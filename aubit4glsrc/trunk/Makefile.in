@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.165 2004-11-26 03:56:28 afalout Exp $
+# $Id: Makefile.in,v 1.166 2004-11-27 06:42:36 afalout Exp $
 #
 
 ## ==================================================================
@@ -114,6 +114,7 @@ corecompile:
 	$(MAKE) -C common/dataio
 	$(MAKE) -C lib
 	$(MAKE) -C compilers/4glc
+	$(MAKE) -C compilers/sql
 	$(MAKE) -C compilers/helpcompile
 	$(MAKE) -C tools/4glpc	
 	$(MAKE) -C compilers/fcompile
@@ -385,6 +386,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C lib/libpacker/xml clean
 	$(MAKE) -C compilers/4glc/rules clean
 	$(MAKE) -C compilers/4glc clean
+	$(MAKE) -C compilers/sql clean
 	$(MAKE) -C compilers/pcode clean
 	$(MAKE) -C compilers/fcompile clean
 	$(MAKE) -C compilers/menus clean
@@ -528,8 +530,20 @@ clean.etc:
 	${RM} etc/*.bak etc/config/*.bak etc/aubit-auto.spec
 	rm -rf etc/Output
 
+#Cant do a4gl_API_* because a4gl_API_exdata.h is NOT generated
 clean.incl:
-	${RM} incl/*.bak .\#* *~ incl/a4gl_API_* 
+	${RM} incl/*.bak incl/\#* incl/*~
+	${RM} incl/a4gl_API_esql.h incl/a4gl_API_msg_lib.h \
+	incl/a4gl_API_esql_lib.h incl/a4gl_API_packer.h \
+	incl/a4gl_API_packer_lib.h incl/a4gl_API_msg.h \
+	incl/a4gl_API_exreport.h incl/a4gl_API_rpc.h \
+	incl/a4gl_API_exreport_lib.h  incl/a4gl_API_rpc_lib.h \
+	incl/a4gl_API_form.h incl/a4gl_API_sql.h \
+	incl/a4gl_API_form_lib.h incl/a4gl_API_sql_lib.h \
+	incl/a4gl_API_help.h incl/a4gl_API_sqlparse.h \
+	incl/a4gl_API_help_lib.h incl/a4gl_API_sqlparse_lib.h \
+	incl/a4gl_API_menu.h incl/a4gl_API_ui.h \
+	incl/a4gl_API_menu_lib.h incl/a4gl_API_ui_lib.h
 
 clean.docs:
 	rm -rf docs/doxy/html

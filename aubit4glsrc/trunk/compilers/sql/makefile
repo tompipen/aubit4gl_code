@@ -1,6 +1,6 @@
 
 #
-# $Id: makefile,v 1.3 2004-11-26 08:11:24 afalout Exp $
+# $Id: makefile,v 1.4 2004-11-27 06:43:43 afalout Exp $
 #
 
 ROOT		=../..
@@ -81,7 +81,8 @@ y.tab.o: y.tab.c lex.yy.c util.c
 ## ==================================================================
 
 clean:
-	${RM} *.o *.so *.dll ${ALL} 2.reqd *~ sql.yacc
+	${RM} *.o *.so *.dll ${ALL} 2.reqd *~ sql.yacc \
+	y.tab.h y.tab.c y.output m2.lex lex.yy.c
 
 
-	
+

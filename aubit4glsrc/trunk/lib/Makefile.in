@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.109 2004-11-01 05:11:18 afalout Exp $
+# $Id: Makefile.in,v 1.110 2004-11-27 06:43:43 afalout Exp $
 #
 
 ROOT    =..
@@ -396,6 +396,13 @@ libSQL_unixodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 libSQL_odbc32.dll: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} odbc32
 
+	
+libSQLPARSE_NONE${SO_EXT}:
+	${MAKE} -C libsqlparse/none
+
+libSQLPARSE_INFORMIX${SO_EXT}:
+	${MAKE} -C ../compilers/sql
+
 ##############
 #libRPC_
 
@@ -567,8 +574,10 @@ clean.other:
 	${MAKE} -C ${LIBHTML_PATH} clean
 	${MAKE} -C ${LIBPOP_PATH} clean
 	${MAKE} -C ${LIBPCRE_PATH} clean
-	${MAKE} -C ${LIBSXML_PATH} clean	
-
+	${MAKE} -C ${LIBSXML_PATH} clean
+	${MAKE} -C libsqlparse/none clean
+	${MAKE} -C ../compilers/sql clean
+	
 clean.cint:
 #We have to allow this one to fail, since it is possible that 
 #Makefile was not yet created by make_cintlib script
