@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.44 2002-02-14 22:11:44 saferreira Exp $
+# $Id: mod.c,v 1.45 2002-02-16 21:25:00 saferreira Exp $
 #
 */
 
@@ -46,12 +46,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.44 2002-02-14 22:11:44 saferreira Exp $
+* $Id: mod.c,v 1.45 2002-02-16 21:25:00 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.44  2002/02/14 22:11:44  saferreira
+*	Code commented
+*	
 *	Revision 1.43  2002/02/03 17:42:27  saferreira
 *	Comments added
 *	
@@ -360,10 +363,10 @@ int max_menu_no = 0;
 struct s_report sreports[1024];
 int sreports_cnt = 0;
 
-/// Menu titles
+/** Menu titles */
 char mmtitle[132][132];
 
-/// Variables dump output file name
+/** Variables dump output file name */
 extern char *outputfilename;
 
 int read_glob_var = 0;
@@ -394,6 +397,7 @@ struct binding ordbind[NUMBINDINGS];
 
 int ordbindcnt = 0;
 
+/** Number of elements in ibind array */
 int ibindcnt = 0;
 int nullbindcnt = 0;
 int obindcnt = 0;
@@ -403,7 +407,7 @@ int fbindcnt = 0;
 #define MAXVARS 2000
 
 
-/// Array of variables found. The level gives us the scope variable
+/** Array of variables found. The level gives us the scope variable */
 struct variables
 {
 
@@ -431,16 +435,15 @@ vars[MAXVARS];
  */
 int modlevel = -1;
 
+/** Command stack array */
 struct cmds
 {
-
   char cmd_type[20];
   int block_no;
 
-}
-command_stack[200];
+} command_stack[200];
 
-/// Command stack counter / index (number of elements in command_stack)
+/** Command stack counter / index (number of elements in command_stack) */
 #ifdef LEXER
 int ccnt = 0;
 #else
@@ -449,7 +452,7 @@ extern int ccnt;
 
 #define EMPTY "----"
 
-/// Array index to the last variable filled in the variables array 
+/** Array index to the last variable filled in the variables array  */
 int varcnt = 0;
 
 int in_record = 0;
@@ -458,6 +461,7 @@ int in_record = 0;
 #define MAXMENUOPTS 10
 
 
+/** The menu stack array */
 struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
 
 /**
@@ -580,7 +584,7 @@ static void add_variable (char *name, char *type, char *n)
 }
 
 /**
- *
+ * Clear the variable stack by setting the counter to zero.
  */
 void clr_variable (void)
 {
@@ -2144,6 +2148,14 @@ static int is_pk (char *s)
 }
 
 
+/**
+ * @param s
+ * @param bindtype
+ *   - u : 
+ * @return 
+ *   - -1 :
+ *   - 0 :
+ */
 int push_bind_rec (char *s, char bindtype)
 {
   int a;
@@ -2300,6 +2312,16 @@ int push_bind_rec (char *s, char bindtype)
   return -1;
 }
 
+/**
+ *
+ * @param i The bind type.
+ *   - i :
+ *   - O  :
+ *   - N :
+ *   - o  :
+ *   - F :
+ * @param var
+ */
 int add_bind (char i, char *var)
 {
   long dtype;
@@ -2398,7 +2420,18 @@ int add_bind (char i, char *var)
 
 }
 
-
+/**
+ * Initilize the bind arrays.
+ *
+ * @param i The bind type:
+ *   - i :
+ *   - N : 
+ *   - o
+ *   - O 
+ *   - f or F :
+ * @param var
+ * @return
+ */
 int start_bind (char i, char *var)
 {
   debug ("start_bind %c -  %s", i, var);
@@ -2433,6 +2466,16 @@ int start_bind (char i, char *var)
   return 0;
 }
 
+/**
+ * Gets the bind number of elements filled in the array.
+ *
+ * @param i The bind array type:
+ *   - i 
+ *   - N 
+ *   - o
+ *   - f or F
+ * @return The number of elements in thbind array, 0 if invalid type.
+ */
 int get_bind_cnt (char i)
 {
   if (i == 'i')
@@ -2443,6 +2486,7 @@ int get_bind_cnt (char i)
     return obindcnt;
   if (i == 'f' || i == 'F')
     return fbindcnt;
+  return 0;
 }
 
 int how_many_in_bind (char i)
@@ -3133,6 +3177,12 @@ void read_glob (char *s)
   fclose (f);
 }
 
+/**
+ * Upshift a string.
+ * 
+ * @param a The string to be upshifted.
+ * @return A static buffer with a copy of the string upshifted.
+ */
 char *upshift (char *a)
 {
   int i;
@@ -3145,6 +3195,12 @@ char *upshift (char *a)
   return buff;
 }
 
+/**
+ * Downshift a string.
+ *
+ * @param a The string to be downshifted.
+ * @return A pointer to a staic buffer where the string downshifted is putted.
+ */
 char *downshift (char *a)
 {
   int i;

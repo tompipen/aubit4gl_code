@@ -24,9 +24,19 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.7 2002-01-23 09:06:18 afalout Exp $
+# $Id: sqlex.c,v 1.8 2002-02-16 21:25:03 saferreira Exp $
 #
 */
+
+/**
+ * @file
+ * SQL 
+ *
+ * @todo Add Doxygen comments to file
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -78,9 +88,6 @@
 #include "libincl/debug.h"
 
 
-
-
-int scan_conn (char *s, char *p, HDBC conn);
 #define chk_rc(rc,stmt,call) chk_rc_full(rc,stmt,call,__LINE__,__FILE__)
 
 struct xxsql_options //struct sql_options
@@ -272,6 +279,7 @@ struct xxsql_options stmt_options[] =
 
 
 //scan_options (struct sql_options options[], char *s, char *p, long *r1, long *r2)
+
 scan_options (struct xxsql_options options[], char *s, char *p, long *r1, long *r2)
 {
   int a;

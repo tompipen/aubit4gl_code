@@ -1,11 +1,3 @@
-/**
- * @file
- * ODBC Sql execution implementation
- *
- * @todo Take the prototypes here declared. See if the functions are static
- * or to be externally seen
- * @todo Doxygen comments to add to functions
- */
 
 /*
 # +----------------------------------------------------------------------+
@@ -33,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.16 2002-02-15 12:09:10 afalout Exp $
+# $Id: sql.c,v 1.17 2002-02-16 21:25:03 saferreira Exp $
 #
 */
 
@@ -86,6 +78,15 @@ extern SQLRETURN SQL_API SQLBindParameter (
     SQLINTEGER * pcbValue);
 
 */
+
+/**
+ * @file
+ * ODBC Sql execution implementation
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
 
 //#define DEFINE_SQLCA
 //#define DEFINE_STATUS
@@ -260,8 +261,11 @@ sqlca_struct;
 #endif /* WIN32 && DLL_EXPORT */
 
 
+/**
+ * Exit from the program with exit status 1.
+ */
 void
-exit_nicely ()
+exit_nicely (void)
 {
   exit (1);
 }
@@ -294,6 +298,12 @@ debug("All done returning rc=%d\n",rc);
 return rc;
 }
 
+/**
+ * Count the number of ? in a query.
+ *
+ * @param s A string with the query.
+ * @return The number of ? found in the query.
+ */
 static int count_queries(char *s)
 {
   char *ptr;
@@ -355,19 +365,13 @@ int proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
 	}
 
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Looks like we have the right number..");
-      }
+/* {DEBUG} */ { debug ("Looks like we have the right number.."); }
 #endif
     }
   for (a = 1; a <= n; a++)
     {
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Binding parameter %d ", a);
-      }
+/* {DEBUG} */ { debug ("Binding parameter %d ", a); }
 #endif
 
       if (t == 'o')
@@ -466,6 +470,12 @@ int need_quotes (int d)
   return 0;
 }
 
+/**
+ * Append a character at the end of a string.
+ *
+ * @param s The string to be appended.
+ * @param a The caracter to append at the end of the string.
+ */
 void chrcat (char *s, char a)
 {
   int b;
@@ -477,8 +487,13 @@ void chrcat (char *s, char a)
   debug ("appended now = %s", s);
 }
 
-struct s_cid *
-A4GLSQL_find_cursor (char *cname)
+/**
+ * Find a cursor in the pointer tree.
+ *
+ * @param cname The name of the cursor to be found.
+ * @return A pointer to the cursor information.
+ */
+struct s_cid *A4GLSQL_find_cursor (char *cname)
 {
   struct s_cid *ptr;
   ptr = (struct s_cid *) find_pointer_val (cname, CURCODE);
@@ -488,6 +503,14 @@ A4GLSQL_find_cursor (char *cname)
   return 0;
 }
 
+/**
+ * Check if a cursor exists in the pointer tree.
+ *
+ * @param cname The name of the cursor to be found.
+ * @return If the cursor exists:
+ *   - 0 : The cursor does not exist.
+ *   - 1 : The cursor exist.
+ */
 int
 find_cursor_for_decl (char *cname)
 {
@@ -497,6 +520,14 @@ find_cursor_for_decl (char *cname)
     return 0;
 }
 
+/**
+ * Assign a value to the status global variable.
+ *
+ * @param a  The value to be set in status.
+ * @param sql A Flag that indicate if sqlca.sqlcoe will be assigned too:
+ *   - 0 : sqlca.sqlcode will be not assigned.
+ *   - Otherwise : sqlca.sqlcode will be assigned.
+ */
 void A4GLSQL_set_status (int a, int sql)
 {
 
@@ -507,8 +538,13 @@ void A4GLSQL_set_status (int a, int sql)
 }
 
 
-struct s_sid *
-A4GLSQL_prepare_sql (char *s)
+/**
+ * Prepare an sql statement.
+ *
+ * @param s A string with the sql statement to be prepared.
+ * @raturn A pointer to the statement information structure.
+ */
+struct s_sid *A4GLSQL_prepare_sql (char *s)
 {
   struct s_sid *sid;
   int rc;
@@ -522,27 +558,18 @@ A4GLSQL_prepare_sql (char *s)
   sid->obind = 0;
   sid->no = 0;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Before alloc sid->hstmt=%p", sid->hstmt);
-  }
+/* {DEBUG} */ { debug ("Before alloc sid->hstmt=%p", sid->hstmt); }
 #endif
   if (new_hstmt (&sid->hstmt))
     {
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("after alloc sid->hstmt=%p", sid->hstmt);
-      }
+/* {DEBUG} */ { debug ("after alloc sid->hstmt=%p", sid->hstmt); }
 #endif
       rc = SQLPrepare (sid->hstmt, sid->select, SQL_NTS);
       chk_rc (rc, sid->hstmt, "SQLPrepare");
 
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Rc set to %d", rc);
-      }
+/* {DEBUG} */ { debug ("Rc set to %d", rc); }
 #endif
       //set_sqlca (sid->hstmt, "Prepare_sql : after SQLPrepare", 0);
 
@@ -557,6 +584,13 @@ A4GLSQL_prepare_sql (char *s)
 }
 
 
+/**
+ * Find a statement prepared in the pointer tree.
+ *
+ * @param pname The statement name.
+ * @param mode Not used.
+ * @return A pointer to the statement strucuture, 0 otherwise.
+ */
 struct s_sid *A4GLSQL_find_prepare (char *pname, int mode)
 {
   struct s_sid *ptr;
@@ -565,10 +599,17 @@ struct s_sid *A4GLSQL_find_prepare (char *pname, int mode)
   ptr = find_pointer_val (pname, PRECODE);
   if (ptr)
     return ptr;
-  return 0;
+  return (struct s_sid *)0;
 }
 
-
+/**
+ * Execute an SQL statement.
+ *
+ * @param pname  The prepared statement name.
+ * @param ni
+ * @param ibind
+ * @return
+ */
 int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING * ibind)
 {
 
@@ -584,23 +625,14 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING * ibind)
 	return;
   }
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug (" prepare statement - Sid=%p ", sid);
-  }
+/* {DEBUG} */ { debug (" prepare statement - Sid=%p ", sid); }
 #endif
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Binding any data... ni=%d hstmt=%p", ni, sid->hstmt);
-  }
+/* {DEBUG} */ { debug ("Binding any data... ni=%d hstmt=%p", ni, sid->hstmt); }
 #endif
   proc_bind (ibind, ni, 'i', sid->hstmt);
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Bound any data... ni=%d", ni);
-  }
+/* {DEBUG} */ { debug ("Bound any data... ni=%d", ni); }
 #endif
   return ODBC_exec_prepared_sql (sid->hstmt);
 }
@@ -661,6 +693,14 @@ A4GLSQL_prepare_select (
   return 0;
 }
 
+/**
+ * Prepare a global SQL statement.
+ *
+ * @param s The SQL statement text.
+ * @param ni
+ * @param ibind
+ * @return A pointer to an SQL statement information strucutre.
+ */
 struct s_sid *
 A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 {
@@ -671,10 +711,7 @@ A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
   sid->ibind = ibind;
 
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("ni=%d ibind=%p", ni, ibind);
-  }
+/* {DEBUG} */ { debug ("ni=%d ibind=%p", ni, ibind); }
 #endif
   sid->ni = ni;
 
@@ -682,19 +719,13 @@ A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
   sid->no = 0;
 
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Hdbc=%p ni=%d", hdbc, sid->ni);
-  }
+/* {DEBUG} */ { debug ("Hdbc=%p ni=%d", hdbc, sid->ni); }
 #endif
 
   if (new_hstmt (&sid->hstmt))
     {
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("after alloc sid->hstmt=%p", sid->hstmt);
-      }
+/* {DEBUG} */ { debug ("after alloc sid->hstmt=%p", sid->hstmt); }
 #endif
 	debug("Preparing %p %s\n",sid->hstmt,sid->select);
       rc = SQLPrepare (sid->hstmt, sid->select, SQL_NTS);
@@ -713,9 +744,19 @@ A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 
 }
 
-
+/**
+ * Declare a cursor.
+ *
+ * @param upd_hold Indicate if the cursor is for update or with hold.
+ * @param sid Select statement to use with the cursor.
+ * @param scroll Indicate if is a scrolling cursor:
+ *   - 0 :
+ *   - 1 :
+ * @param cursname The cursor name.
+ * @return A pointer to the cursor informationstrucutre.
+ */
 struct s_cid *
-A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll, char *cursname)
+A4GLSQL_declare_cursor(int upd_hold,struct s_sid *sid,int scroll,char *cursname)
 {
   //char curs[1024];
   struct s_sid *nsid;
@@ -774,13 +815,6 @@ A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll, char *cursn
 int
 A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 {
-  //int err;
-  //int use_nbind;
-  //int a;
-  //int res;
-  //char *p;
-  //struct BINDING *use_bind;
-
   if (sid == 0)
     {
 #ifdef DEBUG
@@ -812,12 +846,7 @@ A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 int
 A4GLSQL_execute_implicit_select (struct s_sid *sid)
 {
-  //int err;
-  //int use_nbind;
   int a;
-  //int res;
-  //char *p;
-  //struct BINDING *use_bind;
 
   if (sid == 0)
     {
@@ -838,9 +867,13 @@ A4GLSQL_execute_implicit_select (struct s_sid *sid)
   return a;
 }
 
-
-
-
+/**
+ * Open a cursor already declared.
+ *
+ * @param ni
+ * @param s The cursor name.
+ * @return
+ */
 int A4GLSQL_open_cursor (int ni, char *s)
 {
 
@@ -973,16 +1006,26 @@ int A4GLSQL_open_cursor (int ni, char *s)
   return 0;
 }
 
-int A4GLSQL_fetch_cursor (
-	       char *cursor_name,
-	  int fetch_mode, int fetch_when, int nibind, struct BINDING * ibind
-)
+/**
+ * Fetch a cursor into variables.
+ *
+ * @param cursor_name The cursor name
+ * @param fetch_mode The direction of the fetch:
+ *  - FETCH_ABSOLUTE
+ *  - FETCH_RELATIVE
+ * @param fetch_when The number of elements to advance or go back.
+ *   - 1
+ *   - -1
+ *   - Otherwise
+ * @param nibind
+ * @param ibind
+ */
+int A4GLSQL_fetch_cursor (char *cursor_name,
+	  int fetch_mode, int fetch_when, int nibind, struct BINDING * ibind)
 {
 
-  //char cmd[256];
   struct s_cid *cid;
   int nfields;
-  //int a;
   int rc;
   SDWORD nr;
   UWORD nrs[1000];
@@ -1105,22 +1148,26 @@ int A4GLSQL_fetch_cursor (
   return 0;
 }
 
+/**
+ * Initialize a connection to the database.
+ *
+ * If a connection was allready opoened free the reosurces used.
+ *
+ * Gets the username and passord from the environment and call make_connection.
+ *
+ * @todo : Substitute the deprecated function SQLFreeConnect.
+ * @param dbName The database name
+ * @return
+ */
 int A4GLSQL_init_connection (char *dbName)
 {
-  //char *pghost, *pgport, *pgoptions, *pgtty;
-  //int nFields;
-  //int i, j;
   char empty[10] = "None";
   char  *u, *p;
-  //char buff[132];
   HDBC *hh=0;
   int rc;
 
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("In init_connection '%s'", dbName);
-  }
+/* {DEBUG} */ { debug ("In init_connection '%s'", dbName); }
 #endif
   if (strcmp (dbName, OldDBname) == 0)
     return 0;
@@ -1136,20 +1183,13 @@ int A4GLSQL_init_connection (char *dbName)
   u = acl_getenv ("SQLUID");
   p = acl_getenv ("SQLPWD");
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Got environment variables");
-  }
+/* {DEBUG} */ { debug ("Got environment variables"); }
 #endif
   if (u == 0)
     u = empty;
   if (p == 0)
     p = empty;
-#ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("u=%s p=%s", u, p);
-  }
+#ifdef DEBUG /* {DEBUG} */ { debug ("u=%s p=%s", u, p); }
 #endif
 
   if (A4GLSQL_make_connection (dbName, u, p))
@@ -1175,25 +1215,44 @@ int A4GLSQL_init_connection (char *dbName)
   return 0;
 }
 
-
-
-
+/**
+ * Assign the 4gl global variable status.
+ * 
+ * @param a The value to be assigned to status.
+ */
 void A4GLSQL_xset_status(int a) {
 	A4GLSQL_set_status(a,0);
 }
 
+/**
+ * Get the value of the status 4gl global variable.
+ *
+ * @return The value of sqlca.sqlcode
+ */
 int A4GLSQL_get_status ()
 {
   return sqlca.sqlcode;
 }
 
+/**
+ * Get the current SQL error messege.
+ *
+ * @return The contents of sqlca.sqlerrm.
+ */
 char *
 A4GLSQL_get_sqlerrm ()
 {
   return sqlca.sqlerrm;
 }
 
-
+/**
+ * Free the resources allocated for a cursor.
+ *
+ * The cursor is found in the pointer tree.
+ *
+ * @param cname The cursor name.
+ * @return Allways zero
+ */
 struct s_cid *
 A4GLSQL_free_cursor (char *cname)
 {
@@ -1216,8 +1275,16 @@ A4GLSQL_free_cursor (char *cname)
   return 0;
 }
 
-
-
+/**
+ * Close a cursor.
+ *
+ * The cursor is found in the pointer tree.
+ *
+ * @param The cursor name.
+ * @return
+ *   - -1 A cursor with that name was not found
+ *   - 1 Cursor closed
+ */
 int A4GLSQL_close_cursor (char *cname)
 {
   struct s_cid *ptr;
@@ -1243,13 +1310,23 @@ int A4GLSQL_close_cursor (char *cname)
   return 1;
 }
 
+/**
+ * Add a cursor to the pointer tree.
+ *
+ * @param cid A pointer to the identifing cursor structure.
+ * @param cname The cursor name.
+ */
 void add_cursor (struct s_cid *cid, char *cname)
 {
   add_pointer (cname, CURCODE, cid);
 }
 
-char *
-ret_sql_err ()
+/**
+ * Gets the sql error.
+ *
+ * @todo : Fix this recursive return.
+ */
+char *ret_sql_err ()
 {
   return ret_sql_err ();
 }
@@ -1264,6 +1341,12 @@ find_prepare2 (char *pname)
   return 0;
 }
 
+/**
+ * Add a prepare statement to the pointer tree.
+ *
+ * @param pname The prepared statement name.
+ * @param sid A pointer to the statement information.
+ */
 int A4GLSQL_add_prepare (char *pname, struct s_sid * sid)
 {
   if (sid)
@@ -1291,6 +1374,11 @@ int A4GLSQL_add_prepare (char *pname, struct s_sid * sid)
 
 #define max(a,b) (a>b?a:b)
 
+/**
+ * If debug was set print Error.
+ *
+ * @return Allways 1
+ */
 int
 print_err (HDBC hdbc, HSTMT hstmt)
 {
@@ -2692,7 +2780,18 @@ A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 }
 
 
-
+/**
+ * Gets information about columns from a table in the database engine.
+ *
+ * @param tabname The table that we wish to get information about it.
+ * @param colname The column name to get information about it.
+ * @param dtype A pointer to the variable where to put the data type.
+ * @param size A pointer to the variable where to put the size of the column
+ *  returned by the database.
+ * @return 
+ *   - 1 : Information readed.
+ *   - 0 : Error ocurred.
+ */
 int A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   static HSTMT hstmt = 0;
@@ -2950,6 +3049,17 @@ ibind_column_arr (int pos, char *s, HSTMT hstmt)
 
 }
 
+/**
+ * Init a new connection to the database and associate with an explicit 
+ * session name.
+ *
+ * If the user identification was not set gets the values fromthe environment.
+ *
+ * @param sessname The name to be tied to the session.
+ * @param dsn The data source name.
+ * @param usr The user name to establish the connection.
+ * @param pwd The password of the user to set the connection.
+ */
 A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 {
   HDBC *ptr;
@@ -2996,17 +3106,10 @@ A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
     p = empty;
 
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("u=%s p=%s", u, p);
-  }
+/* {DEBUG} */ { debug ("u=%s p=%s", u, p); }
 #endif
 #ifdef DEBUG
-/* {DEBUG} */
-
-  {
-    debug ("Try to make connection then ..%s ", dsn);
-  }
+/* {DEBUG} */ { debug ("Try to make connection then ..%s ", dsn); }
 #endif
 
   if (A4GLSQL_make_connection (dsn, u, p))
@@ -3017,10 +3120,7 @@ A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
       *hh = hdbc;
 
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Made connection executing SQL");
-      }
+/* {DEBUG} */ { debug ("Made connection executing SQL"); }
 #endif
     }
   else
@@ -3139,7 +3239,13 @@ set_conn_options (char *sessname, char *opt, char *val)
   scan_conn (opt, val, *hdbc);
 }
 
-
+/**
+ * Sets the connection to use in the execution of the next SQL statement.
+ *
+ * ODBC dynamic library.
+ *
+ * @param sessname The session name.
+ */
 A4GLSQL_set_conn (char *sessname)
 {
   HDBC *hdbc_new;
@@ -3164,6 +3270,14 @@ A4GLSQL_set_conn (char *sessname)
     }
 }
 
+/**
+ * Find the session and if exist close it.
+ *
+ * @param sessname The session name.
+ * @return 
+ *  - 0 : The session does not exist or could not disconnect from DB.
+ *  - 1 : Session closed.
+ */
 A4GLSQL_close_session (char *sessname)
 {
   HDBC *ptr;
@@ -3194,6 +3308,9 @@ A4GLSQL_close_session (char *sessname)
 }
 
 
+/**
+ * Definition of a date
+ */
 typedef struct tagACLDATE
   {
     DATE_STRUCT date;
