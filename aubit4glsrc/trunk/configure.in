@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.234 2004-08-08 01:41:52 afalout Exp $
+dnl # $Id: configure.in,v 1.235 2004-09-04 09:17:24 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -49,22 +49,49 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 AC_PREREQ(2.50)
 
 #Need to be here too, to be used in AC_INIT call:
+#FIXME - DOES NOT WORK HERE - works only after AC_INIT!!!!
 if test -f "tools/project/version" ; then
-	if `grep -c '=' tools/project/version` -gt 0 ; then
+
+	TMP=`grep -c '=' tools/project/version`
+	if test "$TMP" -gt 0 ; then
 		AC_MSG_ERROR( tools/project/version CVS merge conflict. Stop.)
 	fi
-	if `grep -c '=' tools/project/build` -gt 0 ; then
+	TMP=`grep -c '=' tools/project/build`
+	if test "$TMP" -gt 0 ; then
 		AC_MSG_ERROR( tools/project/build CVS merge conflict. Stop.)
 	fi
 	
 	AUBIT_VERSION=`cat tools/project/version`
 	AUBIT_BUILD=`cat tools/project/build`
+	
+	#Cant test version since its a decimal not integer
+	#if test "$AUBIT_VERSION" -lt 0 -o "$AUBIT_VERSION" = ""; then
+	if test "$AUBIT_VERSION" = "" ; then	
+		AC_MSG_ERROR( tools/project/version file is empty. Stop.)
+	fi
+	if test "$AUBIT_BUILD" = "" ; then 
+		AC_MSG_ERROR( tools/project/build file is empty. Stop.)
+	fi
+
+	if test "$AUBIT_BUILD" -lt 0 ; then 
+		AC_MSG_ERROR( tools/project/build file is invalid. Stop.)
+	fi
+	
+	echo "Aubit version -$AUBIT_VERSION.$AUBIT_BUILD-"
+else
+	echo "Configuring binary installation"
 fi
 
-#FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and $AUBIT_BUILD are not
-#constants. Maybe we should drop stuff in tools/project alltogether, use Autoconf instead?
+#FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
+#$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
+#alltogether, use Autoconf instead?
 dnl source directory sanity check using an arbitrary source file
 AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourceforge.net])
+
+############################################################
+# WARNING - any code you add to this file (including 'echo') 
+#will work ONLY at this point (after AC_INIT)
+############################################################
 
 #needed to initialize AutoMake functionallity, that will create Makefile.in
 #files from Makefile.am:
@@ -1273,11 +1300,39 @@ AC_SUBST(ISHELPFILE_10)
 ##                             Defaults
 ## ==================================================================
 
+
+#need to do this again, since the earlyer one was before initialisation,
+#and will not get in substitution otherwise:
+#if test -f "tools/project/version" ; then
 if test "$AUBIT_SOURCE" = "1" ; then
-	#need to do this again, since the earlyer one was before initialisation,
-	#and will not get in substitution otherwise:
+	TMP=`grep -c '=' tools/project/version`
+	if test "$TMP" -gt 0 ; then
+		AC_MSG_ERROR( tools/project/version CVS merge conflict. Stop.)
+	fi
+	TMP=`grep -c '=' tools/project/build`
+	if test "$TMP" -gt 0 ; then
+		AC_MSG_ERROR( tools/project/build CVS merge conflict. Stop.)
+	fi
+	
 	AUBIT_VERSION=`cat tools/project/version`
 	AUBIT_BUILD=`cat tools/project/build`
+	
+	#Cant test version since its a decimal not integer
+	#if test "$AUBIT_VERSION" -lt 0 -o "$AUBIT_VERSION" = ""; then
+	if test "$AUBIT_VERSION" = "" ; then	
+		AC_MSG_ERROR( tools/project/version file is empty. Stop.)
+	fi
+	if test "$AUBIT_BUILD" = "" ; then 
+		AC_MSG_ERROR( tools/project/build file is empty. Stop.)
+	fi
+
+	if test "$AUBIT_BUILD" -lt 0 ; then 
+		AC_MSG_ERROR( tools/project/build file is invalid. Stop.)
+	fi
+	
+	echo "Aubit version -$AUBIT_VERSION.$AUBIT_BUILD-"
+else
+	echo "Configuring binary installation"
 fi
 
 FULLNAME="Aubit 4GL compiler"
@@ -6750,7 +6805,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.234 2004-08-08 01:41:52 afalout Exp $
+| $Id: configure.in,v 1.235 2004-09-04 09:17:24 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
