@@ -24,12 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.67 2002-09-25 05:42:13 afalout Exp $
+# $Id: Makefile.in,v 1.68 2002-09-25 22:01:39 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ../incl/Makefile-common
-override NOINCL=0
 
 ## ==================================================================
 ##                              Source files
@@ -41,13 +40,6 @@ override NOINCL=0
 ## ==================================================================
 ##                              Options
 ## ==================================================================
-
-#14
-#		libEXREPORT_NOPDF${SO_EXT} libaubit4gl${SO_EXT} \
-#		libRPC_NORPC${SO_EXT} libSQL_nosql${SO_EXT} libFORM_NOFORM${SO_EXT} \
-#		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libLEX_C${SO_EXT} \
-#		libUI_CONSOLE${SO_EXT} libPACKER_PACKED${SO_EXT} libPACKER_PERL${SO_EXT} \
-#		libPACKER_XML${SO_EXT} libLEX_PERL${SO_EXT} libFORM_GENERIC${SO_EXT} \
 
 #target names are maintained in configure.in
 ALL 	=aubit-config ${LIB_DEFAULT} ${LIB_OPTIONAL}
@@ -205,17 +197,17 @@ libIM_JABBER${SO_EXT}:
 
 libA4GL_file${SO_EXT}:
 #	$(MAKE) -C extra_libs/file
-	@echo "Disabled because it needs 4glc"
+	@echo "Disabled because it needs 4glc - $@"
 	@touch $@
 
 libA4GL_string${SO_EXT}:
 #	$(MAKE) -C extra_libs/string
-	@echo "Disabled because it needs 4glc"
+	@echo "Disabled because it needs 4glc - $@"
 	@touch $@
 
 libA4GL_HTML${SO_EXT}:
 #	$(MAKE) -C ../tools/html $@
-	@echo "Disabled because it needs 4glc"
+	@echo "Disabled because it needs 4glc - $@"
 	@touch $@
 
 ## ==================================================================

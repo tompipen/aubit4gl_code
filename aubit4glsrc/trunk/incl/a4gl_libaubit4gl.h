@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.14 2002-09-25 01:14:46 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.15 2002-09-25 22:00:56 afalout Exp $
 #
 */
 
@@ -60,16 +60,14 @@
 		/* we do not want code to behave as native Windows code if we are
         compiling under CygWin environment, since CygWin is essentially
         UNIX-like environment. When you see ifdef WIN32 in Aubit code, this
-        applies ONLY to Windows native compilers, like MSVC or Borland */
+        applies ONLY to Windows native compilers, like MingWin, MSVC or
+		Borland */
 		#undef WIN32
+	    
+		/* missing from rpcgen generated form_x.h on CygWin: */
+		#define bool_t int
+		#define u_int unsigned int
 	#endif
-
-	#ifndef BOOLEAN
-		#define BOOLEAN 	int
-		#define TRUE 		1
-		#define FALSE 		0
-	#endif
-
 
     /* ======================= from a4gl_constats.h ================== */
 
@@ -84,20 +82,21 @@
 	#define ATTRIB_WORDWRAP 			256
 	#define ATTRIB_COLOUR 				512
 
-	#define NO 		(void *)0
-	#define FGL_OK 	(void *)1
-	#define DIGIT_ALIGN_RIGHT 			1
-	#define NUM_PARAM 					30
-	#define DATE_INVALID 				0
-	#define MAXDIG 						30
-
 	#define MODE_INPUT 					1
 	#define MODE_INPUT_WITHOUT_DEFAULTS 2
 	#define MODE_CONSTRUCT 				3
 	#define MODE_DISPLAY_ARRAY 			4
 	#define MODE_PROMPT 				5
+
 	#define FETCH_ABSOLUTE 				1
 	#define FETCH_RELATIVE 				2
+
+	#define NO 							(void *)0
+	#define FGL_OK 						(void *)1
+	#define DIGIT_ALIGN_RIGHT 			1
+	#define NUM_PARAM 					30
+	#define DATE_INVALID 				0
+	#define MAXDIG 						30
 
     /* ===================== from a4gl_dates.h ======================== */
 
@@ -111,12 +110,7 @@
 
 	/* ============================= from a4gl_formxw.h ================ */
 
-   	#ifdef __CYGWIN__
-	    /* missing from rpcgen generated form_x.h on CygWin: */
-		#define bool_t int
-		#define u_int unsigned int
-	#endif
-
+    /*
 	#ifdef MAX
 		#undef MAX
 	#endif
@@ -124,6 +118,7 @@
 	#ifdef MIN
 		#undef MIN
 	#endif
+    */
 
 	/* ======================== from a4gl_aubitcolours.h ========== */
 	#define AUBIT_COLOR_BLACK     0x00000
@@ -152,7 +147,6 @@
 	#define WHEN_CALL 			2
 	#define WHEN_GOTO 			3
 	#define WHEN_NOTSET 		4
-
 	#define WHEN_ERROR 			16
 	#define WHEN_ANYERROR 		32
 	#define WHEN_SQLERROR 		64
@@ -184,11 +178,9 @@
 
     /* ======================== from a4gl_match.h ================= */
 
-
 	#define CONSTR_SEP '\t'
 	#define like(s1,s2) mja_match(s1,s2,'L');
 	#define matches(s1,s2) mja_match(s1,s2,'M');
-
 
     /* ========================= from a4gl_keys.h ================== */
 	#define A4GLKEY_ENTER 	0xff01
@@ -305,7 +297,7 @@
 	#define pushptr_s_form_dets(b,p) 	add_pointer(b,RES_ACLFORM,p)
 
 
-	/* available on to this library */
+	/* available only to this library */
 	#define LIBPRIVATE static
 
 	/* available to other files in the library */
@@ -319,10 +311,10 @@
 
 
 	/* ========================= from a4gl_ui.h ====================== */
-	#define IDENTLEN 18;
-	#define ACL_MN_SHOW 0x0000
-	#define ACL_MN_HIDE 0x0001
-	#define A_BORDER 0x400
+	#define IDENTLEN 		18;
+	#define ACL_MN_SHOW 	0x0000
+	#define ACL_MN_HIDE 	0x0001
+	#define A_BORDER 		0x400
 	#define wchk() if (sqlca.sqlcode<0) werror_hand(__FILE__,__LINE__)
 
 
@@ -356,28 +348,10 @@
 	#define DTYPE_TEXT      12
 	#define DTYPE_VCHAR     13
 	#define DTYPE_INTERVAL  14
-
-/*
-	#define DTYPE_CHAR      0
-	#define DTYPE_SMINT     1
-	#define DTYPE_INT       2
-	#define DTYPE_FLOAT     3
-	#define DTYPE_SMFLOAT   4
-	#define DTYPE_DECIMAL   5
-	#define DTYPE_SERIAL    6
-	#define DTYPE_DATE      7
-	#define DTYPE_MONEY     8
-	#define DTYPE_DTIME     10
-	#define DTYPE_BYTE      11
-	#define DTYPE_TEXT      12
-	#define DTYPE_VCHAR     13
-	#define DTYPE_INTERVAL  14
-*/
 	#define DTYPE_MASK 		255 /* bit pattern for data type */
-
-	#define MAX_DTYPE  		255
 	#define DTYPE_MALLOCED 	256
 
+	#define MAX_DTYPE  		255
 	#define MAXDIG 			30
 	#define MAXPNT 			30
 
@@ -386,7 +360,6 @@
 		               System Includes
 =====================================================================
 */
-
 
 	#include <stdarg.h>  			/* va_start() */
    	#include <ctype.h> 				/* tolower() toupper() */
@@ -411,38 +384,6 @@
     #endif
 */
 
-/*
-Bundles: OS X makes a distinction between dynamic libraries (.dylib on this 
-platform) and executable modules that are loadable at runtime ("bundles" in 
-the OS X jargon). Other Unixes do not make this distinction. By perusal of 
-various Web pages, I found that compiling a C file destined to be a bundle 
-required the switch -fno-common. Linking it to be a bundle required the 
-switches below:
-    -flat_namespace -bundle -undefined suppress
-Also, the bundle must be linked using cc and not with ld, otherwise you will
-get the dreaded dyld_stub_binding_helper error when you actually run the
-program. (My thanks go to Christoph Pfisterer, who told me how to get rid
-of this last problem.)
-
-Download dlCompat library patch from (http://prdownloads.sourceforge.net/gnu-darwin).
-Copy the dlfcn.h include file into /usr/include directory. Copy libdl.dylib
-and libdl.a libraries into /usr/lib directory.
-
-
-[Apr 2002] -Wl,-force_flat_namespace is needed to get all the programs
-to link correctly. [Thanks to Russ Poldrack for this info.]
-
-afni_plugin.c and NLfit_model.c: It turns out that the compiler on OS X always 
-prepends a "_" to all external symbol names (e.g., function "fred" becomes 
-"_fred", as far as the compiler/linker are concerned). When the bundles 
-(.so files) that comprise plugins and models are loaded, a particular 
-function name is searched for (PLUGIN_init()). For DARWIN, this function 
-name had to have the "_" prepended. (This required a single character 
-change to the code that took me several days to discover. Ugh.)
-
-*/
-
-
 	#include <assert.h>             /* assert() */
 	#include <time.h>
 	#include <math.h> 				/* pow() */
@@ -451,8 +392,9 @@ change to the code that took me several days to discover. Ugh.)
 	#include <unistd.h> 			/* sleep() close() write() */
 	#include <signal.h>             /* SIGINT */
 	/*
+    @-skipposixheaders@
 	to force LCLint to process <sys/types.h>, since form_x.h will include
-    rpc.h that needs fd_set. included via /usr/include/sys/types.h but 
+    rpc.h that needs fd_set. included via /usr/include/sys/types.h but
 	defined in /usr/include/sys/select.h
 	 */
 
@@ -460,9 +402,11 @@ change to the code that took me several days to discover. Ugh.)
 	#include <sys/types.h>
 	/*@=skipposixheaders@*/
 
+	/*
 	#ifdef DMALLOC
 		#include "dmalloc.h"
 	#endif
+    */
 
 	#ifdef WIN32
 		#include <windows.h>
@@ -500,6 +444,16 @@ change to the code that took me several days to discover. Ugh.)
 	#endif
 
 
+	/* if not defined in system provided includes: */
+	#ifndef BOOLEAN
+		#define BOOLEAN 	int
+    #endif
+	#ifndef TRUE
+		#define TRUE 		1
+    #endif
+	#ifndef FALSE
+		#define FALSE 		0
+	#endif
 
 
 /*
@@ -531,13 +485,10 @@ change to the code that took me several days to discover. Ugh.)
     /******************************************************
     We really need to remove this - it depends on Sun RPC,
     and therefore makes ALL Aubit code dependent on it!
-    *******************************************************/
+    - no longer true - this one is generated by xgen!
+	*******************************************************/
 	#ifndef _NO_FORM_X_H_
-		//#ifdef SRC_TREE
-			#include "../common/dataio/form_x.x.h"   /* struct_form */
-        //#else
-			//#include "form_x.x.h"   /* struct_form */
-        //#endif
+		#include "../common/dataio/form_x.x.h"   /* struct_form */
     #endif
 
 
@@ -646,15 +597,15 @@ change to the code that took me several days to discover. Ugh.)
 =====================================================================
 */
 
-	void 	init_menu 		(void);						/*initialize menu structure */
+	void 	init_menu 		(void);			/*initialize menu structure */
 	int 	disp_menu 		(char *str, int x,int y);	/* display a menu with title 'str' at position y */
 	void 	banner 			(char str[], int a, int b, int c);
 	void 	title_box 		(char str[], int a, int x, int l);
-	void 	error_box		(char *str);				/*print error message */
+	void 	error_box		(char *str);	/*print error message */
 
 	/* from curslib.c: */
 	void 	disp_opt 		(int row, int x, int y, int l, int type);
-	int 	do_key_menu 	(void);		/*internal function */
+	int 	do_key_menu 	(void);			/*internal function */
 	void 	do_pause 		(void);			/*waits for a key press */
 	int 	edit 			(char *string, char type, int length, int x, int y);
 	int 	check_type 		(char c, char type, int flg, int len);
@@ -713,14 +664,13 @@ change to the code that took me several days to discover. Ugh.)
 	  };
 
 
-	void *create_blank_window (char *name, int x, int y, int w, int h, int border);
-
-	char * glob_window (int x, int y, int w, int h, int border);
-	void * find_pointer (const char *pname, char t);
+	void *	create_blank_window (char *name, int x, int y, int w, int h, int border);
+	char * 	glob_window 		(int x, int y, int w, int h, int border);
+	void * 	find_pointer 		(const char *pname, char t);
 
 	/* OBJECTMODULE is defined in keys.c */
 	#ifdef OBJECTMODULE
-		/*	
+		/*
 		#if (defined(WIN32) && ! defined(__CYGWIN__))
 		#ifdef WIN32
 		*/
@@ -789,7 +739,7 @@ change to the code that took me several days to discover. Ugh.)
     /* ==================== from incl_4glhdr.h =========================*/
 
 	/* not strictly voids - but saves getting into the details */
-	void *prepare_glob_sql (char *s,int ni,void *b);
+	void *	prepare_glob_sql 	(char *s,int ni,void *b);
 
 	/* ------------------ moved from 4gldef.h --------------------- */
 
@@ -808,7 +758,7 @@ change to the code that took me several days to discover. Ugh.)
     /* ------------- end of moved from 4gldef.h ------------------ */
 
 /*
-FYI, to fix the _nm_status error (if status is an int) change
+to fix the _nm_status error (if status is an int) change
 
 extern int status;
 
@@ -825,7 +775,7 @@ be used in applications which link to the library).
 
 
     #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */
-    /* for everything except libaubit4gl */
+    /* for everything except libaubit4gl: */
 
 
 		/** Sqlca variable */
@@ -836,7 +786,7 @@ be used in applications which link to the library).
 
 		/** 4gl global status variable */
 		#ifndef DEFINE_STATUS
-		#define DEFINE_STATUS
+			#define DEFINE_STATUS
 			/* FIXME: is this OK? see lib/fglwrap.c */
 			#ifdef __CYGWIN__
 				extern int status;
@@ -876,7 +826,7 @@ be used in applications which link to the library).
 
 		/** 4gl global status variable */
 		#ifndef DEFINE_STATUS
-		#define DEFINE_STATUS
+			#define DEFINE_STATUS
 			/* FIXME: is this OK? see lib/fglwrap.c */
 			#ifdef __CYGWIN__
 				int status;
@@ -887,7 +837,7 @@ be used in applications which link to the library).
 
 		/** 4gl interrupt ocurred global flag */
 		#ifndef DEFINE_INTFLAG
-		#define DEFINE_INTFLAG
+			#define DEFINE_INTFLAG
 			#ifdef __CYGWIN__
 		    	int int_flag;
 		    #else
@@ -898,7 +848,7 @@ be used in applications which link to the library).
 
 		/** 4gl quit ocurred global flag */
 		#ifndef DEFINE_QUITFLAG
-		#define DEFINE_QUITFLAG
+			#define DEFINE_QUITFLAG
 		    #ifdef __CYGWIN__
 				long quit_flag;
 		    #else
@@ -909,77 +859,73 @@ be used in applications which link to the library).
 
 	#define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
-	#define OP_MASK 512|1024
-	#define OP_MASK_BASE 512
+	#define OP_MASK 		512|1024
+	#define OP_MASK_BASE 	512
 
-
-	#define NUMERIC_OP_2  1*OP_MASK_BASE
-	#define STRING_OP_S1 2*OP_MASK_BASE
-	#define STRING_OP_S2 4*OP_MASK_BASE
-	#define STRING_OP_N1 8*OP_MASK_BASE
-	#define STRING_OP_N2 16*OP_MASK_BASE
-	#define FUNCTION_OP 32*OP_MASK_BASE
-	#define BOOLEAN_OP 64*OP_MASK_BASE
-	#define OTHER_OP 128*OP_MASK_BASE
-
+	#define NUMERIC_OP_2  	1*OP_MASK_BASE
+	#define STRING_OP_S1 	2*OP_MASK_BASE
+	#define STRING_OP_S2 	4*OP_MASK_BASE
+	#define STRING_OP_N1 	8*OP_MASK_BASE
+	#define STRING_OP_N2 	16*OP_MASK_BASE
+	#define FUNCTION_OP 	32*OP_MASK_BASE
+	#define BOOLEAN_OP 		64*OP_MASK_BASE
+	#define OTHER_OP 		128*OP_MASK_BASE
 
 	/* add no more than 15 items to any of the following groups */
-	#define OP_ADD 1|NUMERIC_OP_2
-	#define OP_SUB 2|NUMERIC_OP_2
-	#define OP_MULT 3|NUMERIC_OP_2
-	#define OP_DIV 4|NUMERIC_OP_2
-	#define OP_POWER 5|NUMERIC_OP_2
-	#define OP_MOD 6|NUMERIC_OP_2
+	#define OP_ADD 			1|NUMERIC_OP_2
+	#define OP_SUB 			2|NUMERIC_OP_2
+	#define OP_MULT 		3|NUMERIC_OP_2
+	#define OP_DIV 			4|NUMERIC_OP_2
+	#define OP_POWER 		5|NUMERIC_OP_2
+	#define OP_MOD 			6|NUMERIC_OP_2
 
-	#define OP_CLIP 1|STRING_OP_S1
-	#define OP_CONCAT 1|STRING_OP_S2
-	#define OP_COPY 2|STRING_OP_S2
-	#define OP_USING 3|STRING_OP_S2
-	#define OP_MATCHES 4|STRING_OP_S2
-	#define OP_LIKE 5|STRING_OP_S2
+	#define OP_CLIP 		1|STRING_OP_S1
+	#define OP_CONCAT 		1|STRING_OP_S2
+	#define OP_COPY 		2|STRING_OP_S2
+	#define OP_USING 		3|STRING_OP_S2
+	#define OP_MATCHES 		4|STRING_OP_S2
+	#define OP_LIKE 		5|STRING_OP_S2
 
 	/* This one is a special case and should **NOT** be
 	   used anywhere except for grouping others together in stack.c and
 	   when processing maths operations.
-	        Used for add_op_function & find_op_function
+       Used for add_op_function & find_op_function
 	*/
 
-	#define OP_MATH 12|BOOLEAN_OP
+	#define OP_MATH 		12|BOOLEAN_OP
 
+	#define OP_YEAR 		1|STRING_OP_N1
+	#define OP_MONTH 		2|STRING_OP_N1
+	#define OP_DAY 			3|STRING_OP_N1
+	#define OP_HOUR 		4|STRING_OP_N1
+	#define OP_MINUTE 		5|STRING_OP_N1
+	#define OP_SECOND 		6|STRING_OP_N1
 
-	#define OP_YEAR 1|STRING_OP_N1
-	#define OP_MONTH 2|STRING_OP_N1
-	#define OP_DAY 3|STRING_OP_N1
-	#define OP_HOUR 4|STRING_OP_N1
-	#define OP_MINUTE 5|STRING_OP_N1
-	#define OP_SECOND 6|STRING_OP_N1
+	#define OP_SUBSTR1 		1|STRING_OP_N2
+	#define OP_SUBSTR2 		1|STRING_OP_N3
 
-	#define OP_SUBSTR1 1|STRING_OP_N2
-	#define OP_SUBSTR2 1|STRING_OP_N3
-
-	#define OP_EQUAL (1|BOOLEAN_OP)
-	#define OP_LESS_THAN (2|BOOLEAN_OP)
+	#define OP_EQUAL 		(1|BOOLEAN_OP)
+	#define OP_LESS_THAN 	(2|BOOLEAN_OP)
 	#define OP_GREATER_THAN (3|BOOLEAN_OP)
-	#define OP_NOT_EQUAL (4|BOOLEAN_OP)
+	#define OP_NOT_EQUAL 	(4|BOOLEAN_OP)
 	#define OP_LESS_THAN_EQ (5|BOOLEAN_OP)
 	#define OP_GREATER_THAN_EQ (6|BOOLEAN_OP)
-	#define OP_AND (7|BOOLEAN_OP)
-	#define OP_OR (8|BOOLEAN_OP)
-	#define OP_NOT (9|BOOLEAN_OP)
-	#define OP_ISNULL (10|BOOLEAN_OP)
-	#define OP_ISNOTNULL (11|BOOLEAN_OP)
+	#define OP_AND 			(7|BOOLEAN_OP)
+	#define OP_OR 			(8|BOOLEAN_OP)
+	#define OP_NOT 			(9|BOOLEAN_OP)
+	#define OP_ISNULL 		(10|BOOLEAN_OP)
+	#define OP_ISNOTNULL 	(11|BOOLEAN_OP)
 
-	#define OP_IN (1|OTHER_OP)
-	#define OP_NOTIN (2|OTHER_OP)
-	#define OP_IN_SELECT (3|OTHER_OP)
+	#define OP_IN 			(1|OTHER_OP)
+	#define OP_NOTIN 		(2|OTHER_OP)
+	#define OP_IN_SELECT 	(3|OTHER_OP)
 	#define OP_NOTIN_SELECT (4|OTHER_OP)
-	#define OP_EXISTS (5|OTHER_OP)
-	#define OP_NOTEXISTS (6|OTHER_OP)
+	#define OP_EXISTS 		(5|OTHER_OP)
+	#define OP_NOTEXISTS 	(6|OTHER_OP)
 
-	#define ENCODE_SIZE(x) (x<<16)
-	#define DECODE_SIZE(x) (x>>16)
+	#define ENCODE_SIZE(x) 	(x<<16)
+	#define DECODE_SIZE(x) 	(x>>16)
 
-	/* Prototpes for functions that should be seen */
 	char *	new_string		(int a);
 	int 	pop_bool		(void);
 	int 	pop_int			(void);
@@ -1016,11 +962,12 @@ be used in applications which link to the library).
 	#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
 	#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
 
-	#define GETSETNEW -1
-	#define GETSETRM -2
-	#define GETSETGET 1
-	#define GETSETSET 2
-	#define GETSETGETPTR 3
+	#define GETSETNEW 		-1
+	#define GETSETRM 		-2
+	#define GETSETGET 		1
+	#define GETSETSET 		2
+	#define GETSETGETPTR 	3
+
 	#define GETPTR(struct,ptr,element) get_set(struct,ptr,GETSETGETPTR,element,0)
 	#define GET(struct,ptr,element) get_set(struct,ptr,GETSETGET,element,0)
 	#define SET(struct,ptr,element,value) get_set(struct,ptr,GETSETSET,element,(long)value)
@@ -1074,25 +1021,25 @@ be used in applications which link to the library).
 
 	double 	pdf_size		(double f, char c,struct pdf_rep_structure *p);
 
-	#define REP_TYPE_PDF 1
-	#define REP_TYPE_NORMAL 2
-	#define REPORT_START -1
-	#define REPORT_FINISH -2
-	#define REPORT_DATA -3
-	#define REPORT_OPS_COMPLETE -4
-	#define REPORT_AFTERDATA -5
-	#define REPORT_SENDDATA -6
-	#define REPORT_BEFOREDATA -7
-	#define REPORT_BEFOREGROUP -8
-	#define REPORT_AFTERGROUP -9
-	#define REPORT_LASTROW -10
-	#define REPORT_PAGEHEADER -11
-	#define REPORT_FIRSTPAGEHEADER -12
-	#define REPORT_LASTDATA -13
-	#define REPORT_PAGETRAILER -14
-	#define ERR_BADNOARGS 1000
-	#define ABORT 1
-	#define WARN 2
+	#define REP_TYPE_PDF 			1
+	#define REP_TYPE_NORMAL 		2
+	#define REPORT_START 			-1
+	#define REPORT_FINISH 			-2
+	#define REPORT_DATA 			-3
+	#define REPORT_OPS_COMPLETE 	-4
+	#define REPORT_AFTERDATA 		-5
+	#define REPORT_SENDDATA 		-6
+	#define REPORT_BEFOREDATA 		-7
+	#define REPORT_BEFOREGROUP 		-8
+	#define REPORT_AFTERGROUP 		-9
+	#define REPORT_LASTROW 			-10
+	#define REPORT_PAGEHEADER 		-11
+	#define REPORT_FIRSTPAGEHEADER 	-12
+	#define REPORT_LASTDATA 		-13
+	#define REPORT_PAGETRAILER 		-14
+	#define ERR_BADNOARGS 			1000
+	#define ABORT 					1
+	#define WARN 					2
 
 	#ifndef NODEBUG
 		int set_line(char *s,long l);
@@ -1100,8 +1047,6 @@ be used in applications which link to the library).
 	#else
 		#define debug null_func
 	#endif
-
-	#define MENU_ALL "_AlL_"
 
     /* ====================== from data_if.c =================== */
 
@@ -1135,12 +1080,11 @@ be used in applications which link to the library).
 	void 	push_variable	(void *ptr,int dtype);
 	void 	push_interval	(struct ival *p);
 
-	int 	func_clip(void);
-	void 	func_concat(void);
-	void 	func_using(void);
-	int 	find_function(char *a);
-	double 	power(double a,double b);
-
+	int 	func_clip		(void);
+	void 	func_concat		(void);
+	void 	func_using		(void);
+	int 	find_function	(char *a);
+	double 	power			(double a,double b);
 
 	/* ============================ resource.c ============================= */
 	struct str_resource
@@ -1212,60 +1156,17 @@ be used in applications which link to the library).
 
     /* ============================ from a4gl_stack.h =================*/
 
-	#define OP_MASK 512|1024
-	#define OP_MASK_BASE 512
-
-	#define NUMERIC_OP_2  1*OP_MASK_BASE
-	#define STRING_OP_S1 2*OP_MASK_BASE
-	#define STRING_OP_S2 4*OP_MASK_BASE
-	#define STRING_OP_N1 8*OP_MASK_BASE
-	#define STRING_OP_N2 16*OP_MASK_BASE
-	#define FUNCTION_OP 32*OP_MASK_BASE
-	#define BOOLEAN_OP 64*OP_MASK_BASE
-	#define OTHER_OP 128*OP_MASK_BASE
-
+	#define OP_MASK 		512|1024
+	#define OP_MASK_BASE 	512
 
 	/* add no more than 15 items to any of the following groups */
-	#define OP_ADD 1|NUMERIC_OP_2
-	#define OP_SUB 2|NUMERIC_OP_2
-	#define OP_MULT 3|NUMERIC_OP_2
-	#define OP_DIV 4|NUMERIC_OP_2
-	#define OP_POWER 5|NUMERIC_OP_2
-	#define OP_MOD 6|NUMERIC_OP_2
-	#define OP_CLIP 1|STRING_OP_S1
-	#define OP_CONCAT 1|STRING_OP_S2
-	#define OP_COPY 2|STRING_OP_S2
-	#define OP_USING 3|STRING_OP_S2
-	#define OP_MATCHES 4|STRING_OP_S2
-	#define OP_LIKE 5|STRING_OP_S2
-	#define OP_SUBSTR1 1|STRING_OP_N2
-	#define OP_SUBSTR2 1|STRING_OP_N3
 
-	#define OP_EQUAL (1|BOOLEAN_OP)
-	#define OP_LESS_THAN (2|BOOLEAN_OP)
-	#define OP_GREATER_THAN (3|BOOLEAN_OP)
-	#define OP_NOT_EQUAL (4|BOOLEAN_OP)
-	#define OP_LESS_THAN_EQ (5|BOOLEAN_OP)
-	#define OP_GREATER_THAN_EQ (6|BOOLEAN_OP)
-	#define OP_AND (7|BOOLEAN_OP)
-	#define OP_OR (8|BOOLEAN_OP)
-	#define OP_NOT (9|BOOLEAN_OP)
-	#define OP_ISNULL (10|BOOLEAN_OP)
-	#define OP_ISNOTNULL (11|BOOLEAN_OP)
-
-	#define OP_YEAR 1|STRING_OP_N1
-	#define OP_MONTH 2|STRING_OP_N1
-	#define OP_DAY 3|STRING_OP_N1
-	#define OP_HOUR 4|STRING_OP_N1
-	#define OP_MINUTE 5|STRING_OP_N1
-	#define OP_SECOND 6|STRING_OP_N1
-
-	#define OP_IN (1|OTHER_OP)
-	#define OP_NOTIN (2|OTHER_OP)
-	#define OP_IN_SELECT (3|OTHER_OP)
+	#define OP_IN 			(1|OTHER_OP)
+	#define OP_NOTIN 		(2|OTHER_OP)
+	#define OP_IN_SELECT 	(3|OTHER_OP)
 	#define OP_NOTIN_SELECT (4|OTHER_OP)
-	#define OP_EXISTS (5|OTHER_OP)
-	#define OP_NOTEXISTS (6|OTHER_OP)
+	#define OP_EXISTS 		(5|OTHER_OP)
+	#define OP_NOTEXISTS 	(6|OTHER_OP)
 
 
 	#define ENCODE_SIZE(x) (x<<16)
@@ -1377,8 +1278,8 @@ be used in applications which link to the library).
 	  int popped;
 	};
 
-	void *      dif_get_bind 			(struct bound_list *list);
-	void *      dif_start_bind 			(void);
+	void *      dif_get_bind 	(struct bound_list *list);
+	void *      dif_start_bind 	(void);
 
     /* =================== from a4gl_shockhelp.h ====================*/
 
