@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.28 2003-02-17 05:07:13 afalout Exp $
+# $Id: map.c,v 1.29 2003-04-02 13:43:53 mikeaubury Exp $
 #*/
 
 /**
@@ -150,12 +150,13 @@ rm_quotes (char *s)
 char buff[256];
 int a;
 int b = 0;
-
+buff[0]=0;
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] != '"')
 	{
 	  buff[b++] = s[a];
+	  buff[b]=0;
 	}
     }
   strcpy (s, buff);
