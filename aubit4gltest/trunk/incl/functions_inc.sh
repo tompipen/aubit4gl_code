@@ -3,6 +3,260 @@
 ##############################################################################
 
 
+#Check for incompatible SQL dialect features (tests 234 256 etc...)
+chech_sql_features () {
+
+	if test "$DISABLE_SQL_FEATURES_CHECK" != "1"; then
+		if test "$SQL_FEATURES_USED" != ""; then 
+
+		#List of non-ANSI compatible SQL or db features that is posible
+		#to translate/emulate, but this is __NOT__ currently working
+		#It is anticipated that support for them will be implemented in the 
+		#near future
+		SQL_FEATURES_NON_ANSI_POSIBLE="\
+			ALTER_TABLE \
+			CREATE_DATABASE \
+			CREATE_DATABASE_WITH_NO_LOG \
+			CREATE_SYNONYM \
+			CREATE_TEMP_TABLE \
+			CREATE_VIEW \
+			DATABASE_EXCLUSIVE \
+			DATETIME_EXTEND \
+			DROP_INDEX \
+			DROP_DATABASE \
+			DROP_SYNONYM \
+			DROP_TRIGGER \
+			DDL_DEFAULT_VALUE \
+			DDL_PRIMARY_KEY \
+			DDL_FOREIGN_KEY \
+			DDL_MONEY_DATATYPE \
+			FREE_CURSOR \
+			INTERVAL_EXTEND \
+			LOCK_TABLE \
+			PUT_CURSOR \
+			RENAME_COLUMN \
+			RENAME_TABLE \
+			SELECT_INTO_TEMP \
+			SELECT_RELATIVE \
+			SQL_FUNCTION_SUBSTR \
+			SELECT_INTO_TEMP_WITH_NO_LOG \
+			UNLOAD_PATH_RELATIVE \
+			"
+	
+		#List of non-ANSI compatible SQL or db features that is posible
+		#to translate/emulate, and is implemented in Aubit and fully working
+		SQL_FEATURES_NON_ANSI_SUPORTED="\
+			CLOSE_DATABASE \
+			DROP_TABLE \
+			GRANT \
+			REVOKE \
+			SQL_END_SQL_BLOCK \
+			UNIQUE \
+			UPDATE_COLUMNLIST_EQ_VALUELIST \
+			"
+	
+		#List of non-ANSI compatible SQL or db features that is NOT posible
+		#to translate/emulate, and never will be since it depends on the
+		#functionality of the back-end that CANNOT be emulated, translated
+		#or subsitituted
+		SQL_FEATURES_NON_ANSI_IMPOSIBLE="\
+			ALTER_INDEX \
+			CLUSTER_INDEX \
+			CREATE_AUDIT \
+			DROP_AUDIT \
+			DDL_CHECK \
+			DDL_REFERENCES \
+			DDL_SET_CONSTRAINT \
+			FREE_CURSOR \
+			FREE_LOB \
+			RECOVER_TABLE \
+			ROLLFORWARD_DATABASE \
+			SET_ISOLATION \
+			SET_LOCK_MODE \
+			SET_EXPLAIN \
+			SET_LOG \
+			START_DATABASE \
+			UPDATE_STATISTICS \
+			UPDATE_VIEW \
+			"
+		
+		#List of all non-ANSI compatible SQL or db features
+		SQL_FEATURES_NON_ANSI="$SQL_FEATURES_NON_ANSI_POSIBLE \
+								$SQL_FEATURES_NON_ANSI_SUPORTED \
+								$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
+	
+		#List of all non-ANSI compatible SQL or db features EXPECTED TO FAIL
+		SQL_FEATURES_NON_ANSI_EXPECT_FAIL="$SQL_FEATURES_NON_ANSI_POSIBLE \
+								$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
+							
+#sql_features_used:
+#	@echo ""
+#536 537 538 539 540 541 542 543 544 545 546 547 548 556 561 562 571 586 597 
+#599 607 683 702 796 936 937 531 554 555 558 560 569 572 585 600 797
+
+			#Statments not supported by 4Js ODI on non-Informix databases (all?)
+			SQL_INCOMPAT_4JS="$SQL_INCOMPAT_NON_IFX"
+				
+			#Statements incompatible uisng Aubit in PG EC mode against 
+			#Informix compatibility patched PG engine
+			SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED="$SQL_INCOMPAT_NON_IFX SERIAL ROWID PUT_CURSOR"
+	
+			#Statements incompatible uisng Aubit in PG EC mode against 
+			#vanilla (not patched) PG engine V 7.4
+			SQL_INCOMPAT_AUBIT_ECPG_PG_VANILLA="$SQL_INCOMPAT_AUBIT_ECPG_PG-PATCHED"
+			
+			#Statements incompatible uisng Aubit in C mode (ODBC) against 
+			#vanilla (not patched) PG engine V 7.4
+			SQL_INCOMPAT_AUBIT_C_PG_VANILLA="$SQL_INCOMPAT_AUBIT_ECPG_PG-PATCHED"
+	
+			case $DB_TYPE in
+			
+				IFX-SE) #Informix SE engine, all versions
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: IFX-SE - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+					
+				IFX-OL) #Informix On-line all versions (5.x, 7.x and 9.x)
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: IFX-OL - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+					
+				PG-IFX-74)  #PostgreSQL version 7.4 with Informix compatibility patch
+					for a in $SQL_FEATURES_USED; do
+						for b in $SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED; do
+							if test "$a" = "$b"; then
+								INCOMPAT_SQL_LIST="$INCOMPAT_SQL_LIST $a"
+							fi
+						done
+					done
+					;;
+					
+				PG-74) #PostgreSQL version 7.4x, not patched
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: PG-74 - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+					
+				PG-80) #PostgreSQL version 8.x, not patched
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: PG-80 - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+				*)	#Any other database back-end
+					if test "$VERBOSE" = "1"; then 
+						echo "FIXME: other back-end ($DB_TYPE) - not checking features:"
+						echo "$SQL_FEATURES_USED"
+					fi
+					;;
+			esac
+			
+			if test "$INCOMPAT_SQL_LIST" != ""; then 
+				SKIP_INCOPAT_SQL_LIST="$SKIP_INCOMPAT_SQL_LIST $TEST_NO"
+				SKIP_REASON="incompatible SQL feature: $INCOMPAT_SQL_LIST"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 28"
+			fi
+		fi
+	fi		
+		
+}
+
+###############################################################
+#Check if we need to switch transaction logging mode in RDBMS
+###############################################################
+check_trans_mode () {
+
+		if test "$DB_HAS_TRANSACTION" != "NULL" ; then 
+			if test "$NEED_TRANSACTION" = "1" -a "$DB_HAS_TRANSACTION" != "1" ; then
+				#need to switch logging mode
+				if test "$IFX_ENG_REMOTE" != "1"; then
+					if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
+						if test "$VERBOSE" = "1"; then
+							ontape -s -B $TEST_DB
+							RET=$?
+							echo "NOTE: turned ON buffered logging"
+						else
+							ontape -s -B $TEST_DB > /dev/null
+							RET=$?
+						fi
+						if test "$RET" != "0"; then 
+							echo "ERROR: swithching logging mode ON failed"
+							exit $RET
+						fi
+						DB_HAS_TRANSACTION="1"
+					else
+						#Don't know how to turn on transactions for this RDBMS			
+						SKIP_REASON="needs transaction support, but current database don't have it and I don't know how to turn them on"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 23"
+					fi
+				else
+					if test "$IGNORE_CANT_SWITCH_TRANS" = "1" ; then
+						if test "$VERBOSE" = "1"; then
+							echo "WARNING: $TEST_NO explicit preference for transactions, but DB" >> $LOGFILE
+							echo "WARNING: engine is remote so cant swithch logging mode" >> $LOGFILE		
+						fi
+					else
+						SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"
+						SKIP_REASON="explicit preference for transactions, but DB engine is remote"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 24"
+					fi
+				fi
+			fi
+			if test "$NEED_TRANSACTION" = "2" -a "$DB_HAS_TRANSACTION" = "1"; then
+				#need to switch logging mode
+				if test "$IFX_ENG_REMOTE" != "1"; then				
+					if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
+						if test "$VERBOSE" = "1"; then
+							ontape -s -N $TEST_DB
+							RET=$?
+							echo "NOTE: turned OFF logging"
+						else
+							ontape -s -N $TEST_DB > /dev/null
+							RET=$?
+						fi
+						if test "$RET" != "0"; then 
+							echo "ERROR: swithching logging mode OFF failed"
+							exit $RET
+						fi
+						DB_HAS_TRANSACTION="0"				
+					else
+						#Don't know how to turn off transactions for this RDBMS
+						SKIP_REASON="MUST NOT have transaction support, but current database have it and I don't know how to turn them off"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 25"
+					fi
+				else
+					if test "$IGNORE_CANT_SWITCH_TRANS" = "1" ; then
+						if test "$VERBOSE" = "1"; then
+							echo "WARNING: $TEST_NO explicit preference for transactions, but DB" >> $LOGFILE
+							echo "WARNING: engine is remote so cant swithch logging mode" >> $LOGFILE
+						fi
+					else
+						SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"					
+						SKIP_REASON="explicit preference for transactions, but DB engine is remote"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 26"
+					fi
+				fi
+			fi
+		else
+			if test "$NEED_TRANSACTION" = "1" -o "$NEED_TRANSACTION" = "2" ; then
+				if test "$SKIP_UNKNOWN_TRANS" != "1" ; then
+					if test "$VERBOSE" = "1"; then
+						echo "WARNING: $TEST_NO explicit preference for transactions, but unable to determine state" >> $LOGFILE
+					fi
+				else
+					SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"
+					SKIP_REASON="explicit preference for transactions, but unable to determine state"
+					SKIP_REASON_CODES="$SKIP_REASON_CODES 27"
+				fi
+			fi
+		fi
+}
+
 dont_use_me () {
 
 ALL_DIRS=[0-9]*
@@ -1710,4 +1964,448 @@ fi
   fi
   exit
 }
+
+
+##
+# Show human readable description of the test, and count totals
+# Called from testing loop
+#
+# @param 
+##
+show_test_info() {
+			
+			echo " ------------------- Info for test $TEST_NO -----------------------"		
+
+			if test "$TEMPLATE_COMMENT" = "1"; then 
+				echo "WARNING: test still contains template comment in makefile"
+				TEMPLATE_COMMENT_CNT=`(expr $TEMPLATE_COMMENT_CNT + 1) 2>/dev/null`
+				TEMPLATE_COMMENT_LIST="$TEMPLATE_COMMENT_LIST $TEST_NO"
+			fi
+			
+			if test "$IS_OLD_MAKEFILE" = "1" \
+				-a "$IS_DESCRIBED" = "1" \
+				-a "$IS_UNKNOWN_TEST" != "1"; \
+			then
+				echo "Please migrate folowing test info from 'run_tests' script to makefile:"
+				echo ""
+				MIGRATE_DESC_CNT=`(expr $MIGRATE_DESC_CNT + 1) 2>/dev/null`
+				MIGRATE_DESC_LIST="$MIGRATE_DESC_LIST $TEST_NO"			
+			fi
+			
+			if test "$desc_txt" != "" ; then
+				echo ""
+				echo $desc_txt
+				echo ""
+				HAS_DESC_TXT_CNT=`(expr $HAS_DESC_TXT_CNT + 1) 2>/dev/null`
+			fi
+			
+			if test "$IS_REPORT_TEST" = "1"; then
+				echo "Test contains REPORT block"
+				IS_REPORT_TEST_CNT=`(expr $IS_REPORT_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$EXPECT_CODE" != "0" ; then
+				if test "$EXPECT_CODE" = "x" ; then
+					echo "Test is expected to exit with non-zero code"			
+				else
+					echo "Test is expected to exit with code $EXPECT_CODE"
+				fi
+				NON_ZERO_EXIT_CNT=`(expr $NON_ZERO_EXIT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$COMPILE_ONLY" = "1" ; then
+				echo "Test is compile only, no execution will be attempted"
+				COMPILE_ONLY_CNT=`(expr $COMPILE_ONLY_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_PCODE_ENABLED" = "1" ; then
+				#All tests descxribed by makefiel are P-code enabled amyway
+				echo "Test is P-CODE testing enabled"
+				IS_PCODE_ENABLED_CNT=`(expr $IS_PCODE_ENABLED_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_DESCRIBED" != "1" ; then
+				echo "*** Test not described ***"
+				NOT_DESCRIBED_CNT=`(expr $NOT_DESCRIBED_CNT + 1) 2>/dev/null`
+				NOT_DESCRIBED_LIST="$NOT_DESCRIBED_LIST $TEST_NO"
+			fi
+			if test "$IS_INVALID_TEST" = "1"; then 
+				echo "**** TEST MARKED INVALID IN run_tests ******"
+				IS_INVALID_CNT=`(expr $IS_INVALID_CNT + 1) 2>/dev/null`
+				IS_INVALID_LIST="$IS_INVALID_LIST $TEST_NO"
+			fi
+			if test "$IS_EXPECT_TO_FAIL_TEST" = "1"; then 
+				echo "**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******"
+				EXPECT_FAIL_CNT=`(expr $EXPECT_FAIL_CNT + 1) 2>/dev/null`
+				EXPECT_FAIL_LIST="$EXPECT_FAIL_LIST $TEST_NO"
+			fi
+			if test "$IS_DB_TEST" = "1"; then
+				echo "Test needs database"
+				IS_DB_TEST_CNT=`(expr $IS_DB_TEST_CNT + 1) 2>/dev/null`
+				if test "$SE_REQUIRED" = "1"; then
+					echo "Test requires Informix SE RDBMS"
+					IS_SE_REQUIRED_CNT=`(expr $IS_SE_REQUIRED_CNT + 1) 2>/dev/null`
+				fi
+				if test "$NEED_TRANSACTION" = "2" ; then
+					echo "Database MUST NOT have transactions enabled for this test."
+				fi
+				if test "$NEED_TRANSACTION" = "1" ; then
+					echo "Database MUST have transactions enabled for this test."
+				fi
+				if test "$IS_MAKE_ANSI_SQL_COMPAT" != ""; then
+					if test "$IS_MAKE_ANSI_SQL_COMPAT" = "1"; then
+						echo "Is ANSI SQL 92 compatible"
+					else
+						echo "Is __NOT__ ANSI SQL 92 compatible"
+					fi
+				fi
+				if test "$NEED_IFX_VERSION" != "" -a "$NEED_IFX_VERSION" != "0"; then
+					echo "Needs at least version $NEED_IFX_VERSION of Informix 4gl."
+				fi
+				if test "$SQL_FEATURES_USED" != ""; then 
+					echo "Uses SQL statemets features: $SQL_FEATURES_USED"
+				fi
+				
+			fi
+			if test "$ec_test" = "1"; then
+				echo "Uses/require ESQL compiler output, instead of C output"
+				IS_EC_TEST_CNT=`(expr $IS_EC_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_NOSILENT_TEST" = "1"; then
+				echo "Test will fail if not running on screen (curses)"
+				IS_NOSILENT_CNT=`(expr $IS_NOSILENT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_TUI_TEST" = "1"; then
+				echo "Test uses curses and/or screeen dump and may fail when TERM!=xterm"
+				echo "Anything that uses a screen dump may have specific attributes set which may"
+				echo "fail if TERM!=xterm"
+				echo "This core dumps on MinGW and messes up the terminal completely."
+				echo "On Cygwin they don't core dump, but this tests fail"
+				IS_TUI_TEST_CNT=`(expr $IS_TUI_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_FORM_TEST" = "1"; then
+				echo "Test uses .per form files"
+				IS_FORM_TEST_CNT=`(expr $IS_FORM_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_GRAPHIC_TEST" = "1"; then
+				echo "Test that use graphic characters in forms that may be platform dependent"
+				IS_GRAPHIC_TEST_CNT=`(expr $IS_GRAPHIC_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_CONSOLE_PROMPT_TEST" = "1"; then
+				echo "Test waits for user's input in CONSOLE mode, because automated testing"
+				echo "was not implemented there, so we must skip them untill this is implemented"
+				IS_CONSOLE_PROMPT_CNT=`(expr $IS_CONSOLE_PROMPT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_DUMP_SCREEN_TEST" = "1"; then
+				echo "test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so"
+				echo "it won't work in CONSOLE mode"
+				IS_DUMP_SCREEN_CNT=`(expr $IS_DUMP_SCREEN_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_LONG_TEST" = "1"; then
+				echo "Test takes more then 10 minutes to compile or run"
+				IS_LONG_CNT=`(expr $IS_LONG_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_CERT_TEST" = "1"; then
+				echo "Tests is certified to run (with -eci) If it fails, something was probably broken"
+				echo "in current code."
+				IS_CERT_CNT=`(expr $IS_CERT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_OBSOLETE_TEST" = "1"; then
+				echo "test is superceeded or obsoleted and should be silently skipped"
+				IS_OBSOLETE_CNT=`(expr $IS_OBSOLETE_CNT + 1) 2>/dev/null`
+				IS_OBSOLETE_LIST="$IS_OBSOLETE_LIST $TEST_NO"
+			fi
+			if test "$compat_test" = "1"; then
+				echo "Test can be run using any 4GL compatible compiler, not just Aubit"
+				IS_COMPAT_CNT=`(expr $IS_COMPAT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$need_compat" = "1"; then
+				echo "Test requires Aubit to be in Informix compatibility mode"
+			fi
+			if test "$IS_UNKNOWN_TEST" = "1"; then 
+				echo "Test is clasified as UNKNOWN - please corect this."
+				UNKNOWN_TEST_CNT=`(expr $UNKNOWN_TEST_CNT + 1) 2>/dev/null`			
+				echo ""
+			fi
+			echo ""
+			if test "$INFO_TEST" = "1"; then
+				if test "$CATALOGUE_UNL" = "1"; then 
+					catalogue_unl
+				fi
+				continue
+			fi
+}
+
+
+check_skip_non_db() {
+	
+		if test "$IS_DB_TEST" != "1" -a "$ONLY_DB" = "1"; then
+			SKIP_REASON="non-DB"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 11"
+			SKIP_NONDB_LIST="$SKIP_NONDB_LIST $TEST_NO"
+	    fi
+}
+
+##
+# #See if we can/should run this test, or should we skip it
+# Called from testing loop
+#
+# @param 
+##
+check_skip() {
+	
+	if test "$IS_OBSOLETE_TEST" = "1"; then
+		if test "$VERBOSE" = "1"; then
+			echo "Skipping obsolete test $TEST_NO (not counting or logging)"
+		fi
+        continue
+    fi
+	if [ ! -f $CURR_DIR/$TEST_NO/?akefile ]; then
+		SKIP_REASON="no Makefile - mark it invalid"
+		SKIP_REASON_CODES="$SKIP_REASON_CODES 18"
+		SKIP_NOMAKEFILE_LIST="$SKIP_NOMAKEFILE_LIST $TEST_NO"
+		IS_INVALID_TEST=1
+	fi
+	if test "$IS_INVALID_TEST" = "1"; then
+		SKIP_INVALID_CNT=`(expr $SKIP_INVALID_CNT + 1) 2>/dev/null`
+		SKIP_INVALID_LIST="$SKIP_INVALID_LIST $TEST_NO"
+		SKIP_REASON="invalid test"
+		SKIP_REASON_CODES="$SKIP_REASON_CODES 1"
+	else
+	
+		if test "$A4GL_FAKELEXTYPE" = "PCODE" -a "$IS_PCODE_ENABLED" = "0"; then
+			SKIP_REASON="not p-code enabled"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 3"
+			SKIP_PCODE_LIST="$SKIP_PCODE_LIST $TEST_NO"
+        fi
+		if test "$IS_BLACKLIST_TEST" = "1"; then
+			SKIP_BLACKLIST_LIST="$SKIP_BLACKLIST_LIST $TEST_NO"
+			SKIP_REASON="blacklisted"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 4"
+	    fi
+		if test "$IS_TUI_TEST" != "1" -a "$ONLY_TUI" = "1"; then
+			SKIP_REASON="non-TUI"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 5"			
+			SKIP_TUI_LIST="$SKIP_TUI_LIST $TEST_NO"
+	    fi
+		if test "$SKIP_EXPECT_FAIL" = "1" -a "$IS_EXPECT_TO_FAIL_TEST" = "1"; then
+			SKIP_REASON="expected to fail"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 6"
+			SKIP_EXPECT_FAIL_LIST="$SKIP_EXPECT_FAIL_LIST $TEST_NO"
+		fi
+		if test "$IS_LONG_TEST" = "1" -a "$SKIP_LONG" = "1"; then
+			SKIP_REASON="long running"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 7"
+			SKIP_LONG_LIST="$SKIP_LONG_LIST $TEST_NO"
+	    fi
+		if test "$UI" = "CONSOLE" && (test "$IS_CONSOLE_PROMPT_TEST" = "1" -o "$IS_DUMP_SCREEN_TEST" = "1" -o test "$IS_FORM_TEST" = "1") ; then
+			SKIP_REASON="in CONSOLE mode - uses forms or dump_screen()."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 8"
+			SKIP_CONSOLE_LIST="$SKIP_CONSOLE_LIST $TEST_NO"
+	    fi
+		if test "$IS_DUMP_SCREEN_TEST" = "1" && (test "$UI" = "HL_TUIN" -o "$UI" = "HL_TUINs") ; then
+			SKIP_REASON="screen_dump() not implemented in PDcurses."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 9"
+			SKIP_NO_SCRDUMP_PDCURSES_LIST="$SKIP_NO_SCRDUMP_PDCURSES_LIST $TEST_NO"
+	    fi
+	    if test "$IS_DESCRIBED" != "1" -a "$DESCRIBED_ONLY" = "1"; then
+			SKIP_REASON="not described"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 10"
+			SKIP_NODESC_LIST="$SKIP_NODESC_LIST $TEST_NO"
+	    fi
+		
+		check_skip_non_db
+		
+		if test "$IS_DB_TEST" = "1" -a "$NO_DB" = "1"; then
+			SKIP_REASON="DB dependent"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 12"
+			SKIP_DB_LIST="$SKIP_DB_LIST $TEST_NO"
+	    fi
+	    if test "$IS_NOSILENT_TEST" = "1" -a "$SILENT" = "1"; then
+			SKIP_REASON="cannot run in silent mode."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 13"
+			SKIP_NOSILENT_LIST="$SKIP_NOSILENT_LIST $TEST_NO"
+	    fi
+		#Obsolete-using PDcurses now, not CygWin Ncurses:
+	    #if test "$IS_TUI_TEST" = "1" -a "$TERM" != "xterm" -a "$PLATFORM" = "MINGW"; then
+		#	SKIP_TUI_NOT_XTERM_LIST="$SKIP_TUI_NOT_XTERM_LIST $TEST_NO"
+		#   SKIP_REASON_CODES="$SKIP_REASON_CODES 14"
+		#	SKIP_REASON="cannot run with TERM=$TERM on MinGW using Cygwin Curses."
+	    #fi
+		if test "$IS_DUMP_SCREEN_TEST" = "1" -a "$TERM" != "xterm"; then
+			SKIP_DUMP_SCREEN_NOT_XTERM_LIST="$SKIP_DUMP_SCREEN_NOT_XTERM_LIST $TEST_NO"
+			SKIP_REASON="cannot use dump_screen() with TERM=$TERM (need xterm)."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 15"
+		fi
+	    if test "$IS_GRAPHIC_TEST" = "1" -a "$NO_GRAPHIC" = "1"; then
+			SKIP_REASON="uses platform specific characters."
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 16"
+			SKIP_GRAPHIC_LIST="$SKIP_GRAPHIC_LIST $TEST_NO"
+	    fi
+	    if test "$IS_NO_CRON_TEST" = "1" -a "$CRON_JOB" = "1"; then
+			IS_NO_CRON_CNT=`(expr $IS_NO_CRON_CNT + 1) 2>/dev/null`
+			SKIP_REASON="fails when run as cron job"
+			SKIP_REASON_CODES="$SKIP_REASON_CODES 17"
+			SKIP_NO_CRON_LIST="$SKIP_NO_CRON_LIST $TEST_NO"
+	    fi
+		if test "$USE_COMP" != "aubit"; then
+			#tests that apply only to non-Aubit 4GL compilers
+			if test "$NEED_IFX_VERSION" != "" -a "$NEED_IFX_VERSION" != "0"; then
+				if test "$USE_COMP" = "ifx-p"; then
+					set `echo $NEED_IFX_VERSION | sed -e 's/\./ /g'` #@echo "7.31"
+					NO_GO=0
+					if test "$1" -lt "$I4GL_PCOMPILER_VER_MAJOR"; then
+						NO_GO=1
+					else
+						if test "$I4GL_PCOMPILER_VER_MINOR" -lt "$2" -a "$1" = "$I4GL_PCOMPILER_VER_MAJOR"; then 
+							NO_GO=1
+						fi
+					fi
+					if test "$NO_GO" = "1"; then
+						SKIP_REASON="needs version $NEED_IFX_VERSION but have $I4GL_PCOMPILER_VER_MAJOR.$I4GL_PCOMPILER_VER_MINOR"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 2"					
+						SKIP_NOVERSION_LIST="$SKIP_NOVERSION_LIST $TEST_NO"
+					else
+						if test "$VERBOSE" = "1"; then
+							echo "Version check OK: $NEED_IFX_VERSION >= $I4GL_PCOMPILER_VER_MAJOR.$I4GL_PCOMPILER_VER_MINOR" >> $LOGFILE
+						fi
+					fi
+				fi
+			fi
+			if test "$USE_COMP" = "4js-p"; then
+				TMP1=""
+				TMP1=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l aclfgl_dump_screen {} \;`
+				if test "$TMP1" != ""; then 
+					SKIP_REASON="can't dump_screen with 4js"
+					SKIP_REASON_CODES="$SKIP_REASON_CODES 19"
+					SKIP_DUMP_SCREEN="$SKIP_DUMP_SCREEN $TEST_NO"
+				fi
+			fi
+			if test -f "$TEST_NO/keys.in"; then 
+				SKIP_REASON="$USE_COMP specified but test uses keys.in"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 20"
+				SKIP_KEYS_IN_LIST="$SKIP_KEYS_IN_LIST $TEST_NO"
+			fi
+			if test "$compat_test" != "1" -a "$IGNORE_COMPAT" != "1"; then
+				SKIP_REASON="$USE_COMP specified on non-compat test"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 21"
+				SKIP_NOCOMPAT_LIST="$SKIP_NOCOMPAT_LIST $TEST_NO"
+			fi
+			if test "$IS_OLD_MAKEFILE" = "1" \
+				-a "$IS_DESCRIBED" = "1" \
+				-a "$IS_UNKNOWN_TEST" != "1" || \
+				test "$desc_txt" = "Old makefile"
+			then 
+				#Old makefiles don't know how to use non-Aubit compilers
+				SKIP_OLD_MAKEFILE_LIST="$SKIP_OLD_MAKEFILE_LIST $TEST_NO"
+				SKIP_REASON="$USE_COMP specified on test having old makefile"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 22"
+			fi
+		fi #"$USE_COMP" != "aubit"
+
+		if test "$IS_DB_TEST" = "1"; then
+			#Checks that make sense only if test uses database
+			if test "$SKIP_NON_ANSI" = "1" -a "$IS_MAKE_ANSI_SQL_COMPAT" = "0"; then
+				SKIP_NON_ANSI_CNT=`(expr $SKIP_NON_ANSI_CNT + 1) 2>/dev/null`
+				SKIP_NON_ANSI_LIST="$SKIP_NON_ANSI_LIST $TEST_NO"
+				SKIP_REASON="not ANSI SQL compatible"
+				SKIP_REASON_CODES="$SKIP_REASON_CODES 66"
+			fi
+		
+			#Check if we need to switch transaction logging mode in RDBMS
+			check_trans_mode
+			
+			#Check for incompatible SQL dialect features
+			chech_sql_features
+		fi
+		
+	fi #IS_INVALID_TEST
+
+}	
+
+#Check if makefile is old or new type; sets IS_OLD_MAKEFILE
+check_makefile_type() {
+	
+	#We can no longer use description target itself to find out if test uses new or old 
+	#makefiles, since Mike started adding desc target to old makefiles, so we 
+	#now have OLD makefiles that DO have text description (desc target) but
+	#little if anything else of other descriptions, and do not use any
+	#functionality of new makefiles. So, to find out if this test has old
+	#or new makefile, we will use form_test target... ATM, no makefile below
+	#100 has it.
+	
+	IS_FORM_TEST=`$MAKE -s -C $TEST_NO form_test 2>/dev/null`
+	if test "$IS_FORM_TEST" = ""; then
+		#echo "old makefile"	
+		IS_OLD_MAKEFILE=1
+	else
+		#echo "new makefile"	
+		IS_OLD_MAKEFILE=0
+	fi
+
+}
+
+#see if Makefile contains description. Both old and new makefiles
+#may contain description now, but new ones may contain a template text
+#instead of actuall description text
+check_desc_txt() {
+	
+	desc_txt=`$MAKE -s -C $TEST_NO desc 2>/dev/null`
+
+	if test "$desc_txt" != "" ; then
+		#see if this description is unchanged from template, which 
+		#means that developer who added the test forgot to descibe it
+		TMP1=`echo $desc_txt | grep "This is not a test but a Testing template"`
+	
+		if test "$TMP1" != ""; then 
+			if test "$INFO_TEST" = "1" -o "$RUN_AND_INFO" = "1"; then
+				TEMPLATE_COMMENT=1
+			fi
+			desc_txt=""
+			IS_DESCRIBED=0
+		else
+			ALL_DESCRIBED_TESTS="$ALL_DESCRIBED_TESTS $TEST_NO"
+			IS_DESCRIBED=1
+		fi
+	else
+		IS_DESCRIBED=0
+	fi
+}
+
+
+#Instead of reading descriptions for each test before we can determine
+#if this test should be skiped, use allready loaded cached descriptions
+check_cached_skip_reasons() {
+
+	for b in $IS_DB_TEST_CACHE; do
+		if test "$b" = "$TEST_NO"; then
+			IS_DB_TEST=1
+		fi
+	done
+
+	check_skip_non_db
+
+}
+
+
+#decide if we WANT to skip test
+do_skip() {
+	DO_SKIP=0	
+	if test "$NO_SKIP" != "1"; then
+		#skip is allowed
+		if test "$SKIP_REASON" != ""; then
+			#have reason to skip - skip the test
+			if test "$VERBOSE" = "1"; then
+				#Message shows only LAST reason encountered
+				#SKIP_REASON_CODES show ALL reasons codes
+				echo "Skip #$TEST_NO: $SKIP_REASON ($SKIP_REASON_CODES)"  >> $LOGFILE
+			fi
+			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+			if test "$UNL_LOG" = "1"; then
+				#test_no=$1 result=$2 skip_reason=$3 expect_fail=$4 test_version=$5 db_has_trans=$6
+				result_unl $TEST_NO "" "$SKIP_REASON_CODES" $IS_EXPECT_TO_FAIL_TEST "" $DB_HAS_TRANSACTION
+			fi
+			DO_SKIP=1
+		fi
+    fi
+}
+
+
+
 

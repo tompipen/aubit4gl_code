@@ -58,7 +58,6 @@ endif
 PWD=$(shell pwd)
 DBPATH:=${DBPATH}:/here/there:${PWD}/../23:/and/every/where:
 
-
 export DBPATH
 
 ## ======================================================================

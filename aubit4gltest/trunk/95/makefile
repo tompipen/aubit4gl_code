@@ -24,3 +24,9 @@ db_test:
 ansi_sql_compat:
 	@echo "0"
 
+
+
+
+cert_test:
+	@echo "1"
+

@@ -58,7 +58,9 @@ if test "$AUBITDIR" = ""; then
 	fi
 fi
 if test -f "$AUBITDIR/bin/aubit" ; then 
-	chmod a+x $AUBITDIR/bin/aubit
+	if [ ! -x "$AUBITDIR/bin/aubit" ]; then
+    	chmod a+x $AUBITDIR/bin/aubit
+	fi
 else
 	echo "ERROR: invalid AUBITDIR ($AUBITDIR)"
 	exit 4
@@ -196,30 +198,31 @@ fi
 #######################
 #Define platform defaults
 if test "$PLATFORM" = "MINGW"; then
-	#DEFAULT_FLAGS="-xml -nodb -nospace -nographic"
-	DEFAULT_FLAGS="-esqli -nospace -tuins -nodosdiff"
-	CERT_DEFAULT_FLAGS="-eci -nospace -tuins -nodosdiff"
+	#DEFAULT_FLAGS="-xml -nodb -nographic"
+	DEFAULT_FLAGS="-esqli -tuins -nodosdiff"
+	CERT_DEFAULT_FLAGS="-eci -tuins -nodosdiff"
 	SO_EXT=.dll
 fi
-if test "$PLATFORM" = "CYGWIN"; then
-	DEFAULT_FLAGS="-nographic -nodb -nodosdiff"
-	CERT_DEFAULT_FLAGS="$DEFAULT_FLAGS"
-	SO_EXT=.dll
-fi
+#Obsolete; Cygwin unsupported
+#if test "$PLATFORM" = "CYGWIN"; then
+#	DEFAULT_FLAGS="-nographic -nodb -nodosdiff"
+#	CERT_DEFAULT_FLAGS="$DEFAULT_FLAGS"
+#	SO_EXT=.dll
+#fi
 if test "$PLATFORM" = "UNIX"; then
 	#it is a bit optimistic to hope we can curently use SQLite to run
     #this tests. It would be nice, since it can be easily provided an all
     #platfoms, but it just does not work in many cases.
-	#DEFAULT_FLAGS="-sqlite -nospace"
-	DEFAULT_FLAGS="-esqli -nospace"
-	CERT_DEFAULT_FLAGS="-eci -nospace"
+	#DEFAULT_FLAGS="-sqlite"
+	DEFAULT_FLAGS="-esqli"
+	CERT_DEFAULT_FLAGS="-eci"
 	#Not true for Darwin and HP-UX
 	SO_EXT=.so
 fi
 
-DEFAULT_FLAGS="$DEFAULT_FLAGS -described -nolong -err-with-log"
-#DEFAULT_FLAGS="$DEFAULT_FLAGS -stop"
-CERT_DEFAULT_FLAGS="$CERT_DEFAULT_FLAGS -described -nolong -err-with-log -aubitrc-test"
+DEFAULTS_COMMON="-described -nolong -err-with-log -aubitrc-test -nospace"
+DEFAULT_FLAGS="$DEFAULT_FLAGS $DEFAULTS_COMMON"
+CERT_DEFAULT_FLAGS="$CERT_DEFAULT_FLAGS $DEFAULTS_COMMON"
 
 #######################
 #Apply platform defaults, see if we are to run multiple tests
