@@ -15,15 +15,13 @@ my @fileList;
 
 # Generate the 
 # @param The Directory where the file names should be finded.
+# Warning - This does not work when there are a 4gl in the current dir
 sub getFglModules
 {
   my $dir = shift;
-  #my $currentDir = POSIX::getcwd();
-  #chdir $dir || die "Cant change to $dir : $!\n ";
   my $files = `find $dir -name \*.4gl`;
   @fileList = split(/\n/,$files);
   my $file;
-  #chdir $currentDir;
 }
 
 # Generate the 4gl test suite C++ source file
@@ -68,9 +66,11 @@ GenFglTest::tearDown()
      printf FGLTESTCPP qq|
 void GenFglTest::$functionName()
 {
+  FglParse *fglParse = new FglParse("$file");
   CPPUNIT_ASSERT_EQUAL(
-    PARSE_OK,parse_4gl("$file") 
+    PARSE_OK,fglParse->getParsingResult()
   );
+	delete fglParse;
 }
 |;
   }
@@ -89,6 +89,7 @@ sub genFglTestH
 //#include <cppunit/extensions/HelperMacros.h>
 
 #include <cppunit/extensions/HelperMacros.h>
+#include "FglParse.h"
 
 class GenFglTest : public CppUnit::TestFixture
 {
