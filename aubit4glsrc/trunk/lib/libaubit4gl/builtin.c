@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.64 2004-10-25 18:53:46 whaslbeck Exp $
+# $Id: builtin.c,v 1.65 2004-10-29 12:03:54 mikeaubury Exp $
 #
 */
 
@@ -325,13 +325,21 @@ if (b) {
 		A4GL_debug("Need a little more..");
 		free(np);
 		free(np2);
+	
 		np=malloc(b - a + 2);
 		np2=malloc(b - a + 2);
+		memset(np,0,b - a + 2);
+		memset(np2,0,b - a + 2);
 		strcpy(np,ca);
 		strcpy(np2,ca);
   }
 }
 
+#ifdef DEBUG
+  {
+    A4GL_debug ("Start with %s", A4GL_null_as_null(np));
+  }
+#endif
 
   if (b == 0)
     {
@@ -350,6 +358,9 @@ if (b) {
       np = malloc (DECODE_SIZE (dtype) + 1);
       free (np2);
       np2 = malloc (DECODE_SIZE (dtype) + 1);
+		memset(np,0,DECODE_SIZE (dtype) + 1);
+		memset(np2,0,DECODE_SIZE (dtype) + 1);
+	
       A4GL_pad_string (np, DECODE_SIZE (dtype));
     }
   a--;
@@ -359,6 +370,7 @@ if (b) {
   {
     A4GL_debug ("Start with %s", A4GL_null_as_null(np));
   }
+
   {
     A4GL_debug ("a=%d b=%d dtype=%d,\n ", a, b, dtype);
   }

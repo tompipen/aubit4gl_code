@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.86 2004-10-24 04:21:03 afalout Exp $
+# $Id: sql.c,v 1.87 2004-10-29 12:05:34 mikeaubury Exp $
 #
 */
 
@@ -3349,6 +3349,10 @@ A4GLSQL_close_session_internal (char *sessname)
 	A4GLSQL_commit_rollback (1);
 #endif
 
+if (A4GL_isyes(acl_getenv("FORCE_ROLLBACK_AT_EXIT"))) {
+	A4GLSQL_commit_rollback (1);
+}
+
 
 
   if (ptr == 0)
@@ -3941,7 +3945,10 @@ return ptr;
 
 
 void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
-printf("Warning Validation feature not implemented in ODBC SQL Driver");
+char buff[300];
+sprintf(buff, "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", acl_getenv("A4GL_SYSCOL_VAL"),tabname,colname);
+
+printf("Warning Validation feature not implemented in ODBC SQL Driver\n");
 return 0;
 }
 

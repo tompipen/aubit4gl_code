@@ -3809,7 +3809,7 @@ yyreturn:
 }
 
 
-#line 1178 "screen.yacc"
+#line 108 "screen.yacc"
 
 
 
