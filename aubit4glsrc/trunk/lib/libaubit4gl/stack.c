@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.96 2004-08-05 17:19:40 mikeaubury Exp $
+# $Id: stack.c,v 1.97 2004-08-10 13:04:07 mikeaubury Exp $
 #
 */
 
@@ -667,8 +667,8 @@ A4GL_push_param (void *p, int d)
   int d2;
   int s1;
   int s2;
-  int ptr1;
-  int ptr2 = 0;
+  void *ptr1;
+  void *ptr2 = 0;
   int dtype_1 = -1;
   int dtype_2 = -1;
   int dn1;

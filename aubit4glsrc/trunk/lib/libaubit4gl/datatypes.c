@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.18 2004-03-24 11:45:48 mikeaubury Exp $
+# $Id: datatypes.c,v 1.19 2004-08-10 13:04:07 mikeaubury Exp $
 #
 */
 
@@ -154,6 +154,7 @@ A4GL_init_datatypes (void)
   if (inited == 0)
     {
       inited = 1;
+
       for (a = 0; a < MAX_DTYPE; a++)
 	{
 	  dtypes[a].name = 0;
@@ -161,7 +162,9 @@ A4GL_init_datatypes (void)
 	  dtypes[a].funcs = 0;
 	  dtypes[a].funcs_len = 0;
 	}
+
       A4GL_add_default_datatypes ();
+
     }
   A4GL_debug ("Finished initializing data types");
 }
@@ -307,12 +310,15 @@ A4GL_find_datatype (char *name)
   if (!inited)
     A4GL_init_datatypes ();
 
+printf("Find datatype : %s\n",name);
+
   for (a = 0; a < MAX_DTYPE; a++)
     {
 
       if (dtypes[a].name == 0)
 	continue;
 
+printf("Find datatype : %s = %s ? \n",name,dtypes[a].name);
       if (strcasecmp (dtypes[a].name, name) == 0)
 	{
 	  return a;
