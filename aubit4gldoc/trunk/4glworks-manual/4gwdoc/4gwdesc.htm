@@ -3,10 +3,10 @@
 <HEAD>
    <TITLE>4glWorks: an indepth description</TITLE>
    <META NAME="author" CONTENT="Marco Greco">
-   <META NAME="generator" CONTENT="Hand crafted in Catania by expert Webmakers">
+   <META NAME="generator" CONTENT="Microsoft FrontPage 4.0">
 </HEAD>
 <BODY BGCOLOR="White">
-<H1><HR><CENTER><B>4glWorks: an indepth description</CENTER></B><HR></H1>
+<HR><CENTER><B>4glWorks: an in-depth description</CENTER></B><HR>
 
 <P>I started thinking about an application framework back in 1992, when the
 users of <A href="oops.htm">OOPS</A> begun complaining that it was too mastodontic
@@ -47,7 +47,7 @@ scheme to pass the user selected command between modules.
 <P>A few things were in order:</P>
 
 <UL>
-<LI>code reusal both within OOPS and a developing tool
+<LI>code reuse both within OOPS and a developing tool
 <LI>greater module independence
 <LI>CUA functionality
 </UL>
@@ -67,13 +67,13 @@ motto.</P>
 to have one monolithic menu structure accessed by every viewer, and not
 a 4gl menu for each of them, like in "traditional" 4gl apps.<BR>
 This alone allowed for easier to maintain, shorter code.<BR>
-The menu structure behaviour would be to directly invoke services common
+The menu structure behavior would be to directly invoke services common
 to all viewers, leaving them to deal with their specific user request
 ("Insert new record", etc).</P>
 
 <P>The next move was to have the services tell the viewers what to do upon
 regaining control, rather that putting in the viewers themselves the knowledge
-of the possible behaviours (new record inserted, tbl locked, row deleted,
+of the possible behaviors (new record inserted, tbl locked, row deleted,
 screen defaced, etc.) of all the services.</P>
 
 <P>Third, a way was needed to let the viewers know from menus and services
@@ -87,18 +87,27 @@ ALIGN="bottom" WIDTH=585 HEIGHT=420><BR>
 
 <P>The idea is quite simple: the application is made up of a number of modules
 that call each other and exchange <I>messages</I> in order to communicate what
-each wants the other to do.<BR>
+each wants the other to do.</P>
+
+<P>
 Messages are a couple of smallints that travel upwards (as parameters
-passed to the next module) and downwards, as values returned.<BR>
+passed to the next module) and downwards, as values returned.</P>
+
+<P>
 4gl doesn't offer constant definition, so probably strings would have
 offered more readability. However messages use the stack, and 4gl suffers
-from TSS aches. Smallints seemed a much safer choice.<BR>
+from TSS aches. Smallints seemed a much safer choice.</P>
+
+<P>
 More important, smallints allow for efficient message masking, whereas
-strings don't.<BR>
+strings don't.</P>
+
+<P>
 I quickly got accustomed to using integer values for messages. Recently, when things
 got out of control, I switched to my own cpp like <A HREF="misc.htm#4gl">precompiler</A>.</P>
 
-<H2><HR><B><CENTER>4glWorks module types</B></CENTER><HR></H2>
+<H2></h2>
+<HR><B><CENTER>4glWorks module types</B></CENTER><HR>
 
 <P>This section briefly describe the three main components of a 4glWorks
 application, <I>viewers</I>, <I>services</I> and the <I>menu structure</I>.<BR>
@@ -199,7 +208,8 @@ is requested to perform.<BR>
 4glWorks application are obviously <I>modal</I>, the current mode of operation
 being set by the viewer or service active at a given time.</P>
 
-<H2><HR><B><CENTER>Code reusability</CENTER></B><HR></H2>
+<H2></h2>
+<HR><B><CENTER>Code reusability</CENTER></B><HR>
 
 <P>One of the nice things of messages is that they can be <I>filtered</I>; that
 is to say a message can be fed to a black box that does something with
@@ -218,7 +228,8 @@ you want (say you want a nice header over the data), you can enhance its
 behaviour by putting another one in front of it.<BR>
 Encapsulation and inheritance!</P>
 
-<H2><HR><B><CENTER>Multiple panes and focus</CENTER></B><HR></H2>
+<H2></h2>
+<HR><B><CENTER>Multiple panes and focus</CENTER></B><HR>
 
 <P>If it isn't clear by now, I don't consider 4gl as being fit for applications with multiple
 screen elements, the most obvious reason being the lack of pointing device support.</P>
@@ -240,7 +251,7 @@ For just a moment lets go back to the typical scroller structure:</P>
             return om, op
         end if
     end while
-end function</PRE></P>
+end function</PRE>
 
 <P>(forgive the pseudo-code) where <CODE>upstream</CODE> and
 <CODE>downstream</CODE> are filters that handle messages going from the
@@ -270,7 +281,7 @@ filters directly, like thus:</P>
             return op
         end if
     end while
-end function </PRE></P>
+end function </PRE>
 
 <P>and presto, a multiple pane viewer has been built.</P>
 
@@ -311,7 +322,8 @@ messages
 </UL>
 <P>For everything else, you are on your own.</P>
 
-<H2><HR><B><CENTER>Timer generated messages</CENTER></B><HR></H2>
+<H2></h2>
+<HR><B><CENTER>Timer generated messages</CENTER></B><HR>
 
 <P>As of 2.0b5, 4glWorks permits to specify that a message should be generated after a specified
 amount of time has elapsed, or if the user hasn't pressed a key in some time.<BR>
@@ -323,7 +335,8 @@ the user hasn't asked to move the screen cursor in the master pane for a certain
 The ratio of this would clearly be to speed up the cursor motion in the master pane, since this
 doesn't have to wait for the detail pane to redisplay data every time the current row moves.</P>
 
-<H2><HR><B><CENTER>What Next?</CENTER></B><HR></H2>
+<H2></h2>
+<HR><B><CENTER>What Next?</CENTER></B><HR>
 
 <P>I think it's about time you have a look at the <A HREF="4gwfeatures.htm">feature list</A> of 4glWorks, or the <A HREF="4gwref.htm">programmer's manual</A>.</P>
 
