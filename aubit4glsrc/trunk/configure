@@ -8070,7 +8070,7 @@ RUNTIME_RESOURCE="change.afr.dat helpfile.hlp options.afr.dat values.afr.dat \
 RUNTIME_EXE="fshow loadmap afinderr configurator $AMAKE_BIN_EXE"
 
 COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
-        aace adecompile convertsql aace_4gl aace_perl default_frm 4glpc_new"
+        aace adecompile convertsql aace_4gl aace_perl default_frm 4glpc"
 
 #Currently fail to compile on formhandler: ide1.4ae
 #Needs IFX ESQL/C: sqleditor.4ae
@@ -27869,7 +27869,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.270 2004-10-04 15:37:51 afalout Exp $
+| $Id: configure,v 1.271 2004-10-05 06:01:19 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
