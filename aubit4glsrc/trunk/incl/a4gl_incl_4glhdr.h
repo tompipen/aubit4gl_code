@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.20 2003-05-15 07:10:38 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.21 2003-05-15 16:06:18 mikeaubury Exp $
 */
 
 /**
@@ -67,7 +67,7 @@ extern "C"
 #define BEFORE_INP  (_fld_dr==-99)
 #define AFTER_INP  (_fld_dr==-95)
 #define ON_KEY(zzz) if (_fld_dr==-90&&A4GL_chk_iskey(zzz))
-#define set_status(a) set_status(a,0)
+//#define set_status(a) set_status(a,0)
 #define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 
 #define OP_MASK 512|1024

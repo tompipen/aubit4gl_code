@@ -4,6 +4,7 @@ extern "C"
 {
 #endif
   void popquote (char *s, int size);
+  void popstring (char *s, int size);
   void retquote (char *s);
   void retint (int a);
   void retflo (float *a);
@@ -18,6 +19,7 @@ extern "C"
   void popint (int *x);
   void popshort (short *x);
   void retstring (char *str);
+
 
   void pushshort (short x);
   void pushlong (long x);
