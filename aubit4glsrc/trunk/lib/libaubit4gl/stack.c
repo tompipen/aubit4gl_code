@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.72 2003-09-09 19:01:21 mikeaubury Exp $
+# $Id: stack.c,v 1.73 2003-09-10 10:36:19 mikeaubury Exp $
 #
 */
 
@@ -2531,6 +2531,7 @@ A4GL_conv_to_interval (int a)
   //struct ival i;
   char buff[256];
 
+  memset(buff,0,255);
   A4GL_debug ("Conv to interval - %d\n", a);
   d = A4GL_pop_double ();
   A4GL_debug ("Got d as %lf\n", d);

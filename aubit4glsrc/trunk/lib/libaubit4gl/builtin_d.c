@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.34 2003-09-09 19:01:21 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.35 2003-09-10 10:36:18 mikeaubury Exp $
 #
 */
 
@@ -779,7 +779,8 @@ A4GL_push_dtime (struct A4GLSQL_dtime *p)
   //d->ltime=p->ltime;
   //memcpy(d->data,p->data,32);
   memcpy (d, p, sizeof (struct A4GLSQL_dtime));
-  A4GL_debug ("Pushing dtime block %x %x\n", p->stime, p->ltime);
+
+  //A4GL_debug ("Pushing dtime block %x %x\n", p->stime, p->ltime);
   A4GL_push_param (ptr, DTYPE_DTIME + DTYPE_MALLOCED);
 }
 
@@ -793,6 +794,7 @@ A4GL_push_interval (struct ival *p)
 {
   struct ival *ptr;
   ptr = (struct ival *) acl_malloc (sizeof (struct ival), "push_ival");
+  memset(ptr,0,sizeof(struct ival));
   memcpy (ptr, p, sizeof (struct ival));
   A4GL_debug ("Copied - %x %x", ptr->stime, ptr->ltime);
   A4GL_push_param (ptr, DTYPE_INTERVAL + DTYPE_MALLOCED);

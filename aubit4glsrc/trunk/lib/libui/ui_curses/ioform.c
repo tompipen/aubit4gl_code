@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.74 2003-09-08 08:16:23 mikeaubury Exp $
+# $Id: ioform.c,v 1.75 2003-09-10 10:36:23 mikeaubury Exp $
 #*/
 
 /**
@@ -829,7 +829,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
   char buff3[8000] = "";
   FORM *mform;
   int x, y;
-  int flg = 0;
+  //int flg = 0;
   struct s_form_dets *form;
   struct struct_scr_field *fprop;
 
@@ -3488,7 +3488,7 @@ A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
   int c;
   int b;
   FIELD **field_list;
-  int found;
+  //int found;
   struct s_inp_arr *s;
   struct struct_scr_field *fprop;
   s = sv;
@@ -3581,7 +3581,7 @@ A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   if (c >= 0)
     {
-      for (a = 0; a <= c; a++)
+      for (a = 0; a < c; a++)
 	{
 	  found = 0;
 	  A4GL_debug ("fieldtouched FIELD : %p a=%d c=%d - status=%d\n",
@@ -3590,8 +3590,21 @@ A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
 	  // Have a look to see if we are currently inputing this one...
 	  for (b = 0; b <= s->nfields; b++)
 	    {
-	      if (field_list[a] == field_list[b])
-		found = 1;
+		void *ptr1;
+		void *ptr2;
+
+
+		ptr1=field_list[a];
+
+
+		ptr2=field_list[b];
+
+	A4GL_debug("Ptr1=%p",ptr1);
+	A4GL_debug("Ptr2=%p",ptr2);
+
+	      if (ptr1 == ptr2) found = 1;
+
+
 	    }
 	  if (!found)
 	    {

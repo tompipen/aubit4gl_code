@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.61 2003-09-08 18:54:23 mikeaubury Exp $
+# $Id: conv.c,v 1.62 2003-09-10 10:36:18 mikeaubury Exp $
 #
 */
 
@@ -389,13 +389,14 @@ A4GL_inttoint (void *a, void *b, int size)
   struct ival *d;
   struct ival *e;
   char buff[256];
-
   A4GL_debug ("inttoint\n");
   d = b;
   e = a;
   A4GL_debug ("e->stime=0x%x e->ltime=0x%x", e->stime, e->ltime);
+  memset(buff,0,256);
   A4GL_inttoc (a, buff, 60);
   A4GL_trim (buff);
+  memset(d->data,0,sizeof(d->data));
   A4GL_debug ("Got Interval as : '%s'\n", buff);
   return A4GL_ctoint (buff, b, size);
 
@@ -4532,12 +4533,14 @@ A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data)
 
   x = 0;
 
+  memset(buff,0,255);
   for (cnt = d->stime - 1; cnt <= d->ltime - 1; cnt++)
     {
 
       //debug ("cnt=%d", cnt);
       //debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
       strncpy (&buff[x], &d->data[pos[cnt]], sizes[cnt]);
+	//printf("-->%s\n",&buff[x]);
 
       data_internal[cnt] = atoi_n (&buff[x], sizes[cnt]);
       x += sizes[cnt];

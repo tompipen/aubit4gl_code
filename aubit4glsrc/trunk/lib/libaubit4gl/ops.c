@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.39 2003-09-09 19:01:21 mikeaubury Exp $
+# $Id: ops.c,v 1.40 2003-09-10 10:36:19 mikeaubury Exp $
 #
 */
 
@@ -218,8 +218,10 @@ void A4GL_in_date_ops(int op) {
   A4GL_get_top_of_stack (2, &d1, &s1, (void **) &x_date);
   A4GL_get_top_of_stack (1, &d2, &s2, (void **) &pi);
 
+memset(&in,0,sizeof(in));
   in.stime = pi->stime;
   in.ltime = pi->ltime;
+
   dt.stime = 1;
   dt.ltime = 3;
   A4GL_pop_var2 (&in, DTYPE_INTERVAL, in.stime * 16 + in.ltime);
@@ -285,7 +287,7 @@ A4GL_debug("in_dt_ops");
     }
 
 
-		
+memset(&in,0,sizeof(in));
 
 if (pi) {
   in.stime = pi->stime;
@@ -296,6 +298,7 @@ if (pi) {
   	dt.stime = pd->stime;
   	dt.ltime = pd->ltime;
   }
+ 
   A4GL_pop_var2 (&in, DTYPE_INTERVAL, in.stime * 16 + in.ltime);
 
   if (A4GL_isnull(DTYPE_INTERVAL,(void *)&in)) {

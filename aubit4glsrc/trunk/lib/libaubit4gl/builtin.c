@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.46 2003-07-29 10:47:04 mikeaubury Exp $
+# $Id: builtin.c,v 1.47 2003-09-10 10:36:18 mikeaubury Exp $
 #
 */
 
@@ -898,6 +898,7 @@ acli_interval (char *s, int n)
   struct_ival c;
   //char *ptr;
   A4GL_debug ("acli_interval s=%s n=%d\n", s, n);
+  memset(&c,0,sizeof(c));
   c.ltime = n & 16;
   c.stime = n / 16;
   A4GL_ctoint (s, &c, n);
