@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.10 2002-08-31 06:19:59 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.11 2002-10-03 12:33:53 mikeaubury Exp $
 */
 
 /**
@@ -226,6 +226,55 @@
     /* ======================== datatypes.c ================ */
 
 	int aclfgl_load_datatype (int nargs);
+
+
+#ifndef REP_STRUCTURE
+#define REP_STRUCTURE
+        /* report stuff */
+        struct rep_structure {
+            int top_margin,bottom_margin,left_margin,right_margin;
+            int page_length;
+            int has_first_page;
+            char *next_page;
+            char *rep_table; /* database table for aggregate values */
+            struct BINDING *group_data;
+            char output_mode;
+            char output_loc[256];
+            char top_of_page[256];
+            FILE *output;
+            int page_no;
+            int printed_page_no;
+            int line_no;
+            int col_no;
+                /* was      int (*report)(); */
+                /* int (*report)(void); */ /* report.c:180: too many arguments to function */
+        int (*report)(int a, int b);
+        };
+        struct pdf_rep_structure {
+            double top_margin,bottom_margin,left_margin,right_margin;
+            double page_length;
+            double page_width;
+            int has_first_page;
+            char *next_page;
+            char *rep_table; /* database table for aggregate values */
+            struct BINDING *group_data;
+            char output_mode;
+            char output_loc[256];
+            FILE *output;
+            int page_no;
+            int printed_page_no;
+            double line_no;
+            double col_no;
+                /* was      int (*report)(); */
+                /* int (*report)(void); */ /* report.c:180: too many arguments to function */
+        int (*report)(int a, int b);
+                char font_name[256];
+            double font_size;
+            int paper_size;
+            void *pdf_ptr;
+           int font;
+        };
+#endif
 
 
 #endif /* #ifndef FGLDEF_INCL */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.19 2002-09-26 00:36:18 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.20 2002-10-03 12:33:53 mikeaubury Exp $
 #
 */
 
@@ -992,6 +992,8 @@ be used in applications which link to the library).
 	#define RM(struct,ptr) get_set(struct,ptr,GETSETRM,0,0)
 
 	/* report stuff */
+#ifndef REP_STRUCTURE
+#define REP_STRUCTURE
 	struct rep_structure {
 	    int top_margin,bottom_margin,left_margin,right_margin;
 	    int page_length;
@@ -1036,6 +1038,7 @@ be used in applications which link to the library).
 	   int font;
 	};
 
+#endif
 	double 	pdf_size		(double f, char c,struct pdf_rep_structure *p);
 
 	#define REP_TYPE_PDF 			1

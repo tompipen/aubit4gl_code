@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.4 2002-09-20 10:06:04 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.5 2002-10-03 12:34:08 mikeaubury Exp $
 #*/
 
 /**
@@ -302,7 +302,10 @@ open_packer (char *basename, char dir)
   if (toupper (dir) == 'I')
     {
       infile = fopen (buff, "r");
-
+      if (infile==0) {
+		exitwith("Unable to open form");
+		return 0;
+	}
       /* Get rid of the ?xml line at the beginning */
       fgets(buff,sizeof(buff),infile);
 

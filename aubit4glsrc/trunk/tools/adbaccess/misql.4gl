@@ -1,4 +1,4 @@
-# $Id: misql.4gl,v 1.2 2002-03-31 07:05:32 afalout Exp $
+# $Id: misql.4gl,v 1.3 2002-10-03 12:34:08 mikeaubury Exp $
 # MISQL - Kerry's alternative to Informix-ISQL
 {
 MISQL is the result of work done on behalf of QUANTA SYSTEMS LTD,
@@ -90,7 +90,7 @@ MAIN
 define
     have_args integer
 
-#  WHENEVER ANY ERROR CALL serious_error
+  WHENEVER ANY ERROR CALL serious_error
 #  CALL init_prog("misql")
 
    DEFER INTERRUPT
@@ -103,7 +103,7 @@ error "start"
    OR arg_val(1) = "-V"
    THEN
 #error "3"
-      CALL message_prompt("$Id: misql.4gl,v 1.2 2002-03-31 07:05:32 afalout Exp $","")
+      CALL message_prompt("$Id: misql.4gl,v 1.3 2002-10-03 12:34:08 mikeaubury Exp $","")
       EXIT PROGRAM
    END IF
 
