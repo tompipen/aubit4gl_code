@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.33 2004-12-17 13:19:04 mikeaubury Exp $
+# $Id: nosql.c,v 1.34 2005-03-07 14:53:08 mikeaubury Exp $
 #*/
 
 /**
@@ -60,6 +60,12 @@ void A4GL_local_exitwith (char *s);
 char *find_str_resource (char *s);
 struct s_sid *find_prepare (char *pname);
 extern char *A4GL_global_A4GLSQL_get_sqlerrm (void);	/* in API_sql.c */
+int A4GLSQL_make_connection (char * server, char * uid_p,char * pwd_p);
+int A4GLSQL_get_datatype (char *db, char *tab, char *col);
+void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind);
+void * A4GLSQL_prepare_sql_internal (char *s);
+int A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind);
+int A4GLSQL_initsqllib (void);
 
 
 /*
@@ -140,8 +146,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
  *
  * @todo Describe function
  */
-int
-A4GLSQL_make_connection (char * server, char * uid_p,char * pwd_p)
+int A4GLSQL_make_connection (char * server, char * uid_p,char * pwd_p)
 {
   /*
      A4GL_local_exitwith ("Could not make ODBC connection - noODBC build");
@@ -158,8 +163,7 @@ A4GLSQL_make_connection (char * server, char * uid_p,char * pwd_p)
  *
  * @todo Describe function
  */
-int
-A4GLSQL_get_datatype (char *db, char *tab, char *col)
+int A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
   A4GL_local_exitwith ("Could not get_datatype - noODBC build");
   return 0;
@@ -197,8 +201,7 @@ A4GLSQL_set_conn_internal (char *sessname)
  *
  * @todo Describe function
  */
-void *
-A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind)
+void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *ibind)
 {
   A4GL_local_exitwith ("Could not prepare_global_sql - noODBC build");
   return 0;
@@ -242,8 +245,7 @@ A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
  *
  * @todo Describe function
  */
-void *
-A4GLSQL_prepare_sql_internal (char *s)
+void * A4GLSQL_prepare_sql_internal (char *s)
 {
   A4GL_local_exitwith ("Could not prepare_sql - noODBC build");
   return 0;
@@ -264,8 +266,7 @@ A4GLSQL_add_prepare (char *pname, void *sid)
  *
  * @todo Describe function
  */
-int
-A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind)
+int A4GLSQL_execute_sql_from_ptr_internal (char *pname, int ni, char *ibind)
 {
   A4GL_local_exitwith ("Could not execute_sql_from_ptr - noODBC build");
   return 0;
@@ -407,8 +408,7 @@ A4GLSQL_execute_sql (char *pname, int ni, void *ibind)
  *
  * @todo Describe function
  */
-int
-A4GLSQL_initsqllib (void)
+int A4GLSQL_initsqllib (void)
 {
   return 1;
 }

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.118 2005-02-08 18:53:32 mikeaubury Exp $
+# $Id: ioform.c,v 1.119 2005-03-07 14:53:10 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.118 2005-02-08 18:53:32 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.119 2005-03-07 14:53:10 mikeaubury Exp $";
 /**
  * @file
  *
@@ -86,6 +86,7 @@ extern WINDOW *currwin;
 int tab_cnt = 0;
 int srec_cnt = 0;
 char delimiters[4];
+char *a_strchr(char *s,char c);
 char *A4GL_fld_data_ignore_format (struct struct_scr_field *fprop,
 				   char *fld_data);
 void A4GL_set_field_attr_with_attr_already_determined (FIELD * field,
@@ -97,7 +98,7 @@ int A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 int A4GL_get_field_width_w (void *f);
 void A4GL_set_infield_from_parameter (int a);
 void A4GL_set_curr_infield (long a);
-int A4GL_conversion_ok (int);
+//int A4GL_conversion_ok (int);
 
 int lastc = 0;
 int nline;
@@ -3167,7 +3168,8 @@ struct s_form_dets *formdets;
 
   for (a = 0; a < formdets->fileform->metrics.metrics_len; a++)
     {
-	if (field && formdets->fileform->metrics.metrics_val[a].field!=field) continue;
+	if (field && (void *)formdets->fileform->metrics.metrics_val[a].field != field) continue;
+
       	A4GL_mja_set_field_buffer ((FIELD *) formdets->fileform->metrics.
 				 metrics_val[a].dlm1, 0, sbuff0);
       	A4GL_mja_set_field_buffer ((FIELD *) formdets->fileform->metrics.

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.92 2004-11-26 13:50:34 mikeaubury Exp $
+# $Id: iarray.c,v 1.93 2005-03-07 14:53:10 mikeaubury Exp $
 #*/
 
 static char *module_id =
-  "$Id: iarray.c,v 1.92 2004-11-26 13:50:34 mikeaubury Exp $";
+  "$Id: iarray.c,v 1.93 2005-03-07 14:53:10 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -56,9 +56,10 @@ void debug_print_flags (void *sv, char *txt);
 int A4GL_get_attr_from_string (char *s);
 char *A4GL_fld_data_ignore_format (struct struct_scr_field *fprop,
 				   char *fld_data);
-int A4GL_conversion_ok (int);
+//int A4GL_conversion_ok (int);
 void A4GL_clr_field (FIELD * f);
 void A4GL_make_window_with_this_form_current (void *form);
+int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, int init, void *vevt);
 
 
 #define CONTROL_STACK_LENGTH 10
@@ -1111,8 +1112,7 @@ while (1) {
  * @param attrib Attributes used during input array
  * @return
  */
-int
-UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib,
+int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib,
 		       int init, void *vevt)
 {
   FIELD ***fld_list;

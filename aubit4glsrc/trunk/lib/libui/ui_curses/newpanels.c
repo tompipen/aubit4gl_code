@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.106 2005-03-04 20:25:05 mikeaubury Exp $
+# $Id: newpanels.c,v 1.107 2005-03-07 14:53:11 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.106 2005-03-04 20:25:05 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.107 2005-03-07 14:53:11 mikeaubury Exp $";
 
 /**
  * @file
@@ -88,7 +88,7 @@ int currwinno = -1;
 int currattr = 0;
 int
 A4GL_decode_line_scr (int l);
-PANEL *get_below_panel(PANEL *p) ;
+//PANEL *get_below_panel(PANEL *p) ;
 void A4GL_monitor_screen(void) ;
 
 
@@ -714,7 +714,7 @@ int
 void
  UILIB_A4GL_zrefresh (void)
 {
-static char tmpbuf[256]="";
+//static char tmpbuf[256]="";
 
   //A4GL_gui_refresh ();
   if (A4GL_screen_mode (-1))
@@ -792,8 +792,7 @@ A4GL_debug("addsr : %s",buff);
   A4GL_mja_wrefresh (currwin);
 }
 
-void
-A4GL_tui_printr (int refreshwin, char *fmt, ...)
+void A4GL_tui_printr (int refreshwin, char *fmt, ...)
 {
   va_list args;
   char buff[256];

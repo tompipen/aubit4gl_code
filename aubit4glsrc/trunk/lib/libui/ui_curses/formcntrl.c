@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.71 2005-02-08 18:19:52 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.72 2005-03-07 14:53:09 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.71 2005-02-08 18:19:52 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.72 2005-03-07 14:53:09 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -45,8 +45,15 @@ static char *module_id="$Id: formcntrl.c,v 1.71 2005-02-08 18:19:52 mikeaubury E
 #include <ctype.h>
 //extern int m_lastkey;
 #define CONTROL_STACK_LENGTH 10
+void
+A4GL_fgl_die_with_msg(int n,char *s);
+
 
 //static int process_control_stack (struct s_screenio *arr);
+char *a_strchr(char *s,int c);
+void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
+
+
 static int A4GL_has_something_on_control_stack (struct s_screenio *sio);
 static void A4GL_add_to_control_stack (struct s_screenio *sio, int op,
 				       FIELD * f, char *parameter,
@@ -66,7 +73,7 @@ int A4GL_get_metric_for (struct s_form_dets *form, void *f);
 int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) ;
 void A4GL_set_infield_from_parameter (int a);
 int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
-int A4GL_conversion_ok(int);
+//int A4GL_conversion_ok(int);
 void A4GL_clr_field (FIELD * f);
 void A4GL_make_window_with_this_form_current(void *form);
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);

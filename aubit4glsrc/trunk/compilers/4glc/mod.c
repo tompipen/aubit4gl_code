@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.205 2005-03-01 18:22:25 mikeaubury Exp $
+# $Id: mod.c,v 1.206 2005-03-07 14:51:52 mikeaubury Exp $
 #
 */
 
@@ -4837,7 +4837,7 @@ while (1) {
 	A4GL_trim(buff);
 	if (buff[0]=='#') continue;
 	if (strlen(buff)==0) continue;
-	A4GL_add_pointer(buff,FEATURE_USED,1);
+	A4GL_add_pointer(buff,FEATURE_USED,(void *)1);
 }
 fclose(f);
 	
@@ -4862,7 +4862,7 @@ void A4GL_add_feature(char *feature) {
 			failed++;
 			return;
 		}
-		A4GL_add_pointer(feature,FEATURE_USED,1);
+		A4GL_add_pointer(feature,FEATURE_USED,(void *)1);
 		fprintf(f,"%s\n",feature);
 		fclose(f);
 	 }
@@ -4974,7 +4974,6 @@ static void A4GL_set_sql_features(void) {
 			}
 	}
 }
-
 
 void emulate_insert(char *s) {
 	char buff[256];

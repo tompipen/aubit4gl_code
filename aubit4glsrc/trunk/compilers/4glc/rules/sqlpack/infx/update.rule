@@ -233,7 +233,6 @@ upd_value_expression_ss:
 		free($<sql_string>1);
         }
         | MINUS upd_value_expression_initial_ss {
-		char *s;
                 $<sql_string>$=make_sql_string_and_free(strdup("-"),strdup(A4GLSQLCV_check_expr($<sql_string>2)),0);
 		free($<sql_string>2);
 			

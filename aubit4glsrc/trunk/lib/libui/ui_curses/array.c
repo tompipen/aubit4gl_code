@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.37 2004-11-26 13:50:33 mikeaubury Exp $
+# $Id: array.c,v 1.38 2005-03-07 14:53:09 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.37 2004-11-26 13:50:33 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.38 2005-03-07 14:53:09 mikeaubury Exp $";
 
 
 
@@ -47,6 +47,9 @@ static char *module_id="$Id: array.c,v 1.37 2004-11-26 13:50:33 mikeaubury Exp $
 */
 
 #include "a4gl_lib_ui_tui_int.h"
+int set_scrline_da (int np);
+int set_arrline_da (int np);
+char *a_strchr(char *s,char c);
 
 /*
 =====================================================================
@@ -744,8 +747,7 @@ evt=vevt;
  *   - 0 : There was an error.
  */
 
-int
-set_scrline_da (int np)
+int set_scrline_da (int np)
 {
   int a;
   if (np != 1)
@@ -770,8 +772,7 @@ set_scrline_da (int np)
  * @param np Number of parameters.
  */
 
-int
-set_arrline_da (int np)
+int set_arrline_da (int np)
 {
   int a;
   if (np != 1)

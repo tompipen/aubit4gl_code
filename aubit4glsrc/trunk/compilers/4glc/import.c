@@ -116,9 +116,7 @@ return 1;
 
 
 void import_package(char *s) {
-char buff[256];
 FILE *f;
-
 f=A4GL_open_file_classpath(s);
 if (f==0 ) {
 	int ok=0;

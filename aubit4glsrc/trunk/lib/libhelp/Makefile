@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.23 2004-12-22 11:22:19 afalout Exp $
+# $Id: Makefile,v 1.24 2005-03-07 14:53:06 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -57,12 +57,12 @@ ${LIBROOT}/libHELP_std${SO_EXT}: helplib.o a4gl_xxhelp.afr.o
 ##                              Sub-targets
 ## ==================================================================
 
-helplib.o: helplib.${FGLC_OUTPUT_EXT}
+#helplib.o: helplib.${FGLC_OUTPUT_EXT}
 #a4gl_xxhelp.afr.o: a4gl_xxhelp.afr.c
 
-helplib.${FGLC_OUTPUT_EXT}: helplib.4gl
-	export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; \
-	${4GLC}  --namespace HELPLIB_aclfgl_ $^
+helplib.o: helplib.4gl
+	export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; export A4GL_OBJ_EXT=.o; \
+	${4GLC}  -c --namespace HELPLIB_aclfgl_ $^
 
 #For debugging only
 dbghelplib.${FGLC_OUTPUT_EXT}: helplib.4gl

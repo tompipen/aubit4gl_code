@@ -184,6 +184,11 @@ int A4GL_invert_color (int a);
 void A4GL_move_bar (ACL_Menu * menu, int a);
 int A4GL_find_char (ACL_Menu * menu, int key);
 int A4GL_gui_startmenu (char *s, long a);
+void make_error_panel_top(void);
+PANEL *get_below_panel(PANEL *p);
+void A4GL_tui_printr (int refreshwin, char *fmt, ...);
+int A4GL_has_timeout(int a);
+void A4GL_refresh_error_window(void);
 //void  A4GL_sleep_i                         (void);
 
 

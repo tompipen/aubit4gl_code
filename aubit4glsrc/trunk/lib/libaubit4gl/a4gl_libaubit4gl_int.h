@@ -47,6 +47,7 @@ int rgetkey(void);
 
 /* Prototypes from builtin.c */
 int aclfgl_fgl_getkey(int n) ;
+int aclfgl_fgl_getkey_wait(int n) ;
 char *A4GL_strcpy(char *d,char *s,char *fname,int l,int sdest);
 
 /* Most of the time sizeof(d) will be 4 (size of a pointer) - */

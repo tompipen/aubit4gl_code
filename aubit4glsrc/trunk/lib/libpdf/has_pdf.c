@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.17 2004-08-02 06:40:27 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.18 2005-03-07 14:53:08 mikeaubury Exp $
 #*/
 
 /**
@@ -84,13 +84,15 @@ void A4GL_pdf_skip_to (struct pdf_rep_structure *rep, double a);
 void A4GL_pdf_need_lines (struct pdf_rep_structure *rep);
 void A4GL_pdf_add_spaces (void);
 void A4GL_pdf_rep_close (struct pdf_rep_structure *p);
-int aclpdf (struct pdf_rep_structure *p, char *fname, int n);
 int A4GL_pdf_blob_print (struct pdf_rep_structure *p, struct fgl_int_loc *blob,
 		    char *type, int cr);
 #endif
+int aclpdf (struct pdf_rep_structure *p, char *fname, int n);
+void A4GL_pdf_add_spaces (void);
 int A4GL_pdf_new_page (struct pdf_rep_structure *p);
 double A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *rep);
 void A4GL_pdf_move (struct pdf_rep_structure *p);
+void A4GLREPORT_initlib (void);
 
 /*
 =====================================================================
@@ -401,8 +403,7 @@ rep=vrep;
  *
  * @todo Describe function
  */
-void
-A4GL_pdf_add_spaces (void)
+void A4GL_pdf_add_spaces (void)
 {
   int a;
   char str[1000];
@@ -771,8 +772,7 @@ return 0;
  *
  * @todo Describe function
  */
-void
-A4GLREPORT_initlib (void)
+void A4GLREPORT_initlib (void)
 {
   A4GL_debug ("Calling PDF_boot");
   PDF_boot ();

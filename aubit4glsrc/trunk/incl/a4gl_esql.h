@@ -8,7 +8,7 @@
 
 /*
 #
-# $Id: a4gl_esql.h,v 1.19 2005-02-11 10:12:08 afalout Exp $
+# $Id: a4gl_esql.h,v 1.20 2005-03-07 14:53:03 mikeaubury Exp $
 #
 */
 
@@ -77,7 +77,28 @@ extern "C"
 	#include "a4gl_esql_infx.h"
 #endif
 
+
+void ESQLAPI_A4GLESQL_initlib(void);
+void ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,short *p_indicat,int size,int mode,int x,int y);
+void ESQLAPI_A4GL_copy_date(long *infx,long *a4gl,short *p_indicat,int size,int mode);
+void ESQLAPI_A4GL_copy_datetime(void *infxv, void *a4glv,short *p_indicat,int size,int mode);
+void ESQLAPI_A4GL_copy_decimal(void *infxv,void *a4glv,short *p_indicat,int size,char mode);
+void ESQLAPI_A4GL_copy_double(double *infx,double *a4gl,short *p_indicat,int size,int mode);
+void ESQLAPI_A4GL_copy_float(float *infx,float *a4gl,short *p_indicat,int size,int mode);
+void ESQLAPI_A4GL_copy_int(long *infx,long *a4gl,short *p_indicat,int size,int mode);
+void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *p_indicat,int size,int mode)  ;
+void ESQLAPI_A4GL_copy_money(void *infxv,void *a4glv,short *p_indicat,int size,char mode);
+void ESQLAPI_A4GL_copy_smint(short *infx,short *a4gl,short *p_indicat,int size,int mode);
+
+
 #ifdef __cplusplus
 }
 #endif
+
+
+
+
+
 #endif
+
+

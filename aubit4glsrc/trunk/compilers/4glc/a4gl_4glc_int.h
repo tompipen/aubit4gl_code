@@ -350,7 +350,7 @@ void push_validate (char *t2);
 int gen_cnt (int a);
 void expand_bind (struct binding_comp *bind, int btype, int cnt);
 void A4GL_lex_printc(char* fmt,... );
-void A4GL_lex_printh(char* fmt,... );
+//void A4GL_lex_printh(char* fmt,... );
 void A4GL_lex_printcomment(char* fmt,... );
 char get_curr_report_stack_whytype_1 (void);
 void set_yytext (char *s);
@@ -431,6 +431,19 @@ void A4GL_CV_print_do_select(char *s) ;
 char *A4GL_CV_print_select_all(char *s) ;
 char *A4GL_compiled_sqlpack(void);
 char *A4GL_decode_packtype(char *s);
+void A4GL_cursor_defined(char *s,char type) ;
+void A4GL_cursor_fetch(char *s);
+void A4GL_cursor_current(char *s) ;
+void A4GL_cursor_flush(char *s) ;
+char *A4GL_get_insert_prep(char *s) ;
+void A4GL_insert_cursor_prep(char *cname,char *stmt);
+void A4GL_cursor_is_insert(void);
+int A4GL_open_class_dll(char *s);
+void A4GL_cursor_is_select(void);
+void A4GL_load_features(void);
+void A4GL_lex_printh(char* fmt,... );
+void emulate_insert(char *s);
+char A4GL_cursor_type(char *s);
 
 #define add_feature A4GL_add_feature
 

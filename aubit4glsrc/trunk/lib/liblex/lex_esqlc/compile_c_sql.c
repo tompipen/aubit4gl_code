@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.45 2005-02-11 16:52:37 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.46 2005-03-07 14:53:07 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -566,9 +566,9 @@ print_select_all (char *buff)
 void
 print_unload (char *file, char *delim, char *sql)
 {
-  int ni, no;
-  static char b2[20000];
-  int os;
+  int ni;
+  //static char b2[20000];
+  //int os;
   int isvar=-1;
   printc ("{\n");
   ni = print_bind_definition ('i');

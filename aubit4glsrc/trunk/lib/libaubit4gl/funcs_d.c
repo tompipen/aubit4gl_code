@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.56 2005-03-01 18:23:18 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.57 2005-03-07 14:53:04 mikeaubury Exp $
 #
 */
 
@@ -54,6 +54,7 @@
 // when a database is connected to from ESQL/C generated code.
 // Its not required for Informix, just postgres ATM...
 void *last_esql_db_connection=0;
+void *A4GL_esql_dbopen_connection(void) ;
 
 
 
@@ -79,7 +80,7 @@ struct expr_str
 */
 
 int A4GL_bname2 (char *str, char *str1, char *str2, char *str3);
-
+void* A4GL_db_connected(char* dbname);
 void * A4GL_new_expr (char *value);
 void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 /*

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.216 2005-03-01 18:23:35 mikeaubury Exp $
+# $Id: compile_c.c,v 1.217 2005-03-07 14:53:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.216 2005-03-01 18:23:35 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.217 2005-03-07 14:53:07 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -74,7 +74,7 @@ static char *module_id="$Id: compile_c.c,v 1.216 2005-03-01 18:23:35 mikeaubury 
 
 #define FGL_PLUS_PLUS
 int isin_command (char *cmd_type);
-char *A4GL_get_esql_ext(void);
+//char *A4GL_get_esql_ext(void);
 /*
 void add_function_to_header (char *identifier, int parms);
 char *get_namespace (char *s);
@@ -85,12 +85,15 @@ static void order_by_report_stack(void);
 static void add_to_ordbyfields(int n);
 static void order_by_report_stack();
 extern void expand_bind (struct binding_comp *bind, int btype, int cnt);
+
 */
 
 //char get_curr_report_stack_whytype(void);
 
+int print_bind_expr_portion (void *ptr, char i, int portion);
 
 int suppress_lines=0;
+//int print_bind_expr (void *ptr, char i);
 char **get_field_codes(char *fields) ;
 char *get_curr_report_stack_why(void);
 struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val);
@@ -1792,8 +1795,7 @@ print_bind (char i)
  *
  * @todo Describe function
  */
-int
-print_bind_expr (void *ptr, char i)
+int print_bind_expr (void *ptr, char i)
 {
   int a;
 
@@ -1893,8 +1895,7 @@ print_bind_expr (void *ptr, char i)
   return 0;
 }
 
-int
-print_bind_expr_portion (void *ptr, char i, int portion)
+int print_bind_expr_portion (void *ptr, char i, int portion)
 {
   int a=0;
 

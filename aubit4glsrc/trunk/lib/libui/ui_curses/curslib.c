@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.104 2005-03-04 20:25:05 mikeaubury Exp $
+# $Id: curslib.c,v 1.105 2005-03-07 14:53:09 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.104 2005-03-04 20:25:05 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.105 2005-03-07 14:53:09 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -133,15 +133,16 @@ int init_curses_mode = 0;
 WINDOW * A4GL_window_on_top_ign_menu (void);
 void try_to_stop_alternate_view(void);
 int UILIB_A4GLUI_initlib (void);
+//void A4GL_refresh_error_window(void) ;
+//int A4GL_has_timeout(int a) ;
 
 static void a4gl_gettext (int l, int t, int r, int b, char *buf);
-
 static void message (textarea * area, char *str, int x, int a);
 static void A4GL_chktag (char *buff, int fno);
 static void A4GL_menu_setcolor (ACL_Menu * menu, int typ);
 static void A4GL_set_value (int fno, char *buffer);
 static int A4GL_menu_getkey (ACL_Menu * menu);
-static void A4GL_clear_menu (ACL_Menu * menu);
+//static void A4GL_clear_menu (ACL_Menu * menu);
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 static void A4GL_newbox (textarea * area, int l, int t, int r, int b,
 			 int typ);
@@ -158,8 +159,9 @@ static void A4GL_horiz_disp_opt (int row, int x, int y, int type);
 static void A4GL_h_disp_title (ACL_Menu * menu, char *str);
 static char *A4GL_mfgets (char *s, int n, FILE * fp);
 static int A4GL_load_formdata (char *fname2, char *ftitle, int fno);
-static int wrapper_wgetch (WINDOW * w);
-static void A4GL_flatten_menu (ACL_Menu * menu);
+//static int wrapper_wgetch (WINDOW * w);
+//static void A4GL_flatten_menu (ACL_Menu * menu);
+//void A4GL_tui_printr (int refreshwin, char *fmt, ...);
 
 /*
 =====================================================================
@@ -279,7 +281,7 @@ A4GL_debug("After");
 }
 
 
-void A4GL_refresh_error_window() {
+void A4GL_refresh_error_window(void) {
 	if (curr_error_panel_visible) {
   		show_panel(curr_error_panel);
 		update_panels();
@@ -1580,7 +1582,7 @@ int
 {
   ACL_Menu_Opts *old_option;
   //struct aclfgl_event_list *evt;
-   WINDOW *w;
+   //WINDOW *w;
   int a;
   int key_pressed;
   ACL_Menu *menu;
@@ -1798,6 +1800,7 @@ A4GL_display_menu (ACL_Menu * menu)
 }
 
 
+#ifdef OLD
 /**
  *
  * @todo Describe function
@@ -1805,7 +1808,6 @@ A4GL_display_menu (ACL_Menu * menu)
 static void
 A4GL_clear_menu (ACL_Menu * menu)
 {
-#ifdef OLD
   PANEL *p;
   WINDOW *w;
   p = A4GL_find_pointer (menu->window_name, PANCODE);
@@ -1829,8 +1831,8 @@ A4GL_clear_menu (ACL_Menu * menu)
 
   A4GL_mja_setcolor (NORMAL_TEXT);
 
-#endif
 }
+#endif
 
 
 /**
@@ -2978,7 +2980,7 @@ A4GL_comments (struct struct_scr_field *fprop)
 
 }
 
-
+#ifdef NDEF
 int
 wrapper_wgetch (WINDOW * w)
 {
@@ -2991,6 +2993,7 @@ wrapper_wgetch (WINDOW * w)
     }
   return A4GL_curses_to_aubit (wgetch (w));
 }
+#endif
 
 int
  UILIB_A4GL_open_gui_form_internal (long *form_variable,char *name_orig, int absolute, int nat,
@@ -3170,5 +3173,6 @@ int A4GL_has_timeout(int a) {
 static int to=0;
 	if (a>=0)  to=a;
 	if (a<0) return to;
+return a;
 }
 /* ============================== EOF ============================== */

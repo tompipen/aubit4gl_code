@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.159 2005-02-26 09:40:16 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.160 2005-03-07 14:53:03 mikeaubury Exp $
 #
 */
 
@@ -1544,7 +1544,7 @@ int A4GL_conversion_ok(int a);
 #endif
 
 #ifndef _NO_FORM_X_H_		/* if we don't include form_x.h, this would generate errors : */
-  int A4GL_find_srec (struct_form * fd, char *name);
+  int A4GL_find_srec (struct struct_form * fd, char *name);
   /* struct struct_scr_field defined in fcompile/form_x.h */
   int A4GL_has_str_attribute (struct struct_scr_field *f, int str);
   int A4GL_attr_name_match (struct struct_scr_field *field, char *s);
@@ -1554,6 +1554,7 @@ int A4GL_conversion_ok(int a);
   char *A4GL_strip_quotes (char *s);
   void A4GL_convlower (char *s);
   int A4GL_get_lastkey (void);
+  FILE * A4GL_open_file_classpath (char *fname);
 
   /* ============================ io.c =================================== */
   void A4GL_bname (char *str, char *str1, char *str2);

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.7 2004-12-22 11:22:20 afalout Exp $
+# $Id: makefile,v 1.8 2005-03-07 14:53:11 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -51,18 +51,18 @@ all: ${ROOT}/bin/4glc ${ALL}
 ${ROOT}/${HELP_DESTINATION}/4glpc.hlp: helpfile.msg ${ROOT}/bin/amkmessage
 	${ROOT}/bin/amkmessage $< $@
 
-${ROOT}/bin/4glpc: 4glpc.ao times.ao readsettings.ao 
+${ROOT}/bin/4glpc: 4glpc.o times.o readsettings.o 
 	${LD} $^ -o $@ -L${LIBROOT} -laubit4gl
 
 ## ==================================================================
 ##                              Rules
 ## ==================================================================
 	
-%.ao: %.c
-	${CC} ${CFLAGS} -c $*.c -o $@
+#%.ao: %.c
+	#${CC} ${CFLAGS} -c $*.c -o $@
 	
-%.c: %.4gl
-	A4GL_LEXTYPE=C; ${ROOT}/bin/4glc -c $<
+%.o: %.4gl
+	export A4GL_OBJ_EXT=.o; A4GL_LEXTYPE=C; ${ROOT}/bin/4glc -c $<
 
 ## ==================================================================
 ##                              Dependencies
@@ -79,5 +79,5 @@ ${ROOT}/bin/4glc:
 ## ==================================================================
 
 clean:
-	${RM} *.ao *.o *.c *.h *.err *.glb ${ALL} *~ *.bak *.warn
+	${RM}  *.o *.c *.h *.err *.glb ${ALL} *~ *.bak *.warn
 

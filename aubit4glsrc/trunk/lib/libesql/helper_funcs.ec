@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.31 2005-03-01 18:23:18 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.32 2005-03-07 14:53:05 mikeaubury Exp $
 #
 */
 
@@ -34,6 +34,8 @@
  *
  */
 
+
+void ESQLAPI_A4GL_connect_db(char *dbname) ;
 #ifdef DIALECT_QUERIX
 	//avoid redeclaration of int_flag, quit_flag, UCHAR
 	#define _NO_INT_QUIT_FLAG_
@@ -41,23 +43,26 @@
 		//Avoid conflict of DATE in qxdefs.h with MinGW wtypes.h:
 		#define _NO_WINDOWS_H_
     #endif
-
-	/*
-	in Querix libesql.lib:
-	
-	erence to `rsetnull'
-	erence to `deccvasc'
-	erence to `risnull'
-	erence to `dectoasc'
-	ference to `dtcvasc'
-	ference to `dttoasc'
-	ference to `rmdyjul'
-	ference to `rjulmdy'
-	
-	But them missing DtimeToChar and fammily - where are they?
-	
-	*/
 #endif
+
+void ESQLAPI_popdec_native(void *vx);
+void ESQLAPI_retdec_native(void* vx);
+void ESQLAPI_popdtime_native(void* vx);
+void ESQLAPI_retdtime_native(void* vx);
+
+
+// Get rid of a duplicate bool definition
+#define XS_form_x_XS_H
+#define X_form_x_X_H
+#define XS_form_x_X_H
+
+struct struct_form  {
+	void *n;
+};
+
+struct struct_scr_field {
+	void *a;
+};
 
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_esql.h"
@@ -95,11 +100,8 @@ strcpy(dbName,dbname);
 }
 
 
-
-void* ESQLAPI_A4GL_db_connected(char *dbname) {
-void *ptr=0;
+void* ESQLAPI_A4GL_db_connected(char *dbname) ;
 #ifdef DIALECT_POSTGRES
-{
 struct connection
 {
         char       *name;
@@ -109,8 +111,16 @@ struct connection
         struct ECPGtype_information_cache *cache_head;
         struct connection *next;
 };
-struct connection *ret = NULL;
-	ret=ECPGget_connection(0);
+
+struct connection * ECPGget_connection(char *);
+#endif
+
+void* ESQLAPI_A4GL_db_connected(char *dbname) {
+void *ptr=0;
+#ifdef DIALECT_POSTGRES
+{
+	struct connection *ret = NULL;
+	ret=ECPGget_connection((char *)0);
 	ptr=ret->connection;
 	//printf("ptr=%p\n",ptr);
 }
@@ -146,7 +156,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 	if (mode=='i') {
-		char *ptr;
+		//char *ptr;
 		if (p_indicat) *p_indicat=0;
 		if (A4GL_isnull(DTYPE_DECIMAL,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(DTYPE_DECIMAL,(void *)a4gl)) {rsetnull(CDECIMALTYPE,(void *)infx);return;}
@@ -167,7 +177,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	}
 
 	if (mode=='o') {
-		char *ptr;
+		//char *ptr;
 		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-1||risnull(CDECIMALTYPE,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
 		memset(b,0,255);
@@ -211,7 +221,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 	if (mode=='i') {
-		char *ptr;
+		//char *ptr;
 		if (p_indicat) *p_indicat=0;
 		if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl)) {
@@ -231,7 +241,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	}
 
 	if (mode=='o') {
-	        char *ptr;
+	        //char *ptr;
 		int xisnull;
 		if (p_indicat) indicat=*p_indicat;
 
@@ -323,7 +333,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 		if (mode=='o') {
 			char buff[255];
 			char *ptr;
-			int a;
+			//int a;
 if (p_indicat) indicat=*p_indicat;
 #ifdef DIALECT_POSTGRES
 	#ifdef HAVE_INT64_TIMESTAMP
@@ -360,7 +370,7 @@ if (p_indicat) indicat=*p_indicat;
 void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *p_indicat,int size,int mode) 
 {
 short indicat=0;
-intrvl_t *infx; struct A4GLSQL_dtime *a4gl;
+intrvl_t *infx; struct ival *a4gl;
 if (mode=='i'||mode=='o') ; 
 else {
 	A4GL_assertion(1,"Mode should be 'o' or 'i'");
@@ -640,8 +650,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
  *
  * @todo describe function
  */
-void 
-ESQLAPI_popdec_native(void *vx)
+void ESQLAPI_popdec_native(void *vx)
 {
 #ifdef DIALECT_POSTGRES
 	EXEC SQL BEGIN DECLARE SECTION;
@@ -699,7 +708,7 @@ ESQLAPI_retdtime_native(void *vx)
 {
         char s[123];
 	dtime_t *x;
-        struct A4GLSQL_dtime d;
+        //struct A4GLSQL_dtime d;
 	x=vx;
         dttoasc(x,s);
 }
@@ -710,7 +719,7 @@ ESQLAPI_retdtime_native(void *vx)
  *
  * @todo describe function
  */
-ESQLAPI_A4GLESQL_initlib() 
+void ESQLAPI_A4GLESQL_initlib() 
 {
 
 }

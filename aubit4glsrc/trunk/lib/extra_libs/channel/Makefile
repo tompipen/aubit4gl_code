@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2004-11-30 14:39:23 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2005-03-07 14:53:03 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -49,12 +49,12 @@ ALL     =${LIBROOT}/libchannel${SO_EXT}
 ## ==================================================================
 
 #FIXME: use amake
-${ALL}: channel.c
+${ALL}: channel.o
 	${LD} -g ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
 	@echo "Channel library sucesfully compiled."
 
-channel.c: channel.4gl
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
+channel.o: channel.4gl
+	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} -c ${VERBOSE_FLAG} $^
 
 ## ==================================================================
 ##                              Clean

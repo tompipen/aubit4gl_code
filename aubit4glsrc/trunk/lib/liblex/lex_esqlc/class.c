@@ -2,6 +2,9 @@
 #include <string.h>
 
 #include "a4gl_lib_lex_esqlc_int.h"
+void printc (char *fmt, ...);
+void printcomment (char *fmt, ...);
+
 
 extern char infilename[];
 struct s_method {
@@ -77,7 +80,7 @@ if (strlen(parent_name)) {
 	char **buff;
 	int redirect=0;
 	parents=CLASS_get_members (parent_name);
-	if (parents==-1) { 
+	if (parents==(void *)-1) { 
 		nparents=0;
 	} else {
 		for (a=0;parents[a];a++) ;

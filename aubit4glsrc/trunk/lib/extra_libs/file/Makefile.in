@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2004-11-01 05:11:19 afalout Exp $
+# $Id: Makefile.in,v 1.10 2005-03-07 14:53:03 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -45,12 +45,12 @@ ALL     =${LIBROOT}/libA4GL_file${SO_EXT}
 ## ==================================================================
 
 #FIXME: use amake
-${ALL}: libfile.c
+${ALL}: libfile.o
 	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
 	@echo "File library sucesfully compiled."
 
-libfile.c: libfile.4gl
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
+libfile.o: libfile.4gl
+	export A4GL_OBJ_EXT=.o; export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} -c ${VERBOSE_FLAG} $^
 
 ## ==================================================================
 ##                              Clean

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.78 2005-02-23 12:05:42 mikeaubury Exp $
+# $Id: ops.c,v 1.79 2005-03-07 14:53:05 mikeaubury Exp $
 #
 */
 
@@ -1051,7 +1051,7 @@ if (op==OP_SUB) {
 }
 
 
-
+#ifdef NOT_YET
 static void A4GL_in_string_ops(int op) {
   //struct ival in;
   struct ival *pi;
@@ -1064,6 +1064,7 @@ static void A4GL_in_string_ops(int op) {
   A4GL_get_top_of_stack (1, &d2, &s2, (void *) &pi);
 
 }
+#endif
 
 /**
  *

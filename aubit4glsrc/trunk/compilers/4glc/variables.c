@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.53 2005-02-22 12:25:41 mikeaubury Exp $
+# $Id: variables.c,v 1.54 2005-03-07 14:51:52 mikeaubury Exp $
 #
 */
 
@@ -83,7 +83,7 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 void make_function (char *name, int record_cnt);
 static int is_system_variable (char *s);
 char find_variable_scope (char *s_in);
-struct variable *find_dim(char *s);
+//struct variable *find_dim(char *s);
 
 void print_class_variables (void);
 //void dump_variable_records (struct variable **v, int cnt, int lvl);
