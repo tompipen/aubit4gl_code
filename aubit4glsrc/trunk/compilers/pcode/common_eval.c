@@ -1,7 +1,7 @@
 
 #include "npcode.h"
 #include "npcode_defs.h"
-#include "a4gl_incl_4glhdr.h"
+//#include "a4gl_incl_4glhdr.h"
 extern module this_module;
 #define FglMoney long
 #define FglDecimal long

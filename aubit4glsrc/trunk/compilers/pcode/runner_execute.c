@@ -1,6 +1,6 @@
 #include "npcode.h"
 #include "npcode_defs.h"
-#include "a4gl_incl_4glhdr.h"
+//#include "a4gl_incl_4glhdr.h"
 long find_pcode_function (char *s);
 extern module this_module;
 
@@ -81,107 +81,18 @@ fprintf(stderr,"ADDING to stack %p stack length : %d\n",b,callstack_cnt);
 	  if (b->c_vars.c_vars_val[a].category == CAT_EXTERN)
 	    {
 	      struct variable *n;
-	  b->c_vars.c_vars_val[a].category = CAT_ALLOC_EXTERN;
+		void *ptr;
+	  	b->c_vars.c_vars_val[a].category = CAT_ALLOC_EXTERN;
+
 	      // Need to find our variable...
 	      // It will be in the module_variables table of another module
 	      n = &b->c_vars.c_vars_val[a];
-
-	      if (strcmp (GET_ID (n->var->name_id), "a4gl_sqlca") == 0)
-		{
-		  n->var->offset = (long) &a4gl_sqlca;
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "int_flag") == 0)
-		{
-		  n->var->offset = (long) &int_flag;
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "quit_flag") == 0)
-		{
-		  n->var->offset = (long) &quit_flag;
+		ptr=resolve_externs(n->var->name_id);
+		if (ptr!=(void *)-1) {
+		  n->var->offset = (long) ptr;
 		  continue;
 		}
 
-	      if (strcmp (GET_ID (n->var->name_id), "a4gl_status") == 0)
-		{
-		  n->var->offset = (long) &a4gl_status;
-		  continue;
-		}
-
-	      if (strcmp (GET_ID (n->var->name_id), "today") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "user") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "pageno") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "lineno") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "usrtime") == 0)
-		{
-		  continue;
-		}
-/*
-      				if (strcmp (GET_ID (n->var->name_id), "curr_hwnd") == 0) { n->offset = (long) &curr_hwnd; continue; }
-      				if (strcmp (GET_ID (n->var->name_id), "curr_form") == 0) { n->offset = (long) &curr_form; continue; }
-      				if (strcmp (GET_ID (n->var->name_id), "err_file_name") == 0) { n->offset = (long) &err_file_name; continue; }
-      				if (strcmp (GET_ID (n->var->name_id), "err_file_no") == 0) { n->offset = (long) &err_file_no; continue; }
-      				if (strcmp (GET_ID (n->var->name_id), "curr_file_name") == 0) { n->offset = (long) &curr_file_name; continue; }
-      				if (strcmp (GET_ID (n->var->name_id), "curr_line_no") == 0) { n->offset = (long) &curr_line_no; continue; }
-      				if (strcmp (GET_ID (n->var->name_id), "err_status") == 0) { n->offset = (long) &err_status; continue; }
-      				if (strcmp (GET_ID (n->var->name_id), "aiplib_status") == 0) { n->offset = (long) &aiplib_status; continue; }
-
-*/
-	      if (strcmp (GET_ID (n->var->name_id), "curr_hwnd") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "curr_form") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "err_file_name") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "err_file_no") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "curr_file_name") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "curr_line_no") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "err_status") == 0)
-		{
-		  continue;
-		}
-	      if (strcmp (GET_ID (n->var->name_id), "aiplib_status") == 0)
-		{
-		  continue;
-		}
-
-/*
-curr_hwnd;
-curr_form;
-err_file_name [32+1]
-err_file_no
-curr_file_name [32+1]
-curr_line_no
-err_status
-aiplib_status
-*/
 	  	b->c_vars.c_vars_val[a].category = CAT_EXTERN;
 	      fprintf (stderr,"CAT_EXTERN - Not implemented (%s)\n",
 		      GET_ID (n->var->name_id));
@@ -208,7 +119,6 @@ static void remove_block_from_stack () {
   callstack_cnt--;
 fprintf(stderr,"Removing from stack - stack length : %d\n",callstack_cnt);
 
-  //(*pcallstack_cnt)--;
 }
 
 

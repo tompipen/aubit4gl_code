@@ -6,7 +6,7 @@ The pcode compiler contains 3 elements
 
 1) Compiler - c2pcode
 2) Checker  - checker
-3) Runner   - runner
+3) Runner   - runner_fgl
 
 
 
@@ -164,7 +164,7 @@ This occurs in a few steps :
 3) The 'main' function is identified and executed until completion
 
 
-Programs are run by using the 'runner' program.
+Programs are run by using the 'runner_fgl' program.
 By default this runs a file called 'mine.4pe' unless otherwise specified (this is just to help
 with the development of the runner as it saves typing!)
 

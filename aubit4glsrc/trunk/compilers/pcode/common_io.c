@@ -39,3 +39,8 @@ process_xdr (char dir, void *s, char *filename)
   fclose (fxx);
   return a;
 }
+
+
+void nullfunc() {
+// Does nothing ...
+}

@@ -1,6 +1,6 @@
 #include "npcode.h"
 #include "npcode_defs.h"
-#include "a4gl_incl_4glhdr.h"
+//#include "a4gl_incl_4glhdr.h"
 extern module this_module;
 #define FglMoney long
 #define FglDecimal long
@@ -268,4 +268,19 @@ while (1) {
 }
 fprintf(stderr,"Leaving function badly\n");
 return 0;
+}
+
+
+
+
+
+int main(int argc,char *argv[]) {
+	if (argc!=2) {
+		printf("Usage : %s progname\n",argv[0]);
+		exit(1);
+	}
+
+	init_calls(argc,argv);
+
+	exit(open_and_run(argv[1]));
 }

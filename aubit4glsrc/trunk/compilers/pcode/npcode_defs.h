@@ -15,8 +15,13 @@ struct s_assign {
         struct use_variable *v;
 };
 
+
+#ifdef USE_A4GL_DEBUG
 int A4GL_set_line (char *s, long l);
 #define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
+#else
+#define A4GL_debug nullfunc
+#endif
 
 
 #define DCHAR   0
@@ -68,7 +73,6 @@ void print_params (struct param *e);
 
 void print_module_functions(void);
 
-void A4GL_debug_full (char *fmt, ...);
 void resolve_gotos (void);
 void set_pc_vstack_curr(void);
 void set_pc_vstack (int pc);
@@ -89,3 +93,6 @@ void print_use_variable (struct use_variable *v);
 long end_main (void);
 void move_defines(void);
 void end_define_module(void);
+
+void init_calls(int argc,char **argv);
+void *resolve_externs(char *name);
