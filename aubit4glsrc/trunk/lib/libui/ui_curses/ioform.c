@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.72 2003-08-28 15:22:55 mikeaubury Exp $
+# $Id: ioform.c,v 1.73 2003-09-01 17:12:00 mikeaubury Exp $
 #*/
 
 /**
@@ -2541,7 +2541,7 @@ A4GL_push_constr (void *vs)
 	}
     }
   if (flg == 0)
-    A4GL_push_char ("1=1");
+    A4GL_push_char (" 1=1");
   return 1;
 }
 
