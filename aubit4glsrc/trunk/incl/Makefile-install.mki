@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.30 2002-09-24 06:55:50 afalout Exp $
+# $Id: Makefile-install.mki,v 1.31 2002-10-04 11:27:06 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -200,12 +200,28 @@ test:
 ldconfig:
 ifneq "${ADD_LD_LIBRARY_PATH}" ""
 ifneq "${LDCONFIG}" "no"
-	@echo "Adding to ${LD_SO_CONF} :"
-	@echo " "
-	@for apath in ${ADD_LD_LIBRARY_PATH_SPACE}; do X=`grep $$apath ${LD_SO_CONF}`; if test "$$X" = ""; then echo $$apath ; echo $$apath >> ${LD_SO_CONF}; fi; done;
-	@echo " "
-	ldconfig
-	@echo "Refreshed ldconfig cache."
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Adding to ${LD_SO_CONF} :                                        |"
+	@echo "|                                                                    |"
+#	@${XXX}
+#OK	@for apath in ${ADD_LD_LIBRARY_PATH_SPACE}; do X=`grep $$apath ${LD_SO_CONF}`; if test "$$X" = ""; then echo $$apath ; echo $$apath >> ${LD_SO_CONF}; fi; done;
+	@\
+	ADDED=0;\
+	for apath in ${ADD_LD_LIBRARY_PATH_SPACE}; do \
+		X=`grep $$apath ${LD_SO_CONF}`;\
+		if test "$$X" = ""; then \
+			ADDED=1;\
+			echo $$apath ; \
+			echo $$apath >> ${LD_SO_CONF}; \
+		fi; \
+	done;\
+	if test "$$ADDED" = "0"; then \
+        echo "| Nothing added: All paths already present in ld.so.conf             |";\
+    fi;
+	@echo "|                                                                    |"
+	@ldconfig
+	@echo "| Refreshed ldconfig cache.                                          |"
+#	@echo "+--------------------------------------------------------------------+
 else
 #FIXME: and what if user is not using Bash, but some other shell?
 ifeq "$(shell  grep ${ADD_LD_LIBRARY_PATH} ${HOME}/.bashrc)" ""

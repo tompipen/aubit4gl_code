@@ -13,6 +13,22 @@
 
 # libtool.m4 - Configure libtool for the host system. -*-Shell-script-*-
 
+dnl
+dnl Separator into the configure --help display.
+dnl
+AC_DEFUN(PHP_HELP_SEPARATOR,[
+AC_ARG_ENABLE([],[
+$1
+],[])
+])
+
+dnl PHP_CONFIGURE_PART(MESSAGE)
+dnl Idea borrowed from mm
+AC_DEFUN(PHP_CONFIGURE_PART,[
+  AC_MSG_RESULT()
+  AC_MSG_RESULT([${T_MD}$1${T_ME}])
+])
+
 # serial 47 AC_PROG_LIBTOOL
 # -------------------------
 AC_DEFUN([AC_PROG_LIBTOOL],

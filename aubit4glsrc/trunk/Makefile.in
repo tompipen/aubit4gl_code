@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.91 2002-10-01 09:50:16 afalout Exp $
+# $Id: Makefile.in,v 1.92 2002-10-04 11:26:29 afalout Exp $
 #
 
 ## ==================================================================
@@ -727,6 +727,7 @@ settings.common:
 	@echo -------------------------------------------------- >> ${OUT}
 	@echo COMPILEDATE=$(COMPILEDATE) AUBITVERSION=$(AUBITVERSION) AUBITBUILD=$(AUBITBUILD) >> ${OUT}
 	@echo AUBITDIR=${AUBITDIR} OS=$(TARGET) TARGET_OS=${TARGET_OS}>> ${OUT}
+	@echo CONFIGURE_COMMAND = ${CONFIGURE_COMMAND}>> ${OUT}
 	@echo -------------------------------------------------- >> ${OUT}
 
 show.platform: OUT="/tmp/showplatform"

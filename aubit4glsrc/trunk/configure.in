@@ -1,47 +1,41 @@
-# +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
-# +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
-# +----------------------------------------------------------------------+
-# | This program is free software; you can redistribute it and/or modify |
-# | it under the terms of one of the following licenses:                 |
-# |                                                                      |
-# |  A) the GNU General Public License as published by the Free Software |
-# |     Foundation; either version 2 of the License, or (at your option) |
-# |     any later version.                                               |
-# |                                                                      |
-# |  B) the Aubit License as published by the Aubit Development Team and |
-# |     included in the distribution in the file: LICENSE                |
-# |                                                                      |
-# | This program is distributed in the hope that it will be useful,      |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
-# | GNU General Public License for more details.                         |
-# |                                                                      |
-# | You should have received a copy of both licenses referred to here.   |
-# | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
-# +----------------------------------------------------------------------+
-#
-# $Id: configure.in,v 1.112 2002-10-01 09:50:19 afalout Exp $
-#
-#TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
-#and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
-#then issue a warning.
-#
-#
-
-
-dnl Process this file with autoconf to produce a configure script.
-
-#This script is used to configure BOTH source code and binary distributions
+dnl # +----------------------------------------------------------------------+
+dnl # | Aubit 4gl Language Compiler Version $.0                              |
+dnl # +----------------------------------------------------------------------+
+dnl # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+dnl # +----------------------------------------------------------------------+
+dnl # | This program is free software; you can redistribute it and/or modify |
+dnl # | it under the terms of one of the following licenses:                 |
+dnl # |                                                                      |
+dnl # |  A) the GNU General Public License as published by the Free Software |
+dnl # |     Foundation; either version 2 of the License, or (at your option) |
+dnl # |     any later version.                                               |
+dnl # |                                                                      |
+dnl # |  B) the Aubit License as published by the Aubit Development Team and |
+dnl # |     included in the distribution in the file: LICENSE                |
+dnl # |                                                                      |
+dnl # | This program is distributed in the hope that it will be useful,      |
+dnl # | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+dnl # | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+dnl # | GNU General Public License for more details.                         |
+dnl # |                                                                      |
+dnl # | You should have received a copy of both licenses referred to here.   |
+dnl # | If you did not, or have any questions about Aubit licensing, please  |
+dnl # | contact afalout@ihug.co.nz                                           |
+dnl # +----------------------------------------------------------------------+
+dnl #
+dnl # $Id: configure.in,v 1.113 2002-10-04 11:26:35 afalout Exp $
+dnl #
+dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
+dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
+dnl #then issue a warning.
+dnl #
+dnl #
+dnl #Process this file with autoconf to produce a configure script.
+dnl #This script is used to configure BOTH source code and binary distributions
 
 ## ==================================================================
 ##                             Initialise
 ## ==================================================================
-
-#This will catch some dummys, but not our real command line options:
-CMDLINE="$@"
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
@@ -60,8 +54,23 @@ AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourcef
 #AM_INIT_AUTOMAKE
 AM_INIT_AUTOMAKE(Aubit4gl, $AUBIT_VERSION.$AUBIT_BUILD)
 
+aubitdir=`pwd`
+a4gl_shtool=$aubitdir/tools/project/shtool
+T_MD=`$a4gl_shtool echo -n -e %B`
+T_ME=`$a4gl_shtool echo -n -e %b`
+#PHP_CONFIGURE_PART(Initializing:)
+
 #AC_CANONICAL_TARGET
 
+
+#for arg in $0 "$@"; do
+#for arg in "$ac_configure_args"; do
+#  CONFIGURE_COMMAND="$CONFIGURE_COMMAND '$arg'"
+#done
+#echo "CONFIGURE_COMMAND = $CONFIGURE_COMMAND"
+#echo "ac_configure_args = $ac_configure_args"
+
+CONFIGURE_COMMAND="$ac_configure_args"
 
 #location of additional Autoconf files
 AC_CONFIG_AUX_DIR(etc/config)
@@ -72,18 +81,32 @@ AC_CONFIG_AUX_DIR(etc/config)
 #path, it will be invoked instead of just plain 'configure'
 #aubitconf script will typically have only one line, for example:
 #./configure --with-aubitconf --with-informix --with-jabber -with-iodbc=/blah/huh/iodbc ...etc
+if test "$AUBITCONF_FLAG" != "running"; then
+
+PHP_CONFIGURE_PART(Looking for configure parameters file:)
 
 AC_PATH_PROG(AUBITCONF, aubitconf, no)
 if test "$AUBITCONF" != "no"; then
-    if test "$AUBITCONF_FLAG" != "running"; then
+#    if test "$AUBITCONF_FLAG" != "running"; then
 		if test "$with_aubitconf" != "yes" ; then
 			#--with-aubitconf=no
-			echo "Note: 'aubitconf' script found; running 'configure' via 'aubitconf'..."
-            echo ""
-			echo "WARNING: if you prvided command line options to 'configure', they will"
-            echo "be ingored, and ones provided in 'aubitconf' used instead. Use "
-            echo "--with-aubitconf=no to disable this behaviour."
-            echo ""
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        ***   NOTE  ***                             |
+#| 'aubitconf' script found; running 'configure' via 'aubitconf'...   |
+#+--------------------------------------------------------------------+
+#X
+PHP_CONFIGURE_PART(Redirecting to 'aubitconf':)
+if test "$CONFIGURE_COMMAND" != ""; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You provided command line options to 'configure'. They will        |
+| be ingored, and ones provided in 'aubitconf' used instead. Use     |
+| --with-aubitconf=no to disable this behaviour.                     |
++--------------------------------------------------------------------+
+X
+fi
             #CMDLINE="$@"
 			#echo xxx $CMDLINE xxx
             #echo $ac_cs_invocation
@@ -110,10 +133,28 @@ if test "$AUBITCONF" != "no"; then
         else
             echo "'aubitconf' found, but disabled"
         fi
-	else
-        echo "Note: invoked form first stage 'configure', via 'aubitconf'"
-	fi
+#	else
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        ***   NOTE  ***                             |
+#| invoked form first stage 'configure', via 'aubitconf'. Flags are:  |
+#$CONFIGURE_COMMAND
+#+--------------------------------------------------------------------+
+#X
+#	fi
 fi
+
+	else
+PHP_CONFIGURE_PART(Invoked from 'aubitconf'-use 'make settings' to see flags:)
+#cat<<X
+#+--------------------------------------------------------------------+
+#|                        ***   NOTE  ***                             |
+#| invoked form first stage 'configure', via 'aubitconf'. Flags are:  |
+#$CONFIGURE_COMMAND
+#+--------------------------------------------------------------------+
+#X
+fi
+
 
 
 #This script will be used for configuring binary distributions
@@ -135,9 +176,9 @@ else
 fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
-    echo "Configuring Aubit compiler source code"
+	PHP_CONFIGURE_PART(Configuring Aubit compiler source code:)
 else
-    echo "Configuring Aubit compiler binary distribution"
+	PHP_CONFIGURE_PART(Configuring Aubit compiler binary distribution:)
 fi
 
 #FIXME: what is this?
@@ -311,6 +352,9 @@ AC_SUBST(SO_EXT)
 AC_SUBST(SO_EXT_LINKABLE)
 AC_SUBST(GETOPT_LONG)
 AC_SUBST(ARCHEXT)
+#PHP_SUBST_OLD(CONFIGURE_COMMAND)
+AC_SUBST(CONFIGURE_COMMAND)
+
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
 AC_SUBST(CURSES_INC_PATH)
@@ -408,7 +452,6 @@ fi
 FULLNAME="Aubit 4gl compiler"
 SHORTNAME="aubit4gl"
 COMPILE_DATE=`date +%d-%m-%Y`
-aubitdir=`pwd`
 test_rpclib="1"
 GTKBUILD=no
 HAVE_IODBC=no
@@ -550,40 +593,49 @@ LIBFILE_30=
 ##                              Debugging
 ## ==================================================================
 
+PHP_CONFIGURE_PART(Configuring Debugging options)
+PHP_HELP_SEPARATOR([Debugging options:])
+
+
+AC_MSG_CHECKING(programs debugging)
 if test "$enable_debug" = "no" ; then
     # FIXME: strip executables
     CFLAGS="$CFLAGS -DNODEBUG"
+    AC_MSG_RESULT(no)
 	AC_MSG_WARN(Debugging disabled, use --enable-debug to enable it.)
 	AUBIT_DEBUG=0
 else
     #FIXME: DEBUG=ALL in environment? aubitrc?
     CFLAGS="$CFLAGS -g -Wall -DDEBUG"
-	echo "Debugging enabled. Set DEBUG=ALL in environment/aubitrc to get debug.out trace."
+    AC_MSG_RESULT(yes. Set DEBUG=ALL to get debug.out trace.)
 fi
 
+AC_MSG_CHECKING(YY Debugging)
 if test "$enable_yy_debug" = "yes" ; then
 	#for debbuging in function yyparse() export YYDEBUG=1 to environment:
 	YYDEBUG="-DYYDEBUG=1"
-	echo "YY Debugging enabled, export YYDEBUG=1 to environment to turn it on."
+    AC_MSG_RESULT(enabled, export YYDEBUG=1 to environment to turn it on.)
 else
-	echo "YY Debugging disabled, specify --enable-yy-debug to turn it on."
+    AC_MSG_RESULT(disabled, specify --enable-yy-debug to turn it on.)
 fi
 
+AC_MSG_CHECKING(Yacc Debugging)
 if test "$enable_yacc_debug" = "yes" ; then
 	DEBUG_BISON="--debug"
-	echo "Yacc Debugging enabled"
+    AC_MSG_RESULT(enabled.)
 else
-	echo "Yacc Debugging disabled, specify --enable-yacc-debug to turn it on."
+    AC_MSG_RESULT(disabled, specify --enable-yacc-debug to turn it on.)
 fi
 
 #in libLEX_xxx printc():
 # * If the INCLINES variable is set then the source target C
 # * file is generated with #line (for debugging purposes).
+AC_MSG_CHECKING(printc() Debugging)
 if test "$enable_printc_debug" = "yes" ; then
 	INCLINES=yes
-	echo "printc() Debugging enabled"
+    AC_MSG_RESULT(enabled.)
 else
-	echo "printc() Debugging disabled"
+    AC_MSG_RESULT(disabled.)
 fi
 
 
@@ -638,6 +690,7 @@ GLIBC_VER=2.2.4
 ##                  Checks for standard programs
 ## ==================================================================
 
+PHP_CONFIGURE_PART(Checking standard programs:)
 AC_PATH_PROG(MAKE, make, no)
 if test "$MAKE" = "no" ; then
 	if test "$AUBIT_SOURCE" = "1" ; then
@@ -777,22 +830,22 @@ fi
 ##                 Checks for other 4gl compiles
 ## ==================================================================
 
-AC_MSG_CHECKING(4Js BDL / Informix D4GL)
+PHP_CONFIGURE_PART(Checking for 4Js BDL / Informix D4GL:)
 AC_PATH_PROG(FJS_PCOMPILER, fglcomp, no)
 AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
 
-AC_MSG_CHECKING(Querix compiler)
+PHP_CONFIGURE_PART(Checking for Querix compiler:)
 #4gl code compiler have same name as Plexus  = fglc so we look for Form Compiler
 AC_PATH_PROG(QUERIX_COMP, fmpc, no)
 
 
 if test "$cygwin" = "1" ; then
-	AC_MSG_CHECKING(Plexus XDP AD32 - FGLC Compiler)
+	PHP_CONFIGURE_PART(Checking for Plexus XDP AD32 - FGLC Compiler:)
 	#same name as Querix:
 	#AC_PATH_PROG(PLEXUS_COMP, fglc, no)
 	AC_PATH_PROG(PLEXUS_COMP, mkesq, no)
 else
-	AC_MSG_CHECKING(Classic Informix 4gl P-code)
+	PHP_CONFIGURE_PART(Checking for Classic Informix 4gl P-code:)
 	AC_PATH_PROG(I4GL_PCOMPILER, fglpc, no)
 	AC_PATH_PROG(I4GL_PRUNTIME, fglgo, no)
 
@@ -815,7 +868,7 @@ else
         fi
     fi
 
-	AC_MSG_CHECKING(Classic Informix 4gl C-code)
+	PHP_CONFIGURE_PART(Checking for Classic Informix 4gl C-code:)
 	AC_PATH_PROG(I4GL_CCOMPILER, c4gl, no)
 
     if test "$I4GL_CCOMPILER" != "no"; then
@@ -845,6 +898,7 @@ fi
 
 #see if we can enable Aubit CGI/HTMLlib compile, DoxyGen web
 #install, FGLDOC web server support
+PHP_CONFIGURE_PART(Checking for Web server:)
 
 AC_PATH_PROG(APACHECTL, apachectl, no)
 AC_PATH_PROG(HTTPD, httpd, no)
@@ -871,27 +925,15 @@ fi
 			AC_MSG_RESULT(no)
 		fi
 	fi
+	
+	#FIXME: DO we have JSP needed for FGLDOC?
 
-
-	#DO we have JSP needed for FGLDOC?
-
-    #Where is CGI directory?
     if test "$APACHE_CONF" != ""; then
 		AC_MSG_CHECKING(Web server paths)
-			#ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
-			grep ScriptAlias $APACHE_CONF > /tmp/tmp_config_.tmp
-			TMP=`grep -v \# /tmp/tmp_config_.tmp`
-			#echo 2: $TMP
-            #echo --------------------------
-			TMP2=`echo $TMP | grep cgi-bin | awk '{print $3}' | sed -e 's/"//'`
-			#echo A: $TMP2
-			#to remove second quote
-			CGI_DIR=`echo $TMP2 | sed -e 's/"//'`
-			#echo B: $CGI_DIR
-			WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | awk '{print $2}'`
-			#Some versions of Apache config file have this settings quoted allready
-			AC_DEFINE_UNQUOTED(WWW_DOCUMENT_ROOT, $WWW_DOCUMENT_ROOT)
-		AC_MSG_RESULT(OK)
+		grep ScriptAlias $APACHE_CONF > /tmp/tmp_config_.tmp
+		CGI_DIR=`grep -v \# /tmp/tmp_config_.tmp | grep cgi-bin | awk '{print $3}' | sed -e 's/"//g'`
+		WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | awk '{print $2}' | sed -e 's/"//g'`
+		AC_MSG_RESULT(OK ($WWW_DOCUMENT_ROOT)($CGI_DIR))
     fi
 
 	if test "$with_www_name" != "" ; then
@@ -914,7 +956,7 @@ if test "$SAPDBROOT" = ""; then
 	SAPDBROOT=/opt/sapdb
 fi
 
-AC_MSG_CHECKING(for SAP DB ESQL/C support)
+PHP_CONFIGURE_PART(Checking for SAP DB ESQL/C support:)
 
 AC_ARG_WITH(sapdb,
 [  --with-sapdb[=DIR]   Include SAP DB ESQL/C support.  DIR is the Sap DB base
@@ -922,11 +964,7 @@ AC_ARG_WITH(sapdb,
 [
 	if test "$withval" != "no"; then
 		if test "$SAPDBROOT" = ""; then
-			SAPDB_WARNING="
-WARNING: You asked for SAP DB ESQL/C support, but don't have \\\$SAPDBROOT
-	 environment value set up. Configuring and compiling Sap DB
-	 support is impossible and has been turned off. Please
-	 try again after setting up your environment."
+			SAPDB_WARNING=1
 			AC_MSG_RESULT(no)
 		else
 			if test "$withval" = "yes"; then
@@ -938,10 +976,7 @@ WARNING: You asked for SAP DB ESQL/C support, but don't have \\\$SAPDBROOT
 				SAPDB_INCDIR="-I$withval/depend/incl -I$withval/interfaces/precompiler/incl"
 				SAPDB_LIBDIR="-L$withval/depend/lib -L$withval/interfaces/precompiler/lib"
 				if test "$withval" != "$SAPDBROOT"; then
-					SAPDB_WARNING="
-WARNING: You specified SAP DB base install directory that is different
-	 than your \\\$SAPDBROOT environment variable. You'd better know
-	 exactly what you are doing."
+					SAPDB_WARNING=2
 				fi
     		fi
 
@@ -1012,7 +1047,7 @@ if test "$with_informix" = ""; then
 	force_informix=yes
 fi
 
-AC_MSG_CHECKING(for Informix ESQL/C support)
+PHP_CONFIGURE_PART(Checking for Informix ESQL/C support:)
 
 AC_ARG_WITH(informix,
 [  --with-informix[=DIR]   Include Informix ESQL/C support.  DIR is the Informix base
@@ -1020,11 +1055,7 @@ AC_ARG_WITH(informix,
 [
 	if test "$withval" != "no"; then
 		if test "$INFORMIXDIR" = "" && test "$force_informix" != "yes" ; then
-			INFORMIX_WARNING="
-WARNING: You asked for Informix ESQL/C support, but don't have \\\$INFORMIXDIR
-	 environment value set up. Configuring and compiling Informix
-	 support is impossible and has been turned off. Please
-	 try again after setting up your environment."
+			INFORMIX_WARNING=1
 			#IFX_C_MAKE='touch functions/ifx.c'
 			AC_MSG_RESULT(no)
 		else
@@ -1037,10 +1068,7 @@ WARNING: You asked for Informix ESQL/C support, but don't have \\\$INFORMIXDIR
 				IFX_INCDIR=$withval/incl/esql
 				IFX_LIBDIR="-L$withval/lib -L$withval/lib/esql"
 				if test "$withval" != "$INFORMIXDIR"; then
-					INFORMIX_WARNING="
-WARNING: You specified Informix base install directory that is different
-	 than your \\\$INFORMIXDIR environment variable. You'd better know
-	 exactly what you are doing."
+					INFORMIX_WARNING=2
 				fi
     		fi
 
@@ -1139,101 +1167,6 @@ if test "$cygwin" = "1"; then
 	INFORMIXDIR=
 fi
 
-
-################## PHP V 4 Informix esql
-#PHP_ARG_WITH(informix,for Informix support,
-#[  --with-informix[=DIR]   Include Informix support.  DIR is the Informix base
-#                          install directory, defaults to ${INFORMIXDIR:-nothing}.])
-#
-#if test "$PHP_INFORMIX" != "no"; then
-#
-#  PHP_EXTENSION(informix, $ext_shared)
-#  PHP_SUBST(INFORMIX_SHARED_LIBADD)
-#
-#  if test "$INFORMIXDIR" = ""; then
-#    AC_MSG_ERROR([INFORMIXDIR environment variable is not set.])
-#  fi
-#
-#  if test "$PHP_INFORMIX" = "yes"; then
-#    PHP_ADD_INCLUDE($INFORMIXDIR/incl/esql)
-#    PHP_ADD_LIBPATH($INFORMIXDIR/lib, INFORMIX_SHARED_LIBADD)
-#    PHP_ADD_LIBPATH($INFORMIXDIR/lib/esql, INFORMIX_SHARED_LIBADD)
-#  else
-#    if test "$PHP_INFORMIX" != "$INFORMIXDIR"; then
-#      AC_MSG_ERROR([Specified Informix base install directory is different than your INFORMIXDIR environment variable.])
-#    fi
-#    PHP_ADD_INCLUDE($PHP_INFORMIX/incl/esql)
-#    PHP_ADD_LIBPATH($PHP_INFORMIX/lib, INFORMIX_SHARED_LIBADD)
-#    PHP_ADD_LIBPATH($PHP_INFORMIX/lib/esql, INFORMIX_SHARED_LIBADD)
-#  fi
-#
-#  dnl Check if thread safety flags are needed
-#  if test "$enable_experimental_zts" = "yes"; then
-#    IFX_ESQL_FLAGS="-thread"
-#    CPPFLAGS="$CPPFLAGS -DIFX_THREAD"
-#  else
-#    IFX_ESQL_FLAGS=""
-#  fi
-#
-#  IFX_LIBS=`THREADLIB=POSIX $INFORMIXDIR/bin/esql $IFX_ESQL_FLAGS -libs`
-#  IFX_LIBS=`echo $IFX_LIBS | sed -e 's/Libraries to be used://g' -e 's/esql: error -55923: No source or object file\.//g'`
-#  dnl Seems to get rid of newlines.
-#  dnl According to Perls DBD-Informix, might contain these strings.
-#
-#  case "$host_alias" in
-#    *aix*)
-#      CPPFLAGS="$CPPFLAGS -D__H_LOCALEDEF";;
-#  esac
-#
-#  AC_MSG_CHECKING([Informix version])
-#  IFX_VERSION=[`$INFORMIXDIR/bin/esql -V | sed -ne '1 s/^[^0-9]*\([0-9]\)\.\([0-9]*\).*/\1\2/p'`]
-#  AC_MSG_RESULT($IFX_VERSION)
-#  AC_DEFINE_UNQUOTED(IFX_VERSION, $IFX_VERSION, [ ])
-#
-#  if test $IFX_VERSION -ge "900"; then
-#    AC_DEFINE(HAVE_IFX_IUS,1,[ ])
-#    IFX_ESQL_FLAGS="$IFX_ESQL_FLAGS -EDHAVE_IFX_IUS"
-#  else
-#    IFX_ESQL_FLAGS="$IFX_ESQL_FLAGS -EUHAVE_IFX_IUS"
-#  fi
-#  PHP_SUBST(IFX_ESQL_FLAGS)
-#
-#  for i in $IFX_LIBS; do
-#    case "$i" in
-#      *.o)
-#        IFX_LIBOBJS="$IFX_LIBOBJS $i"
-#        PHP_ADD_LIBPATH($ext_builddir, INFORMIX_SHARED_LIBADD)
-#        PHP_ADD_LIBRARY_DEFER(phpifx, 1, INFORMIX_SHARED_LIBADD)
-#        ;;
-#      -lm)
-#        ;;
-#      -lc)
-#        ;;
-#      -l*)
-#        lib=`echo $i | cut -c 3-`
-#        PHP_ADD_LIBRARY_DEFER($lib, 1, INFORMIX_SHARED_LIBADD)
-#        ;;
-#      *.a)
-#        case "`uname -s 2>/dev/null`" in
-#          UnixWare | SCO_SV | UNIX_SV)
-#            DLIBS="$DLIBS $i"
-#            ;;
-#          *)
-#            ac_dir="`echo $i|sed 's#[^/]*$##;s#\/$##'`"
-#            ac_lib="`echo $i|sed 's#^/.*/lib##g;s#\.a##g'`"
-#            DLIBS="$DLIBS -L$ac_dir -l$ac_lib"
-#            ;;
-#        esac
-#        ;;
-#    esac
-#  done
-#
-#  AC_DEFINE(HAVE_IFX,1,[ ])
-#  PHP_SUBST(INFORMIXDIR)
-#  PHP_SUBST(IFX_LIBOBJS)
-#fi
-
-
 ## ==================================================================
 ##                 Checks for PostgreSQL lib support
 ## ==================================================================
@@ -1243,7 +1176,7 @@ if test "$with_pgsql" = ""; then
 	with_pgsql=yes
 fi
 
-AC_MSG_CHECKING(for PostgresSQL support)
+PHP_CONFIGURE_PART(Checking for PostgresSQL support:)
 AC_ARG_WITH(pgsql,
 [  --with-pgsql[=DIR]      Include PostgresSQL support.  DIR is the PostgresSQL
                           base install directory, defaults to /usr/local/pgsql.],
@@ -1301,62 +1234,13 @@ AC_ARG_WITH(pgsql,
   AC_MSG_RESULT(--with-pgsql not specified)
 ])
 
-#</This block was compied from PHP 3.x configure.in -------------------->
-
-#<This block was copied from PHP 4.x ext/odbc/config.m4 ---------------->
-
-################################ PHP V 4 PG test:
-#AC_DEFUN(PGSQL_INC_CHK,[if test -r $i$1/libpq-fe.h; then PGSQL_DIR=$i; PGSQL_INCDIR=$i$1])
-#
-#PHP_ARG_WITH(pgsql,for PostgreSQL support,
-#[  --with-pgsql[=DIR]      Include PostgreSQL support.  DIR is the PostgreSQL
-#                          base install directory, defaults to /usr/local/pgsql.
-#                          Set DIR to "shared" to build as a dl, or "shared,DIR"
-#                          to build as a dl and still specify DIR.])
-#
-#if test "$PHP_PGSQL" != "no"; then
-#  PHP_EXPAND_PATH($PHP_PGSQL, PHP_PGSQL)
-#  for i in /usr /usr/local /usr/local/pgsql $PHP_PGSQL; do
-#    PGSQL_INC_CHK(/include)
-#    el[]PGSQL_INC_CHK(/include/pgsql)
-#    el[]PGSQL_INC_CHK(/include/postgresql)
-#    fi
-#  done
-#
-#  if test -z "$PGSQL_DIR"; then
-#    AC_MSG_ERROR(Cannot find libpq-fe.h. Please specify the installation path of PostgreSQL)
-#  fi
-#
-#  PGSQL_INCLUDE=-I$PGSQL_INCDIR
-#  PGSQL_LIBDIR=$PGSQL_DIR/lib
-#  test -d $PGSQL_DIR/lib/pgsql && PGSQL_LIBDIR=$PGSQL_DIR/lib/pgsql
-#
-#  old_LIBS=$LIBS
-#  old_LDFLAGS=$LDFLAGS
-#  LDFLAGS="$LDFLAGS -L$PGSQL_LIBDIR"
-#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
-#  AC_CHECK_LIB(pq, PQoidValue,AC_DEFINE(HAVE_PQOIDVALUE,1,[ ]))
-#  AC_CHECK_LIB(pq, PQclientEncoding,AC_DEFINE(HAVE_PQCLIENTENCODING,1,[ ]))
-#  AC_CHECK_LIB(pq, pg_encoding_to_char,AC_DEFINE(HAVE_PGSQL_WITH_MULTIBYTE_SUPPORT,1,[ ]))
-#  LIBS=$old_LIBS
-#  LDFLAGS=$old_LDFLAGS
-#
-#  AC_DEFINE(HAVE_PGSQL,1,[ ])
-#
-#  PHP_ADD_LIBRARY_WITH_PATH(pq, $PGSQL_LIBDIR, PGSQL_SHARED_LIBADD)
-#
-#  PHP_EXTENSION(pgsql,$ext_shared)
-#fi
-#
-#PHP_SUBST(PGSQL_INCLUDE)
-#PHP_SUBST(PGSQL_SHARED_LIBADD)
-
-
 ## ==================================================================
 ##                 Checks for Informix ODBC driver
 ## ==================================================================
 
 #FIXME: use: AC_ARG_WITH here, this is non-standard!
+
+PHP_CONFIGURE_PART(Checking for Informix ODBC driver:)
 
 if test "$cygwin" = "1"; then
 
@@ -1390,19 +1274,8 @@ else
 
 		WARN_LD_LIBRARY_PATH=1
         ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
-
-
-#		INFORMIXODBC_WARNING="
-#-------------------------------WARNING---------------------------------
-#To use Informix ODBC driver, ODBC library directory
-#($INFORMIXDIR/lib/cli) must be in your LD_LIBRARY_PATH environment
-#variable value. Configuration files used by Informix ODBC driver
-#(all in $INFORMIXDIR/etc/): odbc.ini odbcinst.ini setup.odbc
-#
-#	    "
+		INFORMIXODBC_WARNING=1
 	else
-
-
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
 		LDFLAGS="$LDFLAGS -L$INFORMIXDIR/lib/cli -L$INFORMIXDIR/lib/esql -Xlinker -rpath -Xlinker $INFORMIXDIR/lib/esql"
@@ -1415,18 +1288,7 @@ else
 
 		if test "$ac_cv_lib_ivif7912_main" = "yes"; then
 			HAVE_IS_IFXODBC=yes
-
-			INFORMIXODBC_WARNING="
-			Warning:
-			 ODBC library directory ($INFORMIXDIR/lib/cli) must be in your LD_LIBRARY_PATH
-			   environment variable value.
-			   LD_LIBRARY_PATH=$INFORMIXDIR/lib/cli:$INFORMIXDIR/lib/esql:$LD_LIBRARY_PATH
-			   export LD_LIBRARY_PATH
-			Configuration files used by Informix ODBC driver:
-			$INFORMIXDIR/etc/odbc.ini
-			$INFORMIXDIR/etc/odbcinst.ini
-			$INFORMIXDIR/etc/setup.odbc
-		    "
+			INFORMIXODBC_WARNING=1
         fi
 	fi
 fi
@@ -1462,8 +1324,7 @@ fi
 #.c.o:
 #        $(CC) -c -DSQLODBC $(CCFLAGS) $(UNDEF) $(DEFINES) $(INCL) $<
 
-
-AC_MSG_CHECKING(for SAP DB ODBC driver support)
+PHP_CONFIGURE_PART(Checking for SAP DB ODBC driver support:)
 
 #force this check even if not specified on command line:
 if test "$with_sapodbc" = ""; then
@@ -1536,7 +1397,7 @@ AC_ARG_WITH(sapodbc,
 ##                 Checks for PostgreSQL ODBC driver
 ## ==================================================================
 
-AC_MSG_CHECKING(for PostgreSQL ODBC driver support)
+PHP_CONFIGURE_PART(Checking for PostgreSQL ODBC driver support:)
 
 #force this check even if not specified on command line:
 if test "$with_pgodbc" = ""; then
@@ -1621,7 +1482,7 @@ AC_ARG_WITH(pgodbc,
 ## ==================================================================
 
 #if test -z "$ODBC_TYPE"; then
-AC_MSG_CHECKING(for iODBC support)
+PHP_CONFIGURE_PART(Checking for iODBC support:)
 
 #force this check even if not specified on command line:
 if test "$with_iodbc" = ""; then
@@ -1681,7 +1542,7 @@ AC_ARG_WITH(iodbc,
 ##            Checks for unixODBC ODBC manager support
 ## ==================================================================
 
-AC_MSG_CHECKING(for unixODBC support)
+PHP_CONFIGURE_PART(Checking for unixODBC support:)
 
 #force this check even if not specified on command line:
 if test "$with_unixodbc" = ""; then
@@ -1841,6 +1702,7 @@ fi
 #AM_PATH_GTK(1.0.2,, [AC_MSG_ERROR([GTK not in path])])
 #AM_PATH_GTKMM(0.9.5,, [AC_MSG_ERROR([GTK not in path])])
 
+PHP_CONFIGURE_PART(Checking for GTK+ GUI support:)
 
 #AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
 #AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
@@ -1902,7 +1764,8 @@ AC_ARG_WITH(gtk,
 
 					if test "$GTK_CONFIG" != "no"; then
 	                    #this will get assigned in makefile iteself
-                        echo "Will configure using gtk-config in Makefile"
+						AC_MSG_CHECKING(using gtk-config in Makefile)
+						AC_MSG_RESULT(Yes)
 					else
 						if test "$PKG_CONFIG" != "no"; then
 		                    #this will get assigned in makefile iteself, but
@@ -1983,7 +1846,8 @@ AC_ARG_WITH(gtk,
 ##                  Check for Jabber IM support
 ## ==================================================================
 
-AC_MSG_CHECKING(for Jabber support)
+PHP_CONFIGURE_PART(Checking for Jabber support:)
+
 
 #force this check even if not specified on command line:
 if test "$with_iksemel" = ""; then
@@ -2037,7 +1901,7 @@ AC_ARG_WITH(iksemel,
 ##                  Check for PDF support
 ## ==================================================================
 
-AC_MSG_CHECKING(for PDF support)
+PHP_CONFIGURE_PART(Checking for PDF support:)
 
 #force this check even if not specified on command line:
 if test "$with_pdf" = ""; then
@@ -2092,6 +1956,8 @@ AC_ARG_WITH(pdf,
 ## ==================================================================
 ##                  Check for Sun RPC support
 ## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for Sun RPC support:)
 
 #Note: on Linux, rpclib functions are in libc. On other systems, for
 #example Windows/CygWin, this will be a separate library that we will need
@@ -2166,12 +2032,12 @@ AC_ARG_WITH(rpc,
 
 			AC_CHECK_LIB(rpcsvc, svctcp_create ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
 
-
+			AC_MSG_CHECKING(library containing RPC functions)
 			if test "$ac_cv_lib_rpcsvc___rpc_thread_svc_fdset" = "yes" || test "$ac_cv_lib_rpcsvc_svctcp_create_" = "yes" || test "$ac_cv_lib_rpcsvc_xdr_argument_" = "yes"; then
-                echo "Found RPC functions in -lrpcsvc"
+				AC_MSG_RESULT(-lrpcsvc)
 	            RPCLIB_NAME=-lrpcsvc
             else
-				echo "Found -lrpcsvc, but no RPC functions inside."
+				AC_MSG_RESULT(Found -lrpcsvc, but no RPC functions inside.)
 				#This checks are just to make debugging easier if real one fails, and should be removed in future:
 				AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
 				AC_CHECK_LIB(rpcsvc, xdr_argument ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
@@ -2289,7 +2155,7 @@ AC_ARG_WITH(rpc,
 ##                  Check for XML RPC support
 ## ==================================================================
 
-AC_MSG_CHECKING(XML-RPC support)
+PHP_CONFIGURE_PART(Checking for XML-RPC support:)
 
 old_CFLAGS="$CFLAGS"
 old_LIBS="$LIBS"
@@ -2331,7 +2197,7 @@ AC_MSG_RESULT($XML_RPC)
 ##            Check for mpz library (large integers) for exdatatype
 ## ==================================================================
 
-
+PHP_CONFIGURE_PART(Checking for mpz library support:)
 AC_CHECK_LIB([gmp], [main])
 
 if test $ac_cv_lib_gmp_main = yes; then
@@ -2371,6 +2237,8 @@ fi
 ## ==================================================================
 ##         Checks for libraries expected in standard locations
 ## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for standard libraries:)
 
 # FIXME: Replace `main' with a function in `-lc':
 AC_CHECK_LIB([c], [main])
@@ -2453,6 +2321,8 @@ AC_CHECK_LIB([check], [suite_create])
 ##                       Checks for header files
 ## ==================================================================
 
+PHP_CONFIGURE_PART(Checking for header files:)
+
 if test "$AUBIT_SOURCE" = "1" ; then
 	#AC_STDC_HEADERS
 	AC_HEADER_STDC
@@ -2510,6 +2380,8 @@ fi
 ##      Checks for typedefs, structures, and compiler characteristics
 ## ==================================================================
 
+PHP_CONFIGURE_PART(Checking for compiler characteristics:)
+
 AC_C_CONST
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
@@ -2523,6 +2395,7 @@ AC_CHECK_SIZEOF(int, 4)
 ##                   Checks for library functions
 ## ==================================================================
 
+PHP_CONFIGURE_PART(Checking for library functions:)
 if test "$AUBIT_SOURCE" = "1" ; then
 	AC_FUNC_FORK
 	AC_FUNC_MALLOC
@@ -2549,7 +2422,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		if test "$ac_cv_lib_iberty_getopt_long" = "yes"; then
             #On Solaris systems, you will probably have to install the GNU "libiberty"
 			#library (-liberty) which provides getopt_long for Solaris; get it at
-			#	http://sunfreeware.com (look for the package "libiberty.so" in 
+			#	http://sunfreeware.com (look for the package "libiberty.so" in
 			#the list of freeware) and install it into /usr/local/lib.
 			GETOPT_LONG=iberty
 			AC_MSG_RESULT(using iberty getopt_long)
@@ -2565,17 +2438,23 @@ fi
 ##                   Checks for Cygwin specifics
 ## ==================================================================
 
-#<example form hello.x>
-# ----------------------------------------------------------------------
-# Win32 objects need to tell the header whether they will be linking
-# with a dll or static archive in order that everything is imported
-# to the object in the same way that it was exported from the
-# archive (extern for static, __declspec(dllimport) for dlls)
-# ----------------------------------------------------------------------
-LIBHELLO_DLL_IMPORT=
-LIBGREET_DLL_IMPORT=
 case "$host" in
-*-*-cygwin* | *-*-mingw* )
+*-*-cygwin | *-*-cygwin* | *-*-mingw* | *-*-pw32* )
+
+	PHP_CONFIGURE_PART(Checking for Cygwin specific options:)
+
+	#<example form hello.x>
+	# ----------------------------------------------------------------------
+	# Win32 objects need to tell the header whether they will be linking
+	# with a dll or static archive in order that everything is imported
+	# to the object in the same way that it was exported from the
+	# archive (extern for static, __declspec(dllimport) for dlls)
+	# ----------------------------------------------------------------------
+
+
+	LIBHELLO_DLL_IMPORT=
+	LIBGREET_DLL_IMPORT=
+
 
 	if test X"$enable_shared" = Xyes; then
 		LIBHELLO_DLL_IMPORT=-DLIBHELLO_DLL_IMPORT
@@ -2583,16 +2462,10 @@ case "$host" in
 		dnl    AC_TRY_LINK_FUNC([libhello_is_dll],
 		dnl                     [LIBHELLO_DLL_IMPORT=-DLIBHELLO_DLL_IMPORT])
 	fi
-  ;;
-esac
-AC_SUBST(LIBHELLO_DLL_IMPORT)
-AC_SUBST(LIBGREET_DLL_IMPORT)
 
-#</example form hello.x>
-
-
-case $host in
-	*-*-cygwin | *-*-cygwin* | *-*-pw32*)
+	AC_SUBST(LIBHELLO_DLL_IMPORT)
+	AC_SUBST(LIBGREET_DLL_IMPORT)
+	#</example form hello.x>
 
 	#cygcheck can be used instead of ldd that is missing on CygWin:
 	AC_PATH_PROG(CYGCHECK, cygcheck, no)
@@ -2611,48 +2484,51 @@ case $host in
 	AC_LIBTOOL_PROG_LD_SHLIBS           #checking command to parse /usr/bin/nm -B output... ok
 	AC_LIBTOOL_SYS_DYNAMIC_LINKER       #checking whether the linker () supports shared libraries... yes
 	AC_CHECK_LIBM                       #checking dynamic linker characteristics... Win32 ld.exe
-    ;;
-esac
+    
+
+	# recent cygwin and mingw systems supply a stub DllMain which the user
+	# can override, but on older systems we have to supply one
+	#  echo "$as_me:3493: checking if libtool should supply DllMain function" >&5
+	#echo $ECHO_N "checking if libtool should supply DllMain function... $ECHO_C" >&6
+	#if test "${lt_cv_need_dllmain+set}" = set; then
+
+	#=======================================
 
 
-# recent cygwin and mingw systems supply a stub DllMain which the user
-# can override, but on older systems we have to supply one
-#  echo "$as_me:3493: checking if libtool should supply DllMain function" >&5
-#echo $ECHO_N "checking if libtool should supply DllMain function... $ECHO_C" >&6
-#if test "${lt_cv_need_dllmain+set}" = set; then
+	#  case $host/$CC in
+	#  *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
+	#    # old mingw systems require "-dll" to link a DLL, while more recent ones
+	#    # require "-mdll"
+	#    SAVE_CFLAGS="$CFLAGS"
+	#    CFLAGS="$CFLAGS -mdll"
+	#    echo "$as_me:3540: checking how to link DLLs" >&5
+	#echo $ECHO_N "checking how to link DLLs... $ECHO_C" >&6
+	#if test "${lt_cv_cc_dll_switch+set}" = set; then
+	#
+	#...
+	#
+	#
+	#  *-*-cygwin* | *-*-pw32*)
+	#    # cygwin systems need to pass --dll to the linker, and not link
+	#    # crt.o which will require a WinMain@16 definition.
+	#    lt_cv_cc_dll_switch="-Wl,--dll -nostartfiles" ;;
+	#  esac
+	#  ;;
+	#
+	#
 
-#=======================================
-
-
-#  case $host/$CC in
-#  *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
-#    # old mingw systems require "-dll" to link a DLL, while more recent ones
-#    # require "-mdll"
-#    SAVE_CFLAGS="$CFLAGS"
-#    CFLAGS="$CFLAGS -mdll"
-#    echo "$as_me:3540: checking how to link DLLs" >&5
-#echo $ECHO_N "checking how to link DLLs... $ECHO_C" >&6
-#if test "${lt_cv_cc_dll_switch+set}" = set; then
-#
-#...
-#
-#
-#  *-*-cygwin* | *-*-pw32*)
-#    # cygwin systems need to pass --dll to the linker, and not link
-#    # crt.o which will require a WinMain@16 definition.
-#    lt_cv_cc_dll_switch="-Wl,--dll -nostartfiles" ;;
-#  esac
-#  ;;
-#
-#
-
-#=======================================
+	#=======================================
 
 	# cygwin* | mingw* | pw32* | os2*)
       # This hack is so that the source file can tell whether it is being
       # built for inclusion in a dll (and should export symbols for example).
     #  lt_cv_prog_cc_pic='-DDLL_EXPORT'
     #  ;;
+
+
+	;;
+esac
+
 
 ## ==================================================================
 ##            Decide on default SQL driver
@@ -2915,18 +2791,13 @@ if test "$lt_cv_prog_cc_pic_works" = "yes"; then
 	#lt_cv_prog_cc_pic=' -fno-common'
 	PIC="$lt_cv_prog_cc_pic"
 	LDFLAGS_SHARED="$PIC -shared"
-    echo "LDFLAGS_SHARED set to $LDFLAGS_SHARED"
+    #echo "LDFLAGS_SHARED set to $LDFLAGS_SHARED"
 fi
 
 
 ## ==================================================================
 ##           Define which files we will substitute @xxx@ in
 ## ==================================================================
-
-#files to create for both binary and source code:
-#AC_CONFIG_FILES([
-#                incl/Makefile-common
-#                ])
 
 
 if test "$AUBIT_SOURCE" = "1" ; then
@@ -2996,40 +2867,77 @@ else
                 ])
 fi
 
+PHP_CONFIGURE_PART(Creating files:)
 AC_OUTPUT
-
-#AC_OUTPUT(config/Makefile config/sqlcmd.ins, ln config/Makefile . ; ln config/sqlcmd.ins .)
-
 
 ## ==================================================================
 ##                Warnings and exit messages
 ## ==================================================================
 
-
-dnl Warn if Informix support was requested but environment is not set up correctly.
-if test "$INFORMIX_WARNING" != ""; then
-		echo "$INFORMIX_WARNING"
+if test "$INFORMIX_WARNING" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You asked for Informix ESQL/C support, but don't have              |
+| \\\$INFORMIXDIR environment value set up. Configuring and          |
+| compiling Informix support is impossible and has been turned off.  |
+| Please try again after setting up your environment.                |
+X
+fi
+if test "$INFORMIX_WARNING" = "2"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You specified Informix base install directory that is different    |
+| than your \\\$INFORMIXDIR environment variable. You'd better know  |
+| exactly what you are doing.                                        |
+X
+fi
+if test "$SAPDB_WARNING" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You asked for SAP DB ESQL/C support, but don't have \\\$SAPDBROOT  |
+| environment value set up. Configuring and compiling Sap DB         |
+| support is impossible and has been turned off. Please              |
+| try again after setting up your environment.                       |
+X
+fi
+if test "$SAPDB_WARNING" = "2"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You specified SAP DB base install directory that is different      |
+| than your \\\$SAPDBROOT environment variable. You'd better know    |
+| exactly what you are doing.                                        |
+X
 fi
 
-if test "$SAPDB_WARNING" != ""; then
-		echo "$SAPDB_WARNING"
+if test "$INFORMIXODBC_WARNING" = "1"; then
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| ODBC library directory (\$INFORMIXDIR/lib/cli) must be in your      |
+| LD_LIBRARY_PATH environment variable value.                        |
+| Configuration files used by Informix ODBC driver:                  |
+| \$INFORMIXDIR/etc/odbc.ini                                          |
+| \$INFORMIXDIR/etc/odbcinst.ini                                      |
+| \$INFORMIXDIR/etc/setup.odbc                                        |
+X
 fi
-
-if test "$INFORMIXODBC_WARNING" != ""; then
-        echo "$INFORMIXODBC_WARNING"
-fi
-
 if test "$WARN_LD_LIBRARY_PATH" != ""; then
-    echo ""
-	echo "-------------------------------WARNING-----------------------------------"
-    echo "You have specified one or more --with-xxxx=<path> switches to 'configure'"
-    echo "script, specifiying package installed in non-standard <path> In most"
-	echo "cases, you will have to add this path to your PATH and/or LD_LIBRARY_PATH"
-    echo "and/or ld.so.conf in your run-time environment, for Aubit compilers and"
-    echo "compiler programs to be able to find nedded programs and/or libraries"
-    echo "that belong to this way specified package in non-standard place."
-    echo "We will try to do this automatically for you:"
-    echo ""
+cat<<X
++--------------------------------------------------------------------+
+|                        *** WARNING ***                             |
+| You have specified one or more --with-xxxx=<path> switches to      |
+| 'configure' script, specifiying package installed in non-standard  |
+| <path> In most cases, you will have to add this path to your PATH  |
+| and/or LD_LIBRARY_PATH and/or ld.so.conf in your run-time          |
+| environment, for Aubit compilers and compiler programs to be able  |
+| to find nedded programs and/or libraries that belong to this way   |
+| specified package in non-standard place. We will try to do this    |
+| automatically for you:                                             |
+X
 
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then
 		#FIXME: make this call only if make is detected (this can happen with binary distro)
@@ -3043,19 +2951,42 @@ if test "$WARN_LD_LIBRARY_PATH" != ""; then
     fi
 
 fi
-
-echo ""
+cat<<X
++--------------------------------------------------------------------+
+| License:                                                           |
+| This software is subject to the Aubit License, available in this   |
+| distribution in the file LICENSE.  By continuing this installation |
+| process, you are bound by the terms of this license agreement.     |
+| If you do not agree with the terms of this license, you must abort |
+| the installation process at this point.                            |
++--------------------------------------------------------------------+
+X
 
 if test "$AUBIT_SOURCE" = "1" ; then
-	echo "Aubit 4gl compiler source code is now configured."
-	echo "Execute 'make' to compile it."
+cat<<X
+|                          *** NOTE ***                              |
+|            Aubit 4gl compiler source code is now configured.       |
+|                                                                    |
+|                    Execute 'make' to compile it.                   |
++--------------------------------------------------------------------+
+X
 else
-	echo "Aubit 4gl compiler binary disrtibution now configured."
-	echo "Execute 'make install' to install it."
+cat<<X
+|                          *** NOTE ***                              |
+|        Aubit 4gl compiler binary disrtibution now configured.      |
+|                                                                    |
+|                Execute 'make install' to install it.               |
++--------------------------------------------------------------------+
+X
+
 fi
 
-echo "Thank you for using Aubit 4gl."
-echo ""
+cat<<X
+
+Thank you for using Aubit 4gl compiler.
+
+X
+
 
 #------------------------------ EOF --------------------------------
 
