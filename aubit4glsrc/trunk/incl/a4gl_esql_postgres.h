@@ -56,8 +56,7 @@ extern "C"
 #define COPY_DATA_OUT_14(a4gl,pgres,i,size) A4GL_copy_interval(pgres,a4gl,i,size,'o')
 
 
-
-
+#define A4GLSQL_SET_SQLCA_SQLWARN A4GL_copy_sqlca_sqlawarn_string8(sqlca.sqlwarn)
 
 
 #define copy_sqlca
