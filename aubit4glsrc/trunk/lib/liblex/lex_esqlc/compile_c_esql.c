@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.68 2004-02-15 09:45:02 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.69 2004-02-26 19:50:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.68 2004-02-15 09:45:02 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.69 2004-02-26 19:50:52 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -142,8 +142,8 @@ print_exec_sql_bound (char *s)
   printc ("{/* Start exec_sql_bound */\n");
   c = print_bind_definition ('i');
   printc ("/* printed bind - print conversions */");
-  print_conversions ('i');
   print_bind_set_value('i');
+  print_conversions ('i');
   printc ("EXEC SQL %s; /* exec_sql_bound */\n", s);
   print_copy_status ();
   printc ("}\n");
@@ -212,9 +212,9 @@ print_foreach_next (char *cursorname, char *using, char *into)
   printc ("while (1) {\n");
   ni = print_bind_definition ('i');
   no = print_bind_definition ('o');
-  print_conversions ('i');
   print_bind_set_value('i');
   print_bind_set_value('o');
+  print_conversions ('i');
   printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",
 	  A4GL_strip_quotes (cursorname), A4GL_get_into_part (0,no), ni, no);
   printc("internal_recopy_%s_o_Dir();",A4GL_strip_quotes(cursorname));
@@ -297,11 +297,11 @@ print_linked_cmd (int type, char *var)
       }
 
       ni = print_bind_definition ('i');
-      print_conversions ('i');
 	if (type=='S')  {
 		print_bind_set_value('o');
 	}
 	print_bind_set_value('i');
+      print_conversions ('i');
 
 
       if (type == 'S')
@@ -387,8 +387,8 @@ print_put (char *cname,char *putvals)
   int a;
   printc ("{\n");
   n = print_bind_definition ('i');
-  print_conversions ('i');
   print_bind_set_value('i');
+  print_conversions ('i');
   printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cname));
   printc ("EXEC SQL PUT %s /* '%s' */\n", A4GL_strip_quotes (cname),putvals);
 
@@ -464,8 +464,8 @@ print_execute (char *stmt, int using)
       int a;
       printc ("{ /* EXECUTE */\n");
       ni = print_bind_definition ('i');
-      print_conversions ('i');
       ni = print_bind_set_value ('i');
+      print_conversions ('i');
       printc ("EXEC SQL EXECUTE %s USING \n", A4GL_strip_quotes (stmt));
       for (a = 0; a < ni; a++)
 	{
@@ -669,7 +669,7 @@ print_fetch_3 (char *ftp, char *into)
       fp1 = atoi (ptr);
       ptr2++;
       fp2 = atoi (ptr2);
-      printc ("_fp=%d;\n", fp2);
+      printc ("_fp= %d;\n", fp2);
     }
   else
     {
@@ -1042,9 +1042,9 @@ extern int obindcnt;
   		if (bt) printc("{");
 		if (bt&1) print_bind_definition('o');
 		if (bt&2) print_bind_definition('i');
-  		if (bt) print_conversions ('i');
 		if (bt&1) print_bind_set_value('o');
 		if (bt&2) print_bind_set_value('i');
+  		if (bt) print_conversions ('i');
     		sprintf (buff, "%s", s);
 	}
 
@@ -1081,9 +1081,9 @@ print_select_all (char *buff)
   no = print_bind_definition ('o');
   last_no=no;
   printc("/* SETTING last_no=%d */",last_no);
-  print_conversions ('i');
   print_bind_set_value('i');
   print_bind_set_value('o');
+  print_conversions ('i');
   b2 = strdup (buff);
   return b2;
 }
@@ -1128,8 +1128,8 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 	int ni;
 		printc("{");
   		ni = print_bind_definition ('i');
-  		print_conversions ('i');
 		print_bind_set_value('i');
+  		print_conversions ('i');
 			if (file[0]=='"') { 
 				sprintf(filename,"'%s'",A4GL_strip_quotes(file)); 
 			} else { 
@@ -1325,9 +1325,9 @@ printc("{");
   last_ni=ni;
   no = print_bind_definition ('o');
   last_no=no;
-  print_conversions('i');
 	print_bind_set_value('i');
 	print_bind_set_value('o');
+  print_conversions('i');
   printc ("EXEC SQL %s;", s);
   print_copy_status ();
   print_conversions ('o');

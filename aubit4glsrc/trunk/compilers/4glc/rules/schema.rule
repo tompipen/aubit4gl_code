@@ -45,8 +45,8 @@ cr_table_extra_entry :
 	IN space_name {sprintf($<str>$," IN %s",$<str>2);}
 	| EXTENT_SIZE INT_VALUE {sprintf($<str>$," EXTENT SIZE %s",$<str>2); }
 	| NEXT_SIZE INT_VALUE {sprintf($<str>$," NEXT SIZE %s",$<str>2); }
-	| LOCK_MODE_PAGE {sprintf($<str>$," LOCK MODE (PAGE)");}
-	| LOCK_MODE_ROW {sprintf($<str>$," LOCK MODE (ROW)");}
+	| LOCK_MODE_PAGE {sprintf($<str>$," LOCK MODE PAGE");}
+	| LOCK_MODE_ROW {sprintf($<str>$," LOCK MODE ROW");}
 ;
 
 space_name : NAMED;

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.137 2004-02-11 09:25:42 mikeaubury Exp $
+# $Id: compile_c.c,v 1.138 2004-02-26 19:50:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.137 2004-02-11 09:25:42 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.138 2004-02-26 19:50:52 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -830,13 +830,13 @@ print_continue_loop (int n, char *cmd_type)
     {
       printc
 	("if (_fld_dr==-95) {A4GL_req_field(&_sio,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n");
-      printc ("_fld_dr= -1;_exec_block=-1;\n");
+      printc ("_fld_dr= -1;_exec_block= -1;\n");
     }
 
   if (strcmp (cmd_type, "INPUTREQ") == 0
       || strcmp (cmd_type, "CONSTRUCTREQ") == 0)
     {
-      printc ("_fld_dr= -1;_exec_block=-1;\n");
+      printc ("_fld_dr= -1;_exec_block= -1;\n");
     }
 
 
@@ -862,7 +862,7 @@ print_exit_loop (int type, int n)
 {
   if (type == 'M')
     {
-      printc ("cmd_no_%d=-3;goto MENU_START_%d;\n", n, n);
+      printc ("cmd_no_%d= -3;goto MENU_START_%d;\n", n, n);
     }
   if (type == 'P')
     {
@@ -1433,10 +1433,14 @@ print_arr_bind (char i)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", ibind[a].varname,
+	  printc ("{0,%d,%d}", 
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
 	}
       printc ("\n}; /* end of binding */\n");
+      for (a = 0; a < obindcnt; a++)
+	{
+	printc("ibind[%d].ptr= &%s;", a,ibind[a].varname);
+	}
       return a;
     }
 
@@ -1452,7 +1456,7 @@ print_arr_bind (char i)
       printc ("\n}; /* end of binding */\n");
       for (a = 0; a < obindcnt; a++)
 	{
-	printc("obind[%d].ptr=&%s;", a,obind[a].varname);
+	printc("obind[%d].ptr= &%s;", a,obind[a].varname);
 	}
       return a;
     }
@@ -2143,7 +2147,7 @@ print_construct_2 (char *driver)
   /*printc ("   _fld_dr= -97;continue;\n}\n");*/
 
   A4GL_add_event(-94,"");
-  printc("if (_exec_block==%d) { break; } /* END OF INPUT */",A4GL_get_nevents());
+  printc("if (_exec_block== %d) { break; } /* END OF INPUT */",A4GL_get_nevents());
   printc("{");
   print_event_list();
   printc ("_exec_block = %s;_forminit=0;\n", driver);
@@ -2718,7 +2722,7 @@ print_import (char *func, int nargs)
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
-    ("   if (_nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(_nargs);return 0;}\n",
+    ("   if (_nargs!=%d) {a4gl_status= -30174;A4GL_pop_args(_nargs);return 0;}\n",
      nargs, yylineno);
   for (a = 1; a <= nargs; a++)
     {
@@ -3080,7 +3084,7 @@ print_input_2 (char *s)
   printc("{");
   print_event_list();
   printc ("_exec_block=%s;_forminit=0;\n", s);
-  printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr=-1;");
+  printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
   printc("}");
 
 
@@ -4146,9 +4150,9 @@ print_move_window (char *n, int rel)
 void
 print_menu_1 (int n)
 {
-  printc ("{void *m_%d;\n\nint cmd_no_%d=-1; /* n=%d */\n", n, n, n);
+  printc ("{void *m_%d;\n\nint cmd_no_%d= -1; /* n=%d */\n", n, n, n);
   printc ("MENU_START_%d: ;", n);
-  printc ("while (cmd_no_%d!=-3) {\n", n);
+  printc ("while (cmd_no_%d!= -3) {\n", n);
 
 }
 
@@ -4190,7 +4194,7 @@ print_menu (int mn, int n)
     }
 
   printc
-    ("A4GL_finish_create_menu(m_%d);\nA4GL_disp_h_menu(m_%d);cmd_no_%d=-2;continue;\n",
+    ("A4GL_finish_create_menu(m_%d);\nA4GL_disp_h_menu(m_%d);cmd_no_%d= -2;continue;\n",
      n, n, n);
 }
 
@@ -4205,7 +4209,7 @@ print_end_menu_1 (int n)
 {
   /*printc ("\n}");*/
   printcomment (" /*end switch */\n");
-  printc ("if (cmd_no_%d==-1) {\n", n);
+  printc ("if (cmd_no_%d== -1) {\n", n);
   print_menu (menu_cnt, n);
   printc ("}\n");
 }
@@ -4250,7 +4254,7 @@ print_menu_block (int menu, int n)
 void
 print_menu_block_end (int n)
 {
-  printc ("cmd_no_%d=-4;goto MENU_START_%d; } ", n, n);
+  printc ("cmd_no_%d= -4;goto MENU_START_%d; } ", n, n);
 }
 
 /**
@@ -4397,7 +4401,7 @@ void
 print_func_args (int c)
 {
   printc
-    ("if (_nargs!=%d) {a4gl_status=-30174;A4GL_pop_args(_nargs);return 0;}\n",
+    ("if (_nargs!=%d) {a4gl_status= -30174;A4GL_pop_args(_nargs);return 0;}\n",
      c, yylineno);
   print_function_variable_init ();
   printc ("A4GL_pop_params(fbind,%d);\n", c);
@@ -5673,7 +5677,7 @@ print_bind_set_value (char i)
     {
       for (a = 0; a < ibindcnt; a++)
 	{
-	  printc ("ibind[%d].ptr=&%s;", a,ibind[a].varname);
+	  printc ("ibind[%d].ptr= &%s;", a,ibind[a].varname);
 	}
       start_bind (i, 0);
       return a;
@@ -5684,7 +5688,7 @@ print_bind_set_value (char i)
     {
       for (a = 0; a < obindcnt; a++)
 	{
-	  printc ("obind[%d].ptr=&%s;", a,obind[a].varname);
+	  printc ("obind[%d].ptr= &%s;", a,obind[a].varname);
 	}
       start_bind (i, 0);
       return a;
