@@ -12,8 +12,8 @@
 #  @todo Options tem de passar a ser usado como objecto
 #  @todo Forms para interacção com repositorio
 #
-#  $Id: fgldoc,v 1.4 2003-01-09 05:40:42 afalout Exp $
-#  $Author: afalout $
+#  $Id: fgldoc,v 1.5 2003-02-03 14:45:32 saferreira Exp $
+#  $Author: saferreira $
 #
 #  =========================================================================
 
@@ -882,20 +882,22 @@ sub listenerImportFgl
 
 
 #  =========================================================================
-#  Importação dos comentários com origem por parse dos .4gl(s) em modo CUI
-#  (Command Line User Interface)
-#
-#  @todo Limpar esta borrada de aceder a getModules()
+#  CUI interface to make the import of documentation comments making a parse
+#  in the .4gl(s).
 #  =========================================================================
 sub importFglCui
 {
-	@fileList = FglDocumenter::FormP4gl::getModules(
-		  $FglDocumenter::Options::importFglLocation
+	FglDocumenter::Utils::initDirectoryList();
+	$fileListRef = FglDocumenter::Utils::getModules(
+		  $FglDocumenter::Options::importFglLocation, 1
 	);
+  @fileList = @$fileListRef;
 	$FglDocumenter::Options::importFglModules = \@fileList;
 	$FglDocumenter::Options::importFglDirs    = 
-	  \@FglDocumenter::FormP4gl::directoryList
+	  FglDocumenter::Utils::getDirectoryList()
 	;
+	my $dirListRef = FglDocumenter::Utils::getDirectoryList();
+	my @dirList = @$dirListRef;
   executeImportFgl();
 }
 
@@ -1155,8 +1157,10 @@ sub startGui
 
 	initGui();
   $mw->title("4Doc - Fgl documentation tool");
-  $width  = $mw->screenwidth()-10;
-	$height = $mw->screenheight()-30;
+  #$width  = $mw->screenwidth()-10;
+	#$height = $mw->screenheight()-30;
+  $width  = 600;
+	$height = 300;
   $mw->geometry("${width}x${height}+0+0");
   createMenu();
 	createToolbar();

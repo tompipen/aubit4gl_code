@@ -6,7 +6,7 @@
 # existente nos sources de 4gl
 #
 # $Author: saferreira $
-# $Id: ImportFgl.pm,v 1.2 2003-01-06 20:08:19 saferreira Exp $
+# $Id: ImportFgl.pm,v 1.3 2003-02-03 14:46:44 saferreira Exp $
 # 
 # ============================================================================
 
@@ -256,10 +256,11 @@ sub parseSources
 }
 
 #  =========================================================================
-#  Executa o p4gl para o ficheiro passado como parametro
-#    @param directory
-#    @param nome do módulo 4gl
-#    @param opções de execução
+#  Execute the p4gl (4gl documentation parser) to the file passed as 
+#  parameter.
+#    @param directory.
+#    @param 4gl module name.
+#    @param Execution options.
 #  =========================================================================
 sub executeP4glFile
 {
@@ -286,11 +287,11 @@ sub executeP4glFile
 	  " $p4glOptions"
   ;
 
-	$obj->{log}->log("$p4glCommand em " . getcwd() . "\n");
+	$obj->{log}->log("$p4glCommand in " . getcwd() . "\n");
 	my $result;
 	# Isto não está a detectar eventuais erros correctamente
 	# @todo Conseguir detectar se tenho p4gl algures no PATH
-	$result = `$p4glCommand`;
+	$result = system($p4glCommand);
 	if ( $result =~ "^\$" )
   {
 	  $obj->{log}->log("$module Parsed");

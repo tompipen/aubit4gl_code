@@ -1,0 +1,26 @@
+
+==========================================================
+
+Window Size
+  Fixed : 24/1/2003
+
+==========================================================
+
+CUI mode
+--------
+[afalout@aptiva erp]$ make doc4gl
+/usr/local/bin/fgldoc --ui=CUI --action=importFgl --import_directory=/opt/aubit/apps/erp/src/ap --load_recursive --packa
+ge_name=MaxERP --send_line_to_log
+Starting with no GUI
+Can't call method "isFglFile" without a package or object reference at
+/usr/local/lib/perl5/5.8.0/FglDocumenter/FormP4gl.pm line 469.
+make: *** [doc4gl.import] Error 255
+[afalout@aptiva erp]$
+
+  Fixed : 24/1/2003
+
+==========================================================
+
+To many forks
+-------------
+  Fixed : 24/1/2003
