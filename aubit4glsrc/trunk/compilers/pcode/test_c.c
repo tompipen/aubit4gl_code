@@ -2,7 +2,8 @@
 A4GL_FUNCTION int main (int n)
 {
   int a;
-  int b[10]={10,11,12,13,14,15,16,17,18,19,20};
+  int b[10]={10,11,12,13,14,15,16,17,18,19};
+	int x;
 
   int d[3][3]={
 	  	{10,11,12},
@@ -30,8 +31,8 @@ A4GL_FUNCTION int main (int n)
  }
   
    for (a=0;a<3;a++) {
-   	for (b=0;b<3;b++) {
-		printf("%d + %d = %d\n",a,b,d[a][b]);
+   	for (x=0;x<3;x++) {
+		printf("%d + %d = %d\n",a,x,d[a][x]);
 	}
    }
    

@@ -186,6 +186,8 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "red" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return RED;}
 "green" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return GREEN;}
 "cyan" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CYAN;}
+"blink" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BLINK;}
+"underline" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return UNDERLINE;}
 
 "magenta" 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MAGENTA;}
 
@@ -205,6 +207,9 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "program"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PROGRAM;}
 "required"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return REQUIRED;}
 "dynamic"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DYNAMIC;}
+"dim"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DIM;}
+"bold"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BOLD;}
+"normal"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NORMAL;}
 "reverse"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return REVERSE;}
 "verify"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return VERIFY;}
 "queryclear"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return QUERYCLEAR;}

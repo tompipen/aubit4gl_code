@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.8 2004-05-21 13:01:22 mikeaubury Exp $
+# $Id: form_x.x,v 1.9 2005-02-20 19:33:22 mikeaubury Exp $
 #*/
 
 /**
@@ -102,16 +102,17 @@ enum FA_ATTRIBUTES_STRING {
 	FA_S_PROGRAM,
 	FA_S_WIDGET,
 	FA_S_CONFIG,
-	FA_S_COMMENTS
+	FA_S_COMMENTS,
+	FA_S_CLASS
 };
 
 struct struct_field_attr_string {
-	enum FA_ATTRIBUTES_STRING type;
+ 	enum FA_ATTRIBUTES_STRING type;
 	string value<>;
 };
 
 struct colours {
-	enum FA_COLOUR colour;
+	long colour;
 	struct u_expression *whereexpr;
 };
 

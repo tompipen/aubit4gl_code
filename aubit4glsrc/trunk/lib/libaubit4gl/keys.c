@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.31 2005-02-11 14:51:26 mikeaubury Exp $
+# $Id: keys.c,v 1.32 2005-02-20 19:34:42 mikeaubury Exp $
 #
 */
 
@@ -157,6 +157,7 @@ A4GL_key_val (char *str)
 */
 int A4GL_is_special_key(int k, int type) {
 
+
 	if (k==type) return 1;
 	switch (type) {
 		case A4GLKEY_NEXT     : return (std_dbscr.nextkey==k);
@@ -165,7 +166,7 @@ int A4GL_is_special_key(int k, int type) {
 		case A4GLKEY_PREVPAGE : return (std_dbscr.prevkey==k);
 		case A4GLKEY_INSERT   : return (std_dbscr.inskey ==k);
 		case A4GLKEY_DELETE   : return (std_dbscr.delkey ==k);
-		case A4GLKEY_HELP     : return (std_dbscr.helpkey==k);
+		case A4GLKEY_HELP     : A4GL_debug("Help key : %d\n",std_dbscr.helpkey); return (std_dbscr.helpkey==k);
 		case A4GLKEY_ACCEPT   : return (std_dbscr.acckey ==k);
 	}
 	A4GL_debug("HELP=%d\n",A4GLKEY_HELP);
@@ -472,7 +473,7 @@ A4GL_debug("init_stddbscr - form_line");
   std_dbscr.nextkey = A4GLKEY_F (3);
   std_dbscr.prevkey = A4GLKEY_F (4);
   std_dbscr.acckey = 27;
-  std_dbscr.helpkey = 22;
+  std_dbscr.helpkey = 23;
   std_dbscr.input_wrapmode = 0;
   std_dbscr.comment_line = -2;
   std_dbscr.form_line = 3;

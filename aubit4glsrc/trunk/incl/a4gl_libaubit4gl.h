@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.156 2005-02-17 12:01:17 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.157 2005-02-20 19:34:42 mikeaubury Exp $
 #
 */
 
@@ -184,6 +184,7 @@
 #define AUBIT_ATTR_DIM        		0x10000
 #define AUBIT_ATTR_INVISIBLE   		0x20000
 #define AUBIT_ATTR_ALTCHARSET  		0x40000
+#define AUBIT_ATTR_LEFT  		0x80000
 
   /* ====================== from a4gl_errors.h ================== */
 #define ERR_BADNOARGS 		1000
@@ -1866,7 +1867,7 @@ int A4GL_push_binding (void *ptr, int num);
 int A4GL_stof (void *aa, void *zz, int sz_ignore);
 int A4GL_nullfunc (void);
 int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
-
+char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s);
 void A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect) ;
 char *A4GLSQLCV_check_sql(char *s ) ;
 char *A4GLSQLCV_dtype_alias(char *s ) ;

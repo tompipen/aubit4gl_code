@@ -37,7 +37,7 @@ code
 	#endif
 
 
-	#define HELPMAXLEN 78
+	#define HELPMAXLEN 80
 	static FILE * infile;
 	unsigned char indexrec[8];
 
@@ -46,7 +46,7 @@ code
 void HELPLIB_A4GLHELP_initlib(void) ;
 endcode
 
-define constant HELPMAXLEN 78
+define constant HELPMAXLEN 80
 ---------   Module (static) Vars  ------------------------------------
 #define no integer	-- message no we are seeking
 define msgno smallint	-- message no found (while looping thru index)
@@ -55,7 +55,7 @@ define msglen integer	-- length of full message (when found)
 define msgcount integer -- count of messages in helpfile
 define charcount integer --current count of chars read from message
 define filenotfound integer
-define msgline char(HELPMAXLEN)
+define msgline char(255)
 
 define msgerror array[17] of record errline char(HELPMAXLEN) end record
 define msgerrcnt integer
@@ -121,8 +121,9 @@ code
 	if(ok && feof(infile) ) ok = 0;
 	if(ok && (charcount < msglen) ) 
 	{
-		fgets(msgline, HELPMAXLEN, infile); 
+		fgets(msgline, 255, infile); 
 		msgline[HELPMAXLEN] = 0;
+		A4GL_debug(">>>%s<<<",msgline); fflush(stdout);
 	}
 	if(ok && ferror(infile)) ok = -1;
 	if( ok > 0)
@@ -138,7 +139,7 @@ code
 endcode
 	if not ok then let charcount = 0 end if
 	let msgline = msgline clipped
-	return charcount, msgline
+	return charcount, msgline[1,80]
 end function {fetchiem}
 
 
@@ -152,22 +153,24 @@ local function myshowerrors()
 	define i integer
 	define l_msg char(36)
 	#clear form
-	
+	set pause mode on
 	let i = 0
 		let msgerror[1].errline = msgerror[1].errline clipped
-		display msgerror[1].errline to s_help[1].helpline
+		display msgerror[1].errline at 3,1     # to s_help[1].helpline
 	while true
 		let i = i + 1
 		if i > msgerrcnt then exit while end if
 		if i > 16 then exit while end if
 		let msgerror[i].errline = msgerror[i].errline clipped
-		display msgerror[i].errline to s_help[i].helpline
+		display msgerror[i].errline,""  at i+3,1 # to s_help[i].helpline
 	end while
 	while i <= 17
-		display " " to s_help[i].helpline
+		display " ","" at i+3,1 # to s_help[i].helpline
 		let i = i + 1
 	end while
+	set pause mode off
 end function
+	
 
 
 
@@ -186,6 +189,7 @@ local function mynextpage(l_count, l_msg)
 
 	define i integer
 
+	set pause mode on
 	let i = 0
 	while true
 		let i = i + 1
@@ -195,9 +199,9 @@ local function mynextpage(l_count, l_msg)
 			exit while
 		end if
 		if i = 1 then # Put last line of previous page on 1st line
-			display msgline to s_help[i].helpline
+			display msgline,""  at i+3,1 # to s_help[i].helpline
 		else
-			display l_msg to s_help[i].helpline
+			display l_msg,""  at i+3,1 # to s_help[i].helpline
 		end if
 		if l_count >= msglen or i >= 16 then
 			exit while
@@ -207,11 +211,12 @@ local function mynextpage(l_count, l_msg)
 	while i < 16
 		let i = i + 1
 		#clear s_help[i].helpline -- doesn't work?
-		display "  " to s_help[i].helpline
+		display " ","" at i+3,1 #to s_help[i].helpline
 	end while
 	if charcount >= msglen then
-		display "(End of help message)" to s_help[17].helpline
+		display "(End of help message)" at 20,1 # to s_help[17].helpline
 	end if
+	set pause mode off
 end function
 
 
@@ -374,7 +379,7 @@ indexrec[7]);
 	}
 	if(ok)
 	{
-		fgets(msgline, HELPMAXLEN, infile); 
+		fgets(msgline, 255, infile); 
 		msgline[HELPMAXLEN] = 0;
 		charcount = strlen(msgline);
 	}
@@ -427,7 +432,7 @@ endcode
 
 	call form_is_compiled(a4gl_xxhelp,"MEMPACKED","GENERIC");
 
-	open window w1 at 1,1 with form "a4gl_xxhelp"
+	open window w1 at 1,1 with 24 rows,80 columns #with form "a4gl_xxhelp"
 
 	call aclfgl_openiem(filename, n ) returning l_count, l_msg
 
@@ -439,7 +444,7 @@ endcode
 			call myshowerrors()
 		end if
 	end if
-
+	set pause mode off
 	menu "Help"
 			
 		command "Screen" "Displays next page of help"

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.29 2005-02-15 01:29:31 afalout Exp $
+# $Id: helper_funcs.ec,v 1.30 2005-02-20 19:34:42 mikeaubury Exp $
 #
 */
 
@@ -614,7 +614,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
  * @todo describe function
  */
 void 
-popdec(void *vx)
+ESQLAPI_popdec_native(void *vx)
 {
 #ifdef DIALECT_POSTGRES
 	EXEC SQL BEGIN DECLARE SECTION;
@@ -636,7 +636,7 @@ popdec(void *vx)
  * @todo describe function
  */
 void 
-retdec(void *vx) 
+ESQLAPI_retdec_native(void *vx) 
 {
 	dec_t *x;
         fgldecimal _s;
@@ -651,7 +651,7 @@ retdec(void *vx)
  * @todo describe function
  */
 void 
-popdtime(void *vx) 
+ESQLAPI_popdtime_native(void *vx) 
 {
 	dtime_t *x;
         char *s;
@@ -668,7 +668,7 @@ popdtime(void *vx)
  * @todo describe function
  */
 void 
-retdtime(void *vx) 
+ESQLAPI_retdtime_native(void *vx) 
 {
         char s[123];
 	dtime_t *x;

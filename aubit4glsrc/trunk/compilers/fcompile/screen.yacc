@@ -87,9 +87,8 @@ FORMONLY COMMENT
 %token SEMICOLON LOOKUP JOINING
 %token OPEN_BRACKET CLOSE_BRACKET STAR DIVIDE PLUS MINUS RECORD COMMA THROUGH TYPE DELIMITERS
 %token KW_CHAR KW_INT KW_DATE KW_FLOAT SMALLFLOAT SMALLINT KW_DECIMAL MONEY DATETIME INTERVAL LIKE
-%token BLACK BLUE GREEN CYAN RED MAGENTA WHITE YELLOW REVERSE LEFT BLINK UNDERLINE
-%token   AUTONEXT COLOR COMMENTS DEFAULT VALIDATE DISPLAY DOWNSHIFT UPSHIFT FORMAT INCLUDE INVISIBLE NOUPDATE NOENTRY PICTURE PROGRAM
-REQUIRED REVERSE QUERYCLEAR VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
+%token BLACK BLUE GREEN CYAN RED MAGENTA WHITE YELLOW NORMAL REVERSE LEFT BOLD BLINK UNDERLINE DIM
+%token   AUTONEXT COLOR COMMENTS DEFAULT VALIDATE DISPLAY DOWNSHIFT UPSHIFT FORMAT INCLUDE INVISIBLE NOUPDATE NOENTRY PICTURE PROGRAM REQUIRED  QUERYCLEAR VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 %token SERIAL KW_BYTE KW_TEXT VARCHAR SQL_VAR KW_NONSPACE
 %token SQLONLY  WIDGET CONFIG KW_NL
 %token COMPARISON LESSTHAN GREATERTHAN KWOR KWAND KWAND1 KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
@@ -100,7 +99,7 @@ REQUIRED REVERSE QUERYCLEAR VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 %token KW_WS KW_TAB
 %token KW_MASTER_OF
 %token KW_BEFORE KW_AFTER KW_EDITADD KW_EDITUPDATE KW_REMOVE KW_OF
-%token KW_ADD KW_UPDATE KW_QUERY KW_ON_ENDING KW_ON_BEGINNING
+%token KW_ADD KW_UPDATE KW_QUERY KW_ON_ENDING KW_ON_BEGINNING 
 %token KW_CALL
 %token KW_BELL KW_ABORT KW_LET KW_EXITNOW KW_NEXTFIELD
 %token KW_IF KW_THEN KW_ELSE  KW_BEGIN KW_END KW_TOTAL KW_RIGHT KW_ZEROFILL
@@ -651,9 +650,10 @@ CHAR_VALUE {strcpy($<str>$,$<str>1);}
 | NUMBER_VALUE  {strcpy($<str>$,$<str>1);}
 | SQL_VAR {sprintf($<str>$,"\n%s",$<str>1);}
 ;
-colors : color | colors color {
-sprintf($<str>$,"%d",atoi($<str>1)+atoi($<str>2));
-}
+
+
+colors : 	color 
+	| 	colors color { sprintf($<str>$,"%d",atoi($<str>1)+atoi($<str>2)); }
 ;
 
 color : 
@@ -681,7 +681,10 @@ color :
 		}
 
 | 	REVERSE { sprintf($<str>$,"%d",A4GL_get_attr_from_string("REVERSE")); }
+| 	DIM  { sprintf($<str>$,"%d",A4GL_get_attr_from_string("DIM")); }
+| 	NORMAL  { sprintf($<str>$,"%d",A4GL_get_attr_from_string("NORMAL")); }
 | 	LEFT { sprintf($<str>$,"%d",A4GL_get_attr_from_string("LEFT")); }
+| 	BOLD { sprintf($<str>$,"%d",A4GL_get_attr_from_string("BOLD")); }
 | 	BLINK { sprintf($<str>$,"%d",A4GL_get_attr_from_string("BLINK")); }
 | 	UNDERLINE { sprintf($<str>$,"%d",A4GL_get_attr_from_string("UNDERLINE")); }
 
@@ -1177,12 +1180,8 @@ func_call_arg : expression
 
 expression : 
 	single_expression
-	| expression KWAND expression {
-		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"AND");  
-	}
-	| expression KWOR expression {
-		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"OR");  
-	}
+	| expression KWAND expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"AND");  }
+	| expression KWOR expression { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,"OR");  }
 ;
 
 op_expression_list : 
@@ -1244,6 +1243,7 @@ any_kword :
 | AUTONEXT
 | BLACK
 | BLINK
+| BOLD
 | BLUE
 | KWOR
 | KWAND
@@ -1293,6 +1293,8 @@ any_kword :
 | RED
 | REQUIRED
 | REVERSE
+| DIM
+| NORMAL
 | SERIAL 
 | SMALLFLOAT
 | SMALLINT

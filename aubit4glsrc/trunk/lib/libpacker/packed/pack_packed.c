@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.21 2004-12-16 09:28:25 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.22 2005-02-20 19:34:43 mikeaubury Exp $
 #*/
 
 /**
@@ -498,6 +498,7 @@ input_string (char *name, char **val, int ptr, int isarr)
 {
 long l;
 int a;
+char *xptr;
 
   A4GL_debug ("Inputing string '%s'", name);
 //  A4GL_debug ("xxxxxxxxxxxx calling input_long()");
@@ -506,10 +507,13 @@ int a;
 //	  A4GL_debug ("wwwwwwwwwwwwwww ZERO!");
 	return 0;
   }
+  A4GL_assertion(l<0||l>64000,"Dubious length of string") ;
   A4GL_debug ("Got length as %d", l);
-  *val = malloc (l+1);	/* Extra 1 for the \0 */
-  memset(*val,0,l+1);
-  a = fread (*val, 1, l, infile);
+	xptr=malloc (l+1);	/* Extra 1 for the \0 */
+ A4GL_assertion(xptr==0,"Failed to allocate memory");
+  *val = xptr;
+  memset(xptr,0,l+1);
+  a = fread (xptr, 1, l, infile);
   if (a == 0 && l == 0)
     return 1;
   return a;

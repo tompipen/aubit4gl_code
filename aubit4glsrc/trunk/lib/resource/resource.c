@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.95 2005-02-14 14:26:14 mikeaubury Exp $
+# $Id: resource.c,v 1.96 2005-02-20 19:34:44 mikeaubury Exp $
 #
 */
 
@@ -1318,7 +1318,14 @@ A4GL_env_option_set (char *s)
 
 static char * A4GL_strip_quotes_resource (char *s)
 {
-  static char buff[1024];
+  static char *buff=0;
+  static int bl=0;
+
+  if (strlen(s)>bl || buff==0) {
+		bl=strlen(s);
+		buff=realloc(buff,bl+1);
+  }
+
   if ((s[0] == '"' || s[0] == '\'') && s[strlen (s) - 1] == s[0])
     {
       strcpy (buff, &s[1]);

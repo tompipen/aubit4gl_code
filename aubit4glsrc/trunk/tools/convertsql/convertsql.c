@@ -49,7 +49,9 @@ process_stdin (char *dialect_in, char *dialect_out)
 	  ptr=A4GL_convert_sql_new (dialect_in, dialect_out, buff);
 	  strcpy(buff,ptr);
 	  trimbuff ();
-	  printf("%s;\n",buff);
+	  if (strlen(buff)) {
+	  	printf("%s;\n",buff);
+	  }
 	  clearbuff ();
 	  continue;
 	}

@@ -39,6 +39,8 @@ code
 FILE *fin;
 lv_ok=1;
 A4GL_trim(lv_type);
+
+A4GL_debug("PACK : %s",lv_type);
 fin=fopen(lv_type,"r");
 if (fin!=0) {fclose(fin); lv_ok=1;}
 else {lv_ok=0;}

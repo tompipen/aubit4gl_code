@@ -16,7 +16,7 @@ extern "C"
 {
 #endif
 #include "a4gl_incl_4gldef.h"
-
+#include "a4gl_incl_infx.h"
 
 #ifdef __WIN32__
 					/* PG 8 on windows have ecpg_informix.h and no decimal.h */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.102 2005-01-12 11:15:21 mikeaubury Exp $
+# $Id: curslib.c,v 1.103 2005-02-20 19:34:43 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.102 2005-01-12 11:15:21 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.103 2005-02-20 19:34:43 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -1618,9 +1618,10 @@ int
 #endif
       a = A4GL_menu_getkey (menu);
 #ifdef DEBUG
-      A4GL_debug (">>>> KEY=%d", a);
+      A4GL_debug (">>>> KEY=%d %d %d", a,A4GLKEY_HELP,A4GL_is_special_key(a,A4GLKEY_HELP));
 #endif
 
+	
       if (A4GL_is_special_key(a,A4GLKEY_HELP))
 	{
 #ifdef DEBUG

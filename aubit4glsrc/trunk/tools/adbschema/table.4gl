@@ -152,10 +152,12 @@ IF lv_st.tabtype="T" THEN
 			if lv_str!=" " then 
 				let lv_str=lv_str clipped,"," 
 				call outstr(lv_str) 
+				let lv_str= " " 
 			end if
 		else
 			let lv_str=lv_sc.colname clipped," ",lv_sc.coltype using "<<<<<&"," ",lv_sc.collength using "<<<<<&"
-				call outstr(lv_str) 
+			call outstr(lv_str) 
+			let lv_str= " "
 		end if
 	
 		if lv_sc.coltype>255 then
@@ -177,7 +179,7 @@ IF lv_st.tabtype="T" THEN
 
 			when 6 let lv_sc.coldesc="SERIAL"," ",lv_nn
 			when 7 let lv_sc.coldesc="DATE"," ",lv_nn
-			when 8 let lv_sc.coldesc="MONEY",decode_decimal(lv_sc.collength),")"," ",lv_nn
+			when 8 let lv_sc.coldesc="MONEY(",decode_decimal(lv_sc.collength),")"," ",lv_nn
 			when 9 let lv_sc.coldesc="---"
 			when 10 let lv_sc.coldesc="DATETIME ",decode_datetime(lv_sc.collength)," ",lv_nn
 			when 11 let lv_sc.coldesc="BYTE"," ",lv_nn
@@ -416,11 +418,15 @@ end function
 function decode_decimal(a)
 define a integer
 define lv_str char(20)
-if a MOD 256 then
-let lv_str=(a/ 256) using "<<<<<", ",", a MOD 256 using "<<<<<"
+define m integer
+let m=a mod 256
+let a=(a-m)/256
+if m=255 then
+	let lv_str=a using "<<<<<"
 else
-let lv_str=(a/ 256) using "<<<<<",",0"
+	let lv_str=a using "<<<<<", ",", m using "<<<<<"
 end if
+
 return lv_str clipped
 end function
 
