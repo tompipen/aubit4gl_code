@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.5 2002-04-24 07:45:59 afalout Exp $
+# $Id: others.c,v 1.6 2002-04-25 09:47:59 afalout Exp $
 #
 */
 
@@ -370,6 +370,21 @@ has_str_attribute (struct struct_scr_field * f, int str)
   return 0;
 }
 
+
+char *
+char_val (char *s)
+{
+  static char str[80];
+  int a;
+  strcpy (str, &s[1]);
+  str[strlen (str) - 1] = 0;
+  for (a = 0; a < strlen (str); a++)
+    {
+      if (str[a] == '\t')
+	str[a] = ' ';
+    }
+  return str;
+}
 
 
 
