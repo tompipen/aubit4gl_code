@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.84 2003-12-17 11:38:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.85 2004-01-06 12:22:16 mikeaubury Exp $
 #*/
 
 /**
@@ -3196,7 +3196,11 @@ int ppr;
 #ifdef DEBUG
 			A4GL_debug ("Pushing param %p %d", buff, fprop->datatype);
 #endif
-			A4GL_push_param (buff, fprop->datatype + (fprop->dtype_size<<16));
+			if (fprop->datatype==DTYPE_CHAR||fprop->datatype==DTYPE_VCHAR) {
+				A4GL_push_param (buff, fprop->datatype + (strlen(buff)<<16));
+			} else {
+				A4GL_push_param (buff, fprop->datatype + (fprop->dtype_size<<16));
+			}
 			if (A4GL_has_str_attribute (fprop, FA_S_FORMAT))
 			  {
 			    A4GL_push_char (A4GL_get_str_attribute
@@ -4188,13 +4192,19 @@ return fld_data;
 
 int A4GL_check_and_copy_field_to_data_area(struct s_form_dets *form,struct struct_scr_field *fprop,char *fld_data,char *data_area) {
 int pprval;
+int dsize;
 
 fld_data=A4GL_fld_data_ignore_format(fprop,fld_data);
 A4GL_debug("Got fld_data as : %s",fld_data);
 
 
 		    A4GL_push_param (fld_data, DTYPE_CHAR);
-		    pprval=A4GL_pop_param (data_area, fprop->datatype, fprop->dtype_size); // A4GL_get_field_width (form->currentfield));
+			if ((fprop->datatype&0xf)==DTYPE_CHAR || (fprop->datatype&0xf)==DTYPE_VCHAR) {
+				dsize=A4GL_get_field_width (form->currentfield);
+			} else {
+				dsize=fprop->dtype_size;
+			}
+		    pprval=A4GL_pop_param (data_area, fprop->datatype, dsize); 
 
 		    if (pprval) {
 				if (A4GL_isnull(fprop->datatype,data_area)) {

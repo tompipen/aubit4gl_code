@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.47 2003-12-17 18:55:28 mikeaubury Exp $
+# $Id: compile.c,v 1.48 2004-01-06 12:22:08 mikeaubury Exp $
 #*/
 
 /**
@@ -1035,6 +1035,7 @@ char ext[8];
 
 
   A4GL_memfile_fseek (yyin, 0, SEEK_END);
+  A4GL_remove_comments_in_memfile(yyin);
   yyin_len = A4GL_memfile_ftell (yyin);
   A4GL_memfile_rewind (yyin);
 

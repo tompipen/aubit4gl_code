@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.7 2003-10-11 08:41:38 afalout Exp $
+# $Id: memfile.c,v 1.8 2004-01-06 12:22:16 mikeaubury Exp $
 #
 */
 
@@ -325,3 +325,81 @@ A4GL_dump_buffer (char *s, int l)
     }
   A4GL_debug ("%s", buff);
 }
+
+
+
+void A4GL_remove_comments_in_memfile(FILE *f) {
+int a;
+int b;
+int type=0;
+FILE *last;
+
+  if (!A4GL_isyes(acl_getenv("A4GL_REMOVE_COMMENTS_FIRST"))) return;
+
+  if (f != in)
+    {
+      A4GL_debug ("pos = %ld buff_len = %ld f=%x in=%x\n", pos, buff_len, f, in);
+      //a4gl_yyerror ("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
+      return feof (f);
+    }
+
+
+    for (a=0;a<buff_len;a++) {
+        if (strncmp(&buff[a],"\ncode\n",6)==0) {
+			type+=1;
+	}
+        if (strncmp(&buff[a],"\r\ncode\r\n",8)==0) {
+		type+=1;
+	}
+        if (strncmp(&buff[a],"\nendcode\n",9)==0) {
+		type-=1;
+	}
+        if (strncmp(&buff[a],"\r\nendcode\r\n",11)==0) {
+		type-=1;
+	}
+
+        if (buff[a]=='"'&&buff[a-1]!='\\') {
+                 if (type&2) type-=2;
+                 else type+=2;
+        }
+
+        if (buff[a]=='\''&&buff[a-1]!='\\') {
+                 if (type&4) type-=4;
+                 else type+=4;
+        }
+
+	//printf("%x%c",type,buff[a]);
+
+        if (buff[a]=='-'&&buff[a+1]=='-'&&type==0) {
+                for (b=a;buff[b]!='\n';b++) {
+			buff[b]=' ';
+		}
+                a=b-1;
+                continue;
+        }
+
+        if (buff[a]=='#'&&type==0) {
+                for (b=a;buff[b]!='\n';b++) {
+			buff[b]=' ';
+		}
+                a=b-1;
+                continue;
+        }
+        if (buff[a]=='{'&&type==0) {
+                for (b=a;buff[b]!='}';b++) {
+			buff[b]=' ';
+		}
+		buff[b]=' ';
+                a=b-1;
+                continue;
+        }
+
+    }
+
+    if (A4GL_isyes(acl_getenv("A4GL_DUMP_LAST"))) {
+	last=fopen("last","w");
+	fwrite(buff,1,buff_len,last);
+	fclose(last);
+    }
+}
+

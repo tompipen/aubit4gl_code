@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.6 2003-05-15 07:10:20 mikeaubury Exp $
+# $Id: memfile.c,v 1.7 2004-01-06 12:22:08 mikeaubury Exp $
 #
 */
 
@@ -233,4 +233,65 @@ A4GL_memfile_fread (char *ptr, int s, int n, FILE * f)
     }
 }
 
+
+void A4GL_remove_comments_in_memfile(FILE *f) {
+int a;
+int b;
+int type=0;
+
+
+  if (f != in)
+    {
+      A4GL_debug ("pos = %ld buff_len = %ld f=%x in=%x\n", pos, buff_len, f, in);
+      strncpy (buffer, &buff[pos], 255);
+      buff[255] = 0;
+      a4gl_yyerror
+        ("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
+      return feof (f);
+    }
+
+
+    for (a=0;a<buff_len;a++) {
+	if (strncmp(&buff[a],"\ncode\n",6)==0) type+=1;
+	if (strncmp(&buff[a],"\r\ncode\r\n",8)==0) type+=1;
+	if (strncmp(&buff[a],"\nendcode\n",9)==0) type-=1;
+	if (strncmp(&buff[a],"\r\nendcode\r\n",11)==0) type-=1;
+
+	if (buff[a]=='"'&&buff[a-1]!='\\') {
+		 if (type&2) type-=2;
+		 else type+=2;
+	}
+
+
+	if (buff[a]=='\''&&buff[a-1]!='\\') {
+		 if (type&4) type-=4;
+		 else type+=4;
+	}
+
+
+	if (buff[a]=='{'&&type==0) {
+		for (b=a;buff[b]!='}';b++) buff[b]=' ';
+		a=b;
+		continue;
+	}
+
+	if (buff[a]=='-'&&buff[a+1]=='-'&&type==0) {
+		for (b=a;buff[b]!='\n';b++) buff[b]=' ';
+		a=b;
+		continue;
+	}
+
+	if (buff[a]=='#'&&type==0) {
+		for (b=a;buff[b]!='\n';b++) buff[b]=' ';
+		a=b;
+		continue;
+	}
+
+    }
+
+}
+
 #endif
+
+
+

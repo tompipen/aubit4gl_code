@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.57 2004-01-02 21:02:47 mikeaubury Exp $
+# $Id: resource.c,v 1.58 2004-01-06 12:22:16 mikeaubury Exp $
 #
 */
 
@@ -166,6 +166,7 @@ struct str_resource builtin_resource[] = {
   {"MENUMTITLE", "0"},
   {"MENUMNORMAL", "0"},
   {"MENUMHIGHLIGHT", "<>"},
+  {"A4GL_REMOVE_COMMENTS_FIRST","Y"},
 
 /* abbr week days */
   {"_DAY0", "Sun"},
