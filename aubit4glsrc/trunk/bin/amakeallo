@@ -9,7 +9,7 @@
 #log of all compiles, and copy all problematic files in separate
 #directory, including err and c files.
 #
-#n/amakeallo: [: too many arguments    - only with 4js
+#n/amakeallo: [: too many arguments    - only with 4js ????
 #try qyerix
 ######################################################################
 
@@ -36,7 +36,7 @@ else
 
 	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE
     echo " "
-	echo "Attempted to compile total of $ATTEMPTED"
+	echo "Attempted to compile total of $ATTEMPTED , and $ATTEMPTEDGLOBALS GLOBALS files"
 	echo "$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled."
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK."
@@ -46,7 +46,7 @@ else
 	date
 
     echo " " >> $ERRORLOG
-	echo "Attempted to compile total of $ATTEMPTED" >> $ERRORLOG
+	echo "Attempted to compile total of $ATTEMPTED, and $ATTEMPTEDGLOBALS GLOBALS files" >> $ERRORLOG
 	echo "$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled." >> $ERRORLOG
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason." >> $ERRORLOG
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK." >> $ERRORLOG
@@ -390,7 +390,12 @@ function clean {
 function compileit {
 ############################
 
-	let ATTEMPTED=ATTEMPTED+1
+	if test "$DOINGGLOBALS" = "1"
+    then
+		let ATTEMPTEDGLOBALS=ATTEMPTEDGLOBALS+1
+    else
+		let ATTEMPTED=ATTEMPTED+1
+    fi
 
 	##########
 	shortstats
@@ -430,7 +435,7 @@ function compileit {
     #########################
 	#Is is already compiled?
     #########################
-	if [ "$SKIP" = "skip" ]
+	if test "$SKIP" = "1"
 	then
 		if [ -f $DESTDIR/$X ]
 		then
@@ -500,6 +505,18 @@ function compileit {
 		COMPCMD="$FGLCOMPILER $i"
 	fi
 
+	if [ "$COMPILER" = "querix" ]
+	then
+		COMPCMD="$QUERIXCMPLCMD $i"
+	fi
+
+	if [ "$COMPILER" = "informix" ]
+	then
+		COMPCMD="$ICOMPILER $i"
+	fi
+
+
+
     ######################
 	#Run compiler command:
     ######################
@@ -513,16 +530,10 @@ function compileit {
 		echo "#Running $COMPCMD (in $pwd):"  >> $ERRORLOG 2>&1;
     fi
 
-	#$COMPCMD >> $ERRORLOG 2>&1;
-	#err_msg=`4glc "$a"`
-	#err_msg=`eval "$COMPCMD"`
-	#err_msg=`$COMPCMD`
 	err_msg=`$COMPCMD > /tmp/compmsg.tmp 2>&1`
 	RET=$?
-
-
-
-    ###########################
+    
+	###########################
     #get message from compiler:
     ###########################
 	if [ "$err_msg" != "" ]
@@ -558,6 +569,11 @@ function compileit {
     ######################################################
 	if test $RET = "7"
     then
+		#FIXME:
+		#ret code 7 will be only with Aubit, but other compilers can fail on missing 4gl file that
+        #contains GLOBALS too!
+        #FIXME:
+        #this should no longer happen in Aubit, it should now automaticaly create .glb
 		if [ "$COMPILER" = "aubit" ]
         then
 			let NOGLBFILE=NOGLBFILE+1
@@ -686,84 +702,112 @@ function compileit {
         fi
 	fi
 
-
-
     ################################
     #did compiler retur error code?
     ################################
 	if test $RET != "0"
 	then
-        #############################
-		#does this fails in 4Js too?
-        #############################
+        ##################################################
+		#does this fails in alternative 4gl compiler too?
+        ##################################################
         if [ "$COMPILER" = "aubit" ] && [ "$COMPATIBLE" = "1" ]
         then
 			if test $SCRIPTDEBUG = "1"
    			then
-				echo "Trying same in 4Js compiler: $FJSERRFILESDIR/$i"  >> $ERRORLOG
+				echo "Trying same in $ALTCOMPILER compiler:"  >> $ERRORLOG
             fi
 			if [ "$VERBOSE" = "1" ]
 		    then
-				echo "Trying same in 4Js compiler: $FJSERRFILESDIR/$i"
+				echo "Trying same in $ALTCOMPILER compiler:"
             fi
 
-			if [ -d $FJSERRFILESDIR ]
-	        then
-			    if [ "$VERBOSE" = "1" ]
-			    then
-					echo "Using previous 4Js run results in $FJSERRFILESDIR"
-                fi
-				#this depends on amakeallo -4js executed previously:
-				if [ -f $FJSERRFILESDIR/$i ]
-		        then
-	                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
-				    if [ "$VERBOSE" = "1" ]
-				    then
-						echo "Ignoring error - fails with 4Js too (previous)."
-                    fi
-		            return
-		        else
-				    if [ "$VERBOSE" = "1" ]
-				    then
-						echo "NOT EXIST: $FJSERRFILESDIR/$i - so 4Js was OK."
-                    fi
-				fi
-	        else
-		        #this would take a long time since it will try to compile again
-		        #every file that fails:
-
-				if [ "$VERBOSE" = "1" ]
-			    then
-					if [ "$ALTCOMPILER" = "4js" ]
-                    then
-	                    echo "$FJSERRFILESDIR don't exist"
-						echo "$FOURJSCMPLCMD $i:"
-                    fi
-	            fi
-
-				if [ "$ALTCOMPILER" = "4js" ]
+			if test "$USECOMPATFILE" = "1"
+            then
+                #look at ALTFAILLIST for failed files:
+				if [ -f "$ALTFAILLIST" ]
                 then
-					$FOURJSCMPLCMD $i
-                fi
-		        RET=$?
-				if test $RET != "0"
-		        then
-	                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
-				    if [ "$VERBOSE" = "1" ]
+					ERRLINES=`cat $ALTFAILLIST | grep -c "$i"`
+					if [ "$SCRIPTDEBUG" = "1" ]
 				    then
-						echo "Ignoring error - fails with 4Js too (now)."
-                    fi
-			        return
-			    fi
+			    			echo "Looking for $i in $ALTFAILLIST = $ERRLINES"
+			        fi
+					if test $ERRLINES != "0"
+					then
+		                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
+					    if [ "$VERBOSE" = "1" ]
+					    then
+							echo "Ignoring error - fails with $ALTCOMPILER too ($ALTFAILLIST)."
+	                    fi
+						return
+					fi
+
+                else
+                    echo "File that should contain compatibility failed sources, "
+                    echo "$ALTFAILLIST does not exist, but -compatfile was specified. STOP"
+                    exit 19
+                fi
+            else
+				if [ -d $FJSERRFILESDIR ]
+		        then
+				    #look at alternative compiler's dir for files that failed
+					if [ "$VERBOSE" = "1" ]
+				    then
+						echo "Using previous $ALTCOMPILER run results in $FJSERRFILESDIR"
+	                fi
+					#this depends on amakeallo -4js or -q or -ifx executed previously:
+					if [ -f $FJSERRFILESDIR/$i ]
+			        then
+		                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
+					    if [ "$VERBOSE" = "1" ]
+					    then
+							echo "Ignoring error - fails with $ALTCOMPILER too (previous)."
+	                    fi
+			            return
+			        else
+					    if [ "$VERBOSE" = "1" ]
+					    then
+							echo "NOT EXIST: $FJSERRFILESDIR/$i - so $ALTCOMPILER was OK."
+	                    fi
+					fi
+		        else
+			        #if ALTCOMPILER's dir don't exist, try to compile on the fly:
+					#this would take a long time since it will try to compile again
+			        #every file that fails:
+
+					if [ "$VERBOSE" = "1" ]
+				    then
+						if [ "$ALTCOMPILER" = "4js" ]
+	                    then
+		                    echo "$FJSERRFILESDIR don't exist"
+							echo "$FOURJSCMPLCMD $i:"
+	                    fi
+		            fi
+
+					if [ "$ALTCOMPILER" = "4js" ]
+	                then
+						$FOURJSCMPLCMD $i
+	                fi
+			        RET=$?
+					if test $RET != "0"
+			        then
+		                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
+					    if [ "$VERBOSE" = "1" ]
+					    then
+							echo "Ignoring error - fails with $ALTCOMPILER too (now)."
+	                    fi
+				        return
+				    fi
+				fi
 			fi
+
 			if [ "$VERBOSE" = "1" ]
 		    then
-        	    echo "It compiled OK with 4Js"
+        	    echo "It compiled OK with $ALTCOMPILER"
             fi
 
 			if test $SCRIPTDEBUG = "1"
    			then
-				echo "It compiled OK with 4Js" >> $ERRORLOG
+				echo "It compiled OK with $ALTCOMPILER" >> $ERRORLOG
             fi
 		fi
 
@@ -772,29 +816,34 @@ function compileit {
         #is this "does not exist in the database ()" error ?
         ######################################################
 
-		ERRLINES=`cat $ERR | grep -c "does not exist in the database ()"`
-		if [ "$SCRIPTDEBUG" = "1" ]
-	    then
-    			echo "'does not exist in the database ()' found in $ERR = $ERRLINES"
-        fi
-		if test $ERRLINES != "0"
-		then
-	        let FAILDEFLIKE=FAILDEFLIKE+1
-		    if [ "$VERBOSE" = "1" ]
-		    then
-				echo "Ignoring error - fails DEFINE LIKE not in database."
-            fi
-		    #FIXME: log filename to $DEFINELIKELIST
-            #FIXME: extract error lines to $DEFINELIKEERROR
-			return
-        fi
+        if [ -f $ERR ]
+        then
 
+			ERRLINES=`cat $ERR | grep -c "does not exist in the database ()"`
+			if [ "$SCRIPTDEBUG" = "1" ]
+		    then
+	    			echo "'does not exist in the database ()' found in $ERR = $ERRLINES"
+	        fi
+			if test $ERRLINES != "0"
+			then
+		        let FAILDEFLIKE=FAILDEFLIKE+1
+			    if [ "$VERBOSE" = "1" ]
+			    then
+					echo "Ignoring error - fails DEFINE LIKE not in database."
+	            fi
+			    #FIXME: log filename to $DEFINELIKELIST
+	            #FIXME: extract error lines to $DEFINELIKEERROR
+				return
+	        fi
+        fi
 
         ##############################################################
         #It does not fail with other compiler, so we do have an error:
         ##############################################################
 
 		WASERROR=1
+
+		echo $PWD/$i >> $FAILLIST
 
 		############
 		copyerrfiles
@@ -914,6 +963,7 @@ function compileit {
 function compglobals {
 ##########################
 
+    DOINGGLOBALS=1
 	WASERROR="0"
 	ls *.4gl > /dev/null 2>&1
 	RET=$?
@@ -938,7 +988,6 @@ function compglobals {
 			if test $RET != "0"
 			then
 		        #echo $i is NOT GLOBALS file...
-		        #echo
 		        continue
 		    else
 				#echo $i is GLOBALS file...
@@ -973,7 +1022,7 @@ function compglobals {
 			echo "Globals compiled OK, continuing..."
 		fi
     fi
-
+    DOINGGLOBALS=0
 } #compglobals
 
 ###################
@@ -985,14 +1034,17 @@ function runamake {
 				EXECFILE=`basename $i .mk`.4ae;
 				EXECFILEAOX=`basename $i .mk`.aox;
 
-                if [ -f $MAXDIR/aprog/$EXECFILE -o -f $EXECFILEAOX ]
+                if test "$MAXMODE" = "1"
                 then
-					let COMPBEFORE=COMPBEFORE+1
-					if test $VERBOSE = "1"
-                    then
-						echo "$MAXDIR/aprog/$EXECFILE or $EXECFILEAOX exist, skip is ON"
-                    fi
-                    return
+					if [ -f "$MAXDIR/aprog/$EXECFILE" -o -f "$EXECFILEAOX" ]
+	                then
+						let COMPBEFORE=COMPBEFORE+1
+						if test $VERBOSE = "1"
+	                    then
+							echo "$MAXDIR/aprog/$EXECFILE or $EXECFILEAOX exist, skip is ON"
+	                    fi
+	                    return
+	                fi
                 fi
 
                 if [ -f $EXECFILE ]
@@ -1004,7 +1056,10 @@ function runamake {
                     fi
 		            if test "$MOVETOSTORE" = "1"
         		    then
-						mv $EXECFILE $MAXDIR/aprog
+		                if test "$MAXMODE" = "1"
+        		        then
+							mv $EXECFILE $MAXDIR/aprog
+                        fi
                     fi
 					return
                 fi
@@ -1032,7 +1087,10 @@ function runamake {
                     then
 			            if test "$MOVETOSTORE" = "1"
             			then
-							mv $EXECFILE $MAXDIR/aprog
+			                if test "$MAXMODE" = "1"
+            			    then
+								mv $EXECFILE $MAXDIR/aprog
+                            fi
                         fi
 						let AMAKEOK=AMAKEOK+1
                     else
@@ -1068,6 +1126,8 @@ function makecurrentdir {
 
 	if test "$AMAKE" = "1"
     then
+		#try to link into programs:
+
 		ls *.mk > /dev/null 2>&1
 		RET=$?
 		if test $RET = "0"
@@ -1132,7 +1192,7 @@ function makecurrentdir {
     ####
 	else
     ####
-
+        #just compile 4gl files to objects:
 		#####
 		clean
 		#####
@@ -1208,44 +1268,71 @@ function doit {
 #MAIN
 ############
 
-	###########################
+	#####################################################
 	#configuration defaults:
+    #####################################################
 
+    #------------ names: -------------------------
+
+	#main compiler:
+	COMPILER=aubit
+    #compiler used for compatibility fail check:
+	ALTCOMPILER=4js
+
+	#-------- files and directories: ------------
+
+	#where to store results of testing - generic name:
 	ERRFILESDIR=/tmp/amakeallo
+	#where to store results of testing - compiler specific:
 	FJSERRFILESDIR=$ERRFILESDIR-4js
 	AUBITERRFILESDIR=$ERRFILESDIR-aubit
+	QERRFILESDIR=$ERRFILESDIR-querix
+	IFXERRFILESDIR=$ERRFILESDIR-informix
+
+    #where to move compiled objects:
 	DESTDIR=/tmp/amakeallo-objects
 	ROOTDIR=$PWD
+	#sub-directories to skip
+	SKIPDIRS=
+
+    #------------ commands: ----------------------
+
+	AUBITCMPLCMD="4glpc -noerrcode" #-verbose -debug
+    FOURJSCMPLCMD=fglcomp
+    QUERIXCMPLCMD=fglc
+	ICOMPILER=fglpc
+    HEAD=head
+    #HEAD=head -n 20
+
+
+	#------------ numeric variables: ------------
+
+	SKIP=1
 	STOPONERROR=0
 	STOPGLOBALSERROR=0
     NONGLOBAFTERGLOBERR=0
-	SKIP=skip
-	#ERRCHAR=\|
-    ERRCHAR=^\|
-    COMPILER=aubit
-    #compiler used for compatibility fail check:
-	ALTCOMPILER=4js
-    AUBITCMPLCMD="4glpc -noerrcode" #-verbose -debug
-    FOURJSCMPLCMD=fglcomp
-    QUERIXCMPLCMD=fglc
-    RECURSIVE=0
+	RECURSIVE=0
 	GOBACKLINES=20
 	GOAFTERLINES=10
     FULLCLEAN=0
     COMPATIBLE=0
+	USECOMPATFILE=0
     VERBOSE=0
     SCRIPTDEBUG=0
 	MAXMODE=0
 	MAXMODE2=0
-	SKIPDIRS=
-    HEAD=head
-    #HEAD=head -n 20
 	TESTCONTINUE=0
 	AMAKE=0
 	MOVETOSTORE=1
 
-	###############
-	#initialise:
+    #------------- strings: ------------------
+
+	ERRCHAR=^\|
+
+
+	########################
+	#initialise counterts:
+    ########################s
 	WASERROR=0
 	COMPSUCCESS=0
 	COMPFAIL4GL=0
@@ -1265,6 +1352,11 @@ function doit {
     AMAKEOK=0
     AMAKEFAIL=0
 	ATTEMPTED=0
+	ATTEMPTEDGLOBALS=0
+    
+    #################################
+	#read options from command line:
+    #################################
 
 	############
 	for a in $@
@@ -1290,6 +1382,18 @@ function doit {
 		-4js)		COMPILER=4js
         ;;
 
+		-q)			COMPILER=querix
+        ;;
+
+		-ifx)		COMPILER=informix
+        ;;
+
+		-altq)		ALTCOMPILER=querix
+        ;;
+
+		-altifx)	ALTCOMPILER=informix
+        ;;
+
 		-stoperr)	STOPONERROR=1
         ;;
 
@@ -1302,7 +1406,7 @@ function doit {
         -nomove) 	MOVETOSTORE=0
         ;;
 
-		-noskip) 	SKIP=noskip
+		-noskip) 	SKIP=0
         ;;
 
         -fullclean) FULLCLEAN=1
@@ -1312,6 +1416,11 @@ function doit {
         ;;
 
         -compat) 	COMPATIBLE=1
+        ;;
+
+        -compatfile)
+					COMPATIBLE=1
+					USECOMPATFILE=1
         ;;
 
         -continue)  TESTCONTINUE=1
@@ -1350,13 +1459,17 @@ function doit {
 			echo " -r = recursive: step into subdirectories too (. only)"
 			echo " -4js = use 4Js/D4GL compiler (Aubit)"
 			echo " -q = use Querix compiler (Aubit)"
+			echo " -ifx = use Informix compiler (Aubit)"
+			echo " -altq = use Querix as alternative compiler (4Js)"
+			echo " -altifx = use Informix as alternative compiler (4Js)"
 			echo " -stoperr = stop on any error (continue)"
 			echo " -stopglob = stop if any GLOBALS 4gl file fails (continue)"
             echo " -nonglob = continue compiling non-global files even if globals fail (skip)"
 			echo " -noskip = do not skip already compiled (skip)"
 			echo " -x = rename Aubit old extensions in "." [.o->.ao]"
 			echo " -fullclean = remove .c .h .ec before you start (DANGER!)"
-			echo " -compat = ignore errors if they fail in 4Js too (do not ignore)"
+			echo " -compat = ignore errors if they fail in $ALTCOMPILER too (do not ignore)"
+			echo " -compatfile = as -compat, but read failed from $ALTFAILLIST file"
 			echo " -maxmode[minimal] = special mode for Maximise app (universal mode)"
 			echo " -v = verbose - show what you are doing (show only counters)"
 			echo " -debug = verbose + much more"
@@ -1380,6 +1493,23 @@ function doit {
 	####
 	done
 	####
+
+
+    #################################################
+    #set options that depend on command line options:
+    #################################################
+
+	if test "$MAXMODE" = "1"
+    then
+		if [ "$MAXDIR" = "" ]
+        then
+            echo "MAXDIR not set, but -maxmode specified. Please export MAXDIR to"
+            echo "point to Maximise sources root directory. STOP."
+            exit 17
+        else
+            export SCWORK=$MAXDIR
+		fi
+    fi
 
 	if [ "$COMPILER" = "aubit" ]
 	then
@@ -1424,6 +1554,26 @@ function doit {
         fi
 	fi
 
+	FAILLIST=/tmp/amake-compatfail-$COMPILER
+	ALTFAILLIST=/tmp/amake-compatfail-$ALTCOMPILER
+
+	if [ "$ALTCOMPILER" = "4js" ]
+    then
+		ALTERRFILESDIR=$FJSERRFILESDIR
+    fi
+
+    if [ "$ALTCOMPILER" = "querix" ]
+    then
+		ALTERRFILESDIR=$QERRFILESDIR
+    fi
+
+    if [ "$ALTCOMPILER" = "informix" ]
+    then
+		ALTERRFILESDIR=$IFXERRFILESDIR
+    fi
+
+
+
    	ERRORLOG=$ERRFILESDIR/amakeallo.log
 	AMAKEERRORLOG=$ERRFILESDIR/amakeall.log
     ZEROLOG=$ERRFILESDIR/zero_size.log
@@ -1437,6 +1587,10 @@ function doit {
 		echo "NOTE: using $DESTDIR for objects store"
     fi
 
+    
+    ######################################
+	#drop and recreate storrage directory:
+    ######################################
 	if [ -d $ERRFILESDIR ]
 	then
 	    if [ "$TESTCONTINUE" = "0" ]
@@ -1459,7 +1613,11 @@ function doit {
     fi
 
     date
-	
+
+    ######################
+    #Initialise log files:
+    ######################
+
 	if test "$AMAKE" = "1"
     then
 	    date > $AMAKEERRORLOG
@@ -1477,6 +1635,7 @@ function doit {
 		date > $CLOG
 	    date > $CORELOG
 	    date > $GLOBLOG
+		date > FAILLIST
 	fi
 
     #################
@@ -1566,4 +1725,4 @@ function doit {
 		exit 0
     fi
 
-
+#---------------------------------- EOF ---------------------------------

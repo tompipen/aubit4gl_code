@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.7 2001-09-22 10:29:18 mikeaubury Exp $
+#   @(#)$Id: a4gl.mk,v 1.8 2001-09-23 09:16:33 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -22,7 +22,7 @@ AUCC_FLAGS=-g -O2 -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 
 # A4GL C-code Compiler
 #should I use 4glc instead 4glpc here?
-A4GL_CC_CMD     = 4glpc -shared
+A4GL_CC_CMD     = 4glpc #-shared
 A4GL_CC_ENV     =
 #-g -O2 -gtk -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 A4GL_CC_FLAGS   = #-verbose
