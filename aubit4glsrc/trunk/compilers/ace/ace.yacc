@@ -651,8 +651,9 @@ quantified_predicate:
 	;
 
 quantifier:
-	{strcpy($<str>$," ALL ");}
-	| all
+	/*{strcpy($<str>$," ALL ");} 
+	|*/
+	 all
 	| some
 	;
 all:

@@ -5,14 +5,13 @@
 
 #include "../../common/dataio/report.xs.h"
 
-
 /* ================ from lex.yy.c ============================ */
 int buffpos (void);
 #ifndef _NO_YYLEX_PROTO_
 int yylex (void);
 	//void yylex ( void );
 #endif
-void *A4GL_memdup (void *p, int l);
+//void *A4GL_memdup (void *p, int l);
 void set_expr_int (struct expr *e, int a);
 
 
@@ -37,7 +36,7 @@ void A4GL_write_report (void);
 
 /* ================= from main.c =========================== */
 
-void yyerror (char *s);
+//void yyerror (char *s);
 
 /* ================== from y.tab.c ======================= */
 
@@ -63,6 +62,7 @@ int ace_add_table (char *tabname, char *alias);
 
 int compile_ace_report (char *filename);
 
+void a4gl_ace_yyerror (char *s);
 
 
 
