@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.20 2002-07-21 09:56:42 afalout Exp $
+# $Id: esql.ec,v 1.21 2002-07-22 13:44:45 mikeaubury Exp $
 #
 */
 
@@ -155,7 +155,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.20 2002-07-21 09:56:42 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.21 2002-07-22 13:44:45 mikeaubury Exp $";
 #endif
 
 #ifdef WIN32
@@ -2307,7 +2307,7 @@ B
 B
 B
 */
-/* Bad Blue Boys ? */
+/* Bad Blue Boys ? - No wrong termtype...(oops) */
 
 /* int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size); */
 /* int A4GLSQL_get_columns(char *tabname) */
