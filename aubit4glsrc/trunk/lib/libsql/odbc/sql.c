@@ -33,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.9 2002-01-22 23:24:57 mikeaubury Exp $
+# $Id: sql.c,v 1.10 2002-01-23 00:01:04 mikeaubury Exp $
 #
 */
 
@@ -195,7 +195,7 @@ return rc;
 
 rc= SQLBindParameter (hstmt,ipar, SQL_PARAM_INPUT,
     fCType, fSqlType, cbColDef, ibScale, rgbValue,
-    3200000 ,pcbValue);
+    3200 ,pcbValue);
 
    chk_rc(rc,hstmt,"SQLBindParameter");
 
@@ -751,6 +751,13 @@ int A4GLSQL_open_cursor (int ni, char *s)
       return 0;
     }
 
+  if (cid->hstmt != 0) {
+
+	A4GLSQL_close_cursor(s);
+
+        //exitwith ("Cursor already open");
+        //return;
+    }
 
   rc = SQLPrepare (cid->statement->hstmt, cid->statement->select, SQL_NTS);
   chk_rc (rc, cid->statement->hstmt, "SQLPrepare");
@@ -807,6 +814,7 @@ int A4GLSQL_open_cursor (int ni, char *s)
   if (cid->hstmt != 0)
     {
       exitwith ("Cursor already open");
+      return;
     }
   else
     {

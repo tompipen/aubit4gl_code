@@ -16,7 +16,7 @@ print_options('F',$<str>2);
 printc("set_option_value('M',%s);\n",$<str>2);
 }
 		| MSG_LINE line_no {
-print_options('M',$<str>2);
+print_options('m',$<str>2);
 }
 		| PROMPT_LINE line_no {
 print_options('P',$<str>2);
