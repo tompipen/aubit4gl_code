@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.34 2002-10-13 01:40:33 afalout Exp $
+# $Id: lexer.c,v 1.35 2002-10-16 07:05:30 mikeaubury Exp $
 #*/
 
 /**
@@ -811,13 +811,14 @@ fix_bad_strings (char *s)
  *
  */
 int
+//yylex (YYSTYPE *ptr1,int n)
 yylex (void)
 {
   int a;
   char buff[1024];
   char buffval[20480];
   static int last_pc=0;
-  debug ("In yylex...");
+  //debug ("In yylex... %p state=%d", ptr1,n);
 
   if (yyin == 0)
     {
@@ -870,6 +871,7 @@ yylex (void)
   fix_bad_strings (buff);
 
   set_str (buff);
+  //strcpy(ptr1->str,buff);
   lastword = buff;
   lastlex = a;
   if (acl_getenv ("DEBUG"))

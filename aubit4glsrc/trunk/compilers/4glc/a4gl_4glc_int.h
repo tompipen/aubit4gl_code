@@ -46,6 +46,7 @@
 	int 	mja_fgetc 			(FILE * f);
 	void 	turn_state 			(int kw, int v);
 	int 	yylex 				(void);
+	//int 	yylex 				(YYSTYPE *p1,int n);
 
 	/* ========================== Implemented in list.c ================== */
 	char *	list_prompt 		(char *s);

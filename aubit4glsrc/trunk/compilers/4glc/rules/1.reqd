@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.18 2002-10-01 09:50:30 afalout Exp $
+# $Id: 1.reqd,v 1.19 2002-10-16 07:06:13 mikeaubury Exp $
 #
 */
 
@@ -71,6 +71,8 @@
 =====================================================================
 */
 
+//#define YYPURE 1
+//#define YYLEX_PARAM yystate
 
 #define INCASE 		0
 #define INCONSTRUCT 1

@@ -6,22 +6,22 @@
 
 interval_expr:
 	UNITS_YEAR {
-		sprintf($<str>$,"pushop(OP_YEAR);");
+        	$<ptr>$=new_expr("pushop(OP_YEAR);");
 	}
 	| UNITS_MONTH {
-		sprintf($<str>$,"pushop(OP_MONTH);"); 
+        	$<ptr>$=new_expr("pushop(OP_MONTH);");
 	}
 	| UNITS_DAY {
-		sprintf($<str>$,"pushop(OP_DAY);"); 
+        	$<ptr>$=new_expr("pushop(OP_DAY);");
 	}
 	| UNITS_HOUR {
-		sprintf($<str>$,"pushop(OP_HOUR);");
+        	$<ptr>$=new_expr("pushop(OP_HOUR);");
 	}
 	| UNITS_MINUTE {
-		sprintf($<str>$,"pushop(OP_MINUTE);");
+        	$<ptr>$=new_expr("pushop(OP_MINUTE);");
 	}
 	| UNITS_SECOND {
-		sprintf($<str>$,"pushop(OP_SECOND);");
+        	$<ptr>$=new_expr("pushop(OP_SECOND);");
 	}
 ;
 
