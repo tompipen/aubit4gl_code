@@ -180,7 +180,7 @@ this should be the first thing in our function, always @ PC=0
   pc++;
 
 
-  fprintf (logfile, "Entering function %s\n",
+  fprintf (logfile, "******************* Entering function %s *****************\n",
 	   GET_ID (this_module.functions.functions_val[func_no].
 		   func_name_id));fflush(logfile);
 
@@ -239,10 +239,11 @@ Normally we should get a value for p - even if it contains a 0 length list
 Now we've done our function startup - we can get on with actually running it...
 */
 
+  fprintf (logfile, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");fflush(logfile);
   while (1)
     {
 
-      fprintf (logfile, "%04d-%04ld ", func_no, pc);fflush(logfile);
+      fprintf (logfile, "  %04d-%04ld ", func_no, pc);fflush(logfile);
 
       if (pc >= this_module.functions.functions_val[func_no].cmds.cmds_len)
 	{
@@ -253,7 +254,7 @@ Now we've done our function startup - we can get on with actually running it...
 	}
 
       c = &this_module.functions.functions_val[func_no].cmds.cmds_val[pc];
-      fprintf (logfile, "%-10.10s %03d\n", cmd_type_str[c->cmd_type], c->cmd_type); fflush(logfile);
+      fprintf (logfile, "%-20.20s %03d\n", cmd_type_str[c->cmd_type], c->cmd_type); fflush(logfile);
 
 
       switch (c->cmd_type)

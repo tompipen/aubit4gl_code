@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.132 2004-08-31 20:46:51 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.133 2004-09-02 15:57:42 mikeaubury Exp $
 #
 */
 
@@ -1517,7 +1517,9 @@ short a4gl_ntohs(long x);
 
   /* ============================ maths.c ================================ */
   void *A4GL_find_op_function (int dtype1, int dtype2, int op);
-  //void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
+#ifdef CSCC
+  void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
+#endif
 
   /* ============================ translate.c ============================ */
 
@@ -1792,7 +1794,11 @@ void
 A4GL_set_core_dump (void);
 char *A4GL_null_as_null(char *s);
 int A4GL_has_errorlog (void);
-int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
+#ifdef CSCC
+	//int A4GL_add_datatype_function_i (int a, char *funcname, void (*function)(int));
+#else
+	int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
+#endif
 void A4GL_close_errorlog_file (void);
 void A4GL_set_last_outfile (char *s);
 void A4GL_ltrim(char *s) ;

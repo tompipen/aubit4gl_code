@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.85 2004-08-16 13:10:36 mikeaubury Exp $
+# $Id: conv.c,v 1.86 2004-09-02 15:57:42 mikeaubury Exp $
 #
 */
 
@@ -2048,6 +2048,10 @@ A4GL_ltoi (void *aa, void *zz, int sz_ignore)
   {
     A4GL_debug ("Ltoi");
   }
+#endif
+#ifndef SHRT_MIN
+#define SHRT_MIN -32000
+#define SHRT_MAX 32000
 #endif
   if (*a < SHRT_MIN || *a > SHRT_MAX) {
 	A4GL_exitwith("Value exceeds limit of SMALLINT ");

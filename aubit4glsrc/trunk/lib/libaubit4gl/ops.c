@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.57 2004-08-31 20:46:52 mikeaubury Exp $
+# $Id: ops.c,v 1.58 2004-09-02 15:57:42 mikeaubury Exp $
 #
 */
 
@@ -2519,8 +2519,12 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_BYTE, "DISPLAY", A4GL_display_byte);
   A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", A4GL_display_text);
 
-  A4GL_add_datatype_function_i (DTYPE_DECIMAL, ">STRING",
-				A4GL_tostring_decimal);
+
+#ifndef CSCC
+  A4GL_add_datatype_function_i (DTYPE_DECIMAL, ">STRING", A4GL_tostring_decimal);
+#endif
+
+
   //A4GL_add_datatype_function_i (DTYPE_DTIME,  ">STRING", A4GL_tostring_dtime);
 
 

@@ -934,3 +934,30 @@ move_defines ()
     }
   printf ("Generated %d NOPs\n", nop);
 }
+
+
+
+struct cmd_block *get_base(int block_pc) {
+  struct cmd_block *base;
+      struct cmd *command;
+	printf("Block=%p\n",block_pc);
+      if (block_pc == -1)
+	{			// Its module level
+	 printf("Module level variable\n");
+	  command = &this_module.functions.functions_val[0].cmds.cmds_val[0];
+	}
+      else
+	{
+	  printf("Local variable in block @ PC=%d\n",block_pc);
+	  command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[block_pc];
+
+	}
+      if (command->cmd_type != CMD_BLOCK)
+	{
+	  printf ("I've got confused...\nIt happens...\n");
+	  exit (1);
+	}
+      base = command->cmd_u.c_block;
+
+	return base;
+}

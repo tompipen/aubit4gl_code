@@ -274,11 +274,21 @@ add_block (void *ptr_c_vars)
 
 
 long
-add_set_var (struct use_variable *var, long value, int once)
+add_set_var (struct use_variable *var_orig, long value, int once)
 {
   struct cmd_set_var *v;
   struct cmd_set_var1 *v1;
+  struct use_variable *var;
   int pc;
+  int vid;
+  int block;
+
+  var=malloc(sizeof(struct use_variable));
+  memcpy(var,var_orig,sizeof(struct use_variable));
+
+  printf("In add set var : ");
+  print_use_variable(var);
+	printf("\n");
 
   v = malloc (sizeof (struct cmd_set_var));
   v1 = malloc (sizeof (struct cmd_set_var1));
@@ -289,6 +299,154 @@ add_set_var (struct use_variable *var, long value, int once)
   memcpy (&(v->variable), var, sizeof (struct use_variable));
   memcpy (&(v1->variable), var, sizeof (struct use_variable));
 
+  if (this_module.params.params_val[value].param_type==PARAM_TYPE_LIST) {
+	struct cmd_block *base;
+	int a;
+	struct npvariable *variable;
+	int found=-1;
+	//
+		vid=v->variable.variable_id;
+		block=v->variable.defined_in_block_pc;
+		printf("PARAM TYPE LIST IN ASSIGNMENT %d %d\n",vid,block); 
+		//this_module.
+		base=(struct cmd_block *)get_base(block);
+		printf("Base=%p\n",base);
+
+		for (a=0;a<base->c_vars.c_vars_len;a++) {
+			printf("Bibble\n");
+			printf("ID : %d\n",base->c_vars.c_vars_val[a].variable_id);
+			if (base->c_vars.c_vars_val[a].variable_id==vid) {found=a; break;}
+		}
+
+		if (found==-1) {
+			printf("VID not found\n");
+			exit(2);
+		}
+
+		variable=&base->c_vars.c_vars_val[found];
+		printf("var=%p\n",variable);
+		printf("Variable ID =%d\n",variable->variable_id);
+		printf("Variable VAR =%p\n",variable->var);
+		printf("Variable NAME =%s\n",GET_ID(variable->var->name_id));
+
+		printf("Next cnt= %d\n", variable->var->next.next_len);
+		printf("Array Sizes= %d %d %d\n", variable->var->i_arr_size[0], variable->var->i_arr_size[1], variable->var->i_arr_size[2]);
+
+		if (var->sub.sub_len) {
+			printf("Got a sub_len on the assignment - so not looking for all of variable..%d\n",var->sub.sub_len);
+			printf("%d %d %d %d\n", var->sub.sub_val[0].x1element, var->sub.sub_val[0].x1subscript_param_id[0], var->sub.sub_val[0].x1subscript_param_id[1], var->sub.sub_val[0].x1subscript_param_id[2]);
+
+
+
+		} else {
+			struct use_variable *var2;
+			// Lets play...
+			var2=malloc(sizeof(struct use_variable));
+			memcpy(var2,var,sizeof(struct use_variable));
+
+			if (variable->var->i_arr_size[0]&&variable->var->i_arr_size[1]&&variable->var->i_arr_size[2]==0) {
+				int a;
+				int b;
+				// Add as 2 dimensional array...
+				a=0;
+				b=0;
+				while (1) {
+					//struct param *sublist;
+					struct param *subparam;
+					int n;
+					//int sublist_n;
+					int npid_a;
+					printf("---> %d %d\n",a,this_module.params.params_val[value].param_u.p_list->list_param_id.list_param_id_len);
+					if (a>=this_module.params.params_val[value].param_u.p_list->list_param_id.list_param_id_len) break;
+					if (a>=variable->var->i_arr_size[0]) { printf("Excess elements ignored\n"); break; }
+	
+					n=this_module.params.params_val[value].param_u.p_list->list_param_id.list_param_id_val[a];
+					subparam=&this_module.params.params_val[n];
+					if (subparam->param_type!=PARAM_TYPE_LIST) {
+						printf("Expecting a list containing another list\n");
+						exit(3);
+					}
+
+					npid_a=new_param_returns_long('I',(void *)a);
+					printf("doing b\n");
+					for (b=0;b<subparam->param_u.p_list->list_param_id.list_param_id_len;b++) {
+						printf("sub : %d = %d\n",b,subparam->param_u.p_list->list_param_id.list_param_id_val[b]);
+					}
+					b=0;
+
+					while (1) {
+						int npid_b;
+							int nb;
+						printf("subparam=%p\n",subparam);
+						if (subparam->param_type!=PARAM_TYPE_LIST) {
+							printf("Got confused... - subparam is not a list\n");
+							exit(2);
+						}
+					 	if (b>=subparam->param_u.p_list->list_param_id.list_param_id_len) break;
+						if (b>=variable->var->i_arr_size[1]) { printf("Excess elements ignored\n"); break; }
+						var2->sub.sub_val=malloc(sizeof(struct use_variable_sub));
+						var2->sub.sub_len=1;
+						var2->sub.sub_val[0].x1element=-1;
+						var2->sub.sub_val[0].x1subscript_param_id[0]=0;
+						var2->sub.sub_val[0].x1subscript_param_id[1]=0;
+						var2->sub.sub_val[0].x1subscript_param_id[2]=0;
+
+						npid_b=new_param_returns_long('I',(void *)b);
+						var2->sub.sub_val[0].x1subscript_param_id[0]=npid_a;
+						var2->sub.sub_val[0].x1subscript_param_id[1]=npid_b;
+						print_use_variable(var2);
+						
+						printf("\nSetting to param ID %d (%d, %d) n=%d\n",subparam->param_u.p_list->list_param_id.list_param_id_val[b],a,b,n);
+						if (subparam->param_u.p_list->list_param_id.list_param_id_val[b]==0) {
+								printf("Invalid param id\n");
+								exit(2);
+						}
+						nb=subparam->param_u.p_list->list_param_id.list_param_id_val[b];
+						printf("New param=%d\n",nb);
+						pc=add_set_var(var2, nb,once) ;
+						printf("PC=%d for %d,%d (%d %d)\n",pc,a,b,npid_a,npid_b);
+						b++;
+					}
+					a++;
+				}
+			} 
+
+
+			if (variable->var->i_arr_size[0]&&variable->var->i_arr_size[1]==0) {
+				int a;
+				// Add as array...
+				a=0;
+				while (1) {
+				int npid;
+					if (a>=this_module.params.params_val[value].param_u.p_list->list_param_id.list_param_id_len) break;
+					if (a>=variable->var->i_arr_size[0]) { printf("Excess elements ignored\n"); break; }
+					var2->sub.sub_val=malloc(sizeof(struct use_variable_sub));
+					var2->sub.sub_len=1;
+					var2->sub.sub_val[0].x1element=-1;
+					var2->sub.sub_val[0].x1subscript_param_id[0]=0;
+					var2->sub.sub_val[0].x1subscript_param_id[1]=0;
+					var2->sub.sub_val[0].x1subscript_param_id[2]=0;
+
+					npid=new_param_returns_long('I',(void *)a);
+					printf("npid = %d for %d\n",npid,a);
+					var2->sub.sub_val[0].x1subscript_param_id[0]=npid;
+					print_use_variable(var2);
+					pc=add_set_var(var2, this_module.params.params_val[value].param_u.p_list->list_param_id.list_param_id_val[a],once) ;
+					printf("PC=%d\n",pc);
+					a++;
+				}
+			} 
+
+
+			if (variable->var->i_arr_size[0]==0) {
+				printf("Unhandled...\n");
+				exit(3);
+			}
+
+			return pc;
+		}
+
+  }
 
   v->value_param_id=value;
   v1->value_param_id=value;

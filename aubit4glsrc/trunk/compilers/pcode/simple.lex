@@ -29,6 +29,7 @@ void count();
 
 %%
 "/*"			{ comment(); }
+"//"			{ linecomment(); }
 
 "op_and" {strcpy(yytext,"32775");count(); return CONSTANT;}
 "OP_CLIP" {strcpy(yytext,"1025");count(); return CONSTANT;}
@@ -232,6 +233,13 @@ loop:
 
   //if (c != 0) ;
     //putchar (c1);
+}
+
+void linecomment (void )
+{
+  char c, c1;
+  while ((c = input ()) != '\n' && c != 0) ;
+  unput (c1);
 }
 
 

@@ -443,7 +443,7 @@ call_c_function (char *s, struct param *p, long *r)
       return 0;
     }
   A4GL_debug ("sig=%s\n", sig);
-  fprintf (logfile, "Calling C function : %s\n", s);
+  fprintf (logfile, "     Calling C function : %s\n", s);
   if (list)
     {
       if (strlen (sig) - 1 != list->list_param_id.list_param_id_len)

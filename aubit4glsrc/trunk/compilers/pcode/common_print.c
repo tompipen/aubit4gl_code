@@ -67,7 +67,7 @@ print_use_variable (struct use_variable *v)
 
 	  if (v->sub.sub_val[a].x1subscript_param_id[0] != 0)
 	    {
-	        printf ("["); print_params (v->sub.sub_val[a].x1subscript_param_id[0]); printf ("]");
+	        printf ("[ (%d) ",v->sub.sub_val[a].x1subscript_param_id[0]); print_params (v->sub.sub_val[a].x1subscript_param_id[0]); printf ("]");
 	      	if (v->sub.sub_val[a].x1subscript_param_id[1]!=0) {
 			printf ("["); print_params (v->sub.sub_val[a].x1subscript_param_id[1]); printf ("]");
 	      		if (v->sub.sub_val[a].x1subscript_param_id[2]!=0) {
