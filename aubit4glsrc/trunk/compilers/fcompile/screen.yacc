@@ -417,6 +417,17 @@ op_field_desc
 	        yyerror("A button must have a default value for its caption");
 	        YYERROR;
 	}
+	if (!(A4GL_has_str_attribute(fld,FA_S_PICTURE))) {
+		char *p;
+		p=A4GLSQL_syscolval_expr(fld->tabname,fld->colname,"PICTURE");
+		if (p) {
+			// Theres a picture in syscolval - but nothing in the form -
+			// Use the syscolval one...
+			A4GL_add_str_attr(fld,FA_S_PICTURE,p);
+			printf("Setting field picture from syscolval (%s)\n",p);
+		}
+	}
+
 	A4GL_set_field(currftag,fld);
 };
 

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.93 2004-11-05 15:12:14 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.94 2004-11-09 20:28:43 pjfalbe Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.93 2004-11-05 15:12:14 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.94 2004-11-09 20:28:43 pjfalbe Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -197,6 +197,7 @@ clr_suppress_lines();
 void
 print_close (char type, char *name)
 {
+printc("/* CLOSE */");
   switch (type)
     {
     case 'F':
@@ -230,6 +231,7 @@ A4GL_save_sql("CLOSE SESSION %s",A4GL_strip_quotes (name));
       print_copy_status ();
       break;
     }
+printc("/* END OF CLOSE */");
 }
 
 /**

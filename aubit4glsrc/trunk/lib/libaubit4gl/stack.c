@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.104 2004-11-03 14:34:28 pjfalbe Exp $
+# $Id: stack.c,v 1.105 2004-11-09 20:28:42 pjfalbe Exp $
 #
 */
 
@@ -3124,5 +3124,10 @@ int A4GL_conversion_ok(int a) {
 	if (a==1) {ok=1;return 1;}
 	if (a==0) {ok=0;return 0;}
 	return ok;
+}
+
+
+A4GL_pause_execution() {
+	printf("--->\n");
 }
 // ================================ EOF ================================

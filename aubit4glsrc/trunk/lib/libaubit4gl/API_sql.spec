@@ -19,10 +19,7 @@ A4GLSQL_init_connection_internal char* dbName -> int
 A4GLSQL_next_column char** colname int* dtype int* size -> int
 A4GLSQL_read_columns char* tabname char* colname int* dtype int* size -> int
 A4GLSQL_get_validation_expr char* tabname char* colname -> void*
-
-
-
-
+A4GLSQL_syscolval_expr char* tabname char* colname char* typ -> char*
 
 
 A4GLSQL_commit_rollback int mode -> void

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.20 2004-09-28 08:58:54 mikeaubury Exp $
+# $Id: memfile.c,v 1.21 2004-11-09 20:28:42 pjfalbe Exp $
 #
 */
 
@@ -112,8 +112,10 @@ void *
 A4GL_memdup (void *ptr, int size)
 {
   void *p2;
+  A4GL_debug("A4GL_memdup - ptr=%p size=%p",ptr,size);
   p2 = malloc (size);
   memcpy (p2, ptr, size);
+  A4GL_debug("Done");
   return p2;
 }
 

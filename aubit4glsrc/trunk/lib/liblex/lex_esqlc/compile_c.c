@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.191 2004-11-09 13:05:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.192 2004-11-09 20:28:42 pjfalbe Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.191 2004-11-09 13:05:46 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.192 2004-11-09 20:28:42 pjfalbe Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2651,7 +2651,7 @@ print_foreach_end (void)
 void
 print_pushchar (char *s)
 {
-  printc ("A4GL_push_char(%s);\n", s);
+  printc ("A4GL_push_char(%s);/* 1*/ \n", s);
 }
 
 /**
