@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.6 2004-05-24 17:12:49 whaslbeck Exp $
+# $Id: sql.c,v 1.7 2004-05-24 20:04:40 whaslbeck Exp $
 #
 */
 
@@ -118,13 +118,6 @@ A4GLSQL_set_status (int a, int sql)
 
 
 void A4GLSQL_set_sqlerrm( char *m,char *p) {
-        A4GL_debug("A4GLSQL_set_sqlerrm...");
-        if(a4gl_sqlca.sqlcode==100) {
-            A4GL_debug("sqlcode=NOTFOUND workaround");
-            strcpy(a4gl_sqlca.sqlerrm,"NOTFOUND");
-            strcpy(a4gl_sqlca.sqlerrp,"NOTFOUND");
-            return;
-        }
         A4GL_debug("A4GLSQL_set_sqlerrm('%s','%s')", m, p);
         if(!m || !p) {
           A4GL_debug("Nullpointer, doing nothing!");
