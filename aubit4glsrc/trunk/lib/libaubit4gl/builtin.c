@@ -24,13 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.65 2004-10-29 12:03:54 mikeaubury Exp $
+# $Id: builtin.c,v 1.66 2004-11-01 05:11:19 afalout Exp $
 #
 */
 
 /**
  * @file
- * Implementation of builtin, internal functions of informix 4gl standard
+ * Implementation of builtin, internal functions of informix 4gl standard,
+ * as well as some of 4Js extensions
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
@@ -50,9 +51,10 @@
 =====================================================================
 */
 
-int m_arr_count = 0;
-int m_arr_curr = 0;
-int m_scr_line = 0;
+int 	m_arr_count = 0;
+int 	m_arr_curr = 0;
+int 	m_scr_line = 0;
+FILE *	error_log_file = 0;
 
 /*
 =====================================================================
@@ -64,40 +66,32 @@ int m_scr_line = 0;
 	Note : all functions with aclfgl_ prefix are callable from
 	compiled 4gl code, since all references to functions get aclfgl_ prefix
 	appended to them by 4gl compiler. Therefore, compiled 4gl code CANNOT
-    call any function in Aubit libraries without aclfgl prefix.
+    call any function in Aubit libraries without aclfgl_ prefix.
 */
 
-FILE *error_log_file = 0;
+
+char *	A4GL_pull_off_data_for_display 	(int n,int display_type);
+int 	aclfgl_ddepoke 					(char *progname, char *ddemessage, char *ddecommand, char *ddeparam);
+char * 	aclfgl_ddefinish 				(char *progname, char *ddemessage);
+int 	aclfgl_ddeexecute 				(char *progname, char *ddemessage, char *ddecommand);
+char * 	aclfgl_ddegeterror 				(void);
+int 	aclfgl_ddeconnect 				(char *progname, char *ddemessage);
+void 	aclfgl_ddefinishall 			(void);
+char * 	aclfgl_ddepeek 					(char *progname, char *ddemessage, char *ddecommand);
+void 	aclfgl_fgl_winmessage 			(char *windowTitle, char *message, char *iconType);
+void 	aclfgl_fgl_keysetlabel 			(char *keyName, char *labelText);
+char * 	aclfgl_fgl_strtosend 			(char *str);
+int 	aclfgl_winexecwait 				(char *exec_string);
+int 	aclfgl_winexec 					(char *exec_string);
+int 	aclfgli_show_help 				(int a);
+int 	aclfgl_fgl_scr_size 			(int n);
+
 /*
 =====================================================================
                     Functions definitions
 =====================================================================
 */
 
-int aclfgl_ddepoke (char *progname, char *ddemessage, char *ddecommand, char *ddeparam);
-
-char * aclfgl_ddefinish (char *progname, char *ddemessage);
-
-int aclfgl_ddeexecute (char *progname, char *ddemessage, char *ddecommand);
-
-char *A4GL_pull_off_data_for_display(int n,int display_type);
-char * aclfgl_ddegeterror (void);
-
-int aclfgl_ddeconnect (char *progname, char *ddemessage);
-
-void aclfgl_ddefinishall (void);
-
-char * aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand);
-
-void aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType);
-
-char * aclfgl_fgl_strtosend (char *str);
-
-int aclfgl_winexecwait (char *exec_string);
-
-int aclfgl_winexec (char *exec_string);
-int aclfgli_show_help (int a);
-int aclfgl_fgl_scr_size(int n);
 
 /**
  * Does nothing
@@ -1134,14 +1128,25 @@ aclfgl_ddepeek (char *progname, char *ddemessage, char *ddecommand)
 
 
 /**
- * call fgl_winmessage("MS Word Start Up Error", "MS Word could not be started.\nMaybe wrong path?", "stop")
+ * CALL FGL_KEYSETLABEL ("return", "Next")
+ * 4Js compatibility - 
+ * inside dialog use dialog.keysetlabel("key", "label") instead
+**/
+void
+aclfgl_fgl_keysetlabel (char *keyName, char *labelText)
+{
+  A4GL_exitwith ("4Js winmessage function not implemented");
+}
+
+/**
+ * call fgl_winmessage("MS Word Start Up Error", "MS Word could not be started", "stop")
+ * 4Js compatibility - opens message window
  *
 **/
 void
 aclfgl_fgl_winmessage (char *windowTitle, char *message, char *iconType)
 {
   A4GL_exitwith ("4Js winmessage function not implemented");
-  //return 0;
 }
 
 

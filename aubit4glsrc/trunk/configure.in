@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.254 2004-10-29 14:08:38 afalout Exp $
+dnl # $Id: configure.in,v 1.255 2004-11-01 05:11:13 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1824,7 +1824,7 @@ COMP_LIBS="LEX_EC LEX_C LEX_CS LEX_PERL"
 #buit in all cases:
 #FIXME: A4GL_HTML should be linkable (LIB_EXPORTLIB), but we are using 4glc 
 #to create dll, and we don't get .a file...
-NEED_4GLC_ALL_libs="HELP_std A4GL_string A4GL_HTML"
+NEED_4GLC_ALL_libs="HELP_std A4GL_string A4GL_HTML channel"
 
 if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
 	#On CygWin/MinGW:
@@ -7599,7 +7599,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.254 2004-10-29 14:08:38 afalout Exp $
+| $Id: configure.in,v 1.255 2004-11-01 05:11:13 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

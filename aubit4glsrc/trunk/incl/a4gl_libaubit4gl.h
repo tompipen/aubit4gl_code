@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.139 2004-10-29 19:13:19 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.140 2004-11-01 05:11:18 afalout Exp $
 #
 */
 
@@ -310,11 +310,12 @@
 #define COMPILED_FORM_FORMTYPE 	'I'
 #define DYNMEMALLOC 		'J'
 #define STR_RESOURCE_VAL 		'K'
+/* this seems to be used only in lib/extra_libs/channel
 #define CHANNEL_IN		'L'
 #define CHANNEL_OUT		'M'
 #define CHANNEL_DELIM		'N'
 #define CHANNEL_PIPE		'P'
-
+*/
   /* ========================= from a4gl_ui.h ====================== */
 #define DESCLENGTH 		10
 #define nalloc(x) 		malloc(sizeof(x))

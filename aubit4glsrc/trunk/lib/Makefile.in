@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.108 2004-10-04 13:50:01 afalout Exp $
+# $Id: Makefile.in,v 1.109 2004-11-01 05:11:18 afalout Exp $
 #
 
 ROOT    =..
@@ -67,6 +67,7 @@ LIBLEXPERL_PATH   	=liblex/lex_perl
 LIBEXREPORTPDF_PATH =libpdf
 LIBFILE_PATH		=extra_libs/file
 LIBSTRING_PATH		=extra_libs/string
+LIBCHANNEL_PATH		=extra_libs/channel
 LIBESQLCHELPER_PATH	=libesql
 LIBHTML_PATH        =${ROOT}/tools/html
 LIBSQLESQL_PATH     =libsql/esqlc
@@ -159,7 +160,8 @@ LIBFILE_DEPS		=$(wildcard ${LIBFILE_PATH}/*.c) $(wildcard ${LIBFILE_PATH}/*.h) \
 LIBESQLCHELPER_DEPS	=$(wildcard ${LIBESQLCHELPER_PATH}/*.ec) $(wildcard ${LIBESQLCHELPER_PATH}/Makefile) ${ALL_H}
 LIBSTRING_DEPS		=$(wildcard ${LIBSTRING_PATH}/*.c) $(wildcard ${LIBSTRING_PATH}/*.h) \
 					$(wildcard ${LIBSTRING_PATH}/Makefile) ${ALL_H}
-
+LIBCHANNEL_DEPS		=$(wildcard ${LIBCHANNEL_PATH}/*.4gl) \
+					$(wildcard ${LIBCHANNEL_PATH}/Makefile) ${ALL_H}
 LIBPOP_DEPS			=$(wildcard ${LIBPOP_PATH}/*.4gl) $(wildcard ${LIBPOP_PATH}/Makefile) ${ALL_H}
 LIBPCRE_DEPS		=$(wildcard ${LIBPCRE_PATH}/*.4gl) $(wildcard ${LIBPCRE_PATH}/makefile) ${ALL_H}
 LIBSXML_DEPS		=$(wildcard ${LIBPCRE_PATH}/*.4gl) $(wildcard ${LIBPCRE_PATH}/Makefile) ${ALL_H}
@@ -462,6 +464,9 @@ libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
 libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
 	$(MAKE) -C ${LIBSTRING_PATH}
 
+libchannel${SO_EXT}: ${4GLC} ${LIBCHANNEL_DEPS}
+	$(MAKE) -C ${LIBCHANNEL_PATH}
+	
 libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
 	$(MAKE) -C ${LIBPOP_PATH}
 
@@ -556,6 +561,7 @@ clean.other:
 	${MAKE} -C ${LIBEXDATA_PATH} clean
 	${MAKE} -C ${LIBESQL_PATH} clean
 	${MAKE} -C ${LIBSTRING_PATH} clean
+	${MAKE} -C ${LIBCHANNEL_PATH} clean	
 	${MAKE} -C ${LIBFILE_PATH} clean
 	${MAKE} -C ${LIBESQLCHELPER_PATH} clean
 	${MAKE} -C ${LIBHTML_PATH} clean

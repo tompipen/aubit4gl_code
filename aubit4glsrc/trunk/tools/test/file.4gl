@@ -1,16 +1,9 @@
 {
+This is example for new SHARED handling of libraries - old method was removed
+(which looked bad) and introduced the "::" syntax as per perl
 
-This is example for new SHARED handling - removed the old method
-
-
-(which looked bad) and introduced the "::" syntax as per perl (as someone
-here suggested a while ago)
-
-See library in lib/extra_libs/file for file handling as an example.
-
+This code uses library from lib/extra_libs/file for file handling as an example.
 }
-
-
 
 main
 define afile integer
@@ -21,7 +14,7 @@ WHENEVER SQLERROR CONTINUE
 WHENEVER ERROR CONTINUE
 WHENEVER ANY ERROR CONTINUE
 
-	CALL A4GL_file::fopen("textfile","r") returning afile
+	CALL A4GL_file::fopen("file.4gl","r") returning afile
 
 	IF afile=0 THEN
 		ERROR "Unable to open a file called 'textfile'"

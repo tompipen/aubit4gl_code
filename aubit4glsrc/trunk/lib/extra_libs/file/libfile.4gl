@@ -1,14 +1,45 @@
 {
+###########################################################################
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+###########################################################################
 
-This is new SHARED handling - removed the old method
-(which looked bad) and introduced the "::" syntax as per perl (as someone
-here suggested a while ago)
-
-This library in lib/extra_libs/file for file handling as an example.
-
-Try the 'file.4gl' example in tools/test...
-
+	 $Id: libfile.4gl,v 1.12 2004-11-01 05:11:19 afalout Exp $
 }
+
+{**
+ * @file
+ *
+ * Collections of functions for file system files handling from 4GL
+ * Finctions defined in this library:
+ * popen fopen ftell ferror fseek fseek_from_end fsize fgets feof fclose rewind
+ * 
+ *
+ * This library uses new SHARED handling - the old method (which looked bad) 
+ * was removed and the "::" syntax (as per perl) is introduced
+ *
+ * See the 'file.4gl' example in tools/test for examples of usage
+ *
+ * @todo    : Add Doc4GL comments to functions and variables in this file
+ *
+ * @version : original
+ *
+ * @process : UNKNOWN
+ *
+ *}
+
 
 code
 #include <stdio.h>
@@ -18,7 +49,11 @@ endcode
 	WHENEVER ANY ERROR CONTINUE
 	WHENEVER SQLERROR CONTINUE
 
-
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION popen(p_command,mode)
 ####################################
@@ -38,7 +73,11 @@ endcode
 	RETURN r
 END FUNCTION
 
-
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION fopen(filename,mode)
 ####################################
@@ -58,7 +97,11 @@ endcode
 	RETURN r
 END FUNCTION
 
-
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION ftell(handle)
 ####################################
@@ -78,6 +121,11 @@ endcode
 
 END FUNCTION
 
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION ferror(handle)
 ####################################
@@ -97,6 +145,11 @@ endcode
 
 END FUNCTION
 
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION fseek(handle,n)
 ####################################
@@ -119,6 +172,11 @@ endcode
 
 END FUNCTION
 
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION fseek_from_end(handle,n)
 ####################################
@@ -141,6 +199,11 @@ endcode
 
 END FUNCTION
 
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION fsize(handle)
 ####################################
@@ -164,6 +227,11 @@ endcode
 
 END FUNCTION
 
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION fgets(handle)
 ####################################
@@ -186,6 +254,11 @@ endcode
 
 END FUNCTION
 
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION feof(handle)
 ####################################
@@ -210,6 +283,11 @@ endcode
 
 END FUNCTION
 
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION fclose(handle)
 ####################################
@@ -229,6 +307,11 @@ endcode
 
 END FUNCTION
 
+{**
+ * 
+ *
+ *
+ *}
 ####################################
 FUNCTION rewind(handle)
 ####################################

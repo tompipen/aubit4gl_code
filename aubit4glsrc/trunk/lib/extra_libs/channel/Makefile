@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2004-11-01 05:11:19 afalout Exp $
+# $Id: Makefile,v 1.1 2004-11-01 05:11:18 afalout Exp $
 #
 
 ROOT    =../../..
@@ -38,18 +38,22 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 4GLC	=${ROOT}/bin/4glc
-ALL     =${LIBROOT}/libA4GL_file${SO_EXT}
+
+#NOTE: must NOT be named libA4GL_channel, since that would force
+#renaming of all 'CALL channel::' to 'CALL A4GL_channel::'  
+#ALL     =${LIBROOT}/libA4GL_channel${SO_EXT}
+ALL     =${LIBROOT}/libchannel${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 #FIXME: use amake
-${ALL}: libfile.c
+${ALL}: channel.c
 	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
-	@echo "File library sucesfully compiled."
+	@echo "Channel library sucesfully compiled."
 
-libfile.c: libfile.4gl
+channel.c: channel.4gl
 	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
 
 ## ==================================================================
