@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.32 2003-02-22 01:52:22 afalout Exp $
+# $Id: resource.c,v 1.33 2003-03-03 23:05:44 afalout Exp $
 #
 */
 
@@ -110,9 +110,11 @@ struct str_resource builtin_resource[] =
 #if (defined (__MINGW32__))
 //FIXME: do not hard-code D:/cygwin
   {"AUBITETC",			"D:/cygwin/etc/opt/aubit4gl"}, /* points to default location of Aubit config files */
+  {"A4GL_MV_CMD",		"move"},
 #else
   {"AUBITETC",			"/etc/opt/aubit4gl"}, /* points to default location of Aubit config files */
- #endif
+  {"A4GL_MV_CMD",		"mv"},
+#endif
   {"A4GL_RESERVEWORDS", "NO"},
   {"DBDATE", 			"MDY4/"},
   {"DBANSIWARN", 		"N"},

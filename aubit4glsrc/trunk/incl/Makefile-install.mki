@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.61 2003-02-22 01:52:21 afalout Exp $
+# $Id: Makefile-install.mki,v 1.62 2003-03-03 23:05:42 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -378,7 +378,8 @@ libltdl:
 winsetup:
 	(cd ${AUBITDIR}; config.status --file etc/aubit-InnoSetup.iss)
 	unix2dos -D ${AUBITDIR}/etc/aubit-InnoSetup.iss
-	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${WIN_CYGPATH}/${AUBITDIR}/etc/aubit-InnoSetup.iss")
+#	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${WIN_CYGPATH}/${AUBITDIR}/etc/aubit-InnoSetup.iss")
+	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${AUBITDIR}/etc/aubit-InnoSetup.iss")
 #Setup program should now be at ${AUBITDIR}\etc\Output\setup.exe
 
 #</block for binary install Makefile ===================================>

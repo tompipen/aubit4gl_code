@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.18 2003-02-19 22:28:17 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.19 2003-03-03 23:05:35 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -667,11 +667,11 @@ if test "$WINSETUP" = "1"; then
 
         echo "Re-enabled MinGW in the PATH"
     else
-        echo "--------------------------there was no M-i-n-G-W in the path"
+        #echo "--------------------------there was no M-i-n-G-W in the path"
 		TMP=`echo $PATH | grep MinGW`
         if test "$TMP" = ""; then
-        echo "--------------------------there is no MinGW in the path at all, add it:"
-			NEWPATH="D:/MinGW/bin:$PATH"
+        #echo "--------------------------there is no MinGW in the path at all, add it:"
+			NEWPATH="D:/MinGW/bin:/cygdrive/d/MinGW/bin:$PATH"
             echo "Added MinGW to the PATH"
 		fi
     fi
@@ -683,37 +683,47 @@ if test "$WINSETUP" = "1"; then
 			echo "PATH changed to $PATH"
         fi
     fi
-
-        #deinall first, so that we don't accidentally link with CygWin dependent
-		#libaubit4gl still in the path"
-		EXEC="make deinstall"; runexec
-
-        #now we need to configure and build it from source code again:
-		STOPONERROR=1
-	    EXEC="cd $AUBITSRCDIR"; runexec
-		LOGFILE=$CLEANLOG
-		EXEC="make clean.all"; runexec
-		LOGFILE=$CONFIGLOG
-		EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
-		EXEC="make log"; runexec
-
-
-        #Check that what we built is not dependent on Cygwin:
-		TMP=`cygcheck.exe lib/libaubit4gl.dll | grep cygwin1.dll`
-        if test "$TMP" != ""; then
-            echo "ERROR: libaubit4gl.dll depends on cygwin1.dll"
-        fi
-		TMP=`cygcheck.exe bin/4glc.exe | grep cygwin1.dll`
-        if test "$TMP" != ""; then
-            echo "ERROR: 4glc.exe depends on cygwin1.dll"
-        fi
-
-	STOPONERROR=0   #Continue even if next statemets fails
-	EXEC="rm -rf $AUBITSRCDIR/etc/Output/"; runexec
-	STOPONERROR=1
-
     EXEC="cd $AUBITSRCDIR"; runexec
-    EXEC="make winsetup"; runexec
+
+    #deinall first, so that we don't accidentally link with CygWin dependent
+    #libaubit4gl still in the path"
+    EXEC="make deinstall"; runexec
+
+    #now we need to configure and build it from source code again:
+    STOPONERROR=1
+    LOGFILE=$CLEANLOG
+echo "---------------------------------"
+echo $PATH
+type gcc
+echo "---------------------------------"
+    EXEC="make clean.all"; runexec
+#    LOGFILE=$CONFIGLOG
+	LOGFILE=/tmp/mingw-config.log
+    EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
+    EXEC="make log"; runexec
+
+
+    #Check that what we built is not dependent on Cygwin:
+    TMP=`cygcheck.exe lib/libaubit4gl.dll | grep cygwin1.dll`
+    if test "$TMP" != ""; then
+        echo "ERROR: libaubit4gl.dll depends on cygwin1.dll"
+exit 4
+    else
+	    TMP=`cygcheck.exe bin/4glc.exe | grep cygwin1.dll`
+	    if test "$TMP" != ""; then
+	        echo "ERROR: 4glc.exe depends on cygwin1.dll"
+	    else
+			#Create windows installer
+			STOPONERROR=0   #Continue even if next statemets fails
+			EXEC="rm -rf $AUBITSRCDIR/etc/Output/"; runexec
+			STOPONERROR=1
+
+		    EXEC="cd $AUBITSRCDIR"; runexec
+		    EXEC="make winsetup"; runexec
+		fi
+
+	fi
+
 fi
 
 	WINSETUPEXE="$AUBITSRCDIR/etc/Output/$WINSETUPEXE_BASENAME"

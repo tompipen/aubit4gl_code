@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.43 2003-03-02 15:23:43 mikeaubury Exp $
+# $Id: stack.c,v 1.44 2003-03-03 23:05:43 afalout Exp $
 #
 */
 
@@ -1306,7 +1306,12 @@ struct timeval tv2;
   //debug("push_current %d %d\n",a,b);
 /*  setlocale(LC_ALL,""); */
   //debug ("In push_current");
+  
+#ifndef __MINGW32__
   gettimeofday(&tv1,0);
+#else
+    printf ("no gettimeofday on Windows");
+#endif
   	//(void) time (&now);
   	//debug ("Called time...");
 	local_time = localtime (&tv1.tv_sec);
