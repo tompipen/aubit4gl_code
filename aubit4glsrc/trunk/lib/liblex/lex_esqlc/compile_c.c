@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.133 2004-02-09 08:07:36 mikeaubury Exp $
+# $Id: compile_c.c,v 1.134 2004-02-09 19:44:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.133 2004-02-09 08:07:36 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.134 2004-02-09 19:44:02 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1236,7 +1236,10 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
     }
   if (when_code == WHEN_CALL)
     {
-      printc ("%s %s%s(0); /* CALL */\n", when_str, get_namespace (when_to), when_to);
+	char buff[256];
+	strcpy(buff,when_to);	
+	A4GL_convlower(buff);
+      printc ("%s %s%s(0); /* CALL */\n", when_str, get_namespace (when_to), buff);
       add_function_to_header (when_to, 1);
       printcomment ("/* WHENCALL */");
     }
@@ -3573,6 +3576,7 @@ print_report_1 (char *name)
   printc ("A4GL_REPORT void %s%s (int _nargs,int acl_ctrl) {\n", get_namespace (name), name, name);
   printc("static char *_reportName=\"%s\";\n",name);
   rep_print_code=0;
+  rep_print_entry=0;
 }
 
 /**
@@ -5562,6 +5566,119 @@ if (x) {free(x);x=0;}
   return x;
 }
 
+/**
+ * Print the declaration of bind structure array in the generated C source code
+ * and its initialization values.
+ *
+ * @param i The binding type:
+ *   i : Use the array ibind.
+ *   N : Null binding.
+ *   o : Use the array obind.
+ *   O : Use the array ordbind.
+ */
+int
+print_bind_definition (char i)
+{
+  int a;
+#ifdef DEBUG
+  A4GL_debug ("/* %c */\n", i);
+#endif
+  if (i == 'i')
+    {
+      printc ("\n");
+      printc ("struct BINDING ibind[%d]={\n /* ibind %d*/", ONE_NOT_ZERO (ibindcnt), ibindcnt);
+      if (ibindcnt == 0)
+	{
+	  printc ("{0,0,0}");
+	}
+      for (a = 0; a < ibindcnt; a++)
+	{
+	  //if (a > 0) printc (",\n");
+	  printc ("{0,%d,%d,%d,%d}%c", 
+		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16,
+		  ibind[a].start_char_subscript, ibind[a].end_char_subscript,(a<ibindcnt-1)?',':' ');
+	}
+      printc ("\n}; /* end of binding */\n");
+      if (doing_esql ())
+	{
+	  make_sql_bind (0, "i");
+	}
+      return a;
+    }
 
-/* =========================== EOF ================================ */
+  if (i == 'o')
+    {
+      printc ("\n");
+      printc ("struct BINDING obind[%d]={\n", ONE_NOT_ZERO (obindcnt));
+      if (obindcnt == 0)
+	{
+	  printc ("{0,0,0}");
+	}
+
+      for (a = 0; a < obindcnt; a++)
+	{
+	  printc ("{0,%d,%d,%d,%d}%c", 
+		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16,
+		  obind[a].start_char_subscript, obind[a].end_char_subscript, (a<obindcnt-1)?',':' '
+);
+	}
+      printc ("\n}; /* end of binding */\n");
+      if (doing_esql ())
+	{
+	  make_sql_bind (0, "o");
+	}
+      return a;
+    }
+
+    printf("UNEXPECTED BINDING %c\n",i);
+    exit(3);
+
+  return 0;
+}
+
+
+/**
+ * Print the declaration of bind structure array in the generated C source code
+ * and its initialization values.
+ *
+ * @param i The binding type:
+ *   i : Use the array ibind.
+ *   N : Null binding.
+ *   o : Use the array obind.
+ *   O : Use the array ordbind.
+ */
+int
+print_bind_set_value (char i)
+{
+  int a;
+#ifdef DEBUG
+  A4GL_debug ("/* %c */\n", i);
+#endif
+  if (i == 'i')
+    {
+      for (a = 0; a < ibindcnt; a++)
+	{
+	  printc ("ibind[%d].ptr=&%s;", a,ibind[a].varname);
+	}
+      start_bind (i, 0);
+      return a;
+    }
+
+
+  if (i == 'o')
+    {
+      for (a = 0; a < obindcnt; a++)
+	{
+	  printc ("obind[%d].ptr=&%s;", a,obind[a].varname);
+	}
+      start_bind (i, 0);
+      return a;
+    }
+
+  return 0;
+}
+
+
+
+
 /* =========================== EOF ================================ */
