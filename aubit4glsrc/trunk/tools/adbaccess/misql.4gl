@@ -1,4 +1,4 @@
-# $Id: misql.4gl,v 1.5 2003-02-14 10:18:48 mikeaubury Exp $
+# $Id: misql.4gl,v 1.6 2003-03-08 11:57:37 afalout Exp $
 # MISQL - Kerry's alternative to Informix-ISQL
 {
 MISQL is the result of work done on behalf of QUANTA SYSTEMS LTD,
@@ -90,8 +90,11 @@ MAIN
 define
     have_args integer
 
+  #There is no function called serious_error
   #WHENEVER ANY ERROR CALL serious_error
-#  CALL init_prog("misql")
+
+  #There is no function called init_prog
+  #CALL init_prog("misql")
 
    DEFER INTERRUPT
    DEFER QUIT
@@ -101,7 +104,7 @@ define
    IF arg_val(1) = "-v"
    OR arg_val(1) = "-V"
    THEN
-      CALL message_prompt("$Id: misql.4gl,v 1.5 2003-02-14 10:18:48 mikeaubury Exp $","")
+      CALL message_prompt("$Id: misql.4gl,v 1.6 2003-03-08 11:57:37 afalout Exp $","")
       EXIT PROGRAM
    END IF
 
@@ -114,88 +117,76 @@ define
     if num_args() > 0 then
 	   LET have_args = true
 	   LET m_database = arg_val(1)
-	   LET m_tabname = arg_val(2)
+       if num_args() > 1 then
+		   LET m_tabname = arg_val(2)
+       end if
     end if
 
-#bug!
-#this will NOT detect NULL!!!!!!!!:
    if not have_args then
-        #error "usage: misql database table"
-        #exit program
-	   LET m_database = "maindb"
-	   #LET m_tabname = "misqltmp"
-       let m_tabname = " "
+		LET m_database = fgl_getenv("E4GLDBNAME")
+        if length(m_database) < 1 then
+			display "No database name"
+			call show_usage()
+			exit program
+        end if
    end if
 
-if false then
-
-	#error "a1"
 	   WHENEVER ANY ERROR CONTINUE            -- GPA added following test to figure
-	#error "a2"
 	   LET m_text = "DATABASE ",m_database    -- out with to use argval(1) as dbase
-	#error "a3"
-	error m_text
-
 	   PREPARE test_database FROM m_text      -- or as table for $E4GLDBNAME
-	error "a4"
 	   EXECUTE test_database
-	error "a5"
 	   WHENEVER ANY ERROR STOP
-	error "a6"
 	   IF status!=0 THEN
-	error "a7"
+		 #maybe the only parameter was not db name, but table name?
 		 LET m_tabname = m_database
-	error "a8"
 		 LET m_database = fgl_getenv("E4GLDBNAME")
+         if length (m_database) < 1 then
+			#can't be, we don't have db name
+			display "Cannot connect to database ",m_tabname clipped
+			call show_usage()
+			exit program
+         end if
 	   END IF
 
-	error m_database
-end if
-
-if false then
    LET m_text = "database ",m_database
-error m_text
    PREPARE oo_p FROM m_text
    EXECUTE oo_p
-else
-	#database m_database
-    #database maindb
-    #database ptest
 
---!  #This is Aubit only comment
+    whenever error continue
+	database m_database
 
-#	connect to "ptest" user "postgres" using "pg"
-#   LET m_database = "ptest"
+--!  #This is Aubit only comment - but it's not working
+{! #This is also Aubit only comment, and it is working !}
 
+#This is supported by all 4gl compilers, and allow us to use db server name,
+#user name and password, not only database name:
 #	connect to m_database user "postgres" using "pg"
 
+#This is Aubit specific way to open database connection:
 #    OPEN SESSION s_id1 TO DATABASE ptest as user "postgres" password "pg"
---!    
---! DATABASE maindb
 
-DATABASE maindb
-end if
+	   IF status!=0 THEN
+            display "ERROR: cannot connect to the database ", m_database clipped
+            sleep 3
+            exit program
+       end if
+    whenever error stop
 
 
    IF m_tabname IS NULL OR m_tabname = " " THEN
       LET m_tabname = NULL
    END IF
-error "7"
+
    WHENEVER ERROR CALL local_error
    LET m_depth = 17
    OPEN FORM misql FROM "misql"
-error "8"
    CREATE TEMP TABLE picklist
       (textt   char(80),
        linee   serial) WITH NO LOG
-error "9"
 
-if false then
    IF m_tabname IS NOT NULL THEN
-error "10"
 	  CALL form_maint(m_tabname)
    END IF
-end if
 
 
    MENU "MI-SQL"
@@ -209,13 +200,24 @@ end if
       EXIT MENU
    COMMAND KEY ("!")
       CALL shell()
-#  COMMAND KEY(F12) CALL user_menu()
-         -- COMMAND KEY(CONTROL-W) CALL show_help("")
+   #Functions not implemented:
+   #COMMAND KEY(F12)
+   #   CALL user_menu()
+   #COMMAND KEY(CONTROL-W)
+   #   CALL show_help("")
    END MENU
 
    LET m_text = "rm -f /tmp/m????????.tmp"  # Cleanup temp .sql files
    RUN m_text
 END MAIN
+
+function show_usage()
+
+	display "usage: misql [database] [table]"
+	display "You can specify database name in environemtn variable E4GLDBNAME"
+	display "When table naem is specified, ..."
+
+end function
 
 
 FUNCTION clear_stuff()
@@ -267,16 +269,17 @@ DEFINE   i, j       INTEGER,
          WHEN ma_col[i].val[1] = "<" OR ma_col[i].val[1] = ">"
             LET l_where = l_where CLIPPED, " and ",ma_col[i].colname CLIPPED,
                           ma_col[i].val CLIPPED
-         WHEN ma_col[i].val = "=" 
-            LET l_where = l_where CLIPPED, " and ", 
+         WHEN ma_col[i].val = "="
+            LET l_where = l_where CLIPPED, " and ",
                           ma_col[i].colname CLIPPED, " IS NULL"
-#        WHEN ma_col[i].val = "=''"
-#           LET l_where = l_where CLIPPED, " and ", 
-#                         ma_col[i].colname CLIPPED, " = ''"
-
-#                         ma_col[i].colname CLIPPED, " IS NULL OR ",
-#                         ma_col[i].colname CLIPPED, " = '')"
-         WHEN ma_col[i].val = "!=" 
+{
+        WHEN ma_col[i].val = "=''"
+           LET l_where = l_where CLIPPED, " and ",
+                         ma_col[i].colname CLIPPED, " = ''"
+                         ma_col[i].colname CLIPPED, " IS NULL OR ",
+                         ma_col[i].colname CLIPPED, " = '')"
+}
+         WHEN ma_col[i].val = "!="
             LET l_where = l_where CLIPPED, " and ",ma_col[i].colname CLIPPED,
                           " IS NOT NULL"
          WHEN ma_col[i].val[1,2] = "!="
@@ -299,7 +302,7 @@ DEFINE   i, j       INTEGER,
                   LET l_word = ""
                   LET l_wc = 0
                ELSE
-                  LET l_wc = l_wc + 1 
+                  LET l_wc = l_wc + 1
                   LET l_word[l_wc] = l_val[j]
                END IF
             END FOR
@@ -313,23 +316,23 @@ DEFINE   i, j       INTEGER,
 
    MESSAGE "Searching..."
 #  PREPARE cntpre FROM l_where
-#  IF STATUS !=0 THEN 
+#  IF STATUS !=0 THEN
 #     RETURN
 #  END IF
 #  DECLARE cnt_curs CURSOR FOR cntpre
-#  IF STATUS !=0 THEN 
+#  IF STATUS !=0 THEN
 #     RETURN
 #  END IF
 #  LET l_cnt = 0
 #  FOREACH cnt_curs
-#     IF STATUS !=0 THEN 
+#     IF STATUS !=0 THEN
 #        RETURN
 #     END IF
 #     LET l_cnt = l_cnt + 1
 #  END FOREACH
 #  MESSAGE l_cnt USING "<<<<&"," row(s) found"
 #  CLOSE cnt_curs
-#  IF STATUS !=0 THEN 
+#  IF STATUS !=0 THEN
 #     RETURN
 #  END IF
 #  IF l_cnt = 0 THEN
@@ -337,16 +340,16 @@ DEFINE   i, j       INTEGER,
 #  END IF
 
    PREPARE pre FROM l_where
-   IF STATUS !=0 THEN 
+   IF STATUS !=0 THEN
       RETURN
    END IF
    DECLARE qcurs SCROLL CURSOR WITH HOLD FOR pre
 
-   IF STATUS !=0 THEN 
+   IF STATUS !=0 THEN
       RETURN
    END IF
    OPEN qcurs
-   IF STATUS !=0 THEN 
+   IF STATUS !=0 THEN
       RETURN
    END IF
 
@@ -372,15 +375,15 @@ DEFINE   i    INTEGER
 
    LET m_text = "select * from ",m_tabname CLIPPED," where rowid = ",m_rowid
    PREPARE ls FROM m_text
-   IF STATUS !=0 THEN 
+   IF STATUS !=0 THEN
       RETURN
    END IF
    DECLARE lsc CURSOR FOR ls
-   IF STATUS !=0 THEN 
+   IF STATUS !=0 THEN
       RETURN
    END IF
    OPEN lsc
-   IF STATUS !=0 THEN 
+   IF STATUS !=0 THEN
       RETURN
    END IF
    FETCH lsc INTO
@@ -554,8 +557,11 @@ error "f3"
             EXIT MENU
          COMMAND "No" "Do not delete this row"
             EXIT MENU
-#        COMMAND KEY(F12) CALL user_menu()
-         -- COMMAND KEY(CONTROL-W) CALL show_help("")
+         #Functions not implemented:
+		 #COMMAND KEY(F12) 
+		 #	CALL user_menu()
+         #COMMAND KEY(CONTROL-W) 
+		 #   CALL show_help("")
          END MENU
       END IF
 
@@ -586,7 +592,7 @@ error "f3"
       COMMAND "Forward" "Shows the next page of the form"
          MESSAGE ""
          LET l_page = disp_page(l_page+1)
-   
+
       COMMAND "Back" "Shows the previous page of the form"
          MESSAGE ""
          IF l_page > 1 THEN
@@ -609,7 +615,7 @@ error "f3"
 
    COMMAND "Exit" "Exits to the MI-SQL Menu"
       MESSAGE ""
-      EXIT MENU 
+      EXIT MENU
 
    COMMAND KEY ("!")
       MESSAGE ""
@@ -617,8 +623,8 @@ error "f3"
 #  COMMAND KEY(F12) CALL user_menu()
          -- COMMAND KEY(CONTROL-W) CALL show_help("")
    END MENU
-   CLOSE isql_curs 
-   IF STATUS !=0 THEN 
+   CLOSE isql_curs
+   IF STATUS !=0 THEN
       RETURN
    END IF
    CLEAR SCREEN
@@ -663,7 +669,7 @@ DEFINE i          INTEGER
 
    FOR i = 1 TO 300
       IF ma_col[i].colname IS NOT NULL THEN
-         OUTPUT TO REPORT output_report(i)       
+         OUTPUT TO REPORT output_report(i)
       ELSE
          EXIT FOR
       END IF
@@ -822,7 +828,7 @@ DEFINE   l_sqlfile   CHAR(30),
       DISPLAY m_text,"" AT i, 1 ATTRIBUTE(DIM)
    END FOR
 END FUNCTION
- 
+
 
 # This routine needs to understand ; as end-of-command...
 
@@ -873,14 +879,14 @@ DEFINE   l_tmp      CHAR(20),
 
    LET m_text = "SELECT textt{k30} FROM picklist WHERE 1=1"
    LET l_sqlfile = query_window(m_text, "SQL file",1, "")
-   
+
    RETURN l_sqlfile
 END FUNCTION
 
 
 FUNCTION get_tmpname()
 DEFINE   l_tmp   CHAR(30)
-   
+
    LET l_tmp = "/tmp/m",TIME,".tmp"
    RETURN l_tmp
 END FUNCTION
@@ -902,7 +908,7 @@ DEFINE i       INTEGER
 
    LET m_text = m_database CLIPPED,":",m_tabname
    LET i = 80 - LENGTH(m_text)
-  
+
    DISPLAY "" AT 2, 1
    DISPLAY m_text CLIPPED AT 3, i
 END FUNCTION
@@ -918,7 +924,7 @@ END FUNCTION
 
 
 FUNCTION disp_page(l_page)
-DEFINE l_page    INTEGER, 
+DEFINE l_page    INTEGER,
        l_start   INTEGER,
        i         INTEGER
 
@@ -930,7 +936,7 @@ DEFINE l_page    INTEGER,
    END IF
 
    FOR i = l_start TO l_start +  m_depth -1
-      DISPLAY ma_col[i].colname, ma_col[i].val TO scr[i - l_start + 1].* 
+      DISPLAY ma_col[i].colname, ma_col[i].val TO scr[i - l_start + 1].*
    END FOR
    RETURN l_page
 END FUNCTION
@@ -1000,11 +1006,11 @@ DEFINE i INTEGER
                        " = '", ma_col[i].val CLIPPED,
                     "' where rowid = ",m_rowid
          PREPARE pp FROM m_text
-         IF STATUS !=0 THEN 
+         IF STATUS !=0 THEN
             EXIT FOR
          END IF
          EXECUTE pp
-         IF STATUS !=0 THEN 
+         IF STATUS !=0 THEN
             EXIT FOR
          END IF
       END IF
@@ -1068,10 +1074,10 @@ DEFINE   i            INTEGER,
          l_collength  INTEGER
 
    MESSAGE "Loading column definitions..."
-   SELECT tabid 
+   SELECT tabid
      INTO l_tabid
      FROM systables
-    WHERE tabname = m_tabname 
+    WHERE tabname = m_tabname
 
    IF status !=0 THEN
       CALL message_prompt("Information not found!", "")
