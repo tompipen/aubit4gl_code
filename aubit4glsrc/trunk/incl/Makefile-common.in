@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.19 2002-02-25 05:55:54 afalout Exp $
+# $Id: Makefile-common.in,v 1.20 2002-02-26 07:54:04 afalout Exp $
 #
 
 
@@ -228,7 +228,9 @@ LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 MAKINGAUBIT			=1
 
 #for -fPIC
-PIC=@PIC@
+PIC					=@PIC@
+USE_RPCGEN  		=yes
+
 
 ifdef COMSPEC
 	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
@@ -249,7 +251,9 @@ ifdef COMSPEC
 	SOEXP_EXT   =${SO_EXT}.a
     #do not install static libraries on CygWin:
 	STATICLIB_INST=no
-    USE_RPCGEN  =no
+	#if USE_RPCGEN is disabled, static files from /tools/cygwin will be used
+    #this is no longer nececery on CygWin (with appropriate Sun RPC port for CygWin)
+	#USE_RPCGEN  =no
 else
     CFLAGS      +=-g
 	EXEEXT		=
@@ -259,7 +263,6 @@ else
     LN			=ln -f
     SO_LDFLAGS	=${PIC} -shared
 	LN_S_LIB    =${LN_S}
-    USE_RPCGEN  =yes
 endif
 
 ####################### from aubitbuild-multi.mk ####################

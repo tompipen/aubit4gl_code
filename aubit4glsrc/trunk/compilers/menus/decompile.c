@@ -1,5 +1,11 @@
 #include <stdio.h>
-#include "menu_x.h"
+//#include "menu_x.h"
+#include "../../lib/libincl/menuxw.h"
+
+#ifdef __CYGWIN__
+	#include <rpc/rpc.h>
+#endif
+
 
 main(int argc,char *argv[]) {
 struct menu_list the_menus;

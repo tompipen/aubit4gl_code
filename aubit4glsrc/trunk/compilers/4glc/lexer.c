@@ -870,6 +870,7 @@ struct translate_string {
 extern struct translate_string *translate_list;
 extern int translate_list_cnt;
 
+/* duplicate from formwrite2.c
 
 add_translate(int mode,char * from,char * to) {
 	char buff[2048];
@@ -888,7 +889,7 @@ add_translate(int mode,char * from,char * to) {
 		translate_list[translate_list_cnt-1].to        =0;
 	}
 }
-
+*/
 
 
 #ifdef MOVED_TO_LIB_SLASH_TRANSLATE_DOT_C

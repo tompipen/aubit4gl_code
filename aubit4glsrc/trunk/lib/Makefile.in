@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.26 2002-02-25 15:04:50 mikeaubury Exp $
+# $Id: Makefile.in,v 1.27 2002-02-26 07:54:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -32,7 +32,7 @@ include ../incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
-##                              Options
+##                              Source files
 ## ==================================================================
 
 CMODS_PROJECT	=project.c
@@ -46,56 +46,42 @@ CMODS_DLSQL		=dlsql.c
 CMODS_CONFIG	=aubit-config.c
 CMODS_RESOURCE	=resource.c
 
+#FIXME: create libRPC_RPC.so and libRPC_NORPC.so:
+CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c rpc_stack_xdr.c
 
 
 COMMONSRC= \
 	array.c \
-	translate.c \
 	bogus.c builtin.c builtin_d.c \
 	calldll.c conv.c colours.c curslib.c \
 	data_if.c dates.c dmy.c \
-	err.c \
-	fglwrap.c funcs_d.c \
-	gtime.c gtrim.c \
-	io.c \
+	err.c error.c errfile.c \
+	fglwrap.c funcs_d.c fields.c ../compilers/fcompile/form_x_xdr.c \
+	gtime.c gtrim.c gui_io.c \
+	helper.c \
+	io.c iarray.c interval.c \
 	load.c \
+	match.c \
 	newpanels.c \
 	others.c \
 	pointers.c prompt.c \
-	read_dty.c readform.c readforms.c report.c ${CMODS_RESOURCE} rexp2.c rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c rpc_stack_xdr.c \
+	read_dty.c readform.c readforms.c report.c rexp2.c ${CMODS_RESOURCE} ${CMODS_RPC} \
 	screen.c sleep.c stack.c string.c \
-	error.c errfile.c \
-	fields.c ../compilers/fcompile/form_x_xdr.c \
-	gui_io.c \
-	helper.c \
-	iarray.c interval.c\
-	match.c
+	translate.c
+
+#../compilers/fcompile/formwrite2.c
 
 
-#DIFFSRC= \
-#	error.c errfile.c \
-#	fields.c ../compilers/fcompile/form_x_xdr.c \
-#	gui_io.c \
-#	helper.c \
-#	iarray.c interval.c\
-#	match.c
-
-#CMODSNOSQL 		=${COMMONSRC} ${DIFFSRC}
 CMODSNOSQL 			=${COMMONSRC}
-#TMPERRSSRC			=${COMMONSRC} ${GUI_SRC} ${CMODS_ODBCSQL}
-#remove error.c from TMPERRSSRC
-#TMPERRSSRC			=${COMMONSRC} ${DIFFSRC} ${GUI_SRC} ${CMODS_ODBCSQL}
 CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
 OBJS_NOSQL			+=${CMODS_NOSQL:.c=.o}
 
-#======================================================================
+## ==================================================================
+##                              Options
+## ==================================================================
 
 ALL 				=aubit-config libPDF_NOPDF${SO_EXT} libaclall.a
 ALL_GUI				=libaclallgui.a
-
-#LOCALCFLAGS		=-O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
-#-DNODEBUG -g
-
 LDFLAGS				=-Map mapfile
 4GLPC               =../bin/4glpc
 4GLPCFLAGS			=-verbose -nogtk

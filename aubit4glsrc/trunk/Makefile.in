@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.33 2002-02-22 13:34:13 afalout Exp $
+# $Id: Makefile.in,v 1.34 2002-02-26 07:54:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -90,7 +90,7 @@ else
 	PDFTYPE			=noPDF
 endif
 
-MAKERPC				=unixrpc
+#MAKERPC				=unixrpc
 
 ## ==================================================================
 ##                    Automatic Build Settings
@@ -320,7 +320,7 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 
 	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
 	ifeq "${USE_RPCGEN}" "no"
-		MAKERPC			=cyrpc
+		#MAKERPC			=cyrpc
 		CYRPC_FLAG:=$(shell ls cyrpc.flg ${NOERR})
 	endif
 
@@ -420,7 +420,8 @@ MANFILENAME     =$(SOURCE)/$(MANFILEBASENAME)
 #	ALL     =dll.exp.libs
 #endif
 
-ALL			+=Makefile settings ${MAKERPC} corecompile
+#ALL			+=Makefile settings ${MAKERPC} corecompile
+ALL			+=Makefile settings rpc corecompile
 
 ifeq "$(GTKBUILD)" "yes"
 	ifdef COMSPEC
@@ -494,44 +495,54 @@ test.perl:
 
 #FIXME: remove all "prepare" targets - not needed any more
 
-prepare: ${PREPARE}
+#prepare: ${PREPARE}
+prepare:
+	@echo FIXME: remove PREPARE target
 
-unixprepare:
+#unixprepare:
 #FIXME: chmod, touch, rm, MKPATH - shouold not be needed!
-	(chmod a+x tools/project/mkproject)
-	(chmod a+x compilers/4glc/rules/bin/*)
-	(chmod a+x lib/bin/*)
-	(chmod a+x bin/*)
-	(chmod ug+rw compilers compilers/fcompile compilers/menus lib)
+#	(chmod a+x tools/project/mkproject)
+#	(chmod a+x compilers/4glc/rules/bin/*)
+#	(chmod a+x lib/bin/*)
+#	(chmod a+x bin/*)
+#	(chmod ug+rw compilers compilers/fcompile compilers/menus lib)
 
-cyprepare:
-	(chmod a+x tools/project/mkproject)
-	(chmod a+x compilers/4glc/rules/bin/*)
-	(chmod a+x lib/bin/*)
-	(chmod a+x bin/*)
+#cyprepare:
+#	(chmod a+x tools/project/mkproject)
+#	(chmod a+x compilers/4glc/rules/bin/*)
+#	(chmod a+x lib/bin/*)
+#	(chmod a+x bin/*)
 
 ## ==================================================================
 ##                              Make RPC
 ## ==================================================================
 
-rpc: ${MAKERPC}
+#rpc: ${MAKERPC}
+rpc:
+#cyrpc:
+#ifeq "${CYRPC_FLAG}" ""
+#	(cp tools/cygwin/form_x_xdr.c compilers/fcompile )
+#	(cp tools/cygwin/menu_x_xdr.c compilers/menus)
+#
+#	(cp tools/cygwin/form_x.h compilers/fcompile )
+#	(cp tools/cygwin/menu_x.h compilers/menus )
+#	touch cyrpc.flg
+#endif
 
-cyrpc:
-ifeq "${CYRPC_FLAG}" ""
-	(cp tools/cygwin/form_x_xdr.c compilers/fcompile )
-	(cp tools/cygwin/menu_x_xdr.c compilers/menus)
-
-	(cp tools/cygwin/form_x.h compilers/fcompile )
-	(cp tools/cygwin/menu_x.h compilers/menus )
-	touch cyrpc.flg
-endif
-
-unixrpc:
+#unixrpc:
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile rpc
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/menus rpc
 #FIXME: this cp, if realy needed should go in local makefine, not here!
 #	(cp compilers/fcompile/form_x_xdr.c compilers/fcompile/form_x.h lib)
 #	(cp compilers/menus/menu_x_xdr.c compilers/menus/menu_x.h lib)
+
+clean.rpc:
+	${RM} compilers/fcompile/form_x_xdr.c
+	${RM} compilers/menus/menu_x_xdr.c
+	${RM} compilers/fcompile/form_x.h
+	${RM} compilers/menus/menu_x.h
+#	${RM} cyrpc.flg
+
 
 ## ------------------------------------------------------------------
 ##                       Cleanup Targets

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-02-15 11:33:46 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-02-26 07:54:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -39,25 +39,33 @@ override NOINCL=0
 4GLPCFLAGS		= -make-compile -static -verbose -L../../lib -nogtk
 PROGRAM 		=mcompile mdecompile
 
-
-ifndef COMSPEC
-#	4GLPCFLAGS	+=-rdynamic
-	RPCGEN      =@RPCGEN@ menu_x.x
+ifeq "${USE_RPCGEN}" "no"
+	RPCGEN      =cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
 else
+	RPCGEN      =@RPCGEN@ menu_x.x
+endif
+
+
+CFLAGS		   +=-I.
+
+ifdef COMSPEC
+#	4GLPCFLAGS	+=-rdynamic
+#	RPCGEN      =@RPCGEN@ menu_x.x
+#else
 #	4GLPCFLAGS	+=${SO_GCCFLAGS}
 	CYGWIN_FLAGS=${RPCLIB_NAME}
-	RPCGEN      = cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
+#	RPCGEN      = cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
 endif
 
 
 
-ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
-	ifeq "$(ODBC)" "no"
-		4GLPCFLAGS	+= -noodbc
-	else
-		PROGRAM 	+=mcompile-noodbc
-	endif
-endif
+#ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
+#	ifeq "$(ODBC)" "no"
+#		4GLPCFLAGS	+=-noodbc
+#	else
+#		PROGRAM 	+=mcompile-noodbc
+#	endif
+#endif
 
 #ifeq "$(PDFBUILD)" "yes"
 #	4GLPCFLAGS	+=-lpdf
@@ -138,7 +146,7 @@ clean:
 
 
 mdecompile: decompile.c menu_x_xdr.c
-	${CC} decompile.c menu_x_xdr.c -o $@ ${CYGWIN_FLAGS}
+	${CC} ${CFLAGS} decompile.c menu_x_xdr.c -o $@ ${CYGWIN_FLAGS}
 	cp $@ ../../bin
 
 lint:

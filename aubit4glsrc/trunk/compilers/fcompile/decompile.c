@@ -4,7 +4,13 @@
  */
 
 #include <stdio.h>
-#include "form_x.h"
+//#include "form_x.h"
+#include "../../lib/libincl/formxw.h"
+
+#ifdef __CYGWIN__
+	#include <rpc/rpc.h>
+#endif
+
 
 main(int argc,char *argv[]) {
 struct struct_form the_form;

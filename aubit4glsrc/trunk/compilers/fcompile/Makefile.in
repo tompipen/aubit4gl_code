@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2002-02-22 13:22:23 afalout Exp $
+# $Id: Makefile.in,v 1.15 2002-02-26 07:54:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,13 +44,19 @@ ifeq "$(OUTPUTLANG)" "java"
 	ALL		 	+=fdecompile-j
 endif
 
-
-ifdef COMSPEC
+ifeq "${USE_RPCGEN}" "no"
 	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
-#	4GLPCFLAGS	+=${SO_GCCFLAGS}
-	CYGWIN_FLAGS=${RPCLIB_NAME}
 else
 	RPCGEN 		= @RPCGEN@ form_x.x
+endif
+
+
+ifdef COMSPEC
+#	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
+#	4GLPCFLAGS	+=${SO_GCCFLAGS}
+	CYGWIN_FLAGS=${RPCLIB_NAME}
+#else
+#	RPCGEN 		= @RPCGEN@ form_x.x
 #	4GLPCFLAGS	+=-rdynamic
 endif
 
@@ -148,11 +154,11 @@ lint:
 	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
 
 fdecompile-j : decompile.c form_x_xdr.c dump_java.c
-	${CC} decompile.c form_x_xdr.c dump_java.c -o $@
+	${CC} ${CFLAGS} decompile.c form_x_xdr.c dump_java.c -o $@
 	cp $@ ../../bin
 
 fdecompile : decompile.c form_x_xdr.c dump.c
-	${CC} decompile.c form_x_xdr.c dump.c -o $@ ${CYGWIN_FLAGS}
+	${CC} ${CFLAGS} decompile.c form_x_xdr.c dump.c -o $@ ${CYGWIN_FLAGS}
 	cp $@ ../../bin
 
 fshow : fshow.4gl

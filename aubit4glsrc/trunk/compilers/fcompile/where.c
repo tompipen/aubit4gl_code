@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.2 2002-01-25 12:20:42 afalout Exp $
+# $Id: where.c,v 1.3 2002-02-26 07:54:04 afalout Exp $
 #
 */
 
@@ -34,7 +34,9 @@
  *
  */
 
-#include "form_x.h"
+//#include "form_x.h"
+#include "../../lib/libincl/formxw.h"
+
 #include "fcompile.h"
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>

@@ -1,10 +1,13 @@
-   /* $Id: mcompile.c,v 1.3 2002-02-14 22:11:47 saferreira Exp $
+   /* $Id: mcompile.c,v 1.4 2002-02-26 07:54:04 afalout Exp $
    /* */
 
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
 extern int as_c;
-#include "menu_x.h"
+//#include "menu_x.h"
+#include "../../lib/libincl/menuxw.h"
+
+
 FILE *mja_fopen(char *name, char *mode);
 FILE *write_errfile(FILE *f,char *s,long p,int l);
 #ifdef YYDEBUG

@@ -1,5 +1,8 @@
 %{
-#include "form_x.h"
+//#include "form_x.h"
+
+#include "../../lib/libincl/formxw.h"
+
 #include "fcompile.h"
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>

@@ -1,5 +1,6 @@
 %{
-#include "menu_x.h"
+//#include "menu_x.h"
+#include "../../lib/libincl/menuxw.h"
 #include "../../lib/libincl/compiler.h"
 
 #ifdef __CYGWIN__
