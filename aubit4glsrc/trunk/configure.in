@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.197 2003-09-17 11:55:25 afalout Exp $
+dnl # $Id: configure.in,v 1.198 2003-09-22 04:02:06 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -310,6 +310,8 @@ AC_SUBST(ECPG_INCDIR)
 AC_SUBST(ECPG_LIBDIR)
 AC_SUBST(ECPG_LFLAGS)
 AC_SUBST(ECPG_IFLAGS)
+AC_SUBST(POSTGRESDIR)
+
 
 #UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
@@ -2827,6 +2829,18 @@ AC_ARG_WITH(pgsql,
 	# FIXME: Replace `main' with a function in `-lc':
 	AC_CHECK_LIB([pq], [main])
 
+	if test "$ac_cv_lib_pq_main" = "yes"; then
+		HAS_LIB_PQ=1
+
+		AC_CHECK_LIB([pq], [PQresultErrorField])
+		AC_CHECK_LIB([pq], [PQfreemem])
+   		AC_CHECK_LIB([pq], [PQsetNoticeReceiver])
+		AC_CHECK_LIB([pq], [last_path_separator])
+
+	    #AC_CHECK_FUNC(PQresultErrorField,AC_DEFINE(HAVE_PQresultErrorField))
+
+    fi
+
     #needed by native PG connector:
 	AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
     #FIXME: if we did not find this header; disable compilation of PG native
@@ -2873,7 +2887,11 @@ AC_ARG_WITH(ecpg,
                           DIR is the PostgresSQL ecpg base install directory,
                           defaults to /usr.],
 [
-#echo "withval=$withval"
+
+if test "$HAS_LIB_PQ" != "1"; then
+    withval="no"
+	AC_MSG_WARN(Disabled testing for PG ESQL compiler - libpg was not detected)
+fi
 
   if test "$withval" != "no"; then
 	if test "$withval" = "yes"; then
@@ -2967,9 +2985,11 @@ AC_ARG_WITH(ecpg,
 			#test -d $withval/../libpq && PGSQL_INCDIR=$withval/../libpq
 
 		    old_CFLAGS=$CFLAGS; old_LDFLAGS=$LDFLAGS; old_LIBS=$LIBS; old_CPPFLAGS="$CPPFLAGS"
-		    CFLAGS="$CFLAGS -I$PGSQL_INCDIR"
-		    LDFLAGS="$LDFLAGS $PGSQL_LFLAGS"
-		    LIBS="$LIBS $PGSQL_LIBS"
+		    
+			CFLAGS="$CFLAGS -I$PGSQL_INCDIR";
+			#LDFLAGS="$LDFLAGS $PGSQL_LFLAGS"
+			LDFLAGS="$LDFLAGS -L$ECPG_LIBDIR"
+		    LIBS="$LIBS $PGSQL_LIBS";
 			CPPFLAGS="$CPPFLAGS -I$PGSQL_INCDIR"
 
             #reset:
@@ -2980,16 +3000,30 @@ AC_ARG_WITH(ecpg,
 			if test "$ac_cv_header_libpq_fe_h" = "yes" ; then
 				HAVE_PG_ESQL_HEADERS=yes
 				ECPG_IFLAGS="$ECPG_IFLAGS -I$PGSQL_INCDIR"
-		    else
+
+				#FIXME: how do we check for libraries versions?
+				#also check versions of:
+				AC_CHECK_LIB([ecpg], [main])
+				AC_CHECK_LIB([pgtypes], [main])
+				AC_CHECK_LIB([ecpg_compat], [main])
+
+				AC_MSG_CHECKING(PG ESQL libraryes compatibility)
+				if test "$ac_cv_lib_ecpg_main" = "yes" -a "$ac_cv_lib_pgtypes_main" = "yes" -a "$ac_cv_lib_ecpg_compat_main" = "yes"; then
+					AC_MSG_RESULT(OK)
+                    #POSTGRESDIR is really a ecpg installation dir, but...
+					POSTGRESDIR=$withval
+                else
+			        HAVE_PG_ESQL_HEADERS=no
+	                PG_ESQLC_IFXCOMPAT=no
+	                PG_ESQLC=no
+			    	AC_MSG_WARN(Disabled ecpg - no libs)
+				fi
+			else
 		        HAVE_PG_ESQL_HEADERS=no
                 PG_ESQLC_IFXCOMPAT=no
                 PG_ESQLC=no
 		    	AC_MSG_WARN(Disabled ecpg - no headers)
 		    fi
-
-			#FIXME: how do we check for libraries versions?
-			#also check versions of:
-			#-lecpg -lecpg_compat -lpgtypes
 
 			CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS; CPPFLAGS="$old_CPPFLAGS"
 
@@ -3001,8 +3035,6 @@ AC_ARG_WITH(ecpg,
 ],[
   AC_MSG_RESULT(--with-ecpg not specified)
 ])
-
-
 
 ## ==================================================================
 ##                 Checks for SQLite support
@@ -5568,18 +5600,19 @@ fi
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
-if test "$cygwin" != "1"; then
-#Don't know how to link this on Windows...
-	if test "$Q_ESQLC" != "no" ; then
-		PLUGIN_YES="$PLUGIN_YES ESQL_QUERIX"
 if test "disabled" = ""; then
+if test "$cygwin" != "1"; then
+#Don't know how to link this on Windows...GCC not supported?
+	if test "$Q_ESQLC" != "no" ; then
+		#since introduction of "decimal" can't compile - must pre-process with cpp first
+		PLUGIN_YES="$PLUGIN_YES ESQL_QUERIX"
 		#Compile Aubit ESQL/C SQL connectivity plug-in using Querix ESQL/C compiler
 		PLUGIN_YES="$PLUGIN_YES SQL_esqlQ"
-fi
 	else
         PLUGIN_NO="$PLUGIN_NO ESQL_QUERIX SQL_esqlQ"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.querix"
 	fi
+fi
 fi
 
 	if test "$SAPDB_ESQLC" != "no"; then

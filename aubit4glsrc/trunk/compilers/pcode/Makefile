@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2003-09-17 11:55:41 afalout Exp $
+# $Id: Makefile,v 1.7 2003-09-22 04:03:42 afalout Exp $
 #
 
 ROOT    =../..
@@ -55,6 +55,8 @@ OBJ_RUNNER_C	=runner_calls_c.o ${OBJ_RUNNER_COMMON}
 
 OBJ_RUNNER_A4GL	=runner_calls_fgl.o ${OBJ_RUNNER_COMMON}
 
+#open.c write.c print.c missing from CVS:
+OBJ_OPEN        =npcode_xdr.o open.o write.o print.o
 
 CMODS           =runner_calls.c checker_read.c common_eval.c \
 				common_io.c common_print.c compiler_list.c compiler_main.c \
@@ -110,7 +112,8 @@ ${BINROOT}/checker: $(OBJ_CHECKER) npcode.h
 ${BINROOT}/c2pcode:  $(OBJ_C2PCODE) npcode.h
 	$(CC) -o $@ $(OBJ_C2PCODE) ${LINKLIBS}
 
-${BINROOT}/open_pcode:  open.o write.o npcode_xdr.o print.o
+#open.c is missing from CVS:
+${BINROOT}/open_pcode:  ${OBJ_OPEN}
 	$(CC) $^ -o $@ ${LINKLIBS}
 
 ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o

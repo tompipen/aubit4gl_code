@@ -1,11 +1,29 @@
-echo "In ecpg_wrap : $@"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
-export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib
+
+SH_DEBUG=0
+
+
+if test "$SH_DEBUG" = "1"; then
+	echo "In ecpg_wrap : $@"
+fi
 
 if [ "$POSTGRESDIR" = "" ]
 then
 	export POSTGRESDIR=/usr/local/pgsql
 fi
+
+if [ "$AUBITDIR" = "" ]
+then
+    AUBITDIR=`aubit-config AUBITDIR`
+	if [ "$AUBITDIR" = "" ]
+	then
+        echo "ERROR: AUBITDIR unknown. Stop."
+        exit 5
+    fi
+fi
+
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib:$POSTGRESDIR/lib
 
 ECPG_EXT=cpc
 
@@ -13,16 +31,15 @@ while [ "$1" != "" ]
 do
 	a=$1
 
-
 	if [ "$a" = -t ]
-	then 
+	then
 		ecpg_args="$ecpg_args $a"
 		shift
 		continue
 	fi
 
 	if [ "$a" = "-C" -o "$a" = "-D" -o "$a" = "-I" ]
-	then 
+	then
 		ecpg_args="$ecpg_args $a"
 		shift
 		a=$1
@@ -45,27 +62,36 @@ do
 
 	then
 		srcs="$srcs $a"
-		shift	
+		shift
 		continue
 	fi
-	
+
 	other_args="$other_args $a"
 
 	shift
 done
 
-echo "SOURCES : " $srcs
+if test "$SH_DEBUG" = "1"; then
+	echo "SOURCES : " $srcs
+fi
 
 for a in $srcs
 do
-	echo $POSTGRESDIR/bin/ecpg -C INFORMIX_SE -t $ecpg_args $a
-	$POSTGRESDIR/bin/ecpg -C INFORMIX -t $ecpg_args $a
+	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX -t $ecpg_args $a"
+    #-C INFORMIX_SE
+    echo $ECPG_RUN
+    eval $ECPG_RUN
+    RET=$?
+    if test "$RET" != "0"; then
+        exit $RET
+    fi
 	out=`basename $a ".$ECPG_EXT"`
 	cfiles="$cfiles $out.c"
 done
-LD_RUN_PATH=$LD_RUN_PATH:$POSTGRESDIR/lib
-export LD_RUN_PATH
 
-echo gcc  -I$POSTGRESDIR/include $other_args $cfiles
-gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes 
-		
+GCC_RUN="gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes"
+echo $GCC_RUN
+eval $GCC_RUN
+RET=$?
+exit $RET
+
