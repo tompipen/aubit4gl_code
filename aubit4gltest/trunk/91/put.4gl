@@ -1,3 +1,21 @@
+{
+IIRC,
+Yes (sort of) - but only if the database has transaction logging on..
+
+If transaction logging is off - it will work (and obviously outside of a transaction)
+
+> Does insert cursor have to be in transaction?
+> 
+> 	prepare p1 from "insert into t_abc values(?,?)"
+> 	declare c_ins cursor for p1
+> 	open c_ins
+> < -255
+> < Err:Program stopped at 'put.4gl', line number 19.
+> < Error status number -255.
+> < Not in transaction..
+
+}
+
 database test1
 define abc record
 	a integer,

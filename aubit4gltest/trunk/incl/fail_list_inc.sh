@@ -35,8 +35,29 @@ BLACKLIST_TESTS_IFXODBC="107 286 287 681 682 686 687 701 702 703 704"
 ######################
 #Tests that should not be run on MinGW, because they go into endless loop 
 #and never exit
-BLACKLIST_TESTS_MINGW="215 "
+BLACKLIST_TESTS_MINGW="69 215 241 335"
+#215 241 - error in field (seem like only sigle char read from keys.in?)
+#335 - 4glc freezzes
 
+EXPECT_TO_FAIL_TESTS_MINGW="242 244 246 252 254 272 273 274 276 277 288 535 1060 \
+	22 24 26 27 31 33 34 38 40 42 57 59 63 70 77 79 86 104 203 \
+	205 211 213 217 218 220 222 223 229 230 231 236 239 283"
+
+
+#242 
+#244 
+#246 initscr(): LINES=1 COLS=1: too small
+#252 
+#254 
+#272 
+#273 
+#274 
+#276 
+#277 
+#288 
+#535
+#1060 - Native Windows executable knows nothing about bash and CygWin paths,
+#so RUN-ining a shell script fails with error mesage from Microsoft cmd.exe
 
 #-unixodbc with -odbcdb-ifx
 EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""

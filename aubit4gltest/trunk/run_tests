@@ -1320,6 +1320,7 @@ COUNTER=0
 FAIL_CNT=0
 PASS_CNT=0
 SKIP_CNT=0
+SKIP_INVALID_CNT=0
 RUN_CNT=0
 EXPECTED_TO_FAIL_CNT=0
 NOT_EXPECTED_TO_FAIL_CNT=0
@@ -1819,7 +1820,7 @@ do
 
 	if test "$IS_OBSOLETE_TEST" = "1"; then
 		if test "$VERBOSE" = "1"; then
-			echo "Skipping obsolete test $TEST_NO"
+			echo "Skipping obsolete test $TEST_NO (not counting)"
 		fi
 		#SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
         continue
@@ -1861,6 +1862,7 @@ do
         fi
 		if test "$IS_INVALID_TEST" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+			SKIP_INVALID_CNT=`(expr $SKIP_INVALID_CNT + 1) 2>/dev/null`
 			SKIP_INVALID_LIST="$SKIP_INVALID_LIST $TEST_NO"
 			if test "$RUN_ONE" != ""; then
 				echo "Skipping invalid test #$TEST_NO." >> $LOGFILE
@@ -1903,10 +1905,10 @@ do
 			SKIP_LONG_LIST="$SKIP_LONG_LIST $TEST_NO"
 	        continue
 	    fi
-		if test "$UI" = "CONSOLE" && (test "$IS_CONSOLE_PROMPT_TEST" = "1" || test "$IS_DUMP_SCREEN_TEST" = "1" || test "$IS_FORM_TEST" = "1") ; then
+		if test "$UI" = "CONSOLE" && (test "$IS_CONSOLE_PROMPT_TEST" = "1" -o "$IS_DUMP_SCREEN_TEST" = "1" -o test "$IS_FORM_TEST" = "1") ; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$TEST_NO in CONSOLE mode." >> $LOGFILE
+				echo "Skipping test #$TEST_NO in CONSOLE mode - uses forms or dump_screen()." >> $LOGFILE
 			fi
 			SKIP_CONSOLE_LIST="$SKIP_CONSOLE_LIST $TEST_NO"
 	        continue
@@ -1951,13 +1953,14 @@ do
 			SKIP_NOSILENT_LIST="$SKIP_NOSILENT_LIST $TEST_NO"
 	        continue
 	    fi
-	    if test "$IS_TUI_TEST" = "1" && test "$TERM" != "xterm" && test "$PLATFORM" = "MINGW"; then
-			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$TEST_NO - cannot run with TERM=$TERM on MinGW using Cygwin Curses." >> $LOGFILE
-			fi
-	        continue
-	    fi
+		#Obsolete-using PDcurses now, not CygWin Ncurses:
+	    #if test "$IS_TUI_TEST" = "1" -a "$TERM" != "xterm" -a "$PLATFORM" = "MINGW"; then
+		#	SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+		#	if test "$VERBOSE" = "1"; then
+		#		echo "Skipping test #$TEST_NO - cannot run with TERM=$TERM on MinGW using Cygwin Curses." >> $LOGFILE
+		#	fi
+	    #    continue
+	    #fi
 	    if test "$IS_GRAPHIC_TEST" = "1" && test "$NO_GRAPHIC" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
@@ -2029,52 +2032,77 @@ do
 		###############################################################
 		#Check if we need to swiths transaction logging mode in RDBMS
 		###############################################################
-		if test "$IFX_ENG_REMOTE" != "1"; then 
 		if test "$DB_HAS_TRANSACTION" != "NULL" ; then 
-			if test "$NEED_TRANSACTION" = "1" -a "$DB_HAS_TRANSACTION" != "1" ; then 
-				if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
-					if test "$VERBOSE" = "1"; then
-						ontape -s -B $TEST_DB
-						RET=$?
-						echo "NOTE: turned ON buffered logging"
+			if test "$NEED_TRANSACTION" = "1" -a "$DB_HAS_TRANSACTION" != "1" ; then
+				#need to switch logging mode
+				if test "$IFX_ENG_REMOTE" != "1"; then
+					if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
+						if test "$VERBOSE" = "1"; then
+							ontape -s -B $TEST_DB
+							RET=$?
+							echo "NOTE: turned ON buffered logging"
+						else
+							ontape -s -B $TEST_DB > /dev/null
+							RET=$?
+						fi
+						if test "$RET" != "0"; then 
+							echo "ERROR: swithching logging mode ON failed"
+							exit $RET
+						fi
+						DB_HAS_TRANSACTION="1"
 					else
-						ontape -s -B $TEST_DB > /dev/null
-						RET=$?
+						#Don't know how to turn on transactions for this RDBMS			
+						SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`			
+						echo "Skip $TEST_NO - test needs transaction support, but current database don't have it" >> $LOGFILE
+						echo "and I don't know how to turn them on" >> $LOGFILE
+						continue
 					fi
-					if test "$RET" != "0"; then 
-						echo "ERROR: swithching logging mode ON failed"
-						exit $RET
-					fi
-					DB_HAS_TRANSACTION="1"
 				else
-					#Don't know how to turn on transactions for this RDBMS			
-					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`			
-					echo "Skip $TEST_NO - test needs transaction support, but current database don't have it" >> $LOGFILE
-					echo "and I don't know how to turn them on" >> $LOGFILE
-					continue
+					if test "$IGNORE_CANT_SWITCH_TRANS" = "1" ; then
+						echo "WARNING: $TEST_NO explicit preference for transactions, but DB" >> $LOGFILE
+						echo "WARNING: engine is remote so cant swithch logging mode" >> $LOGFILE						
+					else
+						SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+						SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"					
+						echo "Skip $TEST_NO - explicit preference for transactions, but DB engine is remote" >> $LOGFILE
+						continue
+					fi
 				fi
 			fi
-			if test "$NEED_TRANSACTION" = "2" -a "$DB_HAS_TRANSACTION" = "1"; then 
-				if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
-					if test "$VERBOSE" = "1"; then
-						ontape -s -N $TEST_DB
-						RET=$?
-						echo "NOTE: turned OFF logging"
+			if test "$NEED_TRANSACTION" = "2" -a "$DB_HAS_TRANSACTION" = "1"; then
+				#need to switch logging mode
+				if test "$IFX_ENG_REMOTE" != "1"; then				
+					if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
+						if test "$VERBOSE" = "1"; then
+							ontape -s -N $TEST_DB
+							RET=$?
+							echo "NOTE: turned OFF logging"
+						else
+							ontape -s -N $TEST_DB > /dev/null
+							RET=$?
+						fi
+						if test "$RET" != "0"; then 
+							echo "ERROR: swithching logging mode OFF failed"
+							exit $RET
+						fi
+						DB_HAS_TRANSACTION="0"				
 					else
-						ontape -s -N $TEST_DB > /dev/null
-						RET=$?
+						#Don't know how to turn off transactions for this RDBMS
+						SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+						echo "Skip $TEST_NO - test MUST NOT have transaction support, but current database have it" >> $LOGFILE
+						echo "and I don't know how to turn them off" >> $LOGFILE					
+						continue
 					fi
-					if test "$RET" != "0"; then 
-						echo "ERROR: swithching logging mode OFF failed"
-						exit $RET
-					fi
-					DB_HAS_TRANSACTION="0"				
 				else
-					#Don't know how to turn off transactions for this RDBMS
-					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-					echo "Skip $TEST_NO - test MUST NOT have transaction support, but current database have it" >> $LOGFILE
-					echo "and I don't know how to turn them off" >> $LOGFILE					
-					continue
+					if test "$IGNORE_CANT_SWITCH_TRANS" = "1" ; then
+						echo "WARNING: $TEST_NO explicit preference for transactions, but DB" >> $LOGFILE
+						echo "WARNING: engine is remote so cant swithch logging mode" >> $LOGFILE						
+					else
+						SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+						SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"					
+						echo "Skip $TEST_NO - explicit preference for transactions, but DB engine is remote" >> $LOGFILE
+						continue
+					fi
 				fi
 			fi
 		else
@@ -2085,18 +2113,6 @@ do
 					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 					SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"
 					echo "Skip $TEST_NO - explicit preference for transactions, but unable to determine state" >> $LOGFILE
-					continue
-				fi
-			fi
-		fi
-		else
-			if test "$NEED_TRANSACTION" = "1" -o "$NEED_TRANSACTION" = "2" ; then		
-				if test "$SKIP_UNKNOWN_TRANS" != "1" ; then
-					echo "WARNING: $TEST_NO explicit preference for transactions, but DB engine is remote" >> $LOGFILE
-				else
-					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-					SKIP_TRANS_LIST="$SKIP_TRANS_LIST $TEST_NO"					
-					echo "Skip $TEST_NO - explicit preference for transactions, but DB engine is remote" >> $LOGFILE
 					continue
 				fi
 			fi
@@ -2544,7 +2560,7 @@ if test "$EXPECTED_TO_FAIL_PASSED_CNT" != "0"; then
 	echo "Expected to fail, but passed: $EXPECTED_TO_FAIL_PASSED_CNT ($EXPECTED_TO_FAIL_PASSED_LIST)" >> $LOGFILE
 fi
 if test "$SKIP_INVALID_LIST" != "" ; then 
-	echo "Skipped as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST" >> $LOGFILE
+	echo "Skipped $SKIP_INVALID_CNT tests as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST" >> $LOGFILE
 fi
 if test "$SKIP_KEYS_IN_LIST" != ""; then
 	echo "Skipped as use keys.in: $SKIP_KEYS_IN_LIST" >> $LOGFILE
@@ -2606,7 +2622,7 @@ if test "$VERBOSE_RESULTS" = "1"; then
 		echo "Skipped NO_CRON: ($IS_NO_CRON_CNT) $SKIP_NO_CRON_LIST" >> $LOGFILE
 	fi
 	if test "$SKIP_TRANS_LIST" != "" ; then 
-		echo "Skipped NO_TRANS: $SKIP_TRANS_LIST" >> $LOGFILE
+		echo "Skipped 'cant determine trans state' or 'cant swich trans mode': $SKIP_TRANS_LIST" >> $LOGFILE
 	fi 
 	
 	if test "$PASS_FULL_LIST" = "1"; then 

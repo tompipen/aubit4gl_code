@@ -66,7 +66,8 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 
 	if test "$DBACCESS" = "$SH aubit asql_i.4ae"; then
 		if test "$A4GL_UI" = "HL_TUIN"; then 
-			echo "Cant use asql with HL_TUIN: Function Not found : UILIB_A4GL_current_window"
+			echo "WARNING: Cant use asql with HL_TUIN: Function Not found : UILIB_A4GL_current_window"
+			#we are uisng it in command line mode anyway...
 			#exit 3
 		fi
 	fi
