@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.70 2003-12-15 16:02:51 mikeaubury Exp $
+# $Id: curslib.c,v 1.71 2003-12-16 17:52:06 mikeaubury Exp $
 #*/
 
 /**
@@ -3015,6 +3015,7 @@ int
 {
   // Not available in curses
   A4GL_exitwith ("Cant open gui form in curses mode..");
+  return 0;
 }
 
 
