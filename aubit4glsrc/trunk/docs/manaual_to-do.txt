@@ -1591,7 +1591,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.33 2004-10-04 13:49:59 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.34 2004-11-26 11:43:49 mikeaubury Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4846,41 +4846,130 @@ Nope - it doesn't care - do you think we should make it ?
 ===================================================================================
 
 
-	From: 	Mike Aubury <mike@aubit.com>
-To: 	Paul Falbe <falbe@cassens.com>, aubit4gl-developers@lists.sourceforge.net
-Subject: 	[Aubit4gl-developers] logical reports
-Date: 	Fri, 19 Mar 2004 10:37:46 +0000	
-First phase is about done now...
-
-I still need some 4GL syntax to run it but heres whats implemented atm
 
 
 
-Set :
-$ export A4GL_REPORT_TRACE=Y
-
-and you're report output will be a meta-data file rather than a real file...
-
-
-Eventually - I'd like to make this switchable to some temporary file and keep 
-the original file as the original report 
-
-
-(Make sure you start report to "filename" or report output to "filename"!)
-
-This meta-data contains all the information it could gather about what was 
-being printed, where on the page, and in what section of the report...
-
-
-The lib/liblogical directory contains all the stuff to handle these meta-data 
-output files...
-
-For reference - the common/a4gl_lle.h describes what information is stored in 
-the meta data file...
 
 
 
-Now - There are 3 things you can do with this meta data....
+
+
+
+
+Logical reports
+---------------
+
+Logical reports take the print statements in an unmodified REPORT and log whats printed and the section in which its printed to a meta data file.
+
+The report 'function' is unchanged - but the calling procedure is enhanced to include :
+
+	START REPORT report-name TO CONVERTABLE 
+
+as well as the familiar TO PIPE/TO FILE etc
+
+This creates the meta data file (in /tmp) which can be processed later.
+
+The processing is done via the "finish report" statement, "convert report" statement or via an external program "process_report". 
+
+The enhanced FINISH REPORT now accepts the following syntax :
+
+
+
+	FINISH REPORT report-name CONVERTING TO "filename" AS "type" [ USING "layout" ]
+	FINISH REPORT report-name CONVERTING TO MANY
+
+
+Converting to "filename"
+------------------------
+"type" can be any one of the conversions available on the system. 
+
+These are in $AUBITDIR/lib called libLOGREPPROC_*.[so/dll]
+On an average system you may have :
+
+	libLOGREPPROC_CSV.so
+	libLOGREPPROC_PDF.so
+	libLOGREPPROC_TXT.so
+
+This means you can process types of  "CSV", "TXT" or "PDF"
+A special name of "SAVE" can also be used which copied the data verbatim from the meta data file into the filename specified. This file can then be used with the layout editor and/or the process_report program.
+
+If USING "layout" is omitted a default layout will be used.
+
+
+
+Default layouts
+For PDF and TXT it is safe to setup a default layout.
+
+These can be put in the $AUBITDIR/etc directory and have a .lrf extension.
+The filename is made up of combinations of program/module/report name and the width of the page (<=80 = narrow <=132 = normal >132 = wide). The search order is complex - but basically it depends on :
+
+ 	program_module_report_type.lrf
+ 	program_report_type.lrf
+ 	program_module_type.lrf
+ 	module_report_type.lrf
+ 	report_type.lrf
+ 	module_type.lrf
+ 	program_type.lrf
+
+If none of these are found - then it looks for
+
+	default_type_narrow.lrf
+	default_type_normal.lrf
+	default_type_wide.lrf
+
+depending in the width
+
+Finally - it will use
+
+	default_type.lrf
+
+
+(Where type is PDF, TXT or CSV for example)
+
+To create one of these defaults - use layout_engine (for PDF and TXT, you can edit using any meta data file as an input)
+
+
+
+Converting to many
+------------------
+This allows multiple conversions. The meta data file is not automatically deleted so it is possible to use the same meta data to generate a text file, CSV output and PDF if required.
+
+To do this you need to use the CONVERT statement
+
+
+	CONVERT REPORT rep-name TO "filename" AS "type" USING "layout"
+
+again - USING "layout" is omitted, one will be generated automatically..
+
+Once you've done all your conversions, free report will delete the meta data.
+
+
+
+Examples :
+
+	start report r1 to convertable
+	output to report r1 (1,2)
+	finish report r1  converting to "myfile1.pdf" AS "PDF" using "layout1"
+
+
+	start report r1 to convertable
+	output to report r1 (1,2)
+	finish report r1  converting to "myfile2.pdf" AS "PDF"  # uses default layout
+
+	start report r1 to convertable
+	output to report r1 (1,2)
+	finish report r1  converting to many
+        convert report r1 to "orig.output" AS "SAVE" 
+        convert report r1 to "myfile3.pdf" AS "PDF"  
+        convert report r1 to "myfile4.txt" AS "TXT"  
+	free report r1
+
+
+
+
+Saved Meta Data
+
+There are 3 things you can use with the meta data
 
 1) The Report Viewer
 ------------------------
