@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.103 2003-02-20 21:33:37 mikeaubury Exp $
+# $Id: mod.c,v 1.104 2003-02-22 01:55:37 afalout Exp $
 #
 */
 
@@ -1676,8 +1676,7 @@ push_gen (int a, char *s)
   if (gen_stack_cnt[a] >= 90)
     {
       printf ("Out of stack!\n");
-
-      exit (0);
+      exit (77);
     }
   strcpy (gen_stack[a][gen_stack_cnt[a]++], s);
 }
