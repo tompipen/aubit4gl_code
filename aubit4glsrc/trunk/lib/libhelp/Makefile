@@ -24,10 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.20 2004-05-25 20:41:10 mikeaubury Exp $
+# $Id: Makefile,v 1.21 2004-11-11 04:59:29 afalout Exp $
 #
 
-ROOT    	=${AUBITDIR}
+ROOT    	=../..
 LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -77,7 +77,8 @@ dbghelplib.${FGLC_OUTPUT_EXT}: helplib.4gl
 	
 	
 a4gl_xxhelp.afr.c: a4gl_xxhelp.per
-	(export A4GL_PACKER=PACKED; export A4GL_FORMTYPE=GENERIC; export A4GL_SQLTYPE=nosql; \
+	(export A4GL_PACKER=PACKED; export A4GL_FORMTYPE=GENERIC; \
+	export A4GL_SQLTYPE=nosql; export DEBUG=ALL;\
 	${FCOMPILE} -c $^)
 
 ## ==================================================================
