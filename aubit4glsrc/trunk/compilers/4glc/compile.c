@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.46 2003-11-20 13:42:12 mikeaubury Exp $
+# $Id: compile.c,v 1.47 2003-12-17 18:55:28 mikeaubury Exp $
 #*/
 
 /**
@@ -117,6 +117,17 @@ void setGenStackInfo (int _genStackInfo);
 void set_yytext (char *s);
 int has_default_database (void);
 char *get_default_database (void);
+
+
+
+static char *get_rdynamic(void ) {
+char *ptr;
+ptr=acl_getenv("A4GL_RDYNAMIC");
+if (ptr==0) return "-rdynamic";
+if (strlen(ptr)==0) return "-rdynamic";
+
+return ptr;
+}
 
 
 /*
@@ -661,31 +672,31 @@ initArguments (int argc, char *argv[])
             compiler to do the linking */
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
 		  	{
-				sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
+				sprintf (buff, "ecpg_wrap %s -o %s %s %s %s %s %s ",get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 		    }
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
 			{
-				sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
-			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
+			       acl_getenv ("A4GL_SAPDB_ESQLC"), get_rdynamic(),all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 			}
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
 			{
-				  sprintf (buff, "esqlc -rdynamic %s -o %s %s %s %s %s ",
+				  sprintf (buff, "esqlc %s %s -o %s %s %s %s %s ",get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 			}
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",informix_esql,
+				  sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }
 	    } else { /* Pure C compiler output */
-		  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s",
-		       gcc_exec, all_objects, output_object, l_path, l_libs,
+		  sprintf (buff, "%s %s %s -o %s %s %s %s %s",
+		       gcc_exec, get_rdynamic(),all_objects, output_object, l_path, l_libs,
 		       pass_options, extra_ldflags);
         }
 	#else
@@ -695,25 +706,25 @@ initArguments (int argc, char *argv[])
             compiler to do the linking */
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
 		  	{
-				sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
+				sprintf (buff, "ecpg_wrap %s %s -o %s %s %s %s %s ",get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 		    }
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
 			{
-				sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
-			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
+			       acl_getenv ("A4GL_SAPDB_ESQLC"), get_rdynamic(),all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 			}
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
 			{
-				  sprintf (buff, "esqlc -rdynamic %s -o %s %s %s %s %s ",
+				  sprintf (buff, "esqlc %s %s -o %s %s %s %s %s ",get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 			}
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",informix_esql,
+				  sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }
@@ -739,25 +750,25 @@ initArguments (int argc, char *argv[])
 //FIXME:
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
 		  	{
-				sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
+				sprintf (buff, "ecpg_wrap %s %s -o %s %s %s %s %s ",get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 		    }
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
 			{
-				sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
-			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
+			       acl_getenv ("A4GL_SAPDB_ESQLC"), get_rdynamic(),all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 			}
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
 			{
-				  sprintf (buff, "esqlc -rdynamic %s -o %s %s %s %s %s ",
+				  sprintf (buff, "esqlc %s %s -o %s %s %s %s %s ",get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 			}
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",informix_esql,
+				  sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }
@@ -793,25 +804,25 @@ initArguments (int argc, char *argv[])
 //FIXME:
 			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
 		  	{
-				sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
+				sprintf (buff, "ecpg_wrap %s %s -o %s %s %s %s %s ",get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 		    }
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
 			{
-				sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
-			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
+				sprintf (buff, "%s %s %s -o %s %s %s %s %s ",
+			       acl_getenv ("A4GL_SAPDB_ESQLC"), get_rdynamic(),all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 			}
 			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
 			{
-				  sprintf (buff, "esqlc -rdynamic %s -o %s %s %s %s %s ",
+				  sprintf (buff, "esqlc %s %s -o %s %s %s %s %s ",get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 			}
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",informix_esql,
+				  sprintf (buff, "%s %s %s -o %s %s %s %s %s ",informix_esql,get_rdynamic(),
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }

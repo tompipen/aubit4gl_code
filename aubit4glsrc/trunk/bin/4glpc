@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.119 2003-12-17 18:46:26 mikeaubury Exp $
+# $Id: 4glpc,v 1.120 2003-12-17 18:55:27 mikeaubury Exp $
 #
 
 ########################################################################
@@ -1335,7 +1335,11 @@ else
 	if test "$COMSPEC" = ""; then
 		#without -rdynamic:
 		#Opps 1 - can't open DLL - /opt/aubit/aubit4glsrc/lib/libSQL_unixodbc.so: undefined symbol: status
-		LIBS="$LIBS -rdynamic"
+		if [ "$A4GL_RDYNAMIC" = "" ]
+		then
+			A4GL_RDYNAMIC="-rdynamic"
+		fi
+		LIBS="$LIBS $A4GL_RDYNAMIC"
 	fi
 fi
 
