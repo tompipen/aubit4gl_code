@@ -10,11 +10,50 @@ static int A4GL_curses_to_aubit_int (int a);
 #include <curses.h>
 #include <ctype.h>
 
+/*
 
-#ifndef WIN32
-#define a4gl_mvwaddwstr mvwaddwstr
+Curses.h in Aubit tree (taken from Linux) has waddwstr:
+
+#define NCURSES_VERSION_MAJOR 5
+#define NCURSES_VERSION_MINOR 2
+#define NCURSES_VERSION_PATCH 20001021
+
+ #ifdef _XOPEN_SOURCE_EXTENDED
+  extern int waddwstr (WINDOW *, const wchar_t *);	// missing 
+  extern int waddnwstr (WINDOW *, const wchar_t *, int);	// missing 
+  extern int wadd_wch (WINDOW *, const cchar_t *);	// missing 
+  extern int wadd_wchnstr (WINDOW *, const cchar_t *, int);	// missing 
+  extern int wadd_wchstr (WINDOW *, const cchar_t *);	// missing 
+#endif				// _XOPEN_SOURCE_EXTENDED 
+
+Assuming someone defined _XOPEN_SOURCE_EXTENDED...
+(Ignore CVS ID there, it's ID of Aubit CVS)
+
+My curses.h is:
+
+ $Id: lowlevel_tui.c,v 1.27 2004-06-26 09:33:27 afalout Exp $ 
+ #define NCURSES_VERSION_MAJOR 5
+ #define NCURSES_VERSION_MINOR 3 
+ #define NCURSES_VERSION_PATCH 20030802
+
+And has no waddwstr & friends at all...
+
+Used to be there:
+
+http://www.mit.edu/afs/athena/software/cygwin/cygwin_v1.3.2/usr/include/ncurses/curses.h
+
+#define NCURSES_VERSION_MAJOR 5
+#define NCURSES_VERSION_MINOR 2
+#define NCURSES_VERSION_PATCH 20001021
+
+Looks like it was removed in Curses 5.3???!
+*/
+//#ifndef WIN32
+#if (! defined(__CYGWIN__)) 
+//&& ! defined(__MINGW32__))
+	#define a4gl_mvwaddwstr mvwaddwstr
 #else 
-#define a4gl_mvwaddwstr(win,y,x,wstr) (wmove(win,y,x) == ERR ? ERR : waddwstr(win,wstr))
+	#define a4gl_mvwaddwstr(win,y,x,wstr) (wmove(win,y,x) == ERR ? ERR : waddwstr(win,wstr))
 #endif
 
 
@@ -27,7 +66,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.26 2004-06-16 16:51:01 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.27 2004-06-26 09:33:27 afalout Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -2481,7 +2520,12 @@ A4GL_LL_wadd_wchar_xy_col (void *win, int x, int y, int oattr, wchar_t ch)
   if (x < 0 || y < 0 || x > UILIB_A4GL_get_curr_width () || y > UILIB_A4GL_get_curr_height ());
   else {
 		wattrset((WINDOW *)p,attr&0xffffff00);
+#if (! defined(__CYGWIN__)) 
 		a4gl_mvwaddwstr(p,  y, x, buff);
+#else
+		A4GL_debug ("See comment on top of file. EXIT");
+		exit (2);
+#endif
 	}
 }
 

@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 #
-# $Id: amake,v 1.28 2004-03-27 11:48:58 afalout Exp $
+# $Id: amake,v 1.29 2004-06-26 09:33:01 afalout Exp $
 #
 #####################################################################
 
@@ -56,11 +56,17 @@ RULESDIR=$AUBITDIR/incl
 #export MAKERULES="$RULESDIR/d4gl.mk $RULESDIR/a4gl.mk"
 
 if test "$MAKE" = ""; then
-	MAKE=gmake
 	#Amake can't use non-GNU make anyhow
+	if test "$COMSPEC" != ""; then
+		#CygWin does not install gmake link, make is gmake
+		MAKE=make
+	else
+		MAKE=gmake
+	fi
+	
 	#echo "NOTE: MAKE was not set - defaulting to $MAKE" 
 fi
-if test "$MAKE" != "gmake"; then 
+if test "$MAKE" != "gmake" -a "$COMSPEC" = ""; then 
 	echo "WARNING: Amake requires GNU make (gmake) - current MAKE is set to $MAKE"
 fi
 MK=".mk"
