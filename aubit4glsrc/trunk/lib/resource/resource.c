@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.47 2003-08-01 14:34:29 mikeaubury Exp $
+# $Id: resource.c,v 1.48 2003-08-04 09:51:16 mikeaubury Exp $
 #
 */
 
@@ -151,6 +151,7 @@ struct str_resource builtin_resource[] = {
   {"FIELD_REQD_MSG", " This field required an entered value "},
   {"FIELD_CONSTR_EXPR", " Error in expression "},
   {"ARR_DIR_MSG"," There are no more rows in the direction you are going "},
+  {"INPARRAY_FULL_MSG"," Cannot insert another row - the input array is full "},
 
   {"MENUCSELECT", "0"},
   {"MENUCTITLE", "0"},

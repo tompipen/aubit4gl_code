@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.33 2003-08-01 14:34:29 mikeaubury Exp $
+# $Id: iarray.c,v 1.34 2003-08-04 09:51:16 mikeaubury Exp $
 #*/
 
 /**
@@ -573,7 +573,8 @@ static void process_key_press(struct s_inp_arr *arr,int a) {
 	    }
 	  else
 	    {
-	      A4GL_debug ("Insert disabled - too many rows");
+	      	A4GL_debug ("Insert disabled - too many rows");
+		A4GL_error_nobox (acl_getenv("INPARRAY_FULL_MSG"), 0);
 	    }
 	}
     }

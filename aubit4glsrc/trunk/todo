@@ -20,7 +20,7 @@ Enhancements
 	
 	as an fix for hard-coded DATABASE directive in .4gl and .per files,
 	make an option on the compiler (every compiler that might need to access
-	the database - 4glc, fcompile...). --database=dbname@theserver
+	the database - 4glc, fcompile...). --database=dbname@theserver ** DONE - use SCHEMA databasename instead
 
 
 ESQL/C
@@ -45,10 +45,10 @@ UI
 
 Other unimplemented functions
 	put_insert *partial
-	INPUT ARRAY *partial in ui_curses
+	INPUT ARRAY  ** DONE
 	ERROR - needs a window...
-	get_fldbuf 
-	check infield etc
+	get_fldbuf  ** DONE
+	check infield etc ** DONE
 
 
 SQL Parser
@@ -71,7 +71,7 @@ XML-RPC
     create server part
 
 TUI
-	implement Field attribute hierarchy
+	implement Field attribute hierarchy ** DONE
 	implement Field expression parsing
 	implement attribute 'lines' hierarchy
 	General cleanups..

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.15 2003-07-25 22:04:53 mikeaubury Exp $
+# $Id: rexp2.c,v 1.16 2003-08-04 09:51:16 mikeaubury Exp $
 #
 */
 
@@ -191,6 +191,10 @@ A4GL_construct (char *tabname,char *colname_s, char *val, int inc_quotes)
   char lastchar;
   int ismatch;
   char colname[256];
+
+  if (tabname==0) {
+		tabname="";
+  }
   A4GL_debug("A4GL_construct : %s %s %s",tabname,colname_s,val);
   if (strlen(tabname)) {
 		sprintf(colname,"%s.%s",tabname,colname_s);

@@ -10979,12 +10979,12 @@ print_next_form_field(yyvsp[-2].str,yyvsp[0].str);
 
   case 713:
 #line 3803 "fgl.yacc"
-    {sprintf(yyval.str,"\"+\",0");}
+    {sprintf(yyval.str,"\"+\"");}
     break;
 
   case 714:
 #line 3804 "fgl.yacc"
-    {sprintf(yyval.str,"\"-\",0");}
+    {sprintf(yyval.str,"\"-\"");}
     break;
 
   case 716:

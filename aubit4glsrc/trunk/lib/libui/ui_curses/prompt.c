@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.22 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: prompt.c,v 1.23 2003-08-04 09:51:16 mikeaubury Exp $
 #*/
 
 /**
@@ -98,11 +98,16 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   cw = (WINDOW *) A4GL_get_currwin ();
   if (A4GL_iscurrborder()) promptline++;
   p = derwin (cw, 1, width, promptline-1  , A4GL_iscurrborder ());
+
+  
   if (p==0) {
 		A4GL_exitwith("No prompt window created");
 		return 0;
   }
   prompt->win = p;
+
+  buff[width]=0;
+  wprintw(p,"%s",buff);
   promptstr = A4GL_char_pop ();
   prompt->mode = 0;
   prompt->h = h;
@@ -112,6 +117,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   prompt->lastkey = 0;
   width -= strlen (promptstr);
   width--;
+
   if (strlen(promptstr)) {
 	sarr[field_cnt++] = (FIELD *) A4GL_make_label (0, 0, promptstr);
   }
@@ -180,16 +186,16 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   A4GL_debug ("Posted form=%d", a);
   A4GL_int_form_driver (f, REQ_FIRST_FIELD);
   A4GL_int_form_driver (f, REQ_OVL_MODE);
-  wrefresh (p);
+  //wrefresh (p);
   A4GL_debug ("Initialized form");
 /* zrefresh(); */
   A4GLSQL_set_status (0, 0);
 
   A4GL_gui_startprompt ((long) prompt);
   A4GL_gui_setfocus ((long) prompt->field);
-  wrefresh (p);
+  //wrefresh (p);
   A4GL_mja_refresh ();
-
+  A4GL_zrefresh();
   return 1;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.63 2003-08-01 01:03:26 mikeaubury Exp $
+# $Id: newpanels.c,v 1.64 2003-08-04 09:51:16 mikeaubury Exp $
 #*/
 
 /**
@@ -1810,6 +1810,7 @@ A4GL_mja_endwin (void)
 int
 A4GL_chkwin (void)
 {
+ A4GL_debug("chkwin");
   if (A4GL_env_option_set ("NOCURSES"))
     {				/* FIXME: this is now A4GL_UI=CONSOLE */
       A4GL_exitwith ("NOCURSES Mode has been specified - operation not permitted");
@@ -1819,10 +1820,16 @@ A4GL_chkwin (void)
 
   if (A4GL_islinemode ())
     {
-      A4GL_init_curses_stuff ();
-      A4GL_set_scrmode ('S');
-      A4GL_mja_refresh ();
-    }
+	A4GL_debug(" API_ui Was linemode..");
+	clearok(curscr,1);
+      	A4GL_init_curses_stuff ();
+	clearok(curscr,1);
+      	A4GL_set_scrmode ('S');
+	A4GL_zrefresh();
+      	A4GL_mja_refresh ();
+    } else {
+	A4GL_debug("API_ui Was screen mode..");
+	}
   return 1;
 }
 

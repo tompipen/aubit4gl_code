@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.22 2003-07-27 17:28:19 mikeaubury Exp $
+# $Id: report.c,v 1.23 2003-08-04 09:51:16 mikeaubury Exp $
 #
 */
 
@@ -121,13 +121,15 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 	{
 	  if (strcmp (rep->output_loc, "stdout") == 0)
 	    {
-	      A4GL_push_char ("");
-	      A4GL_push_int (-1);
-	      A4GL_push_int (-1);
-	      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
-	      A4GL_display_at (1, 0);
+	      A4GL_gotolinemode ();
+	      //A4GL_push_char ("");
+	      //A4GL_push_int (-1);
+	      //A4GL_push_int (-1);
+	      //A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
+	      //A4GL_display_at (1, 0);
 	      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
 	      rep->output = stdout;
+	      A4GL_gotolinemode ();
 	      A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
 	    }
 	  else
@@ -755,6 +757,11 @@ static char *A4GL_report_char_pop(void) {
 
   return ptr;
 
+}
+
+void A4GL_finished_report() {
+// after a report has finished the screen
+// maybe left in line mode...
 }
 
 /* ============================= EOF ================================ */

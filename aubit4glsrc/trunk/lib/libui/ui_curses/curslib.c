@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.52 2003-08-01 14:34:29 mikeaubury Exp $
+# $Id: curslib.c,v 1.53 2003-08-04 09:51:16 mikeaubury Exp $
 #*/
 
 /**
@@ -1494,6 +1494,7 @@ A4GL_disp_horiz_menu (char *title, int y, int mn_type)
   int old_opt;
   int num_rows = 0;
 
+A4GL_chkwin ();
   if (mn_type == ACL_MN_HORIZ_BOXED)
     mn_offset = 1;
   else
@@ -1772,7 +1773,7 @@ A4GL_menu_loop (void* menuv)
   int key_pressed;
   ACL_Menu *menu;
   menu=menuv;
-
+A4GL_chkwin ();
 
 /*
    owin=get_curr_win();

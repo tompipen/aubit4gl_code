@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.60 2003-08-02 13:07:57 afalout Exp $
+# $Id: ioform.c,v 1.61 2003-08-04 09:51:16 mikeaubury Exp $
 #*/
 
 /**
@@ -1260,6 +1260,22 @@ A4GL_set_fields (void *vsio)
   A4GL_debug ("Field list=%p number of fields = %d", field_list, nofields);
 
   nv = sio->novars;
+  if (sio->mode==MODE_CONSTRUCT) {
+		int a;
+		int need_fix=0;
+		// sio->constr contains a s_constr_list structure
+		// this may need explanding if the column contains a '*'
+		for (a=0;a<nv;a++) {
+			if (strcmp(sio->constr[a].colname,"*")==0) { // It'll need expanding...
+				need_fix=1;
+			} 
+		}
+		if (need_fix) {
+				A4GL_exitwith("Construct needs fixing to handle 'byname on tab.*'");
+				sio->nfields=0;
+				return 0;
+		}
+  }
 
   if (nofields != nv - 1)
     {
@@ -1268,10 +1284,15 @@ A4GL_set_fields (void *vsio)
 	 nofields + 1, nv);
       A4GL_exitwith
 	("Number of fields is not the same as the number of variables");
+	sio->nfields=0;
       return 0;
     }
 
-  for (a = 0; a <= nofields; a++)
+
+
+
+
+  for (a = 0; a < nv; a++)
     {
 
       if (field_list[a] == firstfield)
@@ -1287,8 +1308,6 @@ A4GL_set_fields (void *vsio)
 	  A4GL_set_init_value (field_list[a], sio->vars[a].ptr,
 			       sio->vars[a].dtype +
 			       ENCODE_SIZE (sio->vars[a].size));
-
-
 
 	}
       else
@@ -2430,6 +2449,10 @@ A4GL_push_constr (void *vs)
   int flg = 0;
   struct s_screenio *s;
   s = vs;
+  if (s->nfields==0) {
+	A4GL_push_char("");
+	return 0;
+  }
   if (s->currform == 0)
     {
       A4GL_push_char ("");
@@ -2453,8 +2476,10 @@ A4GL_push_constr (void *vs)
 	  A4GL_debug ("getting ptr", fprop);
 	  A4GL_debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname,
 		      (fprop->datatype) & 0xffff);
-	  A4GL_debug ("Calling constr with : '%s' '%s'", s->constr[a].tabname,
-		      s->constr[a].colname);
+
+	
+	  //A4GL_debug ("Calling constr with : '%s' '%s'", s->constr[a].tabname, s->constr[a].colname);
+
 	  ptr =
 	    (char *) A4GL_construct (s->constr[a].tabname,
 				     s->constr[a].colname, field_buffer (f,

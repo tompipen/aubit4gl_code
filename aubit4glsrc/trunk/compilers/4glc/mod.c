@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.132 2003-06-27 09:26:13 mikeaubury Exp $
+# $Id: mod.c,v 1.133 2003-08-04 09:51:15 mikeaubury Exp $
 #
 */
 
@@ -2711,9 +2711,65 @@ start_arr_bind (char i, char *var)
 void
 push_construct (char *a, char *b)
 {
-  strcpy (constr_buff[constr_cnt].tab, a);
-  strcpy (constr_buff[constr_cnt].col, b);
-  constr_cnt++;
+  if (strcmp(b,"*")==0) {
+	push_construct_table(a);
+  } else {
+  	strcpy (constr_buff[constr_cnt].tab, a);
+  	strcpy (constr_buff[constr_cnt].col, b);
+  	constr_cnt++;
+  }
+}
+
+
+
+
+static int
+push_construct_table (char *tableName)
+{
+  int rval;
+  int isize = 0;
+  int idtype = 0;
+  char colname[256] = "";
+  char csize[20];
+  char cdtype[20];
+  char buff[300];
+  char *ccol;
+
+  A4GL_debug ("push_construct_table()");
+  A4GL_debug ("Calling get_columns : %s\n", tableName);
+  rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
+  A4GL_debug ("rval = %d", rval);
+  if (rval == 0 && tableName)
+    {
+      sprintf (buff, "%s does not exist in the database", tableName);
+      a4gl_yyerror (buff);
+      return 1;
+    }
+
+  A4GL_debug ("Rval !=0");
+
+  while (1)
+    {
+      colname[0] = 0;
+
+      rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+      A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
+      A4GL_debug ("next column for table '%s' is '%s'", tableName, ccol);
+
+      strcpy (colname, ccol);
+      A4GL_trim(colname);
+      /*
+         warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
+         we are sending char ARRAY to function expecting char POINTER !!!!
+       */
+
+      if (rval == 0)
+        break;
+
+	push_construct(tableName,colname);
+    }
+  A4GLSQL_end_get_columns ();
+  return 0;
 }
 
 
