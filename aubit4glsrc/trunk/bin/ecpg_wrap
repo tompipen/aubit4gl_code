@@ -77,7 +77,7 @@ fi
 
 for a in $srcs
 do
-	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX_SE -no_indicator -t $ecpg_args $a"
+	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX_SE -rno_indicator -t $ecpg_args $a"
 
     #-C INFORMIX_SE
     echo $ECPG_RUN
