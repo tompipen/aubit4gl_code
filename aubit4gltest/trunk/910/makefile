@@ -217,3 +217,6 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE DDL_SERIAL ANSI_INSERT SQLCA_SQLERRD6 "
+

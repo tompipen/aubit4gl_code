@@ -48,7 +48,7 @@ MAIN
       FROM xpto
       WHERE valueColumn  like "the second%"
 			ORDER BY 1
-
+##################################### THIS IS NOT EQUAL - LOOKS LIKE - LIKE?
 	OPEN cr_
 
 	FETCH cr_ INTO lv_keyColumn, lv_valueColumn, lv_dateColumn

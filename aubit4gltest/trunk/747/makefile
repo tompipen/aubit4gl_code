@@ -219,3 +219,7 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE \
+	CURSOR_SELECT CLOSE_CURSOR SELECT_WHERE_IN ORDER_BY_NUMBER"
+

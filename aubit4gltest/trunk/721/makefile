@@ -218,4 +218,8 @@ transaction:
 
 ansi_sql_compat:
 	@echo "0"
+	
+sql_features_used:
+	@echo "DROP_TABLE DROP_VIEW DROP_SYNONYM CREATE_TABLE CREATE_VIEW \
+	CREATE_SYNONYM INSERT_COLUMNLIST_EQ_VALUELIST ROWID"
 

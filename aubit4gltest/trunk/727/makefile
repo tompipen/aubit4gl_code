@@ -219,3 +219,7 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST \
+	ANSI_SELECT META_SELECT_AS_ALIAS"
+

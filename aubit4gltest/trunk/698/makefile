@@ -211,4 +211,8 @@ need_ifx_version:
 
 ansi_sql_compat:
 	@echo "0"
+	
+sql_features_used:
+	@echo "DROP_TABLE DROP_VIEW CREATE_TABLE CREATE_VIEW INSERT_COLUMNLIST_EQ_VALUELIST \
+		CURSOR_SELECT META_INSERT_VIEW"
 

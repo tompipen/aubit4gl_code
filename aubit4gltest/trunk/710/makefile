@@ -212,3 +212,7 @@ need_ifx_version:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE DROP_TABLE_QUALIFIED_PATH CREATE_TABLE \
+		INSERT_COLUMNLIST_EQ_VALUELIST_QUALIFIED_PATH"
+

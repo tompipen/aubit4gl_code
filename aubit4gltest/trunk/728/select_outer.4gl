@@ -48,3 +48,4 @@ MAIN
   DROP TABLE xpta
   EXIT PROGRAM exitStatus
 END MAIN
+

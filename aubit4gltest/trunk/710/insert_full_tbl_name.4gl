@@ -29,3 +29,5 @@ MAIN
   DROP TABLE 'informix'.xpto
   DROP TABLE xpta
 END MAIN
+
+

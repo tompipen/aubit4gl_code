@@ -35,6 +35,8 @@ MAIN
       INTO lv_keycolumn, lv_string, a_float
       FROM xpto, xpta
 			ORDER BY 1, 2
+#What does this select have to do with cartesian product?
+			
 
 	OPEN cr
 	FETCH cr

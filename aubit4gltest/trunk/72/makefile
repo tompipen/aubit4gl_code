@@ -14,7 +14,7 @@ run: compile
 	sh ./run_r1
 	
 clean:
-	rm -f test_319_iec.rpt  test_319_i.rpt  test_319_pec.rpt  test_319.rpt
+	rm -f test_319_iec.rpt  test_319_i.rpt  test_319_pec.rpt  test_319.rpt r1.c.17.lreg
 	
 
 ansi_sql_compat:

@@ -217,4 +217,8 @@ transaction:
 
 ansi_sql_compat:
 	@echo "0"
+	
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST \
+	CURSOR_SELECT CLOSE_CURSOR SELECT_ALL ORDER_ASC ORDER_DESC"
 

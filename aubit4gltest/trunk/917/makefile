@@ -219,3 +219,8 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE ANSI_INSERT UPDATE_COLUMNLIST_EQ_VALUELIST \
+		SQLCA_SQLAWARN6"
+

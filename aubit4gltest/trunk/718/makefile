@@ -212,3 +212,8 @@ need_ifx_version:
 ansi_sql_compat:
 	@echo "0"
 
+
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE DDL_DATE INSERT_COLUMNLIST_EQ_VALUELIST \
+	SELECT_DISTINCT"
+

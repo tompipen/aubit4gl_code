@@ -27,3 +27,5 @@ MAIN
   DROP VIEW xptv
   DROP TABLE xpto
 END MAIN
+
+

@@ -47,6 +47,9 @@ MAIN
       FROM xpto
       WHERE valueColumn LIKE "the#" ESCAPE "#"
 			ORDER BY 1
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST DDL_DATE \
+	CURSOR_SELECT WHERE_LIKE_ESCAPE ORDER_BY_NUMBER CLOSE_CURSOR"
 
 	OPEN cr_
 	FETCH cr_ INTO lv_keyColumn, lv_valueColumn, lv_dateColumn

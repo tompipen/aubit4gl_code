@@ -212,3 +212,7 @@ need_ifx_version:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE DROP_VIEW CREATE_TABLE CREATE_VIEW_WITH_SELECT \
+		META_INSERT_MULTITABLE_VIEW SQLCA_SQLCODE"
+

@@ -219,3 +219,6 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE ANSI_INSERT SELECT_SUM SQLCA_SQLAWARN3"
+
