@@ -6,8 +6,11 @@
 #include "a4gl_incl_infx.h"
 
 
-void popint(short *s) {
-	*s=pop_int()&0xffff;
+void popint(int *s) {
+	int a;
+	a=pop_int();
+	*s=(a&0xffff);
+	
 }
 
 void popquote(char *s,int size) {
@@ -17,6 +20,11 @@ void popquote(char *s,int size) {
 
 void retquote(char *s) {
 	push_char(s);
+}
+
+
+void pushint(int a ) {
+	push_int(a);
 }
 
 void retint(int a) {

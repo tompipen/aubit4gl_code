@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.61 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: lexer.c,v 1.62 2003-02-28 17:42:39 mikeaubury Exp $
 #*/
 
 /**
@@ -941,13 +941,18 @@ fix_bad_strings (char *s)
 	  continue;
 	}
 
-      if (s[a + 1] == '[' || s[a + 1] == ']' || s[a + 1] == '^'
-	  || s[a + 1] == '/')
+      /* I have NO idea why this is here - so I'm taking it out...
+       * If you know what it is for - replace this with what it is */
+
+#ifdef I_VE_REMOVED_IT
+      if (s[a + 1]=='['||s[a + 1]==']' || s[a + 1] == '^' || s[a + 1] == '/')
 	{
 	  buff[c++] = s[a + 1];
 	  a++;
 	  continue;
 	}
+#endif
+
       buff[c++] = '\\';
     }
 
@@ -1128,7 +1133,9 @@ debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
       to_lower_str (buff);
     }
 
+	//printf("Buff=%s\n",buff);
   fix_bad_strings (buff);
+	//printf("After Buff=%s\n",buff);
 
   /* call set_str() to send back to the parser the text/value 
    * associated with the token.

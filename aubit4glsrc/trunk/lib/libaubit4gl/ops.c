@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.7 2003-02-26 22:28:10 mikeaubury Exp $
+# $Id: ops.c,v 1.8 2003-02-28 17:43:15 mikeaubury Exp $
 #
 */
 
@@ -370,6 +370,91 @@ return ;
 
 
 /**
+ * Add all the default operations to the system
+ *
+ * @return
+ */
+void
+dt_dt_ops(int op)
+{
+struct a4gl_dtime dt2;
+struct a4gl_dtime dt1;
+int dtime_data1[10];
+int dtime_data2[10];
+int d1;
+int s1;
+void *ptr1;
+struct a4gl_dtime *pi;
+struct a4gl_dtime *pd;
+int ok=0;
+char buff[256];
+int start;
+char *ptr;
+double d_d1;
+double d_d2;
+
+if (op != (OP_SUB)) {
+	push_int(0);
+}
+// d2 - d1
+	get_top_of_stack (2, &d1, &s1, (void **) &pd);
+
+	get_top_of_stack (1, &d1, &s1, (void **) &pi);
+
+
+	if ((d1&DTYPE_MASK)!=DTYPE_DTIME) {
+		printf("Confused... %d != %d\n",d1&DTYPE_MASK,DTYPE_DTIME);
+	}
+
+
+	dt1.stime=pi->stime;
+	dt1.ltime=pi->ltime;
+
+	dt2.stime=pd->stime;
+	dt2.ltime=pd->ltime;
+
+	pop_param(&dt1,DTYPE_DTIME,dt1.stime*16+dt2.ltime);
+	pop_param(&dt2,DTYPE_DTIME,dt1.stime*16+dt2.ltime);
+
+
+	decode_datetime (&dt1, &dtime_data1[0]);
+	decode_datetime (&dt2, &dtime_data2[0]);
+	dtime_data2[0]-=dtime_data1[0]; // Y
+	dtime_data2[1]-=dtime_data1[1]; //
+	dtime_data2[2]-=dtime_data1[2];
+	dtime_data2[3]-=dtime_data1[3];
+	dtime_data2[4]-=dtime_data1[4];
+	dtime_data2[5]-=dtime_data1[5];
+
+// Borrow some seconds for fractions
+	while (dtime_data2[6]<0) { dtime_data2[6]+=100000; dtime_data2[5]--; }
+
+// Borrow some minutes for seconds
+	while (dtime_data2[5]<0) { dtime_data2[5]+=60; dtime_data2[4]--; }
+
+// Borrow some hours for minutes
+	while (dtime_data2[4]<0) { dtime_data2[4]+=60; dtime_data2[3]--; }
+
+// Borrow some days for some hours..
+	while (dtime_data2[3]<0) { dtime_data2[3]+=24; dtime_data2[2]--; }
+
+// Borrow some months for some days. @ FIXME @todo fix days in months
+	while (dtime_data2[2]<0) { dtime_data2[2]+=30; dtime_data2[1]--; }
+
+// Borrow some years for some months.
+	while (dtime_data2[1]<0) { dtime_data2[1]+=12; dtime_data2[0]--; }
+
+	if (dtime_data2[0]||dtime_data2[1]) {
+		// YEAR TO MONTH interval
+		sprintf(buff,"%4d-%02d",dtime_data2[0],dtime_data2[1]);
+	} else {
+		sprintf(buff,"%d %02d:%02d:%02d.%05d",dtime_data2[2],dtime_data2[3],dtime_data2[4],dtime_data2[5],dtime_data2[6]);
+	}
+ 
+	push_char(buff);
+}
+
+/**
  *
  *
  * @return
@@ -409,6 +494,7 @@ DTYPE_SERIAL
 
 	add_op_function(DTYPE_INTERVAL,	DTYPE_DTIME,	OP_MATH,dt_in_ops);
 	add_op_function(DTYPE_DTIME,	DTYPE_INTERVAL,	OP_MATH,in_dt_ops);
+	add_op_function(DTYPE_DTIME,	DTYPE_DTIME,	OP_MATH,dt_dt_ops);
 
 	debug("Finished adding default operations");
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.12 2003-02-28 09:07:58 mikeaubury Exp $
+# $Id: newpanels.c,v 1.13 2003-02-28 17:43:15 mikeaubury Exp $
 #*/
 
 /**
@@ -1455,7 +1455,7 @@ int clr_end_of_line=0;
 	line_length=get_curr_width()-x;
 	line_length++;
 	if (strlen(s)>line_length) {
-		debug("%s seems to long to display... - I'm gonna trim it..");
+		debug("'%s' seems to long to display... - I'm gonna trim it..",s);
 		s[line_length]=0;
 		
 	}

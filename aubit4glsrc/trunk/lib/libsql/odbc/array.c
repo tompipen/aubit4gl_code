@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.4 2003-02-17 00:03:21 afalout Exp $
+# $Id: array.c,v 1.5 2003-02-28 17:43:15 mikeaubury Exp $
 #
 */
 
@@ -394,8 +394,12 @@ HSTMT ret;
 	while (cnt < mx)
     {
 		rc = SQLFetch (hstmt);
-		if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
+		if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR) {
+			#ifdef DEBUG
+			debug("Done fetch - got %d",rc);
+			#endif
 			break;
+		}
 		#ifdef DEBUG
 			debug ("column -> %s Dtype=%x len=%x rc=%d", cn, dt, len, rc);
 			debug ("column %s %s %s %s", tq, to, tn, cn);

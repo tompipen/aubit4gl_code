@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.28 2003-02-26 22:28:08 mikeaubury Exp $
+# $Id: conv.c,v 1.29 2003-02-28 17:43:15 mikeaubury Exp $
 #
 */
 
@@ -3838,7 +3838,7 @@ valid_int (char *s, int *data,int size)
   }
 
   size_type=(size>>4)&15;
-  debug ("In valid_dt\n");
+  debug ("In valid_int\n");
   if (strlen (s) > 24)
     {
       debug ("Too long\n");
@@ -3897,7 +3897,7 @@ valid_int (char *s, int *data,int size)
   type[cnt] = 0;
   dt_type = -1;
   debug ("cnt=%d\n", cnt);
-  debug ("type=%s\n", type);
+  debug ("type='%s'\n", type);
 
   if (strcmp (type, "") == 0)
     {
