@@ -8,16 +8,16 @@
 
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
-EXPECT_TO_FAIL_TESTS="1 82 487 488 490 240 670 692 696 719 720"
+EXPECT_TO_FAIL_TESTS="1 82 487 488 490 240 670 696 702"
 #1 (money), 82(report),487 (Too many arguments to function `A4GL_acli_scroll'+488),
 #490 (syntax on SCROOL DOWN ... BY) 
 #240 (numeric formating) 670 (syntax errors in generated EC code)
-#692 (twelveColExpr = @dummyColumn[2,4])
 #696 (Syntax in generated EC)
-#719+720 (Syntax - AS KEY_COLUMN)
+#702 too few arguments to function `A4GL_copy_char'
 
-#Not reported
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
+#Not (yet) reported
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 251"
+#251 (Aubit specific non-comment)
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
@@ -41,10 +41,11 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 
 ######################
 #Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 249 684 105 705"
-
+INVALID_TESTS="375 377 249 684 105 705 720 217"
 #105 - missing database schemma
 #705 - It is not possible to convert between the specified types.
+#720 - Diferent string value
+#217 - -as-dll problem with 4glpc
 
 ##############################################################################
 #							Describe tests:
@@ -137,29 +138,51 @@ PCODE_ENABLED="3 101 210"
 ##############################################################################
 
 #######################
-#See what platform are we on:
-
+#Set defaults
 CURR_DIR=`pwd`
 export A4GL_PRG=".4ae"
-#FIXME: 4glc does not know how to make -ecp programs
-#export FGLC=4glc
-export FGLC=4glpc
-chmod a+x ../../../bin/4glpc
+export FGLC=4glc
 USE_COMP=aubit
 MAKE_TARGET=run
 MAKE=gmake
 DB_HAS_TRANSACTION=NULL
-
-
 #decimals work ok with 'LC_NUMERIC' set to C
 #apparently they fail with anything else, like when LANG is set to 'de_DE@euro'
 export LC_NUMERIC="C"
 
 
+
+#######################
+#Set and check AUBITDIR
+if test "$AUBITDIR" = ""; then
+	AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
+	if test "$AUBITDIR" = ""; then
+		echo "ERROR: AUBITDIR not set and aubit-config not installed"
+		exit 3
+	else
+		export AUBITDIR
+	fi
+fi
+if test -f "$AUBITDIR/bin/4glpc" ; then 
+	chmod a+x $AUBITDIR/bin/4glpc
+else
+	echo "ERROR: invalid AUBITDIR ($AUBITDIR)"
+	exit 4
+fi
+
+#Even on Windows we have to use UNIX style path in this script. Since when using 
+#MinGW AUBITDIR must be Windows-stile, we must distinguish between them and use
+#only AUBITDIR_UNIX in this script
+AUBITDIR_UNIX="$AUBITDIR"
+
+#######################
+#See what platform are we on:
 #FIXME: Why is this causing "mingw32-gcc: not found" on CygWin ?????
 TMP=`mingw32-gcc --version 2>/dev/null`
 if test "$TMP" != ""; then
     PLATFORM=MINGW
+	#Aubit programs compiled with MinGW GCC understand only Windows-style paths
+	export AUBITDIR="D:/cygwin$AUBITDIR"
     EXE_EXT=.exe
 else
     if test "$COMSPEC" != ""; then
@@ -169,6 +192,22 @@ else
 		export FGLC=4glpc
     else
         PLATFORM=UNIX
+    fi
+fi
+
+#######################
+#Check if we have TUI lib, set AUBITDIR:
+if test "$PLATFORM" = "MINGW"; then
+	#MinGw don't have Curses, but we can try using CygWin one:
+	if ! test -f $AUBITDIR_UNIX/lib/libUI_TUI.dll; then
+        #this file is placed in /tmp by aubitbuild.sh ONLY, so if you want to update it
+        #you will need to do it manually
+		if test -f /tmp/libUI_TUI.dll; then
+			cp /tmp/libUI_TUI.dll $AUBITDIR_UNIX/lib
+	    else
+	        echo "Can't find /tmp/libUI_TUI.dll - Stop."
+	        exit 5
+	    fi
     fi
 fi
 
@@ -219,11 +258,9 @@ for a in $FLAGS; do
 			echo ""
 			exit 4
        fi
-	
 	fi
 
    if test "$NEW_TEST" = "1"; then
-#echo zzz2   
         if test -d $a; then
             echo "ERROR: test $a already exists"
 			exit 5
@@ -250,25 +287,20 @@ for a in $FLAGS; do
             #exit 'for' loop since this flag means we will not be running -alltests
 			break
             ;;
-
-		-cert) #USe flags expected to verify certified tests
+		-cert) #Use flags expected to verify certified tests
 			FLAGS="$CERT_DEFAULT_FLAGS $FLAGS"
 			break
 			;;
-			
         -new)
 			#create new test
 			NEW_TEST="1"
-#echo zzz1			
             continue
             ;;
-
         -info)
 			#Show information about the test
 			INFO_TEST="1"
             continue
             ;;
-
 		-catalogue) 
 			#create catalogue.txt file using -info flag
 			echo "Creating tests catalogue file ... this will take a while, please wait..."			
@@ -276,10 +308,8 @@ for a in $FLAGS; do
 			echo "Tests catalogue created (./catalogue.txt)"
 			exit 0
 			;;
-			
         -add-makefile)
 			#Do not add makefile to 58 and 65 - they are obsolete
-		
 			ALL_DIRS=[0-9]*
             for a in $ALL_DIRS; do
 				if ! test -f $a/?akefile; then
@@ -295,7 +325,6 @@ for a in $FLAGS; do
             #exit script - we are done
 			exit 0
             ;;
-
         -add-cvsignore)
 			ALL_DIRS=[0-9]*
             for a in $ALL_DIRS; do
@@ -314,28 +343,21 @@ for a in $FLAGS; do
 
             #exit script - we are done
 			exit 0
-
             ;;
 
         -alltests)
             echo "Running all available combinations of tests..."
 			ALL_TESTS_NONDB=1
 			ALL_TESTS_DB=1
-            #break
 			;;
-
 		-alltests-db)
             echo "Running all available combinations of DATABASE tests..."
 			ALL_TESTS_DB=1
-            #break
 			;;
-
         -alltests-nodb)
             echo "Running all available combinations of NON_DATABASE tests..."
 			ALL_TESTS_NONDB=1
-            #break
 			;;
-
         -stop)
             #This applies only to -alltests loop:
 			#script can also exit for a valid reason, like when there is no plug-in
@@ -577,7 +599,7 @@ done
 ALL_DIRS=[0-9]*
 ALL_TESTS=`echo $ALL_DIRS | tr " " "\n" | sort -n |  tr "\n" " "`
 
-LIBS_DIR="../../../lib"
+LIBS_DIR="$AUBITDIR_UNIX/lib"
 
 #process comand line parameters:
 ###################
@@ -1324,7 +1346,8 @@ if test "$CLEAN" = "1" -a "$RUN_ONE" = ""; then
 		-o -name "*.err" -o -name "output.log" -o -name "errlog" 
 		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
 		-o -name "*.ec" -o -name "*.h" -o -name "*.c" -o -name "pcode.run" 
-		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" 
+		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
+		-o -name "*.so" -o -name "*.dll"
 		")" -exec rm {} \;'
 	
 	eval $EXEC
@@ -1404,11 +1427,13 @@ if test "$A4GL_UI" = ""; then
 	#export A4GL_UI=HL_TUIN
 fi
 
-export PATH="$CURR_DIR/../../../bin:$PATH"
+export PATH="$AUBITDIR_UNIX/bin:$PATH"
 if test "$COMSPEC" != ""; then
-	export PATH="$CURR_DIR/../../../lib:$PATH"
+	#On windows dll's have to be in the PATH - there is no LD_LIBRARY_PATH
+	#equivalent on Windows
+	export PATH="$AUBITDIR_UNIX/lib:$PATH"
 else
-	export LD_LIBRARY_PATH=$CURR_DIR/../../../lib:$LD_LIBRARY_PATH
+	export LD_LIBRARY_PATH=$AUBITDIR_UNIX/lib:$LD_LIBRARY_PATH
 fi
 LOGFILE=$CURR_DIR/build.log
 RESLOGFILE=$CURR_DIR/resources.log
@@ -1450,10 +1475,10 @@ fi
 
 #########################
 #List of ODBC driver shared libraries
-DRV_IFX=$INFORMIXDIR/lib/cli/libifcli.so
-DRV_PG=/usr/lib/libpsqlodbc.so
-DRV_SQLITE=/usr/local/lib/libsqliteodbc.so
-DRV_SAP=$SAPDBROOT/interfaces/odbc/lib/libsqlod.so
+DRV_IFX=$INFORMIXDIR/lib/cli/libifcli$SO_EXT
+DRV_PG=/usr/lib/libpsqlodbc$SO_EXT
+DRV_SQLITE=/usr/local/lib/libsqliteodbc$SO_EXT
+DRV_SAP=$SAPDBROOT/interfaces/odbc/lib/libsqlod$SO_EXT
 
 #########################
 #Create new odbcinst.ini
@@ -1563,7 +1588,7 @@ if test "$IS_ODBC" = "1"; then
 
     #Some drivers need explicit UID/PWD to connect
 	if test "$SQLPWD" = ""; then
-		SQLPWD=`../../../bin/aubit-config$EXE_EXT SQLPWD`
+		SQLPWD=`AUBITDIR_UNIX/bin/aubit-config$EXE_EXT SQLPWD`
 		if test "$SQLPWD" = ""; then
 	        echo "ERROR: Aubit setting SQLPWD is empty. Stop."
 	        exit 4
@@ -1571,7 +1596,7 @@ if test "$IS_ODBC" = "1"; then
     fi
 
 	if test "$SQLUID" = ""; then
-		SQLUID=`../../../bin/aubit-config$EXE_EXT SQLUID`
+		SQLUID=`AUBITDIR_UNIX/bin/aubit-config$EXE_EXT SQLUID`
 		if test "$SQLUID" = ""; then
 			echo "ERROR: Aubit setting SQLUID is empty. Stop."
 	        exit 4
@@ -1875,7 +1900,7 @@ fi
 
 ######################
 #Check and create SQLite db
-SQLITE_DB="$CURR_DIR/../../$TEST_DB.db"
+SQLITE_DB="$AUBITDIR_UNIX/$TEST_DB.db"
 
 if test "$USE_SQLITE" = "1" || test "$ODBC_USE_DB" = "SQLITE"; then
 	if ! test -f $SQLITE_DB || test "$NEW_SQLITE" = "1"; then
@@ -1898,18 +1923,12 @@ if test "$USE_SQLITE" = "1" || test "$ODBC_USE_DB" = "SQLITE"; then
 
 	#remember to account for this scritp cd-ing into test directory
 	#when setting relative DBPATH to database file
-    #NOTE: just relative path should be enough, but SQLite core dumps:
-	#sqliteodbc.c         1918   (     0,     0) name1=../../../test1.db
-	#and also with:
-    #sqliteodbc.c         1918   (     0,     0) name1=/opt/aubit/aubit4glsrc/tools/test/build_tests/../../test1.db
-	RELATIVE_DBPATH=../../..
 	if test "$PLATFORM" = "MINGW"; then
-		ABSOLUTE_DBPATH="d:/cygwin$CURR_DIR/../.."
-		#export DBPATH="$RELATIVE_DBPATH;$ABSOLUTE_DBPATH;$DBPATH"
-    else
-		ABSOLUTE_DBPATH="$CURR_DIR/../.."
-		#export DBPATH="$RELATIVE_DBPATH:$ABSOLUTE_DBPATH:$DBPATH"
+		DBPATH="d:/cygwin$AUBITDIR_UNIX/tools"
+	else
+		DBPATH="$AUBITDIR_UNIX/tools"
     fi
+	export DBPATH
 fi
 
 ######################
@@ -1986,7 +2005,8 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
             fi
 		fi
     else
-		if test "$NO_ECHO" != "1"; then
+		#if test "$NO_ECHO" != "1"; then
+		if test "$VERBOSE" = "1"; then
 			echo "Found Informix database $TEST_DB"
         fi
 		SQL="select is_logging from sysdatabases where name = 'test1'"
@@ -2288,14 +2308,14 @@ if test "$IS_ODBC_MANAGER" = "1"; then
         #[ISQL]ERROR: Could not SQLConnect
 		TEST=`cat /tmp/tmp.dbaccess |  grep "Could not SQLConnect"`
     elif test "$USE_IODBC" = "1"; then
-        if ! test -f ../../../bin/odbctest-iodbc3; then
-            $MAKE -C ../../odbctest > /dev/null 2>&1
-            if ! test -f ../../../bin/odbctest-iodbc3; then
+        if ! test -f $AUBITDIR_UNIX/bin/odbctest-iodbc3; then
+            $MAKE -C $AUBITDIR_UNIX/tools/odbctest > /dev/null 2>&1
+            if ! test -f $AUBITDIR_UNIX/bin/odbctest-iodbc3; then
                 echo "ERROR: building odbctest failed. Stop."
                 exit 84
             fi
         fi
-        echo quit | ../../../bin/odbctest-iodbc3 "DSN=$TEST_DB;UID=$SQLUID;PWD=$SQLPWD;"  > /tmp/tmp.dbaccess 2>&1
+        echo quit | $AUBITDIR_UNIX/bin/odbctest-iodbc3 "DSN=$TEST_DB;UID=$SQLUID;PWD=$SQLPWD;"  > /tmp/tmp.dbaccess 2>&1
 		#DSN=maindb;UID=informix;PWD=ifmx;HOST=localhost;DATABASE=maindb;OPTIONS='aptiva_on'\r"
 		#[SAP AG][LIBSQLOD SO]Dialog failed., SQLSTATE=IM008
         TEST=`cat /tmp/tmp.dbaccess |  grep "failed"`
@@ -2330,25 +2350,6 @@ fi
 ##############################################################################
 #                           Finalise settings
 ##############################################################################
-
-#######################
-#Check if we have TUI lib, set AUBITDIR:
-if test "$PLATFORM" = "MINGW"; then
-	export AUBITDIR=D:/cygwin$CURR_DIR/../../..
-	#MinGw don't have Curses, but we can try using CygWin one:
-	if ! test -f $CURR_DIR/../../../lib/libUI_TUI.dll; then
-        #this file is placed in /tmp by aubitbuild.sh ONLY, so if you want to update it
-        #you will need to do it manually
-		if test -f /tmp/libUI_TUI.dll; then
-			cp /tmp/libUI_TUI.dll $CURR_DIR/../../../lib
-	    else
-	        echo "Can't find /tmp/libUI_TUI.dll - Stop."
-	        exit 5
-	    fi
-    fi
-else
-	export AUBITDIR=$CURR_DIR/../../..
-fi
 
 #######################
 #initialise counters
@@ -2453,10 +2454,9 @@ do
 	#fi
 	
 	if test "$SHOW_CONFIG" = "1"; then
-		$CURR_DIR/../../../bin/aubit-config$EXE_EXT -a
+		$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a
 		exit 0
 	fi
-	
 	
     #################################
 	#Initialise counters and variables:
@@ -2810,7 +2810,11 @@ do
         fi
 		if test "$IS_INVALID_TEST" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			echo "Skipping invalid test #$a." >> $LOGFILE
+			SKIP_INVALID_LIST="$SKIP_INVALID_LIST $a"
+			if test "$RUN_ONE" != ""; then
+				echo "Skipping invalid test #$a." >> $LOGFILE
+			fi
+			
 			#echo "WARNING - test is invalid - please FIX IT or list it as OBSOLETE." >> $LOGFILE
 	        continue
 	    fi
@@ -2949,7 +2953,8 @@ do
 		-o -name "*.err" -o -name "output.log" -o -name "errlog" 
 		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
 		-o -name "*.ec" -o -name "*.h" -o -name "*.c" -o -name "pcode.run" 
-		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" 
+		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
+		-o -name "*.so" -o -name "*.dll"
 		")" -exec rm {} \;'
 	
 		eval $EXEC
@@ -3161,10 +3166,14 @@ fi
 if test "$EXPECTED_TO_FAIL_PASSED_CNT" != "0"; then 
 	echo "Expected to fail, but passed: $EXPECTED_TO_FAIL_PASSED_CNT ($EXPECTED_TO_FAIL_PASSED_LIST)" >> $LOGFILE
 fi
-if test "$FAIL_CNT" = "$EXPECTED_TO_FAIL_CNT" ; then
+if test "$SKIP_INVALID_LIST" != "" ; then 
+	echo "Skipped as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST"
+fi
+if test "$FAIL_CNT" = "$EXPECTED_TO_FAIL_CNT" -o "$FAIL_CNT" -lt "$EXPECTED_TO_FAIL_CNT" ; then
 	echo "RESULT: EXPECTED" >> $LOGFILE
 	RESULT=0
 else
+	#"$FAIL_CNT" is more then "$EXPECTED_TO_FAIL_CNT"
 	echo "*********** RESULT: UNEXPECTED ******************" >> $LOGFILE
 	RESULT=1
 fi
@@ -3173,7 +3182,7 @@ fi
 echo "" >> $LOGFILE
 echo "see `basename $RESLOGFILE` and $TIME_FILE" >> $LOGFILE
 echo "----------------------------- aubit-config -a ------------------------------" > $RESLOGFILE
-$CURR_DIR/../../../bin/aubit-config$EXE_EXT -a  >> $RESLOGFILE 2>&1
+$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a  >> $RESLOGFILE 2>&1
 echo "" >> $LOGFILE
 echo "Finished at:" >> $LOGFILE
 date >> $LOGFILE

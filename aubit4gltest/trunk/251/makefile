@@ -109,7 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is a quick check for aubits non-comments {! .. !} these get treated as comments by Informix-4GL but not as comments in aubit4GL"
+	@echo "Aubits non-comments {! .. !} treated as comments by other 4GL compilers but not by Aubit4GL"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 

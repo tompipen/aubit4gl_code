@@ -13,5 +13,7 @@ code
 endcode
 !} 
 
+#Should also test -! end-of-line Aubit specific non-comment
+
 display a
 end main

@@ -19,11 +19,11 @@ MAIN
   LET pr.firstColumn = 1
   LET pr.secondColumn = "1 - Hello world"
   LET pr.thirdColumn = 3
-  UPDATE v_update_table SET * = pr.*
+  UPDATE v_update_table_perm SET * = pr.*
     WHERE firstColumn = 1
   DECLARE cr CURSOR FOR 
     SELECT secondColumn, thirdColumn
-      FROM v_update_table
+      FROM v_update_table_perm
   FOREACH cr INTO str, sm
     DISPLAY str clipped, sm
   END FOREACH

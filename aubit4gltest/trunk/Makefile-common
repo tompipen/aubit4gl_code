@@ -7,20 +7,28 @@
 ## ======================================================================
 
 #Root directory of our current Aubit source tree:
-ROOT=../../../..
+#ROOT=../../../..
+
+ifeq "${AUBITDIR}" ""
+	#If you are looking here because you received error from make
+	# commands commence before first target.  Stop.
+	#...then your AUBITDIR IS NOT SET! 
+	echo "ERROR: AUBITDIR not set"
+endif
+
 
 #############
 #While compiling source code, force priority of 'aubitrc' present in this 
 #source code tree. Also applies to aubit-config calls made from makefles 
-A4GL_INIFILE				=${ROOT}/etc/aubitrc
+A4GL_INIFILE				=${AUBITDIR}/etc/aubitrc
 
 
 #Make sure we will be using programs and libraries in our current source tree
 #and NOT something elese, like installed compiler
-AUBITDIR=${ROOT}
+#AUBITDIR=${ROOT}
 
 #Include ALL Amake compilers rules 
-include ${ROOT}/incl/?4gl.mk
+include ${AUBITDIR}/incl/?4gl.mk
 
 ifeq "${USE_COMP}" ""
 	USE_COMP=aubit
