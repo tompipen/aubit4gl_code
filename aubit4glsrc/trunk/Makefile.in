@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.93 2002-10-05 10:28:31 afalout Exp $
+# $Id: Makefile.in,v 1.94 2002-10-05 10:54:48 afalout Exp $
 #
 
 ## ==================================================================
@@ -650,6 +650,11 @@ refresh.noyacc:
 	${CP} compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile
 	${CP} compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus
 	${CP} compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus
+	${CP} compilers/xgen/y.tab.c tools/no_yacc/cygwin/compilers/xgen
+	${CP} compilers/xgen/lex.yy.c tools/no_yacc/cygwin/compilers/xgen
+	${CP} compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace
+	${CP} compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace
+
 
 refresh.norpcgen:
 ifeq "${TARGET_OS}" "cygwin"
