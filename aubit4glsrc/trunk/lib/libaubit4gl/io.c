@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.24 2004-11-11 14:52:52 mikeaubury Exp $
+# $Id: io.c,v 1.25 2004-12-16 09:25:03 mikeaubury Exp $
 #
 */
 
@@ -201,7 +201,7 @@ FILE *f;
 	*/
 
 	A4GL_debug("Opening %s",buff);
-	f = fopen (buff, "r");
+	f = fopen (buff, "rb");
 	if (f == 0) {
 		A4GL_debug("Unable to open %s %s (%s)",path,name,buff);
 		return (FILE *) 0;
