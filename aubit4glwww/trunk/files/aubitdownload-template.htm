@@ -34,7 +34,8 @@ short, stuff here is for people that like to live on bleeding edge.</font></p>
 <p><font color="#000000">Regular user's preferred option should be to download RELEASED
 files from <a href="http://sourceforge.net/projects/aubit4gl" target="_blank"><span style="background-color: #808080">Aubit
 project page</span></a><span style="background-color: #C0C0C0">,</span> and/or to get source code from <a href="http://cvs.sourcefoge.net/cgi-bin/viewcvs.cgi/aubit4gl" target="_blank"><span style="background-color: #808080">Aubit
-CVS</span></a>  .</font></p>
+CVS</span></a>   - unless instructed otherwise, or if files available as
+released are seriously out of date.</font></p>
       </td>
     </tr>
   </table>
@@ -72,6 +73,11 @@ over and over again. See instruction on Aubit CVS page.
 </p>
 
 
+<p>Note: TarBall, ZipBall and SRPM source code packages contain same
+            code, packaged and compressed with different tools, unless they have different
+            version or date in there name</p>
+
+
 <P>
 Download source code (all platforms):&nbsp;
 </P>
@@ -86,9 +92,13 @@ aubit4gl-src--template--.tar.gz
 		  <li><a href="
 aubit4gl-src--template--.zip
 		">Source ZipBall</a> in state used to compile Windows binary distributions on
-            this page (Windows/CygWin) (Note: TarBall and ZipBall contain same
-            code, compressed with different tools, unless they have different
-            version or date in there name)</li>
+            this page (Windows/CygWin)&nbsp;</li>
+
+
+		  <li><a href="
+aubit4gl--template--.src.rpm
+			">SRPM</a> - Source code RPM
+            package for use on platforms with RPM package tools</li>
 
 
 		  <li>Go to <a href="http://sourceforge.net/cvs/?group_id=32409" target="_blank">CVS
@@ -115,20 +125,6 @@ configurations you found it to work OK. They are automatically built every
 </P>
 
 
-<P>
- Filenames format:
-</P>
-
-
-<ul>
-  <li>
- Binary packages compressed archives:&nbsp;<br>
- aubit4gl-bin-[OS|kernel]-[iODBC|unixODBC|odbc32|noODBC]-[GTK|noGTK]-[PDF|noPDF]-[version]-[build]-[build
- date].[tar.gz|rpm|zip]</li>
-  <li>
- Compile platform info text files:&nbsp;<br>
- compile-platform-info-[full binary package name].txt</li>
-</ul>
 <p>Platforms available:</p>
 <ul>
   <li><a href="#tar.gz tarball precompiled binary packages:">Linux tar.gz and RPM precompiled binary packages</a></li>
@@ -137,42 +133,41 @@ configurations you found it to work OK. They are automatically built every
 </ul>
 <p>Please note:</p>
 <ul>
-  <li>Every build includes &quot;noODBC&quot; versions of compilers and
-    libraries (together with ODBC one), that does not require any ODBC manager
-    and/or drivers to be installed on your computer.&nbsp;</li>
-  <li>All other dependencies for each build are valid for &quot;noODBC&quot;
-    versions too, so if you download build with GTK dependencies, your &quot;noODBC'
-    compiler will still need GTK libraries.&nbsp;</li>
-  <li>&quot;noODBC&quot; versions of compilers and libraries DOES NOT include ODBC functionality, therefore
-you CAN NOT execute any database oriented (SQL) commands!</li>
-  <li>If you download &quot;no GTK, no PDF&quot; build, and use it with &quot;-noodbc&quot;
-    switch, you will in effect have &quot;no dependencies&quot; Aubit 4gl
-    compiler - meaning that you will in most cases not need to have any
-    additional libraries installed on your host system.</li>
+  <li>All binary builds now include dynamically loadable support for
+    libraries/functionality external to Aubit compiler, that you may or may not
+    have on your system, like ODBC, PDF, GTK+, Jabber, etc. Packaged with binary
+    distribution is a &quot;configure&quot; script, that will take care of
+    available options detection, and initial configuration. If an option, like
+    PDFlib library is not detected, this functionality will be disabled in
+    automatically created configuration file. See &quot;README.txt&quot; file in
+    archive you will download for details.</li>
+  <li>If 'configure' script does not detect ANY ODBC manager/driver that it can
+    use, &quot;noODBC&quot; versions of SQL libraries will be configured and
+    used. Therefore
+you will NOT be able execute any database oriented (SQL) commands!</li>
+  <li>RPM package have a script that needs to be performed as part of RPM
+    installation. If your RPM client is configured in a way which prohibits
+    execution of scripts, installation will fail. If this happens, you will need
+    to execute 'make' in Aubit RPM installation directory.</li>
+  <li>RPM installation will perform auto detection and create new 'aubitrc'
+    file, but it will not install it if one already exists in
+    /etc/opt/aubit4gl/aubitrc. You will see the message to this effect, if you
+    are installing using command line RPM client, but not if you are using GUI
+    RPM client. As a general rule, it is recommended to install using command
+    line RPM client, since when using GUI clients, installation messages will
+    not be visible to the user.</li>
   <li>Typical size of tar.gz packages is between 2 and 5 MB</li>
 </ul>
-<p><u><i><font color="#000000"><span style="background-color: #00FF00">Linux </span></font><a name="tar.gz tarball precompiled binary packages:"><span style="background-color: #00FF00"><font color="#000000">tar.gz
-tarball and RPM precompiled binary packages:</font></span></a></i></u></p>
+<p><u><i><font color="#000000"><span style="background-color: #00FF00">Linux </span></font><a name="tar.gz tarball precompiled binary packages:"><span style="background-color: #00FF00"><font color="#000000"> precompiled binary packages:</font></span></a></i></u></p>
 <div align="left">
   <table border="1" width="605">
     <tr>
       <td width="205">OS/Kernel</td>
-      <td width="182" colspan="4" align="center" bgcolor="#C0C0C0">
-        <p align="right"><font color="#000000">RedHat 6 (kernel 2.2.x)</font></p>
+      <td width="182" colspan="2" align="center" bgcolor="#C0C0C0">
+        <p align="right"><font color="#000000">Linux (kernel 2.2.x GLIBC 2.1)</font></p>
       </td>
-      <td width="180" colspan="4" align="center" bgcolor="#C0C0C0">
-        <p align="right"><font color="#000000">RedHat 7.1 (kernel 2.4.x)</font></td>
-    </tr>
-    <tr>
-      <td width="205">ODBC manager</td>
-      <td width="124" colspan="2" bgcolor="#808080"> OpenLink/iODBC</td>
-      <td width="148" colspan="2" bgcolor="#808080">
-        <p align="center">unixODBC</p>
-      </td>
-      <td width="32" colspan="2" bgcolor="#808080"> OpenLink/iODBC</td>
-      <td width="148" colspan="2" bgcolor="#808080">
-        <p align="center">unixODBC</p>
-      </td>
+      <td width="180" colspan="2" align="center" bgcolor="#C0C0C0">
+        <p align="right"><font color="#000000">Linux (kernel 2.4.x GLIBC 2.2)</font></td>
     </tr>
     <tr>
       <td width="205">Package type</td>
@@ -180,128 +175,30 @@ tarball and RPM precompiled binary packages:</font></span></a></i></u></p>
         <p align="center"><font color="#000000">tar.gz</font></td>
       <td width="61" bgcolor="#C0C0C0">
         <p align="center"><font color="#000000">RPM</font></td>
-      <td width="61" bgcolor="#C0C0C0">
-        <p align="center"><font color="#000000">tar.gz</font></td>
-      <td width="61" bgcolor="#C0C0C0">
-        <p align="center"><font color="#000000">RPM</font></td>
-      <td width="49" bgcolor="#C0C0C0">
-        <p align="center"><font color="#000000">tar.gz</font></td>
-      <td width="49" bgcolor="#C0C0C0">
-        <p align="center"><font color="#000000">RPM</font></td>
       <td width="49" bgcolor="#C0C0C0">
         <p align="center"><font color="#000000">tar.gz</font></td>
       <td width="49" bgcolor="#C0C0C0">
         <p align="center"><font color="#000000">RPM</font></td>
     </tr>
     <tr>
-      <td width="205" bgcolor="#C0C0C0">		<font color="#000000">		no GTK, no PDF</font></td>
-      <td width="62">
-        <p align="center"><a href="
-aubit4gl-bin-RH6-iODBC-noGTK-noPDF---template--.tar.gz
-		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
-        <a href="
-compile-platform-info-aubit4gl-bin-RH6-iODBC-noGTK-noPDF---txttemplate--.tar.gz.txt
-		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
-      <td width="61">
-        &nbsp;</td>
-      <td width="61" align="center"><a href="
-aubit4gl-bin-RH6-unixODBC-noGTK-noPDF---template--.tar.gz
-	  "><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
-        <a href="
-compile-platform-info-aubit4gl-bin-RH6-unixODBC-noGTK-noPDF---txttemplate--.tar.gz.txt
-		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
-      <td width="61">
-        &nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-    </tr>
-    <tr>
       <td width="205" bgcolor="#C0C0C0">
-        <font color="#000000">
-		GTK only</font></td>
-      <td width="62">
-        <p align="center"><a href="
-aubit4gl-bin-RH6-iODBC-GTK-noPDF---template--.tar.gz
-		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
-        <a href="
-compile-platform-info-aubit4gl-bin-RH6-iODBC-GTK-noPDF---txttemplate--.tar.gz.txt
-		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
-      <td width="61">
-        &nbsp;</td>
-      <td width="61" align="center"><a href="
-aubit4gl-bin-RH6-unixODBC-GTK-noPDF---template--.tar.gz
-	  "><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
-        <a href="
-compile-platform-info-aubit4gl-bin-RH6-unixODBC-GTK-noPDF---txttemplate--.tar.gz.txt
-		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
-      <td width="61">
-        &nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-    </tr>
-    <tr>
-      <td width="205" bgcolor="#C0C0C0">
-        <font color="#000000">
-		PDF only&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></td>
-      <td width="62">
-        <p align="center"><a href="
-aubit4gl-bin-RH6-iODBC-noGTK-PDF---template--.tar.gz
-		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
-        <a href="
-compile-platform-info-aubit4gl-bin-RH6-iODBC-noGTK-PDF---txttemplate--.tar.gz.txt
-		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
-      <td width="61">&nbsp;</td>
-      <td width="61">
-        <p align="center"><a href="
-aubit4gl-bin-RH6-unixODBC-noGTK-PDF---template--.tar.gz
-		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
-        <a href="
-compile-platform-info-aubit4gl-bin-RH6-unixODBC-noGTK-PDF---txttemplate--.tar.gz.txt
-		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></p>
-      </td>
-      <td width="61">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-    </tr>
-    <tr>
-      <td width="205" bgcolor="#C0C0C0">
-        <font color="#000000">
-		GTK and PDF</font></td>
+        <font color="#000000">All libraries support</font></td>
       <td width="62" align="center">
-        <p align="center"><a href="
+        &nbsp;</td>
+      <td width="61">&nbsp;</td>
+      <td align="center">
+        <p><a href="
 aubit4gl-bin-RH6-iODBC-GTK-PDF---template--.tar.gz
 		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
         <a href="
 compile-platform-info-aubit4gl-bin-RH6-iODBC-GTK-PDF---txttemplate--.tar.gz.txt
-		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
-      <td width="61">&nbsp;</td>
-      <td width="61">
-        <p align="center"><a href="
-aubit4gl-bin-RH6-unixODBC-GTK-PDF---template--.tar.gz
-		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
-        <a href="
-compile-platform-info-aubit4gl-bin-RH6-unixODBC-GTK-PDF---txttemplate--.tar.gz.txt
-		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></p>
-      </td>
-      <td width="61">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-      <td width="49">&nbsp;</td>
-    </tr>
-    <tr>
-      <td width="205" bgcolor="#C0C0C0"><font color="#000000">No dependencies</font></td>
-      <td colspan="4" align="left">
-        <p align="center">Download &quot;no GTK, no PDF&quot;</p>
-      </td>
-      <td colspan="4">
-        <p align="center">Download &quot;no GTK, no PDF&quot;</p>
+		"><img border="0" src="/icons/text.gif" alt="Display compile platform info" width="15" height="16"></a></td>
+      <td align="center">
+        
+      <a href="
+aubit4gl--template--.rpm
+		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>
+        
       </td>
     </tr>
   </table>
@@ -315,25 +212,21 @@ Windows</a></i></u></font></span></p>
   <table border="1">
     <tr>
       <td>OS</td>
-      <td bgcolor="#C0C0C0">
+      <td bgcolor="#C0C0C0" colspan="2">
         <p align="center"><font color="#000000">Win32 - CygWin</font></td>
       <td bgcolor="#C0C0C0"><font color="#000000">Win32 - standalone run-time</font></td>
-    </tr>
-    <tr>
-      <td>ODBC manager</td>
-      <td bgcolor="#808080">Windows ODBC32.dll</td>
-      <td bgcolor="#808080">
-        <p align="center">Windows ODBC32.dll</td>
     </tr>
     <tr>
       <td>Package type</td>
       <td bgcolor="#C0C0C0">
         <p align="center"><font color="#000000">Zip</font></td>
       <td bgcolor="#C0C0C0">
+        <font color="#000000">Installer</font></td>
+      <td bgcolor="#C0C0C0">
         <p align="center"><font color="#000000">Zip</font></td>
     </tr>
     <tr>
-      <td bgcolor="#C0C0C0"><font color="#000000">GTK only</font></td>
+      <td bgcolor="#C0C0C0"><font color="#000000">All libraries support</font></td>
       <td>
         <p align="center"><a href="
 aubit4gl-bin-win32-cygwin-odbc32-GTK-noPDF---template--.zip
@@ -341,11 +234,8 @@ aubit4gl-bin-win32-cygwin-odbc32-GTK-noPDF---template--.zip
         <a href="
 compile-platform-info-aubit4gl-bin-win32-cygwin-odbc32-GTK-noPDF---txttemplate--.zip.txt
 			"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td bgcolor="#C0C0C0"><font color="#000000">No dependencies</font></td>
-      <td>&nbsp;</td>
+      <td>
+        &nbsp;</td>
       <td>&nbsp;</td>
     </tr>
   </table>
@@ -371,32 +261,46 @@ platforms, and consider contributing binary packages.</p>
     builds</li>
   <li>&nbsp;&nbsp;&nbsp; FIXME: GWD::4gl files</li>
   <li>&nbsp;&nbsp;&nbsp; FIXME: amake files</li>
+  <li>&nbsp;&nbsp;&nbsp; FIXME: DOC4GL, LIB4GL, etc...</li>
 </ul>
 
 
 <p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
 <hr>
 <h3><a name="Dependencies download links">Dependencies download links</a></h3>
-<p>Depending on your choice of binary package, or options while compiling source
-distribution, you will need some or all third-party software and/or libraries
+<p>Depending on your needs, you will need some or all third-party software and/or libraries
 listed here present on your system. First, check if you have them, and if they are
-compatible version. And if you don't, follow links provided, and install them
-according to there installation instructions. See manual for more information.</p>
-<p>Note: If you want minimum hassle, we found that Red Hat 7.1 contains all
+compatible version. You can run &quot;configure&quot; script to see what it will
+report, in both binary an source files distributions. And if you don't, but you
+want the functionality, follow links provided, and install them
+according to there installation instructions. See manual and README.txt for more information.
+To activate correctly installed functionality based on external libraries or
+programs, after they are installed, it should be sufficient to re-run &quot;configure&quot;
+script, and in case of source code distribution recompile source code and
+re-install. You can, of course, always edit configuration files manually, if you
+prefer.</p>
+<p>Note: If you want minimum hassle, we found that Red Hat 7.2 contains all
 dependencies for Aubit 4gl out of the box, on one CD, all in RPM automatic
 installs (It does NOT have PDFlib, since it is commercial product - OpenSource,
 but you will need to pay fee if you use it) It has unixODBC with GUI configuration
 tools, PostgreSQL with nice GUI tools, and all worked immediately for me. So if
 you have choice of operating systems, this is our recommended platform.</p>
 <p>If you have RPM, or other package manager based system (DEB, etc), easiest
-way to check for existing dependencies is to query that system. Of course, if
-dependencies where installed using them...</p>
+way to check for existing dependencies (if &quot;configure&quot; cannot find
+them but you know you have them) is to query that system. Of course, if
+dependencies where installed using them. Otherwise, try running
+&quot;configure&quot; script, and see what it will report (note: it will NOT
+find anything that is installed in non-standard locations - you can still use it
+by manually specifying the location to &quot;configure&quot; script, but you
+will have to find this location on your own.)</p>
 <h4><i><span style="background-color: #00FF00"><font color="#000000">ODBC</font></span></i></h4>
 <p><i>When will you need it:</i></p>
 <blockquote>
-  <p>Unless you will compile Aubit from sources with ODBC=no, or use &quot;-noodbc&quot;
-  versions of compilers an libraries (available in every binary build), you will need either ODBC manager, ODBC driver for your
-  database(s), or both.</p>
+  <p>To access the database using SQL statements. However, even this is now
+  optional, and Aubit compiler and compiled programs can function as
+  general-purpose language compiler, even if you do not have it, but of course,
+  if you don't attempt to execute SQL statements, in which case error will be
+  reported.</p>
 </blockquote>
 <p><i>How to check if you have it:</i></p>
 <blockquote>
@@ -419,6 +323,10 @@ BEFORE you start screaming &quot;Aubit is not working&quot;! Thank you.</p>
   <li> <a href="http://www.iodbc.org" target="_blank">iODBC</a>
     (Standalone ODBC manager, GPL license)
   </li>
+  <li> PostgreSQL ODBC driver
+  </li>
+  <li> Informix ODBC driver
+  </li>
 </ul>
 <p>Note that SOME managers come with drivers for SOME databases, and some don't.
 If you will be linking Aubit against ODBC manager, you will of course need both
@@ -426,8 +334,9 @@ the manager, AND the ODBC driver(s) for your database(s) of choice. YMMW.</p>
 <h4><span style="background-color: #00FF00"><i><font color="#000000">PDF</font></i></span></h4>
 <p><i>When will you need it:</i></p>
 <blockquote>
-  <p>You will need it to compile Aubit from sources with PDFBUILD=yes, and to
-  use binary build with -PDF- in it's file name.</p>
+  <p>You will need it to use Aubit's PDF report generations functionality. This
+  is optional too, and Aubit will work without it, unless you try to use PDF specific
+  report functionality, in which case error will be repoted.</p>
 </blockquote>
 <p><i>How to check if you have it:</i></p>
 <blockquote>
@@ -463,8 +372,9 @@ FTP site</a></li>
 <h4><i><span style="background-color: #00FF00"><font color="#000000">GTK</font></span></i></h4>
 <p><i>When will you need it:</i></p>
 <blockquote>
-<p>To compile Aubit from sources with &quot;GTKBUILD=yes&quot; and to run binary
-build with -GTK- in it's name.</p>
+<p>To use Aubit GUI functionality. This is optional too, and if you don't have
+it, Aubit programs will fun in CUI (terminal/character) mode. Note that you can
+switch to CUI mode even if you do have GTK+ functionality active.</p>
 </blockquote>
 <p><i>How to check if you have it:</i></p>
 <blockquote>

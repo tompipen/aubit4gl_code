@@ -38,6 +38,10 @@
 #
 #####################################################
 
+
+echo "just type 'cvs update -d' instead"
+exit
+
 #ANONCVS=$1
 #UPDATE=$2
 
@@ -73,6 +77,14 @@ then
 
     exit
 fi
+
+exit
+
+###################################################################
+# Stuff below this line should no longer be used
+###################################################################
+
+
 
 #We don't have the right to cd out of $WWW when running from PHP
 cd $HOME

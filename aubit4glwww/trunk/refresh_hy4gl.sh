@@ -1,5 +1,8 @@
 #!/bin/sh
 
+echo "this is obsolete"
+exit
+
 export HOME=/home/users/a/af/afalout
 export WWW=/home/groups/a/au/aubit4gl/htdocs
 
