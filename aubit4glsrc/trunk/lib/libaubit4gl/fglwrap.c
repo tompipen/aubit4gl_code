@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.66 2004-05-24 19:58:26 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.67 2004-06-15 14:30:42 mikeaubury Exp $
 #
 */
 
@@ -1250,6 +1250,7 @@ initsig_child()
 {
 struct sigaction ServerSig;
 
+if (A4GL_isyes(acl_getenv("NEED_SIGCHLD"))) {
 
 #if (defined(WIN32) || defined(__CYGWIN__) || defined (__MINGW32__))
 	/*
@@ -1271,6 +1272,7 @@ struct sigaction ServerSig;
 		return 0;
 	}
 #endif
+}
 	return 1;
 }
 
