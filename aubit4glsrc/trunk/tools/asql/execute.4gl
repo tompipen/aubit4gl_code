@@ -1,8 +1,14 @@
 code
 #include <stdio.h>
 #include <stdlib.h>
-$include sqltypes;
-$int numberOfColumns=0;
+
+
+EXEC SQL include sqltypes;
+EXEC SQL BEGIN DECLARE SECTION;
+int numberOfColumns=0;
+EXEC SQL END DECLARE SECTION;
+
+
 int width;
 int display_mode;
 int fetchFirst=0;
@@ -42,6 +48,7 @@ char *get_qry_msg(int qry_type,int n);
 
 extern struct element *list;
 extern int list_cnt;
+
 
 endcode
 
@@ -142,7 +149,9 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 
 
 	for (a=0;a<list_cnt;a++) {
-		$char *p;
+		EXEC SQL BEGIN DECLARE SECTION;
+		char *p;
+		EXEC SQL END DECLARE SECTION;
 		qry_type=0;
 
 		raffected=0;
@@ -151,7 +160,7 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 //if (exec_mode==EXEC_MODE_FILE) { printf(" Executing statement %d of %d \n",a,list_cnt); }
 		p=list[a].stmt;
 
-			EXEC SQL PREPARE stExec from $p;
+			EXEC SQL PREPARE stExec from :p;
 			if (ec_check_and_report_error()) {
 						goto end_query; }
 
@@ -316,240 +325,10 @@ int isSqlError () {
 	return 0;
 }
 
-static int
-printField (FILE * outputFile, int idx, char *descName)
-{
-  EXEC SQL BEGIN DECLARE SECTION;
-  int dataType;
-  int index = idx;
-  short indicator;
-  char buffer[32000]="";
 
-  char *descriptorName = descName;
-  int length;
-  loc_t blob;
-
-  char *char_var;
-  short smint_var;
-  long int_var;
-  double float_var;
-  float smfloat_var;
-  dec_t decimal_var;
-  long date_var;
-  dec_t money_var;
-  dtime_t dtime_var;
-  intrvl_t interval_var;
-  /*
-     fglbyte byte_var;
-     fgltext text_var;
-   */
-  EXEC SQL END DECLARE SECTION;
-  //FglDecimal *fgl_decimal;
-  //FglMoney *fgl_money;
-  //FglDatetime *fgl_dtime;
-  //FglInterval *fgl_interval;
-  char buff[255];
-  int rc = 0;
-
-
-A4GL_assertion(out==0,"No output file (3)");
-
-
-
-
-  EXEC SQL GET DESCRIPTOR 'descExec' VALUE:index:indicator =
-    INDICATOR,:dataType = TYPE;
-
-
-
-  //if (indicator == -1) { return 0; }
-
-if (indicator!=-1) {
-  switch (dataType&0xf)
-    {
-    case SQLCHAR:
-    case SQLVCHAR:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:length =
-        LENGTH;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-      char_var = (char *)malloc (length + 1);
-      EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
-      A4GL_trim (char_var);
-      sprintf (buffer, "%s", char_var);
-      free (char_var);
-      break;
-    case SQLSMINT:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smint_var =
-        DATA;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-      sprintf (buffer, "%d", smint_var);
-      break;
-
-    case 6:
-    case SQLINT:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
-        DATA;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-      sprintf (buffer, "%ld", int_var);
-      break;
-    case SQLFLOAT:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:float_var =
-        DATA;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-      sprintf (buffer, "%lf", float_var);
-      break;
-    case SQLSMFLOAT:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smfloat_var =
-        DATA;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-      sprintf (buffer, "%f", smfloat_var);
-      break;
-    case SQLDECIMAL:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:decimal_var =
-        DATA;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-
-      //fgl_decimal = malloc (sizeof (fgldecimal));
-      if (dectoasc (&decimal_var, buff, 32, -1))
-        {
-		A4GL_debug("BAD DECIMAL");
-        /** @todo : Store the error somewhere */
-          return 1;
-        }
-	buff[32]=0;
-      sprintf (buffer, "%s", buff);
-      //free (fgl_decimal);
-      break;
-    case SQLDATE:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:date_var =
-        DATA;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-      /** @todo : Print as date field */
-      char_var = (char *)malloc (sizeof (char) * 10);
-      A4GL_dtos (&date_var, char_var, 10);
-      sprintf (buffer, "%s", char_var);
-      free (char_var);
-      break;
-    case SQLMONEY:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:money_var =
-        DATA;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-      //fgl_money = malloc (sizeof (fglmoney));
-      if (dectoasc (&money_var, buff,32, -1))
-        {
-        /** @todo : Store the error somewhere */
-	A4GL_debug("Bad money");
-          return 1;
-        }
-	buff[32]=0;
-      sprintf (buffer, "%s", buff);
-      //free (fgl_money);
-      break;
-    case SQLDTIME:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:dtime_var =
-        DATA;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-      //fgl_dtime = malloc (sizeof (FglDatetime));
-      if (dttoasc (&dtime_var, buff))
-        {
-        /** @todo : Store the error somewhere */
-	A4GL_debug("Bad dtime");
-          return 1;
-        }
-      sprintf (buffer, "%s", buff);
-      //free (fgl_dtime);
-      break;
-    case SQLINTERVAL:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:interval_var =
-        DATA;
-      if (isSqlError ())
-        {
-          rc = 1;
-          break;
-        }
-      //fgl_interval = malloc (sizeof (FglInterval));
-      if (intoasc (&interval_var, buff))
-        {
-        /** @todo : Store the error somewhere */
-	A4GL_debug("Bad itime");
-          return 1;
-        }
-      sprintf (buffer, "%s", buff);
-      //free (fgl_interval);
-      break;
-    case SQLBYTES:
-      break;
-    case SQLTEXT:
-      break;
-    default:
-	A4GL_debug("INVALID DATATYPE %d %x @ %d+++",dataType,dataType,idx);
-      A4GL_exitwith ("Invalid data type\n");
-    }
-} else {
-	strcpy(buffer,"");
+int get_exec_mode_c() {
+	return exec_mode;
 }
-
-
-
-
-
-	if (display_mode==DISPLAY_DOWN) {
-		if (exec_mode==EXEC_MODE_INTERACTIVE)  {
-			fprintf(outputFile,"%-20.20s %s\n",columnNames[idx-1],buffer);
-		} else {
-			fprintf(exec_out,"%-20.20s %s\n",columnNames[idx-1],buffer);
-		}
-		outlines++;
-	} else {
-		if (exec_mode==EXEC_MODE_INTERACTIVE)  {
-			A4GL_debug("EXECO '%s' '%20s' '%-20s'",buffer,buffer,buffer);
-			fprintf(outputFile,"%-*s",columnWidths[idx-1],buffer);
-		}
-		else
-			fprintf(exec_out,"%-*s",columnWidths[idx-1],buffer);
-  	}
-
-
-  return 0;
-}
-
-
 
 /******************************************************************************/
 void open_display_file_c() {
@@ -582,23 +361,23 @@ int execute_select_prepare() {
 
 open_display_file_c();
 
-$whenever error continue;
-$deallocate descriptor 'descExec';
+EXEC SQL whenever error continue;
+EXEC SQL deallocate descriptor 'descExec';
 
-$allocate descriptor 'descExec' ;
+EXEC SQL allocate descriptor 'descExec' ;
 	if (sqlca.sqlcode<0) return 0;
 
-$describe stExec USING SQL DESCRIPTOR 'descExec';
+EXEC SQL describe stExec USING SQL DESCRIPTOR 'descExec';
 	if (sqlca.sqlcode<0) return 0;
 
-$get descriptor 'descExec' :numberOfColumns=COUNT;
+EXEC SQL get descriptor 'descExec' :numberOfColumns=COUNT;
 	if (sqlca.sqlcode<0) return 0;
-A4GL_debug("numberOfColumns : %d\n",numberOfColumns);
+	A4GL_debug("numberOfColumns : %d\n",numberOfColumns);
 
-$declare crExec CURSOR FOR stExec;
+EXEC SQL declare crExec CURSOR FOR stExec;
 	if (sqlca.sqlcode<0) return 0;
 
-$open crExec ;
+EXEC SQL open crExec ;
 	if (sqlca.sqlcode<0) return 0;
 
 
@@ -616,9 +395,6 @@ if (exec_mode==0||exec_mode==2) {
 		display_mode=DISPLAY_ACROSS;
 	}
 }
-
-
-
 }
 
 
@@ -628,7 +404,9 @@ if (exec_mode==0||exec_mode==2) {
 int execute_sql_fetch() {
 int a;
 	
-	$FETCH crExec USING SQL DESCRIPTOR 'descExec';
+
+
+	EXEC SQL FETCH crExec USING SQL DESCRIPTOR 'descExec';
 
 	if (sqlca.sqlcode<0) {
 		A4GL_push_char("Fetch error...");
@@ -704,10 +482,12 @@ int a;
 
 /******************************************************************************/
 static int field_widths() {
-$int index;
-$int datatype;
-$int size;
-$char columnName[64];
+EXEC SQL BEGIN DECLARE SECTION;
+int index;
+int datatype;
+int size;
+char columnName[64];
+EXEC SQL END DECLARE SECTION;
 int totsize=0;
 
 if (columnNames) {
@@ -728,7 +508,7 @@ columnWidths=malloc(sizeof(int) * (numberOfColumns+1));
 
 
 for(index=1;index<=numberOfColumns;index++) {
-	$GET DESCRIPTOR 'descExec' VALUE: index :size=LENGTH , :datatype=TYPE,
+	EXEC SQL GET DESCRIPTOR 'descExec' VALUE: index :size=LENGTH , :datatype=TYPE,
 		:columnName=NAME
 	;
 	A4GL_trim(columnName);
@@ -865,12 +645,13 @@ if (sqlca.sqlcode>=0) {
 		sprintf(buff,"Operation successed (%d) rows affected",n);
 	}
 } else {
-	char lv_err1[256];
-	char lv_err2[256];
-	rgetmsg(sqlca.sqlcode,lv_err1,sizeof(lv_err1));
-	sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
-	A4GL_trim(lv_err2);
-	sprintf(buff,"Error %d : %s",sqlca.sqlcode,lv_err2);
+	char *ptr;
+	A4GL_push_int(sqlca.sqlcode);
+	aclfgl_get_db_err_msg(1);
+	ptr=A4GL_char_pop();
+	A4GL_trim(ptr);
+	sprintf(buff,"Error %d : %s",sqlca.sqlcode,ptr);
+	free(ptr);
 }
 	return buff;
 }

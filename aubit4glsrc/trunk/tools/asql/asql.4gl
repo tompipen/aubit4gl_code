@@ -116,16 +116,11 @@ define lv_err1 char(255)
 define lv_err2 char(255)
 
 
-# This is currently INFORMIX specific...
 if sqlca.sqlcode>=0 then
 	return 0
 end if
 
-code
-rgetmsg(sqlca.sqlcode,lv_err1,sizeof(lv_err1));
-sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
-A4GL_trim(lv_err2);
-endcode
+let lv_err2=get_db_err_msg(sqlca.sqlcode)
 
 if get_exec_mode()=0 then
 	error lv_err2
@@ -135,6 +130,9 @@ if get_exec_mode()=0 then
 end if
 return 1
 end function
+
+
+
 
 function clear_screen_portion()
 define lv_y integer

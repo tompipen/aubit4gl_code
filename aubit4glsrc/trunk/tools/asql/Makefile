@@ -1,7 +1,11 @@
-all : asql.4ae
+all : asql.4ae qryfrm.afr.dat
 
-asql.4ae: asql.o connection_menu.o database.o lex.yy.o main_menu.o query.o session.o simple_parse.o table.o pick.o dir.o execute.o  paginate.o
+asql.4ae: asql.o connection_menu.o database.o lex.yy.o main_menu.o query.o session.o simple_parse.o table.o pick.o dir.o execute.o  paginate.o infx.o
 	4glpc -g  $^ -o asql.4ae  -lUI_TUI
+
+qryfrm.afr.dat: qryfrm.per
+	fcompile qryfrm.per
+
 
 lex.yy.c: parse.l
 	flex -i parse.l
@@ -36,6 +40,9 @@ execute.o: execute.4gl
 paginate.o: paginate.4gl
 	4glpc -g -c $^
 
+infx.o:infx.4gl
+	4glpc -g -c $^
+
 dir.o: dir.c
 	gcc -g -c dir.c 
 
@@ -52,4 +59,6 @@ clean:
 	query.c query.ec query.glb query.h query.o \
 	session.c session.ec session.glb session.h session.o \
 	simple_parse.o \
-	table.c table.ec table.glb table.h table.o
+	table.c table.ec table.glb table.h table.o \
+	paginate.c paginate.ec paginate.glb paginate.h paginate.o
+

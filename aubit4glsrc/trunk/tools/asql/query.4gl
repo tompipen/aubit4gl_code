@@ -1,7 +1,5 @@
 
 code
-#include <ncurses.h>
-#include <form.h>
 #include "simple.h"
 int init_filename=1;
 endcode
@@ -298,57 +296,6 @@ call close_tmpfile();
 end function
 
 ################################################################################
-function qry_modify()
-	set pause mode off
-	call clear_screen_portion()
-	call read_tmpfile()
-
-	if not frm_is_open then
-		open window w1 at 6,1 with form "qryfrm" attributes(form line 1)
-	end if
-
-	let int_flag=false
-
-	let mv_qry=mv_qry clipped
-	input mv_qry without defaults from info_line  attribute(green)
-
-	on key(up)
-code
-		A4GL_int_form_driver(GET("s_screenio",_inp_io,"cform"),REQ_PREV_LINE);
-endcode
-
-
-	on key(down)
-code
-		A4GL_int_form_driver(GET("s_screenio",_inp_io,"cform"),REQ_NEXT_LINE);
-endcode
-	on key(return)
-code
-		A4GL_int_form_driver(GET("s_screenio",_inp_io,"cform"),REQ_NEW_LINE);
-endcode
-
-
-
-	end input
-	
-	close window w1
-	let frm_is_open=0
-	if int_flag=true then
-		error "INT PRESSED"
-		call read_tmpfile()
-		call display_qry()
-		return 0
-	else
-		error "WRITING"
-		call write_tmpfile()
-		call display_qry()
-		return 1
-	end if
-
-end function
-
-
-################################################################################
 function display_qry()
 define lv_a,lv_b,lv_c integer
 	call clear_screen_portion()
@@ -619,4 +566,74 @@ end function
 
 
 
+
+
+code
+#ifndef DIALECT_POSTGRES
+#include <ncurses.h>
+#include <form.h>
+#else
+#define KEY_MAX         0777            /* Maximum key value is 0633 */
+#define REQ_NEXT_LINE    (KEY_MAX + 19) /* move to next line in field   */
+#define REQ_PREV_LINE    (KEY_MAX + 20) /* move to prev line in field   */
+#define REQ_BEG_LINE     (KEY_MAX + 25) /* move to beginning of line    */
+#define REQ_END_LINE     (KEY_MAX + 26) /* move after last char in line */
+#define REQ_NEW_LINE     (KEY_MAX + 31) /* insert/overlay new line      */
+#define REQ_INS_LINE     (KEY_MAX + 33) /* insert blank line at cursor  */
+#define REQ_DEL_LINE     (KEY_MAX + 36) /* delete line at cursor        */
+#define REQ_SCR_FLINE    (KEY_MAX + 43) /* scroll field forward a line  */
+#define REQ_SCR_BLINE    (KEY_MAX + 44) /* scroll field backward a line */
+#define REQ_SCR_HFLINE   (KEY_MAX + 51) /* horizontal scroll line          */
+#define REQ_SCR_HBLINE   (KEY_MAX + 52) /* horizontal scroll line          */
+#endif
+endcode
+################################################################################
+function qry_modify()
+	set pause mode off
+	call clear_screen_portion()
+	call read_tmpfile()
+
+	if not frm_is_open then
+		open window w1 at 6,1 with form "qryfrm" attributes(form line 1)
+	end if
+
+	let int_flag=false
+
+	let mv_qry=mv_qry clipped
+	input mv_qry without defaults from info_line  attribute(green)
+
+	on key(up)
+code
+		A4GL_int_form_driver(GET("s_screenio",_inp_io,"cform"),REQ_PREV_LINE);
+endcode
+
+
+	on key(down)
+code
+		A4GL_int_form_driver(GET("s_screenio",_inp_io,"cform"),REQ_NEXT_LINE);
+endcode
+	on key(return)
+code
+		A4GL_int_form_driver(GET("s_screenio",_inp_io,"cform"),REQ_NEW_LINE);
+endcode
+
+
+
+	end input
+	
+	close window w1
+	let frm_is_open=0
+	if int_flag=true then
+		error "INT PRESSED"
+		call read_tmpfile()
+		call display_qry()
+		return 0
+	else
+		error "WRITING"
+		call write_tmpfile()
+		call display_qry()
+		return 1
+	end if
+
+end function
 
