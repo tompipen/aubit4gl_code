@@ -1,4 +1,5 @@
 
+#Sections you may need to modify are marked with <<<<<<<<<<<<<<<<<<<<<<<<<<<<(x)
 
 ################
 #All common settings and rules are included:
@@ -36,8 +37,9 @@ include ${MAKEFILE_COMMON}
 
 ################
 #This is set in comon make file; overide it if you need to here
-#A4GL_KEYFILE=keys.in
+A4GL_KEYFILE=keys.in
 #A4GL_KEYDELAY=10000
+OUT_EXPECTED_LIST=w0 w1 w2 w3 w4
 
 ## ======================================================================
 ##                  Local Setings - automatic
@@ -61,14 +63,23 @@ endif
 
 ################
 #Default target - link objects into program
+#Change "progname" to real program name (if different) <<<<<<<<<<<<<<<<<<<<<<(1)
+#Replace "${MODULES}" with list of actual modules constituting this program if
+#this test needs more then one program <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(2)
 progname${TARGET_EXT}: ${MODULES}
+#see included makefile for definition of DEFAULT_LINK. Overide it here if you
+#need to with something like:
+#	${FGLC} $^ -o $@
 	${DEFAULT_LINK}
 
 
 #Add one or more of above targets here, if test uses more then one program
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(3)
 
 ################
 #Synonim to invoke compilation of the test by using uniform target name
+#Change "progname" to real program name (if different) <<<<<<<<<<<<<<<<<<<<<<(4)
+#Add more "progname${TARGET_EXT}" items if test uses more then one program <<(5)
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
 
 ################
@@ -90,6 +101,7 @@ run: compile
 #If you need to set specific options for that program, you can do it like this:
 #(example shows how to specify key file):
 #	export A4GL_KEYFILE=somekeyfile.in; ${DBG} ./anotherprogname${NAMED_[DIFF|RUN]}
+#Add more actions here (if needed) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(7)
 
 ## ======================================================================
 ##                  Test desctiptions
@@ -101,9 +113,12 @@ run: compile
 
 ################
 #Text to describe functionality tested:
+#Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Test if Portguese Characters are correctly displayed."
+	@echo "This is not a test but a Testing template. \
+		Please provide brief description of functionality tested here."
 
+#All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
 ################
 #If this test needs database, return 1
