@@ -1986,6 +1986,13 @@ print_variable (struct variable *v, char scope, int level)
   char arrbuff[256];
   static_extern_flg = 0;
   strcpy(arrbuff,"-1");
+  // are we dealing with the sqlca variable ?
+  if (level==0&&strcmp(v->names.name,"sqlca")==0) {
+	  printf("SQLCA!!!\n");
+	if (strcmp(acl_getenv("LEXTYPE"),"EC")==0) {
+			return;
+	}
+  }
 
   if (scope=='G'&&strcasecmp(v->names.name,"time")==0&&level==0) {
 		printf("Ignore time....\n");

@@ -1021,9 +1021,9 @@ sel_p2 : {strcpy($<str>$,"");}
        sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
        }
 | order_by_clause 
-| INTO_TEMP tmp_tabname op_no_log {
-       sprintf($<str>$,"%s %s %s ",$<str>1,$<str>2,$<str>3);
-} ;
+| INTO_TEMP tmp_tabname op_no_log { sprintf($<str>$,"%s %s %s ",$<str>1,$<str>2,$<str>3); } 
+| order_by_clause INTO_TEMP tmp_tabname op_no_log { sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); } 
+;
 
 
 tmp_tabname: identifier;

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.153 2003-02-04 05:21:12 afalout Exp $
+dnl # $Id: configure.in,v 1.154 2003-02-05 04:20:11 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3507,6 +3507,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/libmenu/menu_generic/Makefile
                 lib/libmsg/msg_native/Makefile
                 lib/liblex/lex_c/Makefile
+                lib/liblex/lex_esqlc/Makefile
                 lib/liblex/lex_perl/Makefile
 				lib/libpdf/Makefile
                 lib/libui/ui_console/Makefile

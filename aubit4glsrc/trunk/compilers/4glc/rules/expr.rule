@@ -174,13 +174,8 @@ int_sign real_number
 ;
 
 literal_expr: 
-ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%d);",atoi($<str>2));inc_counter(); 
-	$<ptr>$=new_expr($<str>$);
-}
-| ASCII variable { sprintf($<str>$,"push_ascii(%s);",$<str>2); inc_counter();
-	$<ptr>$=new_expr($<str>$);
-}
-|
+/*ASCII fgl_expr_c { $<ptr>$=append_expr($<ptr>2,"push_ascii()"); }
+|*/
 CHAR_VALUE  {
 	sprintf($<str>$,get_push_literal('S',$<str>1));
 	/* sprintf($<str>$,"push_char(%s);",$<str>1); */
@@ -600,10 +595,9 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 { 
 	$<ptr>$=append_expr($<ptr>3,"downshift_stk();");
 }
-| ASCII OPEN_BRACKET INT_VALUE CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%d);",atoi($<str>3));
-	$<ptr>$=new_expr($<str>$);
+| ASCII OPEN_BRACKET fgl_expr_c CLOSE_BRACKET { 
+	$<ptr>$=append_expr($<ptr>3,"push_ascii();");
 }
-| ASCII OPEN_BRACKET variable CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%s);",$<str>3); $<ptr>$=new_expr($<str>$); } ;
 | EXTEND OPEN_BRACKET variable_or_current CLOSE_BRACKET { 
 	sprintf($<str>$,"%s",$<str>3); $<ptr>$=new_expr($<str>$); } ;
 pdf_expr : fgl_expr_c POINTS  {
