@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.143 2004-03-06 15:09:31 mikeaubury Exp $
+# $Id: compile_c.c,v 1.144 2004-03-07 16:29:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.143 2004-03-06 15:09:31 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.144 2004-03-07 16:29:34 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1747,15 +1747,20 @@ print_bind_expr (void *ptr, char i)
 	{
 	  if (a > 0)
 	    A4GL_append_expr (ptr, ",");
-	  sprintf (buff, "{&%s,%d,%d}", ibind[a].varname,
+	  sprintf (buff, "{0,%d,%d}", 
 		   (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
 	  A4GL_append_expr (ptr, buff);
 	}
       A4GL_append_expr (ptr, "};");
+
       if (doing_esql ())
         {
           A4GL_append_expr(ptr,make_sql_bind_expr (0, "i"));
         }
+      for (a=0;a<ibindcnt;a++) {
+      		sprintf(buff,"ibind[%d].ptr=&%s;",a,ibind[a].varname);
+	  	A4GL_append_expr (ptr, buff);
+      }
       start_bind (i, 0);
       return a;
     }

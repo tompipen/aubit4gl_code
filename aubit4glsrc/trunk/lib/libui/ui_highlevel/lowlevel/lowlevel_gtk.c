@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.27 2004-02-22 02:29:01 afalout Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.28 2004-03-07 16:30:17 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -2153,8 +2153,7 @@ form=vform;
 cwidget=form->widgets[form->currentfield];
 
 //printf("FORM DRIVER : %p - %x\n",form,mode);
-
-if (mode<=255 && isprint(mode) && mode >=' ') {
+if (mode<=255 && a_isprint(mode) && mode >=' ') {
 	gint iopos;
 	char buff[2];
 	buff[0]=mode;
@@ -2252,8 +2251,11 @@ if (mode<=255 && isprint(mode) && mode >=' ') {
 		case AUBIT_REQ_VALIDATION: printf("REQ_VALIDATION\n"); break;
 
 
-	default: printf("Unknown mode : %d\n",mode);
-	{char *ptr=0; *ptr=0;}
+	default: 
+		if (a>255) {
+			printf("Unknown mode : %d\n",mode);
+			{char *ptr=0; *ptr=0;}
+		}
 	}
 }
 return 0;

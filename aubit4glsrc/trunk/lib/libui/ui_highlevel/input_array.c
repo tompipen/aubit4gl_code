@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.10 2004-03-04 16:27:49 mikeaubury Exp $
+# $Id: input_array.c,v 1.11 2004-03-07 16:30:17 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.10 2004-03-04 16:27:49 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.11 2004-03-07 16:30:17 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1801,6 +1801,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
 	  new_state = 50;
 	  //rval = -12;
 	  if (A4GL_has_event(-12,evt)) rval = A4GL_has_event(-12,evt);
+	  else {if (A4GL_has_event(-17,evt)) rval = A4GL_has_event(-17,evt);}
 	}
 
       if (arr->fcntrl[a].state == 50)
@@ -1819,6 +1820,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
 	{
 	  new_state = 50;
 	  if (A4GL_has_event(-13,evt)) rval = A4GL_has_event(-13,evt);
+	  else { if (A4GL_has_event(-18,evt)) rval = A4GL_has_event(-18,evt); }
 	  //rval = -13;
 	}
 
@@ -1957,6 +1959,9 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
 	  new_state = 0;
 	  //rval = -14;
       	  if (A4GL_has_event(-14,evt)) rval = A4GL_has_event(-14,evt);
+      	  else {
+		if (A4GL_has_event(-17,evt)) rval = A4GL_has_event(-17,evt);
+	  }
 	  arr->curr_line_is_new = 1;
 	}
 
@@ -1968,6 +1973,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
       arr->curr_line_is_new = 0;
       new_state = 0;
       	  if (A4GL_has_event(-15,evt)) rval = A4GL_has_event(-15,evt);
+      	  else {if (A4GL_has_event(-18,evt)) rval = A4GL_has_event(-18,evt);}
       //rval = -15;
     }
 

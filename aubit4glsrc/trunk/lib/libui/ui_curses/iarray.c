@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.73 2004-03-03 14:46:57 mikeaubury Exp $
+# $Id: iarray.c,v 1.74 2004-03-07 16:30:17 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.73 2004-03-03 14:46:57 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.74 2004-03-07 16:30:17 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -2551,10 +2551,21 @@ switch (rval) {
         case -94: if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);rval=-1;break;
         case -10: if (A4GL_has_event(-10,evt)) return A4GL_has_event(-10,evt);rval=-1;break;
         case -11: if (A4GL_has_event(-11,evt)) return A4GL_has_event(-11,evt);rval=-1;break;
-        case -12: if (A4GL_has_event(-12,evt)) return A4GL_has_event(-12,evt);rval=-1;break;
-        case -13: if (A4GL_has_event(-13,evt)) return A4GL_has_event(-13,evt);rval=-1;break;
-        case -14: if (A4GL_has_event(-14,evt)) return A4GL_has_event(-14,evt);rval=-1;break;
-        case -15: if (A4GL_has_event(-15,evt)) return A4GL_has_event(-15,evt);rval=-1;break;
+        case -12: if (A4GL_has_event(-12,evt)) return A4GL_has_event(-12,evt);
+			if (A4GL_has_event(-17,evt)) return A4GL_has_event(-17,evt);
+			rval=-1;break;
+        case -13: 
+		if (A4GL_has_event(-13,evt)) return A4GL_has_event(-13,evt);
+		if (A4GL_has_event(-18,evt)) return A4GL_has_event(-18,evt);
+			rval=-1;break;
+        case -14: 
+			if (A4GL_has_event(-14,evt)) return A4GL_has_event(-14,evt);
+			if (A4GL_has_event(-17,evt)) return A4GL_has_event(-17,evt);
+			rval=-1;
+			break;
+        case -15: if (A4GL_has_event(-15,evt)) return A4GL_has_event(-15,evt);
+		if (A4GL_has_event(-18,evt)) return A4GL_has_event(-18,evt);
+		rval=-1;break;
 
 }
 if (rval>=0||rval==-1) return -1;

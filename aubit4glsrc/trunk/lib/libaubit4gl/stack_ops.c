@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.7 2003-12-10 20:45:19 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.8 2004-03-07 16:29:31 mikeaubury Exp $
 #
 */
 
@@ -49,6 +49,7 @@ A4GL_debug("A4GL_process_stack_op_other");
       int eql;
       A4GL_debug ("OP_IN Set");
       a = A4GL_pop_int ();
+      A4GL_debug ("OP_IN Set checking against %d values",a);
       while (a >= 1)
 	{
 	  A4GL_debug ("Getting base value from stack.. a=%d", a);
