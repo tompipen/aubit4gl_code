@@ -3,8 +3,8 @@
 use ExtUtils::MakeMaker;
 WriteMakefile(
         'NAME'    => 'aubit4gl_pl',
-        'LIBS'=> [ '-lm -lcurses -lform -lpanel' ], 
-        'OBJECT'  => 'lib_wrap.o ../libaubit4gl.so'
+        'LIBS'=> [ '-laubit4gl -lm -lcurses -lform -lpanel -L..' ], 
+        'OBJECT'  => 'lib_wrap.o '
 );
 
 

@@ -1,5 +1,5 @@
 main
-define env, varname char (60)
+define env, varname char(60)
 
 define axxx integer
 define bxxx record
