@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.118 2003-12-12 16:14:49 mikeaubury Exp $
+# $Id: 4glpc,v 1.119 2003-12-17 18:46:26 mikeaubury Exp $
 #
 
 ########################################################################
@@ -387,7 +387,12 @@ fi
 
 PATH=$AUBITDIR/bin:$PATH
 
-COMPCC=""
+if [ "$COMPCC_OPTIONS" != "" ]
+then
+	COMPCC="$COMPCC_OPTIONS"
+else
+	COMPCC=""
+fi
 
 #old_incl is obsolete:
 #if [ "$OLD_INCL" != "0" ] #OLD_INCL is set in Makefile-common
