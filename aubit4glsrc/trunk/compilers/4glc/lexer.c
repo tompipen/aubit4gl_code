@@ -257,7 +257,7 @@ strcpy(word,"");
 			else continue;
 		}
 
-		if (ispunct(a)&&a!='_'&&instrs==0&&instrd==0) {
+		if (ispunct(a)&&a!='.'&&a!='_'&&instrs==0&&instrd==0) {
 			if (strlen(word)>0) {
 				ungetc(a,f);
 				return word;
@@ -329,7 +329,7 @@ cnt=0;
 
 p=read_word(f,&t);
 
-if (strcmp(p,"sqlcode")==0&&xccode==0) {
+if (strcmp(p,"sql_code")==0&&xccode==0) {
 		xccode=2;
 		return KW_CSTART;
 }

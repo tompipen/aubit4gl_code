@@ -1,6 +1,6 @@
 /**************************************************************/
 /*
-/* $Id: 4glc.c,v 1.2 2001-08-21 19:31:22 mikeaubury Exp $
+/* $Id: 4glc.c,v 1.3 2001-08-30 18:55:47 mikeaubury Exp $
 /**/
 //#include "../libincl/compiler.h"
 #include <stdio.h>
@@ -79,7 +79,7 @@ main (argc, argv)
 	}
       else
 	{
-	  printf ("Yacc debugging off\n");
+	  //printf ("Yacc debugging off\n");
 	  yydebug = 0;
 	}
 

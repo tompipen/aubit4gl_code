@@ -5,8 +5,9 @@ OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
 | arr_int_sign INT_VALUE {sprintf($<str>$,"(%s%s)",$<str>1,$<str>2);}
 | variable {
   int a;
-  a=scan_variable($<str>1);
+  a=scan_variable($<str>1)&15;
   if (a!=1&&a!=2) {
+    
     yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
     YYERROR;
     /* error processing */;

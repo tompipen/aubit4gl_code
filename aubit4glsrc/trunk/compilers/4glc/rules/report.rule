@@ -157,7 +157,7 @@ skip_command : SKIP fgl_expr {start_state("KWLINE",1);} KWLINE {printc("%sskip_l
 opt_rep_expr_list : {strcpy($<str>$,"");}
 	| rep_expr_list
 ;
-print_command : PRINT opt_rep_expr_list opt_semi { printc("%srep_print(&rep,0,%s);\n",ispdf(),$<str>3); } ;
+print_command : PRINT opt_rep_expr_list  opt_semi { printc("%srep_print(&rep,0,%s,0);\n",ispdf(),$<str>3); } ;
 
 print_img_command : PRINT_IMAGE blob_var img_types opt_scaling opt_semi { printc("%s pdf_blob_print(&rep,&%s,\"%s\",%s);\n",$<str>4,$<str>2,$<str>3,$<str>5);} 
 ;
@@ -194,14 +194,17 @@ strcpy($<str>$,"1");
 
 rep_expr_list : 
 	rep_expr {
-	printc("%srep_print(&rep,1,1);\n",ispdf());} 
+	printc("%s rep_print(&rep,1,1,%s);\n",ispdf(),$<str>1);} 
 | rep_expr_list COMMA rep_expr {
-         printc("%srep_print(&rep,1,1);\n",ispdf());
+         printc("%s rep_print(&rep,1,1,%s);\n",ispdf(),$<str>1);
 	
 }
 ;
 
-rep_expr : fgl_expr;
+rep_expr : fgl_expr op_wordwrap {
+	strcpy($<str>$,$<str>2);
+	}
+	;
 
 opt_group: | GROUP;
 
@@ -555,4 +558,8 @@ pdf_functions :
    printc("}\n"); }
 ;
 
-
+op_wordwrap:
+	{strcpy($<str>$,"0");}
+ 	| WORDWRAP { sprintf($<str>$,"rep.right_margin"); }
+	| WORDWRAP RIGHT_MARGIN INT_VALUE { sprintf($<str>$,"%s",$<str>3); }
+;

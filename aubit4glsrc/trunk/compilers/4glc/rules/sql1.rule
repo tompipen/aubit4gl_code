@@ -703,12 +703,8 @@ parameter_specification:
 	;
 
 variable_specification:
-	COLON identifier op_indicator identifier
+	COLON identifier  identifier
 	| var_ident_ibind
-	;
-
-op_indicator: {strcpy($<str>$,"");}
-	| INDICATOR
 	;
 
 data_type:
