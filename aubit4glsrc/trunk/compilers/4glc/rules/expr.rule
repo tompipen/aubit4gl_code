@@ -378,22 +378,46 @@ IS_NULL
 ;
 
 string_match_expr:
- MATCHES fgl_expr_c
-{
-	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);");
+ MATCHES fgl_expr_c {
+	$<ptr>$=append_expr($<ptr>2,"push_char(\"\\\\\");pushop(OP_MATCHES);");
+ }
+ | NOT_MATCHES fgl_expr_c {
+	$<ptr>$=append_expr($<ptr>2,"push_char(\"\\\\\");pushop(OP_MATCHES);pushop(OP_NOT);");
 }
-| NOT_MATCHES fgl_expr_c
-{
-	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);pushop(OP_NOT);");
+ | MATCHES fgl_expr_c ESCAPE CHAR_VALUE {
+	char buff[40];
+	sprintf(buff,"push_char(%s);pushop(OP_MATCHES);",$<str>4);
+	$<ptr>$=append_expr($<ptr>2,buff);
+ }
+ | NOT_MATCHES fgl_expr_c ESCAPE CHAR_VALUE {
+	char buff[40];
+	sprintf(buff,"push_char(%s);pushop(OP_MATCHES);pushop(OP_NOT);",$<str>4);
+	$<ptr>$=append_expr($<ptr>2,buff);
 }
-| LIKE fgl_expr_c
-{
-	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);");
+
+
+| LIKE fgl_expr_c {
+	char buff[40];
+	sprintf(buff,"push_char(\"\\\\\");pushop(OP_LIKE);");
+	$<ptr>$=append_expr($<ptr>2,buff);
 }
-| NOT_LIKE fgl_expr_c
-{
-	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);pushop(OP_NOT);");
+| NOT_LIKE fgl_expr_c {
+	char buff[40];
+	sprintf(buff,"push_char(\"\\\\\");pushop(OP_LIKE);pushop(OP_NOT);");
+	$<ptr>$=append_expr($<ptr>2,buff);
 }
+| LIKE fgl_expr_c ESCAPE CHAR_VALUE {
+	char buff[40];
+	sprintf(buff,"push_char(%s);pushop(OP_LIKE);",$<str>4);
+	$<ptr>$=append_expr($<ptr>2,buff);
+}
+| NOT_LIKE fgl_expr_c ESCAPE CHAR_VALUE {
+	char buff[40];
+	sprintf(buff,"push_char(%s);pushop(OP_LIKE);pushop(OP_NOT);",$<str>4);
+	$<ptr>$=append_expr($<ptr>2,buff);
+}
+
+
 ;
 
 clip_expr: 

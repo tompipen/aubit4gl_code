@@ -113,16 +113,13 @@ upd_val_list_ss  :
 
 
 upd_val_ss : 
-	  subquery_ss  {
-		push_gen(UPDVAL,"<SUBQUERY>");
-		$<sql_string>$=$<sql_string>1;
-	}
-	| KW_NULL {
+	  //subquery_ss  { push_gen(UPDVAL,"<SUBQUERY>"); $<sql_string>$=$<sql_string>1; } | 
+	KW_NULL {
 		push_gen(UPDVAL,"NULL");
 		$<sql_string>$=strdup($<str>1);
 	}
-	| value_expression  {
-		$<sql_string>$=strdup($<str>1);
+	| value_expression_ss  {
+		$<sql_string>$=$<sql_string>1;
 	}
 ;
 
@@ -142,9 +139,10 @@ INSERT_INTO { insql=1;start_bind('i',0);} table_name op_insert_column_list ins_2
 }
 ;
 
-ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list CLOSE_BRACKET {
+ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET {
 insql=0;
-$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4," ",$<str>5,0);}
+	//printf("Value = %s\n",$<sql_string>4);
+$<sql_string>$=make_sql_string($<str>1," (",$<sql_string>4,")",0);}
 	| query_specification_ss
 		{$<sql_string>$=$<sql_string>1;}
 	;
@@ -159,17 +157,26 @@ insert_column_list:
 	column_name
 	| insert_column_list COMMA column_name
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	;
+;
 
-insert_value_list:
-	insert_value
-	| insert_value_list COMMA insert_value
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	;
+insert_value_list_ss:
+	insert_value_ss {
+		$<sql_string>$=$<sql_string>1;
+	//printf(" 1. Value = %s\n",$<sql_string>$);
+	}
+	| insert_value_list_ss COMMA insert_value_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1,",", $<sql_string>3,0);
+	//printf(" 2. Value = %s\n",$<sql_string>$);
+	}
+;
 
-insert_value:
-	value_expression
-	| KW_NULL
+insert_value_ss:
+	value_expression_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| KW_NULL {
+		$<sql_string>$=strdup("NULL");
+	}
 	;
 
 fetch_statement:
@@ -615,16 +622,18 @@ having_clause_ss:
 ;
 
 
-group_by_clause:
-	GROUP_BY column_specification_list {
-		sprintf($<str>$," %s %s",$<str>1,$<str>2);
+group_by_clause_ss:
+	GROUP_BY column_specification_list_ss {
+		$<sql_string>$=make_sql_string("GROUP BY ",$<sql_string>2,0);
 	}
 ;
 
-column_specification_list:
-	  column_specification
-	| column_specification_list COMMA column_specification {
-			sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+column_specification_list_ss:
+	  column_specification_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| column_specification_list_ss COMMA column_specification_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
 	}
 ;
 
@@ -667,9 +676,9 @@ tname_list : table_reference | tname_list COMMA table_reference { sprintf($<str>
 table_expression_ss:
 	from_clause  
 	op_where_clause_ss
-	op_group_by_clause 
+	op_group_by_clause_ss
 	op_having_clause_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<sql_string>2," ",$<str>3," ",$<sql_string>4,0);
+		$<sql_string>$=make_sql_string($<str>1," ",$<sql_string>2," ",$<sql_string>3," ",$<sql_string>4,0);
 	}
 	;
 
@@ -677,8 +686,12 @@ op_where_clause_ss: /* empty */ { $<sql_string>$=strdup("");}
 	| where_clause_ss {$<sql_string>$=$<sql_string>1;}
 	;
 
-op_group_by_clause: /*empty */ {strcpy($<str>$,"");}
-	| group_by_clause {strcpy($<str>$,$<str>1);}
+op_group_by_clause_ss: /*empty */ {
+	$<sql_string>$=strdup("");
+}
+	| group_by_clause_ss {
+		$<sql_string>$=$<sql_string>1;
+}
 	;
 
 op_having_clause_ss: {$<sql_string>$=strdup("");}
@@ -729,12 +742,11 @@ exists_predicate_ss:
 	;
 
 
-quantified_predicate_ss:
-	value_expression comp_op quantifier subquery_ss
-{$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3," ",$<sql_string>4,0);}
-	| subquery_ss comp_op value_expression 
-{$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<str>3,0);}
-	;
+//quantified_predicate_ss:
+	//value_expression comp_op quantifier subquery_ss
+//{$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>3," ",$<sql_string>4,0);}
+	//| subquery_ss comp_op value_expression {$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<str>3,0);}
+	//;
 
 quantifier:
 	{strcpy($<str>$," ALL ");}
@@ -755,8 +767,9 @@ some:
 
 
 op_escape:
-	ESCAPE escape_character
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+		{strcpy($<str>$,"");}
+	| ESCAPE escape_character
+	{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
 pattern:
@@ -769,19 +782,17 @@ escape_character:
 
 
 in_predicate_ss:
-	value_expression IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
-		sprintf($<str>$,"%s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
-		$<sql_string>$=strdup($<str>1);
+	value_expression_ss IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string($<sql_string>1," IN (",$<str>4,")",0);
 	}
-	| value_expression IN subquery_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
+	| value_expression_ss IN subquery_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
 	}
-	| value_expression NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
-		sprintf($<str>$,"%s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
-		$<sql_string>$=strdup($<str>1);
+	| value_expression_ss NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string($<sql_string>1," NOT IN (",$<sql_string>4,")",0);
 	}
-	| value_expression NOT_IN subquery_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
+	| value_expression_ss NOT_IN subquery_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1," ",$<str>2," ",$<sql_string>3,0);
 	}
 ;
 
@@ -800,28 +811,23 @@ op_not: {strcpy($<str>$,"");}
 
 
 comparison_predicate_ss:
-	value_expression op_not IS_NULL {
-		sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
-		$<sql_string>$=strdup($<str>$);
+	value_expression_ss op_not IS_NULL {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," IS NULL",0);
 	}
-	| value_expression op_not IS_NOT_NULL {
-		sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
-		$<sql_string>$=strdup($<str>$);
+	| value_expression_ss op_not IS_NOT_NULL {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," IS NOT NULL",0);
 	}
-	| value_expression comp_op value_expression {
-		sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
-		$<sql_string>$=strdup($<str>$);
+	| value_expression_ss comp_op value_expression_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,$<sql_string>3,0);
 	}
-	| value_expression comp_op subquery_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
+	| value_expression_ss op_not BETWEEN value_expression_ss KW_AND value_expression_ss {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," BETWEEN ",$<sql_string>4," AND ",$<sql_string>6,0);
 	}
-	| value_expression op_not BETWEEN value_expression KW_AND value_expression {
-		sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);
-		$<sql_string>$=strdup($<str>$);
+	| value_expression_ss op_not LIKE pattern op_escape {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," LIKE ",$<str>4,$<str>5,0);
 	}
-	| value_expression op_not LIKE pattern op_escape {
-		sprintf($<str>$,"%s %s Like %s %s",$<str>1,$<str>2,$<str>4,$<str>5);
-		$<sql_string>$=strdup($<str>$);
+	| value_expression_ss op_not MATCHES pattern op_escape {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2," MATCHES ",$<str>4,$<str>5,0);
 	}
 	;
 
@@ -831,9 +837,9 @@ comp_op:
 	| LESS_THAN
 	| GREATER_THAN 
         | NOT_MATCHES
-        | NOT_LIKE
+        //| NOT_LIKE
 	| MATCHES
-	| LIKE {strcpy($<str>$,"likE");}
+	//| LIKE {strcpy($<str>$,"likE");}
 	| LESS_THAN_EQ {strcpy($<str>$,"<=");}
 	| GREATER_THAN_EQ {strcpy($<str>$,">=");}
 	;
@@ -846,9 +852,7 @@ predicate_ss:
 	| in_predicate_ss {
 		$<sql_string>$=$<sql_string>1;
 	}
-	| quantified_predicate_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
+	//| quantified_predicate_ss { $<sql_string>$=$<sql_string>1; }
 	| exists_predicate_ss {
 		$<sql_string>$=$<sql_string>1;
 	}
@@ -1147,7 +1151,7 @@ select_statement_ss:
 
 in_select_statement_ss:
 	SELECT op_ad select_list_ss table_expression_ss sel_p2_ss {
-		$<sql_string>$=make_sql_string("push_char(\"", $<str>1, " ",$<str>2," ", $<sql_string>3, " ",$<sql_string>4, " ",$<sql_string>5, "\");",0 );
+		$<sql_string>$=make_sql_string("push_char(\"", $<str>1, " ",$<str>2," ", $<sql_string>3, " ",$<sql_string>4, " ",$<sql_string>5, "\");",0);
 	free($<sql_string>3);
 	free($<sql_string>4);
 	free($<sql_string>5);
@@ -1231,72 +1235,100 @@ op_ad: {strcpy($<str>$,"");}
 	;
 
 select_list_ss: 
-	value_expression_pls  {
+	value_expression_pls_ss  {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| select_list_ss COMMA value_expression_pls_ss { 
+		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
+	}
+;
+
+value_expression_pls_ss : 
+	value_expression_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| value_expression_ss  NAMED {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,0);
+	}
+	| value_expression_ss  reserved_word {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,0);
+	}
+;
+
+
+column_specification_ss : value_expression_ss {
+	$<sql_string>$=$<sql_string>1;
+}
+
+;
+
+
+
+value_expression_ss:
+	value_expression_complex_ss {
+			if (strlen(current_upd_table)) {
+				push_gen(UPDVAL,$<sql_string>1);
+			}
+		$<sql_string>$=$<sql_string>1;
+	}
+	| var_ident_ibind 	{
 		$<sql_string>$=strdup($<str>1);
 	}
-	| select_list_ss COMMA value_expression_pls { 
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<str>3,0);
-		free($<sql_string>1);
+	| subquery_ss {
+		$<sql_string>$=$<sql_string>1;
 	}
 ;
 
-value_expression_pls : 
-value_expression 
-| value_expression  NAMED {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-| value_expression  reserved_word {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-
-;
-
-
-column_specification : value_expression;
-
-
-
-value_expression:
-	value_expression_complex {
-			if (strlen(current_upd_table)) push_gen(UPDVAL,$<str>1);
-	}
-	| var_ident_ibind 	/* push_gen handled by ibind */
-;
-
-value_expression_complex :
-	value_expression DIVIDE value_expression
-{sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
-	| value_expression units_qual
-{sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
-	| value_expression MULTIPLY value_expression
-{sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
-	| value_expression PLUS value_expression
-{sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
-	| value_expression MINUS value_expression
-{sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
+value_expression_complex_ss :
+	value_expression_ss DIVIDE value_expression_ss
+		{$<sql_string>$=make_sql_string($<sql_string>1,"/",$<sql_string>3,0);}
+	| value_expression_ss units_qual
+		{$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,0);}
+	| value_expression_ss MULTIPLY value_expression_ss
+		{$<sql_string>$=make_sql_string($<sql_string>1,"*",$<sql_string>3,0);}
+	| value_expression_ss PLUS value_expression_ss
+		{$<sql_string>$=make_sql_string($<sql_string>1,"+",$<sql_string>3,0);}
+	| value_expression_ss MINUS value_expression_ss
+		{$<sql_string>$=make_sql_string($<sql_string>1,"-",$<sql_string>3,0);}
 	| literal
+		{$<sql_string>$=make_sql_string($<str>1,0);}
 	| KW_TRUE
+		{$<sql_string>$=make_sql_string("TRUE",0);}
 	| KW_FALSE
+		{$<sql_string>$=make_sql_string("FALSE",0);}
 	| USER
-	| MULTIPLY {sprintf($<str>$," %s ",$<str>1);}
+		{$<sql_string>$=make_sql_string("USER",0);}
+	| MULTIPLY 
+		{$<sql_string>$=make_sql_string("*",0);}
 	| COUNT_MULTIPLY 
-{sprintf($<str>$,"%s",$<str>1);}
- 	| AVG OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$,"%s%s%s%s%s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| XMAX OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$,"%s%s%s%s%s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| XMIN OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$,"%s%s%s%s%s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| SUM OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$,"%s(%s%s)",$<str>1,$<str>3,$<str>4);}
-	| COUNT OPEN_BRACKET op_all value_expression CLOSE_BRACKET
-{sprintf($<str>$,"%s%s%s%s%s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| identifier OPEN_BRACKET value_expr_list CLOSE_BRACKET
-{sprintf($<str>$,"%s%s%s%s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| DATE setident OPEN_BRACKET setident value_expr_list CLOSE_BRACKET
-{sprintf($<str>$,"%s%s%s%s",$<str>1,$<str>3,$<str>5,$<str>6);}
-	| OPEN_BRACKET value_expression CLOSE_BRACKET {sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}	
-	| EXTEND OPEN_BRACKET extend_qual CLOSE_BRACKET {sprintf($<str>$,"extend(%s)",$<str>3);}
+{$<sql_string>$=make_sql_string("COUNT(*)",0);}
+ 	| AVG OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
+{$<sql_string>$=make_sql_string("AVERAGE(",$<str>3,$<sql_string>4,")",0);}
+	| XMAX OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
+{$<sql_string>$=make_sql_string("MAX(",$<str>3,$<sql_string>4,")",0);}
+	| XMIN OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
+{$<sql_string>$=make_sql_string("MIN(",$<str>3,$<sql_string>4,")",0);}
+	| SUM OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
+{$<sql_string>$=make_sql_string("SUM(",$<str>3,$<sql_string>4,")",0);}
+	| COUNT OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
+{$<sql_string>$=make_sql_string("COUNT(",$<str>3,$<sql_string>4,")",0);}
+	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET
+{$<sql_string>$=make_sql_string($<str>1,"(",$<sql_string>3,")",0);}
+	| DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET
+{$<sql_string>$=make_sql_string("DATE(",$<sql_string>3,")",0);}
+	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET 
+{$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);}
+	| EXTEND OPEN_BRACKET extend_qual CLOSE_BRACKET
+{$<sql_string>$=make_sql_string("EXTEND(",$<str>3,")",0);}
 ;
 
-value_expr_list : 
-	value_expression | value_expr_list COMMA value_expression;
+value_expr_list_ss : 
+	value_expression_ss {$<sql_string>$=$<sql_string>1;}
+	| value_expr_list_ss COMMA value_expression_ss {
+	$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
+}
+	
+;
 
 value_specification:
 	| literal
@@ -1310,10 +1342,17 @@ print_undo_use($<str>1);
 ;
 
 
-load_cmd :  opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list {
+load_cmd :  
+opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list {
 print_load($<str>3,$<str>4,$<str>6,$<str>7);
 print_undo_use($<str>1);
-};
+}
+| opt_use LOAD_FROM ufile opt_delim variable {
+print_load_str($<str>3,$<str>4,$<str>5);
+print_undo_use($<str>1);
+}
+
+;
 
 opt_delim : {strcpy($<str>$,"\"|\"");} | DELIMITER char_or_var {
 strcpy($<str>$,$<str>2);

@@ -535,6 +535,7 @@ print_unload char* file,char* delim,char* sql -> void
 
 /* void print_load (char *file, char *delim, char *tab, char *list) */
 print_load char* file,char* delim,char* tab,char* list -> void
+print_load_str char* file,char* delim,char* sql -> void
 
 /* void print_use_session (char *sess) */
 print_use_session char *sess -> void

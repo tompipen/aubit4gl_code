@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.45 2003-03-05 07:27:47 afalout Exp $
+# $Id: stack.c,v 1.46 2003-03-05 22:24:37 mikeaubury Exp $
 #
 */
 
@@ -1455,6 +1455,15 @@ push_time (void)
 void
 pushop (int a)
 {
+
+if (a==(OP_MATCHES) || a==(OP_LIKE)) {
+	char *s;
+	s=char_pop();
+	set_escape(s);
+	free(s);
+}
+	
+
   debug("PUSHOP : %d",a);
 	if (
 		a==OP_IN||a==OP_NOTIN
@@ -2685,5 +2694,14 @@ lrtrim (char *z)
   return rstr;
 }
 
+
+char escape_chr;
+void set_escape(char *s) {
+	escape_chr=s[0];
+}
+
+int get_escape_chr() {
+	return (int)escape_chr;
+}
 
 // ================================ EOF ================================

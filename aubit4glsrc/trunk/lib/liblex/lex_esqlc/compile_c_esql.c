@@ -711,6 +711,13 @@ print_load (char *file, char *delim, char *tab, char *list)
   printc("/* LOAD NOT IMPLEMENTED YET */");
 }
 
+void
+print_load_str (char *file, char *delim, char *str)
+{
+  printc("/* LOAD NOT IMPLEMENTED YET */");
+}
+
+
 /**
  * Print in the generated file the C implementation for use a specific 
  * connection in a SQL statement.

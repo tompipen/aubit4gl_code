@@ -500,6 +500,13 @@ print_load (char *file, char *delim, char *tab, char *list)
   printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
 }
 
+
+void
+print_load_str (char *file, char *delim, char *sql)
+{
+  printc ("A4GLSQL_load_data_str(%s,%s,%s);\n", file, delim, sql);
+}
+
 /**
  * Print in the generated file the C implementation for use a specific 
  * connection in a SQL statement.

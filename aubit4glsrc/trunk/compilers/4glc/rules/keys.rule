@@ -32,6 +32,7 @@ key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
 	|       SINGLE_KEY {strcpy($<str>$,$<str>1);}
         |       ESCAPE {strcpy($<str>$,"escape");}
         |       UP {strcpy($<str>$,"up");}
+        |       HELP {strcpy($<str>$,"help");}
         |       DOWN {strcpy($<str>$,"down");}
         |       RETURN {strcpy($<str>$,"return");}
         |       DELETE {strcpy($<str>$,"delete");}

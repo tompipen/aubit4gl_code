@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.64 2003-03-02 14:26:54 mikeaubury Exp $
+# $Id: compile_c.c,v 1.65 2003-03-05 22:24:38 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4400,6 +4400,12 @@ void
 print_load (char *file, char *delim, char *tab, char *list)
 {
   printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
+}
+
+void
+print_load_str (char *file, char *delim, char *sql)
+{
+  printc ("A4GLSQL_load_data_str(%s,%s,%s);\n", file, delim, sql);
 }
 
 /**

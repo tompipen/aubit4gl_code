@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.17 2003-03-02 14:26:55 mikeaubury Exp $
+# $Id: compile_c.c,v 1.18 2003-03-05 22:24:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -136,8 +136,10 @@ dll_import struct   s_constr_buff constr_buff[256];
 dll_import char     when_to[64][8];
 int doing_esql(void) ;
 void make_sql_bind (char *sql, char *type);
-long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr);
+//long get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level, char *arr);
 int split_arrsizes(char *s,int *arrsizes) ;
+int esql_type(void) ;
+void print_function_variable_init(void );
 
 /*
 =====================================================================
@@ -228,7 +230,15 @@ char *ptr;
     }
 
   if (doing_esql()) {
-  	strcat (c, ".ec");
+	switch(esql_type()) {
+
+	case 1:
+  		strcat (c, ".ec");
+		break;
+	case 2:
+  		strcat (c, ".cpc");
+		break;
+	}
   } else {  
   	strcat (c, ".c");
   }
@@ -4161,7 +4171,23 @@ int doing_esql() {
   if (strcmp(acl_getenv("LEXTYPE"),"EC")==0) {
 	  return 1;
   } 
+
+
   return 0;
+}
+
+
+int esql_type() {
+
+  if (strcmp(acl_getenv("LEXDIALECT"),"INFORMIX")==0) {
+	  return 1;
+  } 
+
+  if (strcmp(acl_getenv("LEXDIALECT"),"POSTGRES")==0) {
+	  return 2;
+  } 
+
+  return 1; // Assume informix
 }
 
 void lex_parsed_fgl() {
