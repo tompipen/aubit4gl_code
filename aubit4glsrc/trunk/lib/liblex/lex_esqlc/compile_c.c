@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.142 2004-03-04 18:34:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.143 2004-03-06 15:09:31 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.142 2004-03-04 18:34:20 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.143 2004-03-06 15:09:31 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1533,7 +1533,7 @@ print_param (char i)
     }
 
   if (i=='r') {
-    printc ("struct BINDING _rbind[%d]={ /* print_param */\n", i, ONE_NOT_ZERO(fbindcnt));
+    printc ("struct BINDING _rbind[%d]={ /* print_param */\n", ONE_NOT_ZERO(fbindcnt));
   } else {
     printc ("struct BINDING %cbind[%d]={ /* print_param */\n", i, ONE_NOT_ZERO(fbindcnt));
   }
