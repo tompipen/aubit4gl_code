@@ -59,6 +59,8 @@ then
 	    exit $RET
     fi
 
+	echo "Aubit web site updated from CVS"
+
     exit
 fi
 
