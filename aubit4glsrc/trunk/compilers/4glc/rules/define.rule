@@ -15,7 +15,7 @@ define_multiple	:
 ;
 
 define_set :
-	DEFINE {dtypelist[0]=0;lex_printcomment("/* define */\n");} def_part  {lex_printcomment("/*end def */\n");} 
+	DEFINE {dtypelist[0]=0;lex_printcomment("/* define */\n");} def_part  {lex_printcomment("/*end def */\n");} opt_semi
 	| dim_section
 	| whenever_cmd
 ;

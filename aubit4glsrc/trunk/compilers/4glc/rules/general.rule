@@ -175,6 +175,8 @@ reserved_word :
 	|ESCAPE
 	|UPSHIFT
 	|AVERAGE
+	|UNDERLINE
+	|MENU
 ;
 
 

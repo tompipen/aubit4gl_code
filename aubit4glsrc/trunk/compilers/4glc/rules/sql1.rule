@@ -556,9 +556,9 @@ tname_list : table_reference | tname_list COMMA table_reference { sprintf($<str>
 ;
 
 table_expression:
-	from_clause
-	op_where_clause
-	op_group_by_clause
+	from_clause  
+	op_where_clause 
+	op_group_by_clause 
 	op_having_clause 
 {
 sprintf($<str>$,"%s %s %s %s",
@@ -568,15 +568,15 @@ $<str>3,$<str>4);
 	;
 
 op_where_clause: /* empty */ {strcpy($<str>$,"");}
-	| where_clause
+	| where_clause {strcpy($<str>$,$<str>1);}
 	;
 
 op_group_by_clause: /*empty */ {strcpy($<str>$,"");}
-	| group_by_clause
+	| group_by_clause {strcpy($<str>$,$<str>1);}
 	;
 
 op_having_clause: {strcpy($<str>$,"");}
-	| having_clause
+	| having_clause {strcpy($<str>$,$<str>1);}
 	;
 
 
@@ -786,13 +786,13 @@ scale:
 	;
 
 table_name:
-	 CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",strip_quotes($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	 CHAR_VALUE DOT identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",strip_quotes($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
 	| CHAR_VALUE {
 		sprintf($<str>$," %s",strip_quotes($<str>1));
 		addmap("Use Table",$<str>$,curr_func,yylineno,infilename);
 	}
-	| table_identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
-	| db_name COLON table_identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	| identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
+	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
 
 	;
 

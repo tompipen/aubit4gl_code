@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.49 2003-02-10 23:01:16 mikeaubury Exp $
+# $Id: lexer.c,v 1.50 2003-02-12 08:53:22 mikeaubury Exp $
 #*/
 
 /**
@@ -937,6 +937,17 @@ fix_bad_strings (char *s)
   return;
 }
 
+static int sql_kword(int a) {
+switch (a) {
+	case WHERE:
+	case FROM:
+	case SELECT:
+		return 1;
+}
+return 0;
+}
+
+
 /**
  *  Lexical analysis entry point.
  *
@@ -1005,6 +1016,10 @@ yylex (void *pyylval, int yystate)
 	  if (scan_variable (buff) == -1)
 	    break;
 	case 2:
+	  if (is_commandkw (a) == 0 && !sql_kword(a)) {
+	    a = NAMED_GEN;
+	  }
+	  break;
 	case 3:
 	  /* treat as identifier, unless token starts a command */
 	  if (is_commandkw (a) == 0)

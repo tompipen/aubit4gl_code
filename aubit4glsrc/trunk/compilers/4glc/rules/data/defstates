@@ -29,3 +29,5 @@ formhandler:
 messagebox: 
 	BUTTONS
 
+menu:
+	COMMAND 

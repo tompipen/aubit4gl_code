@@ -45,7 +45,8 @@ fgl_next:
 
 
 
-op_fgl_expr_ret_list: reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_ret_list
+op_fgl_expr_ret_list: reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_ret_list {
+strcpy($<str>$,$<str>2);}
 ;
 
 
@@ -535,6 +536,46 @@ inc_counter();}
 | YEAR OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=append_expr($<ptr>4,"aclfgl_year(1);");
 inc_counter();} 
+| INTERVAL OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET op_extend_i {
+	char buff[256];
+	sprintf(buff,"acli_interval(%s,%s)",$<str>3,$<str>5);
+	$<ptr>$=new_expr(buff);
+}
+| INTERVAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET op_extend_i {
+	char buff[256];
+	sprintf(buff,"acli_interval(\"%s\",%s)",$<str>3,$<str>5);
+	$<ptr>$=new_expr(buff);
+}
+| INTERVAL OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_i {
+	char buff[256];
+	sprintf(buff,"acli_interval(\"%s:%s\",%s)",$<str>3,$<str>5,$<str>7);
+	$<ptr>$=new_expr(buff);
+}
+| DATETIME OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(%s,%s)",$<str>3,$<str>5);
+	$<ptr>$=new_expr(buff);
+}
+| DATETIME OPEN_BRACKET INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s\",%s)",$<str>3,$<str>5);
+	$<ptr>$=new_expr(buff);
+}
+| DATETIME OPEN_BRACKET INT_VALUE COLON INT_VALUE CLOSE_BRACKET op_extend_d {
+	char buff[256];
+	sprintf(buff,"acli_datetime(\"%s:%s\",%s)",$<str>3,$<str>5,$<str>7);
+	$<ptr>$=new_expr(buff);
+}
+;
+
+
+
+op_extend_d: {strcpy($<str>$,"-1,-1");} | s_curr_v TO e_curr_v
+	{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+;
+
+op_extend_i: {strcpy($<str>$,"-1,-1");} | s_curr_v TO e_curr_v
+	{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
 

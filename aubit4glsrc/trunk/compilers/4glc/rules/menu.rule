@@ -5,12 +5,15 @@
 */
 
 menu_cmd	:	MENU {
+	start_state("menu",1);
    	menu_cnt=npush_menu();
    	menu_cmd_cnt[menu_cnt]=1;
    	push_blockcommand("MENU");
 	print_menu_1();
 	}
-	menu_title menu_commands end_menu_command;
+	menu_title menu_commands end_menu_command {
+	start_state("menu",0);
+	}
 
 end_menu_command  : END_MENU {
    print_end_menu_1();

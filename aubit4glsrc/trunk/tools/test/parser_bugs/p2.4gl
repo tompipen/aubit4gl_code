@@ -1,5 +1,5 @@
 main
-menu
+menu ""
 	command key("!")
 		message ""
 end menu

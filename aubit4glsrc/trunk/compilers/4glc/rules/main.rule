@@ -167,7 +167,7 @@ return_cmd :
 
 op_fgl_expr_list : reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_list {
 lex_printcomment("/* Got expr list */");
-sprintf($<str>$,"%s",$<str>1);}
+sprintf($<str>$,"%s",$<str>2);}
 ;
 
 db_section	:	  DATABASE dbase_name {open_db($<str>2);
