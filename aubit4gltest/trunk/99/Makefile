@@ -14,3 +14,6 @@ run: all
 ansi_sql_compat:
 	@echo "1"
 
+
+desc:
+	@echo "Test of Aubit4GL extension - IN and EXISTS as 4GL expression"

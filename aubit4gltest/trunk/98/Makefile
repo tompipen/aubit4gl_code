@@ -10,3 +10,6 @@ run: testna.4ae
 ansi_sql_compat:
 	@echo "0"
 
+
+desc:
+	@echo "Some basic testing of sqlerrd[2] and sqlerrd[6]"

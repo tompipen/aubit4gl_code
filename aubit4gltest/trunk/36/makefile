@@ -16,3 +16,5 @@ run: temp.4ae
 ansi_sql_compat:
 	@echo "0"
 
+desc:
+	@echo "Test a foreach when an open has already been done"

@@ -6,13 +6,18 @@ MAIN
 
   WHENEVER ERROR CONTINUE
 	DROP VIEW xpta
+	display sqlca.sqlcode
 	DROP TABLE xpto
+	display sqlca.sqlcode
   WHENEVER ERROR STOP
+	display sqlca.sqlcode
 	CREATE TABLE xpto (
 	  firstColumn integer,
 		secondColumn char(64)
 	)
+	display sqlca.sqlcode
 	INSERT INTO xpto (firstColumn,secondColumn) VALUES (1,"Hello")
+	display sqlca.sqlcode
 
 	CREATE VIEW xptv AS SELECT * FROM xpto
 
