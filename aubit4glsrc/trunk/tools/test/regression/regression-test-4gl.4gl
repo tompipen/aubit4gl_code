@@ -551,7 +551,8 @@ end function #this_fails()
 function fails_on_30_08_01 ()
 ##########################################################################
    define
-      pr_avail_cred_amt dec(16,2),
+	update char(20),
+	  pr_avail_cred_amt dec(16,2),
 #|_________________________^
 #| Error at line 630, character 27
 #| parse error ()
@@ -650,18 +651,28 @@ function fails_on_30_08_01 ()
 #| parse error ()
 --
 
+ #NOTE: there is a function called UPDATE() in this file.
+ call update() returning update
+ display update
+
+
 ###################################################
 #/data2/maximise/max_4.01.12/main/U1D.err :
             if intvar or
                intvar != intvar or
-               charvar != intvar or      #M 1588
+               charvar != intvar or
                intvar != charvar then
+
+#NOTE: there is a function called exists() defined below in this source file;
+#error is caused by compiler not recognising this exists() function, and
+#this is causing the conflict with reserved word "exists" - which should not be
+#reserved.
 
                if exists(intvar,
 #|______________________^
 #| Error at line 282, character 24
 #| parse error ()
-                         charvar,                    #M 1588
+                         charvar,
                          intvar) then
                     display "blah"
                 end if
@@ -1797,6 +1808,11 @@ define
 	return true
 
 end function
+
+
+FUNCTION update()
+  return "HELLO WORLD"
+END FUNCTION
 
 
 #------------------------------ EOF --------------------------------
