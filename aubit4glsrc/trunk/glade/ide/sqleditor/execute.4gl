@@ -76,6 +76,11 @@ extern struct element *list;
 extern int list_cnt;
 
 
+void set_outfname() {
+	sprintf(outfname,"/tmp/out%d.txt",getpid());
+}
+
+
 
 endcode
 
@@ -504,11 +509,6 @@ int isSqlError () {
 int get_exec_mode_c() {
 	return exec_mode;
 }
-
-void set_outfname() {
-	sprintf(outfname,"/tmp/out%d.txt",getpid());
-}
-
 
 
 
