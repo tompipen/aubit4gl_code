@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.193 2004-11-10 00:45:27 mikeaubury Exp $
+# $Id: compile_c.c,v 1.194 2004-11-10 13:40:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.193 2004-11-10 00:45:27 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.194 2004-11-10 13:40:17 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -3791,8 +3791,8 @@ if (!A4GL_doing_pcode()) {
 
   printc (" ");
   printc("if (acl_ctrl==REPORT_CONVERT) {");
-  printc("char *_f; char *_o; char *_l; _l=A4GL_char_pop(); _o=A4GL_char_pop(); _f=A4GL_char_pop(); \n");
-  printc("A4GL_convert_report(&_rep,_f,_o,_l);");
+  printc("char *_f; char *_o; char *_l; int _to_pipe; _l=A4GL_char_pop(); _o=A4GL_char_pop(); _f=A4GL_char_pop(); _to_pipe=A4GL_pop_int();\n");
+  printc("A4GL_convert_report(&_rep,_f,_o,_l,_to_pipe);");
   printc("return ;}");
   printc("if (acl_ctrl==REPORT_FREE) {");
   printc("A4GL_free_report(&_rep);");
@@ -5972,7 +5972,12 @@ void print_reset_state_after_call(void) {
 }
 
 
-void print_convert_report(char *repname, char* fname,char *otype, char *layout) {
+void print_convert_report(char *repname, char* fname,char *otype, char *layout,char *file_or_pipe) {
+	if (strcmp(file_or_pipe,"PIPE")==0) {	
+		printc("A4GL_push_int(1);");
+	} else {
+		printc("A4GL_push_int(0);");
+	}
 	printc("A4GL_push_char(%s);A4GL_push_char(%s);A4GL_push_char(%s);%s%s(3,REPORT_CONVERT);",fname,otype,layout,get_namespace (repname),repname);
 }
 

@@ -122,6 +122,26 @@ finish_cmd : FINISH_REPORT rep_name {
 		print_finish_report($<str>2);
 		// Can't free convertable here - developer needs to do that using FREE REPORT
 	}
+	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char AS var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","PIPE");
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER AS var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char AS var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
+		print_free_convertable($<str>2);
+	}
 	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char KW_USING var_or_char {
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"FILE");
@@ -142,26 +162,7 @@ finish_cmd : FINISH_REPORT rep_name {
 		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
 		print_free_convertable($<str>2);
 	}
-	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char {
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
-		print_free_convertable($<str>2);
-	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char AS var_or_char {
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","PIPE");
-		print_free_convertable($<str>2);
-	}
-	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER var_or_char AS var_or_char {
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
-		print_free_convertable($<str>2);
-	}
-	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char AS var_or_char {
-		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
-		print_free_convertable($<str>2);
-	}
+
 	
 ;
 

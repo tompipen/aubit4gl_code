@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.20 2004-09-29 15:09:07 mikeaubury Exp $
+# $Id: input_array.c,v 1.21 2004-11-10 13:40:19 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.20 2004-09-29 15:09:07 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.21 2004-11-10 13:40:19 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -146,6 +146,7 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
 	{
 	  A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
 			    arr->curr_attrib + 1,'R');
+		return;
 	}
       else
 	{
@@ -164,10 +165,12 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
 	    {
 	      A4GL_newMovement (arr, arr->scr_line, arr->arr_line,
 				arr->curr_attrib - 1,'L');
+		return;
 	    }
 	  else
 	    {
 	      A4GL_newMovement (arr, arr->scr_line - 1, arr->arr_line - 1, 0,'U');
+		return;
 	    }
 	}
       else

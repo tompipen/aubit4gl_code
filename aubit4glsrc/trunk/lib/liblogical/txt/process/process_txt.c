@@ -154,5 +154,6 @@ int RP_process_report (void *rp, char *buff,void *rbx, int rbs)
     {
       output_page (rep_fout, report->max_col, report->page_length);
     }
+  if (rep_fout) fclose(rep_fout);
 return 1;
 }
