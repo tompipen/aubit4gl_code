@@ -67,7 +67,7 @@ print_finish_report($<str>2);
 
 report_section: op_output_section op_rep_order_by  { sprintf($<str>$,$<str>2); } ;
 
-format_section: FORMAT EVERY ROW {
+format_section: FORMAT EVERY_ROW {
 	print_format_every_row();
 }
 | 
@@ -256,10 +256,10 @@ a=add_report_agg('S',$<ptr>3,$<ptr>5,racnt);
 sprintf($<str>$,"push_double(_g%d);\n",racnt);
 racnt+=a;
 }
-| COUNT     OPEN_BRACKET MULTIPLY CLOSE_BRACKET  rep_where
+| COUNT_MULTIPLY rep_where
 {
 int a;
-a=add_report_agg('C',$<ptr>3,$<ptr>5,racnt);
+a=add_report_agg('C',0,$<ptr>2,racnt);
 sprintf($<str>$,"push_int(_g%d);\n",racnt);
 racnt+=a;
 }

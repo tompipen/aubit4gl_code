@@ -11,7 +11,7 @@ print_for_start($<str>2);
 push_blockcommand("FOR");
 }
 commands {debug("For_cmds\n");} 
-END FOR {
+END_FOR {
 
 pop_blockcommand("FOR");
 print_for_end();

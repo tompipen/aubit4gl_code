@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.13 2002-08-18 05:00:27 afalout Exp $
+# $Id: gui.c,v 1.14 2002-08-29 11:25:45 mikeaubury Exp $
 #
 */
 
@@ -602,7 +602,7 @@ sock_gets (int sockfd, char *str, size_t count)
   char *current_position;
   char last_read = 0;
   fd_set rfds;
-  struct timeval tv;
+  /* struct timeval tv; */
   int retval;
   debug ("Waiting for a string...");
   current_position = str;
@@ -612,9 +612,10 @@ sock_gets (int sockfd, char *str, size_t count)
 
       FD_ZERO (&rfds);
       FD_SET (sockfd, &rfds);
-      tv.tv_sec = 1;
-      tv.tv_usec = 0;
-
+      /* 
+	tv.tv_sec = 1;
+      	tv.tv_usec = 0;
+     */
       while (1)
 	{
 

@@ -10,7 +10,8 @@ accept_key :  ACCEPTKEY key_value {sprintf($<str>$,"key_val(\"%s\")",$<str>2);is
 ;
 
 
-single_key_val : KEY {start_state("keymode",1);iskey=1;} key_do {sprintf($<str>$,"key_val(\"%s\")",$<str>3);iskey=0;start_state("keymode",0);};
+single_key_val : KEY {start_state("keymode",1);iskey=1;} key_do {sprintf($<str>$,"key_val(\"%s\")",$<str>3);iskey=0;start_state("keymode",0);}
+;
 
 key_do	: key_value  {strcpy($<str>$,$<str>1);}
 	| OPEN_BRACKET key_value_list CLOSE_BRACKET  {strcpy($<str>$,$<str>2);}
@@ -22,6 +23,7 @@ key_value_list : key_value | key_value_list COMMA key_value {
 ;
 
 key_value : {start_state("keymode",1);} key_value_1 {start_state("keymode",0);strcpy($<str>$,$<str>2);} 
+;
 
 key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
 	| 	CTRL_KEY /* {strcpy($<str>$,"^A");}*/

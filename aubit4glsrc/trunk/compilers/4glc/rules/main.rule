@@ -45,7 +45,7 @@ func_or_main	:	func_def
 op_code : |code_cmd | whenever_cmd  ;
 
 
-ldeffunction :  FUNCTION {strcpy($<str>$,"");} | LOCAL FUNCTION
+ldeffunction :  FUNCTION {strcpy($<str>$,"");} | LOCAL_FUNCTION
 {
 strcpy($<str>$,"static ");
 } ;

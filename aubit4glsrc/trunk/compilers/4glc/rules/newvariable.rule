@@ -29,7 +29,7 @@ if (scan_variable (buff) == -1&&buff[0]!=' ') {
 
 
 var_int :
-	var | '@' var {strcpy($<str>$,$<str>2);}
+	var | ATSIGN var {strcpy($<str>$,$<str>2);}
 ;
 var: 
  var setident DOT dot_part_var { 

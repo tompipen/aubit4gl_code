@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mpz.c,v 1.6 2002-08-18 05:00:27 afalout Exp $
+# $Id: mpz.c,v 1.7 2002-08-29 11:25:46 mikeaubury Exp $
 */
 
 /**
@@ -344,7 +344,10 @@ mpz_to_str (mpz_t *mpz,char *n,int sz)
 		free(ptr);
 		return 0;
 	} else {
-		strcpy(n,ptr);
+		memset(n,' ',sz);
+		n[sz-1]=0;
+		n[sz-strlen(ptr)]=0;
+		strcat(n,ptr);
 	}
 	return 1;
 }

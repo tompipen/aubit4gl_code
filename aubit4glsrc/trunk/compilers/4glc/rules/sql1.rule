@@ -807,7 +807,7 @@ approx_numeric_type:
 	| REAL
 	| SMALLFLOAT
 	| FLOAT
-	| DOUBLE PRECISION
+	| DOUBLE_PRECISION
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	;
 
@@ -1110,8 +1110,8 @@ value_expression:
 	| KW_FALSE
 	| USER
 	| MULTIPLY {sprintf($<str>$," %s ",$<str>1);}
-	| COUNT OPEN_BRACKET MULTIPLY CLOSE_BRACKET 
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	| COUNT_MULTIPLY 
+{sprintf($<str>$," %s",$<str>1);}
  	| AVG OPEN_BRACKET op_all value_expression CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| XMAX OPEN_BRACKET op_all value_expression CLOSE_BRACKET
