@@ -10,6 +10,7 @@
 struct pdf_layout layout;
 
 void pdf_default_file() {
+	printf("default file\n");
 	strcpy(layout.fontname,"Courier");
 	layout.fontsize		=8;
 	layout.leftmargin	=0;
@@ -43,6 +44,7 @@ int pdf_load_file(FILE *fin) {
 
 	fread(&layout,sizeof(layout),1,fin);
 	printf("LOADING Size %d version %d - fontsize : %d\n", size,ver,layout.fontsize);
+	printf("Img = %s\n",layout.img_src);
 	return 1;
 }
 

@@ -179,13 +179,12 @@ main (int argc, char *argv[])
 	      printf ("Unable to open filter file : %s\n", buff);
 	      exit (2);
 	    }
-	}
-
-
-      if (!RP_default_file (report, errbuff, rbx, rbs))
-	{
-	  printf ("No default file could be generated :\n%s\n", errbuff);
-	  exit (2);
+	} else {
+      		if (!RP_default_file (report, errbuff, rbx, rbs))
+			{
+	  		printf ("No default file could be generated :\n%s\n", errbuff);
+	  		exit (2);
+			}
 	}
     }
 
