@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.16 2002-01-13 14:58:15 mikeaubury Exp $
+# $Id: 4glc.c,v 1.17 2002-01-30 21:13:41 saferreira Exp $
 #
 */
 
@@ -35,7 +35,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.16 2002-01-13 14:58:15 mikeaubury Exp $
+ * $Id: 4glc.c,v 1.17 2002-01-30 21:13:41 saferreira Exp $
  */
 
 #include <stdio.h>
@@ -53,7 +53,10 @@ extern int lcnt;
 extern FILE *yyin;
 extern int glob_only;
 char *outputfilename;
-char outputfile[132];
+
+/** The output file name */
+static char outputfile[132];
+
 extern char infilename[132];
 char errbuff[1024] = "";
 

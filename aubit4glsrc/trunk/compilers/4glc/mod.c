@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.41 2002-01-30 13:41:53 saferreira Exp $
+# $Id: mod.c,v 1.42 2002-01-30 21:13:43 saferreira Exp $
 #
 */
 
@@ -46,12 +46,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.41 2002-01-30 13:41:53 saferreira Exp $
+* $Id: mod.c,v 1.42 2002-01-30 21:13:43 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.41  2002/01/30 13:41:53  saferreira
+*	Comments added
+*	
 *	Revision 1.40  2002/01/20 14:42:12  mikeaubury
 *	Error handling fix.
 *	This really needs examining as to what happens with
@@ -579,9 +582,21 @@ void inmod (void)
   modlevel = varcnt;
 }
 
-static isin_command (char *cmd_type)
+/**
+ * Check if the current state of the compiler is inside a command.
+ *
+ * Used to see what should be the scope of declarations and usages.
+ *
+ * Compare the parameter with the string with command type stored in
+ * the command stack.
+ *
+ * @param cmd_type The command type
+ * @return 
+ *   - 0 : We are NOT in command type
+ *   - 1 : We are in command type
+ */
+static int isin_command (char *cmd_type)
 {
-
   int z;
   if (ccnt == 0)
   {
@@ -590,86 +605,84 @@ static isin_command (char *cmd_type)
 
   for (z = ccnt - 1; z >= 0; z--)
   {
-
     if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
       continue;
 
     if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
     {
-	  debug ("OK\n");
-	  return 1;
-	}
-
-    }
+	    debug ("OK\n");
+	    return 1;
+	  }
+  }
   return 0;
 }
 
-static int print_record (int z, char ff,char *vname)
+/**
+ * Print the declaration of a record.
+ *
+ * @param z The variable index in the array.
+ * @param ff The scope of the record variable:
+ *   - -
+ *   - G
+ * @param vname The record variable name
+ */
+static int print_record(int z, char ff,char *vname)
 {
-
   int a;
-  // It should be declared here because the thw two function are tighly coupled
-  static void print_variable (int z, char ff);
+  // It should be declared here because the two function are tighly coupled
+  static void print_variable(int z, char ff);
 
   int lvl = 1;
-debug("Print record %s\n",vname);
+  debug("Print record %s\n",vname);
 
-  if (isin_command ("REPORT")||isin_command("FORMHANDLER")||isin_command("MENUHANDLER"))
-    {
-      if (ff != '-')
-	{
-	  print_start_record (1,vname);
-	}
-      else
-	{
-	  print_start_record (0,vname);
-	}
-
-    }
+  if (isin_command ("REPORT")||
+			isin_command("FORMHANDLER")||
+			isin_command("MENUHANDLER"))
+  {
+    if (ff != '-')
+	  {
+	    print_start_record (1,vname);
+	  }
+    else
+	  {
+	    print_start_record (0,vname);
+	  }
+  }
   else
-    {
-      if (ff != 'G')
-	print_start_record (0,vname);
-
-      if (ff == 'G')
-	print_start_record (2,vname);
-    }
+  {
+    if (ff != 'G')
+	    print_start_record (0,vname);
+		else
+	    print_start_record (2,vname);
+  }
 
   for (a = z + 1; a < varcnt; a++)
-    {
+  {
 
-      if (strcmp (vars[a].var_type, "_RECORD") == 0)
-	{
+    if (strcmp (vars[a].var_type, "_RECORD") == 0)
+	  {
+	    if (vars[a].level > vars[z].level)
+	      a = print_record (a, '-',vars[a].var_name);
 
-	  if (vars[a].level > vars[z].level)
-	    a = print_record (a, '-',vars[a].var_name);
+	    continue;
+	  }
 
-	  continue;
-
-	}
-
-      if (strcmp (vars[a].var_type, "_ENDREC") == 0)
-	{
-
-	  break;
-
-	}
-      print_variable (a, '-');
-
-    }
+    if (strcmp (vars[a].var_type, "_ENDREC") == 0)
+	  {
+	    break;
+	  }
+    print_variable (a, '-');
+  }
 
   if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
-    {
-      print_end_record (vars[z].var_name, -1);
-    }
-
+  {
+    print_end_record (vars[z].var_name, -1);
+  }
   else
-    {
-      print_end_record (vars[z].var_name, atoi (vars[z].var_arrsize));
-    }
-
+  {
+    print_end_record (vars[z].var_name, atoi (vars[z].var_arrsize));
+  }
   return a;
-
 }
 
 void setinc (a)
@@ -684,8 +697,8 @@ void setinc (a)
  * that generates the variable declaration in the target language to the
  * target generated file.
  *
- * @param z The variable index in the array
- * @param ff
+ * @param z The variable index in the array.
+ * @param ff The scope of the variable.
  *   - L : The variable is local to function
  *   - G : The variable have global scope
  *   - n
@@ -701,28 +714,27 @@ static void print_variable (int z, char ff)
     return;
 
   if (strcmp (vars[z].var_type, "_ENDREC") == 0)
-    {
-
+  {
       return;
-
-    }
+  }
 
   if (strcmp (vars[z].var_type, "_ASSOCIATE") == 0)
-    {
-      print_declare_associate_2 (vars[z].var_name, vars[z].var_size,
-				 vars[z].var_arrsize);
-      return;
-    }
+  {
+    print_declare_associate_2 (
+		  vars[z].var_name, 
+			vars[z].var_size,
+		  vars[z].var_arrsize
+		);
+    return;
+  }
 
   if (strcmp (vars[z].var_type, "_RECORD") == 0)
-    {
-      setinc (1);
-      print_record (z, ff,vars[z].var_name);
-      setinc (-1);
-
-      return;
-
-    }
+  {
+    setinc (1);
+    print_record (z, ff,vars[z].var_name);
+    setinc (-1);
+    return;
+  }
 
   if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
     {
@@ -888,9 +900,8 @@ void dump_vars (void)
  *
  * The scope level is defined by the global modlevel
  *
- * @param z Not used
  */
-void print_variables (int z)
+void print_variables (void)
 {
 
   int a;
@@ -981,9 +992,10 @@ void push_name (char *a, char *n)
  * All of them that have no typr yet associated are defined with this
  * data type.
  *
- * @param a The data type name
- * @param n  The number of elements if the variable is char, decimal
- * @param as If it is recognizing an array is the number of elements
+ * @param a The data type name hardcoded inside the program
+ * @param n  The size of elements if the variable is char, decimal, associate
+ * @param as If it is recognizing an array or associate is the number of 
+ *           elements
  */
 void push_type (char *a, char *n, char *as)
 {
@@ -1048,6 +1060,9 @@ void push_record (void)
 
 /**
  * The parser found a new associative array.
+ *
+ * @param a The size of the string used in the key.
+ * @param b Number of elements of the hash (array).
  */
 void push_associate (char *a, char *b)
 {

@@ -33,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.11 2002-01-23 09:06:18 afalout Exp $
+# $Id: sql.c,v 1.12 2002-01-30 21:14:04 saferreira Exp $
 #
 */
 
@@ -224,6 +224,24 @@ debug("cbval was set to %d after call",cbval);
 
 debug("All done returning rc=%d\n",rc);
 return rc;
+}
+
+static int count_queries(char *s) 
+{
+  char *ptr;
+  int cnt=0;
+  ptr=s;
+  while (1) {
+	  debug("Looking for a ? in %s\n",s);
+	  ptr=strchr(ptr,'?');
+	  debug("ptr=%p\n",ptr);
+	  if (ptr==0) break;
+	  cnt++;
+	  ptr++;
+	  if (*ptr==0) break;
+  }
+  debug("Found %d ? in string %s",cnt,s);
+  return cnt;
 }
 
 int proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
@@ -3484,19 +3502,3 @@ A4GLSQL_initsqllib() {
 	return 1;
 }
 
-static int count_queries(char *s) {
-char *ptr;
-int cnt=0;
-ptr=s;
-while (1) {
-	debug("Looking for a ? in %s\n",s);
-	ptr=strchr(ptr,'?');
-	debug("ptr=%p\n",ptr);
-	if (ptr==0) break;
-	cnt++;
-	ptr++;
-	if (*ptr==0) break;
-}
-debug("Found %d ? in string %s",cnt,s);
-return cnt;
-}
