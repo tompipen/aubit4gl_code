@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.151 2004-03-23 13:10:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.152 2004-03-24 16:15:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.151 2004-03-23 13:10:22 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.152 2004-03-24 16:15:07 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -4382,6 +4382,7 @@ printPushFunction (void)
 {
   if (!isGenStackInfo ())
     return;
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs);\n");
 }
 
