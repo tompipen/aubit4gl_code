@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define NEED_CMD_TYPE_STR
 
 #if (defined(__CYGWIN__)) || defined(__MINGW32__)
 	/* missing from rpcgen generated .h on CygWin: */
@@ -12,6 +13,7 @@
 #include "npcode_defs.h"
 
 extern module this_module;
+
 
 char *op_str[]={
         "EOP_EQUAL",
@@ -34,34 +36,7 @@ char *op_str[]={
 };
 
 
-extern char *cmd_type_str[];
-/*
-char *cmd_type_str[] = {
-  "CMD_NULL",
-  "CMD_BLOCK",
-  "CMD_END_BLOCK",
-  "CMD_CALL",
-  "CMD_IF",
-  "CMD_SET_VAR",
-  "CMD_SET_VAR_ONCE",
-  "CMD_GOTO_LABEL",
-  "CMD_GOTO_PC",
-  "CMD_RETURN",
-  "CMD_NOP",
-  "CMD_PUSH_LONG",
-  "CMD_PUSH_INT",
-  "CMD_PUSH_CHAR",
-  "CMD_CHK_ERR",
-  "CMD_PUSH_VARIABLE",
-  "CMD_END_4GL_0",
-  "CMD_END_4GL_1",
-  "CMD_DISPLAY_AT",
-  "CMD_PUSH_OP",
-  "CMD_CLR_ERR",
-  "CMD_ERRCHK",
-  ""
-};
-*/
+
 
 void print_push_int(int n)  ;
 void print_push_long(int n)  ;

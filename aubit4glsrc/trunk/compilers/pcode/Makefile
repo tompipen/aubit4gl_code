@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2003-10-28 09:48:23 mikeaubury Exp $
+# $Id: Makefile,v 1.15 2003-10-29 08:59:23 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -154,7 +154,7 @@ ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
 	$(CC) -g -shared $^ -o $@
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
-	$(CC) -O2 -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} -ldl
+	$(CC) -export-dynamic -O2 -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} -ldl
 
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
 	$(CC) -export-dynamic -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS} -ldl

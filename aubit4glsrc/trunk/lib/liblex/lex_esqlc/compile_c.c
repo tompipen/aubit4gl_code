@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.108 2003-10-26 19:12:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.109 2003-10-29 08:59:24 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1110,7 +1110,7 @@ A4GL_prchkerr (int l, char *f)
  * 3 = goto 
  */
 
-  if (A4GL_doing_pcode () && 0)
+  if (A4GL_doing_pcode () && 1)
     {
       char buff[2000];
       char tbuff[2000];

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.2 2003-08-25 19:15:50 mikeaubury Exp $
+# $Id: eval_field.c,v 1.3 2003-10-29 08:59:23 mikeaubury Exp $
 #
 */
 
@@ -198,7 +198,8 @@ A4GL_debug("Evaludate field_expr - s=%s exprtype = %d",s,expr->itemtype);
 		{">=",1,5},
 		{"MATCHES",1,6},
 		{"LIKE",1,7},
-	
+		{"NOTLIKE",1,8},
+
 		{"IN",1,	100},
 		{"BETWEEN",1,	101},
 		{"AND",1,	102},
@@ -245,6 +246,7 @@ A4GL_debug("Evaludate field_expr - s=%s exprtype = %d",s,expr->itemtype);
 		if (compid==6) {
 			A4GL_debug("MATCHES : XXXX '%s' matches '%s'",na1,na2);
 		}
+
 		switch(compid) {
 			case 0: A4GL_pushop(OP_LESS_THAN); break;
 			case 1: A4GL_pushop(OP_GREATER_THAN); break;
@@ -254,6 +256,7 @@ A4GL_debug("Evaludate field_expr - s=%s exprtype = %d",s,expr->itemtype);
 			case 5: A4GL_pushop(OP_GREATER_THAN_EQ); break;
 			case 6: A4GL_push_char("\\"); A4GL_pushop(OP_MATCHES); break;
 			case 7: A4GL_push_char("\\");A4GL_pushop(OP_LIKE); break;
+			case 8: A4GL_push_char("\\");A4GL_pushop(OP_LIKE); A4GL_pushop(OP_NOT); break;
 			default: A4GL_exitwith("Internal error - unhandled field comparison"); return 0;
 		}
 

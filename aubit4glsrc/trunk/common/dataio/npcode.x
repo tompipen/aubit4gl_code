@@ -31,7 +31,8 @@ enum cmd_type {
 	CMD_END_4GL_1,
 	CMD_DISPLAY_AT	,
 	CMD_PUSH_OP,
-	CMD_CLR_ERR
+	CMD_CLR_ERR,
+	CMD_ERRCHK
 
 };
 
@@ -215,6 +216,14 @@ struct cmd_display_at {
 	short y;
 };
 
+struct cmd_errchk {
+	long line;
+	long module_name;
+	long modes[5];
+	long actions[5];
+};
+
+
 
 /* An individual command */
 union cmd switch(int  cmd_type) {
@@ -236,6 +245,7 @@ union cmd switch(int  cmd_type) {
 	case CMD_PUSH_LONG:     long			c_push_long;
 	case CMD_PUSH_INT:	short 			c_push_int;
 	case CMD_CHK_ERR: 	long c_chk_err_lineno;
+	case CMD_ERRCHK:	struct cmd_errchk 	*c_errchk;
 	case CMD_PUSH_CHAR:	long 			c_push_char;
 
 /*

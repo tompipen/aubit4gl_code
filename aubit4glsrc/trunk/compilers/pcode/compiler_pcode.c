@@ -25,32 +25,6 @@ static void resolve_gotos_func (int function_cnt);
 
 long pc = 0;
 
-char *cmd_type_str[] = {
-  "CMD_NULL",
-  "CMD_BLOCK",
-  "CMD_END_BLOCK",
-  "CMD_CALL",
-  "CMD_IF",
-  "CMD_SET_VAR",
-  "CMD_SET_VAR_ONCE",
-  "CMD_GOTO_LABEL",
-  "CMD_GOTO_PC",
-  "CMD_RETURN",
-  "CMD_NOP",
-  "CMD_PUSH_LONG",
-  "CMD_PUSH_INT",
-  "CMD_PUSH_CHAR",
-  "CMD_CHK_ERR",
-  "CMD_PUSH_VARIABLE",
-  "CMD_END_4GL_0",
-  "CMD_END_4GL_1",
-  "CMD_DISPLAY_AT",
-  "CMD_PUSH_OP",
-  "CMD_CLR_ERR",
-  "CMD_ERRCHK",
-  ""
-};
-
 
 	// An individual command
 struct label
@@ -468,6 +442,7 @@ add_if (struct param *e, char *true, char *false)
 long add_chk_err(int n) {
   return new_command (CMD_CHK_ERR, (void *)n);
 }
+
 long add_errchk(void *n) {
   return new_command (CMD_ERRCHK, (void *)n);
 }

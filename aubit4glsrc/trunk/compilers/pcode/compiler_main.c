@@ -14,6 +14,7 @@ extern int yydebug;
 int yyparse (void);
 int debug_mode = 0;
 
+char fout[256]="a.4pe";
 
 struct module this_module;
 
@@ -31,11 +32,19 @@ main (int argc, char *argv[])
     {
       this_module.module_name = "-";
       yyin = stdin;
+      strcpy(fout,"a.4pe");
     }
   else
     {
+	char *ptr;
       this_module.module_name = strdup (argv[1]);
       yyin = fopen (argv[1], "r");
+      strcpy(fout,argv[1]);
+      ptr=strrchr(fout,'.');
+	if (ptr) {
+		*ptr=0;
+	}
+	strcat(fout,".4pe");
     }
 
   if (argc > 2)
@@ -115,7 +124,7 @@ main (int argc, char *argv[])
 
   //print_module();
 
-  a = process_xdr ('O', &this_module, "mine.4pe");
+  a = process_xdr ('O', &this_module, fout);
   if (a)
     {
       A4GL_debug ("Written ok %d\n", a);

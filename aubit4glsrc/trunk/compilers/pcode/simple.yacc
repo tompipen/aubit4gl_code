@@ -139,6 +139,7 @@ fgl_funcs :
 	}
 	| KW_A_PUSH_INT '(' int_val ')' {
 			add_push_int($<e>3->param_u.n);
+		printf("fgl_funcs..\n");
 	}
 	| KW_A_PUSH_CHAR '(' STRING_LITERAL ')' {
 			add_push_char($<str>3);

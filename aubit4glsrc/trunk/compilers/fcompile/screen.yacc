@@ -802,6 +802,9 @@ clause:
 	| value LIKE value {
 		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
 		}
+	| value KWNOT LIKE value {
+		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>4,"NOTLIKE");
+		}
 	| value EQUAL value {
 		$<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2);
 	}
