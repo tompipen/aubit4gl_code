@@ -1,0 +1,584 @@
+<!doctype HTML public "-//W3O//DTD W3 HTML3.0//EN">
+<HTML>
+<!doctype HTML public "-//W3O//DTD W3 HTML3.0//EN">
+<HEAD><TITLE>Database comparison table</TITLE></HEAD>
+<BODY>
+<center><h3>Database comparison table generated with <B>crash-me</B></h3></center>
+<table><tr><td><IMG SRC="../images/mysql-03.gif" ALT=logo width="88" height="31"></td>
+<td>You can get a copy of <B>crash-me</B> from the MySQL 3.23 distribution at
+<A HREF="http://www.mysql.com">http://www.mysql.com</A>.
+</td></tr></table>
+<br>
+crash-me is a program that automaticly detects limits and capabilities
+in a SQL server. We at TCX have worked very hard to make crash-me as
+fair and accurate as possible, but there is always a small possibility
+that some particular tests fails for some database, even if the
+database has the capability. We are always willing to correct this as
+soon as this comes to our attention.  Some tests may fail because the
+database in questions does not follow <B>ANSI SQL 92</B> or <B>ODBC
+3.0</B> but in this case we regard this as a failure in the database.
+<br>
+
+TCX is trying to add as much tests to the crash-me program as they can
+but it's always possible that some database vendor specific functions
+/ queries aren't tested. If you find some entries not tested on a
+database please let us know and try to patch the crash-me program your
+self or give us some example queries so we can add those entries. We
+are always open for suggestions for adding things to the crash-me
+program.  The crash-me program is also our input reference for the
+MySQL benchmark program.<br>
+
+<B>Note:</B>
+The crash-me table is generated from databases started with default
+parameters.  If this is not the case, this is noted in the comment row.
+Some detected limits may also be configurable, OS dependent, depend of the
+Perl DBI driver or depending on the license of the used database version.
+<BR><BR>
+The following markers are used in the comparison table
+<table border=1>
+<tr><th>Marker</th><th>Description</th></tr>
+<tr><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td>
+<td>Function is supported</td></tr>
+<tr><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td>
+<td>Function is not supported</td></tr>
+<tr><td><IMG SRC="../images/error.gif" WIDTH=20 HEIGHT=16 ALT="error"></td>
+<td>Function exists but didn't return expected result. This usually means that
+the database is using some non standard extension for the option in question</td></tr>
+<tr><td>ignored</td><td>Function doesn't give an error from the server but it
+doesn't do anything.  One can probably do the same action with some other
+command</td></tr>
+<tr><td>nonstandard</td><td>Function exists but doesn't work according to
+<B>ANSI SQL 92</B> or <B>ODBC 3.0</B></td></tr>
+<tr><td>&nbsp;</td><td>Not relevant or not tested with the database</td></tr>
+<tr><td>+number</td><td>At least <b>number</b> operations is supported</td></tr>
+<tr><td><IMG SRC="../images/warning.gif" WIDTH=28 HEIGHT=28 ALT="warning"></td>
+<td><B>Anyone with normal access to the database server can take it down, possible
+forever!</B></td> </table>
+
+<center><h3>The <B>crash-me</B> comparisons</h3></center>
+<TABLE BORDER=2><TR ALIGN=left>
+<th>Function</th>
+<td>Informix 7.30C1</td><td>PostgreSQL 6.5</td></tr>
+<tr><th colspan=3 ALIGN=center>Crash-me information</th></tr>
+<tr><td>crash&nbsp;me&nbsp;safe</td><td><IMG SRC="../images/warning.gif" WIDTH=28 HEIGHT=28 ALT="warning"></td><td><IMG SRC="../images/thumbs_up.gif" ALT="yes" width="20" height="16"></td></tr>
+<tr><td>crash&nbsp;me&nbsp;version</td><td>1.19a</td><td>1.32</td></tr>
+<tr><td>crash-me&nbsp;tested&nbsp;on</td><td>Windows NT Version 4.0</td><td>Linux 2.2.10 i686</td></tr>
+<tr><th colspan=3 ALIGN=center>ANSI SQL 92 types</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Type&nbsp;bit</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;bit(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;bit&nbsp;varying(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;char(1&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;char&nbsp;varying(1&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;character(1&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;character&nbsp;varying(1&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;date</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;dec(2&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;decimal(2&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;double&nbsp;precision</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;float</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;float(1&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;int</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;integer</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;interval&nbsp;day&nbsp;to&nbsp;second</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;interval&nbsp;year</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;interval&nbsp;year&nbsp;to&nbsp;month</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;national&nbsp;char&nbsp;varying(1&nbsp;arg)</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;national&nbsp;character(1&nbsp;arg)</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;national&nbsp;character&nbsp;varying(1&nbsp;arg)</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;nchar(1&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;numeric(2&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;real</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;smallint</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;time</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;timestamp</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;timestamp&nbsp;with&nbsp;time&nbsp;zone</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;varchar(1&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>ODBC 3.0 types</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Type&nbsp;bigint</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;binary(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;datetime</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;tinyint</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;varbinary(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><th colspan=3 ALIGN=center>Other types</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Type&nbsp;abstime</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;bfile</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;blob</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;bool</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;box</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;byte</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;char(1&nbsp;arg)&nbsp;binary</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;char16</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td>&nbsp;</td></tr>
+<tr><td>Type&nbsp;char2</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td>&nbsp;</td></tr>
+<tr><td>Type&nbsp;char4</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td>&nbsp;</td></tr>
+<tr><td>Type&nbsp;char8</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td>&nbsp;</td></tr>
+<tr><td>Type&nbsp;circle</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;clob</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;datetime</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;double</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;enum(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;float(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;float4</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;float8</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;image</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;int(1&nbsp;arg)&nbsp;zerofill</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;int1</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;int2</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;int3</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;int4</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;int8</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;int&nbsp;not&nbsp;null&nbsp;auto_increment</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;int&nbsp;unsigned</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;interval</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;line</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;long</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;long&nbsp;raw</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;long&nbsp;varbinary</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;long&nbsp;varchar(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;lseg</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;mediumint</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;mediumtext</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;middleint</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;mlslabel</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;money</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;nclob</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;number</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;number(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;number(2&nbsp;arg)</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;nvarchar(2&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td>&nbsp;</td></tr>
+<tr><td>Type&nbsp;nvarchar2(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;path</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;point</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;polygon</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;raw(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;reltime</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;rowid</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;serial</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;set(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;smalldatetime</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;smallfloat</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;smallmoney</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;text</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;text(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;timespan</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;uint</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;varchar2(1&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Type&nbsp;year</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><th colspan=3 ALIGN=center>Constraints</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>foreign&nbsp;keys</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>foreign&nbsp;key&nbsp;syntax</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>ANSI SQL 92 functions</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Function&nbsp;+,&nbsp;-,&nbsp;*&nbsp;and&nbsp;/</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;BIT_LENGTH</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CASE</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;CAST</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;CHAR_LENGTH</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td>&nbsp;</td></tr>
+<tr><td>Function&nbsp;CHARACTER_LENGTH</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;concatenation&nbsp;with&nbsp;||</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;CURRENT_DATE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;CURRENT_DATE()</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CURRENT_TIME</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;CURRENT_TIME()</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CURRENT_TIMESTAMP</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;CURRENT_TIMESTAMP()</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LOWER</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;OCTET_LENGTH</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;POSITION</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;SESSION_USER</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ANSI&nbsp;SQL&nbsp;SUBSTRING</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;SYSTEM_USER</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;TRIM</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;UPPER</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>ODBC 3.0 functions</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Function&nbsp;ABS</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;ACOS</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ASCII</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ASIN</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ATAN</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ATAN2</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CEILING</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CHAR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CONCAT(2&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;COS</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;COT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CURDATE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CURTIME</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DATABASE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DAYNAME</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DAYOFMONTH</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DAYOFWEEK</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DAYOFYEAR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DEGREES</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DIFFERENCE()</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;EXP</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;EXTRACT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;FLOOR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;ODBC&nbsp;syntax&nbsp;LEFT&nbsp;&&nbsp;RIGHT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;HOUR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ANSI&nbsp;HOUR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;IFNULL</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;INSERT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LCASE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LEFT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;REAL&nbsp;LENGTH</td><td><IMG SRC="../images/error.gif" WIDTH=20 HEIGHT=16 ALT="error"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ODBC&nbsp;LENGTH</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LOCATE(2&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LOCATE(3&nbsp;arg)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LOG</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LOG10</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LTRIM</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;MINUTE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;MOD</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;MONTH</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;MONTHNAME</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;NOW</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;PI</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;POWER</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;QUARTER</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;RADIANS</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;RAND</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;REPEAT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;REPLACE</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;RIGHT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ROUND(2&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;RTRIM</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;SECOND</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;SIGN</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;SIN</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;SOUNDEX</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;SPACE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;SQRT</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;ODBC&nbsp;SUBSTRING</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;TAN</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;TIMESTAMPADD</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;TIMESTAMPDIFF</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;TRUNCATE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;UCASE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;USER</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td>&nbsp;</td></tr>
+<tr><td>Function&nbsp;USER()</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;WEEK</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;YEAR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><th colspan=3 ALIGN=center>Other functions</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Function&nbsp;NOT&nbsp;as&nbsp;'!'&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;MOD&nbsp;as&nbsp;%</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;&&nbsp;(bitwise&nbsp;and)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;AND&nbsp;as&nbsp;'&&'</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;&lt;&gt;&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;=</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;ADD_MONTHS</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;AND&nbsp;and&nbsp;OR&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;ATN2</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;automatic&nbsp;num-&gt;string&nbsp;convert</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;automatic&nbsp;string-&gt;num&nbsp;convert</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;BETWEEN&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;&lt;&lt;&nbsp;and&nbsp;&gt;&gt;&nbsp;(bitwise&nbsp;shifts)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;BIT_COUNT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CEIL</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;CHARINDEX</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CHR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;COALESCE</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;concatenation&nbsp;with&nbsp;+</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CONCAT(list)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;CONVERT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;COSH</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DATE_FORMAT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DATEADD</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DATEDIFF</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DATENAME</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;DATEPART</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ELT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ENCRYPT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;FIELD</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;FORMAT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;FROM_DAYS</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;FROM_UNIXTIME</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;GETDATE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;GREATEST</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;IF</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;IN&nbsp;on&nbsp;numbers&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;IN&nbsp;on&nbsp;strings&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;INITCAP</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;LOCATE&nbsp;as&nbsp;INSTR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;INSTR&nbsp;(Oracle&nbsp;syntax)</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;INSTRB</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;INTERVAL</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LAST_DAY</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LAST_INSERT_ID</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LEAST</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LENGTHB</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LIKE&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LIKE&nbsp;ESCAPE&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LN</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;LOG(m,n)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;LOGN</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;LPAD</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;MAX&nbsp;on&nbsp;numbers</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td>&nbsp;</td></tr>
+<tr><td>Function&nbsp;MDY</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;SUBSTRING&nbsp;as&nbsp;MID</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;MIN&nbsp;on&nbsp;numbers</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td>&nbsp;</td></tr>
+<tr><td>Function&nbsp;MONTHS_BETWEEN</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;NOT&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;NOT&nbsp;BETWEEN&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;NOT&nbsp;LIKE&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ODBC&nbsp;CONVERT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;PASSWORD</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;PATINDEX</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;PERIOD_ADD</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;PERIOD_DIFF</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;POW</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;RANGE</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;REGEXP&nbsp;in&nbsp;SELECT</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;REPLICATE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;REVERSE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ROOT</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;ROUND(1&nbsp;arg)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;RPAD</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;SEC_TO_TIME</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;SINH</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;STR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;STRCMP</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;STUFF</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;SUBSTRB</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;SUBSTRING_INDEX</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;SYSDATE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;TANH</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;TIME_TO_SEC</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;TO_DAYS</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;TRANSLATE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/error.gif" WIDTH=20 HEIGHT=16 ALT="error"></td></tr>
+<tr><td>Function&nbsp;TRIM;&nbsp;Many&nbsp;char&nbsp;extension</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;TRIM;&nbsp;Substring&nbsp;extension</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/error.gif" WIDTH=20 HEIGHT=16 ALT="error"></td></tr>
+<tr><td>Function&nbsp;TRUNC</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;UID</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;UNIX_TIMESTAMP</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;USERENV</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;VERSION</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;WEEKDAY</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;|&nbsp;(bitwise&nbsp;or)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;OR&nbsp;as&nbsp;'||'</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><th colspan=3 ALIGN=center>Functions in WHERE</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Function&nbsp;BETWEEN</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;=&nbsp;ALL</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;=&nbsp;ANY</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;=&nbsp;SOME</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;EXISTS</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;IN&nbsp;on&nbsp;numbers</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;LIKE</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;LIKE&nbsp;ESCAPE</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;MATCH</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;MATCH&nbsp;UNIQUE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;MATCHES</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;NOT&nbsp;BETWEEN</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;NOT&nbsp;EXISTS</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;NOT&nbsp;LIKE</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Function&nbsp;NOT&nbsp;UNIQUE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Function&nbsp;UNIQUE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><th colspan=3 ALIGN=center>ANSI SQL 92 group functions</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Group&nbsp;function&nbsp;AVG</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;COUNT&nbsp;(*)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;COUNT&nbsp;column&nbsp;name</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;COUNT&nbsp;DISTINCT&nbsp;column&nbsp;name</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;MAX&nbsp;on&nbsp;numbers</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;MAX&nbsp;on&nbsp;strings</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;MIN&nbsp;on&nbsp;numbers</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;MIN&nbsp;on&nbsp;strings</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;SUM</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>Other group functions</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Group&nbsp;function&nbsp;BIT_AND</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;BIT_OR</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;COUNT(DISTINCT&nbsp;expr,expr,...)</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;STD</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;STDDEV</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Group&nbsp;function&nbsp;VARIANCE</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><th colspan=3 ALIGN=center>Function use</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>update&nbsp;of&nbsp;column=&nbsp;-column</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>column&nbsp;LIKE&nbsp;column</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>LIKE&nbsp;on&nbsp;numbers</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Calculate&nbsp;1--1</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Is&nbsp;'a'&nbsp;||&nbsp;NULL&nbsp;=&nbsp;NULL</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Is&nbsp;1+NULL&nbsp;=&nbsp;NULL</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><th colspan=3 ALIGN=center>Order by and group by</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>number&nbsp;of&nbsp;columns&nbsp;in&nbsp;group&nbsp;by</td><td>&nbsp;</td><td>+64</td></tr>
+<tr><td>number&nbsp;of&nbsp;columns&nbsp;in&nbsp;order&nbsp;by</td><td>&nbsp;</td><td>+64</td></tr>
+<tr><td>Group&nbsp;by</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Group&nbsp;by&nbsp;alias</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Test&nbsp;nulls&nbsp;in&nbsp;group&nbsp;by</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Group&nbsp;by&nbsp;position</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Having</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Having&nbsp;on&nbsp;alias</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Having&nbsp;with&nbsp;group&nbsp;function</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Order&nbsp;by</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Order&nbsp;by&nbsp;alias</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Order&nbsp;by&nbsp;function</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Order&nbsp;by&nbsp;position</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Order&nbsp;by&nbsp;DESC&nbsp;is&nbsp;remembered</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><th colspan=3 ALIGN=center>Join methods</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>cross&nbsp;join&nbsp;(same&nbsp;as&nbsp;from&nbsp;a,b)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>full&nbsp;outer&nbsp;join</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>tables&nbsp;in&nbsp;join</td><td>+64</td><td>+64</td></tr>
+<tr><td>left&nbsp;outer&nbsp;join</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>left&nbsp;outer&nbsp;join&nbsp;using</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>DELETE&nbsp;FROM&nbsp;table1,table2...</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Update&nbsp;with&nbsp;many&nbsp;tables</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>natural&nbsp;join</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>natural&nbsp;left&nbsp;outer&nbsp;join</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>left&nbsp;outer&nbsp;join&nbsp;odbc&nbsp;style</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>recursive&nbsp;subqueries</td><td>10</td><td>25</td></tr>
+<tr><td>right&nbsp;outer&nbsp;join</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Update&nbsp;with&nbsp;sub&nbsp;select</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>ANSI&nbsp;SQL&nbsp;simple&nbsp;joins</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>subqueries</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>String handling</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>case&nbsp;insensitive&nbsp;compare</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>String&nbsp;functions&nbsp;on&nbsp;date&nbsp;columns</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td>&nbsp;</td></tr>
+<tr><td>Double&nbsp;''&nbsp;as&nbsp;'&nbsp;in&nbsp;strings</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>ignore&nbsp;end&nbsp;space&nbsp;in&nbsp;compare</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>insert&nbsp;empty&nbsp;string</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Multiple&nbsp;line&nbsp;strings</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Allows&nbsp;'&nbsp;and&nbsp;"&nbsp;as&nbsp;string&nbsp;markers</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Remembers&nbsp;end&nbsp;space&nbsp;in&nbsp;char()</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Remembers&nbsp;end&nbsp;space&nbsp;in&nbsp;varchar()</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Select&nbsp;constants</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>constant&nbsp;string&nbsp;size&nbsp;in&nbsp;SELECT</td><td>256</td><td>16373</td></tr>
+<tr><td>constant&nbsp;string&nbsp;size&nbsp;in&nbsp;where</td><td>32452</td><td>8104</td></tr>
+<tr><th colspan=3 ALIGN=center>Quoting</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><th colspan=3 ALIGN=center>Name limits</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Alter&nbsp;table&nbsp;rename&nbsp;table</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>different&nbsp;namespace&nbsp;for&nbsp;index</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>column&nbsp;name&nbsp;length</td><td>18</td><td>227</td></tr>
+<tr><td>index&nbsp;name&nbsp;length</td><td>18</td><td>+512</td></tr>
+<tr><td>select&nbsp;alias&nbsp;name&nbsp;length</td><td>18</td><td>+512</td></tr>
+<tr><td>table&nbsp;alias&nbsp;name&nbsp;length</td><td>18</td><td>+512</td></tr>
+<tr><td>table&nbsp;name&nbsp;length</td><td>18</td><td>+512</td></tr>
+<tr><td>case&nbsp;independent&nbsp;table&nbsp;names</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>Index limits</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>create&nbsp;index</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>drop&nbsp;index</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>index&nbsp;in&nbsp;create&nbsp;table</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>index&nbsp;on&nbsp;column&nbsp;part&nbsp;(extension)</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>max&nbsp;index</td><td>+64</td><td>+64</td></tr>
+<tr><td>index&nbsp;length</td><td>255</td><td>8104</td></tr>
+<tr><td>max&nbsp;index&nbsp;part&nbsp;length</td><td>255</td><td>8104</td></tr>
+<tr><td>index&nbsp;parts</td><td>15</td><td>7</td></tr>
+<tr><td>index&nbsp;varchar&nbsp;part&nbsp;length</td><td>254</td><td>8100</td></tr>
+<tr><td>unique&nbsp;indexes</td><td>+64</td><td>+64</td></tr>
+<tr><td>Tables&nbsp;without&nbsp;primary&nbsp;key</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>null&nbsp;in&nbsp;index</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>null&nbsp;in&nbsp;unique</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>primary&nbsp;key&nbsp;in&nbsp;create&nbsp;table</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>unique&nbsp;in&nbsp;create&nbsp;table</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>unique&nbsp;null&nbsp;in&nbsp;create</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>Type limits</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>atomic&nbsp;updates</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>binary&nbsp;items&nbsp;(0x41)</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>char&nbsp;are&nbsp;space&nbsp;filled</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Supports&nbsp;YY-MM-DD&nbsp;dates</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Supports&nbsp;0000-00-00&nbsp;dates</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>mixing&nbsp;of&nbsp;integer&nbsp;and&nbsp;float&nbsp;in&nbsp;expression</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>max&nbsp;char()&nbsp;size</td><td>256</td><td>8104</td></tr>
+<tr><td>max&nbsp;text&nbsp;or&nbsp;blob&nbsp;size</td><td>&nbsp;</td><td>8104</td></tr>
+<tr><td>max&nbsp;varchar()&nbsp;size</td><td>255</td><td>8100</td></tr>
+<tr><th colspan=3 ALIGN=center>Expression limits</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>big&nbsp;expressions</td><td>1</td><td>1</td></tr>
+<tr><td>OR&nbsp;and&nbsp;AND&nbsp;in&nbsp;WHERE</td><td>1204</td><td>7</td></tr>
+<tr><td>simple&nbsp;expressions</td><td>16372</td><td>8187</td></tr>
+<tr><td>stacked&nbsp;expressions</td><td>47</td><td>3331</td></tr>
+<tr><td>SELECT&nbsp;with&nbsp;LIMIT</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>SELECT&nbsp;with&nbsp;LIMIT&nbsp;#,#</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>Comments</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>#&nbsp;as&nbsp;comment</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>--&nbsp;as&nbsp;comment</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>/*&nbsp;*/&nbsp;as&nbsp;comment</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>Other features</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Alter&nbsp;table&nbsp;add&nbsp;column</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Alter&nbsp;table&nbsp;add&nbsp;many&nbsp;columns</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Alter&nbsp;table&nbsp;alter&nbsp;column</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Alter&nbsp;table&nbsp;change&nbsp;column</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Alter&nbsp;table&nbsp;drop&nbsp;column</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Alter&nbsp;table&nbsp;modify&nbsp;column</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Column&nbsp;alias</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Compute</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>default&nbsp;value&nbsp;for&nbsp;column</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>default&nbsp;value&nbsp;function&nbsp;for&nbsp;column</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>create&nbsp;table&nbsp;if&nbsp;not&nbsp;exists</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>create&nbsp;table&nbsp;from&nbsp;select</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>drop&nbsp;table&nbsp;if&nbsp;exists</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>allows&nbsp;end&nbsp;';'</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>except</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>except&nbsp;all</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>insert&nbsp;INTO&nbsp;...&nbsp;SELECT&nbsp;...</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>INSERT&nbsp;with&nbsp;set&nbsp;syntax</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>intersect</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>intersect&nbsp;all</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>lock&nbsp;table</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Value&nbsp;of&nbsp;logical&nbsp;operation&nbsp;(1=1)</td><td>not supported</td><td>1</td></tr>
+<tr><td>minus</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>many&nbsp;tables&nbsp;to&nbsp;drop&nbsp;table</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Value&nbsp;lists&nbsp;in&nbsp;INSERT</td><td>&nbsp;</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td></tr>
+<tr><td>Correct&nbsp;rounding&nbsp;when&nbsp;storing&nbsp;float&nbsp;values</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Type&nbsp;for&nbsp;row&nbsp;id</td><td>&nbsp;</td><td>oid</td></tr>
+<tr><td>SELECT&nbsp;without&nbsp;FROM</td><td><IMG SRC="../images/no.gif" WIDTH=14 HEIGHT=14 ALT="no"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Table&nbsp;alias</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>Select&nbsp;table_name.*</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>temporary&nbsp;tables</td><td>&nbsp;</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>transactions</td><td><IMG SRC="../images/error.gif" WIDTH=20 HEIGHT=16 ALT="error"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>union</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>union&nbsp;all</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><td>views</td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td><td><IMG SRC="../images/ok.gif" WIDTH=20 HEIGHT=16 ALT="yes"></td></tr>
+<tr><th colspan=3 ALIGN=center>Other limits</th></tr>
+<tr><th></th><th>Informix</th><th>PostgreSQL</th></tr>
+<tr><td>Simultaneous&nbsp;connections</td><td>269</td><td>32</td></tr>
+<tr><td>Columns&nbsp;in&nbsp;table</td><td>994</td><td>1248</td></tr>
+<tr><td>max&nbsp;table&nbsp;row&nbsp;length&nbsp;(without&nbsp;blobs)</td><td>32356</td><td>7949</td></tr>
+<tr><td>table&nbsp;row&nbsp;length&nbsp;with&nbsp;nulls&nbsp;(without&nbsp;blobs)</td><td>32356</td><td>7949</td></tr>
+<tr><td>query&nbsp;size</td><td>32766</td><td>16382</td></tr>
+</table>
+<BR>
+This information is provided by TCX so one can get the real limitations from
+the database server (not the information from sales managers!). Hopefully the
+above information will make it easier for you to find a database server that
+has the functionality you need and that you can rely on!
+<BR><BR>
+TCX will continue to extend <b>crash-me</b> and add more database servers
+to the above chart. We are also very interested in new tests so if you have
+any suggestions, please mail us (or even better, send us code).
+<BR>
+We are also working on the <B>MySQL</B> <A HREF ="/benchmark.html">benchmark</A>
+to help users see how fast a database is when doing different typical things.
+<br> 
+<IMG SRC="images/eyesleft.gif" HEIGHT=9 WIDTH=582 ALT="=============================================="> 
+<ADDRESS> You can direct questions about crash-me and the benchmark to the
+<A HREF="http://www.tcx.se/mail.html">MySQL mailing list</A>. 
+</ADDRESS> 
+
+
+<script language="php">
+	#$rest= strstr(__FILE__, "ht-docs");
+	#$rest= strstr($rest, "/");
+    $rest=$PHP_SELF;
+	echo "<a href='/frame.x?".$rest."'>NavBarOn</a> ";
+	echo "<a href='".$rest."' target='_top'>NavBarOff</a>";
+</script>
+
+
+
+</BODY></HTML> 
