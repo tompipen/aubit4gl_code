@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.15 2003-10-29 08:59:23 mikeaubury Exp $
+# $Id: Makefile,v 1.16 2003-11-18 21:26:51 afalout Exp $
 #
 
 ROOT    =../..
@@ -118,6 +118,20 @@ ifneq "${COMSPEC}" ""
 	#-lcygwin
 endif
 
+ifneq "${TARGET_OS}" "hpux"
+	ifneq "${TARGET_OS}" "cygwin"
+		ifneq "${GCC_MINGW}" "yes"
+            #all platforms except HP-UX, CygWin and MinGW:
+			DL_LINK_LIBS           =-ldl
+		endif
+	endif
+else
+            #HP-UX only:
+			DL_LINK_LIBS           =-lcl
+endif
+
+
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -130,14 +144,14 @@ ${BINROOT}/checker: $(OBJ_CHECKER_C) npcode.h
 
 
 ${BINROOT}/checker_fgl: $(OBJ_CHECKER_A4GL) npcode.h
-	$(CC) -g -o $@ $(OBJ_CHECKER_A4GL) ${LINKLIBS} -laubit4gl
+	$(CC) -g -o $@ $(OBJ_CHECKER_A4GL) ${LINKLIBS} -laubit4gl ${RPCLINKLIBS}
 
 
 ${BINROOT}/c2pcode:  $(OBJ_C2PCODE_C) npcode.h
 	$(CC) -o $@ $(OBJ_C2PCODE_C) ${LINKLIBS} ${RPCLINKLIBS}
 
 ${BINROOT}/c2pcode_fgl:  $(OBJ_C2PCODE_A4GL) npcode.h
-	$(CC) -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} -laubit4gl
+	$(CC) -o $@ $(OBJ_C2PCODE_A4GL) ${LINKLIBS} -laubit4gl ${RPCLINKLIBS}
 
 #/* SYSCALLS.c:781:NC */ extern ENTRY *hsearch (ENTRY, ACTION);
 #/* SYSCALLS.c:773:NC */ extern int hcreate (size_t);
@@ -154,10 +168,10 @@ ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
 	$(CC) -g -shared $^ -o $@
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
-	$(CC) -export-dynamic -O2 -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} -ldl
+	$(CC) -export-dynamic -O2 -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS}
 
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
-	$(CC) -export-dynamic -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS} -ldl
+	$(CC) -export-dynamic -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS} ${DL_LINK_LIBS}
 
 
 ## ==================================================================

@@ -238,9 +238,9 @@ union cmd switch(int  cmd_type) {
 	case CMD_GOTO_PC: 	long 			c_goto_pc;
 	case CMD_RETURN: 	struct param 		*c_return;
 
-	case CMD_CLR_ERR:
-	case CMD_END_4GL_0:	
-	case CMD_END_4GL_1:
+	case CMD_CLR_ERR:     void;
+	case CMD_END_4GL_0:   void;
+	case CMD_END_4GL_1:  void;
 	case CMD_NOP: 		void;
 
 	case CMD_PUSH_LONG:     long			c_push_long;

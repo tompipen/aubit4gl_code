@@ -7,7 +7,7 @@
 #include "npcode.h"
 #include <stdio.h>			/* needed for FILE symbol */
 
-
+#include "rpc/rpc.h" //XDR, XDR_ENCODE XDR_DECODE
 
 void
 nullfunc ()
@@ -18,7 +18,7 @@ nullfunc ()
 
 
 #ifdef USE_RPC_ONLY
-#include "rpc/rpc.h" //XDR, XDR_ENCODE XDR_DECODE
+
 int
 process_xdr (char dir, void *s, char *filename)
 {
