@@ -1,8 +1,7 @@
 {**
  * @file
  * @test
- * Check if a simple select with MATCHES in where condition using a variable
- * fetch the correct values.
+ * Check if the commit work statement after a transaction work.
  *}
 
 DATABASE test1
@@ -12,7 +11,6 @@ MAIN
   DEFINE lv_valueColumn CHAR(20)
   DEFINE lv_dateColumn DATE
   DEFINE dt DATE
-	DEFINE lv_like CHAR(20)
   DEFINE exitStatus SMALLINT
 
   LET exitStatus = 0
@@ -27,9 +25,7 @@ MAIN
   )
   LET dt = mdy(12,31,1999)
 
-  INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
-    VALUES (1,"first",dt)
-
+	BEGIN WORK
   LET dt = mdy(1,1,2000)
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
     VALUES (2,"the second",dt)
@@ -40,14 +36,11 @@ MAIN
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
     VALUES (4,"the forth",dt)
 	
-  INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
-    VALUES (5,"fift",dt)
+	COMMIT WORK
 	
-	LET lv_like = "the*"
 	DECLARE cr_ CURSOR FOR
     SELECT keyColumn, valueColumn, dateColumn
       FROM xpto
-      WHERE valueColumn MATCHES lv_like
 			ORDER BY 1
 
 	OPEN cr_

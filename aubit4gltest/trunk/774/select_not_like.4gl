@@ -1,7 +1,7 @@
 {**
  * @file
  * @test
- * Check if a simple select with MATCHES in where condition using a variable
+ * Check if a simple select with NOT LIKE in where condition using a variable
  * fetch the correct values.
  *}
 
@@ -12,7 +12,6 @@ MAIN
   DEFINE lv_valueColumn CHAR(20)
   DEFINE lv_dateColumn DATE
   DEFINE dt DATE
-	DEFINE lv_like CHAR(20)
   DEFINE exitStatus SMALLINT
 
   LET exitStatus = 0
@@ -43,11 +42,10 @@ MAIN
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
     VALUES (5,"fift",dt)
 	
-	LET lv_like = "the*"
 	DECLARE cr_ CURSOR FOR
     SELECT keyColumn, valueColumn, dateColumn
       FROM xpto
-      WHERE valueColumn MATCHES lv_like
+      WHERE valueColumn NOT LIKE "f%"
 			ORDER BY 1
 
 	OPEN cr_

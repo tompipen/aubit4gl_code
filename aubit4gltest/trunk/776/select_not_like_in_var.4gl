@@ -1,7 +1,7 @@
 {**
  * @file
  * @test
- * Check if a simple select with MATCHES in where condition using a variable
+ * Check if a simple select with LIKE in where condition using a variable
  * fetch the correct values.
  *}
 
@@ -43,11 +43,11 @@ MAIN
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
     VALUES (5,"fift",dt)
 	
-	LET lv_like = "the*"
+	LET lv_like = "f%"
 	DECLARE cr_ CURSOR FOR
     SELECT keyColumn, valueColumn, dateColumn
       FROM xpto
-      WHERE valueColumn MATCHES lv_like
+      WHERE valueColumn NOT LIKE lv_like
 			ORDER BY 1
 
 	OPEN cr_

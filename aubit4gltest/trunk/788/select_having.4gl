@@ -1,24 +1,21 @@
 {**
  * @file
  * @test
- * Check if a simple select with MATCHES in where condition using a variable
+ * Check if a simple select with HAVING condition using a variable
  * fetch the correct values.
  *}
 
 DATABASE test1
 
 MAIN
-  DEFINE lv_keyColumn SMALLINT
-  DEFINE lv_valueColumn CHAR(20)
+  DEFINE lv_count SMALLINT
   DEFINE lv_dateColumn DATE
   DEFINE dt DATE
-	DEFINE lv_like CHAR(20)
   DEFINE exitStatus SMALLINT
 
   LET exitStatus = 0
   WHENEVER ERROR CONTINUE
   DROP TABLE xpto
-  DROP TABLE xpta
   WHENEVER ERROR STOP
   CREATE TABLE xpto (
     keyColumn SMALLINT,
@@ -37,30 +34,30 @@ MAIN
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
     VALUES (3,"the third",dt)
 
+  LET dt = mdy(1,2,2000)
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
     VALUES (4,"the forth",dt)
 	
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
     VALUES (5,"fift",dt)
 	
-	LET lv_like = "the*"
+  INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
+    VALUES (6,"sixt",dt)
+	
 	DECLARE cr_ CURSOR FOR
-    SELECT keyColumn, valueColumn, dateColumn
+    SELECT count(*) , dateColumn
       FROM xpto
-      WHERE valueColumn MATCHES lv_like
-			ORDER BY 1
+			GROUP BY dateColumn
+			HAVING COUNT(*) > 1
+			ORDER BY dateColumn
 
 	OPEN cr_
-	FETCH cr_ INTO lv_keyColumn, lv_valueColumn, lv_dateColumn
 
   -- First iteration
-  IF lv_keyColumn != 2 THEN
+	FETCH cr_ INTO lv_count, lv_dateColumn
+  IF lv_count != 2 THEN
     DISPLAY "Diferent key value on first iteration <", 
-		  lv_keycolumn USING "<<", ">!=<2>"
-    LET exitStatus = 1
-  END IF
-  IF lv_valueColumn != "the second" THEN
-    DISPLAY "Diferent string value on first iteration"
+		  lv_count USING "<<", ">!=<2>"
     LET exitStatus = 1
   END IF
   IF lv_dateColumn != DATE(MDY(1,1,2000)) THEN
@@ -69,33 +66,13 @@ MAIN
   END IF
   
 	-- Second iteration
-	FETCH cr_ INTO lv_keyColumn, lv_valueColumn, lv_dateColumn
-  IF lv_keyColumn != 3 THEN
+	FETCH cr_ INTO lv_count, lv_dateColumn
+  IF lv_count != 3 THEN
     DISPLAY "Diferent key value on second iteration <", 
-		  lv_keycolumn USING "<<", ">!=<2>"
+		  lv_count USING "<<", ">!=<2>"
     LET exitStatus = 1
   END IF
-  IF lv_valueColumn != "the third" THEN
-    DISPLAY "Diferent string value on second iteration"
-    LET exitStatus = 1
-  END IF
-  IF lv_dateColumn != DATE(MDY(1,1,2000)) THEN
-    DISPLAY "Diferent date value on second iteration <", lv_dateColumn, ">"
-    LET exitStatus = 1
-  END IF
-
-	-- Third iteration
-	FETCH cr_ INTO lv_keyColumn, lv_valueColumn, lv_dateColumn
-  IF lv_keyColumn != 4 THEN
-    DISPLAY "Diferent key value on third iteration <", 
-		  lv_keycolumn USING "<<", ">!=<2>"
-    LET exitStatus = 1
-  END IF
-  IF lv_valueColumn != "the forth" THEN
-    DISPLAY "Diferent string value on third iteration"
-    LET exitStatus = 1
-  END IF
-  IF lv_dateColumn != DATE(MDY(1,1,2000)) THEN
+  IF lv_dateColumn != DATE(MDY(1,2,2000)) THEN
     DISPLAY "Diferent date value on second iteration <", lv_dateColumn, ">"
     LET exitStatus = 1
   END IF

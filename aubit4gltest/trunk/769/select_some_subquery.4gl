@@ -1,7 +1,7 @@
 {**
  * @file
  * @test
- * Check if a simple select with MATCHES in where condition using a variable
+ * Check if a simple select with SOME subquery in where condition 
  * fetch the correct values.
  *}
 
@@ -12,7 +12,6 @@ MAIN
   DEFINE lv_valueColumn CHAR(20)
   DEFINE lv_dateColumn DATE
   DEFINE dt DATE
-	DEFINE lv_like CHAR(20)
   DEFINE exitStatus SMALLINT
 
   LET exitStatus = 0
@@ -25,6 +24,9 @@ MAIN
     valueColumn CHAR(20),
     dateColumn DATE
   )
+  CREATE TABLE xpta (
+    smint_column SMALLINT
+  )
   LET dt = mdy(12,31,1999)
 
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
@@ -32,34 +34,36 @@ MAIN
 
   LET dt = mdy(1,1,2000)
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
-    VALUES (2,"the second",dt)
+    VALUES (2,"second",dt)
 
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
-    VALUES (3,"the third",dt)
+    VALUES (3,"third",dt)
 
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
-    VALUES (4,"the forth",dt)
+    VALUES (4,"forth",dt)
 	
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
     VALUES (5,"fift",dt)
 	
-	LET lv_like = "the*"
+	INSERT into xpta (smint_column) VALUES (3)
+	INSERT into xpta (smint_column) VALUES (10)
+
 	DECLARE cr_ CURSOR FOR
     SELECT keyColumn, valueColumn, dateColumn
       FROM xpto
-      WHERE valueColumn MATCHES lv_like
+      WHERE keyColumn > SOME (select smint_column FROM xpta )
 			ORDER BY 1
 
 	OPEN cr_
 	FETCH cr_ INTO lv_keyColumn, lv_valueColumn, lv_dateColumn
 
   -- First iteration
-  IF lv_keyColumn != 2 THEN
+  IF lv_keyColumn != 4 THEN
     DISPLAY "Diferent key value on first iteration <", 
 		  lv_keycolumn USING "<<", ">!=<2>"
     LET exitStatus = 1
   END IF
-  IF lv_valueColumn != "the second" THEN
+  IF lv_valueColumn != "forth" THEN
     DISPLAY "Diferent string value on first iteration"
     LET exitStatus = 1
   END IF
@@ -70,29 +74,13 @@ MAIN
   
 	-- Second iteration
 	FETCH cr_ INTO lv_keyColumn, lv_valueColumn, lv_dateColumn
-  IF lv_keyColumn != 3 THEN
+  IF lv_keyColumn != 5 THEN
     DISPLAY "Diferent key value on second iteration <", 
 		  lv_keycolumn USING "<<", ">!=<2>"
     LET exitStatus = 1
   END IF
-  IF lv_valueColumn != "the third" THEN
+  IF lv_valueColumn != "fift" THEN
     DISPLAY "Diferent string value on second iteration"
-    LET exitStatus = 1
-  END IF
-  IF lv_dateColumn != DATE(MDY(1,1,2000)) THEN
-    DISPLAY "Diferent date value on second iteration <", lv_dateColumn, ">"
-    LET exitStatus = 1
-  END IF
-
-	-- Third iteration
-	FETCH cr_ INTO lv_keyColumn, lv_valueColumn, lv_dateColumn
-  IF lv_keyColumn != 4 THEN
-    DISPLAY "Diferent key value on third iteration <", 
-		  lv_keycolumn USING "<<", ">!=<2>"
-    LET exitStatus = 1
-  END IF
-  IF lv_valueColumn != "the forth" THEN
-    DISPLAY "Diferent string value on third iteration"
     LET exitStatus = 1
   END IF
   IF lv_dateColumn != DATE(MDY(1,1,2000)) THEN
