@@ -77,8 +77,6 @@ char* A4GLSQL_get_curr_conn(void );
 
 char* A4GLSQL_get_currdbname(void );
 
-int A4GLSQL_make_connection(char* server,char* uid_p,char* pwd_p);
-
 void A4GLSQL_put_insert(void* ibind,int n);
 
 void A4GLSQL_set_sqlca_sqlcode(int a);

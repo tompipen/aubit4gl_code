@@ -56,7 +56,7 @@ A4GLSQL_prepare_select_internal void* ibind int ni void* obind int no char* s ->
 
 A4GLSQL_get_curr_conn -> char*
 A4GLSQL_get_currdbname -> char*
-A4GLSQL_make_connection char* server char* uid_p char* pwd_p -> int
+* A4GLSQL_make_connection char* server char* uid_p char* pwd_p -> int
 
 
 
