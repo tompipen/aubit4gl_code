@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.49 2004-10-26 20:55:09 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.50 2004-11-09 12:50:38 mikeaubury Exp $
 #
 */
 
@@ -315,6 +315,15 @@ A4GL_push_chars (char *p, int dtype, int size)
   A4GL_debug ("Using dtype : %d",
 	 (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (size)));
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (size)));
+}
+
+void A4GL_push_empty_char(void) {
+char buff[2];
+buff[0]=0;
+buff[1]=0;
+
+A4GL_push_char (buff);
+
 }
 
 /**
