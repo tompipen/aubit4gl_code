@@ -51,7 +51,11 @@ fi
 
 if [ "$2" = "-upd" ]
 then
-    cvs upadte > cvsupdate.log 2>&1
+    
+#Writing to files from PHP also don't work
+#   echo "XXX" > test.tmp
+#	cvs update > cvsupdate.log 2>&1
+	cvs update
 	RET=$?
 	if test "$RET" != "0"
 	then
