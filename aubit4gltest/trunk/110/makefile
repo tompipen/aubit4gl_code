@@ -82,9 +82,9 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-#	${DEFAULT_RUN}
+	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
-	${DEFAULT_DIFF}
+#	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
@@ -109,7 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Test behavious of status variable. No run-time checking"
+	@echo "Test for core dump in LOAD FROM"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -183,7 +183,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -212,5 +212,26 @@ need_ifx_version:
 #"0" means "don't care"
 transaction:
 	@echo "0"
+
+#################
+#List here any SQL dialect-specific features that may be incompatible
+#with some database back-ends, like:
+#ALTER_INDEX CREATE_AUDIT CREATE_DATABASE CREATE_SYNONYM CREATE_TEMP_TABLE 
+#CREATE_VIEW DROP_AUDIT DROP_INDEX DROP_SYNONYM GRANT RECOVER_TABLE 
+#RENAME_COLUMN RENAME_TABLE REVOKE ROLLFORWARD_DATABASE SELECT_INTO_TEMP 
+#SET_EXPLAIN SET_LOG START_DATABASE UPDATE_STATISTICS
+#SERIAL ROWID PUT_CURSOR SQL_END_SQL SELECT_RELATIVE
+#...etc...
+#See run_tests script for full list of features the are checked against
+sql_features_used:
+	@echo ""
+
+	
+#################
+#If test is ANSI SQL 92 compatible, set to "1", if not to "0"
+#If unknown, leave empty
+ansi_sql_compat:
+	@echo ""
+
 	
 # ============================= EOF ================================

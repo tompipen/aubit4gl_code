@@ -496,7 +496,7 @@ for a in $FLAGS; do
             fi
             exit 9
         fi
-		USE_SQLITE=0; USE_ESQLI=1; export SKIP_EC_RUN=1
+		USE_SQLITE=0; USE_ESQLI=1; export SKIP_EC_RUN=1; USE_ECI=0
 		export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=esql
 
         ;;
@@ -1438,14 +1438,14 @@ if test "$USE_COMP" = "aubit"; then
 	case $DB_TYPE in
 		#IFX-SE)
 		IFX-OL)
-			if test "$USE_ESQLI" = "1"; then
+			if test "$USE_ESQLI" = "1" -a "$USE_ECI" = "0"; then
 				EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ESQLI"
 			fi
 			if test "$USE_IFXODBC" = "1"; then		
 				EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_IFXODBC"
 			fi
 			#EXPECT_TO_FAIL_TESTS are actually EXPECT_TO_FAIL_TESTS_ECI, since 
-			#-eci is -cert
+			#-eci is part of -cert
 			;;
 		PG-IFX-74)
 			if test "$USE_ECP" = "1"; then 
