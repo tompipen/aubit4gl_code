@@ -9,6 +9,8 @@ VARIABLE A4GL_UI
 * Name of the header file to be referenced with #include
 *HEADER_FILE API_ui.h
 
+MAP A4GL_make_pixmap A4GL_make_pixmap_gw
+
 * don't include a4gl_libaubit4gl.h - a4gl_libaubit4gl.h includes this header!
 /* #include "a4gl_libaubit4gl.h" */
 #include <stdarg.h>
@@ -139,7 +141,7 @@ aclfgl_set_window_title int nargs -> int
 /* void*  A4GL_get_curr_win_gtk (void)*/
 A4GL_get_curr_win_gtk -> void*
 /* void*  A4GL_make_pixmap_gw (char* filename)*/
-A4GL_make_pixmap_gw char* filename -> void*
+A4GL_make_pixmap char* filename -> void*
 /* int aclfgl_aclfgl_dump_screen (int n)*/
 aclfgl_aclfgl_dump_screen int n -> int
 /* int A4GL_set_fields_inp_arr (void* sio)*/

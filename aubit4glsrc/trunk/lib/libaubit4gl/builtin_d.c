@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.32 2003-09-03 18:43:35 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.33 2003-09-08 08:15:15 mikeaubury Exp $
 #
 */
 
@@ -257,7 +257,8 @@ A4GL_push_dec (char *p, int ismoney,int size)
   }
   }
 
-  plen= (p[0] & 127) + 2;
+  //plen= (p[0] & 127) + 2;
+  plen=sizeof(fgldecimal);
   
   ptr = (char *) acl_malloc (plen, "push dec");
   memcpy (ptr, p, plen);
