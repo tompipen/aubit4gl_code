@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.20 2002-07-26 14:37:04 mikeaubury Exp $
+# $Id: nosql.c,v 1.21 2002-08-31 06:20:00 afalout Exp $
 #*/
 
 /**
@@ -40,30 +40,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <stdarg.h>
-	#include <stdio.h>
-	#include <string.h>
-	#include <stdlib.h>
-
-	#include "a4gl_database.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_pointers.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_dlsql.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_sql_int.h"
-
-#endif
-
-
-
+#include "a4gl_lib_sql_int.h"
 
 /*
 =====================================================================

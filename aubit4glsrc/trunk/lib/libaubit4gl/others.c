@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.15 2002-06-29 13:12:02 afalout Exp $
+# $Id: others.c,v 1.16 2002-08-31 06:19:59 afalout Exp $
 #
 */
 
@@ -43,24 +43,7 @@
 =====================================================================
 */
 
-
-
-#ifdef OLD_INCL
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_keys.h"
-	/* here only to satisfy libFORM_ (from compilers/fcompile/fcompile.c) */
-	#include "a4gl_formxw.h"
-
-	#include "a4gl_aubit_lib.h" 		/* fgl_error() */
-	#include "a4gl_runtime_tui.h" 		/* push_long() */
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -91,12 +74,6 @@ int m_lastkey = 0;
 
 char *		replace_sql_var 	(char *s);
 int 		fgl_keyval			(int _np);
-
-int 		aclfgl_fgl_lastkey	(int _np);
-int 		aclfgl_fgl_keyval	(int _np);
-int 		aclfgl_upshift		(int _np);
-int 		aclfgl_downshift	(int _np);
-
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.61 2002-08-25 09:25:15 afalout Exp $
+# $Id: Makefile.in,v 1.62 2002-08-31 06:19:59 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -135,7 +135,8 @@ libMENU_NOMENU.so :
 	${MAKE} -C libmenu/menu_nomenu $@
 
 libMENU_XDR.so :
-	${MAKE} -C libmenu/menu_xdr $@
+#	${MAKE} -C libmenu/menu_xdr $@
+	${MAKE} -C libmenu/menu_xdr
 
 libEXREPORT_PDF.so:
 	${MAKE} -C libpdf $@

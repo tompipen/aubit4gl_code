@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.11 2002-07-21 06:41:48 afalout Exp $
+# $Id: decompile.c,v 1.12 2002-08-31 06:19:59 afalout Exp $
 #*/
 
 /**
@@ -42,31 +42,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-
-	#ifdef __CYGWIN__
-		#include <rpc/rpc.h>
-	#endif
-
-	#include "a4gl_menuxw.h"
-	#include "a4gl_aubit_lib.h"
-
-
-#else
-
-    #include "a4gl_mcompile_int.h"
-
-#endif
-
-
-/*
-here only to satisfy libMENU_XDR, when linked with mdecompile executable.
-Should be removed once libMENU_ is dlopen() enabled:
-char *outputfilename;
-*/
+#include "a4gl_mcompile_int.h"
 
 /*
 =====================================================================
@@ -124,21 +100,6 @@ int a = 0;
 	}
 return 0;
 }
-
-
-/*  moved to loadmenu.c
-int
-isolated_xdr_decompile(struct menu_list the_menus,XDR xdrp,FILE *f )
-{
-int a;
-
-
-	xdrstdio_create(&xdrp,f,XDR_DECODE);
-	a=xdr_menu_list(&xdrp,&the_menus);
-
-    return a;
-}
-*/
 
 /**
  *

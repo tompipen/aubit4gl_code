@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.12 2002-08-25 09:25:15 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.13 2002-08-31 06:19:59 afalout Exp $
 #
 */
 
@@ -1061,28 +1061,6 @@ be used in applications which link to the library).
 
     /* ===================== from builtin.c =================== */
 
-	/*
-		Note : all functions with aclfgl_ prefix are callable from
-		compiled 4gl code, since all references to functions get aclfgl_ prefix
-		appended to them by 4gl compiler. Therefore, compiled 4gl code CANNOT
-	    call any function in Aubit libraries without aclfgl prefix.
-	*/
-
-
-	int 	aclfgl_set_count 	(int nargs);
-	int 	aclfgl_arr_count 	(int nargs);
-	int 	aclfgl_scr_line 	(int nargs);
-	int 	aclfgl_arr_curr 	(int nargs);
-	int     aclfgl_length 		(int nargs);
-	int     aclfgl_err_get		(int statusnumber);
-	int     aclfgl_err_print	(int statusnumber);
-	int     aclfgl_err_quit		(int statusnumber);
-	int     aclfgl_startlog 	(char *filename);
-	int     aclfgl_errorlog 	(char *string);
-	int     aclfgl_showhelp 	(int helpnumber);
-	int 	aclfgl_fgl_getenv 	(int nargs);
-	void    aclfgl_mdy			(void);
-
 	int     fgl_fieldtouched	(char *fieldname);
 	void    close_database		(void);
 	char * 	let_substr 			(char *ca, int dtype, int a, int b,...);
@@ -1113,13 +1091,6 @@ be used in applications which link to the library).
 	void 	func_using(void);
 	int 	find_function(char *a);
 	double 	power(double a,double b);
-
-	void 	aclfgl_date		(void);
-	void 	aclfgl_fgl_drawbox(int n);
-	int 	aclfgl_day		(void);
-	int 	aclfgl_month	(void);
-	int 	aclfgl_weekday	(void);
-	int 	aclfgl_year		(void);
 
 
 	/* ============================ resource.c ============================= */

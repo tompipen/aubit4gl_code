@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
+# $Id: extfile.c,v 1.9 2002-08-31 06:19:59 afalout Exp $
 #
 */
 
@@ -40,23 +40,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <string.h>
-	#include <stdlib.h> 			/* free() */
-
-
-	#include "a4gl_stack.h" 		/* pop_int() */
-	#include "a4gl_io.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -78,7 +62,7 @@ int max_width;
 
 void 			set_help_file 			(char *fname);
 void 			set_lang_file 			(char *fname_orig);
-int 			aclfgl_fgl_show_help	(int a);
+
 
 /*
 =====================================================================

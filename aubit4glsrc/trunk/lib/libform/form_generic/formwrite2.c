@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.1 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.2 2002-08-31 06:19:59 afalout Exp $
 #*/
 
 /**
@@ -40,32 +40,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include <time.h>		/* time() */
-
-#ifdef __CYGWIN__
-#include <rpc/rpc.h>
-#endif
-
-	//#include "a4gl_formxw.h"
-	//#include "a4gl_fcomp_fcompile.h"
-#include "a4gl_compiler.h"
-#include "a4gl_dbform.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_compiler.h"	/* fgl_comp_error */
-#include "a4gl_debug.h"
-
-#else
-
 #include "a4gl_lib_form_xdr_int.h"
-
-#endif
-
-
 
 /*
 =====================================================================

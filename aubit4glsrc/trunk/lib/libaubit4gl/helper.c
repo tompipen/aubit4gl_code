@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.10 2002-06-25 03:22:30 afalout Exp $
+# $Id: helper.c,v 1.11 2002-08-31 06:19:59 afalout Exp $
 #
 */
 
@@ -72,15 +72,10 @@
 void 		strip_pc			(char *s,char*d);
 int 		extract_numeral		(char *s);
 
-int 		aclfgl_i_rowid_s	(int arg);
-int 		aclfgl_m_rowid_s	(int arg);
-int 		aclfgl_r_rowid_s	(int arg);
-int 		aclfgl_s_rowid_s	(int arg);
-int 		aclfgl_w_rowid_s	(int arg);
-int 		aclfgl_fgl_prtscr	(int n);
+//LIBEXPORT int	aclfgl_get_info		(int np);
 
 LIBPRIVATE int 	int_get_info_form	(char *ptr,char *info);
-LIBEXPORT int	aclfgl_get_info		(int np);
+
 
 
 /*

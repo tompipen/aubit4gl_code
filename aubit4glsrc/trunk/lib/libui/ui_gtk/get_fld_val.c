@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: get_fld_val.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: get_fld_val.c,v 1.2 2002-08-31 06:20:00 afalout Exp $
 #*/
 
 /**
@@ -45,23 +45,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <gtk/gtk.h>
-	#include <string.h> 			/* strcasecmp() */
-	#include <stdio.h> 				/* sprintf() */
-
-	#include "a4gl_runtime_tui.h"	/* push_variable() */
-	#include "a4gl_debug.h"
-	#include "a4gl_gtk_display.h"
-	#include "a4gl_aubit_lib.h"     /* aclfgl_mdy() */
-
-#else
-
-    #include "a4gl_lib_ui_gtk_int.h"
-
-#endif
+#include "a4gl_lib_ui_gtk_int.h"
 
 /*
 =====================================================================

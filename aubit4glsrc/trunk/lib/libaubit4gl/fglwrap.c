@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.16 2002-07-11 09:22:04 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.17 2002-08-31 06:19:59 afalout Exp $
 #
 */
 
@@ -123,9 +123,6 @@ void 			set_intr			(void);
 void 			def_int				(void);
 void 			def_quit			(void);
 char * 			clob				(char *s,char *p);
-int 			aclfgl_get_ui_mode	(void);
-int 			aclfgl_num_args		(int n);
-int 			aclfgl_arg_val		(int n);
 
 
 

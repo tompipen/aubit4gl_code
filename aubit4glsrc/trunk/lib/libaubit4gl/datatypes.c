@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.10 2002-08-18 05:00:27 afalout Exp $
+# $Id: datatypes.c,v 1.11 2002-08-31 06:19:59 afalout Exp $
 #
 */
 
@@ -108,7 +108,7 @@ void add_default_operations (void);
 void add_default_datatypes (void);
 static int (*func) (void);
 int call_datatype_function_i (void *obj, int dtype, char *funcname,int nparam);
-int aclfgl_load_datatype (int nargs);
+
 
 /*
 =====================================================================

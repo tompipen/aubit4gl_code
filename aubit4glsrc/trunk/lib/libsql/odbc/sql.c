@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.39 2002-07-26 14:37:04 mikeaubury Exp $
+# $Id: sql.c,v 1.40 2002-08-31 06:20:00 afalout Exp $
 #
 */
 
@@ -42,112 +42,20 @@
 =====================================================================
 */
 
+#include "a4gl_lib_sql_odbc_int.h"
 
-#ifdef OLD_INCL
-
-	#ifdef __CYGWIN__
-		#include <windows.h>
-		#include <sqlext.h>
-	#else
-		#ifdef UNIXODBC
-			#include <sql.h>
-			#include <sqlext.h>
-			#include <odbcinst.h>
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-		#endif
-
-		#ifdef IODBC
-			#ifdef OLDIODBC
-				#include <iodbc.h>
-				#include <isql.h>
-				#include <isqlext.h>
-	        #else
-				#include <sql.h>
-	            #include <sqlext.h>
-	            #include <sqltypes.h>
-			#endif
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-		#endif
-
-		#ifdef IFXODBC
-			/* infromix headers require wchar_t to be already defined
-			so we have to include stdio.h here */
-			#include <stdio.h>
-
-			#include <incl/cli/infxcli.h>
-			#include <incl/cli/infxsql.h>
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-			/* #include <incl/cli/sqlucode.h> */
-		#endif
-
-		#ifdef PGODBC
-				#include <pgsql/iodbc/iodbc.h>
-				/* #include <pgsql/iodbc/isql.h> */
-				#include <pgsql/iodbc/isqlext.h>
-
-	            /* NOTHING WE CAN DO:
-	            /usr/include/pgsql/iodbc/isqlext.h:1344: warning: redundant redeclaration of `SQLNumResultCols' in same scope
-				/usr/include/pgsql/iodbc/isql.h:210: warning: previous declaration of `SQLNumResultCols'
-	            */
-
-				#define __UCHAR_DEFINED__
-			    #define __ODBC_DEFINED__
-		#endif
-
-	    #ifndef __ODBC_DEFINED__
-	        /* default for tesing, when we don't use makefile we will not have -Dxxx
-			 unixODBC headers: */
-			#include <sql.h>
-			#include <sqlext.h>
-			#include <odbcinst.h>
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-		#endif
-
-	#endif
-
-
-
-	#include <stdio.h>
-	#include <string.h>
-	#include <stdlib.h>
-
-	#include "a4gl_database.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_pointers.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_runtime_tui.h"	/* push_variable() */
-
-	/* stack.h will eventually include stdlib.h, which uses getenv(), so
-	 we need to set GETENV_OK and only then include debug.h */
-	#define GETENV_OK
-	#include "a4gl_debug.h"
-
-	/* MUST be included after ODBC specific headers to precent redeclaration of UCHAR */
-	#include "a4gl_dlsql.h" 		/* A4GLSQL_get_currdbname */
-
-#else
-
-    #include "a4gl_lib_sql_odbc_int.h"
-
-#endif
-
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-#ifndef FALSE 
-#define FALSE 0
-#endif
 /*
 =====================================================================
                     Constants definitions
 =====================================================================
 */
+
+#ifndef TRUE
+	#define TRUE 1
+#endif
+#ifndef FALSE
+	#define FALSE 0
+#endif
 
 #define FETCH_ABSOLUTE 1
 #define FETCH_RELATIVE 2
@@ -221,7 +129,6 @@ int ODBC_disconnect (void);
 int ODBC_exec_sql (UCHAR * sqlstr);
 long describecolumn (HSTMT hstmt, int colno, int type);
 int set_stmt_options (char *cursname, char *opt, char *val);
-int aclfgl_hstmt_get (int np);
 int set_conn_options (char *sessname, char *opt, char *val);
 
 #ifndef DONTINCLUDEDATASOURCES

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.13 2002-08-29 09:10:31 afalout Exp $
+# $Id: mcompile.c,v 1.14 2002-08-31 06:19:59 afalout Exp $
 #*/
 
 /**
@@ -151,7 +151,7 @@ main (int argc, char* argv[])
         }
 
 		bname (c, a, b);
-		strcpy (outputfilename, a);
+		strcpy (outputfilename, a); /* FIXME: output file has no extension ! */
 		yyin = mja_fopen (c, "r");
 
     }
@@ -163,21 +163,16 @@ main (int argc, char* argv[])
 
 	printf ("Outfile = %s\n", a);
 
-  yydebug = 1;
+	yydebug = 1;
 
-  if (yyin == 0)
+	if (yyin == 0)
     {
-
       printf ("Error opening file : %s\n", c);
-
       exit (0);
-
     }
-  
-  init_menu();
 
-  return (yyparse ());
-
+	init_menu();
+	return (yyparse ());
 }
 
 

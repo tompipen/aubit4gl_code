@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.9 2002-08-19 07:58:18 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.10 2002-08-31 06:19:59 afalout Exp $
 */
 
 /**
@@ -141,6 +141,91 @@
 
 	/** 4gl Datetime data type definition */
 	typedef struct ival FglInterval;
+
+    /* ===================== from builtin.c =================== */
+
+	/*
+		Note : all functions with aclfgl_ prefix are callable from
+		compiled 4gl code, since all references to functions get aclfgl_ prefix
+		appended to them by 4gl compiler. Therefore, compiled 4gl code CANNOT
+	    call any function in Aubit libraries without aclfgl prefix.
+	*/
+
+
+	int 	aclfgl_set_count 	(int nargs);
+	int 	aclfgl_arr_count 	(int nargs);
+	int 	aclfgl_scr_line 	(int nargs);
+	int 	aclfgl_arr_curr 	(int nargs);
+	int     aclfgl_length 		(int nargs);
+	int     aclfgl_err_get		(int statusnumber);
+	int     aclfgl_err_print	(int statusnumber);
+	int     aclfgl_err_quit		(int statusnumber);
+	int     aclfgl_startlog 	(char *filename);
+	int     aclfgl_errorlog 	(char *string);
+	int     aclfgl_showhelp 	(int helpnumber);
+	int 	aclfgl_fgl_getenv 	(int nargs);
+	void    aclfgl_mdy			(void);
+
+	/* ======================= From buildtin_d.c ====================*/
+
+	void 	aclfgl_date		(void);
+//	void 	aclfgl_fgl_drawbox(int n);
+	int 	aclfgl_day		(void);
+	int 	aclfgl_month	(void);
+	int 	aclfgl_weekday	(void);
+	int 	aclfgl_year		(void);
+
+	void            aclfgl_hex         	(void);
+	void            aclfgl_abs         	(void);
+	void            aclfgl_root       	(void);
+	void            aclfgl_sqrt        	(void);
+
+
+	/* ============= from assist.4gl/.c ======================= */
+	int aclfgl_run_gui (int nargs);
+
+    /* ============== from curslib.c =========================== */
+	void aclfgl_fgl_drawbox (int n);
+
+    /* ======================= API_ui.c ===================== */
+
+	int     aclfgl_set_page		(void);
+	int     aclfgl_get_page		(void);
+
+    /* =================== sql.c ============================ */
+
+	int aclfgl_hstmt_get (int np);
+
+    /* ====================== extfile.c ===================== */
+
+    int 			aclfgl_fgl_show_help	(int a);
+
+    /* ====================== fglwrap.c ====================== */
+
+	int 			aclfgl_get_ui_mode	(void);
+	int 			aclfgl_num_args		(int n);
+	int 			aclfgl_arg_val		(int n);
+
+    /* ======================= helper.c ======================= */
+
+	int 		aclfgl_i_rowid_s	(int arg);
+	int 		aclfgl_m_rowid_s	(int arg);
+	int 		aclfgl_r_rowid_s	(int arg);
+	int 		aclfgl_s_rowid_s	(int arg);
+	int 		aclfgl_w_rowid_s	(int arg);
+	int 		aclfgl_fgl_prtscr	(int n);
+	int			aclfgl_get_info		(int np);
+
+    /* ====================== others.c ======================= */
+
+	int 		aclfgl_fgl_lastkey	(int _np);
+	int 		aclfgl_fgl_keyval	(int _np);
+	int 		aclfgl_upshift		(int _np);
+	int 		aclfgl_downshift	(int _np);
+
+    /* ======================== datatypes.c ================ */
+
+	int aclfgl_load_datatype (int nargs);
 
 
 #endif /* #ifndef FGLDEF_INCL */

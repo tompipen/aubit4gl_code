@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.2 2002-07-16 17:41:57 mikeaubury Exp $
+# $Id: menuwrite.c,v 1.3 2002-08-31 06:20:00 afalout Exp $
 #*/
 
 /**
@@ -43,26 +43,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <ctype.h>
-	#include <string.h>
-
-	#ifdef __CYGWIN__
-		#include <rpc/rpc.h>
-	#endif
-
-	#include "a4gl_menuxw.h"
-	#include "a4gl_compiler.h"
-	#include "a4gl_debug.h"
-
-
-#else
-
-    #include "a4gl_lib_menu_xdr_int.h"
-
-#endif
+#include "a4gl_lib_menu_xdr_int.h"
 
 /*
 =====================================================================

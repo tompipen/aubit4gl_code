@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: iarray.c,v 1.2 2002-08-31 06:20:00 afalout Exp $
 #*/
 
 /**
@@ -44,20 +44,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include "a4gl_tui_tui.h"
-	#include "a4gl_dbform.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_runtime_tui.h" 	/* push_char() */
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_tui_int.h"
-
-#endif
-
+#include "a4gl_lib_ui_tui_int.h"
 
 /*
 =====================================================================
@@ -704,9 +691,9 @@ int a;
       if (disp->srec == 0)
 	return 0;
       disp->currform = get_curr_form ();
-#ifdef DEBUG
+	#ifdef DEBUG
       {	debug ("disp->currform=%p", disp->currform);      }
-#endif
+	#endif
       disp->last_arr = -1;
       disp->scr_line = 1;
       disp->arr_line = 1;
@@ -785,8 +772,8 @@ int a;
 
       */
 
-#ifdef DEBUG
-/*
+	#ifdef DEBUG
+		/*
       for (x=0;x<disp->srec->attribs.attribs_len;x++) {
 
       for (y=0;y<disp->srec->dim;y++) {
@@ -798,13 +785,13 @@ int a;
       }
 	   update_panels();
            doupdate();
-*/
+		*/
       debug("Array dimensions : %d %d",disp->srec->dim,disp->srec->attribs.attribs_len);
       for (a=0;a<disp->srec->attribs.attribs_len;a++) {
             debug("          Attrib %d = %d:",a,disp->srec->attribs.attribs_val[a]);
       }
 
-#endif
+	#endif
 
       for (a = 0; a < disp->srec->dim; a++)
 
@@ -814,26 +801,26 @@ int a;
 
 	    {
 
-#ifdef DEBUG
+		#ifdef DEBUG
 	      {	debug ("call draw_arr (1)");	      }
-#endif
+		#endif
 	      idraw_arr (disp, a + 1 == disp->arr_line, a + 1);
 
-#ifdef DEBUG
+		#ifdef DEBUG
 	      {	debug ("after draw_arr (1)");	      }
-#endif
+		#endif
 	    }
 
 	}
-#ifdef DEBUG
-      {	debug ("call draw_arr (2) %p %d",disp,disp->arr_line);      }
-#endif
+		#ifdef DEBUG
+    	  {	debug ("call draw_arr (2) %p %d",disp,disp->arr_line);      }
+		#endif
 
       idraw_arr (disp, 1, disp->arr_line);
 
-#ifdef DEBUG
-      {	debug ("after draw_arr (2)");      }
-#endif
+		#ifdef DEBUG
+	      {	debug ("after draw_arr (2)");      }
+		#endif
 
       gui_scroll (disp->no_arr);
       set_arr_curr (disp->arr_line);
@@ -852,7 +839,8 @@ int a;
 /**
  * I think its not used because the function that calls it its not used
  */
-int 
+/*
+int
 set_scrline_ia (int np)
 {
   int a;
@@ -870,12 +858,13 @@ set_scrline_ia (int np)
 #endif
   return 1;
 }
-
+*/
 
 /**
  * I think its not used because the function that calls it its not used
  */
-int 
+/*
+int
 set_arrline_ia (int np)
 {
   int a;
@@ -893,6 +882,7 @@ set_arrline_ia (int np)
 #endif
     return 1;
 }
+*/
 
 /**
  * Not used

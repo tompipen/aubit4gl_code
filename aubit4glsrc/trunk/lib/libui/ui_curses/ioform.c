@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: ioform.c,v 1.2 2002-08-31 06:20:00 afalout Exp $
 #*/
 
 /**
@@ -43,28 +43,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <assert.h>
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_pointers.h"
-	#include "a4gl_aubitcolours.h"
-	#include "a4gl_acl_string.h"
-	#include "a4gl_runtime_tui.h" 		/* push_int() */
-	#include "a4gl_tui_tui.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-
-#else
-
-    #include "a4gl_lib_ui_tui_int.h"
-
-#endif
+#include "a4gl_lib_ui_tui_int.h"
 
 /*
 =====================================================================
@@ -176,8 +155,6 @@ int curr_metric_is_last (void);
 int curr_metric_is_first (void);
 int curr_metric_is_veryfirst (void);
 int curr_metric_is_verylast (void);
-int aclfgl_set_page(int a);
-int aclfgl_get_page(int a);
 
 /*
 =====================================================================
@@ -3030,7 +3007,7 @@ curr_metric_is_verylast (void)
  * @todo Describe function
  */
 int
-aclfgl_set_page(int a)
+aclfgl_set_page(void)
 {
 int b;
 struct s_form_dets *f;
@@ -3046,7 +3023,7 @@ struct s_form_dets *f;
  * @todo Describe function
  */
 int
-aclfgl_get_page(int a)
+aclfgl_get_page(void)
 {
 struct s_form_dets *f;
 	f=get_curr_form();

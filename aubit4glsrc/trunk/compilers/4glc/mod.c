@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.76 2002-08-13 11:56:47 afalout Exp $
+# $Id: mod.c,v 1.77 2002-08-31 06:19:39 afalout Exp $
 #
 */
 
@@ -48,33 +48,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <string.h>
-	#include <stdio.h>
-	#include <stdarg.h>
-	#include <stdlib.h>
-
-	#include "rules/generated/y.tab.h"
-	#include "rules/generated/kw.h"
-
-	#include "a4gl_report.h"
-	#include "a4gl_oform.h"
-	#include "a4gl_tunable.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_errors.h"
-	#include "a4gl_4glc_compiledefs.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_4glc_print_protos.h"
-	#include "a4gl_4glc_4glc.h"
-	#include "a4gl_dlsql.h"
-
-#else
-
-    #include "a4gl_4glc_int.h"
-
-#endif
+#include "a4gl_4glc_int.h"
 
 /*
 =====================================================================
@@ -657,42 +631,52 @@ print_variable (int z, char ff)
 static void 
 dump_gvars(void)
 {
+FILE *f;
+int a;
+char ii[64];
+  
+	strcpy (ii, outputfilename);
+	strcat (ii, ".glb");
+	f = mja_fopen (ii, "w");
 
-  FILE *f;
-  int a;
-  char ii[64];
-  strcpy (ii, outputfilename);
-  strcat (ii, ".glb");
-  f = mja_fopen (ii, "w");
-
-  if (f == 0)
+	if (f == 0)
     {
-      fprintf (stderr, "Couldnt open output file %s\n", ii);
-      exit (0);
+		fprintf (stderr, "Couldnt open output file %s\n", ii);
+		exit (0);
     }
 
-  fprintf (f, "DATABASE=%s\n", get_hdrdbname ());
+	fprintf (f, "DATABASE=%s\n", get_hdrdbname ());
 
-  for (a = 0; a < varcnt; a++)
+	for (a = 0; a < varcnt; a++)
     {
-      fprintf (f, "%s %s %s %s %s %s %d\n",
-	       vars[a].var_name,
-	       vars[a].var_type,
-	       vars[a].var_size,
-	       vars[a].var_arrsize,
-	       vars[a].tabname, vars[a].pklist, vars[a].level);
+
+		trim (vars[a].var_name);
+		if (strcmp (vars[a].var_name, "***CONSTANTS***") == 0)
+        {
+			debug ("Found ***CONSTANTS*** (2) \n");
+        }
+        else
+        {
+			fprintf (f, "%s %s %s %s %s %s %d\n",
+		       vars[a].var_name,
+		       vars[a].var_type,
+		       vars[a].var_size,
+		       vars[a].var_arrsize,
+		       vars[a].tabname, vars[a].pklist, vars[a].level);
+        }
 
     }
-  fprintf (f, "***CONSTANTS***\n");
+  
+	fprintf (f, "***CONSTANTS***\n");
 
-  for (a = 0; a < const_cnt; a++)
+	for (a = 0; a < const_cnt; a++)
     {
-      if (const_arr[a].scope == 'g')
-	fprintf (f, "%c %s %p\n", const_arr[a].type, const_arr[a].name,
-		 const_arr[a].ptr);
+		if (const_arr[a].scope == 'g')
+			fprintf (f, "%c %s %p\n", const_arr[a].type, const_arr[a].name,
+				const_arr[a].ptr);
     }
 
-  fclose (f);
+	fclose (f);
 }
 
 /**
@@ -3312,95 +3296,125 @@ generate_globals_for (char *s)
 void 
 read_glob (char *s)
 {
-  FILE *f;
-  char line[256];
-  char ii[64];
-  char dbname[64];
-  char tname[128];
-  char pklist[1024];
-  strcpy (ii, s);
-  strcat (ii, ".glb");
-  f = mja_fopen (ii, "r");
+FILE *f;
+char line[256];
+char ii[64];
+char dbname[64];
+char tname[128];
+char pklist[1024];
 
-  if (f == 0)
+  	strcpy (ii, s);
+	strcat (ii, ".glb");
+	f = mja_fopen (ii, "r");
+
+	if (f == 0)
     {
-      debug ("Trying to compile globals file");
-      generate_globals_for (ii);
-      f = mja_fopen (ii, "r");
+    	#ifdef DEBUG
+			debug ("Trying to compile globals file");
+        #endif
+		generate_globals_for (ii);
+		f = mja_fopen (ii, "r");
     }
 
-  if (f == 0)
+	if (f == 0)
     {
-      fprintf (stderr, "Couldnt open globals file %s\n", ii);
-      exit (7);
+    	fprintf (stderr, "Couldnt open globals file %s\n", ii);
+		exit (7);
     }
 
-  debug ("OPening %s\n", ii);
+	#ifdef DEBUG
+		debug ("Opening %s\n", ii);
+    #endif
 
-  fgets (line, 255, f);
-  strcpy (dbname, "");
-  sscanf (line, "DATABASE=%s", dbname);
+	fgets (line, 255, f);
+	strcpy (dbname, "");
+	sscanf (line, "DATABASE=%s", dbname);
 
-  if (strlen (dbname) > 0)
+	if (strlen (dbname) > 0)
     {
-      set_hdrdbname (dbname);
-      open_db (dbname);
+    	set_hdrdbname (dbname);
+		open_db (dbname);
     }
 
-  debug ("DBNAME=%s from globals", dbname);
-  while (!feof (f))
+	#ifdef DEBUG
+		debug ("DBNAME=%s from globals", dbname);
+    #endif
+  
+	while (!feof (f))
     {
-      fgets (line, 255, f);
-      if (feof (f))
-	break;
-      trim (line);
-      if (strcmp (line, "***CONSTANTS***") == 0)
-	break;
+    	fgets (line, 255, f);
+		if (feof (f))
+			break;
+		/* did not catch it:
+		trim (line);
+		if (strcmp (line, "***CONSTANTS***") == 0)
+        {
+			debug ("Found ***CONSTANTS***\n");
+			break;
+        }
+        */
 
-      sscanf (line, "%s %s %s %s %s %s %d\n",
+	  	sscanf (line, "%s %s %s %s %s %s %d\n",
 	      vars[varcnt].var_name,
 	      vars[varcnt].var_type,
 	      vars[varcnt].var_size,
 	      vars[varcnt].var_arrsize, tname, pklist, &vars[varcnt].level);
 
+        trim (vars[varcnt].var_name);
+		if (strcmp (vars[varcnt].var_name, "***CONSTANTS***") == 0)
+        {
+			debug ("Found ***CONSTANTS*** (3)\n");
+			break;
+        }
 
-      vars[varcnt].tabname = strdup (tname);
-      vars[varcnt].pklist = strdup (pklist);
+		vars[varcnt].tabname = strdup (tname);
+		vars[varcnt].pklist = strdup (pklist);
 
-      debug ("Read %s %s from globals file (%s %s)\n",
-	     vars[varcnt].var_name,
-	     vars[varcnt].var_type,
-	     vars[varcnt].tabname, vars[varcnt].pklist);
-      debug ("In full : %s %s %s %s %s %s %d\n",
-	     vars[varcnt].var_name,
-	     vars[varcnt].var_type,
-	     vars[varcnt].var_size,
-	     vars[varcnt].var_arrsize,
-	     vars[varcnt].tabname, vars[varcnt].pklist, vars[varcnt].level);
-      vars[varcnt].globflg = 'G';
+		#ifdef DEBUG
+			debug ("Read %s %s from globals file (%s %s)\n",
+		     vars[varcnt].var_name,
+		     vars[varcnt].var_type,
+		     vars[varcnt].tabname, vars[varcnt].pklist);
+			debug ("In full : %s %s %s %s %s %s %d\n",
+		     vars[varcnt].var_name,
+		     vars[varcnt].var_type,
+		     vars[varcnt].var_size,
+		     vars[varcnt].var_arrsize,
+		     vars[varcnt].tabname, vars[varcnt].pklist, vars[varcnt].level);
+        #endif
 
-      if (varcnt >= MAXVARS)
-	{
-	  exitwith ("Too many variables");
-	  yyerror ("Too many variables");
+		vars[varcnt].globflg = 'G';
+
+		if (varcnt >= MAXVARS)
+        {
+			exitwith ("Too many variables");
+			yyerror ("Too many variables");
+		}
+
+		varcnt++;
 	}
-      varcnt++;
-    }
 
-  while (!feof (f))
+	while (!feof (f))
     {
-      char ct;
-      char cn[256];
-      char cv[256];
-      fgets (line, 255, f);
-      if (feof (f))
-	break;
-      trim (line);
-      sscanf (line, "%c %s %s", &ct, cn, cv);
-      add_constant (ct, cv, cn);
-    }
+	char ct;
+    char cn[256];
+    char cv[256];
+      
+		fgets (line, 255, f);
+		if (feof (f))
+			break;
+		trim (line);
+		/* bug fix */
+		if (strcmp (line, "***CONSTANTS***") == 0)
+        {
+			debug ("Found ***CONSTANTS***\n");
+			break;
+        }
+		sscanf (line, "%c %s %s", &ct, cn, cv);
+		add_constant (ct, cv, cn);
+	}
 
-  fclose (f);
+	fclose (f);
 }
 
 /**

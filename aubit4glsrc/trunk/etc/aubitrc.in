@@ -70,8 +70,8 @@ A4GL_LEXTYPE=@A4GL_LEXTYPE@
 ############
 #Default forms driver to be loaded
 #When used: run-time only
-#Options: (NOFORM), XDR
-A4GL_FORMTYPE=@A4GL_FORMTYPE@
+#Options: (GENERIC), NOFORM, XDR
+#A4GL_FORMTYPE=@A4GL_FORMTYPE@
 
 ############
 #Default menu driver to be loaded:
@@ -92,6 +92,26 @@ A4GL_MSGTYPE=@A4GL_MSGTYPE@
 #see example testmpz.4gl into the tools/test directory.
 EXDTYPE=@EXDTYPE@
 
+
+############
+#You can select which packer to use by setting the variable "A4GL_PACKER"
+# 1) PACKED
+#  This is very similar to XDR in that data is written in a hopefully portable
+# way (optionally non-portable if the required functions aren't available).
+# This will probably give the smalled output files
+# 2) XDR
+#  This is the same as doing it the old way
+# 3) (XML) - default
+#  This stores and reads the data in an XML file. The reading is very limited
+# and can basically only read the XML files that it generates - IT IS NOT A
+# FULL BLOWN XML PARSER. It uses some odd constructs and isn't ideal - but
+# you'll get the idea when you see the output
+# 4) PERL
+# This generates a data structure which can be used inside a perl program - its
+# pretty complicated stuff though using hashes for the data representation.
+# What you do with it after you've generated it is up to you, because this is
+# an output only library (ie it can't read back what its written).
+A4GL_PACKER=XML
 
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.9 2002-06-25 03:22:30 afalout Exp $
+# $Id: data_if.c,v 1.10 2002-08-31 06:19:59 afalout Exp $
 #
 */
 
@@ -46,19 +46,8 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
+#include "a4gl_libaubit4gl_int.h"
 
-	#include <string.h>
-	#include <stdlib.h> 		/* free() */
-
-	#include "a4gl_data_if.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.1 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: readforms.c,v 1.2 2002-08-31 06:19:59 afalout Exp $
 #*/
 
 /**
@@ -36,42 +36,13 @@
  * @todo Doxygen comments to add to functions
  */
 
- /*
-    =====================================================================
-    Includes
-    =====================================================================
-  */
-
-
-
-#ifdef OLD_INCL
-
-#include <signal.h>
-#include <ctype.h>
-#include <assert.h>
-
-#ifdef __CYGWIN__
-#include <rpc/rpc.h>
-#endif
-
-#include "a4gl_dbform.h"
-#include "a4gl_constats.h"
-#include "a4gl_dtypes.h"
-#include "a4gl_stack.h"
-#include "a4gl_pointers.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_io.h"
-#include "a4gl_runtime_tui.h"	/* push_char() */
-#include "a4gl_debug.h"
-
-#else
+/*
+=====================================================================
+			    Includes
+=====================================================================
+*/
 
 #include "a4gl_lib_form_xdr_int.h"
-
-#endif
-
-
-
 
 /*
 =====================================================================

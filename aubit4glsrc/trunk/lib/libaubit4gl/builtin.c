@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.8 2002-06-25 09:33:52 mikeaubury Exp $
+# $Id: builtin.c,v 1.9 2002-08-31 06:19:59 afalout Exp $
 #
 */
 
@@ -42,24 +42,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-	
-	#include "a4gl_dbform.h"
-	#include "a4gl_errors.h"
-	#include "a4gl_dlsql.h"         /* A4GLSQL_set_status() */
-	#include "a4gl_runtime_tui.h" 	/* push_int() */
-	#include "a4gl_aubit_lib.h" 	/* trim() etc. */
-	#include "a4gl_debug.h"
-	#include "a4gl_pointers.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
-
-
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -84,33 +67,6 @@ int m_scr_line = 0;
     call any function in Aubit libraries without aclfgl prefix.
 */
 
-
-/* void    get_arr_curr 		(int a); */
-/* void    get_scr_line 		(int a); */
-
-
-#ifdef OLD_INCL
-	int 	aclfgl_set_count 	(int nargs);
-	int 	aclfgl_arr_count 	(int nargs);
-	int 	aclfgl_scr_line 	(int nargs);
-	int 	aclfgl_arr_curr 	(int nargs);
-	int     aclfgl_length 		(int nargs);
-	int     aclfgl_err_get		(int statusnumber);
-	int     aclfgl_err_print	(int statusnumber);
-	int     aclfgl_err_quit		(int statusnumber);
-	int     aclfgl_startlog 	(char *filename);
-	int     aclfgl_errorlog 	(char *string);
-	int     aclfgl_showhelp 	(int helpnumber);
-/* 	int 	aclfgl_fgl_getenv 	(int nargs); */
-/* 	void    aclfgl_mdy			(void); */
-
-
-	int     fgl_fieldtouched	(char *fieldname);
-	void    close_database		(void);
-	char * 	let_substr 			(char *ca, int dtype, int a, int b,...);
-/*	char *substr(char *s,int dtype,int a,int b,...); */
-
-#endif
 
 /*
 =====================================================================

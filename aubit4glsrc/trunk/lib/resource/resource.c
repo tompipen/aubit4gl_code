@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.13 2002-07-21 09:56:42 afalout Exp $
+# $Id: resource.c,v 1.14 2002-08-31 06:20:00 afalout Exp $
 #
 */
 
@@ -43,26 +43,6 @@
 =====================================================================
 */
 
-
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <ctype.h> 		/* toupper() */
-
-	/*
-	This is only source code file in which we should allowe getenv() function
-	call. Everywhere else, we should use acl_getenv. To allow use of getenv,
-	we will define this two variables:
-	*/
-	#define GETENV_OK
-	#define WGETENV_OK
-	#include "a4gl_debug.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
 	/*
 	This is only source code file in which we should allowe getenv() function
 	call. Everywhere else, we should use acl_getenv. To allow use of getenv,
@@ -73,7 +53,7 @@
 	#define _NO_FORM_X_H_
 	#include "a4gl_libaubit4gl_int.h"
 
-#endif
+
 /*
 =====================================================================
                     Constants definitions
@@ -86,14 +66,6 @@
 =====================================================================
                     Variables definitions
 =====================================================================
-*/
-
-/*
-struct str_resource
-  {
-    char name[20];
-    char value[127];
-  };
 */
 
 struct str_resource *user_resource = 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.15 2002-08-29 09:10:32 afalout Exp $
+# $Id: loadmenu.c,v 1.16 2002-08-31 06:20:00 afalout Exp $
 #*/
 
 /**
@@ -70,10 +70,6 @@ GtkWidget *tooltips = 0;
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-	extern GtkWindow *get_curr_win_gtk (void);
-#endif
 static GtkWidget * real_load_menu (char *fname, char *menu_id, int mode, void *handler);
 
 char* mn_caption(char *s);
@@ -365,10 +361,11 @@ real_load_menu (char *fname, char *menu_id, int mode, void *handler)
 /**
  *
  * This is used from compile_c_gtk.c to check if Menu item does exist.
+ * FIXME: not implemented
  */
 int
 mn_itemexists (void)
-{				// FIXME
+{
   return 1;
 }
 
@@ -417,135 +414,36 @@ endis_menuitems (int en_dis, ...)
   menubar = gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
   debug ("menubar=%d", menubar);
 
-  if (menubar == 0)
+	if (menubar == 0)
     {
-	printf("No menu...");
-      exitwith ("No menu displayed...");
-      return;
-    }
-
-  while (ptr)
-    {
-      ptr = va_arg (ap, char *);
-	printf("ptr=%s\n",ptr);
-      if (ptr == 0)
-	break;
-      sprintf (buff, "ID:%s", ptr);
-      debug ("Looking for %s", buff);
-      w = gtk_object_get_data (GTK_OBJECT (menubar), buff);
-      if (w)
-	{
-	  debug ("Found");
-	  gtk_widget_set_sensitive (w, en_dis);
+		printf("No menu...");
+		exitwith ("No menu displayed...");
+		return;
 	}
-      else
-	{
-		printf("No Widget\n");
-	  debug ("No widget...");
-	  exitwith ("Invalid menu ID");
-	  return;
-	}
-    }
-}
 
-
-/* ================================ EOF =============================== */
-
-#ifdef DUPLICATED_FUNCTIONS
-
-/* ------------------duplicate from gtk_4gl.c: */
-
-/* The 4gl current window */
-GtkWindow *currwindow = 0;
-
-/**
- * Finds the 4gl current window
- *
- * @return The current window
- */
-GtkWindow *get_curr_win_gtk (void)
-{
-  debug("Current window : %p",currwindow);
-  return currwindow;
-}
-
-/* -------------------duplicate from window.c: */
-
-/**
- * Gets the width of the current window (in GTK GUI mode).
- *
- * @return The width of the current window.
- */
-int get_curr_width_gtk()
-{
-  GtkWidget *cwin;
-  int width;
-	cwin = (GtkWidget *)get_curr_win_gtk ();
-  	width = (int)gtk_object_get_data (GTK_OBJECT(cwin), "WIDTH");
-	return width;
-}
-
-
-/* ------------------- duplicate from gtk_4gl.c : */
-
-void gui_run_til_no_more (void)
-{
-
-  if (screen_mode (-1) )
+	while (ptr)
     {
-      while (gtk_events_pending ())
-	gtk_main_iteration ();
-    } else {
-	debug("Skipping run_til_no_more - in pause mode");
+		ptr = va_arg (ap, char *);
+		printf("ptr=%s\n",ptr);
+		if (ptr == 0)
+			break;
+		sprintf (buff, "ID:%s", ptr);
+		debug ("Looking for %s", buff);
+		w = gtk_object_get_data (GTK_OBJECT (menubar), buff);
+		if (w)
+        {
+			debug ("Found");
+			gtk_widget_set_sensitive (w, en_dis);
+        }
+		else
+        {
+			printf("No Widget\n");
+			debug ("No widget...");
+			exitwith ("Invalid menu ID");
+			return;
+		}
     }
-
 }
-
-
-/* -------------------- duplicate from cr_funcs.c : */
-
-/**
- * Create a pixmap from the information stored in a file.
- *
- * @param filename The name of the file where the pixmap is stored.
- * @return The pixmap widget.
- */
-GtkWidget *
-make_pixmap (char *filename)
-{
-  GdkPixmap *p;
-  GtkWidget *pixmap;
-  debug("Making pixmap from file:%s\n",filename);
-  p = gdk_pixmap_colormap_create_from_xpm (0,
-    gdk_colormap_get_system (), NULL,
-    NULL, filename
-  );
-  if (p==0) {
-    printf("Bad pixmap...");
-    exitwith("Error creating pixmap");
-    return 0;
-  }
-
-  pixmap = gtk_pixmap_new (p, 0);
-  return pixmap;
-}
-
-
-/* for mdecompile: */
-int
-isolated_xdr_decompile(struct menu_list the_menus,XDR xdrp,FILE *f )
-{
-int a;
-
-
-	xdrstdio_create(&xdrp,f,XDR_DECODE);
-	a=xdr_menu_list(&xdrp,&the_menus);
-
-    return a;
-}
-
-
-#endif
 
 
 /* =================================== EOF ============================= */

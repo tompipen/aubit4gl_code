@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-07-07 08:46:04 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-08-31 06:20:00 afalout Exp $
 #
 
 LIBROOT=../..
@@ -97,7 +97,7 @@ ifdef COMSPEC
     endif
 else
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libMENU_XDR${SO_EXT}
+		ALL			+=${LIBROOT}/libMENU_XDR${SO_EXT}
     endif
 endif
 
@@ -128,9 +128,9 @@ CFLAGS_MENU_X_XDR_C =$(CFLAGS:%-Wall=%)
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libMENU_XDR.so : ${OBJS_MENU_XDR}
+${LIBROOT}/libMENU_XDR.so : ${OBJS_MENU_XDR}
 	${LD} ${SO_LDFLAGS} @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} ${RPCLIB_NAME} -o $@ $^
-	${CP} $@ ${LIBROOT}
+#	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets

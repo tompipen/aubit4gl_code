@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.8 2002-06-25 09:33:52 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.9 2002-08-31 06:19:59 afalout Exp $
 #
 */
 
@@ -53,31 +53,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include <math.h>
-	#include <sys/types.h>
-	#include <ctype.h>
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <locale.h>
-	#include <time.h>
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_dates.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_runtime_tui.h"			/* push_int() */
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -142,12 +118,6 @@ struct s_funcs builtin_funcs[]= {
 */
 
 extern char *	using_date			(int us,char *fmt);
-
-
-void            aclfgl_hex         	(void);
-void            aclfgl_abs         	(void);
-void            aclfgl_root       	(void);
-void            aclfgl_sqrt        	(void);
 
 void            func_mod           	(void);
 void            func_pow           	(void);
