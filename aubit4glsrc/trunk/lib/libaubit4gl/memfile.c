@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.2 2003-04-10 04:01:31 afalout Exp $
+# $Id: memfile.c,v 1.3 2003-04-10 06:52:12 mikeaubury Exp $
 #
 */
 
@@ -111,7 +111,7 @@ FILE *memfile_fopen_buffer(char *ptr,int len) {
 		c2=((unsigned char)ptr[1])&0xff;
 		c3=((unsigned char)ptr[2])&0xff;
 		c4=((unsigned char)ptr[3])&0xff;
-		debug("size=%d %d %d %d",c1,c2,c3,c4);
+		//debug("size=%d %d %d %d",c1,c2,c3,c4);
 		l=c4;
 		l=l*256+c3;
 		l=l*256+c2;
@@ -119,7 +119,7 @@ FILE *memfile_fopen_buffer(char *ptr,int len) {
 		len=l;
 		ptr+=4;
 	}
-	debug("open_packer - length=%d",len);
+	//debug("open_packer - length=%d",len);
 	buff_len=len;
 	buff=memdup(ptr,len);
 	dump_buffer(ptr,30);
@@ -190,7 +190,7 @@ int memfile_ungetc(int c,FILE *f) {
 int memfile_feof(FILE *f) {
 	char buffer[255];
 	if (f!=in) {
-		debug("pos = %ld buff_len = %ld f=%x in=%x\n",pos,buff_len,f,in);
+		//debug("pos = %ld buff_len = %ld f=%x in=%x\n",pos,buff_len,f,in);
 		strncpy(buffer,&buff[pos],255);
 		buff[255]=0;
 		debug("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
@@ -209,25 +209,25 @@ int memfile_fread(char *ptr,int s,int n,FILE *f) {
 		return fread(ptr,s,n,f);
 	} else {
 		int a;
-		debug("Reading from buff start@:%d s=%d n=%d",pos,s,n);
+		//debug("Reading from buff start@:%d s=%d n=%d",pos,s,n);
 		memcpy(ptr,&buff[pos],s*n);
 		for (a=0;a<s*n;a++) {
-			debug("%02x: %c",
-					ptr[a]&0xff,
-					isprint(ptr[a]&0xff)?ptr[a]&0xff:'.'
-					);
+			//debug("%02x: %c",
+					//ptr[a]&0xff,
+					//isprint(ptr[a]&0xff)?ptr[a]&0xff:'.'
+					//);
 		}
 
-		debug("And from pos:");
+		//debug("And from pos:");
 		for (a=0;a<s*n;a++) {
-			debug("%02x: %c",
-					buff[pos+a]&0xff,
-					isprint(buff[pos+a]&0xff)?buff[pos+a]&0xff:'.'
-					);
+			//debug("%02x: %c",
+					//buff[pos+a]&0xff,
+					//isprint(buff[pos+a]&0xff)?buff[pos+a]&0xff:'.'
+					//);
 		}
 
 		pos+=s*n;
-		debug("Reading from buff pos now %d",pos);
+		//debug("Reading from buff pos now %d",pos);
 		return n;
 	}
 }
@@ -237,6 +237,7 @@ dump_buffer(char *s,int l) {
 	char buff[256];
 	char buffx[256];
 	strcpy(buff,"");
+	return;
 	debug("Dump buffer");
 	for (a=0;a<l;a++) {
 		sprintf(buffx,"0x%02x,",s[a]&0xff);
