@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.13 2003-03-06 22:38:31 mikeaubury Exp $
+# $Id: compile.c,v 1.14 2003-03-08 04:23:04 afalout Exp $
 #*/
 
 /**
@@ -138,6 +138,7 @@ initArguments (int argc, char *argv[])
   int todo = 0;
   int flength = 0;
 
+  char * chrptr;
   char opt_list[40] = "";
   char a[128] = "";
   char b[128] = "";
@@ -396,7 +397,12 @@ initArguments (int argc, char *argv[])
   /* prepare CC flags */
   strcpy (incl_path, "-I");
   strcat (incl_path, acl_getenv ("AUBITDIR"));
-  strcat (incl_path, "/incl");
+  strcat (incl_path, "/incl ");
+
+  chrptr=acl_getenv ("GTK_INC_PATH");//GTK_INC_PATH is set in aubitrc by Autoconf
+  rm_quotes (chrptr);
+  strcat (incl_path, chrptr);
+
 
   strcpy (l_path, "-L");
   strcat (l_path, acl_getenv ("AUBITDIR"));

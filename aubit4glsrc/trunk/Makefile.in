@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.116 2003-02-23 02:32:13 afalout Exp $
+# $Id: Makefile.in,v 1.117 2003-03-08 04:22:41 afalout Exp $
 #
 
 ## ==================================================================
@@ -148,6 +148,9 @@ perl.compiler:
 	@echo Aubit 4gl Perl-code generating version LEX library created
 
 perl.lib:
+#Perl created makefile will remove domake when running "clean", so we better make
+#sure we have it:
+	config.status --file lib/swig/domake
 	cd lib/swig; sh domake
 	@echo Aubit 4gl Perl-code libraries installed
 
