@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.60 2004-05-24 14:31:13 mikeaubury Exp $
+# $Id: builtin.c,v 1.61 2004-06-27 08:36:21 mikeaubury Exp $
 #
 */
 
@@ -316,6 +316,16 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
     acl_free (np2);
   np = strdup (ca);
   np2 = strdup (ca);
+
+  if ((b - a + 1) > strlen(ca)) {
+		A4GL_debug("Need a little more..");
+		free(np);
+		free(np2);
+		np=malloc(b - a + 2);
+		np2=malloc(b - a + 2);
+		strcpy(np,ca);
+		strcpy(np2,ca);
+  }
 
 
   if (b == 0)
