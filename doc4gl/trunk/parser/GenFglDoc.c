@@ -1,9 +1,14 @@
 
 /**
  * @file
- * Generate the fgldoc in static html to this module.
- * This action is also made by the manager but implies the existance of 
- * information in the repository.
+ * Generate the fgldoc in static html for this module.
+ * This action is also made by the manager (fgldoc Perl script)
+ * but implies the existance of information in the repository.
+ *
+ * Invoked with --document p4gl switch
+ *
+ * Note - incomplete - use "fgldoc --action=export2Html"
+ *
  */
 
 #include <stdio.h>

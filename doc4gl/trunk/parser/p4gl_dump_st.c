@@ -3,7 +3,23 @@
  * Dump all the information in the abstract tree to the standard output.
  * Symbol table dump in html format. It have crossed links between
  * information.
- * It just works if p4gl was executed with --html option.
+ *
+ * It works only if p4gl was executed with --html option.
+ *
+ * FIXME: it does not show table names parsewd from comments (@table tag)
+ *
+ * See also: GenFglDoc.c - Generate the fgldoc in static html for this module.
+ *
+ * This action is also made by the manager (fgldoc Perl script)
+ * but implies the existance of information in the repository.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
  */
 
 #include <stdio.h>

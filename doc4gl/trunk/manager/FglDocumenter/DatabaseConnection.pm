@@ -265,14 +265,18 @@ sub connect
 		  $obj->getUser(),
 			$obj->getPassword()) 
     ){
-			$obj->{log}->log("Conexão à base de dados estabelecida")
+			#$obj->{log}->log("Conexão à base de dados estabelecida")
+            $obj->{log}->log("Database connection established")
 			  if $obj->{log};
 		}
     else
 		{
       $obj->{err}->error(
-		    "Conexão à base de dados",
-		    "Impossivel estabelecer conexão\n$DBI::errstr"
+		    #"Conexão à base de dados",
+		    #"Impossivel estabelecer conexão\n$DBI::errstr"
+		    "Database connection",
+		    "Cannot establish connection\n$DBI::errstr"
+
       );
 			return 0;
 	  }
@@ -281,14 +285,18 @@ sub connect
 	{
     if ( ($obj->{connection} = DBI->connect($obj->{dbiUrl})) )
 		{
-			$obj->{log}->log("Conexão à base de dados estabelecida")
+			#$obj->{log}->log("Conexão à base de dados estabelecida")
+			$obj->{log}->log("Database connection established")
 			  if $obj->{log};
 		}
     else
 		{
       $obj->{err}->error(
-		    "Conexão à base de dados",
-		    "Impossivel estabelecer conexão\n$DBI::errstr"
+		    #"Conexão à base de dados",
+		    #"Impossivel estabelecer conexão\n$DBI::errstr"
+		    "Database connection",
+		    "Cannot establish connection\n$DBI::errstr"
+
       );
 			return 0;
 	  }

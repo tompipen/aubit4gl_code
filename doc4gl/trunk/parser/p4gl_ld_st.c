@@ -15,8 +15,8 @@
  * Moredata - Lisboa, PORTUGAL
  *                                                       
  * $Author: afalout $
- * $Revision: 1.7 $
- * $Date: 2003-11-17 06:10:26 $
+ * $Revision: 1.8 $
+ * $Date: 2003-11-20 10:51:49 $
  *                                                       
  * Programa      : Carregamento de informação sobre os módulos numa arvore
  *                 abstracta em memoria
@@ -691,11 +691,12 @@ void StUpdFCUsage(char *usage)
 void StInsertTable(char *NmTable)
 {
    strcpy(SQL_STMT_CURR.tabelas[IDX_TAB_CURR],NmTable);
+
 }
 
 /**
  * Increment the table counter.
- * 
+ *
  * @todo : Validate if this increment could be made in StInsertTable
  */
 void StIncrementTable(void)

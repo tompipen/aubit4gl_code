@@ -2,6 +2,9 @@
  * Lista de parametros e sua definição
  */
 
+#ifndef __PARAMETERS_H__
+#define __PARAMETERS_H__
+
 typedef struct {
   char **name;
 	char **comment;
@@ -9,3 +12,6 @@ typedef struct {
 	int idxParameters;   // Indice que aponta para parametro corrente
 	int maxParameters;   // Nº máximo de parametros permitidos
 } Parameters;
+
+
+#endif

@@ -3,7 +3,7 @@
  * @file
  * Contains the prototype declaration for external functions 
  *
- * $Id: p4gl.h,v 1.4 2003-11-17 06:10:26 afalout Exp $
+ * $Id: p4gl.h,v 1.5 2003-11-20 10:51:49 afalout Exp $
  */
 
 /* From ParseComment.c */
@@ -39,6 +39,7 @@ void P4glWarning(int errorLevel,char *fmt,...);
 void P4glVerbose(char *fmt,...);
 void P4glDebug(char *fmt,...);
 void RClipp(char *str);
+void LClipp(char *str);
 void Upshift(char *str);
 void Downshift(char *str);
 void copystr(char *StrDest,char *StrOrig);

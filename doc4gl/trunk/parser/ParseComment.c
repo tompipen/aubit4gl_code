@@ -13,17 +13,25 @@
  * @todo : Make some syntax for table actions
  * @todo : Change the logic of the file level comments algorithm
  *
- * $Author: saferreira $
- * $Revision: 1.6 $
- * $Id: ParseComment.c,v 1.6 2003-05-14 09:51:40 saferreira Exp $
+ * $Author: afalout $
+ * $Revision: 1.7 $
+ * $Id: ParseComment.c,v 1.7 2003-11-20 10:51:49 afalout Exp $
  *
  */
 
+
 #include <stdio.h>
 #include <string.h>
+#include <malloc.h>
 #include "TableUsage.h"
 #include "Comment.h"
 #include "StringBuffer.h"
+
+#include "Parameters.h"
+#include "p4gl_symtab.h"
+#include "p4gl.h"
+
+void yyCommentlex(void); //defined in CommentLexer.c/.l
 
 static char *currentChar;
 static int commentLineStarted = 0;
@@ -99,7 +107,7 @@ static void initComment(Comment *comm,int bufferSize)
  */
 Comment *parseComment(char *commentToParse)
 {
-  register int i;
+  //register int i;
 
   commentState = IN_COMMENT;
 
@@ -113,12 +121,15 @@ Comment *parseComment(char *commentToParse)
 
 /**
  * Marca o inicio de uma nova linha de comentário
+ *
+ * Not used
  */
+/*
 static void startCommentLine(void)
 {
   commentLineStarted = 1;
 }
-
+*/
 
 /**
  * Devolve o próximo caracter da string de comentário ou EOF se null
@@ -214,7 +225,7 @@ static void setTodoComments(char *comments)
 /**
  *  Assigns a table usage definition in comment with table tag.
  *
- *  @todo : Tipo de utilização da tabela.
+ *  @todo : Table Access method (Update/Select/Delete/Insert/DefineLike/DDL[create/drop...]).
  *  @todo : Separar a tabela retirando-lhe base de dados.
  *
  *  @param tableId Table name
@@ -223,9 +234,20 @@ static void setTable(char *tableId)
 {
   TableUsage *tableUsage;
 
+	if (IsEmpty (tableId))
+	{
+		//P4glDebug("Empty table name\n",tableId);
+		//return;
+    } else {
+		//P4glDebug("setTable tableId=%s\n",tableId);
+	}
+
+
   if ( currentComment->tableStarted == 1 )
   {
-    tableUsage = newTableUsage();
+	//P4glDebug("setTable 1\n");
+
+	tableUsage = newTableUsage();
     currentComment->tableList[currentComment->tableIdx] = tableUsage;
     setTableUsageTableName(tableId,tableUsage);
     setTableUsageFoundAs(TU_COMMENT,tableUsage);
@@ -234,8 +256,11 @@ static void setTable(char *tableId)
   }
   else
   {
-    char *oldStr, newStr[64];
-    tableUsage = currentComment->tableList[currentComment->tableIdx];
+	char *oldStr, newStr[64];
+
+	//P4glDebug("setTable <> 1\n");
+
+	tableUsage = currentComment->tableList[currentComment->tableIdx];
     oldStr = getTableUsageTableName(tableUsage);
     sprintf(newStr, "%s%s",oldStr,tableId);
     setTableUsageTableName(newStr,tableUsage);
@@ -403,8 +428,13 @@ void startTodo(void)
  */
 void startTable(void)
 {
+  //P4glDebug("Found @table tag\n");
   commentState = TAG_COMMENT;
   currentTag   = TAG_TABLE;
+
+//  P4glDebug("commentState %s\n",commentState);
+//  P4glDebug("currentTag %s\n",currentTag);
+
   currentComment->tableStarted = 1;
   currentComment->tableIdx++;
 }

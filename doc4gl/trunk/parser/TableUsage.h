@@ -2,6 +2,10 @@
  * @file
  * Header file for typedefs and prototypes of table usages.
  */
+
+#ifndef __TABLEUSAGE_H__
+#define __TABLEUSAGE_H__
+
 #define TABLE_SELECT 0
 #define TABLE_INSERT 1
 #define TABLE_UPDATE 2
@@ -17,7 +21,7 @@
 typedef struct {
 	int  foundAs;             /* How the table usage was found */
 	int  operation;           /* Operation executed */
-  char *tableName;   
+  char *tableName;
 	int  lineNumber;          /* The line where the usage was found in source */
 }TableUsage;
 
@@ -27,3 +31,6 @@ char *getTableUsageTableName(TableUsage *tableUsage);
 void setTableUsageFoundAs(int foundAs,TableUsage *tableUsage);
 void setTableUsageOperation(int operation,TableUsage *tableUsage);
 void setTableUsageLineNumber(int lineNumber,TableUsage *tableUsage);
+
+
+#endif

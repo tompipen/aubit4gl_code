@@ -1,11 +1,14 @@
 /**
- * @file 
+ * @file
  * Table usage functions implementation.
  */
 
 #include <stdio.h>
 #include <string.h>
+#include <malloc.h>
 #include "TableUsage.h"
+
+
 
 /**
  * Alocate and initialize information of a new table usage.
@@ -36,6 +39,7 @@ TableUsage *newTableUsage(void)
  */
 void setTableUsageTableName(char *tableName,TableUsage *tableUsage)
 {
+	//P4glDebug("setTableUsageTableName() tableName=%s\n",tableName);
   tableUsage->tableName = strdup(tableName);
 }
 

@@ -1,14 +1,18 @@
 /**
- *  @file 
+ *  @file
  *  Definition of the buffer where a fgldoc comment is stored.
- *  
+ *
  *  @todo The arrays should be much more dynamic.
  *  @todo Add more tags
  *  @todo See tag
  *
- */ 
+ */
 
 #include "Parameters.h"
+
+#ifndef __COMMENT_H__
+#define __COMMENT_H__
+
 
 typedef struct {
   char       *buffer;           /**< The buffer containing the text of the comment */
@@ -40,3 +44,6 @@ char *getCommentBuffer(Comment *comment);
 int getCommentDeprecated(Comment *comment);
 TableUsage *getCommentTableUsage(Comment *comment,int index);
 int getCommentTableUsageIdx(Comment *comment);
+
+
+#endif

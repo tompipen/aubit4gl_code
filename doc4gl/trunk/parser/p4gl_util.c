@@ -16,8 +16,8 @@
  * Moredata - Lisboa, PORTUGAL
  *
  * $Author: afalout $
- * $Revision: 1.4 $
- * $Date: 2003-11-17 06:10:26 $
+ * $Revision: 1.5 $
+ * $Date: 2003-11-20 10:51:49 $
  *
  */
 
@@ -25,7 +25,24 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <stdarg.h>
+#include <string.h>
 #include "p4gl_symtab.h"
+#include "p4gl.h"
+#include "malloc.h"
+#include <stdlib.h>			/* free() exit()*/
+
+//	#ifndef WIN32
+//		#include <string.h>
+//	#endif
+//	#include <assert.h>		/* assert() */
+//	#include <time.h>
+//	#include <math.h>		/* pow() */
+//	#include <locale.h>		/* setlocale() */
+//	#include <unistd.h>		/* sleep() close() write() usleep() */
+//	#include <signal.h>		/* SIGINT */
+//	#include <sys/types.h>
+
+
 
 /*
 p4gl_util.c:54: warning: implicit declaration of function `RegisterErrorInDb'
@@ -166,7 +183,7 @@ P4glDebug(char *fmt,...)
  *
  * @param str The String to be trimmed
  */
-void 
+void
 RClipp(char *str)
 {
    register int i;
@@ -179,13 +196,45 @@ RClipp(char *str)
 	str[i+1]='\0';
 }
 
+/**
+ * Remove spaces in the begenning of the string.
+ *
+ * It does not alocate space to do it. The work is done in the original string.
+ *
+ * @param str The String to be trimmed
+ */
+void
+LClipp(char *str)
+{
+   register int i;
+	int len, firstChar;
+    char *str2;
+
+	len = strlen(str);
+
+
+	for (i=0 ; str[i] != '\0' ; i++)
+    {
+		if ( str[i] != ' ' )
+        {
+            firstChar=i;
+            break;
+        }
+    }
+
+	//P4glDebug("first = -%d-%d-\n",firstChar,len);
+	str2 = substr(str, firstChar, len);
+	//P4glDebug("got -%s-\n",str2);
+    //str=strdup(str2);
+    strcpy(str,str2);
+}
 
 /**
  * Upshift the characters of a string.
  *
  * @param str The string to uppered
  */
-void 
+void
 Upshift(char *str)
 {
   register int i;
@@ -285,7 +334,7 @@ CpStr(char *fmt,...)
 }
 
 
-/* 
+/*
  * Finds a takes the basename in a string content.
  * The basename is the name before "." or "[".
  *
@@ -361,13 +410,15 @@ RightPos(char *str,int count, char lookfor)
 	retStr[i] = '\0';
 	return retStr;
     */
+
+    return (short)0;
 }
 
 
 /**
  * Returns the substring of str, starting in start a finishing in finish
  *
- * Note that the returned string is allocated dynamicaly. The free of the 
+ * Note that the returned string is allocated dynamicaly. The free of the
  * memory is calling function responsability.
  *
  * @param str The string to substring.
@@ -396,10 +447,10 @@ substr(char *str, short start, short finish)
  *
  *
  * @param The string to be verified
- * @return - 1 The string is empty 
+ * @return - 1 The string is empty
  *         - 0 Otherwise
  */
-int 
+int
 IsEmpty(char *Str)
 {
    register int i, len;
@@ -418,9 +469,16 @@ IsEmpty(char *Str)
 				return(0);
             }
 */
-		if ( Str[i] != ' ' && Str[i] != '\t' && Str[i] != '\0' )
-				return(1);
+		if ( Str[i] != ' ' && Str[i] != '\t' && Str[i] != '\0' ) {
+				// this char is not space,tab or terminator, so it must
+                //be something in this striong - return false
+				return(0);
+        }
+
+
 
 	}
-	return(0);
+	//we found nothing except maybe spaces,tabs and terminator, string is empty,
+    //return true
+	return(1);
 }

@@ -4,7 +4,7 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Id: Makefile.in,v 1.8 2003-11-17 06:10:26 afalout Exp $
+# $Id: Makefile.in,v 1.9 2003-11-20 10:51:49 afalout Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
 #
@@ -34,6 +34,8 @@ A4GL_SQLTYPE=esql
 A4GL_LEXTYPE=C
 A4GL_LEXDIALECT=INFORMIX
 export A4GL_SQLTYPE A4GL_LEXTYPE A4GL_LEXDIALECT
+
+.PRECIOUS : %.sch maxdev.sch p4gl_synt.c
 
 #  ============================================================================
 #  Compilation of all programs
@@ -124,9 +126,10 @@ p4glpp: $(P4GLPPOBJ)
 	fgllink -O -o $@ $*.42m /usr/fgl2c/lib/libfgl4js.42x
 
 #Create 4Js databas schema file
-PRECIOUS : %.sch maxdev.sch
-%.sch:
-	fglschema $*
+#%.sch:
+#	fglschema $*    --- does not work !?
+maxdev.sch:
+	fglschema maxdev
 
 # Querix
 %.4qe: %.4gl
@@ -191,11 +194,17 @@ deinstall:
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
+
+run.loadform:
+	@export A4GL_SQLTYPE=esql; export A4GL_UI=TUI; ./loadform.4ae interactive
+
 #  ==========================================================================
 #  Cleaning of all the garbage
 #  ==========================================================================
 clean:
 	${RM} *.o ${ALL} lex.yy.c y.tab.h a.out core y.output sqexplain.out \
-	*.4go *.4gi *.4ge *.a  InsertP4glRep.c
+	*.4go *.4gi *.4ge *.a  InsertP4glRep.c \
+	*.bak *.42m *.42r *.4gi *.4ae *.4qe loadform.h *.warn *.glb\
+    loadform.c *.qo  *.sch *.err *.ao mkf.c mkf.h
 
 

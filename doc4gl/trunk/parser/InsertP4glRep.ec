@@ -118,6 +118,10 @@ static void deleteModule(idPackage,moduleName)
   exec sql delete from p4gl_function
     where id_package = :idPackage and module_name = :moduleName;
 
+  StatDesc = "Delete p4gl_module_prog";
+  exec sql delete from p4gl_module_prog
+    where id_package = :idPackage and module_name = :moduleName;
+
   StatDesc = "Delete p4gl_module";
   exec sql delete from p4gl_module
     where id_package = :idPackage and module_name = :moduleName;
@@ -269,16 +273,16 @@ static void insertFunctionProcess(int idxFunction)
     return;
 
   StatDesc = "insert p4gl_fun_process";
-  P4glDebug("%s\n",StatDesc);
+  //P4glDebug("%s\n",StatDesc);
 
   idPackage    = P4glCb.package;
   moduleName   = P4glCb.module;
   functionName = FUNCAO(idxFunction).name;
   for ( i = 0 ; i < FUNCAO(idxFunction).parsedDoc->processIdx ; i++ )
   {
-  P4glDebug("1%s\n",StatDesc);
 	idProcess = FUNCAO(idxFunction).parsedDoc->processCode[i];
-  P4glDebug("idProcess %s\n",idProcess);
+    RClipp(idProcess);
+  P4glDebug("idProcess -%s-\n",idProcess);
 	if ( isValidProcess(idProcess) != 0 )
     {
       if ( !P4glCb.insertProcess )
@@ -383,7 +387,7 @@ int idxFunction;
   {
     var_name = FUNCAO(idxFunction).parametros->nome[i];
     dataType = getParameterDataType(idxFunction,var_name);
- 
+
     exec sql insert into p4gl_fun_parameter (
         id_package,module_name, function_name,
         item_num,var_name,data_type
@@ -477,6 +481,39 @@ static void insertFunctionTodos(int idxFunction)
 }
 
 /**
+ * Insert the xxx loaded in abstract table to the repository.
+ *
+ * @param idxFunction Index of the function in the symbol table
+ */
+/* NOT NEEDED
+static void insertFunctionTablesUsageComments(int idxFunction)
+{
+  exec sql begin declare section;
+    char *idPackage;
+    char *moduleName;
+    char *functionName;
+    char *comments;
+    int  i;
+  exec sql end declare section;
+
+  if ( FUNCAO(idxFunction).parsedDoc == (Comment *)0)
+    return;
+
+  StatDesc = "insert p4gl_fun_todo";
+  idPackage    = P4glCb.package;
+  moduleName   = P4glCb.module;
+  functionName = FUNCAO(idxFunction).name;
+  // Aceder aos comentários da função caso existam
+  for (i = 0 ; i <= FUNCAO(idxFunction).parsedDoc->tableIdx ; i++ )
+  {
+	comments = FUNCAO(idxFunction).parsedDoc->tableList[i]->tableName;
+	P4glDebug("Storing table comment %s\n",comments);
+  }
+}
+*/
+
+
+/**
  * Insert all table usage (database tables referenced in this function).
  * The table(s) usage in a function could be extracted by the parser (in
  * explicit/static SQL statement) or by \@table tag (when using dynamic/prepred SQL).
@@ -516,6 +553,14 @@ static void insertTablesUsage(int idxFunction)
     TableUsage *tableUsage;
     tableUsage = getFunctionTableUsage(function,i);
     tableName = tableUsage->tableName;
+
+	//P4glDebug("table -%s-\n",tableName);
+
+    RClipp(tableName);
+    LClipp(tableName);
+
+	//P4glDebug("table -%s-\n",tableName);
+
     switch (tableUsage->operation)
     {
       case SQL_SELECT:
@@ -612,6 +657,9 @@ static void insertTablesUsage(int idxFunction)
             and module_name = :moduleName;
 
 	//P4glDebug("Got process for function %s as %s\n",functionName,id_process);
+
+    RClipp(id_process);
+
 
 	if (IsEmpty (id_process))
     {
@@ -740,6 +788,7 @@ static void insertFunction(int idxFunction)
   insertFunctionProcess(idxFunction);
   insertFunctionTodos(idxFunction);
   insertTablesUsage(idxFunction);
+  //not needed insertFunctionTablesUsageComments(idxFunction);
 
 /* TODO - insert in p4gl_globals_usage */
 
