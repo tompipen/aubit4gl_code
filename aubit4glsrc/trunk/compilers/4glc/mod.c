@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.196 2005-02-11 17:54:11 mikeaubury Exp $
+# $Id: mod.c,v 1.197 2005-02-16 13:19:38 mikeaubury Exp $
 #
 */
 
@@ -1545,9 +1545,12 @@ pushValidateAllTableColumns (char *tableName)
   char *ccol;
 
   A4GL_debug ("pushValidateAllTableColumns()");
-  /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
+
+
   A4GL_debug ("Calling get_columns : %s\n", A4GL_null_as_null(tableName));
+
   rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
+
   A4GL_debug ("rval = %d", rval);
   if (rval == 0 && tableName)
     {
@@ -1562,12 +1565,7 @@ pushValidateAllTableColumns (char *tableName)
     {
       colname[0] = 0;
 
-      /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
       rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-      A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
-      A4GL_debug ("next column for table '%s' is '%s'", A4GL_null_as_null(tableName), A4GL_null_as_null(ccol));
-
-      strcpy (colname, ccol);
 
       /*
          warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
@@ -1577,17 +1575,14 @@ pushValidateAllTableColumns (char *tableName)
       if (rval == 0)
 	break;
 
-      /*sprintf (cdtype, "%d", idtype & 15);*/
-      /*sprintf (csize, "%d", isize);*/
-      /*A4GL_debug ("%d %d", idtype, isize);*/
-      /*A4GL_debug ("---> %s %s", cdtype, csize);*/
-      /*A4GL_debug ("A4GLSQL_read_columns: Pushing %s %s %s", colname, cdtype,*/
-	     /*csize);*/
+      strcpy (colname, ccol);
+
+      A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
+      A4GL_debug ("next column for table '%s' is '%s'", A4GL_null_as_null(tableName), A4GL_null_as_null(ccol));
+
       trim_spaces (colname);
       push_validate_column (tableName,colname);
 
-      /*push_name (colname, 0);*/
-      /*push_type (rettype (cdtype), csize, 0);*/
     }
   A4GLSQL_end_get_columns ();
   return 0;

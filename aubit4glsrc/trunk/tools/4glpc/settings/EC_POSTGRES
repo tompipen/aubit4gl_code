@@ -1,7 +1,7 @@
 A4GL_EC_EXT=.cpc
 A4GL_ESQL_TO_C_FIRST=Y
 A4GL_C_COMP=gcc 
-A4GL_EC_COMP=ecpg -t
+A4GL_EC_COMP=ecpg -t -C INFORMIX
 A4GL_PREC_COMP=ecpg_wrap -t -E
 A4GL_C_OPTS=-I/usr/local/pgsql/include
 A4GL_LINK=gcc 
