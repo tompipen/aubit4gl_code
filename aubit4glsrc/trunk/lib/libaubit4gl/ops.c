@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.67 2005-01-11 15:05:56 mikeaubury Exp $
+# $Id: ops.c,v 1.68 2005-01-17 13:35:40 mikeaubury Exp $
 #
 */
 
@@ -200,7 +200,7 @@ void A4GL_smfloat_smfloat_ops (int op)
 {
   float a;
   float b;
-  float c;
+  double dc;
   float d;
 
   b = A4GL_pop_float ();
@@ -255,11 +255,9 @@ A4GL_debug("%f %f\n",a,b);
 	  return;
 	}
 
-      c = a;
-
-      for (d = 1; d < b; d++)
-	c *= a;
-      A4GL_push_float (c);
+      dc = a;
+      for (d = 1; d < b; d++) dc *= (double) a;
+      A4GL_push_double (dc);
       return;
 
     case OP_LESS_THAN:
@@ -296,7 +294,7 @@ void A4GL_float_smfloat_ops (int op)
 {
   double a;
   float b;
-  float c;
+  double c;
   float d;
 
   b = A4GL_pop_float ();
@@ -392,7 +390,7 @@ void A4GL_smfloat_float_ops (int op)
 {
   float a;
   double b;
-  float c;
+  double c;
   float d;
 
   b = A4GL_pop_double ();
@@ -450,7 +448,7 @@ A4GL_debug("%f %f\n",a,b);
       c = a;
 
       for (d = 1; d < b; d++)
-	c *= a;
+	c *= (double)a;
       A4GL_push_double (c);
       return;
 
@@ -1144,6 +1142,7 @@ A4GL_int_int_ops (int op)
   long a;
   long b;
   long c;
+  double dc;
   long d;
 
   b = A4GL_pop_long ();
@@ -1204,10 +1203,15 @@ A4GL_int_int_ops (int op)
 	  A4GL_push_long (a);
 	  return;
 	}
-      c = a;
-      for (d = 1; d < b; d++)
-	c *= a;
-      A4GL_push_long (c);
+
+      dc = a;
+	c=a;
+      for (d = 1; d < b; d++) {
+	dc *= a;
+	c*=a;
+	}
+	if ((c>0 && c<1000000000) || (c<0 && c>-1000000000 )) A4GL_push_long(c);
+	else A4GL_push_double (dc);
       return;
 
     case OP_LESS_THAN:
@@ -1845,7 +1849,7 @@ A4GL_in_in_ops (int op)
       return;
 
     case OP_POWER:
-      A4GL_exitwith ("You can't raise the A4GL_power of intervals...");
+      A4GL_exitwith ("You can't raise the power of intervals...");
       return;
 
     case OP_LESS_THAN:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.41 2005-01-11 15:04:13 mikeaubury Exp $
+# $Id: helper.c,v 1.42 2005-01-17 13:35:40 mikeaubury Exp $
 #
 */
 
@@ -127,6 +127,7 @@ LIBPRIVATE char *a_get_info_form[] = {
   "FieldSize%", //15
   "FieldBytes%",
   "FieldDets%",
+  "Screens",
   0
 };
 
@@ -366,6 +367,9 @@ int_get_info_form (char *ptr, char *info)
       break;
 
 
+    case 19: // Screens
+      		A4GL_push_long (p->fileform->snames.snames_len);
+		break;
 
     case 7: // ATTRIBUTECOUNT
       A4GL_push_int (p->fileform->attributes.attributes_len);

@@ -124,7 +124,7 @@ A4GL_read_fields void* formdets -> int
 /* int A4GL_read_metrics (void* formdets)*/
 A4GL_read_metrics void* formdets -> int
 /* int aclfgl_set_page (int n)*/
-aclfgl_set_page int n -> int
+aclfgl_a4gl_set_page int n -> int
 /* int aclfgl_a4gl_get_page (int n)*/
 aclfgl_a4gl_get_page int n -> int
 /* int aclfgl_a4gl_run_gui (int nargs)*/

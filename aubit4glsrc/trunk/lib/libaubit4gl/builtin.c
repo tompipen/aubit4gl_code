@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.73 2005-01-11 15:04:13 mikeaubury Exp $
+# $Id: builtin.c,v 1.74 2005-01-17 13:35:40 mikeaubury Exp $
 #
 */
 
@@ -1277,4 +1277,9 @@ int aclfgl_fgl_dialog_setbuffer(int n) {
 int aclfgl_fgl_buffertouched(int n)  {
 // Returns  INTEGER  TRUE if the last field has been modified.
 	return 0;
+}
+
+
+A4GL_strstartswith(char *s,char *w) {
+	return (strncmp(s,w,strlen(w))==0);
 }

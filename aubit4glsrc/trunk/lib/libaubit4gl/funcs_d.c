@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.51 2005-01-11 15:04:13 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.52 2005-01-17 13:35:40 mikeaubury Exp $
 #
 */
 
@@ -626,6 +626,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 	}
     }
   variable_called_b = 0;
+A4GL_debug("str=%s",str);
 
   for (a = 0; a < strlen (fm2); a++)
     {
@@ -658,6 +659,7 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
   ptr = (char *) rindex (str, '<');
 #endif
 
+A4GL_debug("str=%s",str);
   // for any unused leading "<" or "-<" format chars,
   // shift the output to the left
   if (ptr)
@@ -679,10 +681,19 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
       strcpy (str, buff);
     }
 
+A4GL_debug("str=%s",str);
    for (a=0;a<strlen(str);a++) {
 	if (str[a]==0x01) {
+
 		if (a==0) str[a]=' ';
 		else str[a]=str[a-1];
+
+
+		if (a==1) {
+			if (str[a-1]=='$' ) { str[a-1]=' '; }
+			if (str[a-1]=='-' ) { str[a-1]=' '; }
+		}
+
 		if (a>=2) {
 			if (str[a-1]=='$' && str[a-2]!='$') { str[a-1]=' '; }
 			if (str[a-1]=='-' && str[a-2]!='-') { str[a-1]=' '; }
