@@ -1331,6 +1331,11 @@ foreach c_gettrigs into lv_trigname
 	let lv_cnt=lv_cnt+1
 end foreach
 
+if lv_cnt=1 then
+	error "No triggers defined."
+	return 0
+end if
+
 call set_pick_cnt(lv_cnt-1)
 let int_flag=false
 
