@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.14 2004-08-16 13:48:29 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.15 2004-09-18 18:32:18 mikeaubury Exp $
 #
 */
 
@@ -295,6 +295,10 @@ if (*infx==0) indicat=-1;
 void A4GL_copy_interval(void *infxv, void *a4glv,int indicat,int size,int mode) 
 {
 intrvl_t *infx; struct A4GLSQL_dtime *a4gl;
+if (mode=='i'||mode=='o') ; 
+else {
+	A4GL_assertion(1,"Mode should be 'o' or 'i'");
+}
 	infx=infxv;
 	a4gl=a4glv;
 
@@ -302,7 +306,7 @@ intrvl_t *infx; struct A4GLSQL_dtime *a4gl;
 			char *ptr;
 			char buff[255];
 			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {rsetnull(CDTIMETYPE,(void *)infx);return;}
-			A4GL_push_dtime(a4gl);
+			A4GL_push_interval(a4gl);
 			ptr=A4GL_char_pop();
 			if (size<0||size>107) {
 			A4GL_debug("DATETIME OUT OF RANGE");
@@ -343,7 +347,7 @@ intrvl_t *infx; struct A4GLSQL_dtime *a4gl;
 
 
 	// Debugging stuff only
-			A4GL_push_ival(a4gl);
+			A4GL_push_interval(a4gl);
 			ptr=A4GL_char_pop();
 		A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
 		A4GL_debug("                Informix=%s\n",buff);
