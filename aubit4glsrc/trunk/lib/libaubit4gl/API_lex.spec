@@ -67,7 +67,7 @@ print_continue_block int n,int brace -> void
 print_end_block int n -> void
 
 /* void print_continue_loop (int n) */
-print_continue_loop int n -> void
+print_continue_loop int n,char* s -> void
 
 /* void print_exit_loop (int type, int n) */
 print_exit_loop int type,int n -> void

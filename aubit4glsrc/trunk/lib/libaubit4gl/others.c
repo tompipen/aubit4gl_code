@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.19 2002-11-23 06:05:35 afalout Exp $
+# $Id: others.c,v 1.20 2002-12-16 16:46:06 mikeaubury Exp $
 #
 */
 
@@ -103,6 +103,8 @@ aclfgl_fgl_lastkey(int _np)
   if (_np!=0) { fgl_error(-3000,"",0,0);}
 
   _r=get_lastkey();
+debug("TST1 Lastkey=%d",_r);
+
   push_long(_r);
   return 1;
 }
@@ -116,7 +118,10 @@ aclfgl_fgl_lastkey(int _np)
 int
 aclfgl_fgl_keyval(int _np)
 {
-  return fgl_keyval(_np);
+  int a;
+  a=fgl_keyval(_np);
+  debug("TST1 Got %d\n",a);
+  return a;
 }
 
 /**
@@ -146,8 +151,11 @@ fgl_keyval(int _np)
 	}
 
 	v0=char_pop();
+	debug("TST1 - v0=%s",v0);
 
-	push_int(key_val(v0));
+	_r=key_val(v0);
+	debug("TST1 - r=%d\n",_r);
+	push_int(_r);
 	acl_free(v0);
 	return 1;
 }

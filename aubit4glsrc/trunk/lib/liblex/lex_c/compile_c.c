@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.39 2002-11-10 06:45:19 afalout Exp $
+# $Id: compile_c.c,v 1.40 2002-12-16 16:46:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -641,8 +641,11 @@ print_end_block (int n)
  * @param n The loop number
  */
 void
-print_continue_loop (int n)
+print_continue_loop (int n,char *cmd_type)
 {
+if (strcmp(cmd_type,"INPUT")==0||strcmp(cmd_type,"CONSTRUCT")==0) {
+	printc("_fld_dr=-99;\n");
+}
   printc ("goto CONTINUE_BLOCK_%d;", n);
 }
 
@@ -2482,6 +2485,8 @@ generate_or (char *out, char *in1, char *in2)
   sprintf (out, "%s||%s", in1, in2);
 }
 
+int isin_command (char *cmd_type);
+
 /**
  * Generate the C code implementation of the NEXT FIELD command for INPUT 4gl
  * statement.
@@ -2494,6 +2499,11 @@ void
 print_next_field (char *s)
 {
   printc ("req_field(&_inp_io,%s);\n", s);
+if (isin_command("INPUT")>isin_command("CONSTRUCT")) {
+  continue_loop("INPUT");
+} else {
+  continue_loop("CONSTRUCT");
+}
 }
 
 /* ***************************************************************************/

@@ -30,15 +30,16 @@ key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
 	| 	INTERRUPT /* {strcpy($<str>$,"interrupt");}*/
 	| 	ACCEPT /* {strcpy($<str>$,"accept");}*/
 	|       SINGLE_KEY {strcpy($<str>$,$<str>1);}
-        |       ESCAPE {strcpy($<str>$,$<str>1);}
-        |       UP {strcpy($<str>$,$<str>1);}
-        |       DOWN {strcpy($<str>$,$<str>1);}
-        |       RETURN {strcpy($<str>$,$<str>1);}
-        |       TAB {strcpy($<str>$,$<str>1);}
-        |       LEFT {strcpy($<str>$,$<str>1);}
-        |       RIGHT {strcpy($<str>$,$<str>1);}     
-        |       NEXTPAGE {strcpy($<str>$,$<str>1);}     
-        |       PREVPAGE {strcpy($<str>$,$<str>1);}     
+        |       ESCAPE {strcpy($<str>$,"escape");}
+        |       UP {strcpy($<str>$,"up");}
+        |       DOWN {strcpy($<str>$,"down");}
+        |       RETURN {strcpy($<str>$,"return");}
+        |       DELETE {strcpy($<str>$,"delete");}
+        |       TAB {strcpy($<str>$,"tab");}
+        |       LEFT {strcpy($<str>$,"left");}
+        |       RIGHT {strcpy($<str>$,"right");}     
+        |       NEXTPAGE {strcpy($<str>$,"nextpage");}     
+        |       PREVPAGE {strcpy($<str>$,"prevpage");}     
 	|       CHAR_VALUE { rm_quotes($<str>1); strcpy($<str>$,$<str>1); }
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.87 2002-10-22 06:43:35 afalout Exp $
+# $Id: mod.c,v 1.88 2002-12-16 16:42:35 mikeaubury Exp $
 #
 */
 
@@ -119,6 +119,8 @@ static int 	const_cnt = 0;
 int 		rep_type = 0; /** The report type */
 int 		last_var_found = -1;
 int 		var_hdr_finished;
+int isin_command (char *cmd_type);
+
 
 struct s_constants 			/** Array of constants defined in some scope */
 {
@@ -422,8 +424,7 @@ inmod (void)
  *   - 0 : We are NOT in command type
  *   - 1 : We are in command type
  */
-static int
-isin_command (char *cmd_type)
+int isin_command (char *cmd_type)
 {
   int z;
   if (ccnt == 0)
@@ -439,7 +440,7 @@ isin_command (char *cmd_type)
     if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
     {
 	    debug ("OK\n");
-	    return 1;
+	    return z+1;
 	  }
   }
   return 0;
@@ -2571,7 +2572,7 @@ continue_loop (char *cmd_type)
     debug ("/* wanted to continue a %s but wasnt in one! */", cmd_type);
     return;
   }
-  print_continue_loop (command_stack[a].block_no);
+  print_continue_loop (command_stack[a].block_no,cmd_type);
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.22 2002-10-22 06:43:37 afalout Exp $
+# $Id: compile_perl.c,v 1.23 2002-12-16 16:47:53 mikeaubury Exp $
 #
 */
 
@@ -574,7 +574,7 @@ print_end_block (int n)
  * @return
  */
 void
-print_continue_loop (int n)
+print_continue_loop (int n,char *s)
 {
   printc ("goto CONTINUE_BLOCK_%d;", n);
 }
