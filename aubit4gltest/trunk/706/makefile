@@ -174,7 +174,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -183,8 +183,11 @@ obsolete_test:
 
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
+#Not shure if this is supposed to be compatible or not, but it fails with 
+#all compilers I have here (Ifx, 4Js, Querix) Maybe a recent addition to 
+#syntax?
 compat_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -204,7 +207,7 @@ unknown_test:
 ################
 #Specify minimum version of Informix compiler this test can be executed with
 need_ifx_version:
-	@echo "0"
+	@echo "7.31"
 
 ################
 #If database this test runs against MUST have transactions support, set to "1"

@@ -319,7 +319,10 @@ for a in $FLAGS; do
 	-stop)          #stop on error
 		ERROR_STOP=1
 	    ;;
-
+	-showerr) 		#Show compile errors in 4gl code for given test
+		SHOW_4GL_ERROR=1
+		;;
+		
     -nodb)          #skip db dependent tests
 		NO_DB=1
 	    ;;
@@ -1192,6 +1195,7 @@ for a in $FLAGS; do
 		echo " -update     Update tests souce code from CVS"
 		echo " -commit     commit changes to tests source code to CVS"
 		echo " -certify	x  flage the test as certified in the makefile"
+		echo " -showerr x  Show compile errors in 4gl code for given test"
 		echo ""
 		if test "$HELP_ALL" != "1"; then
 			exit 0
@@ -1248,6 +1252,22 @@ for a in $FLAGS; do
 		;;
 		
 	*)              #everything else should be a test number
+		if test "$SHOW_4GL_ERROR" = "1"; then 
+			#echo "a=$a"
+			x=`eval find $CURR_DIR/$a -name \'*.err\'`
+			#echo $x
+			#exit
+			if test "$x" = ""; then
+				echo "No .err files found in test $a"
+			else
+				echo "-----------------------------------------------------------------------"			
+				grep -n -B 5 "^|" $x | head -20
+				echo "-----------------------------------------------------------------------"
+				echo "Above error(s) occured in file: `basename $x`"
+			fi
+			exit
+		fi
+	
 		if test "$STOP_AFTER" != ""; then
 			STOP_AFTER_NUM=$a
 		elif test "$TEST_RANGE" = "1"; then
