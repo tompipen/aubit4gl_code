@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.34 2004-03-16 10:45:25 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.35 2004-03-18 22:47:27 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
@@ -67,8 +67,11 @@ int A4GL_delete_event (GtkWidget * widget, GdkEvent * event, gpointer data);
 int A4GL_destroy_event (GtkWidget * widget, gpointer data);
 int A4GL_keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
 void A4GL_run_gtkrc(void) ;
-void
-A4GL_decode_gui_winname (char *name);
+void A4GL_decode_gui_winname (char *name);
+int menu_callback (gpointer data);
+int A4GL_LL_hide_h_menu(ACL_Menu *menu);
+int A4GL_LL_disp_h_menu( ACL_Menu *menu);
+int A4GL_LL_menu_loop(ACL_Menu *menu);
 
 #define KEY_BUFFER_SIZE 256 
 int keybuffer[KEY_BUFFER_SIZE];
@@ -1125,7 +1128,8 @@ int A4GL_LL_set_field_opts(void* field,int oopt) {
     if (oopt & AUBIT_O_ACTIVE || oopt & AUBIT_O_EDIT) {
 		A4GL_gui_set_active (field, 1);
     } else {
- 		if (gtk_object_get_data(GTK_OBJECT(field),"MF_ISLABEL")) {
+ 		if (gtk_object_get_data(GTK_OBJECT(field),"MF_ISLABEL")
+                || gtk_object_get_data(GTK_OBJECT(field),"DISPLAY_LABEL")) {
 			// Labels are always active :)
 			A4GL_gui_set_active (field, 1);
 		} else {
@@ -2044,38 +2048,39 @@ return form->curcol;
 
 
 void* A4GL_LL_make_field(void *prop,int frow,int fcol,int rows,int cols) {
-struct struct_scr_field *fprop;
-void *widget;
-char *widget_str;
-char *config_str;
-fprop=prop;
-if (fprop) {
-//printf("MAKE FIELD %d %d %d %d    %s %s\n",frow,fcol,rows,cols,fprop->tabname,fprop->colname);
-//printf("Comments=%s\n",A4GL_decode_str_fprop (fprop, FA_S_COMMENTS));
-widget_str=A4GL_decode_str_fprop (fprop, FA_S_WIDGET);
-if (strlen(widget_str)==0) {
-	widget_str="ENTRY";
-}
-//printf("Widget=  %s\n",widget_str);
+  struct struct_scr_field *fprop;
+  void *widget;
+  char *widget_str;
+  char *config_str;
+  fprop=prop;
 
-config_str=A4GL_decode_str_fprop(fprop,FA_S_CONFIG);
-} else {
-	widget_str="ENTRY";
-	config_str="";
-}
+  if (fprop) {
+    widget_str=A4GL_decode_str_fprop (fprop, FA_S_WIDGET);
+    if (strlen(widget_str)==0)
+      widget_str="ENTRY";
+    config_str=A4GL_decode_str_fprop(fprop,FA_S_CONFIG);
+  } else {
+    widget_str="ENTRY";
+    config_str="";
+  }
 
-widget=(void *)A4GL_make_widget (widget_str, config_str, cols);
-printf("Disabling widget\n");
-A4GL_LL_set_field_opts (widget, 0);
+  widget=(void *)A4GL_make_widget (widget_str, config_str, cols);
+  A4GL_LL_set_field_opts (widget, 0);
 
-gtk_object_set_data(GTK_OBJECT(widget),"Attribute",(void *)fprop);
-gtk_object_set_data(GTK_OBJECT(widget),"MF_FROW",(void *)frow);
-gtk_object_set_data(GTK_OBJECT(widget),"MF_FCOL",(void *)fcol);
-gtk_object_set_data(GTK_OBJECT(widget),"MF_ROWS",(void *)rows);
-gtk_object_set_data(GTK_OBJECT(widget),"MF_COLS",(void *)cols);
-gtk_object_set_data(GTK_OBJECT(widget),"MF_ISLABEL",(void *)0);
-return widget;
+  gtk_object_set_data(GTK_OBJECT(widget),"Attribute",(void *)fprop);
+  gtk_object_set_data(GTK_OBJECT(widget),"MF_FROW",(void *)frow);
+  gtk_object_set_data(GTK_OBJECT(widget),"MF_FCOL",(void *)fcol);
+  gtk_object_set_data(GTK_OBJECT(widget),"MF_ROWS",(void *)rows);
+  gtk_object_set_data(GTK_OBJECT(widget),"MF_COLS",(void *)cols);
+  gtk_object_set_data(GTK_OBJECT(widget),"MF_ISLABEL",(void *)0);
 
+  if(strcasecmp("LABEL", widget_str)==0) {
+    gtk_object_set_data(GTK_OBJECT(widget),"DISPLAY_LABEL",(void *)1);
+    if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML")))
+      gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
+  }
+
+  return widget;
 }
 
 void* A4GL_LL_make_label(int frow,int fcol,char* label) {
@@ -2087,7 +2092,6 @@ if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
   A4GL_debug("using PANGO ML for Label '%s'\n",label);
   gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
 }
-gtk_label_set_use_markup(GTK_LABEL(widget), A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML")));    
 g_free(label_utf);
 if (strcmp(label,"[")==0) return 0;
 if (strcmp(label,"]")==0) return 0;
@@ -2877,10 +2881,10 @@ int A4GL_LL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
 static int menu_response=-1;
 
 int menu_callback (gpointer data) {
-int nbutton;
+//int nbutton;
 	//A4GL_debug("Widget=%p data=%d\n",widget,data);
 	//nbutton=(int)gtk_object_get_data(GTK_OBJECT(widget),"BUTTON");
-	menu_response=data;
+	menu_response=(int)data;
 	return TRUE;
 }
 
