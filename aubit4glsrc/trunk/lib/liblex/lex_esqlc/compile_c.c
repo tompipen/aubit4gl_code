@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.131 2004-02-06 10:44:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.132 2004-02-09 07:25:20 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.131 2004-02-06 10:44:19 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.132 2004-02-09 07:25:20 afalout Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -3456,7 +3456,8 @@ static int rep_print_code=0;
  
   if (semi==0) semi_i=0; else semi_i=1;
   if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
-	printc("{int _rpblock;\n_rpblock=A4GL_push_report_print(&rep,_module_name,%d,'%c',\"%s\",%d);",yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
+	printc("{int _rpblock;\n_rpblock=A4GL_push_report_print(&rep,_module_name,%d,'%c',\"%s\",%d);",
+	yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
   }
   if (type == 0)
     printc ("A4GL_%srep_print(&rep,0,%s,0);\n", ispdf (), semi);

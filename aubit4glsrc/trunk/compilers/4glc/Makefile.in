@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.76 2004-02-06 22:50:16 afalout Exp $
+# $Id: Makefile.in,v 1.77 2004-02-09 07:25:20 afalout Exp $
 #
 
 ROOT		=../..
@@ -198,6 +198,9 @@ else
 	${CP} ${ROOT}/tools/no_yacc/cygwin/compilers/4glc/mk_states* .
 endif
 
+mk_states_c:
+	cd ${ROOT}; config.status --file compilers/4glc/mk_states_c
+
 ## ==================================================================
 ##                            Dependencies
 ## ==================================================================
@@ -241,8 +244,9 @@ show:
 clean: clean.rules.generated clean.rules
 	${RM} *${SO_EXT} *.o *.err *.a *.exe *.bak .*.bak .\#* \
 	*.log *.dll *.dll.a *.def wantkw.c wantkw.h mk_states_1.h mk_states.h \
-	mk_states.c API_lex.c API_lex.h mk_states_c
-
+	mk_states.c API_lex.c API_lex.h
+#WARNING! do NOT clean mk_states_c - thsi is an autoconf generated file
+#and will get cleaned only in make.distclean target of root makefile
 	
 clean.rules.generated:
 	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule \
