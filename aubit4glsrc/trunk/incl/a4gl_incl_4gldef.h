@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.27 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.28 2003-02-23 02:32:38 afalout Exp $
 */
 
 /**
@@ -227,13 +227,13 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 #define aclfgl_startlog(n)  A4GL_startlog(__FILE__,__LINE__,n);
 
 	//int     aclfgl_errorlog 	(int n);
-	int     A4GL_errorlog 	(char *s,int l,int n);
-	int     A4GL_startlog 	(char *s,int l,int n);
+	int     A4GL_errorlog 		(char *s,int l,int n);
+	int     A4GL_startlog 		(char *s,int l,int n);
 
 	int     aclfgl_showhelp 	(int helpnumber);
 	int 	aclfgl_fgl_getenv 	(int nargs);
 	int		aclfgl_mdy			(int nargs);
-        char *char_pop(void );
+	char *	char_pop			(void );
 
 
 	/* ======================= From buildtin_d.c ====================*/
@@ -265,11 +265,11 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 	int     aclfgl_get_page		(int nargs);
 
     /* ======================= builtin.c  ================== */
-	void aclfgli_current(int a,int b);
-	void push_current(int a, int b); /* stack.c */
-	char *aclfgli_str_to_id(char *name);
-	int aclfgl_ascii(int n);
-	void push_ascii(void); /* stack.c */
+	void 	aclfgli_current		(int a,int b);
+	void 	push_current		(int a, int b); /* stack.c */
+	char *	aclfgli_str_to_id	(char *name);
+	int 	aclfgl_ascii		(int n);
+	void 	push_ascii			(void); /* stack.c */
 
 	//int     aclfgl_set_page		(void);
 	//int     aclfgl_get_page		(void);
@@ -319,7 +319,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
             int page_length;
             int has_first_page;
             char *next_page;
-            char *rep_table; /* database table for aggregate values */
+            char *rep_table; 					/* database table for aggregate values */
             struct BINDING *group_data;
             char output_mode;
             char output_loc[256];
@@ -329,9 +329,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
             int printed_page_no;
             int line_no;
             int col_no;
-                /* was      int (*report)(); */
-                /* int (*report)(void); */ /* report.c:180: too many arguments to function */
-        int (*report)(int a, int b);
+	        int (*report)(int a, int b);
         };
 
         struct pdf_rep_structure {
@@ -340,7 +338,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
             double page_width;
             int has_first_page;
             char *next_page;
-            char *rep_table; /* database table for aggregate values */
+            char *rep_table; 					/* database table for aggregate values */
             struct BINDING *group_data;
             char output_mode;
             char output_loc[256];
@@ -349,14 +347,12 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
             int printed_page_no;
             double line_no;
             double col_no;
-                /* was      int (*report)(); */
-                /* int (*report)(void); */ /* report.c:180: too many arguments to function */
-        int (*report)(int a, int b);
-                char font_name[256];
+	        int (*report)(int a, int b);
+			char font_name[256];
             double font_size;
             int paper_size;
             void *pdf_ptr;
-           int font;
+			int font;
         };
 	#endif
 
@@ -380,10 +376,11 @@ be used in applications which link to the library).
 	    /* for everything except libaubit4gl: */
 
 		#ifndef _SQLCA_DEFINED_
-	        /* _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
-    	     that also define sqlca: */
+	        /*
+			_SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
+    	    that also define sqlca:
+			*/
 			#define _SQLCA_DEFINED_
-			//extern sqlca_struct sqlca; 	/** Sqlca variable */
 	    #endif
 
         extern long status; 			/** 4gl global status variable */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.6 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: compile.c,v 1.7 2003-02-23 02:32:38 afalout Exp $
 #*/
 
 /**
@@ -69,7 +69,7 @@ extern int 	yylineno;
 
 /* -------- unknown --------- */
 char 		gcc_exec[128];
-char 		pass_options[456]="";
+char 		pass_options[1024]="";
 int         clean_aftercomp = 1; /* clean intermediate files after compilation */
 //char 		rm_cmd[10];
 char 		currinfile_dirname[1024]="";   //path to 4gl file we are currently compiling - used when compiling global files
@@ -141,7 +141,7 @@ char ext[128];
 char incl_path[128];
 char l_path[128];
 char l_libs[128];
-char buff[456];
+char buff[1028];
 char all_objects[456];
 char output_object[128];
 static struct option long_options[] =
@@ -516,6 +516,7 @@ static struct option long_options[] =
 gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../lib/lib4glc.dll compile.o dim.o
 gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols  -o invwind.aox cacdwind.ao cashwind.ao centwind.ao creddetl.ao credfunc.ao crhdwind.ao dispgpfunc.ao ientwind.ao inhdwind.ao instwind.ao invdfunc.ao invowind.ao invqwind.ao ishpwind.ao orddfunc.ao orstfunc.ao unapp_pay.ao D:/cygwin/usr/src/aubit/apps/erp/src/utility/glob_GLOBALS.ao  -LD:/cygwin/usr/local/aubit4gl/lib -laubit4gl
 */
+			//NOTE: we are acutally making a Window dll here.
 			//WARNING: libs must be at the end
 			//WARNING: without -L ld on Windows won't find it's own ass!!!! Not even in curren directory!!!
 			sprintf (buff,"%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s",
@@ -580,7 +581,7 @@ static int
 compile_4gl(int compile_object,char a[128],char incl_path[128],int silent,int verbose,char output_object[128])
 {
 int x, ret;
-char buff[456];
+char buff[1028];
 char c[128];
 char *ptr;
 

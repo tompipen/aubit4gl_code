@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.115 2003-02-23 00:05:17 afalout Exp $
+# $Id: Makefile.in,v 1.116 2003-02-23 02:32:13 afalout Exp $
 #
 
 ## ==================================================================
@@ -746,13 +746,13 @@ help.optional:
 
 ####################
 #
-cvs.commit: refresh.all build
+commit: refresh.all build
 	cvs commit
 
 ####################
 #
-cvs.update:
-#remove configure to prevent menaingless merginig
+update:
+#FIXME: remove configure to prevent menaingless merginig
 	cvs update -d
 
 

@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.24 2003-02-22 01:52:21 afalout Exp $
+#	 $Id: footer.mki,v 1.25 2003-02-23 02:32:38 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -297,7 +297,7 @@ plexus:
 #This is an explicit rule - vpath will not be searched - use implicit rule instead?
 #${PROG.4ae}:${AUBIT_DEPS}
 ${PROG.4ae}:${AUBIT_LINK_DEPS}
-	@echo "AUBIT_DEPS:  ${AUBIT_DEPS}"
+#	@echo "AUBIT_DEPS:  ${AUBIT_DEPS}"
 ifeq "$(PROGTYPE)" ".lib" 	#------------------- linking library -----------------------
 ifeq "${A4GL_USE_LD}" "yes" #using ld
 #-fPIC will apparently not work on AIX - we should autoconf this file

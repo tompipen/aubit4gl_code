@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.20 2003-02-22 01:52:20 afalout Exp $
+# $Id: Makefile.in,v 1.21 2003-02-23 02:32:38 afalout Exp $
 #
 
 
@@ -88,12 +88,13 @@ CFLAGS      +=-I.
 
 ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile ${ROOT}/bin/aace_perl ${ROOT}/bin/aace_4gl
 
-ifeq "@HAVE_RPCLIB@" "0"
-	ifeq "${TARGET_OS}" "cygwin"
-        #On Windows unresolved symbols are not alloved at link time, and we have no RPCLIB:
-		ALL=norpclib
-    endif
-endif
+#Should no longer need RPC - using xgen now:
+#ifeq "@HAVE_RPCLIB@" "0"
+#	ifeq "${TARGET_OS}" "cygwin"
+#        #On Windows unresolved symbols are not alloved at link time, and we have no RPCLIB:
+#		ALL=norpclib
+#    endif
+#endif
 
 ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
