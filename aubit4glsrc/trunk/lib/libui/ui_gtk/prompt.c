@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.18 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: prompt.c,v 1.19 2004-01-16 19:03:53 mikeaubury Exp $
 #*/
 
 /**
@@ -216,7 +216,7 @@ A4GL_debug("Prompt mode=%d",c);
  * it is stored.
  */
 int
- UILIB_A4GL_prompt_loop (void *vprompt,int timeout)
+ UILIB_A4GL_prompt_loop (void *vprompt,int timeout,void *vevt)
 {
   GtkWidget *p;
   int action;
@@ -291,7 +291,7 @@ int
 
   if (prompt->charmode)
     {
-      A4GL_push_char (gtk_entry_get_text (GTK_ENTRY (prompt->field)));
+      A4GL_push_char ((char *)gtk_entry_get_text (GTK_ENTRY (prompt->field)));
     }
 
   return -90;

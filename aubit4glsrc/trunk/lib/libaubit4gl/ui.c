@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.12 2003-12-09 11:23:44 mikeaubury Exp $
+# $Id: ui.c,v 1.13 2004-01-16 19:03:52 mikeaubury Exp $
 #
 */
 
@@ -379,16 +379,16 @@ A4GL_debug("Finding display_internal");
  *
  * @todo Describe function
  */
-int A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib, ...)
-{
-  va_list ap;
+//int A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, int scroll,void *evt)
+//{
+  //va_list ap;
   int a;
 
-  va_start (ap, attrib);
-  a=A4GL_disp_arr_ap (disp, ptr, srecname, attrib, &ap);
-  va_end(ap);
-  return a;
-}
+  //va_start (ap, evt);
+  //a=A4GL_disp_arr_v2 (disp, ptr, srecname, attrib, scroll,evt);
+  //va_end(ap);
+  //return a;
+//}
 
 
 /**
@@ -725,6 +725,40 @@ src=A4GL_pop_long();
 A4GL_add_key_mapping(src,dest);
 return 0;
 }
+
+
+
+
+int A4GL_has_event(int a,struct aclfgl_event_list *evt) {
+int n;
+for (n=0;evt[n].event_type;n++) {
+        if (evt[n].event_type==a) return evt[n].block;
+}
+return 0;
+}
+
+
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) {
+int n;
+for (n=0;evt[n].event_type;n++) {
+        if (evt[n].event_type==-90 && evt[n].keycode==a) return evt[n].block;
+}
+return 0;
+}
+
+int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) {
+int n;
+A4GL_debug("Looking for a %d event on field %s HEF",cat,a);
+for (n=0;evt[n].event_type;n++) {
+        if (evt[n].event_type==cat && A4GL_field_name_str_match(evt[n].field,a) ) {
+		A4GL_debug("FOUND ONE HEF");
+		return evt[n].block;
+	}
+}
+return 0;
+}
+
+
 
 /* ============================= EOF ================================ */
 

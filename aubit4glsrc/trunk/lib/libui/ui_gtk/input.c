@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.21 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: input.c,v 1.22 2004-01-16 19:03:53 mikeaubury Exp $
 #*/
 
 /**
@@ -162,14 +162,16 @@ colname_for_field (GtkWidget * w)
  *   -
  */
 int
- UILIB_A4GL_form_loop (void *vs,int init)
+ UILIB_A4GL_form_loop_v2 (void *vs,int init,void *vevt)
 {
   int a;
   int action;
   long lastfieldval;
   struct s_screenio *s;
+  struct aclfgl_event_list *evt;
   A4GL_debug ("Form_loop");
   s = vs;
+  evt=vevt;
 
   A4GL_set_abort (0);
   if (s->mode != MODE_CONSTRUCT)

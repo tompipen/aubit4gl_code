@@ -338,7 +338,7 @@ int b;
                 a--;
         }
   } else {
-        if (a>(UILIB_A4GL_get_curr_height()-UILIB_A4GL_iscurrborder())) {
+        if (a>(UILIB_A4GL_get_curr_height())) {
                 a=1;
         }
   }
@@ -440,9 +440,9 @@ int b;
                 a--;
         }
   } else {
-        if (a>(UILIB_A4GL_get_curr_height()-UILIB_A4GL_iscurrborder())) {
+        if (a>(UILIB_A4GL_get_curr_height())) {
                 a=2;
-                if (a>UILIB_A4GL_get_curr_height()-UILIB_A4GL_iscurrborder()) a=1;
+                if (a>UILIB_A4GL_get_curr_height()) a=1;
         }
   }
 

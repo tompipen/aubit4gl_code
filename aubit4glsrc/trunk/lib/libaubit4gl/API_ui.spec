@@ -43,7 +43,7 @@ A4GL_finish_create_menu void* menu -> void
 /* void  A4GL_disp_h_menu (void* menu)*/
 A4GL_disp_h_menu void* menu -> void
 /* int A4GL_menu_loop (void* menu)*/
-A4GL_menu_loop void* menu -> int
+A4GL_menu_loop_v2 void* menu void* evt -> int
 /* void A4GL_next_option (void* menu, char* nextopt)*/
 A4GL_next_option void* menu char* nextopt -> void
 /* int A4GL_free_menu (void* menu)*/
@@ -67,7 +67,7 @@ A4GL_widget_name_match void* w char* name -> int
 /* int A4GL_gen_field_chars_ap (void* field_list, void* formdets, va_list* ap)*/
 A4GL_gen_field_chars_ap void* field_list void* formdets va_list* ap -> int
 /* int A4GL_form_loop (void* s,int init)*/
-A4GL_form_loop void* s int init -> int
+A4GL_form_loop_v2 void* s int init void* evt -> int
 /* int A4GL_push_constr (void* s)*/
 A4GL_push_constr void* s -> int
 /* int A4GL_set_fields (void* sio)*/
@@ -91,11 +91,11 @@ A4GL_sleep_i -> void
 /* void A4GL_remove_window (char* win_name)*/
 A4GL_remove_window char* win_name -> void
 /* int A4GL_disp_arr_ap (void* disp, void* ptr, char* srecname, int attrib, va_list* ap)*/
-A4GL_disp_arr_ap void* disp void* ptr char* srecname int attrib va_list* ap -> int
+A4GL_disp_arr_v2 void* disp void* ptr char* srecname int attrib int scrollf int scrollw void* evt  -> int
 /* int A4GL_inp_arr (void* disp, int defs, char* srecname, int attrib, int init)*/
-A4GL_inp_arr void* disp int defs char* srecname int attrib int init -> int
+A4GL_inp_arr_v2 void* disp int defs char* srecname int attrib int init void* evt -> int
 /* int A4GL_prompt_loop (void* prompt,int timeout)*/
-A4GL_prompt_loop void* prompt,int timeout -> int
+A4GL_prompt_loop_v2 void* prompt,int timeout void* evt_list -> int
 /* int A4GL_start_prompt (void* prompt, int ap, int c, int h, int af)*/
 A4GL_start_prompt void* prompt int ap int c int h int af -> int
 /* int A4GL_endis_fields_ap (int en_dis, va_list* ap)*/

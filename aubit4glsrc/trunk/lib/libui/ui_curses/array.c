@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.23 2004-01-03 18:43:43 mikeaubury Exp $
+# $Id: array.c,v 1.24 2004-01-16 19:03:52 mikeaubury Exp $
 #*/
 
 /**
@@ -68,6 +68,8 @@ int cmode = 0;
 =====================================================================
 */
 
+
+#define INTERRUPT_HANDLER_NEW_WAY 
 
 static void A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp, int blank, int attr, int arr_line,int first_only,...);
 /*
@@ -365,11 +367,23 @@ draw_arr (arr, -1, arr->arr_line);
 	arr->processed_onkey=0;
         a = A4GL_getch_win ();
         arr->cntrl=-400;
+
+#ifdef INTERRUPT_HANDLER_NEW_WAY
+	if (abort_pressed) a=-100;
+#endif
+
 	arr->processed_onkey=a;
         m_lastkey = a;
         A4GL_debug("Got a as %x (%d)\n",a,a);
+
+#ifdef INTERRUPT_HANDLER_NEW_WAY
+	if (a!=-1 ) return -90;
+	else return 0;
+#else
 	if (a!=-1 && !abort_pressed) return -90;
 	else return 0;
+#endif
+
     }
 
 
@@ -458,19 +472,13 @@ draw_arr (arr, -1, arr->arr_line);
 
 
     case A4GLKEY_PGDN :
-
-if (
-	(arr->arr_line+arr->srec->dim <= arr->no_arr) || 
-
-	( (arr->arr_line+1< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND")))
-)
-
-
+if ( (arr->arr_line+arr->srec->dim <= arr->no_arr) || ( (arr->arr_line+1< arr->no_arr)&&A4GL_isyes(acl_getenv("SCROLLTOEND"))))  {
 
       if (arr->arr_line+1 < arr->no_arr) {
 		arr->cntrl=0-A4GLKEY_PGDN;
 		return -11;
-	} else {
+	}
+} else {
 		A4GL_error_nobox (acl_getenv("ARR_DIR_MSG"), 0);
         }
 	break;
@@ -551,11 +559,13 @@ if (
 
     case -99:
 		A4GL_debug("Maybe ACCEPT");
-		arr->cntrl=-100;
+		arr->cntrl=-101;
 		return -90;
 		break;
 
-    case -100:
+    case -100: return 0;
+
+    case -101:
 	if (!arr->processed_onkey) {
 		A4GL_debug("Is accept!");
       		return 0;			/* ACCEPT */
@@ -580,13 +590,16 @@ if (
  * @param attrib The attributes
  */
 int
- UILIB_A4GL_disp_arr_ap (
-void *dispv, void *ptr, char *srecname, int attrib,
+ UILIB_A4GL_disp_arr_ap_v2 (
+void *dispv, void *ptr, char *srecname, int attrib, void *vevt,
 	     va_list * ap)
 {
   int a;
 struct s_disp_arr *disp;
+struct aclfgl_event_list *evt;
 disp=dispv;
+evt=vevt;
+
   A4GL_chkwin();
   curr_arr_disp = disp;
   A4GL_debug ("In A4GL_disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);
@@ -940,7 +953,7 @@ for (b=0;b<nfields;b++) {
 		attr=f->fileform->records.records_val[srec_no].attribs.attribs_val[b];
       		fno = f->fileform->attributes.attributes_val[attr].field_no;
 		mno=f->fileform->fields.fields_val[fno].metric.metric_val[a];
-		field=f->fileform->metrics.metrics_val[mno].field;
+		field=(void *)f->fileform->metrics.metrics_val[mno].field;
 		A4GL_debug("SCROLL %s [ %d] . %d = %p (%s)",barr,a,b,field,field_buffer(field,0));
 		buff[a][b]=field;
 	}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.80 2004-01-08 13:55:06 mikeaubury Exp $
+# $Id: curslib.c,v 1.81 2004-01-16 19:03:52 mikeaubury Exp $
 #*/
 
 /**
@@ -981,19 +981,19 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
   UILIB_A4GL_cr_window ("aclfgl_promptwin", 1, 255, 255, 1, 255, 0, 255, 255,
 		  (0x0));
   A4GL_push_char ("!");
-START_BLOCK_1:
+//START_BLOCK_1:
   {
     char _p[36];
     int _fld_dr;
     UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0);
     while ((int) GET ("s_prompt", _p, "mode") != 2)
       {
-	_fld_dr = UILIB_A4GL_prompt_loop (&_p, 0);
-      CONTINUE_BLOCK_1:;	/* add_continue */
+	_fld_dr = UILIB_A4GL_prompt_loop (&_p, 0,0);
+      //CONTINUE_BLOCK_1:;	/* add_continue */
       }
     A4GL_pop_var (&lv_cmd, 6553600);
   }
-END_BLOCK_1:;
+//END_BLOCK_1:;
   aclfgli_clr_err_flg ();
   if (int_flag)
     strcpy (lv_cmd, "");
@@ -1588,9 +1588,10 @@ void
  * @todo Describe function
  */
 int
- UILIB_A4GL_menu_loop (void *menuv)
+ UILIB_A4GL_menu_loop_v2 (void *menuv,void *vevt)
 {
   ACL_Menu_Opts *old_option;
+  struct aclfgl_event_list *evt;
   int a;
   int key_pressed;
   ACL_Menu *menu;

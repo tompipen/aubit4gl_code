@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.122 2004-01-16 11:38:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.123 2004-01-16 19:03:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -809,13 +809,13 @@ print_continue_loop (int n, char *cmd_type)
     {
       printc
 	("if (_fld_dr==-95) {A4GL_req_field(&_sio,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n");
-      printc ("_fld_dr= -1;\n");
+      printc ("_fld_dr= -1;_exec_block=-1;\n");
     }
 
   if (strcmp (cmd_type, "INPUTREQ") == 0
       || strcmp (cmd_type, "CONSTRUCTREQ") == 0)
     {
-      printc ("_fld_dr= -1;\n");
+      printc ("_fld_dr= -1;_exec_block=-1;\n");
     }
 
 
@@ -2097,25 +2097,31 @@ print_construct_1 (void)
 void
 print_construct_2 (char *driver)
 {
-  printc ("if (_fld_dr== -95) {\n");
-  printc ("   break;\n}\n");
-  printc ("if (_fld_dr== -197) {\n");
-  printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack();");
-  printc ("   _fld_dr= -97;continue;\n}\n");
+  //printc ("if (_fld_dr== -95) {\n");
+  //printc ("   break;\n}\n");
+  //printc ("if (_fld_dr== -197) {\n");
+  //printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack();");
+  //printc ("   _fld_dr= -97;continue;\n}\n");
 
-  printc ("_fld_dr= %s;_forminit=0;\n", driver);
+  A4GL_add_event(-94,"");
+  printc("if (_exec_block==%d) { break; } /* END OF INPUT */",A4GL_get_nevents());
+  printc("{");
+  print_event_list();
+  printc ("_exec_block = %s;_forminit=0;\n", driver);
+  printc("}");
 
 
-  printc ("if (_fld_dr== -198) { /* After field */\n");
-  printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); ");
-  printc ("   _fld_dr= -98;continue;\n}\n");
-  printc ("if (_fld_dr==0) {\n");
-  printc ("   _fld_dr= -95;continue;\n}\n");
+
+  //printc ("if (_fld_dr== -198) { /* After field */\n");
+  //printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); ");
+  //printc ("   _fld_dr= -98;continue;\n}\n");
+
+
+
+  //printc ("if (_fld_dr==0) {\n");
+  //printc ("   _fld_dr= -95;continue;\n}\n");
+
   add_continue_blockcommand ("CONSTRUCT");
-  if (!A4GL_doing_pcode ())
-    {
-      printc ("A4GL_debug(\"form_loop=%%d\",_fld_dr);");
-    }
   printc ("\n}\n");
   pop_blockcommand ("CONSTRUCT");
   printc (" A4GL_push_constr(&_sio);\n ");
@@ -2148,10 +2154,10 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
   k = print_bind ('i');
   ccc = print_constr ();
   printc
-    ("int _fld_dr= -100;char *fldname;char _sio[%d]; char _inp_io_type='C'; char *_sio_kw=\"s_screenio\";\n", sizeof (struct s_screenio) + 10);
+    ("int _fld_dr= -100;int _exec_block= 0;char *fldname;char _sio[%d]; char _inp_io_type='C'; char *_sio_kw=\"s_screenio\";\n", sizeof (struct s_screenio) + 10);
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
-  printc ("if (_fld_dr== -100) {\n");
+  printc ("if (_exec_block == 0) {\n");
   printc ("SET(\"s_screenio\",_sio,\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",_sio,\"novars\",%d);\n", ccc);
   printc ("SET(\"s_screenio\",_sio,\"attrib\",%d);\n", cattr);
@@ -2193,7 +2199,10 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
 void
 print_befaft_field_1 (char *fieldexpr)
 {
-  printc ("if (%s) {", fieldexpr);
+int n;
+  n=A4GL_get_nevents();
+  //printc ("if (%s) {", fieldexpr);
+  printc ("if (_exec_block==%d) { /* %s */\n", n,fieldexpr);
 }
 
 /**
@@ -2215,8 +2224,11 @@ print_befaft_field_2 (void)
 void
 print_onkey_1 (char *key_list_str)
 {
-  printc ("if (ON_KEY(\"%s\")) {\n", key_list_str);
-  printc ("A4GL_processed_onkey_v2(_sio_kw,_sio);\n");
+  int n;
+  n=A4GL_get_nevents();
+  //printc ("if (ON_KEY(\"%s\")) {\n", key_list_str);
+  printc ("if (_exec_block==%d) { /* %s */\n", n,key_list_str);
+  //printc ("A4GL_processed_onkey_v2(_sio_kw,_sio);\n");
 }
 
 /**
@@ -2353,6 +2365,10 @@ print_display_form (char *s, char *a)
   printc ("A4GL_disp_form(%s,%s);\n", s, a);
 }
 
+
+
+char *l_arrvar; char *l_srec; char *l_scroll; char *l_attr;
+
 /**
  * The parser found the DISPLAY ARRAY instruction in the source file.
  *
@@ -2369,9 +2385,14 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void
 {
   int cnt;
   struct input_array_attribs *ptr_input_attr;
+	l_arrvar=strdup(arrvar);
+	l_srec=strdup(srec);
+	l_attr=strdup(attr);
+	l_scroll=strdup(scroll);
+
   ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printcomment ("/* Display array */\n");
-  printc ("{int _fld_dr;\nchar _sio[%d];char *_sio_kw=\"s_disp_arr\";\n",
+  printc ("{int _fld_dr;int _exec_block= 0;\nchar _sio[%d];char *_sio_kw=\"s_disp_arr\";\n",
 	  sizeof (struct s_disp_arr) + 10);
   cnt = print_arr_bind ('o');
   printc ("SET(\"s_disp_arr\",_sio,\"no_arr\",A4GL_get_count());\n");
@@ -2380,26 +2401,33 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void
   printc ("SET(\"s_disp_arr\",_sio,\"srec\",0);\n");
   printc
     ("SET(\"s_disp_arr\",_sio,\"arr_elemsize\",sizeof(%s[0]));\n", arrvar);
-  printc ("_fld_dr= -1;\n");
-  printc ("while (_fld_dr!=0) {\n");
-  printc ("_fld_dr=A4GL_disp_arr(&_sio,%s,\"%s\",%s,%s);\n", arrvar, srec,
-	  attr, scroll);
+  printc ("_fld_dr= -1;_exec_block=0;\n");
+  printc ("while (1) {\n");
 }
 
 /**
  * Prints the second part of C generated code to implement the INPUT ARRAY
  * 4gl statement.
  *
- * Called when the parser found the rest of INPUT ARRAY (<field_commands> END
+ * Called when the parser found the rest of DISPLAY ARRAY (<field_commands> END
  * INPUT or nothing).
  *
  */
 void
 print_display_array_p2 (void)
 {
+  A4GL_add_event(-94,"");
+  printc("if (_exec_block==%d) { break; } /* END OF INPUT */",A4GL_get_nevents());
+  printc("{");
+  print_event_list();
+  printc ("_exec_block=A4GL_disp_arr_v2(&_sio,%s,\"%s\",%s /* attr */ ,%s /*scroll */,_sio_evt);\n", l_arrvar, l_srec, l_attr, l_scroll);
+	free(l_arrvar);
+	free(l_srec);
+	free(l_attr);
+	free(l_scroll);
+  printc("}");
   printc ("}\n}\n");
   printcomment ("/* end display */\n");
-
 }
 
 /**
@@ -3035,17 +3063,31 @@ print_input_2 (char *s)
   //{
 
 
-  printc ("if (_fld_dr== -95) {/* after input */\n");
-  printc ("   break;\n}\n");
-  printc ("if (_fld_dr== -197) {/* before field */\n");
-  printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack();");
-  printc ("    _fld_dr= -97;continue;\n}\n");
-  printc ("_fld_dr=%s;_forminit=0;\n", s);
-  printc ("if (_fld_dr== -198) {/* after field */\n");
-  printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); ");
-  printc ("   _fld_dr= -98;continue;\n}\n");
-  printc ("if (_fld_dr==0) { /* after input 2 */\n");
-  printc ("   _fld_dr= -95;continue;\n}\n");
+
+  //printc ("if (_fld_dr== -95) {/* after input */\n");
+  //printc ("   break;\n}\n");
+
+
+  //printc ("if (_fld_dr== -197) {/* before field */\n");
+  //printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack();");
+  //printc ("    _fld_dr= -97;continue;\n}\n");
+  A4GL_add_event(-94,"");
+  printc("if (_exec_block==%d) { break; } /* END OF INPUT */",A4GL_get_nevents());
+  printc("{");
+  print_event_list();
+  printc ("_exec_block=%s;_forminit=0;\n", s);
+  printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr=-1;");
+  printc("}");
+
+  //printc ("if (_fld_dr== -198) {/* after field */\n");
+  //printc ("   fldname=A4GL_char_pop(); A4GL_set_infield_from_stack(); ");
+  //printc ("   _fld_dr= -98;continue;\n}\n");
+
+
+  //printc ("if (_fld_dr==0) { /* after input 2 */\n");
+  //printc ("   _fld_dr= -95;continue;\n}\n");
+
+
   add_continue_blockcommand ("INPUT");
   printc ("\n}\n");
   pop_blockcommand ("INPUT");
@@ -3076,8 +3118,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
 {
   int ccc;
   printc
-    ("{int _fld_dr= -100;char *fldname;char _sio[%d]; char _inp_io_type='I';char *_sio_kw=\"s_screenio\";",
-     sizeof (struct s_screenio) + 10);
+    ("{int _fld_dr= -100;int _exec_block= 0;char *fldname;char _sio[%d]; char _inp_io_type='I';char *_sio_kw=\"s_screenio\";", sizeof (struct s_screenio) + 10);
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
@@ -3114,7 +3155,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
     }
   printc
     ("{int _sf; _sf=A4GL_set_fields(&_sio); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
-  printc ("_fld_dr= -1;\n");
+  printc ("_fld_dr= -1;_exec_block=0;\n");
 }
 
 
@@ -3139,12 +3180,12 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   push_blockcommand ("INPUT");
   printc ("*/");
   printcomment ("/* input */\n");
-  printc ("{int _fld_dr= -100;\nchar *fldname;\nint _forminit=1;");
+  printc ("{int _fld_dr= -100;int _exec_block= 0;\nchar *fldname;\nint _forminit=1;");
   printc ("char _sio[%d];char _inp_io_type='A';char *_sio_kw=\"s_inp_arr\";\n",
 	  sizeof (struct s_inp_arr) + 10);
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
-  printc ("if (_fld_dr== -100) {\n");
+  printc ("if (_exec_block==0) {\n");
   printc ("SET(\"s_inp_arr\",_sio,\"no_arr\",A4GL_get_count());\n");
   printc ("SET(\"s_inp_arr\",_sio,\"binding\",obind);\n");
   printc ("SET(\"s_inp_arr\",_sio,\"nbind\",%d);\n", cnt);
@@ -3196,8 +3237,8 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc
     ("SET(\"s_inp_arr\",_sio,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_sio,\"field_list\"),(void *)GET(\"s_inp_arr\",_sio,\"currform\"),\"%s.*\",0,0));\n",
      srec);
-  printc ("_fld_dr= -1;continue;\n");
-  sprintf (buff2, "A4GL_inp_arr(&_sio,%s,\"%s\",%s,_forminit);\n", defs,
+  printc ("_fld_dr= -1;_exec_block=-1;continue;\n");
+  sprintf (buff2, "A4GL_inp_arr_v2(&_sio,%s,\"%s\",%s,_forminit,_sio_evt);\n", defs,
 	   srec, attr);
   return buff2;
 }
@@ -3216,7 +3257,7 @@ char *
 A4GL_get_formloop_str (int type)
 {
   if (type == 0)		/* Input, Input by name */
-    return "A4GL_form_loop(&_sio,_forminit)";
+    return "A4GL_form_loop_v2(&_sio,_forminit,_sio_evt)";
 
   return "";
 }
@@ -3856,11 +3897,9 @@ print_undo_use (char *s)
 void
 print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout)
 {
-  printc ("{char _sio[%d];int _fld_dr;char *_sio_kw=\"s_prompt\";\n", sizeof (struct s_prompt));
+  printc ("{char _sio[%d];int _fld_dr= -9999;int _exec_block= 0;char *_sio_kw=\"s_prompt\";int _acl_prompt_timeout=%d;\n", sizeof (struct s_prompt),timeout);
   printc ("A4GL_start_prompt(&_sio,%s,%s,%s,%s);\n", a1, a2, a3, a4);
-  printc
-    ("while ((int)GET(\"s_prompt\",_sio,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_sio,%d);\n",
-     timeout);
+  printc ("while (1) {");
 }
 
 /**
@@ -3888,7 +3927,12 @@ print_prompt_forchar (void)
 void
 print_prompt_end (char *s)
 {
+  printc("{");
+  print_event_list();
+  printc("if ((int)GET(\"s_prompt\",_sio,\"mode\")==2) break;");
+  printc("_exec_block=A4GL_prompt_loop_v2(&_sio,_acl_prompt_timeout,_sio_evt);\n");
   printc ("}\n");
+  printc("}");
   print_pop_variable (s);
   printc ("}\n");
 }
@@ -4144,7 +4188,7 @@ print_end_menu_1 (int n)
 void
 print_end_menu_2 (int n)
 {
-  printc ("cmd_no_%d=A4GL_menu_loop(m_%d);\n}A4GL_free_menu(m_%d);\n", n, n,
+  printc ("cmd_no_%d=A4GL_menu_loop_v2(m_%d,0);\n}A4GL_free_menu(m_%d);\n", n, n,
 	  n);
   printcomment ("/* end cwhile */\n");
   printcomment ("/* end menu */\n \n");
@@ -5395,5 +5439,117 @@ while (1) {
 }
 return ptr;
 }
+
+
+void print_event_list () {
+int a;
+int n;
+int b;
+int event_id;
+char *event_dets;
+int *keys;
+char comma=' ';
+char **fields;
+
+n=A4GL_get_nevents();
+printc("static struct aclfgl_event_list _sio_evt[]={");
+if (n==0) {
+	printc(" {0}};");
+	return ;
+}
+
+for (a=0;a<n;a++) {
+	A4GL_get_event(a,&event_id,&event_dets);
+	if (event_id==-90) {
+		keys=get_key_codes(event_dets);
+		for (b=0;keys[b];b++) {
+			printc("{%d,%d,%d,0},",event_id,a+1,keys[b]);
+		}
+	} else {
+		fields=get_field_codes(event_dets);
+		for (b=0;fields[b];b++) {
+			printc("{%d,%d,0,%s},",event_id,a+1,fields[b]);
+		}
+	}
+}
+	printc("{0}");
+	printc("};");
+}
+
+
+
+
+int *get_key_codes(char *keys) {
+char s[1024];
+char *k;
+char *k1;
+static int *x=0;
+int xcnt=0;
+
+if (x) {free(x);x=0;}
+
+  strcpy (s, keys);
+  A4GL_trim(s);
+  strcat (s, "||");
+  A4GL_debug ("Chk keys %s\n", s);
+
+  if (strcmp (keys, "->ANY") == 0) { x=malloc(sizeof(int)*2); x[0]=0xffff; x[1]=0; return x;}
+
+  k=s;
+
+  while (1) {
+  	k1=k;
+  	k = strstr (k1, "||");
+	if (k==0) break;
+  	*k=0;
+	k+=2;
+	xcnt++;
+	x=realloc(x,sizeof(int)*xcnt);
+	x[xcnt-1]= A4GL_key_val (k1);
+  }
+	
+
+	xcnt++;
+	x=realloc(x,sizeof(int)*xcnt);
+	x[xcnt-1]= 0;
+  return x;
+}
+
+
+int *get_field_codes(char *fields) {
+char s[10240];
+char *k;
+char *k1;
+static char **x=0;
+char *p;
+int xcnt=0;
+
+if (x) {free(x);x=0;}
+
+  strcpy (s, fields);
+  A4GL_trim(s);
+  strcat (s, "||");
+  k=s;
+
+  while (1) {
+  	k1=k;
+  	k = strstr (k1, "||");
+	if (k==0) break;
+  	*k=0;
+	k+=2;
+	xcnt++;
+	x=realloc(x,sizeof(int)*xcnt);
+	p=strchr(k1,',');
+	if (p) *p=0;
+	x[xcnt-1]= strdup(k1);
+  }
+	
+
+	xcnt++;
+	x=realloc(x,sizeof(char *)*xcnt);
+	x[xcnt-1]= 0;
+  return x;
+}
+
 
 /* =========================== EOF ================================ */

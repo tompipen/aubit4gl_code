@@ -1,5 +1,6 @@
-#include "../API_lowlevel.h"
 #include "a4gl_libaubit4gl.h"
+#include "../API_lowlevel.h"
+#include "a4gl_incl_4gldef.h"
 
 #include "lowlevel.h"
 #include "formdriver.h"
@@ -283,12 +284,8 @@ add_button (GtkDialog * win, int but_code)
   but = (GtkButton *) gtk_button_new_with_label (txt);
   gtk_object_set_data (GTK_OBJECT (but), "BUTCODE", (gpointer) but_code);
   gtk_object_set_data (GTK_OBJECT (but), "DIALOGWIN", win);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->action_area),
-                     (GtkWidget *) but);
-  gtk_signal_connect_object (GTK_OBJECT (but),
-                             "clicked",
-                             GTK_SIGNAL_FUNC (dialog_callback),
-                             GTK_OBJECT (win));
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->action_area), (GtkWidget *) but);
+  gtk_signal_connect_object (GTK_OBJECT (but), "clicked", GTK_SIGNAL_FUNC (dialog_callback), GTK_OBJECT (win));
 }
 int
 A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
@@ -1348,6 +1345,7 @@ int
 
   A4GL_default_attributes (prompt->field, 0);
   A4GL_debug ("STATIC OFF");
+printf("static off\n");
   A4GL_field_opts_off (prompt->field, AUBIT_O_STATIC);
 
   //printf ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
@@ -1367,6 +1365,7 @@ int
       if (af & AUBIT_ATTR_INVISIBLE)
         {
           A4GL_debug ("Invisible");
+printf("public off\n");
           A4GL_field_opts_off (prompt->field, AUBIT_O_PUBLIC);
         }
 
@@ -1423,16 +1422,19 @@ A4GL_clear_prompt(struct s_prompt *prmt) {
  * it is stored.
  */
 int
- A4GL_LL_prompt_loop (void *vprompt,int timeout)
+ A4GL_LL_prompt_loop (void *vprompt,int timeout,void *vevt)
 {
   int a;
   void *p;
   int was_aborted = 0;
+  int rblock;
+  struct aclfgl_event_list *evt;
 
   void *mform;
 
   struct s_prompt *prompt;
   prompt = vprompt;
+  evt=vevt;
 
   A4GL_chkwin ();
   mform = prompt->f;
@@ -1456,69 +1458,33 @@ int
   if (prompt->mode > 0)
     return 0;
 
-  if (prompt_last_key == 0)
-    {
 
-	A4GL_LL_set_carat(prompt->f);
+      A4GL_LL_set_carat(prompt->f);
       A4GL_LL_screen_update ();
       abort_pressed = 0;
       was_aborted = 0;
       a = A4GL_LL_getch_swin (p);
+      if (abort_pressed) prompt_last_key = -100;
       prompt->processed_onkey = a;
       A4GL_debug ("Read character... %d", a);
       A4GL_clr_error_nobox ("prompt");
       prompt_last_key = a;
       A4GL_set_last_key (a);
       prompt->lastkey = A4GL_get_lastkey ();
-      if (abort_pressed)
-        prompt_last_key = -1;
+      rblock=A4GL_has_event_for_keypress(prompt->lastkey,evt);
+      if (rblock) { // We appear to be all done here...
+      		A4GL_push_null (DTYPE_CHAR, 1);
+      		prompt->mode = 2;
+      		A4GL_clear_prompt (prompt);
+                return rblock;
+      }
 
-      if (abort_pressed)
-        {
-          was_aborted = 1;
-        }
-      else
-        {
-          was_aborted = 0;
-        }
-      A4GL_debug ("No lastkey..");
-      return -90;
-    }
- else
-    {
-      if (was_aborted)
-        {
-          abort_pressed = 1;
-        }
-      if (prompt->processed_onkey != 0)
-        {
-          a = prompt_last_key;
-        }
-      else
-        {
-          prompt_last_key = 0;
-          return -1000;         // Ignored...
-        }
-      if (was_aborted)
-        {
-          abort_pressed = 1;
-        }
-      prompt_last_key = 0;
-    }
+
+
 
 
   a = A4GL_proc_key_prompt (a, mform, prompt);
-  if (was_aborted)
-    abort_pressed = 1;
-  if (abort_pressed)
-    {
 
-      A4GL_push_null (DTYPE_CHAR, 1);
-      prompt->mode = 2;
-      A4GL_clear_prompt (prompt);
-      return 0;
-
-    }
 
   if (a == 0)
     {
@@ -1633,6 +1599,7 @@ GtkWidget *labwidget;
 
   A4GL_chkwin ();
   f=fd;
+  form=f->form;
 
   A4GL_debug ("In display_form");
 
@@ -1714,7 +1681,11 @@ GtkWidget *labwidget;
       A4GL_debug ("Window details returns it has *NO* border ");
     }
 
-  drwin=gtk_fixed_new();
+  if (form->notebook) {
+	drwin=form->notebook;
+  } else {
+  	drwin=gtk_fixed_new();
+  }
 
   if (UILIB_A4GL_iscurrborder ())
     {
@@ -1735,8 +1706,7 @@ GtkWidget *labwidget;
   A4GL_clr_form (0);
   A4GL_debug ("And return");
   A4GL_LL_screen_update ();
-  form=f->form;
-
+  if (!form->notebook) {
   for (a=0;a<form->nwidgets;a++) {
 	if (gtk_object_get_data(GTK_OBJECT(form->widgets[a]),"MF_ISLABEL"))  {
 		char *ptr;
@@ -1759,8 +1729,10 @@ GtkWidget *labwidget;
 		gtk_fixed_put(GTK_FIXED(drwin),form->widgets[a],x,y);
 	}
 	gtk_widget_show(form->widgets[a]);
-  }
+  
   gtk_widget_show(drwin);
+  }
+ }
 //printf("Displayed form..\n");
 
   return drwin;
@@ -1849,7 +1821,8 @@ config_str=A4GL_decode_str_fprop(fprop,FA_S_CONFIG);
 }
 
 widget=(void *)A4GL_make_widget (widget_str, config_str, cols);
-
+printf("Disabling widget\n");
+A4GL_LL_set_field_opts (widget, 0);
 
 gtk_object_set_data(GTK_OBJECT(widget),"MF_FROW",(void *)frow);
 gtk_object_set_data(GTK_OBJECT(widget),"MF_FCOL",(void *)fcol);
@@ -1938,11 +1911,14 @@ form->widgets=malloc(sizeof(void *)*a);
 if (form->npages>1) {
 	form->notebook = gtk_notebook_new ();
 	gtk_widget_show (form->notebook);
+} else {
+	form->notebook=0;
 }
 
-printf("Making form\n");
+printf("Making form %p\n",form->notebook);
 for (a=0;fd->form_fields[a];a++)  {
 	form->widgets[a]=fd->form_fields[a];
+        A4GL_gui_set_active (form->widgets[a],0);
 }
 return form;
 }
@@ -2057,8 +2033,9 @@ void A4GL_LL_set_field_attr(void* field) {
   A4GL_debug ("Setting defs");
 
 
-
+//printf("set_field_attr..\n");
   A4GL_default_attributes (field, f->datatype);
+//printf("Done\n");
 
 
   A4GL_debug ("Set defs");
@@ -2151,6 +2128,34 @@ if (strcmp(s,"START")==0) {
 }
 fprintf(ts,"%s Since START %lf Since Last TS %lf\n",s,ntime-ltime,ntime-lltime);
 lltime=ntime;
+}
+
+
+
+
+int A4GL_LL_endis_fields_ap (int en_dis, void* vap)
+{
+  GtkWidget *formdets;
+  int a;
+  va_list *ap;
+  int nofields;
+  GtkWidget **field_list;  
+ap=vap;
+  formdets = A4GL_get_curr_form (1);
+
+
+  A4GL_debug ("Formdets = %p\n", formdets);
+
+  nofields =
+    A4GL_gen_field_list (&field_list, (GtkWindow *) formdets, 9999, ap);
+  A4GL_debug ("nofields=%d\n", nofields);
+
+  for (a = 0; a <= nofields; a++)
+    {
+      A4GL_debug ("Doing something to %p %d\n", field_list[a], en_dis);
+      A4GL_gui_set_active (field_list[a], en_dis);
+    }
+return 1;
 }
 
 

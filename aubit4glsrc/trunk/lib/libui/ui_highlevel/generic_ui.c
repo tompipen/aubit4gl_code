@@ -1,8 +1,9 @@
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_ui.h"
+#include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
-#include "generic_ui.h"
+//#include "generic_ui.h"
 
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1071,7 +1072,7 @@ UILIB_A4GL_sleep_i (void)
 
 
 int
-UILIB_A4GL_menu_loop (void *menuv)
+UILIB_A4GL_menu_loop_v2 (void *menuv,void *evt)
 {
   A4GL_highlevel_menu_loop (menuv);
 }
@@ -1345,7 +1346,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 
   A4GL_chkwin ();
   A4GL_debug ("In disp_fields");
-  formdets = UILIB_A4GL_get_curr_form (1);
+  formdets = (struct s_form_dets *)UILIB_A4GL_get_curr_form (1);
 #ifdef DEBUG
   {
     A4GL_debug ("Status=%d formdets=%p", a4gl_status, formdets);
@@ -1415,6 +1416,7 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   A4GL_display_field_contents (field, d1, s1, ptr1);
 
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
+printf("AAA0\n");
   oopt = A4GL_LL_field_opts (field);
   A4GL_LL_set_field_attr (field);
   A4GL_debug ("Determining attribute - field_buffer=%s",
@@ -1431,12 +1433,13 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
 
 
   A4GL_debug ("set field attr");
-  fff = UILIB_A4GL_get_curr_form (1);
+  fff = (struct s_form_dets *)UILIB_A4GL_get_curr_form (1);
   A4GL_debug ("set field");
   A4GL_debug ("set field buffer setting do_reverse=%d", a);
 
   f->do_reverse = a;
   A4GL_debug ("done ");
+printf("AAA1\n");
   A4GL_LL_set_field_opts (field, oopt);
   A4GL_debug ("ZZZZ - SET OPTS");
   A4GL_debug ("Calling display_field_contents");
@@ -2581,8 +2584,8 @@ A4GL_find_field_no (void *f, struct s_screenio *sio)
 }
 
 
-int UILIB_A4GL_prompt_loop (void *vprompt, int timeout) {
-	A4GL_LL_prompt_loop(vprompt,timeout);
+int UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout,void *evt) {
+	A4GL_LL_prompt_loop(vprompt,timeout,evt);
 }
 
 int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
@@ -2590,7 +2593,7 @@ int UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af) {
 }
 
 int UILIB_A4GL_get_key(int timeout) {
-	return A4GL_LL_getch_swin (A4GL_window_on_top ());
+	return A4GL_LL_getch_swin ((void *)A4GL_window_on_top ());
 }
 
 
@@ -2621,7 +2624,7 @@ if (n>1) {
 }
 
 
-f=UILIB_A4GL_get_curr_form (1);
+f=(struct s_form_dets *)UILIB_A4GL_get_curr_form (1);
 strcpy(barr,arr);
 
 ptr=strchr(barr,'.');

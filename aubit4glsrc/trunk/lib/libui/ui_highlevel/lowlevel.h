@@ -23,7 +23,7 @@ void A4GL_set_bkg(void *win, int attr) ;
 int A4GL_decode_aubit_attr (int a, char s) ;
 int A4GL_LL_menu_loop (void *menuv) ;
 int A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af) ;
-int A4GL_LL_prompt_loop (void *vprompt,int timeout) ;
+//int A4GL_LL_prompt_loop (void *vprompt,int timeout) ;
 void * A4GL_LL_make_label (int frow, int fcol, char *label) ;
 int A4GL_LL_set_new_page(void *field,int n) ;
 void A4GL_LL_set_field_userptr (void *field, void *ptr) ;

@@ -1092,12 +1092,12 @@ A4GL_turn_field_off (void *f)
   struct struct_scr_field *fprop;
   int a;
   fprop = (struct struct_scr_field *) (A4GL_LL_get_field_userptr (f));
-  A4GL_debug ("Turn Field Off %s %s", fprop->tabname, fprop->colname);
-  A4GL_debug ("ZZZZ - SET OPTS");
+  //A4GL_debug ("Turn Field Off %s %s", fprop->tabname, fprop->colname);
+  //A4GL_debug ("ZZZZ - SET OPTS");
   a = A4GL_field_opts_off (f, AUBIT_O_ACTIVE);
-  A4GL_debug ("a=%d", a);
+  //A4GL_debug ("a=%d", a);
   a += A4GL_field_opts_off (f, AUBIT_O_EDIT);
-  A4GL_debug ("a=%d", a);
+  //A4GL_debug ("a=%d", a);
   if (a == 0)
     return 0;
   return 1;
@@ -1109,7 +1109,7 @@ A4GL_turn_field_off (void *f)
 int
 A4GL_field_opts_on (void *v, int n)
 {
-  A4GL_debug ("LL_field_opts_on");
+  //A4GL_debug ("LL_field_opts_on");
 
   if (A4GL_LL_field_opts (v) & n)
     return;
@@ -1120,11 +1120,10 @@ A4GL_field_opts_on (void *v, int n)
 int
 A4GL_field_opts_off (void *v, int n)
 {
-  A4GL_debug ("LL_field_opts_off");
+  //A4GL_debug ("LL_field_opts_off");
   if (!(A4GL_LL_field_opts (v) & n))
     return 1;
-  A4GL_debug ("field opt was on - turn it off %x %x ", n,
-	      A4GL_LL_field_opts (v));
+  //A4GL_debug ("field opt was on - turn it off %x %x ", n, A4GL_LL_field_opts (v));
   A4GL_LL_set_field_opts (v, A4GL_LL_field_opts (v) - n);
   return 1;
 }
@@ -1305,3 +1304,22 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
   A4GL_debug ("Returning %d from proc_key_prompt\n", a);
   return a;
 }
+
+
+/*
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) {
+int n;
+for (n=0;evt[n].event_type;n++) {
+	if (evt[n].event_type==-90 && evt[n].keycode==a) return evt[n].block;
+}
+return 0;
+}
+*/
+
+
+int
+ UILIB_A4GL_endis_fields_ap (int en_dis, va_list * ap)
+{
+ A4GL_LL_endis_fields_ap(en_dis,ap);
+}
+

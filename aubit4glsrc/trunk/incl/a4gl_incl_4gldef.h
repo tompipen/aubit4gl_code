@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.61 2003-12-09 11:23:44 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.62 2004-01-16 19:03:51 mikeaubury Exp $
 */
 
 /**
@@ -238,6 +238,12 @@ struct s_constr_list {char *tabname;char *colname;};
   }
   ACL_Menu;
 
+  struct aclfgl_event_list {
+        int event_type;
+        int block;
+        int keycode;
+        char *field;
+  };
 
 
 /* This prototypes should be created by 4glc, in assist.h, but they are not.
@@ -442,6 +448,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 	char *header;
 	int finishing;
   };
+
+
 
   struct pdf_rep_structure
   {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.44 2004-01-07 10:04:42 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.45 2004-01-16 19:03:52 mikeaubury Exp $
 #*/
 
 /**
@@ -936,15 +936,17 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
  * @todo Describe function
  */
 int
-UILIB_A4GL_form_loop (void *vs, int init)
+UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 {
   struct s_form_dets *form;
+  struct aclfgl_event_list *evt;
   int a;
   struct s_screenio *s;
   //int int_form_driver_ret = 0;
   struct struct_scr_field *fprop;
   struct struct_metrics *metrics;
   FORM *mform;
+  evt=vevt;
   s = vs;
   if (init == 1)
     {
@@ -1014,13 +1016,12 @@ UILIB_A4GL_form_loop (void *vs, int init)
 
 // Wait for a key..
   a = A4GL_getch_win ();
+  if (abort_pressed) a = -100;
   s->processed_onkey = a;
   m_lastkey = a;
   A4GL_set_last_key (a);
   A4GL_clr_error_nobox ("A4GL_form_loop");
 
-  if (abort_pressed)
-    a = -1;
 
   A4GL_debug ("form_loop1..  currentfield=%p status = %d", form->currentfield,
 	      field_status (form->currentfield));
@@ -1241,7 +1242,7 @@ break;
 */
 
 
-    case -1:
+    case -100:
       A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
       break;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.13 2003-12-12 16:14:57 mikeaubury Exp $
+# $Id: console.c,v 1.14 2004-01-16 19:03:52 mikeaubury Exp $
 #*/
 
 /**
@@ -55,6 +55,7 @@
 #else
 
 #include "a4gl_lib_ui_console_int.h"
+#include "a4gl_API_ui_lib.h"
 
 #endif
 
@@ -546,10 +547,12 @@ int
  * @todo Describe function
  */
 int
- UILIB_A4GL_prompt_loop (void *vprompt,int timeout)
+ UILIB_A4GL_prompt_loop (void *vprompt,int timeout, void *vevt) 
 {
+ struct aclfgl_event_list *evt;
   char buff[256];
   struct s_prompt *prompt;
+  evt=vevt;
   prompt = vprompt;
   fgets (buff, 256, stdin);
   prompt->mode = 2;

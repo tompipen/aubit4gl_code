@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.65 2004-01-07 10:04:42 mikeaubury Exp $
+# $Id: iarray.c,v 1.66 2004-01-16 19:03:52 mikeaubury Exp $
 #*/
 
 /**
@@ -607,7 +607,7 @@ iarr_loop (struct s_inp_arr *arr)
       arr->processed_onkey=a;
       if (abort_pressed)
 	{
-	  a = -1;
+	  a = -100;
 	  //fprintf (stderr, "ABORT\n");
 	  //fflush (stderr);
 	}
@@ -864,7 +864,7 @@ process_key_press (struct s_inp_arr *arr, int a)
       A4GL_add_to_control_stack (arr, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
       break;
 
-    case -1:
+    case -100:
       A4GL_add_to_control_stack (arr, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
       break;
 
@@ -942,15 +942,16 @@ gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d)
  * @return
  */
 int
- UILIB_A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
+ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib, int init,void *vevt)
 {
   FIELD ***fld_list;
   int rval;
+  struct aclfgl_event_list *evt;
   //int a;
-
   
   struct s_inp_arr *inpa;
   inpa = (struct s_inp_arr *) vinpa;
+  evt=vevt;
 
   if (curr_arr_inp && curr_arr_inp != inpa)
     {

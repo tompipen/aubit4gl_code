@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.105 2003-12-24 18:07:03 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.106 2004-01-16 19:03:52 mikeaubury Exp $
 #
 */
 
@@ -550,13 +550,13 @@
 
   /* ========================= from a4gl_ui.h ====================== */
 
-struct input_array_attribs {
+  struct input_array_attribs {
         char *maxcount;
         char *count;
         int allow_insert;
         int allow_delete;
         char *curr_row_display;
-};
+  };
 
 
 
@@ -1801,7 +1801,7 @@ int A4GL_isscrmode (void);
 int A4GL_islinemode (void);
 int A4GL_disp_form_fields (int n, int attr, char *formname, ...);
 int A4GL_endis_fields (int en_dis, ...);
-int A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib, ...);
+int A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib,void *evt, ...);
 int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)));
 int A4GL_fgl_infield (void *inp,char itype,...);
 

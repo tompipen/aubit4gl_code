@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.12 2004-01-16 16:37:42 mikeaubury Exp $
+# $Id: memfile.c,v 1.13 2004-01-16 19:03:52 mikeaubury Exp $
 #
 */
 
@@ -354,7 +354,7 @@ FILE *last;
 
     for (a=0;a<buff_len;a++) {
 
-	if (buff[a]=='\n') type=0; 	// newlines always reset everything.
+	if (buff[a]=='\n'&&type!=1) type=0; 	// newlines always reset everything.
 					// That way - if we get confused - it won't propagate too far..
 					//
 

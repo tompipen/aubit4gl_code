@@ -59,7 +59,7 @@ style "0" {  # Black
   	bg[SELECTED]     = "#ffffff"
   	bg[INSENSITIVE]  = "#ffffff"
   	
-  	base[NORMAL]     = "#ffffff"
+  	base[NORMAL]     = "#c0c0c0"
   	base[SELECTED]   = "#a5abba"
   	base[ACTIVE]     = "#ffffff"
   	base[PRELIGHT]   = "#eaeaea"

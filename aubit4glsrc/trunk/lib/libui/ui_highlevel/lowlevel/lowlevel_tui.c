@@ -1,8 +1,8 @@
 static void A4GL_do_pause (void);
 static int A4GL_curses_to_aubit (int a);
 static int A4GL_curses_to_aubit_int (int a);
-
 #include "a4gl_libaubit4gl.h"
+#include "a4gl_incl_4gldef.h"
 #include "lowlevel.h"
 #include <curses.h>
 #include <form.h>
@@ -345,6 +345,7 @@ A4GL_LL_wadd_char_xy_col (void *win, int x, int y, int ch)
 
 void A4GL_LL_screen_update (void)
 {
+A4GL_debug("CURSES : update");
 // Update the physical screen
   if (A4GL_screen_mode (-1))
     {
@@ -357,6 +358,7 @@ void
 A4GL_LL_screen_refresh (void)
 {
 // Blank the screen and redraw from scratch
+A4GL_debug("CURSES : refresh");
   clearok (curscr, 1);
   A4GL_LL_screen_update ();
 }
@@ -1220,8 +1222,12 @@ A4GL_LL_set_current_field (void *form, void *field)
 void
 A4GL_LL_set_carat (void *form)
 {
+PANEL *w;
   pos_form_cursor (form);
-  A4GL_LL_screen_update ();
+  A4GL_debug("CURSES : set_carat");
+  A4GL_LL_screen_update();
+  w = (PANEL *) A4GL_get_currwin ();
+  wrefresh(panel_window(w));
 }
 
 
@@ -1670,11 +1676,12 @@ int prompt_last_key = 0;
 
 
 int
-A4GL_LL_prompt_loop (void *vprompt, int timeout)
+A4GL_LL_prompt_loop (void *vprompt, int timeout,struct aclfgl_event_list *evt)
 {
   int a;
   void *p;
   int was_aborted = 0;
+int rblock;
 
   void *mform;
 
@@ -1700,75 +1707,43 @@ A4GL_LL_prompt_loop (void *vprompt, int timeout)
       A4GL_clear_prompt (prompt);
       return 0;
     }
+
   if (prompt->mode > 0)
     return 0;
 
-  if (prompt_last_key == 0)
-    {
       pos_form_cursor (mform);
       A4GL_LL_screen_update ();
       abort_pressed = 0;
       was_aborted = 0;
       a = A4GL_LL_getch_swin (p);
-      prompt->processed_onkey = a;
-      A4GL_debug ("Read character... %d", a);
       A4GL_clr_error_nobox ("prompt");
+
+      prompt->processed_onkey = a;
       prompt_last_key = a;
       A4GL_set_last_key (a);
+
       prompt->lastkey = A4GL_get_lastkey ();
-      if (abort_pressed)
-	prompt_last_key = -1;
 
-      if (abort_pressed)
-	{
-	  was_aborted = 1;
+      if (abort_pressed) {
+      	A4GL_set_last_key ( A4GL_key_val ("INTERRUPT"));
+	prompt_last_key 	= A4GL_key_val ("INTERRUPT");;
+	prompt->lastkey		= A4GL_key_val ("INTERRUPT");;
 	}
-      else
-	{
-	  was_aborted = 0;
-	}
+
       A4GL_debug ("No lastkey..");
-      return -90;
-    }
-  else
-    {
-      if (was_aborted)
-	{
-	  abort_pressed = 1;
-	}
-      if (prompt->processed_onkey != 0)
-	{
-	  a = prompt_last_key;
-	}
-      else
-	{
-	  prompt_last_key = 0;
-	  return -1000;		// Ignored...
-	}
-      if (was_aborted)
-	{
-	  abort_pressed = 1;
-	}
-      prompt_last_key = 0;
-    }
+      rblock=A4GL_has_event_for_keypress(prompt->lastkey,evt);
+      if (rblock) { // We appear to be all done here...
+      		A4GL_push_null (DTYPE_CHAR, 1);
+      		prompt->mode = 2;
+      		unpost_form (prompt->f);
+      		A4GL_clear_prompt (prompt);
+		return rblock;
+      }
 
-
-  a = A4GL_proc_key_prompt (a, mform, prompt);
-  if (was_aborted)
+    a = A4GL_proc_key_prompt (a, mform, prompt);
+    if (was_aborted)
     abort_pressed = 1;
 
-
-
-  if (abort_pressed)
-    {
-
-      A4GL_push_null (DTYPE_CHAR, 1);
-      prompt->mode = 2;
-      unpost_form (prompt->f);
-      A4GL_clear_prompt (prompt);
-      return 0;
-
-    }
 
   if (a == 0)
     {
@@ -2035,4 +2010,14 @@ A4GL_debug_print_field_opts (FIELD * a)
 }
 
 A4GLHLUI_initlib() {
+	
 }
+
+
+// Not available in TUI mode...
+int
+ A4GL_LL_endis_fields_ap (int en_dis, va_list * ap)
+{
+return 0;
+}
+

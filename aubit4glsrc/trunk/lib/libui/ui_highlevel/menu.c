@@ -3,6 +3,12 @@
 #include "a4gl_API_ui.h"
 #include "menu.h"
 
+static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
+void A4GL_h_disp_title (ACL_Menu * menu, char *str);
+void A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y, int type);
+void A4GL_clr_menu_disp (ACL_Menu * menu);
+static int A4GL_menu_getkey (ACL_Menu * menu);
+
 
 void
 UILIB_A4GL_disp_h_menu (void *menuv)

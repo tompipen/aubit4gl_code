@@ -10,7 +10,7 @@ static void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 static void ireinpalay_arr (struct s_inp_arr *arr, int reinpa);
 static char *proc_zero(char *s);
 static int pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,struct BINDING *b);
-static int iarr_loop (struct s_inp_arr *arr);
+static int iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt);
 static void process_key_press (struct s_inp_arr *arr, int a);
 static int gen_field_list_vals (void *a, void *b, int nv, ...);
 static void ***gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d);

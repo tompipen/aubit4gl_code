@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.36 2003-12-17 11:38:01 mikeaubury Exp $
+# $Id: prompt.c,v 1.37 2004-01-16 19:03:53 mikeaubury Exp $
 #*/
 
 /**
@@ -307,16 +307,18 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
  * @todo Describe function
  */
 int
- UILIB_A4GL_prompt_loop (void *vprompt,int timeout)
+ UILIB_A4GL_prompt_loop (void *vprompt,int timeout,void *vevt)
 {
   int a;
   WINDOW *p;
+struct aclfgl_event_list *evt;
 int was_aborted=0;
   FORM *mform;
 
   //int kpress;
   struct s_prompt *prompt;
   prompt = vprompt;
+  evt=vevt;
 
   A4GL_chkwin ();
   mform = prompt->f;
