@@ -1,0 +1,23 @@
+ESQL/C
+	Fix OPEN USING in esql/c (sql and lex)
+	Fix FETCH (relative/absolute etc)
+	Fix Declare INTO in esql/c LEX
+	Other fixes in ESQL/C output driver
+
+
+implement extend() 4GL function
+add extend() SQL function into parser
+
+
+implement Field attribute hierarchy
+implement Field expression parsing
+implement attribute 'lines' hierarchy
+
+
+Other unimplemented functions
+	put_insert
+	Pause in reports
+	INPUT ARRAY
+	clean up construct...
+
+Fix FIXME's
