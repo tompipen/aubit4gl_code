@@ -548,6 +548,7 @@ GDB_ATTACH RUNTIME Attach GDB to the process when a Segmentation Fault occurs
 	#7  0x40180baf in __libc_start_main () from /lib/libc.so.6
 	Ignore everything up to the <signal handler called>, and 'frame 5' (in this case)
 	should show the offending line..
+GDB_EXE RUNTIME Path to executable of you prefered debugger (Default: gdb)
 NO_ALT_SCR RUNTIME/TUI Try to disable the alternate screen (for xterm and console)
 =YES|NO
 	When using some terminals types in curses mode, an alternate screen is employed so that
