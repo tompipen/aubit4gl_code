@@ -62,4 +62,129 @@ upd_stats_cmd :
 
 
 
+alter_cmd : alter_1_c {
+	print_exec_sql($<str>1);
+};
 
+alter_1_c : ALTER_TABLE identifier alter_clauses {
+	sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
+}
+;
+
+alter_clauses:
+	alter_clause
+	| alter_clauses COMMA alter_clause {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+;
+
+
+alter_clause:
+	alter_add_clause
+	| alter_drop_clause
+	| alter_modify_clause
+	| alter_add_constraint_clause
+	| alter_drop_contraint_clause
+	| alter_modify_next
+	| alter_lock_mode
+;
+
+
+alter_add_clause:
+	ADD add_column_clause  {
+		sprintf($<str>$,"ADD %s",$<str>2);
+	}
+	| ADD OPEN_BRACKET add_column_clauses CLOSE_BRACKET {
+		sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);
+	}
+;
+
+
+add_column_clause:
+	table_element
+	| table_element BEFORE identifier {
+		sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
+	}
+;
+
+add_column_clauses:
+	add_column_clause
+	| add_column_clauses COMMA add_column_clause {
+		sprintf($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
+	}
+;
+
+
+alter_drop_clause:
+	DROP drop_column {
+		sprintf($<str>$,"DROP %s",$<str>2);
+	}
+	| DROP OPEN_BRACKET drop_column_list CLOSE_BRACKET {
+		sprintf($<str>$,"DROP (%s)",$<str>3);
+	}
+;
+
+
+drop_column_list:
+	drop_column 
+	| drop_column_list COMMA drop_column {
+		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+	}
+;
+
+drop_column : identifier
+;
+
+alter_modify_clause :
+	MODIFY modify_column_clause {
+		sprintf($<str>$,"MODIFY %s",$<str>2);
+	}
+	| MODIFY OPEN_BRACKET modify_column_clauses CLOSE_BRACKET {
+		sprintf($<str>$,"MODIFY (%s)",$<str>3);
+	}
+;
+
+modify_column_clauses :
+	modify_column_clause
+	| modify_column_clauses COMMA modify_column_clause {
+		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+	}
+;
+
+modify_column_clause :
+	table_element
+;
+
+
+alter_lock_mode :
+	LOCK_MODE_PAGE {strcpy($<str>$,"LOCK MODE PAGE");}
+	| LOCK_MODE_ROW {strcpy($<str>$,"LOCK MODE ROW");}
+;
+
+alter_modify_next :
+	MODIFY_NEXT_SIZE INT_VALUE {
+		sprintf($<str>$,"MODIFT NEXT SIZE %d",atoi($<str>2));
+	}
+;
+
+alter_add_constraint_clause:
+	ADD_CONSTRAINT column_constraint
+	| ADD_CONSTRAINT OPEN_BRACKET column_constraints CLOSE_BRACKET {
+		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<str>3);
+	}
+;
+
+
+alter_drop_contraint_clause:
+	DROP_CONSTRAINT constraint_name
+	| DROP_CONSTRAINT OPEN_BRACKET column_constraints CLOSE_BRACKET {
+		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<str>3);
+	}
+;
+column_constraints:
+	column_constraint
+	| column_constraints COMMA column_constraint {
+		sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+	}
+;
+
+constraint_name: identifier
+;
