@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.23 2003-03-23 07:19:42 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.24 2003-04-07 07:11:01 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -33,6 +33,13 @@
 #FIXME: use "cvs export" instead "cvs checkout" to get code without CVS
 #directories for source archives
 
+
+DAY=`date | awk '{print $3}'`
+
+if [ "$DAY" != "1" ] && [ "$DAY" != "5" ] && [ "$DAY" != "10" ] && [ "$DAY" != "15" ] && [ "$DAY" != "20" ] && [ "$DAY" != "25" ]; then
+    #echo "Will run only on 1,5,10,15,20 & 25 day of the month - today is $DAY. STOP."
+    exit
+fi
 
 
 # Am I forced to enter my password for every cvs command?

@@ -1632,7 +1632,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.12 2003-03-05 07:27:46 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.13 2003-04-07 07:12:21 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3664,4 +3664,236 @@ etc...
 >
 > Applies to all windows created when no attribute is specified (including
 > the main screen)
+
+
+---------------------------------------------------------------------
+
+exitwith("This is the error message");
+
+There is a mkerror script which greps these out and makes the error
+number/error message list...
+
+On Wed, 2003-03-26 at 22:52, John O'Gorman wrote:
+
+> What is the favoured way to error out.
+> I usually do perror(errmsg); exit errno;
+>
+> In Aubit4gl, I expect there is an error routine
+> to set an error number and message and leave it
+> to A4GL to capture it with it with its whenever error mechanism
+>
+
+===================================================================
+
+Yes - ish...
+
+They are in lib/libaubit4gl/compat.c - I've only implemented the ones I've
+come across so far, so its not complete..
+
+The preferred mechanism is to use code/endcode instead for most things:
+
+function do_somethin_in_4gl(lv_int,lv_char)
+define lv_int integer
+define lv_char char(80)
+code
+printf("int=%d char=%s\n",lv_int,lv_char);
+endcode
+end function
+
+
+This takes a lot of the work out of doing it now - but doesn't help to much
+when porting an older app..
+
+
+On Wednesday 26 March 2003 4:06 am, John O'Gorman wrote:
+> Hi guys
+>
+> Does Aubit4GL have pushquote(),  popquote() and friends?
+>
+
+
+=====================================================================
+
+I've added the following function to Aubit4gl TUI mode (there is a blank
+entry in GTK mode)
+
+call aclfgl_dump_screen(filename)
+
+This will dump the current screen to the file converting the drawing
+characters for windows to +/|/- where required.
+
+This will allow for us to compare with the output from informix...
+
+
+I've tested the following routine with Informix c4gl and it seems to
+work the same way :
+
+
+#include <stdio.h>
+#include <ncurses.h>
+#include "fglsys.h"
+
+FILE *f;
+
+int scr_width = 80;
+int scr_height = 24;
+
+
+
+int
+aclfgl_dump_screen (int n)
+{
+  int sh;
+  int sw;
+  int x, y;
+  int attr;
+  char *ptr = 0;
+  WINDOW *w;
+  int mode = 1;
+  char buffer[255];
+  char *buff;
+
+//w=find_pointer ("screen", WINCODE);
+  w = curscr;
+
+  if (n == 1)
+    {
+      popquote (buffer, 255);
+    }
+
+  if (n == 2)
+    {
+      popint (&mode);
+      popquote (buffer, 255);
+    }
+
+  ptr = buffer;
+  trim (ptr);
+  strcat (buffer, ".infx");
+
+  if (mode == 3)
+    {
+      scr_dump (ptr);
+      return 0;
+    }
+
+  sh = 24;
+  sw = 80;
+
+  f = fopen (ptr, "w");
+  if (f == 0)
+    return 0;
+
+  for (y = 0; y < sh; y++)
+    {
+      for (x = 0; x < sw; x++)
+        {
+          attr = mvwinch (w, y, x);
+          if (mode == 0)
+            {
+              buff = (char *) &attr;
+              /* @todo - Fix for different ENDISMS */
+              fprintf (f, "%c%c", buff[2], attr & 255);
+            }
+
+          if (mode == 1)
+            {
+              fprintf (f, "%c", attr & 255);
+            }
+        }
+      fprintf (f, "\n");
+    }
+  fclose (f);
+  return 0;
+}
+
+
+static char *
+trim (char *s)
+{
+  int a;
+  for (a = strlen (s) - 1; a >= 0; a--)
+    {
+      if (s[a] == ' ')
+        s[a] = 0;
+      else
+        break;
+    }
+  return s;
+}
+
+
+
+
+Andrej - can you find a home for this ?
+
+Note - the informix c4gl routine above appends .infx to the filename so
+you can run the same program, compiled under the two compilers and
+compare the outputs with no source code changes...
+
+=======================================================================
+
+I've modified the 'getting screen size' routines to use COLUMNS and
+LINES environment variables if they are set (It will use A4GL_COLUMNS
+and A4GL_LINES in preference if they are defined).
+
+This should make it work with a normal (not xterm) terminal session.
+
+As I don't have this particular problem on any of my systems (Andrej has
+reported it) - I can't test if this provides a solution - so give it a
+go...
+
+
+=========================================================================
+
+
+How about -
+
+4glpc -N "myprefix" myfile.4gl
+4glpc --namespace "myprefix" myfile.4gl
+
+It defaults to "aclfgl_" (ie as it is at the minute), specifying "" will cause
+it to work like the old informix way..
+
+All function/report definitions and calls are prefixed with that namespace...
+
+
+I put this in on thursday...
+
+On Saturday 05 April 2003 4:03 am, Andrej Falout wrote:
+> I'd say, namespacing is absolutely necessary. I'd also say, I'm happy
+> putting a limited effort  to port code in this context, as long as it STAYS
+> backward compatible (e.g. after the modifications, it is still usable with
+> other compilers.
+>
+> As long as it's clearly explained in the manual, I expect that most
+> developers will have no problems with this.
+>
+> Btw, I thought that aclfgl_ is reserved for Aubit library functions - maybe
+> in context of user functions it should be something like a4gl_ or 4gluser_
+> ?
+>
+> > -----Original Message-----
+> > Subject: [Aubit4gl-developers] aclfgl_ prefix for functions....
+> >
+> >
+> > Good or bad thing ?
+> >
+> > Good - because it means that Aubit4GL have their own 'namespace' (well
+> > nearly) and can't interfere with other libraries functions...
+> >
+> > Bad - because porting any existing 4GL code with any user-C functions
+> > becomes a bit of a hassle as you have to rename them...
+> >
+> >
+> > As a halfway house I came up with the syntax (open to renaming!):
+> >
+> > 	IMPORT INFORMIX C FUNCTION functionname
+> >
+> > which creates a aclfgl_... wrapper around an existing C function...
+> >
+
+
+=======================================================================
+
 

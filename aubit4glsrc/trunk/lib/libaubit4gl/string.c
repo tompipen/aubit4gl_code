@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.14 2003-03-10 09:09:40 mikeaubury Exp $
+# $Id: string.c,v 1.15 2003-04-07 07:12:22 afalout Exp $
 #
 */
 
@@ -46,30 +46,8 @@
 
 
 
-#ifdef OLD_INCL
+#include "a4gl_libaubit4gl_int.h"
 
-	#include <math.h>
-	#include <sys/types.h>
-	#include <ctype.h>
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <string.h>
-	#include <locale.h>
-	#include <time.h>
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_dates.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_dtypes.h"
-	#include "a4gl_debug.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
 
 /*
 =====================================================================
@@ -85,10 +63,6 @@
                     Functions prototypes
 =====================================================================
 */
-
-#ifdef OLD_INCL
-	void modify_size(char *z,int a);
- #endif
 
 
 /*
@@ -166,8 +140,7 @@ modify_size(char *z,int a)
 {
 char *zzz;
 	#ifdef DEBUG
-		{debug("Modify size has been called !");
-	}
+		debug("Modify size has been called !");
 	#endif
 	zzz=z-sizeof(int);
 	*(int *)zzz=a;
