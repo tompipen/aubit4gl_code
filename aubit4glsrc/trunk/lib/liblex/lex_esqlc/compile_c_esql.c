@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.58 2003-10-31 18:31:14 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.59 2003-11-12 11:22:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -772,9 +772,14 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
       printc ("char *s;");
       printc ("char setdb[256];");
       printc ("EXEC SQL END DECLARE SECTION;\n");
-      printc ("s=A4GL_char_pop();sprintf(setbuf,\"DATABASE %%s\");\n");
-      printc ("EXEC SQL PREPARE acl_p_set_db FROM $setdb;");
-      printc ("EXEC SQL EXECUTE acl_p_set_db;\n");
+      printc ("s=A4GL_char_pop();A4GL_trim(s);");
+	//printc("sprintf(setbuf,\"DATABASE %%s\");\n");
+	
+
+      //printc ("EXEC SQL PREPARE acl_p_set_db FROM $setdb;");
+      //printc ("EXEC SQL EXECUTE acl_p_set_db;\n");	
+	printc("EXEC SQL DATABASE $s;\n");
+
       printc ("}");
   } else {
       switch (esql_type ())
