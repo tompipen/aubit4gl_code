@@ -229,7 +229,7 @@ sql_commands :  schema_ss {
 			strcpy($<str>$,"Schema");
 	} 
 	| MISC_INFX_SQL {
-			print_exec_sql($<sql_string>1);
+			print_exec_sql($<str>1);
 			printf("Warning: Informix specific SQL @ line %d\n",yylineno);
 			strcpy($<str>$,"InfxSpecificSql");
 	}
