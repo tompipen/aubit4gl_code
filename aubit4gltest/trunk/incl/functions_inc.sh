@@ -58,18 +58,22 @@ fi
 		#Determine which feature status applies to this db
 		if test "$DB_TYPE" != "PG-IFX-74" -a "$DB_TYPE" != "PG-74" \
 			-a "$DB_TYPE" != "IFX-OL" -a "$DB_TYPE" != "IFX-SE" \
-			-a "$DB_TYPE" != "SQLITE" ; then 
+			-a "$DB_TYPE" != "SQLITE" -a "$DB_TYPE" != "PG80" ; then 
 			#DB we have no info stored for, treat it as ANSI
 			#TODO: determine if we have .cnv file for that db
 			if test "1" = "1"; then 
-				echo "WARNING: treating DB features as ANSI db without conversion"
+				echo "WARNING: treating DB features as ANSI db without conversion ($DB_TYPE)"
 				FEATURE_DB_TYPE="ANSI"
 			else
-				echo "WARNING: treating DB features as ANSI db with conversion"
+				echo "WARNING: treating DB features as ANSI db with conversion ($DB_TYPE)"
 				FEATURE_DB_TYPE="ANSI-CNV"
 			fi
 		else
-			FEATURE_DB_TYPE="$DB_TYPE"
+			if test "$DB_TYPE" = "PG80"; then 
+				FEATURE_DB_TYPE="PG-74"
+			else
+				FEATURE_DB_TYPE="$DB_TYPE"
+			fi
 		fi
 		
 		#Determine which field of features array contains status for this db
@@ -81,6 +85,18 @@ fi
 			PG-IFX-74) 	STAT_FIELD=5 ;;
 			PG-74) 		STAT_FIELD=6 ;;
 			SQLITE) 	STAT_FIELD=7 ;;
+			MySQL) 		STAT_FIELD=8 ;;
+			MaxDB) 		STAT_FIELD=9 ;;
+			Oracle) 	STAT_FIELD=10 ;;
+			DB2) 		STAT_FIELD=11 ;;
+			MSSQL) 		STAT_FIELD=12 ;;
+			Sybase) 	STAT_FIELD=13 ;;
+			Progress) 	STAT_FIELD=14 ;;
+			Ingres) 	STAT_FIELD=15 ;;
+			FireFox) 	STAT_FIELD=16 ;;
+			xx1) 		STAT_FIELD=17 ;;
+			xx2) 		STAT_FIELD=18 ;;
+			xx3) 		STAT_FIELD=19 ;;
 			*)	echo "ERROR: FEATURE_DB_TYPE=$FEATURE_DB_TYPE"; exit 5 ;;
 		esac
 		
@@ -104,7 +120,7 @@ fi
 			if test "$FIELD_CNT" = "$STAT_FIELD"; then #Feature status
 				FEATURE_STATUS="$field"
 			####################################
-			elif test "$FIELD_CNT" = "8"; then #Feature type
+			elif test "$FIELD_CNT" = "20"; then #Feature type
 				FEATURE_TYPE="$field"
 				case $FEATURE_TYPE in
 				D) #DDL 
@@ -160,7 +176,7 @@ fi
 					;;
 				esac
 			######################################
-			elif test "$FIELD_CNT" = "9"; then #Feature name
+			elif test "$FIELD_CNT" = "21"; then #Feature name
 				case $FEATURE_STATUS in 
 				P) SQL_FEATURES_NON_ANSI_POSIBLE="$SQL_FEATURES_NON_ANSI_POSIBLE $field"
 					let POSIBLE_CNT=POSIBLE_CNT+1 ;;
@@ -854,6 +870,10 @@ check_postgresql () {
 			fi
 		fi
 		else
+			POSTGRESDIR_LIB="`cygpath -u "$POSTGRESDIR"`/lib"
+			#echo $POSTGRESDIR_LIB
+			export PATH="$POSTGRESDIR_LIB:$PATH"
+
 			#On Windows, CygWin 'ps' has -W flag that is supposed to show 
 			#Windows proceses including services, but it does not show
 			#posmaster even when visible in Windows Services tool
@@ -865,19 +885,48 @@ check_postgresql () {
 				echo "set to password for user 'postgres'. STOP."
 				exit 4
 			else
-				WIN_PG_CONF=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`	
-				WIN_PGDATA=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
+				#See http://www.redhat.com/docs/manuals/database/RHDB-2.1-Manual/prog/libpq-envars.html
+				#For more info on variables accpted by libpq
+				#
+				#PGHOST sets the default server name. If this begins with a 
+				#slash, it specifies Unix-domain communication rather than 
+				#TCP/IP communication; the value is the name of the directory 
+				#in which the socket file is stored (default "/tmp").
+				#
+				#PGPORT sets the default TCP port number or Unix-domain socket 
+				#file extension for communicating with the Red Hat Database backend.
+				#
+				#PGDATABASE sets the default Red Hat Database database name.
+				#
+				#PGUSER sets the username used to connect to the database and for 
+				#authentication.
+				#
+				#PGPASSWORD sets the password used if the backend demands password 
+				#authentication.
+				#
+				#PGREALM sets the Kerberos realm to use with Red Hat Database, if it is 
+				#different from the local realm. If PGREALM is set, Red Hat Database 
+				#applications will attempt authentication with servers for this realm and use 
+				#separate ticket files to avoid conflicts with local ticket files. This 
+				#environment variable is used only if Kerberos authentication is selected by 
+				#the backend.
+				#
+				#PGOPTIONS sets additional runtime options for the Red Hat Database backend.
+				#
+				#PGTTY sets the file or tty on which debugging messages from the backend server 
+				export PGPASSWORD="$PGUSER_POSTGRES_PWD"
+			
+				#TODO: maybe we can use PGPASSWORD instead of 'echo $PGUSER_POSTGRES_PWD' ???
+				
+				#WIN_PG_CONF=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`	
+				#WIN_PGDATA=`echo $PGUSER_POSTGRES_PWD | $PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
+				WIN_PG_CONF=`$PSQL -U postgres -d template1 -c "show config_file;"  2>/dev/null | tail -3 | grep -v row`	
+				WIN_PGDATA=`$PSQL -U postgres -d template1 -c "show data_directory;"  2>/dev/null | tail -3 | grep -v row`
+				
 				WIN_PGDATA=`echo $WIN_PGDATA`
 				WIN_PG_CONF=`echo $WIN_PG_CONF`
-
-#echo "WIN_PGDATA set to $WIN_PGDATA"
-#echo "WIN_PG_CONF set to $WIN_PG_CONF"
-#cygpath -u "$WIN_PG_CONF"
-
 				PG_CONF=`cygpath -u "$WIN_PG_CONF"`
 				PGDATA=`cygpath -u "$WIN_PGDATA"`
-#echo "PGDATA set to $PGDATA"
-#echo "PG_CONF set to $PG_CONF"
 				if test ! -d "$PGDATA"; then
 					echo "ERROR: specified PGDATA ($PGDATA) is not a directory"
 					exit 4
@@ -910,11 +959,11 @@ check_postgresql () {
 		fi
 	fi
 	
-	if test "$COMSPEC" != ""; then 
-		echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1
-	else
+	#if test "$COMSPEC" != ""; then 
+	#	echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1
+	#else
 		$PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1	
-	fi
+	#fi
 	RET=$?
 	if test "$RET" != "0"; then 
 		echo "$PSQL returned code $RET trying to connect to db $TEST_DB ."
@@ -931,11 +980,11 @@ check_postgresql () {
 		#	exit $RET
 		fi
 		#Try connecting again
-		if test "$COMSPEC" != ""; then 
-			echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1
-		else
+		#if test "$COMSPEC" != ""; then 
+		#	echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1
+		#else
 			$PSQL -d $TEST_DB -c "\q;" > /tmp/tmp.dbaccess 2>&1	
-		fi
+		#fi
 		RET=$?
 		if test "$RET" != "0"; then 
 			echo "$PSQL returned code $RET trying to connect to db $TEST_DB ."
@@ -950,16 +999,14 @@ check_postgresql () {
 			fi
 		fi
 	fi
-#NEW_PG=1
-#11111111
    	TEST=`cat /tmp/tmp.dbaccess | grep "psql: FATAL"`
 	if test "$NEW_PG" = "1" -a "$TEST" = ""; then
 	    echo "Droping PostgreSQL database $TEST_DB"
-		if test "$COMSPEC" != ""; then 
-			echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/dropdb $TEST_DB > /tmp/dropdbtmp.log
-		else
+		#if test "$COMSPEC" != ""; then 
+		#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/dropdb $TEST_DB > /tmp/dropdbtmp.log
+		#else
 			$POSTGRES_BIN/dropdb $TEST_DB > /tmp/dropdbtmp.log
-		fi
+		#fi
         #returns "DROP DATABASE" string on success
 		RET=$?
         if test "$RET" != "0"; then
@@ -974,11 +1021,11 @@ check_postgresql () {
         echo "Creating PostgreSQL database $TEST_DB"
 		#createdb is a shell script wrapper around the SQL command
 		#CREATE DATABASE via the PostgreSQL interactive terminal psql.
-		if test "$COMSPEC" != ""; then 
-			echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
-		else
+		#if test "$COMSPEC" != ""; then 
+		#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
+		#else
 			$POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
-		fi
+		#fi
         RET=$?
         if test "$RET" != "0"; then
 			TMP4=`cat /tmp/credbtmp.log | grep "FATAL:  user"`
@@ -990,22 +1037,22 @@ check_postgresql () {
 				echo "create user $USERNAME createdb createuser ;" > $SCRIPT
 			 	run_sql_script postgres template1 $SCRIPT /tmp/pg-create-user.log postgres
 				#we need this for future tests
-				if test "$COMSPEC" != ""; then 
-					echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
-				else
+				#if test "$COMSPEC" != ""; then 
+				#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
+				#else
 					$POSTGRES_BIN/createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
-				fi
+				#fi
 				#xxxxx
 				#su postgres
 				#$PSQL -d template1
 				#template1=# create user root createdb createuser ;
 
 				echo "Again: Creating PostgreSQL database $TEST_DB"
-				if test "$COMSPEC" != ""; then 
-					echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
-				else
+				#if test "$COMSPEC" != ""; then 
+				#	echo "$PGUSER_POSTGRES_PWD" | $POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
+				#else
 					$POSTGRES_BIN/createdb $TEST_DB > /tmp/credbtmp.log 2>&1
-				fi
+				#fi
 				RET=$?
 				if test "$RET" != "0"; then
 					echo "Failed again (code $RET)."
@@ -1048,11 +1095,11 @@ check_postgresql () {
     fi
 
 	#Get PG server version
-	if test "$COMSPEC" != ""; then
-		PG_VERSION=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show server_version;" 2>/dev/null | grep "\."`
-	else
+	#if test "$COMSPEC" != ""; then
+	#	PG_VERSION=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show server_version;" 2>/dev/null | grep "\."`
+	#else
 		PG_VERSION=`$PSQL -d $TEST_DB -c "show server_version;" | grep "\."`
-	fi
+	#fi
 	if test "$VERBOSE" = "1"; then 
 		echo "INFO: PG server reported version $PG_VERSION"
 	fi
@@ -1072,11 +1119,11 @@ check_postgresql () {
 	#Tests to verify PG is configured as we need it for Informix
 	#compatibility
 	
-	if test "$COMSPEC" != ""; then 
-		TMP=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show datestyle;" 2>/dev/null | grep -i "informix"`
-	else
+	#if test "$COMSPEC" != ""; then 
+	#	TMP=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show datestyle;" 2>/dev/null | grep -i "informix"`
+	#else
 		TMP=`$PSQL -d $TEST_DB -c "show datestyle;" | grep -i "informix"`
-	fi
+	#fi
 	if test "$TMP" = ""; then 
 		echo "WARNING: PostgreSQL config file ($PG_CONF)"
 		echo "does not contain needed setting:"
@@ -1089,11 +1136,11 @@ check_postgresql () {
 			exit 8
 		fi
 	fi
-	if test "$COMSPEC" != ""; then
-		TMP=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show default_delim;" 2>/dev/null | grep "\|"`
-	else
+	#if test "$COMSPEC" != ""; then
+	#	TMP=`echo "$PGUSER_POSTGRES_PWD" | $PSQL -d $TEST_DB -c "show default_delim;" 2>/dev/null | grep "\|"`
+	#else
 		TMP=`$PSQL -d $TEST_DB -c "show default_delim;"| grep "\|"`
-	fi
+	#fi
 	if test "$TMP" = ""; then 
 		echo "WARNING: PostgreSQL config file ($PG_CONF)"
 		echo "does not contain needed setting:"
@@ -2427,16 +2474,15 @@ AS_USER=$5
 		;;
 	postgres)
 	
-		if test "$COMSPEC" != ""; then 
+		#if test "$COMSPEC" != ""; then 
 			if test "$PGUSER_POSTGRES_PWD" = ""; then 
 				error "PGUSER_POSTGRES_PWD is empty. STOP."
-				ecit 6
+				exit 6
 			fi
-#111111			
-			EXEC="echo "$PGUSER_POSTGRES_PWD" | \"$PSQL\" -d $DB -f $SCRIPT $LOGFILE_CMD"
-		else
+		#	EXEC="echo "$PGUSER_POSTGRES_PWD" | \"$PSQL\" -d $DB -f $SCRIPT $LOGFILE_CMD"
+		#else
 			EXEC="$PSQL -d $DB -f $SCRIPT $LOGFILE_CMD"
-		fi
+		#fi
 		if test "$AS_USER" != ""; then 
 			EXEC="su -l $AS_USER -c '$EXEC'"
 		fi
