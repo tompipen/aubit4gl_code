@@ -21229,13 +21229,15 @@ cat<<X
 | (DEBUG) configure invoked with flags:                              |
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
+| (DEBUG) LD_LIBRARY_PATH to add:                                    |
+| ADD_LD_LIBRARY_PATH=$ADD_LD_LIBRARY_PATH
+|                                                                    |
 X
 fi
 
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then
-		#FIXME: make this call only if make is detected (this can happen with binary distro)
 		if test "$MAKE" != "no" ; then
-			make ldconfig
+			$MAKE ldconfig
         else
             echo "Ooops! No 'make' installed, you will have to do it manually!"
         fi
@@ -21313,13 +21315,13 @@ X
 
 fi
 
-echo "$as_me:21316: result: " >&5
+echo "$as_me:21318: result: " >&5
 echo "${ECHO_T}" >&6
-echo "$as_me:21318: result: Thank you for using Aubit 4gl compiler." >&5
+echo "$as_me:21320: result: Thank you for using Aubit 4gl compiler." >&5
 echo "${ECHO_T}Thank you for using Aubit 4gl compiler." >&6
-echo "$as_me:21320: result:               $AUBIT_PUBLISHER" >&5
+echo "$as_me:21322: result:               $AUBIT_PUBLISHER" >&5
 echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
-echo "$as_me:21322: result: " >&5
+echo "$as_me:21324: result: " >&5
 echo "${ECHO_T}" >&6
 
 #------------------------------ EOF --------------------------------

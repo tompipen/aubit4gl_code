@@ -24,8 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2003-01-22 10:55:39 afalout Exp $
+# $Id: Makefile.in,v 1.13 2003-01-27 03:50:31 afalout Exp $
 #
+
+ROOT    =../..
+LIBROOT =${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ../../incl/Makefile-common
@@ -68,10 +71,10 @@ simple_html.sf:
 	@echo '/home/groups/a/au/aubit4gl/cgi-bin/simple_html.4ae $$@' >> simple_html
 	@echo "simple_html sh script created"
 
-
-libA4GL_HTML${SO_EXT}: libahtmllib.4gl
+libA4GL_HTML${SO_EXT}: ${LIBROOT}/libA4GL_HTML${SO_EXT}
+${LIBROOT}/libA4GL_HTML${SO_EXT}: libahtmllib.4gl
 	${SH} 4glpc -as-dll $^ -o $@
-	${CP} $@ ../../../lib
+#	${CP} $@ ../../../lib
 
 
 ## ==================================================================

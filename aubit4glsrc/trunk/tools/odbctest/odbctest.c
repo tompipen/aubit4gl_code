@@ -1,7 +1,7 @@
 /*
  *  odbctest.c
  *
- *  $Id: odbctest.c,v 1.2 2002-11-12 21:34:08 afalout Exp $
+ *  $Id: odbctest.c,v 1.3 2003-01-27 03:50:31 afalout Exp $
  *
  *  Sample ODBC program
  *
@@ -31,8 +31,9 @@
 #ifdef UNIXODBC
 	#include <sql.h>
 	#include <sqlext.h>
-#elif
-	//IODBC
+#endif
+
+#ifdef IODBC
 	#include "isql.h"
 	#include "isqlext.h"
 #endif

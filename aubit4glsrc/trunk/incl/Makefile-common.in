@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.110 2003-01-26 07:05:48 afalout Exp $
+# $Id: Makefile-common.in,v 1.111 2003-01-27 03:50:30 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -597,11 +597,20 @@ INSTALL_DIR=${PREFIX}/${AUBITNAME}
 		REPLACEWITH=${NEWVALUE}
     endif
 
-    #command line parameter to make : "make aubitrc=new"
+	ifneq "$(shell  if test -w ${AUBITETC} ; then echo 1; fi)" "1"
+		DUMMY:=$(shell ${MKPATH} ${AUBITETC})
+    endif
+
+	#command line parameter to make : "make aubitrc=new"
     #this will force ${AUBITETC}/aubitrc to be overwriten with new one
 	ifneq "${aubitrc}" "new"
 		AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
     endif
+
+	ifeq "${AUBITRCFILEEXISTS}" ""
+		DUMMY:=$(shell ${MKPATH} ${AUBITETC})
+		AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
+	endif
 
 LDCONFIG=@LDCONFIG@
 ifneq "${LDCONFIG}" "no"
@@ -1023,10 +1032,7 @@ TIME                =$(shell date +%H-%M-%S)
 #RH_RPM_VER          =8.0
 RH_RPM_VER			=@REDHAT_VER@
 
-RH_RPM_PATH			=ftp://ftp.redhat.com/pub/redhat/linux/${RH_RPM_VER}/en/os/i386/RedHat/RPMS/
-
-
-
+RH_RPM_PATH			=ftp://ftp.redhat.com/pub/redhat/linux/${RH_RPM_VER}/en/os/i386/RedHat/RPMS
 
 #List of all missing options as make targets to be installed, as determined
 #by autoconf:

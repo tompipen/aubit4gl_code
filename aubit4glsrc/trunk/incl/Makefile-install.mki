@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.56 2003-01-26 07:05:48 afalout Exp $
+# $Id: Makefile-install.mki,v 1.57 2003-01-27 03:50:30 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -230,14 +230,16 @@ ldconfig:
 ifneq "${ADD_LD_LIBRARY_PATH}" ""
 ifneq "${LDCONFIG}" "no"
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| Adding to ${LD_SO_CONF} :                                        |"
+		@echo "| Adding to ${LD_SO_CONF} :                                        |"
 	@echo "|                                                                    |"
-#	@${XXX}
-#OK	@for apath in ${ADD_LD_LIBRARY_PATH_SPACE}; do X=`grep $$apath ${LD_SO_CONF}`; if test "$$X" = ""; then echo $$apath ; echo $$apath >> ${LD_SO_CONF}; fi; done;
+#the dollar sign at the end of apath:		X=`grep $$apath$$ ${LD_SO_CONF}`;\
+#means "at the end of the line", to catter for the cases when ently like
+#/opt/informix/lib/cli is already in ld.so.conf file, but we want to add
+#/opt/informix/lib, and grep thinks it's already in there
 	@\
 	ADDED=0;\
 	for apath in ${ADD_LD_LIBRARY_PATH_SPACE}; do \
-		X=`grep $$apath ${LD_SO_CONF}`;\
+		X=`grep $$apath$$ ${LD_SO_CONF}`;\
 		if test "$$X" = ""; then \
 			ADDED=1;\
 			echo $$apath ; \
@@ -434,6 +436,33 @@ install.pdflib: ${PDFLIB_SRC_TGZ}
 install.xmlrpc: ${XMLRPC_RPM} ${LIBWWW_RPM} ${XMLRPC_DEV_RPM}
 	${RPM} -Uvh $^
 	@echo "Package info & manuals: ${XMLRPC_INFO}"
+	@echo " "
+	@echo " **************** WARNING ! ********************"
+	@echo " In some packages of libwwwxml, there is no link between "
+	@echo "	libwwwxml.so.0.1.0 and libwwwxml.so - if Aubit configure script fails to "
+	@echo " detect XML_RPC libraries, check this, and if needed creat it manually:"
+	-ln -s /usr/lib/libmd5.so.0.1.0       /usr/lib/libmd5.so
+	-ln -s /usr/lib/libxmltok.so.0.1.0    /usr/lib/libxmltok.so
+	-ln -s /usr/lib/libxmlparse.so.0.1.0  /usr/lib/libxmlparse.so
+	-ln -s /usr/lib/libwwwxml.so.0.1.0    /usr/lib/libwwwxml.so
+	-ln -s /usr/lib/libwwwinit.so.0.1.0   /usr/lib/libwwwinit.so
+	-ln -s /usr/lib/libwwwapp.so.0.1.0    /usr/lib/libwwwapp.so
+	-ln -s /usr/lib/libwwwhtml.so.0.1.0   /usr/lib/libwwwhtml.so
+	-ln -s /usr/lib/libwwwtelnet.so.0.1.0 /usr/lib/libwwwtelnet.so
+	-ln -s /usr/lib/libwwwnews.so.0.1.0   /usr/lib/libwwwnews.so
+	-ln -s /usr/lib/libwwwhttp.so.0.1.0   /usr/lib/libwwwhttp.so
+	-ln -s /usr/lib/libwwwmime.so.0.1.0   /usr/lib/libwwwmime.so
+	-ln -s /usr/lib/libwwwgopher.so.0.1.0 /usr/lib/libwwwgopher.so
+	-ln -s /usr/lib/libwwwftp.so.0.1.0    /usr/lib/libwwwftp.so
+	-ln -s /usr/lib/libwwwfile.so.0.1.0   /usr/lib/libwwwfile.so
+	-ln -s /usr/lib/libwwwdir.so.0.1.0    /usr/lib/libwwwdir.so
+	-ln -s /usr/lib/libwwwcache.so.0.1.0  /usr/lib/libwwwcache.so
+	-ln -s /usr/lib/libwwwstream.so.0.1.0 /usr/lib/libwwwstream.so
+	-ln -s /usr/lib/libwwwmux.so.0.1.0    /usr/lib/libwwwmux.so
+	-ln -s /usr/lib/libwwwtrans.so.0.1.0  /usr/lib/libwwwtrans.so
+	-ln -s /usr/lib/libwwwcore.so.0.1.0   /usr/lib/libwwwcore.so
+	-ln -s /usr/lib/libwwwutils.so.0.1.0  /usr/lib/libwwwutils.so
+	-ln -s /usr/lib/libwwwzip.so.0.1.0    /usr/lib/libwwwzip.so
 	@echo " "
 	@echo "libWWW and XML-RPC installed.  Please re-run 'configure' to detect changes."
 	@echo " "

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.148 2003-01-26 07:05:26 afalout Exp $
+dnl # $Id: configure.in,v 1.149 2003-01-27 03:50:14 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3232,14 +3232,6 @@ fi
 ##              RPM packaging, install/seinstall and build process
 ## ==================================================================
 
-	if test "$GTKBUILD" != "no"; then
-		RPMFILE_1=$LIB_PREFIX/libUI_GTK$SO_EXT
-        PLUGIN_YES="$PLUGIN_YES GTK"
-	else
-        PLUGIN_NO="$PLUGIN_NO GTK"
-		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
-	fi
-
 	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
         RPMFILE_2=$LIB_PREFIX/libUI_TUI$SO_EXT
         PLUGIN_YES="$PLUGIN_YES TUI"
@@ -3364,6 +3356,18 @@ fi
 	RPMFILE_22=$LIB_PREFIX/libA4GL_string$SO_EXT
 	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
 	PLUGIN_YES="$PLUGIN_YES FILE STRING HTML"
+
+
+	#GTK plug-in may need to recompile assist.4gl, so it may need to have 4glc,
+    #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
+	if test "$GTKBUILD" != "no"; then
+		RPMFILE_1=$LIB_PREFIX/libUI_GTK$SO_EXT
+        PLUGIN_YES="$PLUGIN_YES GTK"
+	else
+        PLUGIN_NO="$PLUGIN_NO GTK"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
+	fi
+
 
     #temp disabled:
     #if test "$HAVE_PGSQL_LIB" = "yes"; then
@@ -3659,13 +3663,15 @@ cat<<X
 | (DEBUG) configure invoked with flags:                              |
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
+| (DEBUG) LD_LIBRARY_PATH to add:                                    |
+| ADD_LD_LIBRARY_PATH=$ADD_LD_LIBRARY_PATH
+|                                                                    |
 X
 fi
 
 	if test "$ADD_LD_LIBRARY_PATH" != ""; then
-		#FIXME: make this call only if make is detected (this can happen with binary distro)
 		if test "$MAKE" != "no" ; then
-			make ldconfig
+			$MAKE ldconfig
         else
             echo "Ooops! No 'make' installed, you will have to do it manually!"
         fi

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.110 2003-01-25 01:46:35 afalout Exp $
+# $Id: Makefile.in,v 1.111 2003-01-27 03:50:11 afalout Exp $
 #
 
 ## ==================================================================
@@ -42,11 +42,10 @@ include incl/Makefile-common
 .PHONY: all clean default log corecompile extra ide
 
 ALL					=settings corecompile test
-ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess
+ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
-#adbload.4gl:536:2: #error Not Implemented Yet Free Cursor
-ALL_EXTRA_BROKEN	=adbload
+ALL_EXTRA_BROKEN	=
 
 ifneq "${PERLBUILD}" "no"
 	ALL_EXTRA_BROKEN+=perl
