@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.77 2004-02-20 13:19:27 mikeaubury Exp $
+# $Id: sql.c,v 1.78 2004-02-22 02:29:00 afalout Exp $
 #
 */
 
@@ -1343,9 +1343,15 @@ char dbName[2048];
 char *u, *p;
 HDBC *hh = 0;
 int rc;
+
+
 strcpy(dbName,dbName_f);
 A4GL_trim(dbName);
-//#ifdef SQLITEODBC
+
+/* This section does not apply to "real" SQLite odbc driver since it will use odbc.ini
+ settings to look for SQLite database file
+#ifdef SQLITEODBC
+*/
 #ifdef SQLITE_DIRECT
 {
 char a[128], b[128], tmp[2048];
@@ -1367,10 +1373,11 @@ char *FullPathDBname;
 
 	//See if user specified extension in his DATABASE statement:
 	A4GL_bname (dbName, a, b);
-    	if (a[0] == 0) {
-        	sprintf(tmp,"%s.db",dbName);
+    if (a[0] == 0) {
+       	sprintf(tmp,"%s.db",dbName);
 		A4GL_debug("Added .db file name extension, dbName=%s",tmp);
 	} else {
+        //sprintf(tmp,"%s",dbName);
 		strcpy(tmp,dbName);
 	}
 
@@ -1385,7 +1392,7 @@ char *FullPathDBname;
 		/*
             NOTE: SQLite by default will automatically create a new empty
             database file when an attempt to access non-existing database is
-            made. This will in most cases result in complete confusion, since
+            made. This will in most casesI though result in complete confusion, since
             DATABASE statement will never fail, but then all SQL statements
 			expecting tables and/or data will fail. But user will think he is
             successfully conncted to the database...
@@ -3287,7 +3294,7 @@ A4GLSQL_close_session (char *sessname)
   A4GL_debug ("Trying to close session %s, pr=%p", sessname, ptr);
 #endif
 
-#ifdef SQLITEODBC
+#if ( defined (SQLITEODBC) || defined (SQLITE_DIRECT) )
 	//SQLite needs all transactions closed before connection can be ended
     //FIXME: is there a bettr way? SQL_AUTOCOMMIT ? What should we really
     //do if program wants to exit after an error or by reaching EXIT PROGARAM?

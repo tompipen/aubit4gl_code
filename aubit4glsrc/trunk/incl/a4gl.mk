@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.44 2004-02-01 01:09:00 afalout Exp $
+#	 $Id: a4gl.mk,v 1.45 2004-02-22 02:28:59 afalout Exp $
 
 ##########################################################################
 #
@@ -58,8 +58,10 @@ endif
 
 
 #Despite of the use of 2>/dev/null, this will print rubbish (À&@À&@) to stdout when
-#aubit-config is not installed yet. How can I prevent this?
-A4GL_CURR_PACKER			:=$(shell ${AUBIT_CONFIG} A4GL_PACKER 2> /dev/null)
+#aubit-config is not installed yet. That's why we have to use the 'trick' with 
+#x=`...`; echo $x
+A4GL_CURR_PACKER			:=$(shell x=`${AUBIT_CONFIG} A4GL_PACKER 2> /dev/null`; echo $$x )
+
 ifeq "${A4GL_CURR_PACKER}" ""
 	A4GL_CURR_PACKER=PACKED
 endif
@@ -73,7 +75,7 @@ endif
 AUBIT_WRAPER		=aubit
 
 ###########################
-#Define command to be used to run Aubit compiler executbles
+#Define command to be used to run Aubit compiler executables
 #AUBIT_CMD   		=${SH} ${AUBIT_WRAPER}
 AUBIT_CMD   		=${AUBIT_WRAPER}
 

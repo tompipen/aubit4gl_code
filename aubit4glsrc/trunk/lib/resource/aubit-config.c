@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.11 2004-02-20 14:58:56 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.12 2004-02-22 02:29:01 afalout Exp $
 #
 */
 
@@ -173,6 +173,28 @@ A4GL_set_line (void)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+char *
+A4GL_strip_quotes (char *s)
+{
+  static char buff[1024];
+  if ((s[0] == '"' || s[0] == '\'') && s[strlen (s) - 1] == s[0])
+    {
+      strcpy (buff, &s[1]);
+      buff[strlen (buff) - 1] = 0;
+    }
+  else
+    {
+      strcpy (buff, s);
+    }
+  //A4GL_debug ("Returning %s", buff);
+  return buff;
+}
+
+
 void *A4GL_find_pointer(char *s,char c) {
 	return 0;
 }
@@ -183,4 +205,5 @@ int A4GL_has_pointer(char *s,char c) {
 int A4GL_add_pointer(char *s,char c,void *x) {
 return 0;
 }
+
 /* -------------------------- EOF ------------------------ */

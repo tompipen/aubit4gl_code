@@ -97,7 +97,9 @@ A4GL_CINT="@CINT@"
 #look like this: 1:2:3:4. Search for the file in DBPATH will then be performed
 #from left to right, and first path found to contain file looked for will be used.
 #NOTE: DBPATH to xxx/incl is for adbaccess form files
-A4GL_DBPATH="@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/@SHORTNAME@/incl"
+#FIXME: currently MUST NOT be quoted - we will have to allow this
+#since paths can include spaces
+A4GL_DBPATH=@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/@SHORTNAME@/incl
 
 ############
 #CONFIG FILE BASED CONVERSIONS

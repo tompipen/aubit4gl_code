@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.17 2004-02-15 10:21:27 mikeaubury Exp $
+# $Id: io.c,v 1.18 2004-02-22 02:29:00 afalout Exp $
 #
 */
 
@@ -310,11 +310,12 @@ char *dbpath;
 	dbpath=acl_getenv ("DBPATH");
 
 	if (dbpath!=0) {
-		if (strlen (dbpath)) {
+		if (strlen (dbpath)) 
+		{
 			strcpy (str_path, dbpath);
-        	}
-	} else {
-		strcpy(str_path,"");
+		} else {
+			strcpy(str_path,"");
+		}
 	}
 
 	str_len = strlen (str_path);
@@ -352,9 +353,9 @@ char *dbpath;
 
                 //A4GL_debug ("strlen (ptr) > 0, ptr=%s",ptr);
 
-		if (A4GL_try_to_open (ptr, fname, 0)) {
+				if (A4GL_try_to_open (ptr, fname, 0)) {
                     ptr2=malloc(strlen(ptr)+2+strlen(fname));
-			strcpy(ptr2,ptr);
+					strcpy(ptr2,ptr);
                     strcat(ptr2,"/");
                     strcat(ptr2,fname);
                     return ptr2;

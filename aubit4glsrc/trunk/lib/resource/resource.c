@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.61 2004-02-21 11:14:36 mikeaubury Exp $
+# $Id: resource.c,v 1.62 2004-02-22 02:29:01 afalout Exp $
 #
 */
 
@@ -506,7 +506,8 @@ find_str_resource (char *s)
 
 /**
  * Get the contents of an resources or environment variable.
- * WARNING - DO NOT USE CALLS TO A4GL_debug() in this function - it will cause endless loop
+ * WARNING - DO NOT USE CALLS TO A4GL_debug() in this function (OR ANY FUNCTIION 
+ * CALLED BY THIS FUNCTION - it will cause an endless loop
  * @param s The environment variable name.
  */
 char *
@@ -563,7 +564,7 @@ if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
 
     sprintf (prefixed_string, "A4GL_%s", s);
 
-	ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with a prefix */
+	ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with A4GL_ prefix */
 	ptr_env = (char *) getenv (s); /* in environment, but without the prefix */
 	ptr_registry=A4GL_getenv_registry (s,(char *) prefixed_string); /*Windows registry */
 	ptr_resources_A4GL = find_str_resource (prefixed_string); 		/* Try in resources */
@@ -622,6 +623,9 @@ if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
 
 		//A4GL_add_pointer(s,STR_RESOURCE_VAL,ptr);
 
+		//remove quotes - for instance for the cases where quotes are used in 
+		//aubitrc file because values contain spaces
+		ptr=A4GL_strip_quotes (ptr);
 		return ptr;
     }
 }
@@ -855,47 +859,47 @@ get_login (void)
 
 
 /**
- * Finds config fire(s) with user resources (configuration settings)
+ * Finds config file(s) with user resources (configuration settings)
  * and invokes parser/loader
  */
 struct str_resource *
 A4GL_build_user_resources (void)
 {
-  char buff[1024];
-  int a;
-  FILE *resourcefile = 0;
+char buff[1024];
+int a;
+FILE *resourcefile = 0;
 
-#ifdef DEBUG
-  A4GL_debug ("Loading resources");
-#endif
+	#ifdef DEBUG
+		A4GL_debug ("Loading resources");
+	#endif
 
-  if (loaded_resources)
-    return build_resource;
-  if (build_resource)
-    free (build_resource);
+	if (loaded_resources)
+		return build_resource;
+	if (build_resource)
+		free (build_resource);
 
-  /* ----------------- from /etc/opt/aubit4gl/aubitrc 
-     On Windows, this will work only if there is CygWin installed
-   */
+  /* 
+  	----------------- from /etc/opt/aubit4gl/aubitrc (SYSTEM GLOBAL)
+	On Windows, this will work only if there is CygWin installed
+  */
 
-  sprintf (buff, "%s/%s", acl_getenv ("AUBITETC"), "aubitrc");
-  resourcefile = fopen (buff, "r");
-  if (resourcefile != 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("1:From %s", buff);
-#endif
-      add_resources_in (resourcefile);
-      fclose (resourcefile);
+	sprintf (buff, "%s/%s", acl_getenv ("AUBITETC"), "aubitrc");
+	resourcefile = fopen (buff, "r");
+	if (resourcefile != 0) {
+		#ifdef DEBUG
+			A4GL_debug ("1:From %s", buff);
+		#endif
+		add_resources_in (resourcefile);
+		fclose (resourcefile);
+    } else {
+		#ifdef DEBUG
+			A4GL_debug ("1:cannot read %s", buff);
+		#endif
     }
-  else
-    {
-#ifdef DEBUG
-      A4GL_debug ("1:cannot read %s", buff);
-#endif
-    };
 
-  /* -----------------  from $AUBITDIR/etc/aubitrc */
+  /* 
+  	-----------------  from $AUBITDIR/etc/aubitrc (AUBIT INSTALATION DIRECTORY) 
+  */
 
   /*
      AUBITDIR on Windows, when using CygWin tools to compile MingWin native
@@ -918,125 +922,86 @@ A4GL_build_user_resources (void)
 
    */
 
-  sprintf (buff, "%s/etc/%s", acl_getenv ("AUBITDIR"), "aubitrc");
-  resourcefile = fopen (buff, "r");
-  if (resourcefile != 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("2:From %s", buff);
-#endif
-      add_resources_in (resourcefile);
-      fclose (resourcefile);
+   	sprintf (buff, "%s/etc/%s", acl_getenv ("AUBITDIR"), "aubitrc");
+  	resourcefile = fopen (buff, "r");
+  	if (resourcefile != 0) {
+		#ifdef DEBUG
+      		A4GL_debug ("2:From %s", buff);
+		#endif
+		add_resources_in (resourcefile);
+		fclose (resourcefile);
+    } else {
+		#ifdef DEBUG
+			A4GL_debug ("2:cannot read %s", buff);
+		#endif
     }
-  else
-    {
-#ifdef DEBUG
-      A4GL_debug ("2:cannot read %s", buff);
-#endif
-    };
 
-
-  /* -----------------  from ~/.aubit4gl/aubitrc */
-
-  sprintf (buff, "%s/.aubit4gl/%s", acl_getenv ("HOME"), "aubitrc");
-  resourcefile = fopen (buff, "r");
-  if (resourcefile != 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("From %s", buff);
-#endif
-      add_resources_in (resourcefile);
-      fclose (resourcefile);
-    }
-  else
-    {
-#ifdef DEBUG
-      A4GL_debug ("cannot read %s", buff);
-#endif
-    };
-
-  /* -----------------  from ~/aubitrc */
+  /* -----------------  from ~/.aubitrc (USER'S HOME DIRECTORY) */
 
   //Whooops: ~ works on shell command line, not from here!
-  //debug("From ~/aubitrc");
-  //sprintf(buff,"~/%s","aubitrc");
-  sprintf (buff, "%s/%s", acl_getenv ("HOME"), "aubitrc");
+  sprintf (buff, "%s/%s", acl_getenv ("HOME"), ".aubitrc");
   resourcefile = fopen (buff, "r");
-  if (resourcefile != 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("From %s", buff);
-#endif
-      add_resources_in (resourcefile);
-      fclose (resourcefile);
+  	if (resourcefile != 0) {
+		#ifdef DEBUG
+			A4GL_debug ("From %s", buff);
+		#endif
+		add_resources_in (resourcefile);
+		fclose (resourcefile);
+    } else {
+		#ifdef DEBUG
+			A4GL_debug ("cannot read %s", buff);
+		#endif
     }
-  else
-    {
-#ifdef DEBUG
-      A4GL_debug ("cannot read %s", buff);
-#endif
-    };
 
-  /* ----------------- from ./.aubtirc */
+  /* ----------------- from ./.aubtirc (CURENT DIRECTORY) */
 
   sprintf (buff, "./%s", ".aubitrc");
   resourcefile = fopen (buff, "r");
-  if (resourcefile != 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("From %s", buff);
-#endif
+  	if (resourcefile != 0) {
+		#ifdef DEBUG
+     	 A4GL_debug ("From %s", buff);
+		#endif
       add_resources_in (resourcefile);
       fclose (resourcefile);
+    } else {
+		#ifdef DEBUG
+			A4GL_debug ("cannot read %s", buff);
+		#endif
     }
-  else
-    {
-#ifdef DEBUG
-      A4GL_debug ("cannot read %s", buff);
-#endif
-    };
 
-  /* ----------------- from $A4GL_INIFILE */
+  /* ----------------- from $A4GL_INIFILE environment variable, if set */
 
   sprintf (buff, "%s", acl_getenv ("A4GL_INIFILE"));
-  if (strlen (buff))
-    {
+  if (strlen (buff)) {
       resourcefile = fopen (buff, "r");
-      if (resourcefile != 0)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("From %s", buff);
-#endif
-	  add_resources_in (resourcefile);
-	  fclose (resourcefile);
-	}
-      else
-	{
-#ifdef DEBUG
-	  A4GL_debug ("cannot read %s", buff);
-#endif
-	};
-    }
+      if (resourcefile != 0) {
+		  #ifdef DEBUG
+			A4GL_debug ("From %s", buff);
+		  #endif
+		  add_resources_in (resourcefile);
+		  fclose (resourcefile);
+	  } else {
+		  #ifdef DEBUG
+			A4GL_debug ("cannot read %s", buff);
+		  #endif
+	  }
+  }
 
-  if (build_resource_cnt)
-    {
 #ifdef DEBUG
-      A4GL_debug ("User resources");
-#endif
-      for (a = 0; a < build_resource_cnt; a++)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("%d. %s = %s", a, build_resource[a].name,
-		 build_resource[a].value);
-#endif
-	}
-
+	//dump user resources to debug log
+	if (build_resource_cnt) {
+		A4GL_debug ("User resources");
+      for (a = 0; a < build_resource_cnt; a++) {
+		A4GL_debug ("%d. %s = %s", a, build_resource[a].name,
+			build_resource[a].value);
+	  }
     }
+#endif
 
   add_userptr (build_resource);
-#ifdef DEBUG
-  A4GL_debug ("Finished reading configuration");
-#endif
+  #ifdef DEBUG
+  	A4GL_debug ("Finished reading configuration");
+  #endif
   return build_resource;
 }
 
@@ -1184,10 +1149,6 @@ A4GL_dump_all_resource_vars (int export)
 
 }
 
-
-
-
-
 /**
  *
  *
@@ -1208,7 +1169,6 @@ A4GL_env_option_set (char *s)
     return 1;
   return 0;
 }
-
 
 
 /* ----------------------------- EOF --------------------------------- */

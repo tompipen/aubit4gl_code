@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.26 2004-02-13 10:55:20 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.27 2004-02-22 02:29:01 afalout Exp $";
 
 
 #include <gtk/gtk.h>
@@ -2807,7 +2807,7 @@ printf("Add vbox to fixed..");
         strcpy(orig,A4GL_LL_field_buffer(fd.form_fields[1],0));
 
         A4GL_debug("Unpost and delete...");
-	gtk_widget_destroy(drwin);
+		gtk_widget_destroy(drwin);
         A4GL_LL_screen_update();
         A4GL_comments(0);
         return a;
@@ -2852,7 +2852,7 @@ ACL_Menu_Opts *mo;
 		bb=gtk_object_get_data(GTK_OBJECT(win_screen),"BB");
 		if (bb==0) return 0;
 
-gtk_widget_show(bb);
+		gtk_widget_show(bb);
 		nbuttons=(int)gtk_object_get_data(GTK_OBJECT(bb),"NBUTTONS");
 
 		while (nbuttons<menu->num_opts) {
@@ -2880,7 +2880,11 @@ gtk_widget_show(bb);
 			if (a>=menu->num_opts) {
 				gtk_widget_hide(b);
 			} else {
-				gtk_button_set_label(GTK_BUTTON(b),mo->opt_title);
+				#if GTK_CHECK_VERSION(2,0,0)
+					gtk_button_set_label(GTK_BUTTON(b),mo->opt_title);
+				#else
+					A4GL_debug("WARNING: GTK 1.2 has no gtk_button_set_label()");				
+				#endif
 				if (mo->attributes & ACL_MN_HIDE) gtk_widget_hide(b);
 				else gtk_widget_show(b);
 				mo=mo->next_option;

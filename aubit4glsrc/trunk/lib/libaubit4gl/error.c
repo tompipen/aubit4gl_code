@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.19 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: error.c,v 1.20 2004-02-22 02:29:00 afalout Exp $
 #
 */
 
@@ -100,37 +100,36 @@ void
 // IGNOREEXITWITH exit-with(char *s)
 A4GL_exitwith (char *s)
 {
-  int a;
+int a;
 
-#ifdef DEBUG
-  {
-    A4GL_debug ("Error... %s", s);
-  }
-#endif
+	#ifdef DEBUG
+		A4GL_debug ("Error: %s", s);
+	#endif
 
 #ifndef IGNOREEXITWITH
 
-  for (a = 0; errors[a].a4gl_errno; a++)
-    {
-      if (strcmp (s, errors[a].errmsg) == 0)
-	{
-#ifdef DEBUG
-	  {
-	    A4GL_debug ("Found error = %d", errors[a].a4gl_errno);
+  for (a = 0; errors[a].a4gl_errno; a++) {
+      if (strcmp (s, errors[a].errmsg) == 0) {
+		#ifdef DEBUG
+			A4GL_debug ("Found error = %d", errors[a].a4gl_errno);
+		#endif
+		A4GL_debug ("Setting status");
+		A4GLSQL_set_status (-1 * (errors[a].a4gl_errno + 30000), 0);
+		A4GL_debug ("Setting cache_status");
+		cache_status = (errors[a].a4gl_errno + 30000);
+		A4GL_debug ("Setting statusno");
+		cache_statusno = a;
+		return;
+		printf ("Error:\n %s \nSTOP\n ", s);
+		A4GL_debug ("Exiting program.");
+		if (errors[a].a4gl_errno == 0) {
+			//shoud never exit here with 0 - we got an error!
+			exit (1);
+		} else {
+			exit (errors[a].a4gl_errno);
+		}
 	  }
-#endif
-	  A4GL_debug ("Setting status");
-	  A4GLSQL_set_status (-1 * (errors[a].a4gl_errno + 30000), 0);
-	  A4GL_debug ("Setting cache_status");
-	  cache_status = (errors[a].a4gl_errno + 30000);
-	  A4GL_debug ("Setting statusno");
-	  cache_statusno = a;
-	  return;
-	  printf ("Error:\n %s \nSTOP\n ", s);
-	  A4GL_debug ("Exiting program.");
-	  exit (errors[a].a4gl_errno);
-	}
-    }
+  }
 
   A4GL_exitwith ("Unknown error");
 #endif
@@ -158,11 +157,9 @@ A4GL_exitwith_sql (char *s)
     {
       if (strcmp (s, errors[a].errmsg) == 0)
 	{
-#ifdef DEBUG
-	  {
-	    A4GL_debug ("Found error = %d", errors[a].a4gl_errno);
-	  }
-#endif
+		#ifdef DEBUG
+	    	A4GL_debug ("Found error = %d", errors[a].a4gl_errno);
+		#endif
 	  A4GLSQL_set_status (-1 * (errors[a].a4gl_errno + 30000), 1);
 	  cache_status = (errors[a].a4gl_errno + 30000);
 	  cache_statusno = a;
@@ -172,9 +169,13 @@ A4GL_exitwith_sql (char *s)
    * display the error message to standard output
    */
 
+   
   printf ("Error: %s\n", s);
+  #ifdef DEBUG
+  	A4GL_debug ("About to exit with code %d %d", errors[a].a4gl_errno,errors[cache_statusno].a4gl_errno);
+  #endif
 
-  exit (errors[a].a4gl_errno);
+  exit (errors[cache_statusno].a4gl_errno);
 
 #endif
 }
