@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.45 2002-03-25 10:15:01 afalout Exp $
+# $Id: Makefile.in,v 1.46 2002-03-27 11:57:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -156,7 +156,7 @@ endif
 
 
 ifneq "${STATICLIB_INST}" "no"
-	TOLIBGTK+=$(SOURCE)/lib/libUI_GTK.a $(SOURCE)/lib/libUI_GTK_x.a
+#	TOLIBGTK+=$(SOURCE)/lib/libUI_GTK.a $(SOURCE)/lib/libUI_GTK_x.a
 	#$(SOURCE)/lib/libaclallgui.a
 	TOLIBCUI+=$(SOURCE)/lib/libaclall.a
 endif
@@ -987,7 +987,7 @@ install.libs:
 	cp ${L2}/libgtk${LIBVER}.a ${LIBTARGET1}
 
 #FIXME: want about -noodbc libs?
-	cp ${L5}/libUI_GTK.a ${LIBTARGET1}
+#	cp ${L5}/libUI_GTK.a ${LIBTARGET1}
 #	cp ${L5}/libaclallgui.a ${LIBTARGET1}
 	cp ${L5}/libaclall.a ${LIBTARGET1}
 	cp ${L3}/librpclib.a ${LIBTARGET1}
@@ -1008,7 +1008,7 @@ deinstall.libs:
 	${RM} /usr/lib/libgdk${LIBVER}.a
 	${RM} /usr/lib/libgtk${LIBVER}.a
 #FIXME: what about -noodbc libs?
-	${RM} /usr/lib/libUI_GTK.a
+#	${RM} /usr/lib/libUI_GTK.a
 #	${RM} /usr/lib/libaclallgui.a
 	${RM} /usr/lib/libaclall.a
 	${RM} /usr/lib/librpclib.a

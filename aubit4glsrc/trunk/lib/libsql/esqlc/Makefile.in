@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-03-27 11:57:03 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -40,7 +40,7 @@ SRC_C				=${SRC:.ec=.c}
 OBJS				=${SRC_C:.c=.o}
 
 #CFLAGS are used only by C compiler on UNIX, not by ESQL/C or MSVC compilers:
-CFLAGS				+=-I../.. -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql -Ic:/INFORMIX
+CFLAGS				+=-I../.. -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql
 
 ESQL_INCLPATH		=-I../.. -I../../../compilers/fcompile -I../../libincl
 
@@ -55,6 +55,9 @@ ifdef COMSPEC
     #since it's the only supported compiler by esql/c on Windows
 	#-Ic:/cygwin/usr/include
 	ALL				=dllSQL_esql
+
+	CFLAGS			+=-Ic:/INFORMIX
+
 else
 #    ESQL_INCLPATH	=-I../.. -I../../../compilers/fcompile -I../../libincl
 	ALL				=libSQL_esql${SO_EXT}

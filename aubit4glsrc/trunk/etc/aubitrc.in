@@ -100,8 +100,8 @@ OUTPUTLANG=c
 ##################
 #defines command executed as C compiler for your system, when used by 4glpc:
 #Affects: 4glpc
-#Default: GCC="gcc -O"
-GCC="@CC@"
+#Default: CC="gcc -O"
+#GCC="@CC@"
 CC="@CC@"
 
 #################

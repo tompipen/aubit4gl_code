@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.38 2002-03-25 10:15:18 afalout Exp $
+# $Id: Makefile.in,v 1.39 2002-03-27 11:57:03 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -45,24 +45,23 @@ CMODS_ODBCEX    =libsql/odbc/sqlex.c
 CMODS_DLSQL		=dlsql.c
 CMODS_CONFIG	=aubit-config.c
 CMODS_RESOURCE	=resource.c
-CMODS_NORPC		=rpc_norpc.c
-CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
-				rpc_stack_xdr.c ../compilers/fcompile/form_x_xdr.c
+#CMODS_NORPC		=rpc_norpc.c
+#CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
+#				rpc_stack_xdr.c ../compilers/fcompile/form_x_xdr.c
 
 
+#In alphabetical order:
 COMMONSRC= \
 	array.c \
-	gui.c \
-	debug.c keys.c \
-	extfile.c \
 	bogus.c builtin.c builtin_d.c \
 	calldll.c conv.c colours.c curslib.c \
-	data_if.c dates.c dmy.c \
-	err.c error.c errfile.c \
+	data_if.c dates.c dmy.c debug.c \
+	err.c error.c errfile.c extfile.c \
 	fglwrap.c funcs_d.c fields.c \
-	gtime.c gtrim.c gui_io.c \
+	gtime.c gtrim.c gui_io.c gui.c \
 	helper.c \
 	io.c iarray.c interval.c \
+	keys.c \
 	load.c \
 	match.c \
 	newpanels.c \
@@ -72,29 +71,31 @@ COMMONSRC= \
 	screen.c sleep.c stack.c string.c \
 	translate.c
 
-SEPARATE_RPC=1
-
-ifeq "${SEPARATE_RPC}" "1"
+#SEPARATE_RPC=1
+#ifeq "${SEPARATE_RPC}" "1"
 	CMODSNOSQL 			=${COMMONSRC}
-else
-	ifeq "@HAVE_RPCLIB@" "0"
-		CMODSNOSQL 		=${COMMONSRC} ${CMODS_NORPC}
-	else
-		CMODSNOSQL 		=${COMMONSRC} ${CMODS_RPC}
-	endif
-endif
+#else
+#	ifeq "@HAVE_RPCLIB@" "0"
+#		CMODSNOSQL 		=${COMMONSRC} ${CMODS_NORPC}
+#	else
+#		CMODSNOSQL 		=${COMMONSRC} ${CMODS_RPC}
+#	endif
+#endif
 
 CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
 OBJS_NOSQL			=${CMODS_NOSQL:.c=.o}
-OBJS_RPC			=${CMODS_RPC:.c=.o}
-OBJS_NORPC			=${CMODS_NORPC:.c=.o}
+#OBJS_RPC			=${CMODS_RPC:.c=.o}
+#OBJS_NORPC			=${CMODS_NORPC:.c=.o}
+CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
+OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-ALL 				=aubit-config libPDF_NOPDF${SO_EXT} libaclall.a
-ALL_GUI				=libaclallgui.a
+ALL 				=aubit-config libPDF_NOPDF${SO_EXT} libSQL_noodbc${SO_EXT}
+#libaclall.a
+#ALL_GUI				=libaclallgui.a
 #LDFLAGS				=-Map mapfile
 4GLPC               =../bin/4glpc
 4GLPCFLAGS			=-verbose -nogtk
@@ -102,24 +103,12 @@ ALL_GUI				=libaclallgui.a
 ifdef COMSPEC
 #   LDFLAGS			+=-lc
 	ALL				+=dlllibRPC_NORPC dllaclshared
-#	ALL_GUI			+=dllaclsharedgui
-	#ifeq "$(ODBC_LINK)" "static"
-	#	ifneq "$(ODBC)" "no"
-	#		ALL		+=libaclall-noodbc.a
-	#    	ALL_GUI	+=libaclallgui-noodbc.a
-	#    endif
-    #endif
+
 	ifneq "@HAVE_RPCLIB@" "0"
 		ALL			+=dlllibRPC_SUNRPC
     endif
 else
     ALL				+=libaclshared${SO_EXT} libRPC_NORPC${SO_EXT}
-	#ifeq "$(ODBC_LINK)" "static"
-	#	ifneq "$(ODBC)" "no"
-	#	    ALL		+=libaclshared-noodbc${SO_EXT} libaclall-noodbc.a
-	#    	ALL_GUI	+=libaclsharedgui-noodbc${SO_EXT} libaclallgui-noodbc.a
-	#    endif
-    #endif
 	ifneq "@HAVE_RPCLIB@" "0"
 		ALL			+=libRPC_SUNRPC${SO_EXT}
     endif
@@ -131,48 +120,30 @@ endif
 #conflicting paths:
 CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../compilers/fcompile -Ilibincl ${CFLAGS}
 
-#ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
-#	ifneq "$(ODBC)" "no"
-#		CMODS 		=${CMODSNOSQL} ${CMODS_ODBC}
-#	else
-#		CMODS 		=${CMODSNOSQL} ${CMODS_NOSQL}
-#	endif
-#	OBJSNOSQL		=${OBJS_NOSQL}
-#else #default: dynamic linking for SQL access libs
+ifneq "@IFMX_ESQLC@" "no"
+	ALL 		+=libSQL_esql${SO_EXT}
+endif
 
-	CMODS 			=${CMODSNOSQL} ${CMODS_DLSQL}
 
-	ifdef COMSPEC
-		ALL			+=libSQL_noodbc${SO_EXT} libSQL_odbc32${SO_EXT}
+ifdef COMSPEC
+	ALL			+=libSQL_odbc32${SO_EXT}
+else
+	ifeq "$(HAVE_IODBC)" "yes"
+	    ALL		+=libSQL_iodbc${SO_EXT}
+    endif
 
-		ifneq "@IFMX_ESQLC@" "no"
-			ALL 	+=libSQL_esql${SO_EXT}
-		endif
-	else
-		ALL			+=libSQL_noodbc${SO_EXT}
+	ifeq "$(HAVE_UNIXODBC)" "yes"
+		ALL		+=libSQL_unixodbc${SO_EXT}
+    endif
 
-		ifeq "$(HAVE_IODBC)" "yes"
-		    ALL		+=libSQL_iodbc${SO_EXT}
-	    endif
-
-		ifeq "$(HAVE_UNIXODBC)" "yes"
-			ALL		+=libSQL_unixodbc${SO_EXT}
-	    endif
-
-		ifneq "@IFMX_ESQLC@" "no"
-			ALL 	+=libSQL_esql${SO_EXT}
-		endif
-
-		ifneq "@HAVE_IFXODBC@" "no"
-		    ALL		+=libSQL_ifxodbc${SO_EXT}
-		endif
-
-		ifneq "@HAVE_PGODBC@" "no"
-			ALL		+=libSQL_pgodbc${SO_EXT}
-		endif
-
+	ifneq "@HAVE_IFXODBC@" "no"
+	    ALL		+=libSQL_ifxodbc${SO_EXT}
 	endif
-#endif
+
+	ifneq "@HAVE_PGODBC@" "no"
+		ALL		+=libSQL_pgodbc${SO_EXT}
+	endif
+endif
 
 ifeq "$(PDFBUILD)" "yes"
 	ALL 			+=libPDF_PDF${SO_EXT}
@@ -189,12 +160,6 @@ endif
 	AUBIT_RPCLIBNAME=-lRPC_NORPC
 #endif
 
-
-#====================================================================
-
-OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
-OBJSNOSQL			+=${CMODSNOSQL:.c=.o} ${CMODS_PROJECT:.c=.o}
-
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -210,19 +175,21 @@ aubit-config: ${CMODS_CONFIG} ${CMODS_RESOURCE}
 	cp $@ ../bin
 
 libaclall.a : $(OBJS) ${GUI_TUI}
+#	-ldl -lm should be linked here, not in 4glpc with executable?
 	ar rc $@ $^
 	ranlib $@
+#	${LD} -static -rdynamic -o $@ $^ -ldl -lm
 
 libaclshared.so : $(OBJS) ${GUI_TUI}
 #	-ldl -lm should be linked here, not in 4glpc with executable?
-	${LD} ${SO_LDFLAGS} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^ -ldl -lm
 #-Map  mapfile
 
-libRPC_SUNRPC.so: ${OBJS_RPC}
-	${LD} ${SO_LDFLAGS} -o $@ $^
+#libRPC_SUNRPC.so: ${OBJS_RPC}
+#	${LD} ${SO_LDFLAGS} -o $@ $^
 
-libRPC_NORPC.so: ${OBJS_NORPC}
-	${LD} ${SO_LDFLAGS} -o $@ $^
+#libRPC_NORPC.so: ${OBJS_NORPC}
+#	${LD} ${SO_LDFLAGS} -o $@ $^
 
 ## ==================================================================
 ##                       Targets in sub-makefiles
@@ -252,34 +219,26 @@ libSQL_ifxodbc.so:
 libSQL_pgodbc.so:
 	${MAKE} -C libsql/odbc pgodbc
 
+libRPC_SUNRPC.so:
+	${MAKE} -C librpc/sun_rpc libRPC_SUNRPC.so
+
+libRPC_NORPC.so:
+	${MAKE} -C librpc/sun_rpc libRPC_NORPC.so
+
+dlllibRPC_SUNRPC:
+	${MAKE} -C librpc/sun_rpc dlllibRPC_SUNRPC
+
+dlllibRPC_NORPC:
+	${MAKE} -C librpc/sun_rpc dlllibRPC_NORPC
+
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
 .PHONY : dllaclshared
 dllaclshared : $(OBJS) ${GUI_TUI}
-#	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="@CURSES_LIB_NAME@ ${RPCLIB_NAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
-#	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
 	${MAKE} libaclshared.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_RPCLIBNAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L."
 #$RPCLIB_NAME
-
-#when this is linked with -gtk4gl that is linked with -rpclib, linking will fail with duplicated definitions;
-#when this is linked with -gtk4gl that is linked WITHOUT -rpclib, linking will work, but compiled programs (like hello.exe)
-#will fail with missing entry poit to xdr_array in libgtk4gl.dll
-
-#problem: both libaclsharedgui.dll and libgtk4gl.dll MUST be linked with rpclib,
-#aclsharedgui to resolve symbols at link time, and gtk4gl at run-time (???)
-#because there can be no unresolved symbols at link time, when making Windows DLL - but,
-#rpclib have no dll, only static .a, so both .dll's end up with full rpclib linked in them statically.
-#(temporary) Solution: create libgtk4gl-norpc.
-#obsolete-.PHONY : dllaclsharedgui
-#obsolete-dllaclsharedgui : libgtk4gl.dll libPDF_NOPDF.dll
-#obsolete-dllaclsharedgui : $(OBJS) ${GUI_GTK}
-#obsolete-	${MAKE} libaclsharedgui.dll DLLOBJS="$^" DLL_LDLIBS="-lgtk4gl -lform -lpanel -lncurses ${RPCLIB_NAME} -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf -L."
-#$RPCLIB_NAME
-#overwrite non-rpclib with rpclib linked (runtime) versions:
-#obsolete-	cp libgtk4gl-rpc.dll libgtk4gl.dll
-#obsolete-	cp libgtk4gl-rpc${DLL_EXPORTLIB_EXT} libgtk4gl${DLL_EXPORTLIB_EXT}
 
 libSQL_noodbc.dll:
 	${MAKE} -C libsql/nosql nosql.dll
@@ -293,12 +252,11 @@ libPDF_NOPDF.dll:
 libgtk4gl.dll:
 	${MAKE} -C libgui
 
-dlllibRPC_SUNRPC: ${CMODS_RPC}
-	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
+#dlllibRPC_SUNRPC: ${CMODS_RPC}
+#	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
 
-dlllibRPC_NORPC: ${CMODS_NORPC}
-	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
-#-laclshared
+#dlllibRPC_NORPC: ${CMODS_NORPC}
+#	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
 
 ## ==================================================================
 ##                             Sub Targets
@@ -326,16 +284,18 @@ generated/project.c:
 generated/tmperrs.h :
 	${SH} bin/mkerrors
 
-#dependencies:
+## ==================================================================
+##                        Dependencies
+## ==================================================================
+
 error.c : generated/tmperrs.h
 array.o: array.c ../compilers/fcompile/form_x_xdr.c
-
 
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
-clean : clean.generated clean.libsql clean.libpdf clean.libincl
+clean : clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c
 	${RM} form_x_xdr.c form_x.h project.c aubit-config
 	${RM} loadmap loadmap.c loadmap.h core
@@ -348,19 +308,22 @@ clean.generated:
 	${RM} generated/project.c generated/project.o
 
 clean.all: clean
-	${MAKE} $(MKNAME) -C libgui clean
-	${MAKE} $(MKNAME) -C libtui clean
+	${MAKE} -C libgui clean
+	${MAKE} -C libtui clean
 
 clean.libincl:
 	${RM} libincl/*.bak
 
 clean.libsql:
-	${MAKE} $(MKNAME) -C libsql/nosql clean
-	${MAKE} $(MKNAME) -C libsql/odbc clean
-	${MAKE} $(MKNAME) -C libsql/esqlc clean
+	${MAKE} -C libsql/nosql clean
+	${MAKE} -C libsql/odbc clean
+	${MAKE} -C libsql/esqlc clean
 
 clean.libpdf:
-	${MAKE} $(MKNAME) -C libpdf clean
+	${MAKE} -C libpdf clean
+
+clean.librpc:
+	${MAKE} -C librpc/sun_rpc clean
 
 
 ## ==================================================================

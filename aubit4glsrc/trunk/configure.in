@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.48 2002-03-25 07:42:40 afalout Exp $
+# $Id: configure.in,v 1.49 2002-03-27 11:57:02 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -2019,6 +2019,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/libsql/nosql/Makefile
                 lib/libsql/odbc/Makefile
                 lib/libsql/esqlc/Makefile
+                lib/librpc/sun_rpc/Makefile
 				lib/extra_libs/file/Makefile
                 lib/Makefile
                 tools/adbaccess/Makefile

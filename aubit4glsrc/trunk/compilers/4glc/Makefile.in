@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.21 2002-03-25 10:15:18 afalout Exp $
+# $Id: Makefile.in,v 1.22 2002-03-27 11:57:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -40,7 +40,7 @@ override NOINCL=0
 #-nogtk -DDEBUG
 
 ifndef COMSPEC
-	4GLPCFLAGS	+=${LINK_COMPILERS} -ldl
+	4GLPCFLAGS	+=${LINK_COMPILERS} #-ldl
 #-rdynamic
 #else
 #	4GLPCFLAGS	+=${SO_GCCFLAGS}
@@ -73,6 +73,9 @@ endif
 
 4GLCOBJ			=${4GLCAOBJ} lexer.o
 
+#this can be libaclshared too, so we wont use it for now:
+#4GLC_DEPS       =../../lib/libaclall.a
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -80,14 +83,14 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) successfully compield."
 
-4glc: ${4GLCOBJ} ../../lib/libaclall.a
+4glc: ${4GLCOBJ}
 #	${4GLPC} ${4GLPCFLAGS} -o $@ ${4GLCOBJ}
 #same as: why are we using 4glpc?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCOBJ} -laclshared -ldl -lm -lPDF_NOPDF -lRPC_NORPC
+	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCOBJ} ${AUBIT_LIB} -lPDF_NOPDF -lRPC_NORPC
 #-lm and -ldl are needed on Linux, but not on CygWin
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
-4glc_perl: ${4GLCOBJ_PERL} ../../lib/libaclall.a
+4glc_perl: ${4GLCOBJ_PERL}
 #	${4GLPC} ${4GLPCFLAGS} 	${4GLCOBJ_PERL} ../../tools/test/libpdf-dummy.c -o 4glc_perl
 	${4GLPC} ${4GLPCFLAGS} 	${4GLCOBJ_PERL} -o $@
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.26 2002-03-25 10:15:18 afalout Exp $
+# $Id: Makefile-common.in,v 1.27 2002-03-27 11:57:03 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -182,7 +182,7 @@ RM 					=rm -f
 RMDIR				=rm -rf
 SH 					=/bin/sh
 CC 					=@CC@
-LINK.c				=${CC}
+#LINK.c				=${CC}
 LN_S 				=ln -s
 AR 					=ar rc
 #YACC 				=bison -y
@@ -213,11 +213,20 @@ PIC					=@PIC@
 USE_RPCGEN			=@USE_RPCGEN@
 HAVE_RPCLIB			=@HAVE_RPCLIB@
 
-#How do we wanat compilers (4glc, mcompile, mkmess, fcompile) linked:
-LINK_COMPILERS      =-static
+#How do we wanat compilers (4glc, mcompile, mkmess, fcompile) linked. this
+#flag is forwarded to 4glpc:
+#LINK_COMPILERS      =-static
+LINK_COMPILERS      =-dynamic
+#which Aubit library we want to link Aubit executables/compiler with. This
+#flag is forwarded to C linker:
+#AUBIT_LIB			=-laclall
+AUBIT_LIB			=-laclshared
 
 #got core dumps when trying this:
 #LINK_COMPILERS      =-shared
+
+#do not install static libraries on CygWin:
+STATICLIB_INST=no
 
 ifdef COMSPEC
 	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
@@ -236,8 +245,6 @@ ifdef COMSPEC
 	#understand CygWin symbolic links:
 	LN_S_LIB    =cp
 	SOEXP_EXT   =${SO_EXT}.a
-    #do not install static libraries on CygWin:
-	STATICLIB_INST=no
 	#if USE_RPCGEN is disabled, static files from /tools/cygwin will be used
     #this is no longer nececery on CygWin (with appropriate Sun RPC port for CygWin)
 	#USE_RPCGEN  =0

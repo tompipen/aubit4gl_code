@@ -1,0 +1,131 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.1 2002-03-27 11:57:03 afalout Exp $
+#
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../../incl/Makefile-common
+override NOINCL=0
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+CMODS_NORPC		=rpc_norpc.c
+CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
+				rpc_stack_xdr.c ../../../compilers/fcompile/form_x_xdr.c
+
+	CMODSNOSQL 			=${COMMONSRC}
+
+CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
+OBJS_NOSQL			=${CMODS_NOSQL:.c=.o}
+OBJS_RPC			=${CMODS_RPC:.c=.o}
+OBJS_NORPC			=${CMODS_NORPC:.c=.o}
+CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
+OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+ifdef COMSPEC
+	ALL				+=dlllibRPC_NORPC
+	ifneq "@HAVE_RPCLIB@" "0"
+		ALL			+=dlllibRPC_SUNRPC
+    endif
+else
+    ALL				+=libRPC_NORPC${SO_EXT}
+	ifneq "@HAVE_RPCLIB@" "0"
+		ALL			+=libRPC_SUNRPC${SO_EXT}
+    endif
+endif
+
+#This must NOT be += because it would place affitional parameters AFTER
+#existing parameters already in CFLAGS: we must not do this, because if
+#specific path is needed to RPClib, it MUST be BEFORE other potenitially
+#conflicting paths:
+CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/fcompile -I../../libincl ${CFLAGS}
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Default targets (${ALL}) built successfully."
+
+libRPC_SUNRPC.so: ${OBJS_RPC}
+	${LD} ${SO_LDFLAGS} -o $@ $^
+	${CP} $@ ../..
+
+libRPC_NORPC.so: ${OBJS_NORPC}
+	${LD} ${SO_LDFLAGS} -o $@ $^
+	${CP} $@ ../..
+
+
+${OBJS_RPC} ${OBJS_NORPC}: form_x.h
+
+form_x.h:
+	${MAKE} -C ../../../compilers/fcompile rpc
+
+## ==================================================================
+##                       Windows 32 DLL Targets
+## ==================================================================
+
+dlllibRPC_SUNRPC: ${CMODS_RPC}
+	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
+	${CP} libRPC_SUNRPC.dll ../..
+	${CP} libRPC_SUNRPC.dll.a ../..
+
+dlllibRPC_NORPC: ${CMODS_NORPC}
+	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
+	${CP} libRPC_NORPC.dll ../..
+	${CP} libRPC_NORPC.dll.a ../..
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+	${RM} $(OBJS) $(OBJS_DEBUG)
+	${RM} core
+	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
+	${RM} *.base *.exp libRPC_NORPC.def libRPC_SUNRPC.def
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+

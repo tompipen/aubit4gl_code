@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2002-03-25 10:15:18 afalout Exp $
+# $Id: Makefile.in,v 1.17 2002-03-27 11:57:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -86,15 +86,16 @@ TARGETS 		= $(TARGETS.c)
 OBJECTS 		= $(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
 LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
 
+#this can be libaclshared too, so we wont use it for now:
+#MCOMPILE_DEPS       =../../lib/libaclall.a
+
+
 ## ==================================================================
 ##                             Targets
 ## ==================================================================
 
 
 all:	 $(ALL)
-#objects: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
-#sources: $(SOURCES)
-#targets: $(SOURCES) $(TARGETS)
 
 norpclib:
 #we will make some fake executables, to simplify installation and RPM builds:
@@ -103,15 +104,16 @@ norpclib:
 	cp mcompile mdecompile ../../bin
 	@echo "Sun RPClib was not detected - no menu related functionality will be compiled"
 
-mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall.a
+mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS)
 #	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
 #same as: why are we using 4glpc ?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -lm -ldl -laclall -lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} -lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
 #-lm and -ldl are needed on Linux, but not on CygWin
 	${LN} mcompile${EXE} ../../bin/mcompile${EXE}
 
 mdecompile: decompile.c menu_x_xdr.c
-	${CC} ${CFLAGS} decompile.c menu_x_xdr.c -L../../lib -lRPC_SUNRPC -laclshared -ldl -lm -lPDF_NOPDF -o $@ ${CYGWIN_FLAGS}
+	${CC} ${CFLAGS} decompile.c menu_x_xdr.c -L../../lib ${AUBIT_LIB} -lRPC_SUNRPC -lPDF_NOPDF -o $@ ${CYGWIN_FLAGS}
+#-lm and -ldl are needed on Linux, but not on CygWin
 	cp $@ ../../bin
 
 ## ==================================================================
@@ -144,8 +146,6 @@ endif
 
 y.tab.o: lex.yy.c
 rpc: menu_x_xdr.c
-#menu_x_xdr.c: menu_x.h
-#rpc: menu_x.x
 
 ## ==================================================================
 ##                           Install targets
