@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.32 2003-12-30 11:38:08 mikeaubury Exp $
+# $Id: variables.c,v 1.33 2003-12-30 12:48:27 mikeaubury Exp $
 #
 */
 
@@ -1036,7 +1036,20 @@ find_variable_in (char *s, struct variable **list, int cnt)
 struct variable *
 find_variable_ptr (char *s)
 {
+char buff[256];
+char buff2[256];
   struct variable *ptr;
+A4GL_debug("find_variable_ptr : %s",s);
+      if (strncmp (s, " ASSOCIATE_", 11) == 0)
+        {
+          strcpy (buff, &s[11]);
+          strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
+          buff[A4GL_findex (buff, '(')] = 0;
+          strcat (buff, buff2);
+        //printf("DOWNSHIFT : %s\n",buff);
+          A4GL_convlower (buff);
+	  s=buff;
+        }
 
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_')
     {
@@ -1092,7 +1105,7 @@ find_variable (char *s_in, int *dtype, int *size, int *is_array,
     return 1;
   strcpy (s, s_in);
   strip_bracket (s);
-
+A4GL_debug("-->%s",s);
   if (s[0] >= 'A' && s[0] <= 'Z' && s[1] == '_')
     {
       char buff[1024];
@@ -1631,7 +1644,22 @@ get_variable_dets (char *s, int *type, int *arrsize,
     return -1;
   if (s[0] == 0)
     return -1;
+
   strcpy (buff, s);
+      if (strncmp (buff, " ASSOCIATE_", 11) == 0)
+        {
+	char s[256];
+	char buff2[256];
+	strcpy(s,buff);
+          strcpy (buff, &s[11]);
+          strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
+          buff[A4GL_findex (buff, '(')] = 0;
+          strcat (buff, buff2);
+        //printf("DOWNSHIFT : %s\n",buff);
+          A4GL_convlower (buff);
+        }
+
+//printf("get_var : %s\n",buff);
   strip_bracket (buff);
   v = find_variable_ptr (buff);
 
@@ -1753,16 +1781,20 @@ strip_bracket (char *s)
   int c = 0;
   int f = 0;
 
-  //debug ("strip_bracket\n");
+  A4GL_debug ("strip_bracket %s\n",s);
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '[')
 	f++;
-      if (f == 0 && s[a] != ' ')
+      if (f == 0 && s[a] != ' ') {
 	buff[c++] = s[a];
+	buff[c]=0;
+	//A4GL_debug("--> %s",buff);
+	}
       if (s[a] == ']')
 	f--;
     }
+  buff[c]=0;
   strcpy (s, buff);
 }
 
@@ -1936,9 +1968,6 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
         if (v->arr_subscripts[4]) {strcat(fmt,"[%d]");dim=5;}
 
 	if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))) { dim=0; }
-	//if (v->is_array) { printf("v->isarray && simple %d %d %d %d %d\n", v->arr_subscripts[0], v->arr_subscripts[1], v->arr_subscripts[2], v->arr_subscripts[3], v->arr_subscripts[4]); }
-
-
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.142 2003-12-30 11:57:11 mikeaubury Exp $
+# $Id: mod.c,v 1.143 2003-12-30 12:48:27 mikeaubury Exp $
 #
 */
 
@@ -679,8 +679,8 @@ getinc (void)
  *   - The index of the character if found in the string
  *   - 0 if not found
  */
-static int
-findex (char *str, char c)
+int
+A4GL_findex (char *str, char c)
 {
   int a;
   for (a = 0; a < strlen (str); a++)
@@ -727,8 +727,9 @@ scan_variables (char *s_n, int mode)
   int dtype;
   int size;
   int vval;
+  memset(s,0,1024);
   strcpy(s,s_n);
-
+A4GL_debug("s=%s",s);
   //last_var_found = -1;
 
   // MJA - NEWVARIABLE
@@ -751,8 +752,8 @@ scan_variables (char *s_n, int mode)
       if (strncmp (buff, " ASSOCIATE_", 11) == 0)
 	{
 	  strcpy (buff, &s[11]);
-	  strcpy (buff2, &s[findex (s, ')') + 1]);
-	  buff[findex (buff, '(')] = 0;
+	  strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
+	  buff[A4GL_findex (buff, '(')] = 0;
 	  strcat (buff, buff2);
 	//printf("DOWNSHIFT : %s\n",buff);
 	  A4GL_convlower (buff);
@@ -763,7 +764,7 @@ scan_variables (char *s_n, int mode)
 
 
 
-
+A4GL_debug("find_variable : %s",buff);
   vval = find_variable (buff, &dtype, &size, 0, 0);
 
   if (vval == 1)
@@ -945,6 +946,13 @@ isvartype (char *s, int mode)
   if (s[0] == 0)
     return -1;
   strcpy (buff, s);
+
+
+
+
+
+
+
   strip_bracket (buff);
   A4GL_debug ("Striped2\n");
   strcat (buff, ".");
@@ -1995,7 +2003,7 @@ add_bind (char i, char *var_i)
   long dtype;
 char c;
 char var[2048]="";
-//printf("add_bind: %c %s\n",i,var_i);
+A4GL_debug("add_bind: %c %s\n",i,var_i);
 strcpy(var,var_i);
 
   if (var_i[0] == '"')
@@ -2005,6 +2013,7 @@ strcpy(var,var_i);
     }
   else
     {
+	A4GL_debug("Scanning...");
       dtype = scan_variable (var_i);
 
 
@@ -3621,26 +3630,29 @@ int dim;
 
 
 
-
-      if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))) dim=0; else dim=1;
-
-
-      if (isarrvariable (buff)&&buff[strlen(buff)-1]!=']'&&buff[strlen(buff)-2]!=']' && dim==1) { 
-         int type,arrsize,size,level;
-         char buff2[256];
-         char arrbuff[256];
+	dim=1;
+        if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))) dim=0; 
+	if (strncmp(buff," a4gl_let_substr",16)==0) dim=0;
 
 
+	if (dim)   {
+      		if (isarrvariable (buff)&&buff[strlen(buff)-1]!=']'&&buff[strlen(buff)-2]!=']' && dim==1) { 
+         		int type,arrsize,size,level;
+         		char buff2[256];
+         		char arrbuff[256];
+		
+		
 	//printf("Warning: Using an array at this point may not be supported (%s) @ line %d\n",buff,yylineno); 
-
-        get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
-	for (b1=0;b1<arrsize;b1++) {
-		sprintf(buff2,"%s[%d]",buff,b1);
-      		if (scan_variable (buff2) == -2) { strcat (buff2, ".*"); }
-      		add_bind (btype, buff2);
+ 		//printf("GET1 : %s\n",buff);
+        		get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
+			for (b1=0;b1<arrsize;b1++) {
+				sprintf(buff2,"%s[%d]",buff,b1);
+      				if (scan_variable (buff2) == -2) { strcat (buff2, ".*"); }
+      				add_bind (btype, buff2);
+			}
+			continue;
+      		}
 	}
-	continue;
-      }
 
       if (scan_variable (buff) == -2) { strcat (buff, ".*"); }
       add_bind (btype, buff);
