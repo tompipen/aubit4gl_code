@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.21 2003-02-10 12:33:10 mikeaubury Exp $
+# $Id: others.c,v 1.22 2003-02-11 14:52:25 mikeaubury Exp $
 #
 */
 
@@ -310,7 +310,7 @@ char *
 strip_quotes (char *s)
 {
   static char buff[1024];
-  if (s[0] == '"' || s[0] == '\'')
+  if ((s[0] == '"' || s[0] == '\'') && s[strlen(s)-1]==s[0])
     {
       strcpy (buff, &s[1]);
       buff[strlen (buff) - 1] = 0;

@@ -140,7 +140,6 @@ reserved_word :
 	|CLEAR
 	|CLIPPED
 	|CLOSE
-	|LABEL
 	|CONSTANT
 	|CONSTRUCT
 	|COUNT
@@ -168,7 +167,6 @@ reserved_word :
 	|YEAR
 	|MONTH
 	|DAY
-	|MENU
 	|SPACES
 	|RESOURCE
 	|COMMENT

@@ -45,7 +45,7 @@ fgl_next:
 
 
 
-op_fgl_expr_ret_list: {strcpy($<str>$,"0");} | fgl_expr_ret_list
+op_fgl_expr_ret_list: reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_ret_list
 ;
 
 

@@ -158,13 +158,14 @@ print_main_end();
 lex_printcomment("/*end main */\n");} ;
 
 return_cmd : 
-  RETURN reset_cnt op_fgl_expr_ret_list 
+  RETURN op_fgl_expr_ret_list 
   {
     printPopFunction();
     print_return(atoi($<str>3));
-  };
+  }
+;
 
-op_fgl_expr_list : {strcpy($<str>$,"0");} | fgl_expr_list {
+op_fgl_expr_list : reset_cnt {strcpy($<str>$,"0");} | reset_cnt fgl_expr_list {
 lex_printcomment("/* Got expr list */");
 sprintf($<str>$,"%s",$<str>1);}
 ;
