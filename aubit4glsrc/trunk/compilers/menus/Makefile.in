@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.30 2002-08-19 07:58:17 afalout Exp $
+# $Id: Makefile.in,v 1.31 2002-09-22 02:26:22 afalout Exp $
 #
 
 ROOT        =../..
@@ -38,7 +38,7 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-ALL				=mcompile mdecompile
+ALL				=${ROOT}/bin/mcompile ${ROOT}/bin/mdecompile
 
 ifeq "${USE_RPCGEN}" "0"
 	RPCGEN      =${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c ${ROOT}/tools/cygwin/menu_x.h .
@@ -63,7 +63,7 @@ SOURCES.yacc 	=menu.yacc
 SOURCES.lex 	=menu.lex
 TARGETS.c 		=y.tab.c
 DECOMPILE		=decompile.c
-
+OBJS_DECOMPILE	=$(DECOMPILE:%.c=%.o)
 CMODS           =${SRC_COMMON} $(TARGETS.c)
 OBJECTS 		=$(CMODS:%.c=%.o)
 
@@ -85,13 +85,15 @@ endif
 all: $(ALL)
 	@echo "Default targets ($(ALL)) successfully compiled"
 
-mcompile: $(OBJECTS)
-	${CC} ${CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
-	${LN} $@${EXE} ${ROOT}/bin/$@${EXE}
+${ROOT}/bin/mcompile: $(OBJECTS)
+#	${CC} ${CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+#	${LN} $@${EXE} ${ROOT}/bin/$@${EXE}
 
-mdecompile: ${DECOMPILE}
-	${CC} -o $@ ${CFLAGS} $^ -L${ROOT}/lib ${AUBIT_LIB}
-	${CP} $@ ${ROOT}/bin
+${ROOT}/bin/mdecompile: ${OBJS_DECOMPILE}
+#	${CC} -o $@ ${CFLAGS} $^ -L${ROOT}/lib ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+#	${CP} $@ ${ROOT}/bin
 
 ## ==================================================================
 ##                             Sub Targets
