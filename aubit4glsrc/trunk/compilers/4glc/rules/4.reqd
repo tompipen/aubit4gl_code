@@ -1,23 +1,20 @@
 %token <str> NAME
-%left UMINUS
 %left KW_COMMA
+%left WHERE
+%token FINPUT
+%right CLIPPED ASCII COLUMN SPACES KW_USING WORDWRAP
 %left KW_OR         
 %left KW_AND        
-%left KW_USING 
-%left WHERE
 %left NOT
-%left MATCHES     
-%left POWER
-%left LESS_THAN 
-%left GREATER_THAN 
-%left EQUAL 
-%left GREATER_THAN_EQ 
-%left LESS_THAN_EQ 
-%left NOT_EQUAL
+%left IS_NULL IS_NOT_NULL
+%left GREATER_THAN_EQ LESS_THAN GREATER_THAN EQUAL LESS_THAN_EQ NOT_EQUAL
+%right MATCHES NOT_MATCHES LIKE NOT_LIKE
 %left MINUS PLUS
-%token FINPUT
 %left DIVIDE MULTIPLY
-%left MOD
+%left POWER MOD
+%left UNITS
+%right UMINUS
+
 %right COMMAND
 %token NUMBER_VALUE
 %token CHAR_VALUE
