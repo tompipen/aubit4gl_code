@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.35 2004-12-04 09:21:45 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.36 2004-12-07 15:28:01 mikeaubury Exp $
 #
 */
 
@@ -104,6 +104,7 @@ char *cvsql_names[]={
   "CVSQL_RENAME_COLUMN_AS_ALTER_TABLE",
   "CVSQL_FAKE_IMMEDIATE",
   "CVSQL_TEMP_AS_DECLARE_GLOBAL",
+  "CVSQL_TEMP_AS_TEMPORARY",
   "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS",
   "CVSQL_SWAP_SQLCA62",
@@ -173,6 +174,7 @@ enum cvsql_type
   CVSQL_RENAME_COLUMN_AS_ALTER_TABLE,
   CVSQL_FAKE_IMMEDIATE,
   CVSQL_TEMP_AS_DECLARE_GLOBAL,
+  CVSQL_TEMP_AS_TEMPORARY,
   CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS,
   CVSQL_SWAP_SQLCA62,
@@ -836,6 +838,7 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "RENAME_COLUMN_AS_ALTER_TABLE", len) == 0) return CVSQL_RENAME_COLUMN_AS_ALTER_TABLE;
   if (strncasecmp (p, "FAKE_IMMEDIATE", len) == 0) return CVSQL_FAKE_IMMEDIATE;
   if (strncasecmp (p, "TEMP_AS_DECLARE_GLOBAL", len) == 0) return CVSQL_TEMP_AS_DECLARE_GLOBAL;
+  if (strncasecmp (p, "TEMP_AS_TEMPORARY", len) == 0) return CVSQL_TEMP_AS_TEMPORARY;
   if (strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_GLOBAL", len) == 0) return CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL;
   if (strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_TEMP_AS", len) == 0) return CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS;
   //if (strncasecmp (p, "", len) == 0) return CVSQL_;
@@ -2010,10 +2013,15 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 	A4GL_debug("Creating temp table called TABLE : %s",tabname);
 	if (!A4GL_has_pointer(tabname,LOG_TEMP_TABLE)) { A4GL_add_pointer(tabname,LOG_TEMP_TABLE,1); }
 	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,elements);
-} else {
-	sprintf(ptr,"CREATE TEMP TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
+	return ptr;
+} 
+
+if (A4GLSQLCV_check_requirement("TEMP_AS_TEMPORARY")) {
+	sprintf(ptr,"CREATE TEMPORARY TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
+	return ptr;
 }
 
+sprintf(ptr,"CREATE TEMP TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
 return ptr;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.23 2004-12-04 09:21:45 mikeaubury Exp $
+# $Id: sql.c,v 1.24 2004-12-07 15:28:01 mikeaubury Exp $
 #
 */
 
@@ -611,7 +611,10 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
   sid = vsid;
   if (sid)
     {
-      A4GL_add_pointer (pname, PRECODE, sid);
+	char rname[256];
+	sprintf(rname,"%p",sid);
+        A4GL_add_pointer (pname, PRECODE, sid);
+        A4GL_add_pointer (rname, PRECODE_R, pname);
       return 1;
     }
   else

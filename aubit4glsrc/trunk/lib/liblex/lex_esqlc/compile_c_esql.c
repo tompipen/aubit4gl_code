@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.100 2004-12-04 09:21:46 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.101 2004-12-07 15:28:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.100 2004-12-04 09:21:46 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.101 2004-12-07 15:28:01 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1327,7 +1327,7 @@ return ptr;
  * Called when the parser found the UNLOAD statement inthe 4gl source code.
  *
  * Here just calls the library function tal implements the real unload
- * (A4GLSQL_Unload_data()).
+ * (A4GLSQL_unload_data()).
  *
  * @param file The file name where the load will be to.
  * @param delim The delimiter between columns to generate.

@@ -275,7 +275,13 @@ end function
 
 
 function new_form()
-	error "Not implemented new_form"
+	let int_flag=false
+	prompt "Form name >>" for lv_fname
+	if int_flag=true or lv_fname is null or lv_fname matches " " then
+		return
+	else
+		call modify_form(lv_fname)
+	end if
 end function
 
 

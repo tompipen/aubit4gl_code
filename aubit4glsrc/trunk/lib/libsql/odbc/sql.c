@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.95 2004-12-04 09:21:46 mikeaubury Exp $
+# $Id: sql.c,v 1.96 2004-12-07 15:28:02 mikeaubury Exp $
 #
 */
 
@@ -1454,7 +1454,7 @@ char empty[10] = "None";
 char dbName[2048];
 char *u, *p;
 HDBC *hh = 0;
-int rc;
+int rc=0;
 
 
 strcpy(dbName,dbName_f);
@@ -1595,7 +1595,15 @@ char DATABASE[128];
 	}
       *hh = hdbc;
       A4GL_add_pointer ("default", SESSCODE, hh);
-      rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0);
+
+
+
+	// Do we actually need this ?
+	if (A4GL_isyes(acl_getenv("AUTOCOMMIT"))) {
+      		rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0);
+	}
+
+
       chk_rc (rc, 0, "SQLSetConnectOption");
 #ifdef DEBUG
       A4GL_debug ("AUTOCOM rc=%d", rc);
@@ -2121,11 +2129,11 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
   if (hstmt==0) { return 0; }
 
 // if we're not already in a transaction - start one
-if(!in_transaction) { fake_tr=1;A4GLSQL_commit_rollback (-1); }
+  if(!in_transaction) { fake_tr=1;A4GLSQL_commit_rollback (-1); }
   rc = SQLExecute ((SQLHSTMT )hstmt);
 
 // And finish it
-if(fake_tr) { if (rc==0) A4GLSQL_commit_rollback (1); else  A4GLSQL_commit_rollback (0); }
+if(fake_tr) { if (rc==SQL_SUCCESS||rc==SQL_SUCCESS_WITH_INFO) A4GLSQL_commit_rollback (1); else  A4GLSQL_commit_rollback (0); }
 
 
 
@@ -3853,16 +3861,23 @@ A4GLSQL_commit_rollback (int mode)
     }
 
 
+if (tmode==-1) return;
+
+
   if (tmode == 0)
     {
 #ifdef DEBUG
       A4GL_debug ("ODBC Transaction Mode:%d ", mode);
 #endif
-      if (mode == 1)
-	SQLTransact (henv, hdbc, SQL_COMMIT);
+      if (mode == 1) {
+		in_transaction=0;
+		SQLTransact (henv, hdbc, SQL_COMMIT);
+	}
 
-      if (mode == 0)
+      if (mode == 0) {
+		in_transaction=0;
 	SQLTransact (henv, hdbc, SQL_ROLLBACK);
+	}
 
       A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
     }

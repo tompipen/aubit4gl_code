@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.147 2004-12-04 09:21:45 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.148 2004-12-07 15:27:59 mikeaubury Exp $
 #
 */
 
@@ -291,8 +291,7 @@
 #define WINCODE 		'2'
 #define CURCODE 		'3'
 #define PRECODE 		'4'
-/* #define MNWINCODE 		'5' */
-/* #define MNPARCODE 		'6' */
+#define PRECODE_R 		'5'
 #define FORMCODE 		'7'
 #define S_WINDOWSCODE 	'8'
 #define S_FORMDETSCODE 	'9'

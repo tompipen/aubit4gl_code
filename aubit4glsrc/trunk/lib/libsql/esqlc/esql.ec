@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.113 2004-11-30 17:38:01 mikeaubury Exp $
+# $Id: esql.ec,v 1.114 2004-12-07 15:28:01 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.113 2004-11-30 17:38:01 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.114 2004-12-07 15:28:01 mikeaubury Exp $";
 #endif
 
 
@@ -325,7 +325,7 @@ getGlobalStatementName (void)
   static char statementName[10];
 
   statementCount++;
-  sprintf (statementName, "st_%d", statementCount);
+  sprintf (statementName, "a4gl_st_%d", statementCount);
   return statementName;
 }
 
@@ -883,6 +883,7 @@ newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no,
 
   statementName = sid->statementName;
   statementText = sid->select;
+	//printf("%s %s\n",s,sid->statementName);
   return sid;
 }
 
@@ -1957,6 +1958,8 @@ struct s_sid *sid;
   EXEC SQL begin declare section;
   //char *statementName;
   //char *statementText;
+  char *statementName;
+  char buff[256];
   EXEC SQL end declare section;
 sid=vsid;
 
@@ -1967,6 +1970,7 @@ sid=vsid;
       return -1;
     }
 
+  statementName = sid->statementName;
   A4GL_debug ("ESQL : pre");
   if (processPreStatementBinds (sid) == 1)
     {
@@ -2003,8 +2007,13 @@ sid=vsid;
   A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
   copy_sqlca_Stuff(1);
 
-
   A4GLSQL_set_status (sqlca.sqlcode, 1);
+
+  sprintf(buff,"%p",sid);
+  if (!A4GL_has_pointer (buff, PRECODE_R)) { // Its one we made up...
+	//printf("FREE %s\n",statementName);
+  	EXEC SQL FREE :statementName;
+  }
   return 0;
 }
 

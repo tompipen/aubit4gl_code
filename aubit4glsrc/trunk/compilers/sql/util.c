@@ -354,8 +354,6 @@ static int asql_yyerror(char *s) {
 		strncpy(buff,&Sql[sql_string_cnt],199);
 		buff[199]=0;
 		A4GL_debug("MEMREAD syntax error %s\n",buff);
-		printf("MEMREAD syntax error %s\n",buff);
-		fflush(stdout);
 	}
 	was_ok=0;
 	return 0;
