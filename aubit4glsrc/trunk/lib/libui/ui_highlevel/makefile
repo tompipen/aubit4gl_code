@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.19 2004-04-12 10:00:39 whaslbeck Exp $
+# $Id: makefile,v 1.20 2004-04-21 16:38:34 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -108,7 +108,7 @@ CFLAGS			:=${CURSES_INC_PATH} -I/usr/include/ncurses ${CFLAGS} \
 					-I.. -I. -I${ROOT}/incl
 
 ifneq "${HAVE_CURSES}" "0"
-	ALL			+= ${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT} ${LIBROOT}/libUI_HL_TUINW${SO_EXT}
+	ALL			+= ${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT} 
 else
 	ifneq "${HAVE_PDCURSES}" "0"
 		ALL			+=${LIBROOT}/libUI_HL_TUIN${SO_EXT}
