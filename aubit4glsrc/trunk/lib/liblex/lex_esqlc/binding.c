@@ -271,7 +271,11 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("float _vo_%d;", a);
 	  break;
 	case 5:
-	  printc ("decimal _vo_%d;", a);
+	  if (esql_type()==2) {
+	  	printc ("decimal _vo_%d={0,0,0,0,0,NULL,NULL};", a);
+	  } else {
+	  	printc ("decimal _vo_%d;", a);
+	  }
 	  break;
 	case 6:
 	  printc ("int _vo_%d;", a);
@@ -280,7 +284,11 @@ print_sql_type_infx (int a, char ioro)
 	  printc ("int _vo_%d;", a);
 	  break;
 	case 8:
-	  printc ("money _vo_%d;", a);
+	  if (esql_type()==2) {
+	  	printc ("money _vo_%d={0,0,0,0,0,NULL,NULL};", a);
+	  } else {
+	  	printc ("money _vo_%d;", a);
+	  }
 	  break;
 	case 9:
 	  printc ("Blah _vo_%d;", a);
