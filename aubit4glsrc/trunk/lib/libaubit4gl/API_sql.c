@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.13 2002-06-06 12:31:26 afalout Exp $
+# $Id: API_sql.c,v 1.14 2002-06-10 16:00:59 mikeaubury Exp $
 #
 */
 
@@ -215,6 +215,9 @@ int
 A4GLSQL_get_status   (void)
 {
 	debug("Status=%d sqlca.sqlcode=%d",status,sqlca.sqlcode);
+
+	if (status==0&&sqlca.sqlcode<0) status=sqlca.sqlcode;
+
 	return status ;
 }
 

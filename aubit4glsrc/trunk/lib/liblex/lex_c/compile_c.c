@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.21 2002-06-06 12:31:27 afalout Exp $
+# $Id: compile_c.c,v 1.22 2002-06-10 16:00:59 mikeaubury Exp $
 #
 */
 
@@ -662,7 +662,7 @@ print_exit_loop (int type, int n)
  */
 void
 /* print_rep_ret (void) */
-print_rep_ret (int report_cnt)
+print_rep_ret (int report_cntx)
 {
   printc ("goto report%d_ctrl;\n\n", report_cnt);
 }

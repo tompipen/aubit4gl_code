@@ -182,7 +182,7 @@ xrep_expr_list: xxrep_expr_list
 	| xrep_expr_list xxrep_expr_list
 ;
 
-xxrep_expr_list : rep_expr_list opt_print_at opt_semi
+xxrep_expr_list : rep_expr_list opt_print_at 
 ;
 
 opt_print_at : | AT nval {

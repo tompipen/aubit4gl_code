@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.6 2002-06-06 12:31:27 afalout Exp $
+# $Id: report.c,v 1.7 2002-06-10 16:00:59 mikeaubury Exp $
 #
 */
 
@@ -344,6 +344,7 @@ char str[1000];
 }
 
 
+
 /**
  * ORDER BY
  *
@@ -403,6 +404,14 @@ static char buff[256];
 			return buff;
 	}
 return "";
+}
+
+
+/* Used for AREP compiler */
+char * decode_datatype(int dtype,int dim) {
+static char buff[256];
+	sprintf(buff,"%s %s",nm(dtype),sz(dtype,dim));
+	return buff;
 }
 
 /**
