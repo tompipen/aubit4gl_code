@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.51 2004-11-10 23:46:36 pjfalbe Exp $
+# $Id: report.c,v 1.52 2004-11-11 01:26:28 pjfalbe Exp $
 #
 */
 
@@ -1417,7 +1417,8 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 		   acl_getenv ("AUBITDIR"), running_program, ofile, otype, rep->output_loc);
 	}
     }
-  else
+
+  if (to_pipe==0 || to_pipe==2) // File or email
     {
       if (strlen (layout))
 	{
@@ -1433,9 +1434,10 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
     }
 
   system (buff);
+	//printf("buff=%s\n",buff);
 
   if (to_pipe==2) {
-		printf("Sending %s",ofile);
+		//printf("Sending %s\n",ofile);
 		email_report(ofile,otype);
   }
 
@@ -1505,13 +1507,24 @@ char *A4GL_find_report_dim_string(char *type,int value) {
 
 
 static int email_report(char *fname,char *fhint) {
+char *email;
   if (fhint) {
    A4GL_push_char(fhint);
   } else {
    A4GL_push_char( " " );
   }
+
    A4GL_push_char(fname);
-   A4GL_push_char("mike.aubury@aubit.com");
+
+email=acl_getenv("EMAIL_RECIPIENT");
+if (email) { if (strlen(email)==0) email=0; }
+if (email==0) {
+   A4GL_push_user();
+} else {
+  A4GL_push_char(email);
+}
+
+   //A4GL_push_char("mike.aubury@aubit.com"); // Normally username...
    A4GL_call_4gl_dll("fgl_smtp","send_report",3);
 }
 

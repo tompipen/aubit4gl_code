@@ -5,9 +5,16 @@
 */
 
 
-start_cmd : START_REPORT rep_name TO_PRINTER  op_with_dim {
+start_cmd : 
+	START_REPORT rep_name TO_PRINTER  op_with_dim {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2,$<str>4);
+			}
+	| START_REPORT rep_name TO_EMAIL  op_with_dim {
+			char buff[256];
+			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
+			print_start_report("M",buff,$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name TO rout op_with_dim {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
@@ -79,6 +86,11 @@ convert_cmd : 	CONVERT_REPORT rep_name TO var_or_char AS var_or_char KW_USING va
  		| CONVERT_REPORT rep_name TO_PRINTER AS var_or_char {
 			print_convert_report($<str>2, "acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
 		}
+ 		| CONVERT_REPORT rep_name TO_EMAIL AS var_or_char {
+			char buff[255];
+sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
+			print_convert_report($<str>2,    buff ,$<str>5,"\"\"","EMAIL");
+		}
 
  		| CONVERT_REPORT rep_name TO_PIPE var_or_char AS var_or_char KW_USING var_or_char {
 			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"PIPE");
@@ -88,6 +100,11 @@ convert_cmd : 	CONVERT_REPORT rep_name TO var_or_char AS var_or_char KW_USING va
 		}
  		| CONVERT_REPORT rep_name TO_PRINTER AS var_or_char KW_USING var_or_char {
 			print_convert_report($<str>2, "acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
+		}
+ 		| CONVERT_REPORT rep_name TO_EMAIL AS var_or_char KW_USING var_or_char {
+                        char buff[255];
+			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
+			print_convert_report($<str>2, buff,$<str>5,$<str>7,"EMAIL");
 		}
 
 ;
@@ -137,6 +154,15 @@ finish_cmd : FINISH_REPORT rep_name {
 		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
 		print_free_convertable($<str>2);
 	}
+	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL AS var_or_char {
+                        char buff[255];
+			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,buff,$<str>5,"\"\"","EMAIL");
+		print_free_convertable($<str>2);
+	}
+
+
 	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char AS var_or_char {
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
@@ -162,6 +188,14 @@ finish_cmd : FINISH_REPORT rep_name {
 		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
 		print_free_convertable($<str>2);
 	}
+	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL AS var_or_char KW_USING var_or_char {
+                        char buff[255];
+			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,buff,$<str>5,$<str>7,"EMAIL");
+		print_free_convertable($<str>2);
+	}
+
 
 	
 ;

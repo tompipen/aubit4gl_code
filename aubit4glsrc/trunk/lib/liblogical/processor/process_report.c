@@ -126,7 +126,6 @@ main (int argc, char *argv[])
 
 // We may not always need to do this - but for now...
 
-  obtain_rbs_rbx (report, &rbs, &rbx);
 
 
 
@@ -161,6 +160,7 @@ main (int argc, char *argv[])
 	      exit (2);
 	    }
 	} else {
+  		obtain_rbs_rbx (report, &rbs, &rbx);
       		if (!RP_default_file (report, errbuff, rbx, rbs))
 			{
 	  		printf ("No default file could be generated :\n%s\n", errbuff);

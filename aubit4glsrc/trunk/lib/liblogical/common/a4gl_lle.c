@@ -338,6 +338,7 @@ int b;
           for (entry_cnt = 0; entry_cnt < report->blocks[rblock_cnt].nentries;
                entry_cnt++)
             {
+		int nval;
               if (report->blocks[rblock_cnt].entries[entry_cnt].entry_id >=
                   rbx[block_cnt].max_entry)
                 {
@@ -345,13 +346,12 @@ int b;
                   nmax =
                     report->blocks[rblock_cnt].entries[entry_cnt].entry_id +
                     1;
+		nval=nmax;
+		if (report->blocks[rblock_cnt].nentries>nval) nval=report->blocks[rblock_cnt].nentries;
 
-                  rbx[block_cnt].entry_nos =
-                    realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nmax));
-                  rbx[block_cnt].max_size_entry =
-                    realloc (rbx[block_cnt].max_size_entry,
-                             sizeof (int) * (nmax));
-                  for (a = rbx[block_cnt].max_entry; a < nmax; a++)
+                  rbx[block_cnt].entry_nos = realloc (rbx[block_cnt].entry_nos, sizeof (int) * (nval));
+                  rbx[block_cnt].max_size_entry = realloc (rbx[block_cnt].max_size_entry, sizeof (int) * (nval));
+                  for (a = rbx[block_cnt].max_entry; a < nval; a++)
                     {
                       rbx[block_cnt].entry_nos[a] = -1;
                       rbx[block_cnt].max_size_entry[a] = 0;
@@ -363,11 +363,16 @@ int b;
                   (report->blocks[rblock_cnt].entries[entry_cnt].string))
                 {
 
+			int eid;
+			int slen;
 		//printf("Have length for %d/%d\n",rblock_cnt,entry_cnt);
-                  rbx[block_cnt].entry_nos[entry_cnt] = report->blocks[rblock_cnt].entries[entry_cnt].entry_id;
-                  rbx[block_cnt].max_size_entry[entry_cnt] =
-                    strlen (report->blocks[rblock_cnt].entries[entry_cnt].
-                            string);
+                    eid = report->blocks[rblock_cnt].entries[entry_cnt].entry_id;
+			if (entry_cnt>= rbx[block_cnt].max_size_entry) {
+				printf("OOPS1\n");
+			}
+                    rbx[block_cnt].entry_nos[entry_cnt] = eid;
+                    slen=strlen (report->blocks[rblock_cnt].entries[entry_cnt].  string);
+                    rbx[block_cnt].max_size_entry[entry_cnt] =slen;
                 }
             }
         }
