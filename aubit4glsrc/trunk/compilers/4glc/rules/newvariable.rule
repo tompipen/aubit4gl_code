@@ -71,7 +71,7 @@ var:
          else
          {
              debug ("Is string...");
-             sprintf ($<str>$, " substr(%s,%d,%s,0)", buff,
+             sprintf ($<str>$, " substr(%s,%d,%s,0) /*1*/", buff,
                       (int)scan_variable (buff), $<str>4);
 
              addmap("Use Variable",buff,curr_func,yylineno,infilename);
@@ -152,7 +152,7 @@ identifier arr_subscripts
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " substr(%s,%d,%s,0)", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
+        sprintf ($<str>$, " substr(%s,%d,%s,0) /*2*/", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
   } else {
  
   if ((type & (0xffff != 0)) || (arrsize>0))
@@ -163,9 +163,11 @@ identifier arr_subscripts
     }
   else
     {
-      sprintf ($<str>$, " substr(%s,%d,%s,0)", $<str>1, (int)scan_variable ($<str>1), $<str>2);
+      sprintf ($<str>$, " substr(%s,%d,%s,0)/*3*/", $<str>1, (int)scan_variable ($<str>1), $<str>2);
              addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
       lex_printcomment ("/*character variable %s*/\n", $<str>$);
+      	dec_counter();
+      	mcnt--;
     }
 }
 

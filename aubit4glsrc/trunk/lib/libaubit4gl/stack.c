@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.35 2003-02-05 00:24:51 mikeaubury Exp $
+# $Id: stack.c,v 1.36 2003-02-06 13:24:28 mikeaubury Exp $
 #
 */
 
@@ -471,7 +471,12 @@ pop_param (void *p, int d, int size)
   int b;
   char *ptr;
   params_cnt--;
-
+//printf("pop_param....\n");
+  if (params_cnt<0) {
+	  	debug("Stack got corrupted");
+	  	assertion(1,"Stack got corrupted");
+		exit(0);
+  }
   debug ("pop_param... %d %d %d", params[params_cnt].dtype & DTYPE_MASK,
 	 d & DTYPE_MASK, size);
   debug ("             %p %p ", params[params_cnt].ptr, p);

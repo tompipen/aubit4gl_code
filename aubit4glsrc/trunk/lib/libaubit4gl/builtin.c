@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.14 2003-02-05 00:24:51 mikeaubury Exp $
+# $Id: builtin.c,v 1.15 2003-02-06 13:24:28 mikeaubury Exp $
 #
 */
 
@@ -234,60 +234,71 @@ aclfgl_length (int nargs)
  * @param ...
  */
 char *
-substr (char *ca, int dtype, int a, int b,...)
+substr (char *ca, int dtype, int a, int b, ...)
 {
   static char *np = 0;
   static char *np2 = 0;
   va_list ap;
-  printf ("a=%d b=%d\n",a,b);
-  va_start(ap,b);
-  va_end(ap);
+  //printf ("a=%d b=%d\n", a, b);
+  va_start (ap, b);
+  va_end (ap);
 
 #ifdef DEBUG
-  {    debug ("substr");  }
+  {
+    debug ("substr");
+  }
 #endif
-  if (np != 0)
-    acl_free (np);
-  if (np2 != 0)
-    acl_free (np2);
+  if (np != 0) acl_free (np);
+  if (np2 != 0) acl_free (np2);
   np = strdup (ca);
   np2 = strdup (ca);
 
 
-if (b==0) {
-		b=a;
-			printf("Fixed");
-}
+  if (b == 0)
+    {
+      b = a;
+    }
 
   if (np[0] == 0)
     {
 #ifdef DEBUG
-      {	debug ("NULL");      }
+      {
+	debug ("NULL");
+      }
 #endif
+      //printf("PAD\n");
       pad_string (np, DECODE_SIZE (dtype));
     }
   a--;
   b--;
 
 #ifdef DEBUG
-  {    debug (">>>>Start with %s", np);  }
-  {    debug (">>>>a=%d b=%d dtype=%d,\n ", a, b, dtype);  }
+  {
+    debug (">>>>Start with %s", np);
+  }
+  {
+    debug (">>>>a=%d b=%d dtype=%d,\n ", a, b, dtype);
+  }
 #endif
 
   if (b == -1)
     b = a;
 #ifdef DEBUG
-  {    debug (">>>>Allocated %d bytes", b - a + 2);  }
+  {
+    debug (">>>>Allocated %d bytes", b - a + 2);
+  }
 #endif
+
   strncpy (np2, &np[a], b - a + 1);
   np2[b - a + 1] = 0;
 #ifdef DEBUG
-  {    debug (">>>>Set to %s", np2);  }
+  {
+    debug (">>>>Set to %s", np2);
+  }
 #endif
-  printf("np2= '%s'\n",np2);
+  //printf ("np2= '%s'\n", np2);
   return np2;
 }
-
 /**
  *
  * @param ca
@@ -577,6 +588,7 @@ static char buff[200];
 	a=pop_int();
 	/* A4GLSQL_set_status(-3001,0); */
 	sprintf(buff,"Error : %d ",a);
+      	mcnt--;
 	push_char(buff);
       return 1;
 }

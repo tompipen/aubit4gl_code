@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.23 2003-02-04 13:18:59 mikeaubury Exp $
+# $Id: conv.c,v 1.24 2003-02-06 13:24:28 mikeaubury Exp $
 #
 */
 
@@ -2357,9 +2357,9 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 void
 assertion (int a, char *s)
 {
-
   if (a)
     {
+      fflush(stdout);
       set_errm (s);
       debug ("%s", s);
       exitwith ("Assertion failed %s");

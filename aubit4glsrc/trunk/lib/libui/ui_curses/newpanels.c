@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.7 2003-01-21 08:25:56 afalout Exp $
+# $Id: newpanels.c,v 1.8 2003-02-06 13:24:28 mikeaubury Exp $
 #*/
 
 /**
@@ -1350,7 +1350,7 @@ void *tos_ptr;
 int clr_end_of_line=0;
 
 
-
+printf("In display @\n");
     /*
   debug("Colors = %d pairs = %d ",COLORS,COLOR_PAIRS);
   debug("CHYYPE_LONG = %d",CHTYPE_LONG);
@@ -1375,6 +1375,7 @@ int clr_end_of_line=0;
   s[0]=0;
 
 
+printf("In display @ - 2\n");
 
 
 
@@ -1383,6 +1384,7 @@ int clr_end_of_line=0;
   get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
 
 
+printf("In display @ - 3\n");
   debug("TOP1 = %d %d %p\n",tos_dtype%256,tos_size,tos_ptr);
 
   if (tos_dtype%256==0 && tos_size==0) {
@@ -1390,7 +1392,7 @@ int clr_end_of_line=0;
   }
 
 
-  debug("Got %d arguments");
+  debug("Got %d arguments",n);
 
   for (z = 0; z <= n - 1; z++)
     {
