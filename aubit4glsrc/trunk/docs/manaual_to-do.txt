@@ -965,8 +965,8 @@ code
 endcode
 END FUNCTION
 
-- compile this '-as-dll'
-4glpc -as-dll some_module.4gl -o some_module.so
+- compile this '--as-dll'
+4glpc --as-dll some_module.4gl -o some_module.so
 
 then use
 
@@ -1591,7 +1591,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.32 2004-03-25 09:15:24 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.33 2004-10-04 13:49:59 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4712,7 +4712,7 @@ uid.4gl (which contains all our wrappers) :
 	end function
 
 
-$ 4glpc -as-dll uid.4gl -o libuid.so
+$ 4glpc --as-dll uid.4gl -o libuid.so
 
 We can then use this wrapper whenever we like *without* having to do anything
 on our 4glpc line :

@@ -83,7 +83,8 @@ define lv_tabname char(256)
 define lv_ok integer
 code
  trim(lv_tabname);
- lv_ok=A4GLSQL_get_columns (lv_tabname);
+ //A4GLSQL_get_columns char* tabname char* colname int* dtype int* size -> int
+ lv_ok=A4GLSQL_get_columns (lv_tabname,"",0,0);
 endcode
 return lv_ok
 end function

@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.16 2004-09-24 06:29:04 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.17 2004-10-04 13:49:59 afalout Exp $
 ;
 
 
@@ -628,6 +628,28 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 @ISAMAKEFILE_19@
 @ISAMAKEFILE_20@
 
+;=========================
+;Config files (to etc/ )
+@ISCONFFILE_1@
+@ISCONFFILE_2@
+@ISCONFFILE_3@
+@ISCONFFILE_4@
+@ISCONFFILE_5@
+@ISCONFFILE_6@
+@ISCONFFILE_7@
+@ISCONFFILE_8@
+@ISCONFFILE_9@
+@ISCONFFILE_10@
+@ISCONFFILE_11@
+@ISCONFFILE_12@
+@ISCONFFILE_13@
+@ISCONFFILE_14@
+@ISCONFFILE_15@
+@ISCONFFILE_16@
+@ISCONFFILE_17@
+@ISCONFFILE_18@
+@ISCONFFILE_19@
+@ISCONFFILE_20@
 
 ;=========================
 ;GTK libs: (add GTK themes here:)

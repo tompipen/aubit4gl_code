@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-09-28 09:49:16 afalout Exp $
+# $Id: Makefile,v 1.4 2004-10-04 13:50:02 afalout Exp $
 #
 
 ROOT    =../../..
@@ -55,13 +55,13 @@ ALL=${LIBROOT}/libA4GL_sxml${SO_EXT}
 all : ${ALL}
 
 ${LIBROOT}/libA4GL_sxml${SO_EXT}: sxmllib.c
-#	${4GLPC_EXEC} -g -as-dll $^ -o $@ -lsxml
+#	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lsxml
 	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lsxml
 	@echo "SXML library sucesfully compiled."
 
 
 sxmllib.c: sxmllib.4gl
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} --verbose $^
+	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
 
 
 

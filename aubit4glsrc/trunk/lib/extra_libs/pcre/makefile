@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.3 2004-09-28 09:49:15 afalout Exp $
+# $Id: makefile,v 1.4 2004-10-04 13:50:01 afalout Exp $
 #
 
 #PCRE - Perl Compatible Regular Expressions
@@ -74,14 +74,14 @@ ALL=${LIBROOT}/libA4GL_pcre${SO_EXT}
 all : ${ALL}
 
 ${LIBROOT}/libA4GL_pcre${SO_EXT}: match.4gl
-#	${4GLPC_EXEC} -g -as-dll $^ -o $@ -lspopc
+#	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lspopc
 #	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lspopc
-	${4GLPC_EXEC} $^ -as-dll -o $@ -lpcre
+	${4GLPC_EXEC} $^ ${VERBOSE_FLAG} ${AS_DLL} -o $@ -lpcre
 	@echo "PCRE library sucesfully compiled."
 
 
 #pop.c: pop.4gl
-#	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} --verbose $^
+#	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
 
 ## ==================================================================
 ##                              Clean

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2004-09-28 09:49:16 afalout Exp $
+# $Id: Makefile,v 1.11 2004-10-04 13:50:02 afalout Exp $
 #
 
 ROOT    =../../..
@@ -55,13 +55,13 @@ ALL=${LIBROOT}/libA4GL_pop${SO_EXT}
 all : ${ALL}
 
 ${LIBROOT}/libA4GL_pop${SO_EXT}: pop.c
-#	${4GLPC_EXEC} -g -as-dll $^ -o $@ -lspopc
+#	${4GLPC_EXEC} -g ${AS_DLL} $^ -o $@ -lspopc
 	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl -lspopc
 	@echo "POP library sucesfully compiled."
 
 
 pop.c: pop.4gl
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} --verbose $^
+	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
 
 
 #Move this test in tools/test/build_test

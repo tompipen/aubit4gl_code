@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.81 2004-10-01 10:44:28 afalout Exp $
+# $Id: Makefile-install.mki,v 1.82 2004-10-04 13:50:00 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -772,6 +772,25 @@ SXML_SRC				=sxml
 SXML_SRC_GZ				=${SXML_SRC}.tar.gz
 
 
+
+
+
+
+
+
+
+
+
+##################
+# 33: PostgreSQL with Informix compatibility patches
+PGIFX_INFO				=http://gborg.postgresql.org/project/pginformix/projdisplay.php
+PGIFX_SRC_PATH			=http://informix.fastcrypt.com
+PGIFX_SRC				=postgresql081704
+PGIFX_SRC_GZ			=${PGIFX_SRC}.tar.gz
+PGIFX_INSTPATH			=/opt/pg-ifx/${PGIFX_SRC}
+PGIFX_CTL				=${PGIFX_INSTPATH}/pg-ifx-ctl-${PGIFX_SRC}
+
+
 ## ==================================================================
 ##                    Third-party products installation
 ## ==================================================================
@@ -1326,6 +1345,66 @@ endif
 	@echo " "
 
 
+	
+	
+##################
+# 33: PostgreSQL with Informix compatibility patches
+install.pgifx: install.pgifx.install install.pgifx.ctl install.pgifx.activate
+	@echo " "
+	@echo "Package info & manuals: ${PGIFX_INFO}"
+	@echo " "
+	@echo "PostgreSQL engine & ecpg compiler patched for Informix compatibility installed."
+	@echo "Please re-run 'configure' to detect changes, with this ./configure flags:"
+	@echo " --with-pgcompat --with-ecpg=${PGIFX_INSTPATH}"
+	@echo " --with-pgsql=${PGIFX_INSTPATH} --with-pgsqleng=${PGIFX_INSTPATH}"
+	@echo "You can now remove source code from /tmp/pghead and downloaded"
+	@echo "archive ${AUBIT_SRC_ROOT}/$^	if you wish to save disk space."
+	@echo "To change location where PG-IFX is installed, use:"
+	@echo "make install.pgifx PGIFX_INSTPATH=/some/where/to/install"
+	@echo "Add PGIFX_ACFLAGS='<configure flags>' to above command if you need to."
+	@echo ""	
+
+#Download, compile and install
+install.pgifx.install: ${PGIFX_SRC_GZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+#	cd /tmp/${PGIFX_SRC}/pghead; ./configure --prefix=${PGIFX_INSTPATH} ${PGIFX_ACFLAGS}	
+	cd /tmp/pghead; ./configure --prefix=${PGIFX_INSTPATH} ${PGIFX_ACFLAGS}
+	cd /tmp/pghead; make
+	su; cd /tmp/pghead; make install
+
+#Intialise database
+install.pgifx.activate:
+	-adduser postgres
+	mkdir -p ${PGIFX_INSTPATH}/data
+	chown postgres ${PGIFX_INSTPATH}/data
+	su -l postgres -s ${SH} -c "${PGIFX_INSTPATH}/bin/initdb -D ${PGIFX_INSTPATH}/data"
+#add stuff to config file
+	@echo "datestyle = 'informix, mdy'" >> ${PGIFX_INSTPATH}/data/postgresql.conf
+	@echo "default_delim = '|'" >> ${PGIFX_INSTPATH}/data/postgresql.conf 
+#	-${PGIFX_CTL} start
+	-${PGIFX_CTL} status
+#  	${PGIFX_INSTPATH}/bin/createdb test
+#	${PGIFX_INSTPATH}/bin/psql test
+
+#Create controll script
+install.pgifx.ctl:
+	@echo "PG_BIN='${PGIFX_INSTPATH}/bin'" > ${PGIFX_CTL}
+	@echo "PG_DATA='${PGIFX_INSTPATH}/data'" >> ${PGIFX_CTL}
+	@echo "PG_LOG='${PGIFX_INSTPATH}/pg-ifx-${PGIFX_SRC}.log'" >> ${PGIFX_CTL}
+	@echo 'case $$1 in' >> ${PGIFX_CTL}
+	@echo "start)  su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA -o ' -i' start  > \$$PG_LOG 2>&1 & \" " >> ${PGIFX_CTL}
+	@echo ";;" >> ${PGIFX_CTL}
+	@echo "stop)   su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA stop\"" >> ${PGIFX_CTL}
+	@echo "        ;;" >> ${PGIFX_CTL}
+	@echo "status) su -l postgres -s ${SH} -c \"\$$PG_BIN/pg_ctl -D \$$PG_DATA status\"" >> ${PGIFX_CTL}
+	@echo "        ;;" >> ${PGIFX_CTL}
+	@echo "*)      echo "Usage: start/stop/status"" >> ${PGIFX_CTL}
+	@echo "        ;;" >> ${PGIFX_CTL}
+	@echo "esac" >> ${PGIFX_CTL}
+	chmod a+x ${PGIFX_CTL}
+	@echo "Use script ${PGIFX_CTL}"
+	@echo "to start/stop/status PG engine"
+	
 ########################
 #Targets for downloading installation files:
 ${IODBC_RUNTIME_RPM}:
@@ -1437,6 +1516,9 @@ ${SXML_SRC_GZ}:
 	${WGET} ${SXML_SRC_PATH}/$@
 ${PDCURSES_SRC_ZIP}:
 	${WGET} ${PDCURSES_WIN_PATH}/$@
+${PGIFX_SRC_GZ}:
+	${WGET} ${PGIFX_SRC_PATH}/$@
+
 
 #############################################
 #       SQLite tests

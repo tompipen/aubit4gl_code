@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.4 2004-09-28 09:49:27 afalout Exp $
+# $Id: makefile,v 1.5 2004-10-04 13:50:05 afalout Exp $
 #
 
 # Currently Informix only
@@ -39,6 +39,8 @@ BINROOT	=${ROOT}/bin
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
 
+include ${ROOT}/incl/a4gl.mk
+
 ## ==================================================================
 ##                              Options
 ## ==================================================================
@@ -50,35 +52,24 @@ export A4GL_LEXDIALECT
 #INFORMIXC=gcc
 #export INFORMIXC
 
-4GLC=${FGLPCEXEC} -verbose
+4GLC=${FGLPCEXEC} ${VERBOSE_FLAG}
+
+ALL=${ROOT}/bin/aupscol
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-${ROOT}/bin/aupscol: main.o upscol.o infx.o ../asql/ifx_pick.ao val.o att.o
+all: ${ALL}
+	@echo "Default target (${ALL}) succesfuly compiled."
+	
+${ROOT}/bin/aupscol: main.ao upscol.ao infx.ao ../asql/ifx_pick.ao val.ao att.ao
 	${4GLC} $^ -o $@
+
 
 ## ==================================================================
 ##                              Sub-targets
 ## ==================================================================
-
-#FIXME: use amake to do this
-
-att.o: att.4gl
-	${4GLC} -g -c $^ -o $@
-
-main.o: main.4gl
-	${4GLC} -g -c $^ -o $@
-
-val.o: val.4gl
-	${4GLC}  -g -c $^ -o $@
-
-infx.o: infx.4gl
-	${4GLC} -g -c $^ -o $@
-
-upscol.o: upscol.4gl
-	${4GLC} -g -c $^ -o $@
 
 ../asql/ifx_pick.ao:
 	${MAKE} -C ../asql
@@ -89,6 +80,6 @@ upscol.o: upscol.4gl
 	
 clean:
 	${RM} *.o *.ao *.bak *.h *.glb *.c *.ec *~ *.err aupscol \
-	${ROOT}/bin/aupscol *~
+	${ALL} *~ 
 	
 	

@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.248 2004-10-02 04:45:00 afalout Exp $
+dnl # $Id: configure.in,v 1.249 2004-10-04 13:49:33 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -250,7 +250,7 @@ fi
 #AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
 #so we need to specify file which is in both source code and
 #binary distributions:
-AC_CONFIG_SRCDIR([bin/4glpc])
+AC_CONFIG_SRCDIR([bin/aubit])
 
 if test "$AUBIT_SOURCE" = "1" ; then
 	#Location of global header to receive "#define xxxxx y" replacements:
@@ -1209,6 +1209,27 @@ AC_SUBST(CONFFILE_18)
 AC_SUBST(CONFFILE_19)
 AC_SUBST(CONFFILE_20)
 
+AC_SUBST(ISCONFFILE_1)
+AC_SUBST(ISCONFFILE_2)
+AC_SUBST(ISCONFFILE_3)
+AC_SUBST(ISCONFFILE_4)
+AC_SUBST(ISCONFFILE_5)
+AC_SUBST(ISCONFFILE_6)
+AC_SUBST(ISCONFFILE_7)
+AC_SUBST(ISCONFFILE_8)
+AC_SUBST(ISCONFFILE_9)
+AC_SUBST(ISCONFFILE_10)
+AC_SUBST(ISCONFFILE_11)
+AC_SUBST(ISCONFFILE_12)
+AC_SUBST(ISCONFFILE_13)
+AC_SUBST(ISCONFFILE_14)
+AC_SUBST(ISCONFFILE_15)
+AC_SUBST(ISCONFFILE_16)
+AC_SUBST(ISCONFFILE_17)
+AC_SUBST(ISCONFFILE_18)
+AC_SUBST(ISCONFFILE_19)
+AC_SUBST(ISCONFFILE_20)
+
 #SQL conversion files
 AC_SUBST(CONVFILE_1)
 AC_SUBST(CONVFILE_2)
@@ -1614,8 +1635,10 @@ if test "$withval" != "no"; then
 	############ database ##########
 	if test "$with_sapdb" = ""; then			with_sapdb=yes 		;fi
 	if test "$with_pgsql" = ""; then            with_pgsql=yes 		;fi
+	if test "$with_pgsqleng" = ""; then         with_pgsqleng=yes   ;fi	
 	if test "$with_sqlite" = ""; then           with_sqlite=yes     ;fi
 	if test "$with_ecpg" = ""; then             with_ecpg=yes       ;fi
+	if test "$with_pgcompat" = ""; then         with_pgcompat=yes   ;fi	
 	if test "$with_informix" = ""; then         with_informix=yes
                                                force_informix=yes  ;fi
 	if test "$cygwin" != "1" ; then
@@ -1648,7 +1671,6 @@ if test "$withval" != "no"; then
 	if test "$with_pop" = ""; then          	with_pop=yes 		;fi
 	if test "$with_pcre" = ""; then          	with_pcre=yes 		;fi
 	if test "$with_sxml" = ""; then          	with_sxml=yes 		;fi	
-	if test "$with_ecpg" = ""; then          	with_ecpg=yes 		;fi
 	if test "$with_esqlc" = ""; then            with_esqlc=yes 		;fi
 
 	if test "$with_fourj" = ""; then            with_fourj=yes 		;fi
@@ -1799,21 +1821,18 @@ COMP_LIBS="LEX_EC LEX_C LEX_CS LEX_PERL"
 
 #Libraries that need 4glc (and in some cases fcompile) to build, and are
 #buit in all cases:
-#FIXME: A4GL_HTML should be linkable (LIB_EXPORTLIB), but we are using 4glpc to create dll,
-#and we don't get .a file...
+#FIXME: A4GL_HTML should be linkable (LIB_EXPORTLIB), but we are using 4glc 
+#to create dll, and we don't get .a file...
 NEED_4GLC_ALL_libs="HELP_std A4GL_string A4GL_HTML"
 
 if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
 	#On CygWin/MinGW:
-
 	#make[3]: Entering directory `/usr/src/aubit/aubit4glsrc/lib/extra_libs/file'
-	#/usr/bin/bash 4glpc -as-dll libfile.4gl -o libA4GL_file.dll
+	#/usr/bin/bash 4glc --as-dll libfile.4gl -o libA4GL_file.dll
 	#============ FIRST ERROR: ==============
 	#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1834):libfile.c: undefined reference to `trim_nl'
 	#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1846):libfile.c: undefined reference to `push_char'
 	#========================================
-	#See file  libA4GL_file.dll.err
-	#Error compiling... check  libA4GL_file.dll.err
 	NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_file"
 fi
 
@@ -1929,8 +1948,9 @@ fi
 ##       Define permanent list of shell scripts to build/install
 ## ==================================================================
 
-AMAKE_SH="amake amakeallo amakeallf genmake prepmake"
-ALL_SH="4glpc aubit ecpg_wrap esql_wrap $AMAKE_SH"
+AMAKE_SH="amake genmake prepmake"
+ALL_SH="aubit ecpg_wrap esql_wrap $AMAKE_SH"
+#ALL_SH="4glpc $AMAKE_SH"
 #abug.sh
 
 #Source: @IS_SOURCE@\install.sh; DestDir: {app}; Components: Shell
@@ -2135,38 +2155,34 @@ IMPORT_FILES="a4gl_file  a4gl_glade  a4gl_html  a4gl_pcre  a4gl_string  \
 ##       Define permanent list of configuration files to build/install
 ## ==================================================================
 
+ROOT_FILES_CONF="install.sh"
+
+#Warning: ROOT_FILES variable is used by make install target
+ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF"
+
+#Warning: ETC_FILES variable also used for make install target
+ETC_FILES="4glpc.iem gtkrc_2 odbc.ini.example"
+
 ALL_CONF="$INST_BASE/configure $INST_BASE/etc/config/config.guess \
 		$INST_BASE/etc/config/config.sub $INST_BASE/etc/config/install-sh \
-		$INST_BASE/etc/config/missing $INST_BASE/etc/config/mkinstalldirs"
-
-#ROOT_FILES_CONF="$INST_BASE/install.sh"
-ROOT_FILES_CONF="install.sh"
-ETC_FILES="odbc.ini.example 4glpc.iem gtkrc_2"
+		$INST_BASE/etc/config/missing $INST_BASE/etc/config/mkinstalldirs \
+		$INST_BASE/etc/aubitrc-bin.in $INST_BASE/$ROOT_FILES_CONF"
 
     COUNTER=0
+	for FILE in $ETC_FILES ; do	
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "CONFFILE_$COUNTER='%config $INST_BASE/etc/$FILE'"
+		eval "ISCONFFILE_$COUNTER='Source: $IS_SOURCE\etc\\$FILE; DestDir: {app}\etc; Components: runtime'"
+	done
 	for FILE in $ALL_CONF ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "CONFFILE_$COUNTER='$FILE'"
+		#This files are meaningless on Windows
 	done
-	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "CONFFILE_$COUNTER='%config $INST_BASE/etc/$ETC_FILES'"
-	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "CONFFILE_$COUNTER='%config $INST_BASE/etc/aubitrc-bin.in'"
-
-
-ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF" # Makefile
-
-	for FILE in $ROOT_FILES ; do
-		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-		eval "CONFFILE_$COUNTER='$INST_BASE/$FILE'"
-	done
-
 
 #This 2 are used in Makefile-common in BIN_ALLWAYSCLEAN and TOBIN variables
 EXTRAFILE_1=$aubitdir/tools/cygwin/run.exe
 EXTRAFILE_2=$aubitdir/tools/metrics_4gl/4GL_metrics.cgi
-
-
 
 ## ==================================================================
 ##                              Debugging
@@ -2174,8 +2190,6 @@ EXTRAFILE_2=$aubitdir/tools/metrics_4gl/4GL_metrics.cgi
 
 PHP_CONFIGURE_PART(Configuring Debugging options)
 PHP_HELP_SEPARATOR([Debugging options:])
-
-
 
 AC_MSG_CHECKING(Autoconf debugging)
 if test "$enable_ac_debug" = "yes" ; then
@@ -2772,14 +2786,14 @@ AC_ARG_WITH(cint,
 					ac_cv_lib_bsd_main=""
 					AC_CHECK_LIB([bsd], [main])
 				fi
-	
+				AC_MSG_CHECKING(if we can use Cint)	
 				if test "$ac_cv_lib_bsd_main" != "yes" \
 					-o "$ac_cv_lib_termcap_main" != "yes"; \
 				then
 					CINT=no
 					AC_MSG_RESULT(no-missing bsd or termcap libraries)
 				else
-					AC_MSG_RESULT(Use Cint - yes)			
+					AC_MSG_RESULT(yes)
 				fi
 			else
 				#On Windows, we dont have to worry about dependencies
@@ -3194,12 +3208,12 @@ AC_ARG_WITH(esqlc,
                 #on non-Windows platforms, native C compiler will do:
 				QESQLCC_OK="OK"
 			fi
-
+			AC_MSG_CHECKING(if we can use Querix ESQL/C)
 			if test "$Q_ESQLC" != "no" && test "$QESQLCC_OK" = "OK";
 			then
 				AC_MSG_RESULT(yes)
             else
-				AC_MSG_RESULT(esqlc not in path or no compatible C compiler)
+				AC_MSG_RESULT(no - esqlc not in path or no compatible C compiler)
                 Q_ESQLC=no
 			fi
 
@@ -3434,7 +3448,7 @@ AC_ARG_WITH(pgsqleng,
 
 				*-IFX) #Andrej's RPM builds
 			    	AC_MSG_RESULT($POSTMASTER_VER)
-					PG_ENGINE_IFXCOMPAT=yes
+					PG_ENGINE_IFXCOMPAT=yes-old
 		            ;;
 
 				6.*.* | 7.1.* | 7.2.* | 7.3.*)
@@ -3656,6 +3670,7 @@ if test "$withval" != "no"; then
 
 	if test "$PG_ESQLC" != "no"; then
 		AC_MSG_CHECKING(PG ESQL Informix compatibility)
+		#First, with -v
 		PG_ESQLC_VERSION=`$PG_ESQLC -v 2>&1  | head -1 | sed -e 's/ecpg - the postgresql preprocessor, version: //' | sed -e 's/ecpg, the PostgreSQL embedded C preprocessor, version //'`
 		#Fri Jul 18 16:31:10 CEST 2003
 		#        - Set ecpg version to 3.0.0
@@ -3670,9 +3685,9 @@ if test "$withval" != "no"; then
 			    	AC_MSG_RESULT(No-$PG_ESQLC_VERSION)
 					PG_ESQLC_IFXCOMPAT=no
 				    ;;
-				*.*.*) #3.0.0 and up
-			    	AC_MSG_RESULT(Probably yes-$PG_ESQLC_VERSION)
-					PG_ESQLC_IFXCOMPAT=yes
+				3.*.*) #3.0.0 and up
+			    	AC_MSG_RESULT(Maybe-$PG_ESQLC_VERSION)
+					PG_ESQLC_IFXCOMPAT=maybe
 		            ;;
 				*)
 			    	AC_MSG_RESULT(No-Invalid version number format-$PG_ESQLC_VERSION)
@@ -3683,7 +3698,32 @@ if test "$withval" != "no"; then
 	    	AC_MSG_RESULT(No-Cannot read version number)
 			PG_ESQLC_IFXCOMPAT=no
         fi
+		
+		AC_MSG_CHECKING(PG ESQL Informix compatibility)
+		#Now with --version
+		#ecpg (PostgreSQL 7.4informix1.6) 3.0.0
+		if test "$enable_ac_debug" = "yes" ; then
+			$PG_ESQLC --version 2>&1 | sed -e 's/ecpg (PostgreSQL //' | sed -e 's/)//'
+		fi
+		PG_ESQLC_VERSION2=`$PG_ESQLC --version 2>&1  | head -1 | sed -e 's/ecpg (PostgreSQL //' | sed -e 's/)//' | awk '{print $1}'`
+		if test "$PG_ESQLC_VERSION2" != ""; then
+			case "$PG_ESQLC_VERSION2" in
 
+				*informix*)
+			    	AC_MSG_RESULT(Yes-$PG_ESQLC_VERSION $PG_ESQLC_VERSION2)
+					PG_ESQLC_IFXCOMPAT=yes
+		            ;;
+				*)
+			    	AC_MSG_RESULT(No-'informix' identifier not found-$PG_ESQLC_VERSION $PG_ESQLC_VERSION2)
+					PG_ESQLC_IFXCOMPAT=no
+				    ;;
+	        esac
+        else
+	    	AC_MSG_RESULT(No-Cannot read version number)
+			PG_ESQLC_IFXCOMPAT=no
+        fi
+		
+		
 		#Check paths
 		if test -d "$withval/include"; then 
 			ECPG_INCDIR="$withval/include"
@@ -3849,8 +3889,8 @@ if test "$withval" != "no"; then
 			HAVE_PG_ESQL_HEADERS=yes
 				
 			if test "$HAVE_PG_ESQL_DECIMAL_H" != "yes"; then
-				AC_MSG_WARN(** Cannot find ECPG Informix compatibility)
-				AC_MSG_WARN(** headers - this ECPG is NOT Informix compatible.)
+				AC_MSG_WARN(** Cannot find ECPG Informix compatibility headers)
+				AC_MSG_WARN(** (decimal.h) - this ECPG is NOT Informix compatible.)
 				AC_MSG_WARN(** A4GL_LEX=EC with A4GL_LEXDIALECT=POSTGRES)
 				AC_MSG_WARN(** will not work correctly and should NOT be used.)
 				PG_ESQLC_IFXCOMPAT=no
@@ -3933,6 +3973,82 @@ if test "$enable_stop_ecpg" = "yes" ; then
 	exit
 fi
 
+## ==================================================================
+##   Check all PodtgreSQL components for Aubit/Informix compatibility
+## ==================================================================
+
+if test "$POSTMASTER" != "" -a "$PGSQL_LIBS" != "" -a "$HAS_LIB_PQ" != "0" \
+		-a "$HAVE_PGSQL_LIB" != "no" -a "$PG_ESQLC" != "no"; then 
+
+PHP_CONFIGURE_PART(Checking PostgresSQL Aubit/Informix compatibility:)
+AC_ARG_WITH(pgcompat,
+[  --with-pgcompat        Check PostgresSQL compatibility with Aubit],
+[
+	if test "$withval" != "no"; then
+		PG_AUBIT_COMPAT=1
+		if test "$PG_ENGINE_IFXCOMPAT" != "yes"; then 
+			AC_MSG_WARN(Local engine NOT compatible)
+			PG_AUBIT_COMPAT=0
+		fi
+		if test "$PG_ESQLC_IFXCOMPAT" != "yes"; then 
+			AC_MSG_WARN(ecpg NOT compatible)
+			PG_AUBIT_COMPAT=0
+		fi
+		
+		#TODO: how do we check libpq?
+		#Dave say: libpq doesn't matter, it's just the protocol.
+
+		AC_MSG_CHECKING(if we can use Aubit in EC mode with PostgreSQL)
+		if test "$PG_AUBIT_COMPAT" = "0"; then
+			AC_MSG_RESULT(no)
+			WARN_PGCOMPAT=1
+			#disable everything
+			PG_ENGINE_IFXCOMPAT="no" 
+			PG_ESQLC_IFXCOMPAT="no" 
+			POSTMASTER=""
+			PG_ENGINE_IFXCOMPAT="no"
+			PGSQL_WITHVAL=""
+			PGSQL_INCDIR=""
+			PGSQL_LIBDIR=""
+			PGSQL_INCLUDE=""
+			PGSQL_LFLAGS=""
+			PGSQL_LIBS=""
+			HAS_LIB_PQ=0
+			HAVE_PG_ESQL_HEADERS_LIB="no"
+    	    HAVE_PGSQL_LIB="no"
+			PG_ESQLC="no"
+			PG_ESQLC_VERSION=""
+			PG_ESQLC_VERSION2=""
+			ECPG_INCDIR=""
+			ECPG_IFLAGS=""
+			ECPG_LIBDIR=""
+			HAVE_PG_ESQL_HEADERS_LIB="no"
+			PG_ESQL_HEADERS_LIB_SUFIX=""
+			LIBPQ_FE_H_IFLAGS=""
+			HAVE_PG_ESQL_DECIMAL_H="no"
+			HAVE_PG_ESQL_HEADERS_LIB="no"
+			HAVE_PG_ESQL_HEADERS="no"
+			ECPG_IFLAGS=""
+			POSTGRESDIR=""
+            PG_ESQLC="no"
+		else
+			AC_MSG_RESULT(yes)
+		fi
+	
+	else
+    	AC_MSG_RESULT(disabled)
+	fi
+],[
+  AC_MSG_RESULT(--with-pgsqleng not specified)
+])
+
+else
+	PG_AUBIT_COMPAT=0
+fi
+
+if test "$enable_stop_pgcompat" = "yes" ; then
+	exit
+fi
 
 ## ==================================================================
 ##                 Checks for SQLite support
@@ -4663,7 +4779,9 @@ AC_ARG_WITH(pgodbc,
 		old_LIBS="$LIBS"; old_LDFLAGS="$LDFLAGS"; old_CPPFLAGS="$CPPFLAGS"
 		TMP_PGODBC_INCLUDE="-I$withval/include"
 		if test -d "$withval/include/pgsql/iodbc"; then
-			AC_MSG_WARN($withval/include/pgsql/iodbc added to IFLAGS)		
+			if test "$enable_ac_debug" = "yes"; then 
+				AC_MSG_WARN($withval/include/pgsql/iodbc added to IFLAGS)
+			fi
 			TMP_PGODBC_INCLUDE="$TMP_PGODBC_INCLUDE -I$withval/include/pgsql/iodbc"
 		fi
 		TMP_PGODBC_LFLAGS="-L$withval/lib"
@@ -4909,36 +5027,40 @@ AC_ARG_WITH(gtk,
 					AC_MSG_RESULT(GTK+ 2.0 names found with pkg-config)								
 				fi
 			fi
-			#Now check that names
-			if test "$GTK_NAME" != "" -a "$GDK_NAME" != "" -a "$GLIB_NAME" != ""; then
-				if $PKG_CONFIG --exists $GTK_NAME ; then
-					GTK_NAME_OK=1
-				fi
-				if $PKG_CONFIG --exists $GDK_NAME ; then
-					GDK_NAME_OK=1
-				fi
-				if $PKG_CONFIG --exists $GLIB_NAME ; then
-					GLIB_NAME_OK=1
-				fi
-				if test "$GTK_NAME_OK" = "1" -a "$GDK_NAME_OK" = "1" -a "$GLIB_NAME_OK" = "1"; then
-					if test "$enable_ac_debug" = "yes" ; then
-						AC_MSG_RESULT(Found names: GTK_NAME="$GTK_NAME" GDK_NAME="$GDK_NAME" GLIB_NAME="$GLIB_NAME")
+			
+			#If we still watn to use pkg-config:
+			if test "$GTK_USE_CONFIG" = "pkg"; then
+				#Now check that names
+				if test "$GTK_NAME" != "" -a "$GDK_NAME" != "" -a "$GLIB_NAME" != ""; then
+					if $PKG_CONFIG --exists $GTK_NAME ; then
+						GTK_NAME_OK=1
+					fi
+					if $PKG_CONFIG --exists $GDK_NAME ; then
+						GDK_NAME_OK=1
+					fi
+					if $PKG_CONFIG --exists $GLIB_NAME ; then
+						GLIB_NAME_OK=1
+					fi
+					if test "$GTK_NAME_OK" = "1" -a "$GDK_NAME_OK" = "1" -a "$GLIB_NAME_OK" = "1"; then
+						if test "$enable_ac_debug" = "yes" ; then
+							AC_MSG_RESULT(Found names: GTK_NAME="$GTK_NAME" GDK_NAME="$GDK_NAME" GLIB_NAME="$GLIB_NAME")
+						fi
+					else
+						GTK_VERSION="0"; 
+						AC_DEFINE(HAVE_GTK_VERSION,0,[ ])		
+						AC_MSG_WARN(cannot confirm names from pkg-config.)
+						AC_MSG_WARN(GTK_NAME="$GTK_NAME")
+						AC_MSG_WARN(GDK_NAME="$GDK_NAME")
+						AC_MSG_WARN(GLIB_NAME="$GLIB_NAME")
 					fi
 				else
 					GTK_VERSION="0"; 
 					AC_DEFINE(HAVE_GTK_VERSION,0,[ ])		
-					AC_MSG_WARN(cannot confirm names from pkg-config.)
+					AC_MSG_WARN(cannot extract names from pkg-config.)
 					AC_MSG_WARN(GTK_NAME="$GTK_NAME")
 					AC_MSG_WARN(GDK_NAME="$GDK_NAME")
 					AC_MSG_WARN(GLIB_NAME="$GLIB_NAME")
 				fi
-			else
-				GTK_VERSION="0"; 
-				AC_DEFINE(HAVE_GTK_VERSION,0,[ ])		
-				AC_MSG_WARN(cannot extract names from pkg-config.)
-				AC_MSG_WARN(GTK_NAME="$GTK_NAME")
-				AC_MSG_WARN(GDK_NAME="$GDK_NAME")
-				AC_MSG_WARN(GLIB_NAME="$GLIB_NAME")
 			fi
 		fi
 		
@@ -4965,12 +5087,11 @@ AC_ARG_WITH(gtk,
 			GTK_INC_PATH=`$GTK_CONFIG --cflags`
 			GLIB_CFLAGS=$GTK_INC_PATH
 			GTKLIBS=`$GTK_CONFIG --libs`
-
 			#FIXME: why am I using differnt names?
 			if test "$GTK_INC_PATH" != "" -a "$GLIB_CFLAGS" != "" \
 				-a "$GTKLIBS" != ""; then
 				AC_DEFINE(HAVE_GTK,1,[ ])
-				GTK_REAL_VERSION=`$GTK_CONFIG --version $GTK_NAME`
+				GTK_REAL_VERSION=`$GTK_CONFIG --version`
 				GTK_VERSION="1.2"
 				GTKBUILD=yes
 			else
@@ -4978,6 +5099,7 @@ AC_ARG_WITH(gtk,
 				GTKBUILD=no
 			fi
 		fi
+
 		#########################################################
 		if test "$GTK_USE_CONFIG" = "no"; then
             #try to assign paths manually:
@@ -7373,6 +7495,28 @@ cat<<X
 | $PLUGIN_NO
 X
 fi
+if test "$WARN_PGCOMPAT" = "1" ; then
+cat<<X
++--------------------------------------------------------------------+
+|                        ***   NOTE  ***                             |
+| Disabled Aubit support for PostgreSQL EC mode, because installed   |
+| PostgreSQL ecpg and/or engine and/or libraries are NOT compatible  |
+| with Aubit compiler in EC mode. You can still use ODBC to connect  |
+| to PostgreSQL. Download and install Aubit/Informix compatible      |
+| PostgreSQL from: http://informix.fastcrypt.com if you wish to use  |
+| Aubit in PostgreSQL EC mode. You can use 'make install.pgifx' to   |
+| download and install it automatically.                             |
+| DO NOT FORGET TO DE-INSTALL CURRENTLY INSTALLED PG FIRST!          |
+| More info about PG Informix compatibility patch:                   |
+| http://gborg.postgresql.org/project/pginformix/projdisplay.php     |
+| To disable this check, use --without-pgcompat                      |
+| If you do, and you still try to use Aubit in PG EC mode,           |
+| you are on your own - please DO NOT report issues related to       |
+| Aubit PG EC mode unless this check is enabled. Thank you.          |
++--------------------------------------------------------------------+
+X
+fi
+
 if test "$enable_ac_debug" = "yes" ; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -7388,7 +7532,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.248 2004-10-02 04:45:00 afalout Exp $
+| $Id: configure.in,v 1.249 2004-10-04 13:49:33 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

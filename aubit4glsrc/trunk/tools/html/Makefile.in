@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2004-09-28 09:49:27 afalout Exp $
+# $Id: Makefile.in,v 1.18 2004-10-04 13:50:05 afalout Exp $
 #
 
 ROOT    =../..
@@ -52,7 +52,7 @@ all: html
 
 html:
 #	${AMAKE} simple_html
-#	${AMAKE} -verbose A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc simple_html MOVETARGETTOSTORE=0
+#	${AMAKE} ${VERBOSE_FLAG} A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc simple_html MOVETARGETTOSTORE=0
 #	${AMAKE} A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+= A4GL_CC_LDFLAGS+=simple_html MOVETARGETTOSTORE=0
 	${AMAKE} MOVETARGETTOSTORE=0
 
@@ -75,14 +75,14 @@ simple_html.sf:
 
 libA4GL_HTML${SO_EXT}: ${LIBROOT}/libA4GL_HTML${SO_EXT}
 ${LIBROOT}/libA4GL_HTML${SO_EXT}: libahtmllib.c
-#	${FGLPCEXEC} -as-dll $^ -o $@
+#	${FGLPCEXEC} ${AS_DLL} $^ -o $@
 #FIXME: how are we going to link with this on Windows without .dll.a file ?
-#fix 4glpc -as-dll to create .a file, and migrate everything to 4glc...
+#fix 4glpc --as-dll to create .a file, and migrate everything to 4glc...
 	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
 	@echo "HTML library sucesfully compiled."
 
 libahtmllib.c: libahtmllib.4gl
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} --verbose $^
+	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
 
 
 

@@ -70,7 +70,7 @@ More Options:
       -debug  ($INCLLINES=Yes) include extra debuging code
       -map/nomap ($MAP4GL=Yes) generate additional map file code
       -maponly
-      -verbose ($A4GLVERBOSE=yes) show additional info while compiling
+      --verbose ($A4GLVERBOSE=yes) show additional info while compiling
       -noerrcode () do not show eeror code on compile errors
       -as-ddl
       -i ignore errors and continue
@@ -91,7 +91,7 @@ Environment variables recognised:
   -debug  ($INCLLINES=Yes) include extra debuging code
   -map/nomap ($MAP4GL=Yes) generate additional map file code
   -maponly
-  -verbose ($A4GLVERBOSE=yes) show additional info while compiling
+  --verbose ($A4GLVERBOSE=yes) show additional info while compiling
   -as-ddl
   $A4GLRC - full path to file to be used instead of .a4glrc
 

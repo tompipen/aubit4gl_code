@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.48 2004-09-28 09:49:15 afalout Exp $
+#	 $Id: a4gl.mk,v 1.49 2004-10-04 13:50:00 afalout Exp $
 
 ##########################################################################
 #
@@ -87,18 +87,10 @@ AUBIT_WRAPER		=aubit
 AUBIT_CMD   		=${AUBIT_WRAPER}
 
 ###########################
-#do we want to use 4glpc shell script, or will we invoke 4glc directly
-#on CygWin (not MinGW) we have to use 4glpc because of the bug in getopt_long()
-#To find out iw wae are using MinGW, we can try:
+#To find out if we are using MinGW, we can try:
 ifdef COMSPEC
 	MINGW			:=$(shell mingw32-gcc --version 2>/dev/null)
-	ifeq "${MINGW}" ""
-		USE_4GLPC	=1
-    else            
-		USE_4GLPC	=0
-    endif
 endif
-#
 
 ###########################
 #If this compilers needs objects ar run-time, set to 'yes':
@@ -127,20 +119,38 @@ AUCC_FLAGS			=-g -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 
 ###########################
 # A4GL C-code Compiler command
-ifeq "${USE_4GLPC}" "1"
-	ifneq "${FGLPCEXEC}" ""
-		A4GL_FGLC		=${FGLPCEXEC}
+#do we want to use 4glpc shell script, or will we invoke 4glc directly
+ifdef COMSPEC
+	#We are on Windows
+	ifeq "${MINGW}" ""
+		#On Windows, but not using MinGW - so we are using CygWin
+		#on CygWin (not MinGW) we have to use 4glpc because of the bug in 
+		#CygWin implementation of getopt_long()
+		USE_4GLPC	=1
 	else
-		A4GL_FGLC		=4glpc
+		#On Windows, using MinGW
+		#We should use 4glc since we may not have shell installed
+		#and 3glpc is a shell script
+		USE_4GLPC	=0
 	endif
-	A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} ${A4GL_FGLC}
+endif
+ifeq "${USE_4GLPC}" "1"
+	#We are forced to use 4glpc
+	ifneq "${FGLPCEXEC}" ""
+		A4GL_FGLC	=${FGLPCEXEC}
+	else
+		A4GL_FGLC	=4glpc
+	endif
+	A4GL_CC_CMD     =${AUBIT_CMD} ${SH} ${A4GL_FGLC}
 else
+	#default
+	USE_4GLPC		=0
 	A4GL_FGLC		=4glc
-	A4GL_CC_CMD     = ${AUBIT_CMD} ${A4GL_FGLC} ${EXTRA_4GLC}
-#--clean
+	A4GL_CC_CMD     =${AUBIT_CMD} ${A4GL_FGLC} ${EXTRA_4GLC}
+	#--clean
 endif
 A4GL_CC_ENV     =
-A4GL_CC_FLAGS   = #-verbose
+A4GL_CC_FLAGS   = #--verbose
 
 ###########################
 # A4GL C-code Linker
@@ -302,7 +312,7 @@ endif
 ####################################
 # Rule to compile an shared object file from a 4gl file
 %${A4GL_SOB_EXT} : %.4gl
-	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -as-dll -o $@
+	${FAIL_CMPL_4GL}${A4GL_CC} $< -c --as-dll -o $@
 
 
 ####################################

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.164 2004-09-28 09:49:14 afalout Exp $
+# $Id: Makefile-common.in,v 1.165 2004-10-04 13:50:00 afalout Exp $
 #
 
 
@@ -707,22 +707,35 @@ ifeq "${FGLPC}" "new"
 	FGLPC_NAME=4glpc_new
 	FGLPC_SH=
 else
-	FGLPC_NAME=4glpc
+	FGLPC_NAME=4glc
+	FGLPC_SH=
+
+	#FGLPC_NAME=4glpc
 	#4glpc needs bash to run - old sh will not do. We need to fix this in "aubit" script	
-	FGLPC_SH=${SH}
+	#FGLPC_SH=${SH}
+endif
+#Option we need to pass to 4gl compiler used (4glc/4glpc/4glpc_new) to
+#make shared library WARNING: 4glpc -sahred option is not same as what traditionaly
+#it is for C compilers; in 4glpc it menas "use shared libraries for linking) and
+#--as-dll option is used to make shared library. Also, 4glpc accepts "-as-dll" and
+#--as-dll but 4glc accepts --as-dll or --shared, and NOT -as-dll. 4glpc_new takes 
+#--as-dll, but not --shared
+AS_DLL=--as-dll
+ifdef VERBOSE
+	VERBOSE_FLAG=--verbose
 endif
 
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	FCOMPILE	=${AUBIT_SRC_ROOT}/bin/fcompile
 	#MKMESS      =${AUBIT_SRC_ROOT}/bin/mkmess
     MKMESS      =${AUBIT_SRC_ROOT}/bin/amkmessage
-	FGLPCEXEC	:=${SH} ${AUBIT_SRC_ROOT}/bin/${FGLPC_NAME}
+	FGLPCEXEC	:=${FGLPC_SH} ${AUBIT_SRC_ROOT}/bin/${FGLPC_NAME}
 	MCOMPILE	=${AUBIT_SRC_ROOT}/bin/mcompile
 else
 	FCOMPILE	=aubit fcompile
-	#MKMESS      =aubit mkmess amkmessage
+	#MKMESS      =aubit mkmess
 	MKMESS      =aubit amkmessage
-	FGLPCEXEC	=${SH} aubit ${SH} ${FGLPC_NAME}
+	FGLPCEXEC	=${FGLPC_SH} aubit ${FGLPC_SH} ${FGLPC_NAME}
 	MCOMPILE	=aubit mcompile
 endif
 

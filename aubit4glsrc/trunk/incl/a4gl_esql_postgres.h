@@ -17,19 +17,36 @@ extern "C"
 #endif
 #include "a4gl_incl_4gldef.h"
 
-#if HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H
+/*
+Great...ca't do any of this, since this header is needed in binary installation
+where there is no a4gl_incl_config.h to hold Autoconf results...
+
+so we just have to include decimal.h without the path and hope for the best...
+
+#if (HAVE_PGSQL_INFORMIX_ESQL_DECIMAL_H == 1)
 	#include "pgsql/informix/esql/decimal.h"
 #else
-	#if HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H
+	#if (HAVE_POSTGRESQL_INFORMIX_ESQL_DECIMAL_H == 1)
 		#include "postgresql/informix/esql/decimal.h"
 	#else
-		#if HAVE_DECIMAL_H
+		#if (HAVE_DECIMAL_H == 1)
 			//This is dangerous; Informix esqlc and Aubit also have decimal.h
 			//Who knows which one we will actually include like this...
 			#include "decimal.h"
+		#else
+			//configure did not find decimal.h, in whic case compiling ECPG PG
+			//stuff should have been disabled, but you are still here somehow...
+			//#include "decimal.h"
+			assert("ERROR: Autoconf did not find decimal.h - STOP" == 0)
+			//make sure we cause compile-time error here:
+			#include "must-force-compiler-error-missing-decimal.h"
 		#endif
 	#endif
 #endif
+*/
+// see above:
+//on my system, it will compile even without it (which is scarry)
+#include "decimal.h"
 
 #include "sqltypes.h"
 

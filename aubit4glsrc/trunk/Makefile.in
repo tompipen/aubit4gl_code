@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.163 2004-10-01 00:50:03 afalout Exp $
+# $Id: Makefile.in,v 1.164 2004-10-04 13:49:24 afalout Exp $
 #
 
 ## ==================================================================
@@ -37,41 +37,46 @@ include incl/Makefile-common
 ##                    Define default target
 ## ==================================================================
 
+###############################
 #All targets in this make file are "phony" targets - they do not create
 #anything, they just invoke other make files:
 .PHONY: all clean default log corecompile extra ide api.headers glade
 
-ALL					=settings api.headers corecompile liblogical test
-ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload\
+###############################
+#Things we compile by default
+ALL					=settings api.headers corecompile liblogical libfile \
+						libstring test
+						
+###############################
+#Things we compile with 'extra' target
+ALL_EXTRA  			=ide odbctest libhtml adbaccess adbload\
 						glade
-
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
 ALL_EXTRA_BROKEN	=
-
 ifneq "${PERLBUILD}" "no"
 	ALL_EXTRA_BROKEN+=perl
 endif
-
 ifneq "${JABBERBUILD}" "no"
 	ALL_EXTRA  		+=jabber
 endif
-
 ifneq "@DOXYGEN@" "no"
 	ALL_EXTRA  		+=doxy
 endif
 
+################################
+#Define targetss for liblogical
 LIBLOGICAL_BUILD=bin/process_report lib/libLOGREPPROC_TXT.so lib/libLOGREP_PROC_CSV.so
-
 LIBLOGICAL_GTK2_DEPEND=lib/libLOGREP_CSV.so bin/layout_engine bin/report_viewer \
 	lib/libLOGREP_TXT.so
 LIBLOGICAL_PDF_DEPEND=lib/libLOGREP_PROC_PDF.so lib/libLOGREP_PDF.so
-
 ifeq "${GTK_VERSION}" "2.0"
 	LIBLOGICAL_BUILD+=${LIBLOGICAL_GTK2_DEPEND}
 endif
 ifeq "${PDFBUILD}" "yes"
 	LIBLOGICAL_BUILD+=${LIBLOGICAL_PDF_DEPEND}
 endif
+
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -85,21 +90,25 @@ default: ${ALL}
 	@echo "| PREFIX           =${PREFIX} (under ${AUBITNAME}) "
 	@echo "| LIB_INSTALL_LINK =${LIB_INSTALL_LINK}"
 	@echo "| BIN_INSTALL_LINK =${BIN_INSTALL_LINK}"
-	@echo "| Execute 'make extra' to compile additional components.             |"
+	@echo "| Execute 'make extra' to compile additional components:             |"
+	@echo "| ${ALL_EXTRA}"
 	@echo "| Use Aubit regression tests available from CVS to test the build.   |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"
 	@echo " "
 
+#Target do make default and extra targets, and install everything
 all: default extra install
 
+#Target to perform default compile, logging the output to file
 log:
 	@echo "Logging make process to make.log, please wait..."
 	@${MAKE} > make.log 2>&1
 	@echo "make finished successfuly, see make.log for details."
 	@echo "Total compiler warnings: `grep -c 'warning:' make.log`"
 
+#main target of default build
 corecompile:
 	$(MAKE) -C compilers/xgen
 	$(MAKE) -C common/dataio
@@ -119,7 +128,6 @@ endif
 	$(MAKE) -C tools/afinderr
 	$(MAKE) -C tools/configuration
 	$(MAKE) -C tools/asql
-#	$(MAKE) -C tools/adbaccess - obsolete now that we have asql
 ifneq "${IFMX_ESQLC}" "no"
 	#curently compiles only with ESQL/C
 	$(MAKE) -C tools/aupscol
@@ -127,17 +135,13 @@ endif
 	$(MAKE) -C help
 	@echo Aubit 4gl compiler core is now compiled
 
-#cd lib/libui/ui_curses
-#sh make_static
+#Stuff form Mike's 'remake.mja' 
+#TODO - shoud be part of this makefile
+#cd lib/libui/ui_curses; sh make_static
+#cd lib/libsql/esqlc; sh make_static; sh make_simple
+#cd lib/libesql; sh make_static; sh make_simple
 
-#cd lib/libsql/esqlc
-#sh make_static
-#sh make_simple
-
-#cd lib/libesql
-#sh make_static
-#sh make_simple
-
+#Target to create API headers from .spec files
 api.headers:
 	$(MAKE) -C lib/libaubit4gl api.headers
 
@@ -229,6 +233,7 @@ libstring:
 libhtml:
 	$(MAKE) -C tools/html libA4GL_HTML${SO_EXT}
 
+#This is now more or less obsolete - use asql instead
 adbaccess:
 #	$(MAKE) -C tools/adbaccess use.amake
 #We have a problem with getopt_long() on CygWin, so use 4glpc for now:
@@ -516,7 +521,7 @@ clean.bin:
 	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} afinderr${EXE} \
 	*.afr.dat *.afr.xml configurator${EXE} *.hlp \
 	checker${EXE} runner_fgl${EXE} asql${EXE} aupscol${EXE} checker_fgl${EXE} c2pcode${EXE} \
-	aubitbuild.sh  c2pcode_fgl${EXE} runner${EXE} \
+	aubitbuild.sh  c2pcode_fgl${EXE} runner${EXE} *~ 4glpc_new${EXE} \
 	)
 
 clean.etc:

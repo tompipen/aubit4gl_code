@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.135 2004-09-22 14:39:03 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.1 2004-10-04 13:49:58 afalout Exp $
 #
 
 ########################################################################
@@ -38,6 +38,10 @@
 #will be obsoleted in the near future.
 ########################################################################
 
+if test "$MAKINGAUBIT" = "1"; then 
+	echo "ERROR: 4glpc invoked while MAKINGAUBIT"
+	exit 5
+fi
 
 if [ "$1" = "-dirdiff" ]
 then
@@ -602,7 +606,7 @@ do
 			fi
 		done
 		;;
-	#-as-dll) #WARNING: NOT the same as -shared
+	#--as-dll) #WARNING: NOT the same as -shared
 		#when making shred library, we need to first create objects, and then 
 		#do linking as separate stage (hint: esql don't know no .so)
 		
@@ -1272,7 +1276,7 @@ do
         COMPCC="$COMPCC -g"
 	CFLAGS="$CFLAGS -g"
 		;;
-   -as-dll)		#creates shared library- .so on UNIX, .dll on Windows
+   -as-dll | --as-dll)		#creates shared library- .so on UNIX, .dll on Windows
 		if test "$A4GL_LEXTYPE" = "EC"; then
 			if test "$A4GL_LEXDIALECT" = "POSTGRES"; then
 				PG_LIBS="-lecpg_compat -lpgtypes -lpq"			

@@ -4,7 +4,7 @@ FLAGS="$@"
 
 if test "$DEBUG" = "ALL"; then
 	#Force verbose mode for debugging when Aubit DEBUG is set
-	FLAGS="$FLAGS -verbose"
+	FLAGS="$FLAGS --verbose"
 	SCRIPT_DEBUG="1"
 fi
 
@@ -15,7 +15,7 @@ for a in $FLAGS; do
 			NO_ECHO=1
 			;;
 
-        -verbose)   #Show more information about what is going on
+        -verbose | --verbose)   #Show more information about what is going on
             VERBOSE=1
 			;;
 			

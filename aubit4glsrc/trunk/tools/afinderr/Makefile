@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.5 2004-09-28 09:49:26 afalout Exp $
+# $Id: Makefile,v 1.6 2004-10-04 13:50:04 afalout Exp $
 #
 
 ROOT=../..
@@ -35,14 +35,20 @@ ROOT=../..
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
 
+A4GL_LEXTYPE=C
+DEBUG=ALL
+A4GL_SQLTYPE=nosql
+A4GL_UI=CONSOLE
+
+export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
+
 ALL=${ROOT}/bin/afinderr${EXE}
 
 ${ALL}: afinderr.4gl
-	export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE;\
-		${FGLPCEXEC} $^ -o $@
-#	${ROOT}/bin/4glc afinderr.4gl -o afinderr
-#	cp ./afinderr${EXE} ${ROOT}/bin
-
+	${FGLPCEXEC} $^ -o $@
 
 clean:
-	rm -f *.c *.glb *.h *.exe afinderr *.err *.bak ${ALL}
+	${RM} *.c *.glb *.h *.exe afinderr *.err *.bak ${ALL}  *.ao  *.warn \
+	debug.out *~
+	
+	

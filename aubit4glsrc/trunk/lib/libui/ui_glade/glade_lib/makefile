@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.3 2004-09-28 09:49:24 afalout Exp $
+# $Id: makefile,v 1.4 2004-10-04 13:50:03 afalout Exp $
 #
 
 ROOT			=../../../..
@@ -60,7 +60,7 @@ all: ${ALL}
 	@echo "+--------------------------------------------------------------------+"	
 
 ${LIBROOT}/libA4GL_glade${SO_EXT} : ${OBJS}
-	export A4GL_LEXTYPE=C && ${FGLPCEXEC} -g -as-dll $^ -o $@ ${LINKLIBS}
+	export A4GL_LEXTYPE=C && ${FGLPCEXEC} -g ${AS_DLL} $^ -o $@ ${LINKLIBS}
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 	
 ## ==================================================================

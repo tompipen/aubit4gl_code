@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.107 2004-09-28 09:49:15 afalout Exp $
+# $Id: Makefile.in,v 1.108 2004-10-04 13:50:01 afalout Exp $
 #
 
 ROOT    =..
@@ -564,6 +564,8 @@ clean.other:
 	${MAKE} -C ${LIBSXML_PATH} clean	
 
 clean.cint:
+#We have to allow this one to fail, since it is possible that 
+#Makefile was not yet created by make_cintlib script
 	-${MAKE} -C ../cint clean
 	cd ../cint; ${SH} make_cintlib -clean
 	

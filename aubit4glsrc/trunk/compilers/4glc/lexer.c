@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.97 2004-09-28 09:02:32 mikeaubury Exp $
+# $Id: lexer.c,v 1.98 2004-10-04 13:49:59 afalout Exp $
 #*/
 
 /**
@@ -1034,7 +1034,7 @@ chk_word (FILE * f, char *str)
   if (t == TYPE_EOF && xccode)
     {
       printf ("Unexpected end of file - no endcode\n");
-      exit (0);
+      exit (1);
     }
 
   if (xccode && (A4GL_aubit_strcasecmp (p, "endcode") == 0

@@ -26,7 +26,7 @@
 ROOT    =../..
 
 #
-# $Id: Makefile.in,v 1.10 2004-09-29 05:37:44 afalout Exp $
+# $Id: Makefile.in,v 1.11 2004-10-04 13:50:06 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 4GLPC               =${FGLPCEXEC}
-#4GLPCFLAGS			=-verbose
+4GLPCFLAGS			=${VERBOSE_FLAG}
 ALL                 =${ROOT}/bin/loadmap${EXE_EXT}
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.135 2004-09-23 06:15:48 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.136 2004-10-04 13:50:00 afalout Exp $
 #
 */
 
@@ -49,6 +49,12 @@
 
 #ifndef _AUBIT_LIB_INCL_EXT_
 #define _AUBIT_LIB_INCL_EXT_
+
+#ifdef HAVE_CONFIG_H
+	/* header automatically created with AutoConf-configure */
+	#include "a4gl_incl_config.h"
+#endif
+
 
 #ifdef __cplusplus
 	extern "C"

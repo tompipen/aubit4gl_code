@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2003-08-18 06:18:34 afalout Exp $
+# $Id: Makefile.in,v 1.11 2004-10-04 13:50:05 afalout Exp $
 #
 
 ROOT        =../..
@@ -38,7 +38,7 @@ override NOINCL=0
 ## ==================================================================
 
 AMAKE		=../../bin/amake
-AMAKE_FLAGS	=-verbose A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
+AMAKE_FLAGS	=${VERBOSE_FLAG} A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
 #AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
 
 ifneq "@JABBERBUILD@" "no"

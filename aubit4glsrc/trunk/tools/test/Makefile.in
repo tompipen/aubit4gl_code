@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.46 2004-09-29 05:37:45 afalout Exp $
+# $Id: Makefile.in,v 1.47 2004-10-04 13:50:27 afalout Exp $
 #
 
 ROOT    =../..
@@ -46,10 +46,7 @@ A4GL_UI=CONSOLE
 
 export A4GL_LEXTYPE DEBUG A4GL_SQLTYPE A4GL_UI
 					
-
-
-#4GLPCFLAGS		=-verbose -settings
-
+#4GLPCFLAGS		=${VERBOSE_FLAG} -settings
 
 #KEEP IN MIND THAT THIS MAKE FILE IS ALSO IN BINARY DISTRIBUTION - DO NOT ADD
 #ANY MORE TARGETS HERE UNLESS YOU WILL ALSO MODIFY THE INSTALLER TO PACK NEEDED
@@ -122,16 +119,24 @@ solitaire${A4GL_EXE_EXT}: sol.4gl random.4gl
 
 #This is used from root makefile, to test if compiler is working after building it:
 test.build: test_build.4gl
-	${RM} test_build.c test_build.h test_build.o test_build test_build.exe
-	(DEBUG=ALL;export DEBUG;${FGLPCEXEC} -settings -verbose ${4GLPCTESTFLAGS} $^ -o test_build)
-#FIXME: use 4glc directly: 4glc -o test_build.4gl
+	${RM} $(basename $<).c $(basename $<).h $(basename $<).o $(basename $<) $(basename $<).exe
+	(DEBUG=ALL;export DEBUG;${FGLPCEXEC} ${VERBOSE_FLAG} ${4GLPCTESTFLAGS} $^ -o $(basename $<))
 
 #Same purpose as test.build target, but for Perl compiler:
 test.perl: test_build.4gl
 #calldll.c            497    (     0,     0) 1 Function Not found : print_Constant
-	export A4GL_LEXTYPE=PERL; export DEBUG=ALL; ${ROOT}/bin/4glc --verbose test_build.4gl
-	export A4GL_UI=TUI;  export DEBUG=ALL; @PERL@ ./test_build.pl
+	export A4GL_LEXTYPE=PERL; export DEBUG=ALL; ${ROOT}/bin/4glc ${VERBOSE_FLAG} $<
+	export A4GL_UI=TUI;  export DEBUG=ALL; @PERL@ ./$(basename $<).pl
 
+#For Pcode compiler:
+test.pcode: test_build.4gl
+#A4GL_FAKELEXTYPE isn't strictly needed - but it generates smaller C code:
+	export A4GL_FAKELEXTYPE=PCODE; ${ROOT}/bin/4glc $^
+#(Should generate .4pe.dat or 4pe.xml)
+	${ROOT}/bin/c2pcode_fgl $(basename $<).c 
+#do not add .xml or .dat - thats added by the packer:
+	
+	
 ## ==================================================================
 ##                    Targets in sub-makefiles
 ## ==================================================================

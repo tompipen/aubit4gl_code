@@ -8,7 +8,7 @@ SCRIPT_NAME=esql_wrap
 
 if test "$DEBUG" = "ALL"; then
 	#Force verbose mode for debugging when Aubit DEBUG is set
-	ALL_FLAGS="$ALL_FLAGS -verbose"
+	ALL_FLAGS="$ALL_FLAGS --verbose"
 	#SH_DEBUG="1"
 fi
 
@@ -20,7 +20,7 @@ do
 	-noecho)    #Don't show any non-critical messages while running
 		NO_ECHO=1
 		;;
-	-verbose)
+	-verbose | --verbose)
 	   A4GLVERBOSE="yes"
 	   #SH_DEBUG=1
 	   ;;

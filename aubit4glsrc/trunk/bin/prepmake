@@ -5,7 +5,7 @@
 #    ---------------------------------------------------------------
 #                    See manual for information
 #
-# $Id: prepmake,v 1.7 2001-10-16 03:09:13 afalout Exp $
+# $Id: prepmake,v 1.8 2004-10-04 13:49:58 afalout Exp $
 #
 #Run "prepmake" in directory containing make file, "makefile".
 #This will create file "makefile.prep" containing instruction needed for
@@ -428,7 +428,7 @@ function doit {
                 ;;
 
 
-			   	-verbose) 	VERBOSE=1
+			   	-verbose | --verbose) 	VERBOSE=1
 			   	;;
 
 				-quiet)  	VERBOSE=0

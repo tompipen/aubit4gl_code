@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.41 2004-09-28 13:36:31 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.42 2004-10-04 13:49:58 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -416,7 +416,7 @@ else
 				ANYDAY=1
 	            ;;
 
-		    -verbose)
+		    -verbose | --verbose)
 			    VERBOSE=1
 			    ;;
 
@@ -448,7 +448,7 @@ else
 			;;
 
 
-	    -verbose)
+	    -verbose | --verbose)
 		    VERBOSE=1
 			if [ $# -lt 2 ]; then
             	DO_ALL=1

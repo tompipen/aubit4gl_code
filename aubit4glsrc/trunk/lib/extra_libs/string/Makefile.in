@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2003-10-16 09:46:24 afalout Exp $
+# $Id: Makefile.in,v 1.8 2004-10-04 13:50:02 afalout Exp $
 #
 
 ROOT    =../../..
@@ -48,12 +48,12 @@ ALL=${LIBROOT}/libA4GL_string${SO_EXT}
 
 
 ${ALL}: libstring.c
-#	export A4GL_LEXTYPE=C; ${SH} 4glpc -as-dll $^ -o $@
+#	export A4GL_LEXTYPE=C; ${SH} 4glpc ${AS_DLL} $^ -o $@
 	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
 	@echo "String library sucesfully compiled."
 
 libstring.c: libstring.4gl
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} --verbose $^
+	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} ${VERBOSE_FLAG} $^
 
 clean:
 	${RM} *.out *.c *.${FGLC_OUTPUT_EXT} *.h *${SO_EXT} *.err *.bak *.glb *.h ${ALL} *.stackdump

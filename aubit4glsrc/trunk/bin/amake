@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 #
-# $Id: amake,v 1.29 2004-06-26 09:33:01 afalout Exp $
+# $Id: amake,v 1.30 2004-10-04 13:49:58 afalout Exp $
 #
 #####################################################################
 
@@ -230,7 +230,8 @@ else
 			   -defaultinclude) OVERRIDEINCLUDE=0
 			   ;;
 
-			   -verbose) 	VERBOSE="1"
+			   -verbose | --verbose) 	
+			   				VERBOSE="1"
 							#FIXME: does make support -verbose flag?
 							#MKFLAGS="$MKFLAGS -verbose"
 			   ;;
