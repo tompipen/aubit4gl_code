@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.33 2004-11-17 10:40:12 mikeaubury Exp $
+# $Id: debug.c,v 1.34 2004-11-22 12:29:19 mikeaubury Exp $
 #
 */
 
@@ -174,8 +174,8 @@ A4GL_debug_full (char *fmt, ...)
       va_start (args, fmt);
       vsprintf (buff, fmt, args);
       if (buff[strlen (buff) - 1] != ':')
-	fprintf (debugfile, "%-20s %-6d (%6ld,%6ld)",
-		 g_fname, g_lineno, a4gl_status, a4gl_sqlca.sqlcode);
+	fprintf (debugfile, "%-20s %-6d (%6ld,%6ld,%1d)",
+		 g_fname, g_lineno, a4gl_status, a4gl_sqlca.sqlcode,aclfgli_get_err_flg());
       else
 	fprintf (debugfile, "%-20s                       "," ");
 

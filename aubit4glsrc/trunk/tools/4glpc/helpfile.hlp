@@ -22,6 +22,12 @@ Extensions (.ext):
   In -o flag, extendion will decide type of linking:
     ao=object, aox=static library, aso=shared lib, 4ae=executable.
 
+For more help
+ 4glpc --help-options   - for command line options
+ 4glpc --help-env       - for environment variables recognised
+ 4glpc --help-types     - for file types
+ 4glpc --help-examples  - for examples
+
 .3
  4glc [options] -oOutFile.ext file.ext [file.ext ...]
 

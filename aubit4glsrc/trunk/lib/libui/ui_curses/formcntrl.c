@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.67 2004-11-09 19:07:29 pjfalbe Exp $
+# $Id: formcntrl.c,v 1.68 2004-11-22 12:29:21 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.67 2004-11-09 19:07:29 pjfalbe Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.68 2004-11-22 12:29:21 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -229,11 +229,19 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 
   if (attrib < 0)
     {
-      // attempt to move too far to the left
-      A4GL_debug ("Too far to the left");
-      A4GL_newMovement (sio, 0);
-      return;
-    }
+      	// attempt to move too far to the left
+      	A4GL_debug ("Too far to the left");
+ 	// cc 2004.11.15 
+ 	if (sio->currform->currentfield == sio->field_list[0] && std_dbscr.input_wrapmode != 0) {
+ 		A4GL_debug ("Wrap around from top to bottom"); 
+ 		A4GL_newMovement (sio, sio->nfields); 
+ 		return; 
+ 	} 
+ 	// attempt to move too far to the left 
+ 	A4GL_debug ("Too far to the left"); 
+ 	A4GL_newMovement (sio, 0); 
+ 	return; 
+    } 
 
 
   if (attrib > sio->nfields)
@@ -1240,11 +1248,11 @@ do_key_move (char lr, struct s_screenio *s, int a, int has_picture,
     {
       if (at_first)
 	{
-	  if (s->curr_attrib)
-	    {
+	  //if (s->curr_attrib)
+	    //{
 	      A4GL_newMovement (s, s->curr_attrib - 1);	//  go to previous field
 	      return;
-	    }
+	    //}
 
 	}
       else

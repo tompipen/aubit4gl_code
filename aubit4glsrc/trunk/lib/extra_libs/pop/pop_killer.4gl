@@ -161,8 +161,18 @@ end if
 call banner("POP SESSION INACTIVE")
 sleep 10
 end while
-
 end function
+
+
+
+
+
+
+
+
+
+
+
 function banner(s)
 define s char(80)
 let s[50,80]=" "
