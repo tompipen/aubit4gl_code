@@ -17548,16 +17548,16 @@ A4GL_debug("putlist = %s\n",yyval.str);
 #line 7854 "fgl.yacc"
     {
 			if (A4GLSQLCV_check_requirement("ADD_CASCADE")) {
-				sprintf(yyval.str, "%s %s CASCADE",yyvsp[-1].str,yyvsp[0].str);
+				sprintf(yyval.str, "DROP TABLE %s CASCADE",yyvsp[0].str);
 			} else {
-				sprintf(yyval.str, "%s %s ",yyvsp[-1].str,yyvsp[0].str);
+				sprintf(yyval.str, "DROP TABLE %s",yyvsp[0].str);
 			}
 		}
     break;
 
   case 1402:
 #line 7861 "fgl.yacc"
-    {sprintf(yyval.str,  "%s %s ",yyvsp[-1].str,yyvsp[0].str);}
+    {sprintf(yyval.str,"%s %s ",yyvsp[-1].str,yyvsp[0].str);}
     break;
 
   case 1403:
