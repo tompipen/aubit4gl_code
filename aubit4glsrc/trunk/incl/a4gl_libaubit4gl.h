@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.22 2002-10-07 16:11:20 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.23 2002-10-18 01:56:38 afalout Exp $
 #
 */
 
@@ -69,14 +69,35 @@
 		#define u_int unsigned int
 	#endif
 
-	#if (defined(WIN32) && ! defined(__CYGWIN__))
+/* DLL building support on win32 hosts;  mostly to workaround their
+   ridiculous implementation of data symbol exporting. */
+
+	#ifdef EXAMPLE_FROM_LIBLTDL
+		#ifndef LT_SCOPE
+		#  ifdef __WINDOWS__
+		#    ifdef DLL_EXPORT		/* defined by libtool (if required) */
+		#      define LT_SCOPE	__declspec(dllexport)
+		#    endif
+		#    ifdef LIBLTDL_DLL_IMPORT	/* define if linking with this dll */
+		#      define LT_SCOPE	extern __declspec(dllimport)
+		#    endif
+		#  endif
+		#  ifndef LT_SCOPE		/* static linking or !__WINDOWS__ */
+		#    define LT_SCOPE	extern
+		#  endif
+		#endif
+    #endif
+
+
+	//#if (defined(WIN32) && ! defined(__CYGWIN__))
+    #if (defined(__CYGWIN__))
 		#define dll_export __declspec(dllexport)
-		#define dll_import __declspec(dllimport)
+		//#define dll_import __declspec(dllimport)
+		#define dll_import extern __declspec(dllimport)
 	#else
 		#define dll_export
 		#define dll_import
 	#endif
-
 
 	#if (defined(__MACH__) && defined(__APPLE__))
 		#define bool_t int
@@ -1195,15 +1216,7 @@ be used in applications which link to the library).
 
 	#define fglbyte struct fgl_int_loc
 	#define fgltext struct fgl_int_loc
-
-	#if (defined(WIN32) && ! defined(__CYGWIN__))
-		#define dll_export __declspec(dllexport)
-		#define dll_import __declspec(dllimport)
-	#else
-		#define dll_export
-		#define dll_import
-	#endif
-
+	
 	#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
 	#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)
 

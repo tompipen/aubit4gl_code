@@ -24,10 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.47 2002-10-13 01:40:33 afalout Exp $
+# $Id: Makefile.in,v 1.48 2002-10-18 01:56:33 afalout Exp $
 #
 
 ROOT		=../..
+LIBROOT		=../../lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -45,14 +46,16 @@ else
 	Y_TAB_C		=${GENRULES}/y.tab.c
 endif
 
-CMODS           = \
-				4glc.c \
+CMODS_EXE       =4glc.c
+CMODS_LIB       =\
 				dim.c \
 				list.c lexer.c \
 				mod.c map.c \
 				rules/generated/states.c \
 				rules/generated/kw.c \
                 ${Y_TAB_C}
+
+CMODS           =${CMODS_EXE} ${CMODS_LIB}
 
 GETOPT_LONG		=@GETOPT_LONG@
 
@@ -65,16 +68,28 @@ ifneq "${GETOPT_LONG}" "yes"
 endif
 
 4GLCAOBJ		=${CMODS:.c=.o}
+OBJS_LIB		=${CMODS_LIB:.c=.o}
 
 ## ==================================================================
 ##                    Options
 ## ==================================================================
 
-ALL				=${ROOT}/bin/4glc
+ifdef COMSPEC
+	ALL			=${ROOT}/lib/lib4glc${SO_EXT}
+    CMODS		=${CMODS_EXE}
+	4GLCAOBJ	=${CMODS:.c=.o}
+    4GL_LIB     =-l4glc
+endif
+
+ALL				+=${ROOT}/bin/4glc
 
 C_LOCAL_IFLAGS  =-I${ROOT}/lib -I${ROOT}/lib/libincl -I${ROOT}/lib/liblex/lex_c -I. -I../fcompile -Irules -I${GENRULES}
 CFLAGS			+=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
+
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
 
 ## ==================================================================
 ##                              Targets
@@ -84,14 +99,22 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${ROOT}/bin/4glc: ${4GLCAOBJ}
-	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB}
 
 ## ==================================================================
 ##                            Windows Targets
 ## ==================================================================
 
-libexportlib4glcomp.dll.a: ${4GLCAOBJ} ${4GLCOBJ_C}
-	${CC} -shared -o ${ROOT}/lib/libexportlib4glcomp.dll -Wl,--out-implib=libexportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L${ROOT}/lib
+#libexportlib4glcomp.dll.a: ${4GLCAOBJ} ${4GLCOBJ_C}
+#	${CC} -shared -o ${ROOT}/lib/libexportlib4glcomp.dll -Wl,--out-implib=libexportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L${ROOT}/lib
+
+lib4glc${SO_EXT}: ${ROOT}/lib/lib4glc${SO_EXT}
+${ROOT}/lib/lib4glc${SO_EXT}: ${OBJS_LIB}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
+
 
 ## ==================================================================
 ##                            Sub Targets

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.12 2002-08-13 11:56:48 afalout Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.13 2002-10-18 01:56:38 afalout Exp $
 */
 
 /**
@@ -210,13 +210,6 @@
 	#define ENCODE_SIZE(x) (x<<16)
 	#define DECODE_SIZE(x) (x>>16)
 
-	#if (defined(WIN32) && ! defined(__CYGWIN__))
-		#define dll_export __declspec(dllexport)
-		#define dll_import __declspec(dllimport)
-	#else
-		#define dll_export
-		#define dll_import
-	#endif
 
 	#define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
 	#define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)

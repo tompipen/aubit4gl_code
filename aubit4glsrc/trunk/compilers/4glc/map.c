@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.12 2002-10-13 01:40:33 afalout Exp $
+# $Id: map.c,v 1.13 2002-10-18 01:56:33 afalout Exp $
 #*/
 
 /**
@@ -54,11 +54,34 @@
 /* The map file pointer opened file */
 static FILE *mapfile = 0;
 
+//moved from 4glc.c:
+extern FILE *yyin;
+extern int 	glob_only;
+extern long fpos; /** The current file position for direct fseek */
+static char outputfile[132]; /** The output file name */
+extern int 	yylineno;
+char 		errbuff[1024] = "";
+char 		yytext[] = "";
+int 		globals_only = 0;
+static int 	genStackInfo = 1;
+extern char *outputfilename; /* Defined in libaubit4gl */
+extern char infilename[132];
+int 		yyin_len;
+#ifdef YYDEBUG
+	extern int yydebug; /* defined in y.tab.c _IF_ -DYYDEBUG is set */
+#else
+	int yydebug; /* if -DYYDEBUG is not set, we need to define it here */
+#endif
+
+
+
 /*
 =====================================================================
                     Functions prototypes
 =====================================================================
 */
+
+void 		setGenStackInfo		(int _genStackInfo);
 
 /*
 =====================================================================
@@ -129,5 +152,303 @@ closemap (void)
   if (mapfile)
     fclose (mapfile);
 }
+
+/*
+=====================================================================
+                    Functions moved from 4glc.c
+=====================================================================
+*/
+
+/**
+ * Read and parse the globals file (if found).
+ *
+ * @param fname The globals file name
+ */
+int
+read_globals (char *fname)
+{
+FILE *fin;
+fin = yyin;
+
+  glob_only = 1;
+  rm_quote (fname);
+/* printf("Opening %s",fname); */
+  yyin = mja_fopen (fname, "r");
+
+  if (yyin == 0)
+    {
+      printf ("Error opening globals file : %s\n", fname);
+      return -1;
+    }
+
+  lex_printc ("/***********************************************************/\n");
+  return (yyparse ());
+  lex_printc ("/***********************************************************/\n");
+  glob_only = 0;
+  yyin = fin;
+  return 0;
+}
+
+/**
+ * Remove the quotes from a quoted string.
+ *
+ * @param s The string to be unquoted
+ */
+void
+rm_quotes (char *s)
+{
+  char buff[256];
+  int a;
+  int b = 0;
+  for (a = 0; a <= strlen (s); a++)
+    {
+      if (s[a] != '"')
+	{
+	  buff[b++] = s[a];
+	}
+    }
+  strcpy (s, buff);
+}
+
+/**
+ * Remove the quotes in the beginning and at the from a quoted string
+ *
+ * @param s The string to be unquoted
+ */
+void
+rm_quote (char *s)
+{
+  char buff[256];
+  int a;
+  int b = 0;
+  for (a = 0; a <= strlen (s); a++)
+    {
+      if (s[a] != '"')
+	{
+	  buff[b++] = s[a];
+	}
+    }
+  for (a = strlen (buff) - 1; a >= 0; a--)
+    {
+      if (buff[a] == '.')
+	{
+	  buff[a] = 0;
+	  break;
+	}
+    }
+  strcpy (s, buff);
+}
+
+
+/**
+ * Treatment of an error ocurred in the parsing.
+ *
+ * It makes the proper treatment of an syntax error ocurred during the parsing
+ *
+ * @param s The string that contains the error
+ */
+void
+yyerror (char *s)
+{
+  char errfile[256];
+  FILE *f;
+  long ld;
+  char a;
+
+  ld = ftell (yyin);
+  sprintf (errfile, "%s.err", outputfile);
+  a = 0;
+  fseek (yyin, fpos, SEEK_SET);
+  f = write_errfile (yyin, errfile, ld, yylineno);
+  fprintf (f, "| %s%s (%s)", s, errbuff, yytext);
+  write_cont (yyin);
+  printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
+  exit (2);
+}
+
+/************************* same finction from fcompile:
+
+void yyerror(char *s)
+{
+  char errfile[256];
+  FILE *f;
+  long ld;
+
+  ld=buffpos();
+  sprintf(errfile,"%s.err",outputfile);
+  f=write_errfile(yyin,errfile,ld-1,yylineno);
+  fprintf (f, "| %s", s);
+  write_cont(yyin);
+  printf("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
+	  outputfile,outputfile,lineno,yylineno
+  );
+  exit (2);
+}
+
+**************************************************************/
+
+
+/**
+ *  Adds the parameters to the error buffer in the assigned with yyerror.
+ *
+ *  The purpose is to using sprintf with fixed number of parameters.
+ *  I Think that this only exists until we start using varargs.
+ *
+ * @param s The first parameter
+ * @param p The second parameter
+ * @param q The tird parameter
+ */
+void
+adderr (char *s, char *p, char *q)
+{
+  sprintf (errbuff, s, p, q);
+}
+
+
+/**
+ * Inform if we are just parsing the globals
+ *
+ * @return
+ *   - 1 : if we are just doing globals
+ *   - 0 : otherwise
+ */
+int
+only_doing_globals (void)
+{
+  if (globals_only)
+    return 1;
+  return 0;
+}
+
+/**
+ * Assign a value into the global flag that indicate if the compiler should
+ * generate function call stack information.
+ *
+ * @param _genStackInfo The vlaue to assign to the flag
+ */
+void
+setGenStackInfo(int _genStackInfo)
+{
+  genStackInfo = _genStackInfo;
+}
+
+/**
+ * Check the value of the global flag that indicate if the compiler should
+ * generate function call stack information.
+ *
+ * @param _genStackInfo The vlaue to assign to the flag
+ */
+int
+isGenStackInfo(void)
+{
+  return genStackInfo;
+}
+
+
+/**
+ * Print the usage message when executing the 4gl compiler.
+ */
+static void
+printUsage(char *argv[])
+{
+  printf("Usage %s [options] filename[.4gl]\n", argv[0]);
+  printf("Options:\n");
+  printf("  -G     | --globals         : Generate the globals map file\n");
+  printf("  -s 0|1 | --stack_trace 0|1 : ");
+  printf("Instruct the stack trace inclusion in file:\n");
+  printf("     0 - No generate\n");
+  printf("     1 - Generate(Default)\n");
+}
+
+
+/**
+ * Parse the comand line arguments and acording to the passed values
+ * set(s) the properties.
+ *
+ * @param argc The argument count
+ * @param argv The argument values
+ */
+//static
+void
+initArguments(int argc, char *argv[])
+{
+int i;
+/* extern char *optarg; in /usr/include/getopt.h */
+/*  int this_option_optind = optind ? optind : 1; */
+int option_index = 0;
+int si;
+char a[128];
+char b[128];
+char c[128];
+static struct option long_options[] =
+  {
+    {"globals",     0, 0, 'G'},
+    {"stack_trace", 1, 0, 's'},
+    {"help", 0, 0, '?'},
+    {0, 0, 0, 0},
+  };
+
+	debug ("Parsing the comand line arguments\n");
+
+ /* see http://www.gnu.org/software/gengetopt for inspiration */
+
+  while ( ( i = getopt_long (argc, argv, "Gs:?h",
+                        long_options, &option_index) ) != -1)
+  {
+    switch(i)
+    {
+      case 'G':              /* Global generate only */
+		globals_only = 1;
+        break;
+
+      case 's':              /* Stack information inclusion */
+		si = atoi(optarg);
+        if ( si != 0 && si != 1 )
+		{
+		  printUsage(argv);
+		  exit(1);
+		}
+        setGenStackInfo(si);
+        break;
+
+      case '?':
+      case 'h':
+		printUsage(argv);
+        exit(0);
+    }
+  }
+
+  if ( optind >= argc )
+  {
+    printf("No file name defined\n");
+    printUsage(argv);
+    exit(1);
+  }
+  check_and_show_id ("4GL Compiler", argv[optind]);
+  outputfilename = outputfile;
+  if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
+  {
+    printf ("Yacc Debugging on\n");
+    yydebug = 1;
+  }
+  else
+  {
+    yydebug = 0;
+  }
+
+  strcpy (c, argv[optind]);
+  bname (c, a, b);
+  if (b[0] == 0)
+  {
+    strcat (c, ".4gl");
+  }
+  bname (c, a, b);
+  strcpy (outputfilename, a);
+  yyin = fopen (c, "r");
+
+  strcpy (infilename, c);
+}
+
+
 
 /* ================================ EOF ============================== */

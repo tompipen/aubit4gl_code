@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.34 2002-10-13 11:44:39 afalout Exp $
+# $Id: Makefile-install.mki,v 1.35 2002-10-18 01:56:38 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -101,7 +101,7 @@ endif
 install.libs.links: deinstall.libs.links
 	${MKPATH} ${LIB_INSTALL_LINK}
 ifeq "$(shell  if test -w ${LIB_INSTALL_LINK} ; then echo 1; fi)" "1"
-	${LN_S} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
+	${LN_S_LIB} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
 else
 	@echo "WARNING: ${LIB_INSTALL_LINK} is not writable."
 endif

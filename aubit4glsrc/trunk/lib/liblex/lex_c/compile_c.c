@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.36 2002-10-13 01:40:34 afalout Exp $
+# $Id: compile_c.c,v 1.37 2002-10-18 01:56:38 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1121,22 +1121,34 @@ print_bind_pop1 (char i)
 {
   int a;
   a = 0;
+
+	#ifdef DEBUG
+    	//debug ("print_bind_pop1 i='%d' \n",i); // 111, %s core dumps
+    #endif
+
+
   if (i == 'i')
     {
-      if (scan_variable (obind[a].varname) != -1)
-	printc ("pop_var2(&%s,%d,%d);\n", ibind[a].varname,
-		(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-      else
-	printc ("%s;\n", ibind[a].varname);
+	#ifdef DEBUG
+    	//debug ("print_bind_pop1 i='i'\n");
+    #endif
+	if (scan_variable (obind[a].varname) != -1)
+		printc ("pop_var2(&%s,%d,%d);\n", ibind[a].varname,
+			(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+    else
+		printc ("%s;\n", ibind[a].varname);
     }
 
   if (i == 'o')
     {
-      if (scan_variable (obind[a].varname) != -1)
-	printc ("pop_var2(&%s,%d,%d);\n", obind[a].varname,
-		(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
-      else
-	printc ("%s;\n", obind[a].varname);
+	#ifdef DEBUG
+    	//debug ("print_bind_pop1 i='o'\n");
+    #endif
+	if (scan_variable (obind[a].varname) != -1)
+		printc ("pop_var2(&%s,%d,%d);\n", obind[a].varname,
+			(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+	else
+		printc ("%s;\n", obind[a].varname);
     }
 
 }
@@ -3401,7 +3413,7 @@ print_prompt_end (char *s)
  * It generates the C code that implements the open window.
  *
  * Uses the form attribute(s) current in the global variable (form_attrib).
- * 
+ *
  * @param The window name
  * @param type I think it is allways fixed with "cr_window"
  */
@@ -3918,7 +3930,7 @@ print_return (int n)
  *
  * For now its onlu used to change the menu line.
  *
- * @param n The parameter type: 
+ * @param n The parameter type:
  *   - M : Menu
  * @param s The parameter value
  *   - Now just the menu line

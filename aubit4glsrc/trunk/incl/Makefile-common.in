@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.89 2002-10-17 05:38:52 afalout Exp $
+# $Id: Makefile-common.in,v 1.90 2002-10-18 01:56:37 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -423,7 +423,7 @@ SO_EXT_LINKABLE=@SO_EXT_LINKABLE@
 	#we should not use hard links when we are installing, because this
     #can cause errors like "Invalid cross-device link" when source
     #and destination is on different deveices:
-	#LN_S_LIB    =${LN_S}
+	LN_S_LIB    =${LN_S}
 	CPEXE		=${LN_H}
 
 
@@ -474,14 +474,14 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 	#-Wl,--export-all-symbols
 
 
-an alternative way to EXPORT and --export-all-symbols is to create a
-.def file with all the functionnames you want to expose to your users
-and link this .def file as the very first file before any .o and .a;
-see the ld-docu for command line option 'shared' for more details.
-
-The only thing I can't figure out is how to prevent ld from
-additionaly exporting all global variables in the .o an .a files.  Can
-anyone more knowledgable give me a hint?
+	#an alternative way to EXPORT and --export-all-symbols is to create a
+	#.def file with all the functionnames you want to expose to your users
+	#and link this .def file as the very first file before any .o and .a;
+	#see the ld-docu for command line option 'shared' for more details.
+	#
+	#The only thing I can't figure out is how to prevent ld from
+	#additionaly exporting all global variables in the .o an .a files.  Can
+	#anyone more knowledgable give me a hint?
 
 	#DLL_CFLAGS=-shared -Wl,--output-def=$*.def -Wl,--out-implib=$*${SOEXP_EXT} -Wl,--export-all-symbols
 	DLL_CFLAGS=-shared -Wl,--out-implib=TMP${SOEXP_EXT} -Wl,--export-all-symbols
@@ -1016,11 +1016,12 @@ endif
 
 LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
 
-ifneq "${COMSPEC}" ""
+#ifneq "${COMSPEC}" ""
 	#libexportlib4glcomp.dll is really a 4glc executable compiled as dll !!!!
 	#but it is needed by libLEX_C.dll - don't ask me why...
-	LIB_FILES +=${LIB_EXPORTLIB} libexportlib4glcomp.dll
-endif
+	#LIB_FILES +=${LIB_EXPORTLIB} libexportlib4glcomp.dll
+	LIB_FILES +=${LIB_EXPORTLIB} lib4glc.dll
+#endif
 
 ## ==================================================================
 ##                    To docs directory

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-10-07 11:06:29 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-10-18 01:56:38 afalout Exp $
 #
 
 ROOT    =../../..
@@ -62,7 +62,9 @@ endif
 CFLAGS			+=-I.. -I../lex_c -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
 
 ifeq "${TARGET_OS}" "cygwin"
-	LINKLIBS	=-L${LIBROOT} -L${ROOT}/compilers/4glc -lexportlib4glcomp -laubit4gl
+	#LINKLIBS	=-L${LIBROOT} -L${ROOT}/compilers/4glc -lexportlib4glcomp -laubit4gl
+	LINKDEPS    =${LIBROOT}/lib4glc${SO_EXT}
+	LINKLIBS	+=-L${LIBROOT} -laubit4gl -l4glc
 endif
 
 ## ==================================================================
@@ -93,6 +95,9 @@ endif
 ## ==================================================================
 ##                            Dependencies
 ## ==================================================================
+
+${LIBROOT}/lib4glc${SO_EXT}:
+	${MAKE} -C ${ROOT}/compilers/4glc lib4glc${SO_EXT}
 
 ## ==================================================================
 ##                            Clean Targets

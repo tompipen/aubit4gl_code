@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.25 2002-10-07 11:06:27 afalout Exp $
+# $Id: stack.c,v 1.26 2002-10-18 01:56:38 afalout Exp $
 #
 */
 
@@ -150,23 +150,6 @@ int local_binding_cnt = 0;
 int init_local_bindings = 0;
 struct BINDING *local_binding[LOCAL_BINDINGS];
 int num_local_binding[LOCAL_BINDINGS];
-
-
-#ifdef OLD_INCL
-
-	struct bound_list
-	{
-	  struct BINDING *ptr;
-	  int cnt;
-	  int popped;
-	};
-
-
-
-	void *      dif_get_bind 			(struct bound_list *list);
-	void *      dif_start_bind 			(void);
-
-#endif
 
 /*
 =====================================================================
@@ -345,35 +328,34 @@ pop_var2 (void *p, int d, int s)
   int z;
   char *pl;
 
-#ifdef DEBUG
-  /* {DEBUG} */ debug ("pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
-#endif
+	#ifdef DEBUG
+  		debug ("pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
+	#endif
 
   if (d == 0)
     {
       pl = new_string (s);
       z = pop_param (pl, d, s);
-#ifdef DEBUG
-      /* {DEBUG} */ debug ("z=%d\n", z);
-#endif
+	#ifdef DEBUG
+    	debug ("z=%d\n", z);
+	#endif
       if (z == 1)
 	{
-#ifdef DEBUG
-	  /* {DEBUG} */ debug ("zconv ok");
-#endif
+	#ifdef DEBUG
+		debug ("zconv ok");
+	#endif
 	}
       if (z != 1)
 	{
-#ifdef DEBUG
-	  /* {DEBUG} */ debug ("zconv bad");
-#endif
+	#ifdef DEBUG
+		debug ("zconv bad");
+	#endif
 	}
       if (((z) != (1)))
 	{
-#ifdef DEBUG
-	  /* {DEBUG} */ debug ("pop_var2: error in conversion %d d=0 s=%d\n",
-			       z, s);
-#endif
+	#ifdef DEBUG
+		debug ("pop_var2: error in conversion %d d=0 s=%d\n",z, s);
+	#endif
 	}
       debug ("Copying string '%s' to p", pl);
       strcpy ((char *) p, pl);
@@ -386,10 +368,9 @@ pop_var2 (void *p, int d, int s)
   if (z != 1)
     {
       exitwith ("Error in conversion");
-#ifdef DEBUG
-      /* {DEBUG} */ debug ("pop_var2 - error in conversion %d d=%d s=%d\n", z,
-			   d, s);
-#endif
+	#ifdef DEBUG
+    	debug ("pop_var2 - error in conversion %d d=%d s=%d\n", z,d, s);
+	#endif
     }
   return z;
 }

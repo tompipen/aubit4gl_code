@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: list.c,v 1.9 2002-06-29 13:12:01 afalout Exp $
+# $Id: list.c,v 1.10 2002-10-18 01:56:33 afalout Exp $
 #*/
 
 /**
@@ -43,21 +43,7 @@
 */
 
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <string.h>
-	#include <stdlib.h> 			/* exit() */
-
-	#include <a4gl_4glc_4glc.h>
-	#include <a4gl_aubit_lib.h>
-
-#else
-
-    #include "a4gl_4glc_int.h"
-
-#endif
-
+#include "a4gl_4glc_int.h"
 
 /*
 =====================================================================

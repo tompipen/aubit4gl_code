@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.3 2002-09-20 10:06:05 mikeaubury Exp $
+# $Id: newpanels.c,v 1.4 2002-10-18 01:56:38 afalout Exp $
 #*/
 
 /**
@@ -44,30 +44,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include <stdarg.h>
-	#include <unistd.h> 				/* sleep() */
-
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_tui_tui.h"
-	#include "a4gl_dbform.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_pointers.h"
-
-	#ifdef __CYGWIN__
-		#include "a4gl_sqlca.h"
-	#endif
-
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_tui_int.h"
-
-#endif
-
-
+#include "a4gl_lib_ui_tui_int.h"
 
 /*
 =====================================================================
@@ -77,9 +54,10 @@
 
 
 #ifdef __CYGWIN__
-	extern struct s_form_attr std_dbscr;
-	extern sqlca_struct sqlca;
-	extern int status;
+	//dll_import int 		when_code[8];
+	dll_import struct s_form_attr std_dbscr;
+	dll_import sqlca_struct sqlca;
+	dll_import int status;
 #endif
 
 /*
