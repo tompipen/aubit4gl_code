@@ -7182,10 +7182,6 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 #other
 
-#AC_SUBST(PREFIX)
-
-#PHP_SUBST_OLD(CONFIGURE_COMMAND)
-
 #Inno Setup:
 
 #curses:
@@ -7232,6 +7228,10 @@ IFMX_ESQLC=no
 LCLINTEXE=no
 STRIP_EXECUTABLES=no
 cygwin=0
+
+#FIXME: do not hard-code
+WINDOWS_DRIVE=D:
+CYGWIN_PATH=/cygwin
 
 SO_EXT=.so
 SO_EXT_LINKABLE=$SO_EXT
@@ -7373,10 +7373,10 @@ LIBFILE_29=
 LIBFILE_30=
 
 #Install location - must install first:
-#IS_SOURCE="$HOMEDRIVE\\cygwin$prefix\\$SHORTNAME"
+#IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$prefix/$SHORTNAME"
 #Source code location:
-IS_SOURCE="$HOMEDRIVE/cygwin$aubitdir"
-IS_SOURCE_GTK="$HOMEDRIVE/cygwin/lib"
+IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$aubitdir"
+IS_SOURCE_GTK="$HOMEDRIVE$CYGWIN_PATH/lib"
 
 #Note: all command line switches like "--xxxx-wwwww" are automativaly
 #converted to shell variables in "xxxxx_wwwww" format.
@@ -8731,17 +8731,17 @@ echo "${ECHO_T}$1.$2.$3" >&6
 					#should not really need drive letter?
                     #also, if adding drive letter with : , it then we add AUBITDIR to PATH, : will be
                     #interperted as separator (when using CygWin tools), and make PATH invalid
-					aubitdir="$HOMEDRIVE/cygwin$aubitdir"
+					aubitdir="$HOMEDRIVE$CYGWIN_PATH$aubitdir"
                     #BUT-then CygWin things there is a directory called /cygwin in HIS root!
                     #but how to get a directory name CygWin was installed in, if different then default?
-					#aubitdir="/cygwin$aubitdir"
+					#aubitdir="$CYGWIN_PATH$aubitdir"
 					{ echo "$as_me:8738: WARNING: Using MinGW GCC." >&5
 echo "$as_me: WARNING: Using MinGW GCC." >&2;}
 					old_CFLAGS="$CFLAGS"
 					old_CPPFLAGS="$CPPFLAGS"
 					old_LDFLAGS="$LDFLAGS"
 
-					TMP_IFLAGS="-ID:/cygwin/usr/include"
+					TMP_IFLAGS="-I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include"
                     CFLAGS=" $CFLAGS $TMP_IFLAGS"
 					CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
 
@@ -8749,10 +8749,10 @@ echo "$as_me: WARNING: Using MinGW GCC." >&2;}
 					#unset ac_cv_header_dlfcn_h
 					#AC_CHECK_HEADERS([dlfcn.h])
 	                #exit
-					#In file included from d:/MinGW/include/inttypes.h:6,
+					#In file included from $WINDOWS_DRIVE/MinGW/include/inttypes.h:6,
 					#                 from configure:9489:
-					#d:/MinGW/include/stdint.h:27: conflicting types for `int8_t'
-					#D:/cygwin/usr/include/sys/types.h:128: previous declaration of `int8_t'
+					#$WINDOWS_DRIVE/MinGW/include/stdint.h:27: conflicting types for `int8_t'
+					#$WINDOWS_DRIVE$CYGWIN_PATH/usr/include/sys/types.h:128: previous declaration of `int8_t'
 
 					CFLAGS="$old_CFLAGS"
 					CPPFLAGS="$old_CPPFLAGS"
@@ -14078,8 +14078,8 @@ echo "${ECHO_T}${T_MD}Checking for curses libraries:${T_ME}" >&6
 			#when running MinGW GCC in CygWin environment, we can try using CygWin curses:
 			case "$host" in
 			*-*-cygwin | *-*-cygwin* )
-				CYG_LFLAGS="-LD:/cygwin/lib"
-				CYG_IFLAGS="-ID:/cygwin/usr/include/ncurses -ID:/cygwin/usr/include"
+				CYG_LFLAGS="-L$WINDOWS_DRIVE$CYGWIN_PATH/lib"
+				CYG_IFLAGS="-I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include/ncurses -I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include"
 				old_LIBS="$LIBS"
 				old_LDFLAGS="$LDFLAGS"
 				old_CFLAGS="$CFLAGS"
@@ -20675,6 +20675,8 @@ s,@WGET@,$WGET,;t t
 s,@REDHAT_VER@,$REDHAT_VER,;t t
 s,@REDHAT_NAME@,$REDHAT_NAME,;t t
 s,@STRIP_EXECUTABLES@,$STRIP_EXECUTABLES,;t t
+s,@WINDOWS_DRIVE@,$WINDOWS_DRIVE,;t t
+s,@CYGWIN_PATH@,$CYGWIN_PATH,;t t
 s,@IS_SOURCE@,$IS_SOURCE,;t t
 s,@IS_SOURCE_GTK@,$IS_SOURCE_GTK,;t t
 s,@CURSES_LIB_PATH@,$CURSES_LIB_PATH,;t t
@@ -20887,7 +20889,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:20890: creating $ac_file" >&5
+    { echo "$as_me:20892: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -20905,7 +20907,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:20908: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:20910: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -20918,7 +20920,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:20921: error: cannot find input file: $f" >&5
+           { { echo "$as_me:20923: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -20979,7 +20981,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:20982: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:20984: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -20990,7 +20992,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:20993: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:20995: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -21003,7 +21005,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:21006: error: cannot find input file: $f" >&5
+           { { echo "$as_me:21008: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -21120,7 +21122,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:21123: $ac_file is unchanged" >&5
+      { echo "$as_me:21125: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -21451,13 +21453,13 @@ X
 
 fi
 
-echo "$as_me:21454: result: " >&5
+echo "$as_me:21456: result: " >&5
 echo "${ECHO_T}" >&6
-echo "$as_me:21456: result: Thank you for using Aubit 4gl compiler." >&5
+echo "$as_me:21458: result: Thank you for using Aubit 4gl compiler." >&5
 echo "${ECHO_T}Thank you for using Aubit 4gl compiler." >&6
-echo "$as_me:21458: result:               $AUBIT_PUBLISHER" >&5
+echo "$as_me:21460: result:               $AUBIT_PUBLISHER" >&5
 echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
-echo "$as_me:21460: result: " >&5
+echo "$as_me:21462: result: " >&5
 echo "${ECHO_T}" >&6
 
 #------------------------------ EOF --------------------------------
