@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: dates.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
 #
 */
 
@@ -37,25 +37,41 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <math.h>
+#include <sys/types.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+#include <time.h>
+//#include <unistd.h>
+//#include <pwd.h>
+
+
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
 #include "a4gl_constats.h"
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+/* #define DIGIT_ALIGN_LEFT */
+
 int y2ktype=-1;
 extern int errno;
-#include <sys/types.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-//#include <unistd.h>
-//#include <pwd.h>
-#include <locale.h>
-/* #define DIGIT_ALIGN_LEFT */
-#include <time.h>
 
 static int days_in_month[2][13] = {
 	{0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
@@ -94,19 +110,38 @@ struct s_days {
 #define	leap_years_since_year_1(yr) \
 	((yr) / 4 - centuries_since_1700(yr) + quad_centuries_since_1700(yr))
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
 void	day_array (int, int, int *);
-int	day_in_week (int, int, int);
-int	day_in_year (int, int, int);
+int		day_in_week (int, int, int);
+int		day_in_year (int, int, int);
 
-date_sep(int z) {
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+date_sep(int z) 
+{
 	if (z=='/'||z=='-'||z=='.') return 1;
 	return 0;
 }
+
 /**
  * @return the 1 based day number within the year
  */
-int day_in_year(day, month, year)
+int 
+day_in_year(day, month, year)
 int day, month, year;
 {
 	int i, leap;
@@ -147,7 +182,8 @@ int day, month, year;
  *
  * @return The date in internal format
  */
-long gen_dateno2(day, month, year)
+long 
+gen_dateno2(day, month, year)
 {
 	long temp;
 	if (month<1||month>12) return DATE_INVALID;
@@ -167,13 +203,13 @@ long gen_dateno2(day, month, year)
  *
  * @return The date in internal format
  */
-long gen_dateno(int day,int month,int year)
+long 
+gen_dateno(int day,int month,int year)
 {
 	int z;
-#ifdef DEBUG
-/* {DEBUG} */ {        debug("In gen_dateno %d %d %d",day,month,year);
-}
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ {        debug("In gen_dateno %d %d %d",day,month,year);}
+	#endif
 	z=gen_dateno2(day,month,year);
 	if (z==DATE_INVALID) {
 		exitwith("Invalid date");
@@ -187,6 +223,7 @@ long gen_dateno(int day,int month,int year)
  *  @param d The date
  *  @return The year
  */
+int
 get_yr(int d)
 {
 	int e;
@@ -224,7 +261,9 @@ get_yr(int d)
  *  @param d The date
  *  @return The month
  */
-get_month(int d) {
+int
+get_month(int d) 
+{
 	int a;
 	int i, leap;
 	int year;
@@ -243,7 +282,13 @@ get_month(int d) {
 	}
 }
 
-get_date(int d,int *day,int *mn,int *yr) {
+/**
+ *
+ * @todo Describe function
+ */
+int
+get_date(int d,int *day,int *mn,int *yr)
+{
 	int a;
 	int i, leap;
 	int year;
@@ -264,16 +309,26 @@ get_date(int d,int *day,int *mn,int *yr) {
 	return 1;
 }
 
-modify_year(int a) {
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Modify year");
-}
-#endif
+/**
+ *
+ * @todo Describe function
+ */
+int
+modify_year(int a) 
+{
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Modify year");}
+	#endif
 	a=y2kmode(a);
 	return a;
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+int
 y2kmode(int yr)
 {
 char *ptr;
@@ -282,91 +337,91 @@ char *ptr;
 	time_t nw;
 	int ch, month, year, yflag;
 	int zz;
-#ifdef DEBUG
-/* {DEBUG} */ {        debug("y2kmode");
+	
+	#ifdef DEBUG
+	/* {DEBUG} */ {        debug("y2kmode");}
+	#endif
+        if (yr>99) 
+	{
+		#ifdef DEBUG
+		/* {DEBUG} */ {        debug("Year is ok");}
+		#endif
+	   return yr;
+	}
+
+	if (y2ktype==-1) 
+	{
+		#ifdef DEBUG
+		/* {DEBUG} */ {debug("y2ktype not set");}
+		#endif
+	    ptr=acl_getenv("AUBIT_Y2K");
+	    if (ptr==0) y2ktype=50;
+		    else y2ktype=atoi(ptr);
+		#ifdef DEBUG
+		/* {DEBUG} */ {debug("y2ktype set to %d",y2ktype);}
+		#endif
+	    if (y2ktype==0) y2ktype=50;
+	}
+
+	/* y2ktypes
+	+n (n<100) - set to nearest year using +n years from today as limit for future
+	-n (n>-100) - set to nearest year using -n from today as limit for past
+	(note: -25 = +75 )
+	eg
+	year=1997
+	  n=20, anything after 17 will be taken as historic, anything less than= 17 is future
+	  n=-20, anything before 77 will be taken as future, anything greater than= 77 is in the past, 69=2069, 79=1979, 0 = 2000
+
+	XX00 - always use century XX
+	999  - Do not add anything - dealing with AD 0-99
+	-999 - use current century
+	*/
+	
+	/*
+	time(&nw);
+	local_time = localtime(&nw);
+	*/
+
+	/* this is right ! - not y2k specific  epoch = 1899*/
+
+
+	/* year = local_time->tm_year + 1900;  */ /*DEBUGGING */
+	year=1997;
+
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Y2K1");	}
+	#endif
+	if (y2ktype==999) {return yr;}
+
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Y2K2");	}
+	#endif
+	if (y2ktype==-999) {return yr+year-(year%100);}
+
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Y2K3");	}
+	#endif
+	if (y2ktype>=1000&&y2ktype%100==0) 
+	{
+	  yr+=y2ktype;
+	  return yr;
+	}
+
+	if (y2ktype>0&&y2ktype<100) 
+	{
+	    z=(year+y2ktype)%100;
+	    if (yr>z) return year-(year%100)+yr;
+	    else return year-(year%100)+100+yr;
+	}
+
+	if (y2ktype<0&&y2ktype>-100) 
+	{
+	    z=(year+y2ktype)%100;
+	    if (yr>=z) return year-(year%100)+yr;
+	    else return year-(year%100)+100+yr;
+	}
 }
-#endif
-        if (yr>99) {
-#ifdef DEBUG
-/* {DEBUG} */ {        debug("Year is ok");
-}
-#endif
-   return yr;
-}
-
-if (y2ktype==-1) {
-#ifdef DEBUG
-/* {DEBUG} */ {debug("y2ktype not set");
-}
-#endif
-    ptr=acl_getenv("AUBIT_Y2K");
-    if (ptr==0) y2ktype=50;
-    else y2ktype=atoi(ptr);
-#ifdef DEBUG
-/* {DEBUG} */ {debug("y2ktype set to %d",y2ktype);
-}
-#endif
-    if (y2ktype==0) y2ktype=50;
-}
-
-/* y2ktypes
-+n (n<100) - set to nearest year using +n years from today as limit for future
--n (n>-100) - set to nearest year using -n from today as limit for past
-(note: -25 = +75 )
-eg 
-year=1997
-  n=20, anything after 17 will be taken as historic, anything less than= 17 is future
-  n=-20, anything before 77 will be taken as future, anything greater than= 77 is in the past, 69=2069, 79=1979, 0 = 2000
-
-XX00 - always use century XX
-999  - Do not add anything - dealing with AD 0-99
--999 - use current century
-*/
-/*
-time(&nw);
-local_time = localtime(&nw);
-*/
-
-/* this is right ! - not y2k specific  epoch = 1899*/
 
 
-/* year = local_time->tm_year + 1900;  */ /*DEBUGGING */
-year=1997;
-
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Y2K1");
-}
-#endif
-if (y2ktype==999) {return yr;}
-
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Y2K2");
-}
-#endif
-if (y2ktype==-999) {return yr+year-(year%100);}
-
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Y2K3");
-}
-#endif
-if (y2ktype>=1000&&y2ktype%100==0) {
-  yr+=y2ktype;
-  return yr;
-}
-
-if (y2ktype>0&&y2ktype<100) {
-    z=(year+y2ktype)%100;
-    if (yr>z) return year-(year%100)+yr;
-    else return year-(year%100)+100+yr;
-}
-
-if (y2ktype<0&&y2ktype>-100) {
-    z=(year+y2ktype)%100;
-    if (yr>=z) return year-(year%100)+yr;
-    else return year-(year%100)+100+yr;
-}
-}
-
-
-
+// ============================= EOF ===============================
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: string.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
 #
 */
 
@@ -38,35 +38,58 @@
  */
 
 
+ /*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <math.h>
+#include <sys/types.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+#include <time.h>
+//#include <unistd.h>
+//#include <pwd.h>
+
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
 #include "a4gl_constats.h"
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
-extern int errno;
-#include <sys/types.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-//#include <unistd.h>
-//#include <pwd.h>
-#include <locale.h>
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 /* #define DIGIT_ALIGN_LEFT */
-#include <time.h>
+extern int errno;
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
-void string_set(char *ptr,char *b,int size)
+/**
+ *
+ * @todo Desctibe function
+ */
+void 
+string_set(char *ptr,char *b,int size)
 {
 	strncpy(ptr,b,size);
         ptr[size]=0; // MJA 16.08.2001
 	pad_string(ptr,size);
-#ifdef DEBUG
-/*  {        debug("string_set to : '%s' ",ptr);  } */
-
-#endif
+	#ifdef DEBUG
+	/*  {        debug("string_set to : '%s' ",ptr);  } */
+	#endif
 }
 
 
@@ -76,7 +99,8 @@ void string_set(char *ptr,char *b,int size)
  * @param a The size of the string to be created.
  * @return A pointer to the string created.
  */
-char *new_string(int a) 
+char *
+new_string(int a)
 {
 	char *ptr;
 	char *ptr2;
@@ -92,27 +116,33 @@ char *new_string(int a)
  * @param b
  * @return A pointer to the string created.
  */
-char *new_string_set(int a,char *b)
+char *
+new_string_set(int a,char *b)
 {
 	char *ptr;
 	ptr=new_string(a);
 	string_set(ptr,b,a);
-#ifdef DEBUG
-/* {DEBUG} */ {        debug("added : '%s' ",ptr);
-}
-#endif
+	#ifdef DEBUG
+		{        debug("added : '%s' ",ptr);}
+	#endif
 	return ptr;
 }
 
 
-void modify_size(char *z,int a) {
+/**
+ *
+ * @todo Describe function
+ */
+void
+modify_size(char *z,int a)
+{
 char *zzz;
-#ifdef DEBUG
-/* {DEBUG} */ {debug("Modify size has been called !");
-}
-#endif
-zzz=z-sizeof(int);
-*(int *)zzz=a;
+	#ifdef DEBUG
+	/* {DEBUG} */ {debug("Modify size has been called !");
+	}
+	#endif
+	zzz=z-sizeof(int);
+	*(int *)zzz=a;
 }
 
 
@@ -122,7 +152,7 @@ zzz=z-sizeof(int);
 #ifndef __CYGWIN__
 /**
  * Windows implementation of strncasecmp().
- * 
+ *
  * @param a A string to be compared.
  * @param b A string to be compared.
  * @param c The number of characters to be compared.
@@ -137,7 +167,11 @@ strncasecmp(char *a,char *b,int c) {
 #endif
 
 
-
+/**
+ *
+ * @todo Describe function
+ */
+int
 mja_strncmp (char *str1, char *str2, int n)
 {
   int a, b;
@@ -162,3 +196,6 @@ mja_strncmp (char *str1, char *str2, int n)
     }
   return 0;
 }
+
+// =================================== EOF ==============================
+

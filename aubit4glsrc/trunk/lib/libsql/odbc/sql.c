@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.28 2002-05-14 09:27:28 afalout Exp $
+# $Id: sql.c,v 1.29 2002-05-17 07:08:34 afalout Exp $
 #
 */
 
@@ -64,6 +64,7 @@
 		#include <sqlext.h>
 		#include <odbcinst.h>
 		#define __UCHAR_DEFINED__
+	    #define __ODBC_DEFINED__
 	#endif
 
 	#ifdef IODBC
@@ -77,11 +78,14 @@
             #include <sqltypes.h>
 		#endif
 		#define __UCHAR_DEFINED__
+	    #define __ODBC_DEFINED__
 	#endif
+
 	#ifdef IFXODBC
 		#include <incl/cli/infxcli.h>
 		#include <incl/cli/infxsql.h>
 		#define __UCHAR_DEFINED__
+	    #define __ODBC_DEFINED__
 		//#include <incl/cli/sqlucode.h>
 	#endif
 
@@ -90,6 +94,17 @@
 			#include <pgsql/iodbc/isql.h>
 			#include <pgsql/iodbc/isqlext.h>
 			#define __UCHAR_DEFINED__
+		    #define __ODBC_DEFINED__
+	#endif
+
+    #ifndef __ODBC_DEFINED__
+        //default for tesing, when we don't use makefile we will not have -Dxxx
+		// unixODBC headers:
+		#include <sql.h>
+		#include <sqlext.h>
+		#include <odbcinst.h>
+		#define __UCHAR_DEFINED__
+	    #define __ODBC_DEFINED__
 	#endif
 
 #endif
@@ -160,7 +175,7 @@ int example2 (UCHAR * server, UCHAR * uid, UCHAR * pwd, UCHAR * sqlstr);
 void chrcat (char *s, char a);
 char *conv_binding (struct BINDING *b);
 char *char_pop (void);
-HSTMT new_hstmt (HSTMT * hstmt);
+HSTMT *new_hstmt (HSTMT * hstmt);
 
 /*
 =====================================================================
@@ -1045,7 +1060,7 @@ A4GLSQL_open_cursor (int ni, char *s)
 
   struct s_cid *cid;
   char *curs;
-   unsigned long rowcount;
+  unsigned long rowcount;
   int rc;
 
   debug ("Checking cursor %s exists before opening", s);
@@ -1157,7 +1172,13 @@ A4GLSQL_open_cursor (int ni, char *s)
       return sqlerrwith (rc, &cid->statement->hstmt); // warning: passing arg 2 of `sqlerrwith' makes pointer from integer without a cast
     }
   A4GLSQL_set_status (0, 1);
-  rc = SQLRowCount (&cid->statement->hstmt, &rowcount); // warning: passing arg 1 of `SQLRowCount' makes pointer from integer without a cast
+  rc = SQLRowCount (&cid->statement->hstmt,(SQLINTEGER*) &rowcount); // warning: passing arg 1 of `SQLRowCount' makes pointer from integer without a cast
+														// warning: passing arg 2 of `SQLRowCount' from incompatible pointer type
+                                                        // unsigned long rowcount;
+                                                        // SQLRETURN   SQLRowCount(SQLHSTMT StatementHandle,SQLINTEGER *RowCount);
+
+
+
   //chk_rc (rc, cid->statement->hstmt, "SQLRowCount");
   sqlca.sqlerrd[1] = rowcount;
   return 0;
@@ -2024,7 +2045,8 @@ ODBC_exec_select (HSTMT hstmt)
  * @param A pointer to the statement handle structure to be created.
  * @retutn The statement handler.
  */
-HSTMT
+//HSTMT
+HSTMT *
 new_hstmt (HSTMT * hstmt)
 {
   int rc;
@@ -3594,20 +3616,20 @@ int tmode;
 void
 A4GLSQL_unload_data(char *fname,char *delims, char *sql1) 
 {
-  HSTMT hstmt;
-	int cnt=0;
-  static char databuf[64000];
-  short ncols;
-  char colname[64];
-  SWORD colnamelen;
-  SWORD coltype[5000];
-  int colcnt;
-  unsigned long ind;
-	UDWORD collen;
-	SWORD scale;
-	SWORD nullable;
+HSTMT hstmt;
+int cnt=0;
+static char databuf[64000];
+short ncols;
+char colname[64];
+SWORD colnamelen;
+SWORD coltype[5000];
+int colcnt;
+unsigned long ind;
+UDWORD collen;
+SWORD scale;
+SWORD nullable;
+FILE *fout;
 
-  FILE *fout;
   fout=mja_fopen(fname,"wt");
 
   if (fout==0) {
@@ -3643,10 +3665,23 @@ A4GLSQL_unload_data(char *fname,char *delims, char *sql1)
       chk_rc (rc, hstmt, "SQLFetch");
       if (rc == SQL_NO_DATA_FOUND) break;
       cnt++;
-	debug("Fetched row");
+	  debug("Fetched row");
       for (colcnt=1;colcnt<=ncols;colcnt++) {
 
-         rc=SQLGetData(hstmt,(short)colcnt,SQL_CHAR,databuf,sizeof(databuf),&ind); //warning: passing arg 6 of `SQLGetData' from incompatible pointer type
+         rc=SQLGetData(hstmt,(short)colcnt,SQL_CHAR,databuf,sizeof(databuf),(SQLINTEGER*)&ind);
+				/*
+				warning: passing arg 6 of `SQLGetData' from incompatible pointer type
+                unsigned long ind;
+
+					SQLRETURN   SQLGetData(SQLHSTMT StatementHandle,
+					           SQLUSMALLINT ColumnNumber, SQLSMALLINT TargetType,
+					           SQLPOINTER TargetValue, SQLINTEGER BufferLength,
+					           SQLINTEGER *StrLen_or_Ind);
+                */
+
+
+
+
          chk_rc (rc, hstmt, "SQLGetData");
 
 
@@ -3671,6 +3706,7 @@ A4GLSQL_unload_data(char *fname,char *delims, char *sql1)
       }
       fprintf(fout,"\n");
    }
+
   debug("All done...");
   rc = SQLFreeStmt (hstmt, SQL_DROP);
   fclose(fout);

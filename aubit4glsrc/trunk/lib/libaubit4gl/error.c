@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.4 2002-05-07 09:02:47 afalout Exp $
+# $Id: error.c,v 1.5 2002-05-17 07:08:33 afalout Exp $
 #
 */
 
@@ -38,20 +38,48 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include "../generated/tmperrs.h"
 #include "a4gl_debug.h"
 #include <stdarg.h>
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
 #define IGNOREEXITWITH
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 char errorbuff[256]="";
 char lasterrorstr[1024]="";
 extern int status;
-
 int cache_status=0;
 int cache_statusno=0;
 
-IGNOREEXITWITH exitwith(char *s) {
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ *
+ * @todo Describe function
+ */
+IGNOREEXITWITH exitwith(char *s)
+{
 int a;
 	#ifdef DEBUG
 		/* {DEBUG} */ {debug("Error... %s",s);}
@@ -78,6 +106,10 @@ int a;
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 IGNOREEXITWITH exitwith_sql(char *s)
 {
 int a;
@@ -98,7 +130,12 @@ int a;
 	}
 }
 
-void set_error (char *fmt,...)
+/**
+ *
+ * @todo Describe function
+ */
+void 
+set_error (char *fmt,...)
 {
   va_list args;
   va_start (args, fmt);
@@ -108,7 +145,12 @@ void set_error (char *fmt,...)
 #endif
 }
 
-char *get_errm(int z)
+/**
+ *
+ * @todo Describe function
+ */
+char *
+get_errm(int z)
 {
 int a;
 	debug("In get errm");

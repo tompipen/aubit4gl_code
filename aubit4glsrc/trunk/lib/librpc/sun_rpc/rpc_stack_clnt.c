@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: rpc_stack_clnt.c,v 1.3 2002-05-17 07:08:34 afalout Exp $
+#*/
+
 /**
  * @file
  * This file was generated using rpcgen and then modified (IIRC) which
@@ -9,32 +38,80 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <memory.h> /* for memset */
 #include "a4gl_xdr_rpc_stack.h"
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
 #define main server_run
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+
 extern unsigned long serviceport;
 
 /* Default timeout can be changed using clnt_control() */
 static struct timeval TIMEOUT = { 25, 0 };
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 /**
  *
  */
-return_values *call_remote_func_1(call arg1,  CLIENT *clnt)
+return_values *
+call_remote_func_1(call arg1,  CLIENT *clnt)
 {
-	static return_values clnt_res;
+static return_values clnt_res;
 
 	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-	if (clnt_call(clnt, 
-			CALL_REMOTE_FUNC, 
-			xdr_call, 
-			&arg1, 
-			xdr_return_values, 
-			&clnt_res, TIMEOUT) != RPC_SUCCESS) 
-  {
+
+/* in rpc/clnt.h :
+ * enum clnt_stat
+ * CLNT_CALL(rh, proc, xargs, argsp, xres, resp, timeout)
+ * 	CLIENT *rh;
+ *	u_long proc;
+ *	xdrproc_t xargs;
+ *	caddr_t argsp;
+ *	xdrproc_t xres;
+ *	caddr_t resp;
+ *	struct timeval timeout;
+ */
+
+	if (clnt_call(
+			clnt,
+			CALL_REMOTE_FUNC,
+			(xdrproc_t)xdr_call,   		//rpc_stack_clnt.c:28: warning: passing arg 3 of pointer to function from incompatible pointer type
+			(caddr_t)&arg1,      		//rpc_stack_clnt.c:28: warning: passing arg 4 of pointer to function from incompatible pointer type
+			(xdrproc_t)xdr_return_values,  //rpc_stack_clnt.c:28: warning: passing arg 5 of pointer to function from incompatible pointer type
+			(caddr_t)&clnt_res,			//rpc_stack_clnt.c:28: warning: passing arg 6 of pointer to function from incompatible pointer type
+			TIMEOUT
+			)
+				!= RPC_SUCCESS)
+	{
 		return (NULL);
 	}
+
 	return (&clnt_res);
 }
 
+
+// ================================= EOF ===============================
 

@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: rpc_stack_xdr.c,v 1.3 2002-05-17 07:08:34 afalout Exp $
+#*/
+
 /**
  * @file
  *
@@ -11,13 +40,52 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <rpc/types.h>
 #include <rpc/xdr.h>
 
 #include "a4gl_xdr_rpc_stack.h"
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
 #define main server_run
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 unsigned int serviceport=0x2000000;
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
+/**
+ *
+ *
+ * @return
+ */
 bool_t
 xdr_single_dtype(XDR *xdrs, single_dtype *objp)
 {
@@ -68,6 +136,11 @@ xdr_single_dtype(XDR *xdrs, single_dtype *objp)
 	return (TRUE);
 }
 
+/**
+ *
+ *
+ * @return
+ */
 bool_t
 xdr_object_data(XDR *xdrs, object_data *objp)
 {
@@ -80,6 +153,11 @@ xdr_object_data(XDR *xdrs, object_data *objp)
 	return (TRUE);
 }
 
+/**
+ *
+ *
+ * @return
+ */
 bool_t
 xdr_return_values(XDR *xdrs, return_values *objp)
 {
@@ -92,7 +170,13 @@ xdr_return_values(XDR *xdrs, return_values *objp)
 	return (TRUE);
 }
 
-bool_t xdr_call(XDR *xdrs, call *objp)
+/**
+ *
+ *
+ * @return
+ */
+bool_t 
+xdr_call(XDR *xdrs, call *objp)
 {
 
 	 register long *buf;
@@ -110,3 +194,4 @@ bool_t xdr_call(XDR *xdrs, call *objp)
 }
 
 
+// ============================== EOF ==================================

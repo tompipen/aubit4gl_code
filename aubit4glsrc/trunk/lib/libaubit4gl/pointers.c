@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: pointers.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
 #
 */
 
@@ -156,7 +156,7 @@ void add_pointer (char *orig_name, char type, void *ptr)
   struct s_node buff2;
   struct s_node *node;
   char ptrchar[80];
-trim(orig_name);
+  trim(orig_name);
   debug("Adding pointer to %s %c (%p)",orig_name,type,ptr);
   buff = (struct s_node *)malloc (sizeof (struct s_node));
   buff->name[0] = type;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.4 2002-05-14 09:27:27 afalout Exp $
+# $Id: formwrite2.c,v 1.5 2002-05-17 07:08:33 afalout Exp $
 #*/
 
 /**
@@ -97,7 +97,8 @@ FILE *fyy;
 */
 
 static void translate_form(void);
-extern int* translate(char *s); //translate.c
+extern char * translate(char *s); //translate.c
+
 
 /*
 =====================================================================
@@ -1030,7 +1031,7 @@ void
 add_str_attr(struct struct_scr_field *f,int type,char *str)
 {
   debug("add_str_attr %d - '%s'\n",type,str);
-  if (str[0]!='\n') 
+  if (str[0]!='\n')
     str=char_val(str);
   else 
     str++;
@@ -1131,8 +1132,8 @@ translate_form(void)
 	int a;
 	int b;
 	char *ptr;
-	
-	for (a=0;a<the_form.metrics.metrics_len;a++) 
+
+	for (a=0;a<the_form.metrics.metrics_len;a++)
 	{
   		dumpstring(the_form.metrics.metrics_val[a].label,0,"");
 		ptr=translate(the_form.metrics.metrics_val[a].label); //warning: assignment makes pointer from integer without a cast
@@ -1147,7 +1148,7 @@ translate_form(void)
 			if (the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].type==FA_S_COMMENTS)
 			{
 				dumpstring(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value,0,"");
-				ptr=translate(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value);
+				ptr=translate(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value); // warning: assignment from incompatible pointer type
 				if (ptr)
 					the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value=strdup(ptr);
 			}

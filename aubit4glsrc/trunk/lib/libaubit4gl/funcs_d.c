@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.3 2002-05-14 09:27:27 afalout Exp $
+# $Id: funcs_d.c,v 1.4 2002-05-17 07:08:33 afalout Exp $
 #
 */
 
@@ -36,30 +36,43 @@
  * or to be externally seen
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #include <math.h>
+#include <sys/types.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+#include <time.h>
+
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
 #include "a4gl_constats.h"
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 extern int errno;
-#include <sys/types.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-//#include <unistd.h>
-//#include <pwd.h>
-#include <locale.h>
-/* #define DIGIT_ALIGN_LEFT */
-#include <time.h>
 
-
-void trim(char *p);
-void bnamexxx(char *str,char *str1,char *str2);
-
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Another implementation of basename.
@@ -155,8 +168,13 @@ acl_malloc_full(int size,char *why,char *f,long line)
   return p;
 }
 
+/**
+ *
+ *
+ * @param
+ */
 void
-acl_free_full(void *ptr,char *f,long line) 
+acl_free_full(void *ptr,char *f,long line)
 {
   free(ptr);
 }
@@ -166,7 +184,7 @@ acl_free_full(void *ptr,char *f,long line)
  *
  * @param p The string to be trimmed.
  */
-void 
+void
 trim(char *p)
 {
   int a;

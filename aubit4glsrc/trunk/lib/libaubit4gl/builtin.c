@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: builtin.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
 #
 */
 
@@ -36,27 +36,54 @@
  * or to be externally seen
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #include "a4gl_dbform.h"
 #include "a4gl_errors.h"
-//#include "../libincl/4glhdr.h"
 #include "a4gl_debug.h"
+#include "a4gl_dlsql.h"         //A4GLSQL_set_status()
+#include "a4gl_runtime_tui.h" 	//push_int()
+#include "a4gl_aubit_lib.h" 	//trim() etc.
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 int m_arr_count = 0;
 int m_arr_curr = 0;
 int m_scr_line = 0;
 
-void include_builtin_in_exe() {
-// Does nothing
-// fglwrap calls this to make sure this file is included in any
-// executable
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+/**
+ * Does nothing
+ * fglwrap calls this to make sure this file is included in any
+ * executable
+ *
+ */
+void 
+include_builtin_in_exe(void)
+{
+    // Does nothing
 }
+
 /**
  * Set count for INPUT / DISPLAY ARRAY statement.
  *
  * @param nargs Number of arguments passed by the parameter stack.
  */
-int aclfgl_set_count (int nargs)
+int
+aclfgl_set_count (int nargs)
 {
   long a;
   struct BINDING fbind[] =
@@ -66,11 +93,11 @@ int aclfgl_set_count (int nargs)
   if (nargs != 1)
     {
 //      pop_args(nargs);set_status(-3001);
-      pop_args(nargs);A4GLSQL_set_status(-3001);
+      pop_args(nargs);A4GLSQL_set_status(-3001,0);
 
       return 0;
     }
-  A4GLSQL_set_status(0);
+  A4GLSQL_set_status(0,0);
   pop_params (fbind, 1);
   m_arr_count = a;
 /* a is now set to set_Count */
@@ -82,12 +109,13 @@ int aclfgl_set_count (int nargs)
  *
  * @param nargs Number of arguments passed by the parameter stack.
  */
-int aclfgl_arr_count (int nargs)
+int
+aclfgl_arr_count (int nargs)
 {
-  long a;
+//  long a;
   if (nargs != 0)
     {
-      pop_args(nargs);A4GLSQL_set_status(-3001);
+      pop_args(nargs);A4GLSQL_set_status(-3001,0);
       return 0;
     }
   push_int (m_arr_count);
@@ -100,12 +128,13 @@ int aclfgl_arr_count (int nargs)
  *
  * @param nargs Number of arguments passed by the parameter stack.
  */
-int aclfgl_scr_line (int nargs)
+int
+aclfgl_scr_line (int nargs)
 {
-  long a;
+  //long a;
   if (nargs != 0)
     {
-      pop_args(nargs);A4GLSQL_set_status(-3001);
+      pop_args(nargs);A4GLSQL_set_status(-3001,0);
       return 0;
     }
   push_int (m_scr_line);
@@ -122,7 +151,7 @@ aclfgl_arr_curr (int nargs)
 {
   if (nargs != 0)
     {
-      pop_args(nargs);A4GLSQL_set_status(-3001);
+      pop_args(nargs);A4GLSQL_set_status(-3001,0);
       return 0;
     }
   push_int (m_arr_curr);
@@ -136,14 +165,15 @@ aclfgl_arr_curr (int nargs)
  *
  * @param nargs Number of arguments passed by the parameter stack.
  */
-int aclfgl_fgl_getenv (int nargs)
+int
+aclfgl_fgl_getenv (int nargs)
 {
   char *g;
   char *p;
 
   if (nargs != 1)
     {
-      pop_args(nargs);A4GLSQL_set_status(-3001);
+      pop_args(nargs);A4GLSQL_set_status(-3001,0);
       return 0;
     }
   g = char_pop ();
@@ -167,13 +197,14 @@ int aclfgl_fgl_getenv (int nargs)
  *   - 0 : No arguments.
  *   - 1 : OK strlen made.
  */
-int aclfgl_length (int nargs)
+int 
+aclfgl_length (int nargs)
 {
   char *g;
   int p;
   if (nargs != 1)
     {
-      pop_args(nargs);A4GLSQL_set_status(-3001);
+      pop_args(nargs);A4GLSQL_set_status(-3001,0);
       return 0;
     }
   g = char_pop ();
@@ -194,13 +225,14 @@ int aclfgl_length (int nargs)
  * @param b The end index wanted.
  * @param ...
  */
-char *substr (char *ca, int dtype, int a, int b,...)
+char *
+substr (char *ca, int dtype, int a, int b,...)
 {
-  char *p;
+//  char *p;
   static char *np = 0;
   static char *np2 = 0;
 #ifdef DEBUG
-/* {DEBUG} */ 
+/* {DEBUG} */
   {
     debug ("substr");
   }
@@ -215,7 +247,7 @@ char *substr (char *ca, int dtype, int a, int b,...)
   if (np[0] == 0)
     {
 #ifdef DEBUG
-/* {DEBUG} */ 
+/* {DEBUG} */
       {
 	debug ("NULL");
       }
@@ -226,13 +258,13 @@ char *substr (char *ca, int dtype, int a, int b,...)
   b--;
 
 #ifdef DEBUG
-/* {DEBUG} */ 
+/* {DEBUG} */
   {
     debug (">>>>Start with %s", np);
   }
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ 
+/* {DEBUG} */
   {
     debug (">>>>a=%d b=%d dtype=%d,\n ", a, b, dtype);
   }
@@ -241,7 +273,7 @@ char *substr (char *ca, int dtype, int a, int b,...)
   if (b == -1)
     b = a;
 #ifdef DEBUG
-/* {DEBUG} */ 
+/* {DEBUG} */
   {
     debug (">>>>Allocated %d bytes", b - a + 2);
   }
@@ -264,9 +296,10 @@ char *substr (char *ca, int dtype, int a, int b,...)
  * @param a The begining index.
  * @param b The end index.
  */
-char *let_substr (char *ca, int dtype, int a, int b,...)
+char *
+let_substr (char *ca, int dtype, int a, int b,...)
 {
-  char *p;
+//  char *p;
   char *np;
   int size;
 #ifdef DEBUG
@@ -294,13 +327,13 @@ char *let_substr (char *ca, int dtype, int a, int b,...)
   np = (char *)acl_malloc (size + 1, "let_substr");
   pop_char (np, size);
 #ifdef DEBUG
-/* {DEBUG} */ 
+/* {DEBUG} */
   {
     debug ("   Stack contained %s\n", np);
   }
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ 
+/* {DEBUG} */
   {
     debug ("   Size=%d", size);
   }
@@ -315,11 +348,11 @@ char *let_substr (char *ca, int dtype, int a, int b,...)
   return ca;
 }
 
-
 /**
  * The get count for INPUT ARRAY.
  */
-int  get_count ()
+int
+get_count (void)
 {
   return m_arr_count;
 }
@@ -329,7 +362,8 @@ int  get_count ()
  *
  * @param a The position to be setted.
  */
-int set_arr_curr (int a)
+void
+set_arr_curr (int a)
 {
   m_arr_curr = a;
   gui_scrollpos (a);
@@ -340,6 +374,7 @@ int set_arr_curr (int a)
  *
  * @param a The index of the last array position used.
  */
+void
 set_arr_count (int a)
 {
   m_arr_count = a;
@@ -351,6 +386,7 @@ set_arr_count (int a)
  *
  * @param a The screen line to be setted.
  */
+void
 set_scr_line (int a)
 {
   m_scr_line = a;
@@ -363,6 +399,7 @@ set_scr_line (int a)
  * @todo : Remove if not used.
  * @param a The current array to be setted.
  */
+void
 get_arr_curr (int a)
 {
   m_arr_curr = a;
@@ -376,34 +413,44 @@ get_arr_curr (int a)
  * @todo : Remove if not used.
  * @param a The current array to be setted.
  */
+void
 get_scr_line (int a)
 {
   m_scr_line = a;
 }
 
 
-
-
 #ifdef _WINDOWS
+
+/**
+ *
+ *
+ * @param
+ */
 char *
 index (char *s, int a)
 {
-  
+
     int b;
-  
+
     for (b = 0; b < strlen (s); b++)
     {
-      
+
 	if (s[b] == a)
 	return &s[b];
 
     }
-  
+
     return 0;
-  
+
 }
 
 
+/**
+ *
+ *
+ * @param
+ */
 char *
 rindex (char *s, int a)
 {
@@ -423,26 +470,38 @@ rindex (char *s, int a)
 }
 
 
-int 
+/**
+ *
+ *
+ * @param
+ */
+int
 strcasecmp (char *s1, char *s2)
 {
-  
+
     return stricmp (s1, s2);
-  
+
 }
 
 /**
  * Windows implementation of unix sleep.
- * 
+ *
  * @param a The number of seconds to sleep.
  */
-int sleep (int a)
+int 
+sleep (int a)
 {
     Sleep (a * 1000);
 }
 
 
-getpwuid ()
+/**
+ *
+ *
+ * @param
+ */
+int
+getpwuid (void)
 {
     return 0;
 }
@@ -452,7 +511,8 @@ getpwuid ()
  *
  * @return Allways 50.
  */
-getuid()
+int
+getuid(void)
 {
     return 50;
 }
@@ -462,7 +522,8 @@ getuid()
  * A dummy windows popen.
  * Just return 0
  */
-popen ()
+int
+popen (void)
 {
   
     return 0;
@@ -514,7 +575,7 @@ int
 aclfgl_err_get(int statusnumber)
 {
 
-//      A4GLSQL_set_status(-3001);
+//      A4GLSQL_set_status(-3001,0);
       return 0;
 }
 
@@ -528,7 +589,7 @@ int
 aclfgl_err_print(int statusnumber)
 {
 
-//      A4GLSQL_set_status(-3001);
+//      A4GLSQL_set_status(-3001,0);
       return 0;
 }
 
@@ -540,17 +601,22 @@ int
 aclfgl_err_quit(int statusnumber)
 {
 
-//      A4GLSQL_set_status(-3001);
+//      A4GLSQL_set_status(-3001,0);
       return 0;
 }
 
 
+/**
+ *
+ *
+ * @param
+ */
 int
 aclfgl_startlog (char *filename)
 //start_log (filename, 4glmodule, 4gllinenumber)
 {
 
-//      A4GLSQL_set_status(-3001);
+//      A4GLSQL_set_status(-3001,0);
       return 0;
 }
 
@@ -564,7 +630,7 @@ aclfgl_errorlog (char *string)
 
 {
 
-//      A4GLSQL_set_status(-3001);
+//      A4GLSQL_set_status(-3001,0);
       return 0;
 }
 
@@ -600,7 +666,7 @@ aclfgl_showhelp (int helpnumber)
 
 {
 
-//      A4GLSQL_set_status(-3001);
+//      A4GLSQL_set_status(-3001,0);
       return 0;
 }
 
@@ -654,11 +720,12 @@ fgl_fieldtouched(char *fieldname)
  * close database
  * secufunc.ao(.text+0x1ed4f): undefined reference to `close_database'
  */
+void
 close_database(void)
 {
     return;
 }
 
 
-
+// ================================== EOF =============================
 

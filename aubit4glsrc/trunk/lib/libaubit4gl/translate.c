@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.3 2002-05-14 09:27:27 afalout Exp $
+# $Id: translate.c,v 1.4 2002-05-17 07:08:33 afalout Exp $
 #
 */
 
@@ -34,16 +34,29 @@
  * @todo Add Doxygen comments to file
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include <string.h> //strdup()
-char *acl_getenv(char *);
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
 #define stricmp strcasecmp
 #define TRANSLINESIZE 2048
 
-void add_translate(int mode,char * from,char * to, int quote);
-void make_trans_list(void);
-int* translate(char *s);
-
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 /***************************/
 /* Translation definitions */
@@ -59,8 +72,31 @@ int translate_list_cnt=0;
 char **list_of_strings=0;
 int list_of_strings_len=0;
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
-int*
+char * acl_getenv(char *);
+void add_translate(int mode,char * from,char * to, int quote);
+void make_trans_list(void);
+char * translate(char *s);
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
+/**
+ *
+ *
+ * @return
+ */
+char *
 translate(char *s)
 {
 int a;
@@ -71,19 +107,24 @@ int a;
 
 				if (translate_list[a].to!=0)         {
 					debug("->%s\n",translate_list[a].to);
-					return translate_list[a].to;
+					return translate_list[a].to; //return from incompatible pointer type
 				}
 
 				if (translate_list[a].identifier!=0) {
-						return translate_list[a].identifier;
+						return translate_list[a].identifier; //return from incompatible pointer type
 				}
 				debug("Shouldn't happen");
 			}
 	}
-	//
+
 	return 0;
 }
 
+/**
+ *
+ *
+ * @return
+ */
 void
 make_trans_list(void)
 {
@@ -133,6 +174,11 @@ char buff[TRANSLINESIZE];
 	}
 }
 
+/**
+ *
+ *
+ * @return
+ */
 void
 dumpstring(char *s,long n,char *fname) 
 {
@@ -168,6 +214,11 @@ int a;
 
 //moved from formwrite2.c and lexer.c:
 
+/**
+ *
+ *
+ * @return
+ */
 void
 add_translate(int mode,char * from,char * to, int quote) 
 {
@@ -175,7 +226,7 @@ char buff[2048];
 
         translate_list_cnt++;
         translate_list=(struct translate_string *)realloc(translate_list,sizeof( struct translate_string)*translate_list_cnt);
-        translate_list[translate_list_cnt-1].from=strdup(from); //warning: assignment makes pointer from integer without a cast
+        translate_list[translate_list_cnt-1].from=strdup(from);
         debug("Adding %s -> %s mode %d",from,to,mode);
         if (mode==1) {
 	        if (quote==0) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.7 2002-05-14 09:27:27 afalout Exp $
+# $Id: stack.c,v 1.8 2002-05-17 07:08:33 afalout Exp $
 #
 */
 
@@ -41,33 +41,45 @@
  * @todo Doxygen comments to add to functions
  */
 
+ /*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include <math.h>
+#include <sys/types.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#ifndef WIN32
+	#include <unistd.h>
+	#include <pwd.h>
+#endif
+
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
 #include "a4gl_constats.h"
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
-extern int errno;
-#include <sys/types.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "a4gl_acl_string.h"
-#ifndef WIN32
-	#include <unistd.h>
-	#include <pwd.h>
-#endif
+/*
+=====================================================================
+                    Platform specific definitions
+=====================================================================
+*/
 
 
 #ifdef WIN32
-struct passwd
-{
-  char pw_name[20];
-};
-
+	struct passwd
+	{
+	  char pw_name[20];
+	};
 #endif
 
 //FIXME: is this OK? see lib/libincl/dbform.h
@@ -85,16 +97,25 @@ struct passwd
 	extern long status;
 #endif
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
-
-//#include <locale.h>
 /* #define DIGIT_ALIGN_LEFT */
-#include <time.h>
-void push_param (void *p, int d);
-int pop_param (void *p, int d, int s);
-char *lrtrim(char *z) ;
+
 #define IGN 0xee
 #define UC (unsigned char)
+#define LOCAL_BINDINGS 20
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+extern int errno;
 
 int nset[15][9] = {
   {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},
@@ -115,7 +136,7 @@ int nset[15][9] = {
 };
 
 /**
- * Parameter definition type 
+ * Parameter definition type
  */
 struct param
 {
@@ -141,18 +162,35 @@ int alloc_params_cnt = 0;
 /*
  * IN & EXISTS with SQL required some bindings ....
  */
-#define LOCAL_BINDINGS 20
 int local_binding_cnt=0;
 int init_local_bindings=0;
 struct BINDING *local_binding[LOCAL_BINDINGS];
 int num_local_binding[LOCAL_BINDINGS];
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void push_param (void *p, int d);
+int pop_param (void *p, int d, int s);
+char *lrtrim(char *z) ;
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 /**
  * Pop a boolean value from the stack.
  *
  * @return The boolean value.
  */
-int pop_bool(void)
+int
+pop_bool(void)
 {
   int ptr;
   debug ("Popping boolean..");
@@ -166,14 +204,15 @@ int pop_bool(void)
  *
  * @return The value poped.
  */
-int pop_int(void)
+int 
+pop_int(void)
 {
   int ptr;
   int b;
   b = pop_param (&ptr, DTYPE_SMINT, 0);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("pop_int b=%d\n", b);
-#endif
+	#ifdef DEBUG
+		debug ("pop_int b=%d\n", b);
+	#endif
   return ptr;
 }
 
@@ -182,7 +221,8 @@ int pop_int(void)
  *
  * @return The long value poped.
  */
-long pop_long(void)
+long 
+pop_long(void)
 {
   long ptr;
   pop_param (&ptr, DTYPE_INT, 0);
@@ -194,7 +234,8 @@ long pop_long(void)
  *
  * @return The date value poped.
  */
-long pop_date(void)
+long
+pop_date(void)
 {
   long ptr;
   pop_param (&ptr, DTYPE_DATE, 0);
@@ -206,7 +247,8 @@ long pop_date(void)
  *
  * @return The date value poped.
  */
-float pop_float (void)
+float 
+pop_float (void)
 {
   float ptr;
   pop_param (&ptr, DTYPE_SMFLOAT, 0);
@@ -218,77 +260,88 @@ float pop_float (void)
  *
  * @return The date value poped.
  */
-double pop_double (void)
+double 
+pop_double (void)
 {
   double ptr;
   pop_param (&ptr, DTYPE_FLOAT, 0);
   return ptr;
 }
 
-int pop_var (void *p, int d)
+/**
+ *
+ *
+ * @return
+ */
+int
+pop_var (void *p, int d)
 {
   int z;
   int s;
   s = DECODE_SIZE (d);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("pop variable type %d %x (%d) \n", d, d, s);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("pop variable type %d %x (%d) \n", d, d, s);
+	#endif
   z = pop_param (p, d, s);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("z=%d", z);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("z=%d", z);
+	#endif
   if (((z) != (1)))
     {
       exitwith ("Error in conversion");
-#ifdef DEBUG
-/* {DEBUG} */ debug ("pop_var: error in conversion %d\n", z);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("pop_var: error in conversion %d\n", z);
+	#endif
       return 0;
     }
   else
     {
-#ifdef DEBUG
-/* {DEBUG} */ debug ("pop_var: conversion ok");
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("pop_var: conversion ok");
+	#endif
     }
   return z;
 }
 
+/**
+ *
+ *
+ * @return
+ */
 int
 pop_var2 (void *p, int d, int s)
 {
   int z;
   char *pl;
 
-#ifdef DEBUG
-/* {DEBUG} */ debug ("pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
+	#endif
 
   if (d == 0)
     {
       pl = new_string (s);
       z = pop_param (pl, d, s);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("z=%d\n", z);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("z=%d\n", z);
+	#endif
       if (z == 1)
 	{
-#ifdef DEBUG
-/* {DEBUG} */ debug ("zconv ok");
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("zconv ok");
+	#endif
 	}
       if (z != 1)
 	{
-#ifdef DEBUG
-/* {DEBUG} */ debug ("zconv bad");
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("zconv bad");
+	#endif
 	}
       if (((z) != (1)))
 	{
-#ifdef DEBUG
-/* {DEBUG} */ debug ("pop_var2: error in conversion %d d=0 s=%d\n",
-			       z, s);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("pop_var2: error in conversion %d d=0 s=%d\n",z,s);
+	#endif
 	}
       debug ("Copying string '%s' to p", pl);
       strcpy ((char *) p, pl);
@@ -301,31 +354,42 @@ pop_var2 (void *p, int d, int s)
   if (z != 1)
     {
       exitwith ("Error in conversion");
-#ifdef DEBUG
-/* {DEBUG} */ debug ("pop_var2 - error in conversion %d d=%d s=%d\n", z,
-			   d, s);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("pop_var2 - error in conversion %d d=%d s=%d\n", z,
+				   d, s);
+	#endif
     }
   return z;
 }
 
 
+/**
+ *
+ *
+ * @return
+ */
 double
 ret_var (void *p, int d)
 {
-#ifdef DEBUG
-/* {DEBUG} */ debug ("ret_var - %p %d", p, d);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("ret_var - %p %d", p, d);
+	#endif
   return pop_param (&p, d, 0);
 }
 
+/**
+ *
+ *
+ * @return
+ */
+int
 pop_char (char *z, int size)
 {
   int a;
   a = pop_param (z, DTYPE_CHAR, size);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("pop_char returns char ='%s'", z);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("pop_char returns char ='%s'", z);
+	#endif
   return a;
 }
 
@@ -388,22 +452,28 @@ char_pop (void)
   return s;
 }
 
+/**
+ *
+ *
+ * @return
+ */
+int
 pop_param (void *p, int d, int size)
 {
   int b;
   char *ptr;
   params_cnt--;
 
-debug ("pop_param... %d %d %d", params[params_cnt].dtype & DTYPE_MASK, d & DTYPE_MASK, size);
-debug ("             %p %p ", params[params_cnt].ptr, p);
+	debug ("pop_param... %d %d %d", params[params_cnt].dtype & DTYPE_MASK, d & DTYPE_MASK, size);
+	debug ("             %p %p ", params[params_cnt].ptr, p);
 
 
   b = conv (params[params_cnt].dtype & DTYPE_MASK,
 	    params[params_cnt].ptr, d & DTYPE_MASK, p, size);
 
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Conversion returns %d", b);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("Conversion returns %d", b);
+	#endif
 
   if (params[params_cnt].dtype & DTYPE_MALLOCED)
     {
@@ -426,12 +496,13 @@ debug ("             %p %p ", params[params_cnt].ptr, p);
 }
 
 /**
- * Pop parameters from a function call 
+ * Pop parameters from a function call
  *
  * @param b
- * @param n 
+ * @param n
  */
-int pop_params (struct BINDING *b, int n)
+int 
+pop_params (struct BINDING *b, int n)
 {
   int a;
   for (a = n - 1; a >= 0; a--)
@@ -440,6 +511,11 @@ int pop_params (struct BINDING *b, int n)
   }
 }
 
+/**
+ *
+ *
+ * @return
+ */
 int
 push_params (struct BINDING *b, int n)
 {
@@ -460,7 +536,8 @@ push_params (struct BINDING *b, int n)
  * @param n
  * @return 
  */
-void *pop_binding(int *n) 
+void *
+pop_binding(int *n)
 {
 	local_binding_cnt--;
 	*n=num_local_binding[local_binding_cnt];
@@ -471,14 +548,15 @@ void *pop_binding(int *n)
 /**
  * Push a parameter in to the parameter stack.
  *
- * The parameter stack is a global pointer to a struct param array 
+ * The parameter stack is a global pointer to a struct param array
  * dynamically alocated
  *
  * @param p
  * @param d
  *
  */
-void push_param (void *p, int d)
+void 
+push_param (void *p, int d)
 {
   double doublea, doubleb;
   char *c1;
@@ -542,9 +620,9 @@ void push_param (void *p, int d)
   if (d < OP_MASK_BASE)
     {
 
-#ifdef DEBUG
-/*  debug ("Adding ptr=%p d=%d (%d masked) to stack %d\n", p, d, d & DTYPE_MASK, params_cnt); */
-#endif
+	#ifdef DEBUG
+	/*  debug ("Adding ptr=%p d=%d (%d masked) to stack %d\n", p, d, d & DTYPE_MASK, params_cnt); */
+	#endif
   if (params_cnt >= alloc_params_cnt)
 	{
 	  exitwith ("Stack overflow");
@@ -556,16 +634,16 @@ void push_param (void *p, int d)
   if ((d & DTYPE_MASK) == 0 && size == 0)
 	{
 	  size = strlen (p);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Defaulting size");
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("Defaulting size");
+	#endif
 	}
 
       if ((d & DTYPE_MASK) == 0)
 	{
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Adding string '%s' size %d", p, size);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("Adding string '%s' size %d", p, size);
+	#endif
 	}
 
       params[params_cnt].size = size;
@@ -574,7 +652,7 @@ void push_param (void *p, int d)
     }
 
   n1 = 0;
-debug("params_cnt=%d\n",params_cnt);
+	debug("params_cnt=%d\n",params_cnt);
   if (params_cnt > 0)
     {
       if (isnull (params[params_cnt - 1].dtype, params[params_cnt - 1].ptr))
@@ -582,13 +660,14 @@ debug("params_cnt=%d\n",params_cnt);
 
 	    debug("MJA1 %d",strlen(params[params_cnt-1].ptr));
 
-// I don't remember what this is for - so I'm getting shot for now...
+		// I don't remember what this is for - so I'm getting shot for now...
 	    zzz=params[params_cnt - 1].dtype & DTYPE_MASK +
 	    strlen (params[params_cnt - 1].ptr) + params[params_cnt - 1].size;
 
-	zzz=1;
+		zzz=1;
 
-	debug("zzz=%d\n",zzz);
+		debug("zzz=%d\n",zzz);
+
 	  if (zzz == 0)
 	    {
 	      n1 = 0;
@@ -766,11 +845,6 @@ debug("params_cnt=%d\n",params_cnt);
 	return;
   }
 
-
-
-
-
-
   if (d & NUMERIC_OP_2)
     {
 
@@ -796,9 +870,9 @@ debug("params_cnt=%d\n",params_cnt);
       c2 = char_pop ();
       c1 = char_pop ();
 
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Check for %s matches %s", c1, c2);
-#endif
+		#ifdef DEBUG
+		/* {DEBUG} */ debug ("Check for %s matches %s", c1, c2);
+		#endif
       push_int (mja_match (c1, c2, 'M'));
       acl_free (c1);
       acl_free (c2);
@@ -996,7 +1070,13 @@ debug("params_cnt=%d\n",params_cnt);
     }
 }
 
-push_user ()
+/**
+ *
+ *
+ * @return
+ */
+void
+push_user (void)
 {
   int a;
   struct passwd *p;
@@ -1006,7 +1086,14 @@ push_user ()
   push_char (p->pw_name);
 }
 
-push_ascii(int a) {
+/**
+ *
+ *
+ * @return
+ */
+void
+push_ascii(int a)
+{
 	char buff[3];
 	buff[0]=a;
 	buff[1]=0;
@@ -1014,7 +1101,13 @@ push_ascii(int a) {
 }
 
 
-push_today ()
+/**
+ *
+ *
+ * @return
+ */
+void
+push_today (void)
 {
   long z;
   int mja_day;
@@ -1032,12 +1125,18 @@ push_today ()
 
   z = gen_dateno (mja_day, month, year);
 
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Here....%ld %d %d %d", z, mja_day, month, year);
-#endif
+	#ifdef DEBUG
+		debug ("Here....%ld %d %d %d", z, mja_day, month, year);
+	#endif
   push_date (z);
 }
 
+/**
+ *
+ *
+ * @return
+ */
+void
 push_current (int a, int b)
 {
   long z;
@@ -1073,7 +1172,13 @@ push_current (int a, int b)
 }
 
 
-push_time ()
+/**
+ *
+ *
+ * @return
+ */
+void
+push_time (void)
 {
   long z;
   int mja_day;
@@ -1095,13 +1200,25 @@ push_time ()
 }
 
 
+/**
+ *
+ *
+ * @return
+ */
+void
 pushop (int a)
 {
   push_param (0, a);
 }
 
 
-opboolean ()
+/**
+ *
+ *
+ * @return
+ */
+int
+opboolean (void)
 {
   int d1, d2;
   char *z1;
@@ -1113,9 +1230,9 @@ opboolean ()
   d1 = params[params_cnt - 1].dtype & DTYPE_MASK;
   d2 = params[params_cnt - 2].dtype & DTYPE_MASK;
 
-#ifdef DEBUG
-/* {DEBUG} */ debug ("compare Data types %d %d \n", d1, d2);
-#endif
+	#ifdef DEBUG
+		debug ("compare Data types %d %d \n", d1, d2);
+	#endif
   if (d1 == d2 || (d1 != d2 && d1 != 0 && d2 != 0))
     {
       if (d1 == 0 && d2 == 0)
@@ -1124,12 +1241,10 @@ opboolean ()
 	  trim (z1);
 	  z2 = char_pop ();
 	  trim (z2);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("String Compare : '%s' and '%s'", z1, z2);
-#endif
-#ifdef DEBUG
-/* {DEBUG} */ debug (" = %d\n", strcmp (z1, z2));
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("String Compare : '%s' and '%s'", z1, z2);
+	/* {DEBUG} */ debug (" = %d\n", strcmp (z1, z2));
+	#endif
 	  cmp = strcmp (z1, z2) * -1;
 	if (cmp<0) cmp=-1;
 	if (cmp>0) cmp=1;
@@ -1142,9 +1257,9 @@ opboolean ()
 	{
 	  a = pop_double ();
 	  b = pop_double ();
-#ifdef DEBUG
-/* {DEBUG} */ debug ("check %lf %lf", a, b);
-#endif
+	#ifdef DEBUG
+		debug ("check %lf %lf", a, b);
+	#endif
 	  if (b > a)
 	    {
 	      return 1;
@@ -1157,10 +1272,12 @@ opboolean ()
 	  return 0;
 	}
     }
-/* comparison of char to number/date */
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Dont know how to compare a %d to a %d\n", d1, d2);
-#endif
+
+	/* comparison of char to number/date */
+
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("Dont know how to compare a %d to a %d\n", d1, d2);
+	#endif
 
   if (d1 == 0)
     {
@@ -1200,10 +1317,12 @@ opboolean ()
 }
 
 
-
-/*************************************************/
-
-
+/**
+ *
+ *
+ * @return
+ */
+void
 pop_args (int a)
 {
   char *s;
@@ -1211,8 +1330,9 @@ pop_args (int a)
   if (z > 0)
     {
       for (z = 0; z < a; z++)
-	s = char_pop ();
-      acl_free (s);
+		s = char_pop ();
+    	
+		acl_free (s);
     }
 }
 
@@ -1220,40 +1340,52 @@ pop_args (int a)
 /********************************************************************/
 /* debugging */
 
-debug_print_stack ()
+/**
+ *
+ *
+ * @return
+ */
+void
+debug_print_stack (void)
 {
-  int a;
-  char *buff;
-  buff = new_string (20);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("\n");
-#endif
-#ifdef DEBUG
-/* {DEBUG} */
-    debug
-    ("**************************************************************\n");
-#endif
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Call stack has %d entries:\n", params_cnt);
-#endif
-  for (a = 0; a < params_cnt; a++)
-    {
-      conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 20);
-#ifdef DEBUG
-/* {DEBUG} */ debug (" %d Dtype (%d) %s %d\n", a,
-			   params[a].dtype & DTYPE_MASK, buff,
-		     params[a].size);
-#endif
-    }
-#ifdef DEBUG
-/* {DEBUG} */
-    debug
-    ("**************************************************************\n");
-#endif
+int a;
+char *buff;
+
+	buff = new_string (20);
+
+	#ifdef DEBUG
+		debug ("\n");
+	#endif
+	#ifdef DEBUG
+	    debug
+	    ("**************************************************************\n");
+	#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("Call stack has %d entries:\n", params_cnt);
+	#endif
+	  for (a = 0; a < params_cnt; a++)
+	    {
+	      conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 20);
+	#ifdef DEBUG
+	/* {DEBUG} */ debug (" %d Dtype (%d) %s %d\n", a,
+				   params[a].dtype & DTYPE_MASK, buff,
+			     params[a].size);
+	#endif
+	    }
+	#ifdef DEBUG
+	    debug
+	    ("**************************************************************\n");
+	#endif
 }
 
 
-print_stack ()
+/**
+ *
+ *
+ * @return
+ */
+void
+print_stack (void)
 {
   int a;
   char *buff;
@@ -1268,7 +1400,14 @@ print_stack ()
 }
 
 
-static char *add_to_z(char *z,char *s) {
+/**
+ *
+ *
+ * @return
+ */
+static char *
+add_to_z(char *z,char *s)
+{
 char *ptr;
 int l;
       if (z==0) {
@@ -1289,10 +1428,16 @@ int l;
 	free(ptr);
 	debug("z=%s",z);
 
-return z;
+	return z;
 }
 
-char *params_on_stack (char *_paramnames[],int n)
+/**
+ *
+ *
+ * @return
+ */
+char *
+params_on_stack (char *_paramnames[],int n)
 {
   int a;
   char *buff;
@@ -1301,7 +1446,8 @@ char *params_on_stack (char *_paramnames[],int n)
   int sz;
 
   if (n==0) return 0;
-debug_print_stack();
+  
+  debug_print_stack();
   debug("Generating parameter list n=%d",n);
 
   for (a = 0; a < n; a++)
@@ -1346,122 +1492,150 @@ debug_print_stack();
    return z;
 }
 
+/**
+ *
+ *
+ * @return
+ */
 int
 push_bind (struct BINDING *b, int n, int no, int elemsize)
 {
   int a;
-#ifdef DEBUG
-/* {DEBUG} */ debug ("push_bind");
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("push_bind");
+	#endif
   for (a = n - 1; a >= 0; a--)
     {
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Push param %d -> %p %lx", a, b[a].ptr,
-			   b[a].dtype + ENCODE_SIZE (b[a].size));
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("Push param %d -> %p %lx", a, b[a].ptr,
+				   b[a].dtype + ENCODE_SIZE (b[a].size));
+	#endif
       push_param ((char *) b[a].ptr + elemsize * (no - 1), b[a].dtype);
     }
 }
 
 
+/**
+ *
+ *
+ * @return
+ */
 int
 push_disp_bind (struct BINDING *b, int n)
 {
   int a;
-#ifdef DEBUG
-/* {DEBUG} */ debug ("push_disp_bind");
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("push_disp_bind");
+	#endif
   for (a = 0; a < n; a++)
     {
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Push param %d -> %p %lx", a, b[a].ptr,
-			   b[a].dtype + ENCODE_SIZE (b[a].size));
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("Push param %d -> %p %lx", a, b[a].ptr,
+				   b[a].dtype + ENCODE_SIZE (b[a].size));
+	#endif
       push_param ((char *) b[a].ptr, b[a].dtype + ENCODE_SIZE (b[a].size));
     }
 }
 
 
+/**
+ *
+ *
+ * @return
+ */
 int
 chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 {
-  int i;
-  int ca, cb;
-  char *mptr[2048];
+int i;
+int ca, cb;
+char *mptr[2048];
+
+  
   for (ca = 0; ca < no; ca++)
     {
-#ifdef DEBUG
-/* {DEBUG} */ debug ("ca=%d", ca);
-#endif
-      for (cb = 0; cb < nb; cb++)
-	{
-#ifdef DEBUG
-/* {DEBUG} */ debug ("   cb=%d", cb);
-#endif
-	  if (b[cb].ptr == o[ca].ptr)
-	    {
-#ifdef DEBUG
-/* {DEBUG} */ debug ("   pointers %d %d are equal", cb, ca);
-#endif
-	      /* check value in o.ptr against that on the stack */
-#ifdef DEBUG
-/* {DEBUG} */ debug ("nb=%d cb=%d ca=%d\n", nb, cb, ca);
-#endif
-	      read_param (mptr, b[cb].dtype, b[cb].size, nb - cb);
-#ifdef DEBUG
-/* {DEBUG} */
-		debug
-		("   pushing last data-------------------------------------------------");
-#endif
-	      push_param (b[cb].ptr, b[cb].dtype);
-#ifdef DEBUG
-/* {DEBUG} */ debug ("   pushing this data");
-#endif
-	      push_param (mptr, b[cb].dtype);
-#ifdef DEBUG
-/* {DEBUG} */
-		debug
-		("   checking for equallity--------------------------------------------");
-#endif
-	      pushop (OP_EQUAL);
-	      i = pop_bool ();
-#ifdef DEBUG
-/* {DEBUG} */ debug ("   i=%d", i);
-#endif
-	      if (i == 0)
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("ca=%d", ca);
+	#endif
+	      for (cb = 0; cb < nb; cb++)
 		{
-#ifdef DEBUG
-/* {DEBUG} */
-		    debug ("Param %d has changed in order by binding", ca);
-#endif
-		  return ca + 1;
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("   cb=%d", cb);
+	#endif
+		  if (b[cb].ptr == o[ca].ptr)
+		    {
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("   pointers %d %d are equal", cb, ca);
+	#endif
+		      /* check value in o.ptr against that on the stack */
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("nb=%d cb=%d ca=%d\n", nb, cb, ca);
+	#endif
+		      read_param (mptr, b[cb].dtype, b[cb].size, nb - cb);
+	#ifdef DEBUG
+	/* {DEBUG} */
+			debug
+			("   pushing last data-------------------------------------------------");
+	#endif
+		      push_param (b[cb].ptr, b[cb].dtype);
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("   pushing this data");
+	#endif
+		      push_param (mptr, b[cb].dtype);
+	#ifdef DEBUG
+	/* {DEBUG} */
+			debug
+			("   checking for equallity--------------------------------------------");
+	#endif
+		      pushop (OP_EQUAL);
+		      i = pop_bool ();
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("   i=%d", i);
+	#endif
+		      if (i == 0)
+			{
+	#ifdef DEBUG
+	/* {DEBUG} */
+			    debug ("Param %d has changed in order by binding", ca);
+	#endif
+			  return ca + 1;
+			}
+		    }
 		}
 	    }
-	}
-    }
-#ifdef DEBUG
-/* {DEBUG} */ debug ("No change");
-#endif
-  return -1;
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("No change");
+	#endif
+	  return -1;
 }
 
+
+/**
+ *
+ *
+ * @return
+ */
+int
 read_param (void *p, int d, int size, int c)
 {
   int b;
   char *ptr;
-#ifdef DEBUG
-/* {DEBUG} */ debug ("Stack pointer=%d c=%d", params_cnt, c);
-#endif
-#ifdef DEBUG
-/* {DEBUG} */ debug ("read param pointer =%p datatype=%x size=%d count=%d",
-		       p, d, size, c);
-#endif
+	#ifdef DEBUG
+	/* {DEBUG} */ debug ("Stack pointer=%d c=%d", params_cnt, c);
+	/* {DEBUG} */ debug ("read param pointer =%p datatype=%x size=%d count=%d",
+			       p, d, size, c);
+	#endif
   b = conv (params[params_cnt - c].dtype & DTYPE_MASK,
 	    params[params_cnt - c].ptr, d & DTYPE_MASK, p, size);
   return b;
 }
 
-upshift_stk ()
+/**
+ *
+ *
+ * @return
+ */
+void
+upshift_stk (void)
 {
   char *ptr;
   ptr = char_pop ();
@@ -1470,7 +1644,13 @@ upshift_stk ()
   acl_free (ptr);
 }
 
-isparamdate ()
+/**
+ *
+ *
+ * @return
+ */
+int //should be boll
+isparamdate (void)
 {
   if (params[params_cnt - 1].dtype & DTYPE_MASK == DTYPE_DATE)
   return TRUE;
@@ -1485,6 +1665,7 @@ isparamdate ()
  * @param buff A pointer to the buffer where the variable is located.
  * @param size The size of the variable in bytes.
  */
+void
 setnull (int type, char *buff, int size)
 {
   int a;
@@ -1545,12 +1726,14 @@ setnull (int type, char *buff, int size)
  *   - 1 : The variable contains a null value.
  *   - 0 : The variable does not contain null value.
  */
+int
 isnull (int type, char *buff)
 {
   int a;
   type = type & DTYPE_MASK;
 
-debug("ISNULL - %d %p\n",type,buff);
+  debug("ISNULL - %d %p\n",type,buff);
+
   if (type == DTYPE_BYTE || type == DTYPE_TEXT)
     {
       struct fgl_int_loc *ptr;
@@ -1600,6 +1783,12 @@ debug("ISNULL - %d %p\n",type,buff);
 
 
 
+/**
+ *
+ *
+ * @return
+ */
+void
 locate_var (struct fgl_int_loc * p, char where, char *filename)
 {
 
@@ -1629,12 +1818,18 @@ locate_var (struct fgl_int_loc * p, char where, char *filename)
       debug ("Locating blob in file %s", filename);
       p->where = 'F';
       strcpy (p->filename, filename);
-	trim(p->filename);
+	  trim(p->filename);
     }
   debug ("Located at %c %s", p->where, p->filename);
 }
 
 
+/**
+ *
+ *
+ * @return
+ */
+void
 init_blob (struct fgl_int_loc *p)
 {
   debug ("Init blob\n");
@@ -1647,7 +1842,13 @@ init_blob (struct fgl_int_loc *p)
 
 
 
-push_null ()
+/**
+ *
+ *
+ * @return
+ */
+void
+push_null (void)
 {
   static int a = 0;
   debug ("** Pushing null");
@@ -1658,6 +1859,12 @@ push_null ()
 }
 
 
+/**
+ *
+ *
+ * @return
+ */
+int
 chknull (int n, int n1, int n2)
 {
   debug ("CHecking first %d of %d %d", n, n1, n2);
@@ -1684,13 +1891,25 @@ chknull (int n, int n1, int n2)
   return 0;
 }
 
-drop_param ()
+/**
+ *
+ *
+ * @return
+ */
+void
+drop_param (void)
 {
   char buff[80];
   pop_char (buff, 1);
 }
 
-int
+
+/**
+ *
+ *
+ * @return
+ */
+void
 set_init (struct BINDING *b, int n, int no)
 {
   int a;
@@ -1701,6 +1920,12 @@ set_init (struct BINDING *b, int n, int no)
 }
 
 
+/**
+ *
+ *
+ * @return
+ */
+void
 get_top_of_stack (int a, int *d, int *s, void **ptr)
 {
   *d = params[params_cnt - a].dtype;
@@ -1708,6 +1933,12 @@ get_top_of_stack (int a, int *d, int *s, void **ptr)
   *ptr = params[params_cnt - a].ptr;
 }
 
+/**
+ *
+ *
+ * @return
+ */
+int
 chknull_boolean (int n, int n1, int n2)
 {
   if (n == 2 && (n1 || n2))
@@ -1720,6 +1951,12 @@ chknull_boolean (int n, int n1, int n2)
   return 0;
 }
 
+/**
+ *
+ *
+ * @return
+ */
+int
 conv_to_interval (int a)
 {
   double d;
@@ -1741,8 +1978,8 @@ debug("Got d as %lf\n",d);
 		case OP_MINUTE: d=d*60;
 		case OP_SECOND: d=d;
 	}
-debug("D now set to %lf",d);
-debug("a=%d %d %d %d\n",a,OP_YEAR,OP_MONTH,OP_HOUR);
+	debug("D now set to %lf",d);
+	debug("a=%d %d %d %d\n",a,OP_YEAR,OP_MONTH,OP_HOUR);
 
   // d will now be a number of years or a number of seconds.
   if (a==(OP_YEAR)||a==(OP_MONTH)) {
@@ -1760,16 +1997,19 @@ debug("a=%d %d %d %d\n",a,OP_YEAR,OP_MONTH,OP_HOUR);
   return 1;
 }
 
-
-
-
-
 /*  *************************************************
 * IN & EXISTS with SQL required some bindings ....
 ***************************************************/
 
 
-push_binding(void *ptr,int num) {
+/**
+ *
+ *
+ * @return
+ */
+int
+push_binding(void *ptr,int num)
+{
 int n;
 	if (local_binding_cnt>=LOCAL_BINDINGS) {
 		exitwith("Too many bindings");
@@ -1788,7 +2028,14 @@ struct bound_list {
 	int popped;
 };
 
-void *dif_start_bind() {
+/**
+ *
+ *
+ * @return
+ */
+void *
+dif_start_bind(void) 
+{
 	struct bound_list *list;
 	debug("STarting bind");
 	list=malloc(sizeof(struct bound_list));
@@ -1797,11 +2044,18 @@ void *dif_start_bind() {
 	list->popped=-1;
 }
 
-void dif_add_bind(struct bound_list *list,void *dptr,int dtype,int size) {
-	int a;
-  int l;
-	struct BINDING *b;
-  struct BINDING **pp;
+/**
+ *
+ *
+ * @return
+ */
+void
+dif_add_bind(struct bound_list *list,void *dptr,int dtype,int size) {
+int a;
+int l;
+struct BINDING *b;
+struct BINDING **pp;
+
 	a=list->cnt+1;
 	list->ptr=realloc(list->ptr, sizeof(struct BINDING)*a);
 	list->ptr[a-1].ptr=dptr;
@@ -1811,66 +2065,152 @@ void dif_add_bind(struct bound_list *list,void *dptr,int dtype,int size) {
 }
 
 
-void dif_add_bind_date(struct bound_list *list,long a) {
-int *z; z=malloc(sizeof(int));
-*z=a; dif_add_bind(list,z,DTYPE_DATE,0); 
+/**
+ *
+ *
+ * @return
+ */
+void
+dif_add_bind_date(struct bound_list *list,long a) 
+{
+int *z; 
+	z=malloc(sizeof(int));
+	*z=a; 
+	dif_add_bind(list,z,DTYPE_DATE,0);
 }
 
-void dif_add_bind_smint(struct bound_list *list,int a) { 
-int *z; z=malloc(sizeof(int));
-*z=a; dif_add_bind(list,z,DTYPE_SMINT,0); 
+/**
+ *
+ *
+ * @return
+ */
+void
+dif_add_bind_smint(struct bound_list *list,int a) 
+{
+int *z; 
+	z=malloc(sizeof(int));
+	*z=a; 
+	dif_add_bind(list,z,DTYPE_SMINT,0);
 }
 
-void dif_add_bind_smint_ptr(struct bound_list *list,int *a) { 
+/**
+ *
+ *
+ * @return
+ */
+void 
+dif_add_bind_smint_ptr(struct bound_list *list,int *a) 
+{
 	printf("a=%p",a);
 	printf("*a=%x\n",*a);
-dif_add_bind(list,a,DTYPE_SMINT,0); 
+	dif_add_bind(list,a,DTYPE_SMINT,0);
 }
 
-void dif_add_bind_dbl_ptr(struct bound_list *list,double *a) { 
+/**
+ *
+ *
+ * @return
+ */
+void
+dif_add_bind_dbl_ptr(struct bound_list *list,double *a)
+{
 	printf("a=%p",a);
 	printf("*a=%lf\n",*a);
-	dif_add_bind(list,a,DTYPE_SMINT,0); 
+	dif_add_bind(list,a,DTYPE_SMINT,0);
 	*a=3.142;
 }
 
-void dif_add_bind_int(struct bound_list *list,long a) { 
-long *z; z=malloc(sizeof(long));
-*z=a; dif_add_bind(list,z,DTYPE_INT,0); 
+/**
+ *
+ *
+ * @return
+ */
+void dif_add_bind_int(struct bound_list *list,long a) 
+{
+long *z; 
+	z=malloc(sizeof(long));
+	*z=a; 
+	dif_add_bind(list,z,DTYPE_INT,0);
 }
 
-void dif_add_bind_float(struct bound_list *list,double a) { 
-double *z; z=malloc(sizeof(double)); 
-*z=a;dif_add_bind(list,z,DTYPE_FLOAT,0); 
+/**
+ *
+ *
+ * @return
+ */
+void 
+dif_add_bind_float(struct bound_list *list,double a) 
+{
+double *z; 
+	z=malloc(sizeof(double));
+	*z=a;
+	dif_add_bind(list,z,DTYPE_FLOAT,0);
 }
 
-void dif_add_bind_smfloat(struct bound_list *list,float a) { 
-float *z; z=malloc(sizeof(int)); 
-*z=a;dif_add_bind(list,z,DTYPE_SMFLOAT,0); 
+/**
+ *
+ *
+ * @return
+ */
+void 
+dif_add_bind_smfloat(struct bound_list *list,float a)
+{
+float *z; 
+	z=malloc(sizeof(int));
+	*z=a;
+	dif_add_bind(list,z,DTYPE_SMFLOAT,0);
 }
 
-void dif_add_bind_char(struct bound_list *list,char *a) { 
-char *z; z=strdup(a);
-dif_add_bind(list,z,DTYPE_CHAR,strlen(z)); 
+/**
+ *
+ *
+ * @return
+ */
+void 
+dif_add_bind_char(struct bound_list *list,char *a) 
+{
+char *z; 
+	z=strdup(a);
+	dif_add_bind(list,z,DTYPE_CHAR,strlen(z));
 }
 
 
-void dif_free_bind(struct bound_list *list) {
-	int a;
+/**
+ *
+ *
+ * @return
+ */
+void 
+dif_free_bind(struct bound_list *list) 
+{
+int a;
 	debug("free bind");
 	free(list->ptr);
 	free(list);
 }
 
-void *dif_get_bind(struct bound_list *list) {
+/**
+ *
+ *
+ * @return
+ */
+void *
+dif_get_bind(struct bound_list *list) 
+{
 	debug("get bind");
 	return list->ptr;
 }
 
-void dif_print_bind(struct bound_list *list) 
+/**
+ *
+ *
+ * @return
+ */
+void 
+dif_print_bind(struct bound_list *list)
 {
   int a;
-  for (a=0;a<list->cnt;a++) 
+  for (a=0;a<list->cnt;a++)
 	{
 	  debug("%p(%x) %d %d\n",
 		  list->ptr[a].ptr,
@@ -1882,21 +2222,41 @@ void dif_print_bind(struct bound_list *list)
 }
 
 
-long dif_pop_bind_int(struct bound_list *list) {
+/**
+ *
+ *
+ * @return
+ */
+long
+dif_pop_bind_int(struct bound_list *list) 
+{
 long a;
 	if (list->popped==-1) list->popped=list->cnt-1;
 	a=*(long *)list->ptr[list->popped].ptr;
 	return a;
 }
 
-char *dif_pop_bind_char(struct bound_list *list) {
+/**
+ *
+ *
+ * @return
+ */
+char *
+dif_pop_bind_char(struct bound_list *list) 
+{
 char *a;
 	if (list->popped==-1) list->popped=list->cnt-1;
 	a=list->ptr[list->popped].ptr;
 	return a;
 }
 
-int dif_pop_bind_smint(struct bound_list *list) 
+/**
+ *
+ *
+ * @return
+ */
+int 
+dif_pop_bind_smint(struct bound_list *list)
 {
   int a;
 	if (list->popped==-1) list->popped=list->cnt-1;
@@ -1904,14 +2264,27 @@ int dif_pop_bind_smint(struct bound_list *list)
 	return a;
 }
 
-int dif_pop_bind_float(struct bound_list *list) {
+/**
+ *
+ *
+ * @return
+ */
+int 
+dif_pop_bind_float(struct bound_list *list) 
+{
 double a;
 	if (list->popped==-1) list->popped=list->cnt-1;
 	a=*(double *)list->ptr[list->popped].ptr;
 	return a;
 }
 
-int dif_pop_bind_smfloat(struct bound_list *list) 
+/**
+ *
+ *
+ * @return
+ */
+int 
+dif_pop_bind_smfloat(struct bound_list *list)
 {
   float a;
 	if (list->popped==-1) list->popped=list->cnt-1;
@@ -1928,11 +2301,12 @@ int dif_pop_bind_smfloat(struct bound_list *list)
  *
  * @param list
  */
-int dif_pop_bind_dec(struct bound_list *list) 
+int 
+dif_pop_bind_dec(struct bound_list *list)
 {
   char *a;
 
-	if (list->popped==-1) 
+	if (list->popped==-1)
 	  list->popped=list->cnt-1;
 	return (int)list->ptr[list->popped].ptr;
 }
@@ -1944,7 +2318,8 @@ int dif_pop_bind_dec(struct bound_list *list)
  *
  * @param list
  */
-int dif_pop_bind_money(struct bound_list *list) 
+int 
+dif_pop_bind_money(struct bound_list *list)
 {
   char *a;
 	if (list->popped==-1) 
@@ -1953,20 +2328,28 @@ int dif_pop_bind_money(struct bound_list *list)
 }
 
 
-
-
-char *lrtrim(char *z) {
+/**
+ *
+ *
+ * @return
+ */
+char *
+lrtrim(char *z)
+{
 static char rstr[2000];
 int a;
-strcpy(rstr,"");
-debug("COpied");
+	strcpy(rstr,"");
+	debug("COpied");
 
-for (a=0;a<strlen(z);a++) {
-	if (z[a]!=' ') {strcpy(rstr,&z[a]);break;}
-}
-debug("Searched..");
+	for (a=0;a<strlen(z);a++) {
+		if (z[a]!=' ') {strcpy(rstr,&z[a]);break;}
+	}
+	debug("Searched..");
 
-trim(rstr);
-debug("lrtrim : All done - returning '%s'",rstr);
-return rstr;
+	trim(rstr);
+	debug("lrtrim : All done - returning '%s'",rstr);
+	return rstr;
 }
+
+
+// ================================ EOF ================================
