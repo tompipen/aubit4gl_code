@@ -362,9 +362,12 @@ read_glob (char *s)
       exit (7);
     }
   read_global_string (f, "DATABASE", &dbname, 1);
-  printf ("Database = %s\n", dbname);
+    if (strlen (dbname) > 0)
+    {
+        set_hdrdbname (dbname);
+                open_db (dbname);
+    }
   read_global_int (f, "NUMVARS", &gvars);
-  printf ("Numvars=%d\n", gvars);
 
   start = list_imported_global_cnt;
 
