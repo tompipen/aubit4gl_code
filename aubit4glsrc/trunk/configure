@@ -8169,12 +8169,12 @@ AMAKE_INCL_FILES="header.mki footer.mki footer-c.mki a4gl.mk q4gl.mk d4gl.mk i4g
 #Here we come aggain  - a4gl_4gl_callable.h requires all of this:
 INCL_HEADERS_EC_REMOVETHIS="a4gl_libaubit4gl.h a4gl_API_form.h \
 	a4gl_API_menu.h a4gl_API_msg.h a4gl_API_packer.h a4gl_API_ui.h \
-	a4gl_API_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
+	a4gl_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
 	a4gl_incl_infx.h a4gl_API_esql.h a4gl_API_help.h"
 #	../common/dataio/form_x.x.h
 
 ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
-        a4gl_API_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
+        a4gl_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
 		a4gl_API_menu.h a4gl_API_msg.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h"
 
 #INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
@@ -27947,7 +27947,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.284 2004-11-27 06:42:36 afalout Exp $
+| $Id: configure,v 1.285 2004-11-29 07:24:30 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

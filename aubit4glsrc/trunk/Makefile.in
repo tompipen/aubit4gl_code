@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.166 2004-11-27 06:42:36 afalout Exp $
+# $Id: Makefile.in,v 1.167 2004-11-29 07:24:30 afalout Exp $
 #
 
 ## ==================================================================
@@ -432,6 +432,7 @@ clean.tools:
 	$(MAKE) -C tools/4gl_beautify/iid clean
 	$(MAKE) -C tools/4gl_beautify/infmx_tidy clean
 	$(MAKE) -C tools/4glunit clean
+	$(MAKE) -C tools/4glpc clean
 	-$(MAKE) -C tools/fgldoc clean
 	(cd tools/4gltree; ${RM} *.bak)
 	(cd tools/metrics_4gl; ${RM} *.bak)
@@ -531,6 +532,7 @@ clean.etc:
 	rm -rf etc/Output
 
 #Cant do a4gl_API_* because a4gl_API_exdata.h is NOT generated
+#Note anymore - renamed to incl/a4gl_exdata.h apparently
 clean.incl:
 	${RM} incl/*.bak incl/\#* incl/*~
 	${RM} incl/a4gl_API_esql.h incl/a4gl_API_msg_lib.h \
