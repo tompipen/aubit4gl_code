@@ -3,6 +3,14 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 
+    ERRCHAR=^\|
+	GOBACKLINES=10
+	GOAFTERLINES=2
+    HEAD=head
+    #HEAD=head -n 20
+    SHOWERRCODE=1
+
+
 #FIXME:
 #uppercase 0, passed to 4glpc as "4gpc -O ..." is causing on CygWin:
 #[: --help: unknown operand
@@ -48,7 +56,8 @@ then
     echo '  -maponly'
     echo '  -gtk/nogtk ($GTKGUI=Yes/No) include GTK libraries (default)'
     echo '  -verbose ($A4GLVERBOSE=yes) show additional info while compiling'
-    echo '  -pdf ($USE_PDF=yes) use PDF report libraries when compiling'
+    echo '  -noerrcode () do not show eeror code on compile errors'
+	echo '  -pdf ($USE_PDF=yes) use PDF report libraries when compiling'
 	echo '      (if compiler was compiled with them)'
     echo '  -udbc (ODBC_LIB_NAME="udbc")'
     echo '  -odbc (ODBC_LIB_NAME="iodbc")'
@@ -158,7 +167,8 @@ fi
 ENV_ODBC_LIB_DIR=$ODBC_LIB_DIR
 ENV_ODBC_LIB_NAME=$ODBC_LIB_NAME
 
-FOUNDRC=0
+
+	FOUNDRC=0
 
 if [ "$A4GLRC" = "" ]
 then
@@ -331,10 +341,29 @@ do
 		  err_code=$?
 
    		  fname=`basename $a .per`
+   		  errfname=`basename $a .per`.err;
 
 		  if ! [ -f $fname.c ]
 		  then
-            $output "Error compiling $a."
+            if [ -f $errfname ]
+            then
+                if test $SHOWERRCODE = "1"
+				then
+					ERRLINES=`cat $errfname | grep -c $ERRCHAR`
+                    if [ "$ERRLINES" != "0" ]
+                    then
+						echo "============ FIRST ERROR: =============="
+						cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
+                    else
+						echo "============ FIRST ERROR: =============="
+						$HEAD $errfname  >> $ERRORLOG
+                    fi
+                    echo "========================================"
+                fi
+				$output "Error compiling $a, see $errfname"
+			else
+				$output "Error compiling $a - error file NOT created."
+            fi
             if [ "$IGNORE_ERRORS" != "1" ]
             then
 				if [ "$A4GLVERBOSE" = "yes" ]
@@ -375,6 +404,7 @@ do
    *.4gl)
           dirn=`dirname $a`
           fname=`basename $a .4gl`
+          errfname=`basename $a .4gl`.err;
 
           fname2="$dirn/$fname"
           fname=$fname2
@@ -384,11 +414,10 @@ do
                 rm "$fname".err
           fi
 
-          $output "$fname: "
-
 		  if [ "$A4GLVERBOSE" = "yes" ]
 		  then
-	          $output ODBC_LIB_DIR is $ODBC_LIB_DIR
+	          $output "$fname: "
+			  $output ODBC_LIB_DIR is $ODBC_LIB_DIR
 			  $output LD_LIBRARY_PATH is $LD_LIBRARY_PATH
               $output Executing: 4glc "$a"
           fi
@@ -398,7 +427,25 @@ do
 
           if [ "$err_code" != "0" ]
           then
-                 $output "Error compiling $a"
+		  	if [ -f $errfname ]
+            then
+                if test $SHOWERRCODE = "1"
+				then
+					ERRLINES=`cat $errfname | grep -c $ERRCHAR`
+                    if [ "$ERRLINES" != "0" ]
+                    then
+						echo "============ FIRST ERROR: =============="
+						cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
+                    else
+						echo "============ FIRST ERROR: =============="
+						$HEAD $errfname  >> $ERRORLOG
+                    fi
+                    echo "========================================"
+                fi
+				 $output "Error compiling $a - see $errfname"
+			else
+				 $output "Error compiling $a - error file NOT created"
+            fi
 				  if [ "$A4GLVERBOSE" = "yes" ]
 				  then
                     $output err_msg is: $err_msg
@@ -445,7 +492,27 @@ do
 			$output "Error compiling $a - $fname.c not generated, but no err code from 4glc"
 			if [ "$A4GLVERBOSE" = "yes" ]
 			then
-            	$output err_msg is: $err_msg
+			  	if [ -f $errfname ]
+    	        then
+                    if test $SHOWERRCODE = "1"
+					then
+						ERRLINES=`cat $errfname | grep -c $ERRCHAR`
+	                    if [ "$ERRLINES" != "0" ]
+	                    then
+							echo "============ FIRST ERROR: =============="
+							cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
+	                    else
+							echo "============ FIRST ERROR: =============="
+							$HEAD $errfname  >> $ERRORLOG
+	                    fi
+	                    echo "========================================"
+					fi
+                    echo "see $errfname"
+                else
+					echo "Error file NOT created"
+                fi
+
+				$output err_msg is: $err_msg
                 $output err_code is: $err_code
                 $output Please check file "$fname".err
                 $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
@@ -484,6 +551,11 @@ do
 
    -verbose) A4GLVERBOSE="yes"
         export A4GLVERBOSE
+        SHOWERRCODE=1
+   ;;
+
+   -noerrcode)
+        SHOWERRCODE=0
    ;;
 
    -map)
@@ -504,9 +576,9 @@ do
    -nomap) unset MAP4GL
    ;;
 
-   -debug) INCLINES=""
-           export INCLINES
-           #DDEBUG="_g"
+   -debug) export INCLINES=""
+           export DEBUG=ALL
+		   #DDEBUG="_g"
            COMPCC="$COMPCC -g"
    ;;
 
@@ -699,7 +771,23 @@ then
    then
       if [ "$LAST" != "" ]
       then
-		  $output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
+		  errfname=`expr "$LAST" : "..\(.*\)"`
+		  #$output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
+          $output "Error compiling... check $errfname"
+
+            if test $SHOWERRCODE = "1"
+			then
+				ERRLINES=`cat $errfname | grep -c $ERRCHAR`
+                if [ "$ERRLINES" != "0" ]
+                then
+					echo "============ FIRST ERROR: =============="
+					cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
+                else
+					echo "============ FIRST ERROR: =============="
+					$HEAD $errfname  >> $ERRORLOG
+                fi
+                echo "========================================"
+            fi
       else
 		  $output "Error compiling."
       fi
@@ -723,8 +811,25 @@ else
    then
       if [ "$LAST" != "" ]
       then
-		  $output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
-      else
+		  errfname=`expr "$LAST" : "..\(.*\)"`
+		  #$output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
+          $output "Error compiling... check $errfname"
+
+            if test $SHOWERRCODE = "1"
+			then
+				ERRLINES=`cat $errfname | grep -c $ERRCHAR`
+                if [ "$ERRLINES" != "0" ]
+                then
+					echo "============ FIRST ERROR: =============="
+					cat $errfname | grep -B $GOBACKLINES -A $GOAFTERLINES $ERRCHAR
+                else
+					echo "============ FIRST ERROR: =============="
+					$HEAD $errfname  >> $ERRORLOG
+                fi
+                echo "========================================"
+            fi
+
+	  else
 		  $output "Error compiling."
       fi
 	if [ "$A4GLVERBOSE" = "yes" ]

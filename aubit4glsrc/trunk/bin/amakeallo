@@ -20,8 +20,9 @@ function stats {
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
 	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK."
-    echo "$CCOMPWARNING produced warnings from C compiler, but compiled."
+    echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code."
 	echo "$NOGLBFILE glb files not found, but $OKNOGLBFILE compiled on the fly."
+    date
 
 
     echo " " >> $ERRORLOG
@@ -29,9 +30,10 @@ function stats {
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason." >> $ERRORLOG
 	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE >> $ERRORLOG
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK." >> $ERRORLOG
-    echo "$CCOMPWARNING produced warnings from C compiler, but compiled." >> $ERRORLOG
+    echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code." >> $ERRORLOG
 	echo "$NOGLBFILE glb files not found, but $OKNOGLBFILE compiled on the fly." >> $ERRORLOG
-    echo `date` >> $ERRORLOG
+    date >> $ERRORLOG
+
 
 
 }
@@ -39,7 +41,7 @@ function stats {
 ############################
 function shortstats {
 ############################
-	echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE noglob=$OKNOGLBFILE/$NOGLBFILE cw=$CCOMPWARNING"
+	echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE noglob=$OKNOGLBFILE/$NOGLBFILE cw=$CCOMPWARNING 0=$ZEROFILESIZE"
 
 }
 
@@ -54,7 +56,7 @@ function analiseerror {
             #we now return exit codes from CC or fglc, so we need to test this way
             #if the error file was created by 4glc or c compiler:
 			ERRLINES=`cat $ERR | grep -c $ERRCHAR`
-			if [ "$DEBUG" = "1" ]
+			if [ "$SCRIPTDEBUG" = "1" ]
 		    then
     			echo "ERRLINES found in $ERR = $ERRLINES"
             fi
@@ -67,7 +69,7 @@ function analiseerror {
 					echo "$FGLCOMPILER failed: $PWD/$FGL"
 	            fi
 			else
-				cat $ERR  >> $ERRORLOG
+				$HEAD $ERR  >> $ERRORLOG
 				let COMPFAILCCOMP=COMPFAILCCOMP+1
 				if [ "$VERBOSE" = "1" ]
 			    then
@@ -83,7 +85,7 @@ function analiseerror {
 			    then
 					echo "cc failed: $PWD/$FGL"
                 fi
-		        cat $OBJERR >> $ERRORLOG
+		        $HEAD $OBJERR >> $ERRORLOG
 				let COMPFAILCCOMP=COMPFAILCCOMP+1
             else
 			    if [ "$VERBOSE" = "1" ]
@@ -94,23 +96,37 @@ function analiseerror {
 				echo "$FGLCOMPILER failed ($RET) (no .err)" >> $ERRORLOG
                 #is this one of 0 size 4gl files?
 				ls -al $i >> $ERRORLOG
+				#-rw-r--r--   1 root     root            0 Sep  8 13:24 cheqappl.4gl
+				FGLFILESIZE=$(ls -al $i | awk '{print $5}')
 
-				ls core > /dev/null 2>&1
-				RET=$?
-				if test $RET = "0"
-				then
-					if [ "$VERBOSE" = "1" ]
-				    then
-						echo Core was dumped...
-                    fi
-					echo "Core was dumped..."  >> $ERRORLOG
-					rm core
-					let COMPFAILCORE=COMPFAILCORE+1
+				if [ "$VERBOSE" = "1" ]
+	    		then
+					echo FGLFILESIZE is $FGLFILESIZE
+                fi
+                if [ "$FGLFILESIZE" = "0" ]
+                then
+                    echo "This is zero size file, ignoring."
+                    echo "This is zero size file, ignoring."  >> $ERRORLOG
+					let ZEROFILESIZE=ZEROFILESIZE+1
 				else
-                    #we have no err file, no object err file, and no core was dumped:
-					let COMPFAILUNKNOWN=COMPFAILUNKNOWN+1
-				fi;
-            fi
+					ls core > /dev/null 2>&1
+					RET=$?
+					if test $RET = "0"
+					then
+						if [ "$VERBOSE" = "1" ]
+					    then
+							echo Core was dumped...
+	                    fi
+						echo "Core was dumped..."  >> $ERRORLOG
+						rm core
+						let COMPFAILCORE=COMPFAILCORE+1
+					else
+	                    #we have no err file, no object err file, and no core was dumped:
+						echo "NOT a core dump."  >> $ERRORLOG
+						let COMPFAILUNKNOWN=COMPFAILUNKNOWN+1
+					fi;
+                fi
+			fi
 		fi;
 		echo "##########################################################" >> $ERRORLOG
 
@@ -316,7 +332,7 @@ function compileit {
 	ERR=`basename $i .4gl`.err;             #err
 	CFILE=`basename $i .4gl`.c;             #c
 
-	if test $DEBUG = "1111"
+	if test "$SCRIPTDEBUG" = "1111"
    	then
 		echo $pwd
 		echo $HFILE
@@ -359,6 +375,11 @@ function compileit {
 				return
 			fi
 		fi
+		
+		if [ "$VERBOSE" = "1" ]
+	    then
+			echo $DESTDIR/$X or $AO not found
+	    fi
 	fi
 
     #######################
@@ -367,21 +388,26 @@ function compileit {
 	if [ "$COMPILER" = "aubit" ]
 	then
 		#$FGLCOMPILER file.4gl -c -o file.o
-		#A4GLPC="$FGLCOMPILER $i -c -o $X"
-		#A4GLPC="$FGLCOMPILER $i -o $X"
+		#COMPCMD="$FGLCOMPILER $i -c -o $X"
+		#COMPCMD="$FGLCOMPILER $i -o $X"
 
-		if test $DEBUG = "1"
+		if test $SCRIPTDEBUG = "1"
     	then
-			A4GLPC="$FGLCOMPILER -verbose $i -c -o $AO"
+			COMPCMD="$FGLCOMPILER -verbose $i -c -o $AO"
         else
-			A4GLPC="$FGLCOMPILER $i -c -o $AO"
+			COMPCMD="$FGLCOMPILER $i -c -o $AO"
 			export COMPILE_QUIET=yes
+			#2) Its compiled with -g
+            #3) Its compiled with bison --debug
+			#export DEBUG=ALL
+            unset DEBUG
         fi
 	fi
 
+
 	if [ "$COMPILER" = "4js" ]
 	then
-		A4GLPC="$FGLCOMPILER $i"
+		COMPCMD="$FGLCOMPILER $i"
 	fi
 
     ######################
@@ -389,28 +415,29 @@ function compileit {
     ######################
 	if [ "$VERBOSE" = "1" ]
     then
-		echo $DESTDIR/$X or $AO not found
-		echo "Running $A4GLPC (in $pwd):"
+		echo "Run $COMPCMD in $pwd"
     fi
 
-	if test $DEBUG = "1"
+	if test "$SCRIPTDEBUG" = "1"
 	then
-		echo "#Running $A4GLPC (in $pwd):"  >> $ERRORLOG 2>&1;
+		echo "#Running $COMPCMD (in $pwd):"  >> $ERRORLOG 2>&1;
     fi
 
-	#$A4GLPC >> $ERRORLOG 2>&1;
+	#$COMPCMD >> $ERRORLOG 2>&1;
 	#err_msg=`4glc "$a"`
-	#err_msg=`eval "$A4GLPC"`
-	#err_msg=`$A4GLPC`
-	err_msg=`$A4GLPC > /tmp/compmsg.tmp 2>&1`
+	#err_msg=`eval "$COMPCMD"`
+	#err_msg=`$COMPCMD`
+	err_msg=`$COMPCMD > /tmp/compmsg.tmp 2>&1`
 	RET=$?
+
+
 
     ###########################
     #get message from compiler:
     ###########################
 	if [ "$err_msg" != "" ]
     then
-		if test $DEBUG = "1"
+		if test "$SCRIPTDEBUG" = "1"
    		then
 			echo "MSG from compiler: $err_msg"   >> $ERRORLOG 2>&1;
         fi
@@ -425,7 +452,7 @@ function compileit {
         fi
 	    if [ "$err_msg" != "" ]
 	    then
-			if test $DEBUG = "1"
+			if test $SCRIPTDEBUG = "1"
    			then
 				echo "MSG from compiler: $err_msg"   >> $ERRORLOG 2>&1;
             fi
@@ -450,15 +477,18 @@ function compileit {
 			DEPENDGLOB4GLFILE=$(echo $err_msg | awk '{print $5}')
 			if [ "$VERBOSE" = "1" ]
 	    	then
-		        echo "File $DEPENDGLOB4GLFILE need to be compiled first..."
+		        echo "File $DEPENDGLOB4GLFILE need to be prepared before $PWH/$i"
 	        fi
-	        echo "File $DEPENDGLOB4GLFILE need to be compiled first..."  >> $ERRORLOG 2>&1;
+	        echo "File $DEPENDGLOB4GLFILE need to be prepared before $PWD/$i"  >> $ERRORLOG 2>&1;
+
+            #FIXME: I should not use basename here, because it will stip
+			#../ar/ from ../ar/AC.glb - so how do I change extension then?
+            #or, I can do basename on $DEPENDGLOB4GLFILE, and then do diff (how?)
+            #between that and $DEPENDGLOB4GLFILE, and diff will be path part
 
 	        DEPEND4GLFILE=`basename $DEPENDGLOB4GLFILE .glb`.4gl;
 	        DEPEND4GLOBJ=`basename $DEPENDGLOB4GLFILE .glb`.ao;
 			A4GLGLOBPC="$FGLCOMPILER $DEPEND4GLFILE -c -o $DEPEND4GLOBJ"
-			#4glpc .glb.4gl -c -o .glb.ao
-
 
 		    if [ "$VERBOSE" = "1" ]
 	    	then
@@ -484,9 +514,9 @@ function compileit {
 	        else
 			    if [ "$VERBOSE" = "1" ]
 	    		then
-					echo "Compiling $DEPENDGLOB4GLFILE failed."
+					echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."
 	            fi
-				echo "Compiling $DEPENDGLOB4GLFILE failed."  >> $ERRORLOG 2>&1;
+				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $ERRORLOG 2>&1;
 				WASERROR=1
 				let COMPFAIL4GL=COMPFAIL4GL+1
 
@@ -501,10 +531,12 @@ function compileit {
 	        fi
 
 	        #now try it again:
-		    err_msg=`eval "$A4GLPC"`
+		    err_msg=`eval "$COMPCMD"`
 			RET=$?
         fi
 	fi
+
+
 
     ################################
     #did compiler retur error code?
@@ -516,7 +548,7 @@ function compileit {
         #############################
         if [ "$COMPILER" = "aubit" ] && [ "$COMPATIBLE" = "1" ]
         then
-			if test $DEBUG = "1"
+			if test $SCRIPTDEBUG = "1"
    			then
 				echo "Trying same in 4Js compiler: $FJSERRFILESDIR/$i"  >> $ERRORLOG
             fi
@@ -552,11 +584,17 @@ function compileit {
 
 				if [ "$VERBOSE" = "1" ]
 			    then
-                    echo "$FJSERRFILESDIR don't exist"
-					echo "fglcomp $i:"
+					if [ "$ALTCOMPILER" = "4js" ]
+                    then
+	                    echo "$FJSERRFILESDIR don't exist"
+						echo "$FOURJSCMPLCMD $i:"
+                    fi
 	            fi
 
-				fglcomp $i
+				if [ "$ALTCOMPILER" = "4js" ]
+                then
+					$FOURJSCMPLCMD $i
+                fi
 		        RET=$?
 				if test $RET != "0"
 		        then
@@ -572,8 +610,8 @@ function compileit {
 		    then
         	    echo "It compiled OK with 4Js"
             fi
-            
-			if test $DEBUG = "1"
+
+			if test $SCRIPTDEBUG = "1"
    			then
 				echo "It compiled OK with 4Js" >> $ERRORLOG
             fi
@@ -659,11 +697,11 @@ function compileit {
         fi
 		echo "Object was generated, but $ERR was generated too, and $FGLCOMPILER did not return error code."  >> $ERRORLOG
 		echo "########################################## ($RET) $PWD/$ERR :" >> $ERRORLOG
-		cat $ERR | grep -B $GOBACKLINES $GOAFTERLINES $ERRCHAR >> $ERRORLOG
+		#cat $ERR | grep -B $GOBACKLINES $GOAFTERLINES $ERRCHAR >> $ERRORLOG
 	    #this usualy indicates warnings from C compiler, so we will probably not have
 		#4gl error lines markers, so we better include complete error file here:
-		echo "#____________________ COMPLETE ERR FILE: _______________________" >> $ERRORLOG
-		cat $ERR >> $ERRORLOG
+		#echo "#____________________ COMPLETE ERR FILE: _______________________" >> $ERRORLOG
+		$HEAD $ERR >> $ERRORLOG
         echo "##########################################################" >> $ERRORLOG
 		let CCOMPWARNING=CCOMPWARNING+1
 
@@ -726,8 +764,6 @@ function compglobals {
 		    else
 				#echo $i is GLOBALS file...
 		        compileit
-				#shortstats
-				#stats
 			fi
 
 
@@ -857,15 +893,23 @@ function doit {
 	#ERRCHAR=\|
     ERRCHAR=^\|
     COMPILER=aubit
+    #compiler used for compatibility fail check:
+	ALTCOMPILER=4js
+    AUBITCMPLCMD="4glpc -debug -noerrcode" #-verbose
+    FOURJSCMPLCMD=fglcomp
+    QUERIXCMPLCMD=fglc
     RECURSIVE=0
 	GOBACKLINES=20
 	GOAFTERLINES=10
     FULLCLEAN=0
     COMPATIBLE=0
     VERBOSE=0
-    DEBUG=0
+    SCRIPTDEBUG=0
 	MAXMODE=0
 	SKIPDIRS=
+    HEAD=head
+    #HEAD=head -n 20
+
 
 	###############
 	#initialise:
@@ -881,6 +925,7 @@ function doit {
     CCOMPWARNING=0
     NOGLBFILE=0
     OKNOGLBFILE=0
+	ZEROFILESIZE=0
 
 	############
 	for a in $@
@@ -931,7 +976,7 @@ function doit {
         ;;
 
         -debug)		VERBOSE=1
-                    DEBUG=1
+                    SCRIPTDEBUG=1
 		;;
 
 
@@ -974,7 +1019,7 @@ function doit {
 	then
 		ERRFILESDIR=$AUBITERRFILESDIR
 		ERRORLOG=$ERRFILESDIR/amakeallo.log
-		FGLCOMPILER=4glpc
+		FGLCOMPILER=$AUBITCMPLCMD
 		COMPEXT=o
 		COMPEXT2=ao
 
@@ -1002,7 +1047,7 @@ function doit {
 	then
 		ERRFILESDIR=$FJSERRFILESDIR
 		ERRORLOG=$ERRFILESDIR/amakeallo.log
-		FGLCOMPILER=fglcomp
+		FGLCOMPILER=$FOURJSCMPLCMD
 		COMPEXT=42m
 		COMPEXT2=
 
@@ -1032,7 +1077,8 @@ function doit {
 	    mkdir $DESTDIR
     fi
 
-    echo `date` > $ERRORLOG
+    date
+    date > $ERRORLOG
 
 
     #################
@@ -1055,7 +1101,8 @@ function doit {
 			ALLSUBDIRS="winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo cm contr dvfund lawmods"
             SKIPDIRS="aform aprog forms prog gform gprog qform qprog"
         else
-			ALLSUBDIRS=`ls -l | grep "^d" | awk '{print $NF}'`
+			ALLSUBDIRS=`ls -l | 
+			 "^d" | awk '{print $NF}'`
         fi
 
 		################################
