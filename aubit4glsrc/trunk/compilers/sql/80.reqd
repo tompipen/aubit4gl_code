@@ -16,18 +16,16 @@ var_ident_qchar : NAMED
 
 
 
-char_or_var : CHAR_VALUE | variable {
-                if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type charr..");YYERROR;}
-}
+char_or_var : CHAR_VALUE 
+	| variable { if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type charr..");YYERROR;} }
 ;
 
-opt_use : {strcpy($<str>$,"");} | USE_SESSION conn_id FOR {
-        print_use_session($<str>3);
-        strcpy($<str>$,A4GL_get_undo_use());
-}
+opt_use : {strcpy($<str>$,"");} 
+	| USE_SESSION conn_id FOR { print_use_session($<str>3); strcpy($<str>$,A4GL_get_undo_use()); }
 ;
 
-conn_id : ident_or_var;
+conn_id : ident_or_var
+;
 
 
 variable : NOT_USED_1
@@ -66,22 +64,14 @@ select_statement_ss_str_cfu:
 	select_statement_ss_str curs_forupdate { sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
 ;
 
-/*
-op_curs_for_update:  | curs_forupdate
-;
-*/
 
 curs_forupdate : {strcpy($<str>$,"");}
                 | FOR_UPDATE {strcpy($<str>$," FOR UPDATE");}
                 | FOR_UPDATE_OF cur_update_list {sprintf($<str>$," FOR UPDATE OF %s",$<str>2);}
-                ;
+;
 
-cur_update_list : colident {
-			strcpy($<str>$,$<str>1);
-		} 
-		| cur_update_list KW_COMMA colident {
-			sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
-		}
+cur_update_list : colident { strcpy($<str>$,$<str>1); } 
+		| cur_update_list KW_COMMA colident { sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
 ;
 
 colident: identifier
@@ -110,51 +100,25 @@ set_cmd : SQLSEOFF 		 { print_exec_sql($<str>1); }
 ;
 
 
-var_ident: identifier
-	| QUESTION_MARK { $<sql_string>$=strdup($<str>1); }
-;
-
-var_ident_ibind_ss :  column_name { $<sql_string>$=strdup($<str>1); } 
-	| QUESTION_MARK { $<sql_string>$=strdup($<str>1); }
+var_ident_ibind_ss :  column_name_x { $<sql_string>$=strdup($<str>1); } 
+	 | QUESTION_MARK { $<sql_string>$=strdup($<str>1); } 
 ;
 
 
-
-/*
-column_name {
-	$<sql_string>$=strdup($<str>1);
-}
-
+column_name_x:
+        column_name_specific { strcpy($<str>$,$<str>1); }
 ;
-*/
+
 
 
 
 value_expression_initial_ss :
-        value_expression_complex_ss {
-                        /*
-                        if (strlen(current_upd_table)) {
-                                push_gen(UPDVAL,$<sql_string>1);
-                        }
-                        */
-                $<sql_string>$=$<sql_string>1;
-        }
-        | var_ident_ibind_ss    {
-                $<sql_string>$=$<sql_string>1;
-        }
+        value_expression_complex_ss { $<sql_string>$=$<sql_string>1; }
+        | var_ident_ibind_ss    { $<sql_string>$=$<sql_string>1; }
         | subquery_ss { $<sql_string>$=$<sql_string>1; }
         | ALL subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ALL "),$<sql_string>2,0); }
         | ANY subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ANY "),$<sql_string>2,0); }
         | SOME subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("SOME "),$<sql_string>2,0); }
-/*
-I THINK THESE ARE 4GL ONLY
-        | ATSIGN identifier {
-                $<sql_string>$=strdup($<str>2);
-        }
-        | ATSIGN identifier DOT identifier {
-                $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),0);
-        }
-*/
 ;
 
 

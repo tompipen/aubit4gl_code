@@ -35,6 +35,7 @@ int doing_declare=0;
 #define UPDVAL2 4
 #define INSCOL 5
 #define INSVAL 6
+#define YY_NEVER_INTERACTIVE 1
 
 static char *convstrsql(char *s) ;
 char current_upd_table[256];
@@ -154,7 +155,7 @@ int db_used=0;
 	struct  ilist int_list;
 
 }
-
+%expect 173
 %token INT_VALUE
 %token NAMED
 %token NAMED_GEN
