@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.70 2004-11-05 00:37:26 afalout Exp $
+# $Id: compile.c,v 1.71 2004-11-19 13:30:15 mikeaubury Exp $
 #*/
 
 /**
@@ -393,7 +393,8 @@ initArguments (int argc, char *argv[])
 		break;
 
     /************************/
-	case '4':       /* FIXME: what is this?*/
+	case '4':       /* System 4gl module -  disables function name checking so it can 
+					compile functions for use with the aubit4gl library  */
 		compiling_system_4gl = 1;
 		break;
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.27 2004-11-09 20:28:42 pjfalbe Exp $
+# $Id: sqlconvert.c,v 1.28 2004-11-19 13:31:27 mikeaubury Exp $
 #
 */
 
@@ -230,11 +230,15 @@ char *A4GL_cv_lastnonblank (char *str);
                     Function definitions
 =====================================================================
 */
-void
-A4GL_convert_sql (char *source_dialect, char *target_dialect, char *sql) {
-	//A4GLSQLCV_load_convert (source_dialect, target_dialect);
-	//A4GL_translate_sql_string(sql);
+char * A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sql) {
+	char *sql_new;
+	// Silently drop source dialect for now - it should be picked up from A4GL_SQLDIALECT anyway...
+	//
+	sql_new=A4GLSQLCV_convert_sql(target_dialect,sql);
+	return sql_new;
 }
+
+
 
 /*
  * Returns the next token string in a statement

@@ -14,7 +14,7 @@ update_statement_ss:
 	} set_clause_list_ss  {
 		strcpy(current_upd_table,"");
 	} where_upd_ss {
-		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>4,kw_space,$<sql_string>6,0);
+		$<sql_string>$=make_sql_string_and_free(strdup("UPDATE "),strdup($<str>2),kw_space,$<sql_string>4,kw_space,$<sql_string>6,0);
 	}
 ;
 

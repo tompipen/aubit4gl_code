@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.106 2004-11-16 14:44:00 mikeaubury Exp $
+# $Id: stack.c,v 1.107 2004-11-19 13:31:27 mikeaubury Exp $
 #
 */
 
@@ -3134,5 +3134,12 @@ int A4GL_conversion_ok(int a) {
 
 A4GL_pause_execution() {
 	printf("--->\n");
+}
+
+a4gl_upshift(char *s) {
+	int a;
+	for (a=0;a<strlen(s);a++) {
+		s[a]=toupper(s[a]);
+	}
 }
 // ================================ EOF ================================

@@ -22,6 +22,7 @@ process_stdin (char *dialect_in, char *dialect_out)
   char quote = 0;
   int slash = 0;
   int n = 0;
+  char *ptr;
 
   buff = malloc (buffsize);
   clearbuff ();
@@ -44,7 +45,8 @@ process_stdin (char *dialect_in, char *dialect_out)
 	  /* we have an unquoted semi-colon; process what we have
 	     * in the statement buffer, then clear for the next one
 	   */
-	  A4GL_convert_sql (dialect_in, dialect_out, buff);
+	  ptr=A4GL_convert_sql_new (dialect_in, dialect_out, buff);
+	  strcpy(buff,ptr);
 	  trimbuff ();
 	  printf ("%s\n", buff);
 	  clearbuff ();
@@ -77,7 +79,7 @@ process_stdin (char *dialect_in, char *dialect_out)
   /* anything in the buffer but not terminated with semi-colon ? */
   if (bc > 1)
     {
-      A4GL_convert_sql (dialect_in, dialect_out, buff);
+      ptr=A4GL_convert_sql_new (dialect_in, dialect_out, buff);
       trimbuff ();
       printf ("%s\n", buff);
     }

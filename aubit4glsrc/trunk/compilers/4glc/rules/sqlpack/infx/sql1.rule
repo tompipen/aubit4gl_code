@@ -730,7 +730,7 @@ data_type_i:
 char_string_type:
 	  KW_CHAR
 	| KW_CHAR OPEN_BRACKET length CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+{sprintf($<str>$," %s %s%s%s",$<str>1,$<str>2,$<str>3,$<str>4);}
 ;
 
 exact_numeric_type:
@@ -743,12 +743,18 @@ exact_numeric_type:
 			}
 	}
 	| KW_DECIMAL 
-	| KW_DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET {sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);}
+	| KW_DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET {
+		if (strlen($<str>4)) {
+			sprintf($<str>$,"DECIMAL(%s%s)",$<str>3,$<str>4);
+		} else {
+			sprintf($<str>$,"DECIMAL(%s)",$<str>3);
+		}
+	}
 	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET {
 		if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
-			sprintf($<str>$," DECIMAL %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5);
+			sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);
 		} else {
-			sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
+			sprintf($<str>$," MONEY(%s%s)",$<str>3,$<str>4);
 		}
 	}
 
@@ -764,7 +770,7 @@ exact_numeric_type:
 	| INTEGER {strcpy($<str>$,"INTEGER");}
 	| SMALLINT {strcpy($<str>$,"SMALLINT");}
 	| NCHAR {strcpy($<str>$,"NCHAR");}
-	| NCHAR OPEN_BRACKET length CLOSE_BRACKET
+	| NCHAR OPEN_BRACKET length CLOSE_BRACKET {sprintf($<str>$,"NCHAR(%s)",$<str>3);}
 	| NVARCHAR
 	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"NVARCHAR(%s)",$<str>3);}
 	| NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
@@ -1056,9 +1062,9 @@ select_statement21_ss:
 
 
 sel_p2_ss : { $<sql_string>$=strdup(""); }
-	| UNION op_all select_statement2_ss { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,0); }
+	| UNION op_all select_statement2_ss { $<sql_string>$=make_sql_string_and_free(strdup("UNION "),strdup($<str>2),kw_space,$<sql_string>3,0); }
 	| order_by_clause  { $<sql_string>$=strdup($<str>1); }
-	| INTO_TEMP tmp_tabname op_no_log { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),0); } 
+	| INTO_TEMP tmp_tabname op_no_log { $<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>2),kw_space,strdup($<str>3),0); } 
 	| order_by_clause INTO_TEMP tmp_tabname op_no_log { 
 	if (A4GLSQLCV_check_requirement("STRIP_ORDER_BY_INTO_TEMP")) {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);

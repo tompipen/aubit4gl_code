@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.73 2004-10-04 13:50:02 afalout Exp $
+# $Id: Makefile.in,v 1.74 2004-11-19 13:31:26 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -42,7 +42,7 @@ CMODS_PROJECT	=project.c
 #List of API specification files used to generate .c/.h pair
 #created headers are included via a4gl_libaubit4gl_int.h
 API_SPEC    =API_esql.spec API_help.spec API_menu.spec API_packer.spec \
-			API_form.spec API_msg.spec API_ui.spec API_sql.spec API_rpc.spec \
+			API_form.spec API_msg.spec API_ui.spec  API_sqlparse.spec API_sql.spec API_rpc.spec \
 			API_exreport.spec
 
 #List of API .c files that do not have coresponding .spec file

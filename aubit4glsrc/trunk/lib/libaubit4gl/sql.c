@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.17 2004-11-05 16:57:44 mikeaubury Exp $
+# $Id: sql.c,v 1.18 2004-11-19 13:31:26 mikeaubury Exp $
 #
 */
 
@@ -261,8 +261,7 @@ A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 {
   if (must_convert)
     {
-      s = A4GL_apisql_strdup (s);
-      A4GL_convert_sql (source_dialect, curr_sess->dbms_dialect, s);
+      s=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
     }
   return (struct s_sid *) A4GLSQL_prepare_glob_sql_internal (s, ni, ibind);
 }
@@ -298,8 +297,8 @@ struct s_sid* A4GLSQL_prepare_sql (char *s)
 {
   if (must_convert)
     {
-      s = A4GL_apisql_strdup (s);
-      A4GL_convert_sql (source_dialect, curr_sess->dbms_dialect, s);
+      //s = A4GL_apisql_strdup (s);
+      s=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
     }
   return (struct s_sid *) A4GLSQL_prepare_select (0,0,0,0,s);
 }
@@ -341,8 +340,8 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
 {
   if (must_convert)
     {
-      s = A4GL_apisql_strdup (s);
-      A4GL_convert_sql (source_dialect, curr_sess->dbms_dialect, s);
+      //s = A4GL_apisql_strdup (s);
+      s=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
     }
   return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s);
 }
@@ -363,8 +362,8 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BIND
 {
   if (must_convert)
     {
-      sql1 = A4GL_apisql_strdup (sql1);
-      A4GL_convert_sql (source_dialect, curr_sess->dbms_dialect, sql1);
+      //sql1 = A4GL_apisql_strdup (sql1);
+      sql1=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1);
     }
   A4GL_trim(fname);
   A4GLSQL_unload_data_internal (fname, delims, sql1,nbind,ibind);

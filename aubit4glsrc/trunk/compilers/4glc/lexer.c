@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.101 2004-10-26 11:56:44 mikeaubury Exp $
+# $Id: lexer.c,v 1.102 2004-11-19 13:30:15 mikeaubury Exp $
 #*/
 
 /**
@@ -1525,6 +1525,9 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   /*set_str (buff);*/
 
   if (a==CONCAT_PIPES) { strcpy(buff,"||"); }
+
+  if (a==NAMED_GEN||a==CHAR_VALUE) ; else { a4gl_toupper(buff); }
+
   set_str (pyylval, buff);
 
   lastword = buff;
@@ -1543,6 +1546,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 		free(buff2);
 	}
   A4GL_debug ("lexer returns  a=%d, buff=%s\n", a, buff);
+
   return a;
 }
 
