@@ -1,4 +1,3 @@
-
 {**
  *
  * x4gl API framework to build unit tests.
@@ -88,7 +87,7 @@ end record
 #                           Functions definitions
 # =====================================================================
 
-                               { TEST CONTROL }
+  { --------------------------- TEST CONTROL ---------------------- }
 
 {** 
  * Unit test initializations.
@@ -221,7 +220,7 @@ function fglUnitStartTestCase(testCaseName)
 end function
 
 {**
- * Star a new test of the current suite and test case.
+ * Start a new test of the current suite and test case.
  *
  * @param testName The name of the test
  *}
@@ -239,24 +238,24 @@ end function
  * Create the temporary tables used to store the tests.
  * For database located results only.
  *
- * This is Informix dependent due to the serial(s).
+ * This is Informix dependent due to the use of serial(s).
  *}
 function fglUnitCreateTempTable()
   create temp table fglUnitSuite (
-	  suite_id serial not null,
-    description char(60) not null,
+		suite_id serial not null,
+		description char(60) not null,
 		parent_suite integer            ## references fglUnitSuite (suite_id)
 	)
 	create temp table fglUnitTestCase (
-	  test_case_id serial not null,
+		test_case_id serial not null,
 		description char(60) not null,
 		suite_id integer not null       ## references fglUnitSuite (suite_id)
 	)
 	create temp table fglUnitTest (
-	  test_id serial not null,
+		test_id serial not null,
 		testName char(60) not null,
 		result smallint,
-    testComment char(60),
+		testComment char(60),
 		test_case_id integer not null   ## references fglUnitTestCase (test_case_id)
 	)
 end function
@@ -609,9 +608,9 @@ end function
  *}
 function fglUnitPrintResult()
 	output to report testResultReport("","")
-  call fglUnitComputeTestsTime()
+	call fglUnitComputeTestsTime()
 	call fglUnitComputeFailures()
-  call fglUnitPrintFailures()
+	call fglUnitPrintFailures()
 	call fglUnitPrintResultSummary()
 end function
 
@@ -619,11 +618,11 @@ end function
  * Show the summary results of the test executed.
  *}
 function fglUnitPrintResultSummary()
-  if options.showResultIn = "T" then
-    call fglUnitPrintTextResultSummary()
+	if options.showResultIn = "T" then
+	    call fglUnitPrintTextResultSummary()
 	else
 		# @todo : Implement it
-    #call fglUnitPrintTextResultSummary()
+    	#call fglUnitPrintTextResultSummary()
 	end if
 end function
 

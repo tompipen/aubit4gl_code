@@ -138,8 +138,10 @@ A4GL_SQLCONVERT=YES
 
 
 ############
-#auto initializing module and function local variables
-A4GL_AUTONULL=YES
+#auto initializing module and function local variables. This setting is used at
+#compile-time only. Numeric variables are initializet to 0, everything else to NULL
+#To turn on, set to "Y"
+A4GL_AUTONULL=Y
 
 
 ############

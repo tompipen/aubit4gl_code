@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.64 2003-03-06 22:38:33 mikeaubury Exp $
+# $Id: lexer.c,v 1.65 2003-03-12 23:52:11 afalout Exp $
 #*/
 
 /**
@@ -998,7 +998,7 @@ static int last_pc = 0;
   //printf("In yylex ... yystate=%d\n", yystate);
   //printf("%p %d  %p %p\n",pyylval,yystate,yys1,yys2);
   //for (stack_cnt=(short *)yys2;stack_cnt>=(short *)yys1;stack_cnt--) {
-		//printf(" -->%d\n",*stack_cnt);
+		//printf(" ==>%d\n",*stack_cnt);
   //}
 
   current_yylex_state=yystate;

@@ -36,26 +36,6 @@ inv_line_num,cred_line_num) as
     ,x0.cust_type ,x0.year_num ,x0.type_code ,x0.int_num ;
 
 
-
-===========================================================================
-
-
-Compiling fails using A4GL_SQLTYPE=ifxodbc, iodbc, unixodbc:
-
-
-
-function disp_corp_acc(cmpy,pr_cust)
-   define
-      cmpy like company.cmpy_code,
-|______________________________^
-| Error at line 42, character 32
-| syntax error, unexpected COMMA, expecting $end (cmpy_code)
-      pr_corp_code,pr_cust like customer.cust_code,
-      pr_customer record like customer.*,
-
-
-Same file compiled OK with A4GL_SQLTYPE=esql
-
 ===========================================================================
 
 Windows installer does not have Ace files

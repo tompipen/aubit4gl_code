@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.49 2003-03-12 18:10:48 mikeaubury Exp $
+# $Id: esql.ec,v 1.50 2003-03-12 23:52:12 afalout Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.49 2003-03-12 18:10:48 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.50 2003-03-12 23:52:12 afalout Exp $";
 #endif
 
 
@@ -403,7 +403,7 @@ int A4GLSQL_init_connection (char *dbName)
     char *db = dbName;
   EXEC SQL END DECLARE SECTION;
   trim(dbName);
-  printf("-->%s\n",dbName);
+  debug("-->%s<--\n",dbName);
 
 // Have we got an active db session ?
   if (have_connected) {

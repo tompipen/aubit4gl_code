@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.30 2003-03-05 07:27:47 afalout Exp $
+#	 $Id: footer.mki,v 1.31 2003-03-12 23:52:12 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -438,31 +438,18 @@ ${PROG.4ge}: ${I4GL_CCODE_DEPS}
 ########################
 #Build C-code program
 ${PROG.4qe}: ${QUERIX_DEPS}
-ifeq "${VERBOSE}" "1"
-	@echo "Linking Querix: $@"
-endif
 ifeq "$(PROGTYPE)" ".lib"
-ifeq "${PROG}" "dummy.lib"
-	@echo Name dummy.lib was used, final linking skipped.
-else
 #It looks like we should not use -shared for Querix?
-#but id we do, we need to sully it as -lname on link line!
+#but if we do, we need to supply it as -lname on link line!
 	ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
 #...but this causes a lot of undefined crap
 #	ld -fPIC -static $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
 #and so does this:
 #	qxcc ${CFLAGS} -o $@ $^ $(LDLIBS)
-endif
 else
-#	${FAIL_LINK}${Q4GL_CL} -rdynamic -o $@ $^ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
-#regardless of this -rpath, GCC determined that he can't find libraries,
-#probably without passing line to ld at all. We will need to use LD directly...
-	${FAIL_LINK}${Q4GL_CL} -Wl,-rpath ${SCWORK}/common -rdynamic -o $@ $^ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
-#cannt do this:
+	${FAIL_LINK}${Q4GL_CL} ${Q4GL_CL_LDFLAGS_APPSPEC} -rdynamic -o $@ $^ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+#cannt do this (WHY?):
 #	${FAIL_LINK}ld -rpath ${SCWORK}/common $^ -o ${xxEXECSTORE}$@ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
-endif
-ifeq "${VERBOSE}" "1"
-	@echo "$@: OK"
 endif
 
 # =======================================================================

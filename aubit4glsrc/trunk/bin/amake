@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.21 2003-03-07 08:11:54 afalout Exp $
+# $Id: amake,v 1.22 2003-03-12 23:51:55 afalout Exp $
 
 #####################################################################
 
@@ -299,9 +299,20 @@ fi
 
 	if [ "$PROGS" = "" ]
 	then
-	    echo "Please specify one or more .mk file names (without .mk extension)"
-        echo "In command line '$@', there was no .mk file that is in this directory"
-	    exit 1
+	    #echo "Please specify one or more .mk file names (without .mk extension)"
+        #echo "In command line '$@', there was no .mk file that is in this directory"
+	    #exit 1
+
+
+		ls *.mk > /dev/null 2>&1
+		RET=$?
+		if test $RET = "0"
+		then
+			PROGS=`ls *$MK`
+	    else
+	        echo "ERROR: No .mk files in $PWD"
+	        exit 34
+	    fi
 	fi
 
 	if [ "$LOG" = "1" ]
