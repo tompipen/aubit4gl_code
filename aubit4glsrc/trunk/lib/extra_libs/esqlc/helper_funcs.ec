@@ -34,7 +34,7 @@ A4GL_debug("Copy_decimal 'o' - gets %s",b);
 	//debug("dec_t.dec_ndgts=%d\n",infx->dec_ndgts);
 	
 }
-debug("All done..");
+A4GL_debug("All done..");
 
 }
 
@@ -42,7 +42,7 @@ debug("All done..");
 
 void A4GL_copy_money(dec_t *infx,fglmoney *a4gl,int size,char dir) {
 char b[65];
-debug("Aubit size : %d %d\n",size & 15, size>>4);
+A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 if (dir=='i') {
 	char *ptr;
