@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.7 2003-01-21 08:25:53 afalout Exp $
+# $Id: formwrite2.c,v 1.8 2003-02-04 13:19:24 mikeaubury Exp $
 #*/
 
 /**
@@ -170,6 +170,7 @@ init_fld (void)
   xxfield.colour = -1;
   xxfield.dynamic = 0;
   xxfield.datatype = 0;
+  xxfield.dtype_size = 0;
   fld = &xxfield;
   debug ("done init_fld\n");
 }

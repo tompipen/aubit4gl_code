@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.94 2003-02-04 05:21:40 afalout Exp $
+# $Id: 4glpc,v 1.95 2003-02-04 13:19:23 mikeaubury Exp $
 #
 
 ########################################################################
@@ -432,7 +432,7 @@ LAST=""
 INCLDIR="-I$AUBITDIR/incl $GTK_INC_PATH"
 
 #CC is set via aubitrc config file:
-CC="$CC -O2 -g"
+CC="$CC -O2"
 
 #This may help while compiling, but compiled programs will not run
 #if it's not in his environmnet. So set your environment!

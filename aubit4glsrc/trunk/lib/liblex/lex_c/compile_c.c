@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.47 2003-01-29 14:35:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.48 2003-02-04 13:19:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3352,7 +3352,7 @@ print_put (void)
 void
 print_prepare (char *stmt, char *sqlvar)
 {
-  printc ("A4GLSQL_add_prepare(%s,A4GLSQL_prepare_sql(%s));\n", stmt, sqlvar);
+  printc ("A4GLSQL_add_prepare(%s,A4GLSQL_prepare_select(0,0,0,0,%s));\n", stmt, sqlvar);
 }
 
 /**
@@ -4161,7 +4161,7 @@ print_curr_spec (int type, char *s)
   static char buff[3000];
   printc ("{\n");
   if (type == 1)
-    sprintf (buff, "A4GLSQL_prepare_sql(\"%s\")", s);
+    sprintf (buff, "A4GLSQL_prepare_select(0,0,0,0,\"%s\")", s);
   if (type == 2)
     sprintf (buff, "A4GLSQL_find_prepare(%s)", s);
   return buff;

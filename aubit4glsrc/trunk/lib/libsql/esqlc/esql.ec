@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.33 2003-01-30 17:41:24 mikeaubury Exp $
+# $Id: esql.ec,v 1.34 2003-02-04 13:19:25 mikeaubury Exp $
 #
 */
 
@@ -128,7 +128,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.33 2003-01-30 17:41:24 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.34 2003-02-04 13:19:25 mikeaubury Exp $";
 #endif
 
 /*
@@ -187,6 +187,7 @@ static int getColumnsMax = 0;
  */
 static void esqlErrorHandler(void)
 {
+  debug("In esqlErrorHandler..");
   A4GLSQL_set_status(sqlca.sqlcode,1);
 }
 
@@ -733,6 +734,8 @@ static struct s_sid *newStatement(
   sid->obind         = obind;
   sid->no            = no;
   sid->statementName = strdup(getGlobalStatementName());
+  sid->inputDescriptorName=0;
+  sid->outputDescriptorName=0;
 
   statementName = sid->statementName;
   statementText = sid->select;
@@ -771,11 +774,11 @@ debug("PrepareSQL : %s",s);
     return (struct s_sid *)0;
   }
 
-  if ( processPreStatementBinds(sid) == 1 ) {
-        debug("processPreStatementBinds failed ?");
-        error_just_in_case();
-        return 0;
-   }
+  //if ( processPreStatementBinds(sid) == 1 ) {
+        //debug("processPreStatementBinds failed ?");
+        //error_just_in_case();
+        //return 0;
+   //}
   debug("Prepared OK\n");
   return sid;
 }
@@ -1252,8 +1255,10 @@ static int allocateOutputDescriptor(char *descName,
     int  bindCount = bCount;
   EXEC SQL end declare section;
   register int i;
+  debug("allocOutout - %s",descriptorName);
 
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+  debug("Done");
   if ( isSqlError() )
   {
     return 1;
@@ -1346,6 +1351,7 @@ static int executeStatement(struct s_sid *sid)
   statementName        = sid->statementName;
   inputDescriptorName  = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
+  debug("ExecuteStatement");
   switch (getStatementBindType(sid))
   {
     case NO_BIND:
@@ -1384,7 +1390,10 @@ static int executeStatement(struct s_sid *sid)
  */
 struct s_sid *A4GLSQL_prepare_sql (char *s)
 {
-  return(prepareSqlStatement((struct BINDING *)0,0,(struct BINDING *)0,0,s));
+  struct s_sid *sid;
+  sid=prepareSqlStatement((struct BINDING *)0,0,(struct BINDING *)0,0,s);
+  A4GLSQL_set_status(sqlca.sqlcode,1);
+  return sid;
 }
 
 /**
@@ -1437,8 +1446,10 @@ static int processPreStatementBinds(struct s_sid *sid)
     char *descriptorName;
   EXEC SQL END DECLARE SECTION;
   int rv = 0;
-  if ( sid->ibind != (struct BINDING *)0 && sid->ni > 0 )
+  debug("a1");
+  if ( sid->ibind != (struct BINDING *)0 && sid->ni > 0 && sid->inputDescriptorName==0)
   {
+  debug("a2");
     sid->inputDescriptorName = getDescriptorName(sid->statementName,'I');
 
     if ( processInputBind(sid->inputDescriptorName,sid->ni,sid->ibind) == 1) {
@@ -1446,6 +1457,7 @@ static int processPreStatementBinds(struct s_sid *sid)
       return 1;
 	}
   }
+  debug("a3");
 
   if ( sid->obind != (struct BINDING *)0 && sid->no > 0 )
   {
@@ -1453,7 +1465,7 @@ static int processPreStatementBinds(struct s_sid *sid)
       sid->statementName,
       'O'
     );
-
+  debug("a3.1");
     rv = allocateOutputDescriptor(
       sid->outputDescriptorName,
       sid->no,
@@ -1463,6 +1475,7 @@ static int processPreStatementBinds(struct s_sid *sid)
 		debug("Fail2");
       return 1;
 	}
+  debug("a4");
     descriptorName = sid->outputDescriptorName;
     statementName  = sid->statementName;
     EXEC SQL DESCRIBE :statementName USING SQL DESCRIPTOR :descriptorName;
@@ -1559,31 +1572,42 @@ int A4GLSQL_execute_implicit_select (struct s_sid *sid)
     return -1;
   }
 
+  debug("ESQL : pre");
   if ( processPreStatementBinds(sid) == 1 ) {
 	debug("processPreStatementBinds failed ?");
 	error_just_in_case();
     	return 1;
    }
+
+  debug("ESQL : exec");
   if ( executeStatement(sid) == 1 ) {
 	debug("executeStatement failed ?");
 	error_just_in_case();
     	return 1;
   }
+  if (sqlca.sqlcode==0) {
+  debug("ESQL : post");
+
   if ( processPosStatementBinds(sid) == 1 ) {
 	debug("processPosStatementBinds failed ?");
 	error_just_in_case();
     return 1;
   }
+  }
   debug("All ok ?");
+  A4GLSQL_set_status(sqlca.sqlcode,1);
   return 0;
 }
 
 static error_just_in_case() {
+
 if (sqlca.sqlcode==0) {
 	// We have an error - but its not in Informix...
 	// We'll fake one - how about -410
 	sqlca.sqlcode=-410;
 	esqlErrorHandler();
+} else {
+	A4GLSQL_set_status(sqlca.sqlcode,1);
 }
 }
 
@@ -1753,6 +1777,10 @@ struct s_cid *A4GLSQL_declare_cursor(
   }
   debug("Declared OK");
   add_pointer (cursname, PRECODE, cursorIdentification);
+
+
+  if ( processPreStatementBinds(sid) == 1 ) return (struct s_cid *)0;
+
   return cursorIdentification;
 }
 
@@ -1773,9 +1801,47 @@ int A4GLSQL_open_cursor (int ni, char *s)
 {
   EXEC SQL BEGIN DECLARE SECTION;
     char *cursorName = s;
+  struct s_cid *cursorIdentification;
+  struct s_sid *sid;
+    char *inputDescriptorName;
+    char *outputDescriptorName;
+  
   EXEC SQL END DECLARE SECTION;
 
-  EXEC SQL OPEN :cursorName;
+  debug("Open Cursor");
+
+  cursorIdentification=find_pointer (s, PRECODE);
+
+  debug("Got cursorIdentification as : %p",cursorIdentification);
+  sid=cursorIdentification->statement;
+  inputDescriptorName  = sid->inputDescriptorName;
+  outputDescriptorName = sid->outputDescriptorName;
+  debug("Descritors : %s %s",inputDescriptorName,outputDescriptorName);
+  
+  switch (getStatementBindType(sid)) {
+    case NO_BIND:
+  	EXEC SQL OPEN :cursorName;
+	break;
+
+    case INPUT_BIND:
+  	EXEC SQL OPEN :cursorName
+        USING SQL DESCRIPTOR :inputDescriptorName;
+	break;
+
+    case OUTPUT_BIND:
+    	debug("Into on an open ?");
+  	EXEC SQL OPEN :cursorName
+        //INTO SQL DESCRIPTOR :outputDescriptorName;
+	break;
+    case INPUT_OUTPUT_BIND:
+    	debug("Into on an open ?");
+  	EXEC SQL OPEN :cursorName
+        //INTO SQL DESCRIPTOR :outputDescriptorName
+        USING SQL DESCRIPTOR :inputDescriptorName;
+	break;
+  }
+
+
   if ( isSqlError() )
     return 1;
   return 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.2 2002-07-21 09:56:42 afalout Exp $
+# $Id: form_x.x,v 1.3 2003-02-04 13:19:23 mikeaubury Exp $
 #*/
 
 /**
@@ -121,6 +121,7 @@ struct struct_scr_field
     string tabname<>;
     int subscripts[3];
     int datatype;
+    int dtype_size;
     int dynamic;
     int do_reverse;
     struct struct_field_attr_string str_attribs<>;
