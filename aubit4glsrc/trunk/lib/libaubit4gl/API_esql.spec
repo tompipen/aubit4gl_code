@@ -56,10 +56,11 @@ A4GL_copy_double double* infx,double* a4gl,int indicat,int size,int mode -> void
 A4GL_copy_int long* infx,long* a4gl,int indicat,int size,int mode -> void
 A4GL_copy_money void* infx,void* a4gl,int indicat,int size,char dir -> void
 A4GL_copy_smint short* infx,short* a4gl,int indicat,int size,int mode -> void
-popdec void* vx -> void
-retdec void* vx -> void
-popdtime void* vx -> void
-retdtime void* vx -> void
+
+popdec_native void* vx -> void
+retdec_native void* vx -> void
+popdtime_native void* vx -> void
+retdtime_native void* vx -> void
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.91 2004-05-12 08:15:55 mikeaubury Exp $
+# $Id: stack.c,v 1.92 2004-06-03 07:49:01 mikeaubury Exp $
 #
 */
 
@@ -408,6 +408,7 @@ A4GL_pop_var2 (void *p, int d, int s)
   if (z != 1)
     {
       A4GL_exitwith ("Error in conversion");
+      if (A4GL_isyes(acl_getenv("NO_CONV_ERR"))) { A4GL_debug("Ignoreing"); a4gl_status=0; z=1; A4GL_setnull(d,p,s); }
 #ifdef DEBUG
       A4GL_debug ("2 pop_var2 - error in conversion %d d=%d s=%d\n", z, d, s);
 #endif
