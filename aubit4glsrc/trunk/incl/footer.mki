@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.36 2003-05-16 06:49:33 afalout Exp $
+#	 $Id: footer.mki,v 1.37 2003-07-10 08:43:40 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -658,5 +658,31 @@ src.all:
 src.load:
 	${SRC_LOAD_UTIL} ${ALL_SRC} ${PWD}
 
+
+#Use C interpreter (CINT) to run this program by interpreting generated C source code
+#This will work only with C compilers
+cint:
+	@USE_AUBITDIR=`aubit-config AUBITDIR`; \
+	export CINTSYSDIR=/opt/cint; \
+	export MANPATH=$$MANPATH:$$CINTSYSDIR/doc; \
+	export PATH=$$PATH:$$CINTSYSDIR; \
+	LD_LIBRARY_PATH=.:$$CINTSYSDIR:$$USE_AUBITDIR/lib:$$LD_LIBRARY_PATH; \
+	LD_ELF_LIBRARY_PATH=$$LD_LIBRARY_PATH; \
+	export LD_LIBRARY_PATH LD_ELF_LIBRARY_PATH; \
+    export A4GL_UI=TUI; \
+	RUNME="cint -p -I$$USE_AUBITDIR/incl -l$$USE_AUBITDIR/lib/libA4GL_cint.so $(foreach lib,${FILES.aox},-l${lib}) ${FILES.4gl:.4gl=.c}"; \
+    echo $$RUNME; \
+    $$RUNME;
+
+# -D [macro] : define macro symbol for #ifdef
+
+    #echo $$PATH; \
+    #echo $$LD_LIBRARY_PATH; \
+
+#	cint -p -I$$USE_AUBITDIR/incl -l$$USE_AUBITDIR/lib/libA4GL_cint.so -l${FILES.aox} ${FILES.4gl:.4gl=.c}
+
+#	${GLOB_GLOBALS:.obj=.c}
+
+#	$ cint <options> <[file1].c [file2].c [shl].sl ...> [main].c
 
 # =============================== EOF ==================================
