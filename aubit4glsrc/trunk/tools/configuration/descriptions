@@ -1,4 +1,6 @@
-A4GL_AUTOBANG UI/TUI Enable automatic ! for command entry (like dbaccess menus) for all applicable statements
+A4GL_AUTOBANG UI/TUI  Enable automatic ! for command entry 
+=YES|NO
+	(like dbaccess menus) for all applicable statements
 A4GL_CINT
 A4GL_C_COMP
 A4GL_EXE_EXT
@@ -19,6 +21,7 @@ A4GL_OBJ_EXT
 A4GL_OMIT_NO_LOG
 A4GL_PACKED_EXT COMPILE/RUNTIME Determine file extension for packing
 A4GL_PACKER COMPILE/RUNTIME Determine library for packing forms/menus etc
+$AUBITDIR/libPACKER_?.so
 A4GL_PDFTYPE RUNTIME Determine which library to use for extended reports
 A4GL_RESERVEWORDS
 A4GL_RM_CMD
@@ -26,9 +29,11 @@ A4GL_SAPDB_ESQLC
 A4GL_SQLTYPE RUNTIME/COMPILE Determine which library to use to connect to the database
 A4GL_UI RUNTIME Determine which library to use for the user interface
 A4GL_USE_ALIAS_AS
+=YES|NO
 A4GL_XML_EXT
 
 ALWAYSCLOBBER
+=YES|NO
 ANSI_ERROR
 ANSI_WARN
 ARR_DIR_MSG UI/TUI Display/Input array message 'There are no more rows in that direction'
@@ -36,23 +41,24 @@ ARR_DIR_MSG UI/TUI Display/Input array message 'There are no more rows in that d
 AUBITDIR COMPILE/RUNTIME Specify the location of the aubit source tree
 AUBITETC
 AUBIT_Y2K RUNTIME Specify Y2K handling of dates
-     +n (n<100) - set to nearest year using +n years from today as limit for future
-     -n (n>-100) - set to nearest year using -n from today as limit for past
-     (note: -25 = +75 )
-     eg
-     year=1997
-     n=20, anything after 17 will be taken as historic, anything less than= 17 is future
-     n=-20, anything before 77 will be taken as future, anything greater than= 77 is in the past, 69=2069, 79=1979, 0 = 2000
-
-     XX00 - always use century XX
-     999  - Do not add anything - dealing with AD 0-99
-     -999 - use current century
+	+n (n<100) - set to nearest year using +n years from today as limit for future
+	-n (n>-100) - set to nearest year using -n from today as limit for past
+	(note: -25 = +75 )
+	eg if year=1997
+	n=20   > 17 will be taken as historic anything <17 is future
+	n=-20  <77 will be taken as future >77 is in the past 
+	XX00 - always use century XX
+	999  - Do not add anything - dealing with AD 0-99
+	-999 - use current century
 AUTONULL
+=YES|NO
 
-BACKGROUND UI/TUI Default background character (in hex) when creating a window (eg 2E for a '.')
+BACKGROUND UI/TUI Default background character (in hex) when creating a window 
+	(eg 2E for a '.')
 
 
 CLASSIC_I4GL_MONO UI/TUI Inhibit mapping of colours to attributes (like red->BOLD)
+=YES|NO
 COLOR_TUI_BKG UI/TUI specify the default background color 
 COLOR_TUI_BKG_DEF UI/TUI specify the default background color 
 
@@ -72,8 +78,12 @@ COLUMNS  UI/TUI Specify the width of the screen
 COMMENTS COMPILE Add comments to the generated code
 
 COMMENT_LIKE_DISPLAY UI Specify comments to be in current display color
+=YES|NO
 COMMENT_LIKE_INPUT UI Specify comments to be in current input color
-CONSTANT2DEFINES COMPILE Print on standard output a #define for all constants (can be used to generate a .h file)
+=YES|NO
+CONSTANT2DEFINES COMPILE Print on standard output a #define for all constants 
+=YES|NO
+	(can be used to generate a .h file)
 DBDATE RUNTIME Specified how dates will be formated
 DBEDIT
 DBPATH RUNTIME/COMPILE Path to look in for databases/forms etc
@@ -84,10 +94,15 @@ DEBUG_DECIMAL
 DEBUG_LEVEL COMPILE/RUNTIME Specify the detail in which debug messages will be logged
 DEFPRINTER
 DUMPCOMMENTS
-DUMPSTRINGS COMPILE Dump all the strings in a 4GL to a file called strings.out (normally set to 'ident') (see TRANSLATEFILE)
-DUMP_CORE RUNTIME When aubit/4gl programs crash, either print a sorry message (Internal Error...) , or dump core (seg fault)
+DUMPSTRINGS COMPILE Dump all the strings in a 4GL to a file called strings.out 
+=YES|NO
+	(normally set to 'ident') (see TRANSLATEFILE)
+DUMP_CORE RUNTIME Action to perform when aubit/4gl programs crash
+=YES|NO
+	either print a sorry message (Internal Error...) , or dump core (seg fault)
 ERROR_MSG
 ESQL_UNLOAD
+=YES|NO
 EXTENDED_ERRORLOG  RUNTIME Add module and line when writing to the error log from CALL errorlog(..)
 EXTENDED_GRAPHICS UI/TUI enable the use of extended graphics from form files (+<>^v for cross and tee's)
 FAKELEXTYPE
@@ -98,23 +113,32 @@ FIELD_INCL_MSG UI/TUI Message to display when a value in a field is not in the i
 FIELD_PICTURE_MSG UI/TUI Message to display when a pressed which is invalid for picture fields
 FIELD_REQD_MSG UI/TUI Message to display when a field required a value to be entered
 FIXUPDATE
+=YES|NO
 FORMAT_OVERFLOW RUNTIME Determines what happens when a decimal number is too large to fit  [ROUND,REFORMAT]
+=ROUND|REFORMAT
 GTKGUI
 GTKRC
 GTK_INC_PATH
 GUIPORT
 HELPTEXT
 HIDE_MENU UI/TUI Remove menu when finished with it, default is to leave it displayed
+=YES|NO
 DIM_INACTIVE_MENU UI/TUI Leave menu displayed - but as DIM rather than NORMAL to show its inactive
+=YES|NO
 HOME
 INCLINES
+=YES|NO
 INFORMIXDIR
-INIT_COL_REFRESH  UI/TUI Used when curses colours must be reinitialized when returning to Screen mode (terminal specific)
+INIT_COL_REFRESH  UI/TUI Used when curses colours must be reinitialized when returning to Screen mode 
+	(terminal specific)
+=YES|NO
 INPARRAY_FULL_MSG UI/TUI Message to display when input array becomes full
 KEEP_QUALIFIER
+=YES|NO
 KEYFILE UI Read keystokes from a file and replay them
 KEYDELAY UI Speed to replay keystokes
-NEEDALLKEYS UI Specifies an error if more key stokes are requested than appear in the keystoke file (otherwise -return to keyboard input)
+NEEDALLKEYS UI Specifies an error if more key stokes are requested than appear in the keystoke file
+	(otherwise -return to keyboard input)
 KEYLOG UI Log all keystokes to the specified file
 LANGUAGE
 LEXTYPE
@@ -122,23 +146,33 @@ LINES UI/TUI Number of rows on the screen
 LOGNAME
 MAKE
 MAP4GL
+=YES|NO
 MARK_SCOPE
 MONEY_AS_DECIMAL
+=YES|NO
 MONEY_AS_MONEY
+=YES|NO
 MONO UI/TUI Force monochrome output
+=YES|NO
 NOCFILE
+=YES|NO
 NOCLOBBER
+=YES|NO
 NO_INVIS_ATTR UI/TUI Disable usage of A_INVIS in curses - attempt alternative method for concealment
+=YES|NO
 PAGER
 PAUSE_MSG 
 PGKEYSMOVE UI Defines the use of the PgUp and PgDn keys as the same as NEXT KEY or for ON KEY (PGDN)
+=YES|NO
 POSTGRESDIR
 PRINTPROGRESS
 PRINTSCRFILE UI/TUI Specify a file to dump screen to (start with a | to pipe to a command)
 PRINTSCRKEY UI/TUI Specify a key to automatically dump the screen with (goes to PRINTSCRFILE)
 RPCTYPE RUNTIME Determine which library to use for remote procedure calls
 SCROLLBACKTO1 UI/TUI In display array scroll back to first line if PgUp is used rather than to just first page
+=YES|NO
 SIMPLE_GRAPHICS UI/TUI Force usage of simple graphics for borders
+=YES|NO
 SQLCNVPATH RUNTIME/SQL Specifies the location of the conversion details for SQL grammers
 SQLCONVERT COMPILE/RUNTIME/SQL determines whether to try to autoconvert SQL from sourcesfiles dialect to runtime dialect
 SQLDIALECT COMPILE/RUNTIME/SQL determines the SQL Dialect used for the source file
@@ -150,14 +184,20 @@ SYSTEM
 SYSTEMDIR
 SYSUSER
 TEMPDIR
-TRANSLATEFILE COMPILE Specifies the location of a translation file - used for transforming 4GL strings via a message file (see DUMPSTRINGS)
+TRANSLATEFILE COMPILE Specifies the location of a translation file 
+	This is used for transforming 4GL strings via a message file (see DUMPSTRINGS)
 TRANSMODE
 TRIMDUMP UI/TUI Trim the results of a dump screen to a specified screen size (eg 24x80)
+=24x80|25x80|24x132|25x132
 TRIMUSINGFMT RUNTIME Trim trailing spaces from a using string variable before applying it
 USEPAGEKEYS UI Does odd processing with PgUp PgDn keys on keyboard
 USE_BINDING_FOR_PUT
+=YES|NO
 USE_DATABASE_STMT
+=YES|NO
 USE_FORM_SIZE
+=YES|NO
 USE_INDICATOR
+=YES|NO
 VISUAL
 YYDEBUG

@@ -1,0 +1,132 @@
+cat config.4gl.head
+awk '
+BEGIN {
+	name=""
+	desc["UI"]="User Interface options"
+	desc["COMPILE"]="Compile time options"
+	desc["RUNTIME"]="Run time options"
+	desc["SQL"]="SQL Options"
+	desc["FORMS"]="Form Options"
+	desc["ODBC"]="ODBC Options"
+	desc["TUI"]="Text User Interface options"
+	no=0
+	print "FUNCTION do_display_txt(n)"
+	print "DEFINE n INTEGER"
+	print "DEFINE a INTEGER"
+	print "FOR a=1 to 24"
+        print "let lv_txt[a]= \" \""
+	print "end for"
+	print "CASE n"
+}
+
+/^#/ {next}
+/^=/ 	{	
+	options[no]=substr($0,2)
+	next
+	}
+/^\$/ {
+	options[no]="listing" $0 
+	next
+      }
+
+
+/^\t/ {
+	print substr($0,2) > "helpfile.hlp"
+	print "   let lv_txt[" cnt "]=\"" substr($0,2) "\"" 
+	if (length(substr($0,2))>80) {
+		print "#*** TOO LONG"
+	}
+	cnt++
+	next
+}
+
+{a=$0
+if (substr(a,1,1)!=" ") {
+	if (name!="") {
+		print "   CALL display_txt()"
+		split(units,arr_units,"/")
+		for (key in arr_units) {
+			var=arr_units[key]
+			arr_vars[var]++
+			txt=var arr_vars[var];
+			arr_names[txt]=name
+			arr_briefs[name]=brief
+			help_no[name]=no
+		}
+		no++
+	}
+	
+	name=$1
+	if (name=="") next
+	units=$2
+	brief=substr($0,length(name)+length(units)+3)
+	print "." no > "helpfile.hlp"
+	print "( " $0 " )" > "helpfile.hlp"
+	print brief > "helpfile.hlp"
+	printf "Categories :"  > "helpfile.hlp"
+	for (key in arr_units) {
+		printf (" %s",arr_units[key]) > "helpfile.hlp"
+	}
+	print "" > "helpfile.hlp"
+	print "when "  no 
+	cnt=1
+}
+}
+
+END {
+
+	if (name!="") {
+		print "   CALL display_txt()"
+		print ""
+		help_no[name]=no
+		split(units,arr_units,"/")
+		for (var in arr_units) {
+			arr_vars[var,name]=brief
+		}
+		no++
+	}
+	print "END CASE"
+	print "END FUNCTION"
+	print " "
+	print "MAIN"
+	print "   DEFER INTERRUPT"
+	print "   CALL initialize()"
+	print "   MENU \"Main\""
+	
+	for (var in arr_vars) {
+		xx=arr_vars[var];
+		print "      COMMAND \"" var "\" \"" desc[var] "\""
+		print "         call details_" var "()"
+		print " "
+	}
+	print "   COMMAND \"Exit\" exit menu"
+	print "   END MENU"
+	print "END MAIN"
+
+	for (var in arr_vars) {
+		xx=arr_vars[var];
+		print " "
+		print "FUNCTION details_" var "()"
+		for (a=1;a<=xx;a++) {
+			txt=var a
+			name=arr_names[txt]
+			brief=arr_briefs[name]
+			print "   let mv_option[" a "].name=\"" name "\""
+			print "   let mv_option[" a "].brief=\"" brief "\""
+			print "   let mv_option_offscr[" a "].id=" help_no[name] 
+
+			if (substr(options[help_no[name]],1,7)!="listing") {
+				num_op=split(options[help_no[name]],arr_options,"|")
+				print "   let mv_option_offscr[" a "].nvalues=" num_op 
+				for (b in arr_options) {
+					print "   let mv_option_offscr[" a "].values[" b "]=\"" arr_options[b] "\""
+				}	
+			} else {
+				print "   call load_options_from_listing(" a ",\"" substr(options[help_no[name]],8) "\")"
+
+			}
+		}
+		print "   call show_options(" a-1 ")"
+		print "END FUNCTION"
+	}
+}' < descriptions
