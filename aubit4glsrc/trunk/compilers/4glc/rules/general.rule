@@ -4,6 +4,7 @@ line_no		:
 	| FIRST PLUS INT_VALUE {sprintf($<str>$,"%d",atoi($<str>3))+1;}
 	| FIRST {sprintf($<str>$,"1");}
 	| INT_VALUE {sprintf($<str>$,$<str>1);}
+	| variable {sprintf($<str>$,$<str>1);}
 ;
 
 file_name	:	CHAR_VALUE | cvariable 

@@ -1,11 +1,9 @@
 message_cmd :
  msg_start fgl_expr_concat opt_attributes op_msg_wait { 
-
-print_message(0,$<str>3,atoi($<str>4));
-
-
-start_state("message",0);}  msg_end
- ;
+	print_message(0,$<str>3,atoi($<str>4));
+	start_state("message",0);
+} 
+msg_end
  | KWMESSAGE
 	fgl_expr_list
         op_caption
