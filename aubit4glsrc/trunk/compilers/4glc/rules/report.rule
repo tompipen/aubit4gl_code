@@ -1,4 +1,4 @@
-start_cmd : START_REPORT rep_name TO PRINTER 
+start_cmd : START_REPORT rep_name TO_PRINTER 
 {
 addmap('S',$<str>2,curr_func,yylineno,infilename);
 printc("push_char(\"P\");\n");
@@ -11,11 +11,11 @@ addmap('S',$<str>2,curr_func,yylineno,infilename);
 printc("push_char(\"F\");");
 printc("push_char(%s);\n",$<str>4);
 printc("acl_fglr_%s(2,REPORT_START);\n",$<str>2); }
-	    | START_REPORT rep_name TO PIPE rout
+	    | START_REPORT rep_name TO_PIPE rout
 {
 addmap('S',$<str>2,curr_func,yylineno,infilename);
 printc("push_char(\"P\");\n");
-printc("push_char(%s);\n",$<str>5);
+printc("push_char(%s);\n",$<str>4);
 printc("acl_fglr_%s(2,REPORT_START);\n",$<str>2); 
 }
 	    | START_REPORT rep_name
@@ -46,7 +46,7 @@ output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET
 { printc("/*....MJA1........*/\n");}
 reset_cnt 
 { printc("/*....MJA2........*/\n");}
-fgl_expr_list 
+op_fgl_expr_list 
 { printc("/*....MJA3........*/\n");}
 CLOSE_BRACKET
 {

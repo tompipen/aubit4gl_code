@@ -1,8 +1,7 @@
 set_cmd :
 SQLSEON
 | SQLSEOFF
-| SQLSLMW fgl_expr
-| SQLSLMW 
+| SQLSLMW op_fgl_expr {sprintf($<str>$,"%s %s /*FIXME */",$<str>1,$<str>2);}
 | SQLSLMNW 
 | SQLSIDR
 | SQLSIRR
@@ -23,3 +22,5 @@ op_conn_id :
 
 
 
+op_fgl_expr :
+{strcpy($<str>$,"");} | fgl_expr;

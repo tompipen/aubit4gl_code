@@ -1,12 +1,19 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.2 2001-08-31 18:22:31 mikeaubury Exp $
+* $Id: mod.c,v 1.3 2001-09-01 19:57:31 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.2  2001/08/31 18:22:31  mikeaubury
+*	minor fixes,
+*	incl requirement for a : on a label
+*	
+*	major fixes:
+*	automatically compiles a globals 4gl (ie. you don't need to precompile to obtain a glb to compile a module that uses that glb file...)
+*	
 *	Revision 1.1.1.1  2001/08/20 02:35:38  afalout
 *	Initial import to SF
 *	
@@ -62,35 +69,25 @@ int inc = 0;
 #include "rules/generated/kw.h"
 #include "../../lib/libincl/oform.h"
 #include "../../lib/libincl/tunable.h"
-#include "../../lib/libincl/debug.h" 
+#include "../../lib/libincl/debug.h"
 #include "../../lib/libincl/errors.h"
-char *ignull(char *s);
-char pklist[2048]="";
-char upd_using_notpk[5000]="";
-int upd_using_notpk_cnt=0;
-int rep_type=0;
+char *ignull (char *s);
+char pklist[2048] = "";
+char upd_using_notpk[5000] = "";
+int upd_using_notpk_cnt = 0;
+int rep_type = 0;
 
 //#define CHAR_VALUE 3
 //#define NAMED 2
 long scan_variables (char *s, int mode);
-long isvartype (char *s,int mode);
+long isvartype (char *s, int mode);
 int add_constant (char t, char *ptr, char *name);
-char *acl_getenv(char *);
-FILE *mja_fopen(char *,char *);
+char *acl_getenv (char *);
+FILE *mja_fopen (char *, char *);
 #ifdef LEXER
 char xwords[256][256];
-int word_cnt=0;
+int word_cnt = 0;
 #endif
-
-
-
-
-
-
-
-
-
-
 
 #include <curses.h>
 #define USE_PRINTCOMMENT
@@ -98,39 +95,38 @@ extern int menu_cnt;
 extern int yylineno;
 extern char *infilename;
 int db_used = 0;
-int last_var_found=-1;
+int last_var_found = -1;
 int var_hdr_finished;
 #ifdef LEXER
-int xccode=0;
+int xccode = 0;
 long fpos;
 #endif
 
-char *
-get_curr_rep_name();
+char *get_curr_rep_name ();
 struct s_constants
-  {
-    char type;
-    void *ptr;
-    char name[32];
-    char scope;
-  }
+{
+  char type;
+  void *ptr;
+  char name[32];
+  char scope;
+}
 const_arr[MAXCONSTANTS];
 int const_cnt = 0;
-int when_code[8] = {WHEN_STOP,
-		    WHEN_NOTSET,
-                    WHEN_STOP,
-                    WHEN_CONTINUE,
-                    WHEN_CONTINUE,
-                    WHEN_CONTINUE,
-                    WHEN_NOTSET,
-                    WHEN_NOTSET
+int when_code[8] = { WHEN_STOP,
+  WHEN_NOTSET,
+  WHEN_STOP,
+  WHEN_CONTINUE,
+  WHEN_CONTINUE,
+  WHEN_CONTINUE,
+  WHEN_NOTSET,
+  WHEN_NOTSET
 };
 char when_to_tmp[64];
 
 char when_to[64][8];
 
 int menu_nos[100];
-int cmenu=0;
+int cmenu = 0;
 
 int use_group = 0;
 char curr_rep_name[256];
@@ -139,26 +135,25 @@ char *upshift (char *a);
 char *downshift (char *a);
 int findex (char *str, char c);
 
-
-int max_menu_no=0;
+int max_menu_no = 0;
 
 struct s_report
-  {
-    char rep_cond[256];
-    char rep_expr[256];
-    int a;
-    int t;
-    int in_b;
-  };
+{
+  char rep_cond[256];
+  char rep_expr[256];
+  int a;
+  int t;
+  int in_b;
+};
 
 struct s_report sreports[1024];
 int sreports_cnt = 0;
 
 static int print_variable (int z, char ff);
 int print_record (int z, char ff);
-int printcomment (char *fmt,...);
-int printh (char *fmt,...);
-int printc (char *fmt,...);
+int printcomment (char *fmt, ...);
+int printh (char *fmt, ...);
+int printc (char *fmt, ...);
 int add_arr_bind (char i, char *nvar);
 static bname (char *str, char *str1, char *str2);
 
@@ -170,10 +165,10 @@ int counters[256];
 int count_counters = 0;
 
 struct
-  {
-    char why[20];
-    char whytype;
-  }
+{
+  char why[20];
+  char whytype;
+}
 report_stack[256];
 
 int report_stack_cnt = 0;
@@ -182,25 +177,23 @@ int report_cnt = 1;
 int add_bind (char i, char *var);
 int nblock_no = 1;
 
-
 FILE *curr_db = 0;
 FILE *outfile = 0;
 FILE *hfile = 0;
 FILE *ferr = 0;
 #define GEN_STACKS 10
 char gen_stack[GEN_STACKS][100][80];
-int gen_stack_cnt[GEN_STACKS] =
-{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 struct binding
-  {
-    char varname[132];
-    int dtype;
-  };
+{
+  char varname[132];
+  int dtype;
+};
 struct s_constr_buff
-  {
-    char tab[64];
-    char col[64];
-  }
+{
+  char tab[64];
+  char col[64];
+}
 constr_buff[256];
 
 int constr_cnt = 0;
@@ -216,37 +209,35 @@ int ibindcnt = 0;
 int obindcnt = 0;
 
 int fbindcnt = 0;
-int printc (char *fmt,...);
+int printc (char *fmt, ...);
 
 char *rettype (char *s);
 
 struct variables
-  {
+{
 
-    char var_name[65];
-    char var_type[20];
-    char var_size[20];
-    char var_arrsize[20];
-    int alev1;
-    int alev2;
-    int alev3;
-    int level;
-    char *tabname;
-    char *pklist;
-  }
+  char var_name[65];
+  char var_type[20];
+  char var_size[20];
+  char var_arrsize[20];
+  int alev1;
+  int alev2;
+  int alev3;
+  int level;
+  char *tabname;
+  char *pklist;
+}
 vars[2000];
-
-
 
 int modlevel = -1;
 
 struct cmds
-  {
+{
 
-    char cmd_type[20];
-    int block_no;
+  char cmd_type[20];
+  int block_no;
 
-  }
+}
 command_stack[200];
 
 #ifdef LEXER
@@ -254,7 +245,6 @@ int ccnt = 0;
 #else
 extern int ccnt;
 #endif
-
 
 #define EMPTY "----"
 
@@ -265,15 +255,15 @@ int in_record = 0;
 #define MAXMENU 10
 #define MAXMENUOPTS 10
 struct s_menu_stack
-  {
+{
 
-    char menu_title[132];
+  char menu_title[132];
 
-    char menu_help[132];
+  char menu_help[132];
 
-    char menu_key[30];
-    int menu_helpno;
-  }
+  char menu_key[30];
+  int menu_helpno;
+}
 menu_stack[MAXMENU][MAXMENUOPTS];
 
 static char *
@@ -295,14 +285,11 @@ char *
 with_strip_bracket (char *buff)
 {
   static char bff[256];
-  debug("In with_strip_bracket\n");
+  debug ("In with_strip_bracket\n");
   strcpy (bff, buff);
   strip_bracket (bff);
   return bff;
 }
-
-
-
 
 add_variable (char *name, char *type, char *n)
 {
@@ -329,16 +316,14 @@ add_variable (char *name, char *type, char *n)
   else
     strcpy (vars[varcnt].var_size, EMPTY);
 
-
   strcpy (vars[varcnt].var_arrsize, EMPTY);
 
   debug ("added var\n");
-  vars[varcnt].tabname=EMPTY;
-  vars[varcnt].pklist=EMPTY;
+  vars[varcnt].tabname = EMPTY;
+  vars[varcnt].pklist = EMPTY;
   varcnt++;
 
 }
-
 
 clr_variable ()
 {
@@ -347,14 +332,12 @@ clr_variable ()
 
 }
 
-
 inmod ()
 {
 
   modlevel = varcnt;
 
 }
-
 
 print_variables (int z)
 {
@@ -390,7 +373,7 @@ print_variables (int z)
     {
       debug ("/* global variables %d */\n", varcnt);
       printcomment ("/* global variables %d */\n", varcnt);
-      
+
       for (a = 0; a < varcnt; a++)
 	{
 	  if (vars[a].level == 0)
@@ -402,7 +385,8 @@ print_variables (int z)
 	    }
 	}
       dump_gvars ();
-      if (only_doing_globals()) exit(0);
+      if (only_doing_globals ())
+	exit (0);
       /*varcnt=0; */
     }
 
@@ -422,22 +406,19 @@ print_variables (int z)
 
 }
 
-
 push_name (char *a, char *n)
 {
-
 
   add_variable (a, 0, n);
 
 }
-
 
 push_type (char *a, char *n, char *as)
 {
 
   int z;
 
-debug("push_type : %s %s %s",a,n,as);
+  debug ("push_type : %s %s %s", a, n, as);
   for (z = varcnt - 1; z >= 0; z--)
     {
       if (strcmp (vars[z].var_type, EMPTY) != 0)
@@ -446,58 +427,54 @@ debug("push_type : %s %s %s",a,n,as);
 	{
 	  if (strcmp (a, "_ASSOCIATE") == 0)
 	    {
-	      printc ("DEF_ASS (_usg%s,%s+1);\n", downshift (vars[z].var_name), as);
-	      printc ("#define ASSOCIATE_%s(w,rw) %s[ass_hash(_usg%s,%s+1,%s,w,sizeof(_usg%s),rw)]\n",
-		      upshift (vars[z].var_name),
-		      downshift (vars[z].var_name),
-		      downshift (vars[z].var_name),
-		      n,
-		      as,
-		      downshift (vars[z].var_name)
-		);
+	      printc ("DEF_ASS (_usg%s,%s+1);\n",
+		      downshift (vars[z].var_name), as);
+	      printc
+		("#define ASSOCIATE_%s(w,rw) %s[ass_hash(_usg%s,%s+1,%s,w,sizeof(_usg%s),rw)]\n",
+		 upshift (vars[z].var_name), downshift (vars[z].var_name),
+		 downshift (vars[z].var_name), n, as,
+		 downshift (vars[z].var_name));
 	      continue;
 	    }
 	}
-
 
       if (strcmp (vars[z].var_type, EMPTY) != 0)
 	break;
 
       if (a != 0)
 	strcpy (vars[z].var_type, a);
-     else 
+      else
 	strcpy (vars[z].var_type, EMPTY);
-	
 
       if (n != 0)
 	{
 	  strcpy (vars[z].var_size, n);
 
 	}
-     else 
+      else
 	strcpy (vars[z].var_size, EMPTY);
 
       if (as != 0)
 	{
-	debug("Setting array size in vars...%s on %s",as,vars[z].var_name);
+	  debug ("Setting array size in vars...%s on %s", as,
+		 vars[z].var_name);
 	  strcpy (vars[z].var_arrsize, as);
 	}
 
-     else  {
-	debug("unSetting array size in vars...%s on %s",as,vars[z].var_name);
-	//strcpy (vars[z].var_arrsize, EMPTY);
+      else
+	{
+	  debug ("unSetting array size in vars...%s on %s", as,
+		 vars[z].var_name);
+	  //strcpy (vars[z].var_arrsize, EMPTY);
 	}
 
     }
 
-
 }
-
-
 
 push_record ()
 {
-  in_record++;
+  //in_record++;
   push_type ("_RECORD", 0, 0);
 }
 
@@ -511,42 +488,43 @@ pop_associate (char *a)
   /*add_variable (0,"_ENDASSOC", 0); */
 }
 
-
-add_link_to(char *tab,char *pkey) {
-char *pt;
-char *pk;
-int z;
-debug("Adding link to %s %s\n",tab,pkey);
-pt=strdup(tab);
-pk=strdup(pkey);
-for (z=varcnt;z>=0;z--) {
-	if (strcmp(vars[z].var_type,"_RECORD")==0) {
-		debug("vars[%d] is _RECORD\n",z);
-		vars[z].tabname=pt;
-		vars[z].pklist=pk;
-		break;
+add_link_to (char *tab, char *pkey)
+{
+  char *pt;
+  char *pk;
+  int z;
+  debug ("Adding link to %s %s\n", tab, pkey);
+  pt = strdup (tab);
+  pk = strdup (pkey);
+  for (z = varcnt; z >= 0; z--)
+    {
+      if (strcmp (vars[z].var_type, "_RECORD") == 0)
+	{
+	  debug ("vars[%d] is _RECORD\n", z);
+	  vars[z].tabname = pt;
+	  vars[z].pklist = pk;
+	  break;
 	}
+    }
 }
-}
-
 
 pop_record ()
 {
 
-  in_record--;
+  //in_record--;
 
   add_variable (0, "_ENDREC", 0);
 
 }
 
-
 print_variable (int z, char ff)
 {
   char tmpbuff[80];
 
-  debug("Printing variable %d %s",ff,vars[z].var_name);
+  debug ("Printing variable %d %s", ff, vars[z].var_name);
 
-  if (strcmp (vars[z].var_name, "time") == 0) return;
+  if (strcmp (vars[z].var_name, "time") == 0)
+    return;
 
   if (strcmp (vars[z].var_type, "_ENDREC") == 0)
     {
@@ -557,14 +535,11 @@ print_variable (int z, char ff)
 
   if (strcmp (vars[z].var_type, "_ASSOCIATE") == 0)
     {
-      printc ("#define ASSOCIATE_%s(w) %s[ass_hash(_usg%s,%s,%s+1,w,sizeof(_usg%s))]\n",
-	      upshift (vars[z].var_name),
-	      downshift (vars[z].var_name),
-	      downshift (vars[z].var_name),
-	      vars[z].var_arrsize,
-	      vars[z].var_size,
-	      downshift (vars[z].var_name)
-	);
+      printc
+	("#define ASSOCIATE_%s(w) %s[ass_hash(_usg%s,%s,%s+1,w,sizeof(_usg%s))]\n",
+	 upshift (vars[z].var_name), downshift (vars[z].var_name),
+	 downshift (vars[z].var_name), vars[z].var_arrsize, vars[z].var_size,
+	 downshift (vars[z].var_name));
 
       return;
     }
@@ -578,7 +553,6 @@ print_variable (int z, char ff)
       return;
 
     }
-
 
   if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
     {
@@ -595,7 +569,8 @@ print_variable (int z, char ff)
       if (strcmp (vars[z].var_type, "char") == 0)
 	{
 	  if (ff != '-')
-	    printc ("static %s [%s+1]; /* ?5 */\n", tmpbuff, vars[z].var_size);
+	    printc ("static %s [%s+1]; /* ?5 */\n", tmpbuff,
+		    vars[z].var_size);
 	  else
 	    printc ("%s [%s+1]; /* ?4 */\n", tmpbuff, vars[z].var_size);
 	}
@@ -625,9 +600,7 @@ print_variable (int z, char ff)
 	}
     }
 
-
 }
-
 
 print_record (int z, char ff)
 {
@@ -665,7 +638,6 @@ print_record (int z, char ff)
 
 	}
 
-
       if (strcmp (vars[a].var_type, "_ENDREC") == 0)
 	{
 
@@ -690,22 +662,20 @@ print_record (int z, char ff)
 
 }
 
-
-push_command (int mn, int mnopt, char *a, char *b, char *c,char *hlp)
+push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
 {
   strcpy (menu_stack[mn][mnopt - 1].menu_title, b);
   strcpy (menu_stack[mn][mnopt - 1].menu_help, c);
   strcpy (menu_stack[mn][mnopt - 1].menu_key, a);
-  if (hlp) 
-  menu_stack[mn][mnopt - 1].menu_helpno=atoi(hlp);
+  if (hlp)
+    menu_stack[mn][mnopt - 1].menu_helpno = atoi (hlp);
   else
-  menu_stack[mn][mnopt - 1].menu_helpno=0;
+    menu_stack[mn][mnopt - 1].menu_helpno = 0;
   menu_stack[mn][mnopt].menu_title[0] = 0;
   menu_stack[mn][mnopt].menu_help[0] = 0;
   menu_stack[mn][mnopt].menu_key[0] = 0;
-  debug("Menu %d Option %d '%s'",mn,mnopt,b);
+  debug ("Menu %d Option %d '%s'", mn, mnopt, b);
 }
-
 
 print_menu (mn)
 {
@@ -716,16 +686,14 @@ print_menu (mn)
 
   for (a = 0; menu_stack[mn][a].menu_title[0] != 0 ||
        menu_stack[mn][a].menu_key[0] != 0 ||
-       menu_stack[mn][a].menu_help[0] != 0
-       ; a++)
+       menu_stack[mn][a].menu_help[0] != 0; a++)
     c = a;
 
-  printc ("m=(void *)new_menu(%s,1,1,%d,0,%d,\n", mmtitle[mn], 2,c + 1);
+  printc ("m=(void *)new_menu(%s,1,1,%d,0,%d,\n", mmtitle[mn], 2, c + 1);
 
   for (a = 0; menu_stack[mn][a].menu_title[0] != 0 ||
        menu_stack[mn][a].menu_key[0] != 0 ||
-       menu_stack[mn][a].menu_help[0] != 0
-       ; a++)
+       menu_stack[mn][a].menu_help[0] != 0; a++)
     {
 
       if (a > 0)
@@ -734,17 +702,13 @@ print_menu (mn)
       printc ("         %s,%s,%s,%d,0",
 	      menu_stack[mn][a].menu_title,
 	      menu_stack[mn][a].menu_key,
-	      menu_stack[mn][a].menu_help,
-	      menu_stack[mn][a].menu_helpno
-);
-
+	      menu_stack[mn][a].menu_help, menu_stack[mn][a].menu_helpno);
 
     }
 
   printc (");\ndisp_h_menu(m);cmd_no=-2;continue;\n");
 
 }
-
 
 incprint ()
 {
@@ -760,19 +724,19 @@ incprint ()
 
 }
 
-
 setinc (a)
 {
   inc += a;
 }
 
-long 
+long
 scan_variable (char *s)
 {
   return scan_variables (s, 1);
 }
 
-long scan_variables (char *s, int mode)
+long
+scan_variables (char *s, int mode)
 {
   int a;
   long z;
@@ -782,9 +746,11 @@ long scan_variables (char *s, int mode)
   int dir;
   int flg;
   int lvl = 0;
-  last_var_found=-1;
+  last_var_found = -1;
+
   if (s[0] == '.' && s[1] == 0)
     return -1;
+
   if (s[0] == 0)
     return -1;
 
@@ -795,22 +761,22 @@ long scan_variables (char *s, int mode)
 	{
 	  strcpy (buff, &s[11]);
 	  strcpy (buff2, &s[findex (s, ')') + 1]);
-	  debug ("/*Extra bit = %s*/\n", buff2);
+	  //debug ("/*Extra bit = %s*/\n", buff2);
 	  buff[findex (buff, '(')] = 0;
 	  strcat (buff, buff2);
 	  convlower (buff);
-	  debug ("/*whole = %s*/\n", buff);
+	  //debug ("/*whole = %s*/\n", buff);
 	}
       else
 	return -1;
     }
 
   strip_bracket (buff);
-  debug("Stripped\n");
+  //debug ("Stripped\n");
 
   strcat (buff, ".");
   ptr = strtok (buff, ".");
-  debug ("Looking for %s", buff);
+  //debug ("Looking for %s", buff);
   a = varcnt;
   dir = -1;
 
@@ -829,60 +795,69 @@ long scan_variables (char *s, int mode)
       if (a < 0 && dir == -1)
 	break;
 
-      debug("Check %d > %d...",lvl,vars[a].level);
+      //debug ("Check %d > %d...", lvl, vars[a].level);
 
       if (lvl > vars[a].level)
 	break;
 
-      debug("Checking %s %s  %d %d",ptr,vars[a].var_name,vars[a].level,lvl);
+      ////debug ("Checking %s %s  %d %d", ptr, vars[a].var_name, vars[a].level,
+	     //lvl);
 
-      if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, ptr) == 0) && vars[a].level == lvl)
+      if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, ptr) == 0)
+	  && vars[a].level == lvl)
 	{
 	  ptr = strtok (0, ".");
 	  if (ptr == 0)
 	    {
-	      debug ("Got no more to check");
+	      //debug ("Got no more to check");
 	    }
 	  else
 	    {
-	      debug ("Got more to check '%s'", ptr);
-              debug("vn=%s %s %s %s",
-                      vars[a].var_name,
-                      vars[a].var_type,
-                      vars[a].var_arrsize,
-                      vars[a].var_size);
-              if (strcmp(vars[a].var_type,"_RECORD")==0) {
-                  debug("_RECORD....");
-                  while (a<varcnt) {
-                     debug("Looking for more record declarations....");
-                     if (strcmp(vars[a+1].var_type,"_RECORD")==0&&
-                         vars[a].level==vars[a+1].level) {
-			a++;
-			continue;
-                     }
-                     break;
-                  }
+	      //debug ("Got more to check '%s'", ptr);
+	      //debug ("vn=%s %s %s %s", vars[a].var_name, vars[a].var_type,
+		     //vars[a].var_arrsize, vars[a].var_size);
+	      if (strcmp (vars[a].var_type, "_RECORD") == 0)
+		{
+		  //debug ("_RECORD....");
+		  while (a < varcnt)
+		    {
+		      //debug ("Looking for more record declarations....");
+		      if (strcmp (vars[a + 1].var_type, "_RECORD") == 0 &&
+			  vars[a].level == vars[a + 1].level)
+			{
+			  a++;
+			  continue;
+			}
+		      debug (" ---> vn=%s %s %s %s", vars[a].var_name,
+			     vars[a].var_type, vars[a].var_arrsize,
+			     vars[a].var_size);
+		      break;
+		    }
 
-	      }
+		}
 	    }
 	  flg = 0;
 	  if (ptr == 0)
 	    flg = 1;
-	  else if (strcmp (ptr, "*") == 0) {
-	    flg = 1;
-          }
+	  else if (strcmp (ptr, "*") == 0)
+	    {
+	      flg = 1;
+	    }
 
-	  debug ("flg=%d", flg);
+	  //debug ("flg=%d", flg);
 
 	  if (flg)
 	    {
-		debug("Types : %s %s",vars[a].var_type,vars[a].var_size);
-	      z = find_type (vars[a].var_type) + (atoi (vars[a].var_size) << 16);
-		last_var_found=a;
-	      debug ("Find type returned %x", z);
+	      //debug ("Types : %s %s", vars[a].var_type, vars[a].var_size);
+	      z =
+		find_type (vars[a].var_type) +
+		(atoi (vars[a].var_size) << 16);
+	      //debug ("Setting last_var_found to %d\n", a);
+	      last_var_found = a;
+	      //debug ("Find type returned %x", z);
 	      return z;
 	    }
-	  debug ("More levels...");
+	  //debug ("More levels...");
 
 	  lvl++;
 
@@ -895,21 +870,23 @@ long scan_variables (char *s, int mode)
 
 }
 
-
 long
-isarrvariable (char *s) {
-long a;
-a=isvartype(s,1);
-debug("Checking if %s is an array %d",s,a);
-return a;
+isarrvariable (char *s)
+{
+  long a;
+  a = isvartype (s, 1);
+  debug ("Checking if %s is an array %d", s, a);
+  return a;
 }
 
 long
-isrecvariable (char *s) {
-return isvartype(s,2);
+isrecvariable (char *s)
+{
+  return isvartype (s, 2);
 }
 
-long isvartype (char *s,int mode)
+long
+isvartype (char *s, int mode)
 {
   int a;
   long z;
@@ -924,7 +901,7 @@ long isvartype (char *s,int mode)
     return -1;
   strcpy (buff, s);
   strip_bracket (buff);
-  debug("Striped2\n");
+  debug ("Striped2\n");
   strcat (buff, ".");
   ptr = strtok (buff, ".");
   a = varcnt;
@@ -943,7 +920,8 @@ long isvartype (char *s,int mode)
 	break;
       if (lvl > vars[a].level)
 	break;
-      if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, ptr) == 0) && vars[a].level == lvl)
+      if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, ptr) == 0)
+	  && vars[a].level == lvl)
 	{
 	  ptr = strtok (0, ".");
 	  flg = 0;
@@ -952,24 +930,23 @@ long isvartype (char *s,int mode)
 	  else if (strcmp (ptr, "*") == 0)
 	    flg = 1;
 
-	  if (flg&&mode==1)
+	  if (flg && mode == 1)
 	    {
-	     debug("Seems to match %s %d",vars[a].var_name,vars[a].var_arrsize);
+	      debug ("Seems to match %s %d", vars[a].var_name,
+		     vars[a].var_arrsize);
 	      return atoi (vars[a].var_arrsize);
 	    }
 
-	  if (flg&&mode==2)
+	  if (flg && mode == 2)
 	    {
-	      return (strcmp(vars[a].var_type,"_RECORD")==0);
+	      return (strcmp (vars[a].var_type, "_RECORD") == 0);
 	    }
-
 
 	  lvl++;
 	}
     }
   return 0;
 }
-
 
 scan_arr_variable (char *s)
 {
@@ -984,34 +961,32 @@ scan_arr_variable (char *s)
     return -1;
   strcpy (buff, s);
   strip_bracket (buff);
-  debug("striped3");
+  debug ("striped3");
   strcat (buff, ".");
   ptr = strtok (buff, ".");
   for (a = 0; a < varcnt; a++)
     {
 
-      debug ("chk: %d %s %s %d %d\n", a, vars[a].var_name, ptr, vars[a].level, lvl);
-
+      debug ("chk: %d %s %s %d %d\n", a, vars[a].var_name, ptr, vars[a].level,
+	     lvl);
 
       if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
 	{
-
 
 	  ptr = strtok (0, ".");
 
 	  if (ptr == 0)
 	    {
 
-
 	      if (atoi (vars[a].var_arrsize) > 0)
 		{
-		  printc ("range_chk(%s,%d);\n", s, atoi (vars[a].var_arrsize));
+		  printc ("range_chk(%s,%d);\n", s,
+			  atoi (vars[a].var_arrsize));
 		}
 
 	      return find_type (vars[a].var_type);
 
 	    }
-
 
 	  lvl++;
 
@@ -1019,18 +994,15 @@ scan_arr_variable (char *s)
 
     }
 
-
   debug ("/* Warning    Couldnt find %s */\n", s);
 
   return -1;
 
 }
 
-
-
 find_type (char *s)
 {
-char errbuff[80];
+  char errbuff[80];
   debug ("find_type %s\n", s);
   if (strcmp ("char", s) == 0)
     return 0;
@@ -1068,7 +1040,7 @@ char errbuff[80];
     return 10;
 
   if (strcmp ("struct dtime ", s) == 0)
-   return 10;
+    return 10;
 
   if (strcmp ("fglbyte", s) == 0)
     return 11;
@@ -1086,13 +1058,11 @@ char errbuff[80];
     return -2;
 
   debug ("Invalid type : %s\n", s);
-  sprintf (errbuff,"Internal Error (Invalid type : %s)\n", s);
-  yyerror(errbuff);
+  sprintf (errbuff, "Internal Error (Invalid type : %s)\n", s);
+  yyerror (errbuff);
   return 0;
 
 }
-
-
 
 set_variable (char *name, char *type, char *n, char *as, int lvl)
 {
@@ -1110,7 +1080,6 @@ set_variable (char *name, char *type, char *n, char *as, int lvl)
   varcnt++;
 
 }
-
 
 set_4gl_vars ()
 {
@@ -1134,28 +1103,27 @@ set_4gl_vars ()
   set_variable ("lineno", "long", "----", "----", 0);
   set_variable ("usrtime", "long", "----", "----", 0);
   set_variable ("time", "char", "8", "----", 0);
-  add_constant ('i', "100", strdup("notfound"));
-  var_hdr_finished=varcnt;
+  add_constant ('i', "100", strdup ("notfound"));
+  var_hdr_finished = varcnt;
 }
-
 
 open_db (char *s)
 {
 
   char db[132];
-char buff[256];
+  char buff[256];
   strcpy (db, s);
-  set_status(0,1);
+  set_status (0, 1);
   init_connection (db);
-  if (get_status()!=0) {
-      sprintf (buff, "Could not connect to database %s (%s)",s,get_sqlerrm());
+  if (get_status () != 0)
+    {
+      sprintf (buff, "Could not connect to database %s (%s)", s,
+	       get_sqlerrm ());
       yyerror (buff);
-  }
+    }
   if (db_used == 0)
-  db_used = 1;
+    db_used = 1;
 }
-
-
 
 push_like (char *t)
 {
@@ -1180,7 +1148,7 @@ push_like2 (char *t2)
   char cdtype[20];
   int rval;
   char non[] = "0";
-debug("In push_like2");
+  debug ("In push_like2");
 
   if (db_used == 0)
     {
@@ -1207,8 +1175,8 @@ debug("In push_like2");
 	}
       sprintf (cdtype, "%d", idtype & 15);
       sprintf (csize, "%d", isize);
-      debug("---> %s %s",cdtype,csize);
-      trim_spaces(b);
+      debug ("---> %s %s", cdtype, csize);
+      trim_spaces (b);
       //push_name (b, 0);
       push_type (rettype (cdtype), csize, 0);
       return 1;
@@ -1234,21 +1202,17 @@ debug("In push_like2");
 
       sprintf (cdtype, "%d", idtype & 15);
       sprintf (csize, "%d", isize);
-      debug("%d %d",idtype,isize);
-      debug("---> %s %s",cdtype,csize);
-      debug("read_columns: Pushing %s %s %s",col,cdtype,csize);
-      trim_spaces(col);
+      debug ("%d %d", idtype, isize);
+      debug ("---> %s %s", cdtype, csize);
+      debug ("read_columns: Pushing %s %s %s", col, cdtype, csize);
+      trim_spaces (col);
       push_name (col, 0);
       push_type (rettype (cdtype), csize, 0);
     }
 
-
-
   return 0;
 
 }
-
-
 
 push_rectab (char *t)
 {
@@ -1257,29 +1221,27 @@ push_rectab (char *t)
 
 }
 
-
 dump_vars ()
 {
 
   FILE *f;
 
   int a;
-  if (getenv("DUMPVARS")==0) return;
+  if (getenv ("DUMPVARS") == 0)
+    return;
 
-  f = (FILE *)mja_fopen ("dumpvars.out", "w");
+  f = (FILE *) mja_fopen ("dumpvars.out", "w");
 
   for (a = 0; a < varcnt; a++)
     {
 
-      fprintf (f, "%s,%s,%s,%s,%d,%s,%s\n",
-	       ignull(vars[a].var_name),
-	       ignull(vars[a].var_type),
-	       ignull(vars[a].var_size),
-	       ignull(vars[a].var_arrsize),
+      fprintf (f, " %d - %s,%s,%s,%s,%d,%s,%s\n", a,
+	       ignull (vars[a].var_name),
+	       ignull (vars[a].var_type),
+	       ignull (vars[a].var_size),
+	       ignull (vars[a].var_arrsize),
 	       vars[a].level,
-		ignull(vars[a].tabname),
-		ignull(vars[a].pklist)
-       );
+	       ignull (vars[a].tabname), ignull (vars[a].pklist));
 
     }
 
@@ -1287,14 +1249,12 @@ dump_vars ()
 
 }
 
-
 push_menu_title (char *s)
 {
 
   strcpy (mmtitle[menu_cnt], s);
 
 }
-
 
 push_blockcommand (char *cmd_type)
 {
@@ -1304,9 +1264,7 @@ push_blockcommand (char *cmd_type)
   strcpy (command_stack[ccnt].cmd_type, cmd_type);
   if (strcmp (cmd_type, "MAIN") == 0
       || strcmp (cmd_type, "FUNC") == 0 ||
-      strcmp (cmd_type, "REPORT") == 0 ||
-      strcmp (cmd_type, "GLOBALS") == 0
-    )
+      strcmp (cmd_type, "REPORT") == 0 || strcmp (cmd_type, "GLOBALS") == 0)
     {
       command_stack[ccnt].block_no = -1;
     }
@@ -1316,10 +1274,9 @@ push_blockcommand (char *cmd_type)
       printc ("START_BLOCK_%d:\n", nblock_no);
       command_stack[ccnt].block_no = nblock_no++;
     }
-  debug (" Added new block"); 
+  debug (" Added new block");
   ccnt++;
 }
-
 
 add_continue_blockcommand (char *cmd_type)
 {
@@ -1329,17 +1286,18 @@ add_continue_blockcommand (char *cmd_type)
   char err[80];
 /* more checks here ! */
 
-  for (a=ccnt-1;a>0;a--) {
-	if (strcmp(command_stack[a].cmd_type,cmd_type)==0) {
-		printc("\n");
-    		printc ("CONTINUE_BLOCK_%d: /*add_continue - %s */ ",
-      			command_stack[a].block_no ,cmd_type);
-      		return;
+  for (a = ccnt - 1; a > 0; a--)
+    {
+      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+	{
+	  printc ("\n");
+	  printc ("CONTINUE_BLOCK_%d: /*add_continue - %s */ ",
+		  command_stack[a].block_no, cmd_type);
+	  return;
+	}
     }
-  }
 
 }
-
 
 pop_blockcommand (char *cmd_type)
 {
@@ -1349,17 +1307,20 @@ pop_blockcommand (char *cmd_type)
   char err[80];
 /* more checks here ! */
   ccnt--;
-  if (command_stack[ccnt].block_no > 0) {
-	printc("\n");
+  if (command_stack[ccnt].block_no > 0)
+    {
+      printc ("\n");
 
-	if (iscontinuecmd(cmd_type)) {
-    		//printc ("goto END_BLOCK_%d;\n", command_stack[ccnt].block_no);
-    		printc ("CONTINUE_BLOCK_%d: continue; /* %s */\n", 
-			command_stack[ccnt].block_no,cmd_type);
-    		printc ("}\n");
+      if (iscontinuecmd (cmd_type))
+	{
+	  //printc ("goto END_BLOCK_%d;\n", command_stack[ccnt].block_no);
+	  printc ("CONTINUE_BLOCK_%d: continue; /* %s */\n",
+		  command_stack[ccnt].block_no, cmd_type);
+	  printc ("}\n");
 	}
-    	printc ("END_BLOCK_%d: /* %s */;\n\n", command_stack[ccnt].block_no,cmd_type);
-	}
+      printc ("END_BLOCK_%d: /* %s */;\n\n", command_stack[ccnt].block_no,
+	      cmd_type);
+    }
 
   debug ("\n\n--------->%s\n\n", cmd_type);
 
@@ -1383,7 +1344,6 @@ pop_blockcommand (char *cmd_type)
   yyerror (err);
   exit (0);
 }
-
 
 in_command (char *cmd_type)
 {
@@ -1416,13 +1376,11 @@ in_command (char *cmd_type)
 
     }
 
-
   printf ("Not in a %s command\n", cmd_type);
   yyerror ("Can't exit command");
 
   return 0;
 }
-
 
 isin_command (char *cmd_type)
 {
@@ -1451,56 +1409,55 @@ isin_command (char *cmd_type)
   return 0;
 }
 
-
-
 char *
 rettype (char *s)
 {
   static char rs[20] = "long";
-  debug("In rettype : %s",s);
+  debug ("In rettype : %s", s);
 
-  if (strcmp (s, "0")==0)
+  if (strcmp (s, "0") == 0)
     strcpy (rs, "char");
 
-  if (strcmp (s, "1")==0)
+  if (strcmp (s, "1") == 0)
     strcpy (rs, "short");
 
-  if (strcmp (s, "2")==0)
+  if (strcmp (s, "2") == 0)
     strcpy (rs, "long");
 
-  if (strcmp (s, "3")==0)
+  if (strcmp (s, "3") == 0)
     strcpy (rs, "double");
 
-  if (strcmp (s, "4")==0)
+  if (strcmp (s, "4") == 0)
     strcpy (rs, "float");
 
-  if (strcmp (s, "5")==0)
+  if (strcmp (s, "5") == 0)
     strcpy (rs, "fgldecimal");
 
-  if (strcmp (s, "6")==0)
+  if (strcmp (s, "6") == 0)
     strcpy (rs, "long");
 
-  if (strcmp (s, "7")==0)
+  if (strcmp (s, "7") == 0)
     strcpy (rs, "fgldate");
 
-  if (strcmp (s, "8")==0)
+  if (strcmp (s, "8") == 0)
     strcpy (rs, "fglmoney");
 
-  if (strcmp(s,"11")==0)  strcpy(rs,"fglbyte");
-  if (strcmp(s,"12")==0)  strcpy(rs,"fgltext");
-  if (strcmp (s, "13")==0)
+  if (strcmp (s, "11") == 0)
+    strcpy (rs, "fglbyte");
+  if (strcmp (s, "12") == 0)
+    strcpy (rs, "fgltext");
+  if (strcmp (s, "13") == 0)
     strcpy (rs, "char");
 
-return rs;
+  return rs;
 }
 
-static 
+static
 trim (char *s)
 {
   if (s[strlen (s) - 1] == '\n')
     s[strlen (s) - 1] = 0;
 }
-
 
 push_gen (int a, char *s)
 {
@@ -1508,7 +1465,7 @@ push_gen (int a, char *s)
   if (gen_stack_cnt[a] >= 90)
     {
       printf ("Out of stack!\n");
-      
+
       exit (0);
     }
   strcpy (gen_stack[a][gen_stack_cnt[a]++], s);
@@ -1532,19 +1489,19 @@ pop_all_gen (int a, char *s)
     }
 }
 
-
-print_space() {
-char buff[256];
-memset(buff,' ',255);
-buff[ccnt*3]=0;
-fprintf(outfile,"%s",buff);
+print_space ()
+{
+  char buff[256];
+  memset (buff, ' ', 255);
+  buff[ccnt * 3] = 0;
+  fprintf (outfile, "%s", buff);
 }
 
-printc (char *fmt,...)
+printc (char *fmt, ...)
 {
   va_list *args;
   char buff[4096];
-char *ptr;
+  char *ptr;
   int a;
 
   if (outfile == 0)
@@ -1552,12 +1509,12 @@ char *ptr;
       open_outfile ();
     }
 
-  if (outfile==0) return;
+  if (outfile == 0)
+    return;
   va_start (args, fmt);
   if (getenv ("INCLINES"))
     {
       vsprintf (buff, fmt, args);
-
 
       for (a = 0; a < strlen (buff); a++)
 	{
@@ -1565,50 +1522,51 @@ char *ptr;
 	    {
 	      if (infilename != 0)
 		{
-		  fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno, outputfilename);
+		  fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
+			   outputfilename);
 		}
 	      else
 		{
-		  fprintf (outfile, "\n#line %d \"null\"\n", yylineno, outputfilename);
+		  fprintf (outfile, "\n#line %d \"null\"\n", yylineno,
+			   outputfilename);
 		}
 	    }
 	  else
 	    {
 	      fprintf (outfile, "%c", buff[a]);
-	
-		fflush(outfile);
+
+	      fflush (outfile);
 	    }
 	}
     }
   else
     {
       //print_space();
-	
-      vsprintf (buff, fmt, args);
-      ptr=strtok(buff,"\n");
 
-      while (ptr) {
-	print_space();
-      	fprintf (outfile, "%s\n",ptr);
-        ptr=strtok(0,"\n");
-      }
+      vsprintf (buff, fmt, args);
+      ptr = strtok (buff, "\n");
+
+      while (ptr)
+	{
+	  print_space ();
+	  fprintf (outfile, "%s\n", ptr);
+	  ptr = strtok (0, "\n");
+	}
 
     }
 }
 
-
-yyerrorf (char *fmt,...)
+yyerrorf (char *fmt, ...)
 {
   char buff[256];
   va_list *args;
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
-  yyerror(buff);
+  yyerror (buff);
 }
 
-
 #ifdef USE_PRINTCOMMENT
-printcomment (char *fmt,...)
+printcomment (char *fmt, ...)
 {
   va_list *args;
   if (outfile == 0)
@@ -1616,7 +1574,8 @@ printcomment (char *fmt,...)
       open_outfile ();
     }
 
-  if (outfile==0) return;
+  if (outfile == 0)
+    return;
 
   if (getenv ("COMMENTS"))
     {
@@ -1626,20 +1585,19 @@ printcomment (char *fmt,...)
 }
 #endif
 
-printh (char *fmt,...)
+printh (char *fmt, ...)
 {
   va_list *args;
   if (outfile == 0)
     {
       open_outfile ();
     }
-  if (outfile==0) return;
+  if (outfile == 0)
+    return;
 
   va_start (args, fmt);
   vfprintf (hfile, fmt, args);
 }
-
-
 
 open_outfile ()
 {
@@ -1653,27 +1611,29 @@ open_outfile ()
       debug ("NO output file name");
     }
 
-
   //printf ("OPen outputs: %s\n", outputfilename);
   strcpy (c, outputfilename);
   strcpy (h, outputfilename);
   strcpy (err, outputfilename);
 
-  if (strcmp(acl_getenv("NOCLOBBER"),"N")==0) {
-         debug("Clobbering...");
-         set_clobber(outputfilename);
-  }
+  if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
+    {
+      debug ("Clobbering...");
+      set_clobber (outputfilename);
+    }
 
-  debug("Opening output map");
+  debug ("Opening output map");
   openmap (outputfilename);
   //printf ("catting");
-  ptr=acl_getenv("NOCFILE");
-  if (strlen(ptr)) {
-	  if (ptr[0]=='Y'||ptr[0]=='y') {
-		debug(">>> NO C FILES... %s",ptr);
-			return;
-	  }
-  }
+  ptr = acl_getenv ("NOCFILE");
+  if (strlen (ptr))
+    {
+      if (ptr[0] == 'Y' || ptr[0] == 'y')
+	{
+	  debug (">>> NO C FILES... %s", ptr);
+	  return;
+	}
+    }
 
   strcat (c, ".c");
   strcat (h, ".h");
@@ -1686,9 +1646,11 @@ open_outfile ()
   //fprintf (outfile, "#include \"dbform.h\"\n");
   fprintf (outfile, "#include \"4glhdr.h\"\n");
   fprintf (outfile, "#include \"%s\"\n", h);
-  if (getenv("GTKGUI")) fprintf (outfile, "#include <acl4glgui.h>\n");
-  fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno());
-  fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n", outputfilename);
+  if (getenv ("GTKGUI"))
+    fprintf (outfile, "#include <acl4glgui.h>\n");
+  fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ());
+  fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n",
+	   outputfilename);
 
   hfile = mja_fopen (h, "w");
 }
@@ -1707,7 +1669,7 @@ strip_bracket (char *s)
   int a;
   int c = 0;
   int f = 0;
-debug("Stripping brackets from %s ",s);
+  //debug ("Stripping brackets from %s ", s);
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '[')
@@ -1718,12 +1680,13 @@ debug("Stripping brackets from %s ",s);
 	f--;
     }
   strcpy (s, buff);
-  debug("-->%s ",s);
+  //debug ("-->%s ", s);
 }
-
 
 start_bind (char i, char *var)
 {
+  debug ("start_bind %c -  %s", i, var);
+
   if (i == 'i')
     {
       ibindcnt = 0;
@@ -1747,10 +1710,14 @@ start_bind (char i, char *var)
   if (var != 0)
     add_bind (i, var);
 }
-get_bind_cnt(char i) {
-if (i=='i') return ibindcnt;
-if (i=='o') return obindcnt;
-if (i=='f') return fbindcnt;
+get_bind_cnt (char i)
+{
+  if (i == 'i')
+    return ibindcnt;
+  if (i == 'o')
+    return obindcnt;
+  if (i == 'f')
+    return fbindcnt;
 }
 
 add_bind (char i, char *var)
@@ -1759,11 +1726,15 @@ add_bind (char i, char *var)
   dtype = scan_variable (var);
 
 /*printc(" add_bind %c %s %d %ld\n",i,var,dtype); */
+  debug ("add_bind - dtype=%d\n", dtype);
 
   if (i == 'i')
     {
       if (dtype == -2)
-	push_bind_rec (var, i);
+	{
+	  debug ("push_bind_rec...");
+	  push_bind_rec (var, i);
+	}
       else
 	{
 	  strcpy (ibind[ibindcnt].varname, var);
@@ -1774,10 +1745,11 @@ add_bind (char i, char *var)
     }
   if (i == 'o')
     {
-      if (dtype == -2) {
-        printcomment("/* add_bind   obind... %s */\n",var);
-	push_bind_rec (var, i);
-        }
+      if (dtype == -2)
+	{
+	  printcomment ("/* add_bind   obind... %s */\n", var);
+	  push_bind_rec (var, i);
+	}
       else
 	{
 	  strcpy (obind[obindcnt].varname, var);
@@ -1799,7 +1771,6 @@ add_bind (char i, char *var)
       return ordbindcnt;
     }
 
-
   if (i == 'f')
     {
       strcpy (fbind[fbindcnt].varname, var);
@@ -1814,12 +1785,12 @@ print_param (char i)
 {
   int a;
   //dump_vars ();
-  printc("\n");
+  printc ("\n");
 
-if (i=='r') {
-	printc("static");
-}
-
+  if (i == 'r')
+    {
+      printc ("static");
+    }
 
   printc ("struct BINDING %cbind[]={\n", i);
   for (a = 0; a < fbindcnt; a++)
@@ -1827,13 +1798,12 @@ if (i=='r') {
       fbind[a].dtype = scan_variable (fbind[a].varname);
       if (a > 0)
 	printc (",\n");
-      printc ("{&%s,%d,%d}", fbind[a].varname, (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
+      printc ("{&%s,%d,%d}", fbind[a].varname, (int) fbind[a].dtype & 0xffff,
+	      (int) fbind[a].dtype >> 16);
     }
   printc ("\n}; /* end of binding */\n");
   return a;
 }
-
-
 
 how_many_in_bind (char i)
 {
@@ -1853,16 +1823,18 @@ print_bind (char i)
   //dump_vars ();
   if (i == 'i')
     {
-	printc("\n");
-      printc ("struct BINDING ibind[]={\n /* ibind %d*/",ibindcnt);
-	  if (ibindcnt==0) {
-			printc("{0,0,0}");
-	  }
+      printc ("\n");
+      printc ("struct BINDING ibind[]={\n /* ibind %d*/", ibindcnt);
+      if (ibindcnt == 0)
+	{
+	  printc ("{0,0,0}");
+	}
       for (a = 0; a < ibindcnt; a++)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", ibind[a].varname, (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+	  printc ("{&%s,%d,%d}", ibind[a].varname,
+		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
 	}
       printc ("\n}; /* end of binding */\n");
       start_bind (i, 0);
@@ -1871,17 +1843,19 @@ print_bind (char i)
 
   if (i == 'o')
     {
-	printc("\n");
+      printc ("\n");
       printc ("struct BINDING obind[]={\n");
-	  	  if (obindcnt==0) {
-			printc("{0,0,0}");
-	  }
+      if (obindcnt == 0)
+	{
+	  printc ("{0,0,0}");
+	}
 
       for (a = 0; a < obindcnt; a++)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", obind[a].varname, (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+	  printc ("{&%s,%d,%d}", obind[a].varname,
+		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
 	}
       printc ("\n}; /* end of binding */\n");
       start_bind (i, 0);
@@ -1890,17 +1864,20 @@ print_bind (char i)
 
   if (i == 'O')
     {
-	printc("\n");
+      printc ("\n");
       printc ("static struct BINDING _ordbind[]={\n");
-	  	  if (ordbindcnt==0) {
-			printc("{0,0,0}");
-	  }
+      if (ordbindcnt == 0)
+	{
+	  printc ("{0,0,0}");
+	}
 
       for (a = 0; a < ordbindcnt; a++)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", ordbind[a].varname, (int) ordbind[a].dtype & 0xffff, (int) ordbind[a].dtype >> 16);
+	  printc ("{&%s,%d,%d}", ordbind[a].varname,
+		  (int) ordbind[a].dtype & 0xffff,
+		  (int) ordbind[a].dtype >> 16);
 	}
       printc ("\n}; /* end of binding */\n");
 
@@ -1972,9 +1949,12 @@ push_report_block (char *why, char whytype)
 print_report_ctrl ()
 {
   int a;
-  debug ("/* ********************************************************** */\n");
-  debug ("/*                 Report Control Block                       */\n");
-  debug ("/* ********************************************************** */\n");
+  debug
+    ("/* ********************************************************** */\n");
+  debug
+    ("/*                 Report Control Block                       */\n");
+  debug
+    ("/* ********************************************************** */\n");
   printc ("report%d_ctrl:\n", report_cnt);
   printc ("debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
 /*
@@ -1990,13 +1970,21 @@ print_report_ctrl ()
 
   /*if (report_stack[a].whytype=='F') printc("if (acl_ctrl==REPORT_FINISH) call %s(0,REPORT_LASTROW)\n", report_cnt,a); */
 
-  printc ("if (acl_ctrl==REPORT_FINISH) {%s(0,REPORT_LASTDATA);return;}\n", get_curr_rep_name ());
-if (rep_type==REP_TYPE_NORMAL) {
-  printc ("if (acl_ctrl==REPORT_LASTDATA) {%s(0,REPORT_LASTROW);_started=0;fclose(rep.output);return;}\n", get_curr_rep_name ());
-} else {
-  printc ("if (acl_ctrl==REPORT_LASTDATA) {%s(0,REPORT_LASTROW);_started=0;pdf_rep_close(&rep);return;}\n", get_curr_rep_name ());
+  printc ("if (acl_ctrl==REPORT_FINISH) {%s(0,REPORT_LASTDATA);return;}\n",
+	  get_curr_rep_name ());
+  if (rep_type == REP_TYPE_NORMAL)
+    {
+      printc
+	("if (acl_ctrl==REPORT_LASTDATA) {%s(0,REPORT_LASTROW);_started=0;fclose(rep.output);return;}\n",
+	 get_curr_rep_name ());
+    }
+  else
+    {
+      printc
+	("if (acl_ctrl==REPORT_LASTDATA) {%s(0,REPORT_LASTROW);_started=0;pdf_rep_close(&rep);return;}\n",
+	 get_curr_rep_name ());
 
-}
+    }
   printc ("    if (acl_ctrl==REPORT_AFTERDATA ) {\n");
   pr_report_agg ();
   printc ("    }\n");
@@ -2005,28 +1993,42 @@ if (rep_type==REP_TYPE_NORMAL) {
     {
 /* on last row */
       if (report_stack[a].whytype == 'L')
-	printc ("if (acl_ctrl==REPORT_LASTROW) { acl_ctrl=0;goto rep_ctrl%d_%d;}\n", report_cnt, a);
+	printc
+	  ("if (acl_ctrl==REPORT_LASTROW) { acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
+	   report_cnt, a);
 
 /* on every row */
       if (report_stack[a].whytype == 'E')
-	printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n", report_cnt, a);
+	printc
+	  ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n",
+	   report_cnt, a);
 
 /* before group of */
       if (report_stack[a].whytype == 'B')
-	printc ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n", report_stack[a].why, report_cnt, a);
+	printc
+	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
+	   report_stack[a].why, report_cnt, a);
 
 /* after group of */
       if (report_stack[a].whytype == 'A')
-	printc ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n", report_stack[a].why, report_cnt, a);
+	printc
+	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
+	   report_stack[a].why, report_cnt, a);
 
       if (report_stack[a].whytype == 'T')
-	printc ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=REPORT_PAGEHEADER;goto rep_ctrl%d_%d;}\n", report_cnt, a);
+	printc
+	  ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=REPORT_PAGEHEADER;goto rep_ctrl%d_%d;}\n",
+	   report_cnt, a);
 
       if (report_stack[a].whytype == 'P')
-	printc ("if (acl_ctrl==REPORT_PAGEHEADER&&rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n", report_cnt, a);
+	printc
+	  ("if (acl_ctrl==REPORT_PAGEHEADER&&rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
+	   report_cnt, a);
 
       if (report_stack[a].whytype == 'p')
-	printc ("if (acl_ctrl==REPORT_PAGEHEADER&&(rep.page_no!=1||(rep.page_no==1&&rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n", report_cnt, a);
+	printc
+	  ("if (acl_ctrl==REPORT_PAGEHEADER&&(rep.page_no!=1||(rep.page_no==1&&rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
+	   report_cnt, a);
 
     }
   pr_report_agg_clr ();
@@ -2057,16 +2059,16 @@ init_report_structure (struct rep_structure * rep)
   strcpy (rep->output_loc, "\"stdout\"");
 }
 
-pdf_init_report_structure (struct pdf_rep_structure * rep)
+pdf_init_report_structure (struct pdf_rep_structure *rep)
 {
   rep->top_margin = -36.0;
   rep->bottom_margin = -36.0;
   rep->left_margin = -36.0;
 
-  rep->page_length = -842.0; // A4
-  rep->page_width  = -595.0; // A4
+  rep->page_length = -842.0;	// A4
+  rep->page_width = -595.0;	// A4
 
-  rep->right_margin = rep->page_width-(2*rep->left_margin);
+  rep->right_margin = rep->page_width - (2 * rep->left_margin);
 
   rep->page_no = 0;
   rep->printed_page_no = 0;
@@ -2075,10 +2077,9 @@ pdf_init_report_structure (struct pdf_rep_structure * rep)
   rep->output_mode = 'F';
   rep->font_size = 10;
   rep->paper_size = 1;
-  strcpy(rep->font_name,"\"Helvetica\"");
+  strcpy (rep->font_name, "\"Helvetica\"");
   strcpy (rep->output_loc, "\"stdout\"");
 }
-
 
 print_call_out ()
 {
@@ -2116,11 +2117,11 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("rep.paper_size=%d;\n", rep->paper_size);
 
   printc ("rep.top_margin=pdf_size(%f,'l',&rep);\n", rep->top_margin);
-  printc ("rep.bottom_margin=pdf_size(%f,'l',&rep);\n",rep->bottom_margin);
-  printc ("rep.page_length=pdf_size(%f,'l',&rep);\n",rep->page_length);
+  printc ("rep.bottom_margin=pdf_size(%f,'l',&rep);\n", rep->bottom_margin);
+  printc ("rep.page_length=pdf_size(%f,'l',&rep);\n", rep->page_length);
   printc ("rep.left_margin=pdf_size(%f,'c',&rep);\n", rep->left_margin);
   printc ("rep.right_margin=pdf_size(%f,'c',&rep);\n", rep->right_margin);
-  printc ("rep.page_width=pdf_size(%f,'c',&rep);\n",rep->page_width);
+  printc ("rep.page_width=pdf_size(%f,'c',&rep);\n", rep->page_width);
 
   printc ("rep.page_no=%d;\n", rep->page_no);
   printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
@@ -2139,11 +2140,10 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   print_rep_ret ();
 }
 
-
-scan_orderby (char *varname,int cnt)
+scan_orderby (char *varname, int cnt)
 {
   int a;
-debug("Scanning order by for %s %d",varname,ordbindcnt);
+  debug ("Scanning order by for %s %d", varname, ordbindcnt);
   for (a = 0; a <= cnt; a++)
     {
       debug ("/* chk %s against %s */\n", varname, ordbind[a].varname);
@@ -2163,10 +2163,13 @@ print_form_attrib (struct form_attr * form_attrib)
 	  form_attrib->menu_line,
 	  form_attrib->border,
 	  form_attrib->comment_line,
-	  form_attrib->message_line,
-	  form_attrib->attrib);
+	  form_attrib->message_line, form_attrib->attrib);
   debug ("Printing attributes\n");
-  debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow, form_attrib->form_line, form_attrib->error_line, form_attrib->prompt_line, form_attrib->menu_line, form_attrib->border, form_attrib->comment_line, form_attrib->message_line, form_attrib->attrib);
+  debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
+	 form_attrib->form_line, form_attrib->error_line,
+	 form_attrib->prompt_line, form_attrib->menu_line,
+	 form_attrib->border, form_attrib->comment_line,
+	 form_attrib->message_line, form_attrib->attrib);
 }
 
 reset_attrib (struct form_attr *form_attrib)
@@ -2219,18 +2222,16 @@ attr_code (char *s)
   return 0;
 }
 
-
 colour_code (int a)
 {
   int z, b;
   z = 1;
-#ifdef WIN32 
-  return COLOR_PAIR(a+1);
+#ifdef WIN32
+  return COLOR_PAIR (a + 1);
 #else
   return COLOR_PAIR (a + 1);
 #endif
 }
-
 
 print_field_bind (int ccc)
 {
@@ -2277,7 +2278,6 @@ bname (char *str, char *str1, char *str2)
     str2[0] = 0;
 }
 
-
 get_single_key (char *s)
 {
   char buff[2];
@@ -2285,16 +2285,14 @@ get_single_key (char *s)
   s[1] = 0;
 }
 
-
 set_mod_level (int a)
 {
   modlevel = a;
 }
 
-
-
 long
-get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,char *arr)
+get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
+		   char *arr)
 {
   int a;
   long z;
@@ -2310,7 +2308,6 @@ get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,char 
   strcat (buff, ".");
   ptr = strtok (buff, ".");
 
-
   for (a = 0; a < varcnt; a++)
     {
       if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
@@ -2319,21 +2316,21 @@ get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,char 
 
 	  if (ptr == 0)
 	    {
-	      z = find_type (vars[a].var_type) + (atoi (vars[a].var_size) << 16);
+	      z =
+		find_type (vars[a].var_type) +
+		(atoi (vars[a].var_size) << 16);
 	      *level = vars[a].level;
 	      *type = z;
 	      *arrsize = matoi (vars[a].var_arrsize);
-	      if (arr) strcpy(arr,vars[a].var_arrsize);
+	      if (arr)
+		strcpy (arr, vars[a].var_arrsize);
 	      *size = matoi (vars[a].var_size);
 	      debug ("\n/* %s %s %s %s %d */\n",
 		     vars[a].var_name,
 		     vars[a].var_type,
-		     vars[a].var_size,
-		     vars[a].var_arrsize,
-		     vars[a].level);
+		     vars[a].var_size, vars[a].var_arrsize, vars[a].level);
 	      return z;
 	    }
-
 
 	  lvl++;
 
@@ -2342,7 +2339,6 @@ get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,char 
     }
   return -1;
 }
-
 
 matoi (char *s)
 {
@@ -2354,69 +2350,6 @@ matoi (char *s)
 }
 
 //char *
-int print_push_rec (char *s, char *b)
-{
-  int a;
-  long z;
-  char buff[256];
-  int cnt;
-  char bb[256];
-  char buffer[10000] = "";
-  char buffer2[10000];
-  char *ptr;
-  int lvl = 0;
-  debug ("/* pushing record */\n");
-  if (s[0] == '.' && s[1] == 0)
-    return -1;
-  if (s[0] == 0)
-    return -1;
-  scan_variable (s);
-  if (last_var_found==-1) {
-		yyerror("Record or structure not defined");
-  }
-  strcpy (buff, s);
-  strcat (buff, ".");
-  strcpy (bb, "");
-  ptr = strtok (buff, ".");
-
-
-  for (a = last_var_found; a < varcnt; a++)
-    {
-      if (ptr==0) {yyerror("Record structure is too complex for use here");
-	}
-	debug("Check1\n");
-      if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, with_strip_bracket (ptr)) == 0) && vars[a].level == lvl)
-	{
-	  if (ptr[0] != '*')
-	    {
-	      strcat (bb, ptr);
-	      strcat (bb, ".");
-	      ptr = strtok (0, ".");
-	    }
-	  else
-	    {
-	      cnt = 0;
-	      while (strcmp (vars[a].var_type, "_ENDREC") != 0)
-		{
-		  z = find_type (vars[a].var_type) + (atoi (vars[a].var_size) << 16);
-		  strcpy (buffer2, buffer);
-		  sprintf (buffer, "%s push_variable(&%s%s,%d);\n", buffer2, bb, vars[a].var_name, z);
-		  a++;
-		  cnt++;
-		}
-	      debug ("/* Returning %d */", cnt);
-	      strcpy (b, buffer);
-	      return cnt;
-	    }
-
-
-	  lvl++;
-
-	}
-
-    }
-  return -1;
-}
 
 int
 push_bind_rec (char *s, char bindtype)
@@ -2428,6 +2361,7 @@ push_bind_rec (char *s, char bindtype)
   char bbb[256];
   char *ptr;
   int lvl = 0;
+  debug ("In push_bind_rec : %s\n", s);
   if (s[0] == '.' && s[1] == 0)
     return -1;
   if (s[0] == 0)
@@ -2437,20 +2371,28 @@ push_bind_rec (char *s, char bindtype)
   /*strip_bracket(buff); */
   strcpy (bb, "");
   scan_variable (s);
-  if (last_var_found==-1) {
-		yyerror("Record or structure not defined");
-  }
+  if (last_var_found == -1)
+    {
+      yyerror ("Record or structure not defined");
+    }
+
   ptr = strtok (buff, ".");
+
   for (a = last_var_found; a < varcnt; a++)
     {
-	debug("Check2 ptr=%p",ptr);
-	if (ptr==0) {
-		debug("Error processing record - missing item variable ?\nAssuming *");
-		ptr="*";
-	}
-      if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, with_strip_bracket (ptr)) == 0) && vars[a].level == lvl)
+      debug ("Check2 ptr=%p", ptr);
+      if (ptr == 0)
 	{
-	debug("CHeck2.2");
+	  debug
+	    ("Error processing record - missing item variable ?\nAssuming *");
+	  ptr = "*";
+	}
+      if (
+	  (strcmp (ptr, "*") == 0 || 1)
+	   //|| strcmp (vars[a].var_name, with_strip_bracket (ptr)) == 0)
+	  && vars[a].level == lvl)
+	{
+	  debug ("CHeck2.2");
 	  if (ptr[0] != '*')
 	    {
 	      strcat (bb, ptr);
@@ -2461,31 +2403,35 @@ push_bind_rec (char *s, char bindtype)
 	    {
 	      while (strcmp (vars[a].var_type, "_ENDREC") != 0)
 		{
-		  z = find_type (vars[a].var_type) + (atoi (vars[a].var_size) << 16);
+		  z =
+		    find_type (vars[a].var_type) +
+		    (atoi (vars[a].var_size) << 16);
 		  strcpy (bbb, bb);
 		  strcat (bbb, vars[a].var_name);
-		  if (bindtype!='u') {
-		  	add_bind (bindtype, bbb);
-		  } else {
-			debug("UPDATE USING .... check %s",vars[a].var_name);
-			if (!(is_pk(vars[a].var_name))) add_bind ('i', bbb);
-		  }
+		  if (bindtype != 'u')
+		    {
+		      add_bind (bindtype, bbb);
+		    }
+		  else
+		    {
+		      debug ("UPDATE USING .... check %s", vars[a].var_name);
+		      if (!(is_pk (vars[a].var_name)))
+			add_bind ('i', bbb);
+		    }
 		  a++;
 		}
 	      return 1;
 	    }
 
-
-	debug("CHeck3");
+	  debug ("CHeck3");
 	  lvl++;
 
 	}
-	debug("CHeck4");
+      debug ("CHeck4");
 
     }
   return -1;
 }
-
 
 drop_counter ()
 {
@@ -2501,8 +2447,7 @@ new_counter ()
 get_counter_val ()
 {
   debug ("/* get_counter_val =  %d counter number %d*/\n",
-	 counters[count_counters], count_counters
-    );
+	 counters[count_counters], count_counters);
   return counters[count_counters];
 }
 
@@ -2510,14 +2455,17 @@ inc_counter ()
 {
   return ++counters[count_counters];
 }
+
 dec_counter ()
 {
   return --counters[count_counters];
 }
+
 reset_counter ()
 {
   counters[count_counters] = 0;
 }
+
 set_counter (int a)
 {
   counters[count_counters] = a;
@@ -2526,14 +2474,12 @@ inc_counter_by (int a)
 {
   counters[count_counters] += a;
   debug ("/* inc_by =  %d counter number %d*/\n",
-	 counters[count_counters], count_counters
-    );
+	 counters[count_counters], count_counters);
 }
 dec_counter_by (int a)
 {
   counters[count_counters] -= a;
 }
-
 
 print_bind_pop1 (char i)
 {
@@ -2542,7 +2488,8 @@ print_bind_pop1 (char i)
   if (i == 'i')
     {
       if (scan_variable (obind[a].varname) != -1)
-	printc ("pop_var2(&%s,%d,%d);\n", ibind[a].varname, (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+	printc ("pop_var2(&%s,%d,%d);\n", ibind[a].varname,
+		(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
       else
 	printc ("%s;\n", ibind[a].varname);
     }
@@ -2550,15 +2497,13 @@ print_bind_pop1 (char i)
   if (i == 'o')
     {
       if (scan_variable (obind[a].varname) != -1)
-	printc ("pop_var2(&%s,%d,%d);\n", obind[a].varname, (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+	printc ("pop_var2(&%s,%d,%d);\n", obind[a].varname,
+		(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
       else
 	printc ("%s;\n", obind[a].varname);
     }
 
-
 }
-
-
 
 start_arr_bind (char i, char *var)
 {
@@ -2578,18 +2523,20 @@ start_arr_bind (char i, char *var)
     add_arr_bind (i, var);
 }
 
-
 add_arr_bind (char i, char *nvar)
 {
   long dtype;
   char var[256];
   strcpy (var, nvar);
 
-  if (isrecvariable(var)) {
-    strcat (var, "[0].*");
-  } else  {
-    strcat (var, "[0]");
-  }
+  if (isrecvariable (var))
+    {
+      strcat (var, "[0].*");
+    }
+  else
+    {
+      strcat (var, "[0]");
+    }
 
   dtype = scan_variable (var);
 
@@ -2630,8 +2577,6 @@ add_arr_bind (char i, char *nvar)
 
 }
 
-
-
 print_arr_bind (char i)
 {
   int a;
@@ -2640,13 +2585,14 @@ print_arr_bind (char i)
   //dump_vars ();
   if (i == 'i')
     {
-	printc("\n");
+      printc ("\n");
       printc ("struct BINDING ibind[]={\n");
       for (a = 0; a < ibindcnt; a++)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", ibind[a].varname, (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+	  printc ("{&%s,%d,%d}", ibind[a].varname,
+		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
 	}
       printc ("\n}; /* end of binding */\n");
       return a;
@@ -2654,19 +2600,19 @@ print_arr_bind (char i)
 
   if (i == 'o')
     {
-	printc("\n");
+      printc ("\n");
       printc ("struct BINDING obind[]={\n");
       for (a = 0; a < obindcnt; a++)
 	{
 	  if (a > 0)
 	    printc (",\n");
-	  printc ("{&%s,%d,%d}", obind[a].varname, (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+	  printc ("{&%s,%d,%d}", obind[a].varname,
+		  (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
 	}
       printc ("\n}; /* end of binding */\n");
       return a;
     }
 }
-
 
 push_construct (char *a, char *b)
 {
@@ -2678,7 +2624,8 @@ push_construct (char *a, char *b)
 print_constr ()
 {
   int a;
-  printc ("struct s_constr_list {char *tabname;char *colname;} constr_flds[]={\n");
+  printc
+    ("struct s_constr_list {char *tabname;char *colname;} constr_flds[]={\n");
   for (a = 0; a < constr_cnt; a++)
     {
       if (a > 0)
@@ -2688,6 +2635,7 @@ print_constr ()
   printc ("\n};");
   return a;
 }
+
 reset_constr ()
 {
   constr_cnt = 0;
@@ -2709,7 +2657,6 @@ print_field_bind_constr ()
     }
   return a;
 }
-
 
 char *
 convstrsql (char *s)
@@ -2744,7 +2691,6 @@ convstrsql (char *s)
   return buff;
 }
 
-
 #ifdef n0
 int
 convlower (char *s)
@@ -2758,8 +2704,6 @@ convlower (char *s)
   debug ("%s */", s);
 }
 #endif
-
-
 
 dump_gvars ()
 {
@@ -2777,7 +2721,7 @@ dump_gvars ()
       exit (0);
     }
 
-  fprintf(f,"DATABASE=%s\n",get_hdrdbname());
+  fprintf (f, "DATABASE=%s\n", get_hdrdbname ());
 
   for (a = 0; a < varcnt; a++)
     {
@@ -2786,22 +2730,18 @@ dump_gvars ()
 	       vars[a].var_type,
 	       vars[a].var_size,
 	       vars[a].var_arrsize,
-		vars[a].tabname,
-		vars[a].pklist,
-	       vars[a].level
-);
+	       vars[a].tabname, vars[a].pklist, vars[a].level);
 
     }
   fclose (f);
 }
-
 
 read_glob (char *s)
 {
 
   FILE *f;
   int a;
-char line[256];
+  char line[256];
   char ii[64];
   char dbname[64];
   char tname[128];
@@ -2810,11 +2750,12 @@ char line[256];
   strcat (ii, ".glb");
   f = mja_fopen (ii, "r");
 
-  if (f==0) {
-	debug("Trying to compile globals file");
-	generate_globals_for(ii);
-  	f = mja_fopen (ii, "r");
-  }
+  if (f == 0)
+    {
+      debug ("Trying to compile globals file");
+      generate_globals_for (ii);
+      f = mja_fopen (ii, "r");
+    }
 
   if (f == 0)
     {
@@ -2823,17 +2764,18 @@ char line[256];
     }
 
   debug ("OPening %s\n", ii);
-  
-  fgets(line,255,f);
-  strcpy(dbname,"");
-  sscanf(line,"DATABASE=%s",dbname);
 
-  if (strlen(dbname)>0) {
-	set_hdrdbname(dbname);
-	open_db(dbname);
-  }
+  fgets (line, 255, f);
+  strcpy (dbname, "");
+  sscanf (line, "DATABASE=%s", dbname);
 
-  debug("DBNAME=%s from globals",dbname);
+  if (strlen (dbname) > 0)
+    {
+      set_hdrdbname (dbname);
+      open_db (dbname);
+    }
+
+  debug ("DBNAME=%s from globals", dbname);
   while (!feof (f))
     {
 
@@ -2841,29 +2783,21 @@ char line[256];
 	      vars[varcnt].var_name,
 	      vars[varcnt].var_type,
 	      vars[varcnt].var_size,
-	      vars[varcnt].var_arrsize,
-		tname,
-		pklist,
-	      &vars[varcnt].level
-	);
-	
-	      vars[varcnt].tabname=strdup(tname);
-	      vars[varcnt].pklist=strdup(pklist);
+	      vars[varcnt].var_arrsize, tname, pklist, &vars[varcnt].level);
+
+      vars[varcnt].tabname = strdup (tname);
+      vars[varcnt].pklist = strdup (pklist);
 
       debug ("Read %s %s from globals file (%s %s)\n",
 	     vars[varcnt].var_name,
 	     vars[varcnt].var_type,
-		vars[varcnt].tabname,vars[varcnt].pklist
-);
+	     vars[varcnt].tabname, vars[varcnt].pklist);
       debug ("In full : %s %s %s %s %s %s %d\n",
-	      vars[varcnt].var_name,
-	      vars[varcnt].var_type,
-	      vars[varcnt].var_size,
-	      vars[varcnt].var_arrsize,
-	      vars[varcnt].tabname,
-	      vars[varcnt].pklist,
-	       vars[varcnt].level
-);
+	     vars[varcnt].var_name,
+	     vars[varcnt].var_type,
+	     vars[varcnt].var_size,
+	     vars[varcnt].var_arrsize,
+	     vars[varcnt].tabname, vars[varcnt].pklist, vars[varcnt].level);
 
       varcnt++;
     }
@@ -2900,7 +2834,6 @@ downshift (char *a)
   return buff;
 }
 
-
 findex (char *str, char c)
 {
   int a;
@@ -2911,7 +2844,6 @@ findex (char *str, char c)
     }
   return 0;
 }
-
 
 add_report_agg (char t, char *s1, char *s2, int a)
 {
@@ -2951,10 +2883,10 @@ add_report_agg (char t, char *s1, char *s2, int a)
 
   if (t == 'S')
     {
-      printh ("static double _g%d=0;\n", a);
+	printh ("static double _g%d=0;\n",
+						 a);
       return 1;
     }
-
 
   if (t == 'N' || t == 'X')
     {
@@ -2962,7 +2894,6 @@ add_report_agg (char t, char *s1, char *s2, int a)
       printh ("static int _g%dused=0;\n", a);
       return 1;
     }
-
 
   if (t == 'A')
     {
@@ -2972,7 +2903,6 @@ add_report_agg (char t, char *s1, char *s2, int a)
     }
   use_group = 0;
 }
-
 
 pr_report_agg ()
 {
@@ -3000,21 +2930,29 @@ pr_report_agg ()
 
       if (t == 'S')
 	{
-	  printc ("%s if (pop_bool()) {double _res;%s _res=pop_double(); _g%d+=_res;}\n ", s2, s1, a);
+	  printc
+	    ("%s if (pop_bool()) {double _res;%s _res=pop_double(); _g%d+=_res;}\n ",
+	     s2, s1, a);
 	}
 
       if (t == 'A')
 	{
-	  printc ("%s if (pop_bool()) {double _res;%s _res=pop_double(); _g%d+=_res;_g%d++;}\n ", s2, s1, a, a + 1);
+	  printc
+	    ("%s if (pop_bool()) {double _res;%s _res=pop_double(); _g%d+=_res;_g%d++;}\n ",
+	     s2, s1, a, a + 1);
 	}
 
       if (t == 'N')
 	{
-	  printc ("%s if (pop_bool()) {double _res;%s _res=pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", s2, s1, a, a, a, a);
+	  printc
+	    ("%s if (pop_bool()) {double _res;%s _res=pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
+	     s2, s1, a, a, a, a);
 	}
       if (t == 'X')
 	{
-	  printc ("%s if (pop_bool()) {double _res;%s _res=pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", s2, s1, a, a, a, a);
+	  printc
+	    ("%s if (pop_bool()) {double _res;%s _res=pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
+	     s2, s1, a, a, a, a);
 	}
 
     }
@@ -3085,102 +3023,144 @@ pr_report_agg_clr ()
     }
 }
 
-set_whento(char *p) {
-debug("whento = %p",p);
-   strcpy(when_to_tmp,p);
+set_whento (char *p)
+{
+  debug ("whento = %p", p);
+  strcpy (when_to_tmp, p);
 }
-
 
 set_whenever (int c, char *p)
 {
   int code;
-int oldcode;
-oldcode=c&15;
-  c=c>>4;
-  c=c<<4;
-  code=-1;
-  switch (c) {
-	case WHEN_ERROR : code=A_WHEN_ERROR;break;
-	case WHEN_ANYERROR : code=A_WHEN_ANYERROR;break;
-	case WHEN_SQLERROR : code=A_WHEN_SQLERROR;break;
-	case WHEN_WARNING : code=A_WHEN_WARNING;break;
-	case WHEN_SQLWARNING : code=A_WHEN_SQLWARNING;break;
-	case WHEN_NOTFOUND : code=A_WHEN_NOTFOUND;break;
-	case WHEN_SUCCESS: code=A_WHEN_SUCCESS;break;
-	case WHEN_SQLSUCCESS: code=A_WHEN_SQLSUCCESS;break;
-  }
+  int oldcode;
+  oldcode = c & 15;
+  c = c >> 4;
+  c = c << 4;
+  code = -1;
+  switch (c)
+    {
+    case WHEN_ERROR:
+      code = A_WHEN_ERROR;
+      break;
+    case WHEN_ANYERROR:
+      code = A_WHEN_ANYERROR;
+      break;
+    case WHEN_SQLERROR:
+      code = A_WHEN_SQLERROR;
+      break;
+    case WHEN_WARNING:
+      code = A_WHEN_WARNING;
+      break;
+    case WHEN_SQLWARNING:
+      code = A_WHEN_SQLWARNING;
+      break;
+    case WHEN_NOTFOUND:
+      code = A_WHEN_NOTFOUND;
+      break;
+    case WHEN_SUCCESS:
+      code = A_WHEN_SUCCESS;
+      break;
+    case WHEN_SQLSUCCESS:
+      code = A_WHEN_SQLSUCCESS;
+      break;
+    }
 
-  if (code==-1) {
-               printf("Code=%d (%x) to %p\n",c,c,p);
-               yyerror("Internal error setting whenever error...");
-               exit(0);
-  }
+  if (code == -1)
+    {
+      printf ("Code=%d (%x) to %p\n", c, c, p);
+      yyerror ("Internal error setting whenever error...");
+      exit (0);
+    }
 
-  if (p) {
-    strcpy (when_to[code], p);
-  } else {
-    strcpy (when_to[code], when_to_tmp);
-  }
+  if (p)
+    {
+      strcpy (when_to[code], p);
+    }
+  else
+    {
+      strcpy (when_to[code], when_to_tmp);
+    }
   when_code[code] = oldcode;
-printc("set_status(0);\n");
+  printc ("set_status(0);\n");
 }
 
 prchkerr (int l, char *f)
 {
-int a;
+  int a;
 /* 0 = continue */
 /* 1 = stop */
 /* 2 = call */
 /* 3 = goto */
-  
 
-  printc("if (sqlca.sqlcode !=0 || status !=0 || %d) {\n",when_code[A_WHEN_SUCCESS]==WHEN_CALL||when_code[A_WHEN_SQLSUCCESS]==WHEN_CALL);
+  printc ("if (sqlca.sqlcode !=0 || status !=0 || %d) {\n",
+	  when_code[A_WHEN_SUCCESS] == WHEN_CALL
+	  || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
 
-  /*printc("debug(\"status=%%d sqlca.sqlcode=%%d\",status,sqlca.sqlcode);\n");*/
+  /*printc("debug(\"status=%%d sqlca.sqlcode=%%d\",status,sqlca.sqlcode);\n"); */
 
-printcomment("/* NOTFOUND */");
-  a=pr_when_do("   if (sqlca.sqlcode==100)",when_code[A_WHEN_NOTFOUND],l,f,when_to[A_WHEN_NOTFOUND]);
+  printcomment ("/* NOTFOUND */");
+  a =
+    pr_when_do ("   if (sqlca.sqlcode==100)", when_code[A_WHEN_NOTFOUND], l,
+		f, when_to[A_WHEN_NOTFOUND]);
 
-printcomment("/* SQLERROR */");
-  a=pr_when_do("   if (sqlca.sqlcode<0&&status==sqlca.sqlcode)",when_code[A_WHEN_SQLERROR],l,f,when_to[A_WHEN_SQLERROR]);
+  printcomment ("/* SQLERROR */");
+  a =
+    pr_when_do ("   if (sqlca.sqlcode<0&&status==sqlca.sqlcode)",
+		when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
 
-printcomment("/* ANYERROR */");
-  a=pr_when_do("   if (status<0||sqlca.sqlcode<0)",when_code[A_WHEN_ANYERROR],l,f,when_to[A_WHEN_ANYERROR]);
+  printcomment ("/* ANYERROR */");
+  a =
+    pr_when_do ("   if (status<0||sqlca.sqlcode<0)",
+		when_code[A_WHEN_ANYERROR], l, f, when_to[A_WHEN_ANYERROR]);
 
-printcomment("/* ERROR */");
-  a=pr_when_do("   if (status<0)",when_code[A_WHEN_ERROR],l,f,when_to[A_WHEN_ERROR]);
-printcomment("/* SQLWARNING */");
-  a=pr_when_do("   if (sqlca.sqlcode==0&&sqlca.sqlawarn[0]=='W')",when_code[A_WHEN_SQLWARNING],l,f,when_to[A_WHEN_SQLWARNING]);
+  printcomment ("/* ERROR */");
+  a =
+    pr_when_do ("   if (status<0)", when_code[A_WHEN_ERROR], l, f,
+		when_to[A_WHEN_ERROR]);
+  printcomment ("/* SQLWARNING */");
+  a =
+    pr_when_do ("   if (sqlca.sqlcode==0&&sqlca.sqlawarn[0]=='W')",
+		when_code[A_WHEN_SQLWARNING], l, f,
+		when_to[A_WHEN_SQLWARNING]);
 
-printcomment("/* WARNING */");
-  a=pr_when_do("   if (sqlca.sqlcode==0&&(sqlca.sqlawarn[0]=='w'||sqlca.sqlawarn[0]=='W'))",when_code[A_WHEN_WARNING],l,f,when_to[A_WHEN_WARNING]);
+  printcomment ("/* WARNING */");
+  a =
+    pr_when_do
+    ("   if (sqlca.sqlcode==0&&(sqlca.sqlawarn[0]=='w'||sqlca.sqlawarn[0]=='W'))",
+     when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
 
-printcomment("/* SQLSUCCESS */");
-  a=pr_when_do("   if (sqlca.sqlcode==0&&status==0)",when_code[A_WHEN_SQLSUCCESS],l,f,when_to[A_WHEN_SQLSUCCESS]);
+  printcomment ("/* SQLSUCCESS */");
+  a =
+    pr_when_do ("   if (sqlca.sqlcode==0&&status==0)",
+		when_code[A_WHEN_SQLSUCCESS], l, f,
+		when_to[A_WHEN_SQLSUCCESS]);
 
-printcomment("/* SUCCESS */");
-  a=pr_when_do("   if (sqlca.sqlcode==0&&status==0)",when_code[A_WHEN_SUCCESS],l,f,when_to[A_WHEN_SUCCESS]);
+  printcomment ("/* SUCCESS */");
+  a =
+    pr_when_do ("   if (sqlca.sqlcode==0&&status==0)",
+		when_code[A_WHEN_SUCCESS], l, f, when_to[A_WHEN_SUCCESS]);
 
-printc("}\n");
+  printc ("}\n");
 }
 
 pcopy (char *s)
 {
-if (ferr)
-  fprintf (ferr, "%s\n", s);
+  if (ferr)
+    fprintf (ferr, "%s\n", s);
 }
 
-
-int add_constant (char t, char *ptr, char *name)
+int
+add_constant (char t, char *ptr, char *name)
 {
   char scope = 'm';
   int x;
   char buff[256];
-	x=0;
+  x = 0;
   //x = rwlookup (name);
   if (x != 0)
     {
-      adderr ("'%s' is a reserved word and cannot be used as a constant\n", name, "");
+      adderr ("'%s' is a reserved word and cannot be used as a constant\n",
+	      name, "");
       yyerror ("Constant Declaration Error");
     }
   debug ("Add constant\n");
@@ -3214,7 +3194,6 @@ int add_constant (char t, char *ptr, char *name)
   const_arr[const_cnt].ptr = strdup (ptr);
   const_cnt++;
 }
-
 
 clr_function_constants ()
 {
@@ -3259,681 +3238,1042 @@ check_for_constant (char *name, char *buff)
   return 0;
 }
 
+pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
+{
 
-pr_when_do(char *when_str,int when_code,int l,char *f,char *when_to) {
-
-  if (when_code&15 == WHEN_CONTINUE)
+  if (when_code & 15 == WHEN_CONTINUE)
     return 0;
 
- if (when_code&15==WHEN_NOTSET)
+  if (when_code & 15 == WHEN_NOTSET)
     return 0;
 
   if (when_code == WHEN_STOP)
     {
-      printc ("%s chk_err(%d,_module_name);\n", when_str,l, f);
-printcomment("/* WHENSTOP */");
+      printc ("%s chk_err(%d,_module_name);\n", when_str, l, f);
+      printcomment ("/* WHENSTOP */");
     }
   if (when_code == WHEN_CALL)
     {
-      printc ("%s aclfgl_%s(0);\n", when_str,when_to);
-printcomment("/* WHENCALL */");
+      printc ("%s aclfgl_%s(0);\n", when_str, when_to);
+      printcomment ("/* WHENCALL */");
     }
 
   if (when_code == WHEN_GOTO)
     {
-      printc ("%s goto %s;\n", when_str,when_to);
-printcomment("/* WHENGOTO */");
+      printc ("%s goto %s;\n", when_str, when_to);
+      printcomment ("/* WHENGOTO */");
     }
-return 1;
+  return 1;
 }
 
-npush_menu() {
-max_menu_no++;
-cmenu++;
-menu_nos[cmenu]=max_menu_no;
-debug("Menu no %d",max_menu_no);
-return max_menu_no;
+npush_menu ()
+{
+  max_menu_no++;
+  cmenu++;
+  menu_nos[cmenu] = max_menu_no;
+  debug ("Menu no %d", max_menu_no);
+  return max_menu_no;
 }
 
-pop_menu() {
-cmenu--;
-if (cmenu>=0) {
-       menu_cnt=menu_nos[cmenu];
-       debug("Reset Menu no %d",menu_cnt);
-} else {
-     debug("Nothing to reset to...");
-}
-}
-
-setrecord(char *s,char *t,char *c) {
-return 0;
-}
-
-
-
-swapstring(char *d,char *s) {
-int b=0;
-int a;
-int flg;
-for (a=0;a<=strlen(s);a++) {
-      if (s[a]=='\'') {
-                flg=1;
-                if (a>0) {
-                      if (s[a-1]=='\\') {flg=0;}
-                }
-                if (flg) d[b++]='"' ;
-                else
-                d[b++]=s[a];
-      }
-      else
-      if (s[a]=='"') { d[b++]='\\';d[b++]='"';}
-      else  d[b++]=s[a];
-}
-debug("Converted : %s to %s",s,d);
+pop_menu ()
+{
+  cmenu--;
+  if (cmenu >= 0)
+    {
+      menu_cnt = menu_nos[cmenu];
+      debug ("Reset Menu no %d", menu_cnt);
+    }
+  else
+    {
+      debug ("Nothing to reset to...");
+    }
 }
 
-num_arr_elem(char *s) {
-int a;
-int c=0;
-for (a=0;a<strlen(s);a++) {
-      if (s[a]=='[') c++;
-}
-return c;
+setrecord (char *s, char *t, char *c)
+{
+  return 0;
 }
 
-char *change_arr_elem(char *s) {
-static char buff[1024];
-int a;
-char buff2[2];
-buff2[1]=0;
-buff[0]=0;
-strcpy(buff,"(");
-debug("change_arr_elem: %s",s);
-for (a=0;a<strlen(s);a++) {
-if (s[a]==',') {
-    strcat(buff,")-1][(");
-} else {
-   buff2[0]=s[a];
-   strcat(buff,buff2);
-}
-}
-strcat(buff,")-1");
-debug("Generated... %s",buff);
-return buff;
-}
-
-
-trim_spaces(char *s) {
-int l;
-for (l=strlen(s)-1;l>=0;l--) {
-if (s[l]==' ') s[l]=0;
-else break;
-}
-}
-
-
-yywrap() {
-return 1;
-}
-
-system_var(char *s) {
-if (aubit_strcasecmp(s,"today")==0) return 1;
-if (aubit_strcasecmp(s,"time")==0) return 1;
-if (aubit_strcasecmp(s,"user")==0) return 1;
-if (aubit_strcasecmp(s,"date")==0) return 1;
-return 0;
-}
-
-inc_report_cnt() {
-sreports_cnt=0;
-report_cnt++;
-report_stack_cnt = 0;
-}
-
-char *trans_quote(char *s) {
-static char buff[1024];
-int c;
-int a;
-c=0;
-for (a=0;a<strlen(s);a++) {
-	if (s[a]=='"')  {	
-		buff[c++]='\\';
+swapstring (char *d, char *s)
+{
+  int b = 0;
+  int a;
+  int flg;
+  for (a = 0; a <= strlen (s); a++)
+    {
+      if (s[a] == '\'')
+	{
+	  flg = 1;
+	  if (a > 0)
+	    {
+	      if (s[a - 1] == '\\')
+		{
+		  flg = 0;
+		}
+	    }
+	  if (flg)
+	    d[b++] = '"';
+	  else
+	    d[b++] = s[a];
 	}
-	buff[c++]=s[a];
-	buff[c]=0;
+      else if (s[a] == '"')
+	{
+	  d[b++] = '\\';
+	  d[b++] = '"';
+	}
+      else
+	d[b++] = s[a];
+    }
+  debug ("Converted : %s to %s", s, d);
 }
-return buff;
+
+num_arr_elem (char *s)
+{
+  int a;
+  int c = 0;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == '[')
+	c++;
+    }
+  return c;
+}
+
+char *
+change_arr_elem (char *s)
+{
+  static char buff[1024];
+  int a;
+  char buff2[2];
+  buff2[1] = 0;
+  buff[0] = 0;
+  strcpy (buff, "(");
+  debug ("change_arr_elem: %s", s);
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == ',')
+	{
+	  strcat (buff, ")-1][(");
+	}
+      else
+	{
+	  buff2[0] = s[a];
+	  strcat (buff, buff2);
+	}
+    }
+  strcat (buff, ")-1");
+  debug ("Generated... %s", buff);
+  return buff;
+}
+
+trim_spaces (char *s)
+{
+  int l;
+  for (l = strlen (s) - 1; l >= 0; l--)
+    {
+      if (s[l] == ' ')
+	s[l] = 0;
+      else
+	break;
+    }
+}
+
+yywrap ()
+{
+  return 1;
+}
+
+system_var (char *s)
+{
+  if (aubit_strcasecmp (s, "today") == 0)
+    return 1;
+  if (aubit_strcasecmp (s, "time") == 0)
+    return 1;
+  if (aubit_strcasecmp (s, "user") == 0)
+    return 1;
+  if (aubit_strcasecmp (s, "date") == 0)
+    return 1;
+  return 0;
+}
+
+inc_report_cnt ()
+{
+  sreports_cnt = 0;
+  report_cnt++;
+  report_stack_cnt = 0;
+}
+
+char *
+trans_quote (char *s)
+{
+  static char buff[1024];
+  int c;
+  int a;
+  c = 0;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == '"')
+	{
+	  buff[c++] = '\\';
+	}
+      buff[c++] = s[a];
+      buff[c] = 0;
+    }
+  return buff;
 }
 
 #ifdef NODEF
 extern struct s_kw kwords[];
 
-
-
 extern struct s_kw kwords[];
-FILE *yyin=0;
-char *read_word(FILE *f,int *t);
-char *read_word2(FILE *f,int *t);
-int ccat(char *s,char a) ;
-char *mk_word(int c) ;
+FILE *yyin = 0;
+char *read_word (FILE * f, int *t);
+char *read_word2 (FILE * f, int *t);
+int ccat (char *s, char a);
+char *mk_word (int c);
 #define stricmp strcasecmp
 
 #define TYPE_EOF  -1
-#define TYPE_USTRING  -2 /* unterminated string */
+#define TYPE_USTRING  -2	/* unterminated string */
 #define TYPE_NUM 3
 
-#define DBG //
+#define DBG			//
 
+yylex ()
+{
+  int a;
+  char buff[1024];
+  word_cnt = 0;
+  printf ("-----");
+  debug ("YYLEX called");
+  if (yyin == 0)
+    {
+      printf ("No input...\n");
+      exit (0);
+    }
 
-yylex() {
-int a;
-char buff[1024];
-word_cnt=0;
-printf("-----");
-debug("YYLEX called");
-if (yyin==0) {
-	printf("No input...\n");
-	exit(0);
+  a = chk_word (yyin, buff);
+  debug ("chk_word returns %d\n", a);
+  if (a == 2)
+    {
+      to_lower_str (buff);
+    }
+
+  set_str (buff);
+
+  debug ("%04d %d (%4d) %s\n", yylineno, ccnt, a, buff);
+  return a;
 }
 
-a=chk_word(yyin,buff);
-debug("chk_word returns %d\n",a);
-if (a==2) {
-	to_lower_str(buff);
+char *
+read_word (FILE * f, int *t)
+{
+  char *ptr;
+  ptr = read_word2 (f, t);
+  strcpy (xwords[word_cnt], ptr);
+  word_cnt++;
+  return ptr;
 }
 
-set_str(buff);
+char *
+read_word2 (FILE * f, int *t)
+{
+  static char word[1024] = "";
+  int escp = 0;
+  int instrs = 0;
+  int instrd = 0;
+  int a;
+  strcpy (word, "");
+  *t = NAMED;
+  while (1)
+    {
+      a = fgetc (f);
 
-debug("%04d %d (%4d) %s\n",yylineno,ccnt,a,buff);
-return a;
-}
-
-
-char *read_word(FILE *f,int *t) {
-char *ptr;
-ptr=read_word2(f,t);
-strcpy(xwords[word_cnt],ptr);
-word_cnt++;
-return ptr;
-}
-
-char *read_word2(FILE *f,int *t) {
-static char word[1024]="";
-int escp=0;
-int instrs=0;
-int instrd=0;
-int a;
-strcpy(word,"");
-*t=NAMED;
-	while (1) {
-		a=fgetc(f);
-
-		if (feof(f)) {
-			*t=TYPE_EOF;
-			return word;
-			}
-
-		if (xccode) {
-			while (1) {
-				if (feof(f)) break;
-				if (a=='\n'||a=='\r') break;
-				ccat(word,a);
-				a=fgetc(f);
-			}
-			printf("CCODE > %s\n",word);
-			inc_yylineno(f);
-			*t=CLINE;
-			return word;
-		}
-		//DBG printf("Read %c\n",a);
-
-		if (a=='-'&&instrs==0&&instrd==0&&xccode==0) {
-			int z;
-			z=fgetc(f);
-			ungetc(z,f);
-			if (z=='-') {
-				while (1) {
-					a=fgetc(f);
-					if (feof(f)) break;
-					if (a=='\n'||a=='\r') break;
-					ccat(word,a);
-				}
-				inc_yylineno(f);
-				*t=COMMENT;
-				return word;
-			}
-		}
-
-		if (a=='#'&&instrs==0&&instrd==0&&xccode==0) {
-			while (1) {
-				a=fgetc(f);
-				if (feof(f)) break;
-				if (a=='\n'||a=='\r') break;
-				ccat(word,a);
-			}
-			inc_yylineno(f);
-			*t=COMMENT;
-			return word;
-
-		}
-
-		if (a=='{'&&instrs==0&&instrd==0&&xccode==0) {
-			while (1) {
-				a=fgetc(f);
-				if (feof(f)) break;
-				if (a=='}') break;
-				ccat(word,a);
-			}
-			*t=COMMENT;
-			return word;
-		}
-		
-
-		
-
-		if (a=='\n'||a=='\r') {
-			inc_yylineno(f);
-			if (instrs||instrd) {
-				*t=TYPE_USTRING;
-			}
-			if (strlen(word)>0) return word;
-			else continue;
-		}
-
-		if (instrs==0&&instrd==0&&(a==' '||a=='	')) {
-			if (strlen(word)>0) return word;
-			else continue;
-		}
-
-		if (instrs==0&&instrd==0&&(ispunct(a))&&a!='"'&&a!='\''&&a!='_') {
-			if (strlen(word)>0) {
-				if (isnum(word)&&a=='.')  ;
-				else  {
-					ungetc(a,f);
-					return word;
-				}
-			} else {
-				ccat(word,a);
-				return word;
-			}
-		}
-
-		if (a=='\\'&&!escp) {
-		ccat(word,a);
-			if  (escp==0) {escp=1;continue;}
-			else {escp==0;}
-		}
-
-		if (a=='"'&&!escp&&instrs==0) {
-			if (instrd==1) {
-				ccat(word,'"');
-				*t=CHAR_VALUE;
-				return word;
-			}
-			ccat(word,'"');
-			instrd=1;
-			continue;
-		}
-
-		if (a=='\''&&!escp&&instrd==0) {
-			if (instrs==1) {
-				ccat(word,'"');
-				*t=CHAR_VALUE;
-				return word;
-			}
-			ccat(word,'"');
-			instrs=1;
-			continue;
-		}
-		ccat(word,a);
-		escp=0;
+      if (feof (f))
+	{
+	  *t = TYPE_EOF;
+	  return word;
 	}
 
-}
+      if (xccode)
+	{
+	  while (1)
+	    {
+	      if (feof (f))
+		break;
+	      if (a == '\n' || a == '\r')
+		break;
+	      ccat (word, a);
+	      a = fgetc (f);
+	    }
+	  printf ("CCODE > %s\n", word);
+	  inc_yylineno (f);
+	  *t = CLINE;
+	  return word;
+	}
+      //DBG printf("Read %c\n",a);
 
-ccat(char *s,char a) {
-char buff[2];
-buff[0]=a;
-buff[1]=0;
-strcat(s,buff);
-}
-
-
-chk_word(FILE *f,char *str){
-long a;
-int cnt;
-char *p;
-int t;
-int w;
-int rt;
-char buff[256];
-cnt=0;
-rt=yylineno;
-p=read_word(f,&t);
-w=word_cnt;
-
-if (strcmp(p,"code")==0&&xccode==0) {
-		xccode=1;
-		return CSTART;
-}
-
-if (strcmp(p,"endcode")==0&&xccode) {
-		xccode=0;
-		return CEND;
-}
-
-if (xccode) {
-			strcpy(str,p);
-			return CLINE;
+      if (a == '-' && instrs == 0 && instrd == 0 && xccode == 0)
+	{
+	  int z;
+	  z = fgetc (f);
+	  ungetc (z, f);
+	  if (z == '-')
+	    {
+	      while (1)
+		{
+		  a = fgetc (f);
+		  if (feof (f))
+		    break;
+		  if (a == '\n' || a == '\r')
+		    break;
+		  ccat (word, a);
+		}
+	      inc_yylineno (f);
+	      *t = COMMENT;
+	      return word;
+	    }
 	}
 
-if (t==COMMENT) {
-		strcpy(str,p);
-		return chk_word(f,str);
-		/* dont return comments */
+      if (a == '#' && instrs == 0 && instrd == 0 && xccode == 0)
+	{
+	  while (1)
+	    {
+	      a = fgetc (f);
+	      if (feof (f))
+		break;
+	      if (a == '\n' || a == '\r')
+		break;
+	      ccat (word, a);
+	    }
+	  inc_yylineno (f);
+	  *t = COMMENT;
+	  return word;
+
+	}
+
+      if (a == '{' && instrs == 0 && instrd == 0 && xccode == 0)
+	{
+	  while (1)
+	    {
+	      a = fgetc (f);
+	      if (feof (f))
+		break;
+	      if (a == '}')
+		break;
+	      ccat (word, a);
+	    }
+	  *t = COMMENT;
+	  return word;
+	}
+
+      if (a == '\n' || a == '\r')
+	{
+	  inc_yylineno (f);
+	  if (instrs || instrd)
+	    {
+	      *t = TYPE_USTRING;
+	    }
+	  if (strlen (word) > 0)
+	    return word;
+	  else
+	    continue;
+	}
+
+    if (instrs == 0 && instrd == 0
+	  && (a == ' ' || a == '	'))
+	{
+	  if (strlen (word) > 0)
+	    return word;
+	  else
+	    continue;
+	}
+
+      if (instrs == 0 && instrd == 0 && (ispunct (a)) && a != '"' && a != '\''
+	  && a != '_')
+	{
+	  if (strlen (word) > 0)
+	    {
+	      if (isnum (word) && a == '.');
+	      else
+		{
+		  ungetc (a, f);
+		  return word;
+		}
+	    }
+	  else
+	    {
+	      ccat (word, a);
+	      return word;
+	    }
+	}
+
+      if (a == '\\' && !escp)
+	{
+	  ccat (word, a);
+	  if (escp == 0)
+	    {
+	      escp = 1;
+	      continue;
+	    }
+	  else
+	    {
+	      escp == 0;
+	    }
+	}
+
+      if (a == '"' && !escp && instrs == 0)
+	{
+	  if (instrd == 1)
+	    {
+	      ccat (word, '"');
+	      *t = CHAR_VALUE;
+	      return word;
+	    }
+	  ccat (word, '"');
+	  instrd = 1;
+	  continue;
+	}
+
+      if (a == '\'' && !escp && instrd == 0)
+	{
+	  if (instrs == 1)
+	    {
+	      ccat (word, '"');
+	      *t = CHAR_VALUE;
+	      return word;
+	    }
+	  ccat (word, '"');
+	  instrs = 1;
+	  continue;
+	}
+      ccat (word, a);
+      escp = 0;
+    }
+
 }
-a=ftell(f);
-strcpy(buff,p);
 
-if (t==TYPE_EOF)  {strcpy(str,""); return -1;}
+ccat (char *s, char a)
+{
+  char buff[2];
+  buff[0] = a;
+  buff[1] = 0;
+  strcat (s, buff);
+}
 
-debug("Got %s\n",p);
+chk_word (FILE * f, char *str)
+{
+  long a;
+  int cnt;
+  char *p;
+  int t;
+  int w;
+  int rt;
+  char buff[256];
+  cnt = 0;
+  rt = yylineno;
+  p = read_word (f, &t);
+  w = word_cnt;
+
+  if (strcmp (p, "code") == 0 && xccode == 0)
+    {
+      xccode = 1;
+      return CSTART;
+    }
+
+  if (strcmp (p, "endcode") == 0 && xccode)
+    {
+      xccode = 0;
+      return CEND;
+    }
+
+  if (xccode)
+    {
+      strcpy (str, p);
+      return CLINE;
+    }
+
+  if (t == COMMENT)
+    {
+      strcpy (str, p);
+      return chk_word (f, str);
+      /* dont return comments */
+    }
+  a = ftell (f);
+  strcpy (buff, p);
+
+  if (t == TYPE_EOF)
+    {
+      strcpy (str, "");
+      return -1;
+    }
+
+  debug ("Got %s\n", p);
 //printf("Read word %s\n",p);
 
-while (kwords[cnt].id>0) {
-	strcpy(p,buff);
-	debug("%s %s\n",p,kwords[cnt].vals[0]);
-	if (kwords[cnt].mode>=1) {
-		if (words(cnt,0,f,p)) {
-			strcpy(str,mk_word(cnt));
-			print_words();
-			return kwords[cnt].id;
-		}
+  while (kwords[cnt].id > 0)
+    {
+      strcpy (p, buff);
+      debug ("%s %s\n", p, kwords[cnt].vals[0]);
+      if (kwords[cnt].mode >= 1)
+	{
+	  if (words (cnt, 0, f, p))
+	    {
+	      strcpy (str, mk_word (cnt));
+	      print_words ();
+	      return kwords[cnt].id;
+	    }
 	}
-	word_cnt=w;
-	yylineno=rt;
-	fseek(f,a,SEEK_SET);
-	cnt++;
-}
-strcpy(str,p);
-a=isnum(str);
-if (a==1) t=INT_VALUE;
-if (a==2) t=NUMBER_VALUE;
-print_words();
-return t;
-}
-
-words(int cnt,int pos,FILE *f,char *p) {
-int f_pos;
-int z;
-int t;
-char buff[132];
-int states=-1;
-strcpy(buff,kwords[cnt].vals[pos]);
-	if (buff[0]=='*'&&strlen(buff)>1) {
-		strcpy(buff,&kwords[cnt].vals[pos][1]);
-		states=1;
-	}
-
-	if (stricmp(buff,"<ident>")==0)  {
-		printf("check %s\n",p);
-		if (isident(p)==0) return 0;
-	} else {
-		if (stricmp(p,buff)!=0) {
-			return 0;
-		}
-	}
-	if (states!=-1) start_state(buff,states);
-
-	if (kwords[cnt].vals[pos+1]==0) {
-		return 1;
-	}
-	p=read_word(f,&t);
-
-	z=words(cnt,pos+1,f,p);
-
-	if (z==0) {
-		//fseek(f,f_pos,SEEK_SET);
-		return 0;
-	}
+      word_cnt = w;
+      yylineno = rt;
+      fseek (f, a, SEEK_SET);
+      cnt++;
+    }
+  strcpy (str, p);
+  a = isnum (str);
+  if (a == 1)
+    t = INT_VALUE;
+  if (a == 2)
+    t = NUMBER_VALUE;
+  print_words ();
+  return t;
 }
 
-isident(char *p) {
-int a;
-for (a=0;a<strlen(p);a++) {
-	if (isalnum(p[a])||p[a]=='_') continue;
+words (int cnt, int pos, FILE * f, char *p)
+{
+  int f_pos;
+  int z;
+  int t;
+  char buff[132];
+  int states = -1;
+  strcpy (buff, kwords[cnt].vals[pos]);
+  if (buff[0] == '*' && strlen (buff) > 1)
+    {
+      strcpy (buff, &kwords[cnt].vals[pos][1]);
+      states = 1;
+    }
+
+  if (stricmp (buff, "<ident>") == 0)
+    {
+      printf ("check %s\n", p);
+      if (isident (p) == 0)
 	return 0;
-}
-return 1;
-}
-
-
-char *mk_word(int c) {
-static char buff[256];
-int a;
-strcpy(buff,"");
-for (a=0;kwords[c].vals[a];a++) {
-	if (a>0) strcat(buff, " ");
-
-	if (strcmp(kwords[c].vals[a],"<ident>")!=0) {
-		strcat(buff,kwords[c].vals[a]);
-	} else {
-		strcat(buff,xwords[a]);
+    }
+  else
+    {
+      if (stricmp (p, buff) != 0)
+	{
+	  return 0;
 	}
-}
-return buff;
+    }
+  if (states != -1)
+    start_state (buff, states);
+
+  if (kwords[cnt].vals[pos + 1] == 0)
+    {
+      return 1;
+    }
+  p = read_word (f, &t);
+
+  z = words (cnt, pos + 1, f, p);
+
+  if (z == 0)
+    {
+      //fseek(f,f_pos,SEEK_SET);
+      return 0;
+    }
 }
 
-to_lower_str(char *s) {
-int a;
-for (a=0;a<strlen(s);a++) {
-	s[a]=tolower(s[a]);
-}
+isident (char *p)
+{
+  int a;
+  for (a = 0; a < strlen (p); a++)
+    {
+      if (isalnum (p[a]) || p[a] == '_')
+	continue;
+      return 0;
+    }
+  return 1;
 }
 
-isnum(char *s) {
-int a;
-int dp=0;
-for (a=0;a<strlen(s);a++) {
-	if (s[a]=='.'&&dp==0) {dp++;continue;}
-	if  (s[a]>='0'&&s[a]<='9') continue;
-	return 0;
+char *
+mk_word (int c)
+{
+  static char buff[256];
+  int a;
+  strcpy (buff, "");
+  for (a = 0; kwords[c].vals[a]; a++)
+    {
+      if (a > 0)
+	strcat (buff, " ");
+
+      if (strcmp (kwords[c].vals[a], "<ident>") != 0)
+	{
+	  strcat (buff, kwords[c].vals[a]);
+	}
+      else
+	{
+	  strcat (buff, xwords[a]);
+	}
+    }
+  return buff;
 }
-if (strchr(s,'.')) return 2;
-return 1;
+
+to_lower_str (char *s)
+{
+  int a;
+  for (a = 0; a < strlen (s); a++)
+    {
+      s[a] = tolower (s[a]);
+    }
 }
+
+isnum (char *s)
+{
+  int a;
+  int dp = 0;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == '.' && dp == 0)
+	{
+	  dp++;
+	  continue;
+	}
+      if (s[a] >= '0' && s[a] <= '9')
+	continue;
+      return 0;
+    }
+  if (strchr (s, '.'))
+    return 2;
+  return 1;
+}
+
 #ifdef NOLONGERHERE
-turn_state(int kw,int v) {
-int a;
+turn_state (int kw, int v)
+{
+  int a;
 //printf("State changes %d to %d\n",kw,v);
-for (a=0;kwords[a].id>0;a++) {
-		if (kwords[a].id==kw) {
-				if (v) kwords[a].mode++;
-				else kwords[a].mode--;
-			return;
-		}
-}
-}
-#endif
-
-
-inc_yylineno(FILE *f) {
-	yylineno++;
-	fpos=ftell(f);
-}
-
-
-print_words() {
-int a;
-return;
-for (a=0;a<word_cnt;a++) {
-	printf("<%s>",xwords[a]);
-}
-printf("\n");
-}
-#endif
-
-
-
-char *ignull(char *ptr) {
-static char *empty="";
-if (ptr) return ptr;
-else return empty;
-}
-
-last_var_is_linked(char *tabname,char *pklist) {
-strcpy(pklist,"");
-strcpy(tabname,"");
-	if (last_var_found>=0) {
-		debug("last var=%d\n",last_var_found);
-		debug("....%s %s %s\n",vars[last_var_found].var_name,
-		vars[last_var_found].tabname,
-		vars[last_var_found].pklist);
-
-		strcpy(tabname, vars[last_var_found].tabname);
-		strcpy(pklist, vars[last_var_found].pklist);
+for (a = 0; kwords[a].id > 0;
+       a++)
+    {
+      if (kwords[a].id == kw)
+	{
+	  if (v)
+	    kwords[a].mode++;
+	  else
+	    kwords[a].mode--;
+	  return;
 	}
-if (strcmp(tabname,"")==0) return 0;
-else return 1;
+    }
 }
-		
+#endif
+
+inc_yylineno (FILE * f)
+{
+  yylineno++;
+  fpos = ftell (f);
+}
+
+print_words ()
+{
+  int a;
+  return;
+  for (a = 0; a < word_cnt; a++)
+    {
+      printf ("<%s>", xwords[a]);
+    }
+  printf ("\n");
+}
+#endif
+
+char *
+ignull (char *ptr)
+{
+  static char *empty = "";
+  if (ptr)
+    return ptr;
+  else
+    return empty;
+}
+
+last_var_is_linked (char *tabname, char *pklist)
+{
+  strcpy (pklist, "");
+  strcpy (tabname, "");
+  if (last_var_found >= 0)
+    {
+      debug ("last var=%d\n", last_var_found);
+      debug ("....%s %s %s\n", vars[last_var_found].var_name,
+	     vars[last_var_found].tabname, vars[last_var_found].pklist);
+
+      strcpy (tabname, vars[last_var_found].tabname);
+      strcpy (pklist, vars[last_var_found].pklist);
+    }
+  if (strcmp (tabname, "") == 0)
+    return 0;
+  else
+    return 1;
+}
+
 /* 
 split a string into peices, 
 	if a=0 return the number of pieces
 	if a=1 then return the first into buffetc...
 */
-int linked_split(char *s,int a,char *buff) {
-char *p;
-int z;
-int cnt;
-char buffer[2000];
-strcpy(buffer,s);
-strcat(buffer,",");
+int
+linked_split (char *s, int a, char *buff)
+{
+  char *p;
+  int z;
+  int cnt;
+  char buffer[2000];
+  strcpy (buffer, s);
+  strcat (buffer, ",");
 
-cnt=0;
-debug("linked_split %s %d %p",s,a,buff);
-if (a==0) {
-	for (z=0;z<strlen(buffer);z++) {
-		if (buffer[z]==',') {
-			cnt++;
+  cnt = 0;
+  debug ("linked_split %s %d %p", s, a, buff);
+  if (a == 0)
+    {
+      for (z = 0; z < strlen (buffer); z++)
+	{
+	  if (buffer[z] == ',')
+	    {
+	      cnt++;
+	    }
+	}
+      return cnt;
+    }
+  strcpy (buff, "");
+  p = buffer;
+  cnt = 0;
+  if (a > 0)
+    {
+      for (z = 0; z < strlen (buffer); z++)
+	{
+	  if (buffer[z] == ',')
+	    {
+	      cnt++;
+	      if (cnt == a)
+		{
+		  buffer[z] = 0;
+		  strcpy (buff, p);
+		  debug ("Linked found:%s", p);
+		  return 1;
 		}
+	      p = &buffer[z + 1];
+	    }
 	}
-	return cnt;
+    }
+  return 0;
 }
-strcpy(buff,"");
-p=buffer;
-cnt=0;
-if (a>0) {
-	for (z=0;z<strlen(buffer);z++) {
-		if (buffer[z]==',') {
-			cnt++;
-			if (cnt==a) {
-				buffer[z]=0;
-				strcpy(buff,p);
-				debug("Linked found:%s",p);
-				return 1;
-			}
-			p=&buffer[z+1];
+
+set_pklist (char *s)
+{
+  debug ("pklist set to %s\n", s);
+  strcpy (pklist, s);
+  strcpy (upd_using_notpk, "");
+  upd_using_notpk_cnt = 0;
+}
+
+is_pk (char *s)
+{
+  int a;
+  int cnt;
+  char buff[256];
+  debug ("Checking if %s is a pk in %s", s, pklist);
+  a = linked_split (pklist, 0, 0);
+  for (cnt = 1; cnt <= a; cnt++)
+    {
+      linked_split (pklist, cnt, buff);
+      if (strcasecmp (s, buff) == 0)
+	{
+	  debug ("Yes");
+	  return 1;
+	}
+    }
+  if (strlen (upd_using_notpk) > 0)
+    strcat (upd_using_notpk, ",");
+  strcat (upd_using_notpk, s);
+  upd_using_notpk_cnt++;
+  debug ("No");
+  return 0;
+}
+
+char *
+get_upd_using_notpk ()
+{
+  debug ("get_upd_using_notpk");
+  debug ("Returning %s", upd_using_notpk);
+  return upd_using_notpk;
+}
+
+char *
+get_upd_using_queries ()
+{
+  static char buff[2000];
+  int a;
+  debug ("get_upd_using_???");
+  strcpy (buff, "");
+
+  for (a = 0; a < upd_using_notpk_cnt; a++)
+    {
+      if (strlen (buff) > 0)
+	strcat (buff, ",");
+      strcat (buff, "?");
+    }
+  debug ("Returning %s", buff);
+  return buff;
+
+}
+
+char *
+ispdf ()
+{
+  if (rep_type == REP_TYPE_NORMAL)
+    return "";
+  else
+    return "pdf_";
+}
+
+int
+iscontinuecmd (char *s)
+{
+
+  if (strcmp (s, "FOR") == 0)
+    return 1;
+  //if (strcmp(s,"FOREACH")==0) return 1;
+  if (strcmp (s, "WHILE") == 0)
+    return 1;
+  if (strcmp (s, "CASE") == 0)
+    return 1;
+  //if (strcmp(s,"CONSTRUCT")==0) return 1;
+  //if (strcmp(s,"DISPLAY")==0) return 1;
+  //if (strcmp(s,"PROMPT")==0) return 1;
+
+  return 0;
+}
+
+generate_globals_for (char *s)
+{
+  char buff[1024];
+  char dirname[1024];
+  char fname[1024];
+  char *ptr;
+  char nocfile[256];
+  strcpy (buff, s);
+
+  if (strchr (buff, '/'))
+    {
+      strcpy (dirname, buff);
+      ptr = strrchr (dirname, '/');
+      *ptr = 0;
+      ptr++;
+      strcpy (fname, ptr);
+    }
+  else
+    {
+      strcpy (dirname, ".");
+      strcpy (fname, buff);
+    }
+
+  strcpy (nocfile, acl_getenv ("NOCFILE"));
+  setenv ("NOCFILE", "Yes", 1);
+  ptr = strchr (fname, '.');
+  *ptr = 0;
+  debug ("Trying to compile globals file %s\n", fname);
+  sprintf (buff, "cd %s; 4glc -G %s", dirname, fname);
+  system (buff);
+  setenv ("NOCFILE", nocfile, 1);
+
+}
+
+
+
+
+
+
+int
+print_push_rec_old_delete_me (char *s, char *b)
+{
+  int a;
+  long z;
+  char buff[256];
+  int cnt=0;
+  char bb[256];
+  char buffer[10000] = "";
+  char buffer2[10000];
+  char nbuff[10000];
+  char *ptr;
+  int lvf;
+  int lvl = 0;
+  debug ("/* pushing record  '%s' '%s' */\n", s, b);
+  if (s[0] == '.' && s[1] == 0)
+    return -1;
+  if (s[0] == 0)
+    return -1;
+
+  scan_variable (s);
+
+  if (last_var_found == -1)
+    {
+      yyerror ("Record or structure not defined");
+    }
+  lvf = last_var_found;
+
+  debug ("last_var_found=%d", lvf);
+
+  strcpy (buff, s);
+  strcat (buff, ".");
+  strcpy (bb, "");
+  ptr = strtok (buff, ".");
+
+
+  for (a = lvf; a < varcnt; a++)
+    {
+  	debug ("a=%d ptr=%s vars[a].var_name=%s", a,ptr,vars[a].var_name);
+      if (ptr == 0)
+	{
+	  debug ("ptr=%s buff=%s", ptr, buff);
+	  yyerror ("Record structure is too complex for use here");
+	}
+      debug ("Check %s %s\n",vars[a].var_name,ptr);
+
+      if (
+	  (strcmp (ptr, "*") == 0
+	   || strcmp (vars[a].var_name, with_strip_bracket (ptr)) == 0)
+	  && vars[a].level == lvl)
+	{
+	  debug (".* bit");
+	  if (ptr[0] != '*')
+	    {
+	      debug ("not .*");
+	      strcat (bb, ptr);
+	      strcat (bb, ".");
+	      ptr = strtok (0, ".");
+	    }
+	  else
+	    {
+	      debug (".*");
+	      cnt = 0;
+	      while (strcmp (vars[a].var_type, "_ENDREC") != 0)
+		{
+  		debug("Print var at %d \n",a);
+		  z =
+		    find_type (vars[a].var_type) +
+		    (atoi (vars[a].var_size) << 16);
+		debug("z=%d\n",z);
+		  if (z != -2)
+		    {
+		      strcpy (buffer2, buffer);
+		      sprintf (buffer, "%s push_variable(&%s%s,%d);\n",
+			       buffer2, bb, vars[a].var_name, z);
+		      a++;
+		      cnt++;
+		    }
+		  else
+		    {
+		      int c;
+		      char nvar[256];
+		      strcpy (buffer2, buffer);
+		      sprintf (nvar, "%s%s.*", bb, vars[a].var_name);
+		      debug("recursing with %s\n",nvar);
+		      c=print_push_rec (nvar, nbuff);
+		      sprintf (buffer, "%s %s\n", buffer2, nbuff);
+			debug ("print_push_rec returns %d for %s\n",print_push_rec,nvar);
+		      cnt += c;
+		      a += c;
+		      a++;
+		    }
 		}
+	      debug ("/* Returning %d */", cnt);
+	      strcpy (b, buffer);
+	      return cnt;
+	    }
+
+	  lvl++;
+
 	}
-}
-return 0;
-}
 
-set_pklist(char *s) {
-	debug("pklist set to %s\n",s);
-	strcpy(pklist,s);
-strcpy(upd_using_notpk,"");
-upd_using_notpk_cnt=0;
-}
-
-is_pk(char *s) {
-int a;
-int cnt;
-char buff[256];
-debug("Checking if %s is a pk in %s",s,pklist);
-a=linked_split(pklist,0,0);
-for (cnt=1;cnt<=a;cnt++) {
-	linked_split(pklist,cnt,buff);
-	if (strcasecmp(s,buff)==0) {
-		debug("Yes");
-		return 1;
-	}
-}
-if (strlen(upd_using_notpk)>0) strcat(upd_using_notpk,",");
-strcat(upd_using_notpk,s);
-upd_using_notpk_cnt++;
-debug("No");
-return 0;
-}
-
-char *get_upd_using_notpk() {
-debug("get_upd_using_notpk");
-debug("Returning %s",upd_using_notpk);
-return upd_using_notpk;
-}
-char *get_upd_using_queries() {
-static char buff[2000];
-int a;
-debug("get_upd_using_???");
-strcpy(buff,"");
-
-for (a=0;a<upd_using_notpk_cnt;a++) {
-	if (strlen(buff)>0) strcat(buff,",");
-	strcat(buff,"?");
-}
-debug("Returning %s",buff);
-return buff;
-	
-}
-
-char *ispdf() {
-if (rep_type==REP_TYPE_NORMAL) return "";
-else return "pdf_";
+    }
+  return -1;
 }
 
 
-int iscontinuecmd(char *s) {
 
-	if (strcmp(s,"FOR")==0) return 1;
-	//if (strcmp(s,"FOREACH")==0) return 1;
-	if (strcmp(s,"WHILE")==0) return 1;
-	if (strcmp(s,"CASE")==0) return 1;
-	//if (strcmp(s,"CONSTRUCT")==0) return 1;
-	//if (strcmp(s,"DISPLAY")==0) return 1;
-	//if (strcmp(s,"PROMPT")==0) return 1;
+int
+print_push_rec (char *s, char *b)
+{
+  int a;
+  long z;
+  char buff[256];
+  int cnt=0;
+  char bb[256];
+  char buffer[10000] = "";
+  char buffer2[10000];
+  char nbuff[10000];
+  char *ptr;
+  int lvf;
+  int lvl = 0;
 
 
-	return 0;
-}
+  strcpy(bb,s);
+
+  bb[strlen(bb)-1]=0;
+
+  debug ("pushing record  '%s' '%s'\n", s, b);
+  if (s[0] == '.' && s[1] == 0)
+    return -1;
+  if (s[0] == 0)
+    return -1;
+
+  scan_variable (s);
+
+  if (last_var_found == -1)
+    {
+      yyerror ("Record or structure not defined");
+    }
+
+  lvf = last_var_found+1;
+
+  debug ("last_var_found=%d -> %s", lvf,vars[lvf].var_name);
 
 
-generate_globals_for(char *s) {
-char buff[1024];
-char dirname[1024];
-char fname[1024];
-char *ptr;
-char nocfile[256];
-strcpy(buff,s);
+  for (a = lvf; a < varcnt; a++)
+    {
+	      if (strcmp (vars[a].var_type, "_ENDREC") == 0) {
+			debug("Spotted ENDREC @ %d\n",a);
+	      		strcpy (b, buffer);
+			return cnt;
+		}
 
-if (strchr(buff,'/')) {
-	strcpy(dirname,buff);
-	ptr=strrchr(dirname,'/');
-	*ptr=0;
-	ptr++;
-	strcpy(fname,ptr);
-} else {
-	strcpy(dirname,".");
-	strcpy(fname,buff);
-}
+		debug("Testing variable @%d\n",a);
+	       z =
+		    find_type (vars[a].var_type) +
+		    (atoi (vars[a].var_size) << 16);
 
-strcpy(nocfile,acl_getenv("NOCFILE"));
-setenv("NOCFILE","Yes",1);
-ptr=strchr(fname,'.');
-*ptr=0;
-debug("Trying to compile globals file %s\n",fname);
-sprintf(buff,"cd %s; 4glc -G %s",dirname,fname);
-system(buff);
-setenv("NOCFILE",nocfile,1);
 
+		  if (z != -2)
+		    {
+		      strcpy (buffer2, buffer);
+		      sprintf (buffer, "%spush_variable(&%s%s,%d);\n",
+		       buffer2, bb, vars[a].var_name, z);
+		      cnt++;
+		    }
+		  else
+		    {
+		      int c;
+		      char nvar[256];
+		      strcpy (buffer2, buffer);
+		      sprintf (nvar, "%s%s.*", bb, vars[a].var_name);
+
+		      debug("recursing with %s\n",nvar);
+		      c=print_push_rec (nvar, nbuff);
+		      sprintf (buffer, "%s%s\n", buffer2, nbuff);
+		      cnt += c;
+		      a += c;
+		      a++;
+		}
+
+    }
+  return -1;
 }

@@ -102,7 +102,14 @@ db_section	:	 /*empty*/ {strcpy($<str>$,"");lastlineno=yylineno;}
 set_database 	: DATABASE dbase_name {open_db($<str>2);strcpy($<str>$,$<str>2);lastlineno=yylineno;};
 
 globals_section : /* empty */ {strcpy($<str>$,"");lastlineno=yylineno;}
-| GLOBALS {
+| actual_globals_section;
+
+actual_globals_section : 
+	globals_entry
+	| actual_globals_section globals_entry
+;
+
+globals_entry: GLOBALS {
 strcpy(curr_func,"[Globals]");
 push_blockcommand("GLOBALS");
 printcomment("/* start of globals */\n");

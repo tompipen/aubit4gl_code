@@ -130,8 +130,8 @@ inc_counter();
 ;
 
 literal_expr: 
-ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%s);",$<str>2); }
-| ASCII variable { sprintf($<str>$,"push_ascii(%s);",$<str>2); }
+ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%s);",$<str>2);inc_counter(); }
+| ASCII variable { sprintf($<str>$,"push_ascii(%s);",$<str>2); inc_counter();}
 |
 CHAR_VALUE  {
 sprintf($<str>$,"push_char(%s);",$<str>1);
@@ -346,10 +346,10 @@ inc_counter();
 ;
 
 function_callb:
-DATE OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_date(1);\n",$<str>4,$<str>1);} 
-| MONTH OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_month(1);\n",$<str>4,$<str>1);} 
-| DAY OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_day(1);\n",$<str>4,$<str>1);} 
-| YEAR OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_year(1);\n",$<str>4,$<str>1);} 
+DATE OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_date(1);\n",$<str>4,$<str>1);inc_counter();} 
+| MONTH OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_month(1);\n",$<str>4,$<str>1);inc_counter();} 
+| DAY OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_day(1);\n",$<str>4,$<str>1);inc_counter();} 
+| YEAR OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_year(1);\n",$<str>4,$<str>1);inc_counter();} 
 ;
 
 

@@ -507,10 +507,11 @@ return 1;
 
 turn_state(int kw,int v) {
 int a;
-debug("State changes %d to %d\n",kw,v);
+//debug("State changes %d to %d\n",kw,v);
 for (a=0;kwords[a].id>0;a++) {
 		if (kwords[a].id==kw) {
-			debug("a=%d kw=%d\n",a,kw);
+
+			//debug("a=%d kw=%d\n",a,kw);
 				if (v) kwords[a].mode++;
 				else kwords[a].mode--;
 			//return;

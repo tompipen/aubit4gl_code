@@ -47,7 +47,7 @@ upd_val_list  : upd_val {push_gen(UPDVAL,$<str>1);} |
                 upd_val_list COMMA upd_val {push_gen(UPDVAL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);} 
 ;
 
-upd_val : value_expression | KW_NULL;
+upd_val : value_expression | KW_NULL | subquery  ;
 
 rollback_statement:
 	ROLLBACK_W 
@@ -530,8 +530,10 @@ table_reference_list:
 table_reference:
 	  table_name {sprintf($<str>$,$<str>1);}
 	| table_name correlation_name {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	| OUTER OPEN_BRACKET table_name  CLOSE_BRACKET {sprintf($<str>$," %s %s",$<str>1,$<str>3);}
 	| OUTER table_name {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	| OUTER table_name correlation_name {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| OUTER OPEN_BRACKET table_name correlation_name CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>3,$<str>4);}
 	;
 
 
@@ -689,6 +691,7 @@ predicate:
 op_all: {strcpy($<str>$,"");}
 	| ALL
 	| DISTINCT
+	| UNIQUE
 	;
 
 
@@ -894,8 +897,14 @@ printc($<str>1);
 
 	;
 
-curs_forupdate : {strcpy($<str>$,"0");} | FOR_UPDATE {strcpy($<str>$,"1");} ;
+curs_forupdate : {strcpy($<str>$,"0");} 
+		| FOR_UPDATE {strcpy($<str>$,"1");} 
+		| FOR_UPDATE_OF cur_update_list{strcpy($<str>$,"1");} 
+		;
 
+cur_update_list : identifier | cur_update_list identifier
+
+;
 
 cursor_specification_all:
 	cursor_specification_sel
@@ -928,7 +937,11 @@ select_statement:
 }
 ;
 
+
 select_statement2:
+	select_statement2_1 | char_or_var ;
+
+select_statement2_1:
 	SELECT setident op_ad select_list 
         opt_into_sel 
 	table_expression 
@@ -989,11 +1002,17 @@ select_list:
 value_expression_pls : 
 value_expression | value_expression  NAMED {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 ;
+
+
 column_specification : value_expression;
+
+
 
 value_expression:
 	value_expression DIVIDE value_expression
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| value_expression units_qual
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2);}
 	| value_expression MULTIPLY value_expression
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression PLUS value_expression
@@ -1142,6 +1161,19 @@ lock_stmt :
 share_or_exclusive :
 	SHARE
 	| EXCLUSIVE
+;
+
+
+
+
+
+units_qual:
+	UNITS_YEAR {sprintf($<str>$,"UNITS YEAR");}
+	| UNITS_MONTH {sprintf($<str>$,"UNITS MONTH"); }
+	| UNITS_DAY {sprintf($<str>$,"UNITS DAY);"); }
+	| UNITS_HOUR {sprintf($<str>$,"UNITS HOUR);"); }
+	| UNITS_MINUTE {sprintf($<str>$,"UNITS MINUTE);"); }
+	| UNITS_SECOND {sprintf($<str>$,"UNITS SECOND);"); }
 ;
 
 

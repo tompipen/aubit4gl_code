@@ -78,11 +78,11 @@ number_value_arr: INT_VALUE
 ;
 /*{push_type(0,0,$<str>1); }*/
 
-record_variable	: RECORD {push_record();} def_part END_RECORD {pop_record();}
-| 	RECORD_LIKE {push_record();debug("Like\n");} identifier DOT MULTIPLY
+record_variable	: RECORD {push_record();in_record++;} def_part END_RECORD {pop_record();in_record--;}
+| 	RECORD_LIKE {in_record++;push_record();debug("Like\n");} identifier DOT MULTIPLY
                   {debug("Link Table : %s\n",$<str>3);
                   push_rectab($<str>3);
-                  pop_record();} 
+                  pop_record();in_record--;} 
 | 	LINKED_TO {
 		push_record();debug("Like\n");} identifier PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET
                {

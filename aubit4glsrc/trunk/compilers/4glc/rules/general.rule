@@ -64,10 +64,10 @@ addmap('F',last_var,curr_func,yylineno,infilename);
 opt_help_no		:	{strcpy($<str>$,"0");} | HELP INT_VALUE {strcpy($<str>$,$<str>2);};
 
 
-identifier	: setident NAMED { debug("ident(%s)\n",$<str>2); }
- unsetident  { 
+identifier	: setident NAMED unsetident { 
 			strcpy($<str>$,downshift($<str>2)) ;
 }  
+| reserved_word  { strcpy($<str>$,downshift($<str>1)) ; }
 ;
 
 
@@ -123,3 +123,40 @@ YYERROR;
 real_number : NUMBER_VALUE | DOT INT_VALUE {
 		sprintf($<str>$,".%s",$<str>2);
 };
+
+
+reserved_word :
+PASSWORD
+|CHECK
+|CLEAR
+|CLIPPED
+|CLOSE
+|CONSTANT
+|CONSTRUCT
+|COUNT
+|OPTION
+|CYAN
+|HEADER
+|DATABASE
+|DBA
+|DBYNAME
+|DEC
+|DECIMAL
+|AUDIT
+|KWLINE
+|MODE
+|DEFAULT
+|DEFAULTS
+|DEFER
+|DELIMITER
+|DESC
+|DESCENDING
+|DIM
+|DISABLE
+|DOWN
+|DOWNSHIFT
+|DROP
+|FOREIGN
+|EXISTS
+|UPDATE
+;

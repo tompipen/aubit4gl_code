@@ -25,6 +25,7 @@ char last_var [256];
 char larr[4096]="";
 char larr2[4096]="";
 char clobber[64]="";
+extern int in_record;
 int racnt=0;
 int ccode=0;
 int errbomb=0;

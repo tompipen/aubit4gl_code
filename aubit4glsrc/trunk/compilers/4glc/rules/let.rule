@@ -3,13 +3,14 @@ LET {chk4var=1;} obind_var_let_list {chk4var=0;printcomment("/*let3*/\n");}  EQU
 {
 int from_exprs;
 int to_vars;
-printcomment("/*processing let*/\n");
+debug("/*processing let*/\n");
 to_vars=how_many_in_bind('o');
-printcomment("/* To vars=%d */\n",to_vars);
+debug("/* To vars=%d */\n",to_vars);
 if (to_vars>=1) {
     printc("{");
     to_vars=print_bind('o');
     from_exprs=atoi($<str>7);
+    debug("MJA MJA %d exprs %d vars",from_exprs,to_vars);
     printcomment("/* %d exprs %d vars */\n",from_exprs,to_vars);
     if (to_vars!=from_exprs) {yyerror("Number of variables in let not equal to number of values\n");YYERROR;}
     printc("pop_params(obind,%d);\n",from_exprs);
@@ -21,6 +22,6 @@ if (to_vars>=1) {
 }
 ;
 
-op_expr_null : KW_NULL {printc("push_null();\n");} | fgl_expr_concat ;
+op_expr_null : KW_NULL {printc("push_null();\n");strcpy($<str>$,"1");} | fgl_expr_concat ;
 
 
