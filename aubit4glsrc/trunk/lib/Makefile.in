@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.50 2002-04-19 03:45:17 afalout Exp $
+# $Id: Makefile.in,v 1.51 2002-04-22 00:32:23 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -45,11 +45,15 @@ ALL 				=aubit-config libEXREPORT_NOPDF${SO_EXT}
 4GLPC               =../bin/4glpc
 4GLPCFLAGS			=-verbose -nogtk
 
+ifeq "$(GTKBUILD)" "yes"
+	ALL += gtkgui
+endif
+
 ifdef COMSPEC
-	ALL				+=dlllibRPC_NORPC dllaubit4gl libSQL_noodbc${SO_EXT} dllFORM_NOFORM
+	ALL				+=dlllibRPC_NORPC dllaubit4gl libSQL_noodbc${SO_EXT} dllFORM_NOFORM dllMENU_NOMENU
 
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=dlllibRPC_XDR dllFORM_XDR
+		ALL			+=dlllibRPC_XDR dllFORM_XDR dllMENU_XDR
     endif
 
 	ifneq "@XML_RPC@" "no"
@@ -57,9 +61,9 @@ ifdef COMSPEC
     endif
 
 else
-    ALL				+=libaubit4gl${SO_EXT} libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT}
+    ALL				+=libaubit4gl${SO_EXT} libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT} libMENU_NOMENU${SO_EXT}
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT}
+		ALL			+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT} libMENU_XDR${SO_EXT}
     endif
 
 	ifneq "@XML_RPC@" "no"
@@ -106,8 +110,8 @@ all: note ${ALL}
 note:
 	@echo "Building: ${ALL}"
 
-all_gui: ${ALL_GUI}
-	@echo "Default GUI targets (${ALL_GUI}) built successfully."
+#all_gui: ${ALL_GUI}
+#	@echo "Default GUI targets (${ALL_GUI}) built successfully."
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets in sub-makefiles
@@ -120,23 +124,30 @@ libSQL_odbc32.dll:
 	${MAKE} -C libsql/odbc odbc32
 
 libEXREPORT_NOPDF.dll:
-	${MAKE} -C libpdf $(MKNAME) NOPDF.dll
+	${MAKE} -C libpdf NOPDF.dll
 
 libgtk4gl.dll:
 	${MAKE} -C libgui
 
-
 .PHONY : dllaubit4gl
 dllaubit4gl :
-	${MAKE} -C libaubit4gl $(MKNAME) $@
+	${MAKE} -C libaubit4gl $@
 
 .PHONY : dllFORM_XDR
 dllFORM_XDR :
-	${MAKE} -C libform/form_xdr $(MKNAME) $@
+	${MAKE} -C libform/form_xdr $@
 
 .PHONY : dllFORM_NOFORM
 dllFORM_NOFORM :
-	${MAKE} -C libform/form_xdr $(MKNAME) $@
+	${MAKE} -C libform/form_xdr $@
+
+.PHONY : dllMENU_XDR
+dllMENU_XDR :
+	${MAKE} -C libmenu/menu_xdr $@
+
+.PHONY : dllMENU_NOMENU
+dllMENU_NOFORM :
+	${MAKE} -C libmenu/menu_xdr $@
 
 dlllibRPC_XDR:
 	${MAKE} -C librpc/sun_rpc dlllibRPC_XDR
@@ -152,6 +163,10 @@ dlllibRPC_XMLRPC:
 ##                       Targets in sub-makefiles
 ## ==================================================================
 
+gtkgui:
+	$(MAKE) -C libgui
+
+
 aubit-config:
 	${MAKE} -C resource
 
@@ -159,19 +174,26 @@ loadmap:
 	${MAKE} -C ../tools/loadmap
 
 libaubit4gl.so :
-	${MAKE} -C libaubit4gl $(MKNAME) $@
+	${MAKE} -C libaubit4gl $@
 
 libFORM_NOFORM.so :
-	${MAKE} -C libform/form_xdr $(MKNAME) $@
+	${MAKE} -C libform/form_xdr $@
 
 libFORM_XDR.so :
-	${MAKE} -C libform/form_xdr $(MKNAME) $@
+	${MAKE} -C libform/form_xdr $@
+
+
+libMENU_NOMENU.so :
+	${MAKE} -C libmenu/menu_xdr $@
+
+libMENU_XDR.so :
+	${MAKE} -C libmenu/menu_xdr $@
 
 libEXREPORT_PDF.so:
-	${MAKE} -C libpdf $(MKNAME) $@
+	${MAKE} -C libpdf $@
 
 libEXREPORT_NOPDF.so:
-	${MAKE} -C libpdf $(MKNAME) $@
+	${MAKE} -C libpdf $@
 
 libSQL_noodbc.so:
 	${MAKE} -C libsql/nosql nosql.so
@@ -236,7 +258,9 @@ clean.librpc:
 clean.other:
 	${MAKE} -C libaubit4gl clean
 	${MAKE} -C libform/form_xdr clean
-
+	${MAKE} -C libmenu/menu_xdr clean
+	${MAKE} -C resource clean
+	${MAKE} -C ../tools/loadmap clean
 
 ## ==================================================================
 ##                         Other Targets

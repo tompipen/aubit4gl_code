@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.20 2002-04-15 05:04:29 afalout Exp $
+# $Id: Makefile.in,v 1.21 2002-04-22 00:32:23 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -63,11 +63,13 @@ CFLAGS		   +=-I. @RPCLIB_INCLUDE@
 #menu_x_xdr.c decompile.c menuwrite.c ??readmenu.c??
 
 
-SRC_COMMON      =mcompile.c menuwrite.c
+SRC_COMMON      =mcompile.c 
+#menuwrite.c and menu_x_xdr.c are now part of libMENU_XDR
+#MENU_X_XDR		=menu_x_xdr.c
+
 SOURCES.yacc 	=menu.yacc
 SOURCES.lex 	=menu.lex
 TARGETS.c 		=y.tab.c
-MENU_X_XDR		=menu_x_xdr.c
 DECOMPILE		=decompile.c
 OBJECTS 		=$(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
 
@@ -95,11 +97,11 @@ all: $(ALL)
 	@echo "Default targets ($(ALL)) successfully compiled"
 
 mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS)
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} ${RPCLIB_NAME}
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} ${AUBIT_LIB} ${RPCLIB_NAME} -lMENU_XDR
 	${LN} $@${EXE} ../../bin/$@${EXE}
 
 mdecompile: ${DECOMPILE} ${MENU_X_XDR}
-	${CC} -o $@ ${CFLAGS} $^ -L../../lib ${AUBIT_LIB} ${RPCLIB_NAME}
+	${CC} -o $@ ${CFLAGS} $^ -L../../lib ${AUBIT_LIB} ${RPCLIB_NAME} -lMENU_XDR
 	${CP} $@ ../../bin
 
 norpclib:
@@ -113,7 +115,8 @@ norpclib:
 ##                             Sub Targets
 ## ==================================================================
 
-${MENU_X_XDR}: menu_x.x
+menu_x_xdr.c:  menu_x.x
+#${MENU_X_XDR}: menu_x.x
 	${RPCGEN}
 
 menu_x.h: menu_x.x
@@ -138,7 +141,10 @@ endif
 ## ==================================================================
 
 y.tab.o: lex.yy.c
-rpc: ${MENU_X_XDR}
+#rpc: ${MENU_X_XDR}
+#rpc: menu_x_xdr.c
+rpc:
+	${RPCGEN}
 
 ## ==================================================================
 ##                          Clean targets

@@ -1,14 +1,13 @@
 ##########################################################################
 # 			Aubit 4gl configuration file.
-# This file replaces "aubitenv" and "a4glrc" and "aubitbuild.mk files
 #
 #   When this file have file name "aubitrc.in" - it's intendend for use
 #   with "configure" script, as input file for creation of "aubitrc".
-#   If you see any values that look like @xxx@ in here, "configure"
-#   was not executed.
+#   When this file have file name "aubitrc" - it's a configration file,
+#   and you are free to edit it as you wish
 #
 #   Read by:
-#			all Aubit compilers and compiler scripts
+#			all Aubit compilers and compiler script (4glpc)
 #           All Aubit compiler make files (via incl/Makefile-common include)
 #           All Aubit compiled 4gl programs
 #
@@ -19,12 +18,13 @@
 #			./.aubitrc
 #			$A4GL_INIFILE environment variable
 #
+#   Note: Defaults are in (), dependencies in []
 #
 ##########################################################################
 
 #############
 #this internal variable points to default location of Aubit config files
-#Default: AUBITETC=/etc/opt/aubit4gl
+#Default: /etc/opt/aubit4gl You should not need to change this.
 AUBITETC=/etc/opt/aubit4gl
 
 ############
@@ -33,37 +33,61 @@ AUBITETC=/etc/opt/aubit4gl
 #Default for binary distribution:/opt/aubit4gl
 AUBITDIR=@aubitdir@
 
+## ===================================================================
+## 				Loadable modules/library configurations
+## ===================================================================
 
 ############
-#name of SQL library to use when compiler was build with dynamic SQL support
-#Options: static nosql iodbc unixodbc esql ifxodbc pgodbc odbc32
-#Default: A4GL_SQLTYPE=nosql
+#Name of default SQL library to use.
+#When used: run-time and compile-time
+#Options: static (nosql) iodbc unixodbc esql ifxodbc pgodbc odbc32
 A4GL_SQLTYPE=@A4GL_SQLTYPE@
 
 ############
-#A4GL_PDFTYPE determine which library to link with when using
-#4glpc. You need to set this to PDF
-#if you want to use PDF reports.  Options: PDF, NOPDF
-#Default: A4GL_PDFTYPE=NOPDF
+#Determine default driver for Extended Reporting
+#When used: run-time only
+#Options: PDF, (NOPDF)
 A4GL_PDFTYPE=@A4GL_PDFTYPE@
 
-
 ############
-#Determine which RPC library will be linked to compiled programs
-#Options: SUNRPC, NORPC. Default: NORPC
+#Determine default RPC driver to load
+#When used: run-time only
+#Options: SUNRPC, (NORPC)
 A4GL_RPCTYPE=@A4GL_RPCTYPE@
 
 #############
-#Defines in which UI (user intertface) mode will programs run.
-#Options are dependent on libraries installed on your system [in ()]:
-#All options are: CONSOLE (no deps), TUI (curses), GTK (GTK+).
-#Default: AUBITGUI=TUI
+#Defines default UI (user intertface) driver to load
+#When used: run-time only
+#Options: (CONSOLE) [no deps.], TUI [curses], GTK [GTK+].
 AUBITGUI=@AUBITGUI@
 
 ############
-#Default output language for 4gl compiler:
-#Default: OUTPUTLANG=c   Options: perl, c
-OUTPUTLANG=c
+#Default output language driver for 4gl compiler:
+#When used: compie-time only
+#Options: perl, (c)
+OUTPUTLANG=@OUTPUTLANG@
+
+############
+#Default forms driver to be loaded
+#When used: run-time only
+#Options: (NOFORM), XDR
+A4GL_FORMTYPE=@A4GL_FORMTYPE@
+
+############
+#Default menu driver to be loaded:
+#When used: run-time only
+#Options: (NOMENU), XDR
+A4GL_MENUTYPE=@A4GL_MENUTYPE@
+
+############
+#Default help message driver to be loaded:
+#When used: run-time only
+#Options: (NATIVE), XML
+A4GL_MSGTYPE=@A4GL_MSGTYPE@
+
+## ===================================================================
+##     Run-time settings for Aubit compiled programs
+## ===================================================================
 
 ############
 #When you encouter programs that chrash, use this for debugging - it will
@@ -71,7 +95,9 @@ OUTPUTLANG=c
 #dump, so you don't have file 'core' to run 'gdb' on. WARNING: do not set
 #this under normal circumstanced - all programs will create debug.out file
 #when they run, files can be VERY large, and they will slow down progrms
-#execution considerably:
+#execution considerably. This setting applies to all Aubit compiler 
+#executables (includign all compilers) and to all 4gl programs compiled
+#with Aubit compiler.
 #Default=<not set>
 #DEBUG=ALL
 
@@ -85,145 +111,32 @@ OUTPUTLANG=c
 #SQLUID=mydbusername
 #SQLPWD=mydbpassword
 
-
-#obsolete: remove it:
-##################
-#If you compiled compiler with PDF libraries (PDFBUILD=yes), you MUST
-#(Why?) instruct 4glpc linker to add libraries for PDF report generation,
-#but then again, maybe you don't want to link every 4gl program for use
-#with them, but you MUST at the moment (you can also use -pdf flag to
-#4glpc instead):
-#Affects: 4glpc
-#Default: USE_PDF=no
-#USE_PDF=@USE_PDF@
+## ===================================================================
+##     Settings used only by 4glpc and/or other scripts
+## ===================================================================
 
 ##################
 #defines command executed as C compiler for your system, when used by 4glpc:
 #Affects: 4glpc
 #Default: CC="gcc -O"
-#GCC="@CC@"
 CC="@CC@"
 
 #################
 #Depending on installed 4gl compilers, amake can compile same definition
-#oth the 4gl programs with differnt 4gl compilers. Here you can specify
+#of the 4gl programs with differnt 4gl compilers. Here you can specify
 #which make rules will be included by default:
-#Default: MAKERULES=@aubitdir@/incl/a4gl.mk
-
-##################
-#GTK GUI interface: yes or no (needs GTK libraries on system)
-#Affects: main makefile
-#Default: GTKBUILD=no
-GTKBUILD=@GTKBUILD@
-
-#PDF report library: yes or no (needs PDF libraries on system)
-#Affects: main makefile
-#Default: PDFBUILD=no
-PDFBUILD=@PDFBUILD@
-
-#Jabber/XML libraries: yes or no (need iksemel libraries on system)
-#Affects: main makefile
-#Default: JABBERBUILD=no
-JABBERBUILD=@JABBERBUILD@
-
-#If you want to build compiler that will generate Perl code, not only
-#C code, set PERLBUILD to yes
-#Default: PERLBUILD=no
-PERLBUILD=@PERLBUILD@
-
-#defines how will SQL support be built into compiler: dynamic is default.
-#if you enter "static", only SQL/ODBC library defined with "ODBC"
-#parameter will be staticaly linked.
-#Default: ODBC_LINK=dynamic
-ODBC_LINK=dynamic
-
-#If linking SQL support dynamically, you can have more then one SQL
-#manager/driver installed on your system, and compiled Aubit to use them
-#selecting it ar run time with environment variable :
-#A4GL_SQLTYPE=libSQL_<name>.so [name of library to use (defaults to nosql)]
-#if you define more then one HAVE_xxxx variable here as "yes" you MUST use
-#AUBITBUILDMKMULTI to define multiple libraries paths
-#Defaults: HAVE_UNIXODBC=no HAVE_IODBC=no
-HAVE_UNIXODBC=@HAVE_UNIXODBC@
-HAVE_IODBC=@HAVE_IODBC@
-
-#If linking SQL support statically: ODBC manager: "unix" "iodbc" "odbc32"
-#Affects: main makefile Options: unix, iodbc, so, no
-#Default: ODBC=no
-#we can use @A4GL_SQLTYPE@ here, but no is not no, it's "nosql"
-ODBC=no
-
-#If linking SQL support statically: name of library to link compiler with
-#typically, "odbc" for unixODBC, "iodbc" for iODBC manager
-#Affects: main makefile and 4glpc
-#Default: ODBC_LIB_NAME=noodbc
-ODBC_LIB_NAME=@ODBC_LIB_NAME@
-
-#where can we find ODBC header files for this ODBC manager/driver
-#(odbc.h, sql.h ...etc.)
-#fixme: rename this to ODBC_LIB_HEADERS
-#Affects: main makefile, 4glpc and run-time encironment
-#ODBCLIBDIR=/opt/unixODBC/include
-#Default: ODBCLIBDIR=/usr/include
-#Configure note: we cannot use includedir variable because it
-#returns "${prefix}/include" and we cannot process variables here
-ODBCLIBDIR=@oldincludedir@
-
-#where can we find ODBC_LIB_NAME (libiodbc.so, libodbc.so...)
-#Affects: main makefile
-#ODBC_LIB_DIR=/opt/unixODBC/lib
-#Default: ODBC_LIB_DIR=/usr/lib
-#Configure note: we cannot use libdir variable here because it returns
-#returns "${exec_prefix}/lib" and we cannot process variables here
-ODBC_LIB_DIR=/usr/lib
+#Affects: amake only
+#Default: <not set>
+#MAKERULES=@aubitdir@/incl/a4gl.mk
 
 ####################
 #names of libraries paths 'configure' detected outside of standard
-#library search paths; note that they will be adde to ld.so.conf
-#automatically (but this applies onl;y to run-time loader, and not linekr)
+#library search paths; note that they will be added to ld.so.conf
+#automatically (but this applies only to run-time loader, and not linker)
 #and on non-Linux platforms to .bashrc of the user, but this applies only to
-#that user.
-#that installed compiler, but
+#that user that installed compiler. In other cases, you must make sure
+#this is set in your LD_LIBRARY_PATH or equivalent manually.
+#Default=<no default value>
 ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@
-
-#this is used in makefiles and 4glpc (typically -lrpcsvc or -lrpclib):
-RPCLIB_NAME=@RPCLIB_NAME@
-
-###############################
-#GTK+ 2.0 configuration
-
-#To use GTK "pkg-config" utility, set GLIBVER, GDKVER and GTKVER to
-#version strings reported by "pkg-config --list-all"
-#This will also be used in makefiles for
-#GLIB_CFLAGS=`pkg-config --cflags ${GLIBVER}`
-#GLIB_LIBS=`pkg-config --libs ${GLIBVER}`
-#unless GLIBVER=old, when hard-coded flags and GTK libs will be used
-#GTKVER is used in "4glpc" script
-
-#GLIBVER=old
-#GLIBVER=glib-2.0
-#GDKVER=gdk-1.3-win32-production
-#GTKVER=gtk+-1.3-win32-production
-
-#Your GTK/GDK/GLIB installation path; don't forget to include
-#$GTKPATH/bin and $GTKPATH/lib in yout PATH
-#GTKPATH=/usr/src/gtk
-
-#needed also in 4glpc:
-GTK_CONFIG="@GTK_CONFIG@"
-PKG_CONFIG="@PKG_CONFIG@"
-#package names reported by gtk-config or pkg-config:
-GTK_NAME="@GTK_NAME@"
-GDK_NAME="@GDK_NAME@"
-GLIB_NAME="@GLIB_NAME@"
-
-
-MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
-
-
-#FIXME: missing stuff from aubitbuild-multi.mk
-
-
-
 
 #-------------------------------- EOF -----------------------------

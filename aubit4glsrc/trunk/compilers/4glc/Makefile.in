@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.26 2002-04-15 05:04:29 afalout Exp $
+# $Id: Makefile.in,v 1.27 2002-04-22 00:32:23 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -93,8 +93,8 @@ ifneq "${COMSPEC}" ""
 	LIB_C		=
     4GLCAOBJ	+=${4GLCOBJ_C}
 else
-	LIB_PERL	=libA4GLLEX_PERL${SO_EXT}
-	LIB_C		=libA4GLLEX_C${SO_EXT}
+	LIB_PERL	=../../lib/libA4GLLEX_PERL${SO_EXT}
+	LIB_C		=../../lib/libA4GLLEX_C${SO_EXT}
 	LIB_PERL_L  =-lA4GLLEX_PERL
 	LIB_C_L     =-lA4GLLEX_C
 endif
@@ -116,10 +116,12 @@ all: ${ALL}
 	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_PERL_L}
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
-libA4GLLEX_C.so: ${4GLCOBJ_C}
+../../lib/libA4GLLEX_C.so: libA4GLLEX_C.so
+libA4GLLEX_C.so : ${4GLCOBJ_C}
 	${LD} ${SO_LDFLAGS} -o $@ $^
 	${CP} $@ ../../lib
 
+../../lib/libA4GLLEX_PERL.so: libA4GLLEX_PERL.so
 libA4GLLEX_PERL.so: ${4GLPERL_OBJ}
 	${LD} ${SO_LDFLAGS} -o $@ $^
 	${CP} $@ ../../lib

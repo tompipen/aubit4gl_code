@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-04-19 03:45:18 afalout Exp $
+# $Id: Makefile.in,v 1.2 2002-04-22 00:32:24 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,26 +36,23 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPC               =../../bin/4glpc
-4GLPCFLAGS			=-verbose -nogtk
-
-#CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../compilers/fcompile -Ilibincl ${CFLAGS}
+#4GLPCFLAGS			=-verbose
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 loadmap:
-	${SH} ${4GLPC} ${4GLPCFLAGS} -nopdf loadmap.4gl -o $@
-	cp $@${EXE} ../bin
+	${SH} ${4GLPC} ${4GLPCFLAGS} loadmap.4gl -o $@
+	${CP} $@${EXE} ../../bin
 
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
 clean :
-	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c project.c \
-    loadmap loadmap.c loadmap.h core aubit-config *.out *.glb *.so *.a  \
-	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp libaubit4gl.def
+	${RM} loadmap loadmap.c loadmap.h core *.out *.glb *.so *.a  \
+	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp
 
 #----------------------------------- EOF -------------------------------
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.58 2002-04-19 03:45:12 afalout Exp $
+# $Id: configure.in,v 1.59 2002-04-22 00:32:17 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -152,8 +152,18 @@ AC_SUBST(AUBIT_BUILD)
 AC_SUBST(FULLNAME)
 AC_SUBST(SHORTNAME)
 
-#SQL
+
+#defaults for aubitrc:
 AC_SUBST(A4GL_SQLTYPE)
+AC_SUBST(A4GL_PDFTYPE)
+AC_SUBST(A4GL_RPCTYPE)
+AC_SUBST(AUBITGUI)
+AC_SUBST(OUTPUTLANG)
+AC_SUBST(A4GL_FORMTYPE)
+AC_SUBST(A4GL_MENUTYPE)
+AC_SUBST(A4GL_MSGTYPE)
+
+#SQL
 AC_SUBST(ODBC_LIB_NAME)
 
 #Informix ESQL/C
@@ -187,7 +197,6 @@ AC_SUBST(IODBC_LIBS)
 
 #GTK+
 AC_SUBST(GTKBUILD)
-AC_SUBST(AUBITGUI)
 AC_SUBST(GTK_LIB_PATH)
 AC_SUBST(GTK_INC_PATH)
 AC_SUBST(GTKLIBS)
@@ -202,7 +211,6 @@ AC_SUBST(RPCLIB_LFLAGS)
 AC_SUBST(RPCLIB_NAME)
 AC_SUBST(USE_RPCGEN)
 AC_SUBST(HAVE_RPCLIB)
-AC_SUBST(A4GL_RPCTYPE)
 
 #XML RPC
 AC_SUBST(XML_RPC)
@@ -211,7 +219,6 @@ AC_SUBST(XMLRPC_C_CONFIG)
 #PDF
 AC_SUBST(USE_PDF)
 AC_SUBST(PDFBUILD)
-AC_SUBST(A4GL_PDFTYPE)
 AC_SUBST(PDFLIB_I_FLAGS)
 AC_SUBST(PDFLIB_L_FLAGS)
 
@@ -273,25 +280,17 @@ fi
 
 FULLNAME="Aubit 4gl compiler"
 SHORTNAME="aubit4gl"
-
-
 COMPILE_DATE=`date +%d-%m-%Y`
 aubitdir=`pwd`
 test_rpclib="1"
 GTKBUILD=no
-AUBITGUI=CONSOLE
-A4GL_SQLTYPE=nosql
-
 HAVE_IODBC=no
 HAVE_UNIXODBC=no
 HAVE_IFXODBC=no
 HAVE_PGODBC=no
 PIC="-fPIC"
 LDFLAGS_SHARED="-fPIC -shared"
-
 ODBC_LIB_NAME=noodbc
-A4GL_PDFTYPE=NOPDF
-A4GL_RPCTYPE=NORPC
 USE_PDF=no
 PDFBUILD=no
 PERLBUILD=no
@@ -299,6 +298,16 @@ JABBERBUILD=no
 AUBIT_DEBUG=1
 IFMX_ESQLC=no
 cygwin=0
+
+#defaults for aubitrc:
+A4GL_SQLTYPE=nosql
+A4GL_PDFTYPE=NOPDF
+A4GL_RPCTYPE=NORPC
+AUBITGUI=CONSOLE
+OUTPUTLANG=C
+A4GL_FORMTYPE=NOFORM
+A4GL_MENUTYPE=NOMENU
+A4GL_MSGTYPE=NATIVE
 
 #case "$target_os" in
 case $host in
@@ -1385,7 +1394,6 @@ AC_ARG_WITH(gtk,
 		if test "$ac_cv_lib_gtk_main" = yes && test "$ac_cv_lib_glib_main" = yes && test "$ac_cv_lib_gdk_main" = yes; then
 					AC_DEFINE(HAVE_GTK,1,[ ])
 					GTKBUILD=yes
-					AUBITGUI=GTK
 
 					if test "$GTK_CONFIG" != "no"; then
 	                    #this will get assigned in makefile iteself
@@ -1556,7 +1564,6 @@ AC_ARG_WITH(pdf,
 		LDFLAGS=$old_LDFLAGS
 
 		if test $ac_cv_lib_pdf_main = yes; then
-			A4GL_PDFTYPE=PDF
 			USE_PDF=yes
     	    PDFBUILD=yes
 			PDFLIB_I_FLAGS="$TEST_PDFLIB_I_FLAGS"
@@ -1830,9 +1837,6 @@ AC_CHECK_LIB([curses], [main])
         HAVE_CURSES=1
 	    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
 		CURSES_LIB_PATH="-L/lib"
-		if test "$AUBITGUI" = "CONSOLE" ; then
-			AUBITGUI=TUI
-        fi
 		AC_DEFINE(HAVE_CURSES_H)
 	else
 		# FIXME: Replace `main' with a function in `-lcurses':
@@ -1845,22 +1849,11 @@ AC_CHECK_LIB([curses], [main])
 	        HAVE_CURSES=1
 		    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
 			CURSES_LIB_PATH="-L/lib"
-			if test "$AUBITGUI" = "CONSOLE" ; then
-				AUBITGUI=TUI
-	        fi
 			AC_DEFINE(HAVE_NCURSES_H)
 
         else
 			HAVE_CURSES=0
 			CURSES_INC_PATH="-I$aubitdir/tools/no_curses/cygwin"
-			if test "$AUBITGUI" = "CONSOLE" ; then
-				AC_MSG_WARN(No curses or GTK detected - your only screen UI will be CONSOLE)
-	        else
-				AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
-	        fi
-			AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS)
-			AC_MSG_WARN(ONLY DISPLAY ERROR MESSAGE MENU & PROMPT WILL WORK!)
-			AC_MSG_WARN(Considder installing 'curses' libraries)
         fi
 	fi
 
@@ -2009,18 +2002,12 @@ esac
     #  lt_cv_prog_cc_pic='-DDLL_EXPORT'
     #  ;;
 
-
-
-
-
-
 ## ==================================================================
 ##            Decide on default SQL driver
 ## ==================================================================
 
-
 #if more then one ODBC support was detected, this one will
-#ovverride A4GL_SQLTYPE set earlier in this script:
+#override A4GL_SQLTYPE set earlier in this script:
 #Options: static nosql iodbc unixodbc esql ifxodbc pgodbc odbc32
 
 if test "$default_odbc" != ""; then
@@ -2057,14 +2044,13 @@ else
 	fi
 fi
 
-
 ## ==================================================================
 ##            Decide on default RPC driver
 ## ==================================================================
 
 if test "$default_rpc" != ""; then
-	#User can force SQL driver default with --default-odbc=xxxx switch
-	A4GL_RPCTYPE="$default_rpcc"
+	#User can force RPC driver default with --default-rpc=xxxx switch
+	A4GL_RPCTYPE="$default_rpc"
 else
 
 	if test "$XML_RPC" != "no"; then
@@ -2072,8 +2058,86 @@ else
     fi
 
 	if test "$HAVE_RPCLIB" != "no"; then
-		A4GL_RPCTYPE="SUNRPC"
+		A4GL_RPCTYPE="XDR"
     fi
+fi
+
+## ==================================================================
+##            Decide on default FORM driver
+## ==================================================================
+
+if test "$default_form" != ""; then
+	#User can force FORM driver default with --default-form=xxxx switch
+	A4GL_FORMTYPE="$default_form"
+else
+	if test "$HAVE_RPCLIB" != "no"; then
+		A4GL_FORMTYPE="XDR"
+    fi
+fi
+
+## ==================================================================
+##            Decide on default MENU driver
+## ==================================================================
+
+if test "$default_menu" != ""; then
+	#User can force MENU driver default with --default-menu=xxxx switch
+	A4GL_MENUTYPE="$default_menu"
+else
+	if test "$HAVE_RPCLIB" != "no"; then
+		A4GL_MENUTYPE="XDR"
+    fi
+fi
+
+## ==================================================================
+##            Decide on default EXTended REPorts driver
+## ==================================================================
+
+if test "$default_report" != ""; then
+	#User can force EXREPORT driver default with --default-report=xxxx switch
+	A4GL_PDFTYPE="$default_report"
+else
+	if test "$PDFBUILD" != "no"; then
+		A4GL_PDFTYPE="PDF"
+    fi
+fi
+
+## ==================================================================
+##            Decide on default UI driver
+## ==================================================================
+
+if test "$default_ui" != ""; then
+	#User can force UI driver default with --default-ui=xxxx switch
+	AUBITGUI="$default_ui"
+else
+	if test "$HAVE_CURSES" = "1"; then
+		AUBITGUI="TUI"
+    fi
+
+	if test "$GTKBUILD" != "no"; then
+		AUBITGUI="GTK"
+    fi
+
+
+	if test "$AUBITGUI" = "CONSOLE" ; then
+		AC_MSG_WARN(No curses or GTK detected - your only screen UI will be CONSOLE)
+		#AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
+		AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS)
+		AC_MSG_WARN(ONLY DISPLAY ERROR MESSAGE MENU & PROMPT WILL WORK!)
+		AC_MSG_WARN(Considder installing 'curses' libraries)
+    fi
+fi
+
+## ==================================================================
+##            Decide on default COMPILER OUTPUT driver
+## ==================================================================
+
+if test "$default_comp" != ""; then
+	#User can force COMPILER driver default with --default-comp=xxxx switch
+	OUTPUTLANG="$default_comp"
+#else
+	#if test "$PERLBUILD" != "no"; then
+	#	OUTPUTLANG="PERL"
+    #fi
 fi
 
 
@@ -2100,6 +2164,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 compilers/menus/Makefile
                 lib/libaubit4gl/Makefile
                 lib/libform/form_xdr/Makefile
+                lib/libmenu/menu_xdr/Makefile
 				lib/libpdf/Makefile
                 lib/libgui/Makefile
                 lib/libtui/Makefile

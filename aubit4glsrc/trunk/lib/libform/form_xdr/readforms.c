@@ -26,7 +26,6 @@
 #define POS_VERY_FIRST 2
 #define POS_VERY_LAST 4
 #define POS_LAST 8
-int attr_name_match (struct struct_scr_field *field, char *s);
 
 #ifdef __CYGWIN__
 extern int status;
@@ -52,7 +51,7 @@ int comments (struct struct_scr_field *fprop);
 //char *strip_quotes (char *s);
 void *get_curr_form ();
 //char *strip_quotes (char *s);
-char *replace_sql_var (char *s);
+
 
 extern int errno;
 
@@ -63,7 +62,7 @@ char *read_string_dup (FILE * ofile);
 		    //va_list * ap);
 char *string_width (char *a);
 //WINDOW *create_window (char *name, int x, int y, int w, int h, int border);
-char *get_str_attribute (struct struct_scr_field *f, int str);
+
 //extern WINDOW *currwin;
 char *new_string (int a);
 int set_fields2 (int nv, struct BINDING *vars, int d, int n, ...);
@@ -299,45 +298,6 @@ comments (struct struct_scr_field * fprop)
 }
 
 
-
-
-
-
-
-attr_name_match (struct struct_scr_field * field, char *s)
-{
-  char colname[40];
-  char tabname[40];
-  char buff[80];
-  int aa;
-  int ab;
-  //debug ("Field : %p\n", field);
-  //debug ("attr_name_match : %s", s);
-  bname (s, tabname, colname);
-
-  //debug ("Splits to %s & %s", tabname, colname);
-  //debug ("field is [%s %s]", field->tabname, field->colname);
-
-  aa = strcmp (field->tabname, tabname);
-  ab = strcmp (field->colname, colname);
-  //debug ("Matches = %d %d ", aa, ab);
-  if ((ab == 0) || (colname[0] == '*'))
-    {
-      debug ("Match on *");
-      return 1;
-    }
-  if (ab == 0 && tabname[0] == 0)
-    {
-      debug ("Matched");
-      return 1;
-    }
-  //debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
-	 //field->colname, colname);
-  return 0;
-}
-
-
-
 dump_srec (struct s_form_dets * fd)
 {
   int a;
@@ -358,26 +318,6 @@ dump_srec (struct s_form_dets * fd)
 	}
     }
 }
-
-
-
-find_srec (struct_form * fd, char *name)
-{
-  int a;
-  int b;
-
-debug("No of records : %d",fd->records.records_len);
-
-  for (a = 0; a < fd->records.records_len; a++)
-    {
-      if (strcasecmp (name, fd->records.records_val[a].name) == 0)
-	return a;
-    }
-  return -1;
-}
-
-
-
 
 
 //*** This should be moved to lib tui
@@ -545,36 +485,6 @@ include_range_check (char *ss, char *ptr, int dtype)
 }
 
 
-char *
-replace_sql_var (char *s)
-{
-  static char buff[1024];
-  char *ptr;
-  if (s[0] != '\n')
-    {
-      return s;
-    }
-  strcpy (buff, &s[1]);
-
-  if (strcmp (buff, "today") == 0)
-    {
-      push_today ();
-      ptr = char_pop ();
-      strcpy (buff, ptr);
-      acl_free (ptr);
-    }
-  if (strcmp (buff, "user") == 0)
-    {
-      push_user ();
-      ptr = char_pop ();
-      strcpy (buff, ptr);
-      acl_free (ptr);
-    }
-  debug ("replace_sql_var :Returning %s", buff);
-  return buff;
-
-}
-
 
 /* moved to others.c, because it is also used by 4glc
 
@@ -622,37 +532,6 @@ set_bool_attribute (struct struct_scr_field * f, int bool, int value)
 	return 1;
     }
 
-  return 0;
-}
-
-
-has_str_attribute (struct struct_scr_field * f, int str)
-{
-  int a;
-  for (a = 0; a < f->str_attribs.str_attribs_len; a++)
-    {
-      if (f->str_attribs.str_attribs_val[a].type == str)
-	return 1;
-    }
-  return 0;
-}
-
-
-char *
-get_str_attribute (struct struct_scr_field *f, int str)
-{
-  int a;
-
-  if (!has_str_attribute (f, str))
-    {
-      return 0;
-    }
-
-  for (a = 0; a < f->str_attribs.str_attribs_len; a++)
-    {
-      if (f->str_attribs.str_attribs_val[a].type == str)
-	return f->str_attribs.str_attribs_val[a].value;
-    }
   return 0;
 }
 
@@ -712,3 +591,134 @@ chk_iskey (char *keys)
     }
   return 0;
 }
+
+
+/* moved to lib/libaubit4gl/others.c because it is used by other modules too, not just forms
+
+char *replace_sql_var (char *s);
+int attr_name_match (struct struct_scr_field *field, char *s);
+char *get_str_attribute (struct struct_scr_field *f, int str);
+
+
+char *
+replace_sql_var (char *s)
+{
+  static char buff[1024];
+  char *ptr;
+  if (s[0] != '\n')
+    {
+      return s;
+    }
+  strcpy (buff, &s[1]);
+
+  if (strcmp (buff, "today") == 0)
+    {
+      push_today ();
+      ptr = char_pop ();
+      strcpy (buff, ptr);
+      acl_free (ptr);
+    }
+  if (strcmp (buff, "user") == 0)
+    {
+      push_user ();
+      ptr = char_pop ();
+      strcpy (buff, ptr);
+      acl_free (ptr);
+    }
+  debug ("replace_sql_var :Returning %s", buff);
+  return buff;
+
+}
+
+
+
+
+attr_name_match (struct struct_scr_field * field, char *s)
+{
+  char colname[40];
+  char tabname[40];
+  char buff[80];
+  int aa;
+  int ab;
+  //debug ("Field : %p\n", field);
+  //debug ("attr_name_match : %s", s);
+  bname (s, tabname, colname);
+
+  //debug ("Splits to %s & %s", tabname, colname);
+  //debug ("field is [%s %s]", field->tabname, field->colname);
+
+  aa = strcmp (field->tabname, tabname);
+  ab = strcmp (field->colname, colname);
+  //debug ("Matches = %d %d ", aa, ab);
+  if ((ab == 0) || (colname[0] == '*'))
+    {
+      debug ("Match on *");
+      return 1;
+    }
+  if (ab == 0 && tabname[0] == 0)
+    {
+      debug ("Matched");
+      return 1;
+    }
+  //debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
+	 //field->colname, colname);
+  return 0;
+}
+
+
+
+char *
+get_str_attribute (struct struct_scr_field *f, int str)
+{
+  int a;
+
+  if (!has_str_attribute (f, str))
+    {
+      return 0;
+    }
+
+  for (a = 0; a < f->str_attribs.str_attribs_len; a++)
+    {
+      if (f->str_attribs.str_attribs_val[a].type == str)
+	return f->str_attribs.str_attribs_val[a].value;
+    }
+  return 0;
+}
+
+
+
+find_srec (struct_form * fd, char *name)
+{
+  int a;
+  int b;
+
+debug("No of records : %d",fd->records.records_len);
+
+  for (a = 0; a < fd->records.records_len; a++)
+    {
+      if (strcasecmp (name, fd->records.records_val[a].name) == 0)
+	return a;
+    }
+  return -1;
+}
+
+
+
+has_str_attribute (struct struct_scr_field * f, int str)
+{
+  int a;
+  for (a = 0; a < f->str_attribs.str_attribs_len; a++)
+    {
+      if (f->str_attribs.str_attribs_val[a].type == str)
+	return 1;
+    }
+  return 0;
+}
+
+
+
+
+
+
+
+*/

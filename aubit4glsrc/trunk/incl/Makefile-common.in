@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.31 2002-04-15 05:04:29 afalout Exp $
+# $Id: Makefile-common.in,v 1.32 2002-04-22 00:32:23 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -465,6 +465,120 @@ export LD_LIBRARY_PATH
 #AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not
 #in Aubit compiler source code tree; it is added to this file by "make install"
 export AUBIT_BIN_INSTALL
+
+## ==================================================================
+##                      Moved from aubitrc:
+## ==================================================================
+
+##################
+#PDF report library: yes or no (needs PDF libraries on system)
+#Affects: main makefile
+#Default: PDFBUILD=no
+PDFBUILD=@PDFBUILD@
+
+##################
+#Jabber/XML libraries: yes or no (need iksemel libraries on system)
+#Affects: main makefile
+#Default: JABBERBUILD=no
+JABBERBUILD=@JABBERBUILD@
+
+##################
+#If you want to build compiler that will generate Perl code, not only
+#C code, set PERLBUILD to yes
+#Default: PERLBUILD=no
+PERLBUILD=@PERLBUILD@
+
+##################
+#defines how will SQL support be built into compiler: dynamic is default.
+#if you enter "static", only SQL/ODBC library defined with "ODBC"
+#parameter will be staticaly linked.
+#Default: ODBC_LINK=dynamic
+ODBC_LINK=dynamic
+
+##################
+#GTK GUI interface: yes or no (needs GTK libraries on system)
+#Affects: main makefile
+#Default: GTKBUILD=no
+GTKBUILD=@GTKBUILD@
+
+##################
+#If linking SQL support dynamically, you can have more then one SQL
+#manager/driver installed on your system, and compiled Aubit to use them
+#selecting it ar run time with environment variable :
+#A4GL_SQLTYPE=libSQL_<name>.so [name of library to use (defaults to nosql)]
+#if you define more then one HAVE_xxxx variable here as "yes" you MUST use
+#AUBITBUILDMKMULTI to define multiple libraries paths
+#Defaults: HAVE_UNIXODBC=no HAVE_IODBC=no
+HAVE_UNIXODBC=@HAVE_UNIXODBC@
+HAVE_IODBC=@HAVE_IODBC@
+
+#################
+#If linking SQL support statically: ODBC manager: "unix" "iodbc" "odbc32"
+#Affects: main makefile Options: unix, iodbc, so, no
+#Default: ODBC=no
+#we can use @A4GL_SQLTYPE@ here, but no is not no, it's "nosql"
+ODBC=no
+
+#################
+#If linking SQL support statically: name of library to link compiler with
+#typically, "odbc" for unixODBC, "iodbc" for iODBC manager
+#Affects: main makefile and 4glpc
+#Default: ODBC_LIB_NAME=noodbc
+ODBC_LIB_NAME=@ODBC_LIB_NAME@
+
+#where can we find ODBC header files for this ODBC manager/driver
+#(odbc.h, sql.h ...etc.)
+#fixme: rename this to ODBC_LIB_HEADERS
+#Affects: main makefile, 4glpc and run-time encironment
+#ODBCLIBDIR=/opt/unixODBC/include
+#Default: ODBCLIBDIR=/usr/include
+#Configure note: we cannot use includedir variable because it
+#returns "${prefix}/include" and we cannot process variables here
+ODBCLIBDIR=@oldincludedir@
+
+#where can we find ODBC_LIB_NAME (libiodbc.so, libodbc.so...)
+#Affects: main makefile
+#ODBC_LIB_DIR=/opt/unixODBC/lib
+#Default: ODBC_LIB_DIR=/usr/lib
+#Configure note: we cannot use libdir variable here because it returns
+#returns "${exec_prefix}/lib" and we cannot process variables here
+ODBC_LIB_DIR=/usr/lib
+
+#this is used in makefiles (typically -lrpcsvc or -lrpclib):
+RPCLIB_NAME=@RPCLIB_NAME@
+
+###############################
+#GTK+ 2.0 configuration
+
+#To use GTK "pkg-config" utility, set GLIBVER, GDKVER and GTKVER to
+#version strings reported by "pkg-config --list-all"
+#This will also be used in makefiles for
+#GLIB_CFLAGS=`pkg-config --cflags ${GLIBVER}`
+#GLIB_LIBS=`pkg-config --libs ${GLIBVER}`
+#unless GLIBVER=old, when hard-coded flags and GTK libs will be used
+#GTKVER is used in "4glpc" script
+
+#GLIBVER=old
+#GLIBVER=glib-2.0
+#GDKVER=gdk-1.3-win32-production
+#GTKVER=gtk+-1.3-win32-production
+
+#Your GTK/GDK/GLIB installation path; don't forget to include
+#$GTKPATH/bin and $GTKPATH/lib in yout PATH
+#GTKPATH=/usr/src/gtk
+
+#needed also in 4glpc:
+GTK_CONFIG="@GTK_CONFIG@"
+PKG_CONFIG="@PKG_CONFIG@"
+#package names reported by gtk-config or pkg-config:
+GTK_NAME="@GTK_NAME@"
+GDK_NAME="@GDK_NAME@"
+GLIB_NAME="@GLIB_NAME@"
+
+
+MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
+
+
 
 ## ==================================================================
 ##                      Common rules

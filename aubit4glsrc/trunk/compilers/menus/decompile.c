@@ -7,6 +7,11 @@
 #endif
 
 
+//here only to satisfy libMENU_XDR, when linked with mdecompile executable.
+//Should be removed once libMENU_ is dlopen() enabled:
+char *outputfilename;
+
+
 main(int argc,char *argv[]) {
 struct menu_list the_menus;
 FILE *f;

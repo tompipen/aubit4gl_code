@@ -1,6 +1,7 @@
 /**
  * @file
- * Other 4gl internal functions implementation.
+ * Other 4gl internal functions implementation, plus some functions we did
+ * not know where to put...
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
@@ -12,6 +13,11 @@
 
 int m_lastkey = 0;
 char *strip_quotes (char *s);
+char *replace_sql_var (char *s);
+int attr_name_match (struct struct_scr_field *field, char *s);
+char *get_str_attribute (struct struct_scr_field *f, int str);
+
+
 
 /**
  * Get the laskey typed by the user.
@@ -213,5 +219,125 @@ strip_quotes (char *s)
   debug ("Returning %s", buff);
   return buff;
 }
+
+
+char *
+replace_sql_var (char *s)
+{
+  static char buff[1024];
+  char *ptr;
+  if (s[0] != '\n')
+    {
+      return s;
+    }
+  strcpy (buff, &s[1]);
+
+  if (strcmp (buff, "today") == 0)
+    {
+      push_today ();
+      ptr = char_pop ();
+      strcpy (buff, ptr);
+      acl_free (ptr);
+    }
+  if (strcmp (buff, "user") == 0)
+    {
+      push_user ();
+      ptr = char_pop ();
+      strcpy (buff, ptr);
+      acl_free (ptr);
+    }
+  debug ("replace_sql_var :Returning %s", buff);
+  return buff;
+
+}
+
+
+
+
+attr_name_match (struct struct_scr_field * field, char *s)
+{
+  char colname[40];
+  char tabname[40];
+  char buff[80];
+  int aa;
+  int ab;
+  //debug ("Field : %p\n", field);
+  //debug ("attr_name_match : %s", s);
+  bname (s, tabname, colname);
+
+  //debug ("Splits to %s & %s", tabname, colname);
+  //debug ("field is [%s %s]", field->tabname, field->colname);
+
+  aa = strcmp (field->tabname, tabname);
+  ab = strcmp (field->colname, colname);
+  //debug ("Matches = %d %d ", aa, ab);
+  if ((ab == 0) || (colname[0] == '*'))
+    {
+      debug ("Match on *");
+      return 1;
+    }
+  if (ab == 0 && tabname[0] == 0)
+    {
+      debug ("Matched");
+      return 1;
+    }
+  //debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
+	 //field->colname, colname);
+  return 0;
+}
+
+
+
+char *
+get_str_attribute (struct struct_scr_field *f, int str)
+{
+  int a;
+
+  if (!has_str_attribute (f, str))
+    {
+      return 0;
+    }
+
+  for (a = 0; a < f->str_attribs.str_attribs_len; a++)
+    {
+      if (f->str_attribs.str_attribs_val[a].type == str)
+	return f->str_attribs.str_attribs_val[a].value;
+    }
+  return 0;
+}
+
+
+
+find_srec (struct_form * fd, char *name)
+{
+  int a;
+  int b;
+
+debug("No of records : %d",fd->records.records_len);
+
+  for (a = 0; a < fd->records.records_len; a++)
+    {
+      if (strcasecmp (name, fd->records.records_val[a].name) == 0)
+	return a;
+    }
+  return -1;
+}
+
+
+
+has_str_attribute (struct struct_scr_field * f, int str)
+{
+  int a;
+  for (a = 0; a < f->str_attribs.str_attribs_len; a++)
+    {
+      if (f->str_attribs.str_attribs_val[a].type == str)
+	return 1;
+    }
+  return 0;
+}
+
+
+
+
 
 

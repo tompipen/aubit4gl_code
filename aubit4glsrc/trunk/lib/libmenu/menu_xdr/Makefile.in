@@ -24,73 +24,91 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-04-22 00:32:24 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-04-22 00:32:24 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ../../../incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
 ##                              Source files
 ## ==================================================================
 
-CMODS_PROJECT	=project.c
-#GUI_TUI			=gui_tui.o
-#GUI_GTK			=gui_gtk.o
-#GUI_SRC         =API_ui.c
-#CMODS_DLSQL		=API_sql.c
+#CMODS_PROJECT	=project.c
 
-#In alphabetical order:
-COMMONSRC= \
-	 \
-	API_ui.c API_exreport.c API_sql.c API_rpc.c \
-	builtin.c builtin_d.c \
-	calldll.c conv.c \
-	data_if.c dates.c dmy.c debug.c \
-	err.c error.c errfile.c extfile.c \
-	fglwrap.c funcs_d.c \
-	gtime.c gui_io.c gui.c \
-	helper.c \
-	io.c interval.c \
-	keys.c \
-	load.c \
-	match.c \
-	others.c \
-	pointers.c \
-	read_dty.c report.c rexp2.c ../resource/resource.c \
-	screen.c sleep.c stack.c string.c \
-	translate.c
+#require XDR frunctions, part of Sun RPClib:
+CMODS_MENU_XDR		=../../../compilers/menus/menu_x_xdr.c loadmenu.c menuwrite.c
 
-#obsoleted: fields.c \
+CMODS_MENU_NOMENU	=menu_nomenu.c
 
-#CMODS 				=${COMMONSRC} ${CMODS_DLSQL}
-OBJS				=${COMMONSRC:.c=.o} ${CMODS_PROJECT:.c=.o}
+#CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
+#OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
+OBJS_MENU_NOMENU  	=${CMODS_MENU_NOMENU:.c=.o}
+OBJS_MENU_XDR     	=${CMODS_MENU_XDR:.c=.o}
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
 
+#FIXME: libMENU should not depend on GTK: one day, it should work
+#with Swing or Qt just as well
+
+ifneq "$(GLIBVER)" "old"
+	ifneq "$(GLIBVER)" "" #GLIBVER was manualy specified
+		ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
+			GTKLIB_CFLAGS	:=$(shell @PKG_CONFIG@ --cflags $(GLIBVER))
+			GDKLIB_CFLAGS	:=$(shell @PKG_CONFIG@ --cflags $(GDKVER))
+        endif
+		GLIB_CFLAGS		=$(GTKLIB_CFLAGS) $(GDKLIB_CFLAGS) -I${GTKPATH}/include
+    else #GLIBVER is empty
+		ifneq "@GTK_CONFIG@" "no" #GTK_CONFIG
+			GLIB_CFLAGS		:=$(shell @GTK_CONFIG@ --cflags)
+			xxGTKLIBS		:=$(shell @GTK_CONFIG@ --libs)
+			#we cannot have -rdynamic and -shared at the same time:
+			GTKLIBS			=$(subst -rdynamic,,${xxGTKLIBS})
+        else
+			ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
+                #for this we already set CFLAGS in configure
+				#GLIB_CFLAGS		:=$(shell @PKG_CONFIG@ --cflags glib)
+				#GLIB_CFLAGS		:=$(shell @PKG_CONFIG@ --cflags @GTK_NAME@)
+				#-lgtk -lgdk -lgmodule-1.3 -lglib-1.3 -liconv -lintl
+				#GLIB_LIBS		:=$(shell @PKG_CONFIG@ --libs-only-l gtk+-1.3-win32-production)
+            endif
+        endif
+    endif
+else #GLIBVER="old"
+	GLIB_CFLAGS=-I/usr/lib/glib/include
+	ifdef COMSPEC
+		GLIB_CFLAGS+=-I/usr/src/gtk+ -I/usr/src/gtk+/gdk -I/usr/src/glib
+    else
+		GLIB_CFLAGS+=-I/usr/include/gtk-1.2 -I/usr/include/glib-1.2
+    endif
+endif
+
+CFLAGS+=-I../libincl -I../../incl -I.. ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I../../compilers/menus -I../../compilers/fcompile
+
+
+
+
 ifdef COMSPEC
-	ALL				+=dllaubit4gl
+	ALL=dllMENU_NOMENU
+	ifneq "@HAVE_RPCLIB@" "0"
+		ALL			+=dllMENU_XDR
+    endif
 else
-    ALL				+=libaubit4gl${SO_EXT}
+	ALL=libMENU_NOMENU${SO_EXT}
+	ifneq "@HAVE_RPCLIB@" "0"
+		ALL			+=libMENU_XDR${SO_EXT}
+    endif
 endif
 
 #This must NOT be += because it would place affitional parameters AFTER
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-#CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../compilers/fcompile -Ilibincl ${CFLAGS}
-CFLAGS				:=-I../../compilers/fcompile -I../libincl ${CFLAGS}
-
-#cyclical dependency: I need XDR to make libaubit4gl, but I need libaubit4gl to make RPCLIB!
-#ifneq "@HAVE_RPCLIB@" "0"
-#	AUBIT_RPCLIBNAME=-lRPC_XDR
-#else
-	AUBIT_RPCLIBNAME=-lRPC_NORPC
-#endif
+CFLAGS	:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/menus -I../../libincl ${CFLAGS} -I../../../compilers/menus -I../../libgui
 
 ## RPC type and XDR are not the same thing. RPC type represents Remote
 #Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
@@ -103,93 +121,92 @@ CFLAGS				:=-I../../compilers/fcompile -I../libincl ${CFLAGS}
 ##                              Targets
 ## ==================================================================
 
-all: note ${ALL}
+all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-note:
-	@echo "Building: ${ALL}"
+libMENU_NOMENU.so : ${OBJS_MENU_NOMENU}
+	${LD} ${SO_LDFLAGS} -o $@ $^
+	${CP} $@ ../..
 
-libaubit4gl.a : $(OBJS)
-#	-ldl -lm should be linked here, not in 4glpc with executable?
-	ar rc $@ $^
-	ranlib $@
-	${CP} $@ ..
-#	${LD} -static -rdynamic -o $@ $^ -ldl -lm
+libMENU_XDR.so : ${OBJS_MENU_XDR}
+	${LD} ${SO_LDFLAGS} @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} -o $@ $^
+#  -L../.. -lUI_GTK
+	${CP} $@ ../..
 
-libaubit4gl.so : $(OBJS)
-#	-ldl -lm should be linked here, not in 4glpc with executable?
-#IMPORTANT- xdr_ functions are NOT in -lrpcsvc. On Linux, they are in -lc
-	${LD} ${SO_LDFLAGS} -o $@ $^ -ldl -lm
-	${CP} $@ ..
-#	@RPCLIB_NAME@
-#-Map  mapfile
+
+
+#../../lib/libMENU_XDR.so: undefined reference to
+#`gui_xwidth'       	lib/libgui/dims.h
+#`gui_yheight'      	lib/libgui/dims.h
+#`tooltips'             lib/libgui/d2.c
+
+
+#`get_curr_win_gtk'     lib/libgui/gtk_4gl.c
+#`gui_run_til_no_more'  lib/libgui/gtk_4gl.c
+#`get_curr_width_gtk'   lib/libgui/windows.c
+#`make_pixmap'          lib/libgui/cr_funcs.c
+
+
+#`outputfilename'
+
+
+
+
+#/opt/aubit/aubit4glsrc/lib/libUI_GTK.so: undefined reference to
+#`xdr_struct_form'      form_x_xdr.c
+####`has_str_attribute'    libform/form_xdr/readforms.c
+####`find_srec'            libform/form_xdr/readforms.c
+####`get_str_attribute'	libform/form_xdr/readforms.c
+#####`attr_name_match'      libform/form_xdr/readforms.c
+####`replace_sql_var'      libform/form_xdr/readforms.c
+
+
+
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
-.PHONY : dllaubit4gl
-dllaubit4gl : $(OBJS)
-	${MAKE} libaubit4gl.dll DLLOBJS="$^"
-	${CP} libaubit4gl.dll ..
-#	DLL_LDLIBS="${AUBIT_RPCLIBNAME} ${AUBIT_PDFLIBNAME}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L."
-#$RPCLIB_NAME
+.PHONY : dllMENU_XDR
+dllMENU_XDR : ${CMODS_MENU_XDR}  ../compilers/menus/menu_x.h
+	${MAKE} libMENU_XDR.dll DLLOBJS="${CMODS_MENU_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I../compilers/menus -I../incl"
+	${CP} libMENU_XDR.dll ../..
 
-#libaubit4gl.def: $(OBJS) ${GUI_TUI}
-#	dlltool --export-all --output-def $@ $^
-
-#we need to make export library before we can make actuall dll, becaus eof cyclical dependencies
-#between libSQL_xxx.dll and libaubit4gl.dll, since there can be no unresilved symols at link
-#time on Windows when mailing dll:
-#libaubit4gl.dll.a: $(OBJS) ${GUI_TUI}
-#	dlltool --output-exp $@ $^
+.PHONY : dllMENU_NOMENU
+dllMENU_NOMENU : ${CMODS_MENU_NOMENU}
+	${MAKE} libMENU_NOMENU.dll DLLOBJS="$^"
+	${CP} libMENU_NOMENU.dll ../..
 
 ## ==================================================================
 ##                             Sub Targets
 ## ==================================================================
 
-#gui_tui.o: ${GUI_SRC}
-#	${CC} ${CFLAGS} -c $(CFLAGS) $^ -o $@
-
-#gui_gtk.o: ${GUI_SRC}
-#	${CC} ${CFLAGS}-c $(CFLAGS) -DUSE_GTK $^ -o $@
-
 ci: $(CMODS)
 	ci -l  $^
 
-project.o: ../generated/${CMODS_PROJECT}
-	${CC} ${CFLAGS} -c -o $@ $^
-
-../generated/project.c:
-	(cd ../../tools/project; ${SH} mkproject)
-
-../generated/tmperrs.h :
-	${SH} ../bin/mkerrors
-
-../../compilers/fcompile/form_x_xdr.c  ../../compilers/fcompile/form_x.h:
-	${MAKE} -C ../../compilers/fcompile rpc
+../../../compilers/menus/menu_x_xdr.c  ../../../compilers/menus/menu_x.h:
+	${MAKE} -C ../../../compilers/menus rpc
 
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
 
-error.c : ../generated/tmperrs.h
-array.o: array.c ../../compilers/fcompile/form_x_xdr.c
-API_ui.c: ../../compilers/fcompile/form_x.h
+../../../compilers/menus/menu_x_xdr.o: ../../../compilers/menus/menu_x.h
+
+#error.c : generated/tmperrs.h
+#array.o: array.c ../compilers/fcompile/form_x_xdr.c
+#builtin.c: ../compilers/fcompile/form_x.h
 
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
-clean : clean.generated
-	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c
-	${RM} form_x_xdr.c form_x.h project.c aubit-config core
-	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
-	${RM} *.base *.exp libaubit4gl.def
-
-clean.generated:
-	${RM} ../generated/errdefs ../generated/tmperrs.h
-	${RM} ../generated/project.c ../generated/project.o
+clean :
+	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
+	form_x_xdr.c form_x.h project.c aubit-config \
+	loadmap loadmap.c loadmap.h core \
+	*.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
+	*.base *.exp libaubit4gl.def
 
 
 ## ==================================================================
