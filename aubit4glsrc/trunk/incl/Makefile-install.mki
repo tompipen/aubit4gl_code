@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.8 2002-02-15 11:33:46 afalout Exp $
+# $Id: Makefile-install.mki,v 1.9 2002-02-22 13:22:23 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -103,6 +103,15 @@ deinstall.libs.links:
 	${RM} ${LIB_INSTALL_LINK}/libPDF_NOPDF${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libPDF_PDF${SO_EXT}
 	${RM} ${LIB_INSTALL_LINK}/libaclshared${SO_EXT}
+#export libraries on Windows:
+#we keep this only in AUBITDIR, since linking is allways done by 4glpc
+#	${RM} ${LIB_INSTALL_LINK}/libaclsharedgui${SOEXP_EXT}
+#	${RM} ${LIB_INSTALL_LINK}/libgtk4gl${SOEXP_EXT}
+#	${RM} ${LIB_INSTALL_LINK}/libgtk4gl_x${SOEXP_EXT}
+#	${RM} ${LIB_INSTALL_LINK}/libPDF_NOPDF${SOEXP_EXT}
+#	${RM} ${LIB_INSTALL_LINK}/libPDF_PDF${SOEXP_EXT}
+#	${RM} ${LIB_INSTALL_LINK}/libaclshared${SOEXP_EXT}
+
 
 deinstall.bin.links:
 #remove links to binaries:
@@ -132,13 +141,15 @@ deinstall.all: deinstall.libs.links deinstall.bin.links
 		$(INSTALL_DIR)/lib/libgtk4gl_x.a  $(INSTALL_DIR)/lib/libSQL_unixodbc${SO_EXT} \
         $(INSTALL_DIR)/lib/libSQL_iodbc${SO_EXT} $(INSTALL_DIR)/lib/libSQL_esql${SO_EXT}  \
 		$(INSTALL_DIR)/lib/libSQL_ifxodbc${SO_EXT}  $(INSTALL_DIR)/lib/libSQL_pgodbc${SO_EXT} \
-        $(INSTALL_DIR)/lib/libPDF_PDF${SO_EXT} $(INSTALL_DIR)/lib/libgtk4gl.a
+        $(INSTALL_DIR)/lib/libPDF_PDF${SO_EXT} $(INSTALL_DIR)/lib/libgtk4gl.a \
+        $(INSTALL_DIR)/lib/libSQL_odbc32${SO_EXT}
 #windows dll export libraries:
 
 ifneq "${COMSPEC}" ""
 	${RM} $(INSTALL_DIR)/lib/libaclshared${SOEXP_EXT} $(INSTALL_DIR)/lib/libPDF_NOPDF${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libSQL_nosql${SOEXP_EXT} $(INSTALL_DIR)/lib/libgtk4gl${SOEXP_EXT} \
-	$(INSTALL_DIR)/lib/libaclsharedgui${SOEXP_EXT} $(INSTALL_DIR)/lib/libgtk4gl_x${SOEXP_EXT}
+	$(INSTALL_DIR)/lib/libaclsharedgui${SOEXP_EXT} $(INSTALL_DIR)/lib/libgtk4gl_x${SOEXP_EXT} \
+    $(INSTALL_DIR)/lib/libSQL_odbc32${SOEXP_EXT}
 endif
 
 

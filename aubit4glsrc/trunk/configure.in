@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.35 2002-02-21 11:32:58 mikeaubury Exp $
+# $Id: configure.in,v 1.36 2002-02-22 13:22:13 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -601,19 +601,20 @@ WARNING: You specified Informix base install directory that is different
 	            ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib:$INFORMIXDIR/lib/esql:$ADD_LD_LIBRARY_PATH"
 			fi
 
-			#First check if we haev esql installed at all:
+			#First check if we have esql installed at all:
 			AC_PATH_PROG(IFMX_ESQLC, esql, no)
 
 			if test "$cygwin" = "1"; then
 				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
 				AC_PATH_PROG(MSVC_COMP, cl, no)
 				AC_PATH_PROG(MSVC_LINK, link, no)
-				if test "$IFMX_ESQLC" != "no" && test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
+				if test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
 				then
 	                ESQLCC_OK="OK"
                 fi
 			else
-                ESQLCC_OK="OK"
+                #on non-Windows platforms, native C compiler will do:
+				ESQLCC_OK="OK"
 			fi
 
 			if test "$IFMX_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
@@ -1000,11 +1001,13 @@ AC_ARG_WITH(pgodbc,
 		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
 		AC_CHECK_LIB([psqlodbc], [main])
-		#also check for headers, since they are not in PG ODBC RPM, they are
-		#in postgresql-devel, including /usr/lib/libpsqlodbc.a (so we don't need
-		#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
-		#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
-		AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
+		if test $ac_cv_lib_psqlodbc_main = yes; then
+			#also check for headers, since they are not in PG ODBC RPM, they are
+			#in postgresql-devel, including /usr/lib/libpsqlodbc.a (so we don't need
+			#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
+			#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
+			AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
+        fi
 		LIBS="$old_LIBS"
 		LDFLAGS="$old_LDFLAGS"
         CPPFLAGS="$old_CPPFLAGS"
@@ -1305,10 +1308,12 @@ AC_ARG_WITH(gtk,
 		if test "$ac_cv_lib_glib_main" = "no"; then
 			#libglib-1.3.dll.a
 			AC_CHECK_LIB([glib-1.3.dll], [main])
-			if test "$ac_cv_lib_glib-1.3.dll_main" != "no"; then
+			if test "$ac_cv_lib_glib_1_3_dll_main" != "no"; then
 				ac_cv_lib_glib_main="yes"
             fi
-        fi
+        else
+			ac_cv_lib_glib_1_3_dll_main="no"
+		fi
 
 		# FIXME: Replace `main' with a function in `-lgtk':
 		AC_CHECK_LIB([gtk], [main])
@@ -1317,9 +1322,7 @@ AC_ARG_WITH(gtk,
 		LDFLAGS=$old_LDFLAGS
 
 		#check if we have all we need to make GTK GUI
-		if test $ac_cv_lib_gtk_main = yes; then
-			if test $ac_cv_lib_glib_main = yes; then
-				if test $ac_cv_lib_gdk_main = yes; then
+		if test "$ac_cv_lib_gtk_main" = yes && test "$ac_cv_lib_glib_main" = yes && test "$ac_cv_lib_gdk_main" = yes; then
 					AC_DEFINE(HAVE_GTK,1,[ ])
 					GTKBUILD=yes
 					AUBITGUI=gtk
@@ -1373,8 +1376,9 @@ AC_ARG_WITH(gtk,
 							GTKLIBS="-lgtk -lgdk"
 
 							#Some GTK distros on CygWin have a naming probem!
-							if test "$ac_cv_lib_glib-1.3.dll_main" != "no"; then
-			                    GTKLIBS="$GTKLIBS -lglib-1.3.dll"
+							if test "$ac_cv_lib_glib_1_3_dll_main" = "yes"; then
+								"ac_cv_lib_glib_1_3_dll_main = $ac_cv_lib_glib_1_3_dll_main"
+								GTKLIBS="$GTKLIBS -lglib-1.3.dll "
 								GTK_INC_PATH="$GTK_INC_PATH -I$withval/include/glib-2.0 -I$withval/lib/glib-2.0/include"
 		                    else
 			                    GTKLIBS="$GTKLIBS -lglib"
@@ -1386,8 +1390,6 @@ AC_ARG_WITH(gtk,
 							fi
 
 	                    fi
-                    fi
-				fi
 		    fi
 		    #AC_MSG_RESULT(yes)
 		else
@@ -1516,12 +1518,13 @@ AC_ARG_WITH(pdf,
 #Note: on Linux, rpclib functions are in libc. On other systems, for
 #example Windows/CygWin, this will be a separate library that we will need
 
-<<<<<<< configure.in
-AC_CHECK_FUNCS([svc_run])
-=======
-#AC_CHECK_FUNCS([__rpc_thread_svc_fdset])
+#First, let's see if RPC is in libraries we already have as default:
+
+#it is not enough to just test for function, you then have test for it's success by name!
+#and BTW, what's wrong with svctcp_create ?
+#AC_CHECK_FUNCS([svc_run])
 AC_CHECK_FUNCS([svctcp_create])
->>>>>>> 1.32
+
 		#We will get #define HAVE___rpc_thread_svc_fdset in config.h, but no variables
 		#are defined when testing functions.
 
@@ -1581,28 +1584,31 @@ AC_ARG_WITH(rpc,
 		if test "$ac_cv_lib_rpcsvc_main" = "yes"; then
 			#seems rpc library is rpcsvc on aix and sparc-sun-solaris2.7
 			#which defines a bunch of symbols starting 'xdr_'
-			#AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
+
 			AC_CHECK_LIB(rpcsvc, svctcp_create ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
-			#AC_CHECK_LIB(rpcsvc, xdr_argument ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
+
 
 			if test "$ac_cv_lib_rpcsvc___rpc_thread_svc_fdset" = "yes" || test "$ac_cv_lib_rpcsvc_svctcp_create_" = "yes" || test "$ac_cv_lib_rpcsvc_xdr_argument_" = "yes"; then
                 echo "Found RPC functions in -lrpcsvc"
 	            RPCLIB_NAME=rpcsvc
             else
 				echo "Found -lrpcsvc, but no RPC functions inside."
+				AC_CHECK_LIB(rpcsvc, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
+				AC_CHECK_LIB(rpcsvc, xdr_argument ,AC_DEFINE(HAVE_RPCSVC,1,[ ]))
 			fi
         fi
 
 		if test "$ac_cv_lib_rpclib_main" = "yes"; then
-			#AC_CHECK_LIB(rpclib, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
-			AC_CHECK_LIB(rpclib, svctcp_create ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
-			#AC_CHECK_LIB(rpclib, xdr_argument ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
 
+			AC_CHECK_LIB(rpclib, svctcp_create ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
 			if test "$ac_cv_lib_rpclib___rpc_thread_svc_fdset" = "yes" || test "$ac_cv_lib_rpclib_svctcp_create_" = "yes" || test "$ac_cv_lib_rpclib_xdr_argument_" = "yes"; then
 				echo "Found RPC functions in -lrpclib"
 		        RPCLIB_NAME=rpclib
 	        else
                 echo "Found -lrpclib, but no RPC functions inside."
+				AC_CHECK_LIB(rpclib, xdr_argument ,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
+				AC_CHECK_LIB(rpclib, __rpc_thread_svc_fdset,AC_DEFINE(HAVE_RPCLIB,1,[ ]))
+
 			fi
 		fi
 
@@ -1674,9 +1680,10 @@ if test "$default_odbc" != ""; then
 	A4GL_SQLTYPE="$default_odbc"
 else
     ############# native ####################
-	if test "$HAVE_PGSQL_LIB" = "yes" ; then
-		A4GL_SQLTYPE=pgsql
-    fi
+	#non existant:
+	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
+	#	A4GL_SQLTYPE=pgsql
+    #fi
 	if test "$IFMX_ESQLC" != "no" ; then
 		A4GL_SQLTYPE=esql
 	fi
@@ -1694,11 +1701,11 @@ else
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_SQLTYPE=unixodbc
 	fi
-	if test "$xxxxcygwin" = "1"; then
-		#A4GL_SQLTYPE=odbc32
+	if test "$cygwin" = "1"; then
+		A4GL_SQLTYPE=odbc32
 
-        echo "WARNING: SQL on Windows temporaraly disabled"
-		A4GL_SQLTYPE=nosql
+        #echo "WARNING: SQL on Windows temporaraly disabled"
+		#A4GL_SQLTYPE=nosql
 	fi
 fi
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.17 2002-02-19 09:18:34 afalout Exp $
+# $Id: Makefile-common.in,v 1.18 2002-02-22 13:22:23 afalout Exp $
 #
 
 
@@ -218,8 +218,9 @@ MKPATH      		=mkdir -p
 CPPFLAGS 			=
 LDFLAGS 			=-s
 ALL_LIBS			=@LIBS@
-CFLAGS				+=@CFLAGS@ -I. -DAUTOBANG -DDEBUG -I/usr/local/include
-LIBCFLAGS			=${CLFAGS} -Ilibincl
+CFLAGS				+=@CFLAGS@ -O2 -DAUTOBANG -DDEBUG -I/usr/local/include
+#-I.
+#LIBCFLAGS			=${CLFAGS} -Ilibincl
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 
 #To let know 4glpc we are in process of making compiler, and not
@@ -231,7 +232,8 @@ PIC=@PIC@
 
 ifdef COMSPEC
 	PATH		:=${AUBITDIR}/lib:/usr/local/lib:${PATH}
-	CFLAGS		+=-DWIN32
+	#native-struct rewuired by GTK on Windows
+	CFLAGS		+=-DWIN32 -fnative-struct
     EXEEXT		=.exe
 	EXE			=${EXEEXT}
 	SO_EXT      =.dll
@@ -247,14 +249,17 @@ ifdef COMSPEC
 	SOEXP_EXT   =${SO_EXT}.a
     #do not install static libraries on CygWin:
 	STATICLIB_INST=no
+    USE_RPCGEN  =no
 else
-    EXEEXT		=
+    CFLAGS      +=-g
+	EXEEXT		=
 	SO_EXT      =.so
 	CPEXE		=ln -f
     SH			=sh
     LN			=ln -f
     SO_LDFLAGS	=${PIC} -shared
 	LN_S_LIB    =${LN_S}
+    USE_RPCGEN  =yes
 endif
 
 ####################### from aubitbuild-multi.mk ####################
