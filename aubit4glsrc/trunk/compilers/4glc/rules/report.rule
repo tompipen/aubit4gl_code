@@ -401,22 +401,25 @@ pdf_output_command :
 
 op_rep_order_by : {
 int a;
+set_rep_no_orderby(1);
 a=print_bind('O');
-print_order_by_type(2);
+print_order_by_type(2,-1);
 sprintf($<str>$,"%d",a);
 }
 | ORDER BY obind_var_list_ord
 {
 int a;
+set_rep_no_orderby(0);
 a=print_bind('O');
-print_order_by_type(1);
+print_order_by_type(1,a);
 sprintf($<str>$,"%d",a);
 A4GL_debug("Order by Gives :%d\n",a);
 }
 | ORDER_EXTERNAL_BY obind_var_list_ord {
 int a;
+set_rep_no_orderby(0);
 a=print_bind('O');
-print_order_by_type(2);
+print_order_by_type(2,a);
 sprintf($<str>$,"%d",a);
 A4GL_debug("Order by Gives :%d\n",a);
 }

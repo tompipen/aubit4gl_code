@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.44 2003-09-15 16:42:01 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.45 2003-09-18 06:13:44 mikeaubury Exp $
 #
 */
 
@@ -2831,7 +2831,7 @@ A4GL_get_default_scaling (void)
  * @return
  */
 void
-print_order_by_type (int type)
+print_order_by_type (int type,int cnt)
 {
   printc ("static int fgl_rep_orderby=%d;\n", type);
 }

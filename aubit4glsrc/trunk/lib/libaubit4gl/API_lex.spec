@@ -350,7 +350,7 @@ print_report_print_img char* scaling,char* blob,char* type,char* semi -> void
 A4GL_get_default_scaling -> char*
 
 /* void print_order_by_type (int type) */
-print_order_by_type int type -> void
+print_order_by_type int type int size -> void
 
 /* void print_report_1 (char *name) */
 print_report_1 char* name -> void
@@ -649,7 +649,7 @@ A4GL_lex_parsed_fgl -> void
 A4GL_bad_identifiers char* ident -> int
 print_sql_block_cmd char* sql -> void
 A4GL_expr_for_call char* ident char* params int line char* file -> char*
-
+print_empty_bind char* name -> void
 
 /*  ============================== EOF ================================= */
 

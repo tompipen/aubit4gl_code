@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.8 2003-09-17 07:05:41 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.9 2003-09-18 06:13:44 mikeaubury Exp $
 #
 */
 
@@ -80,7 +80,14 @@ But them missing DtimeToChar and fammily - where are they?
 void 
 A4GL_copy_decimal(void *infxv,void *a4glv,int indicat,int size,char dir) 
 {
-dec_t *infx;fgldecimal *a4gl;
+#ifdef DIALECT_POSTGRES
+EXEC SQL BEGIN DECLARE SECTION;
+decimal *infx;
+EXEC SQL END DECLARE SECTION;
+#else
+dec_t *infx;
+#endif
+fgldecimal *a4gl;
 char b[65];
 	infx=infxv;
 	a4gl=a4glv;
@@ -93,13 +100,14 @@ char b[65];
 		A4GL_push_variable(a4gl,(size<<16)+5);
 	   	A4GL_pop_var2(&b,0,0x28);
 		if (A4GL_isyes(acl_getenv("DEBUG_DECIMAL"))) {
-			printf(">b='%s'\n",b);
+			A4GL_debug(">b='%s'\n",b);
 		}
-		A4GL_debug("calling deccvasc with %s",b);
+		A4GL_trim(b);
+		A4GL_debug("calling deccvasc with '%s'",b);
 		deccvasc(b,strlen(b),infx);
 		if (A4GL_isyes(acl_getenv("DEBUG_DECIMAL"))) {
-			//dectoasc(infx,b,64,16);
-			printf(">> b=%s\n",b);
+			dectoasc(infx,b,64,16);
+			A4GL_debug(">> b='%s'\n",b);
 		}
 
 	}
@@ -131,7 +139,15 @@ char b[65];
 void 
 A4GL_copy_money(void *infxv,void *a4glv,int indicat,int size,char dir) 
 {
-dec_t *infx;fgldecimal *a4gl;
+
+#ifdef DIALECT_POSTGRES
+EXEC SQL BEGIN DECLARE SECTION;
+decimal *infx;
+EXEC SQL END DECLARE SECTION;
+#else
+dec_t *infx;
+#endif
+fgldecimal *a4gl;
 char b[65];
 	infx=infxv;
 	a4gl=a4glv;
@@ -144,6 +160,7 @@ char b[65];
 		A4GL_push_variable(a4gl,(size<<16)+5);
 	   	A4GL_pop_var2(&b,0,0x28);
 		A4GL_debug("Ptr=%s\n",b);
+		A4GL_trim(b);
 		deccvasc(b,strlen(b),infx);
 	}
 
@@ -305,7 +322,7 @@ short  mdy[3];
 int mdy_i[3];
 long orig_date;
 	if (mode=='i') {
-		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {rsetnull(CDATETYPE,(void *)infx);return;}
+		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {rsetnull(CDATETYPE,(void *)infx);A4GL_debug("COPY IN NULL DATE");return;}
 		A4GL_get_date(*a4gl,&mdy_i[1],&mdy_i[0],&mdy_i[2]);
 		mdy[0]=mdy_i[0]; // In aubit - these are integers
 		mdy[1]=mdy_i[1]; // so we need to copy them into the shorts
@@ -410,7 +427,13 @@ A4GL_copy_double(double *infx,double *a4gl,int indicat,int size,int mode)
 void 
 popdec(void *vx)
 {
+#ifdef DIALECT_POSTGRES
+EXEC SQL BEGIN DECLARE SECTION;
+	decimal *x;
+EXEC SQL END DECLARE SECTION;
+#else
 	dec_t *x;
+#endif
         char *s;
 	x=vx;
         s=A4GL_char_pop();

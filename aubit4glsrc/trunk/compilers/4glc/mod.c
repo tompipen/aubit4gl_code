@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.136 2003-09-15 13:06:58 mikeaubury Exp $
+# $Id: mod.c,v 1.137 2003-09-18 06:13:25 mikeaubury Exp $
 #
 */
 
@@ -4045,5 +4045,17 @@ if (n==0) {
 
 return buffer;
 }
+
+
+int rep_no_orderby=0;
+
+void set_rep_no_orderby(int n) {
+	rep_no_orderby=n;
+}
+
+int get_rep_no_orderby() {
+	return rep_no_orderby;
+}
+
 /* ================================= EOF ============================= */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.100 2003-09-17 19:13:40 mikeaubury Exp $
+# $Id: compile_c.c,v 1.101 2003-09-18 06:13:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -78,6 +78,9 @@ char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void printcomment (char *fmt, ...);
 int is_builtin_func (char *s);
+static void order_by_report_stack(void);
+static void add_to_ordbyfields(int n);
+static void order_by_report_stack();
 */
 int doing_cs(void );
 /*
@@ -93,6 +96,9 @@ int doing_cs(void );
 
 int last_orderby_type=-1;
 void print_report_table(char *repname,char type, int c);
+extern int get_rep_no_orderby(void);
+int doing_pcode(void);
+static int gen_ord(char *s);
 /*
 =====================================================================
                     Variables definitions
@@ -153,6 +159,7 @@ void make_sql_bind (char *sql, char *type);
 int split_arrsizes (char *s, int *arrsizes);
 int esql_type (void);
 void print_function_variable_init (void);
+static void order_by_report_stack(void);
 
 /*
 =====================================================================
@@ -611,6 +618,7 @@ print_report_ctrl (void)
   printc ("if (rep.lines_in_first_header==-1) rep.lines_in_first_header=%d;",rep_struct.lines_in_first_header);
   printc ("if (rep.lines_in_trailer     ==-1) rep.lines_in_trailer=%d;",rep_struct.lines_in_trailer);
 
+  order_by_report_stack();
 
   printc ("A4GL_debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
   printc ("    if (acl_ctrl==REPORT_OPS_COMPLETE) return;\n\n");
@@ -684,14 +692,14 @@ print_report_ctrl (void)
       /* before group of */
       if (get_report_stack_whytype (a) == 'B')
 	printc
-	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-	   get_report_stack_why (a), report_cnt, a);
+	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%d) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
+	   gen_ord(get_report_stack_why (a)), report_cnt, a);
 
       /* after group of */
       if (get_report_stack_whytype (a) == 'A')
 	printc
-	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-	   get_report_stack_why (a), report_cnt, a);
+	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%d) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
+	   gen_ord(get_report_stack_why (a)), report_cnt, a);
 
       if (get_report_stack_whytype (a) == 'T')
 	printc
@@ -1586,24 +1594,29 @@ print_bind (char i)
          extern struct binding ordbind[NUMBINDINGS];
        */
 
+      //if (get_rep_no_orderby()) {
+		//printc("static struct BINDING *_ordbind=");
+      //} else {
+	//}
 
-      printc ("static struct BINDING _ordbind[%d]={\n",ONE_NOT_ZERO(ordbindcnt));
-      if (ordbindcnt == 0)
-	{
-	  printc ("{0,0,0}");
-	}
-
-      for (a = 0; a < ordbindcnt; a++)
-	{
-	  if (a > 0)
-	    printc (",\n");
-	  printc ("{&%s,%d,%d}", ordbind[a].varname,
-		  (int) ordbind[a].dtype & 0xffff,
-		  (int) ordbind[a].dtype >> 16);
-	}
-      printc ("\n}; /* end of binding */\n");
+      	printc ("static struct BINDING _ordbind[%d]={\n",ONE_NOT_ZERO(ordbindcnt));
+      	if (ordbindcnt == 0)
+			{
+	  		printc ("{0,0,0}");
+			}
+		
+      	for (a = 0; a < ordbindcnt; a++)
+			{
+	  		if (a > 0)
+	    		printc (",\n");
+	  		printc ("{&%s,%d,%d}", ordbind[a].varname,
+		  		(int) ordbind[a].dtype & 0xffff,
+		  		(int) ordbind[a].dtype >> 16);
+			}
+      		printc ("\n}; /* end of binding */\n");
 	current_ordbindcnt=ordbindcnt;
-      start_bind (i, 0);
+      		start_bind (i, 0);
+
       return a;
     }
   return 0;
@@ -3351,9 +3364,10 @@ A4GL_get_default_scaling (void)
  *   - 2 : The order is external to the report (made in the select statement).
  */
 void
-print_order_by_type (int type)
+print_order_by_type (int type,int size)
 {
   last_orderby_type=type;
+  printc ("static int acl_rep_ordcnt=%d;\n",size);
   printc ("static int fgl_rep_orderby=%d;\n", type);
 }
 
@@ -3419,7 +3433,7 @@ print_report_2 (int pdf, char *repordby)
     ("A4GL_fglerror(ERR_BADNOARGS,ABORT);A4GL_pop_args(nargs);return ;}\n");
   printc ("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
   printc
-    ("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
+    ("   if (_useddata) {for (_p=acl_rep_ordcnt;_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
   printc ("}\n");
 
@@ -3441,16 +3455,16 @@ print_report_2 (int pdf, char *repordby)
   //printc ("   A4GL_rep_print(&rep,0,1,0);");
 
 
-  printc ("   _g=A4GL_chk_params(rbind,%d,_ordbind,%s);\n", cnt, repordby);
+  printc ("   _g=A4GL_chk_params(rbind,%d,_ordbind,acl_rep_ordcnt);\n", cnt);
   printc
-    ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
+    ("   if (_g>0&&_useddata) {for (_p=acl_rep_ordcnt;_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
   //for (a=0;a<cnt;a++) { printc("A4GL_setnull(rbind[%d].dtype,rbind[%d].ptr,rbind[%d].size);",a,a,a); }
   printc ("   A4GL_pop_params(rbind,%d);\n", cnt);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");
   printc ("        _useddata=1;");
-  printc ("        for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) ");
+  printc ("        for (_p=_g;_p<=acl_rep_ordcnt;_p++) ");
   printc ("               %s(_p,REPORT_BEFOREGROUP);", get_curr_rep_name ());
   printc ("   }");
   printc ("   _useddata=1;\n");
@@ -3465,7 +3479,7 @@ print_report_2 (int pdf, char *repordby)
   	printc ("        A4GL_push_char(_rout2);\n");
   	printc ("        %s(2,REPORT_RESTART);\n", get_curr_rep_name ());
 	
-  	//printc ("        A4GL_init_report_table(rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", cnt);
+  	//printc ("        A4GL_init_report_table(rbind,%d,_ordbind,acl_rep_ordcnt,&reread);\n", cnt);
   	print_report_table(mv_repname,'I',cnt);
 	
   	//printc ("        while (A4GL_report_table_fetch(reread,%d,rbind))",cnt);
@@ -4818,15 +4832,118 @@ print_foreach_close (char *cname)
 }
 
 
-int doing_pcode() {
+int doing_pcode(void) {
 	if (strcmp(acl_getenv("LEXTYPE"),"PCODE")==0) return 1;
 	if (strcmp(acl_getenv("FAKELEXTYPE"),"PCODE")==0) return 1;
 	return 0;
 }
 
 
-int doing_cs() {
+int doing_cs(void) {
 	if (strcmp(acl_getenv("LEXTYPE"),"CS")==0) return 1;
 	return 0;
 }
+
+
+
+void print_empty_bind(char *name) {
+	printc("static struct BINDING *%s=0;\n",name);
+}
+
+
+int *ordbyfields=0;
+int ordbyfieldscnt=0;
+
+static void add_to_ordbyfields(int n) {
+int a;
+for (a=0;a<ordbyfieldscnt;a++) {
+   if (ordbyfields[a]==n) return;
+}
+ordbyfieldscnt++;
+ordbyfields=realloc(ordbyfields,sizeof(int)*ordbyfieldscnt);
+ordbyfields[ordbyfieldscnt-1]=n;
+
+}
+
+
+/* 
+If the report doesn't specify an explicit order by, there
+may be an implicit one in the order that BEFORE GROUP/AFTER GROUPs were
+added in the format section
+
+We're going to use the fact that the _ordbind will contain all the variables,
+and we have the variable numbers from the before and after groups.
+
+If we copy the ordbind, then reassemble the ordbind using these - we should be ok again
+*/
+
+static void order_by_report_stack() {
+int a;
+static int fiddle=0;
+if (ordbyfields) free(ordbyfields); // From a previous report..
+ordbyfields=0; // clear it all down...
+ordbyfieldscnt=0;
+
+
+
+/* This only applies if we're doing an order external (implicit for no order by at all */
+if (last_orderby_type!=2) return;
+if (!get_rep_no_orderby()) return;
+
+
+/* Find our group order */
+for (a=0;a<report_stack_cnt;a++) {
+      if (get_report_stack_whytype (a) == 'B' ||get_report_stack_whytype (a) == 'A')  {
+		add_to_ordbyfields(atoi(get_report_stack_why (a)));
+      }
+}
+
+
+/* At this point we'll know if they used before/after groups */
+
+/* We only want to do this if we haven't done it before... */
+printc("if (acl_rep_ordcnt==-1) {");
+
+if (ordbyfieldscnt==0)  {
+	printc("acl_rep_ordcnt=0;"); // Nothing to do - there isn't any...
+} else {
+	/* Because of where this needs to go - we're going to shove a function
+		into the header file we can call 
+	*/
+
+	/* C File */
+	printc("acl_rep_ordcnt=%d;",ordbyfieldscnt);
+	// And assign the values
+	fiddle++;
+	printc("acl_exchange_rep_ordby%d(_ordbind,%d);",fiddle,current_ordbindcnt);
+/* H file... */
+	printh("static void acl_exchange_rep_ordby%d(struct BINDING *ord,int cnt) {\n",fiddle);
+ 	printh("struct BINDING *copy;\n");
+	printh("copy=malloc(sizeof(struct BINDING)*cnt);\n");
+	printh("memcpy(copy,ord,sizeof(struct BINDING)*cnt);\n");
+	/* We've got our copy - now we can splat the original! */
+	for (a=0;a<ordbyfieldscnt;a++) {
+		printh("memcpy(&ord[%d],&copy[%d],sizeof(struct BINDING));\n",a,ordbyfields[a]-1); /* fields are numbered from 1 for before/after group variables */
+	}
+	printh("free(copy);\n");
+	printh("}\n");
+}
+printc("}");
+
+}
+
+
+static int gen_ord(char *s) {
+int a;
+int n;
+n=atoi(s);
+if (last_orderby_type!=2) return n;
+if (!get_rep_no_orderby()) return n;
+for (a=0;a<ordbyfieldscnt;a++) {
+	if (n==ordbyfields[a]) return a+1;
+}
+
+return n; // Fall back - shouldn't happen!!
+}
+
 /* =========================== EOF ================================ */
