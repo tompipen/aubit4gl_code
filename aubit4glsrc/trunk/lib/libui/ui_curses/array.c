@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.15 2003-08-24 17:54:14 mikeaubury Exp $
+# $Id: array.c,v 1.16 2003-09-17 22:13:22 mikeaubury Exp $
 #*/
 
 /**
@@ -318,6 +318,7 @@ disp_loop (struct s_disp_arr *arr)
   struct s_form_dets *form;
   int a;
   int redisp;
+  int acckey;
   FORM *mform;
   A4GL_chkwin();
   curr_arr_disp = arr;
@@ -369,7 +370,7 @@ draw_arr (arr, -1, arr->arr_line);
   redisp = 0;
 
   if (a==A4GL_key_val ("ACCEPT")) {
-	a=27;
+	a=-99;
   }
 
 
@@ -516,8 +517,8 @@ draw_arr (arr, -1, arr->arr_line);
       A4GL_set_scr_line (arr->scr_line);
       return -10;
       break;
-    case 27:
-      return 0;			/* escape */
+    case -99:
+      return 0;			/* ACCEPT */
 
     case 26:			/* control-z */
       return 0;
