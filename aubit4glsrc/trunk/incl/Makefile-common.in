@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.169 2004-12-09 23:59:12 afalout Exp $
+# $Id: Makefile-common.in,v 1.170 2004-12-13 01:55:32 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -918,6 +918,11 @@ PDFLIB_I_FLAGS		=@PDFLIB_I_FLAGS@
 
 PCRE_INC_PATH		=@PCRE_INC_PATH@
 PCRE_LIB_PATH		=@PCRE_LIB_PATH@
+MSYS_ROOTDIR		=@MSYS_ROOTDIR@
+
+XMLRPC_LFLAGS		=@XMLRPC_LFLAGS@
+XMLRPC_IFLAGS		=@XMLRPC_IFLAGS@
+XMLRPC_LIBS			=@XMLRPC_LIBS@
 
 
 ## ==================================================================

@@ -24,18 +24,21 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 
-rm -rf /tmp/aubit4glsrc-*
-rm -f /usr/src/redhat/SOURCES/aubit4glsrc-*.tgz
-
 #
-# $Id: aubitbuild.sh.in,v 1.47 2004-12-01 07:21:07 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.48 2004-12-13 01:55:31 afalout Exp $
 #
 
-#Use this script in corn for Aubit nightly automatic builds
+#--------------------------------------------------------------------
+#Use this script for Aubit nightly automatic builds. For use in cron,
+#you will want to invoke it via etc/aubitbuild.cron.sh
+#--------------------------------------------------------------------
 
+#--------------------------------------------------------------------
 #FIXME: use "cvs export" instead "cvs checkout" to get code without CVS
 #directories for source archives
+#--------------------------------------------------------------------
 
+#--------------------------------------------------------------------
 # Am I forced to enter my password for every cvs command?
 #No, you can upload a shared key that will allow SSH sessions to be
 #established without the need to enter you password every time. Go to your
@@ -62,7 +65,7 @@ rm -f /usr/src/redhat/SOURCES/aubit4glsrc-*.tgz
 #To generate unprotected key pair just type return at the ssh-keygen
 #passphrase prompt. The drawback of the unprotected key pair is that
 #everybody who has your private key will have access to the cvs repository.
-
+#--------------------------------------------------------------------
 
 ## ==================================================================
 ##                      Configuration
@@ -70,17 +73,20 @@ rm -f /usr/src/redhat/SOURCES/aubit4glsrc-*.tgz
 
 #VERBOSE=1
 
-#falout.com CVS: (change "aptiva" to "falout.com" when working over Internet)
-LOCAL_CVS_SERVER=aptiva
-
 #####################
 #Source system environment: important when running from cron
 . /etc/profile
 
+#####################
 #This is to work around one of Informix installer screwing up libphtread:
 #tar: /opt/informix/lib/libpthread.so.0: version `GLIBC_2.2' not found (required by tar)
 #tar: /opt/informix/lib/libpthread.so.0: version `GLIBC_2.2' not found (required by /lib/librt.so.1)
 export LD_LIBRARY_PATH="/lib:$LD_LIBRARY_PATH"
+
+#####################
+#Name of CVS host to use when using local CVS server
+#falout.com CVS: (change "aptiva" to "falout.com" when working over Internet)
+LOCAL_CVS_SERVER=aptiva
 
 #####################
 #Where to get CVS from: "sf-ssh" for SSH SourceForge, "falout.com",
@@ -88,26 +94,19 @@ export LD_LIBRARY_PATH="/lib:$LD_LIBRARY_PATH"
 ACVS=sf-ssh
 
 case "$ACVS" in
-
 	sf-ssh)
-
 		#SourceForge CVS:
 		#/bin/custom/aubitsfcvslogin:
 		export CVS_RSH=ssh
 		export CVSROOT=afalout@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl
 		AUBITCVSNAME=aubit4glsrc
         ;;
-
-
 	falout.com)
-
 		export CVS_RSH=
 		export CVSROOT=":pserver:afalout@$LOCAL_CVS_SERVER:/data/cvs"
 		AUBITCVSNAME=Aubit4gl
         ;;
-
 	*)
-
 	    #SourceForge CVS - anon login:
 		#cvs -d:pserver:anonymous@cvs.yourproject.sourceforge.net:/cvsroot/yourproject login
 		#After anonymously logging in:
@@ -116,8 +115,6 @@ case "$ACVS" in
 		export CVSROOT=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
 		AUBITCVSNAME=aubit4glsrc
 	    ;;
-
-
 esac
 
 ######################
@@ -158,6 +155,7 @@ MAINLOG=$LOGFILE
 #Some commands will override LOGFILE, to keep main log file readable:
 CLEANLOG=/tmp/clean.log
 CONFIGLOG=/tmp/config.log
+CONFIGLOG_MINGW="/tmp/mingw-config.log"
 TARLOG=/tmp/tar.log
 
 #####################
@@ -190,7 +188,8 @@ FULLNAME='@FULLNAME@'
 AUBIT_VERSION=@AUBIT_VERSION@
 AUBIT_BUILD=@AUBIT_BUILD@
 
-#For comparing sizes:
+#####################
+#Settings for comparing sizes:
 WGET_SIZE="wget --server-response --spider"
 WGET_LOG=wget.log
 HTTP_FILES_URL="http://aubit4gl.sf.net/files/"
@@ -200,30 +199,25 @@ HTTP_FILES_URL="http://aubit4gl.sf.net/files/"
 HOSTNAME=`hostname`
 HOSTNAME_EXTRA="aptiva.falout.org aptiva"
 HOSTNAME_INCREASE_BUILD="aptiva.falout.org aptiva"
+
+######################
+#Settings needed for RPM
 #RedHat:
 RPM_ROOT=/usr/src/redhat
 #Mandrake:
 #RPM_ROOT=/usr/src/RPM
-
 SRPM_PATH=$RPM_ROOT/SRPMS
 RPM_PATH=$RPM_ROOT/RPMS/i586
 RPMBUILD_PATH=$RPM_ROOT/BUILD
 RPMSRC_PATH=$RPM_ROOT/SOURCES
 
+######################
 #Do we build on any (every) day of the week, or every 5th day
 ANYDAY=1
 
-if test "$COMSPEC" != "" ; then 
-	#On Windows, do we build CygWin
-	#Note: with PDcurses TUI, there is little reason left to build for CygWin
-	BUILD_CYGWIN=0
-	
-	#On Windows, do we build MinGW
-	BUILD_MINGW=1
-else
-	BUILD_CYGWIN=0
-	BUILD_MINGW=0
-fi
+#Name for download page when uploading to download web server:
+DOWNLOADPAGEBASE=aubitdownload.htm
+
 ## ==================================================================
 ##                      Platform dependent Configuration
 ## ==================================================================
@@ -231,11 +225,13 @@ fi
 if [ "$COMSPEC" = "" ]; then
     #UNIX
 
+	BUILD_CYGWIN=0
+	BUILD_MINGW=0
+
 	#####################
 	#Local paths
 	AUBITSRCDIR=/opt/aubit/aubit4glsrc
 	AUBITBINDIR=/opt/aubit4gl
-
 
 	#####################
 	#Template names in HTML file, to be replaced with actual file names
@@ -251,6 +247,13 @@ if [ "$COMSPEC" = "" ]; then
 
 else
     #Windows/CygWin
+	
+	#On Windows, do we build CygWin
+	#Note: with PDcurses TUI, there is little reason left to build for CygWin
+	BUILD_CYGWIN=0
+	
+	#On Windows, do we build MinGW
+	BUILD_MINGW=1
 
 	#####################
 	#Local paths
@@ -275,6 +278,11 @@ else
 
 fi
 
+## ==================================================================
+##                 POST-Platform dependent Configuration
+## ==================================================================
+#This settings depend on variables set in platform-dependent section
+
 #####################
 #name for HTML template file of download page:
 if [ -f $DLPAGEPATH/aubitdownload-template.htm ]; then
@@ -284,31 +292,41 @@ else
 	DOWNLOADPAGE="aubitdownload-template.htm"
 fi
 
-#Name for download page when oploading to download web server:
-DOWNLOADPAGEBASE=aubitdownload.htm
-
+#####################
+#Make sure 'amake' shell script is executable; must be after 
+#platform-dependent section
+chmod a+x $AUBITSRCDIR/bin/amake
 
 ## ==================================================================
 ##                      Initialise variables
 ## ==================================================================
 
 WASERROR=0
+CONFIGURE_FOR=none
+MAKE=0
+RPM=0
+WINSETUP=0
+GET=0
+UPLOAD=0
+CLEAN=0
+CLEAN_OLD=1
+WARNINGS=1
+COMPARE=0
 
 ## ==================================================================
 ##                      Functions
 ## ==================================================================
 
 ############################
-function runexec {
+function runexec () {
 ############################
-
+#Run a single command, log results, check exit codes
 
         if [ "$VERBOSE" = "1" ]; then
 			echo "Executing: $EXEC"
         fi
 
-		if [ "$LOGFILE" != "$MAINLOG" ]
-        then
+		if [ "$LOGFILE" != "$MAINLOG" ]; then
 	        if [ "$VERBOSE" = "1" ]; then
 				echo "Log redirected to $LOGFILE"
 	        fi
@@ -336,9 +354,109 @@ function runexec {
 
 }
 
+
+####################################
+function func_path_NOT_mingw () {
+####################################
+#Change path --NOT-- to use MinGW GCC
+
+if test "$BUILD_CYGWIN" = "1" -a "$COMSPEC" != ""; then
+
+	if test "$VERBOSE" = "1"; then
+		echo "PATH was: $PATH"
+	fi
+	NEWPATH=`echo $PATH | sed -e 's/MinGW/M-i-n-G-W/'g`
+	PATH=$NEWPATH
+	export PATH
+	if test "$VERBOSE" = "1"; then
+		echo "PATH changed to $PATH"
+	fi
+fi
+}
+
+####################################
+function func_path_mingw () {
+####################################
+#Change path to use MinGW GCC
+
+    NEWPATH=
+	TMP=`echo $PATH | grep M-i-n-G-W`
+	if test "$TMP" != ""; then
+    	#For Windows setup installer we need Windows native version,
+        #but we so far compiled only Cygwin version
+
+        NEWPATH=`echo $PATH | sed -e 's/M-i-n-G-W/MinGW/'g`
+
+        echo "Re-enabled MinGW in the PATH"
+    else
+        #echo "--------------------------there was no M-i-n-G-W in the path"
+		TMP=`echo $PATH | grep MinGW`
+        if test "$TMP" = ""; then
+        #echo "--------------------------there is no MinGW in the path at all, add it:"
+			#FIXME: do not hard-code
+			NEWPATH="D:/MinGW/bin:/cygdrive/d/MinGW/bin:$PATH"
+       		if test "$VERBOSE" = "1"; then
+				echo "Added MinGW to the PATH"
+            fi
+		fi
+    fi
+
+    if [ "$NEWPATH" != "" ]; then
+        PATH=$NEWPATH
+        export PATH
+		if test "$VERBOSE" = "1"; then
+			echo "PATH changed to $PATH"
+        fi
+    fi
+}
+
+
+####################################
+function func_configured_for () {
+####################################
+#Determine which C compiler we are/will configure for, depending on 
+#contents of system PATH variable
+
+		TMP=`echo $PATH | grep MinGW`
+        if test "$TMP" != "" ; then
+			CONFIGURE_FOR="mingw"
+		else
+			CONFIGURE_FOR="unix-cygwin"
+		fi
+}
+
+
+################################
+function func_configure () {
+#################################
+#Run Autoconf 'configure' script to create makefiles
+#configure will use 'aubitconf' shell script if it exists in the PATH to 
+#provide switches. Make sure aubitconf accepts flags and will pass them
+#back to 'configure'
+
+	STOPONERROR=1
+	
+	if ! [ -f "$AUBITSRCDIR/configure" ]; then
+		EXEC="autoconf"; runexec
+		if ! [ -f "$AUBITSRCDIR/configure" ]; then
+			echo "ERROR: autoconf failed to create configure. Stop."
+			exit 74
+		fi
+	fi
+	#pasing parameters to configure from here will only work if 
+	#aubitconf script is not in the path
+	#LOGFILE=$CONFIGLOG
+	rm -f $LOGFILE 
+	EXEC="$AUBITSRCDIR/configure --prefix=$AUBITBINDIR"; runexec
+	func_configured_for
+
+	
+}
+
 ############################
-function compare_size {
+function compare_size () {
 ############################
+#Compare file sizes of local and uploaded file on web site. 
 
 UP_FILE=$1
 LOCAL_FILE=$2
@@ -359,8 +477,10 @@ echo "xx"
 }
 
 #########################
-function compare_files {
+function compare_files () {
 #########################
+#Compare byte-for-byte local and uploaded file on web site, by first downloading
+#file from web site to local computer
 UP_FILE=$1
 DOWN_FILE=$2
 
@@ -396,251 +516,13 @@ DOWN_FILE=$2
 	fi
 }
 
-## ==================================================================
-##                      Main
-## ==================================================================
+#########################################
+function func_increase_build_number () {
+#########################################
+#increase build number, but doing this on more then one computer will cause
+#problems with "cvs update"
 
-MAKE=0
-RPM=0
-WINSETUP=0
-GET=0
-UPLOAD=0
-CLEAN=0
-WARNINGS=1
-COMPARE=0
-
-ALL_FLAGS=$@
-
-if [ $# -lt 1 ]; then
-    DO_ALL=1
-else
-	
-	#First catch flags that affect other flags processing
-	for a in $ALL_FLAGS
-	do
-		case $a in
-			-anyday)
-				ANYDAY=1
-	            ;;
-
-		    -verbose | --verbose)
-			    VERBOSE=1
-			    ;;
-
-        esac
-    done
-
-
-	for a in $ALL_FLAGS
-	do
-		case $a in
-
-	    *help)
-			echo "Aubit automatic build and upload script. Usage:"
-			echo "  $0 [options] [actions]"
-			echo "Options:"
-			echo "  -verbose - output additional info"
-			echo "  -anyday - ignore date schedule, run on any day"
-			echo "Actions:"
-			echo "  make - make tarballs, source and binary"
-			echo "  rpm - make RPM's, source and binary"
-            echo "  winsetup - make Windows Installer"
-			echo "  get - get download page template from web server"
-			echo "  upload - upload created files to web server"
-			echo "  clean - remove created files when finished"
-			echo "  compare - download what you uploaded, and compare"
-			echo "When no action is specified, all will be performed"
-			echo " "
-		    exit 1
-			;;
-
-
-	    -verbose | --verbose)
-		    VERBOSE=1
-			if [ $# -lt 2 ]; then
-            	DO_ALL=1
-			fi
-		    ;;
-	    make)
-			MAKE=1
-	        ;;
-	    rpm)
-		    RPM=1
-	        ;;
-	    winsetup)
-            WINSETUP=1
-            ;;
-		get)
-		    GET=1
-	        ;;
-	    upload)
-		    UPLOAD=1
-	        ;;
-	    clean)
-		    CLEAN=1
-	        ;;
-        compare)
-			COMPARE=1
-            ;;
-
-        all)
-			DO_ALL=1
-            ;;
-
-		-anyday)
-			ANYDAY=1
-			if [ $# -lt 2 ]; then
-				DO_ALL=1
-            fi
-            ;;
-
-		*)
-            echo "Parameter $a not recognised. Stop."
-            echo "Try --help"
-            exit 11
-            ;;
-		esac
-	done
-fi
-
-if test "$DO_ALL" = "1"; then
-	#do all steps:
-	if [ "$COMSPEC" = "" ]; then
-	    #UNIX
-	    MAKE=1
-	    RPM=1
-        WINSETUP=0
-	    GET=1
-	    UPLOAD=1
-        CLEAN=1
-        COMPARE=1
-	else
-	    #Windows/CygWin
-	    MAKE=1
-	    RPM=0
-        WINSETUP=1
-	    GET=1
-	    UPLOAD=1
-        CLEAN=1
-        COMPARE=1
-	fi
-fi
-
-
-DAY=`date | awk '{print $3}'`
-
-if [ "$ANYDAY" = "0" ]; then
-	if [ "$DAY" != "1" ] && [ "$DAY" != "5" ] && [ "$DAY" != "10" ] && [ "$DAY" != "15" ] && [ "$DAY" != "20" ] && [ "$DAY" != "25" ]; then
-		#echo "Will run only on 1,5,10,15,20 & 25 day of the month - today is $DAY. STOP."
-		exit 55
-    fi
-fi
-
-
-set `type $AUTO_SF_SCP`
-if [ "$2" != "is" ]; then
-    echo "Script $AUTO_SF_SCP is missing. Stop."
-    exit 23
-fi
-set `type $AUTOSFSCPGET`
-if [ "$2" != "is" ]; then
-	echo "Script $AUTO_SF_SCP is missing. Stop."
-    exit 23
-fi
-set `type $AUTO_CVS`
-if [ "$2" != "is" ]; then
-    echo "Script $AUTO_SF_SCP is missing. Stop."
-    exit 23
-fi
-
-
-
-echo "******* aubitbuild.sh start: ********" > $LOGFILE
-echo "******* `date` ********" >> $LOGFILE
-echo "******* aubitbuild.sh start: ********" > $CLEANLOG
-echo "******* `date` ********" >> $CLEANLOG
-echo "******* aubitbuild.sh start: ********" > $CONFIGLOG
-echo "******* `date` ********" >> $CONFIGLOG
-echo "******* aubitbuild.sh start: ********" > $TARLOG
-echo "******* `date` ********" >> $TARLOG
-
-
-if [ "$VERBOSE" = "1" ]
-then
-    echo "Initialized log files: $LOGFILE $CLEANLOG $CONFIGLOG $TARLOG"
-fi
-
-chmod a+x $AUBITSRCDIR/bin/amake
-
-if test "$MAKE" = "1"; then
-
-		STOPONERROR=0   #Continue even if next statemets fails
-		EXEC="rm -f $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT"; runexec
-		EXEC="rm -f $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT"; runexec
-		STOPONERROR=1
-
-	    #################### make compiler ###############
-
-		EXEC="cd $AUBITSRCDIR"; runexec
-
-		if ! [ -f "$AUBITSRCDIR/?akefile" ]; then
-			if ! [ -f "$AUBITSRCDIR/configure" ]; then
-				EXEC="autoconf"; runexec
-				if ! [ -f "$AUBITSRCDIR/configure" ]; then
-					echo "ERROR: autoconf failed to create configure. Stop."
-					exit 74
-				fi
-			fi
-			#pasing parameters to configure from here will only work if aubitconf script is
-            #not in the path
-			LOGFILE=$CONFIGLOG
-			EXEC="$AUBITSRCDIR/configure --prefix=$AUBITBINDIR"; runexec
-        fi
-
-        #deinstall first, so that we don't accidentally link with CygWin 
-		#dependent/non-dependent libaubit4gl still in the path:
-		EXEC="make deinstall"; runexec
-
-        LOGFILE=$CLEANLOG
-		EXEC="make clean.all"; runexec
-        LOGFILE=$CLEANLOG
-		EXEC="make clean.tools"; runexec
-
-		STOPONERROR=0   #Continue even if next statemets fails
-
-		if [ "$COMSPEC" = "" ]; then
-			#Problems:
-            #if CVS take more then few seconds to respond with login, expect times out
-            #-d is interpreted as debug flag to expect, but "update -d" is treated
-            #by cvs as "unknown command 'update -d'
-			#EXEC="$AUTO_CVS update -d"; runexec
-			EXEC="$AUTO_CVS update"; runexec
-        else
-			#on CygWin:
-			#spawn cvs update -d
-			#Unknown command: `update -d'
-			EXEC="$AUTO_CVS update"; runexec
-        fi
-
-		TMP=`echo $PATH | grep MinGW`
-        if test "$TMP" != "" ; then
-            #we already have MinGW in the path, but we first need to make CygWin version
-            #for binary tarball:
-            NEWPATH=`echo $PATH | sed -e 's/MinGW/M-i-n-G-W/'g`
-            PATH=$NEWPATH
-            export PATH
-			if test "$VERBOSE" = "1"; then
-				echo "PATH changed to $PATH"
-            fi
-        fi
-
-		STOPONERROR=1
-
-		EXEC="autoconf"; runexec
-		
-		#increase build number, but doing this on more then one computer will cause
-        #problems with "cvs update"
-		for HOST in $HOSTNAME_INCREASE_BUILD; do
+	for HOST in $HOSTNAME_INCREASE_BUILD; do
 			if [ "$HOSTNAME" = "$HOST" ] ; then
 				EXEC="make build"; runexec
 				break
@@ -649,50 +531,72 @@ if test "$MAKE" = "1"; then
             		echo "HOSTNAME=$HOSTNAME, will NOT increase build number."
 				fi
 			fi
-		done
+	done
+}
+#################################
+function func_commit_cvs () {
+#################################
+#cvs commit to check in build number
 
-		#configure will use aubitconf if it exists to provide switches:
-		#pasing parameters to configure from here will only work if aubitconf script is
-        #not in the path
-		
-		if ! [ -f "$AUBITSRCDIR/configure" ]; then
-			EXEC="autoconf"; runexec
-			if ! [ -f "$AUBITSRCDIR/configure" ]; then
-				echo "ERROR: autoconf failed to create configure. Stop."
-				exit 74
-			fi
-		fi
-		LOGFILE=$CONFIGLOG
-		EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
-		#cannot do this, if I do, there won't be a makefile left to do "make tar"
-		#EXEC="make clean.configure"; runexec #to remove makefiles before tar
-		#must use 'tar' target in makefile, since I don't have versions and platform info
-	    #here that is created by configure:
-		LOGFILE=$TARLOG
-		EXEC="make tar"; runexec
+	if test "$VERBOSE" = "1"; then
+   		echo "CVS commit disabled"
+	fi
 
-		#cvs commit to check in build number
 		#	@cvs commit -m "commit.build $BULDNO" > commit.log
 		#/usr/bin/expect: invalid option -- m
 		#usage: expect [-div] [-c cmds] [[-f] cmdfile] [args]
 		#auto_cvs commit -m 'commit.build by aubitbuild.sh' failed with code 1
 		#	EXEC="$AUTO_CVS commit -m 'commit.build by aubitbuild.sh'"; runexec
-		
-	if test "$BUILD_CYGWIN" = "1" -o "$COMSPEC" = "" ; then
+}
+
+#################################
+function func_update_cvs () {
+#################################
+#Update source code tree from CVS
+
+ 	STOPONERROR=0   #Continue even if next statemets fails
+	if [ "$COMSPEC" = "" ]; then
+			#Problems:
+            #if CVS take more then few seconds to respond with login, expect times out
+            #-d is interpreted as debug flag to expect, but "update -d" is treated
+            #by cvs as "unknown command 'update -d'
+			#EXEC="$AUTO_CVS update -d"; runexec
+			EXEC="$AUTO_CVS update"; runexec
+    else
+			#on CygWin:
+			#spawn cvs update -d
+			#Unknown command: `update -d'
+			EXEC="$AUTO_CVS update"; runexec
+    fi
+ 	STOPONERROR=1
+}
+
+##############################
+function func_do_make_log () {
+##############################
+#Execute 'make log' to build Aubit compiler as previously configured
+
 		#We need to handle exit code ourselves, so that cron will
 		#know we failed on making a build
 		STOPONERROR=0
+		#LOGFILE is not needed here, make 'log' target logs itself
 		EXEC="make log"; runexec
 		STOPONERROR=1		
 		if test $RET != "0"; then
 			exit 66
 		fi
-		
-		if [ "$VERBOSE" = "1" ]
-		then
+		if [ "$VERBOSE" = "1" ]; then
 			echo "See `pwd`/make.log for details."
         fi
+		
+}
 
+#######################################
+function func_check_cygwin_build () {
+#######################################
+#Make sure built libraries are CygWin libraries
+
+if test "$BUILD_CYGWIN" = "1" -a "$COMSPEC" != ""; then
 		if [ "$COMSPEC" != "" ]; then
 			#Check that what we built is dependent on Cygwin:
 			TMP=`cygcheck.exe lib/libaubit4gl.dll | grep cygwin1.dll`
@@ -701,12 +605,38 @@ if test "$MAKE" = "1"; then
 	        fi
             #store libUI_TUI.dll so we can package it with cygwin1.dll 
 			#for native windows port later:
-            cp lib/libUI_TUI.dll /tmp
+			#NOT NEEDE ANYMORE - have PDcurses now
+			#if test -f lib/libUI_TUI.dll; then 
+            #	cp lib/libUI_TUI.dll /tmp
+			#fi
 		fi
+fi
+}
 
+#######################################
+function func_check_not_cygwin_build () {
+#######################################
+#Make sure built libraries are NOT CygWin libraries
 
-		if [ "$WARNINGS" = "1" ]
-		then
+    TMP=`cygcheck.exe lib/libaubit4gl.dll | grep cygwin1.dll`
+    if test "$TMP" != ""; then
+        echo "ERROR: libaubit4gl.dll depends on cygwin1.dll"
+		exit 4
+    else
+	    TMP=`cygcheck.exe bin/4glc.exe | grep cygwin1.dll`
+	    if test "$TMP" != ""; then
+	        echo "ERROR: 4glc.exe depends on cygwin1.dll"
+			exit 4
+	    fi
+	fi
+}
+
+#######################################
+function func_warnings () {
+#######################################
+#Prepare report on compiler warnings
+
+		if [ "$WARNINGS" = "1" ]; then
 			#This is to keep us up-to-date with warnings so we don't
 			#accumulate lot of them over the time. If this grep creates
 			#output, it will end up in email sent by cron
@@ -718,222 +648,302 @@ if test "$MAKE" = "1"; then
 			echo "See `pwd`/warning.log for details"
 	        echo " "
 
-			if [ "$COMSPEC" = "" ]; then
+			if [ "@LCLINTEXE@" != "no" ]; then
 				EXEC="make splint"; runexec
 				echo "All SPLint warnings: "
 				echo "                          Reported  Suppressed"
 				grep "^Total" lclint.log
-            else
-                echo "FIXME: splint disabled on CygWin"
             fi
             echo " "
 
-			#Run all build tests in tools/test/build_tests/...
-			#this is now invoked from cron script
-			#make test.build
-
+			func_regression_test
         fi
+}
 
-		################## install compiler ###############
-		EXEC="make deinstall"; runexec
+#######################################
+function func_install () {
+#######################################
+#deinstall and then install compiler
+
+		func_deinstall
 		EXEC="make install prefix=$AUBITBINDIR"; runexec
-		EXEC="cd $AUBITBINDIR"; runexec
+}
+
+#######################################
+function func_clean_bininstall_tree () {
+#######################################
+#Clean BINARY installatin tree
+
+		func_cd_bindir
 		LOGFILE=$CLEANLOG
 		#This clean runs on binary installation - NOT in source code tree
 		EXEC="make clean"; runexec
+}
+
+#######################################
+function func_make_binary_tarball () {
+#######################################
+#Make BINARY tarball from binary installation tree
+
 		LOGFILE=$TARLOG
 		EXEC="make tar.bin"; runexec
-	fi
+}
 
-else
-    echo "MAKE disabled ($MAKE)"
-fi
+#######################################
+function func_make_source_tarball () {
+#######################################
+#Make SOURCE tarball from source code tree
 
-#If this host in in the list, build extra targets
-for HOST in $HOSTNAME_EXTRA; do
-	if [ "$HOSTNAME" = "$HOST" ]; then
-		EXEC="cd $AUBITSRCDIR"; runexec
-		STOPONERROR=0
-		EXEC="make extra"; runexec
-		#FIXME: show result of make extra here
+#cannot do this, if I do, there won't be a makefile left to do "make tar"
+#EXEC="make clean.configure"; runexec #to remove makefiles before tar
+#must use 'tar' target in makefile, since I don't have versions and platform info
+#here that is created by configure:
+		LOGFILE=$TARLOG
+		EXEC="make tar"; runexec
+}
+
+#######################################
+function func_deinstall () {
+#######################################
+#De-install the compiler
+
+#deinstall can be important, so that we don't accidentally link with,
+#for example. CygWin dependent/non-dependent libaubit4gl still in the path
+	
+		EXEC="make deinstall"; runexec
+}
+
+#######################################
+function func_clean_src_tree () {
+#######################################
+#Clean the source code tree
+
+        LOGFILE=$CLEANLOG
+		EXEC="make clean.all"; runexec
+        LOGFILE=$CLEANLOG
+		EXEC="make clean.tools"; runexec
+}
+
+#######################################
+function func_clean_tarballs () {
+#######################################
+#Delete ANY existing source and binary tarballs
+
+		STOPONERROR=0   #Continue even if next statemets fails
+		EXEC="rm -f $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT"; runexec
+		EXEC="rm -f $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT"; runexec
 		STOPONERROR=1
-		#EXEC="cd $AUBITBINDIR"; runexec
-		break
-	fi
-done
+}
 
-#get file names of created archives:
-if [ -f $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT ]; then
-	#WARNING: Must _NOT_ be quoted:
-    SOURCETARNAME=`ls $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT`
-    SOURCETARBASENAME=`basename $SOURCETARNAME`
-else
-	if test "$MAKE" = "1"; then
-		echo "ERROR: source archive not created. Stop"
-	    exit 7
-    fi
-fi
+###################################
+function func_cd_srcdir () {
+###################################
+#CD into source code directory
 
-if [ -f $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT ]; then
-	#WARNING: Must _NOT_ be quoted:
-    TARBALL=`ls $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT`
-    TARBALLBASENAME=`basename $TARBALL`
-else
-	if test "$MAKE" = "1"; then
-		if test "$BUILD_CYGWIN" = "1"; then
-			echo "ERROR: binary archive not created."
-			exit 8
-		else
-			TARBALL=NONE
-		    TARBALLBASENAME=NONE
+		EXEC="cd $AUBITSRCDIR"; runexec
+}
+
+###################################
+function func_cd_bindir () {
+###################################
+#CD into binary installation directory
+
+	EXEC="cd $AUBITBINDIR"; runexec
+}		
+
+#########################################
+function func_check_exist_makefile () {
+#########################################
+
+		if ! [ -f "$AUBITSRCDIR/?akefile" ]; then
+			LOGFILE="$CONFIGLOG"
+			func_configure
 		fi
-    fi
-fi
+}
 
-if test "$VERBOSE" = "1"; then
-	echo "created:"
-	echo $SOURCETARNAME
-	echo $TARBALL
+################################
+function func_make () {
+################################
+#The main MAKE function - make compiler (source & binary tarball)
 
-fi
+	if test "$MAKE" = "1"; then
 
+		if test "$VERBOSE" = "1"; then
+			echo "In func_make()"
+		fi
+	
+		func_clean_tarballs
+		func_cd_srcdir
+		func_check_exist_makefile
+		func_deinstall
+		func_clean_src_tree
+		func_update_cvs
+		func_increase_build_number
+		func_commit_cvs
+		func_make_source_tarball
+		
+		if test "$BUILD_CYGWIN" = "1" -o "$COMSPEC" = ""; then
+			#On UNIX and on Windows if we want CygWin tarball, make binary tarball
+			#MinGW comes later
+			if test "$CONFIGURE_FOR" != "unix-cygwin" ; then
+				func_path_NOT_mingw
+				LOGFILE="$CONFIGLOG"
+				func_configure
+			fi
+			func_do_make_log
+			func_check_cygwin_build
+			func_warnings
+			func_install
+			func_clean_bininstall_tree
+			func_make_binary_tarball
+		fi
 
-if test "$RPM" = "1"; then
-    ################## make RPM #######################
-    STOPONERROR=0   #Continue even if next statemets fails
-    EXEC="rm -f $SRPM_PATH/$SHORTNAME*.src.rpm"; runexec
-    EXEC="rm -f $RPM_PATH/$SHORTNAME*.rpm"; runexec
-    EXEC="rm -rf /usr/src/redhat/BUILD/$SHORTNAME*"; runexec
-	STOPONERROR=1
+	else
+    	echo "MAKE disabled ($MAKE)"
+	fi
 
-    EXEC="cd $AUBITSRCDIR"; runexec
-    EXEC="make rpm"; runexec
+}
 
-fi
+########################################
+function func_get_tarball_names () {
+########################################
+#get file names of created tarball archives
 
-#get file names of created RPM archives"
-if ! [ -f $SRPM_PATH/$SHORTNAME*.src.rpm ]; then
+	if [ -f $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT ]; then
+		#WARNING: Must _NOT_ be quoted:
+		SOURCETARNAME=`ls $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT`
+		SOURCETARBASENAME=`basename $SOURCETARNAME`
+	else
+		if test "$MAKE" = "1"; then
+			echo "ERROR: source archive not created. Stop"
+			exit 7
+		fi
+	fi
+	
+	if [ -f $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT ]; then
+		#WARNING: Must _NOT_ be quoted:
+		TARBALL=`ls $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT`
+		TARBALLBASENAME=`basename $TARBALL`
+	else
+		if test "$MAKE" = "1"; then
+			if test "$BUILD_CYGWIN" = "1"; then
+				echo "ERROR: binary archive not created."
+				exit 8
+			else
+				TARBALL=NONE
+				TARBALLBASENAME=NONE
+			fi
+		fi
+	fi
+	
+	if test "$VERBOSE" = "1"; then
+		echo "created:"
+		echo $SOURCETARNAME
+		echo $TARBALL
+	
+	fi
+}
+
+##############################
+function func_make_rpm () {
+##############################
+#Make binary and source RPMs
+
 	if test "$RPM" = "1"; then
-		echo "source RPM not created"
-    fi
-else
-	#WARNING: Must _NOT_ be quoted:
-	SOURCERPM=`ls $SRPM_PATH/$SHORTNAME*.src.rpm`
-	SOURCERPMBASENAME=`basename $SOURCERPM`
-fi
+	
+		if test "$VERBOSE" = "1"; then
+			echo "In func_make_rpm()"
+		fi
+	
+	
+		STOPONERROR=0   #Continue even if next statemets fails
+		EXEC="rm -f $SRPM_PATH/$SHORTNAME*.src.rpm"; runexec
+		EXEC="rm -f $RPM_PATH/$SHORTNAME*.rpm"; runexec
+		EXEC="rm -rf /usr/src/redhat/BUILD/$SHORTNAME*"; runexec
+		STOPONERROR=1
+		func_cd_srcdir
+		EXEC="make rpm"; runexec
+	fi
+}
 
-if ! [ -f $RPM_PATH/$SHORTNAME*.rpm ]; then
-	if test "$RPM" = "1"; then
-		echo "Binary RPM not created."
-    fi
-else
-	#WARNING: Must _NOT_ be quoted:
-	BINRPM=`ls $RPM_PATH/$SHORTNAME*.rpm`
-	BINRPMBASENAME=`basename $BINRPM`
-fi
+#####################################
+function func_get_rpm_names () {
+#####################################
+#get file names of created RPM archives
+
+	if ! [ -f $SRPM_PATH/$SHORTNAME*.src.rpm ]; then
+		if test "$RPM" = "1"; then
+			echo "source RPM not created"
+		fi
+	else
+		#WARNING: Must _NOT_ be quoted:
+		SOURCERPM=`ls $SRPM_PATH/$SHORTNAME*.src.rpm`
+		SOURCERPMBASENAME=`basename $SOURCERPM`
+	fi
+	
+	if ! [ -f $RPM_PATH/$SHORTNAME*.rpm ]; then
+		if test "$RPM" = "1"; then
+			echo "Binary RPM not created."
+		fi
+	else
+		#WARNING: Must _NOT_ be quoted:
+		BINRPM=`ls $RPM_PATH/$SHORTNAME*.rpm`
+		BINRPMBASENAME=`basename $BINRPM`
+	fi
+}
+
+##########################################
+function func_create_win_installer () {
+##########################################
+#Create windows installer executable from natively compiled Aubit
+			STOPONERROR=0   #Continue even if next statemets fails
+			EXEC="rm -rf $AUBITSRCDIR/etc/Output/"; runexec
+			STOPONERROR=1
+
+			func_cd_srcdir
+		    EXEC="make winsetup"; runexec
+}
+
+####################################
+function func_make_winsetup () {
+####################################
+#Compile Aubit compielr using native Windows GCC (MinGW) and  make Windows installer 
+#(native Windows, using MinGW GCC - NOT CygWin)
 
 if test "$WINSETUP" = "1" -a "$BUILD_MINGW" = "1" ; then
-    ################## make Windows installer #######################
+	if test "$VERBOSE" = "1"; then
+   		echo "In func_make_winsetup()"
+	fi
+
 
 	if test "$TARBALL" != "NONE"; then
 		#Move already created tarball out of the way, since we will need to 
-		#do a "make clean.all"
+		#do a "make clean.all" and we don't want to delete it
 		NEWTARBALL=/var/tmp/$TARBALLBASENAME
 		mv $TARBALL $NEWTARBALL
 		TARBALL=$NEWTARBALL
 	fi
 
-
-    NEWPATH=
-	TMP=`echo $PATH | grep M-i-n-G-W`
-	if test "$TMP" != ""; then
-    	#For Windows setup installer we need Windows native version,
-        #but we so far compiled only Cygwin version
-
-        NEWPATH=`echo $PATH | sed -e 's/M-i-n-G-W/MinGW/'g`
-
-        echo "Re-enabled MinGW in the PATH"
-    else
-        #echo "--------------------------there was no M-i-n-G-W in the path"
-		TMP=`echo $PATH | grep MinGW`
-        if test "$TMP" = ""; then
-        #echo "--------------------------there is no MinGW in the path at all, add it:"
-			#FIXME: do not hard-code
-			NEWPATH="D:/MinGW/bin:/cygdrive/d/MinGW/bin:$PATH"
-       		if test "$VERBOSE" = "1"; then
-				echo "Added MinGW to the PATH"
-            fi
-		fi
-    fi
-
-    if [ "$NEWPATH" != "" ]; then
-        PATH=$NEWPATH
-        export PATH
-		if test "$VERBOSE" = "1"; then
-			echo "PATH changed to $PATH"
-        fi
-    fi
-    EXEC="cd $AUBITSRCDIR"; runexec
-
-    #deinall first, so that we don't accidentally link with CygWin dependent
-    #libaubit4gl still in the path"
-    EXEC="make deinstall"; runexec
-
-    #now we need to configure and build it from source code again:
+	func_path_mingw
+	func_cd_srcdir
+    func_deinstall
     STOPONERROR=1
-	#if test "$VERBOSE" = "1"; then
-	#	type gcc
-    #fi
-    LOGFILE=$CLEANLOG
-	EXEC="make clean.all"; runexec
-    LOGFILE=$CLEANLOG
-	EXEC="make clean.tools"; runexec
+	func_clean_src_tree
+	LOGFILE="$CONFIGLOG_MINGW"
+	func_configure
+	func_do_make_log
+	func_check_not_cygwin_build
+	func_create_win_installer
+	func_regression_test
 
-	
-	if ! [ -f "$AUBITSRCDIR/configure" ]; then
-		EXEC="autoconf"; runexec
-		if ! [ -f "$AUBITSRCDIR/configure" ]; then
-			echo "ERROR: autoconf failed to create configure. Stop."
-			exit 74
-		fi
-	fi
-	LOGFILE=$CONFIGLOG
-	LOGFILE=/tmp/mingw-config.log
-	rm -f $LOGFILE 
-    EXEC="./configure  --prefix=$AUBITBINDIR"; runexec
-	STOPONERROR=0	
-    EXEC="make log"; runexec
-	STOPONERROR=1		
-	if test $RET != "0"; then
-		exit 66
-	fi
+fi
 
-    #Check that what we built is not dependent on Cygwin:
-    TMP=`cygcheck.exe lib/libaubit4gl.dll | grep cygwin1.dll`
-    if test "$TMP" != ""; then
-        echo "ERROR: libaubit4gl.dll depends on cygwin1.dll"
-		exit 4
-    else
-	    TMP=`cygcheck.exe bin/4glc.exe | grep cygwin1.dll`
-	    if test "$TMP" != ""; then
-	        echo "ERROR: 4glc.exe depends on cygwin1.dll"
-	    else
-			#Create windows installer
-			STOPONERROR=0   #Continue even if next statemets fails
-			EXEC="rm -rf $AUBITSRCDIR/etc/Output/"; runexec
-			STOPONERROR=1
+}
 
-		    EXEC="cd $AUBITSRCDIR"; runexec
-		    EXEC="make winsetup"; runexec
-		fi
-
-	fi
-
-	#Run all build tests in tools/test/build_tests/...
-	#this is now invoked from cron script
-	#make test.build
-
-fi  #if WINSETUP
+#######################################
+function func_get_winsetup_name () {
+#######################################
+#Get name of created Windows setup installer executable
 
 	WINSETUPEXE="$AUBITSRCDIR/etc/Output/$WINSETUPEXE_BASENAME"
 	if ! [ -f "$WINSETUPEXE" ]; then
@@ -951,30 +961,57 @@ fi  #if WINSETUP
 		WINSETUPEXE="$TMP_WINSETUPEXE"
         WINSETUPEXE_ESC=`echo $WINSETUPEXE | sed -e 's/ /\\\\ /'g`
 	fi
+}
 
-if test "2" = "1"; then
-#this is in 'make test.build'
-	#Run regression tests
-	STOPONERROR=0
-    EXEC="cd /opt/aubit/aubit4gltest"; runexec
-    STOPONERROR=0
-	EXEC="bash run_tests -cert -silent -verbose-results -range 1 20"; runexec
-    STOPONERROR=1
-fi
+##################################
+function func_regression_test () {
+##################################
+#Run regression tests
 
-if test "$GET" = "1"; then
+	if test "2" = "1"; then
+	#this is in 'make test.build'
+		#Run regression tests
+		STOPONERROR=0
+		EXEC="cd /opt/aubit/aubit4gltest"; runexec
+		STOPONERROR=0
+		EXEC="bash run_tests -cert -silent -verbose-results -range 1 20"; runexec
+		STOPONERROR=1
+		
+		#Run all build tests in tools/test/build_tests/...
+		#this is now invoked from cron script
+		#make test.build
+		
+	fi
+}
 
-		################### get things ####################
+###################################
+function func_get_files () {
+###################################
+# get files we need to create Automatic Nightly Builds web page and then
+#create html page
+
+	if test "$GET" = "1"; then
+		if test "$VERBOSE" = "1"; then
+			echo "In func_get_files()"
+		fi
 
 		if [ "$DOWNLOADPAGE_SCP" = "1" ]; then
 			#This will fail first time we do it, if this server is not allsready 
 			#in the list of known hosts. It will ask us:
             #Are you sure you want to continue connecting (yes/no)?
+			STOPONERROR=0
 			EXEC="$AUTOSFSCPGET $SCPPATH/$DOWNLOADPAGE"; runexec
+			
+			if test -f "$DOWNLOADPAGE"; then
+				STOPONERROR=1
+			else
+				echo "failed: $EXEC"
+				echo "Reminder: On first run, scp will prompt for authenticity of host"
+				exit 87
+			fi
         fi
-
+		 
 		EXEC="cp $DOWNLOADPAGE $DLTMP1"; runexec
-
 		if [ "$COMSPEC" = "" ]; then
 			EXEC="$AUTOSFSCPGET $SCPPATH/$CYBUILDNAMES"; runexec
 			EXEC="$AUTOSFSCPGET $SCPPATH/$CYSRCBUILDNAMES"; runexec
@@ -1056,11 +1093,19 @@ if test "$GET" = "1"; then
 		if test "$VERBOSE" = "1"; then
             echo "Fixed download names from other platform(s)"
         fi
+	fi
+}
 
-fi
+##########################
+function func_upload () {
+##########################
+# Upload all files to web site
 
-if test "$UPLOAD" = "1"; then
-	    #################### Upload all ##########################
+	if test "$UPLOAD" = "1"; then
+		if test "$VERBOSE" = "1"; then
+			echo "In func_upload()"
+		fi
+
 		EXEC="$AUTO_SF_SCP $SOURCETARNAME"; runexec
 		if test "$TARBALL" != "NONE"; then
 			EXEC="$AUTO_SF_SCP $TARBALL"; runexec
@@ -1088,10 +1133,21 @@ if test "$UPLOAD" = "1"; then
 	    #upload html page last, so if we fail before, nothing is changed
 		EXEC="cp $DLTMP1 $DOWNLOADPAGEBASE"; runexec
 		EXEC="$AUTO_SF_SCP $DOWNLOADPAGEBASE"; runexec
-fi
+		
+	fi
+}
+
+
+######################################
+function func_compare_uploaded () {
+######################################
+# compare created and uploaded files by size or byte-for-byte
 
 if test "$COMPARE" = "1"; then
-	####################### download and compare #################
+	if test "$VERBOSE" = "1"; then
+   		echo "In func_compare_uploaded()"
+	fi
+
 	COMPARED_OK=1
     cd /tmp
 
@@ -1161,13 +1217,18 @@ if test "$COMPARE" = "1"; then
 		fi
 	fi
     cd -
+	
 fi
+}
+
+###################################
+function func_clean_old () {
+###################################
+#clean stuff we may accumulate over time by not cleaning each time
+#after errors and in oter sittuations when we do not want to clean
 
 if test "$CLEAN_OLD" = "1" ; then
-	#clean stuff we may accumulate over time by not cleaning each time
-	#after errors and in oter sittuations when we do not want to clean
-
-    #Clean created archives and files
+	#Clean created archives and files
 	#EXEC="rm -f $SOURCETARNAME $TARBALL $SOURCERPM $BINRPM"; runexec
 
 	#delete compare files:
@@ -1181,11 +1242,18 @@ if test "$CLEAN_OLD" = "1" ; then
 	#clean temprary stuff created by RPM:
     rm -rf $RPMBUILD_PATH/aubit4gl-*
    	rm -rf $RPMSRC_PATH/aubit4glsrc-*
+	
+	rm -f /usr/src/redhat/SOURCES/aubit4glsrc-*.tgz
+	
 fi
+}
+
+###################################
+function func_clean_created () {
+###################################
+#Clean archives and files created on THIS run
 
 if test "$CLEAN" = "1" -a "$COMPARED_OK" = "1"; then
-
-    #Clean created archives and files
 	EXEC="rm -f $DLTMP1 $DLTMP2 $DOWNLOADPAGEBASE"; runexec
 	EXEC="rm -f $SOURCETARNAME $TARBALL $SOURCERPM $BINRPM"; runexec
 	EXEC="rm -f $CYSRCBUILDNAMES $CYBUILDNAMES"; runexec
@@ -1222,26 +1290,273 @@ if test "$CLEAN" = "1" -a "$COMPARED_OK" = "1"; then
     fi
 
 
-	#We don't want to leave Aubit in path:
-	EXEC="make deinstall"; runexec
-
+	#We don't want to leave Aubit in path (or do we?)
+	func_deinstall
 
 fi
+	
+}
 
-echo "******* LOG END ********" >> $LOGFILE
-echo "******* `date` ********" >> $LOGFILE
-echo "***********************" >> $LOGFILE
-echo " " >> $LOGFILE
+####################################
+function func_init_log_files () {
+####################################
+#Initialise and timestamp log files we will use
 
-if test "$VERBOSE" = "1"; then
-    echo "Successfully reached the end of aubitbuild.sh script. Exiting."
-fi
+	echo "******* aubitbuild.sh start: ********" > $LOGFILE
+	echo "******* `date` ********" >> $LOGFILE
+	echo "******* aubitbuild.sh start: ********" > $CLEANLOG
+	echo "******* `date` ********" >> $CLEANLOG
+	echo "******* aubitbuild.sh start: ********" > $CONFIGLOG
+	echo "******* `date` ********" >> $CONFIGLOG
+	echo "******* aubitbuild.sh start: ********" > $TARLOG
+	echo "******* `date` ********" >> $TARLOG
+	
+	if [ "$VERBOSE" = "1" ]; then
+		echo "Initialized log files: $LOGFILE $CLEANLOG $CONFIGLOG $TARLOG"
+	fi
+	
+}
 
-echo " "
+###################################
+function func_close_log_files () {
+###################################
+#Stamp log files so we know they where completed
+
+	echo "******* LOG END ********" >> $LOGFILE
+	echo "******* `date` ********" >> $LOGFILE
+	echo "***********************" >> $LOGFILE
+	echo " " >> $LOGFILE
+
+}
+
+###################################
+function func_get_flags () {
+###################################
+#Process flags specified on command line to this script
+
+	ALL_FLAGS=$@
+	
+	if [ $# -lt 1 ]; then
+		DO_ALL=1
+	else
+		
+		#First catch flags that affect other flags processing
+		for a in $ALL_FLAGS
+		do
+			case $a in
+				-anyday)
+					ANYDAY=1
+					;;
+	
+				-verbose | --verbose)
+					VERBOSE=1
+					;;
+	
+			esac
+		done
+	
+	
+		for a in $ALL_FLAGS
+		do
+			case $a in
+	
+			*help)
+				echo "Aubit automatic build and upload script. Usage:"
+				echo "  $0 [options] [actions]"
+				echo "Options:"
+				echo "  -verbose - output additional info"
+				echo "  -anyday - ignore date schedule, run on any day"
+				echo "Actions:"
+				echo "  make - make tarballs, source and binary"
+				echo "  rpm - make RPM's, source and binary"
+				echo "  winsetup - make Windows Installer"
+				echo "  get - get download page template from web server"
+				echo "  upload - upload created files to web server"
+				echo "  clean - remove created files when finished"
+				echo "  compare - download what you uploaded, and compare"
+				echo "When no action is specified, all will be performed"
+				echo " "
+				exit 1
+				;;
+	
+	
+			-verbose | --verbose)
+				VERBOSE=1
+				if [ $# -lt 2 ]; then
+					DO_ALL=1
+				fi
+				;;
+			make)
+				MAKE=1
+				;;
+			rpm)
+				RPM=1
+				;;
+			winsetup)
+				WINSETUP=1
+				;;
+			get)
+				GET=1
+				;;
+			upload)
+				UPLOAD=1
+				;;
+			clean)
+				CLEAN=1
+				;;
+			compare)
+				COMPARE=1
+				;;
+	
+			all)
+				DO_ALL=1
+				;;
+	
+			-anyday)
+				ANYDAY=1
+				if [ $# -lt 2 ]; then
+					DO_ALL=1
+				fi
+				;;
+	
+			*)
+				echo "Parameter $a not recognised. Stop."
+				echo "Try --help"
+				exit 11
+				;;
+			esac
+		done
+	fi
+	if test "$DO_ALL" = "1"; then
+		#do all steps:
+		if [ "$COMSPEC" = "" ]; then
+			#UNIX
+			MAKE=1
+			RPM=1
+			WINSETUP=0
+			GET=1
+			UPLOAD=1
+			CLEAN=1
+			COMPARE=1
+		else
+			#Windows/CygWin
+			MAKE=1
+			RPM=0
+			WINSETUP=1
+			GET=1
+			UPLOAD=1
+			CLEAN=1
+			COMPARE=1
+		fi
+	fi
+	
+}	
+	
+#######################################
+function func_check_scripts () {
+#######################################
+#Check that all scripts we need exist
+
+	if test "@EXPECT@" = "no"; then 
+		echo "'expect' is missing. Stop."
+		exit 23
+	fi
+
+	set `type $AUTO_SF_SCP`
+	if [ "$2" != "is" ]; then
+		echo "Script $AUTO_SF_SCP is missing. Stop."
+		exit 23
+	fi
+	set `type $AUTOSFSCPGET`
+	if [ "$2" != "is" ]; then
+		echo "Script $AUTO_SF_SCP is missing. Stop."
+		exit 23
+	fi
+	set `type $AUTO_CVS`
+	if [ "$2" != "is" ]; then
+		echo "Script $AUTO_SF_SCP is missing. Stop."
+		exit 23
+	fi
+}
+
+###############################
+function func_check_day () {
+###############################
+#Check if we are to run this script today
+
+	DAY=`date | awk '{print $3}'`
+	
+	if [ "$ANYDAY" = "0" ]; then
+		if [ "$DAY" != "1" ] && [ "$DAY" != "5" ] && [ "$DAY" != "10" ] && [ "$DAY" != "15" ] && [ "$DAY" != "20" ] && [ "$DAY" != "25" ]; then
+			#echo "Will run only on 1,5,10,15,20 & 25 day of the month - today is $DAY. STOP."
+			exit 55
+		fi
+	fi
+}
+
+###############################
+function func_make_extra () {
+###############################
+#If this host in in the list, build extra targets
 
 
+	for HOST in $HOSTNAME_EXTRA; do
+		if [ "$HOSTNAME" = "$HOST" ]; then
+		
+			if test "$VERBOSE" = "1"; then
+				echo "In func_make_extra()"
+			fi
+		
+		
+			func_cd_srcdir
+			STOPONERROR=0
+			EXEC="make extra"; runexec
+			#FIXME: show result of make extra here
+			STOPONERROR=1
+			#EXEC="cd $AUBITBINDIR"; runexec
+			break
+		fi
+	done
 
+}
 
-#done
-exit 0
+## ==================================================================
+##                      Main
+## ==================================================================
+function func_main () {
+
+	if test "$VERBOSE" = "1"; then
+   		echo "In func_main()"
+	fi
+	
+	func_get_flags
+	func_check_day
+	func_check_scripts
+	func_init_log_files
+	func_make
+	func_make_extra
+	func_get_tarball_names
+	func_make_rpm
+	func_get_rpm_names
+	func_make_winsetup
+	func_get_winsetup_name
+	func_regression_test
+	func_get_files
+	func_upload
+	func_compare_uploaded
+	func_clean_old
+	func_clean_created
+	func_close_log_files
+	
+}
+
+	func_main
+
+	if test "$VERBOSE" = "1"; then
+		echo "Successfully reached the end of aubitbuild.sh script. Exiting."
+	fi
+	echo " "
+	exit 0
+	
+################################## EOF #################################
 

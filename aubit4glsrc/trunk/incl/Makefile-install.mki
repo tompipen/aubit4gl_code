@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.87 2004-12-09 23:59:12 afalout Exp $
+# $Id: Makefile-install.mki,v 1.88 2004-12-13 01:55:32 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -416,6 +416,7 @@ libltdl:
 winsetup:
 ifndef NOREFRESH
 	(cd ${AUBITDIR}; config.status --file etc/aubit-InnoSetup.iss)
+#	MAKINGAUBIT=0 ${SH} ${AUBITDIR}/bin/4glpc.obsolete -deps
 endif
 	unix2dos -D ${AUBITDIR}/etc/aubit-InnoSetup.iss
 #	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${WIN_CYGPATH}/${AUBITDIR}/etc/aubit-InnoSetup.iss")
@@ -428,6 +429,11 @@ endif
 ## ==================================================================
 ##                    Third-party products installation settings
 ## ==================================================================
+
+#MSYS_SH		=${MSYS_ROOTDIR}/bin/sh.exe -c
+MSYS_SH		=/cygdrive/d/msys/1.0/bin/sh.exe -c 
+MSYS_CONF	=. /etc/profile
+
 
 ##################
 # 1: iODBC ODBC manager
@@ -497,11 +503,22 @@ ifeq "${LIBWWW_RPM}" ""
 endif
 
 
+XMLRPC_SRC_PATH		=http://download.sourceforge.net/xmlrpc-c
+XMLRPC_SRC_NAME		=xmlrpc-c-0.9.9
+XMLRPC_SRC_TAR_GZ	=${XMLRPC_SRC_NAME}.tar.gz
+
+LIBWWW_INFO			=http://www.w3c.org/Library/
+LIBWWW_SRC_PATH		=http://www.w3c.org/Library/Distribution
+LIBWWW_SRC_NAME		=w3c-libwww-5.4.0
+LIBWWW_SRC_ZIP		=${LIBWWW_SRC_NAME}.zip
+
 ##################
-# 4: JABBER eksemel
+# 4: eksemel library (JABBER IM protocol)
 IKSEMEL_INFO		=http://iksemel.jabberstudio.org
-IKSEMEL_PATH        =http://files.jabberstudio.org/iksemel
-IKSEMEL_SRC         =iksemel-0.0.1
+#IKSEMEL_PATH        =http://files.jabberstudio.org/iksemel
+IKSEMEL_PATH        =http://www.jabberstudio.org/files/iksemel
+#IKSEMEL_SRC         =iksemel-0.0.1
+IKSEMEL_SRC         =iksemel-1.2
 IKSEMEL_TGZ         =${IKSEMEL_SRC}.tar.gz
 
 ##################
@@ -524,6 +541,11 @@ endif
 GRAPHVIZ_INFO		=http://www.research.att.com/sw/tools/graphviz/
 GRAPHVIZ_PATH       =http://www.graphviz.org/pub/graphviz
 GRAPHVIZ_RPM		=graphviz-1.8.10-4.i386.rpm
+
+GRAPHVIZ_WIN_PATH	=http://www.graphviz.org/pub/graphviz/ARCHIVE
+GRAPHVIZ_WIN_EXE	=graphviz-1.16.exe
+#Freetype2, jpeg, expat, libz, png support libs:
+GRAPHVIZ_WIN_EXTRA_LIBS	=http://www.graphviz.org/Misc/third-party.zip
 
 ##################
 # 7: SAPODBC
@@ -614,8 +636,9 @@ endif
 # 13: MPZ - gnu mp
 MPZ_INFO            =http://swox.com/gmp
 MPZ_MANUAL			=http://www.gnu.org/manual/gmp/html_mono/gmp.html
-MPZ_PATH            =ftp://mirrors.kernel.org/gnu/gmp
-MPZ_SRC             =gmp-4.1.2
+#MPZ_PATH            =ftp://mirrors.kernel.org/gnu/gmp
+MPZ_PATH            =ftp://ftp.gnu.org/gnu/gmp
+MPZ_SRC             =gmp-4.1.4
 MPZ_SRC_TGZ			=${MPZ_SRC}.tar.gz
 
 ##################
@@ -638,6 +661,10 @@ endif
 CHECK_INFO			=http://check.sourceforge.net/
 CHECK_PATH			=http://download.sourceforge.net/check
 CHECK_RPM			=check-0.8.3-1.i386.rpm
+#No specific windows version, try compiling from source code 
+CHECK_SRC_PATH		=http://optusnet.dl.sourceforge.net/sourceforge/check
+CHECK_SRC_NAME		=check-0.9.2
+CHECK_SRC_TAR_GZ	=${CHECK_SRC_NAME}.tar.gz
 
 ##################
 # 16: SAPDB ESQL/C, also needed by ODBC drivers
@@ -871,7 +898,7 @@ else
 #Build it from source code - this failed under CygWin shell using MinGW GCC
 #so it has to be compiled using MSYS
 #TODO - can I invoke MYSYS shell directly form here? something like:
-#/cygdrive/d/msys/1.0/bin/sh.exe -c ". /etc/profile; cd /f/cygwin/tmp/PDFlib-Lite-6.0.1; make install"
+#${MSYS_SH} "{$MSYS_CONF}; cd /f/cygwin/tmp/PDFlib-Lite-6.0.1; make install"
 	${UNZIP} $^ -d /tmp
 #	${UNZIP} $^ -d ${SYSTEMDRIVE}/tmp
 	cd /tmp/${PDFLIB_WIN_NAME}; ./configure; make; make install
@@ -891,12 +918,66 @@ endif
 #     during linking
 #   - use the `-Wl,--rpath -Wl,LIBDIR' linker flag
 
+
+tttmp:
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${XMLRPC_SRC_NAME}; ./configure --disable-abyss-server --disable-cgi-server --disable-cplusplus"
+
+1xxyy:                                                                                                                                                        
+#Then, libxmlrpc:	
+	rm -rf ${SYSTEMDRIVE}/tmp/${XMLRPC_SRC_NAME}
+	cd ${SYSTEMDRIVE}/tmp; tar --gunzip -xf ${CYG_AUBITDIR}/${XMLRPC_SRC_TAR_GZ}
+#Have to copy this file manually, since install choked on MSYS path mangling:
+	cp /cygdrive/d/tmp/w3c-libwww-5.4.0/libwww-config /cygdrive/d/msys/1.0/bin/
+	chmod a+x /cygdrive/d/msys/1.0/bin/libwww-config        
+xxyy:              
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${XMLRPC_SRC_NAME}; ./configure --disable-libwww-client --disable-abyss-server --disable-cgi-server --disable-cplusplus"
+#Disabled all I can, but seems this is abyss error:
+#  --enable-fast-install --disable-libtool-lock 
+#gcc -DHAVE_CONFIG_H -I. -I. -I../../.. -g -O2 -D_UNIX -D_FORK -I/usr/local/include -I/usr/local/include/w3c-libwww -DHAVE_CONFIG_H -c conf.c -o conf.o
+#conf.c:44:17: pwd.h: No such file or directory
+#In file included from conf.c:47:
+#abyss.h:221:21: pthread.h: No such file or directory
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${XMLRPC_SRC_NAME}; make clean"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${XMLRPC_SRC_NAME}; make"
+#Install chokes on:	
+#make[2]: Entering directory `/d/tmp/xmlrpc-c-0.9.9/examples'
+#/bin/sh ../mkinstalldirs /usr/local/bin
+#mkdir /usr/local/bin
+#mkdir: `/usr/local/bin' exists but is not a directory
+	-${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${XMLRPC_SRC_NAME}; make install"
+#Have to copy this file manually, since install choked on MSYS path mangling:
+	cp /cygdrive/d/tmp/xmlrpc-c-0.9.9/xmlrpc-c-config /cygdrive/d/msys/1.0/bin/	
+	cp /cygdrive/d/tmp/xmlrpc-c-0.9.9/src/xmlrpc_client.h /cygdrive/d/msys/1.0/local/include/
+	@echo "use configure --with-xmlrpc=/cygdrive/d/msys/1.0/local"
+	@echo "Or: configure --with-xmlrpc=${MSYS_ROOTDIR}/local/lib/libwwwhtml.a"
+	@echo "For Autoconf to detect XML-RCP "
+
+
+
 ######################
 # 3: install XML-RPC and libWWW
+ifdef COMSPEC
+install.xmlrpc:  ${LIBWWW_SRC_ZIP} ${XMLRPC_SRC_TAR_GZ}
+#First, libwww:
+	rm -rf ${SYSTEMDRIVE}/tmp/${LIBWWW_SRC_NAME}
+	${UNZIP} ${LIBWWW_SRC_ZIP} -d ${SYSTEMDRIVE}/tmp
+#	cd ${SYSTEMDRIVE}/tmp/${LIBWWW_SRC_NAME}; ./configure; make; make install
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${LIBWWW_SRC_NAME}; ./configure"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${LIBWWW_SRC_NAME}; make clean"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${LIBWWW_SRC_NAME}; make"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${LIBWWW_SRC_NAME}; make install"
+#Breaks at:	
+#/bin/sh ../../config/mkinstalldirs /usr/local/bin
+#mkdir /usr/local/bin
+#mkdir: `/usr/local/bin' exists but is not a directory	
+#installs to /usr/local/lib and /usr/local/include/w3c-libwww/ 
+#Which is from CygWin shell: /cygdrive/d/msys/1.0/local/lib/libwwwhtml.a
+#Or: ${MSYS_ROOTDIR}/local/lib/libwwwhtml.a
+	cp ${SYSTEMDRIVE}/tmp/${LIBWWW_SRC_NAME}/wwwconf.h ${MSYS_ROOTDIR}/local/include/
+	cp ${SYSTEMDRIVE}/tmp/${LIBWWW_SRC_NAME}/src/.libs/libxmlrpc_client.a ${SYSTEMDRIVE}/tmp/${LIBWWW_SRC_NAME}/src/.libs/libxmlrpc_client.la ${MSYS_ROOTDIR}/local/lib
+else                                                                     
 install.xmlrpc: ${XMLRPC_RPM} ${LIBWWW_RPM} ${XMLRPC_DEV_RPM}
-	${RPM} -Uvh $^
-	@echo "Package info & manuals: ${XMLRPC_INFO}"
-	@echo " "
+	${RPM} -Uvh $^                                                                   
 	@echo " **************** WARNING ! ********************"
 	@echo " In some packages of libwwwxml, there is no link between "
 	@echo "	libwwwxml.so.0.1.0 and libwwwxml.so - if Aubit configure script fails to "
@@ -923,6 +1004,9 @@ install.xmlrpc: ${XMLRPC_RPM} ${LIBWWW_RPM} ${XMLRPC_DEV_RPM}
 	-ln -s /usr/lib/libwwwcore.so.0.1.0   /usr/lib/libwwwcore.so
 	-ln -s /usr/lib/libwwwutils.so.0.1.0  /usr/lib/libwwwutils.so
 	-ln -s /usr/lib/libwwwzip.so.0.1.0    /usr/lib/libwwwzip.so
+endif
+	@echo " "
+	@echo "Package info & manuals: ${XMLRPC_INFO}"
 	@echo " "
 	@echo "libWWW and XML-RPC installed.  Please re-run 'configure' to detect changes."
 	@echo " "
@@ -930,8 +1014,15 @@ install.xmlrpc: ${XMLRPC_RPM} ${LIBWWW_RPM} ${XMLRPC_DEV_RPM}
 ######################
 # 4: Install IksEmEl Jabber lib:
 install.iksemel: ${IKSEMEL_TGZ}
+ifdef COMSPEC
+	cd ${SYSTEMDRIVE}/tmp; tar --gunzip -xf ${CYG_AUBITDIR}/${IKSEMEL_TGZ}
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${IKSEMEL_SRC}; ./configure"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${IKSEMEL_SRC}; make"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${IKSEMEL_SRC}; make install"
+else	
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	cd /tmp/${IKSEMEL_SRC}; ${SH} autogen.sh; ./configure; make; make install
+endif	
 	@echo "Package info & manuals: ${IKSEMEL_INFO}"
 	@echo " "
 	@echo "IksEmEl compiled and installed.  Please re-run 'configure' to detect changes."
@@ -948,8 +1039,14 @@ install.swig: ${SWIG_RPM}
 
 ######################
 # 6: install GRAPHVIZ that contains Dot tool
+ifdef COMSPEC
+install.dot: ${GRAPHVIZ_WIN_EXE}
+	@echo "Execute ${GRAPHVIZ_WIN_EXE} to install"
+else
 install.dot: ${GRAPHVIZ_RPM}
 	${RPM} -i $^
+endif
+
 	@echo "Package info & manuals: ${GRAPHVIZ_INFO}"
 	@echo " "
 	@echo "Graphviz and Dot tool installed.  Please re-run 'configure' to detect changes."
@@ -1049,8 +1146,15 @@ install.unixodbc.first: ${UNIXODBC_RPM} ${UNIXODBCDEV_GUI_RPM}
 ######################
 # 13: Install MPZ GNU Multiple precision library:
 install.mpz: ${MPZ_SRC_TGZ}
+ifdef COMSPEC
+	cd ${SYSTEMDRIVE}/tmp; tar --gunzip -xf ${CYG_AUBITDIR}/${MPZ_SRC_TGZ}
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${MPZ_SRC}; ./configure"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${MPZ_SRC}; make"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${MPZ_SRC}; make install"
+else	
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	cd /tmp/${MPZ_SRC}; ./configure; make; make install
+endif	
 	@echo "Package info & manuals: ${MPZ_INFO}"
 	@echo " "
 	@echo "MPZ library compiled and installed.  Please re-run 'configure' to detect changes."
@@ -1579,7 +1683,14 @@ ${PDCURSES_SRC_ZIP}:
 ${PGIFX_SRC_GZ}:
 	${WGET} ${PGIFX_SRC_PATH}/$@
 ${PDCURSES_WIN_ZIP}:
-	${WGET} ${PDCURSES_WIN_PATH}/$@ 
+	${WGET} ${PDCURSES_WIN_PATH}/$@
+${GRAPHVIZ_WIN_EXE}:
+	${WGET} ${GRAPHVIZ_WIN_PATH}/$@
+${XMLRPC_SRC_TAR_GZ}:
+	${WGET} ${XMLRPC_SRC_PATH}/$@
+${LIBWWW_SRC_ZIP}:
+	${WGET} ${LIBWWW_SRC_PATH}/$@
+
 
 #############################################
 #       SQLite tests
@@ -1618,5 +1729,7 @@ test_sqlite:
 clean.test.sqlite:
 	rm -f test_sqlite_odbc.*
 
+
+	
 # ============================== EOF ================================
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2004-12-09 23:59:13 afalout Exp $
+# $Id: Makefile,v 1.5 2004-12-13 01:55:33 afalout Exp $
 #
 
 LIBROOT		=../../..
@@ -85,7 +85,7 @@ endif
 endif
 
 ifeq "${GTKBUILD}" "yes"
-	ALL+=${LIBROOT}/libLOGREP_PDF.so
+	ALL+=${LIBROOT}/libLOGREP_PDF${SO_EXT}
 endif
 
 ## ==================================================================
@@ -102,7 +102,7 @@ LINKLIBS	=-L$(ROOT)/lib -laubit4gl
 
 all: ${ALL}
 
-${LIBROOT}/libLOGREP_PDF.so : layout_pdf.c ../common/common_pdf.c
+${LIBROOT}/libLOGREP_PDF${SO_EXT} : layout_pdf.c ../common/common_pdf.c
 #	cc -rdynamic -shared -g $^ -o $@ ${CFLAGS} ${LFLAGS}
 	${LD} ${GTK_LIB_PATH} ${GTK_INC_PATH} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ ${LINKLIBS} ${GTKLIBS}
 	
@@ -111,6 +111,6 @@ ${LIBROOT}/libLOGREP_PDF.so : layout_pdf.c ../common/common_pdf.c
 ## ==================================================================
 
 clean:
-	${RM} ${LIBROOT}/libLOGREP_PDF.so *.o *.dll.a *~
+	${RM} ${LIBROOT}/libLOGREP_PDF${SO_EXT} *.o *.dll.a *~
 	
 	

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2004-12-09 23:59:14 afalout Exp $
+# $Id: Makefile,v 1.6 2004-12-13 01:55:34 afalout Exp $
 #
 
 ROOT		=../../../..
@@ -40,7 +40,7 @@ include ${ROOT}/incl/Makefile-common
 CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  ${PDFLIB_I_FLAGS}
 
 ifeq "${PDFBUILD}" "yes"
-	ALL=${LIBROOT}/libLOGREPPROC_PDF.so
+	ALL=${LIBROOT}/libLOGREPPROC_PDF${SO_EXT}
 endif	
 
 LINKLIBS=-L$(ROOT)/lib -laubit4gl
@@ -51,7 +51,7 @@ LINKLIBS=-L$(ROOT)/lib -laubit4gl
 
 all: ${ALL}
 
-${LIBROOT}/libLOGREPPROC_PDF.so : process_pdf.o pdf_handling.o ../common/common_pdf.c
+${LIBROOT}/libLOGREPPROC_PDF${SO_EXT} : process_pdf.o pdf_handling.o ../common/common_pdf.c
 #	gcc  -z -Wl,+s -Wl,-E -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl  -lpdf
 #	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS}
 #WARNING - on Windows libraries must be at the end
@@ -70,6 +70,6 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} ${LIBROOT}/libLOGREPPROC_PDF.so *.o
+	${RM} ${LIBROOT}/libLOGREPPROC_PDF${SO_EXT} *.o
 	
 	

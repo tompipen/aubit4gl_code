@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.264 2004-12-09 23:57:36 afalout Exp $
+dnl # $Id: configure.in,v 1.265 2004-12-13 01:54:38 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -471,6 +471,10 @@ AC_SUBST(HAVE_RPCLIB)
 #XML RPC
 AC_SUBST(XML_RPC)
 AC_SUBST(XMLRPC_C_CONFIG)
+AC_SUBST(XMLRPC_LFLAGS)
+AC_SUBST(XMLRPC_IFLAGS)
+AC_SUBST(XMLRPC_LIBS)
+
 
 #PDF
 AC_SUBST(USE_PDF)
@@ -506,6 +510,9 @@ AC_SUBST(IKSEMEL_I_FLAGS)
 AC_SUBST(EXDATA_MPZ)
 AC_SUBST(EXDTYPE)
 AC_SUBST(EXDTYPE_DETECTED)
+AC_SUBST(MPZ_LFLAGS)
+AC_SUBST(MPZ_IFLAGS)
+
 
 #other
 AC_SUBST(INSTALL_MISSING_OPTIONAL)
@@ -522,6 +529,7 @@ AC_SUBST(LDFLAGS_SHARED)
 AC_SUBST(BISON)
 AC_SUBST(LEX)
 AC_SUBST(LCLINTEXE)
+AC_SUBST(EXPECT)
 AC_SUBST(SO_EXT)
 AC_SUBST(SO_EXT_LINKABLE)
 AC_SUBST(GETOPT_LONG)
@@ -551,6 +559,7 @@ AC_SUBST(Q_ESQLC)
 AC_SUBST(AUBIT_LICENSE)
 AC_SUBST(PCRE_INC_PATH)
 AC_SUBST(PCRE_LIB_PATH)
+AC_SUBST(MSYS_ROOTDIR)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -722,6 +731,58 @@ AC_SUBST(ISFILE_48)
 AC_SUBST(ISFILE_49)
 AC_SUBST(ISFILE_50)
 
+
+
+AC_SUBST(IS_THIRDPARTY_1)
+AC_SUBST(IS_THIRDPARTY_2)
+AC_SUBST(IS_THIRDPARTY_3)
+AC_SUBST(IS_THIRDPARTY_4)
+AC_SUBST(IS_THIRDPARTY_5)
+AC_SUBST(IS_THIRDPARTY_6)
+AC_SUBST(IS_THIRDPARTY_7)
+AC_SUBST(IS_THIRDPARTY_8)
+AC_SUBST(IS_THIRDPARTY_9)
+AC_SUBST(IS_THIRDPARTY_10)
+AC_SUBST(IS_THIRDPARTY_11)
+AC_SUBST(IS_THIRDPARTY_12)
+AC_SUBST(IS_THIRDPARTY_13)
+AC_SUBST(IS_THIRDPARTY_14)
+AC_SUBST(IS_THIRDPARTY_15)
+AC_SUBST(IS_THIRDPARTY_16)
+AC_SUBST(IS_THIRDPARTY_17)
+AC_SUBST(IS_THIRDPARTY_18)
+AC_SUBST(IS_THIRDPARTY_19)
+AC_SUBST(IS_THIRDPARTY_20)
+AC_SUBST(IS_THIRDPARTY_21)
+AC_SUBST(IS_THIRDPARTY_22)
+AC_SUBST(IS_THIRDPARTY_23)
+AC_SUBST(IS_THIRDPARTY_24)
+AC_SUBST(IS_THIRDPARTY_25)
+AC_SUBST(IS_THIRDPARTY_26)
+AC_SUBST(IS_THIRDPARTY_27)
+AC_SUBST(IS_THIRDPARTY_28)
+AC_SUBST(IS_THIRDPARTY_29)
+AC_SUBST(IS_THIRDPARTY_30)
+AC_SUBST(IS_THIRDPARTY_31)
+AC_SUBST(IS_THIRDPARTY_32)
+AC_SUBST(IS_THIRDPARTY_33)
+AC_SUBST(IS_THIRDPARTY_34)
+AC_SUBST(IS_THIRDPARTY_35)
+AC_SUBST(IS_THIRDPARTY_36)
+AC_SUBST(IS_THIRDPARTY_37)
+AC_SUBST(IS_THIRDPARTY_38)
+AC_SUBST(IS_THIRDPARTY_39)
+AC_SUBST(IS_THIRDPARTY_40)
+AC_SUBST(IS_THIRDPARTY_41)
+AC_SUBST(IS_THIRDPARTY_42)
+AC_SUBST(IS_THIRDPARTY_43)
+AC_SUBST(IS_THIRDPARTY_44)
+AC_SUBST(IS_THIRDPARTY_45)
+AC_SUBST(IS_THIRDPARTY_46)
+AC_SUBST(IS_THIRDPARTY_47)
+AC_SUBST(IS_THIRDPARTY_48)
+AC_SUBST(IS_THIRDPARTY_49)
+AC_SUBST(IS_THIRDPARTY_50)
 
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
@@ -2429,6 +2490,89 @@ PHP_CONFIGURE_PART(Checking standard programs:)
 		fi
 	fi
 
+if test "$COMSPEC" != ""; then
+#Collect info from Windows registry:
+
+	GTK_DEV_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall/Gtk+ Development Environment for Windows"
+	regtool.exe check  "$GTK_DEV_REG_PATH" > /dev/null 2>&1
+	RET=$?
+	if test "$RET" = "0"; then
+		GTK_DEV_VER=`regtool get "$GTK_DEV_REG_PATH/DisplayVersion"`
+		#Also has keys: Cygwin and MSYS
+	fi
+
+	PG_REG_ROOT="/machine/SOFTWARE/PostgreSQL/Installations"
+	regtool.exe check  "$PG_REG_ROOT" > /dev/null 2>&1
+	RET=$?
+	if test "$RET" = "0"; then
+		PG_REG_INST_NAME=`regtool list "$PG_REG_ROOT" | head -1`
+		#Note: sed/dirname are to remove trailing backslash from registry,
+		#otherwise cygpath chokes (backslash escapes closing quote)
+		PG_REG_BASEDIR=`regtool.exe get "$PG_REG_ROOT/$PG_REG_INST_NAME/Base Directory" | sed -e 's/\\\\/\//g'`
+#echo "PG_REG_BASEDIR=$PG_REG_BASEDIR"		
+		PG_REG_BASEDIR=`dirname "$PG_REG_BASEDIR/ddd"`
+#echo "PG_REG_BASEDIR=$PG_REG_BASEDIR"
+
+		#$ cygpath -ws "E:/Program Files/PostgreSQL/8.0.0-beta5"
+		#E:\PROGRA~1\POSTGR~1\803920~1.0-B
+		PG_REG_BASEDIR=`cygpath -ws "$PG_REG_BASEDIR"`
+#echo "PG_REG_BASEDIR=$PG_REG_BASEDIR"		
+
+		#$ cygpath -u "E:\PROGRA~1\POSTGR~1\803920~1.0-B"
+		#/cygdrive/e/PROGRA~1/POSTGR~1/803920~1.0-B
+		PG_REG_BASEDIR_CYGPATH=`cygpath -u "$PG_REG_BASEDIR"`
+	fi
+	
+	UNINST_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"
+	
+	MSYS_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MSYS" | head -1`
+	if test "$MSYS_REG_NAME" != ""; then 
+		MSYS_REG_PATH="$UNINST_REG_PATH/$MSYS_REG_NAME"	
+		MSYS_ROOTDIR=`regtool get "$MSYS_REG_PATH/Inno Setup: App Path"`
+		MSYS_VERSION=`regtool get "$MSYS_REG_PATH/DisplayVersion"`
+	fi
+
+	MINGW_REG_NAME=`regtool list "$UNINST_REG_PATH" | grep "MinGW" | head -1`
+	if test "$MINGW_REG_NAME" != ""; then	
+		MINGW_REG_PATH="$UNINST_REG_PATH/$MINGW_REG_NAME"	
+		MINGW_ROOTDIR=`regtool get "$MINGW_REG_PATH/Inno Setup: App Path"`
+		MINGW_VERSION=`regtool get "$MINGW_REG_PATH/DisplayVersion"`
+	fi
+	
+#ISTool:
+#HKEY_CURRENT_USER\Software\Bjornar Henden\ISTool\Prefs
+#Usefull: ExtFolder InnoFolder LanguageFile
+#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\ISTool_is1
+#Inno Setup: App Path and DisplayVersion
+#Also in HKEY_USERS\S-1-5-21-682003330-813497703-2111712231-500\Software\Bjornar Henden\ISTool
+
+#Inno Setup:
+#HKEY_CURRENT_USER\Software\Jordan Russell\Inno Setup
+#But has no paths there!
+#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 3_is1
+#Inno Setup: App Path and DisplayVersion
+#Also in : HKEY_USERS\S-1-5-21-682003330-813497703-2111712231-500\Software\Jordan Russell\Inno Setup
+
+#My Inno Setup Extensions:
+#HKEY_CURRENT_USER\Software\Martijn Laan\My Inno Setup Extensions
+#No paths there!
+#HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\My Inno Setup Extensions 3_is1
+#Inno Setup: App Path and DisplayVersion
+
+
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "GTK_DEV_VER=$GTK_DEV_VER"
+			echo "MSYS_ROOTDIR=$MSYS_ROOTDIR"
+			echo "MSYS_VERSION=$MSYS_VERSION"
+			echo "MINGW_ROOTDIR=$MINGW_ROOTDIR"
+			echo "MINGW_VERSION=$MINGW_VERSION"
+			echo "PG_REG_INST_NAME=$PG_REG_INST_NAME"
+			echo "PG_REG_BASEDIR=$PG_REG_BASEDIR"
+			echo "PG_REG_BASEDIR_CYGPATH=$PG_REG_BASEDIR_CYGPATH"
+		fi
+
+fi	
+
 if test "$AUBIT_SOURCE" = "1" ; then
 
 ## ==================================================================
@@ -2613,11 +2757,35 @@ fi
     fi
 	
 	if test "$with_dot" != "no"; then
+		old_PATH="$PATH"	
 		if test "$with_dot" != "yes"; then
-			old_PATH="$PATH"
+			#User specified path to dot tool
 	        PATH="$with_dot:$PATH"
-	    fi
-
+	    else
+			if test "$COMSPEC" != ""; then
+				REGKEY=/machine/SOFTWARE/ATT/Graphviz
+				regtool.exe check  "$REGKEY" > /dev/null 2>&1
+				RET=$?
+				if test "$RET" = "0"; then
+					if test "$enable_ac_debug" = "yes" ; then
+						echo "REGKEY=$REGKEY found"
+					fi
+					DOT_PATH=`regtool list -v "$REGKEY"  | awk '{print $3}' | sed -e 's/"//g'`
+				else
+					if test "$enable_ac_debug" = "yes" ; then
+						echo "REGKEY=$REGKEY NOT found"
+					fi
+				fi
+				if test "$DOT_PATH" != ""; then
+					DOT_PATH_CYGWIN=`cygpath -u $DOT_PATH`
+					PATH="$DOT_PATH_CYGWIN/bin:$PATH"
+					if test "$enable_ac_debug" = "yes" ; then
+						echo "$DOT_PATH_CYGWIN/bin added to PATH"
+					fi
+				fi
+			fi
+		fi
+		
 		AC_PATH_PROG(DOTTOOL, dot, no)
 
 		if test "$DOTTOOL" != "no"; then
@@ -2719,6 +2887,10 @@ if test "$AWK" = "awk"; then
 		AC_MSG_WARN(Aubit compiler need gawk, awk will probably fail.)
 fi
 
+
+#expect is needed by aubitbuild autoxxx scripts
+AC_PATH_PROG(EXPECT, expect, no)
+
 AC_PATH_PROG(PERL, perl, no)
 AC_PATH_PROG(SWIG, swig, no)
 AC_PATH_PROG(WGET, wget, no)
@@ -2737,10 +2909,13 @@ fi
 
 AC_PATH_PROG(LDD, ldd, no)
 
+#Note: CygWin has splint
 AC_PATH_PROG(LCLINTEXE,lclint,no)
-
 	if test "$LCLINTEXE" = "no"; then
-		AC_PATH_PROG(LCLINTEXE,splint,no)
+		AC_PATH_PROG(LCLINTEXE2,splint,no)
+		if test "$LCLINTEXE2" != "no"; then
+			LCLINTEXE="$LCLINTEXE2"
+		fi
     fi
 
 AC_PATH_PROG(LDCONFIG, ldconfig, no)
@@ -2753,6 +2928,427 @@ AC_PATH_PROG(AUTOSPEC, autospec, no)
 AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbin /usr/etc /etc /usr/ucblib)
 if test -n "$PROG_SENDMAIL"; then
   AC_DEFINE(HAVE_SENDMAIL)
+fi
+
+## ==================================================================
+##                  Check for Jabber IM support
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for Jabber support:)
+
+AC_ARG_WITH(iksemel,
+[  --with-iksemel[=DIR]      Include Jabber/iksemel support.  DIR is the iksemel
+                          install directory, defaults to /usr/local.],
+[
+
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" != "" -a "$MSYS_ROOTDIR" != ""; then
+				withval="$MSYS_ROOTDIR/local"
+			else
+	    		withval=/usr/local
+			fi
+		else
+			#user specified custom withval
+			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON Jabber"
+			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+		fi
+
+		old_CFLAGS="$CFLAGS"
+		old_LIBS="$LIBS"
+		old_CPPFLAGS="$CPPFLAGS"
+		old_LDFLAGS="$LDFLAGS"
+
+		if test "$COMSPEC" != ""; then
+			withval="`cygpath -m $withval`"
+		fi
+		
+		TEST_IKSEMEL_I_FLAGS="-I$withval/include"
+		TEST_IKSEMEL_L_FLAGS="-L$withval/lib"
+		
+		LDFLAGS="$TEST_IKSEMEL_L_FLAGS $LDFLAGS"
+		CFLAGS="$TEST_IKSEMEL_I_FLAGS $CFLAGS"
+		CPPFLAGS="$TEST_IKSEMEL_I_FLAGS $CPPFLAGS"
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "withval=$withval"
+			echo "CFLAGS=$CFLAGS"
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+			echo "TEST_IKSEMEL_I_FLAGS=$TEST_IKSEMEL_I_FLAGS"
+			echo "TEST_IKSEMEL_L_FLAGS=$TEST_IKSEMEL_L_FLAGS"
+		fi
+		
+		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
+		# FIXME: Replace `main' with a function in `-liksemel':
+		AC_CHECK_LIB([iksemel], [main])
+
+		if test $ac_cv_lib_iksemel_main = yes; then
+			if test "$AUBIT_SOURCE" = "1" ; then
+				AC_CHECK_HEADERS([ iksemel.h ])
+				if test "$ac_cv_header_iksemel_h" = "yes"  ; then
+					JABBERBUILD=yes
+					AC_DEFINE(HAVE_IKSEMEL,1,[ ])
+					IKSEMEL_L_FLAGS="$TEST_IKSEMEL_L_FLAGS"
+					IKSEMEL_I_FLAGS="$TEST_IKSEMEL_I_FLAGS"
+					
+					if test "$COMSPEC" != ""; then
+						x=`cygpath -u $withval` 
+					fi
+					#Only static lib created by compiling from source on Windows
+					#THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+					#JABBER#$x/bin/libiksemel.dll"
+					
+				else
+					JABBERBUILD=no
+				fi
+			else
+				JABBERBUILD=yes
+				AC_DEFINE(HAVE_IKSEMEL,1,[ ])
+				IKSEMEL_L_FLAGS="$TEST_IKSEMEL_L_FLAGS"
+				IKSEMEL_I_FLAGS="$TEST_IKSEMEL_I_FLAGS"
+			fi
+			if test "$enable_ac_debug" = "yes" ; then
+				echo "IKSEMEL_I_FLAGS=$IKSEMEL_I_FLAGS"
+				echo "IKSEMEL_L_FLAGS=$IKSEMEL_L_FLAGS"
+			fi
+			
+			
+		    #AC_MSG_RESULT(yes)
+		else
+		    AC_DEFINE(HAVE_IKSEMEL,0,[ ])
+		    #AC_MSG_RESULT(no)
+		fi
+		
+		CFLAGS="$old_CFLAGS"
+		LIBS="$old_LIBS"
+		CPPFLAGS="$old_CPPFLAGS"
+		LDFLAGS="$old_LDFLAGS"
+
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-iksemel not specified)
+])
+
+if test "$enable_stop_iksemel" = "yes" ; then
+	exit
+fi
+
+if test "$COMSPEC" != "" -a "$JABBERBUILD" = "yes"; then
+	echo "Jabber disabled on Windows - Aubit code incompatible with current version"
+	JABBERBUILD="no"
+fi
+
+
+## ==================================================================
+##            Check for mpz library (large integers) for exdatatype
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for mpz library support:)
+
+AC_ARG_WITH(mpz,
+[  --with-mpz[=DIR]          Include MPZ large integer support.  DIR is MPZ base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" != "" -a "$MSYS_ROOTDIR" != ""; then
+				withval="$MSYS_ROOTDIR/local"
+			else
+	    		withval=/usr/local
+			fi
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	    fi
+
+		old_CFLAGS="$CFLAGS"
+		old_LIBS="$LIBS"
+		old_CPPFLAGS="$CPPFLAGS"
+		old_LDFLAGS="$LDFLAGS"
+
+		if test "$COMSPEC" != ""; then
+			withval="`cygpath -m $withval`"
+		fi
+		
+		MPZ_LFLAGS="-L$withval/lib"
+		MPZ_IFLAGS="-I$withval/include"
+
+		CFLAGS="$MPZ_IFLAGS $CFLAGS"
+		LDFLAGS="$MPZ_LFLAGS $LDFLAGS"
+		CPPFLAGS="$MPZ_IFLAGS $CPPFLAGS"
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "withval=$withval"
+			echo "CFLAGS=$CFLAGS"
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+		fi
+		
+		AC_CHECK_LIB([gmp], [main])
+
+		if test $ac_cv_lib_gmp_main = yes; then
+			if test "$AUBIT_SOURCE" = "1" ; then
+				AC_CHECK_HEADERS([ gmp.h ])
+
+				if test "$ac_cv_header_gmp_h" = "yes"  ; then
+					EXDATA_MPZ=yes
+		            EXDTYPE=MPZ
+                    EXDTYPE_DETECTED="$EXDTYPE_DETECTED $EXDTYPE"
+					
+					if test "$COMSPEC" != ""; then
+						x=`cygpath -u $withval` 
+					fi
+					#Only static lib created by compiling from source on Windows
+					#THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+					#MPZ#$x/bin/libgmp.dll"
+		        else
+					EXDATA_MPZ=no
+		        fi
+		    else
+				EXDATA_MPZ=yes
+				EXDTYPE=MPZ
+                EXDTYPE_DETECTED="$EXDTYPE_DETECTED $EXDTYPE"
+		    fi
+		else
+			EXDATA_MPZ=no
+		fi
+		
+		CFLAGS="$old_CFLAGS"
+		LIBS="$old_LIBS"
+		CPPFLAGS="$old_CPPFLAGS"
+		LDFLAGS="$old_LDFLAGS"
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-mpz not specified)
+])
+
+if test "$enable_stop_mpz" = "yes" ; then
+	exit
+fi
+
+## ==================================================================
+##                  Check for XML RPC support
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for XML-RPC support:)
+
+AC_ARG_WITH(xmlrpc,
+[  --with-xmlrpc[=DIR]       Include XML_RPC support.  DIR is the XML-RPC base
+                          install directory, defaults to /usr/local.],
+[
+
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" != "" -a "$MSYS_ROOTDIR" != ""; then
+				withval="$MSYS_ROOTDIR/local"
+			else
+	    		withval=/usr/local
+			fi
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	    fi
+
+		old_CFLAGS="$CFLAGS"
+		old_LIBS="$LIBS"
+		old_CPPFLAGS="$CPPFLAGS"
+		old_LDFLAGS="$LDFLAGS"
+
+	    #xmlrpc-c-config executable is NOT in current RPM! (maybe in dev RPM?)
+		AC_PATH_PROG(XMLRPC_C_CONFIG, xmlrpc-c-config, no)
+		AC_PATH_PROG(LIBWWW_CONFIG, libwww-config, no)
+		
+		#TODO: implement configuration using config script
+		#Warning: use:
+		#./xmlrpc-c-config libwww-client --libs
+		#and NOT 
+		#./xmlrpc-c-config --libs
+		#And add -lwwwxml at the end!
+		
+		if test "$COMSPEC" != ""; then
+			withval="`cygpath -m $withval`"
+		fi
+
+		#This will test for both w3c-libwww and xmlrpc-c, since all this depends on each other
+		XMLRPC_LFLAGS="-L$withval/lib -L/usr/local/lib -L/usr/lib"
+		XMLRPC_IFLAGS="-I$withval/include"
+
+		#OLD:
+		#XMLRPC_LIBS =-L/usr/local/lib \
+		#-lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp \
+		#-lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher \
+		#-lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux \
+		#-lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse \
+		#-lxmlrpc_xmltok
+		#This libs are not needed any more, at least not on Windows:
+		#OLD_XMLRPC_LIBS="-ldl -lwwwzip"
+
+		#WARNING !!!!!!!!!!!!!!! On Windows, -lwwwxml MUST be at the end !!!!
+		#WARNING! Order is IMPORTANT on Windows!!!!
+		XMLRPC_LIBS=" \
+		-lxmlrpc_client -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml \
+		-lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile \
+		-lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils \
+		-lmd5 -lws2_32 -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwxml"
+			
+		#CFLAGS="$XMLRPC_IFLAGS $XMLRPC_LFLAGS $CFLAGS $XMLRPC_LIBS"
+		CFLAGS="$XMLRPC_IFLAGS $CFLAGS"
+		LDFLAGS="$XMLRPC_LFLAGS $LDFLAGS $XMLRPC_LIBS"
+		CPPFLAGS="$XMLRPC_IFLAGS $CPPFLAGS"
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "withval=$withval"                                 
+			echo "CFLAGS=$CFLAGS"
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+			echo "XMLRPC_LFLAGS=$XMLRPC_LFLAGS"
+			echo "XMLRPC_IFLAGS=$XMLRPC_IFLAGS"
+			echo "XMLRPC_LIBS=$XMLRPC_LIBS"
+		fi
+		AC_CHECK_LIB([xmlrpc], [main])
+		AC_CHECK_LIB([xmlrpc], [xmlrpc_client_init])
+
+#configure:13536: gcc -o conftest.exe -Id:/msys/1.0/local/include -g -O2 
+#-Id:/msys/1.0/local/include  -Ld:/msys/1.0/local/lib -L/usr/local/lib -L/usr/lib
+#        -lxmlrpc_client -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml
+#        -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile
+#                -lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils 
+#-lmd5 -lws2_32 -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwxml conftest.c 
+#-lxmlrpc  -lxmlrpc  >&5
+#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/cc0ybaaa.o(.text+0x15): In function `main':
+#F:/cygwin/usr/src/aubit/aubit4glsrc/conftest.c:34: undefined reference to `xmlrpc_client_init'
+		
+#Order is wrong: this works:
+#gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -o ../../libRPC_XMLRPC.dll 
+#xmlrpc_client.o xmlrpc_server.o -Ld:/msys/1.0/local/lib -L/usr/local/lib 
+#-L/usr/lib -lxmlrpc_client -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml
+#                -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp 
+#-lwwwfile                -lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans 
+#-lwwwcore -lwwwutils                -lmd5 -lws2_32 -lxmlrpc -lxmlrpc_xmlparse 
+#-lxmlrpc_xmltok -lwwwxml -L../.. -laubit4gl
+
+
+		if test $ac_cv_lib_xmlrpc_main = yes; then
+			if test "$AUBIT_SOURCE" = "1" ; then
+				AC_CHECK_HEADERS(xmlrpc.h xmlrpc_client.h,,,
+				[[#if HAVE_XMLRPC_H
+				# include <xmlrpc.h>
+				#endif
+				]])
+				
+				if test "$ac_cv_header_xmlrpc_h" = "yes" -a "$ac_cv_header_xmlrpc_client_h" = "yes" ; then
+					XML_RPC=yes
+		        else
+					XML_RPC=no
+		        fi
+		    else
+				XML_RPC=yes
+		    fi
+		else                                                  
+			XML_RPC=no
+		fi
+
+		CFLAGS="$old_CFLAGS"
+		LIBS="$old_LIBS"
+		CPPFLAGS="$old_CPPFLAGS"
+		LDFLAGS="$old_LDFLAGS"
+
+		AC_MSG_CHECKING(XML-RPC support)
+		AC_MSG_RESULT($XML_RPC)
+		
+		#----- Third-party file list collection ------------------ 
+		if test "$XML_RPC" = "yes"; then
+			#List of files we will not need to install:
+			IGNORE_FILES="-lws2_32" #-lws2_32 is MinGW lib
+			#Turn -L flags into paths to test
+			ALL_PATHS=
+			for lpath in $XMLRPC_LFLAGS; do
+				CHK_PATH=`echo $lpath | sed -e 's/^-L//'`
+				if test "$COMSPEC" != ""; then 
+					CHK_PATH="`cygpath -m $CHK_PATH`"
+				fi
+				if test -d "$CHK_PATH"; then 
+					ALL_PATHS="$ALL_PATHS $CHK_PATH"
+				else
+					if test "$enable_ac_debug" = "yes" ; then
+						echo "$lpath ($CHK_PATH) does not exist."
+					fi
+				fi
+			done
+			#Turn -l flags into files to test
+			ALL_FILES=
+			for one_lib in $XMLRPC_LIBS; do
+				IGNORE_IT=0
+				for ignore_file in $IGNORE_FILES; do
+					if test "$ignore_file" = "$one_lib"; then
+						IGNORE_IT=1
+						break
+					fi
+				done
+				if test "$IGNORE_IT" = "1"; then 
+					continue
+				fi
+				ALL_FILES="$ALL_FILES lib`echo $one_lib | sed -e 's/^-l//'`"
+			done
+			#Check if we can find this files, add them to list
+			
+			#.la is just Windows link catalog
+			#If we have .a but no .dll, it would mean that we had to link 
+			#statically. It is pointless to install static libraries anyway 
+			
+			if test "$ALL_PATHS" != "" -a "$ALL_FILES" != ""; then
+				for one_file in $ALL_FILES; do
+					GOTIT=0
+					for one_path in $ALL_PATHS; do
+						if test -f "$one_path/$one_file$SO_EXT"; then 
+							THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+								XMLRCP#$one_path/$one_file$SO_EXT"
+							GOTIT=1
+							break
+						else
+							#check for static object, so we don't war about missing 
+							#files just because static linking was used
+							#(in which case we don't need this file anyway)
+							if test -f "$one_path/$one_file.a"; then
+								GOTIT=1
+							fi
+						fi
+					done
+					if test "$GOTIT" = "0"; then
+						if test "$enable_ac_debug" = "yes" ; then
+							echo "Failed to find file $one_file[$SO_EXT|.a]"
+							echo "In this paths:"
+							echo "$ALL_PATHS"
+						fi						
+					fi
+				done
+			else
+				if test "$enable_ac_debug" = "yes" ; then
+					echo "ALL_PATHS and/or ALL_FILES is empty"
+				fi
+			fi
+			#----- Third-party file list collection END --------------
+		fi
+		
+    else
+		AC_MSG_RESULT(--with-xmlrpc disabled)
+    fi
+
+],[
+	AC_MSG_RESULT(--with-xmlrpc not specified)
+])
+
+if test "$enable_stop_xmlrpc" = "yes" ; then
+	exit
 fi
 
 ## ==================================================================
@@ -2769,7 +3365,7 @@ AC_ARG_WITH(sxml,
 			if test "$COMSPEC" = ""; then 
 	    		withval=/usr/local
 			else
-				#NOTE: sinc eon CygWin /usr/lib is symling to /usr,
+				#NOTE: since on CygWin /usr/lib is symling to /usr,
 				#files installed there actually end up in /lib, as far as
 				#native Windows executable (GCC) is concerned
 				withval="`cygpath -m /`"
@@ -2837,13 +3433,31 @@ AC_ARG_WITH(pcre,
                           install directory, defaults to /usr/local.],
 [
 	if test "$withval" != "no"; then
+		if test "$COMSPEC" != ""; then 
+			PCRE_REG_PATH="/machine/SOFTWARE/GnuWin32/Pcre/4.4/bin"
+			regtool.exe check  "$PCRE_REG_PATH" > /dev/null 2>&1
+			RET=$?
+			if test "$RET" = "0"; then
+				PCRE_INST_PATH=`regtool get "$PCRE_REG_PATH/InstallPath"`
+				#echo "PCRE_INST_PATH=$PCRE_INST_PATH"
+				PCRE_INST_PATH=`cygpath -ws "$PCRE_INST_PATH"`
+				#echo "PCRE_INST_PATH=$PCRE_INST_PATH"
+			fi
+		fi
+	
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
+			if test "$COMSPEC" != ""; then 
+				if test "$PCRE_INST_PATH" != ""; then 
+					withval=`cygpath -u "$PCRE_INST_PATH"`
+				fi
+			fi
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
+		
 
 		#Store current values
 		old_LIBS="$LIBS"
@@ -2855,9 +3469,9 @@ AC_ARG_WITH(pcre,
 			CPPFLAGS="-I$withval/include $CPPFLAGS"
 			LDFLAGS="-L$withval/lib $LDFLAGS"
 		else
-			PCRE_INC_PATH=`cygpath -m $withval`
+			PCRE_INC_PATH="`cygpath -m $withval`"
 			CPPFLAGS="-I$PCRE_INC_PATH/include $CPPFLAGS"
-			PCRE_LIB_PATH=`cygpath -m $withval`
+			PCRE_LIB_PATH="`cygpath -m $withval`"
 			LDFLAGS="-L$PCRE_LIB_PATH/bin $LDFLAGS"
 		fi
 		
@@ -2881,6 +3495,10 @@ AC_ARG_WITH(pcre,
 				#On Windows binary distro of pcre, there are no header files
 				HAVE_PCRELIB=1
 				AC_MSG_RESULT(yes)
+				
+				THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+					PCRE#$withval/bin/pcre.dll"
+					#PCRE#$PCRE_INST_PATH/bin/pcre.dll"
 			fi
 		else
 			AC_MSG_RESULT(no)
@@ -3052,6 +3670,20 @@ AC_ARG_WITH(pdf,
 			PDFLIB_L_FLAGS="$TEST_PDFLIB_L_FLAGS"
 		    AC_DEFINE(HAVE_PDF,1,[ ])
 		    AC_MSG_RESULT(yes)
+			
+			
+			#;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\; Components: PDFLIB
+			#;looks like it needs to be called "pdflib.dll" not "libpdf.dll" - which we renamed to be able to use -l when linking
+			#;apparently it stores the name of the original dll somewhere?
+			#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\pdflib.dll; Components: PDFLIB
+
+			#if test "$COMSPEC" != ""; then 
+				#When compiling from source on Windows, I got only static object
+				#Which we don't need anyway
+				#THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+				#	PDF#$withval/lib/libpdf.a"
+			#fi
+
 		else
 		    AC_DEFINE(HAVE_PDF,0,[ ])
 		    AC_MSG_RESULT(no)
@@ -3849,6 +4481,9 @@ AC_ARG_WITH(pgsqleng,
   if test "$withval" != "no"; then
     if test "$withval" = "yes"; then
 		withval=/usr/local
+		if test "$PG_REG_BASEDIR_CYGPATH" != ""; then 
+			withval="$PG_REG_BASEDIR_CYGPATH"
+		fi
     else
 		#user specified custom withval
 		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGENGINE"
@@ -3952,6 +4587,9 @@ AC_ARG_WITH(pgsql,
   if test "$withval" != "no"; then
     if test "$withval" = "yes"; then
 		withval=/usr
+		if test "$PG_REG_BASEDIR_CYGPATH" != ""; then 
+			withval="$PG_REG_BASEDIR_CYGPATH"
+		fi
     else
 		#user specified custom withval
 		if test "$enable_ac_debug" = "yes" ; then
@@ -4118,6 +4756,9 @@ fi
 if test "$withval" != "no"; then
 	if test "$withval" = "yes"; then
 		withval=/usr
+		if test "$PG_REG_BASEDIR_CYGPATH" != ""; then 
+			withval="$PG_REG_BASEDIR_CYGPATH"
+		fi
 	else
 		if test "$enable_ac_debug" = "yes" ; then
 			AC_MSG_WARN(Using custom path $withval)
@@ -4620,6 +5261,26 @@ fi
 					#$SQLITE $SQLITE_DB "select * from testing"
 					AC_MSG_RESULT(Created $SQLITE_DB)
 				fi
+				
+#Error on line 660: Source file 
+#"F:\cygwin\usr\src\aubit\aubit4glsrc\etc\d/cygwin\lib\libsqlite.def" does not exist.				
+				
+#Source: @WINDIR@\sqlite.exe; DestDir: {app}\bin; Components: SQLITE
+#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.def; DestDir: {app}\bin; Components: SQLITE
+#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; Components: SQLITE
+#; We need sqlite.dll for sqlite.exe and SQLite GUI tool (we added lib prefix)
+#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; DestName: "sqlite.dll"; Components: SQLITE
+
+				if test "$COMSPEC" != ""; then
+					a=`cygpath -u "$WINDIR"`
+					#b=`cygpath -u "$CYGWIN_PATH_WIN"`
+					b=
+					THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+						SQLITE#$a/sqlite.exe \
+						SQLITE#$b/lib/libsqlite.def \
+						SQLITE#$b/lib/libsqlite.dll \
+						SQLITE#$b/lib/libsqlite.dll!sqlite.dll"
+				fi
 			fi
         else
 			AC_MSG_RESULT(disabled)
@@ -4894,6 +5555,8 @@ AC_ARG_WITH(sapodbc,
             ADD_LD_LIBRARY_PATH="$withval/interfaces/odbc/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
 
+# regtool list "/machine/SOFTWARE/SAP AG/SAPDB ODBC Driver/7.4"		
+		
 		old_LIBS="$LIBS"
 		old_LDFLAGS="$LDFLAGS"
         old_CPPFLAGS="$CPPFLAGS"
@@ -5283,6 +5946,9 @@ AC_ARG_WITH(pgodbc,
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
+#$ regtool get "/machine/SOFTWARE/PostgreSQL/Installations/{EABF5323-E52C-47FF-8
+#D9D-46B699E84F44}/psqlODBC Directory"
+#E:\Program Files\PostgreSQL\8.0.0-beta5\odbc\
 
 		old_LIBS="$LIBS"; old_LDFLAGS="$LDFLAGS"; old_CPPFLAGS="$CPPFLAGS"
 		TMP_PGODBC_INCLUDE="-I$withval/include"
@@ -5665,7 +6331,7 @@ AC_ARG_WITH(glade,
 			if $PKG_CONFIG --exists $GLADE_NAME ; then
 				HAS_GLADE_2=1
 				GLADE_VERSION=`$PKG_CONFIG --modversion $GLADE_NAME`
-				AC_MSG_RESULT(pkg-config reports $GLADE_NAME present ($GLADE_VERSION))
+				AC_MSG_RESULT($GLADE_NAME present ($GLADE_VERSION))
 				#In GladeWin Windows installer:
 				#/cygdrive/c/GTK/lib/libglade-2.0.dll.a
 				AC_CHECK_LIB([glade-2.0], [main])
@@ -5673,7 +6339,7 @@ AC_ARG_WITH(glade,
 				AC_CHECK_LIB([glade-gnome], [main])
 			else
 				HAS_GLADE_2=0
-				AC_MSG_RESULT(pkg-config reports $GLADE_NAME MISSING)
+				AC_MSG_RESULT($GLADE_NAME MISSING)
 			fi
 		else
 			HAS_GLADE_2=0
@@ -5689,56 +6355,6 @@ AC_ARG_WITH(glade,
 	AC_MSG_RESULT(--with-glade not specified)
 ])
 
-
-## ==================================================================
-##                  Check for Jabber IM support
-## ==================================================================
-
-PHP_CONFIGURE_PART(Checking for Jabber support:)
-
-AC_ARG_WITH(iksemel,
-[  --with-iksemel[=DIR]      Include Jabber/iksemel support.  DIR is the iksemel
-                          install directory, defaults to /usr/local.],
-[
-	#PHP_WITH_SHARED
-	if test "$withval" != "no"; then
-		if test "$withval" = "yes"; then
-	    	withval=/usr/local
-		else
-			#user specified custom withval
-			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON Jabber"
-			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-		fi
-
-		old_LIBS=$LIBS
-		old_LDFLAGS=$LDFLAGS
-		TEST_IKSEMEL_I_FLAGS="-I$withval/include"
-		TEST_IKSEMEL_L_FLAGS="-L$withval/lib"
-		LDFLAGS="$LDFLAGS $TEST_IKSEMEL_I_FLAGS $TEST_IKSEMEL_L_FLAGS"
-		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
-		# FIXME: Replace `main' with a function in `-liksemel':
-		AC_CHECK_LIB([iksemel], [main])
-		LIBS=$old_LIBS
-		LDFLAGS=$old_LDFLAGS
-
-		if test $ac_cv_lib_iksemel_main = yes; then
-			JABBERBUILD=yes
-		    AC_DEFINE(HAVE_IKSEMEL,1,[ ])
-            IKSEMEL_L_FLAGS="$TEST_IKSEMEL_L_FLAGS"
-            IKSEMEL_I_FLAGS="$TEST_IKSEMEL_I_FLAGS"
-
-		    #AC_MSG_RESULT(yes)
-		else
-		    AC_DEFINE(HAVE_IKSEMEL,0,[ ])
-		    #AC_MSG_RESULT(no)
-		fi
-	else
-		AC_MSG_RESULT(disabled)
-	fi
-],[
-	AC_MSG_RESULT(--with-iksemel not specified)
-])
 
 ## ==================================================================
 ##                  Check for Sun RPC support
@@ -5946,125 +6562,12 @@ AC_ARG_WITH(rpc,
 
 CUSTOM_WITHVAL=0
 
-#I't probably ok to link it even if we don' need it, but if RPC functions
+#Its probably ok to link it even if we dont need it, but if RPC functions
 #are already in standard libraryes (Linux), we really don't need to:
 #if test "$RPC_FUNC_INTERNAL" = "1"; then
 #	RPCLIB_NAME=
 #fi
 
-## ==================================================================
-##                  Check for XML RPC support
-## ==================================================================
-
-PHP_CONFIGURE_PART(Checking for XML-RPC support:)
-
-AC_ARG_WITH(xmlrpc,
-[  --with-xmlrpc[=DIR]       Include XML_RPC support.  DIR is the XML-RPC base
-                          install directory, defaults to /usr/local.],
-[
-
-	if test "$withval" != "no"; then
-
-		if test "$withval" = "yes"; then
-	    	withval=/usr/local
-		else
-			#user specified custom withval
-		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-	    fi
-
-		old_CFLAGS="$CFLAGS"
-		old_LIBS="$LIBS"
-
-		#This will test for both w3c-libwww and xmlrpc-c, since all this depends on each other
-		CLIENT_LIBS="-L/usr/local/lib -L/usr/lib -lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwzip"
-		CFLAGS="$CFLAGS $CLIENT_LIBS"
-		AC_CHECK_LIB([xmlrpc], [main])
-
-		CFLAGS="$old_CFLAGS"
-		LIBS="$old_LIBS"
-
-		if test $ac_cv_lib_xmlrpc_main = yes; then
-
-		    #xmlrpc-c-config executable is NOT in current RPM!
-			AC_PATH_PROG(XMLRPC_C_CONFIG, xmlrpc-c-config, no)
-
-			if test "$AUBIT_SOURCE" = "1" ; then
-			    #to compile from source code, we need headers too:
-				AC_CHECK_HEADERS([ xmlrpc.h xmlrpc_client.h ])
-
-				if test "$ac_cv_header_xmlrpc_h" = "yes" && test "$ac_cv_header_xmlrpc_client_h" = "yes" ; then
-					XML_RPC=yes
-		        else
-					XML_RPC=no
-		        fi
-		    else
-				XML_RPC=yes
-		    fi
-		else
-			XML_RPC=no
-		fi
-
-		AC_MSG_CHECKING(XML-RPC support)
-		AC_MSG_RESULT($XML_RPC)
-    else
-		AC_MSG_RESULT(--with-xmlrpc disabled)
-    fi
-
-],[
-	AC_MSG_RESULT(--with-xmlrpc not specified)
-])
-
-
-## ==================================================================
-##            Check for mpz library (large integers) for exdatatype
-## ==================================================================
-
-PHP_CONFIGURE_PART(Checking for mpz library support:)
-
-AC_ARG_WITH(mpz,
-[  --with-mpz[=DIR]          Include MPZ large integer support.  DIR is MPZ base
-                          install directory, defaults to /usr/local.],
-[
-	if test "$withval" != "no"; then
-
-		if test "$withval" = "yes"; then
-	    	withval=/usr/local
-		else
-			#user specified custom withval
-		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-	    fi
-
-		AC_CHECK_LIB([gmp], [main])
-
-		if test $ac_cv_lib_gmp_main = yes; then
-
-			if test "$AUBIT_SOURCE" = "1" ; then
-			    #to compile from source code, we need headers too:
-				AC_CHECK_HEADERS([ gmp.h ])
-
-				if test "$ac_cv_header_gmp_h" = "yes"  ; then
-					EXDATA_MPZ=yes
-		            EXDTYPE=MPZ
-                    EXDTYPE_DETECTED="$EXDTYPE_DETECTED $EXDTYPE"
-		        else
-					EXDATA_MPZ=no
-		        fi
-		    else
-				EXDATA_MPZ=yes
-				EXDTYPE=MPZ
-                EXDTYPE_DETECTED="$EXDTYPE_DETECTED $EXDTYPE"
-		    fi
-		else
-			EXDATA_MPZ=no
-		fi
-    else
-		AC_MSG_RESULT(disabled)
-    fi
-],[
-	AC_MSG_RESULT(--with-mpz not specified)
-])
 
 ## ==================================================================
 ##            Check for Perl generating compiler support
@@ -6073,7 +6576,7 @@ AC_ARG_WITH(mpz,
 if test "$PERL" != no; then
 	if test "$SWIG" != no; then
 		#Fixme: How to test for MakeMaker Perl module ?
-			PERLBUILD=yes
+		PERLBUILD=yes
     fi
 fi
 
@@ -7447,8 +7950,12 @@ if test "disabled" = ""; then
 		PLUGIN_YES="$PLUGIN_YES SQL_esqlSAP"
 fi
 	else
-        PLUGIN_NO="$PLUGIN_NO SQL_esqlSAP ESQL_SAP"
-		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sap.esqlc"
+		if test "$COMSPEC" != ""; then 
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS SQL_esqlSAP ESQL_SAP"
+		else
+        	PLUGIN_NO="$PLUGIN_NO SQL_esqlSAP ESQL_SAP"
+			#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sap.esqlc"
+		fi
     fi
 
     #Can't use 'let' - standard sh don't know that...
@@ -7472,8 +7979,6 @@ fi
     PLUGIN_YES="$PLUGIN_YES $PLUGIN_YES_LINKABLE"
     PLUGIN_NO="$PLUGIN_NO $PLUGIN_NO_LINKABLE"
 
-#SWIG?
-
 #MENU_XDR
 
 #Install (Windows):
@@ -7487,8 +7992,6 @@ fi
 #??? (ESQL_QUERIX SQL_esqlQ)
 #??? (SQL_esqlSAP ESQL_SAP)
 
-#install.dot
-#install.libcheck
 
 AC_MSG_RESULT(done.)
 
@@ -7506,16 +8009,16 @@ AC_MSG_RESULT(done.)
     fi
 
 	if test "$HAS_CHECK" != "1"; then
-		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libcheck"
+		if test "$COMSPEC" = ""; then 
+			INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libcheck"
+		else
+			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS libcheck"
+		fi
     fi
-
-
 
 ## ==================================================================
 ##           Translate Autoconf internals into our replace tags:
 ## ==================================================================
-
-
 
 if test "$lt_cv_prog_cc_pic_works" = "yes"; then
 	#WARNING: this will overwrite PIC settings from the beginning of this file
@@ -7526,6 +8029,64 @@ if test "$lt_cv_prog_cc_pic_works" = "yes"; then
     #echo "LDFLAGS_SHARED set to $LDFLAGS_SHARED"
 fi
 
+## ==================================================================
+##           Define list of third-party files to use in installer:
+## ==================================================================
+
+if test "$COMSPEC" != ""; then
+#Add additional third-party files to installer:
+
+#Dont think we need this any longer, using PDcurses now:
+#;for CygWin curses to find terminfo, we have to set %HOME% to location ABOVE .terminfo directory.
+#;if HOME is not set, and CYGDIR is not set, curses will look only under C:\cygwin
+#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\share\terminfo\c\cygwin; DestDir: {app}\.terminfo\c; Components: TUI
+
+
+	THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+		util#$aubitdir/tools/cygwin/run.exe \
+		util#/bin/cygcheck.exe \
+		util#/bin/cygpath.exe \
+		util#/bin/regtool.exe \
+		"
+fi
+
+if test "$THIRD_PARTY_FILES" != ""; then
+	COUNTER=0
+	for an_file in $THIRD_PARTY_FILES; do
+		GROUP=`echo $an_file | sed -e 's/#/ /' | awk '{print $1}'`
+		PATH_FILE=`echo $an_file | sed -e 's/#/ /' | awk '{print $2}'`
+		DEST_NAME=`echo $PATH_FILE | sed -e 's/!/ /' | awk '{print $2}'`
+		if test "$DEST_NAME" != ""; then
+			PATH_FILE=`echo $PATH_FILE | sed -e 's/!/ /' | awk '{print $1}'`
+		fi
+		if test "$COMSPEC" != ""; then 
+			PATH_FILE=`cygpath -w "$PATH_FILE"`
+		fi
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "Third-party file: $an_file"
+			echo "GROUP=$GROUP"
+			echo "PATH_FILE=$PATH_FILE"
+			echo "DEST_NAME=$DEST_NAME"
+		fi
+		if test -f "$PATH_FILE"; then
+			#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; Components: SQLITE
+			#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; DestName: "sqlite.dll"; Components: SQLITE
+
+			#let COUNTER=COUNTER+1
+			COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+			if test "$DEST_NAME" = ""; then 
+				eval "IS_THIRDPARTY_$COUNTER='Source: $PATH_FILE; DestDir: {app}\bin; Components: $GROUP'"
+			else
+				eval "IS_THIRDPARTY_$COUNTER='Source: $PATH_FILE; DestDir: {app}\bin; DestName: "$DEST_NAME"; Components: $GROUP'"			
+			fi
+
+		else
+			if test "$enable_ac_debug" = "yes" ; then
+				echo "#### WARNING: missing $PATH_FILE"
+			fi
+		fi
+	done
+fi
 
 ## ==================================================================
 ##           Define which files we will substitute @xxx@ in
@@ -7870,16 +8431,23 @@ cat<<X
 | $PLUGIN_NO
 X
 fi
-
 if test "$PLATFORM_UNAVAILABLE_OPTIONS" != "" ; then
 cat<<X
 +--------------------------------------------------------------------+
-| Aubit options not available on this platform:                      |
+| Aubit options not available or not supported on this platform:     |
 | $PLATFORM_UNAVAILABLE_OPTIONS
 +--------------------------------------------------------------------+
 X
 fi
-
+if test "$THIRD_PARTY_FILES" != "" ; then
+THIRD_PARTY_FILES=`echo $THIRD_PARTY_FILES`
+cat<<X
++--------------------------------------------------------------------+
+| THIRD_PARTY_FILES:
+| $THIRD_PARTY_FILES
++--------------------------------------------------------------------+
+X
+fi
 if test "$WARN_PGCOMPAT" = "1" ; then
 cat<<X
 +--------------------------------------------------------------------+
@@ -7910,14 +8478,14 @@ cat<<X
 | Aubit plug-ins to build:                                           |
 | $PLUGIN_YES
 |                                                                    |
-| Aubit plug-ins the will not be built:                              |
+| Aubit plug-ins that will NOT be built:                             |
 | $PLUGIN_NO
 |                                                                    |
 | (DEBUG) configure invoked with flags:                              |
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.264 2004-12-09 23:57:36 afalout Exp $
+| $Id: configure.in,v 1.265 2004-12-13 01:54:38 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2004-07-11 23:54:54 afalout Exp $
+# $Id: Makefile,v 1.10 2004-12-13 01:55:34 afalout Exp $
 #
 
 ROOT		=../../../..
@@ -44,7 +44,7 @@ CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC
 ##                              Targets
 ## ==================================================================
 
-${LIBROOT}/libLOGREPPROC_TXT.so : process_txt.o
+${LIBROOT}/libLOGREPPROC_TXT${SO_EXT} : process_txt.o
 #	gcc  -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
 #	gcc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
 	${LD} ${SO_LDFLAGS} -o $@ $^ -L$(LIBROOT) -laubit4gl
@@ -63,6 +63,6 @@ process_txt.o: ../../layout_engine/API_layout.h ../../processor/API_process.h
 ## ==================================================================
 
 clean:
-	${RM} ${LIBROOT}/libLOGREPPROC_TXT.so *.o
+	${RM} ${LIBROOT}/libLOGREPPROC_TXT${SO_EXT} *.o
 	
 	

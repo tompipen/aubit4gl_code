@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.18 2004-12-09 23:59:12 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.19 2004-12-13 01:55:32 afalout Exp $
 ;
 
 
@@ -124,6 +124,7 @@ Name: TUI; Description: Character UI support (includes CygWin library); Types: f
 Name: SQLITE; Description: SQLite RDBMS engine, demo db, GUI tool; Types: full standard
 Name: SQLITEODBC; Description: SQLite ODBC driver; Types: full
 Name: PDFLIB; Description: PDFlib library (evaluation); Types: full
+Name: PCRE; Description: PCRE - Perl compatible regular expression support library; Types: full
 
 [Types]
 Name: standard; Description: Standard installation
@@ -653,14 +654,67 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 
 ;=========================
 ;GTK libs: (add GTK themes here:)
-
 ;=========================
 ;SQLite
-Source: @WINDIR@\sqlite.exe; DestDir: {app}\bin; Components: SQLITE
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.def; DestDir: {app}\bin; Components: SQLITE
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; Components: SQLITE
+;;;Source: @WINDIR@\sqlite.exe; DestDir: {app}\bin; Components: SQLITE
+;;;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.def; DestDir: {app}\bin; Components: SQLITE
+;;;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; Components: SQLITE
 ; We need sqlite.dll for sqlite.exe and SQLite GUI tool (we added lib prefix)
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; DestName: "sqlite.dll"; Components: SQLITE
+;;;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; DestName: "sqlite.dll"; Components: SQLITE
+
+;=========================
+;Third-party files
+;=========================
+@IS_THIRDPARTY_1@
+@IS_THIRDPARTY_2@
+@IS_THIRDPARTY_3@
+@IS_THIRDPARTY_4@
+@IS_THIRDPARTY_5@
+@IS_THIRDPARTY_6@
+@IS_THIRDPARTY_7@
+@IS_THIRDPARTY_8@
+@IS_THIRDPARTY_9@
+@IS_THIRDPARTY_10@
+@IS_THIRDPARTY_11@
+@IS_THIRDPARTY_12@
+@IS_THIRDPARTY_13@
+@IS_THIRDPARTY_14@
+@IS_THIRDPARTY_15@
+@IS_THIRDPARTY_16@
+@IS_THIRDPARTY_17@
+@IS_THIRDPARTY_18@
+@IS_THIRDPARTY_19@
+@IS_THIRDPARTY_20@
+@IS_THIRDPARTY_21@
+@IS_THIRDPARTY_22@
+@IS_THIRDPARTY_23@
+@IS_THIRDPARTY_24@
+@IS_THIRDPARTY_25@
+@IS_THIRDPARTY_26@
+@IS_THIRDPARTY_27@
+@IS_THIRDPARTY_28@
+@IS_THIRDPARTY_29@
+@IS_THIRDPARTY_30@
+@IS_THIRDPARTY_31@
+@IS_THIRDPARTY_32@
+@IS_THIRDPARTY_33@
+@IS_THIRDPARTY_34@
+@IS_THIRDPARTY_35@
+@IS_THIRDPARTY_36@
+@IS_THIRDPARTY_37@
+@IS_THIRDPARTY_38@
+@IS_THIRDPARTY_39@
+@IS_THIRDPARTY_40@
+@IS_THIRDPARTY_41@
+@IS_THIRDPARTY_42@
+@IS_THIRDPARTY_43@
+@IS_THIRDPARTY_44@
+@IS_THIRDPARTY_45@
+@IS_THIRDPARTY_46@
+@IS_THIRDPARTY_47@
+@IS_THIRDPARTY_48@
+@IS_THIRDPARTY_49@
+@IS_THIRDPARTY_50@
 
 ;=========================
 ;SQLite database
@@ -691,17 +745,7 @@ Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbc.dll; DestDir: {app}\bin; Components
 Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbcu.dll; DestDir: {app}\bin; Components: SQLITEODBC
 
 
-;=========================
-;PDFlib (evaluation version)
-;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\; Components: PDFLIB
-;looks like it needs to be called "pdflib.dll" not "libpdf.dll" - which we renamed to be able to use -l when linking
-;apparently it stores the name of the original dll somewhere?
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\pdflib.dll; Components: PDFLIB
 
-;=========================
-;Helpers:
-Source: @IS_SOURCE@\tools\cygwin\run.exe; DestDir: {app}\bin; Components: util
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygcheck.exe; DestDir: {app}\bin; Components: util
 
 ;=========================
 ; Curses UI
@@ -717,9 +761,6 @@ Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygcheck.exe; DestDir: {app}\bin; Compo
 ;Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygpanel7.dll; DestDir: {app}\bin; Components: TUI
 
 
-;for CygWin curses to find terminfo, we have to set %HOME% to location ABOVE .terminfo directory.
-;if HOME is not set, and CYGDIR is not set, curses will look only under C:\cygwin
-Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\share\terminfo\c\cygwin; DestDir: {app}\.terminfo\c; Components: TUI
 
 ;=========================
 ; CygWin support

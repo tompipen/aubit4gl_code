@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2004-09-28 09:49:22 afalout Exp $
+# $Id: Makefile.in,v 1.12 2004-12-13 01:55:35 afalout Exp $
 #
 
 
@@ -53,13 +53,25 @@ ifneq "@XMLRPC_C_CONFIG@" "no"
 	CLIENT_CFLAGS       :=$(shell @XMLRPC_C_CONFIG@ libwww-client --cflags)
 	CLIENT_LIBS         :=$(shell @XMLRPC_C_CONFIG@ libwww-client --ldadd)
 else
-	CLIENT_LIBS =-L/usr/local/lib \
-	-lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp \
-	-lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher \
-	-lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux \
-	-lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse \
-	-lxmlrpc_xmltok
-
+	CLIENT_LIBS=${XMLRPC_LFLAGS} ${XMLRPC_LIBS}
+	
+	#-lxmlrpc_client	
+	xxCLIENT_LIBS=${XMLRPC_LFLAGS} \
+	-lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml \
+	-lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile \
+	-lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils \
+	-lmd5 -lws2_32 \
+	-lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok
+	
+#$ ./xmlrpc-c-config libwww-client --libs
+#WARNING !!!!!!!!!!!!!!! On Windows, -lwwwxml MUST be at the end !!!! 
+	wwwCLIENT_LIBS=${XMLRPC_LFLAGS} \
+	-lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml \
+	-lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile \
+	-lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils \
+	-lmd5 -lws2_32 -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwxml
+	
+	CLIENT_CFLAGS=${XMLRPC_IFLAGS}
 endif
 
 
@@ -72,14 +84,16 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=-I.. -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl ${CFLAGS} ${CLIENT_CFLAGS}
+CFLAGS				:=-I.. -I${LIBROOT}/libincl ${CLIENT_CFLAGS} ${CFLAGS} 
+#-I${ROOT}/compilers/fcompile  
 
 #we cannot compile XMLRPC code with  -Wstrict-prototypes because
 #XML-RPC lib supplied libraries have many functions declared without parameters
 CFLAGS_XMLRPC_C =$(CFLAGS:%-Wstrict-prototypes=%)
 
 ifneq "${COMSPEC}" ""
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -laubit4gl 
+	#-lwsock32
 endif
 
 
@@ -92,10 +106,6 @@ all: ${ALL}
 
 ${LIBROOT}/libRPC_XMLRPC${SO_EXT}: ${OBJS_RPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${CLIENT_LIBS} ${LINKLIBS}
-#ifeq "${SO_EXT}" ".dll"
-#	${MV} TMP${SOEXP_EXT} $@.a
-#endif
-
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
@@ -111,7 +121,7 @@ ${LIBROOT}/libRPC_XMLRPC${SO_EXT}: ${OBJS_RPC}
 
 clean :
 	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core *.base \
-	*.exp *.def
+	*.exp *.def ${ALL}
 
 ## ==================================================================
 ##                         Other Targets

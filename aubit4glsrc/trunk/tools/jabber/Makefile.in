@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2004-10-04 13:50:05 afalout Exp $
+# $Id: Makefile.in,v 1.12 2004-12-13 01:55:35 afalout Exp $
 #
 
 ROOT        =../..
@@ -90,6 +90,13 @@ exec4glim: lib4glim.c
 test: exec4glim
 	echo "This is my message to you" | exec4glim
 
+	
+show:
+	@echo "CFLAGS=${CFLAGS}"
+	@echo "IKSEMEL_I_FLAGS=@IKSEMEL_I_FLAGS@"
+	
+	
+	
 ## ==================================================================
 ##                              Clean
 ## ==================================================================

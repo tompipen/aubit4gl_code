@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2004-12-07 01:43:56 afalout Exp $
+# $Id: Makefile,v 1.9 2004-12-13 01:55:33 afalout Exp $
 #
 
 LIBROOT		=../../..
@@ -84,7 +84,7 @@ endif
 endif
 
 ifeq "${GTKBUILD}" "yes"
-	ALL+=${LIBROOT}/libLOGREP_CSV.so
+	ALL+=${LIBROOT}/libLOGREP_CSV${SO_EXT}
 endif
 
 ## ==================================================================
@@ -104,7 +104,7 @@ LINKLIBS	=-L$(ROOT)/lib -laubit4gl
 
 all: ${ALL}
 
-${LIBROOT}/libLOGREP_CSV.so : layout_csv.c ../common/csv_io.c
+${LIBROOT}/libLOGREP_CSV${SO_EXT} : layout_csv.c ../common/csv_io.c
 #	${CC} ${CFLAGS} $^ -o $@ -L$(ROOT)/lib -laubit4gl
 #	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib  ${GTKLIBS}
 	${LD} ${GTK_LIB_PATH} ${GTK_INC_PATH} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ ${LINKLIBS} ${GTKLIBS}
@@ -136,6 +136,6 @@ show:
 ## ==================================================================
 
 clean:
-	${RM} *.o ${LIBROOT}/libLOGREP_CSV.so *.dll.a *~
+	${RM} *.o ${LIBROOT}/libLOGREP_CSV${SO_EXT} *.dll.a *~
 	
 	
