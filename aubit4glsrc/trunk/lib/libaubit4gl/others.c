@@ -6,59 +6,6 @@
  * or to be externally seen
  */
 
-/*  ***************************************************************************
-* (c) 1997-1998 Aubit Computing Ltd.
-*
-* $Id: others.c,v 1.1 2002-04-17 00:01:36 afalout Exp $
-*
-* Project : Part Of Aubit 4GL Library Functions
-*
-* Change History :
-*	$Log: not supported by cvs2svn $
-*	Revision 1.8  2002/04/15 05:04:29  afalout
-*	CygWin - cleaning ans separating libFORM and libA4GLLEX
-*	
-*	Revision 1.7  2002/03/01 07:41:45  mikeaubury
-*	DL UI
-*	
-*	Revision 1.6  2002/02/28 20:15:06  saferreira
-*	Code commented
-*	
-*	Revision 1.5  2002/02/18 22:27:36  saferreira
-*	Code commented.
-*	
-*	Revision 1.4  2001/12/03 15:52:10  mikeaubury
-*	dl stuff
-*	
-*	Revision 1.3  2001/11/29 22:26:59  saferreira
-*	Some more warnings fixed and Doxygen comments added
-*	
-*	Revision 1.2  2001/11/25 02:44:09  afalout
-*	commit.build
-*	
-*	Revision 1.1.1.1  2001/08/20 02:36:24  afalout
-*	Initial import to SF
-*	
-*	Revision 1.3  2001/06/12 03:37:30  afalout
-*	make install, make clean
-*	
-*	Revision 1.2  2000/09/28 02:42:20  afalout
-*	*** empty log message ***
-*	
-*	Revision 1.1.1.1  2000/01/29 03:11:50  cvs
-*	Initial import of compiler sources using jCVS client
-*	
-*	Revision 1.4  1999/01/28 23:13:18  fglcomp
-*	Latest Update 28/1/99
-*
-*	Revision 1.3  1998/10/15 21:54:22  fglcomp
-*	Up till 15/10/98
-*
-*	Revision 1.2  1998/08/09 11:51:48  fglcomp
-*	Added ID classifications
-*
-*
-*******************************************************************************/
 #include "../libincl/dbform.h"
 #include "../libincl/debug.h"
 #include "../libincl/keys.h"

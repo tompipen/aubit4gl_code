@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.19 2002-03-14 12:17:53 mikeaubury Exp $
+# $Id: 4glc.c,v 1.20 2002-04-19 03:45:17 afalout Exp $
 #
 */
 
@@ -35,7 +35,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.19 2002-03-14 12:17:53 mikeaubury Exp $
+ * $Id: 4glc.c,v 1.20 2002-04-19 03:45:17 afalout Exp $
  */
 
 #include <stdio.h>
@@ -61,7 +61,7 @@ static char outputfile[132];
 extern char infilename[132];
 char errbuff[1024] = "";
 
-#include "aubit_lib.h"
+#include "a4gl_aubit_lib.h"
 #include "../../lib/libincl/pointers.h"
 
 int globals_only = 0;

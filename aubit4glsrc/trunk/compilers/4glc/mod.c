@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.52 2002-04-15 05:04:29 afalout Exp $
+# $Id: mod.c,v 1.53 2002-04-19 03:45:17 afalout Exp $
 #
 */
 
@@ -62,7 +62,7 @@ extern int in_define;
 #include "../../lib/libincl/debug.h"
 #include "../../lib/libincl/errors.h"
 #include "compiledefs.h"
-#include "aubit_lib.h"
+#include "a4gl_aubit_lib.h"
 
 char pklist[2048] = "";
 char upd_using_notpk[5000] = "";

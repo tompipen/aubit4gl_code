@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.49 2002-04-17 01:38:51 afalout Exp $
+# $Id: Makefile.in,v 1.50 2002-04-19 03:45:17 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -35,12 +35,6 @@ override NOINCL=0
 ##                              Source files
 ## ==================================================================
 
-CMODS_PROJECT	=project.c
-CMODS_CONFIG	=aubit-config.c
-CMODS_RESOURCE	=resource.c
-
-
-CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
 
 ## ==================================================================
 ##                              Options
@@ -48,12 +42,10 @@ CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
 
 ALL 				=aubit-config libEXREPORT_NOPDF${SO_EXT}
 #libaubit4gl.a
-#LDFLAGS				=-Map mapfile
 4GLPC               =../bin/4glpc
 4GLPCFLAGS			=-verbose -nogtk
 
 ifdef COMSPEC
-#   LDFLAGS			+=-lc
 	ALL				+=dlllibRPC_NORPC dllaubit4gl libSQL_noodbc${SO_EXT} dllFORM_NOFORM
 
 	ifneq "@HAVE_RPCLIB@" "0"
@@ -74,12 +66,6 @@ else
 		ALL			+=libRPC_XMLRPC${SO_EXT}
     endif
 endif
-
-#This must NOT be += because it would place affitional parameters AFTER
-#existing parameters already in CFLAGS: we must not do this, because if
-#specific path is needed to RPClib, it MUST be BEFORE other potenitially
-#conflicting paths:
-CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../compilers/fcompile -Ilibincl ${CFLAGS}
 
 ifneq "@IFMX_ESQLC@" "no"
 	ALL 		+=libSQL_esql${SO_EXT}
@@ -109,25 +95,6 @@ endif
 ifeq "$(PDFBUILD)" "yes"
 	ALL 			+=libEXREPORT_PDF${SO_EXT}
 endif
-    #PDF_LIBNAME     =-lPDF_PDF
-    #AUBIT_PDFLIBNAME=-Llibpdf
-#else
-    #PDF_LIBNAME     =-lPDF_NOPDF
-#endif
-
-#cyclical dependency: I need XDR to make libaubit4gl, but I need libaubit4gl to make RPCLIB!
-#ifneq "@HAVE_RPCLIB@" "0"
-#	AUBIT_RPCLIBNAME=-lRPC_XDR
-#else
-	AUBIT_RPCLIBNAME=-lRPC_NORPC
-#endif
-
-## RPC type and XDR are not the same thing. RPC type represents Remote
-#Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
-#but regardless of that, XDR functions (also conatained in Sun RPC libraries)
-#are needed by forms and menus functionality, and without it user would not
-#ba able to compile or open forms and menus, since they compiled output
-#file format is outpudte in XDR format for portability:
 
 ## ==================================================================
 ##                              Targets
@@ -141,31 +108,6 @@ note:
 
 all_gui: ${ALL_GUI}
 	@echo "Default GUI targets (${ALL_GUI}) built successfully."
-
-aubit-config: ${CMODS_CONFIG} ${CMODS_RESOURCE}
-	${CC} ${CFLAGS} -Ilibincl -o $@ $^
-	cp $@ ../bin
-
-loadmap:
-	${SH} ${4GLPC} ${4GLPCFLAGS} -nopdf loadmap.4gl -o $@
-	cp $@${EXE} ../bin
-
-
-## ==================================================================
-##                             Sub Targets
-## ==================================================================
-
-ci: $(CMODS)
-	ci -l  $^
-
-## ==================================================================
-##                        Dependencies
-## ==================================================================
-
-error.c : generated/tmperrs.h
-array.o: array.c ../compilers/fcompile/form_x_xdr.c
-builtin.c: ../compilers/fcompile/form_x.h
-
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets in sub-makefiles
@@ -209,6 +151,12 @@ dlllibRPC_XMLRPC:
 ## ==================================================================
 ##                       Targets in sub-makefiles
 ## ==================================================================
+
+aubit-config:
+	${MAKE} -C resource
+
+loadmap:
+	${MAKE} -C ../tools/loadmap
 
 libaubit4gl.so :
 	${MAKE} -C libaubit4gl $(MKNAME) $@

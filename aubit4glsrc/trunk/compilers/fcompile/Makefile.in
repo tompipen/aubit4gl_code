@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.26 2002-04-15 10:59:13 afalout Exp $
+# $Id: Makefile.in,v 1.27 2002-04-19 03:45:17 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -38,7 +38,7 @@ override NOINCL=0
 
 #FIXME: use 4glpc ONLY for 4gl code:
 4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -L../../lib
-CFLAGS 			+=-I../../lib -I. @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
+CFLAGS 			+=-I../../lib/libincl -I. @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 
 #FIXME: we should compile dummy executables in any case, so we can use them instead
 #of real ones when installing binary distro on system with missing RPClib:

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.57 2002-04-17 01:38:45 afalout Exp $
+# $Id: configure.in,v 1.58 2002-04-19 03:45:12 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -1814,60 +1814,6 @@ if test "$PERL" != no; then
 fi
 
 ## ==================================================================
-##            Decide on default SQL driver
-## ==================================================================
-
-
-#if more then one ODBC support was detected, this one will
-#ovverride A4GL_SQLTYPE set earlier in this script:
-#Options: static nosql iodbc unixodbc esql ifxodbc pgodbc odbc32
-
-if test "$default_odbc" != ""; then
-	#User can force SQL driver default with --default-odbc=xxxx switch
-	A4GL_SQLTYPE="$default_odbc"
-else
-    ############# native ####################
-	#non existant:
-	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
-	#	A4GL_SQLTYPE=pgsql
-    #fi
-	if test "$IFMX_ESQLC" != "no" ; then
-		A4GL_SQLTYPE=esql
-	fi
-	############# ODBC drivers ##############
-	if test "$HAVE_PGODBC" = "yes" ; then
-		A4GL_SQLTYPE=pgodbc
-	fi
-	if test "$HAVE_IFXODBC" = "yes" ; then
-		A4GL_SQLTYPE=ifxodbc
-	fi
-	############# ODBC managers #############
-	if test "$HAVE_IODBC" = "yes" ; then
-		A4GL_SQLTYPE=iodbc
-	fi
-	if test "$HAVE_UNIXODBC" = "yes" ; then
-		A4GL_SQLTYPE=unixodbc
-	fi
-	if test "$cygwin" = "1"; then
-		A4GL_SQLTYPE=odbc32
-
-        #echo "WARNING: SQL on Windows temporaraly disabled"
-		#A4GL_SQLTYPE=nosql
-	fi
-fi
-
-
-## ==================================================================
-##            Decide on default RPC driver
-## ==================================================================
-
-
-XML_RPC
-
-
-
-
-## ==================================================================
 ##         Checks for libraries expected in standard locations
 ## ==================================================================
 
@@ -2157,6 +2103,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 				lib/libpdf/Makefile
                 lib/libgui/Makefile
                 lib/libtui/Makefile
+                lib/resource/Makefile
                 lib/libsql/nosql/Makefile
                 lib/libsql/odbc/Makefile
                 lib/libsql/esqlc/Makefile
@@ -2166,6 +2113,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 				lib/extra_libs/string/Makefile
                 lib/Makefile
                 tools/adbaccess/Makefile
+                tools/loadmap/Makefile
                 tools/adbload/Makefile
                 tools/html/Makefile
                 tools/ide/Makefile

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.2 2002-04-17 07:40:39 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-04-19 03:45:17 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -38,9 +38,9 @@ override NOINCL=0
 CMODS_PROJECT	=project.c
 GUI_TUI			=gui_tui.o
 GUI_GTK			=gui_gtk.o
-GUI_SRC         =ui.c
-CMODS_DLSQL		=dlsql.c
-CMODS_RESOURCE	=../resource.c
+GUI_SRC         =API_ui.c
+CMODS_DLSQL		=API_sql.c
+CMODS_RESOURCE	=../resource/resource.c
 
 #In alphabetical order:
 COMMONSRC= \
@@ -48,8 +48,8 @@ COMMONSRC= \
 	builtin.c builtin_d.c \
 	calldll.c conv.c \
 	data_if.c dates.c dmy.c debug.c \
-	err.c error.c errfile.c extfile.c extend_rep.c \
-	fglwrap.c funcs_d.c fields.c \
+	err.c error.c errfile.c extfile.c API_exreport.c \
+	fglwrap.c funcs_d.c \
 	gtime.c gui_io.c gui.c \
 	helper.c \
 	io.c interval.c \
@@ -58,9 +58,11 @@ COMMONSRC= \
 	match.c \
 	others.c \
 	pointers.c \
-	rpc.c read_dty.c report.c rexp2.c ${CMODS_RESOURCE} \
+	API_rpc.c read_dty.c report.c rexp2.c ${CMODS_RESOURCE} \
 	screen.c sleep.c stack.c string.c \
 	translate.c
+
+#obsoleted: fields.c \
 
 CMODSNOSQL 			=${COMMONSRC}
 CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}

@@ -10,7 +10,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "../aubit_lib.h"
+#include "a4gl_aubit_lib.h"
 #include "../libincl/debug.h"
 extern int status;
 

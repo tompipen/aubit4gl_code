@@ -29,7 +29,7 @@ extern int errno;
 #include <unistd.h>
 #include <pwd.h>
 #endif
-#include "../acl_string.h"
+#include "a4gl_acl_string.h"
 
 #ifdef WIN32
 struct passwd

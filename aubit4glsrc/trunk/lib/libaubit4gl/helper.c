@@ -15,7 +15,7 @@
 #include "../libincl/pointers.h"
 #include "../libincl/debug.h"
 
-#include "../runtime_tui.h"
+#include "a4gl_runtime_tui.h"
 
 LIBPRIVATE char last_info[256]="";
 LIBPRIVATE char last_type[256]="";

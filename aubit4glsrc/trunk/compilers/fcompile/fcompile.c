@@ -9,12 +9,12 @@
  */
 
  /* 
-  * $Id: fcompile.c,v 1.10 2002-01-13 14:47:44 mikeaubury Exp $
+  * $Id: fcompile.c,v 1.11 2002-04-19 03:45:17 afalout Exp $
   */
 
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
-#include "aubit_lib.h"
+#include "a4gl_aubit_lib.h"
 extern int as_c;
 #ifdef YYDEBUG
 extern int yydebug;
