@@ -84,7 +84,7 @@ FORMONLY COMMENT
 %token BLACK BLUE GREEN CYAN RED MAGENTA WHITE YELLOW REVERSE LEFT BLINK UNDERLINE
 %token   AUTONEXT COLOR COMMENTS DEFAULT VALIDATE DISPLAY DOWNSHIFT UPSHIFT FORMAT INCLUDE INVISIBLE NOENTRY PICTURE PROGRAM
 REQUIRED REVERSE VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
-%token SERIAL KW_BYTE KW_TEXT VARCHAR SQL_VAR
+%token SERIAL KW_BYTE KW_TEXT VARCHAR SQL_VAR KW_NONSPACE
 %token SQLONLY  WIDGET CONFIG KW_NL
 %token COMPARISON KWOR KWAND KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
 %token YEAR MONTH DAY HOUR MINUTE SECOND FRACTION
@@ -209,7 +209,7 @@ some_text: named_or_kw {
 
 screen_element : 
 some_text {
-	     A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
+        A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
@@ -219,7 +219,8 @@ some_text {
 | GRAPH_CH {
 	char buff[256];
 	sprintf(buff,"\n%s",$<str>1);
-	A4GL_add_field("_label",1+colno-1,lineno,1,scr,0,$<str>1);
+	A4GL_add_field("_label",colno+1,lineno,1,scr,0,$<str>1);
+	colno++;
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 } 
@@ -251,6 +252,7 @@ some_text {
 }  
 | KW_WS {colno++;}
 | KW_NL {colno=0;lineno++;}
+| KW_NONSPACE 
 
 
 

@@ -29,6 +29,10 @@
 "\\g" 	{
 		if (graphics_mode) graphics_mode=0;
 		else graphics_mode=1;
+		if (ignorekw==1) {
+			printf("non-space\n");
+			return KW_NONSPACE;
+		}
 	}
 
 --! 	{if (in_screen_section) REJECT; }
@@ -233,6 +237,7 @@ return(NAMED);}
         if (ignorekw==0) REJECT;
 	strcpy(yylval.str,yytext);
 	//colno++;
+
 	if (graphics_mode) {
 		if (
 			strcmp(yytext,"+")==0 ||
@@ -243,7 +248,7 @@ return(NAMED);}
 			strcmp(yytext,"-")==0 ||
 			strcmp(yytext,"|")==0 ) {
 			sprintf(yylval.str,"\n%s",yytext);
-			colno++;
+			//colno++;
 			return  GRAPH_CH;
 		}
 	}
