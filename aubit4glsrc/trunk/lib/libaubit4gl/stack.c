@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.85 2004-02-20 14:39:52 mikeaubury Exp $
+# $Id: stack.c,v 1.86 2004-03-24 17:19:35 mikeaubury Exp $
 #
 */
 
@@ -2000,7 +2000,7 @@ A4GL_params_on_stack (char *_paramnames[], int n)
       A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, sz);
 
 
-      A4GL_debug ("Conv gives us '%s'", buff);
+      A4GL_debug ("Conv gives us '%s'", A4GL_null_as_null(buff));
 
       buff2 = buff;
       buff2 = A4GL_lrtrim (buff);
@@ -2010,18 +2010,18 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 	  z = add_to_z (z, ",");
 	}
 
-      A4GL_debug ("1. z=%s", z);
+      A4GL_debug ("1. z=%s", A4GL_null_as_null(z));
       z = add_to_z (z, _paramnames[a]);
 
-      A4GL_debug ("2. z=%s", z);
+      A4GL_debug ("2. z=%s", A4GL_null_as_null(z));
       z = add_to_z (z, "=");
-      A4GL_debug ("3. z=%s", z);
+      A4GL_debug ("3. z=%s", A4GL_null_as_null(z));
       z = add_to_z (z, buff2);
-      A4GL_debug ("4. z=%s", z);
+      A4GL_debug ("4. z=%s", A4GL_null_as_null(z));
 
       free (buff);
     }
-  A4GL_debug ("Generated : %s", z);
+  A4GL_debug ("Generated : %s", A4GL_null_as_null(z));
   return z;
 }
 
