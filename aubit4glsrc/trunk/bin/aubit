@@ -43,7 +43,7 @@ SH_SCRIPTS="ecpg_wrap 4glpc esql_wrap prepmake abug.sh aubitbuild.sh genmake \
 
 #List of all Aubit tools that are supposed to run only on command line in
 #TUI mode - not GUI mode
-CMD_LINE_TOOLS="4glc 4glpc_new aubit-config default_frm mcompile 4glc-strip aupscol \
+CMD_LINE_TOOLS="4glc 4glpc aubit-config default_frm mcompile 4glc-strip aupscol \
 	ecpg_wrap mdecompile 4glpc amkmessage c2pcode esql_wrap \
     prepmake aace c2pcode_fgl process_report aace_4gl \
 	fcompile aace_perl checker fdecompile abug.sh checker_fgl \

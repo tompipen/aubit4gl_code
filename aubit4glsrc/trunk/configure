@@ -27869,7 +27869,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.269 2004-10-04 13:49:24 afalout Exp $
+| $Id: configure,v 1.270 2004-10-04 15:37:51 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

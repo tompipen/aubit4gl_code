@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.4 2004-09-28 09:49:25 afalout Exp $
+# $Id: makefile,v 1.5 2004-10-04 15:40:18 afalout Exp $
 #
 
 ROOT        =../..
@@ -39,7 +39,7 @@ include 	${ROOT}/incl/Makefile-common
 ##                              Settings
 ## ==================================================================
 
-ALL 	=${ROOT}/bin/4glpc_new ${ROOT}/etc/4glpc.iem
+ALL 	=${ROOT}/bin/4glpc ${ROOT}/etc/4glpc.iem
 
 ## ==================================================================
 ##                              Targets
@@ -51,7 +51,7 @@ all: ${ROOT}/bin/4glc ${ALL}
 ${ROOT}/etc/4glpc.iem: helpfile.hlp ${ROOT}/bin/amkmessage
 	${ROOT}/bin/amkmessage $< $@
 
-${ROOT}/bin/4glpc_new: 4glpc.ao times.ao readsettings.ao 
+${ROOT}/bin/4glpc: 4glpc.ao times.ao readsettings.ao 
 	${LD} $^ -o $@ -L${LIBROOT} -laubit4gl
 
 ## ==================================================================
