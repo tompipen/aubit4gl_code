@@ -1,0 +1,18 @@
+database FORMONLY 
+ 
+screen 
+{ 
+ [t|refe ] 
+ [t|refe ] 
+ [t|refe ] 
+ [t|refe ] 
+} 
+end 
+ 
+attributes 
+t = formonly.trap,INVISIBLE,AUTONEXT; 
+refe = formonly.refe,NOENTRY; 
+
+INSTRUCTIONS 
+DELIMITERS " " 
+SCREEN RECORD sa_ls[4] (trap, refe); 
