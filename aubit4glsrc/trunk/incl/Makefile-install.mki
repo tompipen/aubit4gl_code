@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.71 2003-10-08 01:36:43 afalout Exp $
+# $Id: Makefile-install.mki,v 1.72 2004-01-22 00:05:03 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -977,7 +977,16 @@ get.pg.esql.cvs:
 	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/interfaces/libpq
 	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/port
 
+#Apply Informix compatibility patch
+#info=http://gborg.postgresql.org/project/pginformix/projdisplay.php
+#file=ftp://gborg.postgresql.org/pub/pginformix/stable/informix.patch.tar.gz
+#or
+#ftp://gborg.postgresql.org/pub/pginformix/stable/informix.patch.gz
+#this patch was made against a REL7_4 tag of cvs, untar this into the source directory 
+#of postgres and run cat informix.diff | patch -p0 -c and then configure and build as normal
 
+	
+	
 #####################
 # 15: Install Check unit testing libraries
 install.libcheck: ${CHECK_RPM}

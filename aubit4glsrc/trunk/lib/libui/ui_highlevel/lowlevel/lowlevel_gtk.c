@@ -5,7 +5,9 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-static char *module_id="$Id: lowlevel_gtk.c,v 1.17 2004-01-18 18:13:26 mikeaubury Exp $";
+
+static char *module_id="$Id: lowlevel_gtk.c,v 1.18 2004-01-22 00:05:03 afalout Exp $";
+
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
@@ -1155,19 +1157,28 @@ A4GL_debug("Wadd_char to window %p %d %d %x",win,x,y,ch);
 		//gtk_label_set_justify( lab,GTK_JUSTIFY_CENTER);
 		//gtk_misc_set_alignment(GTK_MISC(lab), 0.5f, 0.5f);
 		gtk_misc_set_alignment(GTK_MISC(lab), 0.5f, 0.5f);
+#if GTK_CHECK_VERSION(2,0,0)
 		gtk_widget_set_size_request (GTK_WIDGET(e), gui_xwidth, gui_yheight);
 		gtk_widget_set_size_request (GTK_WIDGET(lab), gui_xwidth, gui_yheight);
+
+#endif
+
 		has_old_attr=0;
+
         	gtk_widget_show (GTK_WIDGET (lab));
         	gtk_widget_show (GTK_WIDGET (e));
 
       } else {
 		has_old_attr=1;
                 gtk_label_set_text (lab, cbuff);
+#if GTK_CHECK_VERSION(2,0,0)
 		gtk_widget_set_size_request (GTK_WIDGET(lab), gui_xwidth, gui_yheight);
+#endif		
+
 		if ((ch&0xff)==32) {
 			//printf("Ign spc %s reset\n",buff_label);
 		}
+
       }
 	
       if ((old_attr&0xffffff00)==(ch&0xffffff00) && has_old_attr) ;
@@ -2297,126 +2308,3 @@ return 1;
 }
 
 
-
-int A4GL_LL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void *phandler_c) {
-  GtkWindow *win;
-  void (*handler_c) ();
-  GtkFixed *fixed;
-  //GtkFixed *form;
-  char name[256];
-  char formname[256];
-  struct struct_form *the_form;
-  struct s_form_dets *form_dets;
-  int a;
-
-  handler_c=phandler_c;
-
-  strcpy (name, name_orig);
-  A4GL_decode_gui_winname (name);
-  if (like && strlen (like))
-    {
-      strcpy (formname, like);
-    }
-  else
-    {
-      strcpy (formname, name);
-    }
-
-
-  //strcat (formname, acl_getenv ("A4GL_FRM_BASE_EXT"));
-
-  win = (GtkWindow *) gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (win), "");
-
-  if (win == 0)
-    {
-      A4GL_debug ("No window created!");
-      A4GL_exitwith ("Unable to create new window");
-      return 0;
-    }
-
-  fixed = (GtkFixed *) gtk_fixed_new ();
-
-  gtk_widget_show (GTK_WIDGET (fixed));
-
-  gtk_container_add (GTK_CONTAINER (win), GTK_WIDGET (fixed));
-
-
-  //A4GL_set_current_window (win);
-  /* win = fixed; */
-
-  /* A4GL_add_pointer (name, WINCODE, fixed); */
-  A4GL_add_pointer (name, WINCODE, win);
-
-  gtk_signal_connect (GTK_OBJECT (win), "delete_event",
-                      GTK_SIGNAL_FUNC (handler_e), win);
-  gtk_signal_connect (GTK_OBJECT (win), "destroy",
-                      GTK_SIGNAL_FUNC (handler_e), win);
-  /*
-     gtk_signal_connect (GTK_OBJECT (win), "motion_notify", GTK_SIGNAL_FUNC (handler_e), win);
-     gtk_signal_connect (GTK_OBJECT (win), "key_press_event", GTK_SIGNAL_FUNC (handler_e), win);
-     gtk_signal_connect (GTK_OBJECT (win), "key_release_event", GTK_SIGNAL_FUNC (handler_e), win);
-   */
-  gtk_signal_connect (GTK_OBJECT (win), "focus_in_event",
-                      GTK_SIGNAL_FUNC (handler_e), win);
-  /*
-     gtk_signal_connect (GTK_OBJECT (win), "focus_out_event", GTK_SIGNAL_FUNC (handler_e), win);
-     gtk_signal_connect (GTK_OBJECT (win), "other_event", GTK_SIGNAL_FUNC (handler_e), win);
-     gtk_signal_connect (GTK_OBJECT (win), "enter_notify_event", GTK_SIGNAL_FUNC (handler_e), win);
-     gtk_signal_connect (GTK_OBJECT (win), "leave_notify_event", GTK_SIGNAL_FUNC (handler_e), win);
-     gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
-     GTK_SIGNAL_FUNC (handler_e), win);
-   */
-  form_dets = A4GL_read_form (formname, "uhmmm");
-
-
-
-  printf (">>>>      Setting currform...\n");
-  if (form_dets == 0)
-    {
-      A4GL_exitwith ("Unable to open form");
-      return 0;
-    }
-
-
-  //gtk_object_set_data (GTK_OBJECT (win), "currform", form);
-  //gtk_fixed_put (GTK_FIXED (fixed), GTK_WIDGET (form), A4GL_getx_coords(0), A4GL_gety_coords(0));
-
-  //gtk_widget_show (GTK_WIDGET (form));
-  gtk_widget_show_all (GTK_WIDGET (win));
-
-  handler_c (0, 0);
-
-  //the_form = gtk_object_get_data (GTK_OBJECT (form), "xdr_form");
-
-  //for (a = 0; a < the_form->metrics.metrics_len; a++)
-    //{
-      //A4GL_debug ("%p -> ", the_form->metrics.metrics_val[a].field);
-      //gtk_object_set_data ((GtkObject *) the_form->metrics.metrics_val[a].
-                           //field, "HANDLER", handler_c);
-    //}
-
-
-  gtk_widget_show (GTK_WIDGET (win));
-
-  UILIB_A4GL_gui_run_til_no_more ();
-
-  return 1;
-
-}
-
-void
-A4GL_decode_gui_winname (char *name)
-{
-  char buff[256];
-  char *ptr;
-  strcpy (buff, name);
-  ptr = strchr (name, '_');
-  A4GL_debug ("Decoding name %s - ptr=%p", name, ptr);
-  if (ptr)
-    {
-      strcpy (buff, ptr + 1);
-      A4GL_debug ("Buff=%s\n", buff);
-      strcpy (name, buff);
-    }
-}

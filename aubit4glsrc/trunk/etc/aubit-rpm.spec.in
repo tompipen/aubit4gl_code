@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.19 2004-01-18 11:11:15 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.20 2004-01-22 00:05:03 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -484,6 +484,10 @@ make install
 ##############
 %changelog
 ##############
+#WARNING!!! RPM actually checks date format here !!
+
+* Mon Jan 19 2004 afalout <andrej@falout.org>
+- Make it all work again
 * Wed Sep 17 2003 root <root@aptiva.falout.com>
 - All files set from Autoconf
 * Sun Aug 25 2002 root <root@aptiva.falout.com>
@@ -504,6 +508,10 @@ make install
 #is the macro to do post-install scripts.
 ##############
 
+#reset log file
+date > /tmp/aubit4gl-rpminstall.log
+
+
 #[ ! -d $RPM_INSTALL_PREFIX/bin ] && mkdir $RPM_INSTALL_PREFIX/bin > /dev/null 2>&1
 #ln -fs $RPM_INSTALL_PREFIX/aubit4gl/bin/4glpc $RPM_INSTALL_PREFIX/bin/4glpc
 #
@@ -512,16 +520,25 @@ make install
 
 cd /opt/aubit4gl
 
-echo "PATH=$PATH"
+echo "PATH=$PATH"  >> /tmp/aubit4gl-rpminstall.log
+#It appears that RPM runs under some strange environent where PATH is not what you would
+#expect to find in your currnt environment, but the ABSOLUTE SYSTEM MINIMUM, like:
+#/sbin:/bin:/usr/bin:usr/X11R6/bin  - that's it.
+#Since we are trying to autodetect a lot of stuff, we will try to source syste and user's
+#profile files, to set "normal" user's environment
+source /etc/profile >> /tmp/aubit4gl-rpminstall.log
+source ~/.bash_profile >> /tmp/aubit4gl-rpminstall.log
 
-echo "Running 'make' in /opt/aubit4gl..."
+echo "PATH=$PATH" >> /tmp/aubit4gl-rpminstall.log
+
+echo "Running 'make' in /opt/aubit4gl..." >> /tmp/aubit4gl-rpminstall.log
 #run 'configure', create and install /etc/opt/aubit4gl/aubitrc, install
 #links to /usr/bin and /usr/lib, run test_build:
-make install
+make install >> /tmp/aubit4gl-rpminstall.log 2>&1
 
 
-echo "Running 'bin/configurator' in /opt/aubit4gl..."
-aubit configurator -firstrun
+echo "Running 'aubit configurator -firstrun' in /opt/aubit4gl..."  >> /tmp/aubit4gl-rpminstall.log
+aubit configurator -firstrun >> /tmp/aubit4gl-rpminstall.log 2>&1
 
 #TODO: install icons in GNOME and K desktop menu for:
 #configurator
@@ -531,19 +548,29 @@ aubit configurator -firstrun
 #readme file
 #install Kate editor's sintax highliting xml files for .4gl and .per
 
+echo "post tasks finshed" >> /tmp/aubit4gl-rpminstall.log
 
-
-
-
+echo "Install finished,see /tmp/aubit4gl-rpminstall.log for more info."
+echo "Run 'aubit configurator' if you wish to customise default configuration."
 
 ##############
 %preun
 # is the macro to do pre-uninstall scripts.
 ##############
+
+#reset log file
+date > /tmp/aubit4gl-rpmdeinstall.log
+
 cd /opt/aubit4gl
 #remove links created by 'make', and debris in tools/test
-echo "Running 'make deinstall' in /opt/aubit4gl..."
-make deinstall
+echo "Running 'make clean' in /opt/aubit4gl..."  >> /tmp/aubit4gl-rpmdeinstall.log
+make clean >> /tmp/aubit4gl-rpmdeinstall.log
+echo "Running 'make deinstall' in /opt/aubit4gl..." >> /tmp/aubit4gl-rpmdeinstall.log
+make deinstall >> /tmp/aubit4gl-rpmdeinstall.log
+
+echo "preun tasks finshed" >> /tmp/aubit4gl-rpmdeinstall.log
+
+echo "pre-Uninstall tasks finished,see /tmp/aubit4gl-rpmdeinstall.log for more info."
 
 ##############
 #%postun

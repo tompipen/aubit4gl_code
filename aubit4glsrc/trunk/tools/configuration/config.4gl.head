@@ -22,36 +22,112 @@ end record
 
 define mv_window_open integer
 
+function load_possible_values(id)
+define
+	id integer
+	
+	case mv_option[id].name
+	when "A4GL_SQLTYPE"
+		call load_option("A4GL_SQLTYPE_DETECTED",id)
+	end case
+	
+end function	
 
+function load_option(opt_name,id)
+define 
+	opt_name char (30),
+	id integer,
+	tmp_str char(200),
+	len, cnt, start_pos, end_pos smallint
+	
+	let tmp_str = fgl_getenv(opt_name)
+
+	let len = length(tmp_str) 
+	if len > 1 then 
+		let mv_option_offscr[id].nvalues = 0
+		let mv_option_offscr[id].id = id		
+		let start_pos = 0
+		let end_pos = 0
+		for cnt = 1 to len
+			if tmp_str[cnt] = '"' then
+				continue for
+			end if
+		
+			if tmp_str[cnt] = " " then
+				if start_pos <> 0 then 
+					#end of value
+					let end_pos=cnt-1
+				end if
+			else
+				if start_pos = 0 then 
+					#first char of new value
+					let start_pos = cnt
+				end if
+			end if
+		
+			if start_pos <> 0 and end_pos <> 0 then 
+				let mv_option_offscr[id].nvalues = 
+					mv_option_offscr[id].nvalues + 1				
+				let mv_option_offscr[id].values[mv_option_offscr[id].nvalues]=			
+					tmp_str[start_pos,end_pos]
+				let start_pos = 0
+				let end_pos = 0
+			end if
+			
+		end for
+	
+		#get the last one
+		if start_pos <> 0 and end_pos = 0 then 
+			if tmp_str[cnt] ='"' then
+				let end_pos = cnt - 1
+			else
+				let end_pos = cnt
+			end if
+			let mv_option_offscr[id].nvalues = 
+				mv_option_offscr[id].nvalues + 1				
+			let mv_option_offscr[id].values[mv_option_offscr[id].nvalues]=			
+				tmp_str[start_pos,end_pos]
+		end if
+	
+	end if
+		
+
+end function
+
+
+{*
+ * Note that aubitrc now includes xxx_DETECTED - use it to prevent - or at 
+ * least warn - user from selecting values that very probably will not work.
+ *
+ *
+ *}
 function possible_values(id,v)
 define id integer
 define v char(30)
 define a integer
-if mv_option_offscr[id].nvalues=0 then
-	error "There are no predefined values available"
-	return v
-end if
 
-open window wx at 10,10 with form "values" attribute(blue,reverse,border)
-call set_count(mv_option_offscr[id].nvalues)
-let int_flag=false
-display "   AVAILABLE VALUES" at 1,1
-display array mv_option_offscr[id].values to srec1.* 
-	on key(return) exit display
-end display
-close window wx
-if int_flag=false then
-	return v
-else
-	let a=arr_curr()
-	return mv_option_offscr[id].values[a]
-end if
+	call load_possible_values(id)
+
+	if mv_option_offscr[id].nvalues=0 then
+		error "There are no predefined values available"
+		return v
+	end if
+	
+	open window wx at 10,10 with form "values" attribute(blue,reverse,border)
+	call set_count(mv_option_offscr[id].nvalues)
+	let int_flag=false
+	display "   AVAILABLE VALUES" at 1,1
+	display array mv_option_offscr[id].values to srec1.* 
+		on key(return) exit display
+	end display
+	close window wx
+	if int_flag=false then
+		return v
+	else
+		let a=arr_curr()
+		return mv_option_offscr[id].values[a]
+	end if
 end function
-
-
-
-
-
 
 {*
  *
@@ -76,7 +152,7 @@ define b integer
 end function
 
 
-{*
+{* This is the first function called in MAIN block of 'configurator' program.
  *
  *
  *
@@ -84,9 +160,42 @@ end function
  *}
 function initialize ()
 	let mv_window_open=0
+	
+	if arg_val(1) = "-firstrun" then 
+		call show_firstrun()
+	end if
+	
+	
 end function
 
+{*
+ * Show the short intro message to the user when program starts, if there was 
+ * a flag '-firstrun' on the command line.
+ * Used from aubit-rpm.spec.in after Aubit compiler is installed from RPM package.
+ *
+ *}
+ function show_firstrun()
 
+ 	#open window...
+	
+	let lv_txt[1]="Welcome to Aubit 4GL configuration utility, 'configurator'. When Aubit 4GL was" 
+	let lv_txt[2]="compiled from source code, or installed from 'tarball' package (folowed by " 
+	let lv_txt[3]="'make install' command) or installed from RPM package, a script called" 
+	let lv_txt[4]="'configure' was automatically executed to detect your current system" 
+	let lv_txt[5]="configuration, and based on this Aubit global configuration file"
+	let lv_txt[6]="(/etc/opt/aubit4gl/aubitrc) was created. This utility allows you to inspect" 
+	let lv_txt[7]="and change settings that apply to Aubit compile-time and run-time programs."
+	
+	call display_txt()
+
+	menu "Introduction Window"
+		command "Close" "Close introduction window"
+			#close window...
+			exit menu
+	end menu
+ 
+ end function
+  
 {*
  *
  *
@@ -182,15 +291,15 @@ code
 char **names;
 int n=0;
 names=scan_directory(s);
-for (n=0;names[n];n++) {
-	A4GL_debug("----> DIR RETURNS %s",names[n]);
-	strcpy(buff,names[n]);
+	for (n=0;names[n];n++) 
+	{
+		A4GL_debug("----> DIR RETURNS %s",names[n]);
+		strcpy(buff,names[n]);
 endcode
-	let mv_option_offscr[a].values[n+1]=buff
+		let mv_option_offscr[a].values[n+1]=buff
 code
-	c=c+1;
-}
-
+		c=c+1;
+	}
 }
 endcode
 let mv_option_offscr[a].nvalues=c;

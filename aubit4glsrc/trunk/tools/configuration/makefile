@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.4 2004-01-18 11:11:16 afalout Exp $
+# $Id: makefile,v 1.5 2004-01-22 00:05:04 afalout Exp $
 #
 
 ROOT    =../..
@@ -49,8 +49,11 @@ ALL=configurator helpfile.hlp change.afr.dat options.afr.dat values.afr.dat
 all: ${ALL} install
 	@echo "Default targets (${ALL}) compiled sucesfully"
 
-helpfile.msg config.4gl: descriptions mk_config config.4gl.head
+config.4gl helpfile.msg: descriptions mk_config config.4gl.head
 	${SH} mk_config > config.4gl
+
+config.ao: config.4gl 
+rest.ao: rest.4gl
 
 configurator: config.ao rest.ao dir.o
 	${FGLPCEXEC} $^ -o $@
@@ -61,15 +64,15 @@ configurator: config.ao rest.ao dir.o
 
 install:
 	cp ${ALL} ${ROOT}/bin
-	@echo "Aubit configuratot installed"
+	@echo "Aubit configurator installed"
 
 deinstall:
 	${RM} $(addprefix ${ROOT}/bin/,${ALL})
-	@echo "Aubit configuratot deinstalled"
+	@echo "Aubit configurator deinstalled"
 
 run: ${ALL}
 #	export A4GL_UI=TUI; ${ROOT}/bin/configurator
-	export A4GL_UI=TUI; ./configurator
+	export A4GL_UI=TUI; ./configurator -firstrun
 
 
 
@@ -78,7 +81,8 @@ run: ${ALL}
 ## ==================================================================
 
 clean:
-	${RM} *.msg *.ao ${ALL} *.bak config.4gl *.c *.err *.glb *.h
+	${RM} *.msg *.ao ${ALL} *.bak config.4gl config.c rest.c *.err \
+	*.glb *.h *.warn *~ *.o
 
 
 # ================================= EOF =============================

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.9 2002-10-31 08:40:50 afalout Exp $
+# $Id: Makefile-install,v 1.10 2004-01-22 00:05:03 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
@@ -73,19 +73,26 @@ else
 endif
 
 clean:
-	${RM} config.status config.log etc/aubitrc.original
+	${RM} debug.out config.status config.log etc/aubitrc.original etc/config/bootstrap etc/config/ltmain.sh
 	make -C tools/test clean
 	make -C tools/test/gui clean
-	@echo "Aubit binary installation now clean"
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Aubit binary installation now clean                                |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 deinstall: deinstall.libs.links deinstall.bin.links
-	@echo "All Aubit related links/files outside this tree removed."
-	@echo "If you wish to deinstall completely, just remove this directory"
-	@echo "Note that /etc/opt/aubit4g;/aubitrc configuration file WAS NOT removed"
-	@echo "You can also use 'deinstall.all' to remove all files from"
-	@echo "Aubit installation tree selectively, as they where installed, but "
-	@echo "preserve all files created after installation."
-
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| All Aubit related links/files outside this tree removed.           |"
+	@echo "| If you wish to deinstall completely, just remove this directory    |"
+	@echo "| Note that /etc/opt/aubit4g;/aubitrc configuration file WAS NOT     |"
+	@echo "| removed. You can also use 'deinstall.all' to remove all files from |"
+	@echo "| Aubit installation tree selectively, as they where installed, but  |"
+	@echo "| preserve all files created after installation.                     |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 help:
 	@echo ""
 	@echo "This is Aubit 4gl compiler binary installation make file"

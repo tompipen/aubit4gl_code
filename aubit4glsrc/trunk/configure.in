@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.212 2004-01-18 11:11:06 afalout Exp $
+dnl # $Id: configure.in,v 1.213 2004-01-22 00:04:45 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -315,15 +315,35 @@ AC_SUBST(SHORTNAME)
 #aubitrc:
 AC_SUBST(AUBITETC)
 AC_SUBST(A4GL_SQLTYPE)
+AC_SUBST(A4GL_SQLTYPE_DETECTED)
+
 AC_SUBST(A4GL_PDFTYPE)
+AC_SUBST(A4GL_PDFTYPE_DETECTED)
+
 AC_SUBST(A4GL_RPCTYPE)
+AC_SUBST(A4GL_RPCTYPE_DETECTED)
+
 AC_SUBST(A4GL_UI)
+AC_SUBST(A4GL_UI_DETECTED)
+
 AC_SUBST(A4GL_LEXTYPE)
+AC_SUBST(A4GL_LEXTYPE_DETECTED)
+
 AC_SUBST(A4GL_LEXDIALECT)
+AC_SUBST(A4GL_LEXDIALECT_DETECTED)
+
 AC_SUBST(A4GL_FORMTYPE)
+AC_SUBST(A4GL_FORMTYPE_DETECTED)
+
 AC_SUBST(A4GL_MENUTYPE)
+AC_SUBST(A4GL_MENUTYPE_DETECTED)
+
 AC_SUBST(A4GL_MSGTYPE)
+AC_SUBST(A4GL_MSGTYPE_DETECTED)
+
 AC_SUBST(A4GL_PACKER)
+AC_SUBST(A4GL_PACKER_DETECTED)
+
 AC_SUBST(A4GL_DBPATH)
 
 #SQL
@@ -444,6 +464,7 @@ AC_SUBST(IKSEMEL_I_FLAGS)
 #exdatatype
 AC_SUBST(EXDATA_MPZ)
 AC_SUBST(EXDTYPE)
+AC_SUBST(EXDTYPE_DETECTED)
 
 #other
 AC_SUBST(INSTALL_MISSING_OPTIONAL)
@@ -1306,14 +1327,23 @@ XMLRPC_C_CONFIG=no
 
 #defaults for aubitrc:
 A4GL_SQLTYPE=nosql
+A4GL_SQLTYPE_DETECTED=nosql
 A4GL_PDFTYPE=NOPDF
+A4GL_PDFTYPE_DETECTED=NOPDF
 A4GL_RPCTYPE=NORPC
+A4GL_RPCTYPE_DETECTED=NORPC
 A4GL_UI=CONSOLE
+A4GL_UI_DETECTED=CONSOLE
 A4GL_LEXTYPE=C
+A4GL_LEXTYPE_DETECTED=C
 A4GL_LEXDIALECT=INFORMIX
+A4GL_LEXDIALECT_DETECTED=""
 A4GL_FORMTYPE=NOFORM
+A4GL_FORMTYPE_DETECTED=NOFORM
 A4GL_MENUTYPE=NOMENU
+A4GL_MENUTYPE_DETECTED=NOMENU
 A4GL_MSGTYPE=NATIVE
+A4GL_MSGTYPE_DETECTED=NATIVE
 
 #case "$target_os" in
 case $host in
@@ -1409,7 +1439,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.212 2004-01-18 11:11:06 afalout Exp $
+# $Id: configure.in,v 1.213 2004-01-22 00:04:45 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -1952,8 +1982,11 @@ ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF" # Makefile
 	done
 
 
+#This 2 are used in Makefile-common in BIN_ALLWAYSCLEAN and TOBIN variables
 EXTRAFILE_1=$aubitdir/tools/cygwin/run.exe
 EXTRAFILE_2=$aubitdir/tools/metrics_4gl/4GL_metrics.cgi
+
+
 
 ## ==================================================================
 ##                              Debugging
@@ -4599,7 +4632,8 @@ AC_ARG_WITH(rpc,
 		    RPCLIB_LFLAGS="$TEST_L_FLAGS"
 		    AC_DEFINE(HAVE_RPCLIB,1,[ ])
 			HAVE_RPCLIB=1
-            A4GL_RPCTYPE=SUNRPC
+            #A4GL_RPCTYPE=SUNRPC
+            #A4GL_RPCTYPE_DETECTED="$A4GL_RPCTYPE_DETECTED $A4GL_RPCTYPE"
 		else
 			if test "$RPC_FUNC_INTERNAL" != "1"; then
 				AC_DEFINE(HAVE_RPCLIB,0,[ ])
@@ -4739,12 +4773,14 @@ AC_ARG_WITH(mpz,
 				if test "$ac_cv_header_gmp_h" = "yes"  ; then
 					EXDATA_MPZ=yes
 		            EXDTYPE=MPZ
+                    EXDTYPE_DETECTED="$EXDTYPE_DETECTED $EXDTYPE"
 		        else
 					EXDATA_MPZ=no
 		        fi
 		    else
 				EXDATA_MPZ=yes
 				EXDTYPE=MPZ
+                EXDTYPE_DETECTED="$EXDTYPE_DETECTED $EXDTYPE"
 		    fi
 		else
 			EXDATA_MPZ=no
@@ -5397,38 +5433,46 @@ else
 	if test "$HAVE_PGODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=pgodbc
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 	if test "$HAVE_IFXODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=ifxodbc
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 
 	if test "$HAVE_SAPODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=sapodbc
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
     fi
 
 	############# ODBC managers #############
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=unixodbc
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 	if test "$HAVE_IODBC" = "yes" ; then
 		#we want iodbc to have highest priority, when we have a choice,
         #sine we still have problems with unixODBC
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=iodbc
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 	if test "$cygwin" = "1"; then
 		#if we are on windows, we will ALLWAYS use native odbc32 manager
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=odbc32
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 
 	########## SAP-DB ESQL/C pre-compiler output #############
 	if test "$SAPDB_ESQLC" != "no"; then
 		A4GL_LEXTYPE=EC
+		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		A4GL_LEXDIALECT=SAPDB
+        A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
         A4GL_SQLTYPE=ignored-ec
     fi
 
@@ -5445,7 +5489,9 @@ else
 	if test "$PG_ESQLC" != "no" ; then
 		if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
 			A4GL_LEXTYPE=EC
+			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 			A4GL_LEXDIALECT=POSTGRES
+	        A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
 	        A4GL_SQLTYPE=ignored-ec
         fi
     fi
@@ -5455,7 +5501,9 @@ else
     #setting - this will limit Aubit DB connectivity to Informix ONLY.
 	if test "$IFMX_ESQLC" != "no" ; then
 		A4GL_LEXTYPE=EC
+		A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		A4GL_LEXDIALECT=INFORMIX
+        A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
         A4GL_SQLTYPE=ignored-ec
     fi
 
@@ -5466,7 +5514,9 @@ else
 		#If we have Querix ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
     	#setting - this will limit Aubit DB connectivity to Querix supported RDBMS ONLY.
 		#A4GL_LEXTYPE=EC
+		#A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		#A4GL_LEXDIALECT=QUERIX
+        #A4GL_LEXDIALECT_DETECTED="$A4GL_LEXDIALECT_DETECTED $A4GL_LEXDIALECT"
     	#A4GL_SQLTYPE=ignored-ec
     #fi
 
@@ -5479,6 +5529,7 @@ else
 	if test "$IFMX_ESQLC" != "no" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=esql
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
 	fi
 
 	############# SQLite via ODBC ####################
@@ -5486,12 +5537,14 @@ else
 	if test "$SQLITE_LIB" = "1" && test "$SQLITE_ODBC" = "1"; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=sqliteodbc
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
     fi
 
 	############# SQLite native connector ####################
 	if test "$SQLITE_LIB" = "1" ; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=sqlite
+        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
     fi
 
 	if test "$AUBIT_SOURCE" = "0" && test "$A4GL_SQLTYPE" = "nosql"; then
@@ -5499,11 +5552,14 @@ else
 		if test "$SQLITE_LIB" = "1" ; then
 			A4GL_LEXTYPE=C
 			A4GL_SQLTYPE=sqliteS
+	        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
     	fi
     fi
 fi
 
 AC_MSG_RESULT($A4GL_SQLTYPE)
+AC_MSG_RESULT(Detected:$A4GL_SQLTYPE_DETECTED)
+
 
 ## ==================================================================
 ##            Decide on default COMPILER OUTPUT driver
@@ -5525,11 +5581,13 @@ if test "$default_comp" != ""; then
 	#Disabled since Perl output is not working at the moment
 	#if test "$PERLBUILD" != "no"; then
 	#	A4GL_LEXTYPE="PERL"
+	#	A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
     #fi
 
 	# C# output (Mono)
 	#if test "$CS_COMPILER" != "no"; then
 	#	A4GL_LEXTYPE="CS"
+	#	A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
     #fi
 
 
@@ -5543,6 +5601,8 @@ if test "$A4GL_LEXTYPE" = "EC"; then
 else
 	AC_MSG_RESULT($A4GL_LEXTYPE)
 fi
+AC_MSG_RESULT(Detected:$A4GL_LEXTYPE_DETECTED)
+AC_MSG_RESULT(Detected-EC dialects:$A4GL_LEXDIALECT_DETECTED)
 
 ## ==================================================================
 ##            Decide on default RPC driver
@@ -5557,14 +5617,17 @@ else
 
 	if test "$XML_RPC" != "no"; then
 		A4GL_RPCTYPE="XMLRPC"
+        A4GL_RPCTYPE_DETECTED="$A4GL_RPCTYPE_DETECTED $A4GL_RPCTYPE"
     fi
 
 	if test "$HAVE_RPCLIB" != "0"; then
 		A4GL_RPCTYPE="XDR"
+        A4GL_RPCTYPE_DETECTED="$A4GL_RPCTYPE_DETECTED $A4GL_RPCTYPE"
     fi
 fi
 
 AC_MSG_RESULT($A4GL_RPCTYPE)
+AC_MSG_RESULT(Detected:$A4GL_RPCTYPE_DETECTED)
 
 ## ==================================================================
 ##            Decide on default FORM driver
@@ -5579,12 +5642,15 @@ else
 	#FIXME: do we want to use XDR forms any more?
 	if test "$HAVE_RPCLIB" != "0"; then
 		A4GL_FORMTYPE="XDR"
+		A4GL_FORMTYPE_DETECTED="$A4GL_FORMTYPE_DETECTED $A4GL_FORMTYPE"
     fi
 
 	A4GL_FORMTYPE="GENERIC"
+	A4GL_FORMTYPE_DETECTED="$A4GL_FORMTYPE_DETECTED $A4GL_FORMTYPE"
 fi
 
 AC_MSG_RESULT($A4GL_FORMTYPE)
+AC_MSG_RESULT(Detected:$A4GL_FORMTYPE_DETECTED)
 
 ## ==================================================================
 ##            Decide on default MENU driver
@@ -5596,18 +5662,22 @@ if test "$default_menu" != ""; then
 	#User can force MENU driver default with --default-menu=xxxx switch
 	A4GL_MENUTYPE="$default_menu"
 else
-
-    #Why would we want XDR menu as default in any case?
-	#if test "$HAVE_RPCLIB" != "0"; then
-	#	A4GL_MENUTYPE="XDR"
-	#fi
-
+	#menus need GTK
 	if test "$GTKBUILD" != "no"; then
+
+	    #Why would we want XDR menu as default in any case?
+		if test "$HAVE_RPCLIB" != "0"; then
+			A4GL_MENUTYPE="XDR"
+	       	A4GL_MENUTYPE_DETECTED="$A4GL_MENUTYPE_DETECTED $A4GL_MENUTYPE"
+		fi
+
 		A4GL_MENUTYPE="GENERIC"
+		A4GL_MENUTYPE_DETECTED="$A4GL_MENUTYPE_DETECTED $A4GL_MENUTYPE"
     fi
 fi
 
 AC_MSG_RESULT($A4GL_MENUTYPE)
+AC_MSG_RESULT(Detected:$A4GL_MENUTYPE_DETECTED)
 
 ## ==================================================================
 ##            Decide on default EXTended REPorts driver
@@ -5620,9 +5690,11 @@ if test "$default_report" != ""; then
 else
 	if test "$PDFBUILD" != "no"; then
 		A4GL_PDFTYPE="PDF"
+		A4GL_PDFTYPE_DETECTED="$A4GL_PDFTYPE_DETECTED $A4GL_PDFTYPE"
     fi
 fi
 AC_MSG_RESULT($A4GL_PDFTYPE)
+AC_MSG_RESULT(Detected:$A4GL_PDFTYPE_DETECTED)
 
 ## ==================================================================
 ##            Decide on default UI driver
@@ -5636,10 +5708,12 @@ else
 	if test "$HAVE_CURSES" = "1" || test "$HAVE_PDCURSES" = "1"; then
 		#A4GL_UI="TUI"
         A4GL_UI="HL_TUI"
+		A4GL_UI_DETECTED="$A4GL_UI_DETECTED TUI HL_TUI"
     fi
 
 	if test "$GTKBUILD" != "no"; then
 		A4GL_UI="HL_GTK"
+		A4GL_UI_DETECTED="$A4GL_UI_DETECTED $A4GL_UI"
     fi
 
 
@@ -5648,6 +5722,8 @@ else
     fi
 fi
 AC_MSG_RESULT($A4GL_UI)
+AC_MSG_RESULT(Detected:$A4GL_UI_DETECTED)
+
 
 ## ==================================================================
 ##            Decide on default HELP MESSAGE driver
@@ -5656,12 +5732,9 @@ AC_MSG_CHECKING(Default Message driver)
 if test "$default_msg" != ""; then
 	#User can force HELP MESSAGE driver default with --default-msg=xxxx switch
 	A4GL_MSGTYPE="$default_msg"
-#else
-	#if test "$PERLBUILD" != "no"; then
-	#	A4GL_LEXTYPE="PERL"
-    #fi
 fi
 AC_MSG_RESULT($A4GL_MSGTYPE)
+AC_MSG_RESULT(Detected:$A4GL_MSGTYPE_DETECTED)
 
 ## ==================================================================
 ##  Decide on default packer driver for forms,menus and reports (ace)
@@ -5674,9 +5747,11 @@ if test "$default_packer" != ""; then
 else
 
 	A4GL_PACKER=XML
+	A4GL_PACKER_DETECTED="$A4GL_PACKER_DETECTED $A4GL_PACKER"
 
    	if test "$HAVE_RPCLIB" != "0"; then
 		A4GL_PACKER=XDR
+		A4GL_PACKER_DETECTED="$A4GL_PACKER_DETECTED $A4GL_PACKER"
     fi
 
 	#A4GL_PACKER=PERL
@@ -5684,10 +5759,11 @@ else
 	#Why would we use anything else anyway?
 	#Simple data
 	A4GL_PACKER=PACKED
-
+	A4GL_PACKER_DETECTED="$A4GL_PACKER_DETECTED $A4GL_PACKER"
 
 fi
 AC_MSG_RESULT($A4GL_PACKER)
+AC_MSG_RESULT(Detected:$A4GL_PACKER_DETECTED)
 
 ## ==================================================================
 ##				Decide on targets that are built/istalled/packaged
@@ -6286,12 +6362,24 @@ fi
 
 fi
 if test "$PLUGIN_NO" != "" && test "$PLUGIN_NO" != " "; then
+
+if test "$AUBIT_SOURCE" = "1" ; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        ***   NOTE  ***                             |
 | One or more optional modules will not be built, because required   |
 | libraries or programs where not detected.                          |
 X
+else
+cat<<X
++--------------------------------------------------------------------+
+|                        ***   NOTE  ***                             |
+| One or more plug-in modules will not be functional, because        |
+| required libraries or programs where not detected on your system.  |
+X
+fi
+
+
 #if test "$WGET" != "no" && test "$RPM" != "no" && (test "$REDHAT_VER" = "8.0" || test "$REDHAT_VER" = "7.3") ; then
 if test "$WGET" != "no"; then
 cat<<X
@@ -6329,7 +6417,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.212 2004-01-18 11:11:06 afalout Exp $
+| $Id: configure.in,v 1.213 2004-01-22 00:04:45 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

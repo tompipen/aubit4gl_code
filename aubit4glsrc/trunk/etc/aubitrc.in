@@ -57,6 +57,9 @@
 #
 ##########################################################################
 
+
+#variable names are limited to 10 characters!
+
 ## ===================================================================
 ## 				             Paths
 ## ===================================================================
@@ -71,12 +74,13 @@ AUBITETC=/etc/opt/aubit4gl
 #Default for source distribution:/opt/aubit/aubit4glsrc
 #Default for binary distribution:/opt/aubit4gl
 #Usually set using --prefix=/path to "configure" script
+#Must NOT be enclosed in quotes!
 AUBITDIR=@aubitdir@
 
 ############
 #Full path to CINT C-code interpreter, if installed, othewise "no"
 #used by 4glc compiler to run C compiled code after compilation.
-A4GL_CINT=@CINT@
+A4GL_CINT="@CINT@"
 
 ############
 #DBPATH variable containls list of directory(es) that will be searched for objects
@@ -93,7 +97,7 @@ A4GL_CINT=@CINT@
 #look like this: 1:2:3:4. Search for the file in DBPATH will then be performed
 #from left to right, and first path found to contain file looked for will be used.
 #NOTE: DBPATH to xxx/incl is for adbaccess form files
-A4GL_DBPATH=@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/@SHORTNAME@/incl
+A4GL_DBPATH="@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/@SHORTNAME@/incl"
 
 ############
 #CONFIG FILE BASED CONVERSIONS
@@ -121,6 +125,7 @@ A4GL_DBPATH=@A4GL_DBPATH@:@aubitdir@/incl:@prefix@/@SHORTNAME@/incl
 #Warning: this setting is ignored at run-rime when A4GL_LEXTYPE is set to "EC".
 #At compile time, it is used by compilers segardless of A4GL_LEXTYPE setting
 A4GL_SQLTYPE=@A4GL_SQLTYPE@
+A4GL_SQLTYPE_DETECTED="@A4GL_SQLTYPE_DETECTED@"
 
 ############
 #Default output language driver for 4gl compiler:
@@ -132,6 +137,7 @@ A4GL_SQLTYPE=@A4GL_SQLTYPE@
 #setting of A4GL_SQLTYPE
 #Note: CS is C#
 A4GL_LEXTYPE=@A4GL_LEXTYPE@
+A4GL_LEXTYPE_DETECTED="@A4GL_LEXTYPE_DETECTED@"
 
 ############
 #When A4GL_LEXTYPE=EC, specify type of EC compiler to be used. Ignored if
@@ -139,12 +145,14 @@ A4GL_LEXTYPE=@A4GL_LEXTYPE@
 #When used: compile-time only
 #Options: (INFORMIX), POSTGRES, SAPDB, QUERIX
 A4GL_LEXDIALECT=@A4GL_LEXDIALECT@
+A4GL_LEXDIALECT_DETECTED="@A4GL_LEXDIALECT_DETECTED@"
 
 ############
 #Determine default driver for Extended Reporting
 #When used: run-time only
 #Options: PDF, (NOPDF)
 A4GL_PDFTYPE=@A4GL_PDFTYPE@
+A4GL_PDFTYPE_DETECTED="@A4GL_PDFTYPE_DETECTED@"
 
 ############
 #Determine default RPC (Remote Procedure Call) driver to load
@@ -152,12 +160,14 @@ A4GL_PDFTYPE=@A4GL_PDFTYPE@
 #Options: SUNRPC, (NORPC), XMLRPC
 #Note: XMLRPC is client only at the moment
 A4GL_RPCTYPE=@A4GL_RPCTYPE@
+A4GL_RPCTYPE_DETECTED="@A4GL_RPCTYPE_DETECTED@"
 
 #############
 #Defines default UI (user intertface) driver plug-in to load
 #When used: run-time only
 #Options: (CONSOLE) [no deps.], TUI [curses], GTK [GTK+].
 A4GL_UI=@A4GL_UI@
+A4GL_UI_DETECTED="@A4GL_UI_DETECTED@"
 
 ############
 #Default forms driver to be loaded
@@ -165,6 +175,7 @@ A4GL_UI=@A4GL_UI@
 #Options: (GENERIC), NOFORM, XDR
 #Generic implies that format specified with A4GL_PACKER will be used
 A4GL_FORMTYPE=@A4GL_FORMTYPE@
+A4GL_FORMTYPE_DETECTED="@A4GL_FORMTYPE_DETECTED@"
 
 ############
 #Default menu driver to be loaded:
@@ -172,12 +183,14 @@ A4GL_FORMTYPE=@A4GL_FORMTYPE@
 #Options: (NOMENU), XDR, GENERIC
 #Generic implies that format specified with A4GL_PACKER will be used
 A4GL_MENUTYPE=@A4GL_MENUTYPE@
+A4GL_MENUTYPE_DETECTED="@A4GL_MENUTYPE_DETECTED@"
 
 ############
 #Default help message driver to be loaded:
 #When used: run-time only
 #Options: (NATIVE), XML (??? XML? chech this!)
 A4GL_MSGTYPE=@A4GL_MSGTYPE@
+A4GL_MSGTYPE_DETECTED="@A4GL_MSGTYPE_DETECTED@"
 
 ############
 #External data types support to be loaded
@@ -185,6 +198,7 @@ A4GL_MSGTYPE=@A4GL_MSGTYPE@
 #FIME: not sure if this is needed - looks like this is loaded on request:
 #see example testmpz.4gl into the tools/test directory.
 EXDTYPE=@EXDTYPE@
+EXDTYPE_DETECTED="@EXDTYPE_DETECTED@"
 
 ############
 #You can select which packer to use by setting the variable "A4GL_PACKER"
@@ -206,6 +220,7 @@ EXDTYPE=@EXDTYPE@
 # What you do with it after you've generated it is up to you, because this is
 # an output only library (ie it can't read back what its written).
 A4GL_PACKER=@A4GL_PACKER@
+A4GL_PACKER_DETECTED="@A4GL_PACKER_DETECTED@"
 
 ############
 #Procesing of reserved word is experimental. Set this to YES, if you want to
@@ -377,7 +392,7 @@ CC="@CC@"
 
 ##################
 #Full path to 'Awk' executable (awk,gawk,...)
-AWK=@AWK@
+AWK="@AWK@"
 
 ##################
 #Full path to GTK+ includes (header) files, used when ...?
@@ -388,7 +403,7 @@ GTK_INC_PATH="@GTK_INC_PATH@"
 ##################
 #full path to SAP-DB ESQL/C pre-compiler (does not have to be in the path)
 #Affects: 4glc only
-A4GL_SAPDB_ESQLC=@SAPDB_ESQLC@
+A4GL_SAPDB_ESQLC="@SAPDB_ESQLC@"
 
 #################
 #Depending on installed 4gl compilers, amake can compile same definition
@@ -396,7 +411,7 @@ A4GL_SAPDB_ESQLC=@SAPDB_ESQLC@
 #which make rules will be included by default:
 #Affects: amake only
 #Default: <not set>
-#MAKERULES=@aubitdir@/incl/a4gl.mk
+#MAKERULES="@aubitdir@/incl/a4gl.mk"
 
 ####################
 #names of libraries paths 'configure' detected outside of standard
@@ -406,6 +421,6 @@ A4GL_SAPDB_ESQLC=@SAPDB_ESQLC@
 #that user that installed compiler. In other cases, you must make sure
 #this is set in your LD_LIBRARY_PATH or equivalent manually.
 #Default=<no default value>
-ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@
+ADD_LD_LIBRARY_PATH="@ADD_LD_LIBRARY_PATH@"
 
 #-------------------------------- EOF -----------------------------

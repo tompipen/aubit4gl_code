@@ -31,9 +31,23 @@ fi
 
 
 #set DBPATH for use by some Aubit programs that need form and/or help files, like asql, configurator, etc...
-A4GL_DBPATH=$AUBITDIR/bin:$A4GL_DBPATH
 
-export AUBITDIR PATH LD_LIBRARY_PATH A4GL_DBPATH
+#because of the problem in dealing with multiple separators in resource.c we need to test
+#if this variables are currently empty or not before concernating
+
+if test "$A4GL_DBPATH" = "" ; then
+	A4GL_DBPATH=$AUBITDIR/bin
+else
+	A4GL_DBPATH=$AUBITDIR/bin:$A4GL_DBPATH
+fi
+
+if test "$DBPATH" = "" ; then
+	DBPATH=$AUBITDIR/bin
+else
+	DBPATH=$AUBITDIR/bin:$DBPATH
+fi
+
+export AUBITDIR PATH LD_LIBRARY_PATH A4GL_DBPATH DBPATH
 
 
 if [ $# -lt 1 -o "$1" = "--help" ]
@@ -70,6 +84,8 @@ COMMAND=$1
    *verbose)
         echo "AUBITDIR=$AUBITDIR"
         echo "PATH=$PATH"
+        echo "DBPATH=$DBPATH"
+        echo "A4GL_DBPATH=$A4GL_DBPATH"
         $2 $3 $4 $5 $6 $7 $8 $9
    ;;
 

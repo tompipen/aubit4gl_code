@@ -1,3 +1,4 @@
+#!/bin/sh
 cat config.4gl.head
 awk '
 BEGIN {
@@ -140,3 +141,6 @@ END {
 		print "END FUNCTION"
 	}
 }' < descriptions
+
+
+
