@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.17 2003-03-20 09:53:14 afalout Exp $
+# $Id: compile.c,v 1.18 2003-04-02 18:52:26 mikeaubury Exp $
 #*/
 
 /**
@@ -157,6 +157,7 @@ char extra_ldflags[1024] = "";
   static char output_object[128] = "";
   static struct option long_options[] = {
     {"globals", 0, 0, 'G'},
+    {"namespace", 0, 0, 'N'},
     {"stack_trace", 1, 0, 's'},
     {"help", 0, 0, '?'},
     {"silent", 0, 0, 'S'},
@@ -186,7 +187,7 @@ char extra_ldflags[1024] = "";
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0)
     {
       //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
-      strcpy (opt_list, "Gs:kKco::l::L::?hSVvftd:");
+      strcpy (opt_list, "Gs:N:kKco::l::L::?hSVvftd:");
 		#ifdef DEBUG
 			debug ("Compiling to C code\n");
 		#endif
@@ -194,7 +195,7 @@ char extra_ldflags[1024] = "";
 
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
     {
-      strcpy (opt_list, "Gs:?hSVvftd:");
+      strcpy (opt_list, "Gs:N:?hSVvftd:");
 		#ifdef DEBUG
 			debug ("Compiling to Perl code\n");
 		#endif
@@ -333,6 +334,11 @@ char extra_ldflags[1024] = "";
 	  default_database=strdup(optarg);
 	  break;
 
+
+	case 'N': 
+		printf("Using specified namespace : %s\n",optarg);
+		set_namespace(optarg);
+		break;
 
 	case 'G':		/* generate Globals file only */
 	  globals_only = 1;
@@ -1036,6 +1042,7 @@ printUsage_help (char *argv[])
   printf ("  -G     | --globals         : Generate the globals map file\n");
   printf ("  -S     | --silent          : no output other then errors\n");
   printf ("  -V     | --verbose         : Verbose output\n");
+  printf ("  -N name| --namespace name         : Prefix all functions with name (default 'aclfgl_')\n");
   printf ("  -v     | --version         : Show compiler version and exit\n");
   printf
     ("  -f     | --version_full    : Show full compiler version and details\n");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.67 2003-04-02 08:48:49 mikeaubury Exp $
+# $Id: lexer.c,v 1.68 2003-04-02 18:52:27 mikeaubury Exp $
 #*/
 
 /**
@@ -111,6 +111,7 @@ struct translate_string
   char *identifier;
 };
 
+char namespace[256]="aclfgl_";
 
 #define NEWLIST
 /* Extern reserved words table */
@@ -1193,10 +1194,36 @@ turn_state (int kw, int v)
 	}
     }
 #endif
-
-
-
 }
+
+
+
+void set_namespace(char *s) {
+	strcpy(namespace,s);
+}
+
+char *get_namespace(char *s) {
+
+	if (is_builtin_func(s)) return "aclfgl_"; // Always has aclfgl_...
+
+	return namespace;
+}
+
+
+
+
+int is_builtin_func(char *s) {
+	int a;
+	extern char *builtin_aclfgl_functions[];
+
+	for (a=0;builtin_aclfgl_functions[a];a++) {
+		if (strcmp(s,builtin_aclfgl_functions[a])==0) return 1;
+	}
+	return 0;
+}
+
+
+
 
 
 #ifdef NEWLIST

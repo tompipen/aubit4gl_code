@@ -42,7 +42,7 @@ remote_func_list :  remote_func |  remote_func_list COMMA remote_func
 
 remote_func : identifier {
 	print_remote_func($<str>1);
-	sprintf($<str>$,"unregister_func(\"%s\",aclfgl_%s);\n",$<str>1,$<str>1);
+	sprintf($<str>$,"unregister_func(\"%s\",%s%s);\n",$<str>1,get_namespace($<str>1),$<str>1);
 	addmap("Call Remote",$<str>1,curr_func,yylineno,infilename);
 	}
 ;

@@ -521,7 +521,7 @@ function_call_expr2:
 		cnt=1;
 		debug("Print expr (1)");
 		/* print_expr($<ptr>4); */
-		sprintf($<str>$,"{int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");}\n}\n}\n", $<str>1,$<str>5, lastlineno,infilename);
+		sprintf($<str>$,"{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");}\n}\n}\n", get_namespace($<str>1),$<str>1,$<str>5, lastlineno,infilename);
 		$<ptr>$=append_expr($<ptr>4,$<str>$);
 		inc_counter();
 		}

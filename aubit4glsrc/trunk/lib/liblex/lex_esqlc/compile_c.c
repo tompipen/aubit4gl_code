@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.26 2003-04-02 11:36:09 mikeaubury Exp $
+# $Id: compile_c.c,v 1.27 2003-04-02 18:54:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1030,7 +1030,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
     }
   if (when_code == WHEN_CALL)
     {
-      printc ("%s aclfgl_%s(0);\n", when_str, when_to);
+      printc ("%s %s%s(0);\n", when_str, get_namespace(when_to),when_to);
       printcomment ("/* WHENCALL */");
     }
 
@@ -1540,10 +1540,10 @@ print_stop_external (void)
 void
 print_remote_func (char *identifier)
 {
-  printh ("int aclfgl_%s(int np);\n", identifier);
+  printh ("int %s%s(int np);\n", get_namespace(identifier),identifier);
   printc
-    ("a4gl_status=0;register_func(\"%s\",aclfgl_%s);if (a4gl_status<0) chk_err(%d,_module_name);\n",
-     identifier, identifier, yylineno);
+    ("a4gl_status=0;register_func(\"%s\",%s%s);if (a4gl_status<0) chk_err(%d,_module_name);\n",
+     identifier, get_namespace(identifier), yylineno);
 }
 
 
@@ -1669,7 +1669,7 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
   printc ("/* done print expr */");
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
-  printc ("_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
+  printc ("_retvars=%s%s(%d);\n", get_namespace(identifier),identifier, args_cnt);
 }
 
 /**
@@ -2356,7 +2356,7 @@ print_import (char *func, int nargs)
   int a;
   char buff[1024];
   char buff2[1024];
-  printc ("\n\naclfgl_%s (int nargs) {\n", func);
+  printc ("\n\n%s%s (int nargs) {\n", get_namespace(func),func);
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
@@ -2855,7 +2855,7 @@ print_start_report (char *where, char *out, char *repname)
 {
   printc ("push_char(\"%s\");\n", where);
   printc ("push_char(%s);\n", out);
-  printc ("acl_fglr_%s(2,REPORT_START);", repname);
+  printc ("%s%s(2,REPORT_START);", get_namespace(repname),repname);
 }
 
 
@@ -2869,7 +2869,7 @@ print_start_report (char *where, char *out, char *repname)
 void
 print_output_to_report (char *repname, char *nvalues)
 {
-  printc ("acl_fglr_%s(%s,REPORT_SENDDATA);\n", repname, nvalues);
+  printc ("%s%s(%s,REPORT_SENDDATA);\n", get_namespace(repname),repname, nvalues);
 }
 
 /**
@@ -2882,7 +2882,7 @@ print_output_to_report (char *repname, char *nvalues)
 void
 print_finish_report (char *repname)
 {
-  printc ("acl_fglr_%s(0,REPORT_FINISH);\n", repname);
+  printc ("%s%s(0,REPORT_FINISH);\n", get_namespace(repname),repname);
 }
 
 /**
@@ -3055,7 +3055,7 @@ print_order_by_type (int type)
 void
 print_report_1 (char *name)
 {
-  printc ("int acl_fglr_%s (int nargs,int acl_ctrl) {\n", name, name);
+  printc ("int %s%s (int nargs,int acl_ctrl) {\n", get_namespace(name),name, name);
 }
 
 /**
@@ -3747,9 +3747,9 @@ print_func_start (char *isstatic, char *fname, int type)
   printc (" \n");
   printc (" \n");
   if (type == 0)
-    printc ("\n%sint aclfgl_%s (int nargs){ /* Funtion Start */\n", isstatic, fname);
+    printc ("\n%sint %s%s (int nargs){ /* Funtion Start */\n", isstatic, get_namespace(fname),fname);
   if (type == 1)
-    printc ("\n%sint aclfglm_%s (int nargs){ /* Funtion Start */\n", isstatic, fname);
+    printc ("\n%sint %s%s (int nargs){ /* Funtion Start */\n", isstatic, get_namespace(fname),fname);
 }
 
 /**
@@ -4263,7 +4263,7 @@ void lex_parsed_fgl() {
 void print_import_legacy(char *s) {
 	printc("\n");
 	printc("\n");
-	printc("\n\nstatic int aclfgl_%s(int n) {\nreturn %s(n);\n}\n",s,s);
+	printc("\n\nstatic int %s%s(int n) {\nreturn %s(n);\n}\n",get_namespace(s),s,s);
 	printc("\n");
 	printc("\n");
 }

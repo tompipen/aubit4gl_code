@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.114 2003-04-02 08:48:51 mikeaubury Exp $
+# $Id: mod.c,v 1.115 2003-04-02 18:52:27 mikeaubury Exp $
 #
 */
 
@@ -2819,7 +2819,7 @@ debug("In add_report_agg a=%d\n",a);
 void
 set_curr_rep_name (char *s)
 {
-  strcpy (curr_rep_name, "acl_fglr_");
+  strcpy (curr_rep_name, get_namespace(s));
   strcat (curr_rep_name, s);
 }
 

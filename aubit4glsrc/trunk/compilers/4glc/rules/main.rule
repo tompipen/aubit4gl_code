@@ -96,6 +96,9 @@ func_def	: ldeffunction
 }
 identifier  OPEN_BRACKET  
 { 
+if (is_builtin_func($<str>3)) {
+	a4gl_yyerror("You can't use this name - this is the name of a builtin Aubit4GL function");
+}
 
 if (strcmp($<str>1,"static ")!=0) {
 	// We don't export static functions
