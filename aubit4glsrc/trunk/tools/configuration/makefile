@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.2 2003-12-10 09:33:14 afalout Exp $
+# $Id: makefile,v 1.3 2004-01-05 17:46:48 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/a4gl.mk
 ##                              Options
 ## ==================================================================
 
-ALL=configurator helpfile.hlp change.afr.dat options.afr.dat
+ALL=configurator helpfile.hlp change.afr.dat options.afr.dat values.afr.dat
 
 ## ==================================================================
 ##                              Targets
@@ -50,7 +50,7 @@ all: ${ALL}
 helpfile.msg config.4gl: descriptions mk_config config.4gl.head
 	${SH} mk_config > config.4gl
 
-configurator: config.ao rest.ao
+configurator: config.ao rest.ao dir.o
 	${FGLPCEXEC} $^ -o $@
 
 ## ==================================================================

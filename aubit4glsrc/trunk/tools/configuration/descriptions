@@ -57,27 +57,26 @@ A4GL_EXE_EXT COMPILE Extension to use for executable files compiled by Aubit com
 	A4GL_EXE_EXT=.4gi
 
 A4GL_FORMTYPE FORMS/RUNTIME Determine which runtime library to use for reading forms
-$AUBITDIR/libFORM_?.so
+$AUBITDIR/lib/libFORM_?.so
 	Default forms driver to be loaded
 	When used: run-time only
 	Options: (GENERIC), NOFORM, XDR
 	Generic implies that format specified with A4GL_PACKER will be used
 
 A4GL_FRM_BASE_EXT RUNTIME/COMPILE/FORMS Default form extension (for all packing types)
-A4GL_HELPTYPE HELP/RUNTIME Determin which runtime library to use for displaying help messages
-$AUBITDIR/libHELP_?.so
-$AUBITDIR/libMSG_?.so
+A4GL_HELPTYPE HELP/RUNTIME Determine which runtime library to use for displaying help messages
+$AUBITDIR/lib/libHELP_?.so
 A4GL_HLP_EXT HELP/RUNTIME/COMPILE Specify the default extension for a help file
 A4GL_INIFILE COMPILE/RUNTIME Environment variable optionaly specifiying aubitrc file to use
 A4GL_LEXDIALECT ESQL/COMPILE Determine which ESQL/C dialect to use
-$AUBITDIR/libESQL_?.so
+$AUBITDIR/lib/libESQL_?.so
 	When A4GL_LEXTYPE=EC, specify type of EC compiler to be used. Ignored if
 	A4GL_LEXTYPE is not set to EC
 	When used: compile-time only
 	Options: (INFORMIX), POSTGRES, SAPDB, QUERIX
 
 A4GL_LEXTYPE COMPILE Determine what language to convert the 4GL code into
-$AUBITDIR/libLEX_?.so
+$AUBITDIR/lib/libLEX_?.so
 	Default output language driver for 4gl compiler:
 	When used: compile-time only
 	Options: (C), PERL, EC, CS
@@ -90,7 +89,7 @@ $AUBITDIR/libLEX_?.so
 A4GL_LIB_EXT COMPILE Extension to use for libraries created by Aubit compiler
 A4GL_LINK_LIBS COMPILE Libraries to link against when producing executables
 A4GL_MENUTYPE MENU/COMPILE/RUNTIME Determine library to use for menuhandlers (not normal 4GL menus)
-$AUBITDIR/libMENU_?.so
+$AUBITDIR/lib/libMENU_?.so
 	Default menu driver to be loaded:
 	When used: run-time only
 	Options: (NOMENU), XDR, GENERIC
@@ -99,8 +98,7 @@ $AUBITDIR/libMENU_?.so
 A4GL_MNU_BASE_EXT COMPILE/RUNTIME/MENU Base extension for compiled menu files
 	Base extension (without packer extension) to use when compiling/opening menu files
 A4GL_MSGTYPE HELP/RUNTIME Determine library for help message handling
-$AUBITDIR/libHELP_?.so
-$AUBITDIR/libMSG_?.so
+$AUBITDIR/lib/libMSG_?.so
 	Default help message driver to be loaded:
 	When used: run-time only
 	Options: (NATIVE), XML (??? XML? chech this!)
@@ -110,7 +108,7 @@ A4GL_OBJ_EXT COMPILE extension to use when compiling 4GL modules to objects
 A4GL_OMIT_NO_LOG
 A4GL_PACKED_EXT COMPILE/RUNTIME Determine file extension for packing
 A4GL_PACKER MENU/FORMS/HELP/COMPILE/RUNTIME Determine library for packing forms/menus/help etc
-$AUBITDIR/libPACKER_?.so
+$AUBITDIR/lib/libPACKER_?.so
 	You can select which packer to use by setting the variable 'A4GL_PACKER'
 	 1) (PACKED)  - default
 	  This is very similar to XDR in that data is written in a hopefully portable
@@ -132,7 +130,7 @@ $AUBITDIR/libPACKER_?.so
 
 
 A4GL_PDFTYPE REPORT/RUNTIME Determine which library to use for extended reports
-$AUBITDIR/libEXREPORT_?.so
+$AUBITDIR/lib/libEXREPORT_?.so
 	Determine default driver for Extended Reporting
 	When used: run-time only
 	Options: PDF, (NOPDF)
@@ -164,7 +162,7 @@ $AUBITDIR/libSQL_?.so
 	At compile time, it is used by compilers segardless of A4GL_LEXTYPE setting
 
 A4GL_UI UI/RUNTIME Determine which plug-in to use for the user interface
-$AUBITDIR/libUI_?.so
+$AUBITDIR/lib/libUI_?.so
 	Defines default UI (user intertface) driver plug-in to load
 	When used: run-time only
 	Options: (CONSOLE) [no deps.], TUI [curses], GTK [GTK+].
@@ -412,7 +410,7 @@ A4GL_PRINTPROGRESS
 A4GL_PRINTSCRFILE DEBUG/UI/TUI Specify a file to dump screen to (start with a | to pipe to a command)
 A4GL_PRINTSCRKEY DEBUG/UI/TUI Specify a key to automatically dump the screen with (goes to PRINTSCRFILE)
 A4GL_RPCTYPE RUNTIME Determine which library to use for remote procedure calls
-$AUBITDIR/libRPC_?.so
+$AUBITDIR/lib/libRPC_?.so
 	Determine default RPC (Remote Procedure Call) driver to load
 	When used: run-time only
 	Options: SUNRPC, (NORPC), XMLRPC
@@ -488,7 +486,7 @@ A4GL_USE_INDICATOR ESQL/COMPILE Use indicator variables in ESQL/C generated code
 VISUAL RUNTIME Name of the editor for BLOB fields (?)
 A4GL_YYDEBUG DEBUG/COMPILE Aubit parser debugging
 A4GL_EXDTYPE RUNTIME External data types support to be loaded
-$AUBITDIR/libEXDTYPE_?.so
+$AUBITDIR/lib/libEXDTYPE_?.so
 	Currently only MPZ (large integers) are supported
 	FIME: not sure if this is needed - looks like this is loaded on request:
 	see example testmpz.4gl into the tools/test directory.
