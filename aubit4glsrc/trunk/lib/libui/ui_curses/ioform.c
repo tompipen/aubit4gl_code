@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.45 2003-07-07 14:20:24 mikeaubury Exp $
+# $Id: ioform.c,v 1.46 2003-07-09 16:19:23 mikeaubury Exp $
 #*/
 
 /**
@@ -3621,6 +3621,22 @@ A4GL_fgl_fieldtouched_input_ap (struct s_screenio *s, va_list * ap)
       A4GL_exitwith ("field_touched called with no fields...");
       return 0;
     }
+}
+
+
+void A4GL_clr_fields_ap (int to_defaults, va_list *ap) {
+int a;
+FIELD **field_list;
+int c;
+
+  c = A4GL_gen_field_chars_ap (&field_list, A4GL_get_curr_form(), ap);
+  for (a=0;a<=c;a++) {
+	A4GL_mja_set_field_buffer(field_list[a],0,"");
+  }
+  //if (field_list) free(field_list);
+  //else {
+	//A4GL_exitwith("no fields found to clear...");
+  //}
 }
 
 /* ================================ EOF ============================== */

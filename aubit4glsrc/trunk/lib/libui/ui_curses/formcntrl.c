@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.13 2003-07-07 14:20:24 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.14 2003-07-09 16:19:23 mikeaubury Exp $
 #*/
 
 /**
@@ -287,9 +287,9 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
   if (last_field!=next_field || 1) {
   	A4GL_add_to_control_stack (sio, FORMCONTROL_BEFORE_FIELD, next_field, A4GL_memdup (ptr, sizeof (struct s_movement)), 0);
   	if (last_field) {
-		if (last_field!=next_field) {
+		//if (last_field!=next_field) {
 			A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
-		}
+		//}
 	}
   } else {
   	free (ptr);

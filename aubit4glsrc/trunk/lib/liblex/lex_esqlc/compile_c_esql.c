@@ -1017,8 +1017,9 @@ A4GL_get_undo_use (void)
 static void
 print_copy_status ()
 {
-  printc
-    ("A4GLSQL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
+  printc ("A4GLSQL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
+  printc ("A4GLSQL_set_sqlerrd(sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);");
+
 }
 
 

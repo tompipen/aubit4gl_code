@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include "decimal.h"
 #include "datetime.h"
+#include "sqltypes.h"
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_incl_infx.h"
 

@@ -272,7 +272,8 @@ print_sql_type_infx (int a, char ioro)
 	  break;
 	case 5:
 	  if (esql_type()==2) {
-	  	printc ("decimal _vo_%d={0,0,0,0,0,NULL,NULL};", a);
+	  	printc ("decimal _vo_%d;", a);
+	  	//printc ("decimal _vo_%d={0,0,0,0,0,NULL,NULL};", a); // No longer required - handled by ecpg
 	  } else {
 	  	printc ("decimal _vo_%d;", a);
 	  }
@@ -285,7 +286,8 @@ print_sql_type_infx (int a, char ioro)
 	  break;
 	case 8:
 	  if (esql_type()==2) {
-	  	printc ("money _vo_%d={0,0,0,0,0,NULL,NULL};", a);
+	  	printc ("money _vo_%d;", a);
+	  	//printc ("money _vo_%d={0,0,0,0,0,NULL,NULL};", a); // No longer required - handled by ecpg
 	  } else {
 	  	printc ("money _vo_%d;", a);
 	  }

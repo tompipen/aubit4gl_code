@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.27 2003-06-20 14:50:18 mikeaubury Exp $
+# $Id: others.c,v 1.28 2003-07-09 16:19:22 mikeaubury Exp $
 #
 */
 
@@ -375,28 +375,39 @@ A4GL_replace_sql_var (char *s)
 {
   static char buff[1024];
   char *ptr;
-  if (s[0] != '\n')
-    {
-      return s;
-    }
-  strcpy (buff, &s[1]);
 
-  if (strcmp (buff, "today") == 0)
+  A4GL_debug("In replace_sql_var :%s\n",s);
+
+  //if (s[0] != '\n')
+    //{
+      //return s;
+    //}
+  strcpy (buff, s);
+
+  A4GL_debug("Buff=%s\n",buff);
+
+  if (strcasecmp (buff, "today") == 0)
     {
       A4GL_push_today ();
       ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
+      A4GL_debug("Its today!");
+  A4GL_debug ("replace_sql_var :Returning %s", buff);
+	return buff;
     }
-  if (strcmp (buff, "user") == 0)
+
+  if (strcasecmp (buff, "user") == 0)
     {
       A4GL_push_user ();
       ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
-    }
   A4GL_debug ("replace_sql_var :Returning %s", buff);
-  return buff;
+	return buff;
+    }
+  return s;
+  A4GL_debug ("replace_sql_var :Returning %s", buff);
 
 }
 

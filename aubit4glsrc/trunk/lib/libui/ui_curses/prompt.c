@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.17 2003-07-07 14:20:24 mikeaubury Exp $
+# $Id: prompt.c,v 1.18 2003-07-09 16:19:23 mikeaubury Exp $
 #*/
 
 /**
@@ -125,6 +125,8 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   field_opts_off (sarr[1], O_STATIC);
 
   A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
+  ap=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD , ap,0);
+  af=A4GL_determine_attribute(FGL_CMD_INPUT, af,0);
 
   if (ap)
     {
@@ -275,6 +277,8 @@ A4GL_prompt_loop (void *vprompt)
   int a;
   WINDOW *p;
   FORM *mform;
+  static int last_key=0;
+
   int kpress;
   struct s_prompt *prompt;
   prompt = vprompt;
@@ -313,6 +317,11 @@ A4GL_prompt_loop (void *vprompt)
 
   pos_form_cursor (mform);
 
+  if (last_key!=0) {
+		last_key=0;
+		return -90;
+  }
+
   a=A4GL_real_getch_swin (p);
 
   A4GL_clr_error_nobox();
@@ -320,6 +329,7 @@ A4GL_prompt_loop (void *vprompt)
 
   a = A4GL_proc_key_prompt (a, mform, prompt);
   prompt->lastkey = A4GL_get_lastkey ();
+  last_key=prompt->lastkey;
 
   if (a == 0)
     {
@@ -351,10 +361,11 @@ A4GL_prompt_loop (void *vprompt)
     }
 
   A4GL_debug ("Requesting Validation : %p %x %d", mform, a, a);
-  if (isprint (a))
-    A4GL_int_form_driver (mform, a);
-  A4GL_debug ("Called int_form_driver");
-  A4GL_int_form_driver (mform, REQ_VALIDATION);
+  if (isprint (a)) {
+    	A4GL_int_form_driver (mform, a);
+  	A4GL_debug ("Called int_form_driver");
+  	A4GL_int_form_driver (mform, REQ_VALIDATION);
+  }
   A4GL_debug ("Called formdriver(validation)");
   wrefresh (p);
   A4GL_debug ("Refreshed screen");
@@ -367,6 +378,7 @@ A4GL_prompt_loop (void *vprompt)
     {
       A4GL_push_char (field_buffer (prompt->field, 0));
     }
+  last_key=0; // we'll do it now 
   return -90;
 }
 

@@ -10,7 +10,7 @@ A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 if (dir=='i') {
 	char *ptr;
-	if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl)) {rsetnull(DTYPE_DECIMAL,(void *)infx);return;}
+	if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl)) {rsetnull(CDECIMALTYPE,(void *)infx);return;}
 	A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
 	A4GL_push_variable(a4gl,(size<<16)+5);
    	A4GL_pop_var2(&b,0,0x28);
@@ -21,7 +21,7 @@ if (dir=='i') {
 
 if (dir=='o') {
 	char *ptr;
-	if (indicat==-1||risnull(DTYPE_DECIMAL,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
+	if (indicat==-1||risnull(CDECIMALTYPE,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
 	memset(b,0,65);
 	dectoasc(infx,b,64,16);
 	A4GL_push_char(b);
@@ -43,7 +43,7 @@ A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 if (dir=='i') {
 	char *ptr;
-	if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl)) {rsetnull(DTYPE_MONEY,(void *)infx);return;}
+	if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl)) {rsetnull(CMONEYTYPE,(void *)infx);return;}
 	A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
 	A4GL_push_variable(a4gl,(size<<16)+5);
    	A4GL_pop_var2(&b,0,0x28);
@@ -53,7 +53,7 @@ if (dir=='i') {
 
 if (dir=='o') {
         char *ptr;
-	if (indicat==-1||risnull(DTYPE_MONEY,(void*)infx)) { A4GL_setnull(DTYPE_MONEY,(void *)a4gl,size); return;}
+	if (indicat==-1||risnull(CMONEYTYPE,(void*)infx)) { A4GL_setnull(DTYPE_MONEY,(void *)a4gl,size); return;}
         memset(b,0,65);
         dectoasc(infx,b,64,16);
         A4GL_push_char(b);
@@ -119,7 +119,7 @@ void A4GL_copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int indicat,in
 		char *ptr;
 		int a;
 
-		if (indicat==-1||risnull(DTYPE_DTIME,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(CDTIMETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
 		
 		dttoasc(infx,buff);
 		A4GL_push_char(buff);
@@ -149,11 +149,16 @@ A4GL_copy_interval() {
 A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) {
 	
 	if (mode=='i') {
-		if (A4GL_isnull(0,(void *)a4gl)) {rsetnull(0,infx);return;}
+		if (A4GL_isnull(0,(void *)a4gl)) {
+			printf("Making infx null\n");
+				rsetnull(CCHARTYPE,infx);
+			return;
+	
+		}
 		strcpy((char *)(infx),(char *)(a4gl));
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(0,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
 		infx[size]=0;
 		strcpy((char *)(a4gl),(char *)(infx));
 	}
@@ -162,11 +167,11 @@ A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y) 
 
 A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
-		if (A4GL_isnull(1,(void *)a4gl)) {rsetnull(1,(void *)infx);return;}
+		if (A4GL_isnull(1,(void *)a4gl)) {rsetnull(CSHORTTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(1,(void*)infx)) { A4GL_setnull(1,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(CSHORTTYPE,(void*)infx)) { A4GL_setnull(1,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
@@ -174,11 +179,11 @@ A4GL_copy_smint(short *infx,short *a4gl,int indicat,int size,int mode) {
 
 A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
-		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(2,(void *)infx);return;}
+		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(2,(void*)infx)) { A4GL_setnull(2,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(CLONGTYPE,(void*)infx)) { A4GL_setnull(2,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
@@ -186,11 +191,11 @@ A4GL_copy_int(long *infx,long *a4gl,int indicat,int size,int mode) {
 
 A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
-		if (A4GL_isnull(4,(void *)a4gl)) {rsetnull(4,(void *)infx);return;}
+		if (A4GL_isnull(4,(void *)a4gl)) {rsetnull(CFLOATTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(4,(void*)infx)) { A4GL_setnull(4,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(CFLOATTYPE,(void*)infx)) { A4GL_setnull(4,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }
@@ -198,11 +203,11 @@ A4GL_copy_float(float *infx,float *a4gl,int indicat,int size,int mode) {
 
 A4GL_copy_double(double *infx,double *a4gl,int indicat,int size,int mode) {
 	if (mode=='i') {
-		if (A4GL_isnull(3,(void *)a4gl)) {rsetnull(3,(void *)infx);return;}
+		if (A4GL_isnull(3,(void *)a4gl)) {rsetnull(CDOUBLETYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
-		if (indicat==-1||risnull(3,(void*)infx)) { A4GL_setnull(3,(void *)a4gl,size); return;}
+		if (indicat==-1||risnull(CDOUBLETYPE,(void*)infx)) { A4GL_setnull(3,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
 }

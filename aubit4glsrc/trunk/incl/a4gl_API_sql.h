@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.15 2003-07-01 07:34:24 mikeaubury Exp $
+# $Id: a4gl_API_sql.h,v 1.16 2003-07-09 16:19:00 mikeaubury Exp $
 #
 */
 
@@ -117,6 +117,7 @@ extern "C"
   int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 			   int *size);
   void A4GLSQL_set_status (int a, int sql);
+  void A4GLSQL_set_sqlerrd(int a0,int a1,int a2,int a3,int a4,int a5);
   int A4GLSQL_close_cursor (char *cname);
 
   int A4GLSQL_execute_implicit_sql (struct s_sid *sid);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.61 2003-07-07 14:20:24 mikeaubury Exp $
+# $Id: compile_c.c,v 1.62 2003-07-09 16:19:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2039,7 +2039,9 @@ print_onkey_2 (void)
 void
 print_onkey_2_prompt (void)
 {
-  printc ("continue;}\n");
+	print_exit_loop('P',0);
+	printc("}");
+  //printc (" break;} /* MJA123 */\n");
 }
 
 /**
@@ -3624,7 +3626,7 @@ void
 print_clr_fields (char *flds, char *defs)
 {
 
-  printc ("A4GL_clr_fields(%d,%s);", atoi (defs), flds);
+  printc ("A4GL_clr_fields(%d,%s,0,0);", atoi (defs), flds);
 
   //print_niy ("Clear Fields");
 }

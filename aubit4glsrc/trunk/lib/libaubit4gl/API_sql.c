@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.36 2003-07-01 07:34:29 mikeaubury Exp $
+# $Id: API_sql.c,v 1.37 2003-07-09 16:19:22 mikeaubury Exp $
 #
 */
 
@@ -227,6 +227,15 @@ A4GLSQL_set_status (int a, int sql)
   A4GL_debug ("Status set to %d", a);
 }
 
+
+void A4GLSQL_set_sqlerrd( int a0, int a1, int a2, int a3, int a4, int a5) {
+a4gl_sqlca.sqlerrd[0]=a0;
+a4gl_sqlca.sqlerrd[1]=a1;
+a4gl_sqlca.sqlerrd[2]=a2;
+a4gl_sqlca.sqlerrd[3]=a3;
+a4gl_sqlca.sqlerrd[4]=a4;
+a4gl_sqlca.sqlerrd[5]=a5;
+}
 
 /**
  *

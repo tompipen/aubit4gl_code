@@ -14,6 +14,8 @@
 #include "a4gl_incl_4gldef.h"
 
 #include "decimal.h"
+#include "sqltypes.h"
+
 #define COPY_DATA_IN_0(a4gl,pgres,size,x,y) A4GL_copy_char(pgres,a4gl,0,size,'i',x,y)
 #define COPY_DATA_IN_1(a4gl,pgres,size) A4GL_copy_smint(pgres,a4gl,0,size,'i')
 #define COPY_DATA_IN_2(a4gl,pgres,size) A4GL_copy_int(pgres,a4gl,0,size,'i')
