@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.55 2003-07-18 07:56:26 mikeaubury Exp $
+# $Id: conv.c,v 1.56 2003-07-28 22:04:45 mikeaubury Exp $
 #
 */
 
@@ -3207,6 +3207,7 @@ A4GL_dec_to_str (char *s, int size)
   int dot_printed = -1;
   int blank = 0;
   char buff2[200];
+  int ok;
 
   if (A4GL_isnull (DTYPE_DECIMAL, s)) {
 	strcpy(buff,"");
@@ -3313,6 +3314,17 @@ A4GL_dec_to_str (char *s, int size)
   buff2[blank] = 0;
   strcat (buff2, buff);
   strcpy (buff, buff2);
+  A4GL_debug("99 size=%d blank=%d",size,blank);
+  //if (!dot_printed) {
+	ok=0;
+	for (a=0;a<strlen(buff);a++) {
+		if (buff[a]!=' ') {ok=1;break;}
+	}
+	if (ok==0) {
+		buff[strlen(buff)-1]='0';
+	}
+  //}
+
   A4GL_debug ("returning: %s - blank=%d\n", buff, blank);
   return buff;
 }
@@ -3321,7 +3333,7 @@ A4GL_dec_to_str (char *s, int size)
  * Make a subtraction between two decimal values.
  * 
  * @param a The left value.
- * @param b The rigth value.
+ * @param b The right value.
  * @return The result of the subtraction
  */
 char *

@@ -7,16 +7,20 @@
 #include "a4gl_esql.h"
 
 
-void A4GL_copy_decimal(dec_t *infx,fgldecimal *a4gl,int indicat,int size,char dir) {
+void A4GL_copy_decimal(void *infxv,void *a4glv,int indicat,int size,char dir) {
+dec_t *infx;fgldecimal *a4gl;
 char b[65];
+infx=infxv;
+a4gl=a4glv;
 A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 if (dir=='i') {
 	char *ptr;
-	if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl)) {rsetnull(CDECIMALTYPE,(void *)infx);return;}
+	if (A4GL_isnull(DTYPE_DECIMAL,(void *)a4gl)) {rsetnull(CDECIMALTYPE,(void *)infx);return;}
 	A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
 	A4GL_push_variable(a4gl,(size<<16)+5);
    	A4GL_pop_var2(&b,0,0x28);
+	A4GL_debug("calling deccvasc with %s",b);
 	deccvasc(b,strlen(b),infx);
 
 }
@@ -26,6 +30,7 @@ if (dir=='o') {
 	if (indicat==-1||risnull(CDECIMALTYPE,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
 	memset(b,0,65);
 	dectoasc(infx,b,64,16);
+	A4GL_debug("calling dectoasc returns %s",b);
 	A4GL_push_char(b);
 	A4GL_pop_var2(a4gl,5,size);
 
@@ -39,8 +44,11 @@ A4GL_debug("All done..");
 
 
 
-void A4GL_copy_money(dec_t *infx,fglmoney *a4gl,int indicat,int size,char dir) {
+void A4GL_copy_money(void *infxv,void *a4glv,int indicat,int size,char dir) {
+dec_t *infx;fgldecimal *a4gl;
 char b[65];
+infx=infxv;
+a4gl=a4glv;
 A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 if (dir=='i') {
@@ -91,7 +99,10 @@ int arr_dtime[]={
   };
 
 
-void A4GL_copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int indicat,int size,int mode) {
+void A4GL_copy_datetime(void *infxv, void *a4glv,int indicat,int size,int mode) {
+dtime_t *infx; struct A4GLSQL_dtime *a4gl;
+infx=infxv;
+a4gl=a4glv;
 
 	if (mode=='i') {
 		char *ptr;
@@ -282,4 +293,8 @@ void retdtime(void *vx) {
         struct A4GLSQL_dtime d;
 	x=vx;
         dttoasc(x,s);
+}
+
+
+A4GLESQL_initlib() {
 }

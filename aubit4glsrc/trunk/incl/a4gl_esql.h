@@ -14,7 +14,7 @@
 
 //#include "a4gl_incl_4glhdr.h"
 #define GETENV_OK
-
+#include "a4gl_API_esql.h"
 
 //Including a4gl_libaubit4gl.h here will force practicvally every header file
 //in Aubit compiler to become a dependency when installing Aubit compiler.

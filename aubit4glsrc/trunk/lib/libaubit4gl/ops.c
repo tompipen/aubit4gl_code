@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.28 2003-07-23 14:42:12 mikeaubury Exp $
+# $Id: ops.c,v 1.29 2003-07-28 22:04:45 mikeaubury Exp $
 #
 */
 
@@ -1132,6 +1132,10 @@ A4GL_debug("Display_decimal size=%d",size);
   //if (size_c==-1) { return 0; }
 
   if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT) {
+	if (A4GL_isnull(DTYPE_DECIMAL,ptr)) {
+		strcpy(buff,"");
+		return buff;
+	}
         A4GL_push_dec(ptr,0,size);
 
 
@@ -1147,6 +1151,7 @@ A4GL_debug("Display_decimal size=%d",size);
                 size_c=n+1;
         }
 
+A4GL_debug("Calling make_using.. ptr=%p");
         A4GL_push_char(make_using(ptr));
         A4GL_pushop(OP_USING);
         ptr=A4GL_char_pop();
@@ -1230,6 +1235,7 @@ A4GL_debug("Display_money");
                 size_c=n+1;
         }
 
+A4GL_debug("Calling make_using..");
 	A4GL_push_char(make_using(ptr));
 	A4GL_pushop(OP_USING);	
 	ptr=A4GL_char_pop();
@@ -1403,7 +1409,9 @@ static char buff[256];
 char buff2[256];
 int dig;
 int dec;
+
 A4GL_assertion (ptr==0, "make_using has been passed a null pointer..");
+
 strcpy(buff,"-------------------------------------------------------------------------------------------------------------------");
 dig=NUM_DIG(ptr)*2;
 dec=NUM_DEC(ptr);
