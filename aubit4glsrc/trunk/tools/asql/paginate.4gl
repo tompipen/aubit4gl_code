@@ -104,13 +104,13 @@ FUNCTION display_menu()
 define lv_action integer
 set pause mode off
 		MENU "DISPLAY"
-			COMMAND "NEXT" "Display next page of information"
+			COMMAND "Next" "Display next page of information"
 				let lv_action=0 exit menu
 
-			COMMAND "RESTART" "Restart the query"
+			COMMAND "Restart" "Restart the query"
 				let lv_action=1 exit menu
 
-			COMMAND "EXIT" "Exit the query"
+			COMMAND "Exit" "Exit the query"
 				let lv_action=2 exit menu
 		END MENU
 

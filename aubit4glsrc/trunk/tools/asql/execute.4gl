@@ -123,6 +123,7 @@ define msg char(512)
 define qry_type integer
 define lv_cont integer
 define rpaginate integer
+define l_db char(80)
 let msg=""
 options message line last
 code
@@ -157,6 +158,9 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 			if (ec_check_and_report_error()) { goto end_query; }
         		EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1";
 			qry_type=sqlca.sqlcode;
+			if (qry_type==1) {
+				strcpy(l_db,&p[9]);
+			}
 			EXEC SQL DEALLOCATE DESCRIPTOR "d1";
 			if (ec_check_and_report_error()) { goto end_query; }
 
@@ -220,13 +224,15 @@ repeat_query: ;
 					}
 
 					if (rpaginate==1) {
-				A4GL_debug("EXEC REPEAT");
+						A4GL_debug("EXEC REPEAT");
+						if (out) {fclose(out); out=0;}
+						first_open=1;
 						goto repeat_query;
 					}
 
 
 					if (rpaginate==2) {
-				A4GL_debug("EXEC EXIT");
+						A4GL_debug("EXEC EXIT");
 endcode
 						return 0;
 code
@@ -278,6 +284,17 @@ if sqlca.sqlcode>=0 then
 		display msg clipped
 		display " "
 	end if
+
+	if qry_type=1 then
+		call set_curr_db(l_db)
+		call display_banner()
+	end if
+
+	if qry_type=31 then
+		call set_curr_db("")
+		call display_banner()
+	end if
+
 else
 
 	if exec_mode=0 then

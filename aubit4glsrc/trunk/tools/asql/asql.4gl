@@ -7,6 +7,9 @@ main
 define lv_a integer
 initialize mv_curr_db to null
 defer interrupt
+code
+putenv("A4GL_AUTOBANG=Y");
+endcode
 if num_args() then
 	for lv_a=1 to num_args()
 		let lv_args[lv_a]=arg_val(lv_a)
