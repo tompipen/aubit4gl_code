@@ -656,3 +656,99 @@ void A4GL_add_feature(char *feature) {
 
 void A4GLSQLPARSE_initlib() {
 }
+
+
+
+char *
+fix_insert_expr (int mode)
+{
+  static char big_buff[20000];
+  int a;
+  int rval;
+  int isize = 0;
+  int idtype = 0;
+  char colname[256] = "";
+  /*char csize[20];*/
+  /*char cdtype[20];*/
+  char buff[1000];
+  char *ccol;
+  strcpy (big_buff, "");
+
+
+  if (mode == 1)
+    {
+      if (db_used == 0)
+        {
+          sprintf (buff, "You cannot use insert int this table without specifying a database");
+          a4gl_yyerror (buff);
+          return 0;
+        }
+
+      /* It will only be a '*' anyway....*/
+      gen_stack_cnt[INSCOL] = 0;
+      strcpy (colname, "");
+      rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
+      if (rval == 0)
+        {
+          a4gl_yyerror ("Table is not in the database");
+          return 0;
+        }
+      while (1)
+        {
+          colname[0] = 0;
+          rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+          strcpy (colname, ccol);
+          if (rval == 0)
+            break;
+          trim_spaces (colname);
+          push_gen (INSCOL, colname);
+        }
+      A4GLSQL_end_get_columns ();
+    }
+
+  if (gen_stack_cnt[INSCOL] != gen_stack_cnt[INSVAL])
+    {
+        dump_insvals();
+      a4gl_yyerror
+        ("Number of columns in update not the same as number of values");
+    }
+
+  strcpy(big_buff,"(");
+
+  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
+    {
+      if (a) strcat (big_buff, ",");
+      sprintf (buff, "%s", gen_stack[INSCOL][a]);
+      strcat (big_buff, buff);
+    }
+
+
+
+
+  strcat(big_buff,") VALUES (");
+  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
+    {
+      if (a) strcat (big_buff, ",");
+      sprintf (buff, "%s", A4GLSQLCV_insert_alias(current_ins_table, gen_stack[INSCOL][a],gen_stack[INSVAL][a]));
+      //sprintf (buff, "%s", A4GLSQLCV_insert_alias(current_ins_table, gen_stack[INSCOL][a],0));
+      strcat (big_buff, buff);
+    }
+   strcat(big_buff,")");
+
+  return big_buff;
+}
+
+
+
+
+char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
+        char buff[40000];
+        if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
+                sprintf(buff,"INSERT INTO %s %s",current_ins_table,fix_insert_expr(1));
+                free(s);
+                return strdup(buff);
+        } else {
+                return s;
+        }
+}
+

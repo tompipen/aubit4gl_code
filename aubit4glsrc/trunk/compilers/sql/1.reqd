@@ -33,9 +33,12 @@ int doing_declare=0;
 #define UPDCOL 0
 #define UPDVAL 1
 #define UPDVAL2 4
+#define INSCOL 5
+#define INSVAL 6
 
 static char *convstrsql(char *s) ;
 char current_upd_table[256];
+char current_ins_table[256];
 #define a4gl_yyerror asql_yyerror
 /*
 char *A4GLSQLCV_check_colname(char *tabname,char *colname) ;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.44 2005-02-08 18:52:58 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.45 2005-02-09 10:01:47 mikeaubury Exp $
 #
 */
 
@@ -531,6 +531,8 @@ static void A4GL_cv_fnlist (char *source, char *target)
 
   return;
 }
+
+
 
 
 //
@@ -2256,6 +2258,9 @@ for (b=0;b<conversion_rules_cnt;b++) {
 
 return buff;
 }
+
+
+
 
 
 char *A4GLSQLCV_check_tablename(char *t) {

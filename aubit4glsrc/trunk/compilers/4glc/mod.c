@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.194 2005-02-08 18:48:27 mikeaubury Exp $
+# $Id: mod.c,v 1.195 2005-02-09 09:58:51 mikeaubury Exp $
 #
 */
 
@@ -4877,15 +4877,16 @@ int A4GL_escape_quote_owner(void) {
 }
 
 
-char *A4GL_generate_ins_string(char *s) {
-	char buff[40000];
-	if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
-		sprintf(buff,"INSERT INTO %s %s",current_ins_table,fix_insert_expr(1));
-		free(s);
-		return strdup(buff);
-	} else {
-		return s;
-	}
+
+char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
+        char buff[40000];
+        if (A4GLSQLCV_check_requirement("FULL_INSERT")) {
+                sprintf(buff,"INSERT INTO %s %s",current_ins_table,fix_insert_expr(1));
+                free(s);
+                return strdup(buff);
+        } else {
+                return s;
+        }
 }
 
 

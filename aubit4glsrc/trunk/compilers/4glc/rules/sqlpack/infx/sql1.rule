@@ -17,7 +17,7 @@ insert_statement_ss:
 	ins_2_ss {
 		
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>3),kw_space,strdup($<str>5),kw_space,$<sql_string>6,0); 
-		$<sql_string>$=A4GL_generate_ins_string($<sql_string>$);
+		$<sql_string>$=A4GLSQLCV_generate_ins_string(current_ins_table,$<sql_string>$);
 			pop_all_gen(INSCOL,"!"); pop_all_gen(INSVAL,"!"); 
 	}
 ;
