@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.16 2002-10-18 07:54:51 afalout Exp $
+# $Id: Makefile.in,v 1.17 2003-01-10 07:50:25 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -80,7 +80,7 @@ CFLAGS      +=-I.
 #would give us bunch of warnings about unused varibles, that we cannot fix
 CFLAGS_REPORT_XDR_C		=$(CFLAGS:%-Wall=%)
 
-ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile
+ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile ${ROOT}/bin/aace_perl ${ROOT}/bin/aace_4gl
 
 ifeq "@HAVE_RPCLIB@" "0"
 	ifeq "${TARGET_OS}" "cygwin"
