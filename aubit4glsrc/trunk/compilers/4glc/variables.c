@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.27 2003-08-06 07:34:42 mikeaubury Exp $
+# $Id: variables.c,v 1.28 2003-08-12 08:51:17 mikeaubury Exp $
 #
 */
 
@@ -2610,7 +2610,9 @@ print_nullify (char type)
       for (a = 0; a < list_cnt; a++)
 	{
 	  //printf("Adding : %s\n",list[a]->names.name);
-	  add_bind ('N', list[a]->names.name);
+	  if (list[a]->variable_type!=VARIABLE_TYPE_CONSTANT) {
+	  	add_bind ('N', list[a]->names.name);
+	  }
 
 	}
       print_init ();
