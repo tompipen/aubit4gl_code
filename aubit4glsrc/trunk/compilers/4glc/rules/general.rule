@@ -141,6 +141,7 @@ reserved_word :
 	|CLIPPED
 	|CLOSE
 	|LABEL
+	|CASE
 	|CONSTANT
 	|CONSTRUCT
 	|COUNT

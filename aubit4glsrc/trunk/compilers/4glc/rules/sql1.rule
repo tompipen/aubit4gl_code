@@ -278,10 +278,6 @@ sprintf($<str>$,"Schema Element");
 	print_exec_sql($<str>1);
  }
 	| begin_statement 
-	| set_database_cmd
-{
-sprintf($<str>$,"Set Database");
-}
 	| delete_statement_position {
 
 lex_printcomment("/*  delete 1 */\n");

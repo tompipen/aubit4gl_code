@@ -599,10 +599,7 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 { 
 	$<ptr>$=append_expr($<ptr>3,"downshift_stk();");
 }
-| ASCII OPEN_BRACKET fgl_expr_c CLOSE_BRACKET { 
-	$<ptr>$=append_expr($<ptr>3,"push_ascii();");
-}
-| ASCII fgl_expr_c { 
+| ASCII fgl_expr_c  { 
 	$<ptr>$=append_expr($<ptr>2,"push_ascii();");
 }
 | EXTEND OPEN_BRACKET variable_or_current CLOSE_BRACKET { 
