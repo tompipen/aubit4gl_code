@@ -41,10 +41,10 @@ int a;
 		printf("This does not appear to be a valid form\n(Bad magic number - got %x rather than %x)\n",a,FCOMILE_XDR_MAGIC);
 		exit(0);
 	}
+
 	memset(&the_form,0,sizeof(struct_form));
 
 	xdrstdio_create(&xdrp,f,XDR_DECODE);
-
 
 	a=isolated_xdr_struct_form(&xdrp,&the_form); //in lib/libform/form_xdr/formwrite2.c
 
@@ -60,7 +60,7 @@ int a;
 		exit(1);
 	}
 
-
+printf("Dumping form..\n");
 	dump_form_desc(&the_form);
 
 }
