@@ -20,28 +20,14 @@
 */
 
 
+// I think that i need YYPURE to 1 to be a reentrant parser.
 #ifdef YYPURE
 #undef YYPURE
 #endif
 
 #define YYPURE 1
 #define YYLEX_PARAM yystate,yyssa,yyssp
-#define INCASE 		0
-#define INCONSTRUCT 1
-#define INDISPLAY 	2
-#define INFOR 		3
-#define INFOREACH 	4
-#define ININPUT 	5
-#define INMENU 		6
-#define INPROMPT 	7
-#define INWHILE 	8
-#define INIF 		9
 
-#define UPDCOL 		0
-#define UPDVAL 		1
-#define SELINTO 	2
-#define PUTVAL 		3
-#define UPDVAL2 	4
 
 // Hehe - This one is pretty cool if you have a fairly recent version of bison
 #define YYERROR_VERBOSE
@@ -61,6 +47,7 @@
 =====================================================================
 */
 
+//#include "FglAst.h"
 #include "a4gl_4glc_int.h"
 
 /*
@@ -123,7 +110,11 @@ int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 %token USER_DTYPE
 %token SQL_TEXT
 
-/** @todo : Why are the tokens numbered ? If not necessary remove it */
+/** 
+ * @todo : Why are the tokens numbered ? If not necessary remove it 
+ * I think that is because of the generation to be synced with the generated
+ * kwyword table.
+ */
 %token DYNAMIC_ARRAY 1000
 %token RESIZE_ARRAY 1001
 %token ALLOCATE_ARRAY 1002
@@ -1986,6 +1977,7 @@ display_attr
 disp_rest 
   : 
 	| disp_field_commands END_DISPLAY
+	| END_DISPLAY
 	;
 
 /**
@@ -3095,6 +3087,7 @@ init_tab
 end_input 
   :
   | field_commands END_INPUT 
+  | END_INPUT 
 	;
 
 /**
@@ -3566,6 +3559,7 @@ func_def
       define_section 
       op_code commands 
 		end_func_command
+		// { $$ = new FglFunction($2,$4,$5,$6); }
 	;
 
 /*
@@ -6043,7 +6037,7 @@ set_database_cmd
  * @todo : Change this to db_name
  */
 var_ident_qchar
-  : var_ident 
+  : var_ident ATSIGN identifier 
 	| CHAR_VALUE 
   ;
 
@@ -6181,63 +6175,140 @@ grantee
 	| authorization_identifier
 	;
 
+/**
+ * The statement to create a VIEW.
+ * 4gl code examples:
+ *    CREATE VIEW viewName (colA, colB) AS SELECT acolA,acolB from xptoTable
+ *    CREATE VIEW viewName (colA, colB) AS SELECT acolA,acolB from xptoTable 
+ *      WITH CHECK OPTION
+ */
 view_definition_ss
   : CREATE_VIEW table_name op_view_column_list AS query_specification_ss 
 	  op_with_check_option 
   ;
 
+/**
+ * Optional comma separated view column list to be used in the CREATE VIEW 
+ * statement.
+ * 4gl code examples:
+ *   (colA,colB)
+ */
 op_view_column_list
   : 
 	| OPEN_BRACKET view_column_list CLOSE_BRACKET
 	;
 
+/**
+ * Comma separarted of name of the columns of a view.
+ * 4gl code examples:
+ *   colA
+ *   colA,colB
+ */
 view_column_list
   : column_name
 	| view_column_list COMMA column_name
 	;
 
+/**
+ * Optional WITH CHECK OPTION to be used in the CREATE VIEW statement.
+ */
 op_with_check_option
   : 
 	| WITH_CHECK_OPTION
 	;
 
+/**
+ * A check constraint definition to be used in the CREATE TABLE and
+ * ALTER TABLE statements.
+ * 4gl code examples:
+ *   CHECK ( a = 1 )
+ */
 check_constraint_definition_ss
   : CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET 
 	;
 
+/**
+ * Foreign key constraint definition to be used in the CREATE TABLE and 
+ * ALTER TABLE statements.
+ * 4gl code examples:
+ *   FOREIGN KEY (colA,colB) REFERENCES referencedTable (rcolA,rcolB)
+ */
 referential_constraint_definition
   : FOREIGN_KEY OPEN_BRACKET references_columns CLOSE_BRACKET 
 	  references_specification
 	;
 
+/**
+ * The references section of the foreign key definition.
+ * 4gl code examples:
+ *   REFERENCES refTabName (rcolA,rcolB)
+ */
 references_specification
   : REFERENCES referenced_table_and_columns
 	;
 
+/**
+ * The list of the referenced column list to be used in the foreign key 
+ * definition.
+ * 4gl code examples:
+ *   (rcolA,rcolB)
+ */
 references_columns
   : references_column_list
 	;
 
+/**
+ * The referenced table and columns of the FOREIGN KEY definition.
+ * 4gl code examples:
+ *    rtabName (rcolA,rcolB)
+ */
 referenced_table_and_columns
   : table_name
 	| table_name OPEN_BRACKET references_column_list CLOSE_BRACKET
 	;
 
+/**
+ * Comma separated of columns to be used as referenced columns in 
+ * the FOREIGN KEY definition.
+ * 4gl code examples:
+ *   rcolA,rcolB
+ */
 references_column_list
   : column_name
 	| references_column_list COMMA column_name
 	;
 
+/**
+ * Unique and primary key statements to be used in the CREATE TABLE and ALTER 
+ * TABLE statements.
+ * 4gl code examples:
+ *   UNIQUE (colA,colB)
+ *   PRIMARY KEY (colA,colB)
+ */
 unique_constraint_definition
   : UNIQUE OPEN_BRACKET unique_column_list CLOSE_BRACKET
 	| PRIMARY_KEY OPEN_BRACKET unique_column_list CLOSE_BRACKET
 	;
 
+/**
+ * Comma separated of columns to be used in the UNIQUE or PRIMARY KEY
+ * constraint definition.
+ * 4gl code examples:
+ *   colAName, colBName
+ */
 unique_column_list
   : column_name
 	| unique_column_list COMMA column_name
 	;
 	
+/**
+ * The definition of the possible table level contraints.
+ * 4gl code examples:
+ *   UNIQUE (colA,colB)
+ *   PRIMARY KEY (colA,colB)
+ *   CHECK ( a = 1 )
+ *   FOREIGN KEY (colA,colB) REFERENCES referencedTable (rcolA,rcolB)
+ */
 table_constraint_definition_ss
   : unique_constraint_definition 
 	| referential_constraint_definition 
@@ -6267,7 +6338,8 @@ column_definiton_ss:
  * A column definition to be used in a CREATE TABLE and ALTER TABLE
  * statements.
  * 4gl code examples:
- *
+ *   colAName INTEGER DEFAULT 10 REFERENCES refTable (rColA)
+ *   colAName INTEGER DEFAULT 10 PRIMARY KEY REFERENCES refTable (rColA)
  */ 
 ct_column_definiton_ss
   : identifier data_type op_default_clause op_column_constraint_list_ss 
@@ -6678,6 +6750,7 @@ e_curr
 	| MINUTE 
 	| SECOND 
 	| FRACTION
+  | FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET
 	;
 
 /**
@@ -6688,6 +6761,7 @@ e_curr
  */
 dbase_name	
   :	identifier 
+  | identifier ATSIGN identifier
   |	CHAR_VALUE 
 	;
 
@@ -7046,7 +7120,6 @@ sql_block_entry
   | CASE
   | CCODE
   | CHAR
-  | CHARACTER
   | CHECK
   | CLEAR
   | CLIPPED
@@ -7679,6 +7752,23 @@ move_cmd
 
 /* </WINDOW_STATEMENTS> */
 
+/* <VALIDATE_RULE> */
+
+validate_cmd 
+  : VALIDATE init_bind_var_list LIKE validate_tab_list  
+  ;
+
+validate_tab_list 
+  : validate_tab 
+	| validate_tab_list COMMA validate_tab 
+  ;
+
+validate_tab 
+  : tab_name DOT column_name 
+	| tab_name DOT MULTIPLY 
+  ;
+
+/* </VALIDATE_RULE> */
 
  /* ================ from make_enable ================= */
 

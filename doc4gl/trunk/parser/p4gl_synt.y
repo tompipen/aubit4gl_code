@@ -1,3 +1,4 @@
+
 /**
  * @file
  * Analisador sintatico e semântico de linguagem 4gl
@@ -1502,15 +1503,6 @@ complete_array_usage
    | '[' array_indexes ']'
   ;
 
-integer_operator
-  : '+'
-  | '-'
-  | '*'
-  | '/'
-  | MOD
-  | EXPO  /* ** */
-  ;
-
 op_clipped
   :
   | CLIPPED
@@ -2129,12 +2121,6 @@ menu_option
   | ALL
   | named_value       { char *x; x = $1; }
  
-/* Nesta versao usa o mesmo para display array, display, Input, etc) */
-op_on_key_list
-  :
-  | on_key_list
-  ;
-
 on_key_list
   : on_key_list on_key
   | on_key
@@ -2958,6 +2944,7 @@ drop_column_list
  */
 drop_column 
   : column_name
+	{ char *x = $1; }   // Just fix type clash
   ;
 
 /**
@@ -3033,6 +3020,7 @@ column_constraints_ss
 
 constraint_name
   : column_identifier
+	{ char *x = $1; }   // Just fix type clash
   ;
 
 /**
@@ -3054,6 +3042,7 @@ table_element_ss
  */ 
 ct_column_definiton_ss
   : column_name data_type op_default_clause op_column_constraint_list_ss 
+	{ char *x = $1; }   // Just fix type clash
   ;
 
 /**

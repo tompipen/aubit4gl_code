@@ -62,6 +62,12 @@
 */
 
 // This flag should be assigned by a function.
+
+/**
+ *  @todo : If we want that the parser is reentrant all global variables 
+ *  should be removed.
+ *   To do that we need to work with objects (in C or C++) but with objects.
+ */
 static int sql_mode;
 
 static int idents_cnt = 0;
@@ -162,6 +168,7 @@ int lexer_fgetc (void)
   int a;
 
   a = A4GL_memfile_getc ();
+  if (a==0x0c) a=' ';
 
   /* UNIX will end the line with 13(CR=\r) and 10(LF=\n); 
 	 * DOS will end it with only 10(LF=\n) 
@@ -484,6 +491,10 @@ static char *read_word2 (int *t)
     if (a == '-' && instrs == 0 && instrd == 0 && xccode == NO_CODE)
 	  {
 	    int z;
+      if (strlen (word) > 0) {                  
+        lexer_ungetc (a, f);                  
+				return word;                
+		  }
 	    z = lexer_fgetc ();
 	    lexer_ungetc (z);
 	    if (z == '-')
