@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.144 2004-03-19 11:02:48 afalout Exp $
+# $Id: Makefile.in,v 1.145 2004-03-20 01:50:03 afalout Exp $
 #
 
 ## ==================================================================
@@ -153,6 +153,14 @@ else
 	@echo " ** GTK+ version 2 not detected (have ${GTK_VERSION}) skipped 3 targets"
 	@echo " "	
 endif	
+	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| liblogical: done "
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
+
+
+
 
 clean.liblogical:
 	$(MAKE) -C lib/liblogical/processor clean
@@ -173,10 +181,13 @@ api.headers:
 
 extra: extra_msg ${ALL_EXTRA}
 	@echo " "
-	@echo "Successfully compiled aditional Aubit components :"
-	@echo "${ALL_EXTRA}."
-	@echo "FIXME: still broken targets:"
-	@echo "${ALL_EXTRA_BROKEN}."
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Successfully compiled aditional Aubit components :                 |"
+	@echo "| ${ALL_EXTRA}."
+	@echo "| FIXME: still broken targets:                                       |"
+	@echo "| ${ALL_EXTRA_BROKEN}."
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
 
 extra_msg:
 	@echo "Will make: ${ALL_EXTRA}"
@@ -209,10 +220,18 @@ adbload:
 	$(MAKE) -C tools/adbload
 
 ## ==================================================================
-##                        Perl compiler
+##                        Perl output mode
 ## ==================================================================
 
-perl: perl.compiler perl.lib test.perl
+perl: api perl.compiler perl.lib test.perl
+	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Perl - done. "
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
+
+api:
+	$(MAKE) -C lib/libauibt4gl api
 
 perl.compiler:
 	${MAKE} -C lib/liblex/lex_perl
@@ -862,12 +881,7 @@ help.optional:
 ## ------------------------------------------------------------------
 
 ####################
-#
-commit: refresh.all build
-	cvs commit
-
-####################
-#
+#Update source code tree from CVS repository
 update:
 #FIXME: this will force user to type password TWICE!!
 	@cvs status ./configure | grep "Status: Locally Modified"; \
@@ -911,6 +925,11 @@ update:
 	@echo " "
 
 
+####################
+#Commit all changes to CVS repository
+commit: refresh.all build
+	cvs commit
+	
 ## ------------------------------------------------------------------
 ##       Maintainance of pre-assembled and pre-compiled files
 ##       used in absence of compielr tools when vompiling from source code
@@ -927,26 +946,40 @@ refresh.all: refresh.noyacc refresh.norpcgen refresh.norpclib refresh.perl
 #from Yacc created files:
 refresh.noyacc:
 ifneq "${YACC}" "no"
-	${CP} compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated
-	${CP} compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated
-	${CP} compilers/4glc/rules/generated/kw.h tools/no_yacc/cygwin/compilers/4glc/rules/generated
-	${CP} compilers/4glc/mk_states_1.h tools/no_yacc/cygwin/compilers/4glc
-	${CP} compilers/4glc/mk_states.h tools/no_yacc/cygwin/compilers/4glc
-	${CP} compilers/4glc/mk_states.c tools/no_yacc/cygwin/compilers/4glc
-	${CP} compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile
-	${CP} compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile
-	${CP} compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus
-	${CP} compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus
-	${CP} compilers/xgen/y.tab.c tools/no_yacc/cygwin/compilers/xgen
-	${CP} compilers/xgen/lex.yy.c tools/no_yacc/cygwin/compilers/xgen
-#Check if this two exist first, they will not be there is we have no RPC:
-#ace now uses xgen, should allways be there
-#ifneq "${USE_RPCGEN}" "0"
-	${CP} compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace
-	${CP} compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace
-#else
-#	@echo "Skipping refresh.norpcgen - USE_RPCGEN=0."
-#endif
+	@x=0; \
+	if diff -q compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h > /dev/null ; then x=1; fi; \
+	if diff -q compilers/4glc/rules/generated/kw.h tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h > /dev/null ; then x=1; fi; \
+	if diff -q compilers/4glc/mk_states_1.h tools/no_yacc/cygwin/compilers/4glc/mk_states_1.h > /dev/null ; then x=1; fi; \
+	if diff -q compilers/4glc/mk_states.h tools/no_yacc/cygwin/compilers/4glc/mk_states.h > /dev/null ; then x=1; fi; \
+	if diff -q compilers/4glc/mk_states.c tools/no_yacc/cygwin/compilers/4glc/mk_states.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile/y.tab.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus/lex.yy.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus/y.tab.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/xgen/y.tab.c tools/no_yacc/cygwin/compilers/xgen/y.tab.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/xgen/lex.yy.c tools/no_yacc/cygwin/compilers/xgen/lex.yy.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace/y.tab.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace/lex.yy.c > /dev/null ; then x=1; fi; \
+	if test "$x" = "1"; then \
+		echo "Need to update"; \
+		${CP} compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated; \
+		${CP} compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated; \
+		${CP} compilers/4glc/rules/generated/kw.h tools/no_yacc/cygwin/compilers/4glc/rules/generated; \
+		${CP} compilers/4glc/mk_states_1.h tools/no_yacc/cygwin/compilers/4glc; \
+		${CP} compilers/4glc/mk_states.h tools/no_yacc/cygwin/compilers/4glc; \
+		${CP} compilers/4glc/mk_states.c tools/no_yacc/cygwin/compilers/4glc; \
+		${CP} compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile; \
+		${CP} compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile; \
+		${CP} compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus; \
+		${CP} compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus; \
+		${CP} compilers/xgen/y.tab.c tools/no_yacc/cygwin/compilers/xgen; \
+		${CP} compilers/xgen/lex.yy.c tools/no_yacc/cygwin/compilers/xgen; \
+		${CP} compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace; \
+		${CP} compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace; \
+	else \
+		echo "All no_yacc files up-to-date"; \
+	fi
 else
 	@echo "Skipping refresh.noyacc - YACC=no."
 endif
@@ -956,19 +989,29 @@ endif
 refresh.norpcgen:
 ifeq "${TARGET_OS}" "cygwin"
 ifneq "${USE_RPCGEN}" "0"
-	${CP} compilers/fcompile/form_x.h tools/cygwin
-	${CP} compilers/fcompile/form_x_xdr.c tools/cygwin
-	${CP} compilers/menus/menu_x.h tools/cygwin
-	${CP} compilers/menus/menu_x_xdr.c tools/cygwin
-#Check if this two exist first, they will not be there is we have no RPC:
-#ace uses xgen now,m should allways be there
-	${CP} compilers/ace/report.h tools/cygwin
-	${CP} compilers/ace/report_xdr.c tools/cygwin
+	@x=0; \
+	if diff -q compilers/fcompile/form_x.h tools/cygwin/form_x.h > /dev/null ; then x=1; fi; \
+	if diff -q compilers/fcompile/form_x_xdr.c tools/cygwin/form_x_xdr.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/menus/menu_x.h tools/cygwin/menu_x.h > /dev/null ; then x=1; fi; \
+	if diff -q compilers/menus/menu_x_xdr.c tools/cygwin/menu_x_xdr.c > /dev/null ; then x=1; fi; \
+	if diff -q compilers/ace/report.h tools/cygwin/report.h > /dev/null ; then x=1; fi; \
+	if diff -q compilers/ace/report_xdr.c tools/cygwin/report_xdr.c > /dev/null ; then x=1; fi; \
+	if test "$x" = "1"; then \
+		echo "Need to update"; \
+		${CP} compilers/fcompile/form_x.h tools/cygwin
+		${CP} compilers/fcompile/form_x_xdr.c tools/cygwin
+		${CP} compilers/menus/menu_x.h tools/cygwin
+		${CP} compilers/menus/menu_x_xdr.c tools/cygwin
+		${CP} compilers/ace/report.h tools/cygwin
+		${CP} compilers/ace/report_xdr.c tools/cygwin
+	else \
+		echo "All no_rpcgen files up-to-date"; \
+	fi
 else
 	@echo "Skipping refresh.norpcgen - USE_RPCGEN=0."
 endif
 else
-	@echo "Not on CygWin - skipping."
+	@echo "Skipping refresh.norpcgen - Not on CygWin"
 endif
 
 ####################
@@ -990,15 +1033,16 @@ ifeq "${TARGET_OS}" "cygwin"
 	${CP} ${RPC_INCL_DIR}/types.h tools/no_rpc/cygwin/rpc
 	${CP} ${RPC_INCL_DIR}/xdr.h tools/no_rpc/cygwin/rpc
 else
-	@echo "Not on CygWin - skipping."
+	@echo "Skipping refresh.norpclib - Not on CygWin."
 endif
-	@echo "CONFIRM != IknowWhatImDoing"
+else
+	@echo "Skipping refresh.norpclib - CONFIRM != IknowWhatImDoing"
 endif
 
 ####################
 #FIXME: add no_perl here
 refresh.perl:
-	@echo "FIXME: not storring Perl created files"
+	@echo "FIXME: not storing Perl created files"
 
 ## ------------------------------------------------------------------
 ##                       Maintainance utility targets
