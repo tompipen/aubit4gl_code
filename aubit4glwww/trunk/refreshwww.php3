@@ -2,7 +2,7 @@
 
 $WWW="/home/groups/a/au/aubit4gl/htdocs";
 
-$execline = "sh $WWW/refreshwww.sh -anon";
+$execline = "sh $WWW/refreshwww.sh -anon -upd";
 #$execline = "ls";
 
 		$retvar = array("first line");

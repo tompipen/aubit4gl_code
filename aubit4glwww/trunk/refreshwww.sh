@@ -49,6 +49,20 @@ else
 	autosfcvsanonpasswd
 fi
 
+if [ "$2" = "-upd" ]
+then
+    cvs upadte
+	RET=$?
+	if test "$RET" != "0"
+	then
+    	echo "Error on cvs update"
+	    exit $RET
+    fi
+
+    exit
+fi
+
+#We don't have the right to cd out of $WWW
 cd $HOME
 RET=$?
 if test "$RET" != "0"
