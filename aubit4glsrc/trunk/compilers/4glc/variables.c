@@ -1416,9 +1416,6 @@ check_for_constant (char *name, char *buff)
   struct variable *v;
 int dbg=0;
 
-if (strcasecmp(name,"notfound")==0) {
-	dbg=1;
-}
 
 if (dbg) {
 	if (in_define) {

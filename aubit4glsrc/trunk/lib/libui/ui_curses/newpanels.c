@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.8 2003-02-06 13:24:28 mikeaubury Exp $
+# $Id: newpanels.c,v 1.9 2003-02-06 23:45:16 mikeaubury Exp $
 #*/
 
 /**
@@ -1350,7 +1350,6 @@ void *tos_ptr;
 int clr_end_of_line=0;
 
 
-printf("In display @\n");
     /*
   debug("Colors = %d pairs = %d ",COLORS,COLOR_PAIRS);
   debug("CHYYPE_LONG = %d",CHTYPE_LONG);
@@ -1375,7 +1374,6 @@ printf("In display @\n");
   s[0]=0;
 
 
-printf("In display @ - 2\n");
 
 
 
@@ -1384,7 +1382,6 @@ printf("In display @ - 2\n");
   get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
 
 
-printf("In display @ - 3\n");
   debug("TOP1 = %d %d %p\n",tos_dtype%256,tos_size,tos_ptr);
 
   if (tos_dtype%256==0 && tos_size==0) {
@@ -2253,8 +2250,10 @@ geterror_line (void)
 {
   if (windows[currwinno].form == 0)
     {				/* use screen default */
+	    	debug("Get error line - no form\n");
       return decode_line (std_dbscr.error_line);
     }
+  debug("Get error line - form : %d",windows[currwinno].form->form_details.error_line);
   return decode_line (windows[currwinno].form->form_details.error_line);
 }
 

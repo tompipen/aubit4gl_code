@@ -70,6 +70,9 @@ make_sql_bind (char *sql, char *type)
       	strcpy (buff_out, "");
 	  if (obindcnt)
 	    {
+
+              sprintf(buff_small,"set_init(obind,%d);\n",obindcnt);
+	      strcpy(buff_out,buff_small);
 	      for (a = 0; a < obindcnt; a++)
 		{
 		  print_sql_type(a,'o');

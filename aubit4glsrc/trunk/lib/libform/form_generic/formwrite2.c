@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.8 2003-02-04 13:19:24 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.9 2003-02-06 23:45:16 mikeaubury Exp $
 #*/
 
 /**
@@ -871,14 +871,18 @@ write_form (void)
 
   bname (outputfilename, ext, base);
 
-  if (ext[0] == 0)
+
+  printf("Fname = %s\n",fname);
+  if (ext[0] == 0|| strchr(&fname[3],'.')==0)
     {
+      printf("Setting base...");
       strcat (fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
     }
 
 
   translate_form ();
 
+  printf("Writing to %s\n",fname);
   a = write_data_to_file ("struct_form", ptr, fname);
 
   if (!a)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.15 2003-02-06 13:24:28 mikeaubury Exp $
+# $Id: builtin.c,v 1.16 2003-02-06 23:45:14 mikeaubury Exp $
 #
 */
 
@@ -588,7 +588,6 @@ static char buff[200];
 	a=pop_int();
 	/* A4GLSQL_set_status(-3001,0); */
 	sprintf(buff,"Error : %d ",a);
-      	mcnt--;
 	push_char(buff);
       return 1;
 }

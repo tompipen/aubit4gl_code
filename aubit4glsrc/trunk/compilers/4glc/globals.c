@@ -397,7 +397,6 @@ read_global_int (FILE * f, char *name, int *val)
   sprintf (buff, "%s=%%d\n", name);
   *val=0;
   fgets(buff2,255,f);
-  printf("Buff2=%s\n",buff2);
   sscanf (buff2, buff, val);
 }
 

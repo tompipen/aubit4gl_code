@@ -58,7 +58,6 @@ var:
          }
 
          lex_printcomment("/*variable with [...]*/");
-	printf("GET VAR 1\n");
          get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
          lex_printcomment("/* Arrsize = %d size = %d*/",arrsize,size);
 	 
@@ -129,7 +128,6 @@ identifier arr_subscripts
   char buff2[256];
   char arrbuff[256];
   lex_printcomment("/*array variable nnn */");
-	printf("GET VAR 2\n");
   get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
   lex_printcomment("/*here %s %x */",$<str>1,type);
   if (scan_variable($<str>1)==-1) {
@@ -448,7 +446,6 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
   char arrbuff[256];
   lex_printcomment("/*..array_r_varid..*/");
 
-	printf("GET VAR 3\n");
 if (get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff)>=0) {
   sprintf($<str>$,"%s[%s]",$<str>1,subtract_one($<str>3));
 } else {

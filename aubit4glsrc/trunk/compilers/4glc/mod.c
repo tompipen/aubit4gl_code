@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.97 2003-01-30 11:52:29 afalout Exp $
+# $Id: mod.c,v 1.98 2003-02-06 23:45:11 mikeaubury Exp $
 #
 */
 
@@ -1463,7 +1463,7 @@ variable_action(-1,"false","0","i","add_constant");
 variable_action(-1,"true","1","i","add_constant");
 variable_action(-1,"today","","","a4gl_add_variable");
 variable_action(-1,"fgldate","","","push_type");
-variable_action(-1,"usr","","","a4gl_add_variable");
+variable_action(-1,"user","","","a4gl_add_variable"); /* Did someone change this  to 'usr' */
 variable_action(-1,"char","8","","push_type");
 variable_action(-1,"pageno","","","a4gl_add_variable");
 variable_action(-1,"long","","","push_type");

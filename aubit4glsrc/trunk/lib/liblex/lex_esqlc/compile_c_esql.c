@@ -9,8 +9,10 @@
 void
 print_exec_sql (char *s)
 {
+
   printc
     ("EXEC SQL %s; /* exec_sql */\n", s);
+  print_copy_status();
 }
 
 
@@ -28,6 +30,7 @@ print_exec_sql_bound (char *s)
   c = print_bind ('i');
   print_conversions('i');
   printc ("EXEC SQL %s; /* exec_sql_bound */\n", s);
+  print_copy_status();
   printc ("}\n");
 }
 
@@ -47,9 +50,11 @@ print_close (char type, char *name)
       break;
     case 'S':
       printc ("EXEC SQL CLOSE SESSION %s;\n", name);
+  print_copy_status();
       break;
     case 'C':
       printc ("EXEC SQL CLOSE CURSOR %s;\n", name);
+  print_copy_status();
       break;
     }
 }
@@ -69,11 +74,13 @@ print_foreach_next (char *cursorname, char *into)
   int no;
   printc ("sqlca.sqlcode=0;\n");
   printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", strip_quotes(cursorname),into);
+  print_copy_status();
   printc ("while (1) {\n");
   ni = print_bind ('i');
   no = print_bind ('o');
   print_conversions('i');
   printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",strip_quotes(cursorname),get_into_part(no),ni,no);
+  print_copy_status();
   print_conversions('o');
 
   printc ("if (sqlca.sqlcode<0||sqlca.sqlcode==100) break;\n");
@@ -92,6 +99,7 @@ void
 print_free_cursor (char *s)
 {
   printc ("EXEC SQL FREE CURSOR %s\n",s);
+  print_copy_status();
 }
 
 /**
@@ -170,11 +178,15 @@ print_linked_cmd (int type, char *var)
 	  strcat (buff, "=? ");
 	}
 
-      if (type == 'S')
+      if (type == 'S') {
 	printc ("EXEC SQL %s; /* linked - S */",buff);
+  print_copy_status();
+      }
 
-      if (type == 'D' || type == 'U')
+      if (type == 'D' || type == 'U') {
 	printc ("EXEC SQL %s; /* linked - D/U */", buff);
+  print_copy_status();
+      }
 
       printc ("}\n");
     }
@@ -210,6 +222,7 @@ void
 print_set_conn (char *conn)
 {
   printc ("EXEC SQL SET CONNECTION TO %s;\n", conn);
+  print_copy_status();
 }
 
 /**
@@ -224,6 +237,7 @@ print_put (void)
   n = print_bind ('i');
 print_conversions('i');
   printc ("EXEC SQL PUT /*fixme - cursorname ? */\n", n);
+  print_copy_status();
   printc ("}\n");
 }
 
@@ -241,6 +255,7 @@ void
 print_prepare (char *stmt, char *sqlvar)
 {
   printc ("EXEC SQL PREPARE %s FROM %s;\n", stmt, sqlvar);
+  print_copy_status();
 }
 
 
@@ -257,14 +272,17 @@ void
 print_execute (char *stmt, int using)
 {
   int ni;
-  if (using == 0)
+  if (using == 0) {
     printc ("EXEC SQL %s\n", stmt);
+  print_copy_status();
+  }
   else
     {
       printc ("{\n");
       ni = print_bind ('i');
 print_conversions('i');
       printc ("EXEC SQL %s; /* Execute */\n", stmt);
+  print_copy_status();
       printc ("}\n");
     }
 
@@ -285,6 +303,7 @@ print_open_session (char *s, char *v, char *user)
 {
 
   printc ("EXEC SQL OPEN SESSION %s", s);
+  print_copy_status();
 
 
   if (strcmp (user, "?") == 0)
@@ -310,6 +329,7 @@ void
 print_open_cursor (char *cname, char *using)
 {
   printc ("\nEXEC SQL OPEN  %s USING %s;\n",  strip_quotes(cname),using);
+  print_copy_status();
 }
 
 void
@@ -318,6 +338,7 @@ print_sql_commit (int t)
 	if (t==-1) printc ("EXEC SQL BEGIN WORK;\n", t);
 	if (t==0) printc ("EXEC SQL ROLLBACK WORK;\n", t);
 	if (t==1) printc ("EXEC SQL COMMIT WORK;\n", t);
+  print_copy_status();
 }
 
 /**
@@ -340,6 +361,7 @@ void
 print_fetch_3 (char *ftp, char *into)
 {
   printc ("\nEXEC SQL FETCH  %s INTO %s; /*fetch3*/\n", strip_quotes(ftp), into);
+  print_copy_status();
 }
 
 /**
@@ -365,6 +387,7 @@ print_init_conn (char *db)
   }
   else
     printc ("EXEC SQL CONNECT TO \"%s\" AS 'default';\n",db);
+  print_copy_status();
 }
 
 
@@ -380,6 +403,7 @@ void
 print_do_select (char *s)
 {
   printc ("EXEC SQL %s;\n/* do_select */", s);
+  print_copy_status();
   print_conversions('o');
   printc("}\n");
 }
@@ -395,6 +419,7 @@ void
 print_flush_cursor (char *s)
 {
   printc ("EXEC SQL FLUSH CURSOR %s;\n", s);
+  print_copy_status();
 }
 
 /**
@@ -430,6 +455,7 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 		return;
   }
   printc ("EXEC SQL DECLARE %s CURSOR FOR %s;\n",strip_quotes(a3),a2);
+  print_copy_status();
   printc ("}\n");
 
 }
@@ -564,3 +590,6 @@ get_undo_use (void)
 }
 
 
+static void print_copy_status() {
+	printc("A4GLSQL_set_status(sqlca.sqlcode,1);");
+}

@@ -160,7 +160,7 @@ char sqlstate [9+1];
 #line 109 "assist.4gl"
 extern fgldate today;
 #line 109 "assist.4gl"
-extern char usr [8+1];
+extern char user [8+1];
 #line 109 "assist.4gl"
 extern long pageno;
 #line 109 "assist.4gl"

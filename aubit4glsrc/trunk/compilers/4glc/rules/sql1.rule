@@ -1045,7 +1045,7 @@ query_specification:
 
 subquery:
 	OPEN_BRACKET SELECT setident op_ad select_list table_expression CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
+{sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
 	;
 
 op_ad: {strcpy($<str>$,"");}

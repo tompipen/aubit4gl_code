@@ -1,75 +1,569 @@
-# +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
-# +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
-# +----------------------------------------------------------------------+
-# | This program is free software; you can redistribute it and/or modify |
-# | it under the terms of one of the following licenses:                 |
-# |                                                                      |
-# |  A) the GNU General Public License as published by the Free Software |
-# |     Foundation; either version 2 of the License, or (at your option) |
-# |     any later version.                                               |
-# |                                                                      |
-# |  B) the Aubit License as published by the Aubit Development Team and |
-# |     included in the distribution in the file: LICENSE                |
-# |                                                                      |
-# | This program is distributed in the hope that it will be useful,      |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
-# | GNU General Public License for more details.                         |
-# |                                                                      |
-# | You should have received a copy of both licenses referred to here.   |
-# | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
-# +----------------------------------------------------------------------+
+# Makefile.in generated automatically by automake 1.4-p6 from Makefile.am
 
-#
-# $Id: Makefile.in,v 1.11 2003-02-05 07:22:03 afalout Exp $
-#
+# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# This Makefile.in is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
 
-ROOT        =../..
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
 
-#All stuff common to more then one Aubit compiler make file is there:
-include ${ROOT}/incl/Makefile-common
-override NOINCL=0
 
-## ==================================================================
-##                    Options
-## ==================================================================
+SHELL = @SHELL@
 
-C_LOCAL_IFLAGS  =-I${ROOT}/lib/libincl -I../fcompile
-CFLAGS			+=${C_LOCAL_IFLAGS}
-EXE_CFLAGS		+=-L${ROOT}/lib ${C_LOCAL_IFLAGS} ${C_IFLAGS}
-LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
-CMODS           =mkmess.c
-OBJS			=${CMODS:.c=.o}
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
 
-ALL             =${ROOT}/bin/mkmess
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
 
-## ==================================================================
-##                    Targets
-## ==================================================================
+DESTDIR =
 
-all: ${ALL}
-	@echo "Default targets (${ALL}) successfuly compiled."
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
 
-${ROOT}/bin/mkmess: ${OBJS}
-#	${CC} ${EXE_CFLAGS} $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
-	${LD_EXE} $^ -o $@ ${AUBIT_LIB} -L${ROOT}/lib
-#	${LN} $@${EXE} ${ROOT}/bin/$@${EXE}
+top_builddir = ../..
 
-## ==================================================================
-##                    Clean
-## ==================================================================
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOMAKE = @AUTOMAKE@
+AUTOHEADER = @AUTOHEADER@
 
-clean:
-	${RM} *.o mkmess.err mkmess mkmess.a *.bak .*.bak *.exe
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+transform = @program_transform_name@
 
-splint: lclint
-lclint: $(CMODS)
-	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
-	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
-	@echo "see ${LCLINTLOG} for results"
+NORMAL_INSTALL = :
+PRE_INSTALL = :
+POST_INSTALL = :
+NORMAL_UNINSTALL = :
+PRE_UNINSTALL = :
+POST_UNINSTALL = :
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+A4GL_FORMTYPE = @A4GL_FORMTYPE@
+A4GL_LEXTYPE = @A4GL_LEXTYPE@
+A4GL_MENUTYPE = @A4GL_MENUTYPE@
+A4GL_MSGTYPE = @A4GL_MSGTYPE@
+A4GL_PACKER = @A4GL_PACKER@
+A4GL_PDFTYPE = @A4GL_PDFTYPE@
+A4GL_RPCTYPE = @A4GL_RPCTYPE@
+A4GL_SQLTYPE = @A4GL_SQLTYPE@
+A4GL_UI = @A4GL_UI@
+ACLOCAL = @ACLOCAL@
+ADD_LD_LIBRARY_PATH = @ADD_LD_LIBRARY_PATH@
+APACHECTL = @APACHECTL@
+APACHE_CONF = @APACHE_CONF@
+ARCHEXT = @ARCHEXT@
+AS = @AS@
+AUBITCONF = @AUBITCONF@
+AUBIT_BUILD = @AUBIT_BUILD@
+AUBIT_PUBLISHER = @AUBIT_PUBLISHER@
+AUBIT_VERSION = @AUBIT_VERSION@
+AUBIT_WEBSITE = @AUBIT_WEBSITE@
+AUTOCONF = @AUTOCONF@
+AUTOSPEC = @AUTOSPEC@
+AWK = @AWK@
+CC = @CC@
+CGI_DIR = @CGI_DIR@
+COMPILE_DATE = @COMPILE_DATE@
+CONFIGURE_COMMAND = @CONFIGURE_COMMAND@
+CURSES_INC_PATH = @CURSES_INC_PATH@
+CURSES_LIB_NAME = @CURSES_LIB_NAME@
+CURSES_LIB_PATH = @CURSES_LIB_PATH@
+CVS_CLIENT = @CVS_CLIENT@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CYGCHECK = @CYGCHECK@
+DEBUG_BISON = @DEBUG_BISON@
+DLLTOOL = @DLLTOOL@
+DOTTOOL = @DOTTOOL@
+DOT_PATH = @DOT_PATH@
+DOXYGEN = @DOXYGEN@
+DOXYSEARCH = @DOXYSEARCH@
+DOXY_BIN_ABSPATH = @DOXY_BIN_ABSPATH@
+ECHO = @ECHO@
+EXDATA_MPZ = @EXDATA_MPZ@
+EXDTYPE = @EXDTYPE@
+EXEEXT = @EXEEXT@
+FJS_PCOMPILER = @FJS_PCOMPILER@
+FJS_PRUNTIME = @FJS_PRUNTIME@
+FULLNAME = @FULLNAME@
+GCC_MINGW = @GCC_MINGW@
+GCC_VERSION_MAJOR = @GCC_VERSION_MAJOR@
+GCC_VERSION_MINOR = @GCC_VERSION_MINOR@
+GCJ = @GCJ@
+GCJFLAGS = @GCJFLAGS@
+GDK_NAME = @GDK_NAME@
+GETOPT_LONG = @GETOPT_LONG@
+GLIB_CFLAGS = @GLIB_CFLAGS@
+GLIB_NAME = @GLIB_NAME@
+GTKBUILD = @GTKBUILD@
+GTKLIBS = @GTKLIBS@
+GTK_CONFIG = @GTK_CONFIG@
+GTK_INC_PATH = @GTK_INC_PATH@
+GTK_LIB_PATH = @GTK_LIB_PATH@
+GTK_NAME = @GTK_NAME@
+HAS_CHECK = @HAS_CHECK@
+HAVE_CURSES = @HAVE_CURSES@
+HAVE_DOT = @HAVE_DOT@
+HAVE_IFXODBC = @HAVE_IFXODBC@
+HAVE_IODBC = @HAVE_IODBC@
+HAVE_PDCURSES = @HAVE_PDCURSES@
+HAVE_PGODBC = @HAVE_PGODBC@
+HAVE_RPCLIB = @HAVE_RPCLIB@
+HAVE_SAPODBC = @HAVE_SAPODBC@
+HAVE_UNIXODBC = @HAVE_UNIXODBC@
+HTTPD = @HTTPD@
+I4GL_CCOMPILER = @I4GL_CCOMPILER@
+I4GL_PCOMPILER = @I4GL_PCOMPILER@
+I4GL_PRUNTIME = @I4GL_PRUNTIME@
+IFMX_ESQLC = @IFMX_ESQLC@
+IFX_C_MAKE = @IFX_C_MAKE@
+IFX_ESQL_FLAGS = @IFX_ESQL_FLAGS@
+IFX_INCLUDE = @IFX_INCLUDE@
+IFX_LFLAGS = @IFX_LFLAGS@
+IFX_LIBS = @IFX_LIBS@
+IKSEMEL_I_FLAGS = @IKSEMEL_I_FLAGS@
+IKSEMEL_L_FLAGS = @IKSEMEL_L_FLAGS@
+INCLINES = @INCLINES@
+INFORMIXDIR = @INFORMIXDIR@
+INSTALL_MISSING_OPTIONAL = @INSTALL_MISSING_OPTIONAL@
+IODBC_INCLUDE = @IODBC_INCLUDE@
+IODBC_LFLAGS = @IODBC_LFLAGS@
+IODBC_LIBS = @IODBC_LIBS@
+IS_SOURCE = @IS_SOURCE@
+IS_SOURCE_GTK = @IS_SOURCE_GTK@
+JABBERBUILD = @JABBERBUILD@
+JAVAINCLUDE = @JAVAINCLUDE@
+LCLINTEXE = @LCLINTEXE@
+LDCONFIG = @LDCONFIG@
+LDD = @LDD@
+LDFLAGS = @LDFLAGS@
+LDFLAGS_SHARED = @LDFLAGS_SHARED@
+LEX = @LEX@
+LIBFILE_1 = @LIBFILE_1@
+LIBFILE_10 = @LIBFILE_10@
+LIBFILE_11 = @LIBFILE_11@
+LIBFILE_12 = @LIBFILE_12@
+LIBFILE_13 = @LIBFILE_13@
+LIBFILE_14 = @LIBFILE_14@
+LIBFILE_15 = @LIBFILE_15@
+LIBFILE_16 = @LIBFILE_16@
+LIBFILE_17 = @LIBFILE_17@
+LIBFILE_18 = @LIBFILE_18@
+LIBFILE_19 = @LIBFILE_19@
+LIBFILE_2 = @LIBFILE_2@
+LIBFILE_20 = @LIBFILE_20@
+LIBFILE_21 = @LIBFILE_21@
+LIBFILE_22 = @LIBFILE_22@
+LIBFILE_23 = @LIBFILE_23@
+LIBFILE_24 = @LIBFILE_24@
+LIBFILE_25 = @LIBFILE_25@
+LIBFILE_26 = @LIBFILE_26@
+LIBFILE_27 = @LIBFILE_27@
+LIBFILE_28 = @LIBFILE_28@
+LIBFILE_29 = @LIBFILE_29@
+LIBFILE_3 = @LIBFILE_3@
+LIBFILE_30 = @LIBFILE_30@
+LIBFILE_4 = @LIBFILE_4@
+LIBFILE_5 = @LIBFILE_5@
+LIBFILE_6 = @LIBFILE_6@
+LIBFILE_7 = @LIBFILE_7@
+LIBFILE_8 = @LIBFILE_8@
+LIBFILE_9 = @LIBFILE_9@
+LIBGREET_DLL_IMPORT = @LIBGREET_DLL_IMPORT@
+LIBHELLO_DLL_IMPORT = @LIBHELLO_DLL_IMPORT@
+LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LN_S = @LN_S@
+MAKE = @MAKE@
+MAKEINFO = @MAKEINFO@
+MSVC_COMP = @MSVC_COMP@
+MSVC_LINK = @MSVC_LINK@
+OBJDUMP = @OBJDUMP@
+OBJEXT = @OBJEXT@
+ODBC_LIB_NAME = @ODBC_LIB_NAME@
+PACKAGE = @PACKAGE@
+PDFBUILD = @PDFBUILD@
+PDFLIB_I_FLAGS = @PDFLIB_I_FLAGS@
+PDFLIB_L_FLAGS = @PDFLIB_L_FLAGS@
+PERL = @PERL@
+PERLBUILD = @PERLBUILD@
+PGODBC_INCLUDE = @PGODBC_INCLUDE@
+PGODBC_LFLAGS = @PGODBC_LFLAGS@
+PGSQL_INCLUDE = @PGSQL_INCLUDE@
+PGSQL_LFLAGS = @PGSQL_LFLAGS@
+PGSQL_LIBS = @PGSQL_LIBS@
+PG_ESQLC = @PG_ESQLC@
+PIC = @PIC@
+PKG_CONFIG = @PKG_CONFIG@
+PLEXUS_COMP = @PLEXUS_COMP@
+PROG_SENDMAIL = @PROG_SENDMAIL@
+QUERIX_COMP = @QUERIX_COMP@
+RANLIB = @RANLIB@
+REDHAT_NAME = @REDHAT_NAME@
+REDHAT_VER = @REDHAT_VER@
+RPCGEN = @RPCGEN@
+RPCLIB_INCLUDE = @RPCLIB_INCLUDE@
+RPCLIB_LFLAGS = @RPCLIB_LFLAGS@
+RPCLIB_NAME = @RPCLIB_NAME@
+RPM = @RPM@
+RPMFILE_1 = @RPMFILE_1@
+RPMFILE_10 = @RPMFILE_10@
+RPMFILE_11 = @RPMFILE_11@
+RPMFILE_12 = @RPMFILE_12@
+RPMFILE_13 = @RPMFILE_13@
+RPMFILE_14 = @RPMFILE_14@
+RPMFILE_15 = @RPMFILE_15@
+RPMFILE_16 = @RPMFILE_16@
+RPMFILE_17 = @RPMFILE_17@
+RPMFILE_18 = @RPMFILE_18@
+RPMFILE_19 = @RPMFILE_19@
+RPMFILE_2 = @RPMFILE_2@
+RPMFILE_20 = @RPMFILE_20@
+RPMFILE_21 = @RPMFILE_21@
+RPMFILE_22 = @RPMFILE_22@
+RPMFILE_23 = @RPMFILE_23@
+RPMFILE_24 = @RPMFILE_24@
+RPMFILE_25 = @RPMFILE_25@
+RPMFILE_26 = @RPMFILE_26@
+RPMFILE_27 = @RPMFILE_27@
+RPMFILE_28 = @RPMFILE_28@
+RPMFILE_29 = @RPMFILE_29@
+RPMFILE_3 = @RPMFILE_3@
+RPMFILE_30 = @RPMFILE_30@
+RPMFILE_4 = @RPMFILE_4@
+RPMFILE_5 = @RPMFILE_5@
+RPMFILE_6 = @RPMFILE_6@
+RPMFILE_7 = @RPMFILE_7@
+RPMFILE_8 = @RPMFILE_8@
+RPMFILE_9 = @RPMFILE_9@
+SAPDBROOT = @SAPDBROOT@
+SAPDB_ESQLC = @SAPDB_ESQLC@
+SAPDB_INCDIR = @SAPDB_INCDIR@
+SAPDB_INCLUDE = @SAPDB_INCLUDE@
+SAPDB_LFLAGS = @SAPDB_LFLAGS@
+SAPDB_LIBDIR = @SAPDB_LIBDIR@
+SAPODBC_INCLUDE = @SAPODBC_INCLUDE@
+SAPODBC_LFLAGS = @SAPODBC_LFLAGS@
+SH = @SH@
+SHORTNAME = @SHORTNAME@
+SO_EXT = @SO_EXT@
+SO_EXT_LINKABLE = @SO_EXT_LINKABLE@
+STRIP = @STRIP@
+STRIP_EXECUTABLES = @STRIP_EXECUTABLES@
+SWIG = @SWIG@
+UNIXODBC_INCLUDE = @UNIXODBC_INCLUDE@
+UNIXODBC_LFLAGS = @UNIXODBC_LFLAGS@
+UNIXODBC_LIBS = @UNIXODBC_LIBS@
+USE_PDF = @USE_PDF@
+USE_RPCGEN = @USE_RPCGEN@
+VERSION = @VERSION@
+WGET = @WGET@
+WWW_DOCUMENT_ROOT = @WWW_DOCUMENT_ROOT@
+WWW_HOST_NAME = @WWW_HOST_NAME@
+XMLRPC_C_CONFIG = @XMLRPC_C_CONFIG@
+XML_RPC = @XML_RPC@
+YACC = @YACC@
+YYDEBUG = @YYDEBUG@
+aubitdir = @aubitdir@
+target = @target@
+target_cpu = @target_cpu@
 
-# ========================== EOF ================================
+bin_PROGRAMS = mkmess
+mkmess_SOURCES = mkmess.c a4gl_mkmess_int.h
+INCLUDES = -I../fcompile
 
+mkmess_LDADD = -laubit4gl
+mkinstalldirs = $(SHELL) $(top_srcdir)/etc/config/mkinstalldirs
+CONFIG_HEADER = ../../incl/a4gl_incl_config.h
+CONFIG_CLEAN_FILES = 
+bin_PROGRAMS =  mkmess$(EXEEXT)
+PROGRAMS =  $(bin_PROGRAMS)
+
+
+DEFS = @DEFS@ -I. -I$(srcdir) -I../../incl
+CPPFLAGS = @CPPFLAGS@
+LIBS = @LIBS@
+mkmess_OBJECTS =  mkmess.$(OBJEXT)
+mkmess_DEPENDENCIES = 
+mkmess_LDFLAGS = 
+CFLAGS = @CFLAGS@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+DIST_COMMON =  Makefile.am Makefile.in
+
+
+DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
+
+TAR = gtar
+GZIP_ENV = --best
+DEP_FILES =  .deps/mkmess.P
+SOURCES = $(mkmess_SOURCES)
+OBJECTS = $(mkmess_OBJECTS)
+
+all: all-redirect
+.SUFFIXES:
+.SUFFIXES: .S .c .lo .o .obj .s
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu compilers/helpcompile/Makefile
+
+Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
+	cd $(top_builddir) \
+	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
+
+
+mostlyclean-binPROGRAMS:
+
+clean-binPROGRAMS:
+	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+
+distclean-binPROGRAMS:
+
+maintainer-clean-binPROGRAMS:
+
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL_PROGRAM) $$p $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	  else :; fi; \
+	done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	list='$(bin_PROGRAMS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \
+	done
+
+# FIXME: We should only use cygpath when building on Windows,
+# and only if it is available.
+.c.obj:
+	$(COMPILE) -c `cygpath -w $<`
+
+.s.o:
+	$(COMPILE) -c $<
+
+.S.o:
+	$(COMPILE) -c $<
+
+mostlyclean-compile:
+	-rm -f *.o core *.core
+	-rm -f *.$(OBJEXT)
+
+clean-compile:
+
+distclean-compile:
+	-rm -f *.tab.c
+
+maintainer-clean-compile:
+
+.s.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+.S.lo:
+	$(LIBTOOL) --mode=compile $(COMPILE) -c $<
+
+mostlyclean-libtool:
+	-rm -f *.lo
+
+clean-libtool:
+	-rm -rf .libs _libs
+
+distclean-libtool:
+
+maintainer-clean-libtool:
+
+mkmess$(EXEEXT): $(mkmess_OBJECTS) $(mkmess_DEPENDENCIES)
+	@rm -f mkmess$(EXEEXT)
+	$(LINK) $(mkmess_LDFLAGS) $(mkmess_OBJECTS) $(mkmess_LDADD) $(LIBS)
+
+tags: TAGS
+
+ID: $(HEADERS) $(SOURCES) $(LISP)
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	here=`pwd` && cd $(srcdir) \
+	  && mkid -f$$here/ID $$unique $(LISP)
+
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
+	tags=; \
+	here=`pwd`; \
+	list='$(SOURCES) $(HEADERS)'; \
+	unique=`for i in $$list; do echo $$i; done | \
+	  awk '    { files[$$0] = 1; } \
+	       END { for (i in files) print i; }'`; \
+	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+
+mostlyclean-tags:
+
+clean-tags:
+
+distclean-tags:
+	-rm -f TAGS ID
+
+maintainer-clean-tags:
+
+distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
+
+subdir = compilers/helpcompile
+
+distdir: $(DISTFILES)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(top_distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	cd $(top_srcdir) \
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu compilers/helpcompile/Makefile
+	@for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+
+DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
+
+-include $(DEP_FILES)
+
+mostlyclean-depend:
+
+clean-depend:
+
+distclean-depend:
+	-rm -rf .deps
+
+maintainer-clean-depend:
+
+%.o: %.c
+	@echo '$(COMPILE) -c $<'; \
+	$(COMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-cp .deps/$(*F).pp .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).pp
+
+%.lo: %.c
+	@echo '$(LTCOMPILE) -c $<'; \
+	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).pp -c $<
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).pp > .deps/$(*F).P; \
+	tr ' ' '\012' < .deps/$(*F).pp \
+	  | sed -e 's/^\\$$//' -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).pp
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am: install-binPROGRAMS
+install-exec: install-exec-am
+
+install-data-am:
+install-data: install-data-am
+
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am: uninstall-binPROGRAMS
+uninstall: uninstall-am
+all-am: Makefile $(PROGRAMS)
+all-redirect: all-am
+install-strip:
+	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
+installdirs:
+	$(mkinstalldirs)  $(DESTDIR)$(bindir)
+
+
+mostlyclean-generic:
+
+clean-generic:
+
+distclean-generic:
+	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
+mostlyclean-am:  mostlyclean-binPROGRAMS mostlyclean-compile \
+		mostlyclean-libtool mostlyclean-tags mostlyclean-depend \
+		mostlyclean-generic
+
+mostlyclean: mostlyclean-am
+
+clean-am:  clean-binPROGRAMS clean-compile clean-libtool clean-tags \
+		clean-depend clean-generic mostlyclean-am
+
+clean: clean-am
+
+distclean-am:  distclean-binPROGRAMS distclean-compile distclean-libtool \
+		distclean-tags distclean-depend distclean-generic \
+		clean-am
+	-rm -f libtool
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-binPROGRAMS \
+		maintainer-clean-compile maintainer-clean-libtool \
+		maintainer-clean-tags maintainer-clean-depend \
+		maintainer-clean-generic distclean-am
+	@echo "This command is intended for maintainers to use;"
+	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
+
+.PHONY: mostlyclean-binPROGRAMS distclean-binPROGRAMS clean-binPROGRAMS \
+maintainer-clean-binPROGRAMS uninstall-binPROGRAMS install-binPROGRAMS \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile mostlyclean-libtool distclean-libtool \
+clean-libtool maintainer-clean-libtool tags mostlyclean-tags \
+distclean-tags clean-tags maintainer-clean-tags distdir \
+mostlyclean-depend distclean-depend clean-depend \
+maintainer-clean-depend info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
+
+
+# Tell versions [3.59,3.63) of GNU make to not export all variables.
+# Otherwise a system limit (for SysV at least) may be exceeded.
+.NOEXPORT:
