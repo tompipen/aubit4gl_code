@@ -1,10 +1,13 @@
 /* *****************************************************************************
  * (c) 1997-2002 Aubit Computing Ltd.
  *
- * $Id: a4gl_incl_4gldef.h,v 1.1 2002-04-25 06:32:46 afalout Exp $
+ * $Id: a4gl_incl_4gldef.h,v 1.2 2002-05-18 14:57:29 mikeaubury Exp $
  *
  * Change History :
  *	$Log: not supported by cvs2svn $
+ *	Revision 1.1  2002/04/25 06:32:46  afalout
+ *	Adding a4gl_xxx_ prefix to remaining header files
+ *	
  *	Revision 1.1  2002/04/13 11:09:49  saferreira
  *	Informix connector
  *	
@@ -120,6 +123,7 @@ typedef struct A4GLSQL_dtime FglDatetime;
 /**
  * Interval variable data type.
  */
+#define IVAL_STRUCT
 struct ival {
     int stime;     /**< The start qualifier */
     int ltime;     /**< The end qualifier */
