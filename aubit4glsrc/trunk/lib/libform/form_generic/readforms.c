@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.24 2004-12-16 10:13:00 mikeaubury Exp $
+# $Id: readforms.c,v 1.25 2004-12-16 10:21:25 mikeaubury Exp $
 #*/
 
 /**
@@ -177,6 +177,7 @@ real_read_form (char *fname, char *formname)
 
   a = A4GL_read_data_from_file ("struct_form", formdets->fileform, fname);
 
+  A4GL_debug("A4GL_read_data_from_file returns %d",a);
   if (a==0)
     {
 		free(formdets->fileform);
