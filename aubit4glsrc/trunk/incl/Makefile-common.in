@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.12 2002-01-27 07:00:39 afalout Exp $
+# $Id: Makefile-common.in,v 1.13 2002-02-02 11:57:23 afalout Exp $
 #
 
 
@@ -60,8 +60,15 @@ MAKEFILE_COMMON_INCLUDED=1
 #Default=/etc/opt/aubit4gl
 AUBITETC=/etc/opt/aubit4gl
 
-AUBIT_SRC_ROOT=@aubitdir@
 
+#WARNING! configure is not creating this file when in binary tree,
+#it is copied in state as configured for source code distribution,
+#so in binary tree AUBIT_SRC_ROOT cannot be used since it's wrong,
+#together with most other @xxx@ stuff - but we are using makefiles installed
+#with binary distro inly to install/seinstall and compile stuff in tools/test
+#so I guess it's OK - if not, we will have to pack Makefile-common.in with
+#binary distro and modify configure to create it fo binary biold too.
+AUBIT_SRC_ROOT=@aubitdir@
 AUBIT_VERSION=@AUBIT_VERSION@
 AUBIT_BUILD=@AUBIT_BUILD@
 COMPILE_DATE=@COMPILE_DATE@
@@ -106,8 +113,18 @@ ifeq "$(NOINCL)" "0"
 	#check if this file is included from make file in Aubit source tree or
 	#not. If we are not, we should not override AUBITDIR
     ifneq "${AUBIT_BIN_INSTALL}" "1"
-		AUBITDIR=${AUBIT_SRC_ROOT}
-    endif
+        AUBITDIR=${AUBIT_SRC_ROOT}
+    else
+		ifeq "${AUBITDIR}" ""
+			#this should happen ONLY when initially installing binary build,
+            #unless install of aubitrc to /etc/opt/aubit4gl/aubitrc fails:
+			AUBITRCFILE:=$(shell ls ./etc/aubitrc-bin ${NOERR})
+			ifneq "${AUBITRCFILE}" ""
+				include ${AUBITRCFILE}
+				A2:=${AUBITRCFILE}
+			endif
+        endif
+	endif
 
 	ifneq "${AUBITDIR}" ""
 		AUBITRCFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc ${NOERR})
@@ -345,11 +362,12 @@ INSTALL_DIR=${PREFIX}/aubit4gl
 	TOREPLACE=^AUBITDIR
 
 	ifeq "${AUBIT_BIN_INSTALL}" "1"
-		INFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc-bin ${NOERR})
+		LOOKFOR_INFILE:=${AUBITDIR}/etc/aubitrc-bin
     else
-		INFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc ${NOERR})
+		LOOKFOR_INFILE:=${AUBITDIR}/etc/aubitrc
     endif
 
+	INFILE:=$(shell ls ${LOOKFOR_INFILE} ${NOERR})
 
 	ifneq "${INFILE}" ""
 		OLDVALUE:=$(shell grep "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
@@ -401,7 +419,9 @@ ADD_LD_LIBRATY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRATY_PATH} |  sed -e "s/:/ /
 #All varibales needed in environment, primarily because 4glpc cannot
 #read this file - all make files should include this file anyway:
 export MAKINGAUBIT
-export AUBIT_SRC_ROOT
+ifneq "${AUBIT_BIN_INSTALL}" "1"
+	export AUBIT_SRC_ROOT
+endif
 export AUBITDIR
 #This one is needed to run Aubit compiled programs from build process:
 export LD_LIBRARY_PATH

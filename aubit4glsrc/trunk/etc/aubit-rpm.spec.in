@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.1 2002-01-31 11:34:06 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.2 2002-02-02 11:57:23 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -33,14 +33,12 @@ Distribution: Red Hat Contrib-Net
 BuildArchitectures: @target_cpu@
 
 
-#Fixme: this is inclomplete at best, but what is this supposed to list? Libraries? Functionality? Look in RPM manual.
-Provides: libgtk4gl.so libgtk4gl_x.so libPDF_PDF.so libaclshared.so
+#Provides is supposed to specify a capability needed by other packages,
+#that can be provided by more tehn one package.
+Provides: 4gl_compiler
 
 #Finding  Requires: (using /usr/lib/rpm/find-requires)...
-#error: line 197: Dependency tokens must begin with alpha-numeric, '_' or '/':
-#Requires: ld-linux.so.2 libc.so.6 libdl.so.2 libform.so.4 libm.so.6 libncurses.so.4 libpanel.so.4 /bin/bash /bin/sh libm.so.6(GLIBC_2.1) libc.so.6(GLIBC_2.1) libc.so.6(GLIBC_2.0)
-Requires: ld-linux.so.2 libc.so.6 libdl.so.2 libform.so.4 libm.so.6 libncurses.so.4 libpanel.so.4 /bin/bash /bin/sh GLIBC_2.1 GLIBC_2.1 GLIBC_2.0 make
-
+Requires: glibc >= 2.2, glibc-devel >= 2.2, ncurses-devel >= 5, /bin/bash, /bin/sh, make
 
 #Obsoletes:
 #BuildRoot: /tmp/aubit4glsrc-%{version}-root
@@ -77,7 +75,7 @@ applications.
 ##############
 #cd aubit4glsrc-0.20.160
 cd %{name}src-%{version}
-aubitconf
+./configure
 #./configure
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 #CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
@@ -105,8 +103,11 @@ make install
 %dir /opt/aubit4gl/bin
 %dir /opt/aubit4gl/lib
 %dir /opt/aubit4gl/etc
+%dir /opt/aubit4gl/etc/config
 %dir /opt/aubit4gl/incl
 %dir /opt/aubit4gl/tools/test/gui
+%dir /opt/aubit4gl/tools/test
+%dir /opt/aubit4gl/tools
 %dir /opt/aubit4gl/docs
 
 /opt/aubit4gl/lib/libaclallgui.a
@@ -160,7 +161,7 @@ make install
 %doc /opt/aubit4gl/docs/CREDITS
 %doc /opt/aubit4gl/docs/LICENSE
 %config /opt/aubit4gl/etc/odbc.ini.example
-%dir /usr/bin
+#%dir /usr/bin
 #/usr/bin/aubit-config
 #/usr/bin/aubit
 #/usr/lib/libaclsharedgui.so
@@ -195,7 +196,7 @@ make install
 ##############
 
 ##############
-#%post
+%post
 #is the macro to do post-install scripts.
 ##############
 
@@ -205,10 +206,18 @@ make install
 #[ ! -d /etc/opt/aubit4gl ] && mkdir /etc/opt/aubit4gl > /dev/null 2>&1
 #[ ! -f /etc/opt/aubit4gl/aubitenv	 ] && cp $RPM_INSTALL_PREFIX/aubit4gl/bin/aubitenv.example /etc/opt/aubit4gl/aubitenv
 
+cd /opt/aubit4gl
+#run 'configure', create and install /etc/opt/aubit4gl/aubitrc, install 
+#links to /usr/bin and /usr/lib, run test_build:
+make
+
 ##############
-#%preun
+%preun
 # is the macro to do pre-uninstall scripts.
 ##############
+cd /opt/aubit4gl
+#remove links created by 'make', and debris in tools/test
+make deinstall
 
 ##############
 #%postun

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.5 2002-01-29 11:07:53 afalout Exp $
+# $Id: Makefile-install.mki,v 1.6 2002-02-02 11:57:23 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -32,14 +32,17 @@
 
 #<block for binary install Makefile ======================================>
 
+## ==================================================================
+##                    install.x
+## ==================================================================
+
 install.aubitrc:
-#	@echo STARTWITH = ${STARTWITH}
-#	@echo REPLACEWITH = ${REPLACEWITH}
 ifneq "${INFILE}" ""
+ifneq "${AUBIT_BIN_INSTALL}" "1"
 	sed -e "/${STARTWITH}/s/${STARTWITH}/${REPLACEWITH}/" ${INFILE} > /tmp/aubitrc.tmp
-#else
-#	cp ${INFILE} /tmp/aubitrc.tmp
-#endif
+else
+	${CP} ${INFILE} /tmp/aubitrc.tmp
+endif
 ifeq "${AUBITRCFILEEXISTS}" ""
 	${MKPATH} ${AUBITETC}
 	mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc
@@ -54,7 +57,7 @@ else
 	@echo " "
 endif
 else
-	@echo "ERROR: cannot find etc/aubitrc - please run 'configure' "
+	@echo "ERROR: cannot find ${LOOKFOR_INFILE} - please run 'configure' "
 endif
 
 install.links:
@@ -66,15 +69,15 @@ install.links:
 	@echo "Links to Aubit compiler installed to ${BIN_INSTALL_LINK}/ "
 
 #This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
-install.libs.conf:
-ifeq "${GREP_LD_SO_CONF}" ""
-	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
-	@echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."
-	ldconfig
-	@echo "Refreshed ldconfig cache."
-else
-	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
-endif
+#install.libs.conf:
+#ifeq "${GREP_LD_SO_CONF}" ""
+#	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
+#	@echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."
+#	ldconfig
+#	@echo "Refreshed ldconfig cache."
+#else
+#	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
+#endif
 
 install.libs.links: deinstall.libs.links
 ifeq "${GTKBUILD}" "yes"
@@ -87,6 +90,10 @@ ifeq "${PDFBUILD}" "yes"
 endif
 	${LN_S} $(INSTALL_DIR)/lib/libPDF_NOPDF.so ${LIB_INSTALL_LINK}/libPDF_NOPDF.so
 	${LN_S} $(INSTALL_DIR)/lib/libaclshared.so ${LIB_INSTALL_LINK}/libaclshared.so
+
+## ==================================================================
+##                    deinstall.x
+## ==================================================================
 
 deinstall.libs.links:
 #remove links to libraries:
@@ -165,6 +172,10 @@ else
 endif
 	@echo "Aubit compiler de-installed. Config file in ${AUBITETC} "
 	@echo "where not deleted."
+
+## ==================================================================
+##                    other targets
+## ==================================================================
 
 test:
 	${MAKE} ${MKNAME} -C tools/test test.build PDFBUILD=${PDFBUILD}

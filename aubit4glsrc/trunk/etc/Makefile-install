@@ -23,37 +23,44 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.4 2002-01-27 07:00:39 afalout Exp $
+# $Id: Makefile-install,v 1.5 2002-02-02 11:57:23 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
-#It's purpose is to create aubitrc for binary installation, and install
+#It's purpose is to create aubitrc for binary installation, install
 #it to appropriate place, and create links to binary files and libraries.
 
-
+#####################################################################
 #All stuff common to more then one Aubit compiler make file is there:
 include incl/Makefile-common
+#####################################################################
 
-install: config install.links install.aubitrc install.libs.links \
-		test
-#remove.aubitrc \
-#install.libs.conf
+## ------------------------------------------------------------------
+##                           Targets
+## ------------------------------------------------------------------
+
+install: etc/aubitrc-bin
+	${MAKE} install.step2
 	@echo Aubit compiler binary disrtibution installed.
 
-config:
-	./configure -with-bin ${CPARAM}
+#we have to restart make because we are reading some things in
+#Makefile-common that will be changed by "configure"
+install.step2: install.links install.aubitrc install.libs.links test
 
+etc/aubitrc-bin:
+	./configure ${CPARAM}
+
+#just an alias, remove it?
+config: etc/aubitrc-bin
+
+
+##############################################################
+#All targets common to binary and source code distros as here:
 include incl/Makefile-install.mki
-
-#we have to remove aubitrc created by configure, so it don't override
-#the one installed in /etc/opt/aubit4gl/aubitrc.
-#we don't have to do this any more, since it's now named aubitrc-bin
-#remove.aubitrc:
-#	mv etc/aubitrc-bin etc/aubitrc-bin.original
+##############################################################
 
 tar: clean
 #COMPILE_DATE=20-01-2002
-#TARGET=i586-pc-linux-gnu
 	${RM} aubit4gl-bin-${TARGET}-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz
 	tar -cvzf aubit4gl-bin-${TARGET}-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz *
 	@echo "Aubit binary installation tarball created"

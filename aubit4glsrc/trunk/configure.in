@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.26 2002-01-31 11:33:55 afalout Exp $
+# $Id: configure.in,v 1.27 2002-02-02 11:57:20 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -32,6 +32,9 @@
 ## ==================================================================
 ##                             Initialise
 ## ==================================================================
+
+#This will catch some dummys, but not our real command line options:
+CMDLINE="$@"
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
@@ -44,18 +47,75 @@ fi
 
 #AC_INIT([Aubit4gl],[0.2],[aubit4gl-discuss@lists.sourceforge.net])
 AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourceforge.net])
+
 #location of additional Autoconf files
 AC_CONFIG_AUX_DIR(etc/config)
+
+
+#Purpose of 'aubitconf' script is to hold all the command line switches
+#to 'configure' on your system, and is local to your system. If found in
+#path, it will be invoked instead of just plain 'configure'
+#aubitconf script will typically have only one line, for example:
+#./configure --with-aubitconf --with-informix --with-jabber -with-iodbc=/blah/huh/iodbc ...etc
+
+AC_PATH_PROG(AUBITCONF, aubitconf, no)
+if test "$AUBITCONF" != "no"; then
+    if test "$AUBITCONF_FLAG" != "running"; then
+		if test "$with_aubitconf" != "yes" ; then
+			#--with-aubitconf=no
+			echo "Note: 'aubitconf' script found; running 'configure' via 'aubitconf'..."
+            echo ""
+			echo "WARNING: if you prvided command line options to 'configure', they will"
+            echo "be ingored, and ones provided in 'aubitconf' used instead. Use "
+            echo "--with-aubitconf=no to disable this behaviour."
+            echo ""
+            #CMDLINE="$@"
+			#echo xxx $CMDLINE xxx
+            #echo $ac_cs_invocation
+			#if [ "$CMDLINE" != "" ]
+			#if test "$CMDLINE" != "" ;
+			#then
+	        #    echo "WARNNG: command line options you provided:"
+	        #    echo "$CMDLINE"
+	        #    echo "will be ignored, and aubitconf specified options used instead!"
+			#fi
+
+
+			#so we don't enter the loop:
+			export AUBITCONF_FLAG=running
+			aubitconf
+			err_code=$?
+			#prevent errors when exiting first instance, that did not egt chance
+	        #to create this files, but expects them:
+			touch conftest.log
+			touch confdefs.h
+			#echo "About to exit first invocation of configure ($err_code)..."
+			exit $err_code
+	        echo "Oooops! You should not see this!"
+        else
+            echo "'aubitconf' found, but disabled"
+        fi
+	else
+        echo "Note: invoked form first stage 'configure', via 'aubitconf'"
+	fi
+fi
+
 
 #This script will be used for configuring binary distributions
 #when --with-bin switch is on command line
 if test "$with_bin" = "yes" ; then
 	AUBIT_SOURCE=0
-else #no switch, detect if we are in source code tree
-	if test -f "tools/project/version"; then
+else
+	#when --with-src was on command line
+	if test "$with_src" = "yes" ; then
 		AUBIT_SOURCE=1
-    else
-		AUBIT_SOURCE=0
+	else
+		#no switch, detect if we are in source code tree
+		if test -f "tools/project/version"; then
+			AUBIT_SOURCE=1
+	    else
+			AUBIT_SOURCE=0
+	    fi
     fi
 fi
 
@@ -72,7 +132,6 @@ fi
 #so we need to specify file which is in both source code and
 #binary distributions:
 AC_CONFIG_SRCDIR([bin/4glpc])
-
 
 if test "$AUBIT_SOURCE" = "1" ; then
 	#Location of global header to receive "#define xxxxx y" replacements:
@@ -233,6 +292,10 @@ esac
 
 #Note: all command line switches like "--xxxx-wwwww" are automativaly
 #converted to shell variables in "xxxxx_wwwww" format.
+#--disable-xxx are not assigned "yes" by default
+#--with-xxx are assigned "yes" if no value was assigned on command line
+
+
 
 if test "$enable_debug" = "no" ; then
 	#FIXME: where should I implement AUBIT_DEBUG in code:
@@ -269,7 +332,27 @@ fi
 KERNEL_VER=`uname -r`
 
 #FIXME: how do I get glibc version?
-GLIBC_VER=2.2.7
+GLIBC_VER=2.2.4
+
+#grep /usr/bin/glibcbug for:
+
+#VERSION="2.2.4"
+#RELEASE="stable"
+#ADDONS="c_stubs glibc-compat linuxthreads"
+#HOST="i386-redhat-linux-gnu"
+#CC='gcc'
+#CCVERSION='2.96 20000731 (Red Hat Linux 7.1 2.96-98)'
+#CFLAGS="-march=i386 -D__USE_STRING_INLINES -fstrict-aliasing -freorder-blocks -DNDEBUG=1 -g -O3"
+#SYSINCLUDES=""
+#VERSIONING="yes"
+#BUILD_STATIC="yes"
+#BUILD_SHARED="yes"
+#BUILD_PIC_DEFAULT="no"
+#BUILD_PROFILE="yes"
+#BUILD_OMITFP="no"
+#BUILD_BOUNDED="no"
+#BUILD_STATIC_NSS="no"
+#STDIO="libio"
 
 
 ## ==================================================================
@@ -291,11 +374,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	    fi
 	    AC_MSG_RESULT($1.$2 (ok))
 	fi
-
-	AC_PROG_LEX
-	if test "$LEX" = "no"; then
-		AC_MSG_ERROR(Sorry, current Aubit source distribution will not work without Lex.)
-    fi
 
 	AC_PATH_PROG(DOXYGEN, doxygen, no)
 	AC_PATH_PROG(CVS_CLIENT, cvs, no)
@@ -331,6 +409,16 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
 fi
 
+#This is probably a bug in autoconf, but if we don't test for Lex BEFORE
+#we test for C, all sort of wireds things will happen, so we have to test 
+#it even in binary distro, where we don't need it:
+AC_PROG_LEX
+if test "$LEX" = "no"; then
+	if test "$AUBIT_SOURCE" = "1" ; then
+		AC_MSG_ERROR(Sorry, current Aubit source distribution will not work without Lex.)
+    fi
+fi
+
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
@@ -358,15 +446,14 @@ fi
 ## ==================================================================
 
 #classic Informix 4gl C-code
-#FIXME: names?
+#FIXME: names? see i4gl.mk
 
 AC_MSG_CHECKING(4Js BDL / Informix D4GL)
 AC_PATH_PROG(FJS_PCOMPILER, fglcomp, no)
 AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
 
 AC_MSG_CHECKING(Querix compiler)
-#4gl code compiler have same name as Plexus  = fglc so we look
-#for Form Compiler
+#4gl code compiler have same name as Plexus  = fglc so we look for Form Compiler
 AC_PATH_PROG(QUERIX_COMP, fmpc, no)
 
 
@@ -1530,6 +1617,7 @@ AC_CHECK_LIB([panel], [main])
 ##                       Checks for header files
 ## ==================================================================
 
+#xxxx
 if test "$AUBIT_SOURCE" = "1" ; then
 	AC_HEADER_STDC
 	AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h ])
@@ -1624,7 +1712,14 @@ esac
 ##           Define which files we will substitute @xxx@ in
 ## ==================================================================
 
+#files to create for both binary and source code:
+#AC_CONFIG_FILES([
+#                incl/Makefile-common
+#                ])
+
+
 if test "$AUBIT_SOURCE" = "1" ; then
+
 	AC_CONFIG_FILES([Makefile
                 etc/aubitrc
                 etc/aubit-rpm.spec
