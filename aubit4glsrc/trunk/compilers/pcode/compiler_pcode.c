@@ -26,148 +26,147 @@ char *cmd_type_str[] = {
   "CMD_CALL",
   "CMD_IF",
   "CMD_SET_VAR",
-	  "CMD_SET_VAR_ONCE",
-	  "CMD_GOTO_LABEL",
-	  "CMD_GOTO_PC",
-	  "CMD_RETURN",
-	  "CMD_NOP",
-	    ""
-
-	};
+  "CMD_SET_VAR_ONCE",
+  "CMD_GOTO_LABEL",
+  "CMD_GOTO_PC",
+  "CMD_RETURN",
+  "CMD_NOP",
+  ""
+};
 
 
 	// An individual command
-	struct label
+struct label
+{
+  char *str;
+  int pc;
+};
+
+
+void *label_tree = 0;
+
+struct function *current_function;
+
+
+
+
+
+
+void
+set_externs ()
+{
+  int n;
+  int a;
+  n = 0;
+  for (a = 0; a < ncalls; a++)
+    {
+      if (find_function (call_list[a]) != -1)
+	continue;
+      n++;
+    }
+
+
+  if (n == 0)
+    return;
+  this_module.external_function_table.external_function_table_val =
+    malloc (sizeof (char *) * n);
+  this_module.external_function_table.external_function_table_len = n;
+  n = 0;
+
+
+  for (a = 0; a < ncalls; a++)
+    {
+      if (find_function (call_list[a]) != -1)
+	continue;
+      this_module.external_function_table.external_function_table_val[n] =
+	add_id (call_list[a]);
+      A4GL_debug ("CALLS : %s\n", call_list[a]);
+      n++;
+    }
+}
+
+
+void
+add_called (char *s)
+{
+  int a;
+  for (a = 0; a < ncalls; a++)
+    {
+      if (strcmp (call_list[a], s) == 0)
+	return;
+    }
+  ncalls++;
+
+  call_list = realloc (call_list, sizeof (char *) * ncalls);
+  call_list[ncalls - 1] = strdup (s);
+}
+
+
+
+
+long
+find_function (char *s)
+{
+  int a;
+  for (a = 0; a < this_module.functions.functions_len; a++)
+    {
+      if (strcmp
+	  (GET_ID (this_module.functions.functions_val[a].func_name_id),
+	   s) == 0)
 	{
-	  char *str;
-	  int pc;
-	};
-
-
-	void *label_tree=0;
-
-	struct function *current_function;
-
-
-
-
-
-
-	void
-	set_externs ()
-	{
-	  int n;
-	  int a;
-	  n = 0;
-	  for (a = 0; a < ncalls; a++)
-	    {
-	      if (find_function (call_list[a]) != -1)
-		continue;
-	      n++;
-	    }
-
-
-	  if (n == 0)
-	    return;
-	  this_module.external_function_table.external_function_table_val =
-	    malloc (sizeof (char *) * n);
-	  this_module.external_function_table.external_function_table_len = n;
-	  n = 0;
-
-
-	  for (a = 0; a < ncalls; a++)
-	    {
-	      if (find_function (call_list[a]) != -1)
-		continue;
-	      this_module.external_function_table.external_function_table_val[n] =
-		add_id (call_list[a]);
-	      A4GL_debug ("CALLS : %s\n", call_list[a]);
-	      n++;
-	    }
+	  return a;
 	}
-
-
-	void
-	add_called (char *s)
-	{
-	  int a;
-	  for (a = 0; a < ncalls; a++)
-	    {
-	      if (strcmp (call_list[a], s) == 0)
-		return;
-	    }
-	  ncalls++;
-
-	  call_list = realloc (call_list, sizeof (char *) * ncalls);
-	  call_list[ncalls - 1] = strdup (s);
-	}
+    }
+  return -1;
+}
 
 
 
+long
+new_command (enum cmd_type cmd_type, void *ptr)
+{
 
-	long
-	find_function (char *s)
-	{
-	  int a;
-	  for (a = 0; a < this_module.functions.functions_len; a++)
-	    {
-	      if (strcmp
-		  (GET_ID (this_module.functions.functions_val[a].func_name_id),
-		   s) == 0)
-		{
-		  return a;
-		}
-	    }
-	  return -1;
-	}
+  if (this_module.functions.functions_len == 0)
+    {
+      printf ("No current function to add a command to....\n");
+      exit (1);
+    }
 
 
+  current_function =
+    &this_module.functions.functions_val[this_module.functions.functions_len -
+					 1];
 
-	long
-	new_command (enum cmd_type cmd_type, void *ptr)
-	{
-
-	  if (this_module.functions.functions_len == 0)
-	    {
-	      printf ("No current function to add a command to....\n");
-	      exit (1);
-	    }
-
-
-	  current_function =
-	    &this_module.functions.functions_val[this_module.functions.functions_len -
-						 1];
-
-	  current_function->cmds.cmds_len++;
-	  current_function->cmds.cmds_val =
-	    realloc (current_function->cmds.cmds_val,
-		     sizeof (struct cmd) * current_function->cmds.cmds_len);
+  current_function->cmds.cmds_len++;
+  current_function->cmds.cmds_val =
+    realloc (current_function->cmds.cmds_val,
+	     sizeof (struct cmd) * current_function->cmds.cmds_len);
 
 
 
-	#define CURRENT_CMD current_function->cmds.cmds_val[current_function->cmds.cmds_len - 1]
+#define CURRENT_CMD current_function->cmds.cmds_val[current_function->cmds.cmds_len - 1]
 
-	  CURRENT_CMD.cmd_type = cmd_type;
+  CURRENT_CMD.cmd_type = cmd_type;
 
-	  switch (cmd_type)
-	    {
-	    case CMD_BLOCK:
-	      CURRENT_CMD.cmd_u.c_block = ptr;
-	      break;
+  switch (cmd_type)
+    {
+    case CMD_BLOCK:
+      CURRENT_CMD.cmd_u.c_block = ptr;
+      break;
 
-	    case CMD_END_BLOCK:
-	      CURRENT_CMD.cmd_u.c_endblock = ptr;
-	      break;
+    case CMD_END_BLOCK:
+      CURRENT_CMD.cmd_u.c_endblock = ptr;
+      break;
 
-	    case CMD_CALL:
-	      CURRENT_CMD.cmd_u.c_call = ptr;
-	      break;
+    case CMD_CALL:
+      CURRENT_CMD.cmd_u.c_call = ptr;
+      break;
 
-	    case CMD_IF:
-	      CURRENT_CMD.cmd_u.c_if = ptr;
-	      break;
+    case CMD_IF:
+      CURRENT_CMD.cmd_u.c_if = ptr;
+      break;
 
-	    case CMD_SET_VAR:
+    case CMD_SET_VAR:
       CURRENT_CMD.cmd_u.c_setvar = ptr;
       A4GL_debug ("\n\nADDING CMD_SET_VAR : %p\n\n", ptr);
       A4GL_debug ("variable=%p value=%p\n",
@@ -175,10 +174,12 @@ char *cmd_type_str[] = {
 		  &CURRENT_CMD.cmd_u.c_setvar->value);
       break;
 
-	    case CMD_SET_VAR_ONCE:
+    case CMD_SET_VAR_ONCE:
       CURRENT_CMD.cmd_u.c_setvar1 = ptr;
       A4GL_debug ("\n\nADDING CMD_SET_VAR : %p\n\n", ptr);
-      A4GL_debug ("variable=%p value=%p\n", &CURRENT_CMD.cmd_u.c_setvar->variable, &CURRENT_CMD.cmd_u.c_setvar->value);
+      A4GL_debug ("variable=%p value=%p\n",
+		  &CURRENT_CMD.cmd_u.c_setvar->variable,
+		  &CURRENT_CMD.cmd_u.c_setvar->value);
       break;
 
 
@@ -239,16 +240,17 @@ add_block (void *ptr_c_vars)
 
 
 long
-add_set_var (struct use_variable *var, struct param *value,int once)
+add_set_var (struct use_variable *var, struct param *value, int once)
 {
   struct cmd_set_var *v;
   struct cmd_set_var1 *v1;
   int pc;
-  
-  v  = malloc (sizeof (struct cmd_set_var));
+
+  v = malloc (sizeof (struct cmd_set_var));
   v1 = malloc (sizeof (struct cmd_set_var1));
 
-  A4GL_debug ("sizes : %d %d\n", sizeof (v->variable), sizeof (struct use_variable));
+  A4GL_debug ("sizes : %d %d\n", sizeof (v->variable),
+	      sizeof (struct use_variable));
 
   memcpy (&(v->variable), var, sizeof (struct use_variable));
   memcpy (&(v1->variable), var, sizeof (struct use_variable));
@@ -256,13 +258,16 @@ add_set_var (struct use_variable *var, struct param *value,int once)
 
 //A4GL_debug("Before copy : ");
   //print_params(value);
- if (value) {
-  memcpy (&(v->value), value, sizeof (struct param));
-  memcpy (&(v1->value), value, sizeof (struct param));
- } else {
-	v->value.param_type=PARAM_TYPE_EMPTY;
-	v1->value.param_type=PARAM_TYPE_EMPTY;
-}
+  if (value)
+    {
+      memcpy (&(v->value), value, sizeof (struct param));
+      memcpy (&(v1->value), value, sizeof (struct param));
+    }
+  else
+    {
+      v->value.param_type = PARAM_TYPE_EMPTY;
+      v1->value.param_type = PARAM_TYPE_EMPTY;
+    }
 
 //A4GL_debug("After copy : ");
   //print_params(&v->value);
@@ -274,12 +279,15 @@ add_set_var (struct use_variable *var, struct param *value,int once)
       *ptr = 0;
 
     }
-if (once)  {
-	v1->set=0;
-  	pc = new_command (CMD_SET_VAR_ONCE, v1);
-} else  {
-  pc = new_command (CMD_SET_VAR, v);
-}
+  if (once)
+    {
+      v1->set = 0;
+      pc = new_command (CMD_SET_VAR_ONCE, v1);
+    }
+  else
+    {
+      pc = new_command (CMD_SET_VAR, v);
+    }
   //print_set_var(v);
   return pc;
 }
@@ -370,13 +378,13 @@ add_goto (char *label)
 long
 end_function ()
 {
-int a;
+  int a;
   do_end_block ();
   new_command (CMD_RETURN, 0);
   is_in_function = 0;
-  a=this_module.functions.functions_len-1;
-  resolve_gotos_func(a);
-  
+  a = this_module.functions.functions_len - 1;
+  resolve_gotos_func (a);
+
   //printf("Done..\n");
   return 0;
 }
@@ -462,80 +470,79 @@ islabel (int a)
 }
 
 
-void resolve_gotos_func (int function_cnt)
+void
+resolve_gotos_func (int function_cnt)
 {
   int cmd_cnt;
   int b;
 
 
 
-      current_function = &this_module.functions.functions_val[function_cnt];
-      for (cmd_cnt = 0; cmd_cnt < current_function->cmds.cmds_len; cmd_cnt++)
+  current_function = &this_module.functions.functions_val[function_cnt];
+  for (cmd_cnt = 0; cmd_cnt < current_function->cmds.cmds_len; cmd_cnt++)
+    {
+
+      if (current_function->cmds.cmds_val[cmd_cnt].cmd_type == CMD_GOTO_LABEL)
+	{
+	  b =
+	    find_label ((char *) current_function->cmds.cmds_val[cmd_cnt].
+			cmd_u.c_goto_str);
+	  if (b < 0)
+	    {
+	      printf ("Unable to locate label : %s",
+		      (char *) (current_function->cmds.cmds_val[cmd_cnt].
+				cmd_u.c_goto_str));
+	      exit (1);
+	    }
+	  A4GL_debug ("find label returns %d\n", b);
+	  current_function->cmds.cmds_val[cmd_cnt].cmd_type = CMD_GOTO_PC;
+	  current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_goto_pc =
+	    b - cmd_cnt;
+	}
+
+      if (current_function->cmds.cmds_val[cmd_cnt].cmd_type == CMD_IF)
 	{
 
-	  if (current_function->cmds.cmds_val[cmd_cnt].cmd_type ==
-	      CMD_GOTO_LABEL)
+	  if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_false)
 	    {
 	      b =
-		find_label ((char *) current_function->cmds.cmds_val[cmd_cnt].
-			    cmd_u.c_goto_str);
+		find_label ((char *) current_function->cmds.
+			    cmds_val[cmd_cnt].cmd_u.c_if->goto_false);
 	      if (b < 0)
 		{
 		  printf ("Unable to locate label : %s",
-			  (char *) (current_function->cmds.cmds_val[cmd_cnt].
-				    cmd_u.c_goto_str));
+			  (char *) (current_function->cmds.
+				    cmds_val[cmd_cnt].cmd_u.c_if->
+				    goto_false));
 		  exit (1);
 		}
 	      A4GL_debug ("find label returns %d\n", b);
-	      current_function->cmds.cmds_val[cmd_cnt].cmd_type = CMD_GOTO_PC;
-	      current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_goto_pc = b - cmd_cnt;
+	      current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
+		goto_false = b - cmd_cnt;
+
 	    }
 
-	  if (current_function->cmds.cmds_val[cmd_cnt].cmd_type == CMD_IF)
+	  if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->goto_true)
 	    {
-
-	      if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
-		  goto_false)
+	      b =
+		find_label ((char *) current_function->cmds.
+			    cmds_val[cmd_cnt].cmd_u.c_if->goto_true);
+	      if (b < 0)
 		{
-		  b =
-		    find_label ((char *) current_function->cmds.
-				cmds_val[cmd_cnt].cmd_u.c_if->goto_false);
-		  if (b < 0)
-		    {
-		      printf ("Unable to locate label : %s",
-			      (char *) (current_function->cmds.
-					cmds_val[cmd_cnt].cmd_u.c_if->
-					goto_false));
-		      exit (1);
-		    }
-		  A4GL_debug ("find label returns %d\n", b);
-		  current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if-> goto_false = b - cmd_cnt;
-
+		  printf ("Unable to locate label : %s",
+			  (char *) (current_function->cmds.
+				    cmds_val[cmd_cnt].cmd_u.c_if->goto_true));
+		  exit (1);
 		}
-
-	      if (current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
-		  goto_true)
-		{
-		  b =
-		    find_label ((char *) current_function->cmds.
-				cmds_val[cmd_cnt].cmd_u.c_if->goto_true);
-		  if (b < 0)
-		    {
-		      printf ("Unable to locate label : %s",
-			      (char *) (current_function->cmds.
-					cmds_val[cmd_cnt].cmd_u.c_if->
-					goto_true));
-		      exit (1);
-		    }
-		  A4GL_debug ("find label returns %d\n", b);
-		  current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
-		    goto_true = b - cmd_cnt;
-		}
-
+	      A4GL_debug ("find label returns %d\n", b);
+	      current_function->cmds.cmds_val[cmd_cnt].cmd_u.c_if->
+		goto_true = b - cmd_cnt;
 	    }
-
 
 	}
+
+
+    }
 }
 
 
@@ -545,7 +552,7 @@ resolve_gotos ()
   int function_cnt;
   int cmd_cnt;
   int b;
-return;
+  return;
 
   for (function_cnt = 0; function_cnt < this_module.functions.functions_len;
        function_cnt++)
@@ -643,8 +650,10 @@ add_id (char *s)
   this_module.id_table.id_table_val =
     realloc (this_module.id_table.id_table_val,
 	     sizeof (struct vstring) * this_module.id_table.id_table_len);
-  this_module.id_table.id_table_val[this_module.id_table.id_table_len - 1].s = strdup (s);
-  this_module.id_table.id_table_val[this_module.id_table.id_table_len - 1].rcnt=1;
+  this_module.id_table.id_table_val[this_module.id_table.id_table_len - 1].s =
+    strdup (s);
+  this_module.id_table.id_table_val[this_module.id_table.id_table_len -
+				    1].rcnt = 1;
 
   A4GL_debug ("Created it @ %d\n", this_module.id_table.id_table_len - 1);
   return this_module.id_table.id_table_len - 1;
@@ -660,13 +669,15 @@ add_function (char *function_name, struct define_variables *v, int is_static)
   struct function *curr_func;
   //printf ("Processing :%-80.80s\n", function_name); fflush(stdout);
 
-  if (labels_cnt) {
-	 for(a=0;a<labels_cnt;a++) {
-		free(labels[a].str); 
-	 }
-	labels_cnt=0;
-  }
-	
+  if (labels_cnt)
+    {
+      for (a = 0; a < labels_cnt; a++)
+	{
+	  free (labels[a].str);
+	}
+      labels_cnt = 0;
+    }
+
   this_module.functions.functions_len++;
   this_module.functions.functions_val =
     realloc (this_module.functions.functions_val,
@@ -684,9 +695,11 @@ add_function (char *function_name, struct define_variables *v, int is_static)
   if (v)
     {
       curr_func->param_vars.param_vars_len = v->var_len;
-      curr_func->param_vars.param_vars_val = malloc (sizeof (struct use_variable) * v->var_len);
+      curr_func->param_vars.param_vars_val =
+	malloc (sizeof (struct use_variable) * v->var_len);
       //printf("Adding %d variables as parameters..\n",v->var_len);
-      memset (curr_func->param_vars.param_vars_val, 0, (sizeof (struct use_variable) * v->var_len));
+      memset (curr_func->param_vars.param_vars_val, 0,
+	      (sizeof (struct use_variable) * v->var_len));
     }
   else
     {
@@ -697,9 +710,10 @@ add_function (char *function_name, struct define_variables *v, int is_static)
 
 // Add our function block...
   add_block (0);
-  if (strcmp(function_name,"__MODULE")!=0) {
-		is_in_function = 1;
-  }
+  if (strcmp (function_name, "__MODULE") != 0)
+    {
+      is_in_function = 1;
+    }
 
   if (v)
     {
@@ -715,7 +729,9 @@ add_function (char *function_name, struct define_variables *v, int is_static)
 	  else
 	    {
 	      //printf("Adding %d as parameter variable array \n",a);
-	      add_variable_array (CAT_NORMAL, &v->var_val[a], GET_ID (v->var_val[a].name_id), &v->var_val[a].i_arr_size[0], 0);
+	      add_variable_array (CAT_NORMAL, &v->var_val[a],
+				  GET_ID (v->var_val[a].name_id),
+				  &v->var_val[a].i_arr_size[0], 0);
 	    }
 	}
 
@@ -725,11 +741,12 @@ add_function (char *function_name, struct define_variables *v, int is_static)
 	{
 	  struct use_variable *uv;
 	  uv = mk_use_variable (0, 0, GET_ID (v->var_val[a].name_id), 0);
-		uv->indirection=0;
+	  uv->indirection = 0;
 	  //p = malloc (sizeof (struct param));
 	  //p->param_type = PARAM_TYPE_USE_VAR;
 	  //p->param_u.uv = uv;
-	  memcpy (&curr_func->param_vars.param_vars_val[a], uv, sizeof (struct use_variable));
+	  memcpy (&curr_func->param_vars.param_vars_val[a], uv,
+		  sizeof (struct use_variable));
 	}
 
 
@@ -756,5 +773,3 @@ add_return (struct param *r)
 {
   return new_command (CMD_RETURN, r);
 }
-
-

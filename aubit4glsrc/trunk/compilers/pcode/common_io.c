@@ -41,6 +41,8 @@ process_xdr (char dir, void *s, char *filename)
 }
 
 
-void nullfunc() {
+void
+nullfunc ()
+{
 // Does nothing ...
 }

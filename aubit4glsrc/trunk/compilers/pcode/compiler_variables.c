@@ -26,7 +26,7 @@ static struct variable_element *make_default_struct_element (char *dtype,
 
 
 
-static void end_define_gen(struct cmd_block *block) ;
+static void end_define_gen (struct cmd_block *block);
 
 struct cmd_block *vstack[MAXSTACK];	// 10 levels for blocks should be enough
 int vstack_pc[MAXSTACK];
@@ -76,10 +76,19 @@ get_dtype (char *s)
     return DLONG;
   if (strcasecmp (s, "VoidPointer") == 0)
     return DPTR;
-  if (strcasecmp (s, "Void") == 0) { return DVOID; }
+  if (strcasecmp (s, "Void") == 0)
+    {
+      return DVOID;
+    }
 
-  if (strcasecmp (s, "fgldecimal") == 0) { return DDEC; }
-  if (strcasecmp (s, "fglmoney") == 0) { return DMON; }
+  if (strcasecmp (s, "fgldecimal") == 0)
+    {
+      return DDEC;
+    }
+  if (strcasecmp (s, "fglmoney") == 0)
+    {
+      return DMON;
+    }
 
   if (strcasecmp (s, "ShortPtr") == 0)
     {
@@ -100,26 +109,31 @@ get_dtype (char *s)
 void
 set_master_type (int type)
 {
-	//printf("Setting category to %d",type);
-  	master_variable->category = type;
+  //printf("Setting category to %d",type);
+  master_variable->category = type;
 }
 
-void set_master_set(struct param *set) {
+void
+set_master_set (struct param *set)
+{
   struct use_variable *uv;
 
-  uv=malloc(sizeof(struct use_variable));
-  uv->variable_id=master_variable->variable_id;
-  uv->defined_in_block_pc=vstack_pc[vstack_cnt-1];
+  uv = malloc (sizeof (struct use_variable));
+  uv->variable_id = master_variable->variable_id;
+  uv->defined_in_block_pc = vstack_pc[vstack_cnt - 1];
 
-  uv->indirection=0;
-  uv->sub.sub_len=0;
-  uv->sub.sub_val=0;
+  uv->indirection = 0;
+  uv->sub.sub_len = 0;
+  uv->sub.sub_val = 0;
 
-if (m_type==1) {
-  add_set_var(uv,set,1);
-} else {
-  add_set_var(uv,set,0);
-}
+  if (m_type == 1)
+    {
+      add_set_var (uv, set, 1);
+    }
+  else
+    {
+      add_set_var (uv, set, 0);
+    }
 }
 
 void
@@ -150,14 +164,14 @@ add_variable (int type, struct variable_element *e, char *id,
       // Add it to the current function..
       base = vstack[vstack_cnt - 1];
 
-      master_variable->def_block=vstack_pc[vstack_cnt-1];
+      master_variable->def_block = vstack_pc[vstack_cnt - 1];
     }
   else
     {
       A4GL_debug ("Not in function\n");
-      master_variable->def_block=-1;
+      master_variable->def_block = -1;
       base = vstack[0];
-		//&this_module.module_variables;
+      //&this_module.module_variables;
     }
 
   base->c_vars.c_vars_len++;
@@ -171,7 +185,7 @@ add_variable (int type, struct variable_element *e, char *id,
   memcpy (&base->c_vars.c_vars_val[base->c_vars.c_vars_len - 1],
 	  master_variable, sizeof (struct variable));
 
-  master_variable=&base->c_vars.c_vars_val[base->c_vars.c_vars_len - 1];
+  master_variable = &base->c_vars.c_vars_val[base->c_vars.c_vars_len - 1];
   // Add it to the module level variables...
 
 
@@ -182,18 +196,22 @@ add_variable (int type, struct variable_element *e, char *id,
 
 
 void
-add_variable_array (int type, struct variable_element *e, char *id, long *arrsize, struct param *set)
+add_variable_array (int type, struct variable_element *e, char *id,
+		    long *arrsize, struct param *set)
 {
 
-if (arrsize) {
-  e->i_arr_size[0] = arrsize[0];
-  e->i_arr_size[1] = arrsize[1];
-  e->i_arr_size[2] = arrsize[2];
-} else {
-  e->i_arr_size[0] = 0;
-  e->i_arr_size[1] = 0;
-  e->i_arr_size[2] = 0;
-}
+  if (arrsize)
+    {
+      e->i_arr_size[0] = arrsize[0];
+      e->i_arr_size[1] = arrsize[1];
+      e->i_arr_size[2] = arrsize[2];
+    }
+  else
+    {
+      e->i_arr_size[0] = 0;
+      e->i_arr_size[1] = 0;
+      e->i_arr_size[2] = 0;
+    }
   add_variable (type, e, id, set);
 
 }
@@ -272,10 +290,10 @@ find_variable (int sid, char *s, short *block_no)
 			      c->c_vars.c_vars_val[b].variable_id, a,
 			      GET_ID (c->c_vars.c_vars_val[b].var->name_id));
 
-		if (a!=0)
-		  *block_no = vstack_pc[a];
-		else
-		  *block_no = -1;
+		  if (a != 0)
+		    *block_no = vstack_pc[a];
+		  else
+		    *block_no = -1;
 
 		  return c->c_vars.c_vars_val[b].variable_id;
 		}
@@ -318,7 +336,8 @@ find_variable (int sid, char *s, short *block_no)
 
 
 struct use_variable *
-mk_use_variable (struct param *p, struct param *arr, char *id, char indirection)
+mk_use_variable (struct param *p, struct param *arr, char *id,
+		 char indirection)
 {
   struct use_variable *u;
   struct use_variable_sub *sub = 0;
@@ -385,7 +404,7 @@ mk_use_variable (struct param *p, struct param *arr, char *id, char indirection)
       if (p->param_u.uv->defined_in_block_pc == -1)
 	{			// Its module level
 	  //printf("Module level variable\n");
-	 command = &this_module.functions.functions_val[0].cmds.cmds_val[0];
+	  command = &this_module.functions.functions_val[0].cmds.cmds_val[0];
 	}
       else
 	{
@@ -398,13 +417,13 @@ mk_use_variable (struct param *p, struct param *arr, char *id, char indirection)
 								  uv->
 								  defined_in_block_pc];
 
-}
-	  if (command->cmd_type != CMD_BLOCK)
-	    {
-	      printf ("I've got confused...\nIt happens...\n");
-	      exit (1);
-	    }
-	  base = command->cmd_u.c_block;
+	}
+      if (command->cmd_type != CMD_BLOCK)
+	{
+	  printf ("I've got confused...\nIt happens...\n");
+	  exit (1);
+	}
+      base = command->cmd_u.c_block;
 
 
 /*
@@ -415,7 +434,7 @@ mk_use_variable (struct param *p, struct param *arr, char *id, char indirection)
 								 defined_in_block_pc].
 	    cmd_u.c_block;
 */
-	
+
 
 // We've now found our base - now find our variable
 // We need to go down our subs to find the right element
@@ -542,14 +561,14 @@ new_variable_element_string (char *s)
   n = malloc (sizeof (struct variable_element));
   n->name_id = -1;
   n->dtype = get_dtype (s);
-  n->unit_size  = 0;
+  n->unit_size = 0;
   n->total_size = 0;
 
   switch (n->dtype)
     {
     case DCHAR:
-	n->unit_size=1;
-	break;
+      n->unit_size = 1;
+      break;
     case DINT:
       n->unit_size = 2;
       break;
@@ -601,14 +620,20 @@ new_variable_struct (struct define_variables *v)
 	malloc (sizeof (struct variable_element) * n->next.next_len);
       for (a = 0; a < v->var_len; a++)
 	{
-	int arr;
+	  int arr;
 	  v->var_val[a].offset = s;
-	  if ( v->var_val[a].i_arr_size[0]==0) arr=1;
-	  else {arr=v->var_val[a].i_arr_size[0];}
-	  if ( v->var_val[a].i_arr_size[1]!=0) arr*= v->var_val[a].i_arr_size[1];
-	  if ( v->var_val[a].i_arr_size[2]!=0) arr*= v->var_val[a].i_arr_size[2];
-	
-	  s += v->var_val[a].unit_size*arr;
+	  if (v->var_val[a].i_arr_size[0] == 0)
+	    arr = 1;
+	  else
+	    {
+	      arr = v->var_val[a].i_arr_size[0];
+	    }
+	  if (v->var_val[a].i_arr_size[1] != 0)
+	    arr *= v->var_val[a].i_arr_size[1];
+	  if (v->var_val[a].i_arr_size[2] != 0)
+	    arr *= v->var_val[a].i_arr_size[2];
+
+	  s += v->var_val[a].unit_size * arr;
 	  memcpy (&n->next.next_val[a], &v->var_val[a],
 		  sizeof (struct variable_element));
 	}
@@ -664,16 +689,16 @@ add_default_named_structs ()
 
 
 static struct variable_element *
-make_default_struct_element (char *dtype, int arrsize, char *name) // @FIXME - Allow multiple arrsize
+make_default_struct_element (char *dtype, int arrsize, char *name)	// @FIXME - Allow multiple arrsize
 {
   struct variable_element *dv;
   dv = new_variable_element_string (dtype);
   dv->name_id = add_id (name);
   if (arrsize)
     {
-      dv->i_arr_size[0] =arrsize; 
-      dv->i_arr_size[1] =0; 
-      dv->i_arr_size[2] =0; 
+      dv->i_arr_size[0] = arrsize;
+      dv->i_arr_size[1] = 0;
+      dv->i_arr_size[2] = 0;
     }
   return dv;
 }
@@ -712,116 +737,155 @@ add_default_struct_list (struct define_variables *v,
 
 
 
-void end_define(void) {
-struct cmd_block *block;
-block=vstack[vstack_cnt-1];
-end_define_gen(block);
+void
+end_define (void)
+{
+  struct cmd_block *block;
+  block = vstack[vstack_cnt - 1];
+  end_define_gen (block);
 }
 
-void end_define_module(void) {
-struct cmd_block *block;
-block=vstack[0];
-end_define_gen(block);
+void
+end_define_module (void)
+{
+  struct cmd_block *block;
+  block = vstack[0];
+  end_define_gen (block);
 }
 
 
-void end_define_gen(struct cmd_block *block) {
-int a;
-int size=0;
+void
+end_define_gen (struct cmd_block *block)
+{
+  int a;
+  int size = 0;
 // We must be in a block..
 //printf("end_define_gen\n");
 //printf("This block has %d elements %d bytes\n",block->c_vars.c_vars_len,block->mem_to_alloc);
 
 
-for (a=0;a<block->c_vars.c_vars_len;a++) {
-	A4GL_debug("Catagory = %d\n",block->c_vars.c_vars_val[a].category);
-	//printf("Rendering %d - %s current : %d\n",a,GET_ID(block->c_vars.c_vars_val[a].var->name_id),block->c_vars.c_vars_val[a].var->total_size);
-	if (block->c_vars.c_vars_val[a].var->total_size==0) {
-		if (block->c_vars.c_vars_val[a].var->i_arr_size[0]==0) {
-				block->c_vars.c_vars_val[a].var->total_size=block->c_vars.c_vars_val[a].var->unit_size;
-		} else {
-				int arr;
-				arr=block->c_vars.c_vars_val[a].var->i_arr_size[0];
-				if (block->c_vars.c_vars_val[a].var->i_arr_size[1]) arr*=block->c_vars.c_vars_val[a].var->i_arr_size[1];
-				if (block->c_vars.c_vars_val[a].var->i_arr_size[2]) arr*=block->c_vars.c_vars_val[a].var->i_arr_size[2];
-				block->c_vars.c_vars_val[a].var->total_size=(block->c_vars.c_vars_val[a].var->unit_size)*arr;
-		}
+  for (a = 0; a < block->c_vars.c_vars_len; a++)
+    {
+      A4GL_debug ("Catagory = %d\n", block->c_vars.c_vars_val[a].category);
+      //printf("Rendering %d - %s current : %d\n",a,GET_ID(block->c_vars.c_vars_val[a].var->name_id),block->c_vars.c_vars_val[a].var->total_size);
+      if (block->c_vars.c_vars_val[a].var->total_size == 0)
+	{
+	  if (block->c_vars.c_vars_val[a].var->i_arr_size[0] == 0)
+	    {
+	      block->c_vars.c_vars_val[a].var->total_size =
+		block->c_vars.c_vars_val[a].var->unit_size;
+	    }
+	  else
+	    {
+	      int arr;
+	      arr = block->c_vars.c_vars_val[a].var->i_arr_size[0];
+	      if (block->c_vars.c_vars_val[a].var->i_arr_size[1])
+		arr *= block->c_vars.c_vars_val[a].var->i_arr_size[1];
+	      if (block->c_vars.c_vars_val[a].var->i_arr_size[2])
+		arr *= block->c_vars.c_vars_val[a].var->i_arr_size[2];
+	      block->c_vars.c_vars_val[a].var->total_size =
+		(block->c_vars.c_vars_val[a].var->unit_size) * arr;
+	    }
 	}
-		if ( block->c_vars.c_vars_val[a].category==CAT_NORMAL||block->c_vars.c_vars_val[a].category==CAT_PARAMETER) {
-		block->c_vars.c_vars_val[a].var->offset=size;
-		size+=block->c_vars.c_vars_val[a].var->total_size;
+      if (block->c_vars.c_vars_val[a].category == CAT_NORMAL
+	  || block->c_vars.c_vars_val[a].category == CAT_PARAMETER)
+	{
+	  block->c_vars.c_vars_val[a].var->offset = size;
+	  size += block->c_vars.c_vars_val[a].var->total_size;
 	}
-		
-	
-		
-}
-block->mem_to_alloc=size;
-A4GL_debug("Non-static/externs take up %d bytes...\n",size);
-}
 
 
 
-
-
-void set_type(int a) {
-m_type=a;
+    }
+  block->mem_to_alloc = size;
+  A4GL_debug ("Non-static/externs take up %d bytes...\n", size);
 }
 
-void move_define(struct cmd_block *from,  struct cmd_block *to) {
-int a;
-if (from->c_vars.c_vars_len==0) return; /* Nothing to copy */
 
-for (a=0;a<from->c_vars.c_vars_len;a++) {
-	to->c_vars.c_vars_len++;
-	to->c_vars.c_vars_val=realloc(to->c_vars.c_vars_val,(to->c_vars.c_vars_len)*sizeof(struct variable));
+
+
+
+void
+set_type (int a)
+{
+  m_type = a;
+}
+
+void
+move_define (struct cmd_block *from, struct cmd_block *to)
+{
+  int a;
+  if (from->c_vars.c_vars_len == 0)
+    return;			/* Nothing to copy */
+
+  for (a = 0; a < from->c_vars.c_vars_len; a++)
+    {
+      to->c_vars.c_vars_len++;
+      to->c_vars.c_vars_val =
+	realloc (to->c_vars.c_vars_val,
+		 (to->c_vars.c_vars_len) * sizeof (struct variable));
 
 //printf("Copying variable id : %d\n",from->c_vars.c_vars_val[a].variable_id);
 
 
-to->c_vars.c_vars_val[to->c_vars.c_vars_len-1].variable_id=from->c_vars.c_vars_val[a].variable_id;
-to->c_vars.c_vars_val[to->c_vars.c_vars_len-1].def_block=from->c_vars.c_vars_val[a].def_block;
-to->c_vars.c_vars_val[to->c_vars.c_vars_len-1].category=from->c_vars.c_vars_val[a].category;
+      to->c_vars.c_vars_val[to->c_vars.c_vars_len - 1].variable_id =
+	from->c_vars.c_vars_val[a].variable_id;
+      to->c_vars.c_vars_val[to->c_vars.c_vars_len - 1].def_block =
+	from->c_vars.c_vars_val[a].def_block;
+      to->c_vars.c_vars_val[to->c_vars.c_vars_len - 1].category =
+	from->c_vars.c_vars_val[a].category;
 //to->c_vars.c_vars_val[to->c_vars.c_vars_len-1].alloc_size=from->c_vars.c_vars_val[a].alloc_size;
 //to->c_vars.c_vars_val[to->c_vars.c_vars_len-1].offset=from->c_vars.c_vars_val[a].offset;
-to->c_vars.c_vars_val[to->c_vars.c_vars_len-1].var=from->c_vars.c_vars_val[a].var;
+      to->c_vars.c_vars_val[to->c_vars.c_vars_len - 1].var =
+	from->c_vars.c_vars_val[a].var;
 
-}
-from->c_vars.c_vars_len=0;
+    }
+  from->c_vars.c_vars_len = 0;
 //free(from->c_vars.c_vars_val);
-from->c_vars.c_vars_val=0;
+  from->c_vars.c_vars_val = 0;
 }
 
 /* 
 Convert all internal blocks to 'void' blocks..
 ie blocks with no variables attached to them
 */
-void move_defines() {
-int a;
-int b;
-int nop=0;
-struct function *func;
-for (a=0;a<this_module.functions.functions_len;a++) {
-	func=&this_module.functions.functions_val[a];
-	// 0 will always be the functions block...
-	if (func->cmds.cmds_val[0].cmd_type!=CMD_BLOCK) {
-		printf("Confused - expecting first command to be a block");
+void
+move_defines ()
+{
+  int a;
+  int b;
+  int nop = 0;
+  struct function *func;
+  for (a = 0; a < this_module.functions.functions_len; a++)
+    {
+      func = &this_module.functions.functions_val[a];
+      // 0 will always be the functions block...
+      if (func->cmds.cmds_val[0].cmd_type != CMD_BLOCK)
+	{
+	  printf ("Confused - expecting first command to be a block");
 	}
 
-	for (b=1;b<func->cmds.cmds_len;b++) {
-		if (func->cmds.cmds_val[b].cmd_type==CMD_BLOCK) {
+      for (b = 1; b < func->cmds.cmds_len; b++)
+	{
+	  if (func->cmds.cmds_val[b].cmd_type == CMD_BLOCK)
+	    {
 
-			move_define(func->cmds.cmds_val[b].cmd_u.c_block, func->cmds.cmds_val[0].cmd_u.c_block);
-			func->cmds.cmds_val[b].cmd_type=CMD_NOP;
-			nop++;
-		}
+	      move_define (func->cmds.cmds_val[b].cmd_u.c_block,
+			   func->cmds.cmds_val[0].cmd_u.c_block);
+	      func->cmds.cmds_val[b].cmd_type = CMD_NOP;
+	      nop++;
+	    }
 
-		if (func->cmds.cmds_val[b].cmd_type==CMD_END_BLOCK) {
-			if (func->cmds.cmds_val[b].cmd_u.c_endblock->pc_start_block!=0) {
-				func->cmds.cmds_val[b].cmd_type=CMD_NOP;
-				nop++;
-			}
+	  if (func->cmds.cmds_val[b].cmd_type == CMD_END_BLOCK)
+	    {
+	      if (func->cmds.cmds_val[b].cmd_u.c_endblock->pc_start_block !=
+		  0)
+		{
+		  func->cmds.cmds_val[b].cmd_type = CMD_NOP;
+		  nop++;
 		}
+	    }
 	}
-}
-printf("Generated %d NOPs\n",nop);
+    }
+  printf ("Generated %d NOPs\n", nop);
 }

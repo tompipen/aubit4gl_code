@@ -24,7 +24,7 @@ char *cmd_type_str[] = {
 };
 */
 
-static void print_command (long func_id,long pc, struct cmd *cmd);
+static void print_command (long func_id, long pc, struct cmd *cmd);
 
 void
 print_use_variable (struct use_variable *v)
@@ -73,7 +73,9 @@ print_module_functions ()
     {
       struct function *f;
       f = &this_module.functions.functions_val[func_cnt];
-      printf ("FUNCTION : %s\n", GET_ID (this_module.functions.functions_val[func_cnt].  func_name_id));
+      printf ("FUNCTION : %s\n",
+	      GET_ID (this_module.functions.functions_val[func_cnt].
+		      func_name_id));
       printf ("%d parameters\n", f->param_vars.param_vars_len);
 
 
@@ -83,9 +85,12 @@ print_module_functions ()
 	}
 
 
-      for (cmd_cnt = 0; cmd_cnt < this_module.functions.functions_val[func_cnt].cmds.cmds_len; cmd_cnt++)
+      for (cmd_cnt = 0;
+	   cmd_cnt <
+	   this_module.functions.functions_val[func_cnt].cmds.cmds_len;
+	   cmd_cnt++)
 	{
-	  print_command (func_cnt,cmd_cnt,
+	  print_command (func_cnt, cmd_cnt,
 			 &this_module.functions.functions_val[func_cnt].cmds.
 			 cmds_val[cmd_cnt]);
 	}
@@ -190,9 +195,9 @@ print_if (struct cmd_if *i)
 
 
 static void
-print_command (long func_id,long pc, struct cmd *cmd)
+print_command (long func_id, long pc, struct cmd *cmd)
 {
-  printf ("%04ld-%04ld %02d %-10s\n   ",func_id, pc, cmd->cmd_type,
+  printf ("%04ld-%04ld %02d %-10s\n   ", func_id, pc, cmd->cmd_type,
 	  cmd_type_str[(int) cmd->cmd_type]);
 
   switch (cmd->cmd_type)
@@ -201,7 +206,7 @@ print_command (long func_id,long pc, struct cmd *cmd)
       print_block (cmd->cmd_u.c_block);
       break;
     case CMD_NOP:
-	break;
+      break;
     case CMD_END_BLOCK:
       print_end_block (cmd->cmd_u.c_endblock);
       break;
@@ -226,9 +231,9 @@ print_command (long func_id,long pc, struct cmd *cmd)
     case CMD_RETURN:
       print_call_return (cmd->cmd_u.c_return);
       break;
-	case CMD_NULL:
-		fprintf(stderr,"NULL COMMAND - SHOULDN'T HAPPEN\n");
-		exit(2);
+    case CMD_NULL:
+      fprintf (stderr, "NULL COMMAND - SHOULDN'T HAPPEN\n");
+      exit (2);
     }
 
   printf ("\n");
@@ -246,9 +251,11 @@ print_var_element (int lvl, struct variable_element *ve)
     }
   printf ("Name ID = %ld (%s) ", ve->name_id, GET_ID (ve->name_id));
   printf ("DTYPE= %ld ", ve->dtype);
-  if (ve->i_arr_size[0]) {
-		printf ("ARRAY [%ld][%ld][%ld]",ve->i_arr_size[0],ve->i_arr_size[1],ve->i_arr_size[2]);
-  }
+  if (ve->i_arr_size[0])
+    {
+      printf ("ARRAY [%ld][%ld][%ld]", ve->i_arr_size[0], ve->i_arr_size[1],
+	      ve->i_arr_size[2]);
+    }
 
   printf ("total_size=%ld ", ve->total_size);
   printf ("unit_size=%ld ", ve->unit_size);
@@ -270,7 +277,8 @@ print_var_element (int lvl, struct variable_element *ve)
 void
 print_variable (int lvl, struct variable *v)
 {
-  printf ("VARIABLE :  ID=%ld CAT=%d BLOCK=%ld ", v->variable_id, v->category,  v->def_block);
+  printf ("VARIABLE :  ID=%ld CAT=%d BLOCK=%ld ", v->variable_id, v->category,
+	  v->def_block);
   print_var_element (0, v->var);
 }
 
@@ -319,14 +327,14 @@ print_params (struct param *e)
 	struct param_list *p;
 	int a;
 	p = e->param_u.p_list;
-	printf("LIST [ ");
+	printf ("LIST [ ");
 	for (a = 0; a < p->list.list_len; a++)
 	  {
 	    printf ("   %d ) ", a);
 	    print_params (&p->list.list_val[a]);
 
 	  }
-	printf("]");
+	printf ("]");
 
       }
       break;
@@ -339,11 +347,19 @@ print_params (struct param *e)
       print_use_variable (e->param_u.uv);
       //printf ("struct use_variable %p\n", e->param_u.uv);
       break;
-    case PARAM_TYPE_NULL: printf("NULL\n");break;
-    case PARAM_TYPE_CACHED: printf("CACHED\n");break;
-    case PARAM_TYPE_SPECIAL: printf("SPECIAL\n");break;
-    case PARAM_TYPE_ONKEY: printf("ONKEY\n");break;
-	
+    case PARAM_TYPE_NULL:
+      printf ("NULL\n");
+      break;
+    case PARAM_TYPE_CACHED:
+      printf ("CACHED\n");
+      break;
+    case PARAM_TYPE_SPECIAL:
+      printf ("SPECIAL\n");
+      break;
+    case PARAM_TYPE_ONKEY:
+      printf ("ONKEY\n");
+      break;
+
 
 
     }
@@ -367,17 +383,15 @@ print_module ()
     {
       printf ("%d. \"%s\" %d references\n", a,
 	      this_module.string_table.string_table_val[a].s,
-	      this_module.string_table.string_table_val[a].rcnt
-);
+	      this_module.string_table.string_table_val[a].rcnt);
     }
 
   printf ("\n\nID Table\n\n");
   for (a = 0; a < this_module.id_table.id_table_len; a++)
     {
-      printf ("%d. %s %d references\n", a, 
-this_module.id_table.id_table_val[a].s,
-this_module.id_table.id_table_val[a].rcnt
-);
+      printf ("%d. %s %d references\n", a,
+	      this_module.id_table.id_table_val[a].s,
+	      this_module.id_table.id_table_val[a].rcnt);
     }
 
   printf ("\n\nExternal Function Call Table\n\n");
@@ -392,9 +406,9 @@ this_module.id_table.id_table_val[a].rcnt
 
   //printf ("\n\nModule Level variables\n\n");
   //for (a = 0; a < this_module.module_variables.c_vars.c_vars_len; a++)
-    //{
-      //print_variable (1, &this_module.module_variables.c_vars.c_vars_val[a]);
-    //}
+  //{
+  //print_variable (1, &this_module.module_variables.c_vars.c_vars_val[a]);
+  //}
 
   //for (a = 0; a < this_module.commands.commands_len; a++)
   //{

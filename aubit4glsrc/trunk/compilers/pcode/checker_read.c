@@ -15,7 +15,7 @@ char *cmd_type_str[] = {
   "CMD_GOTO_PC",
   "CMD_RETURN",
   "CMD_NOP",
- ""
+  ""
 };
 
 
@@ -28,14 +28,15 @@ get_string (int a)
 
 
 int
-main (int argc,char *argv[])
+main (int argc, char *argv[])
 {
   int a;
 
-if (argc!=2) {
-	printf("Usage %s filename.4pe\n",argv[0]);
-	exit(1);
-}
+  if (argc != 2)
+    {
+      printf ("Usage %s filename.4pe\n", argv[0]);
+      exit (1);
+    }
   a = process_xdr ('I', &this_module, argv[1]);
 
   if (a)
@@ -44,7 +45,7 @@ if (argc!=2) {
     }
   else
     {
-      printf ("Failed to open %s\n",argv[1]);
+      printf ("Failed to open %s\n", argv[1]);
       exit (1);
     }
 
@@ -56,11 +57,16 @@ if (argc!=2) {
 
 
 
-void *get_var_ptr(struct use_variable *use_var) {
-	printf("Shouldn't be using variables during checking..\n");
-	exit(1);
+void *
+get_var_ptr (struct use_variable *use_var)
+{
+  printf ("Shouldn't be using variables during checking..\n");
+  exit (1);
 }
-long call_function (long pc, struct cmd_call *c) {
-	printf("Shouldn't be calling functions during checking..\n");
-	exit(1);
+
+long
+call_function (long pc, struct cmd_call *c)
+{
+  printf ("Shouldn't be calling functions during checking..\n");
+  exit (1);
 }

@@ -23,7 +23,7 @@ runner_calls_fgl.o : runner_calls.c
 
 
 checker: $(OBJ_CHECKER) npcode.h 
-	$(CC) -g -o $@ $(OBJ_CHECKER) -laubit4gl  -g -pg
+	$(CC) -g -o $@ $(OBJ_CHECKER) -laubit4gl  -g 
 #-lefence
 
 c2pcode:  $(OBJ_C2PCODE) npcode.h

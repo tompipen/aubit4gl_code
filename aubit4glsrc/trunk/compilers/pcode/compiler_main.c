@@ -5,7 +5,7 @@ extern FILE *yyin;
 extern int yydebug;
 
 int yyparse (void);
-int debug_mode=0;
+int debug_mode = 0;
 
 
 struct module this_module;
@@ -31,15 +31,18 @@ main (int argc, char *argv[])
       yyin = fopen (argv[1], "r");
     }
 
-  if (argc>2) {
-  	if (strcmp(argv[2],"-d")==0) {
-		debug_mode=1;
-  	}
-  	if (strcmp(argv[2],"-D")==0) {
-		debug_mode=1;
-		yydebug=1;
-  	}
-  }
+  if (argc > 2)
+    {
+      if (strcmp (argv[2], "-d") == 0)
+	{
+	  debug_mode = 1;
+	}
+      if (strcmp (argv[2], "-D") == 0)
+	{
+	  debug_mode = 1;
+	  yydebug = 1;
+	}
+    }
 
   this_module.compiled_time = time (0);
   this_module.file_size = 0;
@@ -59,14 +62,14 @@ main (int argc, char *argv[])
   this_module.params.params_val = 0;
 
   add_id ("");
-  add_function("__MODULE",0,1); 
-  end_main();
+  add_function ("__MODULE", 0, 1);
+  end_main ();
 
-{
-char *ptr;
-ptr=malloc(1024*1024*16);
-free(ptr); // Should speed things up a little...
-}
+  {
+    char *ptr;
+    ptr = malloc (1024 * 1024 * 16);
+    free (ptr);			// Should speed things up a little...
+  }
   this_module.external_function_table.external_function_table_len = 0;
   this_module.external_function_table.external_function_table_val = 0;
 
@@ -90,11 +93,11 @@ free(ptr); // Should speed things up a little...
       exit (2);
     }
 
-  end_define_module();
+  end_define_module ();
 
   set_externs ();
   //resolve_gotos ();
-  move_defines();
+  move_defines ();
 
 
   A4GL_debug ("String table has %d entries\n",
@@ -125,12 +128,16 @@ yyerror (char *s)
 }
 
 
-void *get_var_ptr(struct use_variable *use_var) {
-	printf("Shouldn't be using variables during compilation..\n");
-	exit(1);
+void *
+get_var_ptr (struct use_variable *use_var)
+{
+  printf ("Shouldn't be using variables during compilation..\n");
+  exit (1);
 }
 
-long call_function (long pc, struct cmd_call *c) {
-	printf("Shouldn't be calling functions during compilation..\n");
-	exit(1);
+long
+call_function (long pc, struct cmd_call *c)
+{
+  printf ("Shouldn't be calling functions during compilation..\n");
+  exit (1);
 }

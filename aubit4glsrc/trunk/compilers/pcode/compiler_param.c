@@ -25,10 +25,11 @@ add_cache_param (struct param *p)
   // bother caching it - as its not going to save us anything...
 
 
-return ;
+  return;
 
 
-if (p->param_type==PARAM_TYPE_USE_VAR) return;
+  if (p->param_type == PARAM_TYPE_USE_VAR)
+    return;
 /*
   switch (p->param_type)
     {
@@ -49,11 +50,13 @@ if (p->param_type==PARAM_TYPE_USE_VAR) return;
       printf ("          data (%lx %lx) \n",
 	      this_module.params.params_val[a].param_u.n, p->param_u.n);
 
-      if (p->param_type!=this_module.params.params_val[a].param_type) {
-		continue;
-      }
+      if (p->param_type != this_module.params.params_val[a].param_type)
+	{
+	  continue;
+	}
 
-      if (memcmp (&this_module.params.params_val[a], p, sizeof (struct param)) == 0)
+      if (memcmp (&this_module.params.params_val[a], p, sizeof (struct param))
+	  == 0)
 	{
 	  p->param_type = PARAM_TYPE_CACHED;
 	  p->param_u.param_cache_id = a;
@@ -61,59 +64,105 @@ if (p->param_type==PARAM_TYPE_USE_VAR) return;
 	  return;
 	}
 
-	// It doesn't match exactly - but it might still match...
-	
-	if (p->param_type==PARAM_TYPE_LIST) {
-		int z;
-		int bad=0;
-		if (p->param_u.p_list->list.list_len!=this_module.params.params_val[a].param_u.p_list->list.list_len) continue;
-		else {
-			for (z=0;z<p->param_u.p_list->list.list_len;z++) {
-				if (memcmp(&p->param_u.p_list->list.list_val[a],&this_module.params.params_val[a].param_u.p_list->list.list_val[z],sizeof(struct param))) {
-					bad=1;
-					break;
-				}
-			}
+      // It doesn't match exactly - but it might still match...
+
+      if (p->param_type == PARAM_TYPE_LIST)
+	{
+	  int z;
+	  int bad = 0;
+	  if (p->param_u.p_list->list.list_len !=
+	      this_module.params.params_val[a].param_u.p_list->list.list_len)
+	    continue;
+	  else
+	    {
+	      for (z = 0; z < p->param_u.p_list->list.list_len; z++)
+		{
+		  if (memcmp
+		      (&p->param_u.p_list->list.list_val[a],
+		       &this_module.params.params_val[a].param_u.p_list->list.
+		       list_val[z], sizeof (struct param)))
+		    {
+		      bad = 1;
+		      break;
+		    }
 		}
-		if (bad==1) continue; // Cache hit...
+	    }
+	  if (bad == 1)
+	    continue;		// Cache hit...
 
-	  	p->param_type = PARAM_TYPE_CACHED;
-	  	p->param_u.param_cache_id = a;
-	  	printf ("Param Cache Hit (1) ...\n");
+	  p->param_type = PARAM_TYPE_CACHED;
+	  p->param_u.param_cache_id = a;
+	  printf ("Param Cache Hit (1) ...\n");
 
-		return ; // Cache hit..
+	  return;		// Cache hit..
 	}
 
-	if(p->param_type==PARAM_TYPE_OP) {
-		if (memcmp(p->param_u.op->left,this_module.params.params_val[a].param_u.op->left,sizeof(struct param))) continue;
-		if (memcmp(p->param_u.op->right,this_module.params.params_val[a].param_u.op->right,sizeof(struct param))) continue;
-		if (p->param_u.op->op_i!=this_module.params.params_val[a].param_u.op->op_i) continue;
+      if (p->param_type == PARAM_TYPE_OP)
+	{
+	  if (memcmp
+	      (p->param_u.op->left,
+	       this_module.params.params_val[a].param_u.op->left,
+	       sizeof (struct param)))
+	    continue;
+	  if (memcmp
+	      (p->param_u.op->right,
+	       this_module.params.params_val[a].param_u.op->right,
+	       sizeof (struct param)))
+	    continue;
+	  if (p->param_u.op->op_i !=
+	      this_module.params.params_val[a].param_u.op->op_i)
+	    continue;
 
-	  	p->param_type = PARAM_TYPE_CACHED;
-	  	p->param_u.param_cache_id = a;
-	  	printf ("Param Cache Hit (2)...\n");
-		return;
+	  p->param_type = PARAM_TYPE_CACHED;
+	  p->param_u.param_cache_id = a;
+	  printf ("Param Cache Hit (2)...\n");
+	  return;
 	}
 
-	if(p->param_type==PARAM_TYPE_USE_VAR) {
-		int z;
-		int bad=0;
-		if (p->param_u.uv->variable_id!=this_module.params.params_val[a].param_u.uv->variable_id) continue;
-		if (p->param_u.uv->defined_in_block_pc!=this_module.params.params_val[a].param_u.uv->defined_in_block_pc) continue;
-		if (p->param_u.uv->indirection!=this_module.params.params_val[a].param_u.uv->indirection) continue;
-		if (p->param_u.uv->sub.sub_len!=this_module.params.params_val[a].param_u.uv->sub.sub_len) continue;
+      if (p->param_type == PARAM_TYPE_USE_VAR)
+	{
+	  int z;
+	  int bad = 0;
+	  if (p->param_u.uv->variable_id !=
+	      this_module.params.params_val[a].param_u.uv->variable_id)
+	    continue;
+	  if (p->param_u.uv->defined_in_block_pc !=
+	      this_module.params.params_val[a].param_u.uv->
+	      defined_in_block_pc)
+	    continue;
+	  if (p->param_u.uv->indirection !=
+	      this_module.params.params_val[a].param_u.uv->indirection)
+	    continue;
+	  if (p->param_u.uv->sub.sub_len !=
+	      this_module.params.params_val[a].param_u.uv->sub.sub_len)
+	    continue;
 
-		for (z=0;z<p->param_u.uv->sub.sub_len;z++) {
-			if (p->param_u.uv->sub.sub_val[z].element!=this_module.params.params_val[a].param_u.uv->sub.sub_val[z].element) {bad=1;break;}
-			if (memcmp(p->param_u.uv->sub.sub_val[z].subscript,this_module.params.params_val[a].param_u.uv->sub.sub_val[z].subscript,sizeof(struct param))) {bad=1;break;}
+	  for (z = 0; z < p->param_u.uv->sub.sub_len; z++)
+	    {
+	      if (p->param_u.uv->sub.sub_val[z].element !=
+		  this_module.params.params_val[a].param_u.uv->sub.sub_val[z].
+		  element)
+		{
+		  bad = 1;
+		  break;
 		}
-		if (bad) continue;
+	      if (memcmp
+		  (p->param_u.uv->sub.sub_val[z].subscript,
+		   this_module.params.params_val[a].param_u.uv->sub.
+		   sub_val[z].subscript, sizeof (struct param)))
+		{
+		  bad = 1;
+		  break;
+		}
+	    }
+	  if (bad)
+	    continue;
 
 
-	  	p->param_type = PARAM_TYPE_CACHED;
-	  	p->param_u.param_cache_id = a;
-	  	printf ("Param Cache Hit (3)...\n");
-		return;
+	  p->param_type = PARAM_TYPE_CACHED;
+	  p->param_u.param_cache_id = a;
+	  printf ("Param Cache Hit (3)...\n");
+	  return;
 	}
 
 
@@ -121,7 +170,8 @@ if (p->param_type==PARAM_TYPE_USE_VAR) return;
   // Cache miss...
 
   printf ("\nCache miss %d %p (%d) type %d\n", this_module.params.params_len,
-	  this_module.params.params_val, sizeof (struct param),p->param_type);
+	  this_module.params.params_val, sizeof (struct param),
+	  p->param_type);
   this_module.params.params_len++;
   this_module.params.params_val =
     realloc (this_module.params.params_val,
@@ -176,16 +226,16 @@ add_string (char *s)
 {
   int nsize;
   int a;
-char *nstr;
+  char *nstr;
 
 
-nstr=strdup_with_conv (s);
+  nstr = strdup_with_conv (s);
 
   for (a = 0; a < this_module.string_table.string_table_len; a++)
     {
       if (strcmp (nstr, this_module.string_table.string_table_val[a].s) == 0)
 	{
-	free(nstr);
+	  free (nstr);
 	  this_module.string_table.string_table_val[a].rcnt++;
 	  return a;
 	}
@@ -201,8 +251,10 @@ nstr=strdup_with_conv (s);
 
 
 
-  this_module.string_table.string_table_val[this_module.string_table.  string_table_len - 1].s = nstr;
-  this_module.string_table.string_table_val[this_module.string_table.  string_table_len - 1].rcnt=1;
+  this_module.string_table.string_table_val[this_module.string_table.
+					    string_table_len - 1].s = nstr;
+  this_module.string_table.string_table_val[this_module.string_table.
+					    string_table_len - 1].rcnt = 1;
   return this_module.string_table.string_table_len - 1;
 }
 
@@ -239,12 +291,12 @@ new_param (char s, void *ptr)
 
     case 'S':
       p->param_type = PARAM_TYPE_SPECIAL;
-      p->param_u.special= (char *) ptr;
+      p->param_u.special = (char *) ptr;
       break;
 
     case 'K':
       p->param_type = PARAM_TYPE_ONKEY;
-      p->param_u.keys= (char *) ptr;
+      p->param_u.keys = (char *) ptr;
       break;
 
 
@@ -381,8 +433,8 @@ new_param_op (struct param *l, char *op, struct param *r)
   pnew = malloc_clr (sizeof (struct param));
   pnew->param_type = PARAM_TYPE_OP;
   pop = malloc_clr (sizeof (struct param_op));
-	add_cache_param(l);
-	add_cache_param(r);
+  add_cache_param (l);
+  add_cache_param (r);
   pop->left = l;
   pop->right = r;
   pop->op_i = decode_op (op);
