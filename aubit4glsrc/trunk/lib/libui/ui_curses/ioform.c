@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.107 2004-12-09 07:26:49 mikeaubury Exp $
+# $Id: ioform.c,v 1.108 2004-12-16 08:26:47 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.107 2004-12-09 07:26:49 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.108 2004-12-16 08:26:47 mikeaubury Exp $";
 /**
  * @file
  *
@@ -3149,6 +3149,29 @@ UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
   return nr;
 }
 
+
+void
+UILIB_A4GL_reset_delims (void *vformdets, void *field,char *delims)
+{
+struct s_form_dets *formdets;
+  int a;
+  char sbuff0[2];
+  char sbuff1[2];
+  formdets=vformdets;
+  sbuff0[0] = delims[0];
+  sbuff0[1] = 0;
+  sbuff1[0] = delims[1];
+  sbuff1[1] = 0;
+
+  for (a = 0; a < formdets->fileform->metrics.metrics_len; a++)
+    {
+	if (field && formdets->fileform->metrics.metrics_val[a].field!=field) continue;
+      	A4GL_mja_set_field_buffer ((FIELD *) formdets->fileform->metrics.
+				 metrics_val[a].dlm1, 0, sbuff0);
+      	A4GL_mja_set_field_buffer ((FIELD *) formdets->fileform->metrics.
+				 metrics_val[a].dlm2, 0, sbuff1);
+    }
+}
 
 #ifdef OBSOLETE
 

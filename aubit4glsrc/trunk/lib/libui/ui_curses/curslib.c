@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.99 2004-11-17 10:40:45 mikeaubury Exp $
+# $Id: curslib.c,v 1.100 2004-12-16 08:26:47 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.99 2004-11-17 10:40:45 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.100 2004-12-16 08:26:47 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -1774,6 +1774,9 @@ A4GL_display_menu (ACL_Menu * menu)
 	      A4GL_debug ("Option %s is out of view", opt1->opt_title);
 	      if (prev_opt)
 		{
+		A4GL_debug("prev option=%p menu=%p");
+		A4GL_debug(" -> %d \n", prev_opt->page);
+		A4GL_debug(" -> = %d \n", menu->curr_page);
 		  if (prev_opt->page == menu->curr_page)
 		    {
 		      A4GL_debug ("More More More!!!");
