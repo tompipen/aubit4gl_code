@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.37 2004-01-16 19:03:53 mikeaubury Exp $
+# $Id: prompt.c,v 1.38 2004-01-17 09:40:45 mikeaubury Exp $
 #*/
 
 /**
@@ -307,7 +307,7 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
  * @todo Describe function
  */
 int
- UILIB_A4GL_prompt_loop (void *vprompt,int timeout,void *vevt)
+ UILIB_A4GL_prompt_loop_v2 (void *vprompt,int timeout,void *vevt)
 {
   int a;
   WINDOW *p;
@@ -357,7 +357,6 @@ int was_aborted=0;
     return 0;
 
 A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
-  if (prompt_last_key==0) {
   	pos_form_cursor (mform);
 	abort_pressed=0;
 	was_aborted=0;
@@ -365,36 +364,21 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
         prompt->processed_onkey=a;
 	A4GL_debug("Read character... %d",a);
   	A4GL_clr_error_nobox("prompt");
+	if (abort_pressed ) a=-100;
 	prompt_last_key=a;
   	A4GL_set_last_key (a);
   	prompt->lastkey = A4GL_get_lastkey ();
-	if (abort_pressed ) prompt_last_key=-1;
 
-	if (abort_pressed) {
-		//A4GL_error_nobox("ABORT!!!",0);
-		was_aborted=1;
-	} else {
-		was_aborted=0;
+
+	if (A4GL_has_event_for_keypress(a,evt)|| abort_pressed) {
+      		A4GL_push_null (DTYPE_CHAR,1);
+      		prompt->mode = 2;
+      		A4GL_gui_endprompt ((long) prompt);       /* void    A4GL_gui_endprompt            (long ld); */
+      		unpost_form (prompt->f);
+      		A4GL_clear_prompt (prompt);
+		return A4GL_has_event_for_keypress(a,evt);
 	}
 	A4GL_debug("No lastkey..");
-	return -90;
-  } else {
-	if (was_aborted) {
-		abort_pressed=1;
-		//A4GL_error_nobox("ABORT 2",0);
-	}
-	if (prompt->processed_onkey!=0) {
-		a=prompt_last_key;
-	} else {
-		prompt_last_key=0;
-		return -1000; // Ignored...
-	}
-	if (was_aborted) {
-		abort_pressed=1;
-		//A4GL_error_nobox("ABORT 1",0);
-	}
-	prompt_last_key=0;
-  }
 
 
 
@@ -407,12 +391,6 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
   if (abort_pressed) {
 		//A4GL_error_nobox("ABORT - process",0);
 
-      A4GL_push_null (DTYPE_CHAR,1);
-      prompt->mode = 2;
-      A4GL_gui_endprompt ((long) prompt);       /* void    A4GL_gui_endprompt            (long ld); */
-      unpost_form (prompt->f);
-      A4GL_clear_prompt (prompt);
-      return 0;
 
   }
 

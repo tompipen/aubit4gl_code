@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.66 2004-01-16 19:03:52 mikeaubury Exp $
+# $Id: iarray.c,v 1.67 2004-01-17 09:40:45 mikeaubury Exp $
 #*/
 
 /**
@@ -76,6 +76,8 @@ struct s_movement
   int attrib_no;
 };
 
+char *last_field_name;
+int last_key_code;
 
 /*
 =====================================================================
@@ -85,7 +87,7 @@ struct s_movement
 int A4GL_field_name_match (FIELD * f, char *s);
 
 static void init_arr_line (struct s_inp_arr *sio, int n);
-static int process_control_stack (struct s_inp_arr *arr);
+//static int process_control_stack (struct s_inp_arr *arr);
 static int A4GL_has_something_on_control_stack (struct s_inp_arr *sio);
 
 static void A4GL_add_to_control_stack (struct s_inp_arr *sio, int op,
@@ -524,7 +526,7 @@ int really_ok=0;
  * @param
  */
 static int
-iarr_loop (struct s_inp_arr *arr)
+iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt)
 {
   struct s_form_dets *form;
   int a;
@@ -582,7 +584,7 @@ iarr_loop (struct s_inp_arr *arr)
   if (A4GL_has_something_on_control_stack (arr))
     {
       int rval;
-      rval = process_control_stack (arr);
+      rval = process_control_stack (arr,evt);
       A4GL_debug ("Control stack - he say %d", rval);
       return rval;
     }
@@ -1090,7 +1092,7 @@ int
   A4GL_debug ("inpaarr4");
   //ireinpalay_arr (inpa, 2);
 
-  rval = iarr_loop (inpa);
+  rval = iarr_loop (inpa,evt);
   A4GL_debug ("DEBUGGING rval=%d", rval);
 
   return rval;
@@ -1682,7 +1684,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 *
 */
 static int
-process_control_stack (struct s_inp_arr *arr)
+process_control_stack_internal (struct s_inp_arr *arr)
 {
   int a;
   int rval;
@@ -1713,13 +1715,14 @@ process_control_stack (struct s_inp_arr *arr)
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_INPUT)
     {
 	  A4GL_comments(0);
-      if (arr->fcntrl[a].op == 99)
+
+      if (arr->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
 	  rval = -95;		// Do any AFTER INPUT section
 	}
 
-      if (arr->fcntrl[a].op == 50)
+      if (arr->fcntrl[a].state == 50)
 	{
 	  A4GL_comments(0);
 	  new_state = 0;
@@ -1741,16 +1744,25 @@ process_control_stack (struct s_inp_arr *arr)
 	      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, arr->currentfield, 0, 0);
 	    }
 	  new_state = 50;
-	  rval = -90;
+	  rval = -1;
 	}
 
 
       if (arr->fcntrl[a].state == 50)
 	{
-	  new_state = 0;
+	  new_state = 10;
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
-	  rval = 0;
+	  rval = -1;
 	}
+
+      if (arr->fcntrl[a].state == 10)
+	{
+	  new_state = 0;
+	  rval = -1;
+	}
+
+
+
 
     }
 
@@ -1931,6 +1943,7 @@ process_control_stack (struct s_inp_arr *arr)
       if (arr->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
+	  last_key_code=arr->fcntrl[a].extent;
 	  rval = -90;
 	}
 
@@ -2137,8 +2150,8 @@ process_control_stack (struct s_inp_arr *arr)
 	  //field_opts_off(arr->currentfield,O_AUTOSKIP); // We'll do the autoskiping here...
 	  //}
 
-	  A4GL_push_long ((long) arr->currentfield);
-	  A4GL_push_char (arr->fcntrl[a].field_name);
+	  A4GL_set_infield_from_parameter ((long) arr->currentfield);
+	  last_field_name=arr->fcntrl[a].field_name;
 	  rval = -197;
 	}
 
@@ -2438,8 +2451,10 @@ A4GL_debug("Called pop_iarr_var - ok");
 				       arr->binding[arr->curr_attrib].size,
 				       cptr);
 	  new_state = 0;
-	  A4GL_push_long ((long) arr->currentfield);
-	  A4GL_push_char (arr->fcntrl[a].field_name);
+	  //A4GL_push_long ((long) arr->currentfield);
+	  //A4GL_push_char (arr->fcntrl[a].field_name);
+	  A4GL_set_infield_from_parameter ((long) arr->currentfield);
+	  last_field_name=arr->fcntrl[a].field_name;
 	  rval = -198;
 	}
       else
@@ -2462,9 +2477,9 @@ A4GL_debug("Called pop_iarr_var - ok");
     {
       if (arr->fcntrl[a].state == new_state)
 	{
-	  A4GL_debug ("new_state=%d state=%d", new_state,
-		      arr->fcntrl[a].state);
-	  A4GL_exitwith ("Internal error - no change in state..");
+	  A4GL_debug ("new_state=%d state=%d op=%d", new_state,
+		      arr->fcntrl[a].state,arr->fcntrl[a].op);
+	  A4GL_exitwith ("Internal error - no change in state");
 	}
       A4GL_debug ("Setting input control state to %d", new_state);
       arr->fcntrl[a].state = new_state;
@@ -2483,7 +2498,32 @@ A4GL_debug("Called pop_iarr_var - ok");
   return rval;
 }
 
+static int process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt) {
+int rval;
+rval=process_control_stack_internal(sio);
+A4GL_debug("Got rval as : %d",rval);
+switch (rval) {
+        case -197: if (A4GL_has_event_for_field(-97,last_field_name,evt)) { return A4GL_has_event_for_field(-97,last_field_name,evt); } rval=-1;break;
+        case -198: if (A4GL_has_event_for_field(-98,last_field_name,evt)) { return A4GL_has_event_for_field(-98,last_field_name,evt); } rval=-1;break;
+        case -90 :if (A4GL_has_event_for_keypress(last_key_code,evt)) {return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
+        case -99: if (A4GL_has_event(-99,evt)) return A4GL_has_event(-99,evt);rval=-1;break;
+        case -95: if (A4GL_has_event(-95,evt)) return A4GL_has_event(-95,evt);rval=-1;break;
+        case -94: if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);rval=-1;break;
+        case -10: if (A4GL_has_event(-10,evt)) return A4GL_has_event(-10,evt);rval=-1;break;
+        case -11: if (A4GL_has_event(-11,evt)) return A4GL_has_event(-11,evt);rval=-1;break;
+        case -12: if (A4GL_has_event(-12,evt)) return A4GL_has_event(-12,evt);rval=-1;break;
+        case -13: if (A4GL_has_event(-13,evt)) return A4GL_has_event(-13,evt);rval=-1;break;
+        case -14: if (A4GL_has_event(-14,evt)) return A4GL_has_event(-14,evt);rval=-1;break;
+        case -15: if (A4GL_has_event(-15,evt)) return A4GL_has_event(-15,evt);rval=-1;break;
 
+}
+if (rval>=0||rval==-1) return -1;
+
+
+A4GL_debug("Code : %d\n",rval);
+A4GL_exitwith("Unhandled code...");
+exit(1);
+}
 
 
 

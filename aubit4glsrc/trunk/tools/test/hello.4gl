@@ -32,6 +32,10 @@ menu "Hello test"
 
     	command "prompt" "Prompt for user name"
 		prompt "Enter your name :" for a
+		on key(f10) 
+			error "F10 pressed"
+			sleep 1
+		end prompt
 		display "Hello ",a clipped
 
 	command "form" "Open a form "

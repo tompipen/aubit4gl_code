@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.87 2004-01-07 10:04:42 mikeaubury Exp $
+# $Id: ioform.c,v 1.88 2004-01-17 09:40:45 mikeaubury Exp $
 #*/
 
 /**
@@ -2753,6 +2753,13 @@ void
   A4GL_debug ("New field :---> %p", inp_current_field);
 }
 
+void
+A4GL_set_infield_from_parameter (int a)
+{
+  A4GL_debug ("**** CHANGED FIELD ****");
+  inp_current_field = a;
+  A4GL_debug ("New field :---> %p", inp_current_field);
+}
 
 /**
  * @return The current field number.

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.45 2004-01-16 19:03:52 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.46 2004-01-17 09:40:45 mikeaubury Exp $
 #*/
 
 /**
@@ -45,7 +45,7 @@
 extern int m_lastkey;
 #define CONTROL_STACK_LENGTH 10
 
-static int process_control_stack (struct s_screenio *arr);
+//static int process_control_stack (struct s_screenio *arr);
 static int A4GL_has_something_on_control_stack (struct s_screenio *sio);
 static void A4GL_add_to_control_stack (struct s_screenio *sio, int op,
 				       FIELD * f, char *parameter,
@@ -56,6 +56,8 @@ static int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
 static void do_key_move (char lr, struct s_screenio *s, int a,
 			 int has_picture, char *picture);
 char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
+char *last_field_name;
+int last_key_code;
 
 /*
 =====================================================================
@@ -316,7 +318,7 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 *
 */
 static int
-process_control_stack (struct s_screenio *sio)
+process_control_stack_internal (struct s_screenio *sio)
 {
   int a;
   int rval;
@@ -365,9 +367,18 @@ process_control_stack (struct s_screenio *sio)
       if (sio->fcntrl[a].state == 50)
 	{
 	  A4GL_add_to_control_stack (sio, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
-	  new_state = 0;
-	  rval = 0;
+	  new_state = 10;
+	  rval = -1;
 	}
+
+
+      if (sio->fcntrl[a].state == 10)
+	{
+	  new_state = 0;
+	  rval = -1;
+	}
+
+
     }
 
 
@@ -387,6 +398,7 @@ process_control_stack (struct s_screenio *sio)
       if (sio->fcntrl[a].state == 99)
 	{
 	  new_state = 75;
+	  last_key_code=sio->fcntrl[a].extent;
 	  rval = -90;
 	}
 
@@ -571,8 +583,11 @@ process_control_stack (struct s_screenio *sio)
 	  ptr_movement = (struct s_movement *) sio->fcntrl[a].parameter;
 	  sio->curr_attrib = ptr_movement->attrib_no;
 
-	  A4GL_push_long ((long) sio->field_list[sio->curr_attrib]);
-	  A4GL_push_char (sio->fcntrl[a].field_name);
+	  //A4GL_push_long ((long) sio->field_list[sio->curr_attrib]);
+	  //A4GL_push_char (sio->fcntrl[a].field_name);
+
+	  last_field_name=sio->fcntrl[a].field_name;
+ 	  A4GL_set_infield_from_parameter ((long) sio->field_list[sio->curr_attrib]);
 	  A4GL_debug ("Setting rval to -197");
 	  rval = -197;
 	}
@@ -818,8 +833,12 @@ process_control_stack (struct s_screenio *sio)
 					       FGL_CMD_INPUT);
 
 	    }
-	  A4GL_push_long ((long) sio->currentfield);
-	  A4GL_push_char (sio->fcntrl[a].field_name);
+
+ 	  A4GL_set_infield_from_parameter ((long)sio->currentfield);
+	  last_field_name=sio->fcntrl[a].field_name;
+
+	  //A4GL_push_long ((long) sio->currentfield);
+	  //A4GL_push_char (sio->fcntrl[a].field_name);
 
 
 
@@ -860,6 +879,26 @@ process_control_stack (struct s_screenio *sio)
   return rval;
 }
 
+static int process_control_stack (struct s_screenio *sio,struct aclfgl_event_list *evt) {
+int rval;
+rval=process_control_stack_internal(sio);
+A4GL_debug("Got rval as : %d",rval);
+switch (rval) {
+	case -197: if (A4GL_has_event_for_field(-97,last_field_name,evt)) { return A4GL_has_event_for_field(-97,last_field_name,evt); } rval=-1;break;
+	case -198: if (A4GL_has_event_for_field(-98,last_field_name,evt)) { return A4GL_has_event_for_field(-98,last_field_name,evt); } rval=-1;break;
+	case -90 :if (A4GL_has_event_for_keypress(last_key_code,evt)) {return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
+ 	case -99: if (A4GL_has_event(-99,evt)) return A4GL_has_event(-99,evt);rval=-1;break;
+ 	case -95: if (A4GL_has_event(-95,evt)) return A4GL_has_event(-95,evt);rval=-1;break;
+ 	case -94: if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);rval=-1;break;
+
+}
+if (rval>=0||rval==-1) return -1;
+
+
+A4GL_debug("Code : %d\n",rval);
+A4GL_exitwith("Unhandled code...");
+exit(1);
+}
 
 int
 UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
@@ -986,7 +1025,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   if (A4GL_has_something_on_control_stack (s))
     {
       int rval;
-      rval = process_control_stack (s);
+      rval = process_control_stack (s,evt);
       A4GL_debug ("Control stack - he say %d", rval);
       return rval;
     }
