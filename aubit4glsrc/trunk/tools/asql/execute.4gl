@@ -8,7 +8,13 @@ int display_mode;
 int fetchFirst=0;
 #define DISPLAY_ACROSS 1
 #define DISPLAY_DOWN   2
-#define DISPLAY_LINES 18
+
+
+
+//#define DISPLAY_LINES 10
+int display_lines=-1;
+
+
 
 FILE *out=0;
 FILE *exec_out;
@@ -59,6 +65,25 @@ function get_exec_mode()
 return exec_mode
 end function
 
+function open_display_file() 
+code
+first_open=1;
+open_display_file_c();
+endcode
+end function
+
+
+function add_to_display_file(lv_str)
+define lv_str char(255)
+code
+A4GL_assertion(out==0,"No output file (1)");
+A4GL_trim(lv_str);
+if (out) fprintf(out,"%s\n",lv_str);
+outlines++;
+endcode
+
+end function
+
 function confirm(qry_type) 
 define qry_type integer
 
@@ -102,6 +127,10 @@ let msg=""
 options message line last
 code
 first_open=1;
+if (display_lines==-1) {
+	display_lines=A4GL_get_curr_height()-8;
+}
+
 A4GL_debug("%d SQL statements",list_cnt);
 //if (exec_mode==EXEC_MODE_FILE) { printf(" %d statements\n",list_cnt); }
 
@@ -163,16 +192,17 @@ code
 			} else {
 				rpaginate=0;
 repeat_query: ;
-	A4GL_debug("Repeat query out=%p\n",out);
+	A4GL_debug("EXEC Repeat query out=%p\n",out);
 				if (execute_select_prepare()) {
 					while (1) {
 					int b;
 					char buff[244];
+						A4GL_debug("Fetching..");
 						b=execute_sql_fetch();
 
 				
 						if (exec_mode==EXEC_MODE_INTERACTIVE) {
-							while (outlines>DISPLAY_LINES) {
+							while (outlines>=display_lines || (outlines && b!=0)) {
 								aclfgl_paginate(0);
 								rpaginate=A4GL_pop_int();
 								if (rpaginate!=0) break;
@@ -203,22 +233,23 @@ code
 					}
 
 
-				A4GL_debug("EXEC CLOSEDOWN");
+				A4GL_debug("EXEC CLOSEDOWN - %d",outlines);
 	
+A4GL_assertion(out==0,"No output file (2)");
 					if (out) {fprintf(out,"\n");fclose(out);out=0;}
 
 					//system("cp out.txt out.1");
 					//sleep(60);
-					if (outlines && exec_mode==EXEC_MODE_INTERACTIVE) {
-							while (1) {
-								if (outlines<=0) break;
-								A4GL_debug("Stmt %d Outlines : %d",a,outlines);
-								aclfgl_paginate(0);
-								rpaginate=A4GL_pop_int();
-								if (rpaginate!=0) break;
-								fetchFirst=1;
-							}
-					}
+					//if (outlines && exec_mode==EXEC_MODE_INTERACTIVE) {
+							//while (1) {
+								//if (outlines<=0) break;
+								//A4GL_debug("Stmt %d Outlines : %d",a,outlines);
+								//aclfgl_paginate(0);
+								//rpaginate=A4GL_pop_int();
+								//if (rpaginate!=0) break;
+								//fetchFirst=1;
+							//}
+					//}
 					EXEC SQL CLOSE crExec;
 					EXEC SQL free stExec;
 					EXEC SQL free crExec;
@@ -282,7 +313,7 @@ int isSqlError () {
 }
 
 static int
-printField (FILE * unloadFile, int idx, char *descName)
+printField (FILE * outputFile, int idx, char *descName)
 {
   EXEC SQL BEGIN DECLARE SECTION;
   int dataType;
@@ -317,7 +348,7 @@ printField (FILE * unloadFile, int idx, char *descName)
   int rc = 0;
 
 
-A4GL_assertion(out==0,"No output file");
+A4GL_assertion(out==0,"No output file (3)");
 
 
 
@@ -495,16 +526,20 @@ if (indicator!=-1) {
 
 
 	if (display_mode==DISPLAY_DOWN) {
-		if (exec_mode==EXEC_MODE_INTERACTIVE) 
-			fprintf(unloadFile,"%-20.20s %s\n",columnNames[idx-1],buffer);
-		else
+		if (exec_mode==EXEC_MODE_INTERACTIVE)  {
+			fprintf(outputFile,"%-20.20s %s\n",columnNames[idx-1],buffer);
+		}
+		else {
 			fprintf(exec_out,"%-20.20s %s\n",columnNames[idx-1],buffer);
+		}
 		outlines++;
 	} else {
-		if (exec_mode==EXEC_MODE_INTERACTIVE) 
-			fprintf(unloadFile,"%*s",columnWidths[idx-1],buffer);
+		if (exec_mode==EXEC_MODE_INTERACTIVE)  {
+			A4GL_debug("EXECO '%s' '%20s' '%-20s'",buffer,buffer,buffer);
+			fprintf(outputFile,"%-*s",columnWidths[idx-1],buffer);
+		}
 		else
-			fprintf(exec_out,"%*s",columnWidths[idx-1],buffer);
+			fprintf(exec_out,"%-*s",columnWidths[idx-1],buffer);
   	}
 
 
@@ -512,8 +547,9 @@ if (indicator!=-1) {
 }
 
 
+
 /******************************************************************************/
-int execute_select_prepare() {
+void open_display_file_c() {
 int cnt;
 fetchFirst=1;
 strcpy(outfname,"out.txt");
@@ -531,9 +567,17 @@ if (out==0) {
 		out=fopen(outfname,"w");
 		first_open=0;
 	}
-	A4GL_assertion(out==0,"Unable to open output file");
+	A4GL_assertion(out==0,"Unable to open output file (4)");
 }
 
+
+
+}
+
+
+int execute_select_prepare() {
+
+open_display_file_c();
 
 $whenever error continue;
 $deallocate descriptor 'descExec';
@@ -597,15 +641,22 @@ int a;
 
 	if (display_mode==DISPLAY_ACROSS&&fetchFirst==1) {
 		for (a=0;a<numberOfColumns;a++) {
-			if (exec_mode==EXEC_MODE_INTERACTIVE) 
-				fprintf(out,"%-*.*s ",columnWidths[a],columnWidths[a],columnNames[a]);
-			else
+			if (exec_mode==EXEC_MODE_INTERACTIVE)  {
+				A4GL_assertion(out==0,"No output file (5)");
+				fprintf(out,"%-*s ",columnWidths[a],columnNames[a]);
+			}
+			else {
+				A4GL_assertion(exec_out==0,"No output file (6)");
 				fprintf(exec_out,"%-*.*s ",columnWidths[a],columnWidths[a],columnNames[a]);
+			}
 		}
-		if (exec_mode==EXEC_MODE_INTERACTIVE) 
+		if (exec_mode==EXEC_MODE_INTERACTIVE)  {
+			A4GL_assertion(out==0,"No output file (7)");
 			fprintf(out,"\n\n");
-		else
+		} else {
+			A4GL_assertion(exec_out==0,"No output file (8)");
 			fprintf(exec_out,"\n\n");
+		}
 
 		outlines+=2;
 		fetchFirst=0;
@@ -616,6 +667,13 @@ int a;
 		if (printField(out,a,"descExec")==1) {
 			A4GL_debug("Break Early %d of %d",a,numberOfColumns);
 			break;
+		}
+
+		if (a<numberOfColumns && display_mode==DISPLAY_ACROSS) {
+			if (exec_mode==EXEC_MODE_INTERACTIVE)
+				fprintf(out," ");
+			else
+				fprintf(exec_out," ");
 		}
 	}
 

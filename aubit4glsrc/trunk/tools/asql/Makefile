@@ -1,7 +1,7 @@
 all : asql.4ae
 
 asql.4ae: asql.o connection_menu.o database.o lex.yy.o main_menu.o query.o session.o simple_parse.o table.o pick.o dir.o execute.o  paginate.o
-	4glpc  -g $^ -o asql.4ae  -lUI_TUI
+	4glpc -g  $^ -o asql.4ae  -lUI_TUI
 
 lex.yy.c: parse.l
 	flex -i parse.l

@@ -26,7 +26,6 @@ if (e->type!='W') {
 	memcpy(&list[list_cnt],e,sizeof(struct element));
 	//list[list_cnt].lineno=line;
 	list_cnt++;
-	printf("--> %s\n",e->stmt);
 }
 }
 

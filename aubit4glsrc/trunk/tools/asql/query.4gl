@@ -218,8 +218,10 @@ function read_file(lv_fname)
 define lv_fname char(256)
 code
 A4GL_trim(lv_fname);
-
-mv_fin=(long)fopen(lv_fname,"r");
+if (strcmp(lv_fname,"-")==0) 
+	mv_fin=stdin;
+else
+	mv_fin=(long)fopen(lv_fname,"r");
 endcode
 
 if mv_fin=0 then
@@ -293,6 +295,7 @@ end function
 
 ################################################################################
 function qry_modify()
+	call clear_screen_portion()
 	call read_tmpfile()
 
 	if not frm_is_open then
@@ -478,6 +481,7 @@ end function
 
 ################################################################################
 function qry_info()
+ 	call table_info()
 end function
 
 ################################################################################

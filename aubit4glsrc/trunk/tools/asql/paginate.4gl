@@ -1,4 +1,4 @@
-define lines array[30] of char(80)
+define lines array[255] of char(80)
 code
 
 
@@ -8,8 +8,7 @@ code
 extern FILE *out;
 extern int outlines;
 extern char outfname[255];
-#define DISPLAY_LINES 19
-
+extern int display_lines;
 endcode
 
 FUNCTION paginate() 
@@ -21,7 +20,7 @@ define lv_action integer
 let lv_cnt=0
 
 set pause mode on
-
+call clear_screen_portion()
 code
 {
 FILE *in;
@@ -31,14 +30,13 @@ if (out) {
 	out=0;
 }
 in=fopen(outfname,"r");
-
+lv_cnt=0;
 rewind(in);
 while (1) {
-
-	if (lv_cnt>=DISPLAY_LINES) break;
 	strcpy(buff,"");
-	fgets(buff,sizeof(buff),in);
 	if (feof(in)) break;
+	if (lv_cnt>=display_lines) break;
+	fgets(buff,sizeof(buff),in);
 	A4GL_debug("PAGINATE : %s",buff);
 	strcpy(lines[lv_cnt],buff);
 	lv_cnt++;
@@ -48,10 +46,11 @@ endcode
 code
 }
 
+if (outlines<0) outlines=0;
 if (lv_cnt==0) outlines=0;
 endcode
 code
-	if (lv_cnt>=DISPLAY_LINES) {
+	if (lv_cnt>=display_lines) {
 		aclfgl_display_menu(0);
 		lv_action=A4GL_pop_int();
 
@@ -74,24 +73,29 @@ code
 		if (lv_action==0) {
 			char nfname[256];
 			sprintf(nfname,"%s.tmp",outfname);
-			outlines-=DISPLAY_LINES;
 			out2=fopen(nfname,"w");
+			outlines=0;
 			while (1) {
 				fgets(buff,sizeof(buff),in);
 				if (feof(in)) break;
+				outlines++;
 				fprintf(out2,"%s",buff);
 			}
 			fclose(in);
 			fclose(out2);
 			rename(nfname,outfname);
-			out=fopen(outfname,"a");
+	
+			open_display_file_c();
 endcode
+set pause mode off
 	return 0
 code
 		}
 	}
 }
+			open_display_file_c();
 endcode
+set pause mode off
 return 0
 END FUNCTION
 

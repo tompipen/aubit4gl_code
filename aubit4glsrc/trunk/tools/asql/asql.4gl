@@ -126,7 +126,12 @@ end function
 
 function clear_screen_portion()
 define lv_y integer
-for lv_y=6 to 24
+define lv_maxy integer
+code
+lv_maxy=A4GL_get_curr_height();
+endcode
+
+for lv_y=6 to lv_maxy
 	display "" at lv_y,1
 end for
 end function

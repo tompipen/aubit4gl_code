@@ -63,7 +63,7 @@ call clear_screen_portion()
 if mv_cnt >=1 then
 	let int_flag=false
 	call show_pick()
-	prompt lv_txt clipped for lv_value
+	prompt lv_txt clipped for lv_value #attribute(normal)
 
 	on key(down)
 		if mv_curr_option+1<=mv_cnt then
