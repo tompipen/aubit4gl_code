@@ -18,8 +18,13 @@ awk '
 BEGIN {
 doverbose="0"
 while (getline < "generated/single_words") {
-	single_words[$1]=1
-	print "Defined " $1 " as single word"
+	if (length($1)>1) {
+		single_words[$1]=1
+		print "Defined " $1 " as single word"
+    } else {
+		print "Input line: " $1 " was empty. Stop."
+		exit
+    }
 }
 }
 ' < data/kwords
@@ -30,8 +35,12 @@ awk '
 BEGIN {
 doverbose="0"
 while (getline < "generated/single_words") {
-	single_words[$1]=1
-	print "Defined " $1 " as single word"
+	if (length($1)>1) {
+		single_words[$1]=1
+		print "Defined " $1 " as single word"
+    } else {
+        exit
+    }
 }
 
 a=1000

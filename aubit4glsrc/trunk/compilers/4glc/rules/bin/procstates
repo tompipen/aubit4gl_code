@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# This script creates states.c from sata/defstates file
+# This script creates states.c from data/defstates file
 #
 
 awk '
