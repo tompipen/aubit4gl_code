@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.80 2004-04-04 16:17:56 mikeaubury Exp $
+# $Id: sql.c,v 1.81 2004-05-24 12:49:07 mikeaubury Exp $
 #
 */
 
@@ -358,6 +358,7 @@ A4GLSQL_set_status (int a, int sql)
   A4GL_debug ("Status set to %d", a);
 }
 
+char* A4GLSQL_get_errmsg(int a) { return 0; }
 
 /**
  * Check if there was an error and set sqlca.

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.20 2004-02-22 02:29:00 afalout Exp $
+# $Id: error.c,v 1.21 2004-05-24 12:49:05 mikeaubury Exp $
 #
 */
 
@@ -206,6 +206,7 @@ char *
 A4GL_get_errm (int z)
 {
   int a = 0;
+char *ptr;
   A4GL_debug ("In get errm");
   if (z == cache_status)
     {
@@ -224,6 +225,9 @@ A4GL_get_errm (int z)
   A4GL_debug ("Not found...");
   A4GL_debug ("Returning %p", lasterrorstr);
   A4GL_debug ("Returning %s", lasterrorstr);
+  ptr=A4GLSQL_get_errmsg(0-z);
+  if (ptr) return ptr;
+
   return lasterrorstr;
 }
 

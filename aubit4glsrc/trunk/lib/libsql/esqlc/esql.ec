@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.84 2004-05-21 15:34:52 mikeaubury Exp $
+# $Id: esql.ec,v 1.85 2004-05-24 12:49:06 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.84 2004-05-21 15:34:52 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.85 2004-05-24 12:49:06 mikeaubury Exp $";
 #endif
 
 
@@ -3415,4 +3415,15 @@ if (A4GL_isyes(acl_getenv("SWAP_SQLCA62"))) {
 	strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
 
 }
+
+char* A4GLSQL_get_errmsg(int a) {
+static char lv_err1[512];
+static char lv_err2[512];
+printf("a=%d\n",a);
+rgetmsg(a,lv_err1,sizeof(lv_err1));
+sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
+A4GL_trim(lv_err2);
+return lv_err2;
+}
+
 /* ================================= EOF ============================== */

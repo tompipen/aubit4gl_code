@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.7 2004-04-21 08:19:35 mikeaubury Exp $
+# $Id: esql_compatible.ec,v 1.8 2004-05-24 12:49:06 mikeaubury Exp $
 #
 */
 
@@ -362,7 +362,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.7 2004-04-21 08:19:35 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.8 2004-05-24 12:49:06 mikeaubury Exp $";
 #endif
 
 
@@ -3810,6 +3810,7 @@ return ptr;
 
 }
 
+char* A4GLSQL_get_errmsg(int a) { return 0; }
 /* ================================= EOF ============================== */
 
 

@@ -105,6 +105,8 @@ void A4GLSQL_set_sqlca_sqlcode(int a);
 
 void A4GLSQL_unload_data_internal(char* fname,char* delims,char* sql1,int nbind,void* ibind);
 
+char* A4GLSQL_get_errmsg(int a);
+
 #ifdef __cplusplus
 }
 #endif

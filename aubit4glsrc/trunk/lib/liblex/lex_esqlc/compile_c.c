@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.165 2004-05-23 14:04:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.166 2004-05-24 12:49:06 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.165 2004-05-23 14:04:52 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.166 2004-05-24 12:49:06 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1260,7 +1260,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 	char buff[256];
 	strcpy(buff,when_to);	
 	A4GL_convlower(buff);
-      printc ("%s {%s%s(0); }\n", when_str, get_namespace (when_to), buff);
+      printc ("%s {A4GL_log_error(%d,_module_name,a4gl_status);%s%s(0); }\n", when_str, l,get_namespace (when_to), buff);
       add_function_to_header (when_to, 1,"");
       printcomment ("/* WHENCALL */");
     }
@@ -1270,7 +1270,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 	char buff[256];
 	strcpy(buff,when_to);	
 	A4GL_convlower(buff);
-      printc ("%s {goto %s;}\n", when_str, buff);
+      printc ("%s {A4GL_log_error(%d,_module_name,a4gl_status); goto %s;}\n", when_str,l, buff);
       printcomment ("/* WHENGOTO */");
     }
   return 1;

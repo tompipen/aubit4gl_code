@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.58 2004-05-12 16:52:41 whaslbeck Exp $
+# $Id: builtin.c,v 1.59 2004-05-24 12:49:05 mikeaubury Exp $
 #
 */
 
@@ -1143,5 +1143,16 @@ int aclfgl_fgl_getkey(int n) {
 	return 1;
 }
 
+
+void A4GL_log_error(int lineno,char *fname,int mstatus) {
+char s[2048];
+A4GL_generateError (s, fname, lineno);
+      if (strcmp (fname, "Unknown") != 0 && A4GL_has_errorlog ())
+        {
+          A4GL_push_char (s);
+          A4GL_errorlog (fname, lineno, 1);
+        }
+
+}
 
 /* ================================== EOF ============================= */

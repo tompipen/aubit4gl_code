@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.7 2004-03-04 16:27:49 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.8 2004-05-24 12:49:07 mikeaubury Exp $
 #*/
 
 /**
@@ -281,4 +281,5 @@ void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
         return 0;
 }
 
+char* A4GLSQL_get_errmsg(int a) { return 0; }
 /* =============================== EOF ============================== */

@@ -40,3 +40,4 @@ A4GLSQL_read_columns char* tabname char* colname int* dtype int* size -> int
 A4GLSQL_set_conn_internal char* sessname -> int
 A4GLSQL_set_sqlca_sqlcode int a -> void
 A4GLSQL_unload_data_internal char* fname char* delims char* sql1 int nbind void* ibind -> void
+A4GLSQL_get_errmsg int a -> char* errmsg
