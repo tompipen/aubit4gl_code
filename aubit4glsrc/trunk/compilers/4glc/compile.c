@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.50 2004-01-29 09:38:56 mikeaubury Exp $
+# $Id: compile.c,v 1.51 2004-01-29 09:39:41 mikeaubury Exp $
 #*/
 
 /**
@@ -95,7 +95,6 @@ char *default_database = 0;
 #ifdef YYDEBUG
 extern int yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set */
 #else
-#error "NO YYDEBUG"
 int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 #endif
 
