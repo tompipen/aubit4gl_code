@@ -46,16 +46,16 @@ LIB_PREFIX ESQLAPI_
 */
 
 
-A4GL_copy_char char* infx,char* a4gl,short*  indicat,int size,int mode,int x,int y -> void
-A4GL_copy_date long* infx,long* a4gl,short*  indicat,int size,int mode -> void
-A4GL_copy_datetime void* infx, void* a4gl,short*  indicat,int size,int mode -> void
-A4GL_copy_interval void* infx, void* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_char char* infx,char* a4gl,short*  indicat,int size,char mode,int x,int y -> void
+A4GL_copy_date long* infx,long* a4gl,short*  indicat,int size,char mode -> void
+A4GL_copy_datetime void* infx, void* a4gl,short*  indicat,int size,char mode -> void
+A4GL_copy_interval void* infx, void* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_decimal void* infx,void* a4gl,short*  indicat,int size,char dir -> void
-A4GL_copy_float float* infx,float* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_float float* infx,float* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_double double* infx,double* a4gl,short*  indicat,int size,int mode -> void
-A4GL_copy_int long* infx,long* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_int long* infx,long* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_money void* infx,void* a4gl,short*  indicat,int size,char dir -> void
-A4GL_copy_smint short* infx,short* a4gl,short*  indicat,int size,int mode -> void
+A4GL_copy_smint short* infx,short* a4gl,short*  indicat,int size,char mode -> void
 
 popdec_native void* vx -> void
 retdec_native void* vx -> void

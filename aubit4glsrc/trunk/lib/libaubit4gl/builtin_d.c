@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.53 2004-11-12 13:30:19 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.54 2004-11-18 16:29:46 pjfalbe Exp $
 #
 */
 
@@ -367,9 +367,11 @@ A4GL_push_char (char *p)
     {
       A4GL_debug ("pc2");
       ptr = (char *) A4GL_new_string_set (strlen (p), p);
+      A4GL_debug ("pc2.1");
     }
-  //A4GL_debug ("pc3");
+  A4GL_debug ("pc3");
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (strlen (p))));
+      A4GL_debug ("pc4");
 }
 
 /**
