@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.17 2002-06-29 13:12:03 afalout Exp $
+# $Id: esql.ec,v 1.18 2002-07-17 17:05:19 mikeaubury Exp $
 #
 */
 
@@ -155,7 +155,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.17 2002-06-29 13:12:03 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.18 2002-07-17 17:05:19 mikeaubury Exp $";
 #endif
 
 #ifdef WIN32
@@ -2302,6 +2302,9 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
+B
+B
+B
 /* int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size); */
 /* int A4GLSQL_get_columns(char *tabname) */
 int 

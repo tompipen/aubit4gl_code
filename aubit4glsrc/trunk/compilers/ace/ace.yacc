@@ -556,7 +556,10 @@ table_reference:
 	;
 
 tname: table_name
-	| table_name correlation_name {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+	| table_name correlation_name {
+		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+		add_table($<str>1,$<str>2);
+		}
 ;
 
 
@@ -790,10 +793,10 @@ e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
 
 
 select_statement:
-	SELECT op_ad select_list 
+	SELECT {reset_sql_stuff();} op_ad select_list 
 	table_expression
         sel_p2 
-	{sprintf($<str>$,"%s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
+	{sprintf($<str>$,"%s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>6);
 }
 ;
 
@@ -866,7 +869,13 @@ select_list:
 	;
 
 value_expression_pls : 
-value_expression | value_expression  NAMED {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+		value_expression {
+			add_select_column($<str>1,$<str>1);
+		}
+	| 	value_expression  NAMED {
+			sprintf($<str>$," %s %s",$<str>1,$<str>2);
+			add_select_column($<str>1,$<str>2);
+		}
 ;
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.3 2002-06-30 22:30:23 mikeaubury Exp $
+# $Id: data.c,v 1.4 2002-07-17 17:04:48 mikeaubury Exp $
 #*/
 
 /**
@@ -356,7 +356,7 @@ add_select (char *sql, char *temptabname)
     ptr->has_where = 1;
 
 
-  printf("Added : %d-%s\n",this_report.getdata.get_data_u.selects.selects_len,ptr->statement);
+  //printf("Added : %d-%s\n",this_report.getdata.get_data_u.selects.selects_len,ptr->statement);
 }
 
 /**
@@ -566,7 +566,7 @@ execute_selects (void)
 
       for (b = 0; b < ptr->varids.varids_len; b++)
 	{
-		printf("Add null value");
+		//printf("Add null value");
 	  /* void dif_add_bind_int (void *list, long a); */
 	  dif_add_bind_int (xi, (long) nval);
 	  xic++;
@@ -578,7 +578,7 @@ execute_selects (void)
 	{
 	  strcat (nstatement, " INTO TEMP a4gl_drep1234");
 	}
-      printf("-->%s\n",nstatement);
+      //printf("-->%s\n",nstatement);
       psql =
 	(void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic,
 					 dif_get_bind (xo), 0, nstatement);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.4 2002-07-09 10:07:12 mikeaubury Exp $
+# $Id: main.c,v 1.5 2002-07-17 17:04:48 mikeaubury Exp $
 #*/
 
 /**
@@ -163,7 +163,7 @@ int rval;
   /* load settings from config file(s): */
   build_user_resources ();
 
-  yydebug=1;
+  yydebug=0;
   strcpy (d, "");
 
   if (argc > 1)
@@ -200,7 +200,7 @@ int rval;
 
     }
 
-  yydebug = 1;
+  yydebug = 0;
 
   if (yyin == 0)
     {
@@ -213,7 +213,9 @@ int rval;
 
   init_report();
   rval=yyparse ();
+	
   if (rval==0) {
+	check_sql_columns();
 	write_report();
   	//close_database();
   	exit(0);

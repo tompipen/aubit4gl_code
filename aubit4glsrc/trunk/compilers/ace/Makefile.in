@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.6 2002-07-16 17:41:56 mikeaubury Exp $
+# $Id: Makefile.in,v 1.7 2002-07-17 17:04:48 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -36,7 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 OBJS_XDR    =report_xdr.o
-OBJS		=${OBJS_XDR} y.tab.o main.o data.o output.o
+OBJS		=${OBJS_XDR} y.tab.o main.o data.o output.o tables.o
 OBJS_DECOMP =${OBJS_XDR} dump.o
 
 #Mike's holding dump_4gl.c back for now - not in CVS
