@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.53 2003-08-04 09:51:16 mikeaubury Exp $
+# $Id: curslib.c,v 1.54 2003-08-08 20:48:18 mikeaubury Exp $
 #*/
 
 /**
@@ -298,6 +298,7 @@ A4GL_error_nobox (char *str,int attr)
 	}
   A4GL_debug("new_panel %p",w);
   p=new_panel(w);
+  set_panel_userptr (p, 0);
   o=panel_below(0);
   top_panel(p);
   

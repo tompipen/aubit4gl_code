@@ -20,7 +20,7 @@
 [\r] ;
 [\n] 	{lineno++;colno=0;graphics_mode=0;REJECT}
 [ ]	{ colno++;}
-[	]	{colno+=3;}
+[\t]	{colno+=8;}
 [	 \n]	;
 <comment>"}"	{BEGIN INITIAL;}
 <comment>.	;

@@ -176,7 +176,6 @@ op_size :
 		l=atoi($<str>2);
         	if (c>the_form.maxcol) the_form.maxcol=c;
         	if (l>the_form.maxline) the_form.maxline=l;
-		/* printf("Set to %d %d\n",the_form.maxcol,the_form.maxline); */
 	}
 }
 ;

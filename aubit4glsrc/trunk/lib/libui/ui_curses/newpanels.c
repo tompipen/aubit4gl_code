@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.66 2003-08-08 15:52:38 mikeaubury Exp $
+# $Id: newpanels.c,v 1.67 2003-08-08 20:48:18 mikeaubury Exp $
 #*/
 
 /**
@@ -469,7 +469,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
     }
   A4GL_debug("new_panel %p",win);
   pan = new_panel (win);
-  A4GL_debug("New panel %p for window %p name %s",pan,win,name);
+  A4GL_debug("New panel %p for window %p name '%s'  ",pan,win,name);
   set_panel_userptr (pan, strdup (name));
   A4GL_add_pointer (name, PANCODE, pan);
 
@@ -2996,16 +2996,24 @@ A4GL_window_on_top_ign_menu (void)
   ptr=0;
   while (1) {
   	ptr = panel_below (ptr);
+	A4GL_debug("panel below=%p");
   	s = panel_userptr (ptr);	/* get name of panel */
-	if (s) break;
+	A4GL_debug("userptr=%p",s);
+	
+	if (s) {
+		A4GL_debug("Got an s = '%s'",s);
+		break;
+	}
 	
   }
   A4GL_debug("window_on_top - %s",s);
   if (A4GL_has_pointer (s, MNPARCODE)) {
 		// Damn - its a menu - whats our parent ?
+		A4GL_debug("Was menu window...");
 		return A4GL_find_pointer (s, MNPARCODE);
   }
   winptr = A4GL_find_pointer (s, WINCODE);
+	A4GL_debug("Winptr=%p",winptr);
   return winptr;
 }
 
