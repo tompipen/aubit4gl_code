@@ -37,7 +37,7 @@ typedef struct
 textarea;
 
 
-void *A4GL_memdup (void *ptr, int size);
+//void *A4GL_memdup (void *ptr, int size);
 int A4GL_form_field_chk (struct s_screenio *sio, int m);
 int A4GL_form_field_constr (struct s_screenio *sio, int m);
 int A4GL_get_curr_metric (struct s_form_dets *form);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.31 2003-11-12 17:35:03 mikeaubury Exp $
+# $Id: prompt.c,v 1.32 2003-11-28 09:46:24 mikeaubury Exp $
 #*/
 
 /**
@@ -469,12 +469,15 @@ int was_aborted=0;
   return -1000;
 }
 
+
+
+
 /**
  *
  * @todo Describe function
  */
-int
-A4GL_curses_to_aubit (int a)
+static int
+A4GL_curses_to_aubit_int (int a)
 {
   int b;
   for (b = 0; b < 64; b++)
@@ -514,6 +517,19 @@ A4GL_curses_to_aubit (int a)
   if (a == KEY_BACKSPACE) return A4GLKEY_BACKSPACE;
 
   return a;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+int A4GL_curses_to_aubit(int a) {
+	int orig_a;
+	orig_a=a;
+	a=A4GL_curses_to_aubit_int(a);
+	a=A4GL_key_map(a);
+	if (a==-1&&orig_a!=a) {int_flag=1;} // A map to -1 is an interrupt...
+	return a;
 }
 
 

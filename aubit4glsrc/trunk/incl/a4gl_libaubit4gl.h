@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.101 2003-11-26 11:46:20 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.102 2003-11-28 09:46:11 mikeaubury Exp $
 #
 */
 
@@ -1776,6 +1776,7 @@ void A4GL_reset_processed_onkey(void);
 int A4GL_has_processed_onkey(void);
 char *A4GL_replace_sql_var (char *s);
 char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
+int A4GL_key_map(int keycode);
 
 struct s_field_name {
 	char *fname;

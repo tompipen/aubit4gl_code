@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.75 2003-10-26 19:12:03 mikeaubury Exp $
+# $Id: newpanels.c,v 1.76 2003-11-28 09:46:24 mikeaubury Exp $
 #*/
 
 /**
@@ -2904,39 +2904,6 @@ A4GL_find_ptr_debug (void *ptr)
 }
 
 
-#ifdef MOVED_TO_KEYS_C
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_init_stddbscr (void)
-{
-A4GL_debug("init_stddbscr - form_line");
-  std_dbscr.mode = 0;
-  std_dbscr.colour = 0;
-  std_dbscr.border = 0;
-  std_dbscr.inpattr = 0;
-  std_dbscr.dispattr = 0;
-  std_dbscr.nextkey = KEY_F (4);
-  std_dbscr.prevkey = KEY_F (3);
-  std_dbscr.acckey = 27;
-  std_dbscr.helpkey = 22;
-  std_dbscr.input_wrapmode = 0;
-  std_dbscr.comment_line = -2;
-  std_dbscr.form_line = 3;
-  std_dbscr.menu_line = 1;
-  std_dbscr.message_line = 2;
-  std_dbscr.prompt_line = 1;
-  std_dbscr.fcnt = 0;
-  std_dbscr.insmode = 0;
-  std_dbscr.error_line = -1;
-  std_dbscr.inskey = KEY_F (1);
-  std_dbscr.delkey = KEY_F (2);
-}
-
-#endif
 /**
  *
  * @todo Describe function

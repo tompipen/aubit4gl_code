@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.10 2003-09-30 10:32:09 mikeaubury Exp $
+# $Id: ui.c,v 1.11 2003-11-28 09:46:24 mikeaubury Exp $
 #
 */
 
@@ -654,4 +654,57 @@ void *A4GL_make_pixmap(char *filename) {
 }
 */
 
+
+
+
+// Key mappings..
+// Any key can be mapped directly to another
+// The simplest way of doing this is to have a simple lookup
+// int src_keycode -> int dest_keycode
+
+struct s_key_mapping {
+	int src_keycode;
+	int dest_keycode;
+};
+
+struct s_key_mapping *key_mappings=0;
+int nkeymappings=0;
+
+
+
+/* Add a new mapping to our keylist */
+void A4GL_add_key_mapping(int src,int dest) {
+nkeymappings++;
+key_mappings=realloc(key_mappings,sizeof(struct s_key_mapping)*nkeymappings);
+key_mappings[nkeymappings-1].src_keycode=src;
+key_mappings[nkeymappings-1].dest_keycode=dest;
+}
+
+/* Transform a keycode based on our mappings */
+int A4GL_key_map(int keycode) {
+int a;
+if (key_mappings==0) return keycode;
+
+for (a=0;a<nkeymappings;a++) {
+	if (key_mappings[a].src_keycode==keycode) {
+			A4GL_debug("Found mapping - %d -> %d",keycode,key_mappings[a].dest_keycode);
+			return key_mappings[a].dest_keycode;
+	}
+}
+A4GL_debug("No key match - %d",keycode);
+return keycode;
+}
+
+
+int aclfgl_aclfgl_add_keymap(int n) {
+int dest;
+int src;
+dest=A4GL_pop_long();
+src=A4GL_pop_long();
+A4GL_add_key_mapping(src,dest);
+return 0;
+}
+
 /* ============================= EOF ================================ */
+
+
