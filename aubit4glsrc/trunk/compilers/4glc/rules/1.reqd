@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.53 2004-09-28 09:02:35 mikeaubury Exp $
+# $Id: 1.reqd,v 1.54 2004-09-29 09:15:57 mikeaubury Exp $
 #
 */
 
@@ -185,7 +185,7 @@ char mv_parent_class[255];
 struct 		rep_structure rep_struct;
 struct 		pdf_rep_structure pdf_rep_struct;
 struct 		form_attr form_attrib;
-char *		make_sql_string(char *first,...);
+char *		make_sql_string_and_free(char *first,...);
 char *into_temp_clause=0;
 void copy_gen (int a, int b);
 char *get_namespace (char *s);
@@ -200,10 +200,19 @@ int if_print_stack[100][2];
 int if_print_stack_cnt=0;
 int if_print_section[100]={0,0,0,0};
 
+char *kw_comma=",";
+char *kw_space=" ";
 #include "../generic.h"
 #include "../field_handling.h"
 
-
+struct sql_statement {
+	int stmt_type;
+	char *sql_string;
+	struct binding_comp *ibind;
+	struct binding_comp *obind;	
+	int nibind;
+	int nobind;
+};
 
 /*
 =====================================================================
@@ -240,6 +249,7 @@ int if_print_section[100]={0,0,0,0};
 	struct array_list *array_list;
 	int 	integer_val;
 	float 	float_val;
+	struct sql_statement *sql_stmt;
 	}
 
 /* ============================== 1.reqd ============================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.179 2004-09-18 18:32:44 mikeaubury Exp $
+# $Id: mod.c,v 1.180 2004-09-29 09:14:45 mikeaubury Exp $
 #
 */
 
@@ -280,7 +280,7 @@ void a4gl_add_variable (char *name, char *type, char *n);
 static void push_validate_column(char *tabname,char *colname) ;
 
 char *get_namespace (char *s);
-char *make_sql_string (char *first, ...);
+char *make_sql_string_and_free (char *first, ...);
 /*void do_print_menu_1(void) ;*/
 /*void do_print_menu_block_end(void) ;*/
 /*int get_blk_no(void) ;*/
@@ -4221,13 +4221,16 @@ dump_updvals();
 
 
 char *
-make_sql_string (char *first, ...)
+make_sql_string_and_free (char *first, ...)
 {
   va_list ap;
   char *ptr = 0;
   int l;
   char *next;
   int n;
+
+	extern char *kw_space;
+	extern char *kw_comma;
 
   n = 0;
   va_start (ap, first);
@@ -4244,6 +4247,7 @@ make_sql_string (char *first, ...)
       l++;			/* Extra space...*/
       ptr = realloc (ptr, l);
       strcat (ptr, next);
+	if (next!=kw_comma && next!=kw_space) free(next);
     }
   return ptr;
 }

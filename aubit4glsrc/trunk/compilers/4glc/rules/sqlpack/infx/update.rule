@@ -1,0 +1,242 @@
+
+/*
+=====================================================================
+                        Source: update.rule
+=====================================================================
+*/
+
+
+update_statement_ss:
+	UPDATE table_name {
+		strcpy(current_upd_table,$<str>2);
+		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
+		$<sql_string>$=strdup("");
+	} set_clause_list_ss  {
+		strcpy(current_upd_table,"");
+	} where_upd_ss {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>4,kw_space,$<sql_string>6,0);
+	}
+;
+
+
+
+where_upd_ss : {
+		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
+		$<sql_string>$=strdup("");
+	}
+	| WHERE_CURRENT_OF fetch_cursor_name { 
+		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
+		rm_quotes($<str>2);
+		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>$),0);
+	}
+	| WHERE search_condition_ss {
+		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); pop_all_gen(UPDVAL2,"!");
+		$<sql_string>$=make_sql_string_and_free(strdup("WHERE "),$<sql_string>2,0);
+	}
+	;
+
+
+set_clause_list_ss: 
+    XSET_OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string_and_free(strdup("SET ("),strdup($<str>2),strdup(")=("),$<sql_string>6,strdup(")"),0);
+
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
+			$<sql_string>$=strdup(fix_update_expr(0)); 
+			ansi_violation("Update (..)=(..)",0);
+		}  else {
+			ansi_violation("Update (..)=(..)",1);
+		}
+    }
+    | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
+		$<sql_string>$=make_sql_string_and_free(strdup("SET *=("),$<sql_string>2,strdup(")"),0);
+		push_gen(UPDCOL,"*");
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
+			$<sql_string>$=strdup(fix_update_expr(1));
+			ansi_violation("Update (..)=(..)",0);
+		} else {
+			ansi_violation("Update (..)=(..)",1);
+		}
+    }
+    | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {	
+		$<sql_string>$=make_sql_string_and_free(strdup("SET *=("),$<sql_string>2,strdup(")"),0);
+		push_gen(UPDCOL,"*");
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
+			$<sql_string>$=strdup(fix_update_expr(1));
+			ansi_violation("Update (..)=(..)",0);
+		} else {
+			ansi_violation("Update (..)=(..)",1);
+		}
+    }
+
+
+    | XSET upd_columns_ss  {
+		$<sql_string>$=make_sql_string_and_free(strdup("SET "),$<sql_string>2,0);
+    }
+    | XSET_MULTIPLY_EQUAL upd_val_list_ss  {
+		char *ptr;
+
+		ptr=$<sql_string>2;
+		push_gen(UPDCOL,"*");
+
+		if (ptr[0]=='(') {
+			$<sql_string>$=make_sql_string_and_free(strdup("SET *= "),$<sql_string>2,0);
+		} else {
+			$<sql_string>$=make_sql_string_and_free(strdup("SET *=("),$<sql_string>2,")",0);
+		}
+
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
+			$<sql_string>$=strdup(fix_update_expr(1));
+			ansi_violation("Update (..)=(..)",0);
+		} else {
+			ansi_violation("Update (..)=(..)",1);
+		}
+	}
+    | XSET_ident_DOT_MULTIPLY_EQUAL upd_val_list_ss  {
+		char *ptr;
+
+		ptr=$<sql_string>2;
+		push_gen(UPDCOL,"*");
+
+		if (ptr[0]=='(') {
+			$<sql_string>$=make_sql_string_and_free(strdup("SET *= "),$<sql_string>2,0);
+		} else {
+			$<sql_string>$=make_sql_string_and_free(strdup("SET *=("),$<sql_string>2,strdup(")"),0);
+		}
+
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
+			$<sql_string>$=strdup(fix_update_expr(1));
+			ansi_violation("Update (..)=(..)",0);
+		} else {
+			ansi_violation("Update (..)=(..)",1);
+		}
+	}
+
+
+
+
+;
+
+upd_columns_ss : 
+	col_1_ss  {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| upd_columns_ss COMMA col_1_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
+	}
+;
+
+
+upd_column_name : column_name  ;
+
+col_1_ss : 
+	upd_column_name EQUAL upd_val_ss {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup("="),$<sql_string>3,0);
+	}
+;
+
+upd_col_list  : upd_column_name	{
+			push_gen(UPDCOL,$<str>1); strcpy($<str>$,$<str>1);
+		} 
+		| upd_col_list COMMA upd_column_name {
+			push_gen(UPDCOL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+		}
+
+;
+
+
+upd_val_list_ss  : 
+	upd_val_ss { 
+		$<sql_string>$=$<sql_string>1; 
+		if (gen_cnt(UPDVAL2)) {
+			copy_gen(UPDVAL,UPDVAL2);
+		} else {
+                	push_gen(UPDVAL,$<sql_string>1);
+		}
+	}
+	| upd_val_list_ss COMMA upd_val_ss { 
+		if (gen_cnt(UPDVAL2)) {
+			copy_gen(UPDVAL,UPDVAL2);
+		} else {
+                	push_gen(UPDVAL,$<sql_string>3);
+		}
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0); 
+	} 
+;
+
+
+
+upd_val_ss : 
+	KW_NULL {
+		$<sql_string>$=strdup($<str>1);
+	}
+	| upd_value_expression_ss  {
+		$<sql_string>$=$<sql_string>1;
+	}
+;
+
+
+
+upd_value_expression_ss:
+        upd_value_expression_initial_ss {
+                $<sql_string>$=$<sql_string>1;
+        }
+        | MINUS upd_value_expression_initial_ss {
+                $<sql_string>$=make_sql_string_and_free(strdup("-"),$<sql_string>2,0);
+        }
+        | PLUS upd_value_expression_initial_ss {
+                $<sql_string>$=make_sql_string_and_free(strdup("+"),$<sql_string>2,0);
+        }
+;
+
+
+
+upd_value_expression_initial_ss :
+        upd_var_ident_ibind_ss    { $<sql_string>$=$<sql_string>1; }
+        | subquery_ss { $<sql_string>$=$<sql_string>1; }
+        | ATSIGN identifier { $<sql_string>$=strdup($<str>2); }
+        | ATSIGN identifier DOT identifier { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),0); }
+        | ATSIGN identifier OPEN_SQUARE INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("["),strdup($<str>4),strdup("]"),0); }
+        | ATSIGN identifier DOT identifier OPEN_SQUARE INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),strdup("["),strdup($<str>6),strdup("]"),0); }
+        | ATSIGN identifier OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("["),strdup($<str>4),kw_comma,strdup($<str>6),strdup("]"),0); }
+        | ATSIGN identifier DOT identifier OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE { $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),strdup("["),strdup($<str>6),kw_comma,strdup($<str>8),strdup("]"),0); }
+        | upd_value_expression_complex_ss { $<sql_string>$=$<sql_string>1; pop_all_gen(UPDVAL2,"!"); }
+        | literal {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
+        | KW_TRUE {$<sql_string>$=make_sql_string_and_free(strdup("TRUE"),0);}
+        | KW_FALSE {$<sql_string>$=make_sql_string_and_free(strdup("FALSE"),0);}
+        | USER {$<sql_string>$=make_sql_string_and_free(strdup("USER"),0);}
+        | COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("COUNT(*)"),0);}
+;
+
+
+upd_value_expression_complex_ss :
+        upd_value_expression_initial_ss DIVIDE upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup("/"),$<sql_string>3,0);}
+        | upd_value_expression_initial_ss units_qual 				{$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);}
+        | upd_value_expression_initial_ss MULTIPLY upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup("*"),$<sql_string>3,0);}
+        | upd_value_expression_initial_ss PLUS upd_value_expression_ss 		{$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup("+"),$<sql_string>3,0);}
+        | upd_value_expression_initial_ss MINUS upd_value_expression_ss 	{$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup("-"),$<sql_string>3,0);}
+        | AVG OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(strdup("AVERAGE("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
+        | XMAX OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(strdup("MAX("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
+        | XMIN OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(strdup("MIN("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
+        | SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(strdup("SUM("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
+        | COUNT OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(strdup("COUNT("),strdup($<str>3),$<sql_string>4,strdup(")"),0);}
+        | identifier OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 		{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup("("),$<sql_string>3,strdup(")"),0);}
+        | DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 		{$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,strdup(")"),0);}
+        | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET 			{$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,strdup(")"),0);}
+        | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET 			{$<sql_string>$=make_sql_string_and_free(strdup("EXTEND("),$<sql_string>3,strdup(")"),0);}
+        | datetime_value_qualified 						{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
+        | interval_value_qualified 						{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
+
+;
+
+
+upd_var_ident_ibind_ss:  var_ident_ibind_ss { $<sql_string>$=$<sql_string>1; }
+;
+
+upd_value_expr_list_ss :
+        upd_value_expression_ss {$<sql_string>$=$<sql_string>1;}
+        | upd_value_expr_list_ss COMMA upd_value_expression_ss {
+        $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
+}
+
+;
