@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.23 2004-05-24 15:27:28 mikeaubury Exp $
+# $Id: Makefile,v 1.24 2004-06-13 13:51:51 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -138,6 +138,10 @@ LINKLIBS		=
 ##                              Targets
 ## ==================================================================
 
+ifeq "${TARGET_OS}" "hpux"
+	4GLPCFLAGS+=-a1 -z -Wl,+s -Wl,-E
+endif
+
 ################
 #Default target
 all : ${ALL} install
@@ -151,7 +155,7 @@ all : ${ALL} install
 #Target to make asql Informix version
 asql_i${A4GL_EXE_EXT}: A4GL_LEXDIALECT=INFORMIX
 asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
-	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} -a1 -z -Wl,+s -Wl,-E
+	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|           Successfuly compiled Informix version of asql            |"
