@@ -49,7 +49,7 @@ ifeq "${USE_COMP}" "aubit"
 
 	#Force Aubit UI to TUI: (unless specified on make command line)
 	ifeq "${A4GL_UI}" ""
-		A4GL_UI=HL_TUI
+		A4GL_UI=TUI
 	endif
 
 	ifeq "${A4GL_KEYLOG}" ""
