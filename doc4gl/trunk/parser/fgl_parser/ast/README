@@ -1,0 +1,5 @@
+
+The ideia here is to build an Abstract Syntax Tree to 4gl.
+
+The first goal to achieve is an AST to use in the fgldoc. Then if it
+works will see more.
