@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.74 2003-09-15 13:07:25 mikeaubury Exp $
+# $Id: stack.c,v 1.75 2003-09-19 14:08:05 mikeaubury Exp $
 #
 */
 
@@ -1635,6 +1635,7 @@ A4GL_opboolean (void)
   double a, b;
   int cmp;
   int adate;
+int first;
   d1 = params[params_cnt - 1].dtype & DTYPE_MASK;
   d2 = params[params_cnt - 2].dtype & DTYPE_MASK;
 
@@ -1693,20 +1694,23 @@ A4GL_opboolean (void)
 
   if (d1 == 0)
     {
-      A4GL_debug ("First is string");
+	//double aa;
+      A4GL_debug ("First is string");	
+	first=1;
       z1 = A4GL_char_pop ();
-      a = A4GL_pop_double ();
-	if (A4GL_stof (z1, &b, 0)) {
+      b = A4GL_pop_double ();
+	if (A4GL_stof (z1, &a, 0)) {
 		A4GL_debug("OK as a float");
 	} else {
 		A4GL_debug("Doesn't look much like a float to me (%s)",z1);
 		return -2;
 	}
       //b = strtod (z1,&ptr);
-      A4GL_debug ("1 --> %s %lf ", z1, a);
+      A4GL_debug ("1 --> %s %lf ", z1, b);
     }
   else
     {
+	first=0;
       A4GL_debug ("second is string");
       a = A4GL_pop_double ();
       z1 = A4GL_char_pop ();
@@ -1723,8 +1727,11 @@ A4GL_opboolean (void)
   if (A4GL_stod (z1, &adate, 0) == 1)
     {
       A4GL_debug ("String is a date...");
-      b = (double) adate;
 
+	if (first==0) 
+      		b = (double) adate;
+	else
+      		a = (double) adate;
     }
 
   if (z1)
