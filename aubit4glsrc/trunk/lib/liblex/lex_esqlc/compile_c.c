@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.180 2004-09-10 11:26:58 mikeaubury Exp $
+# $Id: compile_c.c,v 1.181 2004-09-14 11:49:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.180 2004-09-10 11:26:58 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.181 2004-09-14 11:49:15 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -5283,11 +5283,11 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 
 	if (has_function(ident,lib,0)) {
 		// Call shared...
-  	sprintf(buff, "{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%s); if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n%s}",  lib, ident, params,line,file,get_reset_state_after_call());
+  	sprintf(buff, "{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%s); if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}\n%s}",  lib, ident, params,line,get_reset_state_after_call());
 
 	} else {
-      		sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n%s}\n",
-	       get_namespace (ident), ident, params, line, file, get_reset_state_after_call());
+      		sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}\n}\n%s}\n",
+	       get_namespace (ident), ident, params, line, get_reset_state_after_call());
 	}
     }
   add_function_to_header (ident, 1,"");

@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.36 2004-07-10 09:48:34 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.37 2004-09-14 11:49:15 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -556,11 +556,21 @@ print_select_all (char *buff)
 void
 print_unload (char *file, char *delim, char *sql)
 {
+  int ni, no;
+  static char b2[20000];
+  int os;
+  printc ("{\n");
+  ni = print_bind_definition ('i');
+  print_bind_set_value ('i');
+
+
 if (scan_variable (sql) == -1) {
-  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/,0,0);\n", file, delim, sql);
+  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/,%d,ibind);\n", file, delim, sql,ni);
 } else {
-  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ %s /*2*/,0,0);\n", file, delim, sql);
+  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ %s /*2*/,%d,ibind);\n", file, delim, sql,ni);
 }
+ printc("}");
+
 }
 
 /**
@@ -624,7 +634,15 @@ A4GL_get_undo_use (void)
 void
 print_sql_block_cmd (char *s)
 {
-  printc ("/* %s */", s);
+int u=0;
+static int sqlblock=0;
+extern int yylineno;
+char tmpbuff[256];
+  if (get_bind_cnt('o')) u+=2;
+  if (get_bind_cnt('i')) u+=1;
+  sprintf(tmpbuff,"\"A4GLsb_%d%d\"",sqlblock++,yylineno);
+  printc("A4GLSQL_add_prepare(%s,(void *)A4GLSQL_prepare_select(0,0,0,0,\"%s\"));",tmpbuff,trans_quote(s));
+  print_execute(tmpbuff,u);
 }
 /**
  * The parser found END FOREACH.
@@ -705,4 +723,25 @@ char *x;
  	if (type=='i') A4GL_append_expr(ptr,"A4GL_pushop(OP_NOTIN_SELECT);");
 	free(x);
 	return ptr;
+}
+
+
+
+static char *
+trans_quote (char *s)
+{
+static char buff[64000];
+  int c;
+  int a;
+  c = 0;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == '"')
+        {
+          buff[c++] = '\\';
+        }
+      buff[c++] = s[a];
+      buff[c] = 0;
+    }
+  return buff;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.58 2004-09-02 15:57:42 mikeaubury Exp $
+# $Id: ops.c,v 1.59 2004-09-14 11:48:44 mikeaubury Exp $
 #
 */
 
@@ -908,8 +908,8 @@ A4GL_int_int_ops (int op)
 	  return;
 	}
       c = a;
-      for (d = 1; d <= b; d++)
-	c *= b;
+      for (d = 1; d < b; d++)
+	c *= a;
       A4GL_push_long (c);
       return;
 
@@ -1006,8 +1006,8 @@ A4GL_date_date_ops (int op)
 	  return;
 	}
       c = a;
-      for (d = 1; d <= b; d++)
-	c *= b;
+      for (d = 1; d < b; d++)
+	c *= a;
       A4GL_push_long (c);
       return;
 
@@ -1109,8 +1109,8 @@ A4GL_date_int_ops (int op)
 	  return;
 	}
       c = a;
-      for (d = 1; d <= b; d++)
-	c *= b;
+      for (d = 1; d < b; d++)
+	c *= a;
       A4GL_push_long (c);
       return;
 
@@ -1209,8 +1209,8 @@ A4GL_int_date_ops (int op)
 	  return;
 	}
       c = a;
-      for (d = 1; d <= b; d++)
-	c *= b;
+      for (d = 1; d < b; d++)
+	c *= a;
       A4GL_push_long (c);
       return;
 

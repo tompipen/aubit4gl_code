@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.92 2004-09-08 10:05:22 afalout Exp $
+# $Id: esql.ec,v 1.93 2004-09-14 11:49:15 mikeaubury Exp $
 #
 */
 
@@ -143,7 +143,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.92 2004-09-08 10:05:22 afalout Exp $";
+  "@(#)$Id: esql.ec,v 1.93 2004-09-14 11:49:15 mikeaubury Exp $";
 #endif
 
 
@@ -2646,6 +2646,7 @@ A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbi
     {
     /** @todo : Generate some error code compatible with informix 4gl */
 	free(fname);
+	A4GL_exitwith("Unable to open file for unload");
       return;			/* return 1; */
     }
 
@@ -2691,7 +2692,7 @@ A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbi
 	free(fname);
       return;			/* return 1; */
     }
-  processInputBind ("escInpUnload", nbind, ibind);
+  processInputBind ("descInpUnload", nbind, ibind);
   if (!nbind)
     {
       EXEC SQL OPEN crUnload;
