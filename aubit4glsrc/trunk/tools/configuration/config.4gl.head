@@ -6,7 +6,7 @@
  *}
 
 
-define lv_txt array[24] of char(80)
+define lv_txt array[200] of char(80)
 define lv_newvals associate char(30) with array[300] of char(255)
 
 define mv_option array[100] of record
@@ -67,6 +67,7 @@ function show_options(n)
 define n integer
 define a integer
 define str char(80)
+define lv_name char(80)
 	for a=1 to 24
 		let lv_txt[a]= " "
 	end for
@@ -114,8 +115,9 @@ define str char(80)
 		on key(return)
 			let a=arr_curr()
 			call change(mv_option[a].name) returning str
-			let lv_newvals<<mv_option[a].name>>=str
-			let str=lv_newvals<<mv_option[a].name>>
+			let lv_name=mv_option[a].name
+			let lv_newvals<<lv_name>>=str
+			let str=lv_newvals<<lv_name>>
 			display "NEW     VALUE =",str clipped at 9,1
 
 			let int_flag=false

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.143 2003-12-30 12:48:27 mikeaubury Exp $
+# $Id: mod.c,v 1.144 2003-12-30 13:33:07 mikeaubury Exp $
 #
 */
 
@@ -3633,6 +3633,7 @@ int dim;
 	dim=1;
         if (A4GL_isyes(acl_getenv("NO_ARRAY_EXPAND"))) dim=0; 
 	if (strncmp(buff," a4gl_let_substr",16)==0) dim=0;
+	if (strncmp(buff," ASSOCIATE",10)==0) dim=0;
 
 
 	if (dim)   {

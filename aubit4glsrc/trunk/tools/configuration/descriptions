@@ -29,8 +29,8 @@ A4GL_EXE_EXT COMPILE Extension to use for executable files compiled by Aubit com
 	Aubit default extensions for compiled resources (forms,menus,help) and objects
 	as used by Amake _AND_ Aubit compiler (see resources.c)
 	Amake does NOT read this file (?-check)
-	note that composite variables A4GL_FRM_EXT and A4GL_MNU_EXT exist only in/for Amake
-	defaults:
+	note that composite variables A4GL_FRM_EXT and A4GL_MNU_EXT exist only in/for
+	Amake defaults:
 	A4GL_MNU_BASE_EXT=.mnu
 	A4GL_HLP_EXT=.hlp
 	A4GL_FRM_BASE_EXT=.afr
@@ -494,3 +494,9 @@ A4GL_NULL_DECIMAL_IF_BAD RUNTIME Null a decimal value rather than set it to 0 if
 	The standard informix behaviour seems to be to set the value to 0 for decimals
 	but sets dates to NULL. This is inconsistent and so this default behaviour is switchable
 	via this configuration setting
+A4GL_NO_ARRAY_EXPAND COMPILE Remove the array expansion code
+=YES|NO
+	This is solely for backward compatibilty with older Aubit4GL versions.
+	It should be set to N in all other cases..
+
+
