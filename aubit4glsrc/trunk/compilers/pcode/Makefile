@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2003-10-20 12:18:59 mikeaubury Exp $
+# $Id: Makefile,v 1.13 2003-10-27 17:27:04 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -51,7 +51,7 @@ endif
 
 OBJ_COMMON      =npcode_xdr.o  common_print.o common_eval.o
 
-OBJ_RUNNER_COMMON=runner_main.o runner_execute.o runner_vars.o ${OBJ_COMMON}
+OBJ_RUNNER_COMMON=runner_main.o  runner_vars.o ${OBJ_COMMON}
 
 OBJ_C2PCODE_C		=y.tab.o lex.yy.o compiler_main.o compiler_param.o \
 				compiler_pcode.o compiler_variables.o compiler_list.o \
@@ -64,9 +64,9 @@ OBJ_C2PCODE_A4GL		=y.tab.o lex.yy.o compiler_main.o compiler_param.o \
 OBJ_CHECKER_C		=checker_read.o ${OBJ_COMMON} common_io_c.o
 OBJ_CHECKER_A4GL		=checker_read.o ${OBJ_COMMON} common_io_fgl.o
 
-OBJ_RUNNER_C	=runner_calls_c.o ${OBJ_RUNNER_COMMON} common_io_c.o
+OBJ_RUNNER_C	=runner_calls_c.o ${OBJ_RUNNER_COMMON} common_io_c.o runner_execute_c.o
 
-OBJ_RUNNER_A4GL	=runner_calls_fgl.o ${OBJ_RUNNER_COMMON} common_io_fgl.o
+OBJ_RUNNER_A4GL	=runner_calls_fgl.o ${OBJ_RUNNER_COMMON} common_io_fgl.o runner_execute_fgl.o
 
 #open.c write.c print.c missing from CVS:
 OBJ_OPEN        =npcode_xdr.o open.o write.o print.o
@@ -157,7 +157,7 @@ ${BINROOT}/runner: $(OBJ_RUNNER_C)
 	$(CC) -O2 -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} -ldl
 
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
-	$(CC) -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS} -ldl
+	$(CC) -export-dynamic -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS} ${RPCLINKLIBS} -ldl
 
 
 ## ==================================================================
@@ -171,8 +171,16 @@ npcode.xi.o npcode.xio.o npcode.xo.o: npcode.x ${XGENEXE}
 runner_calls_c.o : runner_calls.c calls.h std_calls.h 
 	$(CC) ${CFLAGS} -g -c runner_calls.c -DSTDCALLS -o $@
 
+
 runner_calls_fgl.o : runner_calls.c calls.h fgl_calls.h
 	$(CC) ${CFLAGS} -g -c runner_calls.c -DFGLCALLS -I$(ROOT)/incl -o $@
+
+
+runner_execute_c.o : runner_execute.c 
+	$(CC) ${CFLAGS} -g -c runner_execute.c -DSTDCALLS -o $@
+
+runner_execute_fgl.o : runner_execute.c 
+	$(CC) -DUSE_A4GL_DEBUG=1 ${CFLAGS} -g -c runner_execute.c -DFGLCALLS -I$(ROOT)/incl -o $@
 
 npcode_xdr.o: npcode_xdr.c
 	$(CC) ${RPC_CFLAGS} -c -o $@ $^

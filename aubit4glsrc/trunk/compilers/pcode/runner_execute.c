@@ -190,7 +190,7 @@ set_var (long pc, struct cmd_set_var *sv)
 
       nsv.variable.sub.sub_len = use_var->sub.sub_len + 1;
       nsv.variable.sub.sub_val =
-	malloc (sizeof (struct use_variable_sub) * use_var->sub.sub_len + 1);
+	malloc (sizeof (struct use_variable_sub) * (use_var->sub.sub_len + 1));
       memcpy (nsv.variable.sub.sub_val, use_var->sub.sub_val,
 	      sizeof (struct use_variable_sub) * use_var->sub.sub_len);
 
@@ -287,6 +287,7 @@ get_var_ptr (struct use_variable *uv)
   struct variable_element *ve_main;
   struct variable_element *ve_sub;
   int call_stack_entry;
+int indirect;
   char pointer_or_offset = 'N';
   char *rptr = 0;
 //int *rptr_i=0;
@@ -393,8 +394,10 @@ get_var_ptr (struct use_variable *uv)
   A4GL_debug (" total_size	=%ld", ve_main->total_size);
   A4GL_debug (" unit_size	=%ld", ve_main->unit_size);
   A4GL_debug ("\n");
+  A4GL_debug("sub.sub_len=%d",uv->sub.sub_len);
 
 // If we've got to here we've found our top level variable
+
 
   if (uv->sub.sub_len)
     {				// Darn - we've got more to do yet...
@@ -417,26 +420,47 @@ get_var_ptr (struct use_variable *uv)
 	}
     }
 
-//fprintf(stderr,"Indirection=%d ptr=%p\n",uv->indirection,rptr);
-  if (uv->indirection == -1)
+indirect=uv->indirection;
+// Are we looking at an array ?
+
+if (ve_main->i_arr_size[0]) {
+	// Are we looking at the variable for the array - with no subscripts
+	// eg char buff[245];
+	//   printf("%s",buff)
+	// This should return &buff which should be the same as &buff[0]
+	//
+	if (indirect==0 && uv->sub.sub_len==0) {
+		indirect=-1;
+	}
+}
+A4GL_debug("Indirection=%d ptr=%p \n",indirect,rptr);
+  if (indirect == -1)
     {
 	static void *ptr;
 	ptr=rptr;
+	A4GL_debug("indirection -1 : %p",&ptr);
       return &ptr;
     }
-  if (uv->indirection == 1)
+
+  if (indirect == 1)
     {
+	A4GL_debug("indirection 1 : %p",*(int *)rptr);
       return (void *) *(int *) rptr;
     }
+
   if (rptr == 0)
     {
       printf ("Uninitialized : ");
       print_use_variable (uv);
     }
-  if (uv->indirection == 0)
+
+  if (indirect == 0)
     {
+	A4GL_debug("indirection 0 : %p",rptr);
       return rptr;
     }
-  fprintf (stderr, "Unknown indirection : %d\n", uv->indirection);
+
+  fprintf (stderr, "Unknown indirection : %d\n", indirect);
+
   exit (10);
 }

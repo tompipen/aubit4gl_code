@@ -173,14 +173,15 @@ sort_specification_list:
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	;
 
-sort_specification: sort_spec op_asc_desc;
+sort_specification: sort_spec op_asc_desc {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+;
 
 sort_spec: INT_VALUE 
 	| column_name 
 	;
 
 op_asc_desc: {strcpy($<str>$,"");}
-	| ASC
+	| ASC 
 	| DESC
 	;
 

@@ -30,8 +30,11 @@ open_and_run (char *lv_progname)
 {
   int a;
   int ok = 1;
+
+
   a = process_xdr ('I', &this_module, lv_progname);
 
+  
   if (a)
     {
       A4GL_debug ("Opened OK\n");
@@ -576,7 +579,10 @@ A4GL_debug("Looking at me...\n");
   if(self==(void *)-1) {
 	A4GL_debug("Trying to open\n");
 	//self = (void *)dlopen (0, LT_DLGLOBAL|LT_DLLAZY_OR_NOW);
-	self = (void *)dlopen ("/home/aubit4gl/sourceforge/aubit4glsrc/lib/libaubit4gl.so", RTLD_LAZY);
+
+	self = (void *)dlopen (0, RTLD_LAZY);
+	//self = (void *)dlopen ("/home/aubit4gl/sourceforge/aubit4glsrc/lib/libaubit4gl.so", RTLD_LAZY);
+
         if (self==0) {
 			A4GL_debug("Error : %s\n",dlerror());
 	}
