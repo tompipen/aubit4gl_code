@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.108 2005-03-23 08:24:11 afalout Exp $
+# $Id: curslib.c,v 1.109 2005-03-31 13:36:18 afalout Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: curslib.c,v 1.108 2005-03-23 08:24:11 afalout Exp $";
+		"$Id: curslib.c,v 1.109 2005-03-31 13:36:18 afalout Exp $";
 #endif
 /*
 =====================================================================
@@ -2921,65 +2921,55 @@ A4GL_refresh_after_system (void)
 
 
 
+/* same function exists in :
 
-// This is called internally...
+	lib/libui/ui_curses/curslib.c (this file)	as (struct struct_scr_field *fprop)
+	lib/libui/ui_highlevel/formcntrl.c 			as (struct struct_scr_field *fprop)
+	
+	lib/libform/form_xdr/readforms.c			as (void *fprop) 
+	
+	proto is defined in API_form.spec :
+		//void A4GL_comments (struct struct_scr_field *fprop); 
+		A4GL_comments void* fprop -> void 
+	
+	
+*/
+// This is called internally in ui_curses plug-in
 void
-A4GL_comments (struct struct_scr_field *fprop)
-{
-  //char *str;
-  int cline;
-  char buff[256];
-  int attr;
+A4GL_comments (struct struct_scr_field *fprop) {
+int cline;
+char buff[256];
+int attr;
 
-  if (!fprop) strcpy(buff," ");
-  else {
-
-  if (!A4GL_has_str_attribute (fprop, FA_S_COMMENTS))
-    {
-      strcpy (buff, "");
+	if (!fprop) {
+		strcpy(buff," ");
+	} else {
+		if (!A4GL_has_str_attribute (fprop, FA_S_COMMENTS)) {
+			strcpy (buff, "");
+		} else {
+			strcpy (buff, A4GL_get_str_attribute (fprop, FA_S_COMMENTS));
+			A4GL_strip_quotes (buff);
+		}
+	}
+	cline = A4GL_getcomment_line ();
+	buff[A4GL_get_curr_width ()] = 0;
+	A4GL_debug ("MJA COMMENTS 1,%d,%s", cline, buff);
+	if (cline > UILIB_A4GL_get_curr_height ()) {
+		cline = UILIB_A4GL_get_curr_height ();
     }
-  else
-    {
-      strcpy (buff, A4GL_get_str_attribute (fprop, FA_S_COMMENTS));
-      A4GL_strip_quotes (buff);
+	attr = A4GL_get_curr_window_attr ();
+	if (!attr) {
+		attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
     }
-  }
-  cline = A4GL_getcomment_line ();
-  buff[A4GL_get_curr_width ()] = 0;
-  A4GL_debug ("MJA COMMENTS 1,%d,%s", cline, buff);
-
-  if (cline > UILIB_A4GL_get_curr_height ())
-    {
-      cline = UILIB_A4GL_get_curr_height ();
+	if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_INPUT"))) {
+		attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
     }
-
-  attr = A4GL_get_curr_window_attr ();
-
-  if (!attr)
-    {
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
+	if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_DISPLAY"))) {
+		attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, 0, 0, 0);
     }
 
-
-  if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_INPUT")))
-    {
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
-    }
-
-  if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_DISPLAY")))
-    {
-      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, 0, 0, 0);
-    }
-
-  //A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, 0,0) , 1); 
-
-
-  UILIB_A4GL_display_internal (1, cline, buff, attr, 1);
-
-  // AUBIT_COLOR_WHITE
-  UILIB_A4GL_zrefresh ();
-
-
+	UILIB_A4GL_display_internal (1, cline, buff, attr, 1);
+	UILIB_A4GL_zrefresh ();
 }
 
 #ifdef NDEF
@@ -2998,7 +2988,7 @@ wrapper_wgetch (WINDOW * w)
 #endif
 
 int
- UILIB_A4GL_open_gui_form_internal (long *form_variable,char *name_orig, int absolute, int nat,
+UILIB_A4GL_open_gui_form_internal (long *form_variable,char *name_orig, int absolute, int nat,
 			     char *like, int disable, void *handler_e,
 			     void *handler_c)
 {

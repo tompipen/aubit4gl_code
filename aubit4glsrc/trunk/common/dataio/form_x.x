@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.9 2005-02-20 19:33:22 mikeaubury Exp $
+# $Id: form_x.x,v 1.10 2005-03-31 13:35:32 afalout Exp $
 #*/
 
 /**
@@ -209,6 +209,20 @@ struct s_complex_expr {
 
 
 typedef struct u_expression *listitem;
+
+/*
+Code generated from this file (form_x.xi.c) produces following warning when compiled:
+
+form_x.xi.c: In function `input_u_expression':
+form_x.xi.c:351: warning: passing arg 2 of `input_listitem' from incompatible pointer type
+
+Mike say:
+
+Should shouldn't cause any problems - a fix would be quite complicated 
+and would possibly mean a change in the format of the form files 
+ - this will have to be put on hold (but it should do no harm)
+
+*/
 
 union u_expression switch (int itemtype) {
 	case ITEMTYPE_INT     : int intval;

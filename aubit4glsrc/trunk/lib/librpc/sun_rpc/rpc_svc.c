@@ -24,16 +24,16 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_svc.c,v 1.14 2005-03-09 15:15:11 mikeaubury Exp $
+# $Id: rpc_svc.c,v 1.15 2005-03-31 13:35:57 afalout Exp $
 #*/
 
 /**
  * @file
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -42,7 +42,7 @@
 =====================================================================
 */
 #ifdef __hpux__
-#define PORTMAP
+	#define PORTMAP
 #endif
 
 #include "a4gl_lib_rpc_xdr_int.h"
@@ -54,7 +54,7 @@
 */
 
 #ifdef __STDC__
-#define SIG_PF void(*)(int)
+	#define SIG_PF void(*)(int)
 #endif
 #define main server_run
 
@@ -76,10 +76,7 @@ int A4GL_rpc_svc_run (void);
 =====================================================================
 */
 
-//int A4GL_server_run (long port);
-//int A4GL_register_func (char *s, void *ptr);
-//int A4GL_unregister_func (char *s);
-//void A4GL_stop_serving (void);
+void A4GL_stop_serving (void);
 
 /*
 =====================================================================

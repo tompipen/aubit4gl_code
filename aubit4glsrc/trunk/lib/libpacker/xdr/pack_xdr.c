@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.9 2005-03-09 15:14:51 mikeaubury Exp $
+# $Id: pack_xdr.c,v 1.10 2005-03-31 13:35:55 afalout Exp $
 #*/
 
 /**
@@ -36,7 +36,7 @@
  * and then - call it...
  *
  *
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -53,9 +53,13 @@
 =====================================================================
 */
 
-int A4GLPACKER_initlib (void);
+//proto now in API header:
+//int A4GLPACKER_initlib (void);
 
-static int (*A4GL_func) ();		/*  warning: function declaration isn't a prototype */
+//Renamed from A4GL_func to A4GL_pack_xdr_func to avoid confusion & conflicts
+//static int (*A4GL_pack_xdr_func) (void);
+static int (*A4GL_pack_xdr_func) (void *xdrp,void *s);
+
 static int process_xdr (char dir, char *name, void *s, char *filename);
 
 /*
@@ -175,11 +179,14 @@ process_xdr (char dir, char *name, void *s, char *filename)
   else
     xdrstdio_create (&xdrp, fxx, XDR_DECODE);
 
-  A4GL_func = (void *) A4GL_find_func (libptr, buff);
-  if (A4GL_func == 0)
+  A4GL_pack_xdr_func = (void *) A4GL_find_func (libptr, buff);
+  if (A4GL_pack_xdr_func == 0)
     return 0;
 
-  A4GL_func (&xdrp, s);
+  A4GL_pack_xdr_func (&xdrp, s);
+  /*
+   too many arguments to function - changed the prototype - see above
+  */
 
   xdr_destroy (&xdrp);
   fclose (fxx);

@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.16 2005-03-09 15:14:42 mikeaubury Exp $
+# $Id: translate.c,v 1.17 2005-03-31 13:35:48 afalout Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  */
 
 /*

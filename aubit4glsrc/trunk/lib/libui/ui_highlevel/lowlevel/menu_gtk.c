@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.7 2005-03-25 12:48:35 afalout Exp $
+# $Id: menu_gtk.c,v 1.8 2005-03-31 13:36:28 afalout Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 
@@ -68,7 +68,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: menu_gtk.c,v 1.7 2005-03-25 12:48:35 afalout Exp $";
+		"$Id: menu_gtk.c,v 1.8 2005-03-31 13:36:28 afalout Exp $";
 #endif
 
 
@@ -302,16 +302,27 @@ make_menus (GtkWidget * menubar, GtkWidget * parent, menu_list * xdrm, char *id,
 //had to change to void pointer to allow prototype to apply to both 
 //GUI and TUI variants of this function
 void * A4GL_LL_create_menu (void * m, char *id, int mode, void *handler) {
-  GtkWidget *menubar;
-  GtkWindow *cwin;
-  extern GtkWidget *win_screen;
+GtkWidget *menubar;
+GtkWindow *cwin;
+
+//changed by Andrej; see comment below
+//extern GtkWidget *win_screen;
+extern GtkWindow *win_screen;
+
   /* Get the vbox associated with the current window */
 //  cwin = GTK_WINDOW (A4GL_get_curr_win_gtk ());
 //not sure if this is correct; A4GL_get_curr_win_gtk is no longer in API:
 
 
   cwin = win_screen;
-
+  /*
+  warning: assignment from incompatible pointer type
+  GtkWindow *cwin;
+  extern GtkWidget *win_screen;
+  defiend in lowlevel_gtk.c as : void *win_screen;
+  Therefore changed declaration to extern GtkWindow *win_screen;
+  
+  */
   /* Is there a menu bar there already ? */
   menubar = gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
 

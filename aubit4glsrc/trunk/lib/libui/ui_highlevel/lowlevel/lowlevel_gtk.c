@@ -12,19 +12,21 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.56 2005-03-25 12:48:35 afalout Exp $";
+		"$Id: lowlevel_gtk.c,v 1.57 2005-03-31 13:36:28 afalout Exp $";
 #endif
 
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
 int gui_yheight=20; // 25
-static int has_stock_item(char *s) ;
-static char *stock_item(char *s) ;
+#if GTK_CHECK_VERSION(2,0,0)
+	static int has_stock_item(char *s) ;
+	static char *stock_item(char *s) ;
+#endif
 int gui_xwidth=9;
 static int menu_response=-1;
 void A4GL_gui_prompt_style (int a);
 void *A4GL_get_currwin (void);
-int A4GLHLUI_initlib(void);
+//int A4GLHLUI_initlib(void);
 void tstamp(char *s) ;
 int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) ;
 static char A4GL_menu_pos(void) ;
@@ -224,9 +226,7 @@ GtkWidget *b;
     //l=gtk_label_new("Cancel");
     //gtk_widget_show(l);
 #if GTK_CHECK_VERSION(2,0,0)
-
     b=gtk_button_new_from_stock(GTK_STOCK_CANCEL);
-
 #else
     b=gtk_button_new();
     l=gtk_label_new("Cancel");
@@ -476,10 +476,12 @@ int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis
   else
     label_utf=NULL;
   label = (GtkLabel *) gtk_label_new (label_utf);
+  #if GTK_CHECK_VERSION(2,0,0)
   if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
     A4GL_debug("using PANGO ML for Label '%s'\n",msg);
     gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
   }
+  #endif
   g_free(label_utf);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->vbox),
                      GTK_WIDGET (label));
@@ -1559,10 +1561,12 @@ A4GL_debug("Create error window");
 
 frame=gtk_frame_new(0);
 label=gtk_label_new(lab_utf);
+#if GTK_CHECK_VERSION(2,0,0)
 if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
   A4GL_debug("using PANGO ML for Label '%s'\n", str);
   gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
 }
+#endif
 g_free(lab_utf);
 evt=gtk_event_box_new();
 
@@ -2286,8 +2290,10 @@ void* A4GL_LL_make_field(void *prop,int frow,int fcol,int rows,int cols) {
   if(strcasecmp("LABEL", widget_str)==0) {
     gtk_object_set_data(GTK_OBJECT(widget),"DISPLAY_LABEL",(void *)1);
     gtk_widget_set_name(GTK_WIDGET(widget), "AppWindow");
+	#if GTK_CHECK_VERSION(2,0,0)	
     if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML")))
       gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
+	#endif
   }
 
   return widget;
@@ -2307,11 +2313,12 @@ label_utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
 widget=gtk_label_new(label_utf);
 
 printf("Making label : %s\n",label);
-
+#if GTK_CHECK_VERSION(2,0,0)
 if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
   	A4GL_debug("using PANGO ML for Label '%s'\n",label);
   	gtk_label_set_use_markup(GTK_LABEL(widget), TRUE);
 }
+#endif
 g_free(label_utf);
 
 
@@ -3193,11 +3200,12 @@ int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
 
   for (a=0;a<nbuttons;a++) {
     GtkWidget *b;
-    GtkWidget *l;
+    GtkWidget *l=0;
     sprintf(buff,"BUTTON_%d",a);
     b=gtk_object_get_data(GTK_OBJECT(bb),buff);
-    gtk_button_set_use_stock(b,0);
-
+	#if GTK_CHECK_VERSION(2,0,0)	
+    	gtk_button_set_use_stock(b,0);
+	#endif
     if (a>=menu->num_opts) {
       gtk_widget_hide(b);
     } else {
@@ -3373,27 +3381,31 @@ void A4GL_LL_set_acc_intr_keys(int n) {
 }
 
 
-
-static int has_stock_item(char *s) {
+#if GTK_CHECK_VERSION(2,0,0)
+static int 
+has_stock_item(char *s) {
 	if (stock_item(s)) return 1;
 	else return 0;
 }
 
-static char *stock_item(char *s) {
+static char *
+stock_item(char *s) {
 char *ptr;
 char buff[256];
 char buff2[256];
-if (s[0]==' ') {
-	strcpy(buff,&s[1]);
-} else {
-	strcpy(buff,s);
-}
-A4GL_trim(buff);
-a4gl_upshift(buff);
-sprintf(buff2,"A4GL_STOCK_%s",buff);
-ptr=acl_getenv(buff2);
-if (ptr==0) return 0;
-if (strlen(ptr)==0) return 0;
-return ptr;
+	if (s[0]==' ') {
+		strcpy(buff,&s[1]);
+	} else {
+		strcpy(buff,s);
+	}
+	A4GL_trim(buff);
+	a4gl_upshift(buff);
+	sprintf(buff2,"A4GL_STOCK_%s",buff);
+	ptr=acl_getenv(buff2);
+	if (ptr==0) return 0;
+	if (strlen(ptr)==0) return 0;
+	return ptr;
 
 }
+
+#endif

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.42 2005-03-09 15:14:43 mikeaubury Exp $
+# $Id: readforms.c,v 1.43 2005-03-31 13:35:50 afalout Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
  /*
@@ -118,7 +118,7 @@ char *read_string_dup (FILE * ofile);
 char *A4GL_string_width (char *a);
 int set_fields2 (int nv, struct BINDING *vars, int d, int n, ...);
 
-static void real_comments (struct struct_scr_field *fprop);
+//static void real_comments (struct struct_scr_field *fprop);
 static struct s_form_dets *real_read_form (char *fname, char *formname);
 static void real_set_default_form (struct s_form_attr *form);
 static void real_dump_srec (struct s_form_dets *fd);
@@ -345,28 +345,46 @@ read_attributes (struct s_form_dets *f)
 }
 
 
+/* same function exists in :
+
+	lib/libui/ui_curses/curslib.c 				as (struct struct_scr_field *fprop)
+	lib/libui/ui_highlevel/formcntrl.c 			as (struct struct_scr_field *fprop)
+	
+	lib/libform/form_xdr/readforms.c (this file) as (void *fprop) 
+	
+	proto is defined in API_form.spec :
+		//void A4GL_comments (struct struct_scr_field *fprop); 
+		A4GL_comments void* fprop -> void 
+	
+	
+*/
 /**
- * Called from lib/libtui/ioform.c
+ * 
  */
+/* commented out by Andrej. 
+There are no calls to A4GL_comments or real_comments anywhere in libform
+only calls come from libui, and both libui_curses and libui_highlevel have
+there own (different) implementations for A4GL_comments function
+
+
 void
-A4GL_comments (void *fprop)
-{
-  A4GL_debug ("via A4GL_comments in lib");
-  real_comments (fprop);
+A4GL_comments (void *fprop) {
+	//A4GL_debug ("via A4GL_comments in lib");
+	real_comments (fprop);
 }
+
 static void
 real_comments (struct struct_scr_field *fprop)
 {
-  if (fprop)
-    {
-      A4GL_debug ("Has property");
-      if (A4GL_has_str_attribute (fprop, FA_S_COMMENTS))
-	{
-	  A4GL_debug ("Adding comment %s",
-		 A4GL_strip_quotes (A4GL_get_str_attribute (fprop, FA_S_COMMENTS)));
-	}
+	if (fprop) {
+		A4GL_debug ("Has property");
+		if (A4GL_has_str_attribute (fprop, FA_S_COMMENTS)) {
+			A4GL_debug ("Adding comment %s",
+			A4GL_strip_quotes (A4GL_get_str_attribute (fprop, FA_S_COMMENTS)));
+		}
     }
 }
+*/
 
 /**
  *

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.16 2005-03-09 15:14:31 mikeaubury Exp $
+# $Id: decompile.c,v 1.17 2005-03-31 13:35:36 afalout Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*

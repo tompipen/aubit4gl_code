@@ -24,21 +24,21 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.49 2005-03-23 08:24:14 afalout Exp $
+# $Id: prompt.c,v 1.50 2005-03-31 13:36:21 afalout Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.49 2005-03-23 08:24:14 afalout Exp $";
+		"$Id: prompt.c,v 1.50 2005-03-31 13:36:21 afalout Exp $";
 #endif
 
 /**
  * @file
  * Prompt implementation for Text User Interface
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*

@@ -1,8 +1,6 @@
 
-#include "a4gl_API_ui_lib.h"
-#include "a4gl_lib_ui_int.h"
-
-    /* =========================== from a4gl_tui_tui.h ======================== */
+#include "a4gl_API_ui_lib.h" //generated from API_ui by dlmagic??
+#include "a4gl_lib_ui_int.h" //general header included in all UI plug-ins
 
 #define WANTCURSES
 
@@ -60,6 +58,7 @@ struct s_form_dets *A4GL_getfromform (FORM * f);
 int A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f);
 //void A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap);
 //int A4GL_gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets, va_list * ap);
+
 	/* ======================= in colours.c  ======================= */
 int A4GL_decode_aubit_attr (int a, char t);
 void a4glattr_wattrset (WINDOW * w, int a);
@@ -220,7 +219,9 @@ void A4GL_tui_print (char *fmt, ...);
 void A4GL_mja_gotoxy (int x, int y);
 void
 A4GL_init_curses_stuff (void);
+
 void A4GL_comments (struct struct_scr_field *fprop);
+
 //int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 void A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type);
 void A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1);
@@ -267,7 +268,7 @@ attributes attributes_list[] = {
 #endif
 
 #ifdef __sun__
-#ifdef __sparc__
+	#ifdef __sparc__
 		/*
 		   Error: can't open DLL /home/users/a/af/afalout/aubit4glsrc/lib/libUI_TUI.so - ld.so.1:
 		   hello: fatal: relocation error: file /home/users/a/af/afalout/aubit4glsrc/lib/libUI_TUI.so:
@@ -276,8 +277,8 @@ attributes attributes_list[] = {
 
 		//from curses.h:
 		//extern WINDOW   *newscr;
-WINDOW *newscr;
-#endif
+		WINDOW *newscr;
+	#endif
 #endif
 
 /* ================================ EOF ================================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.22 2005-03-09 15:14:28 mikeaubury Exp $
+# $Id: data.c,v 1.23 2005-03-31 13:35:35 afalout Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  *
  *
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -42,17 +42,10 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-#include "report.h"
-
-#else
-
 #include "a4gl_ace_int.h"
 
-#endif
-
 #define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
+
 /*
 =====================================================================
                     Variables definitions
@@ -60,14 +53,9 @@
 */
 
 struct report this_report;
-#ifdef OLD_INCL
-extern int a4gl_status;
-#endif
 extern char *outputfilename;
 extern char *ordby[256];
 extern int ordbycnt;
-
-
 
 /*
 =====================================================================
@@ -76,14 +64,6 @@ extern int ordbycnt;
 */
 
 void dif_add_bind_int (void *list, long a);
-#ifdef OLD_INCL
-int A4GLSQL_next_column (char *colname, int *dtype, int *size);
-void ace_add_variable (char *name, char *dstring, int category, int pno,
-		       int dtype, int dim);
-void init_report (void);
-int find_variable (char *name);
-void add_function (char *name);
-#endif
 char *A4GL_decode_datatype (int dtype, int dim);
 void yyerror_sql (char *s);
 void print_variables (char *s);
@@ -160,6 +140,10 @@ find_variable (char *name)
 
 #define STRLENEQ(x,y) (strncmp(x,y,strlen(y))==0)
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 decode_dtype (char *s)
 {
@@ -293,7 +277,8 @@ add_function (char *name)
 
   this_report.functions.functions_val =
     realloc (this_report.functions.functions_val,
-	     this_report.functions.functions_len * sizeof (struct function));
+	     //this_report.functions.functions_len * sizeof (struct function));
+		 this_report.functions.functions_len * sizeof (struct a4gl_report_function));
 
   this_report.functions.functions_val[this_report.functions.functions_len -
 				      1].name = strdup (name);
@@ -302,7 +287,10 @@ add_function (char *name)
 
 
 
-
+/**
+ *
+ * @todo Describe function
+ */
 int
 add_agg (struct agg_val agg)
 {

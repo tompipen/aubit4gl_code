@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.23 2005-03-09 15:14:50 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.24 2005-03-31 13:35:55 afalout Exp $
 #*/
 
 /**
@@ -35,7 +35,7 @@
  * function called, if it's defined in same plug-in, and bypass the API.
  * On Linux, all calls would go via API regardless...
  *
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.163 2005-03-25 12:48:32 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.164 2005-03-31 13:35:37 afalout Exp $
 #
 */
 
@@ -457,14 +457,16 @@
   /* header automatically created with AutoConf-configure */
 	#include "a4gl_incl_config.h"
 #endif
+
 #ifdef CSCC
-#define NO_UNIX_HEADERS
-#undef HAVE_SEARCH_H
-#undef HAVE_NETINET_IN_H
+	#define NO_UNIX_HEADERS
+	#undef HAVE_SEARCH_H
+	#undef HAVE_NETINET_IN_H
 #endif
-	#ifndef __NO_STDARG__
-		#include <stdarg.h>		/* va_start(), va-list ... */
-	#endif
+
+#ifndef __NO_STDARG__
+	#include <stdarg.h>		/* va_start(), va-list ... */
+#endif
 
 #ifndef _NO_SYSINCL_
 
@@ -1094,7 +1096,7 @@ enum cmd_types {
   void A4GL_push_null (int dtype,int size);
   char *a4gl_substr (char *s, int dtype, int a, int b, ...);
   int A4GL_set_line (char *s, long l);
-char *get_bind_varname(char i,int n);
+  char *get_bind_varname(char i,int n);
   int A4GL_pop_bool (void);
   short A4GL_pop_int (void);
   long A4GL_pop_long (void);
@@ -1111,9 +1113,9 @@ char *get_bind_varname(char i,int n);
   void A4GL_push_user (void);
   void A4GL_push_today (void);
 
-void A4GL_fgl_end_4gl_0 (void);
-void A4GL_fgl_end_4gl_1 (void); /* Used on interrupt */
-void A4GL_display_at (int n, int a);
+  void A4GL_fgl_end_4gl_0 (void);
+  void A4GL_fgl_end_4gl_1 (void); /* Used on interrupt */
+  void A4GL_display_at (int n, int a);
   void A4GL_push_dtime (struct A4GLSQL_dtime *p);
   void A4GL_push_int (short p);
   void A4GL_push_long (long p);
@@ -1578,9 +1580,33 @@ int A4GL_conversion_ok(int a);
 
   /* ============================ maths.c ================================ */
   void *A4GL_find_op_function (int dtype1, int dtype2, int op);
-#ifdef CSCC
-  void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
-#endif
+
+// Andrej commented out the ifdef, since proto is needed in all cases 
+// "CSCC" = CSCC compiler (gnu portable .net)
+//#ifdef CSCC
+	void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
+	/* 
+	compiling report.xi.c :
+	In file included from report.xi.c:2:
+	/opt/aubit/aubit4glsrc/incl/a4gl_libaubit4gl.h:1585: parse error before `function'
+	
+	problem here is that in (for example) common/dataio/report.x 
+	contains struct called "function":
+	
+		struct function {
+		char * name;
+		};
+		typedef struct function function;
+	
+	renamed it to a4gl_report_function
+	
+	
+[root@aptiva aubit4glsrc]# find . -name "*.c" -exec grep -H "struct function" {} \;
+./compilers/ace/data.c:      this_report.functions.functions_len * sizeof (struct function));
+
+	*/
+	
+//#endif
 
   /* ============================ translate.c ============================ */
 
@@ -2031,27 +2057,25 @@ int A4GLSQL_add_prepare (char *pname, void *vsid);
 char *A4GLSQLCV_insert_alias(char *t,char *c,char *v);
 void A4GLSQLCV_add_temp_table(char *tabname);
 
-  /* API prototypes */
-#include "a4gl_API_form.h"	/* generated from .spec */
-#include "a4gl_API_menu.h"	/* generated from .spec */
-#include "a4gl_API_msg.h"	/* generated from .spec */
-#include "a4gl_API_packer.h"	/* generated from .spec */
-#include "a4gl_API_ui.h"	/* generated from .spec */
-#include "a4gl_API_help.h"	/* generated from .spec */
-#include "a4gl_sql.h"	/* generated from .spec */
-
-
-#include "a4gl_exdata.h"	/* created manually */
-#include "a4gl_API_exreport.h"	/* created manually */
-#include "a4gl_API_sql.h"	/* created manually */
-#include "a4gl_API_sqlparse.h"	/* created manually */
-#include "a4gl_API_rpc.h"	/* created manually */
-
+  /* API prototypes - now all generated from .spec files by dlmagic */
+#include "a4gl_API_form.h"	
+#include "a4gl_API_menu.h"	
+#include "a4gl_API_msg.h"	
+#include "a4gl_API_packer.h"
+#include "a4gl_API_ui.h"	
+#include "a4gl_API_help.h"	
+#include "a4gl_sql.h"	
+#include "a4gl_exdata.h"	
+#include "a4gl_API_exreport.h"
+#include "a4gl_API_sql.h"
+#include "a4gl_API_sqlparse.h"
+#include "a4gl_API_rpc.h"	
+#include "a4gl_API_esql.h"
 
 #ifndef ALLOW_BOTH_LIB_AND_CALL
-#ifdef FGLINCLDEF_INCL
-#error a4gl_4gl_callable.h and a4gl_libaubit4gl.h should not be included together
-#endif
+	#ifdef FGLINCLDEF_INCL
+		#error a4gl_4gl_callable.h and a4gl_libaubit4gl.h should not be included together
+	#endif
 #endif
 
 #ifdef __cplusplus

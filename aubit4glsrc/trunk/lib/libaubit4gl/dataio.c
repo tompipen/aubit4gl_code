@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.10 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: dataio.c,v 1.11 2005-03-31 13:35:46 afalout Exp $
 #
 */
 
@@ -47,7 +47,7 @@
  *
  *
  *
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 

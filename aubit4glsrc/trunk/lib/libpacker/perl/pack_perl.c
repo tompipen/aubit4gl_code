@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.10 2005-03-09 15:14:50 mikeaubury Exp $
+# $Id: pack_perl.c,v 1.11 2005-03-31 13:35:55 afalout Exp $
 #*/
 
 /**
@@ -38,7 +38,7 @@
  *
  *
  *
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.29 2005-03-23 08:24:09 afalout Exp $
+# $Id: readforms.c,v 1.30 2005-03-31 13:35:49 afalout Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -259,37 +259,6 @@ read_attributes (struct s_form_dets *f)
     }
   A4GL_debug ("returning\n");
 }
-
-
-#ifdef MOVED_TO_CURSLIB
-/**
- * Called from lib/libtui/ioform.c
- */
-void
-A4GL_comments (void *fprop)
-{
-  A4GL_debug ("via A4GL_comments in lib");
-  real_comments (fprop);
-}
-
-/**
- *
- */
-static void
-real_comments (struct struct_scr_field *fprop)
-{
-  if (fprop)
-    {
-      A4GL_debug ("Has property");
-      if (A4GL_has_str_attribute (fprop, FA_S_COMMENTS))
-	{
-	  A4GL_debug ("Adding comment %s",
-		 A4GL_strip_quotes (A4GL_get_str_attribute (fprop, FA_S_COMMENTS)));
-	}
-    }
-}
-#endif
-
 
 /**
  *
@@ -573,13 +542,13 @@ do_translate_form (struct_form * the_form)
     }
 }
 
-
+//obsolete note - remove:
 /* API_form.c (generated from API_form.spec by dlmagic) makes calls to 
 this function. Prototype is also there, but it should not be -  it should be in 
 a4gl_lib_form_int.h - and that header included both in this file and in 
 API_form.c - but that proto is printed by dlmagic and changing it will impact
 all .spec APIs - so since we are lazy we will for now repeat the proto here*/
-int A4GLFORM_initlib (void);
+//int A4GLFORM_initlib (void);
 
 // NOTE - was void here, but int in API
 //void

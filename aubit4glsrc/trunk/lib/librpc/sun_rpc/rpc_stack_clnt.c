@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_stack_clnt.c,v 1.8 2005-03-09 15:15:11 mikeaubury Exp $
+# $Id: rpc_stack_clnt.c,v 1.9 2005-03-31 13:35:57 afalout Exp $
 #*/
 
 /**
@@ -35,7 +35,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*

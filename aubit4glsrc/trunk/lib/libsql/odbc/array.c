@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.13 2005-03-09 15:15:12 mikeaubury Exp $
+# $Id: array.c,v 1.14 2005-03-31 13:35:58 afalout Exp $
 #
 */
 
@@ -389,153 +389,137 @@ struct  {
   SQLBindCol (hstmt, 10, SQL_C_LONG, &data.radix, 4, &outlen[10]);
   SQLBindCol (hstmt, 11, SQL_C_LONG, &data.nullable, 4, &outlen[11]);
 
-  while (cnt < mx)
-    {
-      memset(&data,0,sizeof(data));
-      rc = SQLFetch (hstmt);
-      if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("Done fetch - got %d", rc);
-#endif
-	  break;
-	}
-#ifdef DEBUG
-      A4GL_debug ("column -> %s Dtype=%x len=%x rc=%d", data.cn, data.dt, data.len, rc);
-      A4GL_debug ("column %s %s %s %s", data.tq, data.to, data.tn, data.cn);
-      A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", data.dt, data.dtname, data.prec,
-	     data.len, data.scale, data.radix, data.nullable, data.remarks);
-#endif
-      colsize = A4GL_display_size (data.dt, data.prec, "");
-      sprintf (szcolsize, "%d", colsize);
+  	while (cnt < mx) {
+		memset(&data,0,sizeof(data));
+		rc = SQLFetch (hstmt);
+		if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR){
+			#ifdef DEBUG
+				A4GL_debug ("Done fetch - got %d", rc);
+			#endif
+			break;
+		}
+		#ifdef DEBUG
+		A4GL_debug ("column -> %s Dtype=%x len=%x rc=%d", data.cn, data.dt, data.len, rc);
+		A4GL_debug ("column %s %s %s %s", data.tq, data.to, data.tn, data.cn);
+		A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", data.dt, data.dtname, data.prec,
+	     	data.len, data.scale, data.radix, data.nullable, data.remarks);
+		#endif
+		colsize = A4GL_display_size (data.dt, data.prec, "");
+		sprintf (szcolsize, "%d", colsize);
 
-      if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("Some error getting data....");
-#endif
-	  SQLFreeStmt (hstmt, SQL_DROP);
-	  break;
-	}
+		if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO) {
+			#ifdef DEBUG
+				A4GL_debug ("Some error getting data....");
+			#endif
+			SQLFreeStmt (hstmt, SQL_DROP);
+			break;
+		}
 
-      if (arr1 != 0) strncpy (&arr1[cnt * (szarr1 + 1)], data.cn, szarr1);
-      if (arr2 != 0)
-	{
-	  switch (mode)
-	    {
-	    case 0:
-	      strncpy (&arr2[cnt * (szarr2 + 1)], szcolsize, szarr2);
-	      break;
-	    case 1:
-	      strncpy (&arr2[cnt * (szarr2 + 1)], data.dtname, szarr2);
-	      break;
-	    default:
-	      strncpy (&arr2[cnt * (szarr2 + 1)], data.tn, szarr2);
-	      break;
-	    }
-	}
-      cnt++;
-#ifdef DEBUG
-      A4GL_debug ("fill array columns : Rc= %d", rc);
-      A4GL_debug ("    cb=%s dtname=%s", data.cn, data.dtname);
-#endif
+		if (arr1 != 0) {
+			strncpy (&arr1[cnt * (szarr1 + 1)], data.cn, szarr1);
+		}
+		if (arr2 != 0) {
+			switch (mode) {
+				case 0:
+					strncpy (&arr2[cnt * (szarr2 + 1)], szcolsize, szarr2);
+					break;
+				case 1:
+					strncpy (&arr2[cnt * (szarr2 + 1)], data.dtname, szarr2);
+					break;
+				default:
+					strncpy (&arr2[cnt * (szarr2 + 1)], data.tn, szarr2);
+					break;
+			}
+		}
+		cnt++;
+		#ifdef DEBUG
+			A4GL_debug ("fill array columns : Rc= %d", rc);
+			A4GL_debug ("    cb=%s dtname=%s", data.cn, data.dtname);
+		#endif
     }
-  SQLFreeStmt (hstmt, SQL_DROP);
-  return cnt;
+	SQLFreeStmt (hstmt, SQL_DROP);
+	return cnt;
 }
 
-
-
-int A4GL_fill_array_columns_mk2 (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode, char *info)
-{
-  SQLHSTMT hstmt;
-  int rc;
-  SQLHSTMT ret;
-  char buff[256];
-  SQLSMALLINT scale;
-  SQLSMALLINT nullable;
+int 
+A4GL_fill_array_columns_mk2 (int mx, char *arr1, int szarr1, char *arr2, int szarr2, int mode, char *info) {
+SQLHSTMT hstmt;
+int rc;
+SQLHSTMT ret;
+char buff[256];
+SQLSMALLINT scale;
+SQLSMALLINT nullable;
 int allow_no_rows=1;
 SQLSMALLINT ncols;
-  char colname[64];
-  SWORD colnamelen;
-  SQLSMALLINT coltype;
-  int colcnt;
-  UDWORD collen;
+char colname[64];
+SWORD colnamelen;
+SQLSMALLINT coltype;
+int colcnt;
+UDWORD collen;
 
+  	#ifdef DEBUG
+  		A4GL_debug ("Fill array columns for table %s", info);
+	#endif
 
-
-#ifdef DEBUG
-  A4GL_debug ("Fill array columns for table %s", info);
-#endif
-
-  if (hdbc == 0)
-    {
-      A4GL_exitwith ("Not connected to database");
-      return 0;
+  	if (hdbc == 0){
+		A4GL_exitwith ("Not connected to database");
+		return 0;
     }
+	ret = (SQLHSTMT)A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
+  	if (allow_no_rows) {
+		sprintf(buff,"select * from %s where 1=0",info);
+	} else {
+		sprintf(buff,"select * from %s ",info);
+	}
 
-  ret = (SQLHSTMT)A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
-
-
-if (allow_no_rows) {
-	sprintf(buff,"select * from %s where 1=0",info);
-} else {
-	sprintf(buff,"select * from %s ",info);
-}
-
-
-  SQLPrepare ((SQLHSTMT)hstmt, buff, SQL_NTS);
-  rc = SQLExecute(hstmt);
-  chk_rc (rc, hstmt, "unload_data");
-  if (rc<0) return 0;
-  rc = SQLNumResultCols (hstmt, &ncols);
-  chk_rc (rc, hstmt, "unload_data");
-  if (rc<0) return 0;
-
-
-  for (colcnt = 1; colcnt <= ncols; colcnt++)
-    {
-
-      rc = SQLDescribeCol (hstmt, colcnt, colname, (SWORD) sizeof (colname), &colnamelen, &coltype, &collen, &scale, &nullable);
-      chk_rc (rc, hstmt, "SQLDescribeCol");
-
-      if (arr1 != 0) strncpy (&arr1[(colcnt-1) * (szarr1 + 1)], colname, szarr1);
+	SQLPrepare ((SQLHSTMT)hstmt, buff, SQL_NTS);
+	rc = SQLExecute(hstmt);
+	chk_rc (rc, hstmt, "unload_data");
+	if (rc<0) {
+		return 0;
+	}
+	rc = SQLNumResultCols (hstmt, &ncols);
+	chk_rc (rc, hstmt, "unload_data");
+	if (rc<0) {
+		return 0;
+	}
 
 
-      if (arr2 != 0)
-        {
-          switch (mode)
-            {
-	
-            case 0:
-		{ char buff[256];
-		#ifdef SQLITE
-		sprintf(buff,"%d",collen);
-		#else
-		sprintf(buff,"%ld",collen);
-		#endif
-              strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], buff, szarr2);
+  	for (colcnt = 1; colcnt <= ncols; colcnt++) {
+		rc = SQLDescribeCol (hstmt, colcnt, colname, (SWORD) sizeof (colname), 
+			&colnamelen, &coltype, &collen, &scale, &nullable);
+		chk_rc (rc, hstmt, "SQLDescribeCol");
+		if (arr1 != 0) {
+			strncpy (&arr1[(colcnt-1) * (szarr1 + 1)], colname, szarr1);
 		}
-              break;
-
-            case 1:
-	
-              strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], "CHAR(-1)", szarr2);
-              break;
-
-            default:
-              strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], info, szarr2);
-              break;
+		if (arr2 != 0) {
+			switch (mode) {
+				case 0:
+					{ char buff[256];
+						#ifdef SQLITE
+							sprintf(buff,"%d",collen);
+						#else
+							//sprintf(buff,"%ld",collen);
+							sprintf(buff,"%d",(int)collen);
+							/*warning: long int format, int arg (arg 3)
+							UDWORD collen;
+							*/
+						#endif
+						strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], buff, szarr2);
+					}
+					break;
+				case 1:
+              		strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], "CHAR(-1)", szarr2);
+					break;
+				default:
+					strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], info, szarr2);
+					break;
             }
         }
+	}
 
-
-    }
-
-
-
-  SQLFreeStmt (hstmt, SQL_DROP);
-  return colcnt-1;
+	SQLFreeStmt (hstmt, SQL_DROP);
+	return colcnt-1;
 }
 
 

@@ -24,16 +24,16 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.16 2005-03-09 15:15:11 mikeaubury Exp $
+# $Id: rpc_client.c,v 1.17 2005-03-31 13:35:57 afalout Exp $
 #*/
 
 /**
  * @file
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -223,7 +223,7 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
  *
  * @param host The host where to call the remote function.
  * @param async
- * @param A4GL_func The name of the remote function to call.
+ * @param func The name of the remote function to call.
  * @param port The port number to use when making the call.
  * @param np The number of parameters.
  */
@@ -243,7 +243,7 @@ A4GL_remote_func_call (char *host, int async, char *func, int port, int np)
       strcpy (buff, func);
     }
   serviceport = port + 0x2000000;
-  A4GL_debug ("Calling host %s A4GL_func %s on port %ld with %d entries",
+  A4GL_debug ("Calling host %s function %s on port %ld with %d entries",
 	 host, buff, port, np);
   a = A4GL_fgl_rpc_1 (host, buff, np);
   return a;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.119 2005-03-30 10:52:45 mikeaubury Exp $
+# $Id: sql.c,v 1.120 2005-03-31 13:35:58 afalout Exp $
 #
 */
 
@@ -32,7 +32,7 @@
  * @file
  * ODBC Sql execution implementation
  *
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 
@@ -44,22 +44,24 @@
 
 #include "a4gl_lib_sql_odbc_int.h"
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
 #if (ODBCVER >= 0x0300)
-#define USE_TIMESTAMP
+	#define USE_TIMESTAMP
 #else
-#define DTIME_AS_CHAR
+	#define DTIME_AS_CHAR
 #endif
-
-//#define FREE
 
 #ifdef PGODBC
-#define DTIME_AS_CHAR
-#define DATE_AS_CHAR
+	#define DTIME_AS_CHAR
+	#define DATE_AS_CHAR
 #endif
 
 #define DTIME_AS_CHAR
-
 
 static int find_extras(void *id) ;
 static void free_extra(void *id) ;
@@ -67,16 +69,16 @@ static void set_extra_data(void *id,int in_out,int position, int data,void *val)
 static int setup_extras(void *id) ;
 
 #ifdef DATE_AS_CHAR
-int date_as_char=1;
+	int date_as_char=1;
 #else
-int date_as_char=0;
+	int date_as_char=0;
 #endif
 
 
 #ifdef DTIME_AS_CHAR
-int dtime_as_char=1;
+	int dtime_as_char=1;
 #else
-int dtime_as_char=0;
+	int dtime_as_char=0;
 #endif
 
 static int do_fake_transactions(void) ;
@@ -98,6 +100,7 @@ int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
 void *A4GL_bind_datetime (void *ptr_to_dtime_var);
 void * A4GL_bind_interval (void *ptr_to_ival);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+
 #define FETCH_ABSOLUTE 		1
 #define FETCH_RELATIVE 		2
 #define DTYPE_DATE 			7
@@ -109,19 +112,16 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 
 int in_transaction = 0;
 
-
 #define chk_rc(rc,stmt,call) A4GL_chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
 
-
 #ifndef __MINGW32__
-#define max(a,b) (a>b?a:b)
+	#define max(a,b) (a>b?a:b)
 	/* windef.h:
 
 	   #ifndef NOMINMAX
 	   #ifndef max
 	   #define max(a,b) ((a)>(b)?(a):(b))
 	 */
-
 #endif
 
 /**
@@ -136,9 +136,9 @@ int in_transaction = 0;
 #define fgl_size(a,b) (fgl_sizes[a]==-1?b+1:fgl_sizes[a])
 
 #ifdef _WIN32
-#define ODBC_INI "ODBC.INI"
+	#define ODBC_INI "ODBC.INI"
 #else
-#define ODBC_INI ".odbc.ini"
+	#define ODBC_INI ".odbc.ini"
 #endif
 
 #undef min
@@ -147,19 +147,29 @@ int in_transaction = 0;
 #define max(a, b) ((a) < (b) ? (b) : (a))
 #define SQLRETURN int
 
-
 /*
 =====================================================================
                     Functions prototypes
 =====================================================================
 */
 
+//NOTE: ./compilers/4glc/insert_curs.c:static int find_cursor(char *s)
+static struct s_cid * A4GLSQL_find_cursor (char *cname);
+
+int A4GLSQL_get_datatype (char *db, char *tab, char *col);
+static int do_fake_transactions(void) ;
+int A4GL_dttoc (void *a, void *b, int size);
+void *A4GLSQL_prepare_sql_internal (char *s);
+void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
+int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
+void *A4GL_bind_datetime (void *ptr_to_dtime_var);
+void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 
 //truct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) ;
 struct expr_str *A4GL_add_validation_elements_to_expr (struct expr_str *ptr,
 						       char *val);
-//void *A4GL_new_expr (char *value);
-//void *A4GL_append_expr (struct expr_str *orig_ptr, char *value);
+//now in a4gl_libaubit4gl.h void *A4GL_new_expr (char *value);
+//now in a4gl_libaubit4gl.h void *A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 char *A4GL_conv_date (char *s);
 int A4GL_find_prepare2 (char *pname);
 struct s_sid *find_prepare (char *pname);
@@ -193,13 +203,13 @@ long A4GL_describecolumn (SQLHSTMT hstmt, int colno, int type);
 int set_stmt_options (char *cursname, char *opt, char *val);
 
 #ifndef DONTINCLUDEDATASOURCES
-#ifdef PGODBC
-RETCODE SQL_API SQLDataSources (HENV henv, UWORD fDirection,
-				UCHAR FAR * szDSN, SWORD cbDSNMax,
-				SWORD FAR * pcbDSN, UCHAR FAR * szDescription,
-				SWORD cbDescriptionMax,
-				SWORD FAR * pcbDescription);
-#endif
+	#ifdef PGODBC
+		RETCODE SQL_API SQLDataSources (HENV henv, UWORD fDirection,
+						UCHAR FAR * szDSN, SWORD cbDSNMax,
+						SWORD FAR * pcbDSN, UCHAR FAR * szDescription,
+						SWORD cbDescriptionMax,
+						SWORD FAR * pcbDescription);
+	#endif
 #endif
 
 /* in sqlex.c */
@@ -393,33 +403,21 @@ int convneg_sql_to_4gl[15] = {
 
 #if (defined(WIN32) && ! defined(__CYWIN__))	/* && defined DLL_EXPORT */
 
-dll_export sqlca_struct a4gl_sqlca;
-dll_export int status;
+	dll_export sqlca_struct a4gl_sqlca;
+	dll_export int status;
+	#include <windows.h>
+	int WINAPI
+	libSQL_odbc32_init (HANDLE h, DWORD reason, void *foo) {
+	  return 1;
+	}
 
-#include <windows.h>
-int WINAPI
-libSQL_odbc32_init (HANDLE h, DWORD reason, void *foo)
-{
-  return 1;
-}
-
-
-
-
-
-
-char
-libSQL_odbc32_is_dll (void)
-{
-  return 1;
-}
+	char
+	libSQL_odbc32_is_dll (void) {
+	  return 1;
+	}
 #endif /* WIN32 && DLL_EXPORT */
 
-
 dll_import sqlca_struct a4gl_sqlca;
-
-
-
 
 /*
 =====================================================================
@@ -427,9 +425,8 @@ dll_import sqlca_struct a4gl_sqlca;
 =====================================================================
 */
 
-
-
-static void ensure_as_char(void) {
+static void 
+ensure_as_char(void) {
 	
 	if (A4GL_isyes(acl_getenv("DATE_AS_CHAR"))) { date_as_char=1; }
 	if (A4GL_isyes(acl_getenv("DTIME_AS_CHAR"))) { dtime_as_char=1; }
@@ -439,33 +436,31 @@ static void ensure_as_char(void) {
 }
 
 
-static void set_conv_4gl_to_c(void) {
+static void 
+set_conv_4gl_to_c(void) {
 
-ensure_as_char();
-if (date_as_char) {
-	conv_4gl_to_c[7]=SQL_C_CHAR;
-  	fgl_sizes[7]=12;
-} else {
-	conv_4gl_to_c[7]=SQL_C_DATE;
-  	fgl_sizes[7]=sizeof (long);
+	ensure_as_char();
+	if (date_as_char) {
+		conv_4gl_to_c[7]=SQL_C_CHAR;
+		fgl_sizes[7]=12;
+	} else {
+		conv_4gl_to_c[7]=SQL_C_DATE;
+		fgl_sizes[7]=sizeof (long);
+	}
+	
+	if (dtime_as_char) {
+		conv_4gl_to_c[10]=SQL_C_CHAR;
+		fgl_sizes[10]=30;
+	} else {
+		#ifdef SQL_C_DATETIME
+			conv_4gl_to_c[10]=SQL_C_DATETIME;		// Was timestamp
+			fgl_sizes[10]=0;
+		#else
+			conv_4gl_to_c[10]=SQL_C_TIMESTAMP;		// Was timestamp
+			fgl_sizes[10]=0;
+		#endif
+	}
 }
-
-
-if (dtime_as_char) {
-  conv_4gl_to_c[10]=SQL_C_CHAR;
-  	fgl_sizes[10]=30;
-} else {
-#ifdef SQL_C_DATETIME
-  conv_4gl_to_c[10]=SQL_C_DATETIME;		// Was timestamp
-  	fgl_sizes[10]=0;
-#else
-  conv_4gl_to_c[10]=SQL_C_TIMESTAMP;		// Was timestamp
-  	fgl_sizes[10]=0;
-#endif
-}
-}
-
-
 
 /**
  * Assign a value to the status global variable.
@@ -717,7 +712,7 @@ A4GL_proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
  * @param cname The name of the cursor to be found.
  * @return A pointer to the cursor information.
  */
-struct s_cid *
+static struct s_cid *
 A4GLSQL_find_cursor (char *cname)
 {
   struct s_cid *ptr;

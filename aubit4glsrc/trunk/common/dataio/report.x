@@ -252,7 +252,12 @@ struct cmd_printfile {
 };
 
 
-struct function {
+/* 
+NOTE:
+struct renamed from "function" to "a4gl_report_function" because of the 
+conflict with math related proto in a4gl_libaubit4gl.h
+*/
+struct a4gl_report_function {
 	string name<>;
 };
 
@@ -303,12 +308,17 @@ struct agg_val {
 };
 
 
+/* 
+NOTE:
+"struct function functions<>;" renamed to "struct a4gl_report_function functions<>;"
+because of the conflict with math related proto in a4gl_libaubit4gl.h
+*/
 struct report {
 	string magic<>;
 	string report_name<>;
 	string dbname<>;
 	struct ascii ascii;
-	struct function functions<>;
+	struct a4gl_report_function functions<>;
 	struct variable variables<>;
 	struct input_vals inputs<>;
 	struct output output;

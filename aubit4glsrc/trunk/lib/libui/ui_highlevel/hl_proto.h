@@ -54,7 +54,9 @@ void *A4GL_window_on_top(void);
 void *A4GL_window_on_top_ign_menu(void);
 void A4GL_clr_field(void *f);
 void A4GL_clr_menu_disp (ACL_Menu * menu) ;
+
 void A4GL_comments(struct struct_scr_field *fprop);
+
 void A4GL_default_attributes(void *f, int dtype);
 void A4GL_display_field_contents(void *field, int d1, int s1, char *ptr1);
 void A4GL_display_menu(ACL_Menu *m) ;

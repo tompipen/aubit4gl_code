@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.34 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: keys.c,v 1.35 2005-03-31 13:35:47 afalout Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  */
 
 /*

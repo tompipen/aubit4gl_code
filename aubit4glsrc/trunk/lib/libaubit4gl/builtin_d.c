@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.61 2005-03-16 21:54:41 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.62 2005-03-31 13:35:39 afalout Exp $
 #
 */
 
@@ -37,7 +37,7 @@
  *   - Builtin implemented functions
  *
  *
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  * @todo -Wmissig-prototypes
  * @todo -Wstrict-prototypes
  * @todo -Wall

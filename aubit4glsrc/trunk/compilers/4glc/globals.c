@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.31 2005-03-25 12:48:30 afalout Exp $
+# $Id: globals.c,v 1.32 2005-03-31 13:35:34 afalout Exp $
 #
 */
 
@@ -33,7 +33,7 @@
  * Processing of 4GL GLOBALS declarations and files
  *
  *
- * @todo Doxygen A4GL_comments in all functions
+ * @todo Doxygen comments in all functions
  * @todo static in modular variables
  * @todo const in read only strings
  */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.62 2005-03-28 20:23:22 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.63 2005-03-31 13:35:47 afalout Exp $
 #
 */
 
@@ -42,9 +42,14 @@
 =====================================================================
 */
 
-
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 // Most of the time we don't need to know an explicit connection id
 // sometimes we do - if one is available at all
@@ -55,20 +60,12 @@ void *last_esql_db_connection=0;
 
 /*
 =====================================================================
-                    Variables definitions
-=====================================================================
-*/
-
-//extern int errno;
-
-/*
-=====================================================================
                     Functions prototypes
 =====================================================================
 */
 
 int A4GL_bname2 (char *str, char *str1, char *str2, char *str3);
-void* A4GL_db_connected(char* dbname);
+//void* A4GL_db_connected(char* dbname);
 
 /*
 =====================================================================
@@ -138,40 +135,6 @@ char b3[10];
 }
 
 /**
- * Aubit compiler malloc.
- *
- * It was used to make some A4GL_debug about memory allocations.
- * Right now just encapsulate standard C malloc.
- *
- * @param size The size in bytes to be allocated
- * @param why The reason for memory allocation
- * @param f The source file name where the memory is being alocated
- * @pram line The source file line number where memory being alocated
- * @return A pointer for the memory alocated
- */
-void *
-acl_malloc_full (int size, char *why, char *f, long line)
-{
-  void *p;
-  p = malloc (size);
-  A4GL_debug ("40 alloc %d bytes : %p %s %s %d", size,p,why,f,line);
-  return p;
-}
-
-/**
- *
- *
- * @param
- */
-void
-acl_free_full (void *ptr, char *f, long line)
-{
-  A4GL_debug ("40 Free %p %s %d", ptr,f,line);
-  free (ptr);
-}
-
-
-/**
  * Yet another implementation of basename.
  *
  * @param str
@@ -233,6 +196,39 @@ A4GL_bnamexxx (char *str, char *str1, char *str2)
 }
 
 /**
+ * Aubit compiler malloc.
+ *
+ * It was used to make some A4GL_debug about memory allocations.
+ * Right now just encapsulate standard C malloc.
+ *
+ * @param size The size in bytes to be allocated
+ * @param why The reason for memory allocation
+ * @param f The source file name where the memory is being alocated
+ * @pram line The source file line number where memory being alocated
+ * @return A pointer for the memory alocated
+ */
+void *
+acl_malloc_full (int size, char *why, char *f, long line)
+{
+  void *p;
+  p = malloc (size);
+  A4GL_debug ("alloc %d bytes : %p %s %s %d", size,p,why,f,line);
+  return p;
+}
+
+/**
+ *
+ *
+ * @param
+ */
+void
+acl_free_full (void *ptr, char *f, long line)
+{
+  A4GL_debug ("Free %p %s %d", ptr,f,line);
+  free (ptr);
+}
+
+/**
  * Pad a string with spaces until the string reaches a size.
  *
  * @param ptr A pointer to the string being padded.
@@ -272,56 +268,33 @@ A4GL_pad_string (char *ptr, int size)
 int
 A4GL_digittoc (int *a, char *z, char *fmt, int dtype, int size)
 {
-  static char buff[100];
+static char buff[100];
 
+	#ifdef DEBUG
+		A4GL_debug ("digittoc %d",*a);
+	#endif
+	sprintf (buff, fmt, *a);
 
+	#ifdef DEBUG
+		A4GL_debug ("digittoc: %s", buff);
+	#endif
 
-#ifdef DEBUG
-  {
-    A4GL_debug ("digittoc %d",*a);
-  }
-#endif
-  sprintf (buff, fmt, *a);
+	#define DIGIT_ALIGN_LEFT
 
-#ifdef DEBUG
-  {
-    A4GL_debug ("digittoc: %s", buff);
-  }
-#endif
+	#ifdef DIGIT_ALIGN_LEFT
+		sprintf (buff, "%%-%d%s", size, fmt);
+	#else
+		sprintf (buff, "%%%d%s", size, fmt);
+	#endif
 
-
-
-#define DIGIT_ALIGN_LEFT
-
-#ifdef DIGIT_ALIGN_LEFT
-  sprintf (buff, "%%-%d%s", size, fmt);
-#else
-  sprintf (buff, "%%%d%s", size, fmt);
-#endif
-
-/*
-	if (strlen(buff)>size) {
-		memset(z,'*',size);
-		pad_string(z,size);
-		return 0;
-	}
-*/
-
-
-//printf("Format = %s\n",buff);fflush(stdout);
-
-#ifdef DEBUG
-  {
-    A4GL_debug ("digittoc: buff set to %s", buff);
-  }
-#endif
-  strcpy (fmt, buff);
-#ifdef DEBUG
-  {
-    A4GL_debug ("digittoc: returns");
-  }
-#endif
-  return 1;
+	#ifdef DEBUG
+		A4GL_debug ("digittoc: buff set to %s", buff);
+	#endif
+	strcpy (fmt, buff);
+	#ifdef DEBUG
+		A4GL_debug ("digittoc: returns");
+	#endif
+	return 1;
 }
 
 /**
@@ -680,7 +653,8 @@ A4GL_debug("str=%s",str);
 
 
 
-int A4GL_esql_db_open(int a,char *src,char *dest,char *dbname) {
+int 
+A4GL_esql_db_open(int a,char *src,char *dest,char *dbname) {
 	static int dbopen=0;
 	if (a==1) {
 			dbopen=1;
@@ -692,12 +666,14 @@ int A4GL_esql_db_open(int a,char *src,char *dest,char *dbname) {
 	return dbopen;
 }
 
-void *A4GL_esql_dbopen_connection(void) {
+void *
+A4GL_esql_dbopen_connection(void) {
 	return last_esql_db_connection;
 }
 
 
-void * A4GL_new_expr (char *value)
+void * 
+A4GL_new_expr (char *value)
 {
   struct expr_str *ptr;
   A4GL_debug ("new_expr - %s", value);
@@ -716,7 +692,8 @@ void * A4GL_new_expr (char *value)
  * @param value
  * @return
  */
-void * A4GL_append_expr (struct expr_str *orig_ptr, char *value)
+void * 
+A4GL_append_expr (struct expr_str *orig_ptr, char *value)
 {
   struct expr_str *ptr;
   struct expr_str *start;
@@ -737,7 +714,8 @@ void * A4GL_append_expr (struct expr_str *orig_ptr, char *value)
 }
 
 
-int a_isprint(int a) {
+int 
+a_isprint(int a) {
 	if (a>0xff) return 0;
 	if (isprint(a)) return 1;
 	if (a>0x7f) return 1;
@@ -758,29 +736,29 @@ int a;
 
 
 
-void A4GL_strmaxcpy(char *dest,char *src,int max) {
+void 
+A4GL_strmaxcpy(char *dest,char *src,int max) {
 	strncpy(dest,src,max);
 	dest[max]=0;
 }
 
 
-char *A4GL_get_esql_ext(void) {
-//static char buff[256];
+char *
+A4GL_get_esql_ext(void) {
 char *hr;
-
-hr=acl_getenv("EC_EXT");
-
-if (hr) {
-        if (strlen(hr)) return hr;
-}
-
-
-if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INFORMIX") == 0) { return ".ec"; }
-if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) { return ".cpc"; }
-if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) { return ".cpc"; }
-if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INGRES") == 0) { return ".sc"; }
-
-return ".ec";
+	
+	hr=acl_getenv("EC_EXT");
+	
+	if (hr) {
+		if (strlen(hr)) return hr;
+	}
+	
+	if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INFORMIX") == 0) { return ".ec"; }
+	if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) { return ".cpc"; }
+	if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) { return ".cpc"; }
+	if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INGRES") == 0) { return ".sc"; }
+	
+	return ".ec";
 }
 
 

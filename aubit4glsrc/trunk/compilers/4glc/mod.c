@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.208 2005-03-29 11:22:31 mikeaubury Exp $
+# $Id: mod.c,v 1.209 2005-03-31 13:35:35 afalout Exp $
 #
 */
 
@@ -33,7 +33,7 @@
  * It looks like functions to help the parsing of a module (a x4gl one).
  * For that the name mod.c
  *
- * @todo Doxygen A4GL_comments in all functions
+ * @todo Doxygen comments in all functions
  * @todo static in modular variables
  * @todo const in read only strings
  * @todo -Wmissig-prototypes

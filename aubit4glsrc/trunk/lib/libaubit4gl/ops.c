@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.80 2005-03-09 15:14:40 mikeaubury Exp $
+# $Id: ops.c,v 1.81 2005-03-31 13:35:47 afalout Exp $
 #
 */
 
@@ -50,6 +50,12 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
 void A4GL_date_date_ops (int op);
 void A4GL_date_int_ops (int op);
 void A4GL_int_date_ops (int op);
@@ -57,23 +63,12 @@ double trunc(double f);
 void A4GL_smfloat_float_ops (int op);
 void A4GL_float_smfloat_ops (int op);
 void A4GL_smfloat_smfloat_ops (int op);
-void
-A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
-
-/*
-=====================================================================
-                    Functions prototypes
-=====================================================================
-*/
+//void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
 void A4GL_int_int_ops (int op);
 int A4GL_dectos (void *z, void *w, int size);
 //char * A4GL_make_using_tostring (char *ptr, int d, int n);
 
-#ifdef OLD_INCL
-void A4GL_push_long (long a);
-void A4GL_push_int (int a);
-#endif
 void A4GL_add_default_operations (void);
 void A4GL_dt_in_ops (int op);
 void A4GL_in_dt_ops (int op);
@@ -129,9 +124,6 @@ void A4GL_in_date_ops (int op);
 int A4GL_days_in_month (int m, int y);
 #define NUM_DIG(x)               ((x[0])&127 )
 #define NUM_DEC(x)               ((x[1]))
-
-
-
 
 /*
 =====================================================================

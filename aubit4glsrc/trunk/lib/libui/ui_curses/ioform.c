@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.122 2005-03-23 08:24:13 afalout Exp $
+# $Id: ioform.c,v 1.123 2005-03-31 13:36:20 afalout Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.122 2005-03-23 08:24:13 afalout Exp $";
+		"$Id: ioform.c,v 1.123 2005-03-31 13:36:20 afalout Exp $";
 #endif
 
 /**
@@ -37,7 +37,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*

@@ -633,278 +633,272 @@ static struct lt_user_dlloader sys_dl = {
 
 #if HAVE_SHL_LOAD
 
-/* dynamic linking with shl_load (HP-UX) (A4GL_comments from gmodule) */
-
-#ifdef HAVE_DL_H
-#  include <dl.h>
-#endif
-
-/* some flags are missing on some systems, so we provide
- * harmless defaults.
- *
- * Mandatory:
- * BIND_IMMEDIATE  - Resolve symbol references when the library is loaded.
- * BIND_DEFERRED   - Delay code symbol resolution until actual reference.
- *
- * Optionally:
- * BIND_FIRST	   - Place the library at the head of the symbol search
- * 		     order.
- * BIND_NONFATAL   - The default BIND_IMMEDIATE behavior is to treat all
- * 		     unsatisfied symbols as fatal.  This flag allows
- * 		     binding of unsatisfied code symbols to be deferred
- * 		     until use.
- *		     [Perl: For certain libraries, like DCE, deferred
- *		     binding often causes run time problems. Adding
- *		     BIND_NONFATAL to BIND_IMMEDIATE still allows
- *		     unresolved references in situations like this.]
- * BIND_NOSTART	   - Do not call the initializer for the shared library
- *		     when the library is loaded, nor on a future call to
- *		     shl_unload().
- * BIND_VERBOSE	   - Print verbose messages concerning possible
- *		     unsatisfied symbols.
- *
- * hp9000s700/hp9000s800:
- * BIND_RESTRICTED - Restrict symbols visible by the library to those
- *		     present at library load time.
- * DYNAMIC_PATH	   - Allow the loader to dynamically search for the
- *		     library specified by the path argument.
- */
-
-#ifndef	DYNAMIC_PATH
-#  define DYNAMIC_PATH		0
-#endif
-#ifndef	BIND_RESTRICTED
-#  define BIND_RESTRICTED	0
-#endif
-
-#define	LT_BIND_FLAGS	(BIND_IMMEDIATE | BIND_NONFATAL | DYNAMIC_PATH)
-
-static lt_module
-sys_shl_open (loader_data, filename)
-     lt_user_data loader_data;
-     const char *filename;
-{
-  static shl_t self = (shl_t) 0;
-  lt_module module = shl_load (filename, LT_BIND_FLAGS, 0L);
-
-  /* Since searching for a symbol against a NULL module handle will also
-     look in everything else that was already loaded and exported with 
-     the -E compiler flag, we always cache a handle saved before any
-     modules are loaded.  */
-  if (!self)
-    {
-      lt_ptr address;
-      shl_findsym (&self, "main", TYPE_UNDEFINED, &address);
-    }
-
-  if (!filename)
-    {
-      module = self;
-    }
-  else
-    {
-      module = shl_load (filename, LT_BIND_FLAGS, 0L);
-
-      if (!module)
+	/* dynamic linking with shl_load (HP-UX) (comments from gmodule) */
+	
+	#ifdef HAVE_DL_H
+	#  include <dl.h>
+	#endif
+	
+	/* some flags are missing on some systems, so we provide
+	 * harmless defaults.
+	 *
+	 * Mandatory:
+	 * BIND_IMMEDIATE  - Resolve symbol references when the library is loaded.
+	 * BIND_DEFERRED   - Delay code symbol resolution until actual reference.
+	 *
+	 * Optionally:
+	 * BIND_FIRST	   - Place the library at the head of the symbol search
+	 * 		     order.
+	 * BIND_NONFATAL   - The default BIND_IMMEDIATE behavior is to treat all
+	 * 		     unsatisfied symbols as fatal.  This flag allows
+	 * 		     binding of unsatisfied code symbols to be deferred
+	 * 		     until use.
+	 *		     [Perl: For certain libraries, like DCE, deferred
+	 *		     binding often causes run time problems. Adding
+	 *		     BIND_NONFATAL to BIND_IMMEDIATE still allows
+	 *		     unresolved references in situations like this.]
+	 * BIND_NOSTART	   - Do not call the initializer for the shared library
+	 *		     when the library is loaded, nor on a future call to
+	 *		     shl_unload().
+	 * BIND_VERBOSE	   - Print verbose messages concerning possible
+	 *		     unsatisfied symbols.
+	 *
+	 * hp9000s700/hp9000s800:
+	 * BIND_RESTRICTED - Restrict symbols visible by the library to those
+	 *		     present at library load time.
+	 * DYNAMIC_PATH	   - Allow the loader to dynamically search for the
+	 *		     library specified by the path argument.
+	 */
+	
+	#ifndef	DYNAMIC_PATH
+		#define DYNAMIC_PATH		0
+	#endif
+	#ifndef	BIND_RESTRICTED
+		#define BIND_RESTRICTED	0
+	#endif
+	
+	#define	LT_BIND_FLAGS	(BIND_IMMEDIATE | BIND_NONFATAL | DYNAMIC_PATH)
+	
+	static lt_module
+	sys_shl_open (loader_data, filename)
+		 lt_user_data loader_data;
+		 const char *filename;
 	{
-	  MUTEX_SETERROR (LT_DLSTRERROR (CANNOT_OPEN));
+	  static shl_t self = (shl_t) 0;
+	  lt_module module = shl_load (filename, LT_BIND_FLAGS, 0L);
+	
+	  /* Since searching for a symbol against a NULL module handle will also
+		 look in everything else that was already loaded and exported with 
+		 the -E compiler flag, we always cache a handle saved before any
+		 modules are loaded.  */
+	  if (!self)
+		{
+		  lt_ptr address;
+		  shl_findsym (&self, "main", TYPE_UNDEFINED, &address);
+		}
+	
+	  if (!filename)
+		{
+		  module = self;
+		}
+	  else
+		{
+		  module = shl_load (filename, LT_BIND_FLAGS, 0L);
+	
+		  if (!module)
+		{
+		  MUTEX_SETERROR (LT_DLSTRERROR (CANNOT_OPEN));
+		}
+		}
+	
+	  return module;
 	}
-    }
-
-  return module;
-}
-
-static int
-sys_shl_close (loader_data, module)
-     lt_user_data loader_data;
-     lt_module module;
-{
-  int errors = 0;
-
-  if (module && (shl_unload ((shl_t) (module)) != 0))
-    {
-      MUTEX_SETERROR (LT_DLSTRERROR (CANNOT_CLOSE));
-      ++errors;
-    }
-
-  return errors;
-}
-
-static lt_ptr
-sys_shl_sym (loader_data, module, symbol)
-     lt_user_data loader_data;
-     lt_module module;
-     const char *symbol;
-{
-  lt_ptr address = 0;
-
-  /* sys_shl_open should never return a NULL module handle */
-  if (module == (lt_module) 0)
-    {
-      MUTEX_SETERROR (LT_DLSTRERROR (INVALID_HANDLE));
-    }
-  else
-    if (!shl_findsym ((shl_t *) & module, symbol, TYPE_UNDEFINED, &address))
-    {
-      if (!address)
+	
+	static int
+	sys_shl_close (loader_data, module)
+		 lt_user_data loader_data;
+		 lt_module module;
 	{
-	  MUTEX_SETERROR (LT_DLSTRERROR (SYMBOL_NOT_FOUND));
+	  int errors = 0;
+	
+	  if (module && (shl_unload ((shl_t) (module)) != 0))
+		{
+		  MUTEX_SETERROR (LT_DLSTRERROR (CANNOT_CLOSE));
+		  ++errors;
+		}
+	
+	  return errors;
 	}
-    }
-
-  return address;
-}
-
-static struct lt_user_dlloader sys_shl = {
-  0, sys_shl_open, sys_shl_close, sys_shl_sym, 0, 0
-};
-
+	
+	static lt_ptr
+	sys_shl_sym (loader_data, module, symbol)
+		 lt_user_data loader_data;
+		 lt_module module;
+		 const char *symbol;
+	{
+	  lt_ptr address = 0;
+	
+	  /* sys_shl_open should never return a NULL module handle */
+	  if (module == (lt_module) 0)
+		{
+		  MUTEX_SETERROR (LT_DLSTRERROR (INVALID_HANDLE));
+		}
+	  else
+		if (!shl_findsym ((shl_t *) & module, symbol, TYPE_UNDEFINED, &address))
+		{
+		  if (!address)
+		{
+		  MUTEX_SETERROR (LT_DLSTRERROR (SYMBOL_NOT_FOUND));
+		}
+		}
+	
+	  return address;
+	}
+	
+	static struct lt_user_dlloader sys_shl = {
+	  0, sys_shl_open, sys_shl_close, sys_shl_sym, 0, 0
+	};
+	
 #endif /* HAVE_SHL_LOAD */
-
-
-
 
 /* --- LOADLIBRARY() INTERFACE LOADER --- */
 
 #ifdef __WINDOWS__
 
-/* dynamic linking for Win32 */
-
-#include <windows.h>
-
-/* Forward declaration; required to implement handle search below. */
-static lt_dlhandle handles;
-
-static lt_module
-sys_wll_open (loader_data, filename)
-     lt_user_data loader_data;
-     const char *filename;
-{
-  lt_dlhandle cur;
-  lt_module module = 0;
-  const char *errormsg = 0;
-  char *searchname = 0;
-  char *ext;
-  char self_name_buf[MAX_PATH];
-
-  if (!filename)
-    {
-      /* Get the name of main module */
-      *self_name_buf = 0;
-      GetModuleFileName (NULL, self_name_buf, sizeof (self_name_buf));
-      filename = ext = self_name_buf;
-    }
-  else
-    {
-      ext = strrchr (filename, '.');
-    }
-
-  if (ext)
-    {
-      /* FILENAME already has an extension. */
-      searchname = strdup (filename);
-    }
-  else
-    {
-      /* Append a `.' to stop Windows from adding an
-         implicit `.dll' extension. */
-      searchname = LT_DLMALLOC (char, 2 + strlen (filename));
-      if (!searchname)
+	/* dynamic linking for Win32 */
+	
+	#include <windows.h>
+	
+	/* Forward declaration; required to implement handle search below. */
+	static lt_dlhandle handles;
+	
+	static lt_module
+	sys_wll_open (loader_data, filename)
+		 lt_user_data loader_data;
+		 const char *filename;
 	{
-	  MUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
-	  return 0;
+	  lt_dlhandle cur;
+	  lt_module module = 0;
+	  const char *errormsg = 0;
+	  char *searchname = 0;
+	  char *ext;
+	  char self_name_buf[MAX_PATH];
+	
+	  if (!filename)
+		{
+		  /* Get the name of main module */
+		  *self_name_buf = 0;
+		  GetModuleFileName (NULL, self_name_buf, sizeof (self_name_buf));
+		  filename = ext = self_name_buf;
+		}
+	  else
+		{
+		  ext = strrchr (filename, '.');
+		}
+	
+	  if (ext)
+		{
+		  /* FILENAME already has an extension. */
+		  searchname = strdup (filename);
+		}
+	  else
+		{
+		  /* Append a `.' to stop Windows from adding an
+			 implicit `.dll' extension. */
+		  searchname = LT_DLMALLOC (char, 2 + strlen (filename));
+		  if (!searchname)
+		{
+		  MUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
+		  return 0;
+		}
+		  strcpy (searchname, filename);
+		  strcat (searchname, ".");
+		}
+	
+	#if __CYGWIN__
+	  {
+		char wpath[MAX_PATH];
+		cygwin_conv_to_full_win32_path (searchname, wpath);
+		module = LoadLibrary (wpath);
+	  }
+	#else
+	  module = LoadLibrary (searchname);
+	#endif
+	  LT_DLFREE (searchname);
+	
+	  /* libltdl expects this function to fail if it is unable
+		 to physically load the library.  Sadly, LoadLibrary
+		 will search the loaded libraries for a A4GL_match and return
+		 one of them if the path search load fails.
+	
+		 We check whether LoadLibrary is returning a handle to
+		 an already loaded module, and simulate failure if we
+		 find one. */
+	  MUTEX_LOCK ();
+	  cur = handles;
+	  while (cur)
+		{
+		  if (!cur->module)
+		{
+		  cur = 0;
+		  break;
+		}
+	
+		  if (cur->module == module)
+		{
+		  break;
+		}
+	
+		  cur = cur->next;
+		}
+	  MUTEX_UNLOCK ();
+	
+	  if (cur || !module)
+		{
+		  MUTEX_SETERROR (LT_DLSTRERROR (CANNOT_OPEN));
+		  module = 0;
+		}
+	
+	  return module;
 	}
-      strcpy (searchname, filename);
-      strcat (searchname, ".");
-    }
-
-#if __CYGWIN__
-  {
-    char wpath[MAX_PATH];
-    cygwin_conv_to_full_win32_path (searchname, wpath);
-    module = LoadLibrary (wpath);
-  }
-#else
-  module = LoadLibrary (searchname);
-#endif
-  LT_DLFREE (searchname);
-
-  /* libltdl expects this function to fail if it is unable
-     to physically load the library.  Sadly, LoadLibrary
-     will search the loaded libraries for a A4GL_match and return
-     one of them if the path search load fails.
-
-     We check whether LoadLibrary is returning a handle to
-     an already loaded module, and simulate failure if we
-     find one. */
-  MUTEX_LOCK ();
-  cur = handles;
-  while (cur)
-    {
-      if (!cur->module)
+	
+	static int
+	sys_wll_close (loader_data, module)
+		 lt_user_data loader_data;
+		 lt_module module;
 	{
-	  cur = 0;
-	  break;
+	  int errors = 0;
+	
+	  if (FreeLibrary (module) == 0)
+		{
+		  MUTEX_SETERROR (LT_DLSTRERROR (CANNOT_CLOSE));
+		  ++errors;
+		}
+	
+	  return errors;
 	}
-
-      if (cur->module == module)
+	
+	static lt_ptr
+	sys_wll_sym (loader_data, module, symbol)
+		 lt_user_data loader_data;
+		 lt_module module;
+		 const char *symbol;
 	{
-	  break;
+	  lt_ptr address = GetProcAddress (module, symbol);
+	
+	  if (!address)
+		{
+		  MUTEX_SETERROR (LT_DLSTRERROR (SYMBOL_NOT_FOUND));
+		}
+	
+	  return address;
 	}
-
-      cur = cur->next;
-    }
-  MUTEX_UNLOCK ();
-
-  if (cur || !module)
-    {
-      MUTEX_SETERROR (LT_DLSTRERROR (CANNOT_OPEN));
-      module = 0;
-    }
-
-  return module;
-}
-
-static int
-sys_wll_close (loader_data, module)
-     lt_user_data loader_data;
-     lt_module module;
-{
-  int errors = 0;
-
-  if (FreeLibrary (module) == 0)
-    {
-      MUTEX_SETERROR (LT_DLSTRERROR (CANNOT_CLOSE));
-      ++errors;
-    }
-
-  return errors;
-}
-
-static lt_ptr
-sys_wll_sym (loader_data, module, symbol)
-     lt_user_data loader_data;
-     lt_module module;
-     const char *symbol;
-{
-  lt_ptr address = GetProcAddress (module, symbol);
-
-  if (!address)
-    {
-      MUTEX_SETERROR (LT_DLSTRERROR (SYMBOL_NOT_FOUND));
-    }
-
-  return address;
-}
-
-static struct lt_user_dlloader sys_wll = {
-  0, sys_wll_open, sys_wll_close, sys_wll_sym, 0, 0
-};
-
+	
+	static struct lt_user_dlloader sys_wll = {
+	  0, sys_wll_open, sys_wll_close, sys_wll_sym, 0, 0
+	};
+	
 #endif /* __WINDOWS__ */
-
-
-
 
 /* --- LOAD_ADD_ON() INTERFACE LOADER --- */
 

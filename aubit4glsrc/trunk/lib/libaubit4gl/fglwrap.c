@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.85 2005-03-30 15:56:53 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.86 2005-03-31 13:35:46 afalout Exp $
 #
 */
 
@@ -34,7 +34,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*
@@ -43,15 +43,10 @@
 =====================================================================
 */
 
-//#define DEFINE_INTFLAG
-//#define DEFINE_QUITFLAG
 #define _DEFINE_STATUSVARS_	/* one place we have to DEFINE them, for the
 				   rest of source files, they get only DECLARED
 				   as extern */
 
-/* FIXME: we should not need to pre-load anything */
-//#define _PRELOAD_SQL_		/* pre-load SQL module */
-//#define _PRELOAD_REPORT_	/* pre-load EXREPORT module */
 #define _PRELOAD_UI_		/* pre-load UI module */
 
 
@@ -90,9 +85,6 @@ char *p_args[MAX_ARGS];
 */
 
 void A4GL_nodef_init (void);
-//void A4GL_fgl_end (void);
-//void A4GL_fgl_start (int nargs, char *argv[]);
-//void A4GL_system_run (int a);
 void A4GL_generateError (char *str, char *fileName, int lineno);
 void A4GL_null_func (void);
 int A4GL_ass_hash (char **a, int s, int d, char *str, long size, int rw);
@@ -100,7 +92,7 @@ void A4GL_set_intr (void);
 void A4GL_def_int (void);
 void A4GL_def_quit (void);
 char *A4GL_clob (char *s, char *p);
-int A4GLUI_initlib(void);
+//int A4GLUI_initlib(void);
 
 static char running_program[256];
 
@@ -554,177 +546,130 @@ ass_clrmem (char **a, int sz)
 int
 A4GL_ass_hash (char **a, int s, int d, char *str, long size, int rw)
 {
-  char buff[256];
-  int p;
-  int t;
-  int start;
+char buff[256];
+int p;
+int t;
+int start;
 
-  s--;
+  	s--;
 
+	#ifdef DEBUG
+    	A4GL_debug ("In A4GL_ass_hash a= %p", a);
+	#endif
 
-#ifdef DEBUG
-  {
-    A4GL_debug ("In A4GL_ass_hash a= %p", a);
-  }
-#endif
+	t = 0;
+	#ifdef DEBUG
+		A4GL_debug ("Look for '%s'\n", str);
+	#endif
 
-  t = 0;
-#ifdef DEBUG
-  A4GL_debug ("Look for '%s'\n", str);
-#endif
-
-  if (strlen (str) == 0)
-    {
-#ifdef DEBUG
-      {
- A4GL_debug ("Empty string\n");
-      }
-#endif
-      return 0;
+	if (strlen (str) == 0) {
+		#ifdef DEBUG
+			A4GL_debug ("Empty string\n");
+		#endif
+		return 0;
     }
 
-#ifdef DEBUG
-  {
-    A4GL_debug ("Chk for need clean");
-  }
-#endif
+	#ifdef DEBUG
+    	A4GL_debug ("Chk for need clean");
+	#endif
 
-  if (a[0] == (char *) -1)
-    {
-#ifdef DEBUG
-      {
- A4GL_debug ("clean it");
-      }
-#endif
-
-      ass_clrmem (a, size);
-      for (t = 0; t < d; t++)
-	{
-	  a[t] = 0;
+	if (a[0] == (char *) -1) {
+		#ifdef DEBUG
+			A4GL_debug ("clean it");
+		#endif
+		ass_clrmem (a, size);
+		for (t = 0; t < d; t++) {
+			a[t] = 0;
+		}
+		t = 0;
 	}
-      t = 0;
 
+	#ifdef DEBUG
+		A4GL_debug ("clear buff");
+	#endif
+	memset (buff, 0, 255);
+	#ifdef DEBUG
+		A4GL_debug ("set buff");
+	#endif
+
+	strcpy (buff, str);
+	#ifdef DEBUG
+		A4GL_debug ("copied - marking end at %d", s);
+	#endif
+
+	buff[s] = 0;
+	A4GL_trim (buff);
+
+	#ifdef DEBUG
+		A4GL_debug ("copied : %s", buff);
+	#endif
+
+	for (p = 0; p < s; p++) {
+		t = t + buff[p] * (p + 1);
     }
 
-#ifdef DEBUG
-  {
-    A4GL_debug ("clear buff");
-  }
-#endif
-
-  memset (buff, 0, 255);
-
-#ifdef DEBUG
-  {
-    A4GL_debug ("set buff");
-  }
-#endif
-
-  strcpy (buff, str);
-#ifdef DEBUG
-  {
-    A4GL_debug ("copied - marking end at %d", s);
-  }
-#endif
-
-  buff[s] = 0;
-  A4GL_trim (buff);
-
-#ifdef DEBUG
-  {
-    A4GL_debug ("copied : %s", buff);
-  }
-#endif
-
-  for (p = 0; p < s; p++)
-    {
-      t = t + buff[p] * (p + 1);
-    }
-
-#ifdef DEBUG
-  {
-    A4GL_debug ("hash code = %d", t);
-  }
-#endif
-  t = t % d;
-  if (t == 0)
+	#ifdef DEBUG
+		A4GL_debug ("hash code = %d", t);
+	#endif
+	t = t % d;
+	if (t == 0)
     t++;
-  start = t;
+	start = t;
 
-#ifdef DEBUG
-  A4GL_debug ("Test");
-  {
-    A4GL_debug ("B hash code = %d", t);
-  }
-  {
-    A4GL_debug ("addr1= %p", a);
-  }
-  {
-    A4GL_debug ("addr2= %p", a[t]);
-  }
-#endif
+	#ifdef DEBUG
+		A4GL_debug ("Test");
+		A4GL_debug ("B hash code = %d", t);
+		A4GL_debug ("addr1= %p", a);
+		A4GL_debug ("addr2= %p", a[t]);
+	#endif
 
-  while ((a[t] != 0))
-    {
-#ifdef DEBUG
-      {
- A4GL_debug (" checking = %d a[t]=%p", t, a[t]);
-      }
-#endif
-      if (strcmp ((char *) a[t], buff) == 0)
-	{
-#ifdef DEBUG
-	  {
-	    A4GL_debug ("Found it -> t=%d\n", t);
-	  }
-#endif
-	  return t;
-	}
+	while ((a[t] != 0))  {
+		#ifdef DEBUG
+			A4GL_debug (" checking = %d a[t]=%p", t, a[t]);
+		#endif
+		if (strcmp ((char *) a[t], buff) == 0) {
+			#ifdef DEBUG
+				A4GL_debug ("Found it -> t=%d\n", t);
+			#endif
+			return t;
+		}
 
-      t++;
-      t = t % d;
+		t++;
+		t = t % d;
 
-#ifdef DEBUG
-      {
- A4GL_debug (" C hash code = %d a[t]=%s", t, a[t]);
-      }
-#endif
+		#ifdef DEBUG
+			A4GL_debug (" C hash code = %d a[t]=%s", t, a[t]);
+		#endif
 
-      if (t == 0)
-	t++;
+		if (t == 0) {
+			t++;
+		}
 
-      if (t == start)
-	{
-#ifdef DEBUG
-	  A4GL_debug ("Out of hash spaces\n");
-#endif
-	  exit (0);
-	}
+		if (t == start) {
+			#ifdef DEBUG
+				A4GL_debug ("Out of hash spaces\n");
+			#endif
+			exit (0);
+		}
     }
 
-#ifdef DEBUG
-  A4GL_debug ("t=%d\n", t);
-#endif
-  if (rw == 0)
-    {
-      a[t] = realloc (a[t], strlen (buff) + 1);
-      strcpy ((char *) a[t], buff);
-#ifdef DEBUG
-      {
- A4GL_debug (" returning %d", t);
-      }
-#endif
-      return t;
-    }
-  else
-    {
-#ifdef DEBUG
-      A4GL_debug ("Not found on a read from hash table");
-#endif
-      return 0;
+	#ifdef DEBUG
+		A4GL_debug ("t=%d\n", t);
+	#endif
+	if (rw == 0) {
+		a[t] = realloc (a[t], strlen (buff) + 1);
+		strcpy ((char *) a[t], buff);
+		#ifdef DEBUG
+			A4GL_debug (" returning %d", t);
+		#endif
+		return t;
+    } else {
+		#ifdef DEBUG
+			A4GL_debug ("Not found on a read from hash table");
+		#endif
+		return 0;
     }
 }
-
 
 /**
  *
@@ -775,7 +720,8 @@ set_intr_win32 (DWORD type)
 // ######################################################################
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 // ######################################################################
-//This conditional will happen ONLy when compiling with native Windows compilers, like MinGW
+//This conditional will happen ONLY when compiling with native Windows 
+// compilers, like MinGW
 
 
 // implicit declaration of function `rpc_nt_init'
@@ -825,146 +771,147 @@ A4GL_def_int (void)
 // ######################################################################
 #else //#if (defined(WIN32) && ! defined(__CYGWIN__))
 // ######################################################################
-//This conditional will happen ONLY when NOT compiling on Windows, or when compiling on Windows
+// This conditional will happen ONLY when NOT compiling on Windows, or when 
+// compiling on Windows
 // with CygWin compiler
 
 
 #ifndef CSCC
 
-
-/**
- * Stop the DEFER INTERRUPT in unix systems.
- */
-void
-A4GL_nodef_init ()
-{
-  struct sigaction sa;
-  int ret;
-
-#ifdef OTHER_UNIX
-  sa.sa_sigaction = (void *) A4GL_fgl_end_4gl_1;
-#else
-  sa.sa_handler = (void *) A4GL_fgl_end_4gl_1;
-#endif
-  sigemptyset (&sa.sa_mask);
-  sa.sa_flags = 0;
-  ret = sigaction (SIGINT, &sa, 0);
-  if (ret)
-    {
-      A4GL_exitwith ("Could not defer interrupt");
-    }
-}
-
-
-/**
- *
- * Please describe this function
- *
- */
-void A4GL_core_dump(void) {
-static int core_dumping=0;
-core_dumping++;
-if (core_dumping==1) {
-  if (A4GL_isscrmode ())
-    {
-#ifdef DEBUG
-      A4GL_debug ("In screen mode - ending curses - caught a core dump");
-#endif
-      A4GL_gotolinemode ();
-    }
-   printf("Internal Error - segmentation fault\n");
-   printf("Please note all circumstances and log with the Aubit4GL team\n");
-   printf("If possible - reproduce the error with the environment variable DEBUG\n");
-   printf("set to ALL :\n\n");
-   printf("$ export DEBUG=ALL\n\n");
-   printf("And enclose the last 100 lines from the resultant debug.out file\n");
-   printf("with your bug log.\n");
-   printf("\n");
-   printf("%s\n",A4GLSTK_getStackTrace ());
+	
+	/**
+	 * Stop the DEFER INTERRUPT in unix systems.
+	 */
+	void
+	A4GL_nodef_init ()
+	{
+	  struct sigaction sa;
+	  int ret;
+	
+	#ifdef OTHER_UNIX
+	  sa.sa_sigaction = (void *) A4GL_fgl_end_4gl_1;
+	#else
+	  sa.sa_handler = (void *) A4GL_fgl_end_4gl_1;
+	#endif
+	  sigemptyset (&sa.sa_mask);
+	  sa.sa_flags = 0;
+	  ret = sigaction (SIGINT, &sa, 0);
+	  if (ret)
+		{
+		  A4GL_exitwith ("Could not defer interrupt");
+		}
+	}
 
 
-   if (A4GL_isscrmode ())
-    {
-#ifdef DEBUG
-      A4GL_debug ("In screen mode - ending curses...");
-#endif
-      A4GL_gotolinemode ();
-    }
+	/**
+	 *
+	 * Please describe this function
+	 *
+	 */
+	void A4GL_core_dump(void) {
+	static int core_dumping=0;
+	core_dumping++;
+	if (core_dumping==1) {
+	  if (A4GL_isscrmode ())
+		{
+	#ifdef DEBUG
+		  A4GL_debug ("In screen mode - ending curses - caught a core dump");
+	#endif
+		  A4GL_gotolinemode ();
+		}
+	   printf("Internal Error - segmentation fault\n");
+	   printf("Please note all circumstances and log with the Aubit4GL team\n");
+	   printf("If possible - reproduce the error with the environment variable DEBUG\n");
+	   printf("set to ALL :\n\n");
+	   printf("$ export DEBUG=ALL\n\n");
+	   printf("And enclose the last 100 lines from the resultant debug.out file\n");
+	   printf("with your bug log.\n");
+	   printf("\n");
+	   printf("%s\n",A4GLSTK_getStackTrace ());
+	
+	
+	   if (A4GL_isscrmode ())
+		{
+	#ifdef DEBUG
+		  A4GL_debug ("In screen mode - ending curses...");
+	#endif
+		  A4GL_gotolinemode ();
+		}
+	
+	   if (A4GL_isyes(acl_getenv("GDB_ATTACH"))) {
+		char buff[256];
+		sprintf(buff,"%s %s %d", acl_getenv("GDB_EXE"), running_program, getpid() );
+		system(buff);
+	   }
+	
+	   if (A4GL_isyes(acl_getenv("WAIT_FOR_GDB_ATTACH"))) { printf("Waiting for a debugger to come online\n"); while (1) { sleep(300); } }
+	
+	  A4GL_close_database ();
+	  A4GL_close_errorlog_file ();
+	  exit(99);
+	} else {
+		exit(99);
+	}
+	
+	}
 
-   if (A4GL_isyes(acl_getenv("GDB_ATTACH"))) {
-	char buff[256];
-	sprintf(buff,"%s %s %d", acl_getenv("GDB_EXE"), running_program, getpid() );
-	system(buff);
-   }
+	/**
+	 *
+	 * Please describe this function
+	 *
+	 */
+	void
+	A4GL_set_core_dump (void)
+	{
+	  struct sigaction sa;
+	  int ret;
+	
+	// A4GL_DUMP_CORE = YES 
+	//          Dumps core rather than attach a signal handler to the segmentation
+	//          fault...
+	if (A4GL_isyes(acl_getenv("DUMP_CORE"))) {
+		return;
+	}
 
-   if (A4GL_isyes(acl_getenv("WAIT_FOR_GDB_ATTACH"))) { printf("Waiting for a debugger to come online\n"); while (1) { sleep(300); } }
-
-  A4GL_close_database ();
-  A4GL_close_errorlog_file ();
-  exit(99);
-} else {
-	exit(99);
-}
-
-}
-
-/**
- *
- * Please describe this function
- *
- */
-void
-A4GL_set_core_dump (void)
-{
-  struct sigaction sa;
-  int ret;
-
-// A4GL_DUMP_CORE = YES 
-//          Dumps core rather than attach a signal handler to the segmentation
-//          fault...
-if (A4GL_isyes(acl_getenv("DUMP_CORE"))) {
-	return;
-}
-
-#ifdef OTHER_UNIX
-  sa.sa_sigaction = (void *) A4GL_core_dump;
-#else
-  sa.sa_handler = (void *) A4GL_core_dump;
-#endif
-  sigemptyset (&sa.sa_mask);
-  sa.sa_flags = 0;
-  ret = sigaction (SIGSEGV, &sa, 0);
-  if (ret)
-    {
-      A4GL_exitwith ("Could not attach SegFault Handler");
-    }
-}
-
-
-
-/**
- * Start the defer interrupt in unix systems.
- */
-void
-A4GL_def_int (void)
-{
-  struct sigaction sa;
-  int ret;
-
-#ifdef OTHER_UNIX
-  sa.sa_sigaction = (void *) A4GL_set_intr;
-#else
-  sa.sa_handler = (void *) A4GL_set_intr;
-#endif
-  sigemptyset (&sa.sa_mask);
-  sa.sa_flags = 0;
-  ret = sigaction (SIGINT, &sa, 0);
-  if (ret)
-    {
-      A4GL_exitwith ("Could not defer interrupt");
-    }
-}
-#endif
+	#ifdef OTHER_UNIX
+	  sa.sa_sigaction = (void *) A4GL_core_dump;
+	#else
+	  sa.sa_handler = (void *) A4GL_core_dump;
+	#endif
+	  sigemptyset (&sa.sa_mask);
+	  sa.sa_flags = 0;
+	  ret = sigaction (SIGSEGV, &sa, 0);
+	  if (ret)
+		{
+		  A4GL_exitwith ("Could not attach SegFault Handler");
+		}
+	}
+	
+	
+	
+	/**
+	 * Start the defer interrupt in unix systems.
+	 */
+	void
+	A4GL_def_int (void)
+	{
+	  struct sigaction sa;
+	  int ret;
+	
+	#ifdef OTHER_UNIX
+	  sa.sa_sigaction = (void *) A4GL_set_intr;
+	#else
+	  sa.sa_handler = (void *) A4GL_set_intr;
+	#endif
+	  sigemptyset (&sa.sa_mask);
+	  sa.sa_flags = 0;
+	  ret = sigaction (SIGINT, &sa, 0);
+	  if (ret)
+		{
+		  A4GL_exitwith ("Could not defer interrupt");
+		}
+	}
+#endif //CSCC
 
 // ######################################################################
 #endif  //#if (defined(WIN32) && ! defined(__CYGWIN__))
@@ -1007,19 +954,6 @@ A4GL_clob (char *s, char *p)
 }
 
 /**
- * Generate the serial number of the aubit 4gl compiler.
- * 
- * @return A string pointer with the serial number.
- */
-/*
-char *
-get_serno(void)
-{
-	return "XXXXXXXXXX";
-}
-*/
-
-/**
  * Check and show the aubit compiler ID
  *
  * @param program A string identifiing the program name
@@ -1028,37 +962,30 @@ get_serno(void)
 void
 A4GL_check_and_show_id (char *program, char *arg1)
 {
-  char mod[32];
-  char id[132];
-  int a;
+char mod[32];
+char id[132];
+int a;
 
-  if (strcmp (arg1, "-v") == 0)
-    {
-      printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
-      /*
-         printf("Serial Number %s\n\nVersion       %s\nBuild Level   %d\n",
-         get_serno(),internal_version(),internal_build()
-         );
-       */
-      printf ("Version       %s\nBuild Level   %d\n",
-	      A4GL_internal_version (), A4GL_internal_build ());
+  	if (strcmp (arg1, "-v") == 0) {
+		printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
+		printf ("Version       %s\nBuild Level   %d\n",
+	      	A4GL_internal_version (), A4GL_internal_build ());
 
-      exit (0);
-    }
-
-  if (strcmp (arg1, "-vfull") == 0)
-    {
-      printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
-      printf ("Version       %s\nBuild Level   %d\n",
-	      A4GL_internal_version (), A4GL_internal_build ());
-      for (a = 0;; a++)
-	{
-	  A4GL_set_version (a, mod, id);
-	  if (strlen (mod) == 0)
-	    break;
-	  printf ("%s:\n  %s\n", mod, id);
+		exit (0);
 	}
-      exit (0);
+
+	if (strcmp (arg1, "-vfull") == 0) {
+		printf ("(c) 1997-2005 Aubit project\n%s\n\n", program);
+		printf ("Version       %s\nBuild Level   %d\n",
+	      	A4GL_internal_version (), A4GL_internal_build ());
+		for (a = 0;; a++) {
+			A4GL_set_version (a, mod, id);
+			if (strlen (mod) == 0) {
+				break;
+			}
+			printf ("%s:\n  %s\n", mod, id);
+		}
+		exit (0);
     }
 }
 
@@ -1138,36 +1065,14 @@ A4GL_set_abort (int a)
 void
 A4GL_stripnl (char *str)
 {
-  int a;
-  for (a = 0; a < strlen (str); a++)
-    {
-      if (str[a] == '\n' || str[a] == '\r')
-	{
-	  str[a] = 0;
-	  break;
-	}
+int a;
+  	for (a = 0; a < strlen (str); a++) {
+		if (str[a] == '\n' || str[a] == '\r') {
+			str[a] = 0;
+			break;
+		}
     }
 }
-
-/* same thing?
-
-void
-stripnl(char *buff)
-{
-        int a;
-        for (a=strlen(buff)-1;a--;a>=0)
-        {
-                if (buff[a]=='\n') {
-                        buff[a]=0;
-                        break;
-                }
-        }
-}
-
-*/
-
-
-
 
 /**
  *

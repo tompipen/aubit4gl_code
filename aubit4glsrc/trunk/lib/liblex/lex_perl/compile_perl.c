@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.57 2005-03-09 15:14:46 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.58 2005-03-31 13:35:52 afalout Exp $
 #
 */
 
@@ -4012,7 +4012,7 @@ print_set_langfile (char *s)
 
 
 /**
- * Print A4GL_comments to the C output file.
+ * Print comments to the C output file.
  *
  * If the output file is not opened call the open function.
  *
@@ -4055,7 +4055,7 @@ internal_A4GL_lex_printcomment (char *fmt, va_list * ap)
 #else
 	/**
 	 * Empty function for linking purposes when compiling without generation of
-	 * A4GL_comments in the output C module
+	 * comments in the output C module
 	 */
 
   /* Do nothing... */

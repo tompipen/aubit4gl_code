@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.36 2005-03-14 21:42:56 mikeaubury Exp $
+# $Id: Makefile,v 1.37 2005-03-31 13:36:30 afalout Exp $
 #
 
 ROOT    		=../..
@@ -275,6 +275,7 @@ clean:
 	${RM} ${ALL} ${OBJS_PG} ${OBJS_IFX} ${OBJS_GEN} \
     ${CLEAN_OBJS:.ao=.h} ${CLEAN_OBJS:.ao=.glb} ${CLEAN_OBJS:.ao=.cpc} \
 	${CLEAN_OBJS:.ao=.ec} ${CLEAN_OBJS:.ao=.c} \
-    *.bak *.err *.warn lex.asql_yy.c
+    *.bak *.err *.warn lex.asql_yy.c lex.asql_yy.c
+
 
 # ============================= EOF =================================

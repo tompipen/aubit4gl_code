@@ -24,20 +24,20 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.27 2005-03-25 12:48:34 afalout Exp $
+# $Id: input_array.c,v 1.28 2005-03-31 13:36:27 afalout Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: input_array.c,v 1.27 2005-03-25 12:48:34 afalout Exp $";
+		"$Id: input_array.c,v 1.28 2005-03-31 13:36:27 afalout Exp $";
 #endif
 /**
  * @file
  * Input array implementation
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*

@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.20 2005-03-25 12:48:34 afalout Exp $
+# $Id: display_array.c,v 1.21 2005-03-31 13:36:27 afalout Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: display_array.c,v 1.20 2005-03-25 12:48:34 afalout Exp $";
+		"$Id: display_array.c,v 1.21 2005-03-31 13:36:27 afalout Exp $";
 #endif
 /**
  * @file
  * Implementation of Display Array
  *
- * @todo Doxygen A4GL_comments to add
+ * @todo Doxygen comments to add
  */
 
 /*

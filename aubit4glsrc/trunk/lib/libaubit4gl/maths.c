@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.15 2005-03-09 15:14:40 mikeaubury Exp $
+# $Id: maths.c,v 1.16 2005-03-31 13:35:47 afalout Exp $
 #
 */
 
@@ -43,7 +43,6 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
-void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
 /*
 =====================================================================
@@ -67,12 +66,9 @@ struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
 =====================================================================
 */
 
-
 void A4GL_init_arr_math (void);
-
-#ifdef OLD_INCL
-void *A4GL_find_op_function (int dtype1, int dtype2, int op);
-#endif
+//moved to a4gl_libaubit4gl.h since called from mpz library:
+//void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
 /*
 =====================================================================

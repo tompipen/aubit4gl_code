@@ -29,8 +29,12 @@ VARIABLE A4GL_FORMTYPE
 /* dump_srec (struct s_form_dets * fd) */
 A4GL_dump_srec void* fd -> void
 
-/* void comments (struct struct_scr_field *fprop); */
-/*A4GL_comments void* fprop -> void */
+/* void A4GL_comments (struct struct_scr_field *fprop); */
+/* This was commented out - but function is still in libform/formxdr/readforms.c */
+/* and 2 more .c files (now only 2)*/
+/* This time commented out by Andrej because the function is called */
+/* only from libui internaly */
+/* A4GL_comments void* fprop -> void */ 
 
 /* void set_default_form (struct s_form_attr *form) */
 A4GL_set_default_form void* form -> void

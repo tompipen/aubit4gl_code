@@ -24,13 +24,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.219 2005-03-23 08:24:10 afalout Exp $
+# $Id: compile_c.c,v 1.220 2005-03-31 13:35:51 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
 	static char const module_id[] =
-		"$Id: compile_c.c,v 1.219 2005-03-23 08:24:10 afalout Exp $";
+		"$Id: compile_c.c,v 1.220 2005-03-31 13:35:51 afalout Exp $";
 #endif
 /**
  * @file
@@ -591,7 +591,7 @@ A4GL_internal_lex_printh (char *fmt, va_list * ap)
 }
 
 /**
- * Print A4GL_comments to the C output file.
+ * Print comments to the C output file.
  *
  * If the output file is not opened call the open function.
  *
@@ -631,7 +631,7 @@ A4GL_internal_lex_printcomment (char *fmt, va_list * ap)
 #else
 	/**
 	 * Empty function for linking purposes when compiling without generation of
-	 * A4GL_comments in the output C module
+	 * comments in the output C module
 	 */
 
   /* Do nothing... */
@@ -2357,7 +2357,7 @@ print_end_call_shared (void)
  * Print the C implementation of a call to a remote function (RPC call).
  *
  * @param host The hostname where the RPC server is working.
- * @param A4GL_func The remote function name to e called.
+ * @param func The remote function name to e called.
  * @param port The TCP portnumber where the server is receiving requests.
  * @param nargs The number of arguments to pass to the remote function.
  */
@@ -3037,7 +3037,7 @@ print_if_end (void)
  *
  * This statement is not a informix 4gl original.
  *
- * @param A4GL_func The function name to be imported.
+ * @param func The function name to be imported.
  * @param nargs The number of arguments that the function imported receive.
  */
 void

@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: widget_gtk.c,v 1.14 2005-03-23 08:24:16 afalout Exp $";
+		"$Id: widget_gtk.c,v 1.15 2005-03-31 13:36:28 afalout Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -27,7 +27,9 @@ static GtkWidget *A4GL_cr_button (void);
 static GtkWidget *A4GL_cr_check (void);
 static GtkWidget *A4GL_cr_label (void);
 static GtkWidget *A4GL_cr_picture (void);
+#if GTK_CHECK_VERSION(2,0,0)
 static GtkWidget *A4GL_cr_pixbuf (void);
+#endif
 static GtkWidget *A4GL_cr_combo (void);
 static GtkWidget *A4GL_cr_radio (void);
 static GtkWidget *A4GL_cr_list (void);
@@ -673,31 +675,28 @@ A4GL_cr_picture (void)
   return pixmap;
 }
 
+#if GTK_CHECK_VERSION(2,0,0)
 GtkWidget *
 A4GL_cr_pixbuf (void)
 {
-  GtkWidget *pixmap;
-  char *filename;
-  filename = A4GL_find_param ("FILENAME");
+GtkWidget *pixmap=0;
+char *filename;
 
-  A4GL_debug ("Making picture filename=%s PIXBUF\n", filename);
-#if GTK_CHECK_VERSION(2,0,0)
-  pixmap = A4GL_make_pixbuf_gw (filename);
-#endif
-  //A4GL_add_signal_grab_focus (pixmap, 0);
-  //A4GL_add_signal_clicked (pixmap, 0);
+	filename = A4GL_find_param ("FILENAME");
 
+	A4GL_debug ("Making picture filename=%s PIXBUF\n", filename);
+	#if GTK_CHECK_VERSION(2,0,0)
+		pixmap = A4GL_make_pixbuf_gw (filename);
+	#endif
+	//A4GL_add_signal_grab_focus (pixmap, 0);
+	//A4GL_add_signal_clicked (pixmap, 0);
 	gtk_widget_show(pixmap);
-
-  printf("Made : %p\n",pixmap);
-  //A4GL_add_signal_clicked ((GtkWidget *) pixmap, 0);
-  A4GL_add_signal_grab_focus ((GtkWidget *) pixmap, 0);
-
-
-      
-  return pixmap;
+	printf("Made : %p\n",pixmap);
+	//A4GL_add_signal_clicked ((GtkWidget *) pixmap, 0);
+	A4GL_add_signal_grab_focus ((GtkWidget *) pixmap, 0);
+	return pixmap;
 }
-
+#endif
 
 
 /**
@@ -724,22 +723,24 @@ A4GL_cr_button (void)
   gtk_container_add (GTK_CONTAINER (b), GTK_WIDGET (v));
 
 
-  if (label)
-    {
-      if (strlen (label))
-	{
-	  char *utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
-	printf("utf=%s\n",utf);
-	  l = (GtkLabel *) gtk_label_new (utf);
-//	  if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
-//	    A4GL_debug("using PANGO ML for Label '%s'\n",label);
-//          gtk_label_set_use_markup(l, TRUE);
-//        }
-	  g_free(utf);
-	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
-	  gtk_widget_show (GTK_WIDGET (l));
-	  gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
-	}
+  	if (label) {
+		if (strlen (label)) {
+			char *utf=g_locale_to_utf8(label, -1, NULL, NULL, NULL);
+			printf("utf=%s\n",utf);
+			l = (GtkLabel *) gtk_label_new (utf);
+			#if GTK_CHECK_VERSION(2,0,0)
+				/*
+				if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+					A4GL_debug("using PANGO ML for Label '%s'\n",label);
+					gtk_label_set_use_markup(l, TRUE);
+				}
+				*/
+			#endif
+			g_free(utf);
+			gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
+			gtk_widget_show (GTK_WIDGET (l));
+			gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
+		}
     }
 
   if (image)
@@ -1417,47 +1418,41 @@ A4GL_display_generic (GtkWidget * k, char *s)
 
 
 
-  if (strcasecmp (ptr, "LABEL") == 0)
-    {
-#if ! GTK_CHECK_VERSION(2,0,0)
-	GtkStyle *style;
-#endif
+	if (strcasecmp (ptr, "LABEL") == 0) {
+		/* check whether a Gtk+ version equal to or greater than
+		* major.minor.micro is present.
+		*/
+		//#if ! GTK_CHECK_VERSION(2,0,0)
+		// Old GTK sytle	
+	  	//	GtkStyle *style;
+		//#endif
 
-      gtk_label_set_text (GTK_LABEL (k), utf);
-      if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
-	A4GL_debug("using PANGO ML for Label '%s'\n", s);
-	gtk_label_set_use_markup(GTK_LABEL(k), TRUE);
-      }
-      g_free(utf);
+		gtk_label_set_text (GTK_LABEL (k), utf);
+		#if GTK_CHECK_VERSION(2,0,0)
+      		if(A4GL_isyes(acl_getenv("A4GL_USE_PANGO_ML"))) {
+				A4GL_debug("using PANGO ML for Label '%s'\n", s);
+				gtk_label_set_use_markup(GTK_LABEL(k), TRUE);
+			}
+		#endif
+		g_free(utf);
+		return 1;
+	}
 
-/* check whether a Gtk+ version equal to or greater than
- * major.minor.micro is present.
- */
-      return 1;
+	if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0) {
+		gtk_entry_set_text (GTK_ENTRY (k), utf);
+		g_free(utf);
+		return 1;
     }
 
-  if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0)
-    {
-      gtk_entry_set_text (GTK_ENTRY (k), utf);
-      g_free(utf);
-      return 1;
-    }
+	if (strcasecmp (ptr, "LIST") == 0) {
+		printf ("Adding to list...\n");
+		fflush (stdout);
+		k = gtk_object_get_data (GTK_OBJECT (k), "Child");
+		gtk_clist_append (GTK_CLIST (k), &utf);
+		g_free(utf);
+	}
 
-
-  if (strcasecmp (ptr, "LIST") == 0)
-    {
-      printf ("Adding to list...\n");
-      fflush (stdout);
-
-      k = gtk_object_get_data (GTK_OBJECT (k), "Child");
-      gtk_clist_append (GTK_CLIST (k), &utf);
-      g_free(utf);
-
-    }
-
-
-  if (strcasecmp (ptr, "RADIO") == 0)
-    {
+	if (strcasecmp (ptr, "RADIO") == 0) {
       int a;
       GtkWidget *btn;
       char *ptr;

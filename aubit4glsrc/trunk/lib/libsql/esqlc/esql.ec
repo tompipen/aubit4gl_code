@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.128 2005-03-30 10:50:50 mikeaubury Exp $
+# $Id: esql.ec,v 1.129 2005-03-31 13:35:58 afalout Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.128 2005-03-30 10:50:50 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.129 2005-03-31 13:35:58 afalout Exp $";
 #endif
 
 
@@ -1126,7 +1126,7 @@ int arr_dtime[]={
 			char *b;
 			vptr=(void *)bind[idx].ptr;
 			fgl_money = (fglmoney *) vptr;
-			b=A4GL_dec_to_str(fgl_money,0);
+			b=A4GL_dec_to_str((void *)fgl_money,0);
 			/* 
 				warning: passing arg 1 of `A4GL_dec_to_str' from incompatible pointer type
 				char *A4GL_dec_to_str (fgldecimal *dec, int size) ;	
@@ -1146,10 +1146,8 @@ int arr_dtime[]={
 				  }
 				  fglmoney;
 				
-				So what is GCC complaining about???
-				Should we create separate A4GL_money_to_str() ??
-				Or cast it:
-					b=A4GL_dec_to_str((fgldecimal)fgl_money,0);
+				(cant just cast a non-scalar)
+				So I cast it to void pointer to avoid warning
 			*/
 			if (deccvasc (b, strlen (b), &money_var)) {
 				/** @todo : We need to store this error */

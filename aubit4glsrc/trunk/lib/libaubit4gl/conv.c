@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.103 2005-03-28 20:23:22 mikeaubury Exp $
+# $Id: conv.c,v 1.104 2005-03-31 13:35:39 afalout Exp $
 #
 */
 
@@ -37,7 +37,7 @@
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
  /*

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.20 2005-03-25 12:47:20 afalout Exp $
+# $Id: Makefile,v 1.21 2005-03-31 13:33:35 afalout Exp $
 #
 
 ## ==================================================================
@@ -538,7 +538,7 @@ clean.makefiles:
     tools/test/db/Makefile tools/test/lang/Makefile \
 	tools/test/regression/Makefile tools/test/db/Makefile \
     tools/adbaccess/Makefile tools/adbload/Makefile \
-    tools/html/Makefile tools/ide/Makefile \
+    tools/ide/Makefile \
     tools/odbctest/Makefile \
     tools/test/Makefile tools/test/gui/Makefile \
 	common/dataio/Makefile compilers/ace/Makefile \

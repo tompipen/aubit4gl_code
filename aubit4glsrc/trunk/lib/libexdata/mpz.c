@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mpz.c,v 1.11 2005-03-09 15:14:42 mikeaubury Exp $
+# $Id: mpz.c,v 1.12 2005-03-31 13:35:49 afalout Exp $
 */
 
 /**
@@ -700,6 +700,18 @@ EXDTYPE_initlib (void)
 
   /* These will only apply to TWO MPZ variables */
   A4GL_add_op_function (dtype_mpz, dtype_mpz, OP_ADD, A4GL_add_mpz);
+  //this compiles without warning - wait for OK from Mike:
+  //A4GL_add_op_function (dtype_mpz, dtype_mpz, OP_ADD, (void *) A4GL_add_mpz);
+  
+/*  
+mpz.c:702: warning: passing arg 4 of `A4GL_add_op_function' from incompatible pointer type  
+
+void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
+
+A4GL_add_mpz is actually a function:
+void A4GL_add_mpz (void);
+
+*/
   A4GL_add_op_function (dtype_mpz, dtype_mpz, OP_SUB, A4GL_sub_mpz);
   A4GL_add_op_function (dtype_mpz, dtype_mpz, OP_MULT, A4GL_mul_mpz);
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-12-22 11:22:19 afalout Exp $
+# $Id: Makefile,v 1.4 2005-03-31 13:35:38 afalout Exp $
 #
 
 ROOT    =..
@@ -71,7 +71,7 @@ LIBCHANNEL_PATH		=extra_libs/channel
 LIBESQLCHELPER_PATH	=libesql
 LIBHTML_PATH        =${ROOT}/tools/html
 LIBSQLESQL_PATH     =libsql/esqlc
-LIBUIHL_PATH       =libui/ui_highlevel
+LIBUIHL_PATH       	=libui/ui_highlevel
 LIBUICURSES_PATH	=libui/ui_curses
 LIBUICONSOLE_PATH	=libui/ui_console
 LIBUIGLADE_PATH		=libui/ui_glade
@@ -172,6 +172,8 @@ LIBSQLESQL_DEPS		=$(wildcard ${LIBSQLESQL_PATH}/*.ec) $(wildcard ${LIBSQLESQL_PA
 LIBUIGTK_DEPS		=$(wildcard ${LIBUIGTK_PATH}/*.c) $(wildcard ${LIBUIGTK_PATH}/*.h) \
 					$(wildcard ${LIBUIGTK_PATH}/Makefile) ${ALL_H}
 LIBUIHL_DEPS		=$(wildcard ${LIBUIHL_PATH}/*.c) $(wildcard ${LIBUIHL_PATH}/*.h) \
+					$(wildcard ${LIBUIHL_PATH}/lowlevel/*.c) \
+					$(wildcard ${LIBUIHL_PATH}/lowlevel/*.h) \
 					$(wildcard ${LIBUIHL_PATH}/Makefile) ${ALL_H}
 LIBUICURSES_DEPS	=$(wildcard ${LIBUICURSES_PATH}/*.c) $(wildcard ${LIBUICURSES_PATH}/*.h) \
 					$(wildcard ${LIBUICURSES_PATH}/Makefile) ${ALL_H}

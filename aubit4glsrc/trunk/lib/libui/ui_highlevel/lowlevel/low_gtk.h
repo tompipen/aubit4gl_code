@@ -39,3 +39,6 @@
         #define g_locale_from_utf8(a,b,c,d,e) g_strdup(a)
 #endif
 
+//GTK2 only:
+//#include <gtk/gtklabel.h>   /* gtk_label_set_use_markup() */
+

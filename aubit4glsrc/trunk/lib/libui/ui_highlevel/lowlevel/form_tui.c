@@ -154,6 +154,15 @@ WINDOW *wot;
   warning: assignment from incompatible pointer type
   PANEL *wot;
   #define Get_Form_Window(form) ((form)->sub?(form)->sub:((form)->win?(form)->win:stdscr))
+  
+  Mike:
+  but as its just a pointer - it does no harm (panels can be used for 
+  windows in curses anyway)
+  Changed to a WINDOW *...
+
+  Looks like not commited yet - check again later, if still get warning, change
+  to WINDOW *...
+  
   */
   
   memset(buff,0,buff_len);

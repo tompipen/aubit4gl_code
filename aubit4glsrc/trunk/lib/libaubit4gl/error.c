@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.22 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: error.c,v 1.23 2005-03-31 13:35:46 afalout Exp $
 #
 */
 
@@ -34,10 +34,10 @@
  * WARNING: errno renamed to a4gl_errno here and in mkerrors because of the
  * conflict with function mane in errno.h
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*

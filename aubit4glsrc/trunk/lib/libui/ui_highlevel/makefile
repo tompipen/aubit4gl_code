@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.40 2005-01-04 03:35:32 afalout Exp $
+# $Id: makefile,v 1.41 2005-03-31 13:36:27 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -115,7 +115,7 @@ endif
 
 PDCURSESX_CFLAGS	=${XCURSES_CFLAGS} -DXCURSES -I${ROOT}/incl -I.. \
 	${CWARN} -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H
-
+	
 ifneq "${HAVE_CURSES}" "0"
 	ALL					+=${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
 	#CURSES_INC_PATH must be BEFORE system paths:
@@ -282,7 +282,9 @@ lowlevel_tui_noform.o: lowlevel/lowlevel_tui.c
 	${CC} ${CFLAGS} -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 
 lowlevel_tui_noformX.o: lowlevel/lowlevel_tui.c
-	${CC} ${PDCURSESX_CFLAGS} -DNO_CURSES_FORM -c -Ilowlevel -I. $^ -o $@
+#Cant use warning flags here - xcurses headers produce flood of warnings 
+#and there is nothing we can do about it ...
+	${CC} $(filter-out ${CWARN},${PDCURSESX_CFLAGS}) -DNO_CURSES_FORM -c -Ilowlevel -I. $^ -o $@
 	
 lowlevel_tui_noform_wide.o: lowlevel/lowlevel_tui.c
 	${CC} ${CFLAGS} -DWIDEC -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
@@ -290,9 +292,11 @@ lowlevel_tui_noform_wide.o: lowlevel/lowlevel_tui.c
 form_tui.o: lowlevel/form_tui.c
 	${CC} ${CFLAGS} -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 
-
 form_tuiX.o: lowlevel/form_tui.c
-	${CC} ${PDCURSESX_CFLAGS} -DNO_CURSES_FORM -c -Ilowlevel -I. $^ -o $@
+#Cant use warning flags here - xcurses headers produce flood of warnings 
+#and there is nothing we can do about it ...
+#NOTE: we still get some warnings here from PDcurses headers
+	${CC} $(filter-out ${CWARN},${PDCURSESX_CFLAGS}) -DNO_CURSES_FORM -c -Ilowlevel -I. $^ -o $@
 
 lowlevel_gtk.o: lowlevel/lowlevel_gtk.c a4gl_API_lowlevel.h
 	${CC} ${CFLAGS_GTK_C} -c -I$(ROOT)/incl -I. -Ilowlevel $< -o $@ $(GTK_INC_PATH)

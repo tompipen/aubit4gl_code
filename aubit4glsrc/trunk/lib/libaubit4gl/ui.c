@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.33 2005-03-17 20:48:34 mikeaubury Exp $
+# $Id: ui.c,v 1.34 2005-03-31 13:35:48 afalout Exp $
 #
 */
 
@@ -44,7 +44,7 @@
  * @todo Does this file belong in lib/ directory, or?
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
  /*

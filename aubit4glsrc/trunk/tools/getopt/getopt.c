@@ -487,7 +487,7 @@ _getopt_initialize (argc, argv, optstring)
 
    If OPTSTRING starts with `-' or `+', it requests different methods of
    handling the non-option ARGV-elements.
-   See the A4GL_comments about RETURN_IN_ORDER and REQUIRE_ORDER, above.
+   See the comments about RETURN_IN_ORDER and REQUIRE_ORDER, above.
 
    Long-named options begin with `--' instead of `-'.
    Their names may be abbreviated as long as the abbreviation is unique

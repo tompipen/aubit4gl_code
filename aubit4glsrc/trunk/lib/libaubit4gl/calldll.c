@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.53 2005-03-09 15:14:37 mikeaubury Exp $
+# $Id: calldll.c,v 1.54 2005-03-31 13:35:39 afalout Exp $
 #
 */
 
@@ -44,17 +44,19 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
+
+// everything untill the end of this file is inside this ifdef...
 #ifndef CSCC
 
-#if defined(__hpux__) //HP-UX UNIX OS
-#define USE_SHL 1
-#define SO_EXT "sl"
-#endif
+	#if defined(__hpux__) //HP-UX UNIX OS
+		#define USE_SHL 1
+		#define SO_EXT "sl"
+	#endif
 
 
-#ifdef USE_SHL
-#include <dl.h>
-#endif
+	#ifdef USE_SHL
+		#include <dl.h>
+	#endif
 /*
  **********************************************************************
  * Under Cygwin, we can use the dl family of calls, but we need to jump
@@ -67,19 +69,18 @@
  ***********************************************************************
  */
 
-#ifndef WIN32
-#include <dlfcn.h>
+ 	#ifndef WIN32
+		#include <dlfcn.h>
+	#endif
 
-#endif
 
-
-#ifndef SO_EXT
-#ifdef WIN32
-#define SO_EXT "dll"
-#else
-#define SO_EXT "so"
-#endif
-#endif
+	#ifndef SO_EXT
+		#ifdef WIN32
+			#define SO_EXT "dll"
+		#else
+			#define SO_EXT "so"
+		#endif
+	#endif
 
 
 /*
@@ -109,105 +110,105 @@ static void inc_usage (char *s);
 */
 
 #if defined(__MINGW32__)
-
-/* ------------ this functions simulate dlopen interface on Windows ---- */
-
-
-/* <Windows dlfcn.c> */
-#include <windows.h>
-#include <stdio.h>
-/* #include <dlfcn.h> */
-/* generic version of dlfcn.h */
-#define RTLD_LAZY 1
-#define RTLD_NOW  2
-
-void *dlopen (const char *, int);
-void *dlsym (void *, const char *);
-int dlclose (void *);
-char *dlerror (void);
-/* end dlfcn.h */
-
-static char errbuf[512];
-#define TRACE_DLL_CALLS
-/**
- * Windows dlopen wraper function.
- *
- * This function simulate the unix dlopen in order to
- * let aubit4gl work.
- *
- * @param name The name of the library to load.
- * @param mode Not used here.
- * @return 
- *   - A pointer to the lib handle 
- *   - NULL if it cant find it
- */
-void *
-dlopen (const char *name, int mode)
-{
-  HINSTANCE hdll;
-
-  hdll = LoadLibrary (name);
-#ifdef _WIN32
-  if (!hdll)
-    {
-      sprintf (errbuf, "error code %d loading library %s", GetLastError (),
-	       name);
-      return NULL;
-    }
-#else
-  if ((UINT) hdll < 32)
-    {
-      sprintf (errbuf, "error code %d loading library %s", (UINT) hdll, name);
-      return NULL;
-    }
-#endif
-  return (void *) hdll;
-}
-
-/**
- * Windows specific implementation.
- *
- * Get a pointer to a function loaded in a library
- *
- * @param lib The dll handle.
- * @param name The name of the function to be found.
- * @return A pointer to the function.
- */
-void *
-dlsym (void *lib, const char *name)
-{
-  HMODULE hdll = (HMODULE) lib;
-  void *symAddr;
-  symAddr = (void *) GetProcAddress (hdll, name);
-  if (symAddr == NULL)
-    sprintf (errbuf, "can't find symbol %s", name);
-  return symAddr;
-}
-
-int
-dlclose (void *lib)
-{
-  HMODULE hdll = (HMODULE) lib;
-
-#ifdef _WIN32
-  if (FreeLibrary (hdll))
-    return 0;
-  else
-    {
-      sprintf (errbuf, "error code %d closing library", GetLastError ());
-      return -1;
-    }
-#else
-  FreeLibrary (hdll);
-  return 0;
-#endif
-}
-
-char *
-dlerror ()
-{
-  return errbuf;
-}
+	
+	/* ------------ this functions simulate dlopen interface on Windows ---- */
+	
+	
+	/* <Windows dlfcn.c> */
+	#include <windows.h>
+	#include <stdio.h>
+	/* #include <dlfcn.h> */
+	/* generic version of dlfcn.h */
+	#define RTLD_LAZY 1
+	#define RTLD_NOW  2
+	
+	void *dlopen (const char *, int);
+	void *dlsym (void *, const char *);
+	int dlclose (void *);
+	char *dlerror (void);
+	/* end dlfcn.h */
+	
+	static char errbuf[512];
+	#define TRACE_DLL_CALLS
+	/**
+	 * Windows dlopen wraper function.
+	 *
+	 * This function simulate the unix dlopen in order to
+	 * let aubit4gl work.
+	 *
+	 * @param name The name of the library to load.
+	 * @param mode Not used here.
+	 * @return 
+	 *   - A pointer to the lib handle 
+	 *   - NULL if it cant find it
+	 */
+	void *
+	dlopen (const char *name, int mode)
+	{
+	  HINSTANCE hdll;
+	
+	  hdll = LoadLibrary (name);
+	#ifdef _WIN32
+	  if (!hdll)
+		{
+		  sprintf (errbuf, "error code %d loading library %s", GetLastError (),
+			   name);
+		  return NULL;
+		}
+	#else
+	  if ((UINT) hdll < 32)
+		{
+		  sprintf (errbuf, "error code %d loading library %s", (UINT) hdll, name);
+		  return NULL;
+		}
+	#endif
+	  return (void *) hdll;
+	}
+	
+	/**
+	 * Windows specific implementation.
+	 *
+	 * Get a pointer to a function loaded in a library
+	 *
+	 * @param lib The dll handle.
+	 * @param name The name of the function to be found.
+	 * @return A pointer to the function.
+	 */
+	void *
+	dlsym (void *lib, const char *name)
+	{
+	  HMODULE hdll = (HMODULE) lib;
+	  void *symAddr;
+	  symAddr = (void *) GetProcAddress (hdll, name);
+	  if (symAddr == NULL)
+		sprintf (errbuf, "can't find symbol %s", name);
+	  return symAddr;
+	}
+	
+	int
+	dlclose (void *lib)
+	{
+	  HMODULE hdll = (HMODULE) lib;
+	
+	#ifdef _WIN32
+	  if (FreeLibrary (hdll))
+		return 0;
+	  else
+		{
+		  sprintf (errbuf, "error code %d closing library", GetLastError ());
+		  return -1;
+		}
+	#else
+	  FreeLibrary (hdll);
+	  return 0;
+	#endif
+	}
+	
+	char *
+	dlerror ()
+	{
+	  return errbuf;
+	}
 
 #endif /* __MINGW32__ */
 
@@ -428,7 +429,7 @@ A4GL_dl_openlibrary (char *type, char *p)
  * Try to find a function in a dll loaded.
  *
  * @param dllhandle The dynamic library handler.
- * @param A4GL_func The function name.
+ * @param func The function name.
  * @return - A pointer to the loaded function if it exist in the dll.
  *         - A pointer to the function badfunc if did not find it.
  */
@@ -490,7 +491,7 @@ inc_usage(func);
  * Try to find a function in a dll loaded.
  *
  * @param dllhandle The dynamic library handler.
- * @param A4GL_func The function name.
+ * @param func The function name.
  * @return - A pointer to the loaded function if it exist in the dll.
  *         - A pointer to the function badfunc if did not find it.
  */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.11 2005-03-09 15:15:14 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.12 2005-03-31 13:36:16 afalout Exp $
 #*/
 
 /**
@@ -66,8 +66,8 @@ char lasterrorstr[1024] = "";
 FILE *f_db_in;
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val);
-void * A4GL_new_expr (char *value);
-void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
+//void * A4GL_new_expr (char *value);
+//void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 /* We only need to implement the functions used by the compiler :
 
          A4GLSQL_end_get_columns

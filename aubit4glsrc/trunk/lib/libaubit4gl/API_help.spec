@@ -19,9 +19,9 @@ LIB_PREFIX HELPLIB_
 * Function calls definitions:
 * func-name param-type param-name ... -> returns"
 *
-/* Only one function here for now, from lib/libmsg/msg_native/readmsg.c  */
-/* TODO: extract function that creates compiled message file from mkmess */
-/* executable, and crate lib/libmsg/msg_native/writemsg.c */
+
+
+*FIXME : why aclfgl_aclfgl_ (twice) ??
 
 aclfgl_aclfgl_libhelp_showhelp int helpno -> int
 aclfgl_aclfgl_openiem int nparams -> int

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.24 2005-03-28 20:23:25 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.25 2005-03-31 13:36:27 afalout Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.24 2005-03-28 20:23:25 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.25 2005-03-31 13:36:27 afalout Exp $";
 #endif
 /**
  * @file
@@ -1571,10 +1571,21 @@ A4GL_mja_set_current_field (void *form, void *field)
 }
 
 
+/* same function exists in :
 
+	lib/libui/ui_curses/curslib.c 				as (struct struct_scr_field *fprop)
+	lib/libui/ui_highlevel/formcntrl.c (this file) as (struct struct_scr_field *fprop)
+	
+	lib/libform/form_xdr/readforms.c			as (void *fprop) 
+	
+	proto is defined in API_form.spec :
+		//void A4GL_comments (struct struct_scr_field *fprop); 
+		A4GL_comments void* fprop -> void 
+	
+	
+*/
 void
-A4GL_comments (struct struct_scr_field *fprop)
-{
+A4GL_comments (struct struct_scr_field *fprop) {
   //char *str;
   int cline;
   char buff[256];

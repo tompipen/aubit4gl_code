@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: output.c,v 1.8 2005-03-09 15:14:28 mikeaubury Exp $
+# $Id: output.c,v 1.9 2005-03-31 13:35:36 afalout Exp $
 #*/
 
 /**
@@ -33,7 +33,7 @@
  *
  *
  *
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 /*

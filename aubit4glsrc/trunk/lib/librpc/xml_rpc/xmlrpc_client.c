@@ -24,17 +24,17 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.11 2005-03-28 20:23:24 mikeaubury Exp $
+# $Id: xmlrpc_client.c,v 1.12 2005-03-31 13:35:57 afalout Exp $
 #*/
 
 
 /**
  * @file
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
 
@@ -99,12 +99,17 @@ die_if_fault_occurred (xmlrpc_env * env, int line)
 #define die_if_fault_occurred(x) die_if_fault_occurred(x,__LINE__)
 
 /**
- *
+ * 
+ * Note: proto for this function is printed by dlmagic into API_rpc.c file instead of
+ * .h file - so we cant include it here. 
+ 
+ 	./incl/a4gl_API_rpc.h
+	./incl/a4gl_API_rpc_lib.h
+	
  * @todo Describe function
  */
 int
-A4GLRPC_initlib (void)
-{
+A4GLRPC_initlib (void) {
   xmlrpc_client_init (XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION);
   xmlrpc_env_init (&env);
   die_if_fault_occurred (&env);
@@ -282,8 +287,30 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
 	  A4GL_push_double (get_double (&env, in));
 	  break;
 	case (XMLRPC_TYPE_DATETIME):
-	  /* void push_dtime(struct a4gl_dtime *p); */
+
+	  //A4GL_push_dtime (get_timestamp (&env, in));
+	  //...changed to:
 	  A4GL_push_char (get_timestamp (&env, in));
+	  /*
+	  warning: passing arg 1 of `A4GL_push_dtime' from incompatible pointer type
+	  
+	  void A4GL_push_dtime (struct A4GLSQL_dtime *p);
+	  
+	  static char * get_timestamp (xmlrpc_env * env, xmlrpc_value * in)
+	  
+	  struct A4GLSQL_dtime
+	  {
+		int stime;		   //The start qualifier
+		int ltime;		   //The end qualifier 
+		char data[32];	   //The information in the var
+	  };
+	  
+	Mike:
+	Looks wrong - the function appears to return a character string - but 
+	this is being pushed as a datetime - I'd suggest it be pushed as a 
+	character string instead...
+	  
+	  */
 	  break;
 	case (XMLRPC_TYPE_STRING):
 	  A4GL_push_char (get_string (&env, in));
@@ -326,7 +353,7 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
  *
  * @param host The host where to call the remote function.
  * @param async
- * @param A4GL_func The name of the remote function to call.
+ * @param func The name of the remote function to call.
  * @param port The port number to use when making the call.
  * @param np The number of parameters.
  */
@@ -350,7 +377,7 @@ A4GL_remote_func_call (char *host, int async, char *func, int port, int np)
       strcpy (buff, func);
     }
 
-  A4GL_debug ("Calling host %s A4GL_func %s on port %ld with %d entries", host, buff,
+  A4GL_debug ("Calling host %s function %s on port %ld with %d entries", host, buff,
 	 port, np);
   a = A4GL_fgl_rpc_1 (host, buff, np);
   return a;

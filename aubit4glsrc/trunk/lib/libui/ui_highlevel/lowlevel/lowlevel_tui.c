@@ -42,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.50 2005-03-25 12:48:35 afalout Exp $ 
+ $Id: lowlevel_tui.c,v 1.51 2005-03-31 13:36:28 afalout Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -69,10 +69,10 @@ Looks like it was removed in Curses 5.3???!
 
 
 #ifndef NO_CURSES_FORM
-#include "aubit_form.h"
-#include <form.h>
+	#include "aubit_form.h"
+	#include <form.h>
 #else
-#include "aubit_noform.h"
+	#include "aubit_noform.h"
 #endif
 
 
@@ -85,12 +85,12 @@ Looks like it was removed in Curses 5.3???!
 #include "formdriver.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_tui.c,v 1.50 2005-03-25 12:48:35 afalout Exp $";
+		"$Id: lowlevel_tui.c,v 1.51 2005-03-31 13:36:28 afalout Exp $";
 #endif
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
-int A4GLHLUI_initlib(void) ;
+//int A4GLHLUI_initlib(void) ;
 int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
@@ -2118,7 +2118,9 @@ A4GL_LL_screen_mode ()
 void
 A4GL_LL_initialize_display ()
 {
-//		char *argv[1];
+#ifdef XCURSES
+		char *argv[1];
+#endif
 #ifdef DEBUG	
 	A4GL_debug ("LL_initialize_display *************************");
 #endif	

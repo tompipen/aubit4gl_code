@@ -24,14 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.21 2005-03-09 15:14:39 mikeaubury Exp $
+# $Id: extfile.c,v 1.22 2005-03-31 13:35:46 afalout Exp $
 #
 */
 
 /**
  * @file
  *
- * @todo Add Doxygen A4GL_comments to file
+ * @todo Add Doxygen comments to file
  */
 
 /*
