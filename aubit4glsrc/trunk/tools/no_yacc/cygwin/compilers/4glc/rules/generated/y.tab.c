@@ -16061,7 +16061,7 @@ print_undo_use(yyvsp[-2].str);
 
   case 1634:
 #line 7657 "fgl.yacc"
-    {yyval.sql_string=make_sql_string("AVERAGE(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);}
+    {yyval.sql_string=make_sql_string("AVG(",yyvsp[-2].str,yyvsp[-1].sql_string,")",0);}
     break;
 
   case 1635:
