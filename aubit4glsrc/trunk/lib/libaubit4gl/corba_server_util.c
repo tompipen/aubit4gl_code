@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.4 2005-01-28 08:01:51 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.5 2005-02-01 08:07:42 mikeaubury Exp $
 #
 */
 
@@ -271,7 +271,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	if (sd!=sizeof(char *)) {
 		if (lsrc>=sd) {
 			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
-			sprintf(buff,"String overflow detected @ %s line $d",f,l);
+			sprintf(buff,"String overflow detected @ %s line %d",f,l);
 			A4GL_assertion(1,buff);
 		}
 	}
