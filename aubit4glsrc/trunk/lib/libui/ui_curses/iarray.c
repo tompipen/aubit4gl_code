@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.46 2003-09-05 15:26:59 mikeaubury Exp $
+# $Id: iarray.c,v 1.47 2003-09-08 08:16:23 mikeaubury Exp $
 #*/
 
 /**
@@ -463,6 +463,7 @@ struct struct_scr_field *fprop;
   //void *iloop_context[3];  // What am i doing it do ?
 
 
+  arr->scr_dim = arr->srec->dim;
   if (curr_arr_inp!=arr) {
 	A4GL_debug("DO THEM AGAIN...");
 	A4GL_set_fields_inp_arr (arr);
@@ -1105,7 +1106,10 @@ A4GL_set_fields_inp_arr (void *vsio)
     }
 
 
-  A4GL_debug ("turning some back on");
+  A4GL_debug ("turning some back on : %p %d",sio,sio->scr_dim);
+
+
+
   for (a = 0; a < sio->scr_dim; a++)
     {
       for (b = 0; b < sio->srec->attribs.attribs_len; b++)

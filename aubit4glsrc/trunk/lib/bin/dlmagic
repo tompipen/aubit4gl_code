@@ -133,6 +133,7 @@ print "#endif"
 	/^LIBRARY / {next}
 	/^VARIABLE / {next}
 	/^HEADER_FILE / {next}
+	/^MAP / { map[$2]=$3; next}
 	/^#/ {print
 		next
 	}
@@ -316,6 +317,7 @@ print ""
 /^LIBRARY / {next}
 /^VARIABLE / {next}
 /^HEADER_FILE / {next}
+/MAP / { map[$2]=$3; next}
 /^#/ {print
 	next
 }
@@ -333,6 +335,7 @@ print ""
 }
 /^\*/ {next}
 /^$/ {next}
+
 /^[ 	]*$/ {next}
 {
 fname=$1
@@ -413,7 +416,9 @@ else
 print "A4GL_debug(\"" debug_args "\\n\");"
 print "#endif"
 print "   if (libptr==0) A4GL" lib "_initlib();"
-print "   func=A4GL_find_func(libptr,\"" lib_prefix call_fname "\");"
+if (map[call_fname]) cfname=map[call_fname];
+else cfname=call_fname;
+print "   func=A4GL_find_func(libptr,\"" lib_prefix cfname "\");"
 if (va_start!="") {
 	print "   va_start(ap," va_start ");"
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.73 2003-09-01 17:12:00 mikeaubury Exp $
+# $Id: ioform.c,v 1.74 2003-09-08 08:16:23 mikeaubury Exp $
 #*/
 
 /**
@@ -826,6 +826,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 {
   char buff[8000] = "";
   char buff2[8000] = "";
+  char buff3[8000] = "";
   FORM *mform;
   int x, y;
   int flg = 0;
@@ -894,6 +895,22 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		    strcpy (&buff[4], field_buffer (form->currentfield, 0));
 
 		    strcpy (buff2, &buff[4]);
+
+                        if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) {
+                                int a;
+                                int blank=1;
+				char *picture;
+                                picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+                                A4GL_debug("HAS PICTURE MJA123");
+                                for (a=0;a<strlen(buff2);a++) {
+                                        if (picture[a]=='X'&&buff2[a]!=' ') {blank=0;break;}
+                                        if (picture[a]=='A'&&buff2[a]!=' ') {blank=0;break;}
+                                        if (picture[a]=='#'&&buff2[a]!=' ') {blank=0;break;}
+                                }
+                                if (blank) strcpy(buff2,"");
+                        }
+
+
 		    A4GL_trim (buff2);
 		    getsyx (y, x);
 		    A4GL_trim (buff2);
@@ -971,14 +988,26 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 		  }
 
 
+		strcpy(buff3,field_buffer (sio->currform->currentfield, 0));
 
+                  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) {
+                                int a;
+                                int blank=1;
+                                char *picture;
+                                picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+                                for (a=0;a<strlen(buff3);a++) {
+                                        if (picture[a]=='X'&&buff3[a]!=' ') {blank=0;break;}
+                                        if (picture[a]=='A'&&buff3[a]!=' ') {blank=0;break;}
+                                        if (picture[a]=='#'&&buff3[a]!=' ') {blank=0;break;}
+                                }
+                                if (blank) strcpy(buff3,"");
+                        }
 
 
 		if (A4GL_check_field_for_include
-		    (field_buffer (sio->currform->currentfield, 0),
-		     A4GL_get_str_attribute (fprop, FA_S_INCLUDE),
-		     fprop->datatype) == 0)
+		    (buff3, A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype) == 0)
 		  {
+		A4GL_debug("Not in include list");
 		    A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
 		    set_current_field (mform, form->currentfield);
 		    return -4;

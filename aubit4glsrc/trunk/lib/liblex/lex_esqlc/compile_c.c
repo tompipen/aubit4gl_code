@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.92 2003-09-05 15:26:58 mikeaubury Exp $
+# $Id: compile_c.c,v 1.93 2003-09-08 08:16:23 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2114,6 +2114,7 @@ print_onkey_1 (char *key_list_str)
 void
 print_onkey_2 (void)
 {
+      continue_loop ("INPUTREQ");
   printc ("}\n");
 }
 
@@ -2967,6 +2968,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("SET(\"s_inp_arr\",_inp_io,\"binding\",obind);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_inp_arr\",_inp_io,\"srec\",0);\n");
+  printc ("SET(\"s_inp_arr\",_inp_io,\"scr_dim\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);
   printc ("SET(\"s_inp_arr\",_inp_io,\"help_no\",%s);\n", helpno);
   printc

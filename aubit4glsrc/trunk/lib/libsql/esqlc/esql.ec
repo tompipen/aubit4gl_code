@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.60 2003-08-18 06:18:34 afalout Exp $
+# $Id: esql.ec,v 1.61 2003-09-08 08:16:23 mikeaubury Exp $
 #
 */
 
@@ -139,7 +139,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.60 2003-08-18 06:18:34 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.61 2003-09-08 08:16:23 mikeaubury Exp $";
 #endif
 
 
@@ -1891,7 +1891,8 @@ int A4GLSQL_open_cursor (int ni, char *s)
     case OUTPUT_BIND:
     	A4GL_debug("Into on an open ?");
   	EXEC SQL OPEN :cursorName
-        //INTO SQL DESCRIPTOR :outputDescriptorName;
+        //INTO SQL DESCRIPTOR :outputDescriptorName
+	;
 	break;
     case INPUT_OUTPUT_BIND:
     	A4GL_debug("Into on an open ?");
