@@ -38,8 +38,8 @@ display "Counter=",counter
 		output to report r1 (lv_systables.*)
 	end foreach
 
-
 	finish report r1
+	
 
 end main
 
