@@ -176,6 +176,7 @@ reserved_word :
 	|VALIDATE
 	|ESCAPE
 	|UPSHIFT
+	|AVERAGE
 ;
 
 

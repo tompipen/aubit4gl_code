@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.17 2003-02-08 17:40:52 mikeaubury Exp $
+# $Id: builtin.c,v 1.18 2003-02-11 10:44:02 mikeaubury Exp $
 #
 */
 
@@ -625,11 +625,13 @@ aclfgl_err_quit(int statusnumber)
  * @param
  */
 int
-aclfgl_startlog (char *filename)
-/* start_log (filename, 4glmodule, 4gllinenumber) */
+A4GL_startlog (char *fname,int l,int n)
 {
-
-	/*  A4GLSQL_set_status(-3001,0); */
+	char *s;
+	s=char_pop();
+	debug("START LOG (%s Line:%d) to file '%s'\n",fname,l,s);
+	free(s);
+	
       return 0;
 }
 
@@ -638,12 +640,13 @@ aclfgl_startlog (char *filename)
  * The ERRORLOG( ) function copies its argument into the current error log file.
  */
 int
-aclfgl_errorlog (char *string)
-/* error_log(string, 4glmode, 4gllinenumber) */
-
+A4GL_errorlog (char *fname,int l,int n)
 {
+	char *s;
+	s=char_pop();
+	debug("ERROR LOG - %s Line:%d %s\n",fname,l,s);
+	free(s);
 
-	/*  A4GLSQL_set_status(-3001,0); */
       return 0;
 }
 

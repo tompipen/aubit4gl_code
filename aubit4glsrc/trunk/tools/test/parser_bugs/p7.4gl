@@ -1,5 +1,5 @@
 main
-define lv_record 
+define lv_record  record
 	tn char(20),
 	tid integer
 end record

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.12 2003-01-30 11:54:38 afalout Exp $
+# $Id: report.c,v 1.13 2003-02-11 10:44:02 mikeaubury Exp $
 #
 */
 
@@ -642,5 +642,17 @@ rep_file_print(struct rep_structure *rep, char *fname, int opt_semi)
 	exitwith("Not implemented");
 }
 
+
+/**
+ * Report pause function
+ * 
+**/
+void A4GL_pause(char *s) {
+	push_char(s);
+	push_int(-1);
+	push_int(-1);
+	display_at(1,0);
+	getchar(); // Not the best idea in the world....
+}
 /* ============================= EOF ================================ */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.24 2003-02-10 12:33:10 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.25 2003-02-11 10:44:02 mikeaubury Exp $
 */
 
 /**
@@ -210,11 +210,20 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 	int 	aclfgl_scr_line 	(int nargs);
 	int 	aclfgl_arr_curr 	(int nargs);
 	int     aclfgl_length 		(int nargs);
-	int     aclfgl_err_get		(int statusnumber);
-	int     aclfgl_err_print	(int statusnumber);
-	int     aclfgl_err_quit		(int statusnumber);
-	int     aclfgl_startlog 	(char *filename);
-	int     aclfgl_errorlog 	(char *string);
+
+
+	int     aclfgl_err_get		(int statusnumber); // CHECK
+	int     aclfgl_err_print	(int statusnumber); // THESE SHOULD BE PASSED
+	int     aclfgl_err_quit		(int statusnumber); // A NUMBER OF PARAMETERS
+	int     aclfgl_startlog 	(char *filename);   // NOT THE PARAMETERS THEMSELVES
+
+#define aclfgl_errorlog(n)  A4GL_errorlog(__FILE__,__LINE__,n);
+#define aclfgl_startlog(n)  A4GL_startlog(__FILE__,__LINE__,n);
+
+	//int     aclfgl_errorlog 	(int n);
+	int     A4GL_errorlog 	(char *s,int l,int n);
+	int     A4GL_startlog 	(char *s,int l,int n);
+
 	int     aclfgl_showhelp 	(int helpnumber);
 	int 	aclfgl_fgl_getenv 	(int nargs);
 	int		aclfgl_mdy			(int nargs);

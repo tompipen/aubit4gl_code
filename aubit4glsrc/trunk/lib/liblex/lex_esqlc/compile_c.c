@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.5 2003-02-10 19:54:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.6 2003-02-11 10:44:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2980,7 +2980,7 @@ print_report_2 (int pdf, char *repordby)
 void
 print_pause (char *msg)
 {
-  printc ("acllib_pause(%s);\n", msg);
+  printc ("A4GL_pause(%s);\n", msg);
 }
 
 /* MISC */

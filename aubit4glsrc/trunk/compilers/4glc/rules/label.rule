@@ -1,10 +1,4 @@
-label_cmd : LABEL identifier {
-	exitwith ("Expecting a ':'");
-}
-| LABEL identifier COLON
-{
-	print_label($<str>2);
-}
+label_cmd :  LABEL  { print_label(get_idents(0)); }
 ;
 
 

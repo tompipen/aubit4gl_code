@@ -1056,7 +1056,10 @@ select_list:
 	;
 
 value_expression_pls : 
-value_expression | value_expression  NAMED {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+value_expression 
+| value_expression  NAMED {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+| value_expression  reserved_word {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+
 ;
 
 
