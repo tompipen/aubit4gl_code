@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.30 2003-05-19 18:06:54 mikeaubury Exp $
+# $Id: curslib.c,v 1.31 2003-05-22 13:22:19 mikeaubury Exp $
 #*/
 
 /**
@@ -317,6 +317,7 @@ void
 A4GL_error_nobox (char *str)
 {
   int a;
+  A4GL_chkwin();
   A4GL_push_char (str);
   a = A4GL_geterror_line ();
   A4GL_debug ("Error line = %d", a);
@@ -330,6 +331,23 @@ A4GL_error_nobox (char *str)
 }
 
 
+void
+A4GL_clr_error_nobox (void)
+{
+  int a;
+  A4GL_chkwin();
+  A4GL_push_char ("");
+  a = A4GL_geterror_line ();
+  A4GL_debug ("Error line = %d", a);
+  A4GL_push_int (a);
+  A4GL_push_int (1);
+
+#ifdef DEBUG
+  A4GL_debug ("YY REVERSE");
+#endif
+  A4GL_display_at (1, AUBIT_ATTR_REVERSE);
+}
+
 /**
  * Used.
  * @todo Describe function
@@ -340,6 +358,7 @@ A4GL_error_box (char *str)
   int a, pos;
   WINDOW *x;
 
+  A4GL_chkwin();
   /*YELLOW ON RED */
   A4GL_mja_setcolor (ERROR_COL);
   a = 4;
@@ -562,6 +581,7 @@ aclfgl_fgl_drawbox (int n)
   int xx, yy;
 //void *ptr=0;
   void *win;
+A4GL_chkwin();
   c = 0;
   if (n == 5)
     c = A4GL_pop_int ();
@@ -990,9 +1010,9 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)	/*  prompt for an integer from u
   /*message (&area, prompt, 0, 10); */
   /*
      A4GL_mja_setcolor (NORMAL_TEXT);
-     debug("printw");
+     A4GL_debug("printw");
      wprintw (area2.win_no,"$ ");
-     debug("Set edit1");
+     A4GL_debug("Set edit1");
    */
 
   A4GL_edit (inbuf, 'A', a, 3, 22);
@@ -2959,7 +2979,7 @@ aclfgli_pr_message (int attr, int wait)
   WINDOW *cw;
   char buff[256];
   static WINDOW *mw;
-
+  A4GL_chkwin();
   A4GL_debug ("In message...");
   cw = (WINDOW *) A4GL_get_currwin ();
   ml = A4GL_getmessage_line ();
@@ -2970,7 +2990,7 @@ aclfgli_pr_message (int attr, int wait)
   if (strlen (p) == 0)
     {
       memset (p, ' ', sizeof (p));
-      p[get_curr_width ()] = 0;
+      p[A4GL_get_curr_width ()] = 0;
 
     }
   A4GL_debug ("Message : '%s'", p);
@@ -3333,7 +3353,7 @@ A4GL_set_option_value (char type, int keyval)
       std_dbscr.error_line = keyval;
       break;
     case 'F':
-	debug("Setting form_line to %d",keyval);
+	A4GL_debug("Setting form_line to %d",keyval);
       std_dbscr.form_line = keyval;
       break;
     case 'M':

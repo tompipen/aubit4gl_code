@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.36 2003-05-19 18:06:54 mikeaubury Exp $
+# $Id: newpanels.c,v 1.37 2003-05-22 13:22:19 mikeaubury Exp $
 #*/
 
 /**
@@ -1316,8 +1316,11 @@ display_at2 (char *z, int x, int y, int a)
 int
 A4GL_getch_win (void)
 {
+int a;
   A4GL_debug ("getch_win called...");
-  return A4GL_getch_swin (A4GL_window_on_top ());
+  a=A4GL_getch_swin (A4GL_window_on_top ());
+  A4GL_clr_error_nobox();
+  return a;
 }
 
 /**

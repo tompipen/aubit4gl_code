@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.1 2003-05-22 13:01:17 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.2 2003-05-22 13:22:19 mikeaubury Exp $
 #*/
 
 /**
@@ -521,6 +521,7 @@ A4GL_mja_pos_form_cursor (mform);
 
 // Wait for a key..
   a = A4GL_getch_win ();
+     A4GL_clr_error_nobox();
 
   if (abort_pressed) a = -1;
 
