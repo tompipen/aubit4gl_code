@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2003-09-22 07:03:50 afalout Exp $
+# $Id: Makefile,v 1.13 2003-09-22 08:37:06 afalout Exp $
 #
 
 ROOT    	=../..
@@ -45,8 +45,6 @@ FCOMPILE=${ROOT}/bin/fcompile
 	#LINKLIBS=-lwsock32
 	#LINKLIBS=-lws2_32 -lwsock32 -lmswsock
 #endif
-
-LINKLIBS=-lwsock32
 
 ## ==================================================================
 ##                              Targets
