@@ -357,3 +357,132 @@ Troubleshooting
 
 
 
+
+For informix
+------------
+
+
+1) Get the client SDK
+2) Configure the SDK (normally the
+$INFORMIX/etc/sqlhosts etc)
+3) Check the SDK
+
+Try a simple esql/c program like :
+
+main() {
+   $whenever error stop;
+   $database somedb;
+}
+
+$ esql somefile.ec -o somefile
+$ ./somefile
+
+Compile and run - it if doesn't this is an Informix
+setup problem - check out why...
+
+Most likely  :
+  .rhosts/hosts.equiv not set up properly
+  user doesn't exist on the remote machine
+  /etc/services isn't setup
+  /etc/hosts isn't set up
+  Remote server isn't allowing tcp connections only   
+ 
+    shared memory ones
+
+
+
+4) Setup Aubit - 
+export AUBITDIR=/aubits/path
+export A4GL_SQLTYPE=esql
+** check that you have a $AUBITDIR/lib/libSQL_esql.so
+**
+export A4GL_LEXTYPE=EC
+
+5) Try to compile a simple 4gl
+
+
+database somedb
+main
+display "Hello World"
+end main
+
+4glpc simple.4gl -o simple.4ae
+
+
+5) Try to run that simple.4ae
+
+
+
+For postgres
+------------
+
+1) Install postgres :-)
+
+If possible - use Postgres with the informix compatibility patches :
+(See http://gborg.postgresql.org/project/pginformix/projdisplay.php)
+Make sure you have the ecpg module.
+
+
+2) Configure postgres and create database if required 
+3) Check you're ecpg setup
+
+
+
+
+main() {
+        exec sql database somedb;
+        printf("Status=%d\n",sqlca.sqlcode);
+}
+
+$ ecpg  myprog.ec
+$ gcc myprog.c -o myprog -I/usr/local/pgsql/include -L/usr/local/pgsql/lib -lecpg
+(You'll need to adjust /usr/local/pgsql/include etc to you're environment)
+
+
+If Status=0 then you're fine - if not - its an ecpg/postgres problem...
+
+4) Setup Aubit
+export AUBITDIR=/aubits/path
+export A4GL_SQLTYPE=pg
+** check that you have a $AUBITDIR/lib/libSQL_pg.so
+** if not - go to $AUBITDIR/lib/libsql/postgresql and do a make
+** if that doesn't make it - find out why...
+
+export A4GL_LEXTYPE=EC
+export A4GL_LEXDIALECT=POSTGRES
+
+
+You may also want to consider :
+
+# All updates will be transformed to Ansi syntax
+export A4GL_FIXUPDATE=Y
+
+# The keyword 'AS' is included when using an alias on a select column
+export A4GL_USE_ALIAS_AS=Y
+
+# Any CREATE TEMP TABLE .. WITH NO LOG will have the 'WITH NO LOG' silently 
+removed
+export A4GL_OMIT_NO_LOG=Y
+
+
+# No indicator variables
+export A4GL_USE_INDICATOR=N
+
+# When needed use the ecpg UNLOAD statement rather
+# than the aubit code
+export A4GL_ESQL_UNLOAD=Y
+
+
+
+
+5) Try to run that simple.4ae
+
+database somedb
+main
+display "Hello World"
+end main
+
+4glpc simple.4gl -o simple.4ae
+
+
+
