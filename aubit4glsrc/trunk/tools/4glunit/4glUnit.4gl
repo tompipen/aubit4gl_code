@@ -3,7 +3,7 @@
  *
  * x4gl API framework to build unit tests.
  *
- * The functions are based in the JUnit implementation without object 
+ * The functions are based in the JUnit implementation without object
  * orientation.
  *
  * The bigest problem in 4gl is that there are no features to execute
@@ -19,6 +19,10 @@
  * @Author: Sérgio Ferreira
  *
  }
+
+# =====================================================================
+#                   Module - level variables definitions
+# =====================================================================
 
 {**
  * Array of test suites
@@ -80,6 +84,10 @@ define options record
 	showResultIn char(1)    ## How to show a test result (Text or Form)
 end record
 
+# =====================================================================
+#                           Functions definitions
+# =====================================================================
+
                                { TEST CONTROL }
 
 {** 
@@ -88,18 +96,18 @@ end record
  * This function should be allways called by the specific tests.
  *}
 function fglUnitConstruct()
-  let idxSuite = 0 
-  let idxTest = 0 
+	let idxSuite 		= 0
+	let idxTest 		= 0
 	let currentTestCase = 0
-	let currentSuite = 0
-	let currentTest = 0
-	let maxSuites = 50
-	let maxTests = 1000
-	let maxTestCases = 50
+	let currentSuite 	= 0
+	let currentTest 	= 0
+	let maxSuites 		= 50
+	let maxTests 		= 1000
+	let maxTestCases 	= 50
 
-	let options.printResult = true
-	let options.resultLocation = "V"
-	let options.showResultIn = "T"
+	let options.printResult 	= true
+	let options.resultLocation 	= "V"
+	let options.showResultIn 	= "T"
 end function
 
 {**
@@ -108,25 +116,25 @@ end function
 function fglUnitInit()
 	let startTests = current
 	if options.resultLocation = "D" then 
-    call fglUnitCreateTempTable()
+		call fglUnitCreateTempTable()
 	end if
 	if options.showResultIn = "T" then
-	  start report testResultReport
-  end if
+		start report testResultReport
+	end if
 end function
 
-{** 
+{**
  * Unit test destruction function.
  *}
 function fglUnitDestroy()
-  let idxSuite = 0 
-  let idxTest = 0 
+	let idxSuite = 0
+	let idxTest = 0
 	let currentTestCase = 0
 	let currentSuite = 0
 	let currentTest = 0
-	if options.resultLocation = "D" then 
-    call fglUnitDropTempTable()
-  end if
+	if options.resultLocation = "D" then
+		call fglUnitDropTempTable()
+	end if
 end function
 
 {**
@@ -139,10 +147,10 @@ end function
 function fglUnitSetResultLocation(_resultLocation)
   define _resultLocation char(1)
 
-  if _resultLocation != "T" or _resultLocation != "V" then
-	  display "Assignment of invalid result location (T-Tables,V-Variables) : ",
+	if _resultLocation != "T" or _resultLocation != "V" then
+		display "Assignment of invalid result location (T-Tables,V-Variables) : ",
 		  _resultLocation
-	  exit program
+		exit program
 	end if
 	let options.resultLocation = _resultLocation
 end function
@@ -157,17 +165,17 @@ end function
 function fglUnitSetShowResultIn(_showResultIn)
   define _showResultIn char(1)
 
-  if _showResultIn != "T" or _showResultIn != "F" then
-	  display "Assignment of invalid type of result display (T-Text,F-Form) : ",
+	if _showResultIn != "T" or _showResultIn != "F" then
+		display "Assignment of invalid type of result display (T-Text,F-Form) : ",
 		  _showResultIn
-	  exit program
+		exit program
 	end if
 	let options.showResultIn = _showResultIn
 end function
 
 {**
  * Insert a new test in the result structure.
- * 
+ *
  * @param testName Name of the test to be executed.
  *}
 function fglUnitSetCurrentTest(testName)
@@ -175,7 +183,7 @@ function fglUnitSetCurrentTest(testName)
 
 	if idxTest >= 100 then
 		error "Can't execute more then 100 tests"
-	  return
+		return
 	end if
 	let idxTest = idxTest + 1
 	let paTests[idxTest].testName = testName
@@ -183,13 +191,13 @@ end function
 
 {**
  * Start a new tset suite.
- * 
+ *
  * @param suiteName The name of the suite
  *}
 function fglUnitStartSuite(suiteName)
   define suiteName char(50)
 
-  if options.resultLocation = "T" then
+	if options.resultLocation = "T" then
 	  call fglUnitInsertSuite(suiteName)
 	else
 	  call fglUnitAddSuite(suiteName)
@@ -199,13 +207,13 @@ end function
 {**
  * Start a new test case.
  * Called explicitly in the begining of each test.
- * 
+ *
  * @param testCaseName A text description of the test case
  *}
 function fglUnitStartTestCase(testCaseName)
   define testCaseName char(50)
 
-  if options.resultLocation = "T" then
+	if options.resultLocation = "T" then
 	  call fglUnitInsertTestCase(testCaseName)
 	else
 	  call fglUnitAddTestCase(testCaseName)
@@ -220,7 +228,7 @@ end function
 function fglUnitStartTest(testName)
   define testName char(50)
 
-  if options.resultLocation = "T" then
+	if options.resultLocation = "T" then
 	  call fglUnitInsertTest(testName)
 	else
 	  call fglUnitAddTest(testName)
@@ -257,7 +265,7 @@ end function
  * Drop the temporary tables created to store the test results
  *}
 function fglUnitDropTempTable()
-  drop table fglUnitSuite
+	drop table fglUnitSuite
 	drop table fglUnitTestCase
 	drop table fglUnitTest
 end function
@@ -309,7 +317,8 @@ function fglUnitComputeFailuresInVariables()
 	end for
 end function
 
-                                 { ASSERTIONS }
+{ ---------------------------- ASSERTIONS -------------------------------}
+
 {**
  * Store the assertion of the current test.
  *
@@ -400,14 +409,16 @@ end function
  * @return The result asserted
  *}
 function fglUnitAssertNull(strValue,message)
-  define strValue char(256)
-	define message char(60)
+define strValue char(256)
+define message char(60)
+define dummy smallint
+
 
 	if strValue is null then
-	  call fglUnitAssert(true,message)
+	  call fglUnitAssert(true,message) returning dummy
 		return true
 	else
-	  call fglUnitAssert(false,message)
+	  call fglUnitAssert(false,message) returning dummy
 		return false
   end if
 end function
@@ -420,31 +431,33 @@ end function
  * @return The result asserted
  *}
 function fglUnitAssertCountTable(rowCount,tableName,message)
-	define rowCount integer
-	define tableName char(19)
-	define message char(80)
-  define strSql char(128)
-	define tblCount integer
+define rowCount integer
+define tableName char(19)
+define message char(80)
+define strSql char(128)
+define tblCount integer
+define dummy smallint
 
 	let strSql = "select count(*) from ", tableName clipped
 	prepare statCount from strSql
 	declare crCount cursor for statCount
-	open crCount 
+	open crCount
 	fetch crCount into tblCount
-	call fglUnitAssert(tblCount = rowCount,message)
+	call fglUnitAssert(tblCount = rowCount,message) returning dummy
 	close crCount
 	return tblCount = rowCount
 end function
 
 {**
  * Fail the current test
- * 
+ *
  * @param message The text message to be displayed
  *}
 function fglUnitFail(message)
-  define message char(80)
+define message char(80)
+define dummy smallint
 
-	call fglUnitAssert(false,message)
+	call fglUnitAssert(false,message) returning dummy
 end function
 
 {**
@@ -556,7 +569,7 @@ function fglUnitUpdateTestResult(result,comment)
 	end if
 end function
 
-                       { TEST RESULT DISPLAY FUNCTIONS }
+      { ---------------- TEST RESULT DISPLAY FUNCTIONS ------------------ }
 
 {**
  * Show the result of the assertion made.
@@ -755,3 +768,5 @@ function fglUnitSetPrintResult(_printResult)
 	let options.printResult = _printResult
 end function
 
+
+# =============================== EOF =====================================
