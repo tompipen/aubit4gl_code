@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.47 2003-05-30 17:07:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.48 2003-05-31 09:46:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4334,7 +4334,7 @@ A4GL_get_into_part (int no)
       if (no == 0)
 	return "";
 
-      sprintf (buffer, "INTO\n");
+      sprintf (buffer, "INTO \n");
       for (a = 0; a < no; a++)
 	{
 	  sprintf (buff, "\t:_vo_%d\n", a);

@@ -89,6 +89,7 @@ print_foreach_next (char *cursorname, char *into)
   print_conversions ('i');
   printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",
 	  A4GL_strip_quotes (cursorname), A4GL_get_into_part (no), ni, no);
+  printc("internal_recopy_%s_o_Dir();",A4GL_strip_quotes(cursorname));
   print_copy_status ();
   print_conversions ('o');
 
@@ -572,6 +573,7 @@ print_fetch_3 (char *ftp, char *into)
       print_copy_status ();
       print_conversions ('o');
     }
+  printc("internal_recopy_%s_o_Dir();",A4GL_strip_quotes(cname));
   printc ("}");
   printc ("}");
 }
@@ -761,13 +763,14 @@ int intprflg=0;
 
 intprflg=0;
 if (last_ni) intprflg++;
-if (last_no) intprflg+=3;
+if (last_no) intprflg+=2;
 printc("/* intprflg=%d last_ni=%d last_no=%d */\n",intprflg, last_ni,last_no);
 switch (intprflg) {
 	case 3: printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o);",A4GL_strip_quotes(a3)); break;
 	case 2: printc("internal_set_%s(0,obind,0,native_binding_o);",A4GL_strip_quotes(a3)); break;
 	case 1: printc("internal_set_%s(ibind,0,native_binding_i,0);",A4GL_strip_quotes(a3)); break;
 	case 0: printc("internal_set_%s(0,0,0,0);",A4GL_strip_quotes(a3)); break;
+	default: printc("#error No internal_set written\n");break;
 	
 }
 
