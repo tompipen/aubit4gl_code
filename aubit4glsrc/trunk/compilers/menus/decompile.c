@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.8 2002-06-06 12:31:26 afalout Exp $
+# $Id: decompile.c,v 1.9 2002-06-29 13:12:01 afalout Exp $
 #*/
 
 /**
@@ -43,14 +43,23 @@
 */
 
 
-#include <stdio.h>
+#ifdef OLD_INCL
 
-#ifdef __CYGWIN__
-	#include <rpc/rpc.h>
+	#include <stdio.h>
+
+	#ifdef __CYGWIN__
+		#include <rpc/rpc.h>
+	#endif
+
+	#include "a4gl_menuxw.h"
+	#include "a4gl_aubit_lib.h"
+
+
+#else
+
+    #include "a4gl_mcompile_int.h"
+
 #endif
-
-#include "a4gl_menuxw.h"
-#include "a4gl_aubit_lib.h"
 
 
 /*

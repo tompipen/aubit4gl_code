@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.5 2002-06-02 06:52:38 afalout Exp $
+# $Id: xmlrpc_client.c,v 1.6 2002-06-29 13:12:03 afalout Exp $
 #*/
 
 
@@ -37,16 +37,34 @@
  * @todo Doxygen comments to add to functions
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 
-#include <xmlrpc.h>
-#include <xmlrpc_client.h>
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
-#include "a4gl_stack.h"
-#include "a4gl_runtime_tui.h"		/* push_dtime */
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
+
+
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <stdlib.h>
+
+	#include <xmlrpc.h>
+	#include <xmlrpc_client.h>
+
+	#include "a4gl_stack.h"
+	#include "a4gl_runtime_tui.h"		/* push_dtime */
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_lib_rpc_rpcxml_int.h"
+
+#endif
+
 
 /*
 =====================================================================

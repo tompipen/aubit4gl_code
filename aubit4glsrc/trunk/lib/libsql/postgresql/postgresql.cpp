@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.1 2002-05-07 22:52:24 saferreira Exp $
+# $Id: postgresql.cpp,v 1.2 2002-06-29 13:12:03 afalout Exp $
 #
 */
 
@@ -41,52 +41,84 @@
  *
  */
 
-#ifndef lint
-static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.1 2002-05-07 22:52:24 saferreira Exp $";
-#endif
+/** Informix ESQL/C database connector type */
+/* #define ESQL_CONNECTOR   0 */
 
 #define DEFINE_SQLCA
 
-#include <stdio.h>
-#include "4gldef.h"
-#include "database.h"
-
-#ifndef WIN32
-  #include <string.h>
-  #include "pointers.h"
-  #include "dtypes.h"
-  #include <stdlib.h>
-#else
-  #include <windows.h>
-  int status;
-  #include "libincl/pointers.h"
-  #include "libincl/dtypes.h"
-#endif
-
-#include "constats.h" 
-
-EXEC SQL include sqlca;
-
-#ifndef WIN32
-	#include <stdarg.h>
-#else
-  #define _NO_FORM_H_
-  #define _NO_CURSES_H_
+#ifdef WIN32
+	#define _NO_FORM_H_
+	#define _NO_CURSES_H_
 	#define _NO_PANEL_H_
 	#define _NO_CURSLIB_H_
 	#define FORMXW //form_x.h
-  #define _NO_DBFORM_H_
+	#define _NO_DBFORM_H_
 #endif
 
-/* stack.h will eventually include stdlib.h, which uses getenv(), so
- * we need to set GETENV_OK and only then include debug.h
- */
-#include "libincl/stack.h"
-#define GETENV_OK
-#include "debug.h"
-/* ------ To check if necessary until here */
 
-#include <libpq-fe.h>
+
+ /*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include "4gldef.h"
+	#include "database.h"
+
+	#ifndef WIN32
+	  #include <string.h>
+	  #include "pointers.h"
+	  #include "dtypes.h"
+	  #include <stdlib.h>
+	#else
+	  #include <windows.h>
+	  #include "libincl/pointers.h"
+	  #include "libincl/dtypes.h"
+	#endif
+
+	#include "constats.h"
+
+	/* EXEC SQL include sqlca; */
+
+	#ifndef WIN32
+		#include <stdarg.h>
+	#endif
+
+	/* stack.h will eventually include stdlib.h, which uses getenv(), so
+	 * we need to set GETENV_OK and only then include debug.h
+	 */
+	#include "libincl/stack.h"
+	#define GETENV_OK
+	#include "debug.h"
+	/* ------ To check if necessary until here */
+
+	#include <libpq-fe.h>
+
+#else
+
+    #include "a4gl_lib_sql_pg_int.h"
+
+#endif
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+#ifdef WIN32
+	  int status;
+#endif
+
+#ifndef lint
+	static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.2 2002-06-29 13:12:03 afalout Exp $";
+#endif
+
 
 typedef unsigned char UCHAR;
 char lasterrorstr[1024] = "";
@@ -113,9 +145,6 @@ typedef struct {
   void *connectionInfo; /**< A pointer to a connector specific information */
 }DbConnection;
 
-/** Informix ESQL/C database connector type */
-#define ESQL_CONNECTOR   0
-
 /** The current connection name */
 char *currentConnection;
 
@@ -139,6 +168,14 @@ static int getColumnsMax = 0;
 //   - Aubit4gl database connection manager
 
 static AubitConnectionManager *manager;
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 extern "C" void setConnectionManager(AubitConnectionManager _connManager)
 {

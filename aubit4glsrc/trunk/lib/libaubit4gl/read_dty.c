@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
+# $Id: read_dty.c,v 1.9 2002-06-29 13:12:02 afalout Exp $
 #
 */
 
@@ -64,7 +64,10 @@
 =====================================================================
 */
 
-int get_dtype(char *tabname, char *colname,char *dbname,char *tablist[]);
+
+#ifdef OLD_INCL
+	int get_dtype(char *tabname, char *colname,char *dbname,char *tablist[]);
+#endif
 
 
 /*

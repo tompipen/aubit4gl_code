@@ -24,36 +24,35 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-04-15 05:04:30 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-06-29 13:12:02 afalout Exp $
 #
 
+ROOT    =../../..
+LIBROOT =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
 ##                              Source files
 ## ==================================================================
 
-CMODS_NORPC		=rpc_norpc.c
 CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
 				rpc_stack_xdr.c
-#CMODS_XDR		= ../../../compilers/fcompile/form_x_xdr.c
+#CMODS_XDR		= ${ROOT}/compilers/fcompile/form_x_xdr.c
 
 OBJS_RPC			=${CMODS_RPC:.c=.o}
-OBJS_NORPC			=${CMODS_NORPC:.c=.o}
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
 ifdef COMSPEC
-	ALL				+=dlllibRPC_NORPC
 	ifneq "@HAVE_RPCLIB@" "0"
 		ALL			+=dlllibRPC_XDR
     endif
 else
-    ALL				+=libRPC_NORPC${SO_EXT}
 	ifneq "@HAVE_RPCLIB@" "0"
 		ALL			+=libRPC_XDR${SO_EXT}
     endif
@@ -63,7 +62,7 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/fcompile -I../../libincl -I../../../incl ${CFLAGS}
+CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
 
 ## ==================================================================
 ##                              Targets
@@ -74,41 +73,30 @@ all: ${ALL}
 
 libRPC_XDR.so: ${OBJS_RPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ../..
+	${CP} $@ ${LIBROOT}
 
-#libRPC_XDR.so: ${OBJS_XDR}
-#	${LD} ${SO_LDFLAGS} -o $@ $^
-#	${CP} $@ ../..
-
-libRPC_NORPC.so: ${OBJS_NORPC}
-	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ../..
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
 dlllibRPC_XDR: ${CMODS_RPC}
-	${MAKE} libRPC_XDR.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} ${AUBIT_LIB}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L../.. -I../../libincl -I../../../compilers/fcompile -I../../../incl"
-	${CP} libRPC_XDR.dll libRPC_XDR.dll.a ../..
-
-dlllibRPC_NORPC: ${CMODS_NORPC}
-	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L../.. -I../../libincl -I../../../compilers/fcompile"
-	${CP} libRPC_NORPC.dll libRPC_NORPC.dll.a ../..
+	${MAKE} libRPC_XDR.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} ${AUBIT_LIB}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L${LIBROOT} -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
+	${CP} libRPC_XDR.dll libRPC_XDR.dll.a ${LIBROOT}
 
 ## ==================================================================
 ##                        Sub Targets
 ## ==================================================================
 
 form_x.h:
-	${MAKE} -C ../../../compilers/fcompile rpc
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
 
 ${OBJS_RPC} ${OBJS_NORPC}: form_x.h
-${CMODS_RPC} ${CMODS_NORPC}: form_x.h
+${CMODS_RPC} : form_x.h
 
 ## ==================================================================
 ##                        Clean Targets

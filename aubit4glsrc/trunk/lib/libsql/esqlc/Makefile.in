@@ -24,11 +24,15 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2002-06-25 03:22:31 afalout Exp $
+# $Id: Makefile.in,v 1.13 2002-06-29 13:12:03 afalout Exp $
 #
 
+ROOT		=../../..
+LIBROOT		=../..
+
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
@@ -40,9 +44,10 @@ SRC_C				=${SRC:.ec=.c}
 OBJS				=${SRC_C:.c=.o}
 
 #CFLAGS are used only by C compiler on UNIX, not by ESQL/C or MSVC compilers:
-CFLAGS				+=-I../.. -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl
+CFLAGS				+=-I${LIBROOT} -I${ROOT}/compilers/fcompile -I${INFORMIXDIR} \
+						-I${INFORMIXDIR}/incl/esql -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl
 
-ESQL_INCLPATH		=-I../.. -I../../../compilers/fcompile -I../../libincl -I$(AUBITDIR)/incl ${C_IFLAGS}
+ESQL_INCLPATH		=-I${LIBROOT} -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I$(AUBITDIR)/incl ${C_IFLAGS}
 
 ifdef COMSPEC
     #since we are using ESQL/C compiler, and then MSVC, this define is not automatic:
@@ -50,7 +55,7 @@ ifdef COMSPEC
     #strange things happen to paths when invoking native Windows programs from CygWin make,
     #so we need to use explicit backslash, even though slash is understood by most
     #Windows programs:
-	ESQL_INCLPATH	+=-I..\.. -I..\..\..\compilers\fcompile -I..\..\libincl
+	ESQL_INCLPATH	+=-I${LIBROOT} -I${ROOT}\compilers\fcompile -I${LIBROOT}\libincl
 	#we must NOT use CygWin headers, on Windows we must compile with MSVC,
     #since it's the only supported compiler by esql/c on Windows
 	#-Ic:/cygwin/usr/include
@@ -59,7 +64,7 @@ ifdef COMSPEC
 	CFLAGS			+=-Ic:/INFORMIX
 
 else
-#    ESQL_INCLPATH	=-I../.. -I../../../compilers/fcompile -I../../libincl
+#    ESQL_INCLPATH	=-I${LIBROOT} -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl
 	ALL				=libSQL_esql${SO_EXT}
 endif
 
@@ -71,21 +76,26 @@ ALL: ${ALL}
 
 libSQL_esql.so: ${OBJS}
 	${LD} -L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
--L$(INFORMIXDIR)/lib/cli $(SO_LDFLAGS) $^ @IFX_LIBS@ -o $@
-	cp $@ ../..
+		-L$(INFORMIXDIR)/lib/cli $(SO_LDFLAGS) $^ @IFX_LIBS@ -o $@
+	${CP} $@ ${LIBROOT}
 
 ${OBJS}: $(SRC)
-	esql -c ${SRC} ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH}
+	esql -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
+
+## ==================================================================
+##                              Windows Targets
+## ==================================================================
 
 dllSQL_esql: ${SRC} ${DEF}
 #  -e, -p          Preprocess only (no compilation or linking).
 #-dcmdl          Displays command lines of all programs invoked.
 #-c              Preprocess and compile only (no linking).
-	esql -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX ../../libaubit4gl.dll.a
-	cp libSQL_esql.dll ../..
+	esql -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} \
+		-I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX ${LIBROOT}/libaubit4gl.dll.a
+	${CP} libSQL_esql.dll ${LIBROOT}
 
-../../libaubit4gl.def:
-	make -C ../.. dllaubit4gl
+${LIBROOT}/libaubit4gl.def:
+	make -C ${LIBROOT} dllaubit4gl
 
 ## ==================================================================
 ##                              Clean

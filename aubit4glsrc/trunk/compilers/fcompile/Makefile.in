@@ -24,11 +24,13 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.34 2002-06-25 03:22:28 afalout Exp $
+# $Id: Makefile.in,v 1.35 2002-06-29 13:12:01 afalout Exp $
 #
 
+ROOT        =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 
 override NOINCL=0
 
@@ -36,11 +38,11 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-4GLPC			=../../bin/4glpc
-C_LOCAL_IFLAGS  =-I../../lib/libincl -I.
+4GLPC			=${ROOT}/bin/4glpc
+C_LOCAL_IFLAGS  =-I${ROOT}/lib/libincl -I.
 CFLAGS 			+=${C_LOCAL_IFLAGS} @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
-EXE_CFLAGS      +=-I../../lib/libincl -I. ${C_IFLAGS}
+EXE_CFLAGS      +=-I${ROOT}/lib/libincl -I. ${C_IFLAGS}
 
 ALL	 			=fcompile fdecompile fshow
 
@@ -50,7 +52,7 @@ ifeq "$(OUTPUTLANG)" "java"
 endif
 
 ifeq "${USE_RPCGEN}" "0"
-	RPCGEN      =cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
+	RPCGEN      =${CP} ${ROOT}/tools/cygwin/form_x_xdr.c ${ROOT}/tools/cygwin/form_x.h .
 else
 	RPCGEN 		=@RPCGEN@ form_x.x
 endif
@@ -83,8 +85,8 @@ CMODS           =$(SOURCES.c) $(TARGETS.c)
 OBJECTS 		=$(CMODS:%.c=%.o)
 
 ifeq "@YACC@" "no"
-	LEX_YY_C	=../../tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
-	Y_TAB_C_DEP	=../../tools/no_yacc/cygwin/compilers/fcompile/y.tab.c
+	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
+	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/y.tab.c
 
 else
 	LEX_YY_C	=lex.yy.c
@@ -99,20 +101,21 @@ all: $(ALL)
 	@echo "Default targets (${ALL}) successfully compiled."
 
 fcompile: $(OBJECTS)
-	${CC} ${EXE_CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
-	${LN} ./$@${EXE} ../../bin/$@${EXE}
+	${CC} ${EXE_CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+	${LN} ./$@${EXE} ${ROOT}/bin/$@${EXE}
 
 fdecompile-j : ${DECOMPILE} ${DUMP_JAVA}
-	${CC} ${EXE_CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB}
-	${LN} ./$@ ../../bin
+	${CC} ${EXE_CFLAGS} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
+	${LN} ./$@ ${ROOT}/bin
 
 fdecompile : ${DECOMPILE} ${DUMP_C}
-	${CC} ${EXE_CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB}
-	${LN} ./$@ ../../bin
+	${CC} ${EXE_CFLAGS} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
+	${LN} ./$@ ${ROOT}/bin
 
 fshow : fshow.4gl
-	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
-	${FAIL_OK}${LN} ./$@ ../../bin
+#FIXME: remove -I${ROOT}/tools
+	${FAIL_OK}${SH} ${4GLPC} $^ -o $@ -I${ROOT}/tools
+	${FAIL_OK}${LN} ./$@ ${ROOT}/bin
 
 ## ==================================================================
 ##                          Sub targets
@@ -167,7 +170,7 @@ clean:
 splint: lclint
 lclint: $(CMODS)
 	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
-	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
 #-----------------------------------------------------------------------

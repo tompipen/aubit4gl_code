@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
+# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -22,113 +22,95 @@
 # | If you did not, or have any questions about Aubit licensing, please  |
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
+
 #
-# $Id: Makefile.in,v 1.18 2002-06-29 13:12:03 afalout Exp $
+# $Id: Makefile.in,v 1.1 2002-06-29 13:12:02 afalout Exp $
 #
 
-#note: I plan to use amake for this; this is just for now
+
+ROOT    =../../..
+LIBROOT =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
-#override MAKINGAUBIT=0
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+CMODS_NORPC		=rpc_norpc.c
+OBJS_NORPC		=${CMODS_NORPC:.c=.o}
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-ifneq "${AUBIT_BIN_INSTALL}" "1"
-	FCOMPILE	=../../bin/fcompile
-	MKMESS      =../../bin/mkmess
-	FGLPCEXEC	=${SH} ../../bin/4glpc
-else
-	FCOMPILE	=aubit fcompile
-	MKMESS      =aubit mkmess
-	FGLPCEXEC	=aubit 4glpc
-endif
-
-
-#4GLPCFLAGS		=-verbose -settings
-
 ifdef COMSPEC
-	ifdef MONOLIT
-		4GLPCFLAGS += -mno-cygwin
-	endif
+	ALL				+=dlllibRPC_NORPC
+else
+    ALL				+=libRPC_NORPC${SO_EXT}
 endif
 
-
-ifeq "$(ODBC)" "no"
-	ifeq "$(ODBC_LINK)" "static"
-		4GLPCFLAGS+= -noodbc
-		4GLPCTESTFLAGS+= -noodbc
-    endif
-endif
-
-#remove this:
-4GLPCTESTFLAGS +=-I..
-
+#This must NOT be += because it would place affitional parameters AFTER
+#existing parameters already in CFLAGS: we must not do this, because if
+#specific path is needed to RPClib, it MUST be BEFORE other potenitially
+#conflicting paths:
+CFLAGS				:=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-
-#ALL=other 4gl regression.4gl regression.per
-ALL=other 4gl
-
-
 all: ${ALL}
-	@echo default targets successfully compiled
+	@echo "Default targets (${ALL}) built successfully."
 
-4gl:
-	@echo AUBITDIR in Makefile=${AUBITDIR}
-	${FGLPCEXEC} ${4GLPCFLAGS} hello.4gl -o hello
-	${FGLPCEXEC} ${4GLPCFLAGS} hello2.4gl -o hello2
-	${FGLPCEXEC} ${4GLPCFLAGS} hello_db.4gl -o hello_db
-	@echo 4gl targets successfully compiled
-
-#this will fail unless you compiled Aubit compiler to enable PDF functionality:
-pdf:
-	${FGLPCEXEC} ${4GLPCFLAGS} -lpdf pdf_report.4gl -o pdf_report
-	@echo PDF targets successfully compiled
-
-
-#This is used from root makefile, to test id compiler is working after building it:
-test.build:
-	${RM} test_build.c test_build.h test_build.o test_build test_build.exe
-	${FGLPCEXEC} -settings -verbose ${4GLPCTESTFLAGS} -nogtk test_build.4gl -o test_build
-
-test.perl:
-	cd tools/test; 4glc_perl test_build.4gl
-	cd tools/test; perl test_build.pl
-
-filetest: file.4gl
-	${FGLPCEXEC} ${4GLPCFLAGS} file.4gl -o filetest
-
-other:
-	${FCOMPILE} form.per
-	${MKMESS} helpfile
-#FIXME: we don't have any menu examples?
-	@echo Other targets successfully compiled
+libRPC_NORPC.so: ${OBJS_NORPC}
+	${LD} ${SO_LDFLAGS} -o $@ $^
+	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
-##                          Help
+##                       Windows 32 DLL Targets
 ## ==================================================================
 
-help:
-	@echo "use 'make NOGTK=1' to compile without GTK GUI"
-	@echo "use 'make' to compile with GTK GUI"
+dlllibRPC_NORPC: ${CMODS_NORPC}
+	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} " DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L${LIBROOT} -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile"
+	${CP} libRPC_NORPC.dll libRPC_NORPC.dll.a ${LIBROOT}
 
 ## ==================================================================
-##                           Clean targets
+##                        Sub Targets
 ## ==================================================================
 
+#form_x.h:
+#	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
-clean:
-	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae
-	${RM} hello hello2 hello_db test_build filetest *.hlp *.exe
-	$(RM) *.stackdump *.exe *.err *.c
-	${RM} torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl
-	${RM} *.42r gui/*.err pdf_report rr1.pdf gui/*.glb
-	${RM} *.ao *.log *.4ge *.pl *.pm test_build.c .\#*
+## ==================================================================
+##                        Dependencies
+## ==================================================================
+
+#${OBJS_RPC} ${OBJS_NORPC}: form_x.h
+#${CMODS_RPC} ${CMODS_NORPC}: form_x.h
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+#	${RM} $(OBJS) $(OBJS_DEBUG)
+	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core
+	${RM} *.base *.exp libRPC_NORPC.def libRPC_XDR.def
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+

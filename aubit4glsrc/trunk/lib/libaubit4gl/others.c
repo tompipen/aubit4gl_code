@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.14 2002-06-25 03:22:30 afalout Exp $
+# $Id: others.c,v 1.15 2002-06-29 13:12:02 afalout Exp $
 #
 */
 
@@ -85,9 +85,11 @@ int m_lastkey = 0;
 */
 
 
+#ifdef OLD_INCL
+	char * 		char_val 			(char *s);
+#endif
 
 char *		replace_sql_var 	(char *s);
-char * 		char_val 			(char *s);
 int 		fgl_keyval			(int _np);
 
 int 		aclfgl_fgl_lastkey	(int _np);

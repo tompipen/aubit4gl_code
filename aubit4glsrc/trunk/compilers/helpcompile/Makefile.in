@@ -24,20 +24,22 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-06-11 08:42:26 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-06-29 13:12:01 afalout Exp $
 #
 
+ROOT        =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
 ##                    Options
 ## ==================================================================
 
-C_LOCAL_IFLAGS  =-I../../lib/libincl
+C_LOCAL_IFLAGS  =-I${ROOT}/lib/libincl
 CFLAGS			+=${C_LOCAL_IFLAGS}
-EXE_CFLAGS		+=-L../../lib -I../../lib/libincl
+EXE_CFLAGS		+=-L${ROOT}/lib -I${ROOT}/lib/libincl ${C_IFLAGS}
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 CMODS           =mkmess.c
 
@@ -48,8 +50,8 @@ CMODS           =mkmess.c
 all: mkmess
 
 mkmess: ${CMODS}
-	${CC} ${EXE_CFLAGS} $^ -o $@ ${AUBIT_LIB}
-	${LN} $@${EXE} ../../bin/$@${EXE}
+	${CC} ${EXE_CFLAGS} $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
+	${LN} $@${EXE} ${ROOT}/bin/$@${EXE}
 
 ## ==================================================================
 ##                    Clean
@@ -61,7 +63,7 @@ clean:
 splint: lclint
 lclint: $(CMODS)
 	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
-	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
 # ========================== EOF ================================

@@ -1,12 +1,65 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: mkmess.c,v 1.5 2002-06-29 13:12:01 afalout Exp $
+#*/
+
 /**
  * @file
  * mkmess - message help file compiler, Informix 4gl style formated.
  *
- * Compile a message file (.msg) in ??? format, and generates a help compiled file (.hlp)
+ * Compile a message file (.msg) in ??? format, and generates a help 
+ * compiled file (.hlp)
+ *
  */
 
-#include <stdio.h>
-#include <string.h>
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#ifdef OLD_INCL
+	
+	#include <stdio.h>
+	#include <string.h>
+
+#else
+
+    #include "a4gl_fcompile_int.h"
+
+#endif
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+
 FILE *hlp;
 FILE *msg;
 FILE *tmp;
@@ -20,6 +73,12 @@ int num;
 char tmpbuf[80];
 char tmpnum[6];
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 /**
  * The main entry function to mkmess compiler
  *
@@ -29,7 +88,7 @@ char tmpnum[6];
 main(int argc,char *argv[])
 {
   
-	//load settings from config file(s):
+	/* load settings from config file(s): */
 	build_user_resources();
 
 
@@ -121,6 +180,7 @@ main(int argc,char *argv[])
  *
  * @todo If not used remove it
  */
+/*
 static void read_help_f(int no)
 {
   int pos;
@@ -148,4 +208,8 @@ static void read_help_f(int no)
   if (pos==no) break;
   }
 }
+
+*/
+
+/* ================================ EOF ========================== */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.15 2002-06-26 17:33:43 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.16 2002-06-29 13:12:02 afalout Exp $
 #
 */
 
@@ -36,6 +36,41 @@
  *
  *
  */
+
+/*
+=====================================================================
+
+
+
+
+
+
+
+
+                WHEN EDITING THIS FILE, PLEASE REMEMBER TO DO
+                THE SAME CHANGES TO EQUIVALENT FILE(s) IN OTHER
+                LANGUAGE OUTPUT TARGETS, LIKE:
+
+                    compile_c.c
+                    compile_c_gtk.c
+                    compile_perl.c
+                    ...etc...
+
+
+
+
+
+
+
+
+
+
+
+
+=====================================================================
+*/
+
+
 
 /*
 =====================================================================
@@ -122,6 +157,9 @@ char unwind[256][256];
 int unwindcnt = 0;
 int printing_record = 0;
 
+char lname[256];
+
+
 /*
 =====================================================================
                     Functions prototypes
@@ -144,14 +182,22 @@ static void pr_report_agg_clr (void);
 static void print_menu (int mn);
 
 
-static void real_lex_printc(char *fmt, va_list *ap);
+/* static void real_lex_printc(char *fmt, va_list *ap); */
+
+void printh (char *fmt, ...);
+static void printcomment (char *fmt,...);
+void dump_unwind(void);
+
+
+void internal_lex_printc(char *fmt, va_list *ap);
+void internal_lex_printcomment(char *fmt, va_list *ap);
+void internal_lex_printh(char *fmt, va_list *ap);
+
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args, int args_cnt);
 static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
-void printh (char *fmt, ...);
-void printcomment (char *fmt,...);
-void dump_unwind(void);
+
 
 /*
 =====================================================================
@@ -166,10 +212,12 @@ printc(char* fmt,... )
 va_list ap;
 	debug("via printc in lib");
 	va_start(ap,fmt);
-	real_lex_printc(fmt,&ap);
+	/* real_lex_printc(fmt,&ap); */
+	internal_lex_printc(fmt,&ap);
 }
 
 /* this oen gets called freom API */
+/*
 void
 internal_lex_printc(char* fmt,... )
 {
@@ -179,7 +227,7 @@ va_list ap;
 	real_lex_printc(fmt,&ap);
         debug("Done....");
 }
-
+*/
 
 
 /**
@@ -187,8 +235,12 @@ va_list ap;
  * @param
  * @return
  */
+/*
 static void
 real_lex_printc(char *fmt, va_list *ap)
+*/
+void
+internal_lex_printc (char *fmt, va_list *ap)
 /*
 void
 printc (char *fmt, ...)
@@ -289,36 +341,6 @@ printh (char *fmt, ...)
 
   va_start (args, fmt);
   vfprintf (hfile, fmt, args);
-}
-
-
-/**
- *
- * @param
- * @return
- */
-void
-printcomment (char *fmt,...)
-{
-#ifdef USE_PRINTCOMMENT
-  va_list args;
-  if (outfile == 0)
-    {
-      open_outfile ();
-    }
-
-  if (outfile == 0)
-    return;
-
-  if (acl_getenv ("COMMENTS"))
-    {
-      va_start (args, fmt);
-      vfprintf (outfile, fmt, args);
-    }
-
-#else
-	/* Do nothing... */
-#endif
 }
 
 /**
@@ -3896,6 +3918,123 @@ print_set_langfile (char *s)
 	/*  printc ("set_lang_file(%s);\n", s); */
     exitwith ("print_set_langfile not implemented");
 }
+
+
+/* =========== below: copied from print_c.c ===================== */
+
+
+/**
+ * Print comments to the C output file.
+ *
+ * If the output file is not opened call the open function.
+ *
+ * @param fmt the format to be passed to vsprintf
+ * @param ... The variadic parameters to be passed to vsprintf
+ */
+static void
+printcomment(char* fmt,... )
+{
+va_list ap;
+	va_start(ap,fmt);
+	internal_lex_printcomment(fmt,&ap);
+}
+void
+/* internal_printcomment (char *fmt,...) */
+internal_lex_printcomment(char *fmt, va_list *ap)
+{
+
+return;
+
+#ifdef USE_PRINTCOMMENT
+/*  va_list args; */
+  if (outfile == 0)
+    {
+      open_outfile ();
+    }
+
+  if (outfile == 0)
+    return;
+
+  if (acl_getenv ("COMMENTS"))
+    {
+      /*
+	  va_start (args, fmt);
+      vfprintf (outfile, fmt, args);
+      */
+      vfprintf (outfile, fmt, ap);
+    }
+#else
+	/**
+	 * Empty function for linking purposes when compiling without generation of
+	 * comments in the output C module
+	 */
+
+	/* Do nothing... */
+
+#endif
+}
+
+
+/**
+ * If defined (as compiler option) print the C code for the call to the
+ * initialization function to the calling stack.
+ */
+void printInitFunctionStack(void)
+{
+    return;
+
+  if (!isGenStackInfo())
+    return;
+  printc("A4GLSTK_initFunctionCallStack();");
+
+}
+
+
+/**
+ * If defined (as compiler option) print the C code for the call to the
+ * declaration function to the calling stack.
+ */
+void printDeclareFunctionStack(char *_functionName)
+{
+
+  return;
+
+  printf("Function %s\n",_functionName);
+  if (isGenStackInfo())
+    printc ("\nstatic char _functionName[] = \"%s\";\n",_functionName);
+}
+
+
+/**
+ * If defined (as compiler option) print the C code for the call to the
+ * push function to the calling stack.
+ */
+void printPushFunction(void)
+{
+  return;
+
+  if (!isGenStackInfo())
+    return;
+  printc("A4GLSTK_pushFunction(_functionName,_paramnames,nargs);\n");
+}
+
+/**
+ * Print the C C code to the call to the pop function of the calling stack.
+ *
+ * It only does it if defined as compiler option.
+ */
+void printPopFunction(void)
+{
+  return;
+
+  if (!isGenStackInfo())
+    return;
+  printc("A4GLSTK_popFunction();\n");
+}
+
+
+
+
 
 /* ================================ EOF ============================== */
 

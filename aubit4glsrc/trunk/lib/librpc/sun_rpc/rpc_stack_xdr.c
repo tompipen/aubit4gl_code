@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_stack_xdr.c,v 1.5 2002-06-06 12:31:28 afalout Exp $
+# $Id: rpc_stack_xdr.c,v 1.6 2002-06-29 13:12:03 afalout Exp $
 #*/
 
 /**
@@ -46,10 +46,18 @@
 =====================================================================
 */
 
-#include <rpc/types.h>
-#include <rpc/xdr.h>
+#ifdef OLD_INCL
 
-#include "a4gl_xdr_rpc_stack.h"
+	#include <rpc/types.h>
+	#include <rpc/xdr.h>
+
+	#include "a4gl_xdr_rpc_stack.h"
+
+#else
+
+    #include "a4gl_lib_rpc_xdr_int.h"
+
+#endif
 
 /*
 =====================================================================

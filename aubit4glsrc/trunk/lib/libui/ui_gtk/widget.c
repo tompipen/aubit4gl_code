@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: widget.c,v 1.2 2002-06-29 13:12:03 afalout Exp $
 #*/
 
 /**
@@ -116,32 +116,29 @@ char *desc_bool[] = {
 #ifndef OLD_INCL
 
 	struct s_widgets widgets[]={
-	/*        Widget Type     cr_ function     parameters (placeholder).. */
-		{""		, cr_textbox	,{"MAXCHARS",0} },
-		{"TEXT" 	, cr_textbox	,{"MAXCHARS",0} },
-		{"ENTRY"	, cr_textbox	,{"MAXCHARS",0} },
-		{"BUTTON"	, cr_button	,{"*LABEL","*IMAGE",0} },
-		{"CHECK"	, cr_check	,{0} },
-		{"LABEL"	, cr_label	,{"CAPTION",0} },
-		{"PIXMAP"	, cr_picture	,{"FILENAME",0} },
-		{"COMBO"	, cr_combo	,{0} },
-		{"RADIO"	, cr_radio	,{"NUM",0} },
-		{"LIST"		, cr_list	,{0} },
+	/*   Widget Type  cr_ function     parameters (placeholder).. */
+		{""			, cr_textbox	,{"MAXCHARS",0} 			},
+		{"TEXT" 	, cr_textbox	,{"MAXCHARS",0} 			},
+		{"ENTRY"	, cr_textbox	,{"MAXCHARS",0} 			},
+		{"BUTTON"	, cr_button		,{"*LABEL","*IMAGE",0} 		},
+		{"CHECK"	, cr_check		,{0} 						},
+		{"LABEL"	, cr_label		,{"CAPTION",0} 				},
+		{"PIXMAP"	, cr_picture	,{"FILENAME",0} 			},
+		{"COMBO"	, cr_combo		,{0} 						},
+		{"RADIO"	, cr_radio		,{"NUM",0} 					},
+		{"LIST"		, cr_list		,{0} 						},
 
-	/* NOTE : Calendar needs about 22 characters wide by 7 lines */
-		{"CALENDAR"	, cr_calendar	,{0} },
-
-	/*
-	NEWWIDGET
-	*/
-		{ "SCROLLBAR",cr_scrollbar ,{0}},
+		/* NOTE : Calendar needs about 22 characters wide by 7 lines */
+		{"CALENDAR"	, cr_calendar	,{0} 						},
+		/* 	NEWWIDGET 	*/
+		{ "SCROLLBAR",cr_scrollbar 	,{0}						},
 		/*
-		{ "IMAGE",gtk_image_new,{0} },
-		{ "LIST",gtk_list_new,{0} },
-		{ "MENU",gtk_menu_new,{0} },
-		{ "PROGRESS",gtk_progress_bar_new, {0} },
-		{ "ARROW",cr_arrow,{"TYPE","SHADOW",0} },
-		{ "CALENDAR",gtk_calendar_new,{"MONTH","YEAR",0} },
+		{ "IMAGE"	, gtk_image_new	,{0}						},
+		{ "LIST"	, gtk_list_new	,{0} 						},
+		{ "MENU"	, gtk_menu_new	,{0} 						},
+		{ "PROGRESS", gtk_progress_bar_new, {0} 				},
+		{ "ARROW"	, cr_arrow		,{"TYPE","SHADOW",0} 		},
+		{ "CALENDAR", gtk_calendar_new,{"MONTH","YEAR",0} 		},
         */
 	{ 0 }
 	};

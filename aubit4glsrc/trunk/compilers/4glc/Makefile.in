@@ -24,22 +24,26 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.35 2002-06-11 08:42:26 afalout Exp $
+# $Id: Makefile.in,v 1.36 2002-06-29 13:12:01 afalout Exp $
 #
 
+ROOT		=../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
 ##                   Source files
 ## ==================================================================
 
+GENRULES        =rules/generated
+
 ifeq "@YACC@" "no"
-	CFLAGS		+=-I../../tools/no_yacc/cygwin/compilers/4glc
-	Y_TAB_C		=../../tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
+	CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
+	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/${GENRULES}/y.tab.c
 else
-	Y_TAB_C		=rules/generated/y.tab.c
+	Y_TAB_C		=${GENRULES}/y.tab.c
 endif
 
 CMODS           = \
@@ -47,8 +51,8 @@ CMODS           = \
 				dim.c \
 				list.c lexer.c \
 				mod.c map.c \
-				rules/generated/states.c \
-				rules/generated/kw.c \
+				${GENRULES}/states.c \
+				${GENRULES}/kw.c \
                 ${Y_TAB_C}
 
 4GLCAOBJ		=${CMODS:.c=.o}
@@ -60,7 +64,7 @@ CMODS           = \
 
 ALL				=rules.t 4glc
 
-C_LOCAL_IFLAGS  =-I../../lib -I../../lib/libincl -I../../lib/liblex/lex_c -I. -I../fcompile -Irules
+C_LOCAL_IFLAGS  =-I${ROOT}/lib -I${ROOT}/lib/libincl -I${ROOT}/lib/liblex/lex_c -I. -I../fcompile -Irules -I${GENRULES}
 CFLAGS			+=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 
@@ -73,13 +77,13 @@ all: ${ALL}
 
 #4glc: ${4GLCAOBJ} ${LIB_C}
 4glc: ${4GLCAOBJ}
-#	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_C_L}
-	${CC} ${EXE_CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
-	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
+#	${CC} ${CFLAGS} -L${ROOT}/lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_C_L}
+	${CC} ${EXE_CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+	${CPEXE} $@${EXEEXT} ${ROOT}/bin/$@${EXEEXT}
 
 #4glp: ${4GLCAOBJ} ${LIB_PERL}
-#	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_PERL_L}
-#	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
+#	${CC} ${CFLAGS} -L${ROOT}/lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_PERL_L}
+#	${CPEXE} $@${EXEEXT} ${ROOT}/bin/$@${EXEEXT}
 
 
 ## ==================================================================
@@ -87,10 +91,10 @@ all: ${ALL}
 ## ==================================================================
 
 exportlib4glcomp: ${4GLCAOBJ} ${4GLCOBJ_C}
-#	${MAKE} libexportlib4glcomp.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L../../lib"
+#	${MAKE} libexportlib4glcomp.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L${ROOT}/lib"
 #	dlltool --export-all --output-def $@ $^
 #	dlltool --export-all --output-exp libexportlib4glcomp.dll.a $^
-	${CC} -shared -Wl,--output-def=exportlib4glcomp.def -Wl,--out-implib=exportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L../../lib
+	${CC} -shared -Wl,--output-def=exportlib4glcomp.def -Wl,--out-implib=exportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L${ROOT}/lib
 #	${CC} -shared  -Wl,--output-def=libA4GLLEX_C.def -Wl,--out-implib=libA4GLLEX_C.dll.a $^ -Wl,--export-all-symbols
 
 ## ==================================================================
@@ -100,8 +104,8 @@ exportlib4glcomp: ${4GLCAOBJ} ${4GLCOBJ_C}
 rules.t :
 	${MAKE} -C rules $(MKNAME)
 
-rules/generated/y.tab.o: ${Y_TAB_C}
-	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I../../lib/liblex/lex_c -I.
+${GENRULES}/y.tab.o: ${Y_TAB_C}
+	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I${ROOT}/lib/liblex/lex_c -I.
 
 ${Y_TAB_C}:
 #	make -C rules generated/y.tab.c $(MKNAME)
@@ -114,14 +118,14 @@ ${Y_TAB_C}:
 ##                            Dependencies
 ## ==================================================================
 
-rules/generated/kw.c: 				rules.t
-rules/generated/single_words.rule: 	rules.t
-rules/generated/y.tab.c: 			rules.t
-rules/generated/states.c: 			rules.t
-mod.o: 								mod.c ${Y_TAB_C}
-rules/generated/y.tab.o: 			../fcompile/form_x.h
-lexer.o: 							rules/generated/kw.h
-lexer.o: 							rules/generated/y.tab.h
+${GENRULES}/kw.c: 				rules.t
+${GENRULES}/single_words.rule: 	rules.t
+${GENRULES}/y.tab.c: 			rules.t
+${GENRULES}/states.c: 			rules.t
+mod.o: 							mod.c ${Y_TAB_C}
+${GENRULES}/y.tab.o: 			../fcompile/form_x.h
+lexer.o: 						${GENRULES}/kw.h
+lexer.o: 						${GENRULES}/y.tab.h
 
 
 
@@ -129,7 +133,7 @@ lexer.o: 							rules/generated/y.tab.h
 splint: lclint
 lclint: $(CMODS)
 	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
-	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
 ## ==================================================================
@@ -140,7 +144,7 @@ clean: clean.rules.generated
 	${RM} *.so *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glp *.log *.dll *.dll.a
 
 clean.rules.generated:
-	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output)
+	(cd ${GENRULES}; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output)
 
 
 #--------------------------------- EOF -----------------------------

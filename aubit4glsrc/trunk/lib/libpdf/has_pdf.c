@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.8 2002-06-06 12:31:28 afalout Exp $
+# $Id: has_pdf.c,v 1.9 2002-06-29 13:12:02 afalout Exp $
 #*/
 
 /**
@@ -43,16 +43,24 @@
 =====================================================================
 */
 
-#include <stdio.h>
+#ifdef OLD_INCL
 
-#include "pdflib.h"
+	#include <stdio.h>
 
-#include "a4gl_runtime_tui.h"		/* push_int */
-#include "a4gl_dbform.h"
-#include "a4gl_report.h"
-#include "a4gl_stack.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
+	#include "pdflib.h"
+
+	#include "a4gl_runtime_tui.h"		/* push_int */
+	#include "a4gl_dbform.h"
+	#include "a4gl_report.h"
+	#include "a4gl_stack.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_lib_exreport_pdf_int.h"
+
+#endif
 
 /*
 =====================================================================

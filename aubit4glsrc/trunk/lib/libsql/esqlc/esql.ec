@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.16 2002-05-30 06:25:20 afalout Exp $
+# $Id: esql.ec,v 1.17 2002-06-29 13:12:03 afalout Exp $
 #
 */
 
@@ -57,54 +57,115 @@
  * @todo : Assign status with set_status
  */
 
-#ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.16 2002-05-30 06:25:20 afalout Exp $";
-#endif
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
 #define DEFINE_SQLCA
 
-#include <stdio.h>
-#include "a4gl_incl_4gldef.h"
-#include "a4gl_database.h"
-
-#ifndef WIN32
-	#include <string.h>
-	#include "a4gl_pointers.h"
-	#include "a4gl_dtypes.h"
-	#include <stdlib.h>
-#else
-  #include <windows.h>
-  int status;
-	#include "a4gl_pointers.h"
-	#include "a4gl_dtypes.h"
-#endif
-
-#include "a4gl_constats.h"
+/** Informix ESQL/C database connector type */
+#define ESQL_CONNECTOR   0
 
 #define _SQLCA_DEFINED_
-#include "a4gl_incl_4glhdr.h"
+
+#ifdef WIN32
+	#define _NO_FORM_H_
+	#define _NO_CURSES_H_
+	#define _NO_PANEL_H_
+	#define _NO_CURSLIB_H_
+	#define FORMXW 					/* form_x.h */
+	#define _NO_DBFORM_H_
+#endif
+
+#define INPUT_OUTPUT_BIND 0
+#define INPUT_BIND        1
+#define OUTPUT_BIND       2
+#define NO_BIND           3
+
+
+#define SIMPLE                0
+#define SIMPLE_SCROLL         1
+#define FOR_UPDATE            2
+#define FOR_UPDATE_WITH_HOLD  3
+#define WITH_HOLD             4
+
+#define FETCH_FIRST     0
+#define FETCH_LAST      1
+#define FETCH_NEXT      2
+#define FETCH_PREVIOUS  3
+#define FETCH_CURRENT   4
+#define FETCH__RELATIVE 5
+#define FETCH__ABSOLUTE 6
+
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include "a4gl_incl_4gldef.h"
+	#include "a4gl_database.h"
+
+	#ifndef WIN32
+		#include <string.h>
+		#include "a4gl_pointers.h"
+		#include "a4gl_dtypes.h"
+		#include <stdlib.h>
+	#else
+		#include <windows.h>
+		#include "a4gl_pointers.h"
+		#include "a4gl_dtypes.h"
+	#endif
+
+	#include "a4gl_constats.h"
+	#include "a4gl_incl_4glhdr.h"
+
+	#ifndef WIN32
+		#include <stdarg.h>
+	#endif
+
+	/* stack.h will eventually include stdlib.h, which uses getenv(), so
+	 * we need to set GETENV_OK and only then include debug.h
+	 */
+	#include "a4gl_stack.h"
+	#define GETENV_OK
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_lib_sql_esqlc_int.h"
+
+#endif
+
 
 EXEC SQL include sqlca;
 
-#ifndef WIN32
-	#include <stdarg.h>
-#else
-  #define _NO_FORM_H_
-  #define _NO_CURSES_H_
-	#define _NO_PANEL_H_
-	#define _NO_CURSLIB_H_
-	#define FORMXW //form_x.h
-  #define _NO_DBFORM_H_
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+#ifndef lint
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.17 2002-06-29 13:12:03 afalout Exp $";
 #endif
 
-/* stack.h will eventually include stdlib.h, which uses getenv(), so
- * we need to set GETENV_OK and only then include debug.h
- */
-#include "a4gl_stack.h"
-#define GETENV_OK
-#include "a4gl_debug.h"
+#ifdef WIN32
+	int status;
+#endif
 
-typedef unsigned char UCHAR;
+#ifdef OLD_INCL
+	typedef unsigned char UCHAR;
+#endif
+
 char lasterrorstr[1024] = "";
 
 /** The global (not named) statement count, to generate unique names */
@@ -129,9 +190,6 @@ typedef struct {
   void *connectionInfo; /**< A pointer to a connector specific information */
 }DbConnection;
 
-/** Informix ESQL/C database connector type */
-#define ESQL_CONNECTOR   0
-
 /** The current connection name */
 char *currentConnection;
 
@@ -140,6 +198,12 @@ static int getColumnsOrder = 0;
 
 /** The number of columns when getting datatypes */
 static int getColumnsMax = 0;
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Handle the ocurrence of sql errors.
@@ -220,11 +284,14 @@ char *A4GLSQL_get_sqlerrm (void)
  *
  * Just initialize the error handling.
  */
-void A4GLSQL_initsqllib (void) 
+/* void */	/* int A4GLSQL_initsqllib(void); */			/* << from sql.c */
+int
+A4GLSQL_initsqllib (void)
 {
   EXEC SQL whenever sqlerror call esqlErrorHandler;
   EXEC SQL whenever sqlwarning call esqlWarningHandler;
   currentConnection = NULL;
+  return 1;
 }
 
 /**
@@ -242,7 +309,7 @@ static char *getGlobalStatementName(void)
   return statementName;
 }
 
-/*   Connection manager */
+/*  =================== Connection manager =================== */
 
 /**
  * Create a new DbConnection object.
@@ -420,8 +487,10 @@ int A4GLSQL_close_connection(void)
  *   - 1 : Connection estabilished.
  *   - 0 : there was an error connecting to database.
  */
-int A4GLSQL_make_connection (
-  const UCHAR *server,const UCHAR *uid_p,const UCHAR *pwd_p)
+/*	int A4GLSQL_make_connection(UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p); */
+int A4GLSQL_make_connection
+/*  const UCHAR *server,const UCHAR *uid_p,const UCHAR *pwd_p) */
+(UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
 {
   EXEC SQL begin declare section;
     char *dbName;
@@ -601,7 +670,9 @@ char *A4GLSQL_get_curr_conn(void)
  * @return The current database name.
  *    - NULL if no current connection.
  */
-char *A4GLSQL_get_currdbname(char *cursor)
+/* 	char *A4GLSQL_get_currdbname(void); */
+/* char *A4GLSQL_get_currdbname(char *cursor) */
+char *A4GLSQL_get_currdbname(void)
 {
   DbConnection *currConnection;
 
@@ -1187,11 +1258,6 @@ char *getDescriptorName(char *statementName,char bindType)
   return descriptorName;
 }
 
-#define INPUT_OUTPUT_BIND 0
-#define INPUT_BIND        1
-#define OUTPUT_BIND       2
-#define NO_BIND           3
-
 /**
  * Define the type of statement to be executed.
  * 
@@ -1497,12 +1563,6 @@ struct s_sid *A4GLSQL_prepare_select (
 }
 
 
-#define SIMPLE                0
-#define SIMPLE_SCROLL         1
-#define FOR_UPDATE            2
-#define FOR_UPDATE_WITH_HOLD  3
-#define WITH_HOLD             4
-
 /**
  * Get the cursor type to be declared acording to the flags.
  *
@@ -1528,7 +1588,7 @@ static int getCursorType(int upd_hold,int scroll)
         return SIMPLE;
       case 1: 
         return FOR_UPDATE;
-      case 2: 
+      case 2:
         return WITH_HOLD;
     }
   }
@@ -1629,19 +1689,12 @@ int A4GLSQL_open_cursor (int ni, char *s)
   return 0;
 }
 
-#define FETCH_FIRST     0
-#define FETCH_LAST      1
-#define FETCH_NEXT      2
-#define FETCH_PREVIOUS  3
-#define FETCH_CURRENT   4
-#define FETCH__RELATIVE 5
-#define FETCH__ABSOLUTE 6
 
 /**
  * Define the fetch type.
  *
  * @param fetch_mode
- *   - FETCH_RELATIVE 
+ *   - FETCH_RELATIVE
  *   - FETCH_ABSOLUTE
  * @param fetch_when
  *   - 0 : CURRENT
@@ -1779,7 +1832,10 @@ int A4GLSQL_fetch_cursor (char *cursor_name,
  *   - 1 : Data inserted in the cursor.
  *   - 0 : An error as ocurred.
  */
-int A4GLSQL_put_insert (struct BINDING *ibind, int n)
+/* 	void A4GLSQL_put_insert(struct BINDING *ibind,int n); */
+/* int */
+void
+A4GLSQL_put_insert (struct BINDING *ibind, int n)
 {
   /*
   if ( ibind != (struct BINDING *)0 && nibind > 0 )
@@ -1790,7 +1846,7 @@ int A4GLSQL_put_insert (struct BINDING *ibind, int n)
       exitwith ("Error binding");
   }
   */
-  //EXEC SQL PUT :cursorName FROM :state
+  /* EXEC SQL PUT :cursorName FROM :state */
 }
 
 /**
@@ -2017,7 +2073,10 @@ static int printField(FILE *unloadFile,int idx,char *descName)
  *   - 1 : There was an error unloading the data.
  *   - 0 : Data unloaded to file.
  */
-int A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
+/* 	void A4GLSQL_unload_data(char *fname,char *delims, char *sql1); */
+/* int */
+void
+A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
 {
   int cnt=0;
   static char databuf[64000];
@@ -2035,43 +2094,43 @@ int A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
   if ( unloadFile == (FILE *)0 )
   {
     /** @todo : Generate some error code compatible with informix 4gl */
-    return 1;
+    return; /* return 1; */
   }
 
   EXEC SQL PREPARE stUnload FROM :strSql;
   if ( isSqlError() )
-    return 1;
+    return; /* return 1; */
 
   EXEC SQL ALLOCATE DESCRIPTOR 'descUnload';
   if ( isSqlError() )
-    return 1;
+    return; /* return 1; */
 
   EXEC SQL DESCRIBE stUnload USING SQL DESCRIPTOR 'descUnload';
   if ( isSqlError() )
   {
     EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-    return 1;
+    return; /* return 1; */
   }
 
   EXEC SQL GET DESCRIPTOR 'descUnload' :numberOfColumns = COUNT;
   if ( isSqlError() )
   {
     EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-    return 1;
+    return; /* return 1; */
   }
 
   EXEC SQL DECLARE crUnload CURSOR FOR stUnload;
   if ( isSqlError() )
   {
     EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-    return 1;
+    return; /* return 1; */
   }
 
   EXEC SQL OPEN crUnload;
   if ( isSqlError() )
   {
     EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-    return 1;
+    return; /* return 1; */
   }
 
   // Get the data
@@ -2081,7 +2140,7 @@ int A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
     if ( isSqlError() )
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-      return 1;
+      return; /* return 1; */
     }
     if ( strcmp(SQLSTATE,"02000") == 0 )
       break;
@@ -2105,7 +2164,7 @@ int A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
   EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
   if ( isSqlError() )
     rc = 1;
-  return 0;
+  return; /* return 0; */
 }
 
 /**
@@ -2122,7 +2181,10 @@ int A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
  *  - 0 : Instruction executed.
  *  - 1 : An error as ocurred.
  */
-int A4GLSQL_commit_rollback (int mode)
+/* 	void A4GLSQL_commit_rollback (int mode);*/
+/* int */
+void
+A4GLSQL_commit_rollback (int mode)
 {
   debug ("In commit_rollback");
 
@@ -2138,9 +2200,11 @@ int A4GLSQL_commit_rollback (int mode)
       EXEC SQL COMMIT WORK;
       break;
   }
+/*
   if ( isSqlError() )
     return 1;
   return 0;
+*/
 }
 
 /**
@@ -2178,16 +2242,21 @@ struct s_sid *A4GLSQL_find_prepare (char *pname, int mode)
  *  - 0 : Instruction executed.
  *  - 1 : An error as ocurred.
  */
-int A4GLSQL_flush_cursor (char *cursor)
+/* 	void A4GLSQL_flush_cursor(char *cursor); */
+/* int */
+void
+A4GLSQL_flush_cursor (char *cursor)
 {
   EXEC SQL BEGIN DECLARE SECTION;
     char *cursorName = cursor;
   EXEC SQL END DECLARE SECTION;
 
   EXEC SQL FLUSH :cursorName;
+/*
   if ( isSqlError() )
     return 1;
   return 0;
+*/
 }
 
 /**
@@ -2233,7 +2302,10 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
-int A4GLSQL_get_columns(char *tabname)
+/* int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size); */
+/* int A4GLSQL_get_columns(char *tabname) */
+int 
+A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
     char strSelect[640];
@@ -2287,7 +2359,10 @@ int A4GLSQL_get_columns(char *tabname)
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
-int A4GLSQL_next_column(char *colname, int *dtype,int *size)
+/* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
+/* int A4GLSQL_next_column(char *colname, int *dtype,int *size) */
+int 
+A4GLSQL_next_column(char **colname, int *dtype,int *size)
 {
   EXEC SQL BEGIN DECLARE SECTION;
     int idx = getColumnsOrder;
@@ -2305,7 +2380,7 @@ int A4GLSQL_next_column(char *colname, int *dtype,int *size)
     return 0;
   *dtype = dataType;
   *size = length;
-  strcpy(colname,columnName);
+  strcpy(colname,columnName); /* warning: passing arg 1 of `strcpy' from incompatible pointer type */
   getColumnsOrder++;
   return 1;
 }
@@ -2516,11 +2591,14 @@ A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
  * @param a The value to be assigned to sqlca.sqlcode
  * @return Allways 0
  */
-int A4GLSQL_set_sqlca_sqlcode (int a)
+/* 	void A4GLSQL_set_sqlca_sqlcode(int a); */
+/* int */
+void
+A4GLSQL_set_sqlca_sqlcode (int a)
 {
   status = a;
   sqlca.sqlcode = a;
-  return 0;
+  /* return 0; */
 }
 
 /**
@@ -2533,7 +2611,11 @@ int A4GLSQL_set_sqlca_sqlcode (int a)
  * @param type The type of the information wanted.
  * @return
  */
-long A4GLSQL_describe_stmt (char *stmt, int colno, int type) 
+long A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
   printf("Describe smtm\n");
 }
+
+
+/* ================================= EOF ============================== */
+

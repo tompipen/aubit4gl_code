@@ -7,19 +7,28 @@
 */
 
 
-#include <stdio.h>
-#include <string.h>
+#ifdef OLD_INCL
 
-#include "a4gl_menuxw.h"
-#include "a4gl_compiler.h"
-#include "a4gl_aubit_lib.h"
-#ifdef __CYGWIN__
-	#define GETENV_OK
-	/* On Cygwin, something here will eventually include stdlib.h, that will have getenv
-	call. Everywhere else, we should use acl_getenv. */
+
+	#include <stdio.h>
+	#include <string.h>
+
+	#include "a4gl_menuxw.h"
+	#include "a4gl_compiler.h"
+	#include "a4gl_aubit_lib.h"
+	#ifdef __CYGWIN__
+		#define GETENV_OK
+		/* On Cygwin, something here will eventually include stdlib.h, that will have getenv
+		call. Everywhere else, we should use acl_getenv. */
+	#endif
+
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_mcompile_int.h"
+
 #endif
-
-#include "a4gl_debug.h"
 
 /*
 =====================================================================
@@ -53,7 +62,10 @@ struct menu *m;
 menu *nmenu(void);
 menu_option_item *new_option(menu *m);
 void *get_menu(void);
-char *char_val (char *s);
+
+#ifdef OLD_INCL
+	char *char_val (char *s);
+#endif
 
 /* from mcompile.c */
 extern void pop_menu(void);

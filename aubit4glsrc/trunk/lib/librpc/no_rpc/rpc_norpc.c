@@ -24,18 +24,19 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.7 2002-06-29 13:12:02 afalout Exp $
-#*/
+# $Id: rpc_norpc.c,v 1.1 2002-06-29 13:12:02 afalout Exp $
+#
+*/
 
 /**
  * @file
+ * RPC Implementation functions used in absence of RPC libraries on system.
  *
- *
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
  * @todo Doxygen comments to add to functions
  */
-
 /*
 =====================================================================
 		                    Includes
@@ -46,21 +47,17 @@
 #ifdef OLD_INCL
 
 	#include <stdio.h>
-	#include <ctype.h>
-	#include <string.h>
 
-	#ifdef __CYGWIN__
-		#include <rpc/rpc.h>
-	#endif
+	/* FIXME: how come this two where not needed on ISTATION, but are on ARMADA : */
+	#include <rpc/types.h>  	/* needed for xdr.h */
+	#include <rpc/xdr.h> 		/* defines XDR, etc... */
 
-	#include "a4gl_menuxw.h"
-	#include "a4gl_compiler.h"
+	#include "a4gl_formxw.h"
 	#include "a4gl_debug.h"
-
 
 #else
 
-    #include "a4gl_lib_menu_xdr_int.h"
+    #include "a4gl_lib_rpc_xdr_int.h"
 
 #endif
 
@@ -70,30 +67,35 @@
 =====================================================================
 */
 
-extern int as_c;
-int scr = 0;
-int cmaxcol = 0;
-int cmaxline = 0;
-int maxcol;
-int maxline;
-int newscreen = 0;
-int fldno;
-int fstart;
-int openwith = 0;
+struct menu_option_item {
+	char *id;
+	char *caption;
+	char *key_list;
+	char *image;
+	int checked;
+	int align;
+	int color;
+	char *submenu_id;
+};
+typedef struct menu_option_item menu_option_item;
 
-char currftag[256];
+struct menu {
+	char *id;
+	struct {
+		u_int options_len;
+		menu_option_item *options_val;
+	} options;
+};
+typedef struct menu menu;
 
-struct struct_screen_record *curr_rec;
-char buff_xdr[30000];
 
-extern char *outputfilename;
-
-struct menu_list the_menus;
-struct struct_scr_field *fld;
-
-char *chk_alias (char *s);
-FILE *fxx;
-FILE *fyy;
+struct menu_list {
+	struct {
+		u_int menus_len;
+		menu *menus_val;
+	} menus;
+};
+typedef struct menu_list menu_list;
 
 /*
 =====================================================================
@@ -101,12 +103,8 @@ FILE *fyy;
 =====================================================================
 */
 
-void error_with (char *s, char *a, char *b);
-
-#ifdef OLD_INCL
-	void write_menu (void);
-#endif
-
+static void local_exitwith (char *s);
+bool_t xdr_menu_list(XDR * xdrs,menu_list * objp);
 /*
 =====================================================================
                     Functions definitions
@@ -114,91 +112,86 @@ void error_with (char *s, char *a, char *b);
 */
 
 /**
- * is this not the same as exitwith() ?
  *
  * @todo Describe function
  */
 void
-error_with (char *s, char *a, char *b)
+xdrmem_create(xdrs, addr, size, op)
+	register XDR *xdrs;
+	caddr_t addr;
+	u_int size;
+	enum xdr_op op;
 {
-  static char z[2];
-  z[0] = 0;
-  if (a == 0)
-    a = z;
-  if (b == 0)
-    b = z;
-   printf (s, a, b);
-
-  debug ("\n");
-  exit (0);
+	local_exitwith ("Could not xdrmem_create - noRPC build");
 }
 
 
 /**
- * write the compiled menu data to file in Sun RPC XDR format
+ *
+ * @todo Describe function
+ */
+bool_t
+xdr_int(xdrs, ip)
+	XDR *xdrs;
+	int *ip;
+{
+	local_exitwith ("Could not xdr_int - noRPC build");
+	return 0;
+}
+
+
+/**
  *
  * @todo Describe function
  */
 void
-write_menu (void)
+xdrstdio_create(xdrs, file, op)
+	register XDR *xdrs;
+	FILE *file;
+	enum xdr_op op;
 {
-  char fname[132];
-  char fname2[132];
-  int a;
-  XDR xdrp;
-  menu_list *ptr;
-  ptr=&the_menus;
-  strcpy (fname, outputfilename);
-  strcat (fname, ".mnu");
-
-  strcpy (fname2, outputfilename);
-  strcat (fname2, ".c");
-
-
-  fxx=fopen(fname,"wb");
-
-  printf("has %d menus\n",the_menus.menus.menus_len);
- 
-  if (fxx == 0)
-    {
-      error_with ("Couldnt open file for write (%s)\n", fname, 0);
-    }
-
-        xdrstdio_create(&xdrp, fxx, XDR_ENCODE);
-        a=xdr_menu_list(&xdrp,ptr);
-
-	if (!a) {
-		debug("*** Write FAILED ***\n");
-		error_with("Unable to write data\n",0,0);
-	}
-
-	xdr_destroy(&xdrp);
-	fclose(fxx);
-
-	if (as_c) {
-		int cnt=0;
-		int a;
-		debug("Asc...\n");
-		fxx=fopen(fname,"r");
-		fyy=fopen(fname2,"w");
-		fprintf(fyy,"char compiled_menu_%s[]={\n",outputfilename);
-
-		while (!feof(fxx)) {
-			a=fgetc(fxx);
-			if (feof(fxx)) break;
-			if (cnt>0) fprintf(fyy,",");
-			if (cnt%16==0&&cnt) {fprintf(fyy,"\n");}
-			if (a==-1) {break;}
-			fprintf(fyy,"0x%02x",a);
-			cnt++;
-		}
-		fprintf(fyy,"};\n");
-		fclose(fxx);
-		fclose(fyy);
-		/* unlink(fname); */
-	}
-	
+	local_exitwith ("Could not xdrstdio_create - noRPC build");
 }
 
 
-/* =============================== EOF =============================== */
+/**
+ *
+ * @todo Describe function
+ */
+bool_t
+xdr_struct_form(xdrs, objp)
+	XDR *xdrs;
+	struct_form *objp;
+{
+	local_exitwith ("Could not xdr_struct_form - noRPC build");
+	return 0;
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+bool_t
+xdr_menu_list(XDR * xdrs,menu_list * objp)
+{
+   	local_exitwith ("Could not xdr_menu_list - noRPC build");
+	return 0;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+static void
+local_exitwith (char *s)
+{
+	#ifdef DEBUG
+		{debug ("ending because : %s", s);}
+	#endif
+  printf ("\n\n\n");
+  exit (1);
+}
+
+/* ============================= EOF ============================= */
+

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dim.c,v 1.12 2002-06-06 12:31:12 afalout Exp $
+# $Id: dim.c,v 1.13 2002-06-29 13:12:01 afalout Exp $
 #*/
 
 /**
@@ -38,11 +38,21 @@
 =====================================================================
 */
 
-#include <string.h>
-#include <stdlib.h> 			/* realloc() */
 
-#include "a4gl_4glc_4glc.h"
-#include "a4gl_debug.h"
+
+#ifdef OLD_INCL
+
+	#include <string.h>
+	#include <stdlib.h> 			/* realloc() */
+
+	#include "a4gl_4glc_4glc.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_4glc_int.h"
+
+#endif
 
 /*
 =====================================================================

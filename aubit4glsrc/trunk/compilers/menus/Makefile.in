@@ -24,11 +24,13 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.28 2002-06-11 08:42:26 afalout Exp $
+# $Id: Makefile.in,v 1.29 2002-06-29 13:12:01 afalout Exp $
 #
 
+ROOT        =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 
 override NOINCL=0
 
@@ -39,12 +41,12 @@ override NOINCL=0
 ALL				=mcompile mdecompile
 
 ifeq "${USE_RPCGEN}" "0"
-	RPCGEN      =cp ../../tools/cygwin/menu_x_xdr.c ../../tools/cygwin/menu_x.h .
+	RPCGEN      =${CP} ${ROOT}/tools/cygwin/menu_x_xdr.c ${ROOT}/tools/cygwin/menu_x.h .
 else
 	RPCGEN      =@RPCGEN@ menu_x.x
 endif
 
-C_LOCAL_IFLAGS  =-I. -I../../lib/libincl -I../fcompile
+C_LOCAL_IFLAGS  =-I. -I${ROOT}/lib/libincl -I../fcompile
 #FIXME: this compiler should not depend on RPC:
 CFLAGS		   +=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
@@ -67,8 +69,8 @@ OBJECTS 		=$(CMODS:%.c=%.o)
 
 
 ifeq "@YACC@" "no"
-	LEX_YY_C	=../../tools/no_yacc/cygwin/compilers/menus/lex.yy.c
-	Y_TAB_C_DEP	=../../tools/no_yacc/cygwin/compilers/menus/y.tab.c
+	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/menus/lex.yy.c
+	Y_TAB_C_DEP	=${ROOT}/tools/no_yacc/cygwin/compilers/menus/y.tab.c
 else
 	LEX_YY_C	=lex.yy.c
 	Y_TAB_C_DEP=$(SOURCES.yacc) ${LEX_YY_C}
@@ -84,12 +86,12 @@ all: $(ALL)
 	@echo "Default targets ($(ALL)) successfully compiled"
 
 mcompile: $(OBJECTS)
-	${CC} ${CFLAGS} -L../../lib -o $@ $^ ${AUBIT_LIB}
-	${LN} $@${EXE} ../../bin/$@${EXE}
+	${CC} ${CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+	${LN} $@${EXE} ${ROOT}/bin/$@${EXE}
 
 mdecompile: ${DECOMPILE}
-	${CC} -o $@ ${CFLAGS} $^ -L../../lib ${AUBIT_LIB}
-	${CP} $@ ../../bin
+	${CC} -o $@ ${CFLAGS} $^ -L${ROOT}/lib ${AUBIT_LIB}
+	${CP} $@ ${ROOT}/bin
 
 ## ==================================================================
 ##                             Sub Targets
@@ -104,14 +106,14 @@ menu_x.h: menu_x.x
 
 y.tab.c: ${Y_TAB_C_DEP}
 ifeq "@YACC@" "no"
-	cp ${Y_TAB_C_DEP} .
+	${CP} ${Y_TAB_C_DEP} .
 else
 	nice -20 ${YACC} -v  $(SOURCES.yacc)
 endif
 
 lex.yy.c: $(SOURCES.lex)
 ifeq "@LEX@" "no"
-	cp ${LEX_YY_C} .
+	${CP} ${LEX_YY_C} .
 else
 	nice -20 flex -i $(SOURCES.lex)
 endif
@@ -150,7 +152,7 @@ clean:
 splint: lclint
 lclint: $(CMODS)
 	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
-	${CAT} ${LCLINTLOG} >> ../../${LCLINT_GLOBAL_LOG}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.56 2002-06-26 06:11:43 afalout Exp $
+# $Id: Makefile.in,v 1.57 2002-06-29 13:12:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -53,7 +53,7 @@ ifeq "$(GTKBUILD)" "yes"
 endif
 
 ifneq "@HAVE_RPCLIB@" "0"
-	ALL	+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT} libMENU_XDR${SO_EXT}
+	ALL	+=libRPC_XDR${SO_EXT} libFORM_XDR${SO_EXT} libMENU_XDR${SO_EXT} libUI_TUI${SO_EXT}
 endif
 
 ifneq "@XML_RPC@" "no"
@@ -138,14 +138,14 @@ libFORM_NOFORM.dll :
 libMENU_XDR.dll :
 	${MAKE} -C libmenu/menu_xdr dllMENU_XDR
 
-libMENU_NOFORM.dll :
-	${MAKE} -C libmenu/menu_xdr dllMENU_NOFORM
+libMENU_NOMENU.dll :
+	${MAKE} -C libmenu/menu_nomenu dllMENU_NOMENU
 
 libRPC_XDR.dll:
 	${MAKE} -C librpc/sun_rpc dlllibRPC_XDR
 
 libRPC_NORPC.dll:
-	${MAKE} -C librpc/sun_rpc dlllibRPC_NORPC
+	${MAKE} -C librpc/no_rpc dlllibRPC_NORPC
 
 libRPC_XMLRPC.dll:
 	${MAKE} -C librpc/xml_rpc dlllibRPC_XMLRPC
@@ -190,7 +190,7 @@ libFORM_XDR.so :
 	${MAKE} -C libform/form_xdr $@
 
 libMENU_NOMENU.so :
-	${MAKE} -C libmenu/menu_xdr $@
+	${MAKE} -C libmenu/menu_nomenu $@
 
 libMENU_XDR.so :
 	${MAKE} -C libmenu/menu_xdr $@
@@ -223,7 +223,7 @@ libRPC_XDR.so:
 	${MAKE} -C librpc/sun_rpc $@
 
 libRPC_NORPC.so:
-	${MAKE} -C librpc/sun_rpc $@
+	${MAKE} -C librpc/no_rpc $@
 
 libRPC_XMLRPC.so:
 	${MAKE} -C librpc/xml_rpc $@
@@ -232,7 +232,9 @@ libRPC_XMLRPC.so:
 ##                        Clean Targets
 ## ==================================================================
 
-clean : clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc clean.other
+clean : \
+	clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc \
+	clean.other clean.libui
 	${RM} core *.out *.glb *.so *.a  *.bak *.dll *.stackdump *.err *.base *.exp
 
 clean.generated:
@@ -240,6 +242,8 @@ clean.generated:
 	generated/project.c generated/project.o
 
 clean.all: clean
+
+clean.libui:
 	${MAKE} -C libui/ui_gtk clean
 	${MAKE} -C libui/ui_console clean
 	${MAKE} -C libui/ui_curses clean
@@ -256,6 +260,7 @@ clean.libpdf:
 	${MAKE} -C libpdf clean
 
 clean.librpc:
+	${MAKE} -C librpc/no_rpc clean
 	${MAKE} -C librpc/sun_rpc clean
 	${MAKE} -C librpc/xml_rpc clean
 
@@ -264,6 +269,7 @@ clean.other:
 	${MAKE} -C libform/form_xdr clean
 	${MAKE} -C libform/noform clean
 	${MAKE} -C libmenu/menu_xdr clean
+	${MAKE} -C libmenu/menu_nomenu clean
 	${MAKE} -C libmsg/msg_native clean
 	${MAKE} -C resource clean
 	${MAKE} -C ../tools/loadmap clean

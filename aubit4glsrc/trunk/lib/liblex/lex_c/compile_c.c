@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.24 2002-06-26 17:33:43 mikeaubury Exp $
+# $Id: compile_c.c,v 1.25 2002-06-29 13:12:02 afalout Exp $
 #
 */
 
@@ -37,6 +37,41 @@
  * The goal is to generate a C program that implement the functionality of
  * the 4gl being compiled.
  */
+
+/*
+=====================================================================
+
+
+
+
+
+
+
+
+                WHEN EDITING THIS FILE, PLEASE REMEMBER TO DO
+                THE SAME CHANGES TO EQUIVALENT FILE(s) IN OTHER
+                LANGUAGE OUTPUT TARGETS, LIKE:
+
+                    compile_c.c
+                    compile_c_gtk.c
+                    compile_perl.c
+                    ...etc...
+
+
+
+
+
+
+
+
+
+
+
+
+=====================================================================
+*/
+
+
 
 /*
 =====================================================================

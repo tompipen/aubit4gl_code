@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_svc.c,v 1.7 2002-06-02 06:52:38 afalout Exp $
+# $Id: rpc_svc.c,v 1.8 2002-06-29 13:12:03 afalout Exp $
 #*/
 
 /**
@@ -42,26 +42,36 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <stdlib.h>				/* getenv, exit */
-#include <rpc/pmap_clnt.h> 		/* for pmap_unset */
-#include <string.h> 			/* strcmp */
-#include <memory.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>				/* getdtablesize */
 
 
-#include "a4gl_xdr_rpc_stack.h"
-#include "a4gl_pointers.h"
-#include "a4gl_aubit_lib.h"
+#ifdef OLD_INCL
 
-#ifdef __CYGWIN__
-	#define GETENV_OK
-	/* On Cygwin, stdlib.h, will have getenv
-	call. Everywhere else, we should use acl_getenv. */
+	#include <stdio.h>
+	#include <stdlib.h>				/* getenv, exit */
+	#include <rpc/pmap_clnt.h> 		/* for pmap_unset */
+	#include <string.h> 			/* strcmp */
+	#include <memory.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <unistd.h>				/* getdtablesize */
+
+
+	#include "a4gl_xdr_rpc_stack.h"
+	#include "a4gl_pointers.h"
+	#include "a4gl_aubit_lib.h"
+
+	#ifdef __CYGWIN__
+		#define GETENV_OK
+		/* On Cygwin, stdlib.h, will have getenv
+		call. Everywhere else, we should use acl_getenv. */
+	#endif
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_lib_rpc_xdr_int.h"
+
 #endif
-#include "a4gl_debug.h"
 
 /*
 =====================================================================

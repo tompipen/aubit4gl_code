@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.11 2002-06-05 07:04:54 afalout Exp $
+# $Id: mcompile.c,v 1.12 2002-06-29 13:12:01 afalout Exp $
 #*/
 
 /**
@@ -42,11 +42,19 @@
 =====================================================================
 */
 
-#include <stdio.h>
+#ifdef OLD_INCL
 
-#include "a4gl_compiler.h"
-#include "a4gl_menuxw.h"
-#include "a4gl_aubit_lib.h"
+	#include <stdio.h>
+
+	#include "a4gl_compiler.h"
+	#include "a4gl_menuxw.h"
+	#include "a4gl_aubit_lib.h"
+
+#else
+
+    #include "a4gl_mcompile_int.h"
+
+#endif
 
 /*
 =====================================================================

@@ -20,13 +20,19 @@
 	#define AFTER_INP  (_fld_dr==-95)
 	#define ON_KEY(zzz) if (_fld_dr==-90&&chk_iskey(zzz))
 
+
+#ifdef OLD_INCL
+
 	/* not strictly voids - but saves getting into the details */
 	void *prepare_glob_sql (char *s,int ni,void *b);
-
+#endif
 	#define set_status(a) set_status(a,0)
 
 	#include "a4gl_incl_4gldef.h"
 
+#ifndef OLD_INCL
+    #include "a4gl_libaubit4gl.h"
+#endif
 
     #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */
     /* for everything except libaubit4gl */
@@ -176,6 +182,7 @@
 	#define DECODE_SIZE(x) (x>>16)
 
 	/* Prototpes for functions that should be seen */
+#ifdef OLD_INCL
 	char *	new_string(int a);
 	int 	pop_bool(void);
 	int 	pop_int(void);
@@ -203,7 +210,7 @@
 
 
 	void 	locate_var(struct fgl_int_loc *p,char where,char *filename);
-
+#endif
 
 	#if (defined(WIN32) && ! defined(__CYGWIN__))
 		#define dll_export __declspec(dllexport)
@@ -226,6 +233,8 @@
 	#define SET(struct,ptr,element,value) get_set(struct,ptr,GETSETSET,element,(long)value)
 	#define NEW(struct) get_set(struct,0,GETSETNEW,0,0)
 	#define RM(struct,ptr) get_set(struct,ptr,GETSETRM,0,0)
+
+#ifdef OLD_INCL
 
 	/* report stuff */
 	struct rep_structure {
@@ -273,7 +282,7 @@
 	};
 
 	double pdf_size(double f, char c,struct pdf_rep_structure *p);
-
+#endif
 	#define REPORT_START -1
 	#define REPORT_FINISH -2
 	#define REPORT_DATA -3
@@ -295,7 +304,9 @@
 	#define WARN 2
 
 	#ifndef NODEBUG
+#ifdef OLD_INCL
 		int set_line(char *s,long l);
+#endif
 		#define debug set_line(__FILE__,__LINE__);debug_full
 	#else
 		#define debug null_func

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.29 2002-06-06 12:31:12 afalout Exp $
+# $Id: 4glc.c,v 1.30 2002-06-29 13:12:01 afalout Exp $
 #
 */
 
@@ -39,14 +39,24 @@
 =====================================================================
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <getopt.h>
 
-#include "a4gl_4glc_4glc.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_dlsql.h"
-#include "a4gl_pointers.h"
+
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <getopt.h> 			/* struct option */
+
+	#include "a4gl_4glc_4glc.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_dlsql.h"
+	#include "a4gl_pointers.h"
+
+#else
+
+    #include "a4gl_4glc_int.h"
+
+#endif
 
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.19 2002-06-25 09:33:52 mikeaubury Exp $
+# $Id: stack.c,v 1.20 2002-06-29 13:12:02 afalout Exp $
 #
 */
 
@@ -49,7 +49,7 @@
 
 
 #ifdef OLD_INCL
-	
+
 	#include <stdio.h>
 	#include <math.h>
 	#include <sys/types.h>
@@ -95,19 +95,21 @@
 	};
 #endif
 
-//FIXME: is this OK? see lib/libincl/dbform.h
+/* FIXME: is this OK? see lib/libincl/dbform.h */
 #ifdef __CYGWIN__
-	//extern int int_flag;
-	//extern int status;
+	/*
+	extern int int_flag;
+	extern int status;
+    */
 
-    //this is all wrong: where is TRUE/FALS usualy defined?
+    /* this is all wrong: where is TRUE/FALS usualy defined? */
 	#ifndef BOOLEAN
 		#define BOOLEAN int
 		#define TRUE 1
 		#define FALSE 0
 	#endif
 #else
-	//extern long status;
+	/* extern long status; */
 #endif
 
 /*
@@ -180,13 +182,22 @@ int init_local_bindings = 0;
 struct BINDING *local_binding[LOCAL_BINDINGS];
 int num_local_binding[LOCAL_BINDINGS];
 
-struct bound_list
-{
-  struct BINDING *ptr;
-  int cnt;
-  int popped;
-};
 
+#ifdef OLD_INCL
+
+	struct bound_list
+	{
+	  struct BINDING *ptr;
+	  int cnt;
+	  int popped;
+	};
+
+
+
+	void *      dif_get_bind 			(struct bound_list *list);
+	void        dif_start_bind 			(void);
+
+#endif
 
 /*
 =====================================================================
@@ -208,8 +219,7 @@ void        upshift_stk 			(void);
 int         isparamdate 			(void);
 void        set_init 				(struct BINDING *b, int n, int no);
 int         push_binding 			(void *ptr, int num);
-void        dif_start_bind 			(void);
-void        dif_add_bind 			(struct bound_list *list, void *dptr, 
+void        dif_add_bind 			(struct bound_list *list, void *dptr,
 									int dtype, int size);
 void        dif_add_bind_date 		(struct bound_list *list, long a);
 void        dif_add_bind_smint 		(struct bound_list *list, int a);
@@ -220,7 +230,6 @@ void        dif_add_bind_float 		(struct bound_list *list, double a);
 void        dif_add_bind_smfloat 	(struct bound_list *list, float a);
 void        dif_add_bind_char 		(struct bound_list *list, char *a);
 void        dif_free_bind 			(struct bound_list *list);
-void *      dif_get_bind 			(struct bound_list *list);
 void        dif_print_bind 			(struct bound_list *list);
 long        dif_pop_bind_int 		(struct bound_list *list);
 char *      dif_pop_bind_char 		(struct bound_list *list);
@@ -333,24 +342,24 @@ pop_var (void *p, int d)
   int s;
   s = DECODE_SIZE (d);
 #ifdef DEBUG
-  /* {DEBUG} */ debug ("pop variable type %d %x (%d) \n", d, d, s);
+	debug ("pop variable type %d %x (%d) \n", d, d, s);
 #endif
   z = pop_param (p, d, s);
 #ifdef DEBUG
-  /* {DEBUG} */ debug ("z=%d", z);
+	debug ("z=%d", z);
 #endif
   if (((z) != (1)))
     {
       exitwith ("Error in conversion");
 #ifdef DEBUG
-      /* {DEBUG} */ debug ("pop_var: error in conversion %d\n", z);
+	debug ("pop_var: error in conversion %d\n", z);
 #endif
       return 0;
     }
   else
     {
 #ifdef DEBUG
-      /* {DEBUG} */ debug ("pop_var: conversion ok");
+	debug ("pop_var: conversion ok");
 #endif
     }
   return z;
@@ -613,12 +622,10 @@ push_param (void *p, int d)
   double doublea = 0, doubleb = 0;
   char *c1;
   char *c2;
-//  int opres;
   int size;
   int n1, n2;
   int i1, i2;
   char buff[400];
-//  int a;
   int zzz;
 
   int doing_dt_or_int = 0;
@@ -685,14 +692,14 @@ push_param (void *p, int d)
 	{
 	  size = strlen (p);
 #ifdef DEBUG
-	  /* {DEBUG} */ debug ("Defaulting size");
+	debug ("Defaulting size");
 #endif
 	}
 
       if ((d & DTYPE_MASK) == 0)
 	{
 #ifdef DEBUG
-	  /* {DEBUG} */ debug ("Adding string '%s' size %d", p, size);
+	debug ("Adding string '%s' size %d", p, size);
 #endif
 	}
 
@@ -711,7 +718,7 @@ push_param (void *p, int d)
 
 	  debug ("MJA1 %d", strlen (params[params_cnt - 1].ptr));
 
-	  // I don't remember what this is for - so I'm getting shot for now...
+	  /* I don't remember what this is for - so I'm getting shot for now */
 	  zzz = (params[params_cnt - 1].dtype & DTYPE_MASK) +
 	    (strlen (params[params_cnt - 1].ptr)) +
 	    (params[params_cnt - 1].size);
@@ -743,7 +750,7 @@ push_param (void *p, int d)
 	  debug ("MJA2");
 	  zzz =
 	    ((params[params_cnt - 2].dtype & DTYPE_MASK) +
-	     (strlen (params[params_cnt - 2].ptr)));	//+ params[params_cnt - 2].size;
+	     (strlen (params[params_cnt - 2].ptr)));	/* + params[params_cnt - 2].size; */
 	  zzz = 1;
 
 	  if (zzz == 0)
@@ -758,9 +765,10 @@ push_param (void *p, int d)
   debug ("Checked %d %d", n1, n2);
 
 
-
-// Have a look see if this condition
-// is specifically handled
+	/*
+	Have a look see if this condition
+	is specifically handled
+    */
   if (dtype_2==-1) dtype_2=dtype_1;
 
   if (dtype_1!=-1) {
@@ -859,7 +867,7 @@ push_param (void *p, int d)
 	  a--;
 	}
       debug ("MJA Setting ok=%d\n", ok);
-      drop_param ();		// Get rid of the base...
+      drop_param ();		/* Get rid of the base... */
       if (d == OP_IN)
 	push_int (ok);
       else
@@ -919,7 +927,7 @@ push_param (void *p, int d)
 	    ok = 1;
 	  a--;
 	}
-      drop_param ();		// Get rid of the base...
+      drop_param ();		/* Get rid of the base */
       if (d == OP_IN_SELECT)
 	push_int (ok);
       else
@@ -929,15 +937,13 @@ push_param (void *p, int d)
 
   if (d == OP_EXISTS || d == OP_NOTEXISTS)
     {
-//      int a;
       int ok = 0;
-//      int eql;
       char *s;
       char tmpvar[256];
       static int cntsql = 0;
       char cname[256];
       struct BINDING ibind[] = { {&tmpvar, 0, 255} };	/* end of binding */
-      struct BINDING obind[] = { {0, 0, 0} };	/* end of binding */
+      struct BINDING obind[] = { {0, 0, 0} };			/* end of binding */
       struct BINDING *dbind;
       int n;
       sprintf (cname, "chkex%d", cntsql++);
@@ -987,7 +993,7 @@ push_param (void *p, int d)
 
       if (chknull (2, n1, n2))
 	return;
-      //void get_top_of_stack (int a, int *d, int *s, void **ptr);
+      /* void get_top_of_stack (int a, int *d, int *s, void **ptr); */
       get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
       get_top_of_stack (2, &d2, &s2, (void **) &ptr2);
       if (d1 != DTYPE_INTERVAL || d1 != DTYPE_DTIME || d2 != DTYPE_INTERVAL
@@ -1012,7 +1018,7 @@ push_param (void *p, int d)
       c1 = char_pop ();
 
 #ifdef DEBUG
-      /* {DEBUG} */ debug ("Check for %s matches %s", c1, c2);
+	debug ("Check for %s matches %s", c1, c2);
 #endif
       push_int (mja_match (c1, c2, 'M'));
       acl_free (c1);
@@ -1062,7 +1068,7 @@ push_param (void *p, int d)
       i1 = pop_int ();
       i2 = pop_int ();
 
-      //dumpstack();
+      /* dumpstack(); */
       debug ("OP_OR : %d %d\n", i1, i2);
 
       push_int (i1 || i2);
@@ -1128,7 +1134,7 @@ push_param (void *p, int d)
 
     case OP_CONCAT:
       debug ("In concat %d %d", n1, n2);
-      //if (n1) {drop_param (); return;}
+      /* if (n1) {drop_param (); return;} */
       if (n2 == 1 && n1 == 0)
 	{
 	  char *s;
@@ -1157,7 +1163,7 @@ push_param (void *p, int d)
 	{
 	  debug ("Parameter is null..");
 	  drop_param ();
-	  push_null ();		// FIXME FIXME
+	  push_null ();		/*  FIXME FIXME */
 	  break;
 	}
       func_clip ();
@@ -1212,7 +1218,7 @@ push_param (void *p, int d)
     case OP_MINUTE:
     case OP_SECOND:
 			/** @todo Confirm if the return was needed */
-      // return conv_to_interval (d);
+      /* return conv_to_interval (d); */
       conv_to_interval (d);
       break;			/* just to be sure! */
     }
@@ -1261,10 +1267,9 @@ push_today (void)
   int mja_day;
   struct tm *local_time;
   time_t now;
-  int month, year;		//ch, yflag;
-//  int zz;
+  int month, year;		/* ch, yflag; */
 
-//      setlocale(LC_ALL,"");
+	/*      setlocale(LC_ALL,""); */
   (void) time (&now);
   local_time = localtime (&now);
   year = local_time->tm_year + 1900;
@@ -1287,15 +1292,13 @@ push_today (void)
 void
 push_current (int a, int b)
 {
-//  long z;
   int mja_day;
   struct tm *local_time;
   time_t now;
-  int month, year;		//ch, yflag;
-//  int zz;
+  int month, year;		/* ch, yflag; */
   char buff[50];
   char buff2[50];
-//      setlocale(LC_ALL,"");
+/*  setlocale(LC_ALL,""); */
   debug ("In push_current");
   (void) time (&now);
   debug ("Called time...");
@@ -1311,7 +1314,7 @@ push_current (int a, int b)
 */
   sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%d000000000000",
 	   year, month, mja_day, local_time->tm_hour,
-	   local_time->tm_min, local_time->tm_sec, local_time->tm_sec	//, 0
+	   local_time->tm_min, local_time->tm_sec, local_time->tm_sec	/* , 0 */
 	   /* no support for fractions of a second yet */
     );
   debug ("Time is %s", buff);
@@ -1331,14 +1334,10 @@ push_current (int a, int b)
 void
 push_time (void)
 {
-//  long z;
-//  int mja_day;
   struct tm *local_time;
   time_t now;
-//  int ch, month, year, yflag;
-//  int zz;
   char buff[20];
-//      setlocale(LC_ALL,"");
+/* setlocale(LC_ALL,""); */
   debug ("In push_time");
   (void) time (&now);
   debug ("Called time...");
@@ -1374,7 +1373,6 @@ opboolean (void)
   int d1, d2;
   char *z1;
   char *z2;
-//  char buff[200];
   double a, b;
   int cmp;
   int adate;
@@ -1544,7 +1542,7 @@ print_stack (void)
   for (a = 0; a < params_cnt; a++)
     {
       conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, 8);
-      //int conv (int dtype1, void *p1, int dtype2, void *p2, int size);
+      /* int conv (int dtype1, void *p1, int dtype2, void *p2, int size); */
       printf (" %d Dtype (%d) %s\n", a, params[a].dtype & DTYPE_MASK, buff);
     }
 }

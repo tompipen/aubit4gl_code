@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.72 2002-06-12 07:19:21 mikeaubury Exp $
+# $Id: mod.c,v 1.73 2002-06-29 13:12:01 afalout Exp $
 #
 */
 
@@ -48,24 +48,33 @@
 =====================================================================
 */
 
-#include <string.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
 
-#include "rules/generated/y.tab.h"
-#include "rules/generated/kw.h"
+#ifdef OLD_INCL
 
-#include "a4gl_report.h"
-#include "a4gl_oform.h"
-#include "a4gl_tunable.h"
-#include "a4gl_debug.h"
-#include "a4gl_errors.h"
-#include "a4gl_4glc_compiledefs.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_4glc_print_protos.h"
-#include "a4gl_4glc_4glc.h"
-#include "a4gl_dlsql.h"
+	#include <string.h>
+	#include <stdio.h>
+	#include <stdarg.h>
+	#include <stdlib.h>
+
+	#include "rules/generated/y.tab.h"
+	#include "rules/generated/kw.h"
+
+	#include "a4gl_report.h"
+	#include "a4gl_oform.h"
+	#include "a4gl_tunable.h"
+	#include "a4gl_debug.h"
+	#include "a4gl_errors.h"
+	#include "a4gl_4glc_compiledefs.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_4glc_print_protos.h"
+	#include "a4gl_4glc_4glc.h"
+	#include "a4gl_dlsql.h"
+
+#else
+
+    #include "a4gl_4glc_int.h"
+
+#endif
 
 /*
 =====================================================================

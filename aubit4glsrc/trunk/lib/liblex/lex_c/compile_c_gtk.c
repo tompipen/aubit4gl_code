@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.5 2002-06-26 06:11:43 afalout Exp $
+# $Id: compile_c_gtk.c,v 1.6 2002-06-29 13:12:02 afalout Exp $
 #
 */
 
@@ -39,14 +39,46 @@
  * the 4gl being compiled.
  */
 
- /*
+
+/*
 =====================================================================
-		                    Includes
+
+
+
+
+
+
+
+
+                WHEN EDITING THIS FILE, PLEASE REMEMBER TO DO
+                THE SAME CHANGES TO EQUIVALENT FILE(s) IN OTHER
+                LANGUAGE OUTPUT TARGETS, LIKE:
+
+                    compile_c.c
+                    compile_c_gtk.c
+                    compile_perl.c
+                    ...etc...
+
+
+
+
+
+
+
+
+
+
+
+
 =====================================================================
 */
 
 
-
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #ifdef OLD_INCL
 	
@@ -118,7 +150,7 @@ strcpy(lname,name);
  * @todo Describe function
  */
 void
-print_getwin(void) 
+print_getwin(void)
 {
 	printc("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,get_currwin_name());\n",lname);
 	printc("if (strlen(this_win)==0) strcpy(this_win,get_currwin_name());\n");

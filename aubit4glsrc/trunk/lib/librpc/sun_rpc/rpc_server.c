@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_server.c,v 1.8 2002-06-06 12:31:28 afalout Exp $
+# $Id: rpc_server.c,v 1.9 2002-06-29 13:12:03 afalout Exp $
 #*/
 
 /**
@@ -45,13 +45,21 @@
 =====================================================================
 */
 
-#include "a4gl_pointers.h"
-#include "a4gl_xdr_rpc_stack.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_incl_4glhdr.h"
-#include "a4gl_runtime_tui.h"
-#include "a4gl_debug.h"
 
+#ifdef OLD_INCL
+
+	#include "a4gl_pointers.h"
+	#include "a4gl_xdr_rpc_stack.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_incl_4glhdr.h"
+	#include "a4gl_runtime_tui.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_lib_rpc_xdr_int.h"
+
+#endif
 
 /*
 =====================================================================

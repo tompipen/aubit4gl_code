@@ -24,14 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_stack_clnt.c,v 1.5 2002-06-29 13:12:03 afalout Exp $
+# $Id: menu_nomenu.c,v 1.1 2002-06-29 13:12:02 afalout Exp $
 #*/
 
 /**
  * @file
- * This file was generated using rpcgen and then modified (IIRC) which
- * allows it to act as both a client and a server, in the same C code
- * (which isn't normally possible).
+ * aubit 4gl menus extension used when no other menu extensions are available or needed.
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
@@ -44,82 +42,25 @@
 =====================================================================
 */
 
+
 #ifdef OLD_INCL
 
-	#include <memory.h> /* for memset */
-	#include "a4gl_xdr_rpc_stack.h"
+/*
+	#include "a4gl_gtk_dims.h"
+	#include "a4gl_io.h"
+	#include "a4gl_incl_4glhdr.h"
+	#include "a4gl_gtk_cr_funcs.h"
+	#include "a4gl_dbform.h"	*/		/* struct s_form_dets */
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_lib_rpc_xdr_int.h"
+    #include "a4gl_lib_menu_int.h"
 
 #endif
 
-/*
-=====================================================================
-                    Constants definitions
-=====================================================================
-*/
 
-#define main server_run
+/* what do we need here? */
 
-/*
-=====================================================================
-                    Variables definitions
-=====================================================================
-*/
-
-
-extern unsigned long serviceport;
-
-/* Default timeout can be changed using clnt_control() */
-static struct timeval TIMEOUT = { 25, 0 };
-
-/*
-=====================================================================
-                    Functions definitions
-=====================================================================
-*/
-
-/**
- *
- */
-return_values *
-call_remote_func_1(call arg1,  CLIENT *clnt)
-{
-static return_values clnt_res;
-
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
-
-/* in rpc/clnt.h :
- * enum clnt_stat
- * CLNT_CALL(rh, proc, xargs, argsp, xres, resp, timeout)
- * 	CLIENT *rh;
- *	u_long proc;
- *	xdrproc_t xargs;
- *	caddr_t argsp;
- *	xdrproc_t xres;
- *	caddr_t resp;
- *	struct timeval timeout;
- */
-
-	if (clnt_call(
-			clnt,
-			CALL_REMOTE_FUNC,
-			(xdrproc_t)xdr_call,
-			(caddr_t)&arg1,
-			(xdrproc_t)xdr_return_values,
-			(caddr_t)&clnt_res,
-			TIMEOUT
-			)
-				!= RPC_SUCCESS)
-	{
-		return (NULL);
-	}
-
-	return (&clnt_res);
-}
-
-
-/* ============================= EOF =============================== */
 

@@ -24,12 +24,15 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-04-24 07:46:00 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-06-29 13:12:02 afalout Exp $
 #
+
+ROOT        =../..
+LIBROOT     =..
 
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 
 override NOINCL=0
 
@@ -37,7 +40,7 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-I../libincl -I../../compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
+CFLAGS+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
 
 ifneq "${COMSPEC}" ""
 	ifeq "${PDFBUILD}" "no"
@@ -64,16 +67,16 @@ all: ${ALL}
 
 libEXREPORT_PDF.so: ${OBJECTS_PDF}
 	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@
-	cp $@ ..
+	${CP} $@ ${LIBROOT}
 
 libEXREPORT_NOPDF.so: ${OBJECTS_NOPDF}
 	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@
-	cp $@ ..
+	${CP} $@ ${LIBROOT}
 
 NOPDF.dll: ${OBJECTS_NOPDF}
 	${MAKE} libEXREPORT_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
-	cp libEXREPORT_NOPDF.dll ..
-	cp libEXREPORT_NOPDF.dll.a ..
+	cp libEXREPORT_NOPDF.dll ${LIBROOT}
+	cp libEXREPORT_NOPDF.dll.a ${LIBROOT}
 
 PDF.dll:
 	@echo "Ooops: PDFlib on Windows?"

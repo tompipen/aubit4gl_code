@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.10 2002-06-02 06:52:32 afalout Exp $
+# $Id: map.c,v 1.11 2002-06-29 13:12:01 afalout Exp $
 #*/
 
 /**
@@ -43,10 +43,20 @@
 =====================================================================
 */
 
-#include <stdio.h>
 
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_4glc_int.h"
+
+#endif
+
 
 /*
 =====================================================================
@@ -63,9 +73,11 @@ static FILE *mapfile = 0;
 =====================================================================
 */
 
-void openmap (char *s);
-void addmap (char *t, char *s, char *w, int l, char *m);
-void closemap (void);
+#ifdef OLD_INCL
+	void openmap (char *s);
+	void addmap (char *t, char *s, char *w, int l, char *m);
+	void closemap (void);
+#endif
 
 /*
 =====================================================================

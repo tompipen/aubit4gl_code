@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.19 2002-06-21 09:05:57 mikeaubury Exp $
+# $Id: fcompile.c,v 1.20 2002-06-29 13:12:01 afalout Exp $
 #*/
 
 /**
@@ -42,13 +42,22 @@
 =====================================================================
 */
 
-#include <stdio.h>
 
-/* here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN */
-#include "a4gl_formxw.h"
-#include "a4gl_compiler.h"
-#include "a4gl_fcomp_fcompile.h"
-#include "a4gl_aubit_lib.h"
+#ifdef OLD_INCL
+
+	#include <stdio.h>
+
+	/* here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN */
+	#include "a4gl_formxw.h"
+	#include "a4gl_compiler.h"
+	#include "a4gl_fcomp_fcompile.h"
+	#include "a4gl_aubit_lib.h"
+
+#else
+
+    #include "a4gl_fcompile_int.h"
+
+#endif
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.1 2002-06-25 09:33:52 mikeaubury Exp $
+# $Id: ops.c,v 1.2 2002-06-29 13:12:02 afalout Exp $
 #
 */
 
@@ -36,7 +36,7 @@
  * What we want to be able to do is add datatypes programatically
  * We therefor maintain a list of available datatypes
  * and their various conversion routines..
- * 
+ *
  * This is very much a work in progress....
  *
  */
@@ -47,75 +47,121 @@
 =====================================================================
 */
 
-#include "a4gl_stack.h"
-#include "a4gl_dtypes.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
+
+#ifdef OLD_INCL
+
+	#include "a4gl_stack.h"
+	#include "a4gl_dtypes.h"
+	#include "a4gl_aubit_lib.h"
+	#include "a4gl_debug.h"
+
+#else
+
+    #include "a4gl_libaubit4gl_int.h"
+
+#endif
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
 void int_int_ops(int op) ;
-void push_long(long a);
-void push_int(int a);
+#ifdef OLD_INCL
+	void push_long(long a);
+	void push_int(int a);
+#endif
 void add_default_operations(void) ;
-
 void add_op_function(int dtype1,int dtype2,int op,void *function);
+void dt_in_ops(int op);
 
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
-* Add all the default operations to the system
-**/
-
-void dt_in_ops(int op) {
+ * Add all the default operations to the system
+ *
+ * @return
+ */
+void
+dt_in_ops(int op)
+{
 struct a4gl_dtime dt;
 struct ival in;
-debug("In dt_in_ops");
-printf("Here\n");
-pop_param(&in,DTYPE_INTERVAL,-1);
-pop_param(&dt,DTYPE_DTIME,-1);
+	
+	#ifdef DEBUG
+		debug("In dt_in_ops");
+    #endif
+	printf("Here\n");
+	pop_param(&in,DTYPE_INTERVAL,-1);
+	pop_param(&dt,DTYPE_DTIME,-1);
 
-push_int(0);
+	push_int(0);
 }
 
 
-void int_int_ops(int op) {
+/**
+ *
+ *
+ * @return
+ */
+void
+int_int_ops(int op) 
+{
 long a;
 long b;
 long c;
 long d;
-b=pop_long();
-a=pop_long();
+	
+	b=pop_long();
+	a=pop_long();
 
-debug("int_int_ops : %d %d %d",a,b,op);
+    #ifdef DEBUG
+		debug("int_int_ops : %d %d %d",a,b,op);
+    #endif
 
-switch (op) {
-	case OP_ADD: 			push_long(a+b); return;
-	case OP_SUB: 			push_long(a-b); return;
-	case OP_MULT: 			push_long(a*b); return;
-	case OP_DIV: 			push_long(a/b); return;
-	case OP_MOD: 			push_long(a%b); return;
-	case OP_POWER: 			
-		if (b==0) {push_long(1); return;}
-		if (b==1) {push_long(a); return;}
-		c=a;
-		for (d=1;d<=b;d++) c*=b;
-		push_long(c);
-		return;
+	switch (op) {
+		case OP_ADD: 			push_long(a+b); return;
+		case OP_SUB: 			push_long(a-b); return;
+		case OP_MULT: 			push_long(a*b); return;
+		case OP_DIV: 			push_long(a/b); return;
+		case OP_MOD: 			push_long(a%b); return;
+		case OP_POWER:
+			if (b==0) {push_long(1); return;}
+			if (b==1) {push_long(a); return;}
+			c=a;
+			for (d=1;d<=b;d++) c*=b;
+			push_long(c);
+			return;
 
-	case OP_LESS_THAN: 		push_int(a<b); return;
-	case OP_GREATER_THAN: 		push_int(a>b); return;
-	case OP_LESS_THAN_EQ: 		push_int(a<=b); return;
-	case OP_GREATER_THAN_EQ: 	push_int(a>=b); return;
-	case OP_EQUAL: 			push_int(a<=b); return;
-	case OP_NOT_EQUAL: 		push_int(a>=b); return;
-}
+		case OP_LESS_THAN: 		push_int(a<b); return;
+		case OP_GREATER_THAN: 		push_int(a>b); return;
+		case OP_LESS_THAN_EQ: 		push_int(a<=b); return;
+		case OP_GREATER_THAN_EQ: 	push_int(a>=b); return;
+		case OP_EQUAL: 			push_int(a<=b); return;
+		case OP_NOT_EQUAL: 		push_int(a>=b); return;
+	}
 
-exitwith("Unknown operation");
-push_int(0);
+	exitwith("Unknown operation");
+	push_int(0);
 return ;
 }
 
 
 
-void add_default_operations(void) {
+/**
+ *
+ *
+ * @return
+ */
+void
+add_default_operations(void) 
+{
 
 
 /* Integer functions 
@@ -146,8 +192,11 @@ DTYPE_SERIAL
 	add_op_function(DTYPE_SMINT,	DTYPE_SERIAL,	OP_MATH,int_int_ops);
 	add_op_function(DTYPE_DATE,	DTYPE_SERIAL,	OP_MATH,int_int_ops);
 
-	//add_op_function(DTYPE_DTIME,	DTYPE_INTERVAL,	OP_MATH,dt_in_ops);
+	/* add_op_function(DTYPE_DTIME,	DTYPE_INTERVAL,	OP_MATH,dt_in_ops); */
 	add_op_function(DTYPE_INTERVAL,	DTYPE_DTIME,	OP_MATH,dt_in_ops);
 
 
 }
+
+
+/* ========================== EOF ========================== */

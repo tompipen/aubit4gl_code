@@ -1,10 +1,13 @@
 /* *****************************************************************************
  * (c) 1997-2002 Aubit Computing Ltd.
  *
- * $Id: a4gl_incl_4gldef.h,v 1.5 2002-06-06 12:31:26 afalout Exp $
+ * $Id: a4gl_incl_4gldef.h,v 1.6 2002-06-29 13:12:01 afalout Exp $
  *
  * Change History :
  *	$Log: not supported by cvs2svn $
+ *	Revision 1.5  2002/06/06 12:31:26  afalout
+ *	Fixing warnings with -pedantic
+ *	
  *	Revision 1.4  2002/05/28 10:32:08  afalout
  *	Fixing redundant declarations with -Wredundant-decls
  *	
@@ -58,6 +61,8 @@
 	} fglmoney;
 
 
+#ifdef OLD_INCL
+
 	/** SQLCA structure definition */
 	typedef struct {
 		int sqlcode;
@@ -68,7 +73,11 @@
 		char sqlstate[10];
 	} sqlca_struct;
 
+#endif
 
+
+
+#ifdef OLD_INCL
 	/**
 	 * Binding information structure definition.
 	 * Used to bind values to and from SQL.
@@ -91,6 +100,8 @@
 	  char filename[256];
 	  void *ptr;
 	};
+
+#endif
 
 	#define fglbyte struct fgl_int_loc
 
