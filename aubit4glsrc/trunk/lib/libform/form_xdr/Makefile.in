@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-09-25 05:42:14 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-09-26 07:27:32 afalout Exp $
 #
 
 ROOT		=../../..
@@ -32,7 +32,6 @@ LIBROOT     =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
 
 ## ==================================================================
 ##                              Source files
@@ -40,7 +39,7 @@ override NOINCL=0
 
 #require XDR frunctions, part of Sun RPClib:
 CMODS_FORM_XDR		=${ROOT}/compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
-OBJS_FORM_XDR      =${CMODS_FORM_XDR:.c=.o}
+OBJS_FORM_XDR		=${CMODS_FORM_XDR:.c=.o}
 
 ## ==================================================================
 ##                              Options
@@ -52,7 +51,7 @@ ifdef COMSPEC
     endif
 else
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libFORM_XDR${SO_EXT}
+		ALL			+=${LIBROOT}/libFORM_XDR${SO_EXT}
     endif
 endif
 
@@ -60,7 +59,7 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl ${CFLAGS} -I${ROOT}/common/dataio
+CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile ${CFLAGS} -I${ROOT}/common/dataio
 
 ## RPC type and XDR are not the same thing. RPC type represents Remote
 #Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
@@ -79,9 +78,8 @@ all: note ${ALL}
 note:
 	@echo "Building: ${ALL}"
 
-libFORM_XDR${SO_EXT} : ${OBJS_FORM_XDR}
+${LIBROOT}/libFORM_XDR${SO_EXT} : ${OBJS_FORM_XDR}
 	${LD} ${SO_LDFLAGS} ${RPCLIB_NAME} -o $@ $^
-	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
@@ -116,11 +114,9 @@ ${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
 ## ==================================================================
 
 clean :
-	${RM} $(OBJS_DEBUG) menu_x.h menu_x_xdr.c
-	${RM} form_x_xdr.c form_x.h project.c aubit-config
-	${RM} loadmap loadmap.c loadmap.h core
-	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
-	${RM} *.base *.exp libaubit4gl.def
+	${RM} $(OBJS_DEBUG) menu_x.h menu_x_xdr.c form_x_xdr.c form_x.h project.c \
+	aubit-config loadmap loadmap.c loadmap.h core *.out *.glb *${SO_EXT} *.a  \
+	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp libaubit4gl.def
 
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.9 2002-09-26 07:18:02 afalout Exp $
+# $Id: pointers.c,v 1.10 2002-09-26 07:27:22 afalout Exp $
 #
 */
 
@@ -60,24 +60,11 @@
 
 
 
-#ifdef OLD_INCL
-
-	#include <string.h>
-	#include <stdlib.h> 			/* free() */
-
-	#ifndef WIN32
-		#include <search.h>
-	#endif
-
-	#include "a4gl_debug.h"
-	#include "a4gl_aubit_lib.h" 	/* trim() */
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
+#ifndef WIN32
+	#include <search.h>
 #endif
 
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -105,7 +92,8 @@ struct s_node
 */
 
 /* search internal node for windows only*/
-#ifdef WIN32
+//#ifdef WIN32
+#if (defined(__MACH__) && defined(__APPLE__)) || defined WIN32
 	typedef struct entry { char *key, *data; } ENTRY;
 	typedef enum { FIND, ENTER } ACTION;
 
@@ -398,7 +386,7 @@ find_pointer_ptr (
     {
       node = *(struct s_node **) a;
       node =(struct s_node *) node->ptr;
-       
+
       debug("Copying.. %s",node->name);
       *type = node->name[0];
       strcpy (name, &node->name[1]);

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-09-25 05:42:15 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-09-26 07:27:32 afalout Exp $
 #
 
 ROOT    =../../..
@@ -53,7 +53,7 @@ ifdef COMSPEC
     endif
 else
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libRPC_XDR${SO_EXT}
+		ALL			+=${LIBROOT}/libRPC_XDR${SO_EXT}
     endif
 endif
 
@@ -70,10 +70,8 @@ CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile -
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libRPC_XDR${SO_EXT}: ${OBJS_RPC}
+${LIBROOT}/libRPC_XDR${SO_EXT}: ${OBJS_RPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ${LIBROOT}
-
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
@@ -102,9 +100,8 @@ ${CMODS_RPC} : form_x.h
 ## ==================================================================
 
 clean :
-#	${RM} $(OBJS) $(OBJS_DEBUG)
-	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core
-	${RM} *.base *.exp libRPC_NORPC.def libRPC_XDR.def
+	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
+	core *.base *.exp libRPC_NORPC.def libRPC_XDR.def
 
 ## ==================================================================
 ##                         Other Targets
