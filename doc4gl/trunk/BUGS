@@ -1,72 +1,22 @@
                  BUGS TO BE FIXED
 				 ----------------
 
+in GUI mode, if you try to turn off "show log" option, main window dissapears
+You then must kill the program.
 
+=============================================================================
 
-==========================================================
-BUG 2:
+fgldoc command on the command line, with no parameters at all,
+sometimes starts GUI mode, but some times instead shows a Usage instructios.
 
-fgldoc needs an option to stop (or not) on error
-------------------------------------------------
+===========================================================================
 
-Something like -i (ignore) and to stop on error should be defaut.
-
-Now, when for instance, ther is an error in incovation of p4gl from fgldoc,
-fgldoc reports the error and continues.
-
-==========================================================
-BUG 3:
-
- --import_directory=/opt/aubit/apps/erp/src --load_recursive
-fails
--------------------------------
-
-
-[LOG] : Error executing p4gl :
-		 0
-[PROGRESS] Parsing source 4gl
-[PROGRESS] /opt/aubit/apps/erp/src/utility : U56.4gl
-[LOG] : p4gl --file=U56.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
-
-[LOG] : Error executing p4gl :
-		 0
-[PROGRESS] Parsing source 4gl
-[PROGRESS] /opt/aubit/apps/erp/src/utility : U57.4gl
-[LOG] : p4gl --file=U57.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
-
-[LOG] : Error executing p4gl :
-		 0
-[PROGRESS] Parsing source 4gl
-[PROGRESS] /opt/aubit/apps/erp/src/utility : U58.4gl
-[LOG] : p4gl --file=U58.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
-
-Erro : processo inexistente <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-[LOG] : Error executing p4gl :
-		 0
-[PROGRESS] Parsing source 4gl
-[PROGRESS] /opt/aubit/apps/erp/src/utility : U61.4gl
-[LOG] : p4gl --file=U61.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
-
-[LOG] : Error executing p4gl :
-		 0
-
-
-[root@aptiva erp]#  p4gl --file=U61.4gl --database=p4gl_repository  --insert
-p4glpp: Erro a abrir ficheiro U61.4gl
-No such file or directory
-p4gl: U61.4gl, Unable to Pre-process source (U61.4gl)
-
-If I cd to /opt/aubit/apps/erp/src/utility first, command works fine.
+there is no way to process a single file using fgldoc, only a complete directory
 
 =========================================================================
-BUG 4:
 
-Segmentation fault parsing erpmenu.4gl
----------------------------------------
-
-[root@aptiva erp]# cd src/utility/
-[root@aptiva utility]# p4gl --file=erpmenu.4gl --database=p4gl_repository  --insert
-Segmentation fault
+p4gl error line shows one line too high: for example, if 49 is shown, error
+is actially on line 50
 
 =========================================================================
 BUG 5:
@@ -152,36 +102,11 @@ BUG 9:
 By default fgldoc should work on the current directory recursively.
 ===========================================================================
 
-
+===========================================================================
 
                                     FIXED BUGS
 									----------
 
-==========================================================
-
-Window Size
-  Fixed : 24/1/2003
-
-==========================================================
-
-CUI mode
---------
-[afalout@aptiva erp]$ make doc4gl
-/usr/local/bin/fgldoc --ui=CUI --action=importFgl --import_directory=/opt/aubit/apps/erp/src/ap --load_recursive --packa
-ge_name=MaxERP --send_line_to_log
-Starting with no GUI
-Can't call method "isFglFile" without a package or object reference at
-/usr/local/lib/perl5/5.8.0/FglDocumenter/FormP4gl.pm line 469.
-make: *** [doc4gl.import] Error 255
-[afalout@aptiva erp]$
-
-  Fixed : 24/1/2003
-
-==========================================================
-
-To many forks
--------------
-  Fixed : 24/1/2003
 
 ==========================================================
 
@@ -191,67 +116,6 @@ Impossible to interrupt execution of fgldoc with CTRL-C
 CTRL+C does nothing - fgldoc continues execution
 
 
-==========================================================
-
-fgldoc needs an option to stop (or not) on error
-------------------------------------------------
-
-Something like -i (ignore) and to stop on error should be defaut.
-
-Now, when for instance, ther is an error in incovation of p4gl from fgldoc,
-fgldoc reports the error and continues.
-
-==========================================================
-
- --import_directory=/opt/aubit/apps/erp/src --load_recursive
-fails
--------------------------------
-
-
-[LOG] : Error executing p4gl :
-		 0
-[PROGRESS] Parsing source 4gl
-[PROGRESS] /opt/aubit/apps/erp/src/utility : U56.4gl
-[LOG] : p4gl --file=U56.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
-
-[LOG] : Error executing p4gl :
-		 0
-[PROGRESS] Parsing source 4gl
-[PROGRESS] /opt/aubit/apps/erp/src/utility : U57.4gl
-[LOG] : p4gl --file=U57.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
-
-[LOG] : Error executing p4gl :
-		 0
-[PROGRESS] Parsing source 4gl
-[PROGRESS] /opt/aubit/apps/erp/src/utility : U58.4gl
-[LOG] : p4gl --file=U58.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
-
-Erro : processo inexistente <<<<<<<<<<<<<<<<<<<<<<<<<<<<
-[LOG] : Error executing p4gl :
-		 0
-[PROGRESS] Parsing source 4gl
-[PROGRESS] /opt/aubit/apps/erp/src/utility : U61.4gl
-[LOG] : p4gl --file=U61.4gl --database=p4gl_repository  --insert in /opt/aubit/apps/erp/src/utility
-
-[LOG] : Error executing p4gl :
-		 0
-
-
-[root@aptiva erp]#  p4gl --file=U61.4gl --database=p4gl_repository  --insert
-p4glpp: Erro a abrir ficheiro U61.4gl
-No such file or directory
-p4gl: U61.4gl, Unable to Pre-process source (U61.4gl)
-
-If I cd to /opt/aubit/apps/erp/src/utility first, command works fine.
-
-=========================================================================
-
-Segmentation fault parsing erpmenu.4gl
----------------------------------------
-
-[root@aptiva erp]# cd src/utility/
-[root@aptiva utility]# p4gl --file=erpmenu.4gl --database=p4gl_repository  --insert
-Segmentation fault
 
 =========================================================================
 
@@ -302,54 +166,85 @@ You _FINALLY_ get GUI as you would expect...
 
 ===========================================================================
 
-GUI main screen has 5 pictures:
-
-CSV=>db
-4gl=>db
-CSV=>db (again) <<<<<<<<<<<<<<<<<<<<<<<<<<<<,
-db=>4gl
-db=>HTML
-
-The duplicated CSV=>db should be db=>CSV
 
 
-===========================================================================
+    p4gl: P21.4gl, Line 97: parse error                    
+				let pr_voucher.vouch_code = menu(cmpy, whom, pr_voucher.*,
 
-TEST:Unit perl module is not checked in configure
-
-===========================================================================
-
-
-
-
-
-
-    p4gl: P21.4gl, Line 97: parse error
-    p4gl: P21b.4gl, Line 49: parse error
-    p4gl: P24.4gl, Line 530: parse error
     p4gl: P34k.4gl, Line 509: parse error
-    p4gl: P64.4gl, Line 433: parse error
-    p4gl: P64a.4gl, Line 49: parse error
+				print 54 spaces
+
     p4gl: P6A.4gl, Line 479: parse error
+                 print column 10, pr_temp_text clipped,
+                       column 25, where1_text clipped wordwrap right margin x
+                 print column 25, where2_text clipped wordwrap right margin x
+
+
     p4gl: P71.4gl, Line 697: parse error
+				let pr_temp_text = pr_recurhead.inv_text clipped, ".",
+                               (pr_recurhead.run_num + 1) using "&&&"
+
+
     p4gl: P71f.4gl, Line 739: parse error
+                File has only 154 lines!
+
     p4gl: P72.4gl, Line 265: parse error
+	            let pr_temp_text = (pr_recurhead.run_num + 1) using "&&&"
+
     p4gl: P73.4gl, Line 336: parse error
-    p4gl: PA8.4gl, Line 102: parse error
-    p4gl: PAB.4gl, Line 108: parse error
-    p4gl: PB1.4gl, Line 98: parse error
-    p4gl: PB6.4gl, Line 96: parse error
-    p4gl: PC4.4gl, Line 100: parse error
-    p4gl: PCA.4gl, Line 95: parse error
-    p4gl: PCD.4gl, Line 95: parse error
-    p4gl: PR1.4gl, Line 138: parse error
+         print column 10, pr_temp_text clipped,
+               column 25, where_text clipped wordwrap
+                          right margin x <<<< cause
+
+
+
     p4gl: PR2.4gl, Line 106: parse error
-    p4gl: PRE.4gl, Line 157: parse error
+		   construct by name pr_rmsreps.sel_text on vendor.vend_code,
+                                            vendor.type_code,
+                                            vendor.name_text,
+                                            vendor.currency_code,
+                                            vendor.term_code,
+                                            vendor.tax_code,
+                                            voucher.year_num,
+                                            voucher.period_num
+      attribute(cyan)
+
+
     p4gl: PSL_J.4gl, Line 1007: parse error
+            prompt " Enter target file name: " for file
+
     p4gl: PSU_J.4gl, Line 131: parse error
+            call unload()
+
     p4gl: PSV.4gl, Line 68: parse error
+         call verify()
+
     p4gl: PSW.4gl, Line 126: parse error
+            if unload(1) then end if
+
     p4gl: PX3_J.4gl, Line 145: parse error
+
+   select count(unique pay_doc_num) into pr_count from tentpays
+      where cmpy_code = cmpy
+        and cycle_num = pr_cycle_num
+        and status_ind = "4"
+
+     print "03",pr_invoice.inv_num,
+            pr_voucher.vouch_date using "ddmmyy",
+            (pr_invoice.invoiced_amt * 100) using "&&&&&&&&&&&&&",
+            pr_invoice.inv_sign_text,
+            (pr_tentpays.vouch_amt * 100) using "&&&&&&&&&&&&&",
+            pr_invoice.paid_sign_text,
+            pr_invoice.desc_text,
+            (pr_invoice.discount_amt * 100) using "&&&&&&&&&&&&&",
+            "                                        ",
+            "                                        ",
+            "I",
+            "                                        ",
+            "                                        ",
+            "                                   "
+
+--------------------------------------------------------------------------
     p4gl: A21f.4gl, Line 104: parse error
     p4gl: A23_J.4gl, Line 1877: parse error
     p4gl: A2S.4gl, Line 196: parse error
@@ -388,6 +283,9 @@ TEST:Unit perl module is not checked in configure
     p4gl: ASV_J.4gl, Line 170: parse error
     p4gl: ASW.4gl, Line 117: parse error
     p4gl: AZS.4gl, Line 70: parse error
+
+---------------------------------------------------------------------------
+
     p4gl: contact.4gl, Line 95: parse error
     p4gl: contact_address.4gl, Line 95: parse error
     p4gl: contact_bank.4gl, Line 95: parse error
@@ -400,6 +298,9 @@ TEST:Unit perl module is not checked in configure
     p4gl: contact_relation.4gl, Line 97: parse error
     p4gl: contact_role.4gl, Line 95: parse error
     p4gl: maintain.4gl, Line 98: parse error
+
+---------------------------------------------------------------------------
+
     p4gl: cacdwind.4gl, Line 141: parse error
     p4gl: glob_DATABASE.4gl, Line 38: parse error
     p4gl: glob_GLOBALS.4gl, Line 67: parse error

@@ -188,66 +188,72 @@ void initArguments(int argc, char *argv[])
   {
     switch(c)
     {
-      case 'f':                                       /* File */
+      case 'f':						/* Input 4gl file */
         setFglSourceFile(optarg);
         break;
 
-      case 'd':                                       /* Debug mode */
+      case 'd':						/* Debug mode */
         setDebug(1);
         break;
 
-      case 'v':                                       /* Verbose mode */
+      case 'v':						/* Verbose mode */
         setVerbose(1);
         break;
 
-      case 'i':                                       /* Repository Insert */
+      case 'i':						/* Repository Insert */
         setRepositoryInsert(1);
         break;
 
-      case 'w':                                  /* Warning level */
+      case 'w':						/* Warning level */
         setWarningLevel(atoi(optarg));
         break;
 
-      case 'b':                                  /* Database Name */
+      case 'b':						/* Database Name */
         setDatabaseName(optarg);
         break;
 
-      case 'c':                                  /* Documentation generation*/
+      case 'c':						/* Documentation generation*/
         setFgldocGen(1);
         break;
 
-      case 's':                                  /* Load standard comments */
+      case 's':						/* Load standard comments */
         setStandardComments(1);
         break;
 
-      case 'l':                            /* Documentation dir (location)*/
+      case 'l':						/* Documentation dir (location)*/
         setDocFileDir(optarg);
         break;
 
-      case 'p':                                       /* Package */
+      case 'p': 					/* Package */
         setPackage(optarg);
         break;
 
-      case 'o':                                       /* Package */
+      case 'o':						/* Repository options */
         setRepositoryOptions(optarg);
         break;
 
-      case 'h':                                  /* Warning level */
+      case 'h':						/* Help */
       case '?':
         /* Isto não está actualizado */
         printf(
            "Usage: p4gl [-h] [-d] [-i] [-v] [-w level] -f ficheiro.4gl\n");
-        printf("   -h : Display this help message\n");
-        printf("   -d : Debug mode\n");
-        printf("   -i : Insert in the repository\n");
-        printf("   -v : Verbose mode\n");
-        printf("   -w : Warning level (1..10)\n");
-        printf("   -c : Generate documentation\n");
-        printf("   -s : Use standard comments for documentation\n");
-        printf("   -p package : Nome do package\n");
+        printf("--help : Display this help message\n");
+        printf("--debug : Debug mode\n");
+        printf("--insert : Insert in the repository\n");
+        printf("--verbose : Verbose mode\n");
+        printf("--warning_level : Warning level (1..10)\n");
+        printf("--document : Generate documentation\n");
+        printf("--std_comment : Use standard comments for documentation\n");
+        printf("--package=package : Nome do package\n");
+        printf("--file=file.4gl : Name of 4gl file to process\n");
+        printf("--database=dbname : Name databse to use\n");
+        printf("--document_directory= : \n");
+        printf("--repository_options= : \n");
+        printf("--insert_process= : \n");
         exit(0);
 
-      case 'x':                            
+
+      case 'x':                     /* insert_process */
         P4glCb.insertProcess = 1;
         break;
 
@@ -292,7 +298,7 @@ static void openLogFile(void)
   Log = fopen(logfile,"a");
   if ( Log == ((FILE *)0 ))
   {
-   fprintf(stderr,"Erro a abrir ficheiro log <%s>\n",logfile);
+   fprintf(stderr,"Error opening log file <%s>\n",logfile);
    exit(1);
   }
   umask(originalUmask);
@@ -330,7 +336,7 @@ void initP4glPhaseOne(void)
   P4glCb.numFglDoc         = 0;
   P4glCb.errorToDb         = 0;
   P4glCb.parsedComment     = (Comment *)0;
-  P4glCb.package = strdup(".");
+  P4glCb.package           = strdup(".");
   P4glCb.insertProcess     = 1;
   initDatabase();
   initCommentStateMachine();
@@ -357,7 +363,7 @@ static int openInputFile(void)
   fin_ptr = fopen(FicheiroTemp,"r");
   if ( fin_ptr == ((FILE *)0 ))
   {
-   fprintf(stderr,"Erro a abrir ficheiro do source (.4gl) : <%s>\n",
+   fprintf(stderr,"Error opening a source file (.4gl) : <%s>\n",
         FicheiroTemp);
    perror("ERRO");
    return 0;
@@ -449,7 +455,7 @@ int initP4glPhaseTwo(void)
   /** @todo : This test should return error */
   if ( ! existe_ficheiro )
     P4glError(ERROR_EXIT,
-       "Utilizacao: p4gl [-h] [-d] [-i] [-v] -f %s\n","ficheiro.4gl");
+       "Usage: p4gl [-h] [-d] [-i] [-v] -f %s\nTry 'p4gl --help' for more options\n","filename.4gl");
 
   P4glVerbose("4gl Pre-Processing\n");
   getDirectoryFromFile(); 
