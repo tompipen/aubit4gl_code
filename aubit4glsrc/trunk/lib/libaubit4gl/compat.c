@@ -28,6 +28,11 @@ popquote (char *s, int size)
   A4GL_pop_char (s, size);
 }
 
+void
+popstring (char *s, int size)
+{
+  A4GL_pop_char (s, size);
+}
 
 void
 retquote (char *s)

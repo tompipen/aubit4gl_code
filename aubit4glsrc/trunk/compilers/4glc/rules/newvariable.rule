@@ -97,8 +97,7 @@ var:
          else
          {
              A4GL_debug ("Is string...");
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", buff,
-                      (int)scan_variable (buff), $<str>4);
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", buff, (int)scan_variable (buff), $<str>4);
 
              addmap("Use Variable",buff,curr_func,yylineno,infilename);
              A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
@@ -180,7 +179,7 @@ char arrbuff[256];
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " a4gl_substr(%s,%d,%s,0) /*2*/", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.1*/", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
   } else {
  
   if (((type & 0xffff) != 0) || (arrsize>0))
@@ -192,7 +191,7 @@ char arrbuff[256];
     }
   else
     {
-      sprintf ($<str>$, " a4gl_substr(%s,0x%x,%s,0)/*3*/", $<str>1, (int)scan_variable ($<str>1), $<str>2);
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.2*/", $<str>1, (int)scan_variable ($<str>1), $<str>2);
              addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
       	dec_counter();
@@ -234,7 +233,7 @@ identifier arr_subscripts
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " a4gl_substr(%s,%d,%s,0) /*2*/", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.3*/", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
   } else {
  
   if (((type & 0xffff) != 0) || (arrsize>0))
@@ -245,7 +244,7 @@ identifier arr_subscripts
     }
   else
     {
-      sprintf ($<str>$, " a4gl_substr(%s,0x%x,%s,0)/*3*/", $<str>1, (int)scan_variable ($<str>1), $<str>2);
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.4*/", $<str>1, (int)scan_variable ($<str>1), $<str>2);
              addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
       	dec_counter();

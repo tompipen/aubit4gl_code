@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.122 2003-05-15 07:10:20 mikeaubury Exp $
+# $Id: mod.c,v 1.123 2003-05-17 08:30:23 mikeaubury Exp $
 #
 */
 
@@ -1885,13 +1885,14 @@ add_bind (char i, char *var)
 	      int s_sstart;
 	      int s_send;
 	      int a;
-	      strcpy (buff2, &var[8]);
+	      strcpy (buff2, &var[strlen("a4gl_substr ")+1]);
 
 	      a =
 		sscanf (buff2, "%s , %d , %d , %d) /*1*/", buff, &s_dtype,
 			&s_sstart, &s_send);
 	      if (a != 4)
 		{
+		A4GL_debug("Error processing : %s\n",buff2);
 		  a4gl_yyerror ("Internal error - (split substr)");
 		}
 	      if (s_send == 0)
