@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.29 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: iarray.c,v 1.30 2003-07-27 09:15:30 mikeaubury Exp $
 #*/
 
 /**
@@ -78,7 +78,7 @@ struct s_movement
                     Functions prototypes
 =====================================================================
 */
-
+int A4GL_field_name_match (FIELD * f, char *s);
 
 static void init_arr_line (struct s_inp_arr *sio, int n);
 static int process_control_stack (struct s_inp_arr *arr);
@@ -1946,6 +1946,7 @@ struct s_inp_arr *arr;
 /* fieldname + = next - = previous */
   int a;
   FIELD **ptr;
+char *colname;
 arr=arrv;
 
   if (type=='+')
@@ -1969,14 +1970,18 @@ arr=arrv;
 
   A4GL_debug ("req_field");
 
-  a = A4GL_gen_field_list (&ptr, arr->currform, 1, ap);
+  //a = A4GL_gen_field_list (&ptr, arr->currform, 1, ap);
+  colname=va_arg(*ap,char *);
 
   A4GL_debug ("A=%d MJAMJA123", a);
   if (a >= 0)
     {
       for (a = 0; a < arr->nbind; a++)
 	{
-	  if (arr->field_list[arr->scr_line][a] == ptr[0])
+
+      if (A4GL_field_name_match (arr->field_list[arr->scr_line][a], colname))
+
+	  //if (arr->field_list[arr->scr_line][a] == ptr[0])
 	    {
 	      A4GL_init_control_stack (arr, 0);
 

@@ -9,23 +9,23 @@
 * Name of the API:
 LIBRARY ESQL
 * Name of the variable which will have second part of library name to load:
-VARIABLE A4GL_ESQLTYPE
+VARIABLE A4GL_LEXDIALECT
 * Add prefix for created API punctions:
-API_PREFIX ESQLAPI_
+* API_PREFIX ESQLAPI_
 * Add prefix for existing library functions:
-LIB_PREFIX ESQLAPI_
+* LIB_PREFIX ESQLAPI_
 * Name of the header file to be referenced with #include
-*HEADER_FILE API_lex.h
+* HEADER_FILE API_esql.h
 
 * ======================================================================
 * Function calls definitions:
 * func-name param-type param-name ... -> returns
 *
 
+#include "a4gl_API_esql.h"
 /* ------------ functions from compile_[c|perl].c -------------- */
 
 /* void printc(char *fmt, ...) */
-A4GL_internal_lex_printc char* fmt va_list* ap -> void
 
 /*
 void A4GL_copy_char(char *infx,char *a4gl,int indicat,int size,int mode,int x,int y);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.36 2003-07-25 22:04:53 mikeaubury Exp $
+# $Id: calldll.c,v 1.37 2003-07-27 09:15:30 mikeaubury Exp $
 #
 */
 
@@ -671,8 +671,8 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
 
   A4GL_debug ("Calling function");
   a = func_ptr (args);
-  A4GL_debug ("Closing handle");
-  dlclose (dllhandle);
+  //A4GL_debug ("Closing handle");
+  //dlclose (dllhandle);
   return a;
 
 }

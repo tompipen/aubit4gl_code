@@ -40,7 +40,7 @@ cp lib/*.so /home/aubit4gl/aubit4gl/lib
 cp incl/*.h /home/aubit4gl/aubit4gl/incl
 
 cd /home/aubit4gl/sourceforge/aubit4glsrc/tools/afinderr
-m
+
 cp /home/aubit4gl/sourceforge/aubit4glsrc/tools/afinderr/afinderr /home/aubit4gl/aubit4gl/bin
 cp /home/aubit4gl/sourceforge/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
 

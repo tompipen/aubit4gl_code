@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.74 2003-07-25 22:04:53 mikeaubury Exp $
+# $Id: compile_c.c,v 1.75 2003-07-27 09:15:30 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4091,7 +4091,7 @@ print_main_1 (void)
   	printc ("string[] _paramnames=new string[1]; _paramnames[0]={\"\"};");
   	printc ("int nargs=0;");
   } else {
-  	printc ("\n\nmain(int argc,char *argv[]) {\n");
+  	printc ("\n\nint main(int argc,char *argv[]) {\n");
   	printc ("char *_paramnames[]={\"\"};");
   	printc ("int nargs=0;");
   }
@@ -4127,7 +4127,7 @@ print_fgllib_start (char *db)
 void
 print_main_end (void)
 {
-  printc ("A4GL_fgl_end_4gl_0();\n}\n");
+  printc ("A4GL_fgl_end_4gl_0();\nreturn 0;}\n");
 }
 
 /**

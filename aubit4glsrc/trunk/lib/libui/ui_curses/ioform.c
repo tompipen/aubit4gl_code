@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.55 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: ioform.c,v 1.56 2003-07-27 09:15:30 mikeaubury Exp $
 #*/
 
 /**
@@ -116,7 +116,7 @@ static void A4GL_set_field_attr (FIELD * field);
 
 
 static int A4GL_get_metric_no (struct s_form_dets *form, FIELD * f);
-static int A4GL_field_name_match (FIELD * f, char *s);
+int A4GL_field_name_match (FIELD * f, char *s);
 static void A4GL_do_before_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
 static void A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
@@ -1706,6 +1706,11 @@ A4GL_field_name_match (FIELD * f, char *s)
   int aa;
   int ab;
   struct struct_scr_field *field;
+  struct s_form_dets *fdets;
+  int srec_no;
+  int z;
+
+  fdets = A4GL_get_curr_form (1);
   A4GL_bname (s, tabname, colname);
   A4GL_debug ("field_name_match : '%s' '%s'", tabname, colname);
 
@@ -1713,24 +1718,55 @@ A4GL_field_name_match (FIELD * f, char *s)
   if (field == 0)
     return 0;
 
-  aa = strcmp (field->tabname, tabname);
-  ab = strcmp (field->colname, colname);
-  A4GL_debug ("Column defined as %s %s", field->tabname, field->colname);
 
-  if ((aa == 0 && ab == 0) || (aa == 0 && colname[0] == '*'))
-    {
-      A4GL_debug ("Matches in .*");
-      return 1;
-    }
+  if (tabname[0]!=0) {
+  	srec_no = A4GL_find_srec (fdets->fileform, tabname);
+  } else {
+  	srec_no=-1;
+  }
 
-  if (ab == 0 && tabname[0] == 0)
-    {
-      A4GL_debug ("matches just on column");
-      return 1;
+	A4GL_debug("No srec_no...");
+  	aa = strcmp (field->tabname, tabname);
+  	ab = strcmp (field->colname, colname);
+  	A4GL_debug ("Column defined as %s %s", field->tabname, field->colname);
 
-    }
-  A4GL_debug ("Doesn't A4GL_match - %d %d", aa, ab);
-  return 0;
+  	if ((aa == 0 && ab == 0) || (aa == 0 && colname[0] == '*')) {
+      		A4GL_debug ("Matches in .*");
+      		return 1;
+    	}
+
+  	if (ab == 0 && tabname[0] == 0) {
+      		A4GL_debug ("matches just on column");
+      		return 1;
+	
+    	}
+
+A4GL_debug ("Doesn't A4GL_match - %d %d", aa, ab);
+if (srec_no==-1) return 0;
+
+A4GL_debug("but - Have an srec_no...");
+
+A4GL_debug("Match 2");
+// Maybe its a screen record - not a table name....
+
+
+
+
+          for (z = 0; z < fdets->fileform->records.records_val[srec_no].attribs.attribs_len; z++)
+            {
+		int attr_no;
+		int mno;
+              	attr_no = fdets->fileform->records.records_val[srec_no].attribs.attribs_val[z];
+		A4GL_debug("attr_no=%d - %s %s",attr_no, fdets->fileform->attributes.attributes_val[attr_no].tabname, fdets->fileform->attributes.attributes_val[attr_no].colname);	
+		if (strcmp(fdets->fileform->attributes.attributes_val[attr_no].colname,colname)==0) { // We've found our entry in the screen record
+			if (strcmp(tabname,fdets->fileform->attributes.attributes_val[attr_no].tabname)!=0) {
+			char buff[256];
+			sprintf(buff,"%s.%s",fdets->fileform->attributes.attributes_val[attr_no].tabname,fdets->fileform->attributes.attributes_val[attr_no].colname);
+			if (A4GL_field_name_match (f, buff)) return 1;
+			}
+		}
+	    }
+	return 0;
 }
 
 
@@ -2899,10 +2935,14 @@ A4GL_fgl_infield_ap (void *inp,va_list *ap)
       colname = va_arg (*ap, char *);	/* This is suspect.... */
 	if (colname==0) break;
       field_no=va_arg (*ap,int);
+
+
       if (A4GL_field_name_match ((FIELD *)A4GL_get_curr_infield(), colname)) {
+		A4GL_debug("infield - matches");
 		return 1;
       }
   }
+  A4GL_debug("Infield - doesn't match");
   return 0;
 
 
@@ -2938,12 +2978,15 @@ int field_no;
 
   while (1) {
       colname = va_arg (*ap, char *);   /* This is suspect.... */
-        if (colname==0) break;
+      if (colname==0) break;
       field_no=va_arg (*ap,int);
+
       if (A4GL_field_name_match ((FIELD *)A4GL_get_curr_infield(), colname)) {
+		A4GL_debug("Infield_ia - matches...");
                 return 1;
       }
   }
+  A4GL_debug("Infield_ia - doesn't match");
   return 0;
 
 
