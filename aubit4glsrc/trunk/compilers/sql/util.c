@@ -349,15 +349,15 @@ static int asql_yyerror(char *s) {
 		char buff[200];
 		int c;
 		A4GL_debug("Here\n");
-		printf("Here : %s in  %s\n",s,Sql); sleep (1);
+		//printf("Here : %s in  %s\n",s,Sql); sleep (1);
 		c=sql_string_cnt;
 		c-=20;
 		if (c<0) {c=0; }
 		strncpy(buff,&Sql[sql_string_cnt],199);
 		buff[199]=0;
-		A4GL_debug("MEMREAD syntax error %s\n",buff);
-		printf("MEMREAD syntax error %s\n",buff);
-		printf("                                         ^\n");
+		A4GL_debug("MEMREAD syntax error: %s\n",buff);
+		//printf("MEMREAD syntax error %s\n",buff);
+		//printf("                                         ^\n");
 	}
 	was_ok=0;
 	return 0;
@@ -573,7 +573,7 @@ static char * A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target
 	int a;
 	static char *ptr=0;
 	int l;
-
+	A4GL_debug("A4GLSQLCV_convert_sql_internal %s %s %s %d",source_dialect, target_dialect, sql, from_file);
 
 	sprintf(buff,"%s_%s",source_dialect, target_dialect);
 	if (strcmp(last_conversion,buff)!=0) {
@@ -587,6 +587,7 @@ static char * A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target
 		A4GLSQLCV_setbuffer(sql);
 	}
 
+	A4GL_debug("stmts=%p stmts_cnt=%d Sql=%s",stmts,stmts_cnt,Sql);
 	if (A4GLSQLCV_process()) {
 		// All ok !
 		A4GL_debug("SQL processed OK (%d statements)",stmts_cnt);
@@ -610,6 +611,7 @@ static char * A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target
 		} else {
 			ptr=realloc(ptr,l);
 		}
+		A4GL_debug("Statement %d = %s",a,stmts[a].val);
 		strcat(ptr,stmts[a].val);
 		if (a+1!=stmts_cnt) strcat(ptr,";\n");
 	}
@@ -620,12 +622,13 @@ return ptr;
 
 
 char * A4GLSQLCV_convert_sql (char *target_dialect, char *sql) {
-	return A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,0) ;
+char *ptr;
+ptr=A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,0) ;
+	return ptr;
 }
 
 
 char * A4GLSQLCV_convert_file (char *target_dialect, char *sql) {
-
 	return A4GLSQLCV_convert_sql_internal ("INFORMIX", target_dialect, sql,1) ;
 }
 
@@ -643,5 +646,7 @@ static int A4GLSQLCV_process() {
 void A4GL_add_feature(char *feature) {
         /* Reserved for future use */
 }
+
+
 void A4GLSQLPARSE_initlib() {
 }

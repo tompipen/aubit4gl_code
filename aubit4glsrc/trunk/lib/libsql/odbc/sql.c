@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.99 2004-12-17 13:19:05 mikeaubury Exp $
+# $Id: sql.c,v 1.100 2004-12-24 08:51:05 mikeaubury Exp $
 #
 */
 
@@ -4002,7 +4002,10 @@ A4GLSQL_commit_rollback (int mode)
     }
 
 
-if (tmode==-1) return;
+if (tmode==-1) {
+	A4GL_debug("Ignore all transaction stuff");
+	return;
+}
 
 
   if (tmode == 0)

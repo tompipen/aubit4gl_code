@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.88 2004-12-23 16:42:48 mikeaubury Exp $
+# $Id: resource.c,v 1.89 2004-12-24 08:51:05 mikeaubury Exp $
 #
 */
 
@@ -295,6 +295,7 @@ struct str_resource builtin_resource[] = {
 #endif
 
 
+  {"DBL2DEC_USING","Y"},
   {"COLOR_TUI_BKG_DEF","-1"},
   {"COLOR_TUI_BKG","0"},
   {"COLOR_TUI_FG_DEF","-1"},

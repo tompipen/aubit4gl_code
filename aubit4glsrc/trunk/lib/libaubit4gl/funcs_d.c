@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.47 2004-12-23 16:42:44 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.48 2004-12-24 08:51:05 mikeaubury Exp $
 #
 */
 
@@ -195,9 +195,8 @@ void *
 acl_malloc_full (int size, char *why, char *f, long line)
 {
   void *p;
-  //A4GL_debug ("About to alloc %d bytes", size);
   p = malloc (size);
-  //A4GL_debug ("alloced");
+  A4GL_debug ("alloc %d bytes : %p %s %s %d", size,p,why,f,line);
   return p;
 }
 
@@ -209,6 +208,7 @@ acl_malloc_full (int size, char *why, char *f, long line)
 void
 acl_free_full (void *ptr, char *f, long line)
 {
+  A4GL_debug ("Free %p %s %d", ptr,f,line);
   free (ptr);
 }
 

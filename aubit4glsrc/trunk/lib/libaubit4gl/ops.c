@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.64 2004-11-30 17:38:00 mikeaubury Exp $
+# $Id: ops.c,v 1.65 2004-12-24 08:51:05 mikeaubury Exp $
 #
 */
 
@@ -82,7 +82,7 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 void A4GL_dt_dt_ops (int op);
 //int A4GL_ctodt (void *a, void *b, int size);
 //int A4GL_ctoint (void *a, void *b, int size);
-static char *make_using_tostring (char *ptr, int d, int n);
+//static char *make_using_tostring (char *ptr, int d, int n);
 
 
 char *A4GL_display_int (void *ptr, int size, int size_c,
@@ -2938,7 +2938,7 @@ make_using (char *ptr)
 
 
 
-static char *
+char *
 make_using_tostring (char *ptr, int d, int n)
 {
   static char buff_ts[256];

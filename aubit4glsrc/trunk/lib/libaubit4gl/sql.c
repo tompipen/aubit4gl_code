@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.25 2004-12-17 13:19:03 mikeaubury Exp $
+# $Id: sql.c,v 1.26 2004-12-24 08:51:05 mikeaubury Exp $
 #
 */
 
@@ -298,12 +298,6 @@ A4GLSQL_close_session (char *sessname)
 /* int --- struct s_sid * in sql.c */
 struct s_sid* A4GLSQL_prepare_sql (char *s)
 {
-  if (must_convert)
-    {
-      //s = A4GL_apisql_strdup (s);
-	A4GL_debug("curr_sess->dbms_dialect=%s",curr_sess->dbms_dialect);
-      s=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
-    }
   return (struct s_sid *) A4GLSQL_prepare_select (0,0,0,0,s);
 }
 

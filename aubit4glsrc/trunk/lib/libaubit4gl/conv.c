@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.97 2004-12-23 16:42:44 mikeaubury Exp $
+# $Id: conv.c,v 1.98 2004-12-24 08:51:04 mikeaubury Exp $
 #
 */
 
@@ -1011,7 +1011,7 @@ A4GL_ftodec (void *a, void *z, int size)
   int t;
   double da;
   char buff[650];
-  char fmt[16];
+  char fmt[200];
   char *ptr;
   h=size;
   t = h;
@@ -1024,15 +1024,32 @@ da=*(double *)a;
 A4GL_debug("ftodec... %lf" ,*(double *)a);
   if (t >= 0)
     {
+
+
+
+if (A4GL_isyes(acl_getenv("DBL2DEC_USING"))) {
+	ptr=make_using_tostring("",h,t);
+	strcpy(fmt,ptr);
+	ptr=malloc(strlen(fmt)+10);
+	a4gl_using (ptr, strlen(fmt), fmt, da);
+	strcpy(buff,ptr);
+	free(ptr);
+} else {
        //set format to the number of digits needed, to force round-off
-      sprintf (fmt, "%%-32.%df", t+1);
+	if (A4GL_isyes(acl_getenv("INFORMIX_ROUNDING"))) {
+      		sprintf (fmt, "%%-32.%df", t);
+	} else {
+      		sprintf (fmt, "%%-32.%df", t+1);
+	}
 	A4GL_debug("Format=%s",A4GL_null_as_null(fmt));
+  	sprintf (buff, fmt, *(double *) a);
+}
     }
   else
     {
       strcpy (fmt, "%-32.1f");
-    }
   sprintf (buff, fmt, *(double *) a);
+    }
 	A4GL_debug("buff=%s",A4GL_null_as_null(buff));
   eptr = A4GL_str_to_dec (buff, z);
 

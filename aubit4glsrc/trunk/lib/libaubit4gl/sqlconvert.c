@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.39 2004-12-17 13:19:03 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.40 2004-12-24 08:51:05 mikeaubury Exp $
 #
 */
 
@@ -504,6 +504,7 @@ static void A4GL_cv_fnlist (char *source, char *target)
 char *A4GLSQLCV_check_sql(char *s ) {
 int b;
 static char *buff=0;
+char *ptr;
 
 A4GL_debug("check sql : %s\n",s);
 for (b=0;b<conversion_rules_cnt;b++) {
@@ -515,18 +516,19 @@ for (b=0;b<conversion_rules_cnt;b++) {
 }
 
 A4GL_debug("check sql 2\n");
-buff=realloc(buff,strlen(s)*2+1000);
-strcpy(buff,s);
+ptr=malloc(strlen(s)*2+1000);
+strcpy(ptr,s);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE) {
-		if (A4GL_strcasestr(buff,conversion_rules[b].data.from)!=0 ) {
-			//char b2[256];
-	
-			A4GL_cvsql_replace_str (buff, conversion_rules[b].data.from,conversion_rules[b].data.to );
+		if (A4GL_strcasestr(ptr,conversion_rules[b].data.from)!=0 ) {
+			A4GL_cvsql_replace_str (ptr, conversion_rules[b].data.from,conversion_rules[b].data.to );
 		}
 	}
 }
 A4GL_debug("returning\n");
+if (buff) free(buff);
+buff=strdup(ptr);
+free(ptr);
 return buff;
 }
 
