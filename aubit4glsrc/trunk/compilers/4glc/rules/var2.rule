@@ -84,10 +84,23 @@ struct variable *v_r;
 struct variable *v_1;
 struct variable *v_2;
 struct variable *v_loop;
-        strcpy(was_str,"");
+strcpy(was_str,"");
+printf("THRU : %s %s\n",$<str>1,$<str>3);
+
+A4GL_debug("Starting THRU");
+
+sprintf(buff,"%s\n%s",$<str>1,$<str>3);
+a=get_bind_cnt('i');
+printf("get_bind_cnt=%d\n",a);
+z=add_bind('i',buff);
+z-=a;
+for (a=0;a<z;a++)  {
+         if (strlen(was_str)) {strcat(was_str,",");}
+         strcat(was_str,"?");
+}
 
 
-	split_record($<str>3,&v_r,&v_1,&v_2);
+	/* split_record(buff,&v_r,&v_1,&v_2);
 
 	v_loop=v_1;
 
@@ -107,6 +120,7 @@ struct variable *v_loop;
 		}
 		v_loop=get_next_variable(v_r,v_loop,v_2);
 	}
+*/
 	$<sql_string>$=strdup(was_str);
 }
 ;

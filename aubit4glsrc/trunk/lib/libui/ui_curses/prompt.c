@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.28 2003-09-09 19:01:22 mikeaubury Exp $
+# $Id: prompt.c,v 1.29 2003-10-21 06:52:53 mikeaubury Exp $
 #*/
 
 /**
@@ -106,7 +106,6 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
 		return 0;
   }
   prompt->win = p;
-
   buff[width]=0;
   wprintw(p,"%s",buff);
   promptstr = A4GL_char_pop ();
@@ -221,7 +220,11 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
         clearok(curscr,1);
         A4GL_mja_refresh ();
       break;
+
+
     case -1:
+	abort_pressed=1;
+	return 0;
 
     case 27:
       return 0;
@@ -307,6 +310,7 @@ A4GL_prompt_loop (void *vprompt,int timeout)
 
   A4GL_chkwin ();
   mform = prompt->f;
+  A4GL_set_abort (0);
   p = prompt->win;
 #ifdef DEBUG
   {
@@ -334,6 +338,9 @@ A4GL_prompt_loop (void *vprompt,int timeout)
       A4GL_clear_prompt (prompt);
       return 0;
     }
+
+
+
   if (prompt->mode > 0)
     return 0;
 
@@ -353,6 +360,15 @@ A4GL_prompt_loop (void *vprompt,int timeout)
   a = A4GL_proc_key_prompt (a, mform, prompt);
   prompt->lastkey = A4GL_get_lastkey ();
   prompt_last_key=prompt->lastkey;
+  if (abort_pressed) {
+      A4GL_push_null (DTYPE_CHAR,1);
+      prompt->mode = 2;
+      A4GL_gui_endprompt ((long) prompt);       /* void    A4GL_gui_endprompt            (long ld); */
+      unpost_form (prompt->f);
+      A4GL_clear_prompt (prompt);
+      return 0;
+
+  }
 
   if (a == 0)
     {
