@@ -8,3 +8,6 @@ compile: m1.4ae
 	
 run: m1.4ae
 	sh ./run_m1
+	
+clean:
+	rm -f m1.out.nodate

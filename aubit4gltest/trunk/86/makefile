@@ -8,3 +8,7 @@ compile: g1.4ae
 	
 run: g1.4ae
 	sh ./run_g1
+	
+clean:
+	rm -f arr.out.nodate
+	

@@ -7,3 +7,7 @@ compile: getfld.4ae
 	
 run: getfld.4ae
 	sh ./run_getfld
+	
+clean:
+	rm -f gf.log.nodate
+

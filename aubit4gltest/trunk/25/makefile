@@ -6,3 +6,7 @@ compile: xrpt.4ae
 	
 run: xrpt.4ae
 	sh ./run_xrpt
+	
+clean:
+	rm -f xjunk xok
+	

@@ -7,3 +7,8 @@ compile: test_265.4ae
 run: compile
 	sh run_test_265
 	
+clean:
+	rm -f test_265.log.nodate
+
+
+

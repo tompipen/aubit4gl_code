@@ -82,10 +82,21 @@ run: compile
 #	${DEFAULT_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
-	${DBG} sh ./progname${NAMED_[DIFF|RUN]}
+#what?	${DBG} sh ./progname${NAMED_[DIFF|RUN]}
+#	${DBG} ./progname${NAMED_[DIFF|RUN]}
 #If you need to set specific options for that program, you can do it like this:
 #(example shows how to specify key file):
 #	export A4GL_KEYFILE=somekeyfile.in; ${DBG} ./anotherprogname${NAMED_[DIFF|RUN]}
+	${DBG} ./progname${TARGET_EXT}
+	grep -v Date output > output.out
+	if diff output.out output.out.expected ; then \
+		exit 0; \
+	else \
+		exit 1; \
+	fi
+
+
+
 #Add more actions here (if needed) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(7)
 
 ## ======================================================================

@@ -8,3 +8,6 @@ rpc_client: rpc_client.4gl
 
 run: all
 	./run_test
+	
+clean:
+	rm -f rpc_client rpc_server

@@ -8,3 +8,7 @@ compile: w.4ae
 	
 run: w.4ae
 	sh ./run_w
+	
+clean:
+	rm -f w.out.nodate
+	

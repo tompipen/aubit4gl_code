@@ -1380,7 +1380,9 @@ if test "$CLEAN" = "1" -a "$RUN_ONE" = ""; then
 		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
 		-o -name "*.ec" -o -name "*.h" -o -name "*.c" -o -name "pcode.run" 
 		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
-		-o -name "*.so" -o -name "*.dll"
+		-o -name "*.so" -o -name "*.dll" -o -name "*.iem"
+		-o -name "*.log" -o -name "*.4qe" -o -name "*.qo" -o -name "*.42r"
+		-o -name "*.42m" -o -name "*.frm" -o -name "*.hlp"
 		")" -exec rm {} \;'
 	
 	eval $EXEC
@@ -1388,19 +1390,19 @@ if test "$CLEAN" = "1" -a "$RUN_ONE" = ""; then
 	if test "$CLEAN_ALL" = "1"; then
 		for a in $ALL_TESTS
 		do
-			echo "Cleaning $a..."
+			echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bCleaning $a..."
 			$MAKE -C $a clean > /dev/null 2>&1
 		done
 		
 		#editor's backup files
-		
 		EXEC='	$FIND . "(" -name "*~" -o -name "*.bak"
+		-o -name ".#*"  -o -name ".*~"
 		")" -exec rm {} \;'
 		
 		eval $EXEC
 	fi
-	
-	
+	echo " "
+	echo "Done."
 	exit 0
 fi
 
@@ -2987,14 +2989,25 @@ do
 		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
 		-o -name "*.ec" -o -name "*.h" -o -name "*.c" -o -name "pcode.run" 
 		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
-		-o -name "*.so" -o -name "*.dll"
+		-o -name "*.so" -o -name "*.dll" -o -name "*.iem"
+		-o -name "*.log" -o -name "*.4qe" -o -name "*.qo" -o -name "*.42r"
+		-o -name "*.42m" -o -name "*.frm" -o -name "*.hlp"
 		")" -exec rm {} \;'
 	
 		eval $EXEC
 		
-		$MAKE -C $CURR_DIR/$a clean  > /dev/null 2>&1
-		
-		if test "$CLEAN" = "1" -a "$RUN_ONE" != ""; then 
+		if test "$VERBOSE" = "1"; then 
+			$MAKE -C $CURR_DIR/$a clean 
+		else
+			$MAKE -C $CURR_DIR/$a clean  > /dev/null 2>&1
+		fi
+		RET=$?
+		#Old makefiles do not have 'clean' target so this will allways fail
+		if test "$RET" != "0"; then
+			echo "WARNING: make clean failed - old makefile? (no 'clean' target)"
+		fi
+		if test "$CLEAN" = "1" -a "$RUN_ONE" != ""; then
+			echo "Clean only - done."
 			exit 0
 		fi
     fi

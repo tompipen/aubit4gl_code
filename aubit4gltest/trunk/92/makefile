@@ -8,3 +8,7 @@ compile: test_271.4ae
 	
 run: test_271.4ae
 	sh ./run_test_271
+	
+clean:
+	rm -f 271.errlog
+	

@@ -6,3 +6,7 @@ compile: ibt.4ae
 	
 run: ibt.4ae
 	sh ./run_ibt
+	
+clean:
+	rm -f ibt.out.nodate
+

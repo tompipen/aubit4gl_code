@@ -8,3 +8,7 @@ compile: prog.4ae
 	
 run: prog.4ae
 	./prog.4ae
+	
+clean:
+	rm -rf prelude
+	

@@ -8,3 +8,7 @@ compile: t.4ae
 	
 run: t.4ae
 	sh ./run_t
+	
+clean:
+	rm -f t.out.nodate
+	

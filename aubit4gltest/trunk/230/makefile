@@ -24,12 +24,12 @@ include ../Makefile-common
 ################
 #You can add additional files to be cleand with "clean" target to the default
 #ones, by listing them here:
-ADD_CLEAN="screen10_M screen11_P screen12_M screen13_M screen13_P screen14_M \
+ADD_CLEAN=screen10_M screen11_P screen12_M screen13_M screen13_P screen14_M \
 	screen14_P screen1_P screen2_M screen3_P screen4_M screen5_P screen6_M \
 	screen7_P screen8_M screen9_P screenS1_P screenS2_M screenS3_P screenS4_M \
 	screenT1_P screenT2_M screenT3_P screenT4_M screenW1_P screenW2_M \
-	screenW3_P screenW4_M"
-
+	screenW3_P screenW4_M
+	
 ################
 #This is set in comon make file; overide it if you need to here
 A4GL_KEYFILE=keys.in

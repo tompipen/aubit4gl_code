@@ -7,3 +7,8 @@ compile: m.4ae
 	
 run: m.4ae
 	sh ./run_m
+	
+clean:
+	rm -f  m.log.expected.nodate  m.log.nodate
+	
+	

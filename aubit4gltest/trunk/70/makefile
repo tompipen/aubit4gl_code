@@ -8,3 +8,7 @@ compile: arr3a.4ae
 	
 run: arr3a.4ae
 	sh ./run_arr3a
+	
+clean:
+	rm -f out1
+	

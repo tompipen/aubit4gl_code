@@ -23,7 +23,7 @@ FGL= start_report_kinds.4gl
 ################
 #You can add additional files to be cleand with "clean" target to the default
 #ones, by listing them here:
-#ADD_CLEAN=""
+ADD_CLEAN=xpta.rep xpto.rep
 
 ################
 #This is set in comon make file; overide it if you need to here

@@ -82,10 +82,24 @@ run: compile
 	#${DEFAULT_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
-	sh ./progname${NAMED_[DIFF|RUN]}
+#	sh ./progname${NAMED_[DIFF|RUN]}
 #If you need to set specific options for that program, you can do it like this:
 #(example shows how to specify key file):
 #	export A4GL_KEYFILE=somekeyfile.in; ${DBG} ./anotherprogname${NAMED_[DIFF|RUN]}
+
+	export A4GL_TRIMDUMP=24x80; ./progname.4ae
+	if diff out out.expected  > /dev/null ; then \
+		echo "Normal behaviour detected"; \
+		exit 0 ; \
+	else \
+		if diff out out.expected.scroll > /dev/null; then \
+			echo "SCROLLTOEND behaviour detected" ; \
+			exit 0 ; \
+		else \
+			exit 1 ; \
+		fi \
+	fi
+
 #Add more actions here (if needed) <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(7)
 
 ## ======================================================================
