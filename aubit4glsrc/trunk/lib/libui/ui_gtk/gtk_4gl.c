@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.7 2002-12-24 08:57:45 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.8 2002-12-26 02:25:12 afalout Exp $
 #*/
 
 /**
@@ -1293,6 +1293,13 @@ char *get_currwin_name() {
 
 void dump_object(GtkObject *o) {
 	debug("Object : %p\n");
+/*
 	debug("type:%d ",o->klass->type);
+
+gtk_4gl.c: In function `dump_object':
+gtk_4gl.c:1296: structure has no member named `klass'
+
+*/
+
 
 }
