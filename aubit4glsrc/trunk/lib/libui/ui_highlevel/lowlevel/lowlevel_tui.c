@@ -18,7 +18,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.11 2004-02-09 08:07:53 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.12 2004-02-09 19:51:17 mikeaubury Exp $";
 
 int inprompt = 0;
 
@@ -1741,8 +1741,11 @@ int rblock;
 
       A4GL_push_char (buff);
       prompt->mode = 2;
-      A4GL_form_unpost_form (prompt->f);
-      A4GL_clear_prompt (prompt);
+
+      if (prompt->f) {
+		A4GL_form_unpost_form (prompt->f);
+      		A4GL_clear_prompt (prompt);
+	}
       return 0;
     }
 
@@ -1785,6 +1788,7 @@ int rblock;
       		prompt->mode = 2;
       		A4GL_form_unpost_form (prompt->f);
       		A4GL_clear_prompt (prompt);
+		prompt->f=0;
 		return rblock;
       } 
       
@@ -1979,8 +1983,8 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
     return (prompt->mode = 2);
 
   d = derwin (p, 0, 0, width + 1, 1);
-  A4GL_form_set_form_win (f, p);
-  A4GL_form_set_form_sub (f, d);
+  A4GL_form_set_form_win (f, d);
+  A4GL_form_set_form_sub (f, p);
   A4GL_debug ("Set form win");
   a = A4GL_form_post_form (f);
   A4GL_debug ("Posted form=%d", a);

@@ -13,7 +13,7 @@ if_cmd	:
 	} op_else END_IF {
 		char wt;
 		print_if_end();
-	        wt=get_curr_report_stack_whytype();
+	        wt=get_curr_report_stack_whytype_1();
 		//if (wt=='P'||wt=='p'||wt=='T') {
 		if (wt=='T') {
 			if (if_print_stack[if_print_stack_cnt][0]!=if_print_stack[if_print_stack_cnt][0]) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.34 2004-02-09 08:07:35 mikeaubury Exp $
+# $Id: report.c,v 1.35 2004-02-09 19:51:17 mikeaubury Exp $
 #
 */
 
@@ -131,11 +131,19 @@ if (rep->print_section==SECTION_NORMAL) {
   	} else {
 		fprintf(rep->output,"%s",buff);
   	}
+
 }
 
 if (rep->print_section==SECTION_TRAILER) {
 	if (rep->header) {free(rep->header); rep->header=0;} // we've got a cached header - don't do anything..
-	else fprintf(rep->output,"%s",buff);
+	else {
+  	if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
+		print_data(rep,buff,entry);
+  	} else {
+		fprintf(rep->output,"%s",buff);
+  	}
+
+	}
 }
 
 if (rep->print_section==SECTION_HEADER) {
@@ -1040,7 +1048,9 @@ int a;
 
 static void print_data(struct rep_structure *rep,char *buff,int entry) {
 char *s;
-if (entry==-1) return;
+if (entry==-1) {
+return;
+}
 
 s=strdup(buff);
 A4GL_trim(s);

@@ -5,9 +5,6 @@ Please occasionally remove items that are completed from this list.
 4GL compiler/libraries
 ----------------------
 	Interval and datetime arithmetic...
-	Clean up error handling
-	Replace sqlca & status with acl_sqlca and acl_status -  use as sqlca&status in 4GL code
-		(This will allow other DBs to still have their own sqlca - which may be different). ** PARTIAL
 	fix PACKER=PACKED on MinGW (see test 11/y.per) (-xml)
 	find out what is causing different spaces in reports (-nospace) (see test #24)
 
@@ -98,10 +95,6 @@ TUI
 ----
 	General cleanups..
     	Windows TUI uses strange characters
-
-    	DISPLAY without AT erises the screen completely - sends to stdout
-		- should display _OVER_ existing display/screen
-		(** THIS IS CURSES FAULT **NOT** Aubit... - BUT IT'S STILL INCOMPATIBLE!)
 	find out why on MinGW/Cygwin graphic characters are different (-nographic)
 	fix curses on MinGW
 

@@ -545,8 +545,8 @@ A4GL_form_post_form (FORM * form)
   WINDOW *formwin;
   //int err;
   //int page;
-
-
+A4GL_debug("post_form");
+  if ((form->status&1)==1) return E_POSTED;
   formwin = Get_Form_Window (form);
 
   if ((form->cols > getmaxx (formwin)) || (form->rows > getmaxy (formwin)))
@@ -715,7 +715,10 @@ if (c!=REQ_FIRST_FIELD) {
 
       // Add it as a character..
 	if (form->curcol<field_length) {
-	        //int fake_overwrite=0;
+
+		if ((form->current->opts&(O_BLANK))&&form->curcol==0) {
+			memset(cfield_buffer,' ',field_length);
+		}
 		
 		if ((form->status&2)==0) { // Overwrite mode...
 			A4GL_debug("OVERWRITE CHARACTER : %c",c);
@@ -725,25 +728,15 @@ if (c!=REQ_FIRST_FIELD) {
 			A4GL_debug("INSERT CHARACTER : %c",c);
 			rest_of_line=strdup(&cfield_buffer[form->curcol]);
 			cfield_buffer[form->curcol]=c;
-
 			if (strlen(rest_of_line)) {
 				strncpy(&cfield_buffer[form->curcol+1],rest_of_line,strlen(rest_of_line)-1);
 			}
 		}
 
 		/* Now advance one character */
-		form->curcol++;
-		/* Are we at the end of the field ? */
-		if (form->curcol<current->cols*current->rows) {
-			/* 
-		   	Although we don't implement dynamic fields in here (yet) we need to make
-		   	sure that curcol increments as this is used as the trigger for construct
-		   	to open its field at the bottom of the screen - so only do it for STATIC
-			*/
-			if (current->opts&O_STATIC) form->curcol--;
-		}
-
-
+		if (form->curcol<(field_length-1)) {
+			form->curcol++;	
+		} 
 	}
 	A4GL_debug("----> FIELD NOW '%s'",cfield_buffer);
         redraw_current_field(form);
@@ -812,6 +805,7 @@ if (c!=REQ_FIRST_FIELD) {
       break;
 
     case REQ_FIRST_FIELD:
+		A4GL_debug("REQ_FIRST_FIELD");
       for (a = 0; a < form->maxfield; a++)
 	{
 	  int fopts;
@@ -827,10 +821,12 @@ if (c!=REQ_FIRST_FIELD) {
 
 
     case REQ_FIRST_PAGE:
+	A4GL_debug("REQ_FIRST_PAGE");
 	if (form->curpage!=0) {
 		form->curpage=0;
 		redraw_form(form);
 	}
+	form->curcol=0;
       break;
 
 
