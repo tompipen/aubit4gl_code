@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.4 2004-10-04 13:50:03 afalout Exp $
+# $Id: makefile,v 1.5 2004-10-12 00:40:51 afalout Exp $
 #
 
 ROOT			=../../../..
@@ -45,6 +45,8 @@ ALL				=${LIBROOT}/libA4GL_glade${SO_EXT}
 OBJS			=list.ao common.ao form.ao sbar.ao field.ao entry.ao \
 					text_view.ao mlist.ao
 LINKLIBS		=$(shell pkg-config libglade-2.0 --libs)
+#LINKLIBS		=$(shell pkg-config libglade-2.0 --libs-only-L) \
+#					$(shell pkg-config libglade-2.0 --libs-only-l)
 GLADE_CFLAGS	=$(shell pkg-config libglade-2.0 --cflags)
 
 A4GL_LEXTYPE=C
@@ -60,7 +62,8 @@ all: ${ALL}
 	@echo "+--------------------------------------------------------------------+"	
 
 ${LIBROOT}/libA4GL_glade${SO_EXT} : ${OBJS}
-	export A4GL_LEXTYPE=C && ${FGLPCEXEC} -g ${AS_DLL} $^ -o $@ ${LINKLIBS}
+#	export A4GL_LEXTYPE=C && 
+	${FGLPCEXEC} -g ${AS_DLL} $^ -o $@ ${LINKLIBS}
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 	
 ## ==================================================================
@@ -104,6 +107,12 @@ ${LIBROOT}/libA4GL_glade${SO_EXT} : ${OBJS}
 #text_view.ao: text_view.4gl
 #	export A4GL_LEXTYPE=C && 4glc text_view.4gl 
 #	gcc -g  -c text_view.c -o text_view.o `pkg-config libglade-2.0 --cflags` -I$(AUBITDIR)/incl
+
+show:
+	@echo "FGLPCEXEC=${FGLPCEXEC}"
+	@echo "AS_DLL=${AS_DLL}"
+	@echo "LINKLIBS=${LINKLIBS}"
+	@echo ""
 	
 ## ==================================================================
 ##                              Clean

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.62 2004-10-08 04:16:36 afalout Exp $
+# $Id: compile.c,v 1.63 2004-10-12 00:40:51 afalout Exp $
 #*/
 
 /**
@@ -227,7 +227,7 @@ initArguments (int argc, char *argv[])
 	/* set valid options for getopt_long depending on putput language*/
 	if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0 ||
       	strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0) {
-		strcpy (opt_list, "G4s:N:kKco::l::L::I::?hSgVvftD:d:");
+		strcpy (opt_list, "G4s:N:kKco::l::W::L::I::?hSgVvftD:d:");
     } else if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0) {
 		strcpy (opt_list, "G4s:N:?hSgVvftd:");
     } else /* all other A4GL_LEXTYPE types*/ {
@@ -387,6 +387,14 @@ initArguments (int argc, char *argv[])
     /************************/
 	case '4':       /* FIXME: what is this?*/
 		compiling_system_4gl = 1;
+		break;
+
+	/************************/
+	case 'W':		/* Extra flags to C linker (-Wl,--export-dynamic etc.)*/
+		#ifdef DEBUG
+	  		A4GL_debug ("Pass trough option: %s\n", optarg);
+		#endif
+		sprintf (extra_ldflags,"%s -W%s ",extra_ldflags,optarg);
 		break;
 
 	/************************/
