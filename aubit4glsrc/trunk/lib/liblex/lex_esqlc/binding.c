@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.29 2004-03-18 08:15:51 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.30 2004-03-18 08:20:36 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -523,7 +523,7 @@ char buff_ind[255];
 	  sprintf (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  sprintf (buff,"char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
+	  sprintf (buff,"varchar _vo_%d;", a /*, obind[a].dtype >> 16 */);
 	  break;
 	case 14:
 	  sprintf (buff,"interval _vo_%d;", a);
@@ -663,7 +663,7 @@ static char buff_ind[255];
 	  sprintf (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  sprintf (buff,"char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
+	  sprintf (buff,"varchar _vo_%d;", a /*, obind[a].dtype >> 16 */);
 	  break;
 	case 14:
 	  sprintf (buff,"interval _vo_%d;", a);
