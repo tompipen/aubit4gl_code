@@ -8,7 +8,7 @@ put_cmd :
 		printc("{\n");
 		n=print_bind('i');
 		printc("/* PUT %s FROM %s */",$<str>2,$<str>4); 
-		printc("put_insert(%d);\n",n);
+		printc("put_insert(&ibind,%d);\n",n);
 		printc("}\n");
 	}
 ;
