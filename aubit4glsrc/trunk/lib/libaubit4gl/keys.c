@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.30 2005-01-10 14:51:08 mikeaubury Exp $
+# $Id: keys.c,v 1.31 2005-02-11 14:51:26 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ A4GL_key_val (char *str)
 {
   int a;
   a = A4GL_key_val2 (str);
-  A4GL_debug ("30 key_val : '%s' = %d", str, a);
+  A4GL_debug (" key_val : '%s' = %d", str, a);
   return a;
 }
 
@@ -189,12 +189,13 @@ int
 A4GL_key_val2 (char *str_x)
 {
   int a;
+  int rval;
   char b[3];
   char str[256];
   strcpy(str,str_x);
   A4GL_trim(str);
 
-  A4GL_debug ("99 In A4GL_key_val str=%s", str);
+  A4GL_debug ("In A4GL_key_val str=%s", str);
 
   if (strlen (str) == 1)
     {
@@ -264,12 +265,21 @@ A4GL_key_val2 (char *str_x)
   if (A4GL_mja_strncmp ("CONTROL", str, 7) == 0)
     {
       A4GL_debug ("control key '%s' - returning '%c'\n", str, str[8]);
-	if (str[8]>='A'&&str[8]<='Z')
-      			return toupper (str[8]) - 'A' + 1;
-	if (str[9]>='A'&&str[9]<='Z')
-      			return toupper (str[9]) - 'A' + 1;
-	if (str[10]>='A'&&str[10]<='Z')
-      			return toupper (str[10]) - 'A' + 1;
+	if (toupper(str[8])>='A'&&toupper(str[8])<='Z') {
+			rval= a4gl_toupper (str[8]) - 'A' + 1;
+			A4GL_debug("rval1=%d\n",rval);
+      			return rval;
+	}
+	if (toupper(str[9])>='A'&&toupper(str[9])<='Z') {
+      			rval=a4gl_toupper (str[9]) - 'A' + 1;
+			A4GL_debug("rval2=%d\n",rval);
+			return rval;
+	}
+	if (toupper(str[10])>='A'&&toupper(str[10])<='Z') {
+      			rval=a4gl_toupper (str[10]) - 'A' + 1;
+			A4GL_debug("rval3=%d\n",rval);
+			return rval;
+	}
     }
 
 
