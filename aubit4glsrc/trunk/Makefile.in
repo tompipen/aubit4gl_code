@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.136 2004-01-18 11:11:04 afalout Exp $
+# $Id: Makefile.in,v 1.137 2004-02-01 03:16:17 afalout Exp $
 #
 
 ## ==================================================================
@@ -107,7 +107,10 @@ endif
 	$(MAKE) -C tools/configuration
 	$(MAKE) -C tools/asql
 #	$(MAKE) -C tools/adbaccess
+ifneq "${IFMX_ESQLC}" "no"
+	#curently compiles only with ESQL/C
 	$(MAKE) -C tools/aupscol
+endif
 	$(MAKE) -C help
 	@echo Aubit 4gl compiler core is now compiled
 

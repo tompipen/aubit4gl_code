@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.24 2003-09-14 09:52:40 mikeaubury Exp $
+# $Id: loadmenu.c,v 1.25 2004-02-01 03:16:53 afalout Exp $
 #*/
 
 /**
@@ -286,7 +286,11 @@ create_menu (menu_list * m, char *id, int mode, void *handler)
   GtkWindow *cwin;
 
   /* Get the vbox associated with the current window */
-  cwin = GTK_WINDOW (A4GL_get_curr_win_gtk ());
+//  cwin = GTK_WINDOW (A4GL_get_curr_win_gtk ());
+//not sure if this is correct; A4GL_get_curr_win_gtk is no longer in API:
+  cwin = GTK_WIDGET (A4GL_get_currwin_name ());
+
+
 
   /* Is there a menu bar there already ? */
   menubar = gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
@@ -442,7 +446,10 @@ A4GL_endis_menuitems (int en_dis, ...)
   va_start (ap, en_dis);
   printf ("endis:%d\n", en_dis);
   A4GL_debug ("*****enable/disable menuitems\n");
-  cwin = GTK_WIDGET (A4GL_get_curr_win_gtk ());
+//  cwin = GTK_WIDGET (A4GL_get_curr_win_gtk ());
+//not sure if this is correct; A4GL_get_curr_win_gtk is no longer in API:
+  cwin = GTK_WIDGET (A4GL_get_currwin_name ());
+
 
   /* v=gtk_object_get_data(cwin,"vbox"); */
 

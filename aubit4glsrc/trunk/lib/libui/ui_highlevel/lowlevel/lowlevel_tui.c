@@ -10,7 +10,7 @@ static int A4GL_curses_to_aubit_int (int a);
 #include <form.h>
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.9 2004-01-31 13:42:24 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.10 2004-02-01 03:16:54 afalout Exp $";
 
 int inprompt = 0;
 
@@ -2231,8 +2231,8 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 }
 
 #ifdef NCURSES_VERSION
-#include <term.h>
-#define isprivate(s) ((s) != 0 && strstr(s, "\033[?") != 0)
+	#include <term.h>
+	#define isprivate(s) ((s) != 0 && strstr(s, "\033[?") != 0)
 #endif
 
 void try_to_stop_alternate_view() {
@@ -2267,3 +2267,81 @@ void try_to_stop_alternate_view() {
 }
 
 
+
+/* This is a copy & paste of the function from lowlevel_gtk.c
+
+  Function is called from misc.c
+
+  It is here because Windows do't allow unresolved sibmols when linking.
+
+  I do not know if it is actially needed (an needs to be adapted for TUI)
+
+  or if it is used only for GTK
+
+*/
+int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
+  
+#ifdef FIX_THIS_C&P_FROM_GTK
+  int a;
+  int flg;
+  struct s_form_dets *formdets;
+  void **field_list;
+  int nofields;
+  void *w;
+  struct struct_scr_field *fprop;
+  a4gl_status = 0;
+
+  A4GL_chkwin ();
+  A4GL_debug ("In disp_fields");
+  w = A4GL_find_pointer (s, WINCODE);
+
+  formdets = (struct s_form_dets *)A4GL_find_form_for_win(w);
+
+#ifdef DEBUG
+  {
+    A4GL_debug ("Status=%d formdets=%p", a4gl_status, formdets);
+  }
+#endif
+  if (a4gl_status != 0)
+    return 0;
+  flg = 0;
+
+  A4GL_debug (" field_list = %p", &field_list);
+#ifdef DEBUG
+  {
+    A4GL_debug ("Genfldlist 2");
+  }
+#endif
+  A4GL_debug ("disp_fields");
+  nofields = A4GL_gen_field_list (&field_list, formdets, n, ap);
+  A4GL_debug ("Number of fields=%d ", nofields, n);
+
+  if (nofields < 0)
+    {
+      A4GL_debug ("Failed to find fields");
+      return 0;
+    }
+
+  for (a = nofields; a >= 0; a--)
+    {
+
+      A4GL_set_field_pop_attr (field_list[a], attr, FGL_CMD_DISPLAY_CMD);
+      fprop =
+        (struct struct_scr_field
+         *) (A4GL_LL_get_field_userptr (field_list[a]));
+      fprop->flags |= 2;
+
+
+
+    }
+  A4GL_LL_screen_update ();
+#else
+
+
+  A4GL_debug ("FIXME: A4GL_LL_disp_form_field_ap() not implemented for TUI");
+
+#endif
+
+
+  return 0;
+}

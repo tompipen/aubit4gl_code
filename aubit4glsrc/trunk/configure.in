@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.214 2004-02-01 01:08:47 afalout Exp $
+dnl # $Id: configure.in,v 1.215 2004-02-01 03:16:36 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1439,7 +1439,7 @@ dnl internationalization macros
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure.in,v 1.214 2004-02-01 01:08:47 afalout Exp $
+# $Id: configure.in,v 1.215 2004-02-01 03:16:36 afalout Exp $
 
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
@@ -1709,16 +1709,21 @@ LIB_EXPORTLIB=aubit4gl
 
 AMAKE_BIN_EXE=aubit-config
 
+#Resource files needed by some of the executables
 RUNTIME_RESOURCE="change.afr.dat helpfile.hlp options.afr.dat values.afr.dat qryfrm.afr.dat"
 
+#Note: "asql" is just a link to asql_p or asql_i
+
 #Executables that are needed even in run-time distibutions:
-RUNTIME_EXE="fshow afinderr configurator $AMAKE_BIN_EXE $RUNTIME_RESOURCE"
+RUNTIME_EXE="fshow afinderr configurator $AMAKE_BIN_EXE"
 #FIXME: add loadmap when it compiles again
 
 COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
-        aace adecompile convertsql aace_4gl aace_perl default_frm aupscol asql"
+        aace adecompile convertsql aace_4gl aace_perl default_frm "
 
-	
+#aupscol currently compiles only with Informix ESQL/C
+#asql_p / asql_i compile only if PG / IFX ESQLC compilers are installed
+
 #FIXME: pack files created in $(MAKE) -C help (help_aubit.iem help_ecpg.iem help_sqlite.iem
 
 PCODE_EXE="c2pcode c2pcode_fgl checker checker_fgl runner runner_fgl"
@@ -1750,6 +1755,14 @@ fi
 		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXEEXT'"
 		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE$EXEEXT; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
 	done
+
+	for FILE in $RUNTIME_RESOURCE ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\\$FILE; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+	done
+
+
 
 	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\lib\lib4glc.dll; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
@@ -6417,7 +6430,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.214 2004-02-01 01:08:47 afalout Exp $
+| $Id: configure.in,v 1.215 2004-02-01 03:16:36 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

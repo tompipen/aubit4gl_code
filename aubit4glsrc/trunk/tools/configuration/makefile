@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.5 2004-01-22 00:05:04 afalout Exp $
+# $Id: makefile,v 1.6 2004-02-01 03:16:54 afalout Exp $
 #
 
 ROOT    =../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/a4gl.mk
 ##                              Options
 ## ==================================================================
 
-ALL=configurator helpfile.hlp change.afr.dat options.afr.dat values.afr.dat
+ALL=configurator${EXE} helpfile.hlp change.afr.dat options.afr.dat values.afr.dat
 
 .phony: install clean all deinstall run
 
@@ -55,7 +55,7 @@ config.4gl helpfile.msg: descriptions mk_config config.4gl.head
 config.ao: config.4gl 
 rest.ao: rest.4gl
 
-configurator: config.ao rest.ao dir.o
+configurator${EXE}: config.ao rest.ao dir.o
 	${FGLPCEXEC} $^ -o $@
 
 ## ==================================================================

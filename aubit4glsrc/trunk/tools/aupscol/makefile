@@ -17,24 +17,30 @@ ROOT=../..
 include ${ROOT}/incl/Makefile-common
 
 A4GL_LEXTYPE=EC
-export A4GL_LEXTYPE
+#INFORMIXC=gcc
+export A4GL_LEXTYPE 
+#export INFORMIXC
+
+4GLC=${SH} ${ROOT}/bin/4glpc -verbose
+
 
 ${ROOT}/bin/aupscol: main.o upscol.o infx.o ../asql/ifx_pick.ao val.o att.o
-	4glpc $^ -o $@
+	${4GLC} $^ -o $@
 
 att.o: att.4gl
-	4glpc -g -c $^ -o $@
+	${4GLC} -g -c $^ -o $@
+
 main.o: main.4gl
-	4glpc -g -c $^ -o $@
+	${4GLC} -g -c $^ -o $@
 
 val.o: val.4gl
-	4glpc  -g -c $^ -o $@
+	${4GLC}  -g -c $^ -o $@
 
 infx.o: infx.4gl
-	4glpc -g -c $^ -o $@
+	${4GLC} -g -c $^ -o $@
 
 upscol.o: upscol.4gl
-	4glpc -g -c $^ -o $@
+	${4GLC} -g -c $^ -o $@
 
 ../asql/ifx_pick.ao:
 	${MAKE} -C ../asql

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2003-10-16 09:46:25 afalout Exp $
+# $Id: Makefile.in,v 1.11 2004-02-01 03:16:53 afalout Exp $
 #
 
 LIBROOT=../..
@@ -39,7 +39,8 @@ include ${ROOT}/incl/Makefile-common
 
 #CFLAGS		+=-I.. -I. -I${ROOT}/incl
 #must be BEFORE system paths:
-CFLAGS		:=@CURSES_INC_PATH@ ${CFLAGS} -I.. -I. -I${ROOT}/incl
+CFLAGS		:=@CURSES_INC_PATH@ -I/usr/include/ncurses ${CFLAGS} -I.. -I. -I${ROOT}/incl
+#Note: On CygWin term.h is in -I/usr/include/ncurses
 #@RPCLIB_INCLUDE@
 #-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
 

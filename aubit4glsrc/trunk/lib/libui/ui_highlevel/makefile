@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.9 2004-01-23 10:11:33 mikeaubury Exp $
+# $Id: makefile,v 1.10 2004-02-01 03:16:53 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -100,7 +100,9 @@ endif
 ## ==================================================================
 
 #must be BEFORE system paths:
-CFLAGS			:=${CURSES_INC_PATH} ${CFLAGS} -I.. -I. -I${ROOT}/incl
+CFLAGS			:=${CURSES_INC_PATH} -I/usr/include/ncurses ${CFLAGS} -I.. -I. -I${ROOT}/incl
+#Note: On CygWin term.h is in -I/usr/include/ncurses
+
 
 ifneq "${HAVE_CURSES}" "0"
 	ALL			+=${LIBROOT}/libUI_HL_TUI${SO_EXT}

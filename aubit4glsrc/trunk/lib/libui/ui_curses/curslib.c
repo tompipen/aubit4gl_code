@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.85 2004-01-31 13:13:53 mikeaubury Exp $
+# $Id: curslib.c,v 1.86 2004-02-01 03:16:53 afalout Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.85 2004-01-31 13:13:53 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.86 2004-02-01 03:16:53 afalout Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -3117,8 +3117,8 @@ int x;
 
 
 #ifdef NCURSES_VERSION
-#include <term.h>
-#define isprivate(s) ((s) != 0 && strstr(s, "\033[?") != 0)
+	#include <term.h>
+	#define isprivate(s) ((s) != 0 && strstr(s, "\033[?") != 0)
 #endif
 
 void try_to_stop_alternate_view() {
