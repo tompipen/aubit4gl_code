@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.52 2005-01-17 13:35:40 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.53 2005-01-27 09:15:15 mikeaubury Exp $
 #
 */
 
@@ -692,11 +692,13 @@ A4GL_debug("str=%s",str);
 		if (a==1) {
 			if (str[a-1]=='$' ) { str[a-1]=' '; }
 			if (str[a-1]=='-' ) { str[a-1]=' '; }
+			if (str[a-1]=='(' ) { str[a-1]=' '; }
 		}
 
 		if (a>=2) {
 			if (str[a-1]=='$' && str[a-2]!='$') { str[a-1]=' '; }
 			if (str[a-1]=='-' && str[a-2]!='-') { str[a-1]=' '; }
+			if (str[a-1]=='(' && str[a-2]!='(') { str[a-1]=' '; }
 		}
 	}
    }

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.212 2005-01-24 16:59:24 mikeaubury Exp $
+# $Id: compile_c.c,v 1.213 2005-01-27 09:17:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.212 2005-01-24 16:59:24 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.213 2005-01-27 09:17:22 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -687,6 +687,7 @@ void
 print_report_ctrl (void)
 {
   int a;
+  int printed_every;
   A4GL_debug
     ("/* ********************************************************** */\n");
   A4GL_debug
@@ -762,6 +763,9 @@ print_report_ctrl (void)
   pr_report_agg ();
   printc ("    }\n");
 
+
+  printed_every=0;
+
   for (a = 0; a < report_stack_cnt; a++)
     {
       /* on last row */
@@ -771,10 +775,10 @@ print_report_ctrl (void)
 	   report_cnt, a);
 
       /* on every row */
-      if (get_report_stack_whytype (a) == 'E')
-	printc
-	  ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n",
-	   report_cnt, a);
+      if (get_report_stack_whytype (a) == 'E') {
+	printed_every=1;
+	printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n", report_cnt, a);
+	}
 
       /* before group of */
       if (get_report_stack_whytype (a) == 'B')
@@ -803,6 +807,11 @@ print_report_ctrl (void)
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&(_rep.page_no!=1||(_rep.page_no==1&&_rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
     }
+	if (!printed_every) {
+		printc ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;\n", report_cnt);
+		print_rep_ret (report_cnt,0);
+		printc("}");
+	}
   pr_report_agg_clr ();
 }
 

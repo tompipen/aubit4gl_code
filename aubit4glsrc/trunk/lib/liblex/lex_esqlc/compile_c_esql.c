@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.104 2005-01-25 13:40:35 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.105 2005-01-27 09:17:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.104 2005-01-25 13:40:35 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.105 2005-01-27 09:17:22 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -523,10 +523,18 @@ print_prepare (char *xstmt, char *sqlvar)
 	set_suppress_lines();
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*7*/\n");
   printc ("char *_s;\n");
+  if (A4GL_strstartswith(stmt,"aclfgli_str_to_id")) { printc ("char *_sid;\n"); }
   printc ("\nEXEC SQL END DECLARE SECTION;\n");
-	clr_suppress_lines();
+  clr_suppress_lines();
+
   printc ("_s=strdup(CONVERTSQL(%s));\n", sqlvar);
-  printc ("\nEXEC SQL PREPARE %s FROM :_s;\n", stmt, sqlvar);
+
+  if (A4GL_strstartswith(stmt,"aclfgli_str_to_id")) { 
+		printc ("_sid=%s;\n",xstmt); 
+  		printc ("\nEXEC SQL PREPARE :_sid FROM :_s;\n", sqlvar);
+  } else {
+  		printc ("\nEXEC SQL PREPARE %s FROM :_s;\n", stmt, sqlvar);
+  }
 A4GL_save_sql("PREPARE %s",sqlvar);
 
   printc ("free(_s);\n");
@@ -1147,16 +1155,26 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   char buff[256];
   int intprflg = 0;
   static char *cname = 0;
-  if (cname)
-    free (cname);
+  static int ccnt=0;
+  char *cname2 = 0;
+  char *cname3 =0;
+
+
+  if (cname) free (cname);
   set_suppress_lines ();
   cname = strdup (A4GL_strip_quotes (a3));
 
 
   printc ("/* a1=%s a2=%s a3=%s */", a1, a2, a3);
-  if (a2[0] == '"' )
+
+  if (a2[0] == '"' || A4GL_strstartswith(a2,"aclfgli_str_to_id")) 
     {
       printc ("{ /* DC 0 */");
+      if (A4GL_strstartswith(a2,"aclfgli_str_to_id"))  {
+		printc("EXEC SQL BEGIN DECLARE SECTION;\n");
+		printc("char *_sid;");
+		printc("EXEC SQL END DECLARE SECTION;\n");
+      }
     }
 
 
@@ -1178,7 +1196,28 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
       return;
     }
 
-  sprintf (buff, "sqlca.sqlcode=0;\nEXEC SQL DECLARE %s", cname);
+  if (A4GL_strstartswith(a2,"aclfgli_str_to_id"))  {
+		printc("_sid=%s;\n",a2);
+		a2=":_sid";
+  }
+
+  cname2=cname;
+  cname3=cname;
+
+  if (A4GL_strstartswith(cname,"aclfgli_str_to_id"))  {
+	char buff[20];
+	printc("{ /* Another one */");
+	printc("EXEC SQL BEGIN DECLARE SECTION;");
+	printc("char _cid[256];");
+	printc("EXEC SQL END DECLARE SECTION;");
+	printc("strcpy(_cid,%s);",cname);
+	//free(cname);
+	cname2=strdup(":_cid");
+	sprintf(buff,"_%d",ccnt++);
+	cname3=buff;
+  }
+
+  sprintf (buff, "sqlca.sqlcode=0;\nEXEC SQL DECLARE %s", cname2);
   if (h2)
     {
       strcat (buff, " SCROLL");
@@ -1194,6 +1233,9 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   printc ("     %s ", A4GL_strip_quotes (a2));
 
   printc (";");
+  if (A4GL_strstartswith(cname,"aclfgli_str_to_id"))  {
+	printc("} /* Cname starts with aclfgli... */");
+  }
   print_copy_status ();
 
 
@@ -1203,47 +1245,47 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 	("You cannot use an INTO with a declare with the target database");
       return;
     }
-  printh ("static int acli_ni_%s=%d;\n", cname, last_ni);
-  printh ("static int acli_no_%s=%d;\n", cname, last_no);
-  printh ("static struct BINDING *acli_bi_%s=0;\n", cname);
-  printh ("static struct BINDING *acli_bo_%s=0;\n", cname);
-  printh ("static struct BINDING *acli_nbi_%s=0;\n", cname);
-  printh ("static struct BINDING *acli_nbo_%s=0;\n", cname);
-  printh ("static struct BINDING *acli_nbii_%s=0;\n", cname);
-  printh ("static struct BINDING *acli_nboi_%s=0;\n", cname);
+  printh ("static int acli_ni_%s=%d;\n", cname3, last_ni);
+  printh ("static int acli_no_%s=%d;\n", cname3, last_no);
+  printh ("static struct BINDING *acli_bi_%s=0;\n", cname3);
+  printh ("static struct BINDING *acli_bo_%s=0;\n", cname3);
+  printh ("static struct BINDING *acli_nbi_%s=0;\n", cname3);
+  printh ("static struct BINDING *acli_nbo_%s=0;\n", cname3);
+  printh ("static struct BINDING *acli_nbii_%s=0;\n", cname3);
+  printh ("static struct BINDING *acli_nboi_%s=0;\n", cname3);
   /*printh("#undef ibind\n#undef obind\n"); */
   /*printh("#define ibind acli_bi_%s\n",A4GL_strip_quotes(a3)); */
   /*printh("#define obind acli_bo_%s\n",A4GL_strip_quotes(a3)); */
 
-  printh ("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n", cname);
+  printh ("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n", cname3);
   printh ("struct BINDING *ibind;\n");
   printh ("struct BINDING *native_binding_i;\n");
   printh ("struct BINDING *native_binding_i_ind;\n");
-  printh ("ibind=acli_bi_%s;\n", cname);
-  printh ("native_binding_i_ind=acli_nbii_%s;\n", cname);
-  printh ("native_binding_i=acli_nbi_%s;\n", cname);
+  printh ("ibind=acli_bi_%s;\n", cname3);
+  printh ("native_binding_i_ind=acli_nbii_%s;\n", cname3);
+  printh ("native_binding_i=acli_nbi_%s;\n", cname3);
   print_conversions ('I');
 
   printh ("}\n");
 
-  printh ("\n\nstatic void internal_recopy_%s_o_Dir(void) {\n", cname);
+  printh ("\n\nstatic void internal_recopy_%s_o_Dir(void) {\n", cname3);
   printh ("struct BINDING *obind;\n");
   printh ("struct BINDING *native_binding_o;\n");
   printh ("struct BINDING *native_binding_o_ind;\n");
-  printh ("obind=acli_bo_%s;\n", cname);
-  printh ("native_binding_o=acli_nbo_%s;\n", cname);
-  printh ("native_binding_o_ind=acli_nboi_%s;\n", cname);
+  printh ("obind=acli_bo_%s;\n", cname3);
+  printh ("native_binding_o=acli_nbo_%s;\n", cname3);
+  printh ("native_binding_o_ind=acli_nboi_%s;\n", cname3);
   print_conversions ('O');
   printh ("}\n");
   printh
     ("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no,struct BINDING *nii,struct BINDING *noi) {\n",
-     cname);
-  printh ("acli_bi_%s=i;\n", cname);
-  printh ("acli_bo_%s=o;\n", cname);
-  printh ("acli_nbi_%s=ni;\n", cname);
-  printh ("acli_nbo_%s=no;\n", cname);
-  printh ("acli_nbii_%s=nii;\n", cname);
-  printh ("acli_nboi_%s=noi;\n", cname);
+     cname3);
+  printh ("acli_bi_%s=i;\n", cname3);
+  printh ("acli_bo_%s=o;\n", cname3);
+  printh ("acli_nbi_%s=ni;\n", cname3);
+  printh ("acli_nbo_%s=no;\n", cname3);
+  printh ("acli_nbii_%s=nii;\n", cname3);
+  printh ("acli_nboi_%s=noi;\n", cname3);
   printh ("}\n");
 
   intprflg = 0;
@@ -1264,24 +1306,24 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 	sprintf (buff, "native_binding_i_ind,native_binding_o_ind");
       printc
 	("internal_set_%s(ibind,obind,native_binding_i,native_binding_o,%s);",
-	 cname, buff);
+	 cname3, buff);
       break;
     case 2:
       if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
 	sprintf (buff, "0,0");
       else
 	sprintf (buff, "0,native_binding_o_ind");
-      printc ("internal_set_%s(0,obind,0,native_binding_o,%s);", cname, buff);
+      printc ("internal_set_%s(0,obind,0,native_binding_o,%s);", cname3, buff);
       break;
     case 1:
       if (!A4GLSQLCV_check_requirement ("USE_INDICATOR"))
 	sprintf (buff, "0,0");
       else
 	sprintf (buff, "native_binding_i_ind,0");
-      printc ("internal_set_%s(ibind,0,native_binding_i,0,%s);", cname, buff);
+      printc ("internal_set_%s(ibind,0,native_binding_i,0,%s);", cname3, buff);
       break;
     case 0:
-      printc ("internal_set_%s(0,0,0,0,0,0);", cname);
+      printc ("internal_set_%s(0,0,0,0,0,0);", cname3);
       break;
     default:
       printc ("#error No internal_set written\n");
