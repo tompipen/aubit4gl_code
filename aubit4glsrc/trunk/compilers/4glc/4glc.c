@@ -1,6 +1,6 @@
 /**************************************************************/
 /*
-/* $Id: 4glc.c,v 1.6 2001-11-16 11:05:35 mikeaubury Exp $
+/* $Id: 4glc.c,v 1.7 2001-11-20 23:39:40 saferreira Exp $
 /**/
 //#include "../libincl/compiler.h"
 #include <stdio.h>
@@ -43,7 +43,7 @@ bname (char *str, char *str1, char *str2)
 	  fn[a] = 0;
 	  break;
 	}
-    }
+  }
   ptr = &fn[a];
   strcpy (str1, fn);
   if (a >= 0)
