@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.15 2003-03-07 09:08:29 mikeaubury Exp $
+# $Id: curslib.c,v 1.16 2003-03-07 09:40:52 mikeaubury Exp $
 #*/
 
 /**
@@ -3137,8 +3137,7 @@ set_bkg (WINDOW * win, int attr)
 {
 
   wbkgd (win, decode_aubit_attr(attr,'w'));
-
-  //wbkgdset (win, 0);
+ //wbkgdset (win, 0);
   wbkgdset (win,  decode_aubit_attr(attr,'w'));
 
 }
@@ -3159,28 +3158,42 @@ menu_setcolor (ACL_Menu * menu, int typ)
   long attr2;
   currwin = menu->menu_win;
   attr = menu->attrib;
-  if (attr & 255) attr = attr - (attr & 255);
+  //if (attr & 255) attr = attr - (attr & 255);
+
+
   /* wbkgd(menu->menu_win,0); */
-  debug ("Window background = %x", attr);
-  if (attr == 0)
+
+  debug ("Window background = %x - window - %x", attr,currwin);
+
+  if ((attr-(attr&0xff))==0) {
+	attr=A_NORMAL+(attr&0xff);
+  }
+
+  if ((attr&0xff) == 0)
     {
-      attr = A_NORMAL & ' ';
+      debug("Nothing specified for the background..");
+      attr += ' ';
     }
 
-  debug ("Subwin - setcolor");
+  debug ("Subwin - setcolor - attr=%x",attr);
   switch (typ)
     {
     case NORMAL_TEXT:
     case NORMAL_MENU:
+	debug("Normal : %x\n",attr);
       wattrset (currwin, attr);
       break;
+
     case INVERT_MENU:
       debug ("Invert...");
       debug ("YY REVERSE");
+
       if (attr & A_REVERSE)
 	attr2 = attr - A_REVERSE;
       else
 	attr2 = attr + A_REVERSE;
+
+	debug("Reverse : %x\n",attr2);
       wattrset (currwin, attr2);
       break;
     }

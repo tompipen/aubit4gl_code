@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.16 2003-03-07 09:08:30 mikeaubury Exp $
+# $Id: newpanels.c,v 1.17 2003-03-07 09:40:52 mikeaubury Exp $
 #*/
 
 /**
@@ -243,7 +243,7 @@ init_windows (void)
 LIBUSEONLY void *
 create_blank_window (char *name, int x, int y, int w, int h, int border)
 {
-  return create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1, 0x0);
+  return create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1, 0xffff);
 }
 
 /**
@@ -289,6 +289,8 @@ create_window (char *name, int x, int y, int w, int h,
 		if (n) {
 			attrib=a;
 		}
+	} else {
+		attrib=0x0;
 	}
 	
    }
@@ -1898,7 +1900,7 @@ subwin_print (WINDOW * win, char *fmt,...)
 {
   va_list args;
   chkwin ();
-  debug ("subwin_print '%s'", fmt);
+  debug ("subwin_print '%s' on window %p", fmt,win);
   va_start (args, fmt);
   mja_vwprintw (win, fmt, &args); /*  MJAMJAMJA */
   mja_wrefresh (win);
@@ -2038,7 +2040,13 @@ mja_vwprintw (WINDOW * win, char *fmt,va_list *args)
   if (xwattr_get (win) == 0x20)
     {
       wattrset (win, 0);
+    } else {
+	int a;
+	a=xwattr_get(win);
+	a=a-(a&0xff);
+        wattrset (win, a);
     }
+  debug("Attribute : %x on win %p\n",xwattr_get(win),win);
   wprintw (win, "%s", buff);
   return 0;
 }
