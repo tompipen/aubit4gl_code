@@ -633,6 +633,8 @@ print_cmd_end -> void
 get_into_part int n -> char*
 
 set_var_sql int n -> char*
+
+lex_parsed_fgl -> void
 /*  ============================== EOF ================================= */
 
 

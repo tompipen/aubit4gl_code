@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.1 2003-02-17 05:07:13 afalout Exp $
+# $Id: compile.c,v 1.2 2003-02-19 08:46:38 mikeaubury Exp $
 #*/
 
 /**
@@ -562,6 +562,7 @@ char *ptr;
   #ifdef DEBUG
 	  debug("after yyparse\n");
   #endif
+  lex_parsed_fgl();
 
   if (yydebug)
     {

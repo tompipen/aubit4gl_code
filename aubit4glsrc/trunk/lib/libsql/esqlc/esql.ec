@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.38 2003-02-17 19:54:11 saferreira Exp $
+# $Id: esql.ec,v 1.39 2003-02-19 08:46:40 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,7 @@
  * possible to Xopen embeded sql definition.
  *
  * When compiled its assembled in a dynamic library called libSQL_esql.so (or
- * .ddl in windows).
+ * .dll in windows).
  *
  * Its loaded acording to an environment variable called A4SQL_SQLTYPE that
  * should be filled with "esql".
@@ -127,7 +127,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.38 2003-02-17 19:54:11 saferreira Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.39 2003-02-19 08:46:40 mikeaubury Exp $";
 #endif
 
 /*
@@ -2470,10 +2470,11 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   EXEC SQL BEGIN DECLARE SECTION;
     char strSelect[640];
     int numberOfColumns;
-    int MaxColumns = 245; //we will be able to process tables with maximum 254 columns
+    int MaxColumns = 254; //we will be able to process tables with maximum 254 columns
   EXEC SQL END DECLARE SECTION;
 
   sprintf(strSelect,"select * from %s\n",tabname);
+  debug("strSelect : %s\n",strSelect);
   EXEC SQL PREPARE stReadAllColumns FROM :strSelect;
   if ( isSqlError() )
   {
@@ -2514,6 +2515,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 
   getColumnsMax = numberOfColumns;
   getColumnsOrder = 1;
+  debug("COlumns max=%d",numberOfColumns);
   return 1;
 }
 
@@ -2548,7 +2550,7 @@ int Infx_dt_to_A4gl_dt(int n) {
 static long fixlength(int dtype,int length) {
 	int n1,n2;
 	if (dtype>255) dtype-=256;
-	debug("Got datatype : %d length %d\n");
+	debug("Got datatype : %d length %d\n",dtype,length);
 	if (dtype==10) {
 		n1=Infx_dt_to_A4gl_dt(TU_START(length));
 		n2=Infx_dt_to_A4gl_dt(TU_END(length));
@@ -2590,9 +2592,11 @@ int A4GLSQL_next_column(char **colname, int *dtype,int *size)
     :columnName = NAME, :dataType = TYPE, :length = LENGTH;
   if ( isSqlError() )
     return 0;
+
   *dtype = dataType;
-  *size = fixlength(dataType,length);
   *colname=columnName;
+  *size = fixlength(dataType,length);
+  debug("dtype=%d size=%d colname=%s\n",*dtype,*size,*colname);
   getColumnsOrder++;
   return 1;
 }

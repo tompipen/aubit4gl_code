@@ -13,7 +13,8 @@
 
 
 ESQL/C
-	Fix OPEN USING in esql/c (sql and lex)
+	Fix OPEN USING in esql/c (in sql) 
+	Fix OPEN USING in esql/c (in lex) *** DONE IN LEX
 	Fix FETCH (relative/absolute etc)
 	Fix Declare INTO in esql/c LEX
 	Other fixes in ESQL/C output driver
@@ -50,7 +51,7 @@ SQL plugins
     show error when SQLUID/SQLPWD is not set on DEFINE ... LIKE
 
 ACE
-	ace still uses rpcgen, can't port to windows - use xgen
+	ace still uses rpcgen, can't port to windows - use xgen ** DONE
 
 XML-RPC
     create server part

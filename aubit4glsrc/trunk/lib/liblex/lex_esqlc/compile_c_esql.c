@@ -339,7 +339,37 @@ print_open_session (char *s, char *v, char *user)
 void
 print_open_cursor (char *cname, char *using)
 {
-  printc ("\nEXEC SQL OPEN  %s USING %s;\n",  strip_quotes(cname),using);
+int n;
+int a;
+
+
+  n=atoi(using);
+  if (n) {
+	printc("{\nEXEC SQL BEGIN DECLARE SECTION");
+        for  (a=n-1;a>=0;a--) {
+		printc("EXEC SQL char *_using_%d;",a);
+	}
+	printc("EXEC SQL END DECLARE SECTION");
+
+        for  (a=n-1;a>=0;a--) {
+		printc("_using_%d=char_pop();\n",a);
+        }
+
+  	printc ("\nEXEC SQL OPEN  %s USING /* %d variables */",  strip_quotes(cname),n);
+        for  (a=0;a<n;a++) {
+		if (a) printc(",");
+		printc("_using_%d\n",a);
+	}
+
+	printc(";");
+
+        for  (a=n-1;a>=0;a--) {
+		printc("free(_using_%d);\n",a);
+        }
+	printc("}");
+  } else {
+  	printc ("\nEXEC SQL OPEN  %s; /* No using */\n",  strip_quotes(cname));
+  }
   print_copy_status();
 }
 
