@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2002-10-07 11:06:30 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-10-18 07:54:51 afalout Exp $
 #
 
 ROOT        =../../..
@@ -64,7 +64,7 @@ CFLAGS      +=${LOCAL_IFLAGS}
 CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
 
 ifeq "${TARGET_OS}" "cygwin"
-	LINKLIBS	=-L${LIBROOT} -laubit4gl
+	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
 endif
 
 ifeq "@HAVE_RPCLIB@" "0"
@@ -79,9 +79,9 @@ ALL: ${ALL}
 
 ${LIBROOT}/libPACKER_XDR${SO_EXT}: ${OBJS}
 	${CC} ${CFLAGS_RPCGEN} ${SO_LDFLAGS} $^ -o $@ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ${XDR_CMODS}:
 #	${MAKE} -C ${ROOT}/common/dataio

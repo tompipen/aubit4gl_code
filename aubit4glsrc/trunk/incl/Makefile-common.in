@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.90 2002-10-18 01:56:37 afalout Exp $
+# $Id: Makefile-common.in,v 1.91 2002-10-18 07:54:51 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -176,9 +176,9 @@ PATH:=${AUBITDIR}/bin:${PATH}
 ##                   Global Makefile variables
 ## ==================================================================
 
-ifeq "${TARGET_OS}" "cygwin"
-	GCC_VER=3.2
-endif
+#ifeq "${TARGET_OS}" "cygwin"
+	GCC_VER=@GCC_VERSION_MAJOR@.@GCC_VERSION_MINOR@
+#endif
 
 CONFIGURE_COMMAND=@CONFIGURE_COMMAND@
 
@@ -825,7 +825,7 @@ MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 ## ==================================================================
 
 #Rule to make Windows-CyGwin .dll and export library:
-zzzzz%.dll zzzzzz%.def zzzzzz%.dll.a: $(DLLOBJS)
+zz%.dll zz%.def zz%.dll.a: $(DLLOBJS)
 #	${CC} -shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -o $*.dll $(DLLOBJS) -Wl,--export-all-symbols  $(DLL_LDFLAGS) $(DLL_LDLIBS)
 	${CC} ${DLL_CFLAGS} -o $*.dll $(DLLOBJS) $(DLL_LDFLAGS) $(DLL_LDLIBS)
 

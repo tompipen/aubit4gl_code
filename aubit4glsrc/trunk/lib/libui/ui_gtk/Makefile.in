@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-10-14 00:02:32 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-10-18 07:54:52 afalout Exp $
 #
 
 LIBROOT=../..
@@ -44,8 +44,6 @@ GLIB_CFLAGS		=@GLIB_CFLAGS@
 GTKLIBS			=$(subst -rdynamic,,${@GTKLIBS@})
 
 CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@
-#-I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
-
 ALL				+=${LIBROOT}/libUI_GTK${SO_EXT}
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
@@ -73,6 +71,9 @@ else
 	CFLAGS_NO_PEDANTIC  =${CFLAGS}
 endif
 
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
 
 ## ==================================================================
 ##                              Source files
@@ -93,14 +94,6 @@ ALLOBJ= \
 	signals.o \
 	window.o widget.o
 
-#no more: remove this:
-#	${ROOT}/compilers/fcompile/form_x_xdr.o
-#FIXME: ${ROOT}/compilers/fcompile/form_x_xdr.o is here only because
-#xdr_struct_form is defined there, and we need it for ONE call in
-#gtk_4gl.c - this makes libUI_GTK dependent on SUN RPClib - we need to
-#get rid of this dependency
-
-
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -109,25 +102,17 @@ all : ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${LIBROOT}/libUI_GTK${SO_EXT}: ${ALLOBJ}
-#FIXME: we still need to link RPC lib here, because of one call in gtk_4gl.c
-#to xdr_struct_form() - this needs to be moved into XDR specific lib
-#like libFORM_XDR, or better, removed alltogether. I trued creating
-#isolated_xdr_struct_form() in API_form.spec, and formwrite2.c but this did
-#not work for to me unknown reason.
-#	${LD} ${SO_LDFLAGS} @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} ${RPCLIB_NAME} -o $@ $^
-	${LD} ${SO_LDFLAGS} @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} -o $@ $^
-#	${CP} $@ ${LIBROOT}
+	${LD} ${SO_LDFLAGS} -o $@ $^ @GTK_LIB_PATH@ ${LINKLIBS} @GTKLIBS@ ${GTKLIBS}
+#Need dll.a to link with libMENU_XDR - DO NOT REMOVE!
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
+
 
 ## ==================================================================
 ##                              Windows dll targets
 ## ==================================================================
 
-#.PHONY : dlllibUI_GTK
-#dlllibUI_GTK: ${ALLOBJ}
-#	${MAKE} libUI_GTK.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_LIB} -lFORM_XDR @GTKLIBS@" DLL_LDFLAGS="-L${LIBROOT} @GTK_LIB_PATH@"
-#@CURSES_LIB_NAME@ -lPDF_NOPDF -lRPC_NORPC
-#	${CP} libUI_GTK.dll ${LIBROOT}
-#	${CP} libUI_GTK${DLL_EXPORTLIB_EXT} ${LIBROOT}
 
 ## ==================================================================
 ##                              Sub Targets
@@ -150,7 +135,6 @@ ${ROOT}/compilers/fcompile/form_x.h:
 ${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 	${CC} ${CFLAGS_FORM_X_XDR_C} -c -o $@ $^
 
-
 %.o: %.c
 	${CC} ${CFLAGS_GTK_C} -c -o $@ $^
 
@@ -161,7 +145,7 @@ ${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 
 #widget.c: widget.h
 #assist.4gl: ${ROOT}/bin/4glc
-d2.c: ${ROOT}/compilers/fcompile/form_x.h
+#d2.c: ${ROOT}/compilers/fcompile/form_x.h
 
 ## ==================================================================
 ##                            Clean Targets

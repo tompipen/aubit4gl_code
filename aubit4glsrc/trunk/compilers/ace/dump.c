@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.3 2002-07-21 06:41:48 afalout Exp $
+# $Id: dump.c,v 1.4 2002-10-18 07:54:51 afalout Exp $
 #*/
 
 /**
@@ -42,16 +42,18 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
+#include "a4gl_ace_int.h"
 
-	#include <stdio.h>
-	#include "report.h"
+	#ifdef __CYGWIN__
+	    /* missing from rpcgen generated form_x.h on CygWin: */
+		#define bool_t int
+		#define u_int unsigned int
 
-#else
 
-    #include "a4gl_ace_int.h"
+		#include <rpc/rpc.h>
 
-#endif
+	#endif
+
 
 /*
 =====================================================================

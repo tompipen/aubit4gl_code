@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-10-13 01:40:34 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-10-18 07:54:51 afalout Exp $
 #
 
 ROOT		=../../..
@@ -45,15 +45,15 @@ OBJS_FORM_XDR		=${CMODS_FORM_XDR:.c=.o}
 ##                              Options
 ## ==================================================================
 
-ifdef COMSPEC
-	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=dllFORM_XDR
-    endif
-else
+#ifdef COMSPEC
+#	ifneq "@HAVE_RPCLIB@" "0"
+#		ALL			+=dllFORM_XDR
+#    endif
+#else
 	ifneq "@HAVE_RPCLIB@" "0"
 		ALL			+=${LIBROOT}/libFORM_XDR${SO_EXT}
     endif
-endif
+#endif
 
 #This must NOT be += because it would place affitional parameters AFTER
 #existing parameters already in CFLAGS: we must not do this, because if
@@ -68,6 +68,10 @@ CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile $
 #ba able to compile or open forms and menus, since they compiled output
 #file format is outpudte in XDR format for portability:
 
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+endif
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -79,16 +83,16 @@ note:
 	@echo "Building: ${ALL}"
 
 ${LIBROOT}/libFORM_XDR${SO_EXT} : ${OBJS_FORM_XDR}
-	${LD} ${SO_LDFLAGS} ${RPCLIB_NAME} -o $@ $^
+	${LD} ${SO_LDFLAGS} ${RPCLIB_NAME} -o $@ $^ ${LINKLIBS}
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
-.PHONY : dllFORM_XDR
-dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
-	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
-	${CP} libFORM_XDR.dll ${LIBROOT}
+#.PHONY : dllFORM_XDR
+#dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
+#	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
+#	${CP} libFORM_XDR.dll ${LIBROOT}
 
 
 ## ==================================================================

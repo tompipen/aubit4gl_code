@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.15 2002-10-07 11:06:23 afalout Exp $
+# $Id: Makefile.in,v 1.16 2002-10-18 07:54:51 afalout Exp $
 #
 
 ROOT        =../..
@@ -89,6 +89,9 @@ ifeq "@HAVE_RPCLIB@" "0"
     endif
 endif
 
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+endif
 
 #aace_4gl
 #generate_aace
@@ -106,12 +109,12 @@ all: ${ALL}
 
 ${ROOT}/bin/aace: ${OBJS}
 #	${4GLPC} $(CFLAGS) $^ -o $@
-	${LD_EXE} -o $@  ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT}
+	${LD_EXE} -o $@  ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
 #	${CP} $@ ${ROOT}/bin
 
 ${ROOT}/bin/adecompile: ${REPORT_H} ${OBJS_DECOMP}
 #	${CC} $(CFLAGS) ${OBJS_DECOMP} -o $@
-	${LD_EXE} -o $@ ${AUBIT_LIB} ${OBJS_DECOMP} ${LINK_LIBS} -L${LIBROOT}
+	${LD_EXE} -o $@ ${AUBIT_LIB} ${OBJS_DECOMP} ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
 #	${CP} $@ ${ROOT}/bin
 
 #Cannot compile because dump_4gl.c is missing from CVS

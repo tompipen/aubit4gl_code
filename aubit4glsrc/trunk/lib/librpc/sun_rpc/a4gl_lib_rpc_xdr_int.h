@@ -6,6 +6,10 @@
     #include "rpc/auth.h"
 #endif
 
+#if (defined(__CYGWIN__))
+	#define	enum_t	int
+#endif
+
 #include "a4gl_lib_rpc_int.h"
 
 #if (defined(__MACH__) && defined(__APPLE__))

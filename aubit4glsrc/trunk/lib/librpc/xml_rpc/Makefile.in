@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-10-13 01:40:35 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-10-18 07:54:52 afalout Exp $
 #
 
 
@@ -63,15 +63,10 @@ else
 endif
 
 
-ifdef COMSPEC
-	ifneq "@XML_RPC@" "no"
-		ALL			+=dlllibRPC_XMLRPC
-    endif
-else
-	ifneq "@XML_RPC@" "no"
-		ALL			+=libRPC_XMLRPC${SO_EXT}
-    endif
+ifneq "@XML_RPC@" "no"
+	ALL			+=${LIBROOT}/libRPC_XMLRPC${SO_EXT}
 endif
+
 
 #This must NOT be += because it would place affitional parameters AFTER
 #existing parameters already in CFLAGS: we must not do this, because if
@@ -83,6 +78,10 @@ CFLAGS				:=-I.. -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl ${CFLAGS} ${C
 #XML-RPC lib supplied libraries have many functions declared without parameters
 CFLAGS_XMLRPC_C =$(CFLAGS:%-Wstrict-prototypes=%)
 
+ifeq "${TARGET_OS}" "cygwin"
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
 
 ## ==================================================================
 ##                              Targets
@@ -91,26 +90,28 @@ CFLAGS_XMLRPC_C =$(CFLAGS:%-Wstrict-prototypes=%)
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libRPC_XMLRPC${SO_EXT}: ${OBJS_RPC}
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${CLIENT_LIBS}
-	${CP} $@ ${LIBROOT}
+${LIBROOT}/libRPC_XMLRPC${SO_EXT}: ${OBJS_RPC}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${CLIENT_LIBS} ${LINKLIBS}
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
+
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
-dlllibRPC_XMLRPC: ${CMODS_RPC}
-	${MAKE} libRPC_XMLRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} ${AUBIT_LIB}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L${LIBROOT} -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile"
-	${CP} libRPC_XMLRPC.dll libRPC_XMLRPC.dll.a ${LIBROOT}
+#dlllibRPC_XMLRPC: ${CMODS_RPC}
+#	${MAKE} libRPC_XMLRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} ${AUBIT_LIB}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L${LIBROOT} -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile"
+#	${CP} libRPC_XMLRPC.dll libRPC_XMLRPC.dll.a ${LIBROOT}
 
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
 clean :
-#	${RM} $(OBJS) $(OBJS_DEBUG)
-	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core
-	${RM} *.base *.exp *.def
+	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core *.base \
+	*.exp *.def
 
 ## ==================================================================
 ##                         Other Targets

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.9 2002-10-07 11:06:21 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-10-18 07:54:51 afalout Exp $
 #
 
 ROOT        =../..
@@ -85,7 +85,7 @@ else
 	RPCGEN_FORM		=@RPCGEN@ form_x.x
 	RPCGEN_REPORT   =@RPCGEN@ report.x
 	RPCGEN_MENU     =@RPCGEN@ menu_x.x
-	ALL			+=${RPC}
+	ALL				+=${RPC}
 endif
 ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
@@ -106,46 +106,46 @@ all: ${ALL}
 
 ${LIBROOT}/libDATA_struct_form${SO_EXT}: form_x.xi.o form_x.xio.o form_x.xo.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ${LIBROOT}/libDATA_menu_list${SO_EXT}: menu_x.xi.o menu_x.xio.o menu_x.xo.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ${LIBROOT}/libDATA_report${SO_EXT}: report.xi.o report.xio.o report.xo.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ${LIBROOT}/libXDRPACKER_struct_form${SO_EXT}:	form_x_xdr.o
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ${LIBROOT}/libXDRPACKER_menu_list${SO_EXT}: 	menu_x_xdr.o
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ${LIBROOT}/libXDRPACKER_report${SO_EXT}:  		report_xdr.o
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${RPCLIB_NAME}
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 #FIXME: why not use this, or is it obsolete?
 ${LIBROOT}/libDATA_any${SO_EXT}: menu_x.xio.o form_x.xio.o report.xio.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ## ==================================================================
 ##                          Sub-targets

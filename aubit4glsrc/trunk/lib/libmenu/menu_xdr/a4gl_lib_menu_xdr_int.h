@@ -10,6 +10,10 @@
 	    /* missing from rpcgen generated form_x.h on CygWin: */
 		#define bool_t int
 		#define u_int unsigned int
+	
+
+		#include <rpc/rpc.h>
+
 	#endif
 
 
