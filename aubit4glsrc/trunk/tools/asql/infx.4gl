@@ -3,7 +3,7 @@
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2003 Aubit Computing Ltd                               |
 # +----------------------------------------------------------------------+
-# | Production of this software was sponsered by                         |
+# | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
@@ -103,7 +103,7 @@ Kerry Sainsbury (kerry@kcbbs.gen.nz, kerry@quanta.co.nz)
 }
 
 
-FUNCTION load_info(l_tabname)
+FUNCTION load_info_columns(l_tabname)
 DEFINE   i            INTEGER,
          l_tabid      INTEGER,
          l_coltype    INTEGER,
@@ -145,10 +145,6 @@ while true
    LET i = 0
    FOREACH info_curs INTO lv_colname,l_coltype, l_collength
       LET i = i + 1
-      #IF i = 301 THEN
-         #CALL message_prompt("More than 300 columns in table!", "")
-         #EXIT FOREACH
-      #END IF
 
       LET lv_buff = lv_colname," " ,get_type(l_coltype, l_collength)
 code
@@ -182,6 +178,20 @@ MESSAGE ""
 END FUNCTION
 
 
+FUNCTION do_paginate() 
+define rpaginate integer
+code
+   while (1) {
+	extern int outlines;
+	
+             if (outlines<=0) break;
+             aclfgl_paginate(0);
+             rpaginate=A4GL_pop_int();
+             if (rpaginate!=0) break;
+   }
+endcode
+
+END FUNCTION
 FUNCTION get_type(l_coltype, l_collength)
 DEFINE l_coltype     INTEGER,
        l_collength   INTEGER,
@@ -940,6 +950,7 @@ if lv_newname is not null and lv_newname not matches " " then
 
         close database
         database lv_newname
+	whenever error stop
 
         if sqlca.sqlcode=0 then
                 call set_curr_db(lv_newname)
@@ -999,14 +1010,15 @@ end if
 
 
 if lv_newname is not null and lv_newname not matches " " then
-        whenever error continue
 
         menu "CONFIRM >>"
                 command "YES" "Really Drop the database"
 
+        whenever error continue
                         let lv_sql="drop database ",lv_newname
                         prepare p_drop from lv_sql
                         execute p_drop
+	whenever error stop
 
                         if sqlca.sqlcode=0 then
                                 call set_curr_db("")
@@ -1022,3 +1034,325 @@ if lv_newname is not null and lv_newname not matches " " then
 end if
 
 end function
+
+
+
+
+function load_info_priv(lv_tabname)
+define lv_tabname char(255)
+error "Not Implemented"
+end function
+
+
+function load_info_ref(lv_tabname)
+define lv_tabname char(255)
+error "Not Implemented"
+end function
+
+
+function load_info_status(lv_tabname)
+define lv_tabname char(255)
+define lv_rec record
+	tabname char(20),
+	owner char(20),
+	rowsize integer,
+	nrows integer,
+	ncols integer,
+	created date
+	
+end record
+
+select tabname,owner,rowsize,nrows,ncols,created into lv_rec.* 
+from systables 
+where tabname=lv_tabname
+
+if sqlca.sqlcode=0 then
+	call clear_screen_portion()
+	display "Table Name          ",lv_rec.tabname at 9,1
+	display "Owner               ",lv_rec.owner   at 10,1
+	display "Row Size            ",lv_rec.rowsize at 11,1
+	display "Number Of Rows      ",lv_rec.nrows   at 12,1
+	display "Number Of Columns   ",lv_rec.ncols   at 13,1
+	display "Date Created        ",lv_rec.created at 14,1
+else
+	error "Unable to locate table details"
+end if
+end function
+
+
+function load_info_constraints(lv_tabname)
+define lv_tabname char(255)
+error "Not Implemented"
+end function
+
+function get_tabid(lv_tabname)
+define lv_tabname char(255)
+define lv_tabid integer
+select tabid into lv_tabid from systables
+where tabname=lv_tabname
+if sqlca.sqlcode=0 then
+	return lv_tabid
+else
+	error "Unable to locate table"
+	initialize lv_tabid to null
+	return lv_tabid
+end if
+end function
+
+function load_info_triggers(lv_tabname)
+define lv_tabname char(255)
+define lv_trigname char(255)
+define lv_text char(256)
+define lv_tabid integer
+define lv_cnt integer
+define lv_systrig record
+	trigname char(18),
+	event char(1),
+	old char(18),
+	new char(18)
+end record
+define lv_str char(5000)
+define lv_s1,lv_s2 integer
+let lv_tabid=get_tabid(lv_tabname)
+if lv_tabid is null then
+	return
+end if
+declare c_gettrigs cursor for
+	select trigname from systriggers where tabid=lv_tabid
+
+let lv_cnt=1
+
+foreach c_gettrigs into lv_trigname
+	call set_pick(lv_cnt,lv_trigname)
+	let lv_cnt=lv_cnt+1
+end foreach
+
+call set_pick_cnt(lv_cnt-1)
+let int_flag=false
+
+call prompt_pick("INFO FOR TRIGGER >>","") returning lv_trigname
+
+
+if lv_trigname is null or lv_trigname = " " then
+	return
+end if
+
+CALL open_display_file()
+
+select trigname,event,old,new into lv_systrig.* from  systriggers
+where tabid=lv_tabid
+and trigname=lv_trigname
+let lv_str="create trigger ",lv_trigname clipped
+if lv_systrig.event="U" then
+	let lv_str=lv_str clipped," update on ",lv_tabname
+end if
+if lv_systrig.event="I" then
+	let lv_str=lv_str clipped," insert on ",lv_tabname
+end if
+if lv_systrig.event="D" then
+	let lv_str=lv_str clipped," delete on ",lv_tabname
+end if
+
+if lv_systrig.old is not null or lv_systrig.new is not null then
+	let lv_str=lv_str clipped," referencing "
+	if lv_systrig.old is not null then
+		let lv_str=lv_str clipped, " old as ",lv_systrig.old
+	end if
+	if lv_systrig.new is not null then
+		let lv_str=lv_str clipped, " new as ",lv_systrig.new
+	end if
+end if
+
+
+CALL add_to_display_file(lv_str)
+
+let lv_str=" "
+let lv_s1=1
+declare c_gettrigb cursor for
+select data,seqno from systriggers st,systrigbody stb
+where st.trigid=stb.trigid
+and   stb.datakey="A"
+and  st.trigname=lv_trigname
+and st.tabid=lv_tabid
+order by 2
+
+foreach c_gettrigb into lv_text
+	let lv_s2=lv_s1+255
+	let lv_str[lv_s1,lv_s2]=lv_text
+	let lv_s1=lv_s1+256
+end foreach
+code
+A4GL_debug("lv_str=%s",lv_str);
+endcode
+CALL add_to_display_file_wrapped(lv_str)
+call add_to_display_file("")
+
+CALL do_paginate()
+
+end function
+
+
+
+
+function load_info_fragments(lv_tabname)
+define lv_tabname char(255)
+error "Not Implemented"
+end function
+
+
+function table_info()
+define lv_tabname char(255)
+define lv_txt char(255)
+define lv_cont integer
+        if not has_db() then
+                call select_db()
+        end if
+
+
+	if not has_db() then
+		return
+	end if
+
+
+        while true
+        	call table_select("INFO FOR TABLE >>") returning lv_tabname
+
+        	if lv_tabname is not null and lv_tabname not matches " " THEN
+        	else
+        		return
+		end if
+
+
+		let lv_cont=0
+
+                let lv_txt="INFO - ",lv_tabname
+                menu "Info"
+			command "Columns"
+                		call load_info_columns(lv_tabname)
+
+			command "Indexes"
+                		call load_info_indexes(lv_tabname)
+
+			command "Privileges"
+				call load_info_priv(lv_tabname)
+
+			command "References"
+				call load_info_ref(lv_tabname)
+
+			command "Status"
+				call load_info_status(lv_tabname)
+
+			command "cOnstraints"
+				call load_info_constraints(lv_tabname)
+
+			command key "G" "triGgers"
+				call load_info_triggers(lv_tabname)
+
+			command "Table"
+				let lv_cont=1
+				exit menu
+
+			command "Fragments"
+				call load_info_fragments(lv_tabname)
+
+			command "Exit"
+				let lv_cont=0
+				exit menu
+
+		end menu
+	if lv_cont=0 then
+		exit while
+	end if
+        end while
+
+end function
+
+
+function load_info_indexes(lv_tabname)
+define lv_tabname char(255)
+define lv_tabid integer
+define lv_rec record 
+	idx_name char(18),
+ 	type char(1),
+	clust char(1)
+end record
+define lv_p array[8] of integer
+define lv_cnt integer
+define lv_colno integer
+Define lv_colname char(18)
+define lv_outfile char(255)
+
+let lv_outfile=get_out_fname()
+
+
+let lv_tabid=get_tabid(lv_tabname)
+
+if lv_tabid is null then 
+	return
+end if
+
+
+declare c_getindex cursor for
+select idxname,idxtype,clustered,
+	part1,
+	part2,
+	part3,
+	part4,
+	part5,
+	part6,
+	part7,
+	part8 
+from sysindexes where tabid=lv_tabid
+order by idxtype desc,idxname
+
+start report rindex to lv_outfile
+foreach  c_getindex into lv_rec.*, lv_p[1], lv_p[2], lv_p[3], lv_p[4], lv_p[5], lv_p[6], lv_p[7], lv_p[8]
+
+for lv_cnt=1 to 8
+	if lv_p[lv_cnt]!=0 then
+		let lv_colno=lv_p[lv_cnt]
+		select colname into lv_colname from syscolumns where tabid=lv_tabid and colno=lv_colno
+		output to report rindex (lv_rec.idx_name,lv_rec.type,lv_rec.clust,lv_cnt,lv_colname)
+	end if
+end for
+end foreach
+
+finish report rindex
+call set_outlines(lv_outfile)
+call do_paginate()
+end function
+
+
+report rindex(idx_name,type,clust,colno,colname)
+define idx_name,colname char(18)
+define type,clust char(1)
+define colno integer
+output
+left margin 0
+top margin 0
+
+order external by idx_name
+format
+
+first page header 
+print "Index Name",column 20,"Type",column 30,"Cluster",column 40,"Columns"
+skip 1 line
+
+before group of idx_name
+print idx_name,column 20;
+if type="U" then print "Unique",column 30; end if
+if type="D" then print "Dupls",column 30; end if
+
+if clust="C" then print "Yes"; end if
+if clust="-" then print "No"; end if
+if clust is null then print "Null"; end if
+if clust = " " then print "No"; end if
+
+on every row
+print column 40,colname
+
+after group of idx_name
+print " "
+
+end report
+

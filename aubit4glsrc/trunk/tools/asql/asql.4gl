@@ -3,7 +3,7 @@
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2003 Aubit Computing Ltd                               |
 # +----------------------------------------------------------------------+
-# | Production of this software was sponsered by                         |
+# | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
@@ -278,7 +278,7 @@ display middle("(c) 2003 Aubit Computing Ltd") at 9,1
 display middle("http://www.aubit.com") at 10,1
 display middle("Latest version available at:") at 13,1
 display middle("http://aubit4gl.sourceforge.net") at 14,1
-display middle("Development sponsered by Cassens Transport Company") at 16,1
+display middle("Development sponsored by Cassens Transport Company") at 16,1
 display middle("http://www.cassens.com") at 17,1
 sleep 4
 clear screen

@@ -3,7 +3,7 @@
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2003 Aubit Computing Ltd                               |
 # +----------------------------------------------------------------------+
-# | Production of this software was sponsered by                         |
+# | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
@@ -104,15 +104,50 @@ end function
 
 
 function add_to_display_file(lv_str)
-define lv_str char(255)
+define lv_str char(256)
 code
 A4GL_assertion(out==0,"No output file (1)");
 A4GL_trim(lv_str);
 if (out) fprintf(out,"%s\n",lv_str);
 outlines++;
 endcode
+end function
+
+
+function add_to_display_file_wrapped(lv_str)
+define lv_str char(5000)
+define lv_smstr char(80)
+define lv_col integer
+define a integer
+
+let lv_col=1
+
+for a=1 to length(lv_str)
+
+code
+	if (lv_str[a-1]=='\n' || lv_str[a-1]=='\r') {
+		lv_col=0;
+	 	fprintf(out,"\n");
+	} else {
+	     fprintf(out,"%c",lv_str[a-1]);
+	}
+endcode
+	let lv_col=lv_col+1
+	if lv_col=80 then
+code
+	 	fprintf(out,"\n");
+		lv_col=1;
+endcode
+	end if
+
+
+end for
+
 
 end function
+
+
+
 
 function confirm(qry_type) 
 define qry_type integer
@@ -353,9 +388,49 @@ return 1
 end function
 
 
+function set_outlines(fname)
+define fname char(255)
+define a integer
+code
+set_outlines_c(fname);
+a=outlines;
+endcode
+end function
+
+
+function get_out_fname()
+define lv_out char(300)
+code
+set_outfname();
+strcpy(lv_out,outfname);
+endcode
+let lv_out=lv_out
+return lv_out
+end function
+
+
 
 
 code
+
+int set_outlines_c(char *fname) {
+FILE *f;
+char buff[300];
+A4GL_trim(fname);
+f=fopen(fname,"r");
+outlines=0;
+if (!f)  return;
+while (1) {
+	fgets(buff,300,f);
+	if (feof(f)) break;
+	outlines++;
+}
+fclose(f);
+}
+
+
+
+
 int isSqlError () {
 	if (sqlca.sqlcode<0) return 1;
 	return 0;
@@ -366,12 +441,19 @@ int get_exec_mode_c() {
 	return exec_mode;
 }
 
+void set_outfname() {
+	sprintf(outfname,"/tmp/out%d.txt",getpid());
+}
+
+
+
+
 /******************************************************************************/
 void open_display_file_c() {
 int cnt;
 fetchFirst=1;
 
-sprintf(outfname,"/tmp/out%d.txt",getpid());
+set_outfname();
 
 if (out) {
 	fclose(out);

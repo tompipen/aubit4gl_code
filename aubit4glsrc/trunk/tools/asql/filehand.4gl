@@ -3,7 +3,7 @@
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2003 Aubit Computing Ltd                               |
 # +----------------------------------------------------------------------+
-# | Production of this software was sponsered by                         |
+# | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |

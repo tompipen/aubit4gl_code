@@ -3,7 +3,7 @@
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2003 Aubit Computing Ltd                               |
 # +----------------------------------------------------------------------+
-# | Production of this software was sponsered by                         |
+# | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
@@ -78,14 +78,4 @@ MENU "CONFIRM"
 END MENU
 end function
 
-
-function table_info()
-define lv_tabname char(255)
-	call table_select("INFO FOR TABLE >>") returning lv_tabname
-
-	if lv_tabname is not null and lv_tabname not matches " " THEN
-		call load_info(lv_tabname)
-	end if
-
-end function
 

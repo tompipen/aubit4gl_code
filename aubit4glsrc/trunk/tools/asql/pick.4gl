@@ -3,7 +3,7 @@
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2003 Aubit Computing Ltd                               |
 # +----------------------------------------------------------------------+
-# | Production of this software was sponsered by                         |
+# | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
 # +----------------------------------------------------------------------+
 # | This program is free software; you can redistribute it and/or modify |
@@ -25,7 +25,7 @@
 # | If you did not, or have any questions about Aubit licensing, please  |
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
-define mv_arr array[100] of char(18)
+define mv_arr array[1000] of char(18)
 define mv_cnt integer
 define mv_curr_option integer
 define mv_rows integer
@@ -46,7 +46,6 @@ let mv_rows=0
 let y=y-yinc
 set pause mode on
 for a=1 to mv_cnt
-
 	let y=y+yinc
 
 	if y>=24 then
@@ -95,8 +94,10 @@ if mv_cnt >=1 then
 	on key(down)
 		if mv_curr_option+1<=mv_cnt then
 			let mv_curr_option=mv_curr_option+1
-			call show_pick()
+		else
+			let mv_curr_option=1
 		end if
+		call show_pick()
 		continue prompt
 	
 	on key(right)
@@ -110,8 +111,10 @@ if mv_cnt >=1 then
 	on key(up)
 		if mv_curr_option-1>=1 then
 			let mv_curr_option=mv_curr_option-1
-			call show_pick()
+		else
+			let mv_curr_option=mv_cnt
 		end if
+			call show_pick()
 		continue prompt
 	
 	on key(left)

@@ -186,7 +186,7 @@ Kerry Sainsbury (kerry@kcbbs.gen.nz, kerry@quanta.co.nz)
 }
 
 
-FUNCTION load_info(l_tabname)
+FUNCTION load_info_columns(l_tabname)
 DEFINE   i            INTEGER,
          l_tabid      INTEGER,
          l_coltype    char(80),
@@ -871,5 +871,113 @@ if lv_newname is not null and lv_newname not matches " " then
                         exit menu
         end menu
 end if
+
+end function
+
+
+function load_info_indexes(lv_tabname)
+define lv_tabname char(255)
+
+end function
+
+
+function load_info_priv(lv_tabname)
+define lv_tabname char(255)
+error "Not Implemented"
+end function
+
+
+function load_info_ref(lv_tabname)
+define lv_tabname char(255)
+error "Not Implemented"
+end function
+
+
+function load_info_status(lv_tabname)
+define lv_tabname char(255)
+end function
+
+
+function load_info_constraints(lv_tabname)
+define lv_tabname char(255)
+error "Not Implemented"
+end function
+
+
+function load_info_triggers(lv_tabname)
+define lv_tabname char(255)
+end function
+
+
+function load_info_fragments(lv_tabname)
+define lv_tabname char(255)
+error "Not Implemented"
+end function
+
+function table_info()
+define lv_tabname char(255)
+define lv_txt char(255)
+define lv_cont integer
+
+        if not has_db() then
+                call select_db()
+        end if
+
+
+        if not has_db() then
+                return
+        end if
+
+
+        while true
+                call table_select("INFO FOR TABLE >>") returning lv_tabname
+
+                if lv_tabname is not null and lv_tabname not matches " " THEN
+                else
+                        return
+                end if
+
+
+                let lv_cont=0
+
+                let lv_txt="INFO - ",lv_tabname
+                menu lv_txt
+                        command "Columns"
+                                call load_info_columns(lv_tabname)
+
+                        command "Indexes"
+                                call load_info_indexes(lv_tabname)
+
+                        command "Privileges"
+                                call load_info_priv(lv_tabname)
+
+                        command "References"
+                                call load_info_ref(lv_tabname)
+
+                        command "Status"
+                                call load_info_status(lv_tabname)
+
+                        command "cOnstraints"
+                                call load_info_constraints(lv_tabname)
+
+                        command "triGgers"
+                                call load_info_triggers(lv_tabname)
+
+                        command "Table"
+                                let lv_cont=1
+                                exit menu
+
+                        command "Fragments"
+                                call load_info_fragments(lv_tabname)
+
+                        command "Exit"
+                                let lv_cont=0
+                                exit menu
+
+                end menu
+        if lv_cont=0 then
+                exit while
+        end if
+        end while
 
 end function
