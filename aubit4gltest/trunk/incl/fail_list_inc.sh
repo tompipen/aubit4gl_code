@@ -138,7 +138,7 @@ EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903"
 
 #New, after changing some features status (LCL):
 EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP 207 286 287 551 552 553 558 \
-	559 560 620 635 636 1240"
+	559 560 620 1240"
 #207 function dt_extend(character, "unknown", "unknown") does not exist
 #286 287 < 2|2|2|02/13/1970|2|   ---  > 2|2.0|2.0|13/02/1970|2|
 #551 552 553 558 559 560 (ALL of them):
@@ -146,7 +146,7 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP 207 286 287 551 552 553 558 
 #   line 89:	   EXEC SQL ALTER TABLE xpto ADD (third_column SMALLINT  ); /* exec_sql */
  
 #620 delete where current of - Database error ('(null)' in line 246.).
-#635 636 Cannot do an ESQL_UNLOAD for a prepared statement (DELETE)
+
 
 
 #New, after changing some features status (SW):

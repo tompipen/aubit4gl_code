@@ -4192,7 +4192,16 @@ fi
 		echo "$FAIL_COMPAT_SQL" >> $SQLFEATURES_LOGFILE
 		echo "" >> $SQLFEATURES_LOGFILE
 	fi	
-	
+	if test "$LIST_IN_4G_NOT_IN_MK" != ""; then
+		echo "WARNING: features listed by 4glc but not in Makefile:" >> $SQLFEATURES_LOGFILE
+		echo "$LIST_IN_4G_NOT_IN_MK" >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE		
+	fi
+	if test "$LIST_IN_MK_NOT_IN_4GLC" != ""; then
+		echo "WARNING: features listed in Makefile but not by 4glc:" >> $SQLFEATURES_LOGFILE
+		echo "$LIST_IN_MK_NOT_IN_4GLC" >> $SQLFEATURES_LOGFILE
+		echo "" >> $SQLFEATURES_LOGFILE		
+	fi
 	if test "$FEATURE_NOT_EXPECTED" != ""; then
 		#This is an error - correct the feature description in makefile or
 		#in array of feature descriptions

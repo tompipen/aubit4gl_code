@@ -2604,10 +2604,63 @@ do
 			#get rid of the newline:
 			SQL_FEATURES_USED_4GLC=`echo "$SQL_FEATURES_USED_4GLC" | tr "\n" " "`
 			#SQL_FEATURES_COMPATIBLE=""
+			IN_4G_NOT_IN_MK=""
+			IN_MK_NOT_IN_4GLC=""
 			
+			#Create list of features that do not match in both
+			for FEATURE_MK in $SQL_FEATURES_USED ; do
+				has_match=0
+				for FEATURE_4G in $SQL_FEATURES_USED_4GLC ; do
+					if test "$FEATURE_MK" = "ANSI_SELECT"; then
+						#4glc uses SELECT, not ANSI_SELECT
+						FEATURE_MK="SELECT"
+					fi
+					if test "$FEATURE_MK" = "$FEATURE_4G"; then
+						has_match=1
+						break
+					fi
+				done
+				if test "$has_match" = "0"; then
+					IN_MK_NOT_IN_4GLC="$IN_MK_NOT_IN_4GLC $FEATURE_MK"
+				fi
+			done
+			for FEATURE_4G in $SQL_FEATURES_USED_4GLC ; do
+				if test "$FEATURE_4G" = "SELECT" \
+					-o "$FEATURE_4G" = "DATABASE_USED"; then
+						#Ignore above descriptors. 
+						#DATABASE_USED has no significance (all IS_DB_TEST use it)
+						#SELECT is equivalent to ANSI_SELECT
+						continue
+				fi
+				has_match=0
+				for FEATURE_MK in $SQL_FEATURES_USED ; do
+					if test "$FEATURE_4G" = "$FEATURE_MK"; then
+						has_match=1
+						break
+					fi
+				done
+				if test "$has_match" = "0"; then
+					IN_4G_NOT_IN_MK="$IN_4G_NOT_IN_MK $FEATURE_4G"
+				fi
+			done
 			if test "$RUN_ONE" != ""; then
+				if test "$IN_4G_NOT_IN_MK" != ""; then
+					echo "WARNING: features listed by 4glc but not in Makefile:"
+					echo "$IN_4G_NOT_IN_MK"
+				fi
+				if test "$IN_MK_NOT_IN_4GLC" != ""; then
+					echo "WARNING: features listed in Makefile but not by 4glc:"
+					echo "$IN_MK_NOT_IN_4GLC"
+				fi
 				echo "DB features (makefile) :$SQL_FEATURES_USED" 
 				echo "DB features (4glc)     :$SQL_FEATURES_USED_4GLC"
+			else
+				if test "$IN_4G_NOT_IN_MK" != ""; then
+					LIST_IN_4G_NOT_IN_MK="$LIST_IN_4G_NOT_IN_MK ($TEST_NO:$IN_4G_NOT_IN_MK)"
+				fi
+				if test "$IN_MK_NOT_IN_4GLC" != ""; then
+					LIST_IN_MK_NOT_IN_4GLC="$LIST_IN_MK_NOT_IN_4GLC ($TEST_NO:$IN_MK_NOT_IN_4GLC)"
+				fi
 			fi
 		else
 			if test "$RUN_ONE" != ""; then

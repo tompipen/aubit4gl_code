@@ -20,6 +20,24 @@ function odbc_init () {
 #Obay $ODBCINI: Informix, iODBC, UnixODBC, SqliteODBC, SAP
 #WARNING: Ignore $ODBCINI: Postgresql
 
+if ! test -f "$ODBCINI" ; then
+	if test "$VERBOSE" = "1"; then
+		echo "NOTE: ODBCINI in your environment is invalid:"
+		echo "$ODBCINI"
+	fi
+	unset ODBCINI
+fi
+
+if ! test -f "$ODBCINSTINI"; then
+	if test "$VERBOSE" = "1"; then
+		echo "NOTE: ODBCINSTINI in your environment is invalid:"
+		echo "$ODBCINSTINI"
+	fi
+	unset ODBCINSTINI
+fi
+
+
+
 #if [ "$NOKILLODBCINI" = "" -a "$ODBCINI" != "" ]; then
 if test "$ODBCINI" = "" ; then
 	export ODBCINI=$CURR_DIR/etc/odbc.ini
