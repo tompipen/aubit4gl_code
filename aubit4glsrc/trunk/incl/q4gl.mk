@@ -1,6 +1,6 @@
 ###########################################################################
 #
-#   @(#)$Id: q4gl.mk,v 1.12 2003-04-13 06:23:45 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.13 2003-05-01 02:37:28 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -131,7 +131,12 @@ else
 	QXI_CORELIBS    =-lfgl$(USE_DEBUG_LIBRARIES) -lsqli$(USE_DEBUG_LIBRARIES)
 endif
 
-QXI_LIBS			=${QX_CURSES} -L"$(QUERIXDIR)/lib" ${QXI_CORELIBS}
+
+#BAD ...glob_GLOBALS.qo  "/opt/querix/./lib/libpanel.a" "/opt/querix/./lib/libcurses.a" -L"/opt/querix/./lib" -lfgl -lsqli
+#QXI_LIBS			=${QX_CURSES} -L"$(QUERIXDIR)/lib" ${QXI_CORELIBS}
+
+#OK  ...glob_GLOBALS.qo  -L/opt/querix/./lib -lfgl -lsqli /opt/querix/./lib/libpanel.a /opt/querix/./lib/libcurses.a
+QXI_LIBS			=-L"$(QUERIXDIR)/lib" ${QXI_CORELIBS} ${QX_CURSES}
 
 #ifeq "${QX_CURSES_LOCAL}" "yes"
 #	QXI_LIBS			=${QX_CURSES} -L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) \
@@ -264,20 +269,9 @@ Q4GL_CLEAN_FLAGS	=$(addprefix *,	$(Q4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(Q4
 #respect to the c file, and ignore possible change in 4gl file
 #.4gl.qo:
 
-
-####.4gl${Q4GL_OBJ_EXT}:
-####	${FAIL_CMPL_4GL}${Q4GL_CC} $<
-#####if 4gl compiler is allowed to fail, C compiler must be too, otherwise we will
-#####stop anyway sice c compiler will not get it's input c file:
-####	${FAIL_CMPL_4GL}${FAIL_CMPL_C}${QXCC} -c ${Q4GL_CL_FLAGS} $*.c -o $@
-
-
-
-
-
-
-
 %${Q4GL_OBJ_EXT} : %.4gl
+#.4gl${Q4GL_OBJ_EXT}:
+#	${Q4GL_CC} $<
 #	@echo "--------"
 #	@echo "${QXCC} -c ${Q4GL_CL_FLAGS} $*.c -o $@"
 #	@echo "--------"
@@ -295,6 +289,14 @@ Q4GL_CLEAN_FLAGS	=$(addprefix *,	$(Q4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(Q4
 #if 4gl compiler is allowed to fail, C compiler must be too, otherwise we will
 #stop anyway sice c compiler will not get it's input c file:
 	${FAIL_CMPL_4GL}${FAIL_CMPL_C}${QXCC} -c ${Q4GL_CL_FLAGS} $*.c -o $@
+
+#Works
+#gcc -I/opt/querix/./incl -DQUERIX -Wl,-rpath /opt/aubit/apps/erp/src/common -rdynamic -o erpmenu.4qe erpmenu.qo menuwind.qo secufunc.qo glob_GLOBALS.qo  -L/opt/querix/./lib -lfgl -lsqli /opt/querix/./lib/libpanel.a /opt/querix/./lib/libcurses.a
+#does not:
+#gcc -I/opt/querix/./incl -DQUERIX -Wl,-rpath /opt/aubit/apps/erp/src/common -rdynamic -o erpmenu.4qe erpmenu.qo menuwind.qo secufunc.qo glob_GLOBALS.qo  "/opt/querix/./lib/libpanel.a" "/opt/querix/./lib/libcurses.a" -L"/opt/querix/./lib" -lfgl -lsqli
+
+#OK  ...glob_GLOBALS.qo  -L/opt/querix/./lib -lfgl -lsqli /opt/querix/./lib/libpanel.a /opt/querix/./lib/libcurses.a
+#BAD ...glob_GLOBALS.qo  "/opt/querix/./lib/libpanel.a" "/opt/querix/./lib/libcurses.a" -L"/opt/querix/./lib" -lfgl -lsqli
 
 
 
