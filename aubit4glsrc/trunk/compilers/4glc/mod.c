@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.43 2002-02-03 17:42:27 saferreira Exp $
+# $Id: mod.c,v 1.44 2002-02-14 22:11:44 saferreira Exp $
 #
 */
 
@@ -46,12 +46,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.43 2002-02-03 17:42:27 saferreira Exp $
+* $Id: mod.c,v 1.44 2002-02-14 22:11:44 saferreira Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.43  2002/02/03 17:42:27  saferreira
+*	Comments added
+*	
 *	Revision 1.42  2002/01/30 21:13:43  saferreira
 *	Warning fixes
 *	
@@ -2704,7 +2707,17 @@ int attr_code (char *s)
   return 0;
 }
 
-
+/**
+ * Breaks the file name to take the file name without extension and dir name
+ *
+ * Its used to separate column names from tablename too.
+ *
+ * This function is repeated in severall places.
+ *
+ * @param str The file name 
+ * @param str1 A pointer to the place where to return the left part.
+ * @param str2 A pointer to the place where to return the right part.
+ */
 static bname (char *str, char *str1, char *str2)
 {
   char fn[132];

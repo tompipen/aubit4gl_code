@@ -1,4 +1,4 @@
-   /* $Id: mcompile.c,v 1.2 2001-11-21 22:56:18 saferreira Exp $
+   /* $Id: mcompile.c,v 1.3 2002-02-14 22:11:47 saferreira Exp $
    /* */
 
 #include "../../lib/libincl/compiler.h"
@@ -35,7 +35,18 @@ char *outputfilename;
 char outputfile[132];
 
 
-
+/**
+ * Breaks the file name to take the file name without extension and dir name
+ *
+ * Its used to separate column names from tablename too.
+ *
+ * This function is repeated in severall places.
+ * @todo : Use only one function.
+ *
+ * @param str The file name 
+ * @param str1 A pointer to the place where to return the left part.
+ * @param str2 A pointer to the place where to return the right part.
+ */
 static
 bname (char *str, char *str1, char *str2)
 {

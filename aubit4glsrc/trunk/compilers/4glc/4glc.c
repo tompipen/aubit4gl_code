@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.17 2002-01-30 21:13:41 saferreira Exp $
+# $Id: 4glc.c,v 1.18 2002-02-14 22:11:44 saferreira Exp $
 #
 */
 
@@ -35,7 +35,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.17 2002-01-30 21:13:41 saferreira Exp $
+ * $Id: 4glc.c,v 1.18 2002-02-14 22:11:44 saferreira Exp $
  */
 
 #include <stdio.h>
@@ -68,9 +68,11 @@ int globals_only = 0;
 /**
  * Breaks the file name to take the file name without extension and dir name
  *
+ * Its used to separate column names from tablename too.
+ *
  * @param str The file name 
- * @param str1
- * @param str2
+ * @param str1 A pointer to the place where to return the left part.
+ * @param str2 A pointer to the place where to return the right part.
  */
 static void bname (char *str, char *str1, char *str2)
 {
