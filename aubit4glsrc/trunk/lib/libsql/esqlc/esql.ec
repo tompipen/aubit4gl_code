@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.52 2003-04-24 13:35:59 mikeaubury Exp $
+# $Id: esql.ec,v 1.53 2003-04-28 17:39:50 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.52 2003-04-24 13:35:59 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.53 2003-04-28 17:39:50 mikeaubury Exp $";
 #endif
 
 
@@ -2042,16 +2042,24 @@ int A4GLSQL_fetch_cursor (char *cursor_name,
 void
 A4GLSQL_put_insert (struct BINDING *ibind, int n)
 {
-  /*
-  if ( ibind != (struct BINDING *)0 && nibind > 0 )
-  {
-    descriptorName = getDescriptorName(statementName,'I');
+exec sql begin declare section;
+  char *cursorName;
+char *descriptorName;
+exec sql end declare section;
 
-    if ( processInputBind(descriptorName,nibind,ibind) == 1)
+  cursorName=char_pop();
+   
+
+  if ( ibind != (struct BINDING *)0 && n > 0 )
+  {
+    descriptorName=getDescriptorName(cursorName,'I');
+
+    if ( processInputBind(descriptorName,n,ibind) == 1)
       exitwith ("Error binding");
   }
-  */
-  /* EXEC SQL PUT :cursorName FROM :state */
+  
+   EXEC SQL PUT :cursorName USING SQL DESCRIPTOR $descriptorName ;
+
 }
 
 /**
