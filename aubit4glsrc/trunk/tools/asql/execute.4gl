@@ -277,7 +277,11 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 
 		raffected=0;
 
-
+		if (exec_mode!=EXEC_MODE_INTERACTIVE) {
+			if (is_echo_c()) {
+				fprintf(exec_out,"\n%s\n",list[a].stmt);
+			}
+		}
 
 
 		A4GL_debug("EXEC %d %c - %s\n",list[a].lineno,list[a].type,list[a].stmt);

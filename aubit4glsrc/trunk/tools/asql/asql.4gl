@@ -35,6 +35,15 @@ define lv_input char(255)
 define lv_quiet integer
 define lv_echo integer
 
+function is_echo()
+	return lv_echo
+end function
+
+code
+is_echo_c() {
+return lv_echo;
+}
+endcode
 
 main
 define lv_a integer
