@@ -24,9 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.75 2004-03-07 16:29:35 mikeaubury Exp $
+# $Id: esql.ec,v 1.76 2004-03-09 08:36:59 mikeaubury Exp $
 #
 */
+
 
 /*
  * @file
@@ -140,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.75 2004-03-07 16:29:35 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.76 2004-03-09 08:36:59 mikeaubury Exp $";
 #endif
 
 
