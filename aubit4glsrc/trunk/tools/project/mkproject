@@ -5,7 +5,9 @@ CURRDIR=$PWD
 
 #cd $HOME
 
-PROJECTC=$CURRDIR/../../lib/generated/project.c
+#Bug on CygWin - root makefile PWD allways returned :
+#PROJECTC=$CURRDIR/../../lib/generated/project.c
+PROJECTC=$AUBITDIR/lib/generated/project.c
 #PROJECTC=$CURRDIR/../../lib/project.c
 
 PROJECTC2=$PROJECTC
