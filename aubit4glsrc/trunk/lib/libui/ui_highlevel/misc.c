@@ -4,7 +4,7 @@
 #include "a4gl_lib_ui_int.h"
 #include "a4gl_API_ui.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.4 2004-01-18 09:54:56 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.5 2004-01-18 18:12:54 mikeaubury Exp $";
 
 void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1331,3 +1331,12 @@ A4GL_chkwin();
 
 }
 
+
+
+void UILIB_A4GL_clr_form_fields(int to_defaults,char* defs) { }
+void UILIB_A4GL_init_color(int n,int r,int g,int b) { }
+int UILIB_A4GL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {}
+int UILIB_aclfgl_set_window_title(int nargs) {}
+int UILIB_A4GL_widget_name_match(void* w,char* name) {}
+int UILIB_aclfgl_a4gl_run_gui(int nargs) {}
+int UILIB_A4GL_fgl_fieldnametoid(char* f,char* s,int n) {}

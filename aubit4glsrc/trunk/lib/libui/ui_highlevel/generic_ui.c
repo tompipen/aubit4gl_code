@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "formdriver.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.5 2004-01-17 11:13:34 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.6 2004-01-18 18:12:54 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -1038,16 +1038,19 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	  int sl;
 	  char buff[1024];
 	  memset (buff, ' ', 1024);
+	A4GL_debug("strlen=%d",strlen(s));
 	  sl = strlen (s);
 	  sl = A4GL_get_curr_width () - sl;
-	  if (sl >= 0)
-	    buff[sl] = 0;
-	  buff[1023] = 0;
-	  for (b = 0; b < strlen (buff); b++)
-	    {
-	      A4GL_LL_wadd_char_xy_col (wot, x, y, a + buff[b]);
-	      x++;
-	    }
+	A4GL_debug("sl=%d spaces required",sl);
+	  if (sl >= 0) {
+	    	buff[sl] = 0;
+	  	buff[1023] = 0;
+	  	for (b = 0; b < strlen (buff); b++)
+	    	{
+	      	A4GL_LL_wadd_char_xy_col (wot, x, y, a + buff[b]);
+	      	x++;
+	    	}
+		}
 	}
 
       A4GL_LL_screen_update ();
@@ -1418,7 +1421,6 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
   A4GL_display_field_contents (field, d1, s1, ptr1);
 
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
-printf("AAA0\n");
   oopt = A4GL_LL_field_opts (field);
   A4GL_LL_set_field_attr (field);
   A4GL_debug ("Determining attribute - field_buffer=%s",
@@ -1441,7 +1443,6 @@ printf("AAA0\n");
 
   f->do_reverse = a;
   A4GL_debug ("done ");
-printf("AAA1\n");
   A4GL_LL_set_field_opts (field, oopt);
   A4GL_debug ("ZZZZ - SET OPTS");
   A4GL_debug ("Calling display_field_contents");

@@ -5,7 +5,7 @@
 #include "lowlevel.h"
 #include "formdriver.h"
 #include "low_gtk.h"
-static char *module_id="$Id: lowlevel_gtk.c,v 1.16 2004-01-18 16:15:08 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.17 2004-01-18 18:13:26 mikeaubury Exp $";
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>     /* GDK_Down */
@@ -1075,12 +1075,16 @@ void A4GL_LL_wadd_char_xy_col(void* win,int x,int y,int ch) {
   GtkFixed *cwin;
   GtkEventBox *e;
   GtkLabel *lab;
+  
 
 
   char buff_label[256];
   char buff_evt[256];
   char buff_char[256];
+  char buff_attr[256];
 
+  long old_attr=0;
+  long has_old_attr=0;
   char cbuff[2];
   cbuff[0]=ch&0xff;
   cbuff[1]=0;
@@ -1090,15 +1094,30 @@ A4GL_debug("Wadd_char to window %p %d %d %x",win,x,y,ch);
       sprintf (buff_label, "LABEL_%d_%d", x, y);
       sprintf (buff_char, "LABEL_%d_%d_C", x, y);
       sprintf (buff_evt, "EVENTBOX_%d_%d", x, y);
-
+      sprintf (buff_attr, "ATTR_%d_%d", x, y);
+      
+//printf("%d %d\n",x,y);
       cwin=gtk_object_get_data (GTK_OBJECT (win), "FIXED");
-//printf("fixed=%p win=%p %c %x\n",cwin,win,ch&0xff,ch&0xffffff00);fflush(stdout);
-	
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff_label);
       e = (GtkEventBox *) gtk_object_get_data (GTK_OBJECT (cwin), buff_evt);
+      old_attr=(long)gtk_object_get_data(GTK_OBJECT(cwin),buff_attr);
+
+
+      if (old_attr==ch &&lab && e) return;
+      gtk_object_set_data(GTK_OBJECT(cwin),buff_attr,(void *)ch);
+
+//printf("fixed=%p win=%p %c %x\n",cwin,win,ch&0xff,ch&0xffffff00);fflush(stdout);
+	
 
 		// It did have...
-      		if (ch==32||ch==0||ch==0x10720||ch==0x10700) {
+     if (ch==32||ch==0||ch==0x10720||ch==0x10700) {
+
+		if (lab==0&&e==0) {
+			//printf("Ignore...");
+			return;
+		}
+
+#ifdef XXX
 			if (lab) {
 				gtk_widget_destroy(GTK_WIDGET(lab));
       		        	gtk_object_set_data (GTK_OBJECT (cwin), buff_label,0);
@@ -1111,7 +1130,13 @@ A4GL_debug("Wadd_char to window %p %d %d %x",win,x,y,ch);
 				//printf ("Destroy...%s in %p\n",buff_evt,cwin);
 			}
 			return ;
-		} 
+#endif
+      } 
+
+	if ((ch&0xff)==32) {
+		//printf("Ign spc %s\n",buff_label);
+	}
+
 
       if (!lab) {
 		//printf("NEW LABEL FOR : %d %d\n",x,y);
@@ -1132,20 +1157,24 @@ A4GL_debug("Wadd_char to window %p %d %d %x",win,x,y,ch);
 		gtk_misc_set_alignment(GTK_MISC(lab), 0.5f, 0.5f);
 		gtk_widget_set_size_request (GTK_WIDGET(e), gui_xwidth, gui_yheight);
 		gtk_widget_set_size_request (GTK_WIDGET(lab), gui_xwidth, gui_yheight);
-
+		has_old_attr=0;
         	gtk_widget_show (GTK_WIDGET (lab));
         	gtk_widget_show (GTK_WIDGET (e));
 
-
       } else {
-		//printf("REUSE LABEL FOR : %d %d",x,y);
+		has_old_attr=1;
                 gtk_label_set_text (lab, cbuff);
 		gtk_widget_set_size_request (GTK_WIDGET(lab), gui_xwidth, gui_yheight);
+		if ((ch&0xff)==32) {
+			//printf("Ign spc %s reset\n",buff_label);
+		}
       }
 	
-
-      A4GL_LL_set_field_back ((GtkWidget *) e  , ch); 
-      A4GL_LL_set_field_fore ((GtkWidget *) lab, ch);
+      if ((old_attr&0xffffff00)==(ch&0xffffff00) && has_old_attr) ;
+      else {
+      		A4GL_LL_set_field_back ((GtkWidget *) e  , ch); 
+      		A4GL_LL_set_field_fore ((GtkWidget *) lab, ch);
+      }
 }
 
 
