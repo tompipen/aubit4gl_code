@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.9 2003-08-26 05:27:03 afalout Exp $
+# $Id: main.c,v 1.10 2004-01-28 20:35:24 mikeaubury Exp $
 #*/
 
 /**
@@ -288,8 +288,7 @@ write_genout (void)
   fprintf (cfio, "#include \"a4gl_libaubit4gl.h\"\n");
 
   fprintf (cfo, "#include \"%s\"\n", hfile);
-//      fprintf(cfo,"#include \"a4gl_API_packer.h\"\n");
-//      fprintf(cfo,"#include \"a4gl_lib_packer_int.h\"\n");
+/*      fprintf(cfo,"#include \"a4gl_API_packer.h\"\n"); fprintf(cfo,"#include \"a4gl_lib_packer_int.h\"\n"); */
   fprintf (cfo, "#include \"a4gl_libaubit4gl.h\"\n");
 
   fprintf (cfio, "\n\nint write_%s(%s *s,char *filename);\n", export_name,
@@ -335,18 +334,18 @@ write_genout (void)
 }
 
 
-//this function in normally in libaubit4gl, but xgen is not linked with it:
+/*this function in normally in libaubit4gl, but xgen is not linked with it: */
 
 #ifdef YYPRINT
   /* Give the individual parser a way to print the precise meaning
      of a token, for further debugging info.  */
 
-//YYPRINT (stderr, yychar, yylval)
+/*YYPRINT (stderr, yychar, yylval) */
 int
 aubit_yyprint (int xstderr, int xyychar, int xyylval)
 {
 
-  //do your output here
+  /*do your output here */
   return 0;
 
 }
