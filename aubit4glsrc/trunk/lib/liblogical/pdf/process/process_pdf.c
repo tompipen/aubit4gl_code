@@ -2,23 +2,27 @@
 #include <stdio.h>
 #include "pdflib.h"
 #include "../../common/a4gl_lle.h"
+#include "../common/common_pdf.h"
 #include "../../layout_engine/API_layout.h"
 
 char **lines;
+
+extern struct pdf_layout layout;
+
 
 int page_touched = 0;
 PDF *p;
 void output_page (PDF *p, int w, int h,char **lines);
 
+
+
 int RP_default_file (void) {
-	// As there is no file description to mess with!
-	return 1;
+	return pdf_default_file();
 }
 
 
 int RP_load_file (FILE *fin) {
-	// As there is no file description to mess with!
-	return 1;
+	return pdf_load_file(fin);
 }
 
 

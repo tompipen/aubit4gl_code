@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2004-05-25 17:46:13 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2004-07-02 15:51:48 mikeaubury Exp $
 #
 
 ROOT		=${AUBITDIR}
@@ -44,7 +44,7 @@ CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  -fPIC
 ##                              Targets
 ## ==================================================================
 
-${LIBROOT}/libLOGREPPROC_PDF.sl : process_pdf.o pdf_handling.o
+${LIBROOT}/libLOGREPPROC_PDF.so : process_pdf.o pdf_handling.o ../common/common_pdf.c
 	gcc  -z -Wl,+s -Wl,-E -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl  -lpdf
 
 
