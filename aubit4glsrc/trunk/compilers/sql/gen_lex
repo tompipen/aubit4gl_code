@@ -40,7 +40,7 @@ EOF
 
 grep "token" 2.reqd | awk '{print $2}' | (while read a
 do
-echo $a >> /dev/tty
+#echo $a >> /dev/tty
 grep "^$a[ 	]" ../4glc/rules/data/kwords | awk '
 {
     #print "/* " $0 " */"
