@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.250 2004-10-05 06:01:57 afalout Exp $
+dnl # $Id: configure.in,v 1.251 2004-10-08 02:46:02 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3240,7 +3240,7 @@ AC_ARG_WITH(informix,
                           ${INFORMIXDIR:-nothing}.],
 [
 	if test "$withval" != "no"; then
-		if test "$INFORMIXDIR" = "" && test "$force_informix" != "yes" ; then
+		if test "$INFORMIXDIR" = "" -a "$force_informix" != "yes" ; then
 			INFORMIX_WARNING=1
 			AC_MSG_RESULT(no)
 		else
@@ -3291,6 +3291,10 @@ AC_ARG_WITH(informix,
 				fi
     		fi
 
+			if test "$INFORMIXDIR" = ""; then
+				AC_MSG_WARN(INFORMIXDIR still empty!)
+			fi
+			
 			if test "$withval" != "yes"; then
 	            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$withval/lib/esql$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
             else
@@ -3333,11 +3337,42 @@ AC_ARG_WITH(informix,
 				IFX_INCLUDE="-I$IFX_INCDIR"
 				IFX_LFLAGS="$IFX_LIBDIR"
 				if test -z "$IFX_LIBS"; then
+					#Fails apparently because of single quoting:
+					#IFX_LIBS=`$IFMX_ESQLC -libs | sed -e 's/-lm$//'`
 					IFX_LIBS=`esql -libs | sed -e 's/-lm$//'`
 					dnl  -lm twice otherwise?
 					IFX_LIBS=`echo $IFX_LIBS | sed -e 's/Libraries to be used://g' -e 's/esql: error -55923: No source or object file\.//g'`
 					#dnl Seems to get rid of newlines.
 					#dnl According to Perl's DBD-Informix, might contain these strings.
+					if test "$IFX_LIBS" = ""; then 
+						AC_MSG_WARN(** Cant get libraries list using)
+						AC_MSG_WARN(** $IFMX_ESQLC -libs)
+						$IFMX_ESQLC -libs
+						esql -libs
+					else
+					
+						#WARNING: when using GCC on Windows we need to link with 
+						#.dll's in /bin - NOT with .lib's in /lib (as 'esql -libs' 
+						#will return)
+						
+						if test "$COMSPEC" != ""; then
+							#Convert backslash to slash
+							IFX_LIBS=`echo $IFX_LIBS | sed -e 's/\\\\/\//g'`
+							#echo "IFX_LIBS=$IFX_LIBS"
+							#Remove double slash-es	
+							IFX_LIBS=`echo $IFX_LIBS | sed -e 's/\/\//\//g'`
+							#echo "IFX_LIBS=$IFX_LIBS"
+							#convert lib to bin
+							IFX_LIBS=`echo $IFX_LIBS | sed -e 's/\/lib\//\/bin\//g'`
+							#echo "IFX_LIBS=$IFX_LIBS"
+							#convert .lib to .dll
+							IFX_LIBS=`echo $IFX_LIBS | sed -e 's/\.lib/\.dll/g'`
+							#echo "IFX_LIBS=$IFX_LIBS"
+							#They are MSCV libs - filter them out
+							IFX_LIBS=`echo $IFX_LIBS | sed -e 's/netapi32\.dll//g' -e 's/wsock32\.dll//g' -e 's/user32\.dll//g' -e 's/winmm\.dll//g'`
+							#echo "IFX_LIBS=$IFX_LIBS"							
+						fi
+					fi
 				else
 					dnl Allow override to use static and/or threaded libs
 					IFX_LIBS="$IFX_LIBS"
@@ -3397,7 +3432,6 @@ if test "$COMSPEC" != ""; then
 	INFORMIXDIR="'$INFORMIXDIR'"
 fi
 
-
 #if test "$cygwin" = "1"; then
 #	AC_MSG_WARN(ESQL/C support on Windows temporaraly disabled.)
 #	IFMX_ESQLC=no
@@ -3408,6 +3442,10 @@ fi
 #	IFX_C_MAKE=
 #	INFORMIXDIR=
 #fi
+
+if test "$enable_stop_informix" = "yes" ; then
+	exit
+fi
 
 ## ==================================================================
 ##                 Checks for PostgreSQL engine
@@ -7263,7 +7301,8 @@ AC_OUTPUT
 
 
 if test "$AUBIT_SOURCE" = "1" ; then
-	if test "$INFORMIXDIR" != "" ; then
+	# on MinGW we allready have native path so -d will fail
+	if test "$INFORMIXDIR" != "" -a "$GCC_MINGW" != "yes" ; then
 		if test -d "$INFORMIXDIR" ; then
 			if test "$GCC_MINGW" != "yes"; then	
 				echo "Running configure for FglDoc... ($INFORMIXDIR)"
@@ -7532,7 +7571,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.250 2004-10-05 06:01:57 afalout Exp $
+| $Id: configure.in,v 1.251 2004-10-08 02:46:02 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.82 2004-10-04 13:50:00 afalout Exp $
+# $Id: Makefile-install.mki,v 1.83 2004-10-08 02:47:20 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -226,6 +226,18 @@ deinstall.build:
 tt:
 	(export DEBUG=ALL; cd tools/test; sh aubit 4glc test_build.4gl)
 	(export DEBUG=ALL; cd tools/test; sh aubit 4glc -o test_build.4gl)
+
+	
+######################################
+#Put Aubit nihgtly cron script unser daily cron directory
+install.cron:
+ifdef COMSPEC
+	${CP} etc/aubitbuild.cron.sh /etc/cron.d/
+	chmod a+x /etc/cron.d/*
+else
+	${CP} etc/aubitbuild.cron.sh /etc/cron.daily/
+	chmod a+x /etc/cron.daily/
+endif
 
 #######################################
 #test: tt
@@ -771,6 +783,10 @@ SXML_SRC_PATH			=http://scain.firenze.net
 SXML_SRC				=sxml
 SXML_SRC_GZ				=${SXML_SRC}.tar.gz
 
+#################
+# 32: Valgrind
+#Valgrind is Linux only - no Windows port
+VALGRING_INFO			=http://valgrind.kde.org
 
 
 

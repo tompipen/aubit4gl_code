@@ -1,4 +1,4 @@
-/*
+	/*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.18 2004-10-02 08:04:37 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.19 2004-10-08 02:47:20 afalout Exp $
 #
 */
 
@@ -71,24 +71,24 @@ But them missing DtimeToChar and fammily - where are they?
 #include "a4gl_esql.h"
 
 #ifdef DIALECT_INFORMIX
-#define DIALECTED 1
+	#define DIALECTED 1
 #endif
 
 #ifdef DIALECT_POSTGRES
-#define DIALECTED 1
+	#define DIALECTED 1
 #endif
 
 #ifdef DIALECT_QUERIX
-#define DIALECTED 1
+	#define DIALECTED 1
 #endif
 
 #ifdef DIALECT_SAP
-#define DIALECTED 1
+	#define DIALECTED 1
 #endif
 
 
 #ifndef DIALECTED
-#error "No dialect specified"
+	#error "No dialect specified"
 #endif
 
 

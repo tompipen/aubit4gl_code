@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.30 2004-10-04 13:50:04 afalout Exp $
+# $Id: Makefile,v 1.31 2004-10-08 02:47:21 afalout Exp $
 #
 
 ROOT    		=../..
@@ -222,7 +222,7 @@ install:
 	${CP} ${ALL} ${ROOT}/bin
 #	ln -s ${ROOT}/bin/asql_p.4ae ${ROOT}/bin/asql
 	${RM} ${AUBITDIR}/bin/asql	
-	ln -s ${AUBITDIR}/bin/asql_p${A4GL_EXE_EXT} ${AUBITDIR}/bin/asql
+	ln -s ${AUBITDIR}/bin/asql_g${A4GL_EXE_EXT} ${AUBITDIR}/bin/asql
 	@echo "asql installed."
 
 deinstall:

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.37 2004-10-01 14:46:44 afalout Exp $
+# $Id: Makefile.in,v 1.38 2004-10-08 02:47:20 afalout Exp $
 #
 
 ROOT		=../../..
@@ -115,10 +115,11 @@ ifdef COMSPEC
 
 
     #FIXME!!!!! I'm using variable named TMP somewhere!!!!
-	TMP=/cygdrive/d/DOCUME~1/ADMINI~1/LOCALS~1/Temp
-    PWD=
-    export TMP
-    export PWD
+	#Should be OK now
+	#TMP=/cygdrive/d/DOCUME~1/ADMINI~1/LOCALS~1/Temp
+    #PWD=
+    #export TMP
+    #export PWD
 
 
 	IFX_LIBS="E:\Program files\W2000\Informix\CSDK\lib\isqlt09a.lib" "E:\Program files\W2000\Informix\CSDK\lib\igl4n304.lib" "E:\Program files\W2000\Informix\CSDK\lib\iglxn304.lib" "E:\Program files\W2000\Informix\CSDK\lib\igo4n304.lib"

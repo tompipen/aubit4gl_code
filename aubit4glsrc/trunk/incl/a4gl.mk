@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.49 2004-10-04 13:50:00 afalout Exp $
+#	 $Id: a4gl.mk,v 1.50 2004-10-08 02:47:20 afalout Exp $
 
 ##########################################################################
 #
@@ -78,13 +78,19 @@ endif
 ##########################################################################
 
 ###########################
-#Name of the warper script for allAubit commands, that we expect in the PATH
+#Name of the warper script for all Aubit commands, that we expect in the PATH
 AUBIT_WRAPER		=aubit
 
 ###########################
 #Define command to be used to run Aubit compiler executables
-#AUBIT_CMD   		=${SH} ${AUBIT_WRAPER}
-AUBIT_CMD   		=${AUBIT_WRAPER}
+ifdef COMSPEC
+	#Must incoke shell scripts with bash on CygWin, since sh is default
+	#and sh is NOT bash, and it will fail because it does not understand
+	#functions
+	AUBIT_CMD   		=${SH} ${AUBIT_WRAPER}
+else
+	AUBIT_CMD   		=${AUBIT_WRAPER}
+endif
 
 ###########################
 #To find out if we are using MinGW, we can try:
@@ -161,12 +167,12 @@ A4GL_CL_LDFLAGS = ${LDFLAGS}
 
 ###########################
 # A4GL Form Compiler
-A4GL_FC_CMD     = ${AUBIT_WRAPER} fcompile
+A4GL_FC_CMD     = ${AUBIT_CMD} fcompile
 A4GL_FC_FLAGS   =
 
 ###########################
 # A4GL Message Compiler
-A4GL_MC_CMD     = ${AUBIT_WRAPER} amkmessage
+A4GL_MC_CMD     = ${AUBIT_CMD} amkmessage
 A4GL_MC_FLAGS   =
 
 ###########################
@@ -373,18 +379,18 @@ lib%${A4GL_LIB_EXT}:  $(subst lib,,%.mk)
 # Rule for Aubit/Plexus Menu compiler
 #
 %${A4GL_MNU_EXT}: %.menu
-	aubit mcompile $<
+	${AUBIT_CMD} mcompile $<
 
 ####################################
 # Rule for Aubit/Plexus Menu compiler
 #%.mnu: %${A4GL_MNU_EXT}
 %${A4GL_MNU_EXT}: %.menu
-	aubit mcompile $<
+	${AUBIT_CMD} mcompile $<
 
 ###################################
 #Rule to compile Ace report files to intermediate file
 %${A4GL_ACERC_EXT}: %.ace
-	export A4GL_PACKER=XDR; aubit aace $<
+	export A4GL_PACKER=XDR; ${AUBIT_CMD} aace $<
 
 
 ###################################
@@ -394,7 +400,7 @@ lib%${A4GL_LIB_EXT}:  $(subst lib,,%.mk)
 #NOTE: aace_4gl does NOT work on .xml files created by aace (Bad format)
 .PRECIOUS: %.4gl
 %.4gl: %${A4GL_ACERC_EXT}
-	aubit aace_4gl $< > $@
+	${AUBIT_CMD} aace_4gl $< > $@
 
 
 

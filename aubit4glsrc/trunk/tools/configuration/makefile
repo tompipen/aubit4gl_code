@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.9 2004-02-22 02:26:33 afalout Exp $
+# $Id: makefile,v 1.10 2004-10-08 02:47:21 afalout Exp $
 #
 
 ROOT    =../..
@@ -88,8 +88,6 @@ deinstall:
 run: ${ALL}
 #	export A4GL_UI=TUI; ${ROOT}/bin/configurator
 	export A4GL_UI=TUI; ./configurator -firstrun
-
-
 
 ## ==================================================================
 ##                              Clean

@@ -1,5 +1,22 @@
+
+#On CygWin, using /bin/sh will result in error since sh is NOT bash and 
+#does NOT understand functions!
+#Variables, like #!${SHELL:-/bin/bash} cant be used here
+#Specifying /bin/bash will fail on systems without /bin/bash
+#Not specifying anything will on CygWin invoke /bin/sh and fail
+
+#WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
+#esql compiler will use it without checking to put it's temp files there
+#and fail!
+
 #!/bin/sh
 #This is Aubit 4gl compiler warper script
+
+function dummy {
+	echo "Your shell does not understand functions - please use"
+	echo "'bash aubit' instead of just 'aubit'"
+	exit 5
+}
 
 function show_help {
 	
@@ -52,9 +69,10 @@ CMD_LINE_TOOLS="4glc 4glpc aubit-config default_frm mcompile 4glc-strip aupscol 
 #They run compiled P-code programs - not command line
 #runner runner_fgl
 
-#If user invoked this from command line, he ptobably wants to run them in 
-#terminal, and not GUI mode?
+#If user invoked this from command line, via aubit script, he probably wants 
+#to run them in terminal, and not GUI mode?
 TUI_TOOLS="asql_g.4ae asql_i.4ae asql_p.4ae"
+CMD_LINE_TOOLS="$CMD_LINE_TOOLS $TUI_TOOLS"
 
 FLAGS=$@
 EXEC=""
@@ -69,6 +87,10 @@ for FLAG in $FLAGS; do
 		;;
 	--valgrind)
    		VALGRIND=1
+		;;
+	--debug)
+		echo "Debug mode on"
+   		export DEBUG=ALL
 		;;
 	--show)
 		SHOW=1
@@ -110,7 +132,7 @@ done
 PATH=":$PATH:"
 
 if test "$AUBITDIR" = "" ; then
-	AUBITDIR=`aubit-config AUBITDIR`
+	AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
 	if test "$AUBITDIR" = "" ; then
 		echo "ERROR: AUBITDIR is empty. Stop."
 		aubit-config AUBITDIR
@@ -122,7 +144,7 @@ fi
 #Determine for which OS was this aubit-config compiled
 #TARGET=i686-pc-cygwin
 #TARGET_OS=cygwin
-TARGET_OS=`aubit-config TARGET_OS`
+TARGET_OS=`aubit-config TARGET_OS  2>/dev/null`
 if test "$TARGET_OS" = "mingw"; then 
 	GCC_MINGW="yes"
 	case "$PATH" in
@@ -175,18 +197,18 @@ INIT_AUBITDIR="$AUBITDIR"
 ############################
 #Add paths determined by Autoconf to PATH or LD_LIBRARY_PATH
 #so we can find libraries
-ADD_LD_LIBRARY_PATH="`aubit-config ADD_LD_LIBRARY_PATH`"
+ADD_LD_LIBRARY_PATH="`aubit-config ADD_LD_LIBRARY_PATH 2>/dev/null`"
 if test "$ADD_LD_LIBRARY_PATH" != ""; then 
 	if test "$TARGET_OS" = "mingw"; then
 		if test "$CYGWIN_SHELL" = "1"; then
 			#need to translate paths back to CygWin format first:
-			TMP=`echo $ADD_LD_LIBRARY_PATH | sed -e 's/[Cc]:/\/cygdrive\/c/'g -e 's/[Dd]:/\/cygdrive\/d/'g -e 's/[Ee]:/\/cygdrive\/e/'g `
-			TMP=`echo $TMP | sed -e 's/;/:/'g`
+			TMP_VAR=`echo $ADD_LD_LIBRARY_PATH | sed -e 's/[Cc]:/\/cygdrive\/c/'g -e 's/[Dd]:/\/cygdrive\/d/'g -e 's/[Ee]:/\/cygdrive\/e/'g `
+			TMP_VAR=`echo $TMP_VAR | sed -e 's/;/:/'g`
 			#echo $ADD_LD_LIBRARY_PATH
 			#echo
-			#echo $TMP
+			#echo $TMP_VAR
 			#exit
-			export PATH="$A4GL_PATH_SEP$TMP$A4GL_PATH_SEP$PATH"
+			export PATH="$A4GL_PATH_SEP$TMP_VAR$A4GL_PATH_SEP$PATH"
 		else
 			#This is going to be used by Windows native run-time loader,
 			#so it needs to be in native Windows paths and separators
@@ -291,6 +313,10 @@ if test "$SHOW" = "1" -o "$VERBOSE" = "1"; then
     echo "A4GL_DBPATH=$A4GL_DBPATH"
 	echo 
 	echo "A4GL_PATH_SEP=$A4GL_PATH_SEP"
+	echo
+	echo "TMP=$TMP"
+	echo "TEMP=$TEMP"
+	echo "PWD=$PWD"	
 	echo
 	echo "Running: $EXEC"
 	if test "$VERBOSE" != "1"; then	

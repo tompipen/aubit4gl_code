@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.5 2004-10-04 13:50:05 afalout Exp $
+# $Id: makefile,v 1.6 2004-10-08 02:47:21 afalout Exp $
 #
 
 # Currently Informix only
@@ -56,6 +56,32 @@ export A4GL_LEXDIALECT
 
 ALL=${ROOT}/bin/aupscol
 
+ifdef COMSPEC
+	#Should be obsolete now:
+
+	#FIXME!!!!! I'm using variable named TMP somewhere!!!!
+	#TMP=/cygdrive/d/DOCUME~1/ADMINI~1/LOCALS~1/Temp
+	#TMP=/tmp
+    #PWD=
+    #export TMP
+    #export PWD
+	
+	#TMP=4glc CVS ace fcompile helpcompile menus pcode xgen
+	#TEMP=/cygdrive/d/DOCUME~1/ADMINI~1/LOCALS~1/Temp
+	#PWD=/usr/src/aubit/aubit4glsrc/tools/aupscol
+	
+	#Running:  4glc main.4gl -c -o main.ao
+	#esqlc: Error -33041: Cannot open output file 'D:\cygwin\usr\src\aubit\aubit4glsr
+	#c\tools\aupscol\4glc CVS ace fcompile helpcompile menus pcode xgen\eqaa3468'.
+	
+	#THIS IS PWD:	
+	#'D:\cygwin\usr\src\aubit\aubit4glsrc\tools\aupscol\
+	#THIS IS TMP:
+	#4glc CVS ace fcompile helpcompile menus pcode xgen\eqaa3468'.	
+	
+endif
+
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -64,7 +90,7 @@ all: ${ALL}
 	@echo "Default target (${ALL}) succesfuly compiled."
 	
 ${ROOT}/bin/aupscol: main.ao upscol.ao infx.ao ../asql/ifx_pick.ao val.ao att.ao
-	${4GLC} $^ -o $@
+	${4GLC} ${VERBOSE_FLAG} $^ -o $@
 
 
 ## ==================================================================
@@ -74,12 +100,25 @@ ${ROOT}/bin/aupscol: main.ao upscol.ao infx.ao ../asql/ifx_pick.ao val.ao att.ao
 ../asql/ifx_pick.ao:
 	${MAKE} -C ../asql
 
+run:
+	${ROOT}/bin/aupscol${EXE_EXT}
+	
+show:
+	@echo "TMP=${TMP}"
+	@echo "TEMP=${TEMP}"
+	@echo "PWD=${PWD}"
+#TMP=4glc CVS ace fcompile helpcompile menus pcode xgen
+#PWD=/usr/src/aubit/aubit4glsrc
+#esqlc: Error -33041: Cannot open output file 'd:\pdc25_vc_w32:\cygdrive\d\Progra
+#~1\GnuWin32:\cygdrive\e\Program files\W2000\Informix\lib:\cygdrive\e\Program fil
+#es\W2000\Informix\lib\esql:\eqaa3324'.
+
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 	
 clean:
-	${RM} *.o *.ao *.bak *.h *.glb *.c *.ec *~ *.err aupscol \
+	${RM} *.o *.ao *.bak *.h *.glb *.c *.ec *~ *.err aupscol *.warn *.c_ \
 	${ALL} *~ 
 	
 	

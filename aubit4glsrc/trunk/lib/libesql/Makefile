@@ -1,4 +1,3 @@
-# +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
@@ -24,7 +23,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.19 2004-10-04 13:50:03 afalout Exp $
+# $Id: Makefile,v 1.20 2004-10-08 02:47:20 afalout Exp $
 #
 
 ROOT    =../..
@@ -73,18 +72,19 @@ ifeq "${TARGET_OS}" "solaris"
 endif
 
 ifdef COMSPEC
+	#Should be OK now:
     #FIXME!!!!! I'm using variable named TMP somewhere!!!!
-	TMP=/cygdrive/d/DOCUME~1/ADMINI~1/LOCALS~1/Temp
-    PWD=
-    export TMP
-    export PWD
+	#TMP			=/cygdrive/d/DOCUME~1/ADMINI~1/LOCALS~1/Temp
+    #PWD			=
+    #export TMP
+    #export PWD
 
 #from Mikes Makefile.cygwin:
-	CFLAGS=-g -O2 -Wall -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl
-	ESQL=esql
-	ESQL_FLAGS= -thread
-	LDFLAGS=
-	INFORMIXDIR=E:/Program files/W2000/Informix/CSDK
+	CFLAGS		=-g -O2 -Wall -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl
+	ESQL		=esql
+	ESQL_FLAGS	=-thread
+	LDFLAGS		=
+	INFORMIXDIR	=E:/Program files/W2000/Informix/CSDK
 	XXX="${INFORMIXDIR}\bin\isqlt09a.dll"  "${INFORMIXDIR}\bin\igl4n304.dll" \
 		"${INFORMIXDIR}\bin\iglxn304.dll"  "${INFORMIXDIR}\bin\igo4n304.dll"
 endif
@@ -135,11 +135,18 @@ ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 #Infromix ESQL/C compiler
 helper_funcs_informix.o: helper_funcs.ec
 ifneq "${COMSPEC}" ""
-	$(ESQL) $(ESQL_FLAGS) -I"${INFORMIXDIR}/incl" -e $<
-	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -I"${INFORMIXDIR}/incl" -c $(basename $<).c -o $@
+#WARNING: Querix also has esqlc, and Informix esql invokes esqlc to compile .ec
+#WARNING: esql will strip all quotes, and invoke esqlc with un-quoted paths
+#that may contain spaces. If you get message "Input file name has invalid suffix ''"
+#that is probably what happened. You must double-quote it ('"..."')
+	$(ESQL) -dcmdl $(ESQL_FLAGS) -DDIALECT_INFORMIX -I'"${INFORMIXDIR}/incl"' -e $<
+#-I"${INFORMIXDIR}/CSDK/incl"	
+	$(CC) $(CFLAGS) -DDIALECT_INFORMIX -I"${INFORMIXDIR}/incl/esql" \
+		-I"${INFORMIXDIR}/incl" -c $(basename $<).c -o $@
 	-@rm $(basename $<).c $(basename $<).c_*
 else
-	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl -I"${INFORMIXDIR}/incl"
+	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl \
+		-I"${INFORMIXDIR}/incl"
 #solaris:
 #	esql -e helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl
 #	libtool --mode=compile gcc -fPIC -I$INFORMIXDIR/incl/esql -I.. \ 
