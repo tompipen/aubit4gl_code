@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.83 2004-01-09 11:29:53 mikeaubury Exp $
+# $Id: newpanels.c,v 1.84 2004-01-15 15:47:02 mikeaubury Exp $
 #*/
 
 /**
@@ -2696,7 +2696,7 @@ int b;
                 a--;
         }
   } else {
-        if (a>(A4GL_get_curr_height()-A4GL_iscurrborder())) {
+        if (a>(A4GL_get_curr_height())) {
                 a=2;
 		if (a>A4GL_get_curr_height()-A4GL_iscurrborder()) a=1;
         }
@@ -2761,7 +2761,7 @@ int b;
 		a--;
   	} 
   } else {
-  	if (a>(A4GL_get_curr_height()-A4GL_iscurrborder())) {
+  	if (a>(A4GL_get_curr_height())) {
 		a=1;
   	}
   }
