@@ -510,7 +510,7 @@ print_fetch_3 (char *ftp, char *into)
       *ptr2 = 0;
       fp1 = atoi (ptr);
       poped = 1;
-      printc ("_fp=pop_int();");
+      printc ("_fp=A4GL_pop_int();");
     }
 
   strcpy (buff, "EMPTY");
