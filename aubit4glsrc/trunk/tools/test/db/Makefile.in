@@ -1,0 +1,12 @@
+# Makefile for compiling the informix connection test.
+
+ESQL=esql
+CFLAGS+=-I../../../lib/libincl
+
+test_informix: test_informix.o test_informix_util.ec connection_suite.o \
+ddl_suite.o dml_suite.o
+	$(ESQL) $(CFLAGS) test_informix.o connection_suite.o ddl_suite.o \
+dml_suite.o test_informix_util.ec \
+-o $@ -lcheck -L$(AUBITDIR)/lib -lSQL_esql -laclshared \
+-lncurses -lpanel -lgtk -lgdk -lform -lPDF_NOPDF -lSQL_unixodbc
+

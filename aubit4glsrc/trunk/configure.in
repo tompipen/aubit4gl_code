@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.39 2002-03-07 04:03:07 afalout Exp $
+# $Id: configure.in,v 1.40 2002-03-14 22:29:42 saferreira Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -1728,6 +1728,8 @@ AC_CHECK_LIB([form], [main])
 # FIXME: Replace `main' with a function in `-lpanel':
 AC_CHECK_LIB([panel], [main])
 
+AC_CHECK_LIB([check], [suite_create])
+
 #fixme: check version of curses
 #AIX: Both form and panel h files are part of ncurses. Install it.
 
@@ -1905,6 +1907,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 tools/test/gui/Makefile
                 tools/test/regression/Makefile
                 tools/test/lang/Makefile
+                tools/test/db/Makefile
                 tools/test/Makefile
 				docs/doxy/Doxyfile])
 

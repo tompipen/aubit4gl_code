@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.21 2002-03-14 12:17:59 mikeaubury Exp $
+# $Id: sql.c,v 1.22 2002-03-14 22:29:43 saferreira Exp $
 #
 */
 
@@ -83,8 +83,6 @@ extern SQLRETURN SQL_API SQLBindParameter (
  * @file
  * ODBC Sql execution implementation
  *
- * @todo Take the prototypes here declared. See if the functions are static
- * or to be externally seen
  * @todo Doxygen comments to add to functions
  */
 
@@ -134,6 +132,7 @@ extern SQLRETURN SQL_API SQLBindParameter (
 	#ifdef IFXODBC
 		#include <incl/cli/infxcli.h>
 		#include <incl/cli/infxsql.h>
+    /** @todo : In debian sqlucode is in /usr/include */
 		#include <incl/cli/sqlucode.h>
 	#endif
 
@@ -597,7 +596,7 @@ find_cursor_for_decl (char *cname)
  * Prepare an sql statement.
  *
  * @param s A string with the sql statement to be prepared.
- * @raturn A pointer to the statement information structure.
+ * @return A pointer to the statement information structure.
  */
 struct s_sid *A4GLSQL_prepare_sql (char *s)
 {
@@ -661,8 +660,8 @@ struct s_sid *A4GLSQL_find_prepare (char *pname, int mode)
  * Execute an SQL statement.
  *
  * @param pname  The prepared statement name.
- * @param ni
- * @param ibind The input binding used-
+ * @param ni Number of elements in the input bind.
+ * @param ibind The input binding array used.
  * @return
  */
 int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING * ibind)
@@ -760,7 +759,7 @@ A4GLSQL_prepare_select (
 }
 
 /**
- * Prepare a global SQL statement (to be used in cursor).
+ * Prepare a global SQL statement 
  *
  * @param s The SQL statement text.
  * @param ni The number of variables to bind.
@@ -1233,7 +1232,7 @@ int A4GLSQL_fetch_cursor (char *cursor_name,
 /**
  * Initialize a connection to the database.
  *
- * If a connection was allready opoened free the reosurces used.
+ * If a connection was allready opened free the resources used.
  *
  * Gets the username and passord from the environment and call make_connection.
  *
@@ -1318,7 +1317,7 @@ int A4GLSQL_get_status ()
 }
 
 /**
- * Get the current SQL error messege.
+ * Get the current SQL error message.
  *
  * @return The contents of sqlca.sqlerrm.
  */
@@ -1541,7 +1540,7 @@ display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
  * @param uid_p The user identification.
  * @param pwd_p The password.
  * @return 
- *   - 1 : Connection estabelished.
+ *   - 1 : Connection estabilished.
  *   - 0 : there was an error connecting to database.
  */
 int A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
@@ -3683,7 +3682,7 @@ debug("%s",buffstr);
 }
 
 /**
- * Implementationin ODBC of the transaction statememtns (BEGIN WORK, 
+ * Implementationin ODBC of the transaction statements (BEGIN WORK, 
  * COMMIT WORK, ROLLBACK WORK).
  *
  * @param mode The transaction statement to execute:
