@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.8 2004-05-24 12:49:07 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.9 2005-01-29 11:35:02 mikeaubury Exp $
 #*/
 
 /**
@@ -241,7 +241,7 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   fgets (buff, 255, f_db_in);
 
 // Is this a valid line ?
-  if (buff[0] == '[')
+  if (buff[0] == '[' || feof(f_db_in))
     return 0;			// Obviously not - its another table...
   a = sscanf (buff, "%s %d %d", cname, dtype, size);
   if (a != 3)
@@ -280,6 +280,21 @@ void *A4GLSQL_get_validation_expr(char *tabname,char *colname) {
         printf("Warning Validation feature not implemented in SCHEMA_IN_FILE  SQL Driver");
         return 0;
 }
+
+char *
+A4GLSQL_dbms_dialect (void)
+{
+  /* this is set in make_connection */
+  return "FILE";
+}
+
+
+char *
+A4GLSQL_syscolval_expr (char *tabname, char *colname, char *typ)
+{
+  return 0;
+}
+
 
 char* A4GLSQL_get_errmsg(int a) { return 0; }
 /* =============================== EOF ============================== */

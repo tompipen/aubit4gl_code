@@ -723,7 +723,7 @@ char_string_type:
 ;
 
 exact_numeric_type:
-	| SERIAL  {strcpy($<str>$,"SERIAL");}
+	SERIAL  {strcpy($<str>$,"SERIAL");}
 	| SERIAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 			if (A4GLSQLCV_check_requirement("NO_SERIAL_START_VALUE"))  {
 				sprintf($<str>$,"SERIAL");

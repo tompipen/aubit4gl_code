@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.9 2004-01-29 08:35:41 mikeaubury Exp $
+# $Id: dump.c,v 1.10 2005-01-29 11:34:59 mikeaubury Exp $
 #*/
 
 /**
@@ -120,6 +120,8 @@ main (int argc, char *argv[])
       printf ("Usage %s filename\n", argv[0]);
       exit (0);
     }
+
+  A4GL_build_user_resources ();
 
   f = fopen (argv[1], "rb");
 

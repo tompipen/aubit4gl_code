@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.24 2004-12-17 13:19:03 mikeaubury Exp $
+# $Id: load.c,v 1.25 2005-01-29 11:35:00 mikeaubury Exp $
 #
 */
 
@@ -155,8 +155,7 @@ gen_insert_for_load (char *tabname, int ncols)
   static char inserttxt[6000];
   int a;
   strcpy (inserttxt, "");
-  sprintf (inserttxt,
-	   "insert into %s (%s) values (", tabname, collist_to_str (ncols));
+  sprintf (inserttxt, "INSERT INTO %s (%s) values (", tabname, collist_to_str (ncols));
   for (a = 0; a < ncols; a++)
     {
       if (a > 0)
@@ -171,7 +170,7 @@ gen_insert_for_load (char *tabname, int ncols)
 /**
  * Strip the new line from the end of a string.
  *
- * If it finds a delimiter at the end - 2 put another one at new line place.
+ * If it finds a delimiter at the end - put another one at new line place.
  *
  * @todo Take the fixed definition of pipe delimiter
  *
@@ -215,13 +214,18 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   char delim;
   int nfields;
   int lineno = 0;
+ 
   char *insertstr;
   char filename[1024];
   FILE *p;
   struct BINDING *ibind = 0;
   char buff[255];
   int a;
+
+void *v;
+
   delim = delims[0];
+
 
   A4GL_debug ("In load_data");
   strncpy (filename, fname,sizeof(filename));
@@ -265,21 +269,23 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
       return 0;
     }
   A4GL_debug ("Calling gen_insert_for_load %s %d\n", tabname, cnt);
+
   insertstr = gen_insert_for_load (tabname, cnt);
 
-  A4GL_debug ("Adding prepare..");
-  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_sql (insertstr)) != 1)
-    {
-      A4GL_exitwith ("Internal Error : Error generating insert string for load");
-      return 0;
-    }
 
-  A4GL_debug ("Insert string=%s & prepared\n", insertstr);
+  A4GL_debug ("Adding prepare.. for %s",insertstr);
+
+
+  if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_sql (insertstr)) != 1) { A4GL_exitwith ("Internal Error : Error generating insert string for load"); return 0; }
+
 
   while (1)
     {
       lineno++;
       fgets (loadbuff, LOADBUFFSIZE - 1, p);
+
+
+
       if (feof (p))
 	{
 	  A4GL_debug ("Got to end of the file");
@@ -300,28 +306,40 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 	}
 
       A4GLSQL_set_status (0, 1);
-      if (ibind)
-	{
-	  free (ibind);
-	}
+
+      if (ibind) { free (ibind); }
+
       ibind = malloc (sizeof (struct BINDING) * cnt);
       for (a = 0; a < cnt; a++)
 	{
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
+
+
 	  ibind[a].ptr = colptr[a];
 	  ibind[a].dtype = 0;
+	
+	  if (strlen(colptr[a])==0) {
+	  ibind[a].size = 1;
+	  } else {
 	  ibind[a].size = strlen (colptr[a]);
+	  }
 	}
-      A4GL_debug ("EXECUTE SQL cnt=%d", cnt);
+
+
       A4GLSQL_execute_sql ("load", cnt, ibind);
 
-      if (a4gl_status != 0)
+	//printf("EXECUTE : %d %d\n",lineno,a4gl_status);
+
+      if (a4gl_status != 0 || A4GL_get_a4gl_sqlca_sqlcode()!=0)
 	{
 	  sprintf (buff, "%d", cnt);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Error reading load file at line %s");
+  		fclose (p);
+	  return 0;
 	}
     }
+
   fclose (p);
   return 1;
 }
@@ -415,9 +433,12 @@ A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt_orig)
 			}
 			strcat(sqlstmt,")");
 		}
+
   		if (A4GLSQL_add_prepare ("load", A4GLSQL_prepare_sql (sqlstmt)) != 1) { 
-				A4GL_exitwith ("Internal Error : Error generating insert string for load"); 
-		return 0; }
+			A4GL_exitwith ("Internal Error : Error generating insert string for load"); 
+			return 0; 
+		}
+
       }
 
       A4GLSQL_set_status (0, 1);

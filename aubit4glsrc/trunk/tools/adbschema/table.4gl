@@ -1,6 +1,3 @@
-database mips_3_3
-
-
 define lv_colnames array[2000] of char(18)
 
 define lv_st record
@@ -9,6 +6,7 @@ define lv_st record
 	tabid integer,
 	tabtype char(1)
 end record
+define dtparts array[10] of char(10)
 
 define lv_sc record
 	colname char(64),
@@ -60,6 +58,7 @@ define lv_stid integer,
        lv_stname,lv_so char(18)
 define lv_txt CHAR(64)
 define lv_c1,lv_c2 integer
+define lv_nn char(10)
 
 let lv_t=downshift(lv_t)
 
@@ -88,10 +87,14 @@ end if
 IF lv_st.tabtype="S" THEN
 	select btabid into lv_stid from syssyntable where tabid=lv_st.tabid
 	select tabname,owner into lv_stname,lv_so from systables where tabid=lv_stid
-	call outstr(" ")
-	let lv_str="CREATE SYNONYM \"",lv_st.owner,"\".",lv_t clipped, " FOR \"",lv_so clipped,"\".",lv_stname clipped,";"
-	call outstr(lv_str)
-	call outstr(" ")
+
+	if get_mode()=0 then
+		call outstr(" ")
+		let lv_str="CREATE SYNONYM \"",lv_st.owner,"\".",lv_t clipped, " FOR \"",lv_so clipped,"\".",lv_stname clipped,";"
+		call outstr(lv_str)
+		call outstr(" ")
+	end if
+
 	RETURN
 END IF
 
@@ -109,8 +112,11 @@ IF lv_st.tabtype="V" THEN
 		let lv_c1=lv_c1+64
 		let lv_c2=lv_c2+64
 	END FOREACH
-	
-	CALL outstr(lv_bigstr)
+
+	if get_mode()=0 then
+		CALL outstr(lv_bigstr)
+	end if
+
 	RETURN
 END IF
 
@@ -119,8 +125,15 @@ END IF
 
 IF lv_st.tabtype="T" THEN
 	# Generate out CREATE TABLE line
-	let lv_str= "CREATE TABLE \"",lv_st.owner clipped,"\".",lv_t clipped," ("
-	call outstr(lv_str clipped)
+
+	if get_mode()=0 then
+		let lv_str= "CREATE TABLE \"",lv_st.owner clipped,"\".",lv_t clipped," ("
+		call outstr(lv_str clipped)
+	else
+		let lv_str="[",lv_t clipped,"]"
+		call outstr(lv_str clipped)
+	end if
+	
 	
 	declare c2 cursor for 
 	select colname,coltype,collength,colno,"" from syscolumns
@@ -133,62 +146,104 @@ IF lv_st.tabtype="T" THEN
 	foreach c2 into lv_sc.*
 	
 		let lv_colnames[lv_sc.colno]=lv_sc.colname
-		if lv_str!=" " then 
-				let lv_str=lv_str clipped,"," call outstr(lv_str) 
+
+
+		if get_mode()=0 then
+			if lv_str!=" " then 
+				let lv_str=lv_str clipped,"," 
+				call outstr(lv_str) 
+			end if
+		else
+			let lv_str=lv_sc.colname clipped," ",lv_sc.coltype using "<<<<<&"," ",lv_sc.collength using "<<<<<&"
+				call outstr(lv_str) 
 		end if
 	
+		if lv_sc.coltype>255 then
+			let lv_sc.coltype=lv_sc.coltype-256
+			let lv_nn=" NOT NULL"
+		else
+			let lv_nn=""
+		end if
+
+
 		case lv_sc.coltype
-			when 0 let lv_sc.coldesc="CHAR(",lv_sc.collength using "<<<<<<<",")"
-			when 1 let lv_sc.coldesc="SMALLINT"
-			when 2 let lv_sc.coldesc="INTEGER"
-			when 3 let lv_sc.coldesc="FLOAT"
-			when 4 let lv_sc.coldesc="SMALLFLOAT"
-			when 5 let lv_sc.coldesc="DECIMAL(",lv_sc.collength using "<<<<<<<",")"
-			when 6 let lv_sc.coldesc="SERIAL"
-			when 7 let lv_sc.coldesc="DATE"
-			when 8 let lv_sc.coldesc="MONEY"
+			when 0 let lv_sc.coldesc="CHAR(",lv_sc.collength using "<<<<<<<",")"," ",lv_nn
+			when 1 let lv_sc.coldesc="SMALLINT"," ",lv_nn
+			when 2 let lv_sc.coldesc="INTEGER"," ",lv_nn
+			when 3 let lv_sc.coldesc="FLOAT"," ",lv_nn
+			when 4 let lv_sc.coldesc="SMALLFLOAT"," ",lv_nn
+
+			when 5 let lv_sc.coldesc="DECIMAL(",decode_decimal(lv_sc.collength),")"," ",lv_nn
+
+			when 6 let lv_sc.coldesc="SERIAL"," ",lv_nn
+			when 7 let lv_sc.coldesc="DATE"," ",lv_nn
+			when 8 let lv_sc.coldesc="MONEY",decode_decimal(lv_sc.collength),")"," ",lv_nn
 			when 9 let lv_sc.coldesc="---"
-			when 10 let lv_sc.coldesc="DATETIME"
-			when 11 let lv_sc.coldesc="BYTE"
-			when 12 let lv_sc.coldesc="TEXT"
-			when 13 let lv_sc.coldesc="VARCHAR(",lv_sc.collength using "<<<<<<<",")"
-			when 14 let lv_sc.coldesc="INTERVAL(",lv_sc.collength using "<<<<<<<",")"
+			when 10 let lv_sc.coldesc="DATETIME ",decode_datetime(lv_sc.collength)," ",lv_nn
+			when 11 let lv_sc.coldesc="BYTE"," ",lv_nn
+			when 12 let lv_sc.coldesc="TEXT"," ",lv_nn
+			when 13 let lv_sc.coldesc="VARCHAR(",decode_varchar(lv_sc.collength) clipped,")"," ",lv_nn
+			when 14 let lv_sc.coldesc=decode_interval(lv_sc.collength) clipped," ",lv_nn
+			when 15 let lv_sc.coldesc="NCHAR(",lv_sc.collength using "<<<<<<<",")"," ",lv_nn
+			otherwise
+				display "INVALID DATATYPE: ",lv_sc.coltype
+				exit program 1
 		end case
 		let lv_str="   ",lv_sc.colname clipped," ",lv_sc.coldesc
 	end foreach
 	
-	if lv_str!=" " then call outstr(lv_str) end if
 
+
+	if get_mode()=0 then
+		if lv_str!=" " then 
+			call outstr(lv_str) 
+		end if
+	end if
 
 
 	# Any server specific stuff ?
 	if is_ss() then
 		#  Do the server specific stuff..
+		if get_mode()=0 then
+			select locklevel,fextsize,nextsize into lv_l, lv_es,lv_ns from systables where tabid=lv_st.tabid
 	
-		select locklevel,fextsize,nextsize into lv_l, lv_es,lv_ns from systables where tabid=lv_st.tabid
-	
-		let lv_str=") EXTENT SIZE ",lv_es using "<<<<<"," NEXT SIZE ",lv_ns using "<<<<<<" 
-		if lv_l="P" then
-				let lv_str=lv_str clipped," LOCK MODE PAGE"
-		Else
-				let lv_str=lv_str clipped," LOCK MODE ROW"
+			let lv_str=") EXTENT SIZE ",lv_es using "<<<<<"," NEXT SIZE ",lv_ns using "<<<<<<" 
+			if lv_l="P" then
+					let lv_str=lv_str clipped," LOCK MODE PAGE"
+			Else
+					let lv_str=lv_str clipped," LOCK MODE ROW"
+			end if
+			let lv_str=lv_str clipped,";"
+			call outstr(lv_str)
 		end if
-		let lv_str=lv_str clipped,";"
-		call outstr(lv_str)
 	else
-		let lv_str=");"
-		call outstr(lv_str)
+		if get_mode()=0 then
+			let lv_str=");"
+			call outstr(lv_str)
+		end if
 
 	end if
 
 end if
 
-
-call outstr(" ")
-let lv_str="REVOKE ALL ON \"",lv_st.owner clipped,"\".",lv_t clipped," FROM \"public\";"
-call outstr(lv_str)
+if get_mode()=0 then
+	call outstr(" ")
+	if get_perms() then
+	let lv_str="REVOKE ALL ON \"",lv_st.owner clipped,"\".",lv_t clipped," FROM \"public\";"
+	call outstr(lv_str)
+	end if
+end if
 
 let lv_str=""
+
+
+
+# We don't need to worry about dumping indexes for 
+# fileschema mode
+if get_mode()=1 then
+	return
+end if
+
 
 # Indexes....
 
@@ -343,6 +398,7 @@ end function
 
 
 
+################################################################################
 function get_column(lv_tid,lv_colno)
 define lv_tid integer
 define lv_colno integer
@@ -354,3 +410,163 @@ else
 end if
 end function
 
+
+
+################################################################################
+function decode_decimal(a)
+define a integer
+define lv_str char(20)
+if a MOD 256 then
+let lv_str=(a/ 256) using "<<<<<", ",", a MOD 256 using "<<<<<"
+else
+let lv_str=(a/ 256) using "<<<<<",",0"
+end if
+return lv_str clipped
+end function
+
+
+################################################################################
+function decode_interval(a)
+define a integer
+define pt1,pt2 integer
+define lv_part1,lv_part2 char(20)
+define lv_str char(40)
+define fr1,fr2 integer
+define p1,p2 integer
+
+	call set_dtparts()
+
+        let p1 = (a / 16) MOD 16;
+	if p1 <= 10 then
+		let pt1=  (p1 / 2) 
+	else 
+		let pt1= 6
+	end if
+
+        let fr2 = (a MOD 16) - 10;
+
+        let p2 = a MOD 16;
+
+	if (p2 <= 10) then
+		let pt2= (p2 / 2) 
+	else 
+		let pt2= 6
+	end if
+
+        if pt1 != 6 then
+            	let fr1 = (a / 256) + p1 - p2
+		if fr1!=2 then
+			let lv_part1=dtparts[pt1+1] clipped,"(",fr1 using "<<<<<",")"
+		else
+			let lv_part1=dtparts[pt1+1] clipped,"(",fr1 using "<<<<<",")"
+		end if
+        else
+		let lv_part1=dtparts[pt1+1];
+	end if
+
+        if pt2 = 6  then
+		let lv_part2=dtparts[pt2+1] clipped,"(",fr2 using "<<<<<",")"
+        else
+		let lv_part2=dtparts[pt2+1]
+	end if
+
+	let lv_str= "INTERVAL ", lv_part1 clipped, " TO ", lv_part2 ;
+
+	return lv_str
+end function
+
+
+
+################################################################################
+function decode_varchar(a)
+define a integer
+define lv_str char(20)
+if ((a / 256) MOD 256) then
+let lv_str=(a MOD 256) using "<<<<",",",((a / 256) MOD 256) USING "<<<<"
+else
+let lv_str=(a MOD 256) using "<<<<"
+end if
+
+return lv_str clipped
+end function
+
+
+
+################################################################################
+function decode_datetime(a)
+define a integer
+define pt1,pt2 integer
+define lv_part1,lv_part2 char(20)
+define lv_str char(20)
+define fr2 integer
+call set_dtparts()
+if ((a/16) MOD 16) <= 10  THEN 
+  	let pt1=(((a / 16) MOD 16) / 2) 
+else 
+	let pt1=6;
+end if
+
+let lv_part1=dtparts[pt1+1]
+
+
+
+if (a MOD 16) <= 10 then
+	let pt2= ((a MOD 16) / 2) 
+	let lv_part2=dtparts[pt2+1] clipped
+else 
+	let pt2=6
+	let fr2 = (a mod 16) - 10
+	let lv_part2=dtparts[pt2+1] clipped,"(", fr2  using "<<<<<",")"
+end if
+
+let lv_str= lv_part1 clipped," TO ",lv_part2 
+return lv_str
+end function
+
+
+
+
+
+
+
+
+
+################################################################################
+function set_dtparts()
+if dtparts[1] is null then
+	let dtparts[1]="YEAR"
+	let dtparts[2]="MONTH"
+	let dtparts[3]="DAY"
+	let dtparts[4]="HOUR"
+	let dtparts[5]="MINUTE"
+	let dtparts[6]="SECOND"
+	let dtparts[7]="FRACTION"
+end if
+end function
+
+
+function dump(lv_type,lv_t) 
+define lv_t char(18)
+define lv_type char(1)
+let lv_t=downshift(lv_t)
+
+if lv_t="all" then
+	declare c_get_tables cursor for
+		select tabname from systables where tabid>99
+	
+	foreach c_get_tables into lv_t
+		call dump(lv_type,lv_t)
+	end foreach
+	return
+end if
+
+
+case lv_type
+	when "U" display "UNLOAD TO '",lv_t clipped,".unl' SELECT * FROM ",lv_t clipped,";"
+	when "L" display "LOAD FROM '",lv_t clipped,".unl' INSERT INTO ",lv_t clipped,";"
+	otherwise
+		display "Operation : ",lv_type clipped, " not implemented yet"
+		exit program 1
+end case
+
+end function

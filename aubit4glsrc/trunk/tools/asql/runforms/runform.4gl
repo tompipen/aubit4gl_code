@@ -424,7 +424,11 @@ code
 
       if (!A4GL_has_bool_attribute ((void *) mv_field_pointers[a], FA_B_NOENTRY) || gv_dtypes[a] == DTYPE_SERIAL)
 	{
+	 
 	  strcpy (mv_insert_columns[ni], mv_field_list[a]);
+	  if (strchr(mv_insert_columns[ni],'.')) {
+	  	strcpy (mv_insert_columns[ni], strchr(mv_field_list[a],'.')+1);
+	  }
 	  obind_i[ni].ptr = (void *) gv_field_data[a];
 	  obind_i[ni].dtype = gv_dtypes[a];
 	  obind_i[ni].size = gv_dtypesize[a];
@@ -438,7 +442,12 @@ code
 	  && !A4GL_has_bool_attribute ((void *) mv_field_pointers[a],
 				       FA_B_NOENTRY))
 	{
+	  
 	  strcpy (mv_update_columns[nu], mv_field_list[a]);
+	  if (strchr(mv_update_columns[nu],'.')) {
+		// We don't need no stinkin' table name on an update...
+	  	strcpy (mv_update_columns[nu], strchr(mv_field_list[a],'.')+1   );
+	  }
 	  obind_u[nu].ptr = (void *) gv_field_data[a];
 	  obind_u[nu].dtype = gv_dtypes[a];
 	  obind_u[nu].size = gv_dtypesize[a];

@@ -46,5 +46,7 @@ define lv_tabno,lv_position integer
 	update a4gltaperform set pos=pos-1 where tid=lv_tabno and pos>lv_position
 
 end function
-
 ###############################################################################
+
+
+

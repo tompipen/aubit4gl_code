@@ -6,11 +6,20 @@ define lv_dbname char(64)
 define lv_ss char(1)
 define lv_output char(64)
 define mv_silent integer
+define mv_mode integer
+define mv_perms integer
 
 
 function usage()
-	display "adbschema [-t tabname] [-s user] [-p user] [-r rolename] [-f procname]"
+	display " " 
+	display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
+	display " " 
+	display "adbschema [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] [-r rolename] [-f procname]"
 	display "          -d dbname [-ss] [filename]"
+
+	display "   -noperms     Do not include any GRANT/REVOKE"
+	display "   -fileschema  Generate a schema suitable for the FILESCHEMA SQL Module"
+	display " "
 	exit program 1
 end function
 
@@ -20,22 +29,51 @@ function is_ss()
 end function
 
 
+function get_mode()
+	return mv_mode
+end function
+
+function get_perms()
+	return mv_perms
+end function
+
+
 main
 define a integer
+define lv_4gl integer
+define lv_str char(40)
 
 	let mv_silent=0
 	LET lv_ss="N"
 	let lv_srpf="-"
+	let mv_mode=0
+	let mv_perms=1
+	let lv_4gl=0
 
 	if num_args()=0 then
 		call usage()
 	end if
 	for a=1 to num_Args()
 
-		case arg_Val(a)
+		case arg_val(a)
+
+			when "-fileschema"
+				let mv_mode=1
+
+			when "-noperms"
+				let mv_perms=0
+
 			when "-t" 
 				let a=a+1
 				let lv_tabname=arg_val(a)
+
+
+			when "-U" let lv_srpf="U"
+			when "-U4GL" let lv_srpf="U" let lv_4gl=1
+
+			when "-L" let lv_srpf="L"
+
+			when "-L4GL" let lv_srpf="L" let lv_4gl=1
 
 			when "-s" 
 				let a=a+1
@@ -96,14 +134,38 @@ define a integer
 		display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
 	end if
 
+
+
 	if lv_tabname is not null then
-		call dump_table(lv_tabname)
+		if lv_srpf="-" then
+			call dump_table(lv_tabname)
+		else
+			call dump(lv_srpf,lv_tabname)
+		end if
 	else
 		if lv_srpf="-" then # Looks like the whole database
-			call dump_dbperms()
+			if mv_mode=0 then
+				call dump_dbperms()
+			end if
+
 			call dump_table("all")
-			call dump_procedures()
-			call dump_perms("all")
+
+			if mv_mode=0 then
+				call dump_procedures()
+				call dump_perm("all")
+			end if
+		else
+			if lv_4gl then
+				let lv_str="DATABASE ",lv_dbname
+				call outstr(lv_str)
+				call outstr("MAIN")
+			end if
+
+			call dump(lv_srpf,"all")
+
+			if lv_4gl then
+				call outstr("END MAIN")
+			end if
 		end if
 	end if
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.18 2004-11-16 14:44:00 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.19 2005-01-29 11:35:00 mikeaubury Exp $
 #*/
 
 /**
@@ -234,15 +234,30 @@ A4GLSTK_getStackTrace (void)
 		   functionCallStack[i].moduleName,
 		   functionCallStack[i].lineNumber,
 		   functionCallStack[i].functionName);
-	  strcat (stackTrace, tmpStackTrace);
+
+	if (strlen(stackTrace)+strlen(tmpStackTrace)<sizeof(stackTrace)+5) {
+	  	strcat (stackTrace, tmpStackTrace);
+	} else {
+	  	strcat(stackTrace,"\n...");
+	}
 	}
 
       /* Don't put the brackets on for a MAIN */
       if (strcmp (functionCallStack[i].functionName, "MAIN") != 0)
 	{
 	  strcat (stackTrace, "(");
-	  if (functionCallStack[i].params)
-	    strcat (stackTrace, functionCallStack[i].params);
+
+	  if (functionCallStack[i].params) {
+		char buff[90];
+		strncpy(buff,functionCallStack[i].params,81);
+		buff[81]=0;
+		if (strlen(buff)>=80) {
+			strcat(buff,"...");
+		}
+		if (strlen(stackTrace)+strlen(buff)<sizeof(stackTrace)+5) {
+	    		strcat (stackTrace, buff);
+		}
+	  }
 	  strcat (stackTrace, ")");
 	}
       strcat (stackTrace, "\n");

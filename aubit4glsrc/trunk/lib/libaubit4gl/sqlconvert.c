@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.42 2005-01-11 15:04:14 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.43 2005-01-29 11:35:00 mikeaubury Exp $
 #
 */
 
@@ -262,8 +262,11 @@ char *A4GL_cv_lastnonblank (char *str);
                     Function definitions
 =====================================================================
 */
-char * A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sql) {
+char * A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx) {
 	char *sql_new;
+	char *sql;
+	int a;
+	sql=sqlx;
 	A4GL_debug("A4GL_convert_sql_new : %s",sql);
 
   	if (strcmp(source_dialect,target_dialect)==0 && (!A4GL_isyes(acl_getenv("ALWAYS_CONVERT")))) {
@@ -279,10 +282,28 @@ char * A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *s
 	// Silently drop source dialect for now - it should be picked up from A4GL_SQLDIALECT anyway...
 	//
 	A4GL_debug("sql=%s\n",sql);
-	sql_new=A4GLSQLCV_convert_sql(target_dialect,sql);
-	A4GL_debug("Translates to %s",sql_new);
 
-	sql_new=A4GLSQLCV_check_sql(sql_new);
+	sql=strdup(sqlx);
+
+	A4GL_trim(sql);
+
+	if (strlen(sql)) {
+		sql_new=A4GLSQLCV_convert_sql(target_dialect,sql);
+
+		if (sql_new==0) {
+			A4GL_assertion(1,"Failed to convert SQL (1)");
+		}
+
+		A4GL_debug("Translates to %s",sql_new);
+		sql_new=A4GLSQLCV_check_sql(sql_new);
+		if (sql_new==0) {
+			A4GL_assertion(1,"Failed to convert SQL (2)");
+		}
+	} else {
+		sql_new="";
+	}
+	free(sql);
+        //for (a=0;a<strlen(sql_new);a++) { if (sql_new[a]=='\n') sql_new[a]=' '; }
 	A4GL_debug("check_sql.. %s",sql_new);
 	return sql_new;
 }
@@ -516,7 +537,7 @@ char *A4GLSQLCV_check_sql(char *s ) {
 int b;
 static char *buff=0;
 char *ptr;
-
+A4GL_assertion(s==0,"No pointer");
 A4GL_debug("check sql : %s\n",s);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_CMD) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.11 2004-12-17 13:19:05 mikeaubury Exp $
+# $Id: array.c,v 1.12 2005-01-29 11:35:01 mikeaubury Exp $
 #
 */
 
@@ -322,6 +322,7 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    int mode, char *info)
 {
   SQLHSTMT hstmt;
+struct  {
   char tq[256];
   char to[256];
   char tn[256];
@@ -334,6 +335,7 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
   long radix;
   long nullable;
   char remarks[256];
+} data;
   int colsize;
   char szcolsize[20];
   int a, b;
@@ -374,21 +376,22 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 
   cnt = 0;
 
-  SQLBindCol (hstmt, 1, SQL_C_CHAR, tq, 255, &outlen[1]);
-  SQLBindCol (hstmt, 2, SQL_C_CHAR, to, 255, &outlen[2]);
-  SQLBindCol (hstmt, 3, SQL_C_CHAR, tn, 255, &outlen[3]);
-  SQLBindCol (hstmt, 4, SQL_C_CHAR, cn, 255, &outlen[4]);
-  SQLBindCol (hstmt, 6, SQL_C_CHAR, dtname, 255, &outlen[6]);
-  SQLBindCol (hstmt, 12, SQL_C_CHAR, remarks, 255, &outlen[12]);
-  SQLBindCol (hstmt, 5, SQL_C_LONG, &dt, 4, &outlen[5]);
-  SQLBindCol (hstmt, 7, SQL_C_LONG, &prec, 4, &outlen[7]);
-  SQLBindCol (hstmt, 8, SQL_C_LONG, &len, 4, &outlen[8]);
-  SQLBindCol (hstmt, 9, SQL_C_LONG, &scale, 4, &outlen[9]);
-  SQLBindCol (hstmt, 10, SQL_C_LONG, &radix, 4, &outlen[10]);
-  SQLBindCol (hstmt, 11, SQL_C_LONG, &nullable, 4, &outlen[11]);
+  SQLBindCol (hstmt, 1, SQL_C_CHAR, data.tq, 255, &outlen[1]);
+  SQLBindCol (hstmt, 2, SQL_C_CHAR, data.to, 255, &outlen[2]);
+  SQLBindCol (hstmt, 3, SQL_C_CHAR, data.tn, 255, &outlen[3]);
+  SQLBindCol (hstmt, 4, SQL_C_CHAR, data.cn, 255, &outlen[4]);
+  SQLBindCol (hstmt, 6, SQL_C_CHAR, data.dtname, 255, &outlen[6]);
+  SQLBindCol (hstmt, 12, SQL_C_CHAR, data.remarks, 255, &outlen[12]);
+  SQLBindCol (hstmt, 5, SQL_C_LONG, &data.dt, 4, &outlen[5]);
+  SQLBindCol (hstmt, 7, SQL_C_LONG, &data.prec, 4, &outlen[7]);
+  SQLBindCol (hstmt, 8, SQL_C_LONG, &data.len, 4, &outlen[8]);
+  SQLBindCol (hstmt, 9, SQL_C_LONG, &data.scale, 4, &outlen[9]);
+  SQLBindCol (hstmt, 10, SQL_C_LONG, &data.radix, 4, &outlen[10]);
+  SQLBindCol (hstmt, 11, SQL_C_LONG, &data.nullable, 4, &outlen[11]);
 
   while (cnt < mx)
     {
+      memset(&data,0,sizeof(data));
       rc = SQLFetch (hstmt);
       if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
 	{
@@ -398,12 +401,12 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	  break;
 	}
 #ifdef DEBUG
-      A4GL_debug ("column -> %s Dtype=%x len=%x rc=%d", cn, dt, len, rc);
-      A4GL_debug ("column %s %s %s %s", tq, to, tn, cn);
-      A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", dt, dtname, prec,
-	     len, scale, radix, nullable, remarks);
+      A4GL_debug ("column -> %s Dtype=%x len=%x rc=%d", data.cn, data.dt, data.len, rc);
+      A4GL_debug ("column %s %s %s %s", data.tq, data.to, data.tn, data.cn);
+      A4GL_debug ("XXX       %x %s prec=%x %d\n %x %x %x '%s'", data.dt, data.dtname, data.prec,
+	     data.len, data.scale, data.radix, data.nullable, data.remarks);
 #endif
-      colsize = A4GL_display_size (dt, prec, "");
+      colsize = A4GL_display_size (data.dt, data.prec, "");
       sprintf (szcolsize, "%d", colsize);
 
       if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
@@ -415,7 +418,7 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	  break;
 	}
 
-      if (arr1 != 0) strncpy (&arr1[cnt * (szarr1 + 1)], cn, szarr1);
+      if (arr1 != 0) strncpy (&arr1[cnt * (szarr1 + 1)], data.cn, szarr1);
       if (arr2 != 0)
 	{
 	  switch (mode)
@@ -424,17 +427,17 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	      strncpy (&arr2[cnt * (szarr2 + 1)], szcolsize, szarr2);
 	      break;
 	    case 1:
-	      strncpy (&arr2[cnt * (szarr2 + 1)], dtname, szarr2);
+	      strncpy (&arr2[cnt * (szarr2 + 1)], data.dtname, szarr2);
 	      break;
 	    default:
-	      strncpy (&arr2[cnt * (szarr2 + 1)], tn, szarr2);
+	      strncpy (&arr2[cnt * (szarr2 + 1)], data.tn, szarr2);
 	      break;
 	    }
 	}
       cnt++;
 #ifdef DEBUG
       A4GL_debug ("fill array columns : Rc= %d", rc);
-      A4GL_debug ("    cb=%s dtname=%s", cn, dtname);
+      A4GL_debug ("    cb=%s dtname=%s", data.cn, data.dtname);
 #endif
     }
   SQLFreeStmt (hstmt, SQL_DROP);

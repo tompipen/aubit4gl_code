@@ -16,6 +16,8 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  A4GL_build_user_resources ();
+
   A4GL_setenv ("A4GL_PACKER","PERL",1);
 
   rval = compile_ace_report (argv[1]);

@@ -87,6 +87,7 @@ main (int argc, char *argv[])
       exit (0);
     }
 
+  A4GL_build_user_resources ();
 
   memset (&this_report, 0, sizeof (struct report));
 

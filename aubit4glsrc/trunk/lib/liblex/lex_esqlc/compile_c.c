@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.213 2005-01-27 09:17:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.214 2005-01-29 11:35:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.213 2005-01-27 09:17:22 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.214 2005-01-29 11:35:01 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -3047,7 +3047,7 @@ print_import (char *func, int nargs)
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
-    ("   if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return 0;}\n",
+    ("   if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return -1;}\n",
      nargs, yylineno);
   for (a = 1; a <= nargs; a++)
     {
@@ -4772,8 +4772,10 @@ extern int class_cnt;
 void
 print_func_args (int c)
 {
+
+// cc 2005.01.25 return 0 changed to -1 to catch wrong parameter size
   printc
-    ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);return 0;}\n",
+    ("if (_nargs!=%d) {A4GLSQL_set_status(-3002,0);A4GL_pop_args(_nargs);A4GLSTK_popFunction();return -1;}\n",
      c, yylineno);
   print_function_variable_init ();
   printc ("A4GL_pop_params(fbind,%d);\n", c);

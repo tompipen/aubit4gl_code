@@ -1,7 +1,7 @@
 # rules for converting Informix SQL to Postgres-compatible syntax
 
 DOUBLE_TO_SINGLE_QUOTES
-MATCHES_TO_REGEX
+MATCHES_TO_LIKE
 TABLE_ALIAS_AS
 # ADD_CASCADE
 COLUMN_ALIAS_AS
@@ -104,7 +104,7 @@ DTYPE_ALIAS INTERVAL SECOND (2) TO FRACTION(2)=CHAR(20)
 
 OMIT_NO_LOG
 USE_INDICATOR
-REPLACE rowid = oid
+REPLACE rowid = tid
 REPLACE today = date('today')
 REPLACE current year to second = date('now')
 REPLACE current year to fraction(5) = date('now')

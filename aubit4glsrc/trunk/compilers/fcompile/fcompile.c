@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.40 2005-01-05 20:02:04 mikeaubury Exp $
+# $Id: fcompile.c,v 1.41 2005-01-29 11:35:00 mikeaubury Exp $
 #*/
 
 /**
@@ -310,9 +310,12 @@ A4GLF_getdatatype_fcompile (char *col, char *tab)
       a4gl_form_yyerror ("Column/Table not found");
       return -1;
     }
-  A4GL_debug ("%s.%s = %d\n", tab, col, a);
-	if (a==DTYPE_VCHAR) a=DTYPE_CHAR;
-  return a;
+
+
+  A4GL_debug ("DATATYPE : %s.%s = %d (%x)\n", tab, col, a,a);
+
+  if (a==DTYPE_VCHAR) a=DTYPE_CHAR;
+  return a&0xffff;
 }
 
 /**

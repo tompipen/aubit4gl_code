@@ -46,11 +46,10 @@ process_stdin (char *dialect_in, char *dialect_out)
 	  /* we have an unquoted semi-colon; process what we have
 	     * in the statement buffer, then clear for the next one
 	   */
-		A4GL_debug("Converting : %s from %s %s\n",buff, dialect_in, dialect_out);
 	  ptr=A4GL_convert_sql_new (dialect_in, dialect_out, buff);
 	  strcpy(buff,ptr);
 	  trimbuff ();
-	  printf("%s\n",buff);
+	  printf("%s;\n",buff);
 	  clearbuff ();
 	  continue;
 	}
@@ -101,7 +100,7 @@ void
 clearbuff ()
 {
   memset (buff, 0, buffsize);
-  buff[buffsize] = '\0';
+  buff[buffsize-1] = '\0';
   bp = buff;
   bc = 0;
 }
@@ -132,17 +131,11 @@ putbuff (char c)
   return 1;
 }
 
-/*
- * Trim trailing spaces from the statement buffer, by locating
- * the last non-whitespace character and placing a null after it
- */
+
 void
 trimbuff ()
 {
-  bp = &buff[buffsize - 1];
-  while ((bp > buff) && (isspace (*bp)))
-    bp--;
-  if (bp >= buff)
-    *(++bp) = '\0';
-  bc = strlen (buff);
+A4GL_trim(buff);
 }
+
+

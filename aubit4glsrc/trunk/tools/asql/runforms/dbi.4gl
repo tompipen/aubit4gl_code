@@ -190,7 +190,7 @@ let lv_rowid=sqlca.sqlerrd[6]
 if lv_rowid>0 then
 	call list_add(lv_tabno,lv_nextcnt,lv_rowid)
 else
-	error "Unable to identify new row"
+	error "Unable to identify new row - not added to list"
 end if
 return 1
 END FUNCTION

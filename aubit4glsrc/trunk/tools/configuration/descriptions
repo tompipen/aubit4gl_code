@@ -601,5 +601,8 @@ SWAP_SQLCA62 SQL Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) tra
 A4GL_SYSCOL_VAL UNKNOWN a4gl_syscolval
 A4GL_SYSCOL_VAL SQL the name of the 'syscolval' table 
 A4GL_SYSCOL_ATT SQL the name of the 'syscolatt' table
-A4GL_CLASSPATH UNKNOWN Pat to search for import packages
-
+A4GL_CLASSPATH UNKNOWN Path to search for import packages
+RESTARTLOG RUNTIME Restart the error log
+	This causes the CALL startlog("...") to restart with an empty log file
+	each time the program is run. The default is to append to the end of the
+	current log

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.111 2005-01-17 13:41:26 mikeaubury Exp $
+# $Id: ioform.c,v 1.112 2005-01-29 11:35:03 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.111 2005-01-17 13:41:26 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.112 2005-01-29 11:35:03 mikeaubury Exp $";
 /**
  * @file
  *
@@ -2159,8 +2159,8 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	{
 	  if (fprop->colname != 0)
 	    {
-	      A4GL_debug ("Calling constr with : '%s' '%s'",
-			  sio->constr[a].tabname, sio->constr[a].colname);
+	      A4GL_debug ("Calling constr with : '%s' '%s' datatype=%d",
+			  sio->constr[a].tabname, sio->constr[a].colname,fprop->datatype);
 
 
 	      ptr =

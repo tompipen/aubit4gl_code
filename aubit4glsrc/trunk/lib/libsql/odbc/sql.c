@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.104 2005-01-25 08:35:40 mikeaubury Exp $
+# $Id: sql.c,v 1.105 2005-01-29 11:35:02 mikeaubury Exp $
 #
 */
 
@@ -530,7 +530,7 @@ A4GL_newSQLSetParam (SQLHSTMT hstmt, UWORD ipar, SWORD fCType,
 
   rc = SQLBindParameter (hstmt, ipar, SQL_PARAM_INPUT,
 			 fCType, fSqlType, cbColDef, ibScale, rgbValue,
-			 3200, pcbValue);
+			 256, pcbValue); // 3200
 
   chk_rc (rc, hstmt, "SQLBindParameter");
 
@@ -1171,6 +1171,8 @@ A4GLSQL_open_cursor (char *s, int ni, void *ibind)
   struct BINDING *save_ibind = 0;
   int rc;
 
+A4GL_debug("XXX s=%s ni=%d ibind=%p",s,ni,ibind);
+
 
 #ifdef DEBUG
   A4GL_debug ("Checking cursor %s exists before opening", s);
@@ -1203,6 +1205,7 @@ A4GLSQL_open_cursor (char *s, int ni, void *ibind)
     }
 
 
+A4GL_debug("XXX s=%s ni=%d ibind=%p",s,ni,ibind);
   if (ni)
     {
       // They've used a value on the OPEN
@@ -1246,7 +1249,13 @@ A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 #endif
 
   curs = cid->statement->select;
-  a4gl_status = 0;
+   a4gl_status = 0;
+
+
+
+
+A4GL_debug("XXX s=%s ni=%d ibind=%p",s,ni,ibind);
+
   if (ni == 0)
     {				/* No USING on the open.. */
       A4GL_proc_bind (cid->statement->ibind, cid->statement->ni, 'i',
@@ -1255,6 +1264,7 @@ A4GLSQL_open_cursor (char *s, int ni, void *ibind)
     }
   else
     {
+#ifdef ndef
       struct BINDING *b;
       int a;
 #ifdef DEBUG
@@ -1281,8 +1291,9 @@ A4GLSQL_open_cursor (char *s, int ni, void *ibind)
 	  A4GL_debug ("%d %d %s", b[a].dtype, b[a].size, b[a].ptr);
 #endif
 	}
+#endif
 
-      A4GL_proc_bind (b, ni, 'i', (SQLHSTMT) cid->statement->hstmt);
+      A4GL_proc_bind (ibind, ni, 'i', (SQLHSTMT) cid->statement->hstmt);
 
     }
 
@@ -1397,6 +1408,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   struct BINDING *use_binding;
   int mode = 0;
   struct BINDING *ibind;
+  int use_extended_fetch=-1;
 
 
   ibind = vibind;
@@ -1490,7 +1502,15 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   A4GL_debug ("Before Extended fetch...");
 #endif
 
-  if (A4GL_chk_getenv ("EXTENDED_FETCH", TRUE))
+
+ if (use_extended_fetch==-1) {
+	use_extended_fetch=0;
+  	if (A4GL_chk_getenv ("EXTENDED_FETCH", TRUE)) use_extended_fetch=1;
+	if (strcmp("INGRES",A4GLSQL_dbms_dialect())==0) use_extended_fetch=0;
+ } 
+
+
+  if (use_extended_fetch==1) 
     {
 
 #ifdef DEBUG
@@ -1498,8 +1518,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 		  cid->statement->hstmt, mode, fetch_when);
 #endif
       nr = 1;
-      rc =
-	SQLExtendedFetch ((SQLHSTMT) cid->statement->hstmt, mode, fetch_when,
+      rc = SQLExtendedFetch ((SQLHSTMT) cid->statement->hstmt, mode, fetch_when,
 			  &nr, &nrs[0]);
       chk_rc (rc, cid->statement->hstmt, "SQLExtendedFetch");
     }
@@ -1941,6 +1960,7 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
     {
     case SQL_CHAR:
     case SQL_VARCHAR:
+	A4GL_debug("Character string");
       return (max (collen, strlen (colname)));
     case SQL_SMALLINT:
       return (max (6, strlen (colname)));
@@ -2267,6 +2287,10 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
     }
   rc = SQLExecute ((SQLHSTMT) hstmt);
 
+#ifdef DEBUG
+  A4GL_debug ("SQLExecute returns %d\n", rc);
+#endif
+
 // And finish it
   if (fake_tr)
     {
@@ -2278,9 +2302,6 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
 
 
 
-#ifdef DEBUG
-  A4GL_debug ("SQLExecute returns %d\n", rc);
-#endif
 
   rc = A4GL_chk_need_blob (rc, hstmt);
 
