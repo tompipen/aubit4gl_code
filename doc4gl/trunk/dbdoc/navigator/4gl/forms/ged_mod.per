@@ -1,4 +1,5 @@
-database despodata
+---database despodata
+database formonly
 
 screen
 {
@@ -8,11 +9,13 @@ screen
  nome             [d1                                      ]
 }
 
-tables
-   d_modulos
+--tables
+--   d_modulos
 
 attributes
    a=formonly.RegCorrente;
    b=formonly.totalRegs;
-   d0=codigo;
-   d1=nome;
+--   d0=codigo;
+   d0=formonly.codigo;
+--   d1=nome;
+   d1=formonly.nome;

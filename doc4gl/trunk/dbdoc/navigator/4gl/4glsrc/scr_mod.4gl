@@ -1,9 +1,10 @@
 #  ======================================================================
 #  Base de dados e ficheiro de globals generico da despodata.
 #  ======================================================================
-DATABASE despodata
 
-GLOBALS "gl_mod.4gl"
+#DATABASE despodata
+
+GLOBALS "4glsrc/gl_mod.4gl"
 
 #  ============================================================================ 
 #  Acede ah informacao do registo pelo "rowid" registado na tabela temporaria
@@ -327,7 +328,7 @@ end function
 function 	 get_mod_order_by()
 {}
    DEFINE 
-      campo array[19] of record 
+      campo array[19] of record
          nome_campo  char(39),
          colname     char(19)
       end record,
@@ -390,14 +391,16 @@ function scr_novo_mod()
 
 	call d_scr_ins_inst()
 	current window is w_mod
-   initialize pr_d_modulos.* 
-      like 
+{
+   We don't want to depend on database at compile-time:
+   initialize pr_d_modulos.*
+      like
+         d_modulos.codigo  ,
+         d_modulos.nome
+}
 
-         d_modulos.codigo  , 
-         d_modulos.nome 
+   initialize pr_d_modulos.* to null
 
-
- 
 
 	while ( 1=1 )
       call scr_disp_mod()

@@ -11,21 +11,14 @@
 #	This Module contains Proprietary and Confidential
 #	Information of Despodata - Consultores internacionais Lda.
 #
-#  Modulo        : %M%
-#  SCCSID        : %I%
-#  Data do delta : %G%
 #  Programa      : Main do programa para fazer esquemas.
-#  ----------------------------------------------------------------
-#  DESCRICAO: 
 #
-#  ----------------------------------------------------------------
-#
-#  ============================================================================ 
+#  ============================================================================
 
-GLOBALS "/usr/desenvolv/include/d_libglob.4gl"
+GLOBALS "4glsrc/d_libglob.4gl"
 
 MAIN
-   DEFINE 
+   DEFINE
 		 base_de_dados CHAR(18),
 		 restricao        char(20),
 		 formato       char(11),
@@ -38,11 +31,11 @@ MAIN
    DEFER INTERRUPT
    IF num_args() < 3 THEN
      DISPLAY "Utilizacao: fglgo bdesquema base_de_dados accao parametro"
-     EXIT PROGRAM 
+     EXIT PROGRAM
    END IF
 
    LET strCond="DATABASE ",arg_val(1) CLIPPED
-   PREPARE Ps1 FROM strCond 
+   PREPARE Ps1 FROM strCond
    EXECUTE Ps1
 
    LET base_de_dados = arg_val(1) CLIPPED

@@ -1,41 +1,24 @@
-DATABASE despodata
-
-
-   GLOBALS
-
 
 # ===================================================================
 #
 #  Copyright 1992 DESPODATA - Lisboa, PORTUGAL
-#                                                        
+#
 #  Divisao de desenvolvimento e producao de software.
-#                                                        
-#  Autor: 
-#                                                        
 #
-#	This Module contains Proprietary and Confidential
-#	Information of Despodata - Consultores internacionais Lda.
+#  Autor:
 #
-#  Modulo        : %M%
-#  SCCSID        : %I%
-#  Data do delta : %G%
-#  ----------------------------------------------------------------
 #  PROGRAMA : variaveis globais da livraria.
 #  ----------------------------------------------------------------
-#  DESCRICAO :
-#  ----------------------------------------------------------------
-#  FUNCOES: 
-# 
-#  ----------------------------------------------------------------
-#  FORMS: 
 #
-#  REPORTS: 
-#
-#  NOTAS: Estas variaveis globais passarao a ser utilizadas em todos os 
+#  NOTAS: Estas variaveis globais passarao a ser utilizadas em todos os
 #         programas que utilizem funcoes e utilitarios genericos.
 # ===================================================================
 
 
+
+#DATABASE despodata
+
+   GLOBALS
 
 DEFINE
 
@@ -141,8 +124,10 @@ DEFINE
 										  # Record com os campos a editar
                                 # Record para elemento anterior - Para o CTRL+P
    pr_d_mod_tab, pr_back_d_mod_tab RECORD
-      codmod LIKE d_mod_tab.codmod,
-      tabname LIKE d_mod_tab.tabname
+#      codmod LIKE d_mod_tab.codmod,
+#      tabname LIKE d_mod_tab.tabname
+      codmod char(60),
+      tabname char(60)
    end record,
                                                   # Definicao dos valores 
 																  # constantes da entrada 
@@ -163,8 +148,11 @@ DEFINE
 
 
 DEFINE
-   d_modulosnome LIKE d_modulos.nome,
-   systablesowner LIKE systables.owner
+#   d_modulosnome LIKE d_modulos.nome,
+#   systablesowner LIKE systables.owner
+   d_modulosnome char(60),
+   systablesowner char(60)
+
 
 
    END GLOBALS

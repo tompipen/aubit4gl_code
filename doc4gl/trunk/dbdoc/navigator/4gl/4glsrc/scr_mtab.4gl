@@ -1,9 +1,10 @@
 #  ======================================================================
 #  Base de dados e ficheiro de globals generico da despodata.
 #  ======================================================================
-DATABASE despodata
 
-GLOBALS "gl_mtab.4gl"
+#DATABASE despodata
+
+GLOBALS "4glsrc/gl_mtab.4gl"
 
 #  ============================================================================ 
 #  Acede ah informacao do registo pelo "rowid" registado na tabela temporaria
@@ -398,11 +399,15 @@ function scr_novo_mtab()
 
 	call d_scr_ins_inst()
 	current window is w_mtab
-   initialize pr_d_mod_tab.* 
-      like 
+{ we don't want to depend on database at compile-time
+   initialize pr_d_mod_tab.*
+      like
+         d_mod_tab.codmod  ,
+         d_mod_tab.tabname
+}
+   initialize pr_d_mod_tab.* to null
 
-         d_mod_tab.codmod  , 
-         d_mod_tab.tabname 
+
 
       INITIALIZE d_modulosnome TO NULL
       INITIALIZE systablesowner TO NULL

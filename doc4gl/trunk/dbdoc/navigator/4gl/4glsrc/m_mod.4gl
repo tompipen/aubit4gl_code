@@ -1,37 +1,18 @@
-#  ============================================================================ 
+#  ============================================================================
 #
 #  Copyright 1995 DESPODATA - Lisboa, PORTUGAL
-#                                                        
+#
 #  Divisao de desenvolvimento e producao de software.
 #  Rua da Prata 166 4.o Dto
 #  1100 LISBOA
-#                                                        
-#  Autor: 
-#                                                        
+#
+#  Autor:
+#
 #  Data de criacao: Thu Dec 21 17:01:33 LISBOA 1995
 #
-#	This Module contains Proprietary and Confidential
-#	Information of Despodata - Consultores internacionais Lda.
 #
-#  Modulo        : %M%
-#  SCCSID        : %I%
-#  Data do delta : %G%
-#  Programa      : 
-#  ---------------------------------------------------------------------------
-#  DESCRICAO: 
-#
-#  ---------------------------------------------------------------------------
-#  FUNCOES: 
-# 
-#  ---------------------------------------------------------------------------
-#  FORMS: 
-#
-#  REPORTS: 
-#
-#  NOTAS:
-#
-#  ============================================================================ 
-GLOBALS "/usr/desenvolv/include/d_libglob.4gl"
+#  ============================================================================
+GLOBALS "4glsrc/d_libglob.4gl"
 
 define
    pr_chaves record

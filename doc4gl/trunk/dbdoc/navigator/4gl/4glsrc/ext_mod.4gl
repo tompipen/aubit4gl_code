@@ -7,9 +7,9 @@
 #  ======================================================================
 #  Base de dados e ficheiro de globals generico da despodata.
 #  ======================================================================
-DATABASE despodata
+#DATABASE despodata
 
-GLOBALS "gl_mod.4gl"
+GLOBALS "4glsrc/gl_mod.4gl"
 
 
 #  ======================================================================

@@ -1,17 +1,11 @@
-DATABASE despodata
-
-
-   GLOBALS
-
-
 # ===================================================================
 #
 #  Copyright 1992 DESPODATA - Lisboa, PORTUGAL
-#                                                        
+#
 #  Divisao de desenvolvimento e producao de software.
-#                                                        
-#  Autor: 
-#                                                        
+#
+#  Autor:
+#
 #
 #	This Module contains Proprietary and Confidential
 #	Information of Despodata - Consultores internacionais Lda.
@@ -24,18 +18,22 @@ DATABASE despodata
 #  ----------------------------------------------------------------
 #  DESCRICAO :
 #  ----------------------------------------------------------------
-#  FUNCOES: 
-# 
+#  FUNCOES:
+#
 #  ----------------------------------------------------------------
-#  FORMS: 
+#  FORMS:
 #
-#  REPORTS: 
+#  REPORTS:
 #
-#  NOTAS: Estas variaveis globais passarao a ser utilizadas em todos os 
+#  NOTAS: Estas variaveis globais passarao a ser utilizadas em todos os
 #         programas que utilizem funcoes e utilitarios genericos.
 # ===================================================================
 
 
+#DATABASE despodata
+
+
+   GLOBALS
 
 DEFINE
 
@@ -141,11 +139,13 @@ DEFINE
 										  # Record com os campos a editar
                                 # Record para elemento anterior - Para o CTRL+P
    pr_d_modulos, pr_back_d_modulos RECORD
-      codigo LIKE d_modulos.codigo,
-      nome LIKE d_modulos.nome
+#      codigo LIKE d_modulos.codigo,
+#      nome LIKE d_modulos.nome
+			 codigo     smallint,
+             nome       CHAR (60)
    end record,
-                                                  # Definicao dos valores 
-																  # constantes da entrada 
+                                                  # Definicao dos valores
+																  # constantes da entrada
 																  # de dados
 	flag_insert  smallint,            # Flag que indica se ja foi feito insert
    pr_chaves RECORD

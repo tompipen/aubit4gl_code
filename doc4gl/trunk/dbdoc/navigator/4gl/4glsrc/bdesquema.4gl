@@ -1,40 +1,30 @@
-#  ============================================================================ 
+#  ============================================================================
 #
 #  Copyright 1992 DESPODATA - Lisboa, PORTUGAL
-#                                                        
+#
 #  Divisao de desenvolvimento e producao de software.
-#                                                        
+#
 #  Autor:   Sergio Alexandre Ferreira
-#                                                        
+#
 #
 #	This Module contains Proprietary and Confidential
 #	Information of Despodata - Consultores internacionais Lda.
 #
-#  Modulo        : %M%
-#  SCCSID        : %I%
-#  Data do delta : %G%
 #  Programa      :  bdesquema
 #  ----------------------------------------------------------------
-#  DESCRICAO:  Faz esquemas das tabelas da base de dados mais a 
+#  DESCRICAO:  Faz esquemas das tabelas da base de dados mais a
 #              maneira.
 #
-#  ----------------------------------------------------------------
-#  FUNCOES: 
-# 
-#  ----------------------------------------------------------------
-#  FORMS: 
-#
-#  REPORTS: 
 #
 #  NOTAS:
 #    Falta o keep together no formato word.
 #    Falta meter a label do systableext no heading 1 das tabelas
 #
-#  ============================================================================ 
+#  ============================================================================
 
-DATABASE despodata
+#DATABASE despodata
 
-GLOBALS "/usr/desenvolv/include/d_libglob.4gl"
+GLOBALS "4glsrc/d_libglob.4gl"
 
 define
 	imprime_header   smallint,    # Flag de impressao ou nao do cabecalho
@@ -792,7 +782,16 @@ report     r_html_tabelas(nome_tabela,desc_tabela)
 		starterr smallint,
 		desc_tabela char(254)
 
-   output 
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   output
 		 left margin 0
 		 top margin 0
 		 bottom margin 0

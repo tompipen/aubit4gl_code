@@ -1,4 +1,5 @@
-database despodata
+--database despodata
+database formonly
 
 screen
 {
@@ -8,15 +9,19 @@ screen
  Tabela           [d1                ] [d1d       ]
 }
 
-tables
-   d_mod_tab
-   systables
-   d_modulos
+--tables
+--   d_mod_tab
+--   systables
+--   d_modulos
 
 attributes
    a=formonly.RegCorrente;
    b=formonly.totalRegs;
-   d0=codmod;
-   d0d=d_modulos.nome;
-   d1=d_mod_tab.tabname;
-   d1d=systables.owner;
+--   d0=codmod;
+--   d0d=d_modulos.nome;
+--   d1=d_mod_tab.tabname;
+--   d1d=systables.owner;
+   d0=formonly.codmod;
+   d0d=formonly.nome;
+   d1=formonly.tabname;
+   d1d=formonly.owner;

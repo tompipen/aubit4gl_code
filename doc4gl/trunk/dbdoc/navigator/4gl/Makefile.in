@@ -1,80 +1,93 @@
-#  ============================================================================ 
+#  ============================================================================
 #
 #  Copyright 1992 DESPODATA - Lisboa, PORTUGAL
-#                                                        
+#
 #  Divisao de desenvolvimento e producao de software.
-#                                                        
+#
 #  Autor:  Sergio Alexandre ferreira
 #          Pedro Higgs Menezes
 #
-#	This Module contains Proprietary and Confidential
-#	Information of Despodata - Consultores internacionais Lda.
 #
-#  Modulo        : %M%
-#  SCCSID        : %I%
-#  Data do delta : %G%
 #  ----------------------------------------------------------------
 #  DESCRICAO: Makefile para utilitario bdesquema.
 #
-#  ----------------------------------------------------------------
-#  NOTAS:
-#
-#  ============================================================================ 
+#  ============================================================================
 
-include /usr/desenvolv/include/4glbuilt.mk
+ROOT=../../..
 
-LIBS=/usr/desenvolv/lib/Llibfgldd.4go /usr/desenvolv/lib/d_libglob.4go
+include ${ROOT}/FgldocDefs.mk
 
+
+#include /usr/desenvolv/include/4glbuilt.mk
+O=xxx
+
+VPATH 			=./4glsrc:./forms
+export VPATH
+
+LIBSDIR=/usr/desenvolv/lib/
 FGLDIR=/usr/desenvolv/bin/4gl
 BINDIR=/usr/desenvolv/bin/bin
 FGLFORM=/usr/desenvolv/bin/perform
-FGEI_PROG=bdesquema$(FGEI) modulos$(FGEI) BdeUtil$(FGEI)
+
+LIBS=${LIBSDIR}Llibfgldd.4go ${LIBSDIR}d_libglob.4go
+
+ALL=bdesquema$(FGEI) modulos$(FGEI) BdeUtil$(FGEI)
 SCRIPTS=bdesquema modulos
 FORMS = par_bde.frm ged_mod.frm ged_mtab.frm
 
-#  ============================================================================ 
+#4GLCOMP=d4gl-pcode
+4GLCOMP=i4gl-pcode
+
+#  ============================================================================
+#  Compila todos .4go(s)
+#  ============================================================================
+#all: $(ALL)
+all:
+	export DEFAULT=${4GLCOMP}; amake
+
+
+#  ============================================================================
 #  Utilitario bdesquema.
-#  ============================================================================ 
-BDEUTIL_MOD= BdeUtil$O 
+#  ============================================================================
+BDEUTIL_MOD= BdeUtil$O
 BdeUtil$(FGEI): $(BDEUTIL_MOD) $(FORMS)
 		$(FGLLN) $(BDEUTIL_MOD) $(LIBS) $(OUT_OP) $@
 
-#  ============================================================================ 
+#  ============================================================================
 #  Utilitarios do bdesquema.
-#  ============================================================================ 
+#  ============================================================================
 BDE_MOD= main_bde$O bdesquema$O d_get_tipo$O
 BDE_FORM = par_bde.frm
 bdesquema$(FGEI): $(BDE_MOD) $(FORMS)
 		$(FGLLN) $(BDE_MOD) $(LIBS) $(OUT_OP) $@
 
-#  ============================================================================ 
+#  ============================================================================
 #  Manutencao de modulos
-#  ============================================================================ 
+#  ============================================================================
 mod_MOD=scr_mod$O gl_mod$O ext_mod$O m_mod$O \
 scr_mtab$O gl_mtab$O ext_mtab$O cr_ext$O
 mod_FORM=ged_mod.frm ged_mtab.frm
 modulos$(FGEI): $(mod_MOD) $(mod_FORM)
 		$(FGLLN) $(mod_MOD) $(LIBS) $(OUT_OP) $@
 
-#  ============================================================================ 
-#  Compila todos .4go(s)
-#  ============================================================================ 
-all: $(FGEI_PROG)
-	
-#  ============================================================================ 
+
+#  ============================================================================
 #  Instalacao dos utilitarios no sitio certo.
-#  ============================================================================ 
-install: $(FGEI_PROG)
-		-- chmod 664 $(FGEI_PROG)
+#  ============================================================================
+install: $(ALL)
+		-- chmod 664 $(ALL)
 		-- chmod 664 $(FORMS)
-		cp $(FGEI_PROG) $(FGLDIR)
-		cp $(FGEI_PROG) /usr/appl/bdesquema/bin/4gl
+		cp $(ALL) $(FGLDIR)
+		cp $(ALL) /usr/appl/bdesquema/bin/4gl
 		cp JoinTabelas.class /usr/appl/html-docs
 		cp $(FORMS) $(FGLFORM)
 		cp $(SCRIPTS) $(BINDIR)
 
-#  ============================================================================ 
+#  ============================================================================
 #  Limpa a directoria corrente
-#  ============================================================================ 
+#  ============================================================================
 clean:
 		-- rm -f *.4go *.4gi *.4bk *.o a.out core *.err *.frm *.o
+
+makefile:
+	cd ${ROOT}; config.status; cd -
