@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.40 2004-12-16 10:15:13 mikeaubury Exp $
+# $Id: readforms.c,v 1.41 2005-02-09 21:45:24 pjfalbe Exp $
 #*/
 
 /**
@@ -479,12 +479,18 @@ include_range_check (char *ss, char *ptr, int dtype)
   static char buff[2048];	/* what we're checking */
   static char buff2[2048];	/* what we're checking against */
   static char buff3[2048];	/* used if its a range */
-  char *ptr1;
-  char *ptr2;
-  char *ptr3;
+  char *ptr1=0;
+  char *ptr2=0;
+  char *ptr3=0;
   char *s;
 
-  s = strdup (ss);
+  memset(buff,0,sizeof(buff));
+  memset(buff2,0,sizeof(buff2));
+  memset(buff3,0,sizeof(buff3));
+  s = malloc (strlen(ss)+10);
+  memset(s,0,strlen(ss)+10);
+  strcpy(s,ss);
+
   A4GL_trim (s);
   A4GL_debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
 
@@ -514,21 +520,27 @@ include_range_check (char *ss, char *ptr, int dtype)
                 dim=0x2010;
         }
       A4GL_debug ("Not a string expression");
+	A4GL_debug("Pushing '%s'",s);
       A4GL_push_char (s);
-      A4GL_pop_param (&buff, dtype, dim);
+      A4GL_pop_param (&buff[0], dtype, dim);
+      ptr1 = buff;
 
+	if (dtype==1) { A4GL_debug("Popped ptr1 : %d",*(int *)ptr1); }
+	A4GL_debug("Pushing '%s'",ptr);
       A4GL_push_char (ptr);
-      A4GL_pop_param (&buff2, dtype, dim);
+      A4GL_pop_param (&buff2[0], dtype, dim);
+      ptr2 = buff2;
+	if (dtype==1) { A4GL_debug("Popped ptr2 : %d",*(int *)ptr2); }
 
       /* do we have a range of values to check ? */
       if (ptr3)
 	{
+	A4GL_debug("Pushing '%s'",ptr3);
 	  A4GL_push_char (ptr3);
-	  A4GL_pop_param (&buff3, dtype, dim);
-      	ptr3 = buff3;
+	  A4GL_pop_param (&buff3[0], dtype, dim);
+      	  ptr3 = buff3;
+	  if (dtype==1) { A4GL_debug("Popped ptr3 : %d",*(int *)ptr3); }
 	}
-      ptr1 = buff;
-      ptr2 = buff2;
 
     }
   else
@@ -550,6 +562,11 @@ include_range_check (char *ss, char *ptr, int dtype)
                         return 1;
                 }
         }
+
+	if (dtype==1) {
+		A4GL_debug("%x %x",*(int *)ptr1,*(int *)ptr2);
+	}
+
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr2, dtype);
       A4GL_debug_print_stack ();
@@ -571,7 +588,9 @@ include_range_check (char *ss, char *ptr, int dtype)
     }
   else
     {
-      //A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr2);
+      if(dtype==1||dtype==2) {
+      A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr2);
+	}
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr2, dtype);
       A4GL_debug_print_stack ();
