@@ -1,0 +1,53 @@
+#	p4gl - script that demostrates fglpp usage
+#
+#	Marco Greco (marcog@ctonline.it), Catania, Italy
+#
+#	Initial release: Apr 96
+#	Current release: Dec 96
+#
+#
+#	Usage:	p4gl file.4gl...
+#
+#				NOTICE
+# 	Permission to use, copy, modify and redistribute this software and
+#	its documentation is hereby granted without fee provided that
+#
+#	- all copies of the software and related documentation contain this
+#	  notice and authorship information, UNMODIFIED
+#
+#	- no fee is charged for the physical act of redistributing this
+#	  software or modified copies thereof
+# 
+#	THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND,
+#	EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+#	WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+#
+#	IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, INCIDENTAL,
+#	INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND, OR ANY DAMAGES WHATSOEVER
+#	RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER OR NOT ADVISED
+#	OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF LIABILITY, ARISING
+#	OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# 
+#	ALL RISKS CONNECTED TO THE USE OF THIS SOFTWARE OR IMPOSSIBILITY 
+#	THEREOF LIE SOLELY ON YOU.
+#	USE OF THIS SOFTWARE CONSTITUES AGREEMENT WITH THE ABOVE TERMS 
+#	AND CONDITIONS.
+#
+
+for file in $@
+do
+#
+#  get basename and directory of file
+#
+    sp=`dirname $file`
+    fn=`basename $file .4gl`
+#
+#  search for globals and include files in the input file directory
+#
+    nawk -f fglpp $file glb$$ fglpp$$.4gl $sp
+    c4gl -c fglpp$$.4gl -o $fn.o
+done
+#
+#  now that we're thru, drop the temporary files
+#
+rm glb$$ fglpp$$.4gl

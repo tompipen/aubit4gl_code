@@ -1,0 +1,77 @@
+
+# Standard programs/flags/libraries.
+#
+CC = @CC@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+YACC = @YACC@
+YFLAGS = @YFLAGS@
+LEX = @LEX@
+LFLAGS = @LFLAGS@
+INSTALL = @INSTALL@
+LIBS = @LIBS@
+
+# Installation paths.
+#
+install_top =
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+mandir = @mandir@
+
+# ESQL/C setup, ignored if the program is made without ESQL/C.
+#
+ESQL = @ESQL@
+ESQLFLAGS = @ESQLFLAGS@
+
+# A little shell game for compiling with or without ESQL/C.  The idea
+# is to avoid Makefile conditionals.
+#
+PROGRAM = fgldoc
+TARGET = @target@
+ECOBJS = @ecobjs@
+
+# Object files.
+OBJS = fgldoc.o parser.o lexer.o $(ECOBJS)
+
+# The configure script will define the proper default target.
+all: $(PROGRAM)
+
+$(PROGRAM): $(OBJS)
+	if test $(TARGET) = fgldoc; then \
+	    $(CC) -o $@ $(LDFLAGS) $(OBJS) $(LIBS); \
+	else \
+	    $(ESQL) $(ESQLFLAGS) -o $@ $(LDFLAGS) $(OBJS) $(LIBS); \
+	fi
+	
+read_pdbs.o: read_pdbs.ec config.h
+	if test -n "$$INFORMIXC"; then \
+	    $(ESQL) $(ESQLFLAGS) -c read_pdbs.ec; \
+	else \
+	    $(ESQL) $(ESQLFLAGS) $(CFLAGS) -c read_pdbs.ec; \
+	fi
+	rm -f read_pdbs.c
+
+install: install-bin install-man
+
+install-bin: $(PROGRAM)
+	$(INSTALL) -d $(install_top)$(bindir)
+	$(INSTALL) -o root -g root -m 755 $(PROGRAM) $(install_top)$(bindir)
+
+install-man: $(PROGRAM).1
+	$(INSTALL) -d $(install_top)$(mandir)/man1
+	$(INSTALL) -o root -g root -m 644 $(PROGRAM).1 $(install_top)$(mandir)/man1
+
+fgldoc.o: fgldoc.c fgldoc.h config.h
+
+lexer.o: lexer.l y.tab.h config.h
+
+parser.o: parser.y fgldoc.h config.h
+
+y.tab.h: parser.y
+
+clean:
+	rm -f $(PROGRAM) $(OBJS) core y.tab.h
+
+distclean: clean
+	rm -f Makefile config.h config.status config.cache config.log

@@ -1,0 +1,28 @@
+c2                  : function.4gl  :   6    9D  12 
+c3                  : function.4gl  :   6   10D  12 
+Column01            : example.4gl   :  10L  20 
+Column02            : function.4gl  :   9L
+column02            : example.4gl   :  24 
+Column03            : example.4gl   :  20   26 
+Column03            : function.4gl  :  10L
+column03            : example.4gl   :  24   26 
+compute             : example.4gl   :  24 
+compute             : function.4gl  :   6F
+counter             : example.4gl   :  12D
+c_select            : example.4gl   :  19d  23   27   35 
+duration            : example.4gl   :  11D
+Example             : example.4gl   :   4B
+Example             : function.4gl  :   4B
+Example             : report.4gl    :   4B
+f_demo              : example.4gl   :  15f  16   33 
+MAIN                : example.4gl   :   6M
+report_name         : example.4gl   :  18   28   32 
+report_name         : report.4gl    :   6R
+r_table1            : example.4gl   :   9D  23   24   25   26   28 
+r_table1            : report.4gl    :   6    9D
+s_table1            : example.4gl   :  25 
+tab_id              : example.4gl   :  10L  17   20 
+Table1              : example.4gl   :   9L  10L  20   26 
+Table1              : function.4gl  :   9L  10L
+Table1              : report.4gl    :   9L
+w_demo              : example.4gl   :  14w  34 
