@@ -1,0 +1,1841 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=iso-8859-1">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="StarOffice/5.2 (Linux)">
+	<META NAME="CREATED" CONTENT="19980908;382700">
+	<META NAME="CHANGEDBY" CONTENT="David Prieto">
+	<META NAME="CHANGED" CONTENT="19980909;6364800">
+	<STYLE>
+	<!--
+		@page { size: 21.01cm 29.69cm; margin: 2cm }
+		P { margin-bottom: 0.21cm }
+		H1 { margin-bottom: 0.21cm; font-family: "helvetica", sans-serif; font-size: 16pt; page-break-before: auto; page-break-after: auto }
+		H2 { margin-bottom: 0.21cm; font-family: "helvetica", sans-serif; font-size: 14pt; font-style: italic }
+		P.cuerpo-de-texto-con-sangría { text-indent: 0.74cm; text-align: justify }
+		P.fuente { text-indent: 0.74cm; font-family: "courier", monospace; font-size: 10pt; text-align: justify }
+		P.sdfootnote { margin-left: 0.5cm; text-indent: -0.5cm; margin-bottom: 0cm; font-size: 10pt }
+		P.contenido-del-marco { font-size: 8pt; text-align: center }
+		A.sdfootnoteanc { font-size: 57% }
+	-->
+	</STYLE>
+</HEAD>
+<BODY STYLE="border: none; padding: 0cm">
+<DIV TYPE=HEADER>
+	<P STYLE="margin-bottom: 0.76cm"><FONT FACE="helvetica, sans-serif"><FONT SIZE=2>		Documentaci&oacute;n
+	T&eacute;cnica</FONT></FONT></P>
+</DIV>
+<H1 ALIGN=CENTER><FONT FACE="times, serif"><FONT SIZE=5>Documentaci&oacute;n
+T&eacute;cnica</FONT></FONT></H1>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" ALIGN=LEFT><BR><BR>
+</P>
+<H1>Introducci&oacute;n</H1>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La funci&oacute;n de un
+compilador es la de traducir un c&oacute;digo fuente a un c&oacute;digo
+objeto. En el caso de <B><I>hy4GL</I></B>, el c&oacute;digo fuente es
+el lenguaje 4GL. El compilador toma como entrada un programa escrito
+en lenguaje 4GL y lo traduce a su equivalente en lenguaje C. En un
+segundo paso se usa una herramienta externa (el compilador de C) para
+generar c&oacute;digo en ensablador.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se ha elegido el
+lenguaje C por varias razones. En primer lugar, el objetivo del
+proyecto es obtener una herramienta para programar aplicaciones de
+bases de datos que se relacionen con servidores basados en
+PostgreSQL, y PostgreSQL ofrece librer&iacute;as de funciones para
+acceder a sus bases de datos dese lenguaje C. Por otra parte, este
+lenguaje permite una mayor portabilidad y una independencia de la
+plataforma que no se podr&iacute;a conseguir de otra manera. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para no perder
+portabilidad, el c&oacute;digo generado usa librer&iacute;as de
+funciones encontradas en todas las plataformas UNIX. Para generaci&oacute;n
+de la interfaz de usuario se ha optado por <I>ncurses</I>, una
+librer&iacute;a de funciones que ofrecen un m&eacute;todo de acceder
+a terminales en modo texto independiente del tipo de terminal
+utilizado. Adem&aacute;s, <I>ncurses</I> incluye funciones para
+generar y manejar men&uacute;s y formularios de entrada, lo que ha
+facilitado esta secci&oacute;n del generador de c&oacute;digo.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><B><I>hy4GL</I></B> se
+ha estructurado en dos partes: una herramienta para obtener programas
+ejecutables a partir de c&oacute;digo fuente en 4GL y una librer&iacute;a
+de funciones que usar&aacute;n estos programas en tiempo de
+ejecuci&oacute;n. La librer&iacute;a de <I>run-time</I><SPAN STYLE="font-style: normal">
+incluye las funciones de manejo de la pila interna, las de 
+conversi&oacute;n de tipos y funciones que puede usar el programador
+para obtener informaci&oacute;n como la fecha/hora actual, o la
+longitud de una cadena.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+El compilador de 4GL consta de las siguientes partes: 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><SPAN ID="Frame2" STYLE="float: left; width: 7.89cm; height: 4.71cm; border: 1px solid #000000; padding: 0.15cm; background: #ffffff">
+	<P CLASS="contenido-del-marco"><IMG SRC="sv1491498.gif" NAME="Figura 1: M&oacute;dulos del compilador" ALIGN=LEFT WIDTH=246 HEIGHT=145 BORDER=0><BR CLEAR=LEFT>Figura
+	1: M&oacute;dulos del compilador</P>
+</SPAN><BR><BR>
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">analizador l&eacute;xico
+		(<I>scanner</I><SPAN STYLE="font-style: normal">),</SPAN></P>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><SPAN STYLE="font-style: normal">analizador
+		sint&aacute;ctico (</SPAN><I>parser</I><SPAN STYLE="font-style: normal">),</SPAN></P>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+		analizador sem&aacute;ntico y</P>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+		generador de c&oacute;digo.</P>
+	</UL>
+</UL>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Todas estas partes
+est&aacute;n interconectadas. La salida de una es la entrada de la
+siguiente. En el caso de <B><I>hy4GL</I></B><SPAN STYLE="font-weight: medium"><SPAN STYLE="font-style: normal">,
+las cuatro partes no son totalmente secuenciales: el an&aacute;lisis
+sem&aacute;ntico se realiza al mismo tiempo que el an&aacute;lisis
+sint&aacute;ctico y la generaci&oacute;n de c&oacute;digo.</SPAN></SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal; font-weight: medium">
+<BR><BR>
+</P>
+<H1 STYLE="page-break-before: always">Analizador l&eacute;xico
+(<SPAN STYLE="font-style: normal">scanner</SPAN>)</H1>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" ALIGN=JUSTIFY>El
+analizador l&eacute;xico toma como entrada el programa escrito en
+lenguaje 4GL y lo trocea en <I>tokens</I>. A cada token se le asocia
+un atributo. As&iacute; un n&uacute;mero entero produce el token
+TK_CONS y su atributo asociado es su valor num&eacute;rico.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" ALIGN=JUSTIFY>El
+analizador l&eacute;xico usado en <B><I>hy4GL</I></B><SPAN STYLE="font-weight: medium"><SPAN STYLE="font-style: normal">
+se ha generado usando la herramienta </SPAN><I>LEX</I><SPAN STYLE="font-style: normal"><A CLASS="sdfootnoteanc" NAME="sdfootnote1anc" HREF="#sdfootnote1sym"><SUP>1</SUP></A>.
+Se trata de una herramienta que genera programas en lenguaje C que
+reconocen patrones l&eacute;xicos en textos. El programa se genera a
+partir de un fichero en el que se especifican una serie de tuplas
+(llamadas reglas) formadas por expresiones regulares y c&oacute;digo
+en C que se ejecutar&aacute; cada vez que se encuentre la expresi&oacute;n
+regular en el fuente.</SPAN></SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" ALIGN=JUSTIFY>El
+comportamiento del analizador l&eacute;xico depende del contexto en
+el que nos encontremos: al llegar a un n&uacute;mero entero se
+obtiene un token TK_CONS normalmente, pero si en este momento nos
+encontramos dentro de un comentario, no se obtiene token alguno. Se
+definen cuatro contextos distintos para el funcionamiento de este
+analizador l&eacute;xico: un contexto inicial, en el que se encuentra
+normalmente el analizador; un contexto para los comentarios entre
+llaves (formato de Informix-4GL) y otro para los comentarios entre
+s&iacute;mbolos /* y */ (formato de C). Existe un contexto adicional
+en el que se encuentra el analizador entre los s&iacute;mbolos '.c' y
+'c.' (introducci&oacute;n de sentencias en C embebido).</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El lenguaje tiene una
+serie de <B>palabras reservadas</B><SPAN STYLE="font-weight: medium">
+que no pueden ser usadas como nombres de variables. Cuando el
+analizador l&eacute;xico encuentra una secuencia de caracteres que
+podr&iacute;a ser un nombre de variable, &eacute;sta es buscada en
+una tabla de palabras reservadas. Si se encuentra, el analizador
+l&eacute;xico devuelve el token correspondiente a la palabra
+reservada. En caso contrario, devuelve el token TK_ID (identificador)
+y una cadena con el nombre como atributo.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-weight: medium">
+La b&uacute;squeda en la lista de palabras reservadas se realiza
+mediante un algoritmo de b&uacute;squeda dicot&oacute;mica para
+acelerar el proceso. La lista de palabras reservadas del lenguaje 4GL
+y sus tokens asociados se encuentra en la tabla de la p&aacute;gina
+siguiente.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-weight: medium">
+Las palabras reservadas no son sensibles a may&uacute;sculas y
+min&uacute;sculas. Sin embargo, los identificadores s&iacute; lo son.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-weight: medium">
+<BR><BR>
+</P>
+<H2 STYLE="page-break-before: always">Palabras reservadas</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-weight: medium">
+<SPAN CLASS="sd-abs-pos" STYLE="float: left; width: 643px; border: 1px solid #000000; padding: 0.15cm; background: #ffffff"><MULTICOL COLS=3 GUTTER=11 ID="Palabras reservadas" WIDTH=643>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;abort&quot;	TK_ABORT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;after&quot;	TK_AFTER,</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;and&quot;	TK_AND</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;as&quot;	TK_AS</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;at&quot;	TK_AT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;attribute&quot;	TK_ATTR</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;attributes&quot;	TK_ATTR</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;before&quot;	TK_BEFORE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;begin&quot;	TK_BEGIN</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;border&quot;	TK_BORDER</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;bright&quot;	TK_BRIGHT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;browse&quot;	TK_BROWE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;button&quot;	TK_BUTTON</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;by&quot;	TK_BY</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;call&quot;	TK_CALL</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;char&quot;	TK_CHAR</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;check&quot;	TK_CHECK</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;clear&quot;	TK_CLEAR</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;clipped&quot;	TK_CLIPPED</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;close&quot;	TK_CLOSE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;columns&quot;	TK_COLS</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;command&quot;	TK_COMMAND</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;commit&quot;	TK_COMMIT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;continue&quot;	TK_CONTINUE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;create&quot;	TK_CREATE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;current&quot;	TK_CURRENT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;cursor&quot;	TK_CURSOR</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;database&quot;	TK_DB</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;declare&quot;	TK_DECLARE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;define&quot;	TK_DEFINE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;delay&quot;	TK_DELAY</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;delete&quot;	TK_DELETE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;display&quot;	TK_DISPLAY</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;doble&quot;	TK_DOBLE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;drop&quot;	TK_DROP</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;else&quot;	TK_ELSE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;end&quot;	TK_END</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;every&quot;	TK_EVERY</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;exec_sql&quot;	TK_EXEC</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;exit&quot;	TK_EXIT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;extern&quot;	TK_EXTERN</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;fetch&quot;	TK_FETCH</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;field&quot;	TK_FIELD</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;finish&quot;	TK_FINISH</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;first&quot;	TK_FIRST</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;footer&quot;	TK_FOOTER</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;for&quot;	TK_FOR</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;foreach&quot;	TK_FOREACH</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;form&quot;	TK_FORM</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;format&quot;	TK_FORMAT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;from&quot;	TK_FROM</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;function&quot;	TK_FUNCTION</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;group&quot;	TK_GROUP</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;header&quot;	TK_HEADER</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;horizontal&quot;	TK_HORIZ</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;if&quot;	TK_IF</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;input&quot;	TK_INPUT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;insert&quot;	TK_INSERT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;into&quot;	TK_INTO</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;key&quot;	TK_KEY</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;label&quot;	TK_LABEL</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;last&quot;	TK_LAST</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;let&quot;	TK_LET</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;like&quot;	TK_LIKE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;local&quot;	TK_LOCAL</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;main&quot;	TK_MAIN</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;menu&quot;	TK_MENU</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;move&quot;	TK_MOVE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;next&quot;	TK_NEXT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;of&quot;	TK_OF</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;on&quot;	TK_ON</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;open&quot;	TK_OPEN</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;or&quot;	TK_OR</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;order&quot;	TK_ORDER</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;output&quot;	TK_OUTPUT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;over&quot;	TK_OVER</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;page&quot;	TK_PAGE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;pipe&quot;	TK_PIPE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;previous&quot;	TK_PREVIOUS</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;print&quot;	TK_PRINT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;prompt&quot;	TK_PROMPT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;radio&quot;	TK_RADIO</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;record&quot;	TK_RECORD</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;report&quot;	TK_REPORT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;return&quot;	TK_RETURN</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;returning&quot;	TK_RETURNING</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;row&quot;	TK_ROW</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;rows&quot;	TK_ROWS</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;select&quot;	TK_SELECT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;start&quot;	TK_START</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;then&quot;
+		TK_THEN</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;title&quot;	TK_TITLE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;to&quot;	TK_TO</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;trailer&quot;	TK_FOOTER</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;transaction&quot;	TK_TRANSACTION</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;using&quot;	TK_USING</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;validate&quot;	TK_VALIDATE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;values&quot;	TK_VALUES</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;vertical&quot;	TK_VERT</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;where&quot;	TK_WHERE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;while&quot;	TK_WHILE</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;window&quot;	TK_WINDOW</I></FONT></P>
+	<P STYLE="margin-top: 0.21cm"><FONT SIZE=2><I>&quot;with&quot;	TK_WITH</I></FONT></P>
+</MULTICOL></SPAN><BR><BR>
+</P>
+<H1>Analizador sint&aacute;ctico (parser)</H1>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El analizador
+sint&aacute;ctico es un programa (o funci&oacute;n) que recibe los
+tokens reconocidos por el analizador l&eacute;xico y determina si se
+ajustan o no al lenguaje 4GL. En caso de que as&iacute; sea, los
+tokens y sus correspondientes atributos se organizan formando un
+<I>&aacute;rbol de sintaxis abstracta</I><SPAN STYLE="font-style: normal">.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Durante la generaci&oacute;n del &aacute;rbol de sintaxis abstracta
+se realizan algunas comprobaciones sem&aacute;nticas: como comprobar
+la existencia de variables, o el tipo de un cursor.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Al igual que el analizador l&eacute;xico, el analizador sint&aacute;ctico
+tambi&eacute;n se ha generado usando una herramienta dise&ntilde;ada
+para tal fin. Esta herramienta es YACC<A CLASS="sdfootnoteanc" NAME="sdfootnote2anc" HREF="#sdfootnote2sym"><SUP>2</SUP></A>,
+que genera el parser partiendo de una gram&aacute;tica descrita en un
+fichero.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<H2>Gram&aacute;tica concreta</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+En primer lugar se ha dise&ntilde;ado la gram&aacute;tica concreta
+del lenguaje:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>fich : fichero</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | database fichero</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>fichero : declaraciones  funciones</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | funciones</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>funciones : funciones funcion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | funcion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>funcion : TK_FUNCTION TK_ID '(' ')'
+acciones TK_END TK_FUNCTION</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_MAIN acciones TK_END
+TK_MAIN</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>funcion : TK_FUNCTION TK_ID '('
+lst_identif ')' acciones TK_END TK_FUNCTION</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_EXTERN TK_ID '(' ')' tipo</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | report</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | form_def</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>acciones : declaraciones sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         | sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>declaraciones : declaracion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>              | declaraciones
+declaracion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>declaracion : TK_DEFINE lst_identif
+tipo</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>tipo : TK_ID</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | TK_CHAR</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | TK_CHAR '(' TK_CONS ')'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | TK_RECORD campos TK_END
+TK_RECORD</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | TK_LIKE TK_ID '.' TK_ID</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | TK_RECORD TK_LIKE TK_ID '.' '*'</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>campos : campos campo</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | campo</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>campo : TK_ID tipo</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>sentencias : error</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | sentencia</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | sentencias sentencia</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>sentencia : fuente_c</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | exit_program</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | asignacion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | llamada</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | retorno</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | lectura</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | escribir</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | opventana</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | bloquecontrol</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | TK_DELAY expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | sql</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | menu</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | exitmenu</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | sent_browse</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | sent_report</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | sent_form</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>exit_program : TK_EXIT TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>fuente_c : TK_FUENTE_C</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         | fuente_c TK_FUENTE_C</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente" STYLE="page-break-before: always"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>opventana : TK_OPEN TK_WINDOW TK_ID
+TK_AT expresion ',' expresion </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>			TK_WITH expresion TK_ROWS ','
+expresion TK_COLS tit_ventana</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	| TK_OPEN TK_WINDOW TK_ID TK_AT
+expresion ',' expresion </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>			TK_WITH expresion TK_ROWS ','
+expresion TK_COLS </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>			TK_ATTR atributos_vent tit_ventana</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	| TK_CLOSE TK_WINDOW TK_ID</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_MOVE TK_WINDOW TK_ID TK_TO
+expresion ',' expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_CURRENT TK_WINDOW TK_ID</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_CLEAR TK_WINDOW</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>tit_ventana :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_TITLE expresion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>atributos_vent : atributos_vent ','
+atributo_vent</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | atributo_vent</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | '(' atributos_vent ')'</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>atributo_vent : color</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | color TK_OVER color</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_BORDER</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_DOBLE TK_BORDER</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_BRIGHT</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>color : TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>llamada : TK_ID '(' listaexpresiones
+')'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_ID '(' ')'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_CALL llamada</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>escribir : TK_DISPLAY lista_expr_disp</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>lista_expr_disp : expr_disp</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | lista_expr_disp ',' expr_disp</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>expr_disp : listaexpresiones</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | listaexpresiones TK_AT expresion
+',' expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | listaexpresiones TK_ATTR
+atributos_vent</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | listaexpresiones TK_AT expresion
+',' expresion </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		TK_ATTR atributos_vent</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>lectura : TK_PROMPT TK_FOR identif</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_PROMPT TK_FOR TK_CHAR
+identif</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_PROMPT expresion TK_FOR
+identif</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_PROMPT expresion TK_FOR
+TK_CHAR identif</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>retorno : TK_RETURN listaexpresiones</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_RETURN</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>asignacion : TK_LET lst_identif
+TK_IGUAL listaexpresiones</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | llamada TK_RETURNING
+lst_identif</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>listaexpresiones : expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | listaexpresiones ','
+expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | '(' listaexpresiones ')'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_ID '.' '*'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | listaexpresiones ',' TK_ID
+'.' '*'</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>expresion : identif</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion '[' expresion ']'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion '[' expresion ','
+expresion ']'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_REAL</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_CONS</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_CADENA</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | binaria</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | unaria</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | '(' expresion ')'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | llamada</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion TK_USING TK_CADENA</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion TK_CLIPPED</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>lst_identif : lst_identif ',' identif</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | identif</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | lst_identif ',' TK_ID '.'
+'*'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_ID '.' '*'</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>identif : TK_ID</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_ID '.' TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente" STYLE="page-break-before: always"><FONT SIZE=2>binaria
+: expresion '+' expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion '-' expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion '*' expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion '/' expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion TK_AND expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion TK_OR expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion '&gt;' expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion TK_MAYORIGUAL
+expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion TK_MENORIGUAL
+expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion '&lt;' expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion TK_DISTINTO
+expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | expresion TK_IGUAL expresion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>unaria : '-' expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | '!' expresion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>bloquecontrol : blqif</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | blqwhile</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | cont_while</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | exit_while</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | blqfor</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | cont_for</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | exit_for</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | foreach</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | cont_foreach</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | exit_foreach</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>foreach : TK_FOREACH TK_ID TK_INTO
+lst_identif sentencias TK_END TK_FOREACH</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>cont_foreach : TK_CONTINUE TK_FOREACH</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>exit_foreach : TK_EXIT TK_FOREACH</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>blqif : TK_IF expresion then
+sentencias TK_END TK_IF</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>      | TK_IF expresion then
+sentencias TK_ELSE sentencias TK_END TK_IF</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>then :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | TK_THEN</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>blqwhile : TK_WHILE expresion
+sentencias TK_END TK_WHILE</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>cont_while : TK_CONTINUE TK_WHILE</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>exit_while : TK_EXIT TK_WHILE</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>blqfor : TK_FOR identif TK_IGUAL
+expresion TK_TO expresion </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		sentencias TK_END TK_FOR</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>cont_for : TK_CONTINUE TK_FOR</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>exit_for : TK_EXIT TK_FOR</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>sql : database</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | declare</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | select</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | insert</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | delete</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | transacc_begin</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | transacc_commit</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | transacc_abort</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | open_cursor</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | close_cursor</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | fetch_cursor</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>    | exec_sql</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>database : TK_DB TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>declare : TK_DECLARE TK_ID decl_local
+TK_CURSOR TK_FOR select</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | TK_DECLARE TK_ID decl_local
+TK_CURSOR TK_FOR expresion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>decl_local :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | TK_LOCAL</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>open_cursor : TK_OPEN TK_CURSOR TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>close_cursor : TK_CLOSE TK_CURSOR
+TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>fetch_cursor : TK_FETCH fetch_dir
+TK_ID TK_INTO lst_identif</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>fetch_dir :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | TK_NEXT</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | TK_PREVIOUS</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>exec_sql : TK_EXEC expresion into</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>select : TK_SELECT lst_campos into
+TK_FROM lst_tablas where orden</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>delete : TK_DELETE TK_FROM TK_ID where</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>lst_campos : campo_tabla</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | lst_campos ','
+campo_tabla</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>campo_tabla : '*'</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>            | TK_ID</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>            | TK_ID '(' lst_campos ')'</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>into :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>     | TK_INTO lst_identif</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>where : </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>     | TK_WHERE expresion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>orden :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>      | TK_ORDER TK_BY lst_campos</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>lst_tablas : TK_ID</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | lst_tablas ',' TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>insert : TK_INSERT TK_INTO TK_ID
+TK_VALUES '(' listaexpresiones ')'</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>transacc_begin : TK_BEGIN
+TK_TRANSACTION</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>transacc_abort : TK_ABORT
+TK_TRANSACTION</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>transacc_commit : TK_COMMIT
+TK_TRANSACTION</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>menu : TK_MENU expresion menuformat
+menuattr menuops TK_END TK_MENU</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>menu : TK_MENU menuformat menuattr
+menuops TK_END TK_MENU</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>menuops : menuops menuop</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        | menuop</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>menuop : TK_COMMAND expresion ','
+expresion sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>       | TK_COMMAND expresion
+sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>       | TK_ON TK_KEY '(' TK_ID ')'
+sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>exitmenu : TK_EXIT TK_MENU</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>menuattr : TK_ATTR atributos_vent ';'
+atributos_vent</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         | TK_ATTR atributos_vent</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         |</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>menuformat :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | TK_HORIZ</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | TK_VERT</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | TK_VERT TK_HORIZ</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | TK_HORIZ TK_VERT</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>sent_browse : browse</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>            | browse_exit</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>browse_exit : TK_EXIT TK_BROWSE</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>browse : TK_BROWSE TK_ID TK_INTO
+lst_identif </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		browse_donde </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		browse_titulo </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		TK_DISPLAY expresion </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		browseops TK_END TK_BROWSE</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>browse_donde :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>             | TK_FROM expresion ','
+expresion TK_TO expresion ',' expresion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>browse_titulo :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>              | TK_TITLE expresion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>browseops : browseop</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | browseops browseop</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>browseop : TK_ON TK_KEY '(' TK_ID ')'
+sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         | TK_ON TK_KEY '(' TK_CADENA
+')' sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         | TK_ON TK_KEY '(' TK_CONS
+')' sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente" STYLE="page-break-before: always"><FONT SIZE=2>sent_report
+: start_r</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>            | output_r</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>            | finish_r</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>            | rpt_print</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>start_r : TK_START TK_REPORT TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>output_r : TK_OUTPUT TK_TO TK_REPORT
+TK_ID '(' listaexpresiones ')'</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>finish_r : TK_FINISH TK_REPORT TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_print : TK_PRINT expresion</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>report : TK_REPORT TK_ID '('
+lst_identif ')' declaraciones </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		rpt_salida rpt_formato TK_END
+TK_REPORT</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_salida : TK_OUTPUT rpt_formato_pg</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_formato_pg :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>               | rpt_item_fmt</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>               | rpt_formato_pg
+rpt_item_fmt</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_item_fmt : TK_REPORT TK_TO
+TK_CADENA</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>             | TK_REPORT TK_TO TK_PIPE
+TK_CADENA</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>             | TK_PAGE TK_ID TK_CONS</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_formato : TK_FORMAT
+rpt_first_pg_hd rpt_pg_hd </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		rpt_before_gr rpt_every rpt_after_gr
+rpt_pg_ft rpt_last_rw</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_first_pg_hd :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>                | TK_FIRST TK_PAGE
+TK_HEADER sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_pg_hd :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | TK_PAGE TK_HEADER
+sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_before_gr :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>              | rpt_item_before_gr</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>              | rpt_before_gr
+rpt_item_before_gr</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_item_before_gr : TK_BEFORE
+TK_GROUP TK_OF lst_identif sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_every :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | TK_ON TK_EVERY TK_ROW
+sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_after_gr :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>             | rpt_item_after_gr</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>             | rpt_after_gr
+rpt_item_after_gr</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_item_after_gr : TK_AFTER TK_GROUP
+TK_OF lst_identif sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_pg_ft :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | TK_PAGE TK_FOOTER
+sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>rpt_last_rw :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>            | TK_ON TK_LAST TK_ROW
+sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>sent_form : form_create</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | form_display</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | form_dispByName</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | form_inputByName</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | form_exit</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | form_validate</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>          | form_current</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_create : TK_CREATE TK_FORM TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_display : TK_DISPLAY TK_FORM
+TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_dispByName : TK_DISPLAY TK_BY
+TK_ID lst_identif</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_inputByName : TK_INPUT TK_BY
+TK_ID lst_identif</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	| TK_INPUT TK_BY TK_ID lst_identif
+form_onkeys </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>			form_afterfields TK_END TK_INPUT</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_INPUT TK_BY TK_ID lst_identif
+form_afterfields TK_END TK_INPUT</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | TK_INPUT TK_BY TK_ID lst_identif
+form_onkeys TK_END TK_INPUT</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_onkeys : form_onkey</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | form_onkeys form_onkey</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_afterfields : form_afterfield</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   | form_afterfields form_afterfield</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_onkey : TK_ON TK_KEY '(' TK_ID
+')' sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | TK_ON TK_KEY '('
+TK_CADENA ')' sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | TK_ON TK_KEY '(' TK_CONS
+')' sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>           | TK_ON TK_BUTTON TK_ID
+sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_afterfield : TK_AFTER TK_FIELD
+TK_ID sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_exit : TK_EXIT TK_INPUT</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_validate : TK_VALIDATE TK_FIELD</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_current : TK_CURRENT TK_FIELD
+TK_ID</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>             | TK_NEXT TK_FIELD TK_ID</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_def : TK_FORM TK_ID
+form_elementos TK_END TK_FORM</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_elementos : form_elemento</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>               | form_elementos
+form_elemento</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_elemento :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	| TK_INPUT TK_ID TK_FROM expresion
+',' expresion </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2> 		TK_TO expresion ',' expresion
+form_attribs</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	| TK_BUTTON TK_ID TK_AT expresion ','
+expresion form_attribs</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	| TK_RADIO TK_ID TK_AT expresion ','
+expresion form_attribs</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	| TK_CHECK TK_ID TK_AT expresion ','
+expresion form_attribs</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>form_attribs :</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	| TK_ATTR atributos_vent</FONT></P>
+<P CLASS="fuente" STYLE="font-style: normal"><BR><BR>
+</P>
+<H2 STYLE="page-break-before: always">&Aacute;rbol de sintaxis
+abstracta y tabla de s&iacute;mbolos</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Para la generaci&oacute;n del &aacute;rbol de sintaxis abstracta se
+ha usado la HESA<A CLASS="sdfootnoteanc" NAME="sdfootnote3anc" HREF="#sdfootnote3sym"><SUP>3</SUP></A>.
+Se trata de un programa que genera una serie de estructuras y
+funciones en C que facilitan la organizaci&oacute;n de los tokens y
+atributos formando el &aacute;rbol de sintaxis abstracta. La HESA
+toma como entrada un fichero en el que se especifica la sintaxis
+abstracta del lenguaje. En nuestro caso, la sintaxis es la siguiente:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="fuente">%{</P>
+<P CLASS="fuente"><FONT SIZE=2>#include &quot;global.h&quot;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>%}</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>%union {cadena	nombre;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        double	valor;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		 }</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>%type &lt;nombre&gt; Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>%type &lt;valor&gt;  Constante</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>%%</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Fichero :: var: Variables; fun:
+Funciones</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Funciones :: Funcion *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Funcion :: nom: Identificador; par:
+ListaId; cod: Acciones; tip: Tipo</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>ListaId :: Identificador *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Rect :: y,x,yy,xx: Expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Tipo :: tip: Identificador; tam:
+Constante; cam: Variables</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Acciones :: var: Variables; cod:
+Sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Variables :: Variable *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Variable :: nom: Identificador; tip:
+Tipo</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Sentencias :: Sentencia *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Sentencia :: FuenteC | ExitProgram |
+Asignacion | Llamada | Retorno | Bloque</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>            | Leer | Escribir | Sql |
+OpVentana | Delay | OpMenu | OpReport</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>            | OpForm | OpBrowse</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>FuenteC:: Identificador *</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>OpMenu:: Menu | ExitMenu | MenuAttr</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Menu :: nom: Identificador; exp:
+Expresion; fmt: Constante; </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>			att: MenuAttr; opc: MenuOps</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>MenuOps :: MenuOp *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>MenuOp :: nom: Expresion; desc:
+Expresion; cod: Sentencias; key: Constante</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>MenuAttr :: fore,back: AttsVentana</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente" STYLE="page-break-before: always"><FONT SIZE=2>OpForm::
+Form | FormDisplay | FormCreate | </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		OpFormDispByName | OpFormInputByName
+| FormExit | </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		FormCurrentField | FormValidateField</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormDisplay:: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormCreate:: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Form:: nom: Identificador; campos:
+FormCampos</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormCampos:: FormCampo *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormCampo:: tipo: FormTipoCampo; nom:
+Identificador; </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		y,x,yy,xx: Expresion; attr:
+AttsVentana</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormTipoCampo:: FormButton | FormInput
+| FormLabel | FormCheck</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormDispByName:: campos: ListaId</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormInputByName:: campos: ListaId;
+opc: FormOnKeys; after: FormAfterFields</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormOnKeys :: FormOnKey *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormOnKey :: nom: Identificador; cod:
+Sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormAfterFields :: FormAfterField *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormAfterField :: nom: Identificador;
+cod: Sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormCurrentField :: nom: Identificador</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>OpBrowse:: Browse | BrowseExit</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Browse :: nom: Identificador; cur:
+Identificador; vars: ListaId; </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>   donde: Rect; titulo: Expresion;
+exp: Expresion; opc: BrowseOps</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>BrowseOps :: BrowseOp *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>BrowseOp :: nom: Identificador; cod:
+Sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>OpReport :: StartReport | FinishReport
+| PrintReport </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>Report :: nom: Identificador; par:
+ListaId; var: Variables; </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		out: RptOutput; fmt: FormatoRpt</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>StartReport :: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FinishReport :: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>PrintReport :: exp: Expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>RptOutput:: Identificador *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FormatoRpt:: fph,ph:Sentencias; bg:
+RptGrupos; ev: Sentencias;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	ag: RptGrupos; pf,lr: Sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>RptGrupos:: RptGrupo *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>RptGrupo:: ids: ListaId; cod:
+Sentencias</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente" STYLE="page-break-before: always"><FONT SIZE=2>Sql
+:: Database | Select | Insert | Update | Delete | Declare | ExecSQL</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Database :: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Declare :: nom: Identificador; local:
+Constante; query: Select; </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		es_select: Constante</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Select :: cam: ListaId; into: ListaId;
+from: ListaId; </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		where: Condicion; order: ListaId;
+asc: Constante</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>ExecSQL :: comando: Expresion; into:
+ListaId</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Insert :: tabla: Identificador;
+valores: ListaId</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Delete :: tabla: Identificador; where:
+Condicion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Transacc :: op: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>OpenCursor :: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>CloseCursor :: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>FetchCursor :: nom: Identificador;
+next: Constante; vars: ListaId</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>Delay :: tiempo: Expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>OpVentana :: AbVentana | CieVentana |
+MovVentana | ClearWindow</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>AbVentana :: nom: Identificador; y, x,
+h, w: Constante; </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>		attr: AttsVentana; tit: Expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>CieVentana :: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>MovVentana :: nom: Identificador; y,
+x: Expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>CurVentana :: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>AttsVentana :: AtVentana *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>AtVentana :: nom: Identificador; val:
+Constante</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Leer :: esc: Expresion; var: Variable;
+cha: Constante</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Escribir :: lst: Displays</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Displays :: Display *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Display :: y,x: Expresion; exp:
+Expresiones; attr: AttsVentana</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>Llamada :: nom: Identificador; arg:
+Expresiones</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Llamaproc :: nom: Identificador; arg:
+Expresiones</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Retorno :: exp: Expresiones</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>Asignacion :: des: ListaId; fue:
+Expresiones</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Bloque :: While | ContinueWhile |
+ExitWhile | For | ContinueFor | ExitFor |</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>        	If | Foreach |
+ContinueForeach | ExitForeach</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>While :: con: Condicion ; cod:
+Sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>For :: cont: Id; desde, hasta:
+Expresion; cod: Sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>If :: con: Condicion ; codsi, codelse:
+Sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Foreach :: nom: Identificador; vars:
+ListaId; cod: Sentencias</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Condicion :: termi, termd: Expresion;
+op: Logica</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>Expresiones :: Expresion *</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Expresion :: Id | Const | Binaria |
+Unaria | Llamada | </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>   Cadena | Subcadena | Using |
+Clipped</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>Id :: nom: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Subcadena :: exp: Expresion; desde,
+hasta: Expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Using :: exp: Expresion; mascara:
+Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Clipped :: exp: Expresion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Const :: val: Constante; tip:
+Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Cadena :: val: Identificador</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Unaria :: term: Expresion; op: Opunar</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Opunar :: Menos | Negacion</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Binaria :: termi,termd: Expresion; op:
+Opbina</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Opbina :: Aritmetica | Logica</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Aritmetica :: Suma | Resta |
+Multiplica | Divide | Pot</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Logica ::  Or | And | Menor | Mayor |
+Igual | Distinto</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	| Not | Menorigual | Mayorigual</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+A partir de este fichero, la HESA genera un conjunto de funciones y
+estructuras que permiten tanto la generaci&oacute;n del &aacute;rbol
+de sintaxis abstracta como su recorrido posterior durante la fase de
+generaci&oacute;n de c&oacute;digo.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Estas funciones se han usado para atribuir la gram&aacute;tica
+concreta que se detall&oacute; anteriormente. De esta manera, el
+&aacute;rbol de sintaxis abstracta se va generando a medida que se
+van reconociendo las estructuras del lenguaje en el fichero fuente.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Debido a su extensi&oacute;n no se incluye en este manual el fuente
+de la gram&aacute;tica atribuida. Se puede consultar en el archivo
+'sintax.y'.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Para el desarrollo de este proyecto no se ha implementado una <I>tabla
+de s&iacute;mbolos</I> como tal. Toda la informaci&oacute;n sobre las
+variables, su &aacute;mbito y su tipo se obtiene directamente del
+&aacute;rbol de sint&aacute;xis abstracta. Cuando una sentencia hace
+referencia a una veriable, &eacute;sta se busca en primer lugar en la
+rama del &aacute;rbol de sintaxis abstracta que corresponde con las
+declaraciones de variables locales a la funci&oacute;n en la que nos
+encontramos. Si no se encuentra en esta rama, se busca en la rama que
+corresponde a las declaraciones de variables globales. Y por &uacute;ltimo
+se intenta encontrar en la lista de variables externas. 
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+En el siguiente fragmento de la sintaxis atribuida se puede observar
+c&oacute;mo durante el an&aacute;lisis sint&aacute;ctico se hacen
+comprobaciones sem&aacute;nticas, como no permitir que una variable
+se declare m&aacute;s de una vez:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="fuente" STYLE="page-break-before: always"><FONT SIZE=2>declaracion:
+TK_DEFINE  lst_identif  tipo </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>	{</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		Arbol una,todas;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		int i;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		char *nomvar;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		todas=NULL;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		for
+(i=1;i&lt;=ListaId_longitud($2);i++)</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		{</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>			nomvar=Identificador_nombre(Id_nom(ListaId_elemento($2,i)));</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>			if (Busca_Var(nomvar,lst_locales))</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         {</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>				yyerror(&quot;Variable %s ya
+declarada&quot;,nomvar);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         }</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>			una=Variable(Asigna_nombre(nomvar),$3);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>			todas=Variables(todas,una);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		}</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>		$$=todas;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>	}</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   ;</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><SPAN ID="Frame1" STYLE="float: left; width: 14.72cm; height: 7.68cm; border: 1px solid #000000; padding: 0.15cm; background: #ffffff">
+	<P CLASS="contenido-del-marco"><IMG SRC="sv1491499.jpg" NAME="Figura 2. B&uacute;squeda de variables en el &aacute;rbol de sintaxis abstracta" ALIGN=LEFT WIDTH=406 HEIGHT=261 BORDER=0><BR CLEAR=LEFT>Figura
+	2. Busqueda de variables en el &aacute;rbol de sint&aacute;xis
+	abstracta.</P>
+</SPAN><BR CLEAR=LEFT>Cada identificador incluido en la lista de
+identificadores es buscado en la lista de variables locales. La
+variable <FONT FACE="courier, monospace">lst_locales</FONT> es una
+variable global que apunta en cada momento a la ra&iacute;z del &aacute;rbol
+con las declaraciones de variables locales de la funci&oacute;n que
+se est&aacute; procesando. En caso de encontrarse una variable ya
+declarada con el mismo nombre, se produce un error. La funci&oacute;n
+Busca_Var recorre el &aacute;rbol que se le indique como segundo
+par&aacute;metro,  y devuelve un puntero al nodo en el que se
+encuentre el identificador que se est&eacute; buscando (primer
+par&aacute;metro). En caso de no encontrarlo, devuelve NULL.
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>/* Funcion que busca un simbolo en un
+arbol */</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>/* Si lo encuentra, devuelve un nodo
+con su desc. Si no, devuelve NULL */</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>Arbol Busca_Var(char *id,Arbol ptr)</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>{</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   Arbol aux=NULL, encontrado=NULL;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   int i,cuantas;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=2>   cuantas=Variables_longitud(ptr);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   for (i=1;i&lt;=cuantas;i++)</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   {</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>      aux=Variables_elemento(ptr,i);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>      if (!Constructor(aux))</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         break;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>      if
+(!strcmp(Identificador_nombre(Variable_nom(aux)),id))</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>      {</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         encontrado=aux;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>         break;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>      }</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   }</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>   return encontrado;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=2>}</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<H1 STYLE="page-break-before: always">Generaci&oacute;n de C&oacute;digo</H1>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La &uacute;ltima tarea
+que realiza el compilador es la generaci&oacute;n del c&oacute;digo
+en lenguaje C a partir del &aacute;rbol de sintaxis abstracta. Este
+c&oacute;digo en lenguaje C ser&aacute; posteriormente compilado
+usando un compilador de C para obtener el ejecutable final.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se ha prestado especial
+atenci&oacute;n en hacer que el fuente generado se legible. Se
+incluyen varios comentarios que indican la sentencia original a la
+que corresponden los bloques de c&oacute;digo C. Adem&aacute;s, el
+c&oacute;digo se genera indentado para mejorar su legibilidad.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">En primer lugar se
+genera siempre una parte fija, que incluye un comentario con el
+nombre del fuente original y la versi&oacute;n del compilador. Se
+incluyen los archivos de cabecera necesarios para compilar el
+programa en C y se generan las declaraciones de variables internas
+usadas por las librer&iacute;as de <I>run-time</I>. A partir de ese
+momento, se comienza a recorrer el &aacute;rbol de sintaxis abstracta
+que se ha generado durante la fase de an&aacute;lisis sint&aacute;ctico.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H2>Variables globales.</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El primer nodo del
+&aacute;rbol de sintaxis abstracta corresponde a la lista de
+variables globales del programa. La misma funci&oacute;n con la que
+se generan las variables globales es la siguiente:</P>
+<P CLASS="fuente">void genVariables(Arbol vars, char *prefijo)</P>
+<P CLASS="fuente">{</P>
+<P CLASS="fuente">   Arbol aux;</P>
+<P CLASS="fuente">   int i,cuantas;</P>
+<P CLASS="fuente">   cuantas=Variables_longitud(vars);</P>
+<P CLASS="fuente">   for (i=0;i&lt;cuantas;i++)</P>
+<P CLASS="fuente">   {</P>
+<P CLASS="fuente">      aux=Variables_elemento(vars,i+1);</P>
+<P CLASS="fuente">      if (!Constructor(aux))</P>
+<P CLASS="fuente">         break;</P>
+<P CLASS="fuente">      genVariable(aux,prefijo);</P>
+<P CLASS="fuente">   }</P>
+<P CLASS="fuente">}</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La funci&oacute;n
+recorre todos los elementos de la lista de variables, llamando a la
+funci&oacute;n genVariable para cada nodo. La funci&oacute;n
+genVariable ser&aacute; la que realmente genere el c&oacute;digo para
+cada variable:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="page-break-before: always">
+<BR><BR>
+</P>
+<P CLASS="fuente">void genVariable(Arbol var, char *prefijo)</P>
+<P CLASS="fuente">{</P>
+<P CLASS="fuente">   cadena tipo,nombre;</P>
+<P CLASS="fuente">   int tamanno;</P>
+<P CLASS="fuente">   strcpy(nombre,
+Identificador_nombre(Variable_nom(var)));</P>
+<P CLASS="fuente">   strcpy(tipo,
+Identificador_nombre(Tipo_tip(Variable_tip(var))));</P>
+<P CLASS="fuente">  
+tamanno=Constante_valor(Tipo_tam(Variable_tip(var)));</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">   if (!strcmp(tipo,&quot;WINDOW&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _WINDOW
+*%s=NULL;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;FORM&quot;))</P>
+<P CLASS="fuente">   {</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _4GLFORM
+%s=NULL;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _4GLFORM
+_GenForm%s();\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   }</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;CURSOR&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _CURSOR
+_C%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;LCURSOR&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _CURSOR
+_C%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;MENU&quot;))</P>
+<P CLASS="fuente">   {</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _MENU
+%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s ITEM
+*%s_items[%d];\n&quot;,prefijo,nombre,tamanno);</P>
+<P CLASS="fuente">   }</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;BROWSE&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _BROWSE
+%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;REPORT&quot;))</P>
+<P CLASS="fuente">   {</P>
+<P CLASS="fuente">      genera(indentacion,&quot;/* Funciones del
+report %s */\n&quot;,nombre);</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s int
+_RPT_%s_inic;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">      genera(indentacion,&quot;void
+_Fn_STARTRPT_%s();\n&quot;,nombre);</P>
+<P CLASS="fuente">      genera(indentacion,&quot;void
+_Fn_OutputRpt_%s();\n&quot;,nombre);</P>
+<P CLASS="fuente">      genera(indentacion,&quot;void
+_Fn_RPT_%s();\n&quot;,nombre);</P>
+<P CLASS="fuente">      genera(indentacion,&quot;/*---*/\n&quot;);</P>
+<P CLASS="fuente">   }</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;int&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s int
+%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;float&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s double
+%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;date&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _4GLDATE
+%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;time&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _4GLTIME
+%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;datetime&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _4GLDATETIME
+%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;interval&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s _4GLINTERVAL
+%s;\n&quot;,prefijo,nombre);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;char&quot;))</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s char
+%s[%d];\n&quot;,prefijo,nombre,tamanno+1);</P>
+<P CLASS="fuente">   else if (!strcmp(tipo,&quot;record&quot;))</P>
+<P CLASS="fuente">      genRecord(var);</P>
+<P CLASS="fuente">   else 
+</P>
+<P CLASS="fuente">      genera(indentacion,&quot;%s %s
+%s;\n&quot;,prefijo,tipo,nombre);</P>
+<P CLASS="fuente">}</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La funci&oacute;n
+comprueba el tipo de datos de la variable, y genera una declaraci&oacute;n
+en C para ese tipo de datos. Aquellos tipos que existen en C (char,
+int, float) se declaran directamente, mientras que los tipos a&ntilde;adidos
+por el lenguaje 4GL (date, time, datetime, interval) y las variables
+de control necesarias para el manejo de men&uacute;s, consultas SQL,
+formularios, ventanas, etc. se declaran como tipos definidos en el
+archivo de cabecera <FONT FACE="courier, monospace">hy4gl.h</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Si la variable que se
+est&aacute; generando es de tipo reistro, recorrer&aacute; la lista
+de campos, generando un registro de C con la estructura necesaria:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">void genRecord(Arbol
+var)</P>
+<P CLASS="fuente">{</P>
+<P CLASS="fuente">   Arbol aux;</P>
+<P CLASS="fuente">   int i,cuantas;</P>
+<P CLASS="fuente">  
+cuantas=Variables_longitud(Tipo_cam(Variable_tip(var)));</P>
+<P CLASS="fuente">   genera(indentacion,&quot;struct\n&quot;);</P>
+<P CLASS="fuente">   genera(indentacion,&quot;{\n&quot;);</P>
+<P CLASS="fuente">   indentacion++;</P>
+<P CLASS="fuente">   for (i=0;i&lt;cuantas;i++)</P>
+<P CLASS="fuente">   {</P>
+<P CLASS="fuente">     
+aux=Variables_elemento(Tipo_cam(Variable_tip(var)),i+1);</P>
+<P CLASS="fuente">      if (!Constructor(aux))</P>
+<P CLASS="fuente">         break;</P>
+<P CLASS="fuente">      genVariable(aux,&quot;&quot;);</P>
+<P CLASS="fuente">   }</P>
+<P CLASS="fuente">   indentacion--;</P>
+<P CLASS="fuente">   genera(indentacion,&quot;}
+%s;\n&quot;,Identificador_nombre(Variable_nom(var)));</P>
+<P CLASS="fuente">}</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<H2>Funciones</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El siguiente nodo del
+&aacute;rbol de sintaxis abstracta es la lista de funciones que se
+encuentran en el fuente en 4GL. Esta lista tambi&eacute;n incluye la
+definici&oacute;n de los listados y de los formularios de entrada,
+que se definen fuera de las funciones.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El generador de c&oacute;digo
+recorre esta lista, comprobando si se trata de una funci&oacute;n, un
+listado o un formulario de entrada, y generando el c&oacute;digo
+correspondiente a cada uno de ellos.:</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">void genFunciones()</P>
+<P CLASS="fuente">{</P>
+<P CLASS="fuente">   Arbol aux;</P>
+<P CLASS="fuente">   int i,cuantas;</P>
+<P CLASS="fuente">   cuantas=Funciones_longitud(Fichero_fun(raiz));</P>
+<P CLASS="fuente">   for (i=1;i&lt;=cuantas;i++)</P>
+<P CLASS="fuente">   {</P>
+<P CLASS="fuente">      aux=Funciones_elemento(Fichero_fun(raiz),i);</P>
+<P CLASS="fuente">      if (!Constructor(aux))</P>
+<P CLASS="fuente">         break;</P>
+<P CLASS="fuente">      if (Constructor(aux)==REPORT)</P>
+<P CLASS="fuente">         genReport(aux);</P>
+<P CLASS="fuente">      else if (Constructor(aux)==FORM)</P>
+<P CLASS="fuente">         genForm(aux);</P>
+<P CLASS="fuente">      else if (Constructor(Funcion_cod(aux)))</P>
+<P CLASS="fuente">         genFuncion(aux);</P>
+<P CLASS="fuente">   }</P>
+<P CLASS="fuente">}</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">En el caso de que se
+tratara de una funci&oacute;n, se generan las declaraciones de las
+variables locales y de los par&aacute;metros. Seguidamente se genera
+el c&oacute;digo necesario para desapilar los par&aacute;metros de
+entrada y por &uacute;ltimo se genera el c&oacute;digo de las
+sentencias que componen la funci&oacute;n:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">void
+genFuncion(Arbol fn)</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">{</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">  
+indentacion=0;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">  
+lst_locales=Acciones_var(Funcion_cod(fn));</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">  
+printf(&quot;Generando funci&oacute;n:
+%s\n&quot;,Identificador_nombre(Funcion_nom(fn)));</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">
+	genera(indentacion,&quot;\n/*********************************************\n&quot;);
+</FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">	genera(indentacion,&quot;
+* Funci&oacute;n: %-30.30s*\n&quot;,</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">		Identificador_nombre(Funcion_nom(fn)));</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">	genera(indentacion,&quot;/***********************************************/\n&quot;);
+  </FONT>
+</P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   if
+(strcmp(Identificador_nombre(Funcion_nom(fn)),&quot;main&quot;))</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">	genera(indentacion,&quot;void
+_Fn_%s()\n&quot;,</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">		Identificador_nombre(Funcion_nom(fn)));</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   else</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+genera(indentacion,&quot;main(int argc, char *argv[])\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">  
+genera(indentacion,&quot;{\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">  
+indentacion=1;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   /* Primero
+genero las vars locales */</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   if
+(Constructor(Acciones_var(Funcion_cod(fn))))</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+genVariables(Acciones_var(Funcion_cod(fn)),&quot;&quot;);</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   /* La
+funcion 'main' es un caso especial... */</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   if
+(!strcmp(Identificador_nombre(Funcion_nom(fn)),&quot;main&quot;))</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   {</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+genera(indentacion,&quot;int _i,_j; /* Usadas para inicializar los
+colores */\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">	 
+genera(indentacion,&quot;arg_count=argc-1; _arg_val=argv; /*
+Variables globales que guardan los parametros */\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+genera(indentacion,&quot;/* Preparo las curses */\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+genera(indentacion,&quot;_4GLinit();\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">      if
+(db!=NULL)</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">      {</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+	genera(indentacion,&quot;/* Preparo los valores de los flags de
+estado */\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+genera(indentacion,&quot;notfound=PGRES_EMPTY_QUERY;\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+genera(indentacion,&quot;found=PGRES_TUPLES_OK;\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+genera(indentacion,&quot;ok=PGRES_COMMAND_OK;\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+	genera(indentacion,&quot;/* Conecto con la base de datos */\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+genera(indentacion,&quot;_conn=_4GLsetdb(\&quot;%s\&quot;);\n\n&quot;,</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+Identificador_nombre(Database_nom(db)));</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+genera(indentacion,&quot;if (_4GLfechaEuro==1)\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+genera(indentacion,&quot;{\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+genera(indentacion+1,&quot;_4GLexec(_conn,\&quot;set DateStyle to
+'European';\&quot;);\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+genera(indentacion+1,&quot;_4GLexec(_conn,\&quot;set DateStyle to
+'SQL';\&quot;);\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">       
+genera(indentacion,&quot;}\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">      }</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+genera(indentacion,&quot;pila_param=nueva_pila();\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+genera(indentacion,&quot;pila_exp=nueva_pila();\n\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   }</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   /* Leo los
+par&aacute;metros recibidos */</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   if
+(Constructor(Funcion_par(fn)))</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+genParams(Funcion_par(fn));</FONT></P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   /* Genero
+las acciones */</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">  
+genSentencias(Acciones_cod(Funcion_cod(fn)));</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   if
+(!strcmp(Identificador_nombre(Funcion_nom(fn)),&quot;main&quot;))</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   {</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">     
+genera(indentacion,&quot;_4GLexit(0);    /* Terminamos */\n&quot;);</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">   }</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">  
+indentacion=0;</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">  
+genera(indentacion,&quot;} /* Fin de la funci&oacute;n %s
+*/\n\n&quot;,Identificador_nombre(Funcion_nom(fn)));</FONT></P>
+<P CLASS="fuente"><FONT SIZE=1 STYLE="font-size: 8pt">}</FONT></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">La funci&oacute;n <I>main</I><SPAN STYLE="font-style: normal">
+es un caso especial, ya que es la primera que se ejecuta al iniciar
+el programa. En la generaci&oacute;n del c&oacute;digo para esta
+funci&oacute;n se incluyen sentencias para inicializar la interfaz de
+usuario (</SPAN><I>ncurses</I><SPAN STYLE="font-style: normal">),
+preparar el valor de algunas variables globales y conectar con la
+base de datos si es necesario. Al final de la funci&oacute;n se
+genera el c&oacute;digo para cerrar la conexi&oacute;n con la base de
+datos.</SPAN></P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+No se va a estudiar aqu&iacute; la generaci&oacute;n de c&oacute;digo
+de las distintas sentencias que componen el lenguaje. Se expone como
+ejemplo la generaci&oacute;n del c&oacute;digo de las sentencias de
+asignaci&oacute;n, que es representativo del uso de la pila y de las
+caracter&iacute;sticas de la conversi&oacute;n autom&aacute;tica de
+tipos.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<H2>Evaluaci&oacute;n de expresiones: La pila</H2>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Para la evaluaci&oacute;n
+de expresiones se ha implementado una pila interna. Esta pila es
+gestionada en tiempo de ejecuci&oacute;n por el programa usando las
+funciones que se incluyen en la librer&iacute;a de <I>run-time</I>.
+La pila se ha implementado como una lista enlazada. Cada elemento de
+la lista es un registro con la siguiente estructura:</P>
+<P STYLE="margin-bottom: 0cm"><BR>
+</P>
+<P CLASS="fuente">enum tipos {TIPO_VOID, TIPO_INT, TIPO_FLOAT,
+TIPO_STR, 
+</P>
+<P CLASS="fuente">   TIPO_DATE, TIPO_TIME, TIPO_DATETIME,
+TIPO_INTERVAL,</P>
+<P CLASS="fuente">   TIPO_RECORD};</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">struct pila 
+</P>
+<P CLASS="fuente">{</P>
+<P CLASS="fuente">   enum tipos tipo;</P>
+<P CLASS="fuente">   union</P>
+<P CLASS="fuente">   {</P>
+<P CLASS="fuente">      char *cadena;</P>
+<P CLASS="fuente">      long entero;</P>
+<P CLASS="fuente">      double real;</P>
+<P CLASS="fuente">      _4GLDATE fecha;</P>
+<P CLASS="fuente">      _4GLTIME time;</P>
+<P CLASS="fuente">      _4GLDATETIME datetime;</P>
+<P CLASS="fuente">      _4GLINTERVAL interval;</P>
+<P CLASS="fuente">   } valor;</P>
+<P CLASS="fuente">   struct pila *siguiente;</P>
+<P CLASS="fuente">};</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><SPAN STYLE="font-style: normal">El
+campo </SPAN><I>tipo</I><SPAN STYLE="font-style: normal"> indica el
+tipo del dato que se almacena en este elemento de la pila. Esto es
+necesario puesto que la pila puede albergar datos de cualquier tipo,
+y es necesario conocer el tipo del dato para operar con &eacute;l. E</SPAN>l
+campo <I>valor</I><SPAN STYLE="font-style: normal">  se define como
+una uni&oacute;n de todos los tipos b&aacute;sicos soportados por el
+lenguaje.  </SPAN>
+</P>
+<P CLASS="fuente" STYLE="page-break-before: always"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Las operaciones que se
+pueden realizar sobre la pila son las siguientes:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<UL>
+	<UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Apilar valores</P>
+		<UL>
+			<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se han implementado
+			funciones para apilar cada uno de los tipos de datos b&aacute;sicos
+			soportados por el lenguaje. Al apilar un dato se guarda tambi&eacute;n
+			informaci&oacute;n sobre su tipo</P>
+		</UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Desapilar valores</P>
+		<UL>
+			<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Hay una funci&oacute;n
+			para desapilar cada tipo de datos. La funci&oacute;n comprueba el
+			tipo del dato que hay en la cima de la pila y realiza las
+			conversiones necesarias para convertirlo al tipo de datos deseado.</P>
+		</UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Operar con los
+		valores de la cima de la pila</P>
+		<UL>
+			<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se han implementado
+			las siguientes operaciones:</P>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Suma: Esta
+			operaci&oacute;n toma dos datos de la cima de la pila, los <I>suma</I><SPAN STYLE="font-style: normal">
+			y apila el resultado.</SPAN></P>
+			<UL>
+				<UL>
+					<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><SPAN STYLE="font-style: normal">El
+					tipo de datos del resultado as&iacute; como su contenido
+					depender&aacute; de los tipos de </SPAN>datos de los operandos.
+					As&iacute;, si se suman dos cadenas el resultado es una nueva
+					cadena, resultado de concatenar las dos iniciales, mientras que
+					si se suman dos n&uacute;meros el resultado es otro n&uacute;mero,
+					resultado de sumar los dos originales.</P>
+				</UL>
+			</UL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Resta/Producto/Division:
+			Se toman dos datos de la cima de la pila, se restan y se apila el
+			resultado.</P>
+		</UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Comparar los
+		valores de la cima de la pila</P>
+		<UL>
+			<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Se han implementado
+			tambi&eacute;n las operaciones de comparaci&oacute;n. Todas estas
+			operaciones toman dos valores de la pila y apilan un 1 o un 0,
+			seg&uacute;n se haya o no cumplido la comparaci&oacute;n.</P>
+		</UL>
+		<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Operaciones
+		l&oacute;gicas.</P>
+		<UL>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">AND: esta
+			operaci&oacute;n toma dos valores de la pila y apila un 0 si
+			alguno de los dos valores originales era 0, o un 1 en caso
+			contrario.</P>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">OR: esta
+			operaci&oacute;n toma dos valores de la pila y apila un 0 si los
+			dos valores originales eran 0, o un 1 en caso contrario.</P>
+			<LI><P CLASS="cuerpo-de-texto-con-sangr&iacute;a">NOT: esta
+			operaci&oacute;n toma un valor de la pila y apila un 1 si el valor
+			original era un 0, o un 0 en caso contrario.</P>
+		</UL>
+	</UL>
+</UL>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="page-break-before: always">
+<BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Veamos un ejemplo:</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="fuente">define cadena char(50)</P>
+<P CLASS="fuente">let cadena=&quot;dentro de 10 minutos seran las
+&quot;+(time()+600)</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">El &aacute;rbol de
+sintaxis abstracta de la expresi&oacute;n ser&aacute;:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><SPAN ID="Frame3" STYLE="float: left; width: 12.97cm; height: 8.15cm; border: 1px solid #000000; padding: 0.15cm; background: #ffffff">
+	<P CLASS="contenido-del-marco"><IMG SRC="sv1491500.gif" NAME="Graphic1" ALIGN=LEFT WIDTH=386 HEIGHT=260 BORDER=0><BR CLEAR=LEFT>Figura
+	3. Evaluaci&oacute;n de expresiones</P>
+</SPAN><BR CLEAR=LEFT><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">Y el c&oacute;digo que
+se genera es el siguiente:</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a"><BR><BR>
+</P>
+<P CLASS="fuente">	push_int(pila_exp, 600);</P>
+<P CLASS="fuente">   _Fn_time();</P>
+<P CLASS="fuente">   op_suma(pila_exp);</P>
+<P CLASS="fuente">   push_str(pila_exp, &quot;Dentro de 10 minutos
+seran las &quot;);</P>
+<P CLASS="fuente">   op_suma(pila_exp);</P>
+<P CLASS="fuente">   _4GLstrncpy(cadena,pop_str(pila_exp),50);</P>
+<P CLASS="fuente">   push_str(pila_exp, cadena);</P>
+<P CLASS="fuente"> 	wprintw(curwin,&quot;%s&quot;,pop_str(pila_exp));</P>
+<P CLASS="fuente"><BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a">En primer lugar se
+apila el valor <I>600</I>, de tipo entero</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Seguidamente se llama a la funci&oacute;n time(). Esta funci&oacute;n
+apila un dato de tipo TIME conteniendo la hora actual.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+La funci&oacute;n op_suma() desapila los dos elementos que est&aacute;n
+en la cima de la pila. Comprueba el tipo de dato del primero de ellos
+(TIME) y del segundo (INTEGER) y realiza la operaci&oacute;n
+correspondiente: sumarle al valor de tipo TIME la cantidad de
+segundos indicada por el otro valor. El resultado es otro valor de
+tipo TIME que es apilado.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Ahora se apila la cadena <FONT FACE="courier, monospace">&quot;dentro
+de 10 minutos seran las &quot;</FONT> y se vuelve a llamar a la
+funci&oacute;n op_suma.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+La funcion op_suma() desapila los dos elementos de la cima de la
+pila. El primero de ellos es de tipo STRING y el segundo es de tipo
+TIME. La funci&oacute;n convierte el dato de tipo TIME a tipo STRING
+y concatena las dos cadenas. El resultado es apilado.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Ahora queda en la pila un solo dato, de tipo STRING que contiene el
+resultado de la operaci&oacute;n. Para realizar la asignaci&oacute;n,
+se desapila la cadena y es copiada en la variable de destino.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+Como se ha visto en este ejemplo, la pila se usa tanto para evaluar
+expresiones como para pasar par&aacute;metros a funciones y recibir
+los valores devueltos. De esta manera se facilita el uso de los
+valores devueltos por funciones en expresiones (como en el caso del
+ejemplo), ya que al salir de las funciones ya nos encontramos con los
+valores devueltos en la pila.</P>
+<P CLASS="cuerpo-de-texto-con-sangr&iacute;a" STYLE="font-style: normal">
+<BR><BR>
+</P>
+<DIV ID="Table of Contents1">
+	<P STYLE="margin-top: 0.42cm; page-break-before: always; page-break-after: avoid">
+	<FONT FACE="helvetica, sans-serif"><FONT SIZE=4 STYLE="font-size: 16pt"><B>Indice</B></FONT></FONT></P>
+	<P STYLE="margin-bottom: 0cm"><BR>
+	</P>
+	<P STYLE="margin-bottom: 0cm">Introducci&oacute;n	1</P>
+	<P STYLE="margin-bottom: 0cm">Analizador l&eacute;xico (scanner)	2</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">Palabras
+	reservadas	3</P>
+	<P STYLE="margin-bottom: 0cm">Analizador sint&aacute;ctico
+	(parser)	4</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">Gram&aacute;tica
+	concreta	4</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">&Aacute;rbol de
+	sintaxis abstracta y tabla de s&iacute;mbolos	15</P>
+	<P STYLE="margin-bottom: 0cm">Generaci&oacute;n de C&oacute;digo	21</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">Variables
+	globales.	21</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">Funciones	24</P>
+	<P STYLE="margin-left: 0.5cm; margin-bottom: 0cm">Evaluaci&oacute;n
+	de expresiones: La pila	26</P>
+</DIV>
+<DIV ID="sdfootnote1">
+	<P CLASS="sdfootnote"><A CLASS="sdfootnotesym" NAME="sdfootnote1sym" HREF="#sdfootnote1anc">1</A>Concretamente,
+	la versi&oacute;n 2.5.4 del <I>GNU Fast lexical analyzer generator</I><SPAN STYLE="font-style: normal">
+	(flex)</SPAN></P>
+</DIV>
+<DIV ID="sdfootnote2">
+	<P CLASS="sdfootnote"><A CLASS="sdfootnotesym" NAME="sdfootnote2sym" HREF="#sdfootnote2anc">2</A>En
+	realidad se ha usado BISON. Se trata del generador de <I>parsers</I><SPAN STYLE="font-style: normal">
+	de GNU. BISON es compatible con el est&aacute;ndar YACC, aunque
+	aporta bastantes caracter&iacute;sticas no incluidas en YACC.Sin
+	embargo, y para evitar problemas de portabilidad, no se ha usado
+	ninguna de estas caracter&iacute;sticas.</SPAN></P>
+</DIV>
+<DIV ID="sdfootnote3">
+	<P CLASS="sdfootnote"><A CLASS="sdfootnotesym" NAME="sdfootnote3sym" HREF="#sdfootnote3anc">3</A>HESA:
+	Herramienta de Especificaci&oacute;n de Sintaxis Abstracta, del Dpto
+	de Lenguajes y Sistemas Inform&aacute;ticos de la Universidad de
+	Sevilla.</P>
+</DIV>
+<DIV TYPE=FOOTER>
+	<P STYLE="margin-top: 0.51cm; margin-bottom: 0cm"><BR>
+	</P>
+	<P STYLE="margin-bottom: 0cm; border: none; padding: 0cm"><FONT SIZE=2><I>hy4GL:
+	compilador de lenguaje 4GL para PostgreSQL		3-<SDFIELD TYPE=PAGE SUBTYPE=RANDOM FORMAT=PAGE>30</SDFIELD></I></FONT></P>
+</DIV>
+</BODY>
+</HTML>
