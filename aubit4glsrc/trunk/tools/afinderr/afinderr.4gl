@@ -60,7 +60,7 @@ if (d!=0) {
 		de=readdir(d);
 		if (!de) break;
 	
-		if (!strstr(de->d_name,".iem") && ! strstr(de->d_name,".hlp")) {
+		if (!strstr(de->d_name,".iem") && ! strstr(de->d_name,".hlp") && !  strstr(de->d_name,acl_getenv("A4GL_HLP_EXT"))) {
 			continue;
 		}
 		strcpy(buff2,buff);
