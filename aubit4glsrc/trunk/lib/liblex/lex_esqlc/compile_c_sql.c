@@ -2,6 +2,8 @@
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
 
+void print_report_table(char *repname,char type, int c);
+
 /**
  * Print the C implementation of the execution of the SQL statement allready
  * readed.
@@ -565,3 +567,26 @@ print_foreach_end (void)
 char *get_column_transform(char *s) {
 return s;
 }
+
+
+
+void print_report_table(char *repname,char type, int c) {
+/* We don't need repname here - but the ESQL/C version does.. */
+if (type=='R')
+  printc ("A4GL_add_row_report_table (&rbind,%d);",c);
+
+if (type=='F') 
+  printc ("        while (A4GL_report_table_fetch(reread,%d,&rbind)) {",c);
+
+if (type=='I')
+  printc ("        A4GL_init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", c);
+
+if (type=='E') 
+  printc ("        A4GL_end_report_table(&rbind,%d,reread);",c);
+if (type=='M')
+  printc ("       A4GL_make_report_table(&rbind,%d);",c);
+
+}
+
+
+

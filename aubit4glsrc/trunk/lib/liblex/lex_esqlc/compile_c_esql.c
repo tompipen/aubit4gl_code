@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.41 2003-07-15 17:09:05 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.42 2003-07-23 11:49:04 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -103,8 +103,10 @@ extern void printh 			(char *fmt, ...);
 void 		printc 			(char *fmt, ...);
 static void print_copy_status (void);
 void 		print_conversions (char i);
+void print_report_table(char *repname,char type, int c) ;
 
 
+char * A4GL_mk_temp_tab (struct BINDING *b, int n);
 /*
 =====================================================================
                     Functions definitions
@@ -529,6 +531,7 @@ print_open_cursor (char *cname, char *using)
     {
       printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cname));
       printc ("\nEXEC SQL OPEN  %s; /* No using */\n", A4GL_strip_quotes (cname));
+	//printc("A4GL_char_pop();");
     }
   print_copy_status ();
 }
@@ -690,7 +693,7 @@ print_fetch_3 (char *ftp, char *into)
       return;
     }
 
-
+  printc("/* ... no=%d*/",no);
   printc ("%s %s ;", buff, A4GL_get_into_part (0,no));
   if (strcmp (into, "0,0") != 0)
     {
@@ -807,12 +810,19 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 char buff[256];
 int intprflg=0;
 
+  if (a2[0] == '"')
+    {
+      printc ("{ /* DC 0 */");
+    }
+
+
   if (a2[0]=='"') { 
 		start_bind('i',0); start_bind('o',0); 
 		last_ni=0; 
 		last_no=0; 
   		print_conversions('0');
   }
+
 
   //if (strstr (a2, "INTO $") != 0)
     //{
@@ -821,10 +831,6 @@ int intprflg=0;
       //return;
     //}
 
-  if (a2[0] == '"')
-    {
-      printc ("{");
-    }
 
   if (atoi (a1) && h2)
     {
@@ -869,6 +875,7 @@ int intprflg=0;
   printh("ibind=acli_bi_%s;\n",A4GL_strip_quotes(a3));
   printh("native_binding_i=acli_nbi_%s;\n",A4GL_strip_quotes(a3));
   print_conversions('I');
+
   printh("}\n");
 
   printh("\n\nstatic void internal_recopy_%s_o_Dir(void) {\n",A4GL_strip_quotes(a3));
@@ -906,7 +913,7 @@ switch (intprflg) {
 	
 }
 
-  printc("}\n");
+  printc("} /* DC 1*/\n"); 
 
 }
 
@@ -1245,6 +1252,227 @@ if (strchr(s,'[')==0) return s;
 	}
 	return s;
 }
+
+
+
+
+static char *
+nm (int n)
+{
+  switch (n & 15)
+    {
+    case 0:
+      return "CHAR";
+    case 1:
+      return "SMALLINT";
+    case 2:
+      return "INTEGER";
+    case 3:
+      return "FLOAT";
+    case 4:
+      return "SMALLFLOAT";
+    case 5:
+      return "DECIMAL";
+    case 6:
+      return "INTEGER";
+    case 7:
+      return "DATE";
+    case 8:
+      return "MONEY";
+    case 10:
+      return "DATETIME";
+    case 11:
+      return "BYTE";
+    case 12:
+      return "TEXT";
+    case 13:
+      return "VARCHAR";
+    case 14:
+      return "INTERVAL";
+    }
+  return "CHAR";
+}
+
+static char *
+sz (int d, int s)
+{
+  static char buff[256];
+  switch (d & 15)
+    {
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 7:
+    case 6:
+    case 11:
+    case 12:
+      return "";
+
+    case 10:
+      return "YEAR TO FRACTION(5)";
+
+    case 8:
+    case 5:                     /* decimal */
+      return "(32,16)";
+
+    case 0:
+    case 13:
+      sprintf (buff, "(%d)", s);
+      return buff;
+
+    case 14:
+      sprintf (buff, "year to second(5)");
+      return buff;
+    }
+  return "";
+}
+
+
+void print_report_table(char *repname,char type, int c) {
+extern struct binding_comp fbind[];
+extern struct binding_comp ibind[];
+extern struct binding_comp obind[];
+static char iname[256];
+static char cname[256];
+char buff[10000];
+static char reptab[64];
+char tmpbuff[256];
+char ins_str[10000];
+static int rcnt=0;
+int a;
+int l_dt;
+int l_sz;
+
+sprintf(reptab,"aclfgl_%d%s",rcnt,repname);
+reptab[18]=0; // Make sure its short enough...
+
+if (type=='R') {
+	// print_execute needs an ibind - we have an fbind - so we need
+	// to copy it across...
+	extern int ibindcnt;
+	extern int fbindcnt;
+	memcpy(ibind,fbind,sizeof(struct binding_comp)*c+1);
+	ibindcnt=fbindcnt;
+	sprintf(iname,"acl_p%s",reptab);
+	iname[18]=0;
+	print_execute(iname,1);
+}
+
+if (type=='F') {
+	extern int obindcnt;
+	extern int fbindcnt;
+	char buff[256];
+        char buff2[256];
+	memcpy(obind,fbind,sizeof(struct binding_comp)*c+1);
+	obindcnt=fbindcnt;
+	printc ("        while (1) {");
+	print_fetch_1();
+	print_fetch_2();
+	printc("/* MJAMJA - printing obind */");
+	print_bind('o');
+	sprintf(buff,"\"%s\",FETCH_RELATIVE,1",cname);
+	sprintf(buff2,"%d,rbind",c);
+	print_fetch_3(buff,buff2);
+	printc("if (sqlca.sqlcode!=0) break;");
+        printc("A4GL_push_params (rbind, %d);",c);
+
+}
+
+if (type=='I') {
+	extern int current_ordbindcnt;
+	extern int fbindcnt;
+	extern struct binding_comp ordbind[];
+	char sql[1024];
+	int a;
+	int b;
+	char *p;
+	// We need to
+	//    1.  Generate the SQL including our order by
+	//    2.  declare a cursor for it
+	//    3.  open that cursor
+		sprintf(cname,"acl_c%s",reptab);
+		cname[18]=0;
+
+  		sprintf (sql, "SELECT * FROM %s ORDER BY ", reptab);
+		for (a=0;a<current_ordbindcnt;a++) {
+			int found=0;
+			if (a) strcat(sql,",");
+
+			for (b=0;b<fbindcnt;b++) {
+				if (strcmp(ordbind[a].varname,fbind[b].varname)==0) {
+					char tmpbuff[256];
+					sprintf(tmpbuff,"c%d",b);
+					strcat(sql,tmpbuff);
+					found=1;
+					break;
+				}
+			}
+			if (found==0) {
+				a4gl_yyerror("Could not find variable for order by in report");
+				return;
+			}
+		}
+
+
+		start_bind('i',0);
+		start_bind('o',0);
+		//printc("{ /* RT0 */");
+		p=print_select_all(sql);
+		//printf("p=%s",p);
+		print_declare("0",p,cname,0,0);
+		print_open_cursor(cname,"0");
+
+
+}
+
+
+if (type=='E') {
+		char buff[256];
+		sprintf(cname,"acl_c%s",reptab);
+		cname[18]=0;
+		print_close ('C', cname);
+		start_bind('i',0);
+		sprintf(buff,"DROP TABLE %s",reptab);
+		print_exec_sql_bound(buff);
+}
+
+if (type=='M') { /* Make the table */
+  	sprintf (buff, "CREATE TEMP TABLE %s(\n",reptab);
+	sprintf(ins_str,"\"INSERT INTO %s VALUES (",reptab);
+  	rcnt++;
+  	for (a = 0; a < c; a++) {
+      		if (a) {
+			strcat (buff,",\n");
+			strcat (ins_str,",");
+		}
+      		sprintf (tmpbuff, "c%d ",a);
+		l_dt=fbind[a].dtype&0xffff;
+		l_sz=DECODE_SIZE(fbind[a].dtype);
+		strcat(tmpbuff, nm (l_dt));
+		
+		strcat(tmpbuff, sz (l_dt,l_sz));
+		
+      		strcat (buff, tmpbuff);
+		strcat (ins_str,"?");
+    	}
+        strcat(buff,")");
+        strcat(ins_str,")\"");
+
+	start_bind('i',0);
+	print_exec_sql_bound(buff);
+
+	sprintf(buff,"DELETE FROM %s",reptab);
+	print_exec_sql_bound(buff);
+	sprintf(iname,"acl_p%s",reptab);
+	iname[18]=0;
+	print_prepare (iname, ins_str);
+	}
+
+}
+
+
+
 
 
 /* ================================== EOF =============================== */
