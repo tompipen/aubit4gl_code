@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.21 2004-02-10 10:21:31 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.22 2004-02-12 18:27:27 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -2785,4 +2785,10 @@ printf("Add vbox to fixed..");
         return a;
 }
 
+
+
+
+int A4GL_LL_disp_form_fields_ap(int n,int attr,char* formname,va_list* ap) {
+	        return 0;
+}
 
