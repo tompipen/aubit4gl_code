@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.240 2004-09-13 16:27:45 afalout Exp $
+dnl # $Id: configure.in,v 1.241 2004-09-16 13:34:26 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -98,7 +98,7 @@ AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourcef
 AM_INIT_AUTOMAKE(Aubit4gl, $AUBIT_VERSION.$AUBIT_BUILD)
 
 aubitdir=`pwd`
-
+#define emphasis characters for terminal display
 a4gl_shtool=$aubitdir/tools/project/shtool
 if test -f $a4gl_shtool; then
 	T_MD=`$a4gl_shtool echo -n -e %B`
@@ -571,6 +571,7 @@ AC_SUBST(VALGRIND)
 AC_SUBST(AMAKE_SH)
 AC_SUBST(AMAKE_BIN_EXE)
 AC_SUBST(ALL_SH)
+AC_SUBST(RUNTIME_RESOURCE)
 AC_SUBST(COMP_EXE)
 AC_SUBST(LIB_EXPORTLIB)
 AC_SUBST(COMP_LIBS)
@@ -1799,7 +1800,8 @@ LIB_EXPORTLIB=aubit4gl
 AMAKE_BIN_EXE=aubit-config
 
 #Resource files needed by some of the executables
-RUNTIME_RESOURCE="change.afr.dat helpfile.hlp options.afr.dat values.afr.dat qryfrm.afr.dat"
+RUNTIME_RESOURCE="change.afr.dat helpfile.hlp options.afr.dat values.afr.dat \
+	qryfrm.afr.dat"
 
 #Note: "asql" is just a link to asql_p or asql_i
 
@@ -3258,14 +3260,6 @@ fi
 ##                 Checks for PostgreSQL lib support
 ## ==================================================================
 
-#> > On Friday 12 March 2004 14:45, Dave Cramer wrote:
-#> > > ./configure --with-pgsql=/home/davec/pginfx7.4_1.5/
-#> > > --with-ecpg=/home/davec/pginfx7.4_1.5/ --prefix=/home/davec/aubit4gl
-#> > > and it says it can't find my postgres lib's or ecpg libs
-#> > >
-#> > > they are in /home/davec/pginfx7.4_1.5/lib
-
-
 PHP_CONFIGURE_PART(Checking for PostgresSQL library support:)
 AC_ARG_WITH(pgsql,
 [  --with-pgsql[=DIR]        Include PostgresSQL support.  DIR is the PostgresSQL
@@ -3279,26 +3273,38 @@ AC_ARG_WITH(pgsql,
 		#user specified custom withval
 		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGESQLC"
 		WARN_LD_LIBRARY_PATH=1
-        ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+		#WARNING:new PG path must be first
+        ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
     fi
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "withval=$withval"
+	fi
 
 	#Store witval for use in ecpg section
 	PGSQL_WITHVAL=$withval
 
 	#Find PG include dir under $withval
 	test -d $withval/include && PGSQL_INCDIR=$withval/include
-    test -d $withval/include/pgsql && PGSQL_INCDIR=$withval/include/pgsql
-    test -d $withval/pgsql/include && PGSQL_INCDIR=$withval/pgsql/include
-    test -d $withval/include/postgresql && PGSQL_INCDIR=$withval/include/postgresql
+	if test "$PGSQL_INCDIR" = "" ; then 
+		AC_MSG_WARN(Non-standard include location)	
+		test -d $withval/include/pgsql && PGSQL_INCDIR=$withval/include/pgsql
+		test -d $withval/pgsql/include && PGSQL_INCDIR=$withval/pgsql/include
+		test -d $withval/include/postgresql && PGSQL_INCDIR=$withval/include/postgresql
+		#RH 7.2: /usr/include/pgsql/libpq-fe.h
+		test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
+	fi
 	if test "$PGSQL_INCDIR" = "" ; then 
 		AC_MSG_WARN(cannot determine include path)
 	fi
 
 	#Find PG lib dir under $withval
 	test -d $withval/lib && PGSQL_LIBDIR=$withval/lib
-    test -d $withval/lib/pgsql && PGSQL_LIBDIR=$withval/lib/pgsql
-    test -d $withval/pgsql/lib && PGSQL_LIBDIR=$withval/pgsql/lib
-    test -d $withval/lib/postgresql && PGSQL_LIBDIR=$withval/lib/postgresql
+	if test "$PGSQL_LIBDIR" = "" ; then 
+		AC_MSG_WARN(Non-standard lib location)	
+		test -d $withval/lib/pgsql && PGSQL_LIBDIR=$withval/lib/pgsql
+		test -d $withval/pgsql/lib && PGSQL_LIBDIR=$withval/pgsql/lib
+		test -d $withval/lib/postgresql && PGSQL_LIBDIR=$withval/lib/postgresql
+	fi
 	if test "$PGSQL_LIBDIR" = "" ; then 
 		AC_MSG_WARN(cannot determine library path)
 	fi
@@ -3311,11 +3317,26 @@ AC_ARG_WITH(pgsql,
 #	AC_ADD_LIBRARY_WITH_PATH(pq, $PGSQL_LIBDIR)
 #   AC_ADD_INCLUDE($PGSQL_INCDIR)
 
-    old_CFLAGS=$CFLAGS; old_LDFLAGS=$LDFLAGS; old_LIBS=$LIBS
-    CFLAGS="$CFLAGS $PGSQL_INCLUDE"
-    LDFLAGS="$LDFLAGS $PGSQL_LFLAGS"
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "PGSQL_INCLUDE=$PGSQL_INCLUDE"
+		echo "PGSQL_LFLAGS=$PGSQL_LFLAGS"
+		echo "PGSQL_LIBS=$PGSQL_LIBS"		
+	fi
+
+    old_CFLAGS="$CFLAGS"; old_LDFLAGS="$LDFLAGS"; old_LIBS="$LIBS"; old_CPPFLAGS="$CPPFLAGS"
+	#WARNING:new PG path must come first
+    CFLAGS="$PGSQL_INCLUDE $CFLAGS"
+	CPPFLAGS="$PGSQL_INCLUDE $CPPFLAGS"
+    LDFLAGS="$PGSQL_LFLAGS $LDFLAGS"
     LIBS="$LIBS $PGSQL_LIBS"
 
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "CFLAGS=$CFLAGS"
+		echo "CPPFLAGS=$CPPFLAGS"
+		echo "LDFLAGS=$LDFLAGS"
+		echo "LIBS=$LIBS"
+	fi
+	
 	# FIXME: Replace `main' with a function in `-lc':
 	AC_CHECK_LIB([pq], [main])
 
@@ -3330,8 +3351,11 @@ AC_ARG_WITH(pgsql,
 	    #AC_CHECK_FUNC(PQresultErrorField,AC_DEFINE(HAVE_PQresultErrorField))
 
 		#needed by native PG connector:
-		AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
-	
+		AC_CHECK_HEADERS([ libpq-fe.h ])
+		if test "$ac_cv_header_libpq_fe_h" != "yes" ; then 
+			AC_MSG_WARN(Non-standard location of libpq-fe.h)			
+			AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h ])		
+		fi
 		if test "$ac_cv_header_pgsql_libpq_fe_h" = "yes" \
 			-o "$ac_cv_header_postgresql_libpq_fe_h" = "yes" \
 			-o "$ac_cv_header_libpq_fe_h" = "yes" ; \
@@ -3358,14 +3382,13 @@ AC_ARG_WITH(pgsql,
 		AC_MSG_RESULT(NO (missing library))
     fi
 
-	CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS
+	CFLAGS="$old_CFLAGS"; LDFLAGS="$old_LDFLAGS"; LIBS="$old_LIBS"; CPPFLAGS="$old_CPPFLAGS"
   else
     AC_MSG_RESULT(disabled)
   fi
 ],[
   AC_MSG_RESULT(--with-pgsql not specified)
 ])
-
 
 ## ==================================================================
 ##                 Checks for PostgreSQL ESQL/C pre-compiler
@@ -3386,7 +3409,9 @@ if test "$withval" != "no"; then
 	if test "$withval" = "yes"; then
 		withval=/usr
     fi
-
+	if test "$enable_ac_debug" = "yes" ; then
+		echo "withval=$withval"	
+	fi
 	AC_PATH_PROG(PG_ESQLC, ecpg, no, $withval/bin:$PATH)
 	test -d "$withval/include" && ECPG_INCDIR="$withval/include"
 	if test "$ECPG_INCDIR" = "" ; then 
@@ -3397,8 +3422,13 @@ if test "$withval" != "no"; then
 	if test "$ECPG_LIBDIR" = "" ; then 
 		AC_MSG_WARN(cannot determine library path under $withval)
 	fi	
-
-	ECPG_IFLAGS="-I$ECPG_INCDIR -I$ECPG_INCDIR/postgresql/informix/esql"	
+	ECPG_IFLAGS="-I$ECPG_INCDIR"
+	if test -d "$ECPG_INCDIR/postgresql/informix/esql"; then
+		ECPG_IFLAGS="$ECPG_IFLAGS -I$ECPG_INCDIR/postgresql/informix/esql"
+	else
+		AC_MSG_WARN(cannot find Informix compatibility headers at $ECPG_INCDIR/postgresql/informix/esql)
+	fi
+	
 	#In case we are working from not installed CVS code:
 	#ECPG_LFLAGS="-L$withval/compatlib -L$withval/ecpglib -L$withval/pgtypeslib"
 
@@ -3436,13 +3466,23 @@ if test "$withval" != "no"; then
 		#for compiling things like SQL_c_ecpg that do not need IFX compatibility
 		
             #check PostgreSQL db engine version
-			AC_PATH_PROG(POSTMASTER, postmaster, no, $PATH)
+			AC_PATH_PROG(POSTMASTER, postmaster, no, $withval/bin:$PATH)
 
             if test "$POSTMASTER" != "no"; then
 				AC_MSG_CHECKING(PG engine version)
 				POSTMASTER_VER=`$POSTMASTER --version 2>&1 | head -1 | sed -e 's/postmaster (PostgreSQL) //'`
 				#7.1.3
 				case "$POSTMASTER_VER" in
+					*informix*) #7.4informix1.6 - Dave's patched code
+				    	AC_MSG_RESULT($POSTMASTER_VER)
+						PG_ENGINE_IFXCOMPAT=yes
+			            ;;
+
+					*-IFX) #Andrej's RPM builds
+				    	AC_MSG_RESULT($POSTMASTER_VER)
+						PG_ENGINE_IFXCOMPAT=yes
+			            ;;
+
 					6.*.* | 7.1.* | 7.2.* | 7.3.*)
 				    	AC_MSG_RESULT($POSTMASTER_VER)
 						PG_ENGINE_IFXCOMPAT=no
@@ -3488,27 +3528,12 @@ if test "$withval" != "no"; then
 			fi
             
 			#Make sure we have libpq - 
-			#we can't depend on the same checks in Pglib section, becaue it may be disabled
+			#we can't depend on the same checks in Pglib section, because 
+			#it may be disabled
 
             if test "$PGSQL_WITHVAL" = ""; then 
-				# -o "$PGSQL_WITHVAL" = "yes" ; then
-				#if PGSQL_WITHVAL was "yes", we allready assigned default
-				PGSQL_WITHVAL=/usr/local
+				AC_MSG_ERROR(libpq detection was disabled. Please add --with-pgsql and try again)				
             fi
-
-			#See if we allready found this earlier
-			if test "$PGSQL_INCDIR" = "" ; then
-				#No, find PG include dir now
-				test -d "$PGSQL_WITHVAL/include" && PGSQL_INCDIR=$PGSQL_WITHVAL/include
-				test -d "$PGSQL_WITHVAL/include/pgsql" && PGSQL_INCDIR=$PGSQL_WITHVAL/include/pgsql
-				test -d "$PGSQL_WITHVAL/pgsql/include" && PGSQL_INCDIR=$PGSQL_WITHVAL/pgsql/include
-				test -d "$PGSQL_WITHVAL/include/postgresql" && PGSQL_INCDIR=$PGSQL_WITHVAL/include/postgresql
-				#RH 7.2: /usr/include/pgsql/libpq-fe.h
-				test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
-				if test "$PGSQL_INCDIR" = "" ; then 
-					AC_MSG_WARN(cannot determine include path under $PGSQL_WITHVAL)
-				fi
-			fi
 
 			#Finally, the one in CVS code installed by our install.xxx target:
 			#/opt/aubit/aubit4glsrc/pgsql-server/src/interfaces/libpq/libpq-fe.h
@@ -3526,11 +3551,11 @@ if test "$withval" != "no"; then
 			fi
 
 		    old_CFLAGS="$CFLAGS"; old_LDFLAGS="$LDFLAGS"; old_LIBS="$LIBS"; old_CPPFLAGS="$CPPFLAGS"
-		    
-			CFLAGS="$CFLAGS -I$PGSQL_INCDIR $ECPG_IFLAGS";
-			CPPFLAGS="$CPPFLAGS -I$PGSQL_INCDIR $ECPG_IFLAGS"
-			#LDFLAGS="$LDFLAGS $PGSQL_LFLAGS"
-			LDFLAGS="$LDFLAGS -L$ECPG_LIBDIR"
+		    #WARNING: PG paths need to be at beginig
+			CFLAGS="-I$PGSQL_INCDIR $ECPG_IFLAGS $CFLAGS";
+			CPPFLAGS="-I$PGSQL_INCDIR $ECPG_IFLAGS $CPPFLAGS"
+			#LDFLAGS="$PGSQL_LFLAGS $LDFLAGS"
+			LDFLAGS="-L$ECPG_LIBDIR $LDFLAGS"
 		    LIBS="$LIBS $PGSQL_LIBS";
 
 			export CFLAGS LDFLAGS LIBS CPPFLAGS
@@ -3549,7 +3574,11 @@ if test "$withval" != "no"; then
 			unset ac_cv_header_postgresql_libpq_fe_h
 			
 			#libpq-fe.h hader is NOT part of ecpg, its part of libpq
-			AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
+			AC_CHECK_HEADERS([ libpq-fe.h ])
+			if test "$ac_cv_header_libpq_fe_h" != "yes" ; then			
+				AC_MSG_WARN(Non-standard location of libpq-fe.h)			
+				AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h ])
+			fi
 			#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
 			HAVE_PG_ESQL_HEADERS_LIB=no
 			
@@ -3567,9 +3596,10 @@ if test "$withval" != "no"; then
 			fi
 
 			#Add suffix needed for libpq-fe.h included from ecpglib.h
-			LIBPQ_FE_H_IFLAGS="-I$PGSQL_INCDIR/$PG_ESQL_HEADERS_LIB_SUFIX -I/usr/include/$PG_ESQL_HEADERS_LIB_SUFIX"
-			CPPFLAGS="$CPPFLAGS $LIBPQ_FE_H_IFLAGS"
-			#AC_MSG_RESULT(CPPFLAGS=$CPPFLAGS)
+			LIBPQ_FE_H_IFLAGS="-I$PGSQL_INCDIR/$PG_ESQL_HEADERS_LIB_SUFIX"
+			#Why was this here?
+			#LIBPQ_FE_H_IFLAGS="$LIBPQ_FE_H_IFLAGS -I/usr/include/$PG_ESQL_HEADERS_LIB_SUFIX"
+			CPPFLAGS="$LIBPQ_FE_H_IFLAGS $CPPFLAGS"
 			
 			#headers needed to make libSQL_c_ecpg.so (esql_simple_ecpg.c):
 			#When testing for ecpglib.h, we allready need to know here is 
@@ -3585,6 +3615,15 @@ if test "$withval" != "no"; then
 			if test "$ac_cv_header_postgresql_informix_esql_decimal_h" = "yes" ; then
 				HAVE_PG_ESQL_DECIMAL_H=yes
 			fi
+			if test "$HAVE_PG_ESQL_DECIMAL_H" != "yes"; then
+				unset ac_cv_header_decimal_h			
+				AC_CHECK_HEADERS([ decimal.h ])
+				if test "$ac_cv_header_decimal_h" = "yes" ; then
+					HAVE_PG_ESQL_DECIMAL_H=yes
+					AC_MSG_WARN(decimal.h found - but not sure where)
+				fi
+			fi
+
 			
 			if test "$ac_cv_header_ecpgtype_h" = "yes" \
 				-a "$ac_cv_header_ecpglib_h" = "yes" \
@@ -3665,7 +3704,7 @@ if test "$withval" != "no"; then
 		    	AC_MSG_WARN(Disabled ecpg - no headers)
 		    fi
 
-			CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS; CPPFLAGS="$old_CPPFLAGS"
+			CFLAGS="$old_CFLAGS"; LDFLAGS="$old_LDFLAGS"; LIBS="$old_LIBS"; CPPFLAGS="$old_CPPFLAGS"
 	else
 		AC_MSG_RESULT(No - ecpg not found)
 	fi
@@ -3675,7 +3714,6 @@ fi
 ],[
   AC_MSG_RESULT(--with-ecpg not specified)
 ])
-
 
 ## ==================================================================
 ##                 Checks for SQLite support
@@ -4393,7 +4431,6 @@ AC_ARG_WITH(pgodbc,
 [  --with-pgodbc[=DIR]       Include PostgreSQL ODBC driver support.  DIR is the
                           base install directory, defaults to /usr.],
 [
-  #PHP_WITH_SHARED
 	if test "$withval" != "no"; then
 		if test "$withval" = "yes"; then
 	    	withval=/usr
@@ -4404,18 +4441,24 @@ AC_ARG_WITH(pgodbc,
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
 
-		old_LIBS="$LIBS"
-		old_LDFLAGS="$LDFLAGS"
-        old_CPPFLAGS="$CPPFLAGS"
-		TMP_PGODBC_INCLUDE="-I$withval/include -I$withval/include/pgsql/iodbc"
-		TMP_PGODBC_LFLAGS="-L$withval/lib -L/usr/lib/unixODBC"
+		old_LIBS="$LIBS"; old_LDFLAGS="$LDFLAGS"; old_CPPFLAGS="$CPPFLAGS"
+		TMP_PGODBC_INCLUDE="-I$withval/include"
+		if test -d "$withval/include/pgsql/iodbc"; then
+			AC_MSG_WARN($withval/include/pgsql/iodbc added to IFLAGS)		
+			TMP_PGODBC_INCLUDE="$TMP_PGODBC_INCLUDE -I$withval/include/pgsql/iodbc"
+		fi
+		TMP_PGODBC_LFLAGS="-L$withval/lib"
+		if test -d "/usr/lib/unixODBC" ; then 
+			AC_MSG_WARN(/usr/lib/unixODBC added to LFLAGS)		
+			TMP_PGODBC_LFLAGS="$TMP_PGODBC_LFLAGS -L/usr/lib/unixODBC"
+		fi
 
 		#QT libs also have something that looks like PG ODBC driver:
 		#/usr/lib/qt3/plugins/sqldrivers/libqsqlpsql.so
 		#/usr/lib/qt3/plugins/sqldrivers/libtudopsql.so
 		
-		CPPFLAGS="$CPPFLAGS $TMP_PGODBC_INCLUDE"
-		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
+		CPPFLAGS="$TMP_PGODBC_INCLUDE $CPPFLAGS"
+		LDFLAGS="$TMP_PGODBC_LFLAGS $LDFLAGS"
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
 
 		#unixODBC distributed ODBC driver for PG
@@ -4448,7 +4491,9 @@ AC_ARG_WITH(pgodbc,
 			AC_CHECK_HEADERS([ pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h pgsql/iodbc/isqlext.h ])
 			
 			#if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
-			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
+			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" \
+				&& test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" \
+				&& test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
                 HAVE_PG_HEADERS=yes
             else
 				#TODO - we can often find PG ODBC driver, but no headers. Maybe we should
@@ -4464,9 +4509,7 @@ AC_ARG_WITH(pgodbc,
             fi
 
         fi
-		LIBS="$old_LIBS"
-		LDFLAGS="$old_LDFLAGS"
-        CPPFLAGS="$old_CPPFLAGS"
+		LIBS="$old_LIBS"; LDFLAGS="$old_LDFLAGS"; CPPFLAGS="$old_CPPFLAGS"
 
 		AC_MSG_CHECKING(PG ODBC connector support)
 		if test $ac_cv_lib_psqlodbc_main = yes -o $ac_cv_lib_odbcpsql_main = yes; then
@@ -4510,8 +4553,6 @@ AC_ARG_WITH(pgodbc,
 #warn user to run /usr/share/pgsql/odbc.sql script to add aditional
 # PostgreSQL catalog extensions and functions for ODBC compliance
 #do the same for ODBC managers, if you detect PG database installed
-
-
 
 ## ==================================================================
 ##                  Check for GTK+ GUI support
@@ -6938,7 +6979,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.240 2004-09-13 16:27:45 afalout Exp $
+| $Id: configure.in,v 1.241 2004-09-16 13:34:26 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.161 2004-08-08 01:42:17 afalout Exp $
+# $Id: Makefile-common.in,v 1.162 2004-09-16 13:35:43 afalout Exp $
 #
 
 
@@ -983,6 +983,7 @@ RUNTIME_EXE=@RUNTIME_EXE@
 
 #BIN_SCRIPTS =4glpc aubit ${AMAKE_BIN_SCRIPTS}
 BIN_SCRIPTS=@ALL_SH@
+RUNTIME_RESOURCE=@RUNTIME_RESOURCE@
 
 #BIN_EXE		=4glc${EXEEXT} fcompile${EXEEXT} xgen${EXEEXT} \
 #			mcompile${EXEEXT} mdecompile${EXEEXT} fdecompile${EXEEXT} ${AMAKE_BIN_EXE} \
@@ -1006,7 +1007,7 @@ ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc2${EXE} 2> /dev/null)" ""
 	BIN_EXE		+=odbctest-iodbc2${EXE}
 endif
 
-BIN_FILES   =${BIN_SCRIPTS} $(addsuffix ${EXE_EXT},${BIN_EXE})
+BIN_FILES   =${BIN_SCRIPTS} ${RUNTIME_RESOURCE} $(addsuffix ${EXE_EXT},${BIN_EXE})
 AMAKE_BIN_FILES	=${AMAKE_BIN_SCRIPTS} $(addsuffix ${EXE_EXT},${AMAKE_BIN_EXE})
 
 

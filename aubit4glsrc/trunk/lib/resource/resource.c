@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.79 2004-08-16 19:55:29 mikeaubury Exp $
+# $Id: resource.c,v 1.80 2004-09-16 13:35:45 afalout Exp $
 #
 */
 
@@ -1060,8 +1060,13 @@ FILE *resourcefile = 0;
 	if (build_resource_cnt) {
 		A4GL_debug ("User resources");
       for (a = 0; a < build_resource_cnt; a++) {
-		A4GL_debug ("%d. %s = %s", a, build_resource[a].name,
-			build_resource[a].value);
+		//It can be security risk to dump some settings to log files
+		if (strcmp (build_resource[a].name, "SQLPWD") == 0){
+			A4GL_debug ("%d. %s = <SET>", a, build_resource[a].name);
+		} else {
+			A4GL_debug ("%d. %s = %s", a, build_resource[a].name,
+				build_resource[a].value);
+		}
 	  }
     }
 #endif

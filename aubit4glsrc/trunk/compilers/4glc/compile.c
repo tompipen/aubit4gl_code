@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.57 2004-07-01 17:22:42 mikeaubury Exp $
+# $Id: compile.c,v 1.58 2004-09-16 13:35:41 afalout Exp $
 #*/
 
 /**
@@ -1211,6 +1211,14 @@ char ext[8];
 					  strcat (incl_path, "\"");
 					  strcat (incl_path, " ");
 
+					  ///opt/ecpg-cvs/include/postgresql/informix/esql/decimal.h
+					  strcat (incl_path, "-I");
+					  strcat (incl_path, "\"");
+					  strcat (incl_path, acl_getenv ("POSTGRESDIR"));
+					  strcat (incl_path, "/include/postgresql/informix/esql");
+					  strcat (incl_path, "\"");
+					  strcat (incl_path, " ");
+					  
                       /* /usr/include/pgsql/libpq-fe.h*/
 					  strcat (incl_path, "-I");
 					  strcat (incl_path, "\"");
@@ -1218,6 +1226,8 @@ char ext[8];
 					  strcat (incl_path, "\"");
 					  strcat (incl_path, " ");
 
+
+					  
                   }
 
 			}

@@ -6,8 +6,14 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.21 2004-02-22 02:28:59 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.22 2004-09-16 13:35:43 afalout Exp $
 #
+
+###########
+#Variables
+%define RPM_A4GL_INSTALL_DIR		/opt/aubit4gl
+
+
 
 #There may be times when RPM's automatic dependency processing is not
 #desired. In these cases, the autoreqprov tag may be used to disable it.
@@ -561,6 +567,7 @@ echo "Run 'aubit configurator' if you wish to customise default configuration."
 # is the macro to do pre-uninstall scripts.
 ##############
 
+echo "NOTE: Logging pre-Uninstall tasks to /tmp/aubit4gl-rpmdeinstall.log"
 #reset log file
 date > /tmp/aubit4gl-rpmdeinstall.log
 
@@ -574,6 +581,7 @@ make deinstall >> /tmp/aubit4gl-rpmdeinstall.log
 echo "preun tasks finshed" >> /tmp/aubit4gl-rpmdeinstall.log
 
 echo "pre-Uninstall tasks finished,see /tmp/aubit4gl-rpmdeinstall.log for more info."
+echo "RPM_A4GL_INSTALL_DIR=%{RPM_A4GL_INSTALL_DIR}"
 
 ##############
 #%postun

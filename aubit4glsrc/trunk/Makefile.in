@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.155 2004-09-13 16:26:57 afalout Exp $
+# $Id: Makefile.in,v 1.156 2004-09-16 13:33:54 afalout Exp $
 #
 
 ## ==================================================================
@@ -729,6 +729,7 @@ cleantar:
 #this will make rpm form autoconf-ed etc/aubit-rpm.conf
 rpm:
 ifneq "@RPM@" ""
+	./config.status --file etc/aubit-rpm.spec
 	${MAKE} rpm.build
 else
 	@echo "RPM tools where not detected on your system."
@@ -906,15 +907,20 @@ help.optional:
 ####################
 #Update source code tree from CVS repository
 update:
-#FIXME: this will force user to type password TWICE!!
-	@cvs status ./configure | grep "Status: Locally Modified"; \
-		RET=$$?; \
-		if test "$$RET" = "0" ; then \
-			rm ./configure ; \
-			echo "./configure modified - removing it to avoid invalid merging"; \
-		else \
-			echo "./configure check OK."; \
-		fi
+#FIXME: this will force user to type password TWICE unless SSH certificates are
+#installed
+#Note: - this configure check is just not worth it. In some sittuations CVS
+#actually doenloads COMPLETE configure file form CVS to determine if the local 
+#one was changed. It just takes too bloody long...and it was wrong - it would 
+#remove local configure even when modified only localy
+#	@cvs status ./configure | grep "Status: Locally Modified"; \
+#		RET=$$?; \
+#		if test "$$RET" = "0" ; then \
+#			rm ./configure ; \
+#			echo "./configure modified - removing it to avoid invalid merging"; \
+#		else \
+#			echo "./configure check OK."; \
+#		fi
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| CVS update started at `date`"
 	@echo "| Logging to /tmp/cvsupdate-aubit4gl.log                             |"

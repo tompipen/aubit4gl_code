@@ -1,5 +1,7 @@
-
-
+#ifdef HAVE_CONFIG_H
+	//../../../incl/
+	#include "a4gl_incl_config.h"
+#endif
 #if (defined (__CYGWIN__) || defined (__MINGW32__))
 	#include <windows.h>
 	#include <sqlext.h>
@@ -40,6 +42,7 @@
 	#endif
 	
 	#ifdef PGODBC
+
 		#if HAVE_PGODBC_HEADERS
 			//use headers supplied with PGODBC 
 			
@@ -118,6 +121,7 @@
 	#ifndef __ODBC_DEFINED__
 		/* default for tesing, when we don't use makefile we will not have -Dxxx
 	   unixODBC headers: */
+	   	#include <should-not-happen.h>
 		#include <sql.h>
 		#include <sqlext.h>
 		#include <odbcinst.h>
