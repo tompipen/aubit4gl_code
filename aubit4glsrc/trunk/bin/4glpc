@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 # --norc --noprofile
 #There are several problems with SH on CygWin - not sure how to do this to be compatible
 #with users that don't have bash on there *NIX platforms ....?
@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.106 2003-04-22 08:57:22 mikeaubury Exp $
+# $Id: 4glpc,v 1.107 2003-06-13 19:49:38 mikeaubury Exp $
 #
 
 ########################################################################
@@ -46,6 +46,20 @@ if [ "$COMSPEC" != "" ]; then
         CYG_ROOT="D:/cygwin"
     fi
 fi
+
+
+FGLC_OUTPUT_EXT=c
+
+if [ "$A4GL_LEXTYPE" = "EC" ]
+then
+	if [ "$A4GL_LEXDIALECT"  = "POSTGRES" ]
+	then
+		FGLC_OUTPUT_EXT=cpc
+	else
+		FGLC_OUTPUT_EXT=ec
+	fi
+fi
+
 
     ERRCHAR=^\|
 	GOBACKLINES=10
@@ -454,6 +468,16 @@ NCC="$CC " # -O2
 #with same names in the path, like odbc. This will put path to library we
 #are currently compiling for in front, and pick up correct one:
 
+if [ $FGLC_OUTPUT_EXT = "cpc" ]
+then
+		NCC="ecpg_wrap"
+fi
+if [ $FGLC_OUTPUT_EXT = "ec" ]
+then
+		NCC="esql"
+fi
+
+
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:.:
 #$AUBITDIR/extlibs
 
@@ -791,7 +815,7 @@ do
    		  fname=`basename $a .per`
    		  errfname=`basename $a .per`.err;
 
-		  if ! [ -f $fname.c ]
+		  if ! [ -f $fname.$FGLC_OUTPUT_EXT ]
 		  then
             if [ -f $errfname ]
             then
@@ -816,7 +840,7 @@ do
 				exit $err_code
             fi
           else
-	        COMPCC="$COMPCC $fname.c"
+	        COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
           fi
 
    ;;
@@ -875,7 +899,7 @@ do
         fi
 
         # Create the blank...
-        touch $fname.c
+        touch $fname.$FGLC_OUTPUT_EXT
 
         if [ -f "$fname".err ]
         then
@@ -893,6 +917,7 @@ do
 		########################
 		#Invoke 4GL compiler
 		########################
+		echo $FGLCEXEC $a
 		err_msg=`"$FGLCEXEC" "$a"`
 		err_code=$?
 
@@ -937,17 +962,19 @@ do
 			exit $err_code
 		fi
 
-		if [ -f $fname.c ]
+
+		
+		if [ -f $fname.$FGLC_OUTPUT_EXT ]
         then
             ###########################################
 			#C file was created, no error was reported
             ###########################################
-			if ! [ -s $fname.c  ]
+			if ! [ -s $fname.$FGLC_OUTPUT_EXT  ]
     	    then
 				##############################################
 				#C file is empty!
                 ##############################################
-                echo "Created $fname.c is zero size ! Message is:"
+                echo "Created $fname.$FGLC_OUTPUT_EXT is zero size ! Message is:"
                 echo $err_msg
 
 				if [ "$A4GLVERBOSE" = "yes" ]
@@ -960,9 +987,9 @@ do
 		                then
 							errfname=$dirn/$errfname
 							showerror
-							#$output "Error compiling $fname.c - see file $errfname"
+							#$output "Error compiling $fname.$FGLC_OUTPUT_EXT - see file $errfname"
 		                else
-							$output "Error compiling $fname.c - error file NOT created"
+							$output "Error compiling $fname.$FGLC_OUTPUT_EXT - error file NOT created"
 		                fi
 	                fi
 
@@ -997,7 +1024,7 @@ do
 			PRETTYC=${PRETTYC:-"indent"}
 			if [ "$AUTOINDENT" = "Y" ]
 			then
-			 	$PRETTYC "$fname.c"
+			 	$PRETTYC "$fname.$FGLC_OUTPUT_EXT"
 			fi
 
 			if [ "$LINKIT" = "1" ]
@@ -1007,11 +1034,11 @@ do
 				#make an object from 4gl file :
 				#if [ "$COMSPEC" = "" ]
 				#then
-					EXEC="$DOIT $NCC $CFLAGS $fname.c -c -o $fname.ao $INCLDIR 2> $fname.c.err"
+					EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $fname.ao $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
 				#else
-				#	EXEC="$DOIT $NCC $CFLAGS $fname.c -c -o $fname.ao $INCLDIR 2> $fname.c.err"
+				#	EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -c -o $fname.ao $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
                 #    #remove this duplication
-				#	#EXEC="$DOIT $NCC $CFLAGS $fname.c -o $fname.ao -c $INCLDIR 2> $fname.c.err"
+				#	#EXEC="$DOIT $NCC $CFLAGS $fname.$FGLC_OUTPUT_EXT -o $fname.ao -c $INCLDIR 2> $fname.$FGLC_OUTPUT_EXT.err"
 				#fi
 
 				if [ "$A4GLVERBOSE" = "yes" ]
@@ -1030,34 +1057,34 @@ do
 				then
                     #we got error from C compiler
 					showerror
-					echo "error compiling $fname.c. STOP."
+					echo "error compiling $fname.$FGLC_OUTPUT_EXT. STOP."
 					exit $err_code
                 else
-					if [ -f "$fname.c.err" ]; then
+					if [ -f "$fname.$FGLC_OUTPUT_EXT.err" ]; then
 						#C compiler did not return error code, but .err file was
                         #created, and we know it will only contain C compiler,
                         #warnings, so we don't want to confuse things and people:
 
 						#-s is True if file exists and has a size greater than zero.
-						if [ -s "$fname.c.err" ]; then
+						if [ -s "$fname.$FGLC_OUTPUT_EXT.err" ]; then
 							if [ "$A4GLVERBOSE" = "yes" ]; then
-    	                        echo "Found $fname.c.err, moving it to $fname.c.warn"
+    	                        echo "Found $fname.$FGLC_OUTPUT_EXT.err, moving it to $fname.$FGLC_OUTPUT_EXT.warn"
         			        fi
-							mv "$fname.c.err" "$fname.c.warn"
+							mv "$fname.$FGLC_OUTPUT_EXT.err" "$fname.$FGLC_OUTPUT_EXT.warn"
                         else
                             #file exists, but it's empty
-                            rm "$fname.c.err"
+                            rm "$fname.$FGLC_OUTPUT_EXT.err"
                         fi
                     else
 						if [ "$A4GLVERBOSE" = "yes" ]; then
- 							echo "Did NOT found $fname.c.err"
+ 							echo "Did NOT found $fname.$FGLC_OUTPUT_EXT.err"
 	       		        fi
 					fi
 				fi
 
 				COMPCC="$COMPCC $fname.ao"
             else
-				COMPCC="$COMPCC $fname.c"
+				COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
             fi
         else
             ###################################
@@ -1077,10 +1104,10 @@ do
 				#Simplest way is before the 4glc call in 4glpc, 'touch' the required C
 				#file...
 
-				touch $fname.c
-				COMPCC="$COMPCC $fname.c"
+				touch $fname.$FGLC_OUTPUT_EXT
+				COMPCC="$COMPCC $fname.$FGLC_OUTPUT_EXT"
             else
-				$output "Error compiling $a - $fname.c not generated, but no err code from $FGLCEXEC"
+				$output "Error compiling $a - $fname.$FGLC_OUTPUT_EXT not generated, but no err code from $FGLCEXEC"
 				if [ "$A4GLVERBOSE" = "yes" ]
 				then
 				  	if [ -f $errfname ]
@@ -1091,9 +1118,9 @@ do
 		                then
 							errfname=$dirn/$errfname
 							showerror
-							#$output "Error compiling $fname.c - see file $errfname"
+							#$output "Error compiling $fname.$FGLC_OUTPUT_EXT - see file $errfname"
 		                else
-							$output "Error compiling $fname.c - error file NOT created"
+							$output "Error compiling $fname.$FGLC_OUTPUT_EXT - error file NOT created"
 		                fi
 	                fi
 
@@ -1313,7 +1340,7 @@ then
 		then
 			errfname=`expr "$LAST" : "..\(.*\)"`
 			showerror
-			cerrfname=`basename $errfname .err`.c.err
+			cerrfname=`basename $errfname .err`.$FGLC_OUTPUT_EXT.err
 			if [ "$A4GLVERBOSE" = "yes" ]
 			then
 				echo "Moving $errfname to $cerrfname"
@@ -1337,7 +1364,7 @@ then
 			#-s is True if file exists and has a size greater than zero.
 			if [ -s $errfname ]; then
 				#this must be warnings, since we got no error code...
-				warnfname=`basename $errfname .err`.c.warn
+				warnfname=`basename $errfname .err`.$FGLC_OUTPUT_EXT.warn
 				if [ "$A4GLVERBOSE" = "yes" ]
 				then
 					echo "Moving $errfname to $warnfname"
