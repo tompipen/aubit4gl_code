@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.12 2002-09-22 23:02:35 afalout Exp $
+# $Id: Makefile.in,v 1.13 2002-09-23 05:12:59 afalout Exp $
 #
 
 ROOT        =../..
@@ -67,6 +67,10 @@ ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile
 #aace_4gl
 #generate_aace
 
+ifeq "${TARGET_OS}" "solaris"
+	LINK_LIBS		=-lnsl
+endif
+
 ## ==================================================================
 ##                    Targets
 ## ==================================================================
@@ -76,12 +80,12 @@ all: ${ALL}
 
 ${ROOT}/bin/aace: ${OBJS}
 #	${4GLPC} $(CFLAGS) $^ -o $@
-	${LD_EXE} -o $@  ${AUBIT_LIB} $^
+	${LD_EXE} -o $@  ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT}
 #	${CP} $@ ${ROOT}/bin
 
 ${ROOT}/bin/adecompile: ${REPORT_H} ${OBJS_DECOMP}
 #	${CC} $(CFLAGS) ${OBJS_DECOMP} -o $@
-	${LD_EXE} -o $@ ${AUBIT_LIB} ${OBJS_DECOMP}
+	${LD_EXE} -o $@ ${AUBIT_LIB} ${OBJS_DECOMP} ${LINK_LIBS} -L${LIBROOT}
 #	${CP} $@ ${ROOT}/bin
 
 #Cannot compile because dump_4gl.c is missing from CVS

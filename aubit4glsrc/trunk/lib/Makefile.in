@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.65 2002-09-09 06:51:01 afalout Exp $
+# $Id: Makefile.in,v 1.66 2002-09-23 05:13:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -126,7 +126,7 @@ loadmap:
 	${FAIL_OK}${MAKE} -C ../tools/loadmap
 
 libaubit4gl${SO_EXT} :
-	${MAKE} -C libaubit4gl $@
+	${MAKE} -C libaubit4gl
 
 libFORM_NOFORM.so :
 	${MAKE} -C libform/noform $@
