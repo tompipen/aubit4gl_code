@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.24 2003-05-07 06:47:31 mikeaubury Exp $
+# $Id: curslib.c,v 1.25 2003-05-07 06:59:20 mikeaubury Exp $
 #*/
 
 /**
@@ -1289,8 +1289,6 @@ A4GLUI_ui_init (int argc, char *argv[])
 	#ifdef DEBUG
 		debug ("Initializing curses environment");
 	#endif
-	if (!env_option_set ("NOCURSES"))	/* FIXME: this is now A4GL_UI=CONSOLE */
-    {
 		initscr ();
 		bkgdset (BLANK);
 		start_color ();
@@ -1301,49 +1299,33 @@ A4GLUI_ui_init (int argc, char *argv[])
 			  use_default_colors ();
 		    #endif
 		#endif
+
 		cbreak ();
 		noecho ();
 		nonl ();
 		intrflush (stdscr, TRUE);
 		keypad (stdscr, TRUE);
 
-		#ifdef DEBUG
-			debug ("Done that");
-			debug ("Initializing curses windows and colors");
-		#endif
-
 		start_color ();
-		#ifdef DEBUG
-			debug ("init pairs");
-		#endif
 			init_colour_pairs ();
-		#ifdef DEBUG
-			debug ("init windows");
-		#endif
 		init_windows ();
-		/*
-        mja_gotoxy(1,1);
-        tui_print("(c) 1996-1998 Aubit Computing Ltd");
-		*/
-		#ifdef DEBUG
-			debug ("Clear a bit of the screen");
-		#endif
+
 		mja_gotoxy (1, 1);
-		/* print("                                 "); */
 		tui_print ("                                 ");
 		zrefresh ();
+
 		#ifdef NCURSES_MOUSE_VERSION
-			#ifdef DEBUG
+		#ifdef DEBUG
 				debug ("Turning Mouse on");
-			#endif
-			#ifdef WIN32
+		#endif
+		#ifdef WIN32
 				#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
 					#ifdef DEBUG
 					      debug ("Turning WIN32 mouse on\n");
 					#endif
 				      if (env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
 				#endif
-			#else
+		#else
 			    if (env_option_set ("ACL_MOUSE"))
 				{
 					#ifdef DEBUG
@@ -1357,9 +1339,8 @@ A4GLUI_ui_init (int argc, char *argv[])
 						#endif
 			        }
 				}
-			#endif
 		#endif
-    }
+	#endif
 }
 
 
