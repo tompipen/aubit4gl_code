@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.74 2002-07-16 17:41:50 mikeaubury Exp $
+# $Id: mod.c,v 1.75 2002-07-16 20:40:47 mikeaubury Exp $
 #
 */
 
@@ -3465,6 +3465,8 @@ get_curr_block (void)
 int 
 add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
 {
+
+debug("In add_report_agg a=%d\n",a);
   if (use_group)
     {
       sreports[sreports_cnt].in_b = get_curr_block ();
@@ -3477,10 +3479,12 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
   if (s2 == 0)
     {
 	
-      sreports[sreports_cnt].rep_where_expr=new_expr("push_int(0);");
+      debug("Adding default where on report aggregate of 1");
+      sreports[sreports_cnt].rep_where_expr=new_expr("push_int(1);");
     }
   else
     {
+      debug("Adding non-default where on report aggregate");
       sreports[sreports_cnt].rep_where_expr=s2;
     }
 
@@ -3488,7 +3492,11 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
   sreports[sreports_cnt].rep_cond_expr=s1;
 
   sreports[sreports_cnt].a = a;
+
   sreports[sreports_cnt].t = t;
+
+  debug("sreports[%d].a=%d",sreports_cnt,a);
+
   sreports_cnt++;
 
   if (t == 'C')

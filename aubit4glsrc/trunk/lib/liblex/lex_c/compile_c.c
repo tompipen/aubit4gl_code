@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.27 2002-07-16 17:41:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.28 2002-07-16 20:40:59 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -408,10 +408,13 @@ internal_lex_printh(char *fmt, va_list *ap)
     }
   if (outfile == 0)
     return;
+
   /* va_start (args, fmt);
   vfprintf (hfile, fmt, args);
   */
-  vfprintf (hfile, fmt, ap);
+
+  vfprintf (hfile, fmt, *ap);
+
 }
 
 /**
@@ -801,6 +804,7 @@ pr_report_agg (void)
   char s2[5024];
 */
 
+
   for (z = 0; z < sreports_cnt; z++)
     {
 
@@ -809,6 +813,7 @@ pr_report_agg (void)
 
       a = sreports[z].a;
       t = sreports[z].t;
+debug("pr_report_agg - %c %d z=%d\n",t,a,z);
 
       if (t == 'C')
 	{
@@ -825,9 +830,13 @@ pr_report_agg (void)
 
       if (t == 'S')
 	{
+	debug("X0");
 	  print_expr(sreports[z].rep_where_expr);
+	debug("X1");
 	  printc("if (pop_bool()) {double _res;");
+	debug("X2");
 	  print_expr(sreports[z].rep_cond_expr);
+	debug("X3");
 	  printc("_res=pop_double(); _g%d+=_res;}\n ", a);
 	}
 
@@ -1048,10 +1057,12 @@ real_print_expr (struct expr_str *ptr)
     {
       debug ("Printing %p", ptr->expr);
       printc ("%s\n", ptr->expr);
+ 
       free (ptr->expr);
       optr = ptr;
       debug ("going to %p", ptr->next);
       ptr = ptr->next;
+      debug("Freeing old value %p",optr);
       free (optr);
     }
 }
