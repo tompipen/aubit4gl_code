@@ -1,4 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
+static char *module_id="$Id: binding.c,v 1.27 2004-01-18 12:55:12 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;

@@ -1,4 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
+static char *module_id="$Id: bad_idents.c,v 1.7 2004-01-18 12:55:12 mikeaubury Exp $";
 
 char *reserved_words_in_c[] = {
   "asm",

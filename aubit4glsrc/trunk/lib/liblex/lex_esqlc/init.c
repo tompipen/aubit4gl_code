@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: init.c,v 1.7 2003-10-08 17:09:51 mikeaubury Exp $
+# $Id: init.c,v 1.8 2004-01-18 12:55:12 mikeaubury Exp $
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
-
+static char *module_id="$Id: init.c,v 1.8 2004-01-18 12:55:12 mikeaubury Exp $";
 void printc (char *fmt, ...);
 
 void print_function_variable_init (void);

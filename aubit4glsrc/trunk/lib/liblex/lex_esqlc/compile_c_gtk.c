@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.8 2003-09-30 10:32:09 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.9 2004-01-18 12:55:12 mikeaubury Exp $
 #
 */
 
-
+static char *module_id="$Id: compile_c_gtk.c,v 1.9 2004-01-18 12:55:12 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules, that interface with GTK+ GUI libraries functions

@@ -1,6 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
+static char *module_id="$Id: compile_c_sql.c,v 1.27 2004-01-18 12:55:12 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 
