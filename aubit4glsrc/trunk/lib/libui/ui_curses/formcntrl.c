@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.49 2004-02-09 08:07:50 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.50 2004-02-10 13:50:21 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.49 2004-02-09 08:07:50 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.50 2004-02-10 13:50:21 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -59,6 +59,16 @@ static void do_key_move (char lr, struct s_screenio *s, int a,
 char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
 char *last_field_name;
 int last_key_code;
+int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+int A4GL_get_metric_for (struct s_form_dets *form, void *f);
+int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) ;
+void A4GL_set_infield_from_parameter (int a);
+int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
+int A4GL_conversion_ok(int);
+void A4GL_clr_field (FIELD * f);
+void A4GL_make_window_with_this_form_current(void *form);
 
 /*
 =====================================================================
@@ -1445,7 +1455,7 @@ break;
 
 int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,int initpos) {
         static char rbuff[1024];
-        static char rbuff2[1024];
+        //static char rbuff2[1024];
         FIELD *buff[4];
         WINDOW *cwin;
         WINDOW *drwin;
@@ -1546,15 +1556,14 @@ int A4GL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_key,
 
         A4GL_debug("Unpost and delete...");
         unpost_form(f);
-        delwin(derwin);
+        delwin(drwin);
 	A4GL_mja_refresh();
         A4GL_comments(0);
         return a;
 }
 
 
-int
-A4GL_get_metric_for (struct s_form_dets *form, void *f)
+int A4GL_get_metric_for (struct s_form_dets *form, void *f)
 {
   int a;
 

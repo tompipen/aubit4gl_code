@@ -5,7 +5,8 @@ code
 #include "libspopc.h"
 char *errmsg;
 static popsession *lv_mysession=0;
-void A4GLUI_initlib() {
+void A4GLUI_initlib(void) ;
+void A4GLUI_initlib(void) {
 }
 
 endcode

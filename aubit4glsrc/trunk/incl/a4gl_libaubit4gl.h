@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.110 2004-02-09 08:07:33 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.111 2004-02-10 13:50:19 mikeaubury Exp $
 #
 */
 
@@ -1207,7 +1207,7 @@ void A4GL_display_at (int n, int a);
   void A4GL_gui_startprompt (long ld);
 
   /* ========================== funcs_d.c ================================ */
-  void A4GL_trim (char *p);
+  //void A4GL_trim (char *p);
   void A4GL_bnamexxx (char *str, char *str1, char *str2);
   void A4GL_pad_string (char *ptr, int size);
   void *acl_malloc_full (int size, char *why, char *f, long line);
@@ -1287,7 +1287,7 @@ void A4GL_display_at (int n, int a);
 
   char *A4GL_params_on_stack (char *_paramnames[], int n);
   int A4GL_isnull (int type, char *buff);
-  void A4GL_setnull (int type, void *buff, int size);
+  //void A4GL_setnull (int type, void *buff, int size);
   char *A4GL_lrtrim (char *z);
   void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr);
   void A4GL_drop_param (void);
@@ -1739,6 +1739,14 @@ void A4GL_ltrim(char *s) ;
 void A4GL_fgl_die(int n);
 fgldecimal *A4GL_init_dec (fgldecimal *s, int len, int d);
 
+
+
+
+
+
+
+
+
 /* 
    used by display routines to convert a datatype 
    to a string suitable for display 
@@ -1785,6 +1793,8 @@ int A4GL_has_processed_onkey(void);
 char *A4GL_replace_sql_var (char *s);
 char *A4GL_find_attribute (struct s_form_dets *f, int field_no);
 int A4GL_key_map(int keycode);
+void A4GL_chk_for_screen_print(int a);
+void A4GL_logkey(long a);
 
 struct s_field_name {
 	char *fname;

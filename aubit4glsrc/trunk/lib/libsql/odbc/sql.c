@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.73 2004-01-23 10:05:25 mikeaubury Exp $
+# $Id: sql.c,v 1.74 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -116,9 +116,12 @@
 */
 
 
+struct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) ;
 struct s_cid *A4GLSQL_find_cursor (char *cname);
 struct s_cid *A4GLSQL_free_cursor (char *cname);
-
+struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) ;
+void * A4GL_new_expr (char *value);
+void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 char *A4GL_conv_date (char *s);
 int A4GL_find_prepare2 (char *pname);
 struct s_sid *find_prepare (char *pname);

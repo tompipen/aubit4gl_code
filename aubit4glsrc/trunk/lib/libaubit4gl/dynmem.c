@@ -24,11 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.1 2003-11-26 12:26:50 mikeaubury Exp $
+# $Id: dynmem.c,v 1.2 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
 #include "a4gl_libaubit4gl_int.h"
+
 
 struct s_dyn_allocation {
 	int dims[5];
@@ -36,6 +37,13 @@ struct s_dyn_allocation {
 	void *var_ptr;
 	void *mem_ptr;
 };
+
+
+void *A4GL_alloc_dynarr(void *var_ptr, void *old_ptr,int dim1,int dim2,int dim3,int dim4,int dim5,int total_bytes,int isRealloc)  ;
+void A4GL_dynarr_free(void *var_ptr,void *old_ptr);
+void A4GL_isdynarr_allocated(void *var_ptr);
+void A4GL_dynarr_extent(void *var_ptr,int dim) ;
+
 
 
 static char *dyn_ptr_name(void *var_ptr)  {

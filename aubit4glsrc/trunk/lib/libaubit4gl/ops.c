@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.44 2003-12-29 20:41:52 mikeaubury Exp $
+# $Id: ops.c,v 1.45 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -51,6 +51,9 @@
 #include "a4gl_libaubit4gl_int.h"
 
 static char *make_using(char *ptr) ;
+void A4GL_date_date_ops (int op);
+void A4GL_date_int_ops (int op);
+void A4GL_int_date_ops (int op);
 
 /*
 =====================================================================
@@ -658,8 +661,7 @@ A4GL_int_int_ops (int op)
   return;
 }
 
-void
-A4GL_date_date_ops (int op)
+void A4GL_date_date_ops (int op)
 {
   long a;
   long b;

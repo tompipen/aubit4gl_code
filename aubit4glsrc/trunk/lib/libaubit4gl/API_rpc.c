@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.13 2003-12-18 20:41:46 mikeaubury Exp $
+# $Id: API_rpc.c,v 1.14 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -57,6 +57,9 @@ static void *libptr = 0;
 */
 
 static int (*A4GL_func) ();
+int A4GL_register_func(char *s,void *ptr) ;
+int A4GL_unregister_func(char *s,void *ptr) ;
+int A4GL_server_run(long service) ;
 
 /*
 =====================================================================

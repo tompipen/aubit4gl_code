@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.39 2004-01-04 15:52:40 mikeaubury Exp $
+# $Id: API_sql.c,v 1.40 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -54,6 +54,7 @@ extern sqlca_struct a4gl_sqlca;
 =====================================================================
 */
 
+struct expr_str *A4GLSQL_get_validation_expr(char *tabname, char *colname);
 static void *libptr = 0;
 /* typedef unsigned char UCHAR; in a4gl_dlsql.h */
 
@@ -75,7 +76,6 @@ static char source_dialect[64] = "INFORMIX";
  * differs from the 4GL source dialect.
  * */
 static int must_convert = 0;
-
 
 
 /*
@@ -791,7 +791,7 @@ struct expr_str *A4GLSQL_get_validation_expr(char *tabname, char *colname)
 {
   if (libptr == 0) A4GLSQL_initlib ();
   A4GL_func = A4GL_find_func (libptr, "A4GLSQL_get_validation_expr");
-  return A4GL_func (tabname,colname);
+  return (struct expr_str *) A4GL_func (tabname,colname);
 }
 
 /**

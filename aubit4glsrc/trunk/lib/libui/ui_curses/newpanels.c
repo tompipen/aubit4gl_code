@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.85 2004-01-17 11:10:31 mikeaubury Exp $
+# $Id: newpanels.c,v 1.86 2004-02-10 13:50:21 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.85 2004-01-17 11:10:31 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.86 2004-02-10 13:50:21 mikeaubury Exp $";
 
 /**
  * @file
@@ -64,6 +64,7 @@ dll_import sqlca_struct sqlca;
 
 
 WINDOW * A4GL_window_on_top_ign_menu (void);
+void A4GL_make_window_with_this_form_current(void *form);
 /*
 =====================================================================
                     Constants definitions

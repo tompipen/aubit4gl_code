@@ -5,7 +5,9 @@
 #include <string.h>
 #include "a4gl_incl_4glhdr.h"
 
-void free_directory() ;
+void free_directory(void) ;
+int compare_str(const void *vs1,const void *vs2) ;
+char **scan_directory(char *spec) ;
 
 
 char **m_names=0;
@@ -41,10 +43,10 @@ char *name;
 int cnt=0;
 char buff[255];
 char *left;
-char *right;
+char *right="";
 char *dir;
 char spec2[255];
-char buff2[255];
+//char buff2[255];
 struct dirent *direntp;
 A4GL_trim(spec);
 if (strncmp(spec,"$AUBITDIR",9)==0) {
@@ -70,7 +72,7 @@ A4GL_debug("DIR: Loading directory %s",dir);
 	dirp = opendir(dir);
 
 
-	if (dirp==0) {m_names=0; return;}
+	if (dirp==0) {m_names=0; return 0;}
 
    /***************************************************************************
    * readdir() returns either a pointer to a structure containing directory

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.19 2004-01-17 11:10:31 mikeaubury Exp $
+# $Id: colours.c,v 1.20 2004-02-10 13:50:21 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: colours.c,v 1.19 2004-01-17 11:10:31 mikeaubury Exp $";
+static char *module_id="$Id: colours.c,v 1.20 2004-02-10 13:50:21 mikeaubury Exp $";
 /**
  * @file
  * Gets the color code.
@@ -69,7 +69,7 @@ static char *module_id="$Id: colours.c,v 1.19 2004-01-17 11:10:31 mikeaubury Exp
 int
 A4GL_colour_code (int a)
 {
-  int z, b;
+  int z;
   z = 1;
 
   if (!has_colors ()||A4GL_isyes(acl_getenv("MONO")))

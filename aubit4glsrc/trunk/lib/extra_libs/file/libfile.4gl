@@ -71,7 +71,7 @@ DEFINE r INTEGER
 	END IF
 
 code
-	r=ftell(handle);
+	r=ftell((FILE *)handle);
 endcode
 
 	RETURN r
@@ -110,7 +110,7 @@ DEFINE r INTEGER
 	END IF
 
 code
-	r=fseek(handle,n,SEEK_SET);
+	r=fseek((FILE *)handle,n,SEEK_SET);
 endcode
 
 	if r!=0 THEN
@@ -132,7 +132,7 @@ DEFINE r INTEGER
 	END IF
 
 code
-	r=fseek(handle,n,SEEK_END);
+	r=fseek((FILE *)handle,n,SEEK_END);
 endcode
 
 	if r!=0 THEN
@@ -154,10 +154,10 @@ DEFINE c INTEGER
 	END IF
 
 code
-	c=ftell(handle);          /* Save current position */
-	fseek(handle,0,SEEK_END); /* move to end */
-	n=ftell(handle);          /* Where are we now ? */
-	fseek(handle,c,SEEK_SET); /* move back to where we started */
+	c=ftell((FILE *)handle);          /* Save current position */
+	fseek((FILE *)handle,0,SEEK_END); /* move to end */
+	n=ftell((FILE *)handle);          /* Where are we now ? */
+	fseek((FILE *)handle,c,SEEK_SET); /* move back to where we started */
 endcode
 
 	RETURN n
@@ -178,7 +178,7 @@ DEFINE r INTEGER
 	LET buff=""
 
 code
-	fgets(buff,255,handle);
+	fgets(buff,255,(FILE *)handle);
 	trim_nl(buff);
 	push_char(buff);
 	return 1;
@@ -222,7 +222,7 @@ DEFINE r INTEGER
 	END IF
 
 code
-	r=fclose(handle);
+	r=fclose((FILE *)handle);
 endcode
 	
 	RETURN r
@@ -241,7 +241,7 @@ DEFINE r INTEGER
 	END IF
 
 code
-	rewind(handle);
+	rewind((FILE *)handle);
 endcode
 
 END FUNCTION

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.91 2004-02-09 08:07:51 mikeaubury Exp $
+# $Id: ioform.c,v 1.92 2004-02-10 13:50:21 mikeaubury Exp $
 #*/
-static char *module_id="$Id: ioform.c,v 1.91 2004-02-09 08:07:51 mikeaubury Exp $";
+static char *module_id="$Id: ioform.c,v 1.92 2004-02-10 13:50:21 mikeaubury Exp $";
 /**
  * @file
  *
@@ -80,6 +80,12 @@ int srec_cnt = 0;
 extern int errno;
 char delimiters[4];
 char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
+void A4GL_set_field_attr_with_attr_already_determined (FIELD * field, int attr, int cmd_type);
+int A4GL_check_and_copy_field_to_data_area(struct s_form_dets *form,struct struct_scr_field *fprop,char *fld_data,char *data_area);
+int A4GL_get_field_width_w (void *f);
+void A4GL_set_infield_from_parameter (int a);
+void A4GL_set_curr_infield (long a);
+int A4GL_conversion_ok(int);
 
 int lastc = 0;
 int nline;
@@ -97,6 +103,7 @@ long inp_current_field = 0;
 
 
 void A4GL_clr_field (FIELD * f);
+#ifdef OBSOLETE
 static int A4GL_page_for_cfield (struct s_screenio *s);
 static int A4GL_page_for_nfield (struct s_screenio *s);
 static int A4GL_page_for_pfield (struct s_screenio *s);
@@ -104,13 +111,19 @@ static int A4GL_curr_metric_is_last (void);
 static int A4GL_curr_metric_is_first (void);
 static int A4GL_curr_metric_is_veryfirst (void);
 static int A4GL_curr_metric_is_verylast (void);
-static void A4GL_set_init_pop_attr (FIELD * field, int attr);
-static void A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type);
-
 static FIELD *A4GL_scan_for_field (char *s);
 static FIELD *A4GL_scan_for_field_n (char *s, int n);
 static int A4GL_page_for_field (struct s_screenio *s, FIELD * f);
+static void A4GL_set_init_pop_attr (FIELD * field, int attr);
 static void A4GL_bomb_out (void);
+static void A4GL_do_before_field (FIELD * f, struct s_screenio *sio);
+static void A4GL_set_init_pop (FIELD * f);
+static void A4GL_dump_fields (FIELD * fields[]);
+static void A4GL_reset_delims (struct s_form_dets *formdets, char *delims);
+#endif
+
+static void A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type);
+
 static int A4GL_get_curr_infield (void);
 static void A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff,
 					      int ch);
@@ -120,15 +133,11 @@ static void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
 static void A4GL_set_field_attr (FIELD * field);
 
 
-static int A4GL_get_metric_no (struct s_form_dets *form, FIELD * f);
+//static int A4GL_get_metric_no (struct s_form_dets *form, FIELD * f);
 int A4GL_field_name_match (FIELD * f, char *s);
-static void A4GL_do_before_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_find_field_no (FIELD * f, struct s_screenio *sio);
 int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
-static void A4GL_set_init_pop (FIELD * f);
 static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
-static void A4GL_dump_fields (FIELD * fields[]);
-static void A4GL_reset_delims (struct s_form_dets *formdets, char *delims);
 
 
 
@@ -1191,6 +1200,8 @@ A4GL_get_curr_metric (struct s_form_dets *form)
   return -1;
 }
 
+
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -1211,6 +1222,8 @@ A4GL_get_metric_no (struct s_form_dets *form, FIELD * f)
   A4GL_debug ("NO current metric !");
   return -1;
 }
+#endif
+
 
 
 /**
@@ -1336,7 +1349,7 @@ int xx;
 int
 A4GL_get_field_width_w (void *f)
 {
-  int x, y, a;
+  //int x, y, a;
         int w;
   struct s_form_dets *formdets;
   struct s_scr_field *fprop;
@@ -1351,6 +1364,7 @@ A4GL_get_field_width_w (void *f)
   return w;
 }
 
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -1365,6 +1379,7 @@ A4GL_set_init_pop (FIELD * f)
   A4GL_mja_set_field_buffer (f, 0, ff);
   touchwin (currwin);
 }
+#endif
 
 
 /**
@@ -1997,7 +2012,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
   if (a == -1)
     {
       A4GL_exitwith ("after field : field number not found!");
-      return;
+      return 0;
       //A4GL_bomb_out ();
     }
 
@@ -2067,6 +2082,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 }
 
 
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -2093,6 +2109,7 @@ A4GL_do_before_field (FIELD * f, struct s_screenio *sio)
     }
 
 }
+#endif
 
 
 
@@ -2167,6 +2184,7 @@ A4GL_make_field (int frow, int fcol, int rows, int cols)
 }
 
 
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -2184,6 +2202,7 @@ A4GL_dump_fields (FIELD * fields[])
       a++;
     }
 }
+#endif
 
 
 /**
@@ -2359,6 +2378,7 @@ A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 
 
 
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -2412,6 +2432,7 @@ A4GL_set_init_pop_attr (FIELD * field, int attr)
   free (ff);
 
 }
+#endif
 
 /**
  *
@@ -2722,6 +2743,7 @@ int
 
 
 
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -2747,7 +2769,9 @@ A4GL_scan_for_field (char *s)
     }
   return 0;
 }
+#endif
 
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -2777,6 +2801,7 @@ A4GL_scan_for_field_n (char *s, int n)
     }
   return 0;
 }
+#endif
 
 
 
@@ -3006,6 +3031,7 @@ int
 }
 
 
+#ifdef OBSOLETE
 
 /**
  *
@@ -3030,6 +3056,7 @@ A4GL_reset_delims (struct s_form_dets *formdets, char *delims)
 				 metrics_val[a].dlm2, 0, sbuff1);
     }
 }
+#endif
 
 
 /**
@@ -3067,6 +3094,7 @@ A4GL_debug_print_field_opts (FIELD * a)
 
 
 
+#ifdef RESERVED_FOR_FUTURE_ENHANCEMENT
 /**
  *
  * @todo Describe function
@@ -3089,6 +3117,7 @@ A4GL_page_for_field (struct s_screenio *s, FIELD * f)
     }
   return 0;
 }
+
 
 /**
  *
@@ -3181,6 +3210,7 @@ A4GL_page_for_pfield (struct s_screenio *s)
     }
   return 0;
 }
+#endif
 
 
 
@@ -3476,7 +3506,7 @@ int
   return 0;
 }
 
-
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -3578,6 +3608,7 @@ A4GL_curr_metric_is_verylast (void)
 
   return 0;
 }
+#endif
 
 
 /**
@@ -3656,6 +3687,7 @@ int
 }
 
 
+#ifdef OBSOLETE
 /*
  * This function causes a SEGFAULT - useful for stopping the debugger!
 */
@@ -3665,6 +3697,7 @@ A4GL_bomb_out (void)
   char *ptr = 0;
   *ptr = 0;
 }
+#endif
 
 
 

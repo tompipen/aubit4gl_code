@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.34 2003-12-20 14:24:47 mikeaubury Exp $
+# $Id: others.c,v 1.35 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -81,6 +81,7 @@ char *A4GL_char_val (char *s);
 
 //char *A4GL_replace_sql_var (char *s);
 int A4GL_fgl_keyval (int _np);
+int aclfgl_aclfgl_random(int n) ;
 
 /*
 =====================================================================
@@ -547,7 +548,7 @@ A4GL_char_val (char *s)
   return str;
 }
 
-aclfgl_aclfgl_random(int n) {
+int aclfgl_aclfgl_random(int n) {
 int a;
 	a=A4GL_pop_int();
 	a=rand()%a;

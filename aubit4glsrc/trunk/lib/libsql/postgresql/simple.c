@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.4 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: simple.c,v 1.5 2004-02-10 13:50:21 mikeaubury Exp $
 #*/
 
 
@@ -56,7 +56,7 @@
 //extern sqlca_struct sqlca;
 int sqlcode;
 static void fixtype (char *ptr, int *d, int *s);
-
+char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 /*
 =====================================================================
                     Variables definitions
@@ -184,14 +184,14 @@ A4GLSQL_initsqllib (void)
 }
 
 
-PGresult *res;
+//PGresult *res;
 int nfields = 0;
 
 int
 A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   char buff[2048];
-  char tname[256];
+  //char tname[256];
   curr_colno = 0;
   if (con == 0)
     {
@@ -215,6 +215,17 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
       nfields = PQntuples (res);
       A4GL_debug ("Returns %d fields", nfields);
       return 1;
+
+		case PGRES_EMPTY_QUERY:
+		case PGRES_COPY_OUT:
+		case PGRES_COPY_IN:
+		case PGRES_BAD_RESPONSE:
+		case PGRES_NONFATAL_ERROR:
+		case PGRES_FATAL_ERROR:
+
+  	A4GL_set_errm (tabname);
+  	A4GL_exitwith ("Unexpected postgres return code\n");
+	return 0;
     }
   A4GL_set_errm (tabname);
   A4GL_exitwith ("Table not found\n");
@@ -233,9 +244,9 @@ A4GLSQL_end_get_columns (void)
 int
 A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
-  char buff[256];
+  //char buff[256];
   static char cname[256];
-  int a;
+  //int a;
   char *colptr;
   if (con == 0)
     {
@@ -257,9 +268,10 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
 
 
 
-A4GLSQL_initlib ()
+int A4GLSQL_initlib ()
 {
   // Does nothing but we need it
+return 1;
 }
 
 
@@ -274,11 +286,11 @@ A4GLSQL_dbms_dialect ()
 static void
 fixtype (char *type, int *d, int *s)
 {
-  PGresult *r;
+  //PGresult *r;
   char buff[256];
-  char *typname;
-  char *typinput;
-  char *typoutput;
+  //char *typname;
+  //char *typinput;
+  //char *typoutput;
   char *l1 = "";
   char *l2 = "";
   strcpy (buff, type);

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.69 2004-01-17 11:10:31 mikeaubury Exp $
+# $Id: iarray.c,v 1.70 2004-02-10 13:50:21 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.69 2004-01-17 11:10:31 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.70 2004-02-10 13:50:21 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -54,6 +54,10 @@ void A4GL_set_curr_infield (long a);
 void debug_print_flags (void *sv, char *txt);
 int A4GL_get_attr_from_string (char *s);
 char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
+int A4GL_conversion_ok(int);
+void A4GL_clr_field (FIELD * f);
+void A4GL_make_window_with_this_form_current(void *form);
+
 
 #define CONTROL_STACK_LENGTH 10
 
@@ -87,6 +91,12 @@ int last_key_code;
 */
 int A4GL_field_name_match (FIELD * f, char *s);
 
+static int process_control_stack_internal (struct s_inp_arr *arr);
+static int process_control_stack (struct s_inp_arr  *sio,struct aclfgl_event_list *evt) ;
+void A4GL_set_infield_from_parameter (int a);
+void A4GL_set_field_attr_with_attr_already_determined (FIELD * field, int attr, int cmd_type);
+
+
 static void init_arr_line (struct s_inp_arr *sio, int n);
 //static int process_control_stack (struct s_inp_arr *arr);
 static int A4GL_has_something_on_control_stack (struct s_inp_arr *sio);
@@ -100,6 +110,9 @@ static void A4GL_newMovement (struct s_inp_arr *arr, int scr_line,
 static void A4GL_init_control_stack (struct s_inp_arr *sio, int malloc_data);
 
 static int A4GL_set_fields_inp_arr (void *vsio, int n);
+int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
 /*
 =====================================================================
                     Functions definitions
@@ -1685,8 +1698,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
 * process any waiting actions 
 *
 */
-static int
-process_control_stack_internal (struct s_inp_arr *arr)
+static int process_control_stack_internal (struct s_inp_arr *arr)
 {
   int a;
   int rval;

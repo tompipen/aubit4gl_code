@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.68 2004-02-09 08:07:34 mikeaubury Exp $
+# $Id: conv.c,v 1.69 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -50,6 +50,7 @@
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
 
+int A4GL_conversion_ok(int);
 /*
 =====================================================================
                     Constants definitions
@@ -238,8 +239,8 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 
 int A4GL_mdectod (void *zz, void *aa, int sz_ignore);
 
-static fgldecimal *dec_math (fgldecimal *s, fgldecimal *w, fgldecimal *r, char op);
-static void match_dec (fgldecimal *f, fgldecimal *t, int *a, int *b);
+//static fgldecimal *dec_math (fgldecimal *s, fgldecimal *w, fgldecimal *r, char op);
+//static void match_dec (fgldecimal *f, fgldecimal *t, int *a, int *b);
 void A4GL_trim_decimals (fgldecimal *s, int d);
 void A4GL_set_setdtype (int dtype, void *ptr);
 int A4GL_dectod (void *zz, void *aa, int sz_ignore);

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.135 2004-02-10 10:21:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.136 2004-02-10 13:50:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.135 2004-02-10 10:21:30 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.136 2004-02-10 13:50:20 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -783,7 +783,7 @@ void
 print_start_block (int n)
 {
   printc ("\n");
-  printc ("START_BLOCK_%d:\n", n);
+  printc ("START_BLOCK_%d: if(0) goto START_BLOCK_%d;\n", n,n);
 }
 
 /**
@@ -798,7 +798,7 @@ void
 print_continue_block (int n, int brace)
 {
   printc ("\n");
-  printc ("CONTINUE_BLOCK_%d:    ;   /* add_continue */ ", n);
+  printc ("CONTINUE_BLOCK_%d:    if (0) goto CONTINUE_BLOCK_%d;   /* add_continue */ ", n,n);
   if (brace)
     printc ("}\n");
 }
@@ -813,7 +813,7 @@ print_continue_block (int n, int brace)
 void
 print_end_block (int n)
 {
-  printc ("END_BLOCK_%d: ;\n\n", n);
+  printc ("END_BLOCK_%d: if (0) goto END_BLOCK_%d ;\n\n", n,n);
 }
 
 /**
@@ -4375,12 +4375,14 @@ print_func_start (char *isstatic, char *fname, int type)
   printc (" \n");
   printc (" \n");
   printc (" \n");
-  if (type == 0)
-    printc ("\n A4GL_FUNCTION %sint %s%s (int _nargs){ /* Funtion Start */\n",
-	    isstatic, get_namespace (fname), fname);
-  if (type == 1)
-    printc ("\n A4GL_REPORT %sint %s%s (int _nargs){ /* Funtion Start */\n",
-	    isstatic, get_namespace (fname), fname);
+  if (type == 0) {
+    printc ("\n A4GL_FUNCTION %sint %s%s (int _nargs){ /* Funtion Start */\n", isstatic, get_namespace (fname), fname);
+	add_function_to_header(fname,1);
+  }
+  if (type == 1) {
+    printc ("\n A4GL_REPORT %sint %s%s (int _nargs){ /* Funtion Start */\n", isstatic, get_namespace (fname), fname);
+	add_function_to_header(fname,2);
+  }
 }
 
 /**

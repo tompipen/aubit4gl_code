@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.83 2004-02-09 08:07:35 mikeaubury Exp $
+# $Id: stack.c,v 1.84 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -51,6 +51,8 @@
 #include <unistd.h>
 #include "a4gl_libaubit4gl_int.h"
 
+
+int A4GL_conversion_ok(int);
 /*
 =====================================================================
                     Platform specific definitions
@@ -66,7 +68,7 @@ struct passwd
 #endif
 
 
-static void A4GL_debug_print_stack_simple(char *msg) ;
+//static void A4GL_debug_print_stack_simple(char *msg) ;
 /*
 =====================================================================
                     Constants definitions
@@ -79,6 +81,7 @@ static void A4GL_debug_print_stack_simple(char *msg) ;
 #define UC (unsigned char)
 #define LOCAL_BINDINGS 20
 void A4GL_process_stack_op_other (int d);
+int A4GL_stof (void *aa, void *zz, int sz_ignore);
 
 /*
 =====================================================================
@@ -1298,7 +1301,7 @@ A4GL_debug("51 Have data");
 	A4GL_debug("OP_USING %d %d %d %d s1=%d s2=%d",n1,n2,dn1,dn2,s1,s2);
 
 	if (n1) {
-		int a;
+		//int a;
 		char *ptr;
 		A4GL_drop_param();
 		A4GL_drop_param();
@@ -1875,6 +1878,7 @@ return;
 #endif
 }
 
+#ifdef DBG_PRINT_STACK_SIMPLE
 void A4GL_debug_print_stack_simple(char *msg) {
 char buff[20];
 int a;
@@ -1895,6 +1899,8 @@ printf("* Stack has : %d entries --- %s\n",params_cnt,msg);
     }
 
 }
+#endif
+
 /**
  *
  *

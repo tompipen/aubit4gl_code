@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.16 2004-01-27 21:05:58 mikeaubury Exp $
+# $Id: ui.c,v 1.17 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -77,6 +77,16 @@
 */
 
 char *A4GL_pull_off_data_for_display(int n,int display_type);
+void A4GL_processed_onkey_v2(char *iot,char *base) ;
+void A4GL_add_key_mapping(int src,int dest) ;
+int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
+int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
+int aclfgl_aclfgl_add_keymap(int n) ;
+char  *A4GL_find_gui_id_name_from_id(int id) ;
+int A4GL_find_gui_id_from_name(char *s) ;
+int A4GL_add_gui_id_name(char *s) ;
+
 
 
 #define LINE_MODE               0
@@ -594,7 +604,7 @@ void A4GL_chk_for_screen_print(int a) {
 static int have_key=0; // 0- don't know 1= do nothing 2=print screen to file 3=print screen to pipe
 static int key=0;
 char *ptr;
-char buff[256];
+//char buff[256];
 if (have_key==1) return;
 
 if (have_key==0) {

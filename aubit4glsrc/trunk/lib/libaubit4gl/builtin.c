@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.51 2004-01-03 11:06:45 mikeaubury Exp $
+# $Id: builtin.c,v 1.52 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -77,10 +77,11 @@ FILE *error_log_file = 0;
 int aclfgl_ddepoke (char *progname, char *ddemessage, char *ddecommand, char *ddeparam);
 
 char * aclfgl_ddefinish (char *progname, char *ddemessage);
+int aclfgl_fgl_getkey(int n) ;
 
 int aclfgl_ddeexecute (char *progname, char *ddemessage, char *ddecommand);
 
-
+char *A4GL_pull_off_data_for_display(int n,int display_type);
 char * aclfgl_ddegeterror (void);
 
 int aclfgl_ddeconnect (char *progname, char *ddemessage);

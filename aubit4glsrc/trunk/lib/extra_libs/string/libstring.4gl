@@ -80,7 +80,7 @@ define c integer
 
 code
 if (strchr(a,b[0])==0) c=0;
-else c=strstr(a,b[0])-a+1;
+else c=strchr(a,b[0])-a+1;
 endcode
 return c
 END FUNCTION

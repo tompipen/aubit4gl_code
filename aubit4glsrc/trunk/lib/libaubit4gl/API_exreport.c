@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.16 2003-10-12 12:02:28 mikeaubury Exp $
+# $Id: API_exreport.c,v 1.17 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -62,6 +62,7 @@
 
 #endif
 
+double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
 /*
 =====================================================================
                     Variables definitions
@@ -303,8 +304,8 @@ A4GL_pdf_rep_close (void *p)
  *
  * @todo Describe function
  */
-double
 /* pdf_size(double f, char c,void *p) */
+double
 A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p)
 {
   double d;

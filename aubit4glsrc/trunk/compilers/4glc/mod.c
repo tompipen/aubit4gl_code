@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.157 2004-02-09 11:45:43 mikeaubury Exp $
+# $Id: mod.c,v 1.158 2004-02-10 13:50:19 mikeaubury Exp $
 #
 */
 
@@ -98,12 +98,20 @@
 
 int A4GL_get_nevents(void) ;
 void A4GL_get_event(int n,int *i,char **s) ;
+//static void set_whento (char *p);
+void set_whento_store(char *p);
+void set_whenever_store (int c, char *p) ;
+void set_whenever_from_store(void) ;
+void A4GL_lex_printh(char* fmt,... );
 
 int A4GL_findex (char *str, char c);
 /*void push_validate (char *t2);*/
 int A4GL_get_attr_from_string (char *s);
-/*char get_curr_report_stack_whytype (void);*/
+char get_curr_report_stack_whytype_1 (void);
+char *get_curr_report_stack_why (void);
 char find_variable_scope (char *s_in);
+char *A4GL_get_important_from_clobber(char *s) ;
+char *A4GL_get_clobber_from_orig(char *s);
 
 /*void set_rep_no_orderby(int n) ;*/
 int get_rep_no_orderby(void) ;
@@ -3233,8 +3241,7 @@ void set_whento_store(char *p) {
 /**
  *
  */
-static void
-set_whento (char *p)
+void set_whento (char *p)
 {
   A4GL_debug ("whento = %p", p);
   strcpy (when_to_tmp, p);
@@ -3260,7 +3267,7 @@ void set_whenever_store (int c, char *p) {
  *  - WHEN_SQLSUCCESS:
  * @param p The A4GL_action to execute.
  */
-static void set_whenever (int c, char *p)
+void set_whenever (int c, char *p)
 {
   int code;
   int oldcode;
@@ -3327,7 +3334,7 @@ static void set_whenever (int c, char *p)
 }
 
 
-void set_whenever_from_store() {
+void set_whenever_from_store(void) {
 	set_whento(whentostore_p);
 	set_whenever(whenever_store_c,whenever_store_p);
 }

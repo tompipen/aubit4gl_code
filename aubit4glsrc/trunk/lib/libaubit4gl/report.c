@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.35 2004-02-09 19:51:17 mikeaubury Exp $
+# $Id: report.c,v 1.36 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -57,6 +57,7 @@ static void print_lvl(struct rep_structure *rep,int lvl) ;
 static void print_data(struct rep_structure *rep,char *buff,int entry) ;
 int A4GL_push_report_print(struct rep_structure *rep,char *mod,int lineno,char where,char *why,int rb) ;
 void A4GL_pop_report_print(struct rep_structure *rep,int pb, int rb) ;
+void A4GL_pop_report_section(struct rep_structure *rep, int rb) ;
 static void report_write_string(struct rep_structure *rep, char *s) ;
 static void report_write_int(struct rep_structure *rep, int n) ;
 static void report_write_char(struct rep_structure *rep, unsigned char n) ;
@@ -74,6 +75,7 @@ void A4GL_set_column (struct rep_structure *rep);
 static void A4GL_free_duplicate_binding (struct BINDING *b, int n);
 static struct BINDING *A4GL_duplicate_binding (struct BINDING *b, int n);
 void A4GL_skip_top_of_page (struct rep_structure *rep,int n);
+int A4GL_push_report_section(struct rep_structure *rep,char *mod,char *repname,int lineno,char where,char *why,int rb) ;
 
 void A4GL_rep_print (struct rep_structure *rep, int a, int s,
 		     int right_margin,int entry);
@@ -1075,7 +1077,7 @@ free(s);
 
 
 static void report_write_int(struct rep_structure *rep, int n) {
-unsigned char c;
+//unsigned char c;
 short s;
 	if (n<254) {
 		report_write_char(rep,n);
@@ -1130,13 +1132,13 @@ static void report_write_entry(struct rep_structure *rep,char type) {
 	}
   } else {
 	if (type==ENTRY_START) {
-		fprintf(rep->output,"<LAYOUT module=\"%s\" name=\"%s\" top=%d bottom=%d left=%d right=%d length=%d time=%d />\n",rep->modName,rep->repName,
+		fprintf(rep->output,"<LAYOUT module=\"%s\" name=\"%s\" top=%d bottom=%d left=%d right=%d length=%d time=%ld />\n",rep->modName,rep->repName,
 			rep->top_margin,
 			rep->bottom_margin,
 			rep->left_margin,
 			rep->right_margin,
 			rep->page_length,
-			time(0));
+			(long)time(0));
 	}
   }
 }

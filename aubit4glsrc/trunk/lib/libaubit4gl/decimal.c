@@ -1,5 +1,8 @@
 //
 #include "a4gl_libaubit4gl_int.h"
+fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
+int A4GL_conversion_ok(int);
+char *A4GL_dec_to_str (fgldecimal *dec, int size) ;
 
 
 fgldecimal *A4GL_init_dec(fgldecimal *dec, int length, int digits) {
@@ -9,8 +12,7 @@ fgldecimal *A4GL_init_dec(fgldecimal *dec, int length, int digits) {
 }
 
 
-fgldecimal *
-A4GL_str_to_dec (char *str, fgldecimal *dec) {
+fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) {
 char head[256];
 char tail[256];
 char tmp[3];
@@ -22,7 +24,7 @@ int decimals;
 int head_len;
 int tail_len;
 long head_i;
-char *ptr;
+//char *ptr;
 char buff[256];
 int round_cnt;
 int carry;
@@ -112,7 +114,7 @@ while (carry) {
 if (carry) head_i++;
 
 tail[decimals]=0;
-sprintf(buff,"%0*d",head_len,head_i);
+sprintf(buff,"%0*ld",head_len,head_i);
 sprintf(&dec->dec_data[2],buff);
 strcat(&dec->dec_data[2],".");
 strcat(&dec->dec_data[2],tail);
@@ -132,7 +134,7 @@ return dec;
 
 char *A4GL_dec_to_str (fgldecimal *dec, int size) {
 static char buff[256];
-char buff2[256];
+//char buff2[256];
 int a;
 char *ptr;
 int has_neg=0;

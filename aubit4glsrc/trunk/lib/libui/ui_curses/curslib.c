@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.86 2004-02-01 03:16:53 afalout Exp $
+# $Id: curslib.c,v 1.87 2004-02-10 13:50:21 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.86 2004-02-01 03:16:53 afalout Exp $";
+static char *module_id="$Id: curslib.c,v 1.87 2004-02-10 13:50:21 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -106,7 +106,7 @@ int inwin;
 int curr_opt, max_opt;
 /*int currattr = 0; */
 char dirstr[100];
-int A4GL_mja_strncmp (char *a, char *b, int c);
+//int A4GL_mja_strncmp (char *a, char *b, int c);
 
 int help_no, g_help_no;
 
@@ -128,6 +128,9 @@ int init_curses_mode = 0;
                     Functions prototypes
 =====================================================================
 */
+WINDOW * A4GL_window_on_top_ign_menu (void);
+void try_to_stop_alternate_view(void);
+int UILIB_A4GLUI_initlib (void);
 
 static void a4gl_gettext (int l, int t, int r, int b, char *buf);
 
@@ -972,8 +975,8 @@ void
 A4GL_ask_cmdline (char *prompt, char *s, int a)
 {
   char lv_cmd[100 + 1];
-  int x;
-  int y;
+  //int x;
+  //int y;
   int_flag = 0;
   A4GL_push_long (A4GL_get_curr_height ());
   A4GL_push_long (1);
@@ -1004,6 +1007,7 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
   UILIB_A4GL_remove_window ("aclfgl_promptwin");
 }
 
+#ifdef OBSOLETE
 /**
  *
  * @todo Describe function
@@ -1044,6 +1048,7 @@ A4GL_ask_cmdline_old (char *prompt, char *s, int a)	/*  prompt for an integer fr
   A4GL_clearbox (&area2);
   strcpy (s, inbuf);
 }
+#endif
 
 /**
  *
@@ -1597,7 +1602,7 @@ int
  UILIB_A4GL_menu_loop_v2 (void *menuv,void *vevt)
 {
   ACL_Menu_Opts *old_option;
-  struct aclfgl_event_list *evt;
+  //struct aclfgl_event_list *evt;
   int a;
   int key_pressed;
   ACL_Menu *menu;

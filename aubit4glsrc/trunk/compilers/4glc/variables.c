@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.35 2004-01-29 08:34:00 mikeaubury Exp $
+# $Id: variables.c,v 1.36 2004-02-10 13:50:19 mikeaubury Exp $
 #
 */
 
@@ -45,6 +45,7 @@
 
 #include "a4gl_4glc_int.h"
 #include "variables.h"
+#include <ctype.h>
 
 
 /* CONFIGURABLE...*/
@@ -78,9 +79,11 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 					       struct variable *v);
 
 void make_function (char *name, int record_cnt);
+static int is_system_variable (char *s);
+char find_variable_scope (char *s_in);
 /******************************************************************************/
 
-
+int A4GL_findex (char *str, char c);
 /*void dump_gvars (void);*/
 void set_yytext (char *s);
 int isin_command (char *s);
@@ -1558,7 +1561,7 @@ isvartype (char *s, int mode)
   struct variable *v;
   v = find_variable_ptr (s);
   if(v==0) {
-	extern char *yytext;
+	//extern char *yytext;
 	set_yytext(s);
 	a4gl_yyerror("Variable not found");
 	return 0;
@@ -2866,8 +2869,7 @@ print_nullify (char type)
 }
 
 
-char
-find_variable_scope (char *s_in)
+char find_variable_scope (char *s_in)
 {
   struct variable *ptr;
   char s[1024];
@@ -2902,8 +2904,7 @@ find_variable_scope (char *s_in)
 
 
 
-static int
-is_system_variable (char *s)
+static int is_system_variable (char *s)
 {
   if (strcmp (s, "int_flag") == 0)
     return 1;

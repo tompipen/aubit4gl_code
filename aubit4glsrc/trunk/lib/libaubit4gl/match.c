@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.13 2003-09-06 08:44:24 mikeaubury Exp $
+# $Id: match.c,v 1.14 2004-02-10 13:50:20 mikeaubury Exp $
 #*/
 
 /**
@@ -314,7 +314,7 @@ A4GL_matche (register char *p, register char *t, char multi, char single,
   BOOLEAN invert;		/* is this [..] or [!..] */
   BOOLEAN member_match;		/* have I matched the [..] construct? */
   BOOLEAN loop;			/* should I terminate? */
-  char this_char;
+  //char this_char;
 
 
   C_STAR = multi;

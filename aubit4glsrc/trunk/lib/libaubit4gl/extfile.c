@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.17 2003-11-12 22:22:45 afalout Exp $
+# $Id: extfile.c,v 1.18 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -68,7 +68,7 @@ void A4GL_set_lang_file (char *fname_orig);
 int aclfgl_a4gl_show_help (int a);
 int aclfgli_show_help (int n);
 char * A4GL_get_helpfilename (void);
-//int aclfgli_libhelp_showhelp(int helpno);
+int aclfgli_libhelp_showhelp(int helpno);
 //void A4GL_set_last_outfile (char *s);
 
 

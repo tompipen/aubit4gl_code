@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.26 2004-01-31 09:01:18 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.27 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -45,6 +45,12 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
+struct expr_str
+{
+  char *expr;
+  struct expr_str *next;
+};
+
 /*
 =====================================================================
                     Variables definitions
@@ -62,6 +68,8 @@
 int A4GL_bname2 (char *str, char *str1, char *str2, char *str3);
 void A4GL_trim_nl (char *p);
 
+void * A4GL_new_expr (char *value);
+void * A4GL_append_expr (struct expr_str *orig_ptr, char *value);
 /*
 =====================================================================
                     Functions definitions
@@ -709,15 +717,8 @@ int A4GL_esql_db_open(int a) {
 	return dbopen;
 }
 
-struct expr_str
-{
-  char *expr;
-  struct expr_str *next;
-};
 
-
-void *
-A4GL_new_expr (char *value)
+void * A4GL_new_expr (char *value)
 {
   struct expr_str *ptr;
   A4GL_debug ("new_expr - %s", value);
@@ -736,8 +737,7 @@ A4GL_new_expr (char *value)
  * @param value
  * @return
  */
-void *
-A4GL_append_expr (struct expr_str *orig_ptr, char *value)
+void * A4GL_append_expr (struct expr_str *orig_ptr, char *value)
 {
   struct expr_str *ptr;
   struct expr_str *start;

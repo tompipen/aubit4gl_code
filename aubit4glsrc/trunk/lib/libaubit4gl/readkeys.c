@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.6 2003-08-07 21:39:22 mikeaubury Exp $
+# $Id: readkeys.c,v 1.7 2004-02-10 13:50:20 mikeaubury Exp $
 #*/
 
 /**
@@ -142,7 +142,7 @@ int A4GL_readkey(void) {
 
 static void open_keylog(void) {
 	char *fname;
-	char *delay;
+	//char *delay;
 	have_keylog=0;
 
 	fname=acl_getenv("KEYLOG");
@@ -170,7 +170,7 @@ static void open_keylog(void) {
 
 
 void A4GL_logkey(long a) {
-	char buff[256];
+	//char buff[256];
 	int k;
 	char *keys[]={
 		"ACCEPT",
@@ -227,11 +227,11 @@ void A4GL_logkey(long a) {
 	}
 
 	if (a>=1&&a<=26) {
-		fprintf(keylog,"\\CONTROL-%c\n",a+'A'-1);fflush(keylog);
+		fprintf(keylog,"\\CONTROL-%c\n",(char)a+'A'-1);fflush(keylog);
 		return;
 	}
 	if (isprint(a)&&a!='\\') {
-		fprintf(keylog,"%c",a);fflush(keylog);
+		fprintf(keylog,"%c",(char)a);fflush(keylog);
 		return;
 	}
 	

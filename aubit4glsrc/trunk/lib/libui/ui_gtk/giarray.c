@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: giarray.c,v 1.8 2004-01-23 10:08:59 mikeaubury Exp $
+# $Id: giarray.c,v 1.9 2004-02-10 13:50:21 mikeaubury Exp $
 #*/
 
 /**
@@ -174,7 +174,7 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
 	}
       else
 	{
-	  A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+	  A4GL_int_form_driver ((void *)mform, REQ_NEXT_CHAR);
 	}
 
     }
@@ -197,7 +197,7 @@ do_key_move (char lr, struct s_inp_arr *arr, int a, int has_picture,
 	}
       else
 	{
-	  A4GL_int_form_driver (mform, REQ_PREV_CHAR);
+	  A4GL_int_form_driver ((void *)mform, REQ_PREV_CHAR);
 	}
     }
 
@@ -792,13 +792,13 @@ process_key_press (struct s_inp_arr *arr, int a)
     case A4GLKEY_DC:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
-      A4GL_int_form_driver (mform, REQ_DEL_PREV);
+      A4GL_int_form_driver ((void *)mform, REQ_DEL_PREV);
       break;
 
 
     case 4:			// Control - D
 	A4GL_debug("MMMM - Clear EOF ^d");
-      A4GL_int_form_driver (mform, REQ_CLR_EOF);
+      A4GL_int_form_driver ((void *)mform, REQ_CLR_EOF);
       break;
 
     case 1:			// Control - A
@@ -806,12 +806,12 @@ process_key_press (struct s_inp_arr *arr, int a)
 
       if (form->form_details.insmode)
 	{
-	  A4GL_int_form_driver (mform, REQ_INS_MODE);
+	  A4GL_int_form_driver ((void *)mform, REQ_INS_MODE);
 	  break;
 	}
       else
 	{
-	  A4GL_int_form_driver (mform, REQ_OVL_MODE);
+	  A4GL_int_form_driver ((void *)mform, REQ_OVL_MODE);
 	  break;
 	}
 
@@ -863,7 +863,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 	}
       else
 	{
-	  A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+	  A4GL_int_form_driver ((void *)mform, REQ_NEXT_CHAR);
 	}
       break;
 
@@ -896,7 +896,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 	}
       else
 	{
-	  A4GL_int_form_driver (mform, REQ_PREV_CHAR);
+	  A4GL_int_form_driver ((void *)mform, REQ_PREV_CHAR);
 	}
       break;
 
@@ -2051,7 +2051,7 @@ A4GL_debug("Process_control_stack : %d",arr->fcntrl[a].op);
 			case DTYPE_DECIMAL:
 			case DTYPE_MONEY:
 			A4GL_debug("MMMM - Clear EOF first pos typing");
-			  A4GL_int_form_driver (arr->currform->form,
+			  A4GL_int_form_driver ((void *)arr->currform->form,
 						REQ_CLR_EOF);
 			}
 		    }
@@ -2105,9 +2105,9 @@ A4GL_debug("Process_control_stack : %d",arr->fcntrl[a].op);
 
 	      if (ok == 1)
 		{
-		  A4GL_int_form_driver (arr->currform->form,
+		  A4GL_int_form_driver ((void *)arr->currform->form,
 					arr->fcntrl[a].extent);
-		  A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
+		  A4GL_int_form_driver ((void *)arr->currform->form, REQ_VALIDATION);
 		}
 
 /*
@@ -2332,7 +2332,7 @@ A4GL_debug("Process_control_stack : %d",arr->fcntrl[a].op);
 	  if (has_picture)
 	    {
 		  FORM *mform;
-	      A4GL_int_form_driver (arr->currform->form, REQ_OVL_MODE);	// Always in overwrite mode in a picture...
+	      A4GL_int_form_driver ((void *)arr->currform->form, REQ_OVL_MODE);	// Always in overwrite mode in a picture...
                   mform = arr->currform->form;
                   if (strchr ("A#X", picture[mform->curcol]) == 0
                       && picture[mform->curcol])
@@ -2790,11 +2790,11 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
     }
 
 
-  A4GL_debug (" current field %p  form says currfield=%p m=%d", form->currentfield, current_field (mform), m);
-  A4GL_debug ("field_status(form->currentfield)=%d field_status(currfield)=%d", field_status (form->currentfield), field_status (current_field (mform)));
+  //A4GL_debug (" current field %p  form says currfield=%p m=%d", form->currentfield, current_field (mform), m);
+  //A4GL_debug ("field_status(form->currentfield)=%d field_status(currfield)=%d", field_status (form->currentfield), field_status (current_field (mform)));
 
 
-  if ((form->currentfield != current_field (mform)) || m < 0)
+  if ((form->currentfield != current_field ((void *)mform)) || m < 0)
     {
       /*
          A4GL_debug ("Setting focus");
@@ -2861,7 +2861,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
                                 A4GL_error_nobox (acl_getenv
                                                   ("FIELD_REQD_MSG"), 0);
 	printf("A3\n");
-                                set_current_field (mform, form->currentfield);
+                                set_current_field ((void *)mform, (void *)form->currentfield);
                                 return -4;
                               }
 
@@ -2902,7 +2902,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
                         //A4GL_mja_set_field_buffer (form->currentfield, 0, " ");
                         A4GL_clr_field (form->currentfield);
 	printf("A4\n");
-                        set_current_field (mform, form->currentfield);
+                        set_current_field ((void *)mform, form->currentfield);
                         return -4;
                       }
                   }
@@ -2936,7 +2936,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
                             A4GL_error_nobox (acl_getenv
                                               ("FIELD_REQD_MSG"), 0);
 	printf("A5\n");
-                            set_current_field (mform, form->currentfield);
+                            set_current_field ((void *)mform, form->currentfield);
                             return -4;
                           }
 
@@ -2976,7 +2976,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
                       {
                         A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
 	printf("A6\n");
-                        set_current_field (mform, form->currentfield);
+                        set_current_field ((void *)mform, form->currentfield);
                         return -4;
                       }
                   }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.13 2003-12-24 18:07:03 mikeaubury Exp $
+# $Id: read_dty.c,v 1.14 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -58,6 +58,7 @@
 
 #endif
 
+int A4GL_get_dtype_size(void) ;
 /*
 =====================================================================
                     Functions definitions

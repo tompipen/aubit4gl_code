@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.38 2004-01-18 12:57:39 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.39 2004-02-10 13:50:20 mikeaubury Exp $
 #
 */
 
@@ -126,6 +126,7 @@ void A4GL_func_exp (void);
 void A4GL_func_logn (void);
 void A4GL_func_log10 (void);
 void A4GL_func_length (void);
+int aclfgl_ord(int n) ;
 
 static void push_byte (void *ptr);
 
@@ -246,7 +247,7 @@ A4GL_push_dec (char *p, int ismoney,int size)
 
   if (p) {
   if (NUM_DIG(p)!=l&&NUM_DEC(p)!=d) {
-  	A4GL_init_dec(p,l,d);
+  	A4GL_init_dec((fgldecimal *)p,l,d);
 	A4GL_push_null(DTYPE_DECIMAL,size);
 	A4GL_setnull(DTYPE_DECIMAL,p,size);
 	return;
