@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.207 2004-12-12 08:52:26 mikeaubury Exp $
+# $Id: compile_c.c,v 1.208 2004-12-23 16:42:45 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.207 2004-12-12 08:52:26 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.208 2004-12-23 16:42:45 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -4042,8 +4042,8 @@ if (!A4GL_doing_pcode()) {
   printc("A4GL_free_report(&_rep);");
   printc("return ;}");
   printc ("if (acl_ctrl==REPORT_START||acl_ctrl==REPORT_RESTART) {\n");
-  printc ("   A4GL_pop_char(_rout2,254);\n");
-  printc ("   A4GL_pop_char(_rout1,254);\n");
+  printc ("   A4GL_pop_char(_rout2,254);A4GL_trim(_rout2);\n");
+  printc ("   A4GL_pop_char(_rout1,254);A4GL_trim(_rout1);\n");
   if (last_orderby_type == 1)
     {
       printc ("   if (acl_ctrl==REPORT_START) {fgl_rep_orderby=1;}\n");
@@ -5689,7 +5689,7 @@ order_by_report_stack ()
 	("static void acl_exchange_rep_ordby%d(struct BINDING *ord,int cnt) {\n",
 	 fiddle);
       printh ("struct BINDING *copy;\n");
-      printh ("copy=malloc(sizeof(struct BINDING)*cnt);\n");
+      printh ("copy=(struct BINDING *)malloc(sizeof(struct BINDING)*cnt);\n");
       printh ("memcpy(copy,ord,sizeof(struct BINDING)*cnt);\n");
       /* We've got our copy - now we can splat the original! */
       for (a = 0; a < ordbyfieldscnt; a++)

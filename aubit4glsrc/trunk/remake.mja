@@ -64,10 +64,10 @@ cp /home/aubit4gl/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
 cd /home/aubit4gl/aubit4gltest
 
 
+sh rerun ESQLI
 exit
 echo "No testing..."
 
-sh rerun ALL
 
 
 

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.109 2004-12-17 13:19:06 mikeaubury Exp $
+# $Id: ioform.c,v 1.110 2004-12-23 16:42:45 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.109 2004-12-17 13:19:06 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.110 2004-12-23 16:42:45 mikeaubury Exp $";
 /**
  * @file
  *
@@ -2742,7 +2742,13 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   pos_form_cursor (field->form);
   if (currwin > (WINDOW *) 1)
     {
-      touchwin (currwin);
+
+	//
+	// Don't know why it was doing a touchwin here.....
+	// - maybe a refresh - but a touchwin ?
+
+      //touchwin (currwin);
+	
 #ifdef DEBUG
       {
 	A4GL_debug ("Touched Window");

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "a4gl_lib_ui_tui_int.h"
-static char *module_id="$Id: dump_scr.c,v 1.10 2004-03-26 11:27:44 mikeaubury Exp $";
+static char *module_id="$Id: dump_scr.c,v 1.11 2004-12-23 16:42:45 mikeaubury Exp $";
 
 FILE *f;
 
@@ -78,7 +78,7 @@ int
   if (n==0) {
 	A4GL_debug("AUTO PRINT...");
 		// We want to dump to to PRINTSCRFILE
-		ptr=acl_getenv("PRINTSCRFILE");
+		ptr=acl_getenv("A4GL_PRINTSCRFILE");
 		if (ptr) {
 			if (strlen(ptr)==0) ptr=0;
 		}

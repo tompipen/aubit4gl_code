@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.30 2004-11-30 14:39:23 mikeaubury Exp $
+# $Id: ui.c,v 1.31 2004-12-23 16:42:44 mikeaubury Exp $
 #
 */
 
@@ -658,14 +658,14 @@ if (have_key==1) return;
 
 if (have_key==0) {
 	have_key=1;
-	ptr=acl_getenv("PRINTSCRKEY");
+	ptr=acl_getenv("A4GL_PRINTSCRKEY");
 	if (ptr==0) return;
 	if (strlen(ptr)==0) return;
 
 	key=A4GL_key_val(ptr);
 	if (key==0) return;
 	have_key=2;
-	ptr=acl_getenv("PRINTSCRFILE");
+	ptr=acl_getenv("A4GL_PRINTSCRFILE");
 	if (ptr) {
 		if (strlen(ptr)==0) ptr=0;
 	}

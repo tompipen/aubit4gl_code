@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.96 2004-12-17 13:19:02 mikeaubury Exp $
+# $Id: conv.c,v 1.97 2004-12-23 16:42:44 mikeaubury Exp $
 #
 */
 
@@ -1012,6 +1012,7 @@ A4GL_ftodec (void *a, void *z, int size)
   double da;
   char buff[650];
   char fmt[16];
+  char *ptr;
   h=size;
   t = h;
   h = h / 256;
@@ -1035,6 +1036,8 @@ A4GL_debug("ftodec... %lf" ,*(double *)a);
 	A4GL_debug("buff=%s",A4GL_null_as_null(buff));
   eptr = A4GL_str_to_dec (buff, z);
 
+  ptr = A4GL_dec_to_str (z, 0);
+	A4GL_debug("---> %s\n",ptr);
   if (eptr)
     return 1;
   else
@@ -1098,7 +1101,7 @@ A4GL_dectodec (void *a, void *z, int size)
   h = h / 256;
   t = t - h * 256;
   errno = 0;
-  A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
+  //A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
   A4GL_init_dec (z, h, t);
   buff = A4GL_dec_to_str (a, 0);
   eptr = A4GL_str_to_dec (buff, z);

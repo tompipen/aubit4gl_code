@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.102 2004-12-20 11:48:46 mikeaubury Exp $
+# $Id: newpanels.c,v 1.103 2004-12-23 16:42:46 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.102 2004-12-20 11:48:46 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.103 2004-12-23 16:42:46 mikeaubury Exp $";
 
 /**
  * @file
@@ -771,7 +771,7 @@ A4GL_mja_gotoxy (int x, int y)
  * @todo Describe function
  */
 void
-A4GL_tui_print (char *fmt, ...)
+A4GL_tui_print ( char *fmt, ...)
 {
   va_list args;
   char buff[256];
@@ -788,6 +788,25 @@ A4GL_debug("addsr : %s",buff);
   waddstr (currwin, buff);
 
   A4GL_mja_wrefresh (currwin);
+}
+
+void
+A4GL_tui_printr (int refreshwin, char *fmt, ...)
+{
+  va_list args;
+  char buff[256];
+#ifdef DEBUG
+  {
+    A4GL_debug ("In tui_print");
+  }
+#endif
+  A4GL_chkwin ();
+  va_start (args, fmt);
+  vsprintf (buff, fmt, args);
+  //wprintw (currwin, "%s", buff);
+A4GL_debug("addsr : %s",buff);
+  waddstr (currwin, buff);
+  if (refreshwin) A4GL_mja_wrefresh (currwin);
 }
 
 /**
@@ -1326,7 +1345,9 @@ A4GL_getch_swin (WINDOW * window_ptr)
 
   while (1)
     {
+#ifdef USE_HALF_DELAY
       halfdelay (1);
+#endif
       //a = wgetch (window_ptr);
       a = getch (); // GETCH - getch_swin
 
@@ -1380,7 +1401,9 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 
   while (1)
     {
+#ifdef USE_HALF_DELAY
       halfdelay (1);
+#endif
       if (window_ptr) {
   		keypad (window_ptr, TRUE);
 		a = wgetch (window_ptr);
@@ -1691,7 +1714,7 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
       //A4GL_gui_print (attr, s);
       A4GL_mja_gotoxy (x, y);
       A4GL_debug("X=%d Y=%d",x,y);
-      A4GL_tui_print ("%s", s);
+      A4GL_tui_printr (0,"%s", s);
 
       if (clr_line)
 	{
@@ -2416,7 +2439,7 @@ A4GL_mja_wrefresh (WINDOW * w)
   if (A4GL_screen_mode (-1) && w)
     {
       update_panels ();
-      doupdate ();
+      //doupdate ();
       A4GL_refresh_error_window();
       wrefresh (w);
 
@@ -2437,7 +2460,6 @@ A4GL_mja_refresh (void)
       doupdate ();
       refresh ();
     }
-  //A4GL_gui_refresh ();
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.28 2004-05-19 15:10:02 mikeaubury Exp $
+# $Id: keys.c,v 1.29 2004-12-23 16:42:44 mikeaubury Exp $
 #
 */
 
@@ -183,10 +183,13 @@ int A4GL_is_special_key(int k, int type) {
  * @todo Describe function
  */
 int
-A4GL_key_val2 (char *str)
+A4GL_key_val2 (char *str_x)
 {
   int a;
   char b[3];
+  char str[256];
+  strcpy(str,str_x);
+  A4GL_trim(str);
 
   A4GL_debug ("99 In A4GL_key_val str=%s", str);
 
@@ -233,6 +236,8 @@ A4GL_key_val2 (char *str)
 
 
   if (mja_strcmp ("ESCAPE", str) == 0) return A4GLKEY_ESCAPE;
+  if (mja_strcmp ("ESC", str) == 0) return A4GLKEY_ESCAPE;
+  if (mja_strcmp ("SPACE", str) == 0) return 32;
 
 
 

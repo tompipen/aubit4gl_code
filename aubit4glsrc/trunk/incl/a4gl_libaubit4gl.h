@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.150 2004-12-17 13:19:01 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.151 2004-12-23 16:42:44 mikeaubury Exp $
 #
 */
 
@@ -236,10 +236,10 @@
 #define A4GLKEY_ENTER 		0xff01
 */
 #define A4GLKEY_ENTER 		13
-#define A4GLKEY_DOWN 		0xff02
-#define A4GLKEY_UP 		0xff03
-#define A4GLKEY_LEFT 		0xff04
-#define A4GLKEY_RIGHT 		0xff05
+#define A4GLKEY_DOWN 		2001
+#define A4GLKEY_UP 		2000
+#define A4GLKEY_LEFT 		2002	
+#define A4GLKEY_RIGHT 		2003
 #define A4GLKEY_PGUP 		0xff06
 #define A4GLKEY_PGDN 		0xff07
 #define A4GLKEY_INS 		0xff08
@@ -251,20 +251,20 @@
 #define A4GLKEY_BACKSPACE 	0xff0e
 #define A4GLKEY_SHTAB 		0xff0f
 
-#define A4GLKEY_ACCEPT 		0xff20
-#define A4GLKEY_DELETE		0xff21
-#define A4GLKEY_INSERT		0xff22
-#define A4GLKEY_HELP		0xff23
+#define A4GLKEY_ACCEPT 		2016
+#define A4GLKEY_DELETE		2015
+#define A4GLKEY_INSERT		2014
+#define A4GLKEY_HELP		2008
 #define A4GLKEY_NEXT		0xff24
-#define A4GLKEY_NEXTPAGE	0xff25
+#define A4GLKEY_NEXTPAGE	2005
 #define A4GLKEY_PREV		0xff26
-#define A4GLKEY_PREVPAGE	0xff27
-#define A4GLKEY_INTERRUPT	0xff28
+#define A4GLKEY_PREVPAGE	2006
+#define A4GLKEY_INTERRUPT	2011
 
 
 #define A4GLKEY_CANCEL 		0xfffe
 
-#define A4GLKEY_F(x) 		(0xff10+x)
+#define A4GLKEY_F(x) 		(3000+x-1)
 
   /* ========================= from a4gl_tunable.h ================ */
 

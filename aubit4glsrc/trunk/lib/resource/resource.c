@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.87 2004-12-21 00:23:05 afalout Exp $
+# $Id: resource.c,v 1.88 2004-12-23 16:42:48 mikeaubury Exp $
 #
 */
 
@@ -1065,7 +1065,7 @@ FILE *resourcefile = 0;
 #ifdef DEBUG
 	//dump user resources to debug log
 	if (build_resource_cnt) {
-		int a; 
+		int a;
 		A4GL_debug ("User resources");
       for (a = 0; a < build_resource_cnt; a++) {
 		//It can be security risk to dump some settings to log files

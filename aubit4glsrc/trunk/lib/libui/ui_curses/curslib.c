@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.100 2004-12-16 08:26:47 mikeaubury Exp $
+# $Id: curslib.c,v 1.101 2004-12-23 16:42:45 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.100 2004-12-16 08:26:47 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.101 2004-12-23 16:42:45 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -188,7 +188,7 @@ message (textarea * area, char *str, int x, int a)
   A4GL_newbox (area, pos + x, a, pos + x + strlen (str) + 1, a, NORMAL_BOX);
   A4GL_mja_gotoxy (pos + x + 1, a);
   /* print ("%s", str); */
-  A4GL_tui_print ("%s", str);
+  A4GL_tui_printr (1,"%s", str);
   A4GL_mja_refresh ();
   A4GL_mja_setcolor (NORMAL_TEXT);
 }
@@ -343,7 +343,7 @@ A4GL_error_box (char *str, int attr)
   /*wmove(x,2,2); */
   A4GL_mja_gotoxy (1, 1);
   /* print ("%s", str); */
-  A4GL_tui_print ("%s", str);
+  A4GL_tui_printr (1,"%s", str);
   UILIB_A4GL_zrefresh ();
   A4GL_do_pause ();
   UILIB_A4GL_remove_window ("error");
@@ -388,7 +388,7 @@ A4GL_combi_menu (char *dstn, char *str, int x, int y, int w, int h,
     {
       A4GL_mja_gotoxy (1 + a, 3);
       /* print ("-"); */
-      A4GL_tui_print ("-");
+      A4GL_tui_printr (0,"-");
     }
   fwidth = A4GL_set_combi_opts (nopts, lst, lstwidth, w - 2, nme) + 1;
   last_opt = curr_opt;
@@ -403,7 +403,7 @@ A4GL_combi_menu (char *dstn, char *str, int x, int y, int w, int h,
 			 fwidth, h, INVERT);
   A4GL_mja_gotoxy (1, 1);
   /* print ("%s > %s", str, st); */
-  A4GL_tui_print ("%s > %s", str, st);
+  A4GL_tui_printr (0,"%s > %s", str, st);
   UILIB_A4GL_zrefresh ();
   max_opt = nopts - 1;
   abort_pressed = 0;
@@ -420,7 +420,7 @@ A4GL_combi_menu (char *dstn, char *str, int x, int y, int w, int h,
 	      st[strlen (st) - 1] = 0;
 	      A4GL_mja_gotoxy (1, 1);
 	      /* print ("%s > %s ", str, st); */
-	      A4GL_tui_print ("%s > %s ", str, st);
+	      A4GL_tui_printr (0,"%s > %s ", str, st);
 	    }
 	  else if (a_isprint (a) && strlen (st) <= (w - strlen (str) - 5))
 	    sprintf (st, "%s%c", st, a);
@@ -440,7 +440,7 @@ A4GL_combi_menu (char *dstn, char *str, int x, int y, int w, int h,
 	}
       A4GL_mja_gotoxy (1, 1);
       /* print ("%s > %s", str, st); */
-      A4GL_tui_print ("%s > %s", str, st);
+      A4GL_tui_printr (0,"%s > %s", str, st);
       UILIB_A4GL_zrefresh ();
     }
 
@@ -655,7 +655,7 @@ A4GL_disp_opt (row, x, y, l, type)
   A4GL_mja_gotoxy (x, y);
   sprintf (disopt, "%%-%d.%ds", l, l);
   /* print (disopt, opts[row]); */
-  A4GL_tui_print (disopt, opts[row]);
+  A4GL_tui_printr (0,disopt, opts[row]);
   A4GL_mja_setcolor (NORMAL_MENU);
 
 }
@@ -798,7 +798,7 @@ A4GL_do_pause (void)
   A4GL_mja_gotoxy (1, 2);
   A4GL_mja_setcolor (ERROR_COL);
   /* print ("%s",buff); */
-  A4GL_tui_print ("%s", buff);
+  A4GL_tui_printr (0,"%s", buff);
   UILIB_A4GL_zrefresh ();
   abort_pressed = FALSE;
   doupdate ();
@@ -1616,7 +1616,6 @@ int
 #ifdef DEBUG
       A4GL_debug (">>>> Getting key from menu");
 #endif
-
       a = A4GL_menu_getkey (menu);
 #ifdef DEBUG
       A4GL_debug (">>>> KEY=%d", a);
@@ -1882,7 +1881,7 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 
       if (type == INVERT)
 	{
-	  A4GL_tui_print ("%s", A4GL_string_width (opt1->shorthelp));
+	  A4GL_tui_printr (0,"%s", A4GL_string_width (opt1->shorthelp));
 	}
 
       A4GL_mja_gotoxy (opt1->optpos + offset, 1+menu->menu_line); 
@@ -1891,7 +1890,7 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
       else		  A4GL_menu_setcolor (menu, NORMAL_MENU);
 
       A4GL_debug ("Calling subwin_print...");
-      A4GL_tui_print ("%s", opt1->opt_title);
+      A4GL_tui_printr (0,"%s", opt1->opt_title);
       A4GL_menu_setcolor (menu, NORMAL_MENU);
     }
 }
@@ -1907,7 +1906,7 @@ A4GL_h_disp_title (ACL_Menu * menu, char *str)
   A4GL_mja_gotoxy (1, 1+menu->menu_line);
   A4GL_menu_setcolor (menu, NORMAL_MENU);
   A4GL_debug ("Calling subwin_print...");
-  A4GL_tui_print ("%s", str);
+  A4GL_tui_printr (0,"%s", str);
   A4GL_menu_setcolor (menu, NORMAL_MENU);
   UILIB_A4GL_zrefresh ();
 }
@@ -1926,7 +1925,7 @@ A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
   A4GL_mja_gotoxy ( pos + offset, 1+menu->menu_line);
   A4GL_menu_setcolor (menu, NORMAL_MENU);
   A4GL_debug ("Calling subwin_print...");
-  A4GL_tui_print (" ...");
+  A4GL_tui_printr (0," ...");
 }
 
 
@@ -1947,7 +1946,7 @@ A4GL_clr_menu_disp (ACL_Menu * menu)
   buff=realloc(buff,w+1);
   memset(buff,' ',w);
   buff[w-menu->menu_offset+2]=0;
-  A4GL_tui_print (buff);
+  A4GL_tui_printr (0,buff);
 }
 
 
@@ -2644,7 +2643,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 
 
       A4GL_mja_gotoxy (1, 1+menu->menu_line);
-      A4GL_tui_print ("%s:", menu->menu_title);
+      A4GL_tui_printr (1,"%s:", menu->menu_title);
       a = A4GL_getch_win ();
       A4GL_clr_error_nobox ("Menu");
 

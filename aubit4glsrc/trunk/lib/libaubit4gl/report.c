@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.55 2004-12-17 13:19:03 mikeaubury Exp $
+# $Id: report.c,v 1.56 2004-12-23 16:42:44 mikeaubury Exp $
 #
 */
 
@@ -364,9 +364,9 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
   int b;
   int cnt;
   char *str;
-  A4GL_debug
-    ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d",
-     rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
+  //if (a==0&&s==1) return;
+//printf("rep_print called : %d %d %d\n",a,s,entry);
+  A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d", rep, rep->report, rep->page_no, rep->line_no, rep->col_no, entry);
 
   if (right_margin != 0)
     {
@@ -440,6 +440,44 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
     }
 
 
+  if (a || s==0 || rep->finishing || entry==-5) {
+      if (rep->print_section == SECTION_NORMAL)
+	{
+	  if (rep->line_no > rep->page_length - rep->lines_in_trailer - rep->bottom_margin) {
+	      //printf("Adding trailer..\n");
+	      rep->print_section = SECTION_TRAILER;
+	      rep->report (0, REPORT_PAGETRAILER);	/* report.c:180: too many arguments to function */
+	      rep->print_section = SECTION_NORMAL;
+	    }
+
+	  if (rep->line_no > rep->page_length - rep->bottom_margin)
+	    {
+	      //printf("Bottom margin %d",rep->bottom_margin);
+	      for (cnt = 0; cnt < rep->bottom_margin; cnt++)
+		{
+		  report_print (rep, -1, "\n");
+		  rep->line_no++;
+		  //printf("--->%d\n",rep->line_no);
+		}
+
+	      rep->line_no = 0;
+
+	      //if (a == 0 && s == 5) { return; } else {
+		  if (rep->lines_in_trailer)
+		    {
+		      A4GL_debug ("Calling rep_print");
+		      A4GL_rep_print (rep, 0, 1, 0, -10);
+		    }
+		//}
+
+
+
+	    }
+	}
+   }
+
+
+
 
   if (rep->line_no == 0 && !rep->finishing)
     {
@@ -469,6 +507,10 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
     }
 
   A4GL_debug ("Popping %d parameters", a);
+
+
+
+
   if (a > 0)
     {
       if (rep->col_no == 0)
@@ -496,44 +538,6 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin,
       rep->col_no = 0;
       report_print (rep, -1, "\n");
       rep->line_no++;
-
-
-      if (rep->print_section == SECTION_NORMAL)
-	{
-	  if (rep->line_no >
-	      rep->page_length - rep->lines_in_trailer - rep->bottom_margin)
-	    {
-	      //printf("Adding trailer..\n");
-	      rep->print_section = SECTION_TRAILER;
-	      rep->report (0, REPORT_PAGETRAILER);	/* report.c:180: too many arguments to function */
-	      rep->print_section = SECTION_NORMAL;
-	    }
-
-	  if (rep->line_no > rep->page_length - rep->bottom_margin)
-	    {
-	      //printf("Bottom margin %d",rep->bottom_margin);
-	      for (cnt = 0; cnt < rep->bottom_margin; cnt++)
-		{
-		  report_print (rep, -1, "\n");
-		  rep->line_no++;
-		  //printf("--->%d\n",rep->line_no);
-		}
-
-	      rep->line_no = 0;
-	      if (a == 0 && s == 5)
-		{
-		  return;
-		}
-	      else
-		{
-		  if (rep->lines_in_trailer)
-		    {
-		      A4GL_debug ("Calling rep_print");
-		      A4GL_rep_print (rep, 0, 1, 0, -10);
-		    }
-		}
-	    }
-	}
     }
   return;
 }
@@ -648,8 +652,11 @@ A4GL_need_lines (struct rep_structure *rep)
 {
   int a;
   a = A4GL_pop_int ();
-  if (rep->line_no > (rep->page_length - rep->bottom_margin - a))
+  if (rep->line_no-1 > (rep->page_length - rep->bottom_margin - a - rep->lines_in_trailer)) {	
+
+//printf("NEED\n");
     A4GL_skip_top_of_page (rep, 2);
+  }
 }
 
 /**
@@ -661,24 +668,9 @@ A4GL_skip_top_of_page (struct rep_structure *rep, int n)
 {
   int z;
   int a;
+  a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer+1;
 
-  a =
-    rep->page_length - rep->line_no - rep->bottom_margin -
-    rep->lines_in_trailer;
-
-//printf("pl=%d lineno=%d bm=%d lt=%d\n",
-//rep->page_length,rep->line_no,rep->bottom_margin,
-  //rep->lines_in_trailer);
-
-//if (n==999 && rep->page_no<=1 && a) {
-  //rep->line_no++;
-  //A4GL_rep_print(rep,0,1,0);
-  //A4GL_rep_print(rep,0,0,0);
-//}
-
-  a =
-    rep->page_length - rep->line_no - rep->bottom_margin -
-    rep->lines_in_trailer;
+//printf("Skipping %d lines\n",a);
 
   if (n != 1 || rep->page_no)
     {
@@ -696,15 +688,19 @@ A4GL_skip_top_of_page (struct rep_structure *rep, int n)
 
 //printf("Add %d lines %d %d\n",a,rep->print_section,n);
 
-  if (a)
+  if (a||n==999)
     {
       for (z = 0; z < a; z++)
 	{
 	  A4GL_rep_print (rep, 0, 0, 0, -4);
 	}
-
-      A4GL_rep_print (rep, 0, 0, 0, -5);
+	if (rep->finishing || n==0||n==999) {
+			A4GL_rep_print (rep, 0, 1, 0, -5);
+	}
     }
+
+
+
   //if (n==999&&rep->finishing&&rep->page_no==1) { A4GL_rep_print(rep,0,0,-11);  }
 
 
