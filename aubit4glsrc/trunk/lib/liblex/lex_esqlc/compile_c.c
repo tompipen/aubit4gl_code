@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.181 2004-09-14 11:49:15 mikeaubury Exp $
+# $Id: compile_c.c,v 1.182 2004-09-19 16:18:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.181 2004-09-14 11:49:15 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.182 2004-09-19 16:18:15 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -4980,7 +4980,10 @@ A4GL_get_push_literal (char type, char *value)
   strcpy (buff, "SOME ERROR");
   if (type == 'D')		/* Double */
     {
-      sprintf (buff, "A4GL_push_double(%f);\n", atof (value));
+	printf("-->%s\n",value);
+        sprintf (buff, "A4GL_push_double_str(\"%s\");\n", value);
+	printf("=%s\n",buff);
+	
     }
 
   if (type == 'L')		/* Integer (Long) */
