@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.110 2004-12-17 13:19:03 mikeaubury Exp $
+# $Id: stack.c,v 1.111 2005-02-10 16:06:33 mikeaubury Exp $
 #
 */
 
@@ -489,7 +489,6 @@ A4GL_debug_print_stack();
     {
       f = params[params_cnt - 1].dtype & DTYPE_MASK;
 
-
       if (A4GL_has_datatype_function_i (f, ">STRING"))
 	{
 	  char *(*function) (void *, int , char *, int);
@@ -501,7 +500,19 @@ A4GL_debug_print_stack();
       else
 	{
 	  s = A4GL_new_string (dtype_alloc_char_size[f]);
-	  A4GL_pop_char (s, dtype_alloc_char_size[f]);
+	if (f==DTYPE_DATE) {
+		static int len=0;
+		if (len==0) {
+			if (strchr(A4GL_get_dbdate(),'4')) {
+				len=10;
+			} else {
+				len=8;
+			}
+		}
+	  	A4GL_pop_char (s, len);
+	} else {
+	  	A4GL_pop_char (s, dtype_alloc_char_size[f]);
+	}
 	  if (dtype_alloc_char_size[f]==40) {A4GL_trim(s);}
 	}
 
@@ -515,6 +526,7 @@ A4GL_debug_print_stack();
 	if (params[params_cnt - 1].ptr)
       		params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
     }
+
 
   a = params[params_cnt - 1].size;
   s = A4GL_new_string (a);
@@ -850,9 +862,11 @@ A4GL_debug("51 Have data");
   if (dtype_1 != -1)
     {
       void (*function) (int);
-      A4GL_debug ("7 Calling OP function");
+      A4GL_debug ("7 Calling OP function ?");
 
       function = 0;
+
+
 
 
 /* 
@@ -873,7 +887,18 @@ A4GL_debug("51 Have data");
 	case OP_EQUAL:
 	case OP_NOT_EQUAL:
 	  function = A4GL_find_op_function (dtype_2, dtype_1, OP_MATH);
+
+       if (function==0 && ((dtype_1 & DTYPE_MASK) == DTYPE_CHAR || (dtype_1 & DTYPE_MASK) == DTYPE_VCHAR )) {
+		int dx;
+		int sx;
+		A4GL_debug("Using a string for the second part : %s op=%d  ",params[params_cnt - 1].ptr,d);
+		A4GL_whats_in_a_string(params[params_cnt - 1].ptr,&dx,&sx);
+	
 	}
+
+	}
+
+
 
       //A4GL_debug ("7 Looked for GENERIC MATH handing - %d %d %d - got %p\n", dtype_2, dtype_1, OP_MATH, function);
 
@@ -888,7 +913,7 @@ A4GL_debug("51 Have data");
       if (function)
 	{
 	  /* We've got something to play with */
-	  //A4GL_debug ("7 Calling specified function for %d %d, %d", dtype_1 & DTYPE_MASK, dtype_2 & DTYPE_MASK, d);
+	  A4GL_debug ("7 Calling specified function for %d %d, %d", dtype_1 & DTYPE_MASK, dtype_2 & DTYPE_MASK, d);
 	  function (d);
 	  A4GL_debug ("7 Called function returning");
 	  return;
@@ -896,6 +921,8 @@ A4GL_debug("51 Have data");
 
     }
 
+  A4GL_debug("No specific function for this - try the default - dtype1=%d dtype2=%d",dtype_1 & DTYPE_MASK,dtype_2 & DTYPE_MASK);
+  
 
 
   if ((d) == (OP_ISNULL))
