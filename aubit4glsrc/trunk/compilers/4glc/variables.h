@@ -10,6 +10,7 @@
 #define VARIABLE_TYPE_CONSTANT  3
 #define VARIABLE_TYPE_FUNCTION_DECLARE  4
 #define VARIABLE_TYPE_OBJECT    5
+#define VARIABLE_TYPE_ASSOC_INTERNAL     6
 
 
 // This is used to store a list of

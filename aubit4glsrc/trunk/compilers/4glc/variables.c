@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.48 2004-08-12 15:15:52 mikeaubury Exp $
+# $Id: variables.c,v 1.49 2004-10-02 08:03:19 mikeaubury Exp $
 #
 */
 
@@ -531,6 +531,7 @@ A4GL_debug("scope=%c",scope);
       record_cnt++;
       curr_v[record_cnt] = malloc (sizeof (struct variable));
       set_arr_subscripts (0, record_cnt);
+      curr_v[record_cnt]->variable_type = VARIABLE_TYPE_ASSOC_INTERNAL;
       curr_v[record_cnt]->names.name = ASSOC_INTERNAL;
       curr_v[record_cnt]->names.next = 0;
       curr_v[record_cnt]->is_static = 0;
@@ -851,6 +852,7 @@ add_to_scope (int record_cnt, int unroll)
 
       if (scope == 'C')
 	{
+		printf("SCOPE=C\n");
 	  sprintf (local_scope, "C");
 	  variable_holder = &list_class;
 	  counter = &list_class_cnt;
@@ -1036,6 +1038,10 @@ find_variable_in (char *s, struct variable **list, int cnt)
       /* Now we need to know what to do next....*/
 
       A4GL_debug ("v->variable_type=%d\n", v->variable_type);
+	if (v->variable_type>10 || v->variable_type<0) {
+		A4GL_assertion(1,"Internal error");
+	}
+
       if (v->variable_type == VARIABLE_TYPE_FUNCTION_DECLARE)
 	{
 	  /*debug("Got something .... %s @ %d (%s)\n",s,a,v->names.name);*/
@@ -1144,23 +1150,29 @@ A4GL_debug("find_variable_ptr : %s",s);
   ptr = find_variable_in (s, list_local, list_local_cnt);
   if (ptr)
     {
+	A4GL_debug("local variable");
       return ptr;
     }
 
   ptr = find_variable_in (s, list_module, list_module_cnt);
   if (ptr)
     {
+	A4GL_debug("Module variable");
       return ptr;
     }
 
   ptr = find_variable_in (s, list_global, list_global_cnt);
   if (ptr)
     {
+	A4GL_debug("Global variable");
       return ptr;
     }
 
-  ptr = find_variable_in (s, list_class, list_class_cnt); if (ptr) { return ptr; }
-  {
+
+  ptr = find_variable_in (s, list_class, list_class_cnt);
+
+  if (ptr) {  return ptr; }
+  else  {
 	char buff[1024];
 	char p[1024];
 	int levels;
@@ -1730,6 +1742,7 @@ static long
 isvartype (char *s, int mode)
 {
   struct variable *v;
+	A4GL_debug("isvartype : %s %d\n",s,mode);
   v = find_variable_ptr (s);
   if(v==0) {
 	//extern char *yytext;
@@ -1768,6 +1781,7 @@ long
 isarrvariable (char *s)
 {
   long a;
+A4GL_debug("isarrvar1");
   a = isvartype (s, 1);
   A4GL_debug ("Checking if %s is an array %d", s, a);
   return a;
@@ -1777,6 +1791,7 @@ isarrvariable (char *s)
 long
 isrecvariable (char *s)
 {
+A4GL_debug("isrecvar1");
   return isvartype (s, 2);
 }
 

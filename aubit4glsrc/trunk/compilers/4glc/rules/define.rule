@@ -157,12 +157,7 @@ array_variable :
 	|	ASSOCIATE op_char assoc_open_bracket INT_VALUE assoc_close_bracket WITH_ARRAY OPEN_SQUARE number_arr_assoc CLOSE_SQUARE {
 		    push_associate($<str>4,$<str>8);
 		    push_type(0,0,$<str>8);
-		   
-		}  OF dtype_ident {
-		       /* void pop_associate (char *a);
-		    */ pop_associate(0);
-		   
-		} 
+		}  OF dtype_ident  {pop_associate(0);}
 ;
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.182 2004-09-30 16:09:33 mikeaubury Exp $
+# $Id: mod.c,v 1.183 2004-10-02 08:03:19 mikeaubury Exp $
 #
 */
 
@@ -1111,6 +1111,7 @@ long
 isarrvariable (char *s)
 {
   long a;
+A4GL_debug("isarrvariable\n");
   a = isvartype (s, 1);
   A4GL_debug ("Checking if %s is an array %d", A4GL_null_as_null(s), a);
   return a;
@@ -1130,6 +1131,7 @@ isarrvariable (char *s)
 static long
 isrecvariable (char *s)
 {
+A4GL_debug("isrecvariable\n");
   return isvartype (s, 2);
 }
 #endif
@@ -2204,6 +2206,11 @@ strcpy(var,var_i);
 	  strcpy (nullbind[nullbindcnt].varname, var);
 	  nullbind[nullbindcnt].dtype = dtype;
 	  nullbindcnt++;
+
+	  if (nullbindcnt>=NUMBINDINGS) {
+		a4gl_yyerror("Internal error - ran out of bindings...");
+		return 0;
+	  }
 	}
       return nullbindcnt;
     }
@@ -4241,7 +4248,9 @@ make_sql_string_and_free (char *first, ...)
 
 	if (first!=kw_comma && first!=kw_space && first!=kw_ob && first!=kw_cb) {
 		A4GL_debug("FREE %p (%s)\n",first,first); 
-		free(first);
+		if (A4GL_isyes(acl_getenv("FREE_SQL_MEM"))) {
+			free(first);
+		}
 			first=0;
 	}
   l = strlen (ptr);
@@ -4257,9 +4266,10 @@ make_sql_string_and_free (char *first, ...)
       ptr = realloc (ptr, l);
       strcat (ptr, next);
 	if (next!=kw_comma && next!=kw_space && next!=kw_ob && next!=kw_cb) {
-		
 		A4GL_debug("FREE %p (%s)\n",next,next); 
-		free(next);
+		if (A4GL_isyes(acl_getenv("FREE_SQL_MEM"))) {
+			free(next);
+		}
 	}
     }
   return ptr;

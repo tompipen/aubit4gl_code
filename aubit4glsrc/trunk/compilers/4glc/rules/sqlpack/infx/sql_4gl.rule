@@ -205,7 +205,6 @@ fgl_sql_statement: delete_statement_position {
 		char *ptr;
         	ptr=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
  		$<sql_string>$=strdup(print_select_all(ptr)); free(ptr); 
-		free(ptr);
 
         	if (strstr($<str>2,"FOR UPDATE")) {
                    printf("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");

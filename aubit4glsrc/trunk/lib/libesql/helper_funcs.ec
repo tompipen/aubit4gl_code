@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.17 2004-09-21 08:54:18 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.18 2004-10-02 08:04:37 mikeaubury Exp $
 #
 */
 
@@ -70,6 +70,26 @@ But them missing DtimeToChar and fammily - where are they?
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_esql.h"
 
+#ifdef DIALECT_INFORMIX
+#define DIALECTED 1
+#endif
+
+#ifdef DIALECT_POSTGRES
+#define DIALECTED 1
+#endif
+
+#ifdef DIALECT_QUERIX
+#define DIALECTED 1
+#endif
+
+#ifdef DIALECT_SAP
+#define DIALECTED 1
+#endif
+
+
+#ifndef DIALECTED
+#error "No dialect specified"
+#endif
 
 
 /**
@@ -238,7 +258,7 @@ dtime_t *infx; struct A4GLSQL_dtime *a4gl;
 			ptr=A4GL_char_pop();
 			if (size<0||size>107) {
 			A4GL_debug("DATETIME OUT OF RANGE");
-				printf("ERROR - SEE DEBUG.OUT");
+				printf("ERROR - SEE DEBUG.OUT\n");
 			}
 	#ifdef DIALECT_INFORMIX
 		if (!A4GL_isyes(acl_getenv("KEEP_QUALIFIER"))) {
@@ -305,24 +325,31 @@ else {
 		if (mode=='i') {
 			char *ptr;
 			char buff[255];
-			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {rsetnull(CDTIMETYPE,(void *)infx);return;}
+			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {rsetnull(CINVTYPE,(void *)infx);return;}
 			A4GL_push_interval(a4gl);
 			ptr=A4GL_char_pop();
-			if (size<0||size>107) {
-			A4GL_debug("DATETIME OUT OF RANGE");
-				printf("ERROR - SEE DEBUG.OUT");
-			}
+
 	#ifdef DIALECT_INFORMIX
 		if (!A4GL_isyes(acl_getenv("KEEP_QUALIFIER"))) {
-			infx->in_qual=arr_dtime[size];
+			int ndig_s;
+			int s;
+			int e;
+			int tr[]={0,TU_YEAR,TU_MONTH,TU_DAY,TU_HOUR,TU_MINUTE,TU_SECOND,TU_F1,TU_F2,TU_F3,TU_F4,TU_F5,0};
+			ndig_s=size>>8;
+			s=(size>>4)&0xf;
+			e=(size&0xf);
+			printf("%x %d %d %d %d\n",size,size,ndig_s,s,e);
+			infx->in_qual=TU_IENCODE(ndig_s,tr[s],tr[e]);
 		}
 	#endif
 
 	incvasc(ptr,infx);
 
 	// Debugging stuff only
-		A4GL_debug("Copy datetime in - aubit=%s\n",ptr);
+		A4GL_debug("Copy interval in - aubit=%s\n",ptr);
+		printf("Copy interval in - aubit=%s\n",ptr);
 			intoasc(infx,buff);
+		printf("                Informix=%s\n",buff);
 		A4GL_debug("                Informix=%s\n",buff);
 	// End of Debugging stuff only
 
@@ -339,11 +366,11 @@ else {
 #endif
 //if (*infx==0) indicat=-1;
 #endif
-			if (indicat==-1||risnull(CDTIMETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DTIME,(void *)a4gl,size); return;}
+			if (indicat==-1||risnull(CINVTYPE,(void*)infx)) { A4GL_setnull(DTYPE_INTERVAL,(void *)a4gl,size); return;}
 
 			intoasc(infx,buff);
 			A4GL_push_char(buff);
-			A4GL_pop_param(a4gl,DTYPE_DTIME,size);
+			A4GL_pop_param(a4gl,DTYPE_INTERVAL,size);
 
 
 	// Debugging stuff only
