@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.41 2004-05-12 08:14:00 mikeaubury Exp $
+# $Id: variables.c,v 1.42 2004-05-13 18:13:00 whaslbeck Exp $
 #
 */
 
@@ -81,6 +81,10 @@ static struct record_list *add_to_record_list (struct record_list **list_ptr,
 void make_function (char *name, int record_cnt);
 static int is_system_variable (char *s);
 char find_variable_scope (char *s_in);
+
+void print_class_variables (void);
+void dump_variable_records (struct variable **v, int cnt, int lvl);
+void set_last_class_var(char *s);
 /******************************************************************************/
 
 int A4GL_findex (char *str, char c);
