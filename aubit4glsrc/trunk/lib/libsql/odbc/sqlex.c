@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: sqlex.c,v 1.1 2001-12-03 15:44:37 mikeaubury Exp $
+* $Id: sqlex.c,v 1.2 2001-12-21 04:14:41 afalout Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.1  2001/12/03 15:44:37  mikeaubury
+*	New dl sql stuff
+*	
 *	Revision 1.4  2001/09/20 08:55:16  afalout
 *	Enabling makefiles to compile all builds from one environment
 *	
@@ -114,11 +117,11 @@ alloc_mem[MEMSIZE];
 
 struct str_resource *user_resource = 0;
 
-char *acl_getenv (char *s);
+//char *acl_getenv (char *s);
 int line[80];
 FILE *f = 0;
 char invalid[] = "<Invalid>";
-char *find_str_resource (char *s);
+//char *find_str_resource (char *s);
 
 #define USERS_STRING 0
 #define USERS_LONG 0
@@ -132,10 +135,10 @@ int clrline (int line[]);
 int rm_txt (int a, int line[], int ign);
 int remove_it (int a);
 char *getres (char *s);
-char *acl_getenv (char *s);
-char *chk_str_resource (char *s, struct str_resource *res);
-char *find_str_resource (char *s);
-int replace_str_resource (char *s, char *neww);
+//char *acl_getenv (char *s);
+//char *chk_str_resource (char *s, struct str_resource *res);
+//char *find_str_resource (char *s);
+//int replace_str_resource (char *s, char *neww);
 int add_userptr (void *ptr);
 
 
@@ -474,25 +477,25 @@ getres (char *s)
 
 
 
-
+/*
 char *
 wgetenv (char *s)
 {
-/*
-#ifdef WIN32
-  static char buff[256];
-  if (get_regkey (s, buff, 255))
-    return buff; // was strdup(buff)
-  else
-    return 0;
-#else
-*/
+
+//#ifdef WIN32
+//  static char buff[256];
+//  if (get_regkey (s, buff, 255))
+//    return buff; // was strdup(buff)
+//  else
+//    return 0;
+//#else
+
   return getenv (s);
 //#endif
 }
+*/
 
-
-
+/*
 char *
 acl_getenv (char *s)
 {
@@ -512,7 +515,8 @@ acl_getenv (char *s)
 
   return ptr;
 }
-
+*/
+/*
 chk_dbdate (char *p)
 {
   int d, m, y, del, ysize;
@@ -558,13 +562,13 @@ chk_dbdate (char *p)
 
 
 }
+*/
 
 
-
-
+/*
 struct str_resource builtin_resource[] =
 {
-/* defaults for environment */
+// defaults for environment
   {"AUBITGUI", "text"},
   {"ACL_MOUSE", "N"},
   {"NOCURSES", "N"},
@@ -607,7 +611,7 @@ struct str_resource builtin_resource[] =
   {"MENUMNORMAL", "0"},
   {"MENUMHIGHLIGHT", "<>"},
 
-/* abbr week days */
+// abbr week days
   {"_DAY0", "Sun"},
   {"_DAY1", "Mon"},
   {"_DAY2", "Tue"},
@@ -616,7 +620,7 @@ struct str_resource builtin_resource[] =
   {"_DAY5", "Fri"},
   {"_DAY6", "Sat"},
 
-/* full week days */
+// full week days
   {"_FDAY0", "Sunday"},
   {"_FDAY1", "Monday"},
   {"_FDAY2", "Tuesday"},
@@ -625,7 +629,7 @@ struct str_resource builtin_resource[] =
   {"_FDAY5", "Friday"},
   {"_FDAY6", "Saturday"},
 
-/* abbr months */
+// abbr months
   {"_MON1", "Jan"},
   {"_MON2", "Feb"},
   {"_MON3", "Mar"},
@@ -639,7 +643,7 @@ struct str_resource builtin_resource[] =
   {"_MON11", "Nov"},
   {"_MON12", "Dec"},
 
-/* Full months */
+// Full months
   {"_FMON1", "January"},
   {"_FMON2", "February"},
   {"_FMON3", "March"},
@@ -653,7 +657,7 @@ struct str_resource builtin_resource[] =
   {"_FMON11", "November"},
   {"_FMON12", "December"},
 
-/* addition for days */
+// addition for days
   {"_DAYTH1", "st"},
   {"_DAYTH2", "nd"},
   {"_DAYTH3", "rd"},
@@ -685,30 +689,30 @@ struct str_resource builtin_resource[] =
   {"_DAYTH29", "th"},
   {"_DAYTH30", "th"},
   {"_DAYTH31", "st"},
-/* default lines... */
+// default lines...
   {"_FORMLINE", "3"},
   {"_MENULINE", "1"},
   {"_PROMPTLINE", "1"},
   {"_ERRORLINE", "-1"},
   {"_MESSAGELINE", "-2"},
-  {"_COMMENTLINE", "-2"}, 
-  
-/* WINDOWS Compilation options */ 
-  {"W32LIBSDIR", "-L/acl/lib"}, 
-  {"W32LIBS", "-lpdcurs -lgdi32 -luser32 -lwsock32"}, 
-  {"W32FGLLIBSDIR", "-L/acl/lib"}, 
-  {"W32FGLLIBS_SHARED", "-laclshared -lm"}, 
-  {"W32ODBC", "-lodbc32 -lodbccp32"}, 
-  {"W32FGLLIBS", "-laclall -lm"}, 
-  {"W32INCLDIR", "-I/acl/incl"}, 
-  {"W32GCC", "gcc -s -O"}, 
-  
-/* End of definitions */
+  {"_COMMENTLINE", "-2"},
+
+// WINDOWS Compilation options
+  {"W32LIBSDIR", "-L/acl/lib"},
+  {"W32LIBS", "-lpdcurs -lgdi32 -luser32 -lwsock32"},
+  {"W32FGLLIBSDIR", "-L/acl/lib"},
+  {"W32FGLLIBS_SHARED", "-laclshared -lm"},
+  {"W32ODBC", "-lodbc32 -lodbccp32"},
+  {"W32FGLLIBS", "-laclall -lm"},
+  {"W32INCLDIR", "-I/acl/incl"},
+  {"W32GCC", "gcc -s -O"},
+
+// End of definitions
   {"", 0}
 };
 
-
-
+*/
+/*
 char *
 chk_str_resource (char *s, struct str_resource *res)
 {
@@ -728,52 +732,53 @@ chk_str_resource (char *s, struct str_resource *res)
     }
   return 0;
 }
-
+*/
+/*
 char *
 find_str_resource_int (char *search, int a)
 {
   char *ptr;
   char s[256];
   sprintf (s, "%s%d", search, a);
-  /* look in user resources first */
+  // look in user resources first
   ptr = chk_str_resource (s, user_resource);
   if (ptr)
     return ptr;
-  /* Check built-in resources next */
+  // Check built-in resources next
   ptr = chk_str_resource (s, builtin_resource);
   if (ptr)
     return ptr;
   return 0;
 }
-
-
+*/
+/*
 char *
 find_str_resource (char *s)
 {
   char *ptr;
-  /* look in user resources first */
+  // look in user resources first
   ptr = chk_str_resource (s, user_resource);
   if (ptr)
     return ptr;
-  /* Check built-in resources next */
+  // Check built-in resources next
   ptr = chk_str_resource (s, builtin_resource);
   if (ptr)
     return ptr;
   return 0;
 }
-
-
+*/
+/*
 int
 replace_str_resource (char *s, char *neww)
 {
   void *ptr;
-/* use with care ! */
+// use with care !
   ptr = chk_str_resource (s, builtin_resource);
   if (ptr)
     strcpy (ptr, neww);
   return 0;
 }
-
+*/
 
 int
 add_userptr (void *ptr)
@@ -1331,3 +1336,4 @@ set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
 
 
 
+//--------------------------- EOF --------------------------
