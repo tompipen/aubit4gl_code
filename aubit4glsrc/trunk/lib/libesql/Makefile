@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.11 2004-02-03 04:55:07 afalout Exp $
+# $Id: Makefile,v 1.12 2004-03-25 06:20:04 afalout Exp $
 #
 
 ROOT    =../..
@@ -72,20 +72,28 @@ endif
 all: ${ALL}
 	@echo "Done: ${ALL}"
 
+###################
 libESQL_INFORMIX${SO_EXT}: ${LIBROOT}/libESQL_INFORMIX${SO_EXT}
 ${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
 	${IFMX_ESQLC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
+#Solaris:
+#	libtool --mode=link gcc -shared helper_funcs.o -o libESQL_INFORMIX.so \ 
+#		-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql  `esql -libs`
+#	cp *.so .
 
+###################
 libESQL_POSTGRES${SO_EXT}: ${LIBROOT}/libESQL_POSTGRES${SO_EXT}
 ${LIBROOT}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 # -Bstatic
 #gcc: file path prefix "static" never used
 
+###################
 libESQL_SAP${SO_EXT}: ${LIBROOT}/libESQL_SAP${SO_EXT}
 ${LIBROOT}/libESQL_SAP${SO_EXT}: helper_funcs_sap.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
+###################
 libESQL_QUERIX${SO_EXT}: ${LIBROOT}/libESQL_QUERIX${SO_EXT}
 ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 	${CC} ${STATIC} -g --shared $^ -o $@ ${LIBAUBIT4GL} ${QUERIX_LFLAGS} ${QUERIX_LIBS}
@@ -95,15 +103,22 @@ ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 ##                              Sub-targets
 ## ==================================================================
 
+###################
 #Infromix ESQL/C compiler
 helper_funcs_informix.o: helper_funcs.ec
 	${IFMX_ESQLC} -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
-
+#solaris:
+#	esql -e helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl
+#	libtool --mode=compile gcc -fPIC -I$INFORMIXDIR/incl/esql -I.. \ 
+#		-I/home/aubit4gl/aubit4glsrc/incl  helper_funcs.c -c -o helper_funcs.o
+	
+###################
 #PostgreSQL ESQL/C compiler
 helper_funcs_postgresql.o: helper_funcs.ec
 	${PG_ESQLC} -C INFORMIX -t $^
 	${CC} -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} -I${ROOT}/incl
 
+###################
 #SAP ESQL/C compiler
 helper_funcs_sap.o: helper_funcs.ec
 #cpc will allways add .cpc extension to any source files
@@ -111,6 +126,7 @@ helper_funcs_sap.o: helper_funcs.ec
 	${SAPDB_ESQLC} $^ -I${INFORMIXDIR}/incl/esql -I${ROOT}/incl -o $@ -DDIALECT_SAP -I/opt/sapdb/interfaces/precompiler/incl
 	rm $^.cpc
 
+###################
 #Querix ESQL/C compiler
 helper_funcs_querix.o: helper_funcs.ec
 #must remove .c file or .ec will not get recompiled

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.30 2004-02-09 08:07:49 mikeaubury Exp $
+# $Id: Makefile.in,v 1.31 2004-03-25 06:20:04 afalout Exp $
 #
 
 ROOT		=../../..
@@ -164,6 +164,9 @@ else
     QUERIX_LIBS=-lesql
 endif
 
+ifeq "${TARGET_OS}" "solaris"
+	ESQL_FLAGS+=-fPIC
+fi
 
 ## ==================================================================
 ##                              Targets
@@ -180,10 +183,14 @@ ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
 #	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
 ifneq "${COMSPEC}" ""
 	"@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
-#	${CC} $(basename $<).c -o $(basename $<).o ${ESQL_INCLPATH} -I"E:/Program files/W2000/Informix/CSDK/incl/esql"
-	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.c ${IFX_LIBS} -o $@ ${LD_POSTFLAGS} -laubit4gl  -I"E:/Program files/W2000/Informix/CSDK/incl/esql" -I../../../incl -I. -I.. -L../..
+#	${CC} $(basename $<).c -o $(basename $<).o ${ESQL_INCLPATH} \
+#		-I"E:/Program files/W2000/Informix/CSDK/incl/esql"
+	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.c ${IFX_LIBS} -o $@ ${LD_POSTFLAGS} \
+		-laubit4gl  -I"E:/Program files/W2000/Informix/CSDK/incl/esql" \
+		-I../../../incl -I. -I.. -L../..
 else
-	export INFORMIXC=@INFORMIXC@; "@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
+	export INFORMIXC=@INFORMIXC@; "@IFMX_ESQLC@" -c $^ ${ESQL_FLAGS} \
+		${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 endif
 

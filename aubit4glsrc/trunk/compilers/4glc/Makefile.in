@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.79 2004-03-21 00:47:21 afalout Exp $
+# $Id: Makefile.in,v 1.80 2004-03-25 06:19:12 afalout Exp $
 #
 
 ROOT		=../..
@@ -126,7 +126,8 @@ ifeq "${TARGET_OS}" "linux"
 endif
 
 ifeq "${TARGET_OS}" "solaris"
-	LINKLIBS	+=-ldl
+	#LINKLIBS	+=-ldl
+	AUBIT_LIB	+=-ldl
 endif
 
 ifeq "something" "blah"
