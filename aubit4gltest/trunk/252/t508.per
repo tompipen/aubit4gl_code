@@ -1,0 +1,48 @@
+
+DATABASE FORMONLY
+
+SCREEN
+{
+
+
+
+   Media           Expected    Qty        Pickups          Loans
+\g--------------------------------------------------------------------------------
+  [des      ] [exp         ] [cnt ] [pu          ] [ln          ]
+  [des      ] [exp         ] [cnt ] [pu          ] [ln          ]
+  [des      ] [exp         ] [cnt ] [pu          ] [ln          ]
+
+
+			this is a line with three tabs at the beginning
+ 			this is a line with one space plus three tabs 
+                        this is a line with spaces filled at the beginning
+ Three lines above should appear the same on the screen.
+
+
+\g--------------------------------------------------------------------------------
+
+
+
+
+}
+
+ATTRIBUTES
+des = FORMONLY.description type char, autonext; 
+exp = FORMONLY.bal_amount TYPE INTEGER, include = (null, 0 to 29) ;
+cnt = FORMONLY.bal_units  TYPE INTEGER, FORMAT = "---&" ;
+pu = FORMONLY.price type decimal, picture="######.##",
+    {required, include  = (null,0000001 TO 9999999),}
+        comments = " Invoice Number"; 
+ln = FORMONLY.loan TYPE INTEGER;
+END
+
+INSTRUCTIONS
+DELIMITERS "[]"
+SCREEN RECORD ftlbal[3]
+(
+	FORMONLY.description,
+	FORMONLY.bal_amount,
+	FORMONLY.bal_units,
+	FORMONLY.price,
+	FORMONLY.loan
+)
