@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.17 2003-09-19 14:44:01 mikeaubury Exp $
+# $Id: array.c,v 1.18 2003-12-03 12:23:24 mikeaubury Exp $
 #*/
 
 /**
@@ -452,6 +452,8 @@ draw_arr (arr, -1, arr->arr_line);
 	break;
 
 
+    case A4GLKEY_ENTER:
+    case 13:
     case '\t':
     case A4GLKEY_RIGHT:
     case A4GLKEY_DOWN:
