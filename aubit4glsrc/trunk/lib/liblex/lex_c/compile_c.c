@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.49 2003-02-05 22:33:36 mikeaubury Exp $
+# $Id: compile_c.c,v 1.50 2003-02-06 12:12:26 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2246,11 +2246,11 @@ print_foreach_start (void)
 void
 print_foreach_next (char *cursorname, char *into)
 {
-  int ni;
+  int no;
   printc ("A4GLSQL_set_sqlca_sqlcode(0);\n");
   printc ("A4GLSQL_open_cursor(0,%s);\n", cursorname);
   printc ("while (1) {\n");
-  ni = print_bind ('o');
+  no = print_bind ('o');
   printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname,
 	  FETCH_RELATIVE, no);
   printc ("if (sqlca.sqlcode<0||sqlca.sqlcode==100) break;\n");
