@@ -40,6 +40,10 @@ menu "Hello test"
 
 
 			let env = fgl_getenv("MY__impossible_TEST")
+			if env is null then
+				error "Env is null"
+				sleep 1
+			end if
 			#this will display empty line, since fgl_getenv will fail to assign "env"
 		    #variable because it is not defined anywhere, and set it to NULL string (bug #470960)
 			display "MY_TEST = ", env clipped at 7,5 #6
