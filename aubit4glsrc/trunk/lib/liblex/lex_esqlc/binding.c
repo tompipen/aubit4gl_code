@@ -45,7 +45,10 @@ print_conversions (char i)
     {
       printh ("%s /* buff_out */\n", buff_out);
     }
-
+  if (i=='0') {
+	strcpy(buff_in,"");
+	strcpy(buff_out,"");
+  }
 
 }
 

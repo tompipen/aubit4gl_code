@@ -684,6 +684,9 @@ int intprflg=0;
   //printc(" /* nibind=%d a2=%s*/\n",get_bind_cnt('i'),a2);
   //printc(" /* nobind=%d a3=%s */\n",get_bind_cnt('o'),a3);
 
+  if (a2[0]=='"') { start_bind('i',0); start_bind('o',0); last_ni=0; last_no=0; 
+  	print_conversions('0');
+  }
 
   if (strstr (a2, "INTO $") != 0)
     {
@@ -722,10 +725,6 @@ int intprflg=0;
     }
   printc (";");
   printc(" /* A2='%s'*/",a2);
-  if (a2[0]=='"') {
-	last_ni=0;
-	last_no=0;
-  }
   print_copy_status ();
   printh("int acli_ni_%s=%d;\n",A4GL_strip_quotes(a3),last_ni);
   printh("int acli_no_%s=%d;\n",A4GL_strip_quotes(a3),last_no);
