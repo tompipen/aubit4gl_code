@@ -38,10 +38,17 @@
 #
 #####################################################
 
+#ANONCVS=$1
+#UPDATE=$2
+
+ANONCVS=-anon
+UPDATE=-upd
+
+
 export HOME=/home/users/a/af/afalout
 export WWW=/home/groups/a/au/aubit4gl/htdocs
 
-if [ "$1" = "-anon" ]
+if [ "$ANONCVS" = "-anon" ]
 then
 	export CVS_RSH=
 	export CVSROOT=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
@@ -49,7 +56,7 @@ else
 	autosfcvsanonpasswd
 fi
 
-if [ "$2" = "-upd" ]
+if [ "$UPDATE" = "-upd" ]
 then
 	cvs update 2>&1
 	RET=$?
@@ -67,7 +74,7 @@ then
     exit
 fi
 
-#We don't have the right to cd out of $WWW
+#We don't have the right to cd out of $WWW when running from PHP
 cd $HOME
 RET=$?
 if test "$RET" != "0"
@@ -76,7 +83,7 @@ then
     exit $RET
 fi
 
-if [ "$1" = "-anon" ]
+if [ "$ANONCVS" = "-anon" ]
 then
 	cvs -z8 checkout aubit4glwww
 else
@@ -127,7 +134,7 @@ then
     exit $RET
 fi
 
-if [ "$1" = "-anon" ]
+if [ "$ANONCVS" = "-anon" ]
 then
 	cvs -z8 checkout aubit4gldoc
 else
@@ -143,11 +150,11 @@ fi
 
 echo "Aubit web site doccumentation (aubit4gldoc) refreshed from CVS"
 
-sh refresh_hy4gl.sh $1
+sh refresh_hy4gl.sh $ANONCVS
 RET=$?
 if test "$RET" != "0"
 then
-    echo "Error on 	sh refresh_hy4gl.sh $1"
+    echo "Error on 	sh refresh_hy4gl.sh $ANONCVS"
     exit $RET
 fi
 
