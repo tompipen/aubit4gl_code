@@ -1,7 +1,7 @@
 cd /home/aubit4gl/aubit4glsrc/lib/libesql
 set -x
 
-esql -static helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl -L/home/aubit4gl/aubit4glsrc/lib -laubit4gl --shared -o libESQL_INFORMIX.so
+esql -DDIALECT_INFORMIX -static helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl -L/home/aubit4gl/aubit4glsrc/lib -laubit4gl --shared -o libESQL_INFORMIX.so -I$INFORMIXDIR/incl
 cp libESQL_INFORMIX.so ..
 
 export POSTGRESDIR=/usr/local/pgsql

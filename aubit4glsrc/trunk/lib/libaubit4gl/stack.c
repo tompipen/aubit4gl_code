@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.113 2005-02-17 12:01:23 mikeaubury Exp $
+# $Id: stack.c,v 1.114 2005-03-04 20:23:43 mikeaubury Exp $
 #
 */
 
@@ -1789,6 +1789,7 @@ int first;
 	{
 	  a = A4GL_pop_double ();
 	  b = A4GL_pop_double ();
+	  A4GL_debug("%lf %lf",a,b);
 	  diff=b-a;
 	  if (diff<0) diff=0.0-diff;
 #ifdef DEBUG

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.110 2005-02-08 18:53:29 mikeaubury Exp $
+# $Id: sql.c,v 1.111 2005-03-04 20:25:04 mikeaubury Exp $
 #
 */
 
@@ -49,6 +49,7 @@
 #define DTIME_AS_CHAR
 #endif
 
+//#define FREE
 
 #ifdef PGODBC
 #define DTIME_AS_CHAR
@@ -72,6 +73,7 @@ int dtime_as_char=1;
 int dtime_as_char=0;
 #endif
 
+static int do_fake_transactions(void) ;
 
 
 /*
@@ -405,6 +407,7 @@ dll_import sqlca_struct a4gl_sqlca;
 
 
 static void ensure_as_char() {
+	
 	if (A4GL_isyes(acl_getenv("DATE_AS_CHAR"))) { date_as_char=1; }
 	if (A4GL_isyes(acl_getenv("DTIME_AS_CHAR"))) { dtime_as_char=1; }
 
@@ -1226,7 +1229,6 @@ A4GL_debug("XXX s=%s ni=%d ibind=%p",s,ni,ibind);
       cid->statement->ni = ni;
       cid->statement->ibind = (struct BINDING *) ibind;
     }
-
 
 
   rc =
@@ -2294,12 +2296,14 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
       return 0;
     }
 
-// if we're not already in a transaction - start one
-  if (!in_transaction)
-    {
-      fake_tr = 1;
-      A4GLSQL_commit_rollback (-1);
-    }
+
+   if (do_fake_transactions()) {
+	// if we're not already in a transaction - start one
+  	if (!in_transaction) {
+      		fake_tr = 1;
+      		A4GLSQL_commit_rollback (-1);
+    	}
+  }
   rc = SQLExecute ((SQLHSTMT) hstmt);
 
 #ifdef DEBUG
@@ -2410,6 +2414,9 @@ make[2]: *** [sql.o] Error 1
       if (xerrno > 0 && xerrno != 100)
 	xerrno = 0 - xerrno;
 #ifdef DEBUG
+	if (strcmp(s1,"S1010")==0) { // Function sequence error
+			A4GL_assertion(1,"Function sequence error ?");
+	}
       A4GL_debug ("After SQL Error %d %s %s\n%x", xerrno, s1, s2, xerrno2);
 #endif
       if (strlen (s1) == 0)
@@ -4634,6 +4641,17 @@ A4GLSQL_set_sqlca_sqlcode (int a)
   a4gl_status = a;
   a4gl_sqlca.sqlcode = a;
 }
+
+
+static int do_fake_transactions(void) {
+static int d=-1;
+if (d==-1) {
+	d=A4GL_isyes(acl_getenv("FAKE_TRANSACTIONS"));
+}
+return d;
+}
+
+
 
 /**
  * Check if a environment variable is set (true/false).

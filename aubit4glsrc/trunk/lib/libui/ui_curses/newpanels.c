@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.105 2005-02-04 12:22:04 mikeaubury Exp $
+# $Id: newpanels.c,v 1.106 2005-03-04 20:25:05 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.105 2005-02-04 12:22:04 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.106 2005-03-04 20:25:05 mikeaubury Exp $";
 
 /**
  * @file
@@ -1347,11 +1347,15 @@ A4GL_getch_swin (WINDOW * window_ptr)
 
   while (1)
     {
-#ifdef USE_HALF_DELAY
-      halfdelay (1);
-#endif
-      //a = wgetch (window_ptr);
+	int to;
+	to=A4GL_has_timeout(-1);
+	if (to) { 
+		halfdelay (to); 
+	}
+
+
       a = getch (); // GETCH - getch_swin
+
 
       if (a == KEY_MOUSE)
 	{
@@ -1365,7 +1369,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
 	  break;
 	}
 
-      if (a != -1)
+      if (a != -1 || to)
 	{
 	  A4GL_debug ("MJAC Key Pressed %d", a);
 	  break;

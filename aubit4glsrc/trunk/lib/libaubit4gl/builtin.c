@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.77 2005-02-17 11:51:45 mikeaubury Exp $
+# $Id: builtin.c,v 1.78 2005-03-04 20:23:42 mikeaubury Exp $
 #
 */
 
@@ -1196,6 +1196,19 @@ int aclfgl_fgl_getkey(int n) {
 	A4GL_debug("FGL1");
 	A4GLSQL_set_status (0, 0);
 	a=A4GL_get_key(-1);
+	A4GL_push_long(a);
+	return 1;
+}
+
+int aclfgl_fgl_getkey_wait(int n) {
+	int a;
+	int wait;
+
+	A4GL_debug("FGL1");
+	wait=A4GL_pop_long();
+	
+	A4GLSQL_set_status (0, 0);
+	a=A4GL_get_key(wait);
 	A4GL_push_long(a);
 	return 1;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.103 2005-02-20 19:34:43 mikeaubury Exp $
+# $Id: curslib.c,v 1.104 2005-03-04 20:25:05 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.103 2005-02-20 19:34:43 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.104 2005-03-04 20:25:05 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -3084,7 +3084,17 @@ int UILIB_A4GL_get_key(int timeout) {
 int x;
 	abort_pressed=0;
 	A4GL_chkwin();
+
+	if (timeout) {
+		A4GL_has_timeout(timeout);
+	}
+
 	x=A4GL_getch_win();
+
+	if (timeout) {
+		A4GL_has_timeout(0);
+	}
+         
 	A4GL_debug("get_key returns %d (%x)",x,x);
 	if (A4GL_is_special_key(x,A4GLKEY_ACCEPT))   {
 			A4GL_debug("Looks like an accept - returning that instead");
@@ -3153,5 +3163,12 @@ PANEL *pl;
 		return get_below_panel(curr_error_panel);
 	}
 	return pl;
+}
+
+
+int A4GL_has_timeout(int a) {
+static int to=0;
+	if (a>=0)  to=a;
+	if (a<0) return to;
 }
 /* ============================== EOF ============================== */
