@@ -1,6 +1,6 @@
 ###########################################################################
 #
-#   @(#)$Id: q4gl.mk,v 1.14 2003-05-08 08:17:27 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.15 2003-06-13 05:49:18 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -75,7 +75,6 @@
 #
 #modwinguid.so
 #modwingui.so
-
 
 ###########################
 #Version of Querix compiler in use
@@ -222,7 +221,16 @@ QXCC				=gcc
 Q4GL_CC_CMD     	=fglc${QXDB}
 Q4GL_CC_ENV     	=
 #${CFLAGS}
-Q4GL_CC_FLAGS   	=-a -w -D -I -z -Ig
+Q4GL_CC_FLAGS   	=-a -w -D -I -z -Ig -Mi
+
+
+#Querix specific comment (--*)
+#requires a compiler switch (by default it will accept 4Js comments). Add '-Mi'
+#to $FGLFLAGS and it should be OK ('-M4' is the default for 4Js comments).
+#The compiler will only work in one mode at a time, so if you pass '-Mi' to
+#fglc, it will treat 4Js comments as ordinary comments. Passing '-Mn' will set
+#it into 'all comments are comments' mode.
+
 #-ansi Causes verification of SQL statements for ANSI compliance.
 #-w Enables extra warning tracking at runtime.
 #-anyerr Enables tracking of variable type conversion and arithmetic errors in programs while in runtime, that use
@@ -236,7 +244,7 @@ Q4GL_CC_FLAGS   	=-a -w -D -I -z -Ig
 #-Ig The mutliple symbol definition problem can be avoided by instructing the
 #    compiler not to initialize global symboils by default since these are
 #    global symbols they are actually null initialized during program
-#    initialization. This means that all string variables will be nulled ("\0"), 
+#    initialization. This means that all string variables will be nulled ("\0"),
 #    and numeric variables set to 0.
 
 #######################
