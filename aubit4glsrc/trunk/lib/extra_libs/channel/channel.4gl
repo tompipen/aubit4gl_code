@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.6 2004-12-01 11:07:13 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.7 2004-12-01 11:26:45 mikeaubury Exp $
 }
 
 {**
@@ -108,27 +108,25 @@ endcode
 code
 	{
 	FILE *x;
-		x=A4GL_has_pointer(handle,CHANNEL_IN);
-		if (x) {
+		if (A4GL_has_pointer(handle,CHANNEL_IN)) {
 			// Already open ?
-			x=A4GL_find_pointer(handle,CHANNEL_IN);
+			x=(FILE *)A4GL_find_pointer(handle,CHANNEL_IN);
 			fclose(x);
 			x=0;
 			A4GL_del_pointer(handle,CHANNEL_IN);
 		}
 	
-		x=A4GL_has_pointer(handle,CHANNEL_OUT);
-		if (x) {
+		if (A4GL_has_pointer(handle,CHANNEL_OUT)) {
 			// Already open ?
-			x=A4GL_find_pointer(handle,CHANNEL_OUT);
+			x=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
 			fclose(x);
 			x=0;
 			A4GL_del_pointer(handle,CHANNEL_OUT);
 		}
 	
-		A4GL_add_pointer(handle,CHANNEL_IN, lv_file_i);
-		A4GL_add_pointer(handle,CHANNEL_OUT,lv_file_o);
-		A4GL_add_pointer(handle,CHANNEL_PIPE,0);
+		A4GL_add_pointer(handle,CHANNEL_IN, (void *)lv_file_i);
+		A4GL_add_pointer(handle,CHANNEL_OUT,(void *)lv_file_o);
+		A4GL_add_pointer(handle,CHANNEL_PIPE,(void *)0);
 	}
 endcode
 end function
@@ -185,7 +183,7 @@ code
 	{
 	FILE *x;
 		if (A4GL_has_pointer(handle,CHANNEL_IN)) {
-			x=A4GL_find_pointer(handle,CHANNEL_IN);
+			x=(FILE *)A4GL_find_pointer(handle,CHANNEL_IN);
 			// Already open ?
 			fclose(x);
 			x=0;
@@ -193,16 +191,16 @@ code
 		}
 	
 		if (A4GL_has_pointer(handle,CHANNEL_OUT)) {
-			x=A4GL_find_pointer(handle,CHANNEL_OUT);
+			x=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
 			// Already open ?
 			fclose(x);
 			x=0;
 			A4GL_del_pointer(handle,CHANNEL_OUT);
 		}
 	
-		A4GL_add_pointer(handle,CHANNEL_IN, lv_file_i);
-		A4GL_add_pointer(handle,CHANNEL_OUT,lv_file_o);
-		A4GL_add_pointer(handle,CHANNEL_PIPE,1);
+		A4GL_add_pointer(handle,CHANNEL_IN, (void *)lv_file_i);
+		A4GL_add_pointer(handle,CHANNEL_OUT,(void *)lv_file_o);
+		A4GL_add_pointer(handle,CHANNEL_PIPE,(void *)1);
 	}
 endcode
 end function
@@ -222,7 +220,7 @@ code
 	if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
 		A4GL_del_pointer(handle,CHANNEL_DELIM);
 	}
-	A4GL_add_pointer(handle,CHANNEL_DELIM, (void *)delim[0]);
+	A4GL_add_pointer(handle,CHANNEL_DELIM, (void *)((int)delim[0]));
 endcode
 end function
 
@@ -244,14 +242,14 @@ code
 		}
 		
 		if (A4GL_has_pointer(handle,CHANNEL_IN)) {
-			x=A4GL_find_pointer(handle,CHANNEL_IN);
+			x=(FILE *)A4GL_find_pointer(handle,CHANNEL_IN);
 			if (ispipe)  pclose(x);
 			else fclose(x);
 			A4GL_del_pointer(handle,CHANNEL_IN);
 		}
 		
 		if (A4GL_has_pointer(handle,CHANNEL_OUT)) {
-			x=A4GL_find_pointer(handle,CHANNEL_OUT);
+			x=(FILE *)A4GL_find_pointer(handle,CHANNEL_OUT);
 			if (ispipe)  pclose(x);
 			else fclose(x);
 			A4GL_del_pointer(handle,CHANNEL_OUT);
@@ -276,7 +274,7 @@ define nvars integer
 end function
 
 code
-	aclfgl_fgl_write(int nargs) {
+aclfgl_fgl_write(int nargs) { // NOT USED
 	char *handle;
 	FILE *f;
 	char delim;
@@ -288,8 +286,8 @@ code
 		if (A4GL_has_pointer(handle,CHANNEL_OUT)) {
 		}
 	
-	
-	}
+	return 0;
+}
 endcode
 
 code
@@ -302,6 +300,7 @@ FILE *f;
 ibind=i;
 obind=o;
 char delim_c;
+int d;
 char *ptr;
 
 	if (ni==0) { A4GL_push_int(0); return 1;}
@@ -377,6 +376,7 @@ char buff[20000];
 struct BINDING *ibind;
 struct BINDING *obind;
 char delim_c;
+int d;
 char *ptr;
 int a;
 ibind=i;
@@ -421,12 +421,13 @@ int nn;
 char *ptr2;
 char **px=0;
 int l=0;
+int d;
 char delim_c;
 int a;
 char ds[2];
 nn=n;
 
-px=malloc(sizeof(char *)*n);
+px=(char **)malloc(sizeof(char *)*n);
 while (nn) {
 		nn--;
 		ptr2=A4GL_char_pop();
@@ -434,7 +435,7 @@ while (nn) {
 		px[nn]=ptr2;
 }
 
-ptr=malloc(l);
+ptr=(char *)malloc(l);
 handle=px[0];
 A4GL_trim(handle);
 
