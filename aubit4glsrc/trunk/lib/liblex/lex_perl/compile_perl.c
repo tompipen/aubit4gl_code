@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.48 2003-10-08 17:09:51 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.49 2003-10-13 18:30:47 mikeaubury Exp $
 #
 */
 
@@ -3086,7 +3086,7 @@ print_while_3 (void)
  * @return
  */
 void
-print_put (char *cname)
+print_put (char *cname,char *putvals)
 {
   int n;
   printc ("{\n");

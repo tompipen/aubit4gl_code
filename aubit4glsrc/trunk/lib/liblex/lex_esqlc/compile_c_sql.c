@@ -221,7 +221,7 @@ print_set_conn (char *conn)
  * insert cursors.
  */
 void
-print_put (char *cname)
+print_put (char *cname,char *putvals)
 {
   int n;
   printc ("{\n");

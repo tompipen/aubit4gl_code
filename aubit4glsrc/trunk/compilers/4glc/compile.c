@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.41 2003-10-11 09:53:39 afalout Exp $
+# $Id: compile.c,v 1.42 2003-10-13 18:30:06 mikeaubury Exp $
 #*/
 
 /**
@@ -203,7 +203,7 @@ initArguments (int argc, char *argv[])
       || strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
 	{
 	      //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
-		strcpy (opt_list, "G4s:N:kKco::l::L::I::?hSVvftd:");
+		strcpy (opt_list, "G4s:N:kKco::l::L::I::?hSVvftD:d:");
     }
     else if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
 	{
@@ -346,6 +346,15 @@ initArguments (int argc, char *argv[])
 	  strcat (extra_ldflags, optarg);
 	  strcat (extra_ldflags, " ");
 	  break;
+	case 'D':		// Extra libraries to link with; -l flag
+		#ifdef DEBUG
+	  	A4GL_debug ("Pass trough option: %s\n", optarg);
+		#endif
+	  strcat (extra_ldflags, "-D");
+	  strcat (extra_ldflags, optarg);
+	  strcat (extra_ldflags, " ");
+	  break;
+
 
     /************************/
 	case 'L':		// LD -L flags for linking extra libraries

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.56 2003-10-12 12:04:39 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.57 2003-10-13 18:30:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -373,24 +373,33 @@ print_set_conn (char *conn)
  * insert cursors.
  */
 void
-print_put (char *cname)
+print_put (char *cname,char *putvals)
 {
   int n;
   int a;
   printc ("{\n");
   n = print_bind ('i');
   print_conversions ('i');
-  printc ("EXEC SQL PUT %s \n", A4GL_strip_quotes (cname));
-  if (n)
-    {
-      printc ("FROM ");
-      for (a = 0; a < n; a++)
-	{
-	  if (a)
-	    printc (",");
-	  printc ("   :_vi_%d", a);
-	}
-    }
+  printc ("EXEC SQL PUT %s /* '%s' */\n", A4GL_strip_quotes (cname),putvals);
+
+  if (A4GL_isyes(acl_getenv("USE_BINDING_FOR_PUT"))==0) {
+
+  	if (strlen(putvals)) {
+		printc("FROM %s",putvals);
+  	} 
+  } else {
+
+  	if (n)
+    	{
+      	printc ("FROM ");
+      	for (a = 0; a < n; a++)
+		{
+	  	if (a)
+	    	printc (",");
+	  	printc ("   :_vi_%d", a);
+		}
+    	}
+  }
   printc (";");
   print_copy_status ();
   printc ("}\n");
