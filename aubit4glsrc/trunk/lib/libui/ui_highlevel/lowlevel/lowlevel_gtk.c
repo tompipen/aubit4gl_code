@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.36 2004-03-19 22:44:22 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.37 2004-03-19 23:02:36 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
@@ -2971,12 +2971,13 @@ int A4GL_LL_menu_loop(ACL_Menu *menu) {
 
   while (menu_response==-1) {
     A4GL_LL_screen_update();
-    if((key=get_keypress_from_buffer())>0) {
+
+    if((key=get_keypress_from_buffer())>0) { /* key pressed: */
       ACL_Menu_Opts *f=menu->first; 
-      //printf("keypress in menu: %d\n", key);
       int res=0;
+
+      /* first check optkey */
       while(f) {
-        //printf("in loop: checking option '%s' (keys: '%s')\n", f->opt_title, f->optkey);
         if(f->optkey[0]==key) {
           menu_response=res;
           break;
@@ -2984,6 +2985,30 @@ int A4GL_LL_menu_loop(ACL_Menu *menu) {
         res++;
         f=f->next_option;
       }
+      if(menu_response>=0)
+        break;
+
+      /* no matching KEY found, so check the first letter of each title */
+      f=menu->first;
+      res=0;
+      while(f) {
+        char a;
+        int i;
+        /* set a to the first non-space char in opt_title */
+        for(i=0; i<sizeof(f->opt_title); i++)
+          if(f->opt_title[i]>' ') {
+            a=tolower(f->opt_title[i]);
+            break;
+          }
+        if(a==key) {
+          menu_response=res;
+          break;
+        }
+        res++;
+        f=f->next_option;
+      }
+      if(menu_response>=0)
+        break;
     }
   }
 
