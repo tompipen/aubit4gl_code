@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.111 2002-09-27 06:56:36 afalout Exp $
+# $Id: configure.in,v 1.112 2002-10-01 09:50:19 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -310,7 +310,7 @@ AC_SUBST(LCLINTEXE)
 AC_SUBST(SO_EXT)
 AC_SUBST(SO_EXT_LINKABLE)
 AC_SUBST(GETOPT_LONG)
-
+AC_SUBST(ARCHEXT)
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
 AC_SUBST(CURSES_INC_PATH)
@@ -427,6 +427,8 @@ LCLINTEXE=no
 cygwin=0
 SO_EXT=.so
 SO_EXT_LINKABLE=$SO_EXT
+#ARCHEXT=tar.gz
+ARCHEXT=tgz
 
 #defaults for aubitrc:
 A4GL_SQLTYPE=nosql
@@ -451,6 +453,7 @@ case $host in
     	ODBCMANAGER=$ODBC;
 		cygwin=1
         SO_EXT=.dll
+		ARCHEXT=zip
 		;;
 
 	#*-sun-solaris2.7 (Jonathan) and 2.8 (Andrej on SF CF)
@@ -886,6 +889,8 @@ fi
 			CGI_DIR=`echo $TMP2 | sed -e 's/"//'`
 			#echo B: $CGI_DIR
 			WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | awk '{print $2}'`
+			#Some versions of Apache config file have this settings quoted allready
+			AC_DEFINE_UNQUOTED(WWW_DOCUMENT_ROOT, $WWW_DOCUMENT_ROOT)
 		AC_MSG_RESULT(OK)
     fi
 
@@ -949,9 +954,8 @@ WARNING: You specified SAP DB base install directory that is different
             old_PATH="$PATH"
             PATH="$SAPDBROOT/interfaces/precompiler/bin:$PATH"
 
-			#First check if we have esql installed at all:
-			AC_PATH_PROG(SAPDB_ESQLC, cpc, no)
-			#${SAPDBDIR}/interfaces/precompiler/bin/cpc
+			#First check if we have cpc installed at all:
+			AC_PATH_PROG(SAPDB_ESQLC, cpc, no, $PATH $SAPDBDIR/interfaces/precompiler/bin /opt/sapdb/interfaces/precompiler/bin)
 
 			#if test "$cygwin" = "1"; then
 				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
@@ -970,40 +974,14 @@ WARNING: You specified SAP DB base install directory that is different
 			then
 				SAPDB_INCLUDE=$SAPDB_INCDIR
 				SAPDB_LFLAGS=$SAPDB_LIBDIR
-				#if test -z "$IFX_LIBS"; then
-				#	IFX_LIBS=`esql -libs | sed -e 's/-lm$//'`
-				#	dnl  -lm twice otherwise?
-				#	IFX_LIBS=`echo $IFX_LIBS | sed -e 's/Libraries to be used://g' -e 's/esql: error -55923: No source or object file\.//g'`
-				#	dnl Seems to get rid of newlines.
-				#	dnl According to Perl's DBD-Informix, might contain these strings.
-				#else
-				#	dnl Allow override to use static and/or threaded libs
-				#	IFX_LIBS="$IFX_LIBS"
-				#fi
 
                 old_CFLAGS="$CFLAGS"
                 old_LDFLAGS="$LDFLAGS"
-
-				#if test "`uname -s 2>/dev/null`" = "AIX"; then
-				#	SAPDB_CFLAGS="-D__H_LOCALEDEF"
-				#fi
 
 				CFLAGS="$CFLAGS $SAPDB_INCLUDE $SAPDB_CFLAGS"
 				LDFLAGS="$LDFLAGS $SAPDB_LDFLAGS"
 
 				AC_DEFINE(HAVE_SAPDB)
-				#AC_MSG_CHECKING([SAP DB version])
-				#IFX_VERSION=[`esql -V | sed -ne '1 s/^[^0-9]*\([0-9]\)\.\([0-9]*\).*/\1\2/p'`]
-				#if test $IFX_VERSION -ge "900"; then
-				#	AC_DEFINE(HAVE_IFX_IUS)
-				#	IFX_ESQL_FLAGS="-EDHAVE_IFX_IUS"
-				#else
-				#	IFX_ESQL_FLAGS="-EUHAVE_IFX_IUS"
-				#fi
-
-				#AC_DEFINE_UNQUOTED(IFX_VERSION, $IFX_VERSION)
-				#AC_MSG_RESULT($IFX_VERSION)
-				#IFX_C_MAKE="(esql -e $IFX_ESQL_FLAGS functions/ifx.ec; mv ifx.c functions)"
 
 				CFLAGS="$old_CFLAGS"
                 LDFLAGS="$old_LDFLAGS"
@@ -3008,6 +2986,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 tools/test/lang/Makefile
                 tools/test/db/Makefile
                 tools/test/Makefile
+                bin/aubitbuild.sh
 				docs/doxy/Doxyfile])
 
 else

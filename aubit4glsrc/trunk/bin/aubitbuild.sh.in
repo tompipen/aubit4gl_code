@@ -1,0 +1,618 @@
+#!/bin/sh
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: aubitbuild.sh.in,v 1.1 2002-10-01 09:50:30 afalout Exp $
+#
+
+#Use this script in corn for Aubit nightly automatic builds
+
+#FIXME: use "cvs export" instead "cvs checkout" to get code without CVS 
+#directories for source archives
+
+
+
+# Am I forced to enter my password for every cvs command?
+
+#No, you can upload a shared key that will allow SSH sessions to be
+#established without the need to enter you password every time. Go to your
+#Account Maintainance page, click on the Edit Keys link and follow the
+#instructions.
+#
+#I updated my CVS/SSH shared key but I'm still asked for a passphrase?
+#
+#A passphrase is not a password. When you used ssh-keygen (or ssh-keygen1)
+#to produce your shared key, you were asked for a passphrase. There are two
+# possibilities to avoid cvs passphrase prompts: you can use ssh-agent tool
+#  or you can generate key pair without passphrase.
+#
+#To use ssh-agent edit your .xsession (or .xstart) script and change line
+# where window manager is started into:
+#
+#ssh-agent $WM
+#
+#where $WM is your window manager. Logout-login to activate the ssh-agent.
+#Use ssh-add to add your key to the ssh-agent (you must enter the passphrase).
+#As long as the ssh-agent runs you will not be prompted for the passphrase
+#again. For more details see the man pages of ssh-agent and ssh-add.
+#
+#To generate unprotected key pair just type return at the ssh-keygen
+#passphrase prompt. The drawback of the unprotected key pair is that
+#everybody who has your private key will have access to the cvs repository.
+
+
+## ==================================================================
+##                      Configuration
+## ==================================================================
+
+#####################
+#Where to get CVS from: "sf-ssh" for SSH SourceForge, "falout.com",
+#or empty for SourceForge CVS, anon login:
+ACVS=sf-ssh
+
+case "$ACVS" in
+
+	sf-ssh)
+
+		#SourceForge CVS:
+		#/bin/custom/aubitsfcvslogin:
+		export CVS_RSH=ssh
+		export CVSROOT=afalout@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl
+		AUBITCVSNAME=aubit4glsrc
+        ;;
+
+
+	falout.com)
+
+		#falout.com CVS: (chang "aptiva" to "falout.com" when working over Internet)
+		export CVS_RSH=
+		export CVSROOT=':pserver:afalout@aptiva:/data/cvs'
+		AUBITCVSNAME=Aubit4gl
+        ;;
+
+	*)
+
+	    #SourceForge CVS - anon login:
+		#cvs -d:pserver:anonymous@cvs.yourproject.sourceforge.net:/cvsroot/yourproject login
+		#After anonymously logging in:
+		#cvs -z8 -d:pserver:anonymous@cvs.yourproject.sourceforge.net:/cvsroot/yourproject co directoryname
+		export CVS_RSH=
+		export CVSROOT=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
+		AUBITCVSNAME=aubit4glsrc
+	    ;;
+
+
+esac
+
+######################
+#scripts to provide automatic password on CVS login prompt, SCP, etc...
+AUTO_SF_SCP=auto_sf_scp
+AUTOSFSCPGET=auto_sf_scp_get
+AUTO_CVS=auto_cvs
+
+#####################
+#Add path to the place where scripts are:
+export PATH=/bin/custom:$PATH
+
+#####################
+#Do we want to stop on errors, or continue:
+STOPONERROR=1
+
+#####################
+#Do we want to increase build number:
+UPBUILD=1
+
+#####################
+#Location of log file to log this process to:
+LOGFILE=/tmp/aubitbuild.log
+
+#####################
+#temp file names to use when creating download HTML page
+DLTMP1=tmpdlpage1.html
+DLTMP2=tmpdlpage2.html
+
+#####################
+#names of files containing template-renaming strings
+CYSRCBUILDNAMES=cysrcbuildnames.tmp
+CYBUILDNAMES=cybuildnames.tmp
+UNIXSRCBUILDNAMES=unixsrcbuildnames.tmp
+UNIXBUILDNAMES=unixbuildnames.tmp
+
+#####################
+#Path to download page on download server
+SCPPATH=/home/groups/a/au/aubit4gl/htdocs/files
+
+#####################
+#compressed archives extension
+ARCHEXT=@ARCHEXT@
+
+#####################
+#Common names for files
+SHORTNAME=@SHORTNAME@
+SRCSHORTNAME=@SHORTNAME@src
+BINSHORTNAME=@SHORTNAME@bin
+
+## ==================================================================
+##                      Platform dependent Configuration
+## ==================================================================
+
+if [ "$COMSPEC" = "" ]; then
+    #UNIX
+
+	#####################
+	#Local paths
+	AUBITSRCDIR=/opt/aubit/aubit4glsrc
+	AUBITBINDIR=/opt/aubit4gl
+
+
+	#####################
+	#Template names in HTML file, to be replaced with actual file names
+	TEMPLATESRC=$SHORTNAME-src--template--.tar.gz
+	TEMPLATENAME=$SHORTNAME-bin-RH6-iODBC-GTK-PDF---template--.tar.gz
+	TEMPLATESRPM=$SHORTNAME--template--.src.rpm
+	TEMPLATEBINRPM=$SHORTNAME--template--.rpm
+    DLPAGEPATH=/opt/aubit/aubit4glwww/files
+
+else
+    #Windows/CygWin
+
+	#####################
+	#Local paths
+	AUBITSRCDIR=/usr/aubit/aubit4glsrc
+	AUBITBINDIR=/usr/local/aubit4gl
+
+	#####################
+	#Template names in HTML file, to be replaced with actual file names
+	TEMPLATESRC=$SHORTNAME-src--template--.zip
+	TEMPLATENAME=$SHORTNAME-bin-win32-cygwin-odbc32-GTK-noPDF---template--.zip
+	#TEMPLATESRPM=xxxxx--template--.src.rpm
+	#TEMPLATEBINRPM=xxxxx--template--.rpm
+    DLPAGEPATH=/usr/aubit/aubit4glwww/files
+
+fi
+
+#####################
+#name for HTML template file of download page:
+DOWNLOADPAGE=$DLPAGEPATH/aubitdownload-template.htm
+#Name for download page when oploading to download web server:
+DOWNLOADPAGEBASE=aubitdownload.htm
+
+
+## ==================================================================
+##                      Initialise variables
+## ==================================================================
+
+WASERROR=0
+
+## ==================================================================
+##                      Functions
+## ==================================================================
+
+############################
+function runexec {
+############################
+
+
+        if [ "$VERBOSE" = "1" ]
+        then
+			echo "Executing: $EXEC"
+        fi
+        echo "#####################################################" >> $LOGFILE 2>&1
+		echo "Executing: $EXEC" >> $LOGFILE 2>&1
+        echo "#####################################################" >> $LOGFILE 2>&1
+		$EXEC >> $LOGFILE 2>&1
+		RET=$?
+		if test $RET != "0"
+		then
+		    echo "$EXEC failed with code $RET. See $LOGFILE"
+		    echo "$EXEC failed with code $RET"  >> $LOGFILE 2>&1
+		    if test "$STOPONERROR" = "1"; then
+				exit $RET
+            fi
+		fi
+
+}
+
+
+## ==================================================================
+##                      Main
+## ==================================================================
+
+MAKE=0
+RPM=0
+GET=0
+UPLOAD=0
+CLEAN=0
+WARNINGS=1
+
+if [ $# -lt 1 ]; then
+    
+	#do all steps:
+	if [ "$COMSPEC" = "" ]; then
+	    #UNIX
+	    MAKE=1
+	    RPM=1
+	    GET=1
+	    UPLOAD=1
+        CLEAN=1
+	else
+	    #Windows/CygWin
+	    MAKE=1
+	    RPM=0
+	    GET=1
+	    UPLOAD=1
+        CLEAN=0
+	fi
+
+else
+	for a in $@
+	do
+		case $a in
+
+	    *help)
+			echo "Aubit automatic build and upload script. Usage:"
+			echo "  $0 [options] [actions]"
+			echo "Options:"
+			echo "  -verbose - output additional info"
+			echo "Actions:"
+			echo "  make - make tarballs, source and binary"
+			echo "  rpm - make RPM's, source and binary"
+			echo "  get - get download page template from web server"
+			echo "  upload - upload created files to web server"
+			echo "  clean - remove created files when finished"
+			echo "When no action is specified, all will be performed"
+			echo " "
+		    exit 1
+			;;
+
+
+	    -verbose)
+		    VERBOSE=1
+			if [ $# -lt 2 ]; then
+				#do all steps, this is only parameter on command line:
+				if [ "$COMSPEC" = "" ]; then
+				    #UNIX
+				    MAKE=1
+				    RPM=1
+				    GET=1
+				    UPLOAD=1
+			        CLEAN=1
+				else
+				    #Windows/CygWin
+				    MAKE=1
+				    RPM=0
+				    GET=1
+				    UPLOAD=1
+			        CLEAN=0
+				fi
+            fi
+		    ;;
+	    make)
+			MAKE=1
+	        ;;
+	    rpm)
+		    RPM=1
+	        ;;
+	    get)
+		    GET=1
+	        ;;
+	    upload)
+		    UPLOAD=1
+	        ;;
+	    clean)
+		    CLEAN=1
+	        ;;
+
+		*)
+            echo "Parameter $a not recognised. Stop."
+            echo "Try --help"
+            exit 11
+            ;;
+		esac
+	done
+fi
+
+
+
+
+echo "******* aubitbuild.sh start: ********" > $LOGFILE
+
+if [ "$VERBOSE" = "1" ]
+then
+    echo "Initialized log file: $LOGFILE"
+fi
+
+
+if test "$MAKE" = "1"; then
+
+		STOPONERROR=0   #Continue even if next statemets fails
+		EXEC="rm -f $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT"; runexec
+		EXEC="rm -f $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT"; runexec
+		STOPONERROR=1
+
+	    #################### make compiler ###############
+
+		EXEC="cd $AUBITSRCDIR"; runexec
+
+		if ! [ -f "$AUBITSRCDIR/?akefile" ];
+        then
+			EXEC="$AUBITSRCDIR/configure"; runexec
+        fi
+
+		EXEC="make clean.all"; runexec
+
+		STOPONERROR=0   #Continue even if next statemets fails
+
+		if [ "$COMSPEC" = "" ]; then
+			#Problems:
+            #if CVS take more then few seconds to respond with login, expect times out
+            #-d is interpreted as debug flag to expect, but "update -d" is treated
+            #by cvs as "unknown command 'update -d'
+			#EXEC="$AUTO_CVS update -d"; runexec
+			EXEC="$AUTO_CVS update"; runexec
+        else
+			#on CygWin:
+			#spawn cvs update -d
+			#Unknown command: `update -d'
+			EXEC="$AUTO_CVS update"; runexec
+        fi
+		STOPONERROR=1
+
+		EXEC="autoconf"; runexec
+		EXEC="make build"; runexec
+		#configure will use aubitconf if it exists to provide switches:
+		EXEC="./configure"; runexec
+		#cannot do this, if I do, there won't be a makefile left to do "make tar"
+		#EXEC="make clean.configure"; runexec #to remove makefiles before tar
+		#must use 'tar' target in makefile, since I don't have versions and platform info
+	    #here that is created by configure:
+		EXEC="make tar"; runexec
+
+		#cvs commit to check in build number
+		#	@cvs commit -m "commit.build ${BULDNO}" > commit.log
+		#/usr/bin/expect: invalid option -- m
+		#usage: expect [-div] [-c cmds] [[-f] cmdfile] [args]
+		#auto_cvs commit -m 'commit.build by aubitbuild.sh' failed with code 1
+		#	EXEC="$AUTO_CVS commit -m 'commit.build by aubitbuild.sh'"; runexec
+		if [ "$VERBOSE" = "1" ]
+		then
+			echo "PWD = `pwd` see make.log there..."
+        fi
+		EXEC="make log"; runexec
+
+		if [ "$WARNINGS" = "1" ]
+		then
+			#This is to keep us up-to-date with warnings so we don't
+			#accumulate lot of them over the time. If this grep creates
+			#output, it will end up in email sent by cron
+			WARNLINES=`grep -c "warning:" make.log`
+
+			echo "Toatal compiler warnings: $WARNLINES"
+	        echo " "
+			grep "warning:" make.log
+
+			EXEC="make splint"; runexec
+
+			echo "All SPLint warnings: "
+			echo "                          Reported  Suppressed"
+			grep "^Total" lclint.log
+        fi
+
+		################## install compiler ###############
+		EXEC="make deinstall"; runexec
+		EXEC="make install"; runexec
+		EXEC="cd $AUBITBINDIR"; runexec
+	    EXEC="make clean"; runexec
+		EXEC="make tar.bin"; runexec
+
+fi
+
+#get file names of crteared archives:
+#aubit4glsrc-0.30RC3-115.tgz
+if [ -f $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT ]; then
+    SOURCETARNAME=`ls $AUBITSRCDIR/$SRCSHORTNAME-*.$ARCHEXT`
+    SOURCETARBASENAME=`basename $SOURCETARNAME`
+else
+    echo "ERROR: source archive not created. Stop"
+    exit 7
+fi
+
+if [ -f $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT ]; then
+    TARBALL=`ls $AUBITBINDIR/$BINSHORTNAME-*.$ARCHEXT`
+    TARBALLBASENAME=`basename $TARBALL`
+else
+    echo "ERROR: binary archive not created."
+    exit 8
+fi
+
+if test "$VERBOSE" = "1"; then
+	echo "created:"
+	echo $SOURCETARNAME
+	echo $TARBALL
+
+fi
+
+
+if test "$RPM" = "1"; then
+    ################## make RPM #######################
+    STOPONERROR=0   #Continue even if next statemets fails
+    EXEC="rm -f /usr/src/redhat/SRPMS/$SHORTNAME*.src.rpm"; runexec
+    EXEC="rm -f /usr/src/redhat/RPMS/i586/$SHORTNAME*.rpm"; runexec
+    EXEC="rm -rf /usr/src/redhat/BUILD/$SHORTNAME*"; runexec
+	STOPONERROR=1
+
+    EXEC="cd $AUBITSRCDIR"; runexec
+    EXEC="make rpm"; runexec
+
+fi
+
+#get file names of created RPM archives"
+if ! [ -f /usr/src/redhat/SRPMS/$SHORTNAME*.src.rpm ]; then
+	if test "$RPM" = "1"; then
+		echo "source RPM not created"
+    fi
+else
+	SOURCERPM=`ls /usr/src/redhat/SRPMS/$SHORTNAME*.src.rpm`
+	SOURCERPMBASENAME=`basename $SOURCERPM`
+fi
+
+if ! [ -f /usr/src/redhat/RPMS/i586/$SHORTNAME*.rpm ]; then
+	if test "$RPM" = "1"; then
+		echo "Binary RPM not created."
+    fi
+else
+	BINRPM=`ls /usr/src/redhat/RPMS/i586/$SHORTNAME*.rpm`
+	BINRPMBASENAME=`basename $BINRPM`
+fi
+
+
+
+if test "$GET" = "1"; then
+
+		################### get things ####################
+
+		EXEC="cp $DOWNLOADPAGE $DLTMP1"; runexec
+
+		if [ "$COMSPEC" = "" ]; then
+			EXEC="$AUTOSFSCPGET $SCPPATH/$CYBUILDNAMES"; runexec
+			EXEC="$AUTOSFSCPGET $SCPPATH/$CYSRCBUILDNAMES"; runexec
+			EXEC="rm -f $UNIXBUILDNAMES"; runexec
+			EXEC="rm -f $UNIXSRCBUILDNAMES"; runexec
+            SRCNAMESSCRIPT=$UNIXSRCBUILDNAMES
+			BINNAMESSCRIPT=$UNIXBUILDNAMES
+	    else
+			EXEC="$AUTOSFSCPGET $SCPPATH/$UNIXBUILDNAMES"; runexec
+			EXEC="$AUTOSFSCPGET $SCPPATH/$UNIXSRCBUILDNAMES"; runexec
+			EXEC="rm -f $CYBUILDNAMES"; runexec
+			EXEC="rm -f $CYSRCBUILDNAMES"; runexec
+            SRCNAMESSCRIPT=$CYSRCBUILDNAMES
+			BINNAMESSCRIPT=$CYBUILDNAMES
+		fi
+
+	    #Source file name in build names script
+		echo "sed -e '/^$TEMPLATESRC/s/$TEMPLATESRC/$SOURCETARBASENAME/' $DLTMP1 > $DLTMP2"  > $SRCNAMESSCRIPT
+		if test "$RPM" = "1"; then
+			echo "sed -e '/^$TEMPLATESRPM/s/$TEMPLATESRPM/$SOURCERPMBASENAME/' $DLTMP2 > $DLTMP1"  >> $SRCNAMESSCRIPT
+        else
+			echo "cp $DLTMP2 $DLTMP1"  >> $SRCNAMESSCRIPT
+		fi
+
+	    EXEC="sh $SRCNAMESSCRIPT"; runexec
+
+	    #Tarball name in buils names script:
+		echo "sed -e '/^$TEMPLATENAME/s/$TEMPLATENAME/$TARBALLBASENAME/' $DLTMP1 > $DLTMP2"  > $BINNAMESSCRIPT
+		if test "$RPM" = "1"; then
+			echo "sed -e '/^$TEMPLATEBINRPM/s/$TEMPLATEBINRPM/$BINRPMBASENAME/' $DLTMP2 > $DLTMP1"  >> $BINNAMESSCRIPT
+        else
+			echo "cp $DLTMP2 $DLTMP1"  >> $BINNAMESSCRIPT
+		fi
+
+	    EXEC="sh $BINNAMESSCRIPT"; runexec
+
+		if test "$VERBOSE" = "1"; then
+            echo "Created and executed:"
+            echo $SRCNAMESSCRIPT
+            echo $BINNAMESSCRIPT
+
+        fi
+
+
+	    ################## restore links for other platform builds #########
+
+		if [ "$COMSPEC" = "" ]; then
+
+			if [ -f $CYBUILDNAMES ]; then
+				EXEC="dos2unix $CYBUILDNAMES"; runexec
+				EXEC="sh $CYBUILDNAMES"; runexec
+		    fi
+
+			if [ -f $CYSRCBUILDNAMES ]; then
+				EXEC="dos2unix $CYSRCBUILDNAMES"; runexec
+				EXEC="sh $CYSRCBUILDNAMES"; runexec
+			fi
+        else
+
+			if [ -f $UNIXBUILDNAMES ]; then
+				EXEC="sh $UNIXBUILDNAMES"; runexec
+		    fi
+
+			if [ -f $CYSRCBUILDNAMES ]; then
+				EXEC="sh $UNIXSRCBUILDNAMES"; runexec
+			fi
+
+        fi
+
+		if test "$VERBOSE" = "1"; then
+            echo "Fixed download names from other platform(s)"
+        fi
+
+fi
+
+if test "$UPLOAD" = "1"; then
+	    #################### Upload all ##########################
+		EXEC="cp $DLTMP1 $DOWNLOADPAGEBASE"; runexec
+
+		EXEC="$AUTO_SF_SCP $SOURCETARNAME"; runexec
+		EXEC="$AUTO_SF_SCP $TARBALL"; runexec
+
+        if test "$SOURCERPM" != ""; then
+			EXEC="$AUTO_SF_SCP $SOURCERPM"; runexec
+        fi
+        if test "$BINRPM" != "" ; then
+			EXEC="$AUTO_SF_SCP $BINRPM"; runexec
+        fi
+		
+		if [ "$COMSPEC" = "" ]; then
+			EXEC="$AUTO_SF_SCP $UNIXSRCBUILDNAMES"; runexec
+			EXEC="$AUTO_SF_SCP $UNIXBUILDNAMES"; runexec
+        else
+			EXEC="$AUTO_SF_SCP $CYSRCBUILDNAMES"; runexec
+			EXEC="$AUTO_SF_SCP $CYBUILDNAMES"; runexec
+        fi
+
+	    #upload html page last, so if we fail before, nothing is changed
+		EXEC="$AUTO_SF_SCP $DOWNLOADPAGEBASE"; runexec
+fi
+
+
+    #FIXME: download and compare
+
+
+
+if test "$CLEAN" = "1"; then
+
+    #Clean
+	EXEC="rm -f $DLTMP1 $DLTMP2 $DOWNLOADPAGEBASE"; runexec
+	EXEC="rm -f $SOURCETARNAME $TARBALL $SOURCERPM $BINRPM"; runexec
+	EXEC="rm -f $CYSRCBUILDNAMES $CYBUILDNAMES"; runexec
+	EXEC="rm -f $UNIXSRCBUILDNAMES $UNIXBUILDNAMES"; runexec
+
+fi
+
+
+#done
+exit 0
+

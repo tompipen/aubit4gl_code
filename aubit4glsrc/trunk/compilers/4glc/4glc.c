@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.37 2002-09-27 06:56:41 afalout Exp $
+# $Id: 4glc.c,v 1.38 2002-10-01 09:50:30 afalout Exp $
 #
 */
 
@@ -330,9 +330,9 @@ main(int argc, char *argv[])
   }
 
   init_datatypes();
-  debug("after init_datatypes");
+  debug("after init_datatypes\n");
   x = yyparse (); /* we core dump here on Darwin */
-  debug("after yyparse");
+  debug("after yyparse\n");
 
   if (yydebug)
     {

@@ -24,14 +24,13 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.44 2002-09-25 05:42:13 afalout Exp $
+# $Id: Makefile.in,v 1.45 2002-10-01 09:50:30 afalout Exp $
 #
 
 ROOT		=../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
 
 ## ==================================================================
 ##                   Source files
@@ -71,7 +70,8 @@ endif
 ##                    Options
 ## ==================================================================
 
-ALL				=rules.t ${ROOT}/bin/4glc
+#ALL				=rules.t ${ROOT}/bin/4glc
+ALL				=${ROOT}/bin/4glc
 
 C_LOCAL_IFLAGS  =-I${ROOT}/lib -I${ROOT}/lib/libincl -I${ROOT}/lib/liblex/lex_c -I. -I../fcompile -Irules -I${GENRULES}
 CFLAGS			+=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
@@ -84,17 +84,8 @@ LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 all: ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
-#4glc: ${4GLCAOBJ} ${LIB_C}
 ${ROOT}/bin/4glc: ${4GLCAOBJ}
-#	${CC} ${EXE_CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
-#	${LD_EXE} ${EXE_CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
 	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
-#	${CPEXE} $@${EXEEXT} ${ROOT}/bin/$@${EXEEXT}
-
-#4glp: ${4GLCAOBJ} ${LIB_PERL}
-#	${CC} ${CFLAGS} -L${ROOT}/lib -o $@ ${4GLCAOBJ} ${AUBIT_LIB} ${LIB_PERL_L}
-#	${CPEXE} $@${EXEEXT} ${ROOT}/bin/$@${EXEEXT}
-
 
 ## ==================================================================
 ##                            Windows Targets
@@ -111,14 +102,13 @@ exportlib4glcomp: ${4GLCAOBJ} ${4GLCOBJ_C}
 ##                            Sub Targets
 ## ==================================================================
 
-rules.t :
-	${MAKE} -C rules $(MKNAME)
+#rules.t :
+#	${MAKE} -C rules $(MKNAME)
 
 ${GENRULES}/y.tab.o: ${Y_TAB_C}
 	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I${ROOT}/lib/liblex/lex_c -I.
 
 ${Y_TAB_C}:
-#	make -C rules generated/y.tab.c $(MKNAME)
 	${MAKE} -C rules
 
 ../fcompile/form_x.h:
@@ -128,17 +118,18 @@ ${Y_TAB_C}:
 ##                            Dependencies
 ## ==================================================================
 
-${GENRULES}/kw.c: 				rules.t
-${GENRULES}/single_words.rule: 	rules.t
-${GENRULES}/y.tab.c: 			rules.t
-${GENRULES}/states.c: 			rules.t
+#${GENRULES}/kw.c: 				rules.t
+#${GENRULES}/single_words.rule: 	rules.t
+#${GENRULES}/y.tab.c: 			rules.t
+#${GENRULES}/states.c: 			rules.t
+
+${GENRULES}/kw.c ${GENRULES}/single_words.rule ${GENRULES}/y.tab.c \
+${GENRULES}/states.c: ${Y_TAB_C}
+
 mod.o: 							mod.c ${Y_TAB_C}
 ${GENRULES}/y.tab.o: 			../fcompile/form_x.h
 lexer.o: 						${GENRULES}/kw.h
 lexer.o: 						${GENRULES}/y.tab.h
-
-
-
 
 splint: lclint
 lclint: $(CMODS)

@@ -1,7 +1,7 @@
 *===============================================
 LIBRARY PACKER
 VARIABLE A4GL_PACKER
-*#include "../../incl/a4gl_API_packer.h"
+*#include "../../incl/a4gl_API_packer.hxxx"
 *===============================================
 *-- Packer definitions
 output_int char* name,int val,int ptr,int isarr -> int

@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.10 2002-09-25 05:42:13 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.11 2002-10-01 09:50:30 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -50,14 +50,18 @@ Prefix: /opt
 
 #WARNNING: file name used here will need to be present on local system
 #at time of building RPM:
-Source: http://aubit4gl.sourceforge.net/files/@SHORTNAME@src-@AUBIT_VERSION@.@AUBIT_BUILD@.tar.gz
+#Source: http://aubit4gl.sourceforge.net/files/@SHORTNAME@src-@AUBIT_VERSION@-@AUBIT_BUILD@.@ARCHEXT@
+Source: http://aubit4gl.sourceforge.net/files/%{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@.@ARCHEXT@
+#                                             aubit4glsrc-0.30RC3.114.tar.gz: No such file or directory
+#(1) No /usr/src/redhat/SOURCES/aubit4glsrc-0.30RC3-114.tar.gz, making it...
+#(2) No /tmp/aubit4glsrc-0.30RC3-114/aubit4glsrc-0.30RC3-114.tar.gz, making it...Creating /tmp/aubit4glsrc-0.30RC3-114/aubit4glsrc-0.30RC3-114.tar.gz from aubit4glsrc-0.30RC3-114/ ...
 
 #Patch: aubit4glsrc-%{version}.patch
 
 ##############
 %description
 ##############
-Aubit 4gl (Fourth Generation programing Language) compiler compiles source 
+Aubit 4gl (Fourth Generation programing Language) compiler compiles source
 files to several low-level programming languages (C, Perl, Java...). It has
 ODBC and native database conectivity, GUI interface and many features.
 
@@ -77,7 +81,8 @@ oriented (BRDO) applications.
 ##############
 %build
 ##############
-cd %{name}src-%{version}
+#cd %{name}src-%{version}
+cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
 ./configure
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 #CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
@@ -87,7 +92,8 @@ make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
 ##############
 #install -s -m 755 -o 0 -g 0 loadmap /usr/bin/loadmap
 #install -m 644 -o 0 -g 0 eject.1 /usr/man/man1
-cd %{name}src-%{version}
+#cd %{name}src-%{version}
+cd %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
 make install
 
 

@@ -1,22 +1,61 @@
 /*
-
-file generated/fgl.yacc is created from:
-		rules/ *.rule
-        rules/ *.reqd
-		rules/generated/single_words.rule
-        rules/generated/kw.yh
-
-using mkyacc shell script. It is then processed by yacc tool
-to make generated/y.tab.c
-
-generated/single_words.rule is created from file generated/single_words
-using shell script make_enable
-
-generated/single_words is created from data/kwords file using
-shell script convkw.single
-
-
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: 1.reqd,v 1.18 2002-10-01 09:50:30 afalout Exp $
+#
 */
+
+/**
+ * @file
+ *
+ * File generated/fgl.yacc is created from:
+ *
+ *		rules/*.rule
+ *      rules/*.reqd
+ *		rules/generated/single_words.rule
+ *      rules/generated/kw.yh
+ *
+ * using 'mkyacc' shell script. It is then processed by 'yacc' tool
+ * to make generated/y.tab.c
+ *
+ * generated/single_words.rule is created from file generated/single_words
+ * using shell script 'make_enable'
+ *
+ * generated/single_words is created from data/kwords file using
+ * shell script 'convkw.single'
+ *
+ * "1.reqd" file is allways the first file concernatad into fgl.yacc.
+ * Therefore, it is the only one in compilers/4glc/rules directory that
+ * contains copyrigh message and DoxyGen file comment.
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+
 
 /*
 =====================================================================
@@ -28,134 +67,103 @@ shell script convkw.single
 
 /*
 =====================================================================
-		                    Includes
-=====================================================================
-*/
-
-/* prevent warning for redundant declaration of yyparse: */
-#define _BISON_SIMPLE_INCL_
-
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <ctype.h>
-	#include <string.h>
-	#include <stdlib.h>
-
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_dbform.h"
-	#include "a4gl_report.h"
-	#include "a4gl_oform.h"
-	#include "a4gl_attributes.h"
-	#include "a4gl_errors.h"
-	#include "a4gl_constats.h"
-	#include "a4gl_prompt.h"
-	#include "../a4gl_4glc_print_protos.h"
-	#include "a4gl_4glc_4glc.h"
-	#include "a4gl_debug.h"
-	/*
-	#include "../libincl/compiler.h"
-	#include "a4gl_screen.h"
-	*/
-
-#else
-
-    #define _NO_Y_TAB_H_
-    #include "a4gl_4glc_int.h"
-
-#endif
-
-
-/*
-=====================================================================
-                    Variables definitions
-=====================================================================
-*/
-
-int in_define=0;
-extern int lineno;
-extern int read_glob_var;
-extern int modlevel;
-extern int charno;
-extern int last_var_found;
-extern int varcnt;
-int rordcnt;
-char menuhandler[256];
-char last_var [256];
-char larr[4096]="";
-char larr2[4096]="";
-char clobber[64]="";
-extern int in_record;
-int racnt=0;
-int ccode=0;
-int errbomb=0;
-int glob_only=0;
-int inp_flags=0;
-char dtypelist[2048];
-char curr_func[256]="Module";
-struct rep_structure rep_struct;
-struct pdf_rep_structure pdf_rep_struct;
-extern int rep_type;
-char where_having[1024];
-char menu[2048];
-char varstring[100];
-char infilename[132]="";
-int lcnt;
-int vcnt;
-struct form_attr form_attrib;
-extern int yylineno;
-int rcnt;
-int lastlineno=0;
-int cnt;
-int mcnt=0;
-int inrec=0;
-int iskey=0;
-int insql=0;
-int menu_cnt=0;
-int chk4var=0;
-int menu_cmd_cnt[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-int in_sql=0;
-char hdr_dbname[64]="";
-int continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
-int in_cmd[]={0,0,0,0,0,0,0,0,0,0};
-int fcall_cnt=0;
-
-/*
-=====================================================================
                     Constants definitions
 =====================================================================
 */
 
 
-#define INCASE 0
+#define INCASE 		0
 #define INCONSTRUCT 1
-#define INDISPLAY 2
-#define INFOR 3
-#define INFOREACH 4
-#define ININPUT 5
-#define INMENU 6
-#define INPROMPT 7
-#define INWHILE 8
-#define INIF 9
-#define UPDCOL 0
-#define UPDVAL 1
-#define SELINTO 2
-#define PUTVAL 3
+#define INDISPLAY 	2
+#define INFOR 		3
+#define INFOREACH 	4
+#define ININPUT 	5
+#define INMENU 		6
+#define INPROMPT 	7
+#define INWHILE 	8
+#define INIF 		9
+#define UPDCOL 		0
+#define UPDVAL 		1
+#define SELINTO 	2
+#define PUTVAL 		3
 
+
+/* prevent warning for redundant declaration of yyparse: */
+#define _BISON_SIMPLE_INCL_
+
+
+#define _NO_Y_TAB_H_
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include "a4gl_4glc_int.h"
+
+/*
+=====================================================================
+		                    Variables definitions
+=====================================================================
+*/
+
+extern int 	lineno;
+extern int 	read_glob_var;
+extern int 	modlevel;
+extern int 	charno;
+extern int 	last_var_found;
+extern int 	varcnt;
+extern int 	in_record;
+extern int 	rep_type;
+extern int 	yylineno;
+
+char 		menuhandler[256];
+char 		last_var [256];
+char 		larr[4096]="";
+char 		larr2[4096]="";
+char 		clobber[64]="";
+char 		dtypelist[2048];
+char 		curr_func[256]="Module";
+char 		where_having[1024];
+char		menu[2048];
+char 		varstring[100];
+char 		infilename[132]="";
+char 		hdr_dbname[64]="";
+
+int 		in_define=0;
+int 		rordcnt;
+int 		racnt=0;
+int 		ccode=0;
+int 		errbomb=0;
+int 		glob_only=0;
+int 		inp_flags=0;
+int 		lcnt;
+int 		vcnt;
+int 		rcnt;
+int 		lastlineno=0;
+int 		cnt;
+int 		mcnt=0;
+int 		inrec=0;
+int 		iskey=0;
+int 		insql=0;
+int 		menu_cnt=0;
+int 		chk4var=0;
+int 		menu_cmd_cnt[20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int 		in_sql=0;
+int 		continue_cmd[]={0,1,1,1,1,1,1,1,1,0};
+int 		in_cmd[]={0,0,0,0,0,0,0,0,0,0};
+int 		fcall_cnt=0;
+
+struct 		rep_structure rep_struct;
+struct 		pdf_rep_structure pdf_rep_struct;
+struct 		form_attr form_attrib;
 
 /*
 =====================================================================
                     Functions prototypes
 =====================================================================
 */
-
-
-/* char *downshift(char *); */
-/* char *convstrsql(char *); */
-/* void *new_expr(char *value) ; */
-/* void *append_expr(void *orig_ptr,char *value); */
-/* void *append_expr_expr(void *orig_ptr,void *second_ptr); */
 
 
 %}
@@ -172,5 +180,5 @@ int fcall_cnt=0;
 
 	}
 
-
+/* ============================== 1.reqd ============================ */
 

@@ -79,3 +79,6 @@ op_buttons : | BUTTONS INT_VALUE op_def_but;
 op_def_but : | DEFAULT INT_VALUE;
 
 
+/* ================================ gui.rule ============================= */
+
+

@@ -25,11 +25,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.84 2002-09-27 06:25:42 afalout Exp $
+# $Id: Makefile-common.in,v 1.85 2002-10-01 09:50:31 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
-AUBITNAME=aubit4gl
+AUBITNAME=@SHORTNAME@
 
 #If we later need to know if this makefile was included or not:
 MAKEFILE_COMMON_INCLUDED=1
@@ -386,7 +386,7 @@ SO_EXT=@SO_EXT@
 #this is (or should be) onlu libaubit4gl:
 SO_EXT_LINKABLE=@SO_EXT_LINKABLE@
 
-	ARCHEXT			=tar.gz
+	ARCHEXT			=@ARCHEXT@
     DIRSEP			=/
 	#on unix, we expect to have WWW set in environment
 	#WWW			=/data2/htdocs
@@ -418,7 +418,6 @@ SO_EXT_LINKABLE=@SO_EXT_LINKABLE@
 
 ifdef COMSPEC #############Windows platform - CygWin related:################
 
-	ARCHEXT			=zip
     DIRSEP			=\\
 	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
 	GTKCONFIGTEXT	=echo "----- gtk-version form makefile -------"
@@ -454,6 +453,10 @@ ifeq "${TARGET_OS}" "darwin"
         #shared one, ("bundle") so we will need separate setting for
 		#libaubit4gl.dynlib
 		SO_LDFLAGS	=-flat_namespace -bundle -undefined suppress ${LDFLAGS}
+
+        #Darwin
+		#-Wl,-force_flat_namespace is needed to get all the programs
+		#to link correctly. (huh?)
 endif
 
 ## ==================================================================
@@ -1057,6 +1060,19 @@ FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES))  $(addprefix $(INCL_DEST)/,	
 FROMIDE     =$(addprefix $(IDE_DEST)/,	$(IDE_FILES))
 
 
+## ==================================================================
+##                    Automatic build Settings
+## ==================================================================
+
+AUBITCVSSFNAME		=${AUBITNAME}src
+NAMEVERBLD			=${AUBITCVSSFNAME}-${AUBITVERSION}-${AUBITBUILD}
+PLATFORMINFO		=${NAMEVERBLD}.txt
+SOURCETARBASENAME	=${NAMEVERBLD}.${ARCHEXT}
+BINTARBASENAME      =${AUBITNAME}bin-${TARGET}-${AUBITVERSION}-${AUBITBUILD}.${ARCHEXT}
+SOURCETARNAME		=$(SOURCE)/$(SOURCETARBASENAME)
+
+#Path under your web server HTDOCS dir, where to put Doxy generated files:
+DOXY_WWWPATH        =projects/Aubit4GL/doxy
 
 
 

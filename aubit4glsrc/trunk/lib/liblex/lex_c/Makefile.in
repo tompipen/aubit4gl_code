@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-09-26 02:14:09 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-10-01 09:50:31 afalout Exp $
 #
 
 ROOT        =../../..
@@ -97,8 +97,7 @@ dllLEX_C: exportlib4glcomp ${4GLCOBJ_C}
 compile_c.c: ${ROOT}/compilers/4glc/rules/generated/kw.h ${ROOT}/compilers/4glc/rules/generated/y.tab.h
 
 ${ROOT}/compilers/4glc/rules/generated/kw.h ${ROOT}/compilers/4glc/rules/generated/y.tab.h:
-	${MAKE} -C ${ROOT}/compilers/4glc rules.t
-
+	${MAKE} -C ${ROOT}/compilers/4glc rules/generated/y.tab.c
 
 ## ==================================================================
 ##                            Clean Targets
