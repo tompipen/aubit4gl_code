@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.8 2004-02-10 16:33:58 mikeaubury Exp $
+# $Id: makefile,v 1.9 2004-02-22 02:26:33 afalout Exp $
 #
 
 ROOT    =../..
@@ -50,6 +50,8 @@ ALL=configurator${EXE} helpfile.hlp change.afr.dat options.afr.dat values.afr.da
 
 .phony: install clean all deinstall run
 
+OBJS=config.ao rest.ao dir.o globals.ao
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -57,16 +59,20 @@ ALL=configurator${EXE} helpfile.hlp change.afr.dat options.afr.dat values.afr.da
 all: ${ALL} install
 	@echo "Default targets (${ALL}) compiled sucesfully"
 
-config.4gl helpfile.msg: descriptions mk_config config.4gl.head
+config.4gl helpfile.msg: descriptions mk_config 
 	${SH} mk_config > config.4gl
 
 config.ao: config.4gl 
 rest.ao: rest.4gl
+globals.ao: globals.4gl
 
-configurator${EXE}: config.ao rest.ao dir.o
-	export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE; \
-		${FGLPCEXEC} $^ -o $@
+configurator${EXE}: ${OBJS}
+	export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; \
+		export A4GL_UI=CONSOLE; ${FGLPCEXEC} $^ -o $@
 
+show:
+	@echo "A4GL_CURR_PACKER=${A4GL_CURR_PACKER}"
+		
 ## ==================================================================
 ##                              Install/deinstall
 ## ==================================================================
@@ -91,7 +97,7 @@ run: ${ALL}
 
 clean:
 	${RM} *.msg *.ao ${ALL} *.bak config.4gl config.c rest.c *.err \
-	*.glb *.h *.warn *~ *.o
+	*.glb *.h *.warn *~ *.o *.out globals.c
 
 
 # ================================= EOF =============================
