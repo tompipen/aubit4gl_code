@@ -18,7 +18,7 @@ struct s_rbx *rbx = 0;
 int main(int argc,char *argv[]) {
 FILE *fin_filter;
 char buff[256];
-char errbuff[1024];
+char errbuff[1024]="";
 
   if (argc != 4 && argc!=3 )
     {

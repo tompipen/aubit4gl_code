@@ -146,5 +146,5 @@ int RP_process_report (char *buff)
     {
       output_page (rep_fout, report->max_col, report->page_length);
     }
-
+return 1;
 }
