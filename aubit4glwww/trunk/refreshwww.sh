@@ -55,7 +55,7 @@ then
 #Writing to files from PHP also don't work
 #   echo "XXX" > test.tmp
 #	cvs update > cvsupdate.log 2>&1
-	cvs update
+	cvs update 2>&1
 	RET=$?
 	if test "$RET" != "0"
 	then
