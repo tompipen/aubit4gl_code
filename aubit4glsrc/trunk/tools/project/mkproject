@@ -20,27 +20,16 @@ then
     cd $OLD_DIR
 fi
 
-#cd $HOME
-
-#Bug on CygWin - root makefile PWD allways returned :
-#PROJECTC=$CURRDIR/../../lib/generated/project.c
 PROJECTC=$AUBITDIR/lib/generated/project.c
-#PROJECTC=$CURRDIR/../../lib/project.c
-
-PROJECTC2=$PROJECTC
-#PROJECTC2=$CURRDIR/../../lib/generated/crap.c
-
 
 ##########################
 #get current build number:
 ##########################
-#build=`cat project/build`
 build=`cat build`
 
 #############################
 #Get current version number:
 ##############################
-#version=`cat project/version`
 version=`cat version`
 
 if [ "$1" = "-increase" ]
@@ -137,8 +126,8 @@ internal_version(void)
 #grep all C files in lib to create rest of project.c:
 #######################################################
 
-cd $CURRDIR/../../lib/libaubit4gl
-
+#cd $CURRDIR/../../lib/libaubit4gl
+cd $AUBITDIR/lib/libaubit4gl
 
 #grep "\$Id" *.c | nawk '
 grep "\$Id" *.c | awk '
@@ -174,7 +163,7 @@ print " "
 
 
 }
-' >> $PROJECTC2
+' >> $PROJECTC
 
 # ========================= EOF ===============================
 

@@ -1,8 +1,17 @@
+#ifdef __sun__
+	#ifdef __sparc__
+		// On Solaris bool_t not defined in RPC lib headers
+		#define bool_t int
+
+        // On solaris needed for auth_stat
+        #include "rpc/auth.h"
+    #endif
+#endif
 
 
 #include "a4gl_lib_rpc_int.h"
 
-    #include "rpc/pmap_clnt.h" /* pmap_unset() */
+#include "rpc/pmap_clnt.h" /* pmap_unset() */
 
 
 /* ======================== from a4gl_xdr_rpc_stack.h ================ */

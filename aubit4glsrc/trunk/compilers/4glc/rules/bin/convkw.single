@@ -1,4 +1,12 @@
 #!/bin/sh
+#####################################################################
+#Create generated/single_words from data/kwords
+#Resulting file (generated/single_words) is used by convkw script to
+#create generated/kw.h generated/kw.c
+#
+######################### NOT WORKING !!!!! #########################
+
+
 awk  '
 /^#/ {next}
 /FKEY/ {next}
@@ -15,7 +23,10 @@ if (NF<=2) { print kw > "generated/single_words" }
 ' < data/kwords
 
 # this doesnt work properly yet - so ignore all these anyway !
-cat /dev/null > generated/single_words
+#This would not create EOF and will cause problems at least on Solaris:
+#cat /dev/null > generated/single_words
+rm -f generated/single_words
+touch generated/single_words
 
-
+echo $0 : Done
 

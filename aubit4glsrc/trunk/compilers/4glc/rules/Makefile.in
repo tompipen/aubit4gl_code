@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-05-26 06:26:48 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-09-21 05:46:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -54,11 +54,11 @@ all: generated/kw.c generated/single_words.rule generated/y.tab.c generated/stat
 generated/states.c: data/defstates
 	${SH} bin/procstates
 
-generated/kw.h: generated/single_words
+generated/kw.h generated/kw.c: generated/single_words
 	${SH} bin/convkw
 
-generated/kw.c: generated/single_words
-	${SH} bin/convkw
+#generated/kw.c: generated/single_words
+#	${SH} bin/convkw
 
 generated/single_words: data/kwords
 	${SH} bin/convkw.single

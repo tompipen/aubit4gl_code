@@ -1,4 +1,31 @@
 #!/bin/sh
+###############################################################
+#This script is invoked from compilers/4glc/rules/Makefile:
+#
+#generated/kw.h generated/kw.c: generated/single_words
+#	${SH} bin/convkw
+#
+#NOTE: convkw.single script is disabled, therefore generated/single_words file
+#will be empty!
+#
+###############################################################
+
+MODE=$1
+
+if test "$MODE" = "test" ; then
+echo "MODE=test"
+awk '
+BEGIN {
+doverbose="0"
+while (getline < "generated/single_words") {
+	single_words[$1]=1
+	print "Defined " $1 " as single word"
+}
+}
+' < data/kwords
+exit
+fi
+
 awk '
 BEGIN {
 doverbose="0"

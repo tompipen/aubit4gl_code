@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.84 2002-09-16 10:53:03 afalout Exp $
+# $Id: configure.in,v 1.85 2002-09-21 05:45:53 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -606,7 +606,9 @@ if test "$MAKE" = "no" ; then
 else
 #make --version'
 		AC_MSG_CHECKING(make version)
+		#this creates fill set dump on Solaris
 		set `make --version 2>/dev/null | head -1|sed -e 's/^GNU Make version //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
+		#set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
 		if test "$1" != ""; then
 			if test "$1" = "3" -a "$2" -lt "50"; then
 		        AC_MSG_WARN(You will need GNU make version 3.50 or later (found $1.$2.$3).)
@@ -722,9 +724,6 @@ fi
 ##                 Checks for other 4gl compiles
 ## ==================================================================
 
-#classic Informix 4gl C-code
-#FIXME: names? see i4gl.mk
-
 AC_MSG_CHECKING(4Js BDL / Informix D4GL)
 AC_PATH_PROG(FJS_PCOMPILER, fglcomp, no)
 AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
@@ -740,9 +739,51 @@ if test "$cygwin" = "1" ; then
 	#AC_PATH_PROG(PLEXUS_COMP, fglc, no)
 	AC_PATH_PROG(PLEXUS_COMP, mkesq, no)
 else
-	AC_MSG_CHECKING(Classic Informix 4gl P-coode)
+	AC_MSG_CHECKING(Classic Informix 4gl P-code)
 	AC_PATH_PROG(I4GL_PCOMPILER, fglpc, no)
 	AC_PATH_PROG(I4GL_PRUNTIME, fglgo, no)
+
+    if test "$I4GL_PCOMPILER" != "no"; then
+		#For 4glWorks: try to understand whether this is 4gl4 or 4gl6, as you
+		#have to free cursors & statements differently
+		AC_MSG_CHECKING(fglpc version)
+		set `fglpc -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+		if test "$1" != ""; then
+			#if test "$1" = "4" -a "$2" -lt "50"; then
+            if test "$1" -lt "5"; then
+				I4GL_PCOMPILER_VER=4
+				AC_MSG_RESULT($1.$2.$3 (series 4 or earler))
+	        else
+				I4GL_PCOMPILER_VER=6
+				AC_MSG_RESULT($1.$2.$3 (series 6 or later))
+	        fi
+        else
+			AC_MSG_ERROR(Cannot get fglpc version.)
+        fi
+    fi
+
+	AC_MSG_CHECKING(Classic Informix 4gl C-code)
+	AC_PATH_PROG(I4GL_CCOMPILER, c4gl, no)
+
+    if test "$I4GL_PCOMPILER" != "no"; then
+	#For 4glWorks: try to understand if the product is esql/c 5+
+	#aware, or is a special case, ie c4gl 4.x or is not esql/c
+	#aware in any way, shape or form (ie an rds only shop)
+		AC_MSG_CHECKING(c4gl version)
+		set `c4gl -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+		if test "$1" != ""; then
+			#if test "$1" = "4" -a "$2" -lt "50"; then
+            if test "$1" -lt "5"; then
+				I4GL_CCOMPILER_VER=4
+				AC_MSG_RESULT($1.$2.$3 (series 4 or earler))
+	        else
+				I4GL_CCOMPILER_VER=6
+				AC_MSG_RESULT($1.$2.$3 (series 6 or later))
+	        fi
+        else
+			AC_MSG_ERROR(Cannot get c4gl version.)
+        fi
+    fi
 fi
 
 ## ==================================================================
@@ -1031,6 +1072,10 @@ WARNING: You specified Informix base install directory that is different
 				else
 					IFX_ESQL_FLAGS="-EUHAVE_IFX_IUS"
 				fi
+
+                #For 4glWorks: try to understand if the product is esql/c 5+
+				#aware, or is a special case, ie c4gl 4.x or is not esql/c
+				#aware in any way, shape or form (ie an rds only shop)
 
 				AC_DEFINE_UNQUOTED(IFX_VERSION, $IFX_VERSION)
 				AC_MSG_RESULT($IFX_VERSION)
@@ -2418,6 +2463,7 @@ case $host in
 	#cygcheck can be used instead of ldd that is missing on CygWin:
 	AC_PATH_PROG(CYGCHECK, cygcheck, no)
 
+	#configure.in:2467: warning: AC_LIBTOOL_SETUP was called before AC_LIBTOOL_WIN32_DLL
 	#this macros are in aclocal.m4 - run aclocal to create it :
 	AC_LIBTOOL_WIN32_DLL
 
