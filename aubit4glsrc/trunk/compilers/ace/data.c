@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.12 2002-08-29 09:10:31 afalout Exp $
+# $Id: data.c,v 1.13 2002-09-23 10:24:00 afalout Exp $
 #*/
 
 /**
@@ -78,7 +78,7 @@ extern int ordbycnt;
 void dif_add_bind_int (void *list, long a);
 #ifdef OLD_INCL
 int A4GLSQL_next_column (char *colname, int *dtype, int *size);
-void add_variable (char *name, char *dstring, int category, int pno,
+void ace_add_variable (char *name, char *dstring, int category, int pno,
 		   int dtype, int dim);
 void init_report (void);
 int find_variable (char *name);
@@ -130,9 +130,9 @@ init_report (void)
   this_report.aggs.aggs_len = 0;
   this_report.aggs.aggs_val = 0;
 
-  add_variable ("pageno", "INTEGER", CAT_BUILTIN, 0, 2, 0);
-  add_variable ("lineno", "SMALLINT", CAT_BUILTIN, 0, 1, 0);
-  add_variable ("today", "DATE", CAT_BUILTIN, 0, 7, 0);
+  ace_add_variable ("pageno", "INTEGER", CAT_BUILTIN, 0, 2, 0);
+  ace_add_variable ("lineno", "SMALLINT", CAT_BUILTIN, 0, 1, 0);
+  ace_add_variable ("today", "DATE", CAT_BUILTIN, 0, 7, 0);
 }
 
 
@@ -202,11 +202,11 @@ decode_dtype (char *s)
 }
 
 /**
- *
+ * Function with same name in mod.c - renamed from add_variable to ace_add_variable
  * @todo Describe function
  */
 void
-add_variable (char *name, char *dstring, int category, int pno, int dtype,
+ace_add_variable (char *name, char *dstring, int category, int pno, int dtype,
 	      int dim)
 {
   struct variable *ptr;
@@ -726,7 +726,7 @@ execute_selects (void)
 	  while (A4GLSQL_next_column ((char **) colname, &coltype, &colsize))
 	    {
 	      trim (colname);
-	      add_variable (colname, 0, CAT_SQL, 0, coltype, colsize);
+	      ace_add_variable (colname, 0, CAT_SQL, 0, coltype, colsize);
 	    }
 
 	  /* printf ("ordbycnt=%d\n", ordbycnt); */

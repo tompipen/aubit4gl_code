@@ -280,10 +280,10 @@ define_element:
 		exit(0);
 	}
 	| VARIABLE variable datatype {
-		add_variable($<str>2,$<str>3,CAT_VARIABLE,0,-1,0);
+		ace_add_variable($<str>2,$<str>3,CAT_VARIABLE,0,-1,0);
 	}
 	| PARAM OPEN_SQUARE int_val CLOSE_SQUARE variable datatype {
-		add_variable($<str>5,$<str>6,CAT_PARAM,atoi($<str>3),-1,0);
+		ace_add_variable($<str>5,$<str>6,CAT_PARAM,atoi($<str>3),-1,0);
 	}
 	| FUNCTION ufunc_name {
 		add_function($<str>2);

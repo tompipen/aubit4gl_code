@@ -25,16 +25,19 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.69 2002-09-23 07:15:54 afalout Exp $
+# $Id: Makefile-common.in,v 1.70 2002-09-23 10:24:01 afalout Exp $
 #
+
+#Name we will use in many places, for consistency:
+AUBITNAME=aubit4gl
 
 #If we later need to know if this makefile was included or not:
 MAKEFILE_COMMON_INCLUDED=1
 
 #############
 #this internal variable points to default location of Aubit config files
-#Default=/etc/opt/aubit4gl
-AUBITETC=/etc/opt/aubit4gl
+#Default=/etc/opt/${AUBITNAME}
+AUBITETC=/etc/opt/${AUBITNAME}
 
 
 #WARNING! configure is not creating this file when in binary tree,
@@ -109,7 +112,7 @@ ifeq "$(NOINCL)" "0"
     else
 		ifeq "${AUBITDIR}" ""
 			#this should happen ONLY when initially installing binary build,
-            #unless install of aubitrc to /etc/opt/aubit4gl/aubitrc fails:
+            #unless install of aubitrc to /etc/opt/${AUBITNAME}/aubitrc fails:
 			AUBITRCFILE:=$(shell ls ./etc/aubitrc-bin ${NOERR})
 			ifneq "${AUBITRCFILE}" ""
 				include ${AUBITRCFILE}
@@ -138,7 +141,7 @@ ifeq "$(NOINCL)" "0"
 
     export AUBITDIR_SRC
 
-	AUBITRCFILE:=$(shell ls ~/.aubit4gl/aubitrc ${NOERR})
+	AUBITRCFILE:=$(shell ls ~/.${AUBITNAME}/aubitrc ${NOERR})
 	ifneq "${AUBITRCFILE}" ""
 		include ${AUBITRCFILE}
 		A5:=${AUBITRCFILE}
@@ -220,6 +223,43 @@ CPPFLAGS 			=
 LDFLAGS_SHARED		=@LDFLAGS_SHARED@
 AWK                 =@AWK@
 
+#-rdynamic is needed when calling functions that are defineds in
+#executable, from shared libraries that are dlopen at run-time,
+#otherwise we get this function calls as undefined symbols. as in:
+#4glc: relocation error: /opt/aubit/${AUBITNAME}src/lib/libLEX_C.so: undefined symbol: set_clobber
+#-rdynamic basically makes all symbols in a program public to a dlopen() shared lib.
+#thsi is a LINKER, not compiler option, and it's not in GCC documentation.
+#The -rdynamic option seems to have been
+#introduced as a high-level interface to the linker, to (a) force the
+#allocation of a global symbol table in the final executable, even if it's
+#not strictly needed, and (b) cause the inclusion of the global symbols in
+#that symbol table.
+#
+#        o  Under linux, gcc interprets it by setting the
+#           "-export-dynamic" option for ld, which has that effect, according
+#           to the linux ld manpage.
+#
+#        o Under IRIX it's ignored, and the program's happy as a clam.
+#
+#        o Under SunOS-4.1, gcc interprets it by setting the -dc -dp
+#          options for ld, which again forces the allocation of the symbol
+#          table in the code produced (see ld(1) on a Sun).
+
+ifeq "${TARGET_OS}" "solaris"
+	#On Solaris: gcc: unrecognized option `-rdynamic'
+	#RDYNAMIC            =-rdynamic
+	RDYNAMIC            =
+else
+	RDYNAMIC            =-rdynamic
+endif
+
+#Solaris ld:
+#   In static mode, -dn, relocatable object files given as argu-
+#     ments are combined to produce an executable object file.  If
+#     the  -r  option  is  specified, relocatable object files are
+#     combined to produce one relocatable object file
+#
+
 
 #FIXME: use gcc to do linking, not ld directly.  Instead of 'ld -shared',
 #use 'gcc -shared'.  If you MUST pass linker specific options to ld, use
@@ -257,9 +297,9 @@ ifeq "${TARGET_OS}" "solaris"
 	#listen                              ../../lib/libaubit4gl.so
     #But exactly the same line with ld instead gcc works fine.
 	#LD_EXE              =ld
-	LD_EXE              =${CC}
+	LD_EXE              =${CC} ${RDYNAMIC}
 else
-	LD_EXE              =${CC}
+	LD_EXE              =${CC} ${RDYNAMIC}
 endif
 
 ALL_LIBS			=@LIBS@
@@ -297,41 +337,6 @@ FAIL_OK             =-
 #         even if branches need large displacements.
 #FIXME: is it OK to have -fPIC when creating executables, not libraries?
 PIC					=@PIC@
-#-rdynamic is needed when calling functions that are defineds in
-#executable, from shared libraries that are dlopen at run-time,
-#otherwise we get this function calls as undefined symbols. as in:
-#4glc: relocation error: /opt/aubit/aubit4glsrc/lib/libLEX_C.so: undefined symbol: set_clobber
-#-rdynamic basically makes all symbols in a program public to a dlopen() shared lib.
-#thsi is a LINKER, not compiler option, and it's not in GCC documentation.
-#The -rdynamic option seems to have been
-#introduced as a high-level interface to the linker, to (a) force the
-#allocation of a global symbol table in the final executable, even if it's
-#not strictly needed, and (b) cause the inclusion of the global symbols in
-#that symbol table.
-#
-#        o  Under linux, gcc interprets it by setting the
-#           "-export-dynamic" option for ld, which has that effect, according
-#           to the linux ld manpage.
-#
-#        o Under IRIX it's ignored, and the program's happy as a clam.
-#
-#        o Under SunOS-4.1, gcc interprets it by setting the -dc -dp
-#          options for ld, which again forces the allocation of the symbol
-#          table in the code produced (see ld(1) on a Sun).
-
-ifeq "${TARGET_OS}" "solaris"
-	#On Solaris: gcc: unrecognized option `-rdynamic'
-	RDYNAMIC            =
-else
-	RDYNAMIC            =-rdynamic
-endif
-
-#Solaris ld:
-#   In static mode, -dn, relocatable object files given as argu-
-#     ments are combined to produce an executable object file.  If
-#     the  -r  option  is  specified, relocatable object files are
-#     combined to produce one relocatable object file
-#
 USE_RPCGEN			=@USE_RPCGEN@
 HAVE_RPCLIB			=@HAVE_RPCLIB@
 
@@ -488,7 +493,7 @@ ifdef COMSPEC
 	LIB_INSTALL_LINK=/usr/local/bin
 else
 	#FSH and RPM rules say we should install binaries (links) in
-	#${PREFIX}/aubit4gl and libraries (links) in ${PREFIX}/lib. But this will
+	#${PREFIX}/${AUBITNAME} and libraries (links) in ${PREFIX}/lib. But this will
 	#in our case be /opt, and on 99% of the systems we will not have /opt/bin
 	#already in the path, and /opt/lib will not be in libraries search path.
 	#This conflicts with RPM rule that say that installed programs "must be
@@ -504,7 +509,7 @@ endif
 
 PREFIX=@prefix@
 BIN_INSTALL_LINK=/usr/bin
-INSTALL_DIR=${PREFIX}/aubit4gl
+INSTALL_DIR=${PREFIX}/${AUBITNAME}
 
 #Set AUBITDIR in aubitrc settings:
 	TOREPLACE=^AUBITDIR
@@ -870,12 +875,6 @@ TMP_RPMFILES = \
 	@RPMFILE_18@ @RPMFILE_19@ @RPMFILE_20@ @RPMFILE_21@ @RPMFILE_22@ \
 	@RPMFILE_23@ @RPMFILE_24@ @RPMFILE_25@ @RPMFILE_26@ @RPMFILE_27@ \
 	@RPMFILE_28@ @RPMFILE_29@ @RPMFILE_30@
-
-#remains:
-#lib  libtool
-#[root@aptiva aubit4gl]# ls lib
-#libEXREPORT_PDF.so  libIM_JABBER.so  libSQL_iodbc.so
-
 
 LIB_OPTIONAL =$(notdir ${TMP_RPMFILES})
 
