@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2005-01-07 08:19:02 afalout Exp $
+# $Id: Makefile,v 1.2 2005-01-12 11:15:18 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -44,7 +44,7 @@ OBJS				=${SRC_C:.c=.o}
 #CFLAGS are used only by C compiler on UNIX, not by ESQL/C or MSVC compilers:
 CFLAGS				+=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
 					-I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql \
-					-I$(AUBITDIR)/incl
+					-I$(AUBITDIR)/incl -g
 
 ESQL_INCLPATH		=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
 					-I$(AUBITDIR)/incl ${C_IFLAGS}
@@ -56,7 +56,7 @@ endif
 
 
 LD_LFLAGS           =-L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
-                    -L$(INFORMIXDIR)/lib/cli
+                    -L$(INFORMIXDIR)/lib/cli -g
 
 ifneq "$(findstring esql,${PLUGIN_STATIC})" ""
 	
@@ -222,9 +222,9 @@ ifneq "${COMSPEC}" ""
 	-@rm $(basename $<).c $(basename $<).c_*
 	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${IFX_LIBS} ${LINKLIBS} -o $@
 else
-	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c $^ ${ESQL_FLAGS} \
+	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -g -c $^ ${ESQL_FLAGS} \
 		${ESQL_INCLPATH} ${C_DFLAGS}
-	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
+	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) -g  esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 endif
 
 #------------------------ esql_compatible.ec ----------------------------

@@ -1,20 +1,22 @@
 # rules for converting Informix SQL to Postgres-compatible syntax
 
-
-#Seems like INFORMIX-POSTGRESQL.cnv is obsolete? 
-
-
 DOUBLE_TO_SINGLE_QUOTES
 MATCHES_TO_REGEX
 TABLE_ALIAS_AS
-ADD_CASCADE
+# ADD_CASCADE
 COLUMN_ALIAS_AS
 MONEY_AS_DECIMAL
 ANSI_UPDATE_SYNTAX
 CONSTRAINT_NAME_BEFORE
-SUBSTRING_FUNCTION = substr
-STRIP_ORDER_BY_INTO_TEMP
-
+SUBSTRING_FUNCTION = substring
+TEMP_AS_DECLARE_GLOBAL
+SELECT_INTO_TEMP_AS_DECLARE_GLOBAL
+ADD_SESSION_TO_TEMP_TABLE
+LIMIT_LINE
+NO_DECLARE_INTO
+NO_FETCH_WITHOUT_INTO
+NO_SELECT_WITHOUT_INTO
+NO_PUT
 # Postgres doesn't have one of these - so fake one
 DTYPE_ALIAS BYTE = VARCHAR 
 
@@ -98,50 +100,15 @@ DTYPE_ALIAS INTERVAL SECOND TO FRACTION=CHAR(20)
 DTYPE_ALIAS INTERVAL SECOND (2) TO FRACTION=CHAR(20)
 DTYPE_ALIAS INTERVAL SECOND TO FRACTION(2)=CHAR(20)
 DTYPE_ALIAS INTERVAL SECOND (2) TO FRACTION(2)=CHAR(20)
-DTYPE_ALIAS NVARCHAR=VARCHAR
-
-
-
 
 
 OMIT_NO_LOG
 USE_INDICATOR
-REPLACE_SQLCONST rowid = oid
-
-# These are only needed for non-patched postgres :
-# REPLACE_SQLCONST today = date(now())
-# REPLACE_SQLFUNC year = date_part('YEAR',%s::timestamp with time zone)
-# REPLACE_SQLFUNC month = date_part('MONTH',%s::timestamp with time zone)
-# REPLACE_SQLFUNC day = date_part('DAY',%s::timestamp with time zone)
-# REPLACE_SQLFUNC dow = date_part('DOW',%s::timestamp with time zone)
-
-REPLACE_SQLFUNC ascii = chr(%s)
-REPLACE_SQLFUNC ord = ascii(%s)
-
-REPLACE_EXPR current year to fraction(3) = now()
-REPLACE_EXPR current year to fraction(5) = now()
-REPLACE_EXPR current year to second = now()
-
-# No obvious replacement for these - so effectively remove them
-REPLACE_COMMAND SET EXPLAIN ON = 
-REPLACE_COMMAND SET EXPLAIN OFF = 
-
-# This is about as close as postgres gets to an update statistics...
-REPLACE_COMMAND UPDATE STATISTICS = VACUUM
-
-# We can only replace whole statements with a REPLACE_COMMAND
-# so we need to use a REPLACE on its own for this one..
-REPLACE UPDATE STATISTICS FOR TABLE  = VACUUM 
-
-# Postgres doesn't implement these - so ignore them ?
-REPLACE_COMMAND SET ISOLATION TO DIRTY READ = 
-REPLACE_COMMAND SET ISOLATION TO REPEATABLE READ = 
-
-REPLACE_COMMAND SET ISOLATION TO CURSOR STABILITY = SET SESSION CHARACTERISTICS SERIALIZABLE
-REPLACE_COMMAND SET ISOLATION TO COMMITTED READ = SET SESSION CHARACTERISTICS READ COMMITTED
-REPLACE_COMMAND SET LOCK MODE TO NOT WAIT =
-REPLACE_COMMAND SET LOCK MODE TO WAIT =
-REPLACE_COMMAND SET LOCK MODE TO WAIT %s =
+REPLACE rowid = oid
+REPLACE today = date('today')
+REPLACE current year to second = date('now')
+REPLACE current year to fraction(5) = date('now')
+REPLACE current year to fraction(3) = date('now')
 
 # Ignore any errors when closing a cursor
 # it may already have been closed...
@@ -149,11 +116,6 @@ IGNORE_CLOSE_ERROR
 OMIT_INDEX_CLUSTER
 OMIT_INDEX_ORDER
 IGNORE_OWNER
-ESQL_UNLOAD
-ESQL_UNLOAD_FULL_PATH
-ESQL_AFTER_INSERT = A4GLESQL_after_insert();
-ESQL_AFTER_UPDATE = A4GLESQL_after_update();
-ESQL_AFTER_DELETE = A4GLESQL_after_delete();
 
 IGNORE_DTYPE_VARCHAR_MIN
 # Quote an SQL expression in the form DATETIME(2001-01-01) to be DATETIME("2001-01-01") (give the db a chance to handle with a SP)
@@ -171,5 +133,3 @@ NO_SERIAL_START_VALUE
 
 RENAME_TABLE_AS_ALTER_TABLE
 RENAME_COLUMN_AS_ALTER_TABLE
-
-SWAP_SQLCA62

@@ -207,7 +207,7 @@ style "AppWindow" {
 
 
 style "FormLabel" {
-  	font_name = "monspace 10"
+  	font_name = "monospace 10"
         bg[NORMAL]       = "#000000"
         bg[ACTIVE]       = "#ffffff"
         fg[NORMAL]       = "#000000"

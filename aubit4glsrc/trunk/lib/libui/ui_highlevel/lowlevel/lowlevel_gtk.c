@@ -11,7 +11,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.53 2005-01-08 12:36:15 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.54 2005-01-12 11:15:23 mikeaubury Exp $";
 
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
@@ -3355,10 +3355,10 @@ if (pos==0)  {
 	c=acl_getenv("MENUPOSITION");
 	if (c==0) {pos= 'R'; return pos;}
 	if (strlen(c)==0) {pos= 'R'; return pos;}
-	if (c[0]=='T') {pos= 'T'; return pos;}
-	if (c[0]=='L') {pos= 'L'; return pos;}
-	if (c[0]=='B') {pos= 'B'; return pos;}
-	if (c[0]=='R') {pos= 'R'; return pos;}
+	if (toupper(c[0])=='T') {pos= 'T'; return pos;}
+	if (toupper(c[0])=='L') {pos= 'L'; return pos;}
+	if (toupper(c[0])=='B') {pos= 'B'; return pos;}
+	if (toupper(c[0])=='R') {pos= 'R'; return pos;}
 	pos='R'; 
 }
 

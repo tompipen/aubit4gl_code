@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.191 2004-12-06 10:34:45 mikeaubury Exp $
+# $Id: mod.c,v 1.192 2005-01-12 11:15:10 mikeaubury Exp $
 #
 */
 
@@ -316,6 +316,7 @@ static char *print (char *z)
 }
 */
 
+int A4GL_db_used() { return db_used; }
 
 #ifdef OLD_STUFF
 /**
@@ -1602,7 +1603,7 @@ pushLikeAllTableColumns (char *tableName)
   char csize[20];
   char cdtype[20];
   char buff[300];
-  char *ccol;
+  char *ccol=0;
 
   A4GL_debug ("pushLikeAllTableColumns()");
   /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
@@ -1623,19 +1624,22 @@ pushLikeAllTableColumns (char *tableName)
       colname[0] = 0;
 
       /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
-      rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+	ccol=0;
+        rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+      if (rval == 0) break;
+
+        A4GL_assertion(ccol==0,"No column name set");
+
       A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
       A4GL_debug ("next column for table '%s' is '%s'", A4GL_null_as_null(tableName),A4GL_null_as_null(ccol));
-
       strcpy (colname, ccol);
+
 
       /*
          warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
          we are sending char ARRAY to function expecting char POINTER !!!!
        */
 
-      if (rval == 0)
-	break;
 
       sprintf (cdtype, "%d", idtype & 15);
       sprintf (csize, "%d", isize);
@@ -4754,9 +4758,15 @@ char *A4GL_CV_print_select_all(char *s) {
 
 
 int A4GL_escape_quote_owner(void) {
-	if (A4GLSQLCV_check_requirement("QUOTE_OWNER")) {return 1;}
-	if (A4GLSQLCV_check_requirement("NO_OWNER_QUOTE")) {return 0;}
-	if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0)  return 0;
+	if (A4GLSQLCV_check_requirement("QUOTE_OWNER")) {
+		return 1;
+	}
+	if (A4GLSQLCV_check_requirement("NO_OWNER_QUOTE")) {
+		return 0;
+	}
+	if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0)  {
+		return 0;
+	}
 	return 1;
 }
 
@@ -4779,6 +4789,10 @@ if (strncasecmp(s,"DATETIME(",9)==0) {
 }
 return s;
 }
+
+
+
+
 
 char *A4GL_interval_value(char *s) {
 static char buff[256];

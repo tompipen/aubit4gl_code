@@ -149,8 +149,7 @@ CHAR_VALUE  {
 	}
 	inc_counter();
 }
-| real_number
-{
+| real_number {
 	sprintf($<str>$,"%s",A4GL_get_push_literal('D',$<str>1));
 	$<ptr>$=A4GL_new_expr($<str>$);
 	inc_counter();

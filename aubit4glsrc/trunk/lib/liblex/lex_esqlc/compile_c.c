@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.208 2004-12-23 16:42:45 mikeaubury Exp $
+# $Id: compile_c.c,v 1.209 2005-01-12 11:15:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.208 2004-12-23 16:42:45 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.209 2005-01-12 11:15:18 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -74,6 +74,7 @@ static char *module_id="$Id: compile_c.c,v 1.208 2004-12-23 16:42:45 mikeaubury 
 
 #define FGL_PLUS_PLUS
 int isin_command (char *cmd_type);
+char *A4GL_get_esql_ext(void);
 /*
 void add_function_to_header (char *identifier, int parms);
 char *get_namespace (char *s);
@@ -302,26 +303,32 @@ open_outfile (void)
 
   if (doing_esql ())
     {
+
+
+
+	/* We'll get rid of this switch statement soon - use it to check our get_esql_ext function for now though */
+
       switch (esql_type ())
 	{
 
 	case 1:
-	  strcat (c, ".ec");	/* Informic ESQL/C */
+	  if (strcmp(A4GL_get_esql_ext(),".ec")!=0)  printf("Unexpected extension for informix\n");
   		break;
 
 	case 2:
-	  strcat (c, ".cpc");	/* PostgreSQL ESQL/C compiler */
+	  if (strcmp(A4GL_get_esql_ext(),".cpc")!=0)  printf("Unexpected extension for postgres\n");
 	  break;
 
 	case 3:		/* SAPDB pre-compiler also uses .cpc extension */
-	  strcat (c, ".cpc");
+	  if (strcmp(A4GL_get_esql_ext(),".cpc")!=0)  printf("Unexpected extension for SAP\n");
 	  break;
 
 	case 4:
-	  strcat (c, ".ec");	/* Ingres */
+	  if (strcmp(A4GL_get_esql_ext(),".sc")!=0)  printf("Unexpected extension for INGRES\n");
   		break;
 
 	}
+	strcat(c,A4GL_get_esql_ext());
     }
   else
     {

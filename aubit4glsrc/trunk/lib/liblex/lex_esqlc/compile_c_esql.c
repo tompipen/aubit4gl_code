@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.101 2004-12-07 15:28:01 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.102 2005-01-12 11:15:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.101 2004-12-07 15:28:01 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.102 2005-01-12 11:15:18 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -165,6 +165,16 @@ print_exec_sql (char *s)
   	A4GL_debug("Here");
   	printc ("\nEXEC SQL %s; /* exec_sql */\n", s);
   }
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+	if (strstr(s,"DECLARE GLOBAL TEMPORARY TABLE")) {
+		char tabname[64];
+		char *ptr;
+		strncpy(tabname,&s[39],64);
+		ptr=strchr(tabname, ' ');
+		if (ptr) *ptr=0;
+		printc("A4GLSQLCV_add_temp_table(\"%s\");",tabname);
+	}
+}
   	A4GL_debug("Done");
   print_copy_status ();
 }
@@ -274,8 +284,13 @@ print_foreach_next (char *xcursorname, int has_using, char *into)
   print_conversions ('i');
 set_suppress_lines();
 A4GL_save_sql("FETCH %s", A4GL_strip_quotes (cursorname));
-  printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",
-	  cursorname, A4GL_get_into_part (0,no), ni, no);
+
+
+if (no==0 && A4GLSQLCV_check_requirement("NO_FETCH_WITHOUT_INTO")) {
+	a4gl_yyerror ("You cannot use a FETCH without an INTO with the target database");
+	return;
+}
+  printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n", cursorname, A4GL_get_into_part (0,no), ni, no);
   print_copy_status ();
   printc("internal_recopy_%s_o_Dir();",cursorname);
   print_conversions ('o');
@@ -453,6 +468,9 @@ print_put (char *xcname,char *putvals)
   if (cname) free(cname);
   cname=strdup(A4GL_strip_quotes(xcname));
 
+if (A4GLSQLCV_check_requirement("NO_PUT")) {
+	a4gl_yyerror ("You cannot use a PUT with the target database");
+}
 
   printc ("{\n");
   n = print_bind_definition ('i');
@@ -905,6 +923,13 @@ print_fetch_3 (char *ftp, char *into)
       return;
     }
 
+
+
+if (no==0 && A4GLSQLCV_check_requirement("NO_FETCH_WITHOUT_INTO")) {
+	a4gl_yyerror ("You cannot use a FETCH without an INTO with the target database");
+}
+
+
   printc("/* ... no=%d*/",no);
   printc ("%s %s ;", buff, A4GL_get_into_part (0,no));
 
@@ -1044,9 +1069,13 @@ A4GL_save_sql("CONNECT TO %s AS 'default'",db);
 void
 print_do_select (char *s)
 {
-/*int ni;*/
+int no;
 A4GL_save_sql(s,0);
 set_suppress_lines();
+if (last_no==0 && A4GLSQLCV_check_requirement("NO_SELECT_WITHOUT_INTO")) {
+	a4gl_yyerror ("You cannot use a SELECT without an INTO with the target database");
+	return;
+}
   printc ("\nEXEC SQL %s;\n/* do_select */", s);
 clr_suppress_lines();
   print_copy_status ();
@@ -1155,6 +1184,12 @@ A4GL_save_sql("DECLARE CURSOR FOR %s",a2);
     /*}*/
   printc (";");
   print_copy_status ();
+
+
+if (last_no && A4GLSQLCV_check_requirement("NO_DECLARE_INTO")) {
+	a4gl_yyerror ("You cannot use an INTO with a declare with the target database");
+	return;
+}
   printh("static int acli_ni_%s=%d;\n",cname,last_ni);
   printh("static int acli_no_%s=%d;\n",cname,last_no);
   printh("static struct BINDING *acli_bi_%s=0;\n",cname);
@@ -1435,9 +1470,17 @@ print_load (char *file, char *delim, char *tab, char *list)
       printc ("char _loadfname[512];");
       printc ("char _delim[64];");
       printc ("\nEXEC SQL END DECLARE SECTION;");
+
+
       if (file[0] == '"')
 	{
-	  sprintf (filename, "'%s'", A4GL_strip_quotes (file));
+	  sprintf (filename, ":_loadfname");
+	  printc ("strcpy(_loadfname,%s);", file);
+	  printc ("A4GL_trim(_loadfname);");
+	  if (A4GLSQLCV_check_requirement ("ESQL_UNLOAD_FULL_PATH"))
+	    {
+	      printc ("A4GLSQLCV_check_fullpath(_loadfname);");
+	   }
 	}
       else
 	{
@@ -1700,7 +1743,8 @@ nm (int n)
     case 7:
       return "DATE";
     case 8:
-      return "MONEY";
+	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) return "DECIMAL";
+	else return "MONEY";
     case 10:
       return "DATETIME";
     case 11:
@@ -1736,9 +1780,16 @@ static int rcnt=0;
 int a;
 int l_dt;
 int l_sz;
-
-sprintf(reptab,"aclfgl_%d%s",rcnt,repname);
-reptab[18]=0; /* Make sure its short enough...*/
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+	char b[64];
+	sprintf(reptab,"aclfgl_%d%s",rcnt,repname);
+	reptab[18]=0; /* Make sure its short enough...*/
+	sprintf(b,"session.%s",reptab);
+	strcpy(reptab,b);
+} else {
+	sprintf(reptab,"aclfgl_%d%s",rcnt,repname);
+	reptab[18]=0; /* Make sure its short enough...*/
+}
 
 if (type=='R') {
 	/* print_execute needs an ibind - we have an fbind - so we need*/
@@ -1747,8 +1798,13 @@ if (type=='R') {
 	//extern int fbindcnt;
 	memcpy(ibind,fbind,sizeof(struct binding_comp)*c+1);
 	ibindcnt=fbindcnt;
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+		sprintf(iname,"acl_p%s",&reptab[8]);
+		iname[18]=0;
+} else {
 	sprintf(iname,"acl_p%s",reptab);
 	iname[18]=0;
+}
 	print_execute(iname,1);
 }
 if (type=='E') {
@@ -1799,8 +1855,13 @@ if (type=='I') {
 	/*    1.  Generate the SQL including our order by*/
 	/*    2.  declare a cursor for it*/
 	/*    3.  open that cursor*/
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+		sprintf(cname,"acl_c%s",&reptab[8]);
+		cname[18]=0;
+} else {
 		sprintf(cname,"acl_c%s",reptab);
 		cname[18]=0;
+}
 
   		sprintf (sql, "SELECT * FROM %s ORDER BY ", reptab);
 		for (a=0;a<current_ordbindcnt;a++) {
@@ -1836,8 +1897,14 @@ if (type=='I') {
 
 if (type=='E') {
 		char buff[256];
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+		sprintf(cname,"acl_c%s",&reptab[8]);
+		cname[18]=0;
+} else {
 		sprintf(cname,"acl_c%s",reptab);
 		cname[18]=0;
+}
+
 		print_close ('C', cname);
 		start_bind('i',0);
 		sprintf(buff,"DROP TABLE %s",reptab);
@@ -1845,7 +1912,15 @@ if (type=='E') {
 }
 
 if (type=='M') { /* Make the table */
+	char *xptr;
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+	printf("XXXX\n");
+	printc("A4GLSQLCV_add_temp_table(\"%s\");",&reptab[8]);
+  	sprintf (buff, "DECLARE GLOBAL TEMPORARY TABLE %s( /* AA */\n",reptab);
+
+} else {
   	sprintf (buff, "CREATE TEMP TABLE %s( /* AA */\n",reptab);
+}
 	sprintf(ins_str,"\"INSERT INTO %s VALUES (",reptab);
   	rcnt++;
   	for (a = 0; a < c; a++) {
@@ -1863,18 +1938,40 @@ if (type=='M') { /* Make the table */
       		strcat (buff, tmpbuff);
 		strcat (ins_str,"?");
     	}
+
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+        strcat(buff,") ON COMMIT PRESERVE ROWS WITH NORECOVERY");
+	printf("---> %s\n",reptab[8]);
+        if (!A4GL_has_pointer(&reptab[8],LOG_TEMP_TABLE)) { A4GL_add_pointer(&reptab[8],LOG_TEMP_TABLE,(void *)1); }
+
+} else {
         strcat(buff,")");
+}
         strcat(ins_str,")\"");
 
 	start_bind('i',0);
 	set_suppress_lines();
-	print_exec_sql_bound(buff);
+
+	xptr= A4GLSQLCV_check_sql(buff);
+	print_exec_sql_bound(xptr);
+
 	clr_suppress_lines();
 
 	sprintf(buff,"DELETE FROM %s",reptab);
-	print_exec_sql_bound(buff);
+	xptr= A4GLSQLCV_check_sql(buff);
+	print_exec_sql_bound(xptr);
+
+
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+		sprintf(iname,"acl_p%s",&reptab[8]);
+		iname[18]=0;
+} else {
 	sprintf(iname,"acl_p%s",reptab);
 	iname[18]=0;
+}
+
+
+
 	print_prepare (iname, ins_str);
 	}
 

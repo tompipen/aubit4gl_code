@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.101 2004-12-23 16:42:45 mikeaubury Exp $
+# $Id: curslib.c,v 1.102 2005-01-12 11:15:21 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.101 2004-12-23 16:42:45 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.102 2005-01-12 11:15:21 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -112,8 +112,8 @@ char dirstr[100];
 
 int help_no, g_help_no;
 
-int txtfcolour = COLOR_WHITE;
-int txtbcolour = COLOR_BLACK;
+//int txtfcolour = COLOR_WHITE;
+//int txtbcolour = COLOR_BLACK;
 int m_formno;
 
 textarea set_mess;

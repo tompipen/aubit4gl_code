@@ -5,17 +5,27 @@ define mv_username,mv_passwd char(255)
 
 code
 int fetchFirst;
+int fgl_callback(int argc,char *argv[]) {
+	printf("Hello World\n");
+	A4GL_setenv("A4GL_UI","GLADE",1);
+	printf("-->%s\n",acl_getenv("A4GL_UI"));
+}
 endcode
 
-main
-        hide window _variable("screen")
-		call select_db() 
-		if has_db() then
-			call open_sqleditor()
-		end if
 
-	call a4gl_run_gui()
+main
+	call init()
 end main
+
+function init()
+
+        hide window _variable("screen")
+	call select_db() 
+	if has_db() then
+		call open_sqleditor()
+	end if
+	call a4gl_run_gui()
+end function
 
 
 

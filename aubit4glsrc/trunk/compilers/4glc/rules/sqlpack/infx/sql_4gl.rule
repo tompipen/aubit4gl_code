@@ -118,6 +118,7 @@ declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specificatio
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
 		doing_declare=0;
+		
 	}
 	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
 		print_declare("",$<sql_string>7,$<str>3,2,0); 

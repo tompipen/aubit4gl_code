@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.151 2004-12-23 16:42:44 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.152 2005-01-12 11:15:17 mikeaubury Exp $
 #
 */
 
@@ -312,6 +312,8 @@
 #define CHANNEL_OUT		'M'
 #define CHANNEL_DELIM		'N'
 #define CHANNEL_PIPE		'P'
+
+#define ACLFGLI_STR_TO_ID		'S'
 
 */
   /* ========================= from a4gl_ui.h ====================== */

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.21 2004-11-05 14:21:11 mikeaubury Exp $
+# $Id: colours.c,v 1.22 2005-01-12 11:15:21 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: colours.c,v 1.21 2004-11-05 14:21:11 mikeaubury Exp $";
+static char *module_id="$Id: colours.c,v 1.22 2005-01-12 11:15:21 mikeaubury Exp $";
 /**
  * @file
  * Gets the color code.
@@ -121,7 +121,10 @@ A4GL_decode_colour_attr_aubit (int a)
   A4GL_debug ("MJA Got colour as : %s - %s", colour,attr);
   A4GL_trim(colour);
 
-  if (strlen(colour)==0) return A4GL_colour_code(COLOR_WHITE);
+  if (strlen(colour)==0) {
+  		A4GL_debug ("MJA Got colour as nothing - Using WHITE ", colour,attr);
+		return A4GL_colour_code(COLOR_WHITE);
+  }
 
   if (strcmp (colour, "BLACK") == 0)
     return A4GL_colour_code (COLOR_BLACK);
@@ -185,7 +188,6 @@ A4GL_decode_aubit_attr (int a, char s)
   if (s == 'w')
     {
       ca = A4GL_decode_colour_attr_aubit (a);
-
       if (strstr (attr, "INVISIBLE"))
 	ca += A_INVIS;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.102 2004-11-19 13:30:15 mikeaubury Exp $
+# $Id: lexer.c,v 1.103 2005-01-12 11:15:09 mikeaubury Exp $
 #*/
 
 /**
@@ -335,75 +335,30 @@ isnum (char *s)
       char buff[256];
       char *ptr;
       long n=0;
-	//long inv=0;
       double a_d = 0;
-      //long a_i = 0;
-      //int a_mode;
 
       strcpy (buff, s);
+
       ptr = strchr (buff, 'e');
+
       if (ptr == 0)
 	ptr = strchr (buff, 'E');
+
       if (ptr == 0)
 	{
 	  a4gl_yyerror ("Internal error - couldn't locate 'e'..");
 	}
       *ptr = 0;
       ptr++;
-      if (ptr==0) {n=0;} else {
+
+      if (ptr==0) {
+		n=0;
+	} else {
       sscanf (ptr, "%ld", &n);
 	}
 
-/*
-
-      if (strchr (buff, '.'))
-	{
-	  a_mode = 2;
-	  sscanf (buff, "%lf", &a_d);
-	}
-      else
-	{
-	  a_mode = 1;
-	  sscanf (buff, "%ld", &a_i);
-
-	}
-
-
-	if (n<0) {n=0-n;inv=1;}
-	exp_n=n;
-      while (n)
-	{
-	  if (a_mode == 1)
-	    a_i = a_i * 10;
-
-	  else
-	    a_d = a_d * 10.0;
-
-
-	  n--;
-	}
-
-
-      if (a_mode == 1)
-	{
-		//printf("a_i=%ld\n",a_i);
-		if (inv) sprintf (s, "%lf", 1.0/(double)a_i);
-		else     sprintf (s, "%ld", a_i);
-	}
-      else
-	{
-		//printf("a_d=%lf\n",a_d);
-	//if (inv) sprintf (s, "%32.8lf", 1.0/a_d);
-	//else sprintf (s, "%lf", a_d);
-		a_d=strtod(orig,0);
-		sprintf(s,"%.8lf",a_d);
-
-	}
-*/
-
 	a_d=strtod(orig,0);
-	sprintf(s,"%.8lf",a_d);
-	//printf("%s-->%s\n",orig,s);
+	sprintf(s,"%.8lf",a_d); /* ... */
     }
 
   if (strchr (s, '.'))

@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.38 2004-12-08 07:46:17 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.39 2005-01-12 11:15:17 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -863,6 +863,16 @@ static char buff_ind[255];
 
 }
 
+
+
+
+
+
+
+
+
+
+
 static char *get_sql_type_ingres (int a, char ioro)
 {
 static char buff[255];
@@ -909,7 +919,7 @@ static char buff_ind[255];
 	  sprintf (buff,"char _vi_%d[30];",  a); /* Datetimes can't be qualified in ecpg*/
 	  break;
 	case 11:
-	  sprintf (buff,"byte _vi_%d;", a);
+	  sprintf (buff,"byte varying _vi_%d;", a);
 	  break;
 	case 12:
 	  sprintf (buff,"text _vi_%d;", a);
@@ -969,7 +979,7 @@ static char buff_ind[255];
 	  sprintf (buff,"char _vo_%d[30];",  a); 
 	  break;
 	case 11:
-	  sprintf (buff,"byte _vo_%d;", a);
+	  sprintf (buff,"byte varying _vo_%d;", a);
 	  break;
 	case 12:
 	  sprintf (buff,"text _vo_%d;", a);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.19 2004-12-13 07:47:45 mikeaubury Exp $
+# $Id: simple.c,v 1.20 2005-01-12 11:15:21 mikeaubury Exp $
 #*/
 
 
@@ -126,6 +126,8 @@ A4GLSQL_init_connection_internal (char *dbName)
       return -1;
 
     }
+ 
+ A4GL_add_pointer ("default", SESSCODE,con);
 
   return 0;
 }
@@ -139,6 +141,18 @@ A4GLSQL_get_status (void)
 {
   return sqlcode;
 }
+
+int A4GLSQL_close_session_internal (char *sessname) {
+ PGconn  *con;
+ con=(PGconn *)A4GL_find_pointer (sessname, SESSCODE);
+ if (con) {
+ PQfinish(con);
+ }
+ return 1;
+
+}
+
+
 
 /**
  *

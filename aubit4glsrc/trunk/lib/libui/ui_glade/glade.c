@@ -66,13 +66,13 @@ int UILIB_A4GL_open_gui_form_internal(long *form_variable,char* name_orig,int ab
       strcpy (formname, name);
     }
 
-printf("---> Name=%s\n",name);
-
+    printf("---> Name='%s'\n",name);
 
     xml = glade_xml_new("ide.glade", formname,NULL);
     
     /* connect the signals in the interface */
     if (!xml) {
+	g_warning("something bad happened while creating the interface");
 		A4GL_exitwith("Unable to open glade file\n");
 		return 0;
     }

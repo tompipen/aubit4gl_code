@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.100 2004-12-24 08:51:05 mikeaubury Exp $
+# $Id: sql.c,v 1.101 2005-01-12 11:15:20 mikeaubury Exp $
 #
 */
 
@@ -50,12 +50,29 @@
 #endif
 
 
-#ifdef PGODBC
+#ifdef PGODBC 
 #define DTIME_AS_CHAR
 #define DATE_AS_CHAR
 #endif
 
+#ifdef IFXODBC
 #define DTIME_AS_CHAR
+#define DATE_AS_CHAR
+#endif
+
+
+
+#define DTIME_AS_CHAR
+
+
+
+
+#ifdef DATE_AS_CHAR
+	int date_as_char=1;
+#else
+	int date_as_char=0;
+#endif
+
 
 /*
 =====================================================================
@@ -79,7 +96,7 @@ int A4GL_dttoc (void *a, void *b, int size);
 
 void * A4GLSQL_prepare_sql_internal (char *s);
 //void * A4GLSQL_find_prepare (char *pname);
-int A4GLSQL_execute_sql (char *pname, int ni, void *vibind) ;
+//int A4GLSQL_execute_sql (char *pname, int ni, void *vibind) ;
 void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
 int A4GLSQL_make_connection (char * server, char * uid_p, char * pwd_p);
 void * A4GL_bind_datetime (void *ptr_to_dtime_var);
@@ -96,6 +113,7 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 
 int in_transaction=0;
 
+void A4GLSQL_commit_rollback_internal (int mode,int force) ;
 
 #define chk_rc(rc,stmt,call) A4GL_chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
 
@@ -433,6 +451,7 @@ A4GL_chk_rc_full (int rc, void *hstmt, char *c, int line, char *file)
 
   if (rc == SQL_SUCCESS || rc==SQL_SUCCESS_WITH_INFO)
     {
+	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (0, 1);
       return;
     }
@@ -444,6 +463,7 @@ A4GL_chk_rc_full (int rc, void *hstmt, char *c, int line, char *file)
 	{
 	  A4GLSQL_set_sqlca_sqlcode (100);
 /* A4GL_set_sqlca (hstmt, c, 0,0 ); *//* no error */
+	A4GL_debug("Calling set_status");
 	  A4GLSQL_set_status (100, 1);
 	  return;
 	}
@@ -721,6 +741,7 @@ void * A4GLSQL_prepare_sql_internal (char *s)
   else
     {
       /* A4GL_set_sqlca (sid->hstmt, "Prepare_sql : after SQLPrepare", 0); */
+	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (0, 1);
       return 0;
     }
@@ -814,6 +835,7 @@ void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int 
   sid->no = no;
 
 
+	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
 
   if (A4GL_new_hstmt ((SQLHSTMT *)&sid->hstmt))
@@ -1286,6 +1308,7 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
 
       	return a;
     }
+	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
   rc = SQLRowCount (cid->statement->hstmt,  &rowcount);
 
@@ -1419,7 +1442,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   A4GL_debug ("Before Extended fetch...");
 #endif
 
-  if (A4GL_chk_getenv ("EXTENDED_FETCH", TRUE))
+  if (A4GL_isyes(acl_getenv ("EXTENDED_FETCH")))
     {
 
 #ifdef DEBUG
@@ -1427,9 +1450,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 	     mode, fetch_when);
 #endif
       nr = 1;
-      rc =
-	SQLExtendedFetch ((SQLHSTMT )cid->statement->hstmt, mode, fetch_when, &nr,
-			  &nrs[0]);
+      rc = SQLExtendedFetch ((SQLHSTMT )cid->statement->hstmt, mode, fetch_when, &nr, &nrs[0]);
       chk_rc (rc, cid->statement->hstmt, "SQLExtendedFetch");
     }
   else
@@ -1443,6 +1464,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 #endif
   if (rc == SQL_NO_DATA_FOUND)
     {
+	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (100, 1);
       return 0;
     }
@@ -1629,9 +1651,13 @@ char DATABASE[128];
 
 
 
-	// Do we actually need this ?
+
+	//
+	// This turns OFF autocommit mode...
+	//
 	if (A4GL_isyes(acl_getenv("AUTOCOMMIT"))) {
-      		rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, 0);
+		A4GL_debug("Turning off AUTOCOMMIT");
+      		rc = SQLSetConnectOption (hdbc, SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF);
 	}
 
 
@@ -1660,6 +1686,7 @@ char DATABASE[128];
 void
 A4GLSQL_xset_status (int a)
 {
+	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (a, 0);
 }
 
@@ -1713,6 +1740,7 @@ A4GLSQL_free_cursor (char *cname)
   free (ptr->statement->select);
   free (ptr->statement);
   A4GL_del_pointer (cname, CURCODE);
+	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
   return 0;
 }
@@ -1969,10 +1997,12 @@ char pwd[256] = "";
       return 0;
     }
 
+	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
   ODBC_set_dbms_info ();
 
   rc = SQLSetConnectOption (hdbc, SQL_ASYNC_ENABLE, 0);
+	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
 
   return 1;
@@ -2172,11 +2202,11 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
   if (hstmt==0) { return 0; }
 
 // if we're not already in a transaction - start one
-  if(!in_transaction) { fake_tr=1;A4GLSQL_commit_rollback (-1); }
+  if(!in_transaction) { fake_tr=1;A4GL_debug("S1");A4GLSQL_commit_rollback_internal (-1,0); }
   rc = SQLExecute ((SQLHSTMT )hstmt);
 
 // And finish it
-if(fake_tr) { if (rc==SQL_SUCCESS||rc==SQL_SUCCESS_WITH_INFO) A4GLSQL_commit_rollback (1); else  A4GLSQL_commit_rollback (0); }
+if(fake_tr) { if (rc==SQL_SUCCESS||rc==SQL_SUCCESS_WITH_INFO) {A4GL_debug("S3");A4GLSQL_commit_rollback_internal (1,0);} else  {A4GL_debug("S3");A4GLSQL_commit_rollback_internal (0,0); }}
 
 
 
@@ -2205,6 +2235,7 @@ if(fake_tr) { if (rc==SQL_SUCCESS||rc==SQL_SUCCESS_WITH_INFO) A4GLSQL_commit_rol
     }
  if (SQLRowCount ((SQLHSTMT )hstmt, &rowcount)==SQL_SUCCESS) { a4gl_sqlca.sqlerrd[2]=rowcount; }
 
+	A4GL_debug("Calling set_status");
   A4GLSQL_set_status (0, 1);
   return 1;
 }
@@ -2267,7 +2298,7 @@ make[2]: *** [sql.o] Error 1
 
   if (rc != 0 && rc != 100)
     {
-      A4GL_debug ("Calling SQLError %p %p %p rc=%d", henv, hdbc, hstmt, rc);
+      A4GL_debug ("Calling SQLError %p %p %p ", henv, hdbc, hstmt);
       rc = SQLError (henv, hdbc, (SQLHSTMT)hstmt, s1, &xerrno, s2, 500, &xerrno2); //warning: passing arg 5 of `SQLError' from incompatible pointer type
       A4GL_debug ("rc=%d\n", rc);
       if (xerrno > 0 && xerrno != 100)
@@ -2303,6 +2334,7 @@ make[2]: *** [sql.o] Error 1
       A4GL_debug ("'%s' '%s' (%d %d)", s1, s2, xerrno, xerrno2);
 #endif
       strncpy (a4gl_sqlca.sqlerrm, s2, 72);
+	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (xerrno, 1);
 #ifdef DEBUG
       A4GL_debug ("Setting lasterrorstr to '%s'", s2);
@@ -2418,19 +2450,30 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
     {
 	ACLDATE *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
 	void *ptr;
-	int d,m,y;
 	A4GL_debug("Binding Date original pointer=%p",bind->ptr);
 	ptr=bind->ptr;
 	p= (ACLDATE *)A4GL_bind_date ((long *) ptr);
+#ifdef DATE_AS_CHAR
+#ifdef IFXODBC
+	{char *x;
+	A4GL_push_date(*(long *)ptr);
+	x=A4GL_char_pop();
+	sprintf(p->uDate.date_c,"%s",x);
+	free(x);
+	}
+#else 
+	{
+	int d,m,y;
 	A4GL_get_date(*(int *)ptr,&d,&m,&y);
-	#ifdef DATE_AS_CHAR
 	sprintf(p->uDate.date_c,"%04d-%02d-%02d",y,m,d);
+	}
+#endif
 	size=strlen(p->uDate.date_c);
-	#else
+#else
 	p->uDate.date_ds.year=y;
 	p->uDate.date_ds.month=m;
 	p->uDate.date_ds.day=d;
-	#endif
+#endif
         bind->ptr = p;
     }
 
@@ -2539,12 +2582,9 @@ a4gl_sqlca.sqlerrd[0]=0;
 		a4gl_sqlca.sqlerrd[0]=0;
 		return 0;
 	}
-  rc = SQLRowCount ((SQLHSTMT )hstmt, &rowcount);
-  chk_rc (rc, hstmt, "SQLRowCount");
   
 
 #ifdef DEBUG
-  A4GL_debug ("SQLRowCount=%d", rowcount);
   A4GL_debug ("Before Fetch");
 #endif
 
@@ -2554,6 +2594,10 @@ a4gl_sqlca.sqlerrd[0]=0;
     a4gl_sqlca.sqlerrd[0]=1;
     return 0;
   }
+
+  rc = SQLRowCount ((SQLHSTMT )hstmt, &rowcount);
+  chk_rc (rc, hstmt, "SQLRowCount");
+  A4GL_debug ("SQLRowCount=%d", rowcount);
 
   rc = SQLFetch ((SQLHSTMT )hstmt);
   chk_rc (rc, hstmt, "SQLFetch");
@@ -3649,11 +3693,13 @@ A4GLSQL_close_session_internal (char *sessname)
     //FIXME: is there a bettr way? SQL_AUTOCOMMIT ? What should we really
     //do if program wants to exit after an error or by reaching EXIT PROGARAM?
 	A4GL_debug("commiting all transactions on SQLite...");
-	A4GLSQL_commit_rollback (1);
+A4GL_debug("S4");
+	A4GLSQL_commit_rollback_internal (1,0);
 #endif
 
 if (A4GL_isyes(acl_getenv("FORCE_ROLLBACK_AT_EXIT"))) {
-	A4GLSQL_commit_rollback (1);
+A4GL_debug("S4");
+	A4GLSQL_commit_rollback_internal (1,0);
 }
 
 
@@ -3669,6 +3715,7 @@ if (A4GL_isyes(acl_getenv("FORCE_ROLLBACK_AT_EXIT"))) {
 
   if (rc == 0)
     {
+	A4GL_debug("Calling set_status");
       A4GLSQL_set_status (0, 1);
       free (ptr);
       if (strcmp (sessname, "default") != 0)
@@ -3730,6 +3777,7 @@ void * A4GL_bind_datetime (void *ptr_to_dtime_var)
   return (void *) ptr;
 }
 
+
 /**
  * Binding processing after fetch.
  *
@@ -3738,7 +3786,8 @@ void * A4GL_bind_datetime (void *ptr_to_dtime_var)
  * @param hstmt The statement handle.
  */
 void
-A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hstmt)
+A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
+			   HSTMT hstmt)
 {
   int bind_counter;
   int zz;
@@ -3752,16 +3801,22 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
     {
 
 #ifdef DEBUG
-      A4GL_debug ("a=%d Binding type %d ptr=%p %d", bind_counter, use_binding[bind_counter].dtype, use_binding[bind_counter].ptr, outlen[bind_counter + 1]);
+      A4GL_debug ("a=%d Binding type %d ptr=%p %d", bind_counter,
+		  use_binding[bind_counter].dtype,
+		  use_binding[bind_counter].ptr, outlen[bind_counter + 1]);
 #endif
 
 
-      if (use_binding[bind_counter].dtype == DTYPE_CHAR) {
-		A4GL_debug("Found string @ %d = '%s'",bind_counter,use_binding[bind_counter].ptr);
-		if (strlen(use_binding[bind_counter].ptr)) { // Its not null 
-		A4GL_pad_string(use_binding[bind_counter].ptr, use_binding[bind_counter].size);
-		}
-      }
+      if (use_binding[bind_counter].dtype == DTYPE_CHAR)
+	{
+	  A4GL_debug ("Found string @ %d = '%s'", bind_counter,
+		      use_binding[bind_counter].ptr);
+	  if (strlen (use_binding[bind_counter].ptr))
+	    {			// Its not null 
+	      A4GL_pad_string (use_binding[bind_counter].ptr,
+			       use_binding[bind_counter].size);
+	    }
+	}
 
 
       //printf("outlen=%ld\n",outlen[bind_counter + 1]);
@@ -3774,68 +3829,107 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	      A4GL_setnull (DTYPE_DATE, (char *) date1->ptr, 0);
 	      continue;
 	    }
-	  A4GL_setnull (use_binding[bind_counter].dtype, (char *) use_binding[bind_counter].ptr,
-		   use_binding[bind_counter].size);
+	  A4GL_setnull (use_binding[bind_counter].dtype,
+			(char *) use_binding[bind_counter].ptr,
+			use_binding[bind_counter].size);
 	  continue;
 	}
 
       if (use_binding[bind_counter].dtype == DTYPE_BYTE
 	  || use_binding[bind_counter].dtype == DTYPE_BYTE)
 	{
-	  A4GL_get_blob_data (use_binding[bind_counter].ptr, hstmt, bind_counter);
+	  A4GL_get_blob_data (use_binding[bind_counter].ptr, hstmt,
+			      bind_counter);
 	  continue;
 	}
 
       if (use_binding[bind_counter].dtype == DTYPE_DATE)
 	{
 #ifdef DEBUG
-	  A4GL_debug ("Got a date datatype - better copy the date in properly");
+	  A4GL_debug
+	    ("Got a date datatype - better copy the date in properly");
 #endif
 
 
 	  date1 = use_binding[bind_counter].ptr;
 
-#ifdef DATE_AS_CHAR
-	{
-		int y,d,m;
-		int nscanned;
-		y=-1;
-		d=-1;
-		m=-1;
-		A4GL_debug("DATE=(%s,%d)\n",date1->uDate.date_c,strlen(date1->uDate.date_c));
+	if (date_as_char) {
+	  {
+	    int y, d, m;
+	    int nscanned;
+	    y = -1;
+	    d = -1;
+	    m = -1;
+	    A4GL_debug ("DATE=(%s,%d)\n", date1->uDate.date_c,
+			strlen (date1->uDate.date_c));
 
-		if (strlen(date1->uDate.date_c)) {
-			nscanned=sscanf(date1->uDate.date_c,"%d-%d-%d",&y,&m,&d);
-			if (nscanned==3) {
-				A4GL_debug("Calling gen_dateno");
-	  			zz = A4GL_gen_dateno (d,m,y);
-	  			*((long *) date1->ptr) = zz;
-				continue;
-			} else {
-				A4GL_push_char(date1->uDate.date_c);
-				zz=A4GL_pop_date();
-	  			*((long *) date1->ptr) = zz;
-				continue;
-			}
-		} else {
-			A4GL_debug("Looks null");
-	  		A4GL_setnull(DTYPE_DATE,date1->ptr,0);
-			A4GL_debug("Looks null");
-			continue;
-		}
-	}
-#else
-
-	A4GL_assertion(date1->uDate.date_ds.month<1||date1->uDate.date_ds.month>12,"Invalid month retrieved from db");
-	A4GL_assertion(date1->uDate.date_ds.day<1||date1->uDate.date_ds.day>31,"Invalid day retrieved from db");
+	    if (strlen (date1->uDate.date_c))
+	      {
+		nscanned =
+		  sscanf (date1->uDate.date_c, "%d-%d-%d", &y, &m, &d);
+		if (nscanned == 3)
+		  {
+		    A4GL_debug ("Calling gen_dateno");
+		    zz = A4GL_gen_dateno (d, m, y);
+		    *((long *) date1->ptr) = zz;
+		    continue;
+		  }
+		else
+		  {
+		    A4GL_push_char (date1->uDate.date_c);
+		    zz = A4GL_pop_date ();
+		    *((long *) date1->ptr) = zz;
+		    continue;
+		  }
+	      }
+	    else
+	      {
+		A4GL_debug ("Looks null");
+		A4GL_setnull (DTYPE_DATE, date1->ptr, 0);
+		A4GL_debug ("Looks null");
+		continue;
+	      }
+	  }
+} else {
 #ifdef DEBUG
-	  A4GL_debug ("Year=%d Month=%d Day=%d", date1->uDate.date_ds.year, date1->uDate.date_ds.month, date1->uDate.date_ds.day);
+	  A4GL_debug ("mdy=%d %d %d", date1->uDate.date_ds.month,
+		      date1->uDate.date_ds.day, date1->uDate.date_ds.year);
 #endif
 
-				A4GL_debug("Calling gen_dateno");
-	  zz = A4GL_gen_dateno (date1->uDate.date_ds.day, date1->uDate.date_ds.month, date1->uDate.date_ds.year);
+
+	  if (date1->uDate.date_ds.month == 0 && date1->uDate.date_ds.day == 0
+	      && date1->uDate.date_ds.year == 0)
+	    {			// Looks pretty null...
+	      A4GL_setnull (DTYPE_DATE, date1->ptr, 0);
+	    }
+	  else
+	    {
+
+	      A4GL_assertion (date1->uDate.date_ds.month < 1
+			      || date1->uDate.date_ds.month > 12,
+			      "Invalid month retrieved from db");
+	      A4GL_assertion (date1->uDate.date_ds.day < 1
+			      || date1->uDate.date_ds.day > 31,
+			      "Invalid day retrieved from db");
+#ifdef DEBUG
+	      A4GL_debug ("Year=%d Month=%d Day=%d",
+			  date1->uDate.date_ds.year,
+			  date1->uDate.date_ds.month,
+			  date1->uDate.date_ds.day);
+}
+	      A4GL_debug ("Calling gen_dateno");
+	      zz =
+		A4GL_gen_dateno (date1->uDate.date_ds.day,
+				 date1->uDate.date_ds.month,
+				 date1->uDate.date_ds.year);
 #endif
-	  *((long *) date1->ptr) = zz;
+
+
+
+
+
+	      *((long *) date1->ptr) = zz;
+	    }
 	  continue;
 
 	}
@@ -3843,83 +3937,115 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 
       if (use_binding[bind_counter].dtype == DTYPE_DTIME)
 	{
-		
-	char buff[256];
-	//char buff2[256];
-	//int s;int e;
-	  	dt1 = use_binding[bind_counter].ptr;
+
+	  char buff[256];
+	  //char buff2[256];
+	  //int s;int e;
+	  dt1 = use_binding[bind_counter].ptr;
+
 #ifdef DTIME_AS_CHAR
-	strcpy(buff,dt1->dtime);
+	  strcpy (buff, dt1->dtime);
 #else
-	strcpy(buff,"");
-	s=use_binding[bind_counter].size>>4;
-	e=use_binding[bind_counter].size&0xf;
+	  strcpy (buff, "");
+	  s = use_binding[bind_counter].size >> 4;
+	  e = use_binding[bind_counter].size & 0xf;
 
-	if (s>1) dt1->dtime.year=0;
-	if (s>2) dt1->dtime.month=0;
-	if (s>3) dt1->dtime.day=0;
-	if (s>4) dt1->dtime.hour=0;
-	if (s>5) dt1->dtime.minute=0;
-	if (s>6) dt1->dtime.second=0;
+	  if (s > 1)
+	    dt1->dtime.yearindent: Standard input:223: Warning:old style assignment ambiguity in "=*".  Assuming "= *"
 
-	if (strlen(buff)||dt1->dtime.year) { sprintf(buff2,"%04d",dt1->dtime.year); strcat(buff,buff2); }
+ = 0;
+	  if (s > 2)
+	    dt1->dtime.month = 0;
+	  if (s > 3)
+	    dt1->dtime.day = 0;
+	  if (s > 4)
+	    dt1->dtime.hour = 0;
+	  if (s > 5)
+	    dt1->dtime.minute = 0;
+	  if (s > 6)
+	    dt1->dtime.second = 0;
 
-	if (strlen(buff)||dt1->dtime.month) { 
-		if (e>=2) {
-			sprintf(buff2,"%02d",dt1->dtime.month); 
-			if (strlen(buff)) strcat(buff,"-");
-			strcat(buff,buff2); 
+	  if (strlen (buff) || dt1->dtime.year)
+	    {
+	      sprintf (buff2, "%04d", dt1->dtime.year);
+	      strcat (buff, buff2);
+	    }
+
+	  if (strlen (buff) || dt1->dtime.month)
+	    {
+	      if (e >= 2)
+		{
+		  sprintf (buff2, "%02d", dt1->dtime.month);
+		  if (strlen (buff))
+		    strcat (buff, "-");
+		  strcat (buff, buff2);
 		}
-	}
-	if (strlen(buff)||dt1->dtime.day) { 
-		if (e>=3) {
-			sprintf(buff2,"%02d",dt1->dtime.day); 
-			if (strlen(buff)) strcat(buff,"-");
-			strcat(buff,buff2); 
+	    }
+	  if (strlen (buff) || dt1->dtime.day)
+	    {
+	      if (e >= 3)
+		{
+		  sprintf (buff2, "%02d", dt1->dtime.day);
+		  if (strlen (buff))
+		    strcat (buff, "-");
+		  strcat (buff, buff2);
 		}
-	}
-	if (strlen(buff)||dt1->dtime.hour) { 
-		if (e>=4) {
-			sprintf(buff2,"%02d",dt1->dtime.hour); 
-			if (strlen(buff)) strcat(buff," ");
-			strcat(buff,buff2); 
+	    }
+	  if (strlen (buff) || dt1->dtime.hour)
+	    {
+	      if (e >= 4)
+		{
+		  sprintf (buff2, "%02d", dt1->dtime.hour);
+		  if (strlen (buff))
+		    strcat (buff, " ");
+		  strcat (buff, buff2);
 		}
-	}
+	    }
 
 
-	if (strlen(buff)||dt1->dtime.minute) { 
-		if (e>=5) {
-			sprintf(buff2,"%02d",dt1->dtime.minute); 
-			if (strlen(buff)) strcat(buff,":");
-			strcat(buff,buff2); 
+	  if (strlen (buff) || dt1->dtime.minute)
+	    {
+	      if (e >= 5)
+		{
+		  sprintf (buff2, "%02d", dt1->dtime.minute);
+		  if (strlen (buff))
+		    strcat (buff, ":");
+		  strcat (buff, buff2);
 		}
-	}
-	if (strlen(buff)||dt1->dtime.second) { 
-		if (e>=6) {
-			sprintf(buff2,"%02d",dt1->dtime.second); 
-			if (strlen(buff)) strcat(buff,":");
-			strcat(buff,buff2); 
+	    }
+	  if (strlen (buff) || dt1->dtime.second)
+	    {
+	      if (e >= 6)
+		{
+		  sprintf (buff2, "%02d", dt1->dtime.second);
+		  if (strlen (buff))
+		    strcat (buff, ":");
+		  strcat (buff, buff2);
 		}
-	}
-
+	    }
 #endif
-		A4GL_push_char(buff);
-		A4GL_setnull(DTYPE_DTIME,dt1->ptr,use_binding[bind_counter].size);
-		A4GL_pop_param(dt1->ptr,DTYPE_DTIME,use_binding[bind_counter].size);
+	  A4GL_push_char (buff);
+	  A4GL_setnull (DTYPE_DTIME, dt1->ptr,
+			use_binding[bind_counter].size);
+	  A4GL_pop_param (dt1->ptr, DTYPE_DTIME,
+			  use_binding[bind_counter].size);
 	  continue;
 	}
 
-	
-	if (use_binding[bind_counter].dtype == DTYPE_DECIMAL) {
-		// We've actually selected into a double...
-		double d;
-		d=*((double *)use_binding[bind_counter].ptr);
-		A4GL_debug("DECIMAL from double on db d=%lf",d);
-		A4GL_push_double(d);
-		A4GL_pop_var2(use_binding[bind_counter].ptr,use_binding[bind_counter].dtype,use_binding[bind_counter].size);
+
+      if (use_binding[bind_counter].dtype == DTYPE_DECIMAL)
+	{
+	  // We've actually selected into a double...
+	  double d;
+	  d = *((double *) use_binding[bind_counter].ptr);
+	  A4GL_debug ("DECIMAL from double on db d=%lf", d);
+	  A4GL_push_double (d);
+	  A4GL_pop_var2 (use_binding[bind_counter].ptr,
+			 use_binding[bind_counter].dtype,
+			 use_binding[bind_counter].size);
 	  continue;
 	}
-	A4GL_debug("Bound %d\n",bind_counter);
+      A4GL_debug ("Bound %d\n", bind_counter);
 
     }
 
@@ -3927,19 +4053,25 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
   {
     char buffstr[30000] = "Fetch returns :\n";
     char bf[2048];
-	int a;
+    int a;
     for (a = 0; a < use_nbind; a++)
       {
 	char *cptr;
 	int dtype;
 
 
-	if (use_binding[a].dtype==DTYPE_CHAR || use_binding[a].dtype==DTYPE_VCHAR || use_binding[a].dtype==DTYPE_DECIMAL ||  use_binding[a].dtype==DTYPE_DTIME ) {
-		A4GL_debug("Need to add size to dtype");
-	  dtype = use_binding[a].dtype + ENCODE_SIZE (use_binding[a].size);
-	} else {
-	  dtype = use_binding[a].dtype;
-	}
+	if (use_binding[a].dtype == DTYPE_CHAR
+	    || use_binding[a].dtype == DTYPE_VCHAR
+	    || use_binding[a].dtype == DTYPE_DECIMAL
+	    || use_binding[a].dtype == DTYPE_DTIME)
+	  {
+	    A4GL_debug ("Need to add size to dtype");
+	    dtype = use_binding[a].dtype + ENCODE_SIZE (use_binding[a].size);
+	  }
+	else
+	  {
+	    dtype = use_binding[a].dtype;
+	  }
 
 
 
@@ -3949,11 +4081,14 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	  }
 	else
 	  {
-		if ((dtype&15)==DTYPE_DTIME || (dtype&15)==DTYPE_DATE) {
-			A4GL_push_char("<date/datetime>");
-		} else {
-	    		A4GL_push_variable (use_binding[a].ptr, dtype);
-		}
+	    if ((dtype & 15) == DTYPE_DTIME || (dtype & 15) == DTYPE_DATE)
+	      {
+		A4GL_push_char ("<date/datetime>");
+	      }
+	    else
+	      {
+		A4GL_push_variable (use_binding[a].ptr, dtype);
+	      }
 	  }
 	cptr = A4GL_char_pop ();
 	sprintf (bf, "%d) %d %d : %s", a, use_binding[a].dtype,
@@ -3964,14 +4099,13 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	free (cptr);
       }
     strcat (buffstr, "\n");
-    A4GL_debug ("use_nbind=%d - %s", use_nbind,buffstr);
+    A4GL_debug ("use_nbind=%d - %s", use_nbind, buffstr);
   }
 #endif
 
 
 
 }
-
 /**
  * Implementationin ODBC of the transaction statements (BEGIN WORK,
  * COMMIT WORK, ROLLBACK WORK).
@@ -3984,14 +4118,23 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 void
 A4GLSQL_commit_rollback (int mode)
 {
+A4GLSQL_commit_rollback_internal(mode,1);
+}
+
+
+
+void A4GLSQL_commit_rollback_internal (int mode,int force) {
   HSTMT hstmt = 0;
   char *ptr;
   int tmode;
 
+
 #ifdef DEBUG
-  A4GL_debug ("In commit_rollback");
+  A4GL_debug ("TRANS In commit_rollback %d %d",mode,force);
 #endif
+
   ptr = acl_getenv ("TRANSMODE");
+
   if (strlen (ptr))
     {
       tmode = atoi (ptr);
@@ -4002,51 +4145,71 @@ A4GLSQL_commit_rollback (int mode)
     }
 
 
+
+
 if (tmode==-1) {
-	A4GL_debug("Ignore all transaction stuff");
+	A4GL_debug("TRANS Ignore all transaction stuff");
 	return;
 }
 
 
+
   if (tmode == 0)
     {
+	rc=0;
 #ifdef DEBUG
-      A4GL_debug ("ODBC Transaction Mode:%d ", mode);
+      A4GL_debug ("TRANS ODBC Transaction Mode:%d (0=rollback 1=commit -1=begin ", mode);
 #endif
       if (mode == 1) {
+		A4GL_debug("TRANS Commit");
 		in_transaction=0;
-		SQLTransact (henv, hdbc, SQL_COMMIT);
+		rc=SQLTransact (henv, hdbc, SQL_COMMIT);
+  		chk_rc (rc, 0, "COMMIT");
+      //A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
 	}
 
       if (mode == 0) {
+		A4GL_debug("TRANS Rollback");
 		in_transaction=0;
-	SQLTransact (henv, hdbc, SQL_ROLLBACK);
+		rc=SQLTransact (henv, hdbc, SQL_ROLLBACK);
+  		chk_rc (rc, 0, "ROLLBACK");
+      //A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
 	}
 
-      A4GL_set_sqlca (SQL_NULL_HSTMT, "Commit/Rollback", 0);
     }
   else
     {
+
+	if (force==0) {
+		A4GL_debug("TRANS Faking...");
+		return; /* not explicit  - ignore */
+	}
 #ifdef DEBUG
-      A4GL_debug ("Native Transaction Mode:%d", mode);
+      A4GL_debug ("TRANS Native Transaction Mode:%d", mode);
 #endif
-      A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
+
+     A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
       if (mode == -1) {
 		in_transaction=1;
-	SQLExecDirect (hstmt, "BEGIN WORK", SQL_NTS);
+		A4GL_debug("TRANS BEGIN WORK");
+		rc=SQLExecDirect (hstmt, "BEGIN WORK", SQL_NTS);
+  		chk_rc (rc, hstmt, "begin");
       }
 
       if (mode == 0) {
 		in_transaction=0;
-		SQLExecDirect (hstmt, "ROLLBACK WORK", SQL_NTS);
+		A4GL_debug("TRANS ROLLBACK WORK");
+		rc=SQLExecDirect (hstmt, "ROLLBACK WORK", SQL_NTS);
+  		chk_rc (rc, hstmt, "rollback");
 	}
 
       if (mode == 1) {
 	in_transaction=0;
-	SQLExecDirect (hstmt, "COMMIT WORK", SQL_NTS);
+		A4GL_debug("TRANS COMMIT WORK");
+		rc=SQLExecDirect (hstmt, "COMMIT WORK", SQL_NTS);
+  		chk_rc (rc, hstmt, "commit");
 	}
 
-      A4GL_set_sqlca (hstmt, "Commit/Rollback", 0);
 
 
       SQLFreeStmt (hstmt, SQL_DROP);

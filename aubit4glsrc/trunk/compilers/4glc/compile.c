@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.73 2004-12-09 23:59:10 afalout Exp $
+# $Id: compile.c,v 1.74 2005-01-12 11:15:09 mikeaubury Exp $
 #*/
 
 /**
@@ -1092,6 +1092,9 @@ char ext[8];
 	if (yydebug) { printf ("Closing map : %d\n", yyparse_ret); }
 	dump_gvars ();
 	closemap ();
+	if (A4GL_db_used()) {
+		A4GL_close_database();
+	}
 	#ifdef DEBUG
 		A4GL_debug ("after closemap");
 	#endif

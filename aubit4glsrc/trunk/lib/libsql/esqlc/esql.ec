@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.118 2004-12-21 09:22:01 mikeaubury Exp $
+# $Id: esql.ec,v 1.119 2005-01-12 11:15:18 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.118 2004-12-21 09:22:01 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.119 2005-01-12 11:15:18 mikeaubury Exp $";
 #endif
 
 
@@ -1081,6 +1081,7 @@ int arr_dtime[]={
       EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
 	TYPE =:dataType, DATA =:smint_var;
       break;
+   case DTYPE_SERIAL:
     case DTYPE_INT:
       int_ptr = (long *) bind[idx].ptr;
       int_var = (long) *int_ptr;
@@ -2165,9 +2166,10 @@ A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_s
   sprintf(buff,"%p",sid);
 
   if (singleton) {
-	//printf("FREE %s\n",statementName);
 	A4GL_debug("Free : %s",statementName);
   	EXEC SQL FREE :statementName;
+	sid->statementName="FREED";
+	sid->select="FREED";
   }
 
   return 0;
@@ -2306,9 +2308,8 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       A4GL_debug ("Declare failed");
       return (struct s_cid *) 0;
     }
-  A4GL_debug ("Declared OK");
+  A4GL_debug ("Declared '%s' OK",cursname);
   A4GL_add_pointer (cursname, PRECODE, cursorIdentification);
-
 
   if (processPreStatementBinds (sid) == 1)
 	 return (struct s_cid *) 0;
@@ -2382,7 +2383,8 @@ A4GLSQL_open_cursor (char *s,int ni,void *vibind)
 
   inputDescriptorName = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
-  A4GL_debug ("Descriptors : %s %s %d %d", inputDescriptorName, outputDescriptorName,sid->ni,sid->no);
+  A4GL_debug ("open cursor '%s' - Descriptors  %s %s %d %d", cursorName,inputDescriptorName, outputDescriptorName,sid->ni,sid->no);
+
 
 
   switch (getStatementBindType (sid))
@@ -2769,6 +2771,7 @@ dataType=p_datatype;
       break;
     case DTYPE_SERIAL:
     case DTYPE_INT:
+    case DTYPE_SERIAL:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
 	DATA;
       if (isSqlError ())
