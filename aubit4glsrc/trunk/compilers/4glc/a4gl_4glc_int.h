@@ -187,10 +187,14 @@ void ansi_violation (char *s, int severity);
 
     /* --------------------- from a4gl_4glc_compiledefs.h --------------------- */
 
+
+
+
 #define MAXMENU 		10
 #define MAXMENUOPTS 	10
 #define NUMBINDINGS 	2048
 #define REPORTSTACKSIZE 256
+
 struct s_menu_stack
 {
 

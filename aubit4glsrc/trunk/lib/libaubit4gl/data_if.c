@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.16 2003-05-22 12:14:46 mikeaubury Exp $
+# $Id: data_if.c,v 1.17 2003-06-16 09:26:57 mikeaubury Exp $
 #
 */
 
@@ -306,6 +306,12 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
     void *screen_io;
     void *fcntrl;
     int fcntrl_cnt;
+    int allow_insert;
+    int allow_delete;
+    char *curr_display;
+    int curr_display_i;
+    int maxcount;
+    int count;
   };
 
   struct s_s_inp_arr_1 *val;
@@ -432,6 +438,59 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 	}
     }
 
+  if (strcmp (name, "count") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->count;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->count);
+      if (mode == GETSETSET)
+	{
+	  val->count = (int) var;
+	  return (void *) 1;
+	}
+    }
+
+  if (strcmp (name, "allow_insert") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->allow_insert;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->allow_insert);
+      if (mode == GETSETSET)
+	{
+	  val->allow_insert = (int) var;
+	  return (void *) 1;
+	}
+    }
+
+  if (strcmp (name, "allow_delete") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->allow_delete;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->allow_delete);
+      if (mode == GETSETSET)
+	{
+	  val->allow_delete = (int) var;
+	  return (void *) 1;
+	}
+    }
+
+
+  if (strcmp (name, "maxcount") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->maxcount;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->maxcount);
+      if (mode == GETSETSET)
+	{
+	  val->maxcount = (int) var;
+	  return (void *) 1;
+	}
+    }
+
 
   if (strcmp (name, "nfields") == 0)
     {
@@ -471,6 +530,35 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 	  return (void *) 1;
 	}
     }
+
+  if (strcmp (name, "curr_display_i") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->curr_display_i;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->curr_display_i);
+      if (mode == GETSETSET)
+	{
+	  val->curr_display_i = (int) var;
+	  return (void *) 1;
+	}
+    }
+
+
+  if (strcmp (name, "curr_display") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->curr_display;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->curr_display);
+      if (mode == GETSETSET)
+	{
+	  val->curr_display = (char *) var;
+	  return (void *) 1;
+	}
+    }
+
+
 
   if (strcmp (name, "no_lines") == 0)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.39 2003-06-14 10:29:13 mikeaubury Exp $
+# $Id: 1.reqd,v 1.40 2003-06-16 09:26:57 mikeaubury Exp $
 #
 */
 
@@ -185,6 +185,7 @@ void set_yytext (char *s);
 int isin_command (char *cmd_type);
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 char *do_clobbering(char *f,char *s);
+struct input_array_attribs curr_input_array_attribs;
 
 
 #include "../generic.h"

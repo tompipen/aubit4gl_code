@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.57 2003-06-16 08:19:42 mikeaubury Exp $
+# $Id: stack.c,v 1.58 2003-06-16 09:26:57 mikeaubury Exp $
 #
 */
 
@@ -494,13 +494,10 @@ A4GL_pop_param (void *p, int d, int size)
   b = A4GL_conv (params[params_cnt].dtype & DTYPE_MASK,
 	    params[params_cnt].ptr, d & DTYPE_MASK, p, size);
 
-#ifdef DEBUG
-  /* {DEBUG} */ A4GL_debug ("Conversion returns %d", b);
-#endif
 
   if (params[params_cnt].dtype & DTYPE_MALLOCED)
     {
-      A4GL_debug ("Malloced ");
+      //A4GL_debug ("Malloced ");
       /*printf("Datatype=%d\n",params[params_cnt].dtype&DTYPE_MASK); */
       if ((params[params_cnt].dtype & DTYPE_MASK) != 0)
 	{
@@ -514,7 +511,7 @@ A4GL_pop_param (void *p, int d, int size)
 	  acl_free (ptr);
 	}
     }
-  A4GL_debug ("Returning %d\n", b);
+  //A4GL_debug ("Returning %d\n", b);
   return b;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.51 2003-06-13 18:40:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.52 2003-06-16 09:26:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2830,11 +2830,12 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
  */
 char *
 print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
-		   char *attr)
+		   char *attr,void *v_input_attr)
 {
   static char buff2[256];
   int cnt;
-  //int ccc;
+  struct input_array_attribs *ptr_input_attr;
+  ptr_input_attr=(struct input_array_attribs *)v_input_attr;
   printc ("/*");
   push_blockcommand ("INPUT");
   printc ("*/");

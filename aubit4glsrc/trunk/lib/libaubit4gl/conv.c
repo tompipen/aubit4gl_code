@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.42 2003-06-13 18:40:57 mikeaubury Exp $
+# $Id: conv.c,v 1.43 2003-06-16 09:26:57 mikeaubury Exp $
 #
 */
 
@@ -2375,21 +2375,21 @@ A4GL_ctoc (void *a, void *b, int size)
 {
 #ifdef DEBUG
   {
-    A4GL_debug ("--->Got size as %d", size);
+    //A4GL_debug ("--->Got size as %d", size);
   }
 #endif
 
 
-  A4GL_debug ("String_set....");
+  //A4GL_debug ("String_set....");
 
   A4GL_string_set (b, a, size);
 
 #ifdef DEBUG
   {
-    A4GL_debug ("Set string");
+    //A4GL_debug ("Set string");
   }
 #endif
-  A4GL_debug ("returning");
+  //A4GL_debug ("returning");
   return 1;
 }
 
@@ -2526,7 +2526,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 {
   int (*ptr) (void *ptr1, void *ptr2, int size);
   int rval;
-  A4GL_debug ("In conv.. d1=%d d2=%d size=%d", dtype1, dtype2, size);
+  //A4GL_debug ("In conv.. d1=%d d2=%d size=%d", dtype1, dtype2, size);
 
   A4GL_assertion (p1 == 0, "Pointer 1 is zero");
   A4GL_assertion (p2 == 0, "Pointer 2 is zero");
@@ -2583,8 +2583,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
     		//A4GL_debug ("conv (%x %x)", *(short *) p1, *(short *) p2);
 	//}
 
-    A4GL_debug ("Convmatrix %d %d --- size=%d", dtype1 & DTYPE_MASK,
-	   dtype2 & DTYPE_MASK, size);
+    //A4GL_debug ("Convmatrix %d %d --- size=%d", dtype1 & DTYPE_MASK, dtype2 & DTYPE_MASK, size);
   }
 
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.20 2003-06-06 09:52:36 mikeaubury Exp $
+# $Id: string.c,v 1.21 2003-06-16 09:26:57 mikeaubury Exp $
 #
 */
 
@@ -86,8 +86,8 @@ A4GL_string_set (char *ptr, char *b, int size)
   strncpy (ptr, b, size);
   ptr[size] = 0;		/* MJA 16.08.2001 */
   A4GL_pad_string (ptr, size);
-  A4GL_debug ("..");
-  A4GL_debug ("ptr=%p\n", ptr);
+  ////A4GL_debug ("..");
+  //A4GL_debug ("ptr=%p\n", ptr);
 }
 
 
@@ -101,14 +101,14 @@ char *
 A4GL_new_string (int a)
 {
   char *ptr;
-  A4GL_debug ("In A4GL_new_string %d (%x)\n", a,a);
+  //A4GL_debug ("In A4GL_new_string %d (%x)\n", a,a);
 	if (a>65000) {
 		A4GL_exitwith("Dubious string size");
 		return "";
 	}
   ptr = (char *) acl_malloc (a + 2, "New string");	/* 1 for NULL 1 for extra */
   memset (ptr, 0, a + 2);
-  A4GL_debug ("Aclmalloc returns %p", ptr);
+  //A4GL_debug ("Aclmalloc returns %p", ptr);
   return ptr;
 }
 
@@ -124,17 +124,17 @@ char *
 A4GL_new_string_set (int a, char *b)
 {
   char *ptr;
-  A4GL_debug ("new_string_set 0 a=%d", a);
+  //A4GL_debug ("new_string_set 0 a=%d", a);
   ptr = A4GL_new_string (a);
-  A4GL_debug ("new_string_set 1");
+  //A4GL_debug ("new_string_set 1");
   A4GL_string_set (ptr, b, a);
-  A4GL_debug ("new_string_set 2");
+  //A4GL_debug ("new_string_set 2");
 #ifdef DEBUG
   {
-    A4GL_debug ("added : '%s' ", ptr);
+    //A4GL_debug ("added : '%s' ", ptr);
   }
 #endif
-  A4GL_debug ("new_string_set 3");
+  //A4GL_debug ("new_string_set 3");
   return ptr;
 }
 
@@ -148,7 +148,7 @@ A4GL_modify_size (char *z, int a)
 {
   char *zzz;
 #ifdef DEBUG
-  A4GL_debug ("Modify size has been called !");
+  //A4GL_debug ("Modify size has been called !");
 #endif
   zzz = z - sizeof (int);
   *(int *) zzz = a;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.34 2003-06-13 18:40:58 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.35 2003-06-16 09:26:57 mikeaubury Exp $
 #
 */
 
@@ -2455,7 +2455,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
  */
 char *
 print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
-		   char *attr)
+		   char *attr,void *inp_attr)
 {
   static char buff2[256];
   int cnt;

@@ -162,9 +162,14 @@ print_input(0,$<str>2,$<str>5,$<str>4);
 strcpy($<str>$,A4GL_get_formloop_str(0));
 }
 | ARRAY use_arr_var opt_defs FROM identifier DOT MULTIPLY opt_help_no {
+curr_input_array_attribs.maxcount=0;
+curr_input_array_attribs.count=0;
+curr_input_array_attribs.allow_insert=1;
+curr_input_array_attribs.allow_delete=1;
+curr_input_array_attribs.curr_row_display=0;
 inp_flags=0;} opt_attributes
 {
-strcpy($<str>$,print_input_array($<str>2,$<str>8,$<str>3,$<str>5,$<str>10));
+strcpy($<str>$,print_input_array($<str>2,$<str>8,$<str>3,$<str>5,$<str>10,&curr_input_array_attribs));
 }
 ;
 
@@ -193,15 +198,15 @@ input_array_attributes: input_array_attributes_int {
 
 
 input_array_attributes_int : 
-	CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE
-	| COUNT EQUAL INT_VALUE
-	| COUNT EQUAL variable
-	| MAXCOUNT EQUAL INT_VALUE
-	| MAXCOUNT EQUAL variable
-	| INSERT_ROW_EQUAL_TRUE
-	| INSERT_ROW_EQUAL_FALSE
-	| DELETE_ROW_EQUAL_TRUE
-	| DELETE_ROW_EQUAL_FALSE
+	CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE 	{ curr_input_array_attribs.curr_row_display=strdup($<str>2); }
+	| COUNT EQUAL INT_VALUE 		{ curr_input_array_attribs.count=strdup($<str>3); }
+	| COUNT EQUAL variable 			{ curr_input_array_attribs.count=strdup($<str>3); }
+	| MAXCOUNT EQUAL INT_VALUE 		{ curr_input_array_attribs.maxcount=strdup($<str>3); }
+	| MAXCOUNT EQUAL variable 		{ curr_input_array_attribs.maxcount=strdup($<str>3); }
+	| INSERT_ROW_EQUAL_TRUE 		{ curr_input_array_attribs.allow_insert=1; }
+	| INSERT_ROW_EQUAL_FALSE 		{ curr_input_array_attribs.allow_insert=0; }
+	| DELETE_ROW_EQUAL_TRUE 		{ curr_input_array_attribs.allow_delete=1; }
+	| DELETE_ROW_EQUAL_FALSE 		{ curr_input_array_attribs.allow_delete=0; }
 ;
 
 /* ========================= input.rule ============================= */

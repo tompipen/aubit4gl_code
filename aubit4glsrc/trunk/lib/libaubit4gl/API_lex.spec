@@ -282,7 +282,7 @@ print_input_2 char* s -> void
 print_input int byname,char* defs,char* helpno,char* fldlist -> void
 
 /* char * print_input_array (char *arrvar, char *helpno, char *defs, char *srec, char *attr) */
-print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr -> char*
+print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr,void* inp_attr -> char*
 
 /* char * get_formloop_str (int type) */
 A4GL_get_formloop_str int type -> char*
@@ -646,6 +646,7 @@ A4GL_lex_parsed_fgl -> void
 A4GL_bad_identifiers char* ident -> int
 print_sql_block_cmd char* sql -> void
 A4GL_expr_for_call char* ident char* params int line char* file -> char*
+
 
 /*  ============================== EOF ================================= */
 

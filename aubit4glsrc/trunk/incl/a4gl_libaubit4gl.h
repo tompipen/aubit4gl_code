@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.60 2003-06-16 06:51:00 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.61 2003-06-16 09:26:57 mikeaubury Exp $
 #
 */
 
@@ -562,6 +562,15 @@ extern "C"
 */
 
   /* ========================= from a4gl_ui.h ====================== */
+
+struct input_array_attribs {
+        char *maxcount;
+        char *count;
+        int allow_insert;
+        int allow_delete;
+        char *curr_row_display;
+};
+
 
   typedef struct s_int_list
   {
@@ -1500,6 +1509,12 @@ enum cmd_types {
     struct s_screenio *screen_io;
     struct s_formcontrol *fcntrl;
     int fcntrl_cnt;
+    int allow_insert;
+    int allow_delete;
+    char *curr_display;
+    int curr_display_i;
+    int maxcount;
+    int count;
   };
 
 
