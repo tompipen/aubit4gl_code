@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-06-29 13:12:02 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-07-07 08:46:04 afalout Exp $
 #
 
 ROOT    =../../..
@@ -62,7 +62,7 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
+CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
 
 ## ==================================================================
 ##                              Targets

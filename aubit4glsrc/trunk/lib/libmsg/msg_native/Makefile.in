@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-05-23 09:29:35 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-07-07 08:46:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,7 +44,7 @@ OBJS				=${CMODS:.c=.o}
 ##                              Options
 ## ==================================================================
 
-CFLAGS				+=-I../../libincl -I../../../compilers/fcompile
+CFLAGS				+=-I.. -I../../libincl -I../../../compilers/fcompile
 ALL 				=libMSG_NATIVE.so
 
 ## ==================================================================

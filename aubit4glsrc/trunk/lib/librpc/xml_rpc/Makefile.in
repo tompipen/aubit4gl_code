@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-06-29 13:12:03 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-07-07 08:46:04 afalout Exp $
 #
 
 
@@ -77,7 +77,7 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl ${CFLAGS} ${CLIENT_CFLAGS}
+CFLAGS				:=-I.. -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl ${CFLAGS} ${CLIENT_CFLAGS}
 
 #we cannot compile XMLRPC code with  -Wstrict-prototypes because
 #XML-RPC lib supplied libraries have many functions declared without parameters

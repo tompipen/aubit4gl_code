@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-06-26 06:11:43 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-07-07 08:46:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -49,7 +49,7 @@ else
 	ALL         =libLEX_PERL.so
 endif
 
-CFLAGS			+=-I../lex_c -I../../libincl -I../../../compilers/fcompile -I../../../compilers/4glc/rules -I../../../compilers/4glc
+CFLAGS			+=-I.. -I../lex_c -I../../libincl -I../../../compilers/fcompile -I../../../compilers/4glc/rules -I../../../compilers/4glc
 
 ## ==================================================================
 ##                              Targets

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.22 2002-06-25 09:33:51 mikeaubury Exp $
+# $Id: Makefile.in,v 1.23 2002-07-07 08:46:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -80,9 +80,7 @@ else
     ALL				+=libaubit4gl${SO_EXT}
 endif
 
-#-D_DEFINE_STATUSVARS_ moved in fglwrap.c
-#C_LOCAL_IFLAGS      =-I../../compilers/fcompile -I../../compilers/4glc -I${LIBINCL_PATH}
-CFLAGS				+=${C_LOCAL_IFLAGS}
+CFLAGS              +=-I.
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
 #give us bunch of warnings about unised varibles, that we cannot fix
@@ -91,7 +89,7 @@ CFLAGS_FORM_X_XDR_C =$(CFLAGS:%-Wall=%)
 
 #we cannot compile API code with  -Wstrict-prototypes because we use
 #static int (*func)	(); which need variable number of parameters:
-CFLAGS_API_C =$(CFLAGS:%-Wstrict-prototypes=%)
+CFLAGS_API_C 		=$(CFLAGS:%-Wstrict-prototypes=%)
 
 ifeq "${NON_PEDANTIC_OK}" "1"
 	CFLAGS_NO_PEDANTIC  =$(CFLAGS:%-pedantic=%)
@@ -100,7 +98,7 @@ else
 endif
 
 #LCLINT_CFLAGS :=$($(CFLAGS:%${LCLINT_STRIP1}=%):%${LCLINT_STRIP2}=%)
-LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
+LCLINT_CFLAGS   	=${C_IFLAGS}
 
 ## ==================================================================
 ##                              Targets

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.20 2002-06-11 08:42:27 afalout Exp $
+# $Id: Makefile.in,v 1.21 2002-07-07 08:46:05 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,7 +36,7 @@ include ../../../incl/Makefile-common
 ## ==================================================================
 
 #FIXME: why do we need fcompile headers and RPC lib includes here?
-C_LOCAL_IFLAGS  		=-I../../libincl -I../../../compilers/fcompile -I..
+C_LOCAL_IFLAGS  		=-I.. -I../../libincl -I../../../compilers/fcompile -I..
 CFLAGS					+=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@
 CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
 CFLAGS_NOSTRICTPROTO	=$(CFLAGS:%-Wstrict-prototypes=%)

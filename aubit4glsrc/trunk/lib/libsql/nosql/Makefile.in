@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-06-01 11:55:00 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-07-07 08:46:05 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -35,7 +35,7 @@ include ../../../incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-I../../libincl -I../../../compilers/fcompile @RPCLIB_INCLUDE@
+CFLAGS+=-I.. -I../../libincl -I../../../compilers/fcompile @RPCLIB_INCLUDE@
 
 ifeq "${COMSPEC}" ""
     ALL=libSQL_nosql.so

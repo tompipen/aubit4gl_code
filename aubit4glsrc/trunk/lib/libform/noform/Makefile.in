@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-06-26 06:11:43 afalout Exp $
+# $Id: Makefile.in,v 1.2 2002-07-07 08:46:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -65,7 +65,7 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/fcompile -I../../libincl ${CFLAGS}
+CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/fcompile -I../../libincl ${CFLAGS}
 
 ## RPC type and XDR are not the same thing. RPC type represents Remote
 #Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),

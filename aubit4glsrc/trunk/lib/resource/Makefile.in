@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-05-23 09:29:36 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-07-07 08:46:05 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -44,7 +44,7 @@ OBJS      		=${CMODS:.c=.o}
 
 #CFLAGS			+= -I../compilers/fcompile -Ilibincl ${CFLAGS}
 EXE_CFLAGS      +=-I../libincl
-CFLAGS          +=-I../libincl -I../../compilers/fcompile
+CFLAGS          +=-I../libincl -I../../compilers/fcompile -I../libaubit4gl
 
 ## ==================================================================
 ##                              Targets

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-06-29 13:12:02 afalout Exp $
+# $Id: Makefile.in,v 1.2 2002-07-07 08:46:04 afalout Exp $
 #
 
 LIBROOT=../..
@@ -53,7 +53,7 @@ else
 	ALL=libMENU_NOMENU${SO_EXT}
 endif
 
-CFLAGS	:=-I${ROOT}/compilers/menus -I${LIBROOT}/libincl ${CFLAGS} -I${ROOT}/compilers/menus  -I${LIBROOT}/libui/ui_gtk
+CFLAGS	:=-I.. -I${ROOT}/compilers/menus -I${LIBROOT}/libincl ${CFLAGS} -I${ROOT}/compilers/menus  -I${LIBROOT}/libui/ui_gtk
 
 ## ==================================================================
 ##                              Targets

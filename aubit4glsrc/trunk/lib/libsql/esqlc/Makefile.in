@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.13 2002-06-29 13:12:03 afalout Exp $
+# $Id: Makefile.in,v 1.14 2002-07-07 08:46:04 afalout Exp $
 #
 
 ROOT		=../../..
@@ -44,10 +44,10 @@ SRC_C				=${SRC:.ec=.c}
 OBJS				=${SRC_C:.c=.o}
 
 #CFLAGS are used only by C compiler on UNIX, not by ESQL/C or MSVC compilers:
-CFLAGS				+=-I${LIBROOT} -I${ROOT}/compilers/fcompile -I${INFORMIXDIR} \
+CFLAGS				+=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile -I${INFORMIXDIR} \
 						-I${INFORMIXDIR}/incl/esql -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl
 
-ESQL_INCLPATH		=-I${LIBROOT} -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I$(AUBITDIR)/incl ${C_IFLAGS}
+ESQL_INCLPATH		=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I$(AUBITDIR)/incl ${C_IFLAGS}
 
 ifdef COMSPEC
     #since we are using ESQL/C compiler, and then MSVC, this define is not automatic:

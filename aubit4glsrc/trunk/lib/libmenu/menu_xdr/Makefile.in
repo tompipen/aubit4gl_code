@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-06-29 13:12:02 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-07-07 08:46:04 afalout Exp $
 #
 
 LIBROOT=../..
@@ -41,6 +41,9 @@ override NOINCL=0
 #require XDR frunctions, part of Sun RPClib:
 CMODS_MENU_XDR		=${ROOT}/compilers/menus/menu_x_xdr.c loadmenu.c menuwrite.c
 OBJS_MENU_XDR     	=${CMODS_MENU_XDR:.c=.o}
+
+CFLAGS              +=-I.. -I../../libui
+
 
 #we cannot compile GTK code with  -Wstrict-prototypes because
 #GTK+ supplied libraries have many functions declared without parameters

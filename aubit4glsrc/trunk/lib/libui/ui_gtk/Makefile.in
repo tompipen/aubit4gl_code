@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: Makefile.in,v 1.2 2002-07-07 08:46:05 afalout Exp $
 #
 
 LIBROOT=../..
@@ -73,7 +73,7 @@ else #GLIBVER="old"
     endif
 endif
 
-CFLAGS+=-I. -I${LIBROOT}/libincl -I${ROOT}/incl ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
+CFLAGS+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/incl ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I${ROOT}/compilers/menus -I${ROOT}/compilers/fcompile
 
 ifdef COMSPEC
     ALL				+=dlllibUI_GTK

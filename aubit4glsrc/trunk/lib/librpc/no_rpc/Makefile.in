@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-06-29 13:12:02 afalout Exp $
+# $Id: Makefile.in,v 1.2 2002-07-07 08:46:04 afalout Exp $
 #
 
 
@@ -56,7 +56,7 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
+CFLAGS				:=-I../sun_rpc -I.. -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I${ROOT}/incl ${CFLAGS}
 
 ## ==================================================================
 ##                              Targets

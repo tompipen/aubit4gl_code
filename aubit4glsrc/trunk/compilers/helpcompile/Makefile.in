@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-06-29 13:12:01 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-07-07 08:45:57 afalout Exp $
 #
 
 ROOT        =../..
@@ -37,9 +37,9 @@ override NOINCL=0
 ##                    Options
 ## ==================================================================
 
-C_LOCAL_IFLAGS  =-I${ROOT}/lib/libincl
+C_LOCAL_IFLAGS  =-I${ROOT}/lib/libincl -I../fcompile
 CFLAGS			+=${C_LOCAL_IFLAGS}
-EXE_CFLAGS		+=-L${ROOT}/lib -I${ROOT}/lib/libincl ${C_IFLAGS}
+EXE_CFLAGS		+=-L${ROOT}/lib ${C_LOCAL_IFLAGS} ${C_IFLAGS}
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 CMODS           =mkmess.c
 
