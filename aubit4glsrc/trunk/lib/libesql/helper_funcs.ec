@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.27 2005-01-06 08:34:16 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.28 2005-02-13 15:18:44 mikeaubury Exp $
 #
 */
 
@@ -91,6 +91,16 @@ But them missing DtimeToChar and fammily - where are they?
 	#error "No dialect specified"
 #endif
 
+void ESQLAPI_A4GL_connect_db(char *dbname) {
+EXEC SQL BEGIN DECLARE SECTION;
+char dbName[256];
+EXEC SQL END DECLARE SECTION;
+strcpy(dbName,dbname);
+#ifdef DIALECT_POSTGRES
+	EXEC SQL CONNECT TO :dbName AS 'default';
+#endif
+
+}
 
 /**
  *

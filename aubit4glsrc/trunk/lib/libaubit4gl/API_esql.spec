@@ -59,6 +59,7 @@ A4GL_copy_double double* infx,double* a4gl,short*  indicat,int size,int mode -> 
 A4GL_copy_int long* infx,long* a4gl,short*  indicat,int size,char mode -> void
 A4GL_copy_money void* infx,void* a4gl,short*  indicat,int size,char dir -> void
 A4GL_copy_smint short* infx,short* a4gl,short*  indicat,int size,char mode -> void
+A4GL_connect_db char* dbname -> void
 
 popdec_native void* vx -> void
 retdec_native void* vx -> void
