@@ -117,7 +117,7 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 WHITELIST_TESTS_ECP="63 104 244 272 376 1222 1230 1232 1206"
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903 913"
+EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903"
 #1 'xdt is null' BUT SHOULD BE 'xdt is 12:01:02' http://aubit.com/mantis/view.php?id=687 AND http://aubit.com/mantis/view.php?id=517
 #76 (datetime-ecpg issue) http://aubit.com/mantis/bug_view_page.php?bug_id=0000479
 #98 serial insert ignores non-zero value http://aubit.com/mantis/view.php?id=604
@@ -128,7 +128,7 @@ EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903 913"
 #CLOSED 739 A row was deleted from a temp table with no log http://aubit.com/mantis/view.php?id=692
 #900 A wrong select give a zero sqlca http://aubit.com/mantis/view.php?id=690
 #903 Wrong sqlca it as not assigned sqlcode http://aubit.com/mantis/view.php?id=691
-#913 An warning was not issued with a DB with transactions http://aubit.com/mantis/view.php?id=689
+#CLOSED 913 An warning was not issued with a DB with transactions http://aubit.com/mantis/view.php?id=689
 #CLOSED 1208 1228 UNLOAD TO SELECT FROM cant open file http://www.aubit.com/mantis/view.php?id=697
 #CLOSED 1220 select one more filed then it exsist in the table http://www.aubit.com/mantis/view.php?id=698
 
@@ -138,7 +138,7 @@ EXPECT_TO_FAIL_TESTS_ECP="1 76 98 530 535 670 900 903 913"
 
 #New, after changing some features status (LCL):
 EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP 207 286 287 551 552 553 558 \
-	559 560 620 634 635 636 775 1240"
+	559 560 620 635 636 1240"
 #207 function dt_extend(character, "unknown", "unknown") does not exist
 #286 287 < 2|2|2|02/13/1970|2|   ---  > 2|2.0|2.0|13/02/1970|2|
 #551 552 553 558 559 560 (ALL of them):
@@ -146,9 +146,7 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP 207 286 287 551 552 553 558 
 #   line 89:	   EXEC SQL ALTER TABLE xpto ADD (third_column SMALLINT  ); /* exec_sql */
  
 #620 delete where current of - Database error ('(null)' in line 246.).
-#634 635 636 unload_delimiters (variable delimiterstr is not declared)
-#775 ERROR: syntax error at or near "~"
-#   317	        SELECT keycolumn,valuecolumn,datecolumn  FROM  xpto  WHERE valuecolumn  NOT ~ '^f.*'  ORDER BY 1  
+#635 636 Cannot do an ESQL_UNLOAD for a prepared statement (DELETE)
 
 
 #New, after changing some features status (SW):

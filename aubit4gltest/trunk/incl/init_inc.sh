@@ -628,17 +628,17 @@ for a in $FLAGS; do
         -add-cvsignore)
 			ALL_DIRS=[0-9]*
             for a in $ALL_DIRS; do
-				if ! test -f $a/.cvsignore; then
+				CVSIGNORE="$a/.cvsignore"
+				if ! test -f $CVSIGNORE ; then
                     cp template/.cvsignore $a
-                    ADDED="$ADDED $a/.cvsignore"
+                    ADDED="$ADDED $CVSIGNORE"
                 else
-					CVSIGNORE="$a/.cvsignore"
-					#CVSIGNORE_OUT=">> $CVSIGNORE"
-					ADDEXT_LIST=".c_"
+					#ADDEXT_LIST=".c_"
+					ADDEXT_LIST="sql_features"
 					for ADDEXT in $ADDEXT_LIST; do
 						if ! grep "$ADDEXT" "$CVSIGNORE" > /dev/null ; then 
-							#echo "*$ADDEXT" $CVSIGNORE_OUT
-							echo "*$ADDEXT" >> $CVSIGNORE
+							#echo "*$ADDEXT" >> $CVSIGNORE
+							echo "$ADDEXT" >> $CVSIGNORE
 						fi
 					done
 				fi
