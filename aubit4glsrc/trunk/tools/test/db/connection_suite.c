@@ -8,6 +8,8 @@
 
 #include <check.h>
 #include "informix_test.h"
+#include "a4gl_API_sql.h"
+
 
 /**
  * Test if the connection is established and if with wrong parameters

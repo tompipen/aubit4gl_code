@@ -26,7 +26,7 @@
 # Makefile for compiling the informix ESQL/C connection test.
 
 #
-# $Id: Makefile.in,v 1.9 2002-12-17 00:14:50 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-12-17 02:59:12 afalout Exp $
 #
 
 ROOT    =../../..
@@ -38,18 +38,19 @@ include ${ROOT}/incl/Makefile-common
 ##                    Options
 ## ==================================================================
 
-4GLPC	=${SH} ${ROOT}/bin/4glpc
-ESQL	=@IFMX_ESQLC@
-CFLAGS	+=-I${ROOT}/lib/libincl -L$(AUBITDIR)/lib
+4GLPC			=${SH} ${ROOT}/bin/4glpc
+ESQL			=@IFMX_ESQLC@
+CFLAGS			+=-I${ROOT}/lib/libincl -L$(AUBITDIR)/lib
 
+SOURCES_ESQL    =test_informix_util.ec
+SOURCES_ESQL2	=fgl_ec_util.ec
+SOURCES_4GL		=fgl_dml_suite.4gl
+SOURCES_C       =test_informix.c connection_suite.c ddl_suite.c dml_suite.c
 
-#informix_test.h
-#fgl_dml_suite.4gl
+OBJECTS         =${SOURCES_C:.c=.o} ${SOURCES_ESQL:.ec=.o}
+OBJECTS_ESQL2	=${SOURCES_ESQL2:.ec=.o}
 
-OBJECTS	=test_informix_util.ec test_informix.o connection_suite.o \
-		ddl_suite.o dml_suite.o
-
-LIBS	=-lcheck -laubit4gl
+LIBS			=-lcheck -laubit4gl
 
 ifeq "@HAS_CHECK@" "1"
 	ifneq "${ESQL}" "no"
@@ -75,11 +76,8 @@ test_informix: ${OBJECTS}
 	$(ESQL) $(CFLAGS) $^ -o $@ ${LIBS}
 
 #cannot compile because fgl_ec_util.ec is not in CVS !!!!
-test_db.4ae: fgl_dml_suite.4gl fgl_ec_util.o
+test_db.4ae: ${SOURCES_4GL} ${OBJECTS_ESQL2}
 	${4GLPC} $^ -o $@
-
-fgl_ec_util.o: fgl_ec_util.ec
-	$(ESQL) -c $^
 
 no_esql:
 	@echo "Configure did not found esql compiler - cannot compile tests."
@@ -88,12 +86,22 @@ no_check:
 	@echo "Configure did not found 'check' library - cannot compile tests."
 
 ## ==================================================================
+##                    Sub - Targets
+## ==================================================================
+
+${OBJECTS_ESQL2}: ${SOURCES_ESQL2}
+	$(ESQL) -c $^
+
+test_informix_util.o: ${SOURCES_ESQL}
+	$(ESQL) -c $^
+
+## ==================================================================
 ##                    Clean
 ## ==================================================================
 
 clean:
 	${RM} *.o test_informix *.exe *.bak *.out fgl_dml_suite.c fgl_dml_suite.h \
-    test_informix_util.c
+    test_informix_util.c *.4ae
 
 # =============================== EOF ===============================
 
