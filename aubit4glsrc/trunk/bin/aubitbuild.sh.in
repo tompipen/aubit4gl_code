@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.42 2004-10-04 13:49:58 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.43 2004-10-10 03:07:45 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -1062,15 +1062,6 @@ if test "$COMPARE" = "1"; then
 		fi
     fi
 
-#works OK:
-#scp -q afalout@aubit4gl.sourceforge.net:"/home/groups/a/au/aubit4gl/htdocs/files/Aubit\ 4GL\ compiler\ 0.30RC3.147.exe" .
-#Works:
-#$ auto_sf_scp_get /home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.147.exe
-#spawn scp -q afalout@aubit4gl.sourceforge.net:"/home/groups/a/au/aubit4gl/htdocs/files/Aubit 4GL compiler 0.30RC3.147.exe" .
-# but you need to replace -> spawn scp -q afalout@aubit4gl.sourceforge.net:"$argv" .
-#with -> spawn scp -q afalout@aubit4gl.sourceforge.net:"[lrange $argv 0 5]" .
-#in auto_sf_scp_get !!!!
-	
 	#Windows setup executable
 	if test "$WINSETUPEXE" != ""; then
 		rm -f "/tmp/$WINSETUPEXE_BASENAME"
