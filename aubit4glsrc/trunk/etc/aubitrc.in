@@ -71,7 +71,9 @@ A4GL_LEXTYPE=@A4GL_LEXTYPE@
 #Default forms driver to be loaded
 #When used: run-time only
 #Options: (GENERIC), NOFORM, XDR
-#A4GL_FORMTYPE=@A4GL_FORMTYPE@
+#Generic implies that format specified with A4GL_PACKER will be used (?)
+#FIXME: tried using GENERIC - no go with XML
+A4GL_FORMTYPE=@A4GL_FORMTYPE@
 
 ############
 #Default menu driver to be loaded:
@@ -123,7 +125,7 @@ A4GL_PACKER=XML
 #dump, so you don't have file 'core' to run 'gdb' on. WARNING: do not set
 #this under normal circumstanced - all programs will create debug.out file
 #when they run, files can be VERY large, and they will slow down progrms
-#execution considerably. This setting applies to all Aubit compiler 
+#execution considerably. This setting applies to all Aubit compiler
 #executables (includign all compilers) and to all 4gl programs compiled
 #with Aubit compiler.
 #Default=<not set>

@@ -24,11 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.21 2002-07-07 08:46:05 afalout Exp $
+# $Id: Makefile.in,v 1.22 2002-09-08 09:41:06 afalout Exp $
 #
 
+ROOT    =../../..
+LIBROOT =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 #override NOINCL=0
 
 ## ==================================================================
@@ -36,7 +39,7 @@ include ../../../incl/Makefile-common
 ## ==================================================================
 
 #FIXME: why do we need fcompile headers and RPC lib includes here?
-C_LOCAL_IFLAGS  		=-I.. -I../../libincl -I../../../compilers/fcompile -I..
+C_LOCAL_IFLAGS  		=-I.. -I${LIBROOT}/compilers/fcompile
 CFLAGS					+=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@
 CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
 CFLAGS_NOSTRICTPROTO	=$(CFLAGS:%-Wstrict-prototypes=%)
@@ -48,51 +51,60 @@ OBJECTS					=sql.o sqlex.o
 ## ==================================================================
 
 all :
-	@echo "Must specify target (because clean is not working...)"
-	@echo "Targets: iodbc unixodbc ifxodbc pgodbc odbc32"
+	@echo "Must specify target (because clean is not working.)"
+	@echo "Targets: iodbc unixodbc ifxodbc pgodbc odbc32 sapodbc allodbc"
 
 
-odbc: iodbc unixodbc ifxodbc pgodbc
+allodbc: iodbc unixodbc ifxodbc pgodbc sapodbc
 
 #we MUST always clean first, because we don't know for which libs where
 #current object compiled, if they exists.
-iodbc: 		clean libSQL_iodbc.so
+iodbc: 		clean ${LIBROOT}/libSQL_iodbc.so
 	@echo "iODBC target compiled successfully"
 
-unixodbc: 	clean libSQL_unixodbc.so
+unixodbc: 	clean ${LIBROOT}/libSQL_unixodbc.so
 	@echo "unixODBC target compiled successfully"
 
-ifxodbc: 	clean libSQL_ifxodbc.so
+ifxodbc: 	clean ${LIBROOT}/libSQL_ifxodbc.so
 	@echo "Informix ODBC target compiled successfully"
 
-pgodbc: 	clean libSQL_pgodbc.so
+pgodbc: 	clean ${LIBROOT}/libSQL_pgodbc.so
 	@echo "PostgreSQL ODBC target compiled successfully"
 
+sapodbc: 	clean ${LIBROOT}/libSQL_sapodbc.so
+	@echo "SAP DB ODBC target compiled successfully"
+
 odbc32: 	clean ${OBJECTS}
-	${MAKE} libSQL_odbc32.dll DLLOBJS="${OBJECTS}" DLL_LDLIBS="${AUBIT_LIB} -lodbc32" DLL_LDFLAGS="-L../.."
-	cp libSQL_odbc32.dll ../..
-	cp libSQL_odbc32.dll.a ../..
+	${MAKE} libSQL_odbc32.dll DLLOBJS="${OBJECTS}" DLL_LDLIBS="${AUBIT_LIB} -lodbc32" DLL_LDFLAGS="-L${LIBROOT}"
+	${CP} libSQL_odbc32.dll ${LIBROOT}
+	${CP} libSQL_odbc32.dll.a ${LIBROOT}
 	@echo "Windows ODBC target compiled successfully"
 
-libSQL_iodbc.so: CFLAGS:=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${CFLAGS_NOREDUND}
-libSQL_iodbc.so: ${OBJECTS}
+${LIBROOT}/libSQL_iodbc.so: CFLAGS:=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${CFLAGS_NOREDUND}
+${LIBROOT}/libSQL_iodbc.so: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ @IODBC_LIBS@ @IODBC_LFLAGS@
-	cp $@ ../..
+#	cp $@ ${LIBROOT}
 
-libSQL_unixodbc.so: CFLAGS:=-DUNIXODBC @UNIXODBC_INCLUDE@ @UNIXODBC_LFLAGS@ ${CFLAGS}
-libSQL_unixodbc.so: ${OBJECTS}
+${LIBROOT}/libSQL_unixodbc.so: CFLAGS:=-DUNIXODBC @UNIXODBC_INCLUDE@ @UNIXODBC_LFLAGS@ ${CFLAGS}
+${LIBROOT}/libSQL_unixodbc.so: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ @UNIXODBC_LIBS@ @UNIXODBC_LFLAGS@
-	cp $@ ../..
+#	cp $@ ${LIBROOT}
 
-libSQL_ifxodbc.so: CFLAGS:=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
-libSQL_ifxodbc.so: ${OBJECTS}
+${LIBROOT}/libSQL_ifxodbc.so: CFLAGS:=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${CFLAGS_NOSTRICTPROTO}
+${LIBROOT}/libSQL_ifxodbc.so: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli -rpath ${INFORMIXDIR}/lib/esql -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
-	cp $@ ../..
+#	cp $@ ${LIBROOT}
 
-libSQL_pgodbc.so: CFLAGS:=-DPGODBC @PGODBC_INCLUDE@ @PGODBC_LFLAGS@ ${CFLAGS_NOREDUND}
-libSQL_pgodbc.so: ${OBJECTS}
+${LIBROOT}/libSQL_pgodbc.so: CFLAGS:=-DPGODBC @PGODBC_INCLUDE@ @PGODBC_LFLAGS@ ${CFLAGS_NOREDUND}
+${LIBROOT}/libSQL_pgodbc.so: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lpsqlodbc @PGODBC_LFLAGS@
-	cp $@ ../..
+#	cp $@ ${LIBROOT}
+
+${LIBROOT}/libSQL_sapodbc.so: CFLAGS:=-DSAPODBC @SAPODBC_INCLUDE@ @SAPODBC_LFLAGS@ ${CFLAGS_NOREDUND}
+${LIBROOT}/libSQL_sapodbc.so: ${OBJECTS}
+	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqlod -lsqlrte -lpcr -lpthread -lm @SAPODBC_LFLAGS@
+#	cp $@ ${LIBROOT}
+
 
 ## ==================================================================
 ##                              Clean
@@ -100,7 +112,7 @@ libSQL_pgodbc.so: ${OBJECTS}
 
 .PHONY : clean
 clean:
-	rm -f *.o *.bak *.so *.base *.dll *.def *.exp *.a
+	${RM} *.o *.bak *.so *.base *.dll *.def *.exp *.a
 
 ## ----------------------------- EOF -------------------------------
 

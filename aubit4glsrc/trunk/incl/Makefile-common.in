@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.59 2002-09-01 10:40:10 afalout Exp $
+# $Id: Makefile-common.in,v 1.60 2002-09-08 09:41:06 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -718,15 +718,29 @@ BIN_FILES   =${BIN_SCRIPTS} ${BIN_EXE}
 ##                    To lib directory
 ## ==================================================================
 
-LIB_SO		=libLEX_PERL${SO_EXT} \
-			libaubit4gl${SO_EXT} libEXREPORT_NOPDF${SO_EXT} \
-			libSQL_nosql${SO_EXT} libUI_CONSOLE${SO_EXT} \
-			libRPC_NORPC${SO_EXT} libFORM_NOFORM${SO_EXT} \
-            libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} \
-            libLEX_C${SO_EXT} libDATA_menu_list${SO_EXT} libDATA_report${SO_EXT} \
-			libDATA_struct_form${SO_EXT} libPACKER_PACKED${SO_EXT} \
-			libPACKER_PERL${SO_EXT} libPACKER_XDR${SO_EXT} libPACKER_XML${SO_EXT} \
-            libFORM_GENERIC${SO_EXT}
+TMP_LIBFILES= \
+	@LIBFILE_1@ @LIBFILE_2@ @LIBFILE_3@ @LIBFILE_4@ @LIBFILE_5@ @LIBFILE_6@ \
+	@LIBFILE_7@ @LIBFILE_8@ @LIBFILE_9@ @LIBFILE_10@ @LIBFILE_11@ @LIBFILE_12@ \
+	@LIBFILE_13@ @LIBFILE_14@ @LIBFILE_15@ @LIBFILE_16@ @LIBFILE_17@ \
+	@LIBFILE_18@ @LIBFILE_19@ @LIBFILE_20@ @LIBFILE_21@ @LIBFILE_22@ \
+	@LIBFILE_23@ @LIBFILE_24@ @LIBFILE_25@ @LIBFILE_26@ @LIBFILE_27@ \
+	@LIBFILE_28@ @LIBFILE_29@ @LIBFILE_30@
+
+LIB_DEFAULT =$(notdir ${TMP_LIBFILES})
+
+#18
+#			libLEX_PERL${SO_EXT} \
+#			libaubit4gl${SO_EXT} libEXREPORT_NOPDF${SO_EXT} \
+#			libSQL_nosql${SO_EXT} libUI_CONSOLE${SO_EXT} \
+#			libRPC_NORPC${SO_EXT} libFORM_NOFORM${SO_EXT} \
+#            libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} \
+#            libLEX_C${SO_EXT} libDATA_menu_list${SO_EXT} libDATA_report${SO_EXT} \
+#			libDATA_struct_form${SO_EXT} libPACKER_PACKED${SO_EXT} \
+#			libPACKER_PERL${SO_EXT} libPACKER_XDR${SO_EXT} libPACKER_XML${SO_EXT} \
+#            libFORM_GENERIC${SO_EXT}
+
+
+LIB_SO		=${LIB_DEFAULT}
 
 #Only DLL wr will actually link against - everything else is loaded at run-time:
 LIB_EXPORTLIB 	+=libaubit4gl${SOEXP_EXT}
@@ -738,6 +752,8 @@ TMP_RPMFILES = \
 	@RPMFILE_18@ @RPMFILE_19@ @RPMFILE_20@ @RPMFILE_21@ @RPMFILE_22@ \
 	@RPMFILE_23@ @RPMFILE_24@ @RPMFILE_25@ @RPMFILE_26@ @RPMFILE_27@ \
 	@RPMFILE_28@ @RPMFILE_29@ @RPMFILE_30@
+
+
 
 LIB_OPTIONAL =$(notdir ${TMP_RPMFILES})
 

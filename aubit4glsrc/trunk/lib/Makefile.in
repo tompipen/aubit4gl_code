@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.63 2002-09-01 10:40:10 afalout Exp $
+# $Id: Makefile.in,v 1.64 2002-09-08 09:41:06 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -42,12 +42,15 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-ALL 	=aubit-config libEXREPORT_NOPDF${SO_EXT} libaubit4gl${SO_EXT} \
-		libRPC_NORPC${SO_EXT} libSQL_noodbc${SO_EXT} libFORM_NOFORM${SO_EXT} \
-		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libLEX_C${SO_EXT} \
-		libUI_CONSOLE${SO_EXT} libPACKER_PACKED${SO_EXT} libPACKER_PERL${SO_EXT} \
-		libPACKER_XML${SO_EXT} libLEX_PERL${SO_EXT} libFORM_GENERIC${SO_EXT} \
-		${LIB_OPTIONAL}
+#14
+#		libEXREPORT_NOPDF${SO_EXT} libaubit4gl${SO_EXT} \
+#		libRPC_NORPC${SO_EXT} libSQL_nosql${SO_EXT} libFORM_NOFORM${SO_EXT} \
+#		libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} libLEX_C${SO_EXT} \
+#		libUI_CONSOLE${SO_EXT} libPACKER_PACKED${SO_EXT} libPACKER_PERL${SO_EXT} \
+#		libPACKER_XML${SO_EXT} libLEX_PERL${SO_EXT} libFORM_GENERIC${SO_EXT} \
+
+#target names are maintained in configure.in
+ALL 	=aubit-config ${LIB_DEFAULT} ${LIB_OPTIONAL}
 
 ## ==================================================================
 ##                              Targets
@@ -65,7 +68,7 @@ note:
 
 #FIXME: remove the need to have different target names, and remove this:
 
-libSQL_noodbc.dll:
+libSQL_nosql.dll:
 	${MAKE} -C libsql/nosql nosql.dll
 
 libSQL_odbc32.dll:
@@ -156,7 +159,7 @@ libPACKER_XDR.so:
 libPACKER_XML.so:
 	${MAKE} -C libpacker/xml
 
-libSQL_noodbc.so:
+libSQL_nosql.so:
 	${MAKE} -C libsql/nosql nosql.so
 
 libSQL_iodbc.so:
@@ -174,6 +177,9 @@ libSQL_ifxodbc.so:
 libSQL_pgodbc.so:
 	${MAKE} -C libsql/odbc pgodbc
 
+libSQL_sapodbc.so:
+	${MAKE} -C libsql/odbc sapodbc
+
 libRPC_XDR.so:
 	${MAKE} -C librpc/sun_rpc $@
 
@@ -188,6 +194,55 @@ libEXDTYPE_mpz${SO_EXT}:
 
 libFORM_GENERIC${SO_EXT}:
 	${MAKE} -C libform/form_generic
+
+#libDATA_menu_list${SO_EXT}:
+#	${MAKE} -C ../common/dataio $@
+
+#libDATA_struct_form${SO_EXT}:
+#	${MAKE} -C ../common/dataio $@
+
+#libDATA_report${SO_EXT}:
+#	${MAKE} -C ../common/dataio $@
+
+#libXDRPACKER_struct_form${SO_EXT}:
+#	${MAKE} -C ../common/dataio $@
+
+#libXDRPACKER_menu_list${SO_EXT}:
+#	${MAKE} -C ../common/dataio $@
+
+#libXDRPACKER_report${SO_EXT}:
+#	${MAKE} -C ../common/dataio $@
+
+libDATA_menu_list${SO_EXT} libDATA_struct_form${SO_EXT} libDATA_report${SO_EXT}\
+libXDRPACKER_struct_form${SO_EXT} libXDRPACKER_menu_list${SO_EXT} \
+libXDRPACKER_report${SO_EXT}:
+	${MAKE} -C ../common/dataio
+
+libIM_JABBER${SO_EXT}:
+	$(MAKE) -C ../tools/jabber $@
+
+libA4GL_file${SO_EXT}:
+#	$(MAKE) -C extra_libs/file
+	@echo "Disabled because it needs 4glc"
+	@touch $@
+
+libA4GL_string${SO_EXT}:
+#	$(MAKE) -C extra_libs/string
+	@echo "Disabled because it needs 4glc"
+	@touch $@
+
+libA4GL_HTML${SO_EXT}:
+#	$(MAKE) -C ../tools/html $@
+#This stmt:
+#	display '    if ("$(gui.errorbar.object)" == "dissssabbbled") {'
+#results in:
+#   push_char("    if ("$(gui.errorbar.object)" == "dissssabbbled") {");
+#Which fails with
+#	./libahtmllib.c: In function `aclfgl_html_head':
+#	./libahtmllib.c:909: parse error before `$'
+#Note the ' and "
+	@echo "Disabled becaus of the bug in 4glc"
+	@touch $@
 
 ## ==================================================================
 ##                        Clean Targets

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.79 2002-09-01 10:39:51 afalout Exp $
+# $Id: configure.in,v 1.80 2002-09-08 09:40:49 afalout Exp $
 #
 
 dnl Process this file with autoconf to produce a configure script.
@@ -206,6 +206,11 @@ AC_SUBST(SAPDB_INCLUDE)
 AC_SUBST(SAPDB_INCDIR)
 AC_SUBST(SAPDB_LIBDIR)
 
+#SAP DB ODBC
+AC_SUBST(HAVE_SAPODBC)
+AC_SUBST(SAPODBC_INCLUDE)
+AC_SUBST(SAPODBC_LFLAGS)
+
 #PG ODBC
 AC_SUBST(HAVE_PGODBC)
 AC_SUBST(PGODBC_INCLUDE)
@@ -340,6 +345,41 @@ AC_SUBST(RPMFILE_29)
 AC_SUBST(RPMFILE_30)
 
 
+#List of libraries that we allways make. Here so we don't have to maintain it
+#separately for RPM config file, install/deinstall and lib Makefile:
+AC_SUBST(LIBFILE_1)
+AC_SUBST(LIBFILE_2)
+AC_SUBST(LIBFILE_3)
+AC_SUBST(LIBFILE_4)
+AC_SUBST(LIBFILE_5)
+AC_SUBST(LIBFILE_6)
+AC_SUBST(LIBFILE_7)
+AC_SUBST(LIBFILE_8)
+AC_SUBST(LIBFILE_9)
+AC_SUBST(LIBFILE_10)
+AC_SUBST(LIBFILE_11)
+AC_SUBST(LIBFILE_12)
+AC_SUBST(LIBFILE_13)
+AC_SUBST(LIBFILE_14)
+AC_SUBST(LIBFILE_15)
+AC_SUBST(LIBFILE_16)
+AC_SUBST(LIBFILE_17)
+AC_SUBST(LIBFILE_18)
+AC_SUBST(LIBFILE_19)
+AC_SUBST(LIBFILE_20)
+AC_SUBST(LIBFILE_21)
+AC_SUBST(LIBFILE_22)
+AC_SUBST(LIBFILE_23)
+AC_SUBST(LIBFILE_24)
+AC_SUBST(LIBFILE_25)
+AC_SUBST(LIBFILE_26)
+AC_SUBST(LIBFILE_27)
+AC_SUBST(LIBFILE_28)
+AC_SUBST(LIBFILE_29)
+AC_SUBST(LIBFILE_30)
+
+
+
 ## ==================================================================
 ##                             Defaults
 ## ==================================================================
@@ -419,6 +459,39 @@ ALL_LINGUAS="en"
 dnl internationalization macros
 #AM_GNU_GETTEXT
 
+
+#List of libraries that we allways make. Here so we don't have to maintain it
+#separately for RPM config file, install/deinstall and lib Makefile:
+LIBFILE_1=$LIB_PREFIX/libEXREPORT_NOPDF${SO_EXT}
+LIBFILE_2=$LIB_PREFIX/libaubit4gl${SO_EXT}
+LIBFILE_3=$LIB_PREFIX/libRPC_NORPC${SO_EXT}
+LIBFILE_4=$LIB_PREFIX/libFORM_NOFORM${SO_EXT}
+LIBFILE_5=$LIB_PREFIX/libSQL_nosql${SO_EXT}
+LIBFILE_6=$LIB_PREFIX/libMENU_NOMENU${SO_EXT}
+LIBFILE_7=$LIB_PREFIX/libMSG_NATIVE${SO_EXT}
+LIBFILE_8=$LIB_PREFIX/libLEX_C${SO_EXT}
+LIBFILE_9=$LIB_PREFIX/libUI_CONSOLE${SO_EXT}
+LIBFILE_10=$LIB_PREFIX/libPACKER_PACKED${SO_EXT}
+LIBFILE_11=$LIB_PREFIX/libPACKER_PERL${SO_EXT}
+LIBFILE_12=$LIB_PREFIX/libPACKER_XML${SO_EXT}
+LIBFILE_13=$LIB_PREFIX/libLEX_PERL${SO_EXT}
+LIBFILE_14=$LIB_PREFIX/libFORM_GENERIC${SO_EXT}
+LIBFILE_15=$LIB_PREFIX/libDATA_menu_list${SO_EXT}
+LIBFILE_16=$LIB_PREFIX/libDATA_report${SO_EXT}
+LIBFILE_17=$LIB_PREFIX/libDATA_struct_form${SO_EXT}
+LIBFILE_18=
+LIBFILE_19=
+LIBFILE_20=
+LIBFILE_21=
+LIBFILE_22=
+LIBFILE_23=
+LIBFILE_24=
+LIBFILE_25=
+LIBFILE_26=
+LIBFILE_27=
+LIBFILE_28=
+LIBFILE_29=
+LIBFILE_30=
 
 #Note: all command line switches like "--xxxx-wwwww" are automativaly
 #converted to shell variables in "xxxxx_wwwww" format.
@@ -614,10 +687,6 @@ AC_PATH_PROG(LCLINTEXE,lclint,no)
 	if test "$LCLINTEXE" = "no"; then
 		AC_PATH_PROG(LCLINTEXE,splint,no)
     fi
-
-
-#cygcheck can be used instead of ldd that is missing on CygWin:
-AC_PATH_PROG(CYGCHECK, cygcheck, no)
 
 AC_PATH_PROG(LDCONFIG, ldconfig, no)
 AC_PATH_PROG(AUTOCONF, autoconf, no)
@@ -1267,6 +1336,106 @@ else
         fi
 	fi
 fi
+
+
+## ==================================================================
+##                 Checks for SAP DB ODBC driver
+## ==================================================================
+#UNIX:
+#bin/odbclnk Shell script (Unix only) for the linking of an application.
+#demo/eng/ODBC/sqlexamp.c C example program for an ODBC application.
+#demo/eng/ODBC/sqladhoc.c C example program for an ODBC application.
+#demo/eng/ODBC/Makefile Makefile for generating a demo program.
+
+
+#Win32:
+#pgm\sql*.dll Libraries for the SAP DB runtime
+#environment (see the platform-specific SAP DB Installation manual)
+#<Windows System 32> directory :
+#odbc32.dll Driver Manager
+#ctl3dv2.dll 3D Windows Controls
+#odbccp32.dll Installer library
+#odbcinst.hlp Installer library help
+#odbcad32.exe Administrator program
+#odbccr32.dll ODBC cursor library
+
+
+#Example makefile:
+#INCL = -I$(SAPDBROOT)/incl
+#LIBS = $(SAPDBROOT)/lib/libsqlod.a $(SAPDBROOT)/lib/libsqlrte.a $(SAPDBROOT)/lib/libpcr.a -lpthread -lm
+#HelloSAPDB: HelloSAPDB.o
+#        $(CC) -o $@ HelloSAPDB.o $(LIBS)
+#.c.o:
+#        $(CC) -c -DSQLODBC $(CCFLAGS) $(UNDEF) $(DEFINES) $(INCL) $<
+
+
+AC_MSG_CHECKING(for SAP DB ODBC driver support)
+
+#force this check even if not specified on command line:
+if test "$with_sapodbc" = ""; then
+	with_sapodbc=yes
+fi
+
+AC_ARG_WITH(sapodbc,
+[  --with-sapodbc[=DIR]    Include SAP DB ODBC driver support.  DIR is the base
+                          install directory, defaults to /opt/sapdb.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+	    	withval=/opt/sapdb #$SAPDBROOT
+		else
+			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRARY_PATH="$withval/interfaces/odbc/lib:$ADD_LD_LIBRARY_PATH"
+		fi
+
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+        old_CPPFLAGS="$CPPFLAGS"
+		TMP_SAPODBC_INCLUDE="-I$withval/interfaces/odbc/incl"
+		TMP_SAPODBC_LFLAGS="-L$withval/interfaces/odbc/lib -L$withval/indep_prog/runtime/7300/lib"
+        LIBS="-lsqlrte -lpcr -lpthread -lm"
+
+		CPPFLAGS="$CPPFLAGS $TMP_SAPODBC_INCLUDE"
+		LDFLAGS="$LDFLAGS $TMP_SAPODBC_LFLAGS $TMP_SAPODBC_INCLUDE"
+		# FIXME: Replace `main' with a function in `-lsqlod':
+		AC_CHECK_LIB([sqlod], [main])
+		if test $ac_cv_lib_sqlod_main = yes; then
+			#FIXME: and this is source code - not bynary distro...
+			AC_CHECK_HEADERS([ sql.h sqlext.h sqltypes.h WINDOWS.H ])
+        fi
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+        CPPFLAGS="$old_CPPFLAGS"
+
+		if test $ac_cv_lib_sqlod_main = yes; then
+
+			if test "$ac_cv_header_sqltypes_h" = "yes" && test "$ac_cv_header_sql_h" = "yes" && test "$ac_cv_header_sqlext_h" = "yes" && test "$ac_cv_header_WINDOWS_H" = "yes" ; then
+                HAVE_SAPODBC_HEADERS=yes
+            else
+                HAVE_SAPODBC_HEADERS=no
+            fi
+
+            if test "$HAVE_SAPODBC_HEADERS" != "yes" && AUBIT_SOURCE=1; then
+            #we need headers only to compile source code
+			    AC_DEFINE(HAVE_SAPODBC,0,[ ])
+				AC_MSG_RESULT(no header files)
+			else
+				HAVE_SAPODBC=yes
+			    SAPODBC_INCLUDE="$TMP_SAPODBC_INCLUDE"
+			    SAPODBC_LFLAGS="$TMP_SAPODBC_LFLAGS"
+
+			    AC_DEFINE(HAVE_SAPODBC,1,[ ])
+            fi
+		else
+		    AC_DEFINE(HAVE_SAPODBC,0,[ ])
+		fi
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-sapodbc not specified)
+])
+
 
 ## ==================================================================
 ##                 Checks for PostgreSQL ODBC driver
@@ -2206,8 +2375,10 @@ AC_SUBST(LIBGREET_DLL_IMPORT)
 case $host in
 	*-*-cygwin | *-*-cygwin* | *-*-pw32*)
 
-	#this macros are in aclocal.m4 - run aclocal to create it :
+	#cygcheck can be used instead of ldd that is missing on CygWin:
+	AC_PATH_PROG(CYGCHECK, cygcheck, no)
 
+	#this macros are in aclocal.m4 - run aclocal to create it :
 	AC_LIBTOOL_WIN32_DLL
 
 	AC_CYGWIN
@@ -2498,19 +2669,21 @@ LIB_PREFIX=$prefix/aubit4gl/lib
 		RPMFILE_18=$LIB_PREFIX/libEXDTYPE_mpz$SO_EXT
     fi
 
+	if test "$HAVE_SAPODBC" = "yes" ; then
+		RPMFILE_19=$LIB_PREFIX/libSQL_sapodbc$SO_EXT
+	fi
 
-    #this are made by 'make extra'
+	#this is made by 'make extra'
+	if test "$JABBERBUILD" != "no"; then
+		RPMFILE_20=$LIB_PREFIX/libIM_JABBER.so
+	fi
 
-	#if test "$JABBERBUILD" != "no"; then
-	#	RPMFILE_14=$LIB_PREFIX/libIM_JABBER.so
-    #fi
-
-	#RPMFILE_15=$LIB_PREFIX/libA4GL_file.so
-	#RPMFILE_16=$LIB_PREFIX/libA4GL_string.so
-	#RPMFILE_17=$LIB_PREFIX/libA4GL_HTML.so
-	#RPMFILE_18=$LIB_PREFIX/
-	#RPMFILE_19=$LIB_PREFIX/
-	#RPMFILE_20=$LIB_PREFIX/
+	RPMFILE_21=$LIB_PREFIX/libA4GL_file.so
+	RPMFILE_22=$LIB_PREFIX/libA4GL_string.so
+	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML.so
+	#RPMFILE_24=$LIB_PREFIX/
+	#RPMFILE_25=$LIB_PREFIX/
+	#RPMFILE_26=$LIB_PREFIX/
 
 
 

@@ -1,6 +1,6 @@
 # When running Aubit programs as CGI in web server, use AUBITGUI=CONSOLE
 
-# $Id: libahtmllib.4gl,v 1.3 2002-03-16 03:19:21 afalout Exp $
+# $Id: libahtmllib.4gl,v 1.4 2002-09-08 09:41:06 afalout Exp $
 
 ########################################################################
 #ANSI C libraryes for CGI programing:
@@ -311,12 +311,13 @@ function html_end_para()
 end function
 
 ###################################
-function html_display_para(text)
+function html_display_para(mytext)
 ###################################
-define text char (10000)
+#FIXME: why is "text" reserved word?
+define mytext char (10000)
 
 	call html_start_para()
-    display text clipped
+    display mytext clipped
     call html_end_para()
 end function
 
@@ -333,14 +334,14 @@ end function
 
 
 ###################################
-function html_link(URL,target,text)
+function html_link(URL,target,mytext)
 ###################################
 define
-	URL,text char (300),
+	URL,mytext char (300),
     target char(10)
 
 
-	display "<a href='",URL clipped,"' target='",target clipped,"'>",text clipped,"</a>"
+	display "<a href='",URL clipped,"' target='",target clipped,"'>",mytext clipped,"</a>"
 
 
 end function

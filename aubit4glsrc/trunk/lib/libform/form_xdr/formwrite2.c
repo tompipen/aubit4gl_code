@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.15 2002-07-13 10:36:31 afalout Exp $
+# $Id: formwrite2.c,v 1.16 2002-09-08 09:41:06 afalout Exp $
 #*/
 
 /**
@@ -40,51 +40,10 @@
 =====================================================================
 */
 
+#include "a4gl_lib_form_xdr_int.h"
 
-
-/* We don't want the xgen .h file we want the
-   XDR/rpcgen one instead
-*/
-#define USE_XDR_H
-
-#ifdef OLD_INCL
-	#include <stdio.h>
-	#include <ctype.h>
-	#include <string.h>
-	#include <time.h> 					/* time() */
-
-	#ifdef __CYGWIN__
-		#include <rpc/rpc.h>
-	#endif
-
-	#include "a4gl_formxw.h"
-	#include "a4gl_fcomp_fcompile.h"
-	#include "a4gl_compiler.h"
-	#include "a4gl_dbform.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_compiler.h"			/* fgl_comp_error */
-	#include "a4gl_debug.h"
-
-#else
-
-	//prevent form_x.xs.h from including from form_x.x.h
-	#define  _NO_FORM_X_H_
-
-	#include "a4gl_lib_form_xdr_int.h"
-    //#include "form_x.h"
-
-	/* Most of the time we'll want to use the xgen generated .h file - not the rpcgen one */
-	#ifndef USE_XDR_H
-		#include "../../../common/dataio/form_x.x.h"
-	#else
-		#include "../../../common/dataio/form_x.h"
-	#endif
-
-    /* duplicated from a4gl_libaubit4gl.h : */
-		int 	has_str_attribute 	(struct struct_scr_field * f, int str);
-
-#endif
-
+/* FIXME: duplicated from a4gl_libaubit4gl.h : */
+	int 	has_str_attribute 	(struct struct_scr_field * f, int str);
 
 /*
 =====================================================================
@@ -1100,7 +1059,7 @@ real_add_str_attr(struct struct_scr_field *f,int type,char *str)
   else 
     str++;
 
-  if (!has_str_attribute(f,type)) 
+  if (!has_str_attribute(f,type))
   {
     f->str_attribs.str_attribs_len++;
     f->str_attribs.str_attribs_val=realloc(

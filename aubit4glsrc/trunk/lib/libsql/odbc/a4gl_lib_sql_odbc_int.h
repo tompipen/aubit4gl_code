@@ -52,6 +52,23 @@
 		    #define __ODBC_DEFINED__
 	#endif
 
+
+	#ifdef SAPODBC
+			#include "WINDOWS.H"
+			/*
+			incl/WINDOWS.H Header file for non-MS Windows platforms. On MS Windows 3.1 or
+			Windows NT, this file can be replaced by windows.h if an SDK has been installed.
+            Also defines thingsa like DWORD needed by followint headers.
+			*/
+
+			#include <sql.h> 		/* Header file for the ODBC driver (Core). */
+			#include <sqlext.h>     /* Header file for the ODBC driver (Level1 and Level2). */
+			#include <sqltypes.h>   /* Header file for the ODBC driver (Datatypes). */
+
+			#define __UCHAR_DEFINED__
+		    #define __ODBC_DEFINED__
+	#endif
+
     #ifndef __ODBC_DEFINED__
         /* default for tesing, when we don't use makefile we will not have -Dxxx
 		 unixODBC headers: */
