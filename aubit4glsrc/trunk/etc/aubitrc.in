@@ -356,24 +356,20 @@ A4GL_NO_ALT_SCR=Y
 
 ####################
 #All updates will be transformed to Ansi syntax. Applies only to EC output
-A4GL_FIXUPDATE=Y
-
+#A4GL_FIXUPDATE=Y
 ####################
 # The keyword 'AS' is included when using an alias on a select column
-A4GL_USE_ALIAS_AS=Y
-
+#A4GL_USE_ALIAS_AS=Y
 ####################
 # Any CREATE TEMP TABLE .. WITH NO LOG will have the 'WITH NO LOG' silently removed
-A4GL_OMIT_NO_LOG=Y
-
+#A4GL_OMIT_NO_LOG=Y
 ####################
 # No indicator variables
-A4GL_USE_INDICATOR=N
-
+# A4GL_USE_INDICATOR=N
 ####################
 # When needed use the ecpg UNLOAD statement rather than the aubit code
 #IFX esql needs N, but apparently PG ecpg need Y
-A4GL_ESQL_UNLOAD=N
+#A4GL_ESQL_UNLOAD=N
 
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs
@@ -480,7 +476,7 @@ LIBPQ_FE_H_IFLAGS="@LIBPQ_FE_H_IFLAGS@"
 #Workaround for PG ecpg problem (see test #24)
 # ERROR: Only numeric/decimal have precision/scale argument
 #A4GL_MONEY_AS_MONEY=Y - gives  ERROR: invalid datatype 'money' 
-A4GL_MONEY_AS_DECIMAL=Y
+#A4GL_MONEY_AS_DECIMAL=Y
 
 #List of Informix libraries esql compiler is using; needed in 4glpc to make
 #shared library
