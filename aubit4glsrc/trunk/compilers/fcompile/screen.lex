@@ -209,7 +209,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "user"		{if (ignorekw) REJECT;strcpy(yylval.str,"USER"); return SQL_VAR;}
 "to"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TO;}
 "as"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return AS;}
-"noupdate"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
+"noupdate"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return NOUPDATE;}
 "zerofill"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
 "left"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LEFT;}
 "right"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SQLONLY;}
