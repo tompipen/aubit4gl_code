@@ -4,7 +4,7 @@
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 #
-# $Id: 4glpc,v 1.22 2001-10-16 03:09:13 afalout Exp $
+# $Id: 4glpc,v 1.23 2001-10-18 00:01:30 afalout Exp $
 #
 ########################################################################
 
@@ -15,7 +15,6 @@
     #HEAD=head -n 20
     SHOWERRCODE=1
     FGLCEXEC=4glc
-
 #FIXME:
 #uppercase 0, passed to 4glpc as "4gpc -O ..." is causing on CygWin:
 #[: --help: unknown operand
@@ -246,6 +245,7 @@ ALLPARAMS=$@
 if [ "$GTKGUI" = "" ]
 then
 	GTKGUI="Yes"
+    ui=gui
 fi
 
 if [ "$AUBITDIR" = "" ]
@@ -359,15 +359,18 @@ then
 	    fi
 	fi
 
-	if [ "$ODBC_SHARED" = "" ]
-	then
-	        ODBC_SHARED="-L$ODBC_LIB_DIR"
-	fi
+	if [ "$ODBC_LIB_DIR" != "" ]
+    then
+		if [ "$ODBC_SHARED" = "" ]
+		then
+		        ODBC_SHARED="-L$ODBC_LIB_DIR"
+		fi
 
-	if [ "$ODBC_STATIC" = "" ]
-	then
-	        ODBC_STATIC="-L$ODBC_LIB_DIR"
-	fi
+		if [ "$ODBC_STATIC" = "" ]
+		then
+		        ODBC_STATIC="-L$ODBC_LIB_DIR"
+		fi
+    fi
 fi
 
 #restore things from before reading .a4glrc that where in environment:
@@ -765,6 +768,7 @@ do
    ;;
 
    -nogtk) 	export GTKGUI="no"
+			export ui=""
    ;;
 
 
@@ -883,9 +887,9 @@ do
 done
 ####
 
-if [ "$A4GLVERBOSE" = "yes" ]
+if [ "$A4GLDEBUG" = "yes" ]
 then
-	echo Finished processing switches. USE_PDF = $USE_PDF
+	echo "Finished processing switches. USE_PDF = $USE_PDF"
 fi
 
 if [ "$EXECNAME" = "-1" ]
@@ -905,8 +909,14 @@ then
 	FGLLIBS_STATIC=" -L$AUBITDIR/lib -L../../lib -laclall"$ui$ODBCFLAG" -lm -ldl"
 else
     #echo COMSPEC defined: $COMSPEC
-	FGLLIBS_SHARED=" -L$AUBITDIR/lib -L../../lib -laclallgui$ODBCFLAG -lm -lrpclib  -L/lib/w32api"
-	FGLLIBS_STATIC=" -L$AUBITDIR/lib -L../../lib -laclallgui$ODBCFLAG -lm  -lrpclib -L/lib/w32api"
+	#FGLLIBS_SHARED=" -L$AUBITDIR/lib -L../../lib -laclallgui$ODBCFLAG -lm -lrpclib  -L/lib/w32api"
+	#FGLLIBS_STATIC=" -L$AUBITDIR/lib -L../../lib -laclallgui$ODBCFLAG -lm -lrpclib -L/lib/w32api"
+
+    RPCLIB=-lrpclib
+	#RPCLIB=-lrpc
+	FGLLIBS_COMMON="-lm $RPCLIB -L$AUBITDIR/lib -L../../lib -L/lib/w32api -L/usr/local/lib"
+	FGLLIBS_STATIC="-laclall$ui$ODBCFLAG $FGLLIBS_COMMON"
+	FGLLIBS_SHARED="-laclshared$ui$ODBCFLAG $FGLLIBS_COMMON"
 
 	if [ "$ODBC_LIB_NAME" != "noodbc" ]
     then
@@ -915,6 +925,15 @@ else
     fi
 
 fi
+
+if [ "$A4GLDEBUG" = "yes" ]
+then
+	echo ------------------------------------------------------------------
+	echo FGLLIBS_SHARED = $FGLLIBS_SHARED
+	echo FGLLIBS_STATIC = $FGLLIBS_STATIC
+	echo ------------------------------------------------------------------
+fi
+
 
 if [ "$USE_PDF" = "yes" ]
 then
@@ -937,15 +956,26 @@ fi
 
 if ! [ "$COMSPEC" = "" ]
 then
-    CYLIBSNOVER="-lgdk -lgtk -lglib"
-	CYLIBSSPECVER="-lgdk-1.3 -lgtk-1.3 -lglib-1.3"
-	CYLIBS="-lgtk4gl -lcurses "
+	CYLIBS=-lcurses
+	if [  "$GTKGUI" = "Yes" ]
+    then
+		CYLIBSNOVER="-lgdk -lgtk -lglib"
+		CYLIBSSPECVER="-lgdk-1.3 -lgtk-1.3 -lglib-1.3"
+		CYLIBS="-lgtk4gl $CYLIBS "
+    fi
+	#FIXME: we should use CYLIBSNOVER not CYLIBSSPECVER
 	FGLLIBS_SHARED="$FGLLIBS_SHARED $CYLIBS $CYLIBSSPECVER"
 	FGLLIBS_STATIC="$FGLLIBS_STATIC $CYLIBS $CYLIBSSPECVER"
 fi
 
-#echo $FGLLIBS_SHARED
-#echo $FGLLIBS_STATIC
+if [ "$A4GLDEBUG" = "yes" ]
+then
+	echo ------------------------------------------------------------------
+	echo FGLLIBS_SHARED = $FGLLIBS_SHARED
+	echo FGLLIBS_STATIC = $FGLLIBS_STATIC
+	echo ------------------------------------------------------------------
+fi
+
 
 if [ "$USE_SHARED" = "Yes" ]
 then
@@ -972,13 +1002,20 @@ else
         fi
 fi
 
-#FIXME: provate reference to /root/ncurses/ncurses-5.2/lib, please remove!
-
-LIBS="-L/root/ncurses/ncurses-5.2/lib -lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG"
+#FIXME: Mike's private reference to /root/ncurses/ncurses-5.2/lib, had to remove to shorten
+#execution strimg because of bug in 'eval" on CygWin!
+MIKES_LIBS="-L/root/ncurses/ncurses-5.2/lib"
+LIBS="-lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG"
 
 if [ "$ODBC_LIB_NAME" != "" ] && [ "$ODBC_LIB_NAME" != "noodbc" ]
 then
-	LIBS="$LIBS -L$ODBC_LIB_DIR -l$ODBC_LIB_NAME"
+	LIBS="$LIBS -l$ODBC_LIB_NAME"
+
+	if [ "$ODBC_LIB_DIR" != "" ]
+    then
+		LIBS="$LIBS -L$ODBC_LIB_DIR"
+    fi
+
 fi
 
 if test "$USE_JABBER" = "1"
@@ -1015,7 +1052,7 @@ then
 fi
 
 
-	if [  "$GTKGUI" = "Yes" ]
+if [  "$GTKGUI" = "Yes" ]
 then
 	if [ "$COMSPEC" = "" ]
 	then
@@ -1076,9 +1113,16 @@ else
 
    if [ "$A4GLVERBOSE" = "yes" ]
    then
-	   echo "executing (2) : $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST"
+	   echo "executing (2) : $DOIT $GCC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST"
    fi
-	eval $DOIT $GCC $COMPCC  $INCLDIR  $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST
+	#### WARNING! #### #### WARNING! #### #### WARNING! #### #### WARNING! ####
+    #eval on CygWin is limited to about 400 characters !!!!!
+	#### WARNING! #### #### WARNING! #### #### WARNING! #### #### WARNING! ####
+
+	#EXECSTRING="$DOIT $GCC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST"
+	#echo "executing (2b) : $EXECSTRING"
+	eval $DOIT $GCC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $LAST
+	#eval $EXECSTRING -lrpclib
 	err_code=$?
 
 	if [ $err_code != 0 ]

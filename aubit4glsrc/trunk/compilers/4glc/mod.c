@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.15 2001-10-05 18:16:40 mikeaubury Exp $
+* $Id: mod.c,v 1.16 2001-10-18 00:01:30 afalout Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.15  2001/10/05 18:16:40  mikeaubury
+*	Fixes
+*	
 *	Revision 1.14  2001/09/22 20:09:59  mikeaubury
 *	Fixes
 *	
@@ -343,14 +346,17 @@ with_strip_bracket (char *buff)
 add_variable (char *name, char *type, char *n)
 {
 
+//  debug ("In mod.c : add_variable\n");
   vars[varcnt].level = in_record;
+
+//  debug ("In mod.c : add_variable (1)\n");
 
   if (name != 0)
     strcpy (vars[varcnt].var_name, name);
 
   else
     strcpy (vars[varcnt].var_name, EMPTY);
-
+//  debug ("In mod.c : add_variable (2)\n");
   if (type != 0)
 
     strcpy (vars[varcnt].var_type, type);
@@ -358,12 +364,27 @@ add_variable (char *name, char *type, char *n)
   else
     strcpy (vars[varcnt].var_type, EMPTY);
 
-  if (n != 0)
+  debug ("In mod.c : add_variable (3)\n");
 
-    strcpy (vars[varcnt].var_size, n);
+  if (n != 0) {
+	debug ("In mod.c : add_variable (3a)\n");
+    debug ("/* global variables: name = %d */\n", name);     	/* global variables: name = 50439268 */
+	debug ("/* global variables: varcnt = %d */\n", varcnt);  	/* global variables: varcnt = 18 */
+    debug ("/* global variables: n = %d */\n", n); 				/* global variables: n = 2563 */
 
+	debug ("In mod.c : add_variable (3a2)\n");
+    // we core dump here on CygWin:
+	strcpy (vars[varcnt].var_size, n);
+    debug ("/* global variables: vars[varcnt].var_size = %d */\n", vars[varcnt].var_size);
+
+  }
   else
-    strcpy (vars[varcnt].var_size, EMPTY);
+  {
+	debug ("In mod.c : add_variable (3b)\n");
+	strcpy (vars[varcnt].var_size, EMPTY);
+  }
+
+  debug ("In mod.c : add_variable (4)\n");
 
   strcpy (vars[varcnt].var_arrsize, EMPTY);
 
