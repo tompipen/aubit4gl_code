@@ -186,4 +186,9 @@ compat_test:
 unknown_test:
 	@echo "0"
 
+################
+#Specify minimum version of Informix compiler this test can be executed with
+need_ifx_version:
+	@echo "7.31"
+
 # ============================= EOF ================================

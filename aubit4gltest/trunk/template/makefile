@@ -203,6 +203,7 @@ unknown_test:
 
 ################
 #Specify minimum version of Informix compiler this test can be executed with
+#example: 	@echo "7.31"
 need_ifx_version:
 	@echo "0"
 

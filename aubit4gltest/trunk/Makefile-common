@@ -191,7 +191,7 @@ ifneq "${COMPILE_ONLY}" "1"
 		fi
 
 	NAMED_DUMP_DIFF=${RUN_EXT}; ${DIFF_COMMON}
-	NAMED_DIFF=${RUN_EXT} > out; ${DIFF_COMMON}
+	NAMED_DIFF=${RUN_EXT} > ${OUT}; ${DIFF_COMMON}
 	
 	DEFAULT_DUMP_DIFF=${RUNNER} ${DBG} ./progname${NAMED_DUMP_DIFF}	
 	DEFAULT_DIFF=${RUNNER} ${DBG} ./progname${NAMED_DIFF}
@@ -207,7 +207,7 @@ endif
 
 CLEAN_FILES=*.bak *.o *.4ae *.ao *.ec *.cpc *.h *.glb \
     ${MODULES} ${FORMS} *.4pe.dat *.4pe.xml ${ADD_CLEAN} *.c out *.err  \
-    pcode.run *.tmp
+    pcode.run *.tmp out.ifx out.querix out.4js
 
 ifneq "${TARGET_EXT}" ""
 	CLEAN_FILES+=*${TARGET_EXT}

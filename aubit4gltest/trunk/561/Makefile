@@ -179,7 +179,8 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "1"
+#uses PRIMARY KEY in SQL DDL - ifx,4js and querix (at run-time) fail
+	@echo "0"
 
 ################
 #All other tests not belonging to any of the above groups should be listed here:

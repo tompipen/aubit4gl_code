@@ -179,7 +179,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #All other tests not belonging to any of the above groups should be listed here:
@@ -195,5 +195,10 @@ expect_code:
 #Return 1 if test should only be compiled, and NOT executed 
 compile_only:
 	@echo "0"
+
+################
+#Specify minimum version of Informix compiler this test can be executed with
+need_ifx_version:
+	@echo "7.31"
 
 # ============================= EOF ================================

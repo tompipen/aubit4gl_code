@@ -174,6 +174,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
+#NO WAY - uses ASSOCIATE syntax
 	@echo "0"
 
 ################
