@@ -169,8 +169,8 @@ finish_cmd : FINISH_REPORT rep_name {
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL AS var_or_char {
-			add_feature("USE_REPORT");
                         char buff[255];
+			add_feature("USE_REPORT");
 			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,buff,$<str>5,"\"\"","EMAIL");
