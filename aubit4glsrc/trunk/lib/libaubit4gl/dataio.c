@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.4 2002-10-20 12:02:37 afalout Exp $
+# $Id: dataio.c,v 1.5 2003-01-11 16:05:46 mikeaubury Exp $
 #
 */
 
@@ -66,7 +66,7 @@
 */
 
 static void *libptr=0;
-static int (*func)();/*FIXME-warning: function declaration isn't a prototype */
+static int (*func)(void *ptr,char*filename);   /*FIXME-warning: function declaration isn't a prototype */
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.15 2003-01-04 17:29:56 psterry Exp $
+# $Id: error.c,v 1.16 2003-01-11 16:05:47 mikeaubury Exp $
 #
 */
 
@@ -72,6 +72,9 @@ char lasterrorstr[1024]="";
 int cache_status=0;
 int cache_statusno=0;
 int int_err_flg;
+void aclfgli_clr_err_flg(void);
+void aclfgli_set_err_flg(void);
+int aclfgli_get_err_flg(void);
 
 /*
 =====================================================================
