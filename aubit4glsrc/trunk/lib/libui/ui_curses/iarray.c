@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.64 2004-01-03 18:43:43 mikeaubury Exp $
+# $Id: iarray.c,v 1.65 2004-01-07 10:04:42 mikeaubury Exp $
 #*/
 
 /**
@@ -52,6 +52,7 @@ static void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 void A4GL_set_curr_infield (long a);
 void debug_print_flags (void *sv, char *txt);
 int A4GL_get_attr_from_string (char *s);
+char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
 
 #define CONTROL_STACK_LENGTH 10
 
@@ -192,8 +193,8 @@ insert_line_in_array (struct s_inp_arr *inpa)
   int a;
   char *src_ptr;
   char *dest_ptr;
-  int topline;
-  int scr_line;
+  //int topline;
+  //int scr_line;
 
   A4GL_debug ("insert_line_in_array no_arr=%d arr_size=%d arr_line=%d",
 	      inpa->no_arr, inpa->arr_size, inpa->arr_line);
@@ -479,6 +480,7 @@ int really_ok=0;
 
 
 	really_ok=1;
+	A4GL_debug("Calling pop_var2..");
       A4GL_pop_var2 ((char *) b[x].ptr + (y * elem), b[x].dtype, b[x].size);
 
       if (strlen(buff)&&A4GL_isnull(b[x].dtype,b[x].ptr+ (y * elem))) {

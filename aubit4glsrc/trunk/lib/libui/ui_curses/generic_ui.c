@@ -106,7 +106,12 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
       return 1;
     }
   A4GL_debug ("Dropped through");
-
+  if (A4GL_isyes(acl_getenv("BEEP_BADMENUKEY"))) {
+  	beep();
+  }
+  if (A4GL_isyes(acl_getenv("FLASH_BADMENUKEY"))) {
+  	flash();
+  }
   return fc;
 }
 
@@ -442,7 +447,7 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
 
 #if ! defined (__CYGWIN__)
   //On CygWin: generic_ui.c:469: error: incompatible type for argument 1 of `__builtin_va_end'
-  va_end (ap);
+  va_end (*ap);
 #else
   A4GL_debug ("*******************************");
   A4GL_debug ("FIXME: va_end problem on CygWin");

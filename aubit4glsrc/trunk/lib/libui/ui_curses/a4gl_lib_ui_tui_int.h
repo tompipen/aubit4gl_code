@@ -148,7 +148,7 @@ int A4GL_new_do_keys (ACL_Menu * menu, int a);
 //void  A4GL_clr_window                      (char *win_name);
 int A4GL_int_current_window (char *win_name);
 int A4GL_get_curr_win (void);
-int A4GL_get_curr_height (void);
+//int A4GL_get_curr_height (void);
 int A4GL_get_curr_top (void);
 //char *A4GL_get_currwin_name (void);
 //int A4GL_get_curr_border (void);

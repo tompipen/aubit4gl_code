@@ -83,6 +83,7 @@ int need_tabname=0;
 
 		if (a==0) break;
 		/* Eat up comments */
+		//printf("-->%s (%d) %d\n",yylval.str,a,need_delim);
 
 		if (need_fname) {
 			if (a==KW_SPACE||a==KW_NL) continue;
@@ -101,7 +102,8 @@ int need_tabname=0;
 			printf("Unknown a when looking for filename %d\n",a);
 		}
 
-                if (need_delim&&a==KW_STRING_LITERAL) {
+                if (need_delim&&(a==KW_IDENTIFIER||a==KW_STRING_LITERAL||a==KW_CONSTANT)) {
+			//printf("Have delimiter : %s",yylval.str);
                         e->delim=strdup(yylval.str);
                         free(ptr); ptr=0;
                         need_delim=0;
@@ -128,6 +130,7 @@ int need_tabname=0;
 		}
 
 		if (a==KW_DELIMITER) {
+			//printf("NEED DELIM\n");
 			need_delim=1;
 			continue;
 		}

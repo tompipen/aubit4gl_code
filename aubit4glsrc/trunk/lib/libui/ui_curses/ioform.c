@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.86 2004-01-06 15:54:51 mikeaubury Exp $
+# $Id: ioform.c,v 1.87 2004-01-07 10:04:42 mikeaubury Exp $
 #*/
 
 /**
@@ -79,6 +79,7 @@ int tab_cnt = 0;
 int srec_cnt = 0;
 extern int errno;
 char delimiters[4];
+char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
 
 int lastc = 0;
 int nline;
@@ -1484,14 +1485,18 @@ int
 
       if (sio->mode != MODE_CONSTRUCT)
 	{
-	  strcpy (buff, field_buffer (field_list[a], 0));
+	  //strcpy (buff, field_buffer (field_list[a], 0));
+	  prop = (struct struct_scr_field *) field_userptr (field_list[a]);
+
+	strcpy(buff,A4GL_fld_data_ignore_format(prop,field_buffer (field_list[a], 0)));
+
 	  A4GL_trim (buff);
 
 	  if (strlen (buff))
 	    A4GL_push_char (buff);
 	  else
 	    A4GL_push_null (sio->vars[a].dtype, sio->vars[a].size);	// @todo - check if its set to not null and return CHARs instead..
-
+	A4GL_debug("Calling pop_var2..");
 	  A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype, sio->vars[a].size);
 	}
 
@@ -1995,6 +2000,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	    }
 	}
 
+	A4GL_debug("Calling pop_var2..");
       A4GL_pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype, sio->vars[a].size);
 
     }

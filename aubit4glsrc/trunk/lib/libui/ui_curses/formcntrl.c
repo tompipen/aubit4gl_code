@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.43 2004-01-06 15:54:51 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.44 2004-01-07 10:04:42 mikeaubury Exp $
 #*/
 
 /**
@@ -55,6 +55,7 @@ static void A4GL_init_control_stack (struct s_screenio *sio, int malloc_data);
 static int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
 static void do_key_move (char lr, struct s_screenio *s, int a,
 			 int has_picture, char *picture);
+char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) ;
 
 /*
 =====================================================================
@@ -746,7 +747,10 @@ process_control_stack (struct s_screenio *sio)
 
 	      if (strlen (buff))
 		{
+	          char buff2[10024];
 		  A4GL_debug ("Field is not null");
+		strcpy(buff2,A4GL_fld_data_ignore_format(fprop,buff));
+		strcpy(buff,buff2);
 		  A4GL_push_char (buff);
 		}
 	      else
