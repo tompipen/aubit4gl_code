@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.21 2003-08-02 04:19:41 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.22 2003-08-02 13:07:56 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4249,6 +4249,25 @@ The one thats there at the minute compiles fine for Informix and Postgres.
 
 These are used by the XDR packers (in the same way as the libDATA stuff is for
 Generic) and are required for a binary dist.
+
+==============================================================================
+
+lib/libesql Should be there now
+
+Can you remove any references to libesqlhelper_funcs and replace it with
+	libESQL_INFORMIX.so
+or
+	libESQL_POSTGRES.so
+
+as applicable...
+
+etc.
+
+We'll need to write something for SAP ESQL/C - to handle converting between
+native (SAP) datatypes and Aubit datatypes....
+
+
+The extralibs/esqlc directory should now be depreciated...
 
 ==============================================================================
 

@@ -20,9 +20,9 @@
 #
 #   Note: Defaults are in (), dependencies in []
 #
-# You can override any and all settings defaults as defined in Aubit compiler,
-# not just ones listed in this file.
-# see output of "aubit-config -a" for list of all defaults and there values
+# You can override any and all settings defaults as defined in Aubit compilers,
+# not just ones listed in this file. See output of "aubit-config -a" for list 
+# of all defaults and there values.
 #
 ##########################################################################
 
@@ -44,13 +44,30 @@ AUBITDIR=@aubitdir@
 ############
 #Name of default SQL library to use.
 #When used: run-time and compile-time
-#Options: static (nosql) iodbc unixodbc esql ifxodbc pgodbc odbc32 sapodbc FILESCHEMA
-#FILESCHEMA is to be used **JUST** for compiling programs where either the database
+#Options: (nosql) iodbc unixodbc esql ifxodbc pgodbc odbc32 sapodbc
+#	sqlite sqliteS sqliteodbc FILESCHEMA
+#FILESCHEMA is to be used for compiling programs where either the database
 #doesn't exist yet - or you can't get immediate access to it..
 #This takes the 'database' as a filename (with a .schema extension) and uses
-#that to collect the data.
+#that to collect the data used by compiler(s)
 #Warning: this setting is ignored when A4GL_LEXTYPE is set to EC
 A4GL_SQLTYPE=@A4GL_SQLTYPE@
+
+############
+#Default output language driver for 4gl compiler:
+#When used: compile-time only
+#Options: (C), PERL, EC, CS
+#Note: EC (Embedded SQL C) can be Informix ESQL/C, SAP DB pre-compiler or 
+#PostgreSQL ecpg.
+#using EC will limit Aubit DB connectivity to that of used EC compiler, ignoring
+#setting of A4GL_SQLTYPE
+#Note: CS is C#
+A4GL_LEXTYPE=@A4GL_LEXTYPE@
+
+############
+#When A4GL_LEXTYPE=EC, specify type of EC compiler to be used
+#Options: (INFORMIX), POSTGRES, SAPDB, QUERIX
+A4GL_LEXDIALECT=@A4GL_LEXDIALECT@
 
 ############
 #Determine default driver for Extended Reporting
@@ -71,20 +88,6 @@ A4GL_RPCTYPE=@A4GL_RPCTYPE@
 #Options: (CONSOLE) [no deps.], TUI [curses], GTK [GTK+].
 A4GL_UI=@A4GL_UI@
 
-############
-#Default output language driver for 4gl compiler:
-#When used: compile-time only
-#Options: PERL, EC, (C), CS
-#Note: EC (Embedded SQL C) can be Informix ESQL/C or PostgreSQL (for use with ecpg)
-#using EC will limit Aubit DB connectivity to that of used EC compiler, ignoring
-#setting of A4GL_SQLTYPE
-#Note: CS is C#
-A4GL_LEXTYPE=@A4GL_LEXTYPE@
-
-############
-#When A4GL_LEXTYPE=EC, specify type of EC compiler to be used
-#Options: (INFORMIX), POSTGRES, SAPDB
-A4GL_LEXDIALECT=@A4GL_LEXDIALECT@
 
 ############
 #Default forms driver to be loaded

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.59 2003-08-01 14:34:29 mikeaubury Exp $
+# $Id: ioform.c,v 1.60 2003-08-02 13:07:57 afalout Exp $
 #*/
 
 /**
@@ -129,53 +129,6 @@ static void A4GL_reset_delims (struct s_form_dets *formdets, char *delims);
 
 
 
-#ifdef OLD
-/** @todo Take this prototype definition for a header file */
-void A4GL_bomb_out (void);
-extern char *A4GL_replace_sql_var (char *s);
-char *read_string_dup (FILE * ofile);
-struct s_form_dets *A4GL_getfromform (FORM * f);
-char *A4GL_string_width (char *a);
-WINDOW *A4GL_create_window (char *name, int x, int y, int w, int h,
-			    int border);
-void A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour);
-int
-A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f);
-//void A4GL_display_field_contents(FIELD *field,int d1,int s1,char *ptr1) ;
-
-int display_fields (FORM * mform, int n, ...);
-//void A4GL_debug_print_field_opts (FIELD * a);
-void A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff, int ch);
-void A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type);
-int A4GL_proc_key (int a, FORM * mform, struct s_screenio *s);
-int A4GL_form_field_chk (struct s_screenio *sio, int m);
-int A4GL_form_field_constr (struct s_screenio *sio, int m);
-int A4GL_get_curr_metric (struct s_form_dets *form);
-int A4GL_page_for_pfield (struct s_screenio *s);
-void A4GL_field_autonext (FIELD * f);
-void A4GL_field_dynamic (FIELD * f);
-void A4GL_field_invisible (FIELD * f);
-void A4GL_field_noentry (FIELD * f);
-void A4GL_set_field_attr (FIELD * field);
-int A4GL_req_field_input (struct s_screenio *s, ...);
-int A4GL_req_field_input_array (struct s_inp_arr *s, ...);
-void A4GL_set_init_value (FIELD * f, void *ptr, int dtype);
-int A4GL_get_metric_no (struct s_form_dets *form, FIELD * f);
-//int A4GL_turn_field_off (FIELD * f);
-//void A4GL_turn_field_on (FIELD * f);
-//void A4GL_turn_field_on2 (FIELD * f, int a);
-int A4GL_field_name_match (FIELD * f, char *s);
-void A4GL_do_before_field (FIELD * f, struct s_screenio *sio);
-void A4GL_set_init_pop_attr (FIELD * field, int attr);
-FIELD *A4GL_scan_for_field (char *s);
-int A4GL_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
-int A4GL_page_for_field (struct s_screenio *s, FIELD * f);
-int A4GL_curses_to_aubit (int a);
-//void A4GL_set_field_attr_with_attr (FIELD * field, int attr,int cmd_type);
-int A4GL_gen_field_chars_ap (FIELD *** field_list,
-			     struct s_form_dets *formdets, va_list * ap);
-
-#endif
 /*
 =====================================================================
                     Functions definitions
@@ -371,6 +324,8 @@ A4GL_make_label (int frow, int fcol, char *label)
 
 
 /**
+ *
+ * @todo Describe function
  *  @todo Validate the calls to A4GL_make_label that alocates space to a FIELD
  *  struct and assigns the pointer to integers.
  */
@@ -640,6 +595,10 @@ A4GL_set_field_attr (FIELD * field)
 
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type)
 {
@@ -663,6 +622,10 @@ A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type)
   A4GL_set_field_colour_attr (field, r, attr);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
 {
@@ -729,364 +692,6 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
   A4GL_debug ("Returning");
 }
 
-#ifdef MOVED_TO_FORMCONTROL
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_req_field_input (struct s_screenio *s, ...)
-{				/* does nothing yet... */
-/* fieldname + = next - = previous */
-  int a;
-  FIELD **ptr;
-  struct s_form_dets *sdets;
-  va_list ap;
-  va_start (ap, s);
-
-  A4GL_debug ("req_field");
-  a = A4GL_gen_field_list (&ptr, s->currform, 1, &ap);
-
-
-  if (a >= 0)
-    {
-      A4GL_debug ("Found our field...\n");
-    }
-  else
-    {
-      A4GL_exitwith ("Field not found");
-      return 0;
-    }
-  A4GL_debug ("Setting current field to %p", ptr[0]);
-  sdets = s->currform;
-  set_current_field (sdets->form, ptr[0]);
-
-  pos_form_cursor (sdets->form);
-  free (ptr);
-  return 1;
-}
-#endif
-
-
-#ifdef MOVED_TO_IARRAY
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_req_field_input_array (struct s_inp_arr *s, ...)
-{				/* does nothing yet... */
-/* fieldname + = next - = previous */
-  int a;
-  FIELD **ptr;
-  struct s_form_dets *sdets;
-  va_list ap;
-  va_start (ap, s);
-
-
-
-  A4GL_debug ("MJAMJA req_field_input_array...");
-
-  a = A4GL_gen_field_list (&ptr, s->currform, 1, &ap);
-
-
-  if (a >= 0)
-    {
-      A4GL_debug ("Found our field...\n");
-    }
-  else
-    {
-      A4GL_exitwith ("Field not found");
-      return 0;
-    }
-  A4GL_debug ("Setting current field to %p", ptr[0]);
-  sdets = s->currform;
-  set_current_field (sdets->form, ptr[0]);
-
-  pos_form_cursor (sdets->form);
-  free (ptr);
-  return 1;
-}
-#endif
-
-
-#ifdef MOVED_TO_FORM_CONTROL
-/**
- * 4GL CALL
- * @todo Describe function
- */
-int
-A4GL_form_loop (void *vs)
-{
-  struct s_form_dets *form;
-  int a;
-  struct s_screenio *s;
-  //int int_form_driver_ret = 0;
-  struct struct_scr_field *fprop;
-  struct struct_metrics *metrics;
-  FORM *mform;
-  s = vs;
-  form = s->currform;
-  A4GL_set_abort (0);
-  A4GL_debug ("form_loop0..  currentfield=%p status = %d", form->currentfield,
-	      field_status (form->currentfield));
-
-  if (form != A4GL_get_curr_form (1))
-    {
-      A4GL_debug ("form=%p curr_form=%p", form, A4GL_get_curr_form (1));
-      A4GL_exitwith ("Input form is not current");
-      return 0;
-    }
-
-  mform = form->form;
-  A4GL_mja_wrefresh (currwin);
-
-  //if (s->mode != MODE_CONSTRUCT)
-  //a = A4GL_form_field_chk (s, 0);
-  //else
-  //a = A4GL_form_field_constr (s, 0);
-
-
-  pos_form_cursor (mform);
-
-  // Have we changed fields ?
-  if (a < 0)
-    {
-      // Yep...
-      return a;
-    }
-
-
-  fprop = (struct struct_scr_field *) field_userptr (current_field (mform));
-  metrics = &form->fileform->metrics.metrics_val[A4GL_get_curr_metric (form)];
-
-  if (metrics && (int) metrics != -1)
-    {
-      set_form_page (mform, metrics->scr - 1);
-    }
-
-
-// Wait for a key..
-  a = A4GL_getch_win ();
-  if (abort_pressed)
-    a = -1;
-
-  A4GL_debug ("form_loop1..  currentfield=%p status = %d", form->currentfield,
-	      field_status (form->currentfield));
-
-// Process the key..
-  a = A4GL_proc_key (a, mform, s);
-
-
-  A4GL_debug ("form_loop2..  currentfield=%p status = %d", form->currentfield,
-	      field_status (form->currentfield));
-// Looks like we're done
-  if (a == 0)
-    {
-      if (s->mode != MODE_CONSTRUCT)
-	a = A4GL_form_field_chk (s, -1);
-      else
-	a = A4GL_form_field_constr (s, -1);
-
-      return 0;
-    }
-
-
-  A4GL_debug ("form_loop3..  currentfield=%p status = %d", form->currentfield,
-	      field_status (form->currentfield));
-
-// Looks like we've got something to do...
-
-
-// Have we changed fields ?
-  if (a < 0)
-    {
-      // Yep...
-      return a;
-    }
-
-  A4GL_debug ("form_loop4..  currentfield=%p status = %d", form->currentfield,
-	      field_status (form->currentfield));
-
-  A4GL_int_form_driver (mform, a);
-
-  A4GL_debug ("form_loop5..  currentfield=%p status = %d", form->currentfield,
-	      field_status (form->currentfield));
-
-  A4GL_mja_wrefresh (currwin);
-
-  if (a >= 0 && a <= 255)
-    {
-      A4GL_int_form_driver (mform, REQ_VALIDATION);
-    }
-
-
-
-  return -90;
-
-}
-
-#endif
-
-
-
-#ifdef MOVED_TO_FORM_CONTROL
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_proc_key (int a, FORM * mform, struct s_screenio *s)
-{
-  FIELD *f;
-  struct s_form_attr *form;
-  struct struct_scr_field *fprop;
-  struct s_form_dets *fd;
-  int npage;
-  int acckey;
-  fd = A4GL_getfromform (mform);
-  form = &fd->form_details;
-  do_input_nowrap = 0;
-
-  A4GL_debug ("proc_key .... %d", a);
-  f = current_field (mform);
-  A4GL_debug ("Current field=%p\n", f);
-  if (a != 10)
-    {
-      A4GL_debug ("Getting fprop");
-      fprop = (struct struct_scr_field *) (field_userptr (f));
-      A4GL_debug ("fprop=%p\n", fprop);
-
-      if (fprop != 0)
-	{
-	  A4GL_debug ("Downshift?");
-	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
-	      && isalpha (a))
-	    {
-	      a = tolower (a);
-	    }
-	  A4GL_debug ("Upshift ?");
-	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
-	      && isalpha (a))
-	    {
-	      a = toupper (a);
-	    }
-	}
-
-    }
-
-  acckey = A4GL_key_val ("ACCEPT");
-
-  A4GL_debug ("Got key %d", a);
-
-  m_lastkey = a;
-  A4GL_set_last_key (a);
-
-  if (a == acckey)
-    {
-      A4GL_int_form_driver (mform, REQ_VALIDATION);
-      s->field_changed = 1;
-      return 0;
-    }
-
-
-  switch (a)
-    {
-    case 18:
-      A4GL_mja_wrefresh (stdscr);
-      A4GL_mja_wrefresh (currwin);
-      A4GL_mja_refresh ();
-      break;
-
-
-    case -1:
-      A4GL_debug ("proc_key - got an interrupt");
-      A4GL_int_form_driver (mform, REQ_VALIDATION);
-      m_lastkey = A4GL_key_val ("INTERRUPT");
-      s->field_changed = 1;
-      return 0;
-
-
-    case 26:
-      return 0;
-
-    case 127:
-    case 8:
-    case A4GLKEY_DC:
-    case A4GLKEY_DL:
-    case A4GLKEY_BACKSPACE:
-      return REQ_DEL_PREV;
-    case 24:
-      return REQ_DEL_CHAR;
-
-    case A4GLKEY_UP:
-      if (s->mode != MODE_INPUT_ARRAY)
-	{
-	  npage = A4GL_page_for_pfield (s) - 1;
-	  set_form_page (s->currform->form, npage);
-	  s->field_changed = 1;
-	  return REQ_PREV_FIELD;
-	}
-      else
-	{
-	  // We want to go up on an input array...
-	  return 0 - A4GLKEY_UP;
-	}
-
-      /*
-         case A4GLKEY_PGUP : return REQ_PREV_PAGE;
-         case A4GLKEY_PGDN : return REQ_NEXT_PAGE;
-       */
-
-    case '	':
-    case A4GLKEY_ENTER:
-    case 13:
-    case 10:
-    case A4GLKEY_DOWN:
-      if (s->mode != MODE_INPUT_ARRAY
-	  || (a == '\t' && s->mode == MODE_INPUT_ARRAY))
-	{
-	  if (std_dbscr.input_wrapmode == 0
-	      && A4GL_curr_metric_is_used_last_s_screenio (s, f))
-	    {
-	      s->field_changed = 1;
-	      do_input_nowrap = 1;
-	      return 0;
-	    }
-
-	  npage = A4GL_page_for_nfield (s) - 1;
-	  set_form_page (s->currform->form, npage);
-	  s->field_changed = 1;
-	  return REQ_NEXT_FIELD;
-	}
-      else
-	{
-	  // We want to go down a line in the input array...
-	  return 0 - A4GLKEY_DOWN;
-	}
-
-
-
-    case A4GLKEY_LEFT:
-      return REQ_PREV_CHAR;
-
-    case A4GLKEY_RIGHT:
-      return REQ_NEXT_CHAR;
-
-    case 4:			// Control - D
-      return REQ_CLR_EOF;
-
-    case 1:			// Control - A
-      form->insmode = form->insmode ? 0 : 1;
-      if (form->insmode)
-	return REQ_INS_MODE;
-      else
-	return REQ_OVL_MODE;
-    }
-  A4GL_mja_refresh ();
-  return a;
-}
-#endif
 
 /**
  *
@@ -1752,82 +1357,6 @@ A4GL_set_fields (void *vsio)
   return 1;
 }
 
-
-
-#ifdef OBSOLETE
-/**
- *
- * @todo Describe function
- */
-void
-set_fields2 (int nv, struct BINDING *vars, int d, int n, ...)
-{
-  int a;
-  va_list ap;
-  int z;
-  int flg;
-  char errbuff[80];
-  struct s_form_dets *formdets;
-  struct struct_scr_field *field;
-  FIELD **field_list;
-  int nofields;
-  formdets = A4GL_get_curr_form (1);
-  flg = 0;
-
-  A4GL_debug ("Turning off all");
-  for (z = 0; formdets->form_fields[z] != 0; z++)
-    {
-      field =
-	(struct struct_scr_field
-	 *) (field_userptr (formdets->form_fields[z]));
-      if (field == 0)
-	{
-	  continue;
-	}
-      A4GL_turn_field_off (formdets->form_fields[z]);
-    }
-
-  A4GL_debug ("Set_fields - turned off all n=%d", n);
-
-  va_start (ap, n);
-#ifdef DEBUG
-  {
-    A4GL_debug ("Genfldlist 1");
-  }
-#endif
-  A4GL_debug ("set fields 2");
-  nofields = A4GL_gen_field_list (&field_list, formdets, nv, &ap);
-
-  if (nofields != nv - 1)
-    {
-      sprintf (errbuff,
-	       "Number of fields (%d) is not the same as the number of vars (%d)",
-	       nofields, nv);
-      exitwith
-	("Number of fields is not the same as the number of variables");
-    }
-
-  for (a = 0; a <= nofields; a++)
-    {
-      A4GL_turn_field_on (field_list[a]);
-      if (d)
-	{
-	  A4GL_debug ("set_init_value");
-	  A4GL_set_init_value (field_list[a], vars[a].ptr, vars[a].dtype);
-	}
-
-      if (flg == 0)
-	{
-	  set_current_field (formdets->form, formdets->form_fields[z]);
-	  flg = 1;
-	}
-    }
-  if (flg == 0)
-    {
-      A4GL_exitwith ("No active field");
-    }
-}
-#endif
 
 
 
@@ -2505,6 +2034,10 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_display_field_contents (FIELD * field, int d1, int s1, char *ptr1)
 {
@@ -2657,101 +2190,6 @@ A4GL_set_init_pop_attr (FIELD * field, int attr)
 
 }
 
-
-
-#ifdef MOVED_TO_IARRAY
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_iarr_arr_fields (int n, int fonly, int attr, ...)
-{
-  int a;
-  va_list ap;
-  int flg;
-  struct s_form_dets *formdets;
-  FIELD **field_list;
-  int nofields;
-  A4GL_debug ("In disp_fields");
-
-  formdets = A4GL_get_curr_form (1);
-
-
-  flg = 0;
-  va_start (ap, attr);
-  A4GL_debug (" field_list = %p", &field_list);
-#ifdef DEBUG
-  {
-    A4GL_debug ("Genfldlist 5");
-  }
-#endif
-  nofields = A4GL_gen_field_list (&field_list, formdets, n, &ap);
-  if (fonly && nofields >= 0)
-    nofields = 0;
-  //debug ("MJA Number of fields=%d", nofields);
-  if (nofields >= 0)
-    {
-      for (a = 0; a <= nofields; a++)
-	{
-	  A4GL_debug ("field_list[%d]=%p", a, field_list[a]);
-	  A4GL_set_init_pop_attr (field_list[a], attr);
-	  A4GL_debug ("set_init_pop complete");
-	}
-    }
-}
-#endif
-
-
-
-#ifdef REMOVED
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_disp_arr_fields (int n, int fonly, int attr, ...)
-{
-  int a;
-  va_list ap;
-  int flg;
-  struct s_form_dets *formdets;
-  FIELD **field_list;
-  int nofields;
-  A4GL_debug ("In disp_fields");
-  formdets = A4GL_get_curr_form (1);
-  flg = 0;
-
-
-
-  va_start (ap, attr);
-  A4GL_debug (" field_list = %p", &field_list);
-#ifdef DEBUG
-  {
-    A4GL_debug ("Genfldlist 5");
-  }
-#endif
-  A4GL_debug ("disp_arr_fields");
-  nofields = A4GL_gen_field_list (&field_list, formdets, n, &ap);
-  if (fonly && nofields >= 0)
-    nofields = 0;
-  A4GL_debug ("Number of fields=%d", nofields);
-  if (nofields >= 0)
-    {
-      for (a = 0; a <= nofields; a++)
-	{
-	  A4GL_debug ("field_list[%d]=%p", a, field_list[a]);
-
-
-
-	  A4GL_set_init_pop_attr (field_list[a], attr);
-	  A4GL_debug ("set_init_pop complete");
-	}
-    }
-  free (field_list);
-}
-#endif
-
 /**
  *
  * @todo Describe function
@@ -2900,6 +2338,10 @@ A4GL_form_field_constr (struct s_screenio *sio, int m)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_mja_set_field_buffer_contrl (FIELD * field, int nbuff, int ch)
 {
@@ -3070,6 +2512,10 @@ A4GL_scan_for_field (char *s)
   return 0;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 FIELD *
 A4GL_scan_for_field_n (char *s, int n)
 {
@@ -3173,6 +2619,10 @@ A4GL_fgl_infield_ap (void *inp, va_list * ap)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
 {
@@ -3247,6 +2697,10 @@ A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
   return nr;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
 {
@@ -3280,92 +2734,6 @@ A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
   return nr;
 }
 
-
-
-
-
-
-#ifdef REMOVED
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
-{
-  FIELD *f;
-  f = current_field (mform);
-
-  m_lastkey = a;
-  A4GL_debug ("In proc_key_prompt.... for %d", a);
-  switch (a)
-    {
-    case 18:
-      A4GL_mja_wrefresh (stdscr);
-      A4GL_mja_wrefresh (currwin);
-      A4GL_mja_refresh ();
-      break;
-    case -1:
-
-    case 27:
-      return 0;
-
-    case 26:
-      return 0;
-
-    case 127:
-    case 8:
-    case A4GLKEY_DC:
-    case A4GLKEY_DL:
-    case A4GLKEY_BACKSPACE:
-      A4GL_debug ("Req del prev");
-      if (A4GL_get_curr_field_col (mform))
-	{
-	  A4GL_int_form_driver (mform, REQ_DEL_PREV);
-	  A4GL_debug ("Done...");
-	}
-      return 0;
-
-    case 24:
-      A4GL_int_form_driver (mform, REQ_DEL_CHAR);
-      return 0;
-
-    case '	':
-    case A4GLKEY_ENTER:
-    case 13:
-    case 10:
-    case A4GLKEY_DOWN:
-#ifdef DEBUG
-      A4GL_debug ("Next field in a prompt - they must mean enter");
-#endif
-      return 10;
-
-    case A4GLKEY_LEFT:
-      A4GL_int_form_driver (mform, REQ_PREV_CHAR);
-      return 0;
-
-    case A4GLKEY_RIGHT:
-      A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
-      return 0;
-
-    case 4:
-      A4GL_int_form_driver (mform, REQ_CLR_FIELD);
-      return 0;
-    }
-
-  /* A4GL_mja_refresh (); */
-
-  if (a == A4GL_key_val ("HELP"))
-    {
-      aclfgl_a4gl_show_help (prompt->h);
-      a = 0;
-    }
-
-  A4GL_debug ("Returning %d from proc_key_prompt\n", a);
-  return a;
-}
-#endif
 
 
 /**
@@ -3915,6 +3283,10 @@ A4GL_curr_metric_is_verylast (void)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f)
 {
@@ -3980,72 +3352,11 @@ A4GL_bomb_out (void)
 }
 
 
-#ifdef OLD
-int
-A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
-{
-  int a;
-  int c;
-  int b;
-  FIELD **field_list;
-  int found;
 
-  struct s_inp_arr *s;
-  struct struct_scr_field *fprop;
-  s = sv;
-  A4GL_debug ("fgl_fieldtouched");
-  c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
-  if (c >= 0)
-    {
-      for (a = 0; a <= c; a++)
-	{
-	  found = 0;
-	  A4GL_debug ("fieldtouched FIELD : %p a=%d c=%d - status=%d\n",
-		      field_list[a], a, c, field_status (field_list[a]));
-
-	  // Have a look to see if we are currently inputing this one...
-	  for (b = 0; b <= s->nfields; b++)
-	    {
-	      if (field_list[a] == field_list[b])
-		found = 1;
-	    }
-	  if (!found)
-	    {
-	      // We don't appear to be...
-	      A4GL_exitwith ("Field is not currently being input");
-	      return 0;
-	    }
-	}
-      A4GL_debug ("fieldtouched_input - checking field_status");
-
-      for (a = 0; a <= c; a++)
-	{
-	  A4GL_int_form_driver (s->currform->form, REQ_VALIDATION);
-	  fprop = (struct struct_scr_field *) (field_userptr (field_list[a]));
-	  //if (field_status (field_list[a]))
-	  if (fprop->flags & 2)
-	    {
-	      A4GL_debug ("fieldtouched Field status is set for %p - %d",
-			  field_list[a], fprop->flags);
-	      free (field_list);
-	      return 1;
-	    }
-	}
-      A4GL_debug ("fieldtouched Field status not set for any..");
-      free (field_list);
-      return 0;
-
-    }
-  else
-    {
-      A4GL_exitwith ("field_touched called with no fields...");
-      return 0;
-    }
-}
-#endif
-
-
-
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
 {
@@ -4127,6 +3438,10 @@ A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
 {
@@ -4194,6 +3509,10 @@ A4GL_fgl_fieldtouched_input_ap (void *sv, va_list * ap)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 {
@@ -4220,6 +3539,10 @@ A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 {

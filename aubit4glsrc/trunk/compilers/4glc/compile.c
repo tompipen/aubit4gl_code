@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.35 2003-07-30 10:32:38 mikeaubury Exp $
+# $Id: compile.c,v 1.36 2003-08-02 13:07:56 afalout Exp $
 #*/
 
 /**
@@ -605,28 +605,40 @@ initArguments (int argc, char *argv[])
 	}
 	#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
 	      //We are on UNIX
-	      
+
 		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0){
             /* When using Embedded C output, we need to run appropriate ESQL/C
             compiler to do the linking */
-		  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
-			  sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
+			if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
+		  	{
+				sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s ",
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 
-		    } else {
-			  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) {
-				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
+		    }
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
+			{
+				sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",
 			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
-              } else {
+
+			}
+			else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0)
+			{
+				  sprintf (buff, "esqlc -rdynamic %s -o %s %s %s %s %s ",
+			       all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+
+			}
+			else
+			{
 				//"A4GL_LEXDIALECT"="INFORMIX" - default
 				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s ",
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
-              }
+            }
 
-		    }
+
 	    } else { /* Pure C compiler output */
 		  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s",
 		       gcc_exec, all_objects, output_object, l_path, l_libs,

@@ -37,17 +37,16 @@ then
 	echo Aubit 4gl compiler warper script: $0
     echo
     echo Usage:
-    echo '  aubit <command> <parameters...>'
+    echo '  aubit [--verbose] <command> <command parameters...>'
 	echo
     echo ' For details, try: '
     echo '    aubit <command> --help'
     echo '    where <command> is one of the following:'
-	echo ' 4glpc - main compiler script'
-    echo ' 4glc - 4gl to C-code compiler'
-    echo ' 4glp - 4gl to Perl-code compiler'
+	echo ' 4glpc - main compiler script (scheduled to be obsoleted)'
+    echo ' 4glc - 4gl to [C|Perl|EC|...]-code compiler'
 	echo ' fcompile - form file (.per) compiler'
     echo ' mcompile - menu file (.menu) compiler'
-    echo ' mkemess  - help file (.hlp) compiler'
+    echo ' amkmessage - help file (.hlp) compiler'
     echo
     echo ' Use "aubit-config" to inspect Aubit compiler configuration '
     echo
@@ -63,7 +62,7 @@ COMMAND=$1
    case $COMMAND in
    ################
 
-   -verbose)
+   *verbose)
         echo "AUBITDIR=$AUBITDIR"
         echo "PATH=$PATH"
         $2 $3 $4 $5 $6 $7 $8 $9

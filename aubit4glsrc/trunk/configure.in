@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.185 2003-08-02 10:40:57 afalout Exp $
+dnl # $Id: configure.in,v 1.186 2003-08-02 13:07:46 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1708,6 +1708,8 @@ AC_ARG_WITH(pgsql,
 			fi
 
 			PATH="$withval/bin:$old_PATH"
+
+			AC_CHECK_LIB([readline], [main])
 
 			AC_PATH_PROG(SQLITE, sqlite, no)
 
@@ -3964,10 +3966,10 @@ fi
 
 	if test "$IFMX_ESQLC" != "no" ; then
 		RPMFILE_4=$LIB_PREFIX/libSQL_esql$SO_EXT
-		RPMFILE_1=$LIB_PREFIX/libesqlhelper_funcs$SO_EXT
-		PLUGIN_YES="$PLUGIN_YES IFX_NATIVE ESQLC_HELPER"
+		RPMFILE_1=$LIB_PREFIX/libESQL_INFORMIX$SO_EXT
+		PLUGIN_YES="$PLUGIN_YES IFX_NATIVE ESQLCI_HELPER"
 	else
-        PLUGIN_NO="$PLUGIN_NO IFX_NATIVE ESQLC_HELPER"
+        PLUGIN_NO="$PLUGIN_NO IFX_NATIVE ESQLCI_HELPER"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ifx.esql"
 	fi
 
@@ -4163,8 +4165,16 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
+	if test "$PG_ESQLC" != "no" && test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
+		RPMFILE_32=$LIB_PREFIX/libESQL_POSTGRES$SO_EXT
+		PLUGIN_YES="$PLUGIN_YES ESQLCPG_HELPER"
+    else
+        PLUGIN_NO="$PLUGIN_NO ESQLCPG_HELPER"
+		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
+    fi
 
-    #RPMFILE_32=$LIB_PREFIX/lib$SO_EXT
+
+
     #RPMFILE_33=$LIB_PREFIX/lib$SO_EXT
     #RPMFILE_34=$LIB_PREFIX/lib$SO_EXT
     #RPMFILE_35=$LIB_PREFIX/lib$SO_EXT
