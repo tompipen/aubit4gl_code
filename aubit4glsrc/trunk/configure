@@ -4547,7 +4547,7 @@ EOF
 fi
 done
 
-ac_config_files="$ac_config_files Makefile etc/a4glrc etc/aubitenv etc/aubitbuild.mk compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile lib/libpdf/Makefile lib/libgui/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/Makefile tools/adbaccess/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/Makefile"
+ac_config_files="$ac_config_files Makefile etc/aubitrc incl/Makefile-common compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile lib/libpdf/Makefile lib/libgui/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/Makefile tools/adbaccess/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4855,9 +4855,8 @@ do
   case "$ac_config_target" in
   # Handling of arguments.
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-  "etc/a4glrc" ) CONFIG_FILES="$CONFIG_FILES etc/a4glrc" ;;
-  "etc/aubitenv" ) CONFIG_FILES="$CONFIG_FILES etc/aubitenv" ;;
-  "etc/aubitbuild.mk" ) CONFIG_FILES="$CONFIG_FILES etc/aubitbuild.mk" ;;
+  "etc/aubitrc" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc" ;;
+  "incl/Makefile-common" ) CONFIG_FILES="$CONFIG_FILES incl/Makefile-common" ;;
   "compilers/4glc/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/4glc/Makefile" ;;
   "compilers/4glc/rules/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/4glc/rules/Makefile" ;;
   "compilers/fcompile/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/fcompile/Makefile" ;;
@@ -4877,7 +4876,7 @@ do
   "tools/test/gui/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/test/gui/Makefile" ;;
   "tools/test/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/test/Makefile" ;;
   "incl/config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/config.h" ;;
-  *) { { echo "$as_me:4880: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:4879: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -5098,7 +5097,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:5101: creating $ac_file" >&5
+    { echo "$as_me:5100: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -5116,7 +5115,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5119: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5118: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5129,7 +5128,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5132: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5131: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -5189,7 +5188,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:5192: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:5191: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -5200,7 +5199,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5203: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5202: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5213,7 +5212,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5216: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5215: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -5330,7 +5329,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:5333: $ac_file is unchanged" >&5
+      { echo "$as_me:5332: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -5397,3 +5396,7 @@ if test "$no_create" != yes; then
   $ac_cs_success || { (exit 1); exit 1; }
 fi
 
+#Obsoleted by aubitrc:
+#                 etc/a4glrc
+#                 etc/aubitenv
+#                 etc/aubitbuild.mk

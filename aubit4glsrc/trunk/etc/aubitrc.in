@@ -1,6 +1,23 @@
 ##########################################################################
 # 			Aubit 4gl configuration file.
-# This file replaces "aubitenv" and "a4glrc" files
+# This file replaces "aubitenv" and "a4glrc" and "aubitbuild.mk files
+#
+#   When this file have file name "aubitrc.in" - it's intendend for use
+#   with "configure" script, as input file for creation of "aubitrc"
+#
+#   Read by: 
+#			all Aubit compilers and compile scripts
+#           All Aubit compiler make files (via incl/Makefile-common include)
+#
+#
+#   Read from, in this order:
+#			/etc/opt/aubit4glaubitrc
+#			$AUBITDIR/etc/aubitrc
+#			~/.aubit4gl/aubitrc
+#			./.aubitrc
+#			$A4GL_INIFILE environment variable
+#
+#
 ##########################################################################
 
 #############
@@ -12,8 +29,8 @@ AUBITETC=/etc/opt/aubit4gl
 #Defines location where you installed Aubit4gl:
 #Default for source distribution:/opt/aubit/aubit4glsrc
 #Default for binary distribution:/opt/aubit4gl
-#AUBITDIR=@top_src_dir@
-AUBITDIR=/opt/aubit4gl
+#CONFIGURE:This is not working : AUBITDIR=@top_src_dir@
+AUBITDIR=@aubitdir@
 
 
 ############

@@ -23,11 +23,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.10 2002-01-07 09:42:55 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-01-09 02:03:35 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
-include incl/Makefile-common.in
+include incl/Makefile-common
 
 #we don't want sub-makefiles to include above again: But we dont't went
 #to export this gloably, since it would affect 4glpc sctipt!
@@ -43,7 +43,6 @@ include incl/Makefile-common.in
 #and all commands/shell scripts that are called in make process, You
 #can use "unexport VARIABLE", if you need to prevent something from exporting:
 #.EXPORT_ALL_VARIABLES:
-
 
 ## ==================================================================
 ##                    ODBC Settings
@@ -182,8 +181,18 @@ TOETC		=$(SOURCE)/etc/odbc.ini.example
 TOHOME		=$(SOURCE)/a4glrc.example
 TOROOT		=$(SOURCE)/README.txt
 TOINCL		=$(SOURCE)/incl/4glhdr.h $(SOURCE)/incl/acl4glgui.h \
-				$(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki $(SOURCE)/incl/Makefile-common.in
+				$(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki $(SOURCE)/incl/Makefile-common
 TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/${MKFILNAME}
+
+
+#Set AUBITDIR in aubitrc settings:
+	TOREPLACE=^AUBITDIR
+	INFILE=etc/aubitrc
+	OLDVALUE:=$(shell grep "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
+	NEWVALUE:=$(shell echo "AUBITDIR=$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
+	STARTWITH=^${OLDVALUE}
+	REPLACEWITH=${NEWVALUE}
+	AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
 
 ##################################################
 #definitions of names for bynary distro file name:
@@ -633,17 +642,15 @@ installide:
 	${MAKE} ${MKNAME} -C tools/ide install.aubit
 	@echo Aubit 4gl compiler IDE is now installed
 
-fix.aubitdir:
-	TOREPLACE="^AUBITDIR"
-	INFILE=$AUBITDIR/etc/$AUBITRCSRC
-	OLDVALUE=$(grep "$TOREPLACE" $INFILE | awk '{print $1}' | sed -e "s/\//\\\\\//g")
-	NEWVALUE=$(echo "AUBITDIR=$AUBITDIR" | sed -e "s/\//\\\\\//g")
-	STARTWITH="^$OLDVALUE"
-	REPLACEWITH="$NEWVALUE"
-	sed -e "/$STARTWITH/s/$STARTWITH/$REPLACEWITH/" $INFILE > $AUBITETC/aubitrc
-	chmod a+r $AUBITETC/aubitrc
-
-
+install.aubitrc:
+#	@echo STARTWITH = ${STARTWITH}
+#	@echo REPLACEWITH = ${REPLACEWITH}
+	sed -e "/${STARTWITH}/s/${STARTWITH}/${REPLACEWITH}/" ${INFILE} > /tmp/aubitrc.tmp
+	echo ${AUBITRCFILEEXISTS}
+ifeq "${AUBITRCFILEEXISTS}" ""
+	mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc
+	chmod a+r ${AUBITETC}/aubitrc
+endif
 
 packide:
 	${CP} ${TOIDE} $(INSTALL_DIR)/IDE
@@ -1579,6 +1586,16 @@ old.2.in:
 	${CP} tools/test/Makefile.old tools/test/Makefile.in
 	${CP} tools/test/gui/Makefile.old tools/test/gui/Makefile.in
 
+config.rc:
+	@echo
+	@echo "A1 [/etc/opt/aubit4gl/aubitrc] =${A1}"
+	@echo "A2 [/opt/aubit4gl/etc/aubitrc] =${A2}"
+	@echo "A3 [../etc/aubitrc]            =${A3}"
+	@echo "A4 [etc/aubitrc]               =${A4}"
+	@echo "A5 [~/.aubit4gl/aubitrc]       =${A5}"
+	@echo "A6 [./.aubitrc]                =${A6}"
+	@echo "A7 ['$A4GL_INIFILE' ]            =${A7}"
+	@echo
 
 
 ## ---------------------------- EOF ----------------------------------

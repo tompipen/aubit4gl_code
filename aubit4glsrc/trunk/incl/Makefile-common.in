@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.1 2002-01-08 02:06:56 afalout Exp $
+# $Id: Makefile-common.in,v 1.2 2002-01-09 02:03:37 afalout Exp $
 #
 
 .EXPORT_ALL_VARIABLES:
@@ -41,16 +41,56 @@ AUBITETC=/etc/opt/aubit4gl
 #All includes should become obsolete once autoconf is fully implemented
 NOINCL=0
 ifeq "$(NOINCL)" "0"
-	include ${AUBITETC}/aubitrc
 
-	#we should also attempt to read this locations, if they exist, for
-    #concsystency, but I don't know how to test if file exists here... ?
-	#$AUBITDIR/etc/aubitrc,
-	#~/.aubit4gl/aubitrc
-	#./.aubitrc
+	NOERR=2>/dev/null
+
+	AUBITRCFILE:=$(shell ls ${AUBITETC}/aubitrc ${NOERR})
+	ifneq "${AUBITRCFILE}" ""
+		include ${AUBITRCFILE}
+		A1:=${AUBITRCFILE}
+	endif
+
+
+
+	ifneq "${AUBITDIR}" ""
+		AUBITRCFILE:=$(shell ls ${AUBITDIR}/etc/aubitrc ${NOERR})
+		ifneq "${AUBITRCFILE}" ""
+			include ${AUBITRCFILE}
+			A2:=${AUBITRCFILE}
+		endif
+    endif
+
+		#this is an attempt to locate aubitrc in absence of AUBITDIR,
+        #or to override settings for aubitrc in case we are working
+        #from different Aubit instrallation/source directory:
+		AUBITRCFILE:=$(shell ls ../etc/aubitrc ${NOERR})
+		ifneq "${AUBITRCFILE}" ""
+			include ${AUBITRCFILE}
+			A3:=${AUBITRCFILE}
+		endif
+
+		AUBITRCFILE:=$(shell ls etc/aubitrc ${NOERR})
+		ifneq "${AUBITRCFILE}" ""
+			include ${AUBITRCFILE}
+			A4:=${AUBITRCFILE}
+	    endif
+
+
+	AUBITRCFILE:=$(shell ls ~/.aubit4gl/aubitrc ${NOERR})
+	ifneq "${AUBITRCFILE}" ""
+		include ${AUBITRCFILE}
+		A5:=${AUBITRCFILE}
+    endif
+
+	AUBITRCFILE:=$(shell ls ./.aubitrc ${NOERR})
+	ifneq "${AUBITRCFILE}" ""
+		include ${AUBITRCFILE}
+		A6:=${AUBITRCFILE}
+    endif
 
 	ifdef A4GL_INIFILE
 		include $(A4GL_INIFILE)
+		A7:=$(A4GL_INIFILE)
 	endif
 
 endif
