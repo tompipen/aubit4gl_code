@@ -141,7 +141,7 @@ if (carry) {
 	for (a=strlen(head2)-1;a>=0;a--) {
 		head2[a]++;
 		if (head2[a]<='9') break;
-		head[a]='0';
+		head2[a]='0';
 	}
 }
 strcpy(buff,head2);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.41 2004-04-21 14:45:35 mikeaubury Exp $
+# $Id: calldll.c,v 1.42 2004-04-27 22:27:40 mikeaubury Exp $
 #
 */
 
@@ -321,7 +321,7 @@ A4GL_dl_openlibrary (char *type, char *p)
     {
       A4GL_exitwith ("Error: Cannot determine AUBITDIR - STOP.");
       //FIXME: why is A4GL_exitwith not exiting???
-      exit (43);
+	A4GL_fgl_die_with_msg(43,"Cannot determine AUBITDIR");
     }
 
 #ifdef __CYGWIN__
@@ -424,7 +424,7 @@ A4GL_dl_openlibrary (char *type, char *p)
 
       A4GL_exitwith ("Error: can't open DLL - STOP. See debug.out");
       //FIXME: why is A4GL_exitwith not exiting???
-      exit (44);
+	A4GL_fgl_die_with_msg(44,"Cannot open DLL");
 
     }
   return dllhandle;
@@ -481,14 +481,7 @@ A4GL_find_func (void *dllhandle, char *func)
     {
       A4GL_debug ("1 Function Not found");
       A4GL_exitwith ("Could not find function in shared library");
-      // This is so critical - we're out of here...
-
-      A4GL_gotolinemode ();
-      printf
-	("Critical error - Unable to find function %s in shared library\n",
-	 func);
-      A4GL_fgl_end ();
-      exit (1);
+      A4GL_fgl_die_with_msg(43,"Error:Could not find function in shared library - STOP");
       /* return badfunc; */
     }
 
@@ -601,9 +594,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
       || (strcmp (acl_getenv ("AUBITDIR"), "") == 0))
     {
       A4GL_exitwith ("Error: Cannot determine AUBITDIR - STOP.");
-      //FIXME: why is A4GL_exitwith not exiting???
-      exit (43);
-
+      A4GL_fgl_die_with_msg(43,"Error: Cannot determine AUBITDIR - STOP");
     }
 
   A4GLSQL_set_status (0, 0);
@@ -617,12 +608,15 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
   }
 A4GL_debug("nfile=%s\n",A4GL_null_as_null(nfile));
 
+strcpy(nfunc,"");
+if (strncmp(function,"aclfglclass",11)!=0)  {
+
 #if (defined(__MACH__) && defined(__APPLE__))
   strcpy (nfunc, "aclfgl__");
 #else
   strcpy (nfunc, "aclfgl_");
 #endif
-
+}
   strcat (nfunc, function);
   A4GL_trim (nfunc);
   A4GL_trim (nfile);

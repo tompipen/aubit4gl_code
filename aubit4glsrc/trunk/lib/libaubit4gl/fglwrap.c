@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.61 2004-04-21 14:45:59 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.62 2004-04-27 22:27:40 mikeaubury Exp $
 #
 */
 
@@ -53,6 +53,11 @@
 //#define _PRELOAD_SQL_		/* pre-load SQL module */
 #define _PRELOAD_REPORT_	/* pre-load EXREPORT module */
 #define _PRELOAD_UI_		/* pre-load UI module */
+
+
+int dying=0;
+
+
 
 /*
 =====================================================================
@@ -148,6 +153,9 @@ A4GL_fgl_end ()
 void
 A4GL_fgl_die(int n)
 {
+if (dying) return;
+dying++;
+if (dying>1) { exit(n); }
   if (A4GL_isscrmode ())
     {
 #ifdef DEBUG
@@ -158,6 +166,26 @@ A4GL_fgl_die(int n)
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
   A4GL_debug ("End of program - exit(%d).",n);
+  exit (n);
+}
+
+void
+A4GL_fgl_die_with_msg(int n,char *s)
+{
+if (dying) return;
+dying++;
+if (dying>1) { exit(n); }
+  if (A4GL_isscrmode ())
+    {
+#ifdef DEBUG
+      A4GL_debug ("In screen mode - ending curses...");
+#endif
+      A4GL_gotolinemode ();
+    }
+  A4GL_close_database ();
+  A4GL_close_errorlog_file ();
+  A4GL_debug ("End of program - exit(%d).",n);
+  printf("%s\n",s);
   exit (n);
 }
 
@@ -182,6 +210,7 @@ char *p;
 
 
 	strcpy(running_program,argv[0]);
+  A4GL_build_user_resources ();
 
   /* 
      This does nothing - but we NEED IT!
@@ -194,7 +223,6 @@ char *p;
   A4GL_init_datatypes ();
 
   /* load settings from config file(s): */
-  A4GL_build_user_resources ();
 
 /*
 #ifdef _PRELOAD_SQL_

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.158 2004-04-21 14:48:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.159 2004-04-27 22:28:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.158 2004-04-21 14:48:13 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.159 2004-04-27 22:28:21 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1185,7 +1185,7 @@ A4GL_prchkerr (int l, char *f)
   a =
     pr_when_do ("   if (a4gl_sqlca.sqlcode==100)",
 		when_code[A_WHEN_NOTFOUND], l, f, when_to[A_WHEN_NOTFOUND]);
-  printc ("/* SQLERROR */");
+  printcomment ("/* SQLERROR */");
 
   a =
     pr_when_do
@@ -1193,14 +1193,14 @@ A4GL_prchkerr (int l, char *f)
      when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
 
 #ifdef ANYERRORISCAUSINGPROBS
-  printc ("/* ANYERROR */");
+  printcomment ("/* ANYERROR */");
 
   a =
     pr_when_do ("   if (a4gl_status<0||a4gl_sqlca.sqlcode<0)",
 		when_code[A_WHEN_ANYERROR], l, f, when_to[A_WHEN_ANYERROR]);
 #endif
 
-  printc ("/* ERROR */");
+  printcomment ("/* ERROR */");
   a =
     pr_when_do ("   if (a4gl_status<0) ", when_code[A_WHEN_ERROR], l, f,
 		when_to[A_WHEN_ERROR]);
@@ -1240,14 +1240,13 @@ static int
 pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 {
 
-/*printf("%s when_code=%x continue=%x notset=%x stop=%x\n",when_str,when_code,WHEN_CONTINUE,WHEN_NOTSET,WHEN_STOP);*/
   if ((when_code & 15) == WHEN_CONTINUE)
     return 0;
   if ((when_code & 15) == WHEN_NOTSET)
     return 0;
   if (when_code == WHEN_STOP)
     {
-      printc ("%s A4GL_chk_err(%d,_module_name); /* STOP */\n", when_str, l, f);
+      printc ("%s A4GL_chk_err(%d,_module_name); \n", when_str, l, f);
       printcomment ("/* WHENSTOP */");
     }
   if (when_code == WHEN_CALL)
@@ -1255,7 +1254,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
 	char buff[256];
 	strcpy(buff,when_to);	
 	A4GL_convlower(buff);
-      printc ("%s %s%s(0); /* CALL */\n", when_str, get_namespace (when_to), buff);
+      printc ("%s %s%s(0); \n", when_str, get_namespace (when_to), buff);
       add_function_to_header (when_to, 1,"");
       printcomment ("/* WHENCALL */");
     }
@@ -1441,7 +1440,8 @@ print_arr_bind (char i)
 	  printc ("{0,%d,%d}", 
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
 	}
-      printc ("\n}; /* end of binding */\n");
+      printc ("\n}; \n");
+	printcomment("/* end of binding */\n");
       for (a = 0; a < obindcnt; a++)
 	{
 	printc("ibind[%d].ptr= &%s;", a,ibind[a].varname);
@@ -1458,7 +1458,8 @@ print_arr_bind (char i)
 	  if (a > 0) printc (",\n");
 	  printc ("{0,%d,%d}", (int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
 	}
-      printc ("\n}; /* end of binding */\n");
+      printc ("\n}; ");
+	printcomment("/* end of binding */\n");
       for (a = 0; a < obindcnt; a++)
 	{
 	printc("obind[%d].ptr= &%s;", a,obind[a].varname);
@@ -1539,9 +1540,9 @@ print_param (char i)
     }
 
   if (i=='r') {
-    printc ("struct BINDING _rbind[%d]={ /* print_param */\n", ONE_NOT_ZERO(fbindcnt));
+    printc ("struct BINDING _rbind[%d]={ \n", ONE_NOT_ZERO(fbindcnt));
   } else {
-    printc ("struct BINDING %cbind[%d]={ /* print_param */\n", i, ONE_NOT_ZERO(fbindcnt));
+    printc ("struct BINDING %cbind[%d]={ \n", i, ONE_NOT_ZERO(fbindcnt));
   }
       if (fbindcnt == 0)
 	{
@@ -1560,7 +1561,8 @@ print_param (char i)
 				
     		}
 	}
-  printc ("\n}; /* end of binding */\n");
+  printc ("\n}; ");
+	printcomment("/* end of binding */\n");
   if (i == 'r')
     {
       printc ("static char *_rbindvarname[%d]={\n", ONE_NOT_ZERO(fbindcnt));
@@ -1620,7 +1622,7 @@ print_bind (char i)
   if (i == 'i')
     {
       printc ("\n");
-      printc ("struct BINDING ibind[%d]={\n /* ibind %d*/",
+      printc ("struct BINDING ibind[%d]={\n ",
 	      ONE_NOT_ZERO (ibindcnt), ibindcnt);
       if (ibindcnt == 0)
 	{
@@ -1634,7 +1636,8 @@ print_bind (char i)
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16,
 		  ibind[a].start_char_subscript, ibind[a].end_char_subscript);
 	}
-      printc ("\n}; /* end of binding */\n");
+      printc ("\n}; ");
+	printcomment("/* end of binding */\n");
       if (doing_esql ())
 	{
 	  make_sql_bind (0, "i");
@@ -1696,9 +1699,7 @@ print_bind (char i)
   if (i == 'O')
     {
       printc ("\n");
-	//printf("Expanding ordbind %d",ordbindcnt);
       	expand_bind (&ordbind[0], 'O', ordbindcnt);
-	//printf("Expanding ordbind -> %d",ordbindcnt);
       /*
          warning: passing arg 1 of `expand_bind' from incompatible pointer type
          void expand_bind (struct binding * bind, int btype, int cnt);
@@ -1900,7 +1901,6 @@ print_returning (void)
 void
 print_form_is_compiled (char *s, char *packer, char *formtype)
 {
-  /*printf("%s - %s - %s\n",s,packer,formtype);*/
   printc ("A4GL_add_compiled_form(\"%s\",%s,%s,compiled_form_%s);\n", s,
 	  packer, formtype, s);
   printh ("extern char compiled_form_%s[];\n", s);
@@ -1985,7 +1985,6 @@ char lib[255];
 
 
 if (has_function(identifier,&lib,0)) {
-	printf("Has : %s\n",identifier);
 
   printc ("{int _retvars;\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
@@ -2009,9 +2008,9 @@ static void
 real_print_class_func_call (char *var, char *identifier,
 			    struct expr_str *args, int args_cnt)
 {
-  printc ("/* printing parameters */");
+  printcomment ("/* printing parameters */");
   real_print_expr (args);
-  printc ("/* done printing parameters */");
+  printcomment ("/* done printing parameters */");
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
 
@@ -2178,7 +2177,7 @@ int sio_id;
   /*printc ("   _fld_dr= -97;continue;\n}\n");*/
 
   A4GL_add_event(-94,"");
-  printc("if (_exec_block== %d) { break; } /* END OF INPUT */",A4GL_get_nevents());
+  printc("if (_exec_block== %d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
   printc ("_exec_block = %s;_forminit=0;\n", driver);
@@ -2494,7 +2493,7 @@ print_display_array_p2 (void)
   int sio_id;
   A4GL_add_event(-94,"");
   sio_id=get_sio_id("DISPLAY");
-  printc("if (_exec_block==%d) { break; } /* END OF INPUT */",A4GL_get_nevents());
+  printc("if (_exec_block==%d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
   printc ("_exec_block=A4GL_disp_arr_v2(&_sio_%d,%s,\"%s\",%s /* attr */ ,%s /*scroll */,_sio_evt);\n", sio_id,l_arrvar, l_srec, l_attr, l_scroll);
@@ -2977,7 +2976,6 @@ print_init (void)
   int cnt;
   printc ("{\n");
 
- /*printf("nullbindcnt=%d\n",nullbindcnt); */
   expand_bind (&nullbind[0], 'N', nullbindcnt);
 
   for (cnt = 0; cnt < nullbindcnt; cnt++)
@@ -3017,7 +3015,7 @@ print_validate ()
   cnt=get_validate_list_cnt();
   if (z!=cnt) {
 	  set_yytext("");
-	  printf("%d %d\n",z,cnt);
+	  A4GL_debug(" validate mismatch : %d %d\n",z,cnt);
 	  a4gl_yyerror ("Mismatch in number of variables and number of columns");
 	  return;
   }
@@ -3121,7 +3119,7 @@ print_input_2 (char *s)
 {
  int sio_id;
   A4GL_add_event(-94,"");
-  printc("if (_exec_block==%d) { break; } /* END OF INPUT */",A4GL_get_nevents());
+  printc("if (_exec_block==%d) { break; } ",A4GL_get_nevents());
   printc("{");
   print_event_list();
   printc ("_exec_block=%s;_forminit=0;\n", s);
@@ -3671,7 +3669,6 @@ print_report_2 (int pdf, char *repordby)
 {
   int cnt;
   int a;
-//printf("in print_report_2 - ordbincnt=%d\n",ordbindcnt);
   if (pdf)
     printc ("static struct pdf_rep_structure _rep;\n");
   else
@@ -4040,7 +4037,6 @@ if (strncmp(fmt,"A4GL_open_gui_form",strlen("A4GL_open_gui_form") )==0) {
 	//char *ptr;
 
 
-	/*printf("get_clobber1=%s\n",A4GL_get_important_from_clobber(a1));*/
 
         if (scan_variable (A4GL_get_important_from_clobber(a1)) == -1) {
 	  set_yytext(A4GL_get_important_from_clobber(a1));
@@ -4373,10 +4369,13 @@ printInitFunctionStack (void)
 void
 printDeclareFunctionStack (char *_functionName)
 {
-  /*printf("Function %s\n",_functionName);*/
 #ifdef DEBUG
   A4GL_debug ("Function %s\n", _functionName);
 #endif
+  extern int class_cnt;
+  if (class_cnt) {
+	CLASS_add_method(_functionName,"");
+  }
   if (isGenStackInfo ())
     {
       if (doing_cs ())
@@ -4435,15 +4434,27 @@ printPopFunction (void)
 void
 print_func_start (char *isstatic, char *fname, int type)
 {
+extern int class_cnt;
+
   printc (" \n");
   printc (" \n");
   printc (" \n");
+
   if (type == 0) {
-    printc ("\n A4GL_FUNCTION %sint %s%s (int _nargs){ /* Funtion Start */\n", isstatic, get_namespace (fname), fname);
-	add_function_to_header(fname,1,isstatic);
+	if (class_cnt==0) {
+    		printc ("\n A4GL_FUNCTION %sint %s%s (int _nargs){ \n", isstatic, get_namespace (fname), fname);
+		add_function_to_header(fname,1,isstatic);
+
+	} else {
+    		printc ("\n A4GL_FUNCTION %sint CLASSFUNC_%s%s (struct this_class_var *CLASS_COPY,int _nargs){ \n", isstatic, get_namespace (fname), fname);
+		add_class_function_to_header(fname,1,isstatic);
+
+	}
   }
+
+
   if (type == 1) {
-    printc ("\n A4GL_REPORT %sint %s%s (int _nargs){ /* Funtion Start */\n", isstatic, get_namespace (fname), fname);
+    printc ("\n A4GL_REPORT %sint %s%s (int _nargs){ \n", isstatic, get_namespace (fname), fname);
 	add_function_to_header(fname,2,isstatic);
   }
 }
@@ -4482,7 +4493,8 @@ print_func_defret0 (void)
 void
 print_func_end (void)
 {
-  printc ("}/* END OF FUNCTION */\n\n\n\n");
+  printc ("}");
+	printcomment("/* END OF FUNCTION */\n\n\n\n");
 }
 
 /**
@@ -4816,7 +4828,6 @@ print_start_record (int isstatic_extern, char *varname, char *arrsize,
 {
   char buff[20] = "";
 /*int n;*/
-
   if (isstatic_extern == 1)
     strcat (buff, "static ");
   if (isstatic_extern == 2)
@@ -4868,7 +4879,11 @@ print_start_record (int isstatic_extern, char *varname, char *arrsize,
     }
   else
     {
-      printc ("%sstruct {\n", buff);
+	if (strcmp(varname,"THIS")!=0) {
+      		printc ("%sstruct {\n", buff);
+	} else {
+      		printc ("%sstruct this_class_var {\n", buff);
+	}
     }
 }
 
@@ -4891,7 +4906,15 @@ print_end_record (char *vname, char *arrsize, int level)
 	}
       else
 	{
-	  printc ("} %s;\n", vname);
+
+
+	  if (strcmp(vname,"THIS")==0 ) {
+	  	printc ("};\n");
+
+	  } else {
+
+	  	printc ("} %s;\n", vname);
+	  }
 	}
     }
   else
@@ -4998,7 +5021,7 @@ void
 print_cmd_end ()
 {
   /*printc("\naclfgli_clr_err_flg()\n\n");*/
-  printc ("\n/* End command */\n");
+  printcomment ("\n/* End command */\n");
 }
 
 /**
@@ -5089,7 +5112,6 @@ A4GL_set_var_sql (int doing_declare, int n)
 
 	  if (current_upd_table)
 	    {
-	      /*printf("Pushing ?\n");*/
 	      push_gen (UPDVAL2, "?");
 	    }
 	  strcat (buff, "?");
@@ -5175,8 +5197,11 @@ print_import_legacy (char *s)
 void
 add_function_to_header (char *identifier, int params,char* is_static)
 {
+
   if (is_builtin_func (identifier))
     return;
+
+
   if (!A4GL_has_pointer (identifier, 'X'))
     {
       A4GL_add_pointer (identifier, 'X', (void *) 1);
@@ -5187,8 +5212,35 @@ add_function_to_header (char *identifier, int params,char* is_static)
 	printh ("A4GL_REPORT void %s%s (int n,int a);\n",
 		get_namespace (identifier), identifier);
     }
+
+
 }
 
+
+void
+add_class_function_to_header (char *identifier, int params,char* is_static)
+{
+
+char buff[255];
+sprintf(buff,"CLASSFUNC_%s",identifier);
+identifier=buff;
+  if (is_builtin_func (identifier))
+    return;
+
+
+  if (!A4GL_has_pointer (identifier, 'X'))
+    {
+      A4GL_add_pointer (identifier, 'X', (void *) 1);
+      if (params == 1)		/* Normal Function*/
+	printh ("A4GL_FUNCTION %s int %s%s (int n);\n",is_static,
+		get_namespace (identifier), identifier);
+      if (params == 2)		/* Report...*/
+	printh ("A4GL_REPORT void %s%s (int n,int a);\n",
+		get_namespace (identifier), identifier);
+    }
+
+
+}
 
 char *
 A4GL_expr_for_call (char *ident, char *params, int line, char *file)
@@ -5606,7 +5658,6 @@ if (x) {free(x);x=0;}
   strcat (s, "||");
   A4GL_debug ("Chk keys %s\n", s);
 
-  //printf("s=%s\n",s);
   if (strcmp (keys, "->ANY") == 0) { x=malloc(sizeof(int)*2); x[0]=0xffff; x[1]=0; return x;}
 
   k=s;
@@ -5619,9 +5670,7 @@ if (x) {free(x);x=0;}
 	k+=2;
 	xcnt++;
 	x=realloc(x,sizeof(int)*xcnt);
-	//printf("k1=%s\n",k1);
 	x[xcnt-1]= A4GL_key_val (k1);
-	//printf("---> %d\n",x[xcnt-1]);
   }
 	
 
@@ -5687,7 +5736,7 @@ print_bind_definition (char i)
   if (i == 'i')
     {
       printc ("\n");
-      printc ("struct BINDING ibind[%d]={\n /* ibind %d*/", ONE_NOT_ZERO (ibindcnt), ibindcnt);
+      printc ("struct BINDING ibind[%d]={\n ", ONE_NOT_ZERO (ibindcnt), ibindcnt);
       if (ibindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -5699,7 +5748,7 @@ print_bind_definition (char i)
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16,
 		  ibind[a].start_char_subscript, ibind[a].end_char_subscript,(a<ibindcnt-1)?',':' ');
 	}
-      printc ("\n}; /* end of binding */\n");
+      printc ("\n}; \n");
       if (doing_esql ())
 	{
 	  make_sql_bind (0, "i");
@@ -5734,9 +5783,7 @@ print_bind_definition (char i)
     {
       printc ("\n");
       
-	//printf("Expanding ordbind %d ",ordbindcnt);
       expand_bind (&ordbind[0], 'O', ordbindcnt);
-	//printf("Expanding ordbind ->%d\n ",ordbindcnt);
       printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
       if (ordbindcnt == 0)
 	{
