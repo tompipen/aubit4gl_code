@@ -341,8 +341,6 @@ add_set_var (struct use_variable *var_orig, long value, int once)
 		} else {
 			struct use_variable *var2;
 			// Lets play...
-			var2=malloc(sizeof(struct use_variable));
-			memcpy(var2,var,sizeof(struct use_variable));
 
 			if (variable->var->i_arr_size[0]&&variable->var->i_arr_size[1]&&variable->var->i_arr_size[2]==0) {
 				int a;
@@ -356,12 +354,17 @@ add_set_var (struct use_variable *var_orig, long value, int once)
 					int n;
 					//int sublist_n;
 					int npid_a;
+
+					var2=malloc(sizeof(struct use_variable));
+					memcpy(var2,var,sizeof(struct use_variable));
+
 					printf("---> %d %d\n",a,this_module.params.params_val[value].param_u.p_list->list_param_id.list_param_id_len);
 					if (a>=this_module.params.params_val[value].param_u.p_list->list_param_id.list_param_id_len) break;
 					if (a>=variable->var->i_arr_size[0]) { printf("Excess elements ignored\n"); break; }
 	
 					n=this_module.params.params_val[value].param_u.p_list->list_param_id.list_param_id_val[a];
-					subparam=&this_module.params.params_val[n];
+					subparam=malloc(sizeof (struct param));
+					memcpy(subparam,&this_module.params.params_val[n],sizeof(struct param));
 					if (subparam->param_type!=PARAM_TYPE_LIST) {
 						printf("Expecting a list containing another list\n");
 						exit(3);
@@ -378,18 +381,21 @@ add_set_var (struct use_variable *var_orig, long value, int once)
 						int npid_b;
 							int nb;
 						printf("subparam=%p\n",subparam);
+						printf("sub type1 : %d\n",subparam->param_type);
 						if (subparam->param_type!=PARAM_TYPE_LIST) {
 							printf("Got confused... - subparam is not a list\n");
 							exit(2);
 						}
 					 	if (b>=subparam->param_u.p_list->list_param_id.list_param_id_len) break;
 						if (b>=variable->var->i_arr_size[1]) { printf("Excess elements ignored\n"); break; }
+						printf("sub type2 : %d\n",subparam->param_type);
 						var2->sub.sub_val=malloc(sizeof(struct use_variable_sub));
 						var2->sub.sub_len=1;
 						var2->sub.sub_val[0].x1element=-1;
 						var2->sub.sub_val[0].x1subscript_param_id[0]=0;
 						var2->sub.sub_val[0].x1subscript_param_id[1]=0;
 						var2->sub.sub_val[0].x1subscript_param_id[2]=0;
+						printf("sub type3 : %d\n",subparam->param_type);
 
 						npid_b=new_param_returns_long('I',(void *)b);
 						var2->sub.sub_val[0].x1subscript_param_id[0]=npid_a;
@@ -403,7 +409,9 @@ add_set_var (struct use_variable *var_orig, long value, int once)
 						}
 						nb=subparam->param_u.p_list->list_param_id.list_param_id_val[b];
 						printf("New param=%d\n",nb);
+						printf("sub type4 : %d\n",subparam->param_type);
 						pc=add_set_var(var2, nb,once) ;
+						printf("sub type5 : %d\n",subparam->param_type);
 						printf("PC=%d for %d,%d (%d %d)\n",pc,a,b,npid_a,npid_b);
 						b++;
 					}
