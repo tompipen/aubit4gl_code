@@ -46,7 +46,7 @@
 
 "database"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
 "instructions"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(INSTRUCTIONS);}
-"ATTRIBUTES"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}
+"attributes"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}
 "screen"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN);}
 "title"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(TITLE);}
 screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN_TITLE);}
