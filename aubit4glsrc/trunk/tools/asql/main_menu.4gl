@@ -30,27 +30,27 @@ FUNCTION main_menu()
 
 	BEFORE MENU 
 		call display_banner()
-		#hide option "Tools"
+		#hide option "Utilities"
 
 	COMMAND "Query-language" "Use SQL query language."
 		call query_menu()
-
-	COMMAND "Tools"
-		call tools_menu()
 		
 	COMMAND "Connection" "Connect or disconnect from a database environment."
 		call connection_menu()
 
-	command "Database" "Select, Create, Info, Drop or Close a database."
+	COMMAND "Database" "Select, Create, Info, Drop or Close a database."
 		call database_menu()
 
-	command "Table" "Create, Alter, or Drop a database table."
+	COMMAND "Table" "Create, Alter, or Drop a database table."
 		call table_menu()
 
-	command "Session" "Retrieve information about the current DB-Access session."
+	COMMAND "Session" "Retrieve information about the current DB-Access session."
 		call session_menu()
 
-	command "Exit" "Exit ADBACCESS."
+	COMMAND "Utilities" "Forms, Reports, User Menus etc."
+		call tools_menu()
+
+	COMMAND "Exit" "Exit ADBACCESS."
 		exit menu
 	end menu
 end function

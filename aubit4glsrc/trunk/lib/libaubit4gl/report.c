@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.52 2004-11-11 01:26:28 pjfalbe Exp $
+# $Id: report.c,v 1.53 2004-11-11 16:28:53 pjfalbe Exp $
 #
 */
 
@@ -1402,6 +1402,7 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 
   running_program=A4GL_get_running_program();
 
+
   if (to_pipe==1)
     {
 
@@ -1432,9 +1433,8 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile,
 		   acl_getenv ("AUBITDIR"), running_program,ofile, otype, rep->output_loc);
 	}
     }
-
+  
   system (buff);
-	//printf("buff=%s\n",buff);
 
   if (to_pipe==2) {
 		//printf("Sending %s\n",ofile);
