@@ -1,0 +1,94 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.1 2002-08-26 07:10:35 afalout Exp $
+#
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../../incl/Makefile-common
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+SAPDBROOT=@SAPDBROOT@
+CPC=@SAPDB_ESQLC@
+CPCLNK=${SAPDBROOT}/interfaces/precompiler/bin/cpclnk
+INCLUDE=@SAPDB_INCDIR@
+SAPDB_LIBDIR=@SAPDB_LIBDIR@
+LIBS=${SAPDB_LIBDIR} -lpcrl -lsqlca -ldl
+
+#If you want a precompiler trace to be written when the test program is 
+#executed, you must accordingly set the environment variable SQLOPT to the 
+#value -X :
+#SQLOPT=-X
+#export SQLOPT
+
+USERID=build
+PASSWD=compiler
+DATABASE_NAME=MODELL
+
+#[-u <userid>,<password> -d <database_name> -n <server_node>]
+CPCFLAGS=-Hnocheck -d${DATABASE_NAME} -u${USERID},${PASSWD} -s -c
+CFLAGS+=$(INCLUDE)
+
+
+## ==================================================================
+##                              Generic rules
+## ==================================================================
+
+%.c: %.cpc
+	$(CPC) $(CPCFLAGS) $(basename $<) $(CFLAGS) $(CPPFLAGS)
+
+#%o: %.c
+#	$(CC) -c $(CFLAGS) $<
+
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: test-prg adload
+
+test-prg: test-prg.o
+	$(CC) -o $@ $^ $(LIBS)
+
+adload: adload.o
+	${CPCLNK} $@
+
+## ==================================================================
+##                              Clean
+## ==================================================================
+
+
+clean:
+	${RM} *.o test-prg.c test-prg adload adload.c *.bak
+
+
+distclean:	clean
+	${RM} *.lst *.pcl *.pct
+
+# ============================== EOF =================================
