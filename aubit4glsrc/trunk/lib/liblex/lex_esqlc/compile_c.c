@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.125 2004-01-23 10:03:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.126 2004-01-27 10:10:59 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.125 2004-01-23 10:03:39 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.126 2004-01-27 10:10:59 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -3965,7 +3965,22 @@ print_open_window (char *name, char *type)
 void
 print_open_form (char *fmt, char *a1, char *a2)
 {
-  printc (fmt, a1, a2);
+if (strncmp(fmt,"A4GL_open_gui_form",strlen("A4GL_open_gui_form") )==0) {
+	char buff[256];
+	char *ptr;
+	printf("get_clobber1=%s\n",A4GL_get_important_from_clobber(a1));
+        if (scan_variable (A4GL_get_important_from_clobber(a1)) == -1) {
+	  set_yytext(A4GL_get_important_from_clobber(a1));
+	  a4gl_yyerror ("Form variable not defined");
+	  return;
+		
+	}
+
+	printc("%s=",A4GL_get_important_from_clobber(a1));
+  	printc (fmt, a1, a2);
+} else {
+  	printc (fmt, a1, a2);
+}
 }
 
 

@@ -14,7 +14,7 @@ fi
 
 
 cd /home/aubit4gl/sourceforge/aubit4glsrc
-make -k log
+make log
 
 if [ $? != 0 ]
 then

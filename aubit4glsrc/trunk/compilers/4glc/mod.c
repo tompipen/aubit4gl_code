@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.150 2004-01-23 09:53:51 mikeaubury Exp $
+# $Id: mod.c,v 1.151 2004-01-27 10:10:58 mikeaubury Exp $
 #
 */
 
@@ -4148,6 +4148,7 @@ int get_blk_no() {
 struct s_exchange_clobber {
 	char *orig;
 	char *new;
+	char *important;
 };
 
 struct s_exchange_clobber *clob_arr=0;
@@ -4176,11 +4177,33 @@ static char *get_clobber(char *s) {
 return "";
 }
 
+char *A4GL_get_important_from_clobber(char *s) {
+	int a;
+	if (clob_arr_cnt==0) return 0;
+	for (a=0;a<clob_arr_cnt;a++) {
+		if (strcmp(clob_arr[a].orig,s)==0) {
+			return clob_arr[a].important;
+		}
+	}
+return "";
+}
+char *A4GL_get_clobber_from_orig(char *s) {
+	int a;
+	if (clob_arr_cnt==0) return 0;
+	for (a=0;a<clob_arr_cnt;a++) {
+		if (strcmp(clob_arr[a].new,s)==0) {
+			return clob_arr[a].orig;
+		}
+	}
+return "";
+}
+
 
 static char *add_clobber(char *buff_orig,char *important) {
 static char buff_new[256];
 static int p=0;
 char b1[256];
+printf("add clobber : %s %s\n",buff_orig,important);
 	strcpy(buff_new,buff_orig);
 
 	if (has_clobber(buff_orig)) return get_clobber(buff_orig);
@@ -4197,6 +4220,7 @@ char b1[256];
 	if (strlen(buff_orig)<=20) { // Extra 2 for the quotes...
 		clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
 		clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
+		clob_arr[clob_arr_cnt-1].important=strdup(important);
 		return buff_orig;
 	}
 
@@ -4205,6 +4229,7 @@ char b1[256];
 	sprintf(buff_new,"\"a4gl_%03d_%s\"",p++,b1);
 	clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
 	clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
+	clob_arr[clob_arr_cnt-1].important=strdup(important);
 	return buff_new;
 }
 

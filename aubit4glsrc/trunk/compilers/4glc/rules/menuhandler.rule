@@ -1,4 +1,3 @@
-
 menu_def :
         MENUHANDLER identifier  {
                 strcpy(menuhandler,$<str>2);
@@ -23,24 +22,18 @@ menu_handler_elements :
 
 menu_handler_element :
         BEFORE_SHOW_MENU {
-
 		print_gtk_menuhandler_bsm();
-
                 push_blockcommand("BSM");
         } commands {
                 pop_blockcommand("BSM");
 		print_gtk_menuhandler_bsm_end();
-
         }
         | ON identifier {
-print_gtk_menuhandler_on($<str>2);
+		print_gtk_menuhandler_on($<str>2);
                 push_blockcommand("ON");
         } commands {
                 pop_blockcommand("ON");
 		print_gtk_menuhandler_on_end();
 }
 ;
-
-
-
 

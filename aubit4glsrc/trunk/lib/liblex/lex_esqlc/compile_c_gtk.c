@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.9 2004-01-18 12:55:12 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.10 2004-01-27 10:10:59 mikeaubury Exp $
 #
 */
 
-static char *module_id="$Id: compile_c_gtk.c,v 1.9 2004-01-18 12:55:12 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_gtk.c,v 1.10 2004-01-27 10:10:59 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules, that interface with GTK+ GUI libraries functions
@@ -120,33 +120,26 @@ print_formhandler (char *name)
   if (printed_gtk == 0)
     {
       //#ifdef OBSOLETE *** __NOT__ obsolete!
-      printh ("#include <gtk/gtk.h>\n");
+      //printh ("#include <gtk/gtk.h>\n");
       //#endif
       printh
 	("#define ON_FIELD(x) (A4GL_widget_name_match(widget,x)&&event==0&&(A4GL_strnullcmp(data,\"on\")==0||A4GL_strnullcmp(data,\"clicked\")==0))\n");
       printh ("#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
       printh
-	("#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
+	("#define BEFORE_CLOSE_FORM  (isevent==1&&(A4GL_is_event_close(event)) )\n");
       printed_gtk++;
     }
   strcpy (lname, name);
-  A4GL_lex_printh
-    ("int hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data);\n",
-     name);
-  A4GL_lex_printh ("int hnd_c_%s(GtkWidget *widget,gpointer data);\n", name);
-  A4GL_lex_printh
-    ("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data);\n",
-     name);
-  printc ("int hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data) {\n",
-	  name);
+  A4GL_lex_printh ("int hnd_e_%s(void *widget,void *event,void * data);\n", name);
+  A4GL_lex_printh ("int hnd_c_%s(void *widget,void * data);\n", name);
+  A4GL_lex_printh ("int hnd_%s (void *widget, int isevent,void *event,void * data);\n", name);
+  printc ("int hnd_e_%s(void *widget,void *event,void * data) {\n", name);
   printc ("  hnd_%s(widget,1,event,data);\n", name);
   printc ("return 0;}\n");
-  printc ("int hnd_c_%s(GtkWidget *widget,gpointer data) {\n", name);
+  printc ("int hnd_c_%s(void *widget,void * data) {\n", name);
   printc ("  return hnd_%s(widget,0,0,data);\n", name);
   printc ("}\n");
-  printc
-    ("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data) {\n",
-     name);
+  printc ("int hnd_%s (void *widget, int isevent,void *event,void * data) {\n", name);
 
 }
 
