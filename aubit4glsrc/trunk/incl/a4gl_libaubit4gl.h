@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.8 2002-08-19 07:58:18 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.9 2002-08-19 08:08:19 afalout Exp $
 #
 */
 
@@ -260,22 +260,22 @@
 	#define DTYPE_VCHAR     13
 	#define DTYPE_INTERVAL  14
 
-
+/*
 	#define DTYPE_CHAR      0
 	#define DTYPE_SMINT     1
 	#define DTYPE_INT       2
 	#define DTYPE_FLOAT     3
-	#define DTYPE_SMFLOAT       4
-	#define DTYPE_DECIMAL       5
-	#define DTYPE_SERIAL        6
+	#define DTYPE_SMFLOAT   4
+	#define DTYPE_DECIMAL   5
+	#define DTYPE_SERIAL    6
 	#define DTYPE_DATE      7
 	#define DTYPE_MONEY     8
 	#define DTYPE_DTIME     10
 	#define DTYPE_BYTE      11
 	#define DTYPE_TEXT      12
 	#define DTYPE_VCHAR     13
-	#define DTYPE_INTERVAL      14
-
+	#define DTYPE_INTERVAL  14
+*/
 	#define DTYPE_MASK 255 /* bit pattern for data type */
 
 	#define MAX_DTYPE  255
@@ -383,24 +383,7 @@
     //#include "a4gl_API_ui.h"
     //#include "a4gl_API_exreport.h"
     //#include "a4gl_API_rpc.h"
-    //#include "a4gl_API_exdata.h"
-
-	/* ============================ from datatypes.c ============================ */
-    /* this should go in new header file called a4gl_API_exdata.h : */
-	void    init_datatypes			(void);
-	void *  get_datatype_function_n	(char *name,char *funcname);
-	int     has_datatype_function_n	(char *name,char *funcname);
-	int     A4GLEXDATA_initlib 		(char *f);
-	int     find_datatype_out		(char *name);
-	int 	find_datatype			(char *name);
-	void *  get_datatype_function_i	(int a,char *funcname);
-	int     has_datatype_function_i	(int a,char *funcname);
-	int 	add_datatype 			(char *name, int rq, int precision);
-	int 	add_datatype_function_n (char *name, char *funcname, void *func);
-	void 	add_conversion 			(char *from, char *to, void *func);
-	/* ============================ end from datatypes.c ============================ */
-
-
+	#include "a4gl_API_exdata.h"
 
     #ifndef _NO_FORM_X_H_
 		#ifdef SRC_TREE
