@@ -177,6 +177,8 @@ sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);}
 {sprintf($<str>$,"%d,1",FETCH_RELATIVE);}
 	| PREVIOUS
 {sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
+	| PRIOR
+{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
 	| CURRENT
 {sprintf($<str>$,"%d,0",FETCH_RELATIVE);}
 	| RELATIVE fgl_expr

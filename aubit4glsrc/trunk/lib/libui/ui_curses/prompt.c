@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.2 2002-11-19 18:18:56 mikeaubury Exp $
+# $Id: prompt.c,v 1.3 2003-02-08 17:40:52 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@
 =====================================================================
 */
 
-static int curses_to_aubit(int a);
+int curses_to_aubit(int a);
 
 int start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
 int proc_key_prompt (int a, FORM * mform, struct s_prompt * prompt);
@@ -373,10 +373,14 @@ decode_field_attr(FIELD *f,int af)
  *
  * @todo Describe function
  */
-static int
+int
 curses_to_aubit(int a)
 {
-	/* NEED TO FIX THIS PDQ! */
+	int b;
+	for (b=0;b<64;b++) {
+		if (a==KEY_F(b)) return A4GLKEY_F(b);
+	}
+
 	return a;
 }
 

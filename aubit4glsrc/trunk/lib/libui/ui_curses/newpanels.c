@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.10 2003-02-07 12:59:10 mikeaubury Exp $
+# $Id: newpanels.c,v 1.11 2003-02-08 17:40:52 mikeaubury Exp $
 #*/
 
 /**
@@ -1411,9 +1411,7 @@ int clr_end_of_line=0;
 	{
 	  debug ("In screen mode");
 	  mja_endwin ();
-#ifdef DEBUG
-	  {	    debug ("display_at... '%s'", s);	  }
-#endif
+	  debug ("display_at... '%s'", s);
 	  printf ("%s\n", s);
 	  fflush (stdout);
 #ifdef DEBUG

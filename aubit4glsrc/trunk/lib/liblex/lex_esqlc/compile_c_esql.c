@@ -26,8 +26,9 @@ void
 print_exec_sql_bound (char *s)
 {
   int c;
-  printc ("{\n");
+  printc ("{/* Start exec_sql_bound */\n");
   c = print_bind ('i');
+  printc("/* printed bind - print conversions */");
   print_conversions('i');
   printc ("EXEC SQL %s; /* exec_sql_bound */\n", s);
   print_copy_status();
@@ -254,7 +255,14 @@ print_conversions('i');
 void
 print_prepare (char *stmt, char *sqlvar)
 {
-  printc ("EXEC SQL PREPARE %s FROM %s;\n", stmt, sqlvar);
+  printc("{\n");
+  printc("EXEC SQL BEGIN DECLARE SECTION;\n");
+  printc("char *_s;\n");
+  printc("EXEC SQL END DECLARE SECTION;\n");
+  printc("_s=strdup(%s);\n",sqlvar);
+  printc ("EXEC SQL PREPARE %s FROM $_s;\n", strip_quotes(stmt), sqlvar);
+
+  printc("free(_s);\n}\n");
   print_copy_status();
 }
 
@@ -278,7 +286,7 @@ print_execute (char *stmt, int using)
   }
   else
     {
-      printc ("{\n");
+      printc ("{ /* EXECUTE */\n");
       ni = print_bind ('i');
 print_conversions('i');
       printc ("EXEC SQL %s; /* Execute */\n", stmt);
@@ -448,13 +456,19 @@ void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
   printc ("/* %s+%d,%s,%d,%s */\n", a1, h1, a2, h2, a3);
-  printc(" /* nibind=%d */\n",get_bind_cnt('i'));
+  printc(" /* nibind=%d a2=%s*/\n",get_bind_cnt('i'),a2);
   printc(" /* nobind=%d a3=%s */\n",get_bind_cnt('o'),a3);
+
   if (strstr(a2,"INTO $")!=0) {
 	  	yyerror("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
 		return;
   }
-  printc ("EXEC SQL DECLARE %s CURSOR FOR %s;\n",strip_quotes(a3),a2);
+  if (a2[0]=='"') {
+	  	printc("{");
+}
+  printc ("EXEC SQL DECLARE %s",strip_quotes(a3));
+  printc(" CURSOR FOR %s;\n",strip_quotes(a2));
+
   print_copy_status();
   printc ("}\n");
 
@@ -505,10 +519,10 @@ print_select_all (char *buff)
 {
   int ni, no;
   static char b2[2000];
-  printc ("{\n");
+  printc ("{ /* print_select_all */\n");
   ni = print_bind ('i');
   no = print_bind ('o');
-print_conversions('i');
+  print_conversions('i');
   sprintf (b2, "%s ",  buff);
   return b2;
 }

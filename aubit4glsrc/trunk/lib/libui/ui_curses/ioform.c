@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.6 2003-01-07 18:05:34 psterry Exp $
+# $Id: ioform.c,v 1.7 2003-02-08 17:40:52 mikeaubury Exp $
 #*/
 
 /**
@@ -664,6 +664,7 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
   debug ("Got key %d", a);
 
   m_lastkey = a;
+  set_last_key(curses_to_aubit(a));
 
   if (a == acckey)
     {

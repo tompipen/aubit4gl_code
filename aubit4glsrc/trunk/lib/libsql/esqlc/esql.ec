@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.34 2003-02-04 13:19:25 mikeaubury Exp $
+# $Id: esql.ec,v 1.35 2003-02-08 17:40:52 mikeaubury Exp $
 #
 */
 
@@ -128,7 +128,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.34 2003-02-04 13:19:25 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.35 2003-02-08 17:40:52 mikeaubury Exp $";
 #endif
 
 /*
@@ -1796,6 +1796,9 @@ struct s_cid *A4GLSQL_declare_cursor(
  * @return
  *   - 1 : Cursor declared.
  *   - 0 : An error as ocurred.
+ *
+ * 	@ FIXME - doesn't use the USING section...
+ *
  */
 int A4GLSQL_open_cursor (int ni, char *s)
 {

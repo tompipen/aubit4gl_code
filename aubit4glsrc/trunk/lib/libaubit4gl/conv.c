@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.24 2003-02-06 13:24:28 mikeaubury Exp $
+# $Id: conv.c,v 1.25 2003-02-08 17:40:52 mikeaubury Exp $
 #
 */
 
@@ -2334,7 +2334,7 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
     }
 
 {
-  debug ("conv (%ld %ld)", *(long *) p1, *(long *) p2); 
+  debug ("conv (%ld %lx)", *(long *) p1, *(long *) p2); 
   debug ("conv (%x %x)", *(short *) p1, *(short *) p2); 
 
   debug("Convmatrix %d %d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK);

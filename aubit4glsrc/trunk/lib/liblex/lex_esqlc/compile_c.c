@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.3 2003-02-05 22:33:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.4 2003-02-08 17:40:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3565,9 +3565,9 @@ print_func_start (char *isstatic, char *fname, int type)
   printc (" \n");
   printc (" \n");
   if (type == 0)
-    printc ("\n%sint aclfgl_%s (int nargs){ \n", isstatic, fname);
+    printc ("\n%sint aclfgl_%s (int nargs){ /* Funtion Start */\n", isstatic, fname);
   if (type == 1)
-    printc ("\n%sint aclfglm_%s (int nargs){ \n", isstatic, fname);
+    printc ("\n%sint aclfglm_%s (int nargs){ /* Funtion Start */\n", isstatic, fname);
 }
 
 /**
@@ -3604,7 +3604,7 @@ print_func_defret0 (void)
 void
 print_func_end (void)
 {
-  printc ("}\n");
+  printc ("}/* END OF FUNCTION */\n\n\n\n");
 }
 
 /**
@@ -3965,9 +3965,9 @@ char *get_into_part(int no) {
 
 		 if (no==0) return "";
 
-	         sprintf(buffer,"INTO ");
+	         sprintf(buffer,"INTO\n");
 	         for (a=0;a<no;a++) {
-			   sprintf(buff,"$_vo_%d",a);
+			   sprintf(buff,"\t$_vo_%d\n",a);
 			   if (a) strcat(buffer,",");
 			   strcat(buffer,buff);
                  }
@@ -3991,7 +3991,7 @@ char *set_var_sql(int n) {
 			if (a!=z-n) {
 				strcat(buff,",");
 			}
-			sprintf(buff_small,"$_vi_%d",a);
+			sprintf(buff_small,"\t$_vi_%d\n",a);
 			strcat(buff,buff_small);
 	        }
 		return buff;

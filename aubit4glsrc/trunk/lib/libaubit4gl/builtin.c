@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.16 2003-02-06 23:45:14 mikeaubury Exp $
+# $Id: builtin.c,v 1.17 2003-02-08 17:40:52 mikeaubury Exp $
 #
 */
 
@@ -747,6 +747,13 @@ close_database(void)
 
 
 
+void aclfgli_current(int a,int b) {
+	push_current(a,b);
+}
+
+void aclfgli_extend() {
+	// FIXME
+}
 
 char *aclfgli_str_to_id(char *name) 
 {
