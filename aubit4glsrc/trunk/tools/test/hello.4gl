@@ -1,5 +1,4 @@
 main
-#	sleep 1
 display "STarting"
 menu "Hello test"
     command "window" "Open a new window"
