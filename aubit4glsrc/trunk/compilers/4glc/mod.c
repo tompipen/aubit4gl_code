@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.10 2001-09-10 17:47:39 mikeaubury Exp $
+* $Id: mod.c,v 1.11 2001-09-16 16:19:21 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.10  2001/09/10 17:47:39  mikeaubury
+*	Bugfix - overflow in bindings (manifesting as a 'FUNC' was not the last block...)
+*	
 *	Revision 1.9  2001/09/08 09:57:41  mikeaubury
 *	Does anyone know another phrase for 'yet more changes' ?
 *	They are too numerous and small to mention individually....
@@ -1853,7 +1856,7 @@ print_param (char i)
 
   if (i == 'r')
     {
-      printc ("static");
+      printc ("static ");
     }
 
   printc ("struct BINDING %cbind[]={ /* print_param */\n", i);
