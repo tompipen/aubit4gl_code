@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.78 2004-01-03 18:43:43 mikeaubury Exp $
+# $Id: curslib.c,v 1.79 2004-01-04 19:41:40 mikeaubury Exp $
 #*/
 
 /**
@@ -1488,7 +1488,9 @@ void
       }
 #endif
       menu->gw_b = UILIB_A4GL_iscurrborder ();
-      menu->gw_y = cpt - 1 + mnln - UILIB_A4GL_iscurrborder ();
+      //menu->gw_y = cpt - 1 + mnln - UILIB_A4GL_iscurrborder ();
+      menu->gw_y =  mnln + UILIB_A4GL_iscurrborder ();
+	A4GL_debug("setting gw_y %d %d %d %d px)",menu->gw_y,cpt , mnln , UILIB_A4GL_iscurrborder ());
       menu->gw_x = cl;
 
 
@@ -3049,7 +3051,7 @@ A4GL_flatten_menu (ACL_Menu * menu)
 
   px = menu->gw_x;
   py = menu->gw_y;
-
+A4GL_debug("px=%d py=%d menu->gw_b=%d menu->y=%d",px,py,menu->gw_b,menu->y);
   if (menu->gw_b)
     {
       px -= 1;
