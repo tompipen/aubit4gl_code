@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.3 2002-06-30 22:30:23 mikeaubury Exp $
+# $Id: main.c,v 1.4 2002-07-09 10:07:12 mikeaubury Exp $
 #*/
 
 /**
@@ -163,7 +163,7 @@ int rval;
   /* load settings from config file(s): */
   build_user_resources ();
 
-  yydebug=0;
+  yydebug=1;
   strcpy (d, "");
 
   if (argc > 1)

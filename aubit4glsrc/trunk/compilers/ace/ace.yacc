@@ -6,7 +6,7 @@
 		                    Includes
 =====================================================================
 */
-
+#define YYDEBUG 1
 #ifdef OLD_INCL
 
 	#include <stdio.h>
@@ -394,9 +394,13 @@ format_section:
 		cmd.commands.commands_val=0;
 		add_fmt(FORMAT_EVERY_ROW,"",cmd);
 	  }
-	| FORMAT format_actions END 
+	| FORMAT format_actions  op_end
 		
 ;
+
+op_end: | END
+;
+
 
 format_actions : format_action | format_actions format_action 
 ;

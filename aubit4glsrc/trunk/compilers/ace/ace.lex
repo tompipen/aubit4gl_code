@@ -188,11 +188,11 @@
 "UNITS HOUR" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return UNITS_HOUR;}
 "UNITS MINUTE" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return UNITS_MINUTE;}
 "UNITS SECOND" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return UNITS_SECOND;}
-\"[^\"]+\" {  strcpy(yylval.str,yytext); return CHAR_VALUE;}
-\"\" {  strcpy(yylval.str,yytext); return CHAR_VALUE;}
-\'[^\']+\' {  strcpy(yylval.str,yytext); return CHAR_VALUE;}
+\"[^\"]+\" {  strcpy(yylval.str,strip_quotes(yytext)); return CHAR_VALUE;}
+\"\" {  strcpy(yylval.str,strip_quotes(yytext)); return CHAR_VALUE;}
+\'[^\']+\' {  strcpy(yylval.str,strip_quotes(yytext)); return CHAR_VALUE;}
 
-\'\' {  strcpy(yylval.str,yytext); return CHAR_VALUE;}
+\'\' {  strcpy(yylval.str,strip_quotes(yytext)); return CHAR_VALUE;}
 [a-zA-Z]+[a-zA-Z\_0-9]*	{
 	if (ignorekw) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext);
  return(NAMED);
