@@ -21,6 +21,4 @@ define b integer
 	
 end main
 
-sql_features_used:
-	@echo "CREATE_TEMP_TABLE"
 

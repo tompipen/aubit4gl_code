@@ -7,7 +7,7 @@ end function
 
 FUNCTION test_whenever()
   DEFINE i SMALLINT
-
+database test1
 	WHENEVER NOT FOUND STOP
 	SELECT count(*) INTO i FROM SYSTABLES
 	WHENEVER NOT FOUND CONTINUE

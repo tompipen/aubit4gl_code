@@ -28,6 +28,4 @@ MAIN
 	EXIT PROGRAM exitStatus
 END MAIN
 
-sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLERRD2 "
 

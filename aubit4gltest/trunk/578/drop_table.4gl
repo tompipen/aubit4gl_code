@@ -12,6 +12,4 @@ MAIN
 	DROP TABLE xpto
 END MAIN
 
-sql_features_used:
-	@echo "DROP_TABLE CREATE_TABLE"
 
