@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.29 2002-12-31 02:57:34 psterry Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.30 2003-01-09 09:17:43 psterry Exp $
 #
 */
 
@@ -1111,6 +1111,13 @@
 	int		day_in_week 		(int, int, int);
 	int     modify_year			(int a);
 	int 	date_sep			(int z);
+
+ 	/* ============================ dmy.c ================================== */
+ 
+ 	char *		using_date			(int dn,char *us);
+ 	char *		dbdate_to_using		(char *dbdate);
+ 	char *		get_dbdate			(void);
+ 
 
 	/* =========================== string.c ================================ */
 	char *	new_string_set		(int a,char *b);
