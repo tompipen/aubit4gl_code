@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.120 2003-12-17 18:55:27 mikeaubury Exp $
+# $Id: 4glpc,v 1.121 2003-12-20 14:22:30 mikeaubury Exp $
 #
 
 ########################################################################
@@ -1385,11 +1385,16 @@ fi
 
 if [ "$NO_COMPILE" = 1 ]
 then
+
+
+	eval "$DOIT $NCC -e $CFLAGS $COMPCC $INCLDIR $LAST"
+	err_code=$?
+	
 	if [ "$A4GLVERBOSE" = "yes" ]
 	then
-		echo "Exiting after 4glc stage with code 0"
+		echo "Exiting after esql first stage with code 0"
 	fi
-	exit 0
+	exit $err_code
 fi
 
 

@@ -34,8 +34,13 @@ ECPG_EXT=cpc
 COMPILE_OBJ=0
 output=""
 
+
+
+ECPG_ONLY=0
 # If we have a .ec on the command line -
 # assume they have .ec as the extension instead
+
+
 
 echo $* | grep "\.ec" >/dev/null 2>&1
 [ $? -eq 0 ] &&	ECPG_EXT=ec
@@ -51,6 +56,15 @@ do
 		continue
 	fi
 
+
+	if [ "$a" = -e ]
+	then
+		ECPG_ONLY=1
+		shift
+		continue
+	fi
+
+
 	if [ "$a" = -c ]
 	then
 		COMPILE_OBJ=1
@@ -60,7 +74,7 @@ do
 
 
 
-	if [ "$a" = "-C" -o "$a" = "-D" -o "$a" = "-I" ]
+	if [ "$a" = "-C" -o "$a" = "-D" -o "$a" = "-I"  ]
 	then
 		ecpg_args="$ecpg_args $a"
 		shift
@@ -128,7 +142,11 @@ do
     fi
     out=`basename $a ".$ECPG_EXT"`
     cfiles="$cfiles $out.c"
-    GCC_COMPILE="gcc -c $out.c $PG_IFLAGS $other_args"
+
+
+    if [ "$ECPG_ONLY" = "0" ]
+    then
+    	GCC_COMPILE="gcc -c $out.c $PG_IFLAGS $other_args"
 
 	if test "$OUTPUT_IS_OBJECT" = "1"; then
 	    GCC_COMPILE="$GCC_COMPILE $output"
@@ -138,15 +156,16 @@ do
 	fi
 
 	echo $GCC_COMPILE
-    eval $GCC_COMPILE
-    RET=$?
+    	eval $GCC_COMPILE
+    	RET=$?
 	if test "$RET" != "0"; then
-        exit $RET
+        	exit $RET
+   	fi
+    	ofiles="$ofiles $out.o"
     fi
-    ofiles="$ofiles $out.o"
 done
 
-if [ $COMPILE_OBJ = 1 ]; then
+if [ $COMPILE_OBJ = 1 -o "$ofiles" = "" ]; then
 	exit 0
 fi
 
