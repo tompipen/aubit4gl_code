@@ -6,8 +6,8 @@ CXX=g++
 CXXFLAGS=-g -I ast
 CFLAGS=-g -I ast
 
-FGL_PARSER_MOD= MemFile.o FglLexer.o fgl.o fgl_parse.o generated/kw.o \
-generated/mk_states.o generated/states.o 
+FGL_PARSER_MOD= MemFile.o KeyWord.o KeyWordTextReader.o FglLexer.o fgl.o \
+fgl_parse.o generated/kw.o generated/mk_states.o 
 fgl_parser.so : $(FGL_PARSER_MOD) 
 	${LD} ${SO_LDFLAGS} $^ -o $@  ${LINKLIBS}
 
@@ -20,7 +20,7 @@ generate:
 	# Gera generated/kw.c e generated/kw.h
 	./convkw_hash kwords 
 	# Gera generated/states.c
-	./procstates defstates
+	#./procstates defstates
 	bison -y -r all -d -v fgl.y
 	# Gera generated/mk_states.c
 	./mk_states_c y.output

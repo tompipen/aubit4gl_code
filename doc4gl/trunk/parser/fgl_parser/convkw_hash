@@ -99,6 +99,7 @@ print "{0}" > "generated/kw.c"
 print "};" > "generated/kw.c"
 }
 
+print "/* This an hash organized by the first character of the keywords */"
 print "struct s_kw *hashed_list[]={" > "generated/kw.c"
 
 for (a=0;a<=26;a++) {

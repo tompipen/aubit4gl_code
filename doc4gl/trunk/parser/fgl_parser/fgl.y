@@ -2796,7 +2796,7 @@ opt_help_no
  */
 identifier	
   : NAMED  
-	  { $$ = new FglIdentifier($1->getName()); }
+	  { $$ = new FglIdentifier($1->getText()); }
   ;
 
 /**

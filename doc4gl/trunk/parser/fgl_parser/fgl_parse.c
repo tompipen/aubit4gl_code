@@ -7,6 +7,8 @@
  * This parser is based on the aubit 4gl parser wich have a good
  * 4gl syntax support.
  *
+ * @todo : This code needs to be changed and passed to C++ class.
+ *
  */
 
 /*
@@ -18,6 +20,8 @@
 #include "string.h"
 #include "a4gl_4glc_int.h"
 #include "MemFile.h"
+#include "KeyWordTextReader.h"
+#include "KeyWord.h"
 #include "FglLexer.h"
 
 /*
@@ -116,6 +120,14 @@ int parse_4gl (const char *fglFileName)
 {
 	int x;
 	setFglSource(fglFileName);
+	// @Just to test 
+	/*
+	KeyWordTextReader *kwordReader = new KeyWordTextReader("kwords");
+	kwordReader->openFile();
+	kwordReader->getKeywordTable();
+	kwordReader->closeFile();
+	*/
+
   FglLexer *fglLexer = openFglFile();
 	// @todo : Implement this function
 	//yylex_init();

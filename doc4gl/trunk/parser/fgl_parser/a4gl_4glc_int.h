@@ -27,7 +27,6 @@
 	//#include "rules/generated/y.tab.h"
 //#endif
 
-void turn_state(int i,int j);
 
 /* ==================== from a4gl_4glc_4glc.h ===================== */
 
@@ -45,7 +44,6 @@ int is_commandkw (int kw);
 
 	/* ==================== rules/generated/states.c ==================== */
 void start_state (char *s, int on_off);
-void init_states (void);
 
 
 	/* =========================== y.tab.c ============================== */

@@ -94,6 +94,10 @@ END {
       print " "
    }
    print "#include \"mk_states_1.h\""
+	print "/**"
+	print " * See if the word found (by is kind) is to be returned as identifier "
+	print " * or TOKEN, based on the information of y.output"
+	print " */"
 	print "int allow_token_state(int yystate,int yytoken) {"
 	print "int a;"
         print "  if (yytoken<0) return 1;"
