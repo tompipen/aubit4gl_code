@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.30 2004-11-05 21:13:01 pjfalbe Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.31 2004-11-11 12:28:54 pjfalbe Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -909,8 +909,8 @@ A4GL_new_menu (char *title,
       if (ret != 0)
 	{
 	  opt2 = malloc (sizeof (ACL_Menu_Opts));
-	  (ACL_Menu_Opts *) opt2->prev_option = (ACL_Menu_Opts *) opt1;
-	  (ACL_Menu_Opts *) opt1->next_option = (ACL_Menu_Opts *) opt2;
+	   opt2->prev_option = (ACL_Menu_Opts *) opt1;
+	   opt1->next_option = (ACL_Menu_Opts *) opt2;
 	  opt2->next_option = 0;
 	  opt1 = opt2;
 	}
@@ -2820,7 +2820,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	  memset (buff, ' ', 1024);
 	  A4GL_debug("strlen=%d",strlen(s));
 	  sl = strlen (s);
-	  sl = A4GL_get_curr_width () - sl;
+	  sl = A4GL_get_curr_width () - sl-x+1;
 	  A4GL_debug("sl=%d spaces required",sl);
 	  if (sl >= 0) {
 	    	buff[sl] = 0;

@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.95 2004-09-27 17:13:23 mikeaubury Exp $
+# $Id: newpanels.c,v 1.96 2004-11-11 12:27:26 pjfalbe Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.95 2004-09-27 17:13:23 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.96 2004-11-11 12:27:26 pjfalbe Exp $";
 
 /**
  * @file
@@ -1693,12 +1693,12 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	char buff[1024];
 	memset(buff,' ',1024);
 	sl=strlen(s);
-	sl=w-sl;
+	sl=w-sl-x+1;
 	if (sl>=0) buff[sl]=0;
 	buff[1023]=0;
 	A4GL_debug("currwin=%p",currwin);
 	A4GL_debug("Spacer..");
-	A4GL_debug("Buff=%s",buff);
+	A4GL_debug("Buff='%s'",buff);
   	waddstr (currwin, buff);
 	  A4GL_debug ("Clearing line...");
 	}
