@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.12 2002-10-22 06:43:36 afalout Exp $
+# $Id: string.c,v 1.13 2002-11-25 16:51:25 mikeaubury Exp $
 #
 */
 
@@ -111,9 +111,8 @@ string_set(char *ptr,char *b,int size)
 	strncpy(ptr,b,size);
         ptr[size]=0; /* MJA 16.08.2001 */
 	pad_string(ptr,size);
-	#ifdef DEBUG
-	/*  {        debug("string_set to : '%s' ",ptr);  } */
-	#endif
+	debug("..");
+	debug("ptr=%d\n",ptr);
 }
 
 

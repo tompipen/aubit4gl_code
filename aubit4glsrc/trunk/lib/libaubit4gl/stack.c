@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.28 2002-10-22 06:43:36 afalout Exp $
+# $Id: stack.c,v 1.29 2002-11-25 16:51:24 mikeaubury Exp $
 #
 */
 
@@ -924,6 +924,8 @@ push_param (void *p, int d)
 
   if (d & NUMERIC_OP_2)
     {
+
+	debug("OP_NUMERIC...");
 
       if (chknull (2, n1, n2))
 	return;

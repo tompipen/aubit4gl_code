@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.5 2002-09-26 11:30:15 afalout Exp $
+# $Id: ops.c,v 1.6 2002-11-25 16:51:24 mikeaubury Exp $
 #
 */
 
@@ -118,7 +118,15 @@ long d;
 		case OP_ADD: 			push_long(a+b); return;
 		case OP_SUB: 			push_long(a-b); return;
 		case OP_MULT: 			push_long(a*b); return;
-		case OP_DIV: 			push_long(a/b); return;
+
+
+		case OP_DIV:
+		if (a%b==0) {
+			push_long(a/b); return;
+		} else {
+			push_double((double)a/(double)b); return;
+		}
+
 		case OP_MOD: 			push_long(a%b); return;
 		case OP_POWER:
 			if (b==0) {push_long(1); return;}
@@ -132,7 +140,7 @@ long d;
 		case OP_GREATER_THAN: 		push_int(a>b); return;
 		case OP_LESS_THAN_EQ: 		push_int(a<=b); return;
 		case OP_GREATER_THAN_EQ: 	push_int(a>=b); return;
-		case OP_EQUAL: 			push_int(a<=b); return;
+		case OP_EQUAL: 			push_int(a==b); return;
 		case OP_NOT_EQUAL: 		push_int(a!=b); return;
 	}
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.14 2002-10-07 11:06:26 afalout Exp $
+# $Id: conv.c,v 1.15 2002-11-25 16:51:24 mikeaubury Exp $
 #
 */
 
@@ -824,10 +824,16 @@ ltodec (void *a, void *z, int size)
   h = h / 256;
   t = t - h * 256;
   errno = 0;
-  debug ("converting %s to a decimal (%x) %d,%d", a, size, h, t);
+
+  debug("Size=%d - 0x%x\n",size,size);
+  debug("a=%p %d",a, *(long *) a);
+  debug ("converting %d to a decimal (%x) %d,%d", *(long *)a, size, h, t);
+
   init_dec (z, h, t);
-  sprintf (buff, "%032ld", *(long *) a);
+  sprintf (buff, "%ld", *(long *) a);
+  debug("Buff=%s\n",buff);
   eptr = str_to_dec (buff, z);
+  debug("eptr=%p\n",eptr);
 
   if (eptr)
     return 1;
@@ -1125,7 +1131,10 @@ dectos (void *z, void *w, int size)
   debug ("In dectos gets '%s'", buff);
   dump (z);
   r = ctoc (buff, w, size);
-  debug ("r=%d\n", r);
+  debug("buff=%s\n",(char *)buff);
+  debug("w=%s\n",(char *)w);
+  debug("size=%d\n",size);
+
   return r;
 }
 
@@ -1191,6 +1200,7 @@ dectol (void *zz, void *aa, int sz_ignore)
   debug ("dectol");
   a = (long *) aa;
   z = (char *) zz;
+  debug("dectol");
   dectos (z, buff, 64);
   return stol (buff, a, 0);
 }
@@ -1253,7 +1263,7 @@ dectod (void *zz, void *aa, int sz_ignore)
 int
 dectof (void *zz, void *aa, int sz_ignore)
 {
-  char buff[64];
+  char buff[128];
   char *z;
   double *a;
   a = (double *) aa;
@@ -2189,7 +2199,13 @@ ctoc (void *a, void *b, int size)
 #ifdef DEBUG
   {    debug ("--->Got size as %d", size);  }
 #endif
+
+
+debug("String_set....");
+
   string_set (b, a, size);
+
+
 #ifdef DEBUG
   {    debug ("Set string");  }
 #endif
@@ -2364,14 +2380,16 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
       setdtype[dtype2 & DTYPE_MASK] (p2);
       return -1;
     }
-#ifdef DEBUG
-  {    debug ("conv (%ld %ld)", *(long *) p1, *(long *) p2);  }
-#endif
+
+{
+  debug ("conv (%ld %ld)", *(long *) p1, *(long *) p2); 
+
   debug("Convmatrix %d %d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK);
+}
 
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);
 
-  debug ("rval=%d\n", rval);
+
   return rval;
 }
 
@@ -2613,15 +2631,23 @@ dec_to_dec (char *f, char *t)
   int d, ld;
   int x, y, c;
   trim_dec (f);
+
   l = NUM_DIG (f);
   d = NUM_DEC (f);
+
+  debug("dec_to_dec : l=%d d=%d\n",l,d);
   if (t[0] & 128)
     t[0] = t[0] - 128;
   lt = NUM_DIG (t);
   ld = NUM_DEC (t);
+
+  debug("dec_to_dec : l=%d d=%d\n",lt,ld);
+
   x = 0;
   y = 0;
   x = (l * 2 - lt * 2 - d + ld) / 2;
+  debug("x=%d\n",x);
+
 
   if (x < 0)
     {
@@ -2647,8 +2673,13 @@ dec_to_dec (char *f, char *t)
       return;
     }
 
+  debug("lt=%d c=%d\n",lt,c);
+
   memset (&t[OFFSET_DEC (t)], 0, lt);
+
   memcpy (&t[y + OFFSET_DEC (t)], &f[x + OFFSET_DEC (f)], c);
+
+
   if (f[0] & 128)
     negate (t);
 }
@@ -2702,6 +2733,8 @@ str_to_dec (char *s, char *w)
 
 	}
     }
+
+
   if (hdcnt % 2 == 1)
     {
       strcpy (buff, "0");
@@ -2709,36 +2742,45 @@ str_to_dec (char *s, char *w)
       strcpy (hd, buff);
       hdcnt++;
     }
+
   if (tlcnt % 2 == 1)
     {
       strcat (tl, "0");
       tlcnt++;
     }
 
-
+debug("Head : %s (%d) tail %s(%d) \n",hd,hdcnt,tl,tlcnt);
 
   init_dec (buff, (hdcnt + tlcnt), tlcnt);
   cnt = OFFSET_DEC (buff);
+
+debug("Cnt = %d\n",cnt);
+
   for (a = 0; a < hdcnt; a += 2)
     {
-      buff[cnt++] = HEX_VAL ((hd[a] - '0') * 10 + (hd[a + 1] - '0'));
+      buff[cnt] = HEX_VAL ((hd[a] - '0') * 10 + (hd[a + 1] - '0'));
+	debug("%d %02x\n",cnt,buff[cnt]&0xff);
+	cnt++;
     }
 
   for (a = 0; a < tlcnt; a += 2)
     {
-      buff[cnt++] = HEX_VAL ((tl[a] - '0') * 10 + (tl[a + 1] - '0'));
+      buff[cnt] = HEX_VAL ((tl[a] - '0') * 10 + (tl[a + 1] - '0'));
+	debug("%d %d\n",cnt,buff[cnt]&0xff);
+	cnt++;
     }
-
 
 
   if (w == 0)
     {
+      debug("init_Dec .. %d %d\n",hdcnt+tlcnt,tlcnt);
       w = init_dec (w, (hdcnt + tlcnt), tlcnt);
     }
 
   dec_to_dec (buff, w);
   if (neg)
     {
+      debug("NEGATE...");
       negate (w);
     }
   return w;
@@ -2875,6 +2917,9 @@ dec_to_str (char *s, int size)
   int k;
   static char buff[DBL_DIG1];
   int has_zero = 1;
+debug("dec_to_str...");
+dump(s);
+
   l = NUM_DIG (s);
   d = NUM_DEC (s);
 
@@ -2883,7 +2928,7 @@ dec_to_str (char *s, int size)
     {
       l = size & 256;
       d = size % 256;
-      debug ("l=%d d=%d\n", l, d);
+      debug ("**** CHECK THIS - IT LOOKS WRONG l=%d d=%d\n", l, d);
     }
   c = 0;
   x = l * 2 - d;
@@ -2902,10 +2947,14 @@ dec_to_str (char *s, int size)
       buff[c++] = '.';
       has_zero = 0;
     }
+ 
+  //debug("OFFSET_DEC(s)=%d\n",OFFSET_DEC(s));
 
   for (a = OFFSET_DEC (s); a <= l + 1; a++)
     {
+	
       k = DEC_VAL (s[a]);
+	debug("k=%d\n",k);
       buff[c++] = ((int) k / 10) + '0';
       if (buff[c - 1] != '0' && has_zero == 1)
 	has_zero = 0;
@@ -2946,6 +2995,7 @@ dec_to_str (char *s, int size)
     }
 
   debug ("has_zero=%d c=%d x=%d", has_zero, c, x);
+debug("Buff: %s\n",buff);
   return buff;
 }
 
@@ -3029,6 +3079,7 @@ minus_dec (char *a, char *b)
 char *
 init_dec (char *s, int len, int d)
 {
+  if (len%2==1) len++; /* This was missing - odd number decimals wouldn't allocate the right space! */
   if (s == 0)
     {
       s = malloc (len + OFFSET_DEC (s));
