@@ -535,7 +535,7 @@ const short *token_groups[]={
     token_group_2,
     token_group_87,
     token_group_77,
-    token_group_87,
+    token_group_41,
     token_group_81,
     token_group_2,
     token_group_77,
