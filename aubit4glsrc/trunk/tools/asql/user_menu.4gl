@@ -21,6 +21,7 @@ end function
 function modify_user_menu()
 define lv_str char(255)
 define lv_ut1,lv_ut2 char(30)
+define lv_i integer
 define bad integer
 whenever error continue
 
@@ -37,7 +38,7 @@ end if
 let bad=1
 
 
-let lv_str="select * from ",lv_ut1
+let lv_str="select 1 from ",lv_ut1
 prepare p1_um from lv_str
 if sqlca.sqlcode=0 then
 		declare c1_um cursor for p1_um
@@ -45,7 +46,7 @@ if sqlca.sqlcode=0 then
 		if sqlca.sqlcode=0 then
 			open c1_um
 			if sqlca.sqlcode=0 then
-				fetch c1_um
+				fetch c1_um into lv_i
 				if sqlca.sqlcode>=0 then
 					let bad=0
 				end if

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.33 2004-12-22 11:22:20 afalout Exp $
+# $Id: Makefile,v 1.34 2005-01-25 16:23:26 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -59,10 +59,11 @@ OBJS_C			=lex.yy.o simple_parse.o dir.o
 OBJS_PG_ONLY	=postgres${A4GL_OBJ_EXT}
 OBJS_IFX_ONLY	=infx${A4GL_OBJ_EXT}
 OBJS_GEN_ONLY	=generic${A4GL_OBJ_EXT}
+OBJS_ING_ONLY	=ing${A4GL_OBJ_EXT}
 
 ################
 #All objects that will need celaning, without prefix
-CLEAN_OBJS		=${OBJS_4GL} ${OBJS_PG_ONLY} ${OBJS_IFX_ONLY} ${OBJS_GEN_ONLY}
+CLEAN_OBJS		=${OBJS_4GL} ${OBJS_PG_ONLY} ${OBJS_IFX_ONLY} ${OBJS_GEN_ONLY} ${OBJS_ING_ONLY}
 
 ################
 #All objects for Postgres version
@@ -78,6 +79,8 @@ OBJS_IFX		=$(addprefix ifx_,${OBJS_4GL}) ${OBJS_C} \
 OBJS_GEN		=$(addprefix gen_,${OBJS_4GL}) ${OBJS_C} \
 				$(addprefix gen_,${OBJS_GEN_ONLY})
 
+OBJS_ING		=$(addprefix ing_,${OBJS_4GL}) ${OBJS_C} \
+				$(addprefix ing_,${OBJS_ING_ONLY})
 ## ==================================================================
 ##                              Options
 ## ==================================================================
@@ -85,9 +88,9 @@ OBJS_GEN		=$(addprefix gen_,${OBJS_4GL}) ${OBJS_C} \
 ################
 #Aubit compiler settings
 A4GL_LEXTYPE	=EC
-A4GL_USE_DATABASE_STMT=Y
+#A4GL_USE_DATABASE_STMT=Y
 
-################
+###############
 #Export to environment
 export A4GL_LEXTYPE A4GL_USE_DATABASE_STMT POSTGRESDIR PGSQL_INCDIR CFLAGS
 
@@ -100,6 +103,7 @@ ifneq "${PG_ESQLC}" "no"
 		ALL_PROGS		+=asql_p${A4GL_EXE_EXT}
     endif
 endif
+
 ifneq "${IFMX_ESQLC}" "no"
 	ALL_PROGS			+=asql_i${A4GL_EXE_EXT}
 endif
@@ -181,6 +185,15 @@ asql_g${A4GL_EXE_EXT}: ${OBJS_GEN}
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
+asql_I${A4GL_EXE_EXT}:  A4GL_LEXDIALECT=INGRES
+asql_I${A4GL_EXE_EXT}: ${OBJS_ING}
+	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|           Successfuly compiled Ingres  version of asql             |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
 ################
 #Target to make asql PostgreSQL version
 asql_p${A4GL_EXE_EXT}: A4GL_LEXDIALECT=POSTGRES
@@ -208,6 +221,10 @@ ifx_%${A4GL_OBJ_EXT}: %.4gl
 
 gen_%${A4GL_OBJ_EXT}: %.4gl
 	A4GL_LEXTYPE=C ${COMP4GL}
+
+ing_%${A4GL_OBJ_EXT}: %.4gl
+	${COMP4GL}
+
 ################
 #Rule to make objects from 4GL file - Postgres version
 pg_%.ao: %.4gl
@@ -237,6 +254,9 @@ run.i:
 	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";A4GL_FORMTYPE=GENERIC; \
 	A4GL_PACKER=PACKED;./asql_i${A4GL_EXE_EXT}
 
+run.I:
+	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";A4GL_FORMTYPE=GENERIC; \
+	A4GL_PACKER=PACKED;./asql_I${A4GL_EXE_EXT}
 run.p:
 	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";A4GL_FORMTYPE=GENERIC; \
 	A4GL_PACKER=PACKED;./asql_p${A4GL_EXE_EXT}

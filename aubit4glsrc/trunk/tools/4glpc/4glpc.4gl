@@ -23,6 +23,7 @@ define mv_import_symbols char(256)
 define mv_objects char(20480)
 define mv_errfile char(256)
 define mv_newest_obj char(256)
+DEFINE mv_output_type CHAR(20)
 
 define
 	mv_db 			char(128),
@@ -244,7 +245,6 @@ DEFINE a INTEGER
 DEFINE lv_num_args INTEGER
 DEFINE lv_arg CHAR(100)
 DEFINE lv_type CHAR(40)
-DEFINE lv_output_type CHAR(20)
 DEFINE lv_output char(255)
 DEFINE lv_cnt integer
 DEFINE lv_minus_c, lv_minus_e INTEGER
@@ -297,14 +297,14 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 
 
 # Darn - none at all - guess its an object
-  IF lv_cnt=0 and lv_output_type="UNK" THEN
+  IF lv_cnt=0 and mv_output_type="UNK" THEN
 	IF lv_minus_c THEN
-		LET lv_output_type="OBJ"
+		LET mv_output_type="OBJ"
 	ELSE
 		IF lv_minus_e THEN
-			LET lv_output_type="C"
+			LET mv_output_type="C"
 		ELSE
-			LET lv_output_type="OBJ"
+			LET mv_output_type="OBJ"
 		END IF
 	END IF
 	
@@ -322,26 +322,26 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   	END FOR
 
 	# Guess that its probably an executable..
-	LET lv_output_type="EXE"
+	LET mv_output_type="EXE"
 
 	# Does it look like a static library ?
 	let lv_type=generate_ext("LIB")
 	IF lv_arg matches "*.a" or lv_arg matches lv_type  # Its a library
 	   or lv_arg matches "*.aox" then 
-		LET lv_output_type="LIB"
+		LET mv_output_type="LIB"
 	END IF
 
 
 	let lv_type=generate_ext("EXE")
 	IF lv_arg matches "*.exe" or lv_arg matches lv_type  then
-		LET lv_output_type="EXE"
+		LET mv_output_type="EXE"
 	END IF
 
 
 	# Does it look like a shared library ?
 	let lv_type=generate_ext("DLL")
 	if lv_arg matches "*.so" or lv_arg matches lv_type or mv_make_dll then # Its a library
-		LET lv_output_type="DLL"
+		LET mv_output_type="DLL"
 	end if
 
 	# Does it look like a object ?
@@ -349,7 +349,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	if lv_arg matches "*.o" 
 	   or lv_arg matches "*.ao" 
 	   or lv_arg matches lv_type then
-		LET lv_output_type="OBJ"
+		LET mv_output_type="OBJ"
 	end if
 
 	# Does it look like an EC module ?
@@ -359,7 +359,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	   or lv_arg matches "*.cpc" 
 	   or lv_arg matches lv_type
 	   or lv_arg matches "*.pgc" then # Its an esql/c module
-		LET lv_output_type="EC"
+		LET mv_output_type="EC"
 	end if
 
 	# Does it look like a form ?
@@ -388,7 +388,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	let lv_type=generate_ext("C")
 	if lv_arg matches "*.c"  # Its a C file
 	   or lv_arg matches lv_type then
-		LET lv_output_type="C"
+		LET mv_output_type="C"
 	end if
 
 	# Does it look like a message/help file ?
@@ -402,13 +402,13 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	# Does it look like a compiled message/help file ?
 	let lv_type=generate_ext("IEM")
 	if lv_arg matches "*.iem" or lv_arg matches lv_type  then
-		LET lv_output_type="MSG"
+		LET mv_output_type="MSG"
 	end if
   END IF
 
 
 
-  LET mv_stage=lv_output_type
+  LET mv_stage=mv_output_type
 
   FOR a=1 to lv_num_args
 	LET lv_arg=arg_val(a)
@@ -443,14 +443,14 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "--output"			let a=a+1 let mv_output=arg_val(a) continue for
 		WHEN "-o"			let a=a+1 let mv_output=arg_val(a) continue for
 
-		WHEN "-c"			if lv_output_type!="OBJ" then
-							display "Invalid combination -c, generating a ",lv_output_type
+		WHEN "-c"			if mv_output_type!="OBJ" then
+							display "Invalid combination -c, generating a ",mv_output_type
 							exit program 2
 						end if
 						let mv_stage="OBJ" continue for
 						
-		WHEN "-e"			if lv_output_type!="C" then
-							display "Invalid combination -e, generating a ",lv_output_type
+		WHEN "-e"			if mv_output_type!="C" then
+							display "Invalid combination -e, generating a ",mv_output_type
 							exit program 2
 						end if
 						let mv_stage="C" continue for
@@ -688,7 +688,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 	
 			call run_link(mv_output)
 		else
-			let mv_output=mv_output clipped,get_ext("DLL")
+			let mv_output=get_fname(mv_output,"DLL")
 			call run_link(mv_output)
 		end if
 	ELSE
@@ -733,7 +733,7 @@ IF lv_from="4GL"  THEN
 	IF lv_to="C" and mv_lextype="EC" THEN
 		# We want a preprocessed EC not a -> C
 		CALL make_into(lv_fname,"4GL","EC")
-		LET lv_new=lv_base clipped,get_ext("EC")
+		LET lv_new=get_fname(lv_base,"EC")
 		call run_4glc(lv_fname,lv_new,lv_base)
 		call make_into(lv_new,"EC","PEC")
 		RETURN
@@ -746,26 +746,26 @@ IF lv_from="4GL"  THEN
 
 	CASE lv_to
 		WHEN "C"
-			LET lv_new=lv_base clipped,get_ext("C")
+			LET lv_new=get_fname(lv_base ,"C")
 			call run_4glc(lv_fname,lv_new,lv_base)
 			RETURN
 
 		WHEN "EC"
 			
-			LET lv_new=lv_base clipped,get_ext("EC")
+			LET lv_new=get_fname(lv_base ,"EC")
 			call run_4glc(lv_fname,lv_new,lv_base)
 			RETURN
 
 		WHEN "OBJ"
 			IF mv_lextype="EC" THEN
 				call make_into(lv_fname,"4GL","EC")
-				LET lv_new=lv_base clipped,get_ext("EC")
-				LET lv_new2=lv_base clipped,get_ext("OBJ")
+				LET lv_new=get_fname(lv_base ,"EC")
+				LET lv_new2=get_fname(lv_base ,"OBJ")
 				call make_into(lv_new,"EC","OBJ")
 			ELSE
 				call make_into(lv_fname,"4GL","C")
-				LET lv_new=lv_base clipped,get_ext("C")
-				LET lv_new2=lv_base clipped,get_ext("OBJ")
+				LET lv_new=get_fname(lv_base ,"C")
+				LET lv_new2=get_fname(lv_base ,"OBJ")
 				call make_into(lv_new,"C","OBJ")
 			END IF
 		OTHERWISE
@@ -781,13 +781,13 @@ END IF
 
 
 IF lv_from="C" and lv_to="OBJ" THEN
-	LET lv_new=lv_base clipped,get_ext("OBJ")
+	LET lv_new=get_fname(lv_base,"OBJ")
 	CALL run_compile(lv_fname,lv_new,lv_base)
 	RETURN
 END IF
 
 IF lv_from="EC" and lv_to="PEC" THEN
-	LET lv_new=lv_base clipped,get_ext("C")
+	LET lv_new=get_fname(lv_base ,"C")
 	CALL run_esql_prec(lv_fname,lv_new,lv_base)
 	RETURN
 END IF
@@ -795,13 +795,13 @@ END IF
 IF lv_from="EC" and lv_to="OBJ" THEN
 	IF mv_esql_to_c_first THEN
 if mv_verbose>=4 then display "C FIRST" end if
-		LET lv_new=lv_base clipped,get_ext("C")
+		LET lv_new=get_fname(lv_base ,"C")
 		CALL make_into(lv_fname,"EC","PEC")
-		LET lv_new=lv_base clipped,get_ext("C")
+		LET lv_new=get_fname(lv_base ,"C")
 		CALL make_into(lv_new,"C","OBJ")
 	ELSE
 if mv_verbose>=4 then display "STRAIGHT TO OBJ - NO C FIRST" end if
-		LET lv_new=lv_base clipped,get_ext("OBJ")
+		LET lv_new=get_fname(lv_base,"OBJ")
 		CALL run_compile_esql(lv_fname,lv_new,lv_base)
 	END IF
 
@@ -1400,4 +1400,29 @@ if mv_verbose>=n then
 else
 	return 0
 end if
+end function
+
+
+function get_fname(lv_base,lv_ext_type) 
+define lv_base char(256)
+define lv_ext_type char(10)
+define lv_new char(256)
+if mv_verbose>=5 then 
+	display "lv_ext_type=",lv_ext_type clipped," base=",lv_base clipped," otype=",mv_output_type clipped, " output=",mv_output clipped
+end if
+
+
+if lv_ext_type=mv_output_type then
+
+	if mv_output="" or mv_output is null then
+		LET lv_new=lv_base clipped,get_ext(lv_ext_type)
+	else
+		LET lv_new=mv_output
+	end if
+else
+	LET lv_new=lv_base clipped,get_ext(lv_ext_type)
+end if 
+
+
+return lv_new
 end function

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.74 2005-01-12 11:15:09 mikeaubury Exp $
+# $Id: compile.c,v 1.75 2005-01-25 16:19:43 mikeaubury Exp $
 #*/
 
 /**
@@ -1147,14 +1147,17 @@ char ext[8];
 				from that
 				*/
 				if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
+					char buff2[2000];
 					sprintf (buff, "%s/bin/ecpg -C INFORMIX -t %s.cpc %s %s",
 					   acl_getenv ("POSTGRESDIR"), fgl_basename, incl_path, pass_options);
 					if (verbose){printf ("%s\n", buff);	}
 					if ( ! win_95_98 ) {
 						/*this apparently works on NT, but not on W98:*/
-						sprintf (buff, "%s > %s.cpc.err 2>&1", buff, fgl_basename);
+						sprintf (buff2, "%s > %s.cpc.err 2>&1", buff, fgl_basename);
+						strcpy(buff,buff2);
 					} else {
-						sprintf (buff, "%s > %s.cpc.err", buff, fgl_basename);
+						sprintf (buff2, "%s > %s.cpc.err", buff, fgl_basename);
+						strcpy(buff,buff2);
 					}
 					#ifdef DEBUG
 						A4GL_debug ("Runnung %s", buff);
@@ -1180,13 +1183,20 @@ char ext[8];
 					}
 				} else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) {
 					/* /opt/sapdb/interfaces/precompiler/bin/cpc hello <<- no .cpc extension ! */
-					  sprintf (buff, "%s %s -c -o %s %s %s",
+					   sprintf (buff, "%s %s -c -o %s %s %s",
 					   acl_getenv ("A4GL_SAPDB_ESQLC"), fgl_basename, single_output_object, incl_path,
 					   pass_options);
 				} else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "QUERIX") == 0) {
 					  sprintf (buff, "esqlc %s.ec -c -o %s %s %s",
 					   fgl_basename, single_output_object, incl_path,
 					   pass_options);
+				} else if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "INGRES") == 0) {
+					  sprintf (buff, "4glpc -V5 -c -o %s %s.sc %s %s",single_output_object,
+					   fgl_basename,  incl_path,
+					   pass_options);
+
+					printf("--->%s\n",buff);
+
 				} else /*"A4GL_LEXDIALECT"="INFORMIX" - default*/ {
 					//we must add this include paths becuse we use qualified 
 					//path for decimal.h include, to prevent it from being confused
