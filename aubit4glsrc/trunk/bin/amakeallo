@@ -19,7 +19,7 @@ function stats {
 
 	let TOTALFAILED=COMPFAIL4GL+COMPFAILCCOMP+COMPFAILCORE+COMPFAILUNKNOWN+FAILCOMPATIBLE
 
-	echo "$COMPSUCCESS sucessfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled."
+	echo "$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled."
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason."
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK."
     echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code."
@@ -28,7 +28,7 @@ function stats {
 	date
 
     echo " " >> $ERRORLOG
-	echo "$COMPSUCCESS sucessfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled." >> $ERRORLOG
+	echo "$COMPSUCCESS successfully compiled, $COMPFAIL4GL failed in 4gl, $COMPBEFORE already compiled." >> $ERRORLOG
     echo "$COMPFAILCCOMP failed in C compiler, $COMPFAILCORE dumped core, $COMPFAILUNKNOWN failed for unknown reason." >> $ERRORLOG
     echo "$TOTALFAILED total failed. $FAILCOMPATIBLE failed in both compilers and assumed OK." >> $ERRORLOG
     echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code." >> $ERRORLOG
@@ -47,6 +47,14 @@ function stats {
 	echo " " >> $CLOG
     echo "$COMPFAILCCOMP failed in C compiler" >> $CLOG
 	date >> $CLOG
+
+	echo " " >> $CORELOG
+	echo "$COMPFAILCORE dumped core." >> $CORELOG
+	date >> $CORELOG
+
+    echo " " >> $GLOBLOG
+	echo "$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found." >> $GLOBLOG
+    date >> $GLOBLOG
 
 
 }
@@ -147,6 +155,7 @@ function analiseerror {
 						if [ "$VERBOSE" = "1" ]
 					    then
 							echo Core was dumped...
+                            echo $PWD/$i >> $CORELOG
 	                    fi
 						echo "Core was dumped..."  >> $ERRORLOG
 						rm core
@@ -1125,7 +1134,8 @@ function doit {
     ZEROLOG=$ERRFILESDIR/zero_size.log
     CLOG=$ERRFILESDIR/c_err.log
     FGLLOG=$ERRFILESDIR/4gl_err.log
-
+	CORELOG=$ERRFILESDIR/core_err.log
+    GLOBLOG=$ERRFILESDIR/glob_err.log
 
 	if test $VERBOSE = "0"
 	then
@@ -1155,6 +1165,8 @@ function doit {
 	date > $ZEROLOG
 	date > $FGLLOG
 	date > $CLOG
+    date > $CORELOG
+    date > $GLOBLOG
 
     #################
     #start compiling:
@@ -1176,7 +1188,7 @@ function doit {
 			ALLSUBDIRS="winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo cm contr dvfund lawmods"
             SKIPDIRS="aform aprog forms prog gform gprog qform qprog"
         else
-			ALLSUBDIRS=`ls -l | 
+			ALLSUBDIRS=`ls -l |
 			 "^d" | awk '{print $NF}'`
         fi
 
