@@ -41,8 +41,6 @@ AC_SUBST(PERL)dnl
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lc':
 AC_CHECK_LIB([c], [main])
-# FIXME: Replace `main' with a function in `-lclint':
-AC_CHECK_LIB([clint], [main])
 # FIXME: Replace `main' with a function in `-lcurses':
 AC_CHECK_LIB([curses], [main])
 # FIXME: Replace `main' with a function in `-ldl':
@@ -55,8 +53,6 @@ AC_CHECK_LIB([gdk], [main])
 AC_CHECK_LIB([glib], [main])
 # FIXME: Replace `main' with a function in `-lgtk':
 AC_CHECK_LIB([gtk], [main])
-# FIXME: Replace `main' with a function in `-lgtk4gl':
-AC_CHECK_LIB([gtk4gl], [main])
 # FIXME: Replace `main' with a function in `-liksemel':
 AC_CHECK_LIB([iksemel], [main])
 # FIXME: Replace `main' with a function in `-liodbc':
