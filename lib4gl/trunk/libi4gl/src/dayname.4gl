@@ -1,30 +1,8 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	90.03.22.09.29.12;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@{
-	@@(#)$Id: dayname.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
-	@@(#)Sphinx Informix Tools: General Library
-	@@(#)Return full name of weekday for given date
-	@@(#)Jonathan Leffler
+{
+	@(#)$Id: dayname.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)Sphinx Informix Tools: General Library
+	@(#)Return full name of weekday for given date
+	@(#)Jonathan Leffler
 }
 
 DEFINE
@@ -38,7 +16,7 @@ FUNCTION dayname(d)
 		i	INTEGER
 
 	IF sccs IS NULL THEN
-		LET sccs = "@@(#)$Id: dayname.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"
+		LET sccs = "@(#)$Id: dayname.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 		LET day_names[1] = "Sunday"
 		LET day_names[2] = "Monday"
 		LET day_names[3] = "Tuesday"
@@ -53,4 +31,3 @@ FUNCTION dayname(d)
 	RETURN day_names[i] CLIPPED
 
 END FUNCTION {dayname}
-@

@@ -1,18 +1,18 @@
 /*
-@@(#)File:            $RCSfile: dlqsort.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:45 $
-@@(#)Purpose:         QSORT for doubly-linked lists
-@@(#)Product:         :PRODUCT:
+@(#)File:            $RCSfile: dlqsort.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         QSORT for doubly-linked lists
+@(#)Product:         :PRODUCT:
 */
 
 /*TABSTOP=4*/
 
 /*
-** From: jjsc@@inf.rl.ac.uk (John Cullen)
+** From: jjsc@inf.rl.ac.uk (John Cullen)
 ** Newsgroups: comp.lang.c
 ** Subject: Double linked list quicksort - program.
-** Message-ID: <11906@@pecan.rl.ac.uk>
+** Message-ID: <11906@pecan.rl.ac.uk>
 ** Date: 6 Jan 92 11:04:35 GMT
 **
 ** I am posting this on behalf of a friend without direct news
@@ -29,7 +29,7 @@
 ** quicksort to sort double-linked lists, together with a
 ** demonstration program.  You will need my header file from my
 ** previous posting.  If you havn't got a copy, mail me, and I will
-** send you one.  My e-mail address is: GORMAN_B@@P1.LANCSP.AC.UK.  Our
+** send you one.  My e-mail address is: GORMAN_B@P1.LANCSP.AC.UK.  Our
 ** site will be closed from Christmas Eve until the New Year, so there
 ** may be a delay in replying.  Enjoy!
 */
@@ -40,7 +40,7 @@
 #include "linkpack.h"
 
 #ifndef lint
-static char     sccs[] = "@@(#)$Id: dlqsort.c,v 1.1 2002-06-14 05:03:45 afalout Exp $";
+static char     sccs[] = "@(#)$Id: dlqsort.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 /******************************************\
@@ -183,4 +183,3 @@ int             main()
 }
 
 #endif	/* TEST */
-

@@ -1,7 +1,7 @@
 {
-	@@(#)slistint.4gl	1.2 90/03/04
-	@@(#)Scroll cursor version of D-List code
-	@@(#)Integer List
+	@(#)slistint.4gl	1.2 90/03/04
+	@(#)Scroll cursor version of D-List code
+	@(#)Integer List
 }
 
 DEFINE
@@ -197,4 +197,3 @@ FUNCTION sc_zapint(n)
 	RETURN 0
 
 END FUNCTION {sc_zapint}
-

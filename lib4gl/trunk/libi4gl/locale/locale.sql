@@ -1,30 +1,8 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	91.11.17.16.35.05;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@-- @@(#)File:            $RCSfile: locale.sql,v $
--- @@(#)Version:         $Revision: 1.1 $
--- @@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
--- @@(#)Purpose:         SQL table definition for LOCALE table (Informix)
--- @@(#)Author:          J Leffler
+-- @(#)File:            $RCSfile: locale.sql,v $
+-- @(#)Version:         $Revision: 1.2 $
+-- @(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+-- @(#)Purpose:         SQL table definition for LOCALE table (Informix)
+-- @(#)Author:          J Leffler
 
 -- Designed after the ANSI C header <locale.h>
 CREATE TABLE Locale
@@ -127,4 +105,3 @@ CREATE UNIQUE INDEX Pk_locale ON Locale(Locale_name);
 -- next closest group, and so on.
 -- A standard value for this field is "30", which means group in thousands, and
 -- millions, and thousands of millions, and millions of millions, and ...
-@

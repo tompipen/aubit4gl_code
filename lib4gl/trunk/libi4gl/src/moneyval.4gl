@@ -1,30 +1,8 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	88.04.26.11.07.33;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@{
-	@@(#)$Id: moneyval.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
-	@@(#)KPI Database Project: General Library
-	@@(#)Convert money quantity from string
-	@@(#)Author: JL
+{
+	@(#)$Id: moneyval.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)KPI Database Project: General Library
+	@(#)Convert money quantity from string
+	@(#)Author: JL
 }
 
 { Convert entered string to number and string: income or expense }
@@ -58,4 +36,3 @@ FUNCTION money_val(s, c)
 	RETURN r, i
 
 END FUNCTION {money_val}
-@

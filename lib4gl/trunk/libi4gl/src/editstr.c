@@ -1,31 +1,9 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	88.10.03.13.22.18;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)	File:			$RCSfile: editstr.c,v $
-@@(#)	Version:		$Revision: 1.1 $
-@@(#)	Last changed:	$Date: 2002-06-14 05:03:46 $
-@@(#)	Purpose:		I4GL: Globally substitute substring in string
-@@(#)	Author:			J Leffler
+/*
+@(#)	File:			$RCSfile: editstr.c,v $
+@(#)	Version:		$Revision: 1.2 $
+@(#)	Last changed:	$Date: 2002-06-14 09:23:16 $
+@(#)	Purpose:		I4GL: Globally substitute substring in string
+@(#)	Author:			J Leffler
 */
 
 /* edit_string: globally substitute for a substring in a string */
@@ -109,4 +87,3 @@ register char	*p;		/* In: string to search for */
 	}
 	return(0); /* no match */
 }
-@

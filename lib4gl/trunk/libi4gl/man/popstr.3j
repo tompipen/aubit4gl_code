@@ -1,28 +1,6 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	88.09.25.22.34.23;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@'\" @@(#)$Id: popstr.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: General Library -- Pop string
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+'\" @(#)$Id: popstr.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Pop string
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH POPSTRING 3S "Sphinx Informix Tools"
 .SH NAME
 popstring \(em pop a string off the I4GL stack and strip trailing blanks.
@@ -43,4 +21,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 25th September 1988
-@

@@ -1,31 +1,9 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	91.11.17.16.35.17;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: monset.h,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         ESQL/C header for structure of table Locale.
-@@(#)Author:          J Leffler
+/*
+@(#)File:            $RCSfile: monset.h,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         ESQL/C header for structure of table Locale.
+@(#)Author:          J Leffler
 */
 
 /*TABSTOP=4*/
@@ -61,4 +39,3 @@ $struct Tab_locale
 typedef struct Tab_locale Tab_locale;
 
 #endif	/* MONSET_H */
-@

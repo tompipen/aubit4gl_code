@@ -1,29 +1,7 @@
-head	7.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-7.1
-date	91.05.09.17.56.01;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-7.1
-log
-@Initial revision
-@
-text
-@-- @@(#)$Id: reptype.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $
--- @@(#)JLSS Informix Tools: FGLBLD Support Library
--- @@(#)Allow user to select data set for report
--- @@(#)Author: J Leffler
+-- @(#)$Id: reptype.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+-- @(#)JLSS Informix Tools: FGLBLD Support Library
+-- @(#)Allow user to select data set for report
+-- @(#)Author: J Leffler
 
 { Choose report option }
 FUNCTION report_type(mqdone, rqdone, nrows)
@@ -35,7 +13,7 @@ FUNCTION report_type(mqdone, rqdone, nrows)
 		sccs	CHAR(1),	{ SCCS ID string }
 		choice	CHAR(1)
 
-	LET sccs = "@@(#)$Id: reptype.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $"
+	LET sccs = "@(#)$Id: reptype.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 	LET INT_FLAG = FALSE
 
 	MENU "REPORT DATA"
@@ -109,4 +87,3 @@ FUNCTION report_type(mqdone, rqdone, nrows)
 	RETURN choice
 
 END FUNCTION {report_type}
-@

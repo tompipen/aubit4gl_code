@@ -1,28 +1,6 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	88.09.23.16.39.38;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@{
-	@@(#)$Id: nxfchk.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
-	@@(#)Program to test whether next_field works
+{
+	@(#)$Id: nxfchk.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)Program to test whether next_field works
 }
 
 MAIN
@@ -56,4 +34,3 @@ MAIN
 	CLEAR SCREEN
 
 END MAIN
-@

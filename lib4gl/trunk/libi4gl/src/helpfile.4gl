@@ -1,49 +1,7 @@
-head	1.5;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.5
-date	91.08.19.22.29.34;	author jl;	state Exp;
-branches;
-next	1.4;
-
-1.4
-date	91.08.19.22.26.04;	author jl;	state Exp;
-branches;
-next	1.3;
-
-1.3
-date	91.05.22.12.10.48;	author johnl;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	91.05.09.15.16.46;	author johnl;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	90.08.06.16.18.06;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.5
-log
-@Remove stray line and stray comma
-@
-text
-@-- @@(#)$Id: helpfile.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
--- @@(#)JLSS Informix Tools: General Library
--- @@(#)Maintain stack of helpfile names
--- @@(#)Author: JL
+-- @(#)$Id: helpfile.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+-- @(#)JLSS Informix Tools: General Library
+-- @(#)Maintain stack of helpfile names
+-- @(#)Author: JL
 
 {
 This code maintains a stack of help file names.  Whenever a new file
@@ -106,7 +64,7 @@ FUNCTION cur_helpfile()
 		LET filename = stack[sp]
 	ELSE
 		LET filename = NULL
-		LET sccs = "@@(#)$Id: helpfile.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"
+		LET sccs = "@(#)$Id: helpfile.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 	END IF
 
 	RETURN filename
@@ -129,65 +87,3 @@ FUNCTION help_message(msgnum)
 	RETURN s
 
 END FUNCTION {help_message}
-@
-
-
-1.4
-log
-@Use fgl_msgopen and fgl_msgread
-@
-text
-@a5 1
-
-d25 1
-a25 1
-		junk		INTEGER,
-@
-
-
-1.3
-log
-@Add help_message function
-@
-text
-@d25 2
-a26 1
-		filename	CHAR(64)
-d34 1
-d42 2
-a43 1
-		filename	CHAR(64)
-d48 1
-d83 1
-a83 1
-		LET s = fgl_msgtext(stack[sp], msgnum)
-@
-
-
-1.2
-log
-@Upgrade
-@
-text
-@d70 17
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d1 4
-a4 6
-{
-	@@(#)$Id: helpfile.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
-	@@(#)Sphinx Informix Tools: General Library
-	@@(#)Maintain stack of helpfile names
-	@@(#)Author: JL
-}
-d57 2
-a58 1
-		filename	CHAR(64)
-d64 1
-@

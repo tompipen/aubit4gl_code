@@ -1,28 +1,6 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	88.11.24.17.48.12;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@'\" @@(#)$Id: centre.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: General Library -- right-justify string
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+'\" @(#)$Id: centre.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- right-justify string
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH CENTRE 3S "Sphinx Informix Tools"
 .SH NAME
 centre \(em centre a string
@@ -49,4 +27,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 24th November 1988
-@

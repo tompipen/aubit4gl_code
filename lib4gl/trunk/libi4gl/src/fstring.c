@@ -1,31 +1,9 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	91.06.27.09.30.50;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: fstring.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         Find start of one string in another
-@@(#)Author:          J Leffler
+/*
+@(#)File:            $RCSfile: fstring.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         Find start of one string in another
+@(#)Author:          J Leffler
 */
 
 #define I4GL_C
@@ -33,7 +11,7 @@ text
 extern char *strstr();
 
 #ifndef lint
-static	char	sccs[] = "@@(#)$Id: fstring.c,v 1.1 2002-06-14 05:03:46 afalout Exp $";
+static	char	sccs[] = "@(#)$Id: fstring.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 I4GL_C	find_string(n)
@@ -56,4 +34,3 @@ int		n;
 	}
 	return(1);
 }
-@

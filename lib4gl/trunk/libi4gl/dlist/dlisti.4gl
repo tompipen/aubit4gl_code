@@ -1,6 +1,6 @@
 {
-	@@(#)$Id: dlisti.4gl,v 1.1 2002-06-14 05:03:45 afalout Exp $
-	@@(#)Test code to check functionality of D-lists -- INTEGERS
+	@(#)$Id: dlisti.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)Test code to check functionality of D-lists -- INTEGERS
 }
 
 MAIN
@@ -10,7 +10,7 @@ MAIN
 		sccs		CHAR(32),
 		i,j,k,l,n	INTEGER
 	
-	LET sccs = "@@(#)$Id: dlisti.4gl,v 1.1 2002-06-14 05:03:45 afalout Exp $"
+	LET sccs = "@(#)$Id: dlisti.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 
 	FOR i = 1 TO 4
 		LET list[i] = sc_mkint()
@@ -86,47 +86,3 @@ FUNCTION hash(i)
 	RETURN ((i * 41) / 7) MOD 4 + 1
 
 END FUNCTION
-
-{
-@
-
-
-3.2
-log
-@Tighten up a little
-@
-text
-@d31 1
-a31 1
-		DISPLAY "get row ", n USING "<<<", " from list ",
-d36 1
-a36 1
-			ERROR "Failed to get row ", j USING "<<<",
-d52 1
-a52 1
-			ERROR "Failed to get row ", j USING "<<<",
-d71 1
-a71 1
-				ERROR "Failed to get row ", j USING "<<<",
-@
-
-
-3.1
-log
-@Initial revision
-@
-text
-@d10 1
-d13 2
-d35 1
-a35 1
-		IF k < 0 THEN
-d51 1
-a51 1
-		IF k < 0 THEN
-d70 1
-a70 1
-			IF k < 0 THEN
-@
-
-}

@@ -1,38 +1,16 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	91.11.17.16.35.08;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: memmove.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         Simulate MEMMOVE(3)
-@@(#)Author:          J Leffler
-@@(#)Copyright:       (C) JLSS 1991
+/*
+@(#)File:            $RCSfile: memmove.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         Simulate MEMMOVE(3)
+@(#)Author:          J Leffler
+@(#)Copyright:       (C) JLSS 1991
 */
 
 /*TABSTOP=4*/
 
 #ifndef lint
-static char     sccs[] = "@@(#)$Id: memmove.c,v 1.1 2002-06-14 05:03:46 afalout Exp $";
+static char     sccs[] = "@(#)$Id: memmove.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 void	*memmove(s1, s2, n)
@@ -86,4 +64,3 @@ main()
 	return(0);
 }
 #endif	/* TEST */
-@

@@ -1,9 +1,9 @@
 /*
-	@@(#)$Id: adjinarr.ec,v 1.1 2002-06-14 05:03:45 afalout Exp $
-	@@(#)Alternative interface for INPUT ARRAY
-	@@(#)Allows programmer specified array dimensions
-	@@(#)Requires modification to $INFORMIXDIR/incl/sqlfm.h
-	@@(#)This is an ESQL/C file to ensure that the include files are found
+	@(#)$Id: adjinarr.ec,v 1.2 2002-06-14 09:23:03 afalout Exp $
+	@(#)Alternative interface for INPUT ARRAY
+	@(#)Allows programmer specified array dimensions
+	@(#)Requires modification to $INFORMIXDIR/incl/sqlfm.h
+	@(#)This is an ESQL/C file to ensure that the include files are found
 */
 #define FAR_V_INPUT
 
@@ -14,7 +14,7 @@
 #endif
 
 #ifndef lint
-static	char	sccs[] = "@@(#)$Id: adjinarr.ec,v 1.1 2002-06-14 05:03:45 afalout Exp $";
+static	char	sccs[] = "@(#)$Id: adjinarr.ec,v 1.2 2002-06-14 09:23:03 afalout Exp $";
 #endif
 
 #include <sqlhdr.h>
@@ -66,4 +66,3 @@ _ef_v_ipclean()
 	max_dimension = 0;
 	_efipclean();
 }
-

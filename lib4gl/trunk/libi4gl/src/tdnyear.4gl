@@ -1,35 +1,8 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	90.05.21.13.42.53;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	90.05.09.11.50.35;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Add SCCS tags
-@
-text
-@{
-	@@(#)$Id: tdnyear.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $
-	@@(#)Sphinx Informix Tools: General Library
-	@@(#)Find the date of this day next year
-	@@(#)Author: JL
+{
+	@(#)$Id: tdnyear.4gl,v 1.2 2002-06-14 09:23:17 afalout Exp $
+	@(#)Sphinx Informix Tools: General Library
+	@(#)Find the date of this day next year
+	@(#)Author: JL
 }
 
 FUNCTION this_date_next_year(edate)
@@ -57,19 +30,6 @@ FUNCTION this_date_next_year(edate)
 
 	RETURN MDY(mm, dd, yy)
 
-	LET sccs = "@@(#)$Id: tdnyear.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $"
+	LET sccs = "@(#)$Id: tdnyear.4gl,v 1.2 2002-06-14 09:23:17 afalout Exp $"
 
 END FUNCTION {this_date_next_year}
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d14 2
-a15 1
-		yy		INTEGER		{ Year }
-d32 2
-@

@@ -1,41 +1,9 @@
-head	1.3;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.3
-date	90.04.05.10.51.01;	author john;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	88.05.03.09.40.09;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	88.02.15.20.27.10;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.3
-log
-@Revise SCCS ID and tidy a little
-@
-text
-@/*
-@@(#)File:            $RCSfile: isfile.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         Validate file name in I4GL
-@@(#)Author:          J Leffler
+/*
+@(#)File:            $RCSfile: isfile.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         Validate file name in I4GL
+@(#)Author:          J Leffler
 */
 
 /* -- Include Files		*/
@@ -65,7 +33,7 @@ void	strinsert();
 void	split_name();
 
 #ifndef lint
-static	char	sccs[] = "@@(#)$Id: isfile.c,v 1.1 2002-06-14 05:03:46 afalout Exp $";
+static	char	sccs[] = "@(#)$Id: isfile.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 /* -- Routine: isfile			*/
@@ -199,39 +167,3 @@ char	*t;		/* In:    String to be inserted */
 	while (*t)
 		*s++ = *t++;
 }
-@
-
-
-1.2
-log
-@Convert opquote/blankstrip to popstring
-@
-text
-@d2 5
-a6 5
-@@(#)	File:			$RCSfile: isfile.c,v $
-@@(#)	Version:		$Revision: 1.1 $
-@@(#)	Last changed:	$Date: 2002-06-14 05:03:46 $
-@@(#)	Purpose:		Validate file name in I4GL
-@@(#)	Author:			J Leffler
-a43 1
-
-a44 1
-
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d59 3
-a61 6
-		popquote(ext, sizeof(ext));
-		blankstrip(ext, sizeof(ext));
-		popquote(file, sizeof(file));
-		blankstrip(file, sizeof(file));
-		popquote(path, sizeof(path));
-		blankstrip(path, sizeof(path));
-@

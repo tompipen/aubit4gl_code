@@ -1,33 +1,6 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	89.09.12.21.35.27;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	89.09.12.21.29.36;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Finish heading line
-@
-text
-@'\" @@(#)$Id: redraw.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: REDRAW_SCREEN -- I4GL library function
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+'\" @(#)$Id: redraw.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: REDRAW_SCREEN -- I4GL library function
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH REDRAW_SCREEN 3S "Sphinx Informix Tools"
 .SH NAME
 redraw_screen \(em redraw the screen
@@ -51,15 +24,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 12th September 1989
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d4 1
-a4 1
-.TH PROG 1S "Sphinx Informix Tools"
-@

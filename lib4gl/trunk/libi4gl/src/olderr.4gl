@@ -1,29 +1,7 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	91.11.02.23.53.21;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@-- @@(#)$Id: olderr.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $
--- @@(#)JLSS Informix Tools: General Library
--- @@(#)Backwards-compatability module -- error handling
--- @@(#)Author: JL
+-- @(#)$Id: olderr.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+-- @(#)JLSS Informix Tools: General Library
+-- @(#)Backwards-compatability module -- error handling
+-- @(#)Author: JL
 
 { Terminal error to be displayed to user }
 FUNCTION program_error(s)
@@ -33,7 +11,7 @@ FUNCTION program_error(s)
 		sccs	CHAR(1)
 
 	CALL display_errtxt(s, 5, TRUE, TRUE)
-	LET sccs = "@@(#)$Id: olderr.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $"
+	LET sccs = "@(#)$Id: olderr.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 
 END FUNCTION {program_error}
 
@@ -86,4 +64,3 @@ FUNCTION internal_msgno(n)
 	CALL display_errnum(n, 3, TRUE, FALSE)
 
 END FUNCTION {internal_msgno}
-@

@@ -1,32 +1,10 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	91.11.17.16.35.11;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: mondmp.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         Print locale details (Informix LOCALE)
-@@(#)Author:          J Leffler
-@@(#)Copyright:       (C) JLSS 1991
+/*
+@(#)File:            $RCSfile: mondmp.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         Print locale details (Informix LOCALE)
+@(#)Author:          J Leffler
+@(#)Copyright:       (C) JLSS 1991
 */
 
 /*TABSTOP=4*/
@@ -35,7 +13,7 @@ text
 #include "monfmt.h"
 
 #ifndef lint
-static char     sccs[] = "@@(#)$Id: mondmp.c,v 1.1 2002-06-14 05:03:46 afalout Exp $";
+static char     sccs[] = "@(#)$Id: mondmp.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 static void     dmp_grouping(fp, s, g)
@@ -79,4 +57,3 @@ Money_fmt      *m;
 	dmp_grouping(fp, "grouping", m->grouping);
 	fprintf(fp, "%-18s = %s\n", "thousands_sep", m->thousands_sep);
 }
-@

@@ -1,31 +1,9 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	88.03.01.18.18.13;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)	File:			$RCSfile: decformat.c,v $
-@@(#)	Version:		$Revision: 1.1 $
-@@(#)	Last changed:	$Date: 2002-06-14 05:03:46 $
-@@(#)	Purpose:		Convert DECIMAL/FLOAT/SMALLFLOAT to string
-@@(#)	Author:			J Leffler
+/*
+@(#)	File:			$RCSfile: decformat.c,v $
+@(#)	Version:		$Revision: 1.2 $
+@(#)	Last changed:	$Date: 2002-06-14 09:23:16 $
+@(#)	Purpose:		Convert DECIMAL/FLOAT/SMALLFLOAT to string
+@(#)	Author:			J Leffler
 */
 
 /*
@@ -55,4 +33,3 @@ int	i;
 	retquote(str);
 	return(1);
 }
-@

@@ -1,34 +1,11 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	2001.07.27.16.24.09;	author jleffler;	state Exp;
-branches;
-next	;
-
-
-desc
-@Find the size of a file
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: filesize.ec,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         Find the size of a file.
-@@(#)Author:          J Leffler
-@@(#)Copyright:       (C) JLSS 2001
-@@(#)Product:         :PRODUCT:
+/*
+@(#)File:            $RCSfile: filesize.ec,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         Find the size of a file.
+@(#)Author:          J Leffler
+@(#)Copyright:       (C) JLSS 2001
+@(#)Product:         :PRODUCT:
 */
 
 /*TABSTOP=4*/
@@ -40,7 +17,7 @@ text
 #include <sqlhdr.h>
 
 #ifndef lint
-static const char rcs[] = "@@(#)$Id: filesize.ec,v 1.1 2002-06-14 05:03:46 afalout Exp $";
+static const char rcs[] = "@(#)$Id: filesize.ec,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 int i4gl_filesize(int nargs)
@@ -61,4 +38,3 @@ int i4gl_filesize(int nargs)
     return(1);
 }
 
-@

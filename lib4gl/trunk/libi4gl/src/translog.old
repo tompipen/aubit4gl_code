@@ -1,50 +1,8 @@
-head	1.5;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.5
-date	90.04.05.11.02.11;	author john;	state Exp;
-branches;
-next	1.4;
-
-1.4
-date	89.05.26.14.49.38;	author john;	state Exp;
-branches;
-next	1.3;
-
-1.3
-date	88.07.20.20.14.39;	author john;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	88.07.20.20.13.11;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	88.02.19.15.43.27;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.5
-log
-@Add sccs string
-@
-text
-@{
-	@@(#)$Id: translog.old,v 1.1 2002-06-14 05:03:47 afalout Exp $
-	@@(#)Sphinx Informix Tools: General Library
-	@@(#)Handle transactions whether database has log or not
-	@@(#)Author: JL
+{
+	@(#)$Id: translog.old,v 1.2 2002-06-14 09:23:17 afalout Exp $
+	@(#)Sphinx Informix Tools: General Library
+	@(#)Handle transactions whether database has log or not
+	@(#)Author: JL
 }
 
 { Global to this file -- not accessible outside }
@@ -69,7 +27,7 @@ FUNCTION	translog()
 			LET logstatus = 1 { Log absent }
 		ELSE
 			LET logstatus = 2 { Log present }
-			LET sccs = "@@(#)$Id: translog.old,v 1.1 2002-06-14 05:03:47 afalout Exp $"
+			LET sccs = "@(#)$Id: translog.old,v 1.2 2002-06-14 09:23:17 afalout Exp $"
 		END IF
 		WHENEVER ERROR STOP
 	END IF
@@ -118,49 +76,3 @@ FUNCTION end_work(state)
 	END IF
 
 END FUNCTION {end_work}
-@
-
-
-1.4
-log
-@Fix heading
-@
-text
-@d17 1
-d30 1
-@
-
-
-1.3
-log
-@Add some error protection
-@
-text
-@d3 1
-a3 1
-	@@(#)KPI Database Project: General Library
-@
-
-
-1.2
-log
-@Remove database line -- unnecessary
-@
-text
-@d20 1
-d25 1
-a25 1
-		IF STATUS = NOTFOUND THEN
-d30 1
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@a7 2
-DATABASE KPI
-
-@

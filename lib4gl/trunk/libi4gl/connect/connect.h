@@ -1,11 +1,11 @@
 /*
-@@(#)File:            $RCSfile: connect.h,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:45 $
-@@(#)Purpose:         I4GL Header for CONNECT, DISCONNECT and SET CONNECTION
-@@(#)Author:          J Leffler
-@@(#)Copyright:       (C) JLSS 1995
-@@(#)Product:         :PRODUCT:
+@(#)File:            $RCSfile: connect.h,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         I4GL Header for CONNECT, DISCONNECT and SET CONNECTION
+@(#)Author:          J Leffler
+@(#)Copyright:       (C) JLSS 1995
+@(#)Product:         :PRODUCT:
 */
 
 /*TABSTOP=4*/
@@ -15,7 +15,7 @@
 
 #ifdef MAIN_PROGRAM
 #ifndef lint
-static char connect_h[] = "@@(#)$Id: connect.h,v 1.1 2002-06-14 05:03:45 afalout Exp $";
+static char connect_h[] = "@(#)$Id: connect.h,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif	/* lint */
 #endif	/* MAIN_PROGRAM */
 
@@ -56,12 +56,3 @@ extern int set_connection_default(int n);
 extern int set_connection_by_name(int n);
 
 #endif	/* CONNECT_H */
-
-/*
-extern int set_connect_default(int n);
-extern int set_connect_by_name(int n);
-*/
-/* SET CONNECTION "db_env" */
-/*
-extern int set_connect_db_env(int n);
-*/

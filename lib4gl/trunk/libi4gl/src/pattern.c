@@ -1,36 +1,9 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.2
-date	91.08.19.17.07.10;	author johnl;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	91.08.19.17.01.19;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Add patt_match function; augment comments appropriately
-@
-text
-@/*
-@@(#)File:            $RCSfile: pattern.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:47 $
-@@(#)Purpose:         I4GL Interface to Regular Expressions
-@@(#)Author:          J Leffler, JLSS
+/*
+@(#)File:            $RCSfile: pattern.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         I4GL Interface to Regular Expressions
+@(#)Author:          J Leffler, JLSS
 */
 
 /*
@@ -117,7 +90,7 @@ text
 #define I4GL_C	int
 
 #ifndef lint
-static	char	sccs[] = "@@(#)$Id: pattern.c,v 1.1 2002-06-14 05:03:47 afalout Exp $";
+static	char	sccs[] = "@(#)$Id: pattern.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 I4GL_C	patt_scan(n)
@@ -193,21 +166,3 @@ int		n;
 	}
 	return(1);
 }
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d22 1
-d29 2
-a30 1
-**  substring.
-d43 1
-a84 1
-#include <stdio.h>
-d89 1
-d135 33
-@

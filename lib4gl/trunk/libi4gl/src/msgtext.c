@@ -1,56 +1,9 @@
-head	2.4;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-2.4
-date	91.11.02.21.03.56;	author jl;	state Exp;
-branches;
-next	2.3;
-
-2.3
-date	91.11.01.20.31.23;	author jl;	state Exp;
-branches;
-next	2.2;
-
-2.2
-date	91.08.27.15.43.49;	author jl;	state Exp;
-branches;
-next	2.1;
-
-2.1
-date	91.08.19.22.19.25;	author jl;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	91.05.22.12.12.55;	author johnl;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	91.05.22.12.06.19;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-2.4
-log
-@Use popstring, not popquote!
-@
-text
-@/*
-@@(#)File:            $RCSfile: msgtext.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:47 $
-@@(#)Purpose:         Open, Read, Close Informix Error Message Files
-@@(#)Author:          J Leffler
+/*
+@(#)File:            $RCSfile: msgtext.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         Open, Read, Close Informix Error Message Files
+@(#)Author:          J Leffler
 */
 
 /* -- Include Files */
@@ -96,7 +49,7 @@ extern char    *malloc();
 extern void     free();
 
 #if !defined(lint)
-static char     sccs[] = "@@(#)$Id: msgtext.c,v 1.1 2002-06-14 05:03:47 afalout Exp $";
+static char     sccs[] = "@(#)$Id: msgtext.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 /* Close an already open error message file */
@@ -185,7 +138,7 @@ int             msg;
 	else
 	{
 #ifdef DEBUG
-		fprintf(stderr, "%4d: %6d: %4d @@ 0x%08X\n", msg, ent->err_number,
+		fprintf(stderr, "%4d: %6d: %4d @ 0x%08X\n", msg, ent->err_number,
 				ent->err_length, ent->err_seek);
 #endif	/* DEBUG */
 		fseek(fp, ent->err_seek, 0);
@@ -289,128 +242,3 @@ char          **argv;
 }
 
 #endif	/* TEST */
-@
-
-
-2.3
-log
-@Handle missing messages somewhat better
-@
-text
-@d171 1
-a171 1
-		popquote(msgfile, sizeof(msgfile));
-@
-
-
-2.2
-log
-@Remove dependencies on emalloc
-@
-text
-@d183 1
-d190 5
-a194 1
-		s = iem_read(msgnum);
-@
-
-
-2.1
-log
-@Write brand new code derived from listiem.c
-@
-text
-@a12 2
-#include "stderr.h"
-#include "emalloc.h"
-d48 3
-d63 1
-a63 1
-			FREE(elist);
-d112 2
-a113 1
-		elist = (Entry *) MALLOC(n * sizeof(Entry));
-d117 1
-a117 1
-			FREE(elist);
-@
-
-
-1.2
-log
-@Define type of get_msgtext() function
-@
-text
-@d5 1
-a5 1
-@@(#)Purpose:         Get text of message from I4GL help file
-d9 18
-a26 7
-/*
-**	WARNING: this code uses undocumented Informix function calls
-**			 _setmsgfile() and mmsgtext().  These work with I4GL Version
-**			 4.00.UH1 on Sun Sparcstation under SunOS 4.1, but are not
-**			 guaranteed to be either forwards compatible, backwards
-**			 compatible or sideways compatible.
-*/
-d28 5
-a32 1
-#define I4GL_C					/* C callable from I4GL */
-d34 17
-a50 1
-#ifndef lint
-d54 104
-a157 2
-extern char    *mmsgtext();
-extern void     _setmsgfile();
-d159 2
-a160 3
-char           *get_msgtext(msgfile, msgnum)
-char           *msgfile;
-int             msgnum;
-d162 2
-a163 1
-	char           *s;
-d165 9
-a173 4
-	_setmsgfile(msgfile);
-	s = mmsgtext(msgnum);
-	_setmsgfile("");
-	return (s);
-d176 1
-a176 2
-/* I4GL calling sequence: LET s = fgl_msgtext(msgfile, msgnum) */
-I4GL_C          fgl_msgtext(n)
-a179 1
-	char            msgfile[512];
-d182 1
-a182 1
-	if (n != 2)
-d187 1
-a187 2
-		popstring(msgfile, sizeof(msgfile));
-		s = get_msgtext(msgfile, msgnum);
-d192 46
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d26 12
-a55 12
-}
-
-get_msgtext(msgfile, msgnum)
-char           *msgfile;
-int             msgnum;
-{
-	char           *s;
-
-	_setmsgfile(msgfile);
-	s = mmsgtext(msgnum);
-	_setmsgfile("");
-	return (s);
-@

@@ -1,39 +1,7 @@
-head	1.3;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.3
-date	91.11.06.15.52.55;	author johnl;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	91.11.06.14.50.56;	author johnl;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	91.11.06.14.50.41;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.3
-log
-@Miniaturised version of real thing, but it works!!!!
-@
-text
-@# @@(#)$Id: quine.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $
-# @@(#)BP Ship Vetting System
-# @@(#)LMIS11: Batch update of LMIS Ship Data (Check)
-# @@(#)Author: JL
+# @(#)$Id: quine.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+# @(#)BP Ship Vetting System
+# @(#)LMIS11: Batch update of LMIS Ship Data (Check)
+# @(#)Author: JL
 #
 # A genuinely useful self-reproducing program!
 # -- When run as a shell script, this file QUINES itself.
@@ -99,7 +67,7 @@ echo "		needs_prevet	INTEGER,"
 echo "		prevet_crc		INTEGER"
 echo ""
 echo "	IF f_ship.initialized = FALSE THEN"
-echo "		LET sccs = \"@@(#)$Id: quine.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $\""
+echo "		LET sccs = \"@(#)$Id: quine.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $\""
 echo "		CALL init_f_ship()"
 echo "	END IF"
 echo ""
@@ -218,7 +186,7 @@ FUNCTION cmp_ship()
 		prevet_crc		INTEGER
 
 	IF f_ship.initialized = FALSE THEN
-		LET sccs = "@@(#)$Id: quine.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $"
+		LET sccs = "@(#)$Id: quine.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 		CALL init_f_ship()
 	END IF
 
@@ -526,49 +494,3 @@ FUNCTION chk_sh_vet_date(is_different, needs_prevet)
 	RETURN is_different, needs_prevet
 
 END FUNCTION {chk_sh_vet_date}
-@
-
-
-1.2
-log
-@NOt much
-@
-text
-@d1 10
-a10 7
-#	@@(#)$Id: quine.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $
-
-#	A genuinely useful self-reproducing program!
-#	When run as a shell script, this file QUINES itself.
-#	When the controlling section is modified, it will produce a variant
-#	of itself which then becomes self-reproducing.
-#	When compiled as an I4GL program, it does a complex validation job.
-d15 17
-d33 50
-a82 2
-cat $0 | sed '/^--/q'   >$tmp.1
-cat $0 | sed '1,/^--/d' >$tmp.2
-d84 79
-a162 2
-cat $tmp.1
-cat $tmp.2
-d168 327
-a494 2
--- And this is the I4GL source code
-FUNCTION d_1A()
-d496 1
-a496 1
-END FUNCTION
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d2 5
-a6 2
-#
-#	When run as a shell script, this file produces a copy of itself on stdout.
-@

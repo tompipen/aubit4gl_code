@@ -1,62 +1,15 @@
-head	1.6;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.6
-date	91.03.22.13.36.39;	author johnl;	state Exp;
-branches;
-next	1.5;
-
-1.5
-date	91.03.13.13.32.43;	author johnl;	state Exp;
-branches;
-next	1.4;
-
-1.4
-date	91.03.13.13.31.39;	author johnl;	state Exp;
-branches;
-next	1.3;
-
-1.3
-date	90.04.05.12.04.53;	author john;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	89.11.28.10.07.39;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	88.07.12.12.30.46;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.6
-log
-@Correct interval handling; add test rig
-@
-text
-@/*
-@@(#)File:            $RCSfile: sqltype.ec,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:47 $
-@@(#)Purpose:         Convert type and length from Syscolumns to string
-@@(#)Author:          J Leffler
+/*
+@(#)File:            $RCSfile: sqltype.ec,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:17 $
+@(#)Purpose:         Convert type and length from Syscolumns to string
+@(#)Author:          J Leffler
 */
 
 /*TABSTOP=4*/
 
 #ifndef lint
-static	char	sccs[] = "@@(#)$Id: sqltype.ec,v 1.1 2002-06-14 05:03:47 afalout Exp $";
+static	char	sccs[] = "@(#)$Id: sqltype.ec,v 1.2 2002-06-14 09:23:17 afalout Exp $";
 #endif
 
 #include <stdio.h>
@@ -233,101 +186,3 @@ main()
 	return (0);
 }
 #endif	/* TEST */
-@
-
-
-1.5
-log
-@Without checking, of course
-@
-text
-@d9 2
-d15 1
-d17 1
-d67 1
-d109 2
-a110 3
-	case SQLINTERVAL:
-		dt_fr = (collen >> 4) & 0xF;
-		dt_to = (collen & 0xF);
-d113 8
-d127 62
-@
-
-
-1.4
-log
-@Convert to real C interface
-@
-text
-@a66 3
-	collen  = len;
-	coltype = type;
-
-@
-
-
-1.3
-log
-@Upgrade to include Version 4.00 data types
-@
-text
-@d13 1
-a13 2
-#include "sqltypes.h"
-#define I4GL_C
-d54 5
-a58 2
-I4GL_C	sqltype(n)
-int	n;
-a59 3
-	char	typestr[30];
-	int		coltype;
-	int		collen;
-d67 2
-a68 7
-	if (n != 2)
-	{
-		retquote("");
-		return(1);
-	}
-	popint(&collen);
-	popint(&coltype);
-d116 1
-a116 2
-	retquote(typestr);
-	return(1);
-@
-
-
-1.2
-log
-@Fix glitch in format of DECIMAL(n) fields
-@
-text
-@d2 5
-a6 2
-	@@(#)$Id: sqltype.ec,v 1.1 2002-06-14 05:03:47 afalout Exp $
-	@@(#)Convert type and length from Syscolumns to string
-d9 4
-d26 27
-a52 1
-	"MONEY"
-d62 4
-d90 3
-d104 14
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d6 1
-a6 1
-#include <sqltypes.h>
-d59 4
-a62 1
-		sprintf(typestr, "%s(%d,%d)", sqltypes[coltype], precision, scale);
-@

@@ -1,32 +1,10 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	91.11.17.22.17.42;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: random.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:47 $
-@@(#)Purpose:         I4GL interface to (basic) ANSI C random functions
-@@(#)Author:          J Leffler
-@@(#)Copyright:       (C) JLSS 1991
+/*
+@(#)File:            $RCSfile: random.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         I4GL interface to (basic) ANSI C random functions
+@(#)Author:          J Leffler
+@(#)Copyright:       (C) JLSS 1991
 */
 
 /*TABSTOP=4*/
@@ -37,7 +15,7 @@ text
 static unsigned long next = 1;
 
 #ifndef lint
-static char     sccs[] = "@@(#)$Id: random.c,v 1.1 2002-06-14 05:03:47 afalout Exp $";
+static char     sccs[] = "@(#)$Id: random.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 I4GL_C          i4gl_random(n)
@@ -57,4 +35,3 @@ int             n;
 	next = seed;
 	return (0);
 }
-@

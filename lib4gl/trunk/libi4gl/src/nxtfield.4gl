@@ -1,29 +1,7 @@
-head	7.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-7.1
-date	91.05.09.17.56.02;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-7.1
-log
-@Initial revision
-@
-text
-@-- @@(#)$Id: nxtfield.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $
--- @@(#)JLSS Informix Tools: FGLBLD Support Library
--- @@(#)Calculate which field to go next
--- @@(#)Author: J Leffler
+-- @(#)$Id: nxtfield.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+-- @(#)JLSS Informix Tools: FGLBLD Support Library
+-- @(#)Calculate which field to go next
+-- @(#)Author: J Leffler
 
 FUNCTION next_field(c, p, n)
 
@@ -38,7 +16,7 @@ FUNCTION next_field(c, p, n)
 
 	{ Normalise c }
 	IF c IS NULL THEN
-		LET sccs = "@@(#)$Id: nxtfield.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $"
+		LET sccs = "@(#)$Id: nxtfield.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 		LET c = 0
 	END IF
 	IF c < 0 OR c >= n THEN
@@ -69,4 +47,3 @@ FUNCTION next_field(c, p, n)
 	RETURN nxt
 
 END FUNCTION {next_field}
-@

@@ -1,43 +1,6 @@
-head	4.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-4.1
-date	91.11.17.22.11.17;	author jl;	state Exp;
-branches;
-next	3.3;
-
-3.3
-date	88.11.15.11.48.49;	author john;	state Exp;
-branches;
-next	3.2;
-
-3.2
-date	88.11.15.11.33.25;	author john;	state Exp;
-branches;
-next	3.1;
-
-3.1
-date	88.11.14.13.04.24;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-4.1
-log
-@Extend diagnostic printing -- not very neatly
-@
-text
-@{
-	@@(#)$Id: dlisti.4gl,v 1.1 2002-06-14 05:03:45 afalout Exp $
-	@@(#)Test code to check functionality of D-lists -- INTEGERS
+{
+	@(#)$Id: dlisti.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)Test code to check functionality of D-lists -- INTEGERS
 }
 
 DEFINE
@@ -51,7 +14,7 @@ MAIN
 		sccs		CHAR(32),
 		i,j,k,l,m,n	INTEGER
 
-	LET sccs = "@@(#)$Id: dlisti.4gl,v 1.1 2002-06-14 05:03:45 afalout Exp $"
+	LET sccs = "@(#)$Id: dlisti.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 	LET n_list = 4
 
 	FOR i = 1 TO n_list
@@ -174,129 +137,3 @@ FUNCTION slow_me_up()
 	END FOR
 
 END FUNCTION {slow_me_up}
-@
-
-
-3.3
-log
-@Tidy up screen layout
-@
-text
-@d6 5
-a13 1
-		list		ARRAY[4] OF INTEGER,
-d15 2
-a16 2
-		i,j,k,l,n	INTEGER
-	
-d18 1
-d20 2
-a21 2
-	FOR i = 1 TO 4
-		LET list[i] = sc_mkint()
-d31 1
-d34 1
-d36 6
-a41 5
-		LET j = hash(i)
-		LET n = hash(j+3)*4
-		DISPLAY "get row ", n USING "##&", " from list ",
-				j USING "&" AT 5, 1
-		CALL sc_getint(list[j], 'A', hash(j+3)*4)
-d44 1
-a44 1
-			ERROR "Failed to get row ", j USING "##&",
-d47 4
-d52 1
-a52 1
-		IF sc_insint(list[j], i) < 0 THEN
-d56 1
-d58 3
-d62 5
-d68 1
-d70 5
-a74 2
-		LET j = hash(i+37)
-		CALL sc_getint(list[j], 'A', hash(j+6)*4)
-d77 1
-a77 1
-			ERROR "Failed to get row ", j USING "##&",
-d80 4
-d85 2
-a86 1
-		LET k = sc_delint(list[j])
-d91 1
-d93 1
-d95 5
-d101 13
-a113 4
-	FOR i = 1 TO 4
-		DISPLAY "Dump of list number ", i USING "&" AT 6, 1
-		LET n = sc_numint(list[i])
-		DISPLAY "Number of entries = ", n USING "##&" AT 7, 1
-d115 1
-a115 1
-			CALL sc_getint(list[i], 'A', j) RETURNING k, l
-d117 1
-a117 1
-				ERROR "Failed to get row ", j USING "##&",
-d120 1
-d122 2
-a123 1
-			DISPLAY "Entry[", j USING "#&", "] = ", l USING "##&" AT 8, 1
-d126 1
-d128 1
-a128 1
-END MAIN
-d130 1
-a130 1
-FUNCTION hash(i)
-d133 1
-a133 1
-		i, j	INTEGER
-d135 3
-a137 1
-	RETURN ((i * 41) / 7) MOD 4 + 1
-d139 1
-a139 1
-END FUNCTION
-@
-
-
-3.2
-log
-@Tighten up a little
-@
-text
-@d31 1
-a31 1
-		DISPLAY "get row ", n USING "<<<", " from list ",
-d36 1
-a36 1
-			ERROR "Failed to get row ", j USING "<<<",
-d52 1
-a52 1
-			ERROR "Failed to get row ", j USING "<<<",
-d71 1
-a71 1
-				ERROR "Failed to get row ", j USING "<<<",
-@
-
-
-3.1
-log
-@Initial revision
-@
-text
-@d10 1
-d13 2
-d35 1
-a35 1
-		IF k < 0 THEN
-d51 1
-a51 1
-		IF k < 0 THEN
-d70 1
-a70 1
-			IF k < 0 THEN
-@

@@ -1,34 +1,6 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	90.05.21.14.13.18;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	89.10.10.16.51.35;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Add quarter days and this/last year.
-Generalised routines still needed
-@
-text
-@'\" @@(#)$Id: ltmonth.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: Sphinx I4GL Date Manipulation Routines
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+'\" @(#)$Id: ltmonth.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: Sphinx I4GL Date Manipulation Routines
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH DATES 3S "Sphinx Informix Tools"
 .SH NAME
 last_of_this_month \(em determine last day of this month
@@ -113,24 +85,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 10th October 1989
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d2 1
-a2 1
-'\" @@(#)Manual page: First/Last of this/next month
-d4 1
-a4 1
-.TH LAST_OF_MONTH 3S "Sphinx Informix Tools"
-d11 8
-d25 8
-d48 19
-d73 3
-a75 1
-ftmonth.4gl, fnmonth.4gl, ltmonth.4gl
-@

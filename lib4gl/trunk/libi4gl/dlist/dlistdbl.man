@@ -1,6 +1,6 @@
-'\" @@(#)$Id: dlistdbl.man,v 1.1 2002-06-14 05:03:45 afalout Exp $
-'\" @@(#)Manual page: DLISTDBL -- Double-linked list support routines
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:45 $)
+'\" @(#)$Id: dlistdbl.man,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: DLISTDBL -- Double-linked list support routines
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH DLISTDBL 3S "Sphinx Informix Tools"
 .SH NAME
 dlistdbl \(em Doubly-linked list maintenance in I4GL
@@ -181,4 +181,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 16th November 1988
-

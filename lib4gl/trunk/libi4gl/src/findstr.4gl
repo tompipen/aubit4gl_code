@@ -1,44 +1,7 @@
-head	2.3;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-2.3
-date	98.08.20.20.19.20;	author jleffler;	state Exp;
-branches;
-next	2.2;
-
-2.2
-date	98.08.20.20.17.48;	author jleffler;	state Exp;
-branches;
-next	2.1;
-
-2.1
-date	98.07.08.18.56.30;	author jleffler;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	90.08.14.11.09.21;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-2.3
-log
-@Detab new headers
-@
-text
-@-- @@(#)$Id: findstr.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
--- @@(#)Purpose:     Find index of where string occurs in string
--- @@(#)Author:      Jonathan Leffler
--- @@(#)Product:     :PRODUCT:
+-- @(#)$Id: findstr.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+-- @(#)Purpose:     Find index of where string occurs in string
+-- @(#)Author:      Jonathan Leffler
+-- @(#)Product:     :PRODUCT:
 
 FUNCTION find_string(str, s)
 
@@ -79,61 +42,6 @@ FUNCTION find_string(str, s)
 
 	RETURN 0
 
-	LET rcs = "@@(#)$Id: findstr.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"
+	LET rcs = "@(#)$Id: findstr.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 
 END FUNCTION {find_string}
-@
-
-
-2.2
-log
-@Revamp headers with :PRODUCT: information.
-@
-text
-@d1 4
-a4 4
--- @@(#)$Id: findstr.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
--- @@(#)Purpose:		Find index of where string occurs in string
--- @@(#)Author:		Jonathan Leffler
--- @@(#)Product:		:PRODUCT:
-d45 1
-a45 1
-	LET rcs = "@@(#)$Id: findstr.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"
-@
-
-
-2.1
-log
-@Change sccs to rcs and Sphinx to JLSS
-@
-text
-@d1 4
-a4 6
-{
-	@@(#)$Id: findstr.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
-	@@(#)JLSS Informix Tools: General Library
-	@@(#)Find index of where string occurs in string
-	@@(#)Author: JL
-}
-d45 1
-a45 1
-	LET rcs = "@@(#)$Id: findstr.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d2 2
-a3 2
-	@@(#)$Id: findstr.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
-	@@(#)Sphinx Informix Tools: General Library
-d14 1
-a14 1
-		sccs	CHAR(1),
-d47 1
-a47 1
-	LET sccs = "@@(#)$Id: findstr.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"
-@

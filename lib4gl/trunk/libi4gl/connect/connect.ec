@@ -1,11 +1,11 @@
 /*
-@@(#)File:            $RCSfile: connect.ec,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:45 $
-@@(#)Purpose:         I4GL interface to CONNECT, DISCONNECT, SET CONNECTION
-@@(#)Author:          J Leffler
-@@(#)Copyright:       (C) JLSS 1995
-@@(#)Product:         :PRODUCT:
+@(#)File:            $RCSfile: connect.ec,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         I4GL interface to CONNECT, DISCONNECT, SET CONNECTION
+@(#)Author:          J Leffler
+@(#)Copyright:       (C) JLSS 1995
+@(#)Product:         :PRODUCT:
 */
 
 /*TABSTOP=4*/
@@ -16,7 +16,7 @@
 #include "connect.h"
 
 #ifndef lint
-static char     sccs[] = "@@(#)$Id: connect.ec,v 1.1 2002-06-14 05:03:45 afalout Exp $";
+static char     sccs[] = "@(#)$Id: connect.ec,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 static char module_name[] = "$RCSfile: connect.ec,v $";
@@ -182,43 +182,3 @@ int set_connection_by_name(int n)
 	retint(sqlca.sqlcode);
 	return(1);
 }
-
-/*
-	EXEC SQL CONNECT TO :dbase AS :uconn;
-int set_connect_default(int n)
-int set_connect_by_name(int n)
-	retint(sqlca.sqlcode);
-	return(1);
-}
-*/
-
-/* SET CONNECTION "db_env" */
-
-/*
-int set_connect_db_env(int n)
-{
-	EXEC SQL BEGIN DECLARE SECTION;
-	char	dbase[MAX_DBASE_NAME + 1];
-	EXEC SQL END DECLARE SECTION;
-
-	if (n != 1)
-		fgl_fatal(module_name, __LINE__, -1318);
-	popstring(dbase, sizeof(dbase));
-	EXEC SQL SET CONNECTION :dbase;
-	char	dbase[MAX_DBASE_NAME];
-	char	uconn[MAX_CONN_NAME];
-	char	dbase[MAX_DBASE_NAME];
-	char	uconn[MAX_CONN_NAME];
-	char	uname[MAX_USER_NAME];
-	char	uauth[MAX_AUTH_NAME];
-	char	dbase[MAX_DBASE_NAME];
-	char	uconn[MAX_CONN_NAME];
-	char	dbase[MAX_DBASE_NAME];
-	char	uconn[MAX_CONN_NAME];
-	char	uname[MAX_USER_NAME];
-	char	uauth[MAX_AUTH_NAME];
-	char	uconn[MAX_CONN_NAME];
-	char	uconn[MAX_CONN_NAME];
-	char	dbase[MAX_DBASE_NAME];
-
-*/

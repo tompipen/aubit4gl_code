@@ -1,29 +1,7 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	91.05.17.13.20.46;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@-- @@(#)$Id: incoff.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
--- @@(#)BP Ship Vetting System
--- @@(#)Increment offset for SPI
--- @@(#)Author: JL
+-- @(#)$Id: incoff.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+-- @(#)BP Ship Vetting System
+-- @(#)Increment offset for SPI
+-- @(#)Author: JL
 
 { Increment offset from present value }
 FUNCTION inc_offset(digit, offset, max_offset)
@@ -51,4 +29,3 @@ FUNCTION inc_offset(digit, offset, max_offset)
 	RETURN retval
 
 END FUNCTION {inc_offset}
-@

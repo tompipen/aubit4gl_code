@@ -1,33 +1,6 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	90.02.09.08.28.21;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	89.12.16.18.50.35;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Trim to minimum size
-@
-text
-@{
-	@@(#)$Id: scrndump.4gf,v 1.1 2002-06-14 05:03:47 afalout Exp $
-	@@(#)Form for Screen Dump Utility
+{
+	@(#)$Id: scrndump.4gf,v 1.2 2002-06-14 09:23:17 afalout Exp $
+	@(#)Form for Screen Dump Utility
 }
 
 DATABASE FORMONLY
@@ -43,16 +16,3 @@ ATTRIBUTES
 f000 = FORMONLY.filename TYPE CHAR,
 		COMMENTS = "Enter name of file.  Leave blank to have name generated";
 END
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@a9 1
-
-a10 1
-
-@

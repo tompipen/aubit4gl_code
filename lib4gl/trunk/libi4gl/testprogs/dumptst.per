@@ -1,38 +1,6 @@
-head	1.3;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.3
-date	89.01.31.15.50.20;	author john;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	89.01.31.15.48.26;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	89.01.31.15.46.47;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.3
-log
-@Detab
-@
-text
-@{
-    @@(#)$Id: dumptst.per,v 1.1 2002-06-14 05:03:47 afalout Exp $
-    @@(#)Test screen form for screen dump
+{
+    @(#)$Id: dumptst.per,v 1.2 2002-06-14 09:23:17 afalout Exp $
+    @(#)Test screen form for screen dump
 }
 
 DATABASE FORMONLY
@@ -71,42 +39,3 @@ END
 INSTRUCTIONS
 SCREEN RECORD s_scrdmp (FORMONLY.*)
 END
-@
-
-
-1.2
-log
-@Change (correct) screen record name
-@
-text
-@d2 2
-a3 2
-	@@(#)$Id: dumptst.per,v 1.1 2002-06-14 05:03:47 afalout Exp $
-	@@(#)Test screen form for screen dump
-d12 1
-a12 3
-				SPHINX INFORMIX TOOLS
-		
-		Test screen for screen dump subroutine
-d14 1
-a14 4
-		String  [f001                             ]
-		String  [f002                             ]
-		Decimal [f003       ]
-		Date    [f004            ]
-d16 4
-d23 2
-a24 1
-		When the form is displayed, there is an asterisk in each corner.
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d40 1
-a40 1
-SCREEN RECORD f_scrdmp (FORMONLY.*)
-@

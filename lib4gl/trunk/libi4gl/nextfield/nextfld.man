@@ -1,33 +1,6 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	88.09.23.16.52.44;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	88.09.23.16.39.35;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Add popstr.c to documentation
-@
-text
-@'\" @@(#)$Id: nextfld.man,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: I4GL Customisation Library
-.ds fC "Last changed: $Date: 2002-06-14 05:03:46 $
+'\" @(#)$Id: nextfld.man,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: I4GL Customisation Library
+.ds fC "Last changed: $Date: 2002-06-14 09:23:16 $
 .TH NEXT_FIELD 3S "Sphinx Informix Tools"
 .SH NAME
 next_field \(em make variable string into next field
@@ -140,16 +113,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 23rd September 1988
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d46 2
-d59 1
-a59 1
-the nextfld.o supplied.
-@

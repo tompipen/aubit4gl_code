@@ -1,4 +1,4 @@
--- @@(#)$Id: testconn.4gl,v 1.1 2002-06-14 05:03:45 afalout Exp $
+-- @(#)$Id: testconn.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
 --
 -- Basic tests for CONNECT, DISCONNECT and SET CONNECTION routines
 -- callable from I4GL 6.00 or later.
@@ -71,4 +71,3 @@ MAIN
 	DISPLAY " No current connections "
 
 END MAIN
-

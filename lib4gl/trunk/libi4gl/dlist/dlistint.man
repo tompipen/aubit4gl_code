@@ -1,6 +1,6 @@
-'\" @@(#)$Id: dlistint.man,v 1.1 2002-06-14 05:03:45 afalout Exp $
-'\" @@(#)Manual page: DLISTINT -- Double-linked list support routines
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:45 $)
+'\" @(#)$Id: dlistint.man,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: DLISTINT -- Double-linked list support routines
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH DLISTINT 3S "Sphinx Informix Tools"
 .SH NAME
 dlistint \(em Doubly-linked list maintenance in I4GL
@@ -181,50 +181,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 16th November 1988
-@
-
-
-3.1
-log
-@Mainly a version number change
-@
-text
-@d7 1
-d12 1
-a12 1
- define intger index
-d75 7
-a81 7
-of the I4GL \s-2INTEGER\s0 data type.
-Lists are created (\fBmk_key\fP) and destroyed (\fBrm_key\fP).
-Items can be inserted (\fBins_key\fP), deleted (\fBdel_key\fP)
-and changed (\fBupd_key\fP).
-Items can be retrieved by position in the list (\fBget_key\fP),
-and the size of the list can be determined by \fBcnt_key\fP, and
-the current position discovered by \fBnum_key\fP.
-d94 1
-a94 1
-to \fBmk_key\fP.
-d138 1
-a138 1
-pointer), but no error is indicated either.
-d145 3
-a147 3
-The routine returns a character pointer to the item data;
-there is no record of the length available, so the calling
-routine must know what was stored.
-d169 1
-a169 1
-dlisti.4gl \(em a verification test program
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d2 1
-a2 1
-'\" @@(#)Manual page: Dlist (integer) -- Double-linked list support routines
-

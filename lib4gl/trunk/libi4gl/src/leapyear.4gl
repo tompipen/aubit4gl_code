@@ -1,30 +1,7 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	99.04.23.00.33.21;	author jleffler;	state Exp;
-branches;
-next	;
-
-
-desc
-@Determine whether given date is in a leap year
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@-- @@(#)$Id: leapyear.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
--- @@(#)JLSS Informix Tools: General Library
--- @@(#)Determine whether given date is in a leap year
--- @@(#)Author: JL
+-- @(#)$Id: leapyear.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+-- @(#)JLSS Informix Tools: General Library
+-- @(#)Determine whether given date is in a leap year
+-- @(#)Author: JL
 
 FUNCTION is_leap_year(d)
 
@@ -41,4 +18,3 @@ FUNCTION is_leap_year(d)
 	END CASE
 
 END FUNCTION
-@

@@ -1,33 +1,6 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	91.11.17.16.57.38;	author jl;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	91.11.17.16.39.55;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Tidyings up
-@
-text
-@'\" @@(#)$Id: mon4gl.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: I4GL Money Formatting
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+'\" @(#)$Id: mon4gl.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: I4GL Money Formatting
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH MONEY_FORMAT 3J "JLSS Informix Tools"
 .SH NAME
 i4gl_fmt_money \(em format money using current locale
@@ -102,15 +75,3 @@ Jonathan Leffler
 JLSS
 .br
 17th November 1991
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d70 1
-a70 1
-DECIMAL or MONEY value which exceeds the precision that can be
-@

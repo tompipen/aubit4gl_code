@@ -1,31 +1,9 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	89.06.06.13.35.23;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: round.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:47 $
-@@(#)Purpose:         I4GL: Round Informix Decimal Numbers
-@@(#)Author:          J Leffler
+/*
+@(#)File:            $RCSfile: round.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:17 $
+@(#)Purpose:         I4GL: Round Informix Decimal Numbers
+@(#)Author:          J Leffler
 */
 
 /* -- Include Files */
@@ -36,7 +14,7 @@ text
 #include <decimal.h>
 
 #ifndef lint
-static	char	sccs[] = "@@(#)$Id: round.c,v 1.1 2002-06-14 05:03:47 afalout Exp $";
+static	char	sccs[] = "@(#)$Id: round.c,v 1.2 2002-06-14 09:23:17 afalout Exp $";
 #endif
 /* -- Routine: round		*/
 
@@ -53,4 +31,3 @@ int	i;
 	retdec(&d);
 	return(1);
 }
-@

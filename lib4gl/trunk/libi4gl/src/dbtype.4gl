@@ -1,35 +1,8 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	91.05.09.14.41.23;	author johnl;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	90.11.16.16.53.28;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Minor upgrade
-@
-text
-@{
-	@@(#)$Id: dbtype.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
-	@@(#)JLSS Informix Tools: General Library
-	@@(#)Determine type of database
-	@@(#)Author: JL
+{
+	@(#)$Id: dbtype.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)JLSS Informix Tools: General Library
+	@(#)Determine type of database
+	@(#)Author: JL
 }
 
 {
@@ -75,7 +48,7 @@ FUNCTION set_databasetype()
 			SELECT COUNT(*) INTO counter
 				FROM Systables WHERE Tabtype = 'L'
 			LET db_logs = (counter = 1)
-			LET db_sccs = "@@(#)$Id: dbtype.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"
+			LET db_sccs = "@(#)$Id: dbtype.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 		ELSE
 			LET db_vers = TRUE { It must be Version 4.00 or later }
 			SELECT COUNT(*) INTO counter
@@ -150,13 +123,3 @@ FUNCTION get_databasemode()
 	RETURN db_mode
 
 END FUNCTION {get_databasemode}
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d3 1
-@

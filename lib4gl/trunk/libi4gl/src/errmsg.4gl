@@ -1,34 +1,7 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	91.11.02.23.43.36;	author jl;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	91.11.02.23.42.04;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Add exiting message
-@
-text
-@-- @@(#)$Id: errmsg.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
--- @@(#)JLSS Informix Software: General Library
--- @@(#)Display messages and errors
--- @@(#):PRODUCT:
+-- @(#)$Id: errmsg.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+-- @(#)JLSS Informix Software: General Library
+-- @(#)Display messages and errors
+-- @(#):PRODUCT:
 
 { Display literal error message; optionally delay, log it, exit program }
 FUNCTION display_errtxt(txt, delay, log_it, exit_program)
@@ -115,13 +88,3 @@ FUNCTION display_msgnum(num, delay, log_it)
 	CALL display_msgtxt(txt, delay, log_it)
 
 END FUNCTION {display_msgnum}
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d23 2
-@

@@ -1,30 +1,8 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	91.11.17.16.35.19;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@-- @@(#)File:            $RCSfile: montst.4gl,v $
--- @@(#)Version:         $Revision: 1.1 $
--- @@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
--- @@(#)Purpose:         Test program for LOCALE table (Informix)
--- @@(#)Author:          J Leffler
+-- @(#)File:            $RCSfile: montst.4gl,v $
+-- @(#)Version:         $Revision: 1.2 $
+-- @(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+-- @(#)Purpose:         Test program for LOCALE table (Informix)
+-- @(#)Author:          J Leffler
 
 DATABASE Test
 
@@ -64,4 +42,3 @@ MAIN
 	END FOR
 
 END MAIN
-@

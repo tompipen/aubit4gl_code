@@ -1,33 +1,6 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	91.11.17.16.57.39;	author jl;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	91.11.17.16.39.56;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Tidyings up
-@
-text
-@'\" @@(#)$Id: monfmt.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: Money Formatting using database locales
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+'\" @(#)$Id: monfmt.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: Money Formatting using database locales
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH FMT_MONEY 3J "JLSS Informix Tools"
 .SH NAME
 fmt_money \(em format money using current locale
@@ -196,55 +169,3 @@ Jonathan Leffler
 JLSS
 .br
 17th November 1991
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d20 4
-a23 4
-char	*buffer;
-int		 len;
-double	 value;
-int		 fmtcode;
-d45 1
-a45 1
-which can be set using \fBLC_MONETARY\fP and \fBLC_NUMERIC\fP in
-d55 3
-a57 3
-  -3 format as an integer (FMT_INTEGER)
-  -2 format as international currency (FMT_INTER_CURR)
-  -1 format as local currency (FMT_LOCAL_CURR)
-d102 1
-a102 1
-The characters `\*c0\*d'\*c\|..\|\*d'\*c9\*d' are converted to the
-d119 1
-a119 1
-that the value is treated as NULL.
-d139 2
-a140 2
-_Fmtval in this book, the main change being a move away from
-using localeconv(3) to using set_monlocale(3J).
-d144 1
-a144 1
-fmt_money will return a null string if called incorrectly or if
-d148 1
-a148 1
-provision in sprintf(3) for limiting the amount of space taken up
-d150 1
-a150 1
-set_monlocale returns a status code which can be interpreted
-d152 3
-a154 2
-get_monlocale produces no diagnostics at all.
-get_monfmt produces no diagnostics at all.
-d157 1
-a157 1
-DECIMAL or MONEY value which exceeds the precision that can be
-d161 1
-a161 1
-noticed by set_monlocale.
-@

@@ -1,28 +1,6 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	88.09.27.09.41.42;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@'\" @@(#)$Id: access.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: General Library -- Check file access
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+'\" @(#)$Id: access.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Check file access
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH ACCESS 3S "Sphinx Informix Tools"
 .SH NAME
 file_access \(em I4GL interface to access(2)
@@ -60,4 +38,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 27th September 1988
-@

@@ -1,38 +1,6 @@
-head	1.3;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.3
-date	89.01.31.17.02.19;	author john;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	88.08.02.18.04.18;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	88.07.27.14.26.44;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.3
-log
-@Actually make changes
-@
-text
-@'\" @@(#)$Id: scrdump.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: General Library -- Report Configuration
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)"
+'\" @(#)$Id: scrdump.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- Report Configuration
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)"
 .TH SCREEN_DUMP 3I "Sphinx Informix Tools"
 .SH NAME
 screen_dump \(em dump the screen to a file
@@ -69,30 +37,3 @@ Software Solutions
 Sphinx Ltd.
 .br
 27th July 1988
-@
-
-
-1.2
-log
-@Add fC
-@
-text
-@d3 1
-a3 1
-.ds fC "Last modified: $Date: 2002-06-14 05:03:46 $
-d20 1
-a20 1
-This code was designed and tested on an ATT&T 3B2/400 running 
-d23 2
-a24 1
-preliminary testing indicates that it does work.
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d3 1
-@

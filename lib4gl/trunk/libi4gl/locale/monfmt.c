@@ -1,31 +1,9 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	91.11.17.16.35.13;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: monfmt.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         Locale-specific formatting
-@@(#)Author:          P J Plauger / J Leffler
+/*
+@(#)File:            $RCSfile: monfmt.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         Locale-specific formatting
+@(#)Author:          P J Plauger / J Leffler
 */
 
 /*TABSTOP=4*/
@@ -54,7 +32,7 @@ text
 /* -- Declarations */
 
 #ifndef lint
-static char     sccs[] = "@@(#)$Id: monfmt.c,v 1.1 2002-06-14 05:03:46 afalout Exp $";
+static char     sccs[] = "@(#)$Id: monfmt.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 #ifdef __STDC__
@@ -216,4 +194,3 @@ int             digits;
 	}
 	return(buf);
 }
-@

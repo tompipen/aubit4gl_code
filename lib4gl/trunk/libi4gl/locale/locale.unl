@@ -1,25 +1,2 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	91.11.17.16.35.29;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@C||||||||||||||||.|||
+C||||||||||||||||.|||
 UK|GBP|GBP|.|3|,|-||2|2|1|0|0|1|0|1|.|3|,|
-@

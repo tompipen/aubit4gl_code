@@ -1,7 +1,7 @@
 {
-	@@(#)$Id: adjchk.4gl,v 1.1 2002-06-14 05:03:45 afalout Exp $
-	@@(#)Code to check that ADJINARR works correctly
-	@@(#)Uses form adjchk.frm
+	@(#)$Id: adjchk.4gl,v 1.2 2002-06-14 09:23:03 afalout Exp $
+	@(#)Code to check that ADJINARR works correctly
+	@(#)Uses form adjchk.frm
 }
 
 MAIN
@@ -37,4 +37,3 @@ MAIN
 	CLEAR SCREEN
 
 END MAIN
-

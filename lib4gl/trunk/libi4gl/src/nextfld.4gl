@@ -1,28 +1,6 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	91.06.25.10.17.00;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@-- @@(#)$Id: nextfld.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $
--- @@(#)JLSS Informix Tools
--- @@(#)Calculate which field to go next
+-- @(#)$Id: nextfld.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+-- @(#)JLSS Informix Tools
+-- @(#)Calculate which field to go next
 
 FUNCTION next_field(c, p, mn, mx)
 
@@ -43,7 +21,7 @@ FUNCTION next_field(c, p, mn, mx)
 	{ Normalise c }
 	IF c IS NULL OR c = 0 THEN
 		{ This should not happen }
-		LET sccs = "@@(#)$Id: nextfld.4gl,v 1.1 2002-06-14 05:03:47 afalout Exp $"
+		LET sccs = "@(#)$Id: nextfld.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 		LET c = mn
 	END IF
 	LET c = c - mn + 1
@@ -78,4 +56,3 @@ FUNCTION next_field(c, p, mn, mx)
 	RETURN nxt
 
 END FUNCTION {next_field}
-@

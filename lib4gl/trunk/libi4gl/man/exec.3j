@@ -1,33 +1,6 @@
-head	1.2;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.2
-date	88.09.13.12.40.41;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	88.09.13.11.39.26;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.2
-log
-@Change headings
-@
-text
-@'\" @@(#)$Id: exec.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: General Library -- exec(2) for I4GL
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+'\" @(#)$Id: exec.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- exec(2) for I4GL
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH EXEC 3S "Sphinx Informix Tools"
 .SH NAME
 exec \(em implement exec(2) for I4GL
@@ -52,15 +25,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 13th September 1988
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d4 1
-a4 1
-.TH EXEC 1S "Sphinx Internal System"
-@

@@ -1,40 +1,8 @@
-head	1.3;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.3
-date	90.05.21.13.56.54;	author john;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	89.10.10.09.24.51;	author john;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	89.10.10.09.16.52;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.3
-log
-@Revise sccs
-@
-text
-@{
-	@@(#)$Id: locks.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
-	@@(#)Sphinx Informix Tools: General Library
-	@@(#)Table Lock/Unlock
-	@@(#)Author: JL
+{
+	@(#)$Id: locks.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)Sphinx Informix Tools: General Library
+	@(#)Table Lock/Unlock
+	@(#)Author: JL
 }
 
 { Execute lock table in named mode }
@@ -53,7 +21,7 @@ FUNCTION lock_table(tabname, lock_mode)
 	WHENEVER ERROR CONTINUE
 	PREPARE s_lock FROM lock_stmt
 	IF STATUS < 0 THEN
-		LET sccs = "@@(#)$Id: locks.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"
+		LET sccs = "@(#)$Id: locks.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 		RETURN STATUS
 	END IF
 
@@ -90,35 +58,3 @@ FUNCTION unlock_table(tabname)
 	RETURN STATUS
 
 END FUNCTION {unlock_table}
-@
-
-
-1.2
-log
-@Add -327 cannot unlock table within transaction
-@
-text
-@d3 1
-a3 1
-	@@(#)Sphinx Informix Tools
-d14 2
-a15 1
-		lock_stmt	CHAR(40)
-d24 1
-a24 1
-		LET lock_mode = "@@(#)$Id: locks.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"	{ SCCS ID only }
-d34 1
-a34 1
-{ Execute unlock table: ignore -288 table not locked }
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d51 4
-a54 1
-	IF STATUS = -288 THEN	{ -288: table not locked by current user }
-@

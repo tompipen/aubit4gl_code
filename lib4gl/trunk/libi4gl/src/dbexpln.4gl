@@ -1,39 +1,7 @@
-head	1.3;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.3
-date	92.10.25.12.07.27;	author jl;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	91.05.09.14.41.22;	author johnl;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	90.11.19.17.35.36;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.3
-log
-@Replace getenviron by fgl_getenv
-@
-text
-@{
-	@@(#)$Id: dbexpln.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $
-	@@(#)JLSS Informix Tools: General Library
-	@@(#)Handle SET EXPLAIN mode
+{
+	@(#)$Id: dbexpln.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $
+	@(#)JLSS Informix Tools: General Library
+	@(#)Handle SET EXPLAIN mode
 }
 
 DEFINE
@@ -54,7 +22,7 @@ FUNCTION set_dbexplain()
 	ELSE
 		SET EXPLAIN OFF
 		LET expl_mode = 0
-		LET sccs = "@@(#)$Id: dbexpln.4gl,v 1.1 2002-06-14 05:03:46 afalout Exp $"
+		LET sccs = "@(#)$Id: dbexpln.4gl,v 1.2 2002-06-14 09:23:16 afalout Exp $"
 	END IF
 
 END FUNCTION {set_dbexplain}
@@ -82,26 +50,3 @@ FUNCTION get_explain()
 	RETURN expl_mode
 
 END FUNCTION {get_explain}
-@
-
-
-1.2
-log
-@Minor upgrade
-@
-text
-@d17 1
-a17 1
-	LET dbexpl = getenviron("DBEXPLAIN")
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d3 1
-a3 1
-	@@(#)Informix General Library
-@

@@ -1,36 +1,14 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	91.11.17.16.35.15;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@#line 1 "ESQLinit.ec"
+#line 1 "ESQLinit.ec"
 #include <sqlhdr.h>
 #define SQLCODE sqlca.sqlcode
 #line 1 "monset.ec"
 /*
-@@(#)File:            $RCSfile: monset.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         Set/Get Locale from Database
-@@(#)Author:          J Leffler
-@@(#)Copyright:       (C) JLSS 1991
+@(#)File:            $RCSfile: monset.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         Set/Get Locale from Database
+@(#)Author:          J Leffler
+@(#)Copyright:       (C) JLSS 1991
 */
 
 /*TABSTOP=4*/
@@ -102,7 +80,7 @@ static Tab_locale db_locale;
  static char       *cur_locale;
 
 #ifndef lint
-static char     sccs[] = "@@(#)$Id: monset.c,v 1.1 2002-06-14 05:03:46 afalout Exp $";
+static char     sccs[] = "@(#)$Id: monset.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 /* Return current format information */
@@ -274,4 +252,3 @@ char *name;
 	/*dmp_money_fmt(stderr, &s_locale);*/
 	return (0);
 }
-@

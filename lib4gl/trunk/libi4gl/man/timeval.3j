@@ -1,28 +1,6 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@# @;
-
-
-1.1
-date	88.09.19.07.29.05;	author john;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@'\" @@(#)$Id: timeval.3j,v 1.1 2002-06-14 05:03:46 afalout Exp $
-'\" @@(#)Manual page: General Library -- right-justify string
-.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-06-14 05:03:46 $)
+'\" @(#)$Id: timeval.3j,v 1.2 2002-06-14 09:23:16 afalout Exp $
+'\" @(#)Manual page: General Library -- right-justify string
+.ds fC "Version: $Revision: 1.2 $ ($Date: 2002-06-14 09:23:16 $)
 .TH TIMEVAL 3S "Sphinx Internal System"
 .SH NAME
 timeval \(em given `hh:mm:ss', calculate number of seconds past midnight
@@ -48,4 +26,3 @@ Jonathan Leffler
 Sphinx Ltd.
 .br
 19th September 1988
-@

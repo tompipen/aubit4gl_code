@@ -1,33 +1,11 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	96.10.09.06.04.24;	author johnl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: i4glsqrt.c,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         I4GL-callable SQRT routine i4gl_sqrt()
-@@(#)Author:          J Leffler
-@@(#)Copyright:       (C) JLSS 1996
-@@(#)Product:         :PRODUCT:
+/*
+@(#)File:            $RCSfile: i4glsqrt.c,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         I4GL-callable SQRT routine i4gl_sqrt()
+@(#)Author:          J Leffler
+@(#)Copyright:       (C) JLSS 1996
+@(#)Product:         :PRODUCT:
 */
 
 /*TABSTOP=4*/
@@ -36,7 +14,7 @@ text
 #include <fglsys.h>
 
 #ifndef lint
-static const char sccs[] = "@@(#)$Id: i4glsqrt.c,v 1.1 2002-06-14 05:03:46 afalout Exp $";
+static const char sccs[] = "@(#)$Id: i4glsqrt.c,v 1.2 2002-06-14 09:23:16 afalout Exp $";
 #endif
 
 int i4gl_sqrt(int n)
@@ -58,4 +36,3 @@ int i4gl_sqrt(int n)
 }
 
 
-@

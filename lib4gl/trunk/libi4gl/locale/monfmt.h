@@ -1,31 +1,9 @@
-head	1.1;
-access;
-symbols;
-locks; strict;
-comment	@ * @;
-
-
-1.1
-date	91.11.17.16.35.14;	author jl;	state Exp;
-branches;
-next	;
-
-
-desc
-@@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@/*
-@@(#)File:            $RCSfile: monfmt.h,v $
-@@(#)Version:         $Revision: 1.1 $
-@@(#)Last changed:    $Date: 2002-06-14 05:03:46 $
-@@(#)Purpose:         Header for fmtmoney(3)
-@@(#)Author:          P J Plauger / J Leffler
+/*
+@(#)File:            $RCSfile: monfmt.h,v $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2002-06-14 09:23:16 $
+@(#)Purpose:         Header for fmtmoney(3)
+@(#)Author:          P J Plauger / J Leffler
 */
 
 /*TABSTOP=4*/
@@ -88,4 +66,3 @@ extern char      *_PROTOTYPE(get_monlocale, (void));
 extern int        _PROTOTYPE(set_monfmt, (char *));
 
 #endif	/* MONFMT_H */
-@
