@@ -2,6 +2,7 @@
 #include <string.h>
 #include "a4gl_libaubit4gl.h"
 #include "aubit_noform.h"
+#include <panel.h>
 
 int print_using = -1;
 
@@ -107,7 +108,9 @@ redraw_field (FIELD * f)
 {
   int x, y;
   WINDOW *w;
+  int attr;
   char **ptr;
+      char clr_buff[2000];
   static char *buff = 0;
   static int buff_len = 0;
 //int ls;
@@ -116,15 +119,25 @@ redraw_field (FIELD * f)
 
   if (print_using == -1)
     {
+
       if (A4GL_isyes (acl_getenv ("USEWPRINT")))
 	{
-	  print_using = 0;
-	}
-      else
-	{
-	  print_using = 1;
+	  	print_using = 0;
+	} else {
+      		if (A4GL_isyes (acl_getenv ("USEWPRINTC"))) {
+	  		print_using = 2;
+		} else {
+      			if (A4GL_isyes (acl_getenv ("USEADDW"))) {
+	  			print_using = 1;
+			}
+		}
 	}
     }
+
+
+  if (print_using==-1) {
+	print_using=0;
+  }
 
 
   if (f == 0)
@@ -166,7 +179,13 @@ redraw_field (FIELD * f)
 
 
   buff[(f->cols * f->rows)] = 0;
-  wattrset(w,(f->back | f->fore));
+
+  attr=(f->back | f->fore)&0xffffff00;
+
+  if (print_using!=2) {
+	A4GL_debug("Setting attr=%x",attr);
+  	wattrset(w,attr);
+  }
 
   if (f->rows > 1)
     {
@@ -176,13 +195,23 @@ redraw_field (FIELD * f)
 	  strncpy (xbuff, &buff[row * f->cols], f->cols);
 	  xbuff[f->cols] = 0;
 	  A4GL_debug ("Printing : %s @ %d,%d (multi line)\n", xbuff, x, y);
+
 	  if (print_using == 0)
 	    {
 	      mvwprintw (w, y + row, x, "%s", xbuff);
 	    }
-	  else
+
+	  if (print_using==1) 
 	    {
 	      mvwaddstr (w, y + row, x, xbuff);
+	    }
+
+	  if (print_using==2) 
+	    {
+		int ccc;
+		for (ccc=0;ccc<strlen(xbuff);ccc++) {
+ 			mvwaddch (w, y, x+ccc, attr + xbuff[ccc]);
+		}
 	    }
 	}
       free (xbuff);
@@ -190,16 +219,50 @@ redraw_field (FIELD * f)
   else
     {
       A4GL_debug ("Printing : %s @ %d,%d %x %x\n", buff, x, y,f->opts,f->fore);
-      if (print_using == 0)
-	{
-	  mvwprintw (w, y, x, "%s", buff);
+
+      if (print_using == 0) {
+     		if (A4GL_isyes (acl_getenv ("CLRFIRST"))) {
+			memset(clr_buff,' ',f->cols * f->rows);
+	  		clr_buff[f->cols * f->rows]=0;
+	  		mvwprintw (w, y, x, "%s", clr_buff);
+			update_panels();
+			doupdate();
+		}
+
+	  	mvwprintw (w, y, x, "%s", buff);
 	}
-      else
-	{
-	  mvwaddstr (w, y, x, buff);
+
+      	if (print_using == 1) {
+     		if (A4GL_isyes (acl_getenv ("CLRFIRST"))) {
+			memset(clr_buff,' ',strlen(buff));
+	  		clr_buff[strlen(buff)]=0;
+	  		mvwaddstr (w, y, x, buff);
+			update_panels();
+			doupdate();
+		}
+	  	mvwaddstr (w, y, x, buff);
+	}
+
+        if (print_using == 2) {
+		int ccc;
+     		if (A4GL_isyes (acl_getenv ("CLRFIRST"))) {
+			memset(clr_buff,' ',f->cols * f->rows);
+	  		clr_buff[f->cols * f->rows]=0;
+	  		mvwprintw (w, y, x, "%s", clr_buff);
+			update_panels();
+			doupdate();
+		}
+
+		for (ccc=0;ccc<strlen(buff);ccc++) {
+     			if (A4GL_isyes (acl_getenv ("CLRFIRST"))) {
+ 				mvwaddch (w, y, x+ccc, attr + ' ');
+			}
+ 			mvwaddch (w, y, x+ccc, attr + buff[ccc]);
+			update_panels();
+			doupdate();
+		}
 	}
     }
-  wrefresh (w);
 
 }
 
