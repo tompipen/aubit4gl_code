@@ -623,7 +623,6 @@ MAIN
   IF r_.aIntervalYY != 	INTERVAL(1) YEAR TO YEAR THEN
     DISPLAY "Diferent value 72 1 year to year : ",r_.aIntervalYY
     LET exitStatus = 1
-	exit program
   END IF
   IF r_.aIntervalYPrecY != 	INTERVAL(1) YEAR(4) TO YEAR THEN
     DISPLAY "Diferent value 73"

@@ -1,0 +1,7 @@
+mdecompile m1.mnu > m1.out
+if diff m1.out m1.out.expected
+then
+	exit 0
+else
+	exit 1
+fi
