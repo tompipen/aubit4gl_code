@@ -78,7 +78,7 @@ set_expr_int(struct expr *e,int a)
 %start ace_report
 
 %union	  {
-	char	str[1024];
+	char	str[30000];
 	struct command cmd;
 	struct expr expr;
 	struct commands commands;
@@ -831,7 +831,7 @@ select_statement:
 
 in_select_statement:
 	SELECT op_ad select_list table_expression sel_p2 {
-             char buff[1024];
+             char buff[30000];
              //int ni = 0,no = 0;
              sprintf(buff,"%s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>4, $<str>5);
              sprintf($<str>$,"push_char(\"%s\");",buff);
