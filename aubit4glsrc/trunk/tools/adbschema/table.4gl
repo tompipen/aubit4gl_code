@@ -643,14 +643,16 @@ DEFINE lv_systables integer	#true or false, process Informix sys* tables (defaul
 		end foreach
 		return
 	end if
+
+	#must make sure we unload/load only tables not views or synonyms
+	select tabtype into lv_st.tabtype from systables where
+		tabname = lv_t
+	if lv_st.tabtype = "" or lv_st.tabtype IS NULL then
+		display "Error: cannot get tabtype for ",lv_t clipped
+		exit program 1
+	end if
 	
-	#No point in unloading or loading datat from views
-	#FIXME: when creating .sql unload file like this:
-	# adbschema -q -U -d maxdev  > maxdev-INFORMIX-unload.sql
-	# lv_st.tabtype is not populated?
-	# (So I had to add or lv_st.tabtype = "")
-	#So we will unload views, but not load them...
-	if lv_st.tabtype = "T" or lv_st.tabtype = "" then
+	if lv_st.tabtype = "T" then
 		case lv_type
 			when "U" display "UNLOAD TO '",lv_t clipped,".unl' SELECT * FROM ",lv_t clipped,";"
 			when "L" display "LOAD FROM '",lv_t clipped,".unl' INSERT INTO ",lv_t clipped,";"
