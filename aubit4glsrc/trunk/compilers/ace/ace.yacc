@@ -57,7 +57,7 @@ e->expr_u.i=a;
 %token BETWEEN
 %token BOTTOM
 %token BY
-%token CALL
+%token KW_CALL
 %token CH
 %token CHAR
 %token CHAR_VALUE
@@ -964,7 +964,7 @@ block_commands: command {
 }
 ;
 
-call_command :  CALL func_identifier OPEN_BRACKET op_val_expr_list CLOSE_BRACKET {
+call_command :  KW_CALL func_identifier OPEN_BRACKET op_val_expr_list CLOSE_BRACKET {
 		$<cmd>$.cmd_type=CMD_CALL;
 		$<cmd>$.command_u.cmd_call.fcall=malloc(sizeof(struct expr_call));
                 $<cmd>$.command_u.cmd_call.fcall->fname=strdup($<str>2);

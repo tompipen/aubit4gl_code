@@ -178,7 +178,7 @@
 "MAX" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return XMAX;}
 "MIN" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return XMIN;}
 "YEAR" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return YEAR;}
-"CALL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CALL;}
+"CALL" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_CALL;}
 "WITH NO LOG" {if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WITH_NO_LOG;}
 [0-9]+  {if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(INTVAL);}
 [0-9]+|[0-9]*\.[0-9]+   {if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(NUMBER_VALUE);}
