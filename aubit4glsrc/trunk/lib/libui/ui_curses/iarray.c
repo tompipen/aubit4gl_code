@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.4 2003-02-26 22:28:14 mikeaubury Exp $
+# $Id: iarray.c,v 1.5 2003-03-12 07:23:31 mikeaubury Exp $
 #*/
 
 /**
@@ -688,8 +688,10 @@ int a;
       disp->srec = get_srec (srecname);
        debug(">>>>disp->srec=%p",disp->srec);
 
-      if (disp->srec == 0)
+      if (disp->srec == 0) {
+        exitwith ("Screen record not found");
 	return 0;
+      }
       disp->currform = get_curr_form ();
 	#ifdef DEBUG
       {	debug ("disp->currform=%p", disp->currform);      }
