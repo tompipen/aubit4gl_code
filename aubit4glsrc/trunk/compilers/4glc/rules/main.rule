@@ -192,6 +192,7 @@ sprintf($<str>$,"%s",$<str>2);}
 ;
 
 db_section	:	  DATABASE dbase_name {
+					add_feature("DATABASE_USED");
 					open_db($<str>2);
 					strcpy(hdr_dbname,$<str>2);
 					lastlineno=yylineno;
@@ -199,6 +200,7 @@ db_section	:	  DATABASE dbase_name {
 				file_out_nl("1");
 			}
 		| SCHEMA dbase_name {
+					add_feature("SCHEMA_USED");
 					open_db($<str>2);
 					strcpy(hdr_dbname,$<str>2);
 					lastlineno=yylineno;

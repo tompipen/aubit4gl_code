@@ -45,6 +45,7 @@ sprintf($<str>$,"A4GL_cr_window");
 reset_attrib(&form_attrib);
 }
 		|	KWFORM fgl_expr {
+add_feature("USES_FORM");
 sprintf($<str>$,"A4GL_cr_window_form");
 reset_attrib(&form_attrib);
 };

@@ -434,4 +434,12 @@ char *A4GL_decode_packtype(char *s);
 #define add_feature A4GL_add_feature
 
 
+// printf is often used for debug messages during
+// development
+// to make it quicker to find these - we'll remove 
+// any normal use of printf by using PRINTF instead
+// that way - we can just grep for printf...
+#define PRINTF printf
+
+
 /* ============================= EOF ================================= */

@@ -15,6 +15,7 @@ drops_c : DROP_TABLE table_name {
 			add_feature("DROP_VIEW");
 }
 	| DROP_INDEX idx_name 		{sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("DROP_INDEX_QUALIFIED_PATH");
 			add_feature("DROP_INDEX");
 }
 	| DROP_TRIGGER identifier 	{sprintf($<str>$,"%s %s",$<str>1,$<str>2);
@@ -78,6 +79,7 @@ create_c_1  :
 	CREATE_U_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		add_feature("CREATE_INDEX");
 		add_feature("CREATE_INDEX_UNIQUE");
+		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 	
 } 
@@ -85,6 +87,7 @@ create_c_1  :
 		add_feature("CREATE_INDEX");
 		add_feature("CREATE_INDEX_UNIQUE");
 		add_feature("CLUSTER_INDEX");
+		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_CLUSTER")) {
 		sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
@@ -95,6 +98,7 @@ create_c_1  :
 	| CREATE_C_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
 		add_feature("CREATE_INDEX");
 		add_feature("CLUSTER_INDEX");
+		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_CLUSTER")) {
 			sprintf($<str>$,"CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
@@ -103,6 +107,7 @@ create_c_1  :
 		}
 	} 
 	| CREATE_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
+		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 			add_feature("CREATE_INDEX");
 			sprintf($<str>$," CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
@@ -116,6 +121,7 @@ create_c_1  :
 		a4gl_yyerror("You cannot drop a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
 	}
 	| CREATE_SYNONYM table_name FOR table_name { 
+		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("CREATE_SYNONYM_QUALIFIED_PATH");
 			add_feature("CREATE_SYNONYM");
 			sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4); 
 	}
@@ -127,6 +133,7 @@ create_c_1  :
 		add_feature("DROP_AUDIT");
 		sprintf($<str>$,"DROP AUDIT FOR %s",$<str>2); }
 	| DROP_SYNONYM table_name { 
+		if (strchr($<str>2,'@') || strchr($<str>2,':')) add_feature("DROP_SYNONYM_QUALIFIED_PATH");
 		add_feature("DROP_SYNONYM");
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2); }
 	| RECOVER_TABLE table_name { 
@@ -240,7 +247,7 @@ alter_clause_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| alter_add_constraint_clause {
-	add_feature("ALTER_TABLE_ADD_CONSTRAINT");
+		add_feature("ALTER_TABLE_ADD_CONSTRAINT");
 		$<sql_string>$=strdup($<str>1);
 	}
 	| alter_drop_constraint_clause {
@@ -260,9 +267,11 @@ alter_clause_ss:
 
 alter_add_clause_ss:
 	ADD add_column_clause_ss  {
+		add_feature("ALTER_TABLE_ADD");
 		$<sql_string>$=make_sql_string_and_free(strdup("ADD "),$<sql_string>2,0);
 	}
 	| ADD OPEN_BRACKET add_column_clauses_ss CLOSE_BRACKET {
+		add_feature("ALTER_TABLE_ADD");
 		$<sql_string>$=make_sql_string_and_free(strdup("ADD "),kw_ob,$<sql_string>3,kw_cb,0);
 	}
 ;
@@ -340,6 +349,7 @@ alter_lock_mode :
 
 alter_modify_next :
 	MODIFY_NEXT_SIZE INT_VALUE {
+		add_feature("DDL_NEXT_SIZE");
 		sprintf($<str>$,"MODIFY NEXT SIZE %d",atoi($<str>2));
 	}
 ;
@@ -347,7 +357,7 @@ alter_modify_next :
 alter_add_constraint_clause:
 
 	ADD_CONSTRAINT table_constraint_definition_ss opt_constraint_name {
-		add_feature("ADD_CONSTRAINT");
+		add_feature("DDL_CONSTRAINT");
 		sprintf($<str>$,"ADD CONSTRAINT %s%s",$<sql_string>2,$<str>3);
 	}
 	| ADD_CONSTRAINT OPEN_BRACKET table_constraint_definition_list_ss CLOSE_BRACKET {
@@ -365,7 +375,7 @@ table_constraint_definition_list_ss: table_constraint_definition_ss opt_constrai
 ;
 
 opt_constraint_name : {strcpy($<str>$,"");} 
-		| CONSTRAINT identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2); }
+		| CONSTRAINT identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2); add_feature("DDL_CONSTRAINT");}
 ;
 
 alter_drop_constraint_clause:

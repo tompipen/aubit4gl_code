@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.202 2005-02-23 13:55:59 mikeaubury Exp $
+# $Id: mod.c,v 1.203 2005-02-25 08:39:59 mikeaubury Exp $
 #
 */
 
@@ -465,7 +465,6 @@ int a;
 int max_id=0;
 int anymode=0;
 for (a=0;a<10;a++) stack_ids[a]=0;
-//printf("Looking for cmd_type = %s\n",cmd_type);
 /* Are we looking for anything ? */
 if (strcmp(cmd_type,"ALL")==0) { anymode=1; }
 if (strcmp(cmd_type,"ALLINPUT")==0) { anymode=2; }
@@ -483,12 +482,12 @@ if (anymode) { /* used for getfldbuf etc */
 a=isin_command(cmd_type);
 if (a==0) {
 	int z;
-	printf("Looking for cmd_type = %s - not found\n",cmd_type);
+	PRINTF("Looking for cmd_type = %s - not found\n",cmd_type);
   	for (z = ccnt - 1; z >= 0; z--)
     	{
       	if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
 		continue;
-	printf("%d %s\n",z,command_stack[z].cmd_type);
+	PRINTF("%d %s\n",z,command_stack[z].cmd_type);
 	}
 	a4gl_yyerror("Internal error - unable to find sio_id for command");
 	return 0;
@@ -867,7 +866,6 @@ A4GL_debug("s=%s",A4GL_null_as_null(s));
 	  strcpy (buff2, &s[A4GL_findex (s, ')') + 1]);
 	  buff[A4GL_findex (buff, '(')] = 0;
 	  strcat (buff, buff2);
-	/*printf("DOWNSHIFT : %s\n",buff);*/
 	  A4GL_convlower (buff);
 	}
       else
@@ -905,7 +903,6 @@ A4GL_debug("s=%s",A4GL_null_as_null(s));
   if (vval == 1)
     {
       z_new = dtype + (size << 16);
-      /*printf("OK - %x (%d %d)\n",z_new,dtype,size);*/
       return z_new;
     }
 
@@ -915,7 +912,6 @@ A4GL_debug("s=%s",A4GL_null_as_null(s));
     }
 
 
-  /*printf("Find_variable returns %d for %s\n",vval,buff);*/
   return vval;
 
 
@@ -1008,7 +1004,7 @@ A4GL_debug("s=%s",A4GL_null_as_null(s));
 	      /* A4GL_debug ("Find type returned %x", z); */
 	      if (z_new != z)
 		{
-		  printf ("Discrepency between z's for %s\n", s);
+		  PRINTF ("Discrepency between z's for %s\n", s);
 		  exit (0);
 		}
 	      return z;
@@ -1355,7 +1351,6 @@ set_4gl_vars (void)
   variable_action (-1, "aiplib_status", "", "", "a4gl_add_variable");
   variable_action (-1, "long", "", "", "push_type");
 
-//printf("--> M\n");
   set_current_variable_scope ('m');
 }
 
@@ -1533,7 +1528,6 @@ pushValidateTableColumn (char *tableName, char *columnName)
   char buff[300];
 
   A4GL_debug ("pushValidateTableColumn()");
-/*printf("Table name = %s column name=%s\n",tableName,columnName);*/
   rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
   if (rval == 0)
     {
@@ -1724,7 +1718,6 @@ push_validate (char *t2)
   char *columnName;
   char t[256];
   A4GL_debug ("In push_validate");
-  /*printf("t2=%s\n",t2);*/
 
 
 /* Skip any owner bit...*/
@@ -1819,7 +1812,6 @@ push_menu_title (char *s)
 void
 push_blockcommand (char *cmd_type)
 {
-  /*printf("push_blockcommand %s\n",cmd_type);*/
   A4GL_debug ("START BLOCK %s", cmd_type);
   A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
   A4GL_debug (" /* new block %s %d */\n", cmd_type, ccnt);
@@ -1981,7 +1973,7 @@ in_command (char *cmd_type)
 	}
     }
 
-  printf ("Not in a %s command\n", cmd_type);
+  PRINTF ("Not in a %s command\n", cmd_type);
   a4gl_yyerror ("Can't exit command");
 
   return 0;
@@ -2015,10 +2007,9 @@ void
 push_gen (int a, char *s)
 {
   A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null(s), gen_stack_cnt[a]);
-  /*printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);*/
   if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
     {
-      printf ("Out of stack!\n");
+      PRINTF ("Out of stack!\n");
       exit (77);
     }
   strcpy (gen_stack[a][gen_stack_cnt[a]++], s);
@@ -2041,7 +2032,6 @@ copy_gen (int a, int b)
 
   if (gen_stack_cnt[a] && gen_stack[a][gen_stack_cnt[a] - 1][0] == '(')
     {
-      /*printf ("POP\n");*/
       pop_gen (a);
     }
 
@@ -2056,9 +2046,6 @@ copy_gen (int a, int b)
 char *
 pop_gen (int a)
 {
-  /*printf ("Popgen called\n");*/
-  /*printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]);*/
-  /*dump_updvals();*/
   gen_stack_cnt[a]--;
   return gen_stack[a][gen_stack_cnt[a]];
 
@@ -2194,7 +2181,6 @@ strcpy(var,var_i);
 	  ibind[ibindcnt].start_char_subscript = 0;
 	  ibind[ibindcnt].end_char_subscript = 0;
 
-/*printf("var= '%s'\n",var);*/
 	  if (strncmp (var, " a4gl_substr(", 8) != 0)
 	    {
 	      strcpy (ibind[ibindcnt].varname, var);
@@ -2209,7 +2195,6 @@ strcpy(var,var_i);
 	      int s_send;
 	      int a;
 	      strcpy (buff2, &var[strlen("a4gl_substr ")+1]);
-		printf("%s\n",buff2);
 	      a =
 		sscanf (buff2, "%s , %d , %d , %d) /*1*/", buff, &s_dtype,
 			&s_sstart, &s_send);
@@ -2224,7 +2209,6 @@ strcpy(var,var_i);
 	      ibind[ibindcnt].dtype = s_dtype;
 	      ibind[ibindcnt].start_char_subscript = s_sstart;
 	      ibind[ibindcnt].end_char_subscript = s_send;
-	      /*printf("%s %d %d %d\n",ibind[ibindcnt].varname,ibind[ibindcnt].dtype,ibind[ibindcnt].start_char_subscript,ibind[ibindcnt].end_char_subscript);*/
 	    }
 	  ibindcnt++;
 	}
@@ -3465,7 +3449,7 @@ void set_whenever (int c, char *p)
 
   if (code == -1)
     {
-      printf ("Code=%d (%x) to %p\n", c, c, p);
+      PRINTF ("Code=%d (%x) to %p\n", c, c, p);
       a4gl_yyerror ("Internal error setting whenever error...");
       exit (0);
     }
@@ -3886,8 +3870,6 @@ void expand_bind (struct binding_comp *bind, int btype, int cnt)
          		char arrbuff[256];
 		
 		
-	/*printf("Warning: Using an array at this point may not be supported (%s) @ line %d\n",buff,yylineno); */
- 		/*printf("GET1 : %s\n",buff);*/
         		get_variable_dets (buff,&type,&arrsize,&size,&level,arrbuff);
 			for (b1=0;b1<arrsize;b1++) {
 				sprintf(buff2,"%s[%d]",buff,b1);
@@ -3941,8 +3923,7 @@ chk_init_var (char *s)
     {
       if (isarrvariable (s))
 	{
-	  printf ("Warning: Only initializing first element in array %s\n",
-		  s);
+	  PRINTF ("Warning: Only initializing first element in array %s\n", s);
 	  strcat (s, "[0]");
 	  return;
 	}
@@ -3958,7 +3939,7 @@ chk_init_var (char *s)
     {
       char buff[1024];
       char *ptr;
-      printf ("Warning: Only initializing first element in array %s\n", s);
+      PRINTF ("Warning: Only initializing first element in array %s\n", s);
       strcpy (buff, s);
       ptr = strchr (s, '.');
       *ptr = 0;
@@ -4478,16 +4459,16 @@ dump_updvals ()
   int a;
   for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
     {
-      printf ("UPDCOL[%d] : %s\n", a, gen_stack[UPDCOL][a]);
+      PRINTF ("UPDCOL[%d] : %s\n", a, gen_stack[UPDCOL][a]);
     }
 
   for (a = 0; a < gen_stack_cnt[UPDVAL]; a++)
     {
-      printf ("UPDVAL[%d] : %s\n", a,gen_stack[UPDVAL][a]);
+      PRINTF ("UPDVAL[%d] : %s\n", a,gen_stack[UPDVAL][a]);
     }
   for (a = 0; a < gen_stack_cnt[UPDVAL2]; a++)
     {
-      printf ("UPDVAL2[%d]: %s\n", a,gen_stack[UPDVAL2][a]);
+      PRINTF ("UPDVAL2[%d]: %s\n", a,gen_stack[UPDVAL2][a]);
     }
 }
 
@@ -4498,12 +4479,12 @@ dump_insvals ()
   int a;
   for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
     {
-      printf ("INSCOL[%d] : %s\n", a, gen_stack[INSCOL][a]);
+      PRINTF ("INSCOL[%d] : %s\n", a, gen_stack[INSCOL][a]);
     }
 
   for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
     {
-      printf ("INSVAL[%d] : %s\n", a,gen_stack[INSVAL][a]);
+      PRINTF ("INSVAL[%d] : %s\n", a,gen_stack[INSVAL][a]);
     }
 }
 
@@ -4642,9 +4623,7 @@ fgl_add_scope (char *s, int n)
   static char buffer[256];
   char buffer2[1024];
 
-//printf("ADD SCOPE : %s\n",s);
   if (strncmp(s,"CLASS_COPY->",12)==0) return s;
-//printf("Not class_copy\n");
 
   strcpy (buffer2, s);
   c = find_variable_scope (buffer2);
@@ -4652,7 +4631,6 @@ fgl_add_scope (char *s, int n)
   if (c == 'C' || c=='P');
   else
     {
-	//printf("c!='C'");
       if (!A4GL_isyes (acl_getenv ("MARK_SCOPE")))
 	{
 	  return s;
@@ -4690,7 +4668,6 @@ fgl_add_scope (char *s, int n)
     }
 
 
-//printf("c=%c\n",c);
   if (c != 'S') {
 		if (c=='C'||c=='P') {
 			if (c=='C')  {
@@ -4729,16 +4706,10 @@ struct s_validate *validate_list=0;
 int validate_list_cnt=0;
 
 int get_validate_list_cnt(void) {
-/*int a;*/
-	/*printf("Return count : %d\n",validate_list_cnt);*/
-/*for (a=0;a<validate_list_cnt;a++) {*/
-	/*printf("   %s %s %p\n",validate_list[a].tabname,validate_list[a].colname,validate_list[a].expr);*/
-/*}*/
 	return validate_list_cnt;
 }
 	
 void clr_validate_list(void) {
-	/*printf("Clear list\n");*/
 	if (validate_list) free(validate_list);	
 	validate_list_cnt=0;
 	validate_list=0;
@@ -4746,7 +4717,6 @@ void clr_validate_list(void) {
 
 static void push_validate_column(char *tabname,char *colname) {
 	validate_list_cnt++;
-	/*printf("Add to list %s %s\n",tabname,colname);*/
 	validate_list=realloc(validate_list,sizeof(struct s_validate)*validate_list_cnt);
 	/*A4GL_trim(tabname);*/
 	/*A4GL_trim(colname);*/
@@ -4758,13 +4728,10 @@ static void push_validate_column(char *tabname,char *colname) {
 		a4gl_yyerror("Unable to get validation information - does A4GL_SYSCOL_VAL exist ?");
 	}
 
-	/*printf("-->%p (%d)\n",validate_list[validate_list_cnt-1].expr,validate_list_cnt-1);*/
-	/*printf("%d elements\n",length_expr(validate_list[validate_list_cnt-1].expr));*/
 	
 }
 
 struct expr_str *A4GL_get_validate_expr(int n) {
-	/*printf("-->%p for %d\n",validate_list[n].expr,n);*/
 	return validate_list[n].expr;
 }
 
@@ -4804,12 +4771,10 @@ int a;
 }
 
 void A4GL_add_onkey_key(char *s) {
-	//printf("ADD EVENT 90 : %s\n",s);
 	A4GL_add_event(-90,s);
 }
 
 void A4GL_add_event(int n,char *s) {
-	/*printf("Add Event : %d %s\n",n,s);*/
 	event_queue[nevent_queue].nevents++;
 	event_queue[nevent_queue].events=realloc(event_queue[nevent_queue].events,sizeof(struct s_event)*event_queue[nevent_queue].nevents);
 	event_queue[nevent_queue].events[event_queue[nevent_queue].nevents-1].n=n;
@@ -4817,19 +4782,16 @@ void A4GL_add_event(int n,char *s) {
 }
 
 int A4GL_get_nevents(void) {
-	/*printf("nevents=%d\n", event_queue[nevent_queue].nevents);*/
 	return event_queue[nevent_queue].nevents;
 }
 
 void A4GL_get_event(int n,int *i,char **s) {
-	/*printf("getevent : %d\n", n);*/
 	*i=event_queue[nevent_queue].events[n].n;
 	*s=event_queue[nevent_queue].events[n].s;
 }
 
 
 void A4GL_copy_fbind_to_Obind(void) {
-//printf("Copying fbind %d %d\n",fbindcnt,ordbindcnt);
 memcpy(ordbind,fbind,sizeof(struct binding_comp)*fbindcnt);
 ordbindcnt=fbindcnt;
 }
@@ -4884,6 +4846,7 @@ void A4GL_add_feature(char *feature) {
 	static int dump_features=-1;
 	static int failed=0;
 	FILE *f;
+
 	if (dump_features==-1) {
 		dump_features=A4GL_isyes(acl_getenv("DUMP_FEATURES"));
 	}
@@ -4893,7 +4856,7 @@ void A4GL_add_feature(char *feature) {
 		A4GL_set_sql_features();
 		f=fopen(sql_features,"a");
 		if (f==0) {
-			if (failed==0) printf("Unable to open features file (%s) - %d\n",sql_features,errno);
+			if (failed==0) PRINTF("Unable to open features file (%s) - %d\n",sql_features,errno);
 			failed++;
 			return;
 		}

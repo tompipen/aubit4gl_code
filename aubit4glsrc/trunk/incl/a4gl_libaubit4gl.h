@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.157 2005-02-20 19:34:42 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.158 2005-02-25 08:40:00 mikeaubury Exp $
 #
 */
 
@@ -1884,7 +1884,7 @@ char *A4GLSQLCV_get_sqlconst(char *cval);
 char *A4GLSQLCV_generate_current(char *from,char *to) ;
 int A4GLSQLCV_check_requirement(char *s) ;
 char *A4GLSQLCV_check_colname(char *tabname,char *colname) ;
-char *A4GLSQLCV_matches_string(char *str,char *esc) ;
+char *A4GLSQLCV_matches_string(char *not,char *str,char *esc) ;
 char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) ;
 char *A4GLSQLCV_make_substr(char *colname,int i0,int i1,int i2) ;
 char *A4GLSQLCV_make_ival_extend(char *ival,char *from,char *from_len,char *to,int extend) ;

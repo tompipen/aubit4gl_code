@@ -227,6 +227,7 @@ record_variable :
 		   
 		} 
 	|	RECORD_LIKE {
+			add_feature("DEFINE_LIKE");
 		   in_record++;
 		   push_record();
 		   A4GL_debug("Like\n");
@@ -472,6 +473,7 @@ op_prec :
 
 like_var :
 		LIKE define_table_name DOT col_name {
+			add_feature("DEFINE_LIKE");
 		   sprintf($<str>$,"%s.%s",$<str>2,$<str>4);
 		    A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");
 		   

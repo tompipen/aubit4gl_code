@@ -97,6 +97,9 @@ call_ext :
 	a=get_counter_val();
 	drop_counter();
   	print_func_call($<str>1,$<ptr>4,a);
+	if (strcasecmp($<str>1,"aclfgl_dump_screen")==0) {
+		add_feature("DUMP_SCREEN");
+	}
    }
    opt_return 
    {

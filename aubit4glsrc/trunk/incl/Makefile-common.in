@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.182 2005-02-13 10:26:12 afalout Exp $
+# $Id: Makefile-common.in,v 1.183 2005-02-25 08:40:00 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1061,6 +1061,7 @@ BIN_PATH    =bin
 LIB_PATH    =lib
 DOC_PATH    =docs
 TEST_PATH   =tools/test
+FGLPC_SETTINGS_PATH   =tools/4glpc/settings
 ETC_PATH    =etc
 INCL_PATH   =incl
 IDE_PATH  	=tools/ide
@@ -1073,6 +1074,7 @@ SOURCE 		=${AUBIT_SRC_ROOT}
 BIN_DIR     =$(SOURCE)/${BIN_PATH}
 LIB_DIR     =$(SOURCE)/${LIB_PATH}
 DOC_DIR    	=$(SOURCE)/${DOC_PATH}
+FGLPC_SETTINGS_DIR     =$(SOURCE)/tools/4glpc/settings
 TEST_DIR    =$(SOURCE)/${TEST_PATH}
 TEST_DIR_STD=$(TEST_DIR)
 TEST_DIR_GUI=$(TEST_DIR)/gui
@@ -1087,6 +1089,7 @@ IMPORT_DIR =$(SOURCE)/${IMPORT_PATH}
 #Paths to install to:
 BIN_DEST	=$(INSTALL_DIR)/${BIN_PATH}
 LIB_DEST	=$(INSTALL_DIR)/${LIB_PATH}
+FGLPC_SETTINGS_DEST	=$(INSTALL_DIR)/${FGLPC_SETTINGS_PATH}
 DOC_DEST   	=$(INSTALL_DIR)/${DOC_PATH}
 TEST_DEST   =$(INSTALL_DIR)/${TEST_PATH}
 TEST_DEST_STD =$(TEST_DEST)
@@ -1145,6 +1148,7 @@ endif
 #$(filter %.o,$(files))
 BIN_EXE_NOT_4AE=$(filter-out %.4ae,${BIN_EXE})
 BIN_EXE_4AE=$(filter %.4ae,${BIN_EXE})
+SETTINGS_FILES=C C_INFORMIX EC EC_INFORMIX EC_INGRES EC_POSTGRES EC_SAP INFORMIX
 BIN_FILES   =${BIN_SCRIPTS} ${RUNTIME_RESOURCE} ${BIN_EXE_4AE} \
 			$(addsuffix ${EXE_EXT},${BIN_EXE_NOT_4AE})
 AMAKE_BIN_FILES	=${AMAKE_BIN_SCRIPTS} $(addsuffix ${EXE_EXT},${AMAKE_BIN_EXE})
@@ -1293,6 +1297,7 @@ TOROOT		=$(addprefix $(ROOT_DIR)/,		$(ROOT_FILES))
 TOINCL		=$(addprefix $(INCL_DIR)/,		$(INCL_FILES))
 TOIDE       =$(addprefix $(IDE_DIR)/,		$(IDE_FILES))
 TOCONVSQL   =$(addprefix $(CONVSQL_DIR)/,	$(CONVSQL_FILES))
+TOSETTINGS   =$(addprefix $(FGLPC_SETTINGS_DIR)/,	$(SETTINGS_FILES))
 TOIMPORT	=$(addprefix $(IMPORT_DIR)/,	$(IMPORT_FILES))
 AMAKE_TOBIN	=$(addprefix $(BIN_DIR)/,		$(AMAKE_BIN_FILES))
 AMAKE_TOINCL=$(addprefix $(INCL_DIR)/,		$(AMAKE_INCL_FILES))

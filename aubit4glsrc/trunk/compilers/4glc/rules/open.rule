@@ -6,6 +6,7 @@
 
 open_window_cmd :
 	OPEN_WINDOW open_win_name AT coords WITH window_type win_attributes  {
+add_feature("OPEN_WINDOW");
 form_attrib.iswindow=1;
 print_open_window($<str>2,$<str>6);
 sprintf($<str>$,"open window");
@@ -34,6 +35,7 @@ addmap("Call Formhandler",$<str>1,curr_func,yylineno,infilename);
 open_form_cmd :
 	OPEN_FORM open_form_name  open_form_rest
 		{
+		add_feature("USES_FORM");
 		print_open_form($<str>3,$<str>2,$<str>2);
 		}
 ;
@@ -63,6 +65,7 @@ op_absolute: {strcpy($<str>$,"0");}
 open_session_cmd : 
  OPEN_SESSION conn_id TO_DATABASE var_ident user_details
  {
+add_feature("OPEN_SESSION");
 print_open_session($<str>2,$<str>4,$<str>5);
 
 }

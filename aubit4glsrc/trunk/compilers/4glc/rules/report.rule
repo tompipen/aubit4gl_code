@@ -7,36 +7,44 @@
 
 start_cmd : 
 	START_REPORT rep_name TO_PRINTER  op_with_dim {
+			add_feature("USE_REPORT");
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("P","acl_getenv(\"DBPRINT\")",$<str>2,$<str>4);
 			}
 	| START_REPORT rep_name TO_EMAIL  op_with_dim {
 			char buff[256];
+			add_feature("USE_REPORT");
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 			print_start_report("M",buff,$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name TO rout op_with_dim {
+			add_feature("USE_REPORT");
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("F",$<str>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_FILE rout op_with_dim {
+			add_feature("USE_REPORT");
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("F",$<str>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_PIPE rout op_with_dim {
+			add_feature("USE_REPORT");
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("P",$<str>4,$<str>2,$<str>5);
 			}
 	    | START_REPORT rep_name TO_SCREEN op_with_dim {
+			add_feature("USE_REPORT");
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("S","\"\"",$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name AS_CONVERTABLE  op_with_dim {
+			add_feature("USE_REPORT");
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("C","\"\"",$<str>2,$<str>4);
 			}
 	    | START_REPORT rep_name  op_with_dim {
+			add_feature("USE_REPORT");
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("","\"\"",$<str>2,$<str>3);
 			}
@@ -124,37 +132,44 @@ rep_name : identifier;
 op_values : | VALUES ; /* This isn't standard - but it looks pretty OUTPUT TO REPORT VALUES (...)... */
 
 output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET reset_cnt op_fgl_expr_list CLOSE_BRACKET {
+			add_feature("USE_REPORT");
 		addmap("Output to report",$<str>2,curr_func,yylineno,infilename);
 		print_output_to_report($<str>2,$<str>6); 
 		}
 ;
 
 finish_cmd : FINISH_REPORT rep_name {
+			add_feature("USE_REPORT");
 		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
 		print_finish_report($<str>2);
 		print_free_convertable($<str>2); // Shouldn't really be needed - but they may have started it "AS CONVERTABLE"
 		}
 	| FINISH_REPORT rep_name CONVERTING_TO_MANY   {
+			add_feature("USE_REPORT");
 		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
 		print_finish_report($<str>2);
 		// Can't free convertable here - developer needs to do that using FREE REPORT
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char {
+			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char AS var_or_char {
+			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","PIPE");
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER AS var_or_char {
+			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL AS var_or_char {
+			add_feature("USE_REPORT");
                         char buff[255];
 			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 		print_finish_report($<str>2);
@@ -164,32 +179,38 @@ finish_cmd : FINISH_REPORT rep_name {
 
 
 	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char AS var_or_char {
+			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char KW_USING var_or_char {
+			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"FILE");
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char AS var_or_char KW_USING var_or_char {
+			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"FILE");
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char AS var_or_char KW_USING var_or_char {
+			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"PIPE");
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER AS var_or_char KW_USING var_or_char {
+			add_feature("USE_REPORT");
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO_EMAIL AS var_or_char KW_USING var_or_char {
                         char buff[255];
+			add_feature("USE_REPORT");
 			sprintf(buff,"A4GL_get_tmp_rep(_module_name,\"%s\")",$<str>2);
 		print_finish_report($<str>2);
 		print_convert_report($<str>2,buff,$<str>5,$<str>7,"EMAIL");
@@ -202,6 +223,7 @@ finish_cmd : FINISH_REPORT rep_name {
 
 
 term_rep_cmd : TERMINATE_REPORT rep_name {
+			add_feature("USE_REPORT");
 		addmap("Finish Report",$<str>2,curr_func,yylineno,infilename);
 		print_terminate_report($<str>2);
 }
@@ -589,6 +611,7 @@ A4GL_debug("Order by Gives :%d\n",a);
 
 report_def : REPORT 
 	{ 
+	add_feature("USE_REPORT");
     if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
 
 		rep_type=REP_TYPE_NORMAL; 

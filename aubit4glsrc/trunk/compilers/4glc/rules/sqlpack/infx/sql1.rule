@@ -23,7 +23,7 @@ insert_statement_ss:
 ;
 
 ins_2_ss : VALUES {insql=1;} OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET { insql=0; $<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup(" ("),$<sql_string>4,kw_cb,0);}
-	| query_specification_ss {$<sql_string>$=$<sql_string>1;}
+	| query_specification_ss {$<sql_string>$=$<sql_string>1; add_feature("INSERT_INTO_SELECT_FROM");}
 ;
 
 op_insert_column_list: {strcpy($<str>$,""); push_gen(INSCOL,"*"); }
@@ -123,6 +123,7 @@ op_db_exclusive :
 set_database_cmd : 
        DATABASE var_ident_qchar op_db_exclusive
 {
+	add_feature("DATABASE_USED");
 if (strcmp($<str>2,"?")==0) {
 	print_init_conn(0);
 } else {
@@ -693,7 +694,8 @@ comparison_predicate_ss:
 	| value_expression_ss NOT_LIKE pattern_ss op_like_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
 	| value_expression_ss ILIKE pattern_ss op_ilike_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
 	| value_expression_ss NOT_ILIKE pattern_ss op_ilike_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }
-	| value_expression_ss op_not MATCHES pattern_ss op_matches_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2), strdup(A4GLSQLCV_matches_string($<sql_string>4,$<str>5)),0);
+	| value_expression_ss op_not MATCHES pattern_ss op_matches_escape { 
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space, strdup(A4GLSQLCV_matches_string($<str>2,$<sql_string>4,$<str>5)),0);
 		}
 ;
 
@@ -859,8 +861,7 @@ approx_numeric_type:
 	| REAL
 	| SMALLFLOAT
 	| KW_FLOAT
-	| DOUBLE_PRECISION
-{sprintf($<str>$," %s",$<str>1);}
+	| DOUBLE_PRECISION {add_feature("DDL_DOUBLE_PRECISION"); sprintf($<str>$," %s",$<str>1);}
 ;
 
 length:
@@ -1355,8 +1356,8 @@ misc_sql :
 ;
 
 rename_stmt :
-	RENTAB rentabname TO rentabname { strcpy($<str>$,A4GLSQLCV_rentab($<str>2,$<str>4)); }
-	| RENCOL table_name DOT rencolname TO rencolname { strcpy($<str>$,A4GLSQLCV_rencol($<str>2,$<str>4,$<str>6) ); }
+	RENTAB rentabname TO rentabname { add_feature("RENAME_TABLE"); strcpy($<str>$,A4GLSQLCV_rentab($<str>2,$<str>4)); }
+	| RENCOL table_name DOT rencolname TO rencolname { add_feature("RENAME_COLUMN"); strcpy($<str>$,A4GLSQLCV_rencol($<str>2,$<str>4,$<str>6) ); }
 ;
 
 rentabname : identifier;

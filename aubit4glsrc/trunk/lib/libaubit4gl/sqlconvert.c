@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.46 2005-02-17 11:51:46 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.47 2005-02-25 08:40:00 mikeaubury Exp $
 #
 */
 
@@ -846,27 +846,38 @@ static char buff[256];
 }
 
 
-char *A4GLSQLCV_matches_string(char *str,char *esc) {
+char *A4GLSQLCV_matches_string(char *not, char *str,char *esc) {
 static char buff[1024];
+
+
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_LIKE")) {
+		if (strstr(not,"NOT")==0) {
 		sprintf(buff,"LIKE %s",CV_matches("LIKE",str,esc));
+		} else {
+		sprintf(buff,"NOT LIKE %s",CV_matches("LIKE",str,esc));
+		}
+
 		return buff;
 }
 
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEX")) {
-		sprintf(buff,"~ %s",CV_matches("~",str,esc));
+		if (strstr(not,"NOT")==0) {
+			sprintf(buff,"~ %s",CV_matches("~",str,esc));
+		} else {
+			sprintf(buff,"!~ %s",CV_matches("~",str,esc));
+		}
 		return buff;
 }
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_GLOB")) {
-		sprintf(buff,"GLOB %s",CV_matches("~",str,esc));
+		sprintf(buff,"%s GLOB %s",not,CV_matches("~",str,esc));
 		return buff;
 }
 
 
 if (strlen(esc)) {
-		sprintf(buff,"MATCHES %s %s",str,esc);
+		sprintf(buff,"%s MATCHES %s %s",not,str,esc);
 } else {
-		sprintf(buff,"MATCHES %s ",str);
+		sprintf(buff,"%s MATCHES %s ",not,str);
 }
 
 
