@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.23 2004-10-29 14:09:20 afalout Exp $
+# $Id: io.c,v 1.24 2004-11-11 14:52:52 mikeaubury Exp $
 #
 */
 
@@ -199,6 +199,8 @@ FILE *f;
 	I was trying this because PACKED packer does not work on Windows, 
 	but XML packer does - did not help (try test #242)
 	*/
+
+	A4GL_debug("Opening %s",buff);
 	f = fopen (buff, "r");
 	if (f == 0) {
 		A4GL_debug("Unable to open %s %s (%s)",path,name,buff);
@@ -206,7 +208,7 @@ FILE *f;
 	}
 	if (!keepopen) {				/* We just wanted to check.. */
 	  fclose (f);
-		A4GL_debug("open %s %s (%s) was successful",path,name,buff);
+	  A4GL_debug("open %s %s (%s) was successful",path,name,buff);
 	  return (FILE *) 1;
 	}
 	A4GL_debug ("opened file %s in path %s", name, path);
@@ -225,7 +227,7 @@ A4GL_open_file_dbpath (char *fname)
 char *ptr;
 	ptr=A4GL_fullpath_dbpath(fname);
 	if (ptr==0) return 0;
-		return A4GL_try_to_open("",ptr,1);
+	return A4GL_try_to_open("",ptr,1);
 }
 
 /**
@@ -359,7 +361,7 @@ A4GL_fullpath_xpath (char *fname, char *path)
 
 	      if (A4GL_try_to_open (ptr, fname, 0))	{
 			//printf("ptr=%s\n",ptr);
-			sprintf(str_path,ptr,"%s/%s",ptr,fname);
+			sprintf(str_path,"%s/%s",ptr,fname);
 			return str_path;
 		  } else {
 			 cnt++;

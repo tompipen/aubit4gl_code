@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.18 2004-07-17 09:02:52 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.19 2004-11-11 14:55:37 mikeaubury Exp $
 #*/
 
 /**
@@ -155,10 +155,11 @@ A4GL_open_packer (char *basename, char dir)
     {
       sprintf (buff, "%s%s", basename, acl_getenv("A4GL_PACKED_EXT"));
       infile = A4GL_open_file_dbpath (buff);
-      if (infile)
+      if (infile) {
+		A4GL_debug("Got infile : %p\n",infile);
 	return 1;
+	}
       return 0;
-
     }
 
 
@@ -453,8 +454,9 @@ input_long (char *name, long *val, int ptr, int isarr)
 {
   int a;
   /* long n; */
+  extern int errno;
   a = fread (val, 1, sizeof (long), infile);
-
+  if (ferror(infile)) { printf("ferr too %d\n",errno); }
   *val = a4gl_ntohl (*val);
   return a;
 }
