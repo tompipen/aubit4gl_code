@@ -137,6 +137,10 @@ ident_p2 : NAMED {
 	}
 ;
 
+
+
+
+
 var_or_string : var | CHAR_VALUE;
 
 field_name2_as_struct	:	identifier {
