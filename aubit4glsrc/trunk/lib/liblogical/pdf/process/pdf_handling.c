@@ -64,9 +64,9 @@ output_page (PDF *p, int w, int h,char **lines)
   PDF_setfont(p,font,layout.fontsize);
   printable=this_page_height-(layout.topmargin*72.0);
   eachline=printable/h;
-  printf("Left margin %f\n",layout.leftmargin);
-  printf("Top margin %f\n",layout.topmargin);
-  printf("Printable=%f page height=%f\n",printable,this_page_height);
+  //printf("Left margin %f\n",layout.leftmargin);
+  //printf("Top margin %f\n",layout.topmargin);
+  //printf("Printable=%f page height=%f\n",printable,this_page_height);
 
   for (a = 0; a < h; a++)
     {

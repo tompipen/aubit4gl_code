@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.5 2004-05-25 17:47:06 mikeaubury Exp $
+# $Id: makefile,v 1.6 2004-07-09 16:32:51 mikeaubury Exp $
 #
 
 LIBROOT		=../../..
@@ -46,7 +46,7 @@ OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 ## ==================================================================
 
 
-${LIBROOT}/libLOGREP_PROC_CSV.so: ${OBJS}
+${LIBROOT}/libLOGREPPROC_CSV.so: ${OBJS}
 	gcc -fPIC -shared ${OBJS} -o $@
 	
 ## ==================================================================
