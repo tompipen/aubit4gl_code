@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.6 2002-05-30 06:25:20 afalout Exp $
+# $Id: has_pdf.c,v 1.7 2002-06-02 06:52:38 afalout Exp $
 #*/
 
 /**
@@ -71,6 +71,13 @@ void 	pdf_set_info 	(void *p,char *creator);
 void 	pdf_skip_top_of_page(struct pdf_rep_structure *rep);
 int     pdf_new_page	(struct pdf_rep_structure *p);
 
+void pdf_rep_print (struct pdf_rep_structure *rep, int a, int s,int right_margin);
+void pdf_skip_to(struct pdf_rep_structure *rep,double a);
+void pdf_need_lines(struct pdf_rep_structure *rep);
+void pdf_add_spaces(void);
+void pdf_rep_close(struct pdf_rep_structure *p);
+int aclpdf(struct pdf_rep_structure *p,char *fname,int n);
+int pdf_blob_print(struct pdf_rep_structure *p,struct fgl_int_loc *blob,char *type,int cr);
 
 /*
 =====================================================================
@@ -247,8 +254,8 @@ double needn;
  *
  * @todo Describe function
  */
-void 
-pdf_skip_to(struct pdf_rep_structure *rep,double a) 
+void
+pdf_skip_to(struct pdf_rep_structure *rep,double a)
 {
 	debug("pdf_skip_by");
 	a=pdf_size(a,'l',rep);
@@ -394,7 +401,7 @@ pdf_move(struct pdf_rep_structure *p)
  * @todo Describe function
  */
 void
-pdf_rep_close(struct pdf_rep_structure *p) 
+pdf_rep_close(struct pdf_rep_structure *p)
 {
 	debug("Closing report %f\n",p->line_no);
 		if (p->line_no!=0.0) {
@@ -448,7 +455,7 @@ pdf_metric(int a,char  c,struct pdf_rep_structure *p)
  * @todo Describe function
  */
 int
-aclpdf(struct pdf_rep_structure *p,char *fname,int n) 
+aclpdf(struct pdf_rep_structure *p,char *fname,int n)
 {
 char *ptr;
 int a;
@@ -508,7 +515,7 @@ return 0;
  * @todo Describe function
  */
 int
-pdf_blob_print(struct pdf_rep_structure *p,struct fgl_int_loc *blob,char *type,int cr) 
+pdf_blob_print(struct pdf_rep_structure *p,struct fgl_int_loc *blob,char *type,int cr)
 {
 int n;
 double sx;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.6 2002-05-30 06:25:20 afalout Exp $
+# $Id: rpc_client.c,v 1.7 2002-06-02 06:52:38 afalout Exp $
 #*/
 
 /**
@@ -45,13 +45,13 @@
 #include "a4gl_xdr_rpc_stack.h"
 #include "a4gl_aubit_lib.h"
 #include "a4gl_stack.h"
-#include "a4gl_runtime_tui.h"		//push_long()
-#include "a4gl_incl_4glhdr.h" //pop_int()
+#include "a4gl_runtime_tui.h"		/* push_long() */
+#include "a4gl_incl_4glhdr.h" 		/* pop_int() */
 
 #ifdef __CYGWIN__
 	#define GETENV_OK
-	//On Cygwin, stack.h will eventually include stdlib.h, that will have getenv
-	//call. Everywhere else, we should use acl_getenv.
+	/* On Cygwin, stack.h will eventually include stdlib.h, that will have getenv
+	call. Everywhere else, we should use acl_getenv. */
 #endif
 #include "a4gl_debug.h"
 
@@ -76,11 +76,8 @@ extern unsigned long serviceport;
 =====================================================================
 */
 
-//double pop_double(void);
-//int push_double(double a);
-//float pop_float(void);
-//int push_float(float a);
-
+int fgl_rpc_1( char* host,char *func,int np);
+int remote_func_call(char *host,int async,char *func,int port,int np);
 
 /*
 =====================================================================
@@ -99,27 +96,8 @@ fgl_rpc_1( char* host,char *func,int np)
 {
 CLIENT *clnt;
 return_values  *result_1={0};
-//call  call_remote_func_1_arg1={"0",0,0,0,0}; // warning: missing braces around initializer
 call  call_remote_func_1_arg1={"0",{0,0},{0,0}};
-
-/*
-struct call {
-	char *function_name;
-	struct {
-		u_int parameters_len;
-		object_data *parameters_val;
-	} parameters;
-	struct {
-		u_int sizedata_len;
-		long *sizedata_val;
-	} sizedata;
-};
-*/
-
-
-
 object_data *ptr;
-//double dbl;
 int a;
 void *p;
 int d;
@@ -151,8 +129,7 @@ long s;
 	ptr=call_remote_func_1_arg1.parameters.parameters_val;
 
 	for (a=0;a<np;a++) {
-		get_top_of_stack(1,&d,(int *)&s,&p); // warning: passing arg 3 of `get_top_of_stack' from incompatible pointer type
-            //void get_top_of_stack (int a, int *d, int *s, void **ptr);
+		get_top_of_stack(1,&d,(int *)&s,&p);
 		debug("Top of stack return %d %d %p (%d)",d,s,p);
 
 		ptr[a].dtype=d&15;
@@ -248,4 +225,4 @@ remote_func_call(char *host,int async,char *func,int port,int np)
 }
 
 
-// ============================== EOF =================================
+/* ============================== EOF ================================= */

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.42 2002-06-01 11:54:59 afalout Exp $
+# $Id: Makefile-common.in,v 1.43 2002-06-02 06:52:38 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -222,7 +222,7 @@ AUTOCONF_CFLAGS     =@CFLAGS@
 #-pedantic:     		Fails
 #-Wmissing-prototypes:  Toatal compiler warnings: 1058
 #-Wstrict-prototypes:   Toatal compiler warnings: 1465
-#-Wmissing-declarations:Toatal compiler warnings: 961
+#-Wmissing-declarations:Toatal compiler warnings: 961 -> 6
 #-Wredundant-decls:     Toatal compiler warnings: 5156 -> 14
 
 CWARN               =-Wall -Wredundant-decls -Wmissing-declarations

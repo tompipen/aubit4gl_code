@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.13 2002-06-01 11:54:59 afalout Exp $
+# $Id: readforms.c,v 1.14 2002-06-02 06:52:38 afalout Exp $
 #*/
 
 /**
@@ -35,7 +35,7 @@
  * or to be externally seen
  * @todo Doxygen comments to add to functions
  */
-
+ 
  /*
 =====================================================================
 		                    Includes
@@ -102,13 +102,8 @@ xdr_struct_form(xdrs, objp)
 	struct_form *objp;
 */
 
-//int m_lastkey = 0;
 int tab_cnt = 0;
 int srec_cnt = 0;
-//int maxline = 0;
-//int maxcol = 0;
-
-
 extern int errno;
 char delimiters[4];
 
@@ -126,31 +121,14 @@ char dbname[64];
 */
 
 /** @todo Take this prototype definition for a header file */
-//void default_attributes (FIELD * f, int dtype);
-//int comments (struct struct_scr_field *fprop);
-//void comments (struct struct_scr_field *fprop);
 static void do_translate_form(struct_form *the_form);
 static void read_attributes (struct s_form_dets *f);
 static int include_range_check (char *ss, char *ptr, int dtype);
 static int real_has_bool_attribute (struct struct_scr_field *f, int bool);
 
-//char *strip_quotes (char *s);
-//void *get_curr_form ();
-//char *strip_quotes (char *s);
-
-
 char *read_string_dup (FILE * ofile);
-//struct s_form_dets *getfromform (FORM * f);
-//FIELD *make_field (int, int, int, int);
-//int gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
-		    //va_list * ap);
 char *string_width (char *a);
-//WINDOW *create_window (char *name, int x, int y, int w, int h, int border);
-
-//extern WINDOW *currwin;
-//char *new_string (int a);
 int set_fields2 (int nv, struct BINDING *vars, int d, int n, ...);
-//int display_fields (FORM * mform, int n, ...);
 
 static void real_comments (struct struct_scr_field * fprop);
 static struct s_form_dets * real_read_form (char *fname, char *formname);
@@ -208,7 +186,7 @@ void *
 read_form (char* fname, char* formname)
 {
 	debug("via read_form in lib");
-	return read_form(fname, formname);
+	return real_read_form(fname, formname);
 }
 
 static struct s_form_dets *
@@ -216,9 +194,7 @@ real_read_form (char *fname, char *formname)
 {
 FILE *ofile = 0;
 int a;
-//  struct s_form_attr *form;
 struct s_form_dets *formdets;
-//  FILE *f;
 char buff[80];
 char *ptr = 0;
 XDR xdrp;
@@ -231,7 +207,7 @@ trim (formname);
 
 	if (has_pointer (buff, COMPILED_FORM))
     {
-	  int chkint;		// INT4
+	  int chkint;		/* INT4 */
 		ptr = find_pointer (buff, COMPILED_FORM);
 
 		xdrmem_create (&xdrp, ptr, 128 * 1024, XDR_DECODE);
@@ -246,7 +222,7 @@ trim (formname);
     }
 	else
     {
-      int chkint;		// INT4
+      int chkint;		/*  INT4 */
 		debug ("Opening file");
 		ofile = (FILE *) open_file_dbpath (fname);
 
@@ -441,15 +417,14 @@ real_dump_srec (struct s_form_dets * fd)
 }
 
 
-//*** This should be moved to lib tui
-/**
+/** This should be moved to lib tui
+ *
  *
  */
 struct struct_screen_record *
 get_srec (char *name)
 {
   int a;
-//  int b;
   struct s_form_dets *form;
   debug ("Get_srec");
   form = get_curr_form ();
@@ -864,5 +839,5 @@ has_str_attribute (struct struct_scr_field * f, int str)
 */
 
 
-// ============================ EOF ==============================
+/* ============================ EOF ============================== */
 

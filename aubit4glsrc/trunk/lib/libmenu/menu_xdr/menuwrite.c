@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.5 2002-05-24 13:30:03 afalout Exp $
+# $Id: menuwrite.c,v 1.6 2002-06-02 06:52:38 afalout Exp $
 #*/
 
 /**
@@ -61,13 +61,7 @@
 =====================================================================
 */
 
-//int as_c=1;
 extern int as_c;
-
-//int ignorekw = 0;
-//int colno = 0;
-
-//int lineno = 0;
 int scr = 0;
 int cmaxcol = 0;
 int cmaxline = 0;
@@ -91,6 +85,15 @@ struct struct_scr_field *fld;
 char *chk_alias (char *s);
 FILE *fxx;
 FILE *fyy;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void error_with (char *s, char *a, char *b);
+void write_menu (void);
 
 /*
 =====================================================================
@@ -130,7 +133,6 @@ write_menu (void)
   char fname[132];
   char fname2[132];
   int a;
-//  int outfile;
   XDR xdrp;
   menu_list *ptr;
   ptr=&the_menus;
@@ -181,10 +183,10 @@ write_menu (void)
 		fprintf(fyy,"};\n");
 		fclose(fxx);
 		fclose(fyy);
-		//unlink(fname);
+		/* unlink(fname); */
 	}
 	
 }
 
 
-// =============================== EOF ===============================
+/* =============================== EOF =============================== */

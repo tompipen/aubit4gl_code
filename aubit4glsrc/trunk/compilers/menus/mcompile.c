@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.9 2002-05-30 06:25:17 afalout Exp $
+# $Id: mcompile.c,v 1.10 2002-06-02 06:52:38 afalout Exp $
 #*/
 
 /**
@@ -59,10 +59,19 @@
 /* FILE *	write_errfile	(FILE *f,char *s,long p,int l); */
 /* void    init_menu		(void); */
 
-// in lex.yy.c
+/* in lex.yy.c */
 extern int buffpos		(void);
-//#define yyparse fgl_comp_parse
 extern int 	yyparse		(void);
+
+int yyerror (char *s); 		/* fgl_comp_error() */
+int yywrap(void); 			/* fgl_comp_wrap() */
+
+
+menu * nmenu(void);
+menu_option_item * new_option(menu *m);
+void push_menu(void *a);
+void pop_menu(void);
+void * get_menu(void);
 
 /*
 =====================================================================
@@ -70,6 +79,7 @@ extern int 	yyparse		(void);
 =====================================================================
 */
 
+/* #define yyparse fgl_comp_parse */
 #define MAXMENUS 256
 
 /*
@@ -177,9 +187,8 @@ main (argc, argv)
   char a[128];
   char b[128];
   char c[128];
-//  FILE *fopn;
 
-	//load settings from config file(s):
+	/* load settings from config file(s): */
 	build_user_resources();
 
   if (argc > 1)
@@ -249,8 +258,7 @@ main (argc, argv)
  * @todo Describe function
  */
 int
-yyerror (s)
-     char *s;
+yyerror (char *s)
 {
 char errfile[256];
 FILE *f;
@@ -288,7 +296,7 @@ init_menu(void)
 {
 	the_menus.menus.menus_len=0;
 	the_menus.menus.menus_val=0;
-	the_menus.menus.menus_val=malloc(sizeof(menu)*MAXMENUS); // MAX 256 Menus
+	the_menus.menus.menus_val=malloc(sizeof(menu)*MAXMENUS); /* MAX 256 Menus */
 }
 
 /**
@@ -296,7 +304,7 @@ init_menu(void)
  * @todo Describe function
  */
 menu *
-nmenu(void) 
+nmenu(void)
 {
 menu *m;
 int l;
@@ -305,7 +313,7 @@ int l;
 		printf("Too many menus/submenus\n");
 		exit(0);
 	}
-	//the_menus.menus.menus_val=realloc(the_menus.menus.menus_val,sizeof(menu)*l);
+	/* the_menus.menus.menus_val=realloc(the_menus.menus.menus_val,sizeof(menu)*l); */
 	m=&the_menus.menus.menus_val[l-1];
 	m->id="";
 
@@ -321,7 +329,7 @@ int l;
  * @todo Describe function
  */
 menu_option_item *
-new_option(menu *m) 
+new_option(menu *m)
 {
 menu_option_item *i;
 	m->options.options_len++;
@@ -345,7 +353,7 @@ menu_option_item *i;
  * @todo Describe function
  */
 void
-push_menu(void *a) 
+push_menu(void *a)
 {
 	stackmenus[menu_cnt++]=a;
 }
@@ -365,10 +373,10 @@ pop_menu(void)
  * @todo Describe function
  */
 void *
-get_menu(void) 
+get_menu(void)
 {
 	return stackmenus[menu_cnt-1];
 }
 
 
-// ================================= EOF ===============================
+/* ================================= EOF =============================== */

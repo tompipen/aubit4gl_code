@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_svc.c,v 1.6 2002-05-30 11:18:39 mikeaubury Exp $
+# $Id: rpc_svc.c,v 1.7 2002-06-02 06:52:38 afalout Exp $
 #*/
 
 /**
@@ -49,7 +49,7 @@
 #include <memory.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <unistd.h>						//getdtablesize
+#include <unistd.h>				/* getdtablesize */
 
 
 #include "a4gl_xdr_rpc_stack.h"
@@ -58,8 +58,8 @@
 
 #ifdef __CYGWIN__
 	#define GETENV_OK
-	//On Cygwin, stdlib.h, will have getenv
-	//call. Everywhere else, we should use acl_getenv.
+	/* On Cygwin, stdlib.h, will have getenv
+	call. Everywhere else, we should use acl_getenv. */
 #endif
 #include "a4gl_debug.h"
 
@@ -86,6 +86,16 @@ int funcs_registered=0;
 int do_stop_serving=0;
 int rpc_svc_run(void);
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+int server_run(long port);
+int register_func(char *s,void *ptr);
+int unregister_func(char *s);
+void stop_serving(void);
 
 /*
 =====================================================================
@@ -237,7 +247,7 @@ return 1;
  * @todo Describe function
  */
 void
-stop_serving() 
+stop_serving(void)
 {
 	debug("Stopping server");
 	do_stop_serving=1;
@@ -251,7 +261,6 @@ int
 rpc_svc_run(void)
 {
 fd_set readfdset;
-//extern int errno;
 static int tsize=0;
 static struct timeval tv;
 
@@ -266,7 +275,7 @@ static struct timeval tv;
 			(fd_set *) NULL,
 			(fd_set *) NULL,
 			&tv)) {
-		case -1 : //if (errno==EBADF) continue;
+		case -1 : /* if (errno==EBADF) continue; */
 			  exitwith("RPC server failed");
 			  return 0;
 		case 0 :  if (do_stop_serving==0&&funcs_registered>0) continue;
@@ -295,5 +304,5 @@ fgl_rpc_reply(void *result)
 	return;
 }
 
-// ========================== EOF =================================
+/* ========================== EOF ================================= */
 

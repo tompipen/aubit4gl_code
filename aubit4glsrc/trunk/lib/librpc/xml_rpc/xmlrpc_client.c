@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.4 2002-05-30 06:25:20 afalout Exp $
+# $Id: xmlrpc_client.c,v 1.5 2002-06-02 06:52:38 afalout Exp $
 #*/
 
 
@@ -44,7 +44,7 @@
 #include <xmlrpc_client.h>
 
 #include "a4gl_stack.h"
-#include "a4gl_runtime_tui.h"//push_dtime
+#include "a4gl_runtime_tui.h"		/* push_dtime */
 #include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
 
@@ -72,10 +72,9 @@ xmlrpc_env env;
 =====================================================================
 */
 
-//double pop_double(void);
-//int push_double(double a);
-//float pop_float(void);
-//int push_float(float a);
+void A4GLRPC_initlib(void);
+int fgl_rpc_1( char* host,char *func,int np);
+int remote_func_call(char *host,int async,char *func,int port,int np);
 
 /*
 =====================================================================
@@ -98,7 +97,7 @@ die_if_fault_occurred (xmlrpc_env *env,int line)
 return 0;
 }
 
-//this macro definiton MUST be after the function definition:
+/* this macro definiton MUST be after the function definition: */
 #define die_if_fault_occurred(x) die_if_fault_occurred(x,__LINE__)
 
 /**
@@ -190,7 +189,6 @@ int i;
 int
 fgl_rpc_1( char* host,char *func,int np)
 {
-//double dbl;
 int a;
 void *p;
 int d;
@@ -205,13 +203,13 @@ xmlrpc_value *in;
 	array=xmlrpc_build_value(&env,"()");
 	die_if_fault_occurred(&env);
 
-				// Build the array element here
+				/* Build the array element here */
 
 
 
 	for (a=0;a<np;a++) {
                 item_value = 0;
-		//void get_top_of_stack (int a, int *d, int *s, void **ptr);
+		/* void get_top_of_stack (int a, int *d, int *s, void **ptr); */
 		get_top_of_stack(1,&d,(int *)&s,&p);
 		debug("Top of stack return %d %d %p (%d)",d,s,p);
 
@@ -275,7 +273,7 @@ xmlrpc_value *in;
               push_double(get_double(&env, in));
               break;
            	case (XMLRPC_TYPE_DATETIME):
-				//void push_dtime(struct a4gl_dtime *p);
+				/* void push_dtime(struct a4gl_dtime *p); */
 				push_dtime((struct a4gl_dtime *)get_timestamp(&env, in));
              	break;
            	case (XMLRPC_TYPE_STRING):
@@ -329,7 +327,7 @@ remote_func_call(char *host,int async,char *func,int port,int np)
   int a;
   char buff[64];
 
-// Port is unused in XMLRPC
+/* Port is unused in XMLRPC */
 
   A4GLSQL_set_status(0,0);
 
@@ -347,5 +345,5 @@ remote_func_call(char *host,int async,char *func,int port,int np)
 
 
 
-// ================================ EOF =============================
+/* ================================ EOF ============================= */
 

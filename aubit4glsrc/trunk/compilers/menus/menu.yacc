@@ -15,8 +15,8 @@
 #include "a4gl_aubit_lib.h"
 #ifdef __CYGWIN__
 	#define GETENV_OK
-	//On Cygwin, something here will eventually include stdlib.h, that will have getenv
-	//call. Everywhere else, we should use acl_getenv.
+	/* On Cygwin, something here will eventually include stdlib.h, that will have getenv
+	call. Everywhere else, we should use acl_getenv. */
 #endif
 
 #include "a4gl_debug.h"
@@ -55,15 +55,17 @@ menu_option_item *new_option(menu *m);
 void *get_menu();
 char *char_val (char *s);
 
-//from mcompile.c
+/* from mcompile.c */
 extern void pop_menu(void);
 extern void push_menu(void *a);
 
 
-//#define yylex fgl_comp_lex
+/* #define yylex fgl_comp_lex */
 int yylex(void);
-//#define yyerror fgl_comp_error
+/* #define yyerror fgl_comp_error */
 int yyerror (char* s);
+
+int buffpos(void);
 
 
 
@@ -173,7 +175,7 @@ menu_item :
 		o->caption=strdup($<str>4);
 		o->key_list=strdup($<str>5);
 		o->align=atoi($<str>6);
-		//sprintf(sbuff,"_menuid%d",menu_cnt);
+		/* sprintf(sbuff,"_menuid%d",menu_cnt); */
 		o->submenu_id=strdup($<str>2);
 		m=nmenu();
 		m->id=strdup($<str>2);

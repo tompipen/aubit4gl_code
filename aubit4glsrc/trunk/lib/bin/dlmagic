@@ -130,6 +130,9 @@ then
 	print "====================================================================="
 	print "*/"
 	print ""
+	print "#ifndef __" lib "_H__"
+	print "#define __" lib "_H__"
+	print ""
 	}
 	/^LIBRARY / {next}
 	/^VARIABLE / {next}
@@ -195,6 +198,8 @@ then
 	}
 	args=substr(args,2)
 	print ");"
+	print ""
+	print "#endif  /* #ifdef __" lib "_H__  */"
 	print ""
 
 	}' < $specfile

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.10 2002-06-01 11:55:00 afalout Exp $
+# $Id: compile_perl.c,v 1.11 2002-06-02 06:52:38 afalout Exp $
 #
 */
 
@@ -139,7 +139,9 @@ static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args, int args_cnt);
 static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
-
+void printh (char *fmt, ...);
+void printcomment (char *fmt,...);
+void dump_unwind(void);
 
 /*
 =====================================================================
@@ -274,7 +276,7 @@ printh (char *fmt, ...)
   vfprintf (hfile, fmt, args);
 }
 
-#ifdef USE_PRINTCOMMENT
+
 /**
  *
  * @param
@@ -283,6 +285,7 @@ printh (char *fmt, ...)
 void
 printcomment (char *fmt,...)
 {
+#ifdef USE_PRINTCOMMENT
   va_list args;
   if (outfile == 0)
     {
@@ -297,20 +300,11 @@ printcomment (char *fmt,...)
       va_start (args, fmt);
       vfprintf (outfile, fmt, args);
     }
-}
-#else
-/**
- *
- * @param
- * @return
- */
-void
-printcomment (char *fmt,...)
-{
-// Do nothing...
-}
-#endif
 
+#else
+	// Do nothing...
+#endif
+}
 
 /**
  *

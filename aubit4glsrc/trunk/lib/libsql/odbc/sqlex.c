@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.14 2002-05-24 13:30:03 afalout Exp $
+# $Id: sqlex.c,v 1.15 2002-06-02 06:52:38 afalout Exp $
 #
 */
 
@@ -167,7 +167,6 @@ char invalid[] = "<Invalid>";
 =====================================================================
 */
 
-//int scan_options (struct sql_options options[], char *s, char *p, long *r1, long *r2);
 int scan_options (struct xxsql_options options[], char *s, char *p, long *r1, long *r2);
 int scan_stmt (char *s, char *p, HSTMT hstmt);
 int add_txt (char *s, int x, int hwnd);
@@ -175,15 +174,21 @@ int clrline (int line[]);
 int rm_txt (int a, int line[], int ign);
 int remove_it (int a);
 char *getres (char *s);
-//char *chk_str_resource (char *s, struct str_resource *res);
-//char *find_str_resource (char *s);
-//int replace_str_resource (char *s, char *neww);
 int add_userptr (void *ptr);
 long set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b);
 int set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob);
 long get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
 int alloc_find_ptr (void *ptr);
 
+int ctol (char s);
+char * generate_using_for_dmy (char *s, int size);
+void * allocate_mem (int size, void *parent);
+void init_mem (void);
+int alloc_find_parent (void *ptr, int start);
+void dealloc_mem (void *ptr);
+int new_rescnt (void);
+int get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
+int set_blob_data(HSTMT hstmt);
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.68 2002-06-01 11:54:58 afalout Exp $
+# $Id: mod.c,v 1.69 2002-06-02 06:52:32 afalout Exp $
 #
 */
 
@@ -48,7 +48,6 @@
 =====================================================================
 */
 
-//#include "../libincl/compiler.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -245,8 +244,8 @@ struct cmds
 int ccnt = 0;
 #else
 */
-extern int ccnt;  //in lexer.c
-//#endif
+extern int ccnt;  /* in lexer.c */
+/* #endif */
 
 
 /** Array index to the last variable filled in the variables array  */
@@ -262,6 +261,8 @@ struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array *
 */
 
 static int is_pk (char *s);
+int yywrap (void);
+struct sreports * get_sreports(int z);
 
 /*
 =====================================================================
@@ -367,8 +368,10 @@ add_variable (char *name, char *type, char *n)
 
   if (n != 0)
     {
-      //debug ("/* global variables: n = %d */\n", n);                            /* global variables: n = 2563 */
-      // we core dump here on CygWin:
+
+		/* debug (" global variables: n = %d \n", n); */
+		/* global variables: n = 2563 */
+		/* we core dump here on CygWin: */
 
       debug ("assigning vars[varcnt].var_size ...\n");
       strcpy (vars[varcnt].var_size, n);
@@ -462,10 +465,10 @@ static int
 print_record(int z, char ff,char *vname)
 {
   int a;
-  // It should be declared here because the two function are tighly coupled
+  /*  It should be declared here because the two function are tighly coupled */
   static void print_variable(int z, char ff);
 
-//  int lvl = 1;
+
   debug("Print record %s\n",vname);
 
   if (isin_command ("REPORT")||
@@ -677,7 +680,7 @@ dump_gvars(void)
     {
       if (const_arr[a].scope == 'g')
 	fprintf (f, "%c %s %p\n", const_arr[a].type, const_arr[a].name,
-		 const_arr[a].ptr); // warning: char format, void arg (arg 5)
+		 const_arr[a].ptr);
     }
 
   fclose (f);
@@ -749,11 +752,8 @@ print_variables (void)
 {
 
   int a;
-//  int flg = 0;
-//  int oz;
-//  int record;
 
-  //dump_vars ();
+  /* dump_vars (); */
 
   debug ("/**********************************************************/\n");
   debug ("/******************* Variable definitions *****************/\n");
@@ -885,7 +885,7 @@ push_type (char *a, char *n, char *as)
 	{
 	  debug ("unSetting array size in vars...%s on %s", as,
 		 vars[z].var_name);
-	  //strcpy (vars[z].var_arrsize, EMPTY);
+	  /* strcpy (vars[z].var_arrsize, EMPTY); */
 	}
 
     }
@@ -898,7 +898,7 @@ push_type (char *a, char *n, char *as)
 void 
 push_record (void)
 {
-  //in_record++;
+  /* in_record++; */
   push_type ("_RECORD", 0, 0);
 }
 
@@ -956,7 +956,7 @@ void
 pop_record (void)
 {
 
-  //in_record--;
+  /* in_record--; */
   debug ("In mod.c : pop_record\n");
 
   add_variable (0, "_ENDREC", 0);
@@ -1141,7 +1141,7 @@ scan_variables (char *s, int mode)
     return -1;
 
   if (strchr (s, '\n'))
-    return -2;			// This is a variable thru variable..
+    return -2;			/* This is a variable thru variable.. */
 
   strcpy (buff, s);
   if (s[0] == ' ')
@@ -1161,11 +1161,11 @@ scan_variables (char *s, int mode)
     }
 
   strip_bracket (buff);
-  //debug ("Stripped\n");
+  /* debug ("Stripped\n"); */
 
   strcat (buff, ".");
   ptr = strtok (buff, ".");
-  //debug ("Looking for %s", buff);
+  /* debug ("Looking for %s", buff); */
   a = varcnt;
   dir = -1;
 
@@ -1184,13 +1184,13 @@ scan_variables (char *s, int mode)
       if (a < 0 && dir == -1)
 	break;
 
-      //debug ("Check %d > %d...", lvl, vars[a].level);
+      /* debug ("Check %d > %d...", lvl, vars[a].level); */
 
       if (lvl > vars[a].level)
 	break;
-
-      ////debug ("Checking %s %s  %d %d", ptr, vars[a].var_name, vars[a].level,
-      //lvl);
+      /*
+      debug ("Checking %s %s  %d %d", ptr, vars[a].var_name, vars[a].level, lvl);
+      */
 
       if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, ptr) == 0)
 	  && vars[a].level == lvl)
@@ -1198,19 +1198,21 @@ scan_variables (char *s, int mode)
 	  ptr = strtok (0, ".");
 	  if (ptr == 0)
 	    {
-	      //debug ("Got no more to check");
+	      /* debug ("Got no more to check"); */
 	    }
 	  else
 	    {
-	      //debug ("Got more to check '%s'", ptr);
-	      //debug ("vn=%s %s %s %s", vars[a].var_name, vars[a].var_type,
-	      //vars[a].var_arrsize, vars[a].var_size);
+	      /*
+		  debug ("Got more to check '%s'", ptr);
+	      debug ("vn=%s %s %s %s", vars[a].var_name, vars[a].var_type,
+	      vars[a].var_arrsize, vars[a].var_size);
+          */
 	      if (strcmp (vars[a].var_type, "_RECORD") == 0)
 		{
-		  //debug ("_RECORD....");
+		  /* debug ("_RECORD...."); */
 		  while (a < varcnt)
 		    {
-		      //debug ("Looking for more record declarations....");
+		      /* debug ("Looking for more record declarations...."); */
 		      if (strcmp (vars[a + 1].var_type, "_RECORD") == 0 &&
 			  vars[a].level == vars[a + 1].level)
 			{
@@ -1233,20 +1235,20 @@ scan_variables (char *s, int mode)
 	      flg = 1;
 	    }
 
-	  //debug ("flg=%d", flg);
+	  /* debug ("flg=%d", flg); */
 
 	  if (flg)
 	    {
-	      //debug ("Types : %s %s", vars[a].var_type, vars[a].var_size);
+	      /* debug ("Types : %s %s", vars[a].var_type, vars[a].var_size); */
 	      z =
 		find_type (vars[a].var_type) +
 		(atoi (vars[a].var_size) << 16);
-	      //debug ("Setting last_var_found to %d\n", a);
+	      /* debug ("Setting last_var_found to %d\n", a); */
 	      last_var_found = a;
-	      //debug ("Find type returned %x", z);
+	      /* debug ("Find type returned %x", z); */
 	      return z;
 	    }
-	  //debug ("More levels...");
+	  /* debug ("More levels..."); */
 
 	  lvl++;
 
@@ -1298,7 +1300,6 @@ static long
 isvartype (char *s, int mode)
 {
   int a;
-//  long z;
   char buff[256];
   char *ptr;
   int flg;
@@ -1494,7 +1495,6 @@ add_constant (char t, char *ptr, char *name)
   int x;
   char buff[256];
   x = 0;
-  //x = rwlookup (name);
   if (x != 0)
     {
       adderr ("'%s' is a reserved word and cannot be used as a constant\n",
@@ -1744,7 +1744,7 @@ pushLikeAllTableColumns(char *tableName)
   char buff[300];
 
   debug ("pushLikeAllTableColumns()");
-  //A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+  /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
   rval = A4GLSQL_get_columns(tableName,colname,&idtype, &isize);
   if (rval == 0 && tableName)
   {
@@ -1758,10 +1758,12 @@ pushLikeAllTableColumns(char *tableName)
     colname[0] = 0;
     debug ("Looking for table '%s' col '%s'", tableName, colname);
 
-    //int A4GLSQL_next_column(char *colname, int *dtype,int *size);
+    /* int A4GLSQL_next_column(char *colname, int *dtype,int *size); */
     rval = A4GLSQL_next_column(colname,&idtype,&isize);
-	// warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
-    // we are sending char ARRAY to function expecting char POINTER !!!!
+	/*
+	warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
+    we are sending char ARRAY to function expecting char POINTER !!!!
+    */
 
     if (rval == 0 )
       break;
@@ -1786,14 +1788,12 @@ pushLikeAllTableColumns(char *tableName)
  *
  * @param t2 The table and column (table.column format)
  */
-static void 
+static void
 push_like2 (char *t2)
 {
   char buff[300];
-//  char buffer[300];
   char *tableName;
   char *columnName;
-//  char *c;
   char t[256];
   debug ("In push_like2");
 
@@ -1906,10 +1906,8 @@ push_blockcommand (char *cmd_type)
 void
 add_continue_blockcommand (char *cmd_type)
 {
-//  int z;
   int a;
-//  char err[80];
-	
+
 	/* more checks here ! */
 
   for (a = ccnt - 1; a > 0; a--)
@@ -1938,14 +1936,16 @@ iscontinuecmd (char *s)
 
   if (strcmp (s, "FOR") == 0)
     return 1;
-  //if (strcmp(s,"FOREACH")==0) return 1;
+  /* if (strcmp(s,"FOREACH")==0) return 1; */
   if (strcmp (s, "WHILE") == 0)
     return 1;
   if (strcmp (s, "CASE") == 0)
     return 1;
-  //if (strcmp(s,"CONSTRUCT")==0) return 1;
-  //if (strcmp(s,"DISPLAY")==0) return 1;
-  //if (strcmp(s,"PROMPT")==0) return 1;
+  /*
+  if (strcmp(s,"CONSTRUCT")==0) return 1;
+  if (strcmp(s,"DISPLAY")==0) return 1;
+  if (strcmp(s,"PROMPT")==0) return 1;
+  */
 
   return 0;
 }
@@ -1961,7 +1961,6 @@ iscontinuecmd (char *s)
 void 
 pop_blockcommand (char *cmd_type)
 {
-//  int z;
   int a;
 
   char err[80];
@@ -2285,7 +2284,7 @@ push_bind_rec (char *s, char bindtype)
 	  ptr = "*";
 	}
       if ((strcmp (ptr, "*") == 0 || 1)
-	  //|| strcmp (vars[a].var_name, with_strip_bracket (ptr)) == 0)
+	  /* || strcmp (vars[a].var_name, with_strip_bracket (ptr)) == 0) */
 	  && vars[a].level == lvl)
 	{
 	  debug ("CHeck2.2");
@@ -2715,8 +2714,8 @@ debug("ZZ1 init structure...");
   rep->bottom_margin = -36.0;
   rep->left_margin = -36.0;
 
-  rep->page_length = -842.0;	// A4
-  rep->page_width = -595.0;	// A4
+  rep->page_length = -842.0;		/* A4 */
+  rep->page_width = -595.0;			/* A4 */
 
   rep->right_margin = rep->page_width - (2 * rep->left_margin);
 
@@ -2768,7 +2767,7 @@ float a;
 			pdf_rep_struct->page_width=0-legal_width;
 			break;
 
-		case 4:  // Not used....
+		case 4:  /* Not used.... */
 			pdf_rep_struct->page_length=0-a4_height;
 			pdf_rep_struct->page_width=0-a4_width;
 			break;
@@ -2782,7 +2781,7 @@ float a;
 	}
 
 
-	if (portrait==0)  // Its landscape - swap it around....
+	if (portrait==0)  /* Its landscape - swap it around.... */
     {
 		a=pdf_rep_struct->page_length;
 		pdf_rep_struct->page_length=pdf_rep_struct->page_width;
@@ -3303,7 +3302,6 @@ void
 read_glob (char *s)
 {
   FILE *f;
-//  int a;
   char line[256];
   char ii[64];
   char dbname[64];
@@ -3387,7 +3385,7 @@ read_glob (char *s)
       if (feof (f))
 	break;
       trim (line);
-      sscanf (line, "%c %s %s", &ct, cn, cv); //: warning: char format, different type arg (arg 5)
+      sscanf (line, "%c %s %s", &ct, cn, cv);
       add_constant (ct, cv, cn);
     }
 
@@ -4069,7 +4067,6 @@ print_push_rec (char *s, char *b)
 {
   int a;
   long z;
-//  char buff[256];
   int cnt = 0;
   char bb[256];
   char buffer[40000] = "";
@@ -4077,7 +4074,6 @@ print_push_rec (char *s, char *b)
   char nbuff[40000];
   char *ptr;
   int lvf;
-//  int lvl = 0;
   char endoflist[256];
   char save[256];
 
@@ -4135,7 +4131,7 @@ print_push_rec (char *s, char *b)
 	{
 	  strcpy (buffer2, buffer);
 	  sprintf (buffer, "%s   push_variable(&%s%s,0x%x);\n",
-		   buffer2, bb, vars[a].var_name, (unsigned int)z); // warning: unsigned int format, long unsigned int arg (arg 6)
+		   buffer2, bb, vars[a].var_name, (unsigned int)z);
 	  cnt++;
 	}
       else
@@ -4244,8 +4240,9 @@ chk_init_var (char *s)
   ptr = strchr (buff, '.');
   if (strchr (buff, '['))
     {				/* This need fixing */
-// This should check for arrays within arrays...
-// but this doesn't
+/* This should check for arrays within arrays...
+ but this doesn't
+*/
       return;
     }
 
@@ -4292,7 +4289,6 @@ chk_init_var (char *s)
 void 
 dump_expr (struct expr_str *orig_ptr)
 {
-//  struct expr_str *ptr;
   struct expr_str *start;
   start = orig_ptr;
 
@@ -4360,7 +4356,6 @@ append_expr (struct expr_str *orig_ptr, char *value)
 void *
 append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 {
-//  struct expr_str *ptr;
   struct expr_str *start;
   debug ("MJA append_expr_expr %p %p", orig_ptr, second_ptr);
   start = orig_ptr;
@@ -4383,7 +4378,6 @@ append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
 int
 length_expr (struct expr_str * ptr)
 {
-//  void *optr;
   int c = 0;
   debug ("Print expr... %p", ptr);
   while (ptr)
@@ -4403,7 +4397,6 @@ length_expr (struct expr_str * ptr)
 void
 tr_glob_fname (char *s)
 {
-//  char buff[256];
   int a;
   for (a = 0; a <= strlen (s); a++)
     {
@@ -4424,7 +4417,7 @@ tr_glob_fname (char *s)
 char *
 get_report_stack_whytype(int a)
 {
-    return &report_stack[a].whytype; //warning: return makes pointer from integer without a cast
+    return &report_stack[a].whytype;
 }
 
 /**
@@ -4455,7 +4448,6 @@ add_ex_dtype(char *sx)
 {
 	char s[256];
 	char ss[256];
-//	int a;
 	strcpy(s,sx);
 	trim(s);
 	strcpy(s,downshift(s));
@@ -4477,6 +4469,6 @@ add_ex_dtype(char *sx)
 		print_include(ss);
 	}
 }
-// ================================= EOF =============================
+/* ================================= EOF ============================= */
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.9 2002-05-26 06:26:43 afalout Exp $
+# $Id: map.c,v 1.10 2002-06-02 06:52:32 afalout Exp $
 #*/
 
 /**
@@ -54,8 +54,18 @@
 =====================================================================
 */
 
-/// The map file pointer opened file
+/* The map file pointer opened file */
 static FILE *mapfile = 0;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void openmap (char *s);
+void addmap (char *t, char *s, char *w, int l, char *m);
+void closemap (void);
 
 /*
 =====================================================================
@@ -71,7 +81,7 @@ static FILE *mapfile = 0;
  *
  * @param s The map file name
  */
-void 
+void
 openmap (char *s)
 {
   char buff[256];
@@ -120,11 +130,11 @@ addmap (char *t, char *s, char *w, int l, char *m)
 /**
  * Close the map file
  */
-void 
+void
 closemap (void)
 {
   if (mapfile)
     fclose (mapfile);
 }
 
-// ================================ EOF ==============================
+/* ================================ EOF ============================== */

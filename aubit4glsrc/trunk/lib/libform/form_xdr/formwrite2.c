@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
+# $Id: formwrite2.c,v 1.9 2002-06-02 06:52:38 afalout Exp $
 #*/
 
 /**
@@ -492,7 +492,7 @@ add_new_field(void)
 }
 
 /**
- * Alocate space for a new form metric and insert it in the position 
+ * Alocate space for a new form metric and insert it in the position
  * wanted or at the end of the array
  *
  * @todo Define what is a form metric
@@ -942,7 +942,7 @@ getdatatype(char *col,char *tab)
 
   debug("Calling get_dtype with %s %s %s",the_form.dbname,tab,col);
   //int 	get_dtype			(char *tabname, char *colname,char *dbname,char *tablist[]);
-  a=get_dtype(tab,col,the_form.dbname,(char *)the_form.tables.tables_val);   
+  a=get_dtype(tab,col,the_form.dbname,(char *)the_form.tables.tables_val);
   // warning: passing arg 4 of `get_dtype' from incompatible pointer type
   // so we are passing a char ponter to function expecting char array !!
   debug("get_dtype returns %d",a);

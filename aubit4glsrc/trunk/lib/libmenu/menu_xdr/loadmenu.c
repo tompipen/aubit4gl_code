@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.10 2002-06-01 11:55:00 afalout Exp $
+# $Id: loadmenu.c,v 1.11 2002-06-02 06:52:38 afalout Exp $
 #*/
 
 /**
@@ -46,10 +46,9 @@
 #include "a4gl_menuxw.h"
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-//#include <strings.h>
 
-// 4glhdr.h will eventually include stdlib.h, which uses getenv(), so
-// we need to set GETENV_OK and only then include debug.h
+/* 4glhdr.h will eventually include stdlib.h, which uses getenv(), so
+ we need to set GETENV_OK and only then include debug.h */
 #ifdef __CYGWIN__
 	#define GETENV_OK
 	#include <rpc/rpc.h>
@@ -59,7 +58,7 @@
 #include "a4gl_io.h"
 #include "a4gl_incl_4glhdr.h"
 #include "a4gl_gtk_cr_funcs.h"
-#include "a4gl_dbform.h"// struct s_form_dets
+#include "a4gl_dbform.h"			/* struct s_form_dets */
 #include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
 
@@ -71,7 +70,6 @@
 */
 
 /** Tooltip widget */
-//extern GtkWidget *tooltips;
 GtkWidget *tooltips = 0;
 
 /*
@@ -93,7 +91,10 @@ GtkWidget *tooltips = 0;
 extern GtkWindow *get_curr_win_gtk (void);
 static GtkWidget * real_load_menu (char *fname, char *menu_id, int mode, void *handler);
 
-
+char* mn_caption(char *s);
+char* mn_help(char *s);
+void show_menu (char *menuid, void *handler);
+void endis_menuitems (int en_dis, ...);
 
 /*
 =====================================================================
@@ -172,7 +173,7 @@ make_menus (GtkWidget *menubar, GtkWidget * parent, menu_list * xdrm,
       mm = &xdrm->menus.menus_val[a];
 	debug("Found menu %s - %s\n",mm->id,id);
       if (strcasecmp (mm->id, id) == 0)
-	{			// We've found our menu...
+	{			/* We've found our menu... */
 	  debug ("Found it\n");
 	  nmenu = gtk_menu_new ();
 	  debug ("Create new menu\n");
@@ -192,7 +193,7 @@ make_menus (GtkWidget *menubar, GtkWidget * parent, menu_list * xdrm,
 		{
 		  submenu = 0;
 		}
-	      //o = &mm->options.options_val[b];
+	      /* o = &mm->options.options_val[b]; */
 
 	      trim(o->image);
 	      trim(o->caption);
@@ -257,9 +258,9 @@ make_menus (GtkWidget *menubar, GtkWidget * parent, menu_list * xdrm,
 					(gpointer)o->id
 				);
 
-	      //gtk_signal_connect_object (GTK_OBJECT (w), "activate-item",
-	      //GTK_SIGNAL_FUNC (handler),
-	      //ret);
+	      /*gtk_signal_connect_object (GTK_OBJECT (w), "activate-item",
+	      GTK_SIGNAL_FUNC (handler),
+	      ret); */
 
 	      if (strlen (o->submenu_id) != 0)
 		{
@@ -287,32 +288,28 @@ make_menus (GtkWidget *menubar, GtkWidget * parent, menu_list * xdrm,
 static GtkWidget *
 create_menu (menu_list *m, char *id, int mode, void *handler)
 {
-//  int a;
-//  int b;
-//  menu *mm;
   GtkWidget *menubar;
   GtkWindow *cwin;
-//  GtkWidget *w;
 
-	// Get the vbox associated with the current window..
+	/* Get the vbox associated with the current window.. */
   cwin = GTK_WINDOW(get_curr_win_gtk ());
 
-	// Is there a menu bar there already ?
+	/* Is there a menu bar there already ? */
   menubar = gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
 
   if (menubar)
-    {				// Yes - remove it
+    {				/* Yes - remove it */
       gtk_container_remove (GTK_CONTAINER(cwin), menubar);
     }
 
-	// Create a new menubar
+	/* Create a new menubar */
   menubar = gtk_menu_bar_new ();
 
  gtk_widget_set_usize (GTK_WIDGET (menubar),get_curr_width_gtk()*XWIDTH , YHEIGHT);
 
 
-	// I don't think this one is required when reading from menu files
-	// But it won't hurt
+	/* I don't think this one is required when reading from menu files
+	 But it won't hurt */
   gtk_object_ref (GTK_OBJECT(menubar));
 
 
@@ -321,7 +318,7 @@ create_menu (menu_list *m, char *id, int mode, void *handler)
 
   gtk_widget_show (GTK_WIDGET(menubar));
 
-  //gtk_box_pack_start (GTK_BOX (v), menubar, FALSE, FALSE, 2);
+  /* gtk_box_pack_start (GTK_BOX (v), menubar, FALSE, FALSE, 2); */
   gtk_fixed_put (GTK_FIXED(cwin), GTK_WIDGET(menubar), 0, 0);
   make_menus (menubar, menubar, m, id, 1, handler);
   debug ("Make menubar..\n");
@@ -419,7 +416,6 @@ show_menu (char *menuid, void *handler)
 void
 endis_menuitems (int en_dis, ...)
 {
-//  int a;
   va_list ap;
   GtkWidget *cwin;
   GtkWidget *menubar;
@@ -431,7 +427,7 @@ endis_menuitems (int en_dis, ...)
   debug ("*****enable/disable menuitems...");
   cwin = GTK_WIDGET(get_curr_win_gtk ());
 
-  //v=gtk_object_get_data(cwin,"vbox");
+  /* v=gtk_object_get_data(cwin,"vbox"); */
 
   menubar = gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
   debug ("menubar=%d", menubar);
@@ -468,7 +464,7 @@ endis_menuitems (int en_dis, ...)
 }
 
 
-//==================================================================
+/* ================================ EOF =============================== */
 
 #ifdef DUPLICATED_FUNCTIONS
 
@@ -567,4 +563,4 @@ int a;
 #endif
 
 
-// =================================== EOF =============================
+/* =================================== EOF ============================= */

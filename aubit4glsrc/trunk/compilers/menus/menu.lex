@@ -71,24 +71,24 @@
 %%
 
 int
-buffpos(void) 
+buffpos(void)
 {
 struct yy_buffer_state *y;
 	y=YY_CURRENT_BUFFER;
     return (int)(yy_c_buf_p-y->yy_ch_buf);
 }
 
-
+void dummy_not_used_prevent_warning(void);
 
 /* dummy function to eliminate wanrings about static
 functions not being used */
 void
 dummy_not_used_prevent_warning(void)
 {
-	//static void *yy_flex_realloc YY_PROTO(( void *, yy_size_t ));
+	/* static void *yy_flex_realloc YY_PROTO(( void *, yy_size_t )); */
 	yy_flex_realloc (0,0);
 
-	//static void yyunput YY_PROTO(( int c, char *buf_ptr ));
+	/* static void yyunput YY_PROTO(( int c, char *buf_ptr )); */
 	yyunput (0,0);
 }
 
