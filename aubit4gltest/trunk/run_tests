@@ -1132,6 +1132,14 @@ for a in $FLAGS; do
 		SHOW_TIME=1
         ;;
 
+	-update)
+		cvs -q update -d -P 
+		exit
+		;;
+	-commit)
+		cvs -q commit
+		exit
+		;;
 	-clean)         #clean and exit
 		CLEAN=1
 		;;
