@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.38 2003-03-09 07:26:47 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.39 2003-03-10 18:41:54 mikeaubury Exp $
 #
 */
 
@@ -1315,6 +1315,12 @@
 	/* ============================ translate.c ============================ */
 
 	void 	dumpstring			(char *s,long n,char *fname);
+
+
+	void set_a4gl_status(int a) ;
+	int get_a4gl_status(void) ;
+	void set_a4gl_sqlca_sqlcode(int a) ;
+	int get_a4gl_sqlca_sqlcode(void ) ;
 
     /* ========================== from a4gl_screen.h ==================== */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.15 2003-03-09 07:26:47 afalout Exp $
+# $Id: compile.c,v 1.16 2003-03-10 18:41:26 mikeaubury Exp $
 #*/
 
 /**
@@ -45,6 +45,8 @@
 
 #include "a4gl_4glc_int.h"
 #include "memfile.h"
+int has_default_database(void) ;
+char *get_default_database(void) ;
 
 /*
 =====================================================================
@@ -76,7 +78,7 @@ char errbuff[1024] = "";
 char yytext[1024] = "";
 int globals_only = 0;
 int yyin_len;
-
+char *default_database=0;
 
 #ifdef YYDEBUG
 extern int yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set */
@@ -162,6 +164,7 @@ initArguments (int argc, char *argv[])
     {"lextype", 0, 0, 't'},
     {"keep", 0, 0, 'k'},
     {"clean", 0, 0, 'K'},
+    {"database", 1, 0, 'd'},
     {0, 0, 0, 0},
   };
 
@@ -181,7 +184,7 @@ initArguments (int argc, char *argv[])
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0)
     {
       //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
-      strcpy (opt_list, "Gs:kKco::l::?hSVvft");
+      strcpy (opt_list, "Gs:kKco::l::?hSVvftd:");
 		#ifdef DEBUG
 			debug ("Compiling to C code\n");
 		#endif
@@ -189,7 +192,7 @@ initArguments (int argc, char *argv[])
 
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
     {
-      strcpy (opt_list, "Gs:?hSVvft");
+      strcpy (opt_list, "Gs:?hSVvftd:");
 		#ifdef DEBUG
 			debug ("Compiling to Perl code\n");
 		#endif
@@ -313,6 +316,13 @@ initArguments (int argc, char *argv[])
 	  strcat (pass_options, optarg);
 	  strcat (pass_options, " ");
 	  break;
+
+
+	case 'd':		// Extra libraries to link with
+	  printf("\n\nDB=%s\n\n",optarg);
+	  default_database=strdup(optarg);
+	  break;
+
 
 	case 'G':		/* generate Globals file only */
 	  globals_only = 1;
@@ -1256,4 +1266,14 @@ ansi_violation (char *s, int severity)
   a4gl_yyerror (buff);
 }
 
+
+
+int has_default_database(void ) {
+	if (default_database!=0) return 1;
+	return 0;
+}
+
+char *get_default_database(void ) {
+	return default_database;
+}
 /* ==================================== EOF =============================== */

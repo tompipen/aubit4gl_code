@@ -15,8 +15,9 @@ Please occasionally remove items that are completed from this list.
 
 	Clean up error handling
 	Replace sqlca & status with acl_sqlca and acl_status -  use as sqlca&status in 4GL code
-		(This will allow other DBs to still have their own sqlca - which may be different).
-	allow "exists" to be used as a function name (remove from reserved words)
+		(This will allow other DBs to still have their own sqlca - which may be different). ** PARTIAL
+
+	allow "exists" to be used as a function name (remove from reserved words) - NO - exists is an Aubit4GL builtin function
 
 
 Enhancements

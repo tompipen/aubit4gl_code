@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.46 2003-03-10 09:09:43 mikeaubury Exp $
+# $Id: esql.ec,v 1.47 2003-03-10 18:42:03 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.46 2003-03-10 09:09:43 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.47 2003-03-10 18:42:03 mikeaubury Exp $";
 #endif
 
 
@@ -2975,8 +2975,7 @@ debug("fill_array");
 void
 A4GLSQL_set_sqlca_sqlcode (int a)
 {
-  //a4gl_status = a;
-  //a4gl_sqlca.sqlcode = a;
+	set_a4gl_status(a);
   /* return 0; */
 }
 

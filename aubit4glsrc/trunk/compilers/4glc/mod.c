@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.111 2003-03-08 10:22:43 mikeaubury Exp $
+# $Id: mod.c,v 1.112 2003-03-10 18:41:27 mikeaubury Exp $
 #
 */
 
@@ -224,6 +224,8 @@ extern int 	ccnt;  /* in lexer.c */
 int 		in_record = 0;
 struct 		s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array */
 
+int has_default_database(void) ;
+char *get_default_database(void) ;
 
 /*
 =====================================================================
@@ -1192,14 +1194,20 @@ open_db (char *s)
 char db[132];
 char buff[256];
 
-debug("open_db %s", s);
-
+  debug("open_db %s", s);
   strcpy (db, s);
+
+  if (has_default_database()) {
+	strcpy(db,get_default_database());
+	debug("Overriding default database with %s",db);
+	trim(db);
+  }
+
   A4GLSQL_set_status (0, 1);
   A4GLSQL_init_connection (db);
   if (A4GLSQL_get_status () != 0)
     {
-      sprintf (buff, "Could not connect to database %s (%s)", s,
+      sprintf (buff, "Could not connect to database %s (%s)", db,
 	       A4GLSQL_get_sqlerrm ());
       a4gl_yyerror (buff);
     }
