@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.126 2005-03-25 12:48:33 afalout Exp $
+# $Id: esql.ec,v 1.127 2005-03-28 11:35:06 saferreira Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.126 2005-03-25 12:48:33 afalout Exp $";
+  "@(#)$Id: esql.ec,v 1.127 2005-03-28 11:35:06 saferreira Exp $";
 #endif
 
 
@@ -876,11 +876,6 @@ static struct s_sid *
 newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no,
 	      char *s)
 {
-  EXEC SQL begin declare section;
-  char *statementName;
-  char *statementText;
-  EXEC SQL end declare section;
-
   struct s_sid *sid = malloc (sizeof (struct s_sid));
 
   sid->select = strdup (s);
@@ -892,9 +887,6 @@ newStatement (struct BINDING *ibind, int ni, struct BINDING *obind, int no,
   sid->inputDescriptorName = 0;
   sid->outputDescriptorName = 0;
 
-  statementName = sid->statementName;
-  statementText = sid->select;
-	//printf("%s %s\n",s,sid->statementName);
   return sid;
 }
 
