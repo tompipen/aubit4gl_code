@@ -115,7 +115,7 @@ int buffpos(void);
 %%
 
 /* rules */
-menu_def: menu_sec {write_menu();}
+menu_def: menu_sec {A4GL_write_menu();}
 ;
 
 menu_sec :  
