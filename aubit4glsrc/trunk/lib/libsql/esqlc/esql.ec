@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.51 2003-04-11 13:09:45 mikeaubury Exp $
+# $Id: esql.ec,v 1.52 2003-04-24 13:35:59 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.51 2003-04-11 13:09:45 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.52 2003-04-24 13:35:59 mikeaubury Exp $";
 #endif
 
 
@@ -398,12 +398,16 @@ static int addESQLConnection(char *connectionName,char *dbName,
 int A4GLSQL_init_connection (char *dbName)
 {
   static int have_connected=0;
+  char buff[256];
 
   EXEC SQL BEGIN DECLARE SECTION;
-    char *db = dbName;
+    char *db ;
   EXEC SQL END DECLARE SECTION;
-  trim(dbName);
-  debug("-->%s<--\n",dbName);
+
+  strcpy(buff,dbName);
+  trim(buff);
+  db=buff;
+  debug("-->%s<--\n",buff);
 
 // Have we got an active db session ?
   if (have_connected) {
@@ -412,7 +416,10 @@ int A4GLSQL_init_connection (char *dbName)
 		// Not any more we haven't...
   }
 
-  EXEC SQL connect to :db as 'default';
+  EXEC SQL connect to :db as "default";
+
+  debug("Sqlca=%d",sqlca.sqlcode);
+
   if ( isSqlError() )
     return 1;
 
@@ -1331,7 +1338,7 @@ static int processOutputBind(char *descName,int bCount,struct BINDING *bind)
 char *getDescriptorName(char *statementName,char bindType)
 {
   char *descriptorName;
-  descriptorName = malloc(strlen(statementName)+6);
+  descriptorName = malloc(strlen(statementName)+20);
   sprintf(descriptorName,"%s_%cbind",statementName,bindType);
   return descriptorName;
 }

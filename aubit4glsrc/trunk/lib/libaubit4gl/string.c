@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.15 2003-04-07 07:12:22 afalout Exp $
+# $Id: string.c,v 1.16 2003-04-24 13:35:06 mikeaubury Exp $
 #
 */
 
@@ -101,7 +101,8 @@ new_string(int a)
 {
 char *ptr;
 	debug("In new_string %d\n",a);
-	ptr=(char *)acl_malloc(a+1,"New string"); /* 1 for NULL */
+	ptr=(char *)acl_malloc(a+2,"New string"); /* 1 for NULL 1 for extra*/
+	memset(ptr,0,a+2);
 	debug("Aclmalloc returns %p",ptr);
 	return ptr;
 }

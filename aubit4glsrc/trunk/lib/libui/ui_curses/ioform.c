@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.16 2003-04-23 16:37:25 mikeaubury Exp $
+# $Id: ioform.c,v 1.17 2003-04-24 13:36:02 mikeaubury Exp $
 #*/
 
 /**
@@ -1594,8 +1594,7 @@ gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets,
  * @todo Describe function
  */
 int
-gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
-                va_list * ap)
+gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a, va_list * ap)
 {
   int z;
   int z1;
@@ -1633,12 +1632,12 @@ gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
       if (s == 0)
         break;
 
-      debug ("Got first %s", s);
+      debug ("Got first %s:", s);
 
       f = (int) va_arg (*ap, int *);
       debug ("f=%d\n", f);
-      if (f)
-        f--;
+      if (f>0) f--;
+      
       debug (" got field number as %d ", f);
 
 
@@ -1753,12 +1752,12 @@ gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
         }
 
     }
-  debug ("aa");
   s = va_arg (*ap, char *);
-  debug ("aa");
+
   if (s != 0)
     debug ("Trailing fields ignored");
-  debug ("aa");
+
+
   *field_list = calloc (cnt + 1, sizeof (FIELD *));
   debug ("aa");
   memcpy (*field_list, flist, sizeof (FIELD *) * (cnt + 1));

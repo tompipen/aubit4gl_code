@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.22 2003-04-23 16:37:18 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.23 2003-04-24 13:35:05 mikeaubury Exp $
 #
 */
 
@@ -286,6 +286,7 @@ push_char(char * p)
 {
 	char *ptr;
 	debug("Push_char '%s'\n",p);
+
 	if (p[0]==0&&p[1]!=0) {
 		debug("pc1");
 		ptr=(char *)new_string_set(strlen(p)+1,p);
@@ -767,7 +768,9 @@ push_variable(void *ptr,int dtype)
 	debug("DOING SWITCH");
 	switch (dtype&DTYPE_MASK)
 	{
-		case 0: push_chars(ptr,dtype,DECODE_SIZE(dtype));return;break;
+		case 0: 
+			push_char(ptr);return;
+			//push_chars(ptr,dtype,DECODE_SIZE(dtype));return;break;
 		case 1: 
 				debug("SMALLINT= %d\n",*(short *)ptr);
 				push_int((int)*(short *)ptr);

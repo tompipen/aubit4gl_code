@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.31 2003-04-23 16:37:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.32 2003-04-24 13:35:55 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4283,6 +4283,7 @@ void print_import_legacy(char *s) {
 
 
 void add_function_to_header(char *identifier,int params) {
+if (is_builtin_func(identifier)) return;
   if (!has_pointer(identifier,'X')) {
         add_pointer(identifier,'X',(void *)1);
         if (params==1) printh("int %s%s (int n);\n",get_namespace(identifier),identifier);

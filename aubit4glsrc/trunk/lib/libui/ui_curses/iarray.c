@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.13 2003-04-23 16:37:25 mikeaubury Exp $
+# $Id: iarray.c,v 1.14 2003-04-24 13:36:00 mikeaubury Exp $
 #*/
 
 /**
@@ -150,6 +150,10 @@ idraw_arr (struct s_inp_arr *inpa, int type, int no)
       debug ("scr line out of range %d %d\n", scr_line, inpa->srec->dim);
       return;
     }
+  if (scr_line<0) {
+	debug("scr line out of range <0 %d",scr_line);
+	return;
+	}
 
   if (no > inpa->no_arr)
     {
@@ -735,7 +739,7 @@ inpa=(struct s_inp_arr *)vinpa;
 
       //mja_wrefresh (currwin);
       inpa->curr_attrib = 0;
-      debug("MJAMJA setting current field = %p",inpa->field_list[inpa->scr_line - 1][inpa->curr_attrib]);
+      //debug("MJAMJA setting current field = %p",inpa->field_list[inpa->scr_line - 1][inpa->curr_attrib]);
       newMovement(inpa,0,0,0);
 
     }

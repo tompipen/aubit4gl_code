@@ -23,6 +23,8 @@ char *builtin_aclfgl_functions[]={
 "a4gl_get_ui_mode",
 "hex",
 "i_rowid_s",
+"startlog",
+"errorlog",
 "length",
 "a4gl_load_datatype",
 "m_rowid_s",
