@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.24 2004-03-14 10:40:57 afalout Exp $
+# $Id: globals.c,v 1.25 2004-07-09 07:05:11 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,7 @@
 #include "a4gl_4glc_int.h"
 #include "variables.h"
 
-
+int A4GL_setenv(char *name, char *value, int overwrite);
 /*
 =====================================================================
                     Variables definitions

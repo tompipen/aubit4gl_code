@@ -409,7 +409,7 @@ read_class (char *s)
 {
   char *dbname;
   int is_schema;
-  int a;
+  //int a;
   int pvars;
   int pid;
   extern struct variable **list_class;	/* Our List */
@@ -532,7 +532,7 @@ and the data should be stored in a similar format to a .glb file in a string arr
 	      if (list_class[a + list_class_cnt]->variable_type == 4)
 		{
 		  char buff[1024];
-		  char *ptr;
+		  //char *ptr;
 		  sprintf (buff, "%s.%s", s,
 			   list_class[a + list_class_cnt]->names.name);
 		  //printf ("FUNC : %s\n", buff);
@@ -562,9 +562,12 @@ and the data should be stored in a similar format to a .glb file in a string arr
 void
 class_set_parent (void)
 {
-  int a;
-  struct variable *v;
-  int s;
+  //int a;
+  //struct variable *v;
+  //int s;
+
+
+  // Does nothing ?
 }
 
 

@@ -1,4 +1,5 @@
-
+#ifndef FGLC_VARIABLES_H
+#define FGLC_VARIABLES_H
 // We allow 5 levels of array subscription...
 #define MAX_ARR_SUB 15
 
@@ -130,3 +131,4 @@ void set_current_variable_scope (char n);
 struct record_list *split_record_list (char *s, char *prefix,
 				       struct record_list *list);
 void print_nullify (char type);
+#endif

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.53 2004-05-26 14:02:08 mikeaubury Exp $
+# $Id: 4glc.c,v 1.54 2004-07-09 07:05:10 mikeaubury Exp $
 #
 */
 
@@ -56,7 +56,7 @@ extern FILE *yyin;
 extern char *outputfilename;	/* Defined in libaubit4gl */
 extern char infilename[132];
 extern int yyin_len;		/*now in map.c*/
-void import_package(char *s);
+//void import_package(char *s);
 /*
 =====================================================================
                     Functions prototypes

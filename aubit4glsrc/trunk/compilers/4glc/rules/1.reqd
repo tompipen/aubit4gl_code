@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.50 2004-05-12 08:15:42 mikeaubury Exp $
+# $Id: 1.reqd,v 1.51 2004-07-09 07:07:38 mikeaubury Exp $
 #
 */
 
@@ -187,11 +187,11 @@ char *		make_sql_string(char *first,...);
 char *into_temp_clause=0;
 void copy_gen (int a, int b);
 char *get_namespace (char *s);
-void set_yytext (char *s);
+//void set_yytext (char *s);
 int isin_command (char *cmd_type);
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 char *do_clobbering(char *f,char *s);
-void A4GL_copy_fbind_to_Obind(void);
+//void A4GL_copy_fbind_to_Obind(void);
 struct input_array_attribs curr_input_array_attribs;
 
 int if_print_stack[100][2];

@@ -25,15 +25,16 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: field_handling.c,v 1.2 2004-01-29 08:33:34 mikeaubury Exp $
+# $Id: field_handling.c,v 1.3 2004-07-09 07:05:11 mikeaubury Exp $
 #*/
 
 #include "field_handling.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-char *strdup(char *x);
-char *strcat(char *x,char *y);
+//char *strdup(char *x);
+//char *strcat(char *x,char *y);
 
 
 struct fh_field_entry *new_field_entry(char *f,char *n,int needs_quoting) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.90 2004-06-03 07:46:03 mikeaubury Exp $
+# $Id: lexer.c,v 1.91 2004-07-09 07:05:11 mikeaubury Exp $
 #*/
 
 /**
@@ -61,6 +61,7 @@
 #include "memfile.h"
 
 
+int always_allow(int id,char *name) ;
 /*
 =====================================================================
 					Constants definitions
@@ -294,7 +295,7 @@ isnum (char *s)
   int dp = 0;
   int is_e = 0;
   char orig[256];
-  int exp_n;
+  //int exp_n;
 
   strcpy(orig,s);
 
@@ -332,10 +333,10 @@ isnum (char *s)
       char buff[256];
       char *ptr;
       long n=0;
-	long inv=0;
+	//long inv=0;
       double a_d = 0;
-      long a_i = 0;
-      int a_mode;
+      //long a_i = 0;
+      //int a_mode;
 
       strcpy (buff, s);
       ptr = strchr (buff, 'e');
@@ -609,7 +610,7 @@ read_word2 (FILE * f, int *t)
 
       if (ispunct (a) && a != '.' && a != '_' && instrs == 0 && instrd == 0)
 	{
-		char *ptr;
+		//char *ptr;
 	  	//printf("Word : %s a=%c\n",word,a); 
 	  	if ((a=='+' || a=='-') && strlen(word)>=2 && toupper(word[strlen(word)-1])=='E') {
 		char *ptr;
@@ -870,7 +871,7 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
 
 
   if (proc==0&&stricmp (buff, "<char_value>") == 0) {
-	int a;
+	//int a;
 	if (t_last==CHAR_VALUE) {
         	strcpy (idents[idents_cnt++], p);
 		proc=1;
@@ -896,7 +897,7 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
   if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
   if (kwords[cnt].vals[pos + 1] == 0)
     {
-	int a;
+	//int a;
   if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
   	A4GL_debug("token = %d %s \n",kwords[cnt].id,kwords[cnt].name);
       return 1;

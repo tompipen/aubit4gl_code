@@ -3,25 +3,6 @@
 #include "a4gl_4glc_int.h"
 
 
-enum flist_type {
-	FLIST_NORMAL,
-	FLIST_SPECIAL
-};
-
-
-struct flist {
-	char *name;
-	int type;
-	char *special;
-};
-
-
-struct file_description {
-	char *name;
-	struct flist *list;
-	int nlist;
-};
-
 
 struct file_description *files=0;
 int nfiles=0;

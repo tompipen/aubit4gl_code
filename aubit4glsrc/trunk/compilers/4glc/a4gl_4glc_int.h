@@ -1,3 +1,4 @@
+#include "variables.h"
 
 //      #define __GNU_LIBRARY__
 
@@ -353,5 +354,43 @@ char get_curr_report_stack_whytype_1 (void);
 void set_yytext (char *s);
 struct expr_str *A4GL_get_validate_expr(int n);
 void set_whento_store(char *p);
+
+char *get_last_class_var(void);
+void A4GL_copy_fbind_to_Obind(void);
+void force_curr_v(struct variable *v,int rcnt);
+
+void import_package(char *s);
 void set_whenever_store (int c, char *p) ;
+void dump_variable_records (struct variable **v, int cnt, int lvl);
+void class_set_parent (void);
+
+
+
+char *
+rm_class_copy (char *s);
+
+
+/* Import stuff : */
+
+enum flist_type {
+        FLIST_NORMAL,
+        FLIST_SPECIAL
+};
+
+
+struct flist {
+        char *name;
+        int type;
+        char *special;
+};
+
+
+struct file_description {
+        char *name;
+        struct flist *list;
+        int nlist;
+};
+
+
+int has_function(char *s,char *file,struct flist *ptr);
 /* ============================= EOF ================================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.175 2004-06-03 07:46:04 mikeaubury Exp $
+# $Id: mod.c,v 1.176 2004-07-09 07:05:11 mikeaubury Exp $
 #
 */
 
@@ -113,18 +113,8 @@ char find_variable_scope (char *s_in);
 char *A4GL_get_important_from_clobber(char *s) ;
 char *A4GL_get_clobber_from_orig(char *s);
 
-/*void set_rep_no_orderby(int n) ;*/
 int get_rep_no_orderby(void) ;
 int get_validate_list_cnt(void) ;
-/*void clr_validate_list(void) ;*/
-/*struct expr_str *A4GL_get_validate_expr(int n) ;*/
-/*int A4GL_escape_quote_owner(void) ;*/
-//truct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname);
-
-/*void A4GL_add_event(int n,char *s) ;*/
-/*void A4GL_add_onkey_key(char *s) ;*/
-/*void A4GL_drop_events(void) ;*/
-/*void A4GL_new_events(void) ;*/
 
 /*
 =====================================================================
@@ -4508,7 +4498,7 @@ static void push_validate_column(char *tabname,char *colname) {
 	strcpy(validate_list[validate_list_cnt-1].colname,colname);
 
 	validate_list[validate_list_cnt-1].expr=A4GLSQL_get_validation_expr(tabname,colname);
-	if (validate_list[validate_list_cnt-1].expr==-1) {
+	if (validate_list[validate_list_cnt-1].expr==(void *)-1) {
 		a4gl_yyerror("Unable to get validation information - does A4GL_SYSCOL_VAL exist ?");
 	}
 

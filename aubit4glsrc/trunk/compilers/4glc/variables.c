@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.43 2004-05-17 16:03:51 mikeaubury Exp $
+# $Id: variables.c,v 1.44 2004-07-09 07:05:12 mikeaubury Exp $
 #
 */
 
@@ -42,9 +42,8 @@
 =====================================================================
 */
 
-
-#include "a4gl_4glc_int.h"
 #include "variables.h"
+#include "a4gl_4glc_int.h"
 #include <ctype.h>
 
 
@@ -83,7 +82,7 @@ static int is_system_variable (char *s);
 char find_variable_scope (char *s_in);
 
 void print_class_variables (void);
-void dump_variable_records (struct variable **v, int cnt, int lvl);
+//void dump_variable_records (struct variable **v, int cnt, int lvl);
 void set_last_class_var(char *s);
 /******************************************************************************/
 
@@ -93,7 +92,7 @@ int A4GL_findex (char *str, char c);
 int isin_command (char *s);
 char *rettype (char *s);
 int last_record_cnt=0;
-static char *last_class_var[1024];
+static char last_class_var[1024];
 
 
 #define ASSOC_INTERNAL "Internal"

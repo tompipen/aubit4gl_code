@@ -1,3 +1,5 @@
+#include "variables.h"
+#include "a4gl_4glc_int.h"
 #include "var_handling.h"
 #include <stdio.h>
 #include <stdlib.h>

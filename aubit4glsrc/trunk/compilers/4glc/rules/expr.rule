@@ -497,7 +497,6 @@ function_call_expr2:
 		int cnt;
 		cnt=1;
 		A4GL_debug("Print expr (1)");
-		/* print_expr($<ptr>4); */
 
 		strcpy($<str>$,A4GL_expr_for_call($<str>1,$<str>5,lastlineno,infilename));
 		$<ptr>$=A4GL_append_expr($<ptr>4,$<str>$);
