@@ -25,6 +25,10 @@ then
 	echo ' 4glpc --help-types	- for file types'
     echo ' 4glpc --help-examples	- for examples'
     echo
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
 	exit 6
 fi
 
@@ -35,7 +39,7 @@ then
     echo
 	echo Options:
     echo '  -o'
-    echo '  -c'
+    echo '  -c : falg to C compiler'
 	echo '  -shared/static ($USE_SHARED=Yes/no) compile with shared libraries'
     echo '  -echo  ($DOIT=echo) display CC command only, do not execute'
     echo '              this inhibits C compiler only, not the 4gl compiler'
@@ -54,7 +58,11 @@ then
     echo All options unknown to Aubit compiler will be passed to C compiler
     echo Please see Aubit 4gl manual for more information.
     echo
-    exit 6
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
+	exit 6
 fi
 
 if [ $# -lt 1 -o "$1" = "--help-env" ]
@@ -85,6 +93,10 @@ then
     echo 'Note: 4glc, cc and other compilers invoked by this script will'
     echo '      recognise additional variables that might affect this script'
     echo
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
 	exit 6
 fi
 
@@ -104,7 +116,11 @@ then
     echo '	c   -'
     echo '	menu - Aubit 4gl GUI menu source, compiled to'
     echo
-    exit 6
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
+	exit 6
 fi
 
 if [ $# -lt 1 -o "$1" = "--help-examples" ]
@@ -120,6 +136,10 @@ then
     echo '  4glpc -map -echo file.4gl'
 	echo '  4glpc -gtk file.4gl -o'
     echo
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code 6"
+    fi
 	exit 6
 fi
 
@@ -164,7 +184,11 @@ then
 	then
 	    echo "Cannot find /etc/a4glrc, $AUBITDIR/etc/.a4glrc or $HOME/.a4glrc"
 	    echo "Stop."
-	    exit 5
+		if [ "$A4GLVERBOSE" = "yes" ]
+		then
+    	    echo "Exiting with code 5"
+	    fi
+		exit 5
 	fi
 else
 	if [ -f $A4GLRC ]
@@ -174,7 +198,11 @@ else
     else
 	    echo "Cannot find $A4GLRC"
 	    echo "Stop."
-	    exit 5
+		if [ "$A4GLVERBOSE" = "yes" ]
+		then
+    	    echo "Exiting with code 5"
+	    fi
+		exit 5
 	fi
 fi
 
@@ -282,6 +310,14 @@ do
 		EXECNAME="1"
    ;;
 
+	#same as .o, needed to distinguish from I4GL objects in universal makefiles:
+	#but I don't know how to do OR here...? Like:
+	# *.o) || *.ao)
+   *.ao) COMPCC="$COMPCC $a"
+		EXECNAME="1"
+   ;;
+
+
    *.c) COMPCC="$COMPCC $a"
    ;;
 
@@ -301,6 +337,10 @@ do
             $output "Error compiling $a."
             if [ "$IGNORE_ERRORS" != "1" ]
             then
+				if [ "$A4GLVERBOSE" = "yes" ]
+				then
+			        echo "Exiting with code $err_code"
+			    fi
 				exit $err_code
             fi
           else
@@ -367,9 +407,15 @@ do
                     $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
                   fi
 
-				 exit $err_code
+				if [ "$A4GLVERBOSE" = "yes" ]
+				then
+			        echo "Exiting with code $err_code"
+			    fi
+				exit $err_code
           fi
 
+		if [ -f $fname.c ]
+        then
 		  if [ "$A4GLVERBOSE" = "yes" ]
 		  then
             $output 4glc "$a" OK, continue...
@@ -382,19 +428,36 @@ do
 
           if [ "$MAP4GL" = "Y" ]
           then
-             if [ -x "$AUBITDIR/bin/loadmap" -a "$LOADMAP" != "N" ]
-                then
+			if [ -x "$AUBITDIR/bin/loadmap" -a "$LOADMAP" != "N" ]
+            then
                         $output "Loading map file for $a into database"
                         loadmap $fname.map > /dev/null 2> /dev/null
-                fi
+            fi
           fi
 
           if [ "$PRETTYC" != "" ]
           then
-                $PRETTYC $fname.c
+            $PRETTYC $fname.c
           fi
 
-          COMPCC="$COMPCC $fname.c"
+			COMPCC="$COMPCC $fname.c"
+        else
+			$output "Error compiling $a - $fname.c not generated, but no err code from 4glc"
+			if [ "$A4GLVERBOSE" = "yes" ]
+			then
+            	$output err_msg is: $err_msg
+                $output err_code is: $err_code
+                $output Please check file "$fname".err
+                $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
+			fi
+            #we don't want to wxit with 0 here:
+            err_code=9
+			if [ "$A4GLVERBOSE" = "yes" ]
+			then
+				echo "Exiting with code $err_code"
+			fi
+			exit $err_code
+		fi
    ;;
 
    -echo) DOIT="echo"
@@ -479,6 +542,7 @@ do
 
    ;;
 
+   #suppress final linking stage to executable?
    -o) COMPCC="$COMPCC -o "
        ISMAKE=-1
 
@@ -489,19 +553,6 @@ do
 
 
    ;;
-
-   #same as -o, needed to distinguish from I4GL objects in universal makefiles:
-   #but I don't know how to do OR here...? Like:
-	# -ao) || -o)
-   -ao) COMPCC="$COMPCC -o "
-       ISMAKE=-1
-
-       LAST="2> $fname.err"
-       ERRFILE="$fname.err"
-       DEFAULTCOMPCC="$COMPCC $fname"
-       EXECNAME="-1"
-   ;;
-
 
    *) if [ "$ISMAKE" = "-1" ]
       then
@@ -576,9 +627,6 @@ else
         FGLLIBS="$FGLLIBS_STATIC $ODBC_STATIC"
 fi
 
-#echo FGLLIBS = $FGLLIBS
-#exit
-
 LIBS="-L/root/ncurses/ncurses-5.2/lib -lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG -L$ODBC_LIB_DIR -l$ODBC_LIB_NAME"
 
 if [ "$NOCFILE" = "Y" ]
@@ -587,6 +635,10 @@ then
    then
 	   $output No C files to compile.
    fi
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+		echo "Exiting with code 8"
+	fi
 	exit 8
 fi
 
@@ -596,7 +648,11 @@ then
    then
 	   $output No C files to compile.
    fi
-   exit 8
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+		echo "Exiting with code 8"
+    fi
+	exit 8
 fi
 
 
@@ -647,7 +703,11 @@ then
       else
 		  $output "Error compiling."
       fi
-      exit $err_code
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code $err_code"
+    fi
+	exit $err_code
    fi
 
 else
@@ -667,7 +727,11 @@ else
       else
 		  $output "Error compiling."
       fi
-      exit $err_code
+	if [ "$A4GLVERBOSE" = "yes" ]
+	then
+        echo "Exiting with code $err_code"
+    fi
+	exit $err_code
    fi
 fi
 
@@ -680,7 +744,13 @@ then
 fi
 
 
+if [ "$A4GLVERBOSE" = "yes" ]
+then
+	echo "Exiting with code 0"
+fi
+
+exit 0
 
 
-
+#---------------------------- EOF ---------------------------------
 
