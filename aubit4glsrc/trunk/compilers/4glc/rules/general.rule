@@ -156,8 +156,10 @@ field_name2_as_struct	:	identifier {
 ;
 
 cvariable : variable {
+int dtype;
 A4GL_debug("Scanvar=%d",scan_variable($<str>1)&15);
-if ((scan_variable($<str>1)&15)!=0) {
+dtype=scan_variable($<str>1)&15;
+if (dtype!=DTYPE_CHAR && dtype!=DTYPE_VCHAR) {
 a4gl_yyerror("Only a character variable can be used for this");
 YYERROR;
 }
