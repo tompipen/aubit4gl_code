@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.71 2003-08-27 15:28:35 mikeaubury Exp $
+# $Id: ioform.c,v 1.72 2003-08-28 15:22:55 mikeaubury Exp $
 #*/
 
 /**
@@ -2482,13 +2482,15 @@ A4GL_push_constr (void *vs)
   int flg = 0;
   struct s_screenio *s;
   s = vs;
-  if (s->nfields == 0)
+  if (s->nfields <0)
     {
+      A4GL_debug("NO CONSTRUCT - No fields\n");
       A4GL_push_char ("");
       return 0;
     }
   if (s->currform == 0)
     {
+      A4GL_debug("NO CONSTRUCT - No form\n");
       A4GL_push_char ("");
       return 0;
     }
