@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.67 2003-10-31 18:31:14 mikeaubury Exp $
+# $Id: esql.ec,v 1.68 2003-11-11 12:41:23 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.67 2003-10-31 18:31:14 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.68 2003-11-11 12:41:23 mikeaubury Exp $";
 #endif
 
 
@@ -1756,6 +1756,18 @@ A4GLSQL_execute_implicit_sql (struct s_sid *sid)
       error_just_in_case ();
       return 1;
     }
+    a4gl_sqlca.sqlerrd[0]=sqlca.sqlerrd[0];
+    a4gl_sqlca.sqlerrd[1]=sqlca.sqlerrd[1];
+    a4gl_sqlca.sqlerrd[2]=sqlca.sqlerrd[2];
+    a4gl_sqlca.sqlerrd[3]=sqlca.sqlerrd[3];
+    a4gl_sqlca.sqlerrd[4]=sqlca.sqlerrd[4];
+    a4gl_sqlca.sqlerrd[5]=sqlca.sqlerrd[5];
+	strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
+    //strncpy(a4gl_sqlca.sqlawarn,sqlca.sqlawarn,9);
+	//strcpy(a4gl_sqlca.sqlstate,sqlca.sqlstate);
+
+
+
   if (processPosStatementBinds (sid) == 1)
     {
       A4GL_debug ("Pos failed");
