@@ -1,0 +1,51 @@
+# $Id: build.properties.in,v 1.1 2003-05-26 10:30:42 afalout Exp $
+
+# Settings for build.xml Ant configuration file, that need to be
+# set using Autoconf:
+
+
+#Not sure we can set this one like this:
+#project name="fgldocumenter"
+project.name=@JSP_APP_NAME@
+
+#  <property name="app.name"      value="fgldocumenter"/>
+app.name=@JSP_APP_NAME@
+
+#  <property name="app.path"      value="/${app.name}"/>
+app.path=/${app.name}/
+
+#  <property name="app.version"   value="0.1-dev"/>
+app.version=0.1-dev
+
+#  <property name="build.home"    value="${basedir}/build"/>
+build.home=${basedir}/build/
+
+#  <property name="catalina.home" value="/var/tomcat4"/>
+catalina.home=@TOMCAT_DIR@
+
+#  <property name="dist.home"     value="${basedir}/dist"/>
+dist.home=${basedir}/dist
+
+#  <property name="docs.home"     value="${basedir}/docs"/>
+docs.home=${basedir}/docs
+
+#  <property name="manager.url"   value="http://localhost:8080/manager"/>
+manager.url=http://localhost:8080/manager
+
+#  <property name="src.home"      value="${basedir}/pt/moredata/fgldocumenter/browser"/> 
+#<!-- CHANGE TO src! -->
+src.home=${basedir}/pt/moredata/fgldocumenter/browser
+
+#  <property name="web.home"      value="${basedir}/web"/>
+web.home=${basedir}/web
+
+#  <!-- this will be passed from ant commands from makefile.
+#  you can also define it in your local build.properties file : -->
+#  <property name="manager.username"      value="admin"/>
+manager.username=@TOMCAT_USER@
+
+#  <property name="manager.password"      value="tomcat"/>
+manager.password=@TOMCAT_PASSWORD@
+
+
+## ============================== EOF ==============================

@@ -1,0 +1,465 @@
+#  =========================================================================
+#  Makefile for fgldoc navigator compilation and instalation
+#
+#  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
+#
+#  $Id: Makefile.in,v 1.1 2003-05-26 10:30:42 afalout Exp $
+#  =========================================================================
+
+include ../FgldocDefs.mk
+
+# =========================================================================
+#                              Settings - names and paths
+# =========================================================================
+
+#relative path to source code:
+JSP_SRC_PATH        =web
+#relative path to the root of the build tree - compiled files:
+BUILD_PATH          =build
+#relative path to compiled class files, that result from build proccess:
+CLASS_BUILD_PATH    =${BUILD_PATH}/WEB-INF/classes/pt/moredata/fgldocumenter/browser
+#relative path to image files in the buld tree:
+IMG_PATH            =${BUILD_PATH}/images
+
+# =========================================================================
+#                              Settings - files
+# =========================================================================
+
+#Name of the Cascading Style Sheet definition file:
+CCS_FILE	= stylesheet.css
+#Name of the JavaScript file used to generate tree menu:
+JS_FILE		= treeview.js
+#Name of the index page:
+INDEX.JSP   = index.jsp
+#List of all JSP source files:
+JSP_FILE	= function_error.jsp module.jsp function_list.jsp module_list.jsp \
+			process_list.jsp login.jsp ${INDEX.JSP}
+#List of all image files:
+IMG_FILE	= ftv2link.gif ftv2mlastnode.gif ftv2blank.gif ftv2mnode.gif \
+			ftv2doc.gif ftv2node.gif ftv2folderclosed.gif  ftv2plastnode.gif \
+			ftv2folderopen.gif ftv2pnode.gif ftv2lastnode.gif ftv2vertline.gif
+#List of all class files (compiled .java files)
+CLASS_FILE	= FunctionDescription.class FunctionParameter.class \
+			FunctionReturn.class MainPanel.class ModuleDocument.class \
+			ModuleDocumentOptions.class GenJsTree.class	DocumentAudit.class \
+			Login.class TableUsage.class FglProcess.class P4glConnection.class \
+			FglTableUsage.class  Process.class
+
+#add paths to file names:
+CLASS_FILES	=$(addprefix $(CLASS_BUILD_PATH)/,	$(CLASS_FILE))
+JSP_FILES	=$(addprefix $(BUILD_PATH)/,		$(JSP_FILE))
+CCS_FILES	=$(addprefix $(BUILD_PATH)/,		$(CCS_FILE))
+IMG_FILES	=$(addprefix $(IMG_PATH)/,			$(IMG_FILE))
+JS_FILES	=$(addprefix $(BUILD_PATH)/,		$(JS_FILE))
+
+
+#name of the Tomcat extensions to Ant. Contains Tomcat specific targets for Ant:
+TOMCAT_ANT_F=catalina-ant.jar
+#path and name of the Tomcat extensions to Ant:
+TOMCAT_ANT  =${JAVA_SHARED}/${TOMCAT_ANT_F}
+
+#additional CLASSPATH values needed for the execution of Ant:
+DOC4GL_CLASSPATH=${JAVA_SHARED}/xerces-j2.jar:${TOMCAT_ANT}:${CLASSPATH}
+
+#Declare targets that do not generate any files, to avoid conflicts:
+.PHONY : all install clean deinstall
+
+
+#Find out if ${JSP_APP_NAME} was already installed under Tomcat:
+#FIXME: make evaluates this no mater which target we are invoking, causig a
+#delay EVERY TIME WE INVOKE MAKE !
+
+ALL_APPS	:=$(shell export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} list)
+TMP			:=$(findstring ${JSP_APP_NAME},$(ALL_APPS))
+ifeq "$(TMP)" "${JSP_APP_NAME}"
+#already installed
+	APP_INSTALLED=1
+else
+#new install
+	APP_INSTALLED=0
+endif
+
+
+
+# =========================================================================
+#                        	   Targets
+# =========================================================================
+
+#############################
+#Default make target, invokes "ant" target
+all: ant
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser successfully compiled.                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#############################
+#Invokes ant with default settings to compile all .java files and create 
+#build tree:
+ant: ${TOMCAT_ANT}
+ifneq "${ANT}" "no"
+ifneq "${JAVAC}" "no"
+#directory missing on some Tomcat installations, but needed by build.xml:
+	mkdir -p ${TOMCAT_DIR}/shared/lib
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS}
+else
+	@echo "Java compiler not found - cannot compile"
+endif
+else
+	@echo "Ant tool not found - cannot compile"
+endif
+
+# =========================================================================
+#                              Install
+# =========================================================================
+
+#NOTE: TomCat has two differetn ways to run the web applications:
+#
+# You can INSTALL the application, which means that application will be
+# activated using applications files in-place, in location they where found
+# in the momnet of activarion. No files will be copied inder the TomCat
+# applications installation tree, and application will be DEACTIVATED on
+# the first TomCat shut down. This option is probably easier/faster while
+# developing Doc4GL browser application itself. This action is in this make file
+# performed by target "install.inplace".
+#
+# You can DEPLOY the application to Tomcat, and application files (.class files,
+# .jsp files, image files...) will be phicically placed under Tomcat applications
+# installation tree, and application will be activated on next Tomcat reboot.
+# Thisa option makes more sense when Doc4GL application is used in production
+# environment, since a) it will "survive" TomCat restart, and b) it will allow
+# multiple installations of Doc4GL browser under different application URL names,
+# which is needed to access multiple Doc4GL database repositories when Doc4GL is
+# used to namage access to documentation for more then one application (This
+# requirement is dictated by the fact that Doc4GL web browser application stores
+# repository database cionnection settings inside index.jsp file, and therefore
+# one Doc4GL browser application installation can access only one repository
+# database). In this make file, this action is performed by target "war".
+
+#############################
+#This is a main/default install target:
+#Use Ant to create and install/relaod app in-place:
+#install: install.inplace
+#Create .war file using Ant, drop it under Tomcat and restart Tomcat:
+install: war
+
+#############################
+# Install web browser Doc4GL application using in-place files.
+# 1) check if we have jar file containing Tomcat specific ant target definitions
+# 2) use ant to invoke build.xml, and compile and activate browser app under Tomcat
+# 3) overwrite index.jsp with the one containing correct connection settings
+# 4) phisically install files under Tomcat installation directory.
+#FIXME:
+#ant will _ALLWAYS_ perform compile, overwriting our build directory,
+#and undoing our replaced index.jsp. We need to find a way to do replacing
+#INSIDE build.xml "compile" target...
+#WARNING:
+#Application installed in this way will use files in-place, from browser/build !!!
+#Application will be de-activated on next TomCat shutdown!!!
+install.inplace: ${TOMCAT_ANT} install.index install.ant install.index install.files
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser successfully installed.                 |"
+	@echo "|      You can access the Doc4GL browser at the following URL:       |"
+	@echo "|                http://localhost:8080/${JSP_APP_NAME}                 |"
+	@echo "|      You can monitor installed Tomcat applications at:             |"
+	@echo "|                http://localhost:8080/manager/html                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+#############################
+#This target uses Tomcat specific ant install target to activate fgldoc browser
+#application from curretn location. It will compile code first if needed.
+install.ant:
+#ifeq "$(findstring ${JSP_APP_NAME},$(shell export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} list))" "${JSP_APP_NAME}"
+ifeq "$(APP_INSTALLED)" "1"
+#already installed
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} reload
+else
+#new install
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} install
+endif
+
+#############################
+#This target phisically copy files under Tomcat installation. I'm not sure if
+#this is nececery when using Tocat ant "install", since this is not the same as
+#"deploy" target. I'll copy anyway...
+#FIXME: browser app currently expects to find image files in installation root,
+#but Ant created .war file will place them in sub-directory "images". Untill
+#this is fixed, this is one good reason to physically copy at least image files there:
+install.files: install.files.tree install.files.images
+ifneq "${TOMCAT_DIR}" "no"
+	$(INSTALL) $(CLASS_FILES) 	$(CLASS_DIR)
+	$(INSTALL) $(JSP_FILES) 	$(NAV_DIR)
+#	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
+	$(INSTALL) $(JS_FILES) 		$(NAV_DIR)
+	$(INSTALL) $(CCS_FILES) 	$(NAV_DIR)
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser files successfully installed.           |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+else
+	@echo "Tomcat directory unknown. Cannot install"
+endif
+
+
+install.files.images:
+ifneq "${TOMCAT_DIR}" "no"
+#	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
+else
+	@echo "Tomcat directory unknown. Cannot install"
+endif
+
+
+install.files.tree:
+ifneq "${TOMCAT_DIR}" "no"
+	mkdir -p ${NAV_DIR}
+	mkdir -p ${CLASS_DIR}
+else
+	@echo "Tomcat directory unknown. Cannot install"
+endif
+
+
+
+#############################
+# Take a index.jsp source code, replace connection settings, and
+# overwrite file placed in build directory by ant compile target:
+# FIXME: index.jsp should use separate file xyz.properties to store/read
+# connection settings. We cannot use AutoConf here because this would force
+# developer to change index.jsp.in instead of index.jsp file when developing.
+install.index:
+	@sed -e "s/DOC4GL_USERNAME/${DOC4GL_USERNAME}/" \
+	-e "s/DOC4GL_PASSWORD/${DOC4GL_PASSWORD}/" \
+	-e "s/DOC4GL_SERVER/${DOC4GL_SERVER}/" \
+	-e "s/DOC4GL_DBNAME/${DOC4GL_DBNAME}/" \
+	-e "s/DOC4GL_SERVICE/${DOC4GL_SERVICE}/" \
+	-e "s/DOC4GL_HOSTNAME/${DOC4GL_HOSTNAME}/" \
+	-e "s/DOC4GL_SGDBURL/${DOC4GL_SGDBURL}/" \
+	-e "s/DOC4GL_CONNECTIONTYPE/${DOC4GL_CONNECTIONTYPE}/" \
+	${JSP_SRC_PATH}/${INDEX.JSP} > ${BUILD_PATH}/${INDEX.JSP}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|                       W A R N I N G !                              |"
+	@echo "| ${BUILD_PATH}/${INDEX.JSP} file was created "
+	@echo "| with the following database JDBC connection settings:              |"
+	@echo "|                                                                    |"
+	@echo "|   DOC4GL_USERNAME       =${DOC4GL_USERNAME}"
+	@echo "|   DOC4GL_PASSWORD       =${DOC4GL_PASSWORD}"
+	@echo "|   DOC4GL_SERVER         =${DOC4GL_SERVER}"
+	@echo "|   DOC4GL_DBNAME         =${DOC4GL_DBNAME}"
+	@echo "|   DOC4GL_SERVICE        =${DOC4GL_SERVICE}"
+	@echo "|   DOC4GL_HOSTNAME       =${DOC4GL_HOSTNAME}"
+	@echo "|   DOC4GL_SGDBURL        =${DOC4GL_SGDBURL}"
+	@echo "|   DOC4GL_CONNECTIONTYPE =${DOC4GL_CONNECTIONTYPE}"
+	@echo "|                                                                    |"
+	@echo "| Please verify that this settings are appropriate for access to the |"
+	@echo "| Doc4GL database repository of the APPLICATION YOU WISH TO BROWSE   |"
+	@echo "| documentation for. You can override each of this settings on the   |"
+	@echo "| 'make' command line.                                               |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+#############################
+# calls a target to replace strings and then copy the file to Tomcat
+# installation directory, overwriting exisitng one:
+install.index.deploy: install.index
+ifneq "${TOMCAT_DIR}" "no"
+	${INSTALL} ${BUILD_PATH}/${INDEX.JSP} $(NAV_DIR)/${INDEX.JSP}
+else
+	@echo "Tomcat directory unknown. Cannot install.index"
+endif
+
+
+#############################
+# Create .war installation file
+war: war.create war.install war.deploy install.files.images install.index.deploy
+
+#############################
+# Invoke Ant to create .war file:
+# WARNING: index.jsp will not contain correct settings!
+war.create:
+ifneq "${ANT}" "no"
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} war
+else
+	@echo "Ant tool not detected. Action not possible."
+endif
+
+#############################
+# Install app under TomCat webapps directory, by placing generated .war file
+# in the Tomcat applications root. Default TomCat settings include automatic
+# installation of .war files found there, every x minutes when TomCat is running,
+# on every time TomCat starts.
+war.install:
+ifneq "${TOMCAT_DIR}" "no"
+	${INSTALL} ${JSP_APP_NAME}.war $(TOMCAT_DIR)/webapps
+else
+	@echo "Tomcat directory unknown. Cannot war.install"
+endif
+
+
+#############################
+# Restart TomCat, to force installation of all application .war files found in
+# TomCat application root directory:
+war.deploy: tomcat.stop war.unpack tomcat.start
+
+
+#############################
+# Stop TomCat
+tomcat.stop:
+	-tomcat4 stop
+	sleep 3
+
+#############################
+# Start TomCat
+tomcat.start:
+	tomcat4 start
+#Give Tomcat time to start and unpack .war file:
+	sleep 10
+
+#############################
+# I don't understand why, but TomCat sometimes after it registers new application
+#when it finds a new .war file in app root, fails to unpacl files so it cannot
+#start the applicatio. Therefore, we better make sure we unpack this files
+#ourselves:
+war.unpack:
+	mkdir -p $(TOMCAT_DIR)/webapps/${JSP_APP_NAME}
+	cd $(TOMCAT_DIR)/webapps/${JSP_APP_NAME}; jar x < ../${JSP_APP_NAME}.war
+
+
+#############################
+# WARNIGN: not working!
+# Alternate method of installing .war files, by invoking TomCat manager directly.
+# Should work the same as installing .war via ant target
+#Use this URL to install a .war file:
+#http://aptiva:8080/manager/install?path=/promotxt&war=file:/var/tomcat4/webapps/promotxt.war
+war.activate:
+	wget -O war.activate.log --http-user=admin --http-passwd=tomcat http://localhost:8080/manager/install?path=/${JSP_APP_NAME}&war=file:${DOC4GLSRCDIR}/browser/${JSP_APP_NAME}.war
+	sleep 3
+	cat war.activate.log
+
+#############################
+# WARNIGN: not working!
+# Alternate method of deinstalling applications, by invoking TomCat manager directly
+# Should work the same as deinstalling app via ant target
+war.deactivate:
+	wget -O war.deactivate.log --http-user=admin --http-passwd=tomcat http://localhost:8080/manager/html/remove?path=/${JSP_APP_NAME}
+	sleep 3
+	cat war.dactivate.log
+
+
+# =========================================================================
+#                              Deinstall
+# =========================================================================
+
+#############################
+#First deactivate browser application in Tomcat instance, then phisically remove
+#files installed under Tomcat installation directory:
+deinstall: deinstall.tomcat deinstall.files
+
+
+#############################
+# Deactivate browser application in Tomcat instance:
+deinstall.tomcat: ${TOMCAT_ANT}
+ifeq "$(APP_INSTALLED)" "1"
+ifneq "${ANT}" "no"
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} remove
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser successfully de-installed.              |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+else
+	@echo "Ant tool not detected. Action not possible."
+endif
+else
+	@echo "Application named ${JSP_APP_NAME} not installed to TomCat."
+endif
+
+
+#############################
+#Phisically remove files installed under Tomcat installation directory:
+deinstall.files:
+ifneq "${TOMCAT_DIR}" "no"
+	(cd $(CLASS_DIR)/${CLASS_PACKAGE}; ${RM} $(CLASS_FILE))
+	(cd $(NAV_DIR); ${RM} $(JSP_FILE))
+#	(cd $(NAV_DIR); ${RM} $(IMG_FILE))
+	(cd $(NAV_DIR)/images; ${RM} $(IMG_FILE))
+	(cd $(NAV_DIR); ${RM} $(JS_FILE))
+	(cd $(NAV_DIR); ${RM} $(CCS_FILE))
+	${RM} $(NAV_DIR)/META-INF/MANIFEST.MF
+	${RM} $(NAV_DIR)/*.bak
+	${RM} $(NAV_DIR)/WEB-INF/*.bak
+	${RM} $(NAV_DIR)/WEB-INF/web.xml
+	${RM} $(TOMCAT_DIR)/webapps/${JSP_APP_NAME}.war
+	-rmdir $(NAV_DIR)/images
+	-rmdir $(NAV_DIR)/WEB-INF/classes/pt/moredata/fgldocumenter/browser
+	-rmdir $(NAV_DIR)/WEB-INF/classes/pt/moredata/fgldocumenter
+	-rmdir $(NAV_DIR)/WEB-INF/classes/pt/moredata
+	-rmdir $(NAV_DIR)/WEB-INF/classes/pt
+	-rmdir $(NAV_DIR)/WEB-INF/classes
+	-rmdir $(NAV_DIR)/WEB-INF/lib
+	-rmdir $(NAV_DIR)/WEB-INF
+	-rmdir $(NAV_DIR)/META-INF
+	-rmdir $(NAV_DIR)
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser files successfully removed.             |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+else
+	@echo "Tomcat directory unknown. Cannot deinstall"
+endif
+
+# =========================================================================
+#                              Utility targets
+# =========================================================================
+
+#############################
+# Use Tocat specific ant target "list", to show currently installed Tomcat apps,
+# and there status:
+status:
+ifneq "${ANT}" "no"
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} list
+else
+	@echo "Ant tool not detected. Action not possible."
+endif
+
+#############################
+#Place TomCat distributed Ant extensions class into CLASSPATH
+#accesible location:
+${TOMCAT_ANT}:
+	cp ${TOMCAT_DIR}/server/lib/${TOMCAT_ANT_F} ${JAVA_SHARED}
+
+#############################
+# Show values of make variables, for make proccess debugging:
+show:
+	@echo ALL_APPS=${ALL_APPS}
+	@echo TMP=${TMP}
+	@echo APP_INSTALLED=${APP_INSTALLED}
+
+# =========================================================================
+#                              Clean
+# =========================================================================
+
+#############################
+# Clean the source code tree; leave only files that are in the CVS:
+clean:
+	$(RM) *.class *.jar *.bak *.log
+	$(RM) web/*.bak
+	$(RM) web/WEB-INF/*.bak
+	$(RM) pt/moredata/fgldocumenter/browser/*.bak
+	rm -rf classes
+	rm -rf build
+ifneq "${ANT}" "no"
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} clean
+endif
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl browser source code now clean.                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+# =================================== EOF =================================
