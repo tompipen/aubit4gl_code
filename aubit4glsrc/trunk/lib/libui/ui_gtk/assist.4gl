@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.5 2003-02-08 06:48:10 afalout Exp $
+# $Id: assist.4gl,v 1.6 2003-04-09 07:16:54 mikeaubury Exp $
 
 # ASSIST.4gl
 #
@@ -150,7 +150,7 @@ end function
 ########################################################################
 # Call this before 'END MAIN' if you have any menu or formhandlers
 ########################################################################
-function run_gui()
+function a4gl_run_gui()
 code
 CHK_UI
   while (1) {

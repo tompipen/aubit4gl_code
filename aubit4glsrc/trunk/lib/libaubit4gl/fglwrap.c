@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.33 2003-04-07 16:26:34 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.34 2003-04-09 07:16:52 mikeaubury Exp $
 #
 */
 
@@ -862,7 +862,7 @@ int a;
  * Yes it is... used (?)
  */
 int
-aclfgl_get_ui_mode(int n)
+aclfgl_a4gl_get_ui_mode(int n)
 {
 	push_int(ui_mode);
 	return 1;

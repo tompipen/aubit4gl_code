@@ -64,7 +64,7 @@ extern
 long quit_flag;
 extern 
 long a4gl_status;
-dll_import 
+extern 
 struct {
 long sqlcode;
 char sqlerrm [72+1];
@@ -179,8 +179,8 @@ static char _functionName[] = "set_window_icon";
  
  
  
-int aclfgl_run_gui (int nargs){ /* Funtion Start */
-static char _functionName[] = "run_gui";
+int aclfgl_a4gl_run_gui (int nargs){ /* Funtion Start */
+static char _functionName[] = "a4gl_run_gui";
    struct BINDING fbind[]={ /* print_param */
    }; /* end of binding */
    char *_paramnames[]={

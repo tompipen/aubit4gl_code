@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.30 2003-04-07 16:26:33 mikeaubury Exp $
+# $Id: builtin.c,v 1.31 2003-04-09 07:16:52 mikeaubury Exp $
 #
 */
 
@@ -750,9 +750,9 @@ int
 aclfgl_showhelp (int helpnumber)
 /* show_help(string, 4glmode, 4gllinenumber) */
 {
+	push_long(helpnumber);
+	aclfgli_show_help(1);
 
-    printf ("FIXME: showhelp() not implemented\n");
-	/*  A4GLSQL_set_status(-3001,0); */
       return 0;
 }
 
