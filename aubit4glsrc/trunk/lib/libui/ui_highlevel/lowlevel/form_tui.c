@@ -714,12 +714,14 @@ A4GL_debug("Looking for first - maxfield=%d\n",form->maxfield);
   if (c >= ' ' && c <= 0xff)
     {
 
-	A4GL_debug("----> FIELD WAS '%s'",cfield_buffer);
+	A4GL_debug("----> FIELD WAS '%s' %d ",cfield_buffer,current->maxgrow);
 
       // Add it as a character..
 
 	if (current->maxgrow!=0) {
+		A4GL_debug("T1");
 		if (form->curcol<field_length) {
+		A4GL_debug("T2");
 			if ((form->current->opts&(O_BLANK))&&form->curcol==0) {
 				memset(cfield_buffer,' ',field_length);
 			}
@@ -744,7 +746,9 @@ A4GL_debug("Looking for first - maxfield=%d\n",form->maxfield);
 		}
 
 	}  else {
+		A4GL_debug("T3");
 		if (form->curcol<=field_length-1) {
+		A4GL_debug("T4");
 			if ((form->current->opts&(O_BLANK))&&form->curcol==0) {
 				memset(cfield_buffer,' ',field_length);
 			}
@@ -771,8 +775,10 @@ A4GL_debug("Looking for first - maxfield=%d\n",form->maxfield);
 
 
 
+		A4GL_debug("T5");
 	A4GL_debug("----> FIELD NOW '%s'",cfield_buffer);
         redraw_current_field(form);
+		A4GL_debug("T6");
         return E_OK;
     }
 
