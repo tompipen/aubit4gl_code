@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.21 2002-06-30 22:30:31 mikeaubury Exp $
+# $Id: stack.c,v 1.22 2002-07-11 09:22:04 mikeaubury Exp $
 #
 */
 
@@ -1801,6 +1801,15 @@ upshift_stk (void)
  *
  * @return
  */
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
+
 int				//should be boll
 isparamdate (void)
 {

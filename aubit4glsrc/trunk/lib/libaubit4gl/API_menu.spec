@@ -26,8 +26,6 @@ VARIABLE A4GL_MENUTYPE
 
 /* ------- functions from lib/libmenu/menu_xdr/loadmenu.c */
 
-/* int isolated_xdr_decompile(struct menu_list the_menus,XDR xdrp,FILE *f ) */
-isolated_xdr_decompile void* the_menus,void* xdrp,void* f -> int
 
 /* char *mn_caption(char *s) */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.15 2002-06-25 09:33:52 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.16 2002-07-11 09:22:04 mikeaubury Exp $
 #
 */
 
@@ -646,6 +646,9 @@ int start;
  *
  * @todo Describe function
  */
+#ifndef TRUE
+#define TRUE 1
+#endif
 void
 set_intr(void)
 {

@@ -39,7 +39,7 @@ set_default_form void* form -> void
 read_form char* fname,char* formname -> void*
 
 /* int has_bool_attribute (struct struct_scr_field *f, int bool) */
-has_bool_attribute void* f,int bool -> int
+has_bool_attribute void* f,int boolval -> int
 
 /* int check_field_for_include (char *s, char *inc, int dtype) */
 check_field_for_include char* s,char* inc,int dtype -> int
@@ -182,11 +182,7 @@ add_str_attr void* f,int type,char* str -> void
 /* void add_bool_attr(struct struct_scr_field *f,int type) */
 add_bool_attr void* f,int type -> void
 
-/*  ------------- for decompile.c and gtk_4gl.c ------------------------ */
 
-* did not work, but still needed for fdecompile:
-/* int isolated_xdr_struct_form( XDR xdrp, struct struct_form the_form) */
-isolated_xdr_struct_form void* xdrp,void* the_form -> int
 
 /*  ============================== EOF ================================= */
 
