@@ -27,6 +27,12 @@ export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib:$POSTGRESDIR/lib
 
 ECPG_EXT=cpc
 
+# If we have a .ec on the command line -
+# assume they have .ec as the extension instead
+
+echo $* | grep "\.ec" >/dev/null 2>&1
+[ $? -eq 0 ] &&	ECPG_EXT=ec
+
 while [ "$1" != "" ]
 do
 	a=$1
@@ -59,7 +65,6 @@ do
 	fi
 
 	if [ $b.$ECPG_EXT = $a ]
-
 	then
 		srcs="$srcs $a"
 		shift
@@ -67,6 +72,7 @@ do
 	fi
 
 	other_args="$other_args $a"
+
 
 	shift
 done
@@ -78,7 +84,6 @@ fi
 for a in $srcs
 do
 	ECPG_RUN="$POSTGRESDIR/bin/ecpg -C INFORMIX_SE -rno_indicator -t $ecpg_args $a"
-
     #-C INFORMIX_SE
     echo $ECPG_RUN
     eval $ECPG_RUN
@@ -90,9 +95,10 @@ do
 	cfiles="$cfiles $out.c"
 done
 
-GCC_RUN="gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm"
+GCC_RUN="gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm -L$AUBITDIR/lib -laubit4gl"
 echo $GCC_RUN
 eval $GCC_RUN
 RET=$?
 exit $RET
+
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.35 2003-09-10 10:36:18 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.36 2003-10-21 13:52:01 mikeaubury Exp $
 #
 */
 
@@ -700,8 +700,10 @@ A4GL_func_using (void)
   int f = 0;
 
   fmt = A4GL_char_pop ();
-  if (strstr (fmt, "dd") || strstr (fmt, "mm") || strstr (fmt, "yy"))
-    f = 1;
+
+  if (strstr (fmt, "dd") || strstr (fmt, "mm") || strstr (fmt, "yy")) f = 1;
+  if (strstr (fmt, "DD") || strstr (fmt, "MM") || strstr (fmt, "YY")) f = 1;
+
   if (f == 0)
     {
 #ifdef DEBUG

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.12 2003-07-09 16:19:22 mikeaubury Exp $
+# $Id: dmy.c,v 1.13 2003-10-21 13:52:01 mikeaubury Exp $
 #
 */
 
@@ -165,6 +165,10 @@ A4GL_using_date (int dn, char *us)
   char *using_strs[] = {
     "dddd", "ddd", "dd", "mmmm", "mmm", "mm", "yyyy", "yy", "th", "d", "m", ""
   };
+
+  char *UCusing_strs[] = {
+    "DDDD", "DDD", "DD", "MMMM", "MMM", "MM", "YYYY", "YY", "TH", "D", "M", ""
+  };
   char *rusing_strs[] = {
     "\nA", "\nB", "\nC", "\nD", "\nE", "\nF", "\nG", "\nH", "\nI", "\nJ",
       "\nK", ""
@@ -215,8 +219,10 @@ A4GL_using_date (int dn, char *us)
   /* replace the ddmmyy etc with something the user cant have used */
   for (a = 0; using_strs[a][0] != 0; a++)
     {
-      strcpy (buff2, A4GL_dategsub (buff, using_strs[a], rusing_strs[a]));
-      strcpy (buff, buff2);
+        strcpy (buff2, A4GL_dategsub (buff, using_strs[a], rusing_strs[a]));
+        strcpy (buff, buff2);
+        strcpy (buff2, A4GL_dategsub (buff, UCusing_strs[a], rusing_strs[a]));
+        strcpy (buff, buff2);
     }
 
   /* now replace these with what the user wants - this gets around d

@@ -24,7 +24,8 @@ put_val : value_expression_ss {
 	strcpy(buff,$<sql_string>1);
 	strcpy($<str>$,buff);
 	A4GL_debug("put buff=%s\n",buff);
-	if (buff[0]!='\''&&strcmp(buff,"?")!=0&&strncmp(buff," :",2)!=0) {
+	if (buff[0]!='\''&&strncmp(buff,"?",1)!=0&&strncmp(buff," :",2)!=0) {
+		A4GL_debug("Got : %s - expecting '..', : or ?",buff);
  		a4gl_yyerror("Put values must be variables, strings or 'NULL'");
 		YYERROR;
 	}
