@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.67 2004-04-27 22:27:40 mikeaubury Exp $
+# $Id: Makefile.in,v 1.68 2004-05-26 14:24:12 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -120,7 +120,7 @@ ifneq "${TARGET_OS}" "hpux"
 	endif
 else
             #HP-UX only:
-			LINK_LIBS           =-lcl -lm
+			LINK_LIBS           =-lcl -lm -lnsl
 endif
 
 
