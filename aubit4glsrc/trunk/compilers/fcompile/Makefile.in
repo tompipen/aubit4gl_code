@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.39 2002-09-22 02:02:22 afalout Exp $
+# $Id: Makefile.in,v 1.40 2002-09-22 02:18:44 afalout Exp $
 #
 
 ROOT        =../..
@@ -105,18 +105,18 @@ all: $(ALL)
 
 ${ROOT}/bin/fcompile: $(OBJECTS)
 #	${CC} ${EXE_CFLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
-	${LD} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB}
 #	${LN} ./$@${EXE} ${ROOT}/bin/$@${EXE}
 
 ${ROOT}/bin/fdecompile-j : ${OBJS_DECOMPILE} ${OBJS_DUMP_JAVA}
 #	${CC} ${EXE_CFLAGS} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
-	${LD} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
 #	${LN} ./$@ ${ROOT}/bin
 
 ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
 #	${CC} ${EXE_CFLAGS} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
 #	${LD} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
-	${LD} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
+	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
 #	${LN} ./$@ ${ROOT}/bin
 
 ${ROOT}/bin/fshow : fshow.4gl
