@@ -23,14 +23,13 @@
 extern "C"
 {
 #endif
-  void A4GL_copy_money (dec_t * infx, fglmoney * a4gl, int indicat,int size, char dir);
-  void A4GL_copy_decimal (dec_t * infx, fgldecimal * a4gl, int indicat,int size, char dir);
-  void A4GL_copy_datetime (dtime_t * infx, struct A4GLSQL_dtime *a4gl, int indicat,int size,
-		      int mode);
+  //void A4GL_copy_money (dec_t * infx, fglmoney * a4gl, int indicat,int size, char dir);
+  //void A4GL_copy_decimal (dec_t * infx, fgldecimal * a4gl, int indicat,int size, char dir);
+  //void A4GL_copy_datetime (dtime_t * infx, struct A4GLSQL_dtime *a4gl, int indicat,int size, int mode);
 
 
 // Conversion functions between informix types and A4GL datatypes
-void A4GL_copy_decimal (struct decimal *infx, fgldecimal * a4gl, int indicat,int size, char dir);
+//void A4GL_copy_decimal (struct decimal *infx, fgldecimal * a4gl, int indicat,int size, char dir);
 
 #define COPY_DATA_IN_0(a4gl,infx,size,x,y) A4GL_copy_char(infx,a4gl,0,size,'i',x,y)
 #define COPY_DATA_IN_1(a4gl,infx,size) A4GL_copy_smint(infx,a4gl,0,size,'i')

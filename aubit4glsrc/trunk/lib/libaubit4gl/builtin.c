@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.44 2003-07-21 21:40:11 mikeaubury Exp $
+# $Id: builtin.c,v 1.45 2003-07-27 17:28:19 mikeaubury Exp $
 #
 */
 
@@ -232,7 +232,7 @@ aclfgl_fgl_getenv (int nargs)
  * @return allways 1
  */
 int
-aclfgl_dbms_dialect (void)
+aclfgl_dbms_dialect (int n) // n should always be 0
 {
 //char *g;
   char *p;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.1 2003-07-26 11:12:37 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.2 2003-07-27 17:28:19 mikeaubury Exp $
 */
 
 /**
@@ -62,6 +62,66 @@ extern "C"
 #include "a4gl_API_rpc.h"
 #include "a4gl_API_sql.h"
 #include "a4gl_API_ui.h"
+
+int A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...);
+void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
+void A4GL_skip_top_of_page (struct rep_structure *rep);
+void A4GL_aclfgli_skip_lines (struct rep_structure *rep);
+void A4GL_add_spaces (void);
+void A4GL_add_row_report_table (struct BINDING *b, int n);
+void A4GL_need_lines (struct rep_structure *rep);
+int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
+void A4GL_def_int (void);
+void A4GL_def_quit (void);
+void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
+void A4GL_make_report_table (struct BINDING *b, int n);
+int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, struct BINDING **reread);
+void A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi);
+void A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin);
+int A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b);
+void A4GL_set_column (struct rep_structure *rep);
+void A4GL_set_help_file (char *fname);
+
+
+double A4GL_pop_double(void);
+int A4GL_pop_bool (void);
+short A4GL_pop_int (void);
+long A4GL_pop_long (void);
+long A4GL_pop_date (void);
+float A4GL_pop_float (void);
+int A4GL_pop_var (void *p, int d);
+int A4GL_pop_var2 (void *p, int d, int s);
+int A4GL_pop_char (char *z, int size);
+int A4GL_pop_param (void *p, int d, int size);
+void A4GL_pop_params (struct BINDING *b, int n);
+void A4GL_pop_args (int a);
+
+void A4GL_push_disp_bind (void *b, int n);
+void A4GL_push_time (void);
+void A4GL_push_current (int a, int b);        /* stack.c */
+void A4GL_push_ascii (void);  /* stack.c */
+void A4GL_push_param (void *p, int d);
+void A4GL_push_params (struct BINDING *b, int n);
+void A4GL_push_user (void);
+void A4GL_push_today (void);
+void A4GL_push_dtime (struct A4GLSQL_dtime *p);
+void A4GL_push_int (short p);
+void A4GL_push_long (long p);
+void A4GL_push_date (long p);
+void A4GL_push_float (float p);
+void A4GL_push_dec (char *p, int ismoney,int size);
+void A4GL_push_double (double p);
+void A4GL_push_chars (char *p, int dtype, int size);
+void A4GL_push_char (char *p);
+void A4GL_push_variable (void *ptr, int dtype);
+void A4GL_push_interval (struct ival *p);
+void A4GL_pushop (int a);
+void A4GL_push_null (int dtype,int size);
+void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
+void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
+
+
+
 
 #ifdef __cplusplus
 }

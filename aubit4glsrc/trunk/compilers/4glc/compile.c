@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.33 2003-07-26 04:47:15 afalout Exp $
+# $Id: compile.c,v 1.34 2003-07-27 17:28:12 mikeaubury Exp $
 #*/
 
 /**
@@ -600,6 +600,9 @@ initArguments (int argc, char *argv[])
   if (compile_exec)
     {
       A4GL_debug ("Linking exec\n");
+	if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) {
+		printf("Compiling\r");fflush(stdout);
+	}
 	#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
 	      //We are on UNIX
 	      
@@ -640,6 +643,9 @@ initArguments (int argc, char *argv[])
 
   if (compile_lib)
     {
+	if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) {
+		printf("Linking\r");fflush(stdout);
+	}
 	#ifndef __MINGW32__
 	      A4GL_debug ("Linking static library\n");
 
@@ -660,6 +666,9 @@ initArguments (int argc, char *argv[])
 
   if (compile_so)
     {
+	if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) {
+		printf("Linking Shared Library\r");fflush(stdout);
+	}
       A4GL_debug ("Linking shared library\n");
 	#ifndef __MINGW32__
 	      sprintf (buff, "%s -shared %s -o %s %s %s %s %s %s",
@@ -921,6 +930,9 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
       if (compile_object)
 	{
+	if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) {
+		printf("Compiling Object\r");fflush(stdout);
+	}
 	  A4GL_bname (output_object, a, b);
 	  strcpy (ext, ".");
 	  strcat (ext, b);

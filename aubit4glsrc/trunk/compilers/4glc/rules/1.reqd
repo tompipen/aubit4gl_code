@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.40 2003-06-16 09:26:57 mikeaubury Exp $
+# $Id: 1.reqd,v 1.41 2003-07-27 17:28:19 mikeaubury Exp $
 #
 */
 
@@ -148,6 +148,7 @@ char 		infilename[132]="";
 char 		hdr_dbname[64]="";
 char 		current_upd_table[64]="";
 
+int 		is_schema=0;
 int 		in_define=0;
 int 		rordcnt;
 int 		racnt=0;

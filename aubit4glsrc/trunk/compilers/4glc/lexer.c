@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.76 2003-07-26 04:47:15 afalout Exp $
+# $Id: lexer.c,v 1.77 2003-07-27 17:28:12 mikeaubury Exp $
 #*/
 
 /**
@@ -1034,6 +1034,7 @@ fix_bad_strings (char *s)
   char buff[10000];
   int c;
   int a;
+  char *allowed_escape="nrtfbae0xc\\\""; // We can have \n\r\t etc
   if (s[0] != '"')
     return;
 
@@ -1048,20 +1049,17 @@ fix_bad_strings (char *s)
 	  continue;
 	}
 
-      /* I have NO idea why this is here - so I'm taking it out...
-       * If you know what it is for - replace this with what it is */
+// We have one '\'
 
-#ifdef I_VE_REMOVED_IT
-      if (s[a + 1] == '[' || s[a + 1] == ']' || s[a + 1] == '^'
-	  || s[a + 1] == '/')
-	{
+      if(!strchr(allowed_escape,s[a+1])) {  // Fix \something where something isnt valid..
 	  buff[c++] = s[a + 1];
 	  a++;
 	  continue;
-	}
-#endif
+      }
 
       buff[c++] = '\\';
+      buff[c++] = s[a+1];
+	a++;
     }
 
   buff[c] = 0;
@@ -1125,7 +1123,8 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	{
 	  last_pc = a;
 	  if (strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0)
-	    printf ("%d %% complete\r", last_pc);
+	    printf ("%d %% complete\r", last_pc);fflush(stdout);
+	
 	}
     }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.75 2003-07-27 09:15:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.76 2003-07-27 17:28:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3299,7 +3299,7 @@ print_report_1 (char *name)
 {
   strcpy(mv_repname,name);
   add_function_to_header (name, 2);
-  printc ("int %s%s (int nargs,int acl_ctrl) {\n", get_namespace (name), name,
+  printc ("void %s%s (int nargs,int acl_ctrl) {\n", get_namespace (name), name,
 	  name);
 }
 
@@ -3357,7 +3357,7 @@ print_report_2 (int pdf, char *repordby)
 
   printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   int _g,_p;\n");
-  printc ("   _g=A4GL_chk_params(&rbind,%d,&_ordbind,%s);\n", cnt, repordby);
+  printc ("   _g=A4GL_chk_params(rbind,%d,_ordbind,%s);\n", cnt, repordby);
   printc
     ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
@@ -3380,17 +3380,17 @@ print_report_2 (int pdf, char *repordby)
   	printc ("        A4GL_push_char(_rout2);\n");
   	printc ("        %s(2,REPORT_START);\n", get_curr_rep_name ());
 	
-  	//printc ("        A4GL_init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", cnt);
+  	//printc ("        A4GL_init_report_table(rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", cnt);
   	print_report_table(mv_repname,'I',cnt);
 	
-  	//printc ("        while (A4GL_report_table_fetch(reread,%d,&rbind))",cnt);
+  	//printc ("        while (A4GL_report_table_fetch(reread,%d,rbind))",cnt);
   	print_report_table(mv_repname,'F',cnt);
 	
   	printc ("                    %s(%d,REPORT_SENDDATA);\n", get_curr_rep_name (), cnt);
   	printc (" }");
   	printc ("        %s(0,REPORT_FINISH);\n", get_curr_rep_name ());
 	
-  	//printc ("        A4GL_end_report_table(&rbind,%d,reread);",cnt);
+  	//printc ("        A4GL_end_report_table(rbind,%d,reread);",cnt);
   	print_report_table(mv_repname,'E',cnt);
 	
   	printc ("        return;");
@@ -4106,10 +4106,12 @@ print_main_1 (void)
 void
 print_fgllib_start (char *db)
 {
+extern int is_schema;
   printc ("A4GLSTK_setCurrentLine(0,0);", yylineno);
   if (doing_cs()) 	{ printc ("\nA4GL_fgl_start(argv.Count(),argv);\n"); }
   else 			{ printc ("\nA4GL_fgl_start(argc,argv);\n"); }
-  if (db[0] != 0)
+
+  if (db[0] != 0&&!is_schema)
     {
       print_init_conn (db);
       printc ("if (a4gl_sqlca.sqlcode<0) A4GL_chk_err(%d,_module_name);\n",
@@ -4679,11 +4681,11 @@ add_function_to_header (char *identifier, int params)
   if (!A4GL_has_pointer (identifier, 'X'))
     {
       A4GL_add_pointer (identifier, 'X', (void *) 1);
-      if (params == 1)
+      if (params == 1) // Normal Function
 	printh ("int %s%s (int n);\n", get_namespace (identifier),
 		identifier);
-      if (params == 2)
-	printh ("int %s%s (int n,int a);\n", get_namespace (identifier),
+      if (params == 2) // Report...
+	printh ("void %s%s (int n,int a);\n", get_namespace (identifier),
 		identifier);
     }
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.21 2003-07-26 04:47:16 afalout Exp $
+# $Id: report.c,v 1.22 2003-07-27 17:28:19 mikeaubury Exp $
 #
 */
 
@@ -65,8 +65,7 @@ void A4GL_add_spaces (void);
 char *A4GL_mk_temp_tab (struct BINDING *b, int n);
 void A4GL_make_report_table (struct BINDING *b, int n);
 void A4GL_add_row_report_table (struct BINDING *b, int n);
-int A4GL_init_report_table (struct BINDING *b, int n,
-		       struct BINDING *o, int no, struct BINDING **reread);
+int A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, struct BINDING **reread);
 int A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b);
 void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
 void A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi);

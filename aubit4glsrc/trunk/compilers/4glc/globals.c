@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.18 2003-06-25 21:46:31 mikeaubury Exp $
+# $Id: globals.c,v 1.19 2003-07-27 17:28:12 mikeaubury Exp $
 #
 */
 
@@ -70,6 +70,7 @@ extern int list_imported_global_alloc;	// Space allocated for our list
 extern char *outputfilename;
 extern char currinfile_dirname[1024];	//path to 4gl file we are currently compiling
 
+extern int is_schema;
 /*
 =====================================================================
                     Functions prototypes
@@ -179,6 +180,7 @@ dump_gvars (void)
     }
 
   write_global_string (f, "DATABASE", get_hdrdbname ());
+  write_global_int (f, "SCHEMA_ONLY", is_schema);
   write_global_int (f, "NUMVARS", list_global_cnt);
 
   for (a = 0; a < list_global_cnt; a++)
@@ -553,6 +555,7 @@ read_glob (char *s)
     }
 
   read_global_string (f, "DATABASE", &dbname, 1);
+  read_global_string (f, "SCHEMA_ONLY", &is_schema, 1);
 
   if (strlen (dbname) > 0)
     {

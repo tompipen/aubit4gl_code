@@ -484,7 +484,7 @@ print_select_all (char *buff)
 void
 print_unload (char *file, char *delim, char *sql)
 {
-  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/);\n", file, delim,
+  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/,0,0);\n", file, delim,
 	  sql);
 }
 
@@ -579,15 +579,15 @@ if (type=='R')
   printc ("A4GL_add_row_report_table (&rbind,%d);",c);
 
 if (type=='F') 
-  printc ("        while (A4GL_report_table_fetch(reread,%d,&rbind)) {",c);
+  printc ("        while (A4GL_report_table_fetch(reread,%d,rbind)) {",c);
 
 if (type=='I')
-  printc ("        A4GL_init_report_table(&rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", c);
+  printc ("        A4GL_init_report_table(rbind,%d,_ordbind,sizeof(_ordbind)/sizeof(struct BINDING),&reread);\n", c);
 
 if (type=='E') 
-  printc ("        A4GL_end_report_table(&rbind,%d,reread);",c);
+  printc ("        A4GL_end_report_table(rbind,%d,reread);",c);
 if (type=='M')
-  printc ("       A4GL_make_report_table(&rbind,%d);",c);
+  printc ("       A4GL_make_report_table(rbind,%d);",c);
 
 }
 

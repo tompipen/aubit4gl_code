@@ -180,9 +180,18 @@ A4GL_lex_printcomment("/* Got expr list */");
 sprintf($<str>$,"%s",$<str>2);}
 ;
 
-db_section	:	  DATABASE dbase_name {open_db($<str>2);
-			strcpy(hdr_dbname,$<str>2);
-			lastlineno=yylineno;}
+db_section	:	  DATABASE dbase_name {
+					open_db($<str>2);
+					strcpy(hdr_dbname,$<str>2);
+					lastlineno=yylineno;
+					is_schema=0;
+			}
+		| SCHEMA dbase_name {
+					open_db($<str>2);
+					strcpy(hdr_dbname,$<str>2);
+					lastlineno=yylineno;
+					is_schema=1;
+			}
 ;
 
 module_globals_section : actual_globals_section {

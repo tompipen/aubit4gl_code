@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.77 2003-07-25 22:04:53 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.78 2003-07-27 17:28:19 mikeaubury Exp $
 #
 */
 
@@ -1101,7 +1101,7 @@ enum cmd_types {
   void A4GL_set_arr_curr (int a);
   int A4GL_get_count (void);
   void A4GL_set_arr_count (int a);
-  int aclfgl_dbms_dialect (void);
+  int aclfgl_dbms_dialect (int n);
   void aclfgli_extend (void);
 
 
