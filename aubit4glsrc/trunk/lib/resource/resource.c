@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.15 2002-09-08 10:38:20 afalout Exp $
+# $Id: resource.c,v 1.16 2002-09-23 07:15:54 afalout Exp $
 #
 */
 
@@ -614,6 +614,16 @@ build_user_resources(void)
 	resourcefile=fopen(buff,"r");
 
 	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
+
+	/* from ~/aubitrc */
+
+	debug("From ~/aubitrc");
+
+	sprintf(buff,"~/%s","aubitrc");
+	resourcefile=fopen(buff,"r");
+
+	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
+
 
 	/* from ./.aubtirc */
 

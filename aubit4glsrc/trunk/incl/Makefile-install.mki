@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.28 2002-09-23 05:13:02 afalout Exp $
+# $Id: Makefile-install.mki,v 1.29 2002-09-23 07:15:54 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -72,9 +72,14 @@ endif
 #Create links for bin programs to location of Aubit bynary installation:
 install.links: deinstall.bin.links
 	${MKPATH} ${BIN_INSTALL_LINK}
+    #   -w file True if file exists and is writable.
+ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
 	${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
 	${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit
-	@echo "Links to Aubit compiler installed to ${BIN_INSTALL_LINK}/ "
+else
+	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable."
+endif
+	@echo "Links to Aubit programs installed to ${BIN_INSTALL_LINK}/ "
 
 #This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
 #install.libs.conf:
@@ -89,7 +94,13 @@ install.links: deinstall.bin.links
 
 #######################################
 install.libs.links: deinstall.libs.links
+	${MKPATH} ${LIB_INSTALL_LINK}
+ifeq "$(shell  if test -w ${LIB_INSTALL_LINK} ; then echo 1; fi)" "1"
 	${LN_S} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
+else
+	@echo "WARNING: ${LIB_INSTALL_LINK} is not writable."
+endif
+	@echo "Links to Aubit libraries installed to ${LIB_INSTALL_LINK}/ "
 
 ## ==================================================================
 ##                    deinstall targets
