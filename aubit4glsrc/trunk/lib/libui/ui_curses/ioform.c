@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.15 2003-04-22 08:58:33 mikeaubury Exp $
+# $Id: ioform.c,v 1.16 2003-04-23 16:37:25 mikeaubury Exp $
 #*/
 
 /**
@@ -109,6 +109,8 @@ void set_field_colour_attr(FIELD *field,int do_reverse,int colour) ;
 void 	set_fields2 		(int nv, struct BINDING * vars, int d, int n,...);
 #endif
 
+void
+disp_form_fields_ap (int n, int attr, char *formname,va_list *ap);
 int 			display_fields 		(FORM * mform, int n, ...);
 extern char * 	find_attribute 		(struct s_form_dets *f, int field_no);
 void 			debug_print_field_opts (FIELD * a);
@@ -132,40 +134,43 @@ void 			field_noentry 		(FIELD * f);
 void 			set_field_attr 		(FIELD * field);
 int req_field_input (struct s_screenio *s, ...);
 int req_field_input_array (struct s_inp_arr *s, ...);
-int 			form_loop 			(struct s_screenio * s);
+//int 			form_loop 			(struct s_screenio * s);
 void 			set_init_value 		(FIELD * f, void *ptr, int dtype);
 int 			get_metric_no 		(struct s_form_dets * form, FIELD * f);
 int 			turn_field_off 		(FIELD * f);
 void 			turn_field_on 		(FIELD * f);
 void 			turn_field_on2 		(FIELD * f, int a);
 void 			set_init_pop 		(FIELD * f);
-int 			set_fields 			(struct s_screenio *sio);
+
+//int 			set_fields 			(struct s_screenio *sio);
 int 			field_name_match 	(FIELD * f, char *s);
-void 			disp_fields 		(int n, int attr, va_list * ap);
-int 			gen_field_chars 	(FIELD *** field_list, struct s_form_dets *formdets,
-				                     va_list * ap);
+//void 			disp_fields 		(int n, int attr, va_list * ap);
+
+//int 			gen_field_chars 	(FIELD *** field_list, struct s_form_dets *formdets, va_list * ap);
 
 void 			do_before_field 	(FIELD * f, struct s_screenio *sio);
 void 			dump_fields 		(FIELD * fields[]);
 void 			set_init_pop_attr 	(FIELD * field, int attr);
-int 			push_constr 		(struct s_screenio *s);
+//int 			push_constr 		(struct s_screenio *s);
 
 FIELD * 		scan_for_field 		(char *s);
-void 			set_infield_from_stack (void);
+//void 			set_infield_from_stack (void);
 int 			get_curr_infield	(void);
-int 			fgl_infield 		(char *s, int a);
-int 			fgl_getfldbuf 		(char *s, int a);
+//int 			fgl_infield 		(char *s, int a);
+//int 			fgl_getfldbuf 		(char *s, int a);
 int 			key_prompt 			(int a, FORM * mform, struct s_prompt * prompt);
 void 			reset_delims 		(struct s_form_dets * formdets, char *delims);
 int 			page_for_field 		(struct s_screenio * s, FIELD * f);
 int 			page_for_cfield 	(struct s_screenio * s);
-void 			clr_form 			(int to_default);
-void 			disp_form_fields 	(int n, int attr, char *formname,...);
+//void 			clr_form 			(int to_default);
+//void 			disp_form_fields 	(int n, int attr, char *formname,...);
 int 			curr_metric_is_last (void);
 int 			curr_metric_is_first (void);
 int 			curr_metric_is_veryfirst (void);
 int 			curr_metric_is_verylast (void);
 int curses_to_aubit(int a);
+void set_field_attr_with_attr(FIELD *field,int attr);
+int gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets, va_list * ap);
 
 /*
 =====================================================================
@@ -580,14 +585,16 @@ return 1;
  * @todo Describe function
  */
 int
-form_loop (struct s_screenio * s)
+form_loop (void *vs) 
 {
   struct s_form_dets *form;
   int a;
+struct s_screenio *s;
   //int int_form_driver_ret = 0;
   struct struct_scr_field *fprop;
   struct struct_metrics *metrics;
   FORM *mform;
+	s=vs;
   form = s->currform;
   set_abort (0);
 
@@ -1281,7 +1288,7 @@ set_init_pop (FIELD * f)
  * @todo Describe function
  */
 int
-set_fields (struct s_screenio *sio)
+set_fields (void *vsio) 
 {
   int wid;
   int a;
@@ -1293,6 +1300,8 @@ set_fields (struct s_screenio *sio)
   FIELD **field_list;
   FIELD *firstfield = 0;
   int nofields;
+struct s_screenio *sio;
+	sio=vsio;
   
   
   wid = 0;
@@ -1513,7 +1522,7 @@ field_name_match (FIELD * f, char *s)
  * @todo Describe function
  */
 void
-disp_fields (int n, int attr, va_list * ap)
+disp_fields_ap (int n, int attr, va_list * ap)
 {
   int a;
  int flg;
@@ -1562,7 +1571,7 @@ disp_fields (int n, int attr, va_list * ap)
  * @todo Describe function
  */
 int
-gen_field_chars (FIELD *** field_list, struct s_form_dets *formdets,
+gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets,
                      va_list * ap)
 {
   int a;
@@ -2336,13 +2345,15 @@ mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
  * @todo Describe function
  */
 int
-push_constr (struct s_screenio *s)
+push_constr (void *vs) 
 {
   struct struct_scr_field *fprop;
   FIELD *f;
   int a;
   char *ptr;
   int flg = 0;
+  struct s_screenio *s;
+	s=vs;
   int_form_driver (s->currform->form, REQ_FIRST_PAGE);
 
   debug ("Push_constr");
@@ -2421,8 +2432,7 @@ scan_for_field (char *s)
  *
  * @todo Describe function
  */
-void
-set_infield_from_stack (void)
+void set_infield_from_stack (void)
 {
   debug("**** CHANGED FIELD ****");
   inp_current_field = pop_long ();
@@ -2471,7 +2481,7 @@ fgl_infield (char *s, int a)
  * @todo Describe function
  */
 int
-fgl_getfldbuf (char *s, int a)
+fgl_getfldbuf (char *s,int n)
 {
   struct s_form_dets *f;
   FIELD *fld;
@@ -2978,7 +2988,7 @@ clr_form (int to_default)
  * @todo Describe function
  */
 void
-disp_form_fields (int n, int attr, char *formname,...)
+disp_form_fields_ap (int n, int attr, char *formname,va_list *ap)
 {
         exitwith("Not implemented for TUI mode");
 }

@@ -68,7 +68,7 @@
 	GtkWidget *cr_list(void);
 	GtkWidget *cr_calendar(void);
 	GtkWidget *cr_scrollbar(void);
-	GtkWidget *make_pixmap(char *filename);
+	GtkWidget *make_pixmap_gw(char *filename);
 
 
 	gint delete_event (GtkWidget * widget, GdkEvent * event, gpointer data);
@@ -99,7 +99,7 @@
 
 
 
-	GtkWindow *get_curr_win_gtk(void);
+	//void *get_curr_win_gtk(void);
 	void gui_init_gtk (int argc, char *argv[]);
 	GtkWindow * cr_window_gtk (
 		char *s,

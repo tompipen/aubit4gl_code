@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.4 2003-01-22 10:55:39 afalout Exp $
+# $Id: cr_funcs.c,v 1.5 2003-04-23 16:37:28 mikeaubury Exp $
 #*/
 
 /**
@@ -111,7 +111,7 @@ size_widget (GtkWidget *w, int width)
  * @return The pixmap widget.
  */
 GtkWidget *
-make_pixmap (char *filename)
+make_pixmap_gw (char *filename)
 {
   GdkPixmap *p;
   GtkWidget *pixmap;
@@ -167,7 +167,7 @@ cr_picture (void)
   filename = find_param ("FILENAME");
 
   debug ("Making picture filename=%s\n", filename);
-  pixmap = make_pixmap (filename);
+  pixmap = make_pixmap_gw (filename);
 
   add_signal_grab_focus (pixmap, 0);
   add_signal_clicked (pixmap, 0);
@@ -214,7 +214,7 @@ GtkWidget *pixmap = 0;
   {
     if (strlen (image))
 	  {
-	    pixmap = make_pixmap (image);
+	    pixmap = make_pixmap_gw (image);
 	    gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET(pixmap));
 	    gtk_widget_show (pixmap);
 	    gtk_object_set_data(GTK_OBJECT(b),"IMAGE",image);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.115 2003-04-02 18:52:27 mikeaubury Exp $
+# $Id: mod.c,v 1.116 2003-04-23 16:35:17 mikeaubury Exp $
 #
 */
 
@@ -232,12 +232,15 @@ char *get_default_database(void) ;
                     Functions prototypes
 =====================================================================
 */
-
-static int 			is_pk 				(char *s);
+char *
+rettype (char *s);
+//static int 			is_pk 				(char *s);
 int 				yywrap 				(void);
 struct sreports * 	get_sreports		(int z);
 void 				a4gl_add_variable 	(char *name, char *type, char *n);
 
+char* get_namespace(char *s);
+char *make_sql_string(char *first,...);
 
 /*
 =====================================================================
@@ -471,7 +474,7 @@ setinc (int a)
 
 
 
-
+#ifdef NOLONGERRREQD
 /**
  * Tests if a char pointer is null (char *)0
  *
@@ -489,6 +492,7 @@ ignull (char *ptr)
   else
     return empty;
 }
+#endif
 
 /**
  * The parser found a new variable name and inserts it in the variable array.
@@ -583,9 +587,10 @@ pop_associate (char *a)
 void 
 add_link_to (char *tab, char *pkey)
 {
-  char *pt;
-  char *pk;
-  int z;
+
+  //char *pt;
+  //char *pk;
+  //int z;
   debug ("Adding link to %s %s\n", tab, pkey);
 
   variable_action(-1,tab,pkey,"","add_link_to");
@@ -687,15 +692,17 @@ findex (char *str, char c)
 static long
 scan_variables (char *s, int mode)
 {
-  int a;
-  long z;
+  //int a;
+
+  //long z;
   long z_new;
   char buff[256];
   char buff2[256];
-  char *ptr;
-  int dir;
-  int flg;
-  int lvl = 0;
+  //char *ptr;
+  //int dir;
+
+  //int flg;
+  //int lvl = 0;
 int dtype;
 int size;
 int vval;
@@ -1061,7 +1068,7 @@ scan_arr_variable (char *s)
 void
 add_constant (char t, char *ptr, char *name)
 {
-  char scope = 'm';
+  //char scope = 'm';
   int x;
   char buff[256];
   x = 0;
@@ -1744,6 +1751,7 @@ static a4gl_yyerrorf (char *fmt, ...)
 }
 */
 
+#ifdef NOLONGERREQD
 
 /**
  * Checks if a column is part of primary key
@@ -1777,6 +1785,7 @@ is_pk (char *s)
   debug ("No");
   return 0;
 }
+#endif
 
 
 /**
@@ -2386,6 +2395,7 @@ set_mod_level (int a)
   modlevel = a;
 }
 
+#ifdef NOLONGERREQD
 /**
  *
  *
@@ -2400,6 +2410,7 @@ matoi (char *s)
   a = atoi (s);
   return a;
 }
+#endif
 
 /**
  *
@@ -2819,7 +2830,7 @@ debug("In add_report_agg a=%d\n",a);
 void
 set_curr_rep_name (char *s)
 {
-  strcpy (curr_rep_name, get_namespace(s));
+  strcpy (curr_rep_name, (char *)get_namespace(s));
   strcat (curr_rep_name, s);
 }
 
@@ -3621,7 +3632,7 @@ int a;
   int isize = 0;
   int idtype = 0;
   char colname[256] = "";
-  char csize[20];
+  //char csize[20];
   //char cdtype[20];
   char buff[1000];
   char *ccol;

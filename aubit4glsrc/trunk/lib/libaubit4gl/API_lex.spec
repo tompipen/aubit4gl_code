@@ -395,8 +395,8 @@ print_prepare char* stmt,char* sqlvar -> void
 /* void print_undo_use (char *s) */
 print_undo_use char* s -> void
 
-/* void print_execute (char *stmt, int using) */
-print_execute char* stmt,int using -> void
+/* void print_execute (char *stmt, int exec_using) */
+print_execute char* stmt,int exec_using -> void
 
 /* void print_prompt_1 (char *a1, char *a2, char *a3, char *a4) */
 print_prompt_1 char* a1,char* a2,char* a3,char* a4 -> void
@@ -416,8 +416,8 @@ print_open_form char* fmt,char* a1,char* a2 -> void
 /* void print_open_session (char *s, char *v, char *user) */
 print_open_session char* s,char* v,char* user -> void
 
-/* void print_open_cursor (char *cname, char *using) */
-print_open_cursor char* cname,char* using -> void
+/* void print_open_cursor (char *cname, char *open_using) */
+print_open_cursor char* cname,char* open_using -> void
 
 /* void print_clr_window (char *s) */
 print_clr_window char* s -> void
@@ -640,6 +640,7 @@ set_var_sql int n -> char*
 lex_parsed_fgl -> void
 bad_identifiers char* ident -> int
 print_sql_block_cmd char* sql -> void
+expr_for_call char* ident char* params int line char* file -> char*
 /*  ============================== EOF ================================= */
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: frm.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: frm.c,v 1.3 2003-04-23 16:37:29 mikeaubury Exp $
 #*/
 
 /**
@@ -59,7 +59,7 @@ int find_fields_no_metric (struct_form * f, int metric_no);
 	char * make_field_from_metric (struct_form * f, int metric_no);
 #endif
 
-void clr_form(int to_default);
+//void clr_form(int to_default);
 
 
 /*

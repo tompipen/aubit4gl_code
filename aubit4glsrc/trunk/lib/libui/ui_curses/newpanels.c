@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.25 2003-04-22 08:58:33 mikeaubury Exp $
+# $Id: newpanels.c,v 1.26 2003-04-23 16:37:26 mikeaubury Exp $
 #*/
 
 /**
@@ -110,7 +110,7 @@ struct s_windows windows[MAXWIN];
 /** @todo Take this prototypes of from here */
 
 int 	mja_vwprintw 		(WINDOW * win, char *fmt,va_list *args);
-int 	current_window 		(char *win_name);
+//int 	current_window 		(char *win_name);
 void 	print_panel_stack 	(void);
 void 	init_stddbscr 		(void);
 void 	do_update_panels 	(void);
@@ -124,7 +124,7 @@ int 	chkwin 				(void);
 int 	screen_height 		(void);
 int 	top_win 			(PANEL * p);
 char * 	pointer_code 		(int c);
-void 	clr_window 			(char *win_name);
+//void 	clr_window 			(char *win_name);
 int 	int_current_window 	(char *win_name);
 void 	mja_gotoxy 			(int x, int y);
 int 	get_curr_win 		(void);
@@ -134,11 +134,11 @@ char * 	get_currwin_name 	(void);
 int 	get_curr_border 	(void);
 void 	display_at2 		(char *z, int x, int y, int a);
 int 	decode_line 		(int l);
-void 	display_error 		(int a,int wait);
+//void 	display_error 		(int a,int wait);
 void 	add_compiled_form	(char *s,char *frm);
-int  	open_form 			(char *name);
-void 	close_form 			(char *formname);
-int  	disp_form 			(char *name, int attr);
+//int  	open_form 			(char *name);
+//void 	close_form 			(char *formname);
+//int  	disp_form 			(char *name, int attr);
 int  	set_window 			(int a);
 int 	subwin_printxy 		(WINDOW * win, int x, int y, char *fmt,...);
 int 	subwin_setcolor 	(WINDOW * win, int typ);
@@ -146,7 +146,7 @@ int 	getcomment_line 	(void);
 void 	set_attr_win 		(char s, int wattr);
 char * 	windowname_on_top 	(void);
 int 	invert_color 		(int a);
-void 	sleep_i				(void);
+//void 	sleep_i				(void);
 
 WINDOW *window_on_top 		(void);
 WINDOW *display_form_new_win (char *name, struct s_form_dets *f, int x, int y);
@@ -154,16 +154,17 @@ WINDOW * display_form 		(struct s_form_dets *f);
 WINDOW *create_window 		(char *name, int x, int y, int w, int h, int iswindow, int form_line, int error_line, int prompt_line, int menu_line, int border, int comment_line, int message_line, int attrib);
 WINDOW * display_form_win 	(WINDOW * w, char *name, struct s_form_dets * f);
 
-void * 	cr_window 			(char *s,int iswindow,int form_line,int error_line,int prompt_line,
-	  				int menu_line,int border,int comment_line,int message_line,int attrib);
-int 	cr_window_form 		(char *name,int iswindow,int form_line,int error_line,
-					int prompt_line,int menu_line,int border,int comment_line,int message_line,
-					int attrib);
+//void * 	cr_window 			(char *s,int iswindow,int form_line,int error_line,int prompt_line,
+	  				//int menu_line,int border,int comment_line,int message_line,int attrib);
+//int 	cr_window_form 		(char *name,int iswindow,int form_line,int error_line,
+					//int prompt_line,int menu_line,int border,int comment_line,int message_line,
+					//int attrib);
 
 
-LIBEXPORT void hide_window 	(char *winname);
-LIBEXPORT void show_window 	(char *winname);
-LIBEXPORT int movewin 		(char *winname, int absol);
+void* read_form(char* fname,char* formname);
+//LIBEXPORT void hide_window 	(char *winname);
+//LIBEXPORT void show_window 	(char *winname);
+//LIBEXPORT int movewin 		(char *winname, int absol);
 
 
 /*

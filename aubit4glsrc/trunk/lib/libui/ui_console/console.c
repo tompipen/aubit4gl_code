@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.3 2003-02-06 13:24:28 mikeaubury Exp $
+# $Id: console.c,v 1.4 2003-04-23 16:37:22 mikeaubury Exp $
 #*/
 
 /**
@@ -69,8 +69,8 @@
 void menu_attrib (ACL_Menu * menu, int attr, va_list ap);
 
 void A4GL_ui_init(int argc,char *argv[]);
-void aclfgli_pr_message (int attr,int wait);
-void display_error (int a,int wait);
+//void aclfgli_pr_message (int attr,int wait);
+//void display_error (int a,int wait);
 ACL_Menu * new_menu_create(char *title, int x, int y, int mn_type, int help_no);
 void add_menu_option(ACL_Menu *menu,char *txt,char *keys,char *desc,int help_no,int attr);
 void finish_create_menu(ACL_Menu *menu);
@@ -78,11 +78,11 @@ char * disp_h_menu(ACL_Menu *menu);
 void redisplay_menu(ACL_Menu *menu);
 int menu_loop (ACL_Menu * menu);
 void free_menu (ACL_Menu * menu);
-void sleep_i(void);
+//void sleep_i(void);
 void menu_hide (ACL_Menu * menu,va_list *ap);
 void menu_show (ACL_Menu * menu,va_list *ap);
-void start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
-void prompt_loop(struct s_prompt * prompt);
+//void start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
+//void prompt_loop(struct s_prompt * prompt);
 
 /*
 =====================================================================
@@ -516,11 +516,12 @@ int flg;
  *
  * @todo Describe function
  */
-void
-start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af)
+int start_prompt (void *vprompt , int ap, int c, int h,int af)
 {
 char *promptstr;
 int width;
+struct s_prompt *prompt;
+prompt=vprompt;
 
   promptstr = char_pop ();
   prompt->mode = 0;
@@ -533,6 +534,7 @@ int width;
   A4GLSQL_set_status (0, 0);
   printf("%s",promptstr);
   fflush(stdout);
+return 1;
 }
 
 
@@ -540,14 +542,17 @@ int width;
  *
  * @todo Describe function
  */
-void
-prompt_loop(struct s_prompt * prompt)
+int
+prompt_loop(void *vprompt)
 {
   char buff[256];
+  struct s_prompt * prompt;
+prompt=vprompt;
   fgets(buff,256,stdin);
   prompt->mode =2;
   stripnl(buff);
   push_char(buff);
+return 1;
 }
 
 

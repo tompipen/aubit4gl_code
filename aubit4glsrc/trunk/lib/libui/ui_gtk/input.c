@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.7 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: input.c,v 1.8 2003-04-23 16:37:30 mikeaubury Exp $
 #*/
 
 /**
@@ -82,19 +82,19 @@ static int gui_proc_key_input (int a);
 static int gui_form_field_constr (void);
 static int gui_form_field_chk (void);
 
-
+void
+disp_form_fields_ap (int n, int attr, char *s,va_list * ap);
 
 extern char *replace_sql_var (char *s); 	/* others.c */
 
-int form_loop (struct s_screenio * s);
-int gen_field_chars (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap);
-int set_fields (struct s_screenio * sio);
-void disp_fields (int n, int attr, va_list * ap);
-int push_constr (struct s_screenio *s);
-void fgl_infield (char *s, int a);
+//int form_loop (struct s_screenio * s);
+int gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap);
+//void disp_fields (int n, int attr, va_list * ap);
+//int push_constr (struct s_screenio *s);
+//void fgl_infield (char *s, int a);
 int field_name_match_gtk (GtkWidget * f, char *s);
-void disp_form_fields (int n, int attr, char *s,va_list * ap);
-void set_infield_from_stack (void);
+//void disp_form_fields (int n, int attr, char *s,va_list * ap);
+//void set_infield_from_stack (void);
 
 /*
 =====================================================================
@@ -157,12 +157,14 @@ colname_for_field (GtkWidget * w)
  *   -
  */
 int
-form_loop (struct s_screenio * s)
+form_loop (void *vs) 
 {
   int a;
   int action;
   long lastfieldval;
+struct s_screenio * s;
   debug ("Form_loop");
+	s=vs;
 
   set_abort (0);
   if (s->mode != MODE_CONSTRUCT)
@@ -489,7 +491,7 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
  * @return The number of elements returned.
  */
 int
-gen_field_chars (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap)
+gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap)
 {
   int a;
   //va_list ap;
@@ -507,7 +509,7 @@ gen_field_chars (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap)
  * @return Not used.
  */
 int
-set_fields (struct s_screenio * sio)
+set_fields (void *vsio) 
 {
 /* Disable all fields */
   int a;
@@ -515,10 +517,12 @@ set_fields (struct s_screenio * sio)
   int nofields;
   int nv;
   GtkWidget **field_list;
+  struct s_screenio * sio;
   int wid = 0;			/* input_without_Defaults ?? */
 
   struct_form *formdets;
   struct struct_metrics *m;
+  sio=vsio;
   debug("In set_fields");
   fd1 = gtk_object_get_data (GTK_OBJECT (sio->currform), "currform");
   debug ("fd1=%p\n", fd1);
@@ -621,7 +625,7 @@ gui_set_field_pop_attr (GtkWidget * w, int attr)
  * @return
  */
 void
-disp_fields (int n, int attr, va_list * ap)
+disp_fields_ap (int n, int attr, va_list * ap)
 {
 int a;
 int flg;
@@ -814,13 +818,15 @@ gui_set_init_value (GtkWidget * f, void *ptr, int dtype)
  * @return Allways 1
  */
 int
-push_constr (struct s_screenio *s)
+push_constr (void *vs) 
 {
   struct struct_scr_field *fprop;
   GtkWidget *f;
   int a;
   char *ptr;
+struct s_screenio *s;
   int flg = 0;
+s=vs;
   for (a = 0; a <= s->nfields; a++)
   {
     f = (GtkWidget *)s->field_list[a];
@@ -870,12 +876,13 @@ push_constr (struct s_screenio *s)
  * @param a
  * @return The current feld number.
  */
-void
+int
 fgl_infield (char *s, int a)
 {
   long fld;
 
   fld=get_curr_infield();
+return 1;
 
 }
 
@@ -926,7 +933,7 @@ field_name_match_gtk (GtkWidget * f, char *s)
  *
  */
 void
-disp_form_fields (int n, int attr, char *s,va_list * ap)
+disp_form_fields_ap (int n, int attr, char *s,va_list * ap)
 {
 	void *cwin;
 	void *w;

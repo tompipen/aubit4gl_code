@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.2 2003-03-03 21:11:06 mikeaubury Exp $
+# $Id: colours.c,v 1.3 2003-04-23 16:37:24 mikeaubury Exp $
 #*/
 
 /**
@@ -108,7 +108,7 @@ decode_colour_attr_aubit(int a)
 {
 char colour[20];
 char attr[256];
-int col;
+//int col;
 	debug("Decoding a");
 	get_strings_from_attr(a,colour,attr);
 

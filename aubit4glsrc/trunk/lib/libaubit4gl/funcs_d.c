@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.16 2003-03-10 09:09:39 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.17 2003-04-23 16:37:19 mikeaubury Exp $
 #
 */
 
@@ -322,7 +322,7 @@ digittoc(int *a,char *z,char *fmt,int dtype,int size)
  * @param num The (double-float) number to be formated.
  */
 void
-using(char *str,int s,char *fmt,double num)
+a4gl_using(char *str,int s,char *fmt,double num)
 {
 int dig[MAXDIG];
 int pnt[MAXPNT];
@@ -432,7 +432,7 @@ debug("In using... fmt=%s, num=%lf", fmt, num);
                  (strcasecmp(acl_getenv("FORMAT_OVERFLOW"),"ROUND") == 0) )
             {
             debug("trying fmt=%s",fmt);
-            return (using( str, s, fmt, num) );
+            return (a4gl_using( str, s, fmt, num) );
             }
         }
         // default is to use the strict I4GL behaviour, stars

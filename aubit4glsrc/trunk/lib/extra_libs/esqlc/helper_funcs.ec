@@ -40,7 +40,7 @@ debug("All done..");
 
 
 
-void copy_money(dec_t *infx,fgldecimal *a4gl,int size,char dir) {
+void copy_money(dec_t *infx,fglmoney *a4gl,int size,char dir) {
 char b[65];
 debug("Aubit size : %d %d\n",size & 15, size>>4);
 
@@ -97,7 +97,7 @@ int arr_dtime[]={
   };
 
 
-void copy_datetime(dtime_t *infx, struct a4gl_dtime *a4gl,int size,int mode) {
+void copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int size,int mode) {
 
 	if (mode=='i') {
 		char *ptr;

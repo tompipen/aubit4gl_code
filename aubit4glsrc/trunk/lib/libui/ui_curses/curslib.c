@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.22 2003-04-11 13:45:57 mikeaubury Exp $
+# $Id: curslib.c,v 1.23 2003-04-23 16:37:24 mikeaubury Exp $
 #*/
 
 /**
@@ -145,6 +145,8 @@ int new_do_keys (ACL_Menu * menu, int a);
 int menu_getkey (ACL_Menu * menu);
 void horiz_disp_opt (int row, int x, int y, int type);
 void puttext (int x1, int y1, int x2, int y2, char *buf);
+int
+endis_fields_ap (int en_dis, va_list *ap);
 void gettextinfo (struct text_info r);
 static void a4gl_gettext (int l, int t, int r, int b, char *buf);
 /* void    strip_nl 		(char *str); */
@@ -187,13 +189,13 @@ void set_message (char *str, int x, int y);
 void clr_message (void);
 void chklistbox (char **arr, int elem, int mult, int x, int y, int w, int h);
 int isselected (int a);
-void next_option (ACL_Menu * menu, char *nextopt);
-void menu_hide (ACL_Menu * menu, va_list * ap);
+//void next_option (ACL_Menu * menu, char *nextopt);
+void menu_hide_ap (ACL_Menu * menu, va_list * ap);
 void menu_show (ACL_Menu * menu, ...);
-void aclfgli_pr_message (int attr, int wait);
-void set_option_value (char type, int keyval);
+//void aclfgli_pr_message (int attr, int wait);
+//void set_option_value (char type, int keyval);
 //int show_menu (void);
-int endis_fields (int en_dis, ...);
+//int endis_fields (int en_dis, ...);
 ACL_Menu *new_menu_tui_oldway (char *title, int x, int y, int mn_type,
 			       int help_no, int nopts, va_list * ap);
 ACL_Menu *new_menu_create (char *title, int x, int y, int mn_type,
@@ -202,6 +204,10 @@ void add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
 		      int helpno, int attr);
 void finish_create_menu (ACL_Menu * menu);
 void refresh_after_system (void);
+WINDOW *window_on_top               (void);
+void aclfgli_show_help (int n);
+void
+menu_show_ap (ACL_Menu * menu, va_list *ap);
 
 /*
 =====================================================================
@@ -1134,6 +1140,7 @@ setreledit (int x, int y)
 }
 
 
+#ifdef REMOVE_SOMETIME
 /**
  *
  * @todo Describe function
@@ -1205,6 +1212,7 @@ show_help_old (int no)
   mja_setcolor (NORMAL_TEXT);
   return 1;
 }
+#endif
 
 
 /**
@@ -1490,8 +1498,7 @@ set_option (ACL_Menu * menu, int opt)
   for (a = 0; a < opt; a++)
     {
       (ACL_Menu_Opts *) menu->curr_option =
-	(ACL_Menu_Opts *) ((ACL_Menu_Opts *) (menu->curr_option))->
-	next_option;
+	(ACL_Menu_Opts *) ((ACL_Menu_Opts *) (menu->curr_option))-> next_option;
     }
 }
 
@@ -2703,13 +2710,15 @@ isselected (int a)
  * @todo Describe function
  */
 void
-next_option (ACL_Menu * menu, char *nextopt)
+next_option (void *vmenu, char *nextopt)
 {
   int a;
   int f = 0;
   ACL_Menu_Opts *option;
   ACL_Menu_Opts *old_option;
   char s[256];
+ACL_Menu * menu;
+	menu=vmenu;
   h_disp_opt (menu, menu->curr_option, menu->menu_offset, menu->mn_offset,
 	      NORM);
   trim (nextopt);
@@ -2747,7 +2756,7 @@ next_option (ACL_Menu * menu, char *nextopt)
  * @todo Describe function
  */
 void
-menu_hide (ACL_Menu * menu, va_list * ap)
+menu_hide_ap (ACL_Menu * menu, va_list * ap)
 {
   debug ("Menu hide\n");
   menu_attrib (menu, 0, *ap);
@@ -2758,10 +2767,8 @@ menu_hide (ACL_Menu * menu, va_list * ap)
  * @todo Describe function
  */
 void
-menu_show (ACL_Menu * menu, ...)
+menu_show_ap (ACL_Menu * menu, va_list *ap)
 {
-  va_list ap;
-  va_start (ap, menu);
   debug ("Show");
   menu_attrib (menu, 1, ap);
   find_shown (menu, 0, 1);
@@ -3384,11 +3391,8 @@ show_menu (void)
  * @todo Describe function
  */
 int
-endis_fields (int en_dis, ...)
+endis_fields_ap (int en_dis, va_list *ap)
 {
-  va_list ap;
-  va_start (ap, en_dis);
-
   exitwith ("Not available in TUI mode (enable/disable)");
   return 0;
 }

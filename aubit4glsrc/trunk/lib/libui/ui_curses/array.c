@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.3 2002-10-13 01:40:35 afalout Exp $
+# $Id: array.c,v 1.4 2003-04-23 16:37:24 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@ int cmode=0;
 =====================================================================
 */
 
-int disp_arr(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_list *ap);
+int disp_arr_ap(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_list *ap);
 
 /*
 =====================================================================
@@ -383,7 +383,7 @@ int disp_loop (struct s_disp_arr *arr)
  * @param attrib The attributes
  */
 int
-disp_arr(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_list *ap)
+disp_arr_ap(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_list *ap)
 {
   int a;
   curr_arr_disp = disp;

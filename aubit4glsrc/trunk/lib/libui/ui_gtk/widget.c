@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.4 2002-10-13 11:44:40 afalout Exp $
+# $Id: widget.c,v 1.5 2003-04-23 16:37:30 mikeaubury Exp $
 #*/
 
 /**
@@ -130,13 +130,13 @@ char *desc_bool[] = {
 this should be in a4gl_aubit_lib.h but it's different all over the
 place - see a4gl_aubit_lib.h
 */
-int gen_field_chars (GtkWidget *** field_list,	GtkWindow * cwin,...);
+int gen_field_chars_ap (GtkWidget *** field_list,	GtkWindow * cwin,...);
 
 GtkWidget * make_widget (char *widget, char *config, int w);
 char * decode_config (struct_form * f, int a);
 char * decode_comments (struct_form * f, int a);
 char * decode_widget (struct_form * f, int a);
-GtkWidget * fgl_fieldnametoid(char *f,char *s,int n);
+//int fgl_fieldnametoid(char *f,char *s,int n);
 
 #ifdef OLD_INCL
 	int KeySnooper (GtkWidget *grab_widget, GdkEventKey *event, gpointer func_data);
@@ -427,7 +427,7 @@ add_widget (int metric_no, struct_form * f,
  * @param n
  * @return w A pointer too the widget with the name passed.
  */
-GtkWidget *
+int
 fgl_fieldnametoid(char *f,char *s,int n)
 {
 GtkWidget *formdets;
@@ -452,7 +452,7 @@ GtkWidget **field_list=0;
 
   exitwith ("serious bug in widget.c");
 
-  nofields = gen_field_chars (&field_list, (GtkWindow *)formdets, s,n,0);
+  nofields = gen_field_chars ((void ***)&field_list, (GtkWindow *)formdets, s,n,0);
 
   debug("done Getting field list - nofields=%d",nofields);
 
@@ -460,7 +460,7 @@ GtkWidget **field_list=0;
   else w=0;
   debug("field_list=%p\n",field_list);
   free(field_list);
-  return w;
+  return (int)w;
 }
 
 /**

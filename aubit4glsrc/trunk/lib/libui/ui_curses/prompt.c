@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.7 2003-04-02 11:36:10 mikeaubury Exp $
+# $Id: prompt.c,v 1.8 2003-04-23 16:37:27 mikeaubury Exp $
 #*/
 
 /**
@@ -70,9 +70,9 @@
 
 int curses_to_aubit(int a);
 
-int start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
+//int start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
 int proc_key_prompt (int a, FORM * mform, struct s_prompt * prompt);
-int prompt_loop (struct s_prompt * prompt);
+//int prompt_loop (struct s_prompt * prompt);
 
 int         chkwin                          (void);
 
@@ -88,10 +88,11 @@ int         chkwin                          (void);
  * @todo Describe function
  */
 int
-start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af)
+start_prompt ( void *vprompt, int ap, int c, int h,int af)
 {
 char *promptstr;
 int promptline;
+struct s_prompt *prompt;
 FIELD *sarr[3];
 WINDOW *p;
 WINDOW *d;
@@ -101,7 +102,7 @@ int width;
 char buff[300];
 int a;
 
-  
+  prompt=vprompt;
   debug("In start prompt %p %d %d %d %d",prompt,ap,c,h,af);
 
   memset (buff, ' ', 255);
@@ -277,11 +278,13 @@ FIELD *f;
  * @todo Describe function
  */
 int
-prompt_loop (struct s_prompt * prompt)
+prompt_loop (void *vprompt)
 {
   int a;
   WINDOW *p;
   FORM *mform;
+struct s_prompt * prompt;
+prompt=vprompt;
 
 chkwin();
   mform = prompt->f;

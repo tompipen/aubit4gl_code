@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.20 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: debug.c,v 1.21 2003-04-23 16:37:19 mikeaubury Exp $
 #
 */
 
@@ -187,9 +187,9 @@ void
 setarg0(const char *argv0)
 {
 const char *cp;
-char a[128];
-char b[128];
-char c[128];
+//char a[128];
+//char b[128];
+//char c[128];
 
         size_t nbytes = sizeof(arg0) - 1;
 

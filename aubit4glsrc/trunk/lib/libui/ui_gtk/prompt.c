@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.9 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: prompt.c,v 1.10 2003-04-23 16:37:30 mikeaubury Exp $
 #*/
 
 /**
@@ -63,8 +63,8 @@ int prompt_style=0;
 */
 
 
-int start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
-int prompt_loop (struct s_prompt * prompt);
+//int start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
+//int prompt_loop (struct s_prompt * prompt);
 
 /*
 =====================================================================
@@ -85,7 +85,7 @@ int prompt_loop (struct s_prompt * prompt);
  * @param af The attributes.
  */
 int
-start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af)
+start_prompt (void *vprompt, int ap, int c, int h,int af)
 {
   char *promptstr;
   int promptline;
@@ -94,7 +94,8 @@ start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af)
   GtkHBox *win;
   GtkWidget *cw = 0;
   GtkWidget *sarr[3];
-
+struct s_prompt *prompt;
+prompt=vprompt;
 
   win = GTK_HBOX(gtk_hbox_new(0,0));
 
@@ -203,10 +204,12 @@ start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af)
  * it is stored.
  */
 int
-prompt_loop (struct s_prompt * prompt)
+prompt_loop (void *vprompt)
 {
 GtkWidget *p;
 int action;
+struct s_prompt * prompt;
+prompt=vprompt;
 
   p = prompt->win;
 

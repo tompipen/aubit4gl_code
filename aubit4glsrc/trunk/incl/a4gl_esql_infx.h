@@ -10,9 +10,17 @@
                     Functions prototypes
 =====================================================================
 */
-#include "decimal.h"
-#include "a4gl_incl_4gldef.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include "decimal.h"
+#include "datetime.h"
+#include "a4gl_incl_4gldef.h"
+#include "a4gl_incl_infx.h"
+
+void copy_money(dec_t *infx,fglmoney *a4gl,int size,char dir);
+void copy_decimal(dec_t *infx,fgldecimal *a4gl,int size,char dir);
+void copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int size,int mode);
 
 
 // Conversion functions between informix types and A4GL datatypes

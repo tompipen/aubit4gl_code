@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.49 2003-04-22 08:58:29 mikeaubury Exp $
+# $Id: stack.c,v 1.50 2003-04-23 16:37:19 mikeaubury Exp $
 #
 */
 
@@ -149,14 +149,14 @@ int num_local_binding[LOCAL_BINDINGS];
 void * 		pop_binding 			(int *n);
 //void 		push_ascii 				(void);
 //void 		push_current 			(int a, int b);
-void 		push_time 				(void);
-void		push_disp_bind 			(struct BINDING *b, int n);
+//void 		push_time 				(void);
+//void		push_disp_bind 			(struct BINDING *b, int n);
 int			chk_params 				(struct BINDING *b, int nb,
 									struct BINDING *o, int no);
 void        upshift_stk 			(void);
 void        downshift_stk 			(void);
 int         isparamdate 			(void);
-void        set_init 				(struct BINDING *b, int n, int no);
+//void        set_init 				(struct BINDING *b, int n);
 int         push_binding 			(void *ptr, int num);
 void        dif_add_bind 			(struct bound_list *list, void *dptr,
 									int dtype, int size);
@@ -177,6 +177,7 @@ int         dif_pop_bind_float 		(struct bound_list *list);
 int         dif_pop_bind_smfloat 	(struct bound_list *list);
 int         dif_pop_bind_dec 		(struct bound_list *list);
 int         dif_pop_bind_money 		(struct bound_list *list);
+void set_escape(char *s);
 
 /*
 =====================================================================
@@ -1331,7 +1332,7 @@ push_current (int a, int b)
 {
   int mja_day;
   struct tm *local_time;
-  time_t now;
+  //time_t now;
   int month, year;		/* ch, yflag; */
   char buff[50];
   char buff2[50];
@@ -1340,7 +1341,7 @@ int ptrs[]={-1, 0, 5, 8, 11, 14, 17, 20,21,22,23,24,25 };
 int ptrs2[]={-1, 3, 6, 9, 12, 15, 18, 21,22,23,24,25,26 };
 int pstart;
 struct timeval tv1;
-struct timeval tv2;
+//struct timeval tv2;
 //long fracs;
 
 
@@ -1793,9 +1794,12 @@ push_bind_reverse (struct BINDING *b, int n, int no, int elemsize)
  * @return
  */
 void
-push_disp_bind (struct BINDING *b, int n)
+push_disp_bind (void *vb,int n)
 {
+struct BINDING *b;
   int a;
+b=(struct BINDING *)vb;
+
 #ifdef DEBUG
   /* {DEBUG} */ debug ("push_disp_bind");
 #endif
@@ -1962,11 +1966,13 @@ isparamdate (void)
  * @param size The size of the variable in bytes.
  */
 void
-setnull (int type, char *buff, int size)
+setnull (int type, void *vbuff, int size)
 {
   int a;
   char c;
+  char *buff;
   debug ("Set null");
+  buff=(char *)vbuff;
 
   if (has_datatype_function_i (type, "INIT"))
     {
@@ -2233,7 +2239,7 @@ drop_param (void)
  * @return
  */
 void
-set_init (struct BINDING *b, int n, int no)
+set_init (struct BINDING *b, int n)
 {
   int a;
   for (a = 0; a < n; a++)

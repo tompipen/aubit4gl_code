@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.31 2003-04-09 07:16:52 mikeaubury Exp $
+# $Id: builtin.c,v 1.32 2003-04-23 16:37:18 mikeaubury Exp $
 #
 */
 
@@ -794,9 +794,10 @@ P12.ao(.text+0x3c): undefined reference to `def_quit'
  * See Informix 7.3 manual
  */
 int
-fgl_fieldtouched(char *fieldname)
+fgl_fieldtouched(char *fieldname,int fieldno)
 {
     /* fieldname should be array */
+	exitwith("NIY");
       return 0;
 }
 

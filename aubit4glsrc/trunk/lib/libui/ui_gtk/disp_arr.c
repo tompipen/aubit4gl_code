@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.4 2002-11-19 18:18:56 mikeaubury Exp $
+# $Id: disp_arr.c,v 1.5 2003-04-23 16:37:29 mikeaubury Exp $
 #*/
 
 /**
@@ -68,9 +68,9 @@ void idraw_arr (struct s_inp_arr *disp, int type, int no);
 void iclear_srec_line (struct struct_screen_record *srec, int line);
 
 void set_array_mode (int type);
-int disp_arr (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
-	  va_list * ap);
+//int disp_arr (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 
+int disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 /*
 =====================================================================
                     Functions definitions
@@ -467,7 +467,7 @@ disp_loop (struct s_disp_arr *arr)
  * @param attrib The attributes
  */
 int
-disp_arr (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
+disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
 	  va_list * ap)
 {
   int a;

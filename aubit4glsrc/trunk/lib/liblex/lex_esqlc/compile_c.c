@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.30 2003-04-22 08:58:30 mikeaubury Exp $
+# $Id: compile_c.c,v 1.31 2003-04-23 16:37:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -69,11 +69,13 @@
 
 
 
-
 =====================================================================
 */
 
 
+void add_function_to_header(char *identifier,int parms);
+char *get_namespace(char *s);
+void print_init_var(char *name,char *prefix,int alvl);
 
 /*
 =====================================================================
@@ -645,7 +647,8 @@ void
 print_continue_block (int n, int brace)
 {
   printc ("\n");
-  printc ("CONTINUE_BLOCK_%d: /* add_continue */ ", n);
+  printc ("CONTINUE_BLOCK_%d:    ;   /* add_continue */ ", n);
+  //printc("while (1==0) ; /* a label must be followed by something */");
   if (brace)
     printc ("}\n");
 }
@@ -1031,6 +1034,7 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
   if (when_code == WHEN_CALL)
     {
       printc ("%s %s%s(0);\n", when_str, get_namespace(when_to),when_to);
+      add_function_to_header(when_to,1);
       printcomment ("/* WHENCALL */");
     }
 
@@ -1540,7 +1544,8 @@ print_stop_external (void)
 void
 print_remote_func (char *identifier)
 {
-  printh ("int %s%s(int np);\n", get_namespace(identifier),identifier);
+  //printh ("int %s%s(int np);\n", get_namespace(identifier),identifier);
+  add_function_to_header(identifier,1);
   printc
     ("a4gl_status=0;register_func(\"%s\",%s%s);if (a4gl_status<0) chk_err(%d,_module_name);\n",
      identifier, get_namespace(identifier), yylineno);
@@ -1668,6 +1673,7 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
 {
   real_print_expr (args);
   printc ("/* done print expr */");
+  add_function_to_header(identifier,1);
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   printc ("_retvars=%s%s(%d);\n", get_namespace(identifier),identifier, args_cnt);
@@ -1893,14 +1899,14 @@ int k;
 	if (byname == 1)
 	  {
 	    printc
-	      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
+	      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
 	    print_field_bind_constr ();
 	    printc (" /* */,0));\n");
 	  }
 	else
 	  {
 	    printc
-	      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
 	       attr);}
 
 	printc
@@ -2415,7 +2421,7 @@ void print_init_var(char *name,char *prefix,int alvl) {
 	int lvl;
 	char arr[256];
 	int x;
-	char buff[1024];
+	//char buff[1024];
 	char prefix2[1024];
 	int arrsizes[10];
 	int cnt=0;
@@ -2455,7 +2461,7 @@ void print_init_var(char *name,char *prefix,int alvl) {
 		if (a&&prefix2[strlen(prefix2)-1]!=']') { 
 			char buff_id[256];
 			printing_arr=1;
-			cnt=split_arrsizes(arr,&arrsizes);
+			cnt=split_arrsizes(arr,(int *)&arrsizes);
 			for (acnt=0;acnt<cnt;acnt++) {
 				sprintf(buff_id,"_fglcnt_%d",alvl);
 				printc("{int %s;\n",buff_id); 
@@ -2493,7 +2499,7 @@ void print_init_var(char *name,char *prefix,int alvl) {
 	if (a&&prefix2[strlen(prefix2)-1]!=']') { 
 			char buff_id[256];
 			printing_arr=1;
-			cnt=split_arrsizes(arr,&arrsizes);
+			cnt=split_arrsizes(arr,(int *)&arrsizes);
 			for (acnt=0;acnt<cnt;acnt++) {
 				sprintf(buff_id,"_fglcnt_%d",alvl);
 				printc("{int %s;\n",buff_id); 
@@ -2674,7 +2680,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   printc ("/* input by name */");
   ccc = print_bind ('i');
   printc ("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
-  printc ("if (GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
+  printc ("if ((int)GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
   printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
   printc ("SET(\"s_screenio\",_inp_io,\"help_no\",%s);\n", helpno);
@@ -2684,17 +2690,17 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
   if (byname)
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
+	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
       print_field_bind (ccc);
       printc
-	(",0)); if (GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
+	(",0)); if ((int)GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
     }
   else
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
 	 fldlist);
-      printc ("if (GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
+      printc ("if ((int)GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
     }
   printc
     ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
@@ -2740,12 +2746,12 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
      arrvar, arrvar);
   printc ("SET(\"s_inp_arr\",_inp_io,\"currform\",get_curr_form());\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);
-  printc ("if (GET(\"s_inp_arr\",_inp_io,\"currform\")==0) break;\n");
+  printc ("if ((int)GET(\"s_inp_arr\",_inp_io,\"currform\")==0) break;\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"currentfield\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"currentmetrics\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
   printc
-    ("SET(\"s_inp_arr\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
+    ("SET(\"s_inp_arr\",_inp_io,\"nfields\",gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
      srec); printc ("_fld_dr= -1;continue;\n");
   sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs, srec, attr);
   return buff2;
@@ -2765,7 +2771,7 @@ char *
 get_formloop_str (int type)
 {
   if (type == 0)		/* Input, Input by name */
-    return "form_loop(&_inp_io,_forminit)";
+    return "form_loop(&_inp_io)";
 
     return "";
 }
@@ -2856,6 +2862,7 @@ print_push_null (void)
 void
 print_start_report (char *where, char *out, char *repname)
 {
+  add_function_to_header(repname,2);
   printc ("push_char(\"%s\");\n", where);
   printc ("push_char(%s);\n", out);
   printc ("%s%s(2,REPORT_START);", get_namespace(repname),repname);
@@ -2872,6 +2879,7 @@ print_start_report (char *where, char *out, char *repname)
 void
 print_output_to_report (char *repname, char *nvalues)
 {
+  add_function_to_header(repname,2);
   printc ("%s%s(%s,REPORT_SENDDATA);\n", get_namespace(repname),repname, nvalues);
 }
 
@@ -2885,6 +2893,7 @@ print_output_to_report (char *repname, char *nvalues)
 void
 print_finish_report (char *repname)
 {
+  add_function_to_header(repname,2);
   printc ("%s%s(0,REPORT_FINISH);\n", get_namespace(repname),repname);
 }
 
@@ -3058,6 +3067,7 @@ print_order_by_type (int type)
 void
 print_report_1 (char *name)
 {
+  add_function_to_header(name,2);
   printc ("int %s%s (int nargs,int acl_ctrl) {\n", get_namespace(name),name, name);
 }
 
@@ -3331,7 +3341,7 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
 {
   printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
   printc ("start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
-  printc ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=prompt_loop(&_p);\n");
+  printc ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=prompt_loop(&_p);\n");
 }
 
 /**
@@ -4271,5 +4281,21 @@ void print_import_legacy(char *s) {
 	printc("\n");
 }
 
+
+void add_function_to_header(char *identifier,int params) {
+  if (!has_pointer(identifier,'X')) {
+        add_pointer(identifier,'X',(void *)1);
+        if (params==1) printh("int %s%s (int n);\n",get_namespace(identifier),identifier);
+        if (params==2) printh("int %s%s (int n,int a);\n",get_namespace(identifier),identifier);
+  }
+}
+
+
+char *expr_for_call(char *ident,char *params,int line,char *file) {
+static char buff[2048];
+sprintf(buff,"{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");}\n}\n}\n", get_namespace(ident),ident,params, line,file);
+add_function_to_header(ident,1);
+return buff;
+}
 
 /* =========================== EOF ================================ */

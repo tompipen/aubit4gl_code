@@ -85,12 +85,12 @@
     void 		mja_setcolor 		(int typ);
     int 		screen_width 		(void);
     int 		get_curr_width 		(void);
-    void 		remove_window 		(char *win_name);
+    //void 		remove_window 		(char *win_name);
     int 		find_ptr_debug 		(void *ptr);
     int 		getprompt_line 		(void);
 	void 		tui_print 			(char *fmt,...);
 	
-	int aclfgl_aclfgl_dump_screen(int n);
+	//int aclfgl_aclfgl_dump_screen(int n);
 
     /* ======================= in array.c  ======================= */
     void set_array_mode(int type);

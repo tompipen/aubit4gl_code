@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.12 2003-04-07 18:20:46 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.13 2003-04-23 16:37:30 mikeaubury Exp $
 #*/
 
 /**
@@ -78,6 +78,10 @@ extern int ui_mode;     /** User interface used (GUI or TUI) */
 GtkWindow *console = 0;
 GtkWidget *console_list;
 char currwinname[256];
+static void show_form (GtkWindow * mainfrm, GtkFixed * form);
+struct s_form_dets * read_form (char *fname, char *formname);
+void dump_object(GtkObject *o);
+char *get_currwin_name(void);
 /*
 =====================================================================
                     Functions prototypes
@@ -85,21 +89,23 @@ char currwinname[256];
 */
 
 
+void * read_form_gtk (char *fname,char *formname);
 void show_console (void);
 void hide_console (void);
 void add_to_console (char *s);
 void create_console (void);
 void decode_gui_winname(char *name);
 
-GtkWindow *
-cr_window (char *s, int iswindow, int form_line, int error_line,	/*  Ignored */
+#ifdef MOVED_TO_4GLDEF
+GtkWindow * cr_window (char *s, int iswindow, int form_line, int error_line,	/*  Ignored */
 	       int prompt_line,	/* Ignored */
 	       int menu_line,	/* Ignored */
 	       int border,	/* Ignored */
 	       int comment_line,	/* Ignored */
 	       int message_line, int attrib) ;
+
+
 //GtkFixed * read_form_gtk (char *fname);
-void show_form (GtkWindow * mainfrm, GtkFixed * form);
 void cr_window_form (char *s,
 		    int iswindow,
 		    int form_line,
@@ -108,15 +114,16 @@ void cr_window_form (char *s,
 		    int menu_line,
 		    int border,
 		    int comment_line, int message_line, int attrib);
+#endif
 
-void open_form (char *form_id);
-int disp_form (char *form_id, int a);
-void current_window (char *s);
-void sleep_i (void);
+//void open_form (char *form_id);
+//int disp_form (char *form_id, int a);
+//void current_window (char *s);
+//void sleep_i (void);
 void clear_console (char *s);
-int close_form (char *name);
+//int close_form (char *name);
 /* int open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())); */
-int open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c(int a, int b)));
+//int open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c(int a, int b)));
 struct struct_screen_record * get_srec_gtk (char *name);
 
 /*
@@ -431,7 +438,7 @@ A4GLUI_ui_init (int argc, char *argv[])
  * @param attrib The attributes used Ignored.
  * @return The widget window created.
  */
-GtkWindow *
+void *
 cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
 	       int prompt_line,	/* Ignored */
 	       int menu_line,	/* Ignored */
@@ -476,7 +483,7 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
 			   menu_line,
 			   border, comment_line, message_line, attrib);
   gui_run_til_no_more ();
-  return win;
+  return (void *)win;
 
 }
 
@@ -513,6 +520,7 @@ struct s_form_dets *f;
   f=read_form(fname,formname);
 
   the_form = f->fileform;
+
   //malloc (sizeof (struct_form));
 
   //memset (the_form, 0, sizeof (struct_form));
@@ -529,7 +537,7 @@ struct s_form_dets *f;
 	a=isolated_xdr_struct_form(&xdrp,the_form); //in lib/libform/form_xdr/formwrite2.c
     */
 
-
+a=1;
   if (!a)
     {
       debug ("Bad form file format, form returned=%d\n", a);
@@ -632,8 +640,7 @@ set_current_window (GtkWindow * w)
  * @param mainform The window where the form should be rendered.
  * @param form The form to paint.
  */
-void
-show_form (GtkWindow * mainfrm, GtkFixed * form)
+static void show_form (GtkWindow * mainfrm, GtkFixed * form)
 {
 GtkObject *a;
 int off;
@@ -695,7 +702,7 @@ int off;
  *   showed.
  * @param attrib The attributes used.
  */
-void
+int
 cr_window_form (char *s,
 		    int iswindow,
 		    int form_line,
@@ -707,7 +714,7 @@ cr_window_form (char *s,
 {
   char *fname;
   int x, y;
-  char buff[256];
+  //char buff[256];
   GtkFixed *form;
   GtkWindow *win;
 
@@ -747,6 +754,7 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   show_form (win, form);
   debug_last_field_created ("after show_form");
   debug ("SHown form");
+	return 1;
 }
 
 /**
@@ -756,12 +764,12 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
  *
  * @param form_id The form file name.
  */
-void
+int
 open_form (char *form_id)
 {
   char *filename;
   GtkFixed *form;
-  char buff[256];
+  //char buff[256];
   filename = char_pop ();
   trim(filename);
   //sprintf (buff, "%s%s", filename,acl_getenv ("A4GL_FRM_BASE_EXT"));
@@ -773,6 +781,7 @@ open_form (char *form_id)
   gui_run_til_no_more ();
   debug_last_field_created ("form is open");
   debug ("Form has been opened form=%p\n", form);
+  return 1;
 }
 
 /**
@@ -834,7 +843,7 @@ zrefresh (void)
  *
  * @param s The window name.
  */
-void
+int
 current_window (char *s)
 {
 GtkWindow *w;
@@ -852,7 +861,7 @@ static GtkWidget *b=0;
   if (!has_pointer (s, WINCODE))
     {
       exitwith ("Window is not open");
-      return;
+      return 0 ;
     }
 
 	debug("Set_current %p",w);
@@ -885,6 +894,7 @@ strcpy(currwinname,"SCREEN");
       gtk_widget_show_all (b);
     }
   gui_run_til_no_more ();
+return 1;
 }
 
 
@@ -893,11 +903,11 @@ strcpy(currwinname,"SCREEN");
  *
  * @return The current window
  */
-GtkWindow *
+void *
 get_curr_win_gtk (void)
 {
   debug("Current window : %p",currwindow);
-  return GTK_WINDOW(currwindow);
+  return (void *)GTK_WINDOW(currwindow);
 }
 
 
@@ -1104,11 +1114,10 @@ create_console (void)
  *
  * @param The form name.
  */
-int
+void
 close_form (char *name)
 {
   debug ("close_form_gtk: Not implemented");
-  return 0;
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.44 2003-04-22 08:58:07 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.45 2003-04-23 16:37:13 mikeaubury Exp $
 #
 */
 
@@ -548,11 +548,11 @@ extern "C" {
 
 	/* ========================= from a4gl_ui.h ====================== */
 
-	typedef struct	{
+	typedef struct	s_int_list {
 	  int 		code;
-	  struct 	int_list *next_option;
-	}
-	int_list;
+	  struct 	s_int_list *next_option;
+	} int_list;
+
 
 	typedef struct ACL_Menu_Opts {
 	    char 	opt_title[80];
@@ -592,16 +592,16 @@ extern "C" {
 	}
 	ACL_Menu;
 
-	typedef struct  {
+	typedef struct  s_field_geometry {
 		int 	x,y;
 		int 	length;
-		struct 	field_geometry *field_up;
-		struct 	field_geometry *field_down;
-		struct 	field_geometry *field_left;
-		struct 	field_geometry *field_right;
-		struct 	field_geometry *field_next;
-		struct 	field_geometry *field_previous;
-		struct 	gen_field *master;
+		struct 	s_field_geometry *field_up;
+		struct 	s_field_geometry *field_down;
+		struct 	s_field_geometry *field_left;
+		struct 	s_field_geometry *field_right;
+		struct 	s_field_geometry *field_next;
+		struct 	s_field_geometry *field_previous;
+		struct 	s_gen_field *master;
 	}
 	field_geometry;
 
@@ -960,7 +960,7 @@ extern "C" {
 
     /* ===================== from builtin.c =================== */
 
-	int     fgl_fieldtouched	(char *fieldname);
+	int     fgl_fieldtouched	(char *fieldname,int fno);
 	void    close_database		(void);
 	char * 	let_substr 			(char *ca, int dtype, int a, int b,...);
 	char *	substr				(char *s,int dtype,int a,int b,...);
@@ -1040,7 +1040,7 @@ extern "C" {
 	void 	pad_string			(char *ptr,int size);
 	void * 	acl_malloc_full		(int size,char *why,char *f,long line);
 	void 	acl_free_full		(void *ptr,char *f,long line);
-	void	using				(char *str,int s,char *fmt,double num);
+	void	a4gl_using		(char *str,int s,char *fmt,double num);
 	int     digittoc			(int *a,char *z,char *fmt,int dtype,int size);
 
 
@@ -1097,7 +1097,7 @@ extern "C" {
 	void 	pushop 				(int a);
 	char *	params_on_stack 	(char *_paramnames[],int n);
 	int 	isnull 				(int type, char *buff);
-	void 	setnull 			(int type, char *buff, int size);
+	void 	setnull 			(int type, void *buff, int size);
 	char *	lrtrim				(char *z) ;
 	void 	get_top_of_stack 	(int a, int *d, int *s, void **ptr);
 	void 	drop_param 			(void);
@@ -1373,7 +1373,7 @@ extern "C" {
 
 	void * 	get_curr_form 	(void); /* in API_ui.c libtui/newpanels.c libgui/input.c */
 	int 	load_data		(char *fname,char *delims,char *tabname,...);
-	int 	inp_arr 		(struct s_inp_arr *disp, void *ptr, char *srecname, int attrib,int init);
+	int 	inp_arr 		(void *disp, int ptr, char *srecname, int attrib,int init);
 	int 	set_scrline_ia 	(int np);
 	int 	set_arrline_ia 	(int np);
 	struct 	struct_screen_record *get_srec (char *name);

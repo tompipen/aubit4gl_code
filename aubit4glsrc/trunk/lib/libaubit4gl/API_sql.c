@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.32 2003-03-29 16:33:24 mikeaubury Exp $
+# $Id: API_sql.c,v 1.33 2003-04-23 16:37:17 mikeaubury Exp $
 #
 */
 
@@ -145,6 +145,7 @@ void		apisql_must_convert	( void );
 extern int 	nullfunc		(void);
 int A4GLSQL_loadConnector(char *name);
 
+void global_A4GLSQL_set_sqlcode (int n);
 /*
 =====================================================================
                     Functions definitions

@@ -22,13 +22,13 @@ constr_rest:
 BY_NAME variable ON constr_col_list opt_defs op_help opt_attributes
 {
 	print_construct_3(1,$<str>2,$<str>7);
-	strcpy($<str>$,"form_loop(&_inp_io)"); /* FIXME */
+	strcpy($<str>$,"form_loop(&_inp_io[0])"); /* FIXME */
 	reset_constr();
 }
 | variable ON constr_col_list opt_defs FROM fld_list op_help opt_attributes
 {
 	print_construct_3(0,$<str>1,$<str>8);
-	strcpy($<str>$,"form_loop(&_inp_io)"); /* FIXME */
+	strcpy($<str>$,"form_loop(&_inp_io[0])"); /* FIXME */
 	reset_constr();
 }
 ;

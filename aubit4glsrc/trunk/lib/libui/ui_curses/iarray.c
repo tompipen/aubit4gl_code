@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.12 2003-04-22 08:58:33 mikeaubury Exp $
+# $Id: iarray.c,v 1.13 2003-04-23 16:37:25 mikeaubury Exp $
 #*/
 
 /**
@@ -75,7 +75,7 @@ struct s_movement {
 
 static void init_arr_line(struct s_inp_arr *sio, int n) ;
 void mja_pos_form_cursor(FORM *form);
-int set_fields_inp_arr (struct s_inp_arr *sio);
+//int set_fields_inp_arr (struct s_inp_arr *sio);
 int turn_field_off (FIELD * f);
 int turn_field_on (FIELD * f);
 int turn_field_on2 (FIELD * f, int a);
@@ -300,6 +300,7 @@ proc_zero(char *s)
 }
 */
 
+#ifdef NOT_USED
 /**
  * It have a direct return
  * @todo Confirm if its like this and if remove the rest of the code
@@ -340,7 +341,9 @@ struct struct_scr_field *attr;
 */
     }
 }
+#endif
 
+#ifdef NOT_USED
 /**
  *
  *
@@ -356,6 +359,7 @@ debug_print_field_list (FIELD ** fld_list)
       debug_print_field (fld_list[a]);
     }
 }
+#endif
 
 /**
  *
@@ -624,13 +628,16 @@ gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d)
  * @return
  */
 int
-inp_arr (struct s_inp_arr *inpa, void *ptr, char *srecname, int attrib,int init)
+inp_arr (void *vinpa, int defs, char *srecname, int attrib,int init)
 {
   FIELD ***fld_list;
-  int a;
+  //int a;
+
+struct s_inp_arr *inpa;
+inpa=(struct s_inp_arr *)vinpa;
 
   curr_arr_inp = inpa;
-  debug ("In inp_arr : %s %p %p %d", srecname, ptr, inpa, attrib);
+  debug ("In inp_arr : %s %p %p %d", srecname, defs, inpa, attrib);
   if (inpa->srec == 0)
     {
       debug ("inpaarr1");
@@ -807,7 +814,7 @@ debug_print_all_fields(FORM *f)
 /* This function disables all fields except those used in the 
 * input array itself
 */
-int set_fields_inp_arr (struct s_inp_arr *sio)
+int set_fields_inp_arr (void *vsio) 
 {
   int wid;
   int a,b;
@@ -819,6 +826,8 @@ int set_fields_inp_arr (struct s_inp_arr *sio)
   FIELD **field_list;
   FIELD *firstfield = 0;
   int nofields;
+struct s_inp_arr *sio;
+	sio=vsio;
   
   
   wid = 1;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.5 2003-03-28 08:07:23 mikeaubury Exp $
+# $Id: window.c,v 1.6 2003-04-23 16:37:30 mikeaubury Exp $
 #*/
 
 /**
@@ -65,13 +65,14 @@ static int win_stack_cnt=0;
 */
 
 void dump_gtkwinstack(void);
-void hide_window (char *s);
-void show_window (char *s);
-void movewin (char *s, int to_by);
-void remove_window (char *s);
+//void hide_window (char *s);
+//void show_window (char *s);
+//void movewin (char *s, int to_by);
+//void remove_window (char *s);
 int get_curr_border_gtk(void);
 int get_curr_height_gtk(void);
-void clr_window(char *name);
+//void clr_window(char *name);
+void dump_object(GtkObject *o);
 
 /*
 =====================================================================
@@ -137,7 +138,7 @@ show_window (char *s)
  *   - 0 : The move is abosulte in the screen.
  *   - 1 : The move is relative to the current position.
  */
-void
+int
 movewin (char *s, int to_by)
 {
   int x;
@@ -159,6 +160,7 @@ movewin (char *s, int to_by)
   gtk_fixed_move ((GtkFixed *)win_screen, cwin, (x - 1) * XWIDTH + xo,
 		  (y - 1) * YHEIGHT + yo);
   gui_run_til_no_more ();
+return 1;
 }
 
 /**
@@ -233,10 +235,10 @@ remove_window (char *s)
     } 
 
   cwin_2 = (GtkWidget *)find_pointer (s, WINCODE);
-  dump_object(cwin_2);
+  dump_object((GtkObject *)cwin_2);
 
   cwin = gtk_object_get_data (GTK_OBJECT(cwin_2), "TOP");
-  dump_object(cwin);
+  dump_object((GtkObject *)cwin);
 
   debug("cwin_2=%p cwin=%p win_screen=%p",cwin_2,cwin,win_screen);
 
@@ -412,7 +414,7 @@ int a;
 	}
 }
 
-aclfgl_fgl_drawbox(int n) {
+int aclfgl_fgl_drawbox(int n) {
 while (n) {pop_int();n--;}
 return 0;
 }
