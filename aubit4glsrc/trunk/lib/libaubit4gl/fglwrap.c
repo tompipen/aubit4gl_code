@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.75 2004-11-25 15:36:46 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.76 2004-12-12 08:52:26 mikeaubury Exp $
 #
 */
 
@@ -527,7 +527,7 @@ A4GL_chk_err (int lineno, char *fname)
 void
 A4GL_set_errm (char *s)
 {
-  strcpy (a4gl_sqlca.sqlerrm, s);
+  A4GL_strmaxcpy (a4gl_sqlca.sqlerrm, s,sizeof(a4gl_sqlca.sqlerrm)-1);
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.97 2004-12-09 07:26:49 mikeaubury Exp $
+# $Id: sql.c,v 1.98 2004-12-12 08:52:27 mikeaubury Exp $
 #
 */
 
@@ -55,6 +55,7 @@
 #define DATE_AS_CHAR
 #endif
 
+#define DTIME_AS_CHAR
 
 /*
 =====================================================================
@@ -2418,6 +2419,7 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
 	A4GL_get_date(*(int *)ptr,&d,&m,&y);
 	#ifdef DATE_AS_CHAR
 	sprintf(p->uDate.date_c,"%04d-%02d-%02d",y,m,d);
+	size=strlen(p->uDate.date_c);
 	#else
 	p->uDate.date_ds.year=y;
 	p->uDate.date_ds.month=m;
@@ -2433,7 +2435,8 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
 	int arr[10];
 	void *ptr;
 	//int d,m,y;
-	A4GL_debug("Binding Date original pointer=%p",bind->ptr);
+	A4GL_debug("Binding Datetime original pointer=%p",bind->ptr);
+	
 	ptr=bind->ptr;
 	p= (ACLDTIME *)A4GL_bind_datetime (ptr);
 #ifdef DTIME_AS_CHAR 
@@ -2442,6 +2445,7 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
 	A4GL_dttoc(ptr,buff,bind->size);
 	A4GL_trim(buff);
 	strcpy(p->dtime,buff);
+	size=strlen(buff);
 	}
 #else
 	A4GL_decode_datetime((struct A4GLSQL_dtime*)ptr,&arr[0]);
@@ -2480,6 +2484,8 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
 
 
 
+
+  A4GL_debug("DTYPE %d DTYPE %d SIZE %d",conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size );
 
   rc = A4GL_newSQLSetParam ((SQLHSTMT )hstmt, pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k, bind->ptr, NULL);
 

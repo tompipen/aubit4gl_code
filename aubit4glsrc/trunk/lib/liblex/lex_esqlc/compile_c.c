@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.206 2004-12-02 11:42:33 mikeaubury Exp $
+# $Id: compile_c.c,v 1.207 2004-12-12 08:52:26 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.206 2004-12-02 11:42:33 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.207 2004-12-12 08:52:26 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -4566,6 +4566,7 @@ print_end_menu_2 (int n)
 void
 print_menu_block (int menu, int n)
 {
+	A4GL_assertion(n==-1,"N=-1?");
   printc (" if (cmd_no_%d==%d) { \n", menu, n);
 }
 

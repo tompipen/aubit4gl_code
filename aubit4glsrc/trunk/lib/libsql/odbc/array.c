@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.9 2003-06-06 09:52:37 mikeaubury Exp $
+# $Id: array.c,v 1.10 2004-12-12 08:52:27 mikeaubury Exp $
 #
 */
 
@@ -413,8 +413,7 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 	  break;
 	}
 
-      if (arr1 != 0)
-	strncpy (&arr1[cnt * (szarr1 + 1)], cn, szarr1);
+      if (arr1 != 0) strncpy (&arr1[cnt * (szarr1 + 1)], cn, szarr1);
       if (arr2 != 0)
 	{
 	  switch (mode)
@@ -439,6 +438,107 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
   SQLFreeStmt (hstmt, SQL_DROP);
   return cnt;
 }
+
+
+
+int
+A4GL_fill_array_columns_mk2 (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
+
+		    int mode, char *info)
+{
+  SQLHSTMT hstmt;
+  char tq[256];
+  char to[256];
+  char tn[256];
+  char cn[256];
+  int dt;
+  char dtname[256];
+  long prec;
+  long len;
+  long scale;
+  long radix;
+  long nullable;
+  char remarks[256];
+  int colsize;
+  char szcolsize[20];
+  int a, b;
+  int rc;
+  int cnt;
+  SQLHSTMT ret;
+  char buff[256];
+int allow_no_rows=1;
+int ncols;
+  char colname[64];
+  SWORD colnamelen;
+  SWORD coltype[5000];
+  int colcnt;
+  UDWORD collen;
+
+
+
+#ifdef DEBUG
+  A4GL_debug ("Fill array columns for table %s", info);
+#endif
+
+  if (hdbc == 0)
+    {
+      A4GL_exitwith ("Not connected to database");
+      return 0;
+    }
+
+  ret = (SQLHSTMT)A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
+
+
+if (allow_no_rows) {
+	sprintf(buff,"select * from %s where 1=0",info);
+} else {
+	sprintf(buff,"select * from %s ",info);
+}
+
+
+  SQLPrepare ((SQLHSTMT)hstmt, buff, SQL_NTS);
+  rc = SQLExecute(hstmt);
+  chk_rc (rc, hstmt, "unload_data");
+  if (rc<0) return;
+  rc = SQLNumResultCols (hstmt, &ncols);
+  chk_rc (rc, hstmt, "unload_data");
+  if (rc<0) return;
+
+
+  for (colcnt = 1; colcnt <= ncols; colcnt++)
+    {
+
+      rc = SQLDescribeCol (hstmt, colcnt, colname, (SWORD) sizeof (colname), &colnamelen, &coltype, &collen, &scale, &nullable);
+      chk_rc (rc, hstmt, "SQLDescribeCol");
+      if (arr1 != 0) strncpy (&arr1[(colcnt-1) * (szarr1 + 1)], colname, szarr1);
+      if (arr2 != 0)
+        {
+          switch (mode)
+            {
+            case 0:
+              strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], collen, szarr2);
+              break;
+
+            case 1:
+	
+              strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], "CHAR(-1)", szarr2);
+              break;
+
+            default:
+              strncpy (&arr2[(colcnt-1) * (szarr2 + 1)], info, szarr2);
+              break;
+            }
+        }
+
+
+    }
+
+
+
+  SQLFreeStmt (hstmt, SQL_DROP);
+  return colcnt-1;
+}
+
 
 /**
  * Fill array - depending on service specified, invokes appropriate function
@@ -494,10 +594,17 @@ array.c:451: warning: passing arg 4 of `fill_array_columns' from incompatible po
 
   if (strcmp (service, "COLUMNS") == 0)
     {
+	int rval;
 #ifdef DEBUG
       A4GL_debug ("Get columns");
 #endif
-      return A4GL_fill_array_columns (mx, arr1, szarr1, arr2, szarr2, mode, info);
+	rval=A4GL_fill_array_columns (mx, arr1, szarr1, arr2, szarr2, mode, info);
+	if (rval<=0) {
+		// Try again a different way...
+		rval=A4GL_fill_array_columns_mk2 (mx, arr1, szarr1, arr2, szarr2, mode, info);
+	}
+	A4GL_debug("Got %d\n",rval);
+      return rval;
     }
 #ifdef DEBUG
   A4GL_debug ("****** ERROR unknown service :%s", service);

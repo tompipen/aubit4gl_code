@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.42 2004-12-09 07:26:47 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.43 2004-12-12 08:52:26 mikeaubury Exp $
 #
 */
 
@@ -799,6 +799,11 @@ return 0;
 }
 
 
+
+A4GL_strmaxcpy(char *dest,char *src,int max) {
+	strncpy(dest,src,max);
+	dest[max]=0;
+}
 
 
 #ifdef strcpy

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.115 2004-12-09 07:26:48 mikeaubury Exp $
+# $Id: esql.ec,v 1.116 2004-12-12 08:52:26 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.115 2004-12-09 07:26:48 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.116 2004-12-12 08:52:26 mikeaubury Exp $";
 #endif
 
 
@@ -2068,8 +2068,9 @@ int
 A4GLSQL_execute_implicit_sql (void *vsid)
 {
 struct s_sid *sid;
+char buff[255];
   EXEC SQL begin declare section;
-  //char *statementName;
+  char *statementName;
   //char *descriptorName;
   //int inputBindCount;
   EXEC SQL end declare section;
@@ -2149,6 +2150,16 @@ A4GL_debug ("all ok : COPYA: %c%c%c%c%c%c%c%c\n", a4gl_sqlca.sqlawarn[0], a4gl_s
       error_just_in_case ();
       return 1;
     }
+
+  statementName = sid->statementName;
+  sprintf(buff,"%p",sid);
+  if (!A4GL_has_pointer (buff, PRECODE_R)) { // Its one we made up...
+	//printf("FREE %s\n",statementName);
+  	EXEC SQL FREE :statementName;
+  }
+  return 0;
+
+
   A4GL_debug ("OK");
   return 0;
 }
