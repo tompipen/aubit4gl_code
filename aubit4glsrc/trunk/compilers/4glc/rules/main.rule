@@ -46,68 +46,86 @@ ldeffunction :  FUNCTION {strcpy($<str>$,"");} | LOCAL FUNCTION
 strcpy($<str>$,"static ");
 } ;
 
+/*
+ * Function definition 
+ */
 func_def	: ldeffunction
 {
-clr_variable(); lastlineno=yylineno;
-clr_function_constants (); 
+  clr_variable(); lastlineno=yylineno;
+  clr_function_constants (); 
 }
 identifier  OPEN_BRACKET  
 { 
-sprintf(curr_func,"%s",$<str>3);
-addmap("Declare Function",curr_func,"MODULE",yylineno,infilename);
-print_func_start($<str>1,$<str>3,0);
-cnt=0;
- }
+  sprintf(curr_func,"%s",$<str>3);
+  addmap("Declare Function",curr_func,"MODULE",yylineno,infilename);
+  print_func_start($<str>1,$<str>3,0);
+  printDeclareFunctionStack($<str>3);
+  cnt=0;
+}
 op_param_var_list CLOSE_BRACKET 
 {
-printcomment("/* new function %s parameters*/\n",$<str>6); 
-push_blockcommand("FUNC");printcomment("/* define section */\n");}
+  printcomment("/* new function %s parameters*/\n",$<str>6); 
+  push_blockcommand("FUNC");
+  printcomment("/* define section */\n");
+}
 define_section 
 {
-int c;
-printcomment("/*end of define section */\n");
-c=print_param('f');
-print_func_args(c);
+  int c;
+  printcomment("/*end of define section */\n");
+  c=print_param('f');
+  printPushFunction();
+  print_func_args(c);
+}
+op_code commands end_func_command;
 
-} op_code
-commands  
-end_func_command;
-
-end_func_command : END_FUNCTION {
-		print_func_defret0();
-		pop_blockcommand("FUNC");
-		print_func_end();
-clr_function_constants ();
-printcomment("/*end function*/\n");}
-	;
+/*
+ * The end of the function rule 
+ */
+end_func_command : 
+  END_FUNCTION 
+  {
+    printPopFunction();
+    print_func_defret0();
+    pop_blockcommand("FUNC");
+    print_func_end();
+    clr_function_constants ();
+    printcomment("/*end function*/\n");
+  }
+;
 
 arg_list	: {strcpy($<str>$,"0");cnt=0;} 
 | identifier {strcpy($<str>$,"1");cnt=1;} 
 	|arg_list COMMA identifier {sprintf($<str>$,"%d",++cnt);}
 	;
 
-main_def	:	MAIN { 
-lastlineno=yylineno;
-sprintf(curr_func,"MAIN");
-clr_variable(); 
-push_blockcommand("MAIN"); 
-addmap("MAIN",curr_func,"MODULE",yylineno,infilename);
-print_main_1();
-} 
-define_section
-{
-print_fgllib_start(hdr_dbname);
-
-}
+main_def:	
+  MAIN 
+  { 
+    lastlineno=yylineno;
+    sprintf(curr_func,"MAIN");
+    clr_variable(); 
+    push_blockcommand("MAIN"); 
+    addmap("MAIN",curr_func,"MODULE",yylineno,infilename);
+    print_main_1();
+  } 
+  define_section
+  {
+    printDeclareFunctionStack("MAIN");
+    print_fgllib_start(hdr_dbname);
+    printInitFunctionStack();
+    printPushFunction();
+  }
 commands END_MAIN {
 pop_blockcommand("MAIN");
 print_main_end();
 printcomment("/*end main */\n");} ;
 
-return_cmd : RETURN reset_cnt op_fgl_expr_ret_list {
-
-print_return(atoi($<str>3));
-} ;
+return_cmd : 
+  RETURN reset_cnt op_fgl_expr_ret_list 
+  {
+    printPopFunction();
+    print_return(atoi($<str>3));
+  };
 
 op_fgl_expr_list : {strcpy($<str>$,"0");} | fgl_expr_list {
 printcomment("/* Got expr list */");
@@ -181,27 +199,29 @@ if (glob_only==0) {
 
 mem_func_def : MEMBER_FUNCTION identifier MEMBER_OF identifier OPEN_BRACKET
 {
-addmap("Define Member Function",curr_func,"MODULE",yylineno,infilename);
+  addmap("Define Member Function",curr_func,"MODULE",yylineno,infilename);
 }
 op_param_var_list CLOSE_BRACKET
 {
-char buff[80];
-sprintf(buff,"%s_%s_%d",$<str>4,$<str>2,atoi($<str>7));
-sprintf(curr_func,"%s",buff);
-print_func_start("",buff,1);
+  char buff[80];
+  sprintf(buff,"%s_%s_%d",$<str>4,$<str>2,atoi($<str>7));
+  sprintf(curr_func,"%s",buff);
+  print_func_start("",buff,1);
+  printDeclareFunctionStack(buff);
 
-cnt=0;
-printcomment("/* new function %s parameters*/\n",$<str>7);
-push_blockcommand("FUNC");
-printcomment("/* define section */\n");}
+  cnt=0;
+  printcomment("/* new function %s parameters*/\n",$<str>7);
+  push_blockcommand("FUNC");
+  printcomment("/* define section */\n");
+}
 define_section
 {
-printcomment("/*end of define section */\n");
-print_param('f');
-print_func_args(atoi($<str>7));
-} op_code
-commands
-end_func_command;
+  printcomment("/*end of define section */\n");
+  print_param('f');
+  printPushFunction();
+  print_func_args(atoi($<str>7));
+}
+op_code commands end_func_command;
 
 
 

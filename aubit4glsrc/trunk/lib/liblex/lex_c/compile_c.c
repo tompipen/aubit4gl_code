@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.8 2002-05-08 07:24:01 mikeaubury Exp $
+# $Id: compile_c.c,v 1.9 2002-05-08 21:32:56 saferreira Exp $
 #
 */
 
@@ -3513,10 +3513,11 @@ void printInitFunctionStack(void)
  * If defined (as compiler option) print the C code for the call to the
  * declaration function to the calling stack.
  */
-void printDeclareFunctionStack(char *functionName)
+void printDeclareFunctionStack(char *_functionName)
 {
+  printf("Function %s\n",_functionName);
   if (isGenStackInfo())
-    printc ("\nstatic char _functionName[] = \"%s\";\n",functionName);
+    printc ("\nstatic char _functionName[] = \"%s\";\n",_functionName);
 }
 
 /**
@@ -3568,7 +3569,6 @@ print_func_start (char *isstatic, char *fname, int type)
     printc ("\n%sint aclfgl_%s (int nargs){ \n", isstatic, fname);
   if (type == 1)
     printc ("\n%sint aclfglm_%s (int nargs){ \n", isstatic, fname);
- printDeclareFunctionStack(fname);
 }
 
 /**

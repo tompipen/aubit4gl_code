@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.26 2002-04-24 07:46:00 afalout Exp $
+# $Id: sql.c,v 1.27 2002-05-08 21:32:56 saferreira Exp $
 #
 */
 
@@ -105,7 +105,6 @@ extern SQLRETURN SQL_API SQLBindParameter (
 #include "a4gl_dtypes.h"
 #include <stdlib.h>
 
-//#ifdef WIN32
 #ifdef __CYGWIN__
 	#include <windows.h>
 	#include <sqlext.h>
@@ -121,19 +120,17 @@ extern SQLRETURN SQL_API SQLBindParameter (
 			#include <iodbc.h>
 			#include <isql.h>
 			#include <isqlext.h>
-        #else
+                #else
 			#include <sql.h>
-            #include <sqlext.h>
-            #include <sqltypes.h>
-        #endif
+                        #include <sqlext.h>
+                        #include <sqltypes.h>
+                #endif
 	#endif
 
 	#ifdef IFXODBC
 		#include <incl/cli/infxcli.h>
 		#include <incl/cli/infxsql.h>
-    // Sergio: this would probably not be Informix file you want, allways l;ook under $INFORMIXDIR: (Andrej)
-	/** @todo : In debian sqlucode is in /usr/include */
-		#include <incl/cli/sqlucode.h>
+		//#include <incl/cli/sqlucode.h>
 	#endif
 
 	#ifdef PGODBC

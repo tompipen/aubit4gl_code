@@ -582,6 +582,17 @@ get_push_literal char type,char* value -> char*
 //char *decode_array_string(char *s)
 decode_array_string char* s -> char*
 
+//void printInitFunctionStack(void)
+printInitFunctionStack -> void
+
+//void printDeclareFunctionStack(char *functionName)
+printDeclareFunctionStack char* functionName -> void
+
+//void printPushFunction(void)
+printPushFunction -> void
+
+//void printPopFunction(void)
+printPopFunction -> void
 
 
 //

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.12 2002-05-07 22:52:24 saferreira Exp $
+# $Id: sqlex.c,v 1.13 2002-05-08 21:32:56 saferreira Exp $
 #
 */
 
@@ -60,17 +60,17 @@
 			#include <iodbc.h>
 			#include <isql.h>
 			#include <isqlext.h>
-        #else
+                #else
 			#include <sql.h>
-            #include <sqlext.h>
-            #include <sqltypes.h>
-        #endif
+                        #include <sqlext.h>
+                        #include <sqltypes.h>
+                #endif
 	#endif
 
 	#ifdef IFXODBC
 		#include <incl/cli/infxcli.h>
 		#include <incl/cli/infxsql.h>
-		#include <incl/cli/sqlucode.h>
+		//#include <incl/cli/sqlucode.h>
 	#endif
 
 	#ifdef PGODBC

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-05-06 07:21:16 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-05-08 21:32:56 saferreira Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -59,7 +59,7 @@ COMMONSRC= \
 	pointers.c \
 	read_dty.c report.c rexp2.c ../resource/resource.c \
 	screen.c sleep.c stack.c string.c \
-	translate.c
+	translate.c function_call_stack.c
 
 OBJS_API			=${CMODS_API:.c=.o}
 OBJS				=${COMMONSRC:.c=.o} ${CMODS_PROJECT:.c=.o} ${OBJS_API}

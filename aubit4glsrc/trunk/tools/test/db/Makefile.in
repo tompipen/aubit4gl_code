@@ -26,7 +26,7 @@
 # Makefile for compiling the informix ESQL/C connection test.
 
 #
-# $Id: Makefile.in,v 1.5 2002-04-12 18:57:03 saferreira Exp $
+# $Id: Makefile.in,v 1.6 2002-05-08 21:32:56 saferreira Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -43,7 +43,7 @@ CFLAGS+=-I../../../lib/libincl -L$(AUBITDIR)/lib
 OBJECTS=test_informix_util.ec test_informix.o connection_suite.o \
 		ddl_suite.o dml_suite.o
 
-LIBS=-lcheck -laclshared -lPDF_NOPDF -lRPC_NORPC -lSQL_esql
+LIBS=-lcheck -laubit4gl -lRPC_NORPC -lSQL_esql
 #this is linked to libUI_TUI:
 #-lncurses -lpanel -lform and should be @CURSES_LIB_NAME@
 #this is linked to libUI_GTK:
