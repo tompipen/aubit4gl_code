@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.10 2005-02-03 10:29:14 afalout Exp $
+# $Id: Makefile,v 1.11 2005-02-09 02:16:38 afalout Exp $
 #
 
 ## ==================================================================
@@ -44,8 +44,13 @@ include incl/Makefile-common
 
 ###############################
 #Things we compile by default
-ALL					=settings api.headers corecompile liblogical libfile \
-						libstring glade test
+ALL					=settings api.headers corecompile libfile \
+						libstring test
+
+ifneq "${enable_minimal}" "yes" 
+	ALL 			+=	liblogical glade aace pcode
+endif
+
 						
 ###############################
 #Things we compile with 'extra' target
@@ -179,11 +184,6 @@ corecompile:
 	$(MAKE) -C tools/4glpc	
 	$(MAKE) -C compilers/fcompile
 	$(MAKE) -C compilers/menus
-	$(MAKE) -C compilers/ace
-#FIXME: can't make pcode without Bison
-ifneq "${BISON}" "no"
-	$(MAKE) -C compilers/pcode
-endif
 	$(MAKE) -C lib loadmap
 	$(MAKE) -C tools/convertsql
 	$(MAKE) -C tools/afinderr
@@ -196,6 +196,16 @@ endif
 	$(MAKE) -C help
 	@echo Aubit 4gl compiler core is now compiled
 
+aace:
+	$(MAKE) -C compilers/ace
+	
+pcode:
+#FIXME: can't make pcode without Bison
+ifneq "${BISON}" "no"
+	$(MAKE) -C compilers/pcode
+endif
+	
+	
 #Stuff form Mike's 'remake.mja' 
 #TODO - shoud be part of this makefile
 #cd lib/libui/ui_curses; sh make_static
@@ -1217,12 +1227,11 @@ refresh.all: refresh.noyacc refresh.norpcgen refresh.norpclib refresh.perl
 #  An exit status of 0 means no  differences  were  found,  1
 #       means some differences were found, and 2 means trouble.
 
-
 refresh.noyacc:
 ifneq "${YACC}" "no"
 	@update=0; \
 	ALLF="4glc/rules/generated/y.tab.c 4glc/rules/generated/y.tab.h \
-	4glc/rules/generated/kw.h 4glc/mk_states_1.h 4glc/mk_states.h \
+	4glc/rules/generated/kw.h 4glc/rules/generated/kw.yh 4glc/mk_states_1.h 4glc/mk_states.h \
 	4glc/mk_states.c sql/lex.yy.c sql/y.tab.c sql/y.tab.h fcompile/lex.yy.c \
 	fcompile/y.tab.c menus/lex.yy.c menus/y.tab.c xgen/y.tab.c xgen/lex.yy.c \
 	ace/y.tab.c ace/lex.yy.c"; \
@@ -1411,7 +1420,8 @@ show:
 	@echo "PREFIX=${PREFIX}"
 	@echo "AUBITNAME=${AUBITNAME}"
 	@echo "CYG_AUBITDIR=${CYG_AUBITDIR}"
-
+	@echo "enable_minimal=${enable_minimal}"
+	@echo "CONFIGURE_COMMAND=${CONFIGURE_COMMAND}"
 
 show.platform: OUT="/tmp/showplatform"
 show.platform: platform.common

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.98 2005-02-03 10:31:43 afalout Exp $
+# $Id: Makefile-install.mki,v 1.99 2005-02-09 02:20:14 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -509,21 +509,19 @@ install.winsetup.silent:
 MSYS_SH		=/cygdrive/d/msys/1.0/bin/sh.exe -c 
 MSYS_CONF	=. /etc/profile
 
-
 ##################
 # 1: iODBC ODBC manager
 IODBC_INFO          =http://www.iodbc.org
-IODBC_PATH			=http://www.iodbc.org/dist
-#Archive contains Driver Manager Runtime (iODBC Shared Libraries &
-#Template ".odbc.ini" file) in a RPM (release 3.0.6)
-IODBC_RUNTIME_RPM   =libiodbc-3.0.6-2.i386-glibc21.rpm
-#Archive contains Driver Manager Development (iODBC Static Libraries &
-#Header files) in a RPM Package (release 3.0.6)
-IODBC_SDK_RPM       =libiodbc-devel-3.0.6-2.i386-glibc21.rpm
-#Archive contains graphical administrator and plugins in a RPM
-#package (release 3.0.6)
-IODBC_GUI_RPM       =libiodbc-admin-3.0.6-2.i386-glibc21.rpm
-
+IODBC_PATH          =http://www.iodbc.org/downloads/iODBC
+#Archive contains Driver Manager Runtime (iODBC Shared Libraries & 
+#Template ".odbc.ini" file) in a RPM (release 3.51.2)
+IODBC_RUNTIME_RPM   =libiodbc-3.51.2-1.i386-rh9.rpm
+#Archive contains Driver Manager Development (iODBC Static Libraries & 
+#Header files) in a RPM Package (release 3.51.2)
+IODBC_SDK_RPM       =libiodbc-devel-3.51.2-1.i386-rh9.rpm
+#Archive contains graphical administrator and plugins in a RPM 
+#package (release 3.51.2)
+IODBC_GUI_RPM       =libiodbc-admin-3.51.2-1.i386-rh9.rpm
 
 ##################
 # 2: PDF pdflib
@@ -664,7 +662,9 @@ ifeq "${PGODBC_RPM}" ""
     #default
 	PGODBC_RPM			=postgresql-odbc-7.2.2-1.i386.rpm
 endif
-PGODBC_SRC_PATH     =ftp://ftp.us.postgresql.org/odbc/versions/src
+#PGODBC_SRC_PATH     =ftp://ftp.us.postgresql.org/odbc/versions/src
+PGODBC_SRC_PATH     =http://mirror.poundhost.com/ftp.freebsd.org/distfiles/postgresql
+
 PGODBC_SRC_SRC      =psqlodbc-7.2.5
 PGODBC_SRC_TGZ      =${PGODBC_SRC_SRC}.tar.gz
 
@@ -875,8 +875,8 @@ PDCURSES_SRC			=pdcurs26
 PDCURSES_SRC_ZIP		=${PDCURSES_SRC}.zip
 PDCURSES_SRC_UNIX		=PDCurses-2.6
 PDCURSES_SRC_TAR_GZ		=${PDCURSES_SRC_UNIX}.tar.gz
-ifdef COMSPEC
-	PDCURSES_WIN_INSTALLDIR	=$(shell  cygpath -u ${HOMEDRIVE})/${PDCURSES_SRC}-mingw
+ifneq "${COMSPEC}" ""
+	PDCURSES_WIN_INSTALLDIR	=$(shell cygpath -u ${HOMEDRIVE})/${PDCURSES_SRC}-mingw
 endif
 
 ##################
@@ -1744,7 +1744,9 @@ install.pgifx.ctl:
 
 #Find out location of pkg-config - we need to install there to use it
 PKG_CONFIG_ROOT_CYGPATH:=${shell type pkg-config | sed -e 's/\/bin\// /g' | awk '{print $$3}' | sed -e 's/[()]//g'}
-PKG_CONFIG_ROOT:=${shell cygpath -m "${PKG_CONFIG_ROOT_CYGPATH}"}
+ifdef COMSPEC
+	PKG_CONFIG_ROOT:=${shell cygpath -m "${PKG_CONFIG_ROOT_CYGPATH}"}
+endif
 PKG_CONFIG_ROOT_ESCAPED:=${shell echo "${PKG_CONFIG_ROOT}" | sed -e 's/\//\\\//g'}
 
 install.orbit.bin: ${ORBIT_WIN_BIN_ZIP} ${ORBIT_IDL_WIN_BIN_ZIP}
@@ -1834,7 +1836,9 @@ ifdef COMSPEC
 	@echo " "
 endif
 
-LIBIDL_PREFIX_WINPATH=${shell cygpath -m /cygdrive/d/msys/1.0/local}
+ifdef COMSPEC 
+	LIBIDL_PREFIX_WINPATH=${shell cygpath -m /cygdrive/d/msys/1.0/local}
+endif
 LIBIDL_PC_PATH=F:/GTK/lib/pkgconfig/libIDL-2.0.pc
 #Create pkg-config file for libIDL, which is missing, since ORBit 
 #configure will use pkg-confing to check for libIDL:
@@ -1899,8 +1903,12 @@ install.cccc: ${CCCC_SRC_TAR_GZ}
 	@echo "SXML installed.  Please re-run 'configure' to detect changes."
 	@echo " "
 
+install.ingres: ingres-3.0.1.109-GA-pc-linux-i386.tar.gz
 
-		
+ingres-3.0.1.109-GA-pc-linux-i386.tar.gz:
+#	wget http://opensource.ca.com/projects/ingres/files/ab.int.lnx.ga/ingres-3.0.1.109-GA-pc-linux-i386.tar.gz/ingres-3.0.1.109-GA-pc-linux-i386.tar.gz
+	wget http://opensource.ca.com/projects/ingres/files/ab.int.lnx.ga/ingres-3.0.1.109-GA-pc-linux-i386.tar.gz/view/ingres-3.0.1.109-GA-pc-linux-i386.tar.gz
+
 ###########################################################################
 #			Targets for downloading installation files:
 ###########################################################################
@@ -2035,6 +2043,10 @@ ${ORBIT_IDL_WIN_BIN_ZIP}:
 	${WGET} ${ORBIT_WIN_PATH}/$@
 ${CCCC_SRC_TAR_GZ}:
 	${WGET} ${CCCC_PATH}/$@
+${UNIXODBC_RPM}:
+	${WGET} ${UNIXODBC_PATH}/${UNIXODBC_RPM}
+${UNIXODBC_GUI_RPM}:
+	${WGET} ${UNIXODBC_PATH}/${UNIXODBC_GUI_RPM}
 
 	
 #############################################

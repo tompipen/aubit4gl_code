@@ -1,5 +1,5 @@
 #
-# $Id: makefile,v 1.8 2004-12-15 06:40:33 afalout Exp $
+# $Id: makefile,v 1.9 2005-02-09 02:20:12 afalout Exp $
 #
 
 ROOT		=../..
@@ -19,9 +19,11 @@ ifeq "${YACC}" "no"
 	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/sql/y.tab.c
 	LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/sql/lex.yy.c
 	CFLAGS      +=-I${ROOT}/tools/no_yacc/cygwin/compilers/sql
+	KW_YH		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.yh
 else
 	Y_TAB_C		=y.tab.c
 	LEX_YY_C	=lex.yy.c
+	KW_YH		=../4glc/rules/generated/kw.yh
 endif
 
 ALL					=${ROOT}/bin/sql_parse $(LIBROOT)/libSQLPARSE_INFORMIX${SO_EXT}
@@ -61,9 +63,14 @@ main.o: main.c
 m2.lex: gen_lex 2.reqd
 	${SH} gen_lex > $@
 
-2.reqd:	../4glc/rules/generated/kw.yh
+2.reqd:	${KW_YH}
 	fgrep -f not_used -v $< > $@
 
+../4glc/rules/generated/kw.yh:
+ifneq "${YACC}" "no"
+	${MAKE} -C ../4glc
+endif
+	
 #WARNING: order is IMPORTANT!
 sql.yacc: 1.reqd 2.reqd 10.reqd ${SQLPACK_IFX_PATH}/update.rule \
 	${SQLPACK_IFX_PATH}/schema.rule ${SQLPACK_IFX_PATH}/sql1.rule \

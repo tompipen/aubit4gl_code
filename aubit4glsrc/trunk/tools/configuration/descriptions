@@ -177,6 +177,8 @@ A4GL_XML_EXT COMPILE/RUNTIME extension to use with XML packer
 	SEE ALSO:
 A4GL_ALWAYSCLOBBER
 =YES|NO
+	See also: A4GL_NOCLOBBER
+	
 A4GL_ANSI_ERROR SQL/COMPILE ANSI SQL 92 error checking mode
 	When ANSI_ERROR is set to Yes, compiler will abort if non ANSI SQL 92 statemt
 	is found in source code (Static SQL only).
@@ -405,8 +407,13 @@ A4GL_MONO UI/TUI Force monochrome output
 =YES|NO
 A4GL_NOCFILE
 =YES|NO
-A4GL_NOCLOBBER
+A4GL_NOCLOBBER COMPILE Turn off window names clobbering
 =YES|NO
+	Each time you use a window/form etc - t is automatically preprended with the name of the module to form a unique name across the program.
+	This means that you can safely use window 'w1' in a module without worrying if you are using window w1 in another module..
+	If you want to turn this off (so thatt it works the same way as Informix) - try setting A4GL_NOCLOBBER=Y
+	See also: A4GL_ALWAYSCLOBBER
+	
 A4GL_NO_INVIS_ATTR UI/TUI Disable usage of A_INVIS in curses - attempt alternative method for concealment
 =YES|NO
 A4GL_PAGER
@@ -474,7 +481,16 @@ A4GL_SYSUSER
 A4GL_TEMPDIR
 A4GL_TRANSLATEFILE COMPILE Specifies the location of a translation file
 	This is used for transforming 4GL strings via a message file (see DUMPSTRINGS)
-A4GL_TRANSMODE
+A4GL_TRANSMODE RUNTIME/SQL Set transactions behaviour (PodtgreSQL EC mode only??)
+	-1 	= silently ignore transactions
+	0	= Use odbc's SQLTransact call
+	1	= Use SQLExecDirect with "BEGIN WORK" etc
+	See also: A4GL_AUTOCOMMIT
+	
+A4GL_AUTOCOMMIT RUNTIME/SQL Set transaction commit behaviour (PostgreSQL EC mode only??)
+=YES|NO
+	If enabled, automatically perform a commit after each SQL statement
+	
 A4GL_TRIMDUMP DEBUG/UI/TUI Trim the results of a dump screen to a specified screen size (eg 24x80)
 =24x80|25x80|24x132|25x132
 A4GL_TRIMUSINGFMT RUNTIME Trim trailing spaces from a using string variable before applying it

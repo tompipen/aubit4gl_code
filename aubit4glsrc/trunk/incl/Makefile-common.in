@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.179 2005-02-03 10:31:35 afalout Exp $
+# $Id: Makefile-common.in,v 1.180 2005-02-09 02:20:13 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -235,7 +235,7 @@ WINDOWS_DRIVE   =@WINDOWS_DRIVE@
 CYGWIN_PATH     =@CYGWIN_PATH@
 
 #Substitute Windows drive notation (C: D: E: etc.) with CygWin path mapping
-ifdef COMSPEC
+ifneq "${COMSPEC}" ""
 	CYG_AUBITDIR	:=$(shell cygpath -u ${AUBITDIR})
 endif
 
@@ -881,7 +881,7 @@ COMP_FORM_EXT		=@COMP_FORM_EXT@
 LIBPQ_FE_H_IFLAGS	=@LIBPQ_FE_H_IFLAGS@
 RPM					=@RPM@
 LIBTOOL_DEPS		=@LIBTOOL_DEPS@
-
+enable_minimal		=@enable_minimal@
 
 # Windows / CygWin / MinGW / MSYS
 CYGWIN_PATH_WIN		=@CYGWIN_PATH_WIN@

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.279 2005-02-03 07:45:45 afalout Exp $
+dnl # $Id: configure.in,v 1.280 2005-02-09 02:17:48 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -575,6 +575,7 @@ AC_SUBST(MSYS_ROOTDIR)
 AC_SUBST(HAVE_MQLIB)
 AC_SUBST(HAVE_SXMLLIB)
 AC_SUBST(I4GL_PCOMPILER)
+AC_SUBST(enable_minimal)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -2033,20 +2034,28 @@ fi
 #separately for RPM config file, install/deinstall and lib Makefile:
 
 #List of libraries needed by compiler(s):
-COMP_LIBS="LEX_EC LEX_C LEX_CS LEX_PERL"
+COMP_LIBS="LEX_EC LEX_C"
+
+if test "$enable_minimal" != "yes"; then
+	COMP_LIBS="$COMP_LIBS LEX_CS LEX_PERL"
+fi
 
 #Libraries that need 4glc (and in some cases fcompile) to build, and are
 #buit in all cases:
 #FIXME: A4GL_HTML should be linkable (LIB_EXPORTLIB), but we are using 4glc 
 #to create dll, and we don't get .a file...
-NEED_4GLC_ALL_libs="HELP_std A4GL_string A4GL_HTML channel A4GL_file"
+NEED_4GLC_ALL_libs="HELP_std A4GL_string channel A4GL_file"
 
-#Define targets for liblogical
-LIBLOGICAL_EXE_GTK2_DEPEND="layout_engine report_viewer"
-LIBLOGICAL_BUILD="LOGREPPROC_TXT LOGREPPROC_CSV"
-LIBLOGICAL_GTK2_DEPEND="LOGREP_CSV LOGREP_TXT"
-LIBLOGICAL_PDF_DEPEND="LOGREPPROC_PDF"
-LIBLOGICAL_PDF_GTK2_DEPEND="LOGREP_PDF"
+if test "$enable_minimal" != "yes"; then
+	NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_HTML"
+	#Define targets for liblogical
+	LIBLOGICAL_EXE_GTK2_DEPEND="layout_engine report_viewer"
+	LIBLOGICAL_BUILD="LOGREPPROC_TXT LOGREPPROC_CSV"
+	LIBLOGICAL_GTK2_DEPEND="LOGREP_CSV LOGREP_TXT"
+	LIBLOGICAL_PDF_DEPEND="LOGREPPROC_PDF"
+	LIBLOGICAL_PDF_GTK2_DEPEND="LOGREP_PDF"
+fi
+
 
 ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
@@ -2095,11 +2104,19 @@ RUNTIME_RESOURCE=""
 #Note: "asql" is just a link to asql_p/_i/_g
 
 #Executables that are needed even in run-time distibutions:
-RUNTIME_EXE="fshow loadmap afinderr configurator $AMAKE_BIN_EXE"
+RUNTIME_EXE="afinderr configurator $AMAKE_BIN_EXE"
 
-COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
-        aace generate_aace adecompile convertsql aace_4gl aace_perl default_frm \
-		4glpc sql_parse process_report ide1$A4GL_EXE_EXT asql_g$A4GL_EXE_EXT"
+COMP_EXE="4glc fcompile amkmessage convertsql 4glpc sql_parse asql_g$A4GL_EXE_EXT"
+
+if test "$enable_minimal" != "yes"; then
+#Note: some of them will still be built, but not installed or packaged
+	COMP_EXE="$COMP_EXE aace generate_aace aace_4gl aace_perl \
+		mcompile mdecompile process_report adecompile ide1$A4GL_EXE_EXT \
+		fdecompile unmkmessage default_frm"
+	RUNTIME_EXE="$RUNTIME_EXE fshow loadmap"
+else
+	echo "*** NOTE: --enable-minimal specified; some targets disabled"
+fi
 
 COMP_EXE="$COMP_EXE $PCODE_EXE_NATIVE"
 
@@ -8145,8 +8162,11 @@ PLUGIN_NO_LINKABLE=
 	
 	if test "$IFMX_ESQLC" != "no" ; then
 		PLUGIN_YES="$PLUGIN_YES SQL_esql ESQL_INFORMIX"
-		COMP_EXE="$COMP_EXE sqleditor$A4GL_EXE_EXT aupscol asql_i$A4GL_EXE_EXT"
-		#aupscol/sqleditor/asql_i currently compiles only with Informix ESQL/C
+		COMP_EXE="$COMP_EXE aupscol asql_i$A4GL_EXE_EXT"
+		if test "$enable_minimal" != "yes"; then
+			COMP_EXE="$COMP_EXE aupscol asql_i$A4GL_EXE_EXT"
+			#aupscol/sqleditor/asql_i currently compiles only with Informix ESQL/C
+		fi
 	else
         PLUGIN_NO="$PLUGIN_NO SQL_esql ESQL_INFORMIX sqleditor$A4GL_EXE_EXT aupscol asql_i$A4GL_EXE_EXT"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ifx.esql"
@@ -8432,9 +8452,11 @@ fi
 ##    Populate files lists for executables, resource files, etc:
 ## ==================================================================
 
-#Need RPClib:
-PCODE_EXE_RPC="c2pcode checker runner"
-PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl"
+if test "$enable_minimal" != "yes"; then
+	#Need RPClib:
+	PCODE_EXE_RPC="c2pcode checker runner"
+	PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl"
+fi
 
 #FIXME: can't make pcode without Bison - IS THIS STILL TRUE?
 #if test "$BISON" != "no"; then
@@ -8981,7 +9003,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.279 2005-02-03 07:45:45 afalout Exp $
+| $Id: configure.in,v 1.280 2005-02-09 02:17:48 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
