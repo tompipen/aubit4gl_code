@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.72 2002-07-21 09:56:29 afalout Exp $
+# $Id: configure.in,v 1.73 2002-07-21 10:14:19 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -2337,7 +2337,8 @@ if test "$AUBIT_SOURCE" = "1" ; then
 				lib/libpacker/perl/Makefile
 				lib/libpacker/xdr/Makefile
 				lib/libpacker/xml/Makefile
-                lib/Makefile
+				lib/swig/domake
+				lib/Makefile
                 tools/adbaccess/Makefile
                 tools/loadmap/Makefile
                 tools/adbload/Makefile

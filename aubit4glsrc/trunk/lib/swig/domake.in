@@ -1,0 +1,26 @@
+#!/bin/sh
+##########################################################################
+#
+# Script that bootstraps creation of SWIG warpers for Aubit libraries
+# Used for Aubit Perl putput compiler.
+#
+##########################################################################
+
+
+#Clean everything:
+#yeah right-we don't have makefile at this point!
+#should we move "@PERL@ Makefile.PL" before this?
+make clean
+
+#Create SWIG warpers:
+#FIXME: take Perl version from configure:
+@SWIG@ -v -perl5 -shadow lib.i
+
+#Create Makefile:
+@PERL@ Makefile.PL
+
+#Build:
+make
+
+#Install:
+make install
