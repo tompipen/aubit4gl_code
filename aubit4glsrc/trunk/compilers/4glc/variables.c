@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.18 2003-03-06 22:38:36 mikeaubury Exp $
+# $Id: variables.c,v 1.19 2003-04-01 07:31:49 mikeaubury Exp $
 #
 */
 
@@ -627,6 +627,7 @@ make_constant (char *name, char *value, char *int_or_char)
   local_v->is_extern = 0;
   local_v->is_array = 0;
   local_v->src_module = outputfilename;
+
   for (c = 0; c < MAX_ARR_SUB; c++)
     {
       local_v->arr_subscripts[c] = 0;
@@ -656,6 +657,15 @@ make_constant (char *name, char *value, char *int_or_char)
       local_v->data.v_const.data.data_f = atof (value);
     }
 
+  if ( strcasecmp(name,"TRUE")==0|| strcasecmp(name,"FALSE")==0|| strcasecmp(name,"NOTFOUND")==0) ;
+  else {
+
+     if (isyes(acl_getenv("CONSTANT2DEFINES"))) {
+	   char buff[256];
+	   strcpy(buff,upshift(name));
+	   printf("#define %s %s\n",buff,value);
+     }
+  }
   return local_v;
 }
 
