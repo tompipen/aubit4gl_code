@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.30 2003-01-29 22:21:44 saferreira Exp $
+# $Id: esql.ec,v 1.31 2003-01-30 07:50:14 mikeaubury Exp $
 #
 */
 
@@ -113,6 +113,9 @@
 
 #include "a4gl_lib_sql_esqlc_int.h"
 
+static long fixlength(int dtype,int length) ;
+
+
 EXEC SQL include sqlca;
 
 
@@ -123,7 +126,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.30 2003-01-29 22:21:44 saferreira Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.31 2003-01-30 07:50:14 mikeaubury Exp $";
 #endif
 
 /*
@@ -846,7 +849,7 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
   FglInterval *fgl_interval;
 
   dataType = getIfmxDataType(bind[idx].dtype);
-  length   = bind[idx].size;
+  length   = bind[idx].size; // unfix_length...
 
   if ( isnull(dataType,bind[idx].ptr) )
   {
@@ -1042,7 +1045,7 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
   FglInterval *fgl_interval;
 
   dataType = getIfmxDataType(bind[idx].dtype);
-  length   = bind[idx].size;
+  length   = bind[idx].size; // unfix datatype ?
 
   EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
     :indicator = INDICATOR, :length = LENGTH;
@@ -2378,7 +2381,8 @@ A4GLSQL_next_column(char **colname, int *dtype,int *size)
   if ( isSqlError() )
     return 0;
   *dtype = dataType;
-  *size = length;
+  *size = fixlength(dataType,length);
+  //strcpy((char *)colname,columnName);
   *colname=columnName;
   getColumnsOrder++;
   return 1;
@@ -2460,7 +2464,7 @@ debug("SQL = %s",strSelect);
     return 1;
   }
   *dtype = dataType;
-  *size = length;
+  *size = fixlength(dataType,length);
   return 0;
 }
 
@@ -2523,7 +2527,7 @@ int A4GLSQL_read_columns(char *tabname,char *colname,int *dtype,int *size)
     return 0;
   }
   *dtype = dataType;
-  *size = length;
+  *size = fixlength(dataType,length);
   return 1;
 }
 
@@ -2617,5 +2621,41 @@ long A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 }
 
 
+/**
+ * Convert the length qualifiers for a datetime from the
+ *  informix notation to the A4GL notation
+ */
+int Infx_dt_to_A4gl_dt(int n) {
+	switch(n) {
+		case TU_YEAR: return 1;
+		case TU_MONTH: return 2;
+		case TU_DAY: return 3;
+		case TU_HOUR: return 4;
+		case TU_MINUTE: return 5;
+		case TU_SECOND: return 6;
+		case TU_F1: return 7;
+		case TU_F2: return 8;
+		case TU_F3: return 9;
+		case TU_F4: return 10;
+		case TU_F5: return 11;
+	}
+	// Shouldn't get to here
+	return 3;
+}
+
+static long fixlength(int dtype,int length) {
+	int n1,n2;
+	if (dtype>255) dtype-=256;
+	debug("Got datatype : %d length %d\n");
+	if (dtype==10) {
+		n1=Infx_dt_to_A4gl_dt(TU_START(length));
+		n2=Infx_dt_to_A4gl_dt(TU_END(length));
+		return (n1*16)+n2;
+	}
+	
+	return length;
+}
+
 /* ================================= EOF ============================== */
+
 
