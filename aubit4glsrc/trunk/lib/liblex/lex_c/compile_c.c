@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.7 2002-05-07 22:52:24 saferreira Exp $
+# $Id: compile_c.c,v 1.8 2002-05-08 07:24:01 mikeaubury Exp $
 #
 */
 
@@ -219,9 +219,9 @@ static void open_outfile(void)
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-void printc(char *fmt, ...)
+void lex_printc(char *fmt, va_list *ap)
 {
-  va_list args;
+  //va_list args;
   char buff[40960]="ERROR-empty init";
   char *ptr;
   int a;
@@ -234,8 +234,8 @@ void printc(char *fmt, ...)
 		return;
   }
 
-	va_start (args, fmt);
-	vsprintf (buff, fmt, args);
+	//va_start (args, fmt);
+	vsprintf (buff, fmt, *ap);
 
 debug("buff in lib=%s\n",buff);
 strcpy(buff2,fmt);

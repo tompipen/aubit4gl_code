@@ -143,7 +143,6 @@ rtype="void"
 c=0
 for (a=2;a<=NF;a++) {
 param_type[c]=$a
-
 if (param_type[c]=="->") {
 	param_type[c]=""
 	a++
