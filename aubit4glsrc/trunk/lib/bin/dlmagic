@@ -13,7 +13,10 @@
 ##########################################################################
 
 #Get settings
-. ../../etc/aubitrc
+if [ "$AUBITDIR" != "" ]
+then
+. $AUBITDIR/etc/aubitrc
+fi
 
 
 if [ $# -lt 1 -o "$1" = "--help" ]

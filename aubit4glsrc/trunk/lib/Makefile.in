@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.99 2004-01-15 05:44:05 afalout Exp $
+# $Id: Makefile.in,v 1.100 2004-01-28 09:38:13 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -146,7 +146,7 @@ LIBPACKERXML_DEPS	=$(wildcard ${LIBPACKERXML_PATH}/*.c) $(wildcard ${LIBPACKERXM
 					$(wildcard ${LIBPACKERXML_PATH}/Makefile) ${ALL_H}
 #LIBLEXC_DEPS		=$(wildcard ${LIBLEXC_PATH}/*.c) $(wildcard ${LIBLEXC_PATH}/*.h) \
 #					$(wildcard ${LIBLEXC_PATH}/Makefile) ${ALL_H}
-LIBLEXEC_DEPS		=$(wildcard ${LIBLEXEC_PATH}/*.c) $(wildcard ${LIBLEXEC_PATH}/*.h) \
+LIBLEXEC_DEPS		=$(wildcard ${LIBLEXEC_PATH}/*.c) $(wildcard ${LIBLEXEC_PATH}/*.h) ${ROOT}/compilers/4glc/API_lex.h \
 					$(wildcard ${LIBLEXEC_PATH}/Makefile) ${ALL_H}
 LIBLEXPERL_DEPS		=$(wildcard ${LIBLEXPERL_PATH}/*.c) $(wildcard ${LIBLEXPERL_PATH}/*.h) \
 					$(wildcard ${LIBLEXPERL_PATH}/Makefile) ${ALL_H}
@@ -421,6 +421,8 @@ libXDRPACKER_report${SO_EXT}: ${LIBDATA_DEPS}
 	${MAKE} -C ${LIBDATA_PATH}
 
 
+${ROOT}/compilers/4glc/API_lex.h: ${ROOT}/compilers/4glc/API_lex.spec
+	${SH} ${ROOT}/lib/bin/dlmagic ${ROOT}/compilers/4glc/API_lex.spec -h > ${ROOT}/compilers/4glc/API_lex.h
 
 ###############
 #Misc libs:
