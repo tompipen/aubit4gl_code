@@ -17,16 +17,19 @@ fetch_statement:
     }
 ;
 
-declare_cursor_name  :       ident_or_var {sprintf($<str>$,"%s",$<str>1);doing_declare=1;}
+declare_cursor_name  :       ident_or_var {sprintf($<str>$,"%s",$<str>1);doing_declare=1;
+						A4GL_cursor_defined($<str>1,0); }
 ;
 
 fetch_part: 
 	fetch_place  fetch_cursor_name
 {sprintf($<str>$,"%s, %s",$<str>2,$<str>1);
+A4GL_cursor_fetch($<str>2);
 addmap("Fetch Cursor",$<str>2,curr_func,yylineno,infilename);
 }
         | fetch_cursor_name
 {sprintf($<str>$,"%s, %d, 1",$<str>1,FETCH_RELATIVE);
+A4GL_cursor_fetch($<str>1);
 
 addmap("Fetch Cursor",$<str>1,curr_func,yylineno,infilename);
 }
@@ -86,6 +89,7 @@ delete_statement_position:
 {
  add_feature("DELETE_WHERE_CURRENT_OF");
 rm_quotes($<str>4);
+A4GL_cursor_current($<str>4);
 sprintf($<str>$," %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4
 );}
 	;
@@ -106,6 +110,7 @@ insql=0;strcpy($<str>$,$<str>3);}
 
 flush_cmd : opt_use
 	FLUSH fetch_cursor_name  {
+A4GL_cursor_flush($<str>2);
 	print_flush_cursor($<str>3);
 		addmap("Flush Cursor",$<str>3,curr_func,yylineno,infilename);
 print_undo_use($<str>1);
@@ -160,7 +165,8 @@ cursor_specification_all_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| insert_statement_ss { 
-		if (A4GLSQLCV_check_requirement("UNSUPPORTED_INSERT_CURSOR")) {
+		A4GL_cursor_is_insert();
+		if (A4GLSQLCV_check_requirement("NO_INSERT_CURSOR")) {
 			a4gl_yyerror("Insert cursors are not supported for this rdbms");
 		}
 		$<sql_string>$=make_sql_string_and_free(strdup(print_curr_spec(1,$<sql_string>1)),0);
@@ -169,12 +175,14 @@ cursor_specification_all_ss:
 
 cursor_specification_sel_ss:
 	 stmt_id {
+		
 		start_bind('i',0);
 		start_bind('o',0);
 		$<sql_string>$=make_sql_string_and_free(strdup(print_curr_spec(2,$<str>1)) ,0);
 	}
 	| select_statement_ss_str  curs_forupdate {
 		 char *ptr;
+		A4GL_cursor_is_select();
 		ptr=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
 	 	$<sql_string>$=strdup(A4GL_CV_print_select_all(ptr)); free(ptr); 
 	}

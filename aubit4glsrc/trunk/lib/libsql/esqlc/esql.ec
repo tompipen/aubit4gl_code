@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.122 2005-02-08 18:53:26 mikeaubury Exp $
+# $Id: esql.ec,v 1.123 2005-03-01 18:23:36 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.122 2005-02-08 18:53:26 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.123 2005-03-01 18:23:36 mikeaubury Exp $";
 #endif
 
 
@@ -4160,11 +4160,11 @@ cptr ,tabname,colname);
 
 A4GL_debug("buff=%s",buff);
 EXEC SQL PREPARE p_get_val FROM :buff;
-if (sqlca.sqlcode!=0) return -1;
+if (sqlca.sqlcode!=0) return (void *)-1;
 EXEC SQL DECLARE c_get_val CURSOR FOR p_get_val;
-if (sqlca.sqlcode!=0) return -1;
+if (sqlca.sqlcode!=0) return (void *)-1;
 EXEC SQL OPEN c_get_val ;
-if (sqlca.sqlcode!=0) return -1;
+if (sqlca.sqlcode!=0) return (void *)-1;
 
 
 while (1) {
@@ -4280,9 +4280,9 @@ static void A4GL_quick_trim(char *s) {
 static void A4GL_quick_trim2(char *s) {
         char *ptr;
 	int a;
-	char *eptr;
+	//char *eptr;
 	a=strlen(s);
-	eptr=s[a-1];
+	//eptr=&s[a-1];
 
 	ptr=strrchr(s,' ');
 	while (ptr) {

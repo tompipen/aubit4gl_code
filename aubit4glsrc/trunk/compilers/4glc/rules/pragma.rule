@@ -2,5 +2,9 @@ pragma: PRAGMA pragma_entry;
 
 
 pragma_entry: SYSTEM_4GL { compiling_system_4gl=1; }
-	|  SQL_FEATURE NAMED { add_feature(upshift($<str>2));}
+	| SQL_FEATURE NAMED { add_feature(upshift($<str>2));}
+	| EMULATE_INSERT_CURSOR_FOR NAMED { emulate_insert($<str>2); }
 ;
+
+
+

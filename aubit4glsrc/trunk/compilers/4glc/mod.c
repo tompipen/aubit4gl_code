@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.204 2005-02-26 09:25:29 mikeaubury Exp $
+# $Id: mod.c,v 1.205 2005-03-01 18:22:25 mikeaubury Exp $
 #
 */
 
@@ -4973,6 +4973,13 @@ static void A4GL_set_sql_features(void) {
 				sql_features="sql_features";
 			}
 	}
+}
+
+
+void emulate_insert(char *s) {
+	char buff[256];
+	sprintf(buff,"\"%s\"",s);
+	A4GL_cursor_defined(buff,'I');
 }
 
 /* ================================= EOF ============================= */

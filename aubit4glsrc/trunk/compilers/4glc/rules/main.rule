@@ -51,6 +51,7 @@ module_import
 | module_globals_section 
 | module_define_section  
 | db_section
+| pragma
 	;
 
 

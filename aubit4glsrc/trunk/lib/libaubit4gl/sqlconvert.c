@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.49 2005-03-01 08:25:46 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.50 2005-03-01 18:23:18 mikeaubury Exp $
 #
 */
 
@@ -121,7 +121,10 @@ char *cvsql_names[]={
   "CVSQL_FULL_INSERT",
   "CVSQL_INSERT_ALIAS",
   "CVSQL_OMIT_UPDATE_TABLE",
-  "CVSQL_UNSUPPORTED_INSERT_CURSOR",
+  "CVSQL_NO_INSERT_CURSOR",
+  "CVSQL_EMULATE_INSERT_CURSOR",
+  "CVSQL_ESQL_UNLOAD_STRING",
+  "CVSQL_ESQL_UNLOAD_LIB_FALLBACK",
   
   "CVSQL_DTYPE_ALIAS"
 };
@@ -201,7 +204,10 @@ enum cvsql_type
   CVSQL_FULL_INSERT,
   CVSQL_INSERT_ALIAS,
   CVSQL_OMIT_UPDATE_TABLE,
-  CVSQL_UNSUPPORTED_INSERT_CURSOR,
+  CVSQL_NO_INSERT_CURSOR,
+  CVSQL_EMULATE_INSERT_CURSOR,
+  CVSQL_ESQL_UNLOAD_STRING,
+  CVSQL_ESQL_UNLOAD_LIB_FALLBACK,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -1009,7 +1015,10 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "FULL_INSERT", len) == 0) return CVSQL_FULL_INSERT;
   if (strncasecmp (p, "INSERT_ALIAS", len) == 0) return CVSQL_INSERT_ALIAS;
   if (strncasecmp (p, "OMIT_UPDATE_TABLE", len) == 0) return CVSQL_OMIT_UPDATE_TABLE;
-  if (strncasecmp (p, "UNSUPPORTED_INSERT_CURSOR", len) == 0) return CVSQL_UNSUPPORTED_INSERT_CURSOR;
+  if (strncasecmp (p, "NO_INSERT_CURSOR", len) == 0) return CVSQL_NO_INSERT_CURSOR;
+  if (strncasecmp (p, "EMULATE_INSERT_CURSOR", len) == 0) return CVSQL_EMULATE_INSERT_CURSOR;
+  if (strncasecmp (p, "ESQL_UNLOAD_STRING", len) == 0) return CVSQL_ESQL_UNLOAD_STRING;
+  if (strncasecmp (p, "ESQL_UNLOAD_LIB_FALLBACK", len) == 0) return CVSQL_ESQL_UNLOAD_LIB_FALLBACK;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.30 2005-02-20 19:34:42 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.31 2005-03-01 18:23:18 mikeaubury Exp $
 #
 */
 
@@ -93,6 +93,33 @@ strcpy(dbName,dbname);
 #endif
 
 }
+
+
+
+void* ESQLAPI_A4GL_db_connected(char *dbname) {
+void *ptr=0;
+#ifdef DIALECT_POSTGRES
+{
+struct connection
+{
+        char       *name;
+        PGconn     *connection;
+        bool            committed;
+        int                     autocommit;
+        struct ECPGtype_information_cache *cache_head;
+        struct connection *next;
+};
+struct connection *ret = NULL;
+	ret=ECPGget_connection(0);
+	ptr=ret->connection;
+	//printf("ptr=%p\n",ptr);
+}
+#endif
+return ptr;
+}
+
+
+
 
 /**
  *

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.109 2005-02-26 09:40:43 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.110 2005-03-01 18:23:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.109 2005-02-26 09:40:43 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.110 2005-03-01 18:23:36 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -229,7 +229,7 @@ printc("/* CLOSE */");
   		A4GL_save_sql("DISCONNECT 'default'",0);
       		printc ("\nEXEC SQL DISCONNECT 'default';\n");
 	}
-      printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(0,0,0);");
+      printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(0,0,0,\"\");");
       print_copy_status ();
       break;
     case 'S':
@@ -468,9 +468,38 @@ print_put (char *xcname,char *putvals)
   if (cname) free(cname);
   cname=strdup(A4GL_strip_quotes(xcname));
 
-if (A4GLSQLCV_check_requirement("NO_PUT")) {
+
+  if (A4GLSQLCV_check_requirement("NO_PUT")) {
 	a4gl_yyerror ("You cannot use a PUT with the target database");
-}
+	return;
+  }
+
+
+  if (A4GLSQLCV_check_requirement("EMULATE_INSERT_CURSOR")) {
+	char c;
+	char *ptr;
+	extern int ibindcnt;
+	c=A4GL_cursor_type(xcname);
+
+	if (c!='I') {
+		a4gl_yyerror("Got confused - I didn't think that was an insert cursor");
+		return;
+	}
+	ptr=A4GL_get_insert_prep(xcname);
+
+	printc("/* FAKE PUT - USING EXECUTE */");
+
+	if (ibindcnt==0) {
+		a4gl_yyerror("Doing this isn't implemented yet..");
+		// We need to copy these from the declare...
+		print_execute(ptr,1);
+	} else {
+		// We should be ok...
+		print_execute(ptr,1);
+	}
+	printc("/* END OF FAKE PUT - USING EXECUTE */");
+	return;
+  }
 
   printc ("{\n");
   n = print_bind_definition ('i');
@@ -707,7 +736,7 @@ print_open_session (char *s, char *v, char *user)
 	}	
 	}
 
-	//printc("if (A4GL_esql_db_open(-1,0,0)) {");
+	//printc("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
 	//print_close('D',"");
 	//printc("}");
 A4GL_save_sql("CONNECT TO '%s'", v);
@@ -734,11 +763,20 @@ A4GL_save_sql("CONNECT TO '%s'", v);
 void
 print_open_cursor (char *xcname, int has_using)
 {
-  int n;
-  int a;
+  //int n;
+  //int a;
   static char *cname=0;
   if (cname) free(cname);
   cname=strdup(A4GL_strip_quotes(xcname));
+
+  if (A4GLSQLCV_check_requirement("EMULATE_INSERT_CURSOR")) {
+	char c;
+	c=A4GL_cursor_type(xcname);
+	if (c=='I') {
+		printc("/* Ignore open cursor - faking insert cursor */");
+		return; /* We don't really open a cursor - remember - we're pretending :-) */
+	}
+  }
 
   set_suppress_lines();
   if (has_using) {
@@ -1028,7 +1066,7 @@ A4GL_save_sql("DATABASE $s",0);
       printc ("char *s;");
       printc ("\nEXEC SQL END DECLARE SECTION;\n");
 	clr_suppress_lines();
-	printc("if (A4GL_esql_db_open(-1,0,0)) {");
+	printc("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
 	print_close('D',"");
 	printc("}");
       printc ("s=A4GL_char_pop();A4GL_trim(s);\n");
@@ -1047,7 +1085,7 @@ A4GL_save_sql("DATABASE $s",0);
     }
   else
     {
-	printc("if (A4GL_esql_db_open(-1,0,0)) {");
+	printc("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
 	print_close('D',"");
 A4GL_save_sql("DISCONNECT default'",0);
       		/*printc ("\nEXEC SQL DISCONNECT 'default';\n");*/
@@ -1076,10 +1114,10 @@ A4GL_save_sql("CONNECT TO %s AS 'default'",db);
   }
 
   switch (esql_type ())  {
-  	case 1: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\");");break;
-	case 2: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\");");break;
-	case 3: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"SAP\");");break;
-	case 4: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INGRES\");");break;
+  	case 1: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\",\"%s\");",db);break;
+	case 2: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\",\"%s\");",db);break;
+	case 3: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"SAP\",\"%s\");",db);break;
+	case 4: printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INGRES\",\"%s\");",db);break;
   }
 
 
@@ -1098,7 +1136,7 @@ A4GL_save_sql("CONNECT TO %s AS 'default'",db);
 void
 print_do_select (char *s)
 {
-int no;
+//int no;
 A4GL_save_sql(s,0);
 set_suppress_lines();
 if (last_no==0 && A4GLSQLCV_check_requirement("NO_SELECT_WITHOUT_INTO")) {
@@ -1164,7 +1202,75 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
   cname = strdup (A4GL_strip_quotes (a3));
 
 
-  printc ("/* a1=%s a2=%s a3=%s */", a1, a2, a3);
+  // Are we trying to emulate an insert cursor ?
+  if (A4GLSQLCV_check_requirement("EMULATE_INSERT_CURSOR")) {
+	char c;
+	c=A4GL_cursor_type(a3);
+	if (c=='I') {
+		// Do we have a real statement or a prepared statement ?
+		if (a2[0]=='"' || A4GL_strstartswith(a2,"aclfgli_str_to_id")) { // It's already prepared
+			printc("/* Ignore declare cursor - faking insert cursor */");
+			A4GL_insert_cursor_prep(a3,a2);
+		} else {
+			static int pcnt=0;
+			char buff[20];
+			int aa;
+			char *sstr;
+			printc("/* preparing insert used on declare cursor - faking insert cursor */");
+			sprintf(buff,"\"p_a4gl_%d\"",pcnt++);
+			sstr=malloc(strlen(a2)+2000);
+			sprintf(sstr,"\"%s\"",a2);
+        		for (aa=0;aa<strlen(sstr);aa++) {
+                		if (strncmp(&sstr[aa],":_vi_",5)==0) {
+                        		int b;
+                        		sstr[aa]='?';
+                        		sstr[aa+1]=' ';
+                        		sstr[aa+2]=' ';
+                        		sstr[aa+3]=' ';
+                        		sstr[aa+4]=' ';
+                        		for (b=aa+5;b<strlen(sstr);b++) {
+                                		if (sstr[b]<'0'||sstr[b]>'9') {aa=b-1;break;}
+                                		sstr[b]=' ';
+                        		}
+                		}
+
+                		if (strncmp(&sstr[aa],"INDICATOR :_vii_",16)==0) {
+                        		int b;
+                        		sstr[aa]=' ';
+                        		sstr[aa+1]=' ';
+                        		sstr[aa+2]=' ';
+                        		sstr[aa+3]=' ';
+                        		sstr[aa+4]=' ';
+                        		sstr[aa+5]=' ';
+                        		sstr[aa+6]=' ';
+                        		sstr[aa+7]=' ';
+                        		sstr[aa+8]=' ';
+                        		sstr[aa+9]=' ';
+                        		sstr[aa+10]=' ';
+                        		sstr[aa+11]=' ';
+                        		sstr[aa+12]=' ';
+                        		sstr[aa+13]=' ';
+                        		sstr[aa+14]=' ';
+                        		sstr[aa+15]=' ';
+                        		for (b=aa+16;b<strlen(sstr);b++) {
+                                		if (sstr[b]<'0'||sstr[b]>'9') {aa=b-1;break;}
+                                		sstr[b]=' ';
+                        		}
+                		}
+
+
+                		if (sstr[aa]=='\n') sstr[aa]=' ';
+        		}
+
+			print_prepare (buff, sstr);
+			A4GL_insert_cursor_prep(a3,buff);
+		}
+
+		return; /* We don't really declare a cursor - remember - we're pretending :-) */
+	}
+  }
+
+
 
   if (a2[0] == '"' || A4GL_strstartswith(a2,"aclfgli_str_to_id")) 
     {
@@ -1210,7 +1316,6 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 	printc("char _cid[256];");
 	printc("EXEC SQL END DECLARE SECTION;");
 	printc("strcpy(_cid,%s);",cname);
-	//free(cname);
 	cname2=strdup(":_cid");
 	sprintf(buff,"_%d",ccnt++);
 	cname3=buff;
@@ -1244,6 +1349,12 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 	("You cannot use an INTO with a declare with the target database");
       return;
     }
+
+
+
+
+
+
   printh ("static int acli_ni_%s=%d;\n", cname3, last_ni);
   printh ("static int acli_no_%s=%d;\n", cname3, last_no);
   printh ("static struct BINDING *acli_bi_%s=0;\n", cname3);
@@ -1451,16 +1562,41 @@ print_unload (char *file, char *delim, char *sql)
 {
 char filename[256];
 char delim_s[256];
+int doing_esql_unload=0;
 
 if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
 
-  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD") && strncasecmp(sql,"SELECT",6)!=0) {
-		a4gl_yyerror("Cannot do an ESQL_UNLOAD for a prepared statement");
-		return;
+
+
+// ESQL_UNLOAD was initially designed to work with postgres
+// postgres uses the COPY command to do the unload - but it can only
+// handle UNLOADS with explicit SELECT statements - not variables
+// 
+// We need to check to see if we're dealing with that situation here...
+//
+
+doing_esql_unload=A4GLSQLCV_check_requirement("ESQL_UNLOAD");
+
+  if (doing_esql_unload && strncasecmp(sql,"SELECT",6)!=0) {
+
+		// Looks like a query variable on the unload...
+		// Do we just allow it anyway - and assume the esql/c compiler
+		// can handle this syntax ?
+		//
+		if (A4GLSQLCV_check_requirement("ESQL_UNLOAD_STRING")) ; /* its ok */
+	 	else {
+			// Traditionally - we'd just error here - but lets allow a 
+			// fallback to the libSQL_... unload functions
+			if (A4GLSQLCV_check_requirement("ESQL_UNLOAD_LIB_FALLBACK")) {doing_esql_unload=0;} /* its ok */
+			else {
+				a4gl_yyerror("Cannot do an ESQL_UNLOAD for a prepared statement");
+				return;
+			}
+		}
   }
 
 
-  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD") && strncasecmp(sql,"SELECT",6)==0) {
+  if (doing_esql_unload) {
 	int ni;
 		printf("UNLOAD1\n");
 		printc("{");
@@ -2037,7 +2173,7 @@ if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
 
 if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
         strcat(buff,") ON COMMIT PRESERVE ROWS WITH NORECOVERY");
-	printf("---> %s\n",reptab[8]);
+	//printf("---> %s\n",reptab[8]);
         if (!A4GL_has_pointer(&reptab[8],LOG_TEMP_TABLE)) { A4GL_add_pointer(&reptab[8],LOG_TEMP_TABLE,(void *)1); }
 
 } else {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.21 2005-02-16 08:32:06 mikeaubury Exp $
+# $Id: simple.c,v 1.22 2005-03-01 18:23:37 mikeaubury Exp $
 #*/
 
 
@@ -51,8 +51,7 @@
 #define DTYPE_TEXT      12
 #define DTYPE_VCHAR     13
 #define DTYPE_INTERVAL  14
-
-
+char unloadBuffer[BUFSIZ];
 //extern sqlca_struct sqlca;
 int sqlcode;
 static void fixtype (char *ptr, int *d, int *s);
@@ -94,6 +93,7 @@ char *pgoptions = NULL;
 char *pgtty = NULL;
 char *login = NULL;
 char *pwd = NULL;
+static struct expr_str *A4GL_add_validation_elements_to_expr(struct expr_str *ptr,char *val) ;
 
 
 
@@ -267,7 +267,8 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   static char cname[256];
   //int a;
   char *colptr;
-  strcpy(colname,"");
+strcpy(cname,"");
+  *colname=cname;
   *dtype=0;
   *size=0;
 
@@ -454,7 +455,8 @@ A4GLSQL_get_validation_expr(char *tabname,char *colname)
 {
 char buff[300];
 char val[65];
-char *ptr=0;
+//char *ptr=0;
+struct expr_str *ptr=0;
 int nrows=0;
 int a;
 PGresult *res2;
@@ -504,6 +506,312 @@ char* A4GLSQL_get_errmsg(int a) { return 0; }
 char *A4GLSQL_syscolval_expr(char *tabname,char *colname,char *typ) {
         return 0;
 }
+
+
+#ifdef NDEF
+int
+printField (FILE * outputFile, int idx, char *descName)
+{
+  EXEC SQL BEGIN DECLARE SECTION;
+  int dataType;
+  int index ;
+  short indicator;
+  char buffer[32000]="";
+  int length;
+  int COUNT;
+  int INTVAR, BOOLVAR;
+  int INDICATOR;
+  int TYPE,LENGTH,OCTET_LENGTH,PRECISION,SCALE,NULLABLE,RETURNED_OCTET_LENGTH;
+  int DATETIME_INTERVAL_CODE;
+  char NAME[120];
+  char STRINGVAR[1024];
+  float FLOATVAR;
+  double DOUBLEVAR;
+  EXEC SQL END DECLARE SECTION;
+  char buff[255];
+char fmt[255];
+  int rc = 0;
+index=idx;
+
+A4GL_debug("Getting details for index %d",index);
+ exec sql get descriptor descExec value :index
+         :TYPE = type,
+         :LENGTH = length, :OCTET_LENGTH=octet_length,
+         :RETURNED_OCTET_LENGTH=returned_octet_length,
+         :PRECISION = precision, :SCALE=scale,
+         :NULLABLE=nullable, :NAME=name,
+         :INDICATOR=indicator;cp_sqlca();
+
+ A4GL_debug("%2d\t%s (type: %d length: %d precision: %d scale: %d\n"
+ "\toctet_length: %d returned_octet_length: %d nullable: %d)\n\t= "
+                 ,index,NAME,TYPE,LENGTH,PRECISION,SCALE
+                 ,OCTET_LENGTH,RETURNED_OCTET_LENGTH,NULLABLE);
+        if (INDICATOR==-1) sprintf(buffer,"");
+        else switch (TYPE)
+        {
+          case SQL3_BOOLEAN:
+                exec sql get descriptor descExec value :index :BOOLVAR=data;cp_sqlca();
+                if (display_mode!=DISPLAY_UNLOAD) {
+                        sprintf(buffer,"%s",BOOLVAR ? "true":"false");
+                } else {
+                        sprintf(buffer,"%d",BOOLVAR);
+                }
+                break;
+
+
+           case SQL3_NUMERIC:
+           case SQL3_DECIMAL:
+                if (SCALE==0)
+                {  exec sql get descriptor descExec value :index :INTVAR=data;cp_sqlca();
+                        if (display_mode==DISPLAY_DOWN) {
+                                sprintf (buffer, "%d", INTVAR);
+                        } else {
+                                sprintf (buffer, "%*d", columnWidths[idx-1],INTVAR);
+                        }
+                   //sprintf(buffer,"%-10d",INTVAR);
+                        if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
+                }
+                else
+                {
+
+                        exec sql get descriptor descExec value :index :FLOATVAR=data;cp_sqlca();
+
+                        if (display_mode==DISPLAY_DOWN) {
+                                sprintf (buffer, "%f", FLOATVAR);
+                        } else {
+                                sprintf (buffer, "%*f", columnWidths[idx-1],FLOATVAR);
+                        }
+                                if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
+                }
+                break;
+           case SQL3_INTEGER:
+           case SQL3_SMALLINT:
+                exec sql get descriptor descExec value :index :INTVAR=data;cp_sqlca();
+
+
+                if (display_mode==DISPLAY_DOWN) {
+                        sprintf (buffer, "%d", INTVAR);
+                } else {
+                        sprintf (buffer, "%*d", columnWidths[idx-1],INTVAR);
+                }
+                if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
+                break;
+           case SQL3_FLOAT:
+           case SQL3_REAL:
+                exec sql get descriptor descExec value :index :FLOATVAR=data;cp_sqlca();
+                sprintf(buffer,"%.*f",PRECISION,FLOATVAR);
+                if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
+                break;
+           case SQL3_DOUBLE_PRECISION:
+                exec sql get descriptor descExec value :index :DOUBLEVAR=data;cp_sqlca();
+                sprintf(buffer,"%.*f",PRECISION,DOUBLEVAR);
+                        if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
+                break;
+           case SQL3_DATE_TIME_TIMESTAMP:
+                exec sql get descriptor descExec value :index
+                        :DATETIME_INTERVAL_CODE=datetime_interval_code,
+                        :STRINGVAR=data;cp_sqlca();
+                sprintf(buffer,"%s",STRINGVAR);
+                break;
+           case SQL3_INTERVAL:
+                exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
+                sprintf(buffer,"%s",STRINGVAR);
+                break;
+           case SQL3_CHARACTER:
+           case SQL3_CHARACTER_VARYING:
+                exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
+                sprintf(buffer,"%s",STRINGVAR);
+                A4GL_trim(buffer);
+                break;
+           default:
+                exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
+                sprintf(buffer,"%s",STRINGVAR);
+                if (display_mode==DISPLAY_UNLOAD) A4GL_trim(buffer);
+                break;
+        }
+
+A4GL_debug("BUFFER=%s",buffer);
+
+if (INDICATOR !=-1 && strlen(buffer)==0 &&display_mode==DISPLAY_UNLOAD) {
+        strcpy(buffer," ");
+}
+        if (display_mode==DISPLAY_DOWN) {
+                sprintf(fmt,"%%-%d.%ds %%s\n",colnamesize+1,colnamesize+1);
+
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+                        fprintf(outputFile,fmt,columnNames[idx-1],buffer);
+                } else {
+                        fprintf(exec_out,fmt,columnNames[idx-1],buffer);
+                }
+                outlines++;
+        }
+
+        if (display_mode==DISPLAY_UNLOAD) {
+                        fprintf(unloadFile,"%s%s",escape_delim(buffer),delim);
+        }
+
+        if (display_mode==DISPLAY_ACROSS) {
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+
+                        A4GL_debug("EXECO '%s' '%20s' '%-20s'",buffer,buffer,buffer);
+                        fprintf(outputFile,"%-*s",columnWidths[idx-1],buffer);
+                }
+                else
+                        fprintf(exec_out,"%-*s",columnWidths[idx-1],buffer);
+        }
+
+
+  return 0;
+}
+
+#endif
+
+/**
+ * Unload the data to a file acording to SQL statemement with
+ * columns separated by a delimiter.
+ *
+ * @todo : Implement the unload
+ * @todo : Merge the code to a connector library in order to have just
+ *         one function to do it.
+ *
+ * @param fname The name where the data is to be inserted.
+ * @param delims The row delimiter.
+ * @param sql1 The SQL to generate the data.
+ *
+ * @return
+ *   - 1 : There was an error unloading the data.
+ *   - 0 : Data unloaded to file.
+ */
+/*      void A4GLSQL_unload_data(char *fname,char *delims, char *sql1); */
+/* int */
+void
+A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr_o, int nbind, void *vibind)
+{
+  FILE *unloadFile;
+  int nrows=0;
+  struct BINDING *ibind;
+  int colcnt;
+  int *column_types=0;
+  int *column_sizes=0;
+  PGresult *res2;
+  char *fname;
+  int nfields=0;
+  char*sqlStr;
+  int a;
+  int b;
+
+  if (A4GL_esql_db_open(-1,0,0,"")) {
+	con=A4GL_esql_dbopen_connection();
+  }
+
+  if (con==0) {
+	A4GL_exitwith("Database not open");
+	return ;
+  }
+	
+
+  ibind=vibind;
+
+  A4GL_debug ("Unload data..");
+  if (nbind) {
+	A4GL_exitwith("Currently unable to unload a statement that uses variables");
+	return ;
+  }
+
+
+  fname=strdup(fname_o); A4GL_trim(fname);
+  sqlStr=strdup(sqlStr_o); A4GL_trim(sqlStr);
+  unloadFile = (FILE *) A4GL_mja_fopen (fname, "wt");
+  a4gl_status=0;
+
+  if (unloadFile == (FILE *) 0)
+    {
+    /** @todo : Generate some error code compatible with informix 4gl */
+        free(fname); free(sqlStr);
+        A4GL_exitwith("Unable to open file for unload");
+      return;                   /* return 1; */
+    }
+
+  setbuf(unloadFile, unloadBuffer);
+  A4GL_debug("prepare : %s",sqlStr);
+
+
+
+  res2=PQexec(con,sqlStr);
+
+  switch (PQresultStatus (res2)) {
+    	case PGRES_COMMAND_OK:
+    	case PGRES_TUPLES_OK: 
+		nrows = PQntuples (res2);
+		nfields = PQnfields (res2);
+		break;
+
+	case PGRES_EMPTY_QUERY:
+	case PGRES_COPY_OUT:
+	case PGRES_COPY_IN:
+	case PGRES_BAD_RESPONSE:
+	case PGRES_NONFATAL_ERROR:
+	case PGRES_FATAL_ERROR:
+		A4GL_debug("Got : %d (%s)",PQresultStatus (res2),PQerrorMessage(con));
+  		A4GL_exitwith ("Unexpected postgres return code\n");
+        	free(fname); free(sqlStr);
+		return ;
+  }
+
+
+
+  column_types=malloc(sizeof(int) * nfields);
+  column_sizes=malloc(sizeof(int) * nfields);
+
+  for (colcnt=0;colcnt<nfields;colcnt++) {
+                //int dataType;
+                //int length;
+                //int index;
+                //int indicator;
+                //index=colcnt+1;
+		column_types[colcnt]=PQftype(res2,colcnt);
+		column_sizes[colcnt]=PQfmod(res2,colcnt);
+		
+  }
+
+
+  for (a=0;a<nrows;a++) {
+  	for (b=0;b<nfields;b++) {
+		if (PQgetisnull(res2,a,b)) {
+			fprintf(unloadFile,"%s",delims);
+		} else {
+			static char *s=0;
+			static int sl=-1;
+			int nsl;
+			char *ptr;
+
+			ptr=PQgetvalue(res2,a,b);
+			nsl=strlen(ptr);
+			if (nsl>=sl) {
+				sl=nsl;
+				s=realloc(s,sl+2);
+			}
+			strcpy(s,ptr);
+			A4GL_trim(s);
+			if (strlen(s)) {
+				fprintf(unloadFile,"%s%s", s,delims);
+			} else {
+				fprintf(unloadFile," %s", delims);
+			}
+		}
+        }
+	fprintf(unloadFile,"\n");
+  }
+  fclose(unloadFile);
+  PQclear(res2);
+  free(fname); free(sqlStr);
+  free(column_sizes);
+  free(column_types);
+	
+
+  return;                       /* return 0; */
+}
+
 
 
 /* =============================== EOF ============================== */

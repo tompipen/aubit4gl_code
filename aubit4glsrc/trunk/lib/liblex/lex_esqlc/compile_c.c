@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.215 2005-02-11 17:55:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.216 2005-03-01 18:23:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.215 2005-02-11 17:55:10 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.216 2005-03-01 18:23:35 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2820,7 +2820,7 @@ print_exit_program (int has_expr)
 
   if (doing_esql ())
     {
-      printc ("if (A4GL_esql_db_open(-1,0,0)) {");
+      printc ("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
       print_close ('D', "");
       printc ("}");
     }
@@ -4887,7 +4887,7 @@ print_main_end (void)
 {
   if (doing_esql ())
     {
-      printc ("if (A4GL_esql_db_open(-1,0,0)) {");
+      printc ("if (A4GL_esql_db_open(-1,0,0,\"\")) {");
       print_close ('D', "");
       printc ("}");
     }

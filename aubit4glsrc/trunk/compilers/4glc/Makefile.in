@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.87 2005-02-26 14:08:19 mikeaubury Exp $
+# $Id: Makefile.in,v 1.88 2005-03-01 18:22:24 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -70,7 +70,7 @@ CMODS_LIB       =\
 				dim.c \
 				field_handling.c \
 				globals.c \
-				import.c labels.c \
+				import.c labels.c insert_curs.c \
 				rules/generated/kw.c \
 				list.c lexer.c lex.c \
 				memfile.c mod.c map.c \
