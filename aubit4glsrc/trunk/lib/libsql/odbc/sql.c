@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.64 2003-08-25 11:30:38 mikeaubury Exp $
+# $Id: sql.c,v 1.65 2003-08-26 04:38:44 afalout Exp $
 #
 */
 
@@ -1308,12 +1308,13 @@ int
 A4GLSQL_init_connection (char *dbName)
 {
   char empty[10] = "None";
-  char *u, *p, *FullPathDBname;
+  char *u, *p;
   HDBC *hh = 0;
   int rc;
-  char a[128], b[128], tmp[2048];
-
 #ifdef SQLITEODBC
+  char a[128], b[128], tmp[2048];
+  char *FullPathDBname;
+
 
 	A4GL_debug("SQLITE special...");
 
@@ -2380,25 +2381,30 @@ A4GLSQL_get_datatype (char *db, char *tab, char *col)
 static int
 conv_sqldtype (int sqldtype, int sdim)
 {
-  int ndtype;
+int ndtype;
 
-  if (sqldtype==SQL_TYPE_DATE) return DTYPE_DATE;
+//#if (ODBCVER >= 0x0300)
+	#ifdef SQL_TYPE_DATE
+	if (sqldtype==SQL_TYPE_DATE) return DTYPE_DATE;
+	#endif
 
-  if (sqldtype >= 0)
-    ndtype = convpos_sql_to_4gl[sqldtype];
-  else
-    ndtype = convneg_sql_to_4gl[sqldtype * -1];
-  if (ndtype == 0)
+	if (sqldtype >= 0)
+    	ndtype = convpos_sql_to_4gl[sqldtype];
+	else
+	    ndtype = convneg_sql_to_4gl[sqldtype * -1];
+
+	if (ndtype == 0)
     {
-#ifdef DEBUG
+	#ifdef DEBUG
       A4GL_debug ("Encoding string size : %d", sdim);
-#endif
+	#endif
       ndtype = ENCODE_SIZE (sdim);
     }
-#ifdef DEBUG
-  A4GL_debug ("Datatype (%d,%d) is 0x%x ", sqldtype, sdim, ndtype);
-#endif
-  return ndtype;
+
+	#ifdef DEBUG
+	A4GL_debug ("Datatype (%d,%d) is 0x%x ", sqldtype, sdim, ndtype);
+	#endif
+	return ndtype;
 }
 
 /**

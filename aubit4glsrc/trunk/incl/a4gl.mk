@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.40 2003-08-23 00:42:58 afalout Exp $
+#	 $Id: a4gl.mk,v 1.41 2003-08-26 04:38:44 afalout Exp $
 
 ##########################################################################
 #
@@ -36,9 +36,15 @@ ifndef AMAKE
 endif
 
 #Files compiler uses as source files:
-#FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
-4GL_SRC_SUFFIXES	= .4gl .per .msg
+4GL_SRC_SUFFIXES	=.4gl .per .msg
 
+ifdef COMSPEC
+    SH				=bash
+else
+    SH				=sh
+endif
+
+#------- end of common stuff ------------
 
 #Despite of the use of 2>/dev/null, this will print rubbish (À&@À&@) to stdout when
 #aubit-config is not installed yet. How can I prevent this?
@@ -55,41 +61,52 @@ endif
 #Name of the warper script for allAubit commands, that we expect in the PATH
 AUBIT_WRAPER		=aubit
 
-ifdef COMSPEC
-    SH				=bash
-else
-    SH				=sh
-endif
-
+###########################
+#Define command to be used to run Aubit compiler executbles
 #AUBIT_CMD   		=${SH} ${AUBIT_WRAPER}
 AUBIT_CMD   		=${AUBIT_WRAPER}
 
+###########################
 #do we want to use 4glpc shell script, or will we invoke 4glc directly
-USE_4GLPC           =0
-#USE_4GLPC           =1
+#on CygWin (not MinGW) we have to use 4glpc because of the bug in getopt_long()
+#To find out iw wae are using MinGW, we can try:
+ifdef COMSPEC
+	MINGW			:=$(shell mingw32-gcc --version 2>/dev/null)
+	ifeq "${MINGW}" ""
+		USE_4GLPC	=1
+    else            
+		USE_4GLPC	=0
+    endif
+endif
+#
 
 ###########################
 #If this compilers needs objects ar run-time, set to 'yes':
+#note: applies only to static objects, not shared libraries
 A4GL_INST_OBJ		=no
 
 ###########################
-#If this compiler uses C compiler to create native executables, set thi to 'yes':
+#If this compiler uses C compiler to create native executables, set this to 'yes':
 A4GL_IS_C_COMPILER	=yes
 
 ###########################
 #Name of C compiler used to compile Aubit created C files, and for linking objects:
+#FIXME: why do we need this? 4glpc and 4glc should do this...
 AUCC				=gcc
 
+###########################
+#Define libraryes and paths to link compiled programs with
+#FIXME: why do we need this? 4glpc and 4glc should do this...
 A4GL_LINKLIBS       =-laubit4gl
 A4GL_LINKLIBS_LFLAGS=-L${AUBITDIR}/lib
 
 ###########################
 #Flags to C compiler for compiling objects:
+#FIXME: why do we need this? 4glpc and 4glc should do this...
 AUCC_FLAGS			=-g -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 
 ###########################
-# A4GL C-code Compiler
-#should I use 4glc instead 4glpc here?
+# A4GL C-code Compiler command
 ifeq "${USE_4GLPC}" "1"
 	A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} 4glpc
 else
@@ -113,7 +130,6 @@ A4GL_FC_FLAGS   =
 
 ###########################
 # A4GL Message Compiler
-#A4GL_MC_CMD     = ${AUBIT_WRAPER} mkmess
 A4GL_MC_CMD     = ${AUBIT_WRAPER} amkmessage
 A4GL_MC_FLAGS   =
 
@@ -124,16 +140,13 @@ A4GL_CL         = ${A4GL_CL_ENV} ${A4GL_CL_CMD} ${A4GL_CL_FLAGS}
 A4GL_FC         = ${A4GL_FC_CMD} ${A4GL_FC_FLAGS}
 A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 
-#A4GL_LINKLIBS A4GL_LINKLIBS_LFLAGS
 
 #######################
 # Define suffixes which are recognised.
-
 #NOTE: variable names and settings used here are identical to Aubit resource.c
 
 #Executable:
 A4GL_EXE_EXT=.4ae
-
 #static object:
 A4GL_OBJ_EXT=.ao
 #shared object:
@@ -142,37 +155,34 @@ A4GL_SOB_EXT=.aso
 A4GL_LIB_EXT=.aox
 #shared library:
 A4GL_SOL_EXT=.asx
-
+#Form file:
 A4GL_FRM_BASE_EXT=.afr
+#Menu file
 A4GL_MNU_BASE_EXT=.mnu
+#Packer extensions (added to resource files: form/menu...)
 A4GL_XML_EXT=.xml
 A4GL_PACKED_EXT=.dat
+#help file
+A4GL_HLP_EXT=.hlp
+#ace intermediate file (to be converted to 4gl, or run using Perl aace runner)
+#A4GL_ACERC_EXT=.aarc.xml
+A4GL_ACERC_EXT=.aarc
 
 
 #This to composite variables (A4GL_MNU_EXT and A4GL_FRM_EXT exist only in Amake
+#FIXME: reverse => ${A4GL_FRM_BASE_EXT}${A4GL_XML_EXT}
 ifeq "${A4GL_CURR_PACKER}" "XML"
 	#Compiled form
-	#FIXME: reverse => xml.afr
 	A4GL_FRM_EXT=${A4GL_FRM_BASE_EXT}${A4GL_XML_EXT}
-
 	#Compiled menu:
-	#FIXME: reverse => xml.mnu
 	A4GL_MNU_EXT=${A4GL_MNU_BASE_EXT}${A4GL_XML_EXT}
 endif
 ifeq "${A4GL_CURR_PACKER}" "PACKED"
 	#Compiled form
 	A4GL_FRM_EXT=${A4GL_FRM_BASE_EXT}${A4GL_PACKED_EXT}
-
 	#Compiled menu:
 	A4GL_MNU_EXT=${A4GL_MNU_BASE_EXT}${A4GL_PACKED_EXT}
 endif
-
-#Compiler help
-A4GL_HLP_EXT=.hlp
-
-#ace intermediate file (to be converted to 4gl, or run using Perl aace runner)
-#A4GL_ACERC_EXT=.aarc.xml
-A4GL_ACERC_EXT=.aarc
 
 #Files that compiler created, but are not neded at run-time, that are safe to delete:
 A4GL_TMP_SUFFIXES_DELETE=${A4GL_OBJ_EXT} ${A4GL_LIB_EXT} .err .glb
