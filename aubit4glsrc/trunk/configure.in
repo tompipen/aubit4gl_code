@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.138 2003-01-17 23:03:17 afalout Exp $
+dnl # $Id: configure.in,v 1.139 2003-01-22 10:55:28 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3205,6 +3205,13 @@ fi
 
 PHP_CONFIGURE_PART(Creating files:)
 AC_OUTPUT
+
+
+if test "$AUBIT_SOURCE" = "1" ; then
+	echo "Running configure for FglDoc..."
+	cd tools/fgldoc; configure; cd -
+fi
+
 
 ## ==================================================================
 ##                Warnings and exit messages

@@ -28,7 +28,7 @@
 # ==================================================================
 
 #
-# $Id: Makefile.in,v 1.2 2003-01-14 08:45:46 saferreira Exp $
+# $Id: Makefile.in,v 1.3 2003-01-22 10:55:40 afalout Exp $
 #
 
 ROOT    =../../../..
@@ -90,7 +90,7 @@ test_informix_util.o: ${SOURCES_ESQL}
 
 clean:
 	${RM} *.o test_informix *.exe *.bak *.out fgl_dml_suite.c fgl_dml_suite.h \
-    test_informix_util.c 
+    test_informix_util.c
 
 # =============================== EOF ===============================
 

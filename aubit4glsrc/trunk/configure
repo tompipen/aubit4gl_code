@@ -20367,6 +20367,11 @@ if test "$no_create" != yes; then
   $ac_cs_success || { (exit 1); exit 1; }
 fi
 
+if test "$AUBIT_SOURCE" = "1" ; then
+	echo "Running configure for FglDoc..."
+	cd tools/fgldoc; configure; cd -
+fi
+
 ## ==================================================================
 ##                Warnings and exit messages
 ## ==================================================================

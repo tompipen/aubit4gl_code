@@ -30,6 +30,7 @@ VARIABLE A4GL_MENUTYPE
 /* int mn_itemexists (char *menuitem) */
 mn_itemexists char* menuitem -> int
 
+
 /* char *mn_caption(char *s) */
 
 /* char *mn_help(char *s) */

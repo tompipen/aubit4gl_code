@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.2 2003-01-21 09:37:00 mikeaubury Exp $
+# $Id: loadmenu.c,v 1.3 2003-01-22 10:55:38 afalout Exp $
 #*/
 
 /**
@@ -407,11 +407,18 @@ mn_itemexists (char *menuitem)
 void
 show_menu (char *menuid, void *handler)
 {
-  char *fname;
-  void (*p)(char *);
+char *fname;
+void (*p)(char *);
+char buff[256];
 
   fname = char_pop ();
   p=handler;
+
+  sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_MNU_EXT")); // .xml is added later in libPACKER_
+
+  fname = (char *) buff;
+  debug("show_menu >%s<",fname);
+
   load_menu (fname, menuid, 0, handler);
   p("__BSM__");
 }

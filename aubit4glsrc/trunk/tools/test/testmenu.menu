@@ -9,10 +9,11 @@ END MENU
 MENU mymenu
  
         SUBMENU mn_file "_File" USE file
+
  
         SUBMENU mn_edit "_Edit"
-                OPTION mn_cut    "Cut"
-                OPTION mn_copy  "Copy"
+                OPTION mn_cut  IMAGE="gui/img1.xpm"  "Cut" 
+                OPTION mn_copy Image="gui/linux.xpm" "Copy"	
                 OPTION mn_paste "Paste"
                 SUBMENU mn_zoom "Zoom"
                         OPTION mn_in "In"

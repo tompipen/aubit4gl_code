@@ -1,6 +1,6 @@
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.17 2003-01-21 08:25:51 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.18 2003-01-22 10:55:38 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -92,14 +92,18 @@ A4GL_MNU_EXT=.mnu.xml
 #Files compiler uses as source files:
 #FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
 4GL_SRC_SUFFIXES	= .4gl .per .msg
-#Files that compiler created, but are not neded at run-time:
-A4GL_TMP_SUFFIXES   = ${A4GL_OBJ_EXT} .c .h .err .glb
+#Files that compiler created, but are not neded at run-time, that are safe to delete:
+A4GL_TMP_SUFFIXES_DELETE=${A4GL_OBJ_EXT} .err .glb
+#All files that compiler created, but are not neded at run-time
+A4GL_TMP_SUFFIXES   = ${A4GL_TMP_SUFFIXES_DELETE} .c .h
 #Files that compiler created, needed at run-time
 A4GL_SUFFIXES 		= ${A4GL_PRG_EXT} ${A4GL_FRM_EXT} ${A4GL_HLP_EXT} ${A4GL_MNU_EXT}
 .SUFFIXES:	${A4GL_SUFFIXES} ${4GL_SRC_SUFFIXES} ${A4GL_TMP_SUFFIXES}
 
 #Files we need to delete, to clean everything compiler creates
-A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES)) $(addprefix *,$(A4GL_SUFFIXES)) *.bak *.glb
+#Note that we should NOT blidly delete all .c and .h files, since they may
+#belong to C programs that we did not create
+A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4GL_SUFFIXES)) *.bak
 
 # ====================== Rules for compiling A4GL ==========================
 
@@ -186,9 +190,13 @@ endif
 endif
 
 ####################################
-#For old makefiles that still use .afr extension:
-%.afr: %${A4GL_FRM_EXT}
-#	${FAIL_CMPL_FRM}${A4GL_FC} $<
+#For old makefiles that still use .afr extension - this will still produce
+#Aubit default form extension file - and NOT the .afr file !
+#FIXME: why is redirection to aboce "real" rule not working?
+#%.afr: %${A4GL_FRM_EXT}
+%.afr: %.per
+#	${FAIL_CMPL_FRM}${A4GL_FC} $< $@
+	${FAIL_CMPL_FRM}${A4GL_FC} $<
 #	mv $*${A4GL_FRM_EXT} $@
 
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.107 2003-01-21 08:25:02 afalout Exp $
+# $Id: Makefile.in,v 1.108 2003-01-22 10:55:25 afalout Exp $
 #
 
 ## ==================================================================
@@ -201,7 +201,7 @@ doxy.install.search:
 ##                              Strip
 ## ==================================================================
 
-#cuts size by more then 50%, but it makes it difficult to debug the core dumps 
+#cuts size by more then 50%, but it makes it difficult to debug the core dumps
 #if the debugging info has been stripped out.
 
 # It should be optional, at most.  The increased size does not impact the
@@ -223,17 +223,20 @@ strip:
 #FIXME: "clean" should clean intermediate files resulting from compile, but will skip
 #executables and objects that are needed for instalation. After "clean", it should
 #still be possiblt to do "make install"
-.PHONY : clean
 clean:
 	@echo FIXME: only cleanall works
 
 #will clean EVERYTHING that is not source file from CVS
-distclean: clean.all clean.config
+distclean: clean.all clean.tools clean.distclean clean.config
 	@echo Aubit 4gl compiler source tree now distribution clean
+
+clean.distclean:
+	$(MAKE) -C tools/fgldoc distclean
 
 #will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
-cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install clean.swig clean.project
+cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
+		clean.swig clean.project
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean
 	$(MAKE) -C lib/libui/ui_console clean
@@ -253,25 +256,40 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	$(MAKE) -C compilers/ace clean
 	$(MAKE) -C compilers/helpcompile clean
 	$(MAKE) -C compilers/xgen clean
+	$(MAKE) -C common/dataio clean
+	${RM} lib/swig/lib_wrap.doc
 	$(MAKE) -C tools/test clean
 	$(MAKE) -C tools/test/gui clean
+	@echo Aubit 4gl compiler source tree is now clean
+
+
+#user is expected to manually invole this, so we save some time since usually
+#we just want to clean compiler:
+clean.tools:
 	$(MAKE) -C tools/test/db clean
+	$(MAKE) -C tools/test/db/informix clean
+	$(MAKE) -C tools/test/db/postgresql clean
 	$(MAKE) -C tools/ide clean
 	$(MAKE) -C tools/html clean
 	$(MAKE) -C tools/jabber clean
 	$(MAKE) -C tools/adbaccess clean
 	$(MAKE) -C tools/adbload clean
 	$(MAKE) -C tools/odbctest clean
-	$(MAKE) -C common/dataio clean
-	${RM} lib/swig/lib_wrap.doc
-	@echo Aubit 4gl compiler source tree is now clean
+	$(MAKE) -C tools/4gl_beautify/dbbeauty clean
+	$(MAKE) -C tools/4gl_beautify/iid clean
+	$(MAKE) -C tools/4gl_beautify/infmx_tidy clean
+	$(MAKE) -C tools/4glunit clean
+	$(MAKE) -C tools/fgldoc clean
+	(cd tools/4gltree; ${RM} *.bak)
+	@echo Aubit 4gl compiler tools source tree is now clean
 
 #This will clean everything created with Autoconf configure script:
 clean.config: clean.configure
 clean.configure: clean.makefiles clean.settings clean.splint
 #"configure" _IS_ in CVS
 	${RM} config.log config.status incl/config.h incl/a4gl_incl_config.h \
-	docs/doxy/Doxyfile etc/aubit-rpm.spec configure.lineno libtool
+	docs/doxy/Doxyfile etc/aubit-rpm.spec configure.lineno libtool \
+    bin/aubitbuild.sh etc/aubit-InnoSetup.iss incl/stamp-h
 
 clean.settings:
 	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv etc/aubitrc
@@ -300,7 +318,13 @@ clean.makefiles:
 	lib/resource/Makefile tools/loadmap/Makefile lib/libaubit4gl/Makefile \
 	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile \
 	lib/libui/ui_gtk/Makefile Makefile \
-	lib/libexdata/Makefile lib/libsql/postgresql/Makefile
+	lib/libexdata/Makefile lib/libsql/postgresql/Makefile \
+    lib/libform/form_generic/Makefile lib/libmenu/menu_generic/Makefile \
+	lib/libsql/sapdb/Makefile tools/4glunit/Makefile \
+	tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile \
+    tools/fgldoc/Makefile
+
+
 
 clean.splint:
 	${RM} lclint.log compilers/fcompile/lclint.log compilers/helpcompile/lclint.log \
@@ -335,7 +359,8 @@ clean.bin:
 	*.bak .*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
 	4glp${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
 	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
-	aace adecompile xgen \
+	aace${EXE} aace_4gl${EXE} aace_perl${EXE} adecompile xgen dbbeauty *.err \
+    iid infmx_tidy \
 	)
 
 clean.etc:

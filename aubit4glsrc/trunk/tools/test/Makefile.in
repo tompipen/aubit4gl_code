@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.31 2003-01-21 08:25:58 afalout Exp $
+# $Id: Makefile.in,v 1.32 2003-01-22 10:55:39 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -183,7 +183,7 @@ clean:
 	*.err *.c torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl \
 	*.42r gui/*.err pdf_report rr1.pdf gui/*.glb *.ao *.log *.4ge *.pl *.pm \
 	test_build.c .\#* .*.bak assoc *.frm.xml testmpz file testmenu *.afr.xml \
-	*.mnu.xml
+	*.mnu.xml solitaire
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.6 2003-01-21 08:25:55 afalout Exp $
+# $Id: pack_xml.c,v 1.7 2003-01-22 10:55:38 afalout Exp $
 #*/
 
 /**
@@ -250,7 +250,7 @@ open_packer (char *basename, char dir)
 {
 char buff[256];
 
-  sprintf(buff,"Basename=%s dir=%c\n",basename,dir);
+  sprintf(buff,"Basename=>%s< dir=%c\n",basename,dir);
   debug(buff);
   sprintf (buff, "%s%s", basename,acl_getenv ("A4GL_XML_EXT"));
   debug(buff);

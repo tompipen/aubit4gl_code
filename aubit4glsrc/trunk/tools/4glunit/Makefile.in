@@ -5,3 +5,5 @@
 Example4glUnit.4gi :  Example4glUnit.4go 4glUnit.4go
 	cat $+ > $@
 
+clean:
+	rm -f *.bak *.ao *.4ae *.err *.c *.h *.glb

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.3 2003-01-20 09:50:37 mikeaubury Exp $
+# $Id: cr_funcs.c,v 1.4 2003-01-22 10:55:39 afalout Exp $
 #*/
 
 /**
@@ -62,24 +62,7 @@ extern int widget_next_size;
 =====================================================================
 */
 
-
 GtkWidget * make_pixmap_from_mem (char *img);
-#ifdef OLD_INCL
-	GtkWidget * make_pixmap (char *filename);
-	GtkWidget * cr_picture (void);
-	GtkWidget * cr_button (void);
-	GtkWidget * cr_radio (void);
-	GtkWidget * cr_textbox (void);
-	GtkWidget * cr_label (void);
-	GtkWidget * cr_check (void);
-	GtkWidget * cr_combo (void);
-	GtkWidget * cr_list(void);
-	GtkWidget * cr_calendar (void);
-	GtkWidget * cr_scrollbar (void);
-#endif
-
-
-
 
 /*
 =====================================================================

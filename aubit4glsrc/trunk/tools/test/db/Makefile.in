@@ -26,7 +26,7 @@
 # Makefile for compiling the informix ESQL/C connection test.
 
 #
-# $Id: Makefile.in,v 1.13 2003-01-14 08:45:10 saferreira Exp $
+# $Id: Makefile.in,v 1.14 2003-01-22 10:55:40 afalout Exp $
 #
 
 ROOT    =../../..
@@ -75,7 +75,8 @@ no_check:
 ## ==================================================================
 
 clean:
-	${RM} *.o *.exe *.bak *.out fgl_dml_suite.c fgl_dml_suite.h *.4ae
+	${RM} *.o *.exe *.bak *.out fgl_dml_suite.c fgl_dml_suite.h *.4ae \
+    *.err *.glb
 
 # =============================== EOF ===============================
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.43 2003-01-14 06:27:07 psterry Exp $
+# $Id: Makefile.in,v 1.44 2003-01-22 10:55:38 afalout Exp $
 #
 
 ROOT    	=../..
@@ -257,7 +257,7 @@ clean : clean.generated
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
 		form_x_xdr.c form_x.h project.c core \
 		*.out *.glb *${SO_EXT_LINKABLE} *.a  *.o  *.bak *.dll *.stackdump *.err \
-		*.base *.exp *.def
+		*.base *.exp *.def .\#*
 
 clean.generated:
 	${RM} ${LIBROOT}/generated/errdefs ${LIBROOT}/generated/tmperrs.h \

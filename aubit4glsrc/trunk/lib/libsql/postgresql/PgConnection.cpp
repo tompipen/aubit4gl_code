@@ -161,3 +161,20 @@ PgConnection::~PgConnection()
   free(databaseName);
   free(connectionName);
 }
+
+/*
+ conversion can be automated for the native Postgres interface
+ if you just include the following function :
+
+*/
+
+
+char *
+A4GLSQL_dbms_dialect( void )
+{
+	return "POSTGRESQL";
+}
+
+
+// ================================ EOF =============================
+
