@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.21 2003-03-14 07:55:53 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.22 2003-03-20 09:52:02 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -508,7 +508,7 @@ if test "$MAKE" = "1"; then
 		
 		#increase build number, but doing this on more then one computer will cause
         #problems with "cvs update"
-		if [ "$HOSTNAME" = "aptiva" ]; then
+		if [ "$HOSTNAME" = "aptiva" || "$HOSTNAME" = "aptiva.falout.org" ]; then
 			EXEC="make build"; runexec
         else
             echo "HOSTNAME=$HOSTNAME, will NOT increase build number."

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.27 2003-03-10 16:36:03 mikeaubury Exp $
+# $Id: fcompile.c,v 1.28 2003-03-20 09:53:15 afalout Exp $
 #*/
 
 /**
@@ -233,8 +233,7 @@ main (int argc, char *argv[])
     {
 
       printf ("Error opening file : %s\n", c);
-
-      exit (0);
+      exit (1);
 
     }
   init_form ();

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.16 2003-03-10 18:41:26 mikeaubury Exp $
+# $Id: compile.c,v 1.17 2003-03-20 09:53:14 afalout Exp $
 #*/
 
 /**
@@ -151,6 +151,8 @@ initArguments (int argc, char *argv[])
   char l_libs[1028] = "";
   char buff[4000] = "";
   char all_objects[4000] = "";
+char extra_ldflags[1024] = "";
+
   static FILE *filep = 0;
   static char output_object[128] = "";
   static struct option long_options[] = {
@@ -184,7 +186,7 @@ initArguments (int argc, char *argv[])
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0)
     {
       //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
-      strcpy (opt_list, "Gs:kKco::l::?hSVvftd:");
+      strcpy (opt_list, "Gs:kKco::l::L::?hSVvftd:");
 		#ifdef DEBUG
 			debug ("Compiling to C code\n");
 		#endif
@@ -206,7 +208,7 @@ initArguments (int argc, char *argv[])
     }
   else
     {
-      printUsage_help (argv);
+      printUsage (argv);
       exit (0);
     }
 
@@ -312,13 +314,21 @@ initArguments (int argc, char *argv[])
 		#ifdef DEBUG
 			  debug ("Pass trough option: %s\n", optarg);
 		#endif
-	  strcat (pass_options, "-l");
-	  strcat (pass_options, optarg);
-	  strcat (pass_options, " ");
+	  strcat (extra_ldflags, "-l");
+	  strcat (extra_ldflags, optarg);
+	  strcat (extra_ldflags, " ");
 	  break;
 
+	case 'L':		// LD -L flags for linking extra libraries
+		#ifdef DEBUG
+			  debug ("Pass trough option: %s\n", optarg);
+		#endif
+	  strcat (extra_ldflags, "-L");
+	  strcat (extra_ldflags, optarg);
+	  strcat (extra_ldflags, " ");
+	  break;
 
-	case 'd':		// Extra libraries to link with
+	case 'd':		// Name of the database to compile against - DEFINE ... LIKE ... (?)
 	  printf("\n\nDB=%s\n\n",optarg);
 	  default_database=strdup(optarg);
 	  break;
@@ -332,7 +342,7 @@ initArguments (int argc, char *argv[])
 	  si = atoi (optarg);
 	  if (si != 0 && si != 1)
 	    {
-	      printUsage_help (argv);
+	      printUsage (argv);
 	      exit (1);
 	    }
 	  setGenStackInfo (si);
@@ -390,7 +400,7 @@ initArguments (int argc, char *argv[])
   if (optind >= argc)
     {
       printf ("No file name defined\n");
-      printUsage_help (argv);
+      printUsage (argv);
       exit (1);
     }
 
@@ -515,9 +525,9 @@ initArguments (int argc, char *argv[])
       else
 	{
 	  /* just pass stuff you don't understand to CC */
-#ifdef DEBUG
-	  debug ("Pass trough option: %s\n", c);
-#endif
+		#ifdef DEBUG
+		  debug ("Pass trough option: %s\n", c);
+		#endif
 
 	  strcat (pass_options, c);
 	  strcat (pass_options, " ");
@@ -536,59 +546,55 @@ initArguments (int argc, char *argv[])
   if (compile_exec)
     {
       debug ("Linking exec\n");
-#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
-
+	#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
     //We are on UNIX
-	  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s",
+	  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, l_libs,
-	       pass_options);
-#else
+	       pass_options,extra_ldflags);
+	#else
 	  //We are on Windows
 	  //WARNING: libs must be at the end
-      sprintf (buff, "%s %s -o %s %s %s %s",
+      sprintf (buff, "%s %s -o %s %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, pass_options,
-	       l_libs);
-#endif
+	       l_libs, extra_ldflags);
+	#endif
     }
 
   if (compile_lib)
     {
-#ifndef __MINGW32__
+	#ifndef __MINGW32__
       debug ("Linking static library\n");
 
-      sprintf (buff, "%s -static %s -o %s %s %s -shared %s",
+      sprintf (buff, "%s -static %s -o %s %s %s -shared %s %s",
 	       gcc_exec, all_objects, output_object, pass_options, l_path,
-	       l_libs);
-#else
+	       l_libs,extra_ldflags);
+	#else
       /* On Windows, there can be no unresolved dependencies at link time - so we allways must
          link with libaubit4gl - but we do not make any static Aubit libraries any more, so we
          must link with .dll - meaning that we must force shared linking even when user specified
          static flag */
-      debug
-	("Static linking specified - forcing shared linking on Windows\n");
+      debug ("Static linking specified - forcing shared linking on Windows\n");
       compile_lib = 0;
       compile_so = 1;
-#endif
+	#endif
     }
 
   if (compile_so)
     {
       debug ("Linking shared library\n");
-#ifndef __MINGW32__
-      sprintf (buff, "%s -shared %s -o %s %s %s %s",
+	#ifndef __MINGW32__
+      sprintf (buff, "%s -shared %s -o %s %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, l_libs,
-	       pass_options);
-#else
-      /* 
+	       pass_options,extra_ldflags);
+	#else
+      /*
          NOTE: we are acutally making a Window dll here.
          WARNING: libs must be at the end
          WARNING: without -L ld on Windows won't find it's own ass!!!! Not even in curren directory!!!
        */
-      sprintf (buff,
-	       "%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s",
-	       gcc_exec, output_object, all_objects, output_object,
-	       pass_options, l_path, l_libs);
-#endif
+      sprintf (buff,"%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s",
+	       gcc_exec, output_object, all_objects, output_object,pass_options, l_path, l_libs, extra_ldflags);
+	#endif
 
     }
 
@@ -987,9 +993,8 @@ void
 printUsage (char *argv[])
 {
   printf ("\n");
-  printf
-    ("Aubit 4GL compiler usage: %s [options] -oOutFile.ext file.ext [file.ext ...]\n",
-     argv[0]);
+  printf ("Aubit 4GL compiler usage:\n");
+  printf (" %s [options] -oOutFile.ext file.ext [file.ext ...]\n",argv[0]);
   printf ("  Try -help for more.\n");
   printf ("\n");
 }

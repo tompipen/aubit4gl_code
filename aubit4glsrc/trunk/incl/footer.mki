@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.32 2003-03-13 01:57:06 afalout Exp $
+#	 $Id: footer.mki,v 1.33 2003-03-20 09:53:15 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -131,7 +131,7 @@ endif
 #       Set extensions for compiling library/objects/forms/help files
 # =======================================================================
 
-#Libraries (as specified by make file as part of ptogram):
+#Libraries (as specified by make file as part of the program):
 	ifeq "$(POINTTOSTORE)" "1"
 		ADDLIBSTORE=$(LIBSTORE)
 	endif
@@ -335,7 +335,6 @@ endif
 #This is an explicit rule - vpath will not be searched - use implicit rule instead?
 #${PROG.4ae}:${AUBIT_DEPS}
 ${PROG.4ae}:${AUBIT_LINK_DEPS}
-#	@echo "AUBIT_DEPS:  ${AUBIT_DEPS}"
 ifeq "$(PROGTYPE)" ".lib" 	#------------------- linking library -----------------------
 ifeq "${A4GL_USE_LD}" "yes" #using ld
 #-fPIC will apparently not work on AIX - we should autoconf this file
@@ -378,7 +377,7 @@ else                        #using 4glc
             allf="$$allf $$afile" ; \
         fi ; \
     done; \
-	EXEC="${A4GL_CC} $$allf -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}" ;\
+	EXEC="${A4GL_CC} $$allf -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS} ${PATH.link} ${FILES.aubit.link}" ;\
     echo $$EXEC; \
 	$$EXEC; \
 	exit $$?;
