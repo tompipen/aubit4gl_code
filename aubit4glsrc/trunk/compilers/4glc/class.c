@@ -29,6 +29,7 @@ static void write_variable_header (struct variable *v);
 static void write_variable_simple (struct variable *v);
 static void write_variable_linked (struct variable *v);
 static void write_variable_record (struct variable *v);
+static void write_variable_object (struct variable *v);
 static void write_variable_assoc (struct variable *v);
 static void write_variable_constant (struct variable *v);
 static void read_class_int (char *name, int *val);
@@ -39,6 +40,7 @@ static void read_variable_header (struct variable *v);
 static void read_variable_simple (struct variable *v);
 static void read_variable_linked (struct variable *v);
 static void read_variable_record (struct variable *v);
+static void read_variable_object (struct variable *v);
 static void read_variable_assoc (struct variable *v);
 static void read_variable_constant (struct variable *v);
 //static void generate_globals_for (char *s);
@@ -79,6 +81,21 @@ write_class_int (char *name, int val)
 {
   sprintf (tmpbuff, "%s=%d\n", name, val);
   do_append ();
+}
+
+
+int class_call(char *s,char *f,int args) {
+char buff[512];
+char *fname;
+strcpy(buff,s);
+strcat(buff,acl_getenv("A4GL_DLL_EXT"));
+fname=A4GL_fullpath_classpath(buff);
+printf("fname=%p (%s)\n",fname,buff);
+if (fname==0) {
+	a4gl_yyerror("Unable to open class file");
+	return;
+}
+return A4GL_call_4gl_dll(fname,f,args);
 }
 
 
@@ -217,6 +234,12 @@ write_variable_header (struct variable *v)
       return;
     }
 
+  if (v->variable_type == VARIABLE_TYPE_OBJECT)
+    {
+      write_variable_object (v);
+      return;
+    }
+
   if (v->variable_type == VARIABLE_TYPE_ASSOC)
     {
       write_variable_assoc (v);
@@ -336,6 +359,51 @@ write_variable_record (struct variable *v)
   //printf ("EVR\n");
 }
 
+
+
+/**
+ *
+ *
+ * @param
+ */
+static void
+write_variable_object (struct variable *v)
+{
+  int a;
+  //printf("Count=%d\n", v->data.v_record.record_cnt);
+  //printf ("VR\n");
+  write_class_int ("COUNT", v->data.v_record.record_cnt);
+  if (v->data.v_record.record_cnt == 0)
+    return;
+
+  if (v->data.v_record.linked == 0)
+    {
+      write_class_int ("LINKED", 0);
+    }
+  else
+    {
+
+      if (v->data.v_record.linked->tabname)
+	{
+	  write_class_int ("LINKED", 1);
+	  write_variable_linked (v);
+	}
+      else
+	{
+	  write_class_int ("LINKED", 0);
+	}
+    }
+
+
+  for (a = 0; a < v->data.v_record.record_cnt; a++)
+    {
+      //printf ("Writing %s ->%d of %d\n", v->names.name, a, v->data.v_record.record_cnt);
+      //fflush(stdout);
+      write_variable_header (v->data.v_record.variables[a]);
+    }
+	write_class_string("OBJECT_TYPE",v->data.v_record.object_type);
+  //printf ("EVR\n");
+}
 
 
 
@@ -543,12 +611,23 @@ printf("read_class : %s\n",s);
 	int a;
 	struct variable v;
 	char buff[256];
+	int sz;
 	printf("dim_Set_name : %s\n",s);
-/*
-	v->names.name=strdup(s);
-	v->names.alias=name;
-	v->names.next=0;
-*/
+	sz=class_call(s,"aclfglclass__sizeof",0);
+	printf("sz=%d\n",sz);
+	push_scope();
+	sprintf(buff,"%d",sz);
+	set_current_variable_scope('T');
+	push_name(s,0);
+	push_record();
+	//push_name("_object_type",0);
+	//push_type("-","4",0);
+	push_name("object_type",0);
+	push_type("long","4",0);
+	push_name("object_space",0);
+	push_type("char",buff,0);
+	pop_record();
+	pop_scope();
 
 
 	//dim_set_name(s);
@@ -559,7 +638,6 @@ printf("read_class : %s\n",s);
     }
   return 1;
 }
-
 
 
 void
@@ -723,10 +801,17 @@ read_variable_header (struct variable *v)
     {
       read_variable_simple (v);
     }
+
   if (v->variable_type == VARIABLE_TYPE_RECORD)
     {
       read_variable_record (v);
     }
+
+  if (v->variable_type == VARIABLE_TYPE_OBJECT)
+    {
+      read_variable_object (v);
+    }
+
   if (v->variable_type == VARIABLE_TYPE_ASSOC)
     {
       read_variable_assoc (v);
@@ -823,6 +908,50 @@ read_variable_record (struct variable *v)
     }
 
 }
+
+
+/**
+ *
+ *
+ * @param
+ */
+static void
+read_variable_object (struct variable *v)
+{
+  int a;
+  int is_linked;
+char buff[255];
+  v->data.v_record.linked = 0;
+  read_class_int ("COUNT", &v->data.v_record.record_cnt);
+  if (v->data.v_record.record_cnt == 0)
+    {
+
+      return;
+    }
+
+  read_class_int ("LINKED", &is_linked);
+
+  //printf("Read record : %d %d\n",v->data.v_record.record_cnt, is_linked);
+
+  if (is_linked)
+    {
+      v->data.v_record.linked = malloc (sizeof (struct linked_variable));
+      read_variable_linked (v);
+    }
+
+  v->data.v_record.variables =
+    malloc (sizeof (struct variable *) * v->data.v_record.record_cnt + 1);
+
+  for (a = 0; a < v->data.v_record.record_cnt; a++)
+    {
+      v->data.v_record.variables[a] = malloc (sizeof (struct variable));
+      read_variable_header (v->data.v_record.variables[a]);
+    }
+
+  read_class_string ("OBJECT_TYPE", buff,255);
+	v->data.v_record.object_type=strdup(buff);
+}
+
 
 /**
  *

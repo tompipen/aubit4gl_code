@@ -9,6 +9,7 @@
 #define VARIABLE_TYPE_ASSOC     2
 #define VARIABLE_TYPE_CONSTANT  3
 #define VARIABLE_TYPE_FUNCTION_DECLARE  4
+#define VARIABLE_TYPE_OBJECT    5
 
 
 // This is used to store a list of
@@ -49,6 +50,7 @@ struct record_variable
   int record_alloc;		// Number of slots allocated
   int record_cnt;		// Number of slots used
   struct linked_variable *linked;	// Link to any table + pk or 0
+  char *object_type; // Used for OBJECTS and RECORDs - for a record this will be 0
 };
 
 

@@ -327,7 +327,9 @@ dtype :
 		} 
 	|	INTEGER {
 		   push_type("long",0,0);
-		   
+		} 
+	|	SERIAL {
+		   push_type("long",0,0);
 		} 
 	|	AS define_ident {
 		    A4GL_debug("Using specified type...");

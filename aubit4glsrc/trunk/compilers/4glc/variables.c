@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.46 2004-08-10 19:36:00 whaslbeck Exp $
+# $Id: variables.c,v 1.47 2004-08-11 18:04:58 mikeaubury Exp $
 #
 */
 
@@ -52,7 +52,7 @@
 /* */
 
 extern char *outputfilename;
-#define PRINT_CONSTANTS
+//#define PRINT_CONSTANTS
 char scopes[200];
 int scopes_cnt=0;
 
@@ -305,6 +305,7 @@ variable_action (int category, char *name, char *type, char *n, char *function)
   static int adding_assoc = 0;
   struct name_list *ptr;
   struct variable *tmp_var;
+
 #define MODE_ADD_CONSTANT  	1
 #define MODE_ADD_RECORD    	2
 #define MODE_ADD_TYPE      	3
@@ -317,6 +318,7 @@ variable_action (int category, char *name, char *type, char *n, char *function)
 #define MODE_ADD_END_ASSOC	10
 #define MODE_ADD_FUNCTION	11
 #define MODE_ADD_DIM	12
+#define MODE_ADD_OBJECT	13
 
 /* DEBUGGING Stuff for mode settings... */
 #ifdef DEBUGGING
@@ -334,6 +336,7 @@ variable_action (int category, char *name, char *type, char *n, char *function)
     "ADD_END_ASSOC",
     "ADD_FUNCTION",
     "ADD_DIM"
+    "ADD_OBJECT"
   };
 #endif
 
@@ -393,6 +396,7 @@ A4GL_debug("scope=%c",scope);
     {
       mode = MODE_ADD_RECORD;
     }
+
   if (strcmp (name, "_ASSOCIATE") == 0 && mode == 0)
     {
       mode = MODE_ADD_ASSOC_ARRAY;
@@ -481,9 +485,22 @@ A4GL_debug("scope=%c",scope);
       curr_v[record_cnt]->data.v_record.record_cnt = 0;
       curr_v[record_cnt]->data.v_record.record_alloc = 0;
       curr_v[record_cnt]->data.v_record.linked = 0;
+      curr_v[record_cnt]->data.v_record.object_type = 0;
       record_cnt++;
       curr_v[record_cnt] = 0;	/* Make sure we're starting fresh...*/
       break;
+
+    case MODE_ADD_OBJECT:
+      curr_v[record_cnt]->variable_type = VARIABLE_TYPE_OBJECT;
+      curr_v[record_cnt]->data.v_record.variables = 0;
+      curr_v[record_cnt]->data.v_record.record_cnt = 0;
+      curr_v[record_cnt]->data.v_record.record_alloc = 0;
+      curr_v[record_cnt]->data.v_record.linked = 0;
+      curr_v[record_cnt]->data.v_record.object_type = "Yes";
+      record_cnt++;
+      curr_v[record_cnt] = 0;	/* Make sure we're starting fresh...*/
+      break;
+
 
     case MODE_ADD_ENDRECORD:
       curr_v[record_cnt] = 0;
@@ -786,7 +803,7 @@ add_to_scope (int record_cnt, int unroll)
     {
       /* We can add to an associative array - or a record....*/
 
-      if (curr_v[record_cnt - 1]->variable_type != VARIABLE_TYPE_RECORD
+      if (curr_v[record_cnt - 1]->variable_type != VARIABLE_TYPE_RECORD && curr_v[record_cnt - 1]->variable_type != VARIABLE_TYPE_OBJECT
 	  && curr_v[record_cnt - 1]->variable_type != VARIABLE_TYPE_ASSOC)
 	{
 	  /* We have a problem...*/
@@ -795,7 +812,7 @@ add_to_scope (int record_cnt, int unroll)
 	}
 
 
-      if (curr_v[record_cnt - 1]->variable_type == VARIABLE_TYPE_RECORD)
+      if (curr_v[record_cnt - 1]->variable_type == VARIABLE_TYPE_RECORD || curr_v[record_cnt - 1]->variable_type == VARIABLE_TYPE_OBJECT)
 	{
 	  variable_holder = &curr_v[record_cnt - 1]->data.v_record.variables;
 	  counter = &curr_v[record_cnt - 1]->data.v_record.record_cnt;
@@ -920,6 +937,7 @@ add_to_scope (int record_cnt, int unroll)
   if (record_cnt == 0 && get_current_variable_scope () != 'G'
       && (curr_v[record_cnt]->variable_type == VARIABLE_TYPE_SIMPLE
 	  || curr_v[record_cnt]->variable_type == VARIABLE_TYPE_RECORD
+	  || curr_v[record_cnt]->variable_type == VARIABLE_TYPE_OBJECT
 	  || curr_v[record_cnt]->variable_type == VARIABLE_TYPE_ASSOC))
     {
       char buff[256];
@@ -1028,7 +1046,7 @@ find_variable_in (char *s, struct variable **list, int cnt)
 	}
 
 
-      if (v->variable_type == VARIABLE_TYPE_RECORD)
+      if (v->variable_type == VARIABLE_TYPE_RECORD ||v->variable_type == VARIABLE_TYPE_OBJECT)
 	{
 
 
@@ -1258,7 +1276,7 @@ A4GL_debug("-->%s",s);
       return 1;
     }
 
-  if (ptr->variable_type == VARIABLE_TYPE_RECORD)
+  if (ptr->variable_type == VARIABLE_TYPE_RECORD || ptr->variable_type == VARIABLE_TYPE_OBJECT)
     {
       A4GL_debug ("Got a record - looks complicated..");
       return -2;
@@ -1375,6 +1393,8 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 	  dump_variable_records (v[a]->data.v_record.variables,
 				 v[a]->data.v_record.record_cnt,
 				 lvl + 1);
+
+
       for (c = 0; c < lvl; c++)
 	{
 	  printf ("  ");
@@ -1419,6 +1439,10 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 		printf(" FUNCTION\n");
 			break;
 
+
+	case VARIABLE_TYPE_OBJECT :
+		printf("Object\n");
+		break;
 
 	default:
 	  printf ("Unknown type : %d\n", v[a]->variable_type);
@@ -1724,7 +1748,7 @@ isvartype (char *s, int mode)
 	}
 
 
-      if (v->variable_type == VARIABLE_TYPE_RECORD)
+      if (v->variable_type == VARIABLE_TYPE_RECORD || v->variable_type == VARIABLE_TYPE_RECORD)
 	return 1;
       return 0;
 
@@ -2032,7 +2056,7 @@ split_record (char *s, struct variable **v_record, struct variable **v1,
 					     record_cnt - 1];
     }
 
-  if ((*v_record)->variable_type != VARIABLE_TYPE_RECORD)
+  if ((*v_record)->variable_type != VARIABLE_TYPE_RECORD && (*v_record)->variable_type != VARIABLE_TYPE_OBJECT)
     {
       printf ("Couldn't identify start as a record\n");
       return 0;
@@ -2177,7 +2201,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
       return list;
     }
 
-  if (v->variable_type == VARIABLE_TYPE_RECORD)
+  if (v->variable_type == VARIABLE_TYPE_RECORD || v->variable_type == VARIABLE_TYPE_OBJECT)
     {
 	int b0;
 	int b1;
@@ -2405,7 +2429,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
 
 
-  if (v_record->variable_type != VARIABLE_TYPE_RECORD)
+  if (v_record->variable_type != VARIABLE_TYPE_RECORD && v_record->variable_type != VARIABLE_TYPE_OBJECT)
     {
 
       if (strstr (s, ".*") != 0 && strlen (prefix) == 0)
@@ -2837,7 +2861,7 @@ print_variable (struct variable *v, char scope, int level)
       return;
     }
 
-  if (v->variable_type == VARIABLE_TYPE_RECORD)
+  if (v->variable_type == VARIABLE_TYPE_RECORD ||v->variable_type == VARIABLE_TYPE_OBJECT)
     {
       int a;
       print_start_record (static_extern_flg, name, arrbuff, level);
@@ -2936,7 +2960,7 @@ last_var_is_linked (char *tabname, char *pklist)
   strcpy (tabname, "");
 
   if (last_variable_ptr_found
-      && last_variable_ptr_found->variable_type == VARIABLE_TYPE_RECORD
+      && (last_variable_ptr_found->variable_type == VARIABLE_TYPE_RECORD || last_variable_ptr_found->variable_type == VARIABLE_TYPE_OBJECT) 
       && last_variable_ptr_found->data.v_record.linked)
     {
 

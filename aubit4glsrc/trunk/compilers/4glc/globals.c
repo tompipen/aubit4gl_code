@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.25 2004-07-09 07:05:11 mikeaubury Exp $
+# $Id: globals.c,v 1.26 2004-08-11 18:04:58 mikeaubury Exp $
 #
 */
 
@@ -248,6 +248,11 @@ write_variable_header (FILE * f, struct variable *v)
       write_variable_record (f, v);
 	return;
     }
+  if (v->variable_type == VARIABLE_TYPE_OBJECT)
+    {
+      write_variable_object (f, v);
+	return;
+    }
 
   if (v->variable_type == VARIABLE_TYPE_ASSOC)
     {
@@ -354,6 +359,35 @@ write_variable_record (FILE * f, struct variable *v)
 
 }
 
+
+/**
+ *
+ *
+ * @param
+ */
+static void
+write_variable_object (FILE * f, struct variable *v)
+{
+  int a;
+  write_global_int (f, "COUNT", v->data.v_record.record_cnt);
+
+  if (v->data.v_record.linked == 0)
+    {
+      write_global_int (f, "LINKED", 0);
+    }
+  else
+    {
+      write_global_int (f, "LINKED", 1);
+      write_variable_linked (f, v);
+    }
+
+  for (a = 0; a < v->data.v_record.record_cnt; a++)
+    {
+      write_variable_header (f, v->data.v_record.variables[a]);
+    }
+
+    write_global_string(f,"OBJECT_TYPE",v->data.v_record.object_type);
+}
 
 
 
@@ -732,10 +766,16 @@ read_variable_header (FILE * f, struct variable *v)
     {
       read_variable_simple (f, v);
     }
+
   if (v->variable_type == VARIABLE_TYPE_RECORD)
     {
       read_variable_record (f, v);
     }
+  if (v->variable_type == VARIABLE_TYPE_OBJECT)
+    {
+      read_variable_object (f, v);
+    }
+
   if (v->variable_type == VARIABLE_TYPE_ASSOC)
     {
       read_variable_assoc (f, v);
@@ -800,6 +840,38 @@ read_variable_linked (FILE * f, struct variable *v)
  */
 static void
 read_variable_record (FILE * f, struct variable *v)
+{
+  int a;
+  int is_linked;
+
+  read_global_int (f, "COUNT", &v->data.v_record.record_cnt);
+  read_global_int (f, "LINKED", &is_linked);
+
+
+  if (is_linked)
+    {
+      v->data.v_record.linked = malloc (sizeof (struct linked_variable));
+      read_variable_linked (f, v);
+    }
+
+  v->data.v_record.variables =
+    malloc (sizeof (struct variable *) * v->data.v_record.record_cnt);
+
+  for (a = 0; a < v->data.v_record.record_cnt; a++)
+    {
+      v->data.v_record.variables[a] = malloc (sizeof (struct variable));
+      read_variable_header (f, v->data.v_record.variables[a]);
+    }
+
+}
+
+/**
+ *
+ *
+ * @param
+ */
+static void
+read_variable_object (FILE * f, struct variable *v)
 {
   int a;
   int is_linked;
