@@ -1015,14 +1015,10 @@ literal: CHAR_VALUE {
 	| NUMERIC
 	| real_number
 	| INT_VALUE
-	| PLUS real_number
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-	| PLUS INT_VALUE
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-	| MINUS real_number
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
-	| MINUS INT_VALUE
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	//| PLUS real_number {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	//| PLUS INT_VALUE {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	//| MINUS real_number {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	//| MINUS INT_VALUE {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
         | curr_clause
 	;
 
@@ -1284,6 +1280,18 @@ column_specification_ss : value_expression_ss {
 
 
 value_expression_ss:
+	value_expression_initial_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| MINUS value_expression_initial_ss {
+		$<sql_string>$=make_sql_string("-",$<sql_string>2,0);
+	}
+	| PLUS value_expression_initial_ss {
+		$<sql_string>$=make_sql_string("+",$<sql_string>2,0);
+	}
+;
+
+value_expression_initial_ss :
 	value_expression_complex_ss {
 			if (strlen(current_upd_table)) {
 				push_gen(UPDVAL,$<sql_string>1);
@@ -1305,15 +1313,15 @@ value_expression_ss:
 ;
 
 value_expression_complex_ss :
-	value_expression_ss DIVIDE value_expression_ss
+	value_expression_initial_ss DIVIDE value_expression_initial_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"/",$<sql_string>3,0);}
-	| value_expression_ss units_qual
+	| value_expression_initial_ss units_qual
 		{$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,0);}
-	| value_expression_ss MULTIPLY value_expression_ss
+	| value_expression_initial_ss MULTIPLY value_expression_initial_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"*",$<sql_string>3,0);}
-	| value_expression_ss PLUS value_expression_ss
+	| value_expression_initial_ss PLUS value_expression_initial_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"+",$<sql_string>3,0);}
-	| value_expression_ss MINUS value_expression_ss
+	| value_expression_initial_ss MINUS value_expression_initial_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"-",$<sql_string>3,0);}
 	| literal
 		{$<sql_string>$=make_sql_string($<str>1,0);}
@@ -1341,8 +1349,7 @@ value_expression_complex_ss :
 {$<sql_string>$=make_sql_string($<str>1,"(",$<sql_string>3,")",0);}
 	| DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET
 {$<sql_string>$=make_sql_string("DATE(",$<sql_string>3,")",0);}
-	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET 
-{$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);}
+	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string("(",$<sql_string>2,")",0);}
 	| EXTEND OPEN_BRACKET extend_qual CLOSE_BRACKET
 {$<sql_string>$=make_sql_string("EXTEND(",$<str>3,")",0);}
 ;
