@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.43 2003-02-04 03:06:56 mikeaubury Exp $
+# $Id: lexer.c,v 1.44 2003-02-04 18:13:14 psterry Exp $
 #*/
 
 /**
@@ -48,7 +48,6 @@
 =====================================================================
 */
 
-#include "y.tab.h"
 #include "a4gl_4glc_int.h"
 
 
@@ -935,8 +934,8 @@ yylex (void *pyylval, int yystate)
 	   if ( scan_variable(buff) == -1 ) break;
       case 2:
       case 3:
-        /* treat as identifier */
-           a = NAMED_GEN;
+        /* treat as identifier, unless token starts a command */
+           if ( is_commandkw(a) == 0 ) a = NAMED_GEN;
      }
   }
 

@@ -267,6 +267,7 @@
 	/* =========================== wantkw.c ================================= */
 
 	int		wants_kw_token		(int state, int kw);
+	int		is_commandkw		(int kw);
 
 	/* ==================== rules/generated/states.c ==================== */
 	void 	start_state			(char *s,int on_off);

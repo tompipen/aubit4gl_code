@@ -41,6 +41,9 @@ open(IN, $YOUTPUT ) or die "Cannot read file $YOUTPUT\n";
 # all the symbols that can be empty (blank)
 %empty = ();
 
+# keywords that begin a command
+%cmdkw = ();
+
 # single-word rules are saved for use in keyword/identifier conflicts
 %rule = ();
 
@@ -49,7 +52,8 @@ open(IN, $YOUTPUT ) or die "Cannot read file $YOUTPUT\n";
 
 @kwlist = ();
 
-# locate the Grammar section and find any symbols that can be /* empty */
+# locate the Grammar section and find any symbols that can be /* empty */,
+# also look for keywords that appear at the start of a command
 $grammar = 0;
 while(<IN>) {
   chomp;
@@ -63,6 +67,10 @@ while(<IN>) {
     elsif (/^\s*\d+[\s\d]*\s+([a-z]\w+)\s*->\s*\/.*empty.*\//)
      {
         $empty{$1} = 1;
+     }
+    elsif ( /_cmd\s*->\s*([A-Z0-9_]+)\b/ )
+     {
+        $cmdkw{$1} = 1;
      }
   }
   elsif ( /^\s*Grammar\s*$/i ) {
@@ -174,8 +182,8 @@ $pass++;
 # %idn   - identifiers that are names other than variables (window,cursor,...)
 # %var   - identifiers that are defined 4gl variables
 # %empty - symbols that can be empty
+# %cmdkw - keywords that begin a 4GL command
 # %rule  - single-word rules, for keyword/identifier resolution
-
 
 # now, we continue reading y.output, looking for the "state" sections.
 # we want to output a list of states which can accept an identifier
@@ -256,8 +264,8 @@ print OUT <<EOF;
 # Do not edit it directly.
 #*/
 
-#include "$YTABH"
 #include "$HSOURCE"
+#include "$YTABH"
 
 /**
  * Called from yylex().
@@ -364,8 +372,20 @@ EOF
      "\treturn 1;\n",
      " }\n",
      "\treturn 0;\n",
-     "}\n",
+     "}\n";
  }
+
+# append a function that checks if a keyword begins a command
+
+print OUT
+     "int is_commandkw( int kw ) {\n",
+     " switch (kw) {\n";
+for ( sort keys %cmdkw ) { print OUT "\tcase $_:\n" }
+print OUT
+     "\treturn 1;\n",
+     " }\n",
+     "\treturn 0;\n",
+     "}\n";
 
 # dump a list of the symbols we detected, ie. those that appear
 # in the syntax rules and can be a single-word identifier/variable
@@ -396,6 +416,7 @@ sub print_dot_h {
 #include "rules/generated/kw.h"
 
 int wants_kw_token( int state, int kw );
+int is_commandkw( int kw );
 
 EOF
 
