@@ -1,5 +1,6 @@
 sql_block_cmd : SQL {
 		sql_mode=1;
+		add_feature("SQL_BLOCK");
 		start_bind('i',0);
 		start_bind('o',0);
 	} sql_block END_SQL {

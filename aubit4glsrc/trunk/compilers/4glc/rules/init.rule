@@ -10,6 +10,7 @@ init_cmd : INITIALIZE init_bind_var_list {A4GL_debug("init to\n");} TO KW_NULL
 	print_init();
  }
 | INITIALIZE init_bind_var_list LIKE init_tab_list  {
+	add_feature("INITIALIZE_LIKE");
 	print_init_table($<str>4);
 }
 ;

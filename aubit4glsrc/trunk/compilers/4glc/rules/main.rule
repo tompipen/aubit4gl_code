@@ -78,6 +78,7 @@ func_or_main	:	func_def
                 |       formhandler_def
 		|	code_cmd
 		| 	import_m
+		| 	pragma
 		|       whenever_cmd
 		;
 

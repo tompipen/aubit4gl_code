@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.77 2005-02-21 00:52:53 afalout Exp $
+# $Id: compile.c,v 1.78 2005-02-22 12:25:38 mikeaubury Exp $
 #*/
 
 /**
@@ -1089,6 +1089,7 @@ char ext[8];
 	A4GL_remove_comments_in_memfile(yyin);
 	yyin_len = A4GL_memfile_ftell (yyin);
 	A4GL_memfile_rewind (yyin);
+	A4GL_load_features();
 
 	if (yydebug) { printf ("Opened : %s\n", fgl_file); }
 	openmap (outputfilename);

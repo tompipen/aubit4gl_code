@@ -63,21 +63,21 @@ strcpy($<str>$,"0,0");
 
 fetch_place : 
 	FIRST {
-		sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);}
+		sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);  add_feature("FETCH_FIRST");}
 	| LAST
-		{sprintf($<str>$,"%d,-1",FETCH_ABSOLUTE);}
+		{sprintf($<str>$,"%d,-1",FETCH_ABSOLUTE); add_feature("FETCH_LAST");}
 	| NEXT
-		{sprintf($<str>$,"%d,1",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,1",FETCH_RELATIVE); add_feature("FETCH_NEXT");}
 	| PREVIOUS
-		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE); add_feature("FETCH_PREVIOUS");}
 	| PRIOR
-		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE); add_feature("FETCH_PREVIOUS");}
 	| CURRENT
-		{sprintf($<str>$,"%d,0",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,0",FETCH_RELATIVE); add_feature("FETCH_CURRENT");}
 	| RELATIVE fgl_expr
-		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE);}
+		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE); add_feature("FETCH_RELATIVE");}
 	| ABSOLUTE fgl_expr
-		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_ABSOLUTE);}
+		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_ABSOLUTE); add_feature("FETCH_ABSOLUTE");}
 ;
 
 

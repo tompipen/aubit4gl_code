@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.198 2005-02-22 09:24:04 mikeaubury Exp $
+# $Id: mod.c,v 1.199 2005-02-22 12:25:39 mikeaubury Exp $
 #
 */
 
@@ -826,6 +826,7 @@ scan_variables (char *s_n, int mode)
   int size;
   int vval;
 
+
   if (strlen(s_n)>1023) {
 	A4GL_assertion(1,"scan_variables buffers too small");
   }
@@ -882,7 +883,20 @@ A4GL_debug("s=%s",A4GL_null_as_null(s));
     if(strncmp(s,"CLASS_COPY->",12)==0) { strcpy(buff,&s[12]); strcpy(s,buff); }  
 
 
-A4GL_debug("find_variable : %s",A4GL_null_as_null(buff));
+  A4GL_debug("find_variable : %s",A4GL_null_as_null(buff));
+
+  if (strcmp(buff,"a4gl_status")==0) add_feature("STATUS");
+  if (strcmp(buff,"a4gl_sqlca.sqlawarn")==0) add_feature("SQLCA_SQLAWARN");
+  if (strcmp(buff,"a4gl_sqlca.sqlcode")==0) add_feature("SQLCA_SQLCODE");
+  if (strcmp(buff,"a4gl_sqlca.sqlerrm")==0) add_feature("SQLCA_SQLERRM");
+  if (strcmp(buff,"a4gl_sqlca.sqlerrd[(1)-1]")==0) add_feature("SQLCA_SQLERRD1");
+  if (strcmp(buff,"a4gl_sqlca.sqlerrd[(2)-1]")==0) add_feature("SQLCA_SQLERRD2");
+  if (strcmp(buff,"a4gl_sqlca.sqlerrd[(3)-1]")==0) add_feature("SQLCA_SQLERRD3");
+  if (strcmp(buff,"a4gl_sqlca.sqlerrd[(4)-1]")==0) add_feature("SQLCA_SQLERRD4");
+  if (strcmp(buff,"a4gl_sqlca.sqlerrd[(5)-1]")==0) add_feature("SQLCA_SQLERRD5");
+  if (strcmp(buff,"a4gl_sqlca.sqlerrd[(6)-1]")==0) add_feature("SQLCA_SQLERRD6");
+
+
   vval = find_variable (buff, &dtype, &size, 0, 0);
 
   if (vval == 1)
@@ -4830,6 +4844,37 @@ char *A4GL_decode_packtype(char *s) {
 	return s;
 }
 
+
+void A4GL_load_features() {
+int dump_features;
+FILE *f;
+char *ptr;
+char buff[300];
+dump_features=A4GL_isyes(acl_getenv("DUMP_FEATURES"));
+if (dump_features==0) return;
+f=fopen("sql_features","r");
+if (f==0) return;
+while (1) {
+	strcpy(buff,"");
+	fgets(buff,256,f);
+	if (feof(f)) break;	
+	ptr=strchr(buff,' ');
+	if (ptr) *ptr=0;
+	ptr=strchr(buff,'\n');
+	if (ptr) *ptr=0;
+	ptr=strchr(buff,'\r');
+	if (ptr) *ptr=0;
+	ptr=strchr(buff,'\t');
+	if (ptr) *ptr=0;
+	A4GL_trim(buff);
+	if (buff[0]=='#') continue;
+	if (strlen(buff)==0) continue;
+	A4GL_add_pointer(buff,'.',1);
+}
+fclose(f);
+	
+
+}
 
 void A4GL_add_feature(char *feature) {
 	static int dump_features=-1;

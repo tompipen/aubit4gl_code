@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.52 2005-01-25 08:35:08 mikeaubury Exp $
+# $Id: variables.c,v 1.53 2005-02-22 12:25:41 mikeaubury Exp $
 #
 */
 
@@ -1851,7 +1851,6 @@ get_variable_dets (char *s, int *type, int *arrsize,
   strip_bracket (buff);
   v = find_variable_ptr (buff);
 
-
   if (v == 0)
     return -1;
 
@@ -1874,6 +1873,8 @@ get_variable_dets (char *s, int *type, int *arrsize,
     {
       make_arr_str (arr, v);
     }
+
+
 
   if (v->variable_type != VARIABLE_TYPE_SIMPLE)
     {

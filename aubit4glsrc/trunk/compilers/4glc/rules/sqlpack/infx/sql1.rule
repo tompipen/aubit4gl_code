@@ -70,6 +70,7 @@ insert_value_ss:
 delete_statement_search_ss:
 	DELETE_FROM table_name op_where_clause_ss
               {
+		add_feature("ANSI_DELETE");
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
 			if (strstr($<sql_string>3," EXISTS ")) {
 				add_feature("DELETE_FROM_WHERE_EXISTS_SUBSELECT");
@@ -138,7 +139,17 @@ other_misc_infx_stmt  :
 
 
 misc_infx_stmt: 
-	MISC_INFX_SQL 
+	MISC_INFX_SQL  {
+		if (strcmp($<str>1,"SET BUFFERED LOG")==0) add_feature("SET_BUFFERED_LOG");
+		if (strcmp($<str>1,"SET LOG")==0) add_feature("SET_LOG");
+		if (strncmp($<str>1,"START DATABASE",14)==0) {
+			if (strstr($<str>1,"ANSI")) {
+				add_feature("START_DATABAE_WITH_LOG_MODE_ANSI");
+			} else {
+				add_feature("START_DATABAE_WITH_LOG");
+			}
+		}
+	}
 	| other_misc_infx_stmt
 ;
 
@@ -245,7 +256,9 @@ grantee:
 
 view_definition_ss:
 	CREATE_VIEW table_name op_view_column_list AS query_specification_ss op_with_check_option {
+		add_feature("CREATE_VIEW_AS_SELECT");
 $<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),kw_space,$<sql_string>5,kw_space,strdup($<str>6),0);
+	
 }
 ;
 
@@ -261,25 +274,32 @@ view_column_list:
 ;
 
 op_with_check_option: {strcpy($<str>$,"");}
-	| WITH_CHECK_OPTION
+	| WITH_CHECK_OPTION {
+		add_feature("CREATE_VIEW_SELECT_WITH_CHECK");
+	}
 ;
 
 
 check_constraint_definition_ss:
 	CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string_and_free(strdup("CHECK("),$<sql_string>3,kw_cb,0);
+add_feature("DDL_CHECK");
 	}
 ;
 
 
 referential_constraint_definition:
 	FOREIGN_KEY OPEN_BRACKET references_columns CLOSE_BRACKET references_specification
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
+	add_feature("DDL_FOREIGN_KEY");
+}
 ;
 
 references_specification:
 	REFERENCES referenced_table_and_columns
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+{sprintf($<str>$," %s %s",$<str>1,$<str>2);
+add_feature("DDL_REFERENCES");
+}
 ;
 
 references_columns:
@@ -302,13 +322,17 @@ references_column_list:
 unique_constraint_definition:
 	  UNIQUE OPEN_BRACKET unique_column_list CLOSE_BRACKET {
 		sprintf($<str>$," UNIQUE %s %s %s",$<str>2,$<str>3,$<str>4);
+add_feature("DDL_UNIQUE");
 	}
 	  | DISTINCT OPEN_BRACKET unique_column_list CLOSE_BRACKET {
 		ansi_violation("Use UNIQUE not DISTINCT",0);
 		sprintf($<str>$," UNIQUE %s %s %s",$<str>2,$<str>3,$<str>4);
+add_feature("DDL_DISTINCT");
 	}
 	| PRIMARY_KEY OPEN_BRACKET unique_column_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);
+add_feature("DDL_PRIMARY_KEY");
+}
 ;
 
 unique_column_list:
@@ -379,28 +403,36 @@ column_constraint_ss_1:
 	  NOT_NULL {
 		sprintf($<str>$," %s ",$<str>1);
 		$<sql_string>$=strdup($<str>$);
+		add_feature("DDL_NOT_NULL");
 	}
 	| NOT_NULL_UNIQUE {
 		sprintf($<str>$," NOT NULL UNIQUE ");
 		$<sql_string>$=strdup($<str>$);
+		add_feature("DDL_NOT_NULL");
+		add_feature("DDL_UNIQUE");
 	}
 	| UNIQUE {
 		sprintf($<str>$," UNIQUE ");
 		$<sql_string>$=strdup($<str>$);
+		add_feature("DDL_UNIQUE");
 	}
 	| DISTINCT {
 		ansi_violation("Use UNIQUE not DISTINCT",0);
 		sprintf($<str>$," UNIQUE ");
 		$<sql_string>$=strdup($<str>$);
+		add_feature("DDL_DISTINCT");
 	}
 	| references_specification {
 		$<sql_string>$=strdup($<str>1);
 	}
 	| CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,kw_space,strdup($<str>4),0);
+		add_feature("DDL_CHECK");
+		
 	}
 	| PRIMARY_KEY {
 		$<sql_string>$=make_sql_string_and_free(strdup(" PRIMARY KEY "),0);
+		add_feature("DDL_PRIMARY_KEY");
 	}
 ;
 
@@ -408,6 +440,8 @@ column_constraint_ss_1:
 schema_ss:
 	CREATE_SCHEMA schema_authorization_clause schema_element_list_ss
 {
+		add_feature("CREATE_SCHEMA");
+
 $<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,strdup($<str>3),0);
 }
 ;
@@ -451,7 +485,7 @@ having_clause_ss:
 
 
 group_by_clause_ss:
-	GROUP_BY column_specification_list_ss {
+	GROUP_BY gr_column_specification_list_ss {
 		 add_feature("GROUP_BY"); 
 		$<sql_string>$=make_sql_string_and_free(strdup("GROUP BY "),$<sql_string>2,0);
 	}
@@ -464,6 +498,19 @@ column_specification_list_ss:
 	| column_specification_list_ss KW_COMMA column_specification_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
 	}
+;
+
+gr_column_specification_list_ss:
+	  gr_column_specification_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| gr_column_specification_list_ss KW_COMMA gr_column_specification_ss {
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(","),$<sql_string>3,0);
+	}
+;
+
+
+gr_column_specification_ss: column_specification_ss
 ;
 
 
@@ -571,8 +618,8 @@ boolean_primary_ss:
 
 
 exists_predicate_ss:
-	EXISTS subquery_ss 		{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0);}
-	| NOT_EXISTS subquery_ss 	{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0);}
+	EXISTS subquery_ss 		{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0); add_feature("WHERE_EXISTS");}
+	| NOT_EXISTS subquery_ss 	{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,$<sql_string>2,0); add_feature("WHERE_EXISTS");}
 ;
 
 
@@ -580,7 +627,6 @@ exists_predicate_ss:
 
 
 
-op_escape: {strcpy($<str>$,"");} 	 | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);} 
 op_matches_escape: {strcpy($<str>$,"");} | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_MATCHES_ESCAPE");} ;
 op_ilike_escape: {strcpy($<str>$,"");} 	 | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_ILIKE_ESCAPE");} ;
 op_like_escape: {strcpy($<str>$,"");} 	 | ESCAPE escape_character {sprintf($<str>$," %s %s",$<str>1,$<str>2);add_feature("WHERE_LIKE_ESCAPE");} ;
@@ -597,15 +643,19 @@ escape_character:
 in_predicate_ss:
 	value_expression_ss IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" IN ("),strdup($<str>4),kw_cb,0);
+		add_feature("WHERE_IN");
 	}
 	| value_expression_ss IN subquery_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
+		add_feature("WHERE_IN_SELECT");
 	}
 	| value_expression_ss NOT_IN OPEN_BRACKET in_value_list CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" NOT IN ("),strdup($<str>4),kw_cb,0);
+		add_feature("WHERE_IN");
 	}
 	| value_expression_ss NOT_IN subquery_ss {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
+		add_feature("WHERE_IN_SELECT");
 	}
 ;
 
@@ -627,8 +677,12 @@ op_not: {strcpy($<str>$,"");}
 
 
 comparison_predicate_ss:
-	value_expression_ss op_not IS_NULL { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" IS NULL"),0); }
-	| value_expression_ss op_not IS_NOT_NULL { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" IS NOT NULL"),0); }
+	value_expression_ss op_not IS_NULL { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" IS NULL"),0); 
+		add_feature("WHERE_NULL");
+		}
+	| value_expression_ss op_not IS_NOT_NULL { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" IS NOT NULL"),0); 
+		add_feature("WHERE_NULL");
+	}
 	| value_expression_ss comp_op value_expression_ss { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0); }
 	| value_expression_ss EQUAL value_expression_ss { 
 			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0); table_cnt--; 
@@ -669,15 +723,31 @@ predicate_ss:
 
 
 op_all: {strcpy($<str>$,"");}
-	| ALL {strcpy($<str>$," ALL ");}
+	| ALL {strcpy($<str>$," ALL "); add_feature("AGG_ALL");}
 	| DISTINCT {
 		strcpy($<str>$," DISTINCT ");
+		add_feature("AGG_DISTINCT");
 	}
 	| UNIQUE {
 		ansi_violation("Use DISTINCT not UNIQUE",0);
 		strcpy($<str>$," DISTINCT ");
+		add_feature("AGG_DISTINCT");
 	}
 ;
+
+op_u_all: {strcpy($<str>$,"");}
+	| ALL {strcpy($<str>$," ALL "); add_feature("UNION_ALL");}
+	| DISTINCT {
+		strcpy($<str>$," DISTINCT ");
+		add_feature("UNION_DISTINCT");
+	}
+	| UNIQUE {
+		ansi_violation("Use DISTINCT not UNIQUE",0);
+		add_feature("UNION_DISTINCT");
+		strcpy($<str>$," DISTINCT ");
+	}
+;
+
 
 
 
@@ -807,6 +877,9 @@ scale:
 
 
 table_name: table_name_i  {
+		if (strstr($<str>1,"systables")!=0) { add_feature("IFX_SYSTABLES"); }	
+		if (strstr($<str>1,"syscolumns")!=0) { add_feature("IFX_SYSCOLUMNS"); }	
+		if (strstr($<str>1,"sysindexes")!=0) { add_feature("IFX_SYSINDEXES"); }	
 		strcpy($<str>$,A4GLSQLCV_check_tablename($<str>1));
 		}
 ;
@@ -941,11 +1014,13 @@ column_name :
 column_name_specific: identifier col_arr { 
 		struct ilist *i;
 		i=&$<int_list>2;
+		if (strcmp($<str>1,"rowid")==0) { add_feature("ROWID"); }
 		addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
 		strcpy($<str>$,A4GLSQLCV_make_substr(A4GLSQLCV_check_colname(0,$<str>1), i->i0,i->i1,i->i2));
 	}
 	| table_name DOT identifier col_arr {
 		struct ilist *i;
+		if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
 		sprintf($<str>$,"%s",A4GLSQLCV_check_colname($<str>1,$<str>3));
 		addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
 		i=&$<int_list>4;
@@ -996,6 +1071,7 @@ select_statement_ss_str:
 	table_expression_2_ss
         sel_p2_ss sel_finish {
 		if (!strstr($<sql_string>9,"INTO TEMP")) {
+			add_feature("SELECT");
                 	$<sql_string>$=make_sql_string_and_free(strdup("SELECT "),strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,$<sql_string>9,0);
 		} else {
 			char *ptr;
@@ -1008,6 +1084,17 @@ select_statement_ss_str:
 ;
 
 select_statement2_ss:
+	select_statement21_ss  {
+	add_feature("UNLOAD_TO_SELECT_FROM");
+		$<sql_string>$=make_sql_string_and_free($<sql_string>1,0);
+	 }
+	| char_or_var {
+		add_feature("UNLOAD_TO_CHAR");
+		$<sql_string>$=strdup($<str>1);
+	}
+;
+
+uselect_statement2_ss:
 	select_statement21_ss  {
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,0);
 	 }
@@ -1027,7 +1114,7 @@ select_statement21_ss:
 
 
 sel_p2_ss : { $<sql_string>$=strdup(""); }
-	| UNION op_all select_statement2_ss { $<sql_string>$=make_sql_string_and_free(strdup("UNION "),strdup($<str>2),kw_space,$<sql_string>3,0); }
+	| UNION op_u_all select_statement2_ss { $<sql_string>$=make_sql_string_and_free(strdup("UNION "),strdup($<str>2),kw_space,$<sql_string>3,0); add_feature("SELECT_UNION"); }
 ;
 
 
@@ -1039,6 +1126,7 @@ sel_finish_unload: {$<sql_string>$=strdup("");}
 sel_finish: {$<sql_string>$=strdup("");}
 	| order_by_clause  {  $<sql_string>$=strdup($<str>1); }
 	| order_by_clause INTO_TEMP tmp_tabname op_no_log { 
+			add_feature("SELECT_INTO_TEMP_ORDER_BY");
 	if (A4GLSQLCV_check_requirement("STRIP_ORDER_BY_INTO_TEMP")) {
 		$<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>3),kw_space,strdup($<str>4),0);
 		strcpy(last_tmp_name,$<str>3);
@@ -1048,6 +1136,7 @@ sel_finish: {$<sql_string>$=strdup("");}
 	}
 }
 	| INTO_TEMP tmp_tabname op_no_log { 
+			add_feature("SELECT_INTO_TEMP");
 $<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>2),kw_space,strdup($<str>3),0); strcpy(last_tmp_name,$<str>2);} 
 ;
 
@@ -1077,9 +1166,10 @@ subquery_ss:
 ;
 
 op_ad: {strcpy($<str>$,"");}
-	| ALL {strcpy($<str>$,"ALL ");}
-	| DISTINCT {strcpy($<str>$," DISTINCT ");}
+	| ALL {strcpy($<str>$,"ALL "); add_feature("SELECT_ALL");}
+	| DISTINCT {strcpy($<str>$," DISTINCT "); add_feature("SELECT_DISTINCT");}
 	| UNIQUE {strcpy($<str>$," DISTINCT ");
+		add_feature("SELECT_UNIQUE");
 		ansi_violation("Use DISTINCT not UNIQUE",0);
 		strcpy($<str>$," DISTINCT ");
 }
@@ -1159,12 +1249,13 @@ value_expression_complex_ss :
 	| USER {$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_get_sqlconst("USER")),0);}
 	| KW_TODAY {$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_get_sqlconst("TODAY")),0);}
 	| MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("*"),0);}
-	| COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("COUNT(*)"),0);}
- 	| AVG OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("AVG("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
-	| XMAX OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MAX("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
-	| XMIN OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MIN("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
-	| SUM OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("SUM("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
-	| COUNT OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("COUNT("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
+	| COUNT_MULTIPLY {$<sql_string>$=make_sql_string_and_free(strdup("COUNT(*)"),0); add_feature("SELECT_COUNT");}
+ 	| AVG OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("AVG("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_AVG");}
+	| XMAX OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MAX("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_MAX");}
+	| XMIN OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("MIN("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_MIN");}
+	| SUM OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("SUM("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_SUM");}
+	| COUNT OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("COUNT("),strdup($<str>3),$<sql_string>4,kw_cb,0); add_feature("SELECT_COUNT");
+}
 	| YEAR OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("YEAR",$<sql_string>3));}
 	| MONTH OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("MONTH",$<sql_string>3));}
 	| DAY OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("DAY",$<sql_string>3));}
@@ -1174,10 +1265,11 @@ strdup(A4GLSQLCV_sql_func("DATE",$<sql_string>3));}
 	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func($<str>1,$<sql_string>3));}
 	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,kw_cb,0);}
 	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {
+			add_feature("EXTEND");
 			$<sql_string>$=$<sql_string>3;
 	}
-	| datetime_value_qualified { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
-	| interval_value_qualified {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
+	| datetime_value_qualified { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),0); add_feature("FUNC_DATETIME");}
+	| interval_value_qualified {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0); add_feature("FUNC_INTERVAL");}
 
 
 ;
@@ -1195,7 +1287,7 @@ value_specification:
 ;
 
 
-select_statement_unload : select_statement2_ss sel_finish_unload {
+select_statement_unload : uselect_statement2_ss sel_finish_unload {
 	$<sql_string>$=make_sql_string_and_free($<sql_string>1,$<sql_string>2,0);
 }
 ;
@@ -1203,7 +1295,11 @@ select_statement_unload : select_statement2_ss sel_finish_unload {
 
 
 unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement_unload {
-	add_feature("UNLOAD");
+	add_feature("UNLOAD_TO");
+	if (strcasecmp($<sql_string>5," WHERE ")==0) {
+		add_feature("UNLOAD_TO_SELECT_WHERE");
+	}
+	add_feature("UNLOAD_TO");
 	print_unload($<str>3,$<str>4,$<sql_string>5);
 	print_undo_use($<str>1);
 }
@@ -1212,11 +1308,12 @@ unload_cmd :  opt_use UNLOAD_TO ufile opt_delim select_statement_unload {
 
 load_cmd :  
 opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list {
-	add_feature("LOAD");
+	add_feature("LOAD_FROM_INSERT_INTO");
 	print_load($<str>3,$<str>4,$<str>6,$<str>7);
 	print_undo_use($<str>1);
 }
 | opt_use LOAD_FROM ufile opt_delim variable {
+	add_feature("LOAD_FROM_VARIABLE");
 	print_load_str($<str>3,$<str>4,$<str>5);
 	print_undo_use($<str>1);
 }
@@ -1268,12 +1365,14 @@ rencolname : identifier;
 unlock_stmt:
 
 	UNLOCK_TABLE table_name {
+		add_feature("UNLOCK_TABLE");
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 	}
 ;
 
 lock_stmt :
 	LOCK_TABLE table_name share_or_exclusive  {
+		add_feature("LOCK_TABLE");
 		sprintf($<str>$,"%s %s %s",
 					$<str>1,
 					$<str>2,
@@ -1283,8 +1382,8 @@ lock_stmt :
 ;
 
 share_or_exclusive :
-	INSHARE
-	| INEXCLUSIVE
+	INSHARE { add_feature("LOCK_TABLE_SHARED");}
+	| INEXCLUSIVE {add_feature("LOCK_TABLE_EXCLUSIVE");}
 ;
 
 

@@ -568,6 +568,7 @@ sprintf($<str>$,"%d",a);
 {
 int a;
 set_rep_no_orderby(0);
+add_feature("REPORT_ORDER_BY");
 if (get_bind_cnt('f')&&!get_bind_cnt('O')) { A4GL_copy_fbind_to_Obind(); }
 a=print_bind_definition('O');
 print_order_by_type(1,a);

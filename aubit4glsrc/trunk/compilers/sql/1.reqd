@@ -15,6 +15,7 @@
 #define SQL_SET_ISOLATION_COMMITTED_READ 7
 
 
+#define add_feature A4GL_add_feature
 char *kw_space=" ";
 char *kw_comma=",";
 char *kw_ob="(";

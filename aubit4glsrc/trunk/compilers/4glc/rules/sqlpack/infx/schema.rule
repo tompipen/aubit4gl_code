@@ -69,8 +69,8 @@ cr_index_extra : cr_index_extra_entry
 ;
 
 cr_index_extra_entry :
-	IN space_name {sprintf($<str>$," IN %s",$<str>2);}
-	| FILLFACTOR INT_VALUE {sprintf($<str>$,"FILLFACTOR %s",$<str>2);}
+	IN space_name {sprintf($<str>$," IN %s",$<str>2); add_feature("INDEX_IN");}
+	| FILLFACTOR INT_VALUE {sprintf($<str>$,"FILLFACTOR %s",$<str>2); add_feature("INDEX_FILLFACTOR");}
 ;
 
 
@@ -78,12 +78,14 @@ create_c_1  :
 	CREATE_U_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		add_feature("CREATE_INDEX");
 		add_feature("CREATE_INDEX_UNIQUE");
+		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 	
 } 
 	| CREATE_UC_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
 		add_feature("CREATE_INDEX");
 		add_feature("CREATE_INDEX_UNIQUE");
-		add_feature("CREATE_INDEX_CLUSTER");
+		add_feature("CLUSTER_INDEX");
+		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_CLUSTER")) {
 		sprintf($<str>$,"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		} else {
@@ -92,7 +94,8 @@ create_c_1  :
 	} 
 	| CREATE_C_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
 		add_feature("CREATE_INDEX");
-		add_feature("CREATE_INDEX_CLUSTER");
+		add_feature("CLUSTER_INDEX");
+		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_CLUSTER")) {
 			sprintf($<str>$,"CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 		} else {
@@ -100,6 +103,7 @@ create_c_1  :
 		}
 	} 
 	| CREATE_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {
+		if (strchr($<str>6,',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
 			add_feature("CREATE_INDEX");
 			sprintf($<str>$," CREATE INDEX %s %s %s %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);
 	} 
@@ -162,7 +166,7 @@ idx_column :
 		}
 }
 | identifier DESC {
-		add_feature("CREATE_INDEX_ASC_DESC");
+		add_feature("CREATE_INDEX_DESC");
 		if (A4GLSQLCV_check_requirement("OMIT_INDEX_ORDER")) {
 			sprintf($<str>$,"%s",$<str>1);
 		} else {
@@ -201,6 +205,7 @@ alter_statement_ss : ALTER_TABLE identifier alter_clauses_ss {
 	$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_space,strdup($<str>2),kw_space,$<sql_string>3,0);
 	}
 	| ALTER_INDEX idx_name TO_CLUSTER {
+		add_feature("CLUSTER_INDEX");
 		add_feature("ALTER_INDEX_CLUSTER");
 		$<sql_string>$=make_sql_string_and_free(strdup("ALTER INDEX "),strdup($<str>2),strdup(" TO CLUSTER"),0);
 		}
@@ -227,21 +232,27 @@ alter_clause_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| alter_drop_clause {
+	add_feature("ALTER_TABLE_DROP");
 		$<sql_string>$=strdup($<str>1);
 	}
 	| alter_modify_clause_ss {
+	add_feature("ALTER_TABLE_MODIFY");
 		$<sql_string>$=$<sql_string>1;
 	}
 	| alter_add_constraint_clause {
+	add_feature("ALTER_TABLE_ADD_CONSTRAINT");
 		$<sql_string>$=strdup($<str>1);
 	}
 	| alter_drop_constraint_clause {
+		add_feature("ALTER_TABLE_DROP_CONSTRAINT");
 		$<sql_string>$=strdup($<str>1);
 	}
 	| alter_modify_next {
+		add_feature("ALTER_TABLE_MODIFY_NEXT");
 		$<sql_string>$=strdup($<str>1);
 	}
 	| alter_lock_mode {
+		add_feature("ALTER_TABLE_LOCK_MODE");
 		$<sql_string>$=strdup($<str>1);
 	}
 ;
@@ -262,6 +273,7 @@ add_column_clause_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| table_element_ss BEFORE identifier {
+		add_feature("ALTER_TABLE_ADD_BEFORE");
 		$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup(" BEFORE "),strdup($<str>3),0);
 	}
 ;
@@ -333,14 +345,13 @@ alter_modify_next :
 ;
 
 alter_add_constraint_clause:
-	/* ADD_CONSTRAINT column_constraint_ss opt_constraint_name { sprintf($<str>$,"ADD CONSTRAINT %s",$<sql_string>2,$<str>3); } |  */
-	/* | ADD_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET opt_constraint_name { sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3,$<str>5); } */
-
 
 	ADD_CONSTRAINT table_constraint_definition_ss opt_constraint_name {
+		add_feature("ADD_CONSTRAINT");
 		sprintf($<str>$,"ADD CONSTRAINT %s%s",$<sql_string>2,$<str>3);
 	}
 	| ADD_CONSTRAINT OPEN_BRACKET table_constraint_definition_list_ss CLOSE_BRACKET {
+		add_feature("ADD_CONSTRAINT");
 		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3);
 	}
 ;
@@ -354,13 +365,13 @@ table_constraint_definition_list_ss: table_constraint_definition_ss opt_constrai
 ;
 
 opt_constraint_name : {strcpy($<str>$,"");} 
-		| CONSTRAINT identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+		| CONSTRAINT identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2); }
 ;
 
 alter_drop_constraint_clause:
 	DROP_CONSTRAINT constraint_names
-		{ sprintf($<str>$,"DROP CONSTRAINT %s",$<str>2); }
-	| DROP_CONSTRAINT OPEN_BRACKET constraint_names CLOSE_BRACKET {
+		{ sprintf($<str>$,"DROP CONSTRAINT %s",$<str>2); add_feature("DROP_CONSTRAINT"); }
+	| DROP_CONSTRAINT OPEN_BRACKET constraint_names CLOSE_BRACKET {add_feature("DROP_CONSTRAINT");
 		sprintf($<str>$,"DROP CONSTRAINT (%s)",$<str>3);
 	}
 ;
@@ -370,16 +381,6 @@ constraint_names :
 	| constraint_names KW_COMMA constraint_name {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
-/*
-column_constraints_ss:
-	column_constraint_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| column_constraints_ss KW_COMMA column_constraint_ss {
-		$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_comma,$<sql_string>3,0);
-	}
-;
-*/
 constraint_name: identifier
 ;
 
