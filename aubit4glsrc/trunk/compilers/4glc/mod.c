@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.195 2005-02-09 09:58:51 mikeaubury Exp $
+# $Id: mod.c,v 1.196 2005-02-11 17:54:11 mikeaubury Exp $
 #
 */
 
@@ -4534,34 +4534,37 @@ static int has_clobber(char *s) {
 
 static char *get_clobber(char *s) {
 	int a;
-	if (clob_arr_cnt==0) return 0;
+	if (clob_arr_cnt==0) return s;
 	for (a=0;a<clob_arr_cnt;a++) {
 		if (strcmp(clob_arr[a].orig,s)==0) {
 			return clob_arr[a].new;
 		}
 	}
-return "";
+return s;
 }
 
 char *A4GL_get_important_from_clobber(char *s) {
 	int a;
-	if (clob_arr_cnt==0) return 0;
+	if (clob_arr_cnt==0) return s;
 	for (a=0;a<clob_arr_cnt;a++) {
 		if (strcmp(clob_arr[a].orig,s)==0) {
 			return clob_arr[a].important;
 		}
 	}
-return "";
+return s;
 }
+
+
+
 char *A4GL_get_clobber_from_orig(char *s) {
 	int a;
-	if (clob_arr_cnt==0) return 0;
+	if (clob_arr_cnt==0) return s;
 	for (a=0;a<clob_arr_cnt;a++) {
 		if (strcmp(clob_arr[a].new,s)==0) {
 			return clob_arr[a].orig;
 		}
 	}
-return "";
+return s;
 }
 
 
@@ -4569,7 +4572,7 @@ static char *add_clobber(char *buff_orig,char *important) {
 static char buff_new[256];
 static int p=0;
 char b1[256];
-/*printf("add clobber : %s %s\n",buff_orig,important);*/
+
 	strcpy(buff_new,buff_orig);
 
 	if (has_clobber(buff_orig)) return get_clobber(buff_orig);
@@ -4601,21 +4604,21 @@ char b1[256];
 
 char *do_clobbering(char *f,char *s) {
 static char buff[256];
+
 	if (A4GL_isyes(acl_getenv("NOCLOBBER"))) {
-		/*printf("NOCLOBBER : %s\n",s);*/
 		sprintf(buff,"\"%s\"",s);
+		if (!has_clobber(buff)) { add_clobber(buff,s); }
 		return buff;
 	}
 
 	sprintf(buff,"\"%s_%s\"",f,s);
 
 	if (A4GL_isyes(acl_getenv("ALWAYSCLOBBER"))) {
+		if (!has_clobber(buff)) { add_clobber(buff,s); }
 		return buff;
 	}
 
-	if (has_clobber(buff)) {
-		return get_clobber(buff);
-	}
+	if (has_clobber(buff)) { return get_clobber(buff); }
 	return add_clobber(buff,s);
 }
 

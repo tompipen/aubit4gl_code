@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.214 2005-01-29 11:35:01 mikeaubury Exp $
+# $Id: compile_c.c,v 1.215 2005-02-11 17:55:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.214 2005-01-29 11:35:01 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.215 2005-02-11 17:55:10 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -4334,16 +4334,22 @@ if (strncmp(fmt,"A4GL_open_gui_form",strlen("A4GL_open_gui_form") )==0) {
 	//char *ptr;
 
 
-
-        if (scan_variable (A4GL_get_important_from_clobber(a1)) == -1) {
-	  set_yytext(A4GL_get_important_from_clobber(a1));
-	  a4gl_yyerror ("Form variable not defined");
-	  return;
-		
+	if (A4GL_isyes(acl_getenv("NOCLOBBER")) && 0) {
+		printf("Hello World\n");
+        	if (scan_variable (a1) == -1) {
+	  		set_yytext(a1);
+	  		a4gl_yyerror ("Form variable not defined");
+	  		return;
+		}
+  		printc (fmt, a1, a2);
+	} else {
+        	if (scan_variable (A4GL_get_important_from_clobber(a1)) == -1) {
+	  		set_yytext(A4GL_get_important_from_clobber(a1));
+	  		a4gl_yyerror ("Form variable not defined");
+	  		return;
+		}
+  		printc (fmt, A4GL_get_important_from_clobber(a1), a2);
 	}
-
-	/*printc("%s=",A4GL_get_important_from_clobber(a1));*/
-  	printc (fmt, A4GL_get_important_from_clobber(a1), a2);
 } else {
   	printc (fmt, a1, a2);
 }
