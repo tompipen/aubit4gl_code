@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.28 2002-11-12 21:34:08 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.29 2002-12-31 02:57:34 psterry Exp $
 #
 */
 
@@ -1171,7 +1171,7 @@
 
 	/* ============================ conv.c ================================= */
 	void 	decode_interval 	(struct ival *ival, int *data);
-	int 	stod 				(void *zz, void *aa, int sz_ignore);
+	int 	stod 				(char *zz, int *aa, int sz_ignore);
 	int 	conv 				(int dtype1, void *p1, int dtype2, void *p2, int size);
 	void    set_convmatrix		(int dtype1,int dtype2,void *ptr);
 
