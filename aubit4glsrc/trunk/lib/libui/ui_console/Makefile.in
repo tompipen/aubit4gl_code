@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-10-07 11:06:34 afalout Exp $
+# $Id: Makefile.in,v 1.6 2004-09-28 09:49:24 afalout Exp $
 #
 
 LIBROOT=../..
@@ -51,7 +51,7 @@ else
 	CFLAGS_NO_PEDANTIC  =${CFLAGS}
 endif
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 

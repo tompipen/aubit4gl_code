@@ -1,9 +1,83 @@
-all: 4glpc_new ../../etc/4glpc.iem
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   Jabber makefile	   		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
 
+#
+# $Id: makefile,v 1.4 2004-09-28 09:49:25 afalout Exp $
+#
 
-../../etc/4glpc.iem: helpfile.hlp
-	amkmessage helpfile.hlp ../../etc/4glpc.iem
+ROOT        =../..
+LIBROOT		=${ROOT}/lib
 
-4glpc_new: 4glpc.4gl times.4gl readsettings.4gl
-	4glpc 4glpc.4gl times.4gl readsettings.4gl -o 4glpc_new
-	cp 4glpc_new ../../bin
+include 	${ROOT}/incl/Makefile-common
+
+#We can't use Amake here - we cant't use 4glc or 4glpc
+#include 	${ROOT}/incl/a4gl.mk
+
+## ==================================================================
+##                              Settings
+## ==================================================================
+
+ALL 	=${ROOT}/bin/4glpc_new ${ROOT}/etc/4glpc.iem
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ROOT}/bin/4glc ${ALL}
+	@echo "Default targets (${ALL}) compiled."
+
+${ROOT}/etc/4glpc.iem: helpfile.hlp ${ROOT}/bin/amkmessage
+	${ROOT}/bin/amkmessage $< $@
+
+${ROOT}/bin/4glpc_new: 4glpc.ao times.ao readsettings.ao 
+	${LD} $^ -o $@ -L${LIBROOT} -laubit4gl
+
+## ==================================================================
+##                              Rules
+## ==================================================================
+	
+%.ao: %.c
+	${CC} ${CFLAGS} -c $*.c -o $@
+	
+%.c: %.4gl
+	${ROOT}/bin/4glc -c $<
+
+## ==================================================================
+##                              Dependencies
+## ==================================================================
+	
+${ROOT}/bin/amkmessage:
+	${MAKE} -C ${ROOT}/compilers/helpcompile
+	
+${ROOT}/bin/4glc:
+	${MAKE} -C ${ROOT}/compilers/4glc
+	
+## ==================================================================
+##                              Clean
+## ==================================================================
+
+clean:
+	${RM} *.ao *.o *.c *.h *.err *.glb ${ALL} *~ *.bak
+

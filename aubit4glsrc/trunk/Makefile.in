@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.159 2004-09-24 06:28:07 afalout Exp $
+# $Id: Makefile.in,v 1.160 2004-09-28 09:46:07 afalout Exp $
 #
 
 ## ==================================================================
@@ -85,7 +85,7 @@ default: ${ALL}
 	@echo "| LIB_INSTALL_LINK =${LIB_INSTALL_LINK}"
 	@echo "| BIN_INSTALL_LINK =${BIN_INSTALL_LINK}"
 	@echo "| Execute 'make extra' to compile additional components.             |"
-	@echo "| Execute 'make test.build' to test the build.                       |"
+	@echo "| Use Aubit regression tests available from CVS to test the build.   |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"
@@ -104,21 +104,18 @@ corecompile:
 	$(MAKE) -C common/dataio
 	$(MAKE) -C lib
 	$(MAKE) -C compilers/4glc
+	$(MAKE) -C compilers/helpcompile
+	$(MAKE) -C tools/4glpc	
 	$(MAKE) -C compilers/fcompile
 	$(MAKE) -C compilers/menus
 	$(MAKE) -C compilers/ace
-	$(MAKE) -C compilers/helpcompile
-ifneq "${GCC_MINGW}" "yes"
-	#cannot compile current pcode stuff without RPClib - none on Windows/MinGW
 	$(MAKE) -C compilers/pcode
-endif
-#FIXME: enable loadmap when it compiles again - and in configure.in
-#	$(MAKE) -C lib loadmap
+	$(MAKE) -C lib loadmap
 	$(MAKE) -C tools/convertsql
 	$(MAKE) -C tools/afinderr
 	$(MAKE) -C tools/configuration
 	$(MAKE) -C tools/asql
-#	$(MAKE) -C tools/adbaccess
+#	$(MAKE) -C tools/adbaccess - obsolete now that we have asql
 ifneq "${IFMX_ESQLC}" "no"
 	#curently compiles only with ESQL/C
 	$(MAKE) -C tools/aupscol
@@ -1040,7 +1037,7 @@ endif
 ####################
 #Since we are using xgen now, this should be obsolete
 refresh.norpcgen:
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 ifneq "${USE_RPCGEN}" "0"
 	@x=0; \
 	if diff -q compilers/fcompile/form_x.h tools/cygwin/form_x.h > /dev/null ; then x=1; fi; \
@@ -1071,7 +1068,7 @@ endif
 #Since we are using xgen now, this should be obsolete
 refresh.norpclib:
 ifeq "${CONFIRM}" "IknowWhatImDoing"
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	${CP} ${RPC_INCL_DIR}/auth_unix.h tools/no_rpc/cygwin/rpc
 	${CP} ${RPC_INCL_DIR}/auth.h tools/no_rpc/cygwin/rpc
 	${CP} ${RPC_INCL_DIR}/pmap_clnt.h tools/no_rpc/cygwin/rpc

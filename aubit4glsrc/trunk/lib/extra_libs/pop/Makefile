@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2003-10-16 09:46:24 afalout Exp $
+# $Id: Makefile,v 1.10 2004-09-28 09:49:16 afalout Exp $
 #
 
 ROOT    =../../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-4GLPC_EXEC=export A4GL_LEXTYPE=C; ${SH} ${ROOT}/bin/4glpc
+4GLPC_EXEC=export A4GL_LEXTYPE=C; ${FGLPCEXEC}
 
 ALL=${LIBROOT}/libA4GL_pop${SO_EXT} 
 #test.4ae

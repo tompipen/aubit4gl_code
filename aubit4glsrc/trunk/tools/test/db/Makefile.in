@@ -26,7 +26,7 @@
 # Makefile for compiling the informix ESQL/C connection test.
 
 #
-# $Id: Makefile.in,v 1.14 2003-01-22 10:55:40 afalout Exp $
+# $Id: Makefile.in,v 1.15 2004-09-28 09:50:27 afalout Exp $
 #
 
 ROOT    =../../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 ##                    Options
 ## ==================================================================
 
-4GLPC			=${SH} ${ROOT}/bin/4glpc
+4GLPC			=${FGLPCEXEC}
 ESQL			=@IFMX_ESQLC@
 CFLAGS			+=-I${ROOT}/lib/libincl -L$(AUBITDIR)/lib
 

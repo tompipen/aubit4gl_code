@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.244 2004-09-26 01:47:06 afalout Exp $
+dnl # $Id: configure.in,v 1.245 2004-09-28 09:47:08 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1409,7 +1409,7 @@ CINT=no
 LCLINTEXE=no
 STRIP_EXECUTABLES=no
 cygwin=0
-
+A4GL_PATH_SEP=":"
 SLASH=\\
 
 INFORMIXC=$CC
@@ -1484,6 +1484,12 @@ case $host in
 
 	*-*-mingw*)
 			GCC_MINGW=yes
+			#Autoconf will set TARGET and target_os to CygWin when we use
+			#CygWin tools with MinGW GCC
+			#TARGET=i686-pc-cygwin
+			target_os="mingw"
+			A4GL_PATH_SEP=";"
+			
         ;;
 
     #  *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
@@ -1508,6 +1514,11 @@ case $host in
 			if test "$1" != ""; then
 				if test "$3" = "mingw" -o "$4" = "mingw"; then
 					GCC_MINGW=yes
+					#Autoconf will set TARGET and target_os to CygWin when we use
+					#CygWin tools with MinGW GCC
+					#TARGET=i686-pc-cygwin
+					target_os="mingw"
+					A4GL_PATH_SEP=";"
 				fi
 			fi
 		fi
@@ -1853,11 +1864,10 @@ RUNTIME_RESOURCE="change.afr.dat helpfile.hlp options.afr.dat values.afr.dat \
 #Note: "asql" is just a link to asql_p or asql_i
 
 #Executables that are needed even in run-time distibutions:
-RUNTIME_EXE="fshow afinderr configurator $AMAKE_BIN_EXE"
-#FIXME: add loadmap when it compiles again
+RUNTIME_EXE="fshow loadmap afinderr configurator $AMAKE_BIN_EXE"
 
 COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
-        aace adecompile convertsql aace_4gl aace_perl default_frm "
+        aace adecompile convertsql aace_4gl aace_perl default_frm 4glpc_new"
 
 #Currently fail to compile on formhandler: ide1.4ae 
 #Needs IFX ESQL/C: sqleditor.4ae
@@ -1867,11 +1877,15 @@ COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
 
 #FIXME: pack files created in $(MAKE) -C help (help_aubit.iem help_ecpg.iem help_sqlite.iem
 
-PCODE_EXE="c2pcode c2pcode_fgl checker checker_fgl runner runner_fgl"
+#Need RPClib:
+PCODE_EXE_RPC="c2pcode checker runner"
+PCODE_EXE_NATIVE="c2pcode_fgl checker_fgl runner_fgl"
+
+COMP_EXE="$COMP_EXE $PCODE_EXE_NATIVE"
 
 if test "$GCC_MINGW" != "yes"; then
 	#Pcode stuff needs RCPlib which does not exist on Windows/MinGW
-	COMP_EXE="$COMP_EXE $PCODE_EXE"
+	COMP_EXE="$COMP_EXE $PCODE_EXE_RPC"
 fi
 
 #xgen
@@ -2126,7 +2140,7 @@ ALL_CONF="$INST_BASE/configure $INST_BASE/etc/config/config.guess \
 
 #ROOT_FILES_CONF="$INST_BASE/install.sh"
 ROOT_FILES_CONF="install.sh"
-ETC_FILES="odbc.ini.example"
+ETC_FILES="odbc.ini.example 4glpc.iem gtkrc_2"
 
     COUNTER=0
 	for FILE in $ALL_CONF ; do
@@ -2670,15 +2684,19 @@ fi
 ##                 Checks for CINT - C code interpreter
 ## ==================================================================
 
-    
-PHP_CONFIGURE_PART(Checking for C interpreter:)
+PHP_CONFIGURE_PART(Checking for C interpreter (Cint) :)
 	
 AC_ARG_WITH(cint,
 [  --with-cint[=DIR]         Include CINT support.  DIR is the Cint base
                           install directory, defaults to /usr/local.],
 [
-
 	if test "$withval" != "no"; then
+		if test "$withval" != "yes"; then
+			#user specified path to cint
+			CINT_PATH=$withval
+		else
+			CINT_PATH=/usr/local
+		fi
 	
 		#FIXME: despite listing all this paths, cint executable will only be found
 	    #if its in the PATH - no idea why
@@ -2687,42 +2705,59 @@ AC_ARG_WITH(cint,
 
 		save_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 		save_LDFLAGS="$LDFLAGS"
-		save_PATH="$PATH"		
+		save_PATH="$PATH"
 		save_LIBS="$LIBS"
 #echo "w1 $LDFLAGS"
 #echo "wa $save_LDFLAGS"
 		
-		LD_LIBRARY_PATH="/usr/local/cint:/opt/cint:/usr/local/lib:/usr/lib/termcap:$LD_LIBRARY_PATH"
-		LDFLAGS="-L/usr/lib/termcap $LDFLAGS"
-		PATH=/opt/cint:/usr/local/bin:$PATH
+		LD_LIBRARY_PATH="$CINT_PATH:/usr/local/cint:/opt/cint:/usr/local/lib:/usr/lib/termcap:$LD_LIBRARY_PATH"
+		LDFLAGS="-L$CINT_PATH/lib -L/usr/lib/termcap $LDFLAGS"
+		PATH="$CINT_PATH:/opt/cint:/usr/local/bin:$PATH"
 
-		AC_PATH_PROG(CINT, cint, no, $PATH /usr/local/cint /opt/cint )
-		AC_PATH_PROG(MAKECINT, makecint, no, $PATH /usr/local/cint /opt/cint )
+		AC_PATH_PROG(CINT, cint, no, $CINT_PATH $PATH /usr/local/cint /opt/cint )
+		AC_PATH_PROG(MAKECINT, makecint, no, $CINT_PATH $PATH /usr/local/cint /opt/cint )
 		
-		if test "$CINT" != "no"; then
+		if test "$CINT" != "no" -a "$MAKECINT" != "no"; then
 			CINTSYSDIR=`dirname $CINT`
-			AC_CHECK_LIB([termcap], [main])
-			AC_CHECK_LIB([bsd], [main])
-			AC_CHECK_LIB([bsd-compat], [main])			
-			if test "$ac_cv_lib_bsd_main" != "yes" \
-				-a "$ac_cv_lib_bsd_compat_main" = "yes"; \
-			then			
-				ln -s /usr/lib/libbsd-compat.a /usr/lib/libbsd.a
-				#reset and re-test
-				ac_cv_lib_bsd_main=""
+			
+			case "$CINTSYSDIR" in
+				*cygdrive*)
+					if test "$GCC_MINGW" = "yes"; then
+						#convert Cygwin path mapping back to native
+						CINTSYSDIR=`echo "$CINTSYSDIR" | sed -e 's/^\/cygdrive\///' -e 's/\//:\//'`
+					fi
+					;;
+			esac
+			
+			if test "$COMSPEC" = ""; then 
+				#UNIX
+				AC_CHECK_LIB([termcap], [main])
 				AC_CHECK_LIB([bsd], [main])
-			fi
-
-			if test "$ac_cv_lib_bsd_main" != "yes" \
-				-o "$ac_cv_lib_termcap_main" != "yes"; \
-			then
-				CINT=no
-				AC_MSG_RESULT(no-missing bsd or termcap libraries)
+				AC_CHECK_LIB([bsd-compat], [main])			
+				if test "$ac_cv_lib_bsd_main" != "yes" \
+					-a "$ac_cv_lib_bsd_compat_main" = "yes"; \
+				then			
+					ln -s /usr/lib/libbsd-compat.a /usr/lib/libbsd.a
+					#reset and re-test
+					ac_cv_lib_bsd_main=""
+					AC_CHECK_LIB([bsd], [main])
+				fi
+	
+				if test "$ac_cv_lib_bsd_main" != "yes" \
+					-o "$ac_cv_lib_termcap_main" != "yes"; \
+				then
+					CINT=no
+					AC_MSG_RESULT(no-missing bsd or termcap libraries)
+				else
+					AC_MSG_RESULT(Use Cint - yes)			
+				fi
 			else
-				AC_MSG_RESULT(Use Cint - yes)			
+				#On Windows, we dont have to worry about dependencies
+				AC_MSG_RESULT(Use Cint - yes)
 			fi
+		else
+			AC_MSG_RESULT(Use Cint - NO - no cint and/or makecint executable)
 		fi
-		
 		
 		LD_LIBRARY_PATH="$save_LD_LIBRARY_PATH"
 		PATH="$save_PATH"
@@ -2732,7 +2767,6 @@ AC_ARG_WITH(cint,
     else
 	  AC_MSG_RESULT(--with-cint disabled)
     fi
-
 ],[
   AC_MSG_RESULT(--with-cint not specified)
 ])
@@ -2740,9 +2774,6 @@ AC_ARG_WITH(cint,
 #echo "1 $LDFLAGS"
 #echo "a $save_LDFLAGS"
 #echo "2 $LD_LIBRARY_PATH"
-#exit
-
-
 
 ## ==================================================================
 ##                 Determine RPM build location
@@ -3011,9 +3042,9 @@ AC_ARG_WITH(sapdb,
 	    		fi
 
 				if test "$withval" != "yes"; then
-		            ADD_LD_LIBRARY_PATH="$withval/depend/lib:$ADD_LD_LIBRARY_PATH"
+		            ADD_LD_LIBRARY_PATH="$withval/depend/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	            else
-		            ADD_LD_LIBRARY_PATH="$SAPDBROOT/depend/lib:$ADD_LD_LIBRARY_PATH"
+		            ADD_LD_LIBRARY_PATH="$SAPDBROOT/depend/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 				fi
 
 	            old_PATH="$PATH"
@@ -3211,9 +3242,9 @@ AC_ARG_WITH(informix,
     		fi
 
 			if test "$withval" != "yes"; then
-	            ADD_LD_LIBRARY_PATH="$withval/lib:$withval/lib/esql:$ADD_LD_LIBRARY_PATH"
+	            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$withval/lib/esql$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
             else
-	            ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib:$INFORMIXDIR/lib/esql:$ADD_LD_LIBRARY_PATH"
+	            ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib$A4GL_PATH_SEP$INFORMIXDIR/lib/esql$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 			fi
 
 			#First check if we have esql installed at all:
@@ -3346,7 +3377,7 @@ AC_ARG_WITH(pgsql,
 		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGESQLC"
 		WARN_LD_LIBRARY_PATH=1
 		#WARNING:new PG path must be first
-        ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
+        ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
     fi
 	if test "$enable_ac_debug" = "yes" ; then
 		echo "withval=$withval"
@@ -3418,7 +3449,7 @@ AC_ARG_WITH(pgsql,
 		AC_CHECK_LIB([pq], [PQresultErrorField])
 		AC_CHECK_LIB([pq], [PQfreemem])
    		AC_CHECK_LIB([pq], [PQsetNoticeReceiver])
-		AC_CHECK_LIB([pq], [last_path_separator])
+		AC_CHECK_LIB([pq], [last_A4GL_PATH_SEP])
 
 	    #AC_CHECK_FUNC(PQresultErrorField,AC_DEFINE(HAVE_PQresultErrorField))
 
@@ -4045,7 +4076,7 @@ fi
 			                if test "$TMP" = ""; then
 								WARN_LD_LIBRARY_PATH=1
 								WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IFXODBC"
-								ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
+								ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 			                fi
 							;;
 					esac
@@ -4120,7 +4151,7 @@ AC_ARG_WITH(sapodbc,
 			#user specified custom withval
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON SAPODBC"
 			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRARY_PATH="$withval/interfaces/odbc/lib:$ADD_LD_LIBRARY_PATH"
+            ADD_LD_LIBRARY_PATH="$withval/interfaces/odbc/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_LIBS="$LIBS"
@@ -4227,7 +4258,7 @@ AC_ARG_WITH(iodbc,
 			#user specified custom withval
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON iODBC"
 			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
+            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_LIBS=$LIBS
@@ -4298,7 +4329,7 @@ AC_ARG_WITH(unixodbc,
 		#user specified custom withval
 		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON unixODBC"
 		WARN_LD_LIBRARY_PATH=1
-        ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+        ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
     fi
 
 	if test "$withval" != "no"; then
@@ -4376,12 +4407,12 @@ AC_ARG_WITH(esoob,
   #PHP_WITH_SHARED
   if test "$withval" = "yes"; then
     withval=/usr/local/easysoft/oob/client
-	ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+	ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
   else
 	#user specified custom withval
 	WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON ODBCbridge"
 	WARN_LD_LIBRARY_PATH=1
-    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+    ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
   fi
 
 
@@ -4434,7 +4465,7 @@ AC_ARG_WITH(custom-odbc,
 	#user specified custom withval
 	WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON CustODBC"
 	WARN_LD_LIBRARY_PATH=1
-    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+    ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
   fi
   if test "$withval" != "no"; then
     ODBC_INCDIR=$withval/include
@@ -4510,7 +4541,7 @@ AC_ARG_WITH(pgodbc,
 			#user specified custom withval
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PGODBC"
 			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
+            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_LIBS="$LIBS"; old_LDFLAGS="$LDFLAGS"; old_CPPFLAGS="$CPPFLAGS"
@@ -4661,7 +4692,7 @@ AC_ARG_WITH(gtk,
 		else
 			#user specified custom withval
 			CUSTOM_WITHVAL=1
-		    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+		    ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_PATH="$PATH"
@@ -4928,7 +4959,7 @@ AC_ARG_WITH(iksemel,
 			#user specified custom withval
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON Jabber"
 			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
+            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_LIBS=$LIBS
@@ -4977,7 +5008,7 @@ AC_ARG_WITH(pdf,
 			#user specified custom withval
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON PDF"
 			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
+            ADD_LD_LIBRARY_PATH="$withval/lib$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_LIBS=$LIBS
@@ -5091,7 +5122,7 @@ AC_ARG_WITH(rpc,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 
 		old_LIBS=$LIBS
@@ -5256,7 +5287,7 @@ AC_ARG_WITH(xmlrpc,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 
 		old_CFLAGS="$CFLAGS"
@@ -5319,7 +5350,7 @@ AC_ARG_WITH(mpz,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 
 		AC_CHECK_LIB([gmp], [main])
@@ -5363,23 +5394,18 @@ AC_ARG_WITH(pop,
                           install directory, defaults to /usr/local.],
 [
 	if test "$withval" != "no"; then
-
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
-
 		AC_CHECK_LIB([spopc], [main])
 		if test "$ac_cv_lib_spopc_main" = "yes"; then
-
 			AC_CHECK_HEADERS([ libspopc.h ])
-
 			HAVE_POPLIB=1
 	    fi
-
     else
 		AC_MSG_RESULT(disabled)
     fi
@@ -5403,14 +5429,12 @@ AC_ARG_WITH(pcre,
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
 
 		AC_CHECK_LIB([pcre], [main])
 		if test "$ac_cv_lib_pcre_main" = "yes"; then
-
 			AC_CHECK_HEADERS([ pcre.h ])
-
 			HAVE_PCRELIB=1
 	    fi
 
@@ -5431,22 +5455,37 @@ AC_ARG_WITH(sxml,
                           install directory, defaults to /usr/local.],
 [
 	if test "$withval" != "no"; then
-
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
 		else
 			#user specified custom withval
 		    CUSTOM_WITHVAL=1
-			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 	    fi
+		#Store current values
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+		old_CFLAGS="$CFLAGS"
+		old_CPPFLAGS="$CPPFLAGS"
 
+		LDFLAGS="-L$withval/lib $LDFLAGS"
+		CPPFLAGS="-I$withval/include $CPPFLAGS"
 		AC_CHECK_LIB([sxml], [main])
-		if test "$ac_cv_lib_sxml_main" = "yes"; then
-
-			AC_CHECK_HEADERS([ sxml.h ])
-
+		AC_CHECK_HEADERS([ sxml.h ])		
+		AC_MSG_CHECKING(if we can use SXML)
+		if test "$ac_cv_header_gmp_h" = "yes" -a "$ac_cv_lib_sxml_main" = "yes"; then
 			HAVE_SXMLLIB=1
+			AC_MSG_RESULT(yes)
+		else
+			AC_MSG_RESULT(no)
 	    fi
+
+		
+		#Restore values
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		CPPFLAGS="$old_CPPFLAGS"
 
     else
 		AC_MSG_RESULT(disabled)
@@ -5467,7 +5506,7 @@ if test "$PERL" != no; then
 fi
 
 ## ==================================================================
-##               Checks for curses/ncurses/PDcurses library
+##               Checks for curses/ncurses library
 ## ==================================================================
 
 	#Store current values
@@ -5485,11 +5524,11 @@ fi
 	  if test "$withval" = "no"; then
 		AC_MSG_RESULT(Disabled)
       else
-
 		#User specified location of curses library with --with-curses=path
 		if test "$withval" != "yes"; then
 			CURSES_LIB_PATH="-L$withval"
             CURSES_INC_PATH="-I$withval -I$withval/ncurses"
+            ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
 		else
 			#Note" Aubit source code uses #include <curses.h> and NOT
 			#include <ncurses.h> or include <ncurses/ncurses.h> Therefore,
@@ -5581,6 +5620,10 @@ fi
 		AC_MSG_RESULT(--with-curses not specified)
 	])
 
+## ==================================================================
+##               Checks for PDcurses library
+## ==================================================================
+
 	#NOTE: attempt to compile Aubit TUI plug-in with CygWin curses using 
 	#MingW GCC would fail because CygWin libraries need cygwin1.dll, and 
 	#MinGW GCC would not link it in. Hovewer, we can compile Aubit TUI plug-in 
@@ -5588,52 +5631,85 @@ fi
 	#of Aubit compielr compiled natively (using MinGW GCC) - if we make
     #cygwin1.dll accessible at run-time.
 
-	#there is not ncurses on Win32 - but we can try Pdcurses for UI_TUIN
-		
 	PHP_CONFIGURE_PART(Checking for PDcurses:)
 	AC_ARG_WITH(pdcurses,
 	[  --with-pdcurses[=DIR]     Include PDcurses support. DIR is the PDcurses base
                           install directory, defaults to
-                          /cygdrive/d/pdc25_vc_w32.],
+                          /usr.],
 	[
-	  if test "$withval" = "yes"; then
-	    withval=/cygdrive/d/pdc25_vc_w32
-	  fi
 	  if test "$withval" != "no"; then
-	  #TODO: we need to actually test this, not just blindly accept it
-	  	PD_CURSES_LIB_PATH="-L$withval"
-		PD_CURSES_INC_PATH="-I$withval"
-		PD_CURSES_LIB_NAME="$withval/curses.dll $withval/panel.lib"
-		HAVE_PDCURSES=1
-		AC_DEFINE(HAVE_PDCURSES,1,[ ])
-		AC_MSG_RESULT(yes)
-		#echo 1
-		#echo $withval
+		if test "$withval" != "yes"; then
+			#user specified path
+			case "$withval" in
+				*cygdrive*)
+					if test "$GCC_MINGW" = "yes"; then
+						#convert Cygwin path mapping back to native
+						PDCURSES_WINPATH=`echo "$withval" | sed -e 's/^\/cygdrive\///' -e 's/\//:\//'`
+					fi
+					;;
+			esac
+			if test "$PDCURSES_WINPATH" != ""; then 
+				ADD_LD_LIBRARY_PATH="$PDCURSES_WINPATH$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+			else
+				ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+			fi
+		else
+			#withval is 'yes', assign default
+			withval=/usr
+		fi
+		if test -d "$withval"; then
+			if test -f "$withval/curses.dll"; then 
+				PD_CURSES_LIB_PATH="-L$withval"
+				PD_CURSES_LIB_NAME="$withval/curses.dll $withval/panel.lib"
+				HAVE_PDCURSES=1
+			fi
+			if test -f "$withval/lib/curses.so"; then
+				PD_CURSES_LIB_PATH="-L$withval/lib"
+				PD_CURSES_LIB_NAME="-l$withval/lib/curses.so $withval/lib/panel.lib"
+				HAVE_PDCURSES=1
+			fi
+			if test -d "$withval/incl"; then
+				PD_CURSES_INC_PATH="-I$withval/incl"
+			else
+				#On windows everything is in one directory
+				PD_CURSES_INC_PATH="-I$withval"
+			fi
+			if test "$HAVE_PDCURSES" = "1"; then 
+				AC_DEFINE(HAVE_PDCURSES,1,[ ])
+				AC_MSG_RESULT(yes)
+				#Check if we have objects needed to make statically linked TUIN
+				AC_MSG_CHECKING(PDcurses static link objects)
+				PDCURSES_STATIC_PATH="d:/cygwin/tmp/pdcurs26/win32"
+				if test -f "$PDCURSES_STATIC_PATH/panel.a" -a -f "$PDCURSES_STATIC_PATH/pdcurses.a" ; then
+					AC_MSG_RESULT(yes)
+					HAS_PDCURSES_STATIC_OBJS=1
+				else
+					AC_MSG_RESULT(no)
+				fi
+			else
+				AC_DEFINE(HAVE_PDCURSES,0,[ ])
+				AC_MSG_RESULT(no - missing curses library (.so or .dll))
+			fi
+		else
+			HAVE_PDCURSES=0
+			AC_DEFINE(HAVE_PDCURSES,0,[ ])
+			AC_MSG_RESULT(no - directory $withval does not exist)
+		fi
 		TMP_TMP=`echo $withval | sed -e 's/\// /g'`
-		#echo 2
-		#echo $TMP_TMP
 		TMP_TMP=`echo $TMP_TMP | sed -e 's/\\\\/ /g'`
-		#echo 2a
-		#echo $TMP_TMP
 		TMP_TMP=`echo $TMP_TMP | sed -e 's/cygdrive//' -e 's/\:/ /'`
-		#echo 3
-		#echo $TMP_TMP
 		if test "$TMP_TMP" != ""; then
 			set `echo $TMP_TMP`
-			#echo 4
 			if test "$1" = "c" -o "$1" = "d" -o "$1" = "e" \
 			-o "$1" = "C" -o "$1" = "D" -o "$1" = "E"; then
-				#echo 5
 				PD_CURSES_DRIVE=$1
 			else
-				#echo 6
 				#No drive leter - so same as CygWin drive
 				#HOMEDRIVE is CygWin created environment variable
 				PD_CURSES_DRIVE=`echo $HOMEDRIVE | sed -e 's/\://'`
 			fi
 			PD_CURSES_CYGDRIVE="/cygdrive/$PD_CURSES_DRIVE"
 		fi
-		
 	  else
 		AC_MSG_RESULT(disabled)
 	  fi
@@ -6407,8 +6483,13 @@ else
 	else
 		#we can compile only HL_TUIN with PDcurses
 		if test "$HAVE_PDCURSES" = "1"; then
-			A4GL_UI="HL_TUIN"
-			A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN"
+			if test "$HAS_PDCURSES_STATIC_OBJS" = "1" ; then
+				A4GL_UI="HL_TUINs"
+				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN HL_TUINs"
+			else
+				A4GL_UI="HL_TUIN"
+				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN"
+			fi
 		fi
 	fi
 
@@ -6481,11 +6562,21 @@ PLUGIN_NO_LINKABLE=
 
 	if test "$HAVE_CURSES" = "1" ; then
         PLUGIN_YES="$PLUGIN_YES UI_TUI UI_HL_TUI UI_HL_TUIN"
+		if test "$HAS_PDCURSES_STATIC_OBJS" = "1"; then 
+        	PLUGIN_YES="$PLUGIN_YES UI_HL_TUINs"
+		else
+			PLUGIN_NO="$PLUGIN_NO UI_HL_TUINs"		
+		fi
 	else
 		if test "$HAVE_PDCURSES" = "1"; then
 			#no curses, but found PDcurses
 			#can make only UI_TUIN with PDcurses
     	    PLUGIN_YES="$PLUGIN_YES UI_HL_TUIN"
+			if test "$HAS_PDCURSES_STATIC_OBJS" = "1"; then 
+				PLUGIN_YES="$PLUGIN_YES UI_HL_TUINs"
+			else
+				PLUGIN_NO="$PLUGIN_NO UI_HL_TUINs"
+			fi
 			if test "$GCC_MINGW" != "yes"; then
 				#Does not exist for MinGW anyway
 				PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI"
@@ -6496,7 +6587,7 @@ PLUGIN_NO_LINKABLE=
 			#no Curses and no PDcurses
 			if test "$GCC_MINGW" != "yes"; then
 				#Does not exist for MinGW anyway
-				PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI UI_HL_TUIN"
+				PLUGIN_NO="$PLUGIN_NO UI_TUI UI_HL_TUI UI_HL_TUIN UI_HL_TUINs"
 				#Will be on all known Linux installations, but not by default on CygWin
 				INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL "
 			fi
@@ -6916,9 +7007,11 @@ AC_OUTPUT
 
 if test "$AUBIT_SOURCE" = "1" ; then
 	if test "$INFORMIXDIR" != "" ; then
-		echo "Running configure for FglDoc... ($INFORMIXDIR)"
-		export INFORMIXDIR
-		cd tools/fgldoc; configure; cd -
+		if test "$GCC_MINGW" != "yes"; then	
+			echo "Running configure for FglDoc... ($INFORMIXDIR)"
+			export INFORMIXDIR
+			cd tools/fgldoc; configure; cd -
+		fi
     fi
 fi
 
@@ -7156,7 +7249,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.244 2004-09-26 01:47:06 afalout Exp $
+| $Id: configure.in,v 1.245 2004-09-28 09:47:08 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

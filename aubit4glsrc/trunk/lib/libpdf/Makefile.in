@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2004-08-08 01:42:18 afalout Exp $
+# $Id: Makefile.in,v 1.17 2004-09-28 09:49:21 afalout Exp $
 #
 
 ROOT        =../..
@@ -46,7 +46,7 @@ ifneq "${PDFBUILD}" "no"
 	ALL 		+=${LIBROOT}/libEXREPORT_PDF${SO_EXT}
 endif
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 

@@ -459,7 +459,10 @@ A4GL_SAPDB_ESQLC="@SAPDB_ESQLC@"
 ADD_LD_LIBRARY_PATH="@ADD_LD_LIBRARY_PATH@"
 
 #####################
-#Path to CINT installation. Used by cint/make_cintlib 
+#Path to CINT installation. Used by cint/make_cintlib
+#WARNING: on Windows, CINTSYSDIR has to be in Windows format (not CygWin
+#or MSYS mapping (cygdrive) because makecint and cint executables are
+#native Windows executables and know nothing about path mapping
 CINTSYSDIR=@CINTSYSDIR@
 
 #####################

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.8 2003-10-20 12:19:00 mikeaubury Exp $
+# $Id: Makefile.in,v 1.9 2004-09-28 09:49:21 afalout Exp $
 #
 
 ROOT        =../../..
@@ -49,7 +49,7 @@ ALL 		=${LIBROOT}/libPACKER_XDR${SO_EXT}
 ifeq "@HAVE_RPCLIB@" "0"
 #Is there any point in doing this? Not on Windows, since unresolved dependencies are not
 #allowed at link time, and we have no RPCLIB to link with anyway:
-	ifeq "${TARGET_OS}" "cygwin"
+	ifneq "${COMSPEC}" ""
 		ALL			=norpclib
 	endif
 else
@@ -64,7 +64,7 @@ CFLAGS      +=${LOCAL_IFLAGS}
 #it would #give us bunch of warnings about unused varibles, that we cannot fix
 CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
 endif
 

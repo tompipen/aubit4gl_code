@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.23 2004-03-27 11:50:39 afalout Exp $
+# $Id: Makefile.in,v 1.24 2004-09-28 09:49:11 afalout Exp $
 #
 
 
@@ -80,7 +80,7 @@ OBJS_PERL   =${CMODS_PERL:.c=.o}
 ##                    Settings
 ## ==================================================================
 
-4GLPC       =${SH} ${ROOT}/bin/4glpc
+4GLPC       =${FGLPCEXEC}
 
 CFLAGS      +=-I.
 
@@ -91,13 +91,13 @@ ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile ${ROOT}/bin/aace_perl ${ROOT}/bin
 
 #Should no longer need RPC - using xgen now:
 #ifeq "@HAVE_RPCLIB@" "0"
-#	ifeq "${TARGET_OS}" "cygwin"
+#	ifneq "${COMSPEC}" ""
 #        #On Windows unresolved symbols are not alloved at link time, and we have no RPCLIB:
 #		ALL=norpclib
 #    endif
 #endif
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
 endif
 

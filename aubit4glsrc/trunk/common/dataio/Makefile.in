@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.20 2004-03-21 00:46:06 afalout Exp $
+# $Id: Makefile.in,v 1.21 2004-09-28 09:49:10 afalout Exp $
 #
 
 ROOT        =../..
@@ -55,7 +55,7 @@ XGEN	=${LIBROOT}/libDATA_struct_form${SO_EXT} \
 
 ANY		=${LIBROOT}/libDATA_any${SO_EXT}
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 	ALL         =${LIBROOT}/libaubit4gl.${SO_EXT}
 endif
@@ -77,7 +77,7 @@ ifeq "${USE_RPCGEN}" "0"
 	RPCGEN_PCODE		=${CP} ${ROOT}/tools/cygwin/npcode_xdr.c .
 	#Is there any point in doing this? Not on Windows, since unresolved dependencies are not
     #allowed at link time, and we have no RPCLIB to link with anyway:
-	ifneq "${TARGET_OS}" "cygwin"
+	ifeq "${COMSPEC}" ""
 		ifneq "${GCC_MINGW}" "yes"
             #No point in making XDR format libraries with CygWin Sun RPC, usign MinGW GCC - they
             #Would depend on cygwin1.dll, and MinGW GCC would not link it in. We can use XDR libs
@@ -105,7 +105,7 @@ else
 		ALL				+=${RPC}
     endif
 endif
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 

@@ -4,10 +4,16 @@
 	#define u_int unsigned int
 #endif
 
-#include "npcode.h"
+#ifdef RPCGEN_HEADERS
+	#include "npcode.h"
+	#include "rpc/rpc.h" //XDR, XDR_ENCODE XDR_DECODE	
+#else
+	#include "npcode.xs.h"
+#endif
+
 #include <stdio.h>			/* needed for FILE symbol */
 
-#include "rpc/rpc.h" //XDR, XDR_ENCODE XDR_DECODE
+
 
 void
 nullfunc ()

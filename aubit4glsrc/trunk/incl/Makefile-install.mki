@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.79 2004-09-26 01:47:13 afalout Exp $
+# $Id: Makefile-install.mki,v 1.80 2004-09-28 09:49:15 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -358,7 +358,7 @@ install.aubitbuild.cron:
 	crontab -l
 	chmod a+x ${OUT}
 	@echo "cron script ${OUT} installed, using ${OUT2}"
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 #Activate cron daemon as Windows service:
 	cygrunsrv -E cron
 	cygrunsrv -R cron
@@ -725,15 +725,23 @@ SPOPC_TGZ_SRC=${SPOPC_SRC}.tgz
 ##################
 # 28: cint
 CINT_INFO=http://root.cern.ch/root/Cint.html
-ifdef COMSPEC
-	CINT_BIN_WIN=cintwin
-	CINT_PATH=ftp://root.cern.ch/root/
-	CINT_TAR_GZ_BIN_WIN=${CINT_BIN_WIN}.tar.gz
-else
+#ifdef COMSPEC
+#	#This is MSVC version and creates nmake makefile - no good
+#	CINT_BIN_WIN=cintwin
+#	CINT_PATH=ftp://root.cern.ch/root/
+#	CINT_TAR_GZ_BIN_WIN=${CINT_BIN_WIN}.tar.gz
+#	#See:
+#	#http://darbujan.fzu.cz/~cint/03/msg00425.html
+#	#We have to get source code and compile it with patches available at:
+#	#
+#	
+#else
+#http://www-d0.fnal.gov/D0Code/source/CINT/platform/mingw
+#http://www-d0.fnal.gov/cgi-bin/cvsweb.cgi/CINT/
 	CINT_SRC=cint5.15
 	CINT_PATH=ftp://root.cern.ch/root/
 	CINT_TAR_GZ_SRC=${CINT_SRC}.tar.gz	
-endif
+#endif
 
 
 ##################
@@ -741,6 +749,8 @@ endif
 PDCURSES_INFO			=http://pdcurses.sourceforge.net/
 PDCURSES_WIN_PATH		=http://umn.dl.sourceforge.net/sourceforge/pdcurses
 PDCURSES_WIN_ZIP		=pdc25_vc_w32.zip
+PDCURSES_SRC			=pdcurs26
+PDCURSES_SRC_ZIP		=${PDCURSES_SRC}.zip
 
 ##################
 # 30: PCRE - Perl Compatible Regular Expressions 
@@ -749,7 +759,8 @@ PCRE_SRC_PATH			=ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre
 PCRE_SRC				=pcre-5.0
 PCRE_SRC_GZ				=${PCRE_SRC}.tar.gz
 #Windows installer (with all dependencies)
-PCRE_WIN_PATH			=http://gnuwin32.sourceforge.net/downlinks/pcre-bin.php
+#PCRE_WIN_PATH			=http://gnuwin32.sourceforge.net/downlinks/pcre-bin.php
+PCRE_WIN_PATH			=http://unc.dl.sourceforge.net/sourceforge/gnuwin32
 PCRE_WIN_INSTALLER		=pcre-4.4-bin.exe
 
 
@@ -1188,16 +1199,37 @@ install.libspopc: ${SPOPC_TGZ_SRC}
 #WARNING - Cint needs -ltermcap and -lbsd
 #######################
 
-ifdef COMSPEC
-install.cint: ${CINT_TAR_GZ_BIN_WIN}
-else
+#ifdef COMSPEC
+#install.cint: ${CINT_TAR_GZ_BIN_WIN}
+#else
 install.cint: ${CINT_TAR_GZ_SRC}
-endif
+#endif
+ifdef COMSPEC
+	#must NOT be installed under cygwin, because makecint is Windows native
+	#executable and knows nothing about CygWin path mapping (cygdrive)
+	${MKPATH} /cygdrive/d/${CINT_SRC}-src
+	cd /cygdrive/d/${CINT_SRC}-src; tar -xvzf ${CYG_AUBITDIR}/$^
+	@echo "Unpacked to /cygdrive/d/${CINT_SRC}-src"
+#Not sure about this comments, should work automatically:
+#remove comments if it does.
+	@echo "Open MSYS shell and execute following commands:"	
+	@echo "cd D:\${CINT_SRC}-src"
+	@echo "Edit platform/mingw, add -D_MAX_PATH=512 to SYSMACRO and OTHMACRO lines"
+	@echo "Add -L/d/MinGW/lib to LDOPT in same file"
+	@echo "copy gcc to cc in MinGW/bin"
+	@echo "MAKE SURE YOU ARE USING MINGW GCC - AND NOT CYGWIN!!!!"	
+	@echo "Then, execute:"
+	@echo "bash ./setup platform/mingw"
+	@echo "bash ./INSTALLBIN --bindir=/cygdrive/d/cint --libdir=/cygdrive/d/cint
+#Not sure about this:
+#Can't be compiled from CygWin because of path mangling (cygdrive)
+#So will need MinGW MSYS to compile it since .bat files provided work only
+#for MSVC and shell scripts need, well... shell!
+	cd /cygdrive/d/${CINT_SRC}-src; ${SH} ./setup platform/mingw
+	cd /cygdrive/d/${CINT_SRC}-src; ${SH} ./INSTALLBIN --bindir=/cygdrive/d/cint --libdir=/cygdrive/d/cint	
+else
 	${MKPATH} /tmp/${CINT_SRC}
 	cd /tmp/${CINT_SRC}; tar -xvzf ${AUBIT_SRC_ROOT}/$^
-ifdef COMSPEC
-	@echo "Unpacked to /tmp - what now?"	
-else
 #NOTE: platforms gcc_max, linux2.0_ansi, gcc_min, linux2.0, linux_RH7.3_so 
 #and linux_RH7.3_gcc3 fail on SuSE 9. Cannot use linux2.0_so_only_C becuse 
 #generated makefile for Aubit NEEDS C++ too.
@@ -1215,9 +1247,41 @@ endif
 	@echo " "
 
 ##################
+# 29: PDcurses
+install.pdcurses: ${PDCURSES_SRC_ZIP}
+ifdef COMSPEC
+	@echo "COMSPEC=${COMSPEC}"
+	-mkdir /tmp/${PDCURSES_SRC}
+	cd /tmp/${PDCURSES_SRC}; /bin/unzip ${CYG_AUBITDIR}/$^ -d /tmp/${PDCURSES_SRC}
+#	cd /tmp/${PDCURSES_SRC}; ./configure; make; make install
+	cd /tmp/${PDCURSES_SRC}/win32; make -f mingwin32.mak \
+		PDCURSES_HOME=d:/cygwin/tmp/pdcurs26 CC_HOME=d:/MinGW
+#There is no install target there, have to install it manually:
+	-mkdir /cygdrive/d/${PDCURSES_SRC}-mingw
+	cp panel.a pdcurses.a /cygdrive/d/${PDCURSES_SRC}-mingw
+#TODO - also need headers!	
+#Demos:
+#newdemo.exe  testcurs.exe firework.exe tuidemo.exe xmas.exe
+#Other files of possible interest:
+#pdcurses.ico pdcurses.rc w95-bcc.rsp wccwin32.lrf bccwin32.lrf
+#curses.def curses_lcc.def  
+else
+#	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	unzip $^ -d /tmp
+	cd /tmp/${PDCURSES_SRC}; ./configure; make; make install
+endif	
+	@echo " "
+	@echo "Package info & manuals: ${PDCURSES_INFO}"
+	@echo " "
+	@echo "PDcurses library installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+	
+##################
 # 30: PCRE - Perl Compatible Regular Expressions 
 ifdef COMSPEC
 install.pcre: ${PCRE_WIN_INSTALLER}
+	chmod a+x ${PCRE_WIN_INSTALLER}
 	${PCRE_WIN_INSTALLER}
 else
 install.pcre: ${PCRE_SRC_GZ}
@@ -1234,8 +1298,22 @@ endif
 ##################
 # 31: SXML  
 install.sxml: ${SXML_SRC_GZ}
+ifdef COMSPEC
+	cd /tmp; tar --gunzip -xf ${CYG_AUBITDIR}/$^
+	cd /tmp/${SXML_SRC}; ./configure; make
+#install target fails on Windows because it has hard-coded username 'root'
+#which does not exost on Windows
+#	cd /tmp/${SXML_SRC}; install -o ${USER} -g ${USER} -m 0644 libsxml.a /usr/lib
+	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0644 libsxml.a /usr/lib
+	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0755 libsxml.so /usr/lib/libsxml.dll
+	cd /tmp/${SXML_SRC}; install -o ${USER} -m 0644 sxml.h /usr/include	
+	
+else
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
-	cd /tmp/${SXML_SRC}; ./configure; make; make install
+	cd /tmp/${SXML_SRC}; ./configure; make; make install	
+endif	
+
+	
 	@echo " "
 	@echo "Package info & manuals: ${SXML_INFO}"
 	@echo " "
@@ -1344,12 +1422,16 @@ ${SPOPC_TGZ_SRC}:
 	${WGET} ${SPOPC_PATH}/$@
 ${CINT_TAR_GZ_SRC}:
 	${WGET} ${CINT_PATH}/$@
+${CINT_TAR_GZ_BIN_WIN}:
+	${WGET} ${CINT_PATH}/$@
 ${PCRE_WIN_INSTALLER}:
-	${WGET} ${PCRE_WIN_PATH}
+	${WGET} ${PCRE_WIN_PATH}/${PCRE_WIN_INSTALLER}
 ${PCRE_SRC_GZ}:
 	${WGET} ${PCRE_SRC_PATH}/$@
 ${SXML_SRC_GZ}:
 	${WGET} ${SXML_SRC_PATH}/$@
+${PDCURSES_SRC_ZIP}:
+	${WGET} ${PDCURSES_WIN_PATH}/$@
 
 #############################################
 #       SQLite tests

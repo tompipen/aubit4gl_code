@@ -1,6 +1,8 @@
 #!/bin/sh
 #This is Aubit 4gl compiler warper script
 
+#Make sure that waht is CygWin formated path stays visible
+PATH=":$PATH:"
 
 if [ "$AUBITDIR" = "" ]; then
 	AUBITDIR=`aubit-config AUBITDIR`
@@ -11,24 +13,117 @@ if [ "$AUBITDIR" = "" ]; then
 	fi
 fi
 
+#Determine for which OS was this aubit-config compiled
+#TARGET=i686-pc-cygwin
+#TARGET_OS=cygwin
+TARGET_OS=`aubit-config TARGET_OS`
+if test "$TARGET_OS" = "mingw"; then 
+	GCC_MINGW="yes"
+	
+	case "$PATH" in
+		*cygdrive*)
+			#We are running under CygWin shell, that will do nasty things
+			#to PATH
+			CYGWIN_SHELL=1
+			;;
+	esac
+	if test "$CYGWIN_SHELL" = "1"; then
+		A4GL_PATH_SEP=":"
+		#convert AUBITDIR to cygwin path so shell can find executables
+		AUBITDIR_CYG=`echo "$AUBITDIR" | sed -e 's/c\:/\/cygdrive\/c/' -e 's/d\:/\/cygdrive\/d/' -e 's/C\:/\/cygdrive\/c/' -e 's/D\:/\/cygdrive\/d/'`
+		#echo "AUBITDIR_CYG=$AUBITDIR_CYG"
+		#exit
+	else
+		A4GL_PATH_SEP=";"
+	fi
+else
+	A4GL_PATH_SEP=":"
+fi
+	
+case "$AUBITDIR" in
+	*cygdrive*)
+		if test "$GCC_MINGW" = "yes"; then
+			echo "WARNING: AUBITDIR contaned CygWin mapped path:"
+			echo "$AUBITDIR"
+			#convert Cygwin path mapping back to native
+			AUBITDIR=`echo "$AUBITDIR" | sed -e 's/^\/cygdrive\///' -e 's/\//:\//'`
+		fi
+		;;
+	*:*)
+		if test "$GCC_MINGW" != "yes"; then
+			echo "WARNING: AUBITDIR contans ':' but not using MinGW"
+			echo "$AUBITDIR"
+		fi
+		;;
+	*)
+		#no cygdrive and no column (:)
+		if test "$GCC_MINGW" = "yes"; then
+			echo "WARNING: AUBITDIR does NOT contan ':'"
+			echo "$AUBITDIR"
+		fi
+		;;
+esac
+
+
 INIT_AUBITDIR="$AUBITDIR"
 
+ADD_LD_LIBRARY_PATH="`aubit-config ADD_LD_LIBRARY_PATH`"
+if test "$ADD_LD_LIBRARY_PATH" != ""; then 
+	if test "$TARGET_OS" = "mingw"; then
+		if test "$CYGWIN_SHELL" = "1"; then
+			#need to translate paths back to CygWin format first:
+			TMP=`echo $ADD_LD_LIBRARY_PATH | sed -e 's/[Cc]:/\/cygdrive\/c/'g -e 's/[Dd]:/\/cygdrive\/d/'g -e 's/[Ee]:/\/cygdrive\/e/'g `
+			TMP=`echo $TMP | sed -e 's/;/:/'g`
+			#echo $ADD_LD_LIBRARY_PATH
+			#echo
+			#echo $TMP
+			#exit
+			export PATH="$A4GL_PATH_SEP$TMP$A4GL_PATH_SEP$PATH"
+		else
+			#This is going to be used by Windows native run-time loader,
+			#so it needs to be in native Windows paths and separators
+			export PATH="$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH$A4GL_PATH_SEP$PATH"
+		
+		fi
+
+		
+		#	export PATH=";=====;d:/pdc25_vc_w32;====;$PATH"
+		#	export PATH=";xxxxxx;d:\\pdc25_vc_w32;xxxx;$PATH"
+		#WARNING! WARNING!
+		#we actually need to specify paths to native Windows dlls our native
+		#programs will need to find IN CYGWIN FORMAT, because "clever" CygWin
+		#will map them back to Windows format. If we specify them in Windows
+		#format, CygWin will mess them up completely!
+		#	export PATH=":------:/cygdrive/d/pdc25_vc_w32:-----:$PATH"
+		
+		
+	else
+		export LD_LIBRARY_PATH="$ADD_LD_LIBRARY_PATH$A4GL_PATH_SEP$LD_LIBRARY_PATH"
+	fi
+fi
+#Used to find libaubit4gl _only_ and _only_ on UNIX
+#LD_LIBRARY_PATH is UNIX only feature, so use UNIX path and separator
+export LD_LIBRARY_PATH=$AUBITDIR/lib:$LD_LIBRARY_PATH
+	
 #Strip drive letter, because it will contain ":"
-TMPAUBITDIR=`echo $AUBITDIR | sed -e 's/C://'g`
-TMPAUBITDIR=`echo $TMPAUBITDIR | sed -e 's/D://'g`
+TMPAUBITDIR=`echo $AUBITDIR | sed -e 's/C://'g -e 's/c://'g`
+TMPAUBITDIR=`echo $TMPAUBITDIR | sed -e 's/D://'g -e 's/d://'g`
+TMPAUBITDIR=`echo $TMPAUBITDIR | sed -e 's/E://'g -e 's/e://'g`
 
 #Strip Cygwin path, because PATH set here will be used by bash to 
 #find executables in AUBITDIR
 TMPAUBITDIR=`echo $TMPAUBITDIR | sed -e 's/\/cygwin//'g`
 
-PATH=$TMPAUBITDIR/bin:$PATH
-
-#Used to find libaubit4gl _only_ and _only_ on UNIX
-LD_LIBRARY_PATH=$AUBITDIR/lib:$LD_LIBRARY_PATH
+#Need to do it twice; when CygWin shell looks for executables in the 
+#path, it wants to see UNIX path and separator; when lounched native 
+#Windows executables look in the path, they want to see native Windows 
+#path and separators
+PATH=$TMPAUBITDIR/bin$A4GL_PATH_SEP:$AUBITDIR/bin:$AUBITDIR_CYG/bin:$PATH
 
 if [ "$COMSPEC" != "" ]; then
 	#dll files are searched for by Windows loader only in PATH
-	PATH=$AUBITDIR/lib:$PATH
+	#Only Windows loader loads .dll's, so it must be native Windows paths (?)
+	PATH=$AUBITDIR/lib$A4GL_PATH_SEP$PATH
 fi
 
 
@@ -40,15 +135,31 @@ fi
 if test "$A4GL_DBPATH" = "" ; then
 	A4GL_DBPATH=$AUBITDIR/bin
 else
-	A4GL_DBPATH=$AUBITDIR/bin:$A4GL_DBPATH
+	A4GL_DBPATH=$AUBITDIR/bin$A4GL_PATH_SEP$A4GL_DBPATH
 fi
 
 if test "$DBPATH" = "" ; then
 	DBPATH=$AUBITDIR/bin
 else
-	DBPATH=$AUBITDIR/bin:$DBPATH
+	DBPATH=$AUBITDIR/bin$A4GL_PATH_SEP$DBPATH
 fi
 
+#case "$PATH" in
+#	*\;*)
+		if test "$GCC_MINGW" = "xxxyes"; then
+			NEW_PATH=`echo $PATH | sed -e 's/;/:/'g`
+			if test "$PATH" != "$NEW_PATH"; then 
+				echo "WARNING: PATH contained ';'"
+				echo "$PATH"
+				echo
+				PATH="$NEW_PATH"
+				echo "$PATH"
+				export PATH
+			fi
+			#exit
+		fi
+#		;;
+#esac
 export AUBITDIR PATH LD_LIBRARY_PATH A4GL_DBPATH DBPATH
 
 if [ $# -lt 1 -o "$1" = "--help" ]; then
@@ -75,10 +186,46 @@ fi
 if [ "$1" = "--show" ]; then
     echo
     echo "AUBITDIR=$AUBITDIR"
+	echo
     echo "INIT_AUBITDIR=$INIT_AUBITDIR"
+	echo
     echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+	echo
+    echo "ADD_LD_LIBRARY_PATH=$ADD_LD_LIBRARY_PATH"
+	echo	
     echo "PATH=$PATH"
+	echo
+	echo "TARGET_OS=TARGET_OS"
+	echo
+	echo "GCC_MINGW=$GCC_MINGW"
+	echo
     exit 0
+fi
+if [ "$1" = "--show-path" ]; then
+    echo
+	export PATH=";=====;d:/pdc25_vc_w32;====;$PATH"
+	export PATH=";xxxxxx;d:\\pdc25_vc_w32;xxxx;$PATH"
+	export PATH=":------:/cygdrive/d/pdc25_vc_w32:-----:$PATH"
+	
+	#Protect existing spaces
+	PATH_TMP="`echo $PATH | sed -e 's/ /!/'g`"
+	
+	PATH_ELEMENTS_CYG="`echo $PATH_TMP | sed -e 's/:/ /'g`"
+	PATH_ELEMENTS_WIN="`echo $PATH_TMP | sed -e 's/;/ /'g`"
+	echo "-----------------------------------------------------------------"
+	echo "Path elements as seen by CygWin shell and CygWin programs:"
+	for ELEMENT in $PATH_ELEMENTS_CYG ; do
+		ELEMENT="`echo $ELEMENT | sed -e 's/!/ /'g`"
+		echo "CYG:$ELEMENT"
+	done
+	echo "-----------------------------------------------------------------"
+	echo "Path elements as seen by Windows shell, MinGW and Windows native programs:"
+	for ELEMENT in $PATH_ELEMENTS_WIN; do
+		ELEMENT="`echo $ELEMENT | sed -e 's/!/ /'g`"
+		echo "WIN:$ELEMENT"
+	done
+	echo "-----------------------------------------------------------------"
+	exit 0
 fi
 
 #FIXME: on CygWin, we must add "bash" in front of "4glpc" otherwise standard "sh" will be
@@ -86,17 +233,31 @@ fi
 
 #List of all Aubit tools that are supposed to run only on command line in
 #TUI mode - not GUI mode
-CMD_LINE_TOOLS="4glc aubit-config default_frm mcompile 4glc-strip aupscol \
-	ecpg_wrap mdecompile 4glpc amkmessage aupscol.err c2pcode esql_wrap \
-    prepmake aace asql_g.4ae c2pcode_fgl process_report aace_4gl asql_i.4ae \
-	fcompile aace_perl asql_p.4ae checker fdecompile runner abug.sh checker_fgl \
-    runner_fgl adecompile  unmkmessage afinderr aubitbuild.sh convertsql genmake \
+CMD_LINE_TOOLS="4glc 4glpc_new aubit-config default_frm mcompile 4glc-strip aupscol \
+	ecpg_wrap mdecompile 4glpc amkmessage c2pcode esql_wrap \
+    prepmake aace c2pcode_fgl process_report aace_4gl \
+	fcompile aace_perl checker fdecompile abug.sh checker_fgl \
+    adecompile  unmkmessage afinderr aubitbuild.sh convertsql genmake \
 	amake xgen"
 
+#They run compiled P-code programs - not command line
+#runner runner_fgl
+
+#If user invoked this from command line, he ptobably wants to run them in 
+#terminal, and not GUI mode?
+TUI_TOOLS="asql_g.4ae asql_i.4ae asql_p.4ae"
+	
 for CMD in $CMD_LINE_TOOLS; do
 	if test "$1" = "$CMD"; then 
 		IS_CMD_LINE_TOOL=1
-		export A4GL_UI=TUI
+		#Only thing we have for sure is CONSOLE
+		if test "$GCC_MINGW" = "yes"; then
+			export A4GL_UI=HL_TUIN
+			#export A4GL_UI=HL_TUINs
+		else
+			export A4GL_UI=CONSOLE
+			#export A4GL_UI=TUI
+		fi
 	fi
 done	
 
@@ -110,12 +271,22 @@ for FLAG in $FLAGS; do
    ################
 
    --verbose | -verbose)
+   		echo
         echo "AUBITDIR=$AUBITDIR"
+		echo
         echo "PATH=$PATH"
+		echo
         echo "DBPATH=$DBPATH"
+		echo
         echo "A4GL_DBPATH=$A4GL_DBPATH"
+		echo 
+		echo "A4GL_PATH_SEP=$A4GL_PATH_SEP"
+		echo
 		VERBOSE=1
         $2 $3 $4 $5 $6 $7 $8 $9
+		RET=$?
+		exit $RET
+
    ;;
 
    *)

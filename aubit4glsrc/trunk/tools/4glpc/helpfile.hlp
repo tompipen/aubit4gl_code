@@ -71,9 +71,9 @@ More Options:
       -map/nomap ($MAP4GL=Yes) generate additional map file code
       -maponly
       -verbose ($A4GLVERBOSE=yes) show additional info while compiling
-      -noerrcode () do not show eeror code on compile errors'
-      -as-ddl'
-      -i ignore errors and continue'
+      -noerrcode () do not show eeror code on compile errors
+      -as-ddl
+      -i ignore errors and continue
 
     All options unknown to Aubit compiler will be passed to C compiler
     Please see Aubit 4gl manual for more information.
@@ -125,3 +125,5 @@ Examples:
   4glpc -static -echo file.4gl -o file.4ge
   4glpc -debug file.4gl -o file.debug
   4glpc -map -echo file.4gl'
+  
+  

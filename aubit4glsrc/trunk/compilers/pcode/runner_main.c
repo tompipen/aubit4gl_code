@@ -6,7 +6,12 @@
 #define NEED_CMD_TYPE_STR
 
 #include <stdio.h>
-#include "npcode.h"
+#ifdef RPCGEN_HEADERS
+	#include "npcode.h"
+#else
+	#include "npcode.xs.h"
+#endif
+
 #include "npcode_defs.h"
 //#include "a4gl_incl_4glhdr.h"
 extern module this_module;

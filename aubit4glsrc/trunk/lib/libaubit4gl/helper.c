@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.34 2004-09-21 08:53:23 mikeaubury Exp $
+# $Id: helper.c,v 1.35 2004-09-28 09:49:16 afalout Exp $
 #
 */
 
@@ -886,8 +886,7 @@ aclfgl_w_rowid_s (int arg)
   ptr[pos] = value;
   return (0);
 }
-#endif 
-
+#endif //----------------------------------- ifdef INCLUDE_USR_FUNCS 
 
 /**
  *

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.11 2004-09-21 20:26:21 mikeaubury Exp $
+# $Id: compiler_main.c,v 1.12 2004-09-28 09:49:12 afalout Exp $
 #*/
 
 /**
@@ -46,7 +46,11 @@
 #define u_int unsigned int
 #endif
 int do_optimise=0;
-#include "npcode.h"
+#ifdef RPCGEN_HEADERS
+	#include "npcode.h"
+#else
+	#include "npcode.xs.h"
+#endif
 #include "npcode_defs.h"
 #include "time.h"
 

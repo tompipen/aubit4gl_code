@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2004-09-08 10:05:22 afalout Exp $
+# $Id: Makefile,v 1.17 2004-09-28 09:49:17 afalout Exp $
 #
 
 ROOT    =../..
@@ -42,7 +42,7 @@ include ${ROOT}/incl/Makefile-common
 #detected and linked properly, on some others - you need this to get the link
 #to work...
 #FIXME-in that case, it should be linked in conditionally:
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
 endif
 

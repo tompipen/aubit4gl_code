@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2003-01-15 11:43:33 afalout Exp $
+# $Id: Makefile.in,v 1.13 2004-09-28 09:49:17 afalout Exp $
 #
 
 ROOT		=../../..
@@ -68,7 +68,7 @@ CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile $
 #ba able to compile or open forms and menus, since they compiled output
 #file format is outpudte in XDR format for portability:
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
 endif
 

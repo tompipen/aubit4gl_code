@@ -244,8 +244,6 @@ DEFINE lv_output char(255)
 DEFINE lv_cnt integer
 DEFINE lv_minus_c, lv_minus_e INTEGER
 
-
-
   LET lv_num_args=num_args()
   IF lv_num_args=0 then
 	CALL usg()
@@ -768,7 +766,7 @@ end function
 
 ################################################################################
 function usg()
-call show_help(1)
+	call show_help(1)
 end function
 
 
@@ -797,6 +795,9 @@ endcode
                 end if
 
         end while
+else
+	display "ERROR: failed to open ",filename clipped
+	exit program 2
 end if
 if lv_n !=1 then
 	exit program 0

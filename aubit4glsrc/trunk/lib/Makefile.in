@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.106 2004-09-26 01:47:14 afalout Exp $
+# $Id: Makefile.in,v 1.107 2004-09-28 09:49:15 afalout Exp $
 #
 
 ROOT    =..
@@ -238,6 +238,9 @@ libUI_HL_TUI${SO_EXT}: ${LIBUIHL_DEPS}
 
 libUI_HL_TUIN${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_TUIN${SO_EXT}
+
+libUI_HL_TUINs${SO_EXT}: ${LIBUIHL_DEPS}
+	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_TUINs${SO_EXT}
 
 libUI_HL_GTK${SO_EXT}: ${LIBUIHL_DEPS}
 	$(MAKE) -C ${LIBUIHL_PATH} libUI_HL_GTK${SO_EXT}
@@ -492,7 +495,8 @@ ${FCOMPILE}:
 clean.all: clean
 clean : \
 	clean.generated clean.libsql clean.libpdf clean.librpc clean.libroot \
-	clean.other clean.libui clean.libmenu clean.libform clean.libpacker
+	clean.other clean.libui clean.libmenu clean.libform clean.libpacker \
+	clean.cint
 
 clean.libroot:
 	${RM} core *.out *.glb *${SO_EXT} *.a  *.bak *.dll *.stackdump *.err \
@@ -559,6 +563,10 @@ clean.other:
 	${MAKE} -C ${LIBPCRE_PATH} clean
 	${MAKE} -C ${LIBSXML_PATH} clean	
 
+clean.cint:
+	-${MAKE} -C ../cint clean
+	cd ../cint; ${SH} make_cintlib -clean
+	
 ## ==================================================================
 ##                         Other Targets
 ## ==================================================================

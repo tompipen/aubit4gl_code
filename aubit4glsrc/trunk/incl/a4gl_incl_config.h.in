@@ -5,11 +5,21 @@
  * Use @DEFS@ in Makefile.in to get -DHAVE_CONFIG_H
  * TODO: remove all patform specific #ifdef in Aubit code and replace
  *       them with #if HAVE_
- * WARNING: this file apparently cannto be re-created using 'config.status'
+ * To refresh without running configure, use command 
+ * 'config.status --header=a4gl_inc_config.h'
  */
 
 #ifndef CONFIG_H_INCL
 #define CONFIG_H_INCL
+
+//this 6 are used in pcode compiler - but I don't think that 
+//we are setting them from configure - check
+	#define CAN_DLOPEN_SELF 0
+	#define NEED_DL_UNDERSCORE 0
+	#define RTLD_LAZY 0
+	#define DL_LAZY 0
+	#define RTLD_NOW 0
+	#define DL_NOW 0
 
 
 	#define YYTEXT_POINTER 0

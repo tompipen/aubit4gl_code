@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2003-03-23 07:19:42 afalout Exp $
+# $Id: Makefile.in,v 1.9 2004-09-28 09:49:20 afalout Exp $
 #
 
 ROOT    =../../..
@@ -47,7 +47,7 @@ OBJS				=${CMODS:.c=.o}
 CFLAGS				+=-I.. -I${ROOT}/compilers/fcompile
 ALL 				=${LIBROOT}/libMSG_NATIVE${SO_EXT}
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS		=-L${LIBROOT} -laubit4gl
 endif
 

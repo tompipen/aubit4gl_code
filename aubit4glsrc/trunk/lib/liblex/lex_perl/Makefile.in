@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2003-02-25 04:15:37 afalout Exp $
+# $Id: Makefile.in,v 1.12 2004-09-28 09:49:19 afalout Exp $
 #
 
 ROOT    =../../..
@@ -61,7 +61,7 @@ ALL         =${LIBROOT}/libLEX_PERL${SO_EXT}
 
 CFLAGS			+=-I.. -I../lex_c -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	#LINKLIBS	=-L${LIBROOT} -L${ROOT}/compilers/4glc -lexportlib4glcomp -laubit4gl
 	LINKDEPS    =${LIBROOT}/lib4glc${SO_EXT}
 	LINKLIBS	+=-L${LIBROOT} -laubit4gl -l4glc

@@ -26,42 +26,39 @@
 ROOT    =../..
 
 #
-# $Id: Makefile.in,v 1.8 2003-11-12 22:22:46 afalout Exp $
+# $Id: Makefile.in,v 1.9 2004-09-28 09:49:28 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-4GLPC               =${ROOT}/bin/4glpc
+4GLPC               =${FGLPCEXEC}
 #4GLPCFLAGS			=-verbose
-ALL                 =${ROOT}/bin/loadmap
+ALL                 =${ROOT}/bin/loadmap${EXE_EXT}
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 all: ${ALL}
-
-#loadmap : ${ROOT}/bin/loadmap
-${ROOT}/bin/loadmap : loadmap.4gl
-#ifeq "${FCONVERT}" "yes"
-#	${FCONVERT_CMD} $^
-#endif
-#	${FAIL_OK}${SH} ${4GLPC} ${4GLPCFLAGS} $^ -o $@
-	(export DEBUG=ALL; ${ROOT}/bin/4glc -o$@ $<)
-
+	@echo "Successfuly compiled default target (${ALL})"
+	
+${ROOT}/bin/loadmap${EXE_EXT} : loadmap.4gl
+	${FAIL_OK}${SH} ${4GLPC} ${4GLPCFLAGS} -o $@ $<
+#	export DEBUG=ALL; ${ROOT}/bin/4glc -o $@ $<
+	
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
 clean :
 	${RM} loadmap loadmap.c loadmap.h core *.out *.glb *${SO_EXT} *.a  *.ec \
-	*.o  *.bak .*.bak *.exe *.dll *.stackdump *.err *.base *.exp *.ao *.warn
+	*.o  *.bak .*.bak *.exe *.dll *.stackdump *.err *.base *.exp *.ao *.warn \
+	${ALL}
 
 #----------------------------------- EOF -------------------------------
 

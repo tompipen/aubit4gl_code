@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.30 2004-09-04 09:17:51 afalout Exp $
+# $Id: makefile,v 1.31 2004-09-28 09:49:25 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -152,7 +152,7 @@ CURSES_LIB_NAME_NO_FORM	=$(CURSES_LIB_NAME:%-lform=%)
 ## ==================================================================
 
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 
@@ -188,6 +188,12 @@ ${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o width_narrow.o
 libUI_HL_TUIN${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
 ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
+
+#Statically linked TUIN
+libUI_HL_TUINs${SO_EXT}: ${LIBROOT}/libUI_HL_TUINs${SO_EXT}
+${LIBROOT}/libUI_HL_TUINs${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
+	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} \
+		d:/cygwin/tmp/pdcurs26/win32/panel.a d:/cygwin/tmp/pdcurs26/win32/pdcurses.a
 
 #Debug version of TUIN, using debug library libpanel_g
 libUI_HL_TUIN-DEBUG${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}

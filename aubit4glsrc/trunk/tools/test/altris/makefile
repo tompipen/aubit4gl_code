@@ -9,7 +9,7 @@ CFLAGS=-s -c
 .msg.hlp:
 	mkmessage $< 
 .4gl.o:
-	4glpc  $(CFLAGS) altris.4gl
+	${FGLPCEXEC} $(CFLAGS) altris.4gl
 .per.frm: 
 	fcompiple $<
 .ace.arc: 
@@ -28,4 +28,4 @@ EXE: $(EXE)
 RDS: $(RDS)
 
 altris.4ae : altris.o key_press.o random.o
-	4glpc altris.o key_press.o random.o -o altris1.4ae
+	${FGLPCEXEC} altris.o key_press.o random.o -o altris1.4ae

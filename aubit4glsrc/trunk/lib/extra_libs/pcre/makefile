@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.2 2004-09-26 01:47:14 afalout Exp $
+# $Id: makefile,v 1.3 2004-09-28 09:49:15 afalout Exp $
 #
 
 #PCRE - Perl Compatible Regular Expressions
@@ -58,7 +58,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-4GLPC_EXEC=export A4GL_LEXTYPE=C; ${SH} ${ROOT}/bin/4glpc
+4GLPC_EXEC=export A4GL_LEXTYPE=C; ${FGLPCEXEC}
 
 ALL=${LIBROOT}/libA4GL_pcre${SO_EXT} 
 

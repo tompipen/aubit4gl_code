@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.10 2003-10-05 22:48:38 afalout Exp $
+# $Id: Makefile.in,v 1.11 2004-09-28 09:49:25 afalout Exp $
 #
 
 ROOT    =../..
@@ -88,7 +88,7 @@ forms: ${FORMS.frm}
 
 
 misql.4ae: ${FILES.ao} ${FILES.afr}
-	aubit ${SH} 4glpc ${FILES.ao} -o $@
+	aubit ${FGLPCEXEC} ${FILES.ao} -o $@
 
 use.amake:
 	${AMAKE} misql.mk
@@ -119,7 +119,7 @@ clean:
 ## ==================================================================
 
 .4gl.ao:
-	aubit 4glpc $< -c -o $@
+	aubit ${FGLPCEXEC} $< -c -o $@
 
 .per.afr:
 	fcompile $<

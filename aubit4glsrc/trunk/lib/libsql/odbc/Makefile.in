@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.39 2004-07-11 23:54:55 afalout Exp $
+# $Id: Makefile.in,v 1.40 2004-09-28 09:49:23 afalout Exp $
 #
 
 ROOT    =../../..
@@ -67,7 +67,7 @@ CFLAGS_SQLITE	=-DDONTINCLUDEDATASOURCES -DSQLITEODBC -DHAVE_LIBVERSION=1 \
 				-DWITHOUT_DRIVERMGR ${CFLAGS_NOREDUND} -DHAVE_LOCALECONV=1 \
 				-L@SQLITE_LDPATH@ -I${ROOT}/tools/odbtest/incl -I.
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS		=-L${LIBROOT} -laubit4gl
 	#On Windows we renamed .dll/.def files in original distribution (adding 'lib' prefix) and
     #copyed them to /cygwin/lib directory:
@@ -82,7 +82,7 @@ endif
 #	CFLAGS_SQLITE	+=-DHAVE_USLEEP=1
 #endif
 
-#ifeq "${TARGET_OS}" "cygwin"
+#ifneq "${COMSPEC}" ""
 #	ifneq "${GCC_MINGW}" "yes"
 #		#add flag only for Cygwin compiler
 #		#CFLAGS_SQLITE	+=-D_WIN32

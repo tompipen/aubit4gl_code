@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.2 2004-09-24 06:29:06 afalout Exp $
+# $Id: makefile,v 1.3 2004-09-28 09:49:24 afalout Exp $
 #
 
 ROOT			=../../../..
@@ -41,7 +41,6 @@ include 		${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CFLAGS			+=-I${ROOT}/incl
-4GLPC			=${SH} ${ROOT}/bin/4glpc
 ALL				=${LIBROOT}/libA4GL_glade${SO_EXT}
 OBJS			=list.ao common.ao form.ao sbar.ao field.ao entry.ao \
 					text_view.ao mlist.ao
@@ -61,7 +60,7 @@ all: ${ALL}
 	@echo "+--------------------------------------------------------------------+"	
 
 ${LIBROOT}/libA4GL_glade${SO_EXT} : ${OBJS}
-	export A4GL_LEXTYPE=C && ${4GLPC} -g -as-dll $^ -o $@ ${LINKLIBS}
+	export A4GL_LEXTYPE=C && ${FGLPCEXEC} -g -as-dll $^ -o $@ ${LINKLIBS}
 #	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 	
 ## ==================================================================

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.2 2004-07-04 23:59:52 afalout Exp $
+# $Id: makefile,v 1.3 2004-09-28 09:49:13 afalout Exp $
 #
 
 ROOT			=../..
@@ -41,7 +41,7 @@ include 		${ROOT}/incl/a4gl.mk
 ## ==================================================================
 
 CFLAGS			+=-I${ROOT}/incl
-4GLPC			=${SH} ${ROOT}/bin/4glpc
+4GLPC			=${FGLPCEXEC}
 
 ALL				=${ROOT}/bin/ide1.4ae ${ROOT}/bin/sqleditor.4ae
 

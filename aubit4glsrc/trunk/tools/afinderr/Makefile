@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.4 2004-02-06 22:50:17 afalout Exp $
+# $Id: Makefile,v 1.5 2004-09-28 09:49:26 afalout Exp $
 #
 
 ROOT=../..
@@ -39,7 +39,7 @@ ALL=${ROOT}/bin/afinderr${EXE}
 
 ${ALL}: afinderr.4gl
 	export A4GL_LEXTYPE=C; export DEBUG=ALL; export A4GL_SQLTYPE=nosql; export A4GL_UI=CONSOLE;\
-		${SH} ${ROOT}/bin/4glpc $^ -o $@
+		${FGLPCEXEC} $^ -o $@
 #	${ROOT}/bin/4glc afinderr.4gl -o afinderr
 #	cp ./afinderr${EXE} ${ROOT}/bin
 

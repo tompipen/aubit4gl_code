@@ -4,10 +4,73 @@
 	#define u_int unsigned int
 #endif
 
-#include "npcode.h"
+#ifdef RPCGEN_HEADERS
+	#include "npcode.h"
+#else
+	#include "npcode.xs.h"
+#endif
+
 #include "npcode_defs.h"
 
 #include <stdio.h>
+
+#if defined(__hpux__) //HP-UX UNIX OS
+	#define USE_SHL 1
+#endif
+
+#ifdef USE_SHL
+	#include <dl.h>
+#endif
+
+//this 3 should be determined by configure and defined in a4gl_incl_config.h/.in
+//if not, assume defaults
+#ifndef CAN_DLOPEN_SELF
+	#define CAN_DLOPEN_SELF 1
+#endif
+#ifndef HAVE_DLFCN_H
+	#define HAVE_DLFCN_H 1
+#endif
+#ifndef NEED_DL_UNDERSCORE
+	#define NEED_DL_UNDERSCORE
+#endif	
+
+#ifdef CAN_DLOPEN_SELF
+
+#if HAVE_DLFCN_H
+	#include <dlfcn.h>
+#endif
+
+#ifdef RTLD_GLOBAL
+#  define LT_DLGLOBAL           RTLD_GLOBAL
+#else
+#  ifdef DL_GLOBAL
+#    define LT_DLGLOBAL         DL_GLOBAL
+#  else
+#    define LT_DLGLOBAL         0
+#  endif
+#endif
+
+/* We may have to define LT_DLLAZY_OR_NOW in the command line if we
+   find out it does not work in some platform. */
+#ifndef LT_DLLAZY_OR_NOW
+#  ifdef RTLD_LAZY
+#    define LT_DLLAZY_OR_NOW            RTLD_LAZY
+#  else
+#    ifdef DL_LAZY
+#      define LT_DLLAZY_OR_NOW          DL_LAZY
+#    else
+#      ifdef RTLD_NOW
+#        define LT_DLLAZY_OR_NOW        RTLD_NOW
+#      else
+#        ifdef DL_NOW
+#          define LT_DLLAZY_OR_NOW      DL_NOW
+#        else
+#          define LT_DLLAZY_OR_NOW      0
+#        endif
+#      endif
+#    endif
+#  endif
+#endif
 
 /* void print_module(void) ; */
 module this_module;
@@ -527,70 +590,10 @@ chk_func_sigs ()
 }
 
 
-#if defined(__hpux__) //HP-UX UNIX OS
-#define USE_SHL 1
-#endif
-
-#ifdef USE_SHL
-#include <dl.h>
-#endif
-
-
-#define CAN_DLOPEN_SELF 1
-#define HAVE_DLFCN_H 1
-//#define NEED_DL_UNDERSCORE
-
-
-
-#ifdef CAN_DLOPEN_SELF
-
-#if HAVE_DLFCN_H
-#include <dlfcn.h>
-#endif
-
-#include <stdio.h>
-
-#ifdef RTLD_GLOBAL
-#  define LT_DLGLOBAL           RTLD_GLOBAL
-#else
-#  ifdef DL_GLOBAL
-#    define LT_DLGLOBAL         DL_GLOBAL
-#  else
-#    define LT_DLGLOBAL         0
-#  endif
-#endif
-
-/* We may have to define LT_DLLAZY_OR_NOW in the command line if we
-   find out it does not work in some platform. */
-#ifndef LT_DLLAZY_OR_NOW
-#  ifdef RTLD_LAZY
-#    define LT_DLLAZY_OR_NOW            RTLD_LAZY
-#  else
-#    ifdef DL_LAZY
-#      define LT_DLLAZY_OR_NOW          DL_LAZY
-#    else
-#      ifdef RTLD_NOW
-#        define LT_DLLAZY_OR_NOW        RTLD_NOW
-#      else
-#        ifdef DL_NOW
-#          define LT_DLLAZY_OR_NOW      DL_NOW
-#        else
-#          define LT_DLLAZY_OR_NOW      0
-#        endif
-#      endif
-#    endif
-#  endif
-#endif
-
-
 int aa() {
 	printf("Hello World\n");
 	return 1;
 }
-
-
-
-
 
 void * find_by_dlself(char *s)
 {

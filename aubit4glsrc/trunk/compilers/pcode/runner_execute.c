@@ -7,7 +7,12 @@
 #include <stdio.h>
 
 
-#include "npcode.h"
+#ifdef RPCGEN_HEADERS
+	#include "npcode.h"
+#else
+	#include "npcode.xs.h"
+#endif
+
 #include "npcode_defs.h"
 
 void A4GL_breakpoint (void);

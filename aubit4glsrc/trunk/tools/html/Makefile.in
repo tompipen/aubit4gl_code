@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2003-10-16 09:46:25 afalout Exp $
+# $Id: Makefile.in,v 1.17 2004-09-28 09:49:27 afalout Exp $
 #
 
 ROOT    =../..
@@ -39,7 +39,7 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPCFLAGS=
-FGLPCEXEC=export A4GL_LEXTYPE=C; ${SH} 4glpc
+FGLPCEXEC=export A4GL_LEXTYPE=C; ${FGLPCEXEC}
 AMAKE=export A4GL_LEXTYPE=C; ${SH} ../../bin/amake
 4GLC	=${ROOT}/bin/4glc
 

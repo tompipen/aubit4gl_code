@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.47 2004-03-27 11:50:40 afalout Exp $
+#	 $Id: a4gl.mk,v 1.48 2004-09-28 09:49:15 afalout Exp $
 
 ##########################################################################
 #
@@ -128,7 +128,11 @@ AUCC_FLAGS			=-g -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 ###########################
 # A4GL C-code Compiler command
 ifeq "${USE_4GLPC}" "1"
-	A4GL_FGLC		=4glpc
+	ifneq "${FGLPCEXEC}" ""
+		A4GL_FGLC		=${FGLPCEXEC}
+	else
+		A4GL_FGLC		=4glpc
+	endif
 	A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} ${A4GL_FGLC}
 else
 	A4GL_FGLC		=4glc

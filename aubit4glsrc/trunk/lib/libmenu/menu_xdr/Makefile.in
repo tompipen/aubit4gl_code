@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2003-03-08 04:29:24 afalout Exp $
+# $Id: Makefile.in,v 1.18 2004-09-28 09:49:19 afalout Exp $
 #
 
 LIBROOT	=../..
@@ -156,7 +156,7 @@ ifeq "${NON_PEDANTIC_OK}" "1"
 	CFLAGS_4GLC 	:=$(CFLAGS_4GLC:%-pedantic=%)
 endif
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS		=-L${LIBROOT} -laubit4gl
 #No need to add UI_GTK any more?
 #	LINKLIBS		=-L${LIBROOT} -laubit4gl -lUI_GTK

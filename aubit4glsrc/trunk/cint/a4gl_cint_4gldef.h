@@ -24,36 +24,37 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_cint_4gldef.h,v 1.3 2003-09-08 08:11:25 afalout Exp $
+# $Id: a4gl_cint_4gldef.h,v 1.4 2004-09-28 09:49:10 afalout Exp $
 */
 
 /**
  * @file
  *
- * Definition of structures and typedefs necessary in both lib and generated
- * C code.
- *
- * Header file used to include in the generated c files with origin
- * in the 4gl source files.
- *
- * This file is included from:
- * a4gl_incl_4glhdr.h (included by 4glc compiled 4gl code)
- * and
- * a4gl_libaubit4gl.h (included from the most of Aubit compiler and libraries code)
+ THIS FILE IS APPRENTLY A COPY OF incl/a4gl_incl_4gldef.h FILE,
+ with a bunch of function prototypes added
+ SHOULD WE FIND A WAY TO USE THAT FILE DIRECTLY AND REMOVE THIS FILE?
+
+ We should probably generate the finction prototypes list from .spec
+ files using dlmagic script.
+ 
  *
  */
 
 #ifndef FGLDEF_INCL
 
 #define FGLDEF_INCL
-#include <stdarg.h>
+
+#ifndef __MINGW32__
+	//On MinGW causes errors in va_list definition
+	#include <stdarg.h>
+#endif	
 
 #ifdef __cplusplus
 
 extern "C"
 {
 #endif
-#include <stdio.h>
+#include <stdio.h> //need for va_list
 
 
   typedef struct
@@ -239,52 +240,80 @@ be used in applications which link to the library).
 
 
 #if ( defined(__CYGWIN__) || defined(__MINGW32__) )
-#define __NEED_DLL_IMPORT__
+	#define __NEED_DLL_IMPORT__
 #endif
 
 #ifdef __NEED_DLL_IMPORT__
-#define dll_export __declspec(dllexport)
-#define dll_import extern __declspec(dllimport)
+	#define dll_export __declspec(dllexport)
+	#define dll_import extern __declspec(dllimport)
 #else
-#define dll_export
-#define dll_import extern
+	#define dll_export
+	#define dll_import extern
 #endif
 
 #ifndef _DEFINE_STATUSVARS_	/* set from fglwrap.c --ONLY-- */
 /* for everything except libaubit4gl: */
 
-#ifndef _SQLCA_DEFINED_
-/*
-   _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
-   that also define sqlca:
- */
-#define _SQLCA_DEFINED_
-#endif
+	#ifndef _SQLCA_DEFINED_
+		/*
+		   _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
+		   that also define sqlca:
+		*/
+		#define _SQLCA_DEFINED_
+	#endif
 
-  extern long a4gl_status;				/** 4gl global status variable */
-  extern long int_flag;					/** 4gl interrupt ocurred global flag */
-  extern long quit_flag;			/** 4gl quit ocurred global flag */
+	extern long a4gl_status;				/** 4gl global status variable */
+	extern long int_flag;					/** 4gl interrupt ocurred global flag */
+	extern long quit_flag;					/** 4gl quit ocurred global flag */
 #else
-/* only in libaubit4gl */
-  dll_export sqlca_struct a4gl_sqlca;	    /** Sqlca variable -- DEFINED WHERE ??? --*/
-  long a4gl_status;							/** 4gl global status variable */
-  long int_flag;					/** 4gl interrupt ocurred global flag */
-  long quit_flag;					/** 4gl quit ocurred global flag */
+	/* only in libaubit4gl */
+	dll_export sqlca_struct a4gl_sqlca;	    /** Sqlca variable -- DEFINED WHERE ??? --*/
+	long a4gl_status;						/** 4gl global status variable */
+	long int_flag;							/** 4gl interrupt ocurred global flag */
+	long quit_flag;							/** 4gl quit ocurred global flag */
 #endif
 
-  dll_export sqlca_struct a4gl_sqlca;	    /** Sqlca variable -- DEFINED WHERE ??? --*/
+/*
+On Windows, folowing line is causing:
 
+$ make -C lib libA4GL_cint.dll
+make: Entering directory `/usr/src/aubit/aubit4glsrc/lib'
+cd ../cint; /usr/bin/bash make_cintlib
+################################################################
+# makecint : interpreter-compiler for cint (Windows Mingw version)
+#
+# Copyright(c) 1995~2004 Masaharu Goto (cint@pcroot.cern.ch)
+#                        (cint mailing list 'cint@root.cern.ch')
+################################################################
+makefile is created. Makecint success.
+Do 'make -f makefile' to compile the object
+d:/cint
+make[1]: Entering directory `/usr/src/aubit/aubit4glsrc/cint'
+d:/cint/cint  -w1 -zlibA4GL_cint -nG__cpp_libA4GL_cint.C  -D__MAKECINT__ -DG__MA
+KECINT -p -c-1 -A  -DG__SHAREDLIB -DG__FIX1 -DG__MINGW -D_WINDOWS -DG__NEWSTDHEA
+DER -D_MAX_PATH=512  a4gl_cint_4gldef.h
+Error: Too many '}' FILE:a4gl_cint_4gldef.h LINE:431
+!!!Removing G__cpp_libA4GL_cint.C G__cpp_libA4GL_cint.h !!!
+make[1]: *** [G__cpp_libA4GL_cint.C] Error 1
+make[1]: Leaving directory `/usr/src/aubit/aubit4glsrc/cint'
+ERROR: failed to create libA4GL_cint.so
+make: *** [libA4GL_cint.dll] Error 3
+make: Leaving directory `/usr/src/aubit/aubit4glsrc/lib'
 
+*/
 
+//  dll_export sqlca_struct a4gl_sqlca;	    /** Sqlca variable -- DEFINED WHERE ??? --*/
 
+//****
   char *A4GL_char_pop (void);
   void *A4GL_cr_window (char *s, int iswindow, int form_line, int error_line,
 			int prompt_line, int menu_line, int border,
 			int comment_line, int message_line, int attrib);
   char *A4GL_disp_h_menu (void *menu);
-  void *A4GL_get_curr_win_gtk (void);
+//no longer in API, apprently removed
+//  void *A4GL_get_curr_win_gtk (void);
   void *A4GL_get_set (char *str, void *ptr, int mode, char *name, long var);
-  void *A4GL_make_pixmap_gw(char *filename);
+  void *A4GL_make_pixmap_gw (char *filename);
   void *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
 			      int help_no);
   char *aclfgli_str_to_id (char *name);
@@ -310,7 +339,9 @@ be used in applications which link to the library).
   int  A4GL_ctoint (void *a, void *b, int size);
   int  A4GL_current_window (char *win_name);
   void A4GL_debug_full (char *fmt, ...);
-  int  A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib, ...);
+//Apparently renamed to _v2 
+//  int  A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib, ...);
+  int  A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, ...);
   int  A4GL_disp_fields (int n, int attr, ...);
   int  A4GL_disp_form (char *name, int attr);
   int  A4GL_disp_form_fields (int n, int attr, char *formname, ...);
@@ -324,13 +355,16 @@ be used in applications which link to the library).
   int  A4GL_fgl_infield (char *s, int a);
   void A4GL_fgl_start (int nargs, char *argv[]);
   void A4GL_finish_create_menu (void *menu);
-  int  A4GL_form_loop (void *s, int init);
+//renamed to _v2
+//  int  A4GL_form_loop (void *s, int init);
+  int  A4GL_form_loop_v2 (void *s, int init);
   int  A4GL_free_menu (void *menu);
   int  A4GL_gen_field_chars (void ***field_list, void *formdets, ...);
   void A4GL_hide_window (char *winname);
   int  A4GL_key_val (char *key);
   int  A4GL_menu_hide (void *menu, ...);
-  int  A4GL_menu_loop (void *menu);
+//  int  A4GL_menu_loop (void *menu);
+  int  A4GL_menu_loop_v2 (void *menu);
   int  A4GL_menu_show (void *menu, ...);
   int  A4GL_movewin (char *winname, int absol);
   void A4GL_next_option (void *menu, char *nextopt);
@@ -339,7 +373,8 @@ be used in applications which link to the library).
   void A4GL_pop_params (fgl_binding *b, int n);
   int  A4GL_pop_var (void *p, int d);
   int  A4GL_pop_var2 (void *p, int d, int s);
-  int  A4GL_prompt_loop (void *prompt);
+//  int  A4GL_prompt_loop (void *prompt);
+  int  A4GL_prompt_loop_v2 (void *prompt);
   void A4GL_push_ascii (void);	/* stack.c */
   void A4GL_push_char (char *p);
   int  A4GL_push_constr (void *s);
@@ -353,7 +388,8 @@ be used in applications which link to the library).
   void A4GL_remove_window (char *win_name);
   int  A4GL_req_field (void *s, int size, char *fieldname, int fno);
   int  A4GL_set_fields (void *sio);
-  int  A4GL_set_fields_inp_arr (void *sio);
+//removed from API, but still present in UI plug-ins
+//  int  A4GL_set_fields_inp_arr (void *sio);
   void A4GL_set_help_file (char *s);
   void A4GL_set_infield_from_stack (void);
   void A4GL_set_init (fgl_binding * b, int n);
@@ -384,23 +420,28 @@ be used in applications which link to the library).
   int  aclfgl_fgl_lastkey (int _np);
   int  aclfgl_fgl_prtscr (int n);
   int  aclfgl_hex (int nargs);
-  int  aclfgl_i_rowid_s (int arg);
-  int  aclfgl_length (int nargs);
-  int  aclfgl_load_datatype (int nargs);
-  int  aclfgl_m_rowid_s (int arg);
+  //this function is inside ifdef INCLUDE_USR_FUNCS
+  //and not invoked from anywhere: (most other the same)
+//  int  aclfgl_i_rowid_s (int arg);
+//  int  aclfgl_m_rowid_s (int arg);
+//  int  aclfgl_r_rowid_s (int arg);
+//  int  aclfgl_s_rowid_s (int arg);
+//  int  aclfgl_w_rowid_s (int arg);  
+//*****
+
+  int  aclfgl_num_args (int n);
+  int  aclfgl_root (int nargs);
   int  aclfgl_mdy (int nargs);
   int  aclfgl_month (int nargs);
-  int  aclfgl_num_args (int n);
-  int  aclfgl_r_rowid_s (int arg);
-  int  aclfgl_root (int nargs);
-  int  aclfgl_s_rowid_s (int arg);
+  int  aclfgl_length (int nargs);
+  int  aclfgl_load_datatype (int nargs);
+
   int  aclfgl_scr_line (int nargs);
   int  aclfgl_set_count (int nargs);
   int  aclfgl_set_page (int nargs);
   int  aclfgl_showhelp (int helpnumber);
   int  aclfgl_sqrt (int nargs);
   int  aclfgl_upshift (int _np);
-  int  aclfgl_w_rowid_s (int arg);
   int  aclfgl_weekday (int nargs);
   int  aclfgl_year (int nargs);
   void aclfgli_clr_err_flg (void);
@@ -431,3 +472,5 @@ void A4GLSTK_popFunction (void);
 }
 #endif
 #endif				/* #ifndef FGLDEF_INCL */
+
+

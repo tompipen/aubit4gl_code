@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.28 2004-09-08 10:05:23 afalout Exp $
+# $Id: Makefile,v 1.29 2004-09-28 09:49:26 afalout Exp $
 #
 
 ROOT    		=../..
@@ -107,7 +107,7 @@ endif
 ALL			+=asql_g${A4GL_EXE_EXT}
 ################
 #4gl compiler command line to use
-4GLPC			=${SH} ${ROOT}/bin/4glpc -verbose
+4GLPC			=${FGLPCEXEC} -verbose
 
 ################
 #4gl compiler flags

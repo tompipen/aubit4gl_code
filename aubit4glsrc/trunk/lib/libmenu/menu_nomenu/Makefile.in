@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2003-03-07 08:11:56 afalout Exp $
+# $Id: Makefile.in,v 1.9 2004-09-28 09:49:19 afalout Exp $
 #
 
 LIBROOT=../..
@@ -46,7 +46,7 @@ OBJS_MENU_NOMENU  	=${CMODS_MENU_NOMENU:.c=.o}
 
 CFLAGS+=-I${ROOT}/compilers/fcompile
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 

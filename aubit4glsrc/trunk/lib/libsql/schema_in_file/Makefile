@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2003-07-20 06:53:25 afalout Exp $
+# $Id: Makefile,v 1.3 2004-09-28 09:49:24 afalout Exp $
 #
 
 ROOT    =../../..
@@ -41,7 +41,7 @@ include ${ROOT}/incl/Makefile-common
 #CFLAGS+=-I.. -I${ROOT}/compilers/fcompile -I/usr/local/include -I/usr/local/rpc -I/usr/local
 CFLAGS+=-I..
 
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 

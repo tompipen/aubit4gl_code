@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.3 2004-09-24 06:29:05 afalout Exp $
+# $Id: makefile,v 1.4 2004-09-28 09:49:14 afalout Exp $
 #
 
 ROOT					=../../..
@@ -41,7 +41,7 @@ include 				${ROOT}/incl/a4gl.mk
 ## ==================================================================
 
 CFLAGS					+=-g -I${ROOT}/incl
-4GLPC					=${SH} ${ROOT}/bin/4glpc -debug
+4GLPC					=${FGLPCEXEC} -debug
 
 ################
 #Aubit compiler settings. infx.4gl contains Informix ESQL/C code

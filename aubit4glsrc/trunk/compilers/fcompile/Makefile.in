@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.60 2004-09-12 07:03:47 afalout Exp $
+# $Id: Makefile.in,v 1.61 2004-09-28 09:49:11 afalout Exp $
 #
 
 ROOT        =${AUBITDIR}
@@ -36,7 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-4GLPC			=${ROOT}/bin/4glpc
+4GLPC			=${FGLPCEXEC}
 C_LOCAL_IFLAGS  =-I${ROOT}/lib/libincl -I.
 CFLAGS 			+=${C_LOCAL_IFLAGS} @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}

@@ -80,7 +80,7 @@ This directory and all files should be removed from CVS
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2004-02-03 04:55:07 afalout Exp $
+# $Id: Makefile.in,v 1.18 2004-09-28 09:49:18 afalout Exp $
 #
 
 ROOT        =../../..
@@ -114,7 +114,7 @@ ifeq "${GCC_MINGW}" "yes"
 endif
 
 CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
-ifeq "${TARGET_OS}" "cygwin"
+ifneq "${COMSPEC}" ""
 	#LINKLIBS	+=-L${ROOT}/compilers/4glc -lexportlib4glcomp
 	#LINKDEPS    =${ROOT}/compilers/4glc/libexportlib4glcomp.dll.a
 	#LINKLIBS	+=${ROOT}/compilers/4glc/libexportlib4glcomp.def

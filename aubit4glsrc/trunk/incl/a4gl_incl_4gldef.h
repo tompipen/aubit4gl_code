@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.73 2004-09-10 12:11:43 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.74 2004-09-28 09:49:15 afalout Exp $
 */
 
 /**
@@ -404,11 +404,13 @@ int a_isprint(int a);
 
   /* ======================= helper.c ======================= */
 
-  int aclfgl_i_rowid_s (int arg);
-  int aclfgl_m_rowid_s (int arg);
-  int aclfgl_r_rowid_s (int arg);
-  int aclfgl_s_rowid_s (int arg);
-  int aclfgl_w_rowid_s (int arg);
+  //this function is inside ifdef INCLUDE_USR_FUNCS
+  //and not invoked from anywhere: (most other the same)
+  //int aclfgl_i_rowid_s (int arg);
+  //int aclfgl_m_rowid_s (int arg);
+  //int aclfgl_r_rowid_s (int arg);
+  //int aclfgl_s_rowid_s (int arg);
+  //int aclfgl_w_rowid_s (int arg);
   int aclfgl_fgl_prtscr (int n);
   int aclfgl_get_info (int np);
 

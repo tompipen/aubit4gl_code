@@ -12,7 +12,6 @@ LD_LIBRARY_PATH=.:$CINTSYSDIR:$USE_AUBITDIR/lib:$LD_LIBRARY_PATH
 LD_ELF_LIBRARY_PATH=$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH LD_ELF_LIBRARY_PATH
 
-
 #	$ cint <options> <[file1].c [file2].c [shl].sl ...> [main].c
 #cint -p -I$USE_AUBITDIR/incl -l$USE_AUBITDIR/lib/libA4GL_cint.so $1.c
 cint -p -I$USE_AUBITDIR/incl -l$USE_AUBITDIR/lib/libA4GL_cint.so $@

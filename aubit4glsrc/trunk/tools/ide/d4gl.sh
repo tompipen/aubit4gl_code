@@ -1,4 +1,4 @@
-#	"@(#)$Id: d4gl.sh,v 1.1.1.1 2001-08-20 02:37:05 afalout Exp $"
+#	"@(#)$Id: d4gl.sh,v 1.2 2004-09-28 09:49:27 afalout Exp $"
 #
 #	Run D4GL -- alternative D4GL compiling front-end
 #	Assume that it is installed under :D4GL_DIR:
@@ -25,7 +25,12 @@
 #D4GL_WINDOWCMD_SUFFIX="; sleep 5"
 #-------------------------------------
 #For Aubit 4gl:
-export D4GL_SOURCE_COMPILER="4glpc"
+if test "$FGLPCEXEC" != ""
+	export D4GL_SOURCE_COMPILER="$FGLPCEXEC"
+else
+	export D4GL_SOURCE_COMPILER="4glpc"
+fi
+endif
 export D4GL_SOURCE_OPTIONS=""
 export D4GL_FORM_COMPILER="fcompile"
 export D4GL_FORM_OPTIONS=""

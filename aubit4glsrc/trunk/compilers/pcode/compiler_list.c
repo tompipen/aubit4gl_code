@@ -4,7 +4,12 @@
 	#define u_int unsigned int
 #endif
 
-#include "npcode.h"
+#ifdef RPCGEN_HEADERS
+	#include "npcode.h"
+#else
+	#include "npcode.xs.h"
+#endif
+
 #include "npcode_defs.h"
 
 #if HAVE_SEARCH_H
