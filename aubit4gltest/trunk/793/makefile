@@ -194,7 +194,7 @@ expect_code:
 ################
 #Return 1 if test should only be compiled, and NOT executed 
 compile_only:
-	@echo "0"
+	@echo "1"
 
 ################
 #All other tests not belonging to any of the above groups should be listed here:

@@ -15,7 +15,11 @@ MAIN
 	  keyColumn SMALLINT,
 		char_column CHAR(10)
 	)
+whenever error continue
 	CREATE AUDIT FOR xpto IN "/tmp/xx"
+     if sqlca.sqlcode!=0 and sqlca.sqlcode!=-554 then exit program 1 end if
+whenever error stop
+
 
 	DROP TABLE xpto
 END MAIN

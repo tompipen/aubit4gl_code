@@ -96,8 +96,8 @@ END MAIN
  *}
 FUNCTION checkLastKey(keyName,keyVal)
   DEFINE keyName CHAR(20)
-	DEFINE keyVal SMALLINT
-	DEFINE ans SMALLINT
+	DEFINE keyVal INTEGER
+	DEFINE ans INTEGER
 
 	LET ans = fgl_keyval(keyName)
 	IF ans IS NULL THEN

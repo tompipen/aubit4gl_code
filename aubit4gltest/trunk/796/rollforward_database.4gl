@@ -7,17 +7,28 @@
 
 MAIN 
   WHENEVER ERROR CONTINUE
-	DROP DATABASE a_db
-  WHENEVER ERROR CALL drop_db
-	CREATE DATABASE a_db
+# Make sure everything is nice and clean
+	execute immediate "DROP DATABASE a_db"
+	execute immediate "CREATE DATABASE a_db"
+	execute immediate "CLOSE DATABASE "
+	Execute immediate "DATABASE a_db"
+
+
+WHENEVER ERROR continue
 
 	ROLLFORWARD DATABASE a_db
-
-	DROP DATABASE a_db
+	if sqlca.sqlcode=0 or sqlca.sqlcode=-554 then
+	else
+		exit program 1
+	end if
+	
+	execute immediate "DROP DATABASE a_db"
 END MAIN
 
 FUNCTION drop_db()
-	CLOSE DATABASE
-  DROP DATABASE a_db
+	whenever error stop
+	display "Error :",sqlca.sqlcode
+	execute immediate "CLOSE DATABASE"
+	EXECUTE IMMEDIATE "DROP DATABASE a_db"
 	EXIT PROGRAM 1
 END FUNCTION
