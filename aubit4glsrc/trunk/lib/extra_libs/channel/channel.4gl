@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.7 2004-12-01 11:26:45 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.8 2004-12-01 11:51:12 mikeaubury Exp $
 }
 
 {**
@@ -297,11 +297,11 @@ char buff[20000];
 struct BINDING *ibind;
 struct BINDING *obind;
 FILE *f;
-ibind=i;
-obind=o;
 char delim_c;
 int d;
 char *ptr;
+ibind=i;
+obind=o;
 
 	if (ni==0) { A4GL_push_int(0); return 1;}
 	if ((ibind[0].dtype&0xffff)!=0) {A4GL_push_int(0); return 1;}
