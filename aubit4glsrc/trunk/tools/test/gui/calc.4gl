@@ -5,8 +5,8 @@ main
 	open form calc using calchandler
 	call set_window_title("4GL Calculator");
 
-	open form list using listhandler
-	call set_window_title("Previous results");
+	#open form list using listhandler
+	#call set_window_title("Previous results");
 
 code
 while (1) {
@@ -34,10 +34,12 @@ input lv_line from entered
 		if lv_doing="X" then let lv_line="" let lv_doing="" end if
 		let lv_line=lv_line clipped,"0" 
 		display lv_line to entered
+		message "OK0"
 	on b1 
 		if lv_doing="X" then let lv_line="" let lv_doing="" end if
 		let lv_line=lv_line clipped,"1" 
 		display lv_line to entered  
+		message "OK1"
 	on b2 
 		if lv_doing="X" then let lv_line="" let lv_doing="" end if
 		let lv_line=lv_line clipped,"2" 
@@ -118,12 +120,15 @@ input lv_line from entered
 		let lv_doing=""
 		let lv_line=lv_num1  using "<<<<<<<<.<<<<"
 
-		current window is calc
+code
+debug("************************************* CURRENT WINDOW *********************");
+endcode
+		#current window is calc
 		display lv_line clipped to entered
-		current window is _variable("list")
+		#current window is _variable("list")
 
-		display lv_line clipped to entered
-		current window is _variable("calc")
+		#display lv_line clipped to entered
+		#current window is _variable("calc")
 		
 		let lv_doing="X"
 end input

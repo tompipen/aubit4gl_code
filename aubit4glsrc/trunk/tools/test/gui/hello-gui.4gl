@@ -115,7 +115,7 @@ function mh_test()
 
 #	DISABLE MENUITEM id
 
-#    SHOW WINDOW MyWindow USING my_formhandler
+    #SHOW WINDOW MyWindow USING my_formhandler
 
 end function
 

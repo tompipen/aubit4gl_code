@@ -14,6 +14,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include "../../lib/libincl/debug.h"
 #include "rules/generated/kw.h"
 #include "rules/generated/y.tab.h"
@@ -26,7 +27,9 @@ extern struct s_kw kwords[];
 
 char idents[256][256];
 int idents_cnt = 0;
-
+extern char curr_func[];
+extern char infilename[];
+char *translate(char *s);
 /// Pointer to the source file openen being parsed
 FILE *yyin = 0;
 
@@ -444,9 +447,22 @@ static char *read_word2 (FILE * f, int *t)
 static char *read_word (FILE * f, int *t)
 {
   char *ptr;
+  char *s=0;
+char *s2;
   ptr = read_word2 (f, t);
+  if (*t==CHAR_VALUE) {
+		char *s;
+		s=strdup(ptr+1);
+		s[strlen(s)-1]=0;
+		dumpstring(s,yylineno,infilename);
+		s2=translate(s);
+		if (s2) ptr=s2;
+  }
+
+  //if (s) ptr=s;
   strcpy (xwords[word_cnt], ptr);
   word_cnt++;
+
   return ptr;
 }
 
@@ -841,4 +857,136 @@ void turn_state (int kw, int v)
 
 char *get_idents(int a) {
 	return idents[a];
+}
+
+
+/***************************/
+/* Translation definitions */
+/***************************/
+struct translate_string {
+	char *from;
+	char *to;
+	char *identifier;
+};
+
+struct translate_string *translate_list=(void *)-1;
+int translate_list_cnt=0;
+
+
+char *translate(char *s) {
+int a;
+make_trans_list();
+for (a=0;a<translate_list_cnt;a++) {
+		if (strcmp(translate_list[a].from,s)==0) {
+			debug("TRANSLATION FOUND for %s",s);
+
+			if (translate_list[a].to!=0)         {
+				debug("->%s\n",translate_list[a].to);
+				return translate_list[a].to;
+			}
+
+			if (translate_list[a].identifier!=0) {
+					return translate_list[a].identifier;
+			}
+			debug("Shouldn't happen");
+		}
+}
+//
+return 0;
+}
+
+#define TRANSLINESIZE 2048
+
+make_trans_list() {
+char *filename;
+FILE *file;
+char buff[TRANSLINESIZE];
+
+ if (translate_list!=(void *)-1) return;
+ translate_list=0;
+ filename=(char *)acl_getenv("TRANSLATEFILE");
+
+ if (filename==0) return;
+ if (strlen(filename)==0) return;
+ file=(FILE *)open_file_dbpath(filename);
+
+ if (file==0) {
+		yyerror("Unable to locate translation file");
+		return;
+ }
+
+
+ while (1) {
+	int a;
+	char *ptr;
+	char *ptr2;
+
+	fgets(buff,TRANSLINESIZE,file);
+	if (feof(file)) break;
+	stripnl(buff);
+	if (buff[0]=='#') continue;
+	
+	for (a=1;a<strlen(buff)-1;a++) {
+		if (buff[a]==':'&&buff[a+1]=='='&&buff[a-1]!='/') {
+			ptr2=&buff[a+2];
+			buff[a]=0;
+			add_translate(1,buff,ptr2);
+		}
+
+		if (buff[a]==':'&&buff[a+1]=='>'&&buff[a-1]!='/') {
+			ptr2=&buff[a+2];
+			buff[a]=0;
+			add_translate(2,buff,ptr2);
+		}
+
+
+	}
+ }
+}
+
+add_translate(int mode,char * from,char * to) {
+	char buff[2048];
+
+	translate_list_cnt++;
+	translate_list=(struct translate_string *)realloc(translate_list,sizeof( struct translate_string)*translate_list_cnt);
+	translate_list[translate_list_cnt-1].from=strdup(from);
+	debug("Adding %s -> %s mode %d",from,to,mode);
+	if (mode==1) {
+		sprintf(buff,"\"%s\"",to);
+		translate_list[translate_list_cnt-1].to        =strdup(buff);
+		translate_list[translate_list_cnt-1].identifier=0;
+	} else {
+		sprintf(buff,"get_translated_id(\"%s\")",to);
+		translate_list[translate_list_cnt-1].identifier=strdup(buff);
+		translate_list[translate_list_cnt-1].to        =0;
+	}
+}
+
+char **list_of_strings=0;
+int list_of_strings_len=0;
+
+dumpstring(char *s,long n,char *fname) {
+static FILE *f;
+static int ident=0;
+int a;
+	if (acl_getenv("DUMPSTRINGS")) {
+		if (f==0) {
+			f=fopen("strings.lang","w");
+		}
+		if (f==0) return;
+
+		for (a=0;a<list_of_strings_len;a++) {
+			if (strcmp(list_of_strings[a],s)==0) return;
+		}
+
+		list_of_strings_len++;
+		list_of_strings=(char **)realloc(list_of_strings,list_of_strings_len*sizeof(char *));
+		list_of_strings[list_of_strings_len-1]=s;
+
+		if (stricmp((char *)acl_getenv("DUMPSTRINGS"),"ident")==0) {
+			fprintf(f,"%s:>%d\n",s,ident++);
+		} else {
+			fprintf(f,"%s:=\n",s);
+		}
+	}
 }

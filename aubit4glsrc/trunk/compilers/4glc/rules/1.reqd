@@ -50,7 +50,7 @@ extern int rep_type;
 char where_having[1024];
 char menu[2048];
 char varstring[100];
-char infilename[132];
+char infilename[132]="";
 int lcnt;
 int vcnt;
 
