@@ -56,10 +56,15 @@ return a;
 int has_function(char *s,char *file,struct flist *ptr) {
 int a;
 int b;
+static char buff[256];
 for (a=0;a<nfiles;a++) {
 	for (b=0;b<files[a].nlist;b++) {
 		if (strcmp(s,files[a].list[b].name)==0) {
-			if (file) strcpy(file,files[a].name);
+			if (file) {
+				if (files[a].name[0]!=':') sprintf(buff,"\"%s\"",files[a].name);
+				else sprintf(buff,"%s",&files[a].name[1]);
+				strcpy(file,buff);
+			}
 			if (ptr) ptr=&files[a].list[b];
 			return 1;
 
@@ -98,6 +103,7 @@ int a;
 if (f==0) return 0;
 
 while (fgets(buff,255,f)) {
+	if (buff[0]=='#') continue;
         sscanf(buff,"%s %s",module,function);
         printf("Import %s, %s\n",module,function);
 	a=add_file(module);
