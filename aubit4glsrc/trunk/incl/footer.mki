@@ -5,7 +5,7 @@
 #
 #do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.11 2001-10-16 03:09:13 afalout Exp $
+# $Id: footer.mki,v 1.12 2001-12-03 04:55:41 afalout Exp $
 ######################################
 
 ifneq "$(DBASE)" ""
@@ -182,6 +182,11 @@ endif
 
 ${PROG.4ae}:	${FILES.ao} ${FILES.aox}
 	${TARGETCMD}
+
+ifdef COMSPEC
+	mv $@ $*.exe
+endif
+
 #	@echo CHANGED: $?
 ifeq "$(MOVETARGETTOSTORE)" "1"
 ifneq "$(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null)" ""

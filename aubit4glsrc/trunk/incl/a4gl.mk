@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.12 2001-12-02 08:30:23 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.13 2001-12-03 04:55:40 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -17,7 +17,7 @@
 
 ifdef COMSPEC
 	SH=bash
-esle
+else
 	SH=sh
 endif
 
