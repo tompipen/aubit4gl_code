@@ -68,9 +68,13 @@ while(<IN>) {
      {
         $empty{$1} = 1;
      }
-    elsif ( /_cmd\s*->\s*([A-Z0-9_]+)\b/ )
+    elsif ( /(_command|_cmd)\s*->\s*([A-Z0-9_]+)\b/ )
      {
-        $cmdkw{$1} = 1;
+        $cmdkw{$2} = 1;
+     }
+    elsif ( /(_command|_cmd)\s*->\s*opt_use\s+([A-Z0-9_]+)\b/ )
+     {
+        $cmdkw{$2} = 1;
      }
   }
   elsif ( /^\s*Grammar\s*$/i ) {
