@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.45 2004-05-21 15:34:51 mikeaubury Exp $
+# $Id: calldll.c,v 1.46 2004-09-28 08:58:54 mikeaubury Exp $
 #
 */
 
@@ -127,7 +127,7 @@ char *dlerror (void);
 /* end dlfcn.h */
 
 static char errbuf[512];
-
+#define TRACE_DLL_CALLS
 /**
  * Windows dlopen wraper function.
  *
@@ -471,6 +471,7 @@ A4GL_find_func (void *dllhandle, char *func)
   sprintf (tempbuff, "%s", func);
 #endif
 
+inc_usage(func);
   A4GL_debug ("35 find_func: Finding pointer to DLL function %s\n", A4GL_null_as_null(tempbuff));
 
   if (dllhandle == 0)
@@ -514,6 +515,7 @@ void *
 A4GL_find_func_double (void *dllhandle, char *func)
 {
   double (*func_ptr) (void);
+inc_usage(func);
   A4GL_debug
     ("find_func_double: Finding pointer to DLL function %s which returns a double\n",
      func);
@@ -556,6 +558,9 @@ void *
 A4GL_find_func_allow_missing (void *dllhandle, char *func)
 {
   int (*func_ptr) (void);
+
+  inc_usage(func);
+
   A4GL_debug ("find_func_allow_missing: Finding pointer to DLL function %s\n",
 	 A4GL_null_as_null(func));
 
@@ -692,6 +697,22 @@ if (strncmp(function,"aclfglclass",11)!=0)  {
   return a;
 
 }
+#define TRACE_DLL_CALLS
+void inc_usage (char *s) {
+static FILE *usg=0;
+#ifdef TRACE_DLL_CALLS
+if (A4GL_isyes(acl_getenv("TRACEDLL"))) {
+	if (usg==0) {
+		usg=fopen("trace.txt","w");
+	}
+
+	if (usg!=0) {
+		fprintf(usg,"%s\n",s);
+	}
+}
+#endif
+}
+
 #endif /* #if (defined(WIN32) && ! defined(__CYGWIN__)) */
 #endif /* CSCC */
 

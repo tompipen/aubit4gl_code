@@ -5,15 +5,16 @@
 */
 
 formhandler_def :
-        FORMHANDLER identifier {
-		sprintf(curr_func,"%s",$<str>2); 
-		print_formhandler($<str>2);
+        FORMHANDLER {isin_formhandler=1;} identifier {	
+		sprintf(curr_func,"%s",$<str>3); 
+		print_formhandler($<str>3);
 		push_blockcommand("FORMHANDLER");
         } define_section  {
 		print_variables();
 		print_getwin();
 	} op_code op_bef_ev_list op_input_section op_aft_ev_list 
 	END_FORMHANDLER { 
+		isin_formhandler=0;
 		pop_blockcommand("FORMHANDLER"); print_end_formhandler(); 
 }
 ;
@@ -62,12 +63,10 @@ aft_ev :
         }
 ;
 
-input_section : FINPUT input_sub_section field_ops END_INPUT
-;
-
-input_sub_section :
-        | in_variable_list FROM in_id_list
-        | BY_NAME in_bn_variable_list
+input_section : 
+	FINPUT in_variable_list FROM in_id_list field_ops END_INPUT
+	| FINPUT BY_NAME in_bn_variable_list field_ops END_INPUT
+	| FINPUT field_ops END_INPUT
 ;
 
 

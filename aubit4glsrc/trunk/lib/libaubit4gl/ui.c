@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.24 2004-09-10 11:25:54 mikeaubury Exp $
+# $Id: ui.c,v 1.25 2004-09-28 08:58:54 mikeaubury Exp $
 #
 */
 
@@ -286,16 +286,17 @@ void A4GL_display_at (int n, int a)
   A4GLSQL_set_status(0,0);
   A4GL_debug_print_stack();
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
-  A4GL_debug ("TOP1 = %d %x %p\n", tos_dtype % 256, tos_size, tos_ptr);
+  A4GL_debug ("TOP1 = %d %x %p\n", tos_dtype & 0xff, tos_size, tos_ptr);
 
-  if (tos_dtype % 256 == 0 && tos_size == 0)
+  if ((tos_dtype &0xff)== 0 && tos_size == 0)
     {
 	char *ctos_ptr;
+	A4GL_debug("Maybe null....");
 	ctos_ptr=(char *)tos_ptr;
         A4GL_debug("50 Clear end of line required... %d %d",ctos_ptr[0],ctos_ptr[1]);
-	if (A4GL_isnull(tos_dtype,tos_ptr)) {
+	//if (A4GL_isnull(tos_dtype,tos_ptr)) {
       		clr_end_of_line = 1;
-	}
+	//}
     }
 
 	  if (x == -1 && y == -1) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.96 2004-09-24 09:51:53 mikeaubury Exp $
+# $Id: lexer.c,v 1.97 2004-09-28 09:02:32 mikeaubury Exp $
 #*/
 
 /**
@@ -60,6 +60,7 @@
 
 #include "memfile.h"
 
+extern int isin_formhandler;
 
 int always_allow(int id,char *name) ;
 /*
@@ -826,9 +827,23 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
   char buff[132];
   int states = -1;
   int proc=0;
+
+
   if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
+
   if (!always_allow(kwords[cnt].id,kwords[cnt].name)) {
+	if (isin_formhandler) {
+		int ok=0;
+		if (kwords[cnt].id==INPUT) {
+  			if(allow_token_state (current_yylex_state, kwords[cnt].id)) ok=1;
+			else {
+  				if(allow_token_state (current_yylex_state, FINPUT)) ok=1;
+			}
+			if (!ok) return 0;
+		}
+	} else {
   	if(!allow_token_state (current_yylex_state, kwords[cnt].id)) { return 0; }
+	}
 	A4GL_debug("Allowing : %d %s\n",kwords[cnt].id,kwords[cnt].name);
   }
 
@@ -1065,7 +1080,9 @@ chk_word (FILE * f, char *str)
    * reading ahead when checking for multi-word keywords
    */
   strcpy (buff, p);
+
   t=chk_word_more (f, buff, p, str, t);
+
   switch(t) {
 	case WHENEVER_ERROR_CONTINUE:  		set_whento_store(""); 		set_whenever_store(WHEN_ERROR+WHEN_CONTINUE,0);		t=KW_WHENEVER_SET;break;
 	case WHENEVER_ERROR_STOP:  		set_whento_store(""); 		set_whenever_store(WHEN_ERROR+WHEN_STOP,0);		t=KW_WHENEVER_SET;break;
@@ -1108,12 +1125,13 @@ chk_word (FILE * f, char *str)
 	case WHENEVER_WARNING_CALL:  		set_whento_store(idents[0]); 	set_whenever_store(WHEN_WARNING+WHEN_CALL,0);		t=KW_WHENEVER_SET;break;
    }
 
+A4GL_debug("t=%d\n",t);
   if (t == KWS_COMMENT)
     {
       strcpy (str, p);
       return chk_word (f, str);
     }
-
+A4GL_debug("returning t=%d\n",t);
 
   return t;
 }
@@ -1155,7 +1173,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 #ifdef NEWLIST
   kwords = hashed_list[get_hash_val (p)];
 #endif
-
+ 
   while (kwords[cnt].id > 0)
     {
       strcpy (p, buff);
@@ -1373,9 +1391,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   /*if (chk4var)*/
   /*a = NAMED_GEN;*/
 
-  if (isin_command("FORMHANDLER")) {
-		if (a==INPUT) {a=FINPUT;}
-  }
+  if (isin_formhandler) { if (a==INPUT) {a=FINPUT;} }
   allow = allow_token_state (yystate, a);
   A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);
 

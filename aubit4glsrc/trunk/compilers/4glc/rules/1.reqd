@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.52 2004-09-21 20:26:21 mikeaubury Exp $
+# $Id: 1.reqd,v 1.53 2004-09-28 09:02:35 mikeaubury Exp $
 #
 */
 
@@ -132,6 +132,7 @@ extern int 	in_record;
 extern int 	rep_type;
 extern int 	yylineno;
 extern int compiling_system_4gl;
+int isin_formhandler=0;
 
 int table_cnt=0;
 int sql_mode=0;
