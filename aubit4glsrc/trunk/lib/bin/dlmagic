@@ -448,7 +448,7 @@ if (rtype!="void") {
 printf("static %s (*func_%d)(",rtype,++funccnt)
 for (b=0;b<c;b++) {
 	xxtype=param_type[b]
-	gsub("*"," * ",xxtype)
+	gsub("\*"," * ",xxtype)
 	gsub("  "," ",xxtype)
 	if (b) printf(",")
 	printf("%s ",xxtype) 
