@@ -7,8 +7,10 @@
 ;
 %%
 /* programmer routines */
-//# include "lex.yy.c"
-//# include "lexify.c"
+/*
+# include "lex.yy.c"
+# include "lexify.c"
+*/
 
 void
 set_clobber(char *c)

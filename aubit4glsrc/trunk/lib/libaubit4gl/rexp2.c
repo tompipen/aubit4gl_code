@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.7 2002-05-23 16:01:15 mikeaubury Exp $
+# $Id: rexp2.c,v 1.8 2002-06-06 12:31:27 afalout Exp $
 #
 */
 
@@ -44,7 +44,6 @@
 =====================================================================
 */
 
-//#define size_t long
 #define  EQ 1
 #define  LEQ 2
 #define  NEQ 3
@@ -84,10 +83,9 @@
 */
 
 
-#include <stdlib.h> //atoi()
-#include <string.h> //strlen()
+#include <stdlib.h> /* atoi() */
+#include <string.h> /* strlen() */
 
-//#ifdef WIN32
 #ifdef __CYGWIN__
 	#include "regex2.h"
 #else
@@ -151,11 +149,6 @@ appendchr(char *s, char c)
 int
 mja_match(char *str1, char*str2, int likeormatch)
 {
-//char    tmp_str[800];
-//regex_t *a;
-//int 	newcursor;
-//int     b;
-//int     z;
 char    MULTICHAR, SINGLECHAR;
 
 		int error;
@@ -462,5 +455,5 @@ doconstruct(char *s,char *whereclause)
 }
 
 
-// ============================ EOF ==================================
+/* ============================ EOF ================================== */
 

@@ -40,7 +40,7 @@ var_ident_ibind :  var2
 	{
 		int z = 0,a = 0;
 		a=get_bind_cnt('i');
-		//z=add_bind('i',$<str>1,scan_variable($<str>1)); //int add_bind (char i, char *var);
+		/* z=add_bind('i',$<str>1,scan_variable($<str>1)); //int add_bind (char i, char *var); */
 		z=add_bind('i',$<str>1);
 
 		z-=a;

@@ -121,7 +121,6 @@ array_r_variable:
 identifier arr_subscripts
 {
   int type,arrsize,size,level;
-//  char buff[256];
   char buff2[256];
   char arrbuff[256];
   lex_printcomment("/*array variable nnn */");
@@ -312,7 +311,6 @@ identifier arr_subscripts
 /*OPEN_SQUARE num_list CLOSE_SQUARE*/
   int a;
   int b;
-//  char buff[256];
   char buff2[256];
   lex_printcomment("/*.let. array variable */");
 
@@ -348,7 +346,7 @@ identifier arr_subscripts
     }
   else
     {
-      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", $<str>1, (int)scan_variable ($<str>1), $<str>2); // warning: int format, long int arg (arg 4)
+      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", $<str>1, (int)scan_variable ($<str>1), $<str>2);
 
       addmap("Let Variable",$<str>1,curr_func,yylineno,infilename);
       debug ("/*character variable %s*/\n", $<str>$);
@@ -481,8 +479,6 @@ array_r_varid:
 identifier OPEN_SQUARE num_list CLOSE_SQUARE
 {
   int type,arrsize,size,level;
-//  char buff[256];
-//  char buff2[256];
   char arrbuff[256];
   lex_printcomment("/*..array_r_varid..*/");
 

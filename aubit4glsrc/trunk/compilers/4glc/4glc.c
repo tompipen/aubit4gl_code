@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.28 2002-05-30 06:25:12 afalout Exp $
+# $Id: 4glc.c,v 1.29 2002-06-06 12:31:12 afalout Exp $
 #
 */
 
@@ -159,7 +159,7 @@ initArguments(int argc, char *argv[])
 {
   int i;
   /* extern char *optarg; in /usr/include/getopt.h */
-//  int this_option_optind = optind ? optind : 1;
+/*  int this_option_optind = optind ? optind : 1; */
   int option_index = 0;
   int si;
   char a[128];
@@ -240,7 +240,6 @@ main(int argc, char *argv[])
   char b[128];
   char c[128];
   int x;
-//  FILE *fopn;
   int fname_arg_no = 1;
 
   /** @todo : Remove things that are to use */
@@ -249,7 +248,7 @@ main(int argc, char *argv[])
 
   yydebug = 0;
 
-  //load settings from config file(s):
+  /* load settings from config file(s): */
   build_user_resources();
 
 
@@ -312,7 +311,6 @@ main(int argc, char *argv[])
   openmap(outputfilename);
   if (!A4GLSQL_initlib()) {
 	printf("4glc: Error opening SQL Library - check A4GL_SQLTYPE is set correctly (A4GL_SQLTYPE=%s)\n", acl_getenv("A4GL_SQLTYPE"));
-//    printf ("A4GL_SQLTYPE=%s\n", acl_getenv("A4GL_SQLTYPE"));
 	exit(1);
   }
 
@@ -373,17 +371,12 @@ rm_quote (char *s)
 int 
 read_globals (char *fname)
 {
-//  char a[128];
-//  char b[128];
-//  char c[128];
-//  FILE *fopn;
-//  char ofname[256];
-  FILE *fin;
-  fin = yyin;
+FILE *fin;
+fin = yyin;
 
   glob_only = 1;
   rm_quote (fname);
-//printf("Opening %s",fname);
+/* printf("Opening %s",fname); */
   yyin = mja_fopen (fname, "r");
 
   if (yyin == 0)
@@ -391,10 +384,9 @@ read_globals (char *fname)
       printf ("Error opening globals file : %s\n", fname);
       return -1;
     }
-//printf("/***********************************************************/\n");
+
   lex_printc ("/***********************************************************/\n");
   return (yyparse ());
-//printf("/***********************************************************/\n");
   lex_printc ("/***********************************************************/\n");
   glob_only = 0;
   yyin = fin;
@@ -526,5 +518,5 @@ isGenStackInfo(void)
   return genStackInfo;
 }
 
-// ============================== EOF ===============================
+/* ============================== EOF =============================== */
 

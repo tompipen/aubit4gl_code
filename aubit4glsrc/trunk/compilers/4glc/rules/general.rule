@@ -92,7 +92,6 @@ sprintf($<str>$,"\"%s_%s\"",clobber,downshift($<str>1)) ;
 strcpy(last_var,downshift($<str>1));
 } | VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET
 {
-//sprintf($<str>$,"clob(\"%s\",%s)",clobber,$<str>3);
 strcpy($<str>$,$<str>3);
 sprintf(last_var,"->%s",$<str>3);
 }
@@ -102,7 +101,7 @@ var_or_string : var | CHAR_VALUE;
 
 setident : {
 		debug("Setident\n");
-		//chk4var=1;
+		/* chk4var=1; */
 	strcpy($<str>$,"");
 	   } ;
 
@@ -180,3 +179,6 @@ reserved_word :
 	|ESCAPE
 	|UPSHIFT
 ;
+
+
+/* ============================ general.rule ====================== */

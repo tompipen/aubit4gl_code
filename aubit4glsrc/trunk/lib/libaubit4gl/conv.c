@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.10 2002-06-01 11:54:59 afalout Exp $
+# $Id: conv.c,v 1.11 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -173,7 +173,6 @@ void setno 		(void *p);
 void setsf 		(void *p);
 
 int inttoint 	(void *a, void *b, int size);
-//int inttoint 	(struct ival *a, void *b, int size);
 
 int inttoc 		(void *a1, void *b, int size);
 int mdectol 	(void *zz, void *aa, int sz_ignore);
@@ -329,7 +328,7 @@ int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
   {
   NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
   {
-  inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO,inttoint} // warning: initialization from incompatible pointer type
+  inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO,inttoint}
 };
 
 
@@ -361,11 +360,13 @@ main (void)
   init_dec (wrkbf3, 20, 6);
   str_to_dec ("1.0", wrkbf2);
   str_to_dec ("0.01", wrkbf3);
-//print_res(wrkbf2);
-  //print_res(wrkbf3);
-  //printf("Calculating\n");
+  /*
+  print_res(wrkbf2);
+  print_res(wrkbf3);
+  printf("Calculating\n");
+  */
   dec_math (wrkbf2, wrkbf3, wrkbf, '*');
-  //printf("-9x-0.9 =%s\n",dec_to_str(wrkbf));
+  /* printf("-9x-0.9 =%s\n",dec_to_str(wrkbf)); */
 
   #ifdef EXERCISE
 	  exercise();
@@ -415,14 +416,10 @@ main (void)
  * @param size
  * @return Allways 1
  */
-/*
-4glc: relocation error: /opt/aubit/aubit4glsrc/lib/libaubit4gl.so: undefined symbol: inttoint
-*/
 int
 inttoint (void *a, void *b, int size)
-//inttoint (struct ival *a, void *b, int size)
+/* inttoint (struct ival *a, void *b, int size) */
 {
-//char buff[256];
 int data[10];
 int val1,val2,val3;
 struct ival *d;
@@ -441,8 +438,9 @@ struct ival *e;
   val2 = (size >> 4) & 15;
   val3 = (size >> 8) & 15;
 
-	//void decode_interval (struct ival *ival, int *data);
-  //decode_interval (a,(int *) data); // warning: passing arg 2 of `decode_interval' from incompatible pointer type
+	/* void decode_interval (struct ival *ival, int *data);
+  decode_interval (a,(int *) data); -- warning: passing arg 2 of `decode_interval' from incompatible pointer type
+  */
   decode_interval (e,(int *) data);
 
   debug("Converting to %d %d %d\n",val1,val2,val3);
@@ -553,7 +551,6 @@ ctoint (void *a, void *b, int size)
   int data[256];
   struct ival *d;
   int v1, v2, v3;
-//  char fractions[6];
   debug ("ctoint : %p %p %d\n", a, b, size);
   debug ("a-->%s\n", a);
   d = (struct ival *) b;
@@ -801,7 +798,6 @@ int
 itodec (void *a, void *z, int size)
 {
   char *eptr;
-//  int zz;
   int h;
   int t;
   char buff[256];
@@ -836,7 +832,6 @@ int
 ltodec (void *a, void *z, int size)
 {
   char *eptr;
-//  int zz;
   int h;
   int t;
   char buff[256];
@@ -870,7 +865,6 @@ int
 ftodec (void *a, void *z, int size)
 {
   char *eptr;
-//  int zz;
   int h;
   int t;
   char buff[256];
@@ -905,7 +899,6 @@ int
 sftodec (void *a, void *z, int size)
 {
   char *eptr;
-//  int zz;
   int h;
   int t;
   char buff[256];
@@ -940,7 +933,6 @@ int
 dectodec (void *a, void *z, int size)
 {
   char *eptr;
-//  int zz;
   int h;
   int t;
   char *buff;
@@ -973,7 +965,6 @@ int
 stodec (void *a, void *z, int size)
 {
   char *eptr;
-//  int zz;
   int h;
   int t;
   h = size;
@@ -1007,8 +998,6 @@ stodec (void *a, void *z, int size)
 int
 mdectos (void *z, void *w, int size)
 {
-//  char *eptr;
-//  int zz;
   char *buff;
   buff = dec_to_str (z, size);
   debug ("In dectos gets '%s'", buff);
@@ -1144,8 +1133,6 @@ mdectosf (void *zz, void *aa, int sz_ignore)
 int
 dectos (void *z, void *w, int size)
 {
-//  char *eptr;
-//  int zz;
   char *buff;
   int r;
   debug ("dectos");
@@ -1491,9 +1478,7 @@ stod (void *zz, void *aa, int sz_ignore)
   char dbdate_d[10] = "";
   int cnt = 0;
   int ptr1;
-//  int a;
   char buff[5];
-//  char buff2[15];
   char dbdate[20];
   int *c;
   char *z;
@@ -1699,7 +1684,7 @@ dtos (void *aa, void *zz, int size)
     return 0;
   }
 
-  if (get_date (*a, &d, &m, &y))	// Need DBDATE Fix....
+  if (get_date (*a, &d, &m, &y))	/* Need DBDATE Fix.... */
   {
     if (strncasecmp (acl_getenv ("DBDATE"), "DMY", 3) == 0)
     {
@@ -2358,7 +2343,6 @@ int
 conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 {
   int (*ptr) (void *ptr1, void *ptr2, int size);
-//  void *ptrf;
   int rval;
   debug ("In conv.. d1=%d d2=%d size=%d", dtype1, dtype2, size);
 
@@ -2702,7 +2686,7 @@ str_to_dec (char *s, char *w)
   int dp = 0;
   int neg = 0;
   char buff[DBL_DIG1];
-  int a; //l, d
+  int a;
   
   memset (hd, 0, DBL_DIG1 - 1);
   memset (tl, 0, DBL_DIG1 - 1);
@@ -2839,7 +2823,6 @@ add_dec (char *a, char *b)
   static char wrkbuf[3][DBL_DIG1];
   int xlen, xdig;
   int cnt;
-//  int lb1, hb1, lb2, hb2;
   int n1, n2;
   int carry = 0;
   int acc;
@@ -2996,7 +2979,6 @@ minus_dec (char *a, char *b)
   static char cbuff[DBL_DIG1];
   int xlen, xdig;
   int cnt;
-//  int lb1, hb1, lb2, hb2;
   int n1, n2;
   int carry = 0;
   int acc;
@@ -3107,7 +3089,7 @@ mult_dec (char *s, char *v)
     {
       memset (buff, 0, sizeof (buff));
       cnt = DBL_DIG1;
-      //cnt = 0;
+      /* cnt = 0; */
       carry = 0;
       for (c2 = NUM_DIG (v) - 1; c2 >= 0; c2--)
 	{
@@ -3280,7 +3262,7 @@ exercise (void)
 
 		}
 
-	      //pr(buffz);
+	      /* pr(buffz); */
 	    }
 
 	}
@@ -3368,7 +3350,6 @@ inv (char *s)
   char mult_by[512];
   char mpoint01[512];
   static char tmpbuff[512];
-//  char *res;
   int counter = 0;
   int d;
   int a;
@@ -3505,8 +3486,7 @@ trim_decimals (char *s, int d)
 static void
 print_res_l (int ln, char *s)
 {
-//  static int c = 0;
-  //debug ("%4d->%s\n", ln, dec_to_str (s));
+  /* debug ("%4d->%s\n", ln, dec_to_str (s)); */
   debug ("      ");
   pr (s);
 }
@@ -3612,7 +3592,7 @@ valid_dt (char *s, int *data)
 	{
 	  continue;
 	}
-      // not something we we're expecting
+      /*  not something we we're expecting */
       debug ("Dodgey character %c\n", buff[a]);
       return 0;
     }
@@ -3671,7 +3651,7 @@ valid_dt (char *s, int *data)
   if (strcmp (type, ":") == 0)
     {
       dt_type = dt_encode (DT_MINUTE, DT_SECOND);
-    }				//***
+    }
 
   if (strcmp (type, "-- :") == 0)
     {
@@ -3688,7 +3668,7 @@ valid_dt (char *s, int *data)
   if (strcmp (type, ":") == 0)
     {
       dt_type = dt_encode (DT_HOUR, DT_MINUTE);
-    }				//***
+    }
 
   if (strcmp (type, "-- ") == 0)
     {
@@ -3723,9 +3703,9 @@ valid_dt (char *s, int *data)
   if (dt_type == -1)
     return 0;
   if (dt_type == 0 && strlen (ptr[0]))
-    return 1;			// single number..
+    return 1;			/* single number.. */
   if (dt_type == 0 && strlen (ptr[0]) == 0)
-    return 0;			//nothing...
+    return 0;			/* nothing... */
 
   b = dt_type & 15;
   a = dt_type >> 4;
@@ -3849,7 +3829,7 @@ valid_int (char *s, int *data,int size)
 	{
 	  continue;
 	}
-      // not something we we're expecting
+      /* not something we we're expecting */
       debug ("Dodgey character %c\n", buff[a]);
       return 0;
     }
@@ -3909,7 +3889,7 @@ valid_int (char *s, int *data,int size)
   if (strcmp (type, ":") == 0)
     {
       dt_type = dt_encode (DT_MINUTE, DT_SECOND);
-    }				//***
+    }
 
   if (strcmp (type, "-- :") == 0)
     {
@@ -3926,7 +3906,7 @@ valid_int (char *s, int *data,int size)
   if (strcmp (type, ":") == 0)
     {
       dt_type = dt_encode (DT_HOUR, DT_MINUTE);
-    }				//***
+    }
 
   if (strcmp (type, "-- ") == 0)
     {
@@ -3953,7 +3933,7 @@ valid_int (char *s, int *data,int size)
 
   debug("dt_type= %d\n",dt_type);
 
-  if (dt_type==0) { // Lets assume the programmer knows what he's doing..
+  if (dt_type==0) { /* Lets assume the programmer knows what he's doing.. */
 	debug("Probably type= %d\n",size_type); 
 	dt_type=dt_encode(size_type,size_type);
   }
@@ -3962,10 +3942,10 @@ valid_int (char *s, int *data,int size)
     return 0;
 
   if (dt_type == 0 && strlen (ptr[0]))
-    return 1;			// single number..
+    return 1;			/* single number.. */
 
   if (dt_type == 0 && strlen (ptr[0]) == 0)
-    return 0;			//nothing...
+    return 0;			/* nothing... */
 
   b = dt_type & 15;
   a = dt_type >> 4;
@@ -4130,5 +4110,5 @@ set_setdtype(int dtype, void *ptr)
         setdtype[dtype]=ptr;
 }
 
-// ============================= EOF ================================
+/* ============================= EOF ================================ */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_server.c,v 1.7 2002-05-30 11:18:39 mikeaubury Exp $
+# $Id: rpc_server.c,v 1.8 2002-06-06 12:31:28 afalout Exp $
 #*/
 
 /**
@@ -59,16 +59,7 @@
 =====================================================================
 */
 
-//double pop_double(void);
-//int push_double(double a);
-//float pop_float(void);
-//int push_float(float a);
-//void *find_pointer(char *c,char a);
 static int call_func(char *s,int a);
-
-
-
-//extern int status;
 
 /*
 =====================================================================
@@ -130,13 +121,16 @@ arg1=&arg;
 	        
         exitwith ("serious bug in rpc_server.c");
 
-			fgl_rpc_reply((void *)&result); // warning: passing arg 1 of `fgl_rpc_reply' from incompatible pointer type
-             
-			 //so we are passing struct to function expecting char pointer !!!
+			fgl_rpc_reply((void *)&result); 
+			 /*
+			 warning: passing arg 1 of `fgl_rpc_reply' from incompatible pointer type
+
+			 so we are passing struct to function expecting char pointer !!!
 
 
-			 //void fgl_rpc_reply(char *result);
-             //static return_values result={0,0};
+			 void fgl_rpc_reply(char *result);
+             static return_values result={0,0};
+             */
 
 			/*
 			typedef struct {
@@ -207,7 +201,6 @@ arg1=&arg;
 static int
 call_func(char *s,int a)
 {
-//void *ptr;
 int z;
 int (*func)(int a);
 	debug("In call_func");
@@ -222,4 +215,4 @@ int (*func)(int a);
 	}
 }
 
-// ============================ EOF =================================
+/* ============================ EOF ================================= */

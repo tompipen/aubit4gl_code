@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.10 2002-06-05 07:04:55 afalout Exp $
+# $Id: API_exreport.c,v 1.11 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -74,7 +74,7 @@ static double 	(*func_d)			(double f, char c,struct pdf_rep_structure *p);
 
 
 void *			find_func			(void *p,char *s);
-extern void *	find_func_double 	(void *dllhandle, char *func); //in calldll.c
+extern void *	find_func_double 	(void *dllhandle, char *func); /* in calldll.c */
 void 			pdf_skip_by			(void *rep,double a);
 double 			pdf_metric			(int a,char  c,void *rep);
 void 			pdf_aclfgli_skip_lines(void *rep);
@@ -100,7 +100,6 @@ void            pdf_blob_print		(void *p,void *blob,char *type,int cr);
  *
  * @todo Describe function
  */
-//int - actuall function retuns void
 void
 A4GLREPORT_initlib (void)
 {
@@ -112,7 +111,6 @@ A4GLREPORT_initlib (void)
 
         if (libptr==0) {
                 exitwith("Unable to open EXREPORT library.");
-                //return 0;
                 return;
         }
 
@@ -285,7 +283,7 @@ pdf_rep_close(void *p)
  * @todo Describe function
  */
 double 
-//pdf_size(double f, char c,void *p)
+/* pdf_size(double f, char c,void *p) */
 pdf_size(double f, char c,struct pdf_rep_structure *p)
 {
 double d;
@@ -326,5 +324,5 @@ pdf_blob_print(void *p,void *blob,char *type,int cr)
   func(p,blob,type,cr);
 }
 
-// ================================= EOF =============================
+/* ================================= EOF ============================= */
 

@@ -27,7 +27,7 @@ ibind_var_list {
    {
 	print_field_func('I',$<str>3,$<str>6);
    }
-   | pdf_functions 
+   | pdf_functions
    | FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable 
    { 
 	print_field_func('T',$<str>3,$<str>6);
@@ -106,7 +106,7 @@ CLOSE_BRACKET opt_return {
    }
    opt_return_remote
    { 
-   	//int cnt;
+   	/* int cnt; */
 	char fname[64];
 	
    if (strcmp($<str>14,"WITHOUT WAITING")==0) {	

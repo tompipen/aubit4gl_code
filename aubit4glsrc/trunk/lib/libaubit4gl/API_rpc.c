@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
+# $Id: API_rpc.c,v 1.7 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -108,7 +108,6 @@ A4GLRPC_initlib (void)
 int
 remote_func_call (char *host,int async,char *funcname,int port,int np)
 {
-//  va_list ap;
 	debug("remote_func_call - libptr=%p\n");
   if (libptr==0) A4GLRPC_initlib();
   func=find_func(libptr,"remote_func_call");
@@ -116,4 +115,4 @@ remote_func_call (char *host,int async,char *funcname,int port,int np)
 }
 
 
-// ============================== EOF =================================
+/* ============================== EOF ================================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
+# $Id: debug.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -81,12 +81,7 @@ int g_lineno;
 =====================================================================
 */
 
-//defined in header file
-//void debug_full (char *fmt,...);
-
 static void open_debugfile (void);
-
-
 
 /*
 =====================================================================
@@ -145,9 +140,10 @@ debug_full (char *fmt,...)
 
       fprintf (debugfile, "%s\n", buff);
 
-        //fixme: AUBITGUI can also be gui, not only gtk
-        //Why are we printing this to stderr in any case, it is allready
-        //written to debug.out ?
+        /* fixme: AUBITGUI can also be gui, not only gtk
+        Why are we printing this to stderr in any case, it is allready
+        written to debug.out ?
+        */
         /*
 		if (strcmp(acl_getenv("AUBITGUI"),"GTK")==0) {
                 fprintf(stderr,"%s\n",buff);
@@ -176,4 +172,4 @@ set_line (char *fname, long lineno)
   return 0;
 }
 
-// =============================== EOF =============================
+/* =============================== EOF ============================= */

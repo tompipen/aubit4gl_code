@@ -84,7 +84,7 @@ dim_push_associate($<str>4,$<str>8);
 dim_push_type(0,0,$<str>8);
 }
 OF dim_dtype  {
-	//void dim_pop_associate (char *a);
+	/* void dim_pop_associate (char *a); */
 	dim_pop_associate(0);
 }
 ;
@@ -112,7 +112,7 @@ dim_var_def_list	: dim_var_def_name
 	;
 
 
-//void dim_push_name (char *a, char *b);
+/* void dim_push_name (char *a, char *b); */
 dim_var_def_name	:	identifier { dim_push_name($<str>$,0); } ;
 
 

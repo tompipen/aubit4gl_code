@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.9 2002-06-02 06:52:38 afalout Exp $
+# $Id: formwrite2.c,v 1.10 2002-06-06 12:31:27 afalout Exp $
 #*/
 
 /**
@@ -43,7 +43,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include <time.h> //time()
+#include <time.h> 					/* time() */
 
 #ifdef __CYGWIN__
 	#include <rpc/rpc.h>
@@ -54,7 +54,7 @@
 #include "a4gl_compiler.h"
 #include "a4gl_dbform.h"
 #include "a4gl_aubit_lib.h"
-#include "a4gl_compiler.h"	//fgl_comp_error
+#include "a4gl_compiler.h"			/* fgl_comp_error */
 #include "a4gl_debug.h"
 
 /*
@@ -64,8 +64,6 @@
 */
 
 extern int as_c;
-
-//extern int scr;
 int cmaxcol = 0;
 int cmaxline = 0;
 int maxcol;
@@ -100,8 +98,8 @@ FILE *fyy;
 */
 
 static void translate_form(void);
-extern char * translate(char *s); 	//translate.c
-extern void yyerror(char *s); 		//fcompile.c
+extern char * translate(char *s); 	/* translate.c */
+extern void yyerror(char *s); 		/* fcompile.c */
 static void real_set_field (char *s, struct struct_scr_field *f);
 static void real_add_str_attr(struct struct_scr_field *f,int type,char *str);
 static void real_add_bool_attr(struct struct_scr_field *f,int type);
@@ -157,8 +155,10 @@ init_fld (void)
 
   #define xxfield the_form.attributes.attributes_val[cnt]
 
-  //the_form.fields.fields_len=0;
-  //the_form.fields.fields_val=0;
+  /*
+  the_form.fields.fields_len=0;
+  the_form.fields.fields_val=0;
+  */
 
   xxfield.bool_attribs.bool_attribs_len=0;
   xxfield.bool_attribs.bool_attribs_val=0;
@@ -640,10 +640,10 @@ add_table (char *s, char *a)
 static int
 find_attribs (int **ptr, char *tab, char *colname)
 {
-  static int attrib_list[256];
-  int a;
-  int cnt = 0;
-//  int flg;
+static int attrib_list[256];
+int a;
+int cnt = 0;
+
   debug("find_attribs\n");
   *ptr = (int *)&attrib_list;
 
@@ -678,10 +678,9 @@ find_attribs (int **ptr, char *tab, char *colname)
 static void
 proc_thru (void)
 {
-  int a;
-  int b;
-  int z;
-//  int *p;
+int a;
+int b;
+int z;
 
   debug("proc_thru\n");
   a = curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len - 2];
@@ -732,9 +731,11 @@ add_srec_attribute (char *tab, char *col, char *thru)
 
 	  debug("ptr[z]=%d\n",ptr[z]);
 
-    //curr_rec->attribs.attribs_val=realloc(
-    //curr_rec->attribs.attribs_val,
-	  //curr_rec->attribs.attribs_len*sizeof(int));
+      /*
+    curr_rec->attribs.attribs_val=realloc(
+    curr_rec->attribs.attribs_val,
+	curr_rec->attribs.attribs_len*sizeof(int));
+    */
 
 
     curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len++] = ptr[z];
@@ -849,15 +850,13 @@ chk_for_wordwrap(void)
 void
 write_form (void)
 {
-  char fname[132];
-  char fname2[132];
-  char base[132];
-  char ext[132];
-
-  int a;
-//  int outfile;
-  XDR xdrp;
-  struct_form *ptr;
+char fname[132];
+char fname2[132];
+char base[132];
+char ext[132];
+int a;
+XDR xdrp;
+struct_form *ptr;
 
   ptr = &the_form;
 
@@ -914,7 +913,7 @@ write_form (void)
 		fprintf(fyy,"};\n");
 		fclose(fxx);
 		fclose(fyy);
-		//unlink(fname);
+		/* unlink(fname); */
 	}
 }
 
@@ -941,10 +940,12 @@ getdatatype(char *col,char *tab)
   tabs[the_form.tables.tables_len][0]=0;
 
   debug("Calling get_dtype with %s %s %s",the_form.dbname,tab,col);
-  //int 	get_dtype			(char *tabname, char *colname,char *dbname,char *tablist[]);
+  /* int 	get_dtype			(char *tabname, char *colname,char *dbname,char *tablist[]); */
   a=get_dtype(tab,col,the_form.dbname,(char *)the_form.tables.tables_val);
-  // warning: passing arg 4 of `get_dtype' from incompatible pointer type
-  // so we are passing a char ponter to function expecting char array !!
+   /*
+   warning: passing arg 4 of `get_dtype' from incompatible pointer type
+   so we are passing a char ponter to function expecting char array !!
+   */
   debug("get_dtype returns %d",a);
   /* 6-2 ? CHECK */
   if (a==6) a=2;
@@ -1169,7 +1170,7 @@ translate_form(void)
 	for (a=0;a<the_form.metrics.metrics_len;a++)
 	{
   		dumpstring(the_form.metrics.metrics_val[a].label,0,"");
-		ptr=translate(the_form.metrics.metrics_val[a].label); //warning: assignment makes pointer from integer without a cast
+		ptr=translate(the_form.metrics.metrics_val[a].label);
 		if (ptr)
 			the_form.metrics.metrics_val[a].label=strdup(ptr);
 	}
@@ -1181,7 +1182,7 @@ translate_form(void)
 			if (the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].type==FA_S_COMMENTS)
 			{
 				dumpstring(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value,0,"");
-				ptr=translate(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value); // warning: assignment from incompatible pointer type
+				ptr=translate(the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value);
 				if (ptr)
 					the_form.attributes.attributes_val[b].str_attribs.str_attribs_val[a].value=strdup(ptr);
 			}
@@ -1191,7 +1192,7 @@ translate_form(void)
 
 
 
-//============== from decompile.c =====================
+/* ============== from decompile.c ===================== */
 /*   did not work, but still needed for fdecompile */
 int
 isolated_xdr_struct_form( void* xdrp, void* the_form)
@@ -1208,4 +1209,4 @@ int a;
     return a;
 }
 
-// =============================== EOF ==========================
+/* =============================== EOF ========================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.30 2002-05-25 12:12:44 afalout Exp $
+# $Id: lexer.c,v 1.31 2002-06-06 12:31:12 afalout Exp $
 #*/
 
 /**
@@ -52,7 +52,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "a4gl_aubit_lib.h" 			// acl_getenv()
+#include "a4gl_aubit_lib.h" 			/* acl_getenv() */
 #include "a4gl_4glc_4glc.h"
 #include "rules/generated/kw.h"
 #include "rules/generated/y.tab.h"
@@ -72,7 +72,7 @@
 #define TYPE_EOF  -1
 #define TYPE_USTRING  -2	/* unterminated string */
 #define TYPE_NUM 3
-#define DBG			//
+#define DBG
 
 /*
 =====================================================================
@@ -80,14 +80,14 @@
 =====================================================================
 */
 
-/// Extern reserved words table
+/* Extern reserved words table */
 extern struct s_kw kwords[];
 char idents[256][256];
 int idents_cnt = 0;
 extern char curr_func[];
 extern char infilename[];
-FILE *yyin = 0; /// Pointer to the source file openen being parsed
-int yylineno = 1; /// Current line number
+FILE *yyin = 0; 		/* Pointer to the source file openen being parsed */
+int yylineno = 1; 		/* Current line number */
 extern int chk4var;
 char *lastword;
 int lastlex = -2;
@@ -316,7 +316,7 @@ read_word2 (FILE * f, int *t)
 
 
 
-      //DBG printf("Read %c\n",a);
+      /* DBG printf("Read %c\n",a); */
 
       if (a == '#' && instrs == 0 && instrd == 0 && xccode == 0)
 	{
@@ -392,7 +392,7 @@ read_word2 (FILE * f, int *t)
 		    break;
 		  if (a == '}')
 		    break;
-		  //ccat(word,a,instrs||instrd);
+		  /* ccat(word,a,instrs||instrd); */
 		}
 	    }
 	  *t = KWS_COMMENT;
@@ -481,12 +481,14 @@ read_word2 (FILE * f, int *t)
 	  continue;
 	}
 
-      //if (a == '\"' && instrs == 1)
-	//{
-	  //ccat (word, '\\', instrs || instrd);
-	  //ccat (word, '\"', instrs || instrd);
-	  //continue;
-	//}
+        /*
+      if (a == '\"' && instrs == 1)
+	{
+	  ccat (word, '\\', instrs || instrd);
+	  ccat (word, '\"', instrs || instrd);
+	  continue;
+	}
+    */
 
 
       if (a == '\'' && !escp && instrd == 0)
@@ -520,9 +522,9 @@ read_word2 (FILE * f, int *t)
 static char *
 read_word (FILE * f, int *t)
 {
-  char *ptr;
-//  char *s=0;
+char *ptr;
 char *s2;
+  
   ptr = read_word2 (f, t);
   if (*t==CHAR_VALUE) {
 		char *s;
@@ -533,7 +535,7 @@ char *s2;
 		if (s2) ptr=s2;
   }
 
-  //if (s) ptr=s;
+  /* if (s) ptr=s; */
   strcpy (xwords[word_cnt], ptr);
   word_cnt++;
 
@@ -552,11 +554,10 @@ char *s2;
 static int 
 words (int cnt, int pos, FILE * f, char *p)
 {
-//  int f_pos;
-  int z;
-  int t;
-  char buff[132];
-  int states = -1;
+int z;
+int t;
+char buff[132];
+int states = -1;
 
   strcpy (buff, kwords[cnt].vals[pos]);
 
@@ -569,7 +570,7 @@ words (int cnt, int pos, FILE * f, char *p)
   if (stricmp (buff, "<ident>") == 0)
     {
 
-      //printf("check %s\n",p);
+      /* printf("check %s\n",p); */
       if (isident (p) == 0) 
 	return 0;
       strcpy (idents[idents_cnt++], p);
@@ -595,7 +596,7 @@ words (int cnt, int pos, FILE * f, char *p)
 
   if (z == 0)
     {
-      //fseek(f,f_pos,SEEK_SET);
+      /* fseek(f,f_pos,SEEK_SET); */
       return 0;
     }
 return 1;
@@ -644,14 +645,13 @@ mk_word (int c)
 static int 
 chk_word (FILE * f, char *str)
 {
-  long a;
-  int cnt;
-  char *p;
-  int t;
-  char buff[256];
-  int oline;
-//  int ocharno;
-  cnt = 0;
+long a;
+int cnt;
+char *p;
+int t;
+char buff[256];
+int oline;
+cnt = 0;
 
   p = read_word (f, &t);
 
@@ -718,18 +718,18 @@ chk_word (FILE * f, char *str)
       return -1;
     }
 
-	//printf("Read word %s\n",p);
+	/* printf("Read word %s\n",p); */
 
   while (kwords[cnt].id > 0)
     {
       strcpy (p, buff);
-      //debug("Check %s against ID %d (%s) (%d)\n",p,kwords[cnt].id,kwords[cnt].vals[0],kwords[cnt].mode);
+      /* debug("Check %s against ID %d (%s) (%d)\n",p,kwords[cnt].id,kwords[cnt].vals[0],kwords[cnt].mode); */
       if (kwords[cnt].mode >= 1)
 	{
 	  idents_cnt = 0;
 	  if (words (cnt, 0, f, p))
 	    {
-	      //printf("Matches to %d\n",kwords[cnt].id);
+	      /* printf("Matches to %d\n",kwords[cnt].id); */
 	      strcpy (str, mk_word (cnt));
 	      return kwords[cnt].id;
 	    }
@@ -804,10 +804,6 @@ fix_bad_strings (char *s)
   return;
 }
 
-
-//#define fgetc(x) mja_fgetc(x)
-//#define ungetc(x,y) mja_ungetc(x,y)
-
 /**
  *  Lexical analisys entry point.
  *
@@ -856,17 +852,17 @@ yylex (void)
 	  debug ("Constant switch %s Char", buffval);
 	  strcpy (buff, buffval);
 	  a = CHAR_VALUE;
-	  break;		//'c'
+	  break;		/* 'c' */
 	case 2:
 	  debug ("Constant switch %s Float", buffval);
 	  strcpy (buff, buffval);
 	  a = NUMBER_VALUE;
-	  break;		//'f'
+	  break;		/* 'f' */
 	case 3:
 	  debug ("Constant switch %s Integer", buffval);
 	  strcpy (buff, buffval);
 	  a = INT_VALUE;
-	  break;		//'i'
+	  break;		/* 'i' */
 	}
     }
   if (a == 2)
@@ -932,18 +928,18 @@ void
 turn_state (int kw, int v)
 {
   int a;
-//debug("State changes %d to %d\n",kw,v);
+/* debug("State changes %d to %d\n",kw,v); */
   for (a = 0; kwords[a].id > 0; a++)
     {
       if (kwords[a].id == kw)
 	{
 
-	  //debug("a=%d kw=%d\n",a,kw);
+	  /* debug("a=%d kw=%d\n",a,kw); */
 	  if (v)
 	    kwords[a].mode++;
 	  else
 	    kwords[a].mode--;
-	  //return;
+	  /* return; */
 	}
     }
 }
@@ -960,4 +956,4 @@ get_idents(int a)
 }
 
 
-// ================================== EOF =========================
+/* ================================== EOF ========================= */

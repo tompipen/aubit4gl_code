@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.7 2002-06-01 11:54:59 afalout Exp $
+# $Id: load.c,v 1.8 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -106,7 +106,6 @@ find_delims(char delim)
 {
   int cnt=1;
   int a;
-//  char *ptr;
   colptr[0]=&loadbuff[0];
 
   for (a=0;a<strlen(loadbuff);a++)
@@ -217,7 +216,6 @@ A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
   char *colname;
   int cnt=0;
   char delim;
-//  int linelength;
   int nfields;
   int lineno=0;
   char *insertstr;
@@ -247,24 +245,7 @@ A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
   if (cnt==0) {
      /* get columns from database */
      debug("Getting columns from database");
-	// cnt=fill_array(MAXLOADCOLS,col_list,MAXCOLLENGTH-1,0,0,"COLUMNS",0,tabname);
      cnt=A4GLSQL_fill_array(MAXLOADCOLS,(char **)col_list,MAXCOLLENGTH-1,0,0,"COLUMNS",0,tabname);
-
-
-     /*
-      warning: passing arg 2 of `A4GLSQL_fill_array' from incompatible pointer type
-
-
-	 int A4GLSQL_fill_array     (int mx, char **arr1, int szarr1,
-	  char **arr2, int szarr2, char *service, int mode, char *info
-	);
-
-    /// Column name list where information is to be loaded
-	char col_list[MAXLOADCOLS][MAXCOLLENGTH];
-
-
-
-    */
 
   }
 
@@ -316,4 +297,4 @@ A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
 }
 
 
-// ============================== EOF ================================
+/* ============================== EOF ================================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
+# $Id: dmy.c,v 1.6 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -152,7 +152,6 @@ using_date(int dn,char *us)
   int m;
   int y;
   int dno;
-//  int uses[10];
   static char buff[256];
   char buff2[256];
 
@@ -169,11 +168,13 @@ using_date(int dn,char *us)
   strcpy(buff,us);
   get_date(dn,&d,&m,&y);
   dno=day_in_week(d,m,y);
-  //g_dnamesfull[dno]);
-  //g_dnames[dno]);
-  //g_mnamesfull[m]);
-  //g_mnames[m]);
-  
+  /*
+  g_dnamesfull[dno]);
+  g_dnames[dno]);
+  g_mnamesfull[m]);
+  g_mnames[m]);
+  */
+
   strcpy(rep_strs[0],(char *)find_str_resource_int("_FDAY",dno));
   strcpy(rep_strs[1],(char *)find_str_resource_int("_DAY",dno));
   sprintf(rep_strs[2],"%02d",d);
@@ -223,7 +224,6 @@ dategsub(char *s,char *r,char *p)
 	char buff2[256];
 	char buff3[256];
 	char *ptr;
-//	int a;
 	buff[0]=0;
 	strcpy(buff2,s);
 	while ((ptr=(char *)strstr(buff2,r))) {
@@ -267,5 +267,5 @@ get_dayno(void)
 
 #endif
 
-// ================================ EOF ============================
+/* ================================ EOF ============================ */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
+# $Id: function_call_stack.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
 #*/
 
 /**
@@ -171,9 +171,6 @@ A4GLSTK_popFunction(void)
 {
   if (functionCallStack[functionCallPointer-1].params)
   		free((void *)functionCallStack[functionCallPointer-1].params);
-	//   warning: passing arg 1 of `free' discards qualifiers from pointer target type
-	//extern void free (void *__ptr) __THROW;
-	//static FunctionCall *functionCallStack;
 
   functionCallPointer--;
   if ( functionCallPointer < 0 )
@@ -190,7 +187,6 @@ A4GLSTK_getStackTrace(void)
 {
   static char stackTrace[640];
   static char tmpStackTrace[640];
-//  char *ptr;
   int i;
 
   strcpy(stackTrace,"4gl function call stack :\n");
@@ -209,7 +205,7 @@ A4GLSTK_getStackTrace(void)
 	strcat(stackTrace,tmpStackTrace);
    }
 
-    // Don't put the brackets on for a MAIN
+    /* Don't put the brackets on for a MAIN */
     if (strcmp(functionCallStack[i].functionName,"MAIN")!=0) {
     	strcat(stackTrace,"(");
 	if (functionCallStack[i].params) strcat(stackTrace,functionCallStack[i].params);
@@ -235,4 +231,4 @@ A4GLSTK_isStackInfo(void)
   return stackInfoInitialized;
 }
 
-// ============================= EOF ================================
+/* ============================= EOF ================================ */

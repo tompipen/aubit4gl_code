@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.12 2002-06-01 11:54:59 afalout Exp $
+# $Id: API_sql.c,v 1.13 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -61,8 +61,6 @@
 =====================================================================
 */
 
-//sqlca_struct sqlca;
-//long status;
 static void *libptr=0;
 typedef unsigned char UCHAR;
 
@@ -144,14 +142,13 @@ char *      global_A4GLSQL_get_sqlerrm (void);
 int
 A4GLSQL_initlib (void)
 {
-//  char s[512];
 	libptr=(void *)dl_openlibrary("SQL",acl_getenv("A4GL_SQLTYPE"));
 	debug("libptr=%p\n",libptr);
 	if (libptr==0) {
 		exitwith("Unable to open SQL library.");
 		return 0;
 	}
-	func=find_func_allow_missing(libptr,"A4GLSQL_initlib"); //warning: assignment makes pointer from integer without a cast
+	func=find_func_allow_missing(libptr,"A4GLSQL_initlib");
 
 	if (func)
 		return func();
@@ -267,7 +264,6 @@ A4GLSQL_get_sqlerrm   (void)
  *   - 0 : Error ocurred.
  */
 int
-//A4GLSQL_get_columns(char *tabname)
 A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   if (libptr==0) A4GLSQL_initlib();
@@ -786,8 +782,9 @@ A4GLSQL_initsqllib(void)
 }
 
 
-//moved here from nosql.c/sql.c to work around prblem with automatic exporting
-//of globals when making windows .dll
+/* moved here from nosql.c/sql.c to work around prblem with automatic exporting
+of globals when making windows .dll
+*/
 /**
  *
  *
@@ -801,4 +798,4 @@ global_A4GLSQL_get_sqlerrm (void)
 }
 
 
-// =============================== EOF ==============================
+/* =============================== EOF ============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
+# $Id: extfile.c,v 1.7 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -59,7 +59,6 @@
 FILE *helpfile = 0;
 FILE *langfile = 0;
 char *language_file_contents=0;
-//char helpbuff[10000];
 char disp[24][81];
 int max_width;
 
@@ -309,4 +308,4 @@ get_help_disp(int n)
 	return disp[n];
 }
 
-// ================================ EOF ===============================
+/* ================================ EOF =============================== */

@@ -24,7 +24,6 @@ addmap("Execute",$<str>2,curr_func,yylineno,infilename);
 }
             | EXECUTE stmt_id USING ibind_var_list
 {
-//int ni;
 	addmap("Execute",$<str>2,curr_func,yylineno,infilename);
 	print_execute($<str>2,1);
 }

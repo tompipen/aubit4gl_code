@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
+# $Id: errfile.c,v 1.6 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -99,7 +99,6 @@ FILE*
 write_errfile(FILE *f,char *fname,long as,int lineno)
 {
   int a;
-//  int b;
   long s2,e;
   long s;
   int errorno;
@@ -142,7 +141,7 @@ write_cont(FILE *f)
   a=2048;
   fprintf(fout,"\n");
   while (s>0) {
-   //if (feof(f)) break;
+   /* if (feof(f)) break; */
    s=fread(buff,1,a,f);
    fwrite(buff,s,1,fout);
   }
@@ -163,7 +162,6 @@ write_cont(FILE *f)
 void
 find_nl(FILE *f,long fp,long *s,long *e)
 {
-//  int a;
   char buff[10];
 
   while (fp>0) {
@@ -218,5 +216,5 @@ mja_fopen(char *name, char *mode)
 	return fopen(name,mode);
 }
 
-// ================================== EOF =============================
+/* ================================== EOF ============================= */
 

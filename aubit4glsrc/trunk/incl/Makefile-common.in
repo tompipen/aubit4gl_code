@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.44 2002-06-05 07:04:55 afalout Exp $
+# $Id: Makefile-common.in,v 1.45 2002-06-06 12:31:26 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -229,11 +229,12 @@ AUTOCONF_CFLAGS     =@CFLAGS@
 #-Wall only: 			Toatal compiler warnings: 2168 -> 32
 #-pedantic:     		Fails
 #-Wmissing-prototypes:  Toatal compiler warnings: 1058 -> 7
-#-Wstrict-prototypes:   Toatal compiler warnings: 1465 -> 324
+#-Wstrict-prototypes:   Toatal compiler warnings: 1465 -> 20
 #-Wmissing-declarations:Toatal compiler warnings: 961 -> 6
 #-Wredundant-decls:     Toatal compiler warnings: 5156 -> 14
 
-CWARN               =-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
+NON_PEDANTIC_OK		=1
+CWARN               =-pedantic -Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
 
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} -DAUTOBANG -DDEBUG -I/usr/local/include -I$(AUBITDIR)/incl
 #we are overriding LD_LIBRARY_PATH that might existed in environment:

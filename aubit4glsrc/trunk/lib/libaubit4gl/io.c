@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
+# $Id: io.c,v 1.7 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -86,15 +86,12 @@ FILE * 		open_file_dbpath	(char *fname);
 int
 read_int (FILE * ofile)
 {
+int a;
 
-//    unsigned char c;
-    int a;
-//    int f;
-//    short sa;
 	if (ofile==0) ofile=oufile;
     fread (&a, 1, sizeof (int), ofile);
-    //a=(int)sa;
-debug("read_int returns %d",a);
+    /* a=(int)sa; */
+	debug("read_int returns %d",a);
     return a;
 
 }
@@ -108,10 +105,9 @@ debug("read_int returns %d",a);
 void
 write_int (FILE * ofile, int la)
 {
-//    short a;
-//    unsigned char c;
-	static int locala;
-	int sizeo;
+static int locala;
+int sizeo;
+	
 	if (ofile==0) ofile=oufile;
 	debug("File=%p",ofile);
 	debug("&locala=%p",&locala);
@@ -427,4 +423,4 @@ open_file_dbpath(char *fname)
 }
 
 
-// ============================= EOF ===============================
+/* ============================= EOF =============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.9 2002-06-01 11:55:00 afalout Exp $
+# $Id: resource.c,v 1.10 2002-06-06 12:31:29 afalout Exp $
 #
 */
 
@@ -46,7 +46,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h> //toupper()
+#include <ctype.h> 		/* toupper() */
 
 /*
 This is only source code file in which we should allowe getenv() function
@@ -92,7 +92,7 @@ struct str_resource builtin_resource[] =
   {"ACL_MOUSE",   "N"},
   {"A4GL_SQLTYPE", "nosql"},
   {"A4GL_FORMTYPE", "XDR"},
-  {"NOCURSES", "N"},            //FIXME: NOCURSES is now AUBITGUI=CONSOLE
+  {"NOCURSES", "N"},            /* FIXME: NOCURSES is now AUBITGUI=CONSOLE */
   {"GUIPORT", ""},
   {"A4GL_LEXTYPE","C"},
   {"DBDATE", "MDY4/"},
@@ -114,7 +114,7 @@ struct str_resource builtin_resource[] =
 #ifdef WIN32
   {"EXTENDED_FETCH", "Y"},
 #else
-  {"EXTENDED_FETCH", "Y"}, // This won't always work !
+  {"EXTENDED_FETCH", "Y"}, /* This won't always work ! */
 #endif
   {"ACLDIR", "/usr/acl"},
   {"ACLTEMP", "tempdsn"},
@@ -244,7 +244,7 @@ static void add_resources_in(FILE *resourcefile) ;
 static int next_resource(void);
 int chk_dbdate (char *p);
 
-extern void trim_nl(char *p); //in aubit-config.c when used to make aubit-config executable.
+extern void trim_nl(char *p); /* in aubit-config.c when used to make aubit-config executable. */
 
 static char * chk_str_resource (char *s, struct str_resource *res);
 static int add_userptr (void *ptr);
@@ -379,9 +379,8 @@ find_str_resource (char *s)
 char *
 acl_getenv (char *s)
 {
-//  static char undef[] = "Undefined";
-  char prefixed_string[256];
-  char *ptr;
+char prefixed_string[256];
+char *ptr;
 
 
   sprintf(prefixed_string,"A4GL_%s",s);
@@ -412,7 +411,7 @@ acl_getenv (char *s)
 int
 chk_dbdate (char *p)
 {
-  int d, m, y; //, del, ysize;
+  int d, m, y;
   int cnt;
   d = -1;
   m = -1;
@@ -464,7 +463,7 @@ int
 replace_str_resource (char *s, char *neww)
 {
   void *ptr;
-// use with care !
+/* use with care ! */
   ptr = chk_str_resource (s, builtin_resource);
   if (ptr)
     strcpy (ptr, neww);
@@ -577,8 +576,8 @@ get_login (void)
   get_anykey (HKEY_LOCAL_MACHINE, "Network\\Logon", "username", buff, 255);
   return buff;
 }
-#endif //__CYGWIN__
-#endif // WIN32
+#endif /* __CYGWIN__ */
+#endif /* WIN32 */
 
 
 /**
@@ -597,7 +596,7 @@ build_user_resources(void)
 	if (loaded_resources) return build_resource;
 	if (build_resource) free(build_resource);
 
-	// from /etc/opt/aubit4gl/aubitrc
+	/* from /etc/opt/aubit4gl/aubitrc */
 
 	debug("From /etc/opt/aubit4gl/aubitrc");
 
@@ -606,7 +605,7 @@ build_user_resources(void)
 
 	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
 
-	// from $AUBITDIR/etc/aubitrc
+	/* from $AUBITDIR/etc/aubitrc */
 
 	debug("Finding aubitdir from environment");
 
@@ -618,7 +617,7 @@ build_user_resources(void)
 
 	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
 
-	// from ~/.aubit4gl/aubitrc
+	/* from ~/.aubit4gl/aubitrc */
 
 	debug("From ~/.aubit4gl/aubitrc");
 
@@ -627,7 +626,7 @@ build_user_resources(void)
 
 	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
 
-	// from ./.aubtirc
+	/* from ./.aubtirc */
 
 	sprintf(buff,"./%s",".aubitrc");
 
@@ -636,7 +635,7 @@ build_user_resources(void)
 	resourcefile=fopen(buff,"r");
 	if (resourcefile!=0) { add_resources_in(resourcefile); fclose(resourcefile); }
 
-	// from $A4GL_INIFILE
+	/* from $A4GL_INIFILE */
 
 	debug("Finding INIfile from env");
 
@@ -800,5 +799,5 @@ char *a;
 
 
 
-//----------------------------- EOF ---------------------------------
+/* ----------------------------- EOF --------------------------------- */
 

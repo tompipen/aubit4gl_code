@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.11 2002-06-05 07:04:55 afalout Exp $
+# $Id: fglwrap.c,v 1.12 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -66,7 +66,6 @@
 	#include <errno.h>
 #endif
 
-//authunix_parms redefined: start here:
 #include "a4gl_dbform.h"
 #include "a4gl_stack.h"
 #include "a4gl_debug.h"
@@ -81,20 +80,6 @@
 =====================================================================
 */
 
-//FIXME: is this OK? see lib/libincl/dbform.h
-
-/* now defined ONLY in a4gl_incl_4glhdr.h
-#ifdef __CYGWIN__
-	extern int int_flag;
-	extern int status;
-#else
-	extern long status;
-#endif
-
-
-extern sqlca_struct sqlca;
-
-*/
 int p_numargs=0;
 int isdebug=0;
 char *p_args[256];
@@ -253,14 +238,17 @@ char *p;
 	debug("Init");
 
 
-    /* no need to pre-load this
-	// Initialize the UI library (ie load the dll)
+    /* no need to pre-load this */
+	/* Initialize the UI library (ie load the dll) */
+	/*
 	if (!A4GLUI_initlib()) {
 		printf("4gllib: Error opening UI library (AUBITGUI=%s)\n",acl_getenv("AUBITGUI"));
 		exit(1);
 	}
+    */
 
-	// Do any startup required by the library
+	/* Do any startup required by the library */
+    /*
 	A4GLUI_ui_init(nargs,argv);
     */
 
@@ -611,8 +599,9 @@ set_intr(void)
 	int_flag=TRUE;
 	errno=-1;
 
-// CHECKME
-	//ungetch(A4GLKEY_CANCEL);
+/* CHECKME
+	ungetch(A4GLKEY_CANCEL);
+    */
 
 	set_abort(1);
 	/* Reset signal */
@@ -929,5 +918,5 @@ fgl_error (int a, char *s, int err, int stat)
   return 0;
 }
 
-// ================================= EOF =============================
+/* ================================= EOF ============================= */
 

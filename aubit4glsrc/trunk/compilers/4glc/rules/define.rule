@@ -85,7 +85,7 @@ push_associate($<str>4,$<str>8);
 push_type(0,0,$<str>8);
 }
 OF dtype_ident  {
-    //void pop_associate (char *a);
+    /* void pop_associate (char *a); */
 	pop_associate(0);
 
 }
@@ -146,7 +146,7 @@ dtype	:
 		|	record_variable 
 		|	CHAR {push_type("char","1",0);}
 		|	CHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-//char buff[80];
+/* char buff[80]; */
 if (atoi($<str>3)==4) {
 	addmap("size=4","----",curr_func,yylineno,infilename);
 }

@@ -23,32 +23,28 @@ VARIABLE A4GL_FORMTYPE
 * func-name param-type param-name ... -> returns"
 *
 
-//
-// ------ Function calls from lib/libform/form_xdr/readforms.c ------
-//
+/*  ------ Function calls from lib/libform/form_xdr/readforms.c ------ */
 
-//this should be probably removed, together with function in readforms.c:
-//dump_srec (struct s_form_dets * fd)
+/* this should be probably removed, together with function in readforms.c: */
+/* dump_srec (struct s_form_dets * fd) */
 dump_srec void* fd -> void
 
-//void comments (struct struct_scr_field *fprop);
+/* void comments (struct struct_scr_field *fprop); */
 comments void* fprop -> void
 
-//void set_default_form (struct s_form_attr *form)
+/* void set_default_form (struct s_form_attr *form) */
 set_default_form void* form -> void
 
-//struct s_form_dets * read_form (char *fname, char *formname)
+/* struct s_form_dets * read_form (char *fname, char *formname) */
 read_form char* fname,char* formname -> void*
 
-//int has_bool_attribute (struct struct_scr_field *f, int bool)
+/* int has_bool_attribute (struct struct_scr_field *f, int bool) */
 has_bool_attribute void* f,int bool -> int
 
-//int check_field_for_include (char *s, char *inc, int dtype)
+/* int check_field_for_include (char *s, char *inc, int dtype) */
 check_field_for_include char* s,char* inc,int dtype -> int
 
-//
-// -------- Function calls from formwrite2.c ------------------------
-//
+/*  -------- Function calls from formwrite2.c ------------------------ */
 
 /**
  * Initialize the default values of the last element from the field(s)
@@ -57,7 +53,7 @@ check_field_for_include char* s,char* inc,int dtype -> int
  * It leaves the global field description pointer pointing to the new array
  * element.
  */
-//void init_fld (void)
+/* void init_fld (void) */
 init_fld -> void
 
 /**
@@ -66,13 +62,13 @@ init_fld -> void
  * @param s field tag name
  * @return -1 if not found, the index in the array otherwise
  */
-//int find_field (char *s)
+/* int find_field (char *s) */
 find_field char* s -> int
 
 /**
  * Add / Initialize a new screen array
  */
-//void add_srec(void)
+/* void add_srec(void) */
 add_srec -> void
 
 /**
@@ -81,7 +77,7 @@ add_srec -> void
  *  @param s The screen array name
  *  @param a The array size
  */
-//void set_dim_srec (char *s, int a)
+/* void set_dim_srec (char *s, int a) */
 set_dim_srec char* s,int a -> void
 
 /**
@@ -89,7 +85,7 @@ set_dim_srec char* s,int a -> void
  *
  * @param s The string to be lowered
  */
-//void make_downshift(char *s)
+/* void make_downshift(char *s) */
 make_downshift char* s -> void
 
 /**
@@ -100,7 +96,7 @@ make_downshift char* s -> void
  * section )
  * @param f The field attributes filled in a struct (struct_scr_field)
  */
-//void set_field (char *s, struct struct_scr_field *f)
+/* void set_field (char *s, struct struct_scr_field *f) */
 set_field char* s,void* f -> void
 
 /**
@@ -118,7 +114,7 @@ set_field char* s,void* f -> void
  * @param delim
  * @param label The screen label
  */
-//int add_field(char *s, int x, int y, int wid, int scr, int delim,char *label)
+/* int add_field(char *s, int x, int y, int wid, int scr, int delim,char *label) */
 add_field char* s,int x,int y,int wid,int scr,int delim,char* label -> int
 
 /**
@@ -127,7 +123,7 @@ add_field char* s,int x,int y,int wid,int scr,int delim,char* label -> int
  * @param s table name
  * @param a table alias
  */
-//void add_table (char *s, char *a)
+/* void add_table (char *s, char *a) */
 add_table char* s,char* a -> void
 
 /**
@@ -137,13 +133,13 @@ add_table char* s,char* a -> void
  * @param col The column name or '*'
  * @param thru
  */
-//void add_srec_attribute (char *tab, char *col, char *thru)
+/* void add_srec_attribute (char *tab, char *col, char *thru) */
 add_srec_attribute char* tab,char* col,char* thru -> void
 
 /**
  * Write the frm file with the information parsed from the .per to memory
  */
-//void write_form (void)
+/* void write_form (void) */
 write_form -> void
 
 /**
@@ -152,14 +148,14 @@ write_form -> void
  * @col The column name
  * @tab The table name
  */
-//int getdatatype(char *col,char *tab)
+/* int getdatatype(char *col,char *tab) */
 getdatatype char* col,char* tab -> int
 
 /**
  * Intialize the memory needed to compile a 4gl screen form in order to
  * the lexical and sintatic parser to load the information found
  */
-//void init_form(void)
+/* void init_form(void) */
 init_form -> void
 
 /**
@@ -172,7 +168,7 @@ init_form -> void
  * @param type The attribute type
  * @param str The attribute to add
  */
-//void add_str_attr(struct struct_scr_field *f,int type,char *str)
+/* void add_str_attr(struct struct_scr_field *f,int type,char *str) */
 add_str_attr void* f,int type,char* str -> void
 
 /**
@@ -183,16 +179,16 @@ add_str_attr void* f,int type,char* str -> void
  * @param type The type of the boolean attribute:
  *
  */
-//void add_bool_attr(struct struct_scr_field *f,int type)
+/* void add_bool_attr(struct struct_scr_field *f,int type) */
 add_bool_attr void* f,int type -> void
 
-// ------------- for decompile.c and gtk_4gl.c ------------------------
+/*  ------------- for decompile.c and gtk_4gl.c ------------------------ */
 
 * did not work, but still needed for fdecompile:
-//int isolated_xdr_struct_form( XDR xdrp, struct struct_form the_form)
+/* int isolated_xdr_struct_form( XDR xdrp, struct struct_form the_form) */
 isolated_xdr_struct_form void* xdrp,void* the_form -> int
 
-// ============================== EOF =================================
+/*  ============================== EOF ================================= */
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
+# $Id: helper.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -60,8 +60,6 @@
 =====================================================================
 */
 
-
-//extern char *A4GLSQL_get_currdbname(void);
 void 		strip_pc			(char *s,char*d);
 int 		extract_numeral		(char *s);
 
@@ -81,10 +79,6 @@ LIBEXPORT int	aclfgl_get_info		(int np);
                     Variables definitions
 =====================================================================
 */
-
-//LIBPRIVATE char last_info[256]="";
-//LIBPRIVATE char last_type[256]="";
-//LIBPRIVATE char last_data[256]="";
 
 LIBPRIVATE int used_value=0;
 
@@ -333,7 +327,6 @@ int_get_info_form(char *ptr,char *info)
 LIBPRIVATE int
 int_get_info_connection(char *ptr,char *info)
 {
-//  struct s_form_dets *p;
   int params;
   int a;
 
@@ -349,7 +342,7 @@ int_get_info_connection(char *ptr,char *info)
   switch (a)
   {
     case 1:
-      push_char(A4GLSQL_get_currdbname());  // warning: passing arg 1 of `push_char' makes pointer from integer without a cast
+      push_char(A4GLSQL_get_currdbname());
       break;
     case 0:
       exitwith("Invalid Window info request");
@@ -500,7 +493,6 @@ int_get_info(char *type,char *ptr,char *info)
     case 2 : return int_get_info_form(ptr,info);
     case 3 : return int_get_info_connection(ptr,info);
     case 4 : return int_get_info_statement(ptr,info);
-    //case 5 : return int_get_info_cursor(ptr,info);
     case 5 : return int_get_info_cursor();
   }
 
@@ -753,4 +745,4 @@ aclfgl_fgl_prtscr(int n)
 	return 0;
 }
 
-// =================================== EOF ==============================
+/* =================================== EOF ============================= */

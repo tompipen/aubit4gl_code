@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.15 2002-06-02 06:52:38 afalout Exp $
+# $Id: sqlex.c,v 1.16 2002-06-06 12:31:29 afalout Exp $
 #
 */
 
@@ -80,7 +80,7 @@
 	    #define __ODBC_DEFINED__
 		#include <incl/cli/infxcli.h>
 		#include <incl/cli/infxsql.h>
-		//#include <incl/cli/sqlucode.h>
+		/* #include <incl/cli/sqlucode.h> */
 	#endif
 
 	#ifdef PGODBC
@@ -91,8 +91,9 @@
 	#endif
 
     #ifndef __ODBC_DEFINED__
-        //default for tesing, when we don't use makefile we will not have -Dxxx
-		// unixODBC headers:
+        /* default for tesing, when we don't use makefile we will not have -Dxxx
+		 unixODBC headers:
+         */
 		#include <sql.h>
 		#include <sqlext.h>
 		#include <odbcinst.h>
@@ -102,10 +103,10 @@
 
 #endif
 
-#include "a4gl_dbform.h" //struct s_form_dets
+#include "a4gl_dbform.h" 		/* struct s_form_dets */
 #include "a4gl_aubit_lib.h"
-// stack.h will eventually include stdlib.h, which uses getenv(), so
-// we need to set GETENV_OK and only then include debug.h
+/* stack.h will eventually include stdlib.h, which uses getenv(), so
+ we need to set GETENV_OK and only then include debug.h */
 #include "a4gl_stack.h"
 #define GETENV_OK
 #include "a4gl_debug.h"
@@ -132,21 +133,13 @@
 =====================================================================
 */
 
-struct xxsql_options //struct sql_options
+struct xxsql_options 		/* struct sql_options */
   {
     char optname[30];
     char param[30];
     long opt_id;
     long param_id;
   };
-
-/*
-struct str_resource
-  {
-    char name[20];
-    char value[40];
-  };
-*/
 
 struct
   {
@@ -155,11 +148,10 @@ struct
   }
 alloc_mem[MEMSIZE];
 
-//static char buff[30000];
 int line[80];
 FILE *f = 0;
 char invalid[] = "<Invalid>";
-//char *find_str_resource (char *s);
+
 
 /*
 =====================================================================
@@ -202,7 +194,6 @@ int set_blob_data(HSTMT hstmt);
 	int get_regkey (char *key, char *data, int n);
 	void createkey ();
 	HKEY newkey = 0;
-	//void get_anykey (int whence, char *key, char *key2, char *data, int n);
 	void get_anykey (HKEY whence, char *key, char *key2, char *data, int n);
 	void MBox (char *s, char *fmt,...);
 	void set_default_logon ();
@@ -237,12 +228,12 @@ int set_blob_data(HSTMT hstmt);
 	  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
 	{"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION, SQL_TXN_REPEATABLE_READ},
 	  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
-	//{"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING},
+	/* {"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING}, */
 	  {"", 0, 0, 0}
 	};
 
 
-	//struct sql_options stmt_options[] =
+	/* struct sql_options stmt_options[] = */
 	/** Statement options memory table - Windows version */
 	struct xxsql_options stmt_options[] =
 	{
@@ -270,9 +261,9 @@ int set_blob_data(HSTMT hstmt);
 	  {"", 0, 0, 0}
 	};
 
-#else //#ifdef __CYGWIN__
+#else /* #ifdef __CYGWIN__ */
 
-	//struct sql_options conn_options[] =
+	/* struct sql_options conn_options[] = */
 	/** Connection options memory table - unix version */
 	struct xxsql_options conn_options[] =
 	{
@@ -294,12 +285,12 @@ int set_blob_data(HSTMT hstmt);
 	  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
 	{"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION, SQL_TXN_REPEATABLE_READ},
 	  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
-	//{"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING},
+	/* {"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING}, */
 	  {"", "0", 0, 0}
 	};
 
 
-	//struct sql_options stmt_options[] =
+	/* struct sql_options stmt_options[] = */
 	/** Statement options memory table - unix version */
 	struct xxsql_options stmt_options[] =
 	{
@@ -329,7 +320,7 @@ int set_blob_data(HSTMT hstmt);
 	};
 
 
-#endif //#ifdef __CYGWIN__
+#endif /* #ifdef __CYGWIN__ */
 
 
 /*
@@ -636,8 +627,8 @@ generate_using_for_dmy (char *s, int size)
 void *
 allocate_mem (int size, void *parent)
 {
-//  void *ptr;
-  int a;
+int a;
+  
   a = alloc_find_ptr (0);
 
   if (a == -1)
@@ -796,9 +787,7 @@ readfile_for_preload (char *f)
 int
 get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 {
-//  FILE *f;
-  int cnt;
-
+int cnt;
 
   debug("blob=%p",blob);
   debug("blob->where=%c",blob->where);
@@ -837,7 +826,6 @@ get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 	{
 	  free (blob->ptr);
 	}
-      //long get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
 	  cnt = get_blob_data_int (0, hstmt, colno, (char **)&blob->ptr);
 
     }
@@ -962,8 +950,7 @@ set_blob_data(HSTMT hstmt)
 int
 set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob)
 {
-//  FILE *f;
-  int cnt;
+int cnt;
 
 
   debug("blob=%p",blob);
@@ -1063,4 +1050,4 @@ return 0;
 }
 
 
-// =============================== EOF ===============================
+/* =============================== EOF =============================== */

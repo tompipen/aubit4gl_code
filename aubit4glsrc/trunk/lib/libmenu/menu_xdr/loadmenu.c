@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.11 2002-06-02 06:52:38 afalout Exp $
+# $Id: loadmenu.c,v 1.12 2002-06-06 12:31:28 afalout Exp $
 #*/
 
 /**
@@ -468,9 +468,9 @@ endis_menuitems (int en_dis, ...)
 
 #ifdef DUPLICATED_FUNCTIONS
 
-//------------------duplicate from gtk_4gl.c:
+/* ------------------duplicate from gtk_4gl.c: */
 
-// The 4gl current window
+/* The 4gl current window */
 GtkWindow *currwindow = 0;
 
 /**
@@ -484,7 +484,7 @@ GtkWindow *get_curr_win_gtk (void)
   return currwindow;
 }
 
-//-------------------duplicate from window.c:
+/* -------------------duplicate from window.c: */
 
 /**
  * Gets the width of the current window (in GTK GUI mode).
@@ -501,7 +501,7 @@ int get_curr_width_gtk()
 }
 
 
-//------------------- duplicate from gtk_4gl.c :
+/* ------------------- duplicate from gtk_4gl.c : */
 
 void gui_run_til_no_more (void)
 {
@@ -517,7 +517,7 @@ void gui_run_til_no_more (void)
 }
 
 
-//-------------------- duplicate from cr_funcs.c :
+/* -------------------- duplicate from cr_funcs.c : */
 
 /**
  * Create a pixmap from the information stored in a file.
@@ -546,7 +546,7 @@ make_pixmap (char *filename)
 }
 
 
-// for mdecompile:
+/* for mdecompile: */
 int
 isolated_xdr_decompile(struct menu_list the_menus,XDR xdrp,FILE *f )
 {

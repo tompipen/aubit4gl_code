@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.12 2002-06-05 07:04:56 afalout Exp $
+# $Id: compile_perl.c,v 1.13 2002-06-06 12:31:28 afalout Exp $
 #
 */
 
@@ -52,9 +52,7 @@
 #include "a4gl_constats.h"
 #include "a4gl_prompt.h"
 #include "a4gl_aubit_lib.h"
-//#ifdef IS_THIS_RIGHT_OR_WE_NEED_print_protos_perl.h
-	#include "../lex_c/a4gl_lex_print_protos_c.h"
-//#endif
+#include "../lex_c/a4gl_lex_print_protos_c.h"
 #include "a4gl_4glc_4glc.h"
 #include "a4gl_debug.h"
 
@@ -76,7 +74,7 @@ extern struct rep_structure rep_struct;
 extern struct pdf_rep_structure pdf_rep_struct;
 extern struct form_attr form_attrib;
 extern int menu_cnt;
-extern int ccnt;		// Block counter
+extern int ccnt;				/* Block counter */
 extern char mmtitle[132][132];
 
 extern struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
@@ -149,7 +147,7 @@ void dump_unwind(void);
 =====================================================================
 */
 
-//this one is used only form this file
+/* this one is used only form this file */
 static void
 printc(char* fmt,... )
 {
@@ -159,7 +157,7 @@ va_list ap;
 	real_lex_printc(fmt,&ap);
 }
 
-//this oen gets called freom API
+/* this oen gets called freom API */
 void
 lex_printc(char* fmt,... )
 {
@@ -178,10 +176,12 @@ va_list ap;
  */
 static void
 real_lex_printc(char *fmt, va_list *ap)
-//void
-//printc (char *fmt, ...)
+/*
+void
+printc (char *fmt, ...)
+*/
 {
-//  va_list args;
+/*  va_list args; */
 char buff[40960];
 char *ptr;
 int a;
@@ -195,7 +195,7 @@ char buff2[40960];
 	if (outfile == 0)
 	    return;
 	
-	//va_start (args, fmt);
+	/* va_start (args, fmt); */
 	vsprintf (buff, fmt, *ap);
 
 	debug("buff in lib=%s\n",buff);
@@ -205,7 +205,7 @@ char buff2[40960];
 
 	if (acl_getenv ("INCLINES"))
     {
-    	//vsprintf (buff, fmt, args);
+    	/* vsprintf (buff, fmt, args); */
         for (a = 0; a < strlen (buff); a++)
 		{
 			if (buff[a] == '\n')
@@ -218,7 +218,7 @@ char buff2[40960];
 				else
                 {
 					fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
-					//  outputfilename);
+					/*  outputfilename); */
                 }
 			}
 			else
@@ -230,7 +230,7 @@ char buff2[40960];
 	}
 	else
     {
-		//vsprintf (buff, fmt, args);
+		/* vsprintf (buff, fmt, args); */
 		ptr = strtok (buff, "\n");
 
 		while (ptr)
@@ -302,7 +302,7 @@ printcomment (char *fmt,...)
     }
 
 #else
-	// Do nothing...
+	/* Do nothing... */
 #endif
 }
 
@@ -362,7 +362,7 @@ open_outfile (void)
   fprintf(outfile,"package aubit4gl_pl;\n");
   if (acl_getenv ("GTKGUI"))
     fprintf (outfile, "require aubit4gl_gtk\n");
-//  fprintf (outfile, "$aubit_compiler_ser=\"%s\";\n", get_serno ());
+/*  fprintf (outfile, "$aubit_compiler_ser=\"%s\";\n", get_serno ()); */
   fprintf (outfile, "$aubit_module_name=\"%s.4gl\";\n", outputfilename);
   hfile = mja_fopen (h, "w");
 }
@@ -584,7 +584,6 @@ print_exit_loop (int type, int n)
  * @return
  */
 void
-//print_rep_ret (void)
 print_rep_ret (int report_cnt)
 {
   printc ("goto report%d_ctrl;\n\n", report_cnt);
@@ -987,10 +986,10 @@ print_bind_pop1 (char i)
 static int
 print_arr_bind (char i)
 {
-  int a;
-//  int dtype;
+int a;
+
   debug ("/* %c */\n", i);
-  //dump_vars ();
+  /* dump_vars (); */
   if (i == 'i')
     {
       printc ("\n");
@@ -1055,9 +1054,8 @@ print_constr (void)
 static int
 print_field_bind_constr (void)
 {
-//  char tabname[40];
-//  char colname[40];
-  int a;
+int a;
+  
   for (a = 0; a < constr_cnt; a++)
     {
       if (a > 0)
@@ -1082,10 +1080,9 @@ print_field_bind_constr (void)
 int
 print_param (char i)
 {
-  int a;
-//  char buff[256];
+int a;
+
   debug ("Expanding binding.. - was %d entries", fbindcnt);
-  //void 	expand_bind 		(struct binding * bind, int btype, int cnt);
   expand_bind ((void *)&fbind, 'F', fbindcnt);
   debug ("Expanded - now %d entries", fbindcnt);
   if (i == 'r')
@@ -1118,11 +1115,9 @@ print_param (char i)
 int
 print_bind (char i)
 {
-  int a;
-//  int dtype;
-
-  int bcnt;
-  char name[256];
+int a;
+int bcnt;
+char name[256];
 
   if (i == 'i')
     {
@@ -1221,7 +1216,6 @@ print_bind (char i)
 
   if (i == 'N')
     {
-      //void 	expand_bind 		(struct binding * bind, int btype, int cnt);
 	  expand_bind ((void *)&nullbind, 'N', nullbindcnt);
       printc ("\n");
       printc ("struct BINDING nullbind[]={\n /* nullbind %d*/", nullbindcnt);
@@ -1267,7 +1261,6 @@ print_bind (char i)
   if (i == 'O')
     {
       printc ("\n");
-      //void 	expand_bind 		(struct binding * bind, int btype, int cnt);
 	  expand_bind ( (void *)&ordbind, 'O', ordbindcnt);
       printc ("static struct BINDING _ordbind[]={\n");
       if (ordbindcnt == 0)
@@ -1365,7 +1358,7 @@ print_screen_mode (int n)
  */
 void 
 print_start_server (char * port, char *funclist)
-//void print_start_server (int port, char *funclist)
+/* void print_start_server (int port, char *funclist) */
 {
   printc ("server_run(%s+0x2000000);", port);
 
@@ -1859,7 +1852,7 @@ print_display_line (void)
  */
 void 
 print_display_by_name (char * attr)
-//void print_display_by_name (int attr)
+/* void print_display_by_name (int attr) */
 {
   int a;
   printc ("{\n");
@@ -1926,7 +1919,7 @@ print_display_form (char *s, char *a)
  * @return
  */
 void print_display_array_p1 (char *arrvar, char *srec, char *scrollfield,char *attr)
-//void print_display_array_p1 (char *arrvar, char *srec, char *attr)
+/* void print_display_array_p1 (char *arrvar, char *srec, char *attr) */
 {
   int cnt;
   printcomment ("/* Display array */\n");
@@ -2376,8 +2369,6 @@ char *
 print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
 		   char *attr)
 {
-//  int ccc;
-//  char buff[132];
   static char buff2[256];
   int cnt;
   printc ("/*");
@@ -2498,7 +2489,6 @@ print_linked_cmd (int type, char *var)
 {
   char tabname[64];
   char pklist[256];
-//  int no;
   int ni;
   if (last_var_is_linked (tabname, pklist))
     {
@@ -3702,10 +3692,12 @@ print_declare_associate_2 (char *variable, char *size, char *n)
 void
 print_define_char (char *var, int size, int isstatic_extern)
 {
-  //if (isstatic_extern == 1)
-  //printc ("static ");
-  //if (isstatic_extern == 2)
-  //printc ("extern ");
+  /*
+  if (isstatic_extern == 1)
+  printc ("static ");
+  if (isstatic_extern == 2)
+  printc ("extern ");
+  */
   if (!printing_record)
     {
       printc ("my $%s;\n", var, size);
@@ -3727,11 +3719,12 @@ print_define (char *varstring, int isstatic_extern)
 {
   char dtype[32];
   char vname[32];
-  //if (isstatic_extern == 1)
-  //printc ("static ");
-  //if (isstatic_extern == 1)
-//
-  //printc ("extern ");
+  /*
+  if (isstatic_extern == 1)
+  printc ("static ");
+  if (isstatic_extern == 1)
+  printc ("extern ");
+  */
   sscanf (varstring, "%s %s", dtype, vname);
   if (!printing_record)
     printc ("my $%s;\n", vname);
@@ -3748,10 +3741,12 @@ void
 print_start_record (int isstatic_extern, char *vname)
 {
   printing_record++;
-  //if (isstatic_extern == 1)
-  //printc ("static ");
-  //if (isstatic_extern == 2)
-  //printc ("extern ");
+  /*
+  if (isstatic_extern == 1)
+  printc ("static ");
+  if (isstatic_extern == 2)
+  printc ("extern ");
+  */
   printh ("struct a4glStruct_%s => {\n", vname);
 }
 
@@ -3883,9 +3878,9 @@ return buff;
 void
 print_set_langfile (char *s)
 {
-	//  printc ("set_lang_file(%s);\n", s);
+	/*  printc ("set_lang_file(%s);\n", s); */
     exitwith ("print_set_langfile not implemented");
 }
 
-// ================================ EOF ==============================
+/* ================================ EOF ============================== */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
+# $Id: funcs_d.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -344,19 +344,13 @@ char fm1[64],fm2[64];
 char *ptr1,*ptr;
 char *ptr2;
 char *p;
-//char arr_chr[]="*&#<,.-+()$";
-//int isprinthead[20];
-//int isprinttail[20];
 char canfloat_head[]="*-+($";
-//char canfloat_tail[]=")";
 char rep_digit[]="*&#<-+()$";
-//char neg[]="()-";
 char buff[800];
 int isneg=0;
 int a,b;
 int isprnt=0;
 double ad;
-//int k;
 
 	debug("In using...");
 	for (a=0;a<MAXPNT;a++) {pnt[a]=0;}
@@ -476,5 +470,5 @@ double ad;
 	debug("str=%s",str);
 }
 
-// ============================== EOF ==========================
+/* ============================== EOF ========================== */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
+# $Id: pointers.c,v 1.7 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -163,9 +163,9 @@ strcmpare(const void *a,const void *b)
 void
 action (const void *nodep, const VISIT which, const int depth)
 {
-  struct s_node *datap;
-  char buff[800];
-//  void *val;
+struct s_node *datap;
+char buff[800];
+
   memset (buff, ' ', 800);
   buff[depth * 4] = 0;
   switch (which)
@@ -597,7 +597,7 @@ tfind(char *key, register node **rootp, int (*compar)())
     }
     return (node *)0;
 }
-#endif //#ifdef WIN32
+#endif /* #ifdef WIN32 */
 
-// ============================== EOF ============================
+/* ============================== EOF ============================ */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
+# $Id: string.c,v 1.6 2002-06-06 12:31:27 afalout Exp $
 #
 */
 
@@ -52,8 +52,6 @@
 #include <string.h>
 #include <locale.h>
 #include <time.h>
-//#include <unistd.h>
-//#include <pwd.h>
 
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
@@ -95,7 +93,7 @@ void
 string_set(char *ptr,char *b,int size)
 {
 	strncpy(ptr,b,size);
-        ptr[size]=0; // MJA 16.08.2001
+        ptr[size]=0; /* MJA 16.08.2001 */
 	pad_string(ptr,size);
 	#ifdef DEBUG
 	/*  {        debug("string_set to : '%s' ",ptr);  } */
@@ -112,8 +110,8 @@ string_set(char *ptr,char *b,int size)
 char *
 new_string(int a)
 {
-	char *ptr;
-//	char *ptr2;
+char *ptr;
+
 	ptr=(char *)acl_malloc(a+1,"New string"); /* 1 for NULL */
 	return ptr;
 }
@@ -207,5 +205,5 @@ mja_strncmp (char *str1, char *str2, int n)
   return 0;
 }
 
-// =================================== EOF ==============================
+/* =================================== EOF ============================ */
 

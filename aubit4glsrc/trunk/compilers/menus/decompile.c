@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.7 2002-06-01 11:54:59 afalout Exp $
+# $Id: decompile.c,v 1.8 2002-06-06 12:31:26 afalout Exp $
 #*/
 
 /**
@@ -53,9 +53,11 @@
 #include "a4gl_aubit_lib.h"
 
 
-//here only to satisfy libMENU_XDR, when linked with mdecompile executable.
-//Should be removed once libMENU_ is dlopen() enabled:
-//char *outputfilename;
+/*
+here only to satisfy libMENU_XDR, when linked with mdecompile executable.
+Should be removed once libMENU_ is dlopen() enabled:
+char *outputfilename;
+*/
 
 /*
 =====================================================================
@@ -65,9 +67,6 @@
 
 void dump_options(menu *mm);
 void dump_menu(menu_list *m);
-
-//in API_menu.c
-//extern int 	isolated_xdr_decompile	(struct menu_list the_menus,XDR xdrp,FILE* f);
 
 /*
 =====================================================================
@@ -101,8 +100,10 @@ int a = 0;
 
 	memset(&the_menus,0,sizeof(menu_list));
 
-    //int 	isolated_xdr_decompile			(void* the_menus,void* xdrp,void* f);
-	//int 	isolated_xdr_decompile			(struct menu_list the_menus,XDR xdrp,FILE* f);
+    /*
+	int 	isolated_xdr_decompile			(void* the_menus,void* xdrp,void* f);
+	int 	isolated_xdr_decompile			(struct menu_list the_menus,XDR xdrp,FILE* f);
+    */
     isolated_xdr_decompile(&the_menus,&xdrp,f);
 
 	if (!a) {
@@ -167,4 +168,4 @@ menu_option_item *o;
 }
 
 
-// ============================= EOF ==================================
+/* ============================= EOF ================================== */

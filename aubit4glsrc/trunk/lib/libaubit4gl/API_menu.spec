@@ -24,39 +24,35 @@ VARIABLE A4GL_MENUTYPE
 
 
 
-//
-// ------- functions from lib/libmenu/menu_xdr/loadmenu.c
-//
+/* ------- functions from lib/libmenu/menu_xdr/loadmenu.c */
 
-//int isolated_xdr_decompile(struct menu_list the_menus,XDR xdrp,FILE *f )
+/* int isolated_xdr_decompile(struct menu_list the_menus,XDR xdrp,FILE *f ) */
 isolated_xdr_decompile void* the_menus,void* xdrp,void* f -> int
 
-//char *mn_caption(char *s)
+/* char *mn_caption(char *s) */
 
-//char *mn_help(char *s)
+/* char *mn_help(char *s) */
 
-//static GtkWidget * make_menus (GtkWidget *menubar, GtkWidget * parent, menu_list * xdrm, char *id, int type, void *handler)
+/* static GtkWidget * make_menus (GtkWidget *menubar, GtkWidget * parent, menu_list * xdrm, char *id, int type, void *handler) */
 
-//static GtkWidget * create_menu (menu_list *m, char *id, int mode, void *handler)
+/* static GtkWidget * create_menu (menu_list *m, char *id, int mode, void *handler) */
 
-//GtkWidget * load_menu (char *fname, char *menu_id, int mode, void *handler)
+/* GtkWidget * load_menu (char *fname, char *menu_id, int mode, void *handler) */
 load_menu char* fname,char* menu_id,int mode,void* handler -> void*
 
-//show_menu (char *menuid, void *handler)
+/* show_menu (char *menuid, void *handler) */
 
-//void endis_menuitems (int en_dis, ...)
+/* void endis_menuitems (int en_dis, ...) */
 
-//
-// ------- functions from lib/libmenu/menu_xdr/menuwrite.c
-//
+/*  ------- functions from lib/libmenu/menu_xdr/menuwrite.c */
 
-//void error_with (char *s, char *a, char *b)
+/* void error_with (char *s, char *a, char *b) */
 
-//void write_menu ()
+/* void write_menu () */
 write_menu -> void
 
 
-// ============================ EOF ============================
+/*  ============================ EOF ============================   */
 
 
 

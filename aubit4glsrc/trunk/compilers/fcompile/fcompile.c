@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.17 2002-05-26 06:26:48 afalout Exp $
+# $Id: fcompile.c,v 1.18 2002-06-06 12:31:26 afalout Exp $
 #*/
 
 /**
@@ -44,7 +44,7 @@
 
 #include <stdio.h>
 
-//here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN
+/* here becaus of struct_form: FIXME - fcompile should not depend on RPCGEN */
 #include "a4gl_formxw.h"
 #include "a4gl_compiler.h"
 #include "a4gl_fcomp_fcompile.h"
@@ -145,14 +145,12 @@ static bname (char *str, char *str1, char *str2)
 int 
 main (int argc, char *argv[])
 {
-  char a[128];
-  char b[128];
-  char c[128];
-  char d[128];
-//  FILE *fopn;
+char a[128];
+char b[128];
+char c[128];
+char d[128];
 
-
-	//load settings from config file(s):
+	/* load settings from config file(s): */
 	build_user_resources();
 
 
@@ -200,7 +198,7 @@ main (int argc, char *argv[])
 	      strcpy (outputfilename, d);
 	    }
 
-//		printf ("Output to %s \n", outputfilename);
+/* 	printf ("Output to %s \n", outputfilename); */
 
       	yyin = mja_fopen (c, "r");
 
@@ -290,5 +288,5 @@ yywrap(void)
   return 1;
 }
 
-// ================================== EOF =============================
+/* ================================== EOF ============================= */
 

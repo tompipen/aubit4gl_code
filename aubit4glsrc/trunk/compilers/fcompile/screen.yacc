@@ -40,8 +40,6 @@ extern int scr;
 int in_comment;
 long fileseek=0;
 extern struct_form the_form;
-//extern int maxcol;
-//extern int maxline;
 extern int newscreen;
 extern int fldno;
 extern int fstart;
@@ -171,7 +169,7 @@ op_size :
 	l=atoi($<str>2);
         if (c>the_form.maxcol) the_form.maxcol=c;
         if (l>the_form.maxline) the_form.maxline=l;
-	//printf("Set to %d %d\n",the_form.maxcol,the_form.maxline);
+	/* printf("Set to %d %d\n",the_form.maxcol,the_form.maxline); */
 }
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dim.c,v 1.11 2002-05-30 06:25:12 afalout Exp $
+# $Id: dim.c,v 1.12 2002-06-06 12:31:12 afalout Exp $
 #*/
 
 /**
@@ -38,9 +38,8 @@
 =====================================================================
 */
 
-/* #include <strings.h> */
 #include <string.h>
-#include <stdlib.h> 			//realloc()
+#include <stdlib.h> 			/* realloc() */
 
 #include "a4gl_4glc_4glc.h"
 #include "a4gl_debug.h"
@@ -121,12 +120,9 @@ int dimalloc = 0;
 static void
 dim_add (int a, char *s1, char *s2, char *s3)
 {
-//  char *ptr1;
-//  char *ptr2;
-//  char *ptr3;
-  struct s_dimentry *ent;
-  struct s_dimitem *itm;
-  struct s_dimitem *itm2;
+struct s_dimentry *ent;
+struct s_dimitem *itm;
+struct s_dimitem *itm2;
 
   debug ("dim_add %d %p %p %p\n", a, s1, s2, s3);
 
@@ -389,4 +385,4 @@ push_dim (char *a)
 }
 
 
-// ================================ EOF =============================
+/* ================================ EOF ============================= */

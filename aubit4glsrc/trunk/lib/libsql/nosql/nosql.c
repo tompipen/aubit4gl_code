@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.17 2002-06-01 11:55:00 afalout Exp $
+# $Id: nosql.c,v 1.18 2002-06-06 12:31:28 afalout Exp $
 #*/
 
 /**
@@ -61,7 +61,6 @@
 =====================================================================
 */
 
-//typedef unsigned char UCHAR;
 char lasterrorstr[1024] = "";
 
 /*
@@ -73,8 +72,7 @@ char lasterrorstr[1024] = "";
 void local_exitwith (char *s);
 char *find_str_resource (char *s);
 struct s_sid *find_prepare (char *pname, int mode);
-//void A4GLSQL_set_status (int a, int sql);
-extern char * global_A4GLSQL_get_sqlerrm (void); //in API_sql.c
+extern char * global_A4GLSQL_get_sqlerrm (void); /* in API_sql.c */
 
 
 /*
@@ -135,7 +133,7 @@ A4GLSQL_get_status (void)
 char *
 A4GLSQL_get_sqlerrm (void)
 {
-	return global_A4GLSQL_get_sqlerrm (); // warning: return makes pointer from integer without a cast
+	return global_A4GLSQL_get_sqlerrm ();
 }
 
 /**
@@ -157,11 +155,13 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 int
 A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
 {
-  //local_exitwith ("Could not make ODBC connection - noODBC build");
-  //FIXME: do we want to show some message here????
+  /*
+  local_exitwith ("Could not make ODBC connection - noODBC build");
+  FIXME: do we want to show some message here????
 
-  //FIXME: programs that do not use DATBASE or CONNECT or SESSION,
-  //should not call this function, but they DO!
+  FIXME: programs that do not use DATBASE or CONNECT or SESSION,
+  should not call this function, but they DO!
+  */
 
   return 0;
 }
@@ -440,6 +440,6 @@ local_exitwith (char *s)
 
 }
 
-// =============================== EOF ==============================
+/* =============================== EOF ============================== */
 
 

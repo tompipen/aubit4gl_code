@@ -18,7 +18,7 @@ where_upd : {strcpy($<str>$,"");}
 }
 	| WHERE search_condition 
 {
-pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); 
+pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!");
 sprintf($<str>$," %s %s",$<str>1,$<str>2);
 }
 	;
@@ -144,7 +144,7 @@ sprintf($<str>$,"0,0");
 } | 
 	INTO {
 	debug("FETCH INTO  ...");
-	//start_bind('i',0,-1);
+	/* start_bind('i',0,-1); */
     start_bind('i',0);
 }
     ibind_var_list 
@@ -161,13 +161,15 @@ sprintf($<str>$,"0,0");
 } | 
 	INTO {
 	debug("FETCH INTO  ...");
-	//start_bind('i',0,-1);
+	/* start_bind('i',0,-1); */
     start_bind('i',0);
 }
         ibind_var_list {
-//int ni;
-//ni=print_bind('i');
-//sprintf($<str>$,"%d,ibind",ni);
+/*
+int ni;
+ni=print_bind('i');
+sprintf($<str>$,"%d,ibind",ni);
+*/
 }
 ;
 
@@ -301,14 +303,14 @@ sprintf($<str>$,"Schema Element");
 sprintf($<str>$,"Set Database");
 }
 	| delete_statement_position {
-//int c;
+
 lex_printcomment("/*  delete 1 */\n");
 
 print_exec_sql_bound($<str>1);
 sprintf($<str>$,"Delete where current...");
 } 
 	| delete_statement_search {
-//int c;
+
 lex_printcomment("/*  delete 2 */\n");
 
 print_exec_sql_bound($<str>1);
@@ -319,7 +321,7 @@ sprintf($<str>$,"Fetch");
 lex_printcomment("/*  fetch */\n");
 } 
 	| insert_statement {
-//int c;
+
 lex_printcomment("/*  insert */\n");
 
 print_exec_sql_bound($<str>1);
@@ -334,7 +336,7 @@ sprintf($<str>$,"insert");
 	sprintf($<str>$,"select");
 } 
 	| update_statement {
-//int c;
+
 print_exec_sql_bound($<str>1);
 sprintf($<str>$,"update");
 } 
@@ -998,7 +1000,7 @@ select_statement:
 	SELECT op_ad select_list {debug("Got select list...\n");}
         opt_into_sel
         {
-			//start_bind('i',0,-1);
+			/* start_bind('i',0,-1); */
             start_bind('i',0);
 			lex_printcomment("/* startbind */");
 		}
@@ -1015,7 +1017,7 @@ select_statement:
 in_select_statement:
 	SELECT op_ad select_list table_expression sel_p2 {
              char buff[1024];
-             //int ni = 0,no = 0;
+
              sprintf(buff,"%s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>4, $<str>5);
              sprintf($<str>$,"push_char(\"%s\");",buff);
 }

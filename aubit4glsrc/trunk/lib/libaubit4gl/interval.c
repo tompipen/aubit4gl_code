@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
+# $Id: interval.c,v 1.6 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -136,17 +136,17 @@ conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff)
   debug ("F %d\n", data[6]);
   sprintf(fractions,"%05d",data[6]);
 
-  while (data[5]>=60) {data[5]-=60;data[4]++;}// Increase minutes
-  while (data[4]>=60) {data[4]-=60;data[3]++;}// Increase Hours
-  while (data[3]>=24) {data[3]-=24;data[2]++;} // Increase days
+  while (data[5]>=60) {data[5]-=60;data[4]++;} /* Increase minutes */
+  while (data[4]>=60) {data[4]-=60;data[3]++;} /* Increase Hours */
+  while (data[3]>=24) {data[3]-=24;data[2]++;} /* Increase days */
   while (data[1]>=12) {data[1]-=12;data[0]++;}
 
 
   switch (v2) {
-		case 2: data[1]+=data[0]*12;break; // Month
-		case 4: data[3]+=data[2]*24;break; //Hour
-		case 5: data[4]+=data[2]*24*60+data[3]*60;break; //Minute
-		case 6: data[5]+=data[2]*24*60*60+data[3]*60*60+data[4]*60;break; //Second
+		case 2: data[1]+=data[0]*12;break; /* Month */
+		case 4: data[3]+=data[2]*24;break; /* Hour */
+		case 5: data[4]+=data[2]*24*60+data[3]*60;break; /* Minute */
+		case 6: data[5]+=data[2]*24*60*60+data[3]*60*60+data[4]*60;break; /* Second */
 	}
 
 
@@ -210,14 +210,11 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
   int data_r[10];
   int mode;
   int cnt;
-//  int val;
   int val1;
   int val2;
   int val3;
   int size;
   char buff[256];
-//  char a_str[64];
-//  char b_str[64];
 
   double v1 = 0;
   double v2;
@@ -225,13 +222,13 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 
 	debug("In op_ival a=%p b=%p dv=%lf op=%c param=%c",a,b,double_val,op,param);
 
-  if (param == 'd') // We're using a double - so ignore 'b'
+  if (param == 'd') /* We're using a double - so ignore 'b' */
     {
       b = a;
     }
 
 
-	// Extract the time stuff..
+	/* Extract the time stuff.. */
 
 
   debug("Converting intervals to strings...");
@@ -308,7 +305,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 
 
   if (param == 'd')
-    {				// Using a double
+    {				/* Using a double */
 
       v2=double_val;
 
@@ -325,31 +322,31 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 
 	case '/':
 	  r1 = v1 / double_val;
-	  rval_type = 1; // Interval
+	  rval_type = 1; /* Interval */
 	  break;
 
 	case '*':
 		debug("v1=%lf dv=%lf\n",v1,double_val);
 	  r1 = v1 * double_val;
-	  rval_type = 1; // Interval
+	  rval_type = 1; /* Interval */
 	  break;
 	}
     }
   else
-    {				// Using another interval
+    {				/* Using another interval */
       switch (op)
 	{
 	case '+':
 	  r1 = v1 + v2;
-	  rval_type = 1; // Interval
+	  rval_type = 1; /* Interval */
 	  break;
 	case '-':
 	  r1 = v1 - v2;
-	  rval_type = 1; // Interval
+	  rval_type = 1; /* Interval */
 	  break;
 	case '/':
 	  r1 = v1 / v2;
-	  rval_type = 2; // Number
+	  rval_type = 2; /* Number */
 	  break;
 	case '*':
 	  exitwith ("Can't multiply two intervals");
@@ -359,16 +356,16 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 
     }
 
-	// If we got to here r1 will contain either a number or an interval
+	/* If we got to here r1 will contain either a number or an interval */
 
-	if (rval_type==2) { // Yip yip - this ones easy !
+	if (rval_type==2) { /* Yip yip - this ones easy ! */
 		rval_double=r1;
 		return 2;
 	}
 	debug("r1=%lf mode=%d\n",r1,mode);
 
 
-	if (mode==1) { // we have a number of years in r1
+	if (mode==1) { /* we have a number of years in r1 */
 		double yd,md;
 		int y = 0;
 		yd=floor(r1);
@@ -384,13 +381,13 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 		debug("sd=%lf fd=%lf\n",sd,fd);
 		data_r[6]=fd*100000;
 		s=sd;
-		data_r[5]=s%60; s=s/60; // Seconds
-		data_r[4]=s%60; s=s/60; // Minutes
-		data_r[3]=s%60; s=s/24; // Hours
-		data_r[2]=s; // Days
+		data_r[5]=s%60; s=s/60; /* Seconds */
+		data_r[4]=s%60; s=s/60; /* Minutes */
+		data_r[3]=s%60; s=s/24; /* Hours */
+		data_r[2]=s; /* Days */
 	}
 
-	// data_r should be set up now...
+	/* data_r should be set up now... */
 
   debug("stime=%x ltime=%x",rval_ival.stime,rval_ival.ltime);
   val1=rval_ival.ltime;
@@ -417,5 +414,5 @@ mk_int_size(int s,int l)
   return l+ (s<<4);
 }
 
-// ==================================== EOF ============================
+/* ==================================== EOF =========================== */
 

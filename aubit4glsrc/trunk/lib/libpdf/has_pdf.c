@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.7 2002-06-02 06:52:38 afalout Exp $
+# $Id: has_pdf.c,v 1.8 2002-06-06 12:31:28 afalout Exp $
 #*/
 
 /**
@@ -47,7 +47,7 @@
 
 #include "pdflib.h"
 
-#include "a4gl_runtime_tui.h"	//push_int
+#include "a4gl_runtime_tui.h"		/* push_int */
 #include "a4gl_dbform.h"
 #include "a4gl_report.h"
 #include "a4gl_stack.h"
@@ -95,9 +95,9 @@ int pdf_blob_print(struct pdf_rep_structure *p,struct fgl_int_loc *blob,char *ty
 void
 pdf_rep_print (struct pdf_rep_structure *rep, int a, int s,int right_margin)
 {
-  int b;
-//  int cnt;
-  char *str;
+int b;
+char *str;
+  
   debug ("In rep_print");
   if (right_margin!=0) {
                 debug("***** WARNING ***** wordwrap margin not implemented..");
@@ -124,8 +124,9 @@ pdf_rep_print (struct pdf_rep_structure *rep, int a, int s,int right_margin)
 		}
 	debug("Set info");
 		pdf_set_info(rep->pdf_ptr,"A4GL");
-	//debug("New page");
-		//pdf_new_page(rep);
+	/* debug("New page");
+		pdf_new_page(rep);
+        */
 	    }
 	}
       else
@@ -226,17 +227,17 @@ double needn;
 	     rep->col_no=pdf_metric(1,'c',rep);
 	}
 
-	needn=a - rep->col_no + rep->left_margin; // -pdf_metric(1,'c',rep);
+	needn=a - rep->col_no + rep->left_margin; /* -pdf_metric(1,'c',rep); */
 
 
-	//if (rep->col_no==pdf_metric(1,'c',rep)) needn+=pdf_metric(1,'c',rep);
+	/* if (rep->col_no==pdf_metric(1,'c',rep)) needn+=pdf_metric(1,'c',rep); */
 
 	#ifdef DEBUG
 		{debug("needn=%ld",needn);	}
 	#endif
 
 	if (needn>0) {
-	        //fputmanyc(rep->output,' ',(int)needn);
+	        /* fputmanyc(rep->output,' ',(int)needn); */
 	        rep->col_no+=needn;
 	#ifdef DEBUG
 		{debug("Colno increased by %d",needn);}
@@ -284,7 +285,7 @@ void
 pdf_aclfgli_skip_lines(struct pdf_rep_structure *rep)
 {
 long a;
-//long b;
+
 	debug("skip lines");
 	a=pop_long();
 	rep->line_no+=pdf_metric(a,'l',rep);
@@ -347,7 +348,7 @@ int
 pdf_new_page(struct pdf_rep_structure *p)
 {
 	debug("NEW PAGE : %d\n",p->page_no);
-	//PDF_begin_page(p->pdf_ptr, width, height);
+	/* PDF_begin_page(p->pdf_ptr, width, height); */
 	if (p->page_no) {
 		PDF_end_page(p->pdf_ptr);
 	}
@@ -425,9 +426,9 @@ pdf_size(double f, char c,struct pdf_rep_structure *p)
 
 	if (f<0) {
 		debug("Returning 0-%lf",f);
-		return 0-f; // This is already in PDF units
+		return 0-f; /* This is already in PDF units */
 	}
-	else return pdf_metric((int)f,c,p); // This is in lines or chars
+	else return pdf_metric((int)f,c,p); /* This is in lines or chars */
 
 }
 
@@ -446,7 +447,7 @@ pdf_metric(int a,char  c,struct pdf_rep_structure *p)
 			return (double)((double)a*PDF_stringwidth(p->pdf_ptr,"W",p->font,p->font_size));
 	} else {
 		debug("metric L %d %c",a,c);
-			return (double)(a*p->font_size); //18
+			return (double)(a*p->font_size); /* 18 */
 	}
 }
 
@@ -541,7 +542,7 @@ int x,y;
 	debug("Image handle=%d\n",n);
 
 	if (n<0) {
-		//exitwith("Unable to open file %s %s",type,blob->filename);
+		/* exitwith("Unable to open file %s %s",type,blob->filename); */
         exitwith("Unable to open file.");
 		return 0;
 	}
@@ -584,5 +585,5 @@ A4GLREPORT_initlib (void)
 	PDF_boot();
 }
 
-// ================================ EOF ==============================
+/* ================================ EOF ============================== */
 

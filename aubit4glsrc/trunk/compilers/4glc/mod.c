@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.70 2002-06-05 07:04:42 afalout Exp $
+# $Id: mod.c,v 1.71 2002-06-06 12:31:12 afalout Exp $
 #
 */
 
@@ -775,7 +775,6 @@ print_variables (void)
   if (modlevel == -1)
     {
       debug ("/* global variables %d */\n", varcnt);
-      //lex_printcomment ("/* global variables %d */\n", varcnt);
 
       for (a = 0; a < varcnt; a++)
 	{
@@ -1150,11 +1149,9 @@ scan_variables (char *s, int mode)
 	{
 	  strcpy (buff, &s[11]);
 	  strcpy (buff2, &s[findex (s, ')') + 1]);
-	  //debug ("/*Extra bit = %s*/\n", buff2);
 	  buff[findex (buff, '(')] = 0;
 	  strcat (buff, buff2);
 	  convlower (buff);
-	  //debug ("/*whole = %s*/\n", buff);
 	}
       else
 	return -1;
@@ -3889,7 +3886,6 @@ inc_report_cnt (void)
 static char *
 trans_quote (char *s)
 {
-//  static char buff[1024];
   int c;
   int a;
   c = 0;

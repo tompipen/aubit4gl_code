@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.6 2002-05-30 06:25:19 afalout Exp $
+# $Id: translate.c,v 1.7 2002-06-06 12:31:27 afalout Exp $
 #
 */
 
@@ -41,12 +41,12 @@
 */
 
 #include <stdio.h>
-#include <string.h> 			//strdup()
-#include <stdlib.h> 			//realloc()
+#include <string.h> 			/* strdup() */
+#include <stdlib.h> 			/* realloc() */
 
-#include "a4gl_debug.h" 		//debug()
-#include "a4gl_io.h" 			//open_file_dbpath()
-#include "a4gl_aubit_lib.h" 	//stripnl()
+#include "a4gl_debug.h" 		/* debug() */
+#include "a4gl_io.h" 			/* open_file_dbpath() */
+#include "a4gl_aubit_lib.h" 	/* stripnl() */
 
 /*
 =====================================================================
@@ -83,7 +83,6 @@ int list_of_strings_len=0;
 =====================================================================
 */
 
-//char * acl_getenv(char *);
 void add_translate(int mode,char * from,char * to, int quote);
 void make_trans_list(void);
 char * translate(char *s);
@@ -112,11 +111,11 @@ int a;
 
 				if (translate_list[a].to!=0)         {
 					debug("->%s\n",translate_list[a].to);
-					return translate_list[a].to; //return from incompatible pointer type
+					return translate_list[a].to;
 				}
 
 				if (translate_list[a].identifier!=0) {
-						return translate_list[a].identifier; //return from incompatible pointer type
+						return translate_list[a].identifier;
 				}
 				debug("Shouldn't happen");
 			}
@@ -153,7 +152,6 @@ char buff[TRANSLINESIZE];
 
 	while (1) {
 		int a;
-//		char *ptr;
 		char *ptr2;
 
 		fgets(buff,TRANSLINESIZE,file);
@@ -189,9 +187,6 @@ dumpstring(char *s,long n,char *fname)
 {
 static FILE *f;
 static int ident=0;
-//char buff[256];
-//char buff_str[256];
-//int id;
 int a;
 
 	if (strlen(acl_getenv("DUMPSTRINGS"))) {
@@ -217,7 +212,7 @@ int a;
 }
 
 
-//moved from formwrite2.c and lexer.c:
+/* moved from formwrite2.c and lexer.c: */
 
 /**
  *
@@ -235,10 +230,10 @@ char buff[2048];
         debug("Adding %s -> %s mode %d",from,to,mode);
         if (mode==1) {
 	        if (quote==0) {
-				//formwrite2.c:
+				/* formwrite2.c: */
 				sprintf(buff,"%s",to);
             } else {
-                //lexer.c:
+                /* lexer.c: */
 				sprintf(buff,"\"%s\"",to);
             }
 
@@ -246,10 +241,10 @@ char buff[2048];
                 translate_list[translate_list_cnt-1].identifier=0;
         } else {
 			if (quote==0) {
-				//formwrite2.c:
+				/* formwrite2.c: */
 				sprintf(buff,"get_translated_id:%s",to);
             } else {
-				//lexer.c:
+				/* lexer.c: */
 				sprintf(buff,"get_translated_id(\"%s\")",to);
             }
 
@@ -259,5 +254,5 @@ char buff[2048];
 }
 
 
-// ============================== EOF ===========================
+/* ============================== EOF =========================== */
 

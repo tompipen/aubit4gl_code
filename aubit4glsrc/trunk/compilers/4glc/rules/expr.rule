@@ -122,18 +122,18 @@ int_sign	: PLUS
 boolean_expr:
 NOT fgl_expr_c {
 	
-        //sprintf($<str>$,"%s pushop(OP_NOT);",$<str>2);
+        /* sprintf($<str>$,"%s pushop(OP_NOT);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_NOT);");
 }
 | KW_TRUE  
 {
-        //sprintf($<str>$,"push_int(1);");
+        /* sprintf($<str>$,"push_int(1);"); */
 	$<ptr>$=new_expr("push_int(1);");
         inc_counter();
 }
 | KW_FALSE 
 {
-        //sprintf($<str>$,"push_int(0);");
+        /* sprintf($<str>$,"push_int(0);"); */
 	inc_counter();
 	$<ptr>$=new_expr("push_int(0);");
 }
@@ -167,7 +167,7 @@ int_sign real_number
 	debug("init expr %s %s",$<str>1,$<str>2);
 	sprintf($<str>$,"%s%p",$<str>1,$<str>2);
 	sprintf($<str>$,get_push_literal('D',$<str>$));
-        //sprintf($<str>$,"push_double((double)%s%s)",$<str>1,$<str>2);
+        /* sprintf($<str>$,"push_double((double)%s%s)",$<str>1,$<str>2); */
 	$<ptr>$=new_expr($<str>$);
         inc_counter();
 }
@@ -191,21 +191,20 @@ ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%d);",atoi($<str>2));inc_counter()
 |
 CHAR_VALUE  {
 	sprintf($<str>$,get_push_literal('S',$<str>1));
-	//sprintf($<str>$,"push_char(%s);",$<str>1);
+	/* sprintf($<str>$,"push_char(%s);",$<str>1); */
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
 | real_number
 {
 	sprintf($<str>$,get_push_literal('D',$<str>1));
-	//sprintf($<str>$,"push_double((double)%s);",$<str>1);
+	/* sprintf($<str>$,"push_double((double)%s);",$<str>1); */
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
 | INT_VALUE
 {
 	sprintf($<str>$,get_push_literal('L',$<str>1));
-	//sprintf($<str>$,"push_long((long)%d);/*2*/",atoi($<str>1));
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
@@ -214,7 +213,7 @@ CHAR_VALUE  {
 char r1[256];
 char r2[256];
 char buff[256];
-//char kp[40000];
+/* char kp[40000]; */
 char *ptr1;
 char *ptr2;
 void *p1;
@@ -292,16 +291,14 @@ int a;
 
           if (aubit_strcasecmp($<str>1,"pageno")==0) {
                flg=1;
-               //sprintf($<str>$,"push_variable(&rep.page_no,2);",$<str>1,scan_variable($<str>1)); //warning: too many arguments for format
                sprintf($<str>$,"push_variable(&rep.page_no,2);");
 		  }
           if (aubit_strcasecmp($<str>1,"lineno")==0) {
                flg=1;
-               //sprintf($<str>$,"push_variable(&rep.line_no,2);",$<str>1,scan_variable($<str>1)); //warning: too many arguments for format
                sprintf($<str>$,"push_variable(&rep.line_no,2);");
           }
          if (flg==0) {
-         sprintf($<str>$,"push_variable(&%s,0x%x);",$<str>1,(int)scan_variable($<str>1)); // warning: unsigned int format, long unsigned int arg (arg 4)
+         sprintf($<str>$,"push_variable(&%s,0x%x);",$<str>1,(int)scan_variable($<str>1));
          }
    inc_counter();
    }
@@ -363,12 +360,12 @@ insql=0;
 and_or_expr: 
 AND fgl_expr_c 
 {
-	//sprintf($<str>$,"%s pushop(OP_AND);",$<str>2);
+	/* sprintf($<str>$,"%s pushop(OP_AND);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_AND);");
 }
 | OR fgl_expr_c 
 {
-	//sprintf($<str>$,"%s pushop(OP_OR);",$<str>2);
+	/* sprintf($<str>$,"%s pushop(OP_OR);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_OR);");
 }
 ;
@@ -436,22 +433,22 @@ IS_NULL
 string_match_expr:
  MATCHES fgl_expr_c
 {
-	//sprintf($<str>$,"%s pushop(OP_MATCHES);",$<str>2);
+	/* sprintf($<str>$,"%s pushop(OP_MATCHES);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);");
 }
 | NOT_MATCHES fgl_expr_c
 {
-	//sprintf($<str>$,"%s pushop(OP_MATCHES);pushop(OP_NOT);",$<str>2);
+	/* sprintf($<str>$,"%s pushop(OP_MATCHES);pushop(OP_NOT);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);pushop(OP_NOT);");
 }
 | LIKE fgl_expr_c
 {
-	//sprintf($<str>$," %s pushop(OP_LIKE);",$<str>2);
+	/* sprintf($<str>$," %s pushop(OP_LIKE);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);");
 }
 | NOT_LIKE fgl_expr_c
 {
-	//sprintf($<str>$,"pushop(OP_LIKE);pushop(OP_NOT);",$<str>2);
+	/* sprintf($<str>$,"pushop(OP_LIKE);pushop(OP_NOT);",$<str>2); */
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);pushop(OP_NOT);");
 }
 ;
@@ -475,13 +472,11 @@ USING fgl_expr_c
 math_expr:
 PLUS fgl_expr_c 
 {
-	//sprintf($<str>$,"%s pushop(OP_ADD);",$<str>2);
 	debug("PLUS in math_expr $<ptr>2 = %p",$<ptr>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_ADD);");
 }
 | MINUS fgl_expr_c
 {
-	//sprintf($<str>$,"%s pushop(OP_SUB);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_SUB);");
 }
 | MULTIPLY fgl_expr_c 
@@ -491,24 +486,20 @@ PLUS fgl_expr_c
 }
 | DIVIDE  fgl_expr_c 
 {
-	//sprintf($<str>$,"%s pushop(OP_DIV);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_DIV);");
 }
 | MOD fgl_expr_c 
 {
-	//sprintf($<str>$,"%s pushop(OP_MOD);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_MOD);");
 }
 | POWER fgl_expr_c 
 {
-	//sprintf($<str>$,"%s pushop(OP_POWER);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_POWER);");
 }
 ;
 
 comparison_expr:
 EQUAL           fgl_expr_c {
-	//sprintf($<str>$,"%s pushop(OP_EQUAL);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_EQUAL);");
 }
 | EQUAL_EQUAL   fgl_expr_c {
@@ -517,27 +508,22 @@ EQUAL           fgl_expr_c {
 }
 | LESS_THAN       fgl_expr_c
 {
-	//sprintf($<str>$,"%s pushop(OP_LESS_THAN);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LESS_THAN);");
 }
 | GREATER_THAN    fgl_expr_c
 {
-	//sprintf($<str>$,"%s pushop(OP_GREATER_THAN);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_GREATER_THAN);");
 }
 | NOT_EQUAL       fgl_expr_c
 {
-	//sprintf($<str>$,"%s pushop(OP_NOT_EQUAL);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_NOT_EQUAL);");
 }
 | LESS_THAN_EQ    fgl_expr_c
 {
-	//sprintf($<str>$,"%s pushop(OP_LESS_THAN_EQ);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_LESS_THAN_EQ);");
 }
 | GREATER_THAN_EQ fgl_expr_c
 {
-	//sprintf($<str>$,"%s pushop(OP_GREATER_THAN_EQ);",$<str>2);
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_GREATER_THAN_EQ);");
 }
 ;
@@ -568,7 +554,7 @@ function_call_expr2:
 		int cnt;
 		cnt=1;
 		debug("Print expr (1)");
-		//print_expr($<ptr>4);
+		/* print_expr($<ptr>4); */
 		sprintf($<str>$,"{int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");}\n}\n}\n", $<str>1,$<str>5, lastlineno,infilename);
 		$<ptr>$=append_expr($<ptr>4,$<str>$);
 		inc_counter();
@@ -596,19 +582,15 @@ function_call_expr2:
 
 function_callb:
 DATE OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
-//sprintf($<str>$,"%s aclfgl_date(1);\n",$<str>4,$<str>1);
 	$<ptr>$=append_expr($<ptr>4,"aclfgl_date(1);");
-inc_counter();} 
+inc_counter();}
 | MONTH OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
-//sprintf($<str>$,"%s aclfgl_month(1);\n",$<str>4,$<str>1);
 	$<ptr>$=append_expr($<ptr>4,"aclfgl_month(1);");
 inc_counter();} 
 | DAY OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
-//sprintf($<str>$,"%s aclfgl_day(1);\n",$<str>4,$<str>1);
 	$<ptr>$=append_expr($<ptr>4,"aclfgl_day(1);");
 inc_counter();} 
 | YEAR OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
-//sprintf($<str>$,"%s aclfgl_year(1);\n",$<str>4,$<str>1);
 	$<ptr>$=append_expr($<ptr>4,"aclfgl_year(1);");
 inc_counter();} 
 ;
@@ -617,7 +599,6 @@ inc_counter();}
 function_call_expr:
 function_callb
 | GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET {
-//int cnt;
 sprintf($<str>$,"{int _retvars;\n_retvars=fgl_getfldbuf(%s);\nif (_retvars != 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");}\n}\n",
 	$<str>3, lastlineno,infilename); 
 	$<ptr>$=new_expr($<str>$);
@@ -653,12 +634,10 @@ builtin_expr : curr_v_clause {
 
 builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET 
 { 
-//sprintf($<str>$,"%s upshift_stk();",$<str>3);
 	$<ptr>$=append_expr($<ptr>3,"upshift_stk();");
 }
 |               DOWNSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 { 
-	//sprintf($<str>$,"%s upshift_stk();",$<str>3);
 	$<ptr>$=append_expr($<ptr>3,"downshift_stk();");
 }
 | ASCII OPEN_BRACKET INT_VALUE CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%d);",atoi($<str>3));
@@ -670,15 +649,12 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 ;
 
 pdf_expr : fgl_expr_c POINTS  {
-	//sprintf($<str>$,"%s push_double(-1);pushop(OP_MULT)",$<str>1);
 	$<ptr>$=append_expr($<ptr>1,"push_double(-1);pushop(OP_MULT);");
 }
         |  fgl_expr_c  MM     {
-	//sprintf($<str>$,"%s push_double(-28.3465);pushop(OP_MULT);",$<str>1);
 	$<ptr>$=append_expr($<ptr>1,"push_double(-28.3465);pushop(OP_MULT);");
 }
         |  fgl_expr_c INCHES     {
-	//sprintf($<str>$,"%s push_double(-72.0);pushop(OP_MULT);",$<str>1);
 	$<ptr>$=append_expr($<ptr>1,"push_double(-72.0);pushop(OP_MULT);");
 }
 ;

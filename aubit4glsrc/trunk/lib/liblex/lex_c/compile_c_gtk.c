@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.3 2002-06-01 11:55:00 afalout Exp $
+# $Id: compile_c_gtk.c,v 1.4 2002-06-06 12:31:27 afalout Exp $
 #
 */
 
@@ -65,8 +65,8 @@ char lname[256];
 */
 
 
-extern void printc(char* fmt,... ); //in API_lex.c
-extern void printh (char *fmt, ...); //in API_lex.x
+extern void printc(char* fmt,... ); 	/* in API_lex.c */
+extern void printh (char *fmt, ...); 	/* in API_lex.c */
 
 /*
 =====================================================================
@@ -258,4 +258,4 @@ print_gtk_menuhandler_end(void)
 }
 
 
-// ================================= EOF ==============================
+/* ================================= EOF ============================== */

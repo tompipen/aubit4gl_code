@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.4 2002-06-01 11:55:00 afalout Exp $
+# $Id: aubit-config.c,v 1.5 2002-06-06 12:31:29 afalout Exp $
 #
 */
 
@@ -85,7 +85,7 @@ int
 main(int argc,char *argv[])
 {
 
-	//load settings from config file(s):
+	/* load settings from config file(s): */
 	build_user_resources();
 
 	if (argc!=2) {
@@ -159,4 +159,4 @@ set_line(void)
 }
 
 
-//-------------------------- EOF ------------------------
+/* -------------------------- EOF ------------------------ */

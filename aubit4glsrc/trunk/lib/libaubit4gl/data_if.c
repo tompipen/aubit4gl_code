@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.7 2002-06-05 07:04:55 afalout Exp $
+# $Id: data_if.c,v 1.8 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
 
-// I don't think so (Andrej) :
+/* I don't think so (Andrej) : */
 /*******************************************************/
 /* This file was automatically generated - do not edit */
 /*******************************************************/
@@ -64,7 +64,7 @@ collect2: ld returned 1 exit status
 */
 
 #include <string.h>
-#include <stdlib.h> //free()
+#include <stdlib.h> 		/* free() */
 
 #include "a4gl_data_if.h"
 #include "a4gl_debug.h"
@@ -767,5 +767,5 @@ int a;
 }
 
 
-// ================================ EOF ==============================
+/* ================================ EOF ============================== */
 

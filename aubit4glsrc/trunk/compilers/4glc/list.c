@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: list.c,v 1.7 2002-05-25 12:12:44 afalout Exp $
+# $Id: list.c,v 1.8 2002-06-06 12:31:12 afalout Exp $
 #*/
 
 /**
@@ -44,7 +44,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h> //exit()
+#include <stdlib.h> 			/* exit() */
 
 #include <a4gl_4glc_4glc.h>
 #include <a4gl_aubit_lib.h>
@@ -144,7 +144,7 @@ list_prompt_single (char *id, char *s)
 void
 list_set_single (char *id, char *s)
 {
-//  char *buff;
+  
   strcpy (lists[list_cnt].list_id, id);
   lists[list_cnt].list_count = 0;
   strcpy (lists[list_cnt].list_values[lists[list_cnt].list_count], s);
@@ -455,4 +455,4 @@ list_in(void)
 };
 
 
-// =============================== EOF ============================
+/* =============================== EOF ============================ */

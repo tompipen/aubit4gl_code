@@ -22,614 +22,607 @@ VARIABLE A4GL_LEXTYPE
 * func-name param-type param-name ... -> returns"
 *
 
-//
-// ------------ functions from compile_[c|perl].c --------------
-//
+/* ------------ functions from compile_[c|perl].c -------------- */
 
-//void printc(char *fmt, ...)
+/* void printc(char *fmt, ...) */
 lex_printc char* fmt ... -> void
 
-//printh (char *fmt, ...)
+/* printh (char *fmt, ...) */
 lex_printh char* fmt ... -> void
 
-//void printcomment (char *fmt,...)
+/* void printcomment (char *fmt,...) */
 lex_printcomment char* fmt ... -> void
 
-//void print_sleep (void)
+/* void print_sleep (void) */
 print_sleep -> void
 
-//void print_include(char *s)
+/* void print_include(char *s) */
 print_include char* s -> void
 
-//void print_push_variable (char *s)
+/* void print_push_variable (char *s) */
 print_push_variable char* s -> void
 
-//void print_clr_status ()
+/* void print_clr_status () */
 print_clr_status -> void
 
-*//static void open_outfile(void)
-*open_outfile -> void
-
-//void incprint(void)
+/* void incprint(void) */
 incprint -> void
 
-//void print_repctrl_block (void)
+/* void print_repctrl_block (void) */
 print_repctrl_block -> void
 
-//void print_report_ctrl(void)
+/* void print_report_ctrl(void) */
 print_report_ctrl -> void
 
-//void print_range_check (char *var, char *size)
+/* void print_range_check (char *var, char *size) */
 print_range_check char* var,char* size -> void
 
-//void print_start_block (int n)
+/* void print_start_block (int n) */
 print_start_block int n -> void
 
-//void print_continue_block (int n, int brace)
+/* void print_continue_block (int n, int brace) */
 print_continue_block int n,int brace -> void
 
-//void print_end_block (int n)
+/* void print_end_block (int n) */
 print_end_block int n -> void
 
-//void print_continue_loop (int n)
+/* void print_continue_loop (int n) */
 print_continue_loop int n -> void
 
-//void print_exit_loop (int type, int n)
+/* void print_exit_loop (int type, int n) */
 print_exit_loop int type,int n -> void
 
-//void print_rep_ret (int report_cnt)
+/* void print_rep_ret (int report_cnt) */
 print_rep_ret int report_cnt -> void
 
-//prchkerr (int l, char *f)
+/* prchkerr (int l, char *f) */
 prchkerr int l,char* f -> void
 
-//void print_expr (struct expr_str *ptr)
+/* void print_expr (struct expr_str *ptr) */
 print_expr void* ptr -> void
 
-//void print_bind_pop1 (char i)
+/* void print_bind_pop1 (char i) */
 print_bind_pop1 char i -> void
 
-//int print_param (char i)
+/* int print_param (char i) */
 print_param char i -> int
 
-//int print_bind (char i)
+/* int print_bind (char i) */
 print_bind char i -> int
 
-//int print_bind_expr (void *ptr, char i)
+/* int print_bind_expr (void *ptr, char i) */
 print_bind_expr void* ptr,char i -> int
 
-//void print_screen_mode (int n)
+/* void print_screen_mode (int n) */
 print_screen_mode int n -> void
 
-//void print_start_server (char * port, char *funclist)
+/* void print_start_server (char * port, char *funclist) */
 print_start_server char* port,char* funclist -> void
 
-//void print_stop_external ()
+/* void print_stop_external () */
 print_stop_external -> void
 
-//void print_remote_func (char *identifier)
+/* void print_remote_func (char *identifier) */
 print_remote_func char* identifier -> void
 
-//void print_exec_sql (char *s)
+/* void print_exec_sql (char *s) */
 print_exec_sql char* s -> void
 
-//void print_exec_sql_bound (char *s)
+/* void print_exec_sql_bound (char *s) */
 print_exec_sql_bound char* s -> void
 
-//void print_pop_variable (char *s)
+/* void print_pop_variable (char *s) */
 print_pop_variable char* s -> void
 
-//void print_getfldbuf (char *fields)
+/* void print_getfldbuf (char *fields) */
 print_getfldbuf char* fields -> void
 
-//void print_returning ()
+/* void print_returning () */
 print_returning -> void
 
-//void print_form_is_compiled (char *s)
+/* void print_form_is_compiled (char *s) */
 print_form_is_compiled char* s -> void
 
-//void print_field_func (char type, char *name, char *var)
+/* void print_field_func (char type, char *name, char *var) */
 print_field_func char type,char* name,char* var -> void
 
-//void print_func_call (char *identifier, struct expr_str *args, int args_cnt)
+/* void print_func_call (char *identifier, struct expr_str *args, int args_cnt) */
 print_func_call char* identifier,void* args,int args_cnt -> void
 
-//void print_pdf_call (char *a1, struct expr_str *args, char *a3)
+/* void print_pdf_call (char *a1, struct expr_str *args, char *a3) */
 print_pdf_call char* a1,void* args,char* a3 -> void
 
-//void print_call_shared (char *libfile, char *funcname, int nargs)
+/* void print_call_shared (char *libfile, char *funcname, int nargs) */
 print_call_shared char* libfile,char* funcname,int nargs -> void
 
-//void print_end_call_shared ()
+/* void print_end_call_shared () */
 print_end_call_shared -> void
 
-//void print_call_external (char *host, char *func, char *port, int nargs)
-*had to rename func because of collision with API function variable
+/* void print_call_external (char *host, char *func, char *port, int nargs) */
+/* had to rename func because of collision with API function variable */
 print_call_external char* host,char* funcname,char* port,int nargs -> void
 
-//void print_end_call_external ()
+/* void print_end_call_external () */
 print_end_call_external -> void
 
-//void print_case (int has_expr)
+/* void print_case (int has_expr) */
 print_case int has_expr -> void
 
-//void print_after_when (int endofblock)
+/* void print_after_when (int endofblock) */
 print_after_when int endofblock -> void
 
-//void print_when (int has_expr)
+/* void print_when (int has_expr) */
 print_when int has_expr -> void
 
-//void print_close (char type, char *name)
+/* void print_close (char type, char *name) */
 print_close char type,char* name -> void
 
-//void print_construct_1 ()
+/* void print_construct_1 () */
 print_construct_1 -> void
 
-//void print_construct_2 (char *driver)
+/* void print_construct_2 (char *driver) */
 print_construct_2 char* driver -> void
 
-//void print_construct_3 (int byname, char *constr_str, char *attr) {
+/* void print_construct_3 (int byname, char *constr_str, char *attr) */
 print_construct_3 int byname,char* constr_str,char* attr -> void
 
-//void print_befaft_field_1 (char *fieldexpr)
+/* void print_befaft_field_1 (char *fieldexpr) */
 print_befaft_field_1 char* fieldexpr -> void
 
-//void print_befaft_field_2 ()
+/* void print_befaft_field_2 () */
 print_befaft_field_2 -> void
 
-//void print_onkey_1 (char *key_list_str)
+/* void print_onkey_1 (char *key_list_str) */
 print_onkey_1 char* key_list_str -> void
 
-//void print_onkey_2 ()
+/* void print_onkey_2 () */
 print_onkey_2 -> void
 
-//void print_onkey_2_prompt ()
+/* void print_onkey_2_prompt () */
 print_onkey_2_prompt -> void
 
-//void print_defer (int quit)
+/* void print_defer (int quit) */
 print_defer int quit -> void
 
-//void print_display_line ()
+/* void print_display_line () */
 print_display_line -> void
 
-//void print_display_by_name (char *attr)
+/* void print_display_by_name (char *attr) */
 print_display_by_name char* attr -> void
 
-//char * get_display_str (int type, char *s, char *f)
+/* char * get_display_str (int type, char *s, char *f) */
 get_display_str int type,char* s,char* f -> char*
 
-//void print_display (char *fmt, char *expr, char *attr)
+/* void print_display (char *fmt, char *expr, char *attr) */
 print_display char* fmt,char* expr,char* attr -> void
 
-//void print_display_form (char *s, char *a)
+/* void print_display_form (char *s, char *a) */
 print_display_form char* s,char* a -> void
 
-//void print_display_array_p1 (char *arrvar, char *srec, char *scroll,char *attr)
+/* void print_display_array_p1 (char *arrvar, char *srec, char *scroll,char *attr) */
 print_display_array_p1 char* arrvar,char* srec,char* scroll,char* attr -> void
 
-//void print_display_array_p2 ()
+/* void print_display_array_p2 () */
 print_display_array_p2 -> void
 
-//void print_error (char *s, int wait)
+/* void print_error (char *s, int wait) */
 print_error char* s,int wait -> void
 
-//void print_exit_program (int has_expr)
+/* void print_exit_program (int has_expr) */
 print_exit_program int has_expr -> void
 
-//void print_for_start (char *var)
+/* void print_for_start (char *var) */
 print_for_start char* var -> void
 
-//void print_for_end ()
+/* void print_for_end () */
 print_for_end -> void
 
-//void print_for_default_step ()
+/* void print_for_default_step () */
 print_for_default_step -> void
 
-//void print_foreach_start ()
+/* void print_foreach_start () */
 print_foreach_start -> void
 
-//void print_foreach_next (char *cursorname, char *into)
+/* void print_foreach_next (char *cursorname, char *into) */
 print_foreach_next char* cursorname,char* into -> void
 
-//void print_foreach_end ()
+/* void print_foreach_end () */
 print_foreach_end -> void
 
-//void print_pushchar (char *s)
+/* void print_pushchar (char *s) */
 print_pushchar char* s -> void
 
-//void print_goto (char *label)
+/* void print_goto (char *label) */
 print_goto char* label -> void
 
-//void print_gui_do_menuitems (char *list, int mode)
+/* void print_gui_do_menuitems (char *list, int mode) */
 print_gui_do_menuitems char* list,int mode -> void
 
-//void print_gui_do_fields (char *list, int mode)
+/* void print_gui_do_fields (char *list, int mode) */
 print_gui_do_fields char* list,int mode -> void
 
-//void print_gui_do_form (char *name, char *list, int mode)
+/* void print_gui_do_form (char *name, char *list, int mode) */
 print_gui_do_form char* name,char* list,int mode -> void
 
-//void print_if_start ()
+/* void print_if_start () */
 print_if_start -> void
 
-//void print_if_else ()
+/* void print_if_else () */
 print_if_else -> void
 
-//void print_if_end ()
+/* void print_if_end () */
 print_if_end -> void
 
-//void print_import (char *func, int nargs)
-*have to rename func because of collision in API
+/* void print_import (char *func, int nargs) */
+/* have to rename func because of collision in API */
 print_import char* funcname,int nargs -> void
 
-//void print_init ()
+/* void print_init () */
 print_init -> void
 
-//void print_init_table (char *s)
+/* void print_init_table (char *s) */
 print_init_table char* s -> void
 
-//void generate_or (char *out, char *in1, char *in2)
+/* void generate_or (char *out, char *in1, char *in2) */
 generate_or char* out,char* in1,char* in2 -> void
 
-//void print_next_field (char *s)
+/* void print_next_field (char *s) */
 print_next_field char* s -> void
 
-//void print_input_1 ()
+/* void print_input_1 () */
 print_input_1 -> void
 
-//void print_input_2 (char *s)
+/* void print_input_2 (char *s) */
 print_input_2 char* s -> void
 
-//void print_input (int byname, char *defs, char *helpno, char *fldlist)
+/* void print_input (int byname, char *defs, char *helpno, char *fldlist) */
 print_input int byname,char* defs,char* helpno,char* fldlist -> void
 
-//char * print_input_array (char *arrvar, char *helpno, char *defs, char *srec, char *attr)
+/* char * print_input_array (char *arrvar, char *helpno, char *defs, char *srec, char *attr) */
 print_input_array char* arrvar,char* helpno,char* defs,char* srec,char* attr -> char*
 
-//char * get_formloop_str (int type)
+/* char * get_formloop_str (int type) */
 get_formloop_str int type -> char*
 
-//void print_scroll (char *flds, char *updown)
+/* void print_scroll (char *flds, char *updown) */
 print_scroll char* flds,char* updown -> void
 
-//void print_label (char *s)
+/* void print_label (char *s) */
 print_label char* s -> void
 
-//int print_let_manyvars (char *nexprs)
+/* int print_let_manyvars (char *nexprs) */
 print_let_manyvars char* nexprs -> int
 
-//void print_push_null ()
+/* void print_push_null () */
 print_push_null -> void
 
-//int print_linked_cmd (int type, char *var)
+/* int print_linked_cmd (int type, char *var) */
 print_linked_cmd int type,char* var -> int
 
-//void print_locate (char where, char *var, char *fname)
+/* void print_locate (char where, char *var, char *fname) */
 print_locate char where,char* var,char* fname -> void
 
-//void print_start_report (char *where, char *out, char *repname)
+/* void print_start_report (char *where, char *out, char *repname) */
 print_start_report char* where,char* out,char* repname -> void
 
-//void print_output_to_report (char *repname, char *nvalues)
+/* void print_output_to_report (char *repname, char *nvalues) */
 print_output_to_report char* repname,char* nvalues -> void
 
-//void print_finish_report (char *repname)
+/* void print_finish_report (char *repname) */
 print_finish_report char* repname -> void
 
-//void print_format_every_row ()
+/* void print_format_every_row () */
 print_format_every_row -> void
 
-//void print_need_lines ()
+/* void print_need_lines () */
 print_need_lines -> void
 
-//void print_skip_lines ()
+/* void print_skip_lines () */
 print_skip_lines -> void
 
-//void print_skip_top ()
+/* void print_skip_top () */
 print_skip_top -> void
 
-//void print_skip_by (char *nval)
+/* void print_skip_by (char *nval) */
 print_skip_by char* nval -> void
 
-//void print_skip_to (char *nval)
+/* void print_skip_to (char *nval)    */
 print_skip_to char* nval -> void
 
-//void print_report_print (int type, char *semi, char *wordwrap)
+/* void print_report_print (int type, char *semi, char *wordwrap) */
 print_report_print int type,char* semi,char* wordwrap -> void
 
-//void print_report_print_file (char *fname, char *semi)
+/* void print_report_print_file (char *fname, char *semi) */
 print_report_print_file char* fname,char* semi -> void
 
-//void print_report_print_img (char *scaling, char *blob, char *type, char *semi)
+/* void print_report_print_img (char *scaling, char *blob, char *type, char *semi) */
 print_report_print_img char* scaling,char* blob,char* type,char* semi -> void
 
-//char * get_default_scaling ()
+/* char * get_default_scaling () */
 get_default_scaling -> char*
 
-//void print_order_by_type (int type)
+/* void print_order_by_type (int type) */
 print_order_by_type int type -> void
 
-//void print_report_1 (char *name)
+/* void print_report_1 (char *name) */
 print_report_1 char* name -> void
 
-//void print_report_end ()
+/* void print_report_end () */
 print_report_end -> void
 
-//void print_report_2 (int pdf, char *repordby)
+/* void print_report_2 (int pdf, char *repordby) */
 print_report_2 int pdf,char* repordby -> void
 
-//void print_pause (char *msg)
+/* void print_pause (char *msg) */
 print_pause char* msg -> void
 
-//void print_op (char *type)
+/* void print_op (char *type) */
 print_op char* type -> void
 
-//void print_niy (char *type)
+/* void print_niy (char *type) */
 print_niy char* type -> void
 
-//void print_message (int type, char *attr, int wait)
+/* void print_message (int type, char *attr, int wait) */
 print_message int type,char* attr,int wait -> void
 
-//void print_system_run (int type, char *rvar)
+/* void print_system_run (int type, char *rvar) */
 print_system_run int type,char* rvar -> void
 
-//void print_set_conn (char *conn)
+/* void print_set_conn (char *conn) */
 print_set_conn char* conn -> void
 
-//void print_set_options (char *type, char *id, char *var, char *val)
+/* void print_set_options (char *type, char *id, char *var, char *val) */
 print_set_options char* type,char* id,char* var,char* val -> void
 
-//void print_while_1 (void)
+/* void print_while_1 (void) */
 print_while_1 -> void
 
-//void print_while_2 (void)
+/* void print_while_2 (void) */
 print_while_2 -> void
 
-//void print_while_3 (void)
+/* void print_while_3 (void) */
 print_while_3 -> void
 
-//void print_put ()
+/* void print_put () */
 print_put -> void
 
-//void print_prepare (char *stmt, char *sqlvar)
+/* void print_prepare (char *stmt, char *sqlvar) */
 print_prepare char* stmt,char* sqlvar -> void
 
-//void print_undo_use (char *s)
+/* void print_undo_use (char *s) */
 print_undo_use char* s -> void
 
-//void print_execute (char *stmt, int using)
+/* void print_execute (char *stmt, int using) */
 print_execute char* stmt,int using -> void
 
-//void print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
+/* void print_prompt_1 (char *a1, char *a2, char *a3, char *a4) */
 print_prompt_1 char* a1,char* a2,char* a3,char* a4 -> void
 
-//void print_prompt_forchar ()
+/* void print_prompt_forchar () */
 print_prompt_forchar -> void
 
-//void print_prompt_end (char *s)
+/* void print_prompt_end (char *s) */
 print_prompt_end char* s -> void
 
-//void print_open_window (char *name, char *type)
+/* void print_open_window (char *name, char *type) */
 print_open_window char* name,char* type -> void
 
-//void print_open_form (char *fmt, char *a1, char *a2)
+/* void print_open_form (char *fmt, char *a1, char *a2) */
 print_open_form char* fmt,char* a1,char* a2 -> void
 
-//void print_open_session (char *s, char *v, char *user)
+/* void print_open_session (char *s, char *v, char *user) */
 print_open_session char* s,char* v,char* user -> void
 
-//void print_open_cursor (char *cname, char *using)
+/* void print_open_cursor (char *cname, char *using) */
 print_open_cursor char* cname,char* using -> void
 
-//void print_clr_window (char *s)
+/* void print_clr_window (char *s) */
 print_clr_window char* s -> void
 
-//void print_clr_form (char *formname, char *clr, char *defs)
+/* void print_clr_form (char *formname, char *clr, char *defs) */
 print_clr_form char* formname,char* clr,char* defs -> void
 
-//void print_clr_fields (char *flds, char *defs)
+/* void print_clr_fields (char *flds, char *defs) */
 print_clr_fields char* flds,char* defs -> void
 
-//void print_current_window (char *s)
+/* void print_current_window (char *s) */
 print_current_window char* s -> void
 
-//void print_show_window (char *s)
+/* void print_show_window (char *s) */
 print_show_window char* s -> void
 
-//void print_hide_window (char *s)
+/* void print_hide_window (char *s) */
 print_hide_window char* s -> void
 
-//void print_show_menu (char *mname, char *mhand)
+/* void print_show_menu (char *mname, char *mhand) */
 print_show_menu char* mname,char* mhand -> void
 
-//void print_def_mn_file ()
+/* void print_def_mn_file ()  */
 print_def_mn_file -> void
 
-//void print_move_window (char *n, int rel)
+/* void print_move_window (char *n, int rel) */
 print_move_window char* n,int rel -> void
 
-//void print_menu_1 (void)
+/* void print_menu_1 (void) */
 print_menu_1 -> void
 
-//void print_end_menu_1 (void)
+/* void print_end_menu_1 (void) */
 print_end_menu_1 -> void
 
-//void print_end_menu_2(void)
+/* void print_end_menu_2(void) */
 print_end_menu_2 -> void
 
-//void print_menu_block (int n)
+/* void print_menu_block (int n) */
 print_menu_block int n -> void
 
-//void print_menu_block_end ()
+/* void print_menu_block_end () */
 print_menu_block_end -> void
 
-//void print_option_op (int type, char *n)
+/* void print_option_op (int type, char *n) */
 print_option_op int type,char* n -> void
 
-//void print_at_termination (char *f)
+/* void print_at_termination (char *f) */
 print_at_termination char* f -> void
 
-//void print_func_start (char *isstatic, char *fname, int type)
+/* void print_func_start (char *isstatic, char *fname, int type) */
 print_func_start char* isstatic,char* fname,int type -> void
 
-//void print_func_args (int c)
+/* void print_func_args (int c) */
 print_func_args int c -> void
 
-//void print_func_defret0 ()
+/* void print_func_defret0 () */
 print_func_defret0 -> void
 
-//void print_func_end ()
+/* void print_func_end () */
 print_func_end -> void
 
-//void print_main_1 ()
+/* void print_main_1 () */
 print_main_1 -> void
 
-//void print_fgllib_start (char *db)
+/* void print_fgllib_start (char *db) */
 print_fgllib_start char* db -> void
 
-//void print_main_end ()
+/* void print_main_end () */
 print_main_end -> void
 
-//void print_return (int n)
+/* void print_return (int n) */
 print_return int n -> void
 
-//void print_options (char n, char *s)
+/* void print_options (char n, char *s) */
 print_options char n,char* s -> void
 
-//void print_set_helpfile (char *s)
+/* void print_set_helpfile (char *s) */
 print_set_helpfile char* s -> void
 
-//void print_set_langfile (char *s)
+/* void print_set_langfile (char *s) */
 print_set_langfile char* s -> void
 
-//void print_sql_commit (int t)
+/* void print_sql_commit (int t) */
 print_sql_commit int t -> void
 
-//void print_fetch_1 ()
+/* void print_fetch_1 () */
 print_fetch_1 -> void
 
-//void print_fetch_2 ()
+/* void print_fetch_2 () */
 print_fetch_2 -> void
 
-//void print_fetch_3 (char *ftp, char *into)
+/* void print_fetch_3 (char *ftp, char *into) */
 print_fetch_3 char* ftp,char* into -> void
 
-//void print_init_conn (char *db)
+/* void print_init_conn (char *db) */
 print_init_conn char* db -> void
 
-//void print_do_select (char *s)
+/* void print_do_select (char *s) */
 print_do_select char* s -> void
 
-//void print_flush_cursor (char *s)
+/* void print_flush_cursor (char *s) */
 print_flush_cursor char* s -> void
 
-//void print_declare (char *a1, char *a2, char *a3, int h1, int h2)
+/* void print_declare (char *a1, char *a2, char *a3, int h1, int h2) */
 print_declare char* a1,char* a2,char* a3,int h1,int h2 -> void
 
-//char * print_curr_spec (int type, char *s)
+/* char * print_curr_spec (int type, char *s) */
 print_curr_spec int type,char* s -> char*
 
-//char * print_select_all (char *buff)
+/* char * print_select_all (char *buff) */
 print_select_all char* buff -> char*
 
-//void print_unload (char *file, char *delim, char *sql)
+/* void print_unload (char *file, char *delim, char *sql) */
 print_unload char* file,char* delim,char* sql -> void
 
-//void print_load (char *file, char *delim, char *tab, char *list)
+/* void print_load (char *file, char *delim, char *tab, char *list) */
 print_load char* file,char* delim,char* tab,char* list -> void
 
-//void print_use_session (char *sess)
+/* void print_use_session (char *sess) */
 print_use_session char *sess -> void
 
-//char * get_undo_use (void)
+/* char * get_undo_use (void) */
 get_undo_use -> char*
 
-//void print_next_form_field (char *form, char *field)
+/* void print_next_form_field (char *form, char *field) */
 print_next_form_field char* form,char* field -> void
 
-//void print_declare_associate_1 (char *variable, char *size, char *n)
+/* void print_declare_associate_1 (char *variable, char *size, char *n) */
 print_declare_associate_1 char* variable,char* size,char* n -> void
 
-//void print_declare_associate_2 (char *variable, char *size, char *n)
+/* void print_declare_associate_2 (char *variable, char *size, char *n) */
 print_declare_associate_2 char* variable,char* size,char* n -> void
 
-//void print_define_char (char *var, int size, int isstatic_extern)
+/* void print_define_char (char *var, int size, int isstatic_extern) */
 print_define_char char* var,int size,int isstatic_extern -> void
 
-//void print_define (char *varstring, int isstatic_extern)
+/* void print_define (char *varstring, int isstatic_extern) */
 print_define char* varstring,int isstatic_extern -> void
 
-//void print_start_record (int isstatic_extern, char *varname)
+/* void print_start_record (int isstatic_extern, char *varname) */
 print_start_record int isstatic_extern,char* varname -> void
 
-//void print_end_record (char *vname, int arrsize)
+/* void print_end_record (char *vname, int arrsize) */
 print_end_record char* vname,int arrsize -> void
 
-//char * get_push_literal (char type, char *value)
+/* char * get_push_literal (char type, char *value) */
 get_push_literal char type,char* value -> char*
 
-//char *decode_array_string(char *s)
+/* char *decode_array_string(char *s) */
 decode_array_string char* s -> char*
 
-//void printInitFunctionStack(void)
+/* void printInitFunctionStack(void) */
 printInitFunctionStack -> void
 
-//void printDeclareFunctionStack(char *functionName)
+/* void printDeclareFunctionStack(char *functionName) */
 printDeclareFunctionStack char* functionName -> void
 
-//void printPushFunction(void)
+/* void printPushFunction(void) */
 printPushFunction -> void
 
-//void printPopFunction(void)
+/* void printPopFunction(void) */
 printPopFunction -> void
 
 
-//
-// ----------- functions from compile_[c|perl]_gtk.c ------------------
-//
+/* ----------- functions from compile_[c|perl]_gtk.c ------------------ */
 
 
-//print_formhandler (char *name)
+/* print_formhandler (char *name) */
 print_formhandler char* name -> void
 
-//print_getwin() {
+/* print_getwin()  */
 print_getwin -> void
 
-//print_end_formhandler ()
+/* print_end_formhandler () */
 print_end_formhandler -> void
 
-//print_event (int type)
+/* print_event (int type) */
 print_event int type -> void
 
-//print_event_2 ()
+/* print_event_2 () */
 print_event_2 -> void
 
-//print_gtk_field (int type, char *s)
+/* print_gtk_field (int type, char *s) */
 print_gtk_field int type,char* s -> void
 
-//print_gtk_field_2 ()
+/* print_gtk_field_2 () */
 print_gtk_field_2 -> void
 
-//print_gtk_menuhandler_1 (char *name)
+/* print_gtk_menuhandler_1 (char *name) */
 print_gtk_menuhandler_1 char* name -> void
 
-//print_gtk_menuhandler_bsm ()
+/* print_gtk_menuhandler_bsm () */
 print_gtk_menuhandler_bsm -> void
 
-//print_gtk_menuhandler_bsm_end ()
+/* print_gtk_menuhandler_bsm_end () */
 print_gtk_menuhandler_bsm_end -> void
 
-//print_gtk_menuhandler_on (char *s)
+/* print_gtk_menuhandler_on (char *s) */
 print_gtk_menuhandler_on char* s -> void
 
-//print_gtk_menuhandler_on_end ()
+/* print_gtk_menuhandler_on_end () */
 print_gtk_menuhandler_on_end -> void
 
-//print_gtk_menuhandler_end()
+/* print_gtk_menuhandler_end() */
 print_gtk_menuhandler_end -> void
 
 
-// ============================== EOF =================================
+/*  ============================== EOF ================================= */
 
 
 

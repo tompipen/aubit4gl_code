@@ -28,7 +28,7 @@
 	#include "a4gl_incl_4gldef.h"
 
 
-    #ifndef _DEFINE_STATUSVARS_  //set from lib/libaubit4gl/Makefile
+    #ifndef _DEFINE_STATUSVARS_  /* set from lib/libaubit4gl/Makefile */
     /* for everything except libaubit4gl */
 
 
@@ -41,7 +41,7 @@
 		/** 4gl global status variable */
 		#ifndef DEFINE_STATUS
 		#define DEFINE_STATUS
-			//FIXME: is this OK? see lib/fglwrap.c
+			/* FIXME: is this OK? see lib/fglwrap.c */
 			#ifdef __CYGWIN__
 				extern int status;
 			#else
@@ -81,7 +81,7 @@
 		/** 4gl global status variable */
 		#ifndef DEFINE_STATUS
 		#define DEFINE_STATUS
-			//FIXME: is this OK? see lib/fglwrap.c
+			/* FIXME: is this OK? see lib/fglwrap.c */
 			#ifdef __CYGWIN__
 				int status;
 			#else
@@ -188,7 +188,6 @@
 	int 	pop_char(char *z,int size);
 	char *	char_pop(void);
 	int 	pop_param(void *p,int d,int size);
-	//int 	pop_param (void *p, int d, int s);
 
 	void 	pop_params		(struct BINDING *b,int n);
 	void 	push_param		(void *p,int d);
@@ -273,8 +272,6 @@
 	};
 
 	double pdf_size(double f, char c,struct pdf_rep_structure *p);
-	//double pdf_size(double f, char c,void  *p) ;
-
 
 	#define REPORT_START -1
 	#define REPORT_FINISH -2

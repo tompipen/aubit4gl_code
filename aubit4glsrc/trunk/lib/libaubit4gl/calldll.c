@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.10 2002-06-05 07:04:55 afalout Exp $
+# $Id: calldll.c,v 1.11 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -125,7 +125,7 @@ call_4gl_dll (char *filename, char *function, int args)
 static void
 badfunc (void)
 {
-//  exitwith ("No DLL Loaded");
+	/* exitwith ("No DLL Loaded"); */
   exitwith ("0: Non-existing function called in DLL\n");
 }
 
@@ -171,7 +171,7 @@ dl_openlibrary (char *type, char *name)
   dllhandle = dlopen (buff, RTLD_LAZY);
   if (dllhandle==0) {
 
-		//Sometimes dlerror() returns empty string?
+		/* Sometimes dlerror() returns empty string? */
 		debug("Error: can't open DLL %s - %s - STOP",buff,dlerror());
 		exitwith("Error: can't open DLL - STOP");
 
@@ -200,7 +200,7 @@ int (*func_ptr) (void);
   {
 	debug("Not found - bad handle");
 	exitwith("Could not open shared library");
-    	//return badfunc;
+    	/* return badfunc; */
   }
   func_ptr = dlsym (dllhandle, func);
 	debug("Got %p",func_ptr);
@@ -208,10 +208,10 @@ int (*func_ptr) (void);
   {
 	debug("Function Not found");
 	exitwith("Could not find function in shared library");
-		//return badfunc;
+		/* return badfunc; */
   }
 
-	//  debug("calldll.c: before return func=%s\n",func);
+	/*  debug("calldll.c: before return func=%s\n",func); */
 
   return func_ptr;
 }
@@ -263,7 +263,7 @@ find_func_allow_missing (void *dllhandle, char *func)
 
   if (dllhandle == 0)
   {
-	//  exitwith ("2: Non-existing function (%s) called in DLL",func);
+	/*  exitwith ("2: Non-existing function (%s) called in DLL",func); */
 	return &badfunc;
   }
   func_ptr = dlsym (dllhandle, func);
@@ -354,5 +354,5 @@ call_4gl_dll (char *filename, char *function, int args)
 #endif /* #if (defined(WIN32) && ! defined(__CYGWIN__)) */
 
 
-// ============================= EOF ==================================
+/* ============================= EOF ================================== */
 

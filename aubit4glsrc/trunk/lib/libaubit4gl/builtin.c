@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.5 2002-06-01 11:54:59 afalout Exp $
+# $Id: builtin.c,v 1.6 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -99,7 +99,7 @@ void    get_scr_line 		(int a);
 void 
 include_builtin_in_exe(void)
 {
-    // Does nothing
+    /* Does nothing */
 }
 
 /**
@@ -110,14 +110,14 @@ include_builtin_in_exe(void)
 int
 aclfgl_set_count (int nargs)
 {
-  long a;
+  long a = 0;
   struct BINDING fbind[] =
   {
-    {&a, 2, 0}
+    {&a, 2, 0} /* initializer element is not computable at load time (near initialization for `fbind[0].ptr') */
   };				/* end of binding */
   if (nargs != 1)
     {
-//      pop_args(nargs);set_status(-3001);
+	/* pop_args(nargs);set_status(-3001); */
       pop_args(nargs);A4GLSQL_set_status(-3001,0);
 
       return 0;
@@ -137,7 +137,6 @@ aclfgl_set_count (int nargs)
 int
 aclfgl_arr_count (int nargs)
 {
-//  long a;
   if (nargs != 0)
     {
       pop_args(nargs);A4GLSQL_set_status(-3001,0);
@@ -156,7 +155,6 @@ aclfgl_arr_count (int nargs)
 int
 aclfgl_scr_line (int nargs)
 {
-  //long a;
   if (nargs != 0)
     {
       pop_args(nargs);A4GLSQL_set_status(-3001,0);
@@ -253,7 +251,6 @@ aclfgl_length (int nargs)
 char *
 substr (char *ca, int dtype, int a, int b,...)
 {
-//  char *p;
   static char *np = 0;
   static char *np2 = 0;
 #ifdef DEBUG
@@ -324,7 +321,6 @@ substr (char *ca, int dtype, int a, int b,...)
 char *
 let_substr (char *ca, int dtype, int a, int b,...)
 {
-//  char *p;
   char *np;
   int size;
 #ifdef DEBUG
@@ -600,7 +596,7 @@ int
 aclfgl_err_get(int statusnumber)
 {
 
-//      A4GLSQL_set_status(-3001,0);
+	/* A4GLSQL_set_status(-3001,0); */
       return 0;
 }
 
@@ -614,7 +610,7 @@ int
 aclfgl_err_print(int statusnumber)
 {
 
-//      A4GLSQL_set_status(-3001,0);
+	/*  A4GLSQL_set_status(-3001,0); */
       return 0;
 }
 
@@ -626,7 +622,7 @@ int
 aclfgl_err_quit(int statusnumber)
 {
 
-//      A4GLSQL_set_status(-3001,0);
+	/*  A4GLSQL_set_status(-3001,0); */
       return 0;
 }
 
@@ -638,10 +634,10 @@ aclfgl_err_quit(int statusnumber)
  */
 int
 aclfgl_startlog (char *filename)
-//start_log (filename, 4glmodule, 4gllinenumber)
+/* start_log (filename, 4glmodule, 4gllinenumber) */
 {
 
-//      A4GLSQL_set_status(-3001,0);
+	/*  A4GLSQL_set_status(-3001,0); */
       return 0;
 }
 
@@ -651,11 +647,11 @@ aclfgl_startlog (char *filename)
  */
 int
 aclfgl_errorlog (char *string)
-//error_log(string, 4glmode, 4gllinenumber)
+/* error_log(string, 4glmode, 4gllinenumber) */
 
 {
 
-//      A4GLSQL_set_status(-3001,0);
+	/*  A4GLSQL_set_status(-3001,0); */
       return 0;
 }
 
@@ -687,11 +683,11 @@ aclfgl_errorlog (char *string)
  */
 int
 aclfgl_showhelp (int helpnumber)
-//show_help(string, 4glmode, 4gllinenumber)
+/* show_help(string, 4glmode, 4gllinenumber) */
 
 {
 
-//      A4GLSQL_set_status(-3001,0);
+	/*  A4GLSQL_set_status(-3001,0); */
       return 0;
 }
 
@@ -706,7 +702,7 @@ P12.ao(.text+0x3c): undefined reference to `def_quit'
 /**
  * The FIELD_TOUCHED( ) operator tests whether the user has entered or
  * edited a value in a specified field or list of fields of the current 4GL 
- * form. (This operator can only appear within CONSTRUCT, INPUT, and INPUT 
+ * form. (This operator can only appear within CONSTRUCT, INPUT, and INPUT
  * ARRAY statements.)
  * 
  * Usage:
@@ -735,7 +731,7 @@ P12.ao(.text+0x3c): undefined reference to `def_quit'
 int
 fgl_fieldtouched(char *fieldname)
 {
-    //fieldname should be array
+    /* fieldname should be array */
       return 0;
 }
 
@@ -752,5 +748,5 @@ close_database(void)
 }
 
 
-// ================================== EOF =============================
+/* ================================== EOF ============================= */
 

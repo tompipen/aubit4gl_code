@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.7 2002-06-01 11:54:59 afalout Exp $
+# $Id: gui_io.c,v 1.8 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -134,7 +134,7 @@ void
 gui_mkfield(int h,int w,int y,int x,void *p) 
 {
 char buff[256];
-	sprintf(buff,"%lx %d %d %d %d",(long unsigned int)p,x,y,w,h); //long unsigned int format, __builtin_va_list arg (arg 3)
+	sprintf(buff,"%lx %d %d %d %d",(long unsigned int)p,x,y,w,h);
 	debug("gui_mkfield:Make field");
 	gui_send("MKFIELD",buff);
 }
@@ -506,10 +506,9 @@ char buff2[256];
 void
 gui_user(char *txt)
 {
-//char buff[256];
 	gui_send("USER",txt);
 }
 
 
-// ============================= EOF ===============================
+/* ============================= EOF =============================== */
 

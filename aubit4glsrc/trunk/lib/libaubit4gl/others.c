@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.12 2002-06-01 11:54:59 afalout Exp $
+# $Id: others.c,v 1.13 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -194,9 +194,9 @@ aclfgl_downshift(int _np)
 {
 char *v1;
 	if (_np!=1) { fgl_error(-3000,"",0,0);}
-	//char_pop(v1);
+	/* char_pop(v1); */
 	v1=char_pop();
-	//convupper(v1);
+	/* convupper(v1); */
 	convlower(v1);
 	push_char(v1);
 	acl_free(v1);
@@ -367,19 +367,23 @@ attr_name_match (struct struct_scr_field * field, char *s)
 {
   char colname[40];
   char tabname[40];
-//  char buff[800];
   int aa;
   int ab;
-  //debug ("Field : %p\n", field);
-  //debug ("attr_name_match : %s", s);
+  /*
+  debug ("Field : %p\n", field);
+  debug ("attr_name_match : %s", s);
+  */
+
   bname (s, tabname, colname);
 
-  //debug ("Splits to %s & %s", tabname, colname);
-  //debug ("field is [%s %s]", field->tabname, field->colname);
+  /*
+  debug ("Splits to %s & %s", tabname, colname);
+  debug ("field is [%s %s]", field->tabname, field->colname);
+  */
 
   aa = strcmp (field->tabname, tabname);
   ab = strcmp (field->colname, colname);
-  //debug ("Matches = %d %d ", aa, ab);
+  /* debug ("Matches = %d %d ", aa, ab); */
   if ((ab == 0) || (colname[0] == '*'))
     {
       debug ("Match on *");
@@ -390,8 +394,10 @@ attr_name_match (struct struct_scr_field * field, char *s)
       debug ("Matched");
       return 1;
     }
-  //debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
-	 //field->colname, colname);
+  /*
+  debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname,
+	field->colname, colname);
+    */
   return 0;
 }
 
@@ -429,7 +435,6 @@ int
 find_srec (struct_form * fd, char *name)
 {
   int a;
-//  int b;
 
 	debug("No of records : %d",fd->records.records_len);
 
@@ -480,6 +485,6 @@ char_val (char *s)
 }
 
 
-// ============================== EOF ==========================
+/* ============================== EOF ========================== */
 
 

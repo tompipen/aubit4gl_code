@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.5 2002-06-05 07:04:55 afalout Exp $
+# $Id: report.c,v 1.6 2002-06-06 12:31:27 afalout Exp $
 #
 */
 
@@ -416,9 +416,11 @@ int a;
 static char buff[30000];
 char tmpbuff[256];
 
-	// hopefully b should be fairly random within this session..
-	// as the same report cannot be running twice at the same time.....
-    // Andrej say: yes it can!
+	 /*
+	 hopefully b should be fairly random within this session..
+	 as the same report cannot be running twice at the same time.....
+     Andrej say: yes it can!
+     */
 	sprintf(buff,"create temp table %s (\n",gen_rep_tab_name(b));
 
 	for (a=0;a<n;a++) {
@@ -510,7 +512,7 @@ char tbuff[1024];
 		}
 	}
 	debug("Got select statement as : %s\n",buff);
-	sprintf(tbuff,"_%d",(int)gen_rep_tab_name(b)); // warning: int format, pointer arg (arg 3)
+	sprintf(tbuff,"_%d",(int)gen_rep_tab_name(b));
 	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, 0, obind, 0, buff), 0, tbuff);
 
 	if (sqlca.sqlcode!=0) return 0;
@@ -530,8 +532,8 @@ int
 report_table_fetch(struct BINDING *reread,int n,struct BINDING *b)
 {
 char tbuff[1024];
-//int a;
-	sprintf(tbuff,"_%d",(int)gen_rep_tab_name(b)); // warning: int format, pointer arg (arg 3)
+
+	sprintf(tbuff,"_%d",(int)gen_rep_tab_name(b));
 	A4GLSQL_set_sqlca_sqlcode (0);
 	A4GLSQL_fetch_cursor (tbuff, 2, 1, n, reread);
 	push_params(reread,n);
@@ -626,4 +628,4 @@ rep_file_print(struct rep_structure *rep, char *fname, int opt_semi)
 	exitwith("Not implemented");
 }
 
-// ============================= EOF ================================
+/* ============================= EOF ================================ */

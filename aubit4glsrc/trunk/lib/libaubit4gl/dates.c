@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.6 2002-06-01 11:54:59 afalout Exp $
+# $Id: dates.c,v 1.7 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -51,9 +51,6 @@
 #include <string.h>
 #include <locale.h>
 #include <time.h>
-//#include <unistd.h>
-//#include <pwd.h>
-
 
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
@@ -124,7 +121,6 @@ struct s_days {
 */
 
 void			day_array 	(int, int, int *);
-//int			day_in_week (int, int, int);
 int				day_in_year (int, int, int);
 int     		y2kmode		(int yr);
 
@@ -276,10 +272,8 @@ get_yr(int d)
 int
 get_month(int d)
 {
-//	int a;
 	int i, leap;
 	int year;
-//	int yr2;
 	int day;
 	if (d==DATE_INVALID) return d;
 	year=get_yr(d);
@@ -302,7 +296,6 @@ get_month(int d)
 int
 get_date(int d,int *day,int *mn,int *yr)
 {
-//	int a;
 	int i, leap;
 	int year;
         debug("d=%d\n",d);
@@ -346,10 +339,8 @@ y2kmode(int yr)
 {
 char *ptr;
 	int z;
-//	struct tm *local_time;
-//	time_t nw;
-	int year; //yflag; ch, month
-//	int zz;
+	int year;
+
 
 	#ifdef DEBUG
 	/* {DEBUG} */ {        debug("y2kmode");}
@@ -439,5 +430,5 @@ char *ptr;
 }
 
 
-// ============================= EOF ===============================
+/* ============================= EOF =============================== */
 

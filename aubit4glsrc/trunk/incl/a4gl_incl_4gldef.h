@@ -1,10 +1,13 @@
 /* *****************************************************************************
  * (c) 1997-2002 Aubit Computing Ltd.
  *
- * $Id: a4gl_incl_4gldef.h,v 1.4 2002-05-28 10:32:08 afalout Exp $
+ * $Id: a4gl_incl_4gldef.h,v 1.5 2002-06-06 12:31:26 afalout Exp $
  *
  * Change History :
  *	$Log: not supported by cvs2svn $
+ *	Revision 1.4  2002/05/28 10:32:08  afalout
+ *	Fixing redundant declarations with -Wredundant-decls
+ *	
  *	Revision 1.3  2002/05/20 11:41:12  afalout
  *	Fixing warnings wiht -Wall
  *
@@ -71,7 +74,7 @@
 	 * Used to bind values to and from SQL.
 	 */
 
-	//warning: struct binding in a4gl_4glc_compiledefs is DIFFERENT!!!!
+	/* warning: struct binding in a4gl_4glc_compiledefs is DIFFERENT!!!! */
 	struct BINDING {
 		void *ptr; /**< A pointer to the variable bounded */
 		int dtype; /**< The data type of the variable bounded */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_stack_clnt.c,v 1.3 2002-05-17 07:08:34 afalout Exp $
+# $Id: rpc_stack_clnt.c,v 1.4 2002-06-06 12:31:28 afalout Exp $
 #*/
 
 /**
@@ -98,10 +98,10 @@ static return_values clnt_res;
 	if (clnt_call(
 			clnt,
 			CALL_REMOTE_FUNC,
-			(xdrproc_t)xdr_call,   		//rpc_stack_clnt.c:28: warning: passing arg 3 of pointer to function from incompatible pointer type
-			(caddr_t)&arg1,      		//rpc_stack_clnt.c:28: warning: passing arg 4 of pointer to function from incompatible pointer type
-			(xdrproc_t)xdr_return_values,  //rpc_stack_clnt.c:28: warning: passing arg 5 of pointer to function from incompatible pointer type
-			(caddr_t)&clnt_res,			//rpc_stack_clnt.c:28: warning: passing arg 6 of pointer to function from incompatible pointer type
+			(xdrproc_t)xdr_call,
+			(caddr_t)&arg1,
+			(xdrproc_t)xdr_return_values,
+			(caddr_t)&clnt_res,
 			TIMEOUT
 			)
 				!= RPC_SUCCESS)
@@ -113,5 +113,5 @@ static return_values clnt_res;
 }
 
 
-// ================================= EOF ===============================
+/* ============================= EOF =============================== */
 

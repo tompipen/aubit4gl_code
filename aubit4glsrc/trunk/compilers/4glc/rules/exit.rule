@@ -20,7 +20,7 @@ ext_cmd : EXIT_WHILE
 	| EXIT_MENU  {
 	if (in_command("MENU")) {
 		exit_loop("MENU");
-		//lex_printc("cmd_no=-3;continue;\n");
+		/* lex_printc("cmd_no=-3;continue;\n"); */
 	} 
               else YYERROR;}
 	| EXIT_CASE
@@ -44,11 +44,13 @@ continue_cmd : CONTINUE_WHILE
 	| CONTINUE_MENU
         { if (in_command("MENU")) {  continue_loop("MENU");  } else { YYERROR;} }
 
-// There is no continue case...
-	//| CONTINUE_CASE
-        //{ if (in_command("CASE")) { continue_loop("CASE");  } else { YYERROR;} }
+/* There is no continue case... */
+	/* | CONTINUE_CASE */
+        /* { if (in_command("CASE")) { continue_loop("CASE");  } else { YYERROR;} } */
 	| CONTINUE_PROMPT
         { if (in_command("PROMPT")) { continue_loop("PROMPT"); } else { YYERROR;} }
 ;
 
+
+/* =============================== exit.rule ========================= */
 

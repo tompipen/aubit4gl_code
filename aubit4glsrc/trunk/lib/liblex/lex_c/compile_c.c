@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.20 2002-06-05 07:04:55 afalout Exp $
+# $Id: compile_c.c,v 1.21 2002-06-06 12:31:27 afalout Exp $
 #
 */
 
@@ -1316,9 +1316,12 @@ print_bind (char i)
   if (i == 'O')
     {
       printc ("\n");
-      expand_bind (&ordbind[0], 'O', ordbindcnt);  //warning: passing arg 1 of `expand_bind' from incompatible pointer type
-		//void expand_bind (struct binding * bind, int btype, int cnt);
-        //extern struct binding ordbind[NUMBINDINGS];
+      expand_bind (&ordbind[0], 'O', ordbindcnt);  
+	  /*
+	  warning: passing arg 1 of `expand_bind' from incompatible pointer type
+		void expand_bind (struct binding * bind, int btype, int cnt);
+        extern struct binding ordbind[NUMBINDINGS];
+        */
 
 
 	  printc ("static struct BINDING _ordbind[]={\n");

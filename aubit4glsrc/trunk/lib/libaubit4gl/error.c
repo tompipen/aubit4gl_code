@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.8 2002-06-01 11:54:59 afalout Exp $
+# $Id: error.c,v 1.9 2002-06-06 12:31:26 afalout Exp $
 #
 */
 
@@ -67,7 +67,6 @@
 
 char errorbuff[256]="";
 char lasterrorstr[1024]="";
-//extern int status;
 int cache_status=0;
 int cache_statusno=0;
 
@@ -184,4 +183,4 @@ int a=0;
 	return lasterrorstr;
 }
 
-// ======================== EOF =======================
+/* ======================== EOF ======================= */
