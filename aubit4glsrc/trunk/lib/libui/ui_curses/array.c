@@ -24,8 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.25 2004-01-17 10:41:42 mikeaubury Exp $
+# $Id: array.c,v 1.26 2004-01-17 11:10:31 mikeaubury Exp $
 #*/
+
+
+
+static char *module_id="$Id: array.c,v 1.26 2004-01-17 11:10:31 mikeaubury Exp $";
+
+
 
 /**
  * @file

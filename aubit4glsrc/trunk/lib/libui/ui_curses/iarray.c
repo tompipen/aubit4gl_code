@@ -24,9 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.68 2004-01-17 10:41:42 mikeaubury Exp $
+# $Id: iarray.c,v 1.69 2004-01-17 11:10:31 mikeaubury Exp $
 #*/
 
+static char *module_id="$Id: iarray.c,v 1.69 2004-01-17 11:10:31 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation

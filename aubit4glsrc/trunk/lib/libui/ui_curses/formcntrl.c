@@ -24,9 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.46 2004-01-17 09:40:45 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.47 2004-01-17 11:10:31 mikeaubury Exp $
 #*/
 
+static char *module_id="$Id: formcntrl.c,v 1.47 2004-01-17 11:10:31 mikeaubury Exp $";
 /**
  * @file
  * Form movement control

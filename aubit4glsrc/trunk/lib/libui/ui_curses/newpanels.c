@@ -24,8 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.84 2004-01-15 15:47:02 mikeaubury Exp $
+# $Id: newpanels.c,v 1.85 2004-01-17 11:10:31 mikeaubury Exp $
 #*/
+static char *module_id="$Id: newpanels.c,v 1.85 2004-01-17 11:10:31 mikeaubury Exp $";
 
 /**
  * @file

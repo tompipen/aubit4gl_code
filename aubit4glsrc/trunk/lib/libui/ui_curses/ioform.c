@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.88 2004-01-17 09:40:45 mikeaubury Exp $
+# $Id: ioform.c,v 1.89 2004-01-17 11:10:31 mikeaubury Exp $
 #*/
-
+static char *module_id="$Id: ioform.c,v 1.89 2004-01-17 11:10:31 mikeaubury Exp $";
 /**
  * @file
  *

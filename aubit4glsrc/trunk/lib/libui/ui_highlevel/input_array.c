@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.2 2004-01-16 19:03:53 mikeaubury Exp $
+# $Id: input_array.c,v 1.3 2004-01-17 11:10:40 mikeaubury Exp $
 #*/
 
 /**
@@ -1708,6 +1708,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_INPUT)
     {
 	A4GL_debug("AFTER INPUT ");
+ 	A4GL_comments(0);
       if (arr->fcntrl[a].state == 99)
 	{
 	A4GL_debug("AFTER INPUT state 99");
@@ -1720,6 +1721,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
 
       if (arr->fcntrl[a].state == 50)
 	{
+ 	A4GL_comments(0);
 	A4GL_debug("AFTER INPUT state 50");
 	  new_state = 0;
 	  if (A4GL_has_event(-94,evt)) rval = A4GL_has_event(-94,evt);

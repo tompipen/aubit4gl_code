@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.2 2004-01-16 19:03:53 mikeaubury Exp $
+# $Id: display_array.c,v 1.3 2004-01-17 11:10:40 mikeaubury Exp $
 #*/
 
 /**
@@ -374,12 +374,13 @@ disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
       a = A4GL_getch_win ();
       if (abort_pressed) a=-100;
 
+      m_lastkey = a;
+
       if (A4GL_has_event_for_keypress(a,evt)) {
       		return A4GL_has_event_for_keypress(a,evt);
       }
 
       arr->processed_onkey = 0;
-      m_lastkey = a;
     }
 
   redisp = 0;
@@ -696,7 +697,8 @@ UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,int s
       A4GL_set_arr_curr (disp->arr_line);
       A4GL_set_scr_line (disp->scr_line);
       A4GL_LL_screen_update ();
-      return -10;
+      if (A4GL_has_event(-10,evt)) return A4GL_has_event(-10,evt);
+      //return -10;
     }
   A4GL_debug ("disparr4");
   return disp_loop (disp,evt);

@@ -24,9 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.18 2004-01-09 11:29:53 mikeaubury Exp $
+# $Id: colours.c,v 1.19 2004-01-17 11:10:31 mikeaubury Exp $
 #*/
 
+static char *module_id="$Id: colours.c,v 1.19 2004-01-17 11:10:31 mikeaubury Exp $";
 /**
  * @file
  * Gets the color code.

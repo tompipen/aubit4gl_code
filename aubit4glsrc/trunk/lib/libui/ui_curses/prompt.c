@@ -24,8 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.38 2004-01-17 09:40:45 mikeaubury Exp $
+# $Id: prompt.c,v 1.39 2004-01-17 11:10:31 mikeaubury Exp $
 #*/
+static char *module_id="$Id: prompt.c,v 1.39 2004-01-17 11:10:31 mikeaubury Exp $";
 
 /**
  * @file

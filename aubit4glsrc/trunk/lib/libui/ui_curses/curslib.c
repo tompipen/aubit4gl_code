@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.81 2004-01-16 19:03:52 mikeaubury Exp $
+# $Id: curslib.c,v 1.82 2004-01-17 11:10:31 mikeaubury Exp $
 #*/
 
 /**
@@ -40,6 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
+static char *module_id="$Id: curslib.c,v 1.82 2004-01-17 11:10:31 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
