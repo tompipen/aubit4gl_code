@@ -1,6 +1,6 @@
 ###########################################################################
 #
-#   @(#)$Id: q4gl.mk,v 1.8 2003-02-02 01:13:48 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.9 2003-02-10 02:08:29 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -192,10 +192,16 @@ Q4GL_CLEAN_FLAGS	=$(addprefix *,	$(Q4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(Q4
 
 #######################
 # Rule for compiling a program from single 4gl file
-#FIXME: is this usable at all in real life? REMOVE IT
-#.4gl.4qe:
+.4gl${Q4GL_PRG_EXT}:
 #	${Q4GL_CL} -o $@ $< ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
-
+#	${FAIL_CMPL_4GL}${Q4GL_CC} $< -o $*${Q4GL_OBJ_EXT}
+#-p $(<D)
+	
+	
+	
+	${FAIL_CMPL_4GL}${Q4GL_CC} $<
+	${FAIL_CMPL_4GL}${FAIL_CMPL_C}${QXCC} -c ${Q4GL_CL_FLAGS} $*.c -o $*${Q4GL_OBJ_EXT}
+	${FAIL_LINK}${Q4GL_CL} -o $@ $*${Q4GL_OBJ_EXT} ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
 
 ####################################
 # Rule for making a library using .mk make file

@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.14 2003-01-21 08:25:48 afalout Exp $
+# $Id: amake,v 1.15 2003-02-10 02:08:13 afalout Exp $
 
 #####################################################################
 
@@ -309,8 +309,15 @@ fi
     do
         echo "aMaking $ONEPROG"
 
+		COMPOSITE_IS_TMP=1
+
 		if [ "$PARAM_PATH" != "" ]; then
             cd $PARAM_PATH
+        fi
+
+        if [ "$USER" = "" ]
+        then
+			USER=unknown
         fi
 
 		COMPOSITE=/tmp/$USER-$ONEPROG
@@ -360,6 +367,7 @@ fi
 
 		else
 			COMPOSITE=$ONEPROG
+			COMPOSITE_IS_TMP=0
 		fi
 
 		if [ "$VERBOSE" = "1" ]
@@ -375,6 +383,16 @@ fi
         fi
 
 		RET=$?
+
+		if [ "$COMPOSITE_IS_TMP" = "1" ]; then
+			if [ "$VERBOSE" = "1" ]
+	        then
+	            echo "Removing temp $COMPOSITE"
+	        fi
+			rm $COMPOSITE
+        fi
+
+
 		if test $RET != "0"
 		then
 		    echo "ERROR: amake failed."

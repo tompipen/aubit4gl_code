@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.112 2003-02-07 04:00:35 afalout Exp $
+# $Id: Makefile.in,v 1.113 2003-02-10 02:07:09 afalout Exp $
 #
 
 ## ==================================================================
@@ -452,6 +452,7 @@ install.setmod:
 #install configuration settings
 install.config: install.home
 	$(CP) ${TOETC} $(ETC_DEST)
+	$(CP) ${TOCONVSQL} $(CONVSQL_DEST)
 	@echo "Configuration examples installed to $(INSTALL_DIR)/etc"
 
 #Install files in user's home directory
@@ -486,7 +487,7 @@ pack.ide:
 #Create installation tree
 install.tree:
 	${MKPATH} $(BIN_DEST) $(LIB_DEST) $(ETC_DEST) \
-	$(INCL_DEST) $(TEST_DEST)/gui $(DOC_DEST)
+	$(INCL_DEST) $(TEST_DEST)/gui $(DOC_DEST) ${CONVSQL_DEST}
 	@echo "Aubit 4gl compiler instalation tree created"
 
 install.makefile-install:

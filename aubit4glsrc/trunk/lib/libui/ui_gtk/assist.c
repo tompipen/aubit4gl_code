@@ -192,7 +192,7 @@ extern long aiplib_status;
 #line 109 "assist.4gl"
 
 #line 109 "assist.4gl"
-int aclfgl_set_window_title (int nargs){ 
+int aclfgl_set_window_title (int nargs){ /* Funtion Start */
 #line 109 "assist.4gl"
 
 #line 109 "assist.4gl"
@@ -222,7 +222,13 @@ CHK_UI
 #line 119 "assist.4gl"
 return 0;
 #line 119 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 119 "assist.4gl"
+
+#line 119 "assist.4gl"
+
+#line 119 "assist.4gl"
+
 #line 119 "assist.4gl"
  
 #line 123 "assist.4gl"
@@ -232,7 +238,7 @@ return 0;
 #line 123 "assist.4gl"
 
 #line 123 "assist.4gl"
-int aclfgl_get_window_title (int nargs){ 
+int aclfgl_get_window_title (int nargs){ /* Funtion Start */
 #line 123 "assist.4gl"
 
 #line 123 "assist.4gl"
@@ -262,7 +268,13 @@ CHK_UI
 #line 131 "assist.4gl"
 return 0;
 #line 131 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 131 "assist.4gl"
+
+#line 131 "assist.4gl"
+
+#line 131 "assist.4gl"
+
 #line 131 "assist.4gl"
  
 #line 136 "assist.4gl"
@@ -272,7 +284,7 @@ return 0;
 #line 136 "assist.4gl"
 
 #line 136 "assist.4gl"
-int aclfgl_set_window_icon (int nargs){ 
+int aclfgl_set_window_icon (int nargs){ /* Funtion Start */
 #line 136 "assist.4gl"
 
 #line 136 "assist.4gl"
@@ -310,7 +322,13 @@ CHK_UI
 #line 149 "assist.4gl"
 return 0;
 #line 149 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 149 "assist.4gl"
+
+#line 149 "assist.4gl"
+
+#line 149 "assist.4gl"
+
 #line 149 "assist.4gl"
  
 #line 153 "assist.4gl"
@@ -320,7 +338,7 @@ return 0;
 #line 153 "assist.4gl"
 
 #line 153 "assist.4gl"
-int aclfgl_run_gui (int nargs){ 
+int aclfgl_run_gui (int nargs){ /* Funtion Start */
 #line 153 "assist.4gl"
 
 #line 153 "assist.4gl"
@@ -352,7 +370,13 @@ CHK_UI
 #line 162 "assist.4gl"
 return 0;
 #line 162 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 162 "assist.4gl"
+
+#line 162 "assist.4gl"
+
+#line 162 "assist.4gl"
+
 #line 162 "assist.4gl"
  
 #line 181 "assist.4gl"
@@ -362,7 +386,7 @@ return 0;
 #line 181 "assist.4gl"
 
 #line 181 "assist.4gl"
-int aclfgl_set_frame_style (int nargs){ 
+int aclfgl_set_frame_style (int nargs){ /* Funtion Start */
 #line 181 "assist.4gl"
 
 #line 181 "assist.4gl"
@@ -390,7 +414,13 @@ frame_style=s;
 #line 188 "assist.4gl"
 return 0;
 #line 188 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 188 "assist.4gl"
+
+#line 188 "assist.4gl"
+
+#line 188 "assist.4gl"
+
 #line 188 "assist.4gl"
  
 #line 195 "assist.4gl"
@@ -400,7 +430,7 @@ return 0;
 #line 195 "assist.4gl"
 
 #line 195 "assist.4gl"
-int aclfgl_yeild (int nargs){ 
+int aclfgl_yeild (int nargs){ /* Funtion Start */
 #line 195 "assist.4gl"
 
 #line 195 "assist.4gl"
@@ -426,7 +456,13 @@ CHK_UI
 #line 201 "assist.4gl"
 return 0;
 #line 201 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 201 "assist.4gl"
+
+#line 201 "assist.4gl"
+
+#line 201 "assist.4gl"
+
 #line 201 "assist.4gl"
  
 #line 214 "assist.4gl"
@@ -436,7 +472,7 @@ return 0;
 #line 214 "assist.4gl"
 
 #line 214 "assist.4gl"
-int aclfgl_set_window_type (int nargs){ 
+int aclfgl_set_window_type (int nargs){ /* Funtion Start */
 #line 214 "assist.4gl"
 
 #line 214 "assist.4gl"
@@ -464,7 +500,13 @@ window_frame_type=a;
 #line 221 "assist.4gl"
 return 0;
 #line 221 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 221 "assist.4gl"
+
+#line 221 "assist.4gl"
+
+#line 221 "assist.4gl"
+
 #line 221 "assist.4gl"
  
 #line 225 "assist.4gl"
@@ -474,7 +516,7 @@ return 0;
 #line 225 "assist.4gl"
 
 #line 225 "assist.4gl"
-int aclfgl_set_prompt_style (int nargs){ 
+int aclfgl_set_prompt_style (int nargs){ /* Funtion Start */
 #line 225 "assist.4gl"
 
 #line 225 "assist.4gl"
@@ -502,7 +544,13 @@ gui_prompt_style(a);
 #line 232 "assist.4gl"
 return 0;
 #line 232 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 232 "assist.4gl"
+
+#line 232 "assist.4gl"
+
+#line 232 "assist.4gl"
+
 #line 232 "assist.4gl"
 GtkWidget *file_selector;
 #line 239 "assist.4gl"
@@ -528,7 +576,7 @@ store_filename(GtkFileSelection *selector, gpointer user_data)
 #line 251 "assist.4gl"
 
 #line 251 "assist.4gl"
-int aclfgl_get_filename (int nargs){ 
+int aclfgl_get_filename (int nargs){ /* Funtion Start */
 #line 251 "assist.4gl"
 
 #line 251 "assist.4gl"
@@ -676,7 +724,13 @@ A4GLSTK_popFunction();
 #line 305 "assist.4gl"
 return 0;
 #line 305 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 305 "assist.4gl"
+
+#line 305 "assist.4gl"
+
+#line 305 "assist.4gl"
+
 #line 305 "assist.4gl"
  
 #line 310 "assist.4gl"
@@ -686,7 +740,7 @@ return 0;
 #line 310 "assist.4gl"
 
 #line 310 "assist.4gl"
-int aclfgl_app_top_get (int nargs){ 
+int aclfgl_app_top_get (int nargs){ /* Funtion Start */
 #line 310 "assist.4gl"
 
 #line 310 "assist.4gl"
@@ -738,7 +792,13 @@ A4GLSTK_popFunction();
 #line 318 "assist.4gl"
 return 0;
 #line 318 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 318 "assist.4gl"
+
+#line 318 "assist.4gl"
+
+#line 318 "assist.4gl"
+
 #line 318 "assist.4gl"
  
 #line 323 "assist.4gl"
@@ -748,7 +808,7 @@ return 0;
 #line 323 "assist.4gl"
 
 #line 323 "assist.4gl"
-int aclfgl_app_hide (int nargs){ 
+int aclfgl_app_hide (int nargs){ /* Funtion Start */
 #line 323 "assist.4gl"
 
 #line 323 "assist.4gl"
@@ -774,7 +834,13 @@ gtk_widget_hide(win_screen);
 #line 329 "assist.4gl"
 return 0;
 #line 329 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 329 "assist.4gl"
+
+#line 329 "assist.4gl"
+
+#line 329 "assist.4gl"
+
 #line 329 "assist.4gl"
  
 #line 333 "assist.4gl"
@@ -784,7 +850,7 @@ return 0;
 #line 333 "assist.4gl"
 
 #line 333 "assist.4gl"
-int aclfgl_app_show (int nargs){ 
+int aclfgl_app_show (int nargs){ /* Funtion Start */
 #line 333 "assist.4gl"
 
 #line 333 "assist.4gl"
@@ -810,7 +876,13 @@ gtk_widget_show(win_screen);
 #line 339 "assist.4gl"
 return 0;
 #line 339 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 339 "assist.4gl"
+
+#line 339 "assist.4gl"
+
+#line 339 "assist.4gl"
+
 #line 339 "assist.4gl"
  
 #line 343 "assist.4gl"
@@ -820,7 +892,7 @@ return 0;
 #line 343 "assist.4gl"
 
 #line 343 "assist.4gl"
-int aclfgl_app_maximize (int nargs){ 
+int aclfgl_app_maximize (int nargs){ /* Funtion Start */
 #line 343 "assist.4gl"
 
 #line 343 "assist.4gl"
@@ -846,7 +918,13 @@ CHK_UI
 #line 349 "assist.4gl"
 return 0;
 #line 349 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 349 "assist.4gl"
+
+#line 349 "assist.4gl"
+
+#line 349 "assist.4gl"
+
 #line 349 "assist.4gl"
  
 #line 353 "assist.4gl"
@@ -856,7 +934,7 @@ return 0;
 #line 353 "assist.4gl"
 
 #line 353 "assist.4gl"
-int aclfgl_app_minimize (int nargs){ 
+int aclfgl_app_minimize (int nargs){ /* Funtion Start */
 #line 353 "assist.4gl"
 
 #line 353 "assist.4gl"
@@ -882,7 +960,13 @@ CHK_UI
 #line 359 "assist.4gl"
 return 0;
 #line 359 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 359 "assist.4gl"
+
+#line 359 "assist.4gl"
+
+#line 359 "assist.4gl"
+
 #line 359 "assist.4gl"
  
 #line 363 "assist.4gl"
@@ -892,7 +976,7 @@ return 0;
 #line 363 "assist.4gl"
 
 #line 363 "assist.4gl"
-int aclfgl_app_restore (int nargs){ 
+int aclfgl_app_restore (int nargs){ /* Funtion Start */
 #line 363 "assist.4gl"
 
 #line 363 "assist.4gl"
@@ -918,7 +1002,13 @@ CHK_UI
 #line 369 "assist.4gl"
 return 0;
 #line 369 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 369 "assist.4gl"
+
+#line 369 "assist.4gl"
+
+#line 369 "assist.4gl"
+
 #line 369 "assist.4gl"
  
 #line 374 "assist.4gl"
@@ -928,7 +1018,7 @@ return 0;
 #line 374 "assist.4gl"
 
 #line 374 "assist.4gl"
-int aclfgl_entry_max_chars_set (int nargs){ 
+int aclfgl_entry_max_chars_set (int nargs){ /* Funtion Start */
 #line 374 "assist.4gl"
 
 #line 374 "assist.4gl"
@@ -960,7 +1050,13 @@ gtk_entry_set_max_length(GTK_ENTRY(g),l);
 #line 382 "assist.4gl"
 return 0;
 #line 382 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 382 "assist.4gl"
+
+#line 382 "assist.4gl"
+
+#line 382 "assist.4gl"
+
 #line 382 "assist.4gl"
  
 #line 388 "assist.4gl"
@@ -970,7 +1066,7 @@ return 0;
 #line 388 "assist.4gl"
 
 #line 388 "assist.4gl"
-int aclfgl_entry_selected_cut (int nargs){ 
+int aclfgl_entry_selected_cut (int nargs){ /* Funtion Start */
 #line 388 "assist.4gl"
 
 #line 388 "assist.4gl"
@@ -1002,7 +1098,13 @@ CHK_UI
 #line 397 "assist.4gl"
 return 0;
 #line 397 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 397 "assist.4gl"
+
+#line 397 "assist.4gl"
+
+#line 397 "assist.4gl"
+
 #line 397 "assist.4gl"
  
 #line 401 "assist.4gl"
@@ -1012,7 +1114,7 @@ return 0;
 #line 401 "assist.4gl"
 
 #line 401 "assist.4gl"
-int aclfgl_entry_selected_copy (int nargs){ 
+int aclfgl_entry_selected_copy (int nargs){ /* Funtion Start */
 #line 401 "assist.4gl"
 
 #line 401 "assist.4gl"
@@ -1044,7 +1146,13 @@ CHK_UI
 #line 410 "assist.4gl"
 return 0;
 #line 410 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 410 "assist.4gl"
+
+#line 410 "assist.4gl"
+
+#line 410 "assist.4gl"
+
 #line 410 "assist.4gl"
  
 #line 414 "assist.4gl"
@@ -1054,7 +1162,7 @@ return 0;
 #line 414 "assist.4gl"
 
 #line 414 "assist.4gl"
-int aclfgl_entry_selected_paste (int nargs){ 
+int aclfgl_entry_selected_paste (int nargs){ /* Funtion Start */
 #line 414 "assist.4gl"
 
 #line 414 "assist.4gl"
@@ -1086,7 +1194,13 @@ CHK_UI
 #line 423 "assist.4gl"
 return 0;
 #line 423 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 423 "assist.4gl"
+
+#line 423 "assist.4gl"
+
+#line 423 "assist.4gl"
+
 #line 423 "assist.4gl"
  
 #line 428 "assist.4gl"
@@ -1096,7 +1210,7 @@ return 0;
 #line 428 "assist.4gl"
 
 #line 428 "assist.4gl"
-int aclfgl_entry_selection_set (int nargs){ 
+int aclfgl_entry_selection_set (int nargs){ /* Funtion Start */
 #line 428 "assist.4gl"
 
 #line 428 "assist.4gl"
@@ -1136,7 +1250,13 @@ CHK_UI
 #line 438 "assist.4gl"
 return 0;
 #line 438 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 438 "assist.4gl"
+
+#line 438 "assist.4gl"
+
+#line 438 "assist.4gl"
+
 #line 438 "assist.4gl"
  
 #line 442 "assist.4gl"
@@ -1146,7 +1266,7 @@ return 0;
 #line 442 "assist.4gl"
 
 #line 442 "assist.4gl"
-int aclfgl_entry_text_get (int nargs){ 
+int aclfgl_entry_text_get (int nargs){ /* Funtion Start */
 #line 442 "assist.4gl"
 
 #line 442 "assist.4gl"
@@ -1188,7 +1308,13 @@ CHK_UI
 #line 456 "assist.4gl"
 return 0;
 #line 456 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 456 "assist.4gl"
+
+#line 456 "assist.4gl"
+
+#line 456 "assist.4gl"
+
 #line 456 "assist.4gl"
  
 #line 461 "assist.4gl"
@@ -1198,7 +1324,7 @@ return 0;
 #line 461 "assist.4gl"
 
 #line 461 "assist.4gl"
-int aclfgl_field_hide (int nargs){ 
+int aclfgl_field_hide (int nargs){ /* Funtion Start */
 #line 461 "assist.4gl"
 
 #line 461 "assist.4gl"
@@ -1230,7 +1356,13 @@ gtk_widget_hide((GtkWidget *)g);
 #line 470 "assist.4gl"
 return 0;
 #line 470 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 470 "assist.4gl"
+
+#line 470 "assist.4gl"
+
+#line 470 "assist.4gl"
+
 #line 470 "assist.4gl"
  
 #line 474 "assist.4gl"
@@ -1240,7 +1372,7 @@ return 0;
 #line 474 "assist.4gl"
 
 #line 474 "assist.4gl"
-int aclfgl_field_show (int nargs){ 
+int aclfgl_field_show (int nargs){ /* Funtion Start */
 #line 474 "assist.4gl"
 
 #line 474 "assist.4gl"
@@ -1268,7 +1400,13 @@ gtk_widget_show((GtkWidget *)g);
 #line 481 "assist.4gl"
 return 0;
 #line 481 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 481 "assist.4gl"
+
+#line 481 "assist.4gl"
+
+#line 481 "assist.4gl"
+
 #line 481 "assist.4gl"
  
 #line 485 "assist.4gl"
@@ -1278,7 +1416,7 @@ return 0;
 #line 485 "assist.4gl"
 
 #line 485 "assist.4gl"
-int aclfgl_form_caption_get (int nargs){ 
+int aclfgl_form_caption_get (int nargs){ /* Funtion Start */
 #line 485 "assist.4gl"
 
 #line 485 "assist.4gl"
@@ -1304,7 +1442,13 @@ CHK_UI
 #line 491 "assist.4gl"
 return 0;
 #line 491 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 491 "assist.4gl"
+
+#line 491 "assist.4gl"
+
+#line 491 "assist.4gl"
+
 #line 491 "assist.4gl"
  
 #line 495 "assist.4gl"
@@ -1314,7 +1458,7 @@ return 0;
 #line 495 "assist.4gl"
 
 #line 495 "assist.4gl"
-int aclfgl_form_hide (int nargs){ 
+int aclfgl_form_hide (int nargs){ /* Funtion Start */
 #line 495 "assist.4gl"
 
 #line 495 "assist.4gl"
@@ -1340,7 +1484,13 @@ CHK_UI
 #line 501 "assist.4gl"
 return 0;
 #line 501 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 501 "assist.4gl"
+
+#line 501 "assist.4gl"
+
+#line 501 "assist.4gl"
+
 #line 501 "assist.4gl"
  
 #line 505 "assist.4gl"
@@ -1350,7 +1500,7 @@ return 0;
 #line 505 "assist.4gl"
 
 #line 505 "assist.4gl"
-int aclfgl_form_show (int nargs){ 
+int aclfgl_form_show (int nargs){ /* Funtion Start */
 #line 505 "assist.4gl"
 
 #line 505 "assist.4gl"
@@ -1376,7 +1526,13 @@ CHK_UI
 #line 511 "assist.4gl"
 return 0;
 #line 511 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 511 "assist.4gl"
+
+#line 511 "assist.4gl"
+
+#line 511 "assist.4gl"
+
 #line 511 "assist.4gl"
  
 #line 515 "assist.4gl"
@@ -1386,7 +1542,7 @@ return 0;
 #line 515 "assist.4gl"
 
 #line 515 "assist.4gl"
-int aclfgl_form_is_open (int nargs){ 
+int aclfgl_form_is_open (int nargs){ /* Funtion Start */
 #line 515 "assist.4gl"
 
 #line 515 "assist.4gl"
@@ -1422,7 +1578,13 @@ CHK_UI
 #line 526 "assist.4gl"
 return 0;
 #line 526 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 526 "assist.4gl"
+
+#line 526 "assist.4gl"
+
+#line 526 "assist.4gl"
+
 #line 526 "assist.4gl"
 static int tolist(GtkWidget *a) {
 #line 533 "assist.4gl"
@@ -1440,7 +1602,7 @@ static int tolist(GtkWidget *a) {
 #line 542 "assist.4gl"
 
 #line 542 "assist.4gl"
-int aclfgl_list_count_get (int nargs){ 
+int aclfgl_list_count_get (int nargs){ /* Funtion Start */
 #line 542 "assist.4gl"
 
 #line 542 "assist.4gl"
@@ -1472,7 +1634,13 @@ CHK_UI
 #line 551 "assist.4gl"
 return 0;
 #line 551 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 551 "assist.4gl"
+
+#line 551 "assist.4gl"
+
+#line 551 "assist.4gl"
+
 #line 551 "assist.4gl"
  
 #line 555 "assist.4gl"
@@ -1482,7 +1650,7 @@ return 0;
 #line 555 "assist.4gl"
 
 #line 555 "assist.4gl"
-int aclfgl_list_current_get (int nargs){ 
+int aclfgl_list_current_get (int nargs){ /* Funtion Start */
 #line 555 "assist.4gl"
 
 #line 555 "assist.4gl"
@@ -1522,7 +1690,13 @@ return 1;
 #line 568 "assist.4gl"
 return 0;
 #line 568 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 568 "assist.4gl"
+
+#line 568 "assist.4gl"
+
+#line 568 "assist.4gl"
+
 #line 568 "assist.4gl"
  
 #line 572 "assist.4gl"
@@ -1532,7 +1706,7 @@ return 0;
 #line 572 "assist.4gl"
 
 #line 572 "assist.4gl"
-int aclfgl_list_delete (int nargs){ 
+int aclfgl_list_delete (int nargs){ /* Funtion Start */
 #line 572 "assist.4gl"
 
 #line 572 "assist.4gl"
@@ -1566,7 +1740,13 @@ gtk_clist_remove(GTK_CLIST(s),n);
 #line 580 "assist.4gl"
 return 0;
 #line 580 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 580 "assist.4gl"
+
+#line 580 "assist.4gl"
+
+#line 580 "assist.4gl"
+
 #line 580 "assist.4gl"
  
 #line 584 "assist.4gl"
@@ -1576,7 +1756,7 @@ return 0;
 #line 584 "assist.4gl"
 
 #line 584 "assist.4gl"
-int aclfgl_list_insert (int nargs){ 
+int aclfgl_list_insert (int nargs){ /* Funtion Start */
 #line 584 "assist.4gl"
 
 #line 584 "assist.4gl"
@@ -1616,7 +1796,13 @@ gtk_clist_insert((GtkCList *)s,(gint)n,(char **)&str);
 #line 594 "assist.4gl"
 return 0;
 #line 594 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 594 "assist.4gl"
+
+#line 594 "assist.4gl"
+
+#line 594 "assist.4gl"
+
 #line 594 "assist.4gl"
  
 #line 598 "assist.4gl"
@@ -1626,7 +1812,7 @@ return 0;
 #line 598 "assist.4gl"
 
 #line 598 "assist.4gl"
-int aclfgl_list_selected (int nargs){ 
+int aclfgl_list_selected (int nargs){ /* Funtion Start */
 #line 598 "assist.4gl"
 
 #line 598 "assist.4gl"
@@ -1668,7 +1854,13 @@ sel = GTK_CLIST(s)->selection;
 #line 610 "assist.4gl"
 return 0;
 #line 610 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 610 "assist.4gl"
+
+#line 610 "assist.4gl"
+
+#line 610 "assist.4gl"
+
 #line 610 "assist.4gl"
  
 #line 612 "assist.4gl"
@@ -1678,7 +1870,7 @@ return 0;
 #line 612 "assist.4gl"
 
 #line 612 "assist.4gl"
-int aclfgl_splat_with_image (int nargs){ 
+int aclfgl_splat_with_image (int nargs){ /* Funtion Start */
 #line 612 "assist.4gl"
 
 #line 612 "assist.4gl"
@@ -1830,5 +2022,11 @@ A4GLSTK_popFunction();
 #line 632 "assist.4gl"
 return 0;
 #line 632 "assist.4gl"
-}
+}/* END OF FUNCTION */
+#line 632 "assist.4gl"
+
+#line 632 "assist.4gl"
+
+#line 632 "assist.4gl"
+
 #line 632 "assist.4gl"

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.59 2003-02-08 06:48:10 afalout Exp $
+# $Id: Makefile-install.mki,v 1.60 2003-02-10 02:08:28 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -152,7 +152,7 @@ deinstall.files:
 	-${MAKE} -C $(INSTALL_DIR)/tools/test/gui clean
 #Remove files as they are installed - Do not remove files from ${FROMHOME}
 	${RM} ${FROMBIN} ${FROMLIB} ${FROMDOCS} ${FROMTEST} ${FROMETC} \
-	${FROMROOT} ${FROMINCL} ${FROMIDE}
+	${FROMROOT} ${FROMINCL} ${FROMIDE} ${FROMCONVSQL}
 #Drop Autoconf support directory:
 	rm -rf $(INSTALL_DIR)/etc/config
 #files created after installation, and by Autoconf:

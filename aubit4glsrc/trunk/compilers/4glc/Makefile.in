@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.56 2003-02-08 06:48:10 afalout Exp $
+# $Id: Makefile.in,v 1.57 2003-02-10 02:08:27 afalout Exp $
 #
 
 ROOT		=../..
@@ -53,7 +53,11 @@ endif
 WANTKW_C		=wantkw.c
 Y_OUTPUT		=rules/generated/y.output
 
-ifeq "${HOSTNAME}" "aptiva"
+
+#temp. workarounds for older versions of bizon y.output format:
+HOSTNAME_SPEC   =xxaptiva
+
+ifeq "${HOSTNAME}" "${HOSTNAME_SPEC}"
 	#WANTKW_C	=/tmp/4glc/wantkw.c
 	Y_OUTPUT	=/tmp/4glc/rules/generated/y.output
 endif
@@ -100,7 +104,8 @@ endif
 
 ALL				+=${ROOT}/bin/4glc
 
-C_LOCAL_IFLAGS  =-I${ROOT}/lib -I${ROOT}/lib/libincl -I${ROOT}/lib/liblex/lex_c -I. -I../fcompile -Irules -I${GENRULES}
+C_LOCAL_IFLAGS  =-I${ROOT}/lib/liblex/lex_c -I. -I../fcompile -Irules -I${GENRULES}
+#-I${ROOT}/lib -I${ROOT}/lib/libincl
 CFLAGS			+=${C_LOCAL_IFLAGS} @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 
@@ -156,10 +161,12 @@ ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 #${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
 
 wantkw.c: wantkw_gen.pl ${Y_OUTPUT}
-ifeq "${HOSTNAME}" "aptiva"
+ifeq "${HOSTNAME}" "${HOSTNAME_SPEC}"
 	cp ${Y_OUTPUT} rules/generated/y.output
 endif
 	@PERL@ $<
+#the "t" file is some kind of temporary file created by wantkw_gen.pl
+	${RM} t
 
 ## ==================================================================
 ##                            Dependencies
@@ -197,7 +204,8 @@ clean: clean.rules.generated clean.rules
 	4glp *.log *.dll *.dll.a *.def wantkw.c wantkw.h
 
 clean.rules.generated:
-	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output *.bak .*.bak)
+	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule \
+	*.output *.bak .*.bak)
 
 clean.rules:
 	(cd rules; ${RM} .\#* *.bak .*.bak)

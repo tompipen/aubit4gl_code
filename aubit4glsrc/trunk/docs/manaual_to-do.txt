@@ -1630,7 +1630,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.7 2003-02-07 04:01:43 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.8 2003-02-10 02:08:27 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3537,4 +3537,63 @@ but I'm not going to be fussed if you go with ELIF for some other reason.
 
 
 
+Just for the record, I'm currently working on a .EC lex library.
+This is basically the same as the .C library for all but the SQL stuff.
+
+I've kept the basic functionality of the current Aubit SQL stuff in
+their too, so I imagine we'll eventually loose the liblex/lex_c
+directory and generate the LEX_C and LEX_EC directly from the lex_esqlc
+directory stuff..
+
+The ESQL/C stuff is currently targeted at informix ESQL/C - but this
+should be relatively straight forward to convert to others (possibly
+that UESQL/C (c++) library I've seen on slashdot..)
+
+The one thing to bear in mind is that this is completely different to
+the esql/c connection library sergio is writing (that is a LIB_SQL
+library).
+
+If you use the .EC Lex - you'll get a .ec file you can compile up using
+your esql equivalent. You'll then ONLY be able to connect to that
+database. You'll completly ignore the libSQL stuff and therefore NOT be
+able to retarget the database connectivity....
+
+
+===========================================================================
+
+
+I have done some further work on the SQL dialect conversion functionality.
+
+CONFIG FILE BASED CONVERSIONS
+
+convert_sql() now uses configuration files.  These are by default
+located in /opt/aubit4gl/etc/convertsql/, but that can be changed
+with A4GL_SQLCNVPATH.
+
+The conversion files are named <source-<target>.cnv, eg.
+INFORMIX-POSTGRES.cnv, and they contain a list of directives
+indicating what conversions/translations are required.
+
+Details are in /opt/aubit4gl/etc/convertsql/README.txt
+I will put this into the aubit4gl manual (html) in the next few days.
+
+
+COMMAND LINE CONVERSION TOOL
+In tools/convertsql is a simple utility that can be used to convert SQL
+script files.  I included this as many people use .sql scripts outsided of
+their 4GL programs.
+eg:
+    convertsql  INFORMIX  POSTGRES < myscript.sql > myscript.pg
+
+Andrej - my Makefile here needs work; please have a look.
+
+NOTE
+
+This stuff is far from complete - I still have more work to do on the
+conversion routines, eg. oracle style outer joins with (+).
+
+I also need assistance on building up the config/rule files, especially
+for SAPDB and Oracle.
+
+===========================================================================
 

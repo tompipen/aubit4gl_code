@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.19 2003-02-02 01:13:48 afalout Exp $
+#	 $Id: footer.mki,v 1.20 2003-02-10 02:08:28 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -24,7 +24,7 @@
 #
 # do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.19 2003-02-02 01:13:48 afalout Exp $
+# $Id: footer.mki,v 1.20 2003-02-10 02:08:28 afalout Exp $
 #############################################################################
 
 ifneq "$(DBASE)" ""
@@ -208,7 +208,6 @@ plexus:
 ########################
 #Build C-code program
 ${PROG.4ae}:	${FILES.ao} ${FILES.aox}
-#	@echo FILES.ao = ${FILES.ao}
 #remove this	${FAIL_LINK}${TARGETCMD}
 ifeq "$(PROGTYPE)" ".lib"
 ifeq "${PROG}" "dummy.lib"
@@ -216,22 +215,13 @@ ifeq "${PROG}" "dummy.lib"
 else
 #-fPIC will apparently not work on AIX - we should autoconf this file
 #TARGETCMD=ld -fPIC -shared $< -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
-	ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
-#$< represents onlyt the FIRST in the dependency list? So how do we use vpath here?
+	${FAIL_LINK}ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
 endif
 else
-#$< represents onlyt the FIRST in the dependency list? So how do we use vpath here?
-	${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS}  #--rpath${LIBSTORE} #-L${LIBSTORE}
+	${FAIL_LINK}${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS}
+#--rpath${LIBSTORE} #-L${LIBSTORE}
 endif
 #	@echo CHANGED: $?
-
-tmp_commented_out:
-ifeq "$(MOVETARGETTOSTORE)" "1"
-ifneq "$(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null)" ""
-		${TARGETMVCMD} $(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null) ${EXECSTORE}
-endif
-endif
-#	@echo OK: ${PROG.4ae}
 
 # =======================================================================
 #                            4Js Targets
@@ -355,19 +345,19 @@ install: ${FILES.42m} ${PROG.42r} ${FILES.42f} ${FILES.42h}
 # =======================================================================
 
 clean.target:
-	@${RM} ${DEBRIS.prog}
+	${RM} ${DEBRIS.prog}
 	@echo "All targets deleted"
 
 clean: clean.target
-	@${RM} ${DEBRIS.i4gl} ${DEBRIS.d4gl} ${DEBRIS.aubit} ${DEBRIS.common}
+	${RM} ${DEBRIS.i4gl} ${DEBRIS.d4gl} ${DEBRIS.aubit} ${DEBRIS.common}
 	@echo "All intermediate files and target deleted"
 
 clean.most: clean
-	@${RM} ${DEBRIS.aubit.forms} ${DEBRIS.i4gl.forms}
+	${RM} ${DEBRIS.aubit.forms} ${DEBRIS.i4gl.forms}
 	@echo "All forms deleted"
 
 clean.all: clean.most
-	@${RM} ${DEBRIS.aubit.libs}
+	${RM} ${DEBRIS.aubit.libs}
 	@echo "All libraries deleted"
 
 # =======================================================================

@@ -24,21 +24,30 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-09-25 05:42:14 afalout Exp $
+# $Id: Makefile.in,v 1.5 2003-02-10 02:08:30 afalout Exp $
 #
 
+ROOT    =../../..
+LIBROOT =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
-override NOINCL=0
+include ${ROOT}/incl/Makefile-common
+
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-libA4GL_string${SO_EXT}: libstring.4gl
-	${SH} 4glpc -as-dll $^ -o $@
-	${CP} $@ ../..
 
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+
+${LIBROOT}/libA4GL_string${SO_EXT}: libstring.4gl
+	${SH} 4glpc -as-dll $^ -o $@
 
 clean:
 	${RM} *.out *.c *.h *${SO_EXT} *.err *.bak *.glb *.h
+
+#============================== EOF =================================

@@ -25,8 +25,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.116 2003-02-08 06:48:10 afalout Exp $
+# $Id: Makefile-common.in,v 1.117 2003-02-10 02:08:27 afalout Exp $
 #
+
+#Workarounf for Informix installers messing up libphtread:
+LD_LIBRARY_PATH				:=/lib:${LD_LIBRARY_PATH}
 
 #Name we will use in many places, for consistency:
 AUBITNAME					=@SHORTNAME@
@@ -725,6 +728,7 @@ TEST_PATH   =tools/test
 ETC_PATH    =etc
 INCL_PATH   =incl
 IDE_PATH  	=tools/ide
+CONVSQL_PATH=etc/convertsql
 
 
 #installation files sourcing paths. This is generally the same as destination
@@ -741,6 +745,7 @@ HOME_DIR    =$(SOURCE)
 ROOT_DIR    =$(SOURCE)
 INCL_DIR    =$(SOURCE)/${INCL_PATH}
 IDE_DIR    	=$(SOURCE)/${IDE_PATH}
+CONVSQL_DIR =$(SOURCE)/${CONVSQL_PATH}
 
 #Paths to install to:
 BIN_DEST	=$(INSTALL_DIR)/${BIN_PATH}
@@ -754,6 +759,7 @@ HOME_DEST   =$(HOME)
 ROOT_DEST	=$(INSTALL_DIR)
 INCL_DEST	=$(INSTALL_DIR)/${INCL_PATH}
 IDE_DEST   	=$(INSTALL_DIR)/${IDE_PATH}
+CONVSQL_DEST=$(INSTALL_DIR)/${CONVSQL_PATH}
 
 ##################################################
 #definitions of names for binary distro file name:
@@ -910,9 +916,18 @@ TEST_FILES=$(addprefix gui/,$(TEST_GUI)) $(TEST_STD)
 
 ETC_FILES		=odbc.ini.example
 
-#This file is installed by ciopying etc/aubitrc.in to aubitrc-bin.in
+#This file is installed by copying etc/aubitrc.in to aubitrc-bin.in
 #but we still need to de-install it:
 ETC_DEINST      =aubitrc-bin.in
+
+
+## ==================================================================
+##                    To etc/convertsql directory
+## ==================================================================
+
+#FIXME: still to be added to RPM and Windows installers.
+
+CONVSQL_FILES 	=$(notdir $(wildcard ${CONVSQL_PATH}/*.cnv))
 
 ## ==================================================================
 ##                    To user's HOME directory
@@ -980,14 +995,16 @@ TOHOME		=$(addprefix $(HOME_DIR)/,	$(HOME_FILES))
 TOROOT		=$(addprefix $(ROOT_DIR)/,	$(ROOT_FILES))
 TOINCL		=$(addprefix $(INCL_DIR)/,	$(INCL_FILES))
 TOIDE       =$(addprefix $(IDE_DIR)/,	$(IDE_FILES))
+TOCONVSQL   =$(addprefix $(CONVSQL_DIR)/,	$(CONVSQL_FILES))
 
-AMAKE_TOBIN		=$(addprefix $(BIN_DIR)/,	$(AMAKE_BIN_FILES))
-AMAKE_TOINCL	=$(addprefix $(INCL_DIR)/,	$(AMAKE_INCL_FILES))
+
+AMAKE_TOBIN	=$(addprefix $(BIN_DIR)/,	$(AMAKE_BIN_FILES))
+AMAKE_TOINCL=$(addprefix $(INCL_DIR)/,	$(AMAKE_INCL_FILES))
 
 ifneq "${COMSPEC}" ""
-    TOBIN+=$(SOURCE)/tools/cygwin/run.exe
+    TOBIN	+=$(SOURCE)/tools/cygwin/run.exe
 endif
-
+TOBIN		+=$(SOURCE)/tools/metrics_4gl/4GL_metrics.cgi
 
 #deinstallation files with paths:
 FROMBIN		=$(addprefix $(BIN_DEST)/,	$(BIN_FILES))
@@ -999,11 +1016,12 @@ FROMHOME	=$(addprefix $(HOME_DEST)/,	$(HOME_FILES))
 FROMROOT	=$(addprefix $(ROOT_DEST)/,	$(ROOT_FILES))
 FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES))  $(addprefix $(INCL_DEST)/,	$(INCL_FILES_LEGACY))
 FROMIDE     =$(addprefix $(IDE_DEST)/,	$(IDE_FILES))
+FROMCONVSQL =$(addprefix $(CONVSQL_DEST)/,$(CONVSQL_FILES))
 
 ifneq "${COMSPEC}" ""
-    FROMBIN+=$(INSTALL_DIR)/${BIN_PATH}/run.exe
+	FROMBIN	+=$(INSTALL_DIR)/${BIN_PATH}/run.exe
 endif
-
+FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/4GL_metrics.cgi
 
 ## ==================================================================
 ##                    Automatic build Settings

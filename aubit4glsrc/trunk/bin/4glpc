@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.96 2003-02-05 22:32:59 mikeaubury Exp $
+# $Id: 4glpc,v 1.97 2003-02-10 02:08:12 afalout Exp $
 #
 
 ########################################################################
@@ -370,12 +370,13 @@ PATH=$AUBITDIR/bin:$PATH
 
 COMPCC=""
 
-if [ "$OLD_INCL" != "0" ] #OLD_INCL is set in Makefile-common
-then
-	#if we did not EXPLICITLY turn on new includes, we have to set
-    #old ones as default
-	CFLAGS="-DOLD_INCL $CFLAGS"
-fi
+#old_incl is obsolete:
+#if [ "$OLD_INCL" != "0" ] #OLD_INCL is set in Makefile-common
+#then
+#	#if we did not EXPLICITLY turn on new includes, we have to set
+#    #old ones as default
+#	CFLAGS="-DOLD_INCL $CFLAGS"
+#fi
 
 if [ "$AUBITDIR_SRC" = "1" ] #set from Makefile-common
 then
@@ -477,6 +478,75 @@ do
    ;;
 
 
+   -mk_pair)
+		#find all targets created by Amake make files, to detect which make fiels
+        #failed to produce resulting target
+		ALL=`find . -name "*.mk" -exec basename {} \; | sort `
+		CNT=0
+        CNT2=0
+		############
+		for a in $ALL
+		############
+		do
+            let CNT=CNT+1
+			#echo $a
+            PAIR=`basename $a .mk`.4ae
+			FOUND=`find -name $PAIR`
+            if [ "$FOUND" = "" ]; then
+	            PAIR=`basename $a .mk`.aox
+				FOUND=`find -name $PAIR`
+	            if [ "$FOUND" = "" ]; then
+                    echo "Cannot find a target of $a"
+                    let CNT2=CNT2+1
+                else
+					if [ "$VERBOSE" = "1" ]; then
+						echo $a 	= $PAIR
+                    fi
+				fi
+            else
+				if [ "$VERBOSE" = "1" ]; then
+					echo $a 	= $PAIR
+                fi
+            fi
+		done
+        echo "Total processed : $CNT"
+		echo "Total targets missing : $CNT2"
+    ;;
+
+   -mk_pair2)
+		#find amake makefile pair for each target object (programs and libraries)
+        #to detect missing make files
+		ALL=`find . -name "*.4ae" -exec basename {} \; | sort `
+		ALL="$ALL `find . -name "*.aox" -exec basename {} \; | sort `"
+		CNT=0
+		CNT2=0
+		############
+		for a in $ALL
+		############
+		do
+            let CNT=CNT+1
+			#echo $a
+            PAIR=`basename $a .4ae`
+            PAIR=`basename $PAIR .aox`
+            PAIR=$PAIR.mk
+			if [ "$VERBOSE" = "1" ]; then
+				echo Looking for $PAIR
+            fi
+			FOUND=`find -name $PAIR`
+            if [ "$FOUND" = "" ]; then
+				echo "Cannot find make file pair ($PAIR) of $a"
+            let CNT2=CNT2+1
+            else
+				if [ "$VERBOSE" = "1" ]; then
+					echo $a 	= $PAIR
+                fi
+            fi
+		done
+        echo "Total procesed : $CNT"
+        echo "Total missing  : $CNT2"
+    ;;
+
+
    -dups)
 		#list all duplicated files in tree below current location
 		ALL=`find . -name "*" -exec basename {} \; | sort | uniq -c | grep -v " 1" `
@@ -520,15 +590,23 @@ do
 				"rules")
 				;;
 				* )
-					echo -------------------------- $DUP_NUM = $a
+					PRINTED_HEAER=0
 					FILE=`find . -name $a`
 					for b in $FILE
 					do
 						if [ ! -d "$b" ]
 						then
+							if [ "$PRINTED_HEAER" = "0" ]
+                            then
+                                PRINTED_HEAER=1
+								echo -------------------------- $DUP_NUM = $a
+                            fi
 							ls -al $b
 						else
-							echo "$b Is directory - skipped"
+                            if [ "$VERBOSE" = "1" ]
+                            then
+								echo "$b Is directory - skipped"
+                            fi
 						fi
 					done
 				esac
@@ -704,7 +782,7 @@ do
 			$output "$fname: "
 			$output LD_LIBRARY_PATH=$LD_LIBRARY_PATH, A4GL_SQLTYPE=$A4GL_SQLTYPE
 			$output AUBITDIR=$AUBITDIR, PATH=$PATH
-			$output "Executing (3) : $FGLCEXEC $a"
+			$output "Executing (1) : $FGLCEXEC $a"
 		fi
 
 		########################
@@ -833,7 +911,7 @@ do
 
 				if [ "$A4GLVERBOSE" = "yes" ]
 				then
-					$output "executing (1) : $EXEC"
+					$output "executing (2) : $EXEC"
 				fi
 
                 ########################
@@ -850,12 +928,19 @@ do
 					echo "error compiling $fname.c. STOP."
 					exit $err_code
                 else
-                    if [ -f "$fname.c.err" ]; then
-                        #C compiler did not return error code, but .err file was
+					if [ -f "$fname.c.err" ]; then
+						#C compiler did not return error code, but .err file was
                         #created, and we know it will only contain C compiler,
                         #warnings, so we don't want to confuse things and people:
+						if [ "$A4GLVERBOSE" = "yes" ]; then
+                            echo "Found $fname.c.err, moving it to $fname.c.warn"
+        		        fi
 						mv "$fname.c.err" "$fname.c.warn"
-                    fi
+                    else
+						if [ "$A4GLVERBOSE" = "yes" ]; then
+                            echo "Did NOT found $fname.c.err"
+	       		        fi
+					fi
 				fi
 
 				COMPCC="$COMPCC $fname.ao"
@@ -974,9 +1059,11 @@ do
        ISMAKE=-1
        LINKIT=1
 
-       LAST="2> $fname.err"
-       ERRFILE="$fname.err"
-       DEFAULTCOMPCC="$COMPCC $fname"
+       ERREXT=.err
+
+       ERRFILE="$fname$ERREXT"
+       LAST="2> $ERRFILE"
+	   DEFAULTCOMPCC="$COMPCC $fname"
        EXECNAME="-1"
 
 
@@ -986,8 +1073,10 @@ do
       then
          EXECNAME="$a"
 		 ISMAKE=1
-         LAST="2> $a.err"
-         ERRFILE="$a.err"
+	     ERREXT=.err
+		 ERRFILE="$a$ERREXT"
+		 LAST="2> $ERRFILE"
+
       fi
       COMPCC="$COMPCC $a"
   ;;
@@ -1098,10 +1187,12 @@ then
 
    if [ "$A4GLVERBOSE" = "yes" ]
    then
-        $output "executing (1) : $EXEC"
+        $output "executing (3) : $EXEC"
    fi
-
-   	eval $EXEC
+    ##################
+   	#invoke C compiler
+    ##################
+	eval $EXEC
 	err_code=$?
 
 	if [ $err_code != 0 ]
@@ -1110,22 +1201,42 @@ then
 		then
 			errfname=`expr "$LAST" : "..\(.*\)"`
 			showerror
-			$output "Error compiling... check $errfname"
-      else
-		  $output "Error compiling."
-      fi
-	if [ "$A4GLVERBOSE" = "yes" ]
-	then
-        echo "Exiting with code $err_code"
-    fi
-	exit $err_code
+			cerrfname=`basename $errfname .err`.c.err
+			if [ "$A4GLVERBOSE" = "yes" ]
+			then
+				echo "Moving $errfname to $cerrfname"
+            fi
+			mv $errfname $cerrfname
+			$output "Error compiling - check $cerrfname"
+
+		else
+			$output "Error compiling - no LAST data."
+		fi
+
+		if [ "$A4GLVERBOSE" = "yes" ]
+		then
+	        echo "Exiting with code $err_code"
+	    fi
+		exit $err_code
+   else
+        #C compiler did not return error code
+		errfname=`expr "$LAST" : "..\(.*\)"`
+        if [ -f $errfname ]; then
+            #this must be warnings, since we got no error code...
+			warnfname=`basename $errfname .err`.c.warn
+			if [ "$A4GLVERBOSE" = "yes" ]
+			then
+				echo "Moving $errfname to $warnfname"
+            fi
+			mv $errfname $warnfname
+        fi
    fi
 
 else
    if [ "$A4GLVERBOSE" = "yes" ]
    then
 	   $output "Generating Exec"
-	   echo "executing (2) : $DOIT $NCC $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
+	   echo "executing (4) : $DOIT $NCC $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
 
 		if [ "$A4GLDEBUG" = "yes" ]; then
 		   echo $DOIT

@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.22 2003-02-07 04:01:44 afalout Exp $
+#	 $Id: a4gl.mk,v 1.23 2003-02-10 02:08:28 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.22 2003-02-07 04:01:44 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.23 2003-02-10 02:08:28 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -114,13 +114,19 @@ A4GL_MC         = ${A4GL_MC_CMD} ${A4GL_MC_FLAGS}
 # Define suffixes which are recognised.
 
 A4GL_PRG_EXT=.4ae
-A4GL_OBJ_EXT=.ao        #static object
-A4GL_SOB_EXT=.aso       #shared object
-A4GL_LIB_EXT=.aox       #static library
-A4GL_SOL_EXT=.asx       #shared library
-A4GL_FRM_EXT=.afr.xml   #FIXME: reverse => xml.afr
+#static object
+A4GL_OBJ_EXT=.ao
+#shared object
+A4GL_SOB_EXT=.aso
+#static library
+A4GL_LIB_EXT=.aox
+#shared library
+A4GL_SOL_EXT=.asx
+#FIXME: reverse => xml.afr
+A4GL_FRM_EXT=.afr.xml
 A4GL_HLP_EXT=.hlp
-A4GL_MNU_EXT=.mnu.xml   #FIXME: reverse => xml.mnu
+#FIXME: reverse => xml.mnu
+A4GL_MNU_EXT=.mnu.xml
 
 #Files that compiler created, but are not neded at run-time, that are safe to delete:
 A4GL_TMP_SUFFIXES_DELETE=${A4GL_OBJ_EXT} .err .glb
