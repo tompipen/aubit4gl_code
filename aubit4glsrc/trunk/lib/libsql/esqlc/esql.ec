@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.86 2004-05-24 12:56:18 mikeaubury Exp $
+# $Id: esql.ec,v 1.87 2004-05-26 12:20:41 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.86 2004-05-24 12:56:18 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.87 2004-05-26 12:20:41 mikeaubury Exp $";
 #endif
 
 
@@ -1196,7 +1196,12 @@ int type;
 	return 1;
       char_var = malloc (length + 1);
       EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
-      strcpy (bind[idx].ptr, char_var);
+		if (length>bind[idx].size) length=bind[idx].size;
+	{char *ptr;
+		ptr=bind[idx].ptr;
+      strncpy (ptr, char_var,length);
+	ptr[length]=0;
+	}
       free (char_var);
       break;
     case DTYPE_SMINT:
