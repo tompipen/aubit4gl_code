@@ -69,6 +69,7 @@ function open_tmpfile(lv_type,p_mode)
 define lv_type CHAR(3)
 define p_mode char(1)
 code
+A4GL_debug("OPENING TMP : %s",mv_tmpinfile[get_type_id(lv_type)]);
 mv_fin[get_type_id(lv_type)]=(long)fopen(mv_tmpinfile[get_type_id(lv_type)],p_mode);
 A4GL_assertion(mv_fin[get_type_id(lv_type)]==0,"Tried to open tmpfile failed");
 endcode
@@ -125,14 +126,25 @@ int a;
 do_init=init_filename;
 for (a=0;a<10;a++) { mv_fin[a]=0;}
 init_filename=0;
+#if defined(__MINGW32__)
+sprintf(mv_tmpinfile[get_type_id("SQL")],"c:\\a4gl_sql_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("PER")],"c:\\a4gl_per_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("4GL")],"c:\\a4gl_4gl_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("ACE")],"c:\\a4gl_ace_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("MSG")],"c:\\a4gl_msg_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("FRM")],"c:\\a4gl_frm_%d",getpid());
+sprintf(mv_tmpinfile[get_type_id("C")],"c:\\a4gl_frm_%d",getpid());
+#else
 sprintf(mv_tmpinfile[get_type_id("SQL")],"/tmp/a4gl_sql_%d",getpid());
 sprintf(mv_tmpinfile[get_type_id("PER")],"/tmp/a4gl_per_%d",getpid());
 sprintf(mv_tmpinfile[get_type_id("4GL")],"/tmp/a4gl_4gl_%d",getpid());
 sprintf(mv_tmpinfile[get_type_id("ACE")],"/tmp/a4gl_ace_%d",getpid());
 sprintf(mv_tmpinfile[get_type_id("MSG")],"/tmp/a4gl_msg_%d",getpid());
 sprintf(mv_tmpinfile[get_type_id("FRM")],"/tmp/a4gl_frm_%d",getpid());
-
 sprintf(mv_tmpinfile[get_type_id("C")],"/tmp/a4gl_frm_%d",getpid());
+
+
+#endif
 endcode
 
 call open_tmpfile("SQL","w")

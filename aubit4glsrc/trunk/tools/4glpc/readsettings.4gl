@@ -64,7 +64,10 @@ if (fin!=0) {
 		if(isverbose_c(4)) {
 			printf("Setting : '%s' = '%s'\n",buff,ptr);
 		}
-		if (!getenv(buff)) A4GL_setenv(buff, ptr, 1);
+
+		//if (!getenv(buff)) {
+			A4GL_setenv(buff, ptr, 1);
+		//}
 	}
 }
 
