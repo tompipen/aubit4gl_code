@@ -1,0 +1,33 @@
+# eventually - there will be a proper Makefile
+# here - but for now....
+
+
+
+if [ "$AUBITDIR" = "" ]
+then
+	echo "AUBITDIR is not set"
+fi
+
+
+for a in layout_engine processor report_viewer txt csv
+do
+if [ $a = csv -o $a = txt ]
+then
+	for b in layout process
+	do
+		echo ""
+		echo ""
+		echo Making $a/$b
+		echo ""
+		cd /home/aubit4gl/aubit4glsrc/lib/liblogical/$a/$b
+		make $@
+	done
+else
+		echo ""
+		echo ""
+	echo Making $a
+	echo ""
+	cd /home/aubit4gl/aubit4glsrc/lib/liblogical/$a
+	make $@
+fi
+done

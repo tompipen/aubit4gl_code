@@ -42,16 +42,6 @@ void do_data_get_from_layout (GtkWidget * widget, GdkDragContext * dc,
 			      GtkSelectionData * selection_data, guint info,
 			      guint t, gpointer data);
 extern struct r_report *report;
-/*
-struct s_rbx {
-	int rb;
-	char where;
-	char *why;
-	char *desc;
-	int max_entry;
-	int *entry_nos;
-};
-*/
 
 GtkWidget **block_tables = 0;
 int nblock_tables = 0;
@@ -64,6 +54,7 @@ char *style_cell =
 char *style_cell_disable =
   "style \"CELL_DISABLE\" {font_name=\"monospace 10\" bg[NORMAL] = \"#ffffff\"} widget \"*.CELL_DISABLE\" style \"CELL_DISABLE\"";
 extern void edit_lle (void);
+int remake_table_from_layout(struct csv_report_layout *in) ;
 
 /* ******************************************************************************** */
 
@@ -251,7 +242,7 @@ make_table (GtkWidget * table, int ncols, int nrows, int src_block)
       disable = 0;
     }
 
-  if (ncols<0) {
+  if (ncols<=0) {
 	ncols=10; // some nice default value..
   }
 
@@ -593,13 +584,14 @@ LR_setup_block (int b, GtkWidget * evt, GtkWidget * label)
 void
 LR_default_file ()
 {
-  int a;
-  printf ("rbs=%d\n", rbs + 1);
-  for (a = 0; a < rbs; a++)
-    {
-      printf ("%d %d %c %s %s\n", a, rbx[a].rb, rbx[a].where, rbx[a].why, rbx[a].desc);
-      printf ("%d entries to print of %d..\n", rbx[a].nentry_nos, rbx[a].max_entry);
-    }
+  struct csv_report_layout *d;
+  char buff[2048];
+  d=default_csv(buff);
+  if (d) {
+	remake_table_from_layout(d);
+  } else {
+	msgbox("Failed to create default layout",buff);
+  }
 }
 
 
@@ -698,22 +690,8 @@ return 1;
 
 
 int LR_load_file(FILE *fin) {
-int a;
-GtkWidget *table;
-int x;
-int y;
-int rows;
-int cols;
-char buff[256];
-GtkWidget *label;
-//char *s;
-int rb;
-int entry;
-//int nrbs;
-struct csv_entry *centry;
-
-
 struct csv_report_layout *in;
+
 in=read_csv(fin);
 
 if (!in) {
@@ -724,7 +702,23 @@ if (in->nblocks!=rbs) {
 	msgbox("Unable to load","Report layout appears bad");
 	return 0;
 }
+return remake_table_from_layout(in);
+}
 
+
+
+int remake_table_from_layout(struct csv_report_layout *in) {
+GtkWidget *table;
+int x;
+int y;
+int a;
+int rows;
+int cols;
+char buff[256];
+GtkWidget *label;
+int rb;
+int entry;
+struct csv_entry *centry;
 
 for (a=0;a<rbs;a++) {
 	table=block_tables[a];
@@ -736,7 +730,7 @@ for (a=0;a<rbs;a++) {
 	rows=in->blocks[a].nrows;
 	cols=in->blocks[a].ncols;
 
-	resize_table(table,rows,cols,a);
+	resize_table(table,rows?rows:1,cols,a);
 
 	for (y=0;y<rows;y++) {
 		for (x=0;x<cols;x++) {

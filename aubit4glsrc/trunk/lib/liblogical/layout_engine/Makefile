@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-03-19 02:52:03 afalout Exp $
+# $Id: Makefile,v 1.4 2004-03-19 09:57:06 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -41,7 +41,7 @@ include ${ROOT}/incl/Makefile-common
 CFLAGS+=-g $(shell pkg-config --cflags gtk+-2.0) \
 	-I$(AUBITDIR)/lib/libaubit4gl -I$(AUBITDIR)/incl
 
-LFLAGS:=$(shell pkg-config --libs gtk+-2.0) -laubit4gl
+LFLAGS:=$(shell pkg-config --libs gtk+-2.0) -L$(AUBITDIR)/lib -laubit4gl
 
 OBJS=layout_engine.o ../common/a4gl_lle.o ../report_viewer/report_viewer.o \
 	API_layout.o file_hand.o
@@ -52,6 +52,7 @@ OBJS=layout_engine.o ../common/a4gl_lle.o ../report_viewer/report_viewer.o \
 
 ${ROOT}/bin/layout_engine: API_layout.h ${OBJS}
 	cc -rdynamic -g ${OBJS} -o $@ ${LFLAGS}  
+
 
 API_layout.c: API_layout.spec
 	../../bin/dlmagic $^ > $@

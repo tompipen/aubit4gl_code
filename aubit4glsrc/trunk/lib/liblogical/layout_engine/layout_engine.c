@@ -3,11 +3,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../common/a4gl_lle.h"
+#include "API_layout.h"
+#include "a4gl_libaubit4gl.h"
 
 GtkWidget *window;
+char * create_file_selection (char *fname);
 
 struct r_report *rep;
-char *create_file_selection (char *fname);
 
 #define XWIDTH 10
 #define YHEIGHT 15
@@ -24,9 +26,22 @@ char *input_fname;
 int lc_entry = -1;
 int lc_rb = -1;
 
+
+static void
+default_file (void)
+{
+  LR_default_file ();
+}
+
+static void
+preview_file (void)
+{
+  LR_preview_file ();
+}
+
 /* ******************************************************************************** */
 
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
   int npages;
   char buff[256];
@@ -183,6 +198,7 @@ main (int argc, char *argv[])
   start_lle ();
   edit_lle ();
   gtk_main ();
+return 0;
 }
 
 
@@ -286,19 +302,6 @@ load_file (void)
   } else {
       msgbox ("Load Aborted", "No load performed...");
   }
-}
-
-
-void
-default_file (void)
-{
-  LR_default_file ();
-}
-
-void
-preview_file (void)
-{
-  LR_preview_file ();
 }
 
 void
@@ -420,14 +423,12 @@ set_block_clicked (int rb)
 }
 
 
-void
-setup_entry (int b, int e, GtkWidget * evt, GtkWidget * label)
+void setup_entry (int b, int e, GtkWidget * evt, GtkWidget * label)
 {
   LR_setup_entry (b, e, evt, label);
 }
 
-void
-setup_block (int b, GtkWidget * evt, GtkWidget * label)
+void setup_block (int b, GtkWidget * evt, GtkWidget * label)
 {
   LR_setup_block (b, evt, label);
 }

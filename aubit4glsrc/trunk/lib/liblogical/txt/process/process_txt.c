@@ -80,7 +80,6 @@ set_text (int x, int y, char *s)
 extern struct r_report *report;
 
 
-struct r_report *r;
 int RP_process_report (char *buff) 
 {
   int a;
@@ -90,7 +89,6 @@ int RP_process_report (char *buff)
   int x, y;
   int page;
   int last_page = -1;
-  r=report;
   page_touched = 0;
 
   if (rep_fout) fclose(rep_fout);
@@ -112,41 +110,41 @@ int RP_process_report (char *buff)
 		return 0;
   }
 	
-  lines = malloc (sizeof (char *) * r->page_length);
+  lines = malloc (sizeof (char *) * report->page_length);
 
-  for (a = 0; a < r->page_length; a++)
+  for (a = 0; a < report->page_length; a++)
     {
-      lines[a] = malloc (r->max_col + 1+r->left_margin);	// for the \NULL
+      lines[a] = malloc (report->max_col + 1+report->left_margin);	// for the \NULL
     }
 
-  clear_page (r->max_col+r->left_margin, r->page_length);
+  clear_page (report->max_col+report->left_margin, report->page_length);
 
-  for (block = 0; block < r->nblocks; block++)
+  for (block = 0; block < report->nblocks; block++)
     {
-      for (entry = 0; entry < r->blocks[block].nentries; entry++)
+      for (entry = 0; entry < report->blocks[block].nentries; entry++)
 	{
-	  centry = &r->blocks[block].entries[entry];
+	  centry = &report->blocks[block].entries[entry];
 	  page = centry->page_no;
 	  if (page != last_page)
 	    {
 	      if (page_touched && last_page != -1)
 		{
-		  output_page (rep_fout, r->max_col, r->page_length);
-		  clear_page (r->max_col+r->left_margin, r->page_length);
+		  output_page (rep_fout, report->max_col, report->page_length);
+		  clear_page (report->max_col+report->left_margin, report->page_length);
 		}
 	      last_page = page;
 	    }
 
 
-	  x = centry->col_no+r->left_margin;
-	  y = centry->line_no; //+r->top_margin;
+	  x = centry->col_no+report->left_margin;
+	  y = centry->line_no; //+report->top_margin;
 	  set_text (x, y, centry->string);
 	}
     }
 
   if (page_touched)
     {
-      output_page (rep_fout, r->max_col, r->page_length);
+      output_page (rep_fout, report->max_col, report->page_length);
     }
 
 }

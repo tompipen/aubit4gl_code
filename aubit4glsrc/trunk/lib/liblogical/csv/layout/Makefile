@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-03-19 02:44:46 afalout Exp $
+# $Id: Makefile,v 1.4 2004-03-19 09:57:05 mikeaubury Exp $
 #
 
 LIBROOT		=../../..
@@ -38,14 +38,18 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CFLAGS=-I$(AUBITDIR)/lib/libaubit4gl -I$(AUBITDIR)/incl \
-	`pkg-config --libs --cflags gtk+-2.0`
+	`pkg-config --libs --cflags gtk+-2.0` \
+	-I../common -I../../common
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
+#../../../libLOGREP_CSV.so : layout_csv.c ../common/csv_io.c 
+#cc -Wall -rdynamic -shared -g $^ -o $@ -I../common -I../../common -I$(AUBITDIR)/lib/libaubit4gl -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib `pkg-config --libs --cflags gtk+-2.0` -laubit4gl
+
 ../../../libLOGREP_CSV.so : layout_csv.c ../common/csv_io.c
-	cc -Wall -rdynamic -shared -g $^ -o $@ ${CFLAGS} -laubit4gl
+	cc -Wall -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(AUBITDIR)/lib -laubit4gl
 
 #../common/csv_io.c:
 	

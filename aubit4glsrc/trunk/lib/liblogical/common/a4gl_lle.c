@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #define FILE_VERSION 2
 #include "a4gl_lle.h"
 
+void read_entry(struct r_report_block *block) ;
 
 FILE *fin=0;
 int lvl;
@@ -55,7 +57,7 @@ static char * read_string ()
 
 static void trim (char *s)
 {
-  char *p;
+  //char *p;
   int a, b;
   b = 0;
   for (a = strlen (s) - 1; a > 0; a--)
@@ -88,9 +90,9 @@ check_for_max (int p, int l, int c, char *s)
 
 
 struct r_report *read_report_output(char *fname) {
-  int npages;
-  char buff[256];
-  int buff_i;
+  //int npages;
+  //char buff[256];
+  //int buff_i;
   char buff_c;
   fin = fopen (fname, "r");
   max_page_no = -1;
@@ -161,7 +163,7 @@ struct r_report *read_report_output(char *fname) {
 	return report;
     } else {
 	free_report(report);
-	return;
+	return 0;
     }
 
     
@@ -216,7 +218,7 @@ static void read_block ()
 
 
 
-read_entry(struct r_report_block *block) {
+void read_entry(struct r_report_block *block) {
       /* If we've got to here - then we must have a valid DATA block.. */
       block->nentries++;
       block->entries = (struct r_report_block_entries *) realloc (block->entries, block->nentries * sizeof (struct r_report_block_entries));
@@ -333,7 +335,9 @@ int b;
               if (strlen
                   (report->blocks[rblock_cnt].entries[entry_cnt].string))
                 {
-                  rbx[block_cnt].entry_nos[entry_cnt] = entry_cnt;
+
+		//printf("Have length for %d/%d\n",rblock_cnt,entry_cnt);
+                  rbx[block_cnt].entry_nos[entry_cnt] = report->blocks[rblock_cnt].entries[entry_cnt].entry_id;
                   rbx[block_cnt].max_size_entry[entry_cnt] =
                     strlen (report->blocks[rblock_cnt].entries[entry_cnt].
                             string);
@@ -348,15 +352,14 @@ int b;
           if (rbx[block_cnt].entry_nos[a] >= 0
               && rbx[block_cnt].max_size_entry[a])
             {
+		//printf("Keeping %d\n",rbx[block_cnt].entry_nos[a]);
               tmp_space_e[b] = rbx[block_cnt].entry_nos[a];
               tmp_space_s[b] = rbx[block_cnt].max_size_entry[a];
               b++;
             }
           else
             {
-              printf ("Discarding block %d entry %d - %d %d\n", block_cnt, a,
-                      rbx[block_cnt].entry_nos[a],
-                      rbx[block_cnt].max_size_entry[a]);
+              //printf ("Discarding block %d entry %d - %d %d\n", block_cnt, a, rbx[block_cnt].entry_nos[a], rbx[block_cnt].max_size_entry[a]);
             }
         }
       rbx[block_cnt].nentry_nos = b;
@@ -376,7 +379,7 @@ int b;
 
 
 int load_filter_file_header(char *fname, FILE **fin, char*msgbuff) {
-  int ok;
+  //int ok;
   FILE *fin_filter;
   char buff[255];
   char logrep[255];
@@ -386,7 +389,7 @@ int load_filter_file_header(char *fname, FILE **fin, char*msgbuff) {
   if (fname)
     {
       char *ptr;
-      printf ("fname==%s\n", fname);
+      //printf ("fname==%s\n", fname);
       ptr = strrchr (fname, '/');
       if (ptr == 0)
         ptr = fname;
@@ -408,7 +411,7 @@ int load_filter_file_header(char *fname, FILE **fin, char*msgbuff) {
 
 
         fgets(buff,255,fin_filter);
-        if (sscanf(buff,"A4GL_LOGICAL_REPORT %s",&logrep)) {
+        if (sscanf(buff,"A4GL_LOGICAL_REPORT %s",logrep)) {
                 if (strcmp(logrep,(char *)acl_getenv ("LOGREP"))!=0) {
                         strcpy(msgbuff, "This doesn't look like a valid layout file for this engine");
                         return 0;
@@ -419,7 +422,7 @@ int load_filter_file_header(char *fname, FILE **fin, char*msgbuff) {
         }
 
         fgets(buff,255,fin_filter);
-        sscanf(buff,"%s %s",&rname,&mname);
+        sscanf(buff,"%s %s",rname,mname);
 
         if (strcmp(rname,report->repName)!=0) {
                 sprintf(buff,"This doesn't look like its from the same report (%s != %s)",rname,report->repName);

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-03-19 02:52:04 afalout Exp $
+# $Id: Makefile,v 1.4 2004-03-19 09:57:06 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -47,7 +47,7 @@ OBJS=process_report.o ../common/a4gl_lle.o API_process.o
 ## ==================================================================
 
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
-	cc -rdynamic -g ${OBJS} -o $@ -laubit4gl
+	cc -rdynamic -g ${OBJS} -o $@  -L$(AUBITDIR)/lib -laubit4gl
 
 API_process.c: API_process.spec
 	../../bin/dlmagic $^ > $@

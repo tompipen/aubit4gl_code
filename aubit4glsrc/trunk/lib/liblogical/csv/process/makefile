@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.2 2004-03-19 02:44:47 afalout Exp $
+# $Id: makefile,v 1.3 2004-03-19 09:57:06 mikeaubury Exp $
 #
 
 LIBROOT		=../../..
@@ -37,15 +37,15 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -Wall
+CFLAGS=-g -Wall -I$(AUBITDIR)/incl -I../common -I../../common
 
-OBJS=process_csv.o ../../common/a4gl_lle.o
+OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-../../../libLOGREP_PROC_CSV.so: ${OBJS}
+../../../libLOGREPPROC_CSV.so: ${OBJS}
 	cc -fPIC -shared ${OBJS} -o $@
 	
 ## ==================================================================

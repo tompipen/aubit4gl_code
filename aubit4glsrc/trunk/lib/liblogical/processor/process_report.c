@@ -18,6 +18,7 @@ struct s_rbx *rbx = 0;
 int main(int argc,char *argv[]) {
 FILE *fin_filter;
 char buff[256];
+char errbuff[1024];
 
   if (argc != 4 && argc!=3 )
     {
@@ -56,8 +57,8 @@ char buff[256];
 			exit(2);
 		}
   } else {
-	if (!RP_default_file()) {
-		printf("No default file could be generated\n");
+	if (!RP_default_file(errbuff)) {
+		printf("No default file could be generated :\n%s\n",errbuff);
 		exit(2);
 	}
   }

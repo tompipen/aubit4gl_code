@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2004-03-19 04:00:14 afalout Exp $
+# $Id: Makefile,v 1.6 2004-03-19 09:57:06 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-LFLAGS=` pkg-config --libs --cflags gtk+-2.0` -laubit4gl
+LFLAGS=` pkg-config --libs --cflags gtk+-2.0` -L$(AUBITDIR)/lib -laubit4gl 
 
 ## ==================================================================
 ##                              Targets

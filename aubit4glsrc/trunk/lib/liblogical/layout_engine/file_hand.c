@@ -1,14 +1,21 @@
+#include <stdio.h>
+#include <string.h>
 #include <gtk/gtk.h>
 
+char * create_file_selection (char *fname);
 
+
+
+/*
 void
 store_filename (GtkWidget * widget, gpointer user_data)
 {
-  GtkWidget *file_selector = (GtkWidget *) user_data;
-  const gchar *selected_filename;
+  //GtkWidget *file_selector = (GtkWidget *) user_data;
+  //const gchar *selected_filename;
 
-  g_print ("Selected filename: %s\n", selected_filename);
+  //g_print ("Selected filename: %s\n", selected_filename);
 }
+*/
 
 
 
