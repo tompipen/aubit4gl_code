@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.29 2002-11-25 16:51:24 mikeaubury Exp $
+# $Id: stack.c,v 1.30 2003-01-14 13:30:19 mikeaubury Exp $
 #
 */
 
@@ -152,6 +152,7 @@ void		push_disp_bind 			(struct BINDING *b, int n);
 int			chk_params 				(struct BINDING *b, int nb,
 									struct BINDING *o, int no);
 void        upshift_stk 			(void);
+void        downshift_stk 			(void);
 int         isparamdate 			(void);
 void        set_init 				(struct BINDING *b, int n, int no);
 int         push_binding 			(void *ptr, int num);
@@ -1733,6 +1734,21 @@ upshift_stk (void)
   char *ptr;
   ptr = char_pop ();
   convupper (ptr);
+  push_char (ptr);
+  acl_free (ptr);
+}
+
+/**
+ *
+ *
+ * @return
+ */
+void
+downshift_stk (void)
+{
+  char *ptr;
+  ptr = char_pop ();
+  convlower (ptr);
   push_char (ptr);
   acl_free (ptr);
 }

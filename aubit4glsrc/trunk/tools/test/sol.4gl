@@ -192,7 +192,7 @@ open window w_ace4 at 20,12 with 3 rows, 5 columns
 end function
 
 function dis_card(l_row, l_col)
-
+define lv_fname char(64)
 define
   l_val, l_suit                        char(1),
   l_row, l_col, l_card,
@@ -404,6 +404,7 @@ case
         attribute(border, green)
 end case
 
+
 if g_face[l_row, l_col].fud = "U" then
   let l_val = g_face[l_row, l_col].val
   let l_suit = g_face[l_row, l_col].suit
@@ -415,6 +416,9 @@ if g_face[l_row, l_col].fud = "U" then
     display l_val, l_suit at 1,1 attribute(red)
     display l_val, l_suit at 3,3 attribute(red)
   end if
+  let lv_fname="cards/",downshift(l_val),downshift(l_suit),".gif"
+  
+
 else
   display "#####" at 1,1 attribute(green)
   display "#####" at 2,1 attribute(green)
