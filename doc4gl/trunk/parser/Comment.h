@@ -1,4 +1,3 @@
-
 /**
  *  @file 
  *  Definition of the buffer where a fgldoc comment is stored.

@@ -10,13 +10,13 @@
  *                           - DEFINES
  *                           - Global and external variable declaration
  * ---------------------------------------------------------------------------
- * $Id: p4gl_symtab.h,v 1.4 2003-04-16 12:06:59 saferreira Exp $
+ * $Id: p4gl_symtab.h,v 1.5 2003-11-17 06:10:26 afalout Exp $
  */
 
 
 /* General usage DEFINE(S) */
 
-   /* Maximos */
+   /* Maximums */
 
 #define MAXFUNC       512            /* Max functions by module             */
 #define MAXCALL       768            /* Max function call in a function     */
@@ -26,7 +26,7 @@
 #define MAXGLBVARS  20000            /* Maximo de variaveis globais modulo  */
 #define MAXGLOB         5            /* Maximo de GLOBALS                   */
 #define MAXCURS       640            /* Maximo de cursores                  */
-#define MAXSQL         50            /* Maximo de instrucoes SQL por funcao */
+#define MAXSQL        150            /* Max SQL statements per function (was 50) */
 
 #define NAO             0
 #define SIM             1
@@ -184,7 +184,7 @@ typedef struct {
 } REP_OPTIONS;
                                 /* Estrutura geral de controle de uma source */
 typedef struct {
-	char     directoria[64];         /* Directoria corrente */
+	char     directoria[64];         /* Current directory - Directoria corrente */
 	char     *package;            /* Nome do package */
 	char     modulo[64];             /* Nome do source de 4gl */
 	char     *module;                /* Nome do source de 4gl */
@@ -241,7 +241,8 @@ EXTE short  verbose;            /* Verbose mode flag      */
 EXTE int    exit_stat;
 EXTE FILE   *fin_ptr;
 EXTE FILE   *fout_ptr;
-EXTE int    dbug;
+EXTE int    dbug;               /* Debug flag */
+EXTE int    htmlDump;           /* HTML dump flag */
 EXTE VARS   *Variaveis;        /* Lista corrente de variáveis declaradas */
 EXTE int    IdxVariaveis; 
 EXTE FILE   *Log;               /* Ficheiro onde os erros vao ser acumulados */

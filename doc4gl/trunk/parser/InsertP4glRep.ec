@@ -1,4 +1,3 @@
-
 /**
  * @file
  * Insert the information in a repository with format called p4gl_repository.
@@ -13,8 +12,14 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <varargs.h>
+
+#ifndef WIN32
+	#include <string.h>
+#endif
+
 #include "p4gl_symtab.h"
 #include "p4gl.h"
+
 
 
 /** The statement description */
@@ -59,6 +64,8 @@ static void deleteModule(idPackage,moduleName)
     PARAMETER char *moduleName;
   exec sql end declare section;
 {
+  P4glDebug("Deleting %s module related information form db...\n",moduleName);
+
   StatDesc = "Delete p4gl_fun_parameter";
   exec sql delete from p4gl_fun_parameter
     where id_package = :idPackage and module_name = :moduleName;
@@ -72,27 +79,47 @@ static void deleteModule(idPackage,moduleName)
     where id_package = :idPackage and module_name = :moduleName;
 
   StatDesc = "Delete p4gl_form_usage";
-  exec sql delete from p4gl_form_usage 
+  exec sql delete from p4gl_form_usage
     where id_package = :idPackage and module_name = :moduleName;
 
   StatDesc = "Delete p4gl_fun_process";
-  exec sql delete from p4gl_fun_process 
+  exec sql delete from p4gl_fun_process
     where id_package = :idPackage and module_name = :moduleName;
 
   StatDesc = "Delete p4gl_table_usage";
-  exec sql delete from p4gl_table_usage 
+  exec sql delete from p4gl_table_usage
+    where id_package = :idPackage and module_name = :moduleName;
+
+  StatDesc = "Delete p4gl_mod_todo";
+  exec sql delete from p4gl_mod_todo
+    where id_package = :idPackage and module_name = :moduleName;
+
+  StatDesc = "Delete p4gl_call_parameter";
+  exec sql delete from p4gl_call_parameter
+    where function_call_id in
+	(select function_call_id
+        from p4gl_function_call
+        where p4gl_function_call.id_package = :idPackage
+		and p4gl_function_call.module_name = :moduleName);
+
+  StatDesc = "Delete p4gl_function_calls";
+  exec sql delete from p4gl_function_calls
+    where function_call_id in
+    (select function_call_id
+        from p4gl_function_call
+        where p4gl_function_call.id_package = :idPackage
+		and p4gl_function_call.module_name = :moduleName);
+
+  StatDesc = "Delete p4gl_function_call";
+  exec sql delete from p4gl_function_call
     where id_package = :idPackage and module_name = :moduleName;
 
   StatDesc = "Delete p4gl_function";
   exec sql delete from p4gl_function
     where id_package = :idPackage and module_name = :moduleName;
 
-  StatDesc = "Delete p4gl_mod_todo";
-  exec sql delete from p4gl_mod_todo 
-    where id_package = :idPackage and module_name = :moduleName;
-
   StatDesc = "Delete p4gl_module";
-  exec sql delete from p4gl_module 
+  exec sql delete from p4gl_module
     where id_package = :idPackage and module_name = :moduleName;
 
 }
@@ -124,12 +151,12 @@ static void insertModule(package,module,comments)
 
   idPackage = package;
   moduleName = module;
-  if ( comments != (Comment *)0 ) 
+  if ( comments != (Comment *)0 )
   {
     author = comments->author;
     if ( author == NULL )
       author = " ";
-  
+
     revision = comments->revision;
     if ( revision == NULL )
       revision = " ";
@@ -137,11 +164,11 @@ static void insertModule(package,module,comments)
     since = comments->since;
     if ( since == NULL )
       since = " ";
-  
+
     see = comments->see;
     if ( see == NULL )
       see = " ";
-  
+
     if ( comments->deprecated == 1 )
       deprecated = "Y";
     else
@@ -159,10 +186,14 @@ static void insertModule(package,module,comments)
   commentsText = getCommentBuffer(comments);
   if ( commentsText == NULL )
     commentsText=" ";
-  exec sql insert into p4gl_module 
-    (id_package,module_name,author,revision,deprecated,since,see,comments) 
+
+  exec sql insert into p4gl_module
+    (id_package,module_name,author,revision,deprecated,since,see,comments)
     values
       (:idPackage,:moduleName,:author,:revision,:deprecated,:since,:see,:commentsText);
+
+	P4glDebug("Added module -%s-\n",moduleName);
+
 }
 
 /**
@@ -186,13 +217,13 @@ static int isValidProcess(idProcess)
     from p4gl_process
     where id_process = :idProcess;
 
-  if ( numProcesses > 0 ) 
+  if ( numProcesses > 0 )
     return 0;
   return 1;
 }
 
 /**
- * Insert a process in the p4gl_process table. This is used to 
+ * Insert a process in the p4gl_process table. This is used to
  * let the docuemnter work even if the process does not exist
  * letting the users to fix the processes later.
  *
@@ -200,7 +231,8 @@ static int isValidProcess(idProcess)
  *
  * @param idProcess The primary key of the process to be validated.
  */
-static int insertProcess(idProcess)
+static void 
+insertProcess(idProcess)
   exec sql begin declare section;
     PARAMETER char *idProcess;
   exec sql end declare section;
@@ -214,6 +246,7 @@ static int insertProcess(idProcess)
   numProcesses = 0;
   exec sql insert into p4gl_process (id_process,disp_process,den_process)
     values (:idProcess,:idProcess,:strProcess);
+
 }
 
 
@@ -236,13 +269,17 @@ static void insertFunctionProcess(int idxFunction)
     return;
 
   StatDesc = "insert p4gl_fun_process";
+  P4glDebug("%s\n",StatDesc);
+
   idPackage    = P4glCb.package;
   moduleName   = P4glCb.module;
   functionName = FUNCAO(idxFunction).name;
   for ( i = 0 ; i < FUNCAO(idxFunction).parsedDoc->processIdx ; i++ )
   {
-    idProcess = FUNCAO(idxFunction).parsedDoc->processCode[i];
-    if ( isValidProcess(idProcess) != 0 )
+  P4glDebug("1%s\n",StatDesc);
+	idProcess = FUNCAO(idxFunction).parsedDoc->processCode[i];
+  P4glDebug("idProcess %s\n",idProcess);
+	if ( isValidProcess(idProcess) != 0 )
     {
       if ( !P4glCb.insertProcess )
       {
@@ -336,7 +373,7 @@ int idxFunction;
         item_num,var_name,data_type,comments
       )
       values (
-        :idPackage,:moduleName,:functionName, 
+        :idPackage,:moduleName,:functionName,
         :i, :var_name, :dataType, :comments
      );
   }
@@ -352,7 +389,7 @@ int idxFunction;
         item_num,var_name,data_type
       )
       values (
-        :idPackage,:moduleName,:functionName, 
+        :idPackage,:moduleName,:functionName,
         :i, :var_name, :dataType
      );
   }
@@ -389,7 +426,7 @@ static void insertFunctionReturns(int idxFunction)
     var_name = "";
     dataType = "";
     comments = FUNCAO(idxFunction).parsedDoc->returnList[i];
- 
+
     exec sql insert into p4gl_fun_return (
         id_package,module_name, function_name,
         item_num,var_name,data_type, comments
@@ -427,42 +464,53 @@ static void insertFunctionTodos(int idxFunction)
   for (i = 0 ; i <= FUNCAO(idxFunction).parsedDoc->todoIdx ; i++ )
   {
     comments = FUNCAO(idxFunction).parsedDoc->todoList[i];
- 
+
     exec sql insert into p4gl_fun_todo (
         id_package,module_name, function_name,
         item_num, comments
       )
       values (
-        :idPackage,:moduleName,:functionName, 
+        :idPackage,:moduleName,:functionName,
         :i, :comments
      );
   }
 }
 
 /**
- * Insert all table usage.
- * The table(s) usage in a function could be extracted by the parser (in 
- * explicit SQL or by \@table tag.
+ * Insert all table usage (database tables referenced in this function).
+ * The table(s) usage in a function could be extracted by the parser (in
+ * explicit/static SQL statement) or by \@table tag (when using dynamic/prepred SQL).
  *
- * @param idxFunction Index of the function for where we want to get table(s)
+ * @param idxFunction Index of the function for which we want to get table(s)
  * usage.
  */
 static void insertTablesUsage(int idxFunction)
 {
-  register int i,j;
   exec sql begin declare section;
     char *idPackage;
     char *moduleName;
     char *functionName;
-    char operation; 
+    char operation;
     char *tableName;
+//    char *currpath;
+	char *p_id_process;
+	char owner[129];
+	char tabtype[1];
+    char id_process[129];
+    int numTables;
+    int NumRows;
   exec sql end declare section;
   FUNCTION *function;
+  register int i;
 
   idPackage    = P4glCb.package;
   moduleName   = P4glCb.module;
   function = getFunction(idxFunction);
   functionName = function->name;
+
+	P4glVerbose("Inserting table usage for function %s\n",functionName);
+	StatDesc = "Inserting ussage of the database table";
+
   for ( i = 0 ; i < getFunctionTableUsageIdx(function) ; i++)
   {
     TableUsage *tableUsage;
@@ -485,14 +533,144 @@ static void insertTablesUsage(int idxFunction)
       default:
         operation = 'S';
     }
-    StatDesc = "Insercao em Utilizacao de Tabela";
-    exec sql 
-      insert into p4gl_table_usage ( 
+
+	exec sql select count(*) into :NumRows
+        from systables
+            where tabname = :tableName;
+
+	if ( NumRows == 0 )
+    {
+		//P4glError(ERROR_EXIT,"Table -%s- does not exist in this database\n",tableName);
+        /* This is not nececeraly an error; maybe it's a temp table, or maybe
+        it's a DDL (create table) statement.
+		*/
+
+        strcpy(tabtype,"U"); //Doc4GL table types are T=table V=view U=undefined E=tEmporary
+        strcpy(owner,"unknown");
+
+    } else {
+		exec sql select owner, tabtype into :owner, :tabtype
+        from systables
+            where tabname = :tableName;
+			//Informix tabtyeps are Table or View
+
+	    RClipp(owner);
+		P4glDebug("Owner of table %s is %s\n",tableName,owner);
+    }
+
+	// check if we have this table
+	exec sql select count(*)
+	    into :numTables
+			from systableext
+			    where tabname = :tableName
+				and owner = :owner;
+
+	if ( numTables == 0 )
+    {
+		//add table
+		P4glDebug("New table %s\n",tableName);
+		exec sql
+	      insert into systableext (owner,tabname,tabtype)
+	          values (:owner, :tableName, :tabtype );
+    }
+
+	/* FIXME: remove field tablename form p4gl_table_usage - use only tabname (FK to systableext)
+      need to remove it from Doc4GL browser
+    */
+
+	P4glDebug("New table usage -%s-%s-%s-%s-%s-%s-%c-\n",idPackage,moduleName,functionName,tableName,owner,tableName,operation);
+
+//DEBUG: New table usage -.-PC8.4gl-err_list-err_vpays-process
+//-err_vpays-D-
+
+
+	exec sql
+      insert into p4gl_table_usage (
             id_table_usage, id_package, module_name,
-            function_name, table_name, operation )
+            function_name, table_name, operation,
+			owner,tabname )
           values (0, :idPackage,:moduleName,
-            :functionName, :tableName, :operation );
-  }
+            :functionName, :tableName, :operation,
+			:owner, :tableName );
+
+	/* check if we have this function in the context of this process
+	We are doing this to get the process for this function, so that
+    we can apply same process to tables used in this function
+
+	WARNING - check - is it already stored in database from comment? 
+		- YES, in function insertFunctionProcess
+	
+	WATNING - function can have multiple processes associated with it and
+    here we expect only one row!
+
+	*/
+	exec sql
+		select id_process into :id_process
+			from p4gl_fun_process
+			where function_name = :functionName
+            and id_package = :idPackage
+            and module_name = :moduleName;
+
+	//P4glDebug("Got process for function %s as %s\n",functionName,id_process);
+
+	if (IsEmpty (id_process))
+    {
+		/* we don't know process for this function */
+
+		P4glDebug("New function/process for function %s\n",functionName);
+		/* assume process by directory location */
+        /*
+		currpath = getcwd((char *)0,256);
+        RClipp(currpath);
+		Upshift(currpath);
+		// src/ap
+		P4glDebug("path:%s\n",currpath);
+		p_id_process=substr(currpath, RightPos(currpath,1,"/")+1,strlen(currpath));
+        */
+
+        p_id_process=strdup(FileDirectory);
+		Upshift(p_id_process);
+		sprintf(id_process,"%s",p_id_process);
+		//P4glDebug("process from path:%s\n",p_id_process);
+
+	    /* insertFunctionProcess finction will do this checking:
+		if ( isValidProcess(p_id_process) != 0 )
+        {
+			sprintf(id_process,"%s",p_id_process);
+			P4glError(ERROR_EXIT,"Process -%s- does not exist\n",id_process);
+        }
+        */
+        //insert function/process relationship
+
+		//assign it to global array
+
+		FUNCAO(idxFunction).parsedDoc->processIdx=0;
+		FUNCAO(idxFunction).parsedDoc->processCode[0]=strdup(p_id_process);
+		insertFunctionProcess(idxFunction);
+    }
+
+    /* now that we know process for this function, we can apply same process to
+    this table */
+
+    /* check if we already have this table in the context of this process */
+	exec sql
+		select count (*) into :NumRows
+        from p4gl_table_process
+        where owner = :owner
+        and tabname = :tableName
+        and id_process = :id_process;
+
+	if (NumRows == 0)
+    {
+		P4glDebug("New table/process relationship -%s-%s-%s-\n",id_process,owner,tableName);
+		// Insert table/process relationship
+		exec sql
+		insert into p4gl_table_process
+            (id_process, owner, tabname)
+        values
+            (:id_process,:owner, :tableName);
+    }
+  } // end for loop
 }
 
 /**
@@ -530,11 +708,11 @@ static void insertFunction(int idxFunction)
       deprecated = "Y";
     else
       deprecated = "N";
-  
+
     author = FUNCAO(idxFunction).parsedDoc->author;
 	  if ( author == NULL )
 	    author = " ";
-  
+
     since = FUNCAO(idxFunction).parsedDoc->since;
 	  if ( since == NULL )
 	    since = " ";
@@ -544,7 +722,7 @@ static void insertFunction(int idxFunction)
 		author = " ";
 		since = " ";
 	}
-  
+
   if ( comments == (char *)0 )
     comments=" ";
   exec sql insert into p4gl_function (
@@ -553,17 +731,41 @@ static void insertFunction(int idxFunction)
     )
     values (:idPackage,:moduleName,:functionName,:functionType,:deprecated,
             :comments,:author,:since);
+
+    /* TODO: add instructions_num, sql_num 
+	- what is "locals" in HTML output? is that Local Variables count? */
+
   insertFunctionParameters(idxFunction);
   insertFunctionReturns(idxFunction);
   insertFunctionProcess(idxFunction);
   insertFunctionTodos(idxFunction);
   insertTablesUsage(idxFunction);
+
+/* TODO - insert in p4gl_globals_usage */
+
+/*
+  TODO:
+  insertFormsUsage(idxFunction);
+
+  comment.h:
+  ...
+  char       *formList[100];    / List of forms defined in the comment or found
+  int        formIdx;           / Number of elements in the form list
+  int         tableStarted;     / Internal state
+} Comment;
+
+    I DON'T THIS IS EXTRACTED BY THE PARSER AT THE MOMENT ?
+
+
+
+*/
+
 }
 
 
 /**
  * Insert all the functions loaded in the abstract tree.
- */ 
+ */
 static void insertFunctions(void)
 {
   register int i;
@@ -572,9 +774,263 @@ static void insertFunctions(void)
     insertFunction(i);
 }
 
+#ifdef NICE_TRY
+
+/**
+ * Insert all the function calls loaded in the abstract tree.
+ */
+static void insertFunctionCalls()
+{
+   register int i,j;
+  exec sql begin declare section;
+    char *idPackage;
+    char *moduleName;
+    int NumRows;
+	char ProgramName[129];
+	char ThisProgramName[129];
+	char FunctionCalling[129];
+ 	char FunctionCalled[129];
+  exec sql end declare section;
+
+    StatDesc = "insertFunctionCalls()";
+
+  idPackage    = P4glCb.package;
+  moduleName   = P4glCb.module;
+//  function = getFunction(idxFunction);
+//  functionName = function->name;
+
+
+	for (i=0 ; i < P4glCb.idx_funcoes ; i++) 	/* foreach function in this module */
+	{
+		for (j = 0 ; j< IDX_FC(i) ; j++) /* foreach function call in this function */
+		{
+            FunctionCalling = P4glCb.functions[i].name;
+            FunctionCalled = FUNC_CALL(i,j).name;
+
+			P4glDebug("Function %s calls %s on line %d\n",
+				P4glCb.functions[i].name,
+				FUNC_CALL(i,j).name,
+				FUNC_CALL(i,j).linha);
+
+			/* check if we already have this function call relationship */
+			exec sql
+				select count (*) into :NumRows
+		        from p4gl_function_calls
+		        where id_package = :idPackage
+		        and module_name = :moduleName
+		        and function_name = :FunctionCalling
+			        and calls_id_package = :idPackage
+			        and calls_function_name = :FunctionCalled;
+  			        //and calls_module_name = : -- we don't know that!
+
+P4glDebug("1\n");
+			if (NumRows == 0)
+		    {
+                /* Do we have called function recorded? */
+				exec sql
+					select count (*) into :NumRows
+			        from p4gl_function
+			        where id_package = :idPackage
+			        //and module_name = :moduleName
+			        and function_name = :FunctionCalled;
+P4glDebug("2\n");
+				if (NumRows == 0)
+			    {
+                    /* called function was not yet recorded in db - now what?
+                        adding a function to Doc4GL db is not a simple matter of
+                        inserting a row.
+
+                        We can insert a placeholder in p4gl_function, but when
+                        later actual function is encuntered by p4gl, we will not
+                        be able to simply delete it, because of referential
+						integrity (at least p4gl_function_calls table will be
+                        referencing that row...). To use placeholder we would
+						need to drop referential integrity constraints from at
+                        least this 2 tables.
+
+                        Additionaly, curently this source file DELETES EVERYTHING
+                        IT KNOWS ABOUT A 4GL SOURCE FILE MODULE before it starts
+						adding information (see function deleteModule()). To be
+						able to do this before actual module we inserted a placeholder
+						for is processes, this function call relationship would
+                        need to be deleted first, before function entry can...
+
+                        If we remove call to deleteModule(), we would need to add
+                        checking in front of every insert in this source file,
+                        to see if entry maybe already exists.
+
+                        So if we remove deleteModule(), we can keep referential
+						integrity, but in that case when actual function is encountered,
+                        we would need to (A) be able to recognise a placeholder
+                        (B) be able to to update this placeholder, instead of
+                        trying to delete it.
+
+
+					*/
+
+                } else {
+					if (NumRows == 1)
+				    {
+                        /* we have exactly one function with that name, but
+                        is this the one we are calling here ? We would need to
+						have number of parameters and there types in the call
+                        to be (reasonambly) sure. Since I don't think that p4gl
+                        parser extracts this information, only thing that we can
+                        do is to check if this function is in module that our
+                        module will be linked with when creating program/library.
+
+                        Since program/module relationship is extracted (currently)
+                        only from make files, this means that at this point we
+                        had to have already run mkf.4gl
+
+						*/
+
+                        exec sql
+                            select p4gl_module_prog.program_name into :ProgramName
+                            from p4gl_function, p4gl_module, p4gl_module_prog
+		                    where
+					            p4gl_function.id_package = :idPackage
+					        and p4gl_function.function_name = :FunctionCalled
+                            and p4gl_function.module_name = p4gl_module.module_name
+
+                            and p4gl_module.id_package =  p4gl_function.id_package
+
+							and p4gl_module_prog.id_package = p4gl_module.id_package
+							and p4gl_module_prog.module_name = p4gl_module.module_name;
+
+						if (IsEmpty (ProgramName))
+                        {
+                            /* we do have called function on record, but we
+							failed to get function/program relationship.
+                            */
+							P4glVerbose("Found function %s but not it's program\n",FunctionCalled);
+                        } else {
+                            /* We got called function and it's program, but is
+							this ProgramName same one this module is part of ? */
+
+	                        exec sql
+	                            select p4gl_module_prog.program_name into :ThisProgramName
+	                            from p4gl_function, p4gl_module, p4gl_module_prog
+			                    where
+						            p4gl_function.id_package = :idPackage
+						        and p4gl_function.function_name = :FunctionCalling
+                                and p4gl_function.module_name = :moduleName
+
+	                            and p4gl_module.id_package =  p4gl_function.id_package
+                                and p4gl_module.module_name = p4gl_function.module_name
+
+								and p4gl_module_prog.id_package = p4gl_module.id_package
+								and p4gl_module_prog.module_name = p4gl_module.module_name;
+
+			                if ( strcmp(ProgramName,ThisProgramName) == 0 )
+                            {
+                                /* Yeees! We got it (probably) */
+
+
+                            } else {
+                                /* The only function with that name is apparently
+                                not part of the same program/library as the calling
+								function - so we give up... */
+								P4glVerbose("Only function with name %s is not part of this program\n",FunctionCalled);
+							}
+                         }
+                     } else {
+                        /* multiple functions have this name */
+						P4glVerbose("Found multiple functions named %s\n",FunctionCalled);
+                    }   // end if - only one function with name of the calling function exists
+                }   	// and if - called function is not already recorded in functions table
+            }   		// end if - relationsip between calling/called functions already exists
+		}   			// end for - each call in function
+	}  					// end for - each function in module
+}
+
+#endif
+
+
+/**
+ * Insert all the function calls loaded in the abstract tree.
+ * Function calls relationships can only be resolved after all the
+ * module/function and program/module information is in the database.
+ * TODO: create program to establish this relationships.
+ */
+static void insertFunctionCalls()
+{
+   register int i,j;
+  exec sql begin declare section;
+    char *idPackage;
+    char *moduleName;
+    int NumRows;
+    int Line;
+//	char ProgramName[129];
+//	char ThisProgramName[129];
+	char FunctionCalling[129];
+ 	char FunctionCalled[129];
+  exec sql end declare section;
+
+    StatDesc = "insertFunctionCalls()";
+
+  idPackage    = P4glCb.package;
+  moduleName   = P4glCb.module;
+
+
+	for (i=0 ; i < P4glCb.idx_funcoes ; i++) 	/* foreach function in this module */
+	{
+		for (j = 0 ; j< IDX_FC(i) ; j++) /* foreach function call in this function */
+		{
+            //FunctionCalling=strdup(P4glCb.functions[i].name);
+            //FunctionCalled=strdup(FUNC_CALL(i,j).name);
+            
+            sprintf(FunctionCalling,"%s",P4glCb.functions[i].name);
+            sprintf(FunctionCalled,"%s",FUNC_CALL(i,j).name);
+
+
+			Line = FUNC_CALL(i,j).linha;
+
+			P4glDebug("Function %s calls %s on line %d\n",
+				P4glCb.functions[i].name,
+				FUNC_CALL(i,j).name,
+				FUNC_CALL(i,j).linha);
+
+			/* check if we already have this function call. Since we deleted
+            all this before strting processing this module, it should allways
+            return ), unless if same function was called multiple times on the
+			same line - in which case we will ignore folowing calls on the same
+			line */
+			exec sql
+				select count (*) into :NumRows
+		        from p4gl_function_call
+			        where id_package = :idPackage
+			        and module_name = :moduleName
+			        and function_name = :FunctionCalling
+            	    and calls_function_name = :FunctionCalled
+                    and line = :Line;
+
+
+			if (NumRows == 0)
+		    {
+
+				exec sql
+				insert into p4gl_function_call
+                (function_call_id,id_package,module_name,function_name,calls_function_name,line,call_type)
+				values
+				(0,:idPackage,:moduleName,:FunctionCalling,:FunctionCalled,:Line,"F");
+
+                /* todo: extract & insert call_type: F-function R-report W-whenever error/warning call xxx */
+
+                /* todo: extract & insert into p4gl_call_parameter */
+
+
+            }   		// end if - relationsip between calling/called functions already exists
+		}   			// end for - each call in function
+	}  					// end for - each function in module
+}
+
+
+
+
 /*
  * Start the connection to the database
- * 
+ *
  * @return - 1 : Connection established
  *         - 0 : Otherwise
  */
@@ -605,7 +1061,7 @@ exec sql end declare section;
 
 
 /**
- * Entry function to the insertion of the information in the abstract tree to 
+ * Entry function to the insertion of the information in the abstract tree to
  * the repository.
  */
 void insertP4glRep(void)
@@ -622,5 +1078,9 @@ void insertP4glRep(void)
     P4glCb.parsedComment
   );
   insertFunctions();
+  insertFunctionCalls();
 }
+
+
+/* ================================ EOF ================================== */
 

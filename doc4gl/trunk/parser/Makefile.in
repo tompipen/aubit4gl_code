@@ -4,7 +4,7 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Id: Makefile.in,v 1.7 2003-05-21 00:22:42 afalout Exp $
+# $Id: Makefile.in,v 1.8 2003-11-17 06:10:26 afalout Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
 #
@@ -13,14 +13,37 @@
 
 include ../FgldocDefs.mk
 
+ALL=p4gl p4glpp
+
+ifneq "${FJS_PCOMPILER}" "no"
+    ALL+=mkf.42r loadform.42r
+    ADD_INSTALL=mkf.42m loadform.42m
+endif
+ifneq "${I4GL_PCOMPILER}" "no"
+    ALL+=mkf.4gi loadform.4gi
+endif
+ifneq "${QUERIX_COMP}" "no"
+    ALL+=mkf.4qe loadform.4qe
+endif
+ifneq "${AUBIT_FRONT}" "no"
+    ALL+=mkf.4ae loadform.4ae
+endif
+
+#Override Aubit settings, since we can only work with Informix db at the moment
+A4GL_SQLTYPE=esql
+A4GL_LEXTYPE=C
+A4GL_LEXDIALECT=INFORMIX
+export A4GL_SQLTYPE A4GL_LEXTYPE A4GL_LEXDIALECT
 
 #  ============================================================================
 #  Compilation of all programs
 #  ============================================================================
-all: p4gl p4glpp
+all: ${ALL}
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
-	@echo "|             Doc4gl parser successfully compiled.                   |"
+	@echo "| Doc4gl parser targets:                                             |"
+	@echo "|     ${ALL}"
+	@echo "| successfully compiled.                                             |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
@@ -30,10 +53,10 @@ all: p4gl p4glpp
 #  4GL Parser (for each source file)
 #  ============================================================================
 P4GLOBJ= p4gl_synt.o p4gl_ld_st.o p4gl_lex.o p4gl_parse.o  \
-	p4gl_util.o p4gl_dump_st.o  p4gl_ins_rep.o actions.o GenFglDoc.o \
+	p4gl_util.o p4gl_dump_st.o actions.o GenFglDoc.o \
 	InsertP4glRep.o StringBuffer.o CommentLexer.o ParseComment.o GenParameters.o \
 	ReadComments.o CommentsManagement.o Comment.o P4glLexFuncs.o P4glInit.o \
-	TableUsage.o P4glAbstractTree.o
+	TableUsage.o P4glAbstractTree.o p4gl_ins_rep.o
 
 p4gl : $(P4GLOBJ) m_p4gl.o
 	$(ESQL) $(CFLAGS) -o $@ $(P4GLOBJ) m_p4gl.o
@@ -82,28 +105,34 @@ p4glpp: $(P4GLPPOBJ)
 
 
 #  ==========================================================================
-#  Make file manupulation tool
+#  Make file manupulation tool, and loadform loader compile rules
 #  ==========================================================================
 
 # Aubit
-mkf.4ae: mkf.4gl
+%.4ae: %.4gl
 	aubit 4glc $^ -o $@
 
 # Informix
-mkf.4gi: mkf.4gl
+%.4gi: %.4gl
 	fglpc  $^
-	cat mkf.4go > $@
+	cat $*.4go > $@
 
 # 4Js / D4GL
-mkf.42r: mkf.4gl
-	fgl2p  -c $^
-	fgllink -O -o $@ mkf.42m /usr/fgl2c/lib/libfgl4js.42x
+#%.42r: %.4gl ${DOC4GL_DBNAME}.sch ${DBDOC_DBNAME}.sch
+%.42r: %.4gl maxdev.sch
+	fgl2p  -c $<
+	fgllink -O -o $@ $*.42m /usr/fgl2c/lib/libfgl4js.42x
+
+#Create 4Js databas schema file
+PRECIOUS : %.sch maxdev.sch
+%.sch:
+	fglschema $*
 
 # Querix
-mkf.4qe: mkf.4gl
+%.4qe: %.4gl
 	fglc -a -w -D -I -z -Ig $^
-	gcc -c -I/opt/querix/./incl -DQUERIX mkf.c -o mkf.qo
-	gcc -I/opt/querix/./incl -DQUERIX -rdynamic -o $@ mkf.qo -L"/opt/querix/./lib" -lfgl -lsqlc
+	gcc -c -I/opt/querix/./incl -DQUERIX $*.c -o $*.qo
+	gcc -I/opt/querix/./incl -DQUERIX -rdynamic -o $@ $*.qo -L"/opt/querix/./lib" -lfgl -lsqlc
 
 
 #  ==========================================================================
@@ -145,8 +174,8 @@ tags:
 #  ==========================================================================
 #  Install the software
 #  ==========================================================================
-install:
-	${INSTALL} p4gl p4glpp $(BINDIR)
+install: ${ALL}
+	${INSTALL} ${ALL} ${ADD_INSTALL} $(BINDIR)
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             Doc4gl parser successfully installed.                  |"
@@ -155,7 +184,7 @@ install:
 
 
 deinstall:
-	${RM} ${BINDIR}/p4gl ${BINDIR}/p4glpp
+	${RM} $(addprefix ${BINDIR}/,${ALL} ${ADD_INSTALL})
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             Doc4gl parser successfully de-installed.               |"
@@ -166,7 +195,7 @@ deinstall:
 #  Cleaning of all the garbage
 #  ==========================================================================
 clean:
-	${RM} *.o p4gl p4glpp lex.yy.c y.tab.h a.out core y.output sqexplain.out \
+	${RM} *.o ${ALL} lex.yy.c y.tab.h a.out core y.output sqexplain.out \
 	*.4go *.4gi *.4ge *.a  InsertP4glRep.c
 
 

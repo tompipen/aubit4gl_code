@@ -162,7 +162,7 @@ create table p4gl_table_usage (
 	module_name   char(64) not null,
 	function_name char(50) not null,
 	table_name    char(50) not null,
-  operation char(1) not null 
+  operation char(1) not null
     check (operation IN ('I' ,'U' ,'D' ,'S' )),
 	foreign key (id_package,module_name,function_name)
 	  references p4gl_function (id_package,module_name,function_name)
@@ -182,3 +182,55 @@ create table p4gl_excel (
 );
 
 --load from mobilix_process.u insert into p4gl_process;
+
+
+
+
+{
+
+# Tables for Dbdoc: see dbdocumenter.sql
+
+  $rv = $obj->execSql(qq/create table systableext (
+	  owner char(32),
+	  tabname char(32),
+	  extowner char(32),
+	  tabalias char(32),
+	  remarks char(254),
+	  primary key (owner,tabname)
+  );
+  /);
+
+
+  $rv = $obj->execSql(qq/create table syscolumnext (
+	  owner char(32),
+	  tabname char(32),
+	  colname char(32),
+	  extowner char(32),
+	  colalias char(32),
+	  collabel char(32),
+	  coltitle char(32),
+	  remarks char(254),
+	  subtype char(4),
+	  class char(32),
+	  primary key (owner,tabname,colname)
+  );
+  /);
+
+
+  $rv = $obj->execSql(qq/create table d_modulos (
+	  codigo char(5),
+	  nome char(40)
+  );
+  /);
+
+
+
+  $rv = $obj->execSql(qq/create table d_mod_tab (
+	  codmod char(5),
+	  tabname char(19)
+  );
+  /);
+
+#End of Dbdoc tables
+
+}

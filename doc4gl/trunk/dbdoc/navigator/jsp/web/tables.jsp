@@ -1,16 +1,16 @@
 
 
-<%@ page import="pt.despodata.java.ddata.DDataControl" %>
+<%@ page import="pt.moredata.java.ddata.DDataControl" %>
 
 <HTML>
 
 
-<%@ page import="pt.despodata.java.ddata.DDataSource" %>
+<%@ page import="pt.moredata.java.ddata.DDataSource" %>
 <%@ page import="org.aubit4gl.dbdocumenter.navigator.DbDocumenter" %>
 <%@ page import="java.sql.*" %>
 
 
-<jsp:useBean id="implicitDS" scope="session" class="pt.despodata.java.ddata.DDataSource" />
+<jsp:useBean id="implicitDS" scope="session" class="pt.moredata.java.ddata.DDataSource" />
 
 <% DbDocumenter.setConnection(implicitDS.getConnection()); %>
 <HEAD>

@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.3 2003-07-13 06:11:07 afalout Exp $
+#  $Id: Makefile.in,v 1.4 2003-11-17 06:10:25 afalout Exp $
 #  =========================================================================
 
 ROOT=../../..
@@ -147,7 +147,8 @@ ${MOREDATA_OLTP}:
 #Use Ant to create and install/relaod app in-place:
 #install: install.inplace
 #Create .war file using Ant, drop it under Tomcat and restart Tomcat:
-install: war
+install: war install.message
+	@echo ""
 
 #############################
 # Install web browser Doc4GL application using in-place files.
@@ -162,12 +163,15 @@ install: war
 #WARNING:
 #Application installed in this way will use files in-place, from browser/build !!!
 #Application will be de-activated on next TomCat shutdown!!!
-install.inplace: ${TOMCAT_ANT} install.index install.ant install.index install.files
+install.inplace: ${TOMCAT_ANT} install.index install.ant install.index install.files install.message
+	@echo ""
+
+install.message:
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             DBdoc browser successfully installed.                  |"
 	@echo "|      You can access the DBdoc browser at the following URL:        |"
-	@echo "|                http://localhost:8080/${JSP_DBAPP_NAME}                 |"
+	@echo "|                http://localhost:8080/${JSP_DBAPP_NAME}"
 	@echo "|      You can monitor installed Tomcat applications at:             |"
 	@echo "|                http://localhost:8080/manager/html                  |"
 	@echo "+--------------------------------------------------------------------+"
@@ -196,13 +200,13 @@ endif
 install.files: install.files.tree install.files.images
 ifneq "${TOMCAT_DIR}" "no"
 	$(INSTALL) $(CLASS_FILES) 	$(CLASS_DIR)
-	$(INSTALL) $(JSP_FILES) 	$(NAV_DIR)
-#	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
-#	$(INSTALL) $(JS_FILES) 		$(NAV_DIR)
-	$(INSTALL) $(CCS_FILES) 	$(NAV_DIR)
+	$(INSTALL) $(JSP_FILES) 	$(DBDOC_NAV_DIR)
+#	$(INSTALL) $(IMG_FILES) 	$(DBDOC_NAV_DIR)
+#	$(INSTALL) $(JS_FILES) 		$(DBDOC_NAV_DIR)
+	$(INSTALL) $(CCS_FILES) 	$(DBDOC_NAV_DIR)
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
-	@echo "|             DBdov browser files successfully installed.            |"
+	@echo "|             DBdoc browser files successfully installed.            |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 else
@@ -212,7 +216,7 @@ endif
 
 install.files.images:
 ifneq "${TOMCAT_DIR}" "no"
-#	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
+#	$(INSTALL) $(IMG_FILES) 	$(DBDOC_NAV_DIR)
 else
 	@echo "Tomcat directory unknown. Cannot install"
 endif
@@ -220,7 +224,7 @@ endif
 
 install.files.tree:
 ifneq "${TOMCAT_DIR}" "no"
-	mkdir -p ${NAV_DIR}
+	mkdir -p ${DBDOC_NAV_DIR}
 	mkdir -p ${CLASS_DIR}
 else
 	@echo "Tomcat directory unknown. Cannot install"
@@ -272,7 +276,7 @@ install.index:
 # installation directory, overwriting exisitng one:
 install.index.deploy: install.index
 ifneq "${TOMCAT_DIR}" "no"
-	${INSTALL} ${BUILD_PATH}/${INDEX.JSP} $(NAV_DIR)/${INDEX.JSP}
+	${INSTALL} ${BUILD_PATH}/${INDEX.JSP} $(DBDOC_NAV_DIR)/${INDEX.JSP}
 else
 	@echo "Tomcat directory unknown. Cannot install.index"
 endif
@@ -389,26 +393,26 @@ endif
 deinstall.files:
 ifneq "${TOMCAT_DIR}" "no"
 	(cd $(CLASS_DIR)/${CLASS_PACKAGE}; ${RM} $(CLASS_FILE))
-	(cd $(NAV_DIR); ${RM} $(JSP_FILE))
-#	(cd $(NAV_DIR); ${RM} $(IMG_FILE))
-#	(cd $(NAV_DIR)/images; ${RM} $(IMG_FILE))
-#	(cd $(NAV_DIR); ${RM} $(JS_FILE))
-	(cd $(NAV_DIR); ${RM} $(CCS_FILE))
-	${RM} $(NAV_DIR)/META-INF/MANIFEST.MF
-	${RM} $(NAV_DIR)/*.bak
-	${RM} $(NAV_DIR)/WEB-INF/*.bak
-	${RM} $(NAV_DIR)/WEB-INF/web.xml
+	(cd $(DBDOC_NAV_DIR); ${RM} $(JSP_FILE))
+#	(cd $(DBDOC_NAV_DIR); ${RM} $(IMG_FILE))
+#	(cd $(DBDOC_NAV_DIR)/images; ${RM} $(IMG_FILE))
+#	(cd $(DBDOC_NAV_DIR); ${RM} $(JS_FILE))
+	(cd $(DBDOC_NAV_DIR); ${RM} $(CCS_FILE))
+	${RM} $(DBDOC_NAV_DIR)/META-INF/MANIFEST.MF
+	${RM} $(DBDOC_NAV_DIR)/*.bak
+	${RM} $(DBDOC_NAV_DIR)/WEB-INF/*.bak
+	${RM} $(DBDOC_NAV_DIR)/WEB-INF/web.xml
 	${RM} $(TOMCAT_DIR)/webapps/${JSP_DBAPP_NAME}.war
-	-rmdir $(NAV_DIR)/images
-	-rmdir $(NAV_DIR)/WEB-INF/classes/org/aubit4gl/dbdocumenter/navigator
-	-rmdir $(NAV_DIR)/WEB-INF/classes/org/aubit4gl/dbdocumenter
-	-rmdir $(NAV_DIR)/WEB-INF/classes/org/aubit4gl
-	-rmdir $(NAV_DIR)/WEB-INF/classes/org
-	-rmdir $(NAV_DIR)/WEB-INF/classes
-	-rmdir $(NAV_DIR)/WEB-INF/lib
-	-rmdir $(NAV_DIR)/WEB-INF
-	-rmdir $(NAV_DIR)/META-INF
-	-rmdir $(NAV_DIR)
+	-rmdir $(DBDOC_NAV_DIR)/images
+	-rmdir $(DBDOC_NAV_DIR)/WEB-INF/classes/org/aubit4gl/dbdocumenter/navigator
+	-rmdir $(DBDOC_NAV_DIR)/WEB-INF/classes/org/aubit4gl/dbdocumenter
+	-rmdir $(DBDOC_NAV_DIR)/WEB-INF/classes/org/aubit4gl
+	-rmdir $(DBDOC_NAV_DIR)/WEB-INF/classes/org
+	-rmdir $(DBDOC_NAV_DIR)/WEB-INF/classes
+	-rmdir $(DBDOC_NAV_DIR)/WEB-INF/lib
+	-rmdir $(DBDOC_NAV_DIR)/WEB-INF
+	-rmdir $(DBDOC_NAV_DIR)/META-INF
+	-rmdir $(DBDOC_NAV_DIR)
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             DBdoc browser files successfully removed.             |"

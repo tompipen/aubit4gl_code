@@ -18,7 +18,7 @@
 
 	<!-- Só para testar meta informação -->
   <jsp:useBean id="implicitDS" scope="session" 
-	  class="pt.despodata.java.ddata.DDataSource" />	
+	  class="pt.moredata.java.ddata.DDataSource" />
 
 	<%
 		/*

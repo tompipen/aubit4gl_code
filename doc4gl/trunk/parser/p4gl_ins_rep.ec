@@ -1,9 +1,18 @@
 /**
- * @file 
+ * @file
  * Inserting information into repository (inslib version).
  * Note : This repository format is no longer used
+ * But folowong functions are still used:
+ *
+ * RegisterErrorInDb
+ * RegisterWarningInDb
+ * InsertInslib
+ * SqlErrors
  *
  */
+
+/* Prototypes: */
+
 
 /*===========================================================================
  *
@@ -31,6 +40,7 @@
 #include <varargs.h>
 #include <string.h>
 #include "p4gl_symtab.h"
+#include "p4gl.h"
 
 exec sql include datetime;
 exec sql include sqltypes;
@@ -53,7 +63,8 @@ exec sql end declare section;
 /*
  * Entry Point of Insunix repository fill in
  */
-InsertInslib()
+void
+InsertInslib(void)
 {
 	exec sql whenever sqlerror call SqlErrors;
 
@@ -269,7 +280,7 @@ InsUnixInsertFunctions()
 			{
         StatDesc = "Preparacao de seleccao de funcao declarada (DEBUG)";
 				sprintf(NomeModulo,"%%%s",P4glCb.NmFicheiroInput);
-				exec sql select id_funcao into :ID_Funcao from tags 
+				exec sql select id_funcao into :ID_Funcao from tags
 					where nm_funcao=:NomeFuncao and nm_modulo like :NomeModulo;
 			}
 			else
@@ -425,7 +436,7 @@ InsUnixGetUnknownModule()
 	if (sqlca.sqlcode == 100) 
 	{
 		StatDesc = "Insercao em modulo";
-		exec sql insert into modulo 
+		exec sql insert into modulo
 			(id_modulo, modulo,ficheiro)
 			values
 			(0, "DESCONHECIDO", "DESCONHECIDO");
@@ -467,7 +478,7 @@ InsUnixGetIncludeModule()
 	if (sqlca.sqlcode == 100) 
 	{
 		StatDesc = "Insercao em modulo de include";
-		exec sql insert into modulo 
+		exec sql insert into modulo
 			(id_modulo, modulo,ficheiro)
 			values
 			(0, :NomeInclude, "DESCONHECIDO");
@@ -740,7 +751,7 @@ InsUnixInsertTablesUsage(FunctionNum)
 					  Operacao = 'S';
 			}
          StatDesc = "Insercao em Utilizacao de Tabela";
-			exec sql put c_StInsUtilTab 
+			exec sql put c_StInsUtilTab
 				from :ID_Table, :ID_Function, :Operacao;
 		} 
 		                    /* Inserir LIKE(s) */
@@ -896,7 +907,7 @@ InsUnixInsertGlobalDeclaration(ID_Modulo)
 		else          /* IN_INCLUDE - Declaracao em GLOBALS "GlobalFile.4gl" */
 		{
          StatDesc = "Seleccao de global";
-			exec sql execute StGetGlobal into :ID_Global 
+			exec sql execute StGetGlobal into :ID_Global
 				using :NomeGlob, :ID_Modulo_Include;
 			if (sqlca.sqlcode == 100)
 			{
@@ -1144,7 +1155,8 @@ char *NomeCursor;
   * Funcao que faz a gestao dos erros
   */
 
- SqlErrors()
+void
+SqlErrors(void)
  {
     int err = 0;
     if(!strncmp(SQLSTATE, "00", 2) ||
@@ -1199,7 +1211,7 @@ MostraTempo()
 	dtcurrent(&Tempo);
 	dtsub(&TempoAnterior,&Tempo,&Intervalo);
 	dtcurrent(&TempoAnterior);
-	intoasc(&Intervalo,strtempo); 
+	intoasc(&Intervalo,strtempo);
 	printf("Tempo %s\n",strtempo);
 }
 
@@ -1226,7 +1238,7 @@ va_dcl
 	va_end(args);
 
 	Progname = FicheiroInput;
-	exec sql insert into erros 
+	exec sql insert into erros
 		          (ficheiro,  data_scan, texto)
 		   values (:Progname, CURRENT,   :ErrTxt);
 }
@@ -1260,6 +1272,7 @@ exec sql end declare section;
  * It register(s) a error at the database and 
  * mark module not scanned.
  */
+void
 RegisterErrorInDb(msg)
 char *msg;
 {
@@ -1298,6 +1311,7 @@ ERRO:
  * It register(s) a warning at the database and 
  * mark module not scanned.
  */
+void
 RegisterWarningInDb(msg)
 char *msg;
 {

@@ -1,10 +1,10 @@
 
-<%@ page import="pt.despodata.java.ddata.DDataControl" %>
+<%@ page import="pt.moredata.java.ddata.DDataControl" %>
 
 <HTML>
 
 
-<%@ page import="pt.despodata.java.ddata.DDataSource" %>
+<%@ page import="pt.moredata.java.ddata.DDataSource" %>
 <%@ page import="java.sql.*" %>
 
 

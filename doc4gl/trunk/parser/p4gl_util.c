@@ -14,11 +14,11 @@
 /*
  *
  * Moredata - Lisboa, PORTUGAL
- *                                                       
- * $Author: saferreira $
- * $Revision: 1.3 $
- * $Date: 2003-01-06 20:16:49 $
- *                                                       
+ *
+ * $Author: afalout $
+ * $Revision: 1.4 $
+ * $Date: 2003-11-17 06:10:26 $
+ *
  */
 
 #include <stdio.h>
@@ -26,6 +26,20 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include "p4gl_symtab.h"
+
+/*
+p4gl_util.c:54: warning: implicit declaration of function `RegisterErrorInDb'
+p4gl_util.c:63: warning: implicit declaration of function `CleanP4gl'
+p4gl_util.c:64: warning: implicit declaration of function `exit'
+p4gl_util.c:91: warning: implicit declaration of function `RegisterWarningInDb'
+p4gl_util.c:156: warning: implicit declaration of function `strlen'
+p4gl_util.c:205: warning: implicit declaration of function `strcpy'
+p4gl_util.c:242: warning: implicit declaration of function `malloc'
+p4gl_util.c:256: warning: implicit declaration of function `realloc'
+p4gl_util.c:259: warning: implicit declaration of function `strdup'
+p4gl_util.c:298: warning: implicit declaration of function `strncpy'
+*/
+
 
 
 /**
@@ -38,7 +52,8 @@
  *     - otherwise : Do not exit
  *  @param fmt The format of the message to sprintf
  */
-void P4glError(int errorType,char *fmt,...)
+void 
+P4glError(int errorType,char *fmt,...)
 {
 	va_list args;
 	char  ErroTemporario[256];
@@ -76,7 +91,8 @@ void P4glError(int errorType,char *fmt,...)
  *     - otherwise : Do not exit
  *  @param fmt The format of the message to sprintf
  */
-void P4glWarning(int errorLevel,char *fmt,...)
+void 
+P4glWarning(int errorLevel,char *fmt,...)
 {
 	va_list args;
 	char  ErroTemporario[512];
@@ -101,7 +117,8 @@ void P4glWarning(int errorLevel,char *fmt,...)
  *
  * @param fmt The format of the message to sprintf
  */
-void P4glVerbose(char *fmt,...)
+void 
+P4glVerbose(char *fmt,...)
 {
 	va_list args;
 	char  ErroTemporario[128];
@@ -123,7 +140,8 @@ void P4glVerbose(char *fmt,...)
  *
  * @param fmt The format of the message to sprintf
  */
-void P4glDebug(char *fmt,...)
+void 
+P4glDebug(char *fmt,...)
 {
 	va_list args;
 	char  ErroTemporario[128];
@@ -148,7 +166,8 @@ void P4glDebug(char *fmt,...)
  *
  * @param str The String to be trimmed
  */
-void RClipp(char *str)
+void 
+RClipp(char *str)
 {
    register int i;
 	int len;
@@ -166,7 +185,8 @@ void RClipp(char *str)
  *
  * @param str The string to uppered
  */
-void Upshift(char *str)
+void 
+Upshift(char *str)
 {
   register int i;
 
@@ -179,7 +199,8 @@ void Upshift(char *str)
  *
  * @param str The string to be lowered
  */
-void Downshift(char *str)
+void 
+Downshift(char *str)
 {
   register int i;
 
@@ -197,7 +218,8 @@ void Downshift(char *str)
  * @param StrDest The destination string.
  * @param StrOrig The origin string.
  */
-void copystr(char *StrDest,char *StrOrig)
+void 
+copystr(char *StrDest,char *StrOrig)
 {
    if (StrOrig == (char*)0 )
 		StrDest = (char *)0;
@@ -211,7 +233,8 @@ void copystr(char *StrDest,char *StrOrig)
  *
  * @param str The string where to strip the quotes.
  */
-void tiraAspas(char *str)
+void 
+tiraAspas(char *str)
 {
   str[0] = ' ';
   str[strlen(str)-1] = '\0';
@@ -230,7 +253,8 @@ void tiraAspas(char *str)
  *  @param fmt The format to sprintf.
  *  @return A pointer to the allocated string.
  */
-char *CpStr(char *fmt,...)
+char *
+CpStr(char *fmt,...)
 {
 	va_list args;
 	char *destinoTemporario;
@@ -267,7 +291,8 @@ char *CpStr(char *fmt,...)
  *
  * @param str The string to be transformated just for having basename
  */
-void BaseName(char *str)
+void 
+BaseName(char *str)
 {
    register int i;
 
@@ -288,8 +313,9 @@ void BaseName(char *str)
  * @param str The string with the file name.
  * @return The extension stripped file name.
  */
-char *fileWithoutExtension(char *str)
-{ 
+char *
+fileWithoutExtension(char *str)
+{
   register int i;
 	char *retStr;
 
@@ -299,6 +325,44 @@ char *fileWithoutExtension(char *str)
 	retStr[i] = '\0';
 	return retStr;
 }
+
+
+/**
+ * Find possition of x-th / in string, from right to left
+ *
+ *
+ * @param str The string with the file name.
+ * @return
+ */
+short
+RightPos(char *str,int count, char lookfor)
+{
+  register int i;
+//	char *retStr;
+    int found = 0;
+
+	for ( i = strlen(str) ; i > 0 ; i-- )
+    {
+		if (str[i] == lookfor)
+        {
+            found++;
+
+            if (found == count)
+            {
+                return (short)i;
+
+            }
+        }
+    }
+
+	/*
+	retStr = (char *)malloc(i+1);
+	strncpy(retStr,str,i);
+	retStr[i] = '\0';
+	return retStr;
+    */
+}
+
 
 /**
  * Returns the substring of str, starting in start a finishing in finish
@@ -311,9 +375,10 @@ char *fileWithoutExtension(char *str)
  * @param finish finishing index of the substring wanted.
  * @return A pointer substring allocated and extracted.
  */
-char *substr(char *str, short start, short finish)
+char *
+substr(char *str, short start, short finish)
 {
-   register sh;
+//   register sh;
 	char *retstr;
 
 	if ( start > finish)
@@ -329,24 +394,33 @@ char *substr(char *str, short start, short finish)
  * Verify if a substring is empty.
  * It is considered empty with spaces and tab(s).
  *
- * Not used.
  *
  * @param The string to be verified
  * @return - 1 The string is empty 
  *         - 0 Otherwise
  */
-int IsEmpty(char *Str)
+int 
+IsEmpty(char *Str)
 {
    register int i, len;
 
 	len = strlen(Str);
 	for ( i = 0 ; i <= len; i++)
 	{
+/*
 		if ( Str[i] != ' ' && Str[i] != '\t' )
 			if ( Str[i] == '\0' )
+            {
 				return(1);
+            }
 			else
+            {
 				return(0);
+            }
+*/
+		if ( Str[i] != ' ' && Str[i] != '\t' && Str[i] != '\0' )
+				return(1);
+
 	}
-	return(1);
+	return(0);
 }

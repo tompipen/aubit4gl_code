@@ -6,6 +6,7 @@ package org.aubit4gl.dbdocumenter.navigator;
 import java.util.*;
 import java.io.*;
 import java.sql.*;
+//despodata is obsolete - use moredata
 //import pt.despodata.java.ddata.*;
 //import pt.despodata.java.ddata.connection.*;
 import pt.moredata.dao.*;
@@ -82,14 +83,15 @@ public class TablesDocument
 		System.out.println("<BR>" + strSql);
 		try {
                   Statement stmt=DbDocumenter.getConnection().createStatement();
-		  //Statement stmt=DDataSourcePool.getImplicitDataSource().
+		  /*
+		  Statement stmt=DDataSourcePool.getImplicitDataSource().
 
-		  // it looks like class DataSourcePool was removed - see DAOPool.java
-            // cannot find method getImplicitDataSource anywhere!
-//		System.out.println("<BR>FIXXXMMMEEEE<BR>");
-//	  Statement stmt=DataSourcePool.getImplicitDataSource().
-			  //getConnection().createStatement();
-
+		   it looks like class DataSourcePool was removed - see DAOPool.java
+             cannot find method getImplicitDataSource anywhere!
+		System.out.println("<BR>FIXXXMMMEEEE<BR>");
+	  Statement stmt=DataSourcePool.getImplicitDataSource().
+			getConnection().createStatement();
+          */
 		  ResultSet rs = stmt.executeQuery(strSql);
 		  while ( rs.next() )
 			  tableList.add(rs.getString(1));

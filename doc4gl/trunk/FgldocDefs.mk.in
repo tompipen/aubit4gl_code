@@ -3,7 +3,7 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.15 2003-07-13 06:11:00 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.16 2003-11-17 06:10:00 afalout Exp $
 #
 #  ==========================================================================
 
@@ -97,9 +97,16 @@ CGI_BIN=@CGI_DIR@
 
 #  ==========================================================================
 #  Application dir inside tomcat, or other jsp container.
-#  The place where the jsp(s) should be installed
+#  The place where the jsp(s) for Doc4GL should be installed
 #  ==========================================================================
 NAV_DIR			=$(TOMCAT_DIR)/webapps/${JSP_APP_NAME}
+
+#  ==========================================================================
+#  Application dir inside tomcat, or other jsp container.
+#  The place where the jsp(s) for Dbdoc should be installed
+#  ==========================================================================
+DBDOC_NAV_DIR	=$(TOMCAT_DIR)/webapps/${JSP_DBAPP_NAME}
+
 
 #  ==========================================================================
 #  Place inside applictation dir where tomcat is configured to find the

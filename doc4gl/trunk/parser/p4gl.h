@@ -3,7 +3,7 @@
  * @file
  * Contains the prototype declaration for external functions 
  *
- * $Id: p4gl.h,v 1.3 2003-04-14 17:58:08 saferreira Exp $
+ * $Id: p4gl.h,v 1.4 2003-11-17 06:10:26 afalout Exp $
  */
 
 /* From ParseComment.c */
@@ -106,6 +106,17 @@ int getFunctionSqlIdx(FUNCTION *function);
 SQL *getFunctionSql(FUNCTION *function,int sequence);
 int getSqlTableIdx(SQL *sql);
 char *getSqlTable(SQL *sql,int sequence);
+int getFunctionTableUsageIdx(FUNCTION *function);
 
 /** From InsertP4glrep.ec */
 char *getParameterDataType(int idxFunction,char *paramName);
+
+/** From p4gl_ins_rep.ec */
+
+void RegisterErrorInDb(char *msg);
+void RegisterWarningInDb(char *msg);
+void InsertInslib(void);
+void SqlErrors(void);
+
+
+

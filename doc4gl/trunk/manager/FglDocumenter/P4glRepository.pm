@@ -5,7 +5,7 @@
 #  Methods to interact with a repository in p4gl format.
 #
 #  $Author: afalout $
-#  $Id: P4glRepository.pm,v 1.7 2003-05-26 10:07:11 afalout Exp $
+#  $Id: P4glRepository.pm,v 1.8 2003-11-17 06:10:26 afalout Exp $
 #
 #  @todo Correcto tratamento de erros e mensagens
 #  @todo Retirar dependencia directa de outros packages (sempre por objecto)
@@ -331,6 +331,10 @@ sub execSql
 
 #  =========================================================================
 #  Create all tables that are part of the repository
+#
+#  SEE ALSO: dbdocumenter.sql and p4gl_rep.sql
+#
+#
 #  =========================================================================
 sub create
 {
@@ -512,7 +516,10 @@ sub create
   /);
 
 
-# Tables for Dbdoc:
+##################################################################
+# Tables for Dbdoc: ( 5 total)
+##################################################################
+
 
   $rv = $obj->execSql(qq/create table systableext (
 	  owner char(32),
@@ -547,6 +554,8 @@ sub create
   );
   /);
 
+  $rv = $obj->execSql(qq/create unique index mod_prim on d_modulos (codigo);
+  /);
 
 
   $rv = $obj->execSql(qq/create table d_mod_tab (
@@ -555,7 +564,103 @@ sub create
   );
   /);
 
+
+  $rv = $obj->execSql(qq/create unique index modtab_prim on d_mod_tab (codmod,tabname);
+  /);
+
+
+# found this in one of dbdoc cgi scripts:
+	
+  $rv = $obj->execSql(qq/create table sysmodules (
+	codigo char(5) not null primary key,
+	nome char(40) not null,
+	cod_projecto char(5),
+	sub_modulo_de char(5)
+  );
+  /);
+
+
 #End of Dbdoc tables
+
+
+#-- ****************************************************************************
+#-- New: tables for jdbdoc
+#-- (from dbdoc/jdbcdoc/src/org/aubit4gl/dbdocumenter/repository/RepositoryStructure.java)
+#-- ****************************************************************************
+
+#--     * Create the table where we can identify how to access to the operational
+#--     * databases that are refered in the repository.
+
+#create table ext_database
+#(
+#	database char(64) not null primary key,
+#	jdbc_driver_class varchar(255,64),
+#	url varchar(255,64)
+#);
+
+#--     * Create the table where the extended information about each table
+#--     * should be stored.
+
+#create table ext_table
+#(
+#	database char(64) not null references ext_database (database),
+#	owner char(32) not null,
+#	table_name char(64) not null,
+#	alias char(64),
+#	remarks varchar(255,32),
+#	primary key (database,owner,table_name)
+#);
+
+
+#--	 * Create the table where the extended information about each column it will
+#--     * be stored.
+
+#create table ext_column
+#(
+#	database char(64) not null,
+#	owner char(32) not null,
+#	table_name char(64) not null,
+#	column_name char(64) not null,
+#	alias char(64),
+#	label char(64),
+#	title char(64),
+#	remarks varchar(255,32),
+#	primary key (database,owner,table_name,column_name),
+#	foreign key (database,owner,table_name)
+#		references ext_table (database,owner,table_name)
+#);
+#
+#
+#--     * Create the table where the process will be defined
+#
+#
+#create table process
+#(
+#	id_process char(20) not null primary key,
+#	disp_process char(20) not null,
+#	den_process char(64) not null,
+#	sub_process_of char(20),
+#	comments varchar(255,32)
+#);
+
+
+#--     * Create the table where a process is asociated to a table
+
+#create table table_process
+#(
+#	id_process char(20) not null references process (id_process),
+#	database char(64) not null,
+#	owner char(64) not null,
+#	table_name char(64) not null,
+#		primary key (id_process,database,owner,table_name)
+#
+#-- so where is table "ext_process" ?
+#--		,
+#--		foreign key (database,owner,table_name)
+#--			references ext_process (database,owner,table_name)
+#);
+
+#-- #end new
 
 
   return $retval;
@@ -570,7 +675,7 @@ sub drop
   my $retval = 1;
   my $rv;
   $rv = $obj->execSql("drop table p4gl_package;");
-  #$retval = $rv : 1 
+  #$retval = $rv : 1
   $rv = $obj->execSql("drop table p4gl_program;");
   $rv = $obj->execSql("drop table p4gl_module;");
   $rv = $obj->execSql("drop table p4gl_module_prog;");

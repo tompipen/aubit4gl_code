@@ -1,3 +1,43 @@
+{
+Make file manupulation tool
+
+It allows user to:
+
+- Populate Doc4GL tables with information in make files:
+    - relates target (program/library) to process (module) based on location
+    - relates 4gl source file (module) to target (program/library)
+    - relates form file to target (program/library)
+
+    Usage: replace your compiler command with mkf program:
+        mkf -db-mydbname -i target[.lib] file1.4gl file2.4gl [...] file1.per [...] file1.msg file1.menu library1.lib /some/path/makefile/was/in
+
+- TODO: create make files based on information stored in Doc4GL database
+
+
+inserts into tables:
+p4gl_process p4gl_program p4gl_module p4gl_module_prog p4gl_form_usage(?)
+
+deletes from tables:
+p4gl_module_prog p4gl_program
+
+updates tame: none
+
+selects from tables:
+p4gl_process p4gl_program p4gl_module p4gl_module_prog p4gl_function function_calls(?)
+
+
+Current Doc4GL tables count:
+
+p4gl_table_usage=       	9543
+p4gl_program=        		449     *
+p4gl_process=         		10      *
+p4gl_module_prog=       	4123    *
+p4gl_module=       			1001    *
+p4gl_function=       		3607
+p4gl_fun_parameter=      	10345
+Other tables are empty or have only one row
+
+}
 
 globals
 
@@ -19,7 +59,9 @@ globals
 	ga_libs_size, ga_4gl_size, ga_per_size, ga_msg_size, ga_menu_size smallint,
 
 	#run-time settings:
-	verbose,insert_data,debug_on smallint
+	verbose,insert_data,debug_on smallint,
+
+    this_package char (64)
 
 end globals
 
@@ -31,12 +73,13 @@ end globals
 main
 define
 	arg_cnt, counter, counter2, argument_len, real_count smallint,
-    argument,argument_basename char (100),
-    argument_ext char(4)
+    argument,argument_basename,db char (100),
+    argument_ext char(4),
+    tmp_status integer
 
-    database maxdevdoc
+    let this_package = "."
 
-    let arg_cnt=num_args()
+	let arg_cnt=num_args()
 
 	let ga_libs_size =20
 	let ga_4gl_size =100
@@ -56,7 +99,45 @@ define
     #let verbose=true
     #let insert_data = true
 
+    #get name of database to connect to; connect to it:
+	initialize db to null
     ##########################
+	for counter = 1 to arg_cnt
+    ##########################
+
+		let argument = arg_val(counter)
+        let argument_len = length(argument)
+
+        if argument matches "-db-*" then
+			let db =  argument [5,argument_len]
+			display "Connecting to database >", db clipped, "<..."
+			database db
+            exit for
+        end if
+
+    #######
+	end for
+    #######
+
+    #if database name was not on command line, try default
+	if db is null then
+        let db = "maxdev"
+		whenever error continue
+		database db
+        let tmp_status = status
+		whenever error stop
+
+		if tmp_status <> 0 then
+			display "ERROR: database name was not specified (use '-db-dbname' flag)"
+    	    exit program 1
+        else
+            display "WARNING: connected to the default database 'maxdev'"
+		end if
+    end if
+
+
+    #process non-databse name parameters:
+	##########################
 	for counter = 1 to arg_cnt
     ##########################
 
@@ -66,30 +147,35 @@ define
 
         #display "argument=",argument clipped
 
+        #skip databse name - we already processed that
+		if argument matches "-db-*" then
+            continue for
+        end if
+
         case argument
-            when "-v" #verbose
+            when "-v" 		#turn on verbose mode
 				let verbose=true
                 continue for
-            when "-i" #insert data
+            when "-i" 		#insert data in Dbdoc database
 				let insert_data=true
                 continue for
-            when "-d" #debug
+            when "-d" 		#turn on debug mode
 				let debug_on=true
                 call debug("Debug is now ON")
                 continue for
-            when "-clean"
+            when "-clean" 	#clean tables we populate in this program and exit
                 delete from p4gl_module_prog
 				delete from p4gl_program
-                display "Data in tables program module_prog deleted"
+                display "Data in tables p4gl_program p4gl_module_prog deleted"
                 exit program
 
-            when "-g" #generate target info based on functions data
+            when "-g" 		#generate target info based on functions data
                 call generate_target_info()
                 exit program
 
 		end case
 
-
+{
         case argument
             when "-v" #verbose
                 call debug("-v what the f...?")
@@ -101,22 +187,26 @@ define
                 call debug("-d what the f...?")
                 exit program
 		end case
-
+}
+        #Number of parameters AFTER the flags
         let real_count = real_count + 1
-
 
 		########################################
 		for counter2 = argument_len to 1 step -1
         ########################################
-            if
+            
+
+            #get argument's (file name) extension and basename
+			if
 				argument[counter2] = "."
             then
-                let argument_ext=argument[counter2+1,argument_len]
+				let argument_ext=argument[counter2+1,argument_len]
                 let argument_basename=argument[1,counter2-1]
                 exit for
             end if
 
-            if
+            #get argument's (file name) path
+			if
 				argument[counter2] = "/"
             then
                 let argument_ext="path"
@@ -127,21 +217,21 @@ define
 		end for
         #######
 
+		#determine argument's type based on it's extension
 		case argument_ext
-
-			when "null" 	#program name
+			when "null" 		#program name
 	            call insert_program(argument)
-            when "path" #path make file was in
+            when "path" 		#path make file was in
                 call insert_path(argument_basename)
-            when "per"
+            when "per"          #form file
                 call insert_per(argument_basename)
-            when "4gl"
+            when "4gl"          #4gl source module file
                 call insert_4gl(argument_basename)
-            when "msg"
+            when "msg"          #help file
                 call insert_msg(argument_basename)
-            when "menu" #Aubit/Plexus Menu file
+            when "menu" 		#Aubit/Plexus Menu file
                 call insert_menu(argument_basename)
-            when "lib"
+            when "lib"          #library file
                 if
 					real_count = 1
                 then    #target is a library itself
@@ -163,6 +253,11 @@ define
 
 end main
 
+
+{**
+ * Show debugging messages (if debug is on)
+ *
+ *}
 function debug(string)
 define string char(200)
 
@@ -326,7 +421,8 @@ end function
 
 
 {**
- * call all functions needed to perform data output (db insert or display) actions
+ * call all functions needed to perform data output (db insert or display) 
+ * actions, from data we stored in global arrays
  *
  *}
 function output_all()
@@ -368,13 +464,33 @@ function db_process()
             #a process (.unl) file. Therefore, we will just warn if it does not
             #exist already.
 
-            display "WARNING: process ", system_name clipped, " does not exist in process table - ADDED"
+            display "WARNING: process ", system_name clipped, " does not exist in process table - ADDING"
+
+			select * from p4gl_process
+		        where id_process = "ERP"
+
+		    if
+		        status = NOTFOUND
+	    	then
+                display "ERROR: top-level process 'ERP' does not exist"
+                display "Please load process table first, using command:"
+                display " fgldoc --process_file=my_process_file.unl"
+                exit program 3
+            end if
+
+
+			#-691	Missing key in referenced table for referential constraint
+			#constraint-name.
+
 
 			insert into p4gl_process (id_process,disp_process,den_process,sub_process_of,comments)
 	            values (system_name,system_name,system_name,"ERP","")
 
+
+
+
 {
-  $rv = $obj->execSql(qq/create table p4gl_process (
+  table p4gl_process (
     id_process char(20) not null primary key,
     disp_process char(20) not null,
     den_process char(64) not null,
@@ -477,9 +593,24 @@ define
 				#We would expect that this should never happen, but it DOES,
                 #since Doc4GL p4gl core dumps or fails in parsing, and does
                 #not insert all modules it should...
+				
+
+				#-691	Missing key in referenced table for referential constraint
+				#constraint-name.
+                select * from p4gl_package
+                    where id_package = this_package
+
+                if status = NOTFOUND then
+                    insert into p4gl_package (id_package, comments)
+                        values (this_package,"Default package - automatically generated")
+                    display "WARNING: added default package ", this_package
+                end if
+
+
+
 
 				insert into p4gl_module (id_package,module_name,deprecated)
-	                values (".",module_name_with_ext,"N")
+	                values (this_package,module_name_with_ext,"N")
 
 
 
@@ -497,7 +628,7 @@ define
 
             if status = NOTFOUND then
 		        insert into p4gl_module_prog (program_name, id_package, module_name)
-		            values (target_name_with_ext,".",module_name_with_ext)
+		            values (target_name_with_ext,this_package,module_name_with_ext)
             else
                 display "ERROR:", target_name_with_ext clipped, " already has ",module_name_with_ext clipped, " relation"
                 exit program (5)
@@ -645,7 +776,10 @@ define
 
 end function
 
-
+{**
+ * Generate target (program,library) info based on functions data
+ * Not finished
+ *}
 function generate_target_info()
 define
     r_functions record
@@ -681,26 +815,59 @@ define
 
 end function
 
+{**
+ * Find all functions called by function passed as parameter
+ * Not finished
+ *}
+{
+Andrej Falout wrote:
+
+>Hello Sergio,
+>
+>I'm trying to make a program that will create program definitions, based on functions data in fgldoc database.
+>
+>I start from functions "main" and look for modules that define functions called from "main". Then I look for modules
+>defining functions called from there, and so on...
+>
+>I see table holding function's forms usage: p4gl_form_usage
+>I see table holding function's database table usage: p4gl_table_usage
+>
+>But, I do not see the table that holds function calls in the function body;
+>
+>Looking at HTML code generated by "p4gl -c", I see that the parser DOES record all functions called from an function.
+>
+>But it looks like this data is not stored in the database, and there is no table for it?
+>
+>
+
+It was stored in a diferent repository version.
+How hard dfo you need this ?.. If hard enough i think that i can do it
+in 3 days.
+
+Cheers
+Sérgio
+}
 function find_target_modules(target,p_function_name)
 define
 	target char(64),
     p_function_name char(50),
     r_function_calls record
-        function_name char(50)
+        function_name char(50),
+        calls_function_name char (50)
     end record
 
-
     declare c2 cursor for
-        select unique function_name
-            from function_calls
+        select distinct function_name
+			from p4gl_function_calls
                 where function_name = p_function_name
                 and module_name = target
+                and id_package = this_package
 
     foreach c2 into r_function_calls.*
 
-        display "Function ", p_function_name clipped, 
+        display "Function ", p_function_name clipped,
 				" in module ", target clipped,
-                " calls function ", r_function_calls.function_name clipped
+                " calls function ", r_function_calls.calls_function_name clipped
 
     end foreach
 

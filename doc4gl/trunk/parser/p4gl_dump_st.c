@@ -1,9 +1,9 @@
 /**
- * @file 
+ * @file
  * Dump all the information in the abstract tree to the standard output.
  * Symbol table dump in html format. It have crossed links between
  * information.
- * It just works if p4gl was executed with -d option.
+ * It just works if p4gl was executed with --html option.
  */
 
 #include <stdio.h>
@@ -18,9 +18,9 @@ static FILE *f_dump;
  */
 static void DumpHeader(void)
 {
-   fprintf(f_dump,"<HTML><HEAD>");
-   fprintf(f_dump,"<B>%s</B>",FicheiroInput);
-   fprintf(f_dump,"</HEAD><BODY>");
+   fprintf(f_dump,"<HTML><HEAD>\n");
+   fprintf(f_dump,"	<B>%s</B>\n",FicheiroInput);
+   fprintf(f_dump,"</HEAD><BODY>\n");
 }
 
 /**
@@ -28,7 +28,7 @@ static void DumpHeader(void)
  */
 static void DumpFooter(void)
 {
-   fprintf(f_dump,"</BODY></HTML>");
+   fprintf(f_dump,"</BODY></HTML>\n");
 }
 
 /**
@@ -36,13 +36,13 @@ static void DumpFooter(void)
  */
 static void DumpIndex(void)
 {
-   fprintf(f_dump,"<H2>Index</H2>");
-   fprintf(f_dump,"<A HREF=#Functions>Functions declared</A><BR>");
-   fprintf(f_dump,"<A HREF=#FunctionsCall>Functions called</A><BR>");
-   fprintf(f_dump,"<A HREF=#Cursor>Cursors used</A><BR>");
-   fprintf(f_dump,"<A HREF=#Table>Tables used</A><BR>");
-   fprintf(f_dump,"<A HREF=#Modular>Modular variables</A><BR>");
-   fprintf(f_dump,"<HR>");
+   fprintf(f_dump,"	<H2>Index</H2>\n");
+   fprintf(f_dump,"		<A HREF=#Functions>Functions declared</A><BR>\n");
+   fprintf(f_dump,"		<A HREF=#FunctionsCall>Functions called</A><BR>\n");
+   fprintf(f_dump,"		<A HREF=#Cursor>Cursors used</A><BR>\n");
+   fprintf(f_dump,"		<A HREF=#Table>Tables used</A><BR>\n");
+   fprintf(f_dump,"		<A HREF=#Modular>Modular variables</A><BR>\n");
+   fprintf(f_dump,"	<HR>\n");
 }
 
 /**
@@ -53,26 +53,27 @@ static void DumpFunctionsDeclaration(void)
   register int i,j;
   VAR_USAGE *Next;
 
-	fprintf(f_dump,"<A NAME=Functions>");
-  fprintf(f_dump,"<H2>Function List</H2>");
-	fprintf(f_dump,"<TABLE BORDER>");
-	fprintf(f_dump,"<TR><TH>Name</TH><TH>Line</TH><TH># Instructions</TH>");
-	fprintf(f_dump,"<TH># Calls</TH><TH># SQL</TH><TH># Locals</TH></TR>");
+	fprintf(f_dump,	"	<A NAME=Functions>\n");
+	fprintf(f_dump,	"	<H2>Function List</H2>\n");
+
+	fprintf(f_dump,	"	<TABLE BORDER>\n");
+	fprintf(f_dump,	"		<TR><TH>Name</TH><TH>Line</TH><TH># Instructions</TH>\n");
+	fprintf(f_dump,	"		<TH># Calls</TH><TH># SQL</TH><TH># Locals</TH></TR>\n");
 	/* ??? Faltam cursorecount(s) s e utilizacao de globais */
 	for (i=0 ; i < P4glCb.idx_funcoes ; i++)
 	{
-		fprintf(f_dump,"<TR><TD>");
-		fprintf(f_dump,"<A HREF=#Func%s>%s</A>", P4glCb.functions[i].name,
+		fprintf(f_dump,"		<TR><TD>\n");
+		fprintf(f_dump,"			<A HREF=#Func%s>%s</A>\n", P4glCb.functions[i].name,
 		                                        P4glCb.functions[i].name);
-		fprintf(f_dump,"</TD><TD>%d</TD><TD>%d</TD>",
+		fprintf(f_dump,"		</TD><TD>%d</TD><TD>%d</TD>\n",
 		               P4glCb.functions[i].linha,
 		               P4glCb.functions[i].NInstrucoes);
-		fprintf(f_dump,"<TD>%d</TD><TD>%d</TD><TD>%d</TD></TR>",
+		fprintf(f_dump,"		<TD>%d</TD><TD>%d</TD><TD>%d</TD></TR>\n",
 		               P4glCb.functions[i].idx_function_call,
 		               P4glCb.functions[i].idx_sql,
 		               P4glCb.functions[i].idx_var);
 	}
-	fprintf(f_dump,"</TABLE><HR>");
+	fprintf(f_dump,"	</TABLE><HR>\n");
 }
 
 /**
@@ -83,54 +84,54 @@ static void DumpFunctions(void)
    register int i,j;
    VAR_USAGE *Next;
 
-   fprintf(f_dump,"<H2>Functions Detail</H2>");
+   fprintf(f_dump,"	<H2>Functions Detail</H2>\n");
 	for (i=0 ; i < P4glCb.idx_funcoes ; i++)
 	{
-		fprintf(f_dump,"<HR>");
-		fprintf(f_dump,"<A NAME=Func%s>", P4glCb.functions[i].name);
-		fprintf(f_dump,"Name : <B>%s</B><BR>Line : %d<BR>Instructions : %d\n", 
+		fprintf(f_dump,"	<HR>\n");
+		fprintf(f_dump,"	<A NAME=Func%s>\n", P4glCb.functions[i].name);
+		fprintf(f_dump,"		Name : <B>%s</B><BR>Line : %d<BR>Instructions : %d\n",
 											 P4glCb.functions[i].name,
 		                            P4glCb.functions[i].linha,
 		                            P4glCb.functions[i].NInstrucoes);
 
-      fprintf(f_dump,"<H3>Parameters</H3>");
+      fprintf(f_dump,"		<H3>Parameters</H3>\n");
 		/* Parametros / Argumentos */
 		for (j = 0 ; j< IDX_ARG(i) ; j++)
 		{
-			printf("   PARAMETRO : %s\n", FUNCAO(i).parametros[j]);
+			printf("			PARAMETER : %s\n", FUNCAO(i).parametros[j]);
 		}
 
 		/* Funcoes executadas */
-      fprintf(f_dump,"<H3>CALL(S)</H3>");
-		fprintf(f_dump,"<TABLE BORDER>");
-		fprintf(f_dump,"<TR><TH>Name</TH><TH>Line</TH></TR>");
+      fprintf(f_dump,"		<H3>CALL(S)</H3>\n");
+		fprintf(f_dump,"		<TABLE BORDER>\n");
+		fprintf(f_dump,"			<TR><TH>Name</TH><TH>Line</TH></TR>\n");
 		for (j = 0 ; j< IDX_FC(i) ; j++)
 		{
-			printf("<TR><TD>%s</TD><TD>%d</TD></TR>", 
+			printf("			<TR><TD>%s</TD><TD>%d</TD></TR>\n",
 				FUNC_CALL(i,j).name,
 				FUNC_CALL(i,j).linha);
 		}
-		fprintf(f_dump,"</TABLE>");
-		
+		fprintf(f_dump,"		</TABLE>\n");
+
 		/* Utilizacao de globais */
-      fprintf(f_dump,"<H3>Globals Usage</H3>");
+      fprintf(f_dump,"	<H3>Globals Usage</H3>\n");
 	   Next = FUNCAO(i).var_usage;
-		printf("<TABLE BORDER><TR><TH>Name</TH><TH>Line</TH><TH>Type</TH></TR>");
+		printf("		<TABLE BORDER><TR><TH>Name</TH><TH>Line</TH><TH>Type</TH></TR>\n");
       while (Next != (VAR_USAGE *)0)
 		{
-			printf("<TR>");
+			printf("		<TR>\n");
 			if ( Next->utilizacao == READ_VAR )
-	         printf("<TD>%s</TD><TD>%d</TD><TD>Usage</TD>",
+	         printf("		<TD>%s</TD><TD>%d</TD><TD>Usage</TD>\n",
 						 Next->nome,Next->linha);
 		  else
-	         printf("<TD>%s</TD><TD>%d</TD><TD>Assignment</TD>",
+	         printf("		<TD>%s</TD><TD>%d</TD><TD>Assignment</TD>\n",
 						 Next->nome,Next->linha);
 		   Next = Next->next;
-			printf("</TR>");
+			printf("		</TR>\n");
 		}
-		printf("</TABLE>");
+		printf("		</TABLE>\n");
 	}
-	fprintf(f_dump,"<HR>");
+	fprintf(f_dump,"	<HR>\n");
 }
 
 /**
@@ -140,40 +141,40 @@ static void DumpSql(void)
 {
   register int i,j,k;
 
-	fprintf(f_dump,"<H2><A NAME=Sql>SQL</A></H2>");
-	fprintf(f_dump,"<table border><TR><TH>Funcyion</TH><TH>Operation</TH>",
-			  "<TH>Table name</TH></TR>");
+	fprintf(f_dump,"	<H2><A NAME=Sql>SQL</A></H2>\n");
+	fprintf(f_dump,"		<table border><TR><TH>Funcyion</TH><TH>Operation</TH>\n",
+			  "<TH>Table name</TH></TR>"); //<<<<<<<<<<<<<<<<<<<<<<< !!!
 	for (k=0 ; k < P4glCb.idx_funcoes ; k++)
 	{
 	   for (i=0 ; i < FUNCAO(k).idx_sql ; i++)
 	   {
 		   for (j = 0 ; j  < IDX_TAB(k,i) ; j++)
 		   {
-		      fprintf(f_dump,"<TR>");
-			   fprintf(f_dump,"<TD><A HREF=#Func%s>%s</A></TD>",
+		      fprintf(f_dump,"			<TR>\n");
+			   fprintf(f_dump,"			<TD><A HREF=#Func%s>%s</A></TD>\n",
 					FUNCAO(k).name,
 					FUNCAO(k).name);
 			   switch (SQL_STMT(k,i).operacao)
 			   {
 				   case SQL_SELECT:
-					   fprintf(f_dump,"<TD>SELECT</TD>");
+					   fprintf(f_dump,"				<TD>SELECT</TD>\n");
 					   break;
 				   case SQL_INSERT:
-					   fprintf(f_dump,"<TD>INSERT</TD>");
+					   fprintf(f_dump,"				<TD>INSERT</TD>\n");
 					   break;
 				   case SQL_UPDATE:
-					   fprintf(f_dump,"<TD>UPDATE</TD>");
+					   fprintf(f_dump,"				<TD>UPDATE</TD>\n");
 					   break;
 				   case SQL_DELETE:
-					   fprintf(f_dump,"<TD>DELETE</TD>");
+					   fprintf(f_dump,"				<TD>DELETE</TD>\n");
 					   break;
 			      }
-			   printf("<TD>%s</TD>",SQL_STMT(k,i).tabelas[j]);
-		      fprintf(f_dump,"</TR>");
+			   printf("			<TD>%s</TD>\n",SQL_STMT(k,i).tabelas[j]);
+		      fprintf(f_dump,"		</TR>\n");
 		   }
 	   }
 	 }
-	 fprintf(f_dump,"</table>");
+	 fprintf(f_dump,"	</table>\n");
 }
 
 /**
@@ -183,14 +184,14 @@ static void DumpModuleVariable(void)
 {
   register short i;
 
-	printf("<TABLE BORDER>");
-	printf("<TR><TH>Name</TH><TH>Declaration line</TH></TR>");
+	printf("	<TABLE BORDER>\n");
+	printf("		<TR><TH>Module Variable Name</TH><TH>Declaration line</TH></TR>\n");
 	for ( i = 0 ; i < P4glCb.idx_var_mod ; i++)
-		printf("<TR><TD>%s</TD><TD>%d</TD></TR>",
+		printf("			<TR><TD>%s</TD><TD>%d</TD></TR>\n",
 				 P4glCb.variaveis_mod[i].nome,
 		       P4glCb.variaveis_mod[i].linha);
-	printf("</TR>");
-	printf("</TABLE>");
+	printf("		</TR>\n");
+	printf("	</TABLE>\n");
 }
 
 /**
@@ -200,16 +201,20 @@ void DumpSymtab(void)
 {
 
    f_dump = stdout;
-   if ( dbug )
+   if ( htmlDump )
 	{
 		DumpHeader();
-		DumpIndex();
-		/*DumpGlobals();*/
-		DumpFunctionsDeclaration();
-		DumpFunctions();
-		DumpSql();
+			DumpIndex();
+			/*DumpGlobals();*/
+			DumpFunctionsDeclaration();
+			DumpFunctions();
+			DumpSql();
+			DumpModuleVariable();
 		DumpFooter();
-		DumpModuleVariable();
+
 	}
 
 }
+
+/* ============================== EOF ============================= */
+

@@ -1,6 +1,6 @@
 <!--
 
-     $Id: build.xml,v 1.1 2003-05-26 10:07:10 afalout Exp $
+     $Id: build.xml,v 1.2 2003-11-17 06:10:25 afalout Exp $
 
 
      Build script for DBdocumenter browser web applications and web services,
@@ -191,14 +191,14 @@
 
 -->
 
-<!-- Dummy external dependency -->
 <!--
-  
-  We should probably specify here JDBC driver?
 
-  <property name="foo.jar"
-           value="/path/to/foo.jar"/>
+  We should probably specify here JDBC driver?
 -->
+
+  <property name="oltp-stable-src.jar"
+           value="./oltp-stable-src.jar"/>
+
 
 
 <!-- ==================== Compilation Classpath =========================== -->
@@ -218,9 +218,8 @@
 
     <!-- Include all JAR files that will be included in /WEB-INF/lib -->
     <!-- *** CUSTOMIZE HERE AS REQUIRED BY YOUR APPLICATION *** -->
-<!--
-    <pathelement location="${foo.jar}"/>
--->
+
+    <pathelement location="${oltp-stable-src.jar}"/>
 
     <!-- Include all elements that Tomcat exposes to applications -->
     <pathelement location="${catalina.home}/common/classes"/>
@@ -501,9 +500,8 @@ application. Correct the value specified by the war parameter.
     <!-- Copy external dependencies as required -->
     <!-- *** CUSTOMIZE HERE AS REQUIRED BY YOUR APPLICATION *** -->
     <mkdir  dir="${build.home}/WEB-INF/lib"/>
-<!--
-    <copy todir="${build.home}/WEB-INF/lib" file="${foo.jar}"/>
--->
+
+    <copy todir="${build.home}/WEB-INF/lib" file="${oltp-stable-src.jar}"/>
 
     <!-- Copy static files from external dependencies as needed -->
     <!-- *** CUSTOMIZE HERE AS REQUIRED BY YOUR APPLICATION *** -->

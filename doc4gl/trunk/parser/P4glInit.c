@@ -39,6 +39,16 @@ void setDebug(int _debug)
 }
 
 /**
+ * Sets the HTML flag.
+ *
+ * @param _html The HTML flag to be assigned.
+ */
+void setHTML(int _html)
+{
+  htmlDump = _html;
+}
+
+/**
  * Sets the verbose flag.
  *
  * @param _verbose The verbose flag value.
@@ -169,6 +179,7 @@ void initArguments(int argc, char *argv[])
     {"file", 1, 0, 'f'},
     {"database", 1, 0, 'b'},
     {"debug", 0, 0, 'd'},
+    {"html", 0, 0, 't'},
     {"verbose", 0, 0, 'v'},
     {"insert", 0, 0, 'i'},
     {"warning_level", 1, 0, 'w'},
@@ -194,6 +205,10 @@ void initArguments(int argc, char *argv[])
 
       case 'd':						/* Debug mode */
         setDebug(1);
+        break;
+
+      case 't':						/* Dump HTML to stdout */
+        setHTML(1);
         break;
 
       case 'v':						/* Verbose mode */
@@ -239,6 +254,7 @@ void initArguments(int argc, char *argv[])
            "Usage: p4gl [-h] [-d] [-i] [-v] [-w level] -f ficheiro.4gl\n");
         printf("--help : Display this help message\n");
         printf("--debug : Debug mode\n");
+        printf("--html : Dump HTML to stdout\n");
         printf("--insert : Insert in the repository\n");
         printf("--verbose : Verbose mode\n");
         printf("--warning_level : Warning level (1..10)\n");

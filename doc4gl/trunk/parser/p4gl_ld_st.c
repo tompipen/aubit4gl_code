@@ -14,9 +14,9 @@
  *
  * Moredata - Lisboa, PORTUGAL
  *                                                       
- * $Author: saferreira $
- * $Revision: 1.6 $
- * $Date: 2003-05-12 11:29:58 $
+ * $Author: afalout $
+ * $Revision: 1.7 $
+ * $Date: 2003-11-17 06:10:26 $
  *                                                       
  * Programa      : Carregamento de informação sobre os módulos numa arvore
  *                 abstracta em memoria
@@ -867,7 +867,7 @@ static void PrintNameList(NAME_LIST *List)
 /**
  * Remove the temporary files used during the parsing process.
  *
- * If executed in debug mode does nor remove-it and send a message to 
+ * If executed in debug mode does nor remove-it and send a message to
  * standard output.
  */
 void CleanP4gl(void)
@@ -878,7 +878,10 @@ void CleanP4gl(void)
       unlink(FicheiroParam);
   }
   else
-    printf("ATENCAO : Temporarios nao foram limpos !\n");
+  {
+    //printf("ATENCAO : Temporarios nao foram limpos !\n");
+	printf("NOTE : Temporary parser files NOT removed !\n");
+  }
 }
 
 

@@ -1,5 +1,5 @@
 /**
- * @file 
+ * @file
  * Functions for abstract tree management / access.
  */
 
@@ -35,7 +35,8 @@ FUNCTION *getFunction(int sequence)
  * @param The function pointer to the structure / typedef used.
  * @return The table usage index.
  */
-int getFunctionTableUsageIdx(FUNCTION *function)
+int
+getFunctionTableUsageIdx(FUNCTION *function)
 {
   return function->idxTableUsage;
 }
@@ -50,8 +51,7 @@ void setFunctionTableUsageIdx(FUNCTION *function,int idxTableUsage)
 {
   if ( getFunctionTableUsageIdx(function) >= MAXSQL )
 		P4glError(ERROR_EXIT,
-		  "setTableUsageIdx() : Table usage by function exceded"
-	  );
+		  "setTableUsageIdx() : Table usage by function exceded\n");
   function->idxTableUsage = idxTableUsage;
 }
 
@@ -79,7 +79,7 @@ void addFunctionTableUsage(FUNCTION *function, TableUsage *tableUsage)
 {
 	int tableUsageIdx = getFunctionTableUsageIdx(function);
   if ( tableUsageIdx >= MAXSQL )
-		P4glError(ERROR_EXIT,"addTableUsage() : Table usage by function exceded");
+		P4glError(ERROR_EXIT,"addTableUsage() : Table usage by function exceded\n");
   function->tableUsage[tableUsageIdx] = tableUsage;
   tableUsageIdx++;
 	setFunctionTableUsageIdx(function,tableUsageIdx);

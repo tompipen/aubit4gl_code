@@ -27,8 +27,7 @@ all: ${ALL}
 
 #"Old" JSP based browser
 jsp:
-#Fails to compile at the moment, so we'll ignore it with an "-"
-	-${MAKE} -C jsp
+	${MAKE} -C jsp
 
 # =========================================================================
 #                           Install
@@ -46,8 +45,7 @@ install.cgi:
 
 
 install.jsp:
-#Fails to compile at the moment, so we'll ignore it with an "-"
-	-${MAKE} -C jsp install
+	${MAKE} -C jsp install
 
 # =========================================================================
 #                           De-install
