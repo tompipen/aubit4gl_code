@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2004-03-25 09:00:04 mikeaubury Exp $
+# $Id: Makefile,v 1.14 2004-03-25 09:03:28 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -113,7 +113,7 @@ ${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
 ###################
 #Infromix ESQL/C compiler
 helper_funcs_informix.o: helper_funcs.ec
-	${IFMX_ESQLC} -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
+	${IFMX_ESQLC} -fPIC -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
 #solaris:
 #	esql -e helper_funcs.ec -I.. -I/home/aubit4gl/aubit4glsrc/incl
 #	libtool --mode=compile gcc -fPIC -I$INFORMIXDIR/incl/esql -I.. \ 
