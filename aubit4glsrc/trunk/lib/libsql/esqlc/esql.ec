@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.9 2002-04-12 18:57:03 saferreira Exp $
+# $Id: esql.ec,v 1.10 2002-04-19 18:03:48 mikeaubury Exp $
 #
 */
 
@@ -58,7 +58,7 @@
  */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: esql.ec,v 1.9 2002-04-12 18:57:03 saferreira Exp $";
+static const char rcs[] = "@(#)$Id: esql.ec,v 1.10 2002-04-19 18:03:48 mikeaubury Exp $";
 #endif
 
 #define DEFINE_SQLCA
@@ -218,7 +218,7 @@ char *A4GLSQL_get_sqlerrm (void)
  *
  * Just initialize the error handling.
  */
-void A4GLSQL_initlib (void)
+void A4GLSQL_initsqllib (void) 
 {
   EXEC SQL whenever sqlerror call esqlErrorHandler;
   EXEC SQL whenever sqlwarning call esqlWarningHandler;
