@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.9 2002-01-24 06:37:18 afalout Exp $
+# $Id: Makefile-common.in,v 1.10 2002-01-25 12:20:42 afalout Exp $
 #
 
 
@@ -216,11 +216,13 @@ ifdef COMSPEC
 	CPEXE		=cp
     SH			=bash
     LN			=cp
+    SO_LDFLAGS	=-rdynamic -fPIC
 else
     EXEEXT		=
 	CPEXE		=ln -f
     SH			=sh
     LN			=ln -f
+    SO_LDFLAGS	=-fPIC -shared
 endif
 
 

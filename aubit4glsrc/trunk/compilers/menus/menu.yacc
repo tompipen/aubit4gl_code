@@ -1,6 +1,13 @@
 %{
 #include "menu_x.h"
 #include "../../lib/libincl/compiler.h"
+
+#ifdef __CYGWIN__
+	#define GETENV_OK
+	//On Cygwin, something here will eventually include stdlib.h, that will have getenv
+	//call. Everywhere else, we should use acl_getenv.
+#endif
+
 #include "../../lib/libincl/debug.h"
 #include <stdio.h>
 #include <string.h>

@@ -1,14 +1,56 @@
 /* This is manaully edited version of form_x.h
 for use only on CygWin - WIN32 platform */
 
+/*
+In file included from /usr/include/netinet/in.h:14,
+                 from /usr/local/include/rpc/rpc.h:41,
+                 from form_x.h:10,
+                 from formwrite2.c:9:
+/usr/include/cygwin/in.h:150: warning: `INADDR_LOOPBACK' redefined
+/usr/local/include/rpc/types.h:60: warning: this is the location of the previous
+ definition
+
+
+in rpc/rpc.h :
+
+#include <rpc/types.h>
+#include <netinet/in.h>
+
+
+
+*/
+
+
 
 //--------- new --------------
 
 #ifndef _FORM_X_H_RPCGEN
 #define _FORM_X_H_RPCGEN
 
-#include <rpc/rpc.h>
+/*
+In file included from /usr/include/netinet/in.h:14,
+                 from /usr/local/include/rpc/rpc.h:41,
+                 from form_x.h:10,
+                 from formwrite2.c:9:
+/usr/include/cygwin/in.h:150: warning: `INADDR_LOOPBACK' redefined
+/usr/local/include/rpc/types.h:60: warning: this is the location of the previous
+ definition
 
+in rpc/rpc.h :
+
+#include <rpc/types.h>
+			
+			#ifndef INADDR_LOOPBACK
+			#define       INADDR_LOOPBACK         (u_long)0x7F000001
+			#endif
+
+#include <netinet/in.h>
+
+			#define INADDR_LOOPBACK         0x7f000001      /* 127.0.0.1   */
+
+*/
+
+#include <rpc/rpc.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -106,7 +148,7 @@ struct struct_field_attr_string {
 typedef struct struct_field_attr_string struct_field_attr_string;
 bool_t xdr_struct_field_attr_string();
 
-
+/*
 struct struct_scr_field {
 	int field_no;
 	char *colname;
@@ -127,6 +169,37 @@ struct struct_scr_field {
 };
 typedef struct struct_scr_field struct_scr_field;
 bool_t xdr_struct_scr_field();
+*/
+
+
+//----</new>------------
+
+struct struct_scr_field {
+	int field_no;
+	char *colname;
+	char *tabname;
+	int subscripts[3];
+	int datatype;
+	int dynamic;
+	int do_reverse;
+	struct {
+		u_int str_attribs_len;
+		struct struct_field_attr_string *str_attribs_val;
+	} str_attribs;
+	struct {
+		u_int bool_attribs_len;
+		enum FIELD_ATTRIBUTES_BOOL *bool_attribs_val;
+	} bool_attribs;
+	enum FA_COLOUR colour;
+	struct {
+		u_int colours_len;
+		struct colours *colours_val;
+	} colours;
+};
+typedef struct struct_scr_field struct_scr_field;
+
+//----</new>------------
+
 
 
 struct struct_tables {
@@ -243,8 +316,114 @@ typedef struct struct_form struct_form;
 bool_t xdr_struct_form();
 
 
-#endif
+#endif //#ifndef XDRFILE
 
+
+//==================================================================
+
+struct colours {
+	enum FA_COLOUR colour;
+	struct u_expression *whereexpr;
+};
+typedef struct colours colours;
+
+
+enum ITEMTYPES {
+	ITEMTYPE_INT = 1,
+	ITEMTYPE_CHAR = 2,
+	ITEMTYPE_FIELD = 3,
+	ITEMTYPE_COMPLEX = 4,
+	ITEMTYPE_SPECIAL = 5,
+	ITEMTYPE_LIST = 6,
+	ITEMTYPE_NOT = 7,
+};
+typedef enum ITEMTYPES ITEMTYPES;
+
+enum EXPRESSIONTYPES {
+	EXPRTYPE_COMPLEX = 0,
+	EXPRTYPE_ITEM = 1,
+};
+typedef enum EXPRESSIONTYPES EXPRESSIONTYPES;
+
+struct s_complex_expr {
+	struct u_expression *item1;
+	char *comparitor;
+	struct u_expression *item2;
+};
+typedef struct s_complex_expr s_complex_expr;
+
+typedef struct u_expression *listitem;
+
+struct u_expression {
+	int itemtype;
+	union {
+		int intval;
+		char *charval;
+		char *field;
+		struct s_complex_expr *complex_expr;
+		char *special;
+		struct {
+			u_int list_len;
+			listitem *list_val;
+		} list;
+		struct u_expression *notexpr;
+	} u_expression_u;
+};
+typedef struct u_expression u_expression;
+
+typedef s_complex_expr t_complex_expr;
+
+typedef u_expression t_expression;
+
+/* the xdr functions */
+
+#if defined(__STDC__) || defined(__cplusplus)
+extern  bool_t xdr_struct_metrics (XDR *, struct_metrics*);
+extern  bool_t xdr_struct_form_field (XDR *, struct_form_field*);
+extern  bool_t xdr_FIELD_ATTRIBUTES_BOOL (XDR *, FIELD_ATTRIBUTES_BOOL*);
+extern  bool_t xdr_FA_COLOUR (XDR *, FA_COLOUR*);
+extern  bool_t xdr_FA_ATTRIBUTES_STRING (XDR *, FA_ATTRIBUTES_STRING*);
+extern  bool_t xdr_struct_field_attr_string (XDR *, struct_field_attr_string*);
+extern  bool_t xdr_colours (XDR *, colours*);
+extern  bool_t xdr_struct_scr_field (XDR *, struct_scr_field*);
+extern  bool_t xdr_struct_tables (XDR *, struct_tables*);
+extern  bool_t xdr_screen_name (XDR *, screen_name*);
+extern  bool_t xdr_struct_screen_record (XDR *, struct_screen_record*);
+extern  bool_t xdr_struct_labels (XDR *, struct_labels*);
+extern  bool_t xdr_struct_form (XDR *, struct_form*);
+extern  bool_t xdr_ITEMTYPES (XDR *, ITEMTYPES*);
+extern  bool_t xdr_EXPRESSIONTYPES (XDR *, EXPRESSIONTYPES*);
+extern  bool_t xdr_s_complex_expr (XDR *, s_complex_expr*);
+extern  bool_t xdr_listitem (XDR *, listitem*);
+extern  bool_t xdr_u_expression (XDR *, u_expression*);
+extern  bool_t xdr_t_complex_expr (XDR *, t_complex_expr*);
+extern  bool_t xdr_t_expression (XDR *, t_expression*);
+
+#else /* K&R C */
+extern bool_t xdr_struct_metrics ();
+extern bool_t xdr_struct_form_field ();
+extern bool_t xdr_FIELD_ATTRIBUTES_BOOL ();
+extern bool_t xdr_FA_COLOUR ();
+extern bool_t xdr_FA_ATTRIBUTES_STRING ();
+extern bool_t xdr_struct_field_attr_string ();
+extern bool_t xdr_colours ();
+extern bool_t xdr_struct_scr_field ();
+extern bool_t xdr_struct_tables ();
+extern bool_t xdr_screen_name ();
+extern bool_t xdr_struct_screen_record ();
+extern bool_t xdr_struct_labels ();
+extern bool_t xdr_struct_form ();
+extern bool_t xdr_ITEMTYPES ();
+extern bool_t xdr_EXPRESSIONTYPES ();
+extern bool_t xdr_s_complex_expr ();
+extern bool_t xdr_listitem ();
+extern bool_t xdr_u_expression ();
+extern bool_t xdr_t_complex_expr ();
+extern bool_t xdr_t_expression ();
+
+#endif /* K&R C */
+
+//=================================================================
 
 #ifdef __cplusplus
 }

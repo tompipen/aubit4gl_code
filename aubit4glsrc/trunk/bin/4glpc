@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.40 2002-01-20 04:18:42 afalout Exp $
+# $Id: 4glpc,v 1.41 2002-01-25 12:20:42 afalout Exp $
 #
 
 ########################################################################
@@ -1266,13 +1266,17 @@ else
     fi
 
 fi
-if [ "$A4GL_PDFTYPE" = "PDF" ] && [ "$USE_PDF" = "yes" ]
-then
-	FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_PDF"
-	FGLLIBS_STATIC="$FGLLIBS_SHARED -lPDF_PDF"
-else
-	FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
-	FGLLIBS_STATIC="$FGLLIBS_SHARED -lPDF_NOPDF"
+
+if test "2" = "1" ; then
+	if [ "$A4GL_PDFTYPE" = "PDF" ] && [ "$USE_PDF" = "yes" ]
+	then
+		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_PDF"
+		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_PDF"
+	else
+		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
+		#FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_NOPDF"
+	    FGLLIBS_STATIC="$FGLLIBS_STATIC ../../lib/libPDF_NOPDF.so"
+	fi
 fi
 
 if [ "$A4GLDEBUG" = "yes" ]
@@ -1343,10 +1347,12 @@ else
         fi
 fi
 
-#FIXME: Mike's private reference to /root/ncurses/ncurses-5.2/lib, had to remove to shorten
-#execution strimg because of bug in 'eval" on CygWin!
-MIKES_LIBS="-L/root/ncurses/ncurses-5.2/lib"
-LIBS="-lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG -rdynamic"
+LIBS="-lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG"
+
+if test "$COMSPEC" = ""; then
+	LIBS="$LIBS -rdynamic"
+fi
+
 
 
 if [ "$A4GL_SQLTYPE" = "" ] || [ "$A4GL_SQLTYPE" = "static" ]
@@ -1443,11 +1449,13 @@ else
    if [ "$A4GLVERBOSE" = "yes" ]
    then
 	   echo "executing (2) : $DOIT $GCC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
+       echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+       pwd
    fi
 
     if [ "$COMSPEC" = "" ]
     then
-		eval $DOIT $GCC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST
+		eval  $DOIT $GCC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST
        	err_code=$?
     else
 		eval "$DOIT $GCC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"

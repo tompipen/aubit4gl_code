@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2002-01-18 03:09:10 afalout Exp $
+# $Id: Makefile.in,v 1.13 2002-01-25 12:20:42 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -36,7 +36,13 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPC			=${SH} ../../bin/4glpc
-4GLPCFLAGS		=-make-compile -static -DDEBUG -Irules -L/lib -L../../lib -nogtk -g  -verbose -rdynamic
+4GLPCFLAGS		=-make-compile -static -DDEBUG -Irules -L/lib -L../../lib -nogtk -g  -verbose -L. -I.
+
+ifndef COMSPEC
+	4GLPCFLAGS	+=-rdynamic
+else
+	4GLPCFLAGS	+=-Xlinker -rdynamic
+endif
 
 ALL				=rules.t 4glc
 

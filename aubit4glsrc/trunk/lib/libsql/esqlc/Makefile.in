@@ -1,4 +1,52 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.2 2002-01-25 12:20:42 afalout Exp $
+#
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../../incl/Makefile-common
+override NOINCL=0
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
 override CFLAGS+=-I../.. -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql
+
+ifdef COMSPEC
+#    ESQL_FLAGS		=-D__CYGWIN__
+#    ESQL_INCLPATH	=-I..\.. -I..\..\..\compilers\fcompile
+else
+    ESQL_INCLPATH	=-I../.. -I../../../compilers/fcompile
+endif
+
+## ==================================================================
+##                              Targets
+## ==================================================================
 
 libSQL_esql.so: esql.o
 #libSQL_esql.so: esql.c
@@ -9,8 +57,11 @@ esql.o: esql.c
 
 esql.c:
 #	${ESQL_EC} -e $<
-	esql -c esql.ec -I${INFORMIXDIR} -I../.. -I../../../compilers/fcompile
+	esql -c esql.ec ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH}
 
+## ==================================================================
+##                              Clean
+## ==================================================================
 
 clean:
 	rm -f *.o *.so *.bak *.c

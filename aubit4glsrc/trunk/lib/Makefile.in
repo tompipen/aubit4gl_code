@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2002-01-24 06:37:18 afalout Exp $
+# $Id: Makefile.in,v 1.18 2002-01-25 12:20:42 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -55,8 +55,8 @@ ifdef COMSPEC
 #default RPC install path on CygWin is /usr/local/include:
 	LOCALCFLAGS		+=-DWIN32 -I/usr/local/include
 	LDFLAGS			+= -lrpclib -lc
-	ALL				+=libaclall.a libSQL_odbc32.so
-    ALL_GUI			=libaclallgui.a
+	ALL				+=libaclall.a libSQL_odbc32.so libaclshared.so
+    ALL_GUI			=libaclallgui.a libaclsharedgui.so
 
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
@@ -86,13 +86,13 @@ else
 	ifeq "$(PDFBUID)" "yes"
 		LOCALCFLAGS	+= -DUSE_PDF_REPORTS
     endif
-    ALL				+=aclshared.so libaclall.a
-    ALL_GUI			=aclsharedgui.so libaclallgui.a
+    ALL				+=libaclshared.so libaclall.a
+    ALL_GUI			=libaclsharedgui.so libaclallgui.a
 
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
-		    ALL			+=aclshared-noodbc.so libaclall-noodbc.a
-	    	ALL_GUI		+=aclsharedgui-noodbc.so libaclallgui-noodbc.a
+		    ALL			+=libaclshared-noodbc.so libaclall-noodbc.a
+	    	ALL_GUI		+=libaclsharedgui-noodbc.so libaclallgui-noodbc.a
 	    endif
     endif
     CC				=cc
@@ -138,7 +138,7 @@ ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 	endif
 	OBJSNOSQL		=libsql/odbc/nosql.o
 else #default: dynamic linking for SQL access libs
-    ALL     		+= libsqlso
+    ALL     		+=libsqlso
 	CMODS 			=${CMODSNOSQL} dlsql.c
     LIBSQL			=libSQL_noodbc.so
 
@@ -222,26 +222,26 @@ libSQL_odbc32.so:
 #----------------- with ODBC, if ODBC != no ----------------------
 
 libaclall.a : $(OBJS) gui_tui.o
-	ar rc libaclall.a $(OBJS) gui_tui.o
-	ranlib libaclall.a
+	ar rc $@ $(OBJS) gui_tui.o
+	ranlib $@
 
 libaclallgui.a : $(OBJS) gui_gtk.o
 	ar rc libaclallgui.a $(OBJS) gui_gtk.o
 	ranlib libaclallgui.a
 
-aclshared.so : $(OBJS) gui_tui.o
-	touch libaclshared.so
-	rm libaclshared.so
-	ld  -fPIC -shared $(OBJS) gui_tui.o -o aclshared.so #-lform -lpanel -lncurses -Map  mapfile
+libaclshared.so : $(OBJS) gui_tui.o
+#	touch libaclshared.so
+#	rm libaclshared.so
+	ld ${SO_LDFLAGS} $(OBJS) gui_tui.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
 #FIXME: remove this ln:
-	ln aclshared.so libaclshared.so
+#	ln aclshared.so libaclshared.so
 
-aclsharedgui.so : $(OBJS) gui_gtk.o
-	touch libaclsharedgui.so
-	rm libaclsharedgui.so
-	ld  -fPIC -shared $(OBJS) gui_gtk.o -o aclsharedgui.so #-lform -lpanel -lncurses -Map  mapfile
+libaclsharedgui.so : $(OBJS) gui_gtk.o
+#	touch libaclsharedgui.so
+#	rm libaclsharedgui.so
+	ld ${SO_LDFLAGS} $(OBJS) gui_gtk.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
 #FIXME: remove this ln:
-	ln aclsharedgui.so libaclsharedgui.so
+#	ln aclsharedgui.so libaclsharedgui.so
 
 #----------------- without ODBC, if ODBC = no ----------------------
 
@@ -253,19 +253,19 @@ libaclallgui-noodbc.a: $(OBJSNOSQL) gui_gtk.o
 	ar rc libaclallgui-noodbc.a $(OBJSNOSQL) gui_gtk.o
 	ranlib libaclallgui-noodbc.a
 
-aclshared-noodbc.so:  $(OBJSNOSQL) gui_tui.o
-	touch libaclshared-noodbc.so
-	rm libaclshared-noodbc.so
-	ld  -fPIC -shared $(OBJSNOSQL) gui_tui.o -o aclshared-noodbc.so #-lform -lpanel -lncurses -Map  mapfile
+libaclshared-noodbc.so:  $(OBJSNOSQL) gui_tui.o
+#	touch libaclshared-noodbc.so
+#	rm libaclshared-noodbc.so
+	ld  -fPIC -shared $(OBJSNOSQL) gui_tui.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
 #FIXME: remove this ln:
-	ln aclshared-noodbc.so libaclshared-noodbc.so
+#	ln aclshared-noodbc.so libaclshared-noodbc.so
 
-aclsharedgui-noodbc.so: $(OBJSNOSQL) gui_gtk.o
-	touch libaclsharedgui-noodbc.so
-	rm libaclsharedgui-noodbc.so
-	ld  -fPIC -shared $(OBJSNOSQL) gui_gtk.o -o aclsharedgui-noodbc.so #-lform -lpanel -lncurses -Map  mapfile
+libaclsharedgui-noodbc.so: $(OBJSNOSQL) gui_gtk.o
+#	touch libaclsharedgui-noodbc.so
+#	rm libaclsharedgui-noodbc.so
+	ld  -fPIC -shared $(OBJSNOSQL) gui_gtk.o -o $@ #-lform -lpanel -lncurses -Map  mapfile
 #FIXME: remove this ln:
-	ln aclsharedgui-noodbc.so libaclsharedgui-noodbc.so
+#	ln aclsharedgui-noodbc.so libaclsharedgui-noodbc.so
 
 ## ==================================================================
 ##                             Sub Targets

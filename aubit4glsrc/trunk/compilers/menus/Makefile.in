@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-01-09 04:05:10 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-01-25 12:20:42 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -38,6 +38,16 @@ override NOINCL=0
 
 4GLPCFLAGS		= -make-compile -static -verbose -L../../lib -nogtk
 PROGRAM 		=mcompile mdecompile
+
+
+ifndef COMSPEC
+#	4GLPCFLAGS	+=-rdynamic
+else
+	4GLPCFLAGS	+=-Xlinker -rdynamic
+	CYGWIN_FLAGS=-lrpclib
+endif
+
+
 
 ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 	ifeq "$(ODBC)" "no"
@@ -128,7 +138,7 @@ clean:
 
 
 mdecompile: decompile.c menu_x_xdr.c
-	cc decompile.c menu_x_xdr.c -o $@
+	${CC} decompile.c menu_x_xdr.c -o $@ ${CYGWIN_FLAGS}
 	cp $@ ../../bin
 
 lint:

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-01-18 03:09:10 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-01-25 12:20:42 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -47,6 +47,7 @@ endif
 
 ifdef COMSPEC
 	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
+	CYGWIN_FLAGS=-lrpclib
 else
 	RPCGEN 		= rpcgen form_x.x
 endif
@@ -145,16 +146,16 @@ lint:
 	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
 
 fdecompile-j : decompile.c form_x_xdr.c dump_java.c
-	cc decompile.c form_x_xdr.c dump_java.c -o $@
+	${CC} decompile.c form_x_xdr.c dump_java.c -o $@
 	cp $@ ../../bin
 
 fdecompile : decompile.c form_x_xdr.c dump.c
-	cc decompile.c form_x_xdr.c dump.c -o $@
+	${CC} decompile.c form_x_xdr.c dump.c -o $@ ${CYGWIN_FLAGS)
 	cp $@ ../../bin
 
 fshow : fshow.4gl
-	${SH} ../../bin/4glpc -nogtk fshow.4gl -o fshow
-	cp $@ ../../bin
+	-${SH} ../../bin/4glpc -nogtk fshow.4gl -o fshow
+	-cp $@ ../../bin
 
 fshow-gtk : fshow.4gl
 	${SH} ../../bin/4glpc -gtk -DGTK fshow.4gl -o fshow-gtk

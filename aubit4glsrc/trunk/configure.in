@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.18 2002-01-24 06:37:15 afalout Exp $
+# $Id: configure.in,v 1.19 2002-01-25 12:20:39 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -131,18 +131,22 @@ AUBIT_DEBUG=1
 IFMX_ESQLC=no
 cygwin=0
 
-case "$target_os" in
+#case "$target_os" in
+case $host in
 	*linux*)
         #rpclib is part of clib on Linux
 		test_rpclib="0"
 		;;
-	*cygwin)
+
+    #  *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
+	*-*-cygwin | *-*-cygwin* | *-*-pw32*)
 		ODBC=odbc32;
     	ODBCMANAGER=$ODBC;
 		cygwin=1
-        ;;
+		;;
     *)
-        echo "Please report success or failure to compile Aubit on this platform to the mailing list. Thank you."
+        AC_MSG_WARN(You are using not tested platform)
+		echo "Please report success or failure to compile Aubit on this platform to the mailing list. Thank you."
         ;;
 esac
 
@@ -154,6 +158,7 @@ if test "$enable_debug" = "no" ; then
     # gcc -g
     # DEBUG=ALL
     # strip executables
+    #-DDEBUG
 	AC_MSG_WARN(Debugging disabled)
 	AUBIT_DEBUG=0
 fi
@@ -347,6 +352,21 @@ WARNING: You specified Informix base install directory that is different
 ],[
   AC_MSG_RESULT(--with-informix not specified)
 ])
+
+
+if test "$cygwin" = "1"; then
+
+	AC_MSG_WARN(esql/c support on Windows temporaraly disabled.)
+
+	IFMX_ESQLC=no
+	IFX_ESQL_FLAGS=
+	IFX_LIBS=
+	IFX_LFLAGS=
+	IFX_INCLUDE=
+	IFX_C_MAKE=
+	INFORMIXDIR=
+fi
+
 
 ################## PHP V 4 Informix esql
 #PHP_ARG_WITH(informix,for Informix support,
@@ -1074,6 +1094,67 @@ AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setenv setlocale socket strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
 
 #Should we check here for rpclib finctions on Linux?
+
+
+
+## ==================================================================
+##                   Checks for Cygwin specifics
+## ==================================================================
+
+#this macros are in aclocal.m4 - run aclocal to create it :
+
+case $host in
+	*-*-cygwin | *-*-cygwin* | *-*-pw32*)
+
+	_LT_AC_LOCK                         #checking for dlfcn.h... yes
+	AC_LIBTOOL_DLOPEN_SELF              #checking for BSD-compatible nm... /usr/bin/nm -B
+	AC_LIBTOOL_PROG_LD_SHLIBS           #checking command to parse /usr/bin/nm -B output... ok
+	AC_LIBTOOL_SYS_DYNAMIC_LINKER       #checking whether the linker () supports shared libraries... yes
+	AC_CHECK_LIBM                       #checking dynamic linker characteristics... Win32 ld.exe
+    ;;
+esac
+
+
+  # recent cygwin and mingw systems supply a stub DllMain which the user
+  # can override, but on older systems we have to supply one
+#  echo "$as_me:3493: checking if libtool should supply DllMain function" >&5
+#echo $ECHO_N "checking if libtool should supply DllMain function... $ECHO_C" >&6
+#if test "${lt_cv_need_dllmain+set}" = set; then
+
+#=======================================
+
+
+#  case $host/$CC in
+#  *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
+#    # old mingw systems require "-dll" to link a DLL, while more recent ones
+#    # require "-mdll"
+#    SAVE_CFLAGS="$CFLAGS"
+#    CFLAGS="$CFLAGS -mdll"
+#    echo "$as_me:3540: checking how to link DLLs" >&5
+#echo $ECHO_N "checking how to link DLLs... $ECHO_C" >&6
+#if test "${lt_cv_cc_dll_switch+set}" = set; then
+#
+#...
+#
+#
+#  *-*-cygwin* | *-*-pw32*)
+#    # cygwin systems need to pass --dll to the linker, and not link
+#    # crt.o which will require a WinMain@16 definition.
+#    lt_cv_cc_dll_switch="-Wl,--dll -nostartfiles" ;;
+#  esac
+#  ;;
+#
+#
+
+#=======================================
+
+	# cygwin* | mingw* | pw32* | os2*)
+      # This hack is so that the source file can tell whether it is being
+      # built for inclusion in a dll (and should export symbols for example).
+    #  lt_cv_prog_cc_pic='-DDLL_EXPORT'
+    #  ;;
+
+
 
 ## ==================================================================
 ##           Define which files we will substitute @xxx@ in

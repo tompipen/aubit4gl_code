@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.22 2002-01-23 09:06:16 afalout Exp $
+# $Id: Makefile.in,v 1.23 2002-01-25 12:20:39 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -313,6 +313,7 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 
 	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
 	MAKERPC			=cyrpc
+	CYRPC_FLAG:=$(shell ls cyrpc.flg ${NOERR})
     PREPARE 		=cyprepare
 	GTKCONFIGTEXT	=echo "----- gtk-version form makefile -------"
 	GTKCONFIGCMD	=echo ${LIBVER}
@@ -321,10 +322,10 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 	TOROOT          += $(SOURCE)/Makefile
 
 else ####################### Platform is UNIX ##############################
-    
+
 	#We want to stop using local upload location, as defined in $WWW:
 	USELOCALUPLOAD=0
-	
+
 	SH          	=sh
 	#FIXME: this should be automatic, or contain kernel version:
 	OS				=RH6
@@ -338,6 +339,8 @@ else ####################### Platform is UNIX ##############################
 	GTKCONFIGCMD	=gtk-config --version
     LDDCMD          =ldd
 endif
+
+
 
 
 ## ==================================================================
@@ -505,6 +508,7 @@ cyprepare:
 rpc: ${MAKERPC}
 
 cyrpc:
+ifeq "${CYRPC_FLAG}" ""
 	(cp tools/cygwin/form_x_xdr.c compilers/fcompile )
 	(cp tools/cygwin/menu_x_xdr.c compilers/menus)
 	(cp tools/cygwin/form_x.h compilers/fcompile )
@@ -512,7 +516,8 @@ cyrpc:
 	(cp tools/cygwin/form_x.h lib/libgui)
 	(cp tools/cygwin/menu_x.h compilers/menus )
 	(cp tools/cygwin/menu_x.h lib)
-
+	touch cyrpc.flg
+endif
 
 unixrpc:
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile rpc
@@ -583,7 +588,7 @@ clean.makefiles:
 
 
 clean.root:
-	$(RM) *.bak *.BAK libincl .*.bak core
+	$(RM) *.bak *.BAK libincl .*.bak core cyrpc.flg
 	${RM} debug.out
 	${RM} *.err ${PLATFORMSTRING}*.txt
 #We must not clean *.log when running make process to make.log:
