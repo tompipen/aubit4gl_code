@@ -53,5 +53,13 @@ CREATE TABLE update_table_perm (
 
 CREATE VIEW v_upd_tbl_perm AS SELECT * FROM update_table_perm;
 
+
+create table tab1
+(   x      integer,
+    y      char(10),
+    z      smallint
+);
+
+
 /* ======================== EOF ===========================*/
 

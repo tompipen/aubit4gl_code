@@ -2,6 +2,7 @@
 lpid=$!
 echo "Server : $lpid"
 sleep 1
+echo "Starting client"
 ./rpc_client > client.log
 
 kill $lpid 2> /dev/null 

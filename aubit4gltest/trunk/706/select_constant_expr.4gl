@@ -330,7 +330,7 @@ MAIN
     LET exitStatus = 1
   END IF
   IF r_.aNegativeSmallfloat != 	-1.01  THEN
-    DISPLAY "Diferent value 7"
+    DISPLAY "Diferent value 7 ",r_.aNegativeSmallfloat using "--&.&&&&&"," != -1.01"
     LET exitStatus = 1
   END IF
   IF r_.aDecimal != 	1.01  THEN
@@ -354,7 +354,7 @@ MAIN
     LET exitStatus = 1
   END IF
   IF r_.aSmftExpNegThree != 	+1E-3  THEN
-    DISPLAY "Diferent value 13"
+    DISPLAY "Diferent value 13 ",r_.aSmftExpNegThree using "--&.&&&&&", " != 1E-3"
     LET exitStatus = 1
   END IF
   IF r_.aNumExpThree != 	+1E3  THEN
@@ -378,15 +378,15 @@ MAIN
     LET exitStatus = 1
   END IF
   IF r_.aNegDecExpNegThree != 	-1.01E-3  THEN
-    DISPLAY "Diferent value 19"
+    DISPLAY "Diferent value 19 ",r_.aNegDecExpNegThree using "--&.&&&&&"," != -1.01E-3"
     LET exitStatus = 1
   END IF
   IF r_.aNegFltExpThree != 	-1.01E3  THEN
-    DISPLAY "Diferent value 20"
+    DISPLAY "Diferent value 20a"
     LET exitStatus = 1
   END IF
   IF r_.aPlusNumExpPlusThree != 	+1.01E+3  THEN
-    DISPLAY "Diferent value 20"
+    DISPLAY "Diferent value 20b"
     LET exitStatus = 1
   END IF
   IF r_.aPlusDecExpNegThree != 	+1.01E-3  THEN
@@ -455,6 +455,7 @@ MAIN
     DISPLAY "Diferent value 37"
     LET exitStatus = 1
   END IF
+
   IF r_.currMonthSecond != 	CURRENT MONTH TO SECOND THEN
     DISPLAY "Diferent value 38"
     LET exitStatus = 1
@@ -512,7 +513,7 @@ MAIN
     LET exitStatus = 1
   END IF
   IF r_.aDateTimeYH != 	datetime(1999-12-31 23) YEAR TO HOUR THEN
-    DISPLAY "Diferent value 57"
+    DISPLAY "Diferent value 57x"
     LET exitStatus = 1
   END IF
   IF r_.aDateTimeYMin != 	datetime(1999-12-31 23:59) YEAR TO MINUTE THEN
@@ -620,8 +621,9 @@ MAIN
   --IF r_.--aDateTimeFFScale != 	--datetime(99) FRACTION TO FRACTION(2) THEN
   # Interval(s) != 	# Literal Interval(s) = THEN
   IF r_.aIntervalYY != 	INTERVAL(1) YEAR TO YEAR THEN
-    DISPLAY "Diferent value 72"
+    DISPLAY "Diferent value 72 1 year to year : ",r_.aIntervalYY
     LET exitStatus = 1
+	exit program
   END IF
   IF r_.aIntervalYPrecY != 	INTERVAL(1) YEAR(4) TO YEAR THEN
     DISPLAY "Diferent value 73"
