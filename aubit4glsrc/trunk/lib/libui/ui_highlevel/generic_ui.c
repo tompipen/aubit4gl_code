@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.17 2004-05-13 12:46:00 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.18 2004-05-18 16:20:26 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -998,6 +998,7 @@ void
 UILIB_A4GL_gotolinemode ()
 {
   A4GL_LL_switch_to_line_mode ();
+  A4GL_set_scrmode ('L');
 }
 
 
@@ -2752,9 +2753,9 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 		A4GL_wprintw(wot,x,y,(a&0xffffff00),buff);
 		}
 	}
+  A4GL_LL_screen_update ();
     }
 
-  A4GL_LL_screen_update ();
 }
 
 

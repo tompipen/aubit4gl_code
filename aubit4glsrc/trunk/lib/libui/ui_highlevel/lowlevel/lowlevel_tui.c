@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.23 2004-05-13 12:46:01 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.24 2004-05-18 16:22:07 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -160,6 +160,7 @@ void A4GL_do_pause (void)
   x = A4GL_create_blank_window ("pause", ((w - emw) / 2), 20, emw, 3, 1);
   A4GL_wprintw (x, A4GL_LL_colour_code (COLOR_RED) | A_REVERSE, 1, 2, "%s",
 		buff);
+	A4GL_debug("su");
   A4GL_LL_screen_update ();
   abort_pressed = FALSE;
   if (A4GL_screen_mode (-1))
@@ -252,6 +253,7 @@ static int A4GL_curses_to_aubit (int a)
 void
 A4GL_LL_switch_to_line_mode (void)
 {
+  A4GL_debug("Switch to line mode");
   endwin ();
   A4GL_set_scrmode ('L');
 }
@@ -334,6 +336,7 @@ A4GL_LL_create_window (int h, int w, int y, int x, int border)
   A4GL_debug ("pan=%p", pan);
   keypad (win, TRUE);
   top_panel (pan);
+	A4GL_debug("su");
   A4GL_LL_screen_update ();
   return pan;
 }
@@ -476,9 +479,11 @@ A4GL_LL_error_box (char *str, int attr)
   /* print ("%s", str); */
   A4GL_wprintw (x, A4GL_LL_colour_code (COLOR_RED) | A_REVERSE, 1, 1, "%s",
 		str);
+	A4GL_debug("su");
   A4GL_LL_screen_update ();
   A4GL_do_pause ();
   UILIB_A4GL_remove_window ("error");
+	A4GL_debug("su");
   A4GL_LL_screen_update ();
   A4GL_debug ("All done in error box");
   //A4GL_mja_setcolor (NORMAL_TEXT);
@@ -687,6 +692,7 @@ A4GL_LL_display_form (void *vf, int attrib)
 
   A4GL_clr_form (0);
   A4GL_debug ("And return");
+	A4GL_debug("su");
   A4GL_LL_screen_update ();
   return w;
 }
@@ -1793,6 +1799,7 @@ int rblock;
     return 0;
 
       A4GL_form_pos_form_cursor (mform);
+	A4GL_debug("su");
       A4GL_LL_screen_update ();
       abort_pressed = 0;
       was_aborted = 0;
@@ -1866,6 +1873,7 @@ int rblock;
       A4GL_LL_int_form_driver (mform, AUBIT_REQ_VALIDATION);
       //A4GL_zrefresh ();
       //wrefresh (p);
+	A4GL_debug("su");
       A4GL_LL_screen_update();
       A4GL_debug ("Return pressed");
       prompt->mode = 1;
@@ -1882,6 +1890,7 @@ int rblock;
 
 
 
+	A4GL_debug("su");
       A4GL_LL_screen_update();
 
   if (prompt->charmode)
@@ -1944,6 +1953,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
     }
   prompt->win = p;
   buff[width] = 0;
+	A4GL_debug("su");
   wprintw (p, "%s", buff); A4GL_LL_screen_update();sleep (1);
   promptstr = A4GL_char_pop ();
   prompt->mode = 0;
@@ -2038,6 +2048,7 @@ A4GL_LL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   A4GL_LL_int_form_driver (f, AUBIT_REQ_FIRST_FIELD);
   A4GL_LL_int_form_driver (f, AUBIT_REQ_OVL_MODE);
   A4GLSQL_set_status (0, 0);
+	A4GL_debug("su");
   A4GL_LL_screen_update ();
   return 1;
 }
@@ -2053,6 +2064,7 @@ static void A4GL_clear_prompt (struct s_prompt *prmt)
 #endif
   p = prmt->win;
   delwin ((WINDOW *) p);
+	A4GL_debug("su");
   A4GL_LL_screen_update ();
 }
 
@@ -2233,6 +2245,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 	A4GL_debug("construct - post_form = %d",a);
 	A4GL_mja_set_field_buffer(buff[1],0,rbuff);
 
+	A4GL_debug("su");
 	A4GL_LL_screen_update();
 
 	A4GL_LL_int_form_driver(f,AUBIT_REQ_FIRST_FIELD);
@@ -2251,6 +2264,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 
 	while (looping) {
 		A4GL_LL_set_carat(f);
+	A4GL_debug("su");
 		A4GL_LL_screen_update();
 		a=A4GL_LL_getch_swin (panel_window(cwin));
 		A4GL_debug("construct_large a=%d abort_pressed=%d",a,abort_pressed);
@@ -2301,6 +2315,7 @@ int A4GL_LL_construct_large(char *orig, struct aclfgl_event_list *evt,int init_k
 	A4GL_debug("Unpost and delete...");
         A4GL_form_unpost_form(f);
 	delwin(drwin);
+	A4GL_debug("su");
 	A4GL_LL_screen_update();
 	A4GL_comments(0);
 	return a;
@@ -2410,6 +2425,7 @@ int A4GL_LL_disp_form_field_ap(int n,int attr,char* s,va_list* ap) {
 
 
     }
+	A4GL_debug("su");
   A4GL_LL_screen_update ();
 #else
 

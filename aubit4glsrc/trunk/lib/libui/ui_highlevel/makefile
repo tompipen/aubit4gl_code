@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.20 2004-04-21 16:38:34 mikeaubury Exp $
+# $Id: makefile,v 1.21 2004-05-18 16:20:26 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -36,6 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 ##                              GTK+ Options
 ## ==================================================================
+CFLAGS+=-I/opt/gnome/include/gtk-2.0 -I/opt/gnome/lib/gtk-2.0/include -I/opt/gnome/include/atk-1.0 -I/opt/gnome/include/pango-1.0 -I/usr/X11R6/include -I/usr/include/freetype2 -I/opt/gnome/include/glib-2.0 -I/opt/gnome/lib/glib-2.0/include -Wl,--export-dynamic -L/opt/gnome/lib -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangoxft-1.0 -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
 
 
 ifeq "${WIN_PATH}" "1"
@@ -50,7 +51,7 @@ ifeq "${WIN_PATH}" "1"
 	GTK_LIB_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_LIB_PATH}) ${ADD_ME}
 endif
 
-GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS})
+GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS}) 
 
 #Need to find better sollution for this:
 GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
@@ -165,7 +166,7 @@ ${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o wid
 
 
 ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o width_narrow.o
-	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS}
+	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangoxft-1.0 -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
 
 width_narrow.o: width.c
 	cc -DNO_WIDEC width.c ${CFLAGS} -c -o width_narrow.o
