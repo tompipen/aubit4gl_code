@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.71 2004-03-17 14:49:57 mikeaubury Exp $
+# $Id: resource.c,v 1.72 2004-03-19 08:32:44 whaslbeck Exp $
 #
 */
 
@@ -296,6 +296,7 @@ struct str_resource builtin_resource[] = {
   {"A4GL_LINK_LIBS", "-laubit4gl"},
   {"A4GL_C_COMP", "gcc"},
   {"A4GL_RDYNAMIC", "-rdynamic"},
+  
 
   /* 
      extensions used when invoking C compiler from 4glc
@@ -350,6 +351,12 @@ struct str_resource builtin_resource[] = {
 
   /* GUI HL_GTK Stuff */
   {"A4GL_USE_PANGO_ML", "N"}, /* set to Y to use PangoML in Labels */
+
+
+  /* misc */
+  {"GDB_ATTACH", "N"}, /* set to Y to attach debugger after crash */
+  {"GDB_EXE", "gdb"},  /* set it to the name of your prefered debugger */
+  {"SWAP_SQLCA62", "N"}, /* to get OID after INSERT on unpatched PostgreSQL */
 
   /* End of definitions */
   {"", "0"}

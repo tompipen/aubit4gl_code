@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.58 2004-03-16 07:27:03 whaslbeck Exp $
+# $Id: fglwrap.c,v 1.59 2004-03-19 08:33:49 whaslbeck Exp $
 #
 */
 
@@ -882,7 +882,7 @@ void A4GL_core_dump(void) {
 
    if (A4GL_isyes(acl_getenv("GDB_ATTACH"))) {
 	char buff[256];
-	sprintf(buff,"gdb %s %d",running_program,getpid());
+	sprintf(buff,"%s %s %d", acl_getenv("GDB_EXE"), running_program, getpid() );
 	
 	system(buff);
    }
