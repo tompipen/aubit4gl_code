@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.25 2003-02-10 12:32:57 mikeaubury Exp $
+# $Id: map.c,v 1.26 2003-02-10 19:27:57 mikeaubury Exp $
 #*/
 
 /**
@@ -44,7 +44,7 @@
 */
 
 #include "a4gl_4glc_int.h"
-
+#include "memfile.h"
 /*
 =====================================================================
                     Variables definitions
@@ -270,9 +270,12 @@ FILE *f;
 long ld;
 char a;
 
-  ld = ftell (yyin);
+  ld = memfile_ftell (yyin);
   sprintf (errfile, "%s.err", outputfile);
   a = 0;
+
+
+/* Need a real fseek here */
   fseek (yyin, fpos, SEEK_SET);
   f = write_errfile (yyin, errfile, ld, yylineno);
   fprintf (f, "| %s%s (%s)", s, errbuff, yytext);
@@ -291,9 +294,9 @@ void yyerror(char *s)
 
   ld=buffpos();
   sprintf(errfile,"%s.err",outputfile);
-  f=write_errfile(yyin,errfile,ld-1,yylineno);
+  f=write_errfile(memfile_yyin,errfile,ld-1,yylineno);
   fprintf (f, "| %s", s);
-  write_cont(yyin);
+  write_cont(memfile_yyin);
   printf("Error compiling %s.per - check %s.err (xline=%d yline=%d)\n",
 	  outputfile,outputfile,lineno,yylineno
   );
@@ -784,13 +787,13 @@ compile_4gl(char c[128],int compile_object,char a[128],char incl_path[128],int s
 {
 int x, ret;
 char buff[456];
-static char *file_buffer;
+//static char *file_buffer;
 
   /*
   File MUST be opened in binary mode on Windows, to be able to process
   source file in DOS format - otherwise fpos/ftell gets completely dissoriented:
   */
-  yyin = mja_fopen (c, "rb");
+  yyin = memfile_fopen (c, "rb");
 
   //printf("Buffer size : %d\n",BUFSIZ);
   //file_buffer=malloc(30000);
@@ -803,9 +806,9 @@ static char *file_buffer;
   }
 
 
-  fseek(yyin,0,SEEK_END);
-  yyin_len=ftell(yyin);
-  rewind(yyin);
+  memfile_fseek(yyin,0,SEEK_END);
+  yyin_len=memfile_ftell(yyin);
+  memfile_rewind(yyin);
 
   if (yydebug)
     {
