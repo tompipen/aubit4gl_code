@@ -6,33 +6,29 @@
 
 ######################
 #Check and create SQLite db
-SQLITE_DB="$AUBITDIR_UNIX/$TEST_DB.db"
+SQLITE_DB="$AUBITDIR_UNIX/tools/$TEST_DB.db"
 
 if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
+
 	if ! test -f $SQLITE_DB -o "$NEW_SQLITE" = "1"; then
 		rm -f $SQLITE_DB > /dev/null 2>&1
 		echo "creating SQLite testing database..."
-		cat testdb.sql | sqlite $SQLITE_DB
-        RET=$?
-		if test -f $SQLITE_DB || test "$RET" != "0" ; then
-			echo "created SQLite testing database:"
-			echo "$SQLITE_DB"
-        else
-			echo "ERROR creating SQLite testing database ($RET):"
-			echo "$SQLITE_DB"
-            exit 5
-        fi
+		new_testdb sqlite
+	else
+		if test "$VERBOSE" = "1"; then
+			echo "Found SQLite db in $SQLITE_DB"
+		fi
     fi
 	if test "$NEW_SQLITE" = "1"; then
         exit 0
     fi
 
-	#remember to account for this scritp cd-ing into test directory
+	#remember to account for this scrit cd-ing into test directory
 	#when setting relative DBPATH to database file
 	if test "$PLATFORM" = "MINGW"; then
-		DBPATH="d:/cygwin$AUBITDIR_UNIX/tools"
+		DBPATH="d:/cygwin$AUBITDIR_UNIX"
 	else
-		DBPATH="$AUBITDIR_UNIX/tools"
+		DBPATH="$AUBITDIR_UNIX"
     fi
 	export DBPATH
 fi

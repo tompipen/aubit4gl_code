@@ -1538,6 +1538,23 @@ TMP2=tmp2
 			;;
 		esac
 		;;
+	sqlite)
+		case $TYPE in
+		ddl)
+			cat $SQL_DDL | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > $TMP1			
+			mv $TMP1 $RESULT
+			;;
+		data)
+			cat $SQL_DATA | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > $TMP1			
+			mv $TMP1 $RESULT
+			;;
+		*)
+			echo "ERROR: unknown translation type: $TYPE"
+			exit 3
+			;;
+		esac
+		;;
+	
 	*)
 		echo "ERROR: don't know how to translate SQL for $RDBMS"
 		exit 4
@@ -1579,6 +1596,11 @@ AS_USER=$5
 		eval $EXEC
 		RET=$?
 		;;
+		
+	sqlite)
+		cat $SCRIPT | sqlite $SQLITE_DB
+        RET=$?
+		;;
 	*)
 		echo "ERROR: don't know how to run script for $RDBMS"
 		exit 4
@@ -1613,6 +1635,21 @@ LOGFILE=/tmp/testdb.log
 		convert_sql data $RDBMS $SCRIPT
 		echo "Loading data..."
 		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
+		;;
+	sqlite)
+		convert_sql ddl $RDBMS $SCRIPT
+		echo "Creating tables..."
+		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
+		convert_sql data $RDBMS $SCRIPT
+		echo "Loading data..."
+		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
+		
+		if ! test -f $SQLITE_DB ; then
+			echo "Creation of SQLite db failed: file:"
+			echo "$SQLITE_DB"
+			echo "does not exist. Stop"
+			exit 4
+		fi
 		;;
 	*)
 		echo "ERROR: don't know how to create test data for $RDBMS"

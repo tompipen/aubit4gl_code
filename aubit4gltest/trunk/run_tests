@@ -482,6 +482,7 @@ for a in $FLAGS; do
             exit 9
         fi
 		USE_SQLITE=1; export SKIP_EC_RUN=1; export A4GL_SQLTYPE=sqlite
+		export USE_ESQLI=0; export USE_ECI=0;export A4GL_LEXTYPE=C;
         ;;
 
 	-sqlite-new)    #Create new SQLite database from scripts

@@ -63,6 +63,11 @@ EXPECT_TO_FAIL_TESTS_MINGW="242 244 246 252 254 272 273 274 276 277 288 535 1060
 EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 
 
+
+#NOT expected to fail:  590 1200 (2)
+#Skipped as not descsribed:  1201 1202
+#Expected to fail, but passed: 8 ( 80 348 349 350 351 685 694 703)
+
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 #NOTE: <*> = OK with -esqli

@@ -41,7 +41,7 @@ $ sh run_tests -new 9999
 Where 9999 is the number of the test you want to create...
 
 You should check with Mike or Andrej for a bank of numbers to use if you want 
-to upload them/ make sure we dont use the same numbers  - see script_ranges
+to upload them, to make sure we dont use the same numbers  - see script_ranges
 file for currently alocated ranges
 
 Tests from aproximately 210 and up use new-style makefile from template/ 
@@ -103,6 +103,11 @@ the terminal size - set the
 
 This will trim the output to 24 lines by 80 characters...
 
+
+Much more information about running tests can be found by invoking -help:
+
+	bash run_tests -help
+
 Other ways to test 4GL programs:
 
 > > On Sun, 2004-01-18 at 11:42, Sérgio Ferreira wrote:
@@ -139,7 +144,7 @@ Directories:
 				To - do 
 				-------
 				
-calculate % of success
+Desrcrinbe all non-ANSI db tests as per sql_features_used target in makefile
 				
 ----------------------------------------------------------------------
 TODO - testing script
