@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2004-03-19 02:44:47 afalout Exp $
+# $Id: Makefile,v 1.3 2004-03-19 02:52:04 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -46,7 +46,7 @@ OBJS=process_report.o ../common/a4gl_lle.o API_process.o
 ##                              Targets
 ## ==================================================================
 
-process_report: API_process.h ${OBJS} 
+${ROOT}/bin/process_report: API_process.h ${OBJS} 
 	cc -rdynamic -g ${OBJS} -o $@ -laubit4gl
 
 API_process.c: API_process.spec
@@ -61,6 +61,7 @@ API_process.h: API_process.spec
 ## ==================================================================
 
 clean:
-	${RM} *.o process_report
-	
+	${RM} *.o process_report ${ROOT}/bin/process_report API_process.h \
+	API_process.c
+
 
