@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.68 2004-05-26 14:24:12 mikeaubury Exp $
+# $Id: Makefile.in,v 1.69 2004-06-27 03:16:54 afalout Exp $
 #
 
 ROOT    	=../..
@@ -232,6 +232,9 @@ array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
 builtin.o API_ui.c: ${ROOT}/compilers/fcompile/form_x.h
 ${COMMONSRC}: api ${ROOT}/common/dataio/form_x.x.h
 ${CMODS_API}: ${ROOT}/common/dataio/form_x.x.h
+
+${LIBROOT}/resource/resource.o:
+	${MAKE} -C ${LIBROOT}/resource resource.o 
 
 ## ==================================================================
 ##                         Other Targets

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.150 2004-03-25 05:24:31 afalout Exp $
+# $Id: Makefile.in,v 1.151 2004-06-27 03:16:30 afalout Exp $
 #
 
 ## ==================================================================
@@ -1006,12 +1006,12 @@ ifneq "${USE_RPCGEN}" "0"
 	if diff -q compilers/ace/report_xdr.c tools/cygwin/report_xdr.c > /dev/null ; then x=1; fi; \
 	if test "$x" = "1"; then \
 		echo "Need to update"; \
-		${CP} compilers/fcompile/form_x.h tools/cygwin
-		${CP} compilers/fcompile/form_x_xdr.c tools/cygwin
-		${CP} compilers/menus/menu_x.h tools/cygwin
-		${CP} compilers/menus/menu_x_xdr.c tools/cygwin
-		${CP} compilers/ace/report.h tools/cygwin
-		${CP} compilers/ace/report_xdr.c tools/cygwin
+		${CP} compilers/fcompile/form_x.h tools/cygwin; \
+		${CP} compilers/fcompile/form_x_xdr.c tools/cygwin; \
+		${CP} compilers/menus/menu_x.h tools/cygwin; \
+		${CP} compilers/menus/menu_x_xdr.c tools/cygwin; \
+		${CP} compilers/ace/report.h tools/cygwin; \
+		${CP} compilers/ace/report_xdr.c tools/cygwin; \
 	else \
 		echo "All no_rpcgen files up-to-date"; \
 	fi

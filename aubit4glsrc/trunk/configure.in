@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.226 2004-03-28 07:56:28 afalout Exp $
+dnl # $Id: configure.in,v 1.227 2004-06-27 03:16:30 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -518,7 +518,12 @@ AC_SUBST(CURSES_LIB_PATH)
 AC_SUBST(CURSES_INC_PATH)
 AC_SUBST(HAVE_CURSES)
 AC_SUBST(CURSES_LIB_NAME)
+
 AC_SUBST(HAVE_PDCURSES)
+AC_SUBST(PD_CURSES_LIB_PATH)
+AC_SUBST(PD_CURSES_INC_PATH)
+AC_SUBST(PD_CURSES_LIB_NAME)
+
 
 #debug
 AC_SUBST(DEBUG_BISON)
@@ -1502,8 +1507,12 @@ if test "$withval" != "no"; then
 	if test "$with_gtk" = ""; then              with_gtk=yes        ;fi
 	#if user did not explicitly asked for Pdcurses, and if not on MinGW (which don't have curses):
 #FIXME: we don't have $GCC_MINGW here!!!
-	if test "$with_curses" = "" && test "$with_pdcurses" = "" && test "$GCC_MINGW" != "yes"; then
+	#if test "$with_curses" = "" && test "$with_pdcurses" = "" && test "$GCC_MINGW" != "yes"; then
+	if test "$with_curses" = "" -a "$GCC_MINGW" != "yes"; then
 		with_curses=yes
+	fi
+	if test "$with_pdcurses" = "" -a "$GCC_MINGW" = "yes"; then
+		with_pdcurses=yes
 	fi
 
 	if test "$with_cint" = ""; then          	with_cint=yes 		;fi
@@ -5158,10 +5167,9 @@ fi
 	    withval=/cygdrive/d/pdc25_vc_w32
 	  fi
 	  if test "$withval" != "no"; then
-		CURSES_LIB_PATH="-L$withval"
-		CURSES_INC_PATH="-I$withval"
-		#CURSES_LIB_NAME="-lcurses"
-		CURSES_LIB_NAME="$withval/curses.dll"
+		PD_CURSES_LIB_PATH="-L$withval"
+		PD_CURSES_INC_PATH="-I$withval"
+		PD_CURSES_LIB_NAME="$withval/curses.dll"
         HAVE_PDCURSES=1
 		AC_DEFINE(HAVE_PDCURSES,1,[ ])
 	    AC_MSG_RESULT(yes)
@@ -6632,7 +6640,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.226 2004-03-28 07:56:28 afalout Exp $
+| $Id: configure.in,v 1.227 2004-06-27 03:16:30 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

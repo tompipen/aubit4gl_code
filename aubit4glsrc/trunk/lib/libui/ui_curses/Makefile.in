@@ -24,8 +24,13 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.11 2004-02-01 03:16:53 afalout Exp $
+# $Id: Makefile.in,v 1.12 2004-06-27 03:16:55 afalout Exp $
 #
+
+##########################################################################
+#							Important note
+# This tree is still the main curses support - not the ui_highlevel
+##########################################################################
 
 LIBROOT=../..
 ROOT=../../..
@@ -37,8 +42,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-#CFLAGS		+=-I.. -I. -I${ROOT}/incl
-#must be BEFORE system paths:
+#Curses path must be BEFORE system paths:
 CFLAGS		:=@CURSES_INC_PATH@ -I/usr/include/ncurses ${CFLAGS} -I.. -I. -I${ROOT}/incl
 #Note: On CygWin term.h is in -I/usr/include/ncurses
 #@RPCLIB_INCLUDE@
@@ -48,8 +52,14 @@ ifneq "@HAVE_CURSES@" "0"
 	ALL			=${LIBROOT}/libUI_TUI${SO_EXT}
 endif
 
+#TODO: We will need to explicitly specify ncusrses or pdcurses when both are
+#present, because otherwise they will conflict
 ifneq "@HAVE_PDCURSES@" "0"
 	ALL			=${LIBROOT}/libUI_TUI${SO_EXT}
+	#@PD_CURSES_LIB_PATH@
+	#@PD_CURSES_INC_PATH@
+	#@PD_CURSES_LIB_NAME@
+	
 endif
 
 ifeq "${NON_PEDANTIC_OK}" "1"
@@ -67,7 +77,8 @@ endif
 ##                              Source files
 ## ==================================================================
 
-ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o array.o iarray.o prompt.o generic_ui.o
+ALLOBJ=curslib.o dump_scr.o newpanels.o formcntrl.o ioform.o colours.o \
+	array.o iarray.o prompt.o generic_ui.o
 
 ## ==================================================================
 ##                              Targets
