@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display.c,v 1.9 2003-09-23 05:26:00 afalout Exp $
+# $Id: display.c,v 1.10 2003-09-30 10:31:15 mikeaubury Exp $
 #*/
 
 /**
@@ -120,18 +120,20 @@ A4GL_display_generic (GtkWidget * k, char *s)
     {
 	GtkStyle *style;
       gtk_label_set_text (GTK_LABEL (k), s);
-    style = gtk_style_new ();
 
 /* check whether a Gtk+ version equal to or greater than
  * major.minor.micro is present.
  */
 #if GTK_CHECK_VERSION(2,0,0)
+	
+ A4GL_ChangeWidgetFont(k,"FIXED");
     // GTK+ 2.0 and up: structure has no member named `font'
 #else
+    style = gtk_style_new ();
 	gdk_font_unref (style->font);
     style->font = gdk_font_load ("fixed");
-#endif
 	gtk_widget_set_style (k, style);
+#endif
       return 1;
     }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.19 2003-09-23 05:26:00 afalout Exp $
+# $Id: gtk_4gl.c,v 1.20 2003-09-30 10:31:15 mikeaubury Exp $
 #*/
 
 /**
@@ -611,6 +611,9 @@ A4GL_read_form_gtk (char *fname, char *formname)
 
 	  gtk_widget_show (GTK_WIDGET (fixedpage));
 	  label = gtk_label_new (the_form->snames.snames_val[a].name);
+#if GTK_CHECK_VERSION(2,0,0)
+ A4GL_ChangeWidgetFont(label,"FIXED");
+#endif
 	  gtk_notebook_insert_page (GTK_NOTEBOOK (notebook),
 				    GTK_WIDGET (fixedpage), label, a + 1);
 	  sprintf (buff, "Screen%d", a + 1);
@@ -994,6 +997,9 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 				  A4GL_decode_colour_attr_aubit (a));
 	      gtk_label_set_text (lab, s);
 	      gtk_widget_show (GTK_WIDGET (lab));
+#if GTK_CHECK_VERSION(2,0,0)
+ A4GL_ChangeWidgetFont(lab,"FIXED");
+#endif
 	    }
 	  else
 	    {
@@ -1012,6 +1018,9 @@ A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 			     y * YHEIGHT);
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
 	      gtk_widget_show (GTK_WIDGET (lab));
+#if GTK_CHECK_VERSION(2,0,0)
+ A4GL_ChangeWidgetFont(lab,"FIXED");
+#endif
 	    }
 	}
     }
@@ -1076,14 +1085,15 @@ A4GL_display_at (int n, int a)
 		GtkStyle *style;
 	      		A4GL_gui_set_field_fore ((GtkWidget *) lab, A4GL_decode_colour_attr_aubit (a));
 	      		gtk_label_set_text (lab, s);
-		    	style = gtk_style_new ();
 #if GTK_CHECK_VERSION(2,0,0)
     // GTK+ 2.0 and up: structure has no member named `font'
+		A4GL_ChangeWidgetFont(lab,"FIXED");
 #else
-				gdk_font_unref (style->font);
+		    	style = gtk_style_new ();
+			gdk_font_unref (style->font);
     			style->font = gdk_font_load ("fixed");
-#endif
     			gtk_widget_set_style (GTK_WIDGET(lab), style);
+#endif
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
 	  else
@@ -1103,14 +1113,15 @@ A4GL_display_at (int n, int a)
 	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
 			     y * YHEIGHT);
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
-		    	style = gtk_style_new ();
 #if GTK_CHECK_VERSION(2,0,0)
     // GTK+ 2.0 and up: structure has no member named `font'
+	 	A4GL_ChangeWidgetFont(lab,"FIXED");
 #else
-				gdk_font_unref (style->font);
+		    	style = gtk_style_new ();
+			gdk_font_unref (style->font);
     			style->font = gdk_font_load ("fixed");
-#endif
     			gtk_widget_set_style (GTK_WIDGET(lab), style);
+#endif
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
 	}
@@ -1249,16 +1260,18 @@ A4GL_close_form (char *name)
  */
 int
 /* A4GL_open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())) */
-A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like,
-	       int disable, void *handler_e, void (*handler_c (int a, int b)))
+A4GL_open_gui_form_internal (char *name_orig, int absolute, int nat, char *like,
+	       int disable, void *handler_e, void *phandler_c)
 {
   GtkWindow *win;
+  void (*handler_c) ();
   GtkFixed *fixed;
   GtkFixed *form;
   char name[256];
   char formname[256];
   struct struct_form *the_form;
   int a;
+  handler_c=phandler_c;
 
   strcpy (name, name_orig);
   A4GL_decode_gui_winname (name);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.8 2003-09-08 08:11:26 afalout Exp $
+# $Id: cr_funcs.c,v 1.9 2003-09-30 10:31:15 mikeaubury Exp $
 #*/
 
 /**
@@ -207,6 +207,9 @@ A4GL_cr_button (void)
 	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
 	  gtk_widget_show (GTK_WIDGET (l));
 	  gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
+#if GTK_CHECK_VERSION(2,0,0)
+ A4GL_ChangeWidgetFont(l,"FIXED");
+#endif
 	}
     }
 
@@ -330,6 +333,9 @@ A4GL_cr_label (void)
   gtk_widget_show (label);
   A4GL_add_signal_grab_focus (label, 0);
   A4GL_add_signal_clicked (label, 0);
+#if GTK_CHECK_VERSION(2,0,0)
+ A4GL_ChangeWidgetFont(label,"FIXED");
+#endif
   return label;
 }
 

@@ -86,7 +86,7 @@ extern int gui_xwidth;
 extern int gui_yheight;
 #else
 int gui_xwidth = 8;
-int gui_yheight = 22;
+int gui_yheight = 25;
 #endif
 
 #define XWIDTH gui_xwidth

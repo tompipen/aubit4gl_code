@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.10 2003-09-08 08:11:26 afalout Exp $
+# $Id: widget.c,v 1.11 2003-09-30 10:31:15 mikeaubury Exp $
 #*/
 
 /**
@@ -327,6 +327,9 @@ A4GL_add_widget (int metric_no, struct_form * f,
       A4GL_debug ("Is a label");
       /* Just a peice of text - create a label */
       new_widget = gtk_label_new (metric->label);
+#if GTK_CHECK_VERSION(2,0,0)
+ A4GL_ChangeWidgetFont(new_widget,"FIXED");
+#endif
 
       gtk_fixed_put (GTK_FIXED (A4GL_get_window_gtk (metric->scr)), new_widget,
 		     metric->x * XWIDTH, metric->y * 20);
@@ -522,5 +525,28 @@ w=wv;
 }
 
 
+#define A4GL_GTK_FONT_FIXED "Fixed 10"
+
+
+void A4GL_ChangeWidgetFont(GtkLabel *label,char *font) {
+PangoFontDescription    *pfd;
+int a;
+A4GL_debug("A4GL_ChangeWidgetFont");
+	if (strcmp(font,"FIXED")==0) {
+		font=A4GL_GTK_FONT_FIXED;
+		A4GL_debug("FONT FIXED MJAMJAMJA");
+	} else {
+		A4GL_debug("Font : %s",font);
+	}
+
+
+        pfd = pango_font_description_from_string(font);
+        /* setting PangoFontDescription to label's layout */
+        pango_layout_set_font_description(gtk_label_get_layout(label), pfd);
+        /* asking label to resize/redraw itself, without this you'll not see the changes */
+        gtk_widget_queue_resize(GTK_WIDGET(label));
+        /* freeing PangoFontDescription, cause it has been copied by prev. call */
+        pango_font_description_free(pfd);
+}
 
 /* ============================== EOF =============================== */

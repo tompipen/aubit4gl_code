@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.15 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: input.c,v 1.16 2003-09-30 10:31:15 mikeaubury Exp $
 #*/
 
 /**
@@ -293,7 +293,7 @@ A4GL_form_loop (void *vs,int init)
  * @return The number of fields found.
  */
 int
-A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
+A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow *cwin,int a,
 		    va_list * ap)
 {
   int z;
@@ -329,7 +329,7 @@ A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
 
   A4GL_debug_last_field_created ("gfl 1");
 
-  for (z1 = 0; z1 < a; z1++)
+  for (z1 = 0; z1 <= a; z1++)
     {
 
       A4GL_debug ("Getting first %d of %d", z1, a);
@@ -506,8 +506,6 @@ int
 A4GL_gen_field_chars_ap (void* field_listv, void * cwinv, va_list * ap)
 {
   int a;
-  //va_list ap;
-  //va_start (ap, cwin);
   GtkWidget ***field_list;
   GtkWindow *cwin;
   field_list=field_listv;
@@ -966,7 +964,7 @@ A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap)
     }
   A4GL_debug ("Swapping %p for %p", w, cwin);
   A4GL_set_current_window (w);
-  A4GL_disp_fields (n, attr, ap);
+  A4GL_disp_fields_ap (n, attr, ap);
   A4GL_debug ("Swapping %p for %p", cwin, w);
   A4GL_set_current_window (cwin);
 return 1;
