@@ -3,8 +3,12 @@ This should really be adbaccess - but that was already taken...
 
 YOU MUST SET 
 
-A4GL_LEXTYPE=EC
+	A4GL_LEXTYPE=EC
+and
+	A4GL_USE_DATABASE_STMT=Y
 
 before compiling!
+
+
 
 
