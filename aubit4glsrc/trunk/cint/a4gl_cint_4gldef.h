@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_cint_4gldef.h,v 1.5 2005-01-22 14:16:30 mikeaubury Exp $
+# $Id: a4gl_cint_4gldef.h,v 1.6 2005-01-23 09:19:03 mikeaubury Exp $
 */
 
 /**
@@ -438,7 +438,7 @@ make: Leaving directory `/usr/src/aubit/aubit4glsrc/lib'
 
   int  aclfgl_scr_line (int nargs);
   int  aclfgl_set_count (int nargs);
-  int  aclfgl_aclfgl_set_page (int nargs);
+  int  aclfgl_a4gl_set_page (int nargs);
   int  aclfgl_showhelp (int helpnumber);
   int  aclfgl_sqrt (int nargs);
   int  aclfgl_upshift (int _np);
