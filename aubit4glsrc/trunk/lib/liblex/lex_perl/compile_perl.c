@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.19 2002-09-08 10:38:20 afalout Exp $
+# $Id: compile_perl.c,v 1.20 2002-09-26 01:22:51 afalout Exp $
 #
 */
 
@@ -157,7 +157,7 @@ char unwind[256][256];
 int unwindcnt = 0;
 int printing_record = 0;
 
-char lname[256];
+//char lname[256];
 
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.6 2002-06-29 13:12:02 afalout Exp $
+# $Id: compile_c_gtk.c,v 1.7 2002-09-26 01:22:51 afalout Exp $
 #
 */
 
@@ -80,18 +80,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-	
-	#include <string.h>
-	#include <stdio.h>
-
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_lib_lex_c_int.h"
-
-#endif
+#include "a4gl_lib_lex_c_int.h"
 
 /*
 =====================================================================
