@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.21 2002-10-07 11:06:27 afalout Exp $
+# $Id: fglwrap.c,v 1.22 2002-10-07 16:11:22 mikeaubury Exp $
 #
 */
 
@@ -837,7 +837,7 @@ check_and_show_id(char *program, char *arg1)
  * Yes it is... used (?)
  */
 int
-aclfgl_get_ui_mode(void)
+aclfgl_get_ui_mode(int n)
 {
 	push_int(ui_mode);
 	return 1;

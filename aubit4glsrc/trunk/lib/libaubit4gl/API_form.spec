@@ -183,6 +183,8 @@ add_str_attr void* f,int type,char* str -> void
 add_bool_attr void* f,int type -> void
 
 
+chk_iskey char* keys -> int
+
 
 /*  ============================== EOF ================================= */
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.3 2002-09-01 10:40:10 afalout Exp $
+# $Id: readforms.c,v 1.4 2002-10-07 16:11:22 mikeaubury Exp $
 #*/
 
 /**
@@ -697,10 +697,10 @@ do_translate_form (struct_form * the_form)
 
 
 /**
- *  not called anywhere
+ *  Used for ONKEYs
  */
 /*
-static int
+int
 chk_iskey (char *keys)
 {
   char *k;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.11 2002-10-03 12:33:53 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.12 2002-10-07 16:11:20 mikeaubury Exp $
 */
 
 /**
@@ -87,13 +87,20 @@
 		char data[64]; /**< The value stored in money variable */
 	} fglmoney;
 
+        struct fgl_int_loc {
+          char where;
+          FILE *f;
+          long memsize;
+          char filename[256];
+          void *ptr;
+        };
 
-	#define fglbyte struct fgl_int_loc
+#define fglbyte struct fgl_int_loc
 
 	/** 4gl Byte data type */
 	typedef struct fgl_int_loc FglByte;
 
-	#define fgltext struct fgl_int_loc
+#define fgltext struct fgl_int_loc
 
 	/** 4gl Text data type */
 	typedef struct fgl_int_loc FglText;
@@ -202,7 +209,7 @@
 
     /* ====================== fglwrap.c ====================== */
 
-	int 			aclfgl_get_ui_mode	(void);
+	int 			aclfgl_get_ui_mode	(int n);
 	int 			aclfgl_num_args		(int n);
 	int 			aclfgl_arg_val		(int n);
 

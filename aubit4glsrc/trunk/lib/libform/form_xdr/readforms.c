@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.20 2002-09-17 09:38:01 afalout Exp $
+# $Id: readforms.c,v 1.21 2002-10-07 16:11:23 mikeaubury Exp $
 #*/
 
 /**
@@ -671,10 +671,10 @@ char *ptr;
 
 
 /**
- *  not called anywhere
+ *  used for onkey(..)
  */
 /*
-static int
+int
 chk_iskey (char *keys)
 {
   char *k;

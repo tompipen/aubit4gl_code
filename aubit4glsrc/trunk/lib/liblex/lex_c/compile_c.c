@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.34 2002-10-07 11:06:28 afalout Exp $
+# $Id: compile_c.c,v 1.35 2002-10-07 16:11:23 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -262,6 +262,7 @@ open_outfile(void)
 
   hfile = mja_fopen (h, "w");
 
+#ifdef OBSOLETE_COSE
   if (strncmp(acl_getenv ("GTKGUI"),"Y",1)==0)  {
 	/*
   	strange: was this supposed to be A4GL_UI and not GTKGUI?
@@ -278,6 +279,7 @@ open_outfile(void)
 	fprintf (hfile, "#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
 
   }
+#endif
 }
 
 
@@ -381,7 +383,7 @@ int a;
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-static void
+void
 printh(char* fmt,... )
 {
 va_list ap;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.21 2002-10-07 11:06:24 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.22 2002-10-07 16:11:20 mikeaubury Exp $
 #
 */
 
@@ -772,6 +772,7 @@
 	/**
 	 * Location definition structure for blobs.
 	 */
+/*
 	struct fgl_int_loc {
 	  char where;
 	  FILE *f;
@@ -779,6 +780,7 @@
 	  char filename[256];
 	  void *ptr;
 	};
+*/
 
     /* ------------- end of moved from 4gldef.h ------------------ */
 

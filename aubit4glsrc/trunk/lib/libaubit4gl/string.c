@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.9 2002-10-07 11:06:27 afalout Exp $
+# $Id: string.c,v 1.10 2002-10-07 16:11:22 mikeaubury Exp $
 #
 */
 
@@ -96,6 +96,10 @@
                     Functions definitions
 =====================================================================
 */
+
+int strnullcmp(char *s1,char *s2);
+
+
 
 /**
  *
@@ -217,6 +221,15 @@ mja_strncmp (char *str1, char *str2, int n)
         return 1;
     }
   return 0;
+}
+
+
+int
+strnullcmp(char *s1,char *s2)
+{
+        if (s1==0) return -1;
+        if (s2==0) return -1;
+        return strcmp(s1,s2);
 }
 
 /* =================================== EOF ============================ */

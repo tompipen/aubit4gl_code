@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.84 2002-10-07 11:06:22 afalout Exp $
+# $Id: mod.c,v 1.85 2002-10-07 16:10:55 mikeaubury Exp $
 #
 */
 
@@ -1738,7 +1738,7 @@ pushLikeAllTableColumns(char *tableName)
   char csize[20];
   char cdtype[20];
   char buff[300];
-  char *ccol;
+  char ccol[256];
 
   debug ("pushLikeAllTableColumns()");
   /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
@@ -1757,8 +1757,9 @@ pushLikeAllTableColumns(char *tableName)
 
     /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
     rval = A4GLSQL_next_column(&ccol,&idtype,&isize);
-	strcpy(colname,ccol);
-	free(ccol);
+
+
+    strcpy(colname,ccol);
 
 	/*
 	warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type

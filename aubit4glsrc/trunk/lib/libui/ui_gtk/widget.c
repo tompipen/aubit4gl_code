@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.2 2002-06-29 13:12:03 afalout Exp $
+# $Id: widget.c,v 1.3 2002-10-07 16:11:24 mikeaubury Exp $
 #*/
 
 /**
@@ -518,21 +518,6 @@ KeySnooper (GtkWidget *grab_widget, GdkEventKey *event, gpointer func_data)
 }
 
 
-
-/**
- *
- *
- * @param
- * @param
- * @return
- */
-int
-strnullcmp(char *s1,char *s2)
-{
-	if (s1==0) return -1;
-	if (s2==0) return -1;
-	return strcmp(s1,s2);
-}
 
 
 /**

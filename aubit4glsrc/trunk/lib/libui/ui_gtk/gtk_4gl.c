@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.3 2002-09-20 10:06:05 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.4 2002-10-07 16:11:23 mikeaubury Exp $
 #*/
 
 /**
@@ -106,7 +106,7 @@ int mfrm_height;		/* set to the height of the last opened form */
 extern int ui_mode;     /** User interface used (GUI or TUI) */
 GtkWindow *console = 0;
 GtkWidget *console_list;
-
+char currwinname[256];
 /*
 =====================================================================
                     Functions prototypes
@@ -240,7 +240,7 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   if (isscreenwin == 1)
     {
       win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-
+	strcpy(currwinname,"SCREEN");
       gtk_window_set_title (GTK_WINDOW (win), name);
 
       if (win == 0)
@@ -261,7 +261,7 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
     }
   else
     {
-
+	strcpy(currwinname,name);
       if (border)
 	{
 
@@ -877,9 +877,10 @@ static GtkWidget *b=0;
 	debug("Set_current %p",w);
 	set_current_window (w);
 
-
+strcpy(currwinname,s);
   if (strcmp (s, "screen") != 0)
     {
+strcpy(currwinname,"SCREEN");
 
       if (b)
 	{
@@ -1309,6 +1310,10 @@ void *cwin;
 }
 
 
+
+char *get_currwin_name() {
+	return currwinname;
+}
 /* ================================ EOF ================================ */
 
 
