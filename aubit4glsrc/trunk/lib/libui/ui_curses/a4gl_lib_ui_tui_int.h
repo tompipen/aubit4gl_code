@@ -125,7 +125,8 @@
 		*/
 
 		//from ncurses/curses.h:
-		extern WINDOW   *newscr;
+		//extern WINDOW   *newscr;
+        WINDOW   *newscr;
     #endif
 #endif
 

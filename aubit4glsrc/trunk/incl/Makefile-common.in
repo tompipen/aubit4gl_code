@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.71 2002-09-24 01:59:24 afalout Exp $
+# $Id: Makefile-common.in,v 1.72 2002-09-24 04:40:02 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -284,10 +284,8 @@ LD                  =${CC}
 
 #LD Command to use for linking executables:
 ifeq "${TARGET_OS}" "solaris"
-	#Could not get past core dumps in compiled programs
-    #But exactly the same line with ld instead gcc works fine.
-	LD_EXE              =ld
-	#LD_EXE              =${CC} ${RDYNAMIC}
+	#LD_EXE              =ld
+	LD_EXE              =${CC} ${RDYNAMIC}
 else
 	LD_EXE              =${CC} ${RDYNAMIC}
 endif

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.82 2002-09-23 08:07:24 afalout Exp $
+# $Id: mod.c,v 1.83 2002-09-24 04:39:43 afalout Exp $
 #
 */
 
@@ -333,6 +333,10 @@ with_strip_bracket (const char *buff)
 void
 a4gl_add_variable (char *name, char *type, char *n)
 {
+
+  debug ("a4gl_add_variable");
+
+  //We core dump on Solaris here, if DEBUG is set:
 
   debug ("a4gl_add_variable (name = %s type = %s n = %d varcnt = %d)\n",
 	 name, type, n, varcnt);

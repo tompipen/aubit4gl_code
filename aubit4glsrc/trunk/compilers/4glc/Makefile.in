@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.42 2002-09-23 04:48:33 afalout Exp $
+# $Id: Makefile.in,v 1.43 2002-09-24 04:39:43 afalout Exp $
 #
 
 ROOT		=../..
@@ -59,7 +59,7 @@ GETOPT_LONG		=@GETOPT_LONG@
 
 ifneq "${GETOPT_LONG}" "yes"
 	ifeq "${GETOPT_LONG}" "iberty"
-		AUBIT_LIB+=-liberty
+		AUBIT_LIB+=-L/opt/sfw/lib -liberty
     else
         CMODS   +=${ROOT}/tools/getopt/getopt.c ${ROOT}/tools/getopt/getopt1.c
     endif

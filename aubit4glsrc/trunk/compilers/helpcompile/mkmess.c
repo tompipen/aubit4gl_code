@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkmess.c,v 1.5 2002-06-29 13:12:01 afalout Exp $
+# $Id: mkmess.c,v 1.6 2002-09-24 04:40:02 afalout Exp $
 #*/
 
 /**
@@ -42,16 +42,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-	
-	#include <stdio.h>
-	#include <string.h>
-
-#else
-
-    #include "a4gl_fcompile_int.h"
-
-#endif
+#include "a4gl_fcompile_int.h"
 
 /*
 =====================================================================
@@ -87,7 +78,12 @@ char tmpnum[6];
  */
 main(int argc,char *argv[])
 {
-  
+
+   	#ifdef DEBUG
+		debug ("Starting mkmess");
+	#endif
+
+
 	/* load settings from config file(s): */
 	build_user_resources();
 
@@ -173,6 +169,13 @@ main(int argc,char *argv[])
   fclose(hlp);
   fclose(tmp);
   unlink(fname_tmp);
+
+   	#ifdef DEBUG
+		debug ("Exiting mkmess");
+	#endif
+
+  exit (0);
+
 }
 
 /**

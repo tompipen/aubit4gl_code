@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.4 2002-09-21 12:11:53 afalout Exp $
+# $Id: curslib.c,v 1.5 2002-09-24 04:40:02 afalout Exp $
 #*/
 
 /**
@@ -46,32 +46,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-	/* Datasave Module */
-#include <string.h>
-#include <unistd.h>		/* sleep() */
-
-
-#include "a4gl_runtime_tui.h"	/* push_int() */
-#include "a4gl_tui_tui.h"
-#include "a4gl_dbform.h"
-#include "a4gl_pointers.h"
-#include "a4gl_aubit_lib.h"
-#include "a4gl_debug.h"
-
-#else
-
 #include "a4gl_lib_ui_tui_int.h"
-
-#endif
-
-
 
 /*
 =====================================================================
@@ -80,19 +55,19 @@
 */
 
 #define MAXFORM 8
-#define MAXWIDTH 80
+#define A4GL_MAXWIDTH 80
 #define MAXFIELDS 256
 #define mja_strcmp(a,b) mja_strncmp(a,b,0)
 
 #ifndef strnicmp		/* typically in /usr/include/string.h */
-#define strnicmp(a,b,c) mja_strncmp(a,b,c)
+	#define strnicmp(a,b,c) mja_strncmp(a,b,c)
 #endif
 
 #ifndef stricmp			/* typically in /usr/include/string.h */
-#define stricmp(a,b) mja_strncmp(a,b,0)
+	#define stricmp(a,b) mja_strncmp(a,b,0)
 #endif
 
-#define DEBUG
+//#define DEBUG
 #define MAXENTS 1000
 #define FILESIZE 64
 /*
@@ -110,7 +85,7 @@
 */
 
 int aborted;
-char arr[MAXFORM][MAXFIELDS][MAXWIDTH];
+char arr[MAXFORM][MAXFIELDS][A4GL_MAXWIDTH];
 char names[MAXFORM][MAXFIELDS][20];
 int namescnt = 0;
 int maxforms;
@@ -239,9 +214,10 @@ void refresh_after_system (void);
 char *
 string_width (char *s)
 {
-  char buff[10];
-  int a;
-  static char buff2[132];
+char buff[10];
+int a;
+static char buff2[132];
+  
   a = get_curr_width () - 2;
   sprintf (buff, "%%-%d.%ds", a, a);
   sprintf (buff2, buff, s);
@@ -312,7 +288,8 @@ title_box (str, a, x, l)
 static void
 message (textarea * area, char *str, int x, int a)
 {
-  int pos;
+int pos;
+  
   /*YELLOW ON CYAN */
   mja_setcolor (TITLE_COL);
   pos = (get_curr_width () - strlen (str)) / 2;
@@ -334,9 +311,9 @@ error_nobox (char *str)
   push_char (str);
   push_int (geterror_line ());
   push_int (1);
-#ifdef DEBUG
-  debug ("YY REVERSE");
-#endif
+  #ifdef DEBUG
+  	debug ("YY REVERSE");
+  #endif
   display_at (1, A_REVERSE);
 }
 
@@ -348,8 +325,8 @@ error_nobox (char *str)
 void
 error_box (char *str)
 {
-  int a, pos;
-  WINDOW *x;
+int a, pos;
+WINDOW *x;
 
   /*YELLOW ON RED */
   mja_setcolor (ERROR_COL);
@@ -369,21 +346,19 @@ error_box (char *str)
 }
 
 
-/*
-   dstn = destination string, menu option selected is copied into here
-   str  = prompt string
-   x = starting X location
-   y = starting Y location
-   w = width
-   h = height
-   lst = list of strings each are lstwidth long
-   eg. char opt[20][80]
-   opt would be passed as lst
-   80 would be passed as lstwidth
-   nopts=total number of options
- */
-
 /**
+ * dstn = destination string, menu option selected is copied into here
+ * str  = prompt string
+ * x = starting X location
+ * y = starting Y location
+ * w = width
+ * h = height
+ * lst = list of strings each are lstwidth long
+ * eg. char opt[20][80]
+ * opt would be passed as lst
+ * 80 would be passed as lstwidth
+ * nopts=total number of options
+ *
  *
  * @todo Describe function
  */
@@ -391,12 +366,12 @@ void
 combi_menu (char *dstn, char *str, int x, int y, int w, int h,
 	    char *lst, int lstwidth, int nopts, char *nme, int border)
 {
-  int a, pos;
-  int fwidth, numdisp_opts;
-  char st[80];
-  static int last_opt = -1;
-  st[0] = 0;
+int a, pos;
+int fwidth, numdisp_opts;
+char st[80];
+static int last_opt = -1;
 
+  st[0] = 0;
   mja_setcolor (NORMAL_TEXT);
   a = y;
   pos = (get_curr_width () - strlen (str)) / 2;
@@ -693,9 +668,9 @@ do_key_menu (void)
   int a;
   abort_pressed = FALSE;
   a = getkey ();
-#ifdef DEBUG
-  debug (" do_key_menu...A=%d", a);
-#endif
+  #ifdef DEBUG
+  	debug (" do_key_menu...A=%d", a);
+  #endif
 
   if (a == UPKEY || a == LEFTKEY)
     {
@@ -713,17 +688,17 @@ do_key_menu (void)
 
   if (a == ESC || a == 'Q' || a == 'q')
     {
-#ifdef DEBUG
-      debug ("Abort Pressed in menu");
-#endif
+		#ifdef DEBUG
+      		debug ("Abort Pressed in menu");
+		#endif
       abort_pressed = 1;
     }
 
   if (a == CR)
     {
-#ifdef DEBUG
-      debug ("Enter !");
-#endif
+		#ifdef DEBUG
+		      debug ("Enter !");
+		#endif
       return 1;
     }
 
@@ -750,10 +725,11 @@ clearbox (textarea * area)
 void
 do_pause (void)
 {
-  WINDOW *x;
-  int w;
-  int emw;
-  char buff[80];
+WINDOW *x;
+int w;
+int emw;
+char buff[80];
+  
   w = screen_width ();
   sprintf (buff, " %s ", acl_getenv ("ERROR_MSG"));
   emw = strlen (buff);
@@ -780,15 +756,15 @@ acllib_pause (char *s)
 {
   char buff[80] = "Pausing...";
   char *p;
-#ifdef DEBUG
-  debug ("Pausing in report");
-#endif
+  #ifdef DEBUG
+  	debug ("Pausing in report");
+  #endif
   p = acl_getenv ("PAUSE_MSG");
   if (p)
     strcpy (buff, p);
-#ifdef DEBUG
-  debug ("Got default of %s", buff);
-#endif
+  #ifdef DEBUG
+  	debug ("Got default of %s", buff);
+  #endif
   if (s != 0)
     {
       if (strlen (s) > 0)
@@ -796,9 +772,9 @@ acllib_pause (char *s)
 	  strcpy (buff, s);
 	}
     }
-#ifdef DEBUG
-  debug ("Actual=%s", buff);
-#endif
+  #ifdef DEBUG
+  	debug ("Actual=%s", buff);
+  #endif
   /* buff now contains our message */
   strcat (buff, "\n");
   push_char (buff);
@@ -806,9 +782,9 @@ acllib_pause (char *s)
   push_int (-1);
   display_at (1, 0);
   fflush (stdout);
-#ifdef DEBUG
-  debug ("Printed");
-#endif
+  #ifdef DEBUG
+  	debug ("Printed");
+  #endif
   fgetc (stdin);
 }
 
@@ -823,10 +799,11 @@ edit (string, type, length, x, y)
      char type;
      int x, y, length;
 {
-  textarea area;
-  int a;
-  int len = 0;
-  int flg = 0;
+textarea area;
+int a;
+int len = 0;
+int flg = 0;
+  
   if (abort_pressed)
     return 0;
   len = strlen (string);
@@ -838,9 +815,9 @@ edit (string, type, length, x, y)
   /* textbackground(COLOR_BLACK); */
 
   /*newbox (&area, x, y, x + length + 1, y + 2, NORMAL_BOX); */
-#ifdef DEBUG
-  debug ("Box %d %d %d", x, y, x + length);
-#endif
+  #ifdef DEBUG
+  	debug ("Box %d %d %d", x, y, x + length);
+  #endif
   newbox (&area, x, y, x + length + 1, y + 1, NORMAL_BOX);
   wattron (area.win_no, A_NORMAL);
 
@@ -852,7 +829,7 @@ edit (string, type, length, x, y)
   wprintw (area.win_no, "%s", string);
   zrefresh ();
   while (1 == 1)
-    {
+  {
       mja_gotoxy (x + len + 1, y + 1);
       abort_pressed = FALSE;
       a = getkey ();
@@ -902,7 +879,7 @@ edit (string, type, length, x, y)
 	  if (type == 'Y')
 	    len = 0;
 	}
-    }
+  }
   return 1;
 }
 
@@ -950,10 +927,11 @@ check_type (char c, char type, int flg, int len)
 void
 ask_char (char *prompt, char *s, int a)	/*  prompt for an integer from user  */
 {
-  char inbuf[80] = "";
-  textarea area;
-  textarea area2;
-  inbuf[0] = 0;
+char inbuf[80] = "";
+textarea area;
+textarea area2;
+inbuf[0] = 0;
+  
   strcpy (inbuf, s);
   newbox (&area2, (((80 - a) / 2) - 4), 11, (((80 - a) / 2) + a + 4), 15, 1);
   message (&area, prompt, 0, 10);
@@ -970,18 +948,17 @@ ask_char (char *prompt, char *s, int a)	/*  prompt for an integer from user  */
 void
 ask_cmdline (char *prompt, char *s, int a)	/*  prompt for an integer from user  */
 {
-  char inbuf[80] = "";
-  textarea area2;
+char inbuf[80] = "";
+textarea area2;
+inbuf[0] = 0;
 
-  inbuf[0] = 0;
-
-#ifdef DEBUG
-  debug ("in ask_cmdline");
-#endif
+  #ifdef DEBUG
+  	debug ("in ask_cmdline");
+  #endif
   strcpy (inbuf, s);
-#ifdef DEBUG
-  debug ("newbox");
-#endif
+  #ifdef DEBUG
+  	debug ("newbox");
+  #endif
 
   newbox (&area2, 2, 20, 76, 24, BORDER_BOX);
 
@@ -995,9 +972,9 @@ ask_cmdline (char *prompt, char *s, int a)	/*  prompt for an integer from user  
 
   edit (inbuf, 'A', a, 3, 22);
 
-#ifdef DEBUG
-  debug ("Done edit1");
-#endif
+  #ifdef DEBUG
+  	debug ("Done edit1");
+  #endif
   /* mja_setcolor (NORMAL_TEXT); */
   /*clearbox (&area); */
 
@@ -1013,9 +990,9 @@ int
 ask_int (prompt)		/*  prompt for an integer from user  */
      char *prompt;
 {
-  int i;
-  char inbuf[80];
-  textarea area;
+int i;
+char inbuf[80];
+textarea area;
 
   i = 0;
   inbuf[0] = 0;
@@ -1035,9 +1012,9 @@ double
 ask_dbl (prompt)		/*  prompt for an integer from user  */
      char *prompt;
 {
-  double d;
-  char inbuf[80];
-  textarea area;
+double d;
+char inbuf[80];
+textarea area;
 
   d = 0.0;
   inbuf[0] = 0;
@@ -1057,11 +1034,12 @@ int
 ask_verify (prompt)		/*  prompt for verification  */
      char *prompt;
 {
-  int i;
-  char kch, inbuf[80];
-  int rm_disp = 0;
-  textarea area;
-  textarea area1;
+int i;
+char kch, inbuf[80];
+int rm_disp = 0;
+textarea area;
+textarea area1;
+  
   if (abort_pressed)
     return 0;
   if (strlen (prompt) > 0)
@@ -1289,7 +1267,13 @@ A4GLUI_ui_init (int argc, char *argv[])
       initscr ();
       bkgdset (BLANK);
       start_color ();
-      use_default_colors ();
+      
+#ifndef __sun__
+	#ifndef __sparc__
+	  //curses function not available on Solaris (!!!!?????)
+	  use_default_colors ();
+    #endif
+#endif
       cbreak ();
       noecho ();
       nonl ();
