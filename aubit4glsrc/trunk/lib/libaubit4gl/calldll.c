@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.46 2004-09-28 08:58:54 mikeaubury Exp $
+# $Id: calldll.c,v 1.47 2004-09-28 19:33:36 whaslbeck Exp $
 #
 */
 
@@ -100,6 +100,7 @@ static void badfunc (void);
 int A4GL_nullfunc (void);
 int A4GL_call_4gl_dll (char *filename, char *function, int args);
 void *A4GL_find_func_double (void *dllhandle, char *func);
+void inc_usage (char *s);
 
 /*
 =====================================================================
