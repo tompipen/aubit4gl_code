@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.79 2004-06-25 18:25:24 mikeaubury Exp $
+# $Id: conv.c,v 1.80 2004-06-25 21:56:56 mikeaubury Exp $
 #
 */
 
@@ -1800,8 +1800,8 @@ A4GL_dtos (void *aa, void *zz, int size)
 
   z = (char *) zz;
   a = (int *) aa;
-  memset(z,0,size-1);
-  z[size-1]=0;
+  //memset(z,0,size-1);
+  //z[size-1]=0;
 #ifdef DEBUG
   /* {DEBUG} */
   {
@@ -1826,6 +1826,7 @@ A4GL_dtos (void *aa, void *zz, int size)
       return 0;
     }
   strncpy (z, p, size);
+  z[size]=0;
   A4GL_pad_string (z, size);
 
 #ifdef DEBUG
