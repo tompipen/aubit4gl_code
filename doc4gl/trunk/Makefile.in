@@ -1,30 +1,63 @@
 
 #  ==========================================================================
-#  Main makefile for compile and install fgldoc tools
+#  Main makefile for compile and install of fgldoc tools
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Autor$
-#  $Date: 2003-01-01 04:09:26 $
-#  $Id: Makefile.in,v 1.1 2003-01-01 04:09:26 afalout Exp $
-#  
+#  $Id: Makefile.in,v 1.2 2003-01-01 06:38:01 afalout Exp $
+#
 #  ==========================================================================
+
+#All we need for parser is C and ESQL/C compiler. configure would fail if they
+#are missing, and this Makefile would not be created, so we can assume this
+#will work:
+ALL				=parser
+ALL.INSTALL		=install.db install.parser
+
+#for manager we need...
+#ALL			+=manager
+#ALL.INSTALL	+=install.manager
+
+#for browser we need...
+#ALL			+=browser
+#ALL.INSTALL	+=install.browser
 
 include FgldocDefs.mk
 
-.PHONY:all
-all:
+.PHONY:all parser manager browser install clean install.parser \
+		install.manager install.browser install.db deinstall
+
+
+all: ${ALL}
+
+install: ${ALL.INSTALL}
+
+
+parser:
 	$(MAKE) -C parser all
+
+manager:
 	$(MAKE) -C manager all
+
+browser:
 	$(MAKE) -C browser all
 
-.PHONY:install
-install:
+install.parser:
 	$(MAKE) -C parser install
+
+install.manager:
 	$(MAKE) -C manager install
+
+install.browser:
 	$(MAKE) -C browser install
 
-.PHONY:clean
+install.db:
+
+deinstall:
+	$(MAKE) -C parser deinstall
+	$(MAKE) -C manager deinstall
+	$(MAKE) -C browser deinstall
+
 clean:
 	$(MAKE) -C parser clean
 	$(MAKE) -C manager clean

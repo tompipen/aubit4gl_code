@@ -1,15 +1,10 @@
 
 #  ==========================================================================
-#  This are some definitions needed to fgldoc to be compiled and instaled
-#  
-#  The goal is to minimize the places where it can be configured in order to
-#  the autoconf build should be much more easy
+#  Contains definitions needed to fgldoc to be compiled and instaled
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Author: afalout $
-#  $Date: 2003-01-01 04:09:26 $
-#  $Id: FgldocDefs.mk.in,v 1.1 2003-01-01 04:09:26 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.2 2003-01-01 06:38:01 afalout Exp $
 #
 #  ==========================================================================
 
@@ -18,16 +13,18 @@
 # To compile the 4gl parser
 # Warning (in HP/UX) it just works with -g)
 #
-YACC=bison
-YFLAGS=-d -y
-LEX=lex
+YACC=@YACC@
+YFLAGS=-d
+LEX=@LEX@
 CFLAGS=-g
-ESQL=esql -static
+#CFLAGS=@CFLAGS@
+ESQL=@IFMX_ESQLC@ -static
+
 
 #  ==========================================================================
 #  The place where the parser (p4gl) executable is to be installed
 #  ==========================================================================
-BINDIR=/usr/local/bin
+BINDIR=@prefix@/bin
 
 #  ==========================================================================
 #  The directory where to install the perl modules (it should be created
