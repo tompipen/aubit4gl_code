@@ -60,7 +60,8 @@ int b;
 	unloadFile=fopen(e->fname,"w");
 
 	if (unloadFile==0) {
-		return -2;
+		sqlca.sqlcode=-806;
+		return 0;
 	}
 
 	raffected=0;
@@ -148,29 +149,29 @@ int lineno=0;
         loadFile=fopen(e->fname,"r");
 
         if (loadFile==0) {
-                return -2;
+		sqlca.sqlcode=-805;
+                return 0;
         }
 	ok=0;
 
 	while (1) {
-      		lineno++;
       		fgets (loadbuff, LOADBUFFSIZE - 1, loadFile);
 	        if (feof (loadFile)) {
           		A4GL_debug ("Got to end of the file");
           		break;
         	}
+      		lineno++;
 		stripnlload (loadbuff, delim[0]);
 		nfields = find_delims (delim[0]);
 		sprintf(ins_str,e->stmt);
 		strcat(ins_str," values (");
 		for (a=0;a<nfields;a++) {
 			if (a) strcat(ins_str,",");
-			sprintf(smbuff,"'%s'",colptr[a]);
+			sprintf(smbuff,"'%s'",safe_quotes(colptr[a]));
 			if (strcmp(smbuff,"''")==0) {strcpy(smbuff,"NULL");}
 			strcat(ins_str,smbuff);
 		}
 		strcat(ins_str,")");
-
 
 		EXEC SQL prepare p_loadit from :ins_str;
 		EXEC SQL execute p_loadit;
@@ -185,5 +186,25 @@ int lineno=0;
 }
 
 
+static char *safe_quotes(char *s) {
+static char *p=0;
+static int plen=0;
+int a;
+int c=0;
 
+if(strlen(s)>plen) {
+	plen=strlen(s);
+	p=realloc(p,plen+1000);
+}
+	for(a=0;a<strlen(s);a++) {
+		if (s[a]!='\'') {p[c++]=s[a];continue;}
+		
+		p[c++]='\\';
+		p[c++]='\'';
+	}
+	p[c]=0;
+}
 endcode
+
+
+

@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 
-define mc_version constant "0.2"
+define mc_version constant "0.31"
 
 define mv_curr_db char(256)
 define lv_args array[100] of char(100)

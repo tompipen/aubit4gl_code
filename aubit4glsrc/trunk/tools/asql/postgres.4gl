@@ -559,6 +559,9 @@ if (strncasecmp(s,"database",8)==0) {
 if (type>='1'&&type<='4') return 255;
 
 qry_type=0;
+
+if (type!='S'&&type!='s') qry_type=255;
+
    if (prepared) {
        EXEC SQL free stExec;cp_sqlca();
        prepared=0;
@@ -928,6 +931,9 @@ if lv_newname is not null and lv_newname not matches " " then
         whenever error continue
 
         close database
+code
+	need_cursor_free=0;
+endcode
         database lv_newname
 
         if sqlca.sqlcode=0 then
@@ -1182,6 +1188,9 @@ end function
 function sql_select_db(lv_dbname)
 define lv_dbname char(64)
 database lv_dbname
+code
+	need_cursor_free=0;
+endcode
 end function
 
 
@@ -1215,9 +1224,9 @@ code
 char *s;
 s = A4GL_apisql_strdup (list[b].stmt);
 A4GL_debug("s=%s",s);
+A4GL_trim(s);
 A4GL_convert_sql("INFORMIX","POSTGRESQL",s);
 A4GL_debug("s=%s",s);
-A4GL_trim(s);
 if (n) fprintf((FILE *)n,"%s;\n\n",s);
 free(s);
 }
