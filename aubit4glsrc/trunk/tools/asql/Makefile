@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2003-11-15 07:09:47 afalout Exp $
+# $Id: Makefile,v 1.8 2003-11-15 11:09:42 afalout Exp $
 #
 
 ROOT    =../..
@@ -74,7 +74,7 @@ ifneq "${IFMX_ESQLC}" "no"
 	ALL+=asql_i.4ae
 endif
 
-4GLPC=${ROOT}/bin/4glpc 
+4GLPC=${SH} ${ROOT}/bin/4glpc
 #-verbose
 
 ## ==================================================================
@@ -88,18 +88,13 @@ all : ${ALL}
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
-#obsolete:
-#check:
-#	./check_for_env -- remove from CVS !
-
-
 #why are we linking with UI_TUI ?
 asql_i.4ae: A4GL_LEXDIALECT=INFORMIX
 asql_i.4ae: ${OBJS_IFX}
 	${4GLPC} -g  $^ -o $@  -lUI_TUI
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
-	@echo "|           Successfuly compiler Informix version of asql            |"
+	@echo "|           Successfuly compiled Informix version of asql            |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
@@ -108,7 +103,7 @@ asql_p.4ae: ${OBJS_PG}
 	${4GLPC} -g  $^ -o $@  -lUI_TUI
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
-	@echo "|          Successfuly compiler PostgreSQL version of asql           |"
+	@echo "|          Successfuly compiled PostgreSQL version of asql           |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
@@ -123,15 +118,16 @@ qryfrm.afr.dat: qryfrm.per
 lex.yy.c: parse.l
 	${LEX} -i parse.l
 
-dir.o: dir.c
-	${CC} -g -c dir.c
+#dir.o: dir.c
+#	${CC} -g -c dir.c
 
-#What is -G doing? This is not 4glpc flag...
-%query.ao: query.4gl
-	${4GLPC} -g -G -c $^ -o $@
 
-%execute.ao: execute.4gl
-	${4GLPC} -g -G -c $^ -o $@
+#-G stops esql/c putting #lines in the output so its easier to debug
+#%query.ao: query.4gl
+#	${4GLPC} -g -G -c $^ -o $@
+#
+#%execute.ao: execute.4gl
+#	${4GLPC} -g -G -c $^ -o $@
 
 #Rule to make objects from 4GL file
 %.ao:
@@ -139,7 +135,7 @@ dir.o: dir.c
 
 
 ## ==================================================================
-##                              Install/de-install
+##                    Install/de-install
 ## ==================================================================
 
 install:
@@ -147,6 +143,10 @@ install:
 
 deinstall:
 	@echo "asql de-installed."
+
+## ==================================================================
+##                     Run from current location
+## ==================================================================
 
 run.i:
 	@LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ROOT}/lib";./asql_i.4ae
