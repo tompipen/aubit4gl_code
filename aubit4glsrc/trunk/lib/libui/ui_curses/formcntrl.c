@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.76 2005-03-25 12:48:34 afalout Exp $
+# $Id: formcntrl.c,v 1.77 2005-03-31 16:45:06 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.76 2005-03-25 12:48:34 afalout Exp $";
+		"$Id: formcntrl.c,v 1.77 2005-03-31 16:45:06 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -684,14 +684,17 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	  pos_form_cursor (sio->currform->form);
 	  A4GL_debug ("Processed after users 'BEFORE FIELD'");
 	  pos_form_cursor (sio->currform->form);
-	  fprop =
-	    (struct struct_scr_field *) (field_userptr (sio->currentfield));
-	  attr =
-	    A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop,
-				      field_buffer (sio->currentfield, 0));
-	  if (attr != 0)
-	    A4GL_set_field_attr_with_attr (sio->currentfield, attr,
-					   FGL_CMD_INPUT);
+	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0));
+
+	  if (attr != 0) {
+			A4GL_debug("ATTR!=0");
+			A4GL_set_field_attr_with_attr (sio->currentfield, attr, FGL_CMD_INPUT);
+	  } else {
+			A4GL_debug("ATTR==0");
+	  }
+
 	  if (sio->mode != MODE_CONSTRUCT)
 	    {
 	      char *picture = 0;

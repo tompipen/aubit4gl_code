@@ -32,14 +32,14 @@ code
 	static int lfield=0;
 	static llv_ok=0;
 
-	if (lv_form==lform && lv_field==lfield ) lv_ok=llv_ok;
+	if ((void *)lv_form==lform && lv_field==lfield ) lv_ok=llv_ok;
 	else {
 		w=(GtkWidget *)lv_form;
 		if (w==0) {
 			A4GL_exitwith("Invalid Form");
 			lv_ok=0;
 		} else {
-			wname=A4GL_find_gui_id_name_from_id(lv_field);
+			wname=(char *)A4GL_find_gui_id_name_from_id(lv_field);
 			if (wname==0) {
 				A4GL_exitwith("Unknown widget ID");
 				lv_ok=0;
@@ -47,7 +47,7 @@ code
 				//printf("Getting widget by name : %s from %p\n",wname,w);
 				widget=gtk_object_get_data(GTK_OBJECT(w),wname);
 				lv_ok=(long)widget;
-				lform=lv_form;
+				lform=(void *)lv_form;
 				lfield=lv_field;
 				llv_ok=lv_ok;
 			}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.86 2005-03-31 13:35:46 afalout Exp $
+# $Id: fglwrap.c,v 1.87 2005-03-31 16:45:02 mikeaubury Exp $
 #
 */
 
@@ -450,7 +450,14 @@ A4GL_chk_err (int lineno, char *fname)
       if (atoi(acl_getenv("RUNNING_TEST"))) {
 	char buff[256];
 	FILE *f;
-	sprintf(buff,"%s/test_fail/%s.err",acl_getenv("AUBITDIR"),acl_getenv("RUNNING_TEST"));
+	char *ptr;
+	ptr=acl_getenv("LOG_TEXT");
+
+	if (ptr&&strlen(ptr)) {
+		sprintf(buff,"%s/test_fail/%s/%s.err",acl_getenv("AUBITDIR"),ptr,acl_getenv("RUNNING_TEST"));
+	} else {
+		sprintf(buff,"%s/test_fail/%s.err",acl_getenv("AUBITDIR"),acl_getenv("RUNNING_TEST"));
+	}
 	f=fopen(buff,"w");
 
 	if (f) {

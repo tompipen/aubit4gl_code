@@ -4,6 +4,7 @@
 #include "csv_io.h"
 #include "a4gl_lle.h"
 
+void msgbox (char *title, char *txt) ;
 
 
 //extern int rbs;

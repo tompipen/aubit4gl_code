@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.54 2005-03-20 18:24:26 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.55 2005-03-31 16:45:03 mikeaubury Exp $
 #
 */
 
@@ -1699,7 +1699,7 @@ if (A4GLSQLCV_check_requirement("ADD_SESSION_TO_TEMP_TABLE")) {
 
 
 
-	if (c&&strlen(c)) {
+	if (c&&strlen(c) && strcasecmp(c,t)!=0) {
                 	if (A4GLSQLCV_check_requirement("TABLE_ALIAS_AS")) {
                         	sprintf(buff,"%s AS %s",t,c);
                 	} else {

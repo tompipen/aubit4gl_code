@@ -1,6 +1,6 @@
 #ifndef lint
 	static char const module_id[] =
-		"$Id: widget_gtk.c,v 1.15 2005-03-31 13:36:28 afalout Exp $";
+		"$Id: widget_gtk.c,v 1.16 2005-03-31 16:45:17 mikeaubury Exp $";
 #endif
 #include <stdlib.h>
 #include "a4gl_libaubit4gl.h"
@@ -1337,8 +1337,9 @@ A4GL_func (GtkWidget * w, char *mode)
                 }
               else
                 {
-                  gtk_accelerator_parse (key, &keypressed,
-                                         (GdkModifierType *) & m);
+			void *ptr;
+			ptr=&m;
+                  gtk_accelerator_parse (key, &keypressed, (GdkModifierType *) ptr);
                   if (m & 4 && tolower (keypressed) >= 'a'
                       && tolower (keypressed) <= 'z')
                     keypressed = tolower (keypressed) - 'a' + 1;

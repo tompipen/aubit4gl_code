@@ -36,6 +36,29 @@ GtkWidget *window;
 
 struct r_report *rep;
 
+// PROT
+void save_file (void);
+void quit_program (void);
+gint grab_int_value (GtkSpinButton * a_spinner, gpointer user_data);
+void resize_table (GtkWidget * table, int nlines, int ncols,int src_block);
+void sb_value_changed (GtkSpinButton * spinbutton, gpointer user_data);
+
+void do_data_get (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data);
+GtkWidget * create_integer_spin_button (void);
+void make_dropable (GtkWidget * label, GtkWidget * evt);
+GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block);
+void do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection_data, guint info, guint t, gpointer data);
+void do_data_get_block (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data);
+
+
+
+
+
+
+
+
+
+
 #define XWIDTH 10
 #define YHEIGHT 15
 
@@ -61,14 +84,12 @@ int remake_table_from_layout(struct csv_report_layout *in,void *rbx,int rbs) ;
 
 /* ******************************************************************************** */
 
-void
-quit_program (void)
+void quit_program (void)
 {
   gtk_main_quit ();
 }
 
-void
-save_file (void)
+void save_file (void)
 {
   printf ("Save!\n");
 }
@@ -107,14 +128,12 @@ vbox_in_sw=vvbox_in_sw;
 }
 
 
-gint
-grab_int_value (GtkSpinButton * a_spinner, gpointer user_data)
+gint grab_int_value (GtkSpinButton * a_spinner, gpointer user_data)
 {
   return gtk_spin_button_get_value_as_int (a_spinner);
 }
 
-GtkWidget *
-create_integer_spin_button (void)
+GtkWidget * create_integer_spin_button (void)
 {
 
   //GtkWidget *window, 
@@ -132,10 +151,7 @@ void LR_setup_callback(void *p) {
 	fake_clicked_ptr=p;
 }
 
-void
-do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x,
-		       gint y, GtkSelectionData * selection_data, guint info,
-		       guint t, gpointer data)
+void do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x, gint y, GtkSelectionData * selection_data, guint info, guint t, gpointer data)
 {
   int entry;
   int rb;
@@ -180,8 +196,7 @@ do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x,
 
 
 
-void
-make_dropable (GtkWidget * label, GtkWidget * evt)
+void make_dropable (GtkWidget * label, GtkWidget * evt)
 {
   gtk_drag_dest_set (evt, GTK_DEST_DEFAULT_ALL, target_all,
 		     sizeof (target_all) / sizeof (GtkTargetEntry),
@@ -229,8 +244,7 @@ evt_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
   return FALSE;
 }
 
-GtkWidget *
-make_table (GtkWidget * table, int ncols, int nrows, int src_block)
+GtkWidget * make_table (GtkWidget * table, int ncols, int nrows, int src_block)
 {
   char buff[20];
 //GtkWidget *table;
@@ -421,15 +435,13 @@ make_table (GtkWidget * table, int ncols, int nrows, int src_block)
   return table;
 }
 
-void
-resize_table (GtkWidget * table, int nlines, int ncols,int src_block)
+void resize_table (GtkWidget * table, int nlines, int ncols,int src_block)
 {
   printf ("Resize %p to %d lines\n", table, nlines);
   table = make_table (table, ncols, nlines, src_block);
 }
 
-void
-sb_value_changed (GtkSpinButton * spinbutton, gpointer user_data)
+void sb_value_changed (GtkSpinButton * spinbutton, gpointer user_data)
 {
   resize_table (GTK_WIDGET (user_data), gtk_spin_button_get_value_as_int (spinbutton), -1,(int) gtk_object_get_data (GTK_OBJECT (spinbutton), "BLOCK"));
 }
@@ -499,10 +511,7 @@ create_block (int n,void *vrbx,int rbs)
 }
 
 
-void
-do_data_get (GtkWidget * widget, GdkDragContext * dc,
-	     GtkSelectionData * selection_data, guint info, guint t,
-	     gpointer data)
+void do_data_get (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data)
 {
   char text[256];
   int rb;
@@ -516,10 +525,7 @@ do_data_get (GtkWidget * widget, GdkDragContext * dc,
   printf ("do_data_get\n");
 }
 
-void
-do_data_get_from_layout (GtkWidget * widget, GdkDragContext * dc,
-			 GtkSelectionData * selection_data, guint info,
-			 guint t, gpointer data)
+void do_data_get_from_layout (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data)
 {
   char text[256];
   int rb;
@@ -554,10 +560,7 @@ do_data_get_from_layout (GtkWidget * widget, GdkDragContext * dc,
 
 
 
-void
-do_data_get_block (GtkWidget * widget, GdkDragContext * dc,
-		   GtkSelectionData * selection_data, guint info, guint t,
-		   gpointer data)
+void do_data_get_block (GtkWidget * widget, GdkDragContext * dc, GtkSelectionData * selection_data, guint info, guint t, gpointer data)
 {
   char text[256];
   int rb;

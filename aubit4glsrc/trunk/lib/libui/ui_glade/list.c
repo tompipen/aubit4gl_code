@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 
 
+void do_setup_list(GtkWidget *treeview,int n) ;
 
 static GtkTreeModel * create_model (int n)
 {
@@ -28,7 +30,7 @@ void do_setup_list(GtkWidget *treeview,int n) {
       int a;
       //GtkWidget *treeview;
       model = create_model (n);
-      gtk_tree_view_set_model (treeview,model);
+      gtk_tree_view_set_model (GTK_TREE_VIEW(treeview),model);
 
 
 	printf("****** TREE VIEW !");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.3 2005-03-09 15:15:25 mikeaubury Exp $
+# $Id: dialog.c,v 1.4 2005-03-31 16:45:07 mikeaubury Exp $
 #*/
 
 /**
@@ -45,7 +45,8 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-
+#include "a4gl_libaubit4gl.h"
+#include "a4gl_API_ui_lib.h"
 
 /*
 =====================================================================
@@ -311,7 +312,7 @@ void
 }
 
 
-UILIB_A4GL_zrefresh() {
+void UILIB_A4GL_zrefresh(void) {
 }
 
 

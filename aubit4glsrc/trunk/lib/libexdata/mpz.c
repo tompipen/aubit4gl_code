@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mpz.c,v 1.12 2005-03-31 13:35:49 afalout Exp $
+# $Id: mpz.c,v 1.13 2005-03-31 16:45:03 mikeaubury Exp $
 */
 
 /**
@@ -89,19 +89,19 @@ int A4GL_mpz_to_int (mpz_t * mpz, long *n, int szignore);
 int A4GL_mpz_to_mpz (mpz_t * mpz, mpz_t * n, int szignore);
 char *A4GL_mpz_str (mpz_t * mpz, char *n, int sz);
 int A4GL_mpz_to_str (mpz_t * mpz, char *n, int sz);
-void A4GL_add_mpz (void);
-void A4GL_sub_mpz (void);
-void A4GL_mul_mpz (void);
-void A4GL_pow_mpz (void);
-void A4GL_div_mpz (void);
-void A4GL_mod_mpz (void);
+void A4GL_add_mpz (int dummy);
+void A4GL_sub_mpz (int dummy);
+void A4GL_mul_mpz (int dummy);
+void A4GL_pow_mpz (int dummy);
+void A4GL_div_mpz (int dummy);
+void A4GL_mod_mpz (int dummy);
 int A4GL_compare_mpz (void);
-void A4GL_gt_mpz (void);
-void A4GL_gte_mpz (void);
-void A4GL_lt_mpz (void);
-void A4GL_lte_mpz (void);
-void A4GL_e_mpz (void);
-void A4GL_ne_mpz (void);
+void A4GL_gt_mpz (int dummy);
+void A4GL_gte_mpz (int dummy);
+void A4GL_lt_mpz (int dummy);
+void A4GL_lte_mpz (int dummy);
+void A4GL_e_mpz (int dummy);
+void A4GL_ne_mpz (int dummy);
 void A4GL_mpz_free (void *ptr);
 mpz_t *A4GL_mpz_copy (mpz_t * a1);
 int A4GL_isnull_mpz (void);
@@ -361,7 +361,7 @@ A4GL_mpz_to_str (mpz_t * mpz, char *n, int sz)
  * @todo : Describe function
  */
 void
-A4GL_add_mpz (void)
+A4GL_add_mpz (int dummy)
 {
   mpz_t a1;
   mpz_t a2;
@@ -387,7 +387,7 @@ A4GL_add_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_sub_mpz (void)
+A4GL_sub_mpz (int dummy)
 {
   mpz_t a1;
   mpz_t a2;
@@ -411,7 +411,7 @@ A4GL_sub_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_mul_mpz (void)
+A4GL_mul_mpz (int dummy)
 {
   mpz_t a1;
   mpz_t a2;
@@ -435,7 +435,7 @@ A4GL_mul_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_pow_mpz (void)
+A4GL_pow_mpz (int dummy)
 {
   mpz_t a1;
   unsigned int a2;
@@ -462,7 +462,7 @@ A4GL_pow_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_div_mpz (void)
+A4GL_div_mpz (int dummy)
 {
   mpz_t a1;
   mpz_t a2;
@@ -487,7 +487,7 @@ A4GL_div_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_mod_mpz (void)
+A4GL_mod_mpz (int dummy)
 {
   mpz_t a1;
   mpz_t a2;
@@ -531,7 +531,7 @@ A4GL_compare_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_gt_mpz (void)
+A4GL_gt_mpz (int dummy)
 {
   if (A4GL_compare_mpz () > 0)
     A4GL_push_int (1);
@@ -545,7 +545,7 @@ A4GL_gt_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_gte_mpz (void)
+A4GL_gte_mpz (int dummy)
 {
   if (A4GL_compare_mpz () >= 0)
     A4GL_push_int (1);
@@ -559,7 +559,7 @@ A4GL_gte_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_lt_mpz (void)
+A4GL_lt_mpz (int dummy)
 {
   if (A4GL_compare_mpz () < 0)
     A4GL_push_int (1);
@@ -573,7 +573,7 @@ A4GL_lt_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_lte_mpz (void)
+A4GL_lte_mpz (int dummy)
 {
   if (A4GL_compare_mpz () <= 0)
     A4GL_push_int (1);
@@ -587,7 +587,7 @@ A4GL_lte_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_e_mpz (void)
+A4GL_e_mpz (int dummy)
 {
   if (A4GL_compare_mpz () == 0)
     A4GL_push_int (1);
@@ -601,7 +601,7 @@ A4GL_e_mpz (void)
  * @todo : Describe function
  */
 void
-A4GL_ne_mpz (void)
+A4GL_ne_mpz (int dummy)
 {
   if (A4GL_compare_mpz () != 0)
     A4GL_push_int (1);
@@ -700,18 +700,8 @@ EXDTYPE_initlib (void)
 
   /* These will only apply to TWO MPZ variables */
   A4GL_add_op_function (dtype_mpz, dtype_mpz, OP_ADD, A4GL_add_mpz);
-  //this compiles without warning - wait for OK from Mike:
-  //A4GL_add_op_function (dtype_mpz, dtype_mpz, OP_ADD, (void *) A4GL_add_mpz);
-  
-/*  
-mpz.c:702: warning: passing arg 4 of `A4GL_add_op_function' from incompatible pointer type  
 
-void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
-A4GL_add_mpz is actually a function:
-void A4GL_add_mpz (void);
-
-*/
   A4GL_add_op_function (dtype_mpz, dtype_mpz, OP_SUB, A4GL_sub_mpz);
   A4GL_add_op_function (dtype_mpz, dtype_mpz, OP_MULT, A4GL_mul_mpz);
 

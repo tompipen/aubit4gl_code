@@ -10,6 +10,7 @@ code
 #define WINCODE 'w'
 #define INTEGERCODE 'f'
 #define IDCODE 'i'
+void do_setup_list(GtkWidget *treeview,int n) ;
 
 
 static GtkTreeModel * create_model (int n)
@@ -39,18 +40,18 @@ GList *cols;
       model = create_model (n);
 
 printf("setup_list\n");
-      gtk_tree_view_set_model (treeview,0);
+      gtk_tree_view_set_model (GTK_TREE_VIEW(treeview),0);
 
 
 
-	cols=gtk_tree_view_get_columns(treeview);
+	cols=gtk_tree_view_get_columns(GTK_TREE_VIEW(treeview));
 
       	a=0;
 
 	while (1) {
 		GtkTreeViewColumn *column;
 		column=g_list_nth_data(cols,a);
-	    	if (!gtk_tree_view_remove_column(treeview,GTK_TREE_VIEW_COLUMN(column))) break;
+	    	if (!gtk_tree_view_remove_column(GTK_TREE_VIEW(treeview),GTK_TREE_VIEW_COLUMN(column))) break;
 		a++;
         }
 
@@ -67,7 +68,7 @@ printf("setup_list\n");
       		gtk_tree_view_column_set_sort_column_id (column, a);
                 gtk_tree_view_append_column (GTK_TREE_VIEW(treeview), column);
         }
-      gtk_tree_view_set_model (treeview,model);
+      gtk_tree_view_set_model (GTK_TREE_VIEW(treeview),model);
 }
 
 endcode
@@ -103,7 +104,7 @@ if lv_widget=0 then return end if
 
 code
 printf("Set_column\n");
-do_setup_list(lv_widget,lv_cnt);
+do_setup_list((GtkWidget *)lv_widget,lv_cnt);
 endcode
 
 end function
@@ -124,10 +125,10 @@ GtkTreeViewColumn *c;
 A4GL_trim(lv_title);
 
 printf("Set_column header\n");
-c=gtk_tree_view_get_column(lv_widget,lv_cnt);
+c=gtk_tree_view_get_column(GTK_TREE_VIEW(lv_widget),lv_cnt);
 if (c==0) {
-	gtk_tree_view_insert_column(lv_widget,gtk_tree_view_column_new() ,lv_cnt);
-	c=gtk_tree_view_get_column(lv_widget,lv_cnt);
+	gtk_tree_view_insert_column(GTK_TREE_VIEW(lv_widget),gtk_tree_view_column_new() ,lv_cnt);
+	c=gtk_tree_view_get_column(GTK_TREE_VIEW(lv_widget),lv_cnt);
 }
 
 gtk_tree_view_column_set_title  (c, lv_title);
@@ -149,7 +150,7 @@ if lv_widget=0 then return 0 end if
 code
 {
 GtkTreeViewColumn *c;
-c=gtk_tree_view_get_column(lv_widget,lv_cnt);
+c=gtk_tree_view_get_column(GTK_TREE_VIEW(lv_widget),lv_cnt);
 strcpy(lv_title,gtk_tree_view_column_get_title  (c));
 A4GL_trim(lv_title);
 }
@@ -175,7 +176,7 @@ GList *list;
 GtkTreeModel *model;
 GtkTreePath *path;
 gint *ints;
-	list=gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(lv_widget),&model);
+	list=gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(lv_widget)),&model);
 	if (list!=0)  {
 		path=g_list_nth_data(list,0);
 		if (path!=0) {
@@ -239,7 +240,7 @@ static GtkListStore *store=0;
 A4GL_trim(lv_entry);
 
 if (last_widget!=lv_widget || 1)  {
-	store=gtk_tree_view_get_model(GTK_TREE_VIEW(lv_widget));
+	store=(GtkListStore *)gtk_tree_view_get_model(GTK_TREE_VIEW(lv_widget));
 }
 
 
@@ -306,7 +307,7 @@ GtkTreeModel *model;
 GtkTreePath *path;
 gint *ints;
 int a;
-        list=gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(lv_widget),&model);
+        list=gtk_tree_selection_get_selected_rows(gtk_tree_view_get_selection(GTK_TREE_VIEW(lv_widget)),&model);
 
         if (list!=0)  {
 		for (a=0;a<=g_list_length(list);a++) {

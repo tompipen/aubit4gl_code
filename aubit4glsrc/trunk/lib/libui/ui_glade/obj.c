@@ -2,9 +2,9 @@
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 
+void print_arguments(GtkObject* object);
 
-void
-print_arguments(GtkObject* object)
+void print_arguments(GtkObject* object)
 {
   GtkType type;
 /*

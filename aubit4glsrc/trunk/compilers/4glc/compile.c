@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.80 2005-03-09 15:14:12 mikeaubury Exp $
+# $Id: compile.c,v 1.81 2005-03-31 16:42:13 mikeaubury Exp $
 #*/
 
 /**
@@ -1639,7 +1639,28 @@ a4gl_yyerror (char *s)
 /* Need a real fseek here */
   fseek (yyin, fpos, SEEK_SET);
   f = A4GL_write_errfile (yyin, errfile, ld, yylineno);
+
+
   fprintf (f, "| %s%s (%s)", s, errbuff, yytext);
+
+  if (atoi(acl_getenv("RUNNING_TEST"))) {
+        char buff[256];
+        FILE *f;
+        char *ptr;
+        ptr=acl_getenv("LOG_TEXT");
+
+        if (ptr&&strlen(ptr)) {
+                sprintf(buff,"%s/test_fail/%s/%s.err",acl_getenv("AUBITDIR"),ptr,acl_getenv("RUNNING_TEST"));
+        } else {
+                sprintf(buff,"%s/test_fail/%s.err",acl_getenv("AUBITDIR"),acl_getenv("RUNNING_TEST"));
+        }
+        f=fopen(buff,"w");
+
+        if (f) {
+                fprintf(f,"%s%s (%s)\n",s,errbuff,yytext);
+                fclose(f);
+        }
+  }
   A4GL_write_cont (yyin);
   printf ("Error compiling %s.4gl - check %s.err\n", outputfile, outputfile);
   exit (2);

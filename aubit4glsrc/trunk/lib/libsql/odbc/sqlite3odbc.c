@@ -2,7 +2,7 @@
  * @file sqlite3odbc.c
  * SQLite3 ODBC Driver main module.
  *
- * $Id: sqlite3odbc.c,v 1.2 2005-03-29 11:24:14 mikeaubury Exp $
+ * $Id: sqlite3odbc.c,v 1.3 2005-03-31 16:45:06 mikeaubury Exp $
  *
  * Copyright (c) 2004 Christian Werner <chw@ch-werner.de>
  *
@@ -5366,8 +5366,8 @@ drvallocconnect(SQLHENV env, SQLHDBC *dbc)
 {
     DBC *d;
     ENV *e;
-    const char *verstr;
-    int maj = 0, min = 0, lev = 0;
+    //const char *verstr;
+    //int maj = 0, min = 0, lev = 0;
 
     if (dbc == NULL) {
 	return SQL_ERROR;

@@ -6,7 +6,7 @@
 #include "../../common/a4gl_lle.h"
 #include "../../layout_engine/API_layout.h"
 
-void msgbox(char *title,char *txt) ;
+//void msgbox(char *title,char *txt) ;
 
 GtkWidget *table;
 GtkWidget *labels[10];
@@ -16,7 +16,7 @@ extern struct pdf_layout layout;
 
 GtkWidget *paper_b[10]; // Assume no more than 10 papers anyway..
 
-static void cp_boxes_to_data() {
+static void cp_boxes_to_data(void) {
 	int a;
 	memset(layout.fontname,0,100);
 	strcpy(layout.fontname,gtk_entry_get_text(GTK_ENTRY(values[0])));
@@ -46,7 +46,7 @@ static void cp_boxes_to_data() {
 
 
 
-static void show_layout () {
+static void show_layout (void) {
 	int a;
 	printf("Show layout\n");
 	gtk_entry_set_text(GTK_ENTRY(values[0]),layout.fontname);
@@ -93,7 +93,7 @@ void LR_show_layout_rest(void *report, void *sb, void *vrbx, int rbs) {
 	GtkWidget *hbox;
 	GtkWidget *last;
 	GtkSpinButton *b;
-	GtkWidget *scroll;
+	//GtkWidget *scroll;
 	int paper_types[]={
 		PAPER_TYPE_A4,
 		PAPER_TYPE_LETTER

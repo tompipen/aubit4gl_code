@@ -189,7 +189,7 @@ let lv_widget=get_widget_for(lv_form,lv_field)
 if lv_widget=0 then return ""  end if
 code
 {
-A4GL_push_char(gtk_entry_get_text(lv_widget));
+A4GL_push_char((char *)gtk_entry_get_text(lv_widget));
 A4GLSTK_popFunction();
 return 1;
 }

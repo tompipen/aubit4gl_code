@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.209 2005-03-31 13:35:35 afalout Exp $
+# $Id: mod.c,v 1.210 2005-03-31 16:42:16 mikeaubury Exp $
 #
 */
 
@@ -4289,8 +4289,8 @@ fix_insert_expr (int mode)
   int isize = 0;
   int idtype = 0;
   char colname[256] = "";
-  /*char csize[20];*/
-  /*char cdtype[20];*/
+  /*char csize[20]; */
+  /*char cdtype[20]; */
   char buff[1000];
   char *ccol;
   strcpy (big_buff, "");
@@ -4300,15 +4300,17 @@ fix_insert_expr (int mode)
     {
       if (db_used == 0)
 	{
-	  sprintf (buff, "You cannot use insert int this table without specifying a database");
+	  sprintf (buff,
+		   "You cannot use insert int this table without specifying a database");
 	  a4gl_yyerror (buff);
 	  return 0;
 	}
 
-      /* It will only be a '*' anyway....*/
+      /* It will only be a '*' anyway.... */
       gen_stack_cnt[INSCOL] = 0;
       strcpy (colname, "");
-      rval = A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
+      rval =
+	A4GLSQL_get_columns (current_ins_table, colname, &idtype, &isize);
       if (rval == 0)
 	{
 	  a4gl_yyerror ("Table is not in the database");
@@ -4331,16 +4333,17 @@ fix_insert_expr (int mode)
 
   if (gen_stack_cnt[INSCOL] != gen_stack_cnt[INSVAL])
     {
-	dump_insvals();
+      dump_insvals ();
       a4gl_yyerror
 	("Number of columns in update not the same as number of values");
     }
 
-  strcpy(big_buff,"(");
+  strcpy (big_buff, "(");
 
   for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
     {
-      if (a) strcat (big_buff, ",");
+      if (a)
+	strcat (big_buff, ",");
       sprintf (buff, "%s", gen_stack[INSCOL][a]);
       strcat (big_buff, buff);
     }
@@ -4348,20 +4351,23 @@ fix_insert_expr (int mode)
 
 
 
-  strcat(big_buff,") VALUES (");
+  strcat (big_buff, ") VALUES (");
 
   for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
     {
-      if (a) strcat (big_buff, ",");
-      sprintf (buff, "%s", A4GLSQLCV_insert_alias(current_ins_table, gen_stack[INSCOL][a],gen_stack[INSVAL][a]));
+      if (a)
+	strcat (big_buff, ",");
+      sprintf (buff, "%s",
+	       A4GLSQLCV_insert_alias (current_ins_table,
+				       gen_stack[INSCOL][a],
+				       gen_stack[INSVAL][a]));
       //sprintf (buff, "%s", A4GLSQLCV_insert_alias(current_ins_table, gen_stack[INSCOL][a],0));
       strcat (big_buff, buff);
     }
-   strcat(big_buff,")");
+  strcat (big_buff, ")");
 
   return big_buff;
 }
-
 
 char *
 make_sql_string_and_free (char *first, ...)

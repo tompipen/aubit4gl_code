@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.120 2005-03-31 13:35:58 afalout Exp $
+# $Id: sql.c,v 1.121 2005-03-31 16:45:05 mikeaubury Exp $
 #
 */
 
@@ -43,7 +43,6 @@
 */
 
 #include "a4gl_lib_sql_odbc_int.h"
-
 /*
 =====================================================================
                     Constants definitions
@@ -100,6 +99,7 @@ int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
 void *A4GL_bind_datetime (void *ptr_to_dtime_var);
 void * A4GL_bind_interval (void *ptr_to_ival);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+int A4GL_inttoc (void *a1, void *b, int size);
 
 #define FETCH_ABSOLUTE 		1
 #define FETCH_RELATIVE 		2
@@ -156,14 +156,14 @@ int in_transaction = 0;
 //NOTE: ./compilers/4glc/insert_curs.c:static int find_cursor(char *s)
 static struct s_cid * A4GLSQL_find_cursor (char *cname);
 
-int A4GLSQL_get_datatype (char *db, char *tab, char *col);
-static int do_fake_transactions(void) ;
-int A4GL_dttoc (void *a, void *b, int size);
-void *A4GLSQL_prepare_sql_internal (char *s);
-void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
-int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
-void *A4GL_bind_datetime (void *ptr_to_dtime_var);
-void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
+//int A4GLSQL_get_datatype (char *db, char *tab, char *col);
+//static int do_fake_transactions(void) ;
+//int A4GL_dttoc (void *a, void *b, int size);
+//void *A4GLSQL_prepare_sql_internal (char *s);
+//void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
+//int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
+//void *A4GL_bind_datetime (void *ptr_to_dtime_var);
+//void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 
 //truct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) ;
 struct expr_str *A4GL_add_validation_elements_to_expr (struct expr_str *ptr,
@@ -1459,7 +1459,6 @@ A4GLSQL_fetch_cursor (char *cursor_name,
   int nfields;
   int rc;
   SDWORD nr;
-  UWORD nrs[1000];
   int use_nbind;
   struct BINDING *use_binding;
   int mode = 0;
@@ -1584,7 +1583,10 @@ A4GLSQL_fetch_cursor (char *cursor_name,
       rc=SQLFetchScroll((SQLHSTMT) cid->statement->hstmt,mode,fetch_when);
 #else
 	A4GL_debug("ExtendedFetch");
+{
+  	UWORD nrs[1000];
       rc = SQLExtendedFetch ((SQLHSTMT) cid->statement->hstmt, mode, fetch_when, &nr, &nrs[0]);
+}
 #endif
 
 

@@ -59,7 +59,7 @@ define lv_buff char(512)
 code
 {
 char *ptr;
-ptr=gtk_window_get_title(GTK_WINDOW(lv_form));
+ptr=(char *)gtk_window_get_title(GTK_WINDOW(lv_form));
 strcpy(lv_buff,ptr);
 }
 endcode

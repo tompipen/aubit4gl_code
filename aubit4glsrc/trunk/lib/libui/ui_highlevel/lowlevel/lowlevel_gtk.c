@@ -12,7 +12,7 @@
 #include <ctype.h>
 #ifndef lint
 	static char const module_id[] =
-		"$Id: lowlevel_gtk.c,v 1.57 2005-03-31 13:36:28 afalout Exp $";
+		"$Id: lowlevel_gtk.c,v 1.58 2005-03-31 16:45:17 mikeaubury Exp $";
 #endif
 
 
@@ -196,7 +196,7 @@ static int cancel_callback (gpointer data) {
 }
 
 static void setup_ok_cancel(GtkWidget *ok_cancel) {
-GtkWidget *l;
+//GtkWidget *l;
 GtkWidget *b;
 //printf("Setting up ok cancel\n");
 
@@ -3204,7 +3204,7 @@ int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
     sprintf(buff,"BUTTON_%d",a);
     b=gtk_object_get_data(GTK_OBJECT(bb),buff);
 	#if GTK_CHECK_VERSION(2,0,0)	
-    	gtk_button_set_use_stock(b,0);
+    	gtk_button_set_use_stock(GTK_BUTTON(b),0);
 	#endif
     if (a>=menu->num_opts) {
       gtk_widget_hide(b);
@@ -3212,8 +3212,8 @@ int A4GL_LL_disp_h_menu( ACL_Menu *menu) {
 #if GTK_CHECK_VERSION(2,0,0)
 	//printf("'%s'\n",mo->opt_title);
 	if (has_stock_item(mo->opt_title)) {
-		gtk_button_set_label(b,stock_item(mo->opt_title));
-    		gtk_button_set_use_stock(b,1);
+		gtk_button_set_label(GTK_BUTTON(b),stock_item(mo->opt_title));
+    		gtk_button_set_use_stock(GTK_BUTTON(b),1);
 	} else {
       		char *label_utf=g_locale_to_utf8(mo->opt_title, -1, NULL, NULL, NULL);
       		l= gtk_object_get_data(GTK_OBJECT(b),"LABEL");

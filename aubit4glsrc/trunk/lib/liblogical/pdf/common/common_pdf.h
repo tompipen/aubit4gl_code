@@ -26,3 +26,8 @@ struct pdf_layout {
 	int img_x;
 	int img_y;
 };
+
+void pdf_default_file(void) ;
+int pdf_load_file(FILE *fin);
+int pdf_save_file(FILE *fin);
+void msgbox (char *title, char *txt);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.12 2005-03-31 13:35:37 afalout Exp $
+# $Id: main.c,v 1.13 2005-03-31 16:45:00 mikeaubury Exp $
 #*/
 
 /**
@@ -325,7 +325,9 @@ write_genout (void)
 
   fprintf (hsf, "#ifndef XS_%s_XS_H\n", outputfilename);
   fprintf (hsf, "#define XS_%s_XS_H\n", outputfilename);
+  fprintf(hsf,"#ifndef bool\n");
   fprintf (hsf, "#define bool int\n");
+  fprintf(hsf,"#endif\n");
   fprintf (hsf, "#define istypedefed \n");
   fprintf (hsf, "#include <stdio.h>\n");
   fprintf (hsf, "#include <stdlib.h>\n");

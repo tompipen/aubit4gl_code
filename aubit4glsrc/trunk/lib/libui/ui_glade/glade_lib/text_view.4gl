@@ -103,7 +103,7 @@ define lv_chars integer
 let lv_widget=get_widget_for(lv_form,lv_field)
 if lv_widget=0 then return  end if
 code
-gtk_entry_set_max_length(lv_widget,lv_chars);
+gtk_entry_set_max_length(GTK_ENTRY(lv_widget),lv_chars);
 endcode
 return 
 end function
@@ -116,7 +116,7 @@ define lv_chars integer
 let lv_widget=get_widget_for(lv_form,lv_field)
 if lv_widget=0 then return 0 end if
 code
-lv_chars=gtk_entry_get_max_length(lv_widget);
+lv_chars=gtk_entry_get_max_length(GTK_ENTRY(lv_widget));
 endcode
 return lv_chars
 end function
@@ -149,8 +149,10 @@ if lv_widget=0 then return end if
 call textview_selection_get(lv_form,lv_field) returning lv_start,lv_length
 call textview_selection_delete(lv_form,lv_field)
 code
+gint pos;
+pos=lv_start;
 A4GL_trim(lv_replace_with);
-gtk_editable_insert_text(lv_widget,lv_replace_with,lv_length,lv_start);
+gtk_editable_insert_text(GTK_EDITABLE(lv_widget),lv_replace_with,lv_length,&pos);
 endcode
 return 
 end function
@@ -184,7 +186,13 @@ define lv_start,lv_length INTEGER
 let lv_widget=get_widget_for(lv_form,lv_field)
 if lv_widget=0 then return 0,0  end if
 code
-gtk_editable_get_selection_bounds(lv_widget,&lv_start,&lv_length);
+{
+gint l1;
+gint l2;
+gtk_editable_get_selection_bounds(GTK_EDITABLE(lv_widget),&l1,&l2);
+lv_start=l1;
+lv_length=l2;
+}
 if (lv_start==0) lv_length=0;
 else {lv_length=lv_length-lv_start;}
 endcode
@@ -200,7 +208,7 @@ define lv_start,lv_length INTEGER
 let lv_widget=get_widget_for(lv_form,lv_field)
 if lv_widget=0 then return  end if
 code
-gtk_editable_select_region(lv_widget,lv_start,lv_start+lv_length);
+gtk_editable_select_region(GTK_EDITABLE(lv_widget),lv_start,lv_start+lv_length);
 endcode
 return
 end function
@@ -286,7 +294,7 @@ let lv_widget=get_widget_for(lv_form,lv_field)
 if lv_widget=0 then return   end if
 code
 {
-	new_file(lv_widget,lv_reset);
+	new_file((GtkWidget *)lv_widget,lv_reset);
 }
 endcode
 return 
@@ -302,7 +310,7 @@ if lv_widget=0 then return ""  end if
 code
 {
 	A4GL_trim(lv_file);
-	real_open_file(lv_widget,lv_file);
+	real_open_file((GtkWidget *)lv_widget,lv_file);
 }
 endcode
 return mv_ok
@@ -322,7 +330,7 @@ if lv_widget=0 then return ""  end if
 code
 {
 	A4GL_trim(lv_file);
-	real_save_file(lv_widget,lv_file);
+	real_save_file((GtkWidget *)lv_widget,lv_file);
 }
 endcode
 return mv_ok

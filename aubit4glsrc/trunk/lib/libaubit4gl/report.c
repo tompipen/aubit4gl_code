@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.66 2005-03-31 13:35:48 afalout Exp $
+# $Id: report.c,v 1.67 2005-03-31 16:45:03 mikeaubury Exp $
 #
 */
 
@@ -48,6 +48,7 @@
 #include "a4gl_API_sql.h"
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 //int A4GL_call_4gl_dll (char *filename, char *function, int args);
+static void A4GL_unload_report_table(struct BINDING *b) ;
 
 #define ENTRY_START 1
 #define ENTRY_BLOCK 2
@@ -870,7 +871,7 @@ A4GL_make_report_table (struct BINDING *b, int n)
 
 
 
-void A4GL_unload_report_table(struct BINDING *b) {
+static void A4GL_unload_report_table(struct BINDING *b) {
   char buff[1024];
   struct BINDING *ibind=0;
   return;

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.123 2005-03-31 13:36:20 afalout Exp $
+# $Id: ioform.c,v 1.124 2005-03-31 16:45:07 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: ioform.c,v 1.123 2005-03-31 13:36:20 afalout Exp $";
+		"$Id: ioform.c,v 1.124 2005-03-31 16:45:07 mikeaubury Exp $";
 #endif
 
 /**
@@ -524,8 +524,9 @@ A4GL_default_attributes (FIELD * f, int dtype)
     }
 
   A4GL_debug ("STATIC");
-  set_field_fore (f, A4GL_colour_code (7));
-  set_field_back (f, A4GL_colour_code (7));
+
+  //set_field_fore (f, A4GL_colour_code (7));
+  //set_field_back (f, A4GL_colour_code (7));
 }
 
 
@@ -627,14 +628,15 @@ A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type)
   f = (struct struct_scr_field *) (field_userptr (field));
 
   nattr = A4GL_determine_attribute (cmd_type, attr, f, 0);
-  A4GL_debug ("Passed in attribute: %x, determined attribute should be %x",
-	      attr, nattr);
+
+  A4GL_debug ("Passed in attribute: %x, determined attribute should be %x", attr, nattr);
+
   attr = nattr;
 
   if (attr & AUBIT_ATTR_REVERSE) r = 1;
-  else r = 0; A4GL_debug
-    ("MJA Calling A4GL_set_field_colour_attr - do_reverse=%d attr=%d", r,
-     attr);
+  else r = 0; 
+
+  A4GL_debug ("MJA Calling A4GL_set_field_colour_attr - do_reverse=%d attr=%d", r, attr);
   A4GL_set_field_colour_attr (field, r, attr);
 }
 
