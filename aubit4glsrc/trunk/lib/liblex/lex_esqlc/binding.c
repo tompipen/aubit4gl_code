@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.37 2004-11-26 08:56:26 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.38 2004-12-08 07:46:17 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -31,6 +31,8 @@ int esql_type (void);
 void liblex_add_ibind(int dtype,char *var) ;
 static char* get_sql_type_infx (int a, char ioro);
 static char *get_sql_type_postgres (int a, char ioro);
+static char *get_sql_type_sap (int a, char ioro);
+static char *get_sql_type_ingres (int a, char ioro);
 char * A4GL_dtype_sz (int d, int s);
 
 static char *dt_qual(int a) {
@@ -446,8 +448,7 @@ return 0;
 }
 
 
-static char *
-get_sql_type_infx (int a, char ioro)
+static char *get_sql_type_infx (int a, char ioro)
 {
 static char buff[255];
 char buff_ind[255];
