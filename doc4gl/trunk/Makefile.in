@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.12 2003-05-09 08:41:44 afalout Exp $
+#  $Id: Makefile.in,v 1.13 2003-05-13 11:29:51 afalout Exp $
 #
 #  ==========================================================================
 
@@ -203,25 +203,49 @@ else
 	@echo "Sorry DOXYGEN not detected"
 endif
 
-doxy.make:
-	rm -rf docs/doxy/html
-	@DOXYGEN@ docs/Doxyfile
+# First remove existing documentation, then create new one
+doxy.make: clean.doxy.html doxy.create.html
 	@echo DoxyGen doccumentation created and placed in docs/doxy/html
 
-doxy.install.www:
-	rm -rf @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
-	${MKPATH} @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}
-	cp -r docs/doxy/html @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
-	cd @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html; doxytag -s search.idx
+##########################
+# Invoke DoxyGen to create HTML documentation
+doxy.create.html:
+	@DOXYGEN@ docs/Doxyfile
+
+##########################
+# Install HTML documentation created by DoxyGen under Web server documents tree:
+doxy.install.www: clean.doxy.www doxy.copy.html
 	@echo DoxyGen doccumentation installed in web server path :
 	@echo @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
 	@echo Point your web browser to http://@WWW_HOST_NAME@/${DOXY_WWWPATH}/html/index.html
 
+#########################
+# Copy HTML documentation created by DoxyGen under Web server documents tree:
+doxy.copy.html:
+	${MKPATH} @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}
+	cp -r docs/doxy/html @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
+	cd @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html; doxytag -s search.idx
+
+#########################
+#Install DoxyGen serach CGI script
 doxy.install.search:
 	${CP} docs/doxy/html/doxysearch.cgi @CGI_DIR@
 #run docs/doxy/html/installdox to replace any dummy links:
 	@docs/doxy/html/installdox
 
+##########################
+# Remove ALL files created by DoxyGen:
+clean.doxy: clean.doxy.html clean.doxy.www
+
+##########################
+# Remove all DoxyGen created files under Doc4GL source code tree:
+clean.doxy.html:
+	rm -rf docs/doxy/html
+
+##########################
+# Remove all DoxyGen created files under Web server documents tree:
+clean.doxy.www:
+	rm -rf @WWW_DOCUMENT_ROOT@/${DOXY_WWWPATH}/html
 
 # =========================================================================
 #                           Install Perl modules
@@ -378,5 +402,8 @@ install.informix_jdbc: ${IFX_JDBC_PKG}
 #if we unpack this jar like this:
 #	cd ${INFORMIXDIR}/jdbc/lib; jar xvf ifxjdbc.jar
 #we can copy all filed to ${JAVA_SHARED}, and set CLASSPATH to ${JAVA_SHARED}
+
+show:
+	@echo DOXY_WWWPATH=${DOXY_WWWPATH}
 
 # =============================== EOF ======================================

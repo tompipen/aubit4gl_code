@@ -10,9 +10,9 @@
 #  @todo : Substituir dies por gestão de erros correcta
 #  @todo : O HTML localizado não está completo
 #
-#  $Author: saferreira $
-#  $Date: 2003-05-12 11:29:45 $
-#  $Id: ExportHtml.pm,v 1.4 2003-05-12 11:29:45 saferreira Exp $
+#  $Author: afalout $
+#  $Date: 2003-05-13 11:30:50 $
+#  $Id: ExportHtml.pm,v 1.5 2003-05-13 11:30:50 afalout Exp $
 #
 # ============================================================================
 
@@ -573,13 +573,13 @@ sub selectModulesForProcess
   my $sth;
   if ( $processId eq "AllModules" )
   {
-    $sth = $obj->{dbh}->prepare(qq% 
+    $sth = $obj->{dbh}->prepare(qq%
       SELECT unique module_name FROM p4gl_module 
     %);
   }
   else
   {
-    $sth = $obj->{dbh}->prepare(qq% 
+    $sth = $obj->{dbh}->prepare(qq%
       SELECT unique module_name FROM p4gl_fun_process 
       WHERE id_process = '$processId'
     %);
@@ -878,7 +878,7 @@ sub genTreeviewJs
 // Definition of class Folder 
 // ***************************************************************** 
  
-function Folder(folderDescription, tagName, hreference) //constructor 
+function Folder(folderDescription, tagName, hreference) //constructor
 { 
   //constant data 
   this.desc = folderDescription 
@@ -933,7 +933,7 @@ function setStateFolder(isOpen)
   this.isOpen = isOpen 
   propagateChangesInState(this) 
 } 
- 
+
 function propagateChangesInState(folder) 
 {   
   var i=0 
@@ -988,7 +988,7 @@ var nc
   nc = this.nChildren 
    
   this.createIndex() 
- 
+
   var auxEv = "" 
  
   if (browserVersion > 0) 
@@ -1043,7 +1043,7 @@ function drawFolder(leftSide)
   doc.write(" border=0 cellspacing=0 cellpadding=0>") 
   doc.write("\\n<tr><td>") 
   doc.write(leftSide) 
-  this.outputLink() 
+  this.outputLink()
   doc.write("<img name='folderIcon" + this.id + "' ") 
   doc.write("src='" + this.iconSrc+"' border=0></a>") 
   doc.write("</td>\\n<td valign=middle nowrap>") 
@@ -1098,7 +1098,7 @@ function outputFolderLink()
       doc.write("onClick='javascript:clickOnFolder("+this.id+")'") 
     doc.write(">") 
   } 
-  else 
+  else
     doc.write("<a>") 
 } 
  
@@ -1153,7 +1153,7 @@ function hideItem()
       return 
     this.navObj.style.display = "none" 
   } else { 
-    if (this.navObj.visibility == "hidden") 
+    if (this.navObj.visibility == "hidden")
       return 
     this.navObj.visibility = "hidden" 
   }     
@@ -1263,7 +1263,7 @@ function totalHeight() //used with browserVersion == 2
 } 
  
  
-// Events 
+// Events
 // ********************************************************* 
  
 function clickOnFolder(folderId) 
@@ -1318,7 +1318,7 @@ function initializeDocument()
   } 
 } 
  
-// Auxiliary Functions for Folder-Treee backward compatibility 
+// Auxiliary Functions for Folder-Treee backward compatibility
 // ********************************************************* 
  
 function gFld(description, tagName, hreference) 
@@ -1561,7 +1561,7 @@ sub genNavBar
         <FONT CLASS="$moduleBgColor">
           $str3
         </FONT>&nbsp;</TD>
-  
+
     <!-- Por enquanto nenhum destes se usa
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
         <A HREF="overview-tree.html">
@@ -1707,10 +1707,10 @@ sub selectModuleInformation
   {
     %moduleInformation = (
       'moduleName' => $row[0],
-      'author' => $row[1]
-      'revision' => $row[2]
-      'deprecated' => $row[3]
-      'since' => $row[4]
+      'author' => $row[1],
+      'revision' => $row[2],
+      'deprecated' => $row[3],
+      'since' => $row[4],
       'comments' => $row[5]
     );
   }
@@ -1875,25 +1875,25 @@ sub printModuleHeader
   <P> $obj->{moduleInformation}->{comments}
 |;
 
-	my $author = obj->{moduleInformation}->{author};
+	my $author = $obj->{moduleInformation}->{author};
   $author =~ s/^ *//g;
 	if ( ! $author eq "" ) {
     print MODULEHTML "<BR><B>Author</B>: $author\n";
 	}
 
-	my $revision = obj->{moduleInformation}->{revision};
+	my $revision = $obj->{moduleInformation}->{revision};
   $revision =~ s/^ *//g;
 	if ( ! $revision eq "" ) {
     print MODULEHTML "<BR><B>Revision</B>: $revision\n";
 	}
 
-	my $since = obj->{moduleInformation}->{since};
+	my $since = $obj->{moduleInformation}->{since};
   $since =~ s/^ *//g;
 	if ( ! $since eq "" ) {
     print MODULEHTML "<BR><B>Since</B>: $since\n";
 	}
 
-	my $deprecated = obj->{moduleInformation}->{deprecated};
+	my $deprecated = $obj->{moduleInformation}->{deprecated};
   $deprecated =~ s/^ *//g;
 	if ( ! $deprecated eq "Y" ) {
     print MODULEHTML "<BR><B>Warning</B>: This module is deprecated\n";
