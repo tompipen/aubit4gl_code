@@ -18,6 +18,13 @@ to restart it).
 
 4) On Windows 9x, autoexec.bat must be edited to add path to (<install_dir>/bin)
 
+5) Be carefull if you allready have CygWin installed (or other GCC) that 
+are in the path - Aubit installer adds path to itself and MinGW at the end 
+of PATH variable, and if any executables that it needs (like gcc.exe) are 
+in PATH before MinGW, you will try to compile with possibly inappropriate 
+compiler.
+
+
 6) Installing outside default path of c:\aubit4gl was not tested. It will
 probably work if path don't have spaces it it.
 

@@ -23,28 +23,36 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 
+ROOT    =../..
+
 #
-# $Id: Makefile.in,v 1.4 2002-09-25 05:42:16 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-10-30 01:46:45 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-4GLPC               =../../bin/4glpc
+4GLPC               =${ROOT}/bin/4glpc
 #4GLPCFLAGS			=-verbose
+ALL                 =${ROOT}/bin/loadmap
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-loadmap:
-	${SH} ${4GLPC} ${4GLPCFLAGS} loadmap.4gl -o $@
-	${CP} $@${EXE} ../../bin
+all: ${ALL}
+
+loadmap : ${ROOT}/bin/loadmap
+${ROOT}/bin/loadmap : loadmap.4gl
+ifeq "${GCC_MINGW}" "yes"
+	unix2dos -D $^
+endif
+	${FAIL_OK}${SH} ${4GLPC} ${4GLPCFLAGS} $^ -o $@
 
 ## ==================================================================
 ##                        Clean Targets

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-10-13 01:40:35 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-10-30 01:46:45 afalout Exp $
 #
 
 LIBROOT=../..
@@ -101,7 +101,7 @@ ci: $(CMODS)
 clean :
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
 	form_x_xdr.c form_x.h project.c aubit-config \
-	loadmap loadmap.c loadmap.h core \
+	core \
 	*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
 	*.base *.exp *.def
 

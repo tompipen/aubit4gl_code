@@ -24,11 +24,13 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.74 2002-10-13 01:40:34 afalout Exp $
+# $Id: Makefile.in,v 1.75 2002-10-30 01:46:44 afalout Exp $
 #
 
+ROOT    =..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 
 ## ==================================================================
 ##                              Source files
@@ -112,7 +114,7 @@ aubit-config:
 	${MAKE} -C resource
 
 loadmap:
-	${FAIL_OK}${MAKE} -C ../tools/loadmap
+	${FAIL_OK}${MAKE} -C ${ROOT}/tools/loadmap
 
 libaubit4gl${SO_EXT_LINKABLE} :
 	${MAKE} -C libaubit4gl
@@ -256,7 +258,7 @@ clean.other:
 	${MAKE} -C libmenu/menu_nomenu clean
 	${MAKE} -C libmsg/msg_native clean
 	${MAKE} -C resource clean
-	${MAKE} -C ../tools/loadmap clean
+	${MAKE} -C ${ROOT}/tools/loadmap clean
 	${MAKE} -C liblex/lex_c clean
 	${MAKE} -C liblex/lex_perl clean
 	${MAKE} -C libexdata clean

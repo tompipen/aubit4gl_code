@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.124 2002-10-27 22:33:31 afalout Exp $
+dnl # $Id: configure.in,v 1.125 2002-10-30 01:46:34 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -178,6 +178,8 @@ AC_SUBST(aubitdir)
 AC_SUBST(COMPILE_DATE)
 AC_SUBST(AUBIT_VERSION)
 AC_SUBST(AUBIT_BUILD)
+AC_SUBST(AUBIT_WEBSITE)
+AC_SUBST(AUBIT_PUBLISHER)
 AC_SUBST(FULLNAME)
 AC_SUBST(SHORTNAME)
 
@@ -318,6 +320,9 @@ AC_SUBST(GCC_VERSION_MAJOR)
 AC_SUBST(GCC_VERSION_MINOR)
 AC_SUBST(GCC_MINGW)
 
+#Inno Setup:
+AC_SUBST(IS_SOURCE)
+AC_SUBST(IS_SOURCE_GTK)
 
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
@@ -413,8 +418,10 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AUBIT_BUILD=`cat tools/project/build`
 fi
 
-FULLNAME="Aubit 4gl compiler"
+FULLNAME="Aubit 4GL compiler"
 SHORTNAME="aubit4gl"
+AUBIT_WEBSITE=aubit4gl.sf.net
+AUBIT_PUBLISHER="Aubit project development team"
 COMPILE_DATE=`date +%d-%m-%Y`
 test_rpclib="1"
 GTKBUILD=no
@@ -499,9 +506,18 @@ ALL_LINGUAS="en"
 dnl internationalization macros
 #AM_GNU_GETTEXT
 
-#check if we can install in $prefix
+## ==================================================================
+##            Decide on install location
+## ==================================================================
+
+
 	if test "$prefix" = "NONE"; then
-	    prefix="/opt"
+		if test "$cygwin" = "1" ; then
+			#/opt is not created by default on CygWin installations
+			prefix=/usr/local
+		else
+			prefix=/opt
+	    fi
 	fi
 	AC_MSG_CHECKING(install root 'prefix=$prefix')
 	if test -w "$prefix"; then
@@ -515,7 +531,7 @@ dnl internationalization macros
         fi
     fi
 
-LIB_PREFIX=$prefix/aubit4gl/lib
+LIB_PREFIX=$prefix/$SHORTNAME/lib
 
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
@@ -549,6 +565,12 @@ LIBFILE_27=
 LIBFILE_28=
 LIBFILE_29=
 LIBFILE_30=
+
+#Install location - must install first:
+#IS_SOURCE="$HOMEDRIVE\\cygwin$prefix\\$SHORTNAME"
+#Source code location:
+IS_SOURCE="$HOMEDRIVE\\cygwin$aubitdir"
+IS_SOURCE_GTK="$HOMEDRIVE\\cygwin\\lib"
 
 #Note: all command line switches like "--xxxx-wwwww" are automativaly
 #converted to shell variables in "xxxxx_wwwww" format.
@@ -768,17 +790,8 @@ AC_PROG_CC
 if test "$CC" = "gcc"; then
 	AC_MSG_CHECKING(GCC version)
 
-	#$ gcc --version
-	#2.95.3-5
-
-	#$ gcc --version
-	#gcc (GCC) 3.2 20020818 (prerelease)
-
-	#gcc.exe (GCC) 3.2 (mingw special 20020817-1)
-
 	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc (GCC) //' -e 's/ (prerelease)//' -e 's/\./ /g'`
 	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
-	#  3 2 mingw special 20020817-1)
 	if test "$TMP_TMP" != ""; then
 		set `echo $TMP_TMP`
 		if test "$1" != ""; then
@@ -2790,18 +2803,6 @@ else
     fi
 fi
 
-## ==================================================================
-##            Decide on install location
-## ==================================================================
-
-if test "$prefix" = "NONE"; then
-	if test "$cygwin" = "1" ; then
-		#/opt is not created by default on CygWin installations
-		prefix=/usr/local
-	else
-		prefix=/opt
-    fi
-fi
 
 ## ==================================================================
 ##            Decide on default COMPILER OUTPUT driver
@@ -3000,6 +3001,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AC_CONFIG_FILES([Makefile
                 etc/aubitrc
                 etc/aubit-rpm.spec
+                etc/aubit-InnoSetup.iss
                 incl/Makefile-common
 				common/dataio/Makefile
 				compilers/4glc/Makefile
@@ -3223,12 +3225,10 @@ cat<<X
 | the installation process at this point.                            |
 +--------------------------------------------------------------------+
 X
+if test "$enable_ac_debug" = "yes" ; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        ***  NOTE   ***                             |
-X
-if test "$enable_ac_debug" = "yes" ; then
-cat<<X
 |
 | Aubit plug-ins to build:
 | $PLUGIN_YES
@@ -3259,6 +3259,7 @@ fi
 cat<<X
 
 Thank you for using Aubit 4gl compiler.
+                   $AUBIT_PUBLISHER
 
 X
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.95 2002-10-27 22:34:10 afalout Exp $
+# $Id: Makefile-common.in,v 1.96 2002-10-30 01:46:44 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -1054,6 +1054,9 @@ endif
 ## ==================================================================
 
 DOC_FILES		=changelog.txt COPYING CREDITS LICENSE aubit4gl.ico
+ifneq "${COMSPEC}" ""
+	DOC_FILES	+=README-Windows.txt
+endif
 
 ## ==================================================================
 ##                    To test directory
@@ -1146,6 +1149,10 @@ TOROOT		=$(addprefix $(ROOT_DIR)/,	$(ROOT_FILES))
 TOINCL		=$(addprefix $(INCL_DIR)/,	$(INCL_FILES))
 TOIDE       =$(addprefix $(IDE_DIR)/,	$(IDE_FILES))
 
+ifneq "${COMSPEC}" ""
+    TOBIN+=$(SOURCE)/tools/cygwin/run.exe
+endif
+
 
 #deinstallation files with paths:
 FROMBIN		=$(addprefix $(BIN_DEST)/,	$(BIN_FILES))
@@ -1157,6 +1164,10 @@ FROMHOME	=$(addprefix $(HOME_DEST)/,	$(HOME_FILES))
 FROMROOT	=$(addprefix $(ROOT_DEST)/,	$(ROOT_FILES))
 FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES))  $(addprefix $(INCL_DEST)/,	$(INCL_FILES_LEGACY))
 FROMIDE     =$(addprefix $(IDE_DEST)/,	$(IDE_FILES))
+
+ifneq "${COMSPEC}" ""
+    FROMBIN+=$(INSTALL_DIR)/${BIN_PATH}/run.exe
+endif
 
 
 ## ==================================================================

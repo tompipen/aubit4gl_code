@@ -7612,6 +7612,8 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
+
+
 #defaults for aubitrc:
 
 
@@ -7748,6 +7750,9 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
+#Inno Setup:
+
+
 
 #curses:
 
@@ -7843,8 +7848,10 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AUBIT_BUILD=`cat tools/project/build`
 fi
 
-FULLNAME="Aubit 4gl compiler"
+FULLNAME="Aubit 4GL compiler"
 SHORTNAME="aubit4gl"
+AUBIT_WEBSITE=aubit4gl.sf.net
+AUBIT_PUBLISHER="Aubit project development team"
 COMPILE_DATE=`date +%d-%m-%Y`
 test_rpclib="1"
 GTKBUILD=no
@@ -7928,9 +7935,18 @@ LDFLAGS_SHARED="$PIC -shared"
 ALL_LINGUAS="en"
 #AM_GNU_GETTEXT
 
-#check if we can install in $prefix
+## ==================================================================
+##            Decide on install location
+## ==================================================================
+
+
 	if test "$prefix" = "NONE"; then
-	    prefix="/opt"
+		if test "$cygwin" = "1" ; then
+			#/opt is not created by default on CygWin installations
+			prefix=/usr/local
+		else
+			prefix=/opt
+	    fi
 	fi
 	echo "$as_me:$LINENO: checking install root 'prefix=$prefix'" >&5
 echo $ECHO_N "checking install root 'prefix=$prefix'... $ECHO_C" >&6
@@ -7949,7 +7965,7 @@ echo "$as_me: error: Cannot determine install path. HOME=$HOME Stop." >&2;}
         fi
     fi
 
-LIB_PREFIX=$prefix/aubit4gl/lib
+LIB_PREFIX=$prefix/$SHORTNAME/lib
 
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
@@ -7983,6 +7999,12 @@ LIBFILE_27=
 LIBFILE_28=
 LIBFILE_29=
 LIBFILE_30=
+
+#Install location - must install first:
+#IS_SOURCE="$HOMEDRIVE\\cygwin$prefix\\$SHORTNAME"
+#Source code location:
+IS_SOURCE="$HOMEDRIVE\\cygwin$aubitdir"
+IS_SOURCE_GTK="$HOMEDRIVE\\cygwin\\lib"
 
 #Note: all command line switches like "--xxxx-wwwww" are automativaly
 #converted to shell variables in "xxxxx_wwwww" format.
@@ -9430,17 +9452,8 @@ if test "$CC" = "gcc"; then
 	echo "$as_me:$LINENO: checking GCC version" >&5
 echo $ECHO_N "checking GCC version... $ECHO_C" >&6
 
-	#$ gcc --version
-	#2.95.3-5
-
-	#$ gcc --version
-	#gcc (GCC) 3.2 20020818 (prerelease)
-
-	#gcc.exe (GCC) 3.2 (mingw special 20020817-1)
-
 	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc (GCC) //' -e 's/ (prerelease)//' -e 's/\./ /g'`
 	TMP_TMP=`gcc --version | head -1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/\.exe//' -e 's/\./ /g'`
-	#  3 2 mingw special 20020817-1)
 	if test "$TMP_TMP" != ""; then
 		set `echo $TMP_TMP`
 		if test "$1" != ""; then
@@ -16187,28 +16200,22 @@ fi
 done
 
         fi
-echo 3
+
 		TMP=`eval echo '${'$as_ac_Header'}'`
 		#if test `eval echo '${'$as_ac_Header'}'` != "yes"; then
         if test "$TMP" != "yes"; then
-echo 4
-			if test "$GCC_MINGW" = "yes"; then
-				{ echo "$as_me:$LINENO: WARNING: No dlfcn.h found" >&5
-echo "$as_me: WARNING: No dlfcn.h found" >&2;}
-            else
-				{ { echo "$as_me:$LINENO: error: No dlfcn.h found - please install dl library. Stop." >&5
-echo "$as_me: error: No dlfcn.h found - please install dl library. Stop." >&2;}
-   { (exit 1); exit 1; }; }
+			if test "$GCC_MINGW" != "yes"; then
+				{ { echo "$as_me:$LINENO: error: No dlfcn.h found" >&5
+echo "$as_me: error: No dlfcn.h found" >&2;}
+   { (exit please install dl library. Stop.); exit please install dl library. Stop.; }; }
             fi
-echo 5
 		else
-echo 6
+
 			CFLAGS="$CFLAGS $TMP_IFLAGS"
         fi
-echo 7
+
 		CPPFLAGS="$old_CPPFLAGS"
     fi
-echo B
 fi
 
 ## ==================================================================
@@ -18684,7 +18691,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 18687 "configure"' > conftest.$ac_ext
+  echo '#line 18694 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -19152,7 +19159,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 19155 "configure"
+#line 19162 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -19250,7 +19257,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 19253 "configure"
+#line 19260 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -20807,18 +20814,6 @@ else
     fi
 fi
 
-## ==================================================================
-##            Decide on install location
-## ==================================================================
-
-if test "$prefix" = "NONE"; then
-	if test "$cygwin" = "1" ; then
-		#/opt is not created by default on CygWin installations
-		prefix=/usr/local
-	else
-		prefix=/opt
-    fi
-fi
 
 ## ==================================================================
 ##            Decide on default COMPILER OUTPUT driver
@@ -21014,7 +21009,7 @@ fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
 
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile etc/aubitrc etc/aubit-rpm.spec incl/Makefile-common common/dataio/Makefile compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile compilers/ace/Makefile compilers/xgen/Makefile lib/libaubit4gl/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_generic/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/libui/ui_gtk/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/libsql/esqlc/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake lib/Makefile tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ac_config_files="$ac_config_files Makefile etc/aubitrc etc/aubit-rpm.spec etc/aubit-InnoSetup.iss incl/Makefile-common common/dataio/Makefile compilers/4glc/Makefile compilers/4glc/rules/Makefile compilers/fcompile/Makefile compilers/helpcompile/Makefile compilers/menus/Makefile compilers/ace/Makefile compilers/xgen/Makefile lib/libaubit4gl/Makefile lib/libform/form_xdr/Makefile lib/libform/noform/Makefile lib/libform/form_generic/Makefile lib/libmenu/menu_xdr/Makefile lib/libmenu/menu_nomenu/Makefile lib/libmenu/menu_generic/Makefile lib/libmsg/msg_native/Makefile lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile lib/libpdf/Makefile lib/libui/ui_console/Makefile lib/libui/ui_curses/Makefile lib/libui/ui_gtk/Makefile lib/resource/Makefile lib/libsql/nosql/Makefile lib/libsql/odbc/Makefile lib/libsql/esqlc/Makefile lib/libsql/postgresql/Makefile lib/libsql/sapdb/Makefile lib/librpc/no_rpc/Makefile lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile lib/extra_libs/file/Makefile lib/extra_libs/string/Makefile lib/libpacker/packed/Makefile lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile lib/libpacker/xml/Makefile lib/libexdata/Makefile lib/swig/domake lib/Makefile tools/adbaccess/Makefile tools/loadmap/Makefile tools/adbload/Makefile tools/html/Makefile tools/ide/Makefile tools/jabber/Makefile tools/odbctest/Makefile tools/test/gui/Makefile tools/test/regression/Makefile tools/test/lang/Makefile tools/test/db/Makefile tools/test/Makefile bin/aubitbuild.sh docs/doxy/Doxyfile"
 
 
 else
@@ -21541,6 +21536,7 @@ do
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "etc/aubitrc" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc" ;;
   "etc/aubit-rpm.spec" ) CONFIG_FILES="$CONFIG_FILES etc/aubit-rpm.spec" ;;
+  "etc/aubit-InnoSetup.iss" ) CONFIG_FILES="$CONFIG_FILES etc/aubit-InnoSetup.iss" ;;
   "incl/Makefile-common" ) CONFIG_FILES="$CONFIG_FILES incl/Makefile-common" ;;
   "common/dataio/Makefile" ) CONFIG_FILES="$CONFIG_FILES common/dataio/Makefile" ;;
   "compilers/4glc/Makefile" ) CONFIG_FILES="$CONFIG_FILES compilers/4glc/Makefile" ;;
@@ -21725,6 +21721,8 @@ s,@aubitdir@,$aubitdir,;t t
 s,@COMPILE_DATE@,$COMPILE_DATE,;t t
 s,@AUBIT_VERSION@,$AUBIT_VERSION,;t t
 s,@AUBIT_BUILD@,$AUBIT_BUILD,;t t
+s,@AUBIT_WEBSITE@,$AUBIT_WEBSITE,;t t
+s,@AUBIT_PUBLISHER@,$AUBIT_PUBLISHER,;t t
 s,@FULLNAME@,$FULLNAME,;t t
 s,@SHORTNAME@,$SHORTNAME,;t t
 s,@A4GL_SQLTYPE@,$A4GL_SQLTYPE,;t t
@@ -21819,6 +21817,8 @@ s,@CONFIGURE_COMMAND@,$CONFIGURE_COMMAND,;t t
 s,@GCC_VERSION_MAJOR@,$GCC_VERSION_MAJOR,;t t
 s,@GCC_VERSION_MINOR@,$GCC_VERSION_MINOR,;t t
 s,@GCC_MINGW@,$GCC_MINGW,;t t
+s,@IS_SOURCE@,$IS_SOURCE,;t t
+s,@IS_SOURCE_GTK@,$IS_SOURCE_GTK,;t t
 s,@CURSES_LIB_PATH@,$CURSES_LIB_PATH,;t t
 s,@CURSES_INC_PATH@,$CURSES_INC_PATH,;t t
 s,@HAVE_CURSES@,$HAVE_CURSES,;t t
@@ -22584,12 +22584,10 @@ cat<<X
 | the installation process at this point.                            |
 +--------------------------------------------------------------------+
 X
+if test "$enable_ac_debug" = "yes" ; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        ***  NOTE   ***                             |
-X
-if test "$enable_ac_debug" = "yes" ; then
-cat<<X
 |
 | Aubit plug-ins to build:
 | $PLUGIN_YES
@@ -22620,6 +22618,7 @@ fi
 cat<<X
 
 Thank you for using Aubit 4gl compiler.
+                   $AUBIT_PUBLISHER
 
 X
 

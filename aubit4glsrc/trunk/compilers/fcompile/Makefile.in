@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.44 2002-10-22 06:43:36 afalout Exp $
+# $Id: Makefile.in,v 1.45 2002-10-30 01:46:44 afalout Exp $
 #
 
 ROOT        =../..
@@ -113,11 +113,13 @@ ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
 #	${LD} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
 	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB}
 
+fshow : ${ROOT}/bin/fshow
 ${ROOT}/bin/fshow : fshow.4gl
-	@echo PATH = ${PATH}
-#FIXME: remove -I${ROOT}/tools
+ifeq "${GCC_MINGW}" "yes"
+	unix2dos -D $^
+endif
 	${FAIL_OK}${SH} ${4GLPC} $^ -o $@
-# -I${ROOT}/tools
+
 
 ## ==================================================================
 ##                          Sub targets

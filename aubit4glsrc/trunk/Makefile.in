@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.98 2002-10-22 06:52:17 afalout Exp $
+# $Id: Makefile.in,v 1.99 2002-10-30 01:46:31 afalout Exp $
 #
 
 ## ==================================================================
@@ -308,6 +308,7 @@ clean.bin:
 
 clean.etc:
 	${RM} etc/*.bak etc/config/*.bak etc/aubit-auto.spec
+	rm -rf etc/Output
 
 clean.incl:
 	${RM} incl/*.bak
@@ -456,8 +457,14 @@ tar: clean.all
 #COMPILE_DATE=20-01-2002
 #TARGET=i586-pc-linux-gnu
 	${RM} ${SOURCETARBASENAME}
+ifndef COMSPEC
 	tar -cvzf ${SOURCETARBASENAME} *
-	@echo "Aubit source tarball created"
+	@echo "Aubit tarball created"
+else
+	zip -r ${SOURCETARBASENAME} *
+	@echo "Aubit zipball created"
+endif
+
 
 tar.bin:
 	${RM} ${BINTARBASENAME}

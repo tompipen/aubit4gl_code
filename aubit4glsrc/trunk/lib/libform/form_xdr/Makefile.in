@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-10-18 07:54:51 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-10-30 01:46:44 afalout Exp $
 #
 
 ROOT		=../../..
@@ -119,7 +119,7 @@ ${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
 
 clean :
 	${RM} $(OBJS_DEBUG) menu_x.h menu_x_xdr.c form_x_xdr.c form_x.h project.c \
-	aubit-config loadmap loadmap.c loadmap.h core *.out *.glb *${SO_EXT} *.a  \
+	aubit-config core *.out *.glb *${SO_EXT} *.a  \
 	*.o  *.bak *.exe *.dll *.stackdump *.err *.base *.exp *.def
 
 
