@@ -26,9 +26,11 @@ MAIN
 	  INTO lv_sum
 		FROM xpto
   IF sqlca.sqlawarn[3] != "W" THEN
-	  DISPLAY "An warning was not issued after an agregate with null values"
-		LET exitStatus = 1
-	END IF
+	
+  	DISPLAY "A warning was not issued after an agregate with null values :",sqlca.sqlawarn
+	LET exitStatus = 1
+  END IF
+
   IF lv_sum != 4 THEN
 	  DISPLAY "The sum give a wrong result"
 		LET exitStatus = 1

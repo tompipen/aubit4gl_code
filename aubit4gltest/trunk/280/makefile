@@ -82,9 +82,9 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-	${DEFAULT_RUN}
+#	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
-#	${DEFAULT_DIFF}
+	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
@@ -109,15 +109,18 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Tests mantis bug 516 (private bug)"
-	@echo "ecpg crashed on declare cursor for select statement - the select statement has an 'into clause' of 3 members of a structure. It works fine when the number is less than 3. "
+	@echo "Datetime arithmetic problems mantis bug 566 (private)"
+	@echo "There are 2 problems with datetime arithmetic: "
+	@echo "1. In doing substraction on a datetime variable which is the 1st day of a month, the result is always a null. "
+	@echo "2. In doing addition or subtraction on a datetime variable, the result may be an invalid date, such as 2004-08-31. "
+
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
 ################
 #If this test needs database, return 1
 db_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #return 1 if tests use/require ESQL compiler output, instead of C output
@@ -184,7 +187,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -203,6 +206,7 @@ unknown_test:
 
 ################
 #Specify minimum version of Informix compiler this test can be executed with
+#example: 	@echo "7.31"
 need_ifx_version:
 	@echo "0"
 

@@ -14,7 +14,7 @@ MAIN
   DEFINE ThirdVar SMALLINT
 
 	LET fileName = "/tmp/xx.tmp"
-	LET comm = "a_script.sh ", fileName CLIPPED
+	LET comm = "./a_script.sh ", fileName CLIPPED
 	RUN comm RETURNING exitStatus
 	CREATE TEMP TABLE ret_values (
 	  first_var INTEGER,

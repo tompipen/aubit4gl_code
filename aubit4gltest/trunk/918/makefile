@@ -23,7 +23,7 @@ include ../Makefile-common
 #List of all 4GL modules that need to be compiled to objects. This is already set
 #from included makefile, but you can overide it here if needed. By default, all
 #.4gl files in current directory are automatically listed, and therfore compiled
-FGL=deccvasc.c fgl_deccvasc.4gl
+FGL=fgl_deccvasc.4gl
 
 ################
 #You can add additional files to be cleand with "clean" target to the default
