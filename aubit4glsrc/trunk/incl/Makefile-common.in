@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.88 2002-10-13 01:40:34 afalout Exp $
+# $Id: Makefile-common.in,v 1.89 2002-10-17 05:38:52 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -454,10 +454,36 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
     EXEEXT		=.exe
 	EXE			=${EXEEXT}
 	#SO_LDFLAGS	=${RDYNAMIC} ${PIC}
-	#DLL_CFLAGS=-shared -Wl,--output-def=$*.def -Wl,--out-implib=$*${SOEXP_EXT} -Wl,--export-all-symbols
+	
 
-    #from dllhelpers example
-	#gcc -shared -Wl,--out-implib=$*${SOEXP_EXT} -Wl,--export-all-symbols
+	#The complete syntax is:
+	#
+	#gcc -shared -o cyg${module}.dll \
+	#    -Wl,--out-implib=lib${module}.dll.a \
+	#    -Wl,--export-all-symbols \
+	#    -Wl,--enable-auto-import \
+	#    -Wl,--whole-archive ${old_lib} \
+	#    -Wl,--no-whole-archive ${dependency_libs}
+	#
+	#Where ${module} is the name of your DLL, ${old_lib} are all
+	#objectfiles, bundled together in a static lib or single object
+	#files and the ${dependency_libs} are importlibs you need to
+	#link against, e.g '-lpng -lz -L/usr/local/special -lmyspeciallib'
+	#
+	#All symbols are exported then because you tell the linker to do so:
+	#-Wl,--export-all-symbols
+
+
+an alternative way to EXPORT and --export-all-symbols is to create a
+.def file with all the functionnames you want to expose to your users
+and link this .def file as the very first file before any .o and .a;
+see the ld-docu for command line option 'shared' for more details.
+
+The only thing I can't figure out is how to prevent ld from
+additionaly exporting all global variables in the .o an .a files.  Can
+anyone more knowledgable give me a hint?
+
+	#DLL_CFLAGS=-shared -Wl,--output-def=$*.def -Wl,--out-implib=$*${SOEXP_EXT} -Wl,--export-all-symbols
 	DLL_CFLAGS=-shared -Wl,--out-implib=TMP${SOEXP_EXT} -Wl,--export-all-symbols
 
 	SO_LDFLAGS	=${DLL_CFLAGS}

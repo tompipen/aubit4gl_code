@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.41 2002-10-07 11:06:33 afalout Exp $
+# $Id: sql.c,v 1.42 2002-10-17 05:38:52 afalout Exp $
 #
 */
 
@@ -333,7 +333,7 @@ exit_nicely (void)
  * Assign a value to the status global variable.
  *
  * @param a  The value to be set in status.
- * @param sql A Flag that indicate if sqlca.sqlcoe will be assigned too:
+ * @param sql A Flag that indicate if sqlca.sqlcode will be assigned too:
  *   - 0 : sqlca.sqlcode will be not assigned.
  *   - Otherwise : sqlca.sqlcode will be assigned.
  */

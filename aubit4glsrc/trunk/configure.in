@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.117 2002-10-14 00:02:01 afalout Exp $
+dnl # $Id: configure.in,v 1.118 2002-10-17 05:38:45 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -163,6 +163,11 @@ AC_DISABLE_STATIC
 #Using `AC_PROG_RANLIB' is rendered obsolete by `AC_PROG_LIBTOOL'
 #Note: The libltdl library included with all libtool versions will only work on
 #Darwin when dlcompat is installed.
+
+#AC_LIBTOOL_DLOPEN and AC_LIBTOOL_WIN32_DLL before the AC_PROG_LIBTOOL
+
+AC_LIBTOOL_DLOPEN
+AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
