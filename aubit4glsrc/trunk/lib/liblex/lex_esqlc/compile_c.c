@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.211 2005-01-24 09:14:33 mikeaubury Exp $
+# $Id: compile_c.c,v 1.212 2005-01-24 16:59:24 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.211 2005-01-24 09:14:33 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.212 2005-01-24 16:59:24 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -6244,13 +6244,12 @@ void print_convert_report(char *repname, char* fname,char *otype, char *layout,c
 
 	if (strcmp(file_or_pipe,"EMAIL")==0) {	
 		printc("A4GL_push_int(2);");
-	}
-	if (strcmp(file_or_pipe,"PIPE")==0) {	
-		printc("A4GL_push_int(1);");
-	}
-
-	if (strcmp(file_or_pipe,"PIPE")==0) {	
-		printc("A4GL_push_int(0);");
+	} else {
+		if (strcmp(file_or_pipe,"PIPE")==0) {	
+			printc("A4GL_push_int(1);");
+		} else {
+			printc("A4GL_push_int(0);");
+		}
 	}
 	printc("A4GL_push_char(%s);A4GL_push_char(%s);A4GL_push_char(%s);%s%s(3,REPORT_CONVERT);",fname,otype,layout,get_namespace (repname),repname);
 }
