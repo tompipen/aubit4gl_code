@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.16 2005-03-04 08:02:30 afalout Exp $
+# $Id: Makefile,v 1.17 2005-03-20 04:25:37 afalout Exp $
 #
 
 ## ==================================================================
@@ -167,7 +167,7 @@ all: default extra install
 #Target to perform default compile, logging the output to file
 log:
 	@echo "Logging make process to make.log, please wait..."
-	@${MAKE} > make.log 2>&1
+	@time ${MAKE} > make.log 2>&1
 	@echo "make finished successfuly, see make.log for details."
 	@echo "Total compiler warnings: `grep -c 'warning:' make.log`"
 
@@ -1221,7 +1221,17 @@ update:
 commit: refresh.all build
 #Note: cvs commit command cannot be redirected to file because of the need
 #to edit commit message
+	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| CVS commit started at `date`"
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
 	cvs -q commit
+	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| CVS commit finished at `date`"
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
 	
 ## ------------------------------------------------------------------
 ##       Maintainance of pre-assembled and pre-compiled files
@@ -1246,17 +1256,28 @@ refresh.noyacc:
 ifneq "${YACC}" "no"
 	@update=0; \
 	ALLF="4glc/rules/generated/y.tab.c 4glc/rules/generated/y.tab.h \
-	4glc/rules/generated/kw.h 4glc/rules/generated/kw.yh 4glc/mk_states_1.h 4glc/mk_states.h \
-	4glc/mk_states.c sql/lex.yy.c sql/y.tab.c sql/y.tab.h fcompile/lex.yy.c \
-	fcompile/y.tab.c menus/lex.yy.c menus/y.tab.c xgen/y.tab.c xgen/lex.yy.c \
-	ace/y.tab.c ace/lex.yy.c"; \
+		4glc/rules/generated/kw.h 4glc/rules/generated/kw.yh \
+		4glc/mk_states_1.h 4glc/mk_states.h 4glc/mk_states.c \
+		sql/lex.sqlparse_yy.c sql/y.tab.c sql/y.tab.h \
+		fcompile/lex.yy.c fcompile/y.tab.c \
+		menus/lex.yy.c menus/y.tab.c \
+		xgen/y.tab.c xgen/lex.yy.c \
+		ace/y.tab.c ace/lex.yy.c"; \
 	for a in $$ALLF; do \
-		diff -q compilers/$$a tools/no_yacc/cygwin/compilers/$$a > /dev/null ; \
-		x=$$?; \
-		if test "$$x" != "0"; then update="1"; \
-			echo "DIFFERENT:$$a"; \
-			${CP} compilers/$$a tools/no_yacc/cygwin/compilers/$$a; \
-		fi; \
+		if test -f compilers/$$a ; then \
+			if test -f tools/no_yacc/cygwin/compilers/$$a ; then \
+				diff -q compilers/$$a tools/no_yacc/cygwin/compilers/$$a > /dev/null ; \
+				x=$$?; \
+				if test "$$x" != "0"; then update="1"; \
+					echo "DIFFERENT: compilers/$$a"; \
+					${CP} compilers/$$a tools/no_yacc/cygwin/compilers/$$a; \
+				fi; \
+			else \
+				echo "MISSING DESTINATION: tools/no_yacc/cygwin/compilers/$$a" ; \
+			fi ; \
+		else \
+			echo "MISSING SOURCE : compilers/$$a"; \
+		fi ; \
 	done; \
 	if test "$$update" = "0"; then \
 		echo "All no_yacc files up-to-date"; \

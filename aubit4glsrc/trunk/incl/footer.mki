@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.42 2005-03-11 08:50:37 afalout Exp $
+#	 $Id: footer.mki,v 1.43 2005-03-20 04:26:44 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -46,6 +46,15 @@ endif
 ifeq "${PROG}" ""
 	PROG=no-name-specified.lib
 endif
+
+#######################
+#Dummy name of target called no-linking.lib is uset to prevent
+#linking stage (objects will be compiled from 4gl per and msg files,
+#but no linking will be done)
+#ifeq "${PROG}" "no-linking.lib"
+#	PROG=
+#endif
+
 
 ########################
 #Filter-out 4gl modules to be ignored:
@@ -106,33 +115,41 @@ endif
 # =======================================================================
 
 ifeq "$(PROGTYPE)" ".lib"
-	#we are making a library
-    ifeq "$(POINTTOSTORE)" "1"
-		ADDLIBSTORE=$(LIBSTORE)
-    endif
-	PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_LIB_EXT}}
-	PROG.42e  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_CLIB_EXT}
-	PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_CLIB_EXT}}
-	PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_LIB_EXT}}
-	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=${Q4GL_LIB_EXT}}
-    ifeq "${LIBS_LINK}" "SHARED"
-		#aubit shared library
-		PROG.4ae  = $(ADDLIBSTORE)${LIBPREFIX}${PROG:.lib=${A4GL_SOL_EXT}}
+	ifneq "${PROG}" "no-linking.lib"
+		#we are making a library
+		ifeq "$(POINTTOSTORE)" "1"
+			ADDLIBSTORE=$(LIBSTORE)
+		endif
+		PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_LIB_EXT}}
+		PROG.42e  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_CLIB_EXT}
+		PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_CLIB_EXT}}
+		PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_LIB_EXT}}
+		PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=${Q4GL_LIB_EXT}}
+		ifeq "${LIBS_LINK}" "SHARED"
+			#aubit shared library
+			PROG.4ae  = $(ADDLIBSTORE)${LIBPREFIX}${PROG:.lib=${A4GL_SOL_EXT}}
+		else
+			#aubit static library
+			PROG.4ae  = $(ADDLIBSTORE)${LIBPREFIX}${PROG:.lib=${A4GL_LIB_EXT}}
+		endif
 	else
-		#aubit static library
-		PROG.4ae  = $(ADDLIBSTORE)${LIBPREFIX}${PROG:.lib=${A4GL_LIB_EXT}}
-    endif
+		x=$(warning "No linking stage")
+	endif
 else
-    #we are making a program
-    ifeq "$(POINTTOSTORE)" "1"
-		ADDEXECSTORE=${EXECSTORE}
-    endif
-	PROG.42r  = ${ADDEXECSTORE}${PROG}${D4GL_PRG_EXT}
-	PROG.42e  = ${ADDEXECSTORE}${PROG}${D4GL_CPRG_EXT}
-	PROG.4ge  = ${ADDEXECSTORE}${PROG}${I4GL_CPRG_EXT}
-	PROG.4gi  = ${ADDEXECSTORE}${PROG}${I4GL_PRG_EXT}
-	PROG.4qe  = ${ADDEXECSTORE}${PROG}${Q4GL_PRG_EXT}
-	PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_EXE_EXT}
+	ifneq "${PROG}" "no-linking.lib"
+		#we are making a program
+		ifeq "$(POINTTOSTORE)" "1"
+			ADDEXECSTORE=${EXECSTORE}
+		endif
+		PROG.42r  = ${ADDEXECSTORE}${PROG}${D4GL_PRG_EXT}
+		PROG.42e  = ${ADDEXECSTORE}${PROG}${D4GL_CPRG_EXT}
+		PROG.4ge  = ${ADDEXECSTORE}${PROG}${I4GL_CPRG_EXT}
+		PROG.4gi  = ${ADDEXECSTORE}${PROG}${I4GL_PRG_EXT}
+		PROG.4qe  = ${ADDEXECSTORE}${PROG}${Q4GL_PRG_EXT}
+		PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_EXE_EXT}
+	else
+		x=$(warning "No linking stage")
+	endif
 endif
 
 # =======================================================================
@@ -175,12 +192,14 @@ endif
 	FILES.4go = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${I4GL_OBJ_EXT}})
 	FILES.qo  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${Q4GL_OBJ_EXT}})
 	
-	ifeq "$(PROGTYPE)" ".lib"
-		#Librarises (composed of multiple 4gl modules) are to to result 
-		#in shared object (when using --shared) but object that will be 
-		#linked to crete that library are to be created a static objects
-		OBJS_LINK=STATIC
-	endif 
+	ifneq "${PROG}" "no-linking.lib"
+		ifeq "$(PROGTYPE)" ".lib"
+			#Librarises (composed of multiple 4gl modules) are to to result 
+			#in shared object (when using --shared) but object that will be 
+			#linked to crete that library are to be created a static objects
+			OBJS_LINK=STATIC
+		endif
+	endif
 	ifeq "${OBJS_LINK}" "SHARED"
 		#shared libraries will need to be passes as -l[lib]name on linking line
         #will linker accept .aso as -l ??

@@ -656,6 +656,19 @@ DUMP4GL DEBUG generates a file /tmp/file.out
 	This generates a file /tmp/file.out which gets written to as the 4glc compiler
 	compiles 4GL code. This can be useful in debugging the 4glc compiler
 EC_EXT COMPILE Specify the extension for an ESQL/C file
+	Defaults: Informix=.ec Postgres=.cpc SAP=.cpc
+A4GL_INCOMPAT_AT_RUNTIME COMPILE Allow incompatible statements at compile-time, stop at run-time
+=YES|NO
+	When A4GL_INCOMPAT_AT_RUNTIME is set to YES,
+	statements that are not implemented or not possible when
+	using particular database (when it is known at compile-time)
+	will not cause compile-time error. Instead, they will compile
+	succesfully, and cause the error at run-time. This will allow
+	4GL source code using such features to be compiled, but if execution
+	of it is attempted, program execution will be halted.
+	Default is to abort with error on compile-time (when target 
+	database is known at compile time, which is tipically only when
+	using A4GL_LEXTYPE=EC)
 EMAIL_RECIPIENT UNKNOWN UNKNOWN
 FGLFRMCOMPILE UNKNOWN UNKNOWN
 FIRSTCOL_ONERR_INCL UNKNOWN UNKNOWN

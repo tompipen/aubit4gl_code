@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 #
-# $Id: amake,v 1.33 2005-03-11 08:50:36 afalout Exp $
+# $Id: amake,v 1.34 2005-03-20 04:26:43 afalout Exp $
 #
 #####################################################################
 
@@ -144,14 +144,19 @@ function check_shared () {
 	PROG_NAME=`$MAKE -s -f $COMPOSITE show.PROG 2>/dev/null`
 	
 	if test "$PROG_NAME" != ""; then
-		BASENAME=`basename "$PROG_NAME" .lib`
-		if test "$BASENAME" != "$PROG_NAME"; then
-			TARGET_IS_LIBRARY=1
-		else
-			get_main_fgl
+		if test "$PROG_NAME" != "no-linking.lib"; then	
+			BASENAME=`basename "$PROG_NAME" .lib`
+			if test "$BASENAME" != "$PROG_NAME"; then
+				#Do not make shared objects of 4gl files when
+				#target is a library - target (library) itself 
+				#is to become shared library made of static objects
+				TARGET_IS_LIBRARY=1
+			else
+				get_main_fgl
+			fi
 		fi
 	else
-		error "cannot get PROG name from $ONEPROG"
+		error "cannot get PROG name from $COMPOSITE"
 		error "$MAKE -s -f $COMPOSITE show.PROG"
 		$MAKE -s -f $COMPOSITE show.PROG
 		exit 4
@@ -208,9 +213,36 @@ function get_main_fgl () {
 						error "cannot find $fglfile (even tried VPATH)" "3"
 					fi
 				fi
-				grep -i -w "END MAIN" "$fglfile" > /dev/null 2>&1
-				RET=$?
-				if test "$RET" = "0" ; then
+				RET=`grep -i -w "END MAIN" "$fglfile" 2>/dev/null`
+				if test "$RET" != "" ; then
+					#check if line begins with a comment symbol (#)
+					#TODO - Wont help us when muli-line comment ({}) is used...
+					wc=0
+					for word in $RET ; do
+						let wc=wc+1
+						if test "$word" = "#" -a "$wc" = "1"; then
+							#first 'word' is # - so this line is commented out
+							RET=""
+							break
+						fi
+						t1=`echo "$word" | grep -wi "#end"`
+						if test "$t1" != ""; then
+							#found END in same 'word' as a comment mark - 
+							#so it is commente out
+							RET=""
+							break
+						fi
+						t1=`echo "$word" | grep -wi "end"`
+						if test "$t1" != ""; then
+							#reached first occurance of whole word "end"
+							#without finding solo '#' or '#end' so it 
+							#seems to be not commented out (unselss {})
+							#therefore assume this is a valid END MAIN
+							break
+						fi
+					done
+				fi
+				if test "$RET" != "" ; then
 					FLG_MAIN_LIST="$FLG_MAIN_LIST $fglfile"
 					let FLG_MAIN_CNT=FLG_MAIN_CNT+1
 				fi
@@ -219,13 +251,12 @@ function get_main_fgl () {
 				if test "$FLG_MAIN_CNT" = "0"; then
 					note "did not find MAIN block in any of $ONEPROG source files"
 					note "Please add 'MAIN.4gl=filename.4gl' to $ONEPROG if you want to link it in shared mode"
-					SHARED=""
+					SHARED=
 				else
 					error "Found $FLG_MAIN_CNT 'END MAIN' in $ONEPROG source files:"
 					error "$FLG_MAIN_LIST"
+					exit 2
 				fi
-				SHARED=
-				exit 2
 			else
 				FGL_MAIN="$FLG_MAIN_LIST"
 				verbose "$FGL_MAIN contains MAIN block"
@@ -244,9 +275,9 @@ function get_main_fgl () {
 						print
 					}
 				}
-				' < $ONEPROG > /tmp/amake.tmp
+				' < $CORE_MK > /tmp/amake.tmp
 				
-				mv /tmp/amake.tmp $ONEPROG
+				mv /tmp/amake.tmp $CORE_MK
 				RESTART_AMAKE=1
 			fi
 		else
@@ -263,8 +294,10 @@ function remove_temp_composite () {
 	if [ "$COMPOSITE_IS_TMP" = "1" ]; then
 		#otherwise we would remove the "real" .mk file!
 		if test -f $COMPOSITE; then
-			verbose "Removing temp $COMPOSITE"
-			rm -f $COMPOSITE
+			if test "$KEEP_TMP" != "1" ; then
+				verbose "Removing temp $COMPOSITE"
+				rm -f $COMPOSITE
+			fi
 		fi
 	fi
 
@@ -280,8 +313,12 @@ function prepare_makefile () {
 		#If word 'include' is used to really include a file (and not 
 		#perhaps as a comment) there will be exactly 2 words on that line
 		#which will give us 4 words total (for headed + footer)
-		WORD_CNT=`grep "include" $ONEPROG | wc -w`
-		#HAS_INCLUDE=`grep 'include ' $ONEPROG`
+		if test -f "$CORE_MK" ; then
+			WORD_CNT=`grep "include" $CORE_MK | wc -w`
+		else
+			error "$CORE_MK does not exist" "4"
+		fi
+		#HAS_INCLUDE=`grep 'include ' $CORE_MK`
         #if [ "$HAS_INCLUDE" = "" ]; then
 		if test "$WORD_CNT" != "4" ; then 
 			verbose "Adding include..."
@@ -291,11 +328,13 @@ function prepare_makefile () {
 		if test "$OVERRIDEINCLUDE" = "1"; then
 			verbose "Overriding include..."
 			INCLCMT="#include "
-			sed -e "s%include %$INCLCMT%g" $ONEPROG > $COMPOSITE.tmp
+			sed -e "s%include %$INCLCMT%g" $CORE_MK > $COMPOSITE.tmp
 	        cat $HEADER $COMPOSITE.tmp $FOOTER > $COMPOSITE
-			rm -f $COMPOSITE.tmp
+			if test "$KEEP_TMP" != "1" ; then
+				rm -f $COMPOSITE.tmp
+			fi
 		else
-			COMPOSITE=$ONEPROG
+			COMPOSITE=$CORE_MK
 			COMPOSITE_IS_TMP=0
 		fi
 }
@@ -352,19 +391,25 @@ function main_loop () {
 		fi
 		message "$MSG"
 
+		CORE_MK="$ONEPROG"
 		if [ "$PARAM_PATH" != "" ]; then
             cd $PARAM_PATH
-        fi
-		
+			#When we cd out if the dir where .mk file is, we need to add 
+			#taht path to prepared .mk
+			if test "$MK_IS_CMD_LIST" = "1"; then
+				CORE_MK="$INITDIR/$ONEPROG"
+			fi
+		fi
+
 		prepare_makefile
-		
-		#Why am I using ONEPFOG as makefile here, and not COMPOSITE???
+verbose "ONEPROG=$ONEPROG COMPOSITE=$COMPOSITE CORE_MK=$CORE_MK"
+
 		if test "$CLEANOBJECTS" = "1" ; then
-            $MAKE -f $ONEPROG clean DEFAULT=$DEFAULT
+            $MAKE -f $COMPOSITE clean DEFAULT=$DEFAULT
         fi
 
 		if test "$CLEANTARGET" = "1"; then
-            $MAKE -f $ONEPROG clean.target DEFAULT=$DEFAULT
+            $MAKE -f $COMPOSITE clean.target DEFAULT=$DEFAULT
         fi
 
 		if [ "$ONEPROG" = "allsinglelibs.mk" ]; then
@@ -396,7 +441,10 @@ function main_loop () {
 			fi
 			if test "$SHARED" = "1"; then
 				#This will be used in Amake footer.mki to make shared objects:
-				export OBJS_LINK=SHARED
+				export OBJS_LINK="SHARED"
+				verbose "OBJS_LINK=SHARED"
+			else
+				verbose "OBJS_LINK=STATIC"
 			fi
 		fi
 		
@@ -445,6 +493,10 @@ function main_loop () {
             fi
 		fi
 
+		if [ "$PARAM_PATH" != "" ]; then
+            cd -
+   		fi
+		
     ####
 	done
     ####
@@ -696,7 +748,17 @@ function set_default_options () {
 		USER=`whoami`
 	fi
 	
+	if test "$PWD" != ""; then
+		INITDIR="$PWD"
+	else
+		INITDIR=`pwd`
+	fi
+	
 	#defaults:
+	
+	#Do not delete temporary files - usefull for debugging:
+	#KEEP_TMP=1
+	
 	LOG="0"
 	LOGFILE=amake.log
 	OVERRIDEINCLUDE=0
@@ -781,9 +843,17 @@ function set_default_options () {
 		DEFAULT=aubit
     fi
 
-	if test "$FILES_PROG" != "" ; then 
-		#user wants us to make target using files on command line, and not an .mk file
-		compose_cmd_files
+	if test "$FILES_4gl" != "" ; then
+		if test "$FILES_PROG" != "" ; then 
+			#user wants us to make target using files on command line, and 
+			#not an .mk file
+			compose_cmd_files
+		else
+			#have one or more 4gl files on cmd line, but no target specified.
+			#compile them to objects, but do not link
+			FILES_PROG="no-linking.lib"
+			compose_cmd_files
+		fi
 	fi
 
 	if [ "$PROGS" = "" ]; then
@@ -807,12 +877,15 @@ function set_default_options () {
 	if test "$MK_IS_CMD_LIST" = "1" -a "$RET" = "0"; then
 		#.mk file was created from command line input files specified by 
 		#user - remove it
-		rm -f "$PROGS"
+		if test "$KEEP_TMP" != "1" ; then
+			rm -f "$PROGS"
+		fi
 	fi
-	
-	if [ "$PARAM_PATH" != "" ]; then
-		cd -
-	fi
+
+#We allready cd back in the loop
+#	if [ "$PARAM_PATH" != "" ]; then
+#		cd -
+#	fi
 	
 	if test "$IGNORED_ERROR" != ""; then
 		RET="$IGNORED_ERROR"

@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.56 2005-03-11 08:50:37 afalout Exp $
+#	 $Id: a4gl.mk,v 1.57 2005-03-20 04:26:44 afalout Exp $
 
 ##########################################################################
 #
@@ -342,6 +342,9 @@ else
 	${FAIL_CMPL_4GL}@\
 	if test "$(suffix $@)" = "${A4GL_SOB_EXT}" ; then \
 		SO_FLAG="--shared" ; \
+		TARGET_SUFFIX="${A4GL_SOB_EXT}" ; \
+	else \
+		TARGET_SUFFIX="${A4GL_OBJ_EXT}" ; \
 	fi ; \
 	if test "${OBJSTORE}" != "" ; then \
 		OUTPUTPATH="${OBJSTORE}" ; \
@@ -355,7 +358,7 @@ else
 		fi ; \
 	fi ; \
 	BASENAME="${basename $(@F)}" ; \
-	OUTOBJ="$$OUTPUTPATH$$BASENAME$(suffix $@)" ; \
+	OUTOBJ="$$OUTPUTPATH$$BASENAME$$TARGET_SUFFIX" ; \
 	if test "$(<D)" = "" -o "$(<D)" = "."; then \
 		EXEC="${A4GL_CC} $< $$SO_FLAG -c -o $$OUTOBJ" ; \
 	else \
