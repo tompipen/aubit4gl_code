@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.4 2002-09-20 10:06:04 mikeaubury Exp $
+# $Id: ops.c,v 1.5 2002-09-26 11:30:15 afalout Exp $
 #
 */
 
@@ -183,6 +183,8 @@ DTYPE_SERIAL
 
 	/* add_op_function(DTYPE_DTIME,	DTYPE_INTERVAL,	OP_MATH,dt_in_ops); */
 	add_op_function(DTYPE_INTERVAL,	DTYPE_DTIME,	OP_MATH,dt_in_ops);
+
+	debug("Finished adding default operations");
 
 
 }

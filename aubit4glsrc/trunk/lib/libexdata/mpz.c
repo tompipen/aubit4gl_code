@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mpz.c,v 1.7 2002-08-29 11:25:46 mikeaubury Exp $
+# $Id: mpz.c,v 1.8 2002-09-26 11:30:15 afalout Exp $
 */
 
 /**
@@ -724,6 +724,8 @@ EXDTYPE_initlib(void)
 	add_conversion(MPZ_DTYPE_NAME,"FLOAT",mpz_to_double);
 
 	/* add_conversion(MPZ_DTYPE_NAME,MPZ_DTYPE_NAME,mpz_to_mpz); */
+
+	debug("Finished EXDTYPE_initlib");
 
 }
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.7 2002-08-18 05:00:27 afalout Exp $
+# $Id: maths.c,v 1.8 2002-09-26 11:30:15 afalout Exp $
 #
 */
 
@@ -173,6 +173,8 @@ add_op_function(int dtype1,int dtype2,int op,void *function)
 		while (ptr_orig->next!=0) ptr_orig=ptr_orig->next;
 		ptr_orig->next=ptr_new;
 	}
+
+	debug("Finished adding functions");
 }
 
 
