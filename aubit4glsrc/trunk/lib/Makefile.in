@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.97 2003-08-20 07:39:33 afalout Exp $
+# $Id: Makefile.in,v 1.98 2003-09-10 10:32:50 afalout Exp $
 #
 
 ROOT    =..
@@ -275,29 +275,57 @@ libPACKER_XML${SO_EXT}: ${LIBPACKERXML_DEPS}
 	${MAKE} -C ${LIBPACKERXML_PATH}
 
 ##############
-#libSQL_ native
+#libSQL_ ESQL (native)
 
-libSQL_nosql${SO_EXT}: ${LIBSQLNOSQL_DEPS}
-	${MAKE} -C ${LIBSQLNOSQL_PATH}
-
-#Informix ESQL/C code SQL plug-in compiled with Informix ESQL/C compiler
+#Informix ESQL/C code SQL plug-in compiled with Informix esql ESQL/C compiler
 libSQL_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
+#same thing, but different name for consistency:
+libSQL_esqlI${SO_EXT}: ${LIBSQLESQL_DEPS}
+	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
-#Informix ESQL/C code SQL plug-in compiled with Querix ESQL/C compiler
+#Informix ESQL/C code SQL plug-in compiled with Querix esqlc ESQL/C compiler
 libSQL_esqlQ${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
-#Informix ESQL/C code SQL plug-in compiled with SAP DB ESQL/C compiler
-libSQL_esqlSAP$SO_EXT: ${LIBSQLESQL_DEPS}
+#Informix ESQL/C code SQL plug-in compiled with SAP DB cpc ESQL/C compiler
+libSQL_esqlSAP${SO_EXT}: ${LIBSQLESQL_DEPS}
 	${MAKE} -C ${LIBSQLESQL_PATH} $@
 
-#Sergio never finished this one...
+#Informix ESQL/C code SQL plug-in compiled with PostgreSQL ecpg ESQL/C compiler
+libSQL_esqlPG${SO_EXT}: ${LIBSQLESQL_DEPS}
+	${MAKE} -C ${LIBSQLESQL_PATH} $@
+
+#PostgreSQL esql plug-in based on 'simple' template (ecpg in non-Informix mode)
+libSQL_c_ecpg${SO_EXT}: ${LIBSQLESQL_DEPS}
+	${MAKE} -C ${LIBSQLESQL_PATH} $@
+
+#Informix esql plug-in based on 'simple' template
+libSQL_c_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
+	${MAKE} -C ${LIBSQLESQL_PATH} $@
+
+
+##############
+#libSQL_ C (native)
+
+#Dummy plug-in good for testing or to disable SQL
+libSQL_nosql${SO_EXT}: ${LIBSQLNOSQL_DEPS}
+	${MAKE} -C ${LIBSQLNOSQL_PATH}
+
+#an simple PG plug-in with limited functionality (by Mike)
 libSQL_pg${SO_EXT}: ${LIBSQLPG_DEPS}
 	${MAKE} -C ${LIBSQLPG_PATH}
 
+#Sergio never finished this one...
+libSQL_pgDEVEL${SO_EXT}: ${LIBSQLPG_DEPS}
+	${MAKE} -C ${LIBSQLPG_PATH}
+
+#compile only plug-in for reading schema from file
+libSQL_FILESCHEMA${SO_EXT}: ${FILESCHEMA_DEPS}
+	${MAKE} -C ${FILESCHEMA_PATH}
+
 ##############
-#libSQL_ (ODBC)
+#libSQL_ (ODBC) plug-ins directly linked with ODBC driver
 
 libSQL_ifxodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} ifxodbc
@@ -308,26 +336,35 @@ libSQL_pgodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 libSQL_sapodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} sapodbc
 
+#Linked with SQLite ODBC driver, like any other directly linked ODBC plug-in
+#requires SQLite ODBC driver and SQLite library on the system
+libSQL_sqliteodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} sqliteodbc
+
+#Compiled with SQLite ODBC driver source code in Aubit CVS
+#requires SQLite library on the system
+libSQL_sqlite${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} sqlite
+
+#Compiled with SQLite ODBC driver source code in Aubit CVS and statically
+#linked with SQLite database engine ligrary (self sufficient - used mainly 
+#for binary distributions to provide "always there" SQL functionality)
+libSQL_sqliteS${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} sqlite.static
+
+
+##############
+#libSQL_ (ODBC) managers
+
 libSQL_iodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} iodbc
 
 libSQL_unixodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} unixodbc
 
-libSQL_sqliteodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
-	${MAKE} -C ${LIBSQLODBC_PATH} sqliteodbc
-
-libSQL_sqlite${SO_EXT}: ${LIBSQLODBC_DEPS}
-	${MAKE} -C ${LIBSQLODBC_PATH} sqlite
-
-libSQL_sqliteS${SO_EXT}: ${LIBSQLODBC_DEPS}
-	${MAKE} -C ${LIBSQLODBC_PATH} sqlite.static
 
 libSQL_odbc32.dll: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} odbc32
-
-libSQL_FILESCHEMA${SO_EXT}: ${FILESCHEMA_DEPS}
-	${MAKE} -C ${FILESCHEMA_PATH}
 
 ##############
 #libRPC_

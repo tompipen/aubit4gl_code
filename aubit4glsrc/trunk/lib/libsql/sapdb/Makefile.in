@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.2 2003-09-08 08:11:26 afalout Exp $
+# $Id: Makefile.in,v 1.3 2003-09-10 10:32:51 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -41,8 +41,8 @@ INCLUDE=@SAPDB_INCDIR@
 SAPDB_LIBDIR=@SAPDB_LIBDIR@
 LIBS=${SAPDB_LIBDIR} -lpcrl -lsqlca -ldl
 
-#If you want a precompiler trace to be written when the test program is 
-#executed, you must accordingly set the environment variable SQLOPT to the 
+#If you want a precompiler trace to be written when the test program is
+#executed, you must accordingly set the environment variable SQLOPT to the
 #value -X :
 #SQLOPT=-X
 #export SQLOPT
@@ -53,8 +53,12 @@ DATABASE_NAME=TST
 
 #[-u <userid>,<password> -d <database_name> -n <server_node>]
 CPCFLAGS=-Hnocheck -s -c
+#no compilation with option -c
 #-d${DATABASE_NAME} -u${USERID},${PASSWD}
 CFLAGS+=$(INCLUDE)
+
+PRECIOUS : test-prg.c adload.c
+
 
 ## ==================================================================
 ##                              Targets

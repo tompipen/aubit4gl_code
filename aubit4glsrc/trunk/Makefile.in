@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.125 2003-08-20 07:38:48 afalout Exp $
+# $Id: Makefile.in,v 1.126 2003-09-10 10:32:35 afalout Exp $
 #
 
 ## ==================================================================
@@ -373,6 +373,7 @@ clean.bin:
 	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
 	aace${EXE} aace_4gl${EXE} aace_perl${EXE} adecompile${EXE} xgen${EXE} dbbeauty${EXE} *.err \
     iid${EXE} infmx_tidy${EXE} *.4ae *-strip${EXE} \
+	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} \
 	)
 
 clean.etc:
@@ -1044,11 +1045,9 @@ gcc_symbols:
 
 #Run full set of tests
 test.build:
-#if have-sqlite
-	cd tools/test/build_tests; ${SH} run_tests -norunec -short -silent -sqlite
-#else
-#	cd tools/test/build_tests; ${SH} run_tests -short -silent -nodb
-#endif
+#run_tests script will determine what is available for testing based on
+#available libraries in lib
+	-cd tools/test/build_tests; ${SH} run_tests -alltests
 
 ## ---------------------------- EOF ----------------------------------
 

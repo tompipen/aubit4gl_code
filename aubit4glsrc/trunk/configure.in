@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.194 2003-09-08 08:11:10 afalout Exp $
+dnl # $Id: configure.in,v 1.195 2003-09-10 10:32:37 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -277,6 +277,7 @@ AC_SUBST(SAPODBC_LFLAGS)
 AC_SUBST(HAVE_PGODBC)
 AC_SUBST(PGODBC_INCLUDE)
 AC_SUBST(PGODBC_LFLAGS)
+AC_SUBST(PGODBC_LIBNAME)
 
 #PG ESQL
 AC_SUBST(PGSQL_INCLUDE)
@@ -1699,18 +1700,16 @@ AC_ARG_WITH(informix,
 ])
 
 
-if test "$cygwin" = "1"; then
-
-	AC_MSG_WARN(ESQL/C support on Windows temporaraly disabled.)
-
-	IFMX_ESQLC=no
-	IFX_ESQL_FLAGS=
-	IFX_LIBS=
-	IFX_LFLAGS=
-	IFX_INCLUDE=
-	IFX_C_MAKE=
-	INFORMIXDIR=
-fi
+#if test "$cygwin" = "1"; then
+#	AC_MSG_WARN(ESQL/C support on Windows temporaraly disabled.)
+#	IFMX_ESQLC=no
+#	IFX_ESQL_FLAGS=
+#	IFX_LIBS=
+#	IFX_LFLAGS=
+#	IFX_INCLUDE=
+#	IFX_C_MAKE=
+#	INFORMIXDIR=
+#fi
 
 ## ==================================================================
 ##                 Checks for PostgreSQL lib support
@@ -2389,11 +2388,20 @@ AC_ARG_WITH(pgodbc,
 		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
 
-#libodbcpsql.so - is unixODBC distributed driver for PG - test for that one too?
+		#unixODBC distributed ODBC driver for PG
+		AC_CHECK_LIB([odbcpsql], [main])
+		if test $ac_cv_lib_odbcpsql_main = yes; then
+            PGODBC_LIBNAME=odbcpsql
+        fi
 
-
+		#PostgreSQL distributed ODBC driver for PG
 		AC_CHECK_LIB([psqlodbc], [main])
 		if test $ac_cv_lib_psqlodbc_main = yes; then
+            PGODBC_LIBNAME=psqlodbc
+        fi
+
+
+		if test $ac_cv_lib_psqlodbc_main = yes || test $ac_cv_lib_odbcpsql_main = yes; then
 			#also check for headers, since they are not in PG ODBC RPM, they are
 			#in postgresql-devel, <<< THIS IS NOT TRUE ANY MORE, at least for RH 8 RPM's!
 			#7.1.3 seems to be last version to include this files!!
@@ -2408,6 +2416,13 @@ AC_ARG_WITH(pgodbc,
 			#AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
 
 			AC_CHECK_HEADERS([ pgsql/iodbc/iodbc.h pgsql/iodbc/isql.h pgsql/iodbc/isqlext.h ])
+			
+			#if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
+			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
+                HAVE_PG_HEADERS=yes
+            else
+                HAVE_PG_HEADERS=no
+            fi
 
         fi
 		LIBS="$old_LIBS"
@@ -2415,14 +2430,7 @@ AC_ARG_WITH(pgodbc,
         CPPFLAGS="$old_CPPFLAGS"
 
 		AC_MSG_CHECKING(PG ODBC connector support)
-		if test $ac_cv_lib_psqlodbc_main = yes; then
-
-			#if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
-			if test "$ac_cv_header_pgsql_iodbc_iodbc_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isql_h" = "yes" && test "$ac_cv_header_pgsql_iodbc_isqlext_h" = "yes" ; then
-                HAVE_PG_HEADERS=yes
-            else
-                HAVE_PG_HEADERS=no
-            fi
+		if test $ac_cv_lib_psqlodbc_main = yes || test $ac_cv_lib_odbcpsql_main = yes; then
 
 			if test "$HAVE_PG_HEADERS" != "yes" && AUBIT_SOURCE=1; then
             #we need headers only to compile source code
@@ -4442,6 +4450,10 @@ PLUGIN_NO_LINKABLE=
 	if test "$HAVE_PGSQL_LIB" = "yes"; then
         #an simple PG plug-in with limited functionality (by Mike)
 		PLUGIN_YES="$PLUGIN_YES SQL_pg"
+
+        #ESQL based PG plug-in based on 'simple' template using ecpg in no-Informix mode
+		PLUGIN_YES="$PLUGIN_YES SQL_c_ecpg"
+
 if test "disabled" = ""; then
 		#"real" one written in CPP - Sergio never finised it... :-(
 		PLUGIN_YES="$PLUGIN_YES SQL_pgDEVEL"
@@ -4529,10 +4541,10 @@ fi
 
 	if test "$SAPDB_ESQLC" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_SAP"
-if test "disabled" = ""; then
+#if test "disabled" = ""; then
 		#Compile Aubit ESQL/C SQL connectivity plug-in using SAP DB ESQL/C compiler
 		PLUGIN_YES="$PLUGIN_YES SQL_esqlSAP"
-fi
+#fi
 	else
         PLUGIN_NO="$PLUGIN_NO SQL_esqlSAP ESQL_SAP"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sap.esqlc"

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.68 2003-09-08 08:11:26 afalout Exp $
+# $Id: sql.c,v 1.69 2003-09-10 10:32:50 afalout Exp $
 #
 */
 
@@ -95,6 +95,18 @@
 
 #define strlen(a) (strlen((char *)a))
 #define fgl_size(a,b) (fgl_sizes[a]==-1?b+1:fgl_sizes[a])
+
+#ifdef _WIN32
+	#define ODBC_INI "ODBC.INI"
+#else
+	#define ODBC_INI ".odbc.ini"
+#endif
+
+#undef min
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#undef max
+#define max(a, b) ((a) < (b) ? (b) : (a))
+#define SQLRETURN int
 
 
 /*
@@ -3823,5 +3835,196 @@ A4GLSQL_initsqllib (void)
   A4GLSQL_make_connection (0, 0, 0);
   return 1;
 }
+
+
+/* =================================================== */
+/* Folowing code examples taken from sqliteodbc.c file */
+/* =================================================== */
+
+#ifdef EXAMPLE
+
+//FIXME: we need to be able to read odbc.ini directly to get at least
+// username and password
+
+#if defined(WITHOUT_DRIVERMGR) || !defined(_WIN32)
+
+/**
+ * Handling of SQLConnect() connection attributes
+ * for standalone operation without driver manager.
+ * Extracts requested parameter value from connect string.
+ * @param dsn DSN/driver connection string
+ * @param attr attribute string to be retrieved
+ * @param out output buffer
+ * @param outLen length of output buffer
+ * @result true or false
+ */
+
+static int
+A4GL_getdsnattr(char *dsn, char *attr, char *out, int outLen)
+{
+char *str = dsn, *start;
+int len = strlen(attr);
+
+    while (*str) {
+		while (*str && *str == ';') {
+		    ++str;
+		}
+		start = str;
+		if ((str = strchr(str, '=')) == NULL) {
+		    return 0;
+		}
+		if (str - start == len &&
+			#ifdef _WIN32
+		    _strnicmp(start, attr, len) == 0
+			#else
+		    strncasecmp(start, attr, len) == 0
+			#endif
+		   ) {
+		    start = ++str;
+		    while (*str && *str != ';') {
+				++str;
+		    }
+		    len = min(outLen - 1, str - start);
+		    strncpy(out, start, len);
+		    out[len] = '\0';
+		    return 1;
+		}
+		while (*str && *str != ';') {
+		    ++str;
+		}
+    }
+    return 0;
+}
+#endif
+
+#if defined(WITHOUT_DRIVERMGR) || defined(_WIN32)
+
+/**
+ * Get datasource attributes from registry.
+ * @param setupdlg pointer to dialog data
+ */
+
+static void
+GetAttributes(SETUPDLG *setupdlg)
+{
+    char *dsn = setupdlg->attr[KEY_DSN].attr;
+
+    if (!setupdlg->attr[KEY_DESC].supplied) {
+	SQLGetPrivateProfileString(dsn, "Description", "",
+				   setupdlg->attr[KEY_DESC].attr,
+				   sizeof (setupdlg->attr[KEY_DESC].attr),
+				   ODBC_INI);
+    }
+    if (!setupdlg->attr[KEY_DBNAME].supplied) {
+	SQLGetPrivateProfileString(dsn, "Database", "",
+				   setupdlg->attr[KEY_DBNAME].attr,
+				   sizeof (setupdlg->attr[KEY_DBNAME].attr),
+				   ODBC_INI);
+    }
+    if (!setupdlg->attr[KEY_BUSY].supplied) {
+	SQLGetPrivateProfileString(dsn, "Timeout", "1000",
+				   setupdlg->attr[KEY_BUSY].attr,
+				   sizeof (setupdlg->attr[KEY_BUSY].attr),
+				   ODBC_INI);
+    }
+    if (!setupdlg->attr[KEY_NOWCHAR].supplied) {
+	SQLGetPrivateProfileString(dsn, "NoWCHAR", "",
+				   setupdlg->attr[KEY_NOWCHAR].attr,
+				   sizeof (setupdlg->attr[KEY_NOWCHAR].attr),
+				   ODBC_INI);
+    }
+#ifdef ASYNC
+    if (!setupdlg->attr[KEY_THR].supplied) {
+	SQLGetPrivateProfileString(dsn, "Threaded", "1",
+				   setupdlg->attr[KEY_THR].attr,
+				   sizeof (setupdlg->attr[KEY_THR].attr),
+				   ODBC_INI);
+    }
+#endif
+}
+
+#endif
+
+/**
+ * Internal connect to database.
+ * @param dbc database connection handle
+ * @param dsn DSN string
+ * @param dsnLen length of DSN string or SQL_NTS
+ * @result ODBC error code
+ */
+
+static SQLRETURN
+example_drvconnect(SQLHDBC dbc, SQLCHAR *dsn, SQLSMALLINT dsnLen)
+{
+DBC *d;
+int len;
+char buf[SQL_MAX_MESSAGE_LENGTH], dbname[SQL_MAX_MESSAGE_LENGTH / 4];
+char busy[SQL_MAX_MESSAGE_LENGTH / 4];
+char tflag[32], nwflag[32];
+
+
+//Test parameters we got:
+	if (dbc == SQL_NULL_HDBC) {
+		return SQL_INVALID_HANDLE;
+    }
+    d = (DBC *) dbc;
+    if (d->magic != DBC_MAGIC) {
+		return SQL_INVALID_HANDLE;
+    }
+    if (d->sqlite != NULL) {
+		setstatd(d, "connection already established", "08002");
+		return SQL_ERROR;
+    }
+    buf[0] = '\0';
+    if (dsnLen == SQL_NTS) {
+		len = sizeof (buf) - 1;
+    } else {
+		len = min(sizeof (buf) - 1, dsnLen);
+    }
+    if (dsn != NULL) {
+		strncpy(buf, dsn, len);
+    }
+    buf[len] = '\0';
+    if (buf[0] == '\0') {
+		setstatd(d, "invalid DSN", "S1090");
+		return SQL_ERROR;
+    }
+    busy[0] = '\0';
+    dbname[0] = '\0';
+#ifdef WITHOUT_DRIVERMGR
+//get info from odbc.ini using our own read function
+	A4GL_getdsnattr(buf, "database", dbname, sizeof (dbname));
+    if (dbname[0] == '\0') {
+		strncpy(dbname, buf, sizeof (dbname));
+		dbname[sizeof (dbname) - 1] = '\0';
+    }
+    A4GL_getdsnattr(buf, "timeout", busy, sizeof (busy));
+    tflag[0] = '\0';
+    nwflag[0] = '\0';
+	#ifdef ASYNC
+	    A4GL_getdsnattr(buf, "threaded", tflag, sizeof (tflag));
+	#endif
+    A4GL_getdsnattr(buf, "nowchar", nwflag, sizeof (nwflag));
+#else
+//get info from odbc.ini using driver manager function calls:
+	SQLGetPrivateProfileString(buf, "timeout", "1000",
+			       busy, sizeof (busy), ODBC_INI);
+    SQLGetPrivateProfileString(buf, "database", "",
+			       dbname, sizeof (dbname), ODBC_INI);
+	#ifdef ASYNC
+	    SQLGetPrivateProfileString(buf, "threaded", "",
+				       tflag, sizeof (tflag), ODBC_INI);
+	#endif
+    SQLGetPrivateProfileString(buf, "nowchar", "",
+			       nwflag, sizeof (nwflag), ODBC_INI);
+#endif
+
+	//Now we can connect:
+	//d->nowchar = getbool(nwflag);
+    //return dbopen(d, dbname, dsn, tflag, busy);
+}
+
+
+#endif //ifdef EXAMPLE
 
 /* ================================ EOF ================================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.91 2003-09-08 08:11:25 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.92 2003-09-10 10:32:50 afalout Exp $
 #
 */
 
@@ -110,8 +110,6 @@
 	#define __DARWIN__
 
 	#define bool_t int
-	///usr/include/rpc/auth.h:105: undefined type, found `XDR'
-	//#include "rpc/xdr.h"
 	#define	enum_t	int
 
 #endif
@@ -412,68 +410,55 @@
 
 #ifdef HAVE_CONFIG_H
   /* header automatically created with AutoConf-configure */
-#include "a4gl_incl_config.h"
+	#include "a4gl_incl_config.h"
 #endif
 
-#if defined(WIN32) || defined (__MINGW32__)
-#ifndef _NO_WINDOWS_H_
-#include <windows.h>
-#define __UCHAR_DEFINED__
-#endif
-#else				/* UNIX */
-#include <pwd.h>		/* getpwduid() */
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#endif
+	#ifndef __NO_STDARG__
+		#include <stdarg.h>		/* va_start(), va-list ... */
+	#endif
 
+#ifndef _NO_SYSINCL_
 
-//#ifndef __NO_STDARG__
-	#include <stdarg.h>		/* va_start(), va-list ... */
-//#endif
+	#if defined(WIN32) || defined (__MINGW32__)
+		#ifndef _NO_WINDOWS_H_
+			#include <windows.h>
+			#define __UCHAR_DEFINED__
+		#endif
+	#else						/* UNIX */
+		#include <pwd.h>		/* getpwduid() */
+		#include <sys/socket.h>
+		#include <netinet/in.h>
+		#include <netdb.h>
+	#endif
 
-  //#include <ctype.h>                            /* tolower() toupper() */
-#include <stdio.h>		/* needed for FILE symbol */
-#ifndef WIN32
-#include <string.h>
-#endif
-#include <stdlib.h>		/* free() */
+  	//#include <ctype.h>    	/* tolower() toupper() */
+	#include <stdio.h>			/* needed for FILE symbol */
 
-#if HAVE_SEARCH_H
-#include <search.h>		/* VISIT-used in pointers.c */
-#else
-  /* For tsearch */
-  typedef enum
-  {
-    preorder,
-    postorder,
-    endorder,
-    leaf
-  }
-  VISIT;
-#endif
+	#ifndef WIN32
+		#include <string.h>
+	#endif
+	#include <stdlib.h>			/* free() */
 
-#include <assert.h>		/* assert() */
-#include <time.h>
-#include <math.h>		/* pow() */
-#include <locale.h>		/* setlocale() */
-#include <unistd.h>		/* sleep() close() write() usleep() */
-#include <signal.h>		/* SIGINT */
+	#if HAVE_SEARCH_H
+		#include <search.h>		/* VISIT-used in pointers.c */
+	#else
+	  /* For tsearch */
+	  typedef enum
+	  {
+	    preorder,
+	    postorder,
+	    endorder,
+	    leaf
+	  }
+	  VISIT;
+	#endif
 
-
-#ifdef USE_ZZIPLIB
-
-//#define FILE ZZIP_FILE
-#define fopen zzip_fopen
-#define fread zzip_fread
-#define fwrite zzip_fwrite
-#define fclose zzip_fclose
-#define frewind zzip_frewind
-#define fseek zzip_fseek
-#define ftell zzip_ftell
-#include "zzip.h"
-#endif
-
+	#include <assert.h>		/* assert() */
+	#include <time.h>
+	#include <math.h>		/* pow() */
+	#include <locale.h>		/* setlocale() */
+	#include <unistd.h>		/* sleep() close() write() usleep() */
+	#include <signal.h>		/* SIGINT */
 
   /*
      skipposixheaders flag:
@@ -483,8 +468,25 @@
    */
 
   /*@-skipposixheaders@ */
-#include <sys/types.h>
+	#include <sys/types.h>
   /*@=skipposixheaders@ */
+
+#endif //_NO_SYSINCL_
+
+
+#ifdef USE_ZZIPLIB
+
+	//#define FILE ZZIP_FILE
+	#define fopen zzip_fopen
+	#define fread zzip_fread
+	#define fwrite zzip_fwrite
+	#define fclose zzip_fclose
+	#define frewind zzip_frewind
+	#define fseek zzip_fseek
+	#define ftell zzip_ftell
+	#include "zzip.h"
+#endif
+
 
   /*
      This will prevent ussage of getenv and wgetenv functions:

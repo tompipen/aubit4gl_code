@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.3 2003-09-09 12:01:01 afalout Exp $
+# $Id: esql_compatible.ec,v 1.4 2003-09-10 10:32:50 afalout Exp $
 #
 */
 
@@ -362,7 +362,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.3 2003-09-09 12:01:01 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.4 2003-09-10 10:32:50 afalout Exp $";
 #endif
 
 
@@ -1139,10 +1139,13 @@ A4GL_debug("In binding - %d %d ptr=%p",dataType,length,bind[idx].ptr);
   if ( A4GL_isnull(dataType,bind[idx].ptr) )
   {
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
+//PG: Only GET descriptors are suppted, not SET
 	EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
       TYPE = :dataType,
       LENGTH = :length,
       INDICATOR = -1;
+#endif
 #endif
     if ( isSqlError() )
       return 1;
@@ -1159,10 +1162,12 @@ A4GL_debug("Not null");
 
 	length++; // Add space for the \0
 #ifndef __QUERIX_FIX__
-      EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
+#ifndef __PG_FIX__
+	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         LENGTH = :length,
         DATA = :char_var;
+#endif
 #endif
       break;
 
@@ -1170,36 +1175,44 @@ A4GL_debug("Not null");
       smint_ptr = (short *)bind[idx].ptr;
       smint_var = (short)*smint_ptr;
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
 	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :smint_var;
+#endif
 #endif
       break;
     case DTYPE_INT:
       int_ptr = (long *)bind[idx].ptr;
       int_var = (long) *int_ptr;
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
 	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :int_var;
+#endif
 #endif
       break;
     case DTYPE_FLOAT:
       float_ptr = (double *)bind[idx].ptr;
       float_var = (double)*float_ptr;
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
 	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :float_var;
+#endif
 #endif
       break;
     case DTYPE_SMFLOAT:
       smfloat_ptr = (float *)bind[idx].ptr;
       smfloat_var = (float) *smfloat_ptr;
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
 	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :smfloat_var;
+#endif
 #endif
       break;
     case DTYPE_DECIMAL:
@@ -1210,18 +1223,22 @@ A4GL_debug("Not null");
         return 1;
       }
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
 	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :decimal_var;
+#endif
 #endif
       break;
     case DTYPE_DATE:
       fgl_date = (long *)bind[idx].ptr;
       date_var = (long) *fgl_date;
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
 	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :date_var;
+#endif
 #endif
       break;
     case DTYPE_MONEY:
@@ -1232,9 +1249,11 @@ A4GL_debug("Not null");
         return 1;
       }
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
 	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :money_var;
+#endif
 #endif
       break;
     case DTYPE_DTIME:
@@ -1254,10 +1273,12 @@ A4GL_debug("Not null");
 	dataType=0;
 	length=255;
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
 	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :char_var,
 	LENGTH = :length;
+#endif
 #endif
 	if (sqlca.sqlcode!=0) {
 			A4GL_debug("Bugger - bombed");
@@ -1274,9 +1295,11 @@ A4GL_debug("Not null");
         return 1;
       }
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
 	  EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :interval_var;
+#endif
 #else
       //generates this:
 //      {char *__qxSql[] = { "SET Error! Error! ? VALUE ? TYPE = ? , DATA = ?", 0, };BIND __qxUseList[] = { { SQLVCHAR, 255}, { SQLINT, 4}, { SQLINT, 4}, { SQLINTRVAL, 0}, }; __qxUseList[0].sqldata=(char *)descriptorName; __qxUseList[1].sqldata=(char *)&index; __qxUseList[2].sqldata=(char *)&dataType; __qxUseList[3].sqldata=(char *)&interval_var; __qxUseList[3].sqllen=interval_var.in_qual; SQLCODE = SqlDdl(__qxSql,4,__qxUseList);}
@@ -1317,12 +1340,16 @@ static int processInputBind(char *descName,int bCount,struct BINDING *bind)
   EXEC SQL end declare section;
   register int i;
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#endif
 #endif
   if (sqlca.sqlcode==-480) {
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
-  	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#ifndef __PG_FIX__
+	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#endif
 #endif
   }
 
@@ -1582,7 +1609,9 @@ static int allocateOutputDescriptor(char *descName,
   A4GL_debug("allocOutout - %s cnt=%d",descriptorName,bindCount);
   bindCount+=256;
 #ifndef __QUERIX_FIX__
+#ifndef __PG_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#endif
 #endif
   A4GL_debug("Status=%d",sqlca.sqlcode);
   if (sqlca.sqlcode==-480) {
@@ -1591,7 +1620,9 @@ static int allocateOutputDescriptor(char *descName,
 	A4GL_debug("Try dealloc and alloc");
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
-  	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#ifndef __PG_FIX__
+	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
+#endif
 #endif
   }
   A4GL_debug("Done");
@@ -1603,7 +1634,7 @@ static int allocateOutputDescriptor(char *descName,
 }
  
 /**
- * Makes the bind of the input variables to pass to the statement to a 
+ * Makes the bind of the input variables to pass to the statement to a
  * global ESQL descriptor area.
  *
  * @param descName The name for using as a global descriptor.
@@ -1740,12 +1771,24 @@ typedef struct     {
   switch (getStatementBindType(sid))
   {
     case NO_BIND:
-      EXEC SQL EXECUTE :statementName;
+#ifndef __PG_FIX__
+	  EXEC SQL EXECUTE :statementName;
+#else
+	  EXEC SQL EXECUTE statementName;
+#endif
       break;
     case INPUT_BIND:
-      EXEC SQL EXECUTE :statementName
+#ifndef __PG_FIX__
+	  EXEC SQL EXECUTE :statementName
+#else
+	  EXEC SQL EXECUTE statementName
+#endif
 #ifndef __SAP__
+#ifndef __PG_FIX__
 		USING_SQL_DESCRIPTOR :inputDescriptorName;
+#else
+		USING SQL DESCRIPTOR inputDescriptorName;
+#endif
 #else
 		USING_SQL_DESCRIPTOR &inputDescriptorName;
 #endif

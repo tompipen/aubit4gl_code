@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.36 2003-09-01 00:01:12 afalout Exp $
+# $Id: Makefile.in,v 1.37 2003-09-10 10:32:50 afalout Exp $
 #
 
 ROOT    =../../..
@@ -158,7 +158,7 @@ ${LIBROOT}/libSQL_ifxodbc${SO_EXT}: ${OBJECTS}
 
 ${LIBROOT}/libSQL_pgodbc${SO_EXT}: CFLAGS:=-DPGODBC @PGODBC_INCLUDE@ @PGODBC_LFLAGS@ ${CFLAGS_NOREDUND}
 ${LIBROOT}/libSQL_pgodbc${SO_EXT}: ${OBJECTS}
-	${LD} ${SO_LDFLAGS} $^ -o $@ -lpsqlodbc @PGODBC_LFLAGS@
+	${LD} ${SO_LDFLAGS} $^ -o $@ -l@PGODBC_LIBNAME@ @PGODBC_LFLAGS@
 
 ${LIBROOT}/libSQL_sapodbc${SO_EXT}: CFLAGS:=-DSAPODBC @SAPODBC_INCLUDE@ @SAPODBC_LFLAGS@ ${CFLAGS_NOREDUND}
 ${LIBROOT}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}

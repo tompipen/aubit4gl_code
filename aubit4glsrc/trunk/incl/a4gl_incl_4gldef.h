@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.55 2003-09-08 08:11:25 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.56 2003-09-10 10:32:50 afalout Exp $
 */
 
 /**
@@ -46,11 +46,14 @@
 #ifndef FGLDEF_INCL
 #define FGLDEF_INCL
 
-#ifndef __NO_STDARG__
-//int stdargSTART______________________;
-	#include <stdarg.h>
-//int stdargEND______________________;
-#endif
+#ifndef _NO_SYSINCL_
+
+	#ifndef __NO_STDARG__
+	//int stdargSTART______________________;
+		#include <stdarg.h>
+	//int stdargEND______________________;
+	#endif
+#endif // _NO_SYSINCL_
 
 #ifdef __cplusplus
 
@@ -58,10 +61,12 @@ extern "C"
 {
 #endif
 
+#ifndef _NO_SYSINCL_
+	//int stdioSTART________________;
+	#include <stdio.h>
+	//int stdioEND________________;
+#endif
 
-//int stdioSTART________________;
-#include <stdio.h>
-//int stdioEND________________;
 #define fglbyte struct fgl_int_loc
 #define fgltext struct fgl_int_loc
 
@@ -486,33 +491,26 @@ be used in applications which link to the library).
 
 
 #ifdef MOVED_TO_LIB
-
-#ifndef _DEFINE_STATUSVARS_	/* set from fglwrap.c --ONLY-- */
-  /* for everything except libaubit4gl: */
-
-#ifndef _SQLCA_DEFINED_
-  /*
-     _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
-     that also define sqlca:
-   */
-#define _SQLCA_DEFINED_
+	#ifndef _DEFINE_STATUSVARS_	/* set from fglwrap.c --ONLY-- */
+		/* for everything except libaubit4gl: */
+		#ifndef _SQLCA_DEFINED_
+		  /*
+		     _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
+		     that also define sqlca:
+		   */
+			#define _SQLCA_DEFINED_
+		#endif
+		//extern long a4gl_status;				/** 4gl global status variable */
+		//extern long int_flag;					/** 4gl interrupt ocurred global flag */
+		//extern long quit_flag;				/** 4gl quit ocurred global flag */
+	#else
+		/* only in libaubit4gl */
+		dll_export sqlca_struct a4gl_sqlca;	    /** Sqlca variable -- DEFINED WHERE ??? --*/
+		long a4gl_status;							/** 4gl global status variable */
+		long int_flag;						/** 4gl interrupt ocurred global flag */
+		long quit_flag;						/** 4gl quit ocurred global flag */
+	#endif
 #endif
-  //extern long a4gl_status;				/** 4gl global status variable */
-  //extern long int_flag;					/** 4gl interrupt ocurred global flag */
-  //extern long quit_flag;				/** 4gl quit ocurred global flag */
-#else
-  /* only in libaubit4gl */
-  dll_export sqlca_struct a4gl_sqlca;	    /** Sqlca variable -- DEFINED WHERE ??? --*/
-  long a4gl_status;							/** 4gl global status variable */
-  long int_flag;						/** 4gl interrupt ocurred global flag */
-  long quit_flag;						/** 4gl quit ocurred global flag */
-#endif
-#endif
-
-
-
-
-
 
 #ifdef __cplusplus
 }
