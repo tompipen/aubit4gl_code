@@ -89,7 +89,7 @@ if (m.type==1) {
 	fprintf(hsf,"struct {\n"); 
 	fprintf(hsf," unsigned int %s_len;\n",m.name);
 	fprintf(hsf," %s_val;\n",buff);
-	fprintf(hsf,"} %s;\n",m.name); 
+	fprintf(hsf,"} %s;\n",m.name);
 	return;
 }
 
@@ -128,30 +128,36 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 
 /* Simple types */
 	if (m.type==0) {
-		if (m.pointer==0) fprintf(cfo,"   if (!output_%s(\"%s\",r.%s,0,-1)) return 0;\n",s,m.name,buff); 
+		if (m.pointer==0) fprintf(cfo,"   if (!output_%s(\"%s\",r.%s,0,-1)) return 0;\n",s,m.name,buff);
 		if (m.pointer==1) {
-			fprintf(cfo,"   if (r.%s) {output_okptr(\"%s\");if (!output_%s(\"%s\",*r.%s,1,-1)) return 0;}\n",buff,m.name,s,m.name,buff); 
-			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name); 
+			fprintf(cfo,"   if (r.%s) {output_okptr(\"%s\");if (!output_%s(\"%s\",*r.%s,1,-1)) return 0;}\n",buff,m.name,s,m.name,buff);
+			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
+
+			//to prevent control reaches end of non-void function warning:
+			//fprintf(cfo,"return 99;\n");
 		}
 		return;
 	}
 
 /* Flexible length array */
-	if (m.type==1) { 
+	if (m.type==1) {
 		fprintf(cfo,"   if (!output_start_array(\"%s\",1,r.%s.%s_len)) return 0;\n",m.name,buff,m.name);
 		fprintf(cfo,"   {\n");
 		fprintf(cfo,"      int cnt;\n");
 	        fprintf(cfo,"      for (cnt=0;cnt<r.%s.%s_len;cnt++) {\n",buff,m.name);
-		if (m.pointer==0) fprintf(cfo,"         if (!output_%s(\"%s\",r.%s.%s_val[cnt],0,cnt)) return 0;\n",s,m.name,buff,m.name); 
+		if (m.pointer==0) fprintf(cfo,"         if (!output_%s(\"%s\",r.%s.%s_val[cnt],0,cnt)) return 0;\n",s,m.name,buff,m.name);
 		if (m.pointer==1) {
 			fprintf(cfo,"   if (r.%s.%s_val[cnt]) {output_okptr(\"%s\");if (!output_%s(\"%s\",*r.%s.%s_val[cnt],1,cnt)) return 0;}\n",
 				buff,m.name,m.name,
-				s,m.name,buff,m.name); 
-			fprintf(cfo,"   else     { if (!output_nullptr(\"%s\")) return 0;}\n",m.name); 
+				s,m.name,buff,m.name);
+			fprintf(cfo,"   else     { if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
 		}
 	        fprintf(cfo,"      }\n");
 		fprintf(cfo,"   }\n");
 		fprintf(cfo,"   if (!output_end_array(\"%s\",1)) return 0;\n",s);
+		//to prevent control reaches end of non-void function warning:
+		//fprintf(cfo,"return 98;\n");
+
 		return;
 	}
 
@@ -161,22 +167,33 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 		fprintf(cfo,"   {\n");
 		fprintf(cfo,"      int cnt;\n");
 	        fprintf(cfo,"      for (cnt=0;cnt<%d;cnt++) {\n",m.size);
-		if (m.pointer==0) fprintf(cfo,"   if (!output_%s(\"%s\",r.%s[cnt],0,-1)) return 0;\n",s,m.name,m.name); 
+		if (m.pointer==0) fprintf(cfo,"   if (!output_%s(\"%s\",r.%s[cnt],0,-1)) return 0;\n",s,m.name,m.name);
 		if (m.pointer==1) {
-			fprintf(cfo,"   if (r.%s[cnt]) {output_okptr(\"\");if (!output_%s(\"%s\",*r.%s[cnt],0,cnt)) return 0;}\n",m.name,s,m.name,m.name); 
-			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name); 
+			fprintf(cfo,"   if (r.%s[cnt]) {output_okptr(\"\");if (!output_%s(\"%s\",*r.%s[cnt],0,cnt)) return 0;}\n",m.name,s,m.name,m.name);
+			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
 		}
 		fprintf(cfo,"      }\n");
 		fprintf(cfo,"   }\n");
 		fprintf(cfo,"   if (!output_end_array(\"%s\",2)) return 0;\n",s);
+		//to prevent control reaches end of non-void function warning:
+		//fprintf(cfo,"return 97;\n");
 		return;
 	}
 
 	if (m.type==3) {
-		if (m.pointer==0) fprintf(cfo,"   if (!output_%s(\"%s\",r,0,-1)) return 0;\n",s,m.name); /* ,buff); */
+		if (m.pointer==0) {
+				fprintf(cfo,"   if (!output_%s(\"%s\",r,0,-1)) return 0;\n",s,m.name); /* ,buff); */
+				//to prevent warning:
+				fprintf(cfo,"return 0;\n");
+        }
 		if (m.pointer==1) {
 			fprintf(cfo,"   if (r) {output_okptr(\"\");if (!output_%s(\"%s\",*r,1,-1)) return 0;}\n",buff,s); /* ,m.name,buff); */
 			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
+
+			//to prevent control reaches end of non-void function warning: (OK)
+			fprintf(cfo,"return 96;\n");
+
+
 		}
 		return;
 	}
@@ -194,11 +211,11 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 
 /* Simple types */
 	if (m.type==0) {
-		if (m.pointer==0) fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s,0,-1)) return 0;\n",s,m.name,buff); 
+		if (m.pointer==0) fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s,0,-1)) return 0;\n",s,m.name,buff);
 		if (m.pointer==1) {
 			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s=0;\n",buff); 
 			fprintf(cfi,"   else r->%s=malloc(sizeof(%s));\n",buff,s); 
-			fprintf(cfi,"   if (!input_%s(\"%s\",r->%s,1,-1)) return 0;\n\n",s,m.name,buff); 
+			fprintf(cfi,"   if (!input_%s(\"%s\",r->%s,1,-1)) return 0;\n\n",s,m.name,buff);
 		}
 		return;
 	}
@@ -210,12 +227,28 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 		fprintf(cfi,"      int cnt;\n");
 	        fprintf(cfi,"      r->%s.%s_val=malloc(r->%s.%s_len*sizeof(r->%s.%s_val[0]));\n", buff,m.name, buff,m.name, buff,m.name);
 	        fprintf(cfi,"      for (cnt=0;cnt<r->%s.%s_len;cnt++) {\n",buff,m.name);
-		if (m.pointer==0) fprintf(cfi,"         if (!input_%s(\"%s\",&r->%s.%s_val[cnt],0,cnt)) return 0;\n",s,m.name,buff,m.name); 
+		
+        /*
+
+		form_x.xi.c: In function `input_u_expression':
+		form_x.xi.c:336: warning: passing arg 2 of `input_listitem' from incompatible pointer type
+
+        generated code:
+
+		if (!input_listitem("list",&r->u_expression_u.list.list_val[cnt],0,cnt)) return 0;
+
+        prototype:
+
+		int input_listitem(char *rn,struct u_expression *r,int isptr,int arr) ;
+
+        */
+
+		if (m.pointer==0) fprintf(cfi,"         if (!input_%s(\"%s\",&r->%s.%s_val[cnt],0,cnt)) return 0;\n",s,m.name,buff,m.name);
 		if (m.pointer==1) {
-			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s.%s_val[cnt]=0;\n",buff,m.name); 
-			fprintf(cfi,"   else r->%s.%s_val[cnt]=malloc(sizeof(%s));\n",buff,m.name,s); 
+			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s.%s_val[cnt]=0;\n",buff,m.name);
+			fprintf(cfi,"   else r->%s.%s_val[cnt]=malloc(sizeof(%s));\n",buff,m.name,s);
 			fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s.%s_val[cnt],1,cnt)) return 0;\n\n",
-				s,m.name,buff,m.name); 
+				s,m.name,buff,m.name);
 		}
 	        fprintf(cfi,"      }\n");
 		fprintf(cfi,"   }\n");
@@ -229,11 +262,11 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 		fprintf(cfi,"      int cnt,mcnt;\n");
 		fprintf(cfi,"   if (!input_start_array(\"%s\",2,&mcnt)) return 0;\n",m.name);
 	        fprintf(cfi,"      for (cnt=0;cnt<mcnt;cnt++) {\n");
-		if (m.pointer==0) fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s[cnt],0,-1)) return 0;\n",s,m.name,buff); 
+		if (m.pointer==0) fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s[cnt],0,-1)) return 0;\n",s,m.name,buff);
 		if (m.pointer==1) {
-			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s[cnt]=0;\n",m.name); 
-			fprintf(cfi,"   else r->%s[cnt]=malloc(sizeof(%s));\n",m.name,s); 
-			fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s[cnt],0,cnt)) return 0;\n\n",s,m.name,buff); 
+			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s[cnt]=0;\n",m.name);
+			fprintf(cfi,"   else r->%s[cnt]=malloc(sizeof(%s));\n",m.name,s);
+			fprintf(cfi,"   if (!input_%s(\"%s\",&r->%s[cnt],0,cnt)) return 0;\n\n",s,m.name,buff);
 		}
 		fprintf(cfi,"      }\n");
 		fprintf(cfi,"   }\n");
@@ -243,9 +276,15 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 
 /* typedefs */
 	if (m.type==3) {
-		if (m.pointer==0) fprintf(cfi,"   if (!input_%s(\"%s\",&r,0,-1)) return 0;\n",m.name,buff); 
+		if (m.pointer==0) {
+			fprintf(cfi,"   if (!input_%s(\"%s\",&r,0,-1)) return 0;\n",m.name,buff);
+			//to prevent warning:
+			fprintf(cfi,"return 0;\n");
+        }
 		if (m.pointer==1) {
-			fprintf(cfi,"   if (!input_%s(\"%s\",r,1,-1)) return 0;\n",m.name,buff); 
+			fprintf(cfi,"   if (!input_%s(\"%s\",r,1,-1)) return 0;\n",m.name,buff);
+			//to prevetn warning:
+			fprintf(cfi,"return 0;\n");
 		}
 		return;
 	}
@@ -379,8 +418,10 @@ enum: ENUM NAMED {
 	fprintf(cfi,"int input_%s(char *rn,enum %s *r,int isptr,int arr){\n",$<str>2,$<str>2);
 
 	fprintf(cfo,"char *name=\"%s\";\ndebug(\"Writing %s\");\n",$<str>2,$<str>2);
-	fprintf(cfi,"char *name=\"%s\";\n",$<str>2);
+//	fprintf(cfi,"char *name=\"%s\";\n",$<str>2);
 
+	fprintf(cfi,"char *name;\n");
+	fprintf(cfi,"name=\"%s\";\n",$<str>2);
 
 	fprintf(hsf,"enum %s {",$<str>2);
 	} OPEN_BRACE enum_list CLOSE_BRACE SEMICOLON {
@@ -443,12 +484,23 @@ struct: STRUCT NAMED {
 	fprintf(hsf,"struct %s {\n",$<str>2);
 	fprintf(hf,"int output_%s(char *rn,%s r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfo,"int output_%s(char *rn,%s r,int isptr,int arr) {\n",$<str>2,$<str>2);
-	fprintf(cfo,"char *name=\"%s\";\n",$<str>2);
+	
+//	fprintf(cfo,"char *name=\"%s\";\n",$<str>2);
+
+    /* sepatately defining and initialising to prevent compiler watnings about
+    unised variable: */
+	fprintf(cfo,"char *name;\n");
+	fprintf(cfo,"name=\"%s\";\n",$<str>2);
+
 	fprintf(cfo,"if (!output_start_struct(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
 
 	fprintf(hf,"int input_%s(char *rn,%s *r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfi,"int input_%s(char *rn,%s *r,int isptr,int arr) {\n",$<str>2,$<str>2);
-	fprintf(cfi,"char *name=\"%s\";\n",$<str>2);
+//	fprintf(cfi,"char *name=\"%s\";\n",$<str>2);
+	fprintf(cfi,"char *name;\n");
+	fprintf(cfi,"name=\"%s\";\n",$<str>2);
+
+
 	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n"); /* ,$<str>2); */
 
 	fprintf(cfi,"if (!input_start_struct(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
@@ -551,12 +603,22 @@ union: UNION NAMED SWITCH OPEN_BRACKET  {
 
 	fprintf(hf,"int output_%s(char *rn,%s r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfo,"int output_%s(char *rn,%s r,int isptr,int arr) {\n",$<str>2,$<str>2);
-	fprintf(cfo,"char *name=\"%s\";\n",$<str>2);
+//	fprintf(cfo,"char *name=\"%s\";\n",$<str>2);
+
+    /* sepatately defining and initialising to prevent compiler watnings about
+    unised variable: */
+	fprintf(cfo,"char *name;\n");
+	fprintf(cfo,"name=\"%s\";\n",$<str>2);
+
+
 	fprintf(cfo,"if (!output_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
 
 	fprintf(hf,"int input_%s(char *rn,%s *r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfi,"int input_%s(char *rn,%s *r,int isptr,int arr) {\n",$<str>2,$<str>2);
-	fprintf(cfi,"char *name=\"%s\";\n",$<str>2);
+//	fprintf(cfi,"char *name=\"%s\";\n",$<str>2);
+	fprintf(cfi,"char *name;\n");
+	fprintf(cfi,"name=\"%s\";\n",$<str>2);
+
 	fprintf(cfi,"if (isptr==1&&r==0) return 1; /* Its just a null pointer */\n"); /* ,$<str>2); */
 	fprintf(cfi,"if (!input_start_union(\"%s\",rn,isptr,arr)) return 0;\n",$<str>2);
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.2 2002-07-21 09:56:42 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-08-18 08:36:18 afalout Exp $
 #
 
 ROOT        =../..
@@ -36,6 +36,9 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 ##                    		Settings
 ## ==================================================================
+
+LOCAL_IFLAGS=-I..
+CFLAGS      +=${LOCAL_IFLAGS}
 
 #we don't want -Wall in CFLAGS when compiling rpcgen generated code because it would
 #give us bunch of warnings about unused varibles, that we cannot fix:
@@ -87,7 +90,7 @@ libDATA_menu_list${SO_EXT}: 		menu_x.xo.c
 	${CP} $@ ${LIBROOT}
 
 libDATA_report${SO_EXT}: 			report.xo.c
-	${CC} $(CFLAGS) ${SHARED} -o $@ $^ report.xi.c report.xio.c
+	${CC} $(CFLAGS) ${SHARED} -o $@ $^ report.xi.c report.xio.c -D_NO_FORM_X_H_
 	${CP} $@ ${LIBROOT}
 
 libXDRPACKER_struct_form${SO_EXT}:	form_x_xdr.c
@@ -104,7 +107,7 @@ libXDRPACKER_report${SO_EXT}:  		report_xdr.c
 
 #FIXME: needs renaming, or is it obsolete?
 pack_any${SO_EXT}:
-	${CC} $(CFLAGS) ${SHARED} -o $@ menu_x.xio.c form_x.xio.c report.xio.c
+	${CC} $(CFLAGS) ${SHARED} -o $@ menu_x.xio.c form_x.xio.c report.xio.c -D_NO_FORM_X_H_
 #no copy to lib here?
 
 ## ==================================================================
@@ -123,24 +126,27 @@ report_xdr.c: report.x
 #"xgen form_x.x" will create:
 #form_x.x.h   form_x.xio.c  form_x.xs.h form_x.xi.c  form_x.xo.c
 
-form_x.xo.c: form_x.x
+form_x.xo.c form_x.xi.c form_x.xio.c form_x.x.h: form_x.x
 	${XGENEXE} $^ struct_form
 
-menu_x.xo.c: menu_x.x
+menu_x.xo.c menu_x.xi.c menu_x.xio.c: menu_x.x
 	${XGENEXE} $^ menu_list
 
-report.xo.c: report.x
+report.xo.c report.xi.c report.xio.c: report.x
 	${XGENEXE} $^ report
 
 ${XGENEXE}:
 	${MAKE} -C ${ROOT}/compilers/xgen
+
+report.xi.o: form_x.x.h
+
 
 ## ==================================================================
 ##                          Clean
 ## ==================================================================
 
 clean:
-	${RM} *.c *${SO_EXT} *.h *.bak
+	${RM} *.c *${SO_EXT} *.h *.bak *.o
 
 ## ==================================================================
 ##                         Other Targets

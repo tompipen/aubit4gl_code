@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.3 2002-08-18 05:00:27 afalout Exp $
+# $Id: main.c,v 1.4 2002-08-18 08:36:29 afalout Exp $
 #*/
 
 /**
@@ -90,7 +90,7 @@ extern int 	yyparse			(void); /* in y.tab.c */
 */
 
 /**
- *
+ * FIXME: we should ling xgen with libaubit4gl.so and use bname that is defined there
  * @todo Describe function
  */
 /* static */
@@ -173,9 +173,7 @@ int rval;
 
 	strcpy(outputfilename,a);
 
-
-
-      yyin = (FILE *)fopen (c, "r");
+	yyin = (FILE *)fopen (c, "r");
 
 	strcpy(ofile,outputfilename);
 	strcat(ofile,".xo.c");
@@ -207,7 +205,7 @@ int rval;
   else
     {
 
-      printf ("Usage\n   %s filename\n", argv[0]);
+      printf ("Usage\n   %s filename [export_name]\n", argv[0]);
 
       exit (0);
 
@@ -260,9 +258,19 @@ void
 write_genout(void)
 {
 	fprintf(cfi,"#include \"%s\"\n",hfile);
-	fprintf(cfio,"#include \"%s\"\n",hfile);
-	fprintf(cfo,"#include \"%s\"\n",hfile);
+	fprintf(cfi,"#include \"a4gl_libaubit4gl.h\"\n");
 
+
+	fprintf(cfio,"#include \"%s\"\n",hfile);
+	fprintf(cfio,"#include \"a4gl_libaubit4gl.h\"\n");
+
+	fprintf(cfo,"#include \"%s\"\n",hfile);
+//	fprintf(cfo,"#include \"a4gl_API_packer.h\"\n");
+//	fprintf(cfo,"#include \"a4gl_lib_packer_int.h\"\n");
+	fprintf(cfo,"#include \"a4gl_libaubit4gl.h\"\n");
+
+	fprintf(cfio,"\n\nint write_%s(%s *s,char *filename);\n",export_name,export_name);
+	fprintf(cfio,"int read_%s(%s *s,char *filename);\n",export_name,export_name);
 
 	fprintf(cfio,"\n\nint write_%s(%s *s,char *filename) {\nint a;\n",export_name,export_name);
 	fprintf(cfio,"%s s_s;\n",export_name);
@@ -287,10 +295,10 @@ write_genout(void)
 
 	fprintf(hsf,"#ifndef XS_%s_XS_H\n",outputfilename);
 	fprintf(hsf,"#define XS_%s_XS_H\n",outputfilename);
-	fprintf(hsf,"#define bool int\n"); //,outputfilename);
-	fprintf(hsf,"#define istypedefed \n"); //,outputfilename);
-	fprintf(hsf,"#include <stdio.h>\n"); //,outputfilename);
-	fprintf(hsf,"#include <stdlib.h>\n"); //,outputfilename);
+	fprintf(hsf,"#define bool int\n");
+	fprintf(hsf,"#define istypedefed \n");
+	fprintf(hsf,"#include <stdio.h>\n");
+	fprintf(hsf,"#include <stdlib.h>\n");
 
 	fprintf(hf,"#include \"%s\"\n",hsfile);
 	//fprintf(hf,"int output_int (char *name, int val, int ptr, int isarr);\n");
