@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.54 2003-02-17 12:29:32 mikeaubury Exp $
+# $Id: lexer.c,v 1.55 2003-02-17 13:25:07 mikeaubury Exp $
 #*/
 
 /**
@@ -122,6 +122,7 @@ extern int chk4var;
 extern int ccnt;		/* defined in others.c */
 static void turn_state_all(int kw,int v,int arr) ;
 static int get_hash_val(char *s) ;
+int current_yylex_state;
 
 /*
 =====================================================================
@@ -987,6 +988,7 @@ int allow;
 		//printf(" -->%d\n",*stack_cnt);
   //}
 
+  current_yylex_state=yystate;
 
   if (yyin == 0)
     {
