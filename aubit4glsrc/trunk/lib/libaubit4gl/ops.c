@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.65 2004-12-24 08:51:05 mikeaubury Exp $
+# $Id: ops.c,v 1.66 2004-12-28 13:37:53 mikeaubury Exp $
 #
 */
 
@@ -1275,6 +1275,128 @@ A4GL_date_date_ops (int op)
       return;
     case OP_MULT:
       A4GL_push_long (a * b);
+      return;
+
+
+    case OP_DIV:
+      if (a % b == 0)
+	{
+	  A4GL_push_long (a / b);
+	  return;
+	}
+      else
+	{
+	  A4GL_push_double ((double) a / (double) b);
+	  return;
+	}
+
+    case OP_MOD:
+      A4GL_push_long (a % b);
+      return;
+    case OP_POWER:
+      if (b == 0)
+	{
+	  A4GL_push_long (1);
+	  return;
+	}
+      if (b == 1)
+	{
+	  A4GL_push_long (a);
+	  return;
+	}
+      c = a;
+      for (d = 1; d < b; d++)
+	c *= a;
+      A4GL_push_long (c);
+      return;
+
+    case OP_LESS_THAN:
+      A4GL_push_int (a < b);
+      return;
+    case OP_GREATER_THAN:
+      A4GL_push_int (a > b);
+      return;
+    case OP_LESS_THAN_EQ:
+      A4GL_push_int (a <= b);
+      return;
+    case OP_GREATER_THAN_EQ:
+      A4GL_push_int (a >= b);
+      return;
+    case OP_EQUAL:
+      A4GL_push_int (a == b);
+      return;
+    case OP_NOT_EQUAL:
+      A4GL_push_int (a != b);
+      return;
+    }
+
+  A4GL_exitwith ("Unknown operation");
+  A4GL_push_int (0);
+  return;
+}
+
+void
+A4GL_date_char_ops (int op)
+{
+  long a;
+  char *ptr;
+  long c;
+  long d;
+char buff[256];
+ int was_ok;
+  int b;
+
+  ptr = A4GL_char_pop ();
+  a = A4GL_pop_long ();
+  strncpy(buff,ptr,255);
+  buff[255]=0;
+
+  if (A4GL_isnull (DTYPE_INT, (void *) &a) || A4GL_isnull (DTYPE_CHAR, (void *) &ptr))
+    {
+      free(ptr);
+      A4GL_debug ("int_date - one is null");
+      A4GL_push_null (DTYPE_INT, 0);
+      return;
+    }
+
+  free(ptr);
+
+
+  // Comparisons would normally be to another date....
+  if (op==OP_LESS_THAN|| op== OP_GREATER_THAN|| op== OP_LESS_THAN_EQ|| op== OP_GREATER_THAN_EQ|| op== OP_EQUAL|| op== OP_NOT_EQUAL) {
+		// Firstly - is our string a date ?
+  		was_ok=A4GL_conversion_ok(-1);
+  		A4GL_conversion_ok(1);
+  		A4GL_push_char(buff);
+  		c=A4GL_pop_date();
+  		if (!A4GL_conversion_ok()||A4GL_isnull(DTYPE_DATE,(void *)&c))  { // Its not a date..
+			// Try as an integer ?
+			A4GL_push_char(buff);
+			b=A4GL_pop_long();
+  		} else {
+			b=c;
+		}
+		
+  		A4GL_conversion_ok(was_ok);
+    } else {
+		A4GL_push_char(buff);
+		b=A4GL_pop_long();
+
+    }
+
+  switch (op)
+    {
+    case OP_ADD:
+	a+=b;
+	if (a<=2958464) A4GL_push_date (a);
+	else A4GL_push_date(0);
+
+      return;
+    case OP_SUB:
+      A4GL_push_date (a - b);
+      return;
+    case OP_MULT:
+      A4GL_push_date (a * b);
       return;
 
 
@@ -2834,8 +2956,7 @@ DTYPE_SERIAL
   //A4GL_add_op_function (DTYPE_FLOAT, DTYPE_DATE, OP_MATH, A4GL_dbl_date_ops);
 
 
-  A4GL_add_op_function (DTYPE_SERIAL, DTYPE_SERIAL, OP_MATH,
-			A4GL_int_int_ops);
+  A4GL_add_op_function (DTYPE_SERIAL, DTYPE_SERIAL, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_SERIAL, DTYPE_INT, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_SERIAL, DTYPE_SMINT, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_SERIAL, DTYPE_DATE, OP_MATH, A4GL_int_date_ops);
@@ -2844,13 +2965,14 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_SMINT, DTYPE_SERIAL, OP_MATH, A4GL_int_int_ops);
   A4GL_add_op_function (DTYPE_DATE, DTYPE_SERIAL, OP_MATH, A4GL_date_int_ops);
 
-  A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_INTERVAL, OP_MATH,
-			A4GL_in_in_ops);
+
+  A4GL_add_op_function (DTYPE_DATE, DTYPE_CHAR, OP_MATH, A4GL_date_char_ops);
+
+  A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_INTERVAL, OP_MATH, A4GL_in_in_ops);
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_DTIME, OP_MATH, A4GL_dt_in_ops);
 
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_INTERVAL, OP_MATH, A4GL_in_dt_ops);
-  A4GL_add_op_function (DTYPE_DATE, DTYPE_INTERVAL, OP_MATH,
-			A4GL_in_date_ops);
+  A4GL_add_op_function (DTYPE_DATE, DTYPE_INTERVAL, OP_MATH, A4GL_in_date_ops);
 
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_DTIME, OP_MATH, A4GL_dt_dt_ops);
 
@@ -2861,16 +2983,13 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_SERIAL, "DISPLAY", A4GL_display_int);
   A4GL_add_datatype_function_i (DTYPE_SMINT, "DISPLAY", A4GL_display_smint);
   A4GL_add_datatype_function_i (DTYPE_FLOAT, "DISPLAY", A4GL_display_float);
-  A4GL_add_datatype_function_i (DTYPE_SMFLOAT, "DISPLAY",
-				A4GL_display_smfloat);
+  A4GL_add_datatype_function_i (DTYPE_SMFLOAT, "DISPLAY", A4GL_display_smfloat);
   A4GL_add_datatype_function_i (DTYPE_DATE, "DISPLAY", A4GL_display_date);
   A4GL_add_datatype_function_i (DTYPE_CHAR, "DISPLAY", A4GL_display_char);
-  A4GL_add_datatype_function_i (DTYPE_DECIMAL, "DISPLAY",
-				A4GL_display_decimal);
+  A4GL_add_datatype_function_i (DTYPE_DECIMAL, "DISPLAY", A4GL_display_decimal);
   A4GL_add_datatype_function_i (DTYPE_MONEY, "DISPLAY", A4GL_display_money);
   A4GL_add_datatype_function_i (DTYPE_DTIME, "DISPLAY", A4GL_display_dtime);
-  A4GL_add_datatype_function_i (DTYPE_INTERVAL, "DISPLAY",
-				A4GL_display_interval);
+  A4GL_add_datatype_function_i (DTYPE_INTERVAL, "DISPLAY", A4GL_display_interval);
   A4GL_add_datatype_function_i (DTYPE_BYTE, "DISPLAY", A4GL_display_byte);
   A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", A4GL_display_text);
 
