@@ -5,16 +5,6 @@
 <%@ page import="pt.moredata.fgldocumenter.browser.P4glConnection" %>
 
 <!--
-org.apache.jasper.JasperException: Cannot find any information on
-property 'connectionType' in a bean of type 'pt.moredata.fgldocumenter.browser.P4glConnection'
-
-Once again i had problem like that when i switched from Jrun to Tomcat, the reason
-for my problem is that i used some jsp:setProperty  and Tomcat is more case-sensitive
-than Jrun for the Parameter names and i had to verify all my parameterNames so that the
-follow the convention : theParameterNameMustStartWithLowerCase and the according method
-name in my bean would be: setTheParameterNameMustStartWithLowerCase(String aParamValue);
-
-
   Não foi possivel estabelecer ligação à Base de dados
 jdbc:informix-sqli://localhost:1543/p4gl_repository:INFORMIXSERVER=aptiva_ids;USER=root;PASSWORD=babaroga
 com.informix.asf.IfxASFException: Attempt to connect to database server (aptiva_ids) failed.
@@ -31,7 +21,22 @@ BAD: jdbc:informix-sqli://192.168.1.12:1543/p4gl_repository:INFORMIXSERVER=aptiv
 
 <jsp:useBean id="implicitDS" scope="session" class="pt.moredata.fgldocumenter.browser.P4glConnection">
 <!--
-  <jsp:setProperty name="implicitDS" property="connectionType" 	value="DOC4GL_CONNECTIONTYPE"/>
+    There is something very wrong with this statement (tag markers removed);
+
+	jsp:setProperty name="implicitDS" property="connectionType" 	value="DOC4GL_CONNECTIONTYPE"
+
+	it's causing:
+
+org.apache.jasper.JasperException: Cannot find any information on
+property 'connectionType' in a bean of type 'pt.moredata.fgldocumenter.browser.P4glConnection'
+
+Once again i had problem like that when i switched from Jrun to Tomcat, the reason
+for my problem is that i used some jsp:setProperty  and Tomcat is more case-sensitive
+than Jrun for the Parameter names and i had to verify all my parameterNames so that the
+follow the convention : theParameterNameMustStartWithLowerCase and the according method
+name in my bean would be: setTheParameterNameMustStartWithLowerCase(String aParamValue);
+
+
 -->
   <jsp:setProperty name="implicitDS" property="sgbdUrl"        	value="DOC4GL_SGDBURL"/>
   <jsp:setProperty name="implicitDS" property="hostName"		value="DOC4GL_HOSTNAME"/>
@@ -51,7 +56,8 @@ BAD: jdbc:informix-sqli://192.168.1.12:1543/p4gl_repository:INFORMIXSERVER=aptiv
 </HEAD>
 	<% if ( implicitDS.getConnection() == null ) { %>
 		<BODY>
-	  <B>Database connection failed</B>
+	  <B>Database connection failed. See JSP container log file for details.</B>
+      TOMCAT_HOME/logs/catalina.out
 		</BODY>
   <% } %>
 

@@ -3,12 +3,15 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.10 2003-02-04 05:21:57 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.11 2003-05-06 09:11:41 afalout Exp $
 #
 #  ==========================================================================
 
-############################
-#programs / commands to use:
+
+#  ==========================================================================
+#  programs / commands to use:
+#  ==========================================================================
+
 YACC			=@YACC@
 LEX				=@LEX@
 ESQL			=@IFMX_ESQLC@ -static
@@ -20,19 +23,28 @@ RPM             =@RPM@
 INSTALL			=cp
 RM				=rm -f
 
-############################
-#additional flag to commands:
+#  ==========================================================================
+#  additional flag to commands:
+#  ==========================================================================
+
+#Flags to YACC:
 YFLAGS			=-d
 
-#CFLAGS			=-g
+#Flags to C compiler:
 CFLAGS			=@CFLAGS@
 
 #user name/password used to invoke TomCat administration commnds from and/build.xml
 TOMCAT_USER     =@TOMCAT_USER@
 TOMCAT_PASSWORD =@TOMCAT_PASSWORD@
 
-ANT_FLAGS       =-Dmanager.username=${TOMCAT_USER} -Dmanager.password=${TOMCAT_PASSWORD}
+#Flags used by Ant to login to TomCat in order to execute managment commands
+#(install/deinstall, get status, etc.)
+ANT_TOMCAT_LOGIN=-Dmanager.username=${TOMCAT_USER} -Dmanager.password=${TOMCAT_PASSWORD}
 
+#Flags passed to every invocation of Ant by default:
+ANT_FLAGS       =${ANT_TOMCAT_LOGIN}
+
+#Root directory of the Doc4GL source code tree:
 DOC4GLSRCDIR    =@doc4gldir@
 
 #  ==========================================================================
@@ -40,26 +52,34 @@ DOC4GLSRCDIR    =@doc4gldir@
 #  ==========================================================================
 BINDIR			=@prefix@/bin
 
+#name we will use for the browser application URL, war file, etc., 
+JSP_APP_NAME	=fgldocumenter
+
+#Name of the directory to install Perl manager application:
+PERL_APP_NAME	=${JSP_APP_NAME}
+
+
 #  ==========================================================================
 #  The directory where to install the perl modules (it must exist before
 #  'make install' is executed)
 #  ==========================================================================
 
 ifneq "@PERL_SITE_DIR@" ""
-	PERL_MODULE_DIR	=@PERL_SITE_DIR@/FglDocumenter
+	PERL_MODULE_DIR	=@PERL_SITE_DIR@/${PERL_APP_NAME}
 else
-	PERL_MODULE_DIR	=@PERL_MODULE_DIR@/FglDocumenter
+	PERL_MODULE_DIR	=@PERL_MODULE_DIR@/${PERL_APP_NAME}
 endif
 #  ==========================================================================
 #  Place where Tomcat or other jsp container is installed
 #  ==========================================================================
 TOMCAT_DIR		=@TOMCAT_DIR@
 
+
 #  ==========================================================================
 #  Application dir inside tomcat, or other jsp container.
 #  The place where the jsp(s) should be installed
 #  ==========================================================================
-NAV_DIR			=$(TOMCAT_DIR)/webapps/fgldocumenter
+NAV_DIR			=$(TOMCAT_DIR)/webapps/${JSP_APP_NAME}
 
 #  ==========================================================================
 #  Place inside applictation dir where tomcat is configured to find the
@@ -67,9 +87,14 @@ NAV_DIR			=$(TOMCAT_DIR)/webapps/fgldocumenter
 #  ==========================================================================
 CLASS_DIR		=$(NAV_DIR)/WEB-INF/classes
 
+#Path to Doc4GL clases relative to CLASS_DIR
+CLASS_PACKAGE	=pt/moredata/fgldocumenter/browser
 
-###############################################
-#connection settings for JSP, used in index.jsp:
+
+#  ==========================================================================
+#  connection settings for JSP, used in index.jsp:
+#  ==========================================================================
+
 DOC4GL_USERNAME=@DBD_INFORMIX_USERNAME@
 DOC4GL_PASSWORD=@DBD_INFORMIX_PASSWORD@
 DOC4GL_SERVER=@DOC4GL_SERVER@
@@ -88,14 +113,22 @@ JAVA_SHARED		=/usr/share/java
 BASE=/usr/local/src
 
 
-#Perl manager files list, for deinstall:
+#  ==========================================================================
+#  Perl manager files list, for deinstall:
+#  ==========================================================================
 
+#Path to the Perl manager application source code tree root:
 MGR_SRC             =${DOC4GLSRCDIR}/manager/FglDocumenter
+#Path to the Perl manager application image files:
 MGR_IMG_SRC         =${MGR_SRC}/img
+#Path to the Perl manager application Perl source code:
 MGR_PM_SRC          =${MGR_SRC}
+#Path to the Perl manager application Perl language files:
 MGR_PM_L10N_SRC     =${MGR_SRC}/L10N
+#Path to the Perl manager application test files:
 MGR_PM_TEST_SRC     =${MGR_SRC}/test
 
+#List of all source files names without paths, for Perl manager application:
 MGR_IMG_FILES		=$(notdir $(wildcard ${MGR_IMG_SRC}/*.gif))
 MGR_PM_FILES		=$(notdir $(wildcard ${MGR_PM_SRC}/*.pm))
 MGR_PM_L10N_FILES	=$(notdir $(wildcard ${MGR_PM_L10N_SRC}/*.pm))

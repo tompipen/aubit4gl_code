@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.7 2003-05-06 06:56:26 afalout Exp $
+#  $Id: Makefile.in,v 1.8 2003-05-06 09:12:21 afalout Exp $
 #  =========================================================================
 
 include ../FgldocDefs.mk
@@ -188,10 +188,8 @@ endif
 #FIXME: browser app currently expects to find image files in installation root,
 #but Ant created .war file will place them in sub-directory "images". Untill
 #this is fixed, this is one good reason to physically copy at least image files there:
-install.files:
+install.files: install.files.tree install.files.images
 ifneq "${TOMCAT_DIR}" "no"
-	mkdir -p ${NAV_DIR}
-	mkdir -p ${CLASS_DIR}
 	$(INSTALL) $(CLASS_FILES) 	$(CLASS_DIR)
 	$(INSTALL) $(JSP_FILES) 	$(NAV_DIR)
 	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
@@ -205,6 +203,24 @@ ifneq "${TOMCAT_DIR}" "no"
 else
 	@echo "Tomcat directory unknown. Cannot install"
 endif
+
+
+install.files.images:
+ifneq "${TOMCAT_DIR}" "no"
+	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
+else
+	@echo "Tomcat directory unknown. Cannot install"
+endif
+
+
+install.files.tree:
+ifneq "${TOMCAT_DIR}" "no"
+	mkdir -p ${NAV_DIR}
+	mkdir -p ${CLASS_DIR}
+else
+	@echo "Tomcat directory unknown. Cannot install"
+endif
+
 
 
 #############################
@@ -259,7 +275,7 @@ endif
 
 #############################
 # Create .war installation file
-war: war.create war.install install.index.deploy war.deploy
+war: war.create war.install war.deploy install.files.images install.index.deploy
 
 #############################
 # Invoke Ant to create .war file:
@@ -287,9 +303,31 @@ endif
 #############################
 # Restart TomCat, to force installation of all application .war files found in
 # TomCat application root directory:
-war.deploy: deinstall
+war.deploy: tomcat.stop war.unpack tomcat.start
+
+
+#############################
+# Stop TomCat
+tomcat.stop:
 	-tomcat4 stop
+	sleep 3
+
+#############################
+# Start TomCat
+tomcat.start:
 	tomcat4 start
+#Give Tomcat time to start and unpack .war file:
+	sleep 10
+
+#############################
+# I don't understand why, but TomCat sometimes after it registers new application
+#when it finds a new .war file in app root, fails to unpacl files so it cannot
+#start the applicatio. Therefore, we better make sure we unpack this files
+#ourselves:
+war.unpack:
+	mkdir -p $(TOMCAT_DIR)/webapps/${JSP_APP_NAME}
+	cd $(TOMCAT_DIR)/webapps/${JSP_APP_NAME}; jar x < ../${JSP_APP_NAME}.war
+
 
 #############################
 # WARNIGN: not working!
@@ -355,6 +393,7 @@ ifneq "${TOMCAT_DIR}" "no"
 	${RM} $(NAV_DIR)/*.bak
 	${RM} $(NAV_DIR)/WEB-INF/*.bak
 	${RM} $(NAV_DIR)/WEB-INF/web.xml
+	${RM} $(TOMCAT_DIR)/webapps/${JSP_APP_NAME}.war
 	-rmdir $(NAV_DIR)/images
 	-rmdir $(NAV_DIR)/WEB-INF/classes/pt/moredata/fgldocumenter/browser
 	-rmdir $(NAV_DIR)/WEB-INF/classes/pt/moredata/fgldocumenter
@@ -394,6 +433,8 @@ endif
 ${TOMCAT_ANT}:
 	cp ${TOMCAT_DIR}/server/lib/${TOMCAT_ANT_F} ${JAVA_SHARED}
 
+#############################
+# Show values of make variables, for make proccess debugging:
 show:
 	@echo ALL_APPS=${ALL_APPS}
 	@echo TMP=${TMP}
@@ -406,7 +447,10 @@ show:
 #############################
 # Clean the source code tree; leave only files that are in the CVS:
 clean:
-	$(RM) *.class *.jar *.bak
+	$(RM) *.class *.jar *.bak *.log
+	$(RM) web/*.bak
+	$(RM) web/WEB-INF/*.bak
+	$(RM) pt/moredata/fgldocumenter/browser/*.bak
 	rm -rf classes
 	rm -rf build
 ifneq "${ANT}" "no"

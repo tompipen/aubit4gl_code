@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.12 2003-04-14 17:55:38 saferreira Exp $
+dnl # $Id: configure.in,v 1.13 2003-05-06 09:11:42 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -378,12 +378,21 @@ SO_EXT_LINKABLE=$SO_EXT
 ARCHEXT=tgz
 TOMCAT_DIR=no
 
+
+#Defining the name of the database as part of Doc4GL does not make much sense;
+#Each application we document using Doc4GL will tend to have it's own database
+#for this purpose. User is expected to pass default db name in most cases, using
+#--with-doc4gl-db autoconf flag:
 DOC4GL_DB="p4gl_repository"
 DBD_INFORMIX_USERNAME="informix"
 DBD_INFORMIX_PASSWORD="U-N-K-N-O-W-N"
 DOC4GL_SERVER="INFORMIXSERVER=unstable"
 DOC4GL_SERVICE=1530
-DOC4GL_HOSTNAME="localhost"
+
+#Apparently localhost and 127.0.0.1 (loopback interface) will not work when 
+#used in Informix JDBC driver connection string - must use host name or IP address
+DOC4GL_HOSTNAME=`hostname`
+
 DOC4GL_SGDBURL="informix-sqli"
 DOC4GL_CONNECTIONTYPE="jdbc"
 TOMCAT_USER=admin
