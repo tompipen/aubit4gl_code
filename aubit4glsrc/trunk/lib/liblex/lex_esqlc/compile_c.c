@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.130 2004-01-28 21:47:16 mikeaubury Exp $
+# $Id: compile_c.c,v 1.131 2004-02-06 10:44:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.130 2004-01-28 21:47:16 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.131 2004-02-06 10:44:19 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1493,19 +1493,24 @@ print_param (char i)
       printc ("static ");
     }
 
-  printc ("struct BINDING %cbind[%d]={ /* print_param */\n", i, fbindcnt);
-  for (a = 0; a < fbindcnt; a++)
-    {
-
-      fbind[a].dtype = scan_variable (fbind[a].varname);
-      if (a > 0)
-	printc (",\n");
-      printc ("{&%s,%d,%d}", fbind[a].varname,
-	      (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
-
-
-
-    }
+  printc ("struct BINDING %cbind[%d]={ /* print_param */\n", i, ONE_NOT_ZERO(fbindcnt));
+      if (fbindcnt == 0)
+	{
+	  printc ("{0,0,0}");
+	} else {
+  		for (a = 0; a < fbindcnt; a++)
+    		{
+		
+      		fbind[a].dtype = scan_variable (fbind[a].varname);
+      		if (a > 0)
+			printc (",\n");
+      		printc ("{&%s,%d,%d}", fbind[a].varname,
+	      		(int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
+		
+		
+				
+    		}
+	}
   printc ("\n}; /* end of binding */\n");
   if (i == 'r')
     {
@@ -3446,12 +3451,23 @@ print_skip_to (char *nval)
 void
 print_report_print (int type, char *semi, char *wordwrap)
 {
-
+int semi_i;
+static int rep_print_code=0;
+ 
+  if (semi==0) semi_i=0; else semi_i=1;
+  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
+	printc("{int _rpblock;\n_rpblock=A4GL_push_report_print(&rep,_module_name,%d,'%c',\"%s\",%d);",yylineno,get_curr_report_stack_whytype(),get_curr_report_stack_why(),rep_print_code);
+  }
   if (type == 0)
     printc ("A4GL_%srep_print(&rep,0,%s,0);\n", ispdf (), semi);
 
   if (type == 1)
     printc ("A4GL_%srep_print(&rep,1,1,%s);\n", ispdf (), wordwrap);
+
+  if (A4GL_isyes(acl_getenv("REPORT_TRACE"))) {
+   	printc("A4GL_pop_report_print(&rep,_rpblock,%d);}",rep_print_code);
+	rep_print_code++;
+  }
 }
 
 /**
