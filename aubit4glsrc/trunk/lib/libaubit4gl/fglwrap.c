@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.36 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.37 2003-05-19 20:11:02 mikeaubury Exp $
 #
 */
 
@@ -250,7 +250,7 @@ A4GL_fgl_start (int nargs, char *argv[])
 #ifdef _PRELOAD_REPORT_
   A4GLREPORT_initlib ();
 #endif
-
+  A4GL_set_core_dump ();
   /* signal (SIGINT, fgl_end); */
   A4GL_nodef_init ();
 #ifdef DEBUG
@@ -811,6 +811,47 @@ A4GL_nodef_init ()
 }
 
 
+
+void A4GL_core_dump() {	
+  if (A4GL_isscrmode ())
+    {
+#ifdef DEBUG
+      A4GL_debug ("In screen mode - ending curses...");
+#endif
+      A4GL_gotolinemode ();
+    }
+   printf("Internal Error - segmentation fault\n");
+   printf("Please note all circumstances and log with the Aubit4GL team\n");
+   printf("If possible - reproduce the error with the environment variable DEBUG\n");
+   printf("set to ALL :\n\n");
+   printf("$ export DEBUG=ALL\n\n");
+   printf("And enclose the last 100 lines from the resultant debug.out file\n");
+   printf("with your bug log.\n");
+   printf("\n");
+   printf("%s\n",A4GLSTK_getStackTrace ());
+   A4GL_fgl_end();
+}
+
+void
+A4GL_set_core_dump ()
+{
+  struct sigaction sa;
+  int ret;
+
+#ifdef OTHER_UNIX
+  sa.sa_sigaction = (void *) A4GL_core_dump;
+#else
+  sa.sa_handler = (void *) A4GL_core_dump;
+#endif
+  sigemptyset (&sa.sa_mask);
+  sa.sa_flags = 0;
+  ret = sigaction (SIGSEGV, &sa, 0);
+  if (ret)
+    {
+      A4GL_exitwith ("Could not attach SegFault Handler");
+    }
+}
+
 /**
  * Start the defer interrupt in unix systems.
  */
@@ -1055,5 +1096,7 @@ A4GL_fgl_error (int a, char *s, int err, int stat)
   exit (0);
   return 0;
 }
+
+
 
 /* ================================= EOF ============================= */
