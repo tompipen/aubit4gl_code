@@ -15,6 +15,7 @@ database maindb
 		select tabname,colname,colno from systables,syscolumns
 		where systables.tabid=syscolumns.tabid
 		and systables.tabid>99
+		order by 1,2,3
 
         start report r1  to "rr1.pdf"
 	foreach c1 into t,c,n
@@ -27,7 +28,7 @@ end main
 pdfreport r1(t,c,n)
 define t,c  char(20)
 define n integer
-order  by t,n
+order external  by t,n
 
 format
 first page header
@@ -45,6 +46,7 @@ on every row
 	print column 2 inches,c
 
 before group of t
+	display t
 	print "";
 	call pdf_function("set_font_size",20);
 	call pdf_function("set_parameter","underline","true");
