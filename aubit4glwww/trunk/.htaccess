@@ -1,7 +1,7 @@
 <FILES refreshwww.php3>
 	AuthType basic
 	AuthName "Web site refresh"
-	AuthUserFile forums.inf
+	AuthUserFile /home/groups/a/au/aubit4gl/htdocs/forums.inf
 	<Limit GET POST>
 	  require user afalout maubury
 	</Limit>
