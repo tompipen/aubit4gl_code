@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.53 2005-02-21 00:52:54 afalout Exp $
+#	 $Id: a4gl.mk,v 1.54 2005-02-24 09:29:55 afalout Exp $
 
 ##########################################################################
 #
@@ -314,7 +314,7 @@ else
 	fi; \
 	echo $$EXEC; \
 	$$EXEC; RET=$$?; \
-	if test -f $*.cpc.err ; then cat $*.cpc.err >> /tmp/saveme ; fi; \
+	if test -f $*.cpc.err ; then cat $*.cpc.err >> /tmp/cpc_errors.log ; fi; \
 	exit $$RET;
 endif
 

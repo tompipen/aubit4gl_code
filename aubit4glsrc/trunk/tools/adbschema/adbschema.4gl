@@ -9,20 +9,19 @@ define mv_silent integer
 define mv_mode integer
 define mv_perms integer
 
-GLOBALS
-	DEFINE gv_systables integer	#true or false, process Informix sys* tables (default=0)
-END GLOBALS
-
 function usage()
 	display " " 
 	display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
 	display " " 
-	display "adbschema [-sys] [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] [-r rolename] [-f procname]"
-	display "          -d dbname [-ss] [filename]"
-
+	display "adbschema [-sys] [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] "
+	display "          [-r rolename] [-f procname] -d dbname [-ss] [filename]"
+	display ""
 	display "   -noperms     Do not include any GRANT/REVOKE"
 	display "   -fileschema  Generate a schema suitable for the FILESCHEMA SQL Module"
-	display "   -sys         Process Informix system tables with tabid < 99"	
+	display "   -sys         Process Informix system tables with tabid < 99"
+	display "   -prefix-idx  Add prefix to index names (IDX_)"
+	display "   -ss          todo"
+	display "   -noowner     Do not output object's (table/index/etc) owner information"
 	display " "
 	exit program 1
 end function
@@ -43,18 +42,25 @@ end function
 
 
 main
-define a integer
-define lv_4gl integer
-define lv_str char(40)
-
-	let gv_systables = 0
+define 
+	a integer,
+	lv_4gl integer,
+	lv_str char(40),
+	lv_systables smallint,	#true or false, process Informix sys* tables (default=false)
+	lv_prefix_idx smallint,  #true or false, add prefix to index names (default=false)
+	lv_no_owner smallint	#true or false, do not putput object owner (default=false)
+	
 	let mv_silent=0
 	LET lv_ss="N"
 	let lv_srpf="-"
 	let mv_mode=0
 	let mv_perms=1
 	let lv_4gl=0
-
+	
+	let lv_systables = false
+	let lv_prefix_idx = false
+	let lv_no_owner = false
+	
 	if num_args()=0 then
 		call usage()
 	end if
@@ -90,10 +96,12 @@ define lv_str char(40)
 				let lv_user=arg_val(a)
 				let lv_srpf="P"
 		
-			when "-sys"
-				let a=a+1
-				let gv_systables = 1
+			when "-sys" 		let lv_systables = true
+
+			when "-noowner" 	let lv_no_owner = true
 			
+			when "-prefix-idx" 	let lv_prefix_idx = true
+
 			when "-r" 
 				let a=a+1
 				let lv_user=arg_val(a)
@@ -146,9 +154,9 @@ define lv_str char(40)
 
 	if lv_tabname is not null then
 		if lv_srpf="-" then
-			call dump_table(lv_tabname)
+			call dump_table(lv_tabname,lv_systables,lv_prefix_idx,lv_no_owner)
 		else
-			call dump(lv_srpf,lv_tabname)
+			call dump(lv_srpf,lv_tabname,lv_systables)
 		end if
 	else
 		if lv_srpf="-" then # Looks like the whole database
@@ -156,7 +164,7 @@ define lv_str char(40)
 				call dump_dbperms()
 			end if
 
-			call dump_table("all")
+			call dump_table("all",lv_systables,lv_prefix_idx,lv_no_owner)
 
 			if mv_mode=0 then
 				call dump_procedures()
@@ -167,11 +175,53 @@ define lv_str char(40)
 				let lv_str="DATABASE ",lv_dbname
 				call outstr(lv_str)
 				call outstr("MAIN")
+				call outstr("DEFINE lv char (600)")
+
+				#TODO - do not hard-code DMY - take if from $DBDATE at unload time
+				
+				#cant see a setting for DATE delimiter in PG?
+				
+				call outstr("IF dbms_dialect()='POSTGRESQL' THEN")
+				{
+				The function current_setting yields the current value of the 
+				setting setting_name. It corresponds to the SQL command SHOW
+				}
+				call outstr("	let lv = \"SELECT current_setting('datestyle');\"")
+				call outstr("	PREPARE cur1 FROM lv")
+				call outstr("	EXECUTE cur1 INTO lv")
+				call outstr("	DISPLAY lv CLIPPED")
+				call outstr("	")
+				{
+				set_config sets the parameter setting_name to new_value. 
+				If is_local is true, the new value will only apply to the 
+				current transaction. If you want the new value to apply for 
+				the current session, use false instead. The function corresponds 
+				to the SQL command SET.
+				}
+				#
+				call outstr("	let lv = \"SELECT set_config('datestyle', 'Informix, DMY', false);\"")
+				call outstr("	PREPARE cur2 FROM lv")
+				call outstr("	EXECUTE cur2")
+				call outstr("	")
+
+
+
+				call outstr("	let lv = \"SELECT current_setting('datestyle');\"")
+				call outstr("	PREPARE cur3 FROM lv")
+				call outstr("	EXECUTE cur3 INTO lv")
+				call outstr("	DISPLAY lv CLIPPED")
+				call outstr("	")
+
+				#call outstr("	EXIT PROGRAM")
+				
+				call outstr("END IF")
+				
 			end if
 
-			call dump(lv_srpf,"all")
+			call dump(lv_srpf,"all",lv_systables)
 
 			if lv_4gl then
+				call outstr("	DISPLAY 'Done.'")
 				call outstr("END MAIN")
 			end if
 		end if
