@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.22 2003-08-02 13:07:56 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.23 2003-08-04 00:49:45 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4604,6 +4604,17 @@ Dave
 > > Dave Cramer <dave@fastcrypt.com>
 > > fastcrypt
 >
+
+
+> Is this patch expected to work against current PG CVS or do I need a particular version?
+not cleanly, but you can try, it was synched a few days ago, but
+postgres is changing fast.
+>
+
+Besides, this patch will be very unstable until 7.4 is released. It will
+be more trouble to them than it's worth.
+
+
 
 ==========================================================================
 

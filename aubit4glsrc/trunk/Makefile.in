@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.122 2003-06-14 13:13:35 afalout Exp $
+# $Id: Makefile.in,v 1.123 2003-08-04 00:49:34 afalout Exp $
 #
 
 ## ==================================================================
@@ -39,9 +39,9 @@ include incl/Makefile-common
 
 #All targets in this make file are "phony" targets - they do not create
 #anything, they just invoke other make files:
-.PHONY: all clean default log corecompile extra ide
+.PHONY: all clean default log corecompile extra ide api.headers
 
-ALL					=settings corecompile test
+ALL					=settings api.headers corecompile test
 ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess adbload
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
@@ -97,6 +97,9 @@ corecompile:
 	$(MAKE) -C compilers/helpcompile
 	$(MAKE) -C lib loadmap
 	@echo Aubit 4gl compiler core is now compiled
+
+api.headers:
+	$(MAKE) -C lib/libaubit4gl api.headers
 
 ## ==================================================================
 ##                              Extra

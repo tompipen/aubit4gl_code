@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2003-08-02 13:07:57 afalout Exp $
+# $Id: Makefile,v 1.4 2003-08-04 00:49:45 afalout Exp $
 #
 
 ROOT    =../..
@@ -37,23 +37,30 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
+#> 1) Why -laubit4gl ?
+#Its needed for the pop_.. and push_... stuff - on some platforms this is
+#detected and linked properly, on some others - you need this to get the link
+#to work...
+#FIXME-in that case, it should be linked in conditionally:
+#ifeq "${TARGET_OS}" "theOneThatNeedIt"
+	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
+#endif
+
+PGLIBS=-L${PGSQL_LIBDIR} -lecpg -lecpg_compat -lpgtypes
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-#POSTGRESDIR=/usr/local/pgsql
-
 all: ${LIBROOT}/libESQL_INFORMIX.so ${LIBROOT}/libESQL_POSTGRES.so
-
 
 libESQL_INFORMIX.so: ${LIBROOT}/libESQL_INFORMIX.so
 ${LIBROOT}/libESQL_INFORMIX.so: helper_funcs_i.o
-	esql -static -Bstatic -g --shared $^ -o $@ -L${LIBROOT} -laubit4gl
+	esql -static -Bstatic -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
 libESQL_POSTGRES.so: ${LIBROOT}/libESQL_POSTGRES.so
 ${LIBROOT}/libESQL_POSTGRES.so: helper_funcs_p.o
-	gcc -static -Bstatic -g --shared $^ -o $@ -L${LIBROOT} -L${POSTGRESDIR}/lib -laubit4gl -lecpg -lecpg_compat -lpgtypes
+	${CC} -static -Bstatic -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 
 ## ==================================================================
 ##                              Sub-targets
@@ -65,13 +72,14 @@ helper_funcs_i.o: helper_funcs.ec
 
 helper_funcs_p.o: helper_funcs.ec
 	ecpg -C INFORMIX -t helper_funcs.ec
-	gcc -DDIALECT_POSTGRES -g -c -o helper_funcs_p.o helper_funcs.c -I$(POSTGRESDIR)/include -I${ROOT}/incl
+	gcc -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(PGSQL_INCDIR) -I${ROOT}/incl
 
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
-
 clean:
 	${RM} -f *.o *.c *.so
 
+
+# =============================== EOF ===============================

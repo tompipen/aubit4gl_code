@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.186 2003-08-02 13:07:46 afalout Exp $
+dnl # $Id: configure.in,v 1.187 2003-08-04 00:49:34 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -277,7 +277,8 @@ AC_SUBST(PGODBC_LFLAGS)
 AC_SUBST(PGSQL_INCLUDE)
 AC_SUBST(PGSQL_LFLAGS)
 AC_SUBST(PGSQL_LIBS)
-
+AC_SUBST(PGSQL_INCDIR)
+AC_SUBST(PGSQL_LIBDIR)
 
 #UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
@@ -1581,11 +1582,14 @@ AC_ARG_WITH(pgsql,
         ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
 
-    PGSQL_INCDIR=$withval/include
+	#Find PG include dir
+	PGSQL_INCDIR=$withval/include
     test -d $withval/include/pgsql && PGSQL_INCDIR=$withval/include/pgsql
     test -d $withval/pgsql/include && PGSQL_INCDIR=$withval/pgsql/include
     test -d $withval/include/postgresql && PGSQL_INCDIR=$withval/include/postgresql
-    PGSQL_LIBDIR=$withval/lib
+
+	#Find PG lib dir
+	PGSQL_LIBDIR=$withval/lib
     test -d $withval/lib/pgsql && PGSQL_LIBDIR=$withval/lib/pgsql
     test -d $withval/pgsql/lib && PGSQL_LIBDIR=$withval/pgsql/lib
     test -d $withval/lib/postgresql && PGSQL_LIBDIR=$withval/lib/postgresql

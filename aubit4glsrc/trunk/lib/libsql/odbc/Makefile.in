@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.31 2003-07-26 10:24:36 afalout Exp $
+# $Id: Makefile.in,v 1.32 2003-08-04 00:49:45 afalout Exp $
 #
 
 ROOT    =../../..
@@ -163,7 +163,9 @@ ${LIBROOT}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
 ${LIBROOT}/libSQL_sqliteS${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}
 ${LIBROOT}/libSQL_sqliteS${SO_EXT}: ${OBJECTS} sqliteodbc.o
 	${LD} ${SO_LDFLAGS} $^ -o $@ @SQLITE_LDPATH@/libsqlite.a
-
+#FIXME: use it:
+#Mike used this line to statically link in libs to plug-in:
+#	${CC} -static -Bstatic -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 
 ## ==================================================================
 ##                              Clean

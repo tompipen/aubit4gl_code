@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.133 2003-08-02 04:19:48 afalout Exp $
+# $Id: Makefile-common.in,v 1.134 2003-08-04 00:49:45 afalout Exp $
 #
 
 
@@ -756,6 +756,13 @@ export LD_LIBRARY_PATH
 export AUBIT_BIN_INSTALL
 #Must be exported on MinGW, but don't seem to be working (put it in profile):
 export PATH
+
+
+#Convert Autoconf variables into Make variables here, so we don't need to
+#process every make file with Autoconf:
+PGSQL_INCDIR=@PGSQL_INCDIR@
+PGSQL_LIBDIR=@PGSQL_LIBDIR@
+
 
 ## ==================================================================
 ##                      Moved from aubitrc:
