@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.48 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: conv.c,v 1.49 2003-06-27 15:02:09 mikeaubury Exp $
 #
 */
 
@@ -2549,8 +2549,7 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   int rval;
   //A4GL_debug ("In conv.. d1=%d d2=%d size=%d", dtype1, dtype2, size);
 
-  A4GL_assertion (p1 == 0, "Pointer 1 is zero");
-  A4GL_assertion (p2 == 0, "Pointer 2 is zero");
+
 
 
 
@@ -2573,6 +2572,9 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 	  return 1;
 	}
     }
+
+  A4GL_assertion (p1 == 0, "Pointer 1 is zero");
+  A4GL_assertion (p2 == 0, "Pointer 2 is zero");
 
   /* Sanity check - conv() is sometimes erroneously called with
    * just a length for decimals, instead of length + decimal places.
@@ -2899,7 +2901,7 @@ A4GL_dec_to_dec (char *f, char *t)
       if (c)
 	{
 	  // use a rounded copy of the source decimal
-	  printf ("copying %d bytes\n", NUM_BYTES (f));
+	  //printf ("copying %d bytes\n", NUM_BYTES (f));
 	  memcpy (buff, f, NUM_BYTES (f));
 	  A4GL_dec_roundoff (buff, ld);
 	  f = buff;
@@ -2994,18 +2996,16 @@ A4GL_str_to_dec (char *s, char *w)
 	}
 
 	if (s[cnt]==' ') {
+		int a;
 		if (tlcnt==0&&hdcnt==0) continue; // leading space..
-
-		if (tlcnt||hdcnt) {	// Trailing space ?
-			int a;
-			for (a=cnt+1;a<strlen(s);a++) {
-				if (s[a]!=' ') return 0; // Nope - there is something after it
-			}
+		for (a=cnt+1;a<strlen(s);a++) {
+			if (s[a]!=' ') return 0; // Nope - there is something after it
 		}
+		break; // just trailing spaces
 	}
 
 	// If we've got to here - I've got a character I'm not expecting...
-	A4GL_debug("Can a decimal have a '%c' in it ?",s[cnt]);
+	A4GL_debug("Can a decimal have a '%c' (%d) in it ?",s[cnt],s[cnt]);
 	return 0;
     }
 

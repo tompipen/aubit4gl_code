@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.36 2003-06-18 19:21:07 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.37 2003-06-27 15:02:10 mikeaubury Exp $
 #
 */
 
@@ -3833,7 +3833,7 @@ print_define (char *varstring, int isstatic_extern)
  * @return
  */
 void
-print_start_record (int isstatic_extern, char *vname)
+print_start_record (int isstatic_extern, char *vname,char *arrsize,int level)
 {
   printing_record++;
   /*
@@ -3851,7 +3851,7 @@ print_start_record (int isstatic_extern, char *vname)
  * @return
  */
 void
-print_end_record (char *vname, char *arrsize)
+print_end_record (char *vname, char *arrsize,int level)
 {
   printing_record--;
   if ((int)arrsize == -1)

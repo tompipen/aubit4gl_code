@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.25 2003-06-27 09:26:13 mikeaubury Exp $
+# $Id: variables.c,v 1.26 2003-06-27 15:02:00 mikeaubury Exp $
 #
 */
 
@@ -2457,14 +2457,14 @@ print_variable (struct variable *v, char scope, int level)
   if (v->variable_type == VARIABLE_TYPE_RECORD)
     {
       int a;
-      print_start_record (static_extern_flg, name);
+      print_start_record (static_extern_flg, name,arrbuff,level);
       for (a = 0; a < v->data.v_record.record_cnt; a++)
 	{
 	  struct variable *next_v;
 	  next_v = v->data.v_record.variables[a];
 	  print_variable (next_v, scope, level + 1);
 	}
-      print_end_record (name, arrbuff);
+      print_end_record (name, arrbuff,level);
       return;
     }
 

@@ -853,11 +853,29 @@ print_unload (char *file, char *delim, char *sql)
 {
 char filename[256];
 char delim_s[256];
-if (file[0]=='"') { sprintf(filename,"'%s'",A4GL_strip_quotes(file)); } else { sprintf(filename,":%s",file); }
 if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
 
   if (A4GL_isyes(acl_getenv("ESQL_UNLOAD"))) {
+
+			if (file[0]=='"') { 
+				sprintf(filename,"'%s'",A4GL_strip_quotes(file)); 
+			} else { 
+				sprintf(filename,":_unlfname"); 
+				printc("{");
+				printc("EXEC SQL BEGIN DECLARE SECTION;");
+				printc("char _unlfname[512];");
+				printc("EXEC SQL END DECLARE SECTION;");
+				printc("strcpy(_unlfname,%s);",file);
+			}
+
   			printc ("EXEC SQL UNLOAD TO %s DELIMITER %s %s ;",filename,delim_s,sql);
+
+			if (file[0]!='"') { 
+				printc("}");
+			}
+
+
+
   } else {
   	printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/);\n", file, delim, sql);
   }
@@ -882,19 +900,31 @@ print_load (char *file, char *delim, char *tab, char *list)
 {
 char filename[256];
 char delim_s[256];
-if (file[0]=='"') { sprintf(filename,"'%s'",A4GL_strip_quotes(file)); } else { sprintf(filename,":%s",file); }
 if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
 
   if (A4GL_isyes(acl_getenv("ESQL_UNLOAD"))) {
-	if (strlen(list)==1) 
-  		printc ("EXEC SQL LOAD FROM %s DELIMITER %s INSERT INTO %s  ;",filename,delim_s,tab);
+			if (file[0]=='"') { 
+				sprintf(filename,"'%s'",A4GL_strip_quotes(file)); 
+			} else {
+                                sprintf(filename,":_loadfname");
+                                printc("{");
+                                printc("EXEC SQL BEGIN DECLARE SECTION;");
+                                printc("char _loadfname[512];");
+                                printc("EXEC SQL END DECLARE SECTION;");
+                                printc("strcpy(_loadfname,%s);",file);
+			}
+
+	printc ("EXEC SQL LOAD FROM %s DELIMITER %s ",filename,delim_s);
+
+
+	if (strlen(list)==1) printc (" INSERT INTO %s  ;",tab);
 	else {	
 		char *ptr;
 		char buff[100];
 		int p=0;
 		list[strlen(list)-2]=0;
 		ptr=list;
-  			printc ("EXEC SQL LOAD FROM %s DELIMITER %s INSERT INTO %s (",filename,delim_s,tab);
+  			printc (" INSERT INTO %s (",tab);
 		while (1) {
 			strcpy(buff,ptr);
 			ptr=strchr(buff,',');
@@ -908,6 +938,7 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 		printc(");");
 			
 	}
+	printc("}");
   } else {
   	printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
   }

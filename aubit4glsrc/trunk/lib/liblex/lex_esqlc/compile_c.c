@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.58 2003-06-27 11:09:48 mikeaubury Exp $
+# $Id: compile_c.c,v 1.59 2003-06-27 15:02:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -78,7 +78,7 @@ char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void printcomment (char *fmt, ...);
 int is_builtin_func (char *s);
-
+int cs_ticker=0;
 /*
 =====================================================================
 		                    Includes
@@ -4204,9 +4204,9 @@ strcpy(buff,"");
   }
 
   if (doing_cs()) {
-  	printc ("%s A4GL_cs_%s;\n", buff,var, size);
+  	printc ("%sA4GL_cs_%s;\n", buff,var, size);
   } else {
-  	printc ("%s %s [%d+1];\n", buff,var, size);
+  	printc ("%s%s [%d+1];\n", buff,var, size);
   }
 }
 
@@ -4233,7 +4233,7 @@ strcpy(buff,"");
   if (isstatic_extern == 2) {
 	strcat(buff,"extern ");
   }
-  printc ("%s %s;\n", buff,varstring);
+  printc ("%s%s;\n", buff,varstring);
 }
 
 /**
@@ -4247,10 +4247,12 @@ strcpy(buff,"");
  * @param varname The record variable name. Not used
  */
 void
-print_start_record (int isstatic_extern, char *varname)
+print_start_record (int isstatic_extern, char *varname,char *arrsize,int level)
 {
 char buff[20]="";
-  if (isstatic_extern == 1) strcat(buff,"static");
+int n;
+
+  if (isstatic_extern == 1) strcat(buff,"static ");
   if (isstatic_extern == 2)
     {
 
@@ -4274,7 +4276,22 @@ char buff[20]="";
 #endif
 
     }
-  printc ("%s struct {\n",buff);
+  if (doing_cs()) {
+		cs_ticker++;
+		if (level) {
+			if (arrsize && strcmp(arrsize,"-1")==0) {
+				printc("priv_c_%d %s;",cs_ticker,varname);
+			} else {
+				printc("priv_c_%d %s[]=new priv_c_%d[%s];",cs_ticker,varname,cs_ticker,arrsize);
+			}
+			printc ("%sprivate class priv_c_%s { /* %d */\n",buff,varname,level);
+		} else {
+			printc("pub_c_%d %s;",cs_ticker,varname);
+			printc ("%spublic class pub_c_%s { /* %d */\n",buff,varname,level);
+		}
+  } else {
+  	printc ("%sstruct {\n",buff);
+  }
 }
 
 /**
@@ -4284,15 +4301,23 @@ char buff[20]="";
  * @param arrsize The array size if is a record array
  */
 void
-print_end_record (char *vname, char *arrsize)
+print_end_record (char *vname, char *arrsize,int level)
 {
   if (strcmp (arrsize, "-1") == 0)
     {
-      printc ("} %s;\n", vname);
+	if (doing_cs()) {
+      		printc ("} ;\n");
+	}  else {
+      		printc ("} %s;\n", vname);
+	}
     }
   else
     {
-      printc ("} %s[%s];\n", vname, arrsize);
+	if (doing_cs()) {
+      		printc ("} ;\n");
+	} else {
+      		printc ("} %s[%s];\n", vname, arrsize);
+	}
     }
 }
 
