@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.30 2004-08-02 05:57:31 afalout Exp $
+# $Id: pointers.c,v 1.31 2004-08-08 01:42:17 afalout Exp $
 #
 */
 
@@ -117,9 +117,27 @@ struct s_node
 		On new MinGW, if commented out, error is:
 		pointers.c:142: parse error before "which"
 		
-		On old MinGW, if not commented out, error is:
+		On old MinGW (gcc 3.2) , if not commented out, error is:
+		pointers.c:122: conflicting types for `preorder'
+		a4gl_libaubit4gl.h:483: previous declaration of `preorder'
+		pointers.c:122: conflicting types for `postorder'
+		a4gl_libaubit4gl.h:484: previous declaration of `postorder'
+		pointers.c:122: conflicting types for `endorder'
+		a4gl_libaubit4gl.h:485: previous declaration of `endorder'
+		pointers.c:122: conflicting types for `leaf'
+		a4gl_libaubit4gl.h:487: previous declaration of `leaf'
+		pointers.c:122: redefinition of `VISIT'
+		a4gl_libaubit4gl.h:488: `VISIT' previously declared here
 		*/
-		typedef enum { preorder, postorder, endorder, leaf } VISIT;
+		
+		#if defined (__GNUC__) && defined (__GNUC_MINOR__)
+			//&& defined (__VERSION__) && (__VERSION__ "3.2 (mingw special 20020817-1)")
+			#if (__GNUC__ == 3)
+				#if (__GNUC_MINOR__ >= 3) 
+ 					typedef enum { preorder, postorder, endorder, leaf } VISIT;
+				#endif
+			#endif
+		#endif
 	#endif
 	
 	//why is this line commented out?

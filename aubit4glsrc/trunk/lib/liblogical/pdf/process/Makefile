@@ -24,10 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-07-02 15:51:48 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2004-08-08 01:42:18 afalout Exp $
 #
 
-ROOT		=${AUBITDIR}
+ROOT		=../../../..
 LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,22 +37,33 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  -fPIC 
+CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  ${PDFLIB_I_FLAGS}
 
+ifeq "${PDFBUILD}" "yes"
+	ALL=${LIBROOT}/libLOGREPPROC_PDF.so
+endif	
+
+LINKLIBS=-L$(ROOT)/lib -laubit4gl
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
+all: ${ALL}
+
 ${LIBROOT}/libLOGREPPROC_PDF.so : process_pdf.o pdf_handling.o ../common/common_pdf.c
-	gcc  -z -Wl,+s -Wl,-E -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl  -lpdf
-
-
+#	gcc  -z -Wl,+s -Wl,-E -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl  -lpdf
+#	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS}
+	${LD} ${CFLAGS} ${PDFLIB_L_FLAGS} -lpdf $(SO_LDFLAGS) $^ -o $@ ${LINKLIBS}
+	
 process_pdf.o: ../../layout_engine/API_layout.h
 
 ../../layout_engine/API_layout.h:
 	${MAKE} -C ../../layout_engine API_layout.h
-
+	
+show:
+	@echo "PDFBUILD=${PDFBUILD}"
+	
 ## ==================================================================
 ##                              Clean
 ## ==================================================================

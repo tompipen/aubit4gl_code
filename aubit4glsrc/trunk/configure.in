@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.233 2004-07-11 02:57:38 afalout Exp $
+dnl # $Id: configure.in,v 1.234 2004-08-08 01:41:52 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -50,6 +50,13 @@ AC_PREREQ(2.50)
 
 #Need to be here too, to be used in AC_INIT call:
 if test -f "tools/project/version" ; then
+	if `grep -c '=' tools/project/version` -gt 0 ; then
+		AC_MSG_ERROR( tools/project/version CVS merge conflict. Stop.)
+	fi
+	if `grep -c '=' tools/project/build` -gt 0 ; then
+		AC_MSG_ERROR( tools/project/build CVS merge conflict. Stop.)
+	fi
+	
 	AUBIT_VERSION=`cat tools/project/version`
 	AUBIT_BUILD=`cat tools/project/build`
 fi
@@ -2250,7 +2257,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	if test "$withval" != "no"; then
 		#AC_PROG_YACC
 		#if test "$YACC" != "bison -y"; then
-		#	#AC_PROG_YACC macro sets $YACC to "yacc" even when it's not present!
+		#	#AC_PROG_YACC macro sets $YACC to "yacc" even when its not present!
 		#	YACC=no
 		#    BISON=no
 		#	WARN_YACC=1
@@ -2532,7 +2539,7 @@ AC_ARG_WITH(cint,
 	if test "$withval" != "no"; then
 	
 		#FIXME: despite listing all this paths, cint executable will only be found
-	    #if it's in the PATH - no idea why
+	    #if its in the PATH - no idea why
 #echo "x1 $LDFLAGS"
 #echo "xa $save_LDFLAGS"
 
@@ -3400,7 +3407,7 @@ if test "$withval" != "no"; then
 			unset ac_cv_header_pgsql_libpq_fe_h
 			unset ac_cv_header_postgresql_libpq_fe_h
 
-			#This hader is NOT part of ecpg, it's part of libpq
+			#This hader is NOT part of ecpg, its part of libpq
 			AC_CHECK_HEADERS([ pgsql/libpq-fe.h postgresql/libpq-fe.h libpq-fe.h ])
 			#Note: this is NOT same as HAVE_PG_ESQL_HEADERS test in ecpg section
 			HAVE_PG_ESQL_HEADERS_LIB=no
@@ -3708,7 +3715,7 @@ fi
 		        #Informix ODBC via MS manager plug-in (odbc32)...
 
 				#IVIF7912.DLL      INTERSOLV Informix ODBC driver - WIN
-		        #this should be in WINDOWSDIR/system32 - but it's DLL !!!!
+		        #this should be in WINDOWSDIR/system32 - but its DLL !!!!
 				#AC_CHECK_LIB([ivif7912], [main])
 
 				#only two dll's in csdk280_tc1 - none have lib prefix
@@ -3839,7 +3846,7 @@ AC_ARG_WITH(sapodbc,
         LIBS="-lsqlrte -lpcr -lpthread -lm"
 
         #libpcr: WARNING: NOT part of the SAP DB ODBC RPM!!!
-        #It's part of "environment" RPM:
+        #Its part of "environment" RPM:
         #/opt/sapdb/indep_prog/runtime/7300/lib/libpcr.so
 		#/opt/sapdb/interfaces/precompiler/lib/libpcr.a
 		#/opt/sapdb/interfaces/precompiler/runtime/7300/lib/libpcr.so
@@ -4721,7 +4728,7 @@ if test "$FORCE_RPC" = "1"; then
 
 	#First, let's see if RPC is in libraries we already have as default:
 
-	#it is not enough to just test for function, you then have test for it's success by name!
+	#it is not enough to just test for function, you then have test for its success by name!
 	#and BTW, what's wrong with svctcp_create ?
 	#AC_CHECK_FUNCS([svc_run])
 	AC_CHECK_FUNCS([svctcp_create])
@@ -5447,7 +5454,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
    	AC_CHECK_HEADERS([search.h])
 
 	if test "$GCC_MINGW" = "yes" ; then
-		#MinGW now has something called search.h but it's not complete
+		#MinGW now has something called search.h but its not complete
 		AC_MSG_WARN(Disabling MinGW search.h - not compatible)
 		as_ac_Header="no"
 		AC_DEFINE(HAVE_SEARCH_H,0,[ ])
@@ -6743,7 +6750,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.233 2004-07-11 02:57:38 afalout Exp $
+| $Id: configure.in,v 1.234 2004-08-08 01:41:52 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

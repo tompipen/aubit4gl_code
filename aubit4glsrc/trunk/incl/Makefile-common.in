@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.160 2004-07-11 23:54:54 afalout Exp $
+# $Id: Makefile-common.in,v 1.161 2004-08-08 01:42:17 afalout Exp $
 #
 
 
@@ -864,6 +864,8 @@ PD_CURSES_CYGDRIVE	=@PD_CURSES_CYGDRIVE@
 
 LIBPQ_FE_H_IFLAGS	=@LIBPQ_FE_H_IFLAGS@
 
+PDFLIB_L_FLAGS		=@PDFLIB_L_FLAGS@
+PDFLIB_I_FLAGS		=@PDFLIB_I_FLAGS@
 
 ## ==================================================================
 ##                      Moved from aubitrc:

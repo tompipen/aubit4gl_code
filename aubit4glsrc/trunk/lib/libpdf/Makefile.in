@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2002-10-07 11:06:31 afalout Exp $
+# $Id: Makefile.in,v 1.16 2004-08-08 01:42:18 afalout Exp $
 #
 
 ROOT        =../..
@@ -37,7 +37,8 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS	+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
+CFLAGS			+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile \
+				@PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
 
 ALL 			=${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}
 
@@ -60,16 +61,9 @@ all: ${ALL}
 
 ${LIBROOT}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
 	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
-
 
 ${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
 
 #NOPDF.dll: ${OBJECTS_NOPDF}
 #	${MAKE} libEXREPORT_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
