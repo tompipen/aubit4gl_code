@@ -1632,7 +1632,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.13 2003-04-07 07:12:21 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.14 2003-04-20 23:18:27 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3897,3 +3897,32 @@ On Saturday 05 April 2003 4:03 am, Andrej Falout wrote:
 =======================================================================
 
 
+Doc4gl:
+
+
+>    - The ability to load the processes from an unl file (command option
+> --process_file=file_name).
+
+example.unl:
+
+ERP|ERP|The open source ERP||A description of the ERP
+AP|Acc Payable|Accounts Payable|ERP|
+AR|Acc Receivable|Accounts Receivable|ERP|
+GL|General Ledger|General Ledger an Cash Book|ERP|
+UTL|Utility|Menu system and application setup|ERP|
+CM|Contact Management|Contact Management|ERP|
+ASP|ASP|Application Service Provider|ERP|
+
+
+
+>    - The html generation it have now:
+>         - Parameters
+>         - Return values
+>         - Todo list
+>         - Function prototype
+
+
+http://aptiva:8080/manager/install?path=/promotxt&war=file:/var/tomcat4/webapps/promotxt.war
+
+
+===========================================================================
