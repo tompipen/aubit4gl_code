@@ -59,7 +59,7 @@
 	void 	adderr 				(char *s, char *p, char *q);
 	int 	only_doing_globals 	(void);
 	int 	isGenStackInfo		(void);
-	void 	yyerror 			(char *s);
+	void 	a4gl_yyerror 			(char *s);
 
 
 	/* ========================== Implemented in lexer.c ================= */
@@ -290,9 +290,9 @@
 		/* int     yyparse				(void); */
 		#ifdef __GNUC__
 			#ifdef YYPARSE_PARAM
-				int yyparse (void *);
+				int a4gl_yyparse (void *);
 			#else
-				int yyparse (void);
+				int a4gl_yyparse (void);
 			#endif
 		#endif
     #endif

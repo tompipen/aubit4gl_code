@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.31 2003-02-24 19:54:59 mikeaubury Exp $
+# $Id: 1.reqd,v 1.32 2003-03-06 22:39:53 mikeaubury Exp $
 #
 */
 
@@ -182,6 +182,7 @@ char *		make_sql_string(char *first,...);
 
 
 %}
+%name-prefix="a4gl_yy"
 %pure_parser
 //glr-parser
 %start module

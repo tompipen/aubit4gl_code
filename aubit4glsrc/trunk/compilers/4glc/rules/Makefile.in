@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2003-02-22 01:52:20 afalout Exp $
+# $Id: Makefile.in,v 1.16 2003-03-06 22:39:53 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -81,7 +81,7 @@ generated/y.tab.c: ${Y_TAB_C_DEP}
 ifeq "${YACC}" "no"
 	${CP} ${Y_TAB_C} .
 else
-	(cd generated; unset DEBUG; ${YACC} -r all -d -v fgl.yacc)
+	(cd generated; unset DEBUG; ${YACC}  -r all -d -v fgl.yacc)
 endif
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.18 2003-03-05 22:24:40 mikeaubury Exp $
+# $Id: compile_c.c,v 1.19 2003-03-06 22:40:00 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4126,7 +4126,7 @@ char *get_into_part(int no) {
 
 	         sprintf(buffer,"INTO\n");
 	         for (a=0;a<no;a++) {
-			   sprintf(buff,"\t$_vo_%d\n",a);
+			   sprintf(buff,"\t:_vo_%d\n",a);
 			   if (a) strcat(buffer,",");
 			   strcat(buffer,buff);
                  }

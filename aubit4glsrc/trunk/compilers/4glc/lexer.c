@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.63 2003-03-06 19:01:06 mikeaubury Exp $
+# $Id: lexer.c,v 1.64 2003-03-06 22:38:33 mikeaubury Exp $
 #*/
 
 /**
@@ -984,7 +984,7 @@ fix_bad_strings (char *s)
  */
 int
 //yylex (void)
-yylex (void *pyylval, int yystate,void *yys1,void *yys2)
+a4gl_yylex (void *pyylval, int yystate,void *yys1,void *yys2)
 {
 int a;
 char buff[1024];
@@ -1122,7 +1122,7 @@ debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
 	  strcpy (buff, buffval);
 	  a = NAMED_GEN;
 	  break;		/* 'C' */
-	default: yyerror("Unexpected Error");
+	default: a4gl_yyerror("Unexpected Error");
 
 	}
     }

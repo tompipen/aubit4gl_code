@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: list.c,v 1.10 2002-10-18 01:56:33 afalout Exp $
+# $Id: list.c,v 1.11 2003-03-06 22:38:33 mikeaubury Exp $
 #*/
 
 /**
@@ -167,7 +167,7 @@ list_find_id (char *id)
     }
 
   sprintf (buff, "ID %s is unknown to the template", id);
-  yyerror (buff);
+  a4gl_yyerror (buff);
   exit (0);
 }
 
@@ -258,7 +258,7 @@ list_use (char *id1, char *id2, char *str, char *idnew)
   str = lists[iid3].list_values[0];
   if (lists[iid1].list_count != lists[iid2].list_count)
     {
-      yyerror ("List are different length....\n");
+      a4gl_yyerror ("List are different length....\n");
       exit (0);
     }
   strcpy (lists[list_cnt].list_id, idnew);

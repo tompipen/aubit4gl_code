@@ -90,7 +90,7 @@ debug("rordcnt=%d",rordcnt);
 a=scan_orderby($<str>2,rordcnt);
 if (a<0) {
    sprintf(buff,"%s is not in the order by list",$<str>2);
-   yyerror(buff);
+   a4gl_yyerror(buff);
 	YYERROR;
 }
 sprintf(buff,"%d",a+1);
@@ -107,7 +107,7 @@ debug("rordcnt=%d",rordcnt);
 a=scan_orderby($<str>2,rordcnt);
 if (a<0) {
    sprintf(buff,"%s is not in the order by list",$<str>2);
-   yyerror(buff);
+   a4gl_yyerror(buff);
 	YYERROR;
 }
 
@@ -143,7 +143,7 @@ strcpy(buff,$<str>4);
 if (buff[0]=='1') {
 	print_skip_lines();
 } else {
-	if (rep_type!=REP_TYPE_PDF) { yyerror("SKIP BY is only in PDF reports"); YYERROR; } print_skip_by($<str>2);
+	if (rep_type!=REP_TYPE_PDF) { a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; } print_skip_by($<str>2);
 }
 start_state("KWLINE",0); 
 }
@@ -151,14 +151,14 @@ start_state("KWLINE",0);
 	| FONT_SIZE nval { print_niy("FONT SIZE"); }
 	| SKIP_BY nval {
 			if (rep_type!=REP_TYPE_PDF) {
-				yyerror("SKIP BY is only in PDF reports");
+				a4gl_yyerror("SKIP BY is only in PDF reports");
 				YYERROR;
 			}
 			print_skip_by($<str>2);
 		}
 	| SKIP_TO nval {
 			if (rep_type!=REP_TYPE_PDF) {
-				yyerror("SKIP TO is only in PDF reports");
+				a4gl_yyerror("SKIP TO is only in PDF reports");
 				YYERROR;
 			}
 			print_skip_to($<str>2);
@@ -216,7 +216,7 @@ blob_var :  variable {
 	int vtype;
 	vtype=scan_variable($<str>1);
 	if (vtype!=11&&vtype!=12) {
-	yyerror("Only Blobs may be printed...");
+	a4gl_yyerror("Only Blobs may be printed...");
 	YYERROR;
 	}
 }
@@ -451,7 +451,7 @@ rep_where :  { strcpy($<str>$,"");
 pause_command: PAUSE pause_msg
 {
 if (!in_command("REPORT")) {
-	yyerror("PAUSE can only be used in reportes");
+	a4gl_yyerror("PAUSE can only be used in reportes");
 	YYERROR;
         }
 

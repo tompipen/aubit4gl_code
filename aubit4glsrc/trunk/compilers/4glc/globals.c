@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.12 2003-02-23 08:04:37 afalout Exp $
+# $Id: globals.c,v 1.13 2003-03-06 22:38:32 mikeaubury Exp $
 #
 */
 
@@ -573,7 +573,7 @@ char buff2[256];
   fgets(buff2,255,f);
 
   if (sscanf (buff2, buff, val)!=1) {
-		yyerror ("Error in .glb file (int) - is it an old version ?");
+		a4gl_yyerror ("Error in .glb file (int) - is it an old version ?");
   }
 }
 
@@ -595,7 +595,7 @@ char buff3[2000];
   sprintf (buff, "%s=%%s\n", name);
   a=sscanf (buff3, buff, buff2);
   if (a==0&&strcmp(buff,buff3)!=0) {
-		yyerror ("Error in .glb file (string)- is it an old version ?");
+		a4gl_yyerror ("Error in .glb file (string)- is it an old version ?");
   }
 
   if (alloc)
@@ -623,7 +623,7 @@ char buff3[256];
   fgets(buff3,255,f);
   sprintf (buff, "%s=%%c\n", name);
   if (sscanf (buff3, buff, val)!=1) {
-		yyerror ("Error in .glb file (char)- is it an old version ?");
+		a4gl_yyerror ("Error in .glb file (char)- is it an old version ?");
   }
 }
 
@@ -641,7 +641,7 @@ char buff3[256];
   fgets(buff3,255,f);
   sprintf (buff, "%s=%%lf\n", name);
   if (sscanf (buff3, buff, val)!=1) {
-		yyerror ("Error in .glb file (float)- is it an old version ?");
+		a4gl_yyerror ("Error in .glb file (float)- is it an old version ?");
 	
   }
 

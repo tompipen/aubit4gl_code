@@ -20,7 +20,7 @@ int to_vars;
 
 		if (!print_let_manyvars($<str>7))
 		{
-	    		yyerror("Number of variables in let not equal to number of values\n");YYERROR;
+	    		a4gl_yyerror("Number of variables in let not equal to number of values\n");YYERROR;
 		}
 
 	}

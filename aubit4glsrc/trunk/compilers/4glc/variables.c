@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.17 2003-02-24 19:53:41 mikeaubury Exp $
+# $Id: variables.c,v 1.18 2003-03-06 22:38:36 mikeaubury Exp $
 #
 */
 
@@ -820,7 +820,7 @@ add_to_scope (int record_cnt, int unroll)
 	    {
 	      set_yytext (v[record_cnt]->names.name);
 	      exitwith ("Variable is already defined");
-	      yyerror ("Variable is already defined");
+	      a4gl_yyerror ("Variable is already defined");
 	      return 0;
 	    }
 	}
@@ -926,7 +926,7 @@ find_variable_in (char *s, struct variable **list, int cnt)
 	debug("v->variable_type=%d\n",v->variable_type);
 	if (v->variable_type==VARIABLE_TYPE_FUNCTION_DECLARE) {
 		//debug("Got something .... %s @ %d (%s)\n",s,a,v->names.name);
-		//yyerror("This is the name of a function!");
+		//a4gl_yyerror("This is the name of a function!");
 		continue;
 	}
 
@@ -1103,7 +1103,7 @@ find_variable (char *s_in, int *dtype, int *size, int *is_array,
     }
 
   // Don't know how we got to here....
-  yyerror ("Internal error in find_variable");
+  a4gl_yyerror ("Internal error in find_variable");
   return 0;
 
 }
@@ -1462,7 +1462,7 @@ find_type (char *s)
 
   debug ("Invalid type : '%s'\n", s);
   sprintf (errbuff, "Internal Error (Invalid type : '%s')\n", s);
-  yyerror (errbuff);
+  a4gl_yyerror (errbuff);
   return 0;
 }
 
@@ -1732,7 +1732,7 @@ debug("SPLIT_RECORD : %s\n",s);
 
       if (strcasecmp (r1, r2) != 0)
 	{
-	  yyerror ("Records for thru look different...");
+	  a4gl_yyerror ("Records for thru look different...");
 	  return 0;
 	}
 
@@ -1763,7 +1763,7 @@ debug("SPLIT_RECORD : %s\n",s);
       if (*v_record == 0)
 	{
 	  printf ("Whoops - %s record not found\n", buff);
-	  yyerror ("Record not found...");
+	  a4gl_yyerror ("Record not found...");
 	  return 0;
 	}
 
@@ -1820,7 +1820,7 @@ add_to_record_list (struct record_list **list_ptr, char *prefix_buff,
 
   if (v->is_array)
     {
-      //yyerror ("Can't use a variable containing an array in this context\n");
+      //a4gl_yyerror ("Can't use a variable containing an array in this context\n");
       //return 0;
     }
 
@@ -1892,7 +1892,7 @@ debug("Split_record_list... %s",s);
       if (dot[0] == 0 || dot[1] == 0)
 	{
 	  // Can't find a dot in a thru ?
-	  yyerror
+	  a4gl_yyerror
 	    ("At least one of the entries in the 'thru' is not part of a record");
 	  return 0;
 	}
@@ -1900,7 +1900,7 @@ debug("Split_record_list... %s",s);
       *dot[1] = 0;
       if (strcasecmp (record1, record2) != 0)
 	{
-	  yyerror ("The 'thru' contains different records..");
+	  a4gl_yyerror ("The 'thru' contains different records..");
 	  return 0;
 	}
 
@@ -1939,7 +1939,7 @@ debug("subrecord1=%s subrecord2=%s\n",subrecord1,subrecord2);
       if (v_record == 0)
 	{
 	  printf ("Whoops - record not found for %s\n", record2);
-	  yyerror ("Record not found");
+	  a4gl_yyerror ("Record not found");
 	  return 0;
 	}
 
@@ -1979,7 +1979,7 @@ debug("subrecord1=%s subrecord2=%s\n",subrecord1,subrecord2);
       if (v_record == 0)
 	{
 	  printf ("Whoops - record not found for %s\n", record1);
-	  yyerror ("Record not found");
+	  a4gl_yyerror ("Record not found");
 	  return 0;
 	}
 
@@ -2021,23 +2021,23 @@ debug("subrecord1=%s subrecord2=%s\n",subrecord1,subrecord2);
 	return list;
       }
 	printf("S=%s\n",s);
-      yyerror ("ERROR: Variable is not a record!\n");
+      a4gl_yyerror ("ERROR: Variable is not a record!\n");
       return 0;
     }
 
   if (record_start == -1)
     {
-      yyerror ("Couldn't find start variable");
+      a4gl_yyerror ("Couldn't find start variable");
       return 0;
     }
 
   if (record_end == -1)
     {
-      yyerror ("Couldn't find end variable");
+      a4gl_yyerror ("Couldn't find end variable");
       return 0;
     }
   if (record_start>record_end) {
-	yyerror("Starting point in THRU is after the end point");
+	a4gl_yyerror("Starting point in THRU is after the end point");
 	return 0;
   }
 
@@ -2084,7 +2084,7 @@ debug("Got list : %p",list);
 
   if (list == 0)
     {
-      yyerror ("OOps\n");
+      a4gl_yyerror ("OOps\n");
       return -1;
     }
 
@@ -2125,7 +2125,7 @@ get_next_variable (struct variable *record, struct variable *v1,
 	  return v_return;
 	}
     }
-  yyerror ("Can't find variable in record...");
+  a4gl_yyerror ("Can't find variable in record...");
   return 0;
 }
 
@@ -2145,7 +2145,7 @@ print_push_rec (char *s, void **b)
 
   if (list == 0)
     {
-      yyerror ("OOps\n");
+      a4gl_yyerror ("OOps\n");
       return 0;
     }
 

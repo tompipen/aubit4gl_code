@@ -27,7 +27,7 @@ valid_port : variable {
 		if (scan_variable($<str>1)!=2) {
 		char buff[256];
 			strcpy(buff,"START EXTERNAL ..ON must be an integer");
-			yyerror(buff);
+			a4gl_yyerror(buff);
 			YYERROR;
 		}
 	} | INT_VALUE

@@ -2,7 +2,7 @@ locate_cmd : LOCATE variable IN_MEMORY {
 int vtype;
 vtype=scan_variable($<str>2);
 if (vtype!=11&&vtype!=12) {
-yyerror("Only Byte & Text may be located...");
+a4gl_yyerror("Only Byte & Text may be located...");
 YYERROR;
 }
 print_locate('M',$<str>2,"0");
@@ -13,7 +13,7 @@ print_locate('M',$<str>2,"0");
 int vtype;
 vtype=scan_variable($<str>2);
 if (vtype!=11&&vtype!=12) {
-yyerror("Only Byte & Text may be located...");
+a4gl_yyerror("Only Byte & Text may be located...");
 YYERROR;
 }
 

@@ -1,18 +1,18 @@
 linked_cmd :
 	SELECT_USING variable {
-		if (!print_linked_cmd('S',$<str>2)) yyerror("Not a linked variable");
+		if (!print_linked_cmd('S',$<str>2)) a4gl_yyerror("Not a linked variable");
 	}
 ;
 
 linked_del_cmd :
 	DELETE_USING variable {
-		 if (!print_linked_cmd('D',$<str>2)) yyerror("Not a linked variable");
+		 if (!print_linked_cmd('D',$<str>2)) a4gl_yyerror("Not a linked variable");
 	}
 ;
 
 linked_upd_cmd :
 	UPDATE_USING variable {
-		 if (!print_linked_cmd('U',$<str>2)) yyerror("Not a linked variable");
+		 if (!print_linked_cmd('U',$<str>2)) a4gl_yyerror("Not a linked variable");
 }
 ;
 

@@ -15,7 +15,7 @@ OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
   a=scan_variable($<str>1)&15;
   if (a!=1&&a!=2) {
     
-    yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
+    a4gl_yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
     YYERROR;
     /* error processing */;
   }

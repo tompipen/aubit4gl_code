@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.108 2003-03-06 19:01:08 mikeaubury Exp $
+# $Id: mod.c,v 1.109 2003-03-06 22:38:34 mikeaubury Exp $
 #
 */
 
@@ -1072,7 +1072,7 @@ add_constant (char t, char *ptr, char *name)
     {
       adderr ("'%s' is a reserved word and cannot be used as a constant\n",
 	      name, "");
-      yyerror ("Constant Declaration Error");
+      a4gl_yyerror ("Constant Declaration Error");
     }
   debug ("Add constant\n");
   x = check_for_constant (name, buff);
@@ -1088,7 +1088,7 @@ add_constant (char t, char *ptr, char *name)
    define constant "Bibble"="Wibble"
  */
       adderr ("Constant %s has already been defined (as '%s')", name, buff);
-      yyerror ("Duplicate Constant");
+      a4gl_yyerror ("Duplicate Constant");
     }
 
   if (isin_command ("FUNC") || isin_command ("REPORT") || isin_command("MAIN")
@@ -1197,7 +1197,7 @@ debug("open_db %s", s);
     {
       sprintf (buff, "Could not connect to database %s (%s)", s,
 	       A4GLSQL_get_sqlerrm ());
-      yyerror (buff);
+      a4gl_yyerror (buff);
     }
   if (db_used == 0)
     db_used = 1;
@@ -1317,7 +1317,7 @@ char buff[300];
   if (rval == 0)
   {
     sprintf (buff, "%s.%s does not exist in the database",tableName,columnName);
-    yyerror (buff);
+    a4gl_yyerror (buff);
     return 0;
   }
   sprintf (cdtype, "%d", idtype & 15);
@@ -1351,7 +1351,7 @@ pushLikeAllTableColumns(char *tableName)
   if (rval == 0 && tableName)
   {
     sprintf (buff, "%s does not exist in the database", tableName);
-    yyerror (buff);
+    a4gl_yyerror (buff);
     return 1;
   }
 
@@ -1406,7 +1406,7 @@ push_like2 (char *t2)
   if (db_used == 0)
   {
     sprintf (buff, "You cannot use LIKE without specifying a database");
-    yyerror (buff);
+    a4gl_yyerror (buff);
     return;
   }
 
@@ -1605,7 +1605,7 @@ pop_blockcommand (char *cmd_type)
       debug ("   %s\n", command_stack[a].cmd_type);
     }
   debug ("------------------\n");
-  yyerror (err);
+  a4gl_yyerror (err);
   exit (0);
 }
 
@@ -1641,7 +1641,7 @@ in_command (char *cmd_type)
     }
 
   printf ("Not in a %s command\n", cmd_type);
-  yyerror ("Can't exit command");
+  a4gl_yyerror ("Can't exit command");
 
   return 0;
 }
@@ -1718,13 +1718,13 @@ pop_all_gen (int a, char *s)
  * Not used
  */
 /*
-static yyerrorf (char *fmt, ...)
+static a4gl_yyerrorf (char *fmt, ...)
 {
   char buff[256];
   va_list args;
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
-  yyerror (buff);
+  a4gl_yyerror (buff);
 }
 */
 
@@ -1819,7 +1819,7 @@ add_bind (char i, char *var)
 
 		a=sscanf(buff2,"%s , %d , %d , %d) /*1*/",buff,&s_dtype,&s_sstart,&s_send);
 		if (a!=4) {
-			yyerror("Internal error - (split substr)");
+			a4gl_yyerror("Internal error - (split substr)");
 		}
 		if (s_send==0) s_send=s_sstart;
 	  	strcpy (ibind[ibindcnt].varname, buff);
@@ -2902,7 +2902,7 @@ set_whenever (int c, char *p)
   if (code == -1)
     {
       printf ("Code=%d (%x) to %p\n", c, c, p);
-      yyerror ("Internal error setting whenever error...");
+      a4gl_yyerror ("Internal error setting whenever error...");
       exit (0);
     }
 
@@ -3617,7 +3617,7 @@ if (mode==1) {
   	if (db_used == 0)
   	{
     		sprintf (buff, "You cannot use update * =  without specifying a database");
-    		yyerror (buff);
+    		a4gl_yyerror (buff);
     		return 0;
   	}
 	
@@ -3626,7 +3626,7 @@ if (mode==1) {
 	strcpy(colname,"");
   	rval = A4GLSQL_get_columns(current_upd_table,colname,&idtype, &isize);
 	if (rval==0) {
-		yyerror("Table is not in the database");
+		a4gl_yyerror("Table is not in the database");
 		return 0;
 	}
 
@@ -3645,7 +3645,7 @@ if (mode==1) {
 
 printf("Columns =%d values=%d\n",gen_stack_cnt[UPDCOL],gen_stack_cnt[UPDVAL]) ;
 if (gen_stack_cnt[UPDCOL]!=gen_stack_cnt[UPDVAL]) {
-	yyerror("Number of columns in update not the same as number of values");
+	a4gl_yyerror("Number of columns in update not the same as number of values");
 }
 
 for (a=0;a<gen_stack_cnt[UPDCOL];a++) {

@@ -28,7 +28,7 @@ def_part : def_part2 |  def_part COMMA def_part2
 define_ident : {in_define=1;} identifier {in_define=0;strcpy($<str>$,$<str>2);
                         set_yytext($<str>$);
                         if (bad_identifiers($<str>$)) {
-                                yyerror("You can't use this identifier as it is a reserved word in the target language");
+                                a4gl_yyerror("You can't use this identifier as it is a reserved word in the target language");
                         }
 }
 ;
@@ -233,7 +233,7 @@ push_type("struct_dtime",$<str>2,0);
 				}
 			} else {
 				/* yyerror("Unknown datatype : %s",$<str>1); */
-                yyerror("Unknown datatype.");
+                a4gl_yyerror("Unknown datatype.");
 			}
 		}
 
@@ -298,7 +298,7 @@ strcpy($<str>$,$<str>2);
 
 dtfrac: INT_VALUE {
 if (atoi($<str>1)>5) {
-yyerror("Fraction values are between 0 and 5");
+a4gl_yyerror("Fraction values are between 0 and 5");
 YYERROR;
 }
 }

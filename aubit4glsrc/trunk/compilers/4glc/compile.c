@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.12 2003-03-01 14:18:47 mikeaubury Exp $
+# $Id: compile.c,v 1.13 2003-03-06 22:38:31 mikeaubury Exp $
 #*/
 
 /**
@@ -759,7 +759,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	}
     }
 
-  x = yyparse ();		/* we core dump here on Darwin */
+  x = a4gl_yyparse ();		/* we core dump here on Darwin */
 #ifdef DEBUG
   debug ("after yyparse\n");
 #endif
@@ -1040,7 +1040,7 @@ printUsage_help (char *argv[])
  * @param s The string that contains the error
  */
 void
-yyerror (char *s)
+a4gl_yyerror (char *s)
 {
   char errfile[256];
   FILE *f;
@@ -1065,7 +1065,7 @@ yyerror (char *s)
 
 FIXME: merge all yyerror() finction in libaubit4gl
 
-void yyerror(char *s)
+void a4gl_yyerror(char *s)
 {
   char errfile[256];
   FILE *f;
@@ -1218,7 +1218,7 @@ ansi_violation (char *s, int severity)
       return;
     }
   sprintf (buff, "Error: ANSI violation - %s", s);
-  yyerror (buff);
+  a4gl_yyerror (buff);
 }
 
 /* ==================================== EOF =============================== */

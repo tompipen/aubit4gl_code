@@ -285,7 +285,7 @@ $<ptr>$=append_expr($<ptr>2,$<str>$);
 }
 | rep_agg  {
    if (!in_command("REPORT")) {
-   yyerror("This can only be done in a report!");
+   a4gl_yyerror("This can only be done in a report!");
    YYERROR;
 } 
 insql=0;
@@ -294,7 +294,7 @@ insql=0;
 | GROUP {insql=1;set_ingroup();} rep_agg  {
 	char buff[256];
       if (!in_command("REPORT")) {
-        yyerror("This can only be done in a report!");YYERROR;
+        a4gl_yyerror("This can only be done in a report!");YYERROR;
       } 
       insql=0; 
 	lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);

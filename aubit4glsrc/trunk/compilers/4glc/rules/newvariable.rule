@@ -26,7 +26,7 @@ n=scan_variable(buff);
 
   if (n == -1&&buff[0]!=' ') {
            sprintf(buff2,"'%s' does not represent a defined variable (1)",buff);
-           yyerror(buff2);
+           a4gl_yyerror(buff2);
            exit (0);
   }
   if (strstr(buff,".*") && n!=-2) {
@@ -67,7 +67,7 @@ var:
          sprintf(buff,"%s.%s",$<str>1,$<str>2);
          if (scan_variable(buff)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (2)",buff);
-           yyerror(buff2);
+           a4gl_yyerror(buff2);
            YYERROR;
          }
 
@@ -103,7 +103,7 @@ assoc_var_read  : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
 char buff2[256];
          if (scan_variable($<str>1)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (3)",$<str>1);
-           yyerror(buff2); 
+           a4gl_yyerror(buff2); 
            YYERROR;
          }
 
@@ -117,7 +117,7 @@ assoc_var_write  : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
 char buff2[256];
          if (scan_variable($<str>1)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (4)",$<str>1);
-           yyerror(buff2); 
+           a4gl_yyerror(buff2); 
            YYERROR;
          }
 lex_printcomment("/*Associative Variable : %s*/\n",$<str>3);
@@ -146,7 +146,7 @@ identifier arr_subscripts
   lex_printcomment("/*here %s %x */",$<str>1,type);
   if (scan_variable($<str>1)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (7)",$<str>1);
-           yyerror(buff2); 
+           a4gl_yyerror(buff2); 
            YYERROR;
 
 	}
@@ -237,7 +237,7 @@ lex_printcomment("/* %s */\n",$<str>1);
     {
       lex_printcomment ("/*NOt a variable*/");
       sprintf(buff,"%s is not a variable",$<str>1);
-      yyerror(buff);
+      a4gl_yyerror(buff);
     }
 
   mcnt = 0;
@@ -259,7 +259,7 @@ let_var: let_array_r_variable {
 
          if (scan_variable($<str>$)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (5)",$<str>$);
-           yyerror(buff2); 
+           a4gl_yyerror(buff2); 
            YYERROR;
          }
 
@@ -321,7 +321,7 @@ identifier arr_subscripts
 
          if (a==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (6)",$<str>1);
-           yyerror(buff2); 
+           a4gl_yyerror(buff2); 
            YYERROR;
          }
 

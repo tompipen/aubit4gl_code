@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dim.c,v 1.15 2002-10-18 01:56:33 afalout Exp $
+# $Id: dim.c,v 1.16 2003-03-06 22:38:32 mikeaubury Exp $
 #*/
 
 /**
@@ -148,7 +148,7 @@ struct s_dimitem *itm2;
   }
   if (dimcnt < 0 || dimalloc <= 0)
   {
-    yyerror ("Internal error allocating dim space\n");
+    a4gl_yyerror ("Internal error allocating dim space\n");
   }
   debug ("Adding item dimcnt=%d dimalloc=%d dims=%p\n", dimcnt, dimalloc,
     dims);
@@ -377,7 +377,7 @@ push_dim (char *a)
 	  }
   }
 
-  yyerror ("Unknown type");
+  a4gl_yyerror ("Unknown type");
   return;
 }
 

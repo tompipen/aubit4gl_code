@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.52 2003-02-17 00:03:21 afalout Exp $
+# $Id: sql.c,v 1.53 2003-03-06 22:40:01 mikeaubury Exp $
 #
 */
 
@@ -2451,16 +2451,21 @@ short nColumns;
       #ifdef DEBUG
 		  debug ("New search");
       #endif
-      new_hstmt (&hstmtGetColumns);
+      //new_hstmt (&hstmtGetColumns);
       #ifdef DEBUG
 		  debug ("Got Statement");
       #endif
 
+/*
+SQLColumns (hstmt, "DatabaseName", SQL_NTS,  // qualifier
+NULL, 0,                                     // owner
+"TcpConnectionTable", SQL_NTS,               // table
+"%",SQL_NTS);                                // all columns
+*/
       rc = SQLColumns (hstmtGetColumns,
 		       NULL, 0,
 		       NULL, 0,
-		       tabname,
-		       SQL_NTS,
+		       tabname, SQL_NTS,
 		       NULL, 0
 	);
 

@@ -1359,7 +1359,7 @@ strcpy($<str>$,$<str>2);
 };
 
 char_or_var : CHAR_VALUE | variable {
-if ((scan_variable($<str>1)&15)!=0) {yyerror("Variable must be of type char for a delimiter..");YYERROR;}
+if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type char for a delimiter..");YYERROR;}
 }
 ;
 
