@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-01-23 09:06:18 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-01-24 06:37:19 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -90,6 +90,8 @@ ifxodbc: 	clean show libSQL_ifxodbc.so
 pgodbc: 	clean show libSQL_pgodbc.so
 	@echo "PostgreSQL ODBC target compiled successfully"
 
+odbc32: 	clean show libSQL_odbc32.so
+	@echo "Windows ODBC target compiled successfully"
 
 
 #	    IODBC_INCLUDE=-I$withval/include
@@ -130,6 +132,15 @@ libSQL_pgodbc.so: ${OBJECTS}
 	@echo CFLAGS = ${CFLAGS}
 #	ld  -fPIC -shared $^ -o $@ -lodbc ${UNIXODBC_LFLAGS}
 	ld  -fPIC -shared $^ -o $@ -lpsqlodbc
+	cp $@ ../..
+
+
+libSQL_odbc32.so: CFLAGS+=${LOCAL_CFLAGS}
+libSQL_odbc32.so: ${OBJECTS}
+	@echo LOCAL_CFLAGS = ${LOCAL_CFLAGS}
+	@echo CFLAGS = ${CFLAGS}
+#	ld  -fPIC -shared $^ -o $@ -lodbc ${UNIXODBC_LFLAGS}
+	ld  -fPIC -shared $^ -o $@ -lodbc32
 	cp $@ ../..
 
 

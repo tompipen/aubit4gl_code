@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2002-01-23 09:06:18 afalout Exp $
+# $Id: Makefile.in,v 1.17 2002-01-24 06:37:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -55,7 +55,7 @@ ifdef COMSPEC
 #default RPC install path on CygWin is /usr/local/include:
 	LOCALCFLAGS		+=-DWIN32 -I/usr/local/include
 	LDFLAGS			+= -lrpclib -lc
-	ALL				+=libaclall.a
+	ALL				+=libaclall.a libSQL_odbc32.so
     ALL_GUI			=libaclallgui.a
 
 	ifeq "$(ODBC_LINK)" "static"
@@ -88,7 +88,7 @@ else
     endif
     ALL				+=aclshared.so libaclall.a
     ALL_GUI			=aclsharedgui.so libaclallgui.a
-	
+
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
 		    ALL			+=aclshared-noodbc.so libaclall-noodbc.a
@@ -216,6 +216,8 @@ libSQL_ifxodbc.so:
 libSQL_pgodbc.so:
 	${MAKE} $(MKNAME) -C libsql/odbc pgodbc
 
+libSQL_odbc32.so:
+	${MAKE} $(MKNAME) -C libsql/odbc odbc32
 
 #----------------- with ODBC, if ODBC != no ----------------------
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.17 2002-01-23 11:13:01 afalout Exp $
+# $Id: configure.in,v 1.18 2002-01-24 06:37:15 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -93,6 +93,8 @@ AC_SUBST(AUBITGUI)
 AC_SUBST(JABBERBUILD)
 AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
+AC_SUBST(LDCONFIG)
+
 
 AC_SUBST(target)
 
@@ -127,15 +129,17 @@ PERLBUILD=no
 JABBERBUILD=no
 AUBIT_DEBUG=1
 IFMX_ESQLC=no
+cygwin=0
 
 case "$target_os" in
 	*linux*)
         #rpclib is part of clib on Linux
 		test_rpclib="0"
 		;;
-	cygwin)
+	*cygwin)
 		ODBC=odbc32;
     	ODBCMANAGER=$ODBC;
+		cygwin=1
         ;;
     *)
         echo "Please report success or failure to compile Aubit on this platform to the mailing list. Thank you."
@@ -212,7 +216,7 @@ AC_PATH_PROG(LDCONFIG, ldconfig, no)
 AC_PATH_PROG(RPCGEN, rpcgen, no)
 
 if test "$RPCGEN" = "no"; then
-	if test "$target_os" != "cygwin"; then
+	if test "$cygwin" = "1"; then
 		AC_MSG_ERROR( "rpcgen" not found. Please install RPC. Stop.)
     fi
 fi
@@ -241,6 +245,10 @@ AC_PATH_PROG(I4GL_PCOMPILER, fglpc, no)
 AC_PATH_PROG(I4GL_PRUNTIME, fglgo, no)
 
 #4Js BDL / Informix D4GL
+
+AC_PATH_PROG(FJS_PCOMPILER, fglcomp, no)
+AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
+
 
 #Querix
 
@@ -536,7 +544,16 @@ AC_ARG_WITH(pgsql,
 ##                 Checks for Informix ODBC driver
 ## ==================================================================
 
-		
+
+if test "$cygwin" = "1"; then
+
+		#FIXME: this is not working, probably because it is a DLL and
+        #name does not start with "libxxxxx"
+		#IVIF7912.DLL      INTERSOLV Informix ODBC driver - WIN
+        #this should be in WINDOWSDIR/system32 - but it's DLL !!!!
+		AC_CHECK_LIB([ivif7912], [main])
+
+else
 		#Shared drivers for use with ODBC managers (?)
 		#[INFORMIX 2.8 32-BIT]
 		#Driver=/extra/informix/lib/cli/iclis09a.so
@@ -554,20 +571,50 @@ AC_ARG_WITH(pgsql,
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
 
-if test "$ac_cv_lib_ifcli_main" = "yes"; then
-	HAVE_IFXODBC=yes
 
-INFORMIXODBC_WARNING="
-	Warning:
-	 ODBC library directory ($INFORMIXDIR/lib/cli) must be in your LD_LIBRARY_PATH
-	   environment variable value.
-	   LD_LIBRARY_PATH=$INFORMIXDIR/lib/cli:$INFORMIXDIR/lib/esql:$LD_LIBRARY_PATH
-	   export LD_LIBRARY_PATH
-	Configuration files used by Informix ODBC driver:
-	$INFORMIXDIR/etc/odbc.ini
-	$INFORMIXDIR/etc/odbcinst.ini
-	$INFORMIXDIR/etc/setup.odbc
-    "
+	if test "$ac_cv_lib_ifcli_main" = "yes"; then
+		HAVE_IFXODBC=yes
+
+		INFORMIXODBC_WARNING="
+		Warning:
+		 ODBC library directory ($INFORMIXDIR/lib/cli) must be in your LD_LIBRARY_PATH
+		   environment variable value.
+		   LD_LIBRARY_PATH=$INFORMIXDIR/lib/cli:$INFORMIXDIR/lib/esql:$LD_LIBRARY_PATH
+		   export LD_LIBRARY_PATH
+		Configuration files used by Informix ODBC driver:
+		$INFORMIXDIR/etc/odbc.ini
+		$INFORMIXDIR/etc/odbcinst.ini
+		$INFORMIXDIR/etc/setup.odbc
+	    "
+	else
+
+
+		old_LIBS=$LIBS
+		old_LDFLAGS=$LDFLAGS
+		LDFLAGS="$LDFLAGS -L$INFORMIXDIR/lib/cli -L$INFORMIXDIR/lib/esql -Xlinker -rpath -Xlinker $INFORMIXDIR/lib/esql"
+		# FIXME: Replace `main' with a function in `-lifcli':
+		#		ivif7912.xx           INTERSOLV Informix ODBC driver - UNIX
+		#        Driver=/opt/informix/lib/ivinf7912.so
+		AC_CHECK_LIB([ivif7912], [main])
+		LIBS=$old_LIBS
+		LDFLAGS=$old_LDFLAGS
+
+		if test "$ac_cv_lib_ivif7912_main" = "yes"; then
+			HAVE_IS_IFXODBC=yes
+
+			INFORMIXODBC_WARNING="
+			Warning:
+			 ODBC library directory ($INFORMIXDIR/lib/cli) must be in your LD_LIBRARY_PATH
+			   environment variable value.
+			   LD_LIBRARY_PATH=$INFORMIXDIR/lib/cli:$INFORMIXDIR/lib/esql:$LD_LIBRARY_PATH
+			   export LD_LIBRARY_PATH
+			Configuration files used by Informix ODBC driver:
+			$INFORMIXDIR/etc/odbc.ini
+			$INFORMIXDIR/etc/odbcinst.ini
+			$INFORMIXDIR/etc/setup.odbc
+		    "
+        fi
+	fi
 fi
 
 ## ==================================================================
@@ -604,7 +651,9 @@ AC_MSG_CHECKING(for iODBC support)
 
 #force this check even if not specified on command line:
 if test "$with_iodbc" = ""; then
-	with_iodbc=yes
+	if test "$cygwin" = "0"; then
+		with_iodbc=yes
+    fi
 fi
 
 AC_ARG_WITH(iodbc,
@@ -662,7 +711,9 @@ AC_MSG_CHECKING(for unixODBC support)
 
 #force this check even if not specified on command line:
 if test "$with_unixodbc" = ""; then
-	with_unixodbc=yes
+	if test "$cygwin" = "0"; then
+		with_unixodbc=yes
+    fi
 fi
 
 AC_ARG_WITH(unixodbc,
@@ -802,22 +853,75 @@ fi
 ##                  Check for GTK+ GUI support
 ## ==================================================================
 
-# FIXME: Replace `main' with a function in `-lgdk':
-AC_CHECK_LIB([gdk], [main])
-# FIXME: Replace `main' with a function in `-lglib':
-AC_CHECK_LIB([glib], [main])
-# FIXME: Replace `main' with a function in `-lgtk':
-AC_CHECK_LIB([gtk], [main])
-
-#check if we have all we need to make GTK GUI
-if test $ac_cv_lib_gtk_main = yes; then
-	if test $ac_cv_lib_glib_main = yes; then
-		if test $ac_cv_lib_gdk_main = yes; then
-			GTKBUILD=yes
-			AUBITGUI=gtk
-        fi
-    fi
+#force this check even if not specified on command line:
+if test "$with_gtk" = ""; then
+		with_gtk=yes
 fi
+
+AC_ARG_WITH(gtk,
+[  --with-gtk[=DIR]      Include GTK+ GUI support.  DIR is the GTK+ base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			WARN_LD_LIBRARY_PATH=1
+		fi
+
+		old_LIBS=$LIBS
+		old_LDFLAGS=$LDFLAGS
+		LDFLAGS="$LDFLAGS -L$withval/lib"
+		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
+
+		# FIXME: Replace `main' with a function in `-lgdk':
+		AC_CHECK_LIB([gdk], [main])
+		# FIXME: Replace `main' with a function in `-lglib':
+		AC_CHECK_LIB([glib], [main])
+		if test "$ac_cv_lib_glib_main" = "no"; then
+			#libglib-1.3.dll.a
+			AC_CHECK_LIB([glib-1.3.dll], [main])
+			if test "$ac_cv_lib_glib-1.3.dll_main" != "no"; then
+				ac_cv_lib_glib_main="yes"
+            fi
+        fi
+
+		# FIXME: Replace `main' with a function in `-lgtk':
+		AC_CHECK_LIB([gtk], [main])
+
+		LIBS=$old_LIBS
+		LDFLAGS=$old_LDFLAGS
+
+		#check if we have all we need to make GTK GUI
+		if test $ac_cv_lib_gtk_main = yes; then
+			if test $ac_cv_lib_glib_main = yes; then
+				if test $ac_cv_lib_gdk_main = yes; then
+					GTKBUILD=yes
+					AUBITGUI=gtk
+					GTK_LIB_PATH="-L$withval/lib"
+					AC_DEFINE(HAVE_GTK,1,[ ])
+
+                    GTKLIBS="-lgtk -lgdk"
+
+					if test "$ac_cv_lib_glib-1.3.dll_main" != "no"; then
+	                    GTKLIBS="$GTKLIBS -lglib-1.3.dll"
+                    else
+	                    GTKLIBS="$GTKLIBS -lglib"
+                    fi
+				fi
+		    fi
+		    #AC_MSG_RESULT(yes)
+		else
+		    AC_DEFINE(HAVE_GTK,0,[ ])
+		    #AC_MSG_RESULT(no)
+		fi
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-gtk not specified)
+])
+
 
 #Fixme: we should test for GTK+ versions
 

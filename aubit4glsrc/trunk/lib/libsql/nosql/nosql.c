@@ -24,9 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.6 2002-01-18 03:09:10 afalout Exp $
+# $Id: nosql.c,v 1.7 2002-01-24 06:37:18 afalout Exp $
 #
 */
+
+#ifdef __CYGWIN__
+	#define DEFINE_SQLCA
+	#define DEFINE_STATUS
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -41,7 +46,11 @@
 #include "libincl/dtypes.h"
 
 extern sqlca_struct sqlca;
+
+//#ifndef __CYGWIN__
 extern long status;
+//#endif
+
 char *find_str_resource (char *s);
 typedef unsigned char UCHAR;
 

@@ -1,11 +1,32 @@
 /* This is manaully edited version of form_x.h
 for use only on CygWin - WIN32 platform */
 
+
+//--------- new --------------
+
+#ifndef _FORM_X_H_RPCGEN
+#define _FORM_X_H_RPCGEN
+
+#include <rpc/rpc.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define FCOMILE_XDR_VERSION 102
+#define FCOMILE_XDR_MAGIC 0xa4fc1234
+
+
+//-----------old---------------
+
 #ifndef XDRFILE
 #define XDRFILE
-#include <rpc/rpc.h>
+//#include <rpc/rpc.h>
 #define bool_t int
 #define u_int unsigned int
+
+//-----------------------------
 
 struct struct_metrics {
 	int x;
@@ -145,7 +166,7 @@ struct struct_labels {
 typedef struct struct_labels struct_labels;
 bool_t xdr_struct_labels();
 
-
+/* ---old---
 struct struct_form {
 	char *magic1;
 	char *dbname;
@@ -179,7 +200,54 @@ struct struct_form {
 	char *magic2;
 };
 typedef struct struct_form struct_form;
+*/
+
+struct struct_form {
+	long magic;
+	char *magic1;
+	long fcompile_version;
+	long compiled_time;
+	char *dbname;
+	char *delim;
+	int maxcol;
+	int maxline;
+	struct {
+		u_int snames_len;
+		struct screen_name *snames_val;
+	} snames;
+	struct {
+		u_int attributes_len;
+		struct struct_scr_field *attributes_val;
+	} attributes;
+	struct {
+		u_int metrics_len;
+		struct struct_metrics *metrics_val;
+	} metrics;
+	struct {
+		u_int fields_len;
+		struct struct_form_field *fields_val;
+	} fields;
+	struct {
+		u_int records_len;
+		struct struct_screen_record *records_val;
+	} records;
+	struct {
+		u_int tables_len;
+		struct struct_tables *tables_val;
+	} tables;
+	char *magic2;
+};
+typedef struct struct_form struct_form;
+
+
 bool_t xdr_struct_form();
+
 
 #endif
 
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* !_FORM_X_H_RPCGEN */

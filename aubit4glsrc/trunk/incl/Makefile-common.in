@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.8 2002-01-20 10:04:36 afalout Exp $
+# $Id: Makefile-common.in,v 1.9 2002-01-24 06:37:18 afalout Exp $
 #
 
 
@@ -350,10 +350,11 @@ INSTALL_DIR=${PREFIX}/aubit4gl
 
 	AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
 
-LD_SO_CONF=/etc/ld.so.conf
-GREP_LD_SO_CONF:=$(shell grep ${INSTALL_DIR}/lib ${LD_SO_CONF})
-GREP_LD_SO_CONF_REMOVE:=$(shell echo "${GREP_LD_SO_CONF}" | sed -e "s/\//\\\\\//g")
-
+ifneq "@LDCONFIG@" "no"
+	LD_SO_CONF=/etc/ld.so.conf
+	GREP_LD_SO_CONF:=$(shell grep ${INSTALL_DIR}/lib ${LD_SO_CONF})
+	GREP_LD_SO_CONF_REMOVE:=$(shell echo "${GREP_LD_SO_CONF}" | sed -e "s/\//\\\\\//g")
+endif
 
 #</options needed also for binary disrto makefile========================>
 
