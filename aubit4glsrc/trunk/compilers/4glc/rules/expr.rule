@@ -92,6 +92,7 @@ dec_counter();sprintf($<str>$,"%d",get_counter_val());
 
 
 fgl_expr: fgl_expr_c {
+debug("Print expr (2)");
 print_expr($<ptr>1);
 }
 ;
@@ -132,7 +133,15 @@ NOT fgl_expr_c {
 }
 | OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
 | PLUS OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>3; }
-;
+| EXISTS OPEN_BRACKET in_select_statement CLOSE_BRACKET {
+	$<ptr>$=new_expr($<str>3);
+	$<ptr>$=append_expr($<ptr>$,"pushop(OP_EXISTS);");
+}
+| NOT_EXISTS OPEN_BRACKET in_select_statement CLOSE_BRACKET {
+	$<ptr>$=new_expr($<str>3);
+	$<ptr>$=append_expr($<ptr>$,"pushop(OP_NOTEXISTS);");
+}
+;	
 
 initial_expr: 
 int_sign real_number 
@@ -332,14 +341,38 @@ $<ptr>$=append_expr($<ptr>2,"pushop(OP_OR);");
 }
 ;
 
+
+inexpr_list : fgl_expr_c  {
+	$<ptr>$=$<ptr>1;
+	}
+	| inexpr_list COMMA fgl_expr_c {
+		debug("Adding to list...");
+		$<ptr>$=append_expr_expr($<ptr>1,$<ptr>3);
+	}
+;
+
+
 in_expr:
- IN OPEN_BRACKET reset_cnt fgl_expr_list CLOSE_BRACKET {
-printc("#error IN (..) not implemented yet\n");
+ IN OPEN_BRACKET in_select_statement CLOSE_BRACKET {
+	$<ptr>$=new_expr($<str>3);
+	$<ptr>$=append_expr($<ptr>$,"pushop(OP_IN_SELECT);");
 }
-/* FIXME */
-| NOT_IN OPEN_BRACKET reset_cnt fgl_expr_list CLOSE_BRACKET {
-printc("#error NOT IN (..) not implemented yet\n");
-/* FIXME */
+	
+ | NOT_IN OPEN_BRACKET in_select_statement CLOSE_BRACKET {
+	$<ptr>$=new_expr($<str>3);
+	$<ptr>$=append_expr($<ptr>$,"pushop(OP_NOTIN_SELECT);");
+}
+ |IN OPEN_BRACKET reset_cnt inexpr_list CLOSE_BRACKET {
+	char buff[256];
+	sprintf(buff,"push_int(%d);",length_expr($<ptr>4));
+	$<ptr>$=append_expr($<ptr>4,buff);
+	$<ptr>$=append_expr($<ptr>$,"pushop(OP_IN);");
+}
+| NOT_IN OPEN_BRACKET reset_cnt inexpr_list CLOSE_BRACKET {
+	char buff[256];
+	sprintf(buff,"push_int(%d);",length_expr($<ptr>4));
+	$<ptr>$=append_expr($<ptr>4,buff);
+	$<ptr>$=append_expr($<ptr>$,"pushop(OP_NOTIN);");
 }
 ;
 
@@ -477,6 +510,7 @@ CLOSE_BRACKET
 {
 int cnt;
 cnt=1;
+debug("Print expr (1)");
 print_expr($<ptr>4);
 sprintf($<str>$,"{int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {set_status(-3001);chk_err(%d,\"%s\");}\n}\n}\n", $<str>1,$<str>5, lastlineno,infilename);
 $<ptr>$=new_expr($<str>$);

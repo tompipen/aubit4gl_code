@@ -1,12 +1,17 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.18 2001-10-28 14:46:38 mikeaubury Exp $
+* $Id: mod.c,v 1.19 2001-10-28 17:10:36 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.18  2001/10/28 14:46:38  mikeaubury
+*	Major major expression handling updates
+*	
+*	Minor changes for messages and errors (doesn't prompt on errors anymore)
+*	
 *	Revision 1.17  2001/10/18 01:31:01  afalout
 *	*** empty log message ***
 *	
@@ -4677,31 +4682,30 @@ void *new_expr(char *value) {
 
 void *append_expr(struct expr_str *orig_ptr,char *value) {
 struct expr_str *ptr;
+struct expr_str *start;
+	start=orig_ptr;
 
-	debug("append_expr %p",orig_ptr);
+	debug("MJA append_expr %p (%s)",orig_ptr,value);
 
 	ptr=new_expr(value);
-	if (orig_ptr->next==0) 
-		orig_ptr->next=ptr;
-	else {
-		exitwith("Error - overwriting expression in list...");
-		exit(2);
+	if (orig_ptr->next!=0) {
+		while (orig_ptr->next!=0) orig_ptr=orig_ptr->next;
 	}
+	orig_ptr->next=ptr;
 	debug("Appended expr");
-	return orig_ptr;
+	return start;
 }
 
 void *append_expr_expr(struct expr_str *orig_ptr,struct expr_str *second_ptr) {
 struct expr_str *ptr;
-	debug("append_expr_expr");
-	ptr=second_ptr;
-	if (orig_ptr->next==0) 
-		orig_ptr->next=ptr;
-	else {
-		exitwith("Error - overwriting expression in list...");
-		exit(2);
+struct expr_str *start;
+	debug("MJA append_expr_expr %p %p",orig_ptr,second_ptr);
+	start=orig_ptr;
+	if (orig_ptr->next!=0) {
+		while (orig_ptr->next!=0) orig_ptr=orig_ptr->next;
 	}
-	return orig_ptr;
+	orig_ptr->next=second_ptr;
+	return start;
 }
 
 print_expr(struct expr_str *ptr) {
@@ -4716,4 +4720,15 @@ void *optr;
 		ptr=ptr->next;
 		free(optr);
 	}
+}
+
+length_expr(struct expr_str *ptr) {
+void *optr;
+int c=0;
+	debug("Print expr... %p",ptr);
+	while (ptr) {
+		c++;
+		ptr=ptr->next;
+	}
+return c;
 }
