@@ -1,12 +1,40 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.19 2001-10-28 17:10:36 mikeaubury Exp $
+* $Id: mod.c,v 1.20 2001-10-29 14:42:00 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.19  2001/10/28 17:10:36  mikeaubury
+*	Added IN and EXISTS, (and NOT IN and NOT EXISTS) tests for 4gl, so
+*		if exists (select * from systables where tabid=1) then
+*		...
+*		end if
+*	
+*	and
+*	
+*		define a integer
+*		let a=1
+*		if a in (1,2,3,4) then
+*			display "OK"
+*		end if
+*	
+*	and
+*	
+*		if a in (select tabid from systables) then
+*		...
+*		end if
+*	
+*	and
+*	
+*		if a not in (select tabid from systables) then
+*		...
+*		end if
+*	
+*	should all now work ..
+*	
 *	Revision 1.18  2001/10/28 14:46:38  mikeaubury
 *	Major major expression handling updates
 *	
@@ -125,6 +153,8 @@ struct expr_str {
         struct expr_str *next;
 };
 
+void *new_expr(char *value) ;
+void *append_expr(struct expr_str *orig_ptr,char *value) ;
 #include "rules/generated/y.tab.h"
 #include "../../lib/libincl/report.h"
 #include "rules/generated/kw.h"
@@ -2071,6 +2101,32 @@ print_bind (char i)
     }
 
 }
+
+
+print_bind_expr(void *ptr,char i) {
+int a;
+char buff[256];
+  if (i == 'i')
+    {
+      append_expr(ptr,"struct BINDING ibind[]={");
+
+      if (ibindcnt == 0)
+	{
+	  append_expr(ptr,"{0,0,0}");
+	}
+      for (a = 0; a < ibindcnt; a++)
+	{
+	  if (a > 0) append_expr(ptr,",");
+	  sprintf (buff,"{&%s,%d,%d}", ibind[a].varname,
+		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+	  append_expr(ptr,buff);
+	}
+      append_expr(ptr,"};");
+      start_bind (i, 0);
+      return a;
+    }
+}
+
 
 continue_loop (char *cmd_type)
 {

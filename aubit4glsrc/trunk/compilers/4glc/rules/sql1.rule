@@ -687,8 +687,8 @@ comp_op:
         | NOT_LIKE
 	| MATCHES
 	| LIKE
-	| LESS_THAN_EQ
-	| GREATER_THAN_EQ
+	| LESS_THAN_EQ {sprintf($<str>$,"<=");}
+	| GREATER_THAN_EQ {sprintf($<str>$,">=");}
 	;
 
 
@@ -973,8 +973,7 @@ select_statement:
 
 
 in_select_statement:
-	SELECT op_ad select_list table_expression sel_p2 
-{
+	SELECT op_ad select_list table_expression sel_p2 {
              char buff[1024];
              int ni,no;
              sprintf(buff,"%s %s %s %s %s %s", $<str>1, $<str>2, $<str>3, $<str>4, $<str>5);
