@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.113 2003-11-26 11:46:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.114 2003-12-04 19:30:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3826,13 +3826,16 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout)
 
 /**
  * Print the C implementation of PROMPT FOR CHAR cbreak prompt.
+ * 
+ * I think this code is obsolete and should be done in the
+ * libui instead of here...
  */
 void
 print_prompt_forchar (void)
 {
-  printc ("if (_fld_dr) {\n");
-  print_exit_loop ('P', 0);
-  printc ("}\n");
+  //printc ("if (_fld_dr) {\n");
+  //print_exit_loop ('P', 0);
+  //printc ("}\n");
 }
 
 /**

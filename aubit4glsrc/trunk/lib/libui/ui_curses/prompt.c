@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.32 2003-11-28 09:46:24 mikeaubury Exp $
+# $Id: prompt.c,v 1.33 2003-12-04 19:31:16 mikeaubury Exp $
 #*/
 
 /**
@@ -352,13 +352,14 @@ int was_aborted=0;
   if (prompt->mode > 0)
     return 0;
 
-
+A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
   if (prompt_last_key==0) {
   	pos_form_cursor (mform);
 	abort_pressed=0;
 	was_aborted=0;
   	A4GL_reset_processed_onkey();
   	a=A4GL_real_getch_swin (p);
+	A4GL_debug("Read character... %d",a);
   	A4GL_clr_error_nobox("prompt");
 	prompt_last_key=a;
   	A4GL_set_last_key (a);
@@ -371,6 +372,7 @@ int was_aborted=0;
 	} else {
 		was_aborted=0;
 	}
+	A4GL_debug("No lastkey..");
 	return -90;
   } else {
 	if (was_aborted) {
@@ -442,7 +444,7 @@ int was_aborted=0;
     }
 
   A4GL_debug ("Requesting Validation : %p %x %d", mform, a, a);
-  if (isprint (a)) {
+  if (isprint (a) && a<0xff) {
     	A4GL_int_form_driver (mform, a);
   	A4GL_debug ("Called int_form_driver");
   	A4GL_int_form_driver (mform, REQ_VALIDATION);
@@ -460,7 +462,10 @@ int was_aborted=0;
 
   if (prompt->charmode)
     {
-      A4GL_push_char (field_buffer (prompt->field, 0));
+	if (isprint(a)&&a<0xff) {
+      		A4GL_push_char (field_buffer (prompt->field, 0));
+      		prompt->mode=2;
+	}
     }
 
 
