@@ -69,7 +69,6 @@ echo "No testing..."
 exit
 fi
 
-sh rerun $2
 
 
 
@@ -83,31 +82,5 @@ export A4GL_DUMP_CORE
 
 
 sh run_tests -clean
-mv *.unl  old
-sh run_tests -esqli -silent -log-unl -log-text="ESQLI"
-sh ./load_unl "ESQLI"
-
-#mv *.unl old
-#sh run_tests -clean
-#sh run_tests -eci -silent -log-unl -log-text="ECI"
-#sh ./load_unl "ECI"
-
-#mv *.unl old
-#sh run_tests -clean
-#sh run_tests -ecp -silent -log-unl -ignore-conf-error -log-text="ECP"
-#sh ./load_unl "ECP"
-
-if grep -y "Fail" build.log 
-then
-	echo "Test Failed"
-fi
-
-#sh run_tests -clean
-
-#sh run_tests -eci
-#
-#if grep -y "Fail" build.log 
-#then
-	#echo "Test Failed"
-#fi
+sh rerun $2
 

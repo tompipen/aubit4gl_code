@@ -1,8 +1,8 @@
 %token <str> NAME
 %left KW_COMMA
-%left WHERE
 %token FINPUT
 %right CLIPPED ASCII COLUMN SPACES KW_USING WORDWRAP
+%left WHERE
 %left KW_OR         
 %left KW_AND        
 %left NOT
