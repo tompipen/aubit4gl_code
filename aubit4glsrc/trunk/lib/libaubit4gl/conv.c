@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.22 2003-01-29 14:35:06 mikeaubury Exp $
+# $Id: conv.c,v 1.23 2003-02-04 13:18:59 mikeaubury Exp $
 #
 */
 
@@ -3587,7 +3587,7 @@ valid_dt (char *s, int *data)
 
   strcpy (buff, s);
   ptr[0] = &buff[0];
-  debug ("Splitting '%s'\n");
+  debug ("Splitting '%s'\n",s);
   cnt = 0;
   buff_size = strlen (buff);
   for (a = 1; a < buff_size; a++)
