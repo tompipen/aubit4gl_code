@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: giarray.c,v 1.2 2003-10-10 09:27:37 afalout Exp $
+# $Id: giarray.c,v 1.3 2003-10-10 09:43:45 mikeaubury Exp $
 #*/
 
 /**
@@ -70,6 +70,7 @@ GtkWidget *iarr_current_field=0;
 //void A4GL_mja_set_current_field (FORM * form, GtkWidget * field);
 //int A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m);
 //int A4GL_req_field_input_array (struct s_inp_arr *arr,char typpe, va_list *ap) ;
+int A4GL_get_metric_for (struct s_form_dets *form, void* f);
 
 struct s_movement
 {
@@ -85,7 +86,7 @@ int mform=0;
                     Functions prototypes
 =====================================================================
 */
-int A4GL_field_name_match (GtkWidget * f, char *s);
+int A4GL_field_name_match_gtk (GtkWidget * f, char *s);
 
 static void init_arr_line (struct s_inp_arr *sio, int n);
 static int process_control_stack (struct s_inp_arr *arr);
@@ -2642,7 +2643,7 @@ A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
       for (a = 0; a < arr->nbind; a++)
 	{
 
-	  if (A4GL_field_name_match (arr->field_list[0][a], colname))
+	  if (A4GL_field_name_match_gtk (arr->field_list[0][a], colname))
 
 	    //if (arr->field_list[arr->scr_line][a] == ptr[0])
 	    {
@@ -3226,7 +3227,7 @@ A4GL_decode_line_ib (int l)
 /* -2 = last -1 */
 
 
-  if (A4GL_get_curr_border ())
+  if (A4GL_get_curr_border_gtk ())
     {
           A4GL_debug ("Decoded (3) line %d to %d (because of border)", l, A4GL_get_curr_height_gtk ());
           l=0-l;

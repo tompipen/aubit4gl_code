@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.18 2003-10-08 17:09:52 mikeaubury Exp $
+# $Id: input.c,v 1.19 2003-10-10 09:43:46 mikeaubury Exp $
 #*/
 
 /**
@@ -996,4 +996,114 @@ A4GL_get_curr_infield (void)
 }
 
 
+
+void
+A4GL_set_field_attr_with_attr (GtkWidget * field, int attr, int cmd_type)
+{
+  int r;
+  int nattr;
+  struct struct_scr_field *f;
+  f = (struct struct_scr_field *) (field_userptr (field));
+
+  nattr = A4GL_determine_attribute (cmd_type, attr, f, 0);
+  A4GL_debug ("Passed in attribute: %x, determined attribute should be %x",
+              attr, nattr);
+  attr = nattr;
+
+  if (attr & AUBIT_ATTR_REVERSE)
+    r = 1;
+  else
+    r = 0;
+  A4GL_debug
+    ("MJA Calling A4GL_set_field_colour_attr - do_reverse=%d attr=%d", r,
+     attr);
+  A4GL_set_field_colour_attr (field, r, attr);
+}
+
+void
+A4GL_set_field_attr_with_attr_already_determined (GtkWidget * field, int attr, int cmd_type)
+{
+  int r;
+  int nattr;
+  struct struct_scr_field *f;
+  f = (struct struct_scr_field *) (field_userptr (field));
+
+  //nattr = A4GL_determine_attribute (cmd_type, attr, f, 0);
+  //A4GL_debug ("Passed in attribute: %x, determined attribute should be %x",
+              //attr, nattr);
+  //attr = nattr;
+
+  if (attr & AUBIT_ATTR_REVERSE)
+    r = 1;
+  else
+    r = 0;
+  A4GL_debug
+    ("MJA Calling A4GL_set_field_colour_attr - do_reverse=%d attr=%d", r,
+     attr);
+  A4GL_set_field_colour_attr (field, r, attr);
+}
+
+void A4GL_clr_field (GtkWidget * f)
+{
+  char *picture;
+  char *str;
+  int w;
+  struct struct_scr_field *fprop;
+  fprop = (struct struct_scr_field *) (field_userptr (f));
+
+  w = A4GL_get_field_width (f);
+  str = malloc (w + 1);
+  memset (str, ' ', w);
+  str[w] = 0;
+
+  A4GL_debug ("field width=%d", A4GL_get_field_width (f));
+
+  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+    {
+      int a;
+      picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+      for (a = 0; a < strlen (picture); a++)
+        {
+          if (a > w)
+            break;
+          if (picture[a] == 'X')
+            {
+              str[a] = ' ';
+              continue;
+            }
+          if (picture[a] == 'A')
+            {
+              str[a] = ' ';
+              continue;
+            }
+          if (picture[a] == '#')
+            {
+              str[a] = ' ';
+              continue;
+            }
+          str[a] = picture[a];
+        }
+    }
+  A4GL_mja_set_field_buffer (f, 0, str);
+}
+
+
+int
+A4GL_get_metric_for (struct s_form_dets *form, void* f)
+{
+  int a;
+
+  A4GL_debug ("In curr metric");
+  for (a = 0; a < form->fileform->metrics.metrics_len; a++)
+    {
+      if (f == (void *) form->fileform->metrics.metrics_val[a].field)
+        {
+          A4GL_debug ("Returning %d\n", a);
+          return a;
+        }
+    }
+  A4GL_debug ("NO current metric !");
+  return -1;
+}
 /* =============================== EOF ============================= */
+
