@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.154 2004-03-29 09:11:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.155 2004-04-14 17:07:40 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.154 2004-03-29 09:11:25 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.155 2004-04-14 17:07:40 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -5826,7 +5826,28 @@ print_bind_set_value (char i)
   return 0;
 }
 
+static int read_package_contents(FILE *f) {
 
+}
+
+void print_import_package(char *s) {
+char buff[256];
+FILE *f;
+
+sprintf(buff,"%s/import/%s",acl_getenv("AUBITETC"),s);
+f=fopen(buff,"r");
+
+if (f==0) {
+	sprintf(buff,"%s/etc/import/%s",acl_getenv("AUBITDIR"),s);
+	f=fopen(buff,"r");
+}
+
+if (f==0) {
+	a4gl_yyerror("Unable to open package description");
+	return;
+}
+read_package_contents(f);
+}
 
 
 /* =========================== EOF ================================ */
