@@ -1,5 +1,9 @@
 # random.4gl - Informix Random number routine based on current time
 # Paul Hutton 1993 huttonp@ozemail.com.au
+#
+# Obtained from IIUG software repository -
+#       www.iiug.org
+#
 
 define
     S1                integer,

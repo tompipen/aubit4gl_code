@@ -1,5 +1,9 @@
 # sol.4gl - Solitaire game (just like Windows!)
 # Paul Hutton 1992 huttonp@ozemail.com.au
+#
+# Obtained from IIUG software repository -
+#       www.iiug.org
+#
 
 globals
 define
