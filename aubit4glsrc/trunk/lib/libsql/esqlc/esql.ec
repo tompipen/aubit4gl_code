@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.28 2003-01-28 15:27:29 mikeaubury Exp $
+# $Id: esql.ec,v 1.29 2003-01-28 15:47:13 mikeaubury Exp $
 #
 */
 
@@ -123,7 +123,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.28 2003-01-28 15:27:29 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.29 2003-01-28 15:47:13 mikeaubury Exp $";
 #endif
 
 /*
@@ -396,14 +396,27 @@ static int addESQLConnection(char *connectionName,char *dbName,
  */
 int A4GLSQL_init_connection (char *dbName)
 {
+  static int have_connected=0;
+
   EXEC SQL BEGIN DECLARE SECTION;
     char *db = dbName;
   EXEC SQL END DECLARE SECTION;
 
+
+// Have we got an active db session ?
+  if (have_connected) {
+    EXEC SQL DISCONNECT 'default';
+    removeESQLConnection("default");
+		// Not any more we haven't...
+  }
+
   EXEC SQL connect to :db as 'default';
   if ( isSqlError() )
     return 1;
+
   addESQLConnection("default",dbName,NULL,NULL);
+  have_connected=1;
+
   return 0;
 }
 
@@ -421,11 +434,13 @@ int A4GLSQL_close_session (char *sessname)
     char *connectionName = sessname;
   EXEC SQL end declare section;
 
-  if ( connectionName == NULL )
+  if ( connectionName == NULL ) {
     EXEC SQL DISCONNECT DEFAULT;
-  else
+  }
+  else {
     EXEC SQL DISCONNECT :connectionName;
-  removeESQLConnection(connectionName);
+    removeESQLConnection(connectionName);
+  }
   if ( isSqlError() )
     return 1;
   return 0;
