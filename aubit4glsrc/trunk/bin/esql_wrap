@@ -3,6 +3,7 @@
 #
 SH_DEBUG=0
 ALL_FLAGS=$@
+#echo "ALLFLAGS = $ALL_FLAGS"
 ###################
 for a in $ALL_FLAGS
 ###################
@@ -19,7 +20,7 @@ done
 #######
 	   
 if test "$SH_DEBUG" = "1"; then
-	echo "In esql_wrap : $ALL_FLAGS"
+	echo "In esql_wrap - invoked with : $ALL_FLAGS"
 fi
 
 if [ "$AUBITDIR" = "" ]; then
@@ -116,9 +117,9 @@ do
 	if test "$COMSPEC" = ""; then 
 		ESQL_RUN="esql -e $a"
 	else
-		ESQL_RUN="esql -thread -e $a"
+		ESQL_RUN="esql -thread -e $a"     #-C INFORMIX_SE	
 	fi
-    #-C INFORMIX_SE
+
     echo $ESQL_RUN
     eval $ESQL_RUN
 
@@ -134,10 +135,21 @@ do
 	if test "$OUTPUT_IS_OBJECT" = "1"; then
 	    GCC_COMPILE="$GCC_COMPILE $output"
 	    echo "Compiling $out.c to object $output"
+
+		for a in $output; do
+			case $a in
+			-o) #skip it
+				;;
+			*)
+				LOGFILE="$a.log"			
+				;;
+			esac
+		done
 	else
 	    echo "Compiling $out.c to object"
+		LOGFILE="$out.log"
 	fi
-	LOGFILE=tmp.log
+	
 	if test "$SH_DEBUG" = "1"; then	
 		echo "$GCC_COMPILE > $LOGFILE 2>&1"
 	fi
@@ -151,7 +163,7 @@ do
 		fi
         exit $RET
     fi
-	rm -f $LOGFILE
+	rm -f $LOGFILE $out.c $out.c_
     ofiles="$ofiles $out.o"
 done
 

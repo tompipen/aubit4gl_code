@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.133 2004-09-08 15:02:52 afalout Exp $
+# $Id: 4glpc,v 1.134 2004-09-12 03:00:05 afalout Exp $
 #
 
 ########################################################################
@@ -543,7 +543,7 @@ if [ "$A4GL_LEXTYPE" = "EC" ]; then
 	else
 		#default, assumes A4GL_LEXDIALECT="INFORMIX"
 		FGLC_OUTPUT_EXT=ec
-        NCC=$NCC_IFX
+        NCC="$NCC_IFX"
 	fi
 fi
 
@@ -588,6 +588,7 @@ do
 	   SHOWERRCODE=1
 	   NCC_PG="$NCC_PG -verbose"
 	   NCC_IFX="$NCC_IFX -verbose"
+	   NCC="$NCC -verbose"	   
 	   echo "Verbose mode ON"
 	   ;;
 	-o)

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.76 2004-08-02 05:57:31 afalout Exp $
+# $Id: Makefile-install.mki,v 1.77 2004-09-12 03:00:06 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -246,14 +246,19 @@ ifneq "${LDCONFIG}" "no"
 #means "at the end of the line", to catter for the cases when ently like
 #/opt/informix/lib/cli is already in ld.so.conf file, but we want to add
 #/opt/informix/lib, and grep thinks it's already in there
+#WARNING - THIS WILL NOT WORL IF THERE ARE SPACES IN PATHS - WHICH SHOULD
+#HOPEFULLY HAPPEN ONLY ON WINDOWS - WHERE THERE IS NO LD_LIBRARY_PATH
+#SO WE SHOULD NOT RUN THIS BLOCK ANYWAY
+#WE DO NOT RUN THIS IF LDCONFIG IS no - WHICH IT IS ON WINDOWS - BUT MAKE STILL
+#EVALUATES THIS CODE ANYWAY
 	@\
 	ADDED=0;\
-	for apath in ${ADD_LD_LIBRARY_PATH_SPACE}; do \
-		X=`grep $$apath$$ ${LD_SO_CONF}`;\
+	for apath in '${ADD_LD_LIBRARY_PATH_SPACE}' ; do \
+		X=`grep "$$apath$$" "${LD_SO_CONF}"`;\
 		if test "$$X" = ""; then \
 			ADDED=1;\
-			echo $$apath ; \
-			echo $$apath >> ${LD_SO_CONF}; \
+			echo "$$apath" ; \
+			echo "$$apath" >> ${LD_SO_CONF}; \
 		fi; \
 	done;\
 	if test "$$ADDED" = "0"; then \
@@ -266,12 +271,15 @@ ifneq "${LDCONFIG}" "no"
 else
 #FIXME: and what if user is not using Bash, but some other shell?
 ifeq "$(shell  if test -f ${HOME}/.bashrc ; then echo 1; fi)" "1"
-ifeq "$(shell  grep ${ADD_LD_LIBRARY_PATH} ${HOME}/.bashrc)" ""
+#WARNING - must quote because of Windows, but will it expand with single quotes?
+#SHOULD NOT RUN THIS ON WINDOWS ANYWAY - NO LD_LIBRARY_PATH on Windows
+#But it will get evaluated by Make anyway
+ifeq "$(shell  grep '${ADD_LD_LIBRARY_PATH}' ${HOME}/.bashrc)" ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Adding to ${HOME}/.bashrc :                                        |"
 	@echo ' ' >> ${HOME}/.bashrc
 	@echo '#Added automatically by Aubit 4gl compiler confgure: ' >> ${HOME}/.bashrc
-	@echo 'export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:${ADD_LD_LIBRARY_PATH}' >> ${HOME}/.bashrc
+	@echo 'export LD_LIBRARY_PATH="$$LD_LIBRARY_PATH:${ADD_LD_LIBRARY_PATH}"' >> ${HOME}/.bashrc
 	@echo "| Added to your ${HOME}/.bashrc script LD_LIBRARY_PATH definition:   |"
 	@echo "${ADD_LD_LIBRARY_PATH}"
 	@echo "| Please source this file, by typing:                                |"
