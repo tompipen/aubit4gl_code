@@ -8,14 +8,21 @@ AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
 AC_CONFIG_HEADER([incl/config.h])
 
 AC_CANONICAL_SYSTEM
+test_rpclib="1"
 case "$target_os" in
   linux-gnu)
-    echo "Linux gnu";;
+    echo "Linux gnu"
+    test_rpclib="0"
+		;;
+	*linux*)
+    test_rpclib="0"
+		;;
   cygwin)
     ODBC=odbc32;
     ODBCMANAGER=$ODBC;
     PDFBUILD=no	
 esac
+
 
 AC_SUBST(aubitdir)dnl
 aubitdir=`pwd`
@@ -65,8 +72,13 @@ AC_CHECK_LIB([odbc32], [main])
 AC_CHECK_LIB([panel], [main])
 # FIXME: Replace `main' with a function in `-lpdf':
 AC_CHECK_LIB([pdf], [main])
-# FIXME: Replace `main' with a function in `-lrpclib':
-AC_CHECK_LIB([rpclib], [main])
+if test "$test_rpclib" = "1"
+then
+  # FIXME: Replace `main' with a function in `-lrpclib':
+  AC_CHECK_LIB([rpclib], [main])
+else
+  AC_MSG_RESULT([Not checking rpclib because we are in Linux])
+fi
 
 # Checks for header files.
 AC_HEADER_STDC
