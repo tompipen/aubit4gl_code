@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.5 2003-02-04 05:21:58 afalout Exp $
+#  $Id: Makefile.in,v 1.6 2003-04-20 23:04:51 afalout Exp $
 #  =========================================================================
 
 include ../FgldocDefs.mk
@@ -142,11 +142,25 @@ install.index:
 	${JSP_SRC_PATH}/${INDEX.JSP} > $(NAV_DIR)/${INDEX.JSP}
 #	${BUILD_PATH}/${INDEX.JSP} > $(NAV_DIR)/${INDEX.JSP}
 
+#Create .war installation file
+war: war.create war.install war.deploy
+
+#WARNING: index.jsp will not contain correct settings!
+war.create:
+	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} war
+
+war.install:
+	${INSTALL} fgldocumenter.war $(TOMCAT_DIR)/webapps
+
+war.deploy: deinstall
+	tomcat4 stop
+	tomcat4 start
+
 # =========================================================================
 #                              Deinstall
 # =========================================================================
 
-#First deactivate browser application in Tomcat instance, then phisically remove 
+#First deactivate browser application in Tomcat instance, then phisically remove
 #files installed under Tomcat installation directory:
 deinstall: ${TOMCAT_ANT} deinstall.files
 	export CLASSPATH=${DOC4GL_CLASSPATH}; ${ANT} ${ANT_FLAGS} remove
