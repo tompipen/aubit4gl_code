@@ -1,0 +1,20 @@
+DATABASE formonly 
+SCREEN
+{
+
+    Array of values
+    [c01] [c01] [c01] [c01] [c01] [c01] 
+    [c01] [c01] [c01] [c01] [c01] [c01] 
+    [c01] [c01] [c01] [c01] [c01] [c01] 
+    [c01] [c01] [c01] [c01] [c01] [c01] 
+    [c01] [c01] [c01] [c01] [c01] [c01] 
+
+}
+	
+ATTRIBUTES
+c01 = formonly.number type smallint, include = (NULL, 1 to 999);
+
+INSTRUCTIONS
+	DELIMITERS "  "
+	SCREEN RECORD sc_arr[30] (formonly.number)
+END
