@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.3 2003-10-29 08:59:23 mikeaubury Exp $
+# $Id: eval_field.c,v 1.4 2004-04-02 07:06:59 mikeaubury Exp $
 #
 */
 
@@ -222,7 +222,7 @@ A4GL_debug("Evaludate field_expr - s=%s exprtype = %d",s,expr->itemtype);
 	}
 
 	A4GL_debug("Comparison/Complex ID : %d (%s) ",compid,ptr2->comparitor);
-	if (compid==0) {
+	if (compid==-1) {
 		A4GL_exitwith("Unknown comparison %s");
 		return 0;
 	}
