@@ -38,6 +38,9 @@ function read_pack(lv_type)
 define lv_type char(1024)
 define lv_has_pack integer
 let lv_type=fgl_getenv("AUBITDIR") clipped,"/tools/4glpc/settings/",lv_type clipped
+if isverbose(4) then
+	display "Read pack : ",lv_type clipped
+end if
 let lv_has_pack=0;
 code
 {
@@ -58,7 +61,9 @@ if (fin!=0) {
 		if (ptr==0) continue;
 		*ptr=0;
 		ptr++;
-		printf("Setting : '%s' = '%s'\n",buff,ptr);
+		if(isverbose_c(4)) {
+			printf("Setting : '%s' = '%s'\n",buff,ptr);
+		}
 		if (!getenv(buff)) A4GL_setenv(buff, ptr, 1);
 	}
 }

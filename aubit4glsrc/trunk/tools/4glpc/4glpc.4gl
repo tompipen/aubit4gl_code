@@ -57,7 +57,7 @@ function init()
 define lv_pack char(256)
 
 
-
+	if mv_verbose>=4 then display "Reading packs" end if
 	let lv_pack=fgl_getenv("A4GL_LEXTYPE")
 	call read_pack(lv_pack)
 
@@ -65,23 +65,23 @@ define lv_pack char(256)
 	call read_pack(lv_pack)
 
 
-	let lv_pack=fgl_getenv("A4GL_TARGET_OS")
+	let lv_pack=fgl_getenv("TARGET_OS")
 	call read_pack(lv_pack)
 
-	let lv_pack=fgl_getenv("A4GL_TARGET_OS"),"__",fgl_getenv("A4GL_LEXTYPE")
+	let lv_pack=fgl_getenv("TARGET_OS"),"__",fgl_getenv("A4GL_LEXTYPE")
 	call read_pack(lv_pack)
 
-	let lv_pack=fgl_getenv("A4GL_TARGET_OS"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+	let lv_pack=fgl_getenv("TARGET_OS"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
 
 
 
-	let lv_pack=fgl_getenv("A4GL_TARGET")
+	let lv_pack=fgl_getenv("TARGET")
 	call read_pack(lv_pack)
 
-	let lv_pack=fgl_getenv("A4GL_TARGET"),"__",fgl_getenv("A4GL_LEXTYPE")
+	let lv_pack=fgl_getenv("TARGET"),"__",fgl_getenv("A4GL_LEXTYPE")
 	call read_pack(lv_pack)
 
-	let lv_pack=fgl_getenv("A4GL_TARGET"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+	let lv_pack=fgl_getenv("TARGET"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
 
 	call read_pack(lv_pack)
 
@@ -131,9 +131,10 @@ define lv_pack char(256)
 	let mv_include="-I\"",fgl_getenv("AUBITDIR"),"/incl\" "
 
 
-	IF fgl_getenv("GTK_INC_PATH")!= "" THEN
-		let mv_include=mv_include clipped, " -I\"",fgl_getenv("GTK_INC_PATH"),"\""
-	END IF
+	
+#IF fgl_getenv("GTK_INC_PATH")!= "" THEN
+		#let mv_include=mv_include clipped, " -I\"",fgl_getenv("GTK_INC_PATH"),"\""
+	#END IF
 
 	LET mv_libs=" -laubit4gl"
 
@@ -219,11 +220,10 @@ define lv_pack char(256)
 
 
 			# This should be somewhere else...
-			LET mv_compile_c="esql"
-			LET mv_link="esql"
-
-
-
+			if mv_lexdialect="INFORMIX" then
+				LET mv_compile_c="esql"
+				LET mv_link="esql"
+			end if
 		end if
 	end if
 
@@ -249,6 +249,22 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
   IF lv_num_args=0 then
 	CALL usg()
   END IF
+  FOR a=1 to lv_num_args
+	LET lv_arg=arg_val(a)
+
+	CASE lv_arg
+		WHEN "-?" 			call show_help(2)  continue for
+		WHEN "--verbose"		let mv_verbose=mv_verbose+1 continue for
+		WHEN "-V"			let mv_verbose=mv_verbose+1 continue for
+
+		WHEN "-V1"			let mv_verbose=1 continue for
+		WHEN "-V2"			let mv_verbose=2 continue for
+		WHEN "-V3"			let mv_verbose=3 continue for
+		WHEN "-V4"			let mv_verbose=4 continue for
+		WHEN "-V5"			let mv_verbose=5 continue for
+	END CASE
+  END FOR
+
   CALL init()
 
   LET lv_minus_c=0
@@ -462,6 +478,7 @@ DEFINE lv_minus_c, lv_minus_e INTEGER
 		WHEN "-V3"			let mv_verbose=3 continue for
 		WHEN "-V4"			let mv_verbose=4 continue for
 		WHEN "-V5"			let mv_verbose=5 continue for
+
 		WHEN "-S"			let mv_verbose=0 continue for
 		WHEN "--silent"			let mv_verbose=0 continue for
 		WHEN "-q"			let mv_verbose=0 continue for
@@ -881,7 +898,11 @@ let lv_type=fgl_getenv(lv_type)
 if lv_type is null or lv_type matches " " then
 	LET lv_type="*.",lv_otype
 else
-	let lv_type="*.",lv_type
+	let lv_type="*",lv_type
+end if
+
+if mv_verbose>=4 then
+	display "Generating extention for ",lv_otype clipped, " gives ",lv_type clipped
 end if
 return lv_type
 end function
@@ -1100,11 +1121,13 @@ end if
 
 let lv_compile_c_opts=mv_compile_c_opts
 
-if mv_compile_c="esql" then
-display "Hello World ",fgl_getenv("INFORMIXDIR")
 
-	let lv_compile_c_opts=mv_compile_c_opts clipped," -I",fgl_getenv("INFORMIXDIR") clipped,"/incl"
-end if
+#if mv_compile_c="esql" then
+	#let lv_compile_c_opts=mv_compile_c_opts clipped," -I",fgl_getenv("INFORMIXDIR") clipped,"/incl"
+#end if
+#if mv_compile_c="ecpg_wrap" then
+	#let lv_compile_c_opts=mv_compile_c_opts clipped," -I/usr/local/pgsql/include"
+#end if
 
 let lv_runstr=mv_compile_c clipped," ",lv_compile_c_opts clipped," "
 
@@ -1115,7 +1138,7 @@ end if
 let lv_runstr=lv_runstr clipped, " ",mv_include clipped," -o ",lv_new clipped,
 		" -c ",lv_fname clipped," 2> ",mv_errfile
 if mv_verbose>=2 then
-	display "X.",lv_runstr clipped
+	display "Running : ",lv_runstr clipped
 end if
 run lv_runstr clipped returning lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
@@ -1218,7 +1241,7 @@ end function
 function add_obj(lv_obj)
 define lv_obj char(256)
 	if mv_verbose>=5 then
-		DISPLAY "ADD OBJ : ",lv_obj
+		DISPLAY "ADD OBJ : ",lv_obj clipped
 	end if
 	LET mv_objects=mv_objects clipped," ",lv_obj
 
@@ -1301,6 +1324,13 @@ end function
 function verbosity()
 return mv_verbose
 end function
+
+code
+int isverbose_c(int n) {
+	return mv_verbose>n;
+}
+endcode
+
 
 function isverbose(n)
 define n integer
