@@ -57,8 +57,10 @@ static int read_int ()
 static char read_char ()
 {
   char n;
-  fread (&n, sizeof (n), 1, fin);
-	if (!isprint((int)n)) {
+  int p;
+  	fread (&n, sizeof (n), 1, fin);
+	p=(int) n;
+	if (!isprint(p)) {
 		if (debug) printf("Suspect read_char (%d %x %c)\n",n,n,n);
 	}
 

@@ -59,7 +59,7 @@ main (int argc, char *argv[])
       if (strcmp (argv[a], "-p") == 0)
 	{
 	  a++;
-	  pipecmd = argv[2];
+	  pipecmd = argv[a];
 	  off = a;
 	  a++;
 	  random_name = 1;
