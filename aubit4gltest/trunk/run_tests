@@ -6,7 +6,7 @@
 #
 ###########################################################################
 
-######################
+#######s###############
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 EXPECT_TO_FAIL_TESTS="1 82 487 488 490 240 670 696 702"
 #1 (money), 82(report),487 (Too many arguments to function `A4GL_acli_scroll'+488),
@@ -3167,7 +3167,7 @@ if test "$EXPECTED_TO_FAIL_PASSED_CNT" != "0"; then
 	echo "Expected to fail, but passed: $EXPECTED_TO_FAIL_PASSED_CNT ($EXPECTED_TO_FAIL_PASSED_LIST)" >> $LOGFILE
 fi
 if test "$SKIP_INVALID_LIST" != "" ; then 
-	echo "Skipped as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST"
+	echo "Skipped as invalid (PLEASE FIX OR OBSOLETE): $SKIP_INVALID_LIST" >> $LOGFILE
 fi
 if test "$FAIL_CNT" = "$EXPECTED_TO_FAIL_CNT" -o "$FAIL_CNT" -lt "$EXPECTED_TO_FAIL_CNT" ; then
 	echo "RESULT: EXPECTED" >> $LOGFILE
