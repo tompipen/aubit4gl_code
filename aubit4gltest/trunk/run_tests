@@ -1,4 +1,3 @@
-#using ordinary sh on CygWin will cause "command not found" regardless of 2>/dev/null
 ###########################################################################
 #
 # 		Use this script to run unit tests (see -help)
@@ -8,23 +7,14 @@
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 #NOTE: <*> = OK with -esqli
-EXPECT_TO_FAIL_TESTS="240 670 706 278 681 682 686 687 701 704 107 \
-	766 767 793 794 911 912 913 914 915 961 962 963 976 987"
+EXPECT_TO_FAIL_TESTS="240 670 706 278 \
+	766 767 911 912 913 914 915 961 962 963 976 987"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #670 (syntax errors in generated EC code) http://aubit.com/mantis/bug_view_page.php?bug_id=0000477
 #706 (expression in SQL syntax error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000515
 #278 (Too few variables for the number of fields) http://aubit.com/mantis/bug_view_page.php?bug_id=0000593
-#681 <*>(undefined symbol: A4GL_push_ival) http://aubit.com/mantis/bug_view_page.php?bug_id=0000594
-#682 <*>same
-#686 <*>same
-#687 <*>same
-#701 <*>same
-#704 <*>same
-#107 <*>(Syntax error on identifier or symbol ''testunlo2.unl'') http://aubit.com/mantis/bug_view_page.php?bug_id=0000595
 #766 (Key CONTROL-H was 49     and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
 #767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
-#793 <*>(ec generation error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000598
-#794 <*>same
 #911 (An warning was not issued with truncation) http://aubit.com/mantis/bug_view_page.php?bug_id=0000599
 #912 same
 #913 same
@@ -119,7 +109,6 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 ##
 result_unl() {
 host="host"
-date=`date`
 flags="all_flags"
 aubit_ver="version"
 test_no=$1
@@ -137,7 +126,7 @@ unl_file=results.unl
 	#
 	#fi
 	
-	echo "$host$dl$date$dl$flags$dl$aubit_ver$dl$test_no$dl$db_type$dl\
+	echo "$host$dl$DATE$dl$flags$dl$aubit_ver$dl$test_no$dl$db_type$dl\
 		$db_ver$dl$db_method$dl$result" >> $unl_file
 
 
@@ -738,6 +727,7 @@ export FGLC=4glc
 USE_COMP=aubit
 MAKE_TARGET=run
 MAKE=gmake
+DATE=`date`
 DB_HAS_TRANSACTION=NULL
 TEST_DB="test1"
 #decimals work ok with 'LC_NUMERIC' set to C
@@ -858,6 +848,7 @@ fi
 
 #######################
 #Check if we have TUI lib, set AUBITDIR:
+#fixme - we now have UI_TUIN on MinGW (PDcurses)
 if test "$PLATFORM" = "MINGW"; then
 	#MinGw don't have Curses, but we can try using CygWin one:
 	if ! test -f $AUBITDIR_UNIX/lib/libUI_TUI.dll; then
@@ -942,23 +933,25 @@ for a in $FLAGS; do
    case $a in
    
    		-xxx)
+			#example how to run 4Js programs scripted (replacement for
+			#aubit keys.in functionality)
 			VERBOSE=1
 
-#or perhaps a dumbed down expect script that just sends commands and does not
-#expect anything.
+			#a dumbed down expect script that just sends commands and does not
+			#expect anything.
 
-(
-echo "q\c";
-sleep 2;
-echo "SMITH*";
-sleep 2;
-echo "<ESC>";
-sleep 1;
-echo "b";
-sleep 1;
-
-) | fglrun progam.42r
-
+			(
+			echo "q\c";
+			sleep 2;
+			echo "SMITH*";
+			sleep 2;
+			echo "<ESC>";
+			sleep 1;
+			echo "b";
+			sleep 1;
+			
+			) | fglrun progam.42r
+			exit
 
 			;;
 		-defaults)
@@ -1002,6 +995,7 @@ sleep 1;
 			;;
 
 		-se)
+			#test if current running Informix db is SE or not
 			DB=test1
 			SCRIPT=try.sql
 			LOGFILE=try.log
@@ -1022,7 +1016,7 @@ sleep 1;
 		-update)
 			LOGFILE=/tmp/cvsupdate-aubit4gltest.log
 			echo "+--------------------------------------------------------------------+"
-			echo "| CVS update started at `date`"
+			echo "| CVS update started at $DATE"
 			echo "| Logging to $LOGFILE"
 			echo "+--------------------------------------------------------------------+"	
 			echo " "
@@ -1071,15 +1065,25 @@ sleep 1;
 			exit 0
 			;;
 			
-		-calatlogue-unl) 
+		-catatogue-unl-test) 
 			#unload all test info to .unl file
 			exit
 			;;
-		-unl-log)
+		-log-unl-test)
 			#unload rest result to .unl file
 			result_unl "123" "ifx" "7.3" "eci" "pass"
 			exit
 			;;
+		-catatogue-unl) 
+			#unload all test info to .unl file
+			exit
+			;;
+		-log-unl)
+			#unload rest result to .unl file
+			UNL_LOG=1
+			exit
+			;;
+			
         -add-makefile)
 			#Do not add makefile to 58 and 65 - they are obsolete
 			ALL_DIRS=[0-9]*
@@ -1172,7 +1176,7 @@ if test "$INFO_TEST" = "1"; then
 	if test "$RUN_ONE" = ""; then 
 		INFO_ALL=1
 		echo "This output was created using command 'run_tests -info'"
-		date 
+		$DATE 
 		echo " "
 	fi
 fi
@@ -1192,7 +1196,7 @@ if test "$ALL_TESTS_NONDB" = "1" || test "$ALL_TESTS_DB" = "1"; then
     echo "===================== Test results ========================" >> ./alldb.log
     echo "" >> ./alldb.log
 	#echo "Platform: $PLATFORM" >> ./alldb.log
-	echo "Flags: $FLAGS  Platform: $PLATFORM Date:`date`" >> ./alldb.log
+	echo "Flags: $FLAGS  Platform: $PLATFORM Date:$DATE" >> ./alldb.log
 	echo "  PWD=$CURR_DIR" >> ./alldb.log
 
     echo "" >> ./alldb.log
@@ -1368,6 +1372,14 @@ for a in $FLAGS; do
         -verbose-results)   #Show more information about results			
 			VERBOSE_RESULTS=1
 			;;
+
+		-help-all)			
+			FLAGS="-help -help-general -help-utility -help-test -help-debug \
+				-help-db -help-other -help-examples"
+			HELP_ALL=1
+			;;
+			
+			
 	####
 	esac
 	####
@@ -1391,7 +1403,7 @@ for a in $FLAGS; do
    ##########
 
    -sqlt)
-   
+   #test of SQL translation using SQLFairy
    	# Parsers:
 		# DBI DBI-MySQL DBI-PostgreSQL DBI-SQLite DBI-Sybase
 		# Excel MySQL Oracle PostgreSQL SQLite Storable Sybase
@@ -1681,6 +1693,8 @@ for a in $FLAGS; do
             fi
             exit 9
         fi
+		#***must*** make sure that A4GL_ESQL_UNLOAD=N for informix ec generation.
+		export A4GL_ESQL_UNLOAD=N
 
 		;;
 
@@ -2106,7 +2120,7 @@ for a in $FLAGS; do
 		echo "Usage: run_tests [flags] [x]"
 		echo " x=number of the test to run (default=all tests):"
 
-		echo "Flags help pages:"
+		echo "HELP BY GROUP:"
 		echo " -help-general   General flags help"
 		echo " -help-utility   Utility options"
 		echo " -help-test      Selecting tests to run"
@@ -2114,12 +2128,15 @@ for a in $FLAGS; do
 		echo " -help-db        Selecting database to run tests against" 
 		echo " -help-other     Misc options" 
 		echo " -help-examples  Examples of flags and options"
+		echo " -help-all       Show ALL help sections at once"		
 		echo ""
-		exit 0
+		if test "$HELP_ALL" != "1"; then 
+			exit 0
+		fi
         ;;
 
 	-help-general)		
-		echo " GENERAL:"
+		echo "GENERAL:"
 		echo " -clean [x]  Clean all tests (or test x) and exit"
 		echo " -clean-all  Clean completely to CVS state and exit (SLOW)"		
 		echo " -noclean    Don't clean before running tests"
@@ -2136,22 +2153,26 @@ for a in $FLAGS; do
 		echo " -querix     Use Querix compiler instead of Aubit compiler"
 		echo " -aubitrc-test Use aubitrc in aubit4gltest directory to override local installation settings"		
 		echo ""
-		exit 0
+		if test "$HELP_ALL" != "1"; then		
+			exit 0
+		fi
         ;;
 		
 	-help-debug)
-		echo "Debugging options:"
+		echo "DEBUGGING:"
 		echo " -memdbg     Use 'valgrind' to perform memory checking ar run-time"
 		echo " -gdb        use gdb to run programs with (not 4clc - just compiled programs)"
 		echo " -show-config Don't run any tests - just show configuration under which they would be executed"
 		echo " -show-make  Dont run 'run' target in makefile - run 'show' target instead"
 		
 		echo ""
-		exit 0
+		if test "$HELP_ALL" != "1"; then		
+			exit 0
+		fi
         ;;
 		
 	-help-test)
-		echo "Selecting test(s) to run:"
+		echo "SELECTING TEST(S) TO RUN:"
 		echo " -nographic  Skip tests that use platform specific characters"
 		echo " -noprogress Do not show testing progress counter"
 		echo " -nolong     Skip tests that take a long time to run"
@@ -2168,11 +2189,13 @@ for a in $FLAGS; do
 		echo " -hl_tui     use HL_TUI UI for tests (default is TUI)"
 		echo " -ignore-compat Skip testing for test compatibility with non-aubit compilers"		
 		echo ""
-		exit 0
+		if test "$HELP_ALL" != "1"; then
+			exit 0
+		fi
         ;;
 		
     -help-db)
-		echo " DATABASE:"
+		echo "DATABASE:"
 		echo " -nodb       Skip db dependent tests"
 		echo " -onlydb     Run only db based tests"
 		echo " -norunec    Don't run EC compiled programs"
@@ -2197,9 +2220,12 @@ for a in $FLAGS; do
 		echo "             sqlite | pg | informix | sap"
 
 		echo ""
-		exit 0
+		if test "$HELP_ALL" != "1"; then
+			exit 0
+		fi
         ;;
 	-help-utility)
+		echo "UTILITY OPTIONS:"	
 		echo " -info [x]   Show test x description, or list descriptions for all tests"
 		echo " -catalogue  Create catalogue.txt file using -info flag"
 		echo " -new x      Create new test x from files in template/, add to CVS"
@@ -2211,12 +2237,13 @@ for a in $FLAGS; do
 		echo " -commit     commit changes to tests source code to CVS"
 		echo " -certify	x  flage the test as certified in the makefile"
 		echo ""
-		
-		exit 0
+		if test "$HELP_ALL" != "1"; then
+			exit 0
+		fi
         ;;
 
     -help-other)
-		echo " OUTPUT:"
+		echo "OUTPUT:"
 		echo " -silent     Don't show output of programs execution"
 		echo " -noecho     Don't show any non-critical messages while running tests"
 		echo " -verbose    Show more information about what is going on"
@@ -2234,11 +2261,13 @@ for a in $FLAGS; do
 		echo " -xdr        Use Sun RCP XDR packer for resource files"
 
 		echo ""
-        exit 0
+		if test "$HELP_ALL" != "1"; then
+        	exit 0
+		fi
         ;;
 
     -help-examples)
-		echo " EXAMPLES:"
+		echo "EXAMPLES:"
 		echo " -default -debug 45"
 		echo "   Run only test 45, apply defaults and turn on debugging"
 		echo " -defaults -eci -range 5 50"
@@ -2340,7 +2369,7 @@ if test "$IS_ODBC_MANAGER" = "1"; then
 	fi
 fi
 
-#for now - don't delete the .c files - some of them are not generated
+#for now - don't delete the .c files - some of them are NOT generated
 # but in the scripts
 CLEAN_FIND_FILES='"(" -name "*.4ae" -o -name "*.afr" -o -name "*.afr.*" 
 		-o -name "*.o" -o -name "*.ao" -o -name "*.out" -o -name "*.glb" 
@@ -2386,11 +2415,11 @@ fi
 #######################
 #General Settings:
 
-
-#export DBDATE=DMY4/
-#Mike's settings (what is expected apparently):
+#Make sure we all use same setting for DBDATE
 export DBDATE=MDY4/
 
+########################
+#Set format for 'time' command
 TIME_FILE="time.log"
 TIME_TMPFILE="time.tmp"
 #TIME_FORMAT="\t%E real,\t%U user,\t%S sys"
@@ -2400,26 +2429,24 @@ TIME_TMPFILE="time.tmp"
 #legend:    user system elapsed CPU text data max inputs outputs major minor swaps
 #TIME_FORMAT="%U	%S	%E	%P	%X	%D	%M	%I	%O	%F	%R	%W"
 #TIME_LEGEND="user system elapsed CPU text data max inputs outputs major minor swaps"
-
 TIME_FORMAT="%U	%S	%E	%P	%X	%D	%I	%O	%F	%W"
 TIME_LEGEND="user system elapsed CPU text data inputs outputs major swaps"
-
 if test -f "/usr/bin/time$EXE_EXT"; then
 	TIME_EXE="/usr/bin/time$EXE_EXT"
 fi
-
 if test "$TIME_EXE" != ""; then
 	TIME_CMD='/usr/bin/time --format="$TIME_FORMAT" --output=$TIME_TMPFILE'
 else
     #disable timing:
 	SHOW_TIME=0
 fi
-
 if test "$ALL_DB" = "1"; then
     #disable timing:
 	SHOW_TIME="0"
 fi
 
+############
+#UI default
 if test "$A4GL_UI" = ""; then
 	#Mike say that HL_TUI is still experimental
 	#export A4GL_UI=HL_TUI
@@ -2900,8 +2927,8 @@ fi
 #Check and create SQLite db
 SQLITE_DB="$AUBITDIR_UNIX/$TEST_DB.db"
 
-if test "$USE_SQLITE" = "1" || test "$ODBC_USE_DB" = "SQLITE"; then
-	if ! test -f $SQLITE_DB || test "$NEW_SQLITE" = "1"; then
+if test "$USE_SQLITE" = "1" -o "$ODBC_USE_DB" = "SQLITE"; then
+	if ! test -f $SQLITE_DB -o "$NEW_SQLITE" = "1"; then
 		rm -f $SQLITE_DB > /dev/null 2>&1
 		echo "creating SQLite testing database..."
 		cat testdb.sql | sqlite $SQLITE_DB
@@ -3463,9 +3490,13 @@ if test "$ALL_DB" = "1"; then
 	echo "Flags: $DISP_FLAGS" >> $CURR_DIR/alldb.log
 fi
 echo "" >> $LOGFILE
+#we want exact time here - do not use $DATE
 date >> $LOGFILE
 4glc -v | grep Version >> $LOGFILE
 4glc -v | grep Build >> $LOGFILE
+
+#TODO: show versions of 4Js/Informix/Querix compiler - if used
+
 echo "" >> $LOGFILE
 if test "$RUN_ONE" != ""; then
 	echo "Running test: $RUN_ONE" >> $LOGFILE
@@ -3521,24 +3552,24 @@ if test "$SILENT" = "1" && test "$NO_ECHO" != "1"; then
 	echo "Running test(s)..."
 fi
 
-####################
-for a in $ALL_TESTS
-####################
+#########################
+for TEST_NO in $ALL_TESTS
+#########################
 do
 	#Make sure we are in tests root
 	cd $CURR_DIR
 
 	if test "$TEST_RANGE" = "1"; then 
-		if test "$a" -lt "$TEST_RANGE_FROM"; then 
+		if test "$TEST_NO" -lt "$TEST_RANGE_FROM"; then 
 			continue
 		fi
-		if test "$a" -gt "$TEST_RANGE_TO"; then 
+		if test "$TEST_NO" -gt "$TEST_RANGE_TO"; then 
 			break
 		fi
 	fi
 
 	#if test "$INFO_ALL" = "1" ; then
-	#	echo " ------------------- Info for test $a -----------------------"
+	#	echo " ------------------- Info for test $TEST_NO -----------------------"
 	#	continue
 	#fi
 	
@@ -3577,7 +3608,7 @@ do
     #################################
     #See if we should skip this test:
     if test "$RUN_ONE" != ""; then
-		if test "$RUN_ONE" != "$a"; then
+		if test "$RUN_ONE" != "$TEST_NO"; then
             continue
         fi
     fi
@@ -3587,7 +3618,7 @@ do
 	###################################
 	
 	#see if Makefile contains description
-	desc_txt=`$MAKE -s -C $a desc 2>/dev/null`
+	desc_txt=`$MAKE -s -C $TEST_NO desc 2>/dev/null`
 
 	if test "$desc_txt" != "" ; then
 		#see if this description is unchanged from template, which 
@@ -3601,7 +3632,7 @@ do
 			desc_txt=""
 			IS_DESCRIBED=0
 		else
-			ALL_DESCRIBED_TESTS="$ALL_DESCRIBED_TESTS $a"
+			ALL_DESCRIBED_TESTS="$ALL_DESCRIBED_TESTS $TEST_NO"
 			IS_DESCRIBED=1
 		fi
 	else
@@ -3612,30 +3643,30 @@ do
 
 		##############
 		#get info from makefile
-		IS_DB_TEST=`$MAKE -s -C $a db_test 2>/dev/null`
-		ec_test=`$MAKE -s -C $a ec_test 2>/dev/null`
-		IS_NOSILENT_TEST=`$MAKE -s -C $a nosilent_test 2>/dev/null`
-		IS_TUI_TEST=`$MAKE -s -C $a tui_test 2>/dev/null`
-		IS_FORM_TEST=`$MAKE -s -C $a form_test 2>/dev/null`
-		IS_REPORT_TEST=`$MAKE -s -C $a report_test 2>/dev/null`
-		IS_GRAPHIC_TEST=`$MAKE -s -C $a graphic_test 2>/dev/null`
-		IS_CONSOLE_PROMPT_TEST=`$MAKE -s -C $a console_prompt_test 2>/dev/null`
-		IS_DUMP_SCREEN_TEST=`$MAKE -s -C $a dump_screen_test 2>/dev/null`
-		IS_LONG_TEST=`$MAKE -s -C $a long_test 2>/dev/null`
-		IS_CERT_TEST=`$MAKE -s -C $a cert_test 2>/dev/null`
-		IS_OBSOLETE_TEST=`$MAKE -s -C $a obsolete_test 2>/dev/null`
-		compat_test=`$MAKE -s -C $a compat_test 2>/dev/null`
-		IS_UNKNOWN_TEST=`$MAKE -s -C $a unknown_test 2>/dev/null`
-		EXPECT_CODE=`$MAKE -s -C $a expect_code 2>/dev/null`
-		SE_REQUIRED=`$MAKE -s -C $a se_required 2>/dev/null`
+		IS_DB_TEST=`$MAKE -s -C $TEST_NO db_test 2>/dev/null`
+		ec_test=`$MAKE -s -C $TEST_NO ec_test 2>/dev/null`
+		IS_NOSILENT_TEST=`$MAKE -s -C $TEST_NO nosilent_test 2>/dev/null`
+		IS_TUI_TEST=`$MAKE -s -C $TEST_NO tui_test 2>/dev/null`
+		IS_FORM_TEST=`$MAKE -s -C $TEST_NO form_test 2>/dev/null`
+		IS_REPORT_TEST=`$MAKE -s -C $TEST_NO report_test 2>/dev/null`
+		IS_GRAPHIC_TEST=`$MAKE -s -C $TEST_NO graphic_test 2>/dev/null`
+		IS_CONSOLE_PROMPT_TEST=`$MAKE -s -C $TEST_NO console_prompt_test 2>/dev/null`
+		IS_DUMP_SCREEN_TEST=`$MAKE -s -C $TEST_NO dump_screen_test 2>/dev/null`
+		IS_LONG_TEST=`$MAKE -s -C $TEST_NO long_test 2>/dev/null`
+		IS_CERT_TEST=`$MAKE -s -C $TEST_NO cert_test 2>/dev/null`
+		IS_OBSOLETE_TEST=`$MAKE -s -C $TEST_NO obsolete_test 2>/dev/null`
+		compat_test=`$MAKE -s -C $TEST_NO compat_test 2>/dev/null`
+		IS_UNKNOWN_TEST=`$MAKE -s -C $TEST_NO unknown_test 2>/dev/null`
+		EXPECT_CODE=`$MAKE -s -C $TEST_NO expect_code 2>/dev/null`
+		SE_REQUIRED=`$MAKE -s -C $TEST_NO se_required 2>/dev/null`
 		if test "$EXPECT_CODE" = "" ; then
 			EXPECT_CODE=0
 		fi
-		COMPILE_ONLY=`$MAKE -s -C $a compile_only 2>/dev/null`
-		NEED_IFX_VERSION=`$MAKE -s -C $a need_ifx_version 2>/dev/null`
+		COMPILE_ONLY=`$MAKE -s -C $TEST_NO compile_only 2>/dev/null`
+		NEED_IFX_VERSION=`$MAKE -s -C $TEST_NO need_ifx_version 2>/dev/null`
 		
-		NEED_TRANSACTION=`$MAKE -s -C $a transaction 2>/dev/null`
-		NOPREFIX=`$MAKE -s -C $a noprefix 2>/dev/null`
+		NEED_TRANSACTION=`$MAKE -s -C $TEST_NO transaction 2>/dev/null`
+		NOPREFIX=`$MAKE -s -C $TEST_NO noprefix 2>/dev/null`
 		if [ "$NOPREFIX" = "1" ]
 		then	
 			export A4GL_NAMESPACE=" "
@@ -3643,7 +3674,7 @@ do
 			unset A4GL_NAMESPACE
 		fi
 
-		NEED_COMPAT=`$MAKE -s -C $a need_compat 2>/dev/null`
+		NEED_COMPAT=`$MAKE -s -C $TEST_NO need_compat 2>/dev/null`
 
 		if [ "$NEED_COMPAT" = "1" ]; then
 			#test needs Aubit Informix compatibility support and headers
@@ -3664,83 +3695,83 @@ do
 			#compat_test
 
 			for b in $REPORT_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_REPORT_TEST=1
 				fi
 			done
 
 			for b in $UNKNOWN_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_UNKNOWN_TEST=1
 				fi
 			done
 			for b in $DB_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_DB_TEST=1
 				fi
 			done
 			
 			for b in $NOSILENT_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_NOSILENT_TEST=1
 				fi
 			done
 			
 			for b in $TUI_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_TUI_TEST=1
 				fi
 			done
 			
 			for b in $GRAPHIC_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_GRAPHIC_TEST=1
 				fi
 			done
 			
 			for b in $ALL_DESCRIBED_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_DESCRIBED=1
 				fi
 			done
 			for b in $CONSOLE_PROMPT_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_CONSOLE_PROMPT_TEST=1
 				fi
 			done
 			for b in $DUMP_SCREEN_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_DUMP_SCREEN_TEST=1
 				fi
 			done
 			for b in $FORM_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_FORM_TEST=1
 				fi
 			done
 			for b in $LONG_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_LONG_TEST=1
 				fi
 			done
 			for b in $CERT_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_CERT_TEST=1
 				fi
 			done
 			for b in $OBSOLETE_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_OBSOLETE_TEST=1
 				fi
 			done
 			
 			for b in $PCODE_ENABLED; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_PCODE_ENABLED=1
 				fi
 			done
 			for b in $NO_CRON_TESTS; do
-				if test "$b" = "$a"; then
+				if test "$b" = "$TEST_NO"; then
 					IS_NO_CRON_TEST=1
 				fi
 			done
@@ -3749,12 +3780,12 @@ do
 		#Test information that is allways held only in this script, and NOT
 		#in makefiles	
 		for b in $EXPECT_TO_FAIL_TESTS; do
-			if test "$b" = "$a"; then
+			if test "$b" = "$TEST_NO"; then
 				IS_EXPECT_TO_FAIL_TEST=1
 			fi
 		done
 		for b in $INVALID_TESTS; do
-			if test "$b" = "$a"; then
+			if test "$b" = "$TEST_NO"; then
 				IS_INVALID_TEST=1
 			fi
 		done
@@ -3766,12 +3797,12 @@ do
 
 			#echo "db_test=$db_test"
 			
-			echo " ------------------- Info for test $a -----------------------"		
+			echo " ------------------- Info for test $TEST_NO -----------------------"		
 
 			if test "$TEMPLATE_COMMENT" = "1"; then 
 				echo "WARNING: test still contains template comment in makefile"
 				TEMPLATE_COMMENT_CNT=`(expr $TEMPLATE_COMMENT_CNT + 1) 2>/dev/null`
-				TEMPLATE_COMMENT_LIST="$TEMPLATE_COMMENT_LIST $a"
+				TEMPLATE_COMMENT_LIST="$TEMPLATE_COMMENT_LIST $TEST_NO"
 			fi
 			
 			if test "$OLD_DESC" = "1" \
@@ -3781,7 +3812,7 @@ do
 				echo "Please migrate folowing test info from 'run_tests' script to makefile:"
 				echo ""
 				MIGRATE_DESC_CNT=`(expr $MIGRATE_DESC_CNT + 1) 2>/dev/null`
-				MIGRATE_DESC_LIST="$MIGRATE_DESC_LIST $a"			
+				MIGRATE_DESC_LIST="$MIGRATE_DESC_LIST $TEST_NO"			
 			fi
 			
 			if test "$desc_txt" != "" ; then
@@ -3815,17 +3846,17 @@ do
 			if test "$IS_DESCRIBED" != "1" ; then
 				echo "*** Test not described ***"
 				NOT_DESCRIBED_CNT=`(expr $NOT_DESCRIBED_CNT + 1) 2>/dev/null`
-				NOT_DESCRIBED_LIST="$NOT_DESCRIBED_LIST $a"
+				NOT_DESCRIBED_LIST="$NOT_DESCRIBED_LIST $TEST_NO"
 			fi
 			if test "$IS_INVALID_TEST" = "1"; then 
 				echo "**** TEST MARKED INVALID IN run_tests ******"
 				IS_INVALID_CNT=`(expr $IS_INVALID_CNT + 1) 2>/dev/null`
-				IS_INVALID_LIST="$IS_INVALID_LIST $a"
+				IS_INVALID_LIST="$IS_INVALID_LIST $TEST_NO"
 			fi
 			if test "$IS_EXPECT_TO_FAIL_TEST" = "1"; then 
 				echo "**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******"
 				EXPECT_FAIL_CNT=`(expr $EXPECT_FAIL_CNT + 1) 2>/dev/null`
-				EXPECT_FAIL_LIST="$EXPECT_FAIL_LIST $a"
+				EXPECT_FAIL_LIST="$EXPECT_FAIL_LIST $TEST_NO"
 			fi
 			if test "$IS_DB_TEST" = "1"; then
 				echo "Test needs database"
@@ -3881,7 +3912,7 @@ do
 			if test "$IS_OBSOLETE_TEST" = "1"; then
 				echo "test is superceeded or obsoleted and should be silently skipped"
 				IS_OBSOLETE_CNT=`(expr $IS_OBSOLETE_CNT + 1) 2>/dev/null`
-				IS_OBSOLETE_LIST="$IS_OBSOLETE_LIST $a"
+				IS_OBSOLETE_LIST="$IS_OBSOLETE_LIST $TEST_NO"
 			fi
 			if test "$compat_test" = "1"; then
 				echo "Test can be run using any 4GL compatible compiler, not just Aubit"
@@ -3934,9 +3965,9 @@ do
 				if test "$NO_GO" = "1"; then
 					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 					if test "$VERBOSE" = "1"; then
-						echo "Skipping test $a needs version $NEED_IFX_VERSION but have $I4GL_PCOMPILER_VER_MAJOR.$I4GL_PCOMPILER_VER_MINOR" >> $LOGFILE
+						echo "Skipping test $TEST_NO needs version $NEED_IFX_VERSION but have $I4GL_PCOMPILER_VER_MAJOR.$I4GL_PCOMPILER_VER_MINOR" >> $LOGFILE
 					fi
-					SKIP_NOVERSION_LIST="$SKIP_NOVERSION_LIST $a"
+					SKIP_NOVERSION_LIST="$SKIP_NOVERSION_LIST $TEST_NO"
 					continue
 				else
 					if test "$VERBOSE" = "1"; then
@@ -3948,16 +3979,16 @@ do
 		if test "$A4GL_FAKELEXTYPE" = "PCODE" && test "$IS_PCODE_ENABLED" = "0"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping p-code disabled test #$a." >> $LOGFILE
+				echo "Skipping p-code disabled test #$TEST_NO." >> $LOGFILE
 			fi
-			SKIP_PCODE_LIST="$SKIP_PCODE_LIST $a"
+			SKIP_PCODE_LIST="$SKIP_PCODE_LIST $TEST_NO"
 	        continue
         fi
 		if test "$IS_INVALID_TEST" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-			SKIP_INVALID_LIST="$SKIP_INVALID_LIST $a"
+			SKIP_INVALID_LIST="$SKIP_INVALID_LIST $TEST_NO"
 			if test "$RUN_ONE" != ""; then
-				echo "Skipping invalid test #$a." >> $LOGFILE
+				echo "Skipping invalid test #$TEST_NO." >> $LOGFILE
 			fi
 			#echo "WARNING - test is invalid - please FIX IT or list it as OBSOLETE." >> $LOGFILE
 	        continue
@@ -3966,118 +3997,118 @@ do
 		if test "$IS_TUI_TEST" != "1" && test "$ONLY_TUI" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping non-TUI test #$a." >> $LOGFILE
+				echo "Skipping non-TUI test #$TEST_NO." >> $LOGFILE
 			fi
-			SKIP_TUI_LIST="$SKIP_TUI_LIST $a"
+			SKIP_TUI_LIST="$SKIP_TUI_LIST $TEST_NO"
 	        continue
 	    fi
 
 		if test "$IS_LONG_TEST" = "1" && test "$SKIP_LONG" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping long running test #$a." >> $LOGFILE
+				echo "Skipping long running test #$TEST_NO." >> $LOGFILE
 			fi
-			SKIP_LONG_LIST="$SKIP_LONG_LIST $a"
+			SKIP_LONG_LIST="$SKIP_LONG_LIST $TEST_NO"
 	        continue
 	    fi
 		if test "$UI" = "CONSOLE" && (test "$IS_CONSOLE_PROMPT_TEST" = "1" || test "$IS_DUMP_SCREEN_TEST" = "1" || test "$IS_FORM_TEST" = "1") ; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$a in CONSOLE mode." >> $LOGFILE
+				echo "Skipping test #$TEST_NO in CONSOLE mode." >> $LOGFILE
 			fi
-			SKIP_CONSOLE_LIST="$SKIP_CONSOLE_LIST $a"
+			SKIP_CONSOLE_LIST="$SKIP_CONSOLE_LIST $TEST_NO"
 	        continue
 	    fi
 	    if test "$IS_DESCRIBED" != "1" && test "$DESCRIBED_ONLY" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping not described test #$a." >> $LOGFILE
+				echo "Skipping not described test #$TEST_NO." >> $LOGFILE
 			fi
-			SKIP_NODESC_LIST="$SKIP_NODESC_LIST $a"
+			SKIP_NODESC_LIST="$SKIP_NODESC_LIST $TEST_NO"
 			continue
 	    fi
 		if test "$IS_DB_TEST" != "1" && test "$ONLY_DB" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping non-DB test #$a." >> $LOGFILE
+				echo "Skipping non-DB test #$TEST_NO." >> $LOGFILE
 			fi
-			SKIP_NONDB_LIST="$SKIP_NONDB_LIST $a"
+			SKIP_NONDB_LIST="$SKIP_NONDB_LIST $TEST_NO"
 	        continue
 	    fi
 		if test "$IS_DB_TEST" = "1" && test "$NO_DB" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping DB dependent test #$a." >> $LOGFILE
+				echo "Skipping DB dependent test #$TEST_NO." >> $LOGFILE
 			fi
-			SKIP_DB_LIST="$SKIP_DB_LIST $a"
+			SKIP_DB_LIST="$SKIP_DB_LIST $TEST_NO"
 	        continue
 	    fi
 	    if test "$IS_NOSILENT_TEST" = "1" && test "$SILENT" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$a - cannot run in silent mode." >> $LOGFILE
+				echo "Skipping test #$TEST_NO - cannot run in silent mode." >> $LOGFILE
 			fi
-			SKIP_NOSILENT_LIST="$SKIP_NOSILENT_LIST $a"
+			SKIP_NOSILENT_LIST="$SKIP_NOSILENT_LIST $TEST_NO"
 	        continue
 	    fi
 	    if test "$IS_TUI_TEST" = "1" && test "$TERM" != "xterm" && test "$PLATFORM" = "MINGW"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$a - cannot run with TERM=$TERM on MinGW using Cygwin Curses." >> $LOGFILE
+				echo "Skipping test #$TEST_NO - cannot run with TERM=$TERM on MinGW using Cygwin Curses." >> $LOGFILE
 			fi
 	        continue
 	    fi
 	    if test "$IS_GRAPHIC_TEST" = "1" && test "$NO_GRAPHIC" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$a that uses platform specific characters." >> $LOGFILE
+				echo "Skipping test #$TEST_NO that uses platform specific characters." >> $LOGFILE
 			fi
-			SKIP_GRAPHIC_LIST="$SKIP_GRAPHIC_LIST $a"
+			SKIP_GRAPHIC_LIST="$SKIP_GRAPHIC_LIST $TEST_NO"
 	        continue
 	    fi
 	    if test "$IS_NO_CRON_TEST" = "1" && test "$CRON_JOB" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			IS_NO_CRON_CNT=`(expr $IS_NO_CRON_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "Skipping test #$a that fails when run as cron job" >> $LOGFILE
+				echo "Skipping test #$TEST_NO that fails when run as cron job" >> $LOGFILE
 			fi
-			SKIP_NO_CRON_LIST="$SKIP_NO_CRON_LIST $a"
+			SKIP_NO_CRON_LIST="$SKIP_NO_CRON_LIST $TEST_NO"
 	        continue
 	    fi
-		if [ ! -f $CURR_DIR/$a/makefile -a ! -f $CURR_DIR/$a/Makefile ]; then
+		if [ ! -f $CURR_DIR/$TEST_NO/makefile -a ! -f $CURR_DIR/$TEST_NO/Makefile ]; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
-				echo "$a Not run - no Makefile" >> $LOGFILE
+				echo "$TEST_NO Not run - no Makefile" >> $LOGFILE
 			fi
-			SKIP_NOMAKEFILE_LIST="$SKIP_NOMAKEFILE_LIST $a"
+			SKIP_NOMAKEFILE_LIST="$SKIP_NOMAKEFILE_LIST $TEST_NO"
 			continue
 		fi
 		if test "$USE_COMP" != "aubit"; then
 			if test "$USE_COMP" = "4js-p"; then
 				TMP=""
-				TMP=`find $CURR_DIR/$a -name "*.4gl" -exec grep -l aclfgl_dump_screen {} \;`
+				TMP=`find $CURR_DIR/$TEST_NO -name "*.4gl" -exec grep -l aclfgl_dump_screen {} \;`
 				if test "$TMP" != ""; then 
 					if test "$VERBOSE" = "1"; then
-						echo "Skip $a - can't dump_screen with 4js"
+						echo "Skip $TEST_NO - can't dump_screen with 4js"
 					fi
-					SKIP_DUMP_SCREEN="$SKIP_DUMP_SCREEN $a"
+					SKIP_DUMP_SCREEN="$SKIP_DUMP_SCREEN $TEST_NO"
 					continue
 				fi
 			fi
-			if test -f "$a/keys.in"; then 
+			if test -f "$TEST_NO/keys.in"; then 
 				SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 				if test "$VERBOSE" = "1"; then
-					echo "$a Not run - $USE_COMP specified but test uses keys.in" >> $LOGFILE
+					echo "$TEST_NO Not run - $USE_COMP specified but test uses keys.in" >> $LOGFILE
 				fi
-				SKIP_KEYS_IN_LIST="$SKIP_KEYS_IN_LIST $a"
+				SKIP_KEYS_IN_LIST="$SKIP_KEYS_IN_LIST $TEST_NO"
 				continue
 			fi
 			if test "$compat_test" != "1" -a "$IGNORE_COMPAT" != "1"; then
 				SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 				if test "$VERBOSE" = "1"; then
-					echo "$a Not run - $USE_COMP specified on non-compat test" >> $LOGFILE
+					echo "$TEST_NO Not run - $USE_COMP specified on non-compat test" >> $LOGFILE
 				fi
-				SKIP_NOCOMPAT_LIST="$SKIP_NOCOMPAT_LIST $a"
+				SKIP_NOCOMPAT_LIST="$SKIP_NOCOMPAT_LIST $TEST_NO"
 				continue
 			fi
 			
@@ -4087,9 +4118,9 @@ do
 				test "$desc_txt" = "Old makefile"
 			then 
 				#Old makefiles don't know how to use non-Aubit compilers
-				SKIP_OLD_MAKEFILE_LIST="$SKIP_OLD_MAKEFILE_LIST $a"
+				SKIP_OLD_MAKEFILE_LIST="$SKIP_OLD_MAKEFILE_LIST $TEST_NO"
 				if test "$VERBOSE" = "1"; then
-					echo "$a Not run - $USE_COMP specified on test having old makefile" >> $LOGFILE
+					echo "$TEST_NO Not run - $USE_COMP specified on test having old makefile" >> $LOGFILE
 				fi
 				continue
 			fi
@@ -4116,7 +4147,7 @@ do
 				else
 					#Don't know how to turn on transactions for this RDBMS			
 					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`			
-					echo "Skip $a - test needs transaction support, but current database don't have it" >> $LOGFILE
+					echo "Skip $TEST_NO - test needs transaction support, but current database don't have it" >> $LOGFILE
 					echo "and I don't know how to turn them on" >> $LOGFILE
 					continue
 				fi
@@ -4138,7 +4169,7 @@ do
 				else
 					#Don't know how to turn off transactions for this RDBMS
 					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-					echo "Skip $a - test MUST NOT have transaction support, but current database have it" >> $LOGFILE
+					echo "Skip $TEST_NO - test MUST NOT have transaction support, but current database have it" >> $LOGFILE
 					echo "and I don't know how to turn them off" >> $LOGFILE					
 					continue
 				fi
@@ -4149,7 +4180,7 @@ do
 					echo "WARNING: explicit preference for transactions, but unable to determine state" >> $LOGFILE				
 				else
 					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-					echo "Skip $a - explicit preference for transactions, but unable to determine state" >> $LOGFILE
+					echo "Skip $TEST_NO - explicit preference for transactions, but unable to determine state" >> $LOGFILE
 					continue
 				fi
 			fi
@@ -4158,7 +4189,7 @@ do
 
 	if test "$SILENT" != "1"; then
 		echo " "
-		echo "------------------------- Running test #$a ---------------------------"
+		echo "------------------------- Running test #$TEST_NO ---------------------------"
 		if test "$desc_txt" != "" -a "$VERBOSE" = "1" ; then
 			echo "Description: $desc_txt"
 		fi
@@ -4174,8 +4205,8 @@ do
 			else
 				RESULT=0
 			fi
-			#echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a..."
-			echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a...($RESULT %)  "
+			#echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $TEST_NO..."
+			echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $TEST_NO...($RESULT %)  "
 		fi
     fi
 
@@ -4198,16 +4229,16 @@ do
 	if test "$NO_CLEAN" != "1"; then
 		#Clean old run
 		if test "$VERBOSE"; then
-			echo "Cleaning $CURR_DIR/$a ..."
+			echo "Cleaning $CURR_DIR/$TEST_NO ..."
 		fi
 
-		EXEC="$FIND $CURR_DIR/$a $CLEAN_FIND_FILES -exec rm  {} \;"
+		EXEC="$FIND $CURR_DIR/$TEST_NO $CLEAN_FIND_FILES -exec rm  {} \;"
 		eval $EXEC
 
 		if test "$VERBOSE" = "1"; then 
-			$MAKE -C $CURR_DIR/$a clean 
+			$MAKE -C $CURR_DIR/$TEST_NO clean 
 		else
-			$MAKE -C $CURR_DIR/$a clean  > /dev/null 2>&1
+			$MAKE -C $CURR_DIR/$TEST_NO clean  > /dev/null 2>&1
 		fi
 		RET=$?
 		#Old makefiles do not have 'clean' target so this will allways fail
@@ -4226,10 +4257,10 @@ do
     # run it:
 	RUN_CNT=`(expr $RUN_CNT + 1) 2>/dev/null`
 
-	cd $CURR_DIR/$a
+	cd $CURR_DIR/$TEST_NO
     if test "$SILENT" = "1"; then
 		if test "$ERR_WITH_LOG" != "1"; then
-			echo "Test : " $a   >> $CURR_DIR/$ERROR_LOG
+			echo "Test : " $TEST_NO   >> $CURR_DIR/$ERROR_LOG
             ERRLOG="2>$CURR_DIR/$ERROR_LOG"
         else
             ERRLOG="2>&1"
@@ -4237,7 +4268,7 @@ do
         RUN_CMD="$TIME_CMD $MAKE $MAKE_TARGET >> $CURR_DIR/$OUTPUT_LOG $ERRLOG"
 	else
 		if test "$ERR_WITH_LOG" != "1"; then
-			echo "Test : " $a   >> $CURR_DIR/$ERROR_LOG
+			echo "Test : " $TEST_NO   >> $CURR_DIR/$ERROR_LOG
             ERRLOG="2>> $CURR_DIR/$ERROR_LOG"
         else
             ERRLOG=
@@ -4293,6 +4324,7 @@ do
     ################################
     #Check the result
 	if test "$VERBOSE" = "1" ; then 
+		#almost meaningless - make does not return exit code of failed command
 		echo "$MAKE returned code $RET"	
 	fi
 	
@@ -4302,36 +4334,35 @@ do
 		if test "$compat_test" != "1" -a "$USE_COMP" != "aubit"; then
 			#test is not described as compatible, but even using no-aubit compiler 
 			#it passed, so it should be described as compatible
-			NOT_COMPAT_BUT_PASSED="$NOT_COMPAT_BUT_PASSED $a"
+			NOT_COMPAT_BUT_PASSED="$NOT_COMPAT_BUT_PASSED $TEST_NO"
 			#we do not want to automatically declare test compatible, just because
 			#one compiler can do it. NB; Querix sometimes fails with error, but 
 			#does not exit with error code
-			#change_setting "compat_test" "1" "$a"
+			#change_setting "compat_test" "1" "$TEST_NO"
 		fi
 	
 		if test "$IS_EXPECT_TO_FAIL_TEST" = "1" ; then
 			if test "$SHOW_ITEM_RESULT" = "1"; then 
-				#echo " "
-				#echo "NOTE: test was expected to fail, but passed!"
-				echo "NOTE: test was expected to fail, but passed!"  >> $LOGFILE
+				echo "NOTE: $TEST_NO was expected to fail, but passed!"  >> $LOGFILE
 			fi
-			EXPECTED_TO_FAIL_PASSED_LIST="$EXPECTED_TO_FAIL_PASSED_LIST $a"
+			EXPECTED_TO_FAIL_PASSED_LIST="$EXPECTED_TO_FAIL_PASSED_LIST $TEST_NO"
 			EXPECTED_TO_FAIL_PASSED_CNT=`(expr $EXPECTED_TO_FAIL_PASSED_CNT + 1) 2>/dev/null`
 		fi
 		PASS_CNT=`(expr $PASS_CNT + 1) 2>/dev/null`
-		PASS_LIST="$PASS_LIST $a"
+		PASS_LIST="$PASS_LIST $TEST_NO"
 		if test "$IS_CERT_TEST" = "0"; then
 			if test "$SHOW_ITEM_RESULT" = "1"; then
-				echo "$a Pass - NOT CERTIFIED" >> $LOGFILE
+				echo "$TEST_NO Pass - NOT CERTIFIED" >> $LOGFILE
 			fi
 			NOT_CERT_CNT=`(expr $NOT_CERT_CNT + 1) 2>/dev/null`
-			NOT_CERT_LIST="$NOT_CERT_LIST $a"
+			NOT_CERT_LIST="$NOT_CERT_LIST $TEST_NO"
         else
 			if test "$SHOW_ITEM_RESULT" = "1"; then		
-				echo "$a Pass" >> $LOGFILE
+				echo "$TEST_NO Pass" >> $LOGFILE
 			fi
 		fi
 	else
+		#test failed
 		FAIL_CNT=`(expr $FAIL_CNT + 1) 2>/dev/null`
 
 		if test "$compat_test" != "1" -a "$USE_COMP" != "aubit"; then
@@ -4340,17 +4371,17 @@ do
 		
 		if test "$IS_EXPECT_TO_FAIL_TEST" = "1" ; then 
 			TMPNOTE="(expected)"
-			EXPECTED_TO_FAIL_LIST="$EXPECTED_TO_FAIL_LIST $a"
+			EXPECTED_TO_FAIL_LIST="$EXPECTED_TO_FAIL_LIST $TEST_NO"
 			EXPECTED_TO_FAIL_CNT=`(expr $EXPECTED_TO_FAIL_CNT + 1) 2>/dev/null`
 		else
 			TMPNOTE=
-			NOT_EXPECTED_TO_FAIL_LIST="$NOT_EXPECTED_TO_FAIL_LIST $a"
+			NOT_EXPECTED_TO_FAIL_LIST="$NOT_EXPECTED_TO_FAIL_LIST $TEST_NO"
 			NOT_EXPECTED_TO_FAIL_CNT=`(expr $NOT_EXPECTED_TO_FAIL_CNT + 1) 2>/dev/null`			
 		fi
 		
 		if test "$IS_CERT_TEST" = "1" -a "$USE_ECI" = "1" ; then
 			if test "$SHOW_ITEM_RESULT" = "1"; then
-				echo "$a Fail $TMPNOTE<<< WARNING - TEST WAS CERTIFIED TO RUN, BUT FAILED ($MAKE_EXPECT_CODE/$RET)" >> $LOGFILE
+				echo "$TEST_NO Fail $TMPNOTE<<< WARNING - TEST WAS CERTIFIED TO RUN, BUT FAILED ($MAKE_EXPECT_CODE/$RET)" >> $LOGFILE
 			fi
 
 			if test "$NO_ECHO" != "1" -a "$SILENT" != "1"; then
@@ -4365,9 +4396,9 @@ do
 		else
 			if test "$SHOW_ITEM_RESULT" = "1"; then
 				if test "$IS_CERT_TEST" = "1" ; then 
-					echo "$a Fail $TMPNOTE($MAKE_EXPECT_CODE/$RET) (-eci certified) <<<" >> $LOGFILE			
+					echo "$TEST_NO Fail $TMPNOTE($MAKE_EXPECT_CODE/$RET) (-eci certified) <<<" >> $LOGFILE			
 				else
-					echo "$a Fail $TMPNOTE($MAKE_EXPECT_CODE/$RET) <<<" >> $LOGFILE
+					echo "$TEST_NO Fail $TMPNOTE($MAKE_EXPECT_CODE/$RET) <<<" >> $LOGFILE
 				fi
 			fi
 		fi
@@ -4381,6 +4412,7 @@ do
 done
 #####
 	if test "$INFO_ALL" = "1" ; then
+		#Show all tests summary statiscics
 		echo "--------------------------------------------------------------"
 		echo "Total tests: $COUNTER"
 		echo "Still has template comment: $TEMPLATE_COMMENT_CNT ($TEMPLATE_COMMENT_LIST)"
@@ -4535,6 +4567,7 @@ echo "----------------------------- aubit-config -a ----------------------------
 $AUBITDIR_UNIX/bin/aubit-config$EXE_EXT -a  >> $RESLOGFILE 2>&1
 echo "" >> $LOGFILE
 echo "Finished at:" >> $LOGFILE
+#we want exact time here - do not use $DATE
 date >> $LOGFILE
 echo "" >> $LOGFILE
 

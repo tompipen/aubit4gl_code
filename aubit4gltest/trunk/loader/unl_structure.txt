@@ -1,0 +1,103 @@
+This file documents columns of the .unl files generated using -catatogue-unl
+and -log-unl flags of the run_tests script.
+
+They are listed in the order they appear in .unl files
+
+Some values might be obsolete (like is_ec) but are here for consistancy reasons.
+
+-catatogue-unl will generate file "tests.unl", which will contatin data about the
+tests. To obtain up-to-date values in that file, it is enough to update tests
+from CVS if neede (run_tests -update) and then generate the file. There is 
+no need to send this file with test results file, because the same settings
+and values will apply to all test sites on same version of the tests, since 
+all values recorded in this file are static variables stored in test's makefile
+or in run_test script.
+
+-log-unl will generate file "results.unl" which will contain the results
+of the execution of each test, including the information about conditions/settings
+and context under they where executed. The intention is to recor all the 
+variables/settings that might affect the test result, that are local to the system
+test was executed on, together with the test result. 
+
+It is intended that "Name" labels are used for database schemma naming.
+
+============================= Data about the test =============================
+
+Name 			run_test		stored in			valid options	Description
+				variable		Make/run_tests
+-----------------------------------------------------------------------------
+test_no			TEST_NO			-					smallint		Number of the test described (PK) as per nubmer of the directory containig test files
+test_ver															Last (newest) version of this test in CVS, based on CVS version returned for 4gl file (if more then one, first one when sorted alphabetically)
+run_tests_ver														Version of run_tests script used to collect values
+last_update											datetime		Time of last update of this test (test files changed)
+expect_fail_cert				r					test number FK	Test is expected to fail with -cert, as listed in EXPECT_TO_FAIL_TESTS
+expect_fail_esqli				r					test number FK	Test is expected to fail with -esqli, as listed in EXPECT_TO_FAIL_TESTS_ESQLI
+expect_fail_ecp					r					test number FK	Test is expected to fail with -ecp, as listed in EXPECT_TO_FAIL_TESTS_ECP
+expect_fail_ifx-p				r					test number FK	Test is expected to fail with -ifx-p, as listed in EXPECT_TO_FAIL_IFX
+expect_fail_4js					r					test number FK	Test is expected to fail with -4js, as listed in EXPECT_TO_FAIL_4JS
+expect_fail_querix				r					test number FK	Test is expected to fail with -querix, as listed in EXPECT_TO_FAIL_QUERIX
+invalid			-				r					bol				Test is marked invalid, as per INVALID_TESTS
+is_db			IS_DB_TEST		m/r									Need db. For old makefiles stored in DB_TESTS. Make target:db_test
+is_ec			ec_test			m/r					bol				Hard-coded EC test .For old makefiles stored in EC_TESTS target:ec_test
+is_nosilent		IS_NOSILENT_TESTm/r					bol				Will fail with -silent. Old makefiles: NOSILENT_TESTS target:nosilent_test
+is_window		?				m/r									Opens windows Old makefiles: WINDOW_TESTS
+is_tui			IS_TUI_TEST		m/r					bol				See desc in run_tests or makefile template. Old makefiles:TUI_TESTS target:tui_test
+is_form			IS_FORM_TEST	m/r									Uses form files (.per). Old makefiles:FORM_TESTS target:form_test
+is_report		IS_REPORT_TEST	m/r									Uses REPORT bock. Old makefiles:REPORT_TESTS target:report_test
+is_graphics		IS_GRAPHIC_TEST	m/r									See desc in run_tests or makefile template. Old makefiles:GRAPHIC_TESTS t:graphic_test
+is_prompt		IS_CONSOLE_PROMPT_TESTm/r							See desc in run_tests or makefile template. Old makefiles:CONSOLE_PROMPT_TESTS t:console_prompt_test
+is_dump_screen	IS_DUMP_SCREEN_TESTm/r								Uses dump_screen C function. Old makefiles:DUMP_SCREEN_TESTS t:dump_screen_test
+is_long			IS_LONG_TEST	m/r									Taked on average over then 10 minutes to execute. Old makefiles:LONG_TESTS t:long_test
+is_unknown		IS_UNKNOWN_TEST	m/r									See desc in run_tests or makefile template. Old makefiles:UNKNOWN_TESTS t:unknown_test (possibly obsolete)
+is_cert			IS_CERT_TEST	m/r									Test is certified to run with -cert. Old makefiles:CERT_TESTS t:cert_test
+is_obsolete		IS_OBSOLETE_TESTm/r									Test is obsolete. Old makefiles:OBSOLETE_TESTS t:obsolete_test
+is_described 	IS_DESCRIBED	m/r									Test is described. Old makefiles:ALL_DESCRIBED_TESTS
+is_pcode_enabled				m/r									Test makefile is aubit P-code Old makefiles:PCODE_ENABLED
+is_no_cron						m/r									Test will fail when running under cron. Old makefiles:NO_CRON_TESTS
+desc_txt		desc_txt		m									Test description t:desc
+compat_test		compat_test		m									Test is compatible with non-aubit 4gl compilers t:compat_test
+expect_code		EXPECT_CODE		m									Exit code test must return to suceede t:expect_code
+se_required		SE_REQUIRED		m									Requiers Informix SE engine t:se_required
+compile_only	COMPILE_ONLY	m									Test is compile only, adn is not going to be executed t:compile_only
+need_ifx_ver	NEED_IFX_VERSIONm									Test needs specific version of Informix 4GL compiler t:need_ifx_version
+need_trans		NEED_TRANSACTIONm									Needs database with enabled transactions t:transaction
+no_prefix		NOPREFIX											???? t:noprefix
+need_compat		NEED_COMPAT											Test needs Aubit Informix compatibility support and headers t:need_compat
+old_makefile	OLD_DESC											Test has old style on non-standard makefile
+scripted															Uses scripted execution (keys.in)				
+
+
+
+========================= data about the test execution ======================
+
+Name 		run_test		valid options	Type		Description
+			variable		
+-----------------------------------------------------------------------------
+test_no		TEST_NO			FK				smallint	Number of the test executed
+host		HOSTNAME		-				varchar		Name of the host tests are executed on
+user		?				-				varchar		Username of the user running tests
+platform	PLATFORM		MINGW/CYGWIN/UNIX char(6)	Name of the operating system type tests where executed on
+os_name		?				-				varchar		Name of the operating system tests where executed on
+os_version	?				-				float		Version of the operating system test where executed on
+flags		FLAGS			-				varchar		Full list of flags processed by run_test (expanded if needed)
+aubit_version NONE			-				smallint	Version number of Aubit compiler used
+aubit_build	NONE			-				smallint	Build number of Aubit compiler installed 
+comp_version	NONE		-				char(20)	Version as returned by compiler executable, when non-Aubit 4GL compiler was used to run test (4Js,Ifx,Querix)
+test_version	NONE		-				decimal		CVS version of run_tests script
+db_has_transDB_HAS_TRANSACTION 0/1/2		smallint	Did database test was executed against have support for transation (Unknown/yes/no)
+test_time	NONE			-				datetime	Length of time test took to execute
+result		?				0/1				smalling	Did the test fail (0) of succedde (1)	
+expect_fail ?				0/1				smallint	Was the test expected to fail under current settings
+skip_reason ?				-				varchar		If test was skipped, why. If not, NULL
+c_ver		?				-				?			C compiler version, if used 
+esql_ver	?				-				?			Version of ESQL compiler (ifx/pg/sap/querix) if used
+db_ver		?				-				?			Database engine version as/if used
+make_ver	?				-				?			Version of 'make' used
+sh_ver		?				-				?			Version of shell interpreter used
+
+
+Note: we could expand 'flags' into separate variables, but that would limit our 
+abbility to add new options to run_tests script without at the same time 
+updating the whole test logging chain (loader,database schemma,browser...)
+
+
