@@ -5,12 +5,6 @@
 #All common settings and rules are included:
 include ../Makefile-common
 
-
-LANG=de_DE@euro
-#LANG=C
-export LANG
-
-
 ## ======================================================================
 ##                  Local Setings - user modifiable
 ## ======================================================================
@@ -88,14 +82,13 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-#	${DEFAULT_RUN}
+	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
 #	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
 #program to a file for diff-ing, but expect output file to be created by dumping
 #the screen to file using a function call in the program itself:
-	env > xx
-	${DEFAULT_DUMP_DIFF}
+#	${DEFAULT_DUMP_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
 #	${DBG} ./progname${NAMED_[DIFF|RUN]}
@@ -116,8 +109,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Geraman characters (umlauts) test."
-	@echo "Needs explicit LANG setting (provided by makefile)."
+	@echo "This is not a test but a Testing template. \
+		Please provide brief description of functionality tested here."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -148,7 +141,7 @@ tui_test:
 ################
 #Test uses .per form files:
 form_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #Test uses REPORT section
@@ -170,7 +163,7 @@ console_prompt_test:
 #test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
 #it won't work in CONSOLE mode
 dump_screen_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #Test takes more then 10 minutes to compile or run
@@ -181,7 +174,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -210,8 +203,15 @@ unknown_test:
 
 ################
 #Specify minimum version of Informix compiler this test can be executed with
+#example: 	@echo "7.31"
 need_ifx_version:
 	@echo "0"
 
+################
+#If database this test runs against MUST have transactions support, set to "1"
+#If database this test runs against MUST NOT have transactions support, set to "2"
+#"0" means "don't care"
+transaction:
+	@echo "0"
 	
 # ============================= EOF ================================

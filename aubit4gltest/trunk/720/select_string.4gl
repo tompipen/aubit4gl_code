@@ -1,4 +1,9 @@
-
+{**
+ * @file
+ * @test
+ * Check if constant strings double and single quoted on select
+ * are correctly received.
+ *}
 DATABASE test1
 
 MAIN

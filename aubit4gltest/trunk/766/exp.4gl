@@ -1,0 +1,12 @@
+
+MAIN
+  DEFINE ans SMALLINT
+
+  MENU "A MENU"
+		COMMAND "AN OPTION"
+		  ERROR "AN OPTION"
+	  COMMAND "Exit menu"
+		  EXIT MENU
+  END MENU
+	LET ans = fgl_getkey()
+END MAIN
