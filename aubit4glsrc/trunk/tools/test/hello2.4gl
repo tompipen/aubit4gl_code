@@ -35,7 +35,7 @@ define zz integer
  		set pause mode off
  		let y=y+1
 code
-//usleep(500000);
+usleep(500000);
 endcode
 	end while
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.8 2004-01-06 12:22:16 mikeaubury Exp $
+# $Id: memfile.c,v 1.9 2004-01-09 11:29:45 mikeaubury Exp $
 #
 */
 
@@ -358,12 +358,12 @@ FILE *last;
 		type-=1;
 	}
 
-        if (buff[a]=='"'&&buff[a-1]!='\\') {
+        if (buff[a]=='"'&&buff[a-1]!='\\'&&(type==0||type==2)) {
                  if (type&2) type-=2;
                  else type+=2;
         }
 
-        if (buff[a]=='\''&&buff[a-1]!='\\') {
+        if (buff[a]=='\''&&buff[a-1]!='\\'&&(type==0||type==4)) {
                  if (type&4) type-=4;
                  else type+=4;
         }

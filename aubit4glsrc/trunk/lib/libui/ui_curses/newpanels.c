@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.82 2004-01-03 18:43:43 mikeaubury Exp $
+# $Id: newpanels.c,v 1.83 2004-01-09 11:29:53 mikeaubury Exp $
 #*/
 
 /**
@@ -943,7 +943,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
   if (windows[currwinno].winattr.border)
     {
       A4GL_debug ("MJAPASS1");
-      drwin = derwin (w, rows, cols, fl + 1, 1);
+      drwin = derwin (w, rows, cols, fl , 1);
     }
   else
     {
@@ -2601,10 +2601,14 @@ A4GL_debug("Get formline...%d",windows[currwinno].winattr.form_line);
 /* There seems to be some sort of bug in informix -
    if you have a window with a border - the form is shifted up 1 line...
    so a form line 3 would be displayed on line 2...
-*/
+
   if ( A4GL_get_curr_border ()) {
 	a--;
   }
+*/
+
+
+ A4GL_debug("FORMLINE = %d",a);
   return a;
 
 }

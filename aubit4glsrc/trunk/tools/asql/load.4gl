@@ -233,7 +233,8 @@ for (a=0;a<strlen(s);a++) {
 if (c==0) return s;
 
 if (ptr) free(ptr);
-ptr=malloc(sizeof(s)+c+10);
+
+ptr=malloc(strlen(s)+c+1000);
 
 c=0;
 for (a=0;a<strlen(s);a++) {

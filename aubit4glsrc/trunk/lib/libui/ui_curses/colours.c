@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.17 2003-12-12 16:14:57 mikeaubury Exp $
+# $Id: colours.c,v 1.18 2004-01-09 11:29:53 mikeaubury Exp $
 #*/
 
 /**
@@ -136,8 +136,10 @@ A4GL_decode_colour_attr_aubit (int a)
     return A4GL_colour_code (COLOR_MAGENTA);
   if (strcmp (colour, "CYAN") == 0)
     return A4GL_colour_code (COLOR_CYAN);
-  if (strcmp (colour, "WHITE") == 0)
+  if (strcmp (colour, "WHITE") == 0) {
+	 A4GL_debug("Its white.. %d",A4GL_colour_code (COLOR_WHITE));
     return A4GL_colour_code (COLOR_WHITE);
+	}
 
   return 0;
 }
