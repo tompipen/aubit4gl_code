@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.23 2003-05-20 20:25:50 mikeaubury Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.24 2003-07-26 11:12:37 mikeaubury Exp $
 */
 
 /**
@@ -53,6 +53,7 @@ extern "C"
 #include <string.h>
 
 #include "a4gl_incl_4gldef.h"
+#include "a4gl_4gl_callable.h"
 
 
 #define A4GL_fglerror(a,b) A4GL_fgl_error(__LINE__,__FILE__,a,b)
