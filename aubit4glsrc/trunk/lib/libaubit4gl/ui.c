@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.9 2003-09-08 08:11:25 afalout Exp $
+# $Id: ui.c,v 1.10 2003-09-30 10:32:09 mikeaubury Exp $
 #
 */
 
@@ -468,7 +468,7 @@ int a=-1;
 
 int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)))
 {
-  return A4GL_open_gui_form_internal (name_orig, absolute, nat, like, disable, handler_e);
+  return A4GL_open_gui_form_internal (name_orig, absolute, nat, like, disable, handler_e,handler_c);
 }
 
 

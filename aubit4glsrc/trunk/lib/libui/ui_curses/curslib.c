@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.61 2003-09-26 19:09:02 mikeaubury Exp $
+# $Id: curslib.c,v 1.62 2003-09-30 10:32:09 mikeaubury Exp $
 #*/
 
 /**
@@ -4071,7 +4071,7 @@ int a;
   return A4GL_curses_to_aubit(wgetch(w));
 }
 
-int A4GL_open_gui_form_internal(char* name_orig,int absolute,int nat,char* like,int disable,void* handler_e) {
+int A4GL_open_gui_form_internal(char* name_orig,int absolute,int nat,char* like,int disable,void* handler_e,void *handler_c) {
 	// Not available in curses
 	A4GL_exitwith("Cant open gui form in curses mode..");
 }

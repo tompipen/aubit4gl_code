@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.104 2003-09-29 15:10:37 mikeaubury Exp $
+# $Id: compile_c.c,v 1.105 2003-09-30 10:32:09 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -385,7 +385,7 @@ open_outfile (void)
 
       fprintf (hfile, "#include <gtk/gtk.h>\n");
       fprintf (hfile,
-	       "#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(strnullcmp(data,'on')==0||strnullcmp(data,'clicked')==0))\n");
+	       "#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(A4GL_strnullcmp(data,'on')==0||A4GL_strnullcmp(data,'clicked')==0))\n");
       fprintf (hfile,
 	       "#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
       fprintf (hfile,

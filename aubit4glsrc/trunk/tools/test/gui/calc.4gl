@@ -13,7 +13,7 @@ main
 
 code
 while (1) {
-	gui_run_til_no_more();
+	A4GL_gui_run_til_no_more();
 }
 endcode
 end main

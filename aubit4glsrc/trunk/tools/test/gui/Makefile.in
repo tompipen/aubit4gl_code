@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.9 2003-07-20 06:53:26 afalout Exp $
+# $Id: Makefile.in,v 1.10 2003-09-30 10:32:09 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -46,7 +46,7 @@ ALL			=forms 4gl
 
 IMAGES		=aubit.xpm img1.xpm linux.xpm
 
-FORMS.per	=gui.per widget.per radio.per multi.per form-gui.per calc.per
+FORMS.per	=gui.per widget.per radio.per multi.per form-gui.per calc.per list.per
 
 FORMS.frm	=${FORMS.per:.per=${A4GL_FRM_EXT}}
 

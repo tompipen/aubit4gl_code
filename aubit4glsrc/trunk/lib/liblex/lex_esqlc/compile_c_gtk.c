@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.7 2003-06-06 09:52:36 mikeaubury Exp $
+# $Id: compile_c_gtk.c,v 1.8 2003-09-30 10:32:09 mikeaubury Exp $
 #
 */
 
@@ -123,7 +123,7 @@ print_formhandler (char *name)
       printh ("#include <gtk/gtk.h>\n");
       //#endif
       printh
-	("#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(strnullcmp(data,\"on\")==0||strnullcmp(data,\"clicked\")==0))\n");
+	("#define ON_FIELD(x) (A4GL_widget_name_match(widget,x)&&event==0&&(A4GL_strnullcmp(data,\"on\")==0||A4GL_strnullcmp(data,\"clicked\")==0))\n");
       printh ("#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
       printh
 	("#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
@@ -158,10 +158,10 @@ void
 print_getwin (void)
 {
   printc
-    ("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,get_currwin_name());\n",
+    ("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,A4GL_get_currwin_name());\n",
      lname);
-  printc ("if (strlen(this_win)==0) strcpy(this_win,get_currwin_name());\n");
-  printc ("if (strcmp(this_win,cwin)!=0) current_window(this_win);");
+  printc ("if (strlen(this_win)==0) strcpy(this_win,A4GL_get_currwin_name());\n");
+  printc ("if (strcmp(this_win,cwin)!=0) A4GL_current_window(this_win);");
 }
 
 

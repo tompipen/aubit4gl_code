@@ -133,7 +133,8 @@ aclfgl_a4gl_run_gui int nargs -> int
 /* void A4GL_set_infield_from_stack (void)*/
 A4GL_set_infield_from_stack -> void
 /* int A4GL_open_gui_form_internal (char* name_orig, int absolute, int nat, char* like, int disable, void* handler_e)*/
-A4GL_open_gui_form_internal char* name_orig int absolute int nat char* like int disable void* handler_e -> int
+A4GL_open_gui_form_internal char* name_orig int absolute int nat char* like int disable void* handler_e void* handler_c -> int
+
 /* int A4GL_fgl_fieldnametoid (char* f, char* s, int n)*/
 A4GL_fgl_fieldnametoid char* f char* s int n -> int
 /* int aclfgl_set_window_title (int nargs)*/
