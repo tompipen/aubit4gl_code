@@ -13,6 +13,10 @@ start_cmd : START_REPORT rep_name TO_PRINTER  {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("F",$<str>4,$<str>2);
 			}
+	    | START_REPORT rep_name TO_FILE rout  {
+			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
+			print_start_report("F",$<str>4,$<str>2);
+			}
 	    | START_REPORT rep_name TO_PIPE rout  {
 			addmap("Start Report",$<str>2,curr_func,yylineno,infilename);
 			print_start_report("P",$<str>4,$<str>2);
