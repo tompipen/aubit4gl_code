@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.49 2002-10-22 06:43:35 afalout Exp $
+# $Id: Makefile.in,v 1.50 2003-01-04 01:58:29 afalout Exp $
 #
 
 ROOT		=../..
@@ -73,6 +73,11 @@ endif
 
 4GLCAOBJ		=${CMODS:.c=.o}
 OBJS_LIB		=${CMODS_LIB:.c=.o}
+
+#Use this to create dependency for the parser:
+RULES_SRC_tmp		=$(wildcard rules/*.reqd)
+RULES_SRC_tmp		+=$(wildcard rules/*.rule)
+RULES_SRC			=$(addprefix rules/,$(RULES_SRC_tmp))
 
 ## ==================================================================
 ##                    Options

@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.2 2001-08-28 06:56:32 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.3 2003-01-04 01:58:30 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -35,11 +35,12 @@ I4GL_CL_LDFLAGS = ${LDFLAGS}
 
 # I4GL P-code Compiler
 I4GL_PC_CMD     = fglpc
-I4GL_PC_ENV     = 
+I4GL_PC_ENV     =
 I4GL_PC_FLAGS   =
 
 # I4GL P-code Linker
-I4GL_PL_CMD     = rdslink
+#I4GL_PL_CMD     = rdslink -o
+I4GL_PL_CMD     = cat
 I4GL_PL_ENV     = ${I4GL_PC_ENV}
 I4GL_PL_FLAGS   = ${I4GL_PC_FLAGS}
 I4GL_PL_LDFLAGS =
@@ -94,15 +95,20 @@ I4GL_SUFFIXES = .o .4go .4gl .ec .c .4ge .frm .per .iem .msg .4gi
 #.4gl:
 #	${I4GL_CL} -o $@ $< ${I4GL_CL_LDFLAGS}
 .4gl.4ge:
+	@echo here3
 	${I4GL_CL} -o $@ $< ${I4GL_CL_LDFLAGS}
+
 .4gl.o:
+	@echo here4
 	${I4GL_CC} -c $<
+
 .4gl.ec:
-	@echo --- debug 2 --- $< $@
+#	@echo --- debug 2 --- $< $@
 	${I4GL_CC} -e $<
 
 # Rules for compiling ESQL/C
 .ec:
+	@echo here6
 	${ESQL_EC} -o $@ $< ${ESQL_EC_LDFLAGS}
 	${RM} $*.[co]
 .ec.o:
@@ -113,7 +119,8 @@ I4GL_SUFFIXES = .o .4go .4gl .ec .c .4ge .frm .per .iem .msg .4gi
 
 # Rules for compiling I4GL form files
 .per.frm:
-	${I4GL_FC} $*
+	${I4GL_FC} $<
+#	${I4GL_FC} $*
 
 # Rules for compiling message files
 .msg.iem:
@@ -121,9 +128,26 @@ I4GL_SUFFIXES = .o .4go .4gl .ec .c .4ge .frm .per .iem .msg .4gi
 
 # I4GL RDS compiling
 .4gl.4go:
+#%.4go : %.4gl
+#%.4go:
+#	@echo here2
+#	${I4GL_PC} $*.4gl
 	${I4GL_PC} $<
-.4gl.4gi:
-	${I4GL_PC} $<
-	${I4GL_PL} -o $@ $*.4go ${I4GL_PL_LDFLAGS}
-	${RM} $*.4go
+#	${A4GL_CC} $< -c -o ${OBJSTORE}$@
+#	${A4GL_CC} $< -c -o $@
 
+
+#.4gl.4gi:
+#	${I4GL_PC} $<
+#	#${I4GL_PL} $@ $*.4go ${I4GL_PL_LDFLAGS}
+#	${I4GL_PL} $*.4go > $@
+#	${RM} $*.4go
+
+.4go.4gi:
+#	#${I4GL_PL} $@ $*.4go ${I4GL_PL_LDFLAGS}
+	@echo here ${I4GL_PL}
+	${I4GL_PL}123 $*.4go > $@
+#	${RM} $*.4go
+
+
+# ================================= EOF =================================

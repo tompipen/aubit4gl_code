@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.103 2002-12-08 06:34:26 afalout Exp $
+# $Id: Makefile.in,v 1.104 2003-01-04 01:58:03 afalout Exp $
 #
 
 ## ==================================================================
@@ -36,6 +36,10 @@ include incl/Makefile-common
 ## ==================================================================
 ##                    Define default target
 ## ==================================================================
+
+#All targets in this make file are "phony" targets - they do not create
+#anything, they just invoke other make files:
+.PHONY: all clean default log corecompile extra ide
 
 ALL					=settings corecompile test
 ALL_EXTRA  			=libfile libstring ide odbctest libhtml adbaccess

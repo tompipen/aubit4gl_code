@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-10-30 01:46:44 afalout Exp $
+# $Id: Makefile.in,v 1.5 2003-01-04 01:58:30 afalout Exp $
 #
 
 LIBROOT=../..
@@ -178,10 +178,8 @@ ${ROOT}/compilers/menus/menu_x_xdr.o: ${ROOT}/compilers/menus/menu_x_xdr.c
 ## ==================================================================
 
 clean :
-	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
-	form_x_xdr.c form_x.h project.c aubit-config \
-	core \
-	*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
+	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c core \
+	*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.stackdump *.err \
 	*.base *.exp *.def
 
 

@@ -1,12 +1,12 @@
-######################################
+#############################################################################
 #   Aubit 4gl compiler - make system
 #
 #footer for all .mk files
 #
 #do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.13 2002-02-05 06:41:58 afalout Exp $
-######################################
+# $Id: footer.mki,v 1.14 2003-01-04 01:58:30 afalout Exp $
+#############################################################################
 
 ifneq "$(DBASE)" ""
 	#DBASE.sch = ${FGLDBPATH}/${DBASE}.sch
@@ -155,6 +155,7 @@ d4gl-ccode:	${PROG.42e} ${FILES.42f} ${FILES.42h}
 i4gl-pcode:	${PROG.4gi} ${FILES.frm} ${FILES.iem}
 i4gl-ccode:	${PROG.4ge} ${FILES.frm} ${FILES.iem}
 querix    : ${PROG.42r} ${FILES.42f} ${FILES.42h}
+plexus:
 
 aubitforms: ${FILES.afr}
 
@@ -183,11 +184,6 @@ endif
 
 ${PROG.4ae}:	${FILES.ao} ${FILES.aox}
 	${TARGETCMD}
-
-ifdef COMSPEC
-	mv $@ $*.exe
-endif
-
 #	@echo CHANGED: $?
 ifeq "$(MOVETARGETTOSTORE)" "1"
 ifneq "$(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null)" ""
@@ -196,15 +192,17 @@ endif
 endif
 	@echo OK: ${PROG.4ae}
 
-
-
-
 #${PROG.42e}:	${DBASE.sch} ${FILES.42o}
 ${PROG.42e}:	${FILES.42o} ${FILES.42x}
 	${D4GL_CL} -o $@ ${FILES.42o} ${D4GL_CL_LDFLAGS}
 
-${PROG.4gi}:	${FILES.4go}
-	${I4GL_PL} -o $@ ${FILES.4go} ${I4GL_PL_LDFLAGS}
+${PROG.4gi}: ${FILES.4go}
+#	@echo xwzhere
+#	${I4GL_PL} -o $@ ${FILES.4go} ${I4GL_PL_LDFLAGS}
+	${I4GL_PL} $^ > $@
+
+#%.4go : %.4gl
+#	ddd
 
 ${PROG.4ge}:	${FILES.o}
 	${I4GL_CC} -o $@ ${FILES.o}   ${I4GL_CC_LDFLAGS}

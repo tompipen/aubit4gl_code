@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.40 2002-12-16 16:46:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.41 2003-01-04 01:58:30 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4405,17 +4405,17 @@ char *
 get_push_literal (char type, char *value)
 {
   static char buff[80];
-  if (type == 'D')
+  if (type == 'D')      /* Double */
     {
       sprintf (buff, "push_double(%f);\n", atof (value));
     }
 
-  if (type == 'L')
+  if (type == 'L')      /* Integer (Long) */
     {
       sprintf (buff, "push_long(%d);\n", atoi (value));
     }
 
-  if (type == 'S')
+  if (type == 'S')      /* Char/String */
     {
       sprintf (buff, "push_char(%s);\n", value);
     }

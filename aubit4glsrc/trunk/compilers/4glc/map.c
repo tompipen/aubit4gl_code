@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.18 2002-11-25 22:26:18 afalout Exp $
+# $Id: map.c,v 1.19 2003-01-04 01:58:29 afalout Exp $
 #*/
 
 /**
@@ -66,15 +66,17 @@ char 		errbuff[1024] = "";
 char 		yytext[] = "";
 int 		globals_only = 0;
 int 		yyin_len;
+
 #ifdef YYDEBUG
 	extern int yydebug; 		/* defined in y.tab.c _IF_ -DYYDEBUG is set */
 #else
 	int yydebug; 				/* if !-DYYDEBUG, we need to define it here */
 #endif
 
-char gcc_exec[128];
-char pass_options[456];
-
+char 		gcc_exec[128];
+char 		pass_options[456];
+int         clean_aftercomp = 1; /* clean intermediate files after compilation */
+char 		rm_cmd[10];
 /*
 =====================================================================
                     Functions prototypes
@@ -214,7 +216,7 @@ rm_quotes (char *s)
 char buff[256];
 int a;
 int b = 0;
-  
+
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] != '"')
@@ -551,6 +553,10 @@ static struct option long_options[] =
 		printUsage(argv);
         exit(0);
 
+      case 'i':             /* do not clean intermedate files */
+		clean_aftercomp = 0;
+		break;
+
       case 'S':             /* Silent */
         silent = 1;
         verbose = 0;
@@ -623,6 +629,12 @@ static struct option long_options[] =
 	strcat (l_path,"/lib");
     strcpy (l_libs,"-laubit4gl");
     strcpy (gcc_exec,"gcc");
+
+	#ifdef WIN32
+		sprintf (rm_cmd,"%s","del");
+	#else
+		sprintf (rm_cmd,"%s","rm");
+    #endif
 
 	strcpy (all_objects,"");
 	strcpy (pass_options,"");
@@ -738,6 +750,22 @@ static struct option long_options[] =
 			printf ("Error compiling %s - check %s.err\n",output_object,output_object);
 			//fixme: show err file
 	    }
+        else
+        {
+    		if (clean_aftercomp)
+			{
+				sprintf (buff,"%s %s",rm_cmd,all_objects);
+				#ifdef DEBUG
+					debug("Runnung $s",buff);
+		        #endif
+				ret=system (buff);
+				if (ret) {
+					printf ("Clean of %s intermediate objects failed\n",a);
+	            }
+            }
+
+
+        }
     }
 
   return x;
@@ -818,7 +846,21 @@ char buff[456];
 			printf ("Error compiling %s.c - check %s.err\n",a,a);
 			//fixme: show err file
             return ret;
-        }
+        } 
+		else 
+		{
+			if (clean_aftercomp)
+			{
+				sprintf (buff,"%s %s.err %s.h %s.c %s.glb",rm_cmd,a,a,a,a);
+				#ifdef DEBUG
+					debug("Runnung $s",buff);
+		        #endif
+				ret=system (buff);
+				if (ret) {
+					printf ("Clean of %s intermediate files failed\n",a);
+	            }
+            }
+		}
 	}
   }
 

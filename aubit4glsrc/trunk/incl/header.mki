@@ -14,7 +14,7 @@ else
 	include $(wildcard $(AUBITDIR)/incl/*.mk)
 
     ####################
-	#Or, you can comment out abowe stmt, and pick one or more here:
+	#Or, you can comment out above stmt, and pick one or more here:
 	#include $(AUBITDIR)/incl/i4gl.mk
 	#include $(AUBITDIR)/incl/d4gl.mk
 	#include $(AUBITDIR)/incl/a4gl.mk
@@ -48,7 +48,7 @@ RM = rm -f
 ALLFORMS.per= $(wildcard *.per)
 
 ####################
-#This database name will be used if 4Js/D4GL schemma file (.sch) If you 
+#This database name will be used if 4Js/D4GL schemma file (.sch) If you
 #dont use one of this compilers, you can ignore it.
 #needs to be prepared. You can override this in you local .mk file if
 #you have different database for different progams.
@@ -67,6 +67,7 @@ ifdef MAXDIR
     #compilations on your system, and isolate applications specific
     #configuration, iff needed, like this.
     #See this file for examples of vpath usage:
-	include $(AUBITDIR)/incl/maximise.mki
+	#include $(AUBITDIR)/incl/maximise.mki
+	include $(RULES_DIR)/maximise.mki
 endif
 #------------------------ EOF ------------------------------

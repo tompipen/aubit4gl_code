@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.75 2002-10-30 01:46:44 afalout Exp $
+# $Id: Makefile.in,v 1.76 2003-01-04 01:58:30 afalout Exp $
 #
 
 ROOT    =..
@@ -217,7 +217,7 @@ libA4GL_HTML${SO_EXT_LINKABLE}:
 
 clean : \
 	clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc \
-	clean.other clean.libui
+	clean.other clean.libui clean.libmenu clean.libform
 	${RM} core *.out *.glb *${SO_EXT} *.a  *.bak *.dll *.stackdump *.err *.base *.exp \
     bin/*.bak liblex/*.bak libpacker/*.bak libsql/*.bak
 
@@ -249,13 +249,18 @@ clean.librpc:
 	${MAKE} -C librpc/sun_rpc clean
 	${MAKE} -C librpc/xml_rpc clean
 
-clean.other:
-	${MAKE} -C libaubit4gl clean
+clean.libmenu:
+	${MAKE} -C libmenu/menu_generic clean
+	${MAKE} -C libmenu/menu_xdr clean
+	${MAKE} -C libmenu/menu_nomenu clean
+
+clean.libform:
 	${MAKE} -C libform/form_xdr clean
 	${MAKE} -C libform/noform clean
 	${MAKE} -C libform/form_generic clean
-	${MAKE} -C libmenu/menu_xdr clean
-	${MAKE} -C libmenu/menu_nomenu clean
+
+clean.other:
+	${MAKE} -C libaubit4gl clean
 	${MAKE} -C libmsg/msg_native clean
 	${MAKE} -C resource clean
 	${MAKE} -C ${ROOT}/tools/loadmap clean

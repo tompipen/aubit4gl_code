@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.11 2002-07-07 04:28:05 afalout Exp $
+# $Id: amake,v 1.12 2003-01-04 01:58:29 afalout Exp $
 
 #####################################################################
 
@@ -30,18 +30,17 @@ OVERRIDEINCLUDE=0
 #HEADER="$AUBITDIR/incl/header.mki"
 #FOOTER="$AUBITDIR/incl/footer.mki"
 
+AUBITDIR=`aubit-config AUBITDIR`
 #if you export MAKERULES, it will override 4gl make rules included in
 #standard header.mki:
-#FIXME: we should read aubitrc here, just like 4glpc does
 RULESDIR=$AUBITDIR/incl
 #export MAKERULES="$RULESDIR/i4gl.mk $RULESDIR/d4gl.mk $RULESDIR/a4gl.mk $RULESDIR/q4gl.mk"
 #export MAKERULES="$RULESDIR/a4gl.mk"
 #export MAKERULES="$RULESDIR/d4gl.mk $RULESDIR/a4gl.mk"
-
-rm -f *.err
-
 MAKE=make
 MK=".mk"
+
+rm -f *.err
 
 if [ "$1" = "--help" -o "$1" = "-help" -o "$1" = "help" ]
 then
@@ -53,17 +52,17 @@ then
     echo params :
 	echo " -all = process all .mk files in current directory"
 	echo " -log = log make processing to make.log file"
-    echo " -defaultinclude = use inclludes as specified in .mk file, default is"
+    echo " -defaultinclude = use includes as specified in .mk file, default is"
     echo "  to use make includes specified in this script"
     echo " -header xxx = use xxx file for header include, overrides -defaultinclude"
     echo " -footer yyy = use yyy file for footer include, overrides -defaultinclude"
-    echo " -i : ignore errors in amake and continue (adds -k to mkae call)"
+    echo " -i : ignore errors in amake and continue (adds -k to make call)"
 	echo " everything else will be passed to make"
 	echo " -verbose = show what script is doing, and also pass -verbose to 4glpc"
 	echo
 	echo Examples:
     echo
-    echo "'amake' - build defailt targets of all .mk files in ./"
+    echo "'amake' - build default targets of all .mk files in ./"
 	echo "'amake -k -all install' - install all programs, ignore errors"
     echo "'amake P11 aubit -k' - build aubit target defined in P11.mk, ignore errors"
     echo "'amake P11 aubit -defaultinclude' - build P11 target for Aubit compiler, use"

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.43 2002-12-08 06:34:36 afalout Exp $
+# $Id: Makefile-install.mki,v 1.44 2003-01-04 01:58:30 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -82,6 +82,7 @@ install.links: deinstall.bin.links
 ifeq "$(shell  if test -w ${BIN_INSTALL_LINK} ; then echo 1; fi)" "1"
 	${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
 	${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit
+	${LN_S} $(INSTALL_DIR)/bin/amake ${BIN_INSTALL_LINK}/amake
 	@echo "Links to Aubit programs installed to ${BIN_INSTALL_LINK}/ "
 else
 	@echo "WARNING: ${BIN_INSTALL_LINK} is not writable."
