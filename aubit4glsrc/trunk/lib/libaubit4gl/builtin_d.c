@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.20 2003-03-10 09:09:39 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.21 2003-03-15 09:07:21 mikeaubury Exp $
 #
 */
 
@@ -770,7 +770,7 @@ push_variable(void *ptr,int dtype)
 		case 0: push_chars(ptr,dtype,DECODE_SIZE(dtype));return;break;
 		case 1: 
 				debug("SMALLINT= %d\n",*(short *)ptr);
-				push_int(*(int *)ptr);
+				push_int((int)*(short *)ptr);
 				return;
 				break;
 		case 2:
