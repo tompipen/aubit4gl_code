@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.22 2004-03-25 04:55:45 afalout Exp $
+# $Id: Makefile,v 1.23 2004-05-24 15:27:28 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -106,7 +106,8 @@ endif
 ################
 #4gl compiler flags
 #-G stops esql/c putting #lines in the output so its easier to debug
-4GLPCFLAGS		=-g -O2
+4GLPCFLAGS		= -g -O0  
+
 ifeq "${VERBOSE}" "1"
 	4GLPCFLAGS	+=-verbose
 endif
@@ -150,7 +151,7 @@ all : ${ALL} install
 #Target to make asql Informix version
 asql_i${A4GL_EXE_EXT}: A4GL_LEXDIALECT=INFORMIX
 asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
-	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS}
+	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} -a1 -z -Wl,+s -Wl,-E
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|           Successfuly compiled Informix version of asql            |"

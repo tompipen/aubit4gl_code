@@ -249,7 +249,7 @@ menu "OUTPUT"
 			LET lv_query_out=0 exit menu
 end menu
 if lv_query_out=0 then 
-	return
+	return 1
 end if
 
 call set_pick_cnt(0)
@@ -263,7 +263,7 @@ end case
 
 if lv_name is null or lv_name matches " " THEN
 	error "Output aborted"
-	return
+	return 1
 end if
 IF lv_query_out=1 THEN
         let lv_query_out=4

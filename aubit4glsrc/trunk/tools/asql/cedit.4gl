@@ -293,6 +293,9 @@ endcode
 		let c=key_left
 	end if
 		
+	if c=fgl_keyval("ACCEPT") then let c=27 end if
+	if c=fgl_keyval("INTERRUPT") then let c=-100 end if
+
 	case c
 		when key_home
 			let cursor_x=1 
