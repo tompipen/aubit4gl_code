@@ -267,7 +267,7 @@ code
 	{
 		ok = 0;
 		filenotfound = 1;
-		sprintf(errmsg, "Cannot open %s \n", filename);
+		snprintf(errmsg, HELPMAXLEN,"Cannot open %s \n", filename);
 		myseterr(errmsg);
 		
 	}
