@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.76 2005-02-23 11:36:24 mikeaubury Exp $
+# $Id: ops.c,v 1.77 2005-02-23 11:44:51 mikeaubury Exp $
 #
 */
 
@@ -369,7 +369,7 @@ static void A4GL_char_char_ops (int op)
       return;
 
     case OP_EQUAL:
-	A4GL_debug("Comparing %s %s - gives %d\n",(strcmp(a,b)==0));
+	A4GL_debug("Comparing %s %s - gives %d\n",a,b,(strcmp(a,b)==0));
       A4GL_push_int (strcmp(a,b)==0);
 	A4GL_debug("Freeing my two popped strings %p and %p",a,b);
 	free(a); free(b);
