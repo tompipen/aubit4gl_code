@@ -101,7 +101,7 @@ CONNECT_TO var_ident op_connect_as con_user_details {
 
 
 op_connect_as :
-        {strcpy($<str>$,"");}
+        {strcpy($<str>$,"\"default_conn\"");}
         | AS var_ident {strcpy($<str>$,$<str>2);}
 
 ;
