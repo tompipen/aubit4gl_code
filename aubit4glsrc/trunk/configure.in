@@ -74,6 +74,7 @@ AC_CONFIG_FILES([Makefile
                  compilers/fcompile/Makefile
                  compilers/helpcompile/Makefile
                  compilers/menus/Makefile
+                 lib/libpdf/Makefile
                  lib/libgui/Makefile
                  lib/libsql/nosql/Makefile
                  lib/libsql/odbc/Makefile
