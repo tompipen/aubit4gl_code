@@ -160,7 +160,7 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 if (ignorekw!=1) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); 
  debug("NAMED : %s\n",yytext); 
 return(NAMED);}
-.		{strcpy(yylval.str,yytext);colno++;
+.	{strcpy(yylval.str,yytext);colno++;
  debug("CH : %s\n",yytext);  
 return CH;}
 %%

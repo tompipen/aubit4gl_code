@@ -1,11 +1,10 @@
 message_cmd :
- msg_start fgl_expr_concat opt_attributes op_msg_wait { 
-	print_message(0,$<str>3,atoi($<str>4));
+ msg_start opt_attributes op_msg_wait { 
+	print_message(0,$<str>2,atoi($<str>3));
 	start_state("message",0);
 } 
 msg_end
- | KWMESSAGE
-	fgl_expr_list
+ | msg_start 
         op_caption
         op_icon
         op_buttons
@@ -14,7 +13,7 @@ msg_end
 ;
 
 
-msg_start : KWMESSAGE {start_state("message",1);} ;
+msg_start : KWMESSAGE {start_state("message",1);} fgl_expr_concat ;
 
 msg_end : {start_state("message",0);} ;
 

@@ -183,4 +183,24 @@ endcode
 
 END FUNCTION
 
+####################################
+FUNCTION fclose(handle)
+####################################
+DEFINE handle INTEGER
+DEFINE r INTEGER
+
+	IF handle=0 THEN
+		LET status=-101
+		RETURN ""
+	END IF
+
+code
+	r=fclose(handle);
+endcode
+	
+	RETURN r
+
+END FUNCTION
+
+
 ############################### EOF ##################################
