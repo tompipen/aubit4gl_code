@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.39 2002-01-13 10:58:57 mikeaubury Exp $
+# $Id: mod.c,v 1.40 2002-01-20 14:42:12 mikeaubury Exp $
 #
 */
 
@@ -46,12 +46,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.39 2002-01-13 10:58:57 mikeaubury Exp $
+* $Id: mod.c,v 1.40 2002-01-20 14:42:12 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.39  2002/01/13 10:58:57  mikeaubury
+*	Fixed bug #492094
+*	
 *	Revision 1.38  2002/01/13 09:40:46  afalout
 *	Make install and autoconf for GTK
 *	
@@ -3185,10 +3188,13 @@ void set_whenever (int c, char *p)
   switch (c)
     {
     case WHEN_ERROR:
-      code = A_WHEN_ERROR;
+	set_whenever (WHEN_SQLERROR,p);
+        code = A_WHEN_ERROR;
       break;
 
     case WHEN_ANYERROR:
+	set_whenever (WHEN_ERROR,p);
+	set_whenever (WHEN_SQLERROR,p);
       code = A_WHEN_ERROR;
       break;
 
@@ -3200,18 +3206,23 @@ void set_whenever (int c, char *p)
     case WHEN_SQLERROR:
       code = A_WHEN_SQLERROR;
       break;
+
     case WHEN_WARNING:
       code = A_WHEN_WARNING;
       break;
+
     case WHEN_SQLWARNING:
       code = A_WHEN_SQLWARNING;
       break;
+
     case WHEN_NOTFOUND:
       code = A_WHEN_NOTFOUND;
       break;
+
     case WHEN_SUCCESS:
       code = A_WHEN_SUCCESS;
       break;
+
     case WHEN_SQLSUCCESS:
       code = A_WHEN_SQLSUCCESS;
       break;
