@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.7 2003-02-07 04:01:47 afalout Exp $
+# $Id: Makefile.in,v 1.8 2003-04-30 22:13:40 afalout Exp $
 #
 
 ROOT    =../../..
@@ -49,6 +49,8 @@ IMAGES		=aubit.xpm img1.xpm linux.xpm
 FORMS.per	=gui.per widget.per radio.per multi.per form-gui.per calc.per
 
 FORMS.frm	=${FORMS.per:.per=${A4GL_FRM_EXT}}
+
+FILES.4gl   =hello-gui.4gl gui.4gl calc.4gl
 
 .PHONY: 	${ALL} clean help forms 4gl all
 
@@ -76,5 +78,7 @@ clean:
 	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.h *.c *.o *.4ae \
 	*.hlp *.exe *.stackdump *.err *.glb *${A4GL_FRM_EXT} ${FILES.4gl:.4gl=.h} \
     calc game
+
+
 
 #------------------------------- EOF ---------------------------

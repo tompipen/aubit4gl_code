@@ -25,22 +25,13 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.24 2003-04-07 07:11:01 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.25 2003-04-30 22:13:34 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
 
 #FIXME: use "cvs export" instead "cvs checkout" to get code without CVS
 #directories for source archives
-
-
-DAY=`date | awk '{print $3}'`
-
-if [ "$DAY" != "1" ] && [ "$DAY" != "5" ] && [ "$DAY" != "10" ] && [ "$DAY" != "15" ] && [ "$DAY" != "20" ] && [ "$DAY" != "25" ]; then
-    #echo "Will run only on 1,5,10,15,20 & 25 day of the month - today is $DAY. STOP."
-    exit
-fi
-
 
 # Am I forced to enter my password for every cvs command?
 
@@ -192,6 +183,8 @@ SRPM_PATH=/usr/src/redhat/SRPMS
 RPM_PATH=/usr/src/redhat/RPMS/i586
 RPMBUILD_PATH=/usr/src/redhat/BUILD
 RPMSRC_PATH=/usr/src/redhat/SOURCES
+
+ANYDAY=0
 
 
 ## ==================================================================
@@ -412,6 +405,32 @@ else
         compare)
 			COMPARE=1
             ;;
+
+        all)
+				if [ "$COMSPEC" = "" ]; then
+				    #UNIX
+				    MAKE=1
+				    RPM=1
+                    WINSETUP=0
+				    GET=1
+				    UPLOAD=1
+			        CLEAN=1
+				else
+				    #Windows/CygWin
+				    MAKE=1
+				    RPM=0
+                    WINSETUP=1
+				    GET=1
+				    UPLOAD=1
+			        CLEAN=0
+				fi
+
+            ;;
+
+		-anyday)
+			ANYDAY=1
+            ;;
+
 		*)
             echo "Parameter $a not recognised. Stop."
             echo "Try --help"
@@ -420,6 +439,18 @@ else
 		esac
 	done
 fi
+
+
+
+DAY=`date | awk '{print $3}'`
+
+if [ "$DAY" != "1" ] && [ "$DAY" != "5" ] && [ "$DAY" != "10" ] && [ "$DAY" != "15" ] && [ "$DAY" != "20" ] && [ "$DAY" != "25" ]; then
+    if [ "$ANYDAY" = "0" ]; then
+		#echo "Will run only on 1,5,10,15,20 & 25 day of the month - today is $DAY. STOP."
+		exit
+    fi
+fi
+
 
 set `type $AUTO_SF_SCP`
 if [ "$2" != "is" ]; then
@@ -589,6 +620,9 @@ if test "$MAKE" = "1"; then
 		EXEC="make clean"; runexec
 		LOGFILE=$TARLOG
 		EXEC="make tar.bin"; runexec
+
+else
+    echo "MAKE disabled ($MAKE)"
 
 fi
 

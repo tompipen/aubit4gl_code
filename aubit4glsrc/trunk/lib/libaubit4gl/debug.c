@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.21 2003-04-23 16:37:19 mikeaubury Exp $
+# $Id: debug.c,v 1.22 2003-04-30 22:13:38 afalout Exp $
 #
 */
 
@@ -187,9 +187,11 @@ void
 setarg0(const char *argv0)
 {
 const char *cp;
-//char a[128];
-//char b[128];
-//char c[128];
+#if ( defined (__MINGW32__) )
+	char a[128];
+	char b[128];
+	char c[128];
+#endif
 
         size_t nbytes = sizeof(arg0) - 1;
 

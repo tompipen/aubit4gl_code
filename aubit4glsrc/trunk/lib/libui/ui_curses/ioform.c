@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.17 2003-04-24 13:36:02 mikeaubury Exp $
+# $Id: ioform.c,v 1.18 2003-04-30 22:13:39 afalout Exp $
 #*/
 
 /**
@@ -96,21 +96,15 @@ int 				do_input_nowrap=0;
 
 /** @todo Take this prototype definition for a header file */
 
-void bomb_out(void) ;
+void 			bomb_out			(void) ;
 extern char *	replace_sql_var 	(char *s);
 char *			read_string_dup 	(FILE * ofile);
-struct s_form_dets *getfromform 	(FORM * f);
+struct 			s_form_dets *getfromform 	(FORM * f);
 char *			string_width 		(char *a);
 WINDOW *		create_window 		(char *name, int x, int y, int w, int h, int border);
-void set_field_colour_attr(FIELD *field,int do_reverse,int colour) ;
+void 			set_field_colour_attr(FIELD *field,int do_reverse,int colour) ;
 
-
-#ifdef OBSOLETE
-void 	set_fields2 		(int nv, struct BINDING * vars, int d, int n,...);
-#endif
-
-void
-disp_form_fields_ap (int n, int attr, char *formname,va_list *ap);
+void 			disp_form_fields_ap (int n, int attr, char *formname,va_list *ap);
 int 			display_fields 		(FORM * mform, int n, ...);
 extern char * 	find_attribute 		(struct s_form_dets *f, int field_no);
 void 			debug_print_field_opts (FIELD * a);
@@ -126,51 +120,36 @@ int 			form_field_chk 		(struct s_screenio *sio, int m);
 int 			form_field_constr 	(struct s_screenio *sio, int m);
 int 			get_curr_metric 	(struct s_form_dets *form);
 int 			page_for_pfield 	(struct s_screenio * s);
-
 void 			field_autonext 		(FIELD * f);
 void 			field_dynamic 		(FIELD * f);
 void 			field_invisible 	(FIELD * f);
 void 			field_noentry 		(FIELD * f);
 void 			set_field_attr 		(FIELD * field);
-int req_field_input (struct s_screenio *s, ...);
-int req_field_input_array (struct s_inp_arr *s, ...);
-//int 			form_loop 			(struct s_screenio * s);
+int 			req_field_input 	(struct s_screenio *s, ...);
+int 			req_field_input_array (struct s_inp_arr *s, ...);
 void 			set_init_value 		(FIELD * f, void *ptr, int dtype);
 int 			get_metric_no 		(struct s_form_dets * form, FIELD * f);
 int 			turn_field_off 		(FIELD * f);
 void 			turn_field_on 		(FIELD * f);
 void 			turn_field_on2 		(FIELD * f, int a);
 void 			set_init_pop 		(FIELD * f);
-
-//int 			set_fields 			(struct s_screenio *sio);
 int 			field_name_match 	(FIELD * f, char *s);
-//void 			disp_fields 		(int n, int attr, va_list * ap);
-
-//int 			gen_field_chars 	(FIELD *** field_list, struct s_form_dets *formdets, va_list * ap);
-
 void 			do_before_field 	(FIELD * f, struct s_screenio *sio);
 void 			dump_fields 		(FIELD * fields[]);
 void 			set_init_pop_attr 	(FIELD * field, int attr);
-//int 			push_constr 		(struct s_screenio *s);
-
 FIELD * 		scan_for_field 		(char *s);
-//void 			set_infield_from_stack (void);
 int 			get_curr_infield	(void);
-//int 			fgl_infield 		(char *s, int a);
-//int 			fgl_getfldbuf 		(char *s, int a);
 int 			key_prompt 			(int a, FORM * mform, struct s_prompt * prompt);
 void 			reset_delims 		(struct s_form_dets * formdets, char *delims);
 int 			page_for_field 		(struct s_screenio * s, FIELD * f);
 int 			page_for_cfield 	(struct s_screenio * s);
-//void 			clr_form 			(int to_default);
-//void 			disp_form_fields 	(int n, int attr, char *formname,...);
 int 			curr_metric_is_last (void);
 int 			curr_metric_is_first (void);
 int 			curr_metric_is_veryfirst (void);
 int 			curr_metric_is_verylast (void);
-int curses_to_aubit(int a);
-void set_field_attr_with_attr(FIELD *field,int attr);
-int gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets, va_list * ap);
+int 			curses_to_aubit(int a);
+void 			set_field_attr_with_attr(FIELD *field,int attr);
+int 			gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets, va_list * ap);
 
 /*
 =====================================================================
@@ -2558,9 +2537,9 @@ key_prompt (int a, FORM * mform, struct s_prompt * prompt)
     case 13:
     case 10:
     case KEY_DOWN:
-#ifdef DEBUG
-      {        debug ("Next field in a prompt - they must mean enter");      }
-#endif
+	#ifdef DEBUG
+		debug ("Next field in a prompt - they must mean enter");
+	#endif
       return 10;
 
     case KEY_LEFT:
@@ -2580,7 +2559,7 @@ key_prompt (int a, FORM * mform, struct s_prompt * prompt)
 
   if (a == key_val ("HELP"))
     {
-      show_help (prompt->h);
+      aclfgl_a4gl_show_help (prompt->h);
       a = 0;
     }
 
@@ -2810,18 +2789,17 @@ copy_field_data (struct s_form_dets * form)
                 debug ("stack manip buff2='%s'", buff2);
                 if (strlen (buff2) > 0)
                   {
-#ifdef DEBUG
-                    {                      debug ("Pushing param %p");                    }
-#endif
+					#ifdef DEBUG
+                    	debug ("Pushing param %p");
+					#endif
                     push_param (buff2, DTYPE_CHAR);
                     if (pop_param
                         (buff, fprop->datatype,
                          get_field_width (form->currentfield)))
                       {
-#ifdef DEBUG
-                        {                          debug ("Pushing param %p %d", buff,
-						                                 fprop->datatype);                        }
-#endif
+						#ifdef DEBUG
+                        	debug ("Pushing param %p %d", buff,fprop->datatype);
+						#endif
                         push_param (buff, fprop->datatype);
                         if (has_str_attribute (fprop, FA_S_FORMAT))
                           {
@@ -3129,9 +3107,11 @@ struct s_form_dets *f;
 /*
  * This function causes a SEGFAULT - useful for stopping the debugger!
 */
-void bomb_out() {
+void 
+bomb_out()
+{
 char *ptr=0;
-*ptr=0;
+	*ptr=0;
 }
 
 

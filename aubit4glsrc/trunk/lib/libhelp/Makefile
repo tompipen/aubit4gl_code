@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2003-04-13 06:23:45 afalout Exp $
+# $Id: Makefile,v 1.6 2003-04-30 22:13:38 afalout Exp $
 #
 
 ROOT    	=../..
@@ -45,8 +45,9 @@ FCOMPILE=${ROOT}/bin/fcompile
 ## ==================================================================
 
 ${LIBROOT}/libHELP_std${SO_EXT}: helplib.c a4gl_xxhelp.afr.c
-#	4glpc -as-dll helplib.c a4gl_xxhelp.afr.c -o $@
-	export A4GL_SQLTYPE=nosql; ${4GLC} --shared helplib.c a4gl_xxhelp.afr.c -o $@
+	export A4GL_SQLTYPE=nosql; 4glpc -as-dll $^ -o $@
+#WARNING: cannot use 4glc directly, because of broken getopt_long() on CygWin (-o will not be recognized)
+#	export A4GL_SQLTYPE=nosql; ${4GLC} --shared $^ -o $@
 
 ## ==================================================================
 ##                              Sub-targets

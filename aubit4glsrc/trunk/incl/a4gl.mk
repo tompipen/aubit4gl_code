@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.37 2003-04-27 12:20:59 afalout Exp $
+#	 $Id: a4gl.mk,v 1.38 2003-04-30 22:13:38 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.37 2003-04-27 12:20:59 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.38 2003-04-30 22:13:38 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -150,6 +150,15 @@ ifeq "${A4GL_PACKER}" "XML"
 	A4GL_MNU_EXT=.mnu.xml
 endif
 ifeq "${A4GL_PACKER}" "PACKED"
+	#Compiled form
+	A4GL_FRM_EXT=.afr.dat
+
+	#Compiled menu:
+	A4GL_MNU_EXT=.mnu.dat
+endif
+
+#Default in the case we can't get A4GL_PACKER
+ifeq "${A4GL_FRM_EXT}" ""
 	#Compiled form
 	A4GL_FRM_EXT=.afr.dat
 

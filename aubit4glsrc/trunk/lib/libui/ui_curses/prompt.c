@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.8 2003-04-23 16:37:27 mikeaubury Exp $
+# $Id: prompt.c,v 1.9 2003-04-30 22:13:40 afalout Exp $
 #*/
 
 /**
@@ -43,23 +43,7 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_tui_tui.h"
-	#include "a4gl_pointers.h"
-	#include "a4gl_dbform.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_runtime_tui.h" 		/* push_char() */
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_ui_tui_int.h"
-
-#endif
-
+#include "a4gl_lib_ui_tui_int.h"
 
 
 /*
@@ -68,13 +52,9 @@
 =====================================================================
 */
 
-int curses_to_aubit(int a);
-
-//int start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
+int curses_to_aubit	(int a);
 int proc_key_prompt (int a, FORM * mform, struct s_prompt * prompt);
-//int prompt_loop (struct s_prompt * prompt);
-
-int         chkwin                          (void);
+int chkwin			(void);
 
 /*
 =====================================================================
@@ -189,11 +169,6 @@ return 1;
 }
 
 
-
-
-
-
-
 /**
  *
  * @todo Describe function
@@ -243,9 +218,9 @@ FIELD *f;
     case 13:
     case 10:
     case KEY_DOWN:
-#ifdef DEBUG
-      {        debug ("Next field in a prompt - they must mean enter");      }
-#endif
+	#ifdef DEBUG
+		debug ("Next field in a prompt - they must mean enter");
+	#endif
       return 10;
 
     case KEY_LEFT:
@@ -264,7 +239,7 @@ FIELD *f;
   /* mja_refresh (); */
   if (a == key_val ("HELP"))
     {
-      show_help (prompt->h);
+      aclfgl_a4gl_show_help (prompt->h);
       a = 0;
     }
 
@@ -358,24 +333,6 @@ chkwin();
 	}
   return -90;
 }
-
-
-/**
- *
- * @todo Describe function
- */
-/*
-static void
-decode_field_attr(FIELD *f,int af)
-{
-
-   //set_field_fore(f,af);
-   //set_field_back(f,colour_code(0));
-
-}
-*/
-
-
 
 /**
  *

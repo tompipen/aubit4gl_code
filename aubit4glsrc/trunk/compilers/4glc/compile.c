@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.25 2003-04-27 10:48:33 mikeaubury Exp $
+# $Id: compile.c,v 1.26 2003-04-30 22:13:37 afalout Exp $
 #*/
 
 /**
@@ -568,6 +568,20 @@ char extra_ldflags[1024] = "";
       debug ("Linking only - no 4gl input files.\n");
     }
 
+
+    #ifdef DEBUG
+		debug ("gcc_exec=%s",gcc_exec);
+		debug ("all_objects=%s",all_objects);
+		debug ("output_object=%s",output_object);
+		debug ("l_path=%s",l_path);
+		debug ("l_libs=%s",l_libs);
+        debug ("pass_options=%s",pass_options);
+		debug ("extra_ldflags=%s",extra_ldflags);
+		debug ("incl_path=%s",incl_path);
+    #endif
+
+
+
   if (compile_exec)
     {
       debug ("Linking exec\n");
@@ -613,6 +627,8 @@ char extra_ldflags[1024] = "";
 	       pass_options,extra_ldflags,incl_path);
 		//FIXME: add incl_path only if there are .c files in all_objects
 
+//gcc -shared  -o  -L/usr/src/aubit/aubit4glsrc/lib -laubit4gl helplib.c a4gl_xxhelp.afr.c -o ../libHELP_std.dll   -I/usr/src/aubit/aubit4glsrc/incl -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
+
 	#else
       /*
          NOTE: we are acutally making a Window dll here.
@@ -623,6 +639,10 @@ char extra_ldflags[1024] = "";
 	  //FIXME: add incl_path only if there are .c files in all_objects
 	  sprintf (buff,"%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s",
 	       gcc_exec, output_object, all_objects, output_object,pass_options, l_path, l_libs, extra_ldflags,incl_path);
+
+
+
+
 	#endif
 
     }
