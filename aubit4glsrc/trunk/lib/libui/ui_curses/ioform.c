@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.63 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: ioform.c,v 1.64 2003-08-15 18:36:11 mikeaubury Exp $
 #*/
 
 /**
@@ -2591,6 +2591,10 @@ int
 A4GL_get_curr_infield (void)
 {
   return inp_current_field;
+}
+
+void A4GL_set_curr_infield(long a) {
+	inp_current_field=a;
 }
 
 /**

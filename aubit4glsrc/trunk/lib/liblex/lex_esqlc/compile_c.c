@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.81 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: compile_c.c,v 1.82 2003-08-15 18:36:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -837,6 +837,7 @@ print_output_rep (struct rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=(void *)&%s;\n", get_curr_rep_name ());
   printc ("A4GL_trim(rep.output_loc);");
+  printc ("A4GL_rep_print(&rep,-1,-1,-1);");
   print_rep_ret (report_cnt);
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.39 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: iarray.c,v 1.40 2003-08-15 18:36:11 mikeaubury Exp $
 #*/
 
 /**
@@ -499,8 +499,10 @@ iarr_loop (struct s_inp_arr *arr)
 	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
 	}
       A4GL_mja_set_current_field (mform, form->currentfield);
+
       A4GL_mja_pos_form_cursor (mform);
       abort_pressed = 0;
+A4GL_reset_processed_onkey();
       a = A4GL_getch_win ();
       if (abort_pressed)
 	{
@@ -1112,6 +1114,7 @@ void
 A4GL_mja_set_current_field (FORM * form, FIELD * field)
 {
   int a;
+  A4GL_set_curr_infield(field);
   a = set_current_field (form, field);
   if (a != E_OK)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.55 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: curslib.c,v 1.56 2003-08-15 18:36:11 mikeaubury Exp $
 #*/
 
 /**
@@ -1384,8 +1384,10 @@ void
 A4GL_init_curses_stuff ()
 {
 // Have we already done it ?
-  if (init_curses_mode)
+  if (init_curses_mode) {
+	A4GL_debug("init_curses_stuff Already done - returning");
     return;
+  }
   init_curses_mode = 1;
 
 #ifdef DEBUG

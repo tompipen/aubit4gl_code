@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.12 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: screen.c,v 1.13 2003-08-15 18:35:44 mikeaubury Exp $
 #*/
 
 /**
@@ -139,7 +139,10 @@ A4GL_chk_iskey (char *keys)
 
 // Has our key already been handled somewhere ?
 //
-if (A4GL_has_processed_onkey()) return 0; 
+if (A4GL_has_processed_onkey()) {
+	A4GL_debug("Already handled...");
+	return 0; 
+}
 
 
 // Nope - carry on then....

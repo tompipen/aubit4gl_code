@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.24 2003-08-14 16:12:29 mikeaubury Exp $
+# $Id: prompt.c,v 1.25 2003-08-15 18:36:11 mikeaubury Exp $
 #*/
 
 /**
@@ -344,6 +344,7 @@ A4GL_prompt_loop (void *vprompt)
   }
 
   a=A4GL_real_getch_swin (p);
+  A4GL_reset_processed_onkey();
 
   A4GL_clr_error_nobox();
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.23 2003-08-04 09:51:16 mikeaubury Exp $
+# $Id: report.c,v 1.24 2003-08-15 18:35:43 mikeaubury Exp $
 #
 */
 
@@ -100,7 +100,12 @@ gen_rep_tab_name (void *p)
 /**
  *
  * @todo Describe function
- */
+ * print something onto a report
+ *  rep - report structure to use
+ *  a   - number of parameters to print
+ *  s   - do we require a newline at the end of this print
+ *  right_margin - current right margin (not implemented yet)
+ */ 
 void
 A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 {
@@ -115,7 +120,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
     }
 
   A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
-  if (rep->line_no == 0 && rep->page_no == 0)
+  if (rep->line_no == 0 && rep->page_no == 0 && a<0)
     {
       if (rep->output_mode == 'F')
 	{
@@ -153,6 +158,10 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 	    }
 	}
     }
+
+  if (a<0) { // We're just setting up...
+	return;
+  }
 
   A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p", rep, rep->report);
   if (rep->line_no == 0)
