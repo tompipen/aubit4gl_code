@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.21 2002-01-26 04:18:01 afalout Exp $
+# $Id: configure.in,v 1.22 2002-01-26 08:03:30 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -125,6 +125,8 @@ AC_SUBST(target)
 ##                             Defaults
 ## ==================================================================
 
+#This script will be used for configuring binary distributions too
+AUBIT_SOURCE=1
 
 #need to do this again, since the earlyer one was before initialisation,
 #and will not get in substitution otherwise:
@@ -953,6 +955,7 @@ AC_ARG_WITH(gtk,
 
 					if test "$GTK_CONFIG" != "no"; then
 	                    #this will get assigned in makefile iteself
+                        echo "Will configure using gtk-config in Makefile"
 					else
 						if test "$PKG_CONFIG" != "no"; then
 		                    #this will get assigned in makefile iteself, but
@@ -1061,16 +1064,49 @@ fi
 #Note: on Linux, rpclib functions are in libc. On other systems, for
 #example Windows/CygWin, this will be a separate library that we will need
 
-if test "$test_rpclib" = "1"
-then
+AC_CHECK_FUNCS([__rpc_thread_svc_fdset])
+		#We will get #define HAVE___rpc_thread_svc_fdset in config.h, but no variables
+		#are defined when testing functions.
+
+if test `eval echo '${'$as_ac_var'}'` != yes ; then
+	RPC_FUNC_INTERNAL=0
+	#This happened on ia64-unknown-linux-gnu
+	case $host in
+	*linux*)
+		AC_MSG_WARN(Ooops-you don't have RPC function in stdlib, but you are on Linux?)
+		;;
+	esac
+
 	#force this check even if not specified on command line:
-	if test "$with_rpclib" = ""; then
-		with_rpclib=yes
-		AC_MSG_CHECKING(for rpclib support)
+	if test "$with_rpc" = ""; then
+		with_rpc=yes
 	fi
 else
-	AC_MSG_RESULT([Not checking rpclib because it's part of clib on Linux])
+	RPC_FUNC_INTERNAL=1
+
+	if test "$AUBIT_SOURCE" = "1"; then
+		#force this check even if not specified on command line:
+		if test "$with_rpc" = ""; then
+			with_rpc=yes
+		fi
+    fi
 fi
+
+#if test "$test_rpclib" = "1"; then
+#if "$RPC_FUNC_INTERNAL" = "0"; then
+#	#force this check even if not specified on command line:
+#	if test "$with_rpc" = ""; then
+#		with_rpc=yes
+#	fi
+#else
+#	if test "$with_rpc" = ""; then
+#		if test "$AUBIT_SOURCE" = "0"; then
+#			AC_MSG_RESULT([Not checking rpclib because it's part of clib on Linux])
+#        fi
+#    else #User specified --with-rpc, so whe better try it in any case:
+#		with_rpc=yes
+#	fi
+#fi
 
 AC_ARG_WITH(rpc,
 [  --with-rpc[=DIR]   Include RPC support.  DIR is the RPC base
@@ -1078,6 +1114,8 @@ AC_ARG_WITH(rpc,
 [
 
 	if test "$withval" != "no"; then
+
+		AC_MSG_CHECKING(for RPC support)
 
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
@@ -1099,13 +1137,13 @@ AC_ARG_WITH(rpc,
 		LDFLAGS=$old_LDFLAGS
         PATH=$old_PATH
 
-
-
 		if test "$RPCGEN" = "no"; then
-			if test "$cygwin" = "0"; then
-				AC_MSG_ERROR( "rpcgen" not found. Please install RPC. Stop.)
-		    fi
 		    AC_DEFINE(HAVE_RPCGEN,0,[ ])
+			if test "$cygwin" = "0"; then #we don't need rpcgen on CygWin
+				if test "$AUBIT_SOURCE" = "1"; then #we don't need rpcgen for binary distro
+					AC_MSG_ERROR( "rpcgen" not found. Please install RPC. Stop.)
+                fi
+		    fi
 		else
 		    AC_DEFINE(HAVE_RPCGEN,1,[ ])
 		fi
@@ -1115,14 +1153,16 @@ AC_ARG_WITH(rpc,
 		    RPCLIB_LFLAGS="$TEST_L_FLAGS"
 		    AC_DEFINE(HAVE_RPCLIB,1,[ ])
 		else
-			AC_MSG_ERROR( "-lrpclib" not found. Please install RPC library. Stop.)
-		    AC_DEFINE(HAVE_RPCLIB,0,[ ])
+			AC_DEFINE(HAVE_RPCLIB,0,[ ])
+			if test "$RPC_FUNC_INTERNAL" != "1"; then
+				AC_MSG_ERROR( "-lrpclib" not found. Please install RPC library. Stop.)
+            fi
 		fi
 	else
 		AC_MSG_RESULT(disbled)
 	fi
 ],[
-	AC_MSG_RESULT(--with-rpclib not specified)
+	AC_MSG_RESULT(--with-rpc not specified)
 ])
 
 
@@ -1194,14 +1234,6 @@ AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setenv setlocale socket strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
-
-#Should we check here for rpclib finctions on Linux?
-
-case $host in
-	*linux*)
-		AC_CHECK_FUNCS([__rpc_thread_svc_fdset])
-    ;;
-esac
 
 ## ==================================================================
 ##                   Checks for Cygwin specifics
