@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.101 2005-01-12 11:15:20 mikeaubury Exp $
+# $Id: sql.c,v 1.102 2005-01-13 07:17:13 mikeaubury Exp $
 #
 */
 
@@ -2450,9 +2450,11 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
     {
 	ACLDATE *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
 	void *ptr;
+	int d,m,y;
 	A4GL_debug("Binding Date original pointer=%p",bind->ptr);
 	ptr=bind->ptr;
 	p= (ACLDATE *)A4GL_bind_date ((long *) ptr);
+
 #ifdef DATE_AS_CHAR
 #ifdef IFXODBC
 	{char *x;
@@ -2462,11 +2464,8 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
 	free(x);
 	}
 #else 
-	{
-	int d,m,y;
 	A4GL_get_date(*(int *)ptr,&d,&m,&y);
 	sprintf(p->uDate.date_c,"%04d-%02d-%02d",y,m,d);
-	}
 #endif
 	size=strlen(p->uDate.date_c);
 #else
