@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.119 2005-01-12 11:15:18 mikeaubury Exp $
+# $Id: esql.ec,v 1.120 2005-02-03 09:11:52 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.119 2005-01-12 11:15:18 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.120 2005-02-03 09:11:52 mikeaubury Exp $";
 #endif
 
 
@@ -222,6 +222,19 @@ static void
 esqlWarningHandler (void)
 {
 }
+
+
+
+
+void A4GL_sql_exitwith(char *s) {
+		int s1;
+		s1=a4gl_status;
+		A4GL_exitwith(s);
+		if (s1==0  && a4gl_status!=0) { a4gl_sqlca.sqlcode=a4gl_status; }
+}
+
+
+
 
 /**
  * Check if there was an sql error. Uses ESQL/C XOpen global variable SQLSTATE.
@@ -2269,9 +2282,12 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
   if (sid == (struct s_sid *) 0)
     return (struct s_cid *) 0;
 
-
-  cursorIdentification = malloc (sizeof (struct s_cid));
-  cursorIdentification->statement = sid;
+  if (A4GL_has_pointer (cursname, CURCODE)) {
+  		cursorIdentification = A4GL_find_pointer(cursname,CURCODE);
+  } else {
+  		cursorIdentification = malloc (sizeof (struct s_cid));
+  		cursorIdentification->statement = sid;
+  }
   statementName = sid->statementName;
   A4GL_debug ("declare obind count=%d", sid->no);
 
@@ -2309,12 +2325,28 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll,
       return (struct s_cid *) 0;
     }
   A4GL_debug ("Declared '%s' OK",cursname);
-  A4GL_add_pointer (cursname, PRECODE, cursorIdentification);
+  A4GL_add_pointer (cursname, CURCODE, cursorIdentification);
 
   if (processPreStatementBinds (sid) == 1)
 	 return (struct s_cid *) 0;
 
   return cursorIdentification;
+}
+
+void A4GLSQL_free_cursor (char *s)
+{
+  EXEC SQL BEGIN DECLARE SECTION;
+  char *cursorName = s;
+  struct s_cid *cursorIdentification;
+  EXEC SQL END DECLARE SECTION;
+
+  cursorIdentification = A4GL_find_pointer (s, CURCODE);
+
+  if (cursorIdentification==0) { A4GL_exitwith("Cursor not found"); return ; }
+  EXEC SQL FREE :cursorName;
+  free(cursorIdentification);
+  A4GL_del_pointer (s, CURCODE);
+
 }
 
 
@@ -2349,10 +2381,10 @@ A4GLSQL_open_cursor (char *s,int ni,void *vibind)
 
 
 
-  cursorIdentification = A4GL_find_pointer (s, PRECODE);
+  cursorIdentification = A4GL_find_pointer (s, CURCODE);
 
   if (cursorIdentification==0) {
-		A4GL_exitwith("Cursor not found");
+		A4GL_sql_exitwith("Cursor not found");
 		return 1;
 	}
   A4GL_debug ("Got cursorIdentification as : %p", cursorIdentification);
@@ -2515,7 +2547,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 	      struct BINDING *obind;
 	obind=vobind;
 
-  cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, PRECODE);
+  cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, CURCODE);
   if (cid==0) {
 	if (sqlca.sqlcode==0) {// Fetch attempted on unknown cursor and no error..
 		sqlca.sqlcode=-1;
@@ -2633,7 +2665,7 @@ A4GLSQL_put_insert (void *vibind, int n)
 
   cursorName = A4GL_char_pop ();
 
-  cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, PRECODE);
+  cid = (struct s_cid *) A4GL_find_pointer_val (cursorName, CURCODE);
   sid = (struct s_sid *) cid->statement;
 
 if (sid) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.107 2005-01-31 12:38:09 mikeaubury Exp $
+# $Id: sql.c,v 1.108 2005-02-03 09:11:53 mikeaubury Exp $
 #
 */
 
@@ -160,8 +160,6 @@ int in_transaction = 0;
 
 
 //truct expr_str *A4GLSQL_get_validation_expr(char *tabname,char *colname) ;
-struct s_cid *A4GLSQL_find_cursor (char *cname);
-struct s_cid *A4GLSQL_free_cursor (char *cname);
 struct expr_str *A4GL_add_validation_elements_to_expr (struct expr_str *ptr,
 						       char *val);
 void *A4GL_new_expr (char *value);
@@ -702,8 +700,7 @@ A4GLSQL_find_cursor (char *cname)
   struct s_cid *ptr;
 
   ptr = (struct s_cid *) A4GL_find_pointer_val (cname, CURCODE);
-  if (ptr)
-    return ptr;
+  if (ptr) return ptr;
   A4GL_exitwith ("Cursor not found");
   return 0;
 }
@@ -1163,6 +1160,10 @@ A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 
   return a;
 }
+
+
+
+
 
 /**
  * Open a cursor already declared.
@@ -1805,7 +1806,7 @@ A4GLSQL_get_sqlerrm (void)
  * @param cname The cursor name.
  * @return Allways zero
  */
-struct s_cid *
+void
 A4GLSQL_free_cursor (char *cname)
 {
   struct s_cid *ptr;
@@ -1814,7 +1815,7 @@ A4GLSQL_free_cursor (char *cname)
   if (ptr == 0)
     {
       A4GL_exitwith ("Can't free cursor thats not been defined");
-      return 0;
+      return ;
     }
   if (ptr->hstmt)
     {
@@ -1826,7 +1827,7 @@ A4GLSQL_free_cursor (char *cname)
   free (ptr->statement);
   A4GL_del_pointer (cname, CURCODE);
   A4GLSQL_set_status (0, 1);
-  return 0;
+  return ;
 }
 
 /**

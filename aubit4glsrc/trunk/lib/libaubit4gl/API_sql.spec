@@ -37,7 +37,7 @@ A4GLSQL_execute_implicit_select void* sid int singleton -> int
 A4GLSQL_execute_implicit_sql    void* sid int singleton -> int
 
 
-
+A4GLSQL_free_cursor char* cursor_name -> void
 A4GLSQL_fetch_cursor char* cursor_name int fetch_mode int fetch_when int nibind void* ibind -> int
 A4GLSQL_open_cursor char* s int no void* vibind -> int
 A4GLSQL_flush_cursor char* cursor -> void

@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.43 2004-12-17 13:19:04 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.44 2005-02-03 09:11:47 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -98,9 +98,8 @@ print_foreach_next (char *cursorname, int has_using, char *into)
 void
 print_free_cursor (char *s)
 {
-  printc ("/* FREE CURSOR .. FIXME */\n");
+  printc ("A4GLSQL_free_cursor (%s);\n",s);
 
-/*struct s_cid * A4GLSQL_free_cursor (char *cname)*/
 
 }
 
