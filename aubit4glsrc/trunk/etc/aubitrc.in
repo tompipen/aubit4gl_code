@@ -40,7 +40,7 @@ AUBITDIR=@aubitdir@
 ############
 #Name of default SQL library to use.
 #When used: run-time and compile-time
-#Options: static (nosql) iodbc unixodbc esql ifxodbc pgodbc odbc32
+#Options: static (nosql) iodbc unixodbc esql ifxodbc pgodbc odbc32 sapodbc
 A4GL_SQLTYPE=@A4GL_SQLTYPE@
 
 ############
@@ -59,7 +59,7 @@ A4GL_RPCTYPE=@A4GL_RPCTYPE@
 #Defines default UI (user intertface) driver to load
 #When used: run-time only
 #Options: (CONSOLE) [no deps.], TUI [curses], GTK [GTK+].
-A4GL_AUBITGUI=@AUBITGUI@
+A4GL_UI=@A4GL_UI@
 
 ############
 #Default output language driver for 4gl compiler:

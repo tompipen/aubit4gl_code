@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.17 2002-08-31 06:19:59 afalout Exp $
+# $Id: fglwrap.c,v 1.18 2002-09-08 10:38:19 afalout Exp $
 #
 */
 
@@ -157,7 +157,7 @@ fgl_end(void)
  * Command line arguments to compiled 4gl program can be:
  *
  * GUIPORT    	- FIXME: what is it?
- * NOCURSES     - FIXME: this is now AUBITGUI=CONSOLE
+ * NOCURSES     - FIXME: this is now A4GL_UI=CONSOLE
  *
  * @param nargs The number of arguments.
  * @param argv The arguments values.
@@ -199,8 +199,8 @@ char *p;
 		A4GLSQL_initsqllib();
     #endif
 
-	if (acl_getenv("AUBITGUI")) {
-		p=acl_getenv("AUBITGUI");
+	if (acl_getenv("A4GL_UI")) {
+		p=acl_getenv("A4GL_UI");
 
 		if (strcasecmp(p,"TEXT")==0  )	ui_mode=0;
 		if (strcasecmp(p,"CURSES")==0) 	ui_mode=0;
@@ -235,7 +235,7 @@ char *p;
 			       continue;
 			    }
 
-				/* FIXME: this is now AUBITGUI=CONSOLE */
+				/* FIXME: this is now A4GL_UI=CONSOLE */
 				if (strncmp(argv[a],"NOCURSES",8)==0) {
 			       	#ifdef DEBUG
 					   debug("NOCURSES");
@@ -276,7 +276,7 @@ char *p;
 	#ifdef _PRELOAD_UI_
 		/* Initialize the UI library (ie load the dll) */
 		if (!A4GLUI_initlib()) {
-			printf("4gllib: Error opening UI library (AUBITGUI=%s)\n",acl_getenv("AUBITGUI"));
+			printf("4gllib: Error opening UI library (A4GL_UI=%s)\n",acl_getenv("A4GL_UI"));
 			exit(1);
 		}
 		/* Do any startup required by the library */

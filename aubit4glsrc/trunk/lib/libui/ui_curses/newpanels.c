@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: newpanels.c,v 1.2 2002-09-08 10:38:20 afalout Exp $
 #*/
 
 /**
@@ -1513,7 +1513,7 @@ mja_endwin (void)
 int
 chkwin (void)
 {
-  if (env_option_set("NOCURSES")) {       /* FIXME: this is now AUBITGUI=CONSOLE */
+  if (env_option_set("NOCURSES")) {       /* FIXME: this is now A4GL_UI=CONSOLE */
 	exitwith("NOCURSES Mode has been specified - operation not permitted");
 	exit(0);
 	return 0;

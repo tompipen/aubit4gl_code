@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.26 2002-08-25 09:25:15 afalout Exp $
+# $Id: Makefile-install.mki,v 1.27 2002-09-08 10:38:19 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -178,9 +178,7 @@ deinstall.build:
 test:
 	${MAKE} ${MKNAME} -C tools/test test.build PDFBUILD=${PDFBUILD}
 	@echo in Makefile: LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}
-#	export AUBITGUI=TUI; tools/test/test_build
-#	export NOCURSES=Yes; export AUBITGUI=TUI; tools/test/test_build
-	export AUBITGUI=CONSOLE; tools/test/test_build
+	export A4GL_UI=CONSOLE; tools/test/test_build
 
 #######################################
 ldconfig:

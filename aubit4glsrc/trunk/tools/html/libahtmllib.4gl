@@ -1,6 +1,6 @@
-# When running Aubit programs as CGI in web server, use AUBITGUI=CONSOLE
+# When running Aubit programs as CGI in web server, use A4GL_UI=CONSOLE
 
-# $Id: libahtmllib.4gl,v 1.4 2002-09-08 09:41:06 afalout Exp $
+# $Id: libahtmllib.4gl,v 1.5 2002-09-08 10:38:20 afalout Exp $
 
 ########################################################################
 #ANSI C libraryes for CGI programing:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.31 2002-08-29 09:10:31 afalout Exp $
+# $Id: compile_c.c,v 1.32 2002-09-08 10:38:19 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -289,7 +289,7 @@ open_outfile(void)
 
   if (strncmp(acl_getenv ("GTKGUI"),"Y",1)==0)  {
 	/*
-  	strange: was this supposed to be A4GL_AUBITGUI and not GTKGUI?
+  	strange: was this supposed to be A4GL_UI and not GTKGUI?
     Since GTK programs are working anyway, should I assume this is
     obsolete code?
 	*/

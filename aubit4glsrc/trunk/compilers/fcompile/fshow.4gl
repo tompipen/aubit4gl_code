@@ -1,6 +1,6 @@
 code
 #ifdef GTK
-#define fgl_start(x,y) setenv("AUBITGUI","gtk",1);fgl_start(x,y)
+#define fgl_start(x,y) setenv("A4GL_UI","gtk",1);fgl_start(x,y)
 #endif
 endcode
 MAIN

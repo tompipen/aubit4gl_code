@@ -23,8 +23,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.80 2002-09-08 09:40:49 afalout Exp $
+# $Id: configure.in,v 1.81 2002-09-08 10:38:02 afalout Exp $
 #
+#TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
+#and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
+#then issue a warning.
+#
+#
+
 
 dnl Process this file with autoconf to produce a configure script.
 
@@ -177,7 +183,7 @@ AC_SUBST(SHORTNAME)
 AC_SUBST(A4GL_SQLTYPE)
 AC_SUBST(A4GL_PDFTYPE)
 AC_SUBST(A4GL_RPCTYPE)
-AC_SUBST(AUBITGUI)
+AC_SUBST(A4GL_UI)
 AC_SUBST(A4GL_LEXTYPE)
 AC_SUBST(A4GL_FORMTYPE)
 AC_SUBST(A4GL_MENUTYPE)
@@ -418,7 +424,7 @@ SO_EXT=.so
 A4GL_SQLTYPE=nosql
 A4GL_PDFTYPE=NOPDF
 A4GL_RPCTYPE=NORPC
-AUBITGUI=CONSOLE
+A4GL_UI=CONSOLE
 A4GL_LEXTYPE=C
 A4GL_FORMTYPE=NOFORM
 A4GL_MENUTYPE=NOMENU
@@ -819,6 +825,8 @@ WARNING: You asked for SAP DB ESQL/C support, but don't have \\\$SAPDBROOT
 				SAPDB_INCDIR="-I$SAPDBROOT/depend/incl -I$SAPDBROOT/interfaces/precompiler/incl"
 				SAPDB_LIBDIR="-L$SAPDBROOT/depend/lib -L$SAPDBROOT/interfaces/precompiler/lib"
 			else
+				#user specified custom withval
+				WARN_LD_LIBRARY_PATH=1
 				SAPDB_INCDIR="-I$withval/depend/incl -I$withval/interfaces/precompiler/incl"
 				SAPDB_LIBDIR="-L$withval/depend/lib -L$withval/interfaces/precompiler/lib"
 				if test "$withval" != "$SAPDBROOT"; then
@@ -830,10 +838,8 @@ WARNING: You specified SAP DB base install directory that is different
     		fi
 
 			if test "$withval" != "yes"; then
-				WARN_LD_LIBRARY_PATH=1
 	            ADD_LD_LIBRARY_PATH="$withval/depend/lib:$ADD_LD_LIBRARY_PATH"
             else
-				WARN_LD_LIBRARY_PATH=1
 	            ADD_LD_LIBRARY_PATH="$SAPDBROOT/depend/lib:$ADD_LD_LIBRARY_PATH"
 			fi
 
@@ -944,6 +950,8 @@ WARNING: You asked for Informix ESQL/C support, but don't have \\\$INFORMIXDIR
 				IFX_INCDIR=$INFORMIXDIR/incl/esql
 				IFX_LIBDIR="-L$INFORMIXDIR/lib -L$INFORMIXDIR/lib/esql"
 			else
+				#user specified custom withval
+				WARN_LD_LIBRARY_PATH=1
 				IFX_INCDIR=$withval/incl/esql
 				IFX_LIBDIR="-L$withval/lib -L$withval/lib/esql"
 				if test "$withval" != "$INFORMIXDIR"; then
@@ -955,10 +963,8 @@ WARNING: You specified Informix base install directory that is different
     		fi
 
 			if test "$withval" != "yes"; then
-				WARN_LD_LIBRARY_PATH=1
 	            ADD_LD_LIBRARY_PATH="$withval/lib:$withval/lib/esql:$ADD_LD_LIBRARY_PATH"
             else
-				WARN_LD_LIBRARY_PATH=1
 	            ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib:$INFORMIXDIR/lib/esql:$ADD_LD_LIBRARY_PATH"
 			fi
 
@@ -1161,6 +1167,7 @@ AC_ARG_WITH(pgsql,
     if test "$withval" = "yes"; then
 		withval=/usr/local
     else
+		#user specified custom withval
 		WARN_LD_LIBRARY_PATH=1
         ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
@@ -1263,6 +1270,7 @@ AC_ARG_WITH(pgsql,
 ##                 Checks for Informix ODBC driver
 ## ==================================================================
 
+#FIXME: use: AC_ARG_WITH here, this is non-standard!
 
 if test "$cygwin" = "1"; then
 
@@ -1384,6 +1392,7 @@ AC_ARG_WITH(sapodbc,
 		if test "$withval" = "yes"; then
 	    	withval=/opt/sapdb #$SAPDBROOT
 		else
+			#user specified custom withval
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/interfaces/odbc/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1457,6 +1466,7 @@ AC_ARG_WITH(pgodbc,
 		if test "$withval" = "yes"; then
 	    	withval=/usr
 		else
+			#user specified custom withval
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1543,6 +1553,7 @@ AC_ARG_WITH(iodbc,
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
 		else
+			#user specified custom withval
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1601,6 +1612,7 @@ AC_ARG_WITH(unixodbc,
 	if test "$withval" = "yes"; then
     	withval=/usr/local
 	else
+		#user specified custom withval
 		WARN_LD_LIBRARY_PATH=1
         ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
@@ -1663,9 +1675,9 @@ AC_ARG_WITH(esoob,
   #PHP_WITH_SHARED
   if test "$withval" = "yes"; then
     withval=/usr/local/easysoft/oob/client
-	WARN_LD_LIBRARY_PATH=1
 	ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   else
+	#user specified custom withval
 	WARN_LD_LIBRARY_PATH=1
     ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   fi
@@ -1712,6 +1724,7 @@ AC_ARG_WITH(custom-odbc,
   if test "$withval" = "yes"; then
     withval=/usr/local
   else
+	#user specified custom withval
 	WARN_LD_LIBRARY_PATH=1
     ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   fi
@@ -1755,6 +1768,7 @@ AC_ARG_WITH(gtk,
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
 		else
+			#user specified custom withval
 			WARN_LD_LIBRARY_PATH=1
 		    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1894,6 +1908,7 @@ AC_ARG_WITH(iksemel,
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
 		else
+			#user specified custom withval
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -1947,6 +1962,7 @@ AC_ARG_WITH(pdf,
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
 		else
+			#user specified custom withval
 			WARN_LD_LIBRARY_PATH=1
             ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
@@ -2037,6 +2053,7 @@ AC_ARG_WITH(rpc,
 		if test "$withval" = "yes"; then
 	    	withval=/usr/local
 		else
+			#user specified custom withval
 			WARN_LD_LIBRARY_PATH=1
 		    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
 	    fi
@@ -2545,18 +2562,18 @@ fi
 
 if test "$default_ui" != ""; then
 	#User can force UI driver default with --default-ui=xxxx switch
-	AUBITGUI="$default_ui"
+	A4GL_UI="$default_ui"
 else
 	if test "$HAVE_CURSES" = "1"; then
-		AUBITGUI="TUI"
+		A4GL_UI="TUI"
     fi
 
 	if test "$GTKBUILD" != "no"; then
-		AUBITGUI="GTK"
+		A4GL_UI="GTK"
     fi
 
 
-	if test "$AUBITGUI" = "CONSOLE" ; then
+	if test "$A4GL_UI" = "CONSOLE" ; then
 		AC_MSG_WARN(No curses or GTK detected - your only screen UI will be CONSOLE)
 		#AC_MSG_WARN(No curses detected - your default UI will be GTK GUI)
 		AC_MSG_WARN(IN CONSOLE MODE YOU WILL NOT BE ABLE TO USE FORMS)

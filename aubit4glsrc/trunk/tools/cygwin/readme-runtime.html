@@ -45,10 +45,10 @@ to execute, but not compile, Aubit 4GL programs.</p>
     <br>
     copy all files in "runtimelib" folder to some location on your    Windows computer that is already in the PATH - like c:\Windows, or
     <a href="file:///C:/WINNT">C:\WINNT</a>.</li>
-  <li>Add variable "AUBITGUI" to your global environment, and set it to "gui".	Depending on your versions of Windows operating
+  <li>Add variable "A4GL_UI" to your global environment, and set it to "gui".	Depending on your versions of Windows operating
     system, you can set    global environment in different ways. Consult your Windows
     documentation. In general, from DOS prompt, you would execute the following line:&nbsp;<br>
-    "set AUBITGUI=gui".&nbsp;<br>
+    "set A4GL_UI=gui".&nbsp;<br>
  You can add the same line to your autoexec.bat,    if you have one. On Windows NT based systems, you will need to set this via systems options.</li>
   <li>Step into "apps" folder and double-click on "hello.exe". You should    first see console window, and then GUI window of "Hello" program.</li>
   <li>To demonstrate how to run GUI programs without console window    appearing, there are several shortcuts on top level of this archive,    one for each demo program in "apps" directory. They all use utility    program "run.exe", also provided. Since Microsoft program shortcuts    do not support relative paths, before you can use them, you will    need to edit them to reflect your files location
@@ -58,7 +58,7 @@ to execute, but not compile, Aubit 4GL programs.</p>
 <p>Q: Why do I need to use &quot;run.exe&quot; to get rid of console window?</p>
 <p>A: We can do this by adding "-mwindows" or "-Wl,--subsystem,windows" to    Aubit compiler compile line when compiling programs, but we do not    want this at this point in development, since output from console    is very
 useful for debugging, and since we want to keep the ability    to run programs in both
-GUI and console modes (AUBITGUI=gui, AUBITGUI=cui)</p>
+GUI and console modes (A4GL_UI=gui, A4GL_UI=cui)</p>
 <p>Q: How do I compile 4GL programs using this package?</p>
 <p>A: You don't. This is run-time package. To compile 4GL programs using    Aubit 4GL compiler fro Windows, download Aubit 4gl compiler binary    package for Windows/CygWin, or compile it yourself from source code.    You will of course need full installation of Cygwin, plus additional&nbsp;
 libraries.</p>

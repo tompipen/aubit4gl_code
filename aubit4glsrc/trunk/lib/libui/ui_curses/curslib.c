@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.2 2002-08-29 14:08:17 mikeaubury Exp $
+# $Id: curslib.c,v 1.3 2002-09-08 10:38:20 afalout Exp $
 #*/
 
 /**
@@ -1284,7 +1284,7 @@ A4GLUI_ui_init (int argc, char *argv[])
 #ifdef DEBUG
   debug ("Initializing curses environment");
 #endif
-  if (!env_option_set ("NOCURSES"))	/* FIXME: this is now AUBITGUI=CONSOLE */
+  if (!env_option_set ("NOCURSES"))	/* FIXME: this is now A4GL_UI=CONSOLE */
     {
       initscr ();
       bkgdset (BLANK);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.10 2002-06-25 03:22:30 afalout Exp $
+# $Id: debug.c,v 1.11 2002-09-08 10:38:19 afalout Exp $
 #
 */
 
@@ -150,12 +150,12 @@ debug_full (char *fmt,...)
 
       fprintf (debugfile, "%s\n", buff);
 
-        /* fixme: AUBITGUI can also be gui, not only gtk
+        /* fixme: A4GL_UI can also be gui, not only gtk
         Why are we printing this to stderr in any case, it is allready
         written to debug.out ?
         */
         /*
-		if (strcmp(acl_getenv("AUBITGUI"),"GTK")==0) {
+		if (strcmp(acl_getenv("A4GL_UI"),"GTK")==0) {
                 fprintf(stderr,"%s\n",buff);
         }
         */
