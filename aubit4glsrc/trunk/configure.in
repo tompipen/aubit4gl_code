@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.127 2002-11-06 11:41:57 afalout Exp $
+dnl # $Id: configure.in,v 1.128 2002-11-07 03:44:15 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1424,8 +1424,8 @@ AC_ARG_WITH(sapodbc,
 		# FIXME: Replace `main' with a function in `-lsqlod':
 		AC_CHECK_LIB([sqlod], [main])
 		if test $ac_cv_lib_sqlod_main = yes; then
-			#FIXME: and this is source code - not bynary distro...
 			AC_CHECK_HEADERS([ sql.h sqlext.h sqltypes.h WINDOWS.H ])
+            #FIXME: disable is this headrs are missing and source code
         fi
 		LIBS="$old_LIBS"
 		LDFLAGS="$old_LDFLAGS"
@@ -1658,12 +1658,12 @@ AC_ARG_WITH(unixodbc,
 						AC_CHECK_HEADERS([odbcinst.h])
 						TMP=`eval echo '${'$as_ac_Header'}'`
 				        if test "$TMP" = "yes"; then
-						    $HAVE_UNIXODBC_HEADERS=1
+						    HAVE_UNIXODBC_HEADERS=1
                         fi
                     fi
                 fi
 			else
-			    $HAVE_UNIXODBC_HEADERS=1
+			    HAVE_UNIXODBC_HEADERS=1
 			fi
 
 			if test "$HAVE_UNIXODBC_HEADERS" = "1" ; then
@@ -1676,7 +1676,7 @@ AC_ARG_WITH(unixodbc,
 			    ODBC_TYPE=unixODBC
 			    AC_DEFINE(HAVE_UNIXODBC,1,[ ])
             else
-				AC_MSG_WARNING(unixODBC libraries present but headers are missing.)
+				AC_MSG_WARN(unixODBC libraries present but headers are missing.)
 				AC_DEFINE(HAVE_UNIXODBC,0,[ ])
             fi
 		else
@@ -1828,15 +1828,17 @@ AC_ARG_WITH(gtk,
 		AC_CHECK_LIB([gdk], [main])
 		# FIXME: Replace `main' with a function in `-lglib':
 		AC_CHECK_LIB([glib], [main])
-		if test "$ac_cv_lib_glib_main" = "no"; then
-			#libglib-1.3.dll.a
-			AC_CHECK_LIB([glib-1.3.dll], [main])
-			if test "$ac_cv_lib_glib_1_3_dll_main" != "no"; then
-				ac_cv_lib_glib_main="yes"
-            fi
-        else
-			ac_cv_lib_glib_1_3_dll_main="no"
-		fi
+		
+		#Old workaround - remove:
+		#if test "$ac_cv_lib_glib_main" = "no"; then
+		#	#libglib-1.3.dll.a
+		#	AC_CHECK_LIB([glib-1.3.dll], [main])
+		#	if test "$ac_cv_lib_glib_1_3_dll_main" != "no"; then
+		#		ac_cv_lib_glib_main="yes"
+        #    fi
+        #else
+		#	ac_cv_lib_glib_1_3_dll_main="no"
+		#fi
 
 		# FIXME: Replace `main' with a function in `-lgtk':
 		AC_CHECK_LIB([gtk], [main])
@@ -1886,12 +1888,17 @@ AC_ARG_WITH(gtk,
 			test "$PKG_CONFIG" != "no")); then
 
 			if test "$GTK_CONFIG" != "no"; then
-						GTK_INC_PATH=`$GTK_CONFIG --cflags`
-						GLIB_CFLAGS=$GTK_INC_PATH
-						GTKLIBS=`$GTK_CONFIG --libs`
+				GTK_NAME="using gtk-config"
+				#GTK_NAME=`$PKG_CONFIG --list-all | grep gtk | head -1 | awk '{print $1}'`
+				#GDK_NAME=`$PKG_CONFIG --list-all | grep gdk | head -1 | awk '{print $1}'`
+				#GLIB_NAME=`$PKG_CONFIG --list-all | grep glib |  head -1 | awk '{print $1}'`
 
-						AC_DEFINE(HAVE_GTK,1,[ ])
-						GTKBUILD=yes
+				GTK_INC_PATH=`$GTK_CONFIG --cflags`
+				GLIB_CFLAGS=$GTK_INC_PATH
+				GTKLIBS=`$GTK_CONFIG --libs`
+
+				AC_DEFINE(HAVE_GTK,1,[ ])
+				GTKBUILD=yes
 
 			else
 				if test "$PKG_CONFIG" != "no"; then
@@ -1899,9 +1906,9 @@ AC_ARG_WITH(gtk,
                             #pkg-config needs package name as parameter, and on Cygwin,
                             #this iclude version names, so we need to extract this names first:
 
-                            GTK_NAME=`$PKG_CONFIG --list-all | grep gtk | head -1 | awk '{print $1}'`
-							GDK_NAME=`$PKG_CONFIG --list-all | grep gdk | head -1 | awk '{print $1}'`
-							GLIB_NAME=`$PKG_CONFIG --list-all | grep glib |  head -1 | awk '{print $1}'`
+                            GTK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep ^gtk | head -1 | awk '{print $1}'`
+							GDK_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep ^gdk | head -1 | awk '{print $1}'`
+							GLIB_NAME=`$PKG_CONFIG --list-all 2>/dev/null | grep ^glib |  head -1 | awk '{print $1}'`
 
                             if test "$GTK_NAME" != "" && test "$GDK_NAME" != "" && test "$GLIB_NAME" != ""; then
 	                            GTK_LIB_PATH=`$PKG_CONFIG --libs-only-L $GTK_NAME`
@@ -3254,7 +3261,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
 cat<<X
 |                          *** NOTE ***                              |
 |            Aubit 4gl compiler source code is now configured.       |
-|                                                                    |
 |                    Execute 'make' to compile it.                   |
 +--------------------------------------------------------------------+
 X
@@ -3262,7 +3268,6 @@ else
 cat<<X
 |                          *** NOTE ***                              |
 |        Aubit 4gl compiler binary disrtibution now configured.      |
-|                                                                    |
 |                Execute 'make install' to install it.               |
 +--------------------------------------------------------------------+
 X
