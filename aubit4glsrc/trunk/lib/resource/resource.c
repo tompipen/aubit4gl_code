@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.69 2004-03-17 13:33:58 mikeaubury Exp $
+# $Id: resource.c,v 1.70 2004-03-17 14:05:28 mikeaubury Exp $
 #
 */
 
@@ -554,7 +554,7 @@ if (fd1==0) {
 #ifdef USE_OPTIMISATION
 ptr=(char *)A4GL_find_pointer (s,STR_RESOURCE_VAL);
 if (ptr)  {
-	if (s==value_not_set)  { /* BEFORE you complain - this is RIGHT!
+	if (ptr==value_not_set)  { /* BEFORE you complain - this is RIGHT!
 				 I don't want a string comparison - I want to see If this is set
 				 to the pointer which is exactly value_not_set.
 				 This is done if I couldn't previously find a value for a variables setting
