@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.278 2005-01-07 08:18:58 afalout Exp $
+dnl # $Id: configure.in,v 1.279 2005-02-03 07:45:45 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -572,6 +572,9 @@ AC_SUBST(AUBIT_LICENSE)
 AC_SUBST(PCRE_INC_PATH)
 AC_SUBST(PCRE_LIB_PATH)
 AC_SUBST(MSYS_ROOTDIR)
+AC_SUBST(HAVE_MQLIB)
+AC_SUBST(HAVE_SXMLLIB)
+AC_SUBST(I4GL_PCOMPILER)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -2042,7 +2045,8 @@ NEED_4GLC_ALL_libs="HELP_std A4GL_string A4GL_HTML channel A4GL_file"
 LIBLOGICAL_EXE_GTK2_DEPEND="layout_engine report_viewer"
 LIBLOGICAL_BUILD="LOGREPPROC_TXT LOGREPPROC_CSV"
 LIBLOGICAL_GTK2_DEPEND="LOGREP_CSV LOGREP_TXT"
-LIBLOGICAL_PDF_DEPEND="LOGREPPROC_PDF LOGREP_PDF"
+LIBLOGICAL_PDF_DEPEND="LOGREPPROC_PDF"
+LIBLOGICAL_PDF_GTK2_DEPEND="LOGREP_PDF"
 
 ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
@@ -3648,6 +3652,73 @@ AC_ARG_WITH(sxml,
 ])
 
 if test "$enable_stop_sxml" = "yes" ; then
+	exit
+fi
+
+## ==================================================================
+##            Check for IBM WebSphere MQ 
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for MQ libraries:)
+AC_ARG_WITH(mq,
+[  --with-mq[=DIR]          Include IBM MQ support.  DIR is the MQ base
+                          install directory, defaults to /usr/mqm.],
+[
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+			if test "$COMSPEC" = ""; then 
+	    		withval=/usr/mqm
+			else
+				#NOTE: since on CygWin /usr/lib is symlink to /usr,
+				#files installed there actually end up in /lib, as far as
+				#native Windows executable (GCC) is concerned
+				withval="`$CYGPATH -m /`"
+			fi
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
+	    fi
+		#Store current values
+		old_LIBS="$LIBS"
+		old_LDFLAGS="$LDFLAGS"
+		old_CFLAGS="$CFLAGS"
+		old_CPPFLAGS="$CPPFLAGS"
+
+		LDFLAGS="-L$withval/lib $LDFLAGS"
+		CPPFLAGS="-I$withval/inc $CPPFLAGS"
+		
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "LDFLAGS=$LDFLAGS"
+			echo "CPPFLAGS=$CPPFLAGS"
+		fi
+		
+		AC_CHECK_LIB([mqm], [main])
+		AC_CHECK_HEADERS([ cmqc.h mqcmh.h ])
+		AC_MSG_CHECKING(if we can use MQ)
+		if test "$ac_cv_header_cmqc_h" = "yes" \
+			-a "$ac_cv_header_mqcmh_h" = "yes" \
+			-a "$ac_cv_lib_mqm_main" = "yes"; then
+			HAVE_MQLIB=1
+			AC_MSG_RESULT(yes)
+		else
+			AC_MSG_RESULT(no)
+	    fi
+		
+		#Restore values
+		LIBS="$old_LIBS"
+		LDFLAGS="$old_LDFLAGS"
+		CFLAGS="$old_CFLAGS"
+		CPPFLAGS="$old_CPPFLAGS"
+
+    else
+		AC_MSG_RESULT(disabled)
+    fi
+],[
+	AC_MSG_RESULT(--with-mq not specified)
+])
+
+if test "$enable_stop_mq" = "yes" ; then
 	exit
 fi
 
@@ -8065,6 +8136,13 @@ PLUGIN_NO_LINKABLE=
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pdflib"
 	fi
 
+	if test "$PDFBUILD" != "no" -a "$GTK_VERSION" = "2.0"; then
+		PLUGIN_YES="$PLUGIN_YES $LIBLOGICAL_PDF_GTK2_DEPEND"
+	else
+        PLUGIN_NO="$PLUGIN_NO $LIBLOGICAL_PDF_GTK2_DEPEND"
+		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pdflib"
+	fi
+	
 	if test "$IFMX_ESQLC" != "no" ; then
 		PLUGIN_YES="$PLUGIN_YES SQL_esql ESQL_INFORMIX"
 		COMP_EXE="$COMP_EXE sqleditor$A4GL_EXE_EXT aupscol asql_i$A4GL_EXE_EXT"
@@ -8903,7 +8981,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.278 2005-01-07 08:18:58 afalout Exp $
+| $Id: configure.in,v 1.279 2005-02-03 07:45:45 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

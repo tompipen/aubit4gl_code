@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc.obsolete,v 1.8 2005-01-07 08:19:01 afalout Exp $
+# $Id: 4glpc.obsolete,v 1.9 2005-02-03 07:47:30 afalout Exp $
 #
 
 ########################################################################
@@ -128,7 +128,7 @@ then
 	A4GLVERBOSE="yes"
 fi
 
-aubit-config -ae > /tmp/$$.env
+aubit-config -ae > /tmp/$$.env 2>&1
 
 NO_COMPILE=0
 
@@ -808,7 +808,8 @@ do
 		
 		#List of libs we will ignore as user needs to install them
 		#GTK+ libs:
-		IGNORE_MISSING="libgdk- libglib- libgobject- libgtk- libglade- libgdk_pixbuf"
+		IGNORE_MISSING="libgdk- libglib- libgobject- libgtk- libglade- libgdk_pixbuf libintl-"
+		
 		#Informix CSDK libs:
 		IGNORE_MISSING="$IGNORE_MISSING isqlt09 isqlt09"
 		#PostgreSQL ECPG libs:
@@ -913,6 +914,18 @@ do
 		IGNORE_MISSING="$IGNORE_MISSING isqlt09 isqlt09"
 		#PostgreSQL ECPG libs:
 		IGNORE_MISSING="$IGNORE_MISSING libecpg_compat libecpg"
+
+		#libSQL_pg uses libintl-2 - it is NOT part of GTK+ - Its GetText
+		#its in GnuWin dir on Windows - seels like libpq is linked with it, so 
+		#PostgreSQL istaller would supply it?
+		IGNORE_MISSING="$IGNORE_MISSING libintl-"
+		
+#$ cygcheck lib/libSQL_pg.dll
+#    D:\WINNT\system32\libeay32.dll
+#    d:\Program Files\GnuWin32\bin\libintl-2.dll
+#      d:\Program Files\GnuWin32\bin\libiconv-2.dll
+#    D:\WINNT\system32\ssleay32.dll		
+
 		
 		SYSTEM32_PATH="`cygpath --windir`/system32"
 		UNINST_REG_PATH="/HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Windows/CurrentVersion/Uninstall"

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.96 2005-01-07 08:19:01 afalout Exp $
+# $Id: Makefile-install.mki,v 1.97 2005-02-03 07:47:31 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -928,6 +928,11 @@ ORBIT_SRC_PATH		=ftp://ftp.gnome.org/pub/gnome/sources/ORBit2/2.12/
 ORBIT_SRC			=ORBit2-2.12.0
 ORBIT_SRC_TAR_GZ	=${ORBIT_SRC}.tar.gz
 
+ORBIT_WIN_PATH			=http://hei.unige.ch/~strba5
+ORBIT_WIN_BIN_NAME		=ORBit2-2.12.0
+ORBIT_WIN_BIN_ZIP		=${ORBIT_WIN_BIN_NAME}.zip
+ORBIT_IDL_WIN_BIN_NAME	=libIDL-0.8.4
+ORBIT_IDL_WIN_BIN_ZIP	=${ORBIT_IDL_WIN_BIN_NAME}.zip
 
 ## ==================================================================
 ##                    Third-party products installation
@@ -1728,6 +1733,29 @@ install.pgifx.ctl:
 	
 ##############################
 # 35 : ORBit Corba:
+
+#Find out location of pkg-config - we need to install there to use it
+PKG_CONFIG_ROOT_CYGPATH:=${shell type pkg-config | sed -e 's/\/bin\// /g' | awk '{print $$3}' | sed -e 's/[()]//g'}
+PKG_CONFIG_ROOT:=${shell cygpath -m "${PKG_CONFIG_ROOT_CYGPATH}"}
+PKG_CONFIG_ROOT_ESCAPED:=${shell echo "${PKG_CONFIG_ROOT}" | sed -e 's/\//\\\//g'}
+
+install.orbit.bin: ${ORBIT_WIN_BIN_ZIP} ${ORBIT_IDL_WIN_BIN_ZIP}
+#ORBIT_WIN_BIN_NAME ORBIT_IDL_WIN_BIN_NAME
+	@echo "PKG_CONFIG_ROOT=${PKG_CONFIG_ROOT}"
+	@echo "PKG_CONFIG_ROOT_ESCAPED=${PKG_CONFIG_ROOT_ESCAPED}"
+	${UNZIP} ${ORBIT_WIN_BIN_ZIP} -d ${PKG_CONFIG_ROOT}
+	${UNZIP} ${ORBIT_IDL_WIN_BIN_ZIP} -d ${PKG_CONFIG_ROOT}
+#ORBit needs libpopt:
+	http://optusnet.dl.sourceforge.net/sourceforge/gnuwin32/popt-1.8-1-bin.exe
+
+ee:
+#Fix info in pkg-config files: APPARENTLY NOT NEEDED - /target is automatically expanded?
+	cat ${PKG_CONFIG_ROOT}/lib/pkgconfig/ORBit-2.0.pc | sed -e 's/prefix=\/target/prefix=${PKG_CONFIG_ROOT_ESCAPED}/'
+	cat ${PKG_CONFIG_ROOT}/lib/pkgconfig/ORBit-CosNaming-2.0.pc
+	cat ${PKG_CONFIG_ROOT}/lib/pkgconfig/ORBit-idl-2.0.pc
+	cat ${PKG_CONFIG_ROOT}/lib/pkgconfig/ORBit-imodule-2.0.pc
+	cat ${PKG_CONFIG_ROOT}/lib/pkgconfig/libIDL-2.0.pc
+
 ifdef ORBIT_USE_TARBALL
 install.orbit: ${ORBIT_SRC_TAR_GZ}
 	cd ${SYSTEMDRIVE}/tmp; tar --gunzip -xf ${CYG_AUBITDIR}/$^	
@@ -1981,7 +2009,10 @@ ${SQLITE_SRC_TAR_GZ}:
 	${WGET} ${SQLITE_PATH}/$@
 ${ORBIT_SRC_TAR_GZ}:
 	${WGET} ${ORBIT_SRC_PATH}/$@
-	
+${ORBIT_WIN_BIN_ZIP}:
+	${WGET} ${ORBIT_WIN_PATH}/$@
+${ORBIT_IDL_WIN_BIN_ZIP}:
+	${WGET} ${ORBIT_WIN_PATH}/$@
 	
 #############################################
 #       SQLite tests

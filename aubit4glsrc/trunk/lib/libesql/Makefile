@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.25 2005-01-07 08:19:02 afalout Exp $
+# $Id: Makefile,v 1.26 2005-02-03 07:47:32 afalout Exp $
 #
 
 ROOT    =../..
@@ -180,7 +180,7 @@ helper_funcs_postgresql.o: helper_funcs.ec
 helper_funcs_sap.o: helper_funcs.ec
 #cpc will allways add .cpc extension to any source files
 	cp $^ $^.cpc
-	${SAPDB_ESQLC} $^ -I${INFORMIXDIR}/incl/esql -I${ROOT}/incl -o $@ -DDIALECT_SAP -I/opt/sapdb/interfaces/precompiler/incl
+	${SAPDB_ESQLC} $^ -I${ROOT}/incl -o $@ -DDIALECT_SAP -I/opt/sapdb/interfaces/precompiler/incl
 	rm $^.cpc
 
 ###################
@@ -205,6 +205,12 @@ helper_funcs_ingres.o: helper_ingres.ec
 #-DNEWERA
 	rm helper_ingres.c
 
+	
+show:
+	@echo "INFORMIXDIR=${INFORMIXDIR}"
+	@echo "INFORMIXDIR_UNQUOTED=${INFORMIXDIR_UNQUOTED}"
+
+	
 ## ==================================================================
 ##                              Clean
 ## ==================================================================

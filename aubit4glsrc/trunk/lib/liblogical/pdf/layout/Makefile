@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2004-12-13 01:55:33 afalout Exp $
+# $Id: Makefile,v 1.6 2005-02-03 07:47:32 afalout Exp $
 #
 
 LIBROOT		=../../..
@@ -85,7 +85,9 @@ endif
 endif
 
 ifeq "${GTKBUILD}" "yes"
+ifeq "${PDFBUILD}" "yes"
 	ALL+=${LIBROOT}/libLOGREP_PDF${SO_EXT}
+endif
 endif
 
 ## ==================================================================

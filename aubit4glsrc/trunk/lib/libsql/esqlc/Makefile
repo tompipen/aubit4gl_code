@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2005-01-12 11:15:18 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2005-02-03 07:47:33 afalout Exp $
 #
 
 ROOT		=../../..
@@ -41,7 +41,6 @@ SRC					=esql.ec
 SRC_C				=${SRC:.ec=.c}
 OBJS				=${SRC_C:.c=.o}
 
-#CFLAGS are used only by C compiler on UNIX, not by ESQL/C or MSVC compilers:
 CFLAGS				+=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
 					-I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql \
 					-I$(AUBITDIR)/incl -g
@@ -49,11 +48,9 @@ CFLAGS				+=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
 ESQL_INCLPATH		=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
 					-I$(AUBITDIR)/incl ${C_IFLAGS}
 
-
 ifneq "${INFORMIXDIR}" ""
 	ESQL_INCLPATH	+=-I${INFORMIXDIR}
 endif
-
 
 LD_LFLAGS           =-L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
                     -L$(INFORMIXDIR)/lib/cli -g
@@ -94,22 +91,18 @@ ifneq "$(findstring esql,${PLUGIN_STATIC})" ""
 endif
 
 
-ifdef COMSPEC
+#TODO: remove all this - its obsolete:
+ifdef xxxxCOMSPECxxxx
     #since we are using ESQL/C compiler, and then MSVC, this define is not automatic:
-	ESQL_FLAGS		=-D__CYGWIN__ -e
+	#ESQL_FLAGS		=-D__CYGWIN__ -e
+	ESQL_FLAGS		=-e
 	# -e, -p          Preprocess only (no compilation or linking).
 
     #strange things happen to paths when invoking native Windows programs from CygWin make,
     #so we need to use explicit backslash, even though slash is understood by most
     #Windows programs:
-	ESQL_INCLPATH	+=-I${LIBROOT} -I${ROOT}\compilers\fcompile
-	#we must NOT use CygWin headers, on Windows we must compile with MSVC,
-    #since it's the only supported compiler by esql/c on Windows
-	#-Ic:/cygwin/usr/include
-	ALL				=dllSQL_esql
-
-	CFLAGS			+=-Ic:/INFORMIX
-
+	ESQL_INCLPATH	+=-I${LIBROOT} 
+	#-I${ROOT}\compilers\fcompile
 
     #FIXME!!!!! I'm using variable named TMP somewhere!!!!
 	#Should be OK now
@@ -125,9 +118,10 @@ ifdef COMSPEC
 
 else
 #    ESQL_INCLPATH	=-I${LIBROOT} -I${ROOT}/compilers/fcompile
-	ALL				=${LIBROOT}/libSQL_esql${SO_EXT}
+	
 endif
 
+ALL				=${LIBROOT}/libSQL_esql${SO_EXT}
 
 #C pre-processor flags:
 CPP_FLAGS=-I${ROOT}/incl -I.. -P
@@ -167,32 +161,16 @@ ifeq "${TARGET_OS}" "solaris"
 endif
 
 ifdef COMSPEC
-#from Mikes Makefile.cygwin:
-
-#.SUFFIXES: .ec .o .c
-
-	CFLAGS=-g -O2 -Wall -D_REENTRANT -DIFX_THREAD -I../../../incl -I..
-	#CC=gcc
-	ESQL=esql
-	ESQL_FLAGS= -thread
+	#CFLAGS=-g -O2 -Wall -D_REENTRANT -DIFX_THREAD -I../../../incl -I..
+	#ESQL_SOMETHING=esql
+	ESQL_FLAGS=-thread
 	LDFLAGS=
 	#IFX_CSDK_DIR=/CSDK
 	INFORMIXDIR_CSDK	=${INFORMIXDIR_UNQUOTED}${IFX_CSDK_DIR}
 	IFX_LIBS="${INFORMIXDIR_CSDK}\bin\isqlt09a.dll"  "${INFORMIXDIR_CSDK}\bin\igl4n304.dll" \
 		"${INFORMIXDIR_CSDK}\bin\iglxn304.dll"  "${INFORMIXDIR_CSDK}\bin\igo4n304.dll"
-		
-		
-		
 	LINKLIBS=-L../../ -laubit4gl
-
-	#.ec.o:
-	#	$(ESQL) $(ESQL_FLAGS) -e $<
-	#	$(CC) $(CFLAGS) -I"${INFORMIXDIR}\incl\esql" -c $*.c -o $*.o
-	#	-@rm $*.c $*.c_*
-	
-	#libSQL_ESQL.dll:  esql.o
-	#	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $^ ${IFX_LIBS} ${LINKLIBS} -o $@
-
+	CFLAGS+=-D_REENTRANT -DIFX_THREAD -I"${INFORMIXDIR_CSDK}\incl\esql"	
 endif
 
 ifneq "${COMSPEC}" ""
@@ -201,7 +179,9 @@ ifneq "${COMSPEC}" ""
 	ECPG_IFLAGS			:=$(shell echo "${ECPG_IFLAGS}" | tr '\\' '/')
 	PGLIBS				:=$(shell echo "${PGLIBS}" | tr '\\' '/')
 endif	
-	
+
+
+.SUFFIXES: .ec .o .c
 
 ## ==================================================================
 ##                              Targets
@@ -217,8 +197,9 @@ libSQL_esql${SO_EXT}: ${LIBROOT}/libSQL_esql${SO_EXT}
 ${LIBROOT}/libSQL_esql${SO_EXT}: ${SRC}
 #	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
 ifneq "${COMSPEC}" ""
-	$(ESQL) $(ESQL_FLAGS) -e $<
-	$(CC) $(CFLAGS) -I"${INFORMIXDIR_CSDK}\incl\esql" -c $(basename $<).c -o $(basename $<).o
+#	$(ESQL_SOMETHING) $(ESQL_FLAGS) -e $<
+	${IFMX_ESQLC} $(ESQL_FLAGS) -e $<
+	$(CC) $(CFLAGS) -c $(basename $<).c -o $(basename $<).o
 	-@rm $(basename $<).c $(basename $<).c_*
 	$(CC) $(LDFLAGS) -mms-bitfields -shared -Wl,--export-all-symbols $(basename $<).o ${IFX_LIBS} ${LINKLIBS} -o $@
 else
@@ -234,7 +215,8 @@ endif
 libSQL_esqlI${SO_EXT}: ${LIBROOT}/libSQL_esqlI${SO_EXT}
 ${LIBROOT}/libSQL_esqlI${SO_EXT}: esql_compatible.ec
 	cpp ${CPP_FLAGS} $^ -D__IFX__  > ifx_$^
-	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c ifx_$^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
+	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c ifx_$^ ${ESQL_FLAGS} \
+		${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) ifx_esql.o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 ##################
@@ -292,7 +274,7 @@ ${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
 #FIXME: Not sure what is this good for, when we already have working one?
 libSQL_c_esql${SO_EXT}: ${LIBROOT}/libSQL_c_esql${SO_EXT}
 ${LIBROOT}/libSQL_c_esql${SO_EXT}: esql_simple_infx.ec
-	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
+	export INFORMIXC=${INFORMIXC}; ${IFMX_ESQLC} -c $^ ${ESQL_FLAGS} ${ESQL_INCLPATH} ${C_DFLAGS}
 	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $(basename $<).o ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 
@@ -309,13 +291,6 @@ ${LIBROOT}/libSQL_c_ecpg${SO_EXT}: esql_simple_ecpg.ec
 		${ECPG_IFLAGS} $(basename $<).c -o $(basename $<).o
 	${CC} -shared -o $@ $(basename $<).o -L${LIBROOT} ${PGLIBS} ${LIBAUBIT4GL}
 
-##################
-#moved here from separate script
-#FIXME: remove it - no need for separate taret jsut for a -static flag...s
-#static:
-#	esql -static esql.ec -I.. -I/home/aubit4gl/sourceforge/aubit4glsrc/incl -L/home/aubit4gl/sourceforge/aubit4glsrc/lib -laubit4gl --shared -o libSQL_esql_s.so
-#	cp libSQL_esql_s.so ../..
-
 ## ==================================================================
 ##                              Sub-Targets
 ## ==================================================================
@@ -330,22 +305,6 @@ show:
 	@echo "IFX_LIBS=${IFX_LIBS}"
 	@echo "Output of 'set':"
 	set
-
-## ==================================================================
-##                              Windows Targets
-## ==================================================================
-
-#just testing:
-dllSQL_esql: ${SRC} ${DEF}
-#  -e, -p          Preprocess only (no compilation or linking).
-#-dcmdl          Displays command lines of all programs invoked.
-#-c              Preprocess and compile only (no linking).
-	${IFMX_ESQLC} -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} \
-		-I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX ${LIBROOT}/libaubit4gl.dll.a
-	${CP} libSQL_esql.dll ${LIBROOT}
-
-${LIBROOT}/libaubit4gl.def:
-	${MAKE} -C ${LIBROOT} dllaubit4gl
 
 ## ==================================================================
 ##                              Clean
