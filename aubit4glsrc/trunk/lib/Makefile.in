@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.31 2002-03-16 12:00:03 afalout Exp $
+# $Id: Makefile.in,v 1.32 2002-03-16 12:15:11 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -331,10 +331,10 @@ libgtk4gl.dll:
 #obsolete-	${MAKE} libaclshared.def DLLOBJS="$^" DLL_LDLIBS="-lform -lpanel -lncurses ${RPCLIB_NAME} -lPDF_NOPDF" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -Llibpdf"
 
 dlllibRPC_SUNRPC: ${CMODS_RPC}
-	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
+	${MAKE} libRPC_SUNRPC.dll DLLOBJS="$^" DLL_LDLIBS="${RPCLIB_NAME} ${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
 
 dlllibRPC_NORPC: ${CMODS_NORPC}
-	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
+	${MAKE} libRPC_NORPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} -laclshared" DLL_LDFLAGS="@RPCLIB_INCLUDE@ ${PDF_LIBNAME} -L. -Ilibincl -I../compilers/fcompile"
 
 
 ## ==================================================================
