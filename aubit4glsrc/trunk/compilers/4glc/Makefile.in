@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.20 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile.in,v 1.21 2002-03-25 10:15:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -40,7 +40,7 @@ override NOINCL=0
 #-nogtk -DDEBUG
 
 ifndef COMSPEC
-	4GLPCFLAGS	+=${LINK_COMPILERS}
+	4GLPCFLAGS	+=${LINK_COMPILERS} -ldl
 #-rdynamic
 #else
 #	4GLPCFLAGS	+=${SO_GCCFLAGS}
@@ -48,28 +48,7 @@ endif
 
 ALL				=rules.t 4glc
 
-#ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
-#	ifneq "$(ODBC)" "no"
-#		ALL		+=4glc-noodbc
-#	endif
-#endif
-
 CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
-#override CFLAGS	+=-I../fcompile #-I../mcompile
-
-#debbuging in function yyparse() and then export YYDEBUG=1 to environment
-YYDEBUG			=@YYDEBUG@
-
-ifndef COMSPEC
-	4GLPCFLAGS	+=-ldl
-endif
-
-
-#ifeq "$(PDFBUILD)" "yes"
-#	4GLPCFLAGS	+=-lpdf
-#else
-#	4GLPCFLAGS	+=-nopdf
-#endif
 
 ifeq "@YACC@" "no"
 	CFLAGS		+=-I../../tools/no_yacc/cygwin/compilers/4glc
@@ -78,19 +57,18 @@ else
 	Y_TAB_C		=rules/generated/y.tab.c
 endif
 
-
 4GLCAOBJ		=mod.o 4glc.o map.o rules/generated/states.o \
 				rules/generated/kw.o rules/generated/y.tab.o dim.o list.o
 
-4GLCAOBJ_PERL   := ${4GLCAOBJ} compile_perl.o compile_c_gtk.o
-4GLCOBJ_PERL	= ${4GLCAOBJ_PERL} lexer.o
+4GLCAOBJ_PERL   =${4GLCAOBJ} compile_perl.o compile_c_gtk.o
+4GLCOBJ_PERL	=${4GLCAOBJ_PERL} lexer.o
 
 ifeq "$(OUTPUTLANG)" "c"
-	4GLCAOBJ	+= compile_c.o compile_c_gtk.o
+	4GLCAOBJ	+=compile_c.o compile_c_gtk.o
 endif
 
 ifeq "$(OUTPUTLANG)" "perl"
-	4GLCAOBJ	+= compile_perl.o compile_c_gtk.o
+	4GLCAOBJ	+=compile_perl.o compile_c_gtk.o
 endif
 
 4GLCOBJ			=${4GLCAOBJ} lexer.o
@@ -99,16 +77,14 @@ endif
 ##                              Targets
 ## ==================================================================
 
-
 all: ${ALL}
+	@echo "Default targets (${ALL}) successfully compield."
 
 4glc: ${4GLCOBJ} ../../lib/libaclall.a
-#	@echo OUTPUTLANG = $(OUTPUTLANG)
 #	${4GLPC} ${4GLPCFLAGS} -o $@ ${4GLCOBJ}
 #same as: why are we using 4glpc?
-#	${CC} -O2 -g  -Irules -L/lib -L../../lib -g -L. -I. -o  4glc mod.o 4glc.o map.o rules/generated/states.o rules/generated/kw.o rules/generated/y.tab.o dim.o list.o compile_c.o compile_c_gtk.o lexer.o -I/usr/aubit/aubit4glsrc/incl -L/usr/aubit/aubit4glsrc/lib -L/lib/w32api -L/usr/local/lib -lm -lPDF_NOPDF -lRPC_NORPC -laclshared
-	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCOBJ} -laclall -lPDF_NOPDF -lRPC_NORPC
-#	-lm
+	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCOBJ} -laclshared -ldl -lm -lPDF_NOPDF -lRPC_NORPC
+#-lm and -ldl are needed on Linux, but not on CygWin
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
 4glc_perl: ${4GLCOBJ_PERL} ../../lib/libaclall.a
@@ -116,53 +92,41 @@ all: ${ALL}
 	${4GLPC} ${4GLPCFLAGS} 	${4GLCOBJ_PERL} -o $@
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
 
-
-4glc-noodbc:  ${4GLCOBJ} ../../lib/libaclall-noodbc.a
-	${4GLPC} -noodbc ${4GLPCFLAGS} 	${4GLCOBJ} -o $@
-	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
-
-
-.PHONY : exp_4glc
-exp_4glc : ${4GLCOBJ}
-	${MAKE} lib4glc${DLL_EXPORTLIB_EXT} DLLOBJS="${4GLCOBJ}"
-
-########################################
-include ../../incl/a4gl-rules.mki
-########################################
-
 ## ==================================================================
 ##                            Sub Targets
 ## ==================================================================
 
-rules/generated/kw.c: rules.t
-rules/generated/single_words.rule: rules.t
-rules/generated/y.tab.c: rules.t
-rules/generated/states.c: rules.t
 
 rules.t :
 	make -C rules $(MKNAME)
 
 rules/generated/y.tab.o: ${Y_TAB_C}
-	$(CC) ${YYDEBUG} ${CFLAGS} -c -o rules/generated/y.tab.o ${Y_TAB_C}
-
-mod.o: mod.c ${Y_TAB_C}
-
-4glc.o: 4glc.c
-	${CC} 4glc.c $(CFLAGS) -c -o 4glc.o
+	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@
 
 ${Y_TAB_C}:
 #	make -C rules generated/y.tab.c $(MKNAME)
 	make -C rules $(MKNAME)
 
 ## ==================================================================
+##                            Dependencies
+## ==================================================================
+
+rules/generated/kw.c: rules.t
+rules/generated/single_words.rule: rules.t
+rules/generated/y.tab.c: rules.t
+rules/generated/states.c: rules.t
+mod.o: mod.c ${Y_TAB_C}
+
+
+## ==================================================================
 ##                            Clean Targets
 ## ==================================================================
 
 clean: clean.rules.generated
-	rm -f *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glc_perl *.log
+	${RM} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glc_perl *.log
 
 clean.rules.generated:
-	(cd rules/generated; rm -f *.yacc *.c *.h single_words *.o *.yh *.rule *.output)
+	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output)
 
 
 #--------------------------------- EOF -----------------------------

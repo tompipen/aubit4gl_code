@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile.in,v 1.16 2002-03-25 10:15:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -106,16 +106,12 @@ norpclib:
 mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall.a
 #	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
 #same as: why are we using 4glpc ?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -laclall -lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
-#-lm
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -lm -ldl -laclall -lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
+#-lm and -ldl are needed on Linux, but not on CygWin
 	${LN} mcompile${EXE} ../../bin/mcompile${EXE}
 
-#mcompile-noodbc: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall-noodbc.a
-#	${SH} ../../bin/4glpc -noodbc ${4GLPCFLAGS} -o $@ $(OBJECTS)
-#	${LN} mcompile-noodbc${EXE} ../../bin/mcompile-noodbc${EXE}
-
 mdecompile: decompile.c menu_x_xdr.c
-	${CC} ${CFLAGS} decompile.c menu_x_xdr.c -L../../lib -lRPC_SUNRPC -o $@ ${CYGWIN_FLAGS}
+	${CC} ${CFLAGS} decompile.c menu_x_xdr.c -L../../lib -lRPC_SUNRPC -laclshared -ldl -lm -lPDF_NOPDF -o $@ ${CYGWIN_FLAGS}
 	cp $@ ../../bin
 
 ## ==================================================================

@@ -1,12 +1,79 @@
-# Makefile for compiling the informix connection test.
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
 
-ESQL=esql
-CFLAGS+=-I../../../lib/libincl
+# Makefile for compiling the informix ESQL/C connection test.
 
-test_informix: test_informix.o test_informix_util.ec connection_suite.o \
-ddl_suite.o dml_suite.o
-	$(ESQL) $(CFLAGS) test_informix.o connection_suite.o ddl_suite.o \
-dml_suite.o test_informix_util.ec \
--o $@ -lcheck -L$(AUBITDIR)/lib -lSQL_esql -laclshared \
--lncurses -lpanel -lgtk -lgdk -lform -lPDF_NOPDF -lSQL_unixodbc
+#
+# $Id: Makefile.in,v 1.2 2002-03-25 10:15:18 afalout Exp $
+#
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../../incl/Makefile-common
+override NOINCL=0
+
+## ==================================================================
+##                    Options
+## ==================================================================
+
+ESQL=@IFMX_ESQLC@
+CFLAGS+=-I../../../lib/libincl -L$(AUBITDIR)/lib
+
+OBJECTS=test_informix_util.ec test_informix.o connection_suite.o \
+		ddl_suite.o dml_suite.o
+
+LIBS=-lcheck -laclshared -lPDF_NOPDF -lRPC_NORPC
+#this is linked to libUI_TUI:
+#-lncurses -lpanel -lform 
+#this is linked to libUI_GTK:
+#-lgtk -lgdk 
+#This is loaded dynamically at run-time by libaclshared, one or the other:
+#-lSQL_esql -lSQL_unixodbc
+
+#FIXME: also test if we have -lcheck
+ifneq "${ESQL}" "no"
+	ALL=test_informix
+else
+	ALL=no_esql
+endif
+
+## ==================================================================
+##                    Targets
+## ==================================================================
+
+ALL:
+
+test_informix: ${OBJECTS}
+	$(ESQL) $(CFLAGS) $^ -o $@ ${LIBS}
+
+no_esql:
+	@echo "Configure did not found esql compiler - cannot compile tests."
+
+## ==================================================================
+##                    Clean
+## ==================================================================
+
+clean:
+	rm -f *.o test_informix *.exe *.bak
 

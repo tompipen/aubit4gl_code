@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.37 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile.in,v 1.38 2002-03-25 10:15:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -214,6 +214,7 @@ libaclall.a : $(OBJS) ${GUI_TUI}
 	ranlib $@
 
 libaclshared.so : $(OBJS) ${GUI_TUI}
+#	-ldl -lm should be linked here, not in 4glpc with executable?
 	${LD} ${SO_LDFLAGS} -o $@ $^
 #-Map  mapfile
 

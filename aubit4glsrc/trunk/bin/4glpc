@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.62 2002-03-25 07:42:44 afalout Exp $
+# $Id: 4glpc,v 1.63 2002-03-25 10:15:18 afalout Exp $
 #
 
 ########################################################################
@@ -54,8 +54,8 @@ then
 	USE_SHARED="Yes"
 fi
 
-#thsi still won't work on UNIX:
-#	USE_SHARED="Yes"
+#this still won't work on UNIX:
+#USE_SHARED="Yes"
 
 
 #############

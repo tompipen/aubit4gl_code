@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.25 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile-common.in,v 1.26 2002-03-25 10:15:18 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -249,7 +249,8 @@ else
 	CPEXE		=ln -f
     SH			=sh
     LN			=ln -f
-    SO_LDFLAGS	=${PIC} -shared
+#    SO_LDFLAGS	=${PIC} -shared
+	SO_LDFLAGS	=-shared
 	LN_S_LIB    =${LN_S}
 endif
 

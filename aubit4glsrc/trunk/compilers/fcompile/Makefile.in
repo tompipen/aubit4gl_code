@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.20 2002-03-25 07:42:44 afalout Exp $
+# $Id: Makefile.in,v 1.21 2002-03-25 10:15:18 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,7 +37,7 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPCFLAGS		=-make-compile ${LINK_COMPILERS} -verbose -nogtk -L../../lib
-CFLAGS 			+=-I../../lib -I. @CURSES_INC_PATH@
+CFLAGS 			+=-I../../lib -I. @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 
 #FIXME: we should compile dummy executables in any case, so we can use them instead
 #of real ones when installing binary distro on system with missing RPClib:
@@ -67,20 +67,6 @@ ifdef COMSPEC
 #	RPCGEN 		= @RPCGEN@ form_x.x
 #	4GLPCFLAGS	+=-rdynamic
 endif
-
-#ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
-#	ifeq "$(ODBC)" "no"
-#		4GLPCFLAGS	+= -noodbc
-#	else
-#		ALL 	+= fcompile-noodbc
-#	endif
-#endif
-
-#ifeq "$(PDFBUILD)" "yes"
-#	4GLPCFLAGS	+=-lpdf
-#else
-#	4GLPCFLAGS	+=-nopdf
-#endif
 
 SRC_COMMON      =fcompile.c formwrite2.c where.c
 
@@ -112,8 +98,6 @@ endif
 
 LEX_YY_C        =../../tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
 
-CFLAGS			+=@RPCLIB_INCLUDE@
-
 ## ==================================================================
 ##                             Targets
 ## ==================================================================
@@ -121,14 +105,11 @@ CFLAGS			+=@RPCLIB_INCLUDE@
 all:	 $(ALL)
 	@echo "Default targets (${ALL}) successfully compiled."
 
-#objects: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
-#sources: $(SOURCES)
-#targets: $(SOURCES) $(TARGETS)
-
 fcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall.a
 #	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
 #same as: why are we using 4glpc ?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -lm -laclall -lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -lm -ldl -laclall -lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
+#-lm and -ldl are needed on Linux, but not on CygWin
 #	${CC} -g -O2 -DAUTOBANG -DDEBUG -I/usr/local/include -DWIN32 -fnative-struct -I../../lib -I. -I/usr/aubit/aubit4glsrc/tools/no_curses/cygwin -I/usr/aubit/aubit4glsrc/tools/no_rpc/cygwin -L../../lib -o fcompile fcompile.o formwrite2.o where.o y.tab.o -lm  -laclall -lRPC_NORPC -lPDF_NOPDF
 	${LN} fcompile${EXE} ../../bin/fcompile${EXE}
 
@@ -152,10 +133,6 @@ endif
 fshow : fshow.4gl
 	${SH} ../../bin/4glpc fshow.4gl -o fshow
 	cp $@ ../../bin
-
-#fshow-gtk : fshow.4gl
-#	${SH} ../../bin/4glpc -verbose -gtk -DGTK fshow.4gl -o fshow-gtk
-#	cp $@ ../../bin
 
 norpclib:
 #we will make some fake executables, to simplify installation and RPM builds:
@@ -217,7 +194,7 @@ clean:
 #do NOT remove lex.yy.c and y.tab.c OR...
 	$(RM) fcompile fcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta \
 	core *~ *.ln *.output *.bak *.exe lex.yy.c form_x.h form_x_xdr.c \
-	*.err fdecompile-j fdecompile fshow-gtk fshow fshow.c
+	*.err fdecompile-j fdecompile fshow-gtk fshow fshow.c *.out
 
 ## ==================================================================
 ##                         Other Targets

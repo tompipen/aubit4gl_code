@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.44 2002-03-25 07:42:40 afalout Exp $
+# $Id: Makefile.in,v 1.45 2002-03-25 10:15:01 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -579,6 +579,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	$(MAKE) ${MKNAME} -C compilers/helpcompile clean
 	$(MAKE) ${MKNAME} -C tools/test clean
 	$(MAKE) ${MKNAME} -C tools/test/gui clean
+	$(MAKE) -C tools/test/db clean
 	$(MAKE) ${MKNAME} -C tools/ide clean
 	$(MAKE) ${MKNAME} -C tools/html clean
 	$(MAKE) ${MKNAME} -C tools/jabber clean
@@ -586,7 +587,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 
 clean.config: clean.configure
 clean.configure: clean.makefiles clean.settings
-	${RM} config.log config.status incl/config.h docs/doxy/doxyfile \
+	${RM} config.log config.status incl/config.h docs/doxy/Doxyfile \
             etc/aubit-rpm.spec
 #incl/a4gl-rules.mki
 
@@ -611,6 +612,7 @@ clean.makefiles:
 	${RM} tools/test/db/Makefile
 	${RM} tools/test/lang/Makefile
 	${RM} tools/test/regression/Makefile
+	${RM} tools/test/db/Makefile
 	${RM} tools/adbaccess/Makefile
 	${RM} tools/adbload/Makefile
 	${RM} tools/html/Makefile
@@ -649,7 +651,7 @@ clean.bin:
 	)
 
 clean.etc:
-	${RM} etc/*.bak etc/aubit-auto.spec
+	${RM} etc/*.bak etc/config/*.bak etc/aubit-auto.spec
 
 clean.incl:
 	${RM} incl/*.bak
