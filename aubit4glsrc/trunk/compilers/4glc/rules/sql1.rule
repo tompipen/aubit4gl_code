@@ -693,7 +693,7 @@ comparison_predicate:
 
 comp_op:
 	  EQUAL
-	| NOT_EQUAL
+	| NOT_EQUAL {sprintf($<str>$,"!=");}
 	| LESS_THAN
 	| GREATER_THAN 
         | NOT_MATCHES

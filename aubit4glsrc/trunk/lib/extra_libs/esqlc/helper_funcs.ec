@@ -8,8 +8,17 @@ if (dir=='i') {
 	char *ptr;
 	push_dec(a4gl,0);
 	ptr=char_pop();
-	printf("Ptr=%s",ptr);
+	debug("Ptr=%s\n",ptr);
 }
+
+if (dir=='o') {
+	char *ptr;
+	debug("Ptr=dec_t=%p\n",infx);
+	debug("dec_t.dec_exp=%d\n",infx->dec_exp);
+	debug("dec_t.dec_pos=%d\n",infx->dec_pos);
+	debug("dec_t.dec_ndgts=%d\n",infx->dec_ndgts);
+}
+
 
 }
 
@@ -19,9 +28,10 @@ if (dir=='i') {
 // some of these are not valid - but an array is a quick way to
 // look up the corresponding Informix Dtype qualifiers...
 int arr_dtime[]={
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  1024, 1538, 2052, 2566, 3080, 3594, 3851, 4108, 4365, 4622, 4879,
-  0, 0, 0, 0, 0, 0,
+   	0,0,0, 	0, 	0, 	0, 	0, 	0, 	0, 	0, 	0, 
+  0, 	0, 	0, 	0, 	0, 	0, 	1024, 	1538, 	2052, 	2566, 
+  3080,	3594, 	3851, 	4108, 	4365, 	4622, 	4879, 	0, 	0, 	0, 
+  0, 0, 0,
   546, 1060, 1574, 2088, 2602, 2859, 3116, 3373, 3630, 3887,
   0, 0, 0, 0, 0, 0, 0,
   580, 1094, 1608, 2122, 2379, 2636, 2893, 3150, 3407,
@@ -45,13 +55,17 @@ void copy_datetime(dtime_t *infx, struct a4gl_dtime *a4gl,int size,int mode) {
 			debug("DATETIME OUT OF RANGE");
 			printf("ERROR - SEE DEBUG.OUT");
 		}
+		debug("size=%d\n",size);
 		infx->dt_qual=arr_dtime[size];
+		debug("infx_dtqual=%d\n",infx->dt_qual);
 		dtcvasc(ptr,infx);
-/*
-		printf("Copy datetime in - aubit=%s\n",ptr);
+
+// Debugging stuff only
+		debug("Copy datetime in - aubit=%s\n",ptr);
 		dttoasc(infx,buff);
-		printf("                Informix=%s\n",buff);
-*/
+		debug("                Informix=%s\n",buff);
+// End of Debugging stuff only
+
 		free(ptr);
 	}
 
@@ -63,13 +77,14 @@ void copy_datetime(dtime_t *infx, struct a4gl_dtime *a4gl,int size,int mode) {
 		push_char(buff);
 		pop_param(a4gl,DTYPE_DTIME,size);
 
-/*
+
+// Debugging stuff only
 		push_dtime(a4gl);
 		ptr=char_pop();
-		printf("Copy datetime out - aubit=%s\n",ptr);
-		printf("                Informix=%s\n",buff);
+		debug("Copy datetime out - aubit=%s\n",ptr);
+		debug("                Informix=%s\n",buff);
 		free(ptr);
-*/
+// End of Debugging stuff only
 	}
 
 
