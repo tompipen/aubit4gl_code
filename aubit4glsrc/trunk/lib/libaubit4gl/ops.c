@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.59 2004-09-14 11:48:44 mikeaubury Exp $
+# $Id: ops.c,v 1.60 2004-09-14 14:31:35 mikeaubury Exp $
 #
 */
 
@@ -54,6 +54,7 @@ static char *make_using (char *ptr);
 void A4GL_date_date_ops (int op);
 void A4GL_date_int_ops (int op);
 void A4GL_int_date_ops (int op);
+double trunc(double f);
 
 /*
 =====================================================================
