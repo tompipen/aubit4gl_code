@@ -1473,7 +1473,7 @@ misc_sql :
 
 rename_stmt :
 	RENTAB rentabname TO rentabname { sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); }
-	| RENCOL table_name DOT rencolname TO rencolname { sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); }
+	| RENCOL table_name DOT rencolname TO rencolname { sprintf($<str>$,"RENAME COLUMN  %s.%s TO %s",$<str>2,$<str>4,$<str>6); }
 ;
 
 rentabname : identifier;
