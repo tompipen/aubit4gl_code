@@ -160,6 +160,9 @@ cursor_specification_all_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| insert_statement_ss { 
+		if (A4GLSQLCV_check_requirement("UNSUPPORTED_INSERT_CURSOR")) {
+			a4gl_yyerror("Insert cursors are not supported for this rdbms");
+		}
 		$<sql_string>$=make_sql_string_and_free(strdup(print_curr_spec(1,$<sql_string>1)),0);
 	}
 ;

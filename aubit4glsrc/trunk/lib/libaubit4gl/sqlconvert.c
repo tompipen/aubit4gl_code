@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.47 2005-02-25 08:40:00 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.48 2005-02-26 08:41:50 mikeaubury Exp $
 #
 */
 
@@ -120,6 +120,9 @@ char *cvsql_names[]={
   "CVSQL_NO_PUT",
   "CVSQL_FULL_INSERT",
   "CVSQL_INSERT_ALIAS",
+  "CVSQL_OMIT_UPDATE_TABLE",
+  "CVSQL_UNSUPPORTED_INSERT_CURSOR",
+  
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -197,6 +200,8 @@ enum cvsql_type
   CVSQL_NO_PUT,
   CVSQL_FULL_INSERT,
   CVSQL_INSERT_ALIAS,
+  CVSQL_OMIT_UPDATE_TABLE,
+  CVSQL_UNSUPPORTED_INSERT_CURSOR,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -1003,6 +1008,8 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "NO_PUT", len) == 0) return CVSQL_NO_PUT;
   if (strncasecmp (p, "FULL_INSERT", len) == 0) return CVSQL_FULL_INSERT;
   if (strncasecmp (p, "INSERT_ALIAS", len) == 0) return CVSQL_INSERT_ALIAS;
+  if (strncasecmp (p, "OMIT_UPDATE_TABLE", len) == 0) return CVSQL_OMIT_UPDATE_TABLE;
+  if (strncasecmp (p, "UNSUPPORTED_INSERT_CURSOR", len) == 0) return CVSQL_UNSUPPORTED_INSERT_CURSOR;
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
@@ -2053,7 +2060,6 @@ char *A4GLSQLCV_make_dtime_extend(char *dval,char *from,char *to,int extend) {
         static char buff[256];
 	int hr;
 	char *xx;
-
 
         hr=A4GLSQLCV_check_requirement("DATETIME_EXTEND_FUNCTION");
         if (hr) {

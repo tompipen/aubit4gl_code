@@ -1041,11 +1041,13 @@ correlation_name:
 literal: CHAR_VALUE { strcpy($<str>$,convstrsql($<str>1)); A4GL_debug("Set $<str>$ to %s\n",$<str>$); }
 	| real_number
 	| INT_VALUE
-        | curr_clause
+        | curr_clause 
+		
 ;
 
 
-cur_part: { strcpy($<str>$,A4GLSQLCV_generate_current(0,0)); }
+cur_part: { strcpy($<str>$,A4GLSQLCV_generate_current(0,0)); 
+}
 	| s_curr TO e_curr {
 		strcpy($<str>$,A4GLSQLCV_generate_current($<str>1,$<str>3));
 	}
@@ -1229,11 +1231,13 @@ value_expression_ss:
 		char *a;
 		a=strdup(A4GLSQLCV_check_expr($<sql_string>2));
 		$<sql_string>$=make_sql_string_and_free(strdup("-"),a,0);
+		free($<sql_string>2);
 	}
 	| PLUS value_expression_initial_ss {
 		char *a;
 		a=strdup(A4GLSQLCV_check_expr($<sql_string>2));
 		$<sql_string>$=make_sql_string_and_free(strdup("+"),a,0);
+		free($<sql_string>2);
 	}
 ;
 
