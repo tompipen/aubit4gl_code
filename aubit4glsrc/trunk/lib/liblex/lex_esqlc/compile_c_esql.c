@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.90 2004-10-26 12:34:03 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.91 2004-10-26 20:55:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.90 2004-10-26 12:34:03 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.91 2004-10-26 20:55:13 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -220,8 +220,11 @@ A4GL_save_sql("CLOSE SESSION %s",A4GL_strip_quotes (name));
       print_copy_status ();
       break;
     case 'C':
-A4GL_save_sql("CLOSE SESSION %s", A4GL_strip_quotes (name));
+      A4GL_save_sql("CLOSE  %s", A4GL_strip_quotes (name));
       printc ("\nEXEC SQL CLOSE %s;\n", A4GL_strip_quotes (name));
+      if (A4GLSQLCV_check_requirement("IGNORE_CLOSE_ERROR")) {
+		printc("sqlca.sqlcode=0;");
+      }
       print_copy_status ();
       break;
     }

@@ -5,13 +5,23 @@ MATCHES_TO_REGEX
 TABLE_ALIAS_AS
 ADD_CASCADE
 COLUMN_ALIAS_AS
+MONEY_AS_DECIMAL
 ANSI_UPDATE_SYNTAX
 CONSTRAINT_NAME_BEFORE
 SUBSTRING_FUNCTION = substr
+# Postgres doesn't have one of these - so fake one
+DTYPE_ALIAS DATETIME HOUR TO SECOND=CHAR(8)
+DTYPE_ALIAS DATETIME YEAR TO FRACTION(5)=CHAR(20)
+DTYPE_ALIAS DATETIME YEAR TO MINUTE=CHAR(16)
 OMIT_NO_LOG
 USE_INDICATOR
 REPLACE rowid = oid
 REPLACE today = date(now())
 REPLACE current year to second = now()
-REPLACE unique = distinct
+REPLACE current year to fraction(5) = now()
+# Ignore any errors when closing a cursor
+# it may already have been closed...
+IGNORE_CLOSE_ERROR
+OMIT_INDEX_CLUSTER
+OMIT_INDEX_ORDER
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.21 2004-10-26 12:34:02 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.22 2004-10-26 20:55:11 mikeaubury Exp $
 #
 */
 
@@ -71,11 +71,16 @@ char *cvsql_names[]={
   "CVSQL_STRIP_ORDER_BY_INTO_TEMP",
   "CVSQL_ADD_CASCADE",
   "CVSQL_OMIT_NO_LOG",
-  "CVSQL_OWNER_QUOTE",
+  "CVSQL_QUOTE_OWNER",
   "CVSQL_NO_OWNER_QUOTE",
   "CVSQL_CONSTRAINT_NAME_BEFORE",
   "CVSQL_CONSTRAINT_NAME_AFTER",
-  "CVSQL_USE_INDICATOR"
+  "CVSQL_USE_INDICATOR",
+  "CVSQL_IGNORE_CLOSE_ERROR",
+  "CVSQL_OMIT_INDEX_CLUSTER",
+  "CVSQL_OMIT_INDEX_ORDER",
+
+  "CVSQL_DTYPE_ALIAS"
 };
 
 struct ilist {
@@ -107,11 +112,15 @@ enum cvsql_type
   CVSQL_STRIP_ORDER_BY_INTO_TEMP,
   CVSQL_ADD_CASCADE,
   CVSQL_OMIT_NO_LOG,
-  CVSQL_OWNER_QUOTE,
+  CVSQL_QUOTE_OWNER,
   CVSQL_NO_OWNER_QUOTE,
   CVSQL_CONSTRAINT_NAME_BEFORE,
   CVSQL_CONSTRAINT_NAME_AFTER,
-  CVSQL_USE_INDICATOR
+  CVSQL_USE_INDICATOR,
+  CVSQL_IGNORE_CLOSE_ERROR,
+  CVSQL_OMIT_INDEX_CLUSTER,
+  CVSQL_OMIT_INDEX_ORDER,
+  CVSQL_DTYPE_ALIAS
 };
 
 
@@ -332,7 +341,7 @@ A4GL_cv_fnlist (char *source, char *target)
    */
   while (fgets (buff, 200, fh))
     {
-      if ((t = A4GL_cv_next_token (buff, &len, 0)) == NULL)
+      if ((t = A4GL_cv_next_token (buff, &len, 0)) == NULL) 
 	continue;
       if (*t == '#')
 	continue;
@@ -342,12 +351,10 @@ A4GL_cv_fnlist (char *source, char *target)
 	realloc (conversion_rules,
 		 sizeof (*conversion_rules) * conversion_rules_cnt);
 
-      conversion_rules[conversion_rules_cnt - 1].type =
-	A4GL_cv_str_to_func (t, len);
+      conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len);
       conversion_rules[conversion_rules_cnt - 1].data.from = 0;
       conversion_rules[conversion_rules_cnt - 1].data.to = 0;
 A4GL_trim(t);
-      //printf ("1. (%s)\n", t);
       /* get the argument list, A4GL_strip off leading = sign */
       t += len;
       t = A4GL_cv_next_token (t, &len, 0);
@@ -407,6 +414,8 @@ A4GL_trim(t);
 char *A4GLSQLCV_check_sql(char *s ) {
 int b;
 static char *buff=0;
+printf("check sql : %s\n",s);
+A4GL_debug("check sql : %s\n",s);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_CMD) {
 		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
@@ -419,15 +428,84 @@ buff=realloc(buff,strlen(s)*2+1000);
 strcpy(buff,s);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE) {
-		if (strstr(buff,conversion_rules[b].data.from)!=0) {
-			char b2[256];
-			sprintf(b2,"%s = %s", conversion_rules[b].data.from,conversion_rules[b].data.to);
-			A4GL_cvsql_replace (buff, b2);
+		if (A4GL_strcasestr(buff,conversion_rules[b].data.from)!=0) {
+			//char b2[256];
+			//printf("%s = %s", conversion_rules[b].data.from,conversion_rules[b].data.to);
+			A4GL_cvsql_replace_str (buff, conversion_rules[b].data.from,conversion_rules[b].data.to );
 		}
 	}
 }
 return buff;
 }
+
+
+char *A4GLSQLCV_dtype_alias(char *s ) {
+int b;
+A4GL_debug("Alias : '%s'\n",s);
+for (b=0;b<conversion_rules_cnt;b++) {
+	
+	if (conversion_rules[b].type==CVSQL_DTYPE_ALIAS) {
+		A4GL_debug("--> %s %s\n",conversion_rules[b].data.from,s);
+		if (strcmp(s,conversion_rules[b].data.from)==0) {
+			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
+			return conversion_rules[b].data.to;
+		}
+	}
+}
+return s;
+}
+
+A4GL_cvsql_replace_str (char *buff, char *from,char *to) {
+int a;
+static char *buff2;
+int l;
+int cnt=0;
+int sq=0;
+int dq=0;
+l=strlen(buff)*2+1000;
+buff2=realloc(buff2,l);
+
+for (a=0;a<=strlen(buff);a++) {
+	if (sq==0&&dq==0&&strncasecmp(&buff[a],from,strlen(from))==0) {
+		strcat(buff2,to);
+		cnt=strlen(buff2);
+		a=a+strlen(from)-1;
+	} else {
+		buff2[cnt++]=buff[a];
+		buff2[cnt]=0;
+		if (buff[a]=='\'' && dq==0) sq=1-sq;
+		if (buff[a]=='"' && sq==0) dq=1-dq;
+	}
+}
+
+if (cnt>=l) {
+	A4GL_assertion(1,"Not allocated enough space for replace_str");
+}
+
+strcpy(buff,buff2);
+
+}
+
+
+
+char *A4GLSQLCV_check_expr(char *s ) {
+int b;
+static char *buff=0;
+buff=realloc(buff,strlen(s)*2+1000);
+strcpy(buff,s);
+
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_REPLACE_EXPR) {
+		if (strstr(buff,conversion_rules[b].data.from)!=0) {
+			A4GL_cvsql_replace_str (buff, conversion_rules[b].data.from,conversion_rules[b].data.to );
+		}
+	}
+}
+return buff;
+}
+
+
+
 
 
 
@@ -565,11 +643,15 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "STRIP_ORDER_BY_INTO_TEMP", len) == 0) return CVSQL_STRIP_ORDER_BY_INTO_TEMP;
   if (strncasecmp (p, "ADD_CASCADE", len) == 0) return CVSQL_ADD_CASCADE;
   if (strncasecmp (p, "OMIT_NO_LOG", len) == 0) return CVSQL_OMIT_NO_LOG;
-  if (strncasecmp (p, "OWNER_QUOTE", len) == 0) return CVSQL_OWNER_QUOTE;
+  if (strncasecmp (p, "QUOTE_OWNER", len) == 0) return CVSQL_QUOTE_OWNER;
   if (strncasecmp (p, "NO_OWNER_QUOTE", len) == 0) return CVSQL_NO_OWNER_QUOTE;
   if (strncasecmp (p, "CONSTRAINT_NAME_BEFORE", len) == 0) return CVSQL_CONSTRAINT_NAME_BEFORE;
   if (strncasecmp (p, "CONSTRAINT_NAME_AFTER", len) == 0) return CVSQL_CONSTRAINT_NAME_AFTER;
   if (strncasecmp (p, "USE_INDICATOR", len) == 0) return CVSQL_USE_INDICATOR;
+  if (strncasecmp (p, "IGNORE_CLOSE_ERROR", len) == 0) return CVSQL_IGNORE_CLOSE_ERROR;
+  if (strncasecmp (p, "OMIT_INDEX_CLUSTER", len) == 0) return CVSQL_OMIT_INDEX_CLUSTER;
+  if (strncasecmp (p, "OMIT_INDEX_ORDER", len) == 0) return CVSQL_OMIT_INDEX_ORDER;
+  if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
 printf("Unknown : %s\n",p);
@@ -1504,4 +1586,22 @@ free(o2);
 return a_i;
 	
 
+}
+
+
+int A4GL_strcasestr(char *h,char *n) {
+char *h1;
+char *n1;
+int r;
+A4GL_push_char(h);
+A4GL_upshift_stk();
+h1=A4GL_char_pop();
+
+A4GL_push_char(n);
+A4GL_upshift_stk();
+n1=A4GL_char_pop();
+r=strstr(h1,n1);
+free(h1);
+free(n1);
+return r;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.48 2004-09-30 10:20:01 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.49 2004-10-26 20:55:09 mikeaubury Exp $
 #
 */
 
@@ -421,7 +421,7 @@ A4GL_func_mod (void)
 
 
 int aclfgl_ord(int n) {
-char *s;
+unsigned char *s;
 s=A4GL_char_pop();
 A4GL_push_long(s[0]);
 free(s);

@@ -674,6 +674,8 @@ comp_op:
 predicate_ss:
 	  comparison_predicate_ss {
 		$<sql_string>$=$<sql_string>1;
+
+	
 	}
 	| in_predicate_ss {
 		$<sql_string>$=$<sql_string>1;
@@ -686,7 +688,9 @@ predicate_ss:
 
 op_all: {strcpy($<str>$,"");}
 	| ALL {strcpy($<str>$," ALL ");}
-	| DISTINCT {strcpy($<str>$," DISTINCT ");}
+	| DISTINCT {
+		strcpy($<str>$," DISTINCT ");
+	}
 	| UNIQUE {
 		ansi_violation("Use DISTINCT not UNIQUE",0);
 		strcpy($<str>$," DISTINCT ");
@@ -698,7 +702,14 @@ op_all: {strcpy($<str>$,"");}
 
 
 
-data_type:
+data_type :
+	data_type_i {
+		strcpy($<str>$,A4GLSQLCV_dtype_alias($<str>1));
+	}
+;
+
+
+data_type_i:
 	  char_string_type
 	| exact_numeric_type
 	| approx_numeric_type
@@ -732,24 +743,24 @@ exact_numeric_type:
 			strcpy($<str>$,"MONEY");
 		}
 	}
-        | KW_DATE
-	| INTEGER
-	| SMALLINT
-	| NCHAR
+        | KW_DATE {strcpy($<str>$,"DATE");}
+	| INTEGER {strcpy($<str>$,"INTEGER");}
+	| SMALLINT {strcpy($<str>$,"SMALLINT");}
+	| NCHAR {strcpy($<str>$,"NCHAR");}
 	| NCHAR OPEN_BRACKET length CLOSE_BRACKET
 	| NVARCHAR
 	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+{sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	| DATETIME s_curr TO e_curr
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+{sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| DATETIME 
 	| INTERVAL s_curr TO e_curr
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+{sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| INTERVAL
 	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr
-{sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
+{sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
 	| TEXT
 	| KW_BYTE
 	| VARCHAR
@@ -1083,13 +1094,20 @@ column_specification_ss : value_expression_ss {
 
 value_expression_ss:
 	value_expression_initial_ss {
-		$<sql_string>$=$<sql_string>1;
+		char *a;
+		a=strdup(A4GLSQLCV_check_expr($<sql_string>1));
+		$<sql_string>$=a;
+		free($<sql_string>1);
 	}
 	| MINUS value_expression_initial_ss {
-		$<sql_string>$=make_sql_string_and_free(strdup("-"),$<sql_string>2,0);
+		char *a;
+		a=strdup(A4GLSQLCV_check_expr($<sql_string>2));
+		$<sql_string>$=make_sql_string_and_free(strdup("-"),a,0);
 	}
 	| PLUS value_expression_initial_ss {
-		$<sql_string>$=make_sql_string_and_free(strdup("+"),$<sql_string>2,0);
+		char *a;
+		a=strdup(A4GLSQLCV_check_expr($<sql_string>2));
+		$<sql_string>$=make_sql_string_and_free(strdup("+"),a,0);
 	}
 ;
 

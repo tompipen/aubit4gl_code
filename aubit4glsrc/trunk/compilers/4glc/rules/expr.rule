@@ -17,10 +17,7 @@ initial_expr
 }
 | builtin_expr
 | pdf_expr
-| literal_expr {
-	A4GL_debug("Got literal ptr=%p",$<ptr>1);
-}
-
+| literal_expr { A4GL_debug("Got literal ptr=%p",$<ptr>1); }
 | MINUS fgl_expr_c {
 	$<ptr>$=A4GL_new_expr("A4GL_push_int(0);");
 	$<ptr>$=A4GL_append_expr_expr($<ptr>$,$<ptr>2);
