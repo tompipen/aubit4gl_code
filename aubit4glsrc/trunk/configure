@@ -10606,7 +10606,7 @@ echo "$as_me: WARNING: ** want to regenerate the Aubit parsers" >&2;}
 				#So a quick fix is setting LANG to C (or unset LANG, which is the
 				#same) "by hand" before ./configure. A better fix is to change
 				#the Makefile (replace "bison" with "LANG=C bison" or something)
-				BISON="LANG=C LC_ALL=C; nice -n -20 $BISON -y"
+				BISON="LANG=C LC_ALL=C; $BISON -y"
 				#('nice -n' for future compatibility)
 			fi
 		else
@@ -34148,7 +34148,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.286 2004-12-01 07:18:59 afalout Exp $
+| $Id: configure,v 1.287 2004-12-01 18:43:59 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
