@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.45 2003-05-22 21:59:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.46 2003-05-23 17:47:48 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1936,6 +1936,7 @@ print_construct_3 (int byname, char *constr_str, char *attr)
   ccc = print_constr ();
   printc ("int _fld_dr= -100;char *fldname;char _inp_io[%d];\n",
 	  sizeof (struct s_screenio) + 10);
+  printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
   printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
