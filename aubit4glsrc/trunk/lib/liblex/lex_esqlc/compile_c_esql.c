@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.75 2004-03-07 21:58:20 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.76 2004-03-16 18:45:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.75 2004-03-07 21:58:20 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.76 2004-03-16 18:45:50 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -957,7 +957,7 @@ print_do_select (char *s)
 void
 print_flush_cursor (char *s)
 {
-  printc ("EXEC SQL FLUSH CURSOR %s;\n", A4GL_strip_quotes(s));
+  printc ("EXEC SQL FLUSH %s;\n", A4GL_strip_quotes(s));
   print_copy_status ();
 }
 
