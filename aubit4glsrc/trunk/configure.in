@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.182 2003-07-26 06:46:01 afalout Exp $
+dnl # $Id: configure.in,v 1.183 2003-07-26 10:24:25 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -108,8 +108,6 @@ if test "$AUBITCONF_FLAG" != "running"; then
 		echo "" >> order.c
 
 	##############################
-
-					#echo '\1330\135mysqlitedb\1331\135' > tmp2.tmp
 
 
 PHP_CONFIGURE_PART(Looking for configure parameters file:)
@@ -378,6 +376,7 @@ AC_SUBST(WINDOWS_DRIVE)
 AC_SUBST(CYGWIN_PATH)
 AC_SUBST(EFENCE)
 AC_SUBST(CINT)
+AC_SUBST(SQLITE_LDPATH)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -1685,6 +1684,7 @@ AC_ARG_WITH(pgsql,
 	old_LIBS="$LIBS"
 	old_LDFLAGS="$LDFLAGS"
 	old_CFLAGS="$CFLAGS"
+    old_PATH="$PATH"
 
 	#force this check even if not specified on command line:
 	if test "$with_sqlite" = ""; then
@@ -1696,31 +1696,55 @@ AC_ARG_WITH(pgsql,
 	[  --with-sqlite[=DIR]        Include SQLite support.  DIR is the SQLite
 	                          base install directory, defaults to /usr.],
 	[
+        if test "$withval" != "no"; then
 
-		AC_PATH_PROG(SQLITE, sqlite, no)
-
-		# FIXME: Replace `main' with a function in `-lc':
-		AC_CHECK_LIB([sqlite], [main])
-		AC_CHECK_HEADERS([ sqlite.h ])
-
-		if test "$ac_cv_lib_sqlite_main" = "yes" ; then
-			SQLITE_LIB=1
-			# test for availability of sqlite_libversion()
-			AC_CHECK_LIB(sqlite,sqlite_libversion,SQLITE_LIBVERSION=1,SQLITE_LIBVERSION=0)
-			AC_SUBST(SQLITE_LIBVERSION)
-
-			AC_MSG_CHECKING(for default SQLite database)
-            SQLITE_DB=tools/aubit.db
-			if test -f "$SQLITE_DB" ; then
-				AC_MSG_RESULT(Allready present in $SQLITE_DB)
-            else
-				#create a default database
-				$SQLITE $SQLITE_DB "create table testing (test integer)"
-				$SQLITE $SQLITE_DB "insert into testing values (987)"
-				#$SQLITE $SQLITE_DB "select * from testing"
-				AC_MSG_RESULT(Created $SQLITE_DB)
+	        if test "$withval" = "yes"; then
+                withval="/usr"
 			fi
-		fi
+
+			PATH="$withval/bin:$old_PATH"
+
+			AC_PATH_PROG(SQLITE, sqlite, no)
+
+	        if test "$SQLITE" != "no"; then
+				#we found executable, set withval to the place
+				#you found sqlite executable in
+				TMP=`dirname $SQLITE`
+                #to remove bin/
+				withval=`dirname $TMP`
+			fi
+
+			AC_MSG_CHECKING(SQLite base install directory)
+			AC_MSG_RESULT($withval)
+			SQLITE_LDPATH="$withval/lib"
+			LDFLAGS="-L$SQLITE_LDPATH"
+			CLFAGS="-I$withval/include"
+
+			# FIXME: Replace `main' with a function in `-lc':
+			AC_CHECK_LIB([sqlite], [main])
+			AC_CHECK_HEADERS([ sqlite.h ])
+
+			if test "$ac_cv_lib_sqlite_main" = "yes" ; then
+				SQLITE_LIB=1
+				# test for availability of sqlite_libversion()
+				AC_CHECK_LIB(sqlite,sqlite_libversion,SQLITE_LIBVERSION=1,SQLITE_LIBVERSION=0)
+				AC_SUBST(SQLITE_LIBVERSION)
+
+				AC_MSG_CHECKING(for default SQLite database)
+	            SQLITE_DB=tools/aubit.db
+				if test -f "$SQLITE_DB" ; then
+					AC_MSG_RESULT(Allready present in $SQLITE_DB)
+	            else
+					#create a default database
+					$SQLITE $SQLITE_DB "create table testing (test integer)"
+					$SQLITE $SQLITE_DB "insert into testing values (987)"
+					#$SQLITE $SQLITE_DB "select * from testing"
+					AC_MSG_RESULT(Created $SQLITE_DB)
+				fi
+			fi
+        else
+			AC_MSG_RESULT(disabled)
+        fi
 	],[
 	  AC_MSG_RESULT(--with-sqlite not specified)
 	])
@@ -1729,7 +1753,7 @@ AC_ARG_WITH(pgsql,
 	LIBS="$old_LIBS"
 	LDFLAGS="$old_LDFLAGS"
 	CFLAGS="$old_CFLAGS"
-
+    PATH="$old_PATH"
 
 ## ==================================================================
 ##                 Checks for SQLite ODBC support

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.30 2003-07-26 06:46:13 afalout Exp $
+# $Id: Makefile.in,v 1.31 2003-07-26 10:24:36 afalout Exp $
 #
 
 ROOT    =../../..
@@ -70,7 +70,8 @@ endif
 
 CFLAGS_SQLITE=-DDONTINCLUDEDATASOURCES -DSQLITEODBC ${CFLAGS_NOREDUND} \
 	-I${ROOT}/tools/odbtest/incl -DHAVE_USLEEP=1 -DHAVE_LOCALECONV=1 \
-	-DHAVE_LIBVERSION=1 -I. -DWITHOUT_DRIVERMGR
+	-DHAVE_LIBVERSION=1 -I. -DWITHOUT_DRIVERMGR -L@SQLITE_LDPATH@ \
+	-L/usr/local/lib -L/usr/lib
 #-DHAVE_IODBC=1
 
 .PHONY : clean all allodbc iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc odbc32 sqlite sqlite.static
@@ -161,7 +162,7 @@ ${LIBROOT}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
 #SQLite plug-in statically linked with SQLite library/engine:
 ${LIBROOT}/libSQL_sqliteS${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}
 ${LIBROOT}/libSQL_sqliteS${SO_EXT}: ${OBJECTS} sqliteodbc.o
-	${LD} ${SO_LDFLAGS} $^ -o $@ /usr/lib/libsqlite.a
+	${LD} ${SO_LDFLAGS} $^ -o $@ @SQLITE_LDPATH@/libsqlite.a
 
 
 ## ==================================================================
