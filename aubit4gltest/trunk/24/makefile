@@ -14,3 +14,5 @@ clean:
 ansi_sql_compat:
 	@echo "1"
 
+desc:
+	@echo  "Fairly comprehensive Input test"

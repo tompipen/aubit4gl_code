@@ -10,7 +10,8 @@ MAIN
 	CREATE TABLE a_table (
 	  a_column INTEGER DEFAULT 1,
 		another_column CHAR(20) DEFAULT user,
-		date_column DATE DEFAULT today
+		date_column DATE DEFAULT today,
+		dt_column DATETIME YEAR TO MINUTE DEFAULT CURRENT YEAR TO MINUTE
 	)
 	DROP TABLE a_table
 END MAIN

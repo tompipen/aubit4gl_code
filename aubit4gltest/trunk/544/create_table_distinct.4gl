@@ -8,7 +8,7 @@ MAIN
 	CREATE TABLE a_table (
 	  a_column INTEGER,
 		another_column CHAR(20),
-		DISTINCT (a_column,another_column)
+		DISTINCT  (a_column,another_column)
 	)
 	DROP TABLE a_table
 

@@ -559,6 +559,12 @@ for a in $FLAGS; do
 		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=POSTGRES
 		USE_PG=1
         #this will be used only by 4glc/fcompile compilers:
+
+		if [ "$A4GL_SYSCOL_VAL" = "" ]
+		then	
+			A4GL_SYSCOL_VAL=a4gl_syscolval
+			export A4GL_SYSCOL_VAL
+		fi
 		#export A4GL_SQLTYPE=esqlPG
 		#export A4GL_SQLTYPE=c_ecpg
 		#export A4GL_SQLTYPE=pgodbc

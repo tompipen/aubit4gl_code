@@ -17,4 +17,5 @@ run: dec_round.4ae dec_round2.4ae dec_round3.4ae dec_round4.4ae dec_round5.4ae d
 
 ansi_sql_compat:
 	@echo "1"
-
+desc:
+	@echo "Decimal handling"

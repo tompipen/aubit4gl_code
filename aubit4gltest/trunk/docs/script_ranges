@@ -13,3 +13,13 @@ Ranges reserved for use for test scripts
 900-999    Sergio Ferreira (sergio@moredata.pt)
 1000-1199  Sergio Ferreira (sergio@moredata.pt)
 1200-1299  Mike Aubury     (mike@aubit.com)
+1300-1399  Mike Aubury     (mike@aubit.com)    ** Copies of existing tests - see note
+
+
+** I've copied some existing tests away from their current locations and
+modified the originals.
+They appear to be testing for invalid things or using non-standard sql to check for 
+something other than the test is designed to detect..
+(Eg testing > or >= against the return value of the mdy function - which may or may not
+exist in the target rdbms).
+Tests in this range need to be examined for SQL compatibility and deleted if the non-standard SQL is for tested elsewhere.

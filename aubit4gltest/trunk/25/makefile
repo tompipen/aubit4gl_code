@@ -14,3 +14,5 @@ clean:
 ansi_sql_compat:
 	@echo "1"
 
+desc:
+	@echo "Another simple report - with page header and page trailer"

@@ -12,6 +12,7 @@ MAIN
   DEFINE lv_valueColumn CHAR(20)
   DEFINE lv_dateColumn DATE
   DEFINE dt DATE
+  DEFINE dtm DATE
   DEFINE exitStatus SMALLINT
 
   LET exitStatus = 0
@@ -45,11 +46,12 @@ MAIN
   INSERT INTO xpto (keyColumn,valueColumn,dateColumn) 
     VALUES (5,"fift",dt)
 	
+LET dtm=mdy(1,1,2000)
 	DECLARE cr_ CURSOR FOR
     SELECT keyColumn, valueColumn, dateColumn
       FROM xpto
-      WHERE dateColumn >= mdy(1,1,2000)
-			ORDER BY 1
+      WHERE dateColumn >= dtm
+	ORDER BY 1
 
 	OPEN cr_
 

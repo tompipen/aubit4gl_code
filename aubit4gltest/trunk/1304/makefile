@@ -109,8 +109,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "A quick test of the define variable like dbname:tablename.column and record like dbname:tablename.\*"
-
+	@echo "Check if a simple select with GREATER or equal the in where condition \
+		fetch the correct values."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -184,7 +184,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -217,5 +217,5 @@ transaction:
 # ============================= EOF ================================
 
 ansi_sql_compat:
-	@echo "1"
+	@echo "0"
 

@@ -26,33 +26,40 @@ MAIN
 	)
 
 	INSERT INTO xpto 
-	    (firstColumn,secondColumn,thirdColumn,aUser,aDate,
-		     aToday,aSingleQuoteStr)
+	    (firstColumn,secondColumn,thirdColumn,aUser,aDate,aDatetime,anInterval,
+		     aToday,aCurrent,aSingleQuoteStr)
 	   VALUES (1,"Hello world",
 				 5,
 				 USER,
 				 "12/31/1999",
+				 datetime(1999-12-31 23:59) YEAR TO MINUTE,
+				 interval(48:01) HOUR TO MINUTE,
 				 TODAY,
+				 CURRENT YEAR TO FRACTION(3),
 				 'Single quote'
 				)
 
 	UPDATE xpto 
-	    SET (secondColumn,thirdColumn,aUser,aDate,
-			     aToday,aSingleQuoteStr)
+	    SET (secondColumn,thirdColumn,aUser,aDate,aDatetime,
+			     anInterval,aToday,aCurrent,aSingleQuoteStr)
 	   = (aUser,
 				 firstColumn+1/2*5,
 				 secondColumn,
 				 aDate-1,
+				 aDatetime - 1 UNITS HOUR,
+				 anInterval + 1 UNITS HOUR ,
 				 aToday - 1,
+				 CURRENT YEAR TO FRACTION(3),
 				 'Single quote'
 				)
 	  WHERE firstColumn = 1
 
 	DECLARE cr CURSOR FOR 
-	  SELECT secondColumn, thirdColumn, aDate
+	  SELECT secondColumn, thirdColumn, aDate, aDateTime, anInterval
 		  FROM xpto
 	FOREACH cr INTO str, sm, dt, dtt, it
-	  DISPLAY "<", str clipped, ">", "<", sm, ">", "<",  dt, ">"
+	  DISPLAY "<", str clipped, ">", "<", sm, ">", "<",  dt, ">", "<", dtt, ">",
+		  "<", it, ">"
 	END FOREACH
 	DROP TABLE xpto
 END MAIN

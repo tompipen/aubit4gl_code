@@ -1,4 +1,4 @@
-DATABASE sabre
+DATABASE test1
 
 MAIN
 	OPTIONS 

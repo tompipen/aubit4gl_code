@@ -11,3 +11,6 @@ run: arr3.4ae
 ansi_sql_compat:
 	@echo "1"
 
+
+desc:
+	@echo "Input array testing"

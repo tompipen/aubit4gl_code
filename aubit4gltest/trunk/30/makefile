@@ -14,3 +14,5 @@ run: arr12.4ae  inp.4ae
 ansi_sql_compat:
 	@echo "1"
 
+desc:
+	@echo "Checking field values in before clauses in Input array"

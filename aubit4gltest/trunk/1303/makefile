@@ -85,10 +85,6 @@ run: compile
 	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
 #	${DEFAULT_DIFF}
-#Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
-#program to a file for diff-ing, but expect output file to be created by dumping
-#the screen to file using a function call in the program itself:
-#	${DEFAULT_DUMP_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
 #	${DBG} ./progname${NAMED_[DIFF|RUN]}
@@ -109,8 +105,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "A quick test of the define variable like dbname:tablename.column and record like dbname:tablename.\*"
-
+	@echo "UPDATE with expresion in SET and column list (Informix syntax)"
+	@echo "No run-time checking."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -184,7 +180,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -203,19 +199,12 @@ unknown_test:
 
 ################
 #Specify minimum version of Informix compiler this test can be executed with
-#example: 	@echo "7.31"
 need_ifx_version:
 	@echo "0"
 
-################
-#If database this test runs against MUST have transactions support, set to "1"
-#If database this test runs against MUST NOT have transactions support, set to "2"
-#"0" means "don't care"
-transaction:
-	@echo "0"
 	
 # ============================= EOF ================================
 
 ansi_sql_compat:
-	@echo "1"
+	@echo "0"
 

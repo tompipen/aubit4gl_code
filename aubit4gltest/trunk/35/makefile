@@ -9,3 +9,6 @@ run: arith.4ae
 ansi_sql_compat:
 	@echo "1"
 
+
+desc:
+	@echo "Check for an early arithmetic bug"

@@ -10,3 +10,5 @@ run: dt.4ae
 ansi_sql_compat:
 	@echo "1"
 
+desc:
+	@echo "Very basic datetime arithmetic"

@@ -9,26 +9,26 @@ include ${MAKEFILE_COMMON}
 ##                  Local Setings - user modifiable
 ## ======================================================================
 
-#NOTE: Do not use quotes when declaring make verialbes - they will be 
-#taken literaly (eg. PER="xx" will set PER variable to "xx" NOT to xx
-#Make does not need quotes to declare multiple items (like SH does)
-
 ################
 #List of all form files that need to be compiled. This is already set from
 #included makefile, but you can override it here if you need to. By default, all
 #.per files in current directory are automatically listed, and therfore compiled
-#PER=
+#PER=""
+
+
 
 ################
 #List of all 4GL modules that need to be compiled to objects. This is already set
 #from included makefile, but you can overide it here if needed. By default, all
 #.4gl files in current directory are automatically listed, and therfore compiled
-#FGL=
+#FGL="./create_table_pk.4gl "
+
+
 
 ################
 #You can add additional files to be cleand with "clean" target to the default
 #ones, by listing them here:
-#ADD_CLEAN=
+#ADD_CLEAN=""
 
 ################
 #This is set in comon make file; overide it if you need to here
@@ -43,7 +43,6 @@ include ${MAKEFILE_COMMON}
 #replace .per/.4gl with appropriate extesion in forms and modules list
 FORMS=${PER:.per=${A4GL_FORMEXT}}
 MODULES=${FGL:.4gl=${OBJ_EXT}}
-HELP=${MSG:.msg=${HLP_EXT}}
 
 ################
 #export to environment:
@@ -74,7 +73,7 @@ progname${TARGET_EXT}: ${MODULES}
 #Synonim to invoke compilation of the test by using uniform target name
 #Change "progname" to real program name (if different) <<<<<<<<<<<<<<<<<<<<<<(4)
 #Add more "progname${TARGET_EXT}" items if test uses more then one program <<(5)
-compile: progname${TARGET_EXT} ${FORMS} ${HELP}
+compile: progname${TARGET_EXT} ${FORMS}
 
 ################
 #Run the compiled test
@@ -85,10 +84,6 @@ run: compile
 	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
 #	${DEFAULT_DIFF}
-#Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
-#program to a file for diff-ing, but expect output file to be created by dumping
-#the screen to file using a function call in the program itself:
-#	${DEFAULT_DUMP_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
 #	${DBG} ./progname${NAMED_[DIFF|RUN]}
@@ -109,8 +104,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "A quick test of the define variable like dbname:tablename.column and record like dbname:tablename.\*"
-
+	@echo "CREATE TABLE with PRIMARY KEY clause."
+	@echo "No run-time checking. NOTE: fails with -ifx-p."
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -184,17 +179,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
-
-################
-#Test is expeceted to exit with code (return "x" for any not-null exit code)
-expect_code:
-	@echo "0"
-
-################
-#Return 1 if test should only be compiled, and NOT executed 
-compile_only:
-	@echo "0"
+	@echo "1"
 
 ################
 #All other tests not belonging to any of the above groups should be listed here:
@@ -203,19 +188,11 @@ unknown_test:
 
 ################
 #Specify minimum version of Informix compiler this test can be executed with
-#example: 	@echo "7.31"
 need_ifx_version:
-	@echo "0"
+	@echo "7.31"
 
-################
-#If database this test runs against MUST have transactions support, set to "1"
-#If database this test runs against MUST NOT have transactions support, set to "2"
-#"0" means "don't care"
-transaction:
-	@echo "0"
-	
 # ============================= EOF ================================
 
 ansi_sql_compat:
-	@echo "1"
+	@echo "0"
 
