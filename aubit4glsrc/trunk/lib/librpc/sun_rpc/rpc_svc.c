@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_svc.c,v 1.5 2002-05-26 08:43:45 afalout Exp $
+# $Id: rpc_svc.c,v 1.6 2002-05-30 11:18:39 mikeaubury Exp $
 #*/
 
 /**
@@ -283,7 +283,7 @@ static struct timeval tv;
  * @todo Describe function
  */
 void
-fgl_rpc_reply(char *result)
+fgl_rpc_reply(void *result)
 {
 	xdrproc_t xdr_result;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.15 2002-05-30 06:25:19 afalout Exp $
+# $Id: stack.c,v 1.16 2002-05-30 11:18:38 mikeaubury Exp $
 #
 */
 
@@ -2101,7 +2101,7 @@ conv_to_interval (int a)
   else
     {
       debug ("Got to here\n");
-      sprintf (buff, "%lf", d);
+      sprintf (buff, "%f", d);
       debug ("B Buff=%s seconds\n", buff);
       push_char (buff);
     }
@@ -2232,7 +2232,7 @@ void
 dif_add_bind_dbl_ptr (struct bound_list *list, double *a)
 {
   printf ("a=%p", a);
-  printf ("*a=%lf\n", *a);
+  printf ("*a=%f\n", *a);
   dif_add_bind (list, a, DTYPE_SMINT, 0);
   *a = 3.142;
 }

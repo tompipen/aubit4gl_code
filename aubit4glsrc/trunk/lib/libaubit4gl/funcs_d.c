@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.6 2002-05-23 16:01:13 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.7 2002-05-30 11:18:38 mikeaubury Exp $
 #
 */
 
@@ -378,7 +378,7 @@ double ad;
 	   ad=ad/10;
 	}
 	num+=ad;
-	sprintf(number,"%64.32lf",num);
+	sprintf(number,"%64.32f",num);
 	number[31]=0;
 	debug("Number=%s",number);
 	debug("Format=%s",fmt);

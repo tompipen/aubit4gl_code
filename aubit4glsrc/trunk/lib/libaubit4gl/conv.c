@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.8 2002-05-26 06:26:49 afalout Exp $
+# $Id: conv.c,v 1.9 2002-05-30 11:18:38 mikeaubury Exp $
 #
 */
 
@@ -864,7 +864,7 @@ ftodec (void *a, void *z, int size)
   errno = 0;
   debug ("converting %s to a decimal (%x) %d,%d", a, size, h, t);
   init_dec (z, h, t);
-  sprintf (buff, "%32.16lf", *(double *) a);
+  sprintf (buff, "%32.16f", *(double *) a);
   eptr = str_to_dec (buff, z);
 
   if (eptr)
@@ -3209,9 +3209,9 @@ exercise (void)
 		  z2 = x / y;
 		}
 
-	      sprintf (tb1, "%10.2lf", dec_to_double (buffz));
+	      sprintf (tb1, "%10.2f", dec_to_double (buffz));
 
-	      sprintf (tb2, "%10.2lf", z2);
+	      sprintf (tb2, "%10.2f", z2);
 
 	      if (strcmp (tb1, "     -0.00") == 0)
 		{

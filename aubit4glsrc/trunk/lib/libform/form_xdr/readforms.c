@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.11 2002-05-30 06:25:19 afalout Exp $
+# $Id: readforms.c,v 1.12 2002-05-30 11:18:39 mikeaubury Exp $
 #*/
 
 /**
@@ -132,6 +132,7 @@ void comments (struct struct_scr_field *fprop);
 static void do_translate_form(struct_form *the_form);
 static void read_attributes (struct s_form_dets *f);
 static int include_range_check (char *ss, char *ptr, int dtype);
+int has_bool_attribute (struct struct_scr_field *f, int bool);
 
 //char *strip_quotes (char *s);
 //void *get_curr_form ();
@@ -594,8 +595,7 @@ strip_quotes (char *s)
 /**
  *
  */
-int
-has_bool_attribute (struct struct_scr_field *f, int bool)
+int has_bool_attribute (struct struct_scr_field *f, int bool)
 {
   int a;
   debug ("Checking %p for %d\n", f, bool);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.8 2002-05-30 06:25:20 afalout Exp $
+# $Id: loadmenu.c,v 1.9 2002-05-30 11:18:39 mikeaubury Exp $
 #*/
 
 /**
@@ -42,9 +42,10 @@
 =====================================================================
 */
 
+#include <stdio.h>
+#include "a4gl_menuxw.h"
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-#include <stdio.h>
 //#include <strings.h>
 
 // 4glhdr.h will eventually include stdlib.h, which uses getenv(), so
@@ -55,7 +56,6 @@
 #endif
 
 #include "a4gl_gtk_dims.h"
-#include "a4gl_menuxw.h"
 #include "a4gl_io.h"
 #include "a4gl_incl_4glhdr.h"
 #include "a4gl_gtk_cr_funcs.h"

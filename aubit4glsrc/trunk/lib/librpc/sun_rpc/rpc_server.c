@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_server.c,v 1.6 2002-05-30 06:25:20 afalout Exp $
+# $Id: rpc_server.c,v 1.7 2002-05-30 11:18:39 mikeaubury Exp $
 #*/
 
 /**
@@ -130,7 +130,7 @@ arg1=&arg;
 	        
         exitwith ("serious bug in rpc_server.c");
 
-			fgl_rpc_reply(&result); // warning: passing arg 1 of `fgl_rpc_reply' from incompatible pointer type
+			fgl_rpc_reply((void *)&result); // warning: passing arg 1 of `fgl_rpc_reply' from incompatible pointer type
              
 			 //so we are passing struct to function expecting char pointer !!!
 

@@ -1,5 +1,5 @@
 on_key_command : 
-        ON_KEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;} 
+        ONKEY {iskey=1;} key_do {strcpy($<str>$,$<str>3);iskey=0;} 
 |
         ON_ANY_KEY {strcpy($<str>$,"->ANY");} 
 ;
