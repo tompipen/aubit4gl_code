@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.36 2003-04-24 08:30:18 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.37 2003-04-24 10:31:29 mikeaubury Exp $
 */
 
 /**
@@ -277,7 +277,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   void set_option_value (char type, int keyval);
   int aclfgli_get_err_flg (void);
   void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
-  void clr_fields (int to_defaults, char *flds,int fno,...);
+  void clr_fields (int to_defaults, char *flds,...);
 
   int chk_iskey (char *keys);
   int fgl_infield (char *s, int a);

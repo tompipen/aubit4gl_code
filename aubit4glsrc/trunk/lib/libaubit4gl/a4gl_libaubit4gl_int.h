@@ -30,7 +30,7 @@
 		#include <errno.h>
 	#endif
 
-
+	int dlclose(void *);
 #endif /* #ifndef _AUBIT_LIB_INCL_INT_ */
 
 
