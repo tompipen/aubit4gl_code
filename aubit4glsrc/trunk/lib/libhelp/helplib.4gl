@@ -8,6 +8,7 @@ help.4gl	Aubit4GL help routines (work with Informix .iem files)
 		Note: Uses inline C code for I/O
 }
 code
+#define PORTABLE
 	#include <errno.h>
 
 
@@ -154,9 +155,9 @@ local function myshowerrors()
 	define l_msg char(36)
 	#clear form
 	set pause mode on
-	let i = 0
-		let msgerror[1].errline = msgerror[1].errline clipped
-		display msgerror[1].errline at 3,1     # to s_help[1].helpline
+	let i = 1
+	let msgerror[1].errline = msgerror[1].errline clipped
+	display msgerror[1].errline at 3,1     # to s_help[1].helpline
 	while true
 		let i = i + 1
 		if i > msgerrcnt then exit while end if
@@ -331,8 +332,6 @@ indexrec[5],
 indexrec[6],
 indexrec[7]);
                                 memcpy(&msgno,indexrec,2);
-                                //msgno=ntohs(msgno);
-				//A4GL_debug("msgno=%d",msgno);
                                 msgno=ntohs(msgno);
 				A4GL_debug("now msgno=%d (n=%d)",msgno,n);
 
@@ -343,9 +342,7 @@ indexrec[7]);
 				myseterr(errmsg);
 				break;
 			}
-
-			//fprintf(stderr, "%d of %d msgno=%d wanting n=%d\n",
-			//		i, msgcount, msgno, n);
+			A4GL_debug("msgno=%d n=%d",msgno,n);
 			if(ok && msgno == n ) // found it!
 			{
 				break;
@@ -386,8 +383,7 @@ indexrec[7]);
 	else if( msgnotfound )
 	{
 		charcount = 0;
-		snprintf(errmsg, HELPMAXLEN-1, "Error: Message %d not found in '%s'",
-				 n,filename);
+		snprintf(errmsg, HELPMAXLEN-1, "Error: Message %d not found in '%s'", n,filename);
 		myseterr(errmsg);
 	}
 //	fprintf(stderr, "At end of aclfgl_openiem, msgline = \n %s;", msgline);
@@ -508,7 +504,7 @@ myseterr( char *s)
 {
 	/* int e; */
 	char *t;
-
+	A4GL_debug("myseterr : %s (%d)",s,msgerrcnt);
 	s[HELPMAXLEN]=0;
 	t=msgerror[msgerrcnt].errline;
 	strncpy( t,s,HELPMAXLEN);

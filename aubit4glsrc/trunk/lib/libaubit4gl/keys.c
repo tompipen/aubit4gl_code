@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.32 2005-02-20 19:34:42 mikeaubury Exp $
+# $Id: keys.c,v 1.33 2005-03-07 21:28:46 mikeaubury Exp $
 #
 */
 
@@ -318,142 +318,59 @@ void
 A4GL_set_option_value (char type, int keyval)
 {
   A4GL_init_stddbscr ();
-  A4GL_debug ("Set option value : %c %d", type, keyval);
   switch (type)
     {
-    case 'C':
-      std_dbscr.comment_line = keyval;
-      break;
-    case 'E':
-      std_dbscr.error_line = keyval;
-      break;
-    case 'F':
-	A4GL_debug("Setting form_line (in keys.c) to %d",keyval);
-      std_dbscr.form_line = keyval;
-      break;
-    case 'M':
-      std_dbscr.menu_line = keyval;
-      break;
-    case 'm':
-      std_dbscr.message_line = keyval;
-      break;
-    case 'P':
-      std_dbscr.prompt_line = keyval;
-      break;
-    case 'A':
-      std_dbscr.acckey = keyval;
-      break;
-    case 'D':
-      std_dbscr.delkey = keyval;
-      break;
-    case 'I':
-      std_dbscr.inskey = keyval;
-      break;
-    case 'N':
-      std_dbscr.nextkey = keyval;
-      break;
-    case 'p':
-      std_dbscr.prevkey = keyval;
-      break;
-    case 'H':
-      std_dbscr.helpkey = keyval;
-      break;
-    case 'd':
-      std_dbscr.dispattr = keyval;
-      break;
-    case 'i':
-      std_dbscr.inpattr = keyval;
-      break;
-    case 'W':
-      std_dbscr.input_wrapmode = keyval;
-      break;
-    case 'f':
-      std_dbscr.fieldconstr = keyval;
-      break;
-    case 'S':
-      std_dbscr.sqlintr = keyval;
-      break;
-
-    case 'r':
-	std_dbscr.run_ui_mode=keyval;break;
-    case '|':
-	std_dbscr.pipe_ui_mode=keyval;break;
-	
+    case 'C': std_dbscr.comment_line = keyval; break;
+    case 'E': std_dbscr.error_line = keyval; break;
+    case 'F': std_dbscr.form_line = keyval; break;
+    case 'M': std_dbscr.menu_line = keyval; break;
+    case 'm': std_dbscr.message_line = keyval; break;
+    case 'P': std_dbscr.prompt_line = keyval; break;
+    case 'A': std_dbscr.acckey = keyval; break;
+    case 'D': std_dbscr.delkey = keyval; break;
+    case 'I': std_dbscr.inskey = keyval; break;
+    case 'N': std_dbscr.nextkey = keyval; break;
+    case 'p': std_dbscr.prevkey = keyval; break;
+    case 'H': std_dbscr.helpkey = keyval; break;
+    case 'd': std_dbscr.dispattr = keyval; break;
+    case 'i': std_dbscr.inpattr = keyval; break;
+    case 'W': std_dbscr.input_wrapmode = keyval; break;
+    case 'f': std_dbscr.fieldconstr = keyval; break;
+    case 'S': std_dbscr.sqlintr = keyval; break;
+    case 'r': std_dbscr.run_ui_mode=keyval;break;
+    case '|': std_dbscr.pipe_ui_mode=keyval;break;
     }
+    A4GL_set_option_value_for_current_window (type,keyval);
 }
 
-/**
- *
- * @todo Describe function
- */
 int
 A4GL_get_option_value (char type)
 {
   A4GL_init_stddbscr ();
   A4GL_debug ("Get option value : %c", type);
-
   switch (type)
     {
-    case 'C':
-      return std_dbscr.comment_line;
-      break;
-    case 'E':
-      return std_dbscr.error_line ;
-      break;
-    case 'F':
-      return std_dbscr.form_line;
-      break;
-    case 'M':
-      return std_dbscr.menu_line ;
-      break;
-    case 'm':
-      return std_dbscr.message_line ;
-      break;
-    case 'P':
-      return std_dbscr.prompt_line ;
-      break;
-    case 'A':
-      return std_dbscr.acckey ;
-      break;
-    case 'D':
-      return std_dbscr.delkey ;
-      break;
-    case 'I':
-      return std_dbscr.inskey ;
-      break;
-    case 'N':
-      return std_dbscr.nextkey ;
-      break;
-    case 'p':
-      return std_dbscr.prevkey ;
-      break;
-    case 'H':
-      return std_dbscr.helpkey ;
-      break;
-    case 'd':
-		A4GL_debug("Returning dispattr : %x\n",std_dbscr.dispattr);
-      return std_dbscr.dispattr ;
-      break;
-    case 'i':
-      return std_dbscr.inpattr ;
-      break;
-    case 'W':
-      return std_dbscr.input_wrapmode ;
-      break;
-    case 'f':
-      return std_dbscr.fieldconstr ;
-      break;
-    case 'S':
-      return std_dbscr.sqlintr ;
-      break;
-    case 'r':
-	return std_dbscr.run_ui_mode;
-      break;
-    case '|':
-	return std_dbscr.pipe_ui_mode;
-      break;
+    case 'C': return std_dbscr.comment_line; break;
+    case 'E': return std_dbscr.error_line ; break;
+    case 'F': return std_dbscr.form_line; break;
+    case 'M': return std_dbscr.menu_line ; break;
+    case 'm': return std_dbscr.message_line ; break;
+    case 'P': return std_dbscr.prompt_line ; break;
+    case 'A': return std_dbscr.acckey ; break;
+    case 'D': return std_dbscr.delkey ; break;
+    case 'I': return std_dbscr.inskey ; break;
+    case 'N': return std_dbscr.nextkey ; break;
+    case 'p': return std_dbscr.prevkey ; break;
+    case 'H': return std_dbscr.helpkey ; break;
+    case 'd': return std_dbscr.dispattr ; break;
+    case 'i': return std_dbscr.inpattr ; break;
+    case 'W': return std_dbscr.input_wrapmode ; break;
+    case 'f': return std_dbscr.fieldconstr ; break;
+    case 'S': return std_dbscr.sqlintr ; break;
+    case 'r': return std_dbscr.run_ui_mode; break;
+    case '|': return std_dbscr.pipe_ui_mode; break;
     }
-A4GL_exitwith("Unknown option value");
+A4GL_assertion(1,"Unknown option value");
 return 0;
 }
 

@@ -62,6 +62,10 @@ aclfgli_pr_message_internal int attr int wait char* s -> void
 A4GL_display_error int attr int wait -> void
 /* void* A4GL_get_curr_form (int warn_if_no_form)*/
 A4GL_get_curr_form int warn_if_no_form -> void*
+
+A4GL_set_option_value_for_current_window char type  int keyval  -> void
+A4GL_get_option_value_for_current_window char type   -> int
+
 /* int A4GL_widget_name_match (void* w, char* name)*/
 A4GL_widget_name_match void* w char* name -> int
 /* int A4GL_gen_field_chars_ap (void* field_list, void* formdets, va_list* ap)*/
