@@ -1,7 +1,5 @@
 #This program demonstrates ussage of PDF report capability in Aubit 4gl
 
-
-database maindb
 define mv_logo byte
 
 
@@ -9,6 +7,8 @@ main
 
 define t,c char(20)
 define n integer
+
+database stores7
 
 	declare c1 cursor for
 		select tabname,colname,colno from systables,syscolumns

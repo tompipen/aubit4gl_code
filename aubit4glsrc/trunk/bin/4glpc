@@ -64,6 +64,7 @@ then
     echo '  -odbc (ODBC_LIB_NAME="iodbc")'
     echo '  -as-ddl'
     echo '  -i ignore errors and continue'
+	echo '  -jabber link executable with Jabber libraries'
 	echo
     echo All options unknown to Aubit compiler will be passed to C compiler
     echo Please see Aubit 4gl manual for more information.
@@ -251,7 +252,8 @@ COMPCC=""
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:$ODBC_LIB_DIR
 #$AUBITDIR/extlibs
 
-
+JABBER_LIB_DIR=$AUBITDIR/tools/jabber
+JABBER_LIB_NAME=jabber
 
 FGLLIBSDIR="-L$AUBITDIR/lib"
 
@@ -374,6 +376,7 @@ do
 		  fcompile -c $a
 		  err_code=$?
 
+          dirn=`dirname $a`
    		  fname=`basename $a .per`
    		  errfname=`basename $a .per`.err;
 
@@ -384,7 +387,14 @@ do
 				showerror
 				$output "Error compiling $a, see $errfname"
 			else
-				$output "Error compiling $a - error file NOT created."
+				if [ -f $dirn/$errfname ]
+                then
+					errfname=$dirn/$errfname
+					showerror
+					$output "Error compiling $a - see $errfname"
+                else
+					$output "Error compiling $a - error file NOT created"
+                fi
             fi
             if [ "$IGNORE_ERRORS" != "1" ]
             then
@@ -470,7 +480,14 @@ do
 				showerror
 				$output "Error compiling $a - see $errfname"
 			else
-				$output "Error compiling $a - error file NOT created"
+				if [ -f $dirn/$errfname ]
+                then
+					errfname=$dirn/$errfname
+					showerror
+					$output "Error compiling $a - see $errfname"
+                else
+					$output "Error compiling $a - error file NOT created"
+                fi
             fi
 
 			if [ "$A4GLVERBOSE" = "yes" ]
@@ -566,7 +583,6 @@ do
 				touch $fname.c
 				COMPCC="$COMPCC $fname.c"
             else
-
 				$output "Error compiling $a - $fname.c not generated, but no err code from 4glc"
 				if [ "$A4GLVERBOSE" = "yes" ]
 				then
@@ -574,7 +590,14 @@ do
 	    	        then
                         showerror
 					else
-						echo "Error file NOT created"
+						if [ -f $dirn/$errfname ]
+		                then
+							errfname=$dirn/$errfname
+							showerror
+							$output "Error compiling $fname.c - see $errfname"
+		                else
+							$output "Error compiling $fname.c - error file NOT created"
+		                fi
 	                fi
 
 					$output err_msg is: $err_msg
@@ -597,6 +620,9 @@ do
    ;;
 
    -i) IGNORE_ERRORS="1"
+   ;;
+
+   -jabber) USE_JABBER=1
    ;;
 
 
@@ -766,7 +792,15 @@ else
         FGLLIBS="$FGLLIBS_STATIC $ODBC_STATIC"
 fi
 
+
 LIBS="-L/root/ncurses/ncurses-5.2/lib -lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG -L$ODBC_LIB_DIR -l$ODBC_LIB_NAME"
+
+if test "$USE_JABBER" = "1"
+then
+	LIBS="$LIBS -L$JABBER_LIB_DIR -l$JABBER_LIB_NAME -liksemel"
+	#JabberX link line:
+	#MANLINK2= -rdynamic -lnsl -ldl -lm -lposix -lcrypt -lcurses -liksemel
+fi
 
 if [ "$NOCFILE" = "Y" ]
 then

@@ -22,12 +22,12 @@ then
 
     echo " "
 	echo "Attempted to compile total of $ATTEMPTED"
-	echo "OK= $AMAKEOK failed= $AMAKEFAIL . $COMPBEFORE already compiled."
+	echo "OK= $AMAKEOK, failed= $AMAKEFAIL, already compiled= $COMPBEFORE "
     echo "See $AMAKEERRORLOG"
 
     echo " " >> $AMAKEERRORLOG
 	echo "Attempted to compile total of $ATTEMPTED" >> $AMAKEERRORLOG
-	echo "OK= $AMAKEOK failed= $AMAKEFAIL . $COMPBEFORE already compiled." >> $AMAKEERRORLOG
+	echo "OK= $AMAKEOK, failed= $AMAKEFAIL, already compiled= $COMPBEFORE ." >> $AMAKEERRORLOG
     echo "See $AMAKEERRORLOG" >> $AMAKEERRORLOG
 	date >> $AMAKEERRORLOG
 
@@ -89,7 +89,13 @@ fi
 ############################
 function shortstats {
 ############################
-	echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE glb=$OKNOGLBFILE/$NOGLBFILE/$NO4GLNOGLBFILE cw=$CCOMPWARNING 0=$ZEROFILESIZE &=$TESTCONTINUESKIP L=$FAILDEFLIKE"
+	if test $AMAKE = "1"
+	then
+		echo "Tried=$ATTEMPTED OK=$AMAKEOK Fail=$AMAKEFAIL Previous=$COMPBEFORE "
+    else
+		echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE glb=$OKNOGLBFILE/$NOGLBFILE/$NO4GLNOGLBFILE cw=$CCOMPWARNING 0=$ZEROFILESIZE &=$TESTCONTINUESKIP L=$FAILDEFLIKE"
+    fi
+
 
 }
 
@@ -818,13 +824,19 @@ function compileit {
 		if [ -f $AO ]
 		then
 			HAVEOBJECT=1
-			mv $AO $DESTDIR
+            if test "$MOVETOSTORE" = "1"
+            then
+				mv $AO $DESTDIR
+            fi
         fi
     else
 		if [ -f $X ]
 		then
 			HAVEOBJECT=1
-			mv $X $DESTDIR
+            if test "$MOVETOSTORE" = "1"
+            then
+				mv $X $DESTDIR
+            fi
         fi
     fi
 
@@ -973,18 +985,27 @@ function runamake {
 				EXECFILE=`basename $i .mk`.4ae;
 				EXECFILEAOX=`basename $i .mk`.aox;
 
-                if [ -f $MAXDIR/aprog/$EXECFILE ]
+                if [ -f $MAXDIR/aprog/$EXECFILE -o -f $EXECFILEAOX ]
                 then
 					let COMPBEFORE=COMPBEFORE+1
-					echo "$MAXDIR/aprog/$EXECFILE exist, skip is ON"
+					if test $VERBOSE = "1"
+                    then
+						echo "$MAXDIR/aprog/$EXECFILE or $EXECFILEAOX exist, skip is ON"
+                    fi
                     return
                 fi
 
                 if [ -f $EXECFILE ]
                 then
 					let COMPBEFORE=COMPBEFORE+1
-					echo "$EXECFILE exist, skip is ON"
-                    mv $EXECFILE $MAXDIR/aprog
+					if test $VERBOSE = "1"
+                    then
+						echo "$EXECFILE exist, skip is ON"
+                    fi
+		            if test "$MOVETOSTORE" = "1"
+        		    then
+						mv $EXECFILE $MAXDIR/aprog
+                    fi
 					return
                 fi
 
@@ -1001,26 +1022,38 @@ function runamake {
 				RET=$?
 				if test $RET = "0"
 				then
-					echo "OK: $PWD/$i"
-                    echo "OK: $PWD/$i" >> $AMAKEERRORLOG
+					if test $VERBOSE = "1"
+                    then
+						echo "OK: $PWD/$i"
+                    fi
+   	                echo "OK: $PWD/$i" >> $AMAKEERRORLOG
 
 	                if [ -f $EXECFILE ]
                     then
-						mv $EXECFILE $MAXDIR/aprog
+			            if test "$MOVETOSTORE" = "1"
+            			then
+							mv $EXECFILE $MAXDIR/aprog
+                        fi
 						let AMAKEOK=AMAKEOK+1
                     else
 						if [ -f $EXECFILEAOX ]
                         then
 							let AMAKEOK=AMAKEOK+1
                         else
-							echo "ERROR (?): $EXECFILE or $EXECFILEAOX not created"
+							if test $VERBOSE = "1"
+            		        then
+								echo "ERROR (?): $EXECFILE or $EXECFILEAOX not created"
+                            fi
 							#let AMAKEFAIL=AMAKEFAIL+1
                         fi
                     fi
 
                 else
 					let AMAKEFAIL=AMAKEFAIL+1
-					echo "FAILED: $PWD/$i"
+					if test $VERBOSE = "1"
+                    then
+						echo "FAILED: $PWD/$i"
+                    fi
                     echo "FAILED: $PWD/$i" >> $AMAKEERRORLOG
                 fi
 				echo "#########################################################" >> $AMAKEERRORLOG 2>&1
@@ -1081,6 +1114,10 @@ function makecurrentdir {
 			####################
 			for i in *.mk; do
 			####################
+
+				##########
+				shortstats
+                ##########
 
                 ########
                 runamake
@@ -1171,16 +1208,14 @@ function doit {
 #MAIN
 ############
 
-	################
-	#configuration:
+	###########################
+	#configuration defaults:
 
 	ERRFILESDIR=/tmp/amakeallo
-
 	FJSERRFILESDIR=$ERRFILESDIR-4js
 	AUBITERRFILESDIR=$ERRFILESDIR-aubit
 	DESTDIR=/tmp/amakeallo-objects
 	ROOTDIR=$PWD
-
 	STOPONERROR=0
 	STOPGLOBALSERROR=0
     NONGLOBAFTERGLOBERR=0
@@ -1206,9 +1241,8 @@ function doit {
     HEAD=head
     #HEAD=head -n 20
 	TESTCONTINUE=0
-
 	AMAKE=0
-
+	MOVETOSTORE=1
 
 	###############
 	#initialise:
@@ -1265,6 +1299,9 @@ function doit {
         -nonglob)   NONGLOBAFTERGLOBERR=1
         ;;
 
+        -nomove) 	MOVETOSTORE=0
+        ;;
+
 		-noskip) 	SKIP=noskip
         ;;
 
@@ -1307,24 +1344,26 @@ function doit {
 		-help)
 
             echo "Aubit 4gl compiler object compile utillity: amakeallo"
-            echo " compiles all 4gl files to objects"
+            echo " compiles all 4gl files to objects or all .mk to programs"
             echo
 			echo "Options: [defaults are in ()]"
 			echo " -r = recursive: step into subdirectories too (. only)"
 			echo " -4js = use 4Js/D4GL compiler (Aubit)"
+			echo " -q = use Querix compiler (Aubit)"
 			echo " -stoperr = stop on any error (continue)"
 			echo " -stopglob = stop if any GLOBALS 4gl file fails (continue)"
             echo " -nonglob = continue compiling non-global files even if globals fail (skip)"
-			echo " -noskip = do not skip files that are already compiled (skip)"
-			echo " -x = rename Aubit old extensions [.o->.ao]"
+			echo " -noskip = do not skip already compiled (skip)"
+			echo " -x = rename Aubit old extensions in "." [.o->.ao]"
 			echo " -fullclean = remove .c .h .ec before you start (DANGER!)"
 			echo " -compat = ignore errors if they fail in 4Js too (do not ignore)"
-			echo " -maxmode/maxmodeminimal = special mode for Maximise application testing"
-			echo " -v = verbose - show what you are doing"
-			echo " -continue - contine previous run, don't retry already failed"
+			echo " -maxmode[minimal] = special mode for Maximise app (universal mode)"
+			echo " -v = verbose - show what you are doing (show only counters)"
 			echo " -debug = verbose + much more"
-			echo " -amake = run amake on all .mk files, instead compiling objects"
-            echo " -cleanmk = clean .mk files when running with -amake"
+			echo " -continue - contine previous run, don't retry already failed"
+			echo " -amake = run amake on all .mk files {compile .4gl to objects)"
+            echo " -cleanmk = clean .mk files when running with -amake (use existing .mk)"
+			echo " -nomove = don't move resulting objects/execs (move to OBJSTORE)"
 			echo " -help = this help"
             echo
             exit 0
@@ -1420,20 +1459,25 @@ function doit {
     fi
 
     date
-    date > $ERRORLOG
-	echo "Invoked with: $@" >> $ERRORLOG
-    echo "Invoked in $PWD" >> $ERRORLOG
-	echo "-----------------------------------------------------" >> $ERRORLOG
+	
+	if test "$AMAKE" = "1"
+    then
+		echo "Invoked with: $@" >> $AMAKEERRORLOG
+	    echo "Invoked in $PWD" >> $AMAKEERRORLOG
+		echo "-----------------------------------------------------" >> $AMAKEERRORLOG
+    else
+	    date > $ERRORLOG
+		echo "Invoked with: $@" >> $ERRORLOG
+	    echo "Invoked in $PWD" >> $ERRORLOG
+		echo "-----------------------------------------------------" >> $ERRORLOG
 
-	date > $ZEROLOG
-	date > $FGLLOG
-	date > $CLOG
-    date > $CORELOG
-    date > $GLOBLOG
-    date > $AMAKEERRORLOG
-	echo "Invoked with: $@" >> $AMAKEERRORLOG
-    echo "Invoked in $PWD" >> $AMAKEERRORLOG
-	echo "-----------------------------------------------------" >> $AMAKEERRORLOG
+		date > $ZEROLOG
+		date > $FGLLOG
+		date > $CLOG
+	    date > $CORELOG
+	    date > $GLOBLOG
+	    date > $AMAKEERRORLOG
+	fi
 
     #################
     #start compiling:
