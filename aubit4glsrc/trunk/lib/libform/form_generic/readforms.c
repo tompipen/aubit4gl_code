@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.18 2003-08-25 19:15:50 mikeaubury Exp $
+# $Id: readforms.c,v 1.19 2003-09-17 07:05:41 mikeaubury Exp $
 #*/
 
 /**
@@ -398,7 +398,7 @@ include_range_check (char *ss, char *ptr, int dtype)
 	A4GL_debug("X111 - dtype!=0 %s (%s)\n",ptr2,ptr1);
 
 
-      if (dtype==5||dtype==6) {
+      if (dtype==5||dtype==8) {
 		dim=0x2010;
 	}
       A4GL_debug ("Not a string expression");

@@ -52,6 +52,7 @@ struct call_funcs system_funcs[]={
 	{ &A4GL_pop_var2,			"A4GL_pop_var2",			"4444"},
 	{ &A4GL_push_char,			"A4GL_push_char",			"04"},
 	{ &A4GL_push_int,			"A4GL_push_int",			"02"},
+	{ &A4GL_pop_int,			"A4GL_pop_int",			"4"},
 	{ &A4GL_push_long,			"A4GL_push_long",			"04"},
 	{ &A4GL_push_variable,			"A4GL_push_variable",			"044"},
 	{ &A4GL_pushop,				"A4GL_pushop",				"04"},
@@ -71,6 +72,8 @@ struct call_funcs system_funcs[]={
 
 void init_calls(int argc,char *argv[]) {
    A4GL_fgl_start(argc,argv);
+   A4GLSTK_initFunctionCallStack ();
+
 }
 
 

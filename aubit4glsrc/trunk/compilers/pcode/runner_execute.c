@@ -96,7 +96,7 @@ add_block_to_stack (int pc, struct cmd_block *b)
 	      // Need to find our variable...
 	      // It will be in the module_variables table of another module
 	      n = &b->c_vars.c_vars_val[a];
-	      ptr = resolve_externs (n->var->name_id);
+	      ptr = resolve_externs (GET_ID(n->var->name_id));
 
 	      if (ptr != (void *) -1)
 		{
@@ -279,7 +279,7 @@ get_var_ptr (struct use_variable *uv)
   struct variable_element *ve_sub;
   int call_stack_entry;
   char pointer_or_offset = 'N';
-  static char *rptr = 0;
+  char *rptr = 0;
 //int *rptr_i=0;
 
 
@@ -371,6 +371,14 @@ get_var_ptr (struct use_variable *uv)
     }
 
   ve_main = var->var;
+  //printf ("-->%s", GET_ID (ve_main->name_id));
+  //printf (" offset		=%ld", ve_main->offset);
+  //printf (" total_size	=%ld", ve_main->total_size);
+  //printf (" unit_size	=%ld", ve_main->unit_size);
+  //printf (" rptrbase	=%p", rptr);
+  //printf ("\n");
+
+
   A4GL_debug ("-->%s", GET_ID (ve_main->name_id));
   A4GL_debug (" offset		=%ld", ve_main->offset);
   A4GL_debug (" total_size	=%ld", ve_main->total_size);
@@ -392,18 +400,20 @@ get_var_ptr (struct use_variable *uv)
 	  else
 	    {
 	      int x;
+		//printf("Looking to get subscript\n");
 	      evaluate_param (uv->sub.sub_val[a].subscript, &x);
-	      A4GL_debug ("Sub :ARRAY (%d)\n", x);
+	      //printf ("Sub :ARRAY (%d) +=%d\n", x,ve_main->unit_size*x);
 	      rptr += ve_main->unit_size * x;
 	    }
 	}
     }
 
-
 //fprintf(stderr,"Indirection=%d ptr=%p\n",uv->indirection,rptr);
   if (uv->indirection == -1)
     {
-      return &rptr;
+	static void *ptr;
+	ptr=rptr;
+      return &ptr;
     }
   if (uv->indirection == 1)
     {

@@ -7,6 +7,28 @@ extern module this_module;
 #define FglDecimal long
 #define fgldate long
 
+
+static char *op_str[]={
+        "EOP_EQUAL",
+        "EOP_GT",
+        "EOP_GTE",
+        "EOP_LT",
+        "EOP_LTE",
+        "EOP_PLUS",
+        "EOP_MINUS",
+        "EOP_MULTIPLY",
+        "EOP_DIVIDE",
+        "EOP_AND",
+        "EOP_OR",
+        "EOP_LOGAND",
+        "EOP_LOGOR",
+        "EOP_NE",
+        "EOP_NOT"
+,0
+
+};
+
+
 int
 evaluate_param (struct param *e, int *x)
 {
@@ -66,7 +88,7 @@ evaluate_param (struct param *e, int *x)
 	  {
 	    b = 0;
 	  }
-	A4GL_debug ("XXXX op=%d a=%d b=%d\n", e->param_u.op->op_i, a, b);
+	//printf("XXXX op=%d (%s) a=%d b=%d\n", e->param_u.op->op_i, op_str[e->param_u.op->op_i], a, b); fflush(stdout);
 
 
 	switch (e->param_u.op->op_i)

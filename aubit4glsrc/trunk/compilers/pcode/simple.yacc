@@ -17,8 +17,9 @@ char buff[20];
 %}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
-%left AND_OP OR_OP
-%left PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
+%token AND_OP 
+%token OR_OP
+%token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
 %token XOR_ASSIGN OR_ASSIGN TYPE_NAME FUNCTION FGLDATE   FGLDECIMAL FGLMONEY
@@ -447,7 +448,7 @@ for :
                         add_label(buff);
 	} expr ';' {
                         sprintf(buff,"_while_e_%d",$<i>5);
-                        add_if($<e>6,0,buff);
+                        add_if($<e>6,0,strdup(buff));
 	}
 	assign_common ')' cmd 
 	{
@@ -472,7 +473,7 @@ while : WHILE {
 
 		} '(' expr ')'  {
 			sprintf(buff,"_while_e_%d",$<i>2);
-			add_if($<e>4,0,buff);
+			add_if($<e>4,0,strdup(buff));
 		} cmd {
 			sprintf(buff,"_while_c_%d",$<i>2);
 			add_goto(buff);
@@ -492,12 +493,23 @@ goto: GOTO IDENTIFIER {
 	}
 ;
 
-expr : expr_1 {
-	$<e>$=$<e>1;
-	}
+expr :   or_expr  {$<e>$=$<e>1;}
 ;
+
+
+or_expr: and_expr  {$<e>$=$<e>1;}
+	| or_expr OR_OP and_expr   { $<e>$=new_param_op($<e>1,$<str>2,$<e>3); }
+;
+
+and_expr : other_expr_1  {$<e>$=$<e>1;}
+	| and_expr AND_OP other_expr_1  { $<e>$=new_param_op($<e>1,$<str>2,$<e>3); }
+;
+
+
+other_expr_1: expr_1
+;
+
 expr_1:
-	/*and_or_op 	 	{$<e>$=$<e>1; }   */
 	 op 			{$<e>$=$<e>1; }  
 	| int_val 		{$<e>$=$<e>1;}
 	| STRING_LITERAL 	{
@@ -518,6 +530,8 @@ expr_1:
 	| '!' expr 		{$<e>$=new_param_op($<e>2,"NOT",0);}
 	| BEF_ROW { $<e>$=new_param('S',"BEF_ROW");}
 	| ON_KEY '(' STRING_LITERAL ')' { $<e>$=new_param('K',$<str>3);}
+
+
 ;
 
 cast:
@@ -553,10 +567,14 @@ fcall_expr :
 	}
 ;
 
-op: expr double_operator expr {
+
+
+op: 
+	 expr_1 double_operator expr_1 {
 		$<e>$=new_param_op($<e>1,$<str>2,$<e>3);
 		}
 ;
+
 
 
 /*
@@ -578,8 +596,6 @@ double_operator:
  	| '/'
 	| '<'
 	| '>'
-	| AND_OP 
-	| OR_OP
  ;
 
 int_constant_val :
@@ -695,3 +711,6 @@ variable: IDENTIFIER 				{$<e>$=new_param('V',(void *)mk_use_variable(0    ,0   
 		p->param_u.uv->indirection--;
 	}
 ;
+
+
+

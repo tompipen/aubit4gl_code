@@ -130,13 +130,14 @@ A4GL_debug("XYXY dec to str : %s",&dec->dec_data[2]);
 ptr=&dec->dec_data[2];
 //printf("dectostr--->%s\n",&dec->dec_data[2]);
 strcat(buff,ptr);
-for (a=has_neg;a<strlen(buff);a++) {
-	if (buff[a]=='.') break;
-	if (buff[a]==' ') continue;
-	if (buff[a]=='0') {buff[a]=' ';continue;}
-	//if (buff[a]=='-') continue;
-	break;
-}
+	for (a=has_neg;a<strlen(buff);a++) {
+		if (buff[a]=='.') break;
+		if (buff[a]==' ') continue;
+		if (buff[a]=='0' && a==strlen(buff)-2&&buff[a+1]=='.') break;
+		if (buff[a]=='0') {buff[a]=' ';continue;}
+		//if (buff[a]=='-') continue;
+		break;
+	}
 A4GL_trim(buff);
 if (buff[strlen(buff)-1]=='.') buff[strlen(buff)-1]=0;
 

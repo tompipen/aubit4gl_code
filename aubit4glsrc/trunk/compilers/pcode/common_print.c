@@ -6,6 +6,27 @@
 
 extern module this_module;
 
+char *op_str[]={
+        "EOP_EQUAL",
+        "EOP_GT",
+        "EOP_GTE",
+        "EOP_LT",
+        "EOP_LTE",
+        "EOP_PLUS",
+        "EOP_MINUS",
+        "EOP_MULTIPLY",
+        "EOP_DIVIDE",
+        "EOP_AND",
+        "EOP_OR",
+        "EOP_LOGAND",
+        "EOP_LOGOR",
+        "EOP_NE",
+        "EOP_NOT"
+,0
+
+};
+
+
 extern char *cmd_type_str[];
 /*
 char *cmd_type_str[] = {
@@ -29,7 +50,7 @@ static void print_command (long func_id, long pc, struct cmd *cmd);
 void
 print_use_variable (struct use_variable *v)
 {
-  printf ("Use Variable : %d in block %d indirection : %d ", v->variable_id,
+  printf ("UV(%d,%d,%d : ", v->variable_id,
 	  v->defined_in_block_pc, v->indirection);
   if (v->sub.sub_len)
     {
@@ -38,7 +59,7 @@ print_use_variable (struct use_variable *v)
 	{
 	  if (v->sub.sub_val[a].element != -1)
 	    {
-	      printf (" element : %ld ", v->sub.sub_val[a].element);
+	      printf (" %ld ", v->sub.sub_val[a].element);
 	    }
 	  if (v->sub.sub_val[a].subscript != 0)
 	    {
@@ -48,6 +69,7 @@ print_use_variable (struct use_variable *v)
 	    }
 	}
     }
+	printf(")");
 }
 
 
@@ -339,9 +361,11 @@ print_params (struct param *e)
       }
       break;
     case PARAM_TYPE_OP:
+	printf(" OP (");
       print_params (e->param_u.op->left);
-      printf ("%d", e->param_u.op->op_i);
+      printf ("%d (%s)", e->param_u.op->op_i,op_str[e->param_u.op->op_i]);
       print_params (e->param_u.op->right);
+	printf(") ");
       break;
     case PARAM_TYPE_USE_VAR:
       print_use_variable (e->param_u.uv);

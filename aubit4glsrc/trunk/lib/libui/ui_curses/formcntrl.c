@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.34 2003-09-15 13:07:25 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.35 2003-09-17 07:05:42 mikeaubury Exp $
 #*/
 
 /**
@@ -833,8 +833,10 @@ A4GL_form_loop (void *vs,int init)
       set_form_page (mform, metrics->scr - 1);
     }
 
-
-A4GL_mja_set_current_field (mform, form->currentfield);
+//if (current_field(mform)!=form->currentfield) {
+	//A4GL_debug("CHANGE OF FIELD\n");
+	A4GL_mja_set_current_field (mform, form->currentfield);
+//}
 A4GL_mja_pos_form_cursor (mform);
 
   A4GL_reset_processed_onkey ();
@@ -894,6 +896,7 @@ if (mform->curcol==0) {
 
 if (mform->curcol==A4GL_get_field_width(current_field(mform))-1) {
                 at_last=1;
+	A4GL_debug("AT LAST..... XYXYXY");
 }
 
 if (lr=='L') {
@@ -910,6 +913,7 @@ if (lr=='L') {
 
 if (lr=='R') {
 	if (at_last) { // Acts like KEY_DOWN at last position in the field
+		A4GL_debug("AT LAST");
 	    if (std_dbscr.input_wrapmode == 0 && A4GL_curr_metric_is_used_last_s_screenio (s, f)) {
                 A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
                 return;
@@ -1066,7 +1070,9 @@ break;
 	A4GL_debug("MJA Try to move to previous field : %d\n",s->curr_attrib-1);
 	A4GL_newMovement(s,s->curr_attrib-1);
 	break;
-
+    case 2:
+	A4GL_debug("FIELD OPTS : ");
+	A4GL_debug_print_field_opts(s->currentfield); break;
     case '\t':
     case A4GLKEY_ENTER:
     case 13:

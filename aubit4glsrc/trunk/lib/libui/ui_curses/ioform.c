@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.76 2003-09-15 13:07:26 mikeaubury Exp $
+# $Id: ioform.c,v 1.77 2003-09-17 07:05:42 mikeaubury Exp $
 #*/
 
 /**
@@ -45,6 +45,7 @@
 
 #include "a4gl_lib_ui_tui_int.h"
 #include <ctype.h>
+static void chk_for_picture(FIELD *f,char *buff) ;
 
 /*
 =====================================================================
@@ -466,22 +467,31 @@ A4GL_default_attributes (FIELD * f, int dtype)
 {
   struct struct_scr_field *fprop;
 
+int done=0;
+
   fprop = (struct struct_scr_field *) (field_userptr (f));
   A4GL_debug ("In def attrib f=%p", f);
 
   if (fprop) {
   	if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) {
+		A4GL_debug("ZZZZ - SET OPTS");
       		set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_STATIC);
-    	}
-  } else
-    {
+		done=1;
+    	} 
+  }
+
+
+
+ if (done==0) { 
 
      A4GL_debug("MMMM DTYPE & 255 = %d",dtype);
 
       if ((dtype&255) == 0) {
+		A4GL_debug("ZZZZ - SET OPTS");
 		set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_STATIC);
 		field_opts_off(f,O_BLANK);
 	} else {
+		A4GL_debug("ZZZZ - SET OPTS");
 		A4GL_debug("BLANK BLANK");
 		set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_STATIC | O_BLANK);
 	}
@@ -500,6 +510,7 @@ A4GL_default_attributes (FIELD * f, int dtype)
 void
 A4GL_field_autonext (FIELD * f)
 {
+		A4GL_debug("ZZZZ - SET OPTS");
   field_opts_on (f, O_AUTOSKIP);
 }
 
@@ -510,6 +521,7 @@ A4GL_field_autonext (FIELD * f)
 void
 A4GL_field_dynamic (FIELD * f)
 {
+		A4GL_debug("ZZZZ - SET OPTS");
   field_opts_off (f, O_STATIC);
 }
 
@@ -520,6 +532,7 @@ A4GL_field_dynamic (FIELD * f)
 void
 A4GL_field_invisible (FIELD * f)
 {
+		A4GL_debug("ZZZZ - SET OPTS");
   field_opts_off (f, O_PUBLIC);
 }
 
@@ -530,6 +543,7 @@ A4GL_field_invisible (FIELD * f)
 void
 A4GL_field_noentry (FIELD * f)
 {
+		A4GL_debug("ZZZZ - SET OPTS");
   field_opts_off (f, O_ACTIVE);
   field_opts_off (f, O_EDIT);
 }
@@ -559,17 +573,20 @@ A4GL_set_field_attr (FIELD * field)
   if (A4GL_has_bool_attribute (f, FA_B_AUTONEXT))
     {
       A4GL_debug ("Autoskip");
+		A4GL_debug("ZZZZ - SET OPTS");
       field_opts_on (field, O_AUTOSKIP);
     }
 
   if (A4GL_has_bool_attribute (f, FA_B_INVISIBLE))
     {
       A4GL_debug ("Invisible ***");
+		A4GL_debug("ZZZZ - SET OPTS");
       field_opts_off (field, O_PUBLIC);
     }
 
   if (f->dynamic != 0)
     {
+		A4GL_debug("ZZZZ - SET OPTS");
       field_opts_off (field, O_STATIC);
 
       if (f->dynamic == -1)
@@ -588,21 +605,25 @@ A4GL_set_field_attr (FIELD * field)
   if (A4GL_has_bool_attribute (f, FA_B_NOENTRY))
     {
       A4GL_debug ("No entry");
+		A4GL_debug("ZZZZ - SET OPTS");
       field_opts_off (field, O_ACTIVE);
       field_opts_off (field, O_EDIT);
     }
 
   if (A4GL_has_bool_attribute (f, FA_B_REQUIRED))
     {
+		A4GL_debug("ZZZZ - SET OPTS");
       field_opts_off (field, O_NULLOK);
     }
   else
     {
+		A4GL_debug("ZZZZ - SET OPTS");
       field_opts_on (field, O_NULLOK);
     }
 
   if (A4GL_has_bool_attribute (f, FA_B_COMPRESS))
     {
+		A4GL_debug("ZZZZ - SET OPTS");
       field_opts_on (field, O_WRAP);
     }
 
@@ -1240,6 +1261,7 @@ A4GL_turn_field_off (FIELD * f)
   int a;
   fprop = (struct struct_scr_field *) (field_userptr (f));
   A4GL_debug ("Turn Field Off %s %s", fprop->tabname, fprop->colname);
+		A4GL_debug("ZZZZ - SET OPTS");
   a = field_opts_off (f, O_ACTIVE);
   A4GL_debug ("a=%d", a);
   a += field_opts_off (f, O_EDIT);
@@ -1261,6 +1283,7 @@ A4GL_turn_field_on (FIELD * f)
   int a;
   fprop = (struct struct_scr_field *) (field_userptr (f));
   A4GL_debug ("Turn Field On %s %s", fprop->tabname, fprop->colname);
+		A4GL_debug("ZZZZ - SET OPTS");
   a = field_opts_on (f, O_ACTIVE);
   A4GL_debug ("a=%d", a);
   a = field_opts_on (f, O_EDIT);
@@ -2089,6 +2112,7 @@ A4GL_make_field (int frow, int fcol, int rows, int cols)
       A4GL_gui_mkfield (rows, cols, frow, fcol, f);
       A4GL_debug ("Field created - setting attributes");
       /*A4GL_set_field_attr (f); */
+		A4GL_debug("ZZZZ - SET OPTS");
       field_opts_off (f, O_ACTIVE);
       field_opts_off (f, O_EDIT);
       field_opts_off (f, O_BLANK);
@@ -2183,6 +2207,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
   f->do_reverse = a;
   A4GL_debug ("done ");
   set_field_opts (field, oopt);
+		A4GL_debug("ZZZZ - SET OPTS");
   A4GL_debug ("Calling display_field_contents");
 
 
@@ -2868,6 +2893,7 @@ A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
   int c;
   int a;
   int nr;
+  
 
   s = inp;
 
@@ -2875,7 +2901,11 @@ A4GL_fgl_getfldbuf_ap (void *inp, va_list * ap)
   nr = 0;
   for (a = 0; a <= c; a++)
     {
-      A4GL_push_char (field_buffer (field_list[a], 0));
+	char *buff;
+	buff=strdup(field_buffer (field_list[a], 0));
+	chk_for_picture(field_list[a],buff);
+      	A4GL_push_char (buff);
+	free(buff);
       nr++;
     }
   return nr;
@@ -2908,9 +2938,14 @@ A4GL_fgl_getfldbuf_ia_ap (void *inp, va_list * ap)
 	{
 	  if (f == s->field_list[0][b])
 	    {
+		char *buff;
 	      // Found @ position b...
 	      A4GL_push_char (field_buffer
 			      (s->field_list[s->scr_line - 1][b], 0));
+		buff=strdup(field_buffer (s->field_list[s->scr_line-1][b], 0));
+		chk_for_picture(field_list[a],buff);
+      		A4GL_push_char (buff);
+		free(buff);
 	      nr++;
 	    }
 	}
@@ -4045,4 +4080,27 @@ void A4GL_clr_field (FIELD * f)
 	}
     }
   A4GL_mja_set_field_buffer (f, 0, str);
+}
+
+
+
+void chk_for_picture(FIELD *f,char *buff) {
+  struct struct_scr_field *fprop;
+char *picture;
+
+  fprop = (struct struct_scr_field *) (field_userptr (f));
+
+                        if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) {
+                                int a;
+                                int blank=1;
+                                picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+                                A4GL_debug("HAS PICTURE MJA123");
+                                for (a=0;a<strlen(buff);a++) {
+                                        if (picture[a]=='X'&&buff[a]!=' ') {blank=0;break;}
+                                        if (picture[a]=='A'&&buff[a]!=' ') {blank=0;break;}
+                                        if (picture[a]=='#'&&buff[a]!=' ') {blank=0;break;}
+                                }
+                                if (blank) strcpy(buff,"");
+                        }
+A4GL_trim(buff);
 }

@@ -110,6 +110,23 @@ handle_4444 (void *end_func, struct param *p)
 }
 
 long
+handle_44444 (void *end_func, struct param *p)
+{
+  int params[4];
+  long rval;
+  long (*func) (long, long, long,long);
+  func = end_func;
+  evaluate_param (&p->param_u.p_list->list.list_val[0], &params[0]);
+  evaluate_param (&p->param_u.p_list->list.list_val[1], &params[1]);
+  evaluate_param (&p->param_u.p_list->list.list_val[2], &params[2]);
+  evaluate_param (&p->param_u.p_list->list.list_val[3], &params[3]);
+  rval = func (params[0], params[1], params[2],params[3]);
+  return rval;
+
+
+}
+
+long
 handle_444444 (void *end_func, struct param *p)
 {
   int params[5];
@@ -252,6 +269,7 @@ struct func_sigs function_signiatures[] = {
   {&handle_44, "44"},
   {&handle_444, "444"},
   {&handle_4444, "4444"},
+  {&handle_44444, "44444"},
   {&handle_444444, "444444"},
   {&handle_44444444444, "44444444444"},
   {&handle_0, "0"},
@@ -420,7 +438,7 @@ call_c_function (char *s, struct param *p, long *r)
   ptr = find_sig (sig);
   if (!ptr)
     {
-      printf ("Can't find signiature...\n");
+      printf ("Can't find signiature... (%s for %s)\n",sig,s);
       exit (1);
 
     }

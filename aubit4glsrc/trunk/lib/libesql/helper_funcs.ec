@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.7 2003-09-15 13:07:25 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.8 2003-09-17 07:05:41 mikeaubury Exp $
 #
 */
 
@@ -92,8 +92,15 @@ char b[65];
 		A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
 		A4GL_push_variable(a4gl,(size<<16)+5);
 	   	A4GL_pop_var2(&b,0,0x28);
+		if (A4GL_isyes(acl_getenv("DEBUG_DECIMAL"))) {
+			printf(">b='%s'\n",b);
+		}
 		A4GL_debug("calling deccvasc with %s",b);
 		deccvasc(b,strlen(b),infx);
+		if (A4GL_isyes(acl_getenv("DEBUG_DECIMAL"))) {
+			//dectoasc(infx,b,64,16);
+			printf(">> b=%s\n",b);
+		}
 
 	}
 
@@ -200,7 +207,9 @@ dtime_t *infx; struct A4GLSQL_dtime *a4gl;
 				printf("ERROR - SEE DEBUG.OUT");
 			}
 	#ifdef DIALECT_INFORMIX
+		if (!A4GL_isyes(acl_getenv("KEEP_QUALIFIER"))) {
 			infx->dt_qual=arr_dtime[size];
+		}
 	#endif
 			dtcvasc(ptr,infx);
 

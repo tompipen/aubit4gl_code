@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2003-09-14 03:44:59 afalout Exp $
+# $Id: Makefile,v 1.5 2003-09-17 07:05:16 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS			=-Wall -O2
+CFLAGS			=-Wall -O2 -g
 #CC=gcc
 
 OBJ_COMMON      =npcode_xdr.o common_io.o common_print.o common_eval.o
