@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.10 2003-02-14 10:18:47 mikeaubury Exp $
+# $Id: load.c,v 1.11 2003-02-14 13:26:43 mikeaubury Exp $
 #
 */
 
@@ -230,7 +230,9 @@ A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
   char *insertstr;
   char filename[256];
   FILE *p;
+  struct BINDING *ibind=0;
   char buff[255];
+int a;
   delim=delims[0];
   
   debug("In load_data");
@@ -286,6 +288,7 @@ A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
       debug("Read line '%s'",loadbuff);
       nfields=find_delims(delim);
       debug("nfields=%d number of columns=%d",nfields,cnt);
+
       if (nfields!=cnt) {
 	 sprintf(buff,"%d",cnt);
          set_errm(buff);
@@ -293,9 +296,19 @@ A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
          return 0;
       }
 
-	A4GLSQL_set_status(0,1);
+      A4GLSQL_set_status(0,1);
+	if (ibind) {
+		free(ibind);
+	}
+	ibind=malloc(sizeof(struct BINDING)*cnt);
+	for (a=0;a<cnt;a++) {
+		ibind[a].ptr=colptr[a];
+		ibind[a].dtype=0;
+		ibind[a].size=strlen(colptr[a]);
+	}
 
-      A4GLSQL_execute_sql_from_ptr("_load",cnt,colptr);
+      A4GLSQL_execute_sql("_load",cnt,ibind);
+
       if (status!=0) {
 	   sprintf(buff,"%d",cnt);
            set_errm(buff);
