@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.58 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: iarray.c,v 1.59 2003-12-15 07:33:01 mikeaubury Exp $
 #*/
 
 /**
@@ -443,8 +443,7 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
 {
 
 
-  A4GL_debug ("In pop_iarr_var %d %d currentfield=%p", x, y,
-	      form->currentfield);
+  A4GL_debug ("In pop_iarr_var %d %d currentfield=%p", x, y, form->currentfield);
   if (form->currentfield == 0)
     return 1;
   y--;
@@ -457,6 +456,15 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
       A4GL_trim (ptr);
       if (strlen (ptr))
 	{
+	  struct struct_scr_field *fprop;
+	  char *ptr2;
+          fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
+
+	  ptr2=A4GL_fld_data_ignore_format(fprop,ptr);
+	  if (ptr2!=ptr)  {
+	  	free(ptr);
+	  	ptr=strdup(ptr2);
+	  }
 	  A4GL_push_char (ptr);
 	}
       else
@@ -544,8 +552,7 @@ iarr_loop (struct s_inp_arr *arr)
 	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
 	}
 
-      fprop =
-	(struct struct_scr_field *) (field_userptr (form->currentfield));
+      fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
       if (fprop)
 	A4GL_comments (fprop);
 

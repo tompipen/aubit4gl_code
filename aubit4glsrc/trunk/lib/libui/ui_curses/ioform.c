@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.82 2003-12-12 16:15:05 mikeaubury Exp $
+# $Id: ioform.c,v 1.83 2003-12-15 07:33:01 mikeaubury Exp $
 #*/
 
 /**
@@ -4180,12 +4180,41 @@ A4GL_trim(buff);
 
 
 
+char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop,char *fld_data) {
+char *ptr;
+ptr=A4GL_get_str_attribute (fprop, FA_S_FORMAT);
+A4GL_debug("FLD_DATA_IGNORE_FORMAT : %s\n",fld_data);
+if (ptr) {
+        // It could the that there are some literals or other characters
+        // in fld_data that we need to take out first...
+        //
+	A4GL_debug("Has format");
+        if (fprop->datatype==DTYPE_SMINT|| fprop->datatype==DTYPE_INT|| fprop->datatype==DTYPE_DECIMAL|| fprop->datatype==DTYPE_MONEY|| fprop->datatype==DTYPE_FLOAT|| fprop->datatype==DTYPE_SMFLOAT) {
+                static char buff_new[256];
+                int a;
+                int c=0;
+                memset(buff_new,0,255);
+                for (a=0;a<strlen(fld_data);a++) {
+                        if (fld_data[a]=='$'||fld_data[a]==','||fld_data[a]=='£') continue;
+                        buff_new[c++]=fld_data[a];
+                }
+                fld_data=buff_new;
+                A4GL_debug("COPY -> %s instead",fld_data);
+        }
 
+}
+A4GL_debug("Returning : %s",fld_data);
+return fld_data;
+}
 
 
 
 int A4GL_check_and_copy_field_to_data_area(struct s_form_dets *form,struct struct_scr_field *fprop,char *fld_data,char *data_area) {
 int pprval;
+
+fld_data=A4GL_fld_data_ignore_format(fprop,fld_data);
+A4GL_debug("Got fld_data as : %s",fld_data);
+
 
 		    A4GL_push_param (fld_data, DTYPE_CHAR);
 		    pprval=A4GL_pop_param (data_area, fprop->datatype, A4GL_get_field_width (form->currentfield));
