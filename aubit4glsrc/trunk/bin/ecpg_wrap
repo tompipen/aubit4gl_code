@@ -58,7 +58,7 @@ echo "SOURCES : " $srcs
 
 for a in $srcs
 do
-	echo $POSTGRESDIR/bin/ecpg -C INFORMIX -t $ecpg_args $a
+	echo $POSTGRESDIR/bin/ecpg -C INFORMIX_SE -t $ecpg_args $a
 	$POSTGRESDIR/bin/ecpg -C INFORMIX -t $ecpg_args $a
 	out=`basename $a ".$ECPG_EXT"`
 	cfiles="$cfiles $out.c"

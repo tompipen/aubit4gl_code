@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.68 2003-06-27 09:26:24 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.69 2003-06-30 17:36:14 mikeaubury Exp $
 #
 */
 
@@ -1663,6 +1663,7 @@ void A4GL_fgl_end_4gl_0 (void);
 #define DISPLAY_TYPE_DISPLAY 	1
 #define DISPLAY_TYPE_DISPLAY_AT 2
 #define DISPLAY_TYPE_DISPLAY_TO 3
+#define DISPLAY_TYPE_PRINT 	4
 
 
 #ifndef _DEFINE_STATUSVARS_     /* set from fglwrap.c --ONLY-- */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.56 2003-05-15 14:07:03 mikeaubury Exp $
+# $Id: esql.ec,v 1.57 2003-06-30 17:36:15 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.56 2003-05-15 14:07:03 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.57 2003-06-30 17:36:15 mikeaubury Exp $";
 #endif
 
 
@@ -851,7 +851,7 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
     loc_t  blob;
 
     char     *char_var;
-    int      smint_var, *smint_ptr;
+    short      smint_var, *smint_ptr;
     long     int_var, *int_ptr;
     double   float_var, *float_ptr;
     float    smfloat_var, *smfloat_ptr;
@@ -889,6 +889,8 @@ A4GL_debug("In binding - %d %d",dataType,length);
     return 0;
   }
 
+A4GL_debug("Not null");
+
   switch (dataType)
   {
     case DTYPE_CHAR:
@@ -902,9 +904,10 @@ A4GL_debug("In binding - %d %d",dataType,length);
         LENGTH = :length,
         DATA = :char_var;
       break;
+
     case DTYPE_SMINT:
-      smint_ptr = (int *)bind[idx].ptr;
-      smint_var = (int)*smint_ptr;
+      smint_ptr = (short *)bind[idx].ptr;
+      smint_var = (short)*smint_ptr;
       EXEC SQL SET DESCRIPTOR :descriptorName  VALUE :index
         TYPE = :dataType,
         DATA = :smint_var;

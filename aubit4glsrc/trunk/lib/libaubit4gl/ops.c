@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.20 2003-06-30 09:00:19 mikeaubury Exp $
+# $Id: ops.c,v 1.21 2003-06-30 17:36:14 mikeaubury Exp $
 #
 */
 
@@ -873,7 +873,7 @@ A4GL_display_int (void *ptr, int size, int size_c,
   static char buff[256];
   A4GL_debug("A4GL_display_int..");
 
-  if (display_type == DISPLAY_TYPE_DISPLAY)
+  if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT)
     {
       if (A4GL_isnull(DTYPE_INT,ptr)) {
 		strcpy(buff,"           ");
@@ -928,7 +928,7 @@ A4GL_display_smint (void *ptr, int size, int size_c, struct struct_scr_field *fi
 
   A4GL_debug("A4GL_display_smint..");
 
-  if (display_type == DISPLAY_TYPE_DISPLAY)
+  if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT)
     {
       if (A4GL_isnull(DTYPE_SMINT,ptr)) {
 		strcpy(buff,"      ");
@@ -979,7 +979,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
   double a;
   static char buff[256];
 
-  if (display_type == DISPLAY_TYPE_DISPLAY)
+  if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT)
     {
       if (A4GL_isnull(DTYPE_FLOAT,ptr)) { strcpy(buff,""); return buff; }
   	a = *(double *) ptr;
@@ -1037,7 +1037,7 @@ A4GL_display_smfloat (void *ptr, int size, int size_c,
   float a;
   static char buff[256];
 
-  if (display_type == DISPLAY_TYPE_DISPLAY)
+  if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT)
     {
       if (A4GL_isnull(DTYPE_SMFLOAT,ptr)) { strcpy(buff,""); return buff; }
   a = *(float *) ptr;
@@ -1113,7 +1113,7 @@ static char buff[256];
 A4GL_debug("Display_decimal");
   //if (size_c==-1) { return 0; }
 
-  if (display_type == DISPLAY_TYPE_DISPLAY) {
+  if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT) {
         A4GL_push_dec(ptr,0,size);
 
 
@@ -1193,7 +1193,7 @@ A4GL_debug("Display_money");
   //if (size_c==-1) { return 0; }
 
 
-  if (display_type == DISPLAY_TYPE_DISPLAY) {
+  if (display_type == DISPLAY_TYPE_DISPLAY|| display_type==DISPLAY_TYPE_PRINT) {
         A4GL_push_dec(ptr,1,size);
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.17 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: report.c,v 1.18 2003-06-30 17:36:14 mikeaubury Exp $
 #
 */
 
@@ -70,6 +70,7 @@ int A4GL_init_report_table (struct BINDING *b, int n,
 int A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b);
 void A4GL_end_report_table (struct BINDING *b, int n, struct BINDING *reread);
 void A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi);
+static char *A4GL_report_char_pop(void) ;
 
 char *A4GL_decode_datatype (int dtype, int dim);
 extern sqlca_struct a4gl_sqlca;
@@ -187,7 +188,7 @@ A4GL_rep_print (struct rep_structure *rep, int a, int s, int right_margin)
 	}
       for (b = 0; b < a; b++)
 	{
-	  str = A4GL_char_pop ();
+	  str = A4GL_report_char_pop ();
 	  A4GL_debug ("Popped '%s'...", str);
 	  rep->col_no += strlen (str);
 	  A4GL_debug ("Popped %s\n", str);
@@ -730,6 +731,31 @@ A4GL_pause (char *s)
   A4GL_push_int (-1);
   A4GL_display_at (1, 0);
   getchar ();			// Not the best idea in the world....
+}
+
+
+static char *A4GL_report_char_pop(void) {
+  int tos_size;
+  int tos_dtype;
+  void *tos_ptr;
+  char *ptr;
+  char *(*function) (void *, int, int, struct struct_scr_field *, int);
+  A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
+
+  function = A4GL_get_datatype_function_i (tos_dtype & DTYPE_MASK, "DISPLAY");
+
+  ptr = function (tos_ptr, tos_size, -1, (struct struct_scr_field *) 0, DISPLAY_TYPE_PRINT);
+  if (ptr != 0)
+            {
+		ptr=strdup(ptr);
+              A4GL_drop_param ();
+  } else {
+		 ptr = A4GL_char_pop ();
+  }
+
+
+  return ptr;
+
 }
 
 /* ============================= EOF ================================ */

@@ -25,5 +25,15 @@ cp lib/*.so /home/aubit4gl/aubit4gl/lib
 cp incl/*.h /home/aubit4gl/aubit4gl/incl
 
 cd /home/aubit4gl/sourceforge/aubit4glsrc/tools/afinderr
-make
+m
+cp /home/aubit4gl/sourceforge/aubit4glsrc/tools/afinderr/afinderr /home/aubit4gl/aubit4gl/bin
 cp /home/aubit4gl/sourceforge/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
+
+cd /home/aubit4gl/sourceforge/aubit4glsrc/tools/test/build_tests
+find /home/aubit4gl/sourceforge/aubit4glsrc/tools/test/build_tests -name "*.4ae" -exec rm {} \;
+find /home/aubit4gl/sourceforge/aubit4glsrc/tools/test/build_tests -name "*.afr*" -exec rm {} \;
+sh run_tests
+if grep -y "Fail" build.log 
+then
+	banner "Test Failed"
+fi
