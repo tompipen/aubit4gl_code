@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.26 2004-12-17 05:23:49 afalout Exp $
+# $Id: io.c,v 1.27 2004-12-23 19:02:32 mikeaubury Exp $
 #
 */
 
@@ -135,6 +135,8 @@ static char fn[FNAMESIZE];
 int a;
 char *ptr;
 
+strcpy(str1,"");
+strcpy(str2,"");
   strcpy (fn, str);
 
   for (a = strlen (fn); a >= 0; a--) {
@@ -142,6 +144,8 @@ char *ptr;
 		fn[a] = 0;
 		break;
 	  }
+      if (fn[a]=='/') {a=0;break;}
+	
   }
 
   ptr = &fn[a];
