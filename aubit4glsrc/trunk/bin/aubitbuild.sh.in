@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.48 2004-12-13 01:55:31 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.49 2004-12-13 13:05:07 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -72,6 +72,11 @@
 ## ==================================================================
 
 #VERBOSE=1
+SH_DEBUG=1
+
+ALL_FLAGS=$@
+NUM_FLAGS=$#
+
 
 #####################
 #Source system environment: important when running from cron
@@ -184,15 +189,22 @@ SHORTNAME=@SHORTNAME@
 SRCSHORTNAME=@SHORTNAME@src
 BINSHORTNAME=@SHORTNAME@bin
 WINSETUPEXE_BASENAME=setup.exe
+
+WINSETUP_OUTPUTDIR="etc/Output"
 FULLNAME='@FULLNAME@'
-AUBIT_VERSION=@AUBIT_VERSION@
-AUBIT_BUILD=@AUBIT_BUILD@
+
+
+#WARNING: in process of making a build we actually increase a build number,
+#so this is a buld number from LAST TIME WE EXECUTED 'configure' BEFORE
+#running this script - which can and probably will be wrong.
+#AUBIT_VERSION=@AUBIT_VERSION@
+#AUBIT_BUILD=@AUBIT_BUILD@
 
 #####################
 #Settings for comparing sizes:
 WGET_SIZE="wget --server-response --spider"
 WGET_LOG=wget.log
-HTTP_FILES_URL="http://aubit4gl.sf.net/files/"
+HTTP_FILES_URL="http://aubit4gl.sourceforge.net/files"
 
 #####################
 #name of the computer we are on:
@@ -453,26 +465,74 @@ function func_configure () {
 	
 }
 
+###################################
+function website_filesize () {
+###################################
+the_url="$1"	
+
+	FILESIZE_SF=`$WGET_SIZE $the_url > $WGET_LOG 2>&1;`
+	FILESIZE_SF=`cat $WGET_LOG | grep Content-Length: | awk '{print $3}'`
+}
+
 ############################
 function compare_size () {
 ############################
 #Compare file sizes of local and uploaded file on web site. 
 
-UP_FILE=$1
-LOCAL_FILE=$2
+UP_FILE="$1"
+LOCAL_FILE="$2"
+UP_URLENCODED="$3"
 
-	HTTP_FILE="$HTTP_FILES_URL$UP_FILE"			
+	if test "$UP_URLENCODED" = ""; then 
+		HTTP_FILE="$HTTP_FILES_URL/$UP_FILE"
+	else
+		HTTP_FILE="$HTTP_FILES_URL/$UP_URLENCODED"
+	fi
+	website_filesize "$HTTP_FILE"
 	FILESIZE_SF=`$WGET_SIZE $HTTP_FILE > $WGET_LOG 2>&1;`
-	FILESIZE_SF=`cat $WGET_LOG | grep Content-Length: | sed -e 's/7 Content-Length://'`
+	FILESIZE_SF=`cat $WGET_LOG | grep Content-Length: | awk '{print $3}'`
+	if test "$FILESIZE_SF" = ""; then 
+		echo "ERROR: failed to get file size for uploaded file file:"
+		echo "$HTTP_FILE"
+		echo "see $WGET_LOG"
+		COMPARED_OK=0
+		return
+	fi
 	rm -f $WGET_LOG
 echo "Trying to ls: .$LOCAL_FILE."
 	FILESIZE_LOCAL=`ls -al "$LOCAL_FILE" | awk '{print $5}';`
 echo "xx"	
+	if test "$FILESIZE_LOCAL" = ""; then 
+		echo "ERROR: failed to get file size for local file:"
+		echo "$LOCAL_FILE"
+		COMPARED_OK=0
+		return
+	fi
 	if test "$FILESIZE_LOCAL" != "$FILESIZE_SF"; then 
-		echo "ERROR: $LOCAL_FILE filesize of local and uploaded file are different"
+		echo "ERROR: filesize of local and uploaded file are different"
+		echo "$LOCAL_FILE"
 		echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL"
+		FILESIZE_SF=""
+		website_filesize "$HTTP_FILE"
+		echo "Again, filesize on SF: $FILESIZE_SF:"
+		FILESIZE_SF=""
+		website_filesize "$HTTP_FILE"
+		echo "Once more, filesize on SF: $FILESIZE_SF:"
 		echo "----------------------------------------------------"				
 		COMPARED_OK=0
+#echo "command was:"
+#echo "$WGET_SIZE $HTTP_FILE > $WGET_LOG 2>&1;"
+#echo "cat $WGET_LOG | grep Content-Length: | awk '{print $3}'"
+		
+		echo "Will try downloading that file to compare:"
+		compare_files "$UP_FILE" "$LOCAL_FILE" "$UP_URLENCODED"
+	else
+		if [ "$VERBOSE" = "1" ]; then
+			echo "Size compares OK:"
+		echo "$LOCAL_FILE"
+		echo "Filesize on SF is $FILESIZE_SF, local file is $FILESIZE_LOCAL"
+		echo "----------------------------------------------------"				
+		fi
 	fi
 }
 
@@ -481,24 +541,32 @@ function compare_files () {
 #########################
 #Compare byte-for-byte local and uploaded file on web site, by first downloading
 #file from web site to local computer
-UP_FILE=$1
-DOWN_FILE=$2
+UP_FILE="$1"
+DOWN_FILE="$2"
+UP_URLENCODED="$3"
+
 
 	if test "$USE_WGET" = "1"; then
-		EXEC="wget http://aubit4gl.sf.net/files/$UP_FILE"; runexec
+		#WGET adds ftp:// when using single quotes
+		#EXEC="wget --ignore-length \"$HTTP_FILES_URL/$UP_FILE\""; runexec
+		if test "$UP_URLENCODED" = ""; then
+			EXEC="wget --ignore-length $HTTP_FILES_URL/$UP_FILE"; runexec
+		else
+			EXEC="wget --ignore-length $HTTP_FILES_URL/$UP_URLENCODED"; runexec		
+		fi
 	else
-		EXEC="$AUTOSFSCPGET $SCPPATH/$UP_FILE"; runexec
+		EXEC="$AUTOSFSCPGET '$SCPPATH/$UP_FILE'"; runexec
 	fi
 	
-	if [ -f /tmp/$UP_FILE ]; then
-		diff /tmp/$UP_FILE $DOWN_FILE
+	if [ -f "/tmp/$UP_FILE" ]; then
+		diff "/tmp/$UP_FILE" "$DOWN_FILE"
 		RET=$?
 		if test $RET != "0"; then
 			#echo "Error: /tmp/$UP_FILE and $DOWN_FILE are different"
 			ls -al "/tmp/$UP_FILE"
 			ls -al "$DOWN_FILE"
 			if [ "$VERBOSE" = "1" ]; then
-				echo "Failed cmd was: $EXEC"
+				echo "Failed cmd was: '$EXEC'"
 			fi
 			echo "----------------------------------------------------"
 			COMPARED_OK=0
@@ -507,9 +575,9 @@ DOWN_FILE=$2
 			fi
 		fi
 	else
-		echo "Download of $UP_FILE failed"
+		echo "Download of /tmp/$UP_FILE failed"
 		if [ "$VERBOSE" = "1" ]; then
-			echo "Failed cmd was: $EXEC"
+			echo "Failed cmd was: '$EXEC'"
 		fi
 		echo "----------------------------------------------------"
 		COMPARED_OK=0
@@ -522,26 +590,36 @@ function func_increase_build_number () {
 #increase build number, but doing this on more then one computer will cause
 #problems with "cvs update"
 
+DO_INCREASE=0
+
 	for HOST in $HOSTNAME_INCREASE_BUILD; do
 			if [ "$HOSTNAME" = "$HOST" ] ; then
-				EXEC="make build"; runexec
+				DO_INCREASE=1
 				break
-			else
-				if test "$VERBOSE" = "1"; then
-            		echo "HOSTNAME=$HOSTNAME, will NOT increase build number."
-				fi
 			fi
 	done
+	
+	if test "$DO_INCREASE" = "1"; then 
+		EXEC="make build"; runexec
+	else
+		if test "$VERBOSE" = "1"; then
+        	echo "HOSTNAME=$HOSTNAME, will NOT increase build number."
+		fi
+	fi
+	
 }
 #################################
 function func_commit_cvs () {
 #################################
 #cvs commit to check in build number
+#Commit only tools/project/build file
 
 	if test "$VERBOSE" = "1"; then
    		echo "CVS commit disabled"
 	fi
 
+	
+	
 		#	@cvs commit -m "commit.build $BULDNO" > commit.log
 		#/usr/bin/expect: invalid option -- m
 		#usage: expect [-div] [-c cmds] [[-f] cmdfile] [args]
@@ -838,8 +916,8 @@ function func_get_tarball_names () {
 	
 	if test "$VERBOSE" = "1"; then
 		echo "created:"
-		echo $SOURCETARNAME
-		echo $TARBALL
+		echo "Src terball: $SOURCETARNAME"
+		echo "Bin tarball: $TARBALL"
 	
 	fi
 }
@@ -897,7 +975,7 @@ function func_create_win_installer () {
 ##########################################
 #Create windows installer executable from natively compiled Aubit
 			STOPONERROR=0   #Continue even if next statemets fails
-			EXEC="rm -rf $AUBITSRCDIR/etc/Output/"; runexec
+			EXEC="rm -rf $AUBITSRCDIR/$WINSETUP_OUTPUTDIR/"; runexec
 			STOPONERROR=1
 
 			func_cd_srcdir
@@ -945,22 +1023,76 @@ function func_get_winsetup_name () {
 #######################################
 #Get name of created Windows setup installer executable
 
-	WINSETUPEXE="$AUBITSRCDIR/etc/Output/$WINSETUPEXE_BASENAME"
+	WINSETUPEXE="$AUBITSRCDIR/$WINSETUP_OUTPUTDIR/$WINSETUPEXE_BASENAME"
 	if ! [ -f "$WINSETUPEXE" ]; then
-		if test "$WINSETUP" = "1"; then
-			echo "Windows installer not created"
-        fi
-        WINSETUPEXE=""
-    else
+		#Maybe we allready renamed it?
+		prepare_winsetup_names
+		if [ -f "$TMP_WINSETUPEXE" ]; then
+			if test "$VERBOSE" = "1"; then
+				echo "Allready renamed winsetup"
+			fi
+			#allready did
+			show_winsetup_names
+			return
+		else
+			#Nope - not there
+			if test "$WINSETUP" = "1" -o "$VERBOSE" = "1"; then
+				echo "Windows installer not created"
+				echo "No '$WINSETUPEXE' or"
+				echo "'$TMP_WINSETUPEXE'"
+				
+			fi
+			WINSETUPEXE=""
+		fi
+	else
+		#created it, so rename it
+		prepare_winsetup_names
 		#rename it to current version:
-		TMP_BASENAME="$FULLNAME $AUBIT_VERSION.$AUBIT_BUILD.exe"
-		TMP_WINSETUPEXE="$AUBITSRCDIR/etc/Output/$TMP_BASENAME"
 		mv "$WINSETUPEXE" "$TMP_WINSETUPEXE"
+		show_winsetup_names
+	fi
+	
+}
+
+######################################
+function prepare_winsetup_names () {
+######################################
+
+		get_current_aubit_version
+		TMP_BASENAME="$FULLNAME $AUBIT_VERSION.$AUBIT_BUILD.exe"
+		TMP_WINSETUPEXE="$AUBITSRCDIR/$WINSETUP_OUTPUTDIR/$TMP_BASENAME"
         WINSETUPEXE_BASENAME="$TMP_BASENAME"
         WINSETUPEXE_BASENAME_ESC=`echo $WINSETUPEXE_BASENAME | sed -e 's/ /\\\\ /'g`
 		WINSETUPEXE="$TMP_WINSETUPEXE"
         WINSETUPEXE_ESC=`echo $WINSETUPEXE | sed -e 's/ /\\\\ /'g`
-	fi
+		WINSETUPEXE_URLENCODE=`echo $WINSETUPEXE | sed -e 's/ /\%20/'g`
+		WINSETUPEXE_BASENAME_URLENCODE=`echo $WINSETUPEXE_BASENAME | sed -e 's/ /\%20/'g`
+}
+
+#######################################
+function show_winsetup_names () { 
+#######################################
+		if test "$VERBOSE" = "1"; then
+			echo "Created Windows setup:"
+			echo "TMP_BASENAME=$TMP_BASENAME"
+echo "FULLNAME=$FULLNAME"
+echo "AUBIT_VERSION=$AUBIT_VERSION"
+echo "AUBIT_BUILD=$AUBIT_BUILD"
+			echo "TMP_WINSETUPEXE=$TMP_WINSETUPEXE"
+			echo "WINSETUPEXE_BASENAME=$WINSETUPEXE_BASENAME"
+			echo "WINSETUPEXE_BASENAME_ESC=$WINSETUPEXE_BASENAME_ESC"
+			echo "WINSETUPEXE=$WINSETUPEXE"
+			echo "WINSETUPEXE_ESC=$WINSETUPEXE_ESC"
+		fi
+}
+
+########################################
+function get_current_aubit_version () {
+########################################
+
+	AUBIT_VERSION=`cat $AUBITSRCDIR/tools/project/version`
+	AUBIT_BUILD=`cat $AUBITSRCDIR/tools/project/build`
+
 }
 
 ##################################
@@ -1096,6 +1228,30 @@ function func_get_files () {
 	fi
 }
 
+#############################
+function do_upload () {
+#############################
+the_file="$1"
+#Do NOT single-quote file names to auto_sf_scp!
+
+	START_TIME=`date +%s`
+	EXEC="$AUTO_SF_SCP $the_file"; runexec
+	EXIT_TIME=`date +%s`
+	let TOOK_TIME=EXIT_TIME - START_TIME
+	if test "$VERBOSE" = "1"; then	
+		the_script="`type auto_sf_scp | awk '{print $3}'`"
+		timeout="`grep timeout $the_script | awk '{print $3}'`"
+		echo "Upload took $TOOK_TIME seconds (timeout=$timeout)."
+		#if test "$timeout" -lt "$TOOK_TIME" -o 
+		if test "$timeout" = "$TOOK_TIME"; then
+			echo "WARNING: did 'expect' timeout kill scp?"
+		fi
+	fi
+	
+}
+
+
+
 ##########################
 function func_upload () {
 ##########################
@@ -1105,34 +1261,35 @@ function func_upload () {
 		if test "$VERBOSE" = "1"; then
 			echo "In func_upload()"
 		fi
-
-		EXEC="$AUTO_SF_SCP $SOURCETARNAME"; runexec
-		if test "$TARBALL" != "NONE"; then
-			EXEC="$AUTO_SF_SCP $TARBALL"; runexec
+		
+		do_upload "$SOURCETARNAME"
+		
+		if test "$TARBALL" != "NONE" -a "$TARBALL" != ""; then
+			do_upload "$TARBALL"
 		fi
 
         if test "$SOURCERPM" != ""; then
-			EXEC="$AUTO_SF_SCP $SOURCERPM"; runexec
+			do_upload "$SOURCERPM"
         fi
         if test "$BINRPM" != "" ; then
-			EXEC="$AUTO_SF_SCP $BINRPM"; runexec
+			do_upload "$BINRPM"
         fi
 
 		if test "$WINSETUPEXE" != ""; then
-			EXEC="$AUTO_SF_SCP $WINSETUPEXE"; runexec
+			do_upload "$WINSETUPEXE"
         fi
 
 		if [ "$COMSPEC" = "" ]; then
-			EXEC="$AUTO_SF_SCP $UNIXSRCBUILDNAMES"; runexec
-			EXEC="$AUTO_SF_SCP $UNIXBUILDNAMES"; runexec
+			do_upload "$UNIXSRCBUILDNAMES"
+			do_upload "$UNIXBUILDNAMES"
         else
-			EXEC="$AUTO_SF_SCP $CYSRCBUILDNAMES"; runexec
-			EXEC="$AUTO_SF_SCP $CYBUILDNAMES"; runexec
+			do_upload "$CYSRCBUILDNAMES"
+			do_upload "$CYBUILDNAMES"
         fi
 
 	    #upload html page last, so if we fail before, nothing is changed
 		EXEC="cp $DLTMP1 $DOWNLOADPAGEBASE"; runexec
-		EXEC="$AUTO_SF_SCP $DOWNLOADPAGEBASE"; runexec
+		do_upload "$DOWNLOADPAGEBASE"
 		
 	fi
 }
@@ -1155,9 +1312,9 @@ if test "$COMPARE" = "1"; then
 	if test "$SOURCETARBASENAME" != ""; then
 		rm -f /tmp/$SOURCETARBASENAME
 		if test "$COMPARE_SIZE" = "1"; then
-			compare_size $SOURCETARBASENAME $SOURCETARNAME
+			compare_size "$SOURCETARBASENAME" "$SOURCETARNAME"
 		else
-			compare_files $SOURCETARBASENAME $SOURCETARNAME
+			compare_files "$SOURCETARBASENAME" "$SOURCETARNAME"
 		fi
     fi
 
@@ -1165,9 +1322,9 @@ if test "$COMPARE" = "1"; then
 	if test "$TARBALLBASENAME" != "" -a "$TARBALL" != "NONE"; then
 		rm -f /tmp/$TARBALLBASENAME
 		if test "$COMPARE_SIZE" = "1"; then
-			compare_size $TARBALLBASENAME $TARBALL
+			compare_size "$TARBALLBASENAME" "$TARBALL"
 		else
-			compare_files $TARBALLBASENAME $TARBALL
+			compare_files "$TARBALLBASENAME" "$TARBALL"
 		fi
     fi
 
@@ -1175,9 +1332,14 @@ if test "$COMPARE" = "1"; then
 	if test "$WINSETUPEXE" != ""; then
 		rm -f "/tmp/$WINSETUPEXE_BASENAME"
 		if test "$COMPARE_SIZE" = "1"; then
-			compare_size $WINSETUPEXE_BASENAME $WINSETUPEXE
+			#compare_size "$WINSETUPEXE_BASENAME" "$WINSETUPEXE"
+			#compare_size "$WINSETUPEXE_BASENAME" "$WINSETUPEXE_ESC"
+			#compare_size "$WINSETUPEXE_URLENCODE" "$WINSETUPEXE_BASENAME"
+			#compare_size "$WINSETUPEXE_URLENCODE" "$WINSETUPEXE"
+			#compare_size "$WINSETUPEXE_BASENAME_URLENCODE" "$WINSETUPEXE"
+			compare_size "$WINSETUPEXE_BASENAME" "$WINSETUPEXE" "$WINSETUPEXE_BASENAME_URLENCODE"
 		else
-			compare_files $WINSETUPEXE_BASENAME $WINSETUPEXE
+			compare_files "$WINSETUPEXE_BASENAME" "$WINSETUPEXE" "$WINSETUPEXE_BASENAME_URLENCODE"
 		fi
     fi
 
@@ -1187,9 +1349,9 @@ if test "$COMPARE" = "1"; then
 			#Source RPM
 			rm -f /tmp/$SOURCERPMBASENAME
 			if test "$COMPARE_SIZE" = "1"; then
-				compare_size $SOURCERPMBASENAME $SOURCERPM
+				compare_size "$SOURCERPMBASENAME" "$SOURCERPM"
 			else
-				compare_files $SOURCERPMBASENAME $SOURCERPM
+				compare_files "$SOURCERPMBASENAME" "$SOURCERPM"
 			fi
 		fi
 
@@ -1197,9 +1359,9 @@ if test "$COMPARE" = "1"; then
 			#Binary RPM
 			rm -f /tmp/$BINRPMBASENAME
 			if test "$COMPARE_SIZE" = "1"; then
-				compare_size $BINRPMBASENAME $BINRPM
+				compare_size "$BINRPMBASENAME" "$BINRPM"
 			else
-				compare_files $BINRPMBASENAME $BINRPM
+				compare_files "$BINRPMBASENAME" "$BINRPM"
 			fi
 		fi
     fi
@@ -1207,13 +1369,13 @@ if test "$COMPARE" = "1"; then
 	if test "$COMPARED_OK" != "1"; then
 		echo "ERROR: one or more errors comparing created and downloaded files."
 		echo "Upload commands where:"
-		echo "SRC Tarball: $AUTO_SF_SCP $SOURCETARNAME"
+		echo "SRC Tarball: $AUTO_SF_SCP '$SOURCETARNAME'"
 		if test "$COMSPEC" = ""; then 
-			echo "BIN Tarball: $AUTO_SF_SCP $TARBALL"
-			echo "SRC RPM: $AUTO_SF_SCP $SOURCERPM"
-			echo "BIN RPM: $AUTO_SF_SCP $BINRPM"
+			echo "BIN Tarball: $AUTO_SF_SCP '$TARBALL'"
+			echo "SRC RPM: $AUTO_SF_SCP '$SOURCERPM'"
+			echo "BIN RPM: $AUTO_SF_SCP '$BINRPM'"
 		else
-			echo "WinSetup: $AUTO_SF_SCP $WINSETUPEXE"
+			echo "WinSetup: $AUTO_SF_SCP '$WINSETUPEXE'"
 		fi
 	fi
     cd -
@@ -1334,30 +1496,36 @@ function func_get_flags () {
 ###################################
 #Process flags specified on command line to this script
 
-	ALL_FLAGS=$@
+	#echo "Processing flags..."
+	#echo "ALL_FLAGS='$ALL_FLAGS' NUM_FLAGS=$NUM_FLAGS"
 	
-	if [ $# -lt 1 ]; then
+	if [ $NUM_FLAGS -lt 1 ]; then
+		#No command line flags - do it all
 		DO_ALL=1
 	else
-		
 		#First catch flags that affect other flags processing
-		for a in $ALL_FLAGS
-		do
+		for a in $ALL_FLAGS; do
 			case $a in
 				-anyday)
 					ANYDAY=1
+					if [ "$NUM_FLAGS" = "1" ]; then
+						DO_ALL=1
+					fi
+					
 					;;
 	
 				-verbose | --verbose)
 					VERBOSE=1
+					if [ "$NUM_FLAGS" = "1" ]; then
+						DO_ALL=1
+					fi
 					;;
 	
 			esac
 		done
 	
 	
-		for a in $ALL_FLAGS
-		do
+		for a in $ALL_FLAGS; do
 			case $a in
 	
 			*help)
@@ -1382,7 +1550,7 @@ function func_get_flags () {
 	
 			-verbose | --verbose)
 				VERBOSE=1
-				if [ $# -lt 2 ]; then
+				if [ $NUM_FLAGS -lt 2 ]; then
 					DO_ALL=1
 				fi
 				;;
@@ -1414,7 +1582,7 @@ function func_get_flags () {
 	
 			-anyday)
 				ANYDAY=1
-				if [ $# -lt 2 ]; then
+				if [ $NUM_FLAGS -lt 2 ]; then
 					DO_ALL=1
 				fi
 				;;
@@ -1449,6 +1617,11 @@ function func_get_flags () {
 			COMPARE=1
 		fi
 	fi
+
+	if test "$VERBOSE" = "1"; then
+		echo "Verbose mode is ON"
+	fi
+
 	
 }	
 	
@@ -1469,12 +1642,12 @@ function func_check_scripts () {
 	fi
 	set `type $AUTOSFSCPGET`
 	if [ "$2" != "is" ]; then
-		echo "Script $AUTO_SF_SCP is missing. Stop."
+		echo "Script $AUTOSFSCPGET is missing. Stop."
 		exit 23
 	fi
 	set `type $AUTO_CVS`
 	if [ "$2" != "is" ]; then
-		echo "Script $AUTO_SF_SCP is missing. Stop."
+		echo "Script $AUTO_CVS is missing. Stop."
 		exit 23
 	fi
 }
