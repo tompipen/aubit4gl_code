@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.84 2004-08-05 17:19:40 mikeaubury Exp $
+# $Id: conv.c,v 1.85 2004-08-16 13:10:36 mikeaubury Exp $
 #
 */
 
@@ -856,7 +856,7 @@ A4GL_stol (void *aa, void *zi, int sz_ignore)
 
   if (errno != 0 || eptr[0] != 0 || eptr == a)
     {
-	A4GL_debug("Fail check 2");
+	A4GL_debug("Fail check 2 %d %d (%d %d)",errno,eptr[0],eptr , a);
       return 0;
     }
 		A4GL_debug("OK");
@@ -2049,6 +2049,10 @@ A4GL_ltoi (void *aa, void *zz, int sz_ignore)
     A4GL_debug ("Ltoi");
   }
 #endif
+  if (*a < SHRT_MIN || *a > SHRT_MAX) {
+	A4GL_exitwith("Value exceeds limit of SMALLINT ");
+	return 0;
+  }
   *z = (short) *a;
   return 1;
 }
