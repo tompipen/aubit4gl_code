@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.45 2003-07-27 17:28:19 mikeaubury Exp $
+# $Id: builtin.c,v 1.46 2003-07-29 10:47:04 mikeaubury Exp $
 #
 */
 
@@ -755,7 +755,9 @@ A4GL_errorlog (char *fname, int l, int n)
   char *date_str;
   char *time_str;
   //int d;
-  s = A4GL_char_pop ();
+
+  //s = A4GL_char_pop ();
+  s=A4GL_pull_off_data_for_display(n,DISPLAY_TYPE_DISPLAY_AT);
   A4GL_debug ("ERROR LOG - %s Line:%d %s\n", fname, l, s);
 
   if (error_log_file)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.4 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: ui.c,v 1.5 2003-07-29 10:47:04 mikeaubury Exp $
 #
 */
 
@@ -76,7 +76,7 @@
 =====================================================================
 */
 
-static char *pull_off_data_for_display(int n,int display_type);
+char *A4GL_pull_off_data_for_display(int n,int display_type);
 
 
 #define LINE_MODE               0
@@ -221,7 +221,7 @@ void aclfgli_pr_message (int attr, int wait,int n)
 {
   char *s;
 A4GL_debug("In aclfgli_pr_message : %d",n);
-  s=pull_off_data_for_display(n,DISPLAY_TYPE_DISPLAY_AT);
+  s=A4GL_pull_off_data_for_display(n,DISPLAY_TYPE_DISPLAY_AT);
   A4GL_debug(" called pull_off_data_for_display  s=%s",s);
   aclfgli_pr_message_internal(attr, wait,s);
   free(s);
@@ -284,7 +284,7 @@ void A4GL_display_at (int n, int a)
 		display_type=DISPLAY_TYPE_DISPLAY_AT;
 	  }
 
-  s=pull_off_data_for_display(n,display_type);
+  s=A4GL_pull_off_data_for_display(n,display_type);
 
 
 #ifdef REMOVED
@@ -524,7 +524,7 @@ int A4GL_fgl_fieldtouched (void *input,char itype, ...)
 }
 
 
-static char *pull_off_data_for_display(int n,int display_type) {
+char *A4GL_pull_off_data_for_display(int n,int display_type) {
 int z;
 char *s=0;
 int tos_dtype,tos_size;

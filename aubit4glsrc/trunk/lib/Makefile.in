@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.92 2003-07-27 06:08:43 afalout Exp $
+# $Id: Makefile.in,v 1.93 2003-07-29 10:46:50 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -81,6 +81,7 @@ LIBRPCSUNRPC_PATH	=librpc/sun_rpc
 LIBRPCNORPC_PATH	=librpc/no_rpc
 LIBRPCXMLRPC_PATH	=librpc/xml_rpc
 LIBEXDATA_PATH		=libexdata
+LIBESQL_PATH		=libesql
 LIBDATA_PATH		=${ROOT}/common/dataio
 LIBHELP_STD_PATH	=libhelp
 LIBMSGNATIVE_PATH	=libmsg/msg_native
@@ -111,6 +112,8 @@ LIBRPCXMLRPC_DEPS	=$(wildcard ${LIBRPCXMLRPC_PATH}/*.c) $(wildcard ${LIBRPCXMLRP
 					$(wildcard ${LIBRPCXMLRPC_PATH}/Makefile) ${ALL_H}
 LIBEXDATA_DEPS		=$(wildcard ${LIBEXDATA_PATH}/*.c) $(wildcard ${LIBEXDATA_PATH}/*.h) \
 					$(wildcard ${LIBEXDATA_PATH}/Makefile) ${ALL_H}
+LIBESQL_DEPS		=$(wildcard ${LIBESQL_PATH}/*.ec) $(wildcard ${LIBESQL_PATH}/*.h) \
+					$(wildcard ${LIBESQL_PATH}/Makefile) ${ALL_H}
 LIBSQLNOSQL_DEPS	=$(wildcard ${LIBSQLNOSQL_PATH}/*.c) $(wildcard ${LIBSQLNOSQL_PATH}/*.h) \
 					$(wildcard ${LIBSQLNOSQL_PATH}/Makefile) ${ALL_H}
 FILESCHEMA_DEPS     =$(wildcard ${FILESCHEMA_PATH}/*.c) \
@@ -323,6 +326,14 @@ libRPC_NORPC${SO_EXT}: ${LIBRPCNORPC_DEPS}
 libRPC_XMLRPC${SO_EXT}: ${LIBRPCXMLRPC_DEPS}
 	${MAKE} -C ${LIBRPCXMLRPC_PATH}
 
+#############
+# libESQL
+
+libESQL_INFORMIX${SO_EXT}: ${LIBESQL_DEPS}
+	${MAKE} -C ${LIBESQL_PATH} $@
+
+libESQL_POSTGRES${SO_EXT}: ${LIBESQL_DEPS}
+	${MAKE} -C ${LIBESQL_PATH} $@
 ##############
 #libEXDTYPE_
 
@@ -439,6 +450,7 @@ clean.other:
 	${MAKE} -C ${LIBLEXEC_PATH} clean
 	${MAKE} -C ${LIBLEXPERL_PATH} clean
 	${MAKE} -C ${LIBEXDATA_PATH} clean
+	${MAKE} -C ${LIBESQL_PATH} clean
 	${MAKE} -C ${LIBSTRING_PATH} clean
 	${MAKE} -C ${LIBFILE_PATH} clean
 	${MAKE} -C ${LIBESQLCHELPER_PATH} clean

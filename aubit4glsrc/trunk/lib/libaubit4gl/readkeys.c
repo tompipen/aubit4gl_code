@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.3 2003-06-20 00:02:10 afalout Exp $
+# $Id: readkeys.c,v 1.4 2003-07-29 10:47:04 mikeaubury Exp $
 #*/
 
 /**
@@ -41,11 +41,15 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
+#include <ctype.h>
 
 int have_keyfile=-1;
 FILE *keyfile;
 static void open_keyfile(void) ;
 
+int have_keylog=-1;
+FILE *keylog;
+static void open_keylog(void) ;
 long key_delay=100000;
 
 
@@ -127,4 +131,107 @@ int A4GL_readkey(void) {
 	// no usleep on Windows - usleep(key_delay);
     a4gl_usleep (key_delay);
 	return a;
+}
+
+
+
+
+
+
+
+
+static void open_keylog(void) {
+	char *fname;
+	char *delay;
+	have_keyfile=0;
+
+	fname=acl_getenv("KEYLOG");
+	if (fname==0) return;
+	if (strlen(fname)==0) return ;
+
+	if (keyfile) {
+		if (strcmp((char *)acl_getenv("KEYLOG"),(char *)acl_getenv("KEYFILE"))==0) {
+			A4GL_exitwith("A4GL_KEYLOG and A4GL_KEYFILE both point to the same file");
+			return;
+		}
+	}
+
+	keylog=fopen (fname,"w");
+
+	if (keylog==(FILE *) 0) {
+		A4GL_set_errm(fname);
+		A4GL_exitwith("Unable to open key logging file");
+		A4GL_chk_err (0,"Unknown");
+		return;
+	}
+
+	have_keylog=1;
+}
+
+
+void A4GL_logkey(long a) {
+	char buff[256];
+	int k;
+	char *keys[]={
+		"ACCEPT",
+		"DELETE",
+		"INSERT",
+		"HELP",
+		"NEXT",
+		"NEXTPAGE",
+		"PREV",
+		"PREVPAGE",
+		"ACCEPT",
+		"INTERRUPT",
+		"RETURN",
+		"ENTER",
+		"TAB",
+		"DOWN,"
+		"UP",
+		"LEFT",
+		"RIGHT",
+		"ESCAPE",
+		"BACKSPACE",
+	0
+	};
+		
+
+	if (have_keylog==-1) {
+		open_keylog();
+	}
+
+	if (!have_keylog) return;
+	
+
+
+	for (k=1;k<=36;k++) {
+		char buff[256];
+		sprintf(buff,"F%d",k);
+		
+		if (a==A4GL_key_val(buff)) {
+			fprintf(keylog,"\\%s\n",buff);fflush(keylog);
+			return;
+		}
+	}
+
+	//fprintf(keylog,"a=%d ",a);
+	for (k=0;keys[k];k++) {
+		if (a==A4GL_key_val(keys[k])) {
+				fprintf(keylog,"\\%s\n",keys[k]);fflush(keylog);
+				return;
+		}
+	}
+
+	if (a>=1&&a<=26) {
+		fprintf(keylog,"\\CONTROL-%c\n",a+'A'-1);fflush(keylog);
+		return;
+	}
+	if (isprint(a)&&a!='\\') {
+		fprintf(keylog,"%c",a);fflush(keylog);
+		return;
+	}
+	
+	// Darn - couldn't detect what the key was...
+
+	A4GL_debug("Unknown key %d",a);
 }

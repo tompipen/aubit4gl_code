@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.61 2003-07-28 17:27:51 mikeaubury Exp $
+# $Id: newpanels.c,v 1.62 2003-07-29 10:47:04 mikeaubury Exp $
 #*/
 
 /**
@@ -1433,6 +1433,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
     }
   cbreak ();
   a=A4GL_curses_to_aubit (a); // Convert it to an aubit key...
+	A4GL_logkey(a);
   A4GL_debug ("Got char from keyboard : %d F2=%d LEFT=%d 4GL for f5 = %d", a,KEY_F(2),KEY_LEFT,A4GLKEY_F (5));
   return a;
 }
@@ -1498,6 +1499,7 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
   cbreak ();
   A4GL_debug ("Got char from keyboard : %d LEFT=%d", a,KEY_LEFT);
   a=A4GL_curses_to_aubit (a);
+	A4GL_logkey(a);
   A4GL_debug (" = %d", a);
   return a;
 }
