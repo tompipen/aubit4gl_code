@@ -30,18 +30,18 @@ exec sql whenever sqlerror call SqlErrors;
  */
 static void updatePackage(idPackage)
   exec sql begin declare section;
-		PARAMETER char *idPackage;
-	exec sql end declare section;
+    PARAMETER char *idPackage;
+  exec sql end declare section;
 {
-	StatDesc = "Update p4gl_package";
+  StatDesc = "Update p4gl_package";
   exec sql update p4gl_package set id_package = :idPackage
-	  where id_package = :idPackage;
+    where id_package = :idPackage;
 
-	/* Falta saber qual o sqlca.sqlerrd (ver manual esqlc) */
+  /* Falta saber qual o sqlca.sqlerrd (ver manual esqlc) */
   if ( sqlca.sqlerrd[2] <= 0)
-	{
-	  exec sql insert into p4gl_package (id_package) values (:idPackage);
-	}
+  {
+    exec sql insert into p4gl_package (id_package) values (:idPackage);
+  }
 }
 
 
@@ -55,37 +55,37 @@ static void updatePackage(idPackage)
  */
 static void deleteModule(idPackage,moduleName)
   exec sql begin declare section;
-		PARAMETER char *idPackage;
-		PARAMETER char *moduleName;
-	exec sql end declare section;
+    PARAMETER char *idPackage;
+    PARAMETER char *moduleName;
+  exec sql end declare section;
 {
-	StatDesc = "Delete p4gl_fun_parameter";
+  StatDesc = "Delete p4gl_fun_parameter";
   exec sql delete from p4gl_fun_parameter
-	  where id_package = :idPackage and module_name = :moduleName;
+    where id_package = :idPackage and module_name = :moduleName;
 
-	StatDesc = "Delete p4gl_fun_return";
+  StatDesc = "Delete p4gl_fun_return";
   exec sql delete from p4gl_fun_return
-	  where id_package = :idPackage and module_name = :moduleName;
+    where id_package = :idPackage and module_name = :moduleName;
 
-	StatDesc = "Delete p4gl_fun_todo";
+  StatDesc = "Delete p4gl_fun_todo";
   exec sql delete from p4gl_fun_todo
-	  where id_package = :idPackage and module_name = :moduleName;
+    where id_package = :idPackage and module_name = :moduleName;
 
-	StatDesc = "Delete p4gl_fun_process";
+  StatDesc = "Delete p4gl_fun_process";
   exec sql delete from p4gl_fun_process 
-	  where id_package = :idPackage and module_name = :moduleName;
+    where id_package = :idPackage and module_name = :moduleName;
 
-	StatDesc = "Delete p4gl_table_usage";
+  StatDesc = "Delete p4gl_table_usage";
   exec sql delete from p4gl_table_usage 
-	  where id_package = :idPackage and module_name = :moduleName;
+    where id_package = :idPackage and module_name = :moduleName;
 
-	StatDesc = "Delete p4gl_function";
+  StatDesc = "Delete p4gl_function";
   exec sql delete from p4gl_function
-	  where id_package = :idPackage and module_name = :moduleName;
+    where id_package = :idPackage and module_name = :moduleName;
 
-	StatDesc = "Delete p4gl_module";
+  StatDesc = "Delete p4gl_module";
   exec sql delete from p4gl_module 
-	  where id_package = :idPackage and module_name = :moduleName;
+    where id_package = :idPackage and module_name = :moduleName;
 
 }
 
@@ -99,17 +99,17 @@ static void deleteModule(idPackage,moduleName)
  */
 static void insertModule(idPackage,moduleName,comments)
   exec sql begin declare section;
-		PARAMETER char *idPackage;
-		PARAMETER char *moduleName;
-		PARAMETER char *comments;
-	exec sql end declare section;
+    PARAMETER char *idPackage;
+    PARAMETER char *moduleName;
+    PARAMETER char *comments;
+  exec sql end declare section;
 {
-	StatDesc = "insert p4gl_module";
-	if ( comments == NULL )
-	  comments=" ";
-	/* printf("Comments <%s>\n",comments); */
+  StatDesc = "insert p4gl_module";
+  if ( comments == NULL )
+    comments=" ";
+  /* printf("Comments <%s>\n",comments); */
   exec sql insert into p4gl_module (id_package,module_name,comments) values
-	  (:idPackage,:moduleName,:comments);
+    (:idPackage,:moduleName,:comments);
 }
 
 /**
@@ -120,22 +120,47 @@ static void insertModule(idPackage,moduleName,comments)
  */
 static int isValidProcess(idProcess)
   exec sql begin declare section;
-		PARAMETER char *idProcess;
-	exec sql end declare section;
+    PARAMETER char *idProcess;
+  exec sql end declare section;
 {
   exec sql begin declare section;
-	  int numProcesses;
+    int numProcesses;
   exec sql end declare section;
 
   numProcesses = 0;
   exec sql select count(*)
-		into :numProcesses
-	  from p4gl_process
-		where id_process = :idProcess;
+    into :numProcesses
+    from p4gl_process
+    where id_process = :idProcess;
 
   if ( numProcesses > 0 ) 
-	  return 0;
-	return 1;
+    return 0;
+  return 1;
+}
+
+/**
+ * Insert a process in the p4gl_process table. This is used to 
+ * let the docuemnter work even if the process does not exist
+ * letting the users to fix the processes later.
+ *
+ * @todo : Fix the errors.
+ *
+ * @param idProcess The primary key of the process to be validated.
+ */
+static int insertProcess(idProcess)
+  exec sql begin declare section;
+    PARAMETER char *idProcess;
+  exec sql end declare section;
+{
+  exec sql begin declare section;
+    int numProcesses;
+		char strProcess[20];
+  exec sql end declare section;
+
+	sprintf(strProcess,"unknown <%s>",idProcess);
+  numProcesses = 0;
+  exec sql insert into p4gl_process (id_process,disp_process,den_process)
+	  values (:idProcess,:idProcess,:strProcess);
 }
 
 
@@ -147,35 +172,40 @@ static int isValidProcess(idProcess)
 static void insertFunctionProcess(int idxFunction)
 {
   exec sql begin declare section;
-		char *idProcess;
-		char *idPackage;
-		char *moduleName;
-		char *functionName;
-	exec sql end declare section;
-	register int i;
+    char *idProcess;
+    char *idPackage;
+    char *moduleName;
+    char *functionName;
+  exec sql end declare section;
+  register int i;
 
-	if ( FUNCAO(idxFunction).parsedDoc == (Comment *)0 )
-	  return;
+  if ( FUNCAO(idxFunction).parsedDoc == (Comment *)0 )
+    return;
 
-	StatDesc = "insert p4gl_fun_process";
-	idPackage    = P4glCb.package;
-	moduleName   = P4glCb.module;
-	functionName = FUNCAO(idxFunction).name;
-	for ( i = 0 ; i < FUNCAO(idxFunction).parsedDoc->processIdx ; i++ )
-	{
-		idProcess = FUNCAO(idxFunction).parsedDoc->processCode[i];
-		if ( isValidProcess(idProcess) == 0 )
+  StatDesc = "insert p4gl_fun_process";
+  idPackage    = P4glCb.package;
+  moduleName   = P4glCb.module;
+  functionName = FUNCAO(idxFunction).name;
+  for ( i = 0 ; i < FUNCAO(idxFunction).parsedDoc->processIdx ; i++ )
+  {
+    idProcess = FUNCAO(idxFunction).parsedDoc->processCode[i];
+    if ( isValidProcess(idProcess) != 0 )
 		{
-      exec sql insert into p4gl_fun_process (
-				id_process,
-	      id_package,module_name,
-	      function_name
-		    )
-	      values (:idProcess,:idPackage,:moduleName,:functionName);
+			if ( !P4glCb.insertProcess )
+			{
+        /* @todo - Devia usar rotina de erros do p4gl */
+        printf("Error : The process <%s> does not exist\n",idProcess);
+				continue;
+			}
+			insertProcess(idProcess);
 	  }
-		else
-			/* @todo - Devia usar rotina de erros do p4gl */
-		  printf("Erro : processo inexistente\n");
+
+    exec sql insert into p4gl_fun_process (
+      id_process,
+      id_package,module_name,
+      function_name
+    )
+     values (:idProcess,:idPackage,:moduleName,:functionName);
   }
 }
 
@@ -188,18 +218,18 @@ static void insertFunctionProcess(int idxFunction)
  */
 char *getParameterDataType(int idxFunction,char *paramName)
 {
-	char *dataType;
-	char *varName;
-	register int i;
+  char *dataType;
+  char *varName;
+  register int i;
 
-	dataType = "Unknown (for now)";
-	for ( i = 0 ; i < FUNCAO(idxFunction).idx_var ; i++ )
-	{
-		varName = FUNCAO(idxFunction).variaveis[i].nome;
-		if ( strcmp(varName,paramName) == 0 )
-		  dataType = FUNCAO(idxFunction).variaveis[i].tipo;
-	}
-	return dataType;
+  dataType = "Unknown (for now)";
+  for ( i = 0 ; i < FUNCAO(idxFunction).idx_var ; i++ )
+  {
+    varName = FUNCAO(idxFunction).variaveis[i].nome;
+    if ( strcmp(varName,paramName) == 0 )
+      dataType = FUNCAO(idxFunction).variaveis[i].tipo;
+  }
+  return dataType;
 }
 
 /**
@@ -211,62 +241,62 @@ static void insertFunctionParameters(idxFunction)
 int idxFunction;
 {
   exec sql begin declare section;
-		char *idPackage;
-		char *moduleName;
-		char *functionName;
-		char *var_name;
-		char *dataType;
-		char *comments;
+    char *idPackage;
+    char *moduleName;
+    char *functionName;
+    char *var_name;
+    char *dataType;
+    char *comments;
     int  i;
-	exec sql end declare section;
-	Parameters *parameters;
+  exec sql end declare section;
+  Parameters *parameters;
 
-	if ( FUNCAO(idxFunction).parametros == (NAME_LIST *)0)
-		return;
+  if ( FUNCAO(idxFunction).parametros == (NAME_LIST *)0)
+    return;
 
-	StatDesc = "insert p4gl_fun_parameter";
-	idPackage    = P4glCb.package;
-	moduleName   = P4glCb.module;
-	functionName = FUNCAO(idxFunction).name;
-	// Aceder aos comentários da função caso existam
-	if ( FUNCAO(idxFunction).parsedDoc == (Comment *)0 )
-	  return;
-	parameters = FUNCAO(idxFunction).parsedDoc->parameterList;
-	for (i = 0 ; i < parameters->idxParameters ; i++ )
-	{
-		comments = parameters->comment[i];
-		if ( comments == NULL )
-		  comments = "";
-		var_name = parameters->name[i];
-	  dataType = parameters->dataType[i];
-		if ( dataType == NULL )
-		  dataType = "--";
+  StatDesc = "insert p4gl_fun_parameter";
+  idPackage    = P4glCb.package;
+  moduleName   = P4glCb.module;
+  functionName = FUNCAO(idxFunction).name;
+  // Aceder aos comentários da função caso existam
+  if ( FUNCAO(idxFunction).parsedDoc == (Comment *)0 )
+    return;
+  parameters = FUNCAO(idxFunction).parsedDoc->parameterList;
+  for (i = 0 ; i < parameters->idxParameters ; i++ )
+  {
+    comments = parameters->comment[i];
+    if ( comments == NULL )
+      comments = "";
+    var_name = parameters->name[i];
+    dataType = parameters->dataType[i];
+    if ( dataType == NULL )
+      dataType = "--";
     exec sql insert into p4gl_fun_parameter (
-	      id_package,module_name, function_name,
-				item_num,var_name,data_type,comments
-		  )
-	    values (
-			  :idPackage,:moduleName,:functionName, 
-			  :i, :var_name, :dataType, :comments
-     );
-	}
-
-	/* Para remover
-	for (i = 0 ; i < FUNCAO(idxFunction).parametros->idx ; i++ )
-	{
-		var_name = FUNCAO(idxFunction).parametros->nome[i];
-	  dataType = getParameterDataType(idxFunction,var_name);
- 
-    exec sql insert into p4gl_fun_parameter (
-	      id_package,module_name, function_name,
-				item_num,var_name,data_type
-		  )
-	    values (
-			  :idPackage,:moduleName,:functionName, 
-			  :i, :var_name, :dataType
+        id_package,module_name, function_name,
+        item_num,var_name,data_type,comments
+      )
+      values (
+        :idPackage,:moduleName,:functionName, 
+        :i, :var_name, :dataType, :comments
      );
   }
-	*/
+
+  /* Para remover
+  for (i = 0 ; i < FUNCAO(idxFunction).parametros->idx ; i++ )
+  {
+    var_name = FUNCAO(idxFunction).parametros->nome[i];
+    dataType = getParameterDataType(idxFunction,var_name);
+ 
+    exec sql insert into p4gl_fun_parameter (
+        id_package,module_name, function_name,
+        item_num,var_name,data_type
+      )
+      values (
+        :idPackage,:moduleName,:functionName, 
+        :i, :var_name, :dataType
+     );
+  }
+  */
 }
 
 /**
@@ -277,36 +307,36 @@ int idxFunction;
 static void insertFunctionReturns(int idxFunction)
 {
   exec sql begin declare section;
-		char *idPackage;
-		char *moduleName;
-		char *functionName;
-		char *var_name;
-		char *dataType;
-		char *comments;
+    char *idPackage;
+    char *moduleName;
+    char *functionName;
+    char *var_name;
+    char *dataType;
+    char *comments;
     int  i;
-	exec sql end declare section;
+  exec sql end declare section;
 
-	if ( FUNCAO(idxFunction).parsedDoc == (Comment *)0)
-		return;
+  if ( FUNCAO(idxFunction).parsedDoc == (Comment *)0)
+    return;
 
-	StatDesc = "insert p4gl_fun_return";
-	idPackage    = P4glCb.package;
-	moduleName   = P4glCb.module;
-	functionName = FUNCAO(idxFunction).name;
-	// Aceder aos comentários da função caso existam
-	for (i = 0 ; i <= FUNCAO(idxFunction).parsedDoc->returnIdx ; i++ )
-	{
-		var_name = "";
-	  dataType = "";
-		comments = FUNCAO(idxFunction).parsedDoc->returnList[i];
+  StatDesc = "insert p4gl_fun_return";
+  idPackage    = P4glCb.package;
+  moduleName   = P4glCb.module;
+  functionName = FUNCAO(idxFunction).name;
+  // Aceder aos comentários da função caso existam
+  for (i = 0 ; i <= FUNCAO(idxFunction).parsedDoc->returnIdx ; i++ )
+  {
+    var_name = "";
+    dataType = "";
+    comments = FUNCAO(idxFunction).parsedDoc->returnList[i];
  
     exec sql insert into p4gl_fun_return (
-	      id_package,module_name, function_name,
-				item_num,var_name,data_type, comments
-		  )
-	    values (
-			  :idPackage,:moduleName,:functionName, 
-			  :i, :var_name, :dataType, :comments
+        id_package,module_name, function_name,
+        item_num,var_name,data_type, comments
+      )
+      values (
+        :idPackage,:moduleName,:functionName, 
+        :i, :var_name, :dataType, :comments
      );
   }
 }
@@ -319,32 +349,32 @@ static void insertFunctionReturns(int idxFunction)
 static void insertFunctionTodos(int idxFunction)
 {
   exec sql begin declare section;
-		char *idPackage;
-		char *moduleName;
-		char *functionName;
-		char *comments;
+    char *idPackage;
+    char *moduleName;
+    char *functionName;
+    char *comments;
     int  i;
-	exec sql end declare section;
+  exec sql end declare section;
 
-	if ( FUNCAO(idxFunction).parsedDoc == (Comment *)0)
-		return;
+  if ( FUNCAO(idxFunction).parsedDoc == (Comment *)0)
+    return;
 
-	StatDesc = "insert p4gl_fun_todo";
-	idPackage    = P4glCb.package;
-	moduleName   = P4glCb.module;
-	functionName = FUNCAO(idxFunction).name;
-	// Aceder aos comentários da função caso existam
-	for (i = 0 ; i <= FUNCAO(idxFunction).parsedDoc->todoIdx ; i++ )
-	{
-		comments = FUNCAO(idxFunction).parsedDoc->todoList[i];
+  StatDesc = "insert p4gl_fun_todo";
+  idPackage    = P4glCb.package;
+  moduleName   = P4glCb.module;
+  functionName = FUNCAO(idxFunction).name;
+  // Aceder aos comentários da função caso existam
+  for (i = 0 ; i <= FUNCAO(idxFunction).parsedDoc->todoIdx ; i++ )
+  {
+    comments = FUNCAO(idxFunction).parsedDoc->todoList[i];
  
     exec sql insert into p4gl_fun_todo (
-	      id_package,module_name, function_name,
-				item_num, comments
-		  )
-	    values (
-			  :idPackage,:moduleName,:functionName, 
-			  :i, :comments
+        id_package,module_name, function_name,
+        item_num, comments
+      )
+      values (
+        :idPackage,:moduleName,:functionName, 
+        :i, :comments
      );
   }
 }
@@ -360,49 +390,49 @@ static void insertFunctionTodos(int idxFunction)
 static void insertTablesUsage(int idxFunction)
 {
   register int i,j;
-	exec sql begin declare section;
-		char *idPackage;
-		char *moduleName;
-		char *functionName;
-		char operation; 
-		char *tableName;
-	exec sql end declare section;
-	FUNCTION *function;
+  exec sql begin declare section;
+    char *idPackage;
+    char *moduleName;
+    char *functionName;
+    char operation; 
+    char *tableName;
+  exec sql end declare section;
+  FUNCTION *function;
 
-	idPackage    = P4glCb.package;
-	moduleName   = P4glCb.module;
-	function = getFunction(idxFunction);
-	functionName = function->name;
-	for ( i = 0 ; i < getFunctionTableUsageIdx(function) ; i++)
-	{
-	  TableUsage *tableUsage;
-		tableUsage = getFunctionTableUsage(function,i);
-		tableName = tableUsage->tableName;
-		switch (tableUsage->operation)
-		{
-			case SQL_SELECT:
-				operation = 'S';
-				break;
-			case SQL_INSERT:
-				operation = 'I';
-				break;
-			case SQL_UPDATE:
-				operation = 'U';
-				break;
-			case SQL_DELETE:
-				operation = 'D';
-				break;
-			default:
-				operation = 'S';
-		}
+  idPackage    = P4glCb.package;
+  moduleName   = P4glCb.module;
+  function = getFunction(idxFunction);
+  functionName = function->name;
+  for ( i = 0 ; i < getFunctionTableUsageIdx(function) ; i++)
+  {
+    TableUsage *tableUsage;
+    tableUsage = getFunctionTableUsage(function,i);
+    tableName = tableUsage->tableName;
+    switch (tableUsage->operation)
+    {
+      case SQL_SELECT:
+        operation = 'S';
+        break;
+      case SQL_INSERT:
+        operation = 'I';
+        break;
+      case SQL_UPDATE:
+        operation = 'U';
+        break;
+      case SQL_DELETE:
+        operation = 'D';
+        break;
+      default:
+        operation = 'S';
+    }
     StatDesc = "Insercao em Utilizacao de Tabela";
-		exec sql 
-			insert into p4gl_table_usage ( 
-				    id_table_usage, id_package, module_name,
-	          function_name, table_name, operation )
-					values (0, :idPackage,:moduleName,
-					  :functionName, :tableName, :operation );
-	}
+    exec sql 
+      insert into p4gl_table_usage ( 
+            id_table_usage, id_package, module_name,
+            function_name, table_name, operation )
+          values (0, :idPackage,:moduleName,
+            :functionName, :tableName, :operation );
+  }
 }
 
 /**
@@ -415,37 +445,37 @@ static void insertTablesUsage(int idxFunction)
 static void insertFunction(int idxFunction)
 {
   exec sql begin declare section;
-		char *idPackage;
-		char *moduleName;
-		char *functionName;
-		char *functionType;
-		char *comments;
-		char *deprecated;
-	exec sql end declare section;
+    char *idPackage;
+    char *moduleName;
+    char *functionName;
+    char *functionType;
+    char *comments;
+    char *deprecated;
+  exec sql end declare section;
 
-	StatDesc = "insert p4gl_function";
-	idPackage    = P4glCb.package;
-	moduleName   = P4glCb.module;
-	functionName = FUNCAO(idxFunction).name;
-	comments     = getCommentBuffer(FUNCAO(idxFunction).parsedDoc);
-	if ( FUNCAO(idxFunction).functionType == FUNCTION_TYPE )
-	  functionType = "F";
+  StatDesc = "insert p4gl_function";
+  idPackage    = P4glCb.package;
+  moduleName   = P4glCb.module;
+  functionName = FUNCAO(idxFunction).name;
+  comments     = getCommentBuffer(FUNCAO(idxFunction).parsedDoc);
+  if ( FUNCAO(idxFunction).functionType == FUNCTION_TYPE )
+    functionType = "F";
   else
-	  functionType = "R";
+    functionType = "R";
 
-	if ( getCommentDeprecated(FUNCAO(idxFunction).parsedDoc))
-	  deprecated = "Y";
+  if ( getCommentDeprecated(FUNCAO(idxFunction).parsedDoc))
+    deprecated = "Y";
   else
-	  deprecated = "N";
+    deprecated = "N";
 
-	if ( comments == (char *)0 )
-	  comments=" ";
+  if ( comments == (char *)0 )
+    comments=" ";
   exec sql insert into p4gl_function (
-	    id_package,module_name,
-	    function_name,function_type,deprecated,comments
-		)
-	  values (:idPackage,:moduleName,:functionName,:functionType,:deprecated,
-		        :comments);
+      id_package,module_name,
+      function_name,function_type,deprecated,comments
+    )
+    values (:idPackage,:moduleName,:functionName,:functionType,:deprecated,
+            :comments);
   insertFunctionParameters(idxFunction);
   insertFunctionReturns(idxFunction);
   insertFunctionProcess(idxFunction);
@@ -459,10 +489,10 @@ static void insertFunction(int idxFunction)
  */ 
 static void insertFunctions(void)
 {
-	register int i;
+  register int i;
 
   for ( i = 0 ; i < P4glCb.idx_funcoes ; i++ )
-	  insertFunction(i);
+    insertFunction(i);
 }
 
 /*
@@ -477,22 +507,22 @@ exec sql begin declare section;
    char StrStat[512];
 exec sql end declare section;
 
-	if ( DBConnected )
-		return 1;
+  if ( DBConnected )
+    return 1;
   sprintf(StrStat,"database %s",P4glCb.database);
   StatDesc = "Preparacao de instrucao de abertura da BD";
-	exec sql prepare opndb from :StrStat;
+  exec sql prepare opndb from :StrStat;
   StatDesc = "Abertura da BD";
-	exec sql execute opndb ;
-	if ( sqlca.sqlcode != 0 )
-	{
-		P4glError(ERROR_EXIT," %d open the database %s\n",
-		  sqlca.sqlcode,P4glCb.database
+  exec sql execute opndb ;
+  if ( sqlca.sqlcode != 0 )
+  {
+    P4glError(ERROR_EXIT," %d open the database %s\n",
+      sqlca.sqlcode,P4glCb.database
     );
-		return 0;
-	}
-	DBConnected = 1;
-	return 1;
+    return 0;
+  }
+  DBConnected = 1;
+  return 1;
 }
 
 
@@ -503,17 +533,17 @@ exec sql end declare section;
  */
 void insertP4glRep(void)
 {
-	exec sql whenever sqlerror call SqlErrors;
-	if ( ! connectDb() )
-	  return;
+  exec sql whenever sqlerror call SqlErrors;
+  if ( ! connectDb() )
+    return;
   deleteModule(P4glCb.package,P4glCb.module);
-	updatePackage(P4glCb.package);
+  updatePackage(P4glCb.package);
 
-	insertModule(
-	  P4glCb.package,
-		P4glCb.module,
-		getCommentBuffer(P4glCb.parsedComment)
-	);
-	insertFunctions();
+  insertModule(
+    P4glCb.package,
+    P4glCb.module,
+    getCommentBuffer(P4glCb.parsedComment)
+  );
+  insertFunctions();
 }
 

@@ -10,7 +10,7 @@
  *                           - DEFINES
  *                           - Global and external variable declaration
  * ---------------------------------------------------------------------------
- * $Id: p4gl_symtab.h,v 1.2 2003-01-06 20:16:45 saferreira Exp $
+ * $Id: p4gl_symtab.h,v 1.3 2003-02-04 13:13:13 saferreira Exp $
  */
 
 
@@ -216,6 +216,7 @@ typedef struct {
 	FILE     *docFilePtr;            /* Pointer para ficheiro de documentação */
 	short    ha_erros;               /* Indica a existencia de erros          */
 	short    errorToDb;
+	short    insertProcess;          /* Indicate if it should insert the process */
 	REP_OPTIONS repositoryOptions;   /* Opções de inserção no repositório */
 }P4GLCB;                       /* P4gl Control Block */
 

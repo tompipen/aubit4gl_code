@@ -12,10 +12,12 @@
 #  @todo Options tem de passar a ser usado como objecto
 #  @todo Forms para interacção com repositorio
 #
-#  $Id: fgldoc,v 1.5 2003-02-03 14:45:32 saferreira Exp $
+#  $Id: fgldoc,v 1.6 2003-02-04 13:12:46 saferreira Exp $
 #  $Author: saferreira $
 #
 #  =========================================================================
+
+use sigtrap 'handler' => \&signal_handler, 'INT' ;
 
 use Getopt::Long;
 use POSIX;
@@ -96,6 +98,15 @@ sub initCui
   $err->setUI("CUI");
 	#openRepository();
 	#$p4glRepObject->setConnection($FglDocumenter::Options::p4glRepository);
+}
+
+#  =========================================================================
+#  The signal handler for enabling the manager to let the INTERRUPT to work.
+#    @todo : Make diferent things acording to the UI choosed.
+#  =========================================================================
+sub signal_handler
+{
+	die "Interrupt !...";
 }
 
 #  =========================================================================
@@ -918,6 +929,7 @@ sub executeImportFgl
 	#my @dir = @FglDocumenter::FormP4gl::directoryList;
 	my @mod = @$FglDocumenter::Options::importFglModules;
 	my @dir = @$FglDocumenter::Options::importFglDirs;
+	$importFglObject->setStop($FglDocumenter::Options::stop);
 	$importFglObject->setFglModules(\@mod);
 	$importFglObject->setFglDirectoryList(\@dir);
 	$importFglObject->addProgressListener(\&displayProgress);
@@ -1083,6 +1095,7 @@ sub printUsage()
     --ignore_exist_dir
     --database=<databaseName>
     --locale=<language (current just en_us and pt_pt)>
+    --stop      : Stop when an error ocurr
   Actions:
     test
     importCsv
@@ -1127,6 +1140,8 @@ sub getParameters
 		"action=s"          => \$FglDocumenter::Options::action,
 		"database=s"        => \$FglDocumenter::Options::importDatabase,
 		"locale=s"          => \$FglDocumenter::Options::locale,
+		"normalize"         => \$FglDocumenter::Options::normalize,
+		"stop"              => \$FglDocumenter::Options::stop,
   );
 
   $lh = FglDocumenter::L10N->get_handle(
@@ -1221,7 +1236,7 @@ sub analiseCuiOptions
 }
 
 #  =========================================================================
-#  Inicia o funcionamento em CUI (Command User Interface)
+#  Start the execution in CUI (Comand User Interface) mode.
 #
 #  Executa as acçoes com dados recebidos com parametros enviando
 #  os resultados para ficheiro(s) de log ou standard output

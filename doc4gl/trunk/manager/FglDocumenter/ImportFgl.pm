@@ -6,7 +6,7 @@
 # existente nos sources de 4gl
 #
 # $Author: saferreira $
-# $Id: ImportFgl.pm,v 1.3 2003-02-03 14:46:44 saferreira Exp $
+# $Id: ImportFgl.pm,v 1.4 2003-02-04 13:13:13 saferreira Exp $
 # 
 # ============================================================================
 
@@ -20,23 +20,24 @@ use POSIX;
 #  =========================================================================
 sub new
 {
-	my $importFgl = {
+  my $importFgl = {
     "repository"         => 0,
     "dbh"                => 0,
     "err"                => 0,
     "log"                => 0,
     "fglModules"         => 0,
-	  "fglDirectoryList"   => 0,
+    "fglDirectoryList"   => 0,
     "progressListener"   => 0,
-	  "parseOnly"          => 0,
-	  "loadComments"       => 1,
-	  "loadTableUsage"     => 0,
-	  "loadParameters"     => 1,
-	  "loadStrings"        => 0,
-	  "loadLocalVariables" => 0,
-	};
-	bless $importFgl, "FglDocumenter::ImportFgl";
-	return $importFgl;
+    "parseOnly"          => 0,
+    "loadComments"       => 1,
+    "loadTableUsage"     => 0,
+    "loadParameters"     => 1,
+    "loadStrings"        => 0,
+    "loadLocalVariables" => 0,
+    "stop" => 0,
+  };
+  bless $importFgl, "FglDocumenter::ImportFgl";
+  return $importFgl;
 }
 
 
@@ -48,7 +49,7 @@ sub setRepository
 {
   my $obj = shift;
   $obj->{repository} = shift;
-	$obj->{dbh} = $obj->{repository}->getConnection();
+  $obj->{dbh} = $obj->{repository}->getConnection();
 }
 
 #  ===========================================================================
@@ -58,6 +59,15 @@ sub setError
 {
   my $obj = shift;
   $obj->{err} = shift;
+}
+
+#  ===========================================================================
+#  Set the value of the stop on error flag
+#  ===========================================================================
+sub setStop
+{
+  my $obj = shift;
+  $obj->{stop} = shift;
 }
 
 #  ===========================================================================
@@ -122,7 +132,7 @@ sub loadLocalVariables
 sub setFglModules
 {
   my $obj = shift;
-	#my $refModList = shift;
+  #my $refModList = shift;
   #$obj->{fglModules} = $refModList;
   $obj->{fglModules} = shift;
 }
@@ -133,9 +143,9 @@ sub setFglModules
 sub setFglDirectoryList
 {
   my $obj = shift;
-	#my $refDirList = shift;
-	#$obj->{fglDirectoryList} = @$refDirList;
-	$obj->{fglDirectoryList} = shift;
+  #my $refDirList = shift;
+  #$obj->{fglDirectoryList} = @$refDirList;
+  $obj->{fglDirectoryList} = shift;
 }
 
 # ============================================================================
@@ -164,9 +174,9 @@ sub addProgressListener
 sub getNumActions
 {
   my $obj = shift;
-	my $refFglMod = $obj->{fglModules};
-	my @refFglList = @$refFglMod;;
-	return $#refFglList;
+  my $refFglMod = $obj->{fglModules};
+  my @refFglList = @$refFglMod;;
+  return $#refFglList;
 }
 
 #  ===========================================================================
@@ -178,41 +188,41 @@ sub getNumActions
 sub initP4glOptions
 {
   my $obj = shift;
-	my $p4glOptions = "";
-	if ( $obj->{loadComments} == 1)
-	{
-	  $p4glOptions .= " --document";
-	}
+  my $p4glOptions = "";
+  if ( $obj->{loadComments} == 1)
+  {
+    $p4glOptions .= " --document";
+  }
 
-	if ( $obj->{parseOnly} == 0 )
-	{
-	  $p4glOptions = " --insert";
-	}
+  if ( $obj->{parseOnly} == 0 )
+  {
+    $p4glOptions = " --insert";
+  }
 
-	my $repOptions = "";
-	if ( $obj->{loadTableUsage} == 1)
-	{
-	  $repOptions .= "t";
-	}
+  my $repOptions = "";
+  if ( $obj->{loadTableUsage} == 1)
+  {
+    $repOptions .= "t";
+  }
 
-	if ( $obj->{loadParameters} == 1)
-	{
-	  $repOptions .= "p";
-	}
+  if ( $obj->{loadParameters} == 1)
+  {
+    $repOptions .= "p";
+  }
 
-	if ( $obj->{loadStrings} == 1)
-	{
-	  $repOptions .= "s";
-	}
+  if ( $obj->{loadStrings} == 1)
+  {
+    $repOptions .= "s";
+  }
 
-	if ( $obj->{loadLocalVariables} == 1)
-	{
-	  $repOptions .= "l";
-	}
+  if ( $obj->{loadLocalVariables} == 1)
+  {
+    $repOptions .= "l";
+  }
 
-	# @todo Validar se isto está ou não correcto
-	#$p4glOptions .= " --repository_options=$repOptions";
-	return $p4glOptions;
+  # @todo Validar se isto está ou não correcto
+  #$p4glOptions .= " --repository_options=$repOptions";
+  return $p4glOptions;
 }
 
 # ============================================================================
@@ -221,38 +231,41 @@ sub initP4glOptions
 sub parseSources
 {
   my $obj = shift;
-	my $p4glOptions = $obj->initP4glOptions();
-	my $module;
-	my $refModules = $obj->{fglModules};
-	my @fglModules = @$refModules;
-	my $retval = 1;
+  my $p4glOptions = $obj->initP4glOptions();
+  my $module;
+  my $refModules = $obj->{fglModules};
+  my @fglModules = @$refModules;
+  my $retval = 1;
 
-	my $refDirList = $obj->{fglDirectoryList};
-	my @fglDirectoryList = @$refDirList;
+  my $refDirList = $obj->{fglDirectoryList};
+  my @fglDirectoryList = @$refDirList;
 
-	my $i = 0;
-	$obj->{log}->log("Parsing $#fglModules");
-	foreach $module ( @fglModules )
-	{
-		my $directory = @fglDirectoryList[$i];
+  my $i = 0;
+  $obj->{log}->log("Parsing $#fglModules");
+  foreach $module ( @fglModules )
+  {
+    my $directory = @fglDirectoryList[$i];
 
-		$obj->{progressListener}("Parsing source 4gl",
-		  "$directory : $module"
+    $obj->{progressListener}("Parsing source 4gl",
+      "$directory : $module"
     ) if $obj->{progressListener};
 
-		my $p4glRetval;
-		$p4glRetval = $obj->executeP4glFile(
-			$directory,
-			$module,
-			$p4glOptions
+    my $p4glRetval;
+    $p4glRetval = $obj->executeP4glFile(
+      $directory,
+      $module,
+      $p4glOptions
     );
-		if ( $p4glRetval == 0 )
-		{
-		  $retval = 0;
-		}
-		$i++;
-	}
-	return $retval;
+    if ( $p4glRetval == 0 )
+    {
+      $retval = 0;
+			if ( $obj->{stop} == 1 ) {
+			  return $retval;
+			}
+    }
+    $i++;
+  }
+  return $retval;
 }
 
 #  =========================================================================
@@ -261,52 +274,59 @@ sub parseSources
 #    @param directory.
 #    @param 4gl module name.
 #    @param Execution options.
+#    @return 0 - An error was ocurred.
+#            1 - Otherwise.
 #  =========================================================================
 sub executeP4glFile
 {
   my $obj = shift;
-	my $wantedDir   = shift;
-	my $module      = shift;
-	my $p4glOptions = shift;
+  my $wantedDir   = shift;
+  my $module      = shift;
+  my $p4glOptions = shift;
   my $retval = 1;
 
   my $currentDir = getcwd();
-	unless (chdir $wantedDir)
-	{
-		$obj->{err}->error(
-		  "Mudar de directório para parsing de $module",
-		  "Error changing to $wantedDir :$!"
-    );		
-	  return 0;
+  unless (chdir $wantedDir)
+  {
+    $obj->{err}->error(
+      "Mudar de directório para parsing de $module",
+      "Error changing to $wantedDir :$!"
+    );    
+    return 0;
   }
 
   # @todo Retirar dependencia de opçoes
-	my $rep = $obj->{repository};
-	my $databaseName = $rep->getDatabase();
-	my $p4glCommand = "p4gl --file=$module --database=$databaseName" .
-	  " $p4glOptions"
+  my $rep = $obj->{repository};
+  my $databaseName = $rep->getDatabase();
+  my $p4glCommand = "p4gl --file=$module --database=$databaseName" .
+    " $p4glOptions"
   ;
 
-	$obj->{log}->log("$p4glCommand in " . getcwd() . "\n");
-	my $result;
-	# Isto não está a detectar eventuais erros correctamente
-	# @todo Conseguir detectar se tenho p4gl algures no PATH
-	$result = system($p4glCommand);
-	if ( $result =~ "^\$" )
+  $obj->{log}->log("$p4glCommand in " . getcwd() . "\n");
+  my $result;
+	
+	if (! open P4GL, "$p4glCommand|" ) {
+	  print "Error executing p4gl : $!\n";
+		return 0;
+  }
+	$result = <P4GL>;
+	print "RESULT : <$result>\n";
+  if ( $result =~ "^\$" )
   {
-	  $obj->{log}->log("$module Parsed");
-	}
-	else
-	{
-	  $obj->{log}->log("Error executing p4gl :\n		$! $result");
-		$obj->{err}->error(
-		  "Parsing de ficheiro",
-		  "Error parsing $module :$result"
-    );		
-		$retval = 0;
-	}
+    $obj->{log}->log("$module Parsed");
+  }
+  else
+  {
+		chomp($result);
+    $obj->{log}->log("Error executing p4gl :\n    $result");
+    $obj->{err}->error(
+      "Parsing de ficheiro",
+      "Error parsing $module :$result"
+    );    
+    $retval = 0;
+  }
 
-	# Still missing
+  # Still missing
   #{"file", 1, 0, 'f'},
   #{"database", 1, 0, 'b'},
   #{"debug", 0, 0, 'd'},
@@ -319,15 +339,15 @@ sub executeP4glFile
   #{"document_directory", 1, 0, 'l'},
   #{"package", 1, 0, 'p'},
   #{"repository_options", 1, 0, 'o'},
-	unless (chdir $currentDir)
-	{
-		$obj->{err}->error(
-		  "Mudar para directório original $currentDir",
-		  "Error changing to $currentDir :$!"
-    );		
-	  return 0;
-	}
-	return $retval;
+  unless (chdir $currentDir)
+  {
+    $obj->{err}->error(
+      "Mudar para directório original $currentDir",
+      "Error changing to $currentDir :$!"
+    );    
+    return 0;
+  }
+  return $retval;
 }
 
 return 1;

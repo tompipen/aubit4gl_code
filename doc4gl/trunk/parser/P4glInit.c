@@ -24,8 +24,8 @@ static existe_ficheiro = 0;
  */
 void setFglSourceFile(char *_fglSourceFile)
 {
-	FicheiroInput = strdup(_fglSourceFile);
-	existe_ficheiro = 1;
+  FicheiroInput = strdup(_fglSourceFile);
+  existe_ficheiro = 1;
 }
 
 /**
@@ -45,7 +45,7 @@ void setDebug(int _debug)
  */
 void setVerbose(int _verbose)
 {
-	verbose = _verbose;
+  verbose = _verbose;
 }
 
 /**
@@ -76,7 +76,7 @@ void setWarningLevel(int _warningLevel)
  */
 void setDatabaseName(char *_databaseName)
 {
-	P4glCb.database = strdup(_databaseName);
+  P4glCb.database = strdup(_databaseName);
 }
 
 /**
@@ -106,7 +106,7 @@ void setStandardComments(int _standardComments)
  */
 void setDocFileDir(char *_docFileDir)
 {
-	P4glCb.docFileDir = strdup(_docFileDir);
+  P4glCb.docFileDir = strdup(_docFileDir);
 }
 
 /**
@@ -131,7 +131,7 @@ static void setRepositoryOptions(char *options)
 {
   if ( index(options,'t') != NULL || index(options,'T') != NULL )
     P4glCb.repositoryOptions.insertTableUsage = 1;
-	/** @todo - Resto das opções de configuração */
+  /** @todo - Resto das opções de configuração */
 }
 
 
@@ -143,9 +143,9 @@ static void initDatabase(void)
 {
   if ( getenv("DATABASE") == NULL )
     setDatabaseName("p4gl_repository");
-	else
+  else
     setDatabaseName(getenv("DATABASE"));
-	if ( P4glCb.database[0] == '\0' || strlen(P4glCb.database) == 0 )
+  if ( P4glCb.database[0] == '\0' || strlen(P4glCb.database) == 0 )
     setDatabaseName("p4gl_repository");
 }
 
@@ -158,13 +158,13 @@ static void initDatabase(void)
  */
 void initArguments(int argc, char *argv[])
 {
-	int c;
-	extern char *optarg;
-	/* Para utilização do gnu getopt */
-	int this_option_optind = optind ? optind : 1;
+  int c;
+  extern char *optarg;
+  /* Para utilização do gnu getopt */
+  int this_option_optind = optind ? optind : 1;
   int option_index = 0;
-	/* Estrutura para getopt_long */
-	static struct option long_options[] =
+  /* Estrutura para getopt_long */
+  static struct option long_options[] =
   {
     {"file", 1, 0, 'f'},
     {"database", 1, 0, 'b'},
@@ -178,82 +178,88 @@ void initArguments(int argc, char *argv[])
     {"document_directory", 1, 0, 'l'},
     {"package", 1, 0, 'p'},
     {"repository_options", 1, 0, 'o'},
+    {"insert_process", 1, 0, 'x'},
     {0, 0, 0, 0},
-	};
+  };
 
-	/* while ( (c=getopt(argc,argv,"f:dviw:h?csl:p:b:")) != -1) */
-	while ( ( c = getopt_long (argc, argv, "f:dviw:h?csl:p:b:",
+  /* while ( (c=getopt(argc,argv,"f:dviw:h?csl:p:b:")) != -1) */
+  while ( ( c = getopt_long (argc, argv, "f:dviw:h?csl:p:b:",
                         long_options, &option_index) ) != -1)
-	{
-		switch(c)
-		{
-			case 'f':                                       /* File */
-				setFglSourceFile(optarg);
-				break;
+  {
+    switch(c)
+    {
+      case 'f':                                       /* File */
+        setFglSourceFile(optarg);
+        break;
 
-			case 'd':                                       /* Debug mode */
-				setDebug(1);
-				break;
+      case 'd':                                       /* Debug mode */
+        setDebug(1);
+        break;
 
-			case 'v':                                       /* Verbose mode */
-				setVerbose(1);
-				break;
+      case 'v':                                       /* Verbose mode */
+        setVerbose(1);
+        break;
 
-			case 'i':                                       /* Repository Insert */
-				setRepositoryInsert(1);
-				break;
+      case 'i':                                       /* Repository Insert */
+        setRepositoryInsert(1);
+        break;
 
-			case 'w':                                  /* Warning level */
-				setWarningLevel(atoi(optarg));
-				break;
+      case 'w':                                  /* Warning level */
+        setWarningLevel(atoi(optarg));
+        break;
 
-			case 'b':                                  /* Database Name */
-				setDatabaseName(optarg);
-				break;
+      case 'b':                                  /* Database Name */
+        setDatabaseName(optarg);
+        break;
 
-			case 'c':                                  /* Documentation generation*/
-				setFgldocGen(1);
-				break;
+      case 'c':                                  /* Documentation generation*/
+        setFgldocGen(1);
+        break;
 
-			case 's':                                  /* Load standard comments */
-				setStandardComments(1);
-				break;
+      case 's':                                  /* Load standard comments */
+        setStandardComments(1);
+        break;
 
-			case 'l':                            /* Documentation dir (location)*/
-				setDocFileDir(optarg);
-				break;
+      case 'l':                            /* Documentation dir (location)*/
+        setDocFileDir(optarg);
+        break;
 
-			case 'p':                                       /* Package */
-				setPackage(optarg);
-				break;
+      case 'p':                                       /* Package */
+        setPackage(optarg);
+        break;
 
-			case 'o':                                       /* Package */
-				setRepositoryOptions(optarg);
-				break;
+      case 'o':                                       /* Package */
+        setRepositoryOptions(optarg);
+        break;
 
-			case 'h':                                  /* Warning level */
-			case '?':
-				/* Isto não está actualizado */
-		    printf(
-					 "Usage: p4gl [-h] [-d] [-i] [-v] [-w level] -f ficheiro.4gl\n");
-				printf("   -h : Display this help message\n");
-				printf("   -d : Debug mode\n");
-				printf("   -i : Insert in the repository\n");
-				printf("   -v : Verbose mode\n");
-				printf("   -w : Warning level (1..10)\n");
-				printf("   -c : Generate documentation\n");
-				printf("   -s : Use standard comments for documentation\n");
-				printf("   -p package : Nome do package\n");
+      case 'h':                                  /* Warning level */
+      case '?':
+        /* Isto não está actualizado */
+        printf(
+           "Usage: p4gl [-h] [-d] [-i] [-v] [-w level] -f ficheiro.4gl\n");
+        printf("   -h : Display this help message\n");
+        printf("   -d : Debug mode\n");
+        printf("   -i : Insert in the repository\n");
+        printf("   -v : Verbose mode\n");
+        printf("   -w : Warning level (1..10)\n");
+        printf("   -c : Generate documentation\n");
+        printf("   -s : Use standard comments for documentation\n");
+        printf("   -p package : Nome do package\n");
         exit(0);
-		  /* Help */
-		  /* case 'E'  :  Only pre-processing */
-		  /* case  L   :  Do NOT load symbol table */
-		  /* Load only some objects */
-		  /* case '?':     Option not valid */
-		  /* case ':':     Missing option   */
 
-		}
-	}
+      case 'x':                            
+        P4glCb.insertProcess = 1;
+        break;
+
+      /* Help */
+      /* case 'E'  :  Only pre-processing */
+      /* case  L   :  Do NOT load symbol table */
+      /* Load only some objects */
+      /* case '?':     Option not valid */
+      /* case ':':     Missing option   */
+
+    }
+  }
 }
 
 /**
@@ -266,7 +272,7 @@ static void openLogFile(void)
 {
   char logfile[64];
   char logdir[35];
-	mode_t originalUmask;
+  mode_t originalUmask;
 
   if ( getenv("LOGDIR") != NULL )
     strcpy(logdir,getenv("LOGDIR"));
@@ -275,21 +281,21 @@ static void openLogFile(void)
 
   if (logdir[0] == '\0' )
   {
-		P4glWarning(DISPENSAVEL,
-	     "Variavel de ambiente <LOGDIR> nao esta preenchida (default /tmp)\n");
-	 strcpy(logdir,"/tmp");
+    P4glWarning(DISPENSAVEL,
+       "Variavel de ambiente <LOGDIR> nao esta preenchida (default /tmp)\n");
+   strcpy(logdir,"/tmp");
   }
 
-	originalUmask = umask((mode_t)0);
+  originalUmask = umask((mode_t)0);
   sprintf(logfile,"%s/p4gl.log",logdir);
 
   Log = fopen(logfile,"a");
   if ( Log == ((FILE *)0 ))
   {
-	 fprintf(stderr,"Erro a abrir ficheiro log <%s>\n",logfile);
-	 exit(1);
+   fprintf(stderr,"Erro a abrir ficheiro log <%s>\n",logfile);
+   exit(1);
   }
-	umask(originalUmask);
+  umask(originalUmask);
 }
 /**
  * Variable and symbol table initialization. 
@@ -297,40 +303,41 @@ static void openLogFile(void)
  */
 void initP4glPhaseOne(void)
 {
-	extern int ID_Modulo;
-	char existe_ficheiro;
+  extern int ID_Modulo;
+  char existe_ficheiro;
 
-	openLogFile();
-	ID_Modulo                = 0;
-	P4glCb.idx_funcoes       = 0;
-	P4glCb.idx_globais       = 0;
-	P4glCb.ha_erros          = 0;
-	existe_ficheiro          = 0;
-	verbose                  = 0;
-	InsertInDatabase         = 0;
-	InLimbo                  = 1;
-	InGlobals                = 0;
-	InInclude                = 0;
-	InRecord                 = 0;
-	WarningLevel             = 0;
-	DBConnected              = 0;
-	IdxTabLikeStack          = 0;
-	TabLikeStack             = (char **)0;
-	DimTabLikeStack          = 0;
-	repositoryFormat         = P4GL;
-	generateFglDoc           = 0;
-	standardComments         = 0;
-	P4glCb.docFileDir        = ".";
-	P4glCb.numFglDoc         = 0;
-	P4glCb.errorToDb         = 0;
-	P4glCb.parsedComment     = (Comment *)0;
-	P4glCb.package = strdup(".");
-	initDatabase();
-	initCommentStateMachine();
+  openLogFile();
+  ID_Modulo                = 0;
+  P4glCb.idx_funcoes       = 0;
+  P4glCb.idx_globais       = 0;
+  P4glCb.ha_erros          = 0;
+  existe_ficheiro          = 0;
+  verbose                  = 0;
+  InsertInDatabase         = 0;
+  InLimbo                  = 1;
+  InGlobals                = 0;
+  InInclude                = 0;
+  InRecord                 = 0;
+  WarningLevel             = 0;
+  DBConnected              = 0;
+  IdxTabLikeStack          = 0;
+  TabLikeStack             = (char **)0;
+  DimTabLikeStack          = 0;
+  repositoryFormat         = P4GL;
+  generateFglDoc           = 0;
+  standardComments         = 0;
+  P4glCb.docFileDir        = ".";
+  P4glCb.numFglDoc         = 0;
+  P4glCb.errorToDb         = 0;
+  P4glCb.parsedComment     = (Comment *)0;
+  P4glCb.package = strdup(".");
+  P4glCb.insertProcess     = 1;
+  initDatabase();
+  initCommentStateMachine();
 
-	/* Variaveis temporarias para passagem de valores entre regras */
-	/* Lixo para remover quando se implementar o $$ na maioria das regras */
-	Variaveis = (VARS *)0;
+  /* Variaveis temporarias para passagem de valores entre regras */
+  /* Lixo para remover quando se implementar o $$ na maioria das regras */
+  Variaveis = (VARS *)0;
 }
 
 /**
@@ -350,12 +357,12 @@ static int openInputFile(void)
   fin_ptr = fopen(FicheiroTemp,"r");
   if ( fin_ptr == ((FILE *)0 ))
   {
-	 fprintf(stderr,"Erro a abrir ficheiro do source (.4gl) : <%s>\n",
-				FicheiroTemp);
-	 perror("ERRO");
-	 return 0;
+   fprintf(stderr,"Erro a abrir ficheiro do source (.4gl) : <%s>\n",
+        FicheiroTemp);
+   perror("ERRO");
+   return 0;
   }
-	return 1;
+  return 1;
 }
 
 /**
@@ -368,21 +375,21 @@ static int openInputFile(void)
 static void getDirName(char *dirPath)
 {
   register short i;
-	short len;
+  short len;
 
-	RClipp(dirPath);
-	FilePath = (char *)malloc(strlen(dirPath)+strlen(FicheiroInput)+2);
-	sprintf(FilePath,"%s/%s",dirPath,FicheiroInput);
-	len = strlen(dirPath);
-	for ( i = len ; i > 0 ; i-- )
-	{
-		if ( dirPath[i] == '/' )
-		{
-			strcpy(FileDirectory,dirPath+i+1);
-			return;
-		}
-	}
-	strcpy(FileDirectory,dirPath);
+  RClipp(dirPath);
+  FilePath = (char *)malloc(strlen(dirPath)+strlen(FicheiroInput)+2);
+  sprintf(FilePath,"%s/%s",dirPath,FicheiroInput);
+  len = strlen(dirPath);
+  for ( i = len ; i > 0 ; i-- )
+  {
+    if ( dirPath[i] == '/' )
+    {
+      strcpy(FileDirectory,dirPath+i+1);
+      return;
+    }
+  }
+  strcpy(FileDirectory,dirPath);
 }
 
 
@@ -394,35 +401,35 @@ static void getDirName(char *dirPath)
 static void getDirectoryFromFile(void)
 {
   register short i;
-	short len;
-	char *substr();
-	char *PathDirectory;
+  short len;
+  char *substr();
+  char *PathDirectory;
 
-	len = strlen(FicheiroInput);
-	/* 1 - Ver se o nome do ficheiro ja traz a directoria ou apenas file name */
-	for (i = len ; i >= 0 ; i--)
-	{
+  len = strlen(FicheiroInput);
+  /* 1 - Ver se o nome do ficheiro ja traz a directoria ou apenas file name */
+  for (i = len ; i >= 0 ; i--)
+  {
       if ( FicheiroInput[i] == '/' )
-		{
-			if ( FicheiroInput[0] == '/' )
-			{
+    {
+      if ( FicheiroInput[0] == '/' )
+      {
             PathDirectory = substr(FicheiroInput,0,i-1);
-	         getDirName(PathDirectory);
-				free(PathDirectory);
-				return;
-			}
-		   /* Concatenar o pwd com o resto */
-			PathDirectory = strcat(getcwd((char *)0,256),
-							           substr(FicheiroInput,0,i-1));
-			getDirName(PathDirectory);
-			free(PathDirectory);
-		   return;
-		}
-	}
-	/* Nao descobriu /, portanto a directoria eh o pwd */
-	PathDirectory = getcwd((char *)0,256);
-	getDirName(PathDirectory);
-	free(PathDirectory);
+           getDirName(PathDirectory);
+        free(PathDirectory);
+        return;
+      }
+       /* Concatenar o pwd com o resto */
+      PathDirectory = strcat(getcwd((char *)0,256),
+                         substr(FicheiroInput,0,i-1));
+      getDirName(PathDirectory);
+      free(PathDirectory);
+       return;
+    }
+  }
+  /* Nao descobriu /, portanto a directoria eh o pwd */
+  PathDirectory = getcwd((char *)0,256);
+  getDirName(PathDirectory);
+  free(PathDirectory);
 }
 
 
@@ -437,21 +444,21 @@ static void getDirectoryFromFile(void)
  */
 int initP4glPhaseTwo(void)
 {
-	/** @todo : This test should return error */
-	if ( ! existe_ficheiro )
-		P4glError(ERROR_EXIT,
-			 "Utilizacao: p4gl [-h] [-d] [-i] [-v] -f %s\n","ficheiro.4gl");
+  /** @todo : This test should return error */
+  if ( ! existe_ficheiro )
+    P4glError(ERROR_EXIT,
+       "Utilizacao: p4gl [-h] [-d] [-i] [-v] -f %s\n","ficheiro.4gl");
 
-	P4glVerbose("4gl Pre-Processing\n");
-	getDirectoryFromFile(); 
-	P4glVerbose("Directory %s\n",FileDirectory);
-	P4glPreProcessing();
-	if ( !openInputFile() )
-	  return 0;
-	yyin = fin_ptr;
+  P4glVerbose("4gl Pre-Processing\n");
+  getDirectoryFromFile(); 
+  P4glVerbose("Directory %s\n",FileDirectory);
+  P4glPreProcessing();
+  if ( !openInputFile() )
+    return 0;
+  yyin = fin_ptr;
 
-	initSymtab();                 /* Inicializacao da tabela de simbolos */
-	return 1;
+  initSymtab();                 /* Inicializacao da tabela de simbolos */
+  return 1;
 }
 
 
