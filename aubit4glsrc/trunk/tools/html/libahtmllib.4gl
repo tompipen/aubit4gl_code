@@ -2,7 +2,7 @@
 # variable 'NOCURSES=YES' or the command line 'proramname NOCURSES=YES'
 # when running to avoid the normal screen setup
 
-# $Id: libahtmllib.4gl,v 1.1 2001-11-19 06:28:19 afalout Exp $
+# $Id: libahtmllib.4gl,v 1.2 2001-11-21 01:54:07 afalout Exp $
 
 ########################################################################
 #ANSI C libraryes for CGI programing:
@@ -85,7 +85,9 @@ globals
     HTTPvar array [100] of record
         vname char(20),
         value char(60)
-    end record
+    end record,
+
+    g_css char (40)
 
 end globals
 
@@ -93,8 +95,11 @@ end globals
 
 
 #######################
-function html_init()
+function html_init(cssfilename)
 #######################
+define
+    cssfilename
+        char (40)
 
 	call html_headers()
 
@@ -107,6 +112,10 @@ function html_init()
 	if www.REQUEST_METHOD = "POST"
 	then
 		call getstdin()
+    end if
+
+    if vread("do_debug") <> "" then
+        let do_debug = true
     end if
 
 
@@ -125,14 +134,68 @@ function html_init()
 		call html_params(HTTP_GET_VAR)
     end if
 
+    if vread("do_debug") <> "" then
+        let do_debug = true
+    end if
+
+    if vread("g_css") <> "0" then
+        let g_css = vread("g_css")
+        let cssfilename = g_css
+    end if
+
+
+
     if do_debug
     then
 		call vreadall()
     end if
 
+	call html_css(cssfilename)
 
 end function
 
+################################
+function html_css(cssfilename)
+################################
+define
+    cssfilename, tmp_cssfilename char (40)
+
+	let tmp_cssfilename = vread("css")
+{
+	display "xxx",tmp_cssfilename clipped,"xxx"
+
+    if vread("css") <> false
+    then
+        display "not false"
+    end if
+
+    if vread("css") <> "0"
+    then
+        display "not '0'"
+    end if
+
+    if vread("css") <> 0
+    then
+        display "not 0"
+    end if
+}
+
+	if tmp_cssfilename  <> '0'
+#    if vread("css") <> '0'
+    then
+#		let tmp_cssfilename = vread("css")
+#	    display "xxx",tmp_cssfilename clipped,"xxx"
+
+		let cssfilename = tmp_cssfilename
+        let g_css = tmp_cssfilename
+    end if
+
+    if cssfilename <> "none" then
+		display "  <link rel='stylesheet' type='text/css' href='/",cssfilename clipped,".css'>"
+    end if
+
+
+end function
 
 ############################
 function html_headers()
@@ -143,7 +206,11 @@ function html_headers()
 #starts, so we heve to use this:
 code
 
+
+
 //printf("HTTP/1.1 200 OK");
+
+//Pragma: no-cache
 printf("Content-type: text/html");
 
 endcode
@@ -217,7 +284,12 @@ function html_start_body()
 	#display "<body bgcolor='#000000' text='#FFFFFF' link='#00FFFF' vlink='#0000FF'>"
 
     #light blue scheme fro Maximise "add user"
-	display "<body text='#000000' bgcolor='#ededff' link='#000000' vlink='#000000' alink='#000000'>"
+	#display "<body text='#000000' bgcolor='#ededff' link='#000000' vlink='#000000' alink='#000000'>"
+
+
+#  <body onLoad="A4gl_CheckError()">
+
+	display "<body onLoad='A4gl_CheckError()' text='#000000' bgcolor='#ededff' link='#000000' vlink='#000000' alink='#000000'>"
 
 end function
 
@@ -283,9 +355,23 @@ function html_head(page_title)
 define page_title char (300)
 
 	display "<head>"
+	display "    <meta http-equiv='Pragma' content='no-cache'>"
+
 	call html_title(page_title)
     call html_meta()
 	display "</head>"
+
+	display "  <script language='JavaScript'>"
+	display "  <!--"
+	display "  function A4gl_CheckError() {"
+#	display '    if ("$(gui.errorbar.object)" != "") {'
+	display '    if ("$(gui.errorbar.object)" == "dissssabbbled") {'
+	display '      alert ("$(gui.errorbar.object)")'
+	display "    }"
+	display "  }"
+	display "  //-->"
+	display "  </script>"
+
 
 end function
 

@@ -2,7 +2,7 @@
 #
 #This is Aubit 4gl demo for CGI/HTML functionality
 #
-# $Id: simple_html.4gl,v 1.1 2001-11-19 06:28:19 afalout Exp $
+# $Id: simple_html.4gl,v 1.2 2001-11-21 01:54:08 afalout Exp $
 #
 ########################################################################
 
@@ -12,10 +12,12 @@ globals "libahtmllib.4gl"
 main
 ###################################
 
-	let do_debug = false
-#	let do_debug = true
+#	let do_debug = false
+	let do_debug = true
+#    let g_css="none"
+    let g_css="gray-blue"
 
-    call html_init()
+    call html_init(g_css)
 	call select_page()
 
 end main
@@ -53,9 +55,13 @@ define dummy smallint
 end function
 
 
-######################
+############################
 function page_menu()
-######################
+############################
+define
+#    passvar
+#        char (40) #use this to pass variables from form to form
+    tmp_char char(40)
 
 	call html_start_center()
 
@@ -63,11 +69,35 @@ function page_menu()
 	display "	<tr>"
 	display "		<td width='100%'>"	#&nbsp;"
 	display '			<form method="',form_method clipped,'" action="simple_html">'
+
 	display "				<label for='fp1'>Menu: </label>"
-	display "				<input type='Submit' value='Intro' name='item' id='fp1'>"
-	display "				<input type='Submit' value='Form' name='item'>"
-	display "				<input type='Submit' value='Debug' name='item'>"
-	display "				<input type='Submit' value='Exit' name='item'>"
+
+
+	display "				<input tabindex=1 value='Intro' title='Show intro screen' 	type='Submit' name='item' id='fp1'>"
+	display "				<input tabindex=2 value='Form' 	title='Show form screen'	type='Submit' name='item'>"
+	display "				<input tabindex=3 value='Debug'	title='Show debug screen'	type='Submit' name='item'>"
+	display "				<input tabindex=4 value='Exit'	title='Exit this demo'		type='Submit' name='item'>"
+
+	display "				<input tabindex=5 value='none'			title='Change CCS to none'		type='Submit' name='css'>"
+   	display "				<input tabindex=6 value='gray-blue'	title='Change CCS to blue'		type='Submit' name='css'>"
+	display "				<input tabindex=7 value='brown-red'	title='Change CCS to red'		type='Submit' name='css'>"
+
+   	display "				<input tabindex=8 value='on'	title='Turn debugging on'	type='Submit' name='do_debug'>"
+	display "				<input tabindex=9 value=''		title='Turn debugging off'	type='Submit' name='do_debug'>"
+
+
+
+#	display "      				<input type='hidden' name='passvar' value='",passvar clipped,"'>"
+	display "      				<input type='hidden' name='g_css' value='",g_css clipped,"'>"
+
+if do_debug then
+    let tmp_char = "on"
+else
+    let tmp_char = "off"
+end if
+
+	display "      				<input type='hidden' name='do_debug' value='",tmp_char clipped,"'>"
+
 	display "			</form>"
 	display "		</td>"
 	display "	</tr>"
@@ -78,27 +108,28 @@ function page_menu()
 
 end function
 
+####################
+function ccs_demo_fjs()
+####################
 
-function ccs_demo()
-
-	display "<html>
-	display "  <link rel="stylesheet" type="text/css" href="css2.css">
-	display "  <head><title>CSS Example</title></head>
-	display "  <body>
-	display "    <form action="fglcl.exe?libebizdemo" method="post">
-	display "      <input type="hidden" name="taskId" value="libebizdemo.73078023.1"><br>
-	display "      <input name="m1" tabindex=1 title="Change the infofield's class to fjs-none" type=submit value="None">
-	display "      <input name="m2" tabindex=2 title="Change the infofield's class to fjs-red"  type=submit value="Red">
-	display "      <input name="m3" tabindex=3 title="Change the infofield's class to fjs-blue" type=submit value="Blue">
-	display "      <input name="m4" tabindex=4 title="Remove the infofield's class attribute"   type=submit value="Remove">
-	display "      <input name="m5" tabindex=5 type=submit value="Exit"><br>
-	display "      <font color="#FF0000"></font><font color="#00FF00"></font><br>
-	display "      <table width='100%'>
-	display "        <tr><td><center><span class="fjs-none">Hello, world !</span></center></td></tr>
-	display "      </table>
-	display "    </form>
-	display "  </body>
-	display "</html>
+#	display "<html>"
+#	display "  <link rel='stylesheet' type='text/css' href='css2.css'>"
+#	display "  <head><title>CSS Example</title></head>"
+#	display "  <body>"
+#	display "    <form action='fglcl.exe?libebizdemo' method='post'>"
+#	display "      <input type='hidden' name='taskId' value='libebizdemo.73078023.1'><br>"
+#	display "      <input name='m1' tabindex=1 title='Change the infofield's class to fjs-none' type=submit value='None'>"
+#	display "      <input name='m2' tabindex=2 title='Change the infofield's class to fjs-red'  type=submit value='Red'>"
+#	display "      <input name='m3' tabindex=3 title='Change the infofield's class to fjs-blue' type=submit value='Blue'>"
+#	display "      <input name='m4' tabindex=4 title='Remove the infofield's class attribute'   type=submit value='Remove'>"
+#	display "      <input name='m5' tabindex=5 													type=submit value='Exit'><br>"
+#	display "      <font color='#FF0000'></font><font color='#00FF00'></font><br>"
+#	display "      <table width='100%'>"
+#	display "        <tr><td><center><span class='fjs-none'>Hello, world !</span></center></td></tr>"
+#	display "      </table>"
+#	display "    </form>"
+#	display "  </body>"
+#	display "</html>"
 
 end function
 
@@ -232,10 +263,28 @@ end function
 ##############################
 function standard_footer()
 ##############################
+{
 	call html_hline()
 	call html_start_center()
     call html_link("http://aubit4gl.sourceforge.net","_blank","Aubit home page")
 	call html_end_center()
+}
+
+	display "      <table width='100%'>"
+	display "        <tr>"
+	display "			<td>"
+	display "				<center>"
+	display "					<span class='fjs-none'>"
+
+	call html_link("http://aubit4gl.sourceforge.net","_blank","Aubit home page")
+
+	display "					</span>"
+	display "				</center>"
+	display "			</td>"
+	display "		 </tr>"
+	display "      </table>"
+
+
 
 end function
 
