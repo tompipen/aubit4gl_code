@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.17 2003-10-28 10:52:27 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.18 2003-12-05 09:49:28 mikeaubury Exp $
 #*/
 
 /**
@@ -435,6 +435,7 @@ output_string (char *name, char *val, int ptr, int isarr)
 	&quot; " quotation mark
 */
       if (val[a]=='<') { fprintf (outfile, "&lt;"); continue;}
+      if (val[a]=='\n') { fprintf (outfile, "&nl;"); continue;}
       if (val[a]=='>') { fprintf (outfile, "&gt;"); continue;}
       if (val[a]=='&') { fprintf (outfile, "&amp;"); continue;}
       if (val[a]=='\'') { fprintf (outfile, "&apos;"); continue;}
@@ -740,6 +741,7 @@ input_string (char *name, char **val, int ptr, int isarr)
 		&quot; " quotation mark */
 
 		if (strncmp(&buff[a],"&lt;",4)==0)   { a+=3;pptr[b++]='<'; pptr[b]=0;continue;  }
+		if (strncmp(&buff[a],"&nl;",4)==0)   { a+=3;pptr[b++]='\n'; pptr[b]=0;continue;  }
 		if (strncmp(&buff[a],"&gt;",4)==0)   { a+=3;pptr[b++]='>'; pptr[b]=0;continue; }
 		if (strncmp(&buff[a],"&amp;",5)==0)  { a+=4;pptr[b++]='&'; pptr[b]=0;continue; }
 		if (strncmp(&buff[a],"&apos;",6)==0) { a+=5;pptr[b++]='\''; pptr[b]=0;continue; }

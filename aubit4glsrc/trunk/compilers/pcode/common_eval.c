@@ -59,6 +59,8 @@ evaluate_param (struct param *e, int *x)
     case PARAM_TYPE_LITERAL_CHAR:
       *x = e->param_u.c;
       return 1;
+
+
     case PARAM_TYPE_LITERAL_STRING:
       *x =
 	(int) this_module.string_table.string_table_val[e->param_u.str_entry].
@@ -196,7 +198,7 @@ evaluate_param (struct param *e, int *x)
 
     }
 
-  fprintf (stderr, "Non-handled param_type...\n");
+  fprintf (stderr, "Non-handled param_type... %d\n",e->param_type);
   exit (4);
 
   return 0;
