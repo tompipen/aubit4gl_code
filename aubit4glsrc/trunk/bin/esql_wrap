@@ -1,0 +1,140 @@
+SH_DEBUG=0
+
+
+if test "$SH_DEBUG" = "1"; then
+	echo "In esql_wrap : $@"
+fi
+
+if [ "$INFORMIXDIR" = "" ]
+then
+	export INFORMIXDIR="c:\informix"
+fi
+
+if [ "$AUBITDIR" = "" ]
+then
+    AUBITDIR=`aubit-config AUBITDIR`
+	if [ "$AUBITDIR" = "" ]
+	then
+        echo "ERROR: AUBITDIR unknown. Stop."
+        exit 5
+    fi
+fi
+
+
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+export LD_RUN_PATH=$LD_RUN_PATH:$AUBITDIR/lib:$POSTGRESDIR/lib
+
+ESQL_EXT=cpc
+COMPILE_OBJ=0
+output=""
+
+# If we have a .ec on the command line -
+# assume they have .ec as the extension instead
+
+echo $* | grep "\.ec" >/dev/null 2>&1
+[ $? -eq 0 ] &&	ESQL_EXT=ec
+
+while [ "$1" != "" ]
+do
+	a=$1
+
+	if [ "$a" = -c ]
+	then
+		COMPILE_OBJ=1
+		shift
+		continue
+	fi
+
+
+
+
+	d=`dirname $a`
+
+	if [ "$d" != "" -a "$d" != "." ]
+	then
+		c=$d/`basename "$a" `
+		b=$d/`basename "$c" ".$ESQL_EXT"`
+	else
+		c=`basename "$a" `
+		b=`basename "$c" ".$ESQL_EXT"`
+		b2=./`basename "$c" ".$ESQL_EXT"`
+	fi
+
+	if [ $b.$ESQL_EXT = $a -o $b2.$ESQL_EXT = $a ]
+	then
+		srcs="$srcs $a"
+		shift
+		continue
+	fi
+
+	if [ $a = "-o" ]
+	then
+		shift
+		output="-o $1"
+		case $1 in
+            *.ao)
+                OUTPUT_IS_OBJECT="1"
+                ;;
+			*.o)
+                OUTPUT_IS_OBJECT="1"
+				;;
+        esac
+		shift
+		continue
+	fi
+
+	other_args="$other_args $a"
+
+
+	shift
+done
+
+if test "$SH_DEBUG" = "1"; then
+	echo "SOURCES : " $srcs
+fi
+
+for a in $srcs
+do
+	ESQL_RUN="esql -thread -e $a"
+    #-C INFORMIX_SE
+    echo $ESQL_RUN
+    eval $ESQL_RUN
+
+    RET=$?
+    if test "$RET" != "0"; then
+        exit $RET
+    fi
+    out=`basename $a ".$ESQL_EXT"`
+    cfiles="$cfiles $out.c"
+    GCC_COMPILE="gcc -c $out.c $other_args -I\"$INFORMIXDIR\incl\esql\" -I$AUBITDIR/incl"
+
+	if test "$OUTPUT_IS_OBJECT" = "1"; then
+	    GCC_COMPILE="$GCC_COMPILE $output"
+	    echo "Compiling $out.c to object $output"
+	else
+	    echo "Compiling $out.c to object"
+	fi
+
+	echo $GCC_COMPILE
+    eval $GCC_COMPILE
+    RET=$?
+	if test "$RET" != "0"; then
+        exit $RET
+    fi
+    ofiles="$ofiles $out.o"
+done
+
+if [ $COMPILE_OBJ = 1 ]; then
+	exit 0
+fi
+
+GCC_INFX='-mms-bitfields  "c:\informix\bin\isqlt09a.dll"  "c:\informix\bin\igl4n304.dll"  "c:\informix\bin\iglxn304.dll"  "c:\informix\bin\igo4n304.dll" '
+"\"C:\informix\\lib\isqlt09a.lib\" \"C:\informix\\lib\igl4n304.lib\" \"C:\informix\\lib\iglxn304.lib\" \"C:\informix\\lib\igo4n304.lib\"  "
+GCC_RUN="gcc $ofiles $other_args $GCC_INFX -L$AUBITDIR/lib -laubit4gl $output"
+echo $GCC_RUN
+eval $GCC_RUN
+RET=$?
+exit $RET
+
+
