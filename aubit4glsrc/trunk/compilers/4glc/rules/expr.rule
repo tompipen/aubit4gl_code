@@ -506,6 +506,31 @@ function_call_expr2:
 		start_bind('i',$<str>3);
                 $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
         }
+/*
+   | KW_CHANNEL_WRITE OPEN_BRACKET variable KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
+		start_bind('i',$<str>3);
+                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"write\"");
+        }
+   | KW_CHANNEL_WRITE OPEN_BRACKET variable KW_COMMA ebind_var_list CLOSE_BRACKET  {
+		start_bind('i',$<str>3);
+                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"write\"");
+        }
+*/
+| KW_CHANNEL_WRITE { new_counter(); } OPEN_BRACKET fgl_expr_c KW_COMMA {
+        A4GLSQL_set_status(0,0);
+} opt_cw_func_call_args CLOSE_BRACKET {
+	int cv;
+        cv=get_counter_val();
+	void *p;
+        drop_counter();
+        sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_call_4gl_dll(\"channel\",\"write\",%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");A4GL_pop_args(_retvars);A4GL_push_null(2,0);}\n}\n}\n", cv, lastlineno,infilename);
+        p=A4GL_append_expr_expr($<ptr>4,$<ptr>7);
+        $<ptr>$=A4GL_append_expr(p,$<str>$);
+}
+
+
+
+
 
 
 | identifier DOUBLE_COLON identifier OPEN_BRACKET {
@@ -927,5 +952,9 @@ sprintf($<str>$,"%d",atoi($<str>3)+6);
 ;
 
 
+
+opt_cw_func_call_args : opt_func_call_args {$<ptr>$=$<ptr>1;} |
+	OPEN_SQUARE opt_func_call_args CLOSE_SQUARE { $<ptr>$=$<ptr>2;}
+;
 
 /* ============================ expr.rule =========================== */

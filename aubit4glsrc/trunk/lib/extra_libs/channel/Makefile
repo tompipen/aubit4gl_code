@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2004-11-01 05:11:18 afalout Exp $
+# $Id: Makefile,v 1.2 2004-11-30 14:39:23 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-4GLC	=${ROOT}/bin/4glc
+4GLC	=${ROOT}/bin/4glc -g
 
 #NOTE: must NOT be named libA4GL_channel, since that would force
 #renaming of all 'CALL channel::' to 'CALL A4GL_channel::'  
@@ -50,7 +50,7 @@ ALL     =${LIBROOT}/libchannel${SO_EXT}
 
 #FIXME: use amake
 ${ALL}: channel.c
-	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
+	${LD} -g ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -laubit4gl
 	@echo "Channel library sucesfully compiled."
 
 channel.c: channel.4gl

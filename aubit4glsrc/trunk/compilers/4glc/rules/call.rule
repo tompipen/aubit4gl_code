@@ -115,12 +115,53 @@ opt_func_call_args {
 	print_returning();
 	print_end_call_shared();
 }
-   | KW_CHANNEL_READ OPEN_BRACKET variable KW_COMMA OPEN_SQUARE obind_var_list CLOSE_SQUARE CLOSE_BRACKET RETURNING ibind_var_list {
-		print_call_shared_bound("\"channel\"","\"read\""); print_end_call_shared();
+   | KW_CHANNEL_READ OPEN_BRACKET variable KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET  {
+                start_bind('i',$<str>3);
+                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
+	} RETURNING variable {
+		print_expr($<ptr>9);
+		start_bind('o',$<str>11);
+		print_bind_pop1('o');
+		
 	}
-   | KW_CHANNEL_READ OPEN_BRACKET variable KW_COMMA obind_var_list CLOSE_BRACKET RETURNING ibind_var_list {
-		print_call_shared_bound("\"channel\"","\"read\""); print_end_call_shared();
+   | KW_CHANNEL_READ OPEN_BRACKET variable KW_COMMA ebind_var_list CLOSE_BRACKET {
+                start_bind('i',$<str>3);
+                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
+	}  RETURNING variable {
+		print_expr($<ptr>7);
+		start_bind('o',$<str>9);
+		print_bind_pop1('o');
 	}
+/*
+   | KW_CHANNEL_WRITE OPEN_BRACKET variable KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
+                start_bind('i',$<str>3);
+                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"write\"");
+		} RETURNING variable {
+		print_expr($<ptr>9);
+		start_bind('o',$<str>11);
+		print_bind_pop1('o');
+	}
+   | KW_CHANNEL_WRITE OPEN_BRACKET variable KW_COMMA ebind_var_list CLOSE_BRACKET {
+                start_bind('i',$<str>3);
+                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"write\"");
+	} RETURNING variable {
+		print_expr($<ptr>7);
+		start_bind('o',$<str>9);
+		print_bind_pop1('o');
+	}
+*/
+   | KW_CHANNEL_WRITE OPEN_BRACKET { new_counter(); } fgl_expr_c KW_COMMA opt_cw_func_call_args CLOSE_BRACKET opt_return {
+		void *p;
+		int cv;
+		p=A4GL_append_expr_expr($<ptr>4,$<ptr>6);
+		cv=get_counter_val();
+		drop_counter();
+        	print_expr ((struct expr_str *)p);  
+		print_call_shared("\"channel\"","\"write\"",cv);
+		print_returning();
+		print_end_call_shared();
+	}
+
    | identifier DOUBLE_COLON identifier  OPEN_BRACKET {
 	sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>3);
 	A4GLSQL_set_status(0,0);

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.202 2004-11-29 22:33:08 mikeaubury Exp $
+# $Id: compile_c.c,v 1.203 2004-11-30 14:39:24 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.202 2004-11-29 22:33:08 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.203 2004-11-30 14:39:24 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1800,8 +1800,10 @@ print_bind_expr (void *ptr, char i)
       		sprintf(buff,"ibind[%d].ptr=&%s;",a,ibind[a].varname);
 	  	A4GL_append_expr (ptr, buff);
       }
+
       start_bind (i, 0);
       return a;
+
     }
 
 
@@ -1853,10 +1855,6 @@ print_bind_expr (void *ptr, char i)
 	}
       A4GL_append_expr (ptr, "};");
 
-      if (doing_esql ())
-        {
-          A4GL_append_expr(ptr,make_sql_bind_expr (0, "i"));
-        }
       for (a=0;a<ebindcnt;a++) {
       		sprintf(buff,"ebind[%d].ptr=&%s;",a,ebind[a].varname);
 	  	A4GL_append_expr (ptr, buff);
@@ -2173,10 +2171,10 @@ void *get_call_shared_bound_expr(char *lname,char *fname) {
 	int ni;
 	int no;
 	void *ptr;
-	ptr=A4GL_new_expr("");
+	ptr=A4GL_new_expr("{");
 	ni=print_bind_expr(ptr,'i');
 	no=print_bind_expr(ptr,'e');
-	sprintf(buff_small,"{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind);if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}}\n", lname, fname, ni,no,yylineno);
+	sprintf(buff_small,"{int _retvars; A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll_bound(%s,%s,%d,ibind,%d,ebind);if (_retvars!= 1 && a4gl_status==0 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,_module_name);}}}\n", lname, fname, ni,no,yylineno);
   	return A4GL_append_expr(ptr,buff_small);
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.29 2004-11-16 14:44:00 mikeaubury Exp $
+# $Id: ui.c,v 1.30 2004-11-30 14:39:23 mikeaubury Exp $
 #
 */
 
@@ -287,13 +287,13 @@ void A4GL_display_at (int n, int a)
   A4GL_debug_print_stack();
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
   A4GL_debug ("TOP1 = %d %x %p\n", tos_dtype & 0xff, tos_size, tos_ptr);
-
+  //A4GL_assertion(tos_ptr==0,"Invalid pointer passed to display_at");
   if ((tos_dtype &0xff)== 0 && tos_size == 0)
     {
 	char *ctos_ptr;
 	A4GL_debug("Maybe null....");
 	ctos_ptr=(char *)tos_ptr;
-        A4GL_debug("50 Clear end of line required... %d %d",ctos_ptr[0],ctos_ptr[1]);
+        //A4GL_debug("50 Clear end of line required... %d %d",ctos_ptr[0],ctos_ptr[1]);
     	clr_end_of_line = 1;
     }
 
