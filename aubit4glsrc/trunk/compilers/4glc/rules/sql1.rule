@@ -1014,17 +1014,17 @@ cur_part: {strcpy($<str>$," YEAR TO SECOND ");}
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
-cur_v_part: {strcpy($<str>$,"0,19");}
-| s_curr_v TO e_curr_v
+cur_v_part: {strcpy($<str>$,"1,6");}
+| s_curr_v TO s_curr_v
 {sprintf($<str>$," %s ,%s",$<str>1,$<str>3);}
 ;
 
-s_curr_v: YEAR {strcpy($<str>$,"0");} | MONTH  {strcpy($<str>$,"5");}| DAY  {strcpy($<str>$,"8");}| HOUR  {strcpy($<str>$,"11");}| MINUTE  {strcpy($<str>$,"14");}| SECOND  {strcpy($<str>$,"17");}| 
+s_curr_v: YEAR {strcpy($<str>$,"1");} | MONTH  {strcpy($<str>$,"2");}| DAY  {strcpy($<str>$,"3");}| HOUR  {strcpy($<str>$,"4");}| MINUTE  {strcpy($<str>$,"5");}| SECOND  {strcpy($<str>$,"6");}| 
 FRACTION {
-strcpy($<str>$,"23");
+sprintf($<str>$,"%d",6+2);
 }
 | FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-strcpy($<str>$,"23");
+sprintf($<str>$,"%d",atoi($<str>3)+6);
 }
 ;
 

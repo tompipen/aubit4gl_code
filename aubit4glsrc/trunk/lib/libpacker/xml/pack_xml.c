@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.7 2003-01-22 10:55:38 afalout Exp $
+# $Id: pack_xml.c,v 1.8 2003-02-26 22:28:13 mikeaubury Exp $
 #*/
 
 /**
@@ -264,17 +264,19 @@ char buff[256];
 			return 1;
 		} else {
 			exitwith("Unable to open form");
-            exit (46);
+			return 0;
+            		//exit (46);
 		}
     }
 
   if (toupper (dir) == 'I')
     {
 		/* read XML file */
-		infile = fopen (buff, "r");
+		infile = open_file_dbpath (buff);
 		if (infile==0) {
 			exitwith("Unable to open form");
-            exit (45);
+			return 0;
+            		//exit (45);
 		}
 
 		/* Get rid of the ?xml line at the beginning */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.27 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: conv.c,v 1.28 2003-02-26 22:28:08 mikeaubury Exp $
 #
 */
 
@@ -94,7 +94,7 @@
 #define DT_HOUR 		4
 #define DT_MINUTE 		5
 #define DT_SECOND 		6
-#define DT_FRACTION 	7
+#define DT_FRACTION 		7
 /*
 #define DT_YEAR 		1
 #define DT_MONTH 		2
@@ -401,7 +401,7 @@ int
 inttoint (void *a, void *b, int size)
 /* inttoint (struct ival *a, void *b, int size) */
 {
-int data[10];
+int data[20];
 int val1,val2,val3;
 struct ival *d;
 struct ival *e;
@@ -409,6 +409,7 @@ struct ival *e;
   debug ("inttoint\n");
   d=b;
   e=a;
+  debug("e->stime=0x%x e->ltime=0x%x",e->stime,e->ltime);
 
   d->ltime = size & 15;
   d->stime = size >> 4;
@@ -417,10 +418,12 @@ struct ival *e;
   val2 = (size >> 4) & 15;
   val3 = (size >> 8) & 15;
 
-	/* void decode_interval (struct ival *ival, int *data);
+/* void decode_interval (struct ival *ival, int *data);
   decode_interval (a,(int *) data); -- warning: passing arg 2 of `decode_interval' from incompatible pointer type
   */
-  decode_interval (e,(int *) data);
+
+
+  decode_interval (e,&data[0]);
 
   debug("Converting to %d %d %d\n",val1,val2,val3);
   conv_invdatatoc(data,val1,val2,val3,d->data);
@@ -578,16 +581,25 @@ int
 dttodt (void *a, void *b, int size)
 {
   char buff[256];
-  debug ("dttodt %p %p %d\n", a, b, size);
+  struct a4gl_dtime *d;
+d=a;
+
+
+  debug ("dttodt %p %p %d a->stime=%d a->ltime=%d\n", a, b, size,d->stime,d->ltime);
+
   if (size==-1) {
+	debug("Mallocing new a4gl_dtime");
 	memcpy(b,a,sizeof(struct a4gl_dtime));
 	return 0;
   }
 
 
+
+  debug("In dttodt - calling dttoc size=%x ",size);
   if (dttoc (a, buff, 255))
     {
-      return ctodt (buff, b, size);
+	debug("Got buff as : %s - size=%x\n",buff,size);
+      	return ctodt (buff, b, size);
     }
   return 0;
 }
@@ -610,7 +622,7 @@ ctodt (void *a, void *b, int size)
   debug ("a-->%s\n", a);
   d = (struct a4gl_dtime *) b;
 
-  d->ltime = size & 15;
+  d->ltime = size % 16;
   d->stime = size >> 4;
 
   if (valid_dt (a, data))
@@ -625,6 +637,7 @@ ctodt (void *a, void *b, int size)
 
       sprintf (d->data, "%04d%02d%02d%02d%02d%02d%d00000",
 	       data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
+	debug("MJA ---> %s\n",d->data);
 
       return 1;
     }
@@ -658,16 +671,18 @@ dttoc (void *a, void *b, int size)
   int sizes[] = { 4, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
   char delim[] = "-- ::.*****";
 
-  debug ("dttoc : %p %p %d\n", a, b, size);
+  debug ("dttoc : %p %p %x\n", a, b, size);
   d = a;
   x = 0;
-  for (cnt = d->stime - 1; cnt <= d->ltime - 1; cnt++)
+  debug("d->stime=%d d->ltime=%d\n%s\n",d->stime,d->ltime,d->data);
+
+  for (cnt = d->stime-1 ; cnt <= d->ltime-1 ; cnt++)
     {
       debug ("cnt=%d", cnt);
       debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
       strncpy (&buff[x], &d->data[pos[cnt]], sizes[cnt]);
       x += sizes[cnt];
-      if (cnt < d->ltime - 1)
+      if (cnt < d->ltime-1 )
 	{
 	  if (delim[cnt] != '*')
 	    {
@@ -684,6 +699,8 @@ dttoc (void *a, void *b, int size)
       exitwith ("does not fit\n");
       return 0;
     }
+
+  debug("dttoc sets to %s",buff);
 
   strcpy (b, buff);
   return 1;
@@ -3643,6 +3660,7 @@ valid_dt (char *s, int *data)
   dt_type = -1;
   debug ("cnt=%d\n", cnt);
   debug ("type=%s\n", type);
+
   if (strcmp (type, "") == 0)
     {
       dt_type = 0;
@@ -3779,7 +3797,7 @@ valid_dt (char *s, int *data)
 	  return 0;
 	}
 
-      data[i - 1] = atoi (ptr[i - a]);
+      data[i-1 ] = atoi (ptr[i - a]);
 
       debug ("%s -> '%s'\n", codes[i], ptr[i - a]);
     }
@@ -4033,6 +4051,60 @@ valid_int (char *s, int *data,int size)
       return 0;
     }
   return 1;
+}
+
+
+
+static int atoi_n(char *s,int n) {
+	char buff[256];
+	strcpy(buff,s);
+	buff[n]=0;
+	return atoi(buff);
+}
+
+
+void decode_datetime(struct a4gl_dtime *d, int *data) {
+  int cnt;
+  char buff[256];
+  int x;
+  int pos[] = { 0, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 19 };
+  int sizes[] = { 4, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
+  char delim[] = "-- ::.*****";
+  int data_internal[20];
+
+  for (x=0;x<10;x++) {
+	data[x]=0;
+  }
+
+  for (x=0;x<20;x++) {
+	data_internal[x]=0;
+  }
+
+  x = 0;
+
+  for (cnt = d->stime-1 ; cnt <= d->ltime-1 ; cnt++)
+    {
+	
+      debug ("cnt=%d", cnt);
+      debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
+      strncpy (&buff[x], &d->data[pos[cnt]], sizes[cnt]);
+
+	data_internal[cnt]=atoi_n(&buff[x],sizes[cnt]);
+        x += sizes[cnt];
+    }
+    // Got our split into Y,M,D,H,M,S,F,F,F,F,F
+    // Need to copy these across
+    data[0]=data_internal[0]; //Y
+    data[1]=data_internal[1]; //M
+    data[2]=data_internal[2]; //D
+    data[3]=data_internal[3]; //H
+    data[4]=data_internal[4]; //M
+    data[5]=data_internal[5]; //S
+    data[6]=data_internal[6]; //F1
+    data[6]=data[6]*10+data_internal[7]; //F2
+    data[6]=data[6]*10+data_internal[8]; //F3
+    data[6]=data[6]*10+data_internal[9]; //F4
+    data[6]=data[6]*10+data_internal[10]; //F5
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.40 2003-02-20 21:34:22 mikeaubury Exp $
+# $Id: esql.ec,v 1.41 2003-02-26 22:28:14 mikeaubury Exp $
 #
 */
 
@@ -127,7 +127,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.40 2003-02-20 21:34:22 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.41 2003-02-26 22:28:14 mikeaubury Exp $";
 #endif
 
 /*
@@ -2807,20 +2807,30 @@ static int fillColumnsArray(char *tableName,int max,char **colArray,
 	int size;
 	int rv;
 	int i = 0;
+char *ccol;
 
-  rv = A4GLSQL_get_columns (tableName, "", &dtype, &size);
+strcpy(colname,"");
+  rv = A4GLSQL_get_columns (tableName, colname, &dtype, &size);
   while ( rv == 1 ) 
 	{
-	  rv = A4GLSQL_next_column(colname,&dtype,&size);
-		strncpy(colArray[i],colname,sizeColArray);
+	  rv = A4GLSQL_next_column(&ccol,&dtype,&size);
+	strcpy(colname,ccol);
+
+		strncpy(&colArray[i*(sizeColArray+1)],colname,sizeColArray);
+
+
 		if ( array2 != (char **) 0 ) {
+
+
 	    switch ( mode ) {
+
 	      case COLUMN_SIZE:
-          sprintf(array2[i],"%d",size);
+          sprintf(array2[i*(sizeArray2+1)],"%d",size);
 		      break;
 	      case DATA_TYPE:
-          sprintf(array2[i],"%d",dtype);
+          sprintf(array2[i*(sizeArray2+1)],"%d",dtype);
 		      break;
+
 		    default:
           exitwith ("Could not fill_array - Wrong mode asked!");
 	    }

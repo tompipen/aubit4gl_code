@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.17 2003-02-24 19:02:51 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.18 2003-02-26 22:28:08 mikeaubury Exp $
 #
 */
 
@@ -702,7 +702,7 @@ push_dtime(struct a4gl_dtime *p)
         d->stime=p->stime;
         d->ltime=p->ltime;
         memcpy(d->data,p->data,32);
-        debug("Pushing dtime block\n");
+        debug("Pushing dtime block %x %x\n",p->stime,p->ltime);
         push_param(ptr,DTYPE_DTIME+DTYPE_MALLOCED);
 }
 

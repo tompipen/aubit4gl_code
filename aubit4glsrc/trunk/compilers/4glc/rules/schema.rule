@@ -87,8 +87,8 @@ upd_stats_cmd :
 
 
 alter_cmd : ALTER_TABLE identifier alter_clauses_ss {
-	$<sql_string>$=make_sql_string($<str>1,$<str>2,$<sql_string>3,0);
-	print_exec_sql($<sql_string>1); 
+	$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
+	print_exec_sql($<sql_string>$); 
 }
 ;
 
@@ -134,7 +134,7 @@ alter_add_clause_ss:
 		$<sql_string>$=make_sql_string("ADD ",$<sql_string>2,0);
 	}
 	| ADD OPEN_BRACKET add_column_clauses_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string("ADD (",$<sql_string>2,")",0);
+		$<sql_string>$=make_sql_string("ADD (",$<sql_string>3,")",0);
 	}
 ;
 
@@ -144,7 +144,7 @@ add_column_clause_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| table_element_ss BEFORE identifier {
-		$<sql_string>$=make_sql_string($<str>1," BEFORE ",$<str>3,0);
+		$<sql_string>$=make_sql_string($<sql_string>1," BEFORE ",$<str>3,0);
 	}
 ;
 
@@ -153,7 +153,7 @@ add_column_clauses_ss:
 		$<sql_string>$=$<sql_string>1;
 	}
 	| add_column_clauses_ss COMMA add_column_clause_ss {
-		$<sql_string>$=make_sql_string($<str>1,",",$<str>3,0);
+		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
 	}
 ;
 

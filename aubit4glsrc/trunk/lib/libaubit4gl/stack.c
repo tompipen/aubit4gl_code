@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.39 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: stack.c,v 1.40 2003-02-26 22:28:11 mikeaubury Exp $
 #
 */
 
@@ -1275,6 +1275,12 @@ push_current (int a, int b)
   int month, year;		/* ch, yflag; */
   char buff[50];
   char buff2[50];
+  int n;
+int ptrs[]={-1, 0, 5, 8, 11, 14, 17, 20,21,22,23,24,25 };
+int ptrs2[]={-1, 3, 6, 9, 12, 15, 18, 21,22,23,24,25,26 };
+int pstart;
+
+
   debug("push_current %d %d\n",a,b);
 /*  setlocale(LC_ALL,""); */
   debug ("In push_current");
@@ -1296,12 +1302,21 @@ push_current (int a, int b)
 	   /* no support for fractions of a second yet */
     );
   debug ("Time is %s", buff);
-  buff[b] = 0;
-  debug ("a=%d",a);
-  strcpy (buff2, &buff[a]);
-  debug("Pushing %s",buff2);
-  push_char (buff2);
-  debug ("All done...");
+
+  debug ("a=%d b=%d ",a,b);
+  pstart=ptrs2[b]+1;
+  debug("pstart=%d buff=%s\n",pstart,buff);
+  buff[pstart]=0;
+
+debug("Set buff to %s\n",buff);
+  strcpy (buff2, &buff[ptrs[a]]);
+debug("Set buff2 to %s\n",buff2);
+
+  n=(a<<4)+b;
+
+  debug("push_current -Pushing %s - n = %d (%x)",buff2,n,n);
+  acli_datetime(buff2,n);
+  debug ("All done - push_current...");
 }
 
 
@@ -1881,7 +1896,6 @@ setnull (int type, char *buff, int size)
     {
       struct a4gl_dtime *i;
       i = (struct a4gl_dtime *) buff;
-      //i->data[0] == 0;  //warning: statement with no effect
       i->data[0] = 0;
       return;
     }
@@ -1890,7 +1904,6 @@ setnull (int type, char *buff, int size)
     {
       struct ival *i;
       i = (struct ival *) buff;
-      //i->data[0] == 0;  //warning: statement with no effect
       i->data[0] = 0;
       return;
     }
@@ -2170,7 +2183,7 @@ int
 conv_to_interval (int a)
 {
   double d;
-//  struct ival i;
+  struct ival i;
   char buff[256];
 
   debug ("Conv to interval - %d\n", a);
@@ -2206,17 +2219,16 @@ conv_to_interval (int a)
   if ((a == (OP_YEAR)) || (a == (OP_MONTH)))
     {
       debug ("%d %d", (a == (OP_YEAR)), (a == (OP_MONTH)));
-      debug ("A. Buff = %s", buff);
-      push_char (buff);
+	debug("Calling acli_interval for year to month");
+      acli_interval(buff,1042); // YEAR(4) TO MONTH
     }
   else
     {
-      debug ("Got to here\n");
       sprintf (buff, "%f", d);
-      debug ("B Buff=%s seconds\n", buff);
-      push_char (buff);
+	debug("Calling acli_interval for second to fraction");
+      acli_interval(buff,0x46b); // SECOND(4) TO FRACTION(5)
+	debug("Done acli_interval second to fraction MJA...");
     }
-
 
   return 1;
 }

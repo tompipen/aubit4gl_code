@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.3 2002-09-26 01:32:15 afalout Exp $
+# $Id: iarray.c,v 1.4 2003-02-26 22:28:14 mikeaubury Exp $
 #*/
 
 /**
@@ -152,8 +152,8 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
   if (disp->highlight)
     {
       debug ("With highlight");
-      idisp_arr_fields (disp->nbind, fonly, type * A_REVERSE, srec2, scr_line, 0, 0);
-    }
+	      idisp_arr_fields (disp->nbind, fonly, type * A_REVERSE, srec2, scr_line, 0, 0);
+	    }
   else
     {
       debug ("Without highlight");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.6 2002-11-25 16:51:24 mikeaubury Exp $
+# $Id: ops.c,v 1.7 2003-02-26 22:28:10 mikeaubury Exp $
 #
 */
 
@@ -64,6 +64,7 @@ void int_int_ops(int op) ;
 #endif
 void add_default_operations(void) ;
 void dt_in_ops(int op);
+void in_dt_ops(int op);
 
 
 /*
@@ -71,7 +72,6 @@ void dt_in_ops(int op);
                     Functions definitions
 =====================================================================
 */
-
 /**
  * Add all the default operations to the system
  *
@@ -82,13 +82,231 @@ dt_in_ops(int op)
 {
 struct a4gl_dtime dt;
 struct ival in;
+int ival_data[10];
 	
 	#ifdef DEBUG
 		debug("In dt_in_ops");
     #endif
-	printf("Here\n");
+	printf("DTIN Here\n");
+	fflush(stdout);
 	pop_param(&in,DTYPE_INTERVAL,-1);
 	pop_param(&dt,DTYPE_DTIME,-1);
+	printf("DTIN Here2\n");
+	fflush(stdout);
+
+	decode_interval (&in, &ival_data[0]);
+	printf("Interval : Y=%d\n",ival_data[0]);
+	printf("Interval : M=%d\n",ival_data[1]);
+	
+	printf("Interval : D=%d\n",ival_data[2]);
+	printf("Interval : H=%d\n",ival_data[3]);
+	printf("Interval : M=%d\n",ival_data[4]);
+	printf("Interval : S=%d\n",ival_data[5]);
+	printf("Interval : F=%d\n",ival_data[6]);
+	fflush(stdout);
+
+
+
+
+	push_int(0);
+}
+
+/**
+ * Add all the default operations to the system
+ *
+ * @return
+ */
+void
+in_dt_ops(int op)
+{
+struct a4gl_dtime dt;
+struct ival in;
+int ival_data[10];
+int dtime_data[10];
+int d1;
+int s1;
+void *ptr1;
+struct ival *pi;
+struct a4gl_dtime *pd;
+int ok=0;
+char buff[256];
+int start;
+char *ptr;
+
+	get_top_of_stack (2, &d1, &s1, (void **) &pd);
+
+	get_top_of_stack (1, &d1, &s1, (void **) &pi);
+
+
+	if ((d1&DTYPE_MASK)!=DTYPE_INTERVAL) {
+		printf("Confused... %d != %d\n",d1&DTYPE_MASK,DTYPE_INTERVAL);
+	}
+
+
+	in.stime=pi->stime;
+	in.ltime=pi->ltime;
+	dt.stime=pd->stime;
+	dt.ltime=pd->ltime;
+	pop_var2(&in,DTYPE_INTERVAL,in.stime*16+in.ltime);
+
+
+	pop_param(&dt,DTYPE_DTIME,dt.stime*16+dt.ltime);
+
+
+	decode_interval (&in, &ival_data[0]);
+/*
+	printf("\n\nInterval : Y=%d\n",ival_data[0]);
+	printf("Interval : M=%d\n",ival_data[1]);
+	printf("Interval : D=%d\n",ival_data[2]);
+	printf("Interval : H=%d\n",ival_data[3]);
+	printf("Interval : M=%d\n",ival_data[4]);
+	printf("Interval : S=%d\n",ival_data[5]);
+	printf("Interval : F=%d\n",ival_data[6]);
+*/
+
+	decode_datetime (&dt, &dtime_data[0]);
+
+/*
+	printf("Datetime : Y=%d\n",dtime_data[0]);
+	printf("Datetime : M=%d\n",dtime_data[1]);
+	printf("Datetime : D=%d\n",dtime_data[2]);
+	printf("Datetime : H=%d\n",dtime_data[3]);
+	printf("Datetime : M=%d\n",dtime_data[4]);
+	printf("Datetime : S=%d\n",dtime_data[5]);
+	printf("Datetime : F=%d\n",dtime_data[6]);
+*/
+
+	switch(op) {
+		case OP_ADD:
+			// Fractions
+			dtime_data[6]+=ival_data[6];
+			if (dtime_data[6]>99999) {
+				dtime_data[5]++;
+				dtime_data[6]-=100000;
+			}
+
+			// Seconds
+			dtime_data[5]+=ival_data[5];
+			if (dtime_data[5]>60) { dtime_data[4]++; dtime_data[5]-=60; }
+
+			// Minutes
+			dtime_data[4]+=ival_data[4];
+			if (dtime_data[4]>60) { dtime_data[3]++; dtime_data[4]-=60; }
+
+			// Hours
+			dtime_data[3]+=ival_data[3];
+			if (dtime_data[3]>24) { dtime_data[2]++; dtime_data[3]-=24; }
+
+			// Days
+			dtime_data[2]+=ival_data[2];
+			if (dtime_data[2]>30) { dtime_data[1]++; dtime_data[2]-=30; /** @todo Fix this **/ }
+
+			// Months
+			dtime_data[1]+=ival_data[1];
+			if (dtime_data[1]>12) { dtime_data[0]++; dtime_data[1]-=12; }
+
+			// Years
+			dtime_data[0]+=ival_data[0];
+			ok=1;
+			break;
+
+		case OP_SUB:
+			// Fractions
+			dtime_data[6]-=ival_data[6];
+			if (dtime_data[6]<0) {
+				dtime_data[5]--;
+				dtime_data[6]+=100000;
+				printf("Carry F\n");
+			}
+
+			// Seconds
+			dtime_data[5]-=ival_data[5];
+			if (dtime_data[5]<0) { dtime_data[4]--; dtime_data[5]+=60; printf("Carry S\n"); }
+
+			// Minutes
+			dtime_data[4]-=ival_data[4];
+			if (dtime_data[4]<0) { dtime_data[3]--; dtime_data[4]+=60; printf("Carry M\n");}
+
+			// Hours
+			dtime_data[3]-=ival_data[3];
+			if (dtime_data[3]<0) { dtime_data[2]--; dtime_data[3]+=24; printf("Carry H\n");}
+
+			if (dt.stime<=3) {
+			// Days
+			dtime_data[2]-=ival_data[2];
+			if (dtime_data[2]<=1) { dtime_data[1]--; dtime_data[2]+=30; /** @todo Fix this **/ printf("Carry D\n"); }
+			}
+
+			if (dt.stime<=2) {
+				// Months
+				dtime_data[1]-=ival_data[1];
+				if (dtime_data[1]<=1) { dtime_data[0]--; dtime_data[1]+=12; printf("Carry M\n");}
+			}
+
+			if (dt.stime<=1) {
+				// Years
+				dtime_data[0]-=ival_data[0];
+			}
+
+
+			ok=1;
+			break;
+	}
+
+	if (ok) {
+		sprintf(buff,"%04d-%02d-%02d %02d:%02d:%02d.%05d",
+				dtime_data[0],
+				dtime_data[1],
+				dtime_data[2],
+				dtime_data[3],
+				dtime_data[4],
+				dtime_data[5],
+				dtime_data[6]);
+
+		start=0;
+		if (dtime_data[0]>0&&!start) start=1;
+		if (dtime_data[1]>0&&!start) start=2;
+		if (dtime_data[2]>0&&!start) start=3;
+		if (dtime_data[3]>0&&!start) start=4;
+		if (dtime_data[4]>0&&!start) start=4;
+		if (dtime_data[5]>0&&!start) start=4;
+		if (dtime_data[6]>0&&!start) start=4; 
+
+
+		//0123456789012345678901234
+		//0000-MM-30 23:57:10.00000
+
+		switch (start) {
+			case 1: ptr=&buff[0];break;
+			case 2: ptr=&buff[5];break;
+			case 3: ptr=&buff[8];break;
+			case 4: ptr=&buff[11];break;
+			case 5: ptr=&buff[14];break;
+			case 6: ptr=&buff[17];break;
+			case 7: ptr=&buff[18];break;
+		}
+			
+		dt.stime=start;
+		//dt.ltime=11;
+
+/*
+		switch(dt.ltime) {
+			case 1: buff[4]=0;break; //Y
+			case 2: buff[7]=0;break; //M
+			case 3: buff[10]=0;break; //D
+			case 4: buff[13]=0;break; //H
+			case 5: buff[16]=0;break; //M
+			case 6: buff[19]=0;break; //D
+		}
+*/
+
+		ctodt(ptr,&dt,dt.stime*16+dt.ltime);
+	
+		push_dtime(&dt);
+		return;
+	}
+
+
 
 	push_int(0);
 }
@@ -189,8 +407,8 @@ DTYPE_SERIAL
 	add_op_function(DTYPE_SMINT,	DTYPE_SERIAL,	OP_MATH,int_int_ops);
 	add_op_function(DTYPE_DATE,	DTYPE_SERIAL,	OP_MATH,int_int_ops);
 
-	/* add_op_function(DTYPE_DTIME,	DTYPE_INTERVAL,	OP_MATH,dt_in_ops); */
 	add_op_function(DTYPE_INTERVAL,	DTYPE_DTIME,	OP_MATH,dt_in_ops);
+	add_op_function(DTYPE_DTIME,	DTYPE_INTERVAL,	OP_MATH,in_dt_ops);
 
 	debug("Finished adding default operations");
 

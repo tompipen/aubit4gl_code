@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.10 2002-08-31 06:19:59 afalout Exp $
+# $Id: data_if.c,v 1.11 2003-02-26 22:28:09 mikeaubury Exp $
 #
 */
 
@@ -371,6 +371,10 @@ struct s_s_inp_arr_1 *val;
 	if (mode==GETSETGETPTR) return (void *)&(val->curr_attrib);
 	 if (mode==GETSETSET) { val->curr_attrib=(int )var;return (void *)1;}
 	 }
+
+	assertion(1,"CRITICAL ERROR - unknown name in GETSET/s_inp_arr");
+	debug("CRITICAL - UNKNOWN VALUE FOR  s_inp_arr - %s\n",name);
+
 	return (void *)0; /* unknown value */
 };
 
@@ -713,6 +717,7 @@ struct s_s_disp_arr_1 *val;
 	 if (mode==GETSETSET) { val->cntrl=(int )var;return (void *)1;}
 	 }
 
+	assertion(1,"CRITICAL ERROR - unknown name in GETSET/s_disp_arr");
 	return (void *)0; /* unknown value */
 	};
 

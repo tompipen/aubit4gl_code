@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.15 2003-02-24 19:02:56 mikeaubury Exp $
+# $Id: compile_c.c,v 1.16 2003-02-26 22:28:12 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2075,7 +2075,7 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll,char *attr)
 	  sizeof (struct s_disp_arr) + 10);
   cnt = print_arr_bind ('o');
   printc ("SET(\"s_disp_arr\",_dispio,\"no_arr\",get_count());\n");
-  printc ("SET(\"s_disp_arr\",_dispio,\"binding_comp\",obind);\n");
+  printc ("SET(\"s_disp_arr\",_dispio,\"binding\",obind);\n");
   printc ("SET(\"s_disp_arr\",_dispio,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_disp_arr\",_dispio,\"srec\",0);\n");
   printc
@@ -2399,7 +2399,7 @@ void print_init_var(char *name,char *prefix,int alvl) {
 	char buff[1024];
 	char prefix2[1024];
 	int arrsizes[10];
-	int cnt;
+	int cnt=0;
 	int acnt;
 	int printing_arr;
 
@@ -2689,7 +2689,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_fld_dr==-100) {\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"no_arr\",get_count());\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"binding_comp\",obind);\n");
+  printc ("SET(\"s_inp_arr\",_inp_io,\"binding\",obind);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_inp_arr\",_inp_io,\"srec\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);
