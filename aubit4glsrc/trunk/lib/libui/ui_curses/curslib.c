@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.42 2003-06-26 18:38:48 mikeaubury Exp $
+# $Id: curslib.c,v 1.43 2003-06-27 18:56:07 mikeaubury Exp $
 #*/
 
 /**
@@ -1965,6 +1965,7 @@ A4GL_clear_prompt (struct s_prompt *prmt)
 #endif
   p = prmt->win;
   delwin ((WINDOW *) p);
+  A4GL_zrefresh();
 }
 
 
