@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.18 2003-01-07 10:16:42 psterry Exp $
+# $Id: conv.c,v 1.19 2003-01-08 19:15:18 mikeaubury Exp $
 #
 */
 
@@ -2906,6 +2906,7 @@ dec_to_str (char *s, int size)
   int l,d;
   int c,x,a,k;
   static char buff[DBL_DIG1];
+  int dot_printed=-1;
 
   l = NUM_DIG (s);  // length of decimal in bytes
   d = NUM_DEC (s);  // number of digits to right of decimal point
@@ -2941,6 +2942,7 @@ dec_to_str (char *s, int size)
       if ( a == x ) {
          // insert decimal point, and a leading zero if needed
 	 if (c==0 || buff[c-1]=='-')  buff[c++] = '0';
+	 dot_printed=c;
          buff[c++] = '.';
       }
 
@@ -2955,9 +2957,11 @@ dec_to_str (char *s, int size)
       // similarly for right-hand digit
       buff[c] = (int) k % 10 + '0';
       if ( c==0 && buff[c]=='0' ) { buff[c] = 0; } else c++;
-
     }
 
+  if (dot_printed&&d%2==1) {
+	buff[dot_printed+d+1]=0;
+  }
   debug("returning: %s\n",buff);
   return buff;
 }
