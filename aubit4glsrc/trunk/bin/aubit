@@ -1,25 +1,130 @@
 #!/bin/sh
 #This is Aubit 4gl compiler warper script
 
+function show_help {
+	
+    echo
+	echo Aubit 4gl compiler warper script: $0
+    echo
+    echo Usage:
+    echo '  aubit [FLAGS] <command> <command parameters...>'
+	echo
+    echo '[FLAGS] are options intercepted and processed by "aubit" script,'
+    echo ' and will not reach the program invoked:'
+    echo ' --averbose'
+    echo ' --valgrind'
+    echo ' --ahelp'
+    echo ' --show-path'
+    echo ' --ahelp'	
+    echo
+    echo '<command> can be:'
+	echo ' 4glpc - main compiler script (scheduled to be obsoleted)'
+    echo ' 4glc - 4gl to [C|Perl|EC|...]-code compiler'
+	echo ' fcompile - form file (.per) compiler'
+    echo ' mcompile - menu file (.menu) compiler'
+    echo ' amkmessage - help file (.hlp) compiler'
+    echo ' ...or any other executable program you wish to run under controled'
+    echo ' Aubit environment (PATH,LD_LIBRARY_PATH,AUBITDIR,etc)'
+    echo
+    echo ' Use "aubit-config" to inspect Aubit compiler configuration '
+    echo
+
+}
+
+if [ $# -lt 1 ]; then
+	show_help
+	exit 0
+fi
+
+#FIXME: on CygWin, we must add "bash" in front of "4glpc" otherwise standard "sh" will be
+#used and give us bunch of errors in 4glpc. We need to recognize and fix this here
+SH_SCRIPTS="ecpg_wrap 4glpc esql_wrap prepmake abug.sh aubitbuild.sh genmake \
+		amake"
+
+#List of all Aubit tools that are supposed to run only on command line in
+#TUI mode - not GUI mode
+CMD_LINE_TOOLS="4glc 4glpc_new aubit-config default_frm mcompile 4glc-strip aupscol \
+	ecpg_wrap mdecompile 4glpc amkmessage c2pcode esql_wrap \
+    prepmake aace c2pcode_fgl process_report aace_4gl \
+	fcompile aace_perl checker fdecompile abug.sh checker_fgl \
+    adecompile  unmkmessage afinderr aubitbuild.sh convertsql genmake \
+	amake xgen"
+#They run compiled P-code programs - not command line
+#runner runner_fgl
+
+#If user invoked this from command line, he ptobably wants to run them in 
+#terminal, and not GUI mode?
+TUI_TOOLS="asql_g.4ae asql_i.4ae asql_p.4ae"
+
+FLAGS=$@
+EXEC=""
+FLAG_CNT=0
+for FLAG in $FLAGS; do
+   ################
+   case $FLAG in
+   ################
+   #4glpc 4glc etc take -verbose, so we need to use something else
+   	--averbose)
+		VERBOSE=1
+		;;
+	--valgrind)
+   		VALGRIND=1
+		;;
+	--show)
+		SHOW=1
+		;;
+	--show-path)
+		SHOW_PATH=1
+		;;
+	--ahelp)
+		show_help
+		exit 0
+		;;
+   *)
+   		#Everything else is program/script to be executed, or
+		#a flag for it
+		FLAG_CNT=`(expr $FLAG_CNT + 1) 2>/dev/null`
+		
+		for CMD in $CMD_LINE_TOOLS; do
+			if test "$FLAG" = "$CMD"; then 
+				IS_CMD_LINE_TOOL=1
+				#Only thing we have for sure is CONSOLE
+				if test "$GCC_MINGW" = "yes"; then
+					export A4GL_UI=HL_TUIN
+					#export A4GL_UI=HL_TUINs
+				else
+					export A4GL_UI=CONSOLE
+					#export A4GL_UI=TUI
+				fi
+			fi
+		done	
+
+	    EXEC="$EXEC $FLAG"
+		;;
+  ####
+  esac
+  ####
+done
+
 #Make sure that waht is CygWin formated path stays visible
 PATH=":$PATH:"
 
-if [ "$AUBITDIR" = "" ]; then
+if test "$AUBITDIR" = "" ; then
 	AUBITDIR=`aubit-config AUBITDIR`
-	if [ "$AUBITDIR" = "" ]; then
+	if test "$AUBITDIR" = "" ; then
 		echo "ERROR: AUBITDIR is empty. Stop."
 		aubit-config AUBITDIR
 		exit 3
 	fi
 fi
 
+################################
 #Determine for which OS was this aubit-config compiled
 #TARGET=i686-pc-cygwin
 #TARGET_OS=cygwin
 TARGET_OS=`aubit-config TARGET_OS`
 if test "$TARGET_OS" = "mingw"; then 
 	GCC_MINGW="yes"
-	
 	case "$PATH" in
 		*cygdrive*)
 			#We are running under CygWin shell, that will do nasty things
@@ -64,9 +169,12 @@ case "$AUBITDIR" in
 		;;
 esac
 
-
+#Store waht we have now for debugging
 INIT_AUBITDIR="$AUBITDIR"
 
+############################
+#Add paths determined by Autoconf to PATH or LD_LIBRARY_PATH
+#so we can find libraries
 ADD_LD_LIBRARY_PATH="`aubit-config ADD_LD_LIBRARY_PATH`"
 if test "$ADD_LD_LIBRARY_PATH" != ""; then 
 	if test "$TARGET_OS" = "mingw"; then
@@ -85,7 +193,6 @@ if test "$ADD_LD_LIBRARY_PATH" != ""; then
 			export PATH="$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH$A4GL_PATH_SEP$PATH"
 		
 		fi
-
 		
 		#	export PATH=";=====;d:/pdc25_vc_w32;====;$PATH"
 		#	export PATH=";xxxxxx;d:\\pdc25_vc_w32;xxxx;$PATH"
@@ -144,46 +251,26 @@ else
 	DBPATH=$AUBITDIR/bin$A4GL_PATH_SEP$DBPATH
 fi
 
-#case "$PATH" in
-#	*\;*)
-		if test "$GCC_MINGW" = "xxxyes"; then
-			NEW_PATH=`echo $PATH | sed -e 's/;/:/'g`
-			if test "$PATH" != "$NEW_PATH"; then 
-				echo "WARNING: PATH contained ';'"
-				echo "$PATH"
-				echo
-				PATH="$NEW_PATH"
-				echo "$PATH"
-				export PATH
-			fi
-			#exit
-		fi
-#		;;
-#esac
-export AUBITDIR PATH LD_LIBRARY_PATH A4GL_DBPATH DBPATH
-
-if [ $# -lt 1 -o "$1" = "--help" ]; then
-    echo
-	echo Aubit 4gl compiler warper script: $0
-    echo
-    echo Usage:
-    echo '  aubit [--verbose] <command> <command parameters...>'
-	echo
-    echo ' For details, try: '
-    echo '    aubit <command> --help'
-    echo '    where <command> is one of the following:'
-	echo ' 4glpc - main compiler script (scheduled to be obsoleted)'
-    echo ' 4glc - 4gl to [C|Perl|EC|...]-code compiler'
-	echo ' fcompile - form file (.per) compiler'
-    echo ' mcompile - menu file (.menu) compiler'
-    echo ' amkmessage - help file (.hlp) compiler'
-    echo
-    echo ' Use "aubit-config" to inspect Aubit compiler configuration '
-    echo
-	exit 1
+if test "$GCC_MINGW" = "xxxyes"; then
+	NEW_PATH=`echo $PATH | sed -e 's/;/:/'g`
+	if test "$PATH" != "$NEW_PATH"; then 
+		echo "WARNING: PATH contained ';'"
+		echo "$PATH"
+		echo
+		PATH="$NEW_PATH"
+		echo "$PATH"
+		export PATH
+	fi
 fi
 
-if [ "$1" = "--show" ]; then
+#Export settings we will need in environment 
+export AUBITDIR PATH LD_LIBRARY_PATH A4GL_DBPATH DBPATH
+
+if test "$VALGRIND" = "1" ; then 
+	EXEC="valgrind $EXEC "
+fi
+
+if test "$SHOW" = "1" -o "$VERBOSE" = "1"; then
     echo
     echo "AUBITDIR=$AUBITDIR"
 	echo
@@ -199,9 +286,18 @@ if [ "$1" = "--show" ]; then
 	echo
 	echo "GCC_MINGW=$GCC_MINGW"
 	echo
-    exit 0
+    echo "DBPATH=$DBPATH"
+	echo
+    echo "A4GL_DBPATH=$A4GL_DBPATH"
+	echo 
+	echo "A4GL_PATH_SEP=$A4GL_PATH_SEP"
+	echo
+	echo "Running: $EXEC"
+	if test "$VERBOSE" != "1"; then	
+    	exit 0
+	fi
 fi
-if [ "$1" = "--show-path" ]; then
+if [ "$SHOW_PATH" = "--show-path" ]; then
     echo
 	export PATH=";=====;d:/pdc25_vc_w32;====;$PATH"
 	export PATH=";xxxxxx;d:\\pdc25_vc_w32;xxxx;$PATH"
@@ -228,85 +324,9 @@ if [ "$1" = "--show-path" ]; then
 	exit 0
 fi
 
-#FIXME: on CygWin, we must add "bash" in front of "4glpc" otherwise standard "sh" will be
-#used and give us bunch of errors in 4glpc. We need to recognize and fix this here
-
-#List of all Aubit tools that are supposed to run only on command line in
-#TUI mode - not GUI mode
-CMD_LINE_TOOLS="4glc 4glpc_new aubit-config default_frm mcompile 4glc-strip aupscol \
-	ecpg_wrap mdecompile 4glpc amkmessage c2pcode esql_wrap \
-    prepmake aace c2pcode_fgl process_report aace_4gl \
-	fcompile aace_perl checker fdecompile abug.sh checker_fgl \
-    adecompile  unmkmessage afinderr aubitbuild.sh convertsql genmake \
-	amake xgen"
-
-#They run compiled P-code programs - not command line
-#runner runner_fgl
-
-#If user invoked this from command line, he ptobably wants to run them in 
-#terminal, and not GUI mode?
-TUI_TOOLS="asql_g.4ae asql_i.4ae asql_p.4ae"
-	
-for CMD in $CMD_LINE_TOOLS; do
-	if test "$1" = "$CMD"; then 
-		IS_CMD_LINE_TOOL=1
-		#Only thing we have for sure is CONSOLE
-		if test "$GCC_MINGW" = "yes"; then
-			export A4GL_UI=HL_TUIN
-			#export A4GL_UI=HL_TUINs
-		else
-			export A4GL_UI=CONSOLE
-			#export A4GL_UI=TUI
-		fi
-	fi
-done	
-
-FLAGS=$@
-EXEC=""
-FLAG_CNT=0
-
-for FLAG in $FLAGS; do
-   ################
-   case $FLAG in
-   ################
-
-   --verbose | -verbose)
-   		echo
-        echo "AUBITDIR=$AUBITDIR"
-		echo
-        echo "PATH=$PATH"
-		echo
-        echo "DBPATH=$DBPATH"
-		echo
-        echo "A4GL_DBPATH=$A4GL_DBPATH"
-		echo 
-		echo "A4GL_PATH_SEP=$A4GL_PATH_SEP"
-		echo
-		VERBOSE=1
-        $2 $3 $4 $5 $6 $7 $8 $9
-		RET=$?
-		exit $RET
-
-   ;;
-
-   *)
-		FLAG_CNT=`(expr $FLAG_CNT + 1) 2>/dev/null`
-		
-		if test "$FLAG_CNT" = "1" -a "$VALGRIND" = "YES" ; then 
-	        EXEC="$EXEC valgrind $FLAG"		
-		else
-	        EXEC="$EXEC $FLAG"
-		fi
-   ;;
-
-  ####
-  esac
-  ####
-done
-if test "$VERBOSE"; then 
-	echo "Running: $EXEC"
-fi
+##########
 eval $EXEC
+##########
 RET=$?
 exit $RET
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2004-09-16 13:35:44 afalout Exp $
+# $Id: Makefile.in,v 1.9 2004-10-01 14:46:44 afalout Exp $
 #
 
 ROOT    =../../..
@@ -44,7 +44,8 @@ SRC		=simple.c
 
 OBJS	=${SRC:.c=.o}
 CPPOBJS	=${CPPSRC:.cpp=.o}
-CFLAGS	+=-I.. @PGSQL_INCLUDE@ -I/usr/include/pgsql/libpq++ -I/usr/include/pgsql
+CFLAGS	+=-I.. @PGSQL_INCLUDE@ 
+#-I/usr/include/pgsql/libpq++ -I/usr/include/pgsql
 CXXFLAGS=$(CFLAGS)
 
 ALL		=${LIBROOT}/libSQL_pg${SO_EXT}
@@ -67,6 +68,13 @@ libSQL_pgDEVEL${SO_EXT}:${LIBROOT}/libSQL_pgDEVEL${SO_EXT}
 ${LIBROOT}/libSQL_pgDEVEL${SO_EXT}: $(CPPOBJS)
 	${LD} ${SO_LDFLAGS} $^ @PGSQL_LFLAGS@ @PGSQL_LIBS@ -o $@
 
+	
+show:
+	@echo "LD=${LD}" 
+	@echo "SO_LDFLAGS=${SO_LDFLAGS}"
+	@echo "PGSQL_LFLAGS=@PGSQL_LFLAGS@" 
+	@echo "PGSQL_LIBS=@PGSQL_LIBS@"
+	@echo "CFLAGS=${CFLAGS}"
 
 ## ==================================================================
 ##                              Clean

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.36 2004-09-28 09:49:23 afalout Exp $
+# $Id: Makefile.in,v 1.37 2004-10-01 14:46:44 afalout Exp $
 #
 
 ROOT		=../../..
@@ -268,8 +268,11 @@ ${LIBROOT}/libSQL_esqlSAP${SO_EXT}: esql_compatible.ec
 #PostgreSQL ESQL/C compiler:
 libSQL_esqlPG${SO_EXT}: ${LIBROOT}/libSQL_esqlPG${SO_EXT}
 ${LIBROOT}/libSQL_esqlPG${SO_EXT}: esql_compatible.ec
-	cpp ${CPP_FLAGS} $^ -D__PG__ -D__PG_FIX__ -I/opt/ecpg-cvs/include > pg_$^
-	${PG_ESQLC} -I/opt/ecpg-cvs/include -C INFORMIX -t pg_$^
+#@PGSQL_LFLAGS@ @PGSQL_LIBS@ @PGSQL_INCLUDE@
+#	cpp ${CPP_FLAGS} $^ -D__PG__ -D__PG_FIX__ -I/opt/ecpg-cvs/include > pg_$^
+	cpp ${CPP_FLAGS} $^ -D__PG__ -D__PG_FIX__ @PGSQL_INCLUDE@ > pg_$^
+#	${PG_ESQLC} -I/opt/ecpg-cvs/include -C INFORMIX -t pg_$^
+	${PG_ESQLC} @PGSQL_INCLUDE@ -C INFORMIX -t pg_$^
 #	${CC} ${STATIC} -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 
 ##################
