@@ -1,27 +1,49 @@
+#!/bin/sh
 #
 # FIXME: this script don't know how to make a shared library (.so/.dll)
 #
-SH_DEBUG=0
+
 ALL_FLAGS=$@
-#echo "ALLFLAGS = $ALL_FLAGS"
+SCRIPT_NAME=esql_wrap
+
+if test "$DEBUG" = "ALL"; then
+	#Force verbose mode for debugging when Aubit DEBUG is set
+	ALL_FLAGS="$ALL_FLAGS -verbose"
+	#SH_DEBUG="1"
+fi
+
 ###################
 for a in $ALL_FLAGS
 ###################
 do
 	case $a in
+	-noecho)    #Don't show any non-critical messages while running
+		NO_ECHO=1
+		;;
 	-verbose)
 	   A4GLVERBOSE="yes"
-	   SH_DEBUG=1
-	   echo "Verbose mode ON"
+	   #SH_DEBUG=1
 	   ;;
+	-script-debug)
+		SH_DEBUG="1"
+		;;
+	   
 	esac
 #######
 done
 #######
-	   
-if test "$SH_DEBUG" = "1"; then
-	echo "In esql_wrap - invoked with : $ALL_FLAGS"
+
+if test "$A4GLVERBOSE" = "1"; then
+	echo "$SCRIPT_NAME: Verbose mode ON"
 fi
+if test "$SH_DEBUG" = "1"; then
+	echo "$SCRIPT_NAME: Script debug mode ON - invoked with :"
+	echo "$ALL_FLAGS"
+fi
+
+#######################################################################
+#				Set environment 
+#######################################################################
 
 if [ "$AUBITDIR" = "" ]; then
     AUBITDIR=`aubit-config AUBITDIR`
@@ -186,7 +208,7 @@ do
 	eval "$GCC_COMPILE > $LOGFILE 2>&1"
     RET=$?
 	if test "$RET" != "0"; then
-		echo "esql_wrap faled. GCC exit code was $RET - see $LOGFILE"
+		echo "$SCRIPT_NAME faled. GCC exit code was $RET - see $LOGFILE"
 		if test "$SH_DEBUG" != "1"; then
 			echo "Failed command was:"
 			echo "$GCC_COMPILE > $LOGFILE 2>&1"		

@@ -17,11 +17,17 @@ for a in $FLAGS; do
 
         -verbose)   #Show more information about what is going on
             VERBOSE=1
-			echo "In ecpg_wrap : $FLAGS"
 			;;
-
+			
+		-script-debug)
+			SCRIPT_DEBUG="1"
+			;;
 	esac
 done
+
+if test "$SCRIPT_DEBUG" = "1"; then 
+	echo "In ecpg_wrap : $FLAGS"
+fi
 
 #######################################################################
 #				Set environment 
@@ -209,7 +215,7 @@ do
 	fi
 
 	other_args="$other_args $a"
-	if test "$VERBOSE" = "1" ; then
+	if test "$SCRIPT_DEBUG" = "1" ; then
 		echo "ADDED $a to other_args"
 	fi
 

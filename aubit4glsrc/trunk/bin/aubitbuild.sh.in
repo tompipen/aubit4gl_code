@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.39 2004-09-24 06:29:04 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.40 2004-09-25 08:05:39 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -876,7 +876,8 @@ if test "$WINSETUP" = "1" -a "$BUILD_MINGW" = "1" ; then
 	fi
 
 	#Run all build tests in tools/test/build_tests/...
-	make test.build
+	#this is now invoked from cron script
+	#make test.build
 
 fi  #if WINSETUP
 
