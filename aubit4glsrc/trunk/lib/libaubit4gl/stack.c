@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.115 2005-03-09 15:14:41 mikeaubury Exp $
+# $Id: stack.c,v 1.116 2005-03-16 21:54:41 mikeaubury Exp $
 #
 */
 
@@ -399,6 +399,7 @@ A4GL_pop_var2 (void *p, int d, int s)
 	}
       A4GL_debug ("9 Copying string '%s' to p", A4GL_null_as_null(pl));
       strncpy ((char *) p, pl,s);
+	free(pl);
       pl = (char *) p;
       pl[s] = 0;		/* changed from s+1 to s */
       return z;
