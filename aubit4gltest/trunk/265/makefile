@@ -1,3 +1,4 @@
+
 #Sections you may need to modify are marked with <<<<<<<<<<<<<<<<<<<<<<<<<<<<(x)
 
 ################
@@ -8,34 +9,31 @@ include ../Makefile-common
 ##                  Local Setings - user modifiable
 ## ======================================================================
 
+#NOTE: Do not use quotes when declaring make verialbes - they will be 
+#taken literaly (eg. PER="xx" will set PER variable to "xx" NOT to xx
+#Make does not need quotes to declare multiple items (like SH does)
+
 ################
 #List of all form files that need to be compiled. This is already set from
 #included makefile, but you can override it here if you need to. By default, all
 #.per files in current directory are automatically listed, and therfore compiled
-#PER=""
+#PER=
 
 ################
 #List of all 4GL modules that need to be compiled to objects. This is already set
 #from included makefile, but you can overide it here if needed. By default, all
 #.4gl files in current directory are automatically listed, and therfore compiled
-#FGL=simple_validate.4gl
+#FGL=
 
 ################
 #You can add additional files to be cleand with "clean" target to the default
 #ones, by listing them here:
-#ADD_CLEAN=""
+#ADD_CLEAN=
 
 ################
 #This is set in comon make file; overide it if you need to here
 #A4GL_KEYFILE=keys.in
 #A4GL_KEYDELAY=10000
-
-ifeq "${A4GL_SYSCOL_VAL}" ""
-		A4GL_SYSCOL_VAL=a4gl_syscolval
-		export A4GL_SYSCOL_VAL
-endif
-
-
 
 ## ======================================================================
 ##                  Local Setings - automatic
@@ -45,13 +43,13 @@ endif
 #replace .per/.4gl with appropriate extesion in forms and modules list
 FORMS=${PER:.per=${A4GL_FORMEXT}}
 MODULES=${FGL:.4gl=${OBJ_EXT}}
+HELP=${MSG:.msg=${HLP_EXT}}
 
 ################
 #export to environment:
 ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
-
 
 ## ======================================================================
 ##                 	Local Targets
@@ -76,19 +74,21 @@ progname${TARGET_EXT}: ${MODULES}
 #Synonim to invoke compilation of the test by using uniform target name
 #Change "progname" to real program name (if different) <<<<<<<<<<<<<<<<<<<<<<(4)
 #Add more "progname${TARGET_EXT}" items if test uses more then one program <<(5)
-compile: progname${TARGET_EXT} ${FORMS}
+compile: progname${TARGET_EXT} ${FORMS} ${HELP}
 
-cxx:
-	./bibble
 ################
 #Run the compiled test
 run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-	${DEFAULT_RUN}
+#	${DEFAULT_RUN}
 #To run program and diff the stdout output against a file, testing for difference:
-#	${DEFAULT_DIFF}
+	${DEFAULT_DIFF}
+#Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
+#program to a file for diff-ing, but expect output file to be created by dumping
+#the screen to file using a function call in the program itself:
+#	${DEFAULT_DUMP_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
 #	${DBG} ./progname${NAMED_[DIFF|RUN]}
@@ -109,14 +109,14 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Simple validate"
+	@echo "This is a basic test of comparing datetimes (MID 537)"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
 ################
 #If this test needs database, return 1
 db_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #return 1 if tests use/require ESQL compiler output, instead of C output
@@ -173,7 +173,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped
@@ -183,12 +183,34 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "1"
+	@echo "0"
+
+################
+#Test is expeceted to exit with code (return "x" for any not-null exit code)
+expect_code:
+	@echo "0"
+
+################
+#Return 1 if test should only be compiled, and NOT executed 
+compile_only:
+	@echo "0"
 
 ################
 #All other tests not belonging to any of the above groups should be listed here:
 unknown_test:
 	@echo "0"
 
-# ============================= EOF ================================
+################
+#Specify minimum version of Informix compiler this test can be executed with
+#example: 	@echo "7.31"
+need_ifx_version:
+	@echo "0"
 
+################
+#If database this test runs against MUST have transactions support, set to "1"
+#If database this test runs against MUST NOT have transactions support, set to "2"
+#"0" means "don't care"
+transaction:
+	@echo "0"
+	
+# ============================= EOF ================================

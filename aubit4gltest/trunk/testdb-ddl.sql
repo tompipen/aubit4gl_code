@@ -61,5 +61,31 @@ create table tab1
 );
 
 
+create table a4gl_syscolval 
+  (
+    tabname nchar(18),
+    colname nchar(18),
+    attrname nchar(10),
+    attrval nchar(64)
+  );
+
+create table a4gl_syscolatt 
+  (
+    tabname nchar(18),
+    colname nchar(18),
+    seqno serial not null ,
+    color smallint,
+    inverse nchar(1),
+    underline nchar(1),
+    blink nchar(1),
+    left nchar(1),
+    def_format nchar(64),
+    condition nchar(64)
+  );
+    
+
+
+
+
 /* ======================== EOF ===========================*/
 

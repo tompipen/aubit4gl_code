@@ -1,0 +1,50 @@
+database formonly
+screen
+{
+
+
+            XXXXXX XXXXXXX XX XXXXXX XXXX
+	    =============================
+
+	    Enter:[t] '1' for XXXXXXX
+		      '2' for XXXXXX XXXX
+
+	    XXXXXX     XXXXXX:[br]
+            XXXXXXXX   XXXXXX:[a         ]
+	    XXXXXXXXXX XXXXXX:[b  ] (XXXXXXXXXXXXXXXXXXXX)
+			[d]
+	    XXXXX XXXXXXX XXXXX:[c        ]
+	           XXXXXX XXXXX:[e        ]
+	       XXX-XXXXXX XXXXX:[f        ]
+
+
+
+  F1=Quit
+}
+end
+attributes
+	t       = formonly.fld0 type char,
+		  color=white,
+		  comments = " Enter '1' or '2'.";
+	br      = formonly.fld1 type integer,
+		  color=white,
+		  format = "&&",
+		  comments = " XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX  ";
+	a      	= formonly.fld2 type integer,
+		  color=white, format="##########",
+		  comments = " XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+	b  	= formonly.fld3,
+		  color=white,
+		  comments = " XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+	d	= formonly.dummy, noentry;
+	c         = formonly.fldx,
+			  noentry, color=white;
+	e        	= formonly.fldy,
+			  noentry, color=white;
+	f         	= formonly.fldz,
+			  noentry, color=white;
+end
+
+instructions
+	delimiters " "
+end

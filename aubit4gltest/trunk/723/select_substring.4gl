@@ -25,11 +25,11 @@ MAIN
     WHERE keyColumn = 1
 
   IF lv_string != "str" THEN
-    DISPLAY "Diferent substring value"
+    DISPLAY "Diferent substring value (1):'",lv_string,"'"
     LET exitStatus = 1
   END IF
   IF lv_string2 != "a string" THEN
-    DISPLAY "Diferent substring value"
+    DISPLAY "Diferent substring value (2):'",lv_string2,"'"
     LET exitStatus = 1
   END IF
   DROP TABLE xpto
