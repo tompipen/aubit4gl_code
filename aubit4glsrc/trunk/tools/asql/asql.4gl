@@ -297,7 +297,7 @@ display middle("Latest version available at:") at 13,1
 display middle("http://aubit4gl.sourceforge.net") at 14,1
 display middle("Development sponsored by Cassens Transport Company") at 16,1
 display middle("http://www.cassens.com") at 17,1
-sleep 4
+sleep 2
 clear screen
 end function
 
