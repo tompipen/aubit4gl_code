@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.151 2004-01-27 10:10:58 mikeaubury Exp $
+# $Id: mod.c,v 1.152 2004-01-28 16:21:03 mikeaubury Exp $
 #
 */
 
@@ -1421,6 +1421,7 @@ pushValidateTableColumn (char *tableName, char *columnName)
   char buff[300];
 
   A4GL_debug ("pushValidateTableColumn()");
+//printf("Table name = %s column name=%s\n",tableName,columnName);
   rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
   if (rval == 0)
     {
@@ -1613,6 +1614,19 @@ push_validate (char *t2)
   char *columnName;
   char t[256];
   A4GL_debug ("In push_validate");
+  //printf("t2=%s\n",t2);
+
+
+// Skip any owner bit...
+  if (t2[0]=='\\' && t2[1]=='"') {
+	char *x;
+	x=strchr(t2,'.');
+	if (x) {
+		t2=x+1;
+	}
+  }
+
+
 
   if (db_used == 0)
     {
@@ -3202,14 +3216,34 @@ set_ingroup (void)
   use_group = 1;
 }
 
+
+char *whentostore_p;
+int whenever_store_c;
+char * whenever_store_p;
+
+
+
+void set_whento_store(char *p) {
+	if (p) whentostore_p=strdup(p);
+	else whentostore_p=0;
+}
+
+
+
 /**
  *
  */
-void
+static void
 set_whento (char *p)
 {
   A4GL_debug ("whento = %p", p);
   strcpy (when_to_tmp, p);
+}
+
+void set_whenever_store (int c, char *p) {
+	whenever_store_c=c;
+	if (p) whenever_store_p=strdup(p);
+	else whenever_store_p=0;
 }
 
 /**
@@ -3226,13 +3260,11 @@ set_whento (char *p)
  *  - WHEN_SQLSUCCESS:
  * @param p The A4GL_action to execute.
  */
-void
-set_whenever (int c, char *p)
+static void set_whenever (int c, char *p)
 {
   int code;
   int oldcode;
   oldcode = c & 15;
-  A4GL_debug ("MJA Set_whenever : %d %s", c, p);
   c = c >> 4;
   c = c << 4;
   code = -1;
@@ -3293,6 +3325,13 @@ set_whenever (int c, char *p)
 
   print_clr_status ();
 }
+
+
+void set_whenever_from_store() {
+	set_whento(whentostore_p);
+	set_whenever(whenever_store_c,whenever_store_p);
+}
+
 
 /**
  *
@@ -4203,7 +4242,7 @@ static char *add_clobber(char *buff_orig,char *important) {
 static char buff_new[256];
 static int p=0;
 char b1[256];
-printf("add clobber : %s %s\n",buff_orig,important);
+//printf("add clobber : %s %s\n",buff_orig,important);
 	strcpy(buff_new,buff_orig);
 
 	if (has_clobber(buff_orig)) return get_clobber(buff_orig);

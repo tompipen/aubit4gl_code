@@ -13,11 +13,11 @@ validate_tab_list : validate_tab | validate_tab_list COMMA validate_tab {sprintf
 }
 ;
 
-validate_tab : tab_name DOT column_name {
+validate_tab : table_name DOT column_name {
 		sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
 		push_validate($<str>$);
 	}
-	| tab_name DOT MULTIPLY {
+	| table_name DOT MULTIPLY {
 		sprintf($<str>$,"%s.*",$<str>1);
 		push_validate($<str>$);
 	}

@@ -39,8 +39,10 @@ module_header	:	module_entry
 module_entry : 
 module_import 
 | module_code 
+| whenever_cmd
 | module_globals_section 
 | module_define_section  
+| db_section
 	;
 
 
@@ -70,6 +72,7 @@ func_or_main	:	func_def
 		|	code_cmd
 		| 	import_m
 		|	comment_cmd
+		|       whenever_cmd
 		;
 
 module_code : code_cmd   ;
@@ -202,7 +205,7 @@ actual_globals_section :
 	| actual_globals_section xglobals_entry
 ;
 
-xglobals_entry : globals_entry | module_code  | db_section
+xglobals_entry : globals_entry 
 ;
 
 globals_entry: GLOBALS {
@@ -230,6 +233,8 @@ char b[256];
 	read_glob(b);
 	set_current_variable_scope('m');
 }
+| module_code  
+| db_section
 ;
 
 mem_func_def : MEMBER_FUNCTION identifier MEMBER_OF identifier OPEN_BRACKET

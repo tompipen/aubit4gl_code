@@ -28,3 +28,4 @@
 %token KW_CEND
 %token USER_DTYPE
 %token SQL_TEXT
+%token KW_WHENEVER_SET

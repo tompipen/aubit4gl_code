@@ -5,4 +5,9 @@
 */
 
 
+whenever_cmd : KW_WHENEVER_SET {
+		set_whenever_from_store();
+}
+;
+
 /* =============================== whenever.rule ==================== */

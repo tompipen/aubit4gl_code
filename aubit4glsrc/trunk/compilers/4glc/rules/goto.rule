@@ -6,7 +6,10 @@
 
 
 goto_cmd : GOTO label_goto {
-	print_goto($<str>2);
+	char buff[256];
+	strcpy(buff,$<str>2);
+	A4GL_convlower(buff);
+	print_goto(buff);
 }
 ;
 
