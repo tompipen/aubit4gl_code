@@ -33,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.8 2002-01-20 15:45:23 mikeaubury Exp $
+# $Id: sql.c,v 1.9 2002-01-22 23:24:57 mikeaubury Exp $
 #
 */
 
@@ -182,7 +182,7 @@ RETCODE SQL_API newSQLSetParam (HSTMT hstmt, UWORD ipar, SWORD fCType,
       SDWORD FAR * pcbValue) {
 int rc;
 static SDWORD cbval;
-debug("Setting parameter %d to type %d (%d)",ipar,fCType,SQL_C_BINARY);
+debug("Setting parameter %d to type %d (%d) %d (%d)",ipar,fSqlType,SQL_C_BINARY,fCType,SQL_PARAM_INPUT);
 
 if (fCType==SQL_C_BINARY) {
 	debug("Setting blob data");
@@ -193,9 +193,9 @@ if (fCType==SQL_C_BINARY) {
 return rc;
 }
 
-rc= SQLBindParameter (hstmt,ipar, SQL_PARAM_INPUT_OUTPUT,
+rc= SQLBindParameter (hstmt,ipar, SQL_PARAM_INPUT,
     fCType, fSqlType, cbColDef, ibScale, rgbValue,
-    SQL_SETPARAM_VALUE_MAX ,pcbValue);
+    3200000 ,pcbValue);
 
    chk_rc(rc,hstmt,"SQLBindParameter");
 
@@ -411,7 +411,7 @@ A4GLSQL_prepare_sql (char *s)
   sid->select = strdup (s);
   debug ("Set select");
   sid->ibind = 0;
-  sid->ni = 0;
+  sid->ni =  count_queries(s);
   sid->obind = 0;
   sid->no = 0;
 #ifdef DEBUG
@@ -772,7 +772,31 @@ int A4GLSQL_open_cursor (int ni, char *s)
 
   curs = cid->statement->select;
   status=0;
-  proc_bind (cid->statement->ibind, cid->statement->ni, 'i', cid->statement->hstmt);
+  if (ni==0) { // No USING on the open..
+  	proc_bind (cid->statement->ibind, cid->statement->ni, 'i', cid->statement->hstmt);
+  } else {
+	struct BINDING *b;
+	int a;
+	debug("We dont have a binding - but I'll make one");
+	b=malloc(sizeof(struct BINDING)*ni);
+
+	for  (a=ni-1;a>=0;a--) {
+		b[a].ptr=char_pop();
+		debug("Got string as '%s' a=%d\n",b[a].ptr,a);
+		b[a].dtype=0;
+		b[a].size=strlen(b[a].ptr);
+		debug("Got size as '%d' a=%d\n",b[a].size,a);
+	}
+
+	for  (a=0;a<ni;a++) {
+		debug ("%d %d %s",b[a].dtype,b[a].size,b[a].ptr);
+	}
+
+  	proc_bind (b, ni, 'i', cid->statement->hstmt);
+
+  }
+
+
   if (status!=0)  {
 	return 0;
   }
@@ -1079,7 +1103,7 @@ A4GLSQL_free_cursor (char *cname)
 
 
 
-int close_cursor (char *cname)
+int A4GLSQL_close_cursor (char *cname)
 {
   struct s_cid *ptr;
 
@@ -1676,10 +1700,10 @@ void ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     size = bind->size;
 
 
-  debug("Call SQLSetParam %d %d %d %p",
+  debug("Call SQLSetParam h=%p p=%d dt=%d dt=%d size=%d k=%d ptr=%p",hstmt,pos,
 		    conv_4gl_to_c[bind->dtype],
 		    conv_4gl_to_c[bind->dtype],
-		    size, bind->ptr);
+		    size, k,bind->ptr);
   	rc = newSQLSetParam (hstmt, pos,
 		    conv_4gl_to_c[bind->dtype],
 		    conv_4gl_to_c[bind->dtype],
@@ -3429,4 +3453,21 @@ A4GLSQL_flush_cursor(char *cursor) {
 A4GLSQL_initsqllib() {
         A4GLSQL_make_connection(0,0,0);  
 	return 1;
+}
+
+static int count_queries(char *s) {
+char *ptr;
+int cnt=0;
+ptr=s;
+while (1) {
+	debug("Looking for a ? in %s\n",s);
+	ptr=strchr(ptr,'?');
+	debug("ptr=%p\n",ptr);
+	if (ptr==0) break;
+	cnt++;
+	ptr++;
+	if (*ptr==0) break;
+}
+debug("Found %d ? in string %s",cnt,s);
+return cnt;
 }
