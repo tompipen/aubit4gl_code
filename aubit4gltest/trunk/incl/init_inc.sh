@@ -372,8 +372,8 @@ for a in $FLAGS; do
 		-db-features-doc)
 			echo "Preparing catalogue of db features, please wait..."
 			TEST_WEBCVS_URL="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest"
-			FEATURES_STATUS_TMP="features_status.tmp"
-			TEST_FEATURES_TMP="tests_features.tmp"
+			FEATURES_STATUS_TMP="/tmp/features_status.tmp"
+			TEST_FEATURES_TMP="/tmp/tests_features.tmp"
 			OUT_TMP=out.tmp
 			EXPANDED_CONFIDENCE=1
 			HTML=1

@@ -283,8 +283,9 @@ endif
 
 CLEAN_FILES=*.bak *.o *.4ae *.ao *.ec *.cpc *.h *.glb \
     ${MODULES} ${FORMS} *.4pe.dat *.4pe.xml ${ADD_CLEAN}  out *.err  \
-    pcode.run *.tmp out.ifx out.querix out.4js *.4go *.warn
-
+    pcode.run *.tmp out.ifx out.querix out.4js *.4go *.warn *~ \
+	$(subst .4gl,.c,$(FGL))
+	
 ifneq "${TARGET_EXT}" ""
 	CLEAN_FILES+=*${TARGET_EXT}
 endif
@@ -320,9 +321,9 @@ endif
 #included this becomes the default target (when user types just "make" without
 #specifying the target)
 clean:
-##for files PRESERVE
+	@-$(foreach file,${PRESERVE},echo "Preserving ${file}"; mv ${file} ${file}.preserve)
 	rm  -f ${CLEAN_FILES}
-
+	@-$(foreach file,${PRESERVE},echo "Restoring ${file}"; mv ${file}.preserve ${file})
 	
 show:
 	@echo "PER=${PER}"

@@ -310,20 +310,71 @@ fi
 				esac
 			######################################
 			elif test "$FIELD_CNT" = "21"; then #Feature name
+				FEATURE_NAME="$field"
 				case $FEATURE_STATUS in 
-				P) SQL_FEATURES_NON_ANSI_POSIBLE="$SQL_FEATURES_NON_ANSI_POSIBLE $field"
+				P) SQL_FEATURES_NON_ANSI_POSIBLE="$SQL_FEATURES_NON_ANSI_POSIBLE $FEATURE_NAME"
 					let POSIBLE_CNT=POSIBLE_CNT+1 ;;
-				S) SQL_FEATURES_NON_ANSI_SUPORTED="$SQL_FEATURES_NON_ANSI_SUPORTED $field"
+				S) SQL_FEATURES_NON_ANSI_SUPORTED="$SQL_FEATURES_NON_ANSI_SUPORTED $FEATURE_NAME"
 					let SUPPORTED_CNT=SUPPORTED_CNT+1 ;;
-				I) SQL_FEATURES_NON_ANSI_IMPOSIBLE="$SQL_FEATURES_NON_ANSI_IMPOSIBLE $field"
+				I) SQL_FEATURES_NON_ANSI_IMPOSIBLE="$SQL_FEATURES_NON_ANSI_IMPOSIBLE $FEATURE_NAME"
 					let IMPOSSIBLE_CNT=IMPOSSIBLE_CNT+1 ;;
-				D) SQL_FEATURES_NON_ANSI_DEPEND="$SQL_FEATURES_NON_ANSI_DEPEND $field"
+				D) SQL_FEATURES_NON_ANSI_DEPEND="$SQL_FEATURES_NON_ANSI_DEPEND $FEATURE_NAME"
 					let DEPEND_CNT=DEPEND_CNT+1 ;;
-				G) SQL_FEATURES_NON_ANSI_IGNORED="$SQL_FEATURES_NON_ANSI_IGNORED $field"
+				G) SQL_FEATURES_NON_ANSI_IGNORED="$SQL_FEATURES_NON_ANSI_IGNORED $FEATURE_NAME"
 					let IGNORED_CNT=IGNORED_CNT+1 ;;
 				*) echo "ERROR: FEATURE_STATUS=$FEATURE_STATUS"
 					exit 5 ;;
 				esac
+
+				if test "$EXTRACT_FEATURE_COMMENTS" = "1"; then 
+					#WARNING - extracting comments from config file takes time
+					#Not recomended for anything but features support status
+					#catalog creation and similar - not while running
+					#ordinary tests
+					
+					#Line must NOT start with a #, then it will have none or more 
+					#alpha and numbers, then feature name, followed by none or more 
+					#spaces before and of the line 
+					#FEATURE_NAME="CLUSTER_INDEX"
+					REGEX="^[^#][[:alnum:][:space:]]*$FEATURE_NAME[[:space:]]*\$"
+					#get 10 lines after the current feature identifier
+					TMP1=`grep -E --word-regexp -A10 -e "$REGEX" etc/db_features.conf`
+					if test "$DBG_THIS" = "1"; then 
+						echo "1:--------------------"
+						echo "$TMP1"
+						#exit
+					fi
+					#Number ALL lines, and then take only lines that did NOT start with a comment
+					#then isolate first two, then get the second line
+					#NOTE: must be done on one line, so we dont loose newline
+					TMP2=`echo "$TMP1" | grep -n "" | grep -v ":#"  | head -n 2 | tail -n 1`
+					if test "$DBG_THIS" = "1"; then
+						echo "2:--------------------"
+						echo "$TMP2"
+					fi
+					#Get the line number of that line
+					NEXT_FEATURE_LINE=`echo $TMP2 | awk '{print $1}' | tr ":" " "`
+					if test "$DBG_THIS" = "1"; then
+						echo "NEXT_FEATURE_LINE=$NEXT_FEATURE_LINE"
+					fi
+					let NEXT_FEATURE_LINE=NEXT_FEATURE_LINE-1
+					if test "$DBG_THIS" = "1"; then	
+						echo "NEXT_FEATURE_LINE=$NEXT_FEATURE_LINE"
+					fi
+					#Now get that number of lines - cant use data we allready have in the 
+					#variable TMP1 because they lost newline
+					#Take ony lines that begin with the comment
+					#and get rid of comment symbol, filter out lines starting with 
+					#3 hashes (###) because they contain line field numbers
+					#NOTE: must be done on one line
+					THE_COMMENT=`grep --word-regexp -A$NEXT_FEATURE_LINE "$REGEX" etc/db_features.conf | grep  "^#" | sed 's/^#//' | grep -v "^###"`
+					if test "$DBG_THIS" = "1"; then
+						if test "$THE_COMMENT" != ""; then 
+							echo "$FEATURE_NAME comment: $THE_COMMENT"
+						fi
+					fi
+				fi
+			
 				let ROW_CNT=ROW_CNT+1
 				if test "$VERBOSE" = "1"; then 
 					let DOTS_CNT=DOTS_CNT+1

@@ -28,7 +28,8 @@ include ${MAKEFILE_COMMON}
 ################
 #You can add additional files to be cleand with "clean" target to the default
 #ones, by listing them here:
-#ADD_CLEAN=
+ADD_CLEAN=xx5 xx3 xx1
+
 
 ################
 #This is set in comon make file; overide it if you need to here

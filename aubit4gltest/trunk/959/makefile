@@ -31,6 +31,11 @@ include ${MAKEFILE_COMMON}
 #ADD_CLEAN=
 
 ################
+#You can specify file NOT to be cleaned, even if they have extension that is 
+#normaly cleaned:
+PRESERVE=fgl_end.c
+
+################
 #This is set in comon make file; overide it if you need to here
 #A4GL_KEYFILE=keys.in
 #A4GL_KEYDELAY=10000
