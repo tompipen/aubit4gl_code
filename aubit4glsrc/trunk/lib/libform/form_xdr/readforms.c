@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.35 2003-09-17 07:05:42 mikeaubury Exp $
+# $Id: readforms.c,v 1.36 2004-05-26 14:16:55 mikeaubury Exp $
 #*/
 
 /**
@@ -557,7 +557,7 @@ include_range_check (char *ss, char *ptr, int dtype)
     }
   else
     {
-      A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr2);
+      //A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr2);
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr2, dtype);
       A4GL_debug_print_stack ();
@@ -569,7 +569,7 @@ include_range_check (char *ss, char *ptr, int dtype)
 	  return FALSE;
 	}
 
-      A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr3);
+      //A4GL_debug ("if ints : %d comp %d", *(int *) ptr1, *(int *) ptr3);
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr3, dtype);
       A4GL_debug_print_stack ();
