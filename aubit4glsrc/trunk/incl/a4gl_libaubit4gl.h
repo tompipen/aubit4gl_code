@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.152 2005-01-12 11:15:17 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.153 2005-02-10 15:56:56 mikeaubury Exp $
 #
 */
 
@@ -1133,6 +1133,7 @@ void A4GL_display_at (int n, int a);
   void A4GL_debug_print_stack (void);
   void print_stack (void);
   void A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename);
+  void A4GL_whats_in_a_string(char *s,int *d,int *sz);
 
 #define acl_free(s) acl_free_full(s,__FILE__,__LINE__)
 #define acl_malloc(a,b) acl_malloc_full(a,b,__FILE__,__LINE__)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.99 2005-01-11 15:04:13 mikeaubury Exp $
+# $Id: conv.c,v 1.100 2005-02-10 16:00:42 mikeaubury Exp $
 #
 */
 
@@ -63,41 +63,24 @@ static int decimal_char=0;
  * definitions for dates (seems a pretty odd conversion though...
  */
 #define A4GL_itomdec 	A4GL_itodec
-#define A4GL_dtodec 		A4GL_ltodec
+#define A4GL_dtodec 	A4GL_ltodec
 #define A4GL_dtomdec 	A4GL_ltodec
 #define A4GL_ltomdec 	A4GL_ltodec
 #define A4GL_stomdec 	A4GL_stodec
 
 #define A4GL_ftomdec 	A4GL_ftodec
 #define A4GL_sftomdec 	A4GL_sftodec
-#define A4GL_mdectomdec 	A4GL_dectodec
+#define A4GL_mdectomdec A4GL_dectodec
 #define A4GL_mdectodec 	A4GL_dectodec
 #define A4GL_dectomdec 	A4GL_dectodec
 
 #define OK (void *)1
 
 
-#ifdef MOVED
-#define DEC_VAL(x) 		( ((x)&0xf)+ (((x)&0xf0)*10 /16) )
-#define HEX_VAL(x) 		(((x)%10) + ((((x)-((x)%10)) / 10)*16))
-#define SIGNED(x) 		(x[0]&128)
-#define SET_SIGNED(x) 	(x[0]|=128)
-#define SET_UNSIGNED(x) (x[0]=(x[0]>=128)?x[0]:x[0]-128)
-
-#define NUM_DIG(x) 		((x[0])&127 )
-#define NUM_DEC(x) 		((x[1]))
-#define SET_DIG(x,y) 	(x[0]=y)
-#define SET_DEC(x,y) 	(x[1]=y)
-#define OFFSET_DEC(x) 	(2)
-#define NUM_BYTES(x) 	(NUM_DIG(x)+OFFSET_DEC(x))
-#endif
 
 
 #define print_res(x) 	print_res_l(__LINE__,x)
 #define dt_encode(s,e) 	((s*16)+e)
-//#define dt_encode(s,e)        ((s*16)+e)
-
-//#define DBL_DIG1 		512
 #define DT_YEAR 		1
 #define DT_MONTH 		2
 #define DT_DAY 			3
@@ -105,15 +88,6 @@ static int decimal_char=0;
 #define DT_MINUTE 		5
 #define DT_SECOND 		6
 #define DT_FRACTION 		7
-/*
-#define DT_YEAR 		1
-#define DT_MONTH 		2
-#define DT_DAY 			3
-#define DT_HOUR 		4
-#define DT_MINUTE 		5
-#define DT_SECOND 		6
-#define DT_FRACTION 	7
-*/
 
 
 /*
@@ -469,7 +443,6 @@ data[9]=0;
   // s2 = start..
   // s1 = number of digits in start..
   strcpy (buff, "");
-
   for (cnt = s2; cnt <= e; cnt++)
     {
 
@@ -495,6 +468,10 @@ data[9]=0;
       strcat (buff, buff2);
 
     }
+  if (s2>=8) {
+	sprintf(buff,".%05d",data[7]);
+  }
+
   A4GL_debug ("-->'%s'\n", A4GL_null_as_null(buff));
   A4GL_ctoc (buff, b, size);
   return 1;
@@ -3248,6 +3225,7 @@ A4GL_valid_int (char *s, int *data, int size)
     0
   };
 
+  if (strlen(s)==0) return 0;
   for (i = 0; i < 10; i++)
     {
       data[i] = 0;
@@ -3261,13 +3239,21 @@ A4GL_valid_int (char *s, int *data, int size)
       return 0;
     }
 
+	A4GL_debug("%d %d\n",(size&0xf) ,size_type);
+  if ((size&0xf)>1 && size_type<1) return 0; // Size is wrong..
+  if ((size&0xf)<size_type && size_type!=8) return 0; // Size is wrong..
+
+  memset(buff,0,255);
   while (s[0]==' '&&s[0]!=0) s++;
   strcpy (buff, s);
-  
+  if (strlen(buff)==0) return 0;
+  memset(type,0,255);
+
   ptr[0] = &buff[0];
   A4GL_debug ("Splitting '%s'\n", A4GL_null_as_null(buff));
   cnt = 0;
   buff_size = strlen (buff);
+
   for (a = 1; a < buff_size; a++)
     {
 
@@ -3311,10 +3297,12 @@ A4GL_valid_int (char *s, int *data, int size)
       A4GL_debug ("Dodgey character %c\n", buff[a]);
       return 0;
     }
+  //printf("buff=%s\n",buff);
 
   type[cnt] = 0;
   dt_type = -1;
-  //debug ("cnt=%d\n", cnt);
+  A4GL_debug ("cnt=%d\n", cnt);
+
   //debug ("type='%s' size=0x%x\n", type,size);
 
   if (strcmp (type, "") == 0)
