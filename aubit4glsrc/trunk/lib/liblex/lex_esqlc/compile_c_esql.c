@@ -2,6 +2,8 @@
 void printc (char *fmt, ...);
 static void print_copy_status (void);
 void print_conversions (char i);
+int last_ni;
+int last_no;
 
 /**
  * Print the C implementation of the execution of the SQL statement allready
@@ -76,6 +78,7 @@ print_foreach_next (char *cursorname, char *into)
   int ni;
   int no;
   printc ("a4gl_sqlca.sqlcode=0;\n");
+  printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cursorname));
   printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", A4GL_strip_quotes (cursorname),
 	  into);
   print_copy_status ();
@@ -384,6 +387,7 @@ print_open_cursor (char *cname, char *using)
 	  printc ("_using_%d=A4GL_char_pop();\n", a);
 	}
 
+      printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cname));
       printc ("\nEXEC SQL OPEN  %s USING /* %d variables */",
 	      A4GL_strip_quotes (cname), n);
       for (a = 0; a < n; a++)
@@ -403,6 +407,7 @@ print_open_cursor (char *cname, char *using)
     }
   else
     {
+      printc("internal_recopy_%s_i_Dir();",A4GL_strip_quotes(cname));
       printc ("\nEXEC SQL OPEN  %s; /* No using */\n", A4GL_strip_quotes (cname));
     }
   print_copy_status ();
@@ -673,7 +678,8 @@ void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
   char buff[256];
-  //printc ("/* print_declare a1=%s h1=%d a2=%s h2=%d a3=%s */\n", a1, h1, a2, h2, a3);
+  int a;
+  printc ("/* print_declare a1=%s h1=%d a2=%s h2=%d a3=%s */\n", a1, h1, a2, h2, a3);
   //printc(" /* nibind=%d a2=%s*/\n",get_bind_cnt('i'),a2);
   //printc(" /* nobind=%d a3=%s */\n",get_bind_cnt('o'),a3);
 
@@ -715,7 +721,44 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
     }
   printc (";");
   print_copy_status ();
-  printc ("}\n");
+  printh("int acli_ni_%s=%d;\n",A4GL_strip_quotes(a3),last_ni);
+  printh("int acli_no_%s=%d;\n",A4GL_strip_quotes(a3),last_no);
+  printh("struct BINDING *acli_bi_%s=0;\n",A4GL_strip_quotes(a3));
+  printh("struct BINDING *acli_bo_%s=0;\n",A4GL_strip_quotes(a3));
+  printh("struct BINDING *acli_nbi_%s=0;\n",A4GL_strip_quotes(a3));
+  printh("struct BINDING *acli_nbo_%s=0;\n",A4GL_strip_quotes(a3));
+  //printh("#undef ibind\n#undef obind\n");
+  //printh("#define ibind acli_bi_%s\n",A4GL_strip_quotes(a3));
+  //printh("#define obind acli_bo_%s\n",A4GL_strip_quotes(a3));
+
+  printh("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n",A4GL_strip_quotes(a3));
+  printh("struct BINDING *ibind;\n");
+  printh("struct BINDING *native_binding_i;\n");
+  printh("ibind=acli_bi_%s;\n",A4GL_strip_quotes(a3));
+  printh("native_binding_i=acli_nbi_%s;\n",A4GL_strip_quotes(a3));
+  print_conversions('I');
+  printh("}\n");
+
+  printh("\n\nstatic void internal_recopy_%s_o_Dir(void) {\n",A4GL_strip_quotes(a3));
+  printh("struct BINDING *obind;\n");
+  printh("struct BINDING *native_binding_o;\n");
+  printh("obind=acli_bo_%s;\n",A4GL_strip_quotes(a3));
+  printh("native_binding_o=acli_nbo_%s;\n",A4GL_strip_quotes(a3));
+  print_conversions('O');
+  printh("}\n");
+  printh("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no) {\n",A4GL_strip_quotes(a3));
+  printh("acli_bi_%s=i;\n",A4GL_strip_quotes(a3));
+  printh("acli_bo_%s=o;\n",A4GL_strip_quotes(a3));
+  printh("acli_nbi_%s=ni;\n",A4GL_strip_quotes(a3));
+  printh("acli_nbo_%s=no;\n",A4GL_strip_quotes(a3));
+  printh("}\n");
+
+  printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o);",A4GL_strip_quotes(a3));
+
+
+
+
+  printc("}\n");
 
 }
 
@@ -764,7 +807,9 @@ print_select_all (char *buff)
   static char *b2;
   printc ("{ /* print_select_all */\n");
   ni = print_bind ('i');
+  last_ni=ni;
   no = print_bind ('o');
+  last_no=no;
   print_conversions ('i');
   b2 = strdup (buff);
   return b2;

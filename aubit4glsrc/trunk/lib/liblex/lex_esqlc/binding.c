@@ -37,6 +37,16 @@ print_conversions (char i)
     {
       printc ("%s /* buff_out */\n", buff_out);
     }
+  if (i == 'I')
+    {
+      printh ("%s /* buff_in */\n", buff_in);
+    }
+  if (i == 'O')
+    {
+      printh ("%s /* buff_out */\n", buff_out);
+    }
+
+
 }
 
 
@@ -63,12 +73,16 @@ make_sql_bind (char *sql, char *type)
 	      for (a = 0; a < ibindcnt; a++)
 		{
 		  print_sql_type (a, 'i');
-		  sprintf (buff_small, "COPY_DATA_IN_%d(&%s,&_vi_%d,%d);\n",
-			   ibind[a].dtype & 0xffff, ibind[a].varname, a,
+		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d);\n",
+			   ibind[a].dtype & 0xffff, 
+					//ibind[a].varname, 
+					a,
+					
+				a,
 			   ibind[a].dtype >> 16);
 		  strcat (buff_in, buff_small);
 		}
-	      printc ("/* %s */", buff_in);
+	      //printc ("/* %s */", buff_in);
 	    }
 	}
 
@@ -83,14 +97,40 @@ make_sql_bind (char *sql, char *type)
 	      for (a = 0; a < obindcnt; a++)
 		{
 		  print_sql_type (a, 'o');
-		  sprintf (buff_small, "COPY_DATA_OUT_%d(&%s,&_vo_%d,%d);\n",
-			   obind[a].dtype & 0xffff, obind[a].varname, a,
+		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%d);\n",
+			   obind[a].dtype & 0xffff, 
+				//obind[a].varname, 
+				a,
+				a,
 			   obind[a].dtype >> 16);
 		  strcat (buff_out, buff_small);
 		}
 	    }
 	}
       printc ("EXEC SQL END DECLARE SECTION;\n");
+
+
+	if (strchr (type, 'i')) {
+		char comma=' ';
+      		printc("struct BINDING native_binding_i[]={\n");
+		for (a=0;a<ibindcnt;a++) {
+			printc("   %c{&_vi_%d,%d,%d}",comma,a,ibind[a].dtype&0xffff,ibind[a].dtype>>16);
+			comma=',';
+		}
+ 		printc("};\n");
+	}
+
+	if (strchr (type, 'o')) {
+		char comma=' ';
+      		printc("struct BINDING native_binding_o[]={\n");
+		for (a=0;a<obindcnt;a++) {
+			printc(" %c{&_vo_%d,%d,%d}",comma,a,obind[a].dtype&0xffff,obind[a].dtype>>16);
+			comma=',';
+		}
+ 		printc("};\n");
+	}
+
+      
     }
 }
 

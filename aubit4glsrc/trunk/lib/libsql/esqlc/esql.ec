@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.55 2003-05-15 07:10:44 mikeaubury Exp $
+# $Id: esql.ec,v 1.56 2003-05-15 14:07:03 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.55 2003-05-15 07:10:44 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.56 2003-05-15 14:07:03 mikeaubury Exp $";
 #endif
 
 
@@ -1481,9 +1481,10 @@ static int processPreStatementBinds(struct s_sid *sid)
   EXEC SQL END DECLARE SECTION;
   int rv = 0;
   A4GL_debug("a1");
-  if ( sid->ibind != (struct BINDING *)0 && sid->ni > 0 && sid->inputDescriptorName==0)
+  if ( sid->ibind != (struct BINDING *)0 && sid->ni > 0) 
   {
   A4GL_debug("a2");
+	if ( sid->inputDescriptorName==0)
     sid->inputDescriptorName = getDescriptorName(sid->statementName,'I');
 
     if ( processInputBind(sid->inputDescriptorName,sid->ni,sid->ibind) == 1) {
@@ -1785,6 +1786,7 @@ struct s_cid *A4GLSQL_declare_cursor(
   if ( sid == (struct s_sid *)0 )
     return (struct s_cid *)0;
 
+
   cursorIdentification = malloc(sizeof(struct s_cid));
   cursorIdentification->statement = sid;
   statementName = sid->statementName;
@@ -1859,11 +1861,14 @@ int A4GLSQL_open_cursor (int ni, char *s)
 
   cursorIdentification=A4GL_find_pointer (s, PRECODE);
 
+
   A4GL_debug("Got cursorIdentification as : %p",cursorIdentification);
   sid=cursorIdentification->statement;
   inputDescriptorName  = sid->inputDescriptorName;
   outputDescriptorName = sid->outputDescriptorName;
   A4GL_debug("Descritors : %s %s",inputDescriptorName,outputDescriptorName);
+
+  processPreStatementBinds(sid); // MJA 150503
   
   switch (getStatementBindType(sid)) {
     case NO_BIND:
