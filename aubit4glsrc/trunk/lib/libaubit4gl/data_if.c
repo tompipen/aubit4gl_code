@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.22 2003-12-09 11:23:44 mikeaubury Exp $
+# $Id: data_if.c,v 1.23 2004-01-03 11:06:45 mikeaubury Exp $
 #
 */
 
@@ -361,7 +361,7 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
   };
 
   struct s_s_inp_arr_1 *val;
-
+A4GL_debug("getcount=%d XYX",A4GL_get_count());
 
   A4GL_debug ("mode = %d ptr=%x  name=%s size=%d", mode, ptr, name,
 	 sizeof (struct s_s_inp_arr_1));
@@ -505,6 +505,7 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 	return (void *) &(val->count);
       if (mode == GETSETSET)
 	{
+	A4GL_debug("Setting count %d XYX\n",var);
 	  val->count = (int) var;
 	  return (void *) 1;
 	}

@@ -419,6 +419,8 @@ $AUBITDIR/libRPC_?.so
 
 A4GL_SCROLLBACKTO1 UI/TUI Display array handling
 =YES|NO
+A4GL_SCROLLTOEND UI/TUI Display array handling
+=YES|NO
 	In display array scroll back to first line if PgUp is used rather than to just first page
 A4GL_SIMPLE_GRAPHICS UI/TUI Force usage of simple graphics for borders
 =YES|NO
@@ -494,6 +496,12 @@ A4GL_NULL_DECIMAL_IF_BAD RUNTIME Null a decimal value rather than set it to 0 if
 	The standard informix behaviour seems to be to set the value to 0 for decimals
 	but sets dates to NULL. This is inconsistent and so this default behaviour is switchable
 	via this configuration setting
+A4GL_BEEPONERROR RUNTIME Indicates that a beep should be emitted by the ERROR statement
+=YES|NO
+A4GL_FLASHONERROR RUNTIME Indicates that a screen flash should be emitted by the ERROR statement
+=YES|NO
+	Not all terminals are capable of emitting a screen flash. If a screen flash is not 
+	possible then the terminal bell is rung instead.
 A4GL_NO_ARRAY_EXPAND COMPILE Remove the array expansion code
 =YES|NO
 	This is solely for backward compatibilty with older Aubit4GL versions.

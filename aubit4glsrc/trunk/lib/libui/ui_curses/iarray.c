@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.62 2004-01-02 21:02:47 mikeaubury Exp $
+# $Id: iarray.c,v 1.63 2004-01-03 11:07:20 mikeaubury Exp $
 #*/
 
 /**
@@ -950,7 +950,7 @@ int
       A4GL_set_fields_inp_arr (inpa, 0);
     }
   curr_arr_inp = inpa;
-  A4GL_debug ("In UILIB_A4GL_inp_arr : %s %p %p %d", srecname, defs, inpa, attrib);
+  A4GL_debug ("In UILIB_A4GL_inp_arr : %s %p %p %d count=%d (%d) XYX", srecname, defs, inpa, attrib,inpa->count,A4GL_get_count());
 
   inpa->display_attrib = attrib;
 
@@ -958,6 +958,7 @@ int
     {
       A4GL_debug ("inpaarr1");
       inpa->srec = A4GL_get_srec (srecname);
+
 
       A4GL_debug (">>>>inpa->srec=%p", inpa->srec);
 
@@ -989,11 +990,14 @@ int
 	  A4GL_set_arr_count (inpa->no_arr);
 	}
 
+
+
       A4GL_debug ("********** no_arr=%d\n", inpa->no_arr);
       A4GL_debug ("********** nbind=%d\n", inpa->nbind);
 
-      if (inpa->no_arr == 0)
-	init_arr_line (inpa, 0);
+  	//if (inpa->no_arr==0) { inpa->no_arr=1; }
+
+      if (inpa->no_arr == 0) { init_arr_line (inpa, 1); }
 
       A4GL_set_arr_curr (inpa->arr_line);
       A4GL_set_scr_line (inpa->scr_line);
@@ -1311,7 +1315,7 @@ init_arr_line (struct s_inp_arr *sio, int n)
   struct BINDING *b;
 
   b = sio->binding;
-
+ 
   for (a = sio->nbind - 1; a >= 0; a--)
     {
       A4GL_debug ("b[a].dtype=%d", b[a].dtype);
@@ -1691,6 +1695,8 @@ process_control_stack (struct s_inp_arr *arr)
   //}
 
   if (a>10||a<0) {
+		char *ptr=0;
+		*ptr=0;
 		A4GL_assertion(1==1,"formcontrol count variable out of range");
   }
 

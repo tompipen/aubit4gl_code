@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.50 2004-01-02 20:40:58 mikeaubury Exp $
+# $Id: builtin.c,v 1.51 2004-01-03 11:06:45 mikeaubury Exp $
 #
 */
 
@@ -423,6 +423,7 @@ a4gl_let_substr (char *ca, int dtype, int a, int b, ...)
 int
 A4GL_get_count (void)
 {
+ A4GL_debug("m_arr_count=%d XYX",m_arr_count);
   return m_arr_count;
 }
 
