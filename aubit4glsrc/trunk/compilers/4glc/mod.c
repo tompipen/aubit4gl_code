@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.125 2003-05-22 08:03:23 mikeaubury Exp $
+# $Id: mod.c,v 1.126 2003-05-30 16:57:50 mikeaubury Exp $
 #
 */
 
@@ -2160,7 +2160,7 @@ exit_loop (char *cmd_type)
 
   if (strcmp (cmd_type, "MENU") == 0)
     {
-      print_exit_loop ('M', 0);
+      print_exit_loop ('M', command_stack[a].block_no);
       printed = 1;
     }
 
@@ -3796,5 +3796,100 @@ dump_updvals ()
       printf ("UPDVAL2: %s\n", gen_stack[UPDVAL2][a]);
     }
 }
+
+
+int do_print_menu_1(void) {
+	print_menu_1(get_blk_no());
+	print_menu_1b(get_blk_no());
+}
+
+int do_print_menu_block_end(void) {
+	print_menu_block_end(get_blk_no());
+}
+
+int get_blk_no() {
+	return command_stack[ccnt-1].block_no;
+}
+
+
+struct s_exchange_clobber {
+	char *orig;
+	char *new;
+};
+
+struct s_exchange_clobber *clob_arr=0;
+int clob_arr_cnt=0;
+
+static int has_clobber(char *s) {
+	int a;
+	if (clob_arr_cnt==0) return 0;
+	for (a=0;a<clob_arr_cnt;a++) {
+		if (strcmp(clob_arr[a].orig,s)==0) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+
+static char *get_clobber(char *s) {
+	int a;
+	if (clob_arr_cnt==0) return 0;
+	for (a=0;a<clob_arr_cnt;a++) {
+		if (strcmp(clob_arr[a].orig,s)==0) {
+			return clob_arr[a].new;
+		}
+	}
+return "";
+}
+
+
+static char *add_clobber(char *buff_orig,char *important) {
+static char buff_new[256];
+static int p=0;
+	strcpy(buff_new,buff_orig);
+
+	if (has_clobber(buff_orig)) return get_clobber(buff_orig);
+
+	clob_arr_cnt++;
+	clob_arr=realloc(clob_arr,sizeof(struct s_exchange_clobber)*clob_arr_cnt);
+	if (clob_arr==0) {
+		a4gl_yyerror("Unable to allocate buffer...");
+		return 0;
+	}
+
+
+	if (strlen(buff_orig)<=18) {
+		clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
+		clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
+		return buff_orig;
+	}
+
+	sprintf(buff_new,"a4gl_%d_%s",p++,important);
+	buff_new[18]=0;
+	clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);
+	clob_arr[clob_arr_cnt-1].new=strdup(buff_new);
+	return buff_new;
+}
+
+char *do_clobbering(char *f,char *s) {
+static char buff[256];
+	if (A4GL_isyes(acl_getenv("NOCLOBBER"))) {
+		printf("NOCLOBBER : %s\n",s);
+		return s;
+	}
+
+	sprintf(buff,"%s_%s",f,s);
+
+	if (A4GL_isyes(acl_getenv("ALWAYSCLOBBER"))) {
+		return buff;
+	}
+
+	if (has_clobber(buff)) {
+		return get_clobber(buff);
+	}
+	return add_clobber(buff,s);
+}
+
 
 /* ================================= EOF ============================= */

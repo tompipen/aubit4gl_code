@@ -85,8 +85,8 @@ ident_or_var	: ident_p2  {
 ;
 
 ident_p2 : NAMED {
-sprintf($<str>$,"\"%s_%s\"",clobber,downshift($<str>1)) ;
-strcpy(last_var,downshift($<str>1));
+	strcpy($<str>$,do_clobbering(clobber,downshift($<str>1))) ;
+	strcpy(last_var,downshift($<str>1));
 } | VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET
 	{
 		sprintf($<str>$,"aclfgli_str_to_id(%s)",$<str>3);

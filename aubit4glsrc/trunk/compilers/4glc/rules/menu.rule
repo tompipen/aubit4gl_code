@@ -9,7 +9,7 @@ menu_cmd	:	MENU {
    	menu_cnt=npush_menu();
    	menu_cmd_cnt[menu_cnt]=1;
    	push_blockcommand("MENU");
-	print_menu_1();
+	do_print_menu_1();
 	}
 	menu_title menu_commands end_menu_command {
 	start_state("menu",0);
@@ -18,9 +18,9 @@ menu_cmd	:	MENU {
 
 
 end_menu_command  : END_MENU {
-   print_end_menu_1();
+   print_end_menu_1(get_blk_no());
    add_continue_blockcommand ("MENU");
-print_end_menu_2();
+print_end_menu_2(get_blk_no());
    pop_blockcommand("MENU");
    pop_menu();
 }
@@ -33,7 +33,7 @@ menu_block_command :
 		print_menu_block(-2) ;
                   }  
 	commands {
-		print_menu_block_end();
+		do_print_menu_block_end();
 	}
 | COMMAND 
         opt_key 
@@ -47,7 +47,7 @@ A4GL_debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 		menu_cmd_cnt[menu_cnt]++;
 		} 
 	commands {
-		print_menu_block_end();
+		do_print_menu_block_end();
 }
 | COMMAND 
         opt_key 
@@ -58,7 +58,7 @@ A4GL_debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
 		menu_cmd_cnt[menu_cnt]++;
 		} 
 	commands {
-		print_menu_block_end();
+		do_print_menu_block_end();
 }
 ;
 
@@ -76,17 +76,17 @@ menu_optional_desc	:      {strcpy($<str>$,"\"\"");}
                         | CHAR_VALUE {strcpy($<str>$,$<str>1);};
 
 next_option_cmd : NEXT_OPTION opt_name {
-	print_option_op('N',$<str>2);
+	print_option_op('N',$<str>2,get_blk_no());
 }
 ;
 
 show_option_cmd : SHOW_OPTION opt_name_list {
-	print_option_op('S',$<str>2);
+	print_option_op('S',$<str>2,get_blk_no());
 }
 ;
 
 hide_option_cmd : HIDE_OPTION opt_name_list {
-	print_option_op('H',$<str>2);
+	print_option_op('H',$<str>2,get_blk_no());
 }
 ;
 
