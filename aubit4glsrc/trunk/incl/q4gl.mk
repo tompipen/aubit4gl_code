@@ -1,6 +1,6 @@
 ###########################################################################
 #
-#   @(#)$Id: q4gl.mk,v 1.11 2003-03-23 07:19:42 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.12 2003-04-13 06:23:45 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -51,21 +51,21 @@ USE_DEBUG_LIBRARIES	=
 ###########################
 #Extender libraries needed for GUI, HTML and SN Querix functionality extensions:
 ifneq "${QUERIXDIR}" ""
+    ifndef COMSPEC
+		#loaded libraries list from .ext files contains make style variables, but they
+		#are not automatically expanded in this context, so we have to do this manually:
+		DOLLAR=$$
+		LEFT=(
+		RIGHT=)
 
-	#loaded libraries list from .ext files contains make style variables, but they
-	#are not automatically expanded in this context, so we have to do this manually:
-	DOLLAR=$$
-	LEFT=(
-	RIGHT=)
-	
-	EXTENDERLIBS_GUI	=$(subst QUERIXDIR,$(QUERIXDIR),$(shell cat ${QUERIXDIR}/etc/gui.ext))
-	EXTENDERLIBS_GUI	:=$(subst USE_DEBUG_LIBRARIES,${USE_DEBUG_LIBRARIES},${EXTENDERLIBS_GUI})
-	EXTENDERLIBS_GUI	:=$(subst ${DOLLAR},,${EXTENDERLIBS_GUI})
-	EXTENDERLIBS_GUI	:=$(subst ${LEFT},,${EXTENDERLIBS_GUI})
-	EXTENDERLIBS_GUI	:=$(subst ${RIGHT},,${EXTENDERLIBS_GUI})
+		EXTENDERLIBS_GUI	=$(subst QUERIXDIR,$(QUERIXDIR),$(shell cat "${QUERIXDIR}/etc/gui.ext"))
+		EXTENDERLIBS_GUI	:=$(subst USE_DEBUG_LIBRARIES,${USE_DEBUG_LIBRARIES},${EXTENDERLIBS_GUI})
+		EXTENDERLIBS_GUI	:=$(subst ${DOLLAR},,${EXTENDERLIBS_GUI})
+		EXTENDERLIBS_GUI	:=$(subst ${LEFT},,${EXTENDERLIBS_GUI})
+		EXTENDERLIBS_GUI	:=$(subst ${RIGHT},,${EXTENDERLIBS_GUI})
 
-	EXTENDERLIBS_HTML	=$(shell cat ${QUERIXDIR}/etc/html.ext)
-
+		EXTENDERLIBS_HTML	=$(shell cat "${QUERIXDIR}/etc/html.ext")
+    endif
 endif
 
 ###########################
@@ -84,15 +84,19 @@ EXTENDER_HTML       =no
 #otherwise, Querix provided static Curses libraries will be linked
 #QX_CURSES_LOCAL		=yes
 
-ifeq "${QX_CURSES_LOCAL}" "yes"
-	#FIXME: replace -lcurses with value assigned by autoconf (can be ncurses)
-	QX_CURSES		=-lpanel -lcurses -lform
-    #apparently standard Linux -lpanel does not define few symbols needed by Querix..
-	#this works:  gcc -I/opt/querix/./incl -DQUERIX -o test.4qe test.qo  -lcurses -lform  -L/opt/querix/./lib -lfgl -lsqli  -lpanel
-	#this does not:  gcc -I/opt/querix/./incl -DQUERIX -o test.4qe test.qo  -lcurses -lform -lpanel -L/opt/querix/./lib -lfgl -lsqli
-else
-	QX_CURSES		=$(QUERIXDIR)/lib/libpanel.a $(QUERIXDIR)/lib/libcurses.a
+ifndef COMSPEC
+	ifeq "${QX_CURSES_LOCAL}" "yes"
+		#FIXME: replace -lcurses with value assigned by autoconf (can be ncurses)
+		QX_CURSES		=-lpanel -lcurses -lform
+	    #apparently standard Linux -lpanel does not define few symbols needed by Querix..
+		#this works:  gcc -I/opt/querix/./incl -DQUERIX -o test.4qe test.qo  -lcurses -lform  -L/opt/querix/./lib -lfgl -lsqli  -lpanel
+		#this does not:  gcc -I/opt/querix/./incl -DQUERIX -o test.4qe test.qo  -lcurses -lform -lpanel -L/opt/querix/./lib -lfgl -lsqli
+	else
+		QX_CURSES		="$(QUERIXDIR)/lib/libpanel.a" "$(QUERIXDIR)/lib/libcurses.a"
+	endif
 endif
+
+
 
 ###########################
 #FIXME: how do we link Querix with shared libs?
@@ -100,13 +104,43 @@ SHARED				=-rdynamic
 
 ###########################
 #All libraries needed to link Querix program:
-ifeq "${QX_CURSES_LOCAL}" "yes"
-	QXI_LIBS			=${QX_CURSES} -L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) \
-						-lsqli$(USE_DEBUG_LIBRARIES)
+
+
+ifdef COMSPEC
+	#QXI_CORELIBS    =-lfgl$(USE_DEBUG_LIBRARIES).lib -lsqli$(USE_DEBUG_LIBRARIES).lib
+
+	#QXI_CORELIBS    =-L"$(QUERIXDIR)/bin" -lfgl$(USE_DEBUG_LIBRARIES).dll -lsqli$(USE_DEBUG_LIBRARIES).dll
+
+
+#	QXI_CORELIBS    ="$(QUERIXDIR)/lib/libfgl$(USE_DEBUG_LIBRARIES).lib" "$(QUERIXDIR)/lib/libsqlc$(USE_DEBUG_LIBRARIES).lib"
+	
+	QXI_CORELIBS    ="$(QUERIXDIR)/bin/libfgl$(USE_DEBUG_LIBRARIES).dll" "$(QUERIXDIR)/bin/libsqlc$(USE_DEBUG_LIBRARIES).dll"
+
+
+#gcc -I"E:/Program files/W2000/QueriX/include" -DQUERIX -DWINNT -Dgetenv=QXgetenv -o hello.4qe hello.qo   -L"E:/Program files/W2000/QueriX/lib" -L"E:/Program files/W2000/QueriX/bin" -lfgl -lsqlc
+#Warning: resolving _Sleep by linking to _Sleep@4
+#Use --enable-stdcall-fixup to disable these warnings
+#Use --disable-stdcall-fixup to disable these fixups
+#d000008.o(.text+0x0): multiple definition of `_onexit'
+#d:/MinGW/bin/../lib/gcc-lib/mingw32/3.2/../../../crt2.o(.text+0x60):crt1.c: first defined here
+#d000011.o(.text+0x0): multiple definition of `atexit'
+#d:/MinGW/bin/../lib/gcc-lib/mingw32/3.2/../../../crt2.o(.text+0x40):crt1.c: first defined here
+#	QXI_CORELIBS    =-L"$(QUERIXDIR)/bin" -lfgl$(USE_DEBUG_LIBRARIES) -lsqlc$(USE_DEBUG_LIBRARIES)
+
 else
-	QXI_LIBS			=-L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) \
-						-lsqli$(USE_DEBUG_LIBRARIES) ${QX_CURSES}
+	QXI_CORELIBS    =-lfgl$(USE_DEBUG_LIBRARIES) -lsqli$(USE_DEBUG_LIBRARIES)
 endif
+
+QXI_LIBS			=${QX_CURSES} -L"$(QUERIXDIR)/lib" ${QXI_CORELIBS}
+
+#ifeq "${QX_CURSES_LOCAL}" "yes"
+#	QXI_LIBS			=${QX_CURSES} -L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) \
+#						-lsqli$(USE_DEBUG_LIBRARIES)
+#else
+#	QXI_LIBS			=-L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) \
+#						-lsqli$(USE_DEBUG_LIBRARIES) ${QX_CURSES}
+#endif
+
 
 #The extender libs must appear in the link list before libfgl(d) and libsql(d).
 ifeq "${EXTENDER_GUI}" "yes"
@@ -152,7 +186,12 @@ Q4GL_CC_FLAGS   	=-a -w -D -I -z -Ig
 #NOTE: this is only for use with 4gl code that NOES NOT define it's own MAIN!!!
 Q4GL_CL_CMD     = ${QXCC}
 Q4GL_CL_ENV     = ${Q4GL_CC_ENV}
-Q4GL_CL_FLAGS   = -I${QUERIXDIR}/incl -DQUERIX
+
+ifdef COMSPEC
+	Q4GL_CL_FLAGS   = -I"${QUERIXDIR}/include" -DQUERIX -DWINNT -Dgetenv=QXgetenv
+else
+	Q4GL_CL_FLAGS   = -I${QUERIXDIR}/incl -DQUERIX
+endif
 Q4GL_CL_LDFLAGS = ${LDFLAGS}
 
 #######################
@@ -205,7 +244,7 @@ Q4GL_CLEAN_FLAGS	=$(addprefix *,	$(Q4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(Q4
 #	${FAIL_CMPL_4GL}${Q4GL_CC} $< -o $*${Q4GL_OBJ_EXT}
 #-p $(<D)
 	
-	
+
 	
 	${FAIL_CMPL_4GL}${Q4GL_CC} $<
 	${FAIL_CMPL_4GL}${FAIL_CMPL_C}${QXCC} -c ${Q4GL_CL_FLAGS} $*.c -o $*${Q4GL_OBJ_EXT}
@@ -224,11 +263,40 @@ Q4GL_CLEAN_FLAGS	=$(addprefix *,	$(Q4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(Q4
 #Otherwise, make would be happy when it see that object is up-to-date in
 #respect to the c file, and ignore possible change in 4gl file
 #.4gl.qo:
-.4gl${Q4GL_OBJ_EXT}:
-	${FAIL_CMPL_4GL}${Q4GL_CC} $<
+
+
+####.4gl${Q4GL_OBJ_EXT}:
+####	${FAIL_CMPL_4GL}${Q4GL_CC} $<
+#####if 4gl compiler is allowed to fail, C compiler must be too, otherwise we will
+#####stop anyway sice c compiler will not get it's input c file:
+####	${FAIL_CMPL_4GL}${FAIL_CMPL_C}${QXCC} -c ${Q4GL_CL_FLAGS} $*.c -o $@
+
+
+
+
+
+
+
+%${Q4GL_OBJ_EXT} : %.4gl
+#	@echo "--------"
+#	@echo "${QXCC} -c ${Q4GL_CL_FLAGS} $*.c -o $@"
+#	@echo "--------"
+	${FAIL_CMPL_4GL}@if test "$(<D)" = "" -o "$(<D)" = "."; then \
+		EXEC="${Q4GL_CC} $<"; \
+	else \
+		EXEC="${Q4GL_CC} ${CYGWIN_ROOT}$<"; \
+	fi; \
+	echo "$$EXEC"; \
+	$$EXEC; \
+	RET=$$?; \
+	if test "$$RET" != "0" ; then \
+		exit $$RET; \
+    fi;
 #if 4gl compiler is allowed to fail, C compiler must be too, otherwise we will
 #stop anyway sice c compiler will not get it's input c file:
 	${FAIL_CMPL_4GL}${FAIL_CMPL_C}${QXCC} -c ${Q4GL_CL_FLAGS} $*.c -o $@
+
+
 
 #######################
 # Rule for compiling Q4GL form files

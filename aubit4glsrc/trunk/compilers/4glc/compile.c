@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.22 2003-04-10 04:00:49 afalout Exp $
+# $Id: compile.c,v 1.23 2003-04-13 06:23:29 afalout Exp $
 #*/
 
 /**
@@ -463,6 +463,8 @@ char extra_ldflags[1024] = "";
   strcat (incl_path, "/incl ");
 
   chrptr=acl_getenv ("GTK_INC_PATH");//GTK_INC_PATH is set in aubitrc by Autoconf
+  /* NOTE: when GTK_INC_PATH was not set, I got core dumps on Windows - this should not happen */
+
   rm_quotes (chrptr);
   strcat (incl_path, chrptr);
 
@@ -607,7 +609,7 @@ char extra_ldflags[1024] = "";
       sprintf (buff, "%s -shared %s -o %s %s %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, l_libs,
 	       pass_options,extra_ldflags,incl_path);
-    //FIXME: add incl_path only if there are .c files in all_objects
+		//FIXME: add incl_path only if there are .c files in all_objects
 
 	#else
       /*
@@ -615,8 +617,10 @@ char extra_ldflags[1024] = "";
          WARNING: libs must be at the end
          WARNING: without -L ld on Windows won't find it's own ass!!!! Not even in curren directory!!!
        */
-      sprintf (buff,"%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s",
-	       gcc_exec, output_object, all_objects, output_object,pass_options, l_path, l_libs, extra_ldflags);
+
+	  //FIXME: add incl_path only if there are .c files in all_objects
+	  sprintf (buff,"%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s",
+	       gcc_exec, output_object, all_objects, output_object,pass_options, l_path, l_libs, extra_ldflags,incl_path);
 	#endif
 
     }
@@ -667,11 +671,11 @@ char extra_ldflags[1024] = "";
 
 	      debug ("%s file size is not zero %d\n", buff, flength);
 
-	      sprintf (buff, "mv %s.err %s.warn", output_object,
+	      sprintf (buff, "%s %s.err %s.warn", acl_getenv ("A4GL_MV_CMD"), output_object,
 		       output_object);
-#ifdef DEBUG
-	      debug ("Runnung %s", buff);
-#endif
+			#ifdef DEBUG
+				debug ("Runnung %s", buff);
+			#endif
 	      ret = system (buff);
 
 	    }
@@ -695,9 +699,9 @@ char extra_ldflags[1024] = "";
 	      //sprintf (buff,"%s %s",acl_getenv("A4GL_RM_CMD"),all_objects);
 	      sprintf (buff, "%s %s.err", acl_getenv ("A4GL_RM_CMD"),
 		       output_object);
-#ifdef DEBUG
-	      debug ("Runnung %s\n", buff);
-#endif
+			#ifdef DEBUG
+				debug ("Runnung %s\n", buff);
+			#endif
 	      ret = system (buff);
 	      if (ret)
 		{
@@ -969,12 +973,13 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
 		   */
 
-
+		#ifdef DEBUG
 		  debug ("%s file size is not zero %d\n", buff, flength);
-		  sprintf (buff, "mv %s.c.err %s.c.warn", aa, aa);
-#ifdef DEBUG
-		  debug ("Runnung %s", buff);
-#endif
+        #endif
+		  sprintf (buff, "%s %s.c.err %s.c.warn",acl_getenv ("A4GL_MV_CMD"), aa, aa);
+		#ifdef DEBUG
+			debug ("Runnung %s", buff);
+		#endif
 		  ret = system (buff);
 
 		}

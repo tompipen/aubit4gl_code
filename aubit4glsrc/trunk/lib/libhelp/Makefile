@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.4 2003-04-10 04:01:32 afalout Exp $
+# $Id: Makefile,v 1.5 2003-04-13 06:23:45 afalout Exp $
 #
 
 ROOT    	=../..
@@ -44,7 +44,7 @@ FCOMPILE=${ROOT}/bin/fcompile
 ##                              Targets
 ## ==================================================================
 
-${LIBROOT}/libHELP_std.so: helplib.c a4gl_xxhelp.afr.c
+${LIBROOT}/libHELP_std${SO_EXT}: helplib.c a4gl_xxhelp.afr.c
 #	4glpc -as-dll helplib.c a4gl_xxhelp.afr.c -o $@
 	export A4GL_SQLTYPE=nosql; ${4GLC} --shared helplib.c a4gl_xxhelp.afr.c -o $@
 
@@ -64,6 +64,6 @@ a4gl_xxhelp.afr.c: a4gl_xxhelp.per
 ## ==================================================================
 
 clean:
-	rm -f a4gl_xxhelp.afr.c ${LIBROOT}/libHELP_std.so a4gl_xxhelp.afr.dat helplib.c helplib.glb helplib.h *.err *.bak
+	rm -f a4gl_xxhelp.afr.c ${LIBROOT}/libHELP_std${SO_EXT} a4gl_xxhelp.afr.dat helplib.c helplib.glb helplib.h *.err *.bak
 
 # =============================== EOF ================================

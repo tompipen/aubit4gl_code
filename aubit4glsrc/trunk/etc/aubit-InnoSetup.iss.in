@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.7 2003-02-08 06:48:10 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.8 2003-04-13 06:23:45 afalout Exp $
 ;
 
 
@@ -99,7 +99,9 @@ Source: @IS_SOURCE@\bin\aubit-config.exe; DestDir: {app}\bin; Components: compil
 Source: @IS_SOURCE@\bin\fcompile.exe; DestDir: {app}\bin; Components: compiler
 Source: @IS_SOURCE@\bin\fdecompile.exe; DestDir: {app}\bin; Components: compiler
 Source: @IS_SOURCE@\bin\mcompile.exe; DestDir: {app}\bin; Components: compiler
-Source: @IS_SOURCE@\bin\mkmess.exe; DestDir: {app}\bin; Components: compiler
+;Source: @IS_SOURCE@\bin\mkmess.exe; DestDir: {app}\bin; Components: compiler
+Source: @IS_SOURCE@\bin\amkmessage.exe; DestDir: {app}\bin; Components: compiler
+Source: @IS_SOURCE@\bin\unmkmessage.exe; DestDir: {app}\bin; Components: compiler
 Source: @IS_SOURCE@\incl\a4gl_incl_4gldef.h; DestDir: {app}\incl; Components: compiler
 Source: @IS_SOURCE@\incl\a4gl_incl_4glhdr.h; DestDir: {app}\incl; Components: compiler
 Source: @IS_SOURCE@\lib\libLEX_C.dll; DestDir: {app}\lib; Components: compiler
@@ -132,12 +134,14 @@ Source: @IS_SOURCE@\lib\libFORM_GENERIC.dll; DestDir: {app}\lib; Components: run
 Source: @IS_SOURCE@\lib\libMENU_GENERIC.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libMSG_NATIVE.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libPACKER_PACKED.dll; DestDir: {app}\lib; Components: runtime
+Source: @IS_SOURCE@\lib\libPACKER_MEMPACKED.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libPACKER_PERL.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libPACKER_XML.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libRPC_NORPC.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libSQL_odbc32.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libUI_CONSOLE.dll; DestDir: {app}\lib; Components: runtime
 Source: @IS_SOURCE@\lib\libUI_GTK.dll; DestDir: {app}\lib; Components: runtime
+Source: @IS_SOURCE@\lib\libHELP_std.dll; DestDir: {app}\lib; Components: runtime
 
 ;=========================
 ;Example code:

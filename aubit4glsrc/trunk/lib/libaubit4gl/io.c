@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
+# $Id: io.c,v 1.9 2003-04-13 06:23:45 afalout Exp $
 #
 */
 
@@ -42,22 +42,7 @@
 =====================================================================
 */
 
-
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-
-	#include "a4gl_dbform.h"
-	#include "a4gl_tunable.h"
-	#include "a4gl_aubit_lib.h"     /* acl_getenv() */
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
-#endif
+#include "a4gl_libaubit4gl_int.h"
 
 /*
 =====================================================================
@@ -76,10 +61,6 @@ FILE *oufile=0;
 int 		read_int 			(FILE * ofile);
 void 		write_int 			(FILE * ofile, int la);
 FILE * 		try_to_open			(char *path,char *name,int keepopen);
-
-#ifdef OLD_INCL
-	FILE * 		open_file_dbpath	(char *fname);
-#endif
 
 
 /*
@@ -394,10 +375,11 @@ try_to_open(char *path,char *name,int keepopen)
 FILE *
 open_file_dbpath(char *fname)
 {
-  char str_path[2048];
-  int cnt;
-  char *ptr;
-  int str_len;
+char str_path[2048];
+int cnt;
+char *ptr;
+int str_len;
+  
   memset(str_path,0,2048);
 
   if (try_to_open(".",fname,0)) {
@@ -412,7 +394,11 @@ open_file_dbpath(char *fname)
   ptr=str_path;
 
   for (cnt=0;cnt<str_len;cnt++) {
+  #ifdef __MINGW32__
+	if (str_path[cnt]==';') {
+  #else
 	if (str_path[cnt]==':') {
+  #endif
 		str_path[cnt]=0;
 		if (strlen(ptr)) {
 			if (try_to_open(ptr,fname,0)) {

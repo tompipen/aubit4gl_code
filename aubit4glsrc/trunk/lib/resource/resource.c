@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.35 2003-04-07 16:26:52 mikeaubury Exp $
+# $Id: resource.c,v 1.36 2003-04-13 06:24:21 afalout Exp $
 #
 */
 
@@ -276,6 +276,11 @@ struct str_resource builtin_resource[] =
 //#endif
     /* can't use del on Windows, does not accept forward slash in the path */
   {"A4GL_RM_CMD", 		"rm -f"},
+
+
+  {"GTK_INC_PATH", 		""},    //this ently is to prevent core dumps on Windows when thsi value is not set
+
+
 
 	/* WINDOWS Compilation options */
 /* obsolete
@@ -756,19 +761,21 @@ FILE *resourcefile=0;
 	if (loaded_resources) return build_resource;
 	if (build_resource) free(build_resource);
 
-	/* ----------------- from /etc/opt/aubit4gl/aubitrc */
+	/* ----------------- from /etc/opt/aubit4gl/aubitrc 
+	On Windows, this will work only if there is CygWin installed
+	*/
 
 	sprintf(buff,"%s/%s",acl_getenv("AUBITETC"),"aubitrc");
 	resourcefile=fopen(buff,"r");
 	if (resourcefile!=0)
 	{
 		#ifdef DEBUG
-			debug("From %s",buff);
+			debug("1:From %s",buff);
         #endif
 		add_resources_in(resourcefile); fclose(resourcefile);
 	}else {
 		#ifdef DEBUG
-			debug("cannot read %s",buff);
+			debug("1:cannot read %s",buff);
         #endif
 	};
 
@@ -800,12 +807,12 @@ FILE *resourcefile=0;
 	if (resourcefile!=0) 
 	{
 		#ifdef DEBUG
-			debug("From %s",buff);
+			debug("2:From %s",buff);
         #endif
 		add_resources_in(resourcefile); fclose(resourcefile);
 	}else {
 		#ifdef DEBUG
-			debug("cannot read %s",buff);
+			debug("2:cannot read %s",buff);
         #endif
 	};
 

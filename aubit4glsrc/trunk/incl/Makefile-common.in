@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.126 2003-03-05 07:27:47 afalout Exp $
+# $Id: Makefile-common.in,v 1.127 2003-04-13 06:23:45 afalout Exp $
 #
 
 
@@ -599,12 +599,14 @@ LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	FCOMPILE	=${AUBIT_SRC_ROOT}/bin/fcompile
-	MKMESS      =${AUBIT_SRC_ROOT}/bin/mkmess
+	#MKMESS      =${AUBIT_SRC_ROOT}/bin/mkmess
+    MKMESS      =${AUBIT_SRC_ROOT}/bin/amkmessage
 	FGLPCEXEC	=${SH} ${AUBIT_SRC_ROOT}/bin/4glpc
 	MCOMPILE	=${AUBIT_SRC_ROOT}/bin/mcompile
 else
 	FCOMPILE	=aubit fcompile
-	MKMESS      =aubit mkmess
+	#MKMESS      =aubit mkmess amkmessage
+	MKMESS      =aubit amkmessage
 	#4glpc needs bash to run - old sh will not do. We need to fix this in "aubit" script
 	FGLPCEXEC	=${SH} aubit ${SH} 4glpc
 	MCOMPILE	=aubit mcompile
@@ -827,8 +829,10 @@ AMAKE_BIN_EXE=aubit-config${EXEEXT}
 
 BIN_SCRIPTS =4glpc aubit ${AMAKE_BIN_SCRIPTS}
 BIN_EXE		=4glc${EXEEXT} fcompile${EXEEXT} xgen${EXEEXT} \
-			mcompile${EXEEXT} mkmess${EXEEXT} \
-			mdecompile${EXEEXT} fdecompile${EXEEXT} ${AMAKE_BIN_EXE}
+			mcompile${EXEEXT} mdecompile${EXEEXT} fdecompile${EXEEXT} ${AMAKE_BIN_EXE} \
+            amkmessage${EXEEXT} unmkmessage${EXEEXT}
+
+#mkmess${EXEEXT} \
 
 
 #This two can fail to compile, when 4glc is not working:

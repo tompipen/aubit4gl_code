@@ -1,13 +1,14 @@
 @echo off
 
-set AUBITDIR=../..
-set PATH=../../bin;../../lib;%PATH%
+rem should not be needed:
+rem set AUBITDIR=../..
+rem set PATH=..\..\bin;..\..\lib;%PATH%
 
 echo fcompile form.per
 fcompile form.per
 
-echo mkmess helpfile
-mkmess helpfile
+echo amkmessage helpfile
+amkmessage helpfile
 
 echo 4glc -o hello.exe hello.4gl
 4glc -o hello.exe hello.4gl
