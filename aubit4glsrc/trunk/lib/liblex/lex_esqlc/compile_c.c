@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.187 2004-11-03 14:34:29 pjfalbe Exp $
+# $Id: compile_c.c,v 1.188 2004-11-04 21:20:09 pjfalbe Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.187 2004-11-03 14:34:29 pjfalbe Exp $";
+static char *module_id="$Id: compile_c.c,v 1.188 2004-11-04 21:20:09 pjfalbe Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -690,7 +690,11 @@ print_report_ctrl (void)
   printc ("    }\n\n");
 
 
-  printc ("if (acl_ctrl==REPORT_FINISH) {%s(0,REPORT_LASTDATA);return;}\n",
+  printc ("if (acl_ctrl==REPORT_FINISH && _started==0) {");
+  printc ("    A4GLSQL_set_status(-5555,0);\n");
+  printc ("    return;\n");
+  printc ("    }\n");
+  printc ("if (acl_ctrl==REPORT_FINISH && _started) {%s(0,REPORT_LASTDATA);return;}\n",
 	  get_curr_rep_name ());
 
   if (rep_type == REP_TYPE_NORMAL)
