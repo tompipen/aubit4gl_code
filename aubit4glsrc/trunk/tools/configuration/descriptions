@@ -1,3 +1,25 @@
+# FORMAT :
+#
+# VAR CATEGORIES Brief Description
+# Followed by nothing or 
+# =OPTIONAL|LINE|FOR|POSSIBLE|VALUES|IF|REQUIRED
+# or
+# $DIRECTORY/filespec_?.so
+# where the ? would be the setting (like $AUBITDIR/lib/libSQL_?.so for SQLTYPE)
+#
+# The last portion is indented with a 'TAB' and gives a fuller description..
+#
+# AUBIT_Y2K RUNTIME Specify Y2K handling of dates
+# <tab>+n (n<100) - set to nearest year using +n years from today as limit for future
+#  "   -n (n>-100) - set to nearest year using -n from today as limit for past
+#  "   (note: -25 = +75 )
+#  "   eg if year=1997
+#  "   n=20   > 17 will be taken as historic anything <17 is future
+#  "   n=-20  <77 will be taken as future >77 is in the past
+#  "   XX00 - always use century XX
+#  "   999  - Do not add anything - dealing with AD 0-99
+#  "   -999 - use current century
+#
 A4GL_AUTOBANG UI/TUI  Enable automatic ! for command entry 
 =YES|NO
 	(like dbaccess menus) for all applicable statements
