@@ -810,7 +810,7 @@ table_identifier:
 	;
 
 
-col_arr : {strcpy($<str>$,"")} 
+col_arr : {strcpy($<str>$,"");} 
 	| OPEN_SQUARE INT_VALUE CLOSE_SQUARE {sprintf($<str>$,"[%s]",$<str>2);}
 	| OPEN_SQUARE INT_VALUE COMMA INT_VALUE CLOSE_SQUARE {sprintf($<str>$,"[%s,%s]",$<str>2,$<str>4);}
 ;
@@ -1105,7 +1105,7 @@ printc("load_data(%s,%s,\"%s\",%s);\n",$<str>3,$<str>4,$<str>6,$<str>7);
 printc($<str>1);
 };
 
-opt_delim : {strcpy($<str>$,"\"|\"")} | DELIMITER char_or_var {
+opt_delim : {strcpy($<str>$,"\"|\"");} | DELIMITER char_or_var {
 strcpy($<str>$,$<str>2);
 };
 

@@ -616,15 +616,15 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 
 pdf_expr : fgl_expr_c POINTS  {
 //sprintf($<str>$,"%s push_double(-1);pushop(OP_MULT)",$<str>1);
-	$<ptr>$=append_expr($<ptr>3,"push_double(-1);pushop(OP_MULT);");
+	$<ptr>$=append_expr($<ptr>2,"push_double(-1);pushop(OP_MULT);");
 }
         |  fgl_expr_c  MM     {
 //sprintf($<str>$,"%s push_double(-28.3465);pushop(OP_MULT);",$<str>1);
-	$<ptr>$=append_expr($<ptr>3,"push_double(-28.3465);pushop(OP_MULT);");
+	$<ptr>$=append_expr($<ptr>2,"push_double(-28.3465);pushop(OP_MULT);");
 }
         |  fgl_expr_c INCHES     {
 //sprintf($<str>$,"%s push_double(-72.0);pushop(OP_MULT);",$<str>1);
-	$<ptr>$=append_expr($<ptr>3,"push_double(-72.0);pushop(OP_MULT);");
+	$<ptr>$=append_expr($<ptr>2,"push_double(-72.0);pushop(OP_MULT);");
 }
 ;
 

@@ -4,9 +4,9 @@ message_cmd :
  | msg_start fgl_expr_concat opt_attributes CAPTION fgl_expr_concat op_msg_wait { printc("aclfgli_pr_message_cap(%d,%d);\n",atoi($<str>3),atoi($<str>6)); }  msg_end;
 
 
-msg_start : KWMESSAGE {start_state("message",1)} ;
+msg_start : KWMESSAGE {start_state("message",1);} ;
 
-msg_end : {start_state("message",0)} ;
+msg_end : {start_state("message",0);} ;
 
 
 op_msg_wait : {strcpy($<str>$,"0");} | WAIT_FOR_KEY {strcpy($<str>$,"1");} 
