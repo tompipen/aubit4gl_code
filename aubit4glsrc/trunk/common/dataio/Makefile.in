@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.6 2002-09-24 09:10:55 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-09-24 09:29:43 afalout Exp $
 #
 
 ROOT        =../..
@@ -85,33 +85,42 @@ XGENEXE    		=${ROOT}/compilers/xgen/xgen
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
+#ld  -o ../../lib/libDATA_struct_form.so form_x.xi.o form_x.xio.o form_x.xo.o -r
+
 ${LIBROOT}/libDATA_struct_form${SO_EXT}: form_x.xi.o form_x.xio.o form_x.xo.o
-	${CC} $(CFLAGS) ${SHARED} -o $@ $^
-#	${CP} $@ ${LIBROOT}
+#	${LD} $(CFLAGS) ${SHARED} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^
+
 
 ${LIBROOT}/libDATA_menu_list${SO_EXT}: menu_x.xi.o menu_x.xio.o menu_x.xo.o
-	${CC} $(CFLAGS) ${SHARED} -o $@ $^
+#	${LD} $(CFLAGS) ${SHARED} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^
 #	${CP} $@ ${LIBROOT}
 
 ${LIBROOT}/libDATA_report${SO_EXT}: report.xi.o report.xio.o report.xo.o
-	${CC} $(CFLAGS) ${SHARED} -o $@ $^  -D_NO_FORM_X_H_
+#	${LD} $(CFLAGS) ${SHARED} -o $@ $^  -D_NO_FORM_X_H_
+	${LD} ${SO_LDFLAGS} -o $@ $^
 #	${CP} $@ ${LIBROOT}
 
 ${LIBROOT}/libXDRPACKER_struct_form${SO_EXT}:	form_x_xdr.o
-	${CC} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
+#	${LD} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^
 #	${CP} $@ ${LIBROOT}
 
 ${LIBROOT}/libXDRPACKER_menu_list${SO_EXT}: 	menu_x_xdr.o
-	${CC} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
+#	${LD} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^
 #	${CP} $@ ${LIBROOT}
 
 ${LIBROOT}/libXDRPACKER_report${SO_EXT}:  		report_xdr.o
-	${CC} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
+#	${LD} $(CFLAGS_RPCGEN) ${SHARED} -o $@ $^
+	${LD} ${SO_LDFLAGS} -o $@ $^
 #	${CP} $@ ${LIBROOT}
 
 #FIXME: needs renaming, or is it obsolete?
 pack_any${SO_EXT}: menu_x.xio.o form_x.xio.o report.xio.o
-	${CC} $(CFLAGS) ${SHARED} -o $@ $^ -D_NO_FORM_X_H_
+#	${LD} $(CFLAGS) ${SHARED} -o $@ $^ -D_NO_FORM_X_H_
+	${LD} ${SO_LDFLAGS} -o $@ $^
 #no copy to lib here?
 
 ## ==================================================================

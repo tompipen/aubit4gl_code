@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.98 2002-09-24 07:39:17 afalout Exp $
+# $Id: configure.in,v 1.99 2002-09-24 09:29:35 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2849,6 +2849,7 @@ if test "$lt_cv_prog_cc_pic_works" = "yes"; then
 	#lt_cv_prog_cc_pic=' -fno-common'
 	PIC="$lt_cv_prog_cc_pic"
 	LDFLAGS_SHARED="$PIC -shared"
+    echo "LDFLAGS_SHARED set to $LDFLAGS_SHARED"
 fi
 
 

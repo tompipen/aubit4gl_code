@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.74 2002-09-24 07:39:32 afalout Exp $
+# $Id: Makefile-common.in,v 1.75 2002-09-24 09:29:43 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -288,8 +288,11 @@ endif
 #ld: fatal: Flags processing errors
 
 #LD Command to use for linking libraries:
-#LD                  =ld
-LD                  =${CC}
+ifeq "${TARGET_OS}" "darwin"
+	LD                  =ld
+else
+	LD                  =${CC}
+endif
 
 #LD Command to use for linking executables:
 ifeq "${TARGET_OS}" "solaris"
@@ -394,7 +397,7 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 	CPEXE		=cp
 
 
-else ####################### Platform is UNIX ##############################
+else ####################### All other platforms ##############################
 
 	ARCHEXT			=tar.gz
     DIRSEP			=/
@@ -407,8 +410,14 @@ else ####################### Platform is UNIX ##############################
     #FIXME: add -g from configure
 	#FIXME: verify that we need -fPIC in CFLAGS
 	CFLAGS      +=${PIC}
-    #flags to linker, when making shared libraries:
-	SO_LDFLAGS	=-shared
+
+	#flags to linker, when making shared libraries:
+	ifeq "${TARGET_OS}" "darwin"
+		SO_LDFLAGS	=-shared
+    else
+		SO_LDFLAGS	=-r
+    endif
+
     #flags to CC when making and linking executables:
 	EXE_CFLAGS  =${RDYNAMIC}
 	EXEEXT		=
