@@ -15,35 +15,43 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.20 2003-02-10 02:08:28 afalout Exp $
+#	 $Id: footer.mki,v 1.21 2003-02-11 03:43:13 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
 #
-# footer for all .mk files
+# standard footer for all .mk files. Contains processing of variables defined
+# in .mk files, header.mki and any optional additionlly included files, to
+# prepare for execution of targets that are also defined here.
 #
 # do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.20 2003-02-10 02:08:28 afalout Exp $
 #############################################################################
 
+########################
+#Set name for 4Js database definition file to be created/used
 ifneq "$(DBASE)" ""
 	DBASE.sch = ${DBASE}.sch
 endif
 
+#######################
+#extract program file extension, to determine which kind of target to build
+#(library or program)
 PROGTYPE  = $(suffix ${PROG})
 
-#for ld to find .aox and other C based libraries (and objects)
+########################
+#for ld to find C compiler libraries (and objects)
 #NOTE: this applies only to LD, and NOT to GCC
 LD_RUN_PATH	:=${LIBSTORE}:${LD_RUN_PATH}
 export LD_RUN_PATH
 
+########################
 #If we did not include rules files for all compilers, we must at least specify
 #extensions for the targets defined in this file, to avoid warning from make:
 # warning: overriding commands for target `xyz'
-
 ifeq "${I4GL_PRG_EXT}" ""
 	I4GL_PRG_EXT=.I4GL_RULES_NOT_INCLUDED
+	I4GL_CPRG_EXT=.I4GL_CPRG_EXT.${I4GL_PRG_EXT}
 	I4GL_LIB_EXT=${I4GL_PRG_EXT}
 endif
 ifeq "${A4GL_PRG_EXT}" ""
@@ -56,6 +64,7 @@ ifeq "${Q4GL_PRG_EXT}" ""
 endif
 ifeq "${D4GL_PRG_EXT}" ""
 	D4GL_PRG_EXT=.D4GL_RULES_NOT_INCLUDED
+	D4GL_CPRG_EXT=.D4GL_CPRG_EXT.${D4GL_PRG_EXT}
 	D4GL_LIB_EXT=${D4GL_PRG_EXT}
 endif
 
@@ -68,31 +77,29 @@ ifeq "$(PROGTYPE)" ".lib"
     ifeq "$(POINTTOSTORE)" "1"
 		ADDLIBSTORE=$(LIBSTORE)
     endif
-	PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_LIB_EXT}} 		#D4GL/4Js p-code
-	PROG.42e  = $(ADDLIBSTORE)${PROG:.lib=.42o} 				#D4GL/4Js c-code
-	PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=.4cx} 				#I4GL c-code
-	PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_LIB_EXT}} 		#I4GL p-code
-	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=${Q4GL_LIB_EXT}} 		#Querix
+	PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_LIB_EXT}}
+	PROG.42e  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_CLIB_EXT}
+	PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_CLIB_EXT}}
+	PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_LIB_EXT}}
+	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=${Q4GL_LIB_EXT}}
     ifeq "${LIBS_LINK}" "SHARED"
-		PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_SOL_EXT}} 	#aubit shared library
+		#aubit shared library
+		PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_SOL_EXT}}
 	else
-		PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_LIB_EXT}} 	#aubit static library
+		#aubit static library
+		PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_LIB_EXT}}
     endif
-
-
 else
     #we are making a program
     ifeq "$(POINTTOSTORE)" "1"
 		ADDEXECSTORE=${EXECSTORE}
     endif
-
-	PROG.42r  = ${ADDEXECSTORE}${PROG}${D4GL_PRG_EXT} 			#D4GL/4Js p-code
-	PROG.42e  = ${ADDEXECSTORE}${PROG}.42e 						#D4GL/4Js c-code
-	PROG.4ge  = ${ADDEXECSTORE}${PROG}.4ge 						#I4GL c-code
-	PROG.4gi  = ${ADDEXECSTORE}${PROG}${I4GL_PRG_EXT} 			#I4GL p-code
-	PROG.4qe  = ${ADDEXECSTORE}${PROG}${Q4GL_PRG_EXT} 			#Querix
-	PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_PRG_EXT} 			#aubit
-
+	PROG.42r  = ${ADDEXECSTORE}${PROG}${D4GL_PRG_EXT}
+	PROG.42e  = ${ADDEXECSTORE}${PROG}${D4GL_CPRG_EXT}
+	PROG.4ge  = ${ADDEXECSTORE}${PROG}${I4GL_CPRG_EXT}
+	PROG.4gi  = ${ADDEXECSTORE}${PROG}${I4GL_PRG_EXT}
+	PROG.4qe  = ${ADDEXECSTORE}${PROG}${Q4GL_PRG_EXT}
+	PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_PRG_EXT}
 endif
 
 # =======================================================================
@@ -104,7 +111,9 @@ endif
 		ADDLIBSTORE=$(LIBSTORE)
 	endif
 	FILES.42x = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${D4GL_LIB_EXT}})
+	FILES.42o = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${D4GL_CLIB_EXT}})
 	FILES.4gx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${I4GL_LIB_EXT}})
+	FILES.4cx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${I4GL_CLIB_EXT}})
 	FILES.qox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${Q4GL_LIB_EXT}})
     ifeq "${LIBS_LINK}" "SHARED"
 		FILES.aox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_SOL_EXT}})
@@ -177,49 +186,66 @@ endif
 DEBRIS.common 		= *.bak *.err
 
 # =======================================================================
+#                         Targets dependencies
+# =======================================================================
+
+# WARNING!!!! VPATH can dissapear for second variable in dependency list,
+# if $^ is placed within ifeq or ifneq !!!!!!! (probably a make bug)
+# This is the reason why we will put all dependencies in one variable before
+# we need them:
+#NOTE: I've seen the case where make finds .aox in another firectory (using VPATH)
+#and does not try to remake it, and then DOES NOT find it any more, UNTILL YOU
+#DELETE IT AND RE-MAKE IT, and THEN it finds is - no idea why, but if something
+#like that happnes, do a full clean, and thern remake everything (or whatever
+#fails to link...)
+AUBIT_DEPS		=${FILES.ao} ${FILES.aox}
+D4GL_PCODE_DEPS	=${FILES.42m} ${FILES.42x}
+D4GL_CCODE_DEPS	=${FILES.42o} ${FILES.42o}
+I4GL_PCODE_DEPS	=${FILES.4go} ${FILES.4gx}
+I4GL_CCODE_DEPS	=${FILES.o} ${FILES.4cx}
+QUERIX_DEPS		=${FILES.qo} ${FILES.qox}
+
+# =======================================================================
 #                              Targets
 # =======================================================================
 
 
 default:	${DEFAULT}
 
-all:	aubit d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode
+all:	aubit querix d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode
 
-touch.all:
-	@touch -c ${FILES.4gl} ${FILES.per} ${FILES.msg}
-	@echo "Touched all source files in current dorectory"
+touch.all: ${FILES.4gl} ${FILES.per} ${FILES.msg}
+	@touch -c $^
+	@echo "Touched all source files of this program/library"
 
 # =======================================================================
 #                      Compiler dependent Targets
 # =======================================================================
 
+#addind libraries in first place is an attempt to cause libs to exist in the moment
+#make reaches prgram target, examine dependencies, applies VPATH and hopefully
+#finds them. If this does not help, remove it, since it's redundant:
+#aubit	  :	${FILES.aox} ${PROG.4ae} ${FILES.afr} ${FILES.hlp}
 aubit	  :	${PROG.4ae} ${FILES.afr} ${FILES.hlp}
-d4gl-pcode:	${PROG.42r} ${FILES.42f} ${FILES.42h}
-d4gl-ccode:	${PROG.42e} ${FILES.42f} ${FILES.42h}
-i4gl-pcode:	${PROG.4gi} ${FILES.frm} ${FILES.iem}
-i4gl-ccode:	${PROG.4ge} ${FILES.frm} ${FILES.iem}
-querix    : ${PROG.4qe} ${FILES.pic} ${FILES.qms}
+d4gl-pcode:	${FILES.42x} ${PROG.42r} ${FILES.42f} ${FILES.42h}
+d4gl-ccode:	${FILES.42o} ${PROG.42e} ${FILES.42f} ${FILES.42h}
+i4gl-pcode:	${FILES.4gx} ${PROG.4gi} ${FILES.frm} ${FILES.iem}
+i4gl-ccode:	${FILES.4cx} ${PROG.4ge} ${FILES.frm} ${FILES.iem}
+querix    : ${FILES.qox} ${PROG.4qe} ${FILES.pic} ${FILES.qms}
 plexus:
 
 # =======================================================================
 #                            Aubit Targets
 # =======================================================================
 
-########################
-#Build C-code program
-${PROG.4ae}:	${FILES.ao} ${FILES.aox}
-#remove this	${FAIL_LINK}${TARGETCMD}
+
+${PROG.4ae}:${AUBIT_DEPS}
 ifeq "$(PROGTYPE)" ".lib"
-ifeq "${PROG}" "dummy.lib"
-	@echo Name dummy.lib was used, final linking skipped.
-else
 #-fPIC will apparently not work on AIX - we should autoconf this file
-#TARGETCMD=ld -fPIC -shared $< -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
-	${FAIL_LINK}ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
-endif
+#--rpath${LIBSTORE} # -L${LIBSTORE}
+	${FAIL_LINK}ld -fPIC -shared $^ -o ${xxEXECSTORE}$@
 else
-	${FAIL_LINK}${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS}
-#--rpath${LIBSTORE} #-L${LIBSTORE}
+	${FAIL_LINK}${A4GL_CC} $^ -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}
 endif
 #	@echo CHANGED: $?
 
@@ -229,41 +255,14 @@ endif
 
 #########################
 #Build P-code program
-${PROG.42r}:	${FILES.42m} ${FILES.42x}
+${PROG.42r}: ${D4GL_PCODE_DEPS}
 #	${D4GL_PL} -o $@ $^ ${D4GL_PL_LDFLAGS}
-ifeq "${PROG}" "dummy.lib"
-#remove this	${TARGETCMD}
-ifeq "$(PROGTYPE)" ".lib"
-ifeq "${PROG}" "dummy.lib"
-	@echo Name dummy.lib was used, final linking skipped.
-else
-	@echo "Ooops - FIXME"
-endif
-else
-	${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS}  #--rpath${LIBSTORE} #-L${LIBSTORE}
-endif
-else
 	${FAIL_LINK}fgllink -O -o $@ $^ ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
-endif
-ifeq "$(MOVETOSTORE)" "1"
-ifeq "$(dir $@)" "./"
-		${PRGMVCMD} $@ ${EXECSTORE}
-endif
-ifneq "$(shell ls ${FILES.42m} 2> /dev/null)" ""
-		${LIBMVCMD} $(shell ls ${FILES.42m} 2> /dev/null) ${LIBSTORE}
-endif
-endif
-ifeq "$(MOVETARGETTOSTORE)" "1"
-ifneq "$(shell ls ${PROG.42r} ${FILES.42m} 2> /dev/null)" ""
-		${TARGETMVCMD} $(shell ls ${PROG.42r} ${FILES.42m} 2> /dev/null) ${EXECSTORE}
-endif
-endif
-#	@echo OK: ${PROG.42r}
 
 ########################
 #Build C-code program
 #${PROG.42e}:	${DBASE.sch} ${FILES.42o}
-${PROG.42e}:	${FILES.42o} ${FILES.42x}
+${PROG.42e}: ${D4GL_CCODE_DEPS}
 	${D4GL_CL} -o $@ ${FILES.42o} ${D4GL_CL_LDFLAGS}
 
 # =======================================================================
@@ -272,14 +271,18 @@ ${PROG.42e}:	${FILES.42o} ${FILES.42x}
 
 #########################
 #Build P-code program
-${PROG.4gi}: ${FILES.4go} ${FILES.4gx}
-#	@echo xwzhere
+#this will fail in cases we are making ${FILES.4gx} outsid ecurrent dir on the fly,
+#because ${FILES.4gx} file names will not include path, since VPATH was
+#already examined. On the second run, ti will work OK.
+${PROG.4gi}: ${I4GL_PCODE_DEPS}
 #	${I4GL_PL} -o $@ ${FILES.4go} ${I4GL_PL_LDFLAGS}
-	${I4GL_PL} $^ > $@
+	${I4GL_PL} $^ > $@; if test "$$?" != "0"; then echo "CAT failed, removing $@"; rm $@; fi
+#cat can fail because of missing files in link line, but it will still
+#create a file
 
 ########################
 #Build C-code program
-${PROG.4ge}:	${FILES.o}
+${PROG.4ge}: ${I4GL_CCODE_DEPS}
 	${I4GL_CC} -o $@ ${FILES.o}   ${I4GL_CC_LDFLAGS}
 
 
@@ -289,7 +292,7 @@ ${PROG.4ge}:	${FILES.o}
 
 ########################
 #Build C-code program
-${PROG.4qe}:	${FILES.qo} ${FILES.qox}
+${PROG.4qe}: ${QUERIX_DEPS}
 ifeq "${VERBOSE}" "1"
 	@echo "Linking Querix: $@"
 endif
@@ -397,7 +400,8 @@ show:
 	@echo SET_VPATH_OBJ   =${SET_VPATH_OBJ}
 	@echo SET_VPATH_PRG   =${SET_VPATH_PRG}
 	@echo SET_VPATH_LIB   =${SET_VPATH_LIB}
-	@echo EXTENSIONS: ${FRM} ${OBJ} ${PRG} ${LIB}
+	@echo SET_VPATH_HLP   =${SET_VPATH_HLP}
+	@echo EXTENSIONS: ${FRM} ${OBJ} ${PRG} ${LIB} ${HLP}
 
 
 # =============================== EOF ==================================

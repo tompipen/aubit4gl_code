@@ -1,4 +1,4 @@
-#   @(#)$Id: d4gl.mk,v 1.8 2003-02-04 05:21:40 afalout Exp $
+#   @(#)$Id: d4gl.mk,v 1.9 2003-02-11 03:43:13 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -72,10 +72,12 @@ D4GL_SC         = ${D4GL_SC_CMD} ${D4GL_SC_FLAGS}
 # Define suffixes which are recognised.
 
 D4GL_PRG_EXT	=.42r
+D4GL_CPRG_EXT	=.42e
 D4GL_OBJ_EXT	=.42m
 D4GL_FRM_EXT	=.42f
 D4GL_HLP_EXT	=.42h
 D4GL_LIB_EXT	=.42x
+D4GL_CLIB_EXT	=.42o
 
 #WARNING:
 D4GL_C_SUFFIXES =.42e .42o .42h
@@ -150,14 +152,14 @@ eerr%.42x:
 	${D4GL_CC} -c $*.4gl
 	${D4GL_CL} -o $*.42e $*.42o ${D4GL_CL_LDFLAGS}
 
-%.42f: %.per
+%${D4GL_FRM_EXT}: %.per
 	${D4GL_FC} $^
 #	@echo MKTARGET = ${MKTARGET} FSTORE= ${FSTORE}
 #	@echo FORMSTORE = ${FORMSTORE}
-	${FORMMVCMD} $(dir $^)$@ ${FORMSTORE}
+#	${FORMMVCMD} $(dir $^)$@ ${FORMSTORE}
 
-.msg.42h:
-	${D4GL_MC} $*.msg $*.42h
+.msg${D4GL_HLP_EXT}:
+	${D4GL_MC} $^ $@
 
 #rule to make database schemma file
 #${DBASE.sch}:

@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: header.mki,v 1.14 2003-02-02 01:13:48 afalout Exp $
+#	 $Id: header.mki,v 1.15 2003-02-11 03:43:14 afalout Exp $
 
 ############################################
 #   Aubit 4gl compiler - amake system
@@ -154,6 +154,17 @@ ifeq "$(DEFAULT)" "querix"
 	LIB=${Q4GL_LIB_EXT}
 endif
 
+####################
+#FGLDBPATH is 4Js env var that points to directory where .sch files can be
+#found; if this is not set, we will not know where to put it, 'mv' command
+#will have no destination and fail. So we do this to prevent it form failing
+#and leanve created .sch file in current directory:
+ifndef FGLDBPATH
+	SCHMVCMD=@\#
+else
+	SCHMVCMD=mv
+	vpath %.sch ${FGLDBPATH}
+endif
 
 ifneq "${AMAKE_ADDRULES}" ""
     ####################

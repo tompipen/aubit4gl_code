@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.23 2003-02-10 02:08:28 afalout Exp $
+#	 $Id: a4gl.mk,v 1.24 2003-02-11 03:43:13 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.23 2003-02-10 02:08:28 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.24 2003-02-11 03:43:13 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -217,7 +217,7 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 #executed from anywhere else!
 #.msg.iem:
 .msg${A4GL_HLP_EXT}:
-	${A4GL_MC} $*
+	${FAIL_CMPL_HLP}${A4GL_MC} $^
 #because of this make fill always recompile help file, since it can't
 #find .hlp files; can we make aubit compiler to automatically look for
 #.hlp if it can't find .iem (or other extension sopecified in code):

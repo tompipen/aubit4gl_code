@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.7 2003-02-04 05:21:40 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.8 2003-02-11 03:43:14 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -106,13 +106,15 @@ RM            = rm -f       # Delete files
 # Define suffixes which are recognised.
 
 I4GL_PRG_EXT		=.4gi
+I4GL_CPRG_EXT		=.4ge
 I4GL_OBJ_EXT		=.4go
 I4GL_FRM_EXT		=.frm
 I4GL_HLP_EXT		=.iem
 I4GL_LIB_EXT		=.4gx
+I4GL_CLIB_EXT		=.4cx
 
 #WARNING:
-I4GL_C_SUFFIXES 	=.ec .c .4ge
+I4GL_C_SUFFIXES 	=.ec .c ${I4GL_CPRG_EXT}
 
 #Files compiler uses as source files:
 #FIXME: 4GL_SRC_SUFFIXES should be in some common place for all compilers
