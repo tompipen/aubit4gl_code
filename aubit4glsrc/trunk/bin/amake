@@ -14,15 +14,27 @@
 #####################################################################
 
 #`--include-dir=dir'
-#Specifies a directory dir to search for included makefiles. See section 
-#Including Other Makefiles. If several `-I' options are used to specify 
+#Specifies a directory dir to search for included makefiles. See section
+#Including Other Makefiles. If several `-I' options are used to specify
 #several directories, the directories are searched in the order specified.
 
 #defaults:
 LOG="0"
-OVERRIDEINCLUDE="1"
-HEADER="./header.mki"
-FOOTER="./footer.mki"
+LOGFILE=amake.log
+OVERRIDEINCLUDE="0"
+#HEADER="./header.mki"
+#FOOTER="./footer.mki"
+HEADER="$AUBITDIR/incl/header.mki"
+FOOTER="$AUBITDIR/incl/footer.mki"
+
+#if you export MAKERULES, ti will override 4gl make rules included in 
+#standard header.mki:
+RULESDIR=$AUBITDIR/incl
+#export MAKERULES=$RULESDIR/i4gl.mk $RULESDIR/d4gl.mk $RULESDIR/a4gl.mk $RULESDIR/q4gl.mk
+export MAKERULES=$RULESDIR/a4gl.mk
+
+rm -f *.err
+
 MAKE=make
 MK=".mk"
 
@@ -40,8 +52,10 @@ then
     echo "  to use make includes specified in this script"
     echo " -header xxx = use xxx file for header include, overrides -defaultinclude"
     echo " -footer yyy = use yyy file for footer include, overrides -defaultinclude"
+    echo " -i : ignore errors in amake and continue (adds -k to mkae call)"
 	echo " everything else will be passed to make"
-    echo
+	echo " -verbose = show what script is doing"
+	echo
 	echo Examples:
     echo
     echo "'amake' - build defailt targets of all .mk files in ./"
@@ -69,6 +83,8 @@ else
 	for a in $@
     ###########
 	do
+		a=`basename $a .mk`
+
 		let cnt=cnt+1
 
         #############
@@ -110,7 +126,14 @@ else
 			   -log) LOG="1"
 			   ;;
 
+			   -i) IGNOREERROR="1"
+                    MAKE="$MAKE -k"
+			   ;;
+
 			   -defaultinclude) OVERRIDEINCLUDE="0"
+			   ;;
+
+			   -verbose) VERBOSE="1"
 			   ;;
 
 			   -header) OVERRIDEINCLUDE="1"
@@ -167,24 +190,61 @@ fi
 	for ONEPROG in $PROGS
     #####################
     do
+        #see if we have include command in this .mk :
+		grep include $ONEPROG > /dev/null
+		RET=$?
+		if test $RET != "0"
+		then
+			OVERRIDEINCLUDE="1"
+		fi
+
 		if [ "$OVERRIDEINCLUDE" = "1" ]
         then
+			if [ "$VERBOSE" = "1" ]
+            then
+				echo "Overriding include..."
+            fi
 			INCLCMT="#include"
-			COMPOSITE=/tmp/$USER_$ONEPROG
+			COMPOSITE=/tmp/$USER-$ONEPROG
 			sed -e "s%include%$INCLCMT%g" $ONEPROG > $COMPOSITE.tmp
 	        cat $HEADER $COMPOSITE.tmp $FOOTER > $COMPOSITE
         else
-            $COMPOSITE=$ONEPROG
+			COMPOSITE=$ONEPROG
 		fi
+
+		if [ "$VERBOSE" = "1" ]
+        then
+            echo Command is: $MAKE $MKFLAGS -f $COMPOSITE $PARAMS
+        fi
+
 
 		if [ "$LOG" = "1" ]
 		then
-			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS > make.log 2>&1
+			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS > $LOGFILE 2>&1
         else
 			$MAKE $MKFLAGS -f $COMPOSITE $PARAMS
         fi
 
-        #FIXME: stop on error
+		RET=$?
+		if test $RET != "0"
+		then
+		    echo "ERROR: amake failed."
+			if [ "$LOG" = "1" ]
+			then
+				echo "See $LOGFILE"
+            fi
+		    ls *.err > /dev/null
+			RET=$?
+			if test $RET = "0"
+			then
+                echo "See .err files generated"
+            fi
+			if ! [ "$IGNOREERROR" = "1" ]
+            then
+				exit 1
+            fi
+		fi
+
     ####
 	done
     ####

@@ -7,6 +7,15 @@
 #
 ############################################################
 
+#Confirmed to work in :
+#gl
+#ap
+
+#$WARNING: some Maximise moduls depend on other modules already being
+#compiled. If they are not, makefile.prep will fail.
+#Compile modules in this order:
+#winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo;
+
 
 #1. run "prepmake" in directory containing Maximise make file, "makefile".
 #This will create file "makefile.prep" containing instruction needed for
@@ -17,12 +26,60 @@
 #you want to process, look at the script, it should be easy to substitute
 #this with some other present command.
 
-INCLCMT='	genmake $(basename $(@F)) $(addsuffix .4gl,$(basename $(^F))) #'
-INCLCMT2="#fgllink"
+FILENAME=allsinglelibs.mk
+rm -f $FILENAME
 COMPOSITE=/tmp/makefile
 
-sed -e "s%cat%$INCLCMT%g" makefile > $COMPOSITE.tmp
-sed -e "s%fgllink%$INCLCMT2%g" $COMPOSITE.tmp > makefile.prep
+#replacing all "fgllink" lines with our command:
+#INCLCMT='	genmake $(basename $(@F)) $(addsuffix .4gl,$(basename $(^F))) #'
+#we don't want to rename ALL dependencies to .4gl they may be .per files!
+#INCLCMT='	genmake $(basename $(@F)) $(^F) #'
+#we alos don't want to strip extension from object name, it may be library
+#target, not executable:
+INCLCMT='	genmake $(@F) $(^F) #'
+
+sed -e "s%fgllink%$INCLCMT%g" makefile > $COMPOSITE.tmp
+
+#commenting out all "cat" lines, so they don't get executed:
+INCLCMT2="#cat "
+sed -e "s%cat %$INCLCMT2%g" $COMPOSITE.tmp > makefile.prep
+
+
+################### for GL #################################
+#INCLCMT2='touch $(addsuffix .42m,$(basename $($<)))'
+#INCLCMT2='touch $(basename $<).42m'
+INCLCMT2='touch $(notdir $(basename $<)).42m'
+#replace all fglcomp lines with fakes, so we don't go trough actual compile:
+sed -e "s%fglcomp%$INCLCMT2%g" makefile.prep > $COMPOSITE.tmp
+
+#INCLCMT2='touch $(notdir $(basename $<)).42f'
+INCLCMT2='touch $(basename $<).42f'
+#replace all fglform lines with fakes, so we don't go trough actual compile:
+sed -e "s%fglform%$INCLCMT2%g" $COMPOSITE.tmp > makefile.prep
+
+INCLCMT2='touch $(basename $<).frm'
+sed -e "s%form4gl%$INCLCMT2%g" makefile.prep > $COMPOSITE.tmp
+
+cp $COMPOSITE.tmp makefile.prep
+################### end for GL #################################
+
+
+################### for winds #################################
+#we need all fglpc replaced with commands, since in winds most files
+#are not programs, but library functions.
+INCLCMT3='	genmake $(@F) $(^F) #'
+sed -e "s%fglpc%$INCLCMT3%g" makefile.prep > $COMPOSITE.tmp
+
+
+#but we also need to process fgllink, since it creates composite library
+#objects (.42x)
+
+cp $COMPOSITE.tmp makefile.prep
+
+
+#################### end for winds #############################
+
+
 
 #2. run first "touch *.4gl" (to force all targets ito thinking they need
 #building) and then "make -f makefile.prep". This will create one make
@@ -33,5 +90,30 @@ sed -e "s%fgllink%$INCLCMT2%g" $COMPOSITE.tmp > makefile.prep
 
 touch *.4gl
 make -f makefile.prep
+RET=$?
+
+echo " "
+if test $RET != "0"
+then
+    echo "Error preparing make file, see makefile.prep "
+    exit 1
+else
+
+	#if we created single libs file, we need to add footer at the end:
+	FOOTERNAME='${AUBITDIR}/incl/footer.mki'
+
+	if [ -f $FILENAME ]
+    then
+		echo >> $FILENAME
+	    #echo "#-------------------------------------" >> $FILENAME
+		#echo >> $FILENAME
+		echo include $FOOTERNAME >> $FILENAME
+		echo >> $FILENAME
+    fi
+
+	echo "'prepmake' completed. You can now run generated make files using "
+	echo "'amake' script. see 'amake -help' for instructions"
+	exit 0
+fi
 
 #-------------------------- EOF -------------------------------

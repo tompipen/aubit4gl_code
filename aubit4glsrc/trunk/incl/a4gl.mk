@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.1.1.1 2001-08-20 02:36:00 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.2 2001-08-28 06:56:32 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -15,6 +15,8 @@
 ##########################################################################
 
 A4GL_CLEAN_FLAGS = *.ao *.bak *.h *.err *.glb *.hlp *.4ae
+
+AUCC=gcc
 
 # A4GL C-code Compiler
 A4GL_CC_CMD     = 4glpc -g -O2 -gtk -static
@@ -79,8 +81,8 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 #	-mv $*.frm $@
 
 .c.ao:
-#	${CC} ${CFLAGS} -DAUBIT4GL -c $?
-	${CC} ${A4GL_CC_FLAGS} -c $?
+#	${AUCC} ${CFLAGS} -DAUBIT4GL -c $?
+	${AUCC} ${A4GL_CC_FLAGS} -c $? > $*.err 2>&1
 	mv $*.o $@
 
 # Rules for compiling message files

@@ -1,4 +1,4 @@
-#   @(#)$Id: q4gl.mk,v 1.1.1.1 2001-08-20 02:36:00 afalout Exp $
+#   @(#)$Id: q4gl.mk,v 1.2 2001-08-28 06:56:32 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -29,7 +29,6 @@ Q4GL_CLEAN_FLAGS = *.o *.qo *.bak *.h *.err *.pic *.4qe
 QXI_LIBS=-L$(QUERIXDIR)/lib -lfgl$(USE_DEBUG_LIBRARIES) -lsqli$(USE_DEBUG_LIBRARIES) -lpanel -lcurses $(QXS_LIBS)
 QX_LIBS=$(EXTENDERLIBS) $(QXI_LIBS)
 QXCC=gcc
-CFLAGS=-DQUERIX
 
 # Q4GL C-code Compiler
 Q4GL_CC_CMD     = fglc
@@ -44,7 +43,7 @@ Q4GL_CC_FLAGS   = "-a -I -DQUERIX -I${QUERIXDIR}/incl "
 
 # Q4GL C-code Linker
 #Q4GL_CL_CMD     = ${Q4GL_CC_CMD}
-Q4GL_CL_CMD     = gcc
+Q4GL_CL_CMD     = ${QXCC}
 Q4GL_CL_ENV     = ${Q4GL_CC_ENV}
 Q4GL_CL_FLAGS   = ${Q4GL_CC_FLAGS}
 Q4GL_CL_LDFLAGS = ${LDFLAGS}
@@ -83,11 +82,11 @@ Q4GL_SUFFIXES = .qo .4gl .c .4qe .pic .per .iem .msg .qms
 #.4gl.o:
 .4gl.qo:
 	${Q4GL_CC} -c $<
-	gcc -c -I/opt/querix/qxinf.f.lnx/incl $*.c
+	${QXCC} -c -I/opt/querix/qxinf.f.lnx/incl $*.c
 	mv $*.o $@
 
 .c.qo:
-	${CC} ${CFLAGS} -DQUERIX -c $?
+	${QXCC} ${Q4GL_CC_FLAGS} ${CFLAGS} -DQUERIX -c $?
 	mv $*.o $@
 
 # Rules for compiling Q4GL form files

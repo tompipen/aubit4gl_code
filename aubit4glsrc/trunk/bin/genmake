@@ -1,25 +1,94 @@
 #!/bin/sh
-
-############################################################
+##########################################################################
 #
-#   Aubit 4gl compiler - make system
-#genmake - utillity script to create Aubit-style makefiles
-#from typical existing 4gl makefiles
+#			Aubit 4gl compiler - make system
 #
-############################################################
+# genmake - utillity script to create Aubit-style makefiles from typical 
+# existing 4gl makefiles.
+#
+# You are not supposed to run this script mannualy; it will be called from
+# makefiles created with "prepmake" script.
+#
+##########################################################################
 
-#you are not supposed to run this script mannualy; it will be called from
-#makefiles created with "prepmake" script.
+if [ $# -lt 2 -o "$1" = "--help" ]
+then
+    echo "ERROR: not enough parameters."
+	echo "You are not supposed to run this script mannualy; it will be"
+	echo "called from makefiles created with 'prepmake' script."
+    exit 2
+fi
 
-FILENAME=$1.mk
+FIRST=`basename $1`
 
-	echo include header.mki > $FILENAME
+PROG=`basename $FIRST .4go`
+if [ "$PROG" != "$FIRST" ]
+then
+    IS4GO="1"
+    ISLIB="1"
+else
+	PROG=`basename $FIRST .4gi`
+	if [ "$PROG" != "$FIRST" ]
+	then
+	    IS4GI="1"
+	else
+        echo "Cannot recognise extension of $1. STOP."
+        exit 4
+	fi
+fi
+
+	HEADERNAME='${AUBITDIR}/incl/header.mki'
+	#HEADERNAME=header.mki
+	FOOTERNAME='${AUBITDIR}/incl/footer.mki'
+	FORMFILES=
+
+
+#if we revceived only prog name and one 4gl file, AND program name is one
+#of lib extensions, this is library function, not executable program:
+if [ $# = "2" ] && [ "$ISLIB" = "1" ]
+then
+    IS_SINGLE_LIB="1"
+	FILENAME=allsinglelibs.mk
+	fname=`basename $2 .4go`
+	fname=`basename $fname .4gl`
+
+    if ! [ -f $FILENAME ]
+    then
+		echo include $HEADERNAME > $FILENAME
+		echo >> $FILENAME
+		echo #we are using this dummy name only to get all in objects- >> $FILENAME
+        echo #it will not be used for anything - and it will possibly >> $FILENAME
+        echo #even fail to link: >> $FILENAME
+		echo "PROG		= dummy.lib"  >> $FILENAME
+		echo >> $FILENAME
+		echo "GLOBALS.4gl	= $fname.4gl" >> $FILENAME
+		echo >> $FILENAME
+		echo 'FILES.4gl	= \' >> $FILENAME
+		echo '		${GLOBALS.4gl} \' >> $FILENAME
+	else
+		echo "			$fname.4gl \\" >> $FILENAME
+	fi
+
+else
+	FILENAME=$PROG.mk
+
+	echo include $HEADERNAME > $FILENAME
 	echo >> $FILENAME
     #echo "#-------------------------------------" >> $FILENAME
 	#echo >> $FILENAME
-	echo "PROG		= $1"  >> $FILENAME
+
+	if [ "$ISLIB" = "1" ]
+    then
+		echo "PROG		= $PROG.lib"  >> $FILENAME
+    else
+		echo "PROG		= $PROG"  >> $FILENAME
+    fi
 	echo >> $FILENAME
-	echo "GLOBALS.4gl	= $2" >> $FILENAME
+
+	fname=`basename $2 .4go`
+	fname=`basename $fname .4gl`
+	echo "GLOBALS.4gl	= $fname.4gl" >> $FILENAME
+
 	echo >> $FILENAME
 	echo 'FILES.4gl	= \' >> $FILENAME
 	echo '		${GLOBALS.4gl} \' >> $FILENAME
@@ -27,29 +96,66 @@ FILENAME=$1.mk
 	for a in $@
     ###########
 	do
-        if ! [ "$1" = $a ]
+		if ! [ "$1" = $a ] 		#it's program name
         then
-	        if ! [ "$2" = $a ]
+	        if ! [ "$2" = $a ]  #it's GLOBALS file
             then
-                echo "		$a \\" >> $FILENAME
+
+			##########
+			case $a in
+	        ##########
+
+			#*.42m) || *.4go) HOW THE HELL DO YOU DO _OR_here ?
+			*.4go)
+				fname=`basename $a .4go`
+	            echo "			$fname.4gl \\" >> $FILENAME
+			;;
+
+			#*.42f) || *.frm)
+	        *.frm)
+				fname=`basename $a .frm`
+	            FORMFILES="$FORMFILES $fname.per"
+	        ;;
+
+	        *) echo "ERROR: what the hell is $a"
+	            exit 1
+
+	        ;;
+
+			####
+			esac
+			####
             fi
         fi
-    ####
+	####
 	done
     ####
 
 	echo >> $FILENAME
-	echo 'FILES.per	= ${ALLFORMS.per}' >> $FILENAME
+   	if [ "$ISLIB" != "1" ]
+    then
+
+		if [ "$FORMFILES" = "" ]
+	    then
+			#as defined in header.mki:
+			echo 'FILES.per	= ${ALLFORMS.per}' >> $FILENAME
+	    else
+			echo "FILES.per	= \\" >> $FILENAME
+
+			###################
+			for a in $FORMFILES
+		    ###################
+			do
+				echo "			$a \\" >> $FILENAME
+	        done
+	    fi
+    fi
+	
 	echo >> $FILENAME
     #echo "#-------------------------------------" >> $FILENAME
 	#echo >> $FILENAME
-	echo include footer.mki >> $FILENAME
+	echo include $FOOTERNAME >> $FILENAME
 	echo >> $FILENAME
-	echo
+fi
 
-
-
-
- 
-
-
+#------------------------------ EOF --------------------------------

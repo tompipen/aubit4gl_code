@@ -1,7 +1,7 @@
 #!/bin/sh
 #/bin/bash
 #this is main Aubit 4gl compiler .4gl files compiler script
-#You should not need to invoke actual compiler (4glc) directly
+#You should not need to invoke actual compiler(s) (4glc, fcompile...) directly
 
 #FIXME:
 #uppercase 0, passed to 4glpc as "4gpc -O ..." is causing on CygWin:
@@ -180,8 +180,11 @@ fi
 
 COMPCC=""
 
-#LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:$AUBITDIR/extlibs
-#export LD_LIBRARY_PATH
+#This may help while compiling, but compiled programs will not run
+#if it's not in his environmnet. So set your environment!
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:$ODBC_LIB_DIR
+#$AUBITDIR/extlibs
+
 
 
 FGLLIBSDIR="-L$AUBITDIR/lib"
@@ -220,10 +223,12 @@ then
     fi
 fi
 
-# if this isnt set - try in extlibs....
 if [ "$ODBC_LIB_DIR" = "" ]
 then
-        ODBC_LIB_DIR=$AUBITDIR/extlibs
+	if [ -d $AUBITDIR/extlibs ]
+	then
+		ODBC_LIB_DIR=$AUBITDIR/extlibs
+    fi
 fi
 
 if [ "$ODBC_SHARED" = "" ]
@@ -262,9 +267,14 @@ else
 	GCC=${GCC:-"gcc -O -g "}
 fi
 
+############
 for a in $@
+############
 do
+   ##########
    case $a in
+   ##########
+
    *.a) COMPCC="$COMPCC $a"
    ;;
 
@@ -337,7 +347,6 @@ do
 		  if [ "$A4GLVERBOSE" = "yes" ]
 		  then
 	          $output ODBC_LIB_DIR is $ODBC_LIB_DIR
-			  #LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ODBC_LIB_DIR
 			  $output LD_LIBRARY_PATH is $LD_LIBRARY_PATH
               $output Executing: 4glc "$a"
           fi
@@ -480,6 +489,8 @@ do
    ;;
 
    #same as -o, needed to distinguish from I4GL objects in universal makefiles:
+   #but I don't know how to do OR here...? Like:
+	# -ao) || -o)
    -ao) COMPCC="$COMPCC -o "
        ISMAKE=-1
 
@@ -499,8 +510,13 @@ do
       fi
       COMPCC="$COMPCC $a"
   ;;
+  
+  ####
   esac
+  ####
+####
 done
+####
 
 if [ "$EXECNAME" = "-1" ]
 then
@@ -621,7 +637,12 @@ then
    eval $EXEC
    if [ $? != 0 ]
    then
-      $output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
+      if [ "$LAST" != "" ]
+      then
+		  $output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
+      else
+		  $output "Error compiling."
+      fi
       exit 3
    fi
 
@@ -636,7 +657,12 @@ else
 
    if [ $? != 0 ]
    then
-      $output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
+      if [ "$LAST" != "" ]
+      then
+		  $output "Error compiling... check"`expr "$LAST" : "..\(.*\)"`
+      else
+		  $output "Error compiling."
+      fi
       exit 2
    fi
 fi
