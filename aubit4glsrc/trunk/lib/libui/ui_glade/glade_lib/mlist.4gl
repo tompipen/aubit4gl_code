@@ -99,7 +99,7 @@ define lv_cnt integer
 define lv_a integer
 
 let lv_widget=get_widget_for(lv_form,lv_field)
-if lv_widget=0 then return 0 end if
+if lv_widget=0 then return end if
 
 code
 printf("Set_column\n");
