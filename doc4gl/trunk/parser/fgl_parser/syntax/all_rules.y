@@ -1,3 +1,8 @@
+/**
+ * This source file is where all rules was been inserted
+ * They are taken from here when used.
+ */
+ 
 /*
 =====================================================================
                         Source: 99.reqd
@@ -101,288 +106,6 @@ arr_int_sign
   | MINUS 
 ;
 
-
-/*
-=====================================================================
-                        Source: attributes.rule
-=====================================================================
-*/
-
-
-/**
- * Optional (could be empty) attributes to be used in screens.
- */
-opt_attributes
-  :	
-	| attributes_def 
-  ;
-
-/**
- * Possible screen interaction attribute statement.
- * 4gl code examples:
- *     ATTRIBUTES (REVERSE,WHITE)
- *     SIZE (10,20)
- */
-attributes_def	
-  : ATTRIBUTES OPEN_BRACKET attribs_sec CLOSE_BRACKET 
-  | SIZE OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET
-  ;
-
-/**
- * Attribute list.
- * 4gl code example:
- *    REVERSE,WHITE
- */
-attribs_sec	
-  : attribute 
-  | attribs_sec COMMA attribute 
-  ;
-
-/**
- * Specific possible screen attributes
- */
-attribute	
-  :BLACK
-	|BLUE
-	|CYAN
-	|GREEN
-	|MAGENTA
-	|RED
-	|WHITE
-	|YELLOW
-	|REVERSE
-	|BLINK
-	|UNDERLINE
-	|BOLD
-	|NORMAL
-	|INVISIBLE
-	|DIM
-  |NO_NEW_LINES 
-	|input_array_attributes 
-	;
-
-/**
- *  Optional (could be empty) WINDOW attributes.
- */
-win_attributes
-  :
-	| win_attributes_def
-  ;
-
-/**
- * Window attribute sub section
- * 4gl code example:
- *    ATTRIBUTES (MAGENTA,REVERSE)
- */
-win_attributes_def	
-  :	ATTRIBUTES OPEN_BRACKET wattribs_sec CLOSE_BRACKET 
-  ;
-
-/**
- * List of window attributes.
- * 4gl code example:
- *    MAGENTA,REVERSE
- */
-wattribs_sec	
-  :	wattribute 
-	|	wattribs_sec COMMA wattribute 
-  ;
-
-/**
- * Concrete window attributes
- */
-wattribute	
-  : attribute 
-  |	BORDER 
-	| PAD CHAR_VALUE
-	|	COMMENT_LINE line_no
-	|	FORM_LINE line_no
-	|	ERROR_LINE line_no
-	|	MENU_LINE line_no
-	|	MSG_LINE line_no
-	|	PROMPT_LINE line_no
-  ;
-
-
-/*
-=====================================================================
-                        Source: call.rule
-=====================================================================
-*/
-
-
-/**
- * Explicit function call.
- * 4gl code example:
- *    CALL xpto(a,2,"XX")
- */
-call_cmd	
-  : FCALL call_ext 
-  ;
-
-/**
- * Continuation of the explicit function call.
- * This rule should
- *
- * @todo : I take of the validation of the get_fldbuff inside the input or 
- * construct.
- */
-call_ext 
-  : function_callb RETURNING variable 
-  | GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET RETURNING  ibind_var_list 
-  | FORM_IS_COMPILED OPEN_BRACKET identifier 
-	  COMMA CHAR_VALUE COMMA CHAR_VALUE CLOSE_BRACKET 
-  | INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING variable 
-  | pdf_functions
-  | FIELD_TOUCHED OPEN_BRACKET field_name_list CLOSE_BRACKET RETURNING variable 
-  | variable COLON identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET 
-    opt_return 
-  | identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET opt_return 
-  | SHARED char_or_var IN char_or_var OPEN_BRACKET 
-    opt_func_call_args CLOSE_BRACKET opt_return 
-  | identifier DOUBLE_COLON identifier  OPEN_BRACKET opt_func_call_args 
-    CLOSE_BRACKET opt_return 
-  | EXTERNAL remote_host_name COLON remote_func_name 
-	  OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET
-    opt_func_call_args CLOSE_BRACKET opt_return_remote
-  ;
-
-/**
- * Optional (could be void) returning of function call statement.
- * 4gl code example: RETURNING a,1,"xx"
- * @todo : Change the name to op_returning
- */
-opt_return 	
-  : 
-	| RETURNING ibind_var_list 
-  ;
-
-/**
- * Optional returning subsection of function call as RPC client
- */
-opt_return_remote 	
-  : 
-  | RETURNING ibind_var_list
-  | WITHOUT_WAITING
-  ;
-
-
-/**
- * Optional function call arguments.
- */
-opt_func_call_args 
-  : 
-	| func_call_args
-  ;
-
-/**
- * Function call argument list.
- * 4gl code example:  a,b,1,"zz"
- */
-func_call_args	
-  : func_arg
-	| func_call_args COMMA func_arg 
-  ;
-
-
-/**
- * A function argument.
- */
-func_arg 	
-  : fgl_expr_c 
-  ;
-
-/**
- * Remote host name to be used in the RPC function calls.
- */
-remote_host_name 
-  : CHAR_VALUE 
-	| identifier
-  ;
-
-/**
- * Remote (RPC) function names.
- */
-remote_func_name 
-  : identifier 
-  | identifier DOT identifier 
-  ;
-
-/* </CALL_STATEMENT> */
-
-
-/* <CASE_STATEMENT> */
-
-/**
- * 4gl CASE statement.
- */
-case_cmd	
-  : CASE fgl_expr when_unit_expr op_otherwise_command_expr end_case_command 
-  | CASE when_unit op_otherwise_command end_case_command 
-  ;
-
-/**
- * When sub statement of the case instruction with the statements that
- * are executed.
- * @todo : Explain this in a better way
- */
-when_unit 
-  : when_command 
-	| when_unit when_command 
-  ;
-
-/**
- * The possible expressions in the when of a case command.
- */
-when_unit_expr  
-  : when_command_expr 
-	| when_unit_expr when_command_expr 
-  ;
-
-/**
- * The end of a case statement
- */
-end_case_command 
-  : END_CASE 
-  ;
-
-/**
- * Optional otherwise command of the CASE statement.
- */
-op_otherwise_command 
-  : 
-	| OTHERWISE commands 
-  ;
-
-/**
- * Optional otherwise command of the CASE statement.
- * @todo : Understand why i cant use the rule below.
- */
-op_otherwise_command_expr 
-  : 
-	| OTHERWISE commands 
-  ;
-
-/**
- * The when definition without the statements to be executed.
- * 4gl code example:
- *    WHEN a = 1
- */
-when_command	
-  : WHEN  fgl_expr commands 
-  ;
-
-/**
- * @todo : understand the diference between this one a the one below.
- */
-when_command_expr	
-  : WHEN fgl_expr commands 
-  ;
-
-/* </CASE_STATEMENT> */
-
-
-
 /* <CLOSE_STATEMENTS> */
 
 /**
@@ -472,118 +195,6 @@ comment_cmd
 
 /* </COMMENTS> */
 
-
-/* <CONSTRUCT_STATEMENT> */
-
-/**
- * The construct statement.
- * 4gl example code:
- *   CONSTRUCT BY NAME pr.* ON str
- *    ... construct events ...
- *   END CONSTRUCT
- */
-construct_cmd	
-  :	CONSTRUCT constr_rest end_constr 
-  ;
-
-
-/**
- * The main part of construct between CONSTRUCT and END CONSTRUCT
- * 4gl example code:
- *    BY NAME pr.* ON str
- *    AFTER FIELD xpto
- *       ... 4gl code ...
- */
-constr_rest
-  : BY_NAME variable ON constr_col_list opt_defs op_help opt_attributes
-  | variable ON constr_col_list opt_defs FROM fld_list op_help opt_attributes
-  ;
-
-/**
- * Optional end construct.
- * @todo : change the name to op_end_construct
- */
-end_constr 
-  : 
-  | constr_extra_commands END_CONSTRUCT 
-  ;
-
-/**
- * The construct column list
- * 4gl code example:
- *    xpto.a, xpto.b, x
- */
-constr_col_list 
-  : constr_col 
-	| constr_col_list COMMA constr_col
-  ;
-
-/**
- * A construct column
- * 4gl code examples:
- *    xpto.*
- *    xpto.a
- *    y
- */
-constr_col 
-  : identifier 
-  | identifier DOT identifier 
-  | identifier DOT MULTIPLY 
-  ;
-
-/**
- * Extra comand list of the construct statement.
- */ 
-constr_extra_commands 
-  : constr_extra_command 
-	| constr_extra_commands constr_extra_command
-  ;
-
-/**
- * Construct possible event statements.
- * 4gl code examples:
- *    BEFORE FIELD xpto
- *      ... 4gl statements ...
- *    AFTER FIELD xpto
- *      ... 4gl statements ...
- *    ON KEY (CONTROL-A)
- *      ... 4gl statements ...
- *    AFTER CONSTRUCT
- *      ... 4gl statements ...
- *    BEFORE CONSTRUCT
- *      ... 4gl statements ...
- */
-constr_extra_command 
-  : BEFFIELD bef_c_field_list commands 
-	| AFTFIELD aft_c_field_list commands 
-	| on_key_command commands 
-	| AFTCONSTRUCT commands 
-	| BEFCONSTRUCT commands 
-  ;
-
-/**
- * The before field construct list
- * 4gl code example:
- *    first_field, second_field
- */
-bef_c_field_list 
-  : field_name2 
-	| bef_c_field_list COMMA field_name2 
-  ;
-
-/**
- * The after field construct list 
- * 4gl code example:
- *    first_field, second_field
- */
-aft_c_field_list 
-  : field_name2 
-	| aft_c_field_list COMMA field_name2 
-  ;
-
-/* </CONSTRUCT_STATEMENT> */
-
-
 /* <DATETIME_EXPRESSION> */
 
 /**
@@ -621,11 +232,10 @@ op_datetime_qual
 /* <DATETIME_EXPRESSION> */
 
 
-
-
 /* <DEFINE_STATEMENT> */
 
 /**
+ * To be in Define.y
  * Optional define section
  */
 define_section
@@ -1092,134 +702,6 @@ dim_var_def_name
 
 /* </DIM_STATEMENT> */
 
-
-/* <DISPLAY_STATEMENT> */
-
-/**
- * Optional AT used on the DISPLAY statement.
- * 4gl code examples:
- *   AT 3, 5
- * @todo : More examples.
- */
-opt_at 
-  : 
-	| AT display_coords 
-	| TO_MENUITEM identifier 
-	| TO_MAIN_CAPTION
-	| TO fld_list
-	| TO KWFORM identifier KWFIELD fld_list 
-	| TO KWFORM identifier CAPTION 
-	| TO_STATUSBOX identifier 
-  ;
-
-/**
- * The display by name statement definition.
- * 4gl code example:
- *   DISPLAY BY NAME a, b ATTRIBUTE(BORDER)
- */
-display_b_n_cmd 
-  : DISPLAY_BY_NAME ibind_var_list display_attr 
-  ;
-
-
-/**
- * The display statement.
- * 4gl code example:
- *   DISPLAY a, " XPTO ", 4 ATTRIBUTE(REVERSE)
- */
-display_cmd 
-  : DISPLAY fgl_expr_list opt_at display_attr 
-  ;
-
-/**
- * The display form statement.
- * 4gl code example:
- *   DISPLAY FORM "form_name" ATTRIBUTE(REVERSE)
- */
-display_form_cmd 
-  : DISPLAY_FORM form_name display_attr 
-  ;
-
-/**
- * The display array statement.
- * 4gl code example:
- *   DISPLAY ARRAY array_var TO xpto.* ATTRIBUTES(REVERSE)
- *     ... EVENTS ...
- *   END DISPLAY
- */
-display_array_cmd 
-  : DISPLAY_ARRAY use_arr_var TO identifier DOT MULTIPLY opt_scroll 
-	  opt_attributes disp_rest 
-  ;
-
-/**
- * Optional scroll to display array statement.
- * 4gl code example:
- *   SCROLL USING a
- * @todo : Understand what is this. I think that is an extension to standard 4gl
- */
-opt_scroll
-  : 
-  | SCROLL_USING field_name 
-  ;
-
-/**
- * Attributes used on the DISPLAY statements.
- */
-display_attr	
-  :	opt_attributes 
-	;
-
-/**
- * The optional part (events and end display) of DISPLAY ARRAY statement.
- */
-disp_rest 
-  : 
-	| disp_field_commands END_DISPLAY
-	| END_DISPLAY
-	;
-
-/**
- * Event handlers list for DISPLAY ARRAY statement.
- */
-disp_field_commands 
-  : disp_field_command 
-	| disp_field_commands disp_field_command
-	;
-
-/**
- * The specific DISPLAY ARRAY events
- * 4gl code examples:
- *    AFTER ROW
- *      ... 4gl code ...
- *    BEFORE ROW
- *      ... 4gl code ...
- *    ON KEY (CONTROL-P)
- *      ... 4gl code ...
- */
-disp_field_command 
-  : AFTROW commands 
-	| BEFROW commands 
-	| on_key_command commands 
-  ;
-
-/* </DISPLAY_STATEMENT> */
-
-/* <ERROR_STATEMENT> */
-
-/**
- * Error statement
- * 4gl code example:
- *   ERROR "This is an error number : ", status ATTRIBUTE(REVERSE)
- */
-error_cmd	
-  : ERROR fgl_expr_concat opt_attributes 
-	| ERROR fgl_expr_concat opt_attributes  WAIT_FOR_KEY 
-  ;
-
-/* </ERROR_STATEMENT> */
-
-
 /* <EXIT_STATEMENT> */
 
 /**
@@ -1307,30 +789,6 @@ fgl_next
   | using_expr 
   | math_expr
   | CONCAT_PIPES fgl_expr_c 
-  ;
-
-/**
- * Optional 4gl ???ret??? expression.
- */
-op_fgl_expr_ret_list
-  : 
-	| fgl_expr_ret_list
-  ;
-
-/**
- * 4gl ???ret??? expression.
- */
-fgl_expr_ret 
-  : fgl_expr 
-	| KW_NULL
-  ;
-
-/**
- * Comma separated 4gl ??? ret ??? list
- */
-fgl_expr_ret_list 	
-  : fgl_expr_ret
-	| fgl_expr_ret_list COMMA fgl_expr_ret
   ;
 
 /**
@@ -1543,7 +1001,7 @@ function_callb
   ;
 
 /**
- * Optional 
+ * Optional extend datetime
  */
 op_extend_d
   : 
@@ -1652,59 +1110,6 @@ field_name_list
 	| field_name_list COMMA field_name 
 
 /* </EXPRESSION_RULE> */
-
-
-/* <FOR_RULE> */
-
-/**
- * The FOR loop statement.
- * 4gl code examples:
- *   FOR i = 1 TO 10 STEP 2
- *      ... 4gl statements ...
- *   END FOR
- */
-for_cmd	
-  : FOR variable EQUAL fgl_expr TO fgl_expr op_for_step commands END_FOR 
-  ;
-
-/**
- * The optional step in the FOR loop.
- * 4gl code example:
- *   STEP -1
- */
-op_for_step 
-  :	
-	|	STEP fgl_expr
-  ;
-
-/* </FOR_RULE> */
-
-
-/* <FOREACH_RULE> */
-
-/**
- * The 4gl FOREACH statement.
- * 4gl code examples:
- *    FOREACH crXppto INTO rec.a, rec.b
- *      ...4gl statements...
- *    END FOREACH
- */
-foreach_cmd	
-  :	FOREACH fetch_cursor_name opt_foreach_using_part
-    opt_foreach_into_fetch_part commands END_FOREACH 
-  ;
-
-/**
- * The optional foreach loop USING sub statement.
- * 4gl code example:
- *    USING a,b,2
- */
-opt_foreach_using_part
-  : 
-	| KW_USING fgl_expr_list 
-	;
-
-/* </FOREACH_RULE> */
 
 
 /* <FORM_HANDLER_RULE> */
@@ -1834,21 +1239,6 @@ field_op
   ;
 
 /* </FORM_HANDLER_RULE> */
-
-
-/* <FREE_STATEMENT> */
-
-/**
- * FREE cursor statement
- * 4gl code example:
- *    FREE crXpto
- */
-free_cmd 
-  : FREE cursor_name
-  ;
-
-/* </FREE_STATEMENT> */
-
 
 /* <GENERAL_RULE> */
 
@@ -2043,21 +1433,6 @@ real_number
 
 /* </GENERAL_RULE> */
 
-
-/* <GOTO_STATEMENT> */
-
-/**
- * Goto statement
- * 4gl code example:
- *    GOTO xptoLabel
- */
-goto_cmd 
-  : GOTO label_goto 
-  ;
-
-/* </GOTO_STATEMENT> */
-
-
 /* <UI_RULE> */
 
 /**
@@ -2205,39 +1580,6 @@ op_def_but
 
 /* </UI_RULE> */
 
-
-/* <IF_STATEMENT> */
-
-/**
- * 4gl IF statement
- * 4gl code example:
- *    IF i = 1 THEN
- *       ... 4gl statements ...
- *    ELSE
- *       ... 4gl statements ...
- *    END IF
- */
-if_cmd	
-  : IF fgl_expr THEN  commands op_else END_IF 
-  ;
-
-/**
- * Optional ELSE subsatement of IF command.
- * 4gl code examples:
- *   ELSE
- *     ... 4gl statements ...
- *
- *   ELSE IF x = 1 THEN
- *     ... 4gl statements ...
- */
-op_else 
-  : 
-	| ELSE commands
-	| ELIF fgl_expr THEN commands op_else 
-	;
-
-/* </IF_STATEMENT> */
-
 /**
  * Import function statement.
  * This statement is an extension to original Informix 4gl.
@@ -2253,175 +1595,6 @@ import_m
 module_import
   : IMPORT_DATATYPE identifier 
   ;
-
-/* <INPUT_STATEMENT> */
-
-/**
- * Optional end input.
- */
-end_input 
-  :
-  | field_commands END_INPUT 
-  | END_INPUT 
-	;
-
-/**
- * Optional WHITHOUT DEFAULTS property of INPUT statement.
- */
-opt_defs 
-  : 
-  | WITHOUT_DEFAULTS 
-  ;
-
-/**
- * The list of field commands to be used inside INPUT statement.
- * The commands are the field and input events.
- */
-field_commands 
-  : field_command 
-	| field_commands field_command
-	;
-
-/**
- * The field commands tyo be used inside the INPUT statement.
- */
-field_command 
-  : BEFFIELD bef_field_list commands 
-	| AFTFIELD aft_field_list commands 
-	| AFTROW commands 
-	| BEFROW commands 
-	| on_key_command commands 
-	| AFTINP commands 
-	| BEFINP commands 
-	| BEFORE_DELETE  commands 
-	| BEFORE_INSERT  commands 
-	| AFTER_DELETE  commands 
-	| AFTER_INSERT  commands 
-  ;
-
-/**
- * The list of fields to be used in before field event of the INPUT
- * statement.
- */
-bef_field_list 
-  : field_name 
-	| bef_field_list COMMA field_name 
-  ;
-
-/**
- * The list of fields to be used in after field events of the INPUT 
- * statement.
- */
-aft_field_list 
-  : field_name 
-	| aft_field_list COMMA field_name 
-  ;
-
-/**
- * The next field command that is used inside the events of the INPUT
- * statement.
- */
-next_field_cmd 
-  : NEXTFIELD next_field 
-  ;
-
-/**
- *
- */
-next_form_cmd 
-  : NEXTFORM identifier KWFIELD next_field 
-  ;
-
-/**
- * The definition of the field that where to move with
- * NEXT FIELD command.
- */
-next_field	
-  :	NEXT 
-	| PREVIOUS 
-	| field_name 
-  ;
-
-/**
- * The main rule of the INPUT statement.
- */
-input_cmd	
-  :	INPUT inp_rest end_input 
-  ;
-
-/**
- * The inside of the INPUT statement.
- * 4gl code examples:
- *   BY NAME xpto.* HELP 100
- *   BY NAME xpto.* HELP 100
- *   ARRAY vsArray FROM pa 
- */
-inp_rest
-  : BY_NAME ibind_var_list opt_defs opt_help_no opt_attributes 
-  | ibind_var_list opt_defs FROM fld_list  opt_help_no opt_attributes 
-  | ARRAY use_arr_var opt_defs FROM identifier DOT MULTIPLY opt_help_no 
-    opt_attributes
-  ;
-
-/**
- * Scroll statement that scrolls up or down the values of an array
- * in a screen array.
- */
-scroll_cmd 
-  : SCROLL fld_list up_or_down 
-  ;
-
-/**
- * The up or down definition os the scroll statement and the amount of
- * lines.
- * 4gl code example:
- *    UP 2
- *    DOWN 4
- *    UP
- *    DOWN
- */
-up_or_down  
-  : KWUP_BY INT_VALUE 
-	| KWDOWN_BY INT_VALUE 
-	| KWUP 
-	| KWDOWN 
-  ;
-
-/**
- * Optional help used in the construct statement.
- * 4gl code example:
- *    HELP 20
- */
-op_help 
-  : 
-	| HELP INT_VALUE
-  ;
-
-/**
- * Specific INPUT ARRAY attributes.
- * @todo : Understand if this rule could be merged with 
- * input_array_attributes_int rule.
- */
-input_array_attributes
-  : input_array_attributes_int 
-  ;
-
-/**
- * Specific INPUT ARRAY attributes.
- */
-input_array_attributes_int 
-  : CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE 	
-	| COUNT EQUAL INT_VALUE
-	| COUNT EQUAL variable
-	| MAXCOUNT EQUAL INT_VALUE
-	| MAXCOUNT EQUAL variable
-	| INSERT_ROW_EQUAL_TRUE
-	| INSERT_ROW_EQUAL_FALSE
-	| DELETE_ROW_EQUAL_TRUE
-	| DELETE_ROW_EQUAL_FALSE
-  ;
-
-/* </INPUT_STATEMENT> */
 
 /**
  * The on key command used on PROMPT, CONSTRUCT, INPUT statements.
@@ -2518,18 +1691,6 @@ key_value_1
   | PREVPAGE
   | CHAR_VALUE
   ;
-
-
-/**
- * The 4gl LABEL statement to be used with the GOTO statement.
- * The identifier of the label is readed by the lexer.
- * 4gl code example:
- *   LABEL xpto
- */
-label_cmd 
-  : LABEL  
-  ;
-
 
 
 /** 
@@ -2654,18 +1815,6 @@ ldeffunction
   ;
 
 /**
- * The return statements
- * 4gl code examples:
- *   RETURN
- *   RETURN a
- *   RETURN 1, x.p
- *   RETURN a+b
- */
-return_cmd 
-  : RETURN op_fgl_expr_ret_list 
-  ;
-
-/**
  * Optional 4gl expression list
  * 4gl code examples:
  *   a + 1
@@ -2743,141 +1892,6 @@ mem_func_def
 
 
 /* </MAIN_RULE> */
-
-
-/* <MENU_STATEMENT> */
-
-/**
- * The MENU statement.
- * 4gl code example:
- *   MENU "Options"
- *      COMMAND "Op 1" "First option"
- *        ... 4gl statements ...
- *   END MENU
- */
-menu_cmd	
-  :	MENU menu_title menu_commands end_menu_command 
-  ;
-
-/**
- * The end menu
- * @todo : Understand why this is a separated RULE.
- */
-end_menu_command  
-  : END_MENU 
-  ;
-
-/**
- * The possible menu declarative subsections.
- * 4gl code examples:
- *   BEFORE MENU 
- *      ... 4gl statements ...
- *   COMMAND "Op 1" 
- *      ... 4gl statements ...
- *   COMMAND KEY "X" "Op 1" "First option" HELP 100
- *      ... 4gl statements ...
- */
-menu_block_command 
-  : BEFORE_MENU commands 
-  | COMMAND opt_key menu_opt_name menu_optional_desc opt_help_no commands 
-  | COMMAND opt_key opt_help_no commands 
-  ;
-
-/**
- * The list of possible menu commands
- */
-menu_commands 
-  : menu_block_command 
-	| menu_commands menu_block_command
-	;
-
-/**
- * Optional key to use in the COMMAND of the MENU statement.
- */
-opt_key	
-  :	
-	| key_val 
-
-/**
- * Name for a COMMAND substatement in the MENU statement.
- * @todo : This should change name because it is not optional and 
- *         is part of COMMAND. maybe "command_option_name"
- */
-menu_opt_name	
-  :	CHAR_VALUE 
-  | variable 
-  ;
-
-/**
- * Optional description of the COMMAND substatement in the MENU statement.
- * @todo : Change to opt_menu_description.
- */
-menu_optional_desc	
-  :
-  | variable 
-  | CHAR_VALUE 
-	;
-
-/**
- * A NEXT option command to be used in the MENU events. The
- * next option continue the menu execution in a specific 
- * option.
- * 4gl code example:
- *    NEXT OPTION "Xpto"
- */
-next_option_cmd 
-  : NEXT_OPTION opt_name 
-  ;
-
-/**
- * The SHOW OPTION command of the MENU statement. This statement
- * turns visible one option.
- * 4gl code examples:
- *   SHOW OPTION "Xpto"
- *   SHOW OPTION "Xpto", "Xpta"
- */
-show_option_cmd 
-  : SHOW_OPTION opt_name_list 
-  ;
-
-/**
- * The HIDE OPTION command of the MENU statement. This statement
- * turns invisible one option.
- * 4gl code example:
- *   HIDE OPTION "Xpto"
- *   HIDE OPTION "Xpto", "Xpta"
- */
-hide_option_cmd 
-  : HIDE_OPTION opt_name_list 
-  ;
-
-/**
- * Name of a menu option.
- * @todo : Change the rule name because it is not optional
- */
-opt_name	
-  :	ALL 
-  | CHAR_VALUE 
-  | variable 
-  ;
-
-/**
- * A comma separated menu option name.
- */
-opt_name_list	
-  :	opt_name
-	|	opt_name_list COMMA opt_name 
-	;
-
-/** 
- * The title of the menu.
- */
-menu_title 	
-  :	variable 
-  | CHAR_VALUE
-  ;
-
-/* </MENU_STATEMENT> */
 
 
 /**
@@ -3481,43 +2495,17 @@ opt_allopts
 
 /* </OPTIONS_STATEMENT> */
 
-
-
-/* <PREPARE_STATEMENT> */
-
-/**
- * Dynamic SQL preparation.
- * 4gl code examples:
- *    PREPARE stXpto FROM sqlStr
- *    USE SESSION connName FOR PREPARE stXpto FROM sqlStr
- */
-prepare_cmd 
-  : opt_use PREPARE stmt_id FROM var_or_char 
-  ;
-
 var_or_char
   : variable 
 	| CHAR_VALUE
 	;
 
 /**
- * Execution of a prepared statement.
- * 4gl code examples:
- *   EXECUTE stXpto
- *   EXECUTE stXpto USING var, 1, 3
- *   EXECUTE IMEDIATE sqlStr
+ * Prepared statement identification.
  */
-execute_cmd 
-  : EXECUTE stmt_id
-  | EXECUTE stmt_id KW_USING ibind_var_list 
-	| EXECUTE_IMMEDIATE var_or_char 
-  ;
-
 stmt_id 
   : ident_or_var 
 	;
-
-/* </PREPARE_STATEMENT> */
 
 
 /* <PUT_STATEMENT> */
@@ -4151,26 +3139,6 @@ op_wordwrap
 
 /* </REPORT_RULE> */
 
-
-/* <RUN_STATEMENT> */
-
-/**
- * Run an external program making a fork and eventually a wait.
- * 4gl code examples:
- *   RUN "fgrep xx *" RETURNING x
- *   RUN "vi" WITHOUT WAITING
- *   RUN "vi" EXIT
- */
-run_cmd 
-  : RUN fgl_expr 
-  | RUN fgl_expr RETURNING variable 
-  | RUN fgl_expr WITHOUT_WAITING 
-  | RUN fgl_expr WAIT 
-  | RUN fgl_expr EXIT 
-  ;
-
-/* </RUN_STATEMENT> */
-
 /**
  * The possible DROP commands.
  * @todo : Understamd if this rule is realy needed.
@@ -4578,123 +3546,12 @@ rollback_statement
 	;
 
 /**
- * Database insert statement.
- * @todo : Understand what ss means.
- * 4gl code examples:
- *   INSERT INTO xptoTable 
- *   INSERT INTO xptoTable (firstCol,secondCol,b,c) VALUES (a,b,8,"xx")
- *   INSERT INTO xptoTable (x,y,z) SELECT a,b,c FROM otherTable WHERE a > 1
- *   INSERT INTO xptoTable VALUES (a,b,8,"xx")
- *   INSERT INTO xptoTable SELECT a,b,c FROM otherTable WHERE a > 1
- */
-insert_statement_ss
-  : INSERT_INTO table_name op_insert_column_list ins_2_ss 
-  ;
-
-/**
- * The second part of the INSERT statement.
- * 4gl code examples:
- *   VALUES (a,b,8,"xx")
- *   SELECT a,b,c FROM otherTable WHERE a > 1
- */
-ins_2_ss 
-  : VALUES OPEN_BRACKET insert_value_list_ss CLOSE_BRACKET 
-	| query_specification_ss
-	;
-
-/**
- * Optional INSERT statement column list.
- * 4gl code example:
- *   (a,b,8,"xx")
- */
-op_insert_column_list
-  : 
-	| OPEN_BRACKET insert_column_list CLOSE_BRACKET
-	;
-
-/**
- * Comma separated column list used in the INSERT statement.
- * 4gl code examples:
- *   a
- *   x,y,z,w
- */
-insert_column_list
-  : column_name
-	| insert_column_list COMMA column_name
-  ;
-
-/**
- * Comma separated list of values to be inserted in a table with the INSERT 
- * statement.
- * @todo : understand what ss means.
- * 4gl code examples:
- *    a,b,8,"xx",NULL
- */
-insert_value_list_ss
-  : insert_value_ss 
-	| insert_value_list_ss COMMA insert_value_ss 
-  ;
-
-/**
- * Single value that can be inserted to be used in the INSERT statement.
- * @todo : understand what ss means.
- * 4gl code example:
- *   NULL
- *   a
- *   "xx"
- *   i+1
- */
-insert_value_ss
-  : value_expression_ss 
-	| KW_NULL 
-	;
-
-/**
- * The cursor FETCH statement.
- * 4gl code examples:
- *   FETCH crName 
- *   FETCH crName INTO x,y,z
- *   FETCH FIRST crName
- *   FETCH LAST crName INTO x,y,z
- *   FETCH NEXT crName
- *   FETCH PREVIOUS crName
- *   FETCH PRIOR crName INTO x,y,z
- *   FETCH CURRENT crName
- *   FETCH RELATIVE 10 crName  INTO x,y,z
- *   FETCH ABSOLUTE i + 1 crName 
- */
-fetch_statement
-  : FETCH fetch_part opt_into_fetch_part
-  ;
-
-/**
  * The possible name to declare a CURSOR with the DECLARE statement.
  * 4gl statement examples:
  *   crName
  */
 declare_cursor_name  
   : ident_or_var 
-  ;
-
-/**
- * The specification about what kind of fetch is made.
- * 4gl code examples:
- *   crName
- *   
- */
-fetch_part
-  : fetch_place fetch_cursor_name
-  | fetch_cursor_name
-  ;
-
-/**
- * Optional INTO subcommand of the FETCH statement.
- * 4gl code examples:
- *   INTO a,b,c
- */
-opt_into_fetch_part
-  :
-  | INTO obind_var_list 
   ;
 
 /**
@@ -4705,30 +3562,6 @@ opt_into_fetch_part
 opt_foreach_into_fetch_part
   :
   | INTO obind_var_list 
-  ;
-
-/**
- * The kind of place for where the cursor should be positioned.
- * Used in the FETCH statement.
- * 4gl code examples:
- *   FIRST 
- *   LAST
- *   NEXT
- *   PREVIOUS
- *   PRIOR
- *   CURRENT
- *   RELATIVE 10
- *   ABSOLUTE i + 1
-*/
-fetch_place 
-  : FIRST 
-	| LAST
-	| NEXT
-	| PREVIOUS
-	| PRIOR
-	| CURRENT
-	| RELATIVE fgl_expr
-	| ABSOLUTE fgl_expr
   ;
 
 /**
@@ -4867,6 +3700,8 @@ sql_cmd
 /**
  * The 4gl sql statements without the USE part.
  * This rule breaks the SQL statements in kinds.
+ * @todo : When i have tests for everithing i must borke this in the kinds of
+ *         sql statements.
  * 4gl code examples:
  */
 sql_commands 
@@ -5946,16 +4781,6 @@ e_curr
 	;
 
 /**
- * Flushing of an insert cursor into the database.
- * 4gl code examples:
- *    FLUSH crXpto
- *    USE SESSION connName FLUSH crXpto
- */
-flush_cmd 
-  : opt_use FLUSH fetch_cursor_name  
-  ;
-
-/**
  * The statement to declare cursors.
  * The usage of diferent connections is an extension to Informix 4gl.
  * 4gl code examples:
@@ -6502,379 +5327,6 @@ extend_qual_ss
 
 /* </SQL1_RULE> */
 
-/**
- * An embedded SQL block.
- * This is an extension to Informix 4gl.
- * In a SQL block the statements are not parsed. This way we can use specific
- * statements of a concrete database (ex: postgresql) with a diferent SQL
- * dialect.
- * The only thing validated are the reserved words.
- * 4gl code examples:
- *   SQL
- *      SELECT * FROM xptoTable
- *   END SQL
- */
-sql_block_cmd 
-  : SQL sql_block END_SQL 
-  ;
-
-/**
- * The internal part of a SQL embededd block.
- */
-sql_block 
-  : sql_block_entry 
-	| sql_block sql_block_entry  
-  ;
-
-/**
- * A piece of SQL code of an embedded SQL block.
- * This rule accepts any kind of reserved SQL token without validating
- * the syntax of the SQL statement.
- */
-sql_block_entry
-  : SQL_TEXT 
-	| in_var 
-	| sql_block_into 
-  | ABSOLUTE
-  | ACCEPT
-  | ACL_BUILTIN
-  | ADD
-  | AFTER
-  | ALL
-  | ALTER
-  | ANSI
-  | ANY
-  | APPEND
-  | ARRAY
-  | AS
-  | ASC
-  | ASCENDING
-  | ASCII
-  | ASSOCIATE
-  | AT
-  | ATSIGN
-  | ATTRIBUTES
-  | AUDIT
-  | AUTHORIZATION
-  | AVERAGE
-  | AVG
-  | BEFORE
-  | BETWEEN
-  | BLACK
-  | BLINK
-  | BLUE
-  | BOLD
-  | BORDER
-  | BOTTOM
-  | BUFFERED
-  | BUTTONS
-  | BY
-  | BYTE
-  | CAPTION
-  | CASE
-  | CCODE
-  | CHAR
-  | CHECK
-  | CLEAR
-  | CLIPPED
-  | CLOSE
-  | CLOSE_BRACKET
-  | CLOSE_SQUARE
-  | CODE_C
-  | COLON
-  | COLUMN
-  | COLUMNS
-  | COMMA
-  | COMMAND
-  | COMMENT
-  | COMMIT
-  | CONNECT
-  | CONST
-  | CONSTANT
-  | CONSTRUCT
-  | COUNT
-  | CREATE
-  | CURRENT
-  | CURSOR
-  | CYAN
-  | DATABASE
-  | DATE
-  | DATETIME
-  | DAY
-  | DBA
-  | DBYNAME
-  | DEC
-  | DECIMAL
-  | DECLARE
-  | DEFAULT
-  | DEFAULTS
-  | DEFER
-  | DEFINE
-  | DELETE
-  | DELIMITER
-  | DESC
-  | DESCENDING
-  | DIM
-  | DISABLE
-  | DISPLAY
-  | DISTINCT
-  | DIVIDE
-  | DOT
-  | DOUBLE
-  | DOWNSHIFT
-  | DROP
-  | ELIF
-  | ELSE
-  | ENABLE
-  | ENDCODE
-  | EQUAL
-  | ERROR
-  | ESCAPE
-  | EVERY
-  | EXCLUSIVE
-  | EXEC
-  | EXECUTE
-  | EXISTS
-  | EXIT
-  | EXTEND
-  | EXTENT
-  | EXTERNAL
-  | FCALL
-  | FETCH
-  | FIELDTOWIDGET
-  | FIELD_TOUCHED
-  | FINISH
-  | FIRST
-  | FKEY
-  | FLOAT
-  | FLUSH
-  | FOR
-  | FOREACH
-  | FOREIGN
-  | FORMAT
-  | FORMHANDLER
-  | INPUT
-  | FORM_IS_COMPILED
-  | FOUND
-  | FRACTION
-  | FREE
-  | FROM
-  | FUNCTION
-  | GET_FLDBUF
-  | GLOBALS
-  | GO
-  | GOTO
-  | GRANT
-  | GREATER_THAN
-  | GREEN
-  | GROUP
-  | HAVING
-  | HEADER
-  | HELP
-  | HIDE
-  | HOUR
-  | ICON
-  | ID_TO_INT
-  | IF
-  | IN
-  | INCHES
-  | INDEX
-  | INFIELD
-  | INITIALIZE
-  | INPUT
-  | INSERT
-  | INTEGER
-  | INTERRUPT
-  | INTERVAL
-  | INT_TO_ID
-  | INVISIBLE
-  | KEY
-  | KWDOWN
-  | KWFIELD
-  | KWFORM
-  | KWLINE
-  | KWMESSAGE
-  | KWNO
-  | KWUP
-  | KWWINDOW
-  | KW_AND
-  | KW_FALSE
-  | KW_IS
-  | KW_NULL
-  | KW_OR
-  | KW_TRUE
-  | KW_USING
-  | LAST
-  | LEFT
-  | LESS_THAN
-  | LET
-  | LIKE
-  | LOCAL
-  | LOCATE
-  | LOG
-  | MAGENTA
-  | MAIN
-  | MARGIN
-  | MATCHES
-  | MAXCOUNT
-  | MEMORY
-  | MENU
-  | MENUHANDLER
-  | MESSAGEBOX
-  | MINUS
-  | MINUTE
-  | MM
-  | MOD
-  | MODE
-  | MODIFY
-  | MONEY
-  | MONTH
-  | MULTIPLY
-  | NEED
-  | NEXT
-  | NEXTPAGE
-  | NOCR
-  | NORMAL
-  | NOT
-  | NUMERIC
-  | OF
-  | OFF
-  | ON
-  | OPEN
-  | OPEN_BRACKET
-  | OPEN_SQUARE
-  | OPTION
-  | OPTIONS
-  | ORDER
-  | OTHERWISE
-  | OUTER
-  | OUTPUT
-  | PAD
-  | PASSWORD
-  | PAUSE
-  | PDF_FUNCTION
-  | PDF_REPORT
-  | PERCENT
-  | PLUS
-  | POINTS
-  | PRECISION
-  | PREPARE
-  | PREPEND
-  | PREVIOUS
-  | PREVPAGE
-  | PRINT
-  | PRIOR
-  | PROCEDURE
-  | PROGRAM
-  | PROMPT
-  | PUBLIC
-  | PUT
-  | QUIT
-  | READONLY
-  | REAL
-  | RECORD
-  | RECOVER
-  | RED
-  | REFERENCES
-  | REGISTER
-  | RELATIVE
-  | REPORT
-  | RESOURCE
-  | RETURN
-  | RETURNING
-  | REVERSE
-  | REVOKE
-  | RIGHT
-  | ROLLFORWARD
-  | ROW
-  | ROWS
-  | RUN
-  | SCHEMA
-  | SCROLL
-  | SECOND
-  | SECTION
-  | SELECT
-  | SEMICOLON
-  | SERIAL
-  | SESSION
-  | SHARED
-  | SHOW
-  | SINGLE_KEY
-  | SIZE
-  | SKIP
-  | SLEEP
-  | SMALLFLOAT
-  | SMALLINT
-  | SOME
-  | SPACES
-  | SQL
-  | SQLSUCCESS
-  | STATUSBOX
-  | STEP
-  | STOP
-  | SUM
-  | SYNONYM
-  | TAB
-  | TEMP
-  | TEMPLATE
-  | TEXT
-  | THEN
-  | THRU
-  | TIMEOUT
-  | TO
-  | TOP
-  | TRAILER
-  | TUPLE
-  | UNCONSTRAINED
-  | UNDERLINE
-  | UNION
-  | UNIQUE
-  | UNLOCK
-  | UPDATE
-  | UPSHIFT
-  | USE
-  | USER
-  | VALIDATE
-  | VALUES
-  | VARCHAR
-  | VARIABLE
-  | WAIT
-  | WAITING
-  | WHEN
-  | WHERE
-  | WHILE
-  | WHITE
-  | WITH
-  | WORDWRAP
-  | WORK
-  | XMAX
-  | XMIN
-  | XSET
-  | YEAR
-  | YELLOW
-	;
-
-/**
- * The definition of a 4gl variable usage inside an embedded SQL block.
- * 4gl code example:
- *   $varName
- */
-in_var  
-  : DOLLAR var_ident_ibind_ss 
-  ;
-
-/**
- * An optional INTO to be used in the embedded SQL blocks.
- * 4gl code examples:
- *   INTO a
- *   INTO aRecord.*
- */
-sql_block_into
-  : INTO obind_var_list 
-  ;
-
-
-
 
 /** @todo : See if this is to be used and if so uncomment it.
 op_template :
@@ -6919,203 +5371,6 @@ template_value
   ;
 
 */
-
-/*
-=====================================================================
-                        Source: update.rule
-=====================================================================
-*/
-
-
-/* <UPDATE_RULE> */
-
-/**
- * The SQL update statement to change data in the database.
- * 4gl code examples:
- *   UPDATE table SET ??? WHERE  table.a = 1
- */
-update_statement_ss
-  : UPDATE table_name set_clause_list_ss  where_upd_ss 
-  ;
-
-/**
- * The where current definition to make cursor for update changes.
- * 4gl code examples:
- *   WHERE CURRENT OF cursorName
- *   WHERE a = 1
- */
-where_upd_ss 
-  : 
-	| WHERE_CURRENT_OF fetch_cursor_name 
-	| WHERE search_condition_ss 
-	;
-
-/**
- * Set clause of a SQL Update Statement.
- * 4gl code examples:
- *   SET (columnOne,columnTwo) = (valOne,1)
- *   SET * = ( valOne,1,"xpto")
- *   SET tabName.* = ( valOne,1,"xpto")
- *   SET (colOne,columnTwo)
- *   SET * = colOne,colTwo
- *   SET tabName.* = colOne,colTwo
- */
-set_clause_list_ss
-  : XSET_OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL 
-	  OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET 
-  | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET 
-  | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET 
-  | XSET upd_columns_ss  
-  | XSET_MULTIPLY_EQUAL upd_val_list_ss  
-  | XSET_ident_DOT_MULTIPLY_EQUAL upd_val_list_ss  
-  ;
-
-/**
- * Comma separated list of values that can be changed with an UPDATE statement.
- * 4gl code examples:
- *   columnOne,columnTwo
- */
-upd_columns_ss 
-  : col_1_ss  
-	| upd_columns_ss COMMA col_1_ss 
-  ;
-
-/**
- * A possible column name to be used in the UPDATE SQL statement.
- * 4gl code example:
- *   columnOne
- *   define
- */
-upd_column_name 
-  : column_name  
-	;
-
-/**
- * A SET assignment in a single column.
- * 4gl code examples:
- *   colName = 1
- *   colName = "xpto"
- */
-col_1_ss 
-  : upd_column_name EQUAL upd_val_ss 
-  ;
-
-/**
- * A comma separated list of columns to be updated.
- * This rule is to use inside brackets.
- */
-upd_col_list  
-  : upd_column_name	
-	| upd_col_list COMMA upd_column_name 
-  ;
-
-/**
- * A comma separated list of values to update columns.
- * To be used in the UPDATE statement.
- * 4gl code examples:
- *   valOne, 1
- *   valTwo, "xpto", NULL
- *   varName + 1 / 2
- */
-upd_val_list_ss  
-  : upd_val_ss 
-	| upd_val_list_ss COMMA upd_val_ss 
-  ;
-
-/**
- * A possible value to use in the update statements.
- * 4gl code examples:
- *   NULL
- *   varName + 1 / 2
- */ 
-upd_val_ss 
-  : KW_NULL 
-	| upd_value_expression_ss  
-  ;
-
-/**
- * An update value expression to use in an update statement.
- * 4gl code examples:
- *   varName
- *   1
- *   -10
- *   +14.6
- */
-upd_value_expression_ss
-  : upd_value_expression_initial_ss 
-  | MINUS upd_value_expression_initial_ss 
-  | PLUS upd_value_expression_initial_ss 
-  ;
-
-/**
- * The definition of a value to use as update value in the UPDATE statement.
- * 4gl code examples:
- *   1
- *   (select count(*) from xpto)
- *   @columnName
- *   @tableName.columnName
- *   "xpto"
- *   TRUE
- *   FALSE
- *   USER
- *   COUNT(*)
- */
-upd_value_expression_initial_ss 
-  : upd_var_ident_ibind_ss    
-  | subquery_ss 
-  | ATSIGN identifier 
-  | ATSIGN identifier DOT identifier 
-  | upd_value_expression_complex_ss 
-  | literal
-  | KW_TRUE
-  | KW_FALSE
-  | USER
-  | COUNT_MULTIPLY
-  ;
-
-/**
- * A more complex expression to be used as a value to change column contents
- * with the UPDATE statement.
- * @todo : More examples
- * 4gl code examples:
- *   10 / 2
- *   10:10 + 1 UNITS HOUR
- */
-upd_value_expression_complex_ss 
-  : upd_value_expression_initial_ss DIVIDE upd_value_expression_ss 
-  | upd_value_expression_initial_ss units_qual 
-  | upd_value_expression_initial_ss MULTIPLY upd_value_expression_ss 
-  | upd_value_expression_initial_ss PLUS upd_value_expression_ss 
-  | upd_value_expression_initial_ss MINUS upd_value_expression_ss 
-  | AVG OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
-  | XMAX OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
-  | XMIN OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
-  | SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
-  | COUNT OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 
-  | identifier OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 
-  | DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 
-  | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET 
-  | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET 
-  ;
-
-
-upd_var_ident_ibind_ss
-  : var_ident_ibind_ss 
-  ;
-
-/**
- * A comma separated list of expressions to be used in the complex expressions
- * of the update statement.
- * 4gl code examples:
- *   10 * 3 / varName, 5/varName
- */
-upd_value_expr_list_ss 
-  : upd_value_expression_ss 
-  | upd_value_expr_list_ss COMMA upd_value_expression_ss 
-  ;
-
-/* </UPDATE_RULE> */
-
 
 /* <VAR_RULE> */
 
@@ -7177,22 +5432,6 @@ var_ident_ibind_ss
 /* </VAR_RULE> */
 
 
-/* <WHILE_STATEMENT> */
-
-/**
- * The while loop.
- * 4gl code example:
- *    WHILE i = 1 
- *      .. 4gl statements...
- *    END WHILE
- */
-while_cmd 
-  : WHILE fgl_expr commands END_WHILE 
-  ;
-
-/* </WHILE_STATEMENT> */
-
-
 /* <WINDOW_STATEMENTS> */
 
 /**
@@ -7218,6 +5457,8 @@ op_to_defs
 
 /**
  * All possible CLEAR commands in 4gl.
+ * @todo : If posssible break this rule in severall but only after all tests
+ * created.
  * 4gl code examples:
  *   CLEAR SCREEN
  *   CLEAR WINDOW wXpto
@@ -7245,17 +5486,6 @@ clear_cmd
 fld_list	
   :	field_name  
 	|	fld_list COMMA field_name 
-  ;
-
-/**
- * The statement to make current (the visible window) a specific window.
- * 4gl code examples:
- *   CURRENT WINDOW IS SCREEN
- *   CURRENT WINDOW IS wName
- */
-current_win_cmd	
-  :	CWIS 
-	|	CURRENT_WINDOW_IS win_name 
   ;
 
 /**
@@ -7311,26 +5541,6 @@ menu_name
 menu_handler
   : identifier
 	;
-
-/**
- * The command to hide a window.
- * 4gl code examples:
- *   HIDE WINDOW wName
- */
-hide_cmd 
-  : HIDE_WINDOW win_name 
-  ;
-
-/**
- * A statement to move a window in the screen.
- * 4gl code examples:
- *   MOVE WINDOW wName TO x+3/2, y-4
- *   MOVE WINDOW wName BY x+3/2, y-4
- */ 
-move_cmd 
-  : MOVE_WINDOW win_name TO fgl_expr COMMA fgl_expr 
-  |  MOVE_WINDOW win_name BY fgl_expr COMMA fgl_expr
-  ;
 
 /* </WINDOW_STATEMENTS> */
 

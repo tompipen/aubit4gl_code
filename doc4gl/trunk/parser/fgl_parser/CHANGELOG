@@ -1,0 +1,30 @@
+mkdir generated
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/CompilerDirectives.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/ScreenInteraction.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/SqlDml.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/FglDefinition.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/Sql.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/SqlDynamicManagement.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/FglReport.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/SqlQueryOptimization.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/SqlDataIntegrity.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/ReportExecution.y syntax/
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/syntax/SqlDds.y syntax/
+
+cvs add syntax/CompilerDirectives.y syntax/ScreenInteraction.y syntax/SqlDml.y \
+syntax/FglDefinition.y syntax/Sql.y syntax/SqlDynamicManagement.y syntax/FglReport.y \
+syntax/SqlQueryOptimization.y syntax/SqlDataIntegrity.y syntax/ReportExecution.y \
+syntax/SqlDds.y
+
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/ast/Makefile ast
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/ast/Fgl.tc ast
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/ast/CompilerDirectives.tc ast
+cvs add ast/Fgl.tc ast/CompilerDirectives.tc
+
+# Getted the yacc.c skeleton from bison CVS
+
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/FglParse.cpp .
+cp  ~sergio/tmp/doc4gl_arch/doc4gl.ok/parser/fgl_parser/FglParse.h .
+cvs add FglParse.cpp FglParse.h 
+
+# Installed a version of cppunit

@@ -1,6 +1,6 @@
 /**
  * @file
- * Definition of an AST to Informix 4gl information to be loaded by the 
+ * Definition of the cursor manipulation statements to be loaded by the
  * bison parser.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,14 +19,10 @@
  */
 
 /* @todo : Create this tree
-%include "SqlDds.tc"
-*/
-%include "SqlCursorManipulation.tc"
+%include "CloseCursor.tc"
+%include "Declare.tc"
+%include "Fetch.tc"
+%include "Flush.tc"
+%include "OpenCursor.tc"
+%include "Put.tc"
 /*
-%include "SqlDml.tc"
-%include "SqlQueryOptimization.tc"
-%include "SqlDataAccess.tc"
-%include "SqlDataIntegrity.tc"
-%include "SqlDynamicManagement.tc"
-%include "SqlEmbedded.tc"
-*/

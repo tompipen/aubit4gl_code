@@ -1,6 +1,8 @@
 
+CPP_UNIT_DIR=/usr/local/cppunit-1.9.12
 CXX=g++
-CXXFLAGS=-g -I .. -I ../ast -I ../lexer -I ../error
+CXXFLAGS=-g -I .. -I ../ast -I ../lexer -I ../error -I ../keyword \
+-I $(CPP_UNIT_DIR)/include
 
 # =========================================================
 # Generated cppunit tests to test all 4gl(s) in a directory
@@ -8,7 +10,7 @@ CXXFLAGS=-g -I .. -I ../ast -I ../lexer -I ../error
 # =========================================================
 GenParserTest_OBJECTS = MainGenFglTest.o GenFglTest.o 
 GenParserTest: $(GenParserTest_OBJECTS) 
-	$(CXX) $(CXXFLAGS) -o $@ $(GenParserTest_OBJECTS) -ldl /usr/local/cppunit-1.9.11/src/cppunit/.libs/libcppunit.so ../fgl_parser.so ../ast/fgl_ast.so
+	$(CXX) $(CXXFLAGS) -o $@ $(GenParserTest_OBJECTS) -ldl /usr/local/cppunit-1.9.12/src/cppunit/.libs/libcppunit.so ../fgl_parser.so ../ast/fgl_ast.so
 
 # =========================================================
 # An executable to parse the 4gl passed as argument.

@@ -5,7 +5,10 @@
 #include "ParserError.h"
 #include "KeyWord.h"
 
+// FIXME : This should not be here
+#ifndef a4gl_yyerror
 #define a4gl_yyerror(e) getParserError()->addError(e,getLine(),0)
+#endif
 
 class FglLexer {
 	private:

@@ -19,6 +19,7 @@ include(../generated/kw.yh)
 
 include(FglDefinition.y)
 include(CompilerDirectives.y) 
+include(FlowControl.y)
 include(StorageManipulation.y)
 include(ScreenInteraction.y)
 include(ReportExecution.y)
