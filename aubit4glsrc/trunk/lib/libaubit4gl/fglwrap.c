@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.53 2003-09-26 19:08:28 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.54 2003-11-11 11:33:56 mikeaubury Exp $
 #
 */
 
@@ -76,7 +76,10 @@ static int initsig_child(void );
 /* extern int errno; */
 #include <errno.h>
 
-char *p_args[256];
+#define MAX_ARGS 1024
+
+
+char *p_args[MAX_ARGS];
 
 
 /*
@@ -237,7 +240,7 @@ char *p;
   /* printf("Check.."); */
 
   b = 0;
-  for (a = 0; a < 256; a++)
+  for (a = 0; a < MAX_ARGS; a++)
     {
       if (a < nargs)
 	{
@@ -278,7 +281,6 @@ char *p;
 #ifdef DEBUG
   A4GL_debug ("Copied Arguments\n");
 #endif
-
   A4GL_start_gui ();
 
 #ifdef _PRELOAD_REPORT_
