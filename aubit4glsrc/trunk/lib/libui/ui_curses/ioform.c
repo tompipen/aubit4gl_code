@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.4 2002-11-23 07:11:55 afalout Exp $
+# $Id: ioform.c,v 1.5 2002-11-23 08:45:10 mikeaubury Exp $
 #*/
 
 /**
@@ -3005,7 +3005,7 @@ curr_metric_is_verylast (void)
  * @todo Describe function
  */
 int
-aclfgl_set_page(void)
+aclfgl_set_page(int n)
 {
 int b;
 struct s_form_dets *f;
@@ -3021,7 +3021,7 @@ struct s_form_dets *f;
  * @todo Describe function
  */
 int
-aclfgl_get_page(void)
+aclfgl_get_page(int n)
 {
 struct s_form_dets *f;
 	f=get_curr_form();

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.17 2002-11-23 06:05:35 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.18 2002-11-23 08:44:55 mikeaubury Exp $
 */
 
 /**
@@ -195,16 +195,18 @@
 	int 	aclfgl_run_gui 	(int nargs);
 
     /* ============== from curslib.c =========================== */
-	//int 	aclfgl_fgl_drawbox (int n);
-	void 	aclfgl_fgl_drawbox (int n);
+	int 	aclfgl_fgl_drawbox (int n);
+	//void 	aclfgl_fgl_drawbox (int n);
 
     /* ======================= API_ui.c ===================== */
 
 //does not match actual function definition:
-//	int     aclfgl_set_page		(int nargs);
-//	int     aclfgl_get_page		(int nargs);
-	int     aclfgl_set_page		(void);
-	int     aclfgl_get_page		(void);
+	int     aclfgl_set_page		(int nargs);
+	int     aclfgl_get_page		(int nargs);
+
+
+	//int     aclfgl_set_page		(void);
+	//int     aclfgl_get_page		(void);
 
 
     /* =================== sql.c ============================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.9 2002-11-23 07:11:55 afalout Exp $
+# $Id: curslib.c,v 1.10 2002-11-23 08:45:10 mikeaubury Exp $
 #*/
 
 /**
@@ -542,7 +542,7 @@ newbox (textarea * area, int l, int t, int r, int b, int typ)
  * 4GL CALL
  * @todo Describe function
  */
-void
+int
 aclfgl_fgl_drawbox (int n)
 {
 int x, y, w, h, c;
@@ -580,6 +580,7 @@ void *ptr;
   wmove (ptr, y + h - 1, x + w - 1);
   wprintw (ptr, "+");
   mja_refresh ();
+  return 0;
 }
 
 /**
