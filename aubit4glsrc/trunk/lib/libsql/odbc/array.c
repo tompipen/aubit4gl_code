@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 * 
-* $Id: array.c,v 1.1 2003-02-14 12:49:31 mikeaubury Exp $
+* $Id: array.c,v 1.2 2003-02-14 12:51:57 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.1  2003/02/14 12:49:31  mikeaubury
+*	Why was fill_array and friends taken out of sql.c ?
+*	
 *
 *******************************************************************************/
 #include <stdio.h>
@@ -16,7 +19,7 @@
 extern HENV                    henv ;
 extern HDBC                    hdbc;
 SDWORD                  outlen[512];
-
+#define chk_rc(rc,stmt,call) chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
 
 int fill_array_databases (int mx, char *arr1, int szarr1, char *arr2, int szarr2)
 {
