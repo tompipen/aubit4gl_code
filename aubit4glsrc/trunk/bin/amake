@@ -54,7 +54,7 @@ then
     echo " -footer yyy = use yyy file for footer include, overrides -defaultinclude"
     echo " -i : ignore errors in amake and continue (adds -k to mkae call)"
 	echo " everything else will be passed to make"
-	echo " -verbose = show what script is doing"
+	echo " -verbose = show what script is doing, and also pass -verbose to 4glpc"
 	echo
 	echo Examples:
     echo
@@ -120,42 +120,43 @@ else
 	           ##########
 
 			   #################this are parameters to this script:##########
-			   -all) PROGS=`ls *$MK`
+			   -all) 		PROGS=`ls *$MK`
 			   ;;
 
-			   -log) LOG="1"
+			   -log) 		LOG="1"
 			   ;;
 
-			   -i) IGNOREERROR="1"
-                    MAKE="$MAKE -k"
+			   -i) 			IGNOREERROR="1"
+                    		MAKE="$MAKE -k"
 			   ;;
 
 			   -defaultinclude) OVERRIDEINCLUDE="0"
 			   ;;
 
-			   -verbose) VERBOSE="1"
+			   -verbose) 	VERBOSE="1"
+							MKFLAGS="$MKFLAGS -verbose"
 			   ;;
 
-			   -header) OVERRIDEINCLUDE="1"
-	                #HEADER=<next parameter>
-					#let next=cnt+1
-	                NEXT=HEADER
+			   -header) 	OVERRIDEINCLUDE="1"
+	                		#HEADER=<next parameter>
+							#let next=cnt+1
+	                		NEXT=HEADER
 
 			   ;;
 
-			   -footer) OVERRIDEINCLUDE="1"
-	                #FOOTER=<next parameter>
-                    NEXT=FOOTER
+			   -footer) 	OVERRIDEINCLUDE="1"
+	                		#FOOTER=<next parameter>
+                    		NEXT=FOOTER
 
 			   ;;
 
 			   #########anything else that starts with "-" is make flag:#####
-			   -*) MKFLAGS="$MKFLAGS $a"
+			   -*) 			MKFLAGS="$MKFLAGS $a"
 			   ;;
 
 
 			   ################anything else is make parameter:##############
-			   *)   PARAMS="$a $PARAMS"
+			   *)   		PARAMS="$a $PARAMS"
 
 
 			  ;;
@@ -233,7 +234,8 @@ fi
 			then
 				echo "See $LOGFILE"
             fi
-		    ls *.err > /dev/null
+		    
+			ls *.err > /dev/null 2>&1
 			RET=$?
 			if test $RET = "0"
 			then

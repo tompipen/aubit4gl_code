@@ -69,7 +69,8 @@ ${PROG.42r}:	${DBASE.sch} ${FILES.42m}
 #using VPATH:
 	${D4GL_PL} -o $@ $^ ${D4GL_PL_LDFLAGS}
 
-${PROG.4ae}:	debug ${FILES.ao} enddebug
+#${PROG.4ae}:	debug ${FILES.ao} enddebug
+${PROG.4ae}:	${FILES.ao}
 	${A4GL_CC} -o $@ $^ ${A4GL_CC_LDFLAGS}
 
 ${PROG.42e}:	${DBASE.sch} ${FILES.42o}

@@ -1,119 +1,276 @@
 #!/bin/sh
-############################################################
-#   Aubit 4gl compiler - make system
-#prepmake - utillity script to convert makefiles
+##########################################################################
+#                  Aubit 4gl compiler - make system
+#    prepmake - utillity script to convert makefiles to amake format
+#    ---------------------------------------------------------------
+#                    See manual for information
 #
-#See manual for information
 #
-############################################################
-
-#Confirmed to work in :
-#gl
-#ap
-
-#$WARNING: some Maximise moduls depend on other modules already being
-#compiled. If they are not, makefile.prep will fail.
-#Compile modules in this order:
-#winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo;
-
-
-#1. run "prepmake" in directory containing Maximise make file, "makefile".
+#Run "prepmake" in directory containing make file, "makefile".
 #This will create file "makefile.prep" containing instruction needed for
 #dumping program definitions to individual make files (*.mk). Note: this
-#functionallity depends on fact that all Maximise makefiles use command
+#functionallity depends on fact that all (Maximise) makefiles use command
 #"fgllink" somewhere in each defined prgram target, and list all source
 #files in dependencies. If for any reason this is not true for some makefie
 #you want to process, look at the script, it should be easy to substitute
 #this with some other present command.
+#
+#"prepmake" will then run first "touch *.4gl" (to force all targets into
+#thinking they need building) and then "make -f makefile.prep". This will
+#create one make file for each program defined in makefile.prep, named as
+#<progname>.mk, using script "genmake". Each .mk files will contain
+#definitions of include headers and footers, and names of source files
+#needed to build that program, and nothing else. allsinglelibs.mk will
+#also be created, and contain library objects - this file will probably
+#not need to be used, since all makefiles for building programs should
+#be able to build objects for themselves.
+#
+#WARNING: some Maximise moduls depend on other modules already being
+#compiled. If they are not, makefile.prep will fail.
+#Compile modules in this order:
+#	winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo
+#
+#Confirmed to work in $MAXDIR:
+#
+#	winds
+#   ar
+#	gl
+#	ap
+#
+##########################################################################
 
-FILENAME=allsinglelibs.mk
-rm -f $FILENAME
-COMPOSITE=/tmp/makefile
+########################
+function replace {
+########################
 
-#replacing all "fgllink" lines with our command:
-#INCLCMT='	genmake $(basename $(@F)) $(addsuffix .4gl,$(basename $(^F))) #'
-#we don't want to rename ALL dependencies to .4gl they may be .per files!
-#INCLCMT='	genmake $(basename $(@F)) $(^F) #'
-#we alos don't want to strip extension from object name, it may be library
-#target, not executable:
-INCLCMT='	genmake $(@F) $(^F) #'
+    echo "Replacing    [$TOREPLACE]	with	[$INCLCMT]"
+	sed -e "s%$TOREPLACE%$INCLCMT%g" $RESULTMAKEFILE > $TMPCOMPOSITE
+	mv $TMPCOMPOSITE $RESULTMAKEFILE
 
-sed -e "s%fgllink%$INCLCMT%g" makefile > $COMPOSITE.tmp
-
-#commenting out all "cat" lines, so they don't get executed:
-INCLCMT2="#cat "
-sed -e "s%cat %$INCLCMT2%g" $COMPOSITE.tmp > makefile.prep
-
-
-################### for GL #################################
-#INCLCMT2='touch $(addsuffix .42m,$(basename $($<)))'
-#INCLCMT2='touch $(basename $<).42m'
-INCLCMT2='touch $(notdir $(basename $<)).42m'
-#replace all fglcomp lines with fakes, so we don't go trough actual compile:
-sed -e "s%fglcomp%$INCLCMT2%g" makefile.prep > $COMPOSITE.tmp
-
-#INCLCMT2='touch $(notdir $(basename $<)).42f'
-INCLCMT2='touch $(basename $<).42f'
-#replace all fglform lines with fakes, so we don't go trough actual compile:
-sed -e "s%fglform%$INCLCMT2%g" $COMPOSITE.tmp > makefile.prep
-
-INCLCMT2='touch $(basename $<).frm'
-sed -e "s%form4gl%$INCLCMT2%g" makefile.prep > $COMPOSITE.tmp
-
-cp $COMPOSITE.tmp makefile.prep
-################### end for GL #################################
-
-
-################### for winds #################################
-#we need all fglpc replaced with commands, since in winds most files
-#are not programs, but library functions.
-INCLCMT3='	genmake $(@F) $(^F) #'
-sed -e "s%fglpc%$INCLCMT3%g" makefile.prep > $COMPOSITE.tmp
-
-
-#but we also need to process fgllink, since it creates composite library
-#objects (.42x)
-
-cp $COMPOSITE.tmp makefile.prep
-
-
-#################### end for winds #############################
+}
 
 
 
-#2. run first "touch *.4gl" (to force all targets ito thinking they need
-#building) and then "make -f makefile.prep". This will create one make
-#file for each program defined in makefile.prep, named as <progname>.mk,
-#using script "genmake". Each .mk files will contain definitions of
-#include headers and footers, and names of source files needed to build
-#that program, and nothing else.
+########################
+function r_ln {
+########################
 
-touch *.4gl
-make -f makefile.prep
-RET=$?
+	#---------------------------------------------------------
+	TOREPLACE="ln "
+	INCLCMT='#'$TOREPLACE
+	replace
+	#---------------------------------------------------------
+}
 
-echo " "
-if test $RET != "0"
-then
-    echo "Error preparing make file, see makefile.prep "
-    exit 1
-else
+########################
+function r_rm {
+########################
 
-	#if we created single libs file, we need to add footer at the end:
-	FOOTERNAME='${AUBITDIR}/incl/footer.mki'
+	#---------------------------------------------------------
+	TOREPLACE="rm "
+	INCLCMT='#'$TOREPLACE
+	replace
+	#---------------------------------------------------------
+}
 
-	if [ -f $FILENAME ]
-    then
-		echo >> $FILENAME
-	    #echo "#-------------------------------------" >> $FILENAME
-		#echo >> $FILENAME
-		echo include $FOOTERNAME >> $FILENAME
-		echo >> $FILENAME
+
+########################
+function r_fgllink {
+########################
+
+	#replacing all "fgllink" lines with our command:
+	#INCLCMT='	genmake $(basename $(@F)) $(addsuffix .4gl,$(basename $(^F))) #'
+	#we don't want to rename ALL dependencies to .4gl they may be .per files!
+	#INCLCMT='	genmake $(basename $(@F)) $(^F) #'
+	#we alos don't want to strip extension from object name, it may be library
+	#target, not executable:
+	#---------------------------------------------------------
+	TOREPLACE=fgllink
+	INCLCMT='	genmake $(@F) $(^F) #'$TOREPLACE
+	replace
+	#---------------------------------------------------------
+
+}
+
+########################
+function r_cat {
+########################
+
+	#commenting out all "cat" lines, so they don't get executed:
+	#---------------------------------------------------------
+	TOREPLACE="cat "
+	INCLCMT="#$TOREPLACE"
+	replace
+	#---------------------------------------------------------
+
+}
+
+#######################
+function r_fglcomp {
+#######################
+
+	#replace all fglcomp lines with fakes, so we don't go trough actual compile:
+	#INCLCMT='touch $(addsuffix .42m,$(basename $($<)))'
+	#INCLCMT='touch $(basename $<).42m'
+	#---------------------------------------------------------
+	TOREPLACE="fglcomp"
+	INCLCMT='touch $(notdir $(basename $<)).42m #'$TOREPLACE
+	replace
+	#---------------------------------------------------------
+
+}
+
+#######################
+function r_fglform {
+#######################
+
+	#replace all fglform lines with fakes, so we don't go trough actual compile:
+	#INCLCMT='touch $(notdir $(basename $<)).42f'
+	#---------------------------------------------------------
+	TOREPLACE="fglform"
+	INCLCMT='touch $(basename $<).42f #'$TOREPLACE
+	replace
+	#---------------------------------------------------------
+}
+
+#####################
+function r_form4gl {
+#####################
+
+	#---------------------------------------------------------
+	TOREPLACE="form4gl"
+	INCLCMT='touch $(basename $<).frm #'$TOREPLACE
+	replace
+	#---------------------------------------------------------
+
+}
+
+#####################
+function r_fglpc {
+#####################
+
+	#we need all fglpc replaced with commands, since in winds most files
+	#are not programs, but library functions.
+	#---------------------------------------------------------
+	TOREPLACE="fglpc"
+	INCLCMT='	genmake $(@F) $(^F) #'$TOREPLACE
+	replace
+	#---------------------------------------------------------
+}
+
+
+########################
+#MAIN
+########################
+
+#############################
+#Configuration:
+	FILENAME=allsinglelibs.mk
+	rm -f $FILENAME
+	TMPCOMPOSITE=/tmp/makefile.1
+	RESULTMAKEFILE=makefile.prep
+	GENMAKE=genmake
+    SUBDIR=$1
+    DOALL=1
+
+	cp makefile $RESULTMAKEFILE
+
+    #add default rules, so make don't complain about missing rules
+    #or missing dependencies:
+
+    echo " " >> $RESULTMAKEFILE
+	echo ".SUFFIXES:   .ao .4gl .c .4ae .afr .per .iem .msg .hlp .4go .4gi .42m .42r" >> $RESULTMAKEFILE
+	echo " " >> $RESULTMAKEFILE
+	
+	#echo ".4gl:" >> $RESULTMAKEFILE
+    #echo "	touch $<" >> $RESULTMAKEFILE
+	#echo ".4go:" >> $RESULTMAKEFILE
+    #echo "	touch $<" >> $RESULTMAKEFILE
+	#echo ".4gi:" >> $RESULTMAKEFILE
+    #echo "	touch $<" >> $RESULTMAKEFILE
+	#echo ".4gl.4go:" >> $RESULTMAKEFILE
+    #echo "	touch $<" >> $RESULTMAKEFILE
+	#echo '$P/*.4go :' >> $RESULTMAKEFILE
+    #echo '	touch $P/$<' >> $RESULTMAKEFILE
+	#echo '$P/.4go :' >> $RESULTMAKEFILE
+    #echo '	touch $P/$<' >> $RESULTMAKEFILE
+
+    echo '%::' >> $RESULTMAKEFILE
+    echo '	touch $@' >> $RESULTMAKEFILE
+    echo '.DEFAULT:' >> $RESULTMAKEFILE
+    echo '	touch $@' >> $RESULTMAKEFILE
+	echo " " >> $RESULTMAKEFILE
+
+
+    r_ln
+    r_rm
+
+
+	if [ "$SUBDIR" = "ap" -o "$DOALL" = "1" ]
+	then
+		r_fgllink
+		r_cat
     fi
 
-	echo "'prepmake' completed. You can now run generated make files using "
-	echo "'amake' script. see 'amake -help' for instructions"
-	exit 0
-fi
+	if [ "$SUBDIR" = "gl" -o "$DOALL" = "1" ]
+	then
+		r_fglcomp
+		r_fglform
+		r_form4gl
+	fi
 
-#-------------------------- EOF -------------------------------
+	if [ "$SUBDIR" = "winds" -o "$DOALL" = "1" ]
+	then
+	    r_fglpc
+
+		#but we also need to process fgllink, since it creates composite library
+		#objects (.42x)
+	fi
+
+	if [ "$SUBDIR" = "main" -o "$DOALL" = "1" ]
+	then
+        touch $MAXDIR/prog/lic_calc.4go
+        touch $MAXDIR/prog/lic_check.4go
+        touch $MAXDIR/prog/lic_start.4go
+        touch $MAXDIR/prog/menuwind.4go
+	fi
+
+
+#############################################
+#Run prepared makefile, to create .mk files:
+
+	echo " "
+   	echo "------------------------- Running make ... ------------------------------"
+	echo " "
+
+	touch *.4gl
+	make -f $RESULTMAKEFILE
+	RET=$?
+
+   	echo "----------------------- Finished running make ---------------------------"
+
+	echo " "
+	if test $RET != "0"
+	then
+	    echo "Error preparing make file, see $RESULTMAKEFILE "
+	    exit 1
+	else
+
+		#if we created single libs file, we need to add footer at the end:
+		FOOTERNAME='${AUBITDIR}/incl/footer.mki'
+
+		if [ -f $FILENAME ]
+	    then
+			echo >> $FILENAME
+		    #echo "#-------------------------------------" >> $FILENAME
+			#echo >> $FILENAME
+			echo include $FOOTERNAME >> $FILENAME
+			echo >> $FILENAME
+	    fi
+
+		echo "'prepmake' completed. You can now run generated make files using "
+		echo "'amake' script. see 'amake -help' for instructions"
+		exit 0
+	fi
+
+#------------------------------ EOF -------------------------------------

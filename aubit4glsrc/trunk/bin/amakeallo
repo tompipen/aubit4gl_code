@@ -34,6 +34,14 @@ function stats {
     echo "$CCOMPWARNING produced warnings from C compiler, but compiled. Ignored $ZEROFILESIZE Files with no code." >> $ERRORLOG
 	echo "$NOGLBFILE glb files not found, $OKNOGLBFILE compiled on the fly, $NO4GLNOGLBFILE 4gl's for making glb not found." >> $ERRORLOG
     echo "$TESTCONTINUESKIP skipped since they failed in previous run" >> $ERRORLOG
+	echo "See also:" >> $ERRORLOG
+	echo "All zero length files		:$ZEROLOG" >> $ERRORLOG
+	echo "All 4gl compiler errors	:$FGLLOG" >> $ERRORLOG
+	echo "All C compiler errors		:$CLOG" >> $ERRORLOG
+	echo "All core dumps			:$CORELOG" >> $ERRORLOG
+    echo "All GLOBALS errors		:$GLOBLOG" >> $ERRORLOG
+
+
 	date >> $ERRORLOG
 
 	echo " " >> $ZEROLOG
@@ -587,7 +595,8 @@ function compileit {
 				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $ERRORLOG
 				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $GLOBLOG
 				WASERROR=1
-				let COMPFAIL4GL=COMPFAIL4GL+1
+				#we will step on this file again, so we don't want to count this twice:
+				#let COMPFAIL4GL=COMPFAIL4GL+1
 		        echo "##########################################################" >> $ERRORLOG
 				if test $STOPONERROR = "1"
 			    then
@@ -977,6 +986,7 @@ function doit {
     VERBOSE=0
     SCRIPTDEBUG=0
 	MAXMODE=0
+	MAXMODE2=0
 	SKIPDIRS=
     HEAD=head
     #HEAD=head -n 20
@@ -1049,6 +1059,12 @@ function doit {
         -maxmode)   MAXMODE=1
 		;;
 
+        -maxmodeminimal)
+
+                MAXMODE=1
+				MAXMODE2=1
+        ;;
+
         -v)			VERBOSE=1
         ;;
 
@@ -1072,7 +1088,7 @@ function doit {
 			echo " -x = rename Aubit old extensions [.o->.ao]"
 			echo " -fullclean = remove .c .h .ec before you start (DANGER!)"
 			echo " -compat = ignore errors if they fail in 4Js too (do not ignore)"
-			echo " -maxmode = special mode for Maximise application testing"
+			echo " -maxmode/maxmodeminimal = special mode for Maximise application testing"
 			echo " -v = verbose - show what you are doing"
 			echo " -continue - contine previous run, don't retry already failed"
 			echo " -debug = verbose + much more"
@@ -1168,6 +1184,10 @@ function doit {
 
     date
     date > $ERRORLOG
+	echo "Invoked with: $@" >> $ERRORLOG
+    echo "Invoked in $PWD" >> $ERRORLOG
+	echo "-----------------------------------------------------" >> $ERRORLOG
+
 	date > $ZEROLOG
 	date > $FGLLOG
 	date > $CLOG
@@ -1191,8 +1211,13 @@ function doit {
         then
 			#In Maximise, order of compilation is important, and we also
             #need to skip some directories
-			#ALLSUBDIRS="winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo cm contr dvfund lawmods"
-			ALLSUBDIRS="winds main ar gl ap"
+			if test "$MAXMODE2" = "1"
+            then
+				ALLSUBDIRS="winds main ar gl ap"
+            else
+				ALLSUBDIRS="winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo cm contr dvfund lawmods"
+            fi
+
             SKIPDIRS="aform aprog forms prog gform gprog qform qprog"
         else
 			ALLSUBDIRS=`ls -l |

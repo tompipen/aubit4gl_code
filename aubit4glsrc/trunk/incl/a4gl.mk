@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.2 2001-08-28 06:56:32 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.3 2001-09-11 08:43:19 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -16,12 +16,16 @@
 
 A4GL_CLEAN_FLAGS = *.ao *.bak *.h *.err *.glb *.hlp *.4ae
 
+#C code to objects
 AUCC=gcc
+AUCC_FLAGS=-g -O2 -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 
 # A4GL C-code Compiler
-A4GL_CC_CMD     = 4glpc -g -O2 -gtk -static
+#should I use 4glc instead 4glpc here?
+A4GL_CC_CMD     = 4glpc
 A4GL_CC_ENV     =
-A4GL_CC_FLAGS   = -O -I${AUBITDIR}/incl -DAUBIT4GL
+#-g -O2 -gtk -static -O -I${AUBITDIR}/incl -DAUBIT4GL
+A4GL_CC_FLAGS   =
 
 # A4GL C-code Linker
 A4GL_CL_CMD     = ${A4GL_CC_CMD}
@@ -62,10 +66,13 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 #.4gl.4ge:
 .4gl.4ae:
 	${A4GL_CL} -o $@ $< ${A4GL_CL_LDFLAGS}
+
+
 #.4gl.o:
 .4gl.ao:
-	${A4GL_CC} -c $<
-	mv $*.o $@
+	${A4GL_CC} $< -c -o $*.ao
+#	mv $*.o $@
+
 
 # Rules for compiling A4GL form files
 #.per.frm:
@@ -80,10 +87,13 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 #recompile forms, since it will not be able to find .afr files
 #	-mv $*.frm $@
 
-.c.ao:
+#I always want to go from 4gl to c, so I will disable this:
+.xx-c.xx-ao:
 #	${AUCC} ${CFLAGS} -DAUBIT4GL -c $?
-	${AUCC} ${A4GL_CC_FLAGS} -c $? > $*.err 2>&1
-	mv $*.o $@
+#	echo DEBUG: $? $*
+#	${AUCC} ${A4GL_CC_FLAGS} -c $? > $*.err 2>&1
+	${AUCC} ${AUCC_FLAGS} -c $*.c -o $*.ao
+#	mv $*.o $@
 
 # Rules for compiling message files
 #FIXME: this assumes program will look for .iem extension
