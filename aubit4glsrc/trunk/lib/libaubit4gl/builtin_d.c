@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.25 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.26 2003-05-18 11:05:49 mikeaubury Exp $
 #
 */
 
@@ -685,7 +685,7 @@ A4GL_func_using (void)
     }
   else
     {
-      d = A4GL_pop_long ();
+      d = A4GL_pop_date ();
 #ifdef DEBUG
       {
  A4GL_debug ("Date using...%ld (%s)", d, fmt);

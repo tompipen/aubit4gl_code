@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.34 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: newpanels.c,v 1.35 2003-05-18 11:06:21 mikeaubury Exp $
 #*/
 
 /**
@@ -249,6 +249,7 @@ A4GL_init_windows (void)
 LIBUSEONLY void *
 A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
 {
+  A4GL_chkwin();
   return A4GL_create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1,
 			0xffff);
 }
@@ -1022,6 +1023,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
   char buff[80];
   A4GL_chkwin ();
   A4GL_debug ("display_form_new_win - name=%s\n", name);
+  A4GL_chkwin();
   scale_form (f->form, &rows, &cols);
   if (f->form_details.border)
     {
@@ -1626,6 +1628,7 @@ A4GL_cr_window (char *s,
   h = A4GL_pop_int ();
   x = A4GL_pop_int ();
   y = A4GL_pop_int ();
+  A4GL_chkwin();
   if (A4GL_has_pointer (s, WINCODE))
     {
 #ifdef DEBUG
@@ -1669,6 +1672,7 @@ A4GL_cr_window_form (char *name,
 	 name, iswindow, form_line, error_line, prompt_line, menu_line,
 	 border, comment_line, message_line, attrib);
 
+  A4GL_chkwin();
   if (form_line == 0xff)
     {
       form_line = std_dbscr.form_line;

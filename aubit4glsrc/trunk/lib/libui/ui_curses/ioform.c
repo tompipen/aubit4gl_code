@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.22 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: ioform.c,v 1.23 2003-05-18 11:06:21 mikeaubury Exp $
 #*/
 
 /**
@@ -104,6 +104,8 @@ struct s_form_dets *A4GL_getfromform (FORM * f);
 char *A4GL_string_width (char *a);
 WINDOW *A4GL_create_window (char *name, int x, int y, int w, int h, int border);
 void A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour);
+int
+A4GL_curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f);
 
 void A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap);
 int display_fields (FORM * mform, int n, ...);
@@ -621,7 +623,7 @@ A4GL_form_loop (void *vs)
 
 
   fprop = (struct struct_scr_field *) field_userptr (current_field (mform));
-  metrics = &form->fileform->metrics.metrics_val[get_curr_metric (form)];
+  metrics = &form->fileform->metrics.metrics_val[A4GL_get_curr_metric (form)];
 
   if (metrics && (int) metrics != -1)
     {
@@ -858,7 +860,7 @@ A4GL_set_init_value (FIELD * f, void *ptr, int dtype)
       ff = A4GL_new_string (A4GL_get_field_width (f));
       for (a = 0; a < A4GL_get_field_width (f); a++)
 	ff[a] = ' ';
-      ff[get_field_width (f) - 1] = 0;
+      ff[A4GL_get_field_width (f) - 1] = 0;
     }
   A4GL_debug ("set_init_value : display '%s' to field", ff);
   A4GL_mja_set_field_buffer (f, 0, ff);
@@ -876,7 +878,7 @@ A4GL_read_fields (struct s_form_dets *formdets)
   int n1, a1;
   int metric_no;
   char *ptr;
-
+A4GL_chkwin ();
   n = formdets->fileform->fields.fields_len;
   A4GL_debug ("Got %d fields\n", n);
 
@@ -1001,7 +1003,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			   A4GL_get_metric_for (form, form->currentfield));
 		    A4GL_modify_size (&buff[4],
 				 form->fileform->metrics.
-				 metrics_val[get_metric_for
+				 metrics_val[A4GL_get_metric_for
 					     (form, form->currentfield)].w);
 		    A4GL_debug ("modfy size done -> '%s'", &buff[4]);
 
@@ -1023,7 +1025,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			}
 #endif
 		 A4GL_push_param (buff2, DTYPE_CHAR);
-			if (pop_param
+			if (A4GL_pop_param
 			    (buff, fprop->datatype,
 			     A4GL_get_field_width (form->currentfield)))
 			  {
@@ -1036,9 +1038,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 			    A4GL_push_param (buff, fprop->datatype);
 			    if (A4GL_has_str_attribute (fprop, FA_S_FORMAT))
 			      {
-			 A4GL_push_char (get_str_attribute
+			 A4GL_push_char (A4GL_get_str_attribute
 					   (fprop, FA_S_FORMAT));
-				//push_param ("using", FUNCTION_OP);
 			 A4GL_pushop (OP_USING);
 			      }
 			    A4GL_pop_param (buff, DTYPE_CHAR,
@@ -1355,10 +1356,10 @@ A4GL_set_fields (void *vsio)
 
   if (nofields != nv - 1)
     {
-      debug
+      A4GL_debug
 	("Number of fields (%d) is not the same as the number of vars (%d)",
 	 nofields + 1, nv);
-      exitwith
+      A4GL_exitwith
 	("Number of fields is not the same as the number of variables");
       return 0;
     }
@@ -1386,8 +1387,8 @@ A4GL_set_fields (void *vsio)
 	      A4GL_debug ("default from form to '%s'",
 		     A4GL_get_str_attribute (prop, FA_S_DEFAULT));
 	      A4GL_set_init_value (field_list[a],
-			      A4GL_replace_sql_var (strip_quotes
-					       (get_str_attribute
+			      A4GL_replace_sql_var (A4GL_strip_quotes
+					       (A4GL_get_str_attribute
 						(prop, FA_S_DEFAULT))), 0);
 	    }
 	  else
@@ -1854,7 +1855,7 @@ A4GL_do_after_field (FIELD * f, struct s_screenio *sio)
 	  mform = sio->currform->form;
 	  fprop = (struct struct_scr_field *) (field_userptr (f));
 	  A4GL_debug ("Got form %p", sio->currform->form);
-	  if (check_field_for_include
+	  if (A4GL_check_field_for_include
 	      (field_buffer (sio->currform->currentfield, 0),
 	       A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype) == 0)
 	    {
@@ -2040,6 +2041,15 @@ A4GL_set_field_pop_attr (FIELD * field, int attr)
     }
 */
 
+  if (A4GL_has_str_attribute (f, FA_S_FORMAT)) {
+                            A4GL_push_char (ff);
+                            A4GL_push_char (A4GL_get_str_attribute (f, FA_S_FORMAT));
+                            A4GL_pushop (OP_USING);
+		A4GL_debug("Has format - need to process it... (%s) (%s)",ff,A4GL_get_str_attribute (f, FA_S_FORMAT));
+                            A4GL_pop_param (ff, DTYPE_CHAR, A4GL_get_field_width (field));
+		A4GL_debug("Has format - processed it to (%s) ",ff);
+
+  }
   A4GL_debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = field_opts (field);
   A4GL_set_field_attr (field);
@@ -2862,7 +2872,7 @@ A4GL_copy_field_data (struct s_form_dets *form)
 		       A4GL_get_metric_for (form, form->currentfield));
 	 A4GL_modify_size (&buff[4],
 			     form->fileform->metrics.
-			     metrics_val[get_metric_for
+			     metrics_val[A4GL_get_metric_for
 					 (form, form->currentfield)].w);
 	 A4GL_debug ("modfy size done -> '%s'", &buff[4]);
 
@@ -2882,7 +2892,7 @@ A4GL_copy_field_data (struct s_form_dets *form)
 		    A4GL_debug ("Pushing param %p");
 #endif
 		    A4GL_push_param (buff2, DTYPE_CHAR);
-		    if (pop_param
+		    if (A4GL_pop_param
 			(buff, fprop->datatype,
 			 A4GL_get_field_width (form->currentfield)))
 		      {
@@ -2892,9 +2902,8 @@ A4GL_copy_field_data (struct s_form_dets *form)
 		 A4GL_push_param (buff, fprop->datatype);
 			if (A4GL_has_str_attribute (fprop, FA_S_FORMAT))
 			  {
-			    A4GL_push_char (get_str_attribute
+			    A4GL_push_char (A4GL_get_str_attribute
 				       (fprop, FA_S_FORMAT));
-			    //push_param ("using", FUNCTION_OP);
 			    A4GL_pushop (OP_USING);
 			  }
 		 A4GL_pop_param (buff, DTYPE_CHAR,
@@ -3044,8 +3053,8 @@ A4GL_clr_form (int to_default)
 	      struct struct_scr_field *prop;
 	      prop = (struct struct_scr_field *) field_userptr (f);
 	      A4GL_mja_set_field_buffer (f, 0,
-				    A4GL_replace_sql_var (strip_quotes
-						     (get_str_attribute
+				    A4GL_replace_sql_var (A4GL_strip_quotes
+						     (A4GL_get_str_attribute
 						      (prop, FA_S_DEFAULT))));
 	    }
 	}
