@@ -153,8 +153,13 @@ literal_expr:
 /*ASCII fgl_expr_c { $<ptr>$=A4GL_append_expr($<ptr>2,"A4GL_push_ascii()"); }
 |*/
 CHAR_VALUE  {
-	sprintf($<str>$,"%s",A4GL_get_push_literal('S',$<str>1));
-	$<ptr>$=A4GL_new_expr($<str>$);
+	if (strcmp($<str>1,"\"\"")==0) {
+		sprintf($<str>$,"%s",A4GL_get_push_literal('N',$<str>1));
+		$<ptr>$=A4GL_new_expr($<str>$);
+	} else {
+		sprintf($<str>$,"%s",A4GL_get_push_literal('S',$<str>1));
+		$<ptr>$=A4GL_new_expr($<str>$);
+	}
 	inc_counter();
 }
 | real_number
