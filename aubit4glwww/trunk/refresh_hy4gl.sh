@@ -1,5 +1,9 @@
 #!/bin/sh
 
+export HOME=/home/users/a/af/afalout
+export WWW=/home/groups/a/au/aubit4gl/htdocs
+
+
 cd $WWW
 
 if [ "$1" = "-anon" ]

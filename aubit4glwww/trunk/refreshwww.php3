@@ -1,6 +1,10 @@
 <script language="php">
 
-$execline = "export HOME=/home/users/a/af/afalout; export WWW=/home/groups/a/au/aubit4gl/htdocs; sh $WWW/refreshwww.sh -anon";
+$WWW="/home/groups/a/au/aubit4gl/htdocs";
+
+#$execline = "export HOME=/home/users/a/af/afalout; export WWW=/home/groups/a/au/aubit4gl/htdocs; sh $WWW/refreshwww.sh -anon";
+$execline = "sh $WWW/refreshwww.sh -anon";
+#$execline = "ls";
 
 		$retvar = array("first line");
 		$string = exec($execline,$retvar, $return_status);
