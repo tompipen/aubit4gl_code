@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.41 2002-03-28 07:19:02 afalout Exp $
+# $Id: Makefile.in,v 1.42 2002-04-02 08:17:33 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -289,6 +289,9 @@ generated/project.c:
 
 generated/tmperrs.h :
 	${SH} bin/mkerrors
+
+../compilers/fcompile/form_x_xdr.c:
+	${MAKE} -C ../compilers/fcompile rpc
 
 ## ==================================================================
 ##                        Dependencies

@@ -23,83 +23,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.51 2002-03-31 07:05:12 afalout Exp $
+# $Id: Makefile.in,v 1.52 2002-04-02 08:17:32 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
 include incl/Makefile-common
-
-#FIXME: this should be obsoleted by configure and aubitrc:
-#we don't want sub-makefiles to include above again: But we dont't went
-#to export this gloably, since it would affect 4glpc sctipt!
-#Instead, we want tp pass it to makefiles as command line parameter,
-#only for make files that use it, but don't call 4glpc
-#NOINCL_PARAM=NOINCL=1
-
-#WARNING! cannot use ${MAKEFLAGS} because of make bug (see showbug:)
-#all replaced with BUGMAKEFLAGS
-
-
-## ==================================================================
-##                    ODBC Settings
-## ==================================================================
-
-#obsolete - ifeq "$(ODBC)" "unix"
-#obsolete - 	#Human readable name, for archinve file name, etc.
-#obsolete - 	ODBCMANAGER		=unixODBC
-#obsolete -    	#additional flags for ifdef in C code, needed for this ODBC driver/manager
-#obsolete - #	LIBCFLAGS 		+= -DUNIXODBC
-#obsolete - endif
-#obsolete - ifeq "$(ODBC)" "iodbc"
-#obsolete - 	ODBCMANAGER		=iODBC
-#obsolete - #	LIBCFLAGS 		+= -DIODBC
-#obsolete - endif
-#obsolete - ifeq "$(ODBC)" "no"
-#obsolete - 	ODBCMANAGER		=noODBC
-#obsolete - #	LIBCFLAGS 		+= -DNOODBC
-#obsolete - 	ODBCLIBDIR      =
-#obsolete - 	ODBC_LIB_DIR    =
-#obsolete - 	ODBC_LIB_NAME   = noodbc
-#obsolete - endif
-
-#obsolete - ifneq "$(ODBC)" "no"
-#obsolete - 	#make sure we will pick up correct ODBC libraries:
-#obsolete - 	LD_LIBRARY_PATH := ${ODBC_LIB_DIR}:${LD_LIBRARY_PATH}
-#obsolete - 	export LD_LIBRARY_PATH
-#obsolete - endif
-
-## ==================================================================
-##                    GTK Settings
-## ==================================================================
-
-#obsolete - #Human readable names for archive file names:
-#obsolete - ifeq "$(GTKBUILD)" "yes"
-#obsolete - 	GUITYPE			=GTK
-#obsolete - else
-#obsolete - 	GUITYPE			=noGTK
-#obsolete - endif
-
-## ==================================================================
-##                    PDF Settings
-## ==================================================================
-
-#obsolete - ifeq "$(PDFBUILD)" "yes"
-#obsolete - #	LIBCFLAGS 		+= -DUSE_PDF_REPORTS
-#obsolete - 	PDFTYPE			=PDF
-#obsolete - else
-#obsolete - 	PDFTYPE			=noPDF
-#obsolete - endif
-#obsolete -
-#MAKERPC				=unixrpc
-
-## ==================================================================
-##                    Automatic Build Settings
-## ==================================================================
-
-#When we package all binary builds using make allbindist, what we will build
-#ALLBINDISTNAMESNOPDF=unixodbc-gtk-nopdf iodbc-gtk-nopdf unixodbc-nogtk-nopdf iodbc-nogtk-nopdf
-#ALLBINDISTNAMESPDF	=unixodbc-gtk-pdf unixodbc-nogtk-pdf iodbc-gtk-pdf iodbc-nogtk-pdf
-#ALLBINDISTNAMES		=${ALLBINDISTNAMESNOPDF} ${ALLBINDISTNAMESPDF}
 
 ## ==================================================================
 ##                    Install Settings
@@ -132,14 +60,6 @@ ifeq "$(OUTPUTLANG)" "java"
 	TOBIN		+=$(SOURCE)/bin/fdecompile-j${EXEEXT}
 endif
 
-
-#obsolete - ifneq "$(ODBC)" "no"
-#obsolete - 	ifeq "$(ODBC_LINK)" "static"
-#obsolete - 		TOBIN	+=$(SOURCE)/bin/4glc-noodbc${EXEEXT} $(SOURCE)/bin/fcompile-noodbc${EXEEXT} \
-#obsolete - 					$(SOURCE)/bin/mcompile-noodbc${EXEEXT}
-#obsolete -     endif
-#obsolete - endif
-
 TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
 #$(SOURCE)/lib/libaclsharedgui${SO_EXT}
 TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libPDF_NOPDF${SO_EXT} \
@@ -156,8 +76,6 @@ endif
 
 
 ifneq "${STATICLIB_INST}" "no"
-#	TOLIBGTK+=$(SOURCE)/lib/libUI_GTK.a $(SOURCE)/lib/libUI_GTK_x.a
-	#$(SOURCE)/lib/libaclallgui.a
 	TOLIBCUI+=$(SOURCE)/lib/libaclall.a
 endif
 
@@ -175,9 +93,6 @@ endif
 
 
 TOLIBGTK_EXPORTLIB	=$(SOURCE)/lib/libUI_GTK${SOEXP_EXT} $(SOURCE)/lib/libUI_GTK_x${SOEXP_EXT}
-#$(SOURCE)/lib/libaclsharedgui${SOEXP_EXT} \
-
-
 
 ifneq "${COMSPEC}" ""
 	TOLIBCUI			+=$(SOURCE)/lib/libSQL_odbc32${SO_EXT}
@@ -187,13 +102,6 @@ endif
 ifeq "${PDFBUILD}" "yes"
     TOLIBCUI +=$(SOURCE)/lib/libPDF_PDF${SO_EXT}
 endif
-
-#ifneq "$(ODBC)" "no"
-#	ifeq "$(ODBC_LINK)" "static"
-#		TOLIBGTK	+=$(SOURCE)/lib/libaclallgui-noodbc.a
-#		TOLIBCUI	+=$(SOURCE)/lib/libaclall-noodbc.a
-#    endif
-#endif
 
 ifeq "${HAVE_UNIXODBC}" "yes"
 	TOLIBCUI	+=$(SOURCE)/lib/libSQL_unixodbc${SO_EXT}
@@ -219,8 +127,6 @@ MKFILNAME	=Makefile
 TODOCS		=$(SOURCE)/docs/changelog.txt $(SOURCE)/docs/COPYING $(SOURCE)/docs/CREDITS $(SOURCE)/docs/LICENSE
 TOTEST		=$(TESTDIR)/*.4gl $(TESTDIR)/*.per $(TESTDIR)/${MKFILNAME} $(TESTDIR)/*.msg
 TOTESTGUI	=$(TESTDIR)/gui/*.4gl $(TESTDIR)/gui/*.per $(TESTDIR)/gui/${MKFILNAME}
-#TOETC		=$(SOURCE)/etc/*.example
-#TOETC		=$(SOURCE)/etc/a4glrc.example $(SOURCE)/etc/aubitenv.example $(SOURCE)/etc/odbc.ini.example $(SOURCE)/etc/aubitbuild.mk.example
 TOETC		=$(SOURCE)/etc/odbc.ini.example
 TOHOME		=$(SOURCE)/a4glrc.example
 TOROOT		=$(SOURCE)/README.txt
@@ -239,21 +145,8 @@ COMPILEDATE	:=$(shell date +%d-%m-%Y)
 ##                    CVS Settings
 ## ==================================================================
 
-#obsolete - AUBITCVSNAME=Aubit4gl
 AUBITCVSSFNAME=aubit4glsrc
-#obsolete - AUBITCVSSFMANNAME=aubit4gldoc
-#obsolete - CVSROOTSF=':pserver:anonymous@cvs.aubit4gl.sourceforge.net:/cvsroot/aubit4gl'
-
 NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
-
-#Download page processing temp file names:
-#Warning: if you change this names, you will need to manually change existing
-#names already embedded in CYBUILDNAMES	and UNIXBUILDNAMES files.
-#obsolete - DLTMP1=tmpdlpage1.html
-#obsolete - DLTMP2=tmpdlpage2.html
-
-#obsolete - SCPPATH=/home/groups/a/au/aubit4gl/htdocs/files
-
 
 ## ==================================================================
 ##                    Platform dependent Settings
@@ -261,94 +154,21 @@ NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
 
 ifdef COMSPEC #############Windows platform - CygWin related:################
 
-	#Under CygWin/Windows, cron cannot use network shares, and also
-   	#we want to stop using local upload location, as defined in $WWW:
-#obsolete - 	USELOCALUPLOAD	=0
-#obsolete - 	SH          	=bash
-	#OS				=win32-cygwin
 	ARCHEXT			=zip
     DIRSEP			=\\
 	EXE				=.exe
-	#for packcygwin
-	#CYSOURCE 		= $(AUBITDIR)
-#obsolete -     CYSOURCE 		=.
-#obsolete - 	CYDLLTARGET		=${INSTALL_DIR}/dll
-#obsolete - 	CYLIBTARGET1	=${INSTALL_DIR}/extralibs
-#obsolete - 	LIBTARGET2		=/lib
-#obsolete - 	LIBTARGET1		=${INSTALL_DIR}/extralibs
-#obsolete - 	DLLTARGET		=${INSTALL_DIR}/dll
-#obsolete - 	RUNEXE			=$(CYSOURCE)/tools/cygwin/run.exe
-#obsolete - 	CYTOBIN			=$(CYSOURCE)/bin/4glc${EXE} $(CYSOURCE)/bin/4glpc \
-#obsolete - 					$(CYSOURCE)/bin/fcompile${EXE} $(CYSOURCE)/bin/mcompile${EXE} \
-#obsolete - 					$(CYSOURCE)/bin/mkmess${EXE} ${RUNEXE} $(CYSOURCE)/bin/amake \
-#obsolete - 	    	        $(CYSOURCE)/bin/amakeallf $(CYSOURCE)/bin/amakeallo \
-#obsolete - 	        	    $(CYSOURCE)/bin/aubitbuild.sh $(CYSOURCE)/bin/genmake \
-#obsolete - 	            	$(CYSOURCE)/bin/prepmake
-
-#obsolete - 	ifneq "$(ODBC)" "no"
-#obsolete - 		ifeq "$(ODBC_LINK)" "static"
-#obsolete - 			CYTOBIN	+=$(CYSOURCE)/bin/4glc-noodbc${EXE} \
-#obsolete - 					$(CYSOURCE)/bin/fcompile-noodbc${EXE} \
-#obsolete - 					$(CYSOURCE)/bin/mcompile-noodbc${EXE}
-#obsolete -         endif
-#obsolete -     endif
-
-#	CYTOLIBGTK	=$(CYSOURCE)/lib/libaclallgui.a $(CYSOURCE)/lib/libUI_GTK.a
-	#we still cannot compile this one: $(CYSOURCE)/lib/libUI_GTK_x.so
-#	ifneq "$(ODBC)" "no"
-#		ifeq "$(ODBC_LINK)" "static"
-#			CYTOLIBGTK	+=$(CYSOURCE)/lib/libaclallgui-noodbc.a
-			#We still cannot compile this one :$(CYSOURCE)/lib/libUI_GTK-noodbc.a
-#        endif
-#    endif
-
-#	ifeq "$(GTKBUILD)" "yes"
-#	    ifeq "$(GLIBVER)" "old"
-#			#extra libraries locations:
-#			LIBVER		=-1.3
-#			ADD			=/usr/src
-#			L1			=${ADD}/gtk+/gdk
-#			L2			=${ADD}/gtk+/gtk
-#			L3			=${ADD}/rpc-4.0/rpc
-#			L4			=${ADD}/glib
-#			L5			=${AUBITDIR}/lib
-#			L6			=${ADD}/libiconv${LIBVER}/src
-#			L7			=${ADD}/intl
-#			ALLLINKPATHS=-L${L1} -L${L2} -L${L3} -L${L4} -L${L5} -I/usr/src/rpc-4.0
-#
-#			LIBCFLAGS 		+=${ALLLINKPATHS}
-#	    endif
-#    endif
-
-	#WARNING! this will override all CFLAGS in all sub-makefiles:
-#	LIBCFLAGS 		+= -DWIN32
-
 	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
-	ifeq "${USE_RPCGEN}" "0"
-		#MAKERPC			=cyrpc
-		CYRPC_FLAG:=$(shell ls cyrpc.flg ${NOERR})
-	endif
-
-#obsolete -     PREPARE 		=cyprepare
 	GTKCONFIGTEXT	=echo "----- gtk-version form makefile -------"
 	GTKCONFIGCMD	=echo ${LIBVER}
     LDDCMD          =cygcheck 	#echo "no ldd available on CygWin"
     #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
-#obsolete - 	TOROOT          += $(SOURCE)/Makefile
 
 else ####################### Platform is UNIX ##############################
 
-	#We want to stop using local upload location, as defined in $WWW:
-#obsolete - 	USELOCALUPLOAD=0
-
-#obsolete - 	SH          	=sh
-	#FIXME: this should be automatic, or contain kernel version:
-	#OS				=RH6
 	ARCHEXT			=tar.gz
     DIRSEP			=/
 	#on unix, we expect to have WWW set in environment
 	#WWW			=/data2/htdocs
-#obsolete -     PREPARE 		=unixprepare
 	GTKCONFIGTEXT	=echo "----- gtk-config --version ---------"
 	GTKCONFIGCMD	=gtk-config --version
     LDDCMD          =ldd
@@ -359,59 +179,12 @@ endif
 ##                    Nightly builds Settings
 ## ==================================================================
 
-#obsolete - FTPLOCATION		=$(WWW)${DIRSEP}projects${DIRSEP}Aubit4GL${DIRSEP}download
-
-#FIXME: add CPU to file name (i385,i586, etc.) instead of "bin"
-#obsolete - TEMPLATENAME	=aubit4gl-bin-$(TARGET)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)---template--.${ARCHEXT}
-#obsolete - TEMPLATENAMETXT	=aubit4gl-bin-$(TARGET)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)---txttemplate--.${ARCHEXT}
-#obsolete - TEMPLATESRC		=aubit4gl-src--template--.${ARCHEXT}
-
-#script (SCP) to use to get html template
-#obsolete - AUTOSFSCPGET	=autosfscpget
-
-#obsolete - TARNAMENOEXT	=aubit4gl-bin-$(TARGET)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE)
-#obsolete - TARNAME			=${TARNAMENOEXT}.${ARCHEXT}
-#FIXME: remove ZIPNAME
-#obsolete - ZIPNAME			=${TARNAME}
-#obsolete - ZIPRUNTIMENAME  =aubit4gl-runtime-$(TARGET)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
 
 PLATFORMSTRING	=compile-platform-info
-
-#SF web site thinks all files that have tar.gz ANYWHERE in the name are
-#tar.gz files, and show them as empty, so we cannot use full TARNAME:
-#PLATFORMINFOFULL=${PLATFORMSTRING}-$(TARNAME).txt
-#obsolete - PLATFORMINFOFULL=${PLATFORMSTRING}-$(TARNAMENOEXT).txt
-#obsolete - TEMPLATENAMEINFO=${PLATFORMSTRING}-$(TEMPLATENAMETXT).txt
 PLATFORMINFO	=${PLATFORMSTRING}.txt
 
-
-#obsolete - DOWNLOADPAGEBASE=aubitdownload.htm
-#obsolete - DOWNLOADPAGE	=$(FTPLOCATION)${DIRSEP}${DOWNLOADPAGEBASE}
-#obsolete - TEMPLATEFILEBASE=aubitdownload-template.htm
-#obsolete - TEMPLATEFILE	=$(FTPLOCATION)${DIRSEP}${TEMPLATEFILEBASE}
-
-#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
-#obsolete - 	CYBUILDNAMES	=${FTPLOCATION}${DIRSEP}cybuildnames.tmp
-#obsolete - 	UNIXBUILDNAMES	=${FTPLOCATION}${DIRSEP}unixbuildnames.tmp
-#obsolete - 	CYSRCBUILDNAMES	=${FTPLOCATION}${DIRSEP}cysrcbuildnames.tmp
-#obsolete - 	UNIXSRCBUILDNAMES=${FTPLOCATION}${DIRSEP}unixsrcbuildnames.tmp
-#obsolete - else
-#obsolete - 	CYBUILDNAMES	=cybuildnames.tmp
-#obsolete - 	UNIXBUILDNAMES	=unixbuildnames.tmp
-#obsolete - 	CYSRCBUILDNAMES	=cysrcbuildnames.tmp
-#obsolete - 	UNIXSRCBUILDNAMES=unixsrcbuildnames.tmp
-#obsolete - endif
-
 SOURCETARBASENAME=aubit4gl-src-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
-#obsolete - MANFILEBASENAME=aubit4gl-doc-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE).${ARCHEXT}
-#obsolete - #FIXME: remove SOURCEZIPBASENAME
-#obsolete - SOURCEZIPBASENAME=${SOURCETARBASENAME}
-
 SOURCETARNAME	=$(SOURCE)/$(SOURCETARBASENAME)
-#obsolete - #FIXME: remove SOURCEZIPNAME (and all duplicate functions)
-#obsolete - SOURCEZIPNAME	=$(SOURCE)/$(SOURCEZIPBASENAME)
-#obsolete - MANFILENAME     =$(SOURCE)/$(MANFILEBASENAME)
-#obsolete -
 
 ## ==================================================================
 ##                    Define default target
@@ -424,24 +197,11 @@ ifeq "$(GTKBUILD)" "yes"
 	ALL += gtkgui
 endif
 
-ALL +=test 
-#extra
-
-#FIXME: results of this compilations should be in install/deinstall 
-#and RPM target too: (also add to clean.all)
-#	libA4GL_file.so libA4GL_string.so libA4GL_html.so
-
-#IDE installs:
-#/usr/local/bin/ide
-#/usr/local/4glide/ide.4ae
-#/usr/local/4glide/d4glinpt.afr d4glopts.afr
-#/usr/local/4glide/d4glhelp.iem
-
-
+ALL +=test
 
 ALL_EXTRA  			=libfile libstring ide odbctest
-#FIXME:
-#All stuff that should be in ALL_EXTRA, but does not compile:
+
+#FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
 ALL_EXTRA_BROKEN	=libhtml adbaccess adbload
 
 ifneq "${PERLBUILD}" "no"
@@ -460,13 +220,15 @@ endif
 ##                              Targets
 ## ==================================================================
 
-all: ${ALL}
+default: ${ALL}
 	@echo " "
 	@echo "Successfully compiled Aubit compiler default targets :"
 	@echo "${ALL}."
 	@echo "You MUST install it before you can use it - execute 'make install'."
 	@echo "Execute 'make extra' to compile additional components."
 	@echo "Thank you for using Aubit 4gl compiler"
+
+all: default extra install
 
 log:
 	@echo "Logging make process to make.log, please wait..."
@@ -501,6 +263,20 @@ gtkgui:
 ##                              Extra
 ## ==================================================================
 
+#FIXME: results of this compilations should be in install/deinstall
+#and RPM target too: (also add to clean.all)
+#libA4GL_file.so libA4GL_string.so  libIM_JABBER.so odbctest-unixODBC odbctest-iodbc3[2]
+
+#IDE installs:
+#/usr/local/bin/ide
+#/usr/local/4glide/ide.4ae
+#/usr/local/4glide/d4glinpt.afr d4glopts.afr
+#/usr/local/4glide/d4glhelp.iem
+
+#stuff made by doxy make no sense in binary distro
+
+#broken: libA4GL_html.so, adbaccess files, adbload, perl compiler
+
 ide:
 	$(MAKE) -C tools/ide
 	$(MAKE) -C tools/ide install.aubit
@@ -517,6 +293,13 @@ libhtml:
 adbaccess:
 	$(MAKE) -C tools/adbaccess amake
 #	$(MAKE) -C tools/adbaccess misql.4ae
+
+odbctest:
+	$(MAKE) -C tools/odbctest
+
+jabber:
+	$(MAKE) -C tools/jabber libIM_JABBER.so
+
 
 ## ==================================================================
 ##                              Perl compiler
@@ -540,9 +323,10 @@ test.perl:
 ##                              Make RPC
 ## ==================================================================
 
+#this should happen in local make flies, as needed:
 rpc:
-	$(MAKE) -C compilers/fcompile rpc
-	$(MAKE) -C compilers/menus rpc
+#	$(MAKE) -C compilers/fcompile rpc
+#	$(MAKE) -C compilers/menus rpc
 
 ## ==================================================================
 ##                              Clean
@@ -560,21 +344,22 @@ clean.all: cleanall
 #will clean EVERYTHING that is not source file from CVS
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install clean.swig clean.project
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
-	$(MAKE) ${MKNAME} -C lib clean
-	$(MAKE) ${MKNAME} -C lib/libgui clean
-	${MAKE} $(MKNAME) -C lib/libtui clean
-	$(MAKE) ${MKNAME} -C lib/extra_libs/file clean
-	$(MAKE) ${MKNAME} -C compilers/4glc/rules clean
-	$(MAKE) ${MKNAME} -C compilers/4glc clean
-	$(MAKE) ${MKNAME} -C compilers/fcompile clean
-	$(MAKE) ${MKNAME} -C compilers/menus clean
-	$(MAKE) ${MKNAME} -C compilers/helpcompile clean
-	$(MAKE) ${MKNAME} -C tools/test clean
-	$(MAKE) ${MKNAME} -C tools/test/gui clean
+	$(MAKE) -C lib clean
+	$(MAKE) -C lib/libgui clean
+	${MAKE} -C lib/libtui clean
+	$(MAKE) -C lib/extra_libs/file clean
+	$(MAKE) -C lib/extra_libs/string clean
+	$(MAKE) -C compilers/4glc/rules clean
+	$(MAKE) -C compilers/4glc clean
+	$(MAKE) -C compilers/fcompile clean
+	$(MAKE) -C compilers/menus clean
+	$(MAKE) -C compilers/helpcompile clean
+	$(MAKE) -C tools/test clean
+	$(MAKE) -C tools/test/gui clean
 	$(MAKE) -C tools/test/db clean
-	$(MAKE) ${MKNAME} -C tools/ide clean
-	$(MAKE) ${MKNAME} -C tools/html clean
-	$(MAKE) ${MKNAME} -C tools/jabber clean
+	$(MAKE) -C tools/ide clean
+	$(MAKE) -C tools/html clean
+	$(MAKE) -C tools/jabber clean
 	@echo Aubit 4gl compiler source tree is now clean
 
 clean.config: clean.configure
@@ -587,66 +372,41 @@ clean.settings:
 	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv etc/aubitrc
 
 clean.makefiles:
-	${RM} compilers/4glc/Makefile
-	${RM} compilers/4glc/rules/Makefile
-	${RM} compilers/fcompile/Makefile
-	${RM} compilers/helpcompile/Makefile
-	${RM} compilers/menus/Makefile
-	${RM} incl/Makefile-common
-	${RM} lib/Makefile
-	${RM} lib/libgui/Makefile
-	${RM} lib/libpdf/Makefile
-	${RM} lib/libsql/nosql/Makefile
-	${RM} lib/libsql/esqlc/Makefile
-	${RM} lib/libsql/odbc/Makefile
-	${RM} lib/extra_libs/file/Makefile
-	${RM} lib/libtui/Makefile
-	${RM} tools/test/db/Makefile
-	${RM} tools/test/lang/Makefile
-	${RM} tools/test/regression/Makefile
-	${RM} tools/test/db/Makefile
-	${RM} tools/adbaccess/Makefile
-	${RM} tools/adbload/Makefile
-	${RM} tools/html/Makefile
-	${RM} tools/ide/Makefile
-	${RM} tools/jabber/Makefile
-	${RM} tools/odbctest/Makefile
-	${RM} tools/test/Makefile
-	${RM} tools/test/gui/Makefile
-	${RM} Makefile
+	${RM} compilers/4glc/Makefile compilers/4glc/rules/Makefile \
+	compilers/fcompile/Makefile compilers/helpcompile/Makefile \
+	compilers/menus/Makefile incl/Makefile-common \
+    lib/Makefile lib/libgui/Makefile lib/libpdf/Makefile \
+    lib/libsql/nosql/Makefile lib/libsql/esqlc/Makefile \
+    lib/libsql/odbc/Makefile lib/extra_libs/file/Makefile \
+    lib/extra_libs/string/Makefile lib/libtui/Makefile \
+    tools/test/db/Makefile tools/test/lang/Makefile \
+	tools/test/regression/Makefile tools/test/db/Makefile \
+    tools/adbaccess/Makefile tools/adbload/Makefile \
+    tools/html/Makefile tools/ide/Makefile \
+    tools/jabber/Makefile tools/odbctest/Makefile \
+    tools/test/Makefile tools/test/gui/Makefile Makefile
 
 
 clean.root:
-	$(RM) *.bak *.BAK libincl .*.bak core cyrpc.flg
-	${RM} debug.out
-	${RM} *.err ${PLATFORMSTRING}*.txt
 #We must not clean *.log when running make process to make.log:
-	${RM} make.log commit.log rpmbuild.log
 #we must not clean *.tmp because of unixbuildnames.tmp:
-#	${RM} *.tmp
-	${RM} aubit4gl.lsm aubitdownload-template.htm
+	$(RM) *.bak *.BAK libincl .*.bak core cyrpc.flg debug.out \
+	*.err ${PLATFORMSTRING}*.txt make.log commit.log rpmbuild.log \
+	aubit4gl.lsm aubitdownload-template.htm rpmbuild.log
 
 #FIXME: move this to appropriate makefile :
-	${RM} rpmbuild.log
-	${RM} compilers/fcompile/fshow.glb
-	${RM} compilers/fcompile/fshow.h
-#FIXME: we no longer need this file:
-	${RM} etc/configure
-
+	${RM} compilers/fcompile/fshow.glb compilers/fcompile/fshow.h
 
 clean.rpc:
-	${RM} compilers/fcompile/form_x_xdr.c
-	${RM} compilers/menus/menu_x_xdr.c
-	${RM} compilers/fcompile/form_x.h
-	${RM} compilers/menus/menu_x.h
-
+	${RM} compilers/fcompile/form_x_xdr.c compilers/menus/menu_x_xdr.c \
+	compilers/fcompile/form_x.h compilers/menus/menu_x.h
 
 clean.bin:
 	(cd bin;${RM} 4glc${EXE} fcompile${EXE} mcompile${EXE} mkmess${EXE} \
 	mcompile-noodbc${EXE} loadmap${EXE} \
 	*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
 	4glc_perl${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
-	aubit-config${EXE} fshow${EXE} \
+	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
 	)
 
 clean.etc:
@@ -657,8 +417,7 @@ clean.incl:
 
 clean.docs:
 	rm -rf docs/doxy/html
-	${RM} docs/doxy/*.bak
-	${RM} docs/*.bak
+	${RM} docs/doxy/*.bak docs/*.bak
 
 clean.install:
 	rm -rf install
@@ -678,14 +437,11 @@ clean.project:
 clean.build:
 	${RM} *.tgz *.htm *.html *.tmp
 
-
-
 ## ==================================================================
 ##                              Install
 ## ==================================================================
 #FIXME: this should use ${INSTALL}
 #FIXME: install .a4glrc in $HOME too
-#FIXME: do NOT overwrite .a4glrc and aubitenv!
 #make icons for KDE and GNOME: to IDE, to manual
 
 install: install.core install.example install.manual install.config \
@@ -756,17 +512,12 @@ installdrop:
 
 #install.tree.mkpath:
 install.tree:
-#	${MKPATH} $(INSTALL_DIR)
 	${MKPATH} $(INSTALL_DIR)/bin
 	${MKPATH} $(INSTALL_DIR)/lib
 	${MKPATH} $(INSTALL_DIR)/etc
 	${MKPATH} $(INSTALL_DIR)/incl
-#	${MKPATH} $(INSTALL_DIR)/tools/ide
-#	${MKPATH} $(INSTALL_DIR)/test
 	${MKPATH} $(INSTALL_DIR)/tools/test/gui
 	${MKPATH} $(INSTALL_DIR)/docs
-#	${MKPATH} $(INSTALL_DIR)/docs/manual
-#	${MKPATH} $(INSTALL_DIR)/docs/manual/html
 	@echo "Aubit 4gl compiler instalation tree created"
 
 install.links.source:
@@ -803,25 +554,6 @@ tarinstall: platform
 createcleantar: installdrop installall tarinstall
 	@echo "Aubit 4gl compiler binary disribution is now in $(SOURCE)/$(TARNAME)"
 
-
-###################################
-# Get sources from CVS
-#cvs login script uses "expect" to supply my CVS password, and therefore
-#will not be included here; but here is code for this script if you need it:
-#Wrapper to make cvs password be non-interactive:
-#--------------------------------
-#!/usr/bin/expect -f
-#spawn cvs login [lindex $argv 0]
-#expect "CVS password:"
-#send "mysecretpassword\r"
-#expect eof
-#--------------------------------
-#obsolete - source.tar:
-#obsolete - 	${RMDIR} $(INSTALL_DIR)
-#obsolete - 	${MKPATH} $(INSTALL_DIR)
-#obsolete - 	(cd $(INSTALL_DIR); autocvspasswd; cvs -z3 checkout $(AUBITCVSNAME))
-#obsolete - 	(cd $(INSTALL_DIR)/$(AUBITCVSNAME); tar -cvzf $(SOURCETARNAME) * )
-
 tar: clean.all
 #COMPILE_DATE=20-01-2002
 #TARGET=i586-pc-linux-gnu
@@ -829,216 +561,19 @@ tar: clean.all
 	tar -cvzf aubit4gl-src-${AUBIT_VERSION}.${AUBIT_BUILD}.tgz *
 	@echo "Aubit source tarball created"
 
-#obsolete - source.tar.sf:
-#obsolete - 	${RMDIR} $(INSTALL_DIR)
-#obsolete - 	${MKPATH} $(INSTALL_DIR)
-#obsolete - 	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFNAME))
-#obsolete - 	(cd $(INSTALL_DIR)/$(AUBITCVSSFNAME); tar -cvzf $(SOURCETARNAME) * )
-
-#obsolete - source.tar.location:
-#obsolete - 	(cd $(SRCLOCATION); tar -cvzf $(SOURCETARNAME) * )
-#obsolete - 	@echo $(SOURCETARNAME) created
-
-#obsolete - source.tar.curr: SRCLOCATION=${AUBITDIR}
-#obsolete - source.tar.curr: clean.all source.tar.location
-
-#obsolete - man.tar.sf:
-#use "cvs export" instead "cvs checkout" to get code without CVS directories
-#	export CVS_RSH=
-#obsolete - 	${RMDIR} $(INSTALL_DIR)
-#obsolete - 	${MKPATH} $(INSTALL_DIR)
-#obsolete - 	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFMANNAME))
-#obsolete - 	(cd $(INSTALL_DIR)/$(AUBITCVSSFMANNAME); tar -cvzf $(MANFILENAME) * )
-
 source.zip:
 	${RMDIR} $(INSTALL_DIR)
 	${MKPATH} $(INSTALL_DIR)
 	(cd $(INSTALL_DIR); autocvspasswd; cvs -w checkout $(AUBITCVSNAME))
 	(cd $(INSTALL_DIR)/$(AUBITCVSNAME); zip -r $(SOURCEZIPNAME) * )
 
-#obsolete - source.zip.sf:
-#obsolete - 	${RMDIR} $(INSTALL_DIR)
-#obsolete - 	${MKPATH} $(INSTALL_DIR)
-#obsolete - 	(cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -w -z8 checkout $(AUBITCVSSFNAME))
-#obsolete - 	(cd $(INSTALL_DIR)/$(AUBITCVSSFNAME); zip -r $(SOURCEZIPNAME) * )
-
-#obsolete - source.zip.location:
-#obsolete - 	(cd $(SRCLOCATION); zip -r $(SOURCEZIPNAME) * )
-
-#obsolete - source.tar.2download:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
-#obsolete - 	$(CP) $(SOURCETARNAME) $(FTPLOCATION)
-#obsolete - endif
-#obsolete - 	autosfscp $(SOURCETARNAME)
-#obsolete - 	@if [ ! -f ${DLTMP1} ]; then \
-#obsolete - 		${MAKE} ${MKNAME} getdlpage; \
-#obsolete - 	fi
-#obsolete - 	@sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCETARBASENAME)/" ${DLTMP1} > ${DLTMP2} ;
-#obsolete - 	@mv ${DLTMP2} ${DLTMP1} ;
-#obsolete - 	${MAKE} ${MKNAME} store.tar.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCETARBASENAME=$(SOURCETARBASENAME)
-#obsolete - #	${MAKE} putdlpage
-#obsolete -
-#obsolete - source.zip.2download:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
-#obsolete - 	$(CP) $(SOURCEZIPNAME) $(FTPLOCATION)
-#obsolete - endif
-#obsolete - 	autosfscp $(SOURCEZIPNAME)
-#obsolete - 	@if [ ! -f ${DLTMP1} ]; then \
-#obsolete - 		${MAKE} ${MKNAME} getdlpage; \
-#obsolete - 	fi
-#obsolete - 	@sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCEZIPBASENAME)/" ${DLTMP1} > ${DLTMP2} ;
-#obsolete - 	@mv ${DLTMP2} ${DLTMP1} ;
-#obsolete - 	${MAKE} ${MKNAME} store.zip.dl.names TEMPLATESRC=$(TEMPLATESRC) SOURCEZIPBASENAME=$(SOURCEZIPBASENAME)
-#obsolete - #	${MAKE} putdlpage
-#obsolete -
-#obsolete - store.tar.dl.names:
-#obsolete - 	@echo 'sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCETARBASENAME)/" ${DLTMP1} > ${DLTMP2}'  > ${UNIXSRCBUILDNAMES}
-#obsolete - 	@echo 'cp ${DLTMP2} ${DLTMP1}'  >> ${UNIXSRCBUILDNAMES}
-#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
-#obsolete - 	autosfscp ${UNIXSRCBUILDNAMES}
-#obsolete - endif
-#obsolete -
-#obsolete - store.zip.dl.names:
-#obsolete - 	@echo 'sed -e "/^$(TEMPLATESRC)/s/$(TEMPLATESRC)/$(SOURCEZIPBASENAME)/" ${DLTMP1} > ${DLTMP2}' > ${CYSRCBUILDNAMES}
-#obsolete - 	@echo 'cp ${DLTMP2} ${DLTMP1}' >> ${CYSRCBUILDNAMES}
-#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
-#obsolete - 	autosfscp ${CYSRCBUILDNAMES}
-#obsolete - endif
-#obsolete -
-
-## ------------------------------------------------------------------
-##                Additional Installation Targets: Windows/CygWin
-## ------------------------------------------------------------------
-
-#obsolete - install.tree.cy:
-#obsolete - 	@cd $(INSTALL_DIR); \
-#obsolete - 	${MKPATH} $(INSTALL_DIR)/dll; \
-#obsolete - 	${MKPATH} $(INSTALL_DIR)/extralibs;
-#obsolete -
-#obsolete - pack.cygwin:
-#obsolete - 	${MAKE} ${MKNAME} installdrop INSTALL_DIR=${INSTALL_DIR}
-#obsolete - 	${MAKE} ${MKNAME} install.tree INSTALL_DIR=${INSTALL_DIR}
-#obsolete - 	${MAKE} ${MKNAME} install.tree.cy INSTALL_DIR=${INSTALL_DIR}
-#obsolete - 	${MAKE} ${MKNAME} installx SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR} TOBIN="${CYTOBIN}" TOLIBGTK="${CYTOLIBGTK}"
-#obsolete - 	${MAKE} ${MKNAME} install.example SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR}
-#obsolete - #FIXME: we should pack compiled IDE with binary distro, not sources
-#obsolete - 	${MAKE} ${MKNAME} packide SOURCE=${CYSOURCE} INSTALL_DIR=${INSTALL_DIR}
-#obsolete - 	${MAKE} ${MKNAME} install.libs LIBTARGET1=${CYLIBTARGET1}
-#obsolete - 	${MAKE} ${MKNAME} install.dll DLLTARGET=${CYDLLTARGET}
-#obsolete - 	${MAKE} ${MKNAME} cygwin.runtime INSTALL_DIR=${INSTALL_DIR}
-#obsolete - 	${MAKE} ${MKNAME} zip.install GUITYPE=GTK $(INSTALL_DIR) $(SOURCE)
-
-#obsolete - cygwin.runtime.with.demo: cygwin.runtime cygwin.runtime.demo cygwin.zip.runtime
-
-#FIXME: if this programs are not compiled, make will stop: cygwin.runtime.demo
-#obsolete - cygwin.runtime: cygwin.runtime.tree
-#obsolete - 	${CP} /bin/cygncurses?.dll $(INSTALL_DIR)/runtime/runtimelib
-#obsolete - 	${CP} /bin/cygwin?.dll $(INSTALL_DIR)/runtime/runtimelib
-#obsolete - 	${CP} /bin/cygform?.dll $(INSTALL_DIR)/runtime/runtimelib
-#obsolete - 	${CP} /bin/cygpanel?.dll $(INSTALL_DIR)/runtime/runtimelib
-#obsolete - 	${CP} ${DLLTARGET}/* $(INSTALL_DIR)/runtime/runtimelib
-#obsolete - 	${CP} tools/cygwin/readme-runtime.html $(INSTALL_DIR)/runtime
-#FIXME: At the moment, we are not making any .so or .dll on Windows
-#	${CP} lib/*.so $(INSTALL_DIR)/runtime/runtimelib
-
-#obsolete - cygwin.runtime.tree:
-#obsolete - 	${MKPATH} $(INSTALL_DIR)/runtime
-#obsolete - 	${MKPATH} $(INSTALL_DIR)/runtime/runtimelib
-#obsolete - 	${MKPATH} $(INSTALL_DIR)/runtime/apps
-
-#obsolete - cygwin.runtime.demo:
-#obsolete - 	${MAKE} ${MKNAME} -C tools/test GTKBUILD=yes
-#obsolete - #obsolete - 	${MAKE} ${MKNAME} -C tools/test/gui GTKBUILD=yes
-#obsolete - 	cp ${CYSOURCE}/tools/test/*.exe $(INSTALL_DIR)/runtime/apps
-#obsolete - 	cp ${CYSOURCE}/tools/test/gui/*.exe $(INSTALL_DIR)/runtime/apps
-#obsolete - 	${CP} tools/cygwin/*.lnk.hide $(INSTALL_DIR)/runtime
-#obsolete - 	${CP} tools/cygwin/unhide.bat $(INSTALL_DIR)/runtime
-
 #if we unhide them before zip, zip will not find them:
 unhide.lnk:
-#	(cd $(INSTALL_DIR)/runtime; for afile in *.lnk.hide; do echo $$afile; done;)
-#	(cd $(INSTALL_DIR)/runtime; for afile in *.lnk.hide; do echo `basename "$$afile" .hide`; done;)
 	(cd $(INSTALL_DIR)/runtime; for afile in *.lnk.hide; do mv "$$afile" "`basename "$$afile" .hide`"; done;)
 
 cygwin.zip.runtime:
 	${RM} $(SOURCE)/$(ZIPRUNTIMENAME)
 	(cd $(INSTALL_DIR)/runtime/; zip -r $(SOURCE)/$(ZIPRUNTIMENAME) * )
-
-
-#obsolete - zip.install: platform
-#obsolete - #FIXME: check if it exists first
-#obsolete - 	${RM} $(SOURCE)/$(ZIPNAME)
-#obsolete - 	${CP} $(PLATFORMINFO) $(INSTALL_DIR)
-#obsolete - #	(cd $(INSTALL_DIR); zip -r $(SOURCE)/$(ZIPNAME) * $(A4GLRC))
-#obsolete - 	(cd $(INSTALL_DIR); zip -r $(SOURCE)/$(ZIPNAME) * )
-#obsolete - install.libs:
-#obsolete - 	cp ${L4}/glib${LIBVER}.lib ${LIBTARGET1}
-#obsolete - 	cp ${L1}/gdk${LIBVER}.lib ${LIBTARGET1}
-#obsolete - 	cp ${L2}/gtk${LIBVER}.lib ${LIBTARGET1}
-#obsolete - 	cp ${L4}/libglib${LIBVER}.a ${LIBTARGET1}/libglib.a
-#obsolete - 	cp ${L1}/libgdk${LIBVER}.a ${LIBTARGET1}/libgdk.a
-#obsolete - 	cp ${L2}/libgtk${LIBVER}.a ${LIBTARGET1}/libgtk.a
-#obsolete - #preserve version numbers too:
-#obsolete - 	cp ${L4}/libglib${LIBVER}.a ${LIBTARGET1}
-#obsolete - 	cp ${L1}/libgdk${LIBVER}.a ${LIBTARGET1}
-#obsolete - 	cp ${L2}/libgtk${LIBVER}.a ${LIBTARGET1}
-
-#FIXME: want about -noodbc libs?
-#	cp ${L5}/libUI_GTK.a ${LIBTARGET1}
-#	cp ${L5}/libaclallgui.a ${LIBTARGET1}
-#obsolete - 	cp ${L5}/libaclall.a ${LIBTARGET1}
-#obsolete - 	cp ${L3}/librpclib.a ${LIBTARGET1}
-
-#obsolete - install.dll:
-#obsolete - 	cp ${L1}/gdk${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	cp ${L4}/glib${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	cp ${L6}/iconv${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	cp ${L2}/gtk${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	cp ${L4}/gmodule/gmodule${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	cp ${L7}/gnu-intl.dll ${DLLTARGET}
-
-#obsolete - deinstall.libs:
-#obsolete - 	${RM} /usr/lib/glib${LIBVER}.lib
-#obsolete - 	${RM} /usr/lib/gdk${LIBVER}.lib
-#obsolete - 	${RM} /usr/lib/gtk${LIBVER}.lib
-#obsolete - 	${RM} /usr/lib/libglib${LIBVER}.a
-#obsolete - 	${RM} /usr/lib/libgdk${LIBVER}.a
-#obsolete - 	${RM} /usr/lib/libgtk${LIBVER}.a
-#FIXME: what about -noodbc libs?
-#	${RM} /usr/lib/libUI_GTK.a
-#	${RM} /usr/lib/libaclallgui.a
-#obsolete - 	${RM} /usr/lib/libaclall.a
-#obsolete - 	${RM} /usr/lib/librpclib.a
-
-#obsolete - deinstall.dll:
-#obsolete - 	${RM} /bin/gdk${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	${RM} /bin/glib${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	${RM} /bin/iconv${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	${RM} /bin/gtk${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	${RM} /bin/gmodule/gmodule${LIBVER}.dll ${DLLTARGET}
-#obsolete - 	${RM} /bin/gnu-intl.dll ${DLLTARGET}
-
-
-#obsolete - install.bin.lib: install.run.exe
-#obsolete - #we should not do this: this should be done in aubitenv:
-#obsolete - #$PATH to $AUBITDIR/dll
-#obsolete - #$LD_LIBRARY_PATH to $AUBITDIR/extralibs
-#obsolete - 	cp dll/* /bin
-#obsolete - 	cp extralibs/* /usr/lib
-#obsolete - 	${MAKE} ${MKNAME} cygwin.install.message
-
-#obsolete - install.run.exe:
-#obsolete - 	${CP} bin/run.exe ${SYSTEMROOT}
-#obsolete - 	${MAKE} ${MKNAME} cygwin.install.message
-
-#obsolete - deinstall.bin.lib: deinstall.libs deinstall.dll
-#obsolete - 	${RM} ${SYSTEMROOT}/run.exe
-
-#obsolete - cygwin.install.message:
-#obsolete - 	@echo "Don't forget to add"
-#obsolete - 	@echo "C:\cygwin\bin;C:\cygwin${AUBITDIR}\bin;C:\cygwin${AUBITDIR}\dll"
-#obsolete - 	@echo "to WINDOWS path."
-#obsolete - 	@echo "Add AUBITGUI=gui to system environment to run in GUI mode"
 
 pack.amake:
 	${MKPATH} /tmp/pack_amake/bin
@@ -1052,283 +587,11 @@ pack.amake:
 ## ------------------------------------------------------------------
 ##                       Binary distribution Targets
 ## ------------------------------------------------------------------
-#For nightly builds, put "$AUBITDIR/bin/aubitbuild.sh" in corn
-#
-
-#	getdlpage in now in aubitbuild.sh, because source.zip needs it
-#obsolete - allbindist: \
-#obsolete - 	clear.dl.names \
-#obsolete - 	${ALLBINDISTNAMES} \
-#obsolete - 	restore.dl.names \
-#obsolete - 	restore.src.dl.names \
-#obsolete - 	todownload \
-#obsolete - 	putdlpage
-#obsolete - 	@echo "All binary distributions built successfully and placed in FTP locattion"
-
-
-#obsolete - all.win.bin.dist: \
-#obsolete - 	cy.clear.dl.names \
-#obsolete - 	cy-odbc32-gtk-nopdf \
-#obsolete -     cygwin.runtime.with.demo \
-#obsolete - 	cy.restore.dl.names \
-#obsolete - 	cy.restore.src.dl.names \
-#obsolete - 	cy.todownload \
-#obsolete - 	putdlpage
-#obsolete - 	@echo "All win32 binary distributions built successfully and placed in FTP locattion"
-#obsolete -
-#FIXME: we need to delete stuff in DL locations older then x days
-
-#we cannot do mass upload here using autosfscp becaouse of bug in * files listing, so we need to do it
-#for each individual package
-#obsolete - todownload:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
-#obsolete - 	$(CP) *.${ARCHEXT} $(FTPLOCATION)
-#obsolete - 	$(CP) ${PLATFORMSTRING}*.txt $(FTPLOCATION)
-#obsolete - else
-#obsolete - 	@(for afile in *.${ARCHEXT}; do echo To move: "$$afile" ; done;)
-#obsolete - 	@(for afile in *.${ARCHEXT}; do autosfscp "$$afile" ; done;)
-#obsolete - 	@(for afile in ${PLATFORMSTRING}*.txt; do echo To move: "$$afile" ; done;)
-#obsolete - 	@(for afile in ${PLATFORMSTRING}*.txt; do autosfscp "$$afile" ; done;)
-#obsolete - #	@echo "Network share drive is disabled"
-#obsolete - endif
-#obsolete -
-#obsolete - cy.todownload:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
-#obsolete - 	$(CP) *.${ARCHEXT} $(FTPLOCATION)
-#obsolete - 	$(CP) ${PLATFORMSTRING}*.txt $(FTPLOCATION)
-#obsolete - else
-#obsolete - 	@(for afile in *.${ARCHEXT}; do echo To move: "$$afile" ; done;)
-#obsolete - 	@(for afile in *.${ARCHEXT}; do autosfscp "$$afile" ; done;)
-#obsolete - 	@(for afile in ${PLATFORMSTRING}*.txt; do echo To move: "$$afile" ; done;)
-#obsolete - 	@(for afile in ${PLATFORMSTRING}*.txt; do autosfscp "$$afile" ; done;)
-#obsolete - #	@echo "Network share drive is disabled"
-#obsolete - endif
-#obsolete -
-
-#Example of "autosfscp" script:
-##!/usr/bin/expect -f
-## wrapper to make cvs password be non-interactive
-## username is passed as 1st arg, passwd as 2nd
-#spawn scp -q $argv afalout@aubit4gl.sourceforge.net:/home/groups/a/au/aubit4gl/htdocs/files
-#expect " password:"
-#send "mysecretpassword\r"
-#expect eof
-#obsolete - bindist.to.sf.download:
-#obsolete - 	autosfscp $(SOURCE)/$(TARNAME)
-#obsolete - 	autosfscp $(SOURCE)/$(PLATFORMINFOFULL)
-
-#obsolete - cy.bindist.to.sf.download:
-#obsolete - 	autosfscp $(SOURCE)/$(ZIPNAME)
-#obsolete - 	autosfscp $(SOURCE)/$(PLATFORMINFOFULL)
-
-
-#FIXME: copy source tar and manual tar to download too? We can get it via jCVS servlet anyway...
 
 cleantar:
 	$(RM) *.${ARCHEXT}
 	$(RM) *.${ARCHEXT}.txt
 
-#obsolete - cleandownload:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
-#obsolete - 	$(RM) $(FTPLOCATION)/*.${ARCHEXT}
-#obsolete - 	$(RM) $(FTPLOCATION)/${PLATFORMSTRING}*.txt
-#obsolete - endif
-
-
-#example of "autosfscpget" script:
-#!/usr/bin/expect -f
-#spawn scp -q afalout@aubit4gl.sourceforge.net:$argv .
-#expect " password:"
-#send "mysecretpassword\r"
-#expect eof
-
-#obsolete - getdlpage:
-#obsolete - 	${RM} ${DLTMP1} ${DLTMP2} ${TEMPLATEFILEBASE}
-#obsolete - #	@cp $(TEMPLATEFILE) ${DLTMP1}
-#obsolete - 	${AUTOSFSCPGET} ${SCPPATH}/${TEMPLATEFILEBASE}
-#obsolete - 	@if [ -f ${TEMPLATEFILEBASE} ]; then \
-#obsolete - 		cp ${TEMPLATEFILEBASE} ${DLTMP1}; \
-#obsolete -     else \
-#obsolete -         ${MAKE} ${MKNAME} getdlpage; \
-#obsolete -     fi
-#NOTE: re-entrant call to getdlpage abowe is because on CygWin
-#autosfscp can fail randomly
-
-
-#obsolete - putdlpage:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "1"
-#obsolete - 	@if [ -f ${DLTMP1} ]; then \
-#obsolete - 		cp ${DLTMP1} $(DOWNLOADPAGE); \
-#obsolete -         cp ${DLTMP1} $(DOWNLOADPAGEBASE); \
-#obsolete -     else \
-#obsolete -         echo "putdlpage: cannot find ${DLTMP1}" ; \
-#obsolete -     fi
-#obsolete - endif
-#obsolete - 	@if [ -f ${DLTMP1} ]; then \
-#obsolete - 		cp ${DLTMP1} $(DOWNLOADPAGEBASE); \
-#obsolete - 		autosfscp $(DOWNLOADPAGEBASE); \
-#obsolete -     else \
-#obsolete -         echo "putdlpage: cannot find ${DLTMP1}" ; \
-#obsolete -     fi
-
-#		rm -f ${DLTMP1} ${DLTMP2}; \
-
-#obsolete - fix.dl.page: getdlpage restore.dl.names cy.restore.dl.names restore.src.dl.names cy.restore.src.dl.names putdlpage
-
-#---------------------
-
-#obsolete - downloadnames:
-#obsolete - 	@if [ ! -f ${DLTMP1} ]; then \
-#obsolete - 		${MAKE} ${MKNAME} getdlpage; \
-#obsolete - 	else \
-#obsolete - 		sed -e "/^$(TEMPLATENAME)/s/$(TEMPLATENAME)/$(TARNAME)/" ${DLTMP1} > ${DLTMP2} ; \
-#obsolete - 		sed -e "/^$(TEMPLATENAMEINFO)/s/$(TEMPLATENAMEINFO)/$(PLATFORMINFOFULL)/" ${DLTMP2} > ${DLTMP1} ; \
-#obsolete -     fi
-
-#obsolete - clear.dl.names:
-#obsolete - #when $(USELOCALUPLOAD) is 0, this will remove loval file, is this OK?
-#obsolete - 	${RM} ${UNIXBUILDNAMES}
-
-#obsolete - store.dl.names:
-#obsolete - 	@echo 'sed -e "/^$(TEMPLATENAME)/s/$(TEMPLATENAME)/$(TARNAME)/" ${DLTMP1} > ${DLTMP2}'  >> ${UNIXBUILDNAMES}
-#obsolete - 	@echo 'sed -e "/^$(TEMPLATENAMEINFO)/s/$(TEMPLATENAMEINFO)/$(PLATFORMINFOFULL)/" ${DLTMP2} > ${DLTMP1}'  >> ${UNIXBUILDNAMES}
-#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
-#obsolete - 	autosfscp ${UNIXBUILDNAMES}
-#obsolete - endif
-#obsolete -
-
-#obsolete - restore.dl.names:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
-#obsolete - 	@if ! [ -f ${CYBUILDNAMES} ]; then \
-#obsolete - 		${AUTOSFSCPGET} ${SCPPATH}/${CYBUILDNAMES}; \
-#obsolete - 	fi
-#obsolete - endif
-#obsolete - 	@if [ -f ${CYBUILDNAMES} ]; then \
-#obsolete - 		dos2unix ${CYBUILDNAMES}; \
-#obsolete - 		${SH} ${CYBUILDNAMES}; \
-#obsolete -     else \
-#obsolete - 		echo "restore.dl.names: Cannot find ${CYBUILDNAMES}"; \
-#obsolete -     fi
-
-#---------------------
-
-#obsolete - cy.downloadnames:
-#obsolete - 	@if [ ! -f ${DLTMP1} ]; then \
-#obsolete - 		${MAKE} ${MKNAME} getdlpage; \
-#obsolete - 	else \
-#obsolete - 		sed -e "/^$(TEMPLATENAME)/s/$(TEMPLATENAME)/$(TARNAME)/" ${DLTMP1} > ${DLTMP2} ; \
-#obsolete - 		sed -e "/^$(TEMPLATENAMEINFO)/s/$(TEMPLATENAMEINFO)/$(PLATFORMINFOFULL)/" ${DLTMP2} > ${DLTMP1} ; \
-#obsolete -     fi
-#obsolete -
-#obsolete - cy.clear.dl.names:
-#obsolete - 	${RM} ${CYBUILDNAMES}
-
-#obsolete - cy.store.dl.names:
-#obsolete - 	@echo 'sed -e "/^$(TEMPLATENAME)/s/$(TEMPLATENAME)/$(TARNAME)/" ${DLTMP1} > ${DLTMP2}'  >> ${CYBUILDNAMES}
-#obsolete - 	@echo 'sed -e "/^$(TEMPLATENAMEINFO)/s/$(TEMPLATENAMEINFO)/$(PLATFORMINFOFULL)/" ${DLTMP2} > ${DLTMP1}'  >> ${CYBUILDNAMES}
-#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
-#obsolete - 	autosfscp ${CYBUILDNAMES}
-#obsolete - endif
-
-
-
-#obsolete - cy.restore.dl.names:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
-#obsolete - 	@if ! [ -f ${UNIXBUILDNAMES} ]; then \
-#obsolete - 		${AUTOSFSCPGET} ${SCPPATH}/${UNIXBUILDNAMES}; \
-#obsolete -     fi
-#obsolete - #else
-#obsolete - #when USELOCALUPLOAD=1, filename ${UNIXBUILDNAMES} includes path
-#obsolete - endif
-#obsolete - 	@if [ -f ${UNIXBUILDNAMES} ]; then \
-#obsolete - 		${SH} ${UNIXBUILDNAMES}; \
-#obsolete - 	else\
-#obsolete - 		echo "cy.restore.dl.names: Cannot find ${UNIXBUILDNAMES}"; \
-#obsolete - 	fi
-#obsolete -
-#----------------------
-
-#obsolete - cy.restore.src.dl.names:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
-#obsolete - 	@if ! [ -f ${UNIXSRCBUILDNAMES} ]; then \
-#obsolete - 		${AUTOSFSCPGET} ${SCPPATH}/${UNIXSRCBUILDNAMES}; \
-#obsolete -     fi
-#obsolete - endif
-#obsolete - 	@if [ -f ${UNIXSRCBUILDNAMES} ]; then \
-#obsolete - 		${SH} ${UNIXSRCBUILDNAMES}; \
-#obsolete -     else \
-#obsolete - 		echo "cy.restore.src.dl.names: Cannot find ${UNIXSRCBUILDNAMES}"; \
-#obsolete - 	fi
-#obsolete -
-#obsolete - restore.src.dl.names:
-#obsolete - ifeq "$(USELOCALUPLOAD)" "0"
-#obsolete - 	@if ! [ -f ${CYSRCBUILDNAMES} ]; then \
-#obsolete - 		${AUTOSFSCPGET} ${SCPPATH}/${CYSRCBUILDNAMES} ; \
-#obsolete -     fi
-#obsolete - endif
-#obsolete - 	@if [ -f ${CYSRCBUILDNAMES} ]; then \
-#obsolete - 		dos2unix ${CYSRCBUILDNAMES}; \
-#obsolete - 		${SH} ${CYSRCBUILDNAMES}; \
-#obsolete -     else \
-#obsolete - 		echo "restore.src.dl.names: Cannot find ${CYSRCBUILDNAMES}"; \
-#obsolete - 	fi
-#obsolete -
-#FIXME: do I need to do make cleanall before each build?
-#FIXME: can I compile without ODBC, so we have general purpose compiler
-#without any dependencies?
-
-#obsolete - ######################
-#obsolete - #Binary build targets:
-#obsolete -
-#obsolete - iodbc-gtk-pdf:
-#obsolete - 	${MAKE} ${MKNAME} PDFBUILD=yes 	GTKBUILD=yes 	ODBC=iodbc 	step.two
-#obsolete -
-#obsolete - iodbc-nogtk-pdf:
-#obsolete - 	${MAKE} ${MKNAME} PDFBUILD=yes 	GTKBUILD=no 	ODBC=iodbc  step.two
-#obsolete -
-#obsolete - iodbc-gtk-nopdf:
-#obsolete - 	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=yes 	ODBC=iodbc  step.two
-#obsolete -
-#obsolete - iodbc-nogtk-nopdf:
-#obsolete - 	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=no 	ODBC=iodbc  step.two
-#obsolete -
-#obsolete - unixodbc-gtk-pdf:
-#obsolete - 	${MAKE} ${MKNAME} PDFBUILD=yes 	GTKBUILD=yes 	ODBC=unix 	step.two
-#obsolete -
-#obsolete - unixodbc-nogtk-pdf:
-#obsolete - 	${MAKE} ${MKNAME} PDFBUILD=yes 	GTKBUILD=no 	ODBC=unix 	step.two
-#obsolete -
-#obsolete - unixodbc-gtk-nopdf:
-#obsolete - 	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=yes 	ODBC=unix 	step.two
-#obsolete -
-#obsolete - unixodbc-nogtk-nopdf:
-#obsolete - 	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=no 	ODBC=unix 	step.two
-#obsolete -
-#obsolete - cy-odbc32-gtk-nopdf:
-#obsolete - 	${MAKE} ${MKNAME} PDFBUILD=no 	GTKBUILD=yes 	ODBC=odbc32 cy.step.two
-#obsolete -
-#obsolete - step.two: \
-#obsolete - 	settings \
-#obsolete - 	cleanall \
-#obsolete - 	all \
-#obsolete - 	installdrop \
-#obsolete - 	installall \
-#obsolete - 	tarinstall \
-#obsolete - 	downloadnames \
-#obsolete - 	store.dl.names \
-#obsolete - 	bindist.to.sf.download
-#obsolete - 	@echo "UNIX build ${PDFTYPE}-${GUITYPE}-${ODBCMANAGER} build finished successfuly."
-#obsolete -
-#obsolete - cy.step.two: \
-#obsolete - 	settings \
-#obsolete - 	cleanall \
-#obsolete - 	all \
-#obsolete - 	pack.cygwin \
-#obsolete - 	cy.downloadnames \
-#obsolete - 	cy.store.dl.names \
-#obsolete - 	cy.bindist.to.sf.download
-#obsolete - 	@echo "CygWin build ${PDFTYPE}-${GUITYPE}-${ODBCMANAGER} build finished successfuly."
-#obsolete -
 
 ## ------------------------------------------------------------------
 ##                      RPM packaging
@@ -1413,45 +676,9 @@ rpm.1: RPMCONFFILE:=${AUBITDIR}/etc/aubit-auto.spec
 rpm.1:
 	rpm -ba ${RPMCONFFILE} ${LOGFILE}
 
-#       -bl    Do a "list check".  The "%files" section  from  the
-#              spec file is macro expanded, and checks are made to
-#              verify that each file exists.
-
-
-#       --short-circuit
-#              Skip  straight  to  specified  stage  (ie, skip all
-#              stages leading up to the  specified  stage).   Only
-#              valid with -bc and -bi.
-
-
-#p means just run the prep section of the specfile.
-#l is a list check that does some checks on %files.
-#c do a prep and compile. This is useful when you are unsure of whether
-#	your source will build at all. It seems useless because you might want
-#	to just keep playing with the source itself until it builds and then
-#	start using RPM, but once you become accustomed to using RPM you will
-#	find instances when you will use it.
-#i do a prep, compile, and install.
-#b prep, compile, install, and build a binary package only.
-#a build it all (both source and binary packages).
-
-#--short-circuit will skip straight to a specified stage (can only be used with c and i).
-#--clean removes the build tree when done.
-#--keep-temps will keep all the temp files and scripts that were made in /tmp. You can actually see what files were created in /tmp using the -v option.
-#--test does not execute any real stages, but does keep-temp.
-
 #automatically create .spec file for RPM build:
 etc/aubit-auto.spec: aubit4gl.lsm
 	${MAKE} ${MKNAME} -n install | autospec -i -d -n ${NAMEVERBLD} -g Development/Languages > ${AUBITDIR}/etc/aubit-auto.spec
-
-#make -n = Print the commands that would be executed, but do not execute them.
-#autospec:
-#  -d     Don't look for documentation  files  like  `README'
-#              and  `BUGS' in the current directory to add them to
-#              the spec file list.
-
-
-
 
 build.diff.patch:
 	diff -uNr dirname.orig dirname > ../SOURCES/dirname-linux.patch
@@ -1502,7 +729,6 @@ endif
 doxy.make:
 	rm -rf docs/doxy/html
 	doxygen docs/doxy/Doxyfile
-	
 #Now copy the file
 #
 #     /opt/aubit/aubit4glsrc/docs/doxy/html/doxysearch.cgi
@@ -1512,7 +738,6 @@ doxy.make:
 #     /opt/aubit/aubit4glsrc/docs/doxy/html/installdox
 #
 #to replace any dummy links.
-
 	@echo DoxyGen doccumentation created and placed in docs/doxy/html
 
 doxy.install.www:
@@ -1525,8 +750,6 @@ doxy.install.www:
 
 doxy.install.search:
 	cp docs/doxy/html/doxysearch.cgi @CGI_DIR@
-
-
 
 ## ------------------------------------------------------------------
 ##                       Other Targets
@@ -1572,19 +795,13 @@ help.targets:
 	@echo
 	@echo Targets:
 	@echo
-	@echo "  all (same as just "make") - compile the Aubit 4gl compiler"
+	@echo "  default (same as just "make") - compile the Aubit 4gl compiler"
 	@echo "  gtkgui - compile only GTK libraries"
 	@echo "  clean - delete and temp and intermittent files, but not targets"
 	@echo "  cleanall - delete ALL compiled object and temp files that where"
 	@echo "          created with make. This will result in clan source code"
 	@echo "          tree, as exported form CVS"
-	@echo "  installall - install.tree install install.example install.manual"
-	@echo "  createcleantar - installdrop installall tarinstall"
 	@echo "  install - installs Aubit 4gl compiler in installation tree"
-	@echo "  install.example - installs 4gl examples in installation tree"
-	@echo "  install.manual - installs manual in installation tree"
-	@echo "  installdrop - DELETES installation tree. WARNING: uses ${RMDIR}"
-	@echo "  install.tree - creates installation tree"
 	@echo "  tarinstall - creates ${ARCHEXT} file from installation tree"
 	@echo "  demo - compile 4gl exampe code in tools/test/ and tools/test/gui/"
 	@echo "  log - log default target make process to ./make.log"
@@ -1598,8 +815,6 @@ help.options:
 	@echo "  PDFBUILD=(no/yes) NOTE: Must have PDF lib installed"
 	@echo "  GTKBUILD=(yes/no) NOTE: Must have GTK lib installed"
 	@echo "  JABBERBUILD=(yes/no) NOTE: Must have ikemel lib installed"
-	@echo "  ODBC=iodbc/unix (ignored on Windows) NOTE: Must have ODBC lib installed"
-	@echo "  CYGWIN=mno-cygwin : compile to monolith CygWin target (Windows only)"
 	@echo "  PREFIX= where to install binaries, default is $PREFIX"
 	@echo
 	@echo
@@ -1702,46 +917,6 @@ lclint:
 	$(MAKE) ${MKNAME} -C compilers/4glc/rules lclint LCLINTFLAGS=$(LCLINTFLAGS) >> $(LCLINTLOGCMD)
 	@echo "see $(LCLINTLOG) for results"
 
-
-
-#obsolete - 1:
-#obsolete - 	rm -f lib/libgui/assist.c
-#obsolete - 	echo ${GTKGUI}
-#obsolete - 	echo ${AUBITDIR}
-#obsolete - 	make ${MKNAME} -C lib/libgui assist.c
-#obsolete - 	ls lib/libgui/assist.c
-
-#obsolete - 2:
-#obsolete - 	echo ${AUBITVERSION}
-#obsolete - 	echo ${AUBITBUILD}
-
-
-#obsolete - showbug: xsettings
-#obsolete - 	${MAKE} XWZ=1 xsettings
-#obsolete - xsettings:
-#obsolete - 	@echo "make invoked with flags : xx${MAKEFLAGS}xx"
-
-#obsolete - old.2.in:
-#obsolete - 	${CP} Makefile.old Makefile.in
-#obsolete - 	${CP} compilers/4glc/Makefile.old compilers/4glc/Makefile.in
-#obsolete - 	${CP} compilers/4glc/rules/Makefile.old compilers/4glc/rules/Makefile.in
-#obsolete - 	${CP} compilers/fcompile/Makefile.old compilers/fcompile/Makefile.in
-#obsolete - 	${CP} compilers/helpcompile/Makefile.old compilers/helpcompile/Makefile.in
-#obsolete - 	${CP} compilers/menus/Makefile.old compilers/menus/Makefile.in
-#obsolete - 	${CP} lib/Makefile.old lib/Makefile.in
-#obsolete - 	${CP} lib/libgui/Makefile.old lib/libgui/Makefile.in
-#obsolete - 	${CP} lib/libpdf/Makefile.old lib/libpdf/Makefile.in
-#obsolete - 	${CP} lib/libsql/nosql/Makefile.old lib/libsql/nosql/Makefile.in
-#obsolete - 	${CP} lib/libsql/odbc/Makefile.old lib/libsql/odbc/Makefile.in
-#obsolete - 	${CP} tools/adbaccess/Makefile.old tools/adbaccess/Makefile.in
-#obsolete - 	${CP} tools/adbload/Makefile.old tools/adbload/Makefile.in
-#obsolete - 	${CP} tools/html/Makefile.old tools/html/Makefile.in
-#obsolete - 	${CP} tools/ide/Makefile.old tools/ide/Makefile.in
-#obsolete - 	${CP} tools/jabber/Makefile.old tools/jabber/Makefile.in
-#obsolete - 	${CP} tools/odbctest/Makefile.old tools/odbctest/Makefile.in
-#obsolete - 	${CP} tools/test/Makefile.old tools/test/Makefile.in
-#obsolete - 	${CP} tools/test/gui/Makefile.old tools/test/gui/Makefile.in
-#obsolete -
 settings.rc:
 	@echo
 	@echo "A1 [/etc/opt/aubit4gl/aubitrc] =${A1}"

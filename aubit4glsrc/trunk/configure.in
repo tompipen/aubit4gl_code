@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.51 2002-03-31 07:05:17 afalout Exp $
+# $Id: configure.in,v 1.52 2002-04-02 08:17:33 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -229,8 +229,12 @@ AC_SUBST(WWW_DOCUMENT_ROOT)
 AC_SUBST(RPM)
 AC_SUBST(AUTOSPEC)
 
-#other
+#Jabber/Iksemel lib
 AC_SUBST(JABBERBUILD)
+AC_SUBST(IKSEMEL_L_FLAGS)
+AC_SUBST(IKSEMEL_I_FLAGS)
+
+#other
 AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
 AC_SUBST(LDCONFIG)
@@ -1485,8 +1489,9 @@ AC_ARG_WITH(iksemel,
 
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
-		TEST_IKSEMEL_FLAGS="-I$withval/include -L$withval/lib"
-		LDFLAGS="$LDFLAGS $TEST_IKSEMEL_FLAGS"
+		TEST_IKSEMEL_I_FLAGS="-I$withval/include"
+		TEST_IKSEMEL_L_FLAGS="-L$withval/lib"
+		LDFLAGS="$LDFLAGS $TEST_IKSEMEL_I_FLAGS $TEST_IKSEMEL_L_FLAGS"
 		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
 		# FIXME: Replace `main' with a function in `-liksemel':
 		AC_CHECK_LIB([iksemel], [main])
@@ -1496,6 +1501,9 @@ AC_ARG_WITH(iksemel,
 		if test $ac_cv_lib_iksemel_main = yes; then
 			JABBERBUILD=yes
 		    AC_DEFINE(HAVE_IKSEMEL,1,[ ])
+            IKSEMEL_L_FLAGS="$TEST_IKSEMEL_L_FLAGS"
+            IKSEMEL_I_FLAGS="$TEST_IKSEMEL_I_FLAGS"
+
 		    #AC_MSG_RESULT(yes)
 		else
 		    AC_DEFINE(HAVE_IKSEMEL,0,[ ])
