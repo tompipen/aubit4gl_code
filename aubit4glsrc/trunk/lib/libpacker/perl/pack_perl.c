@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.2 2002-07-21 09:56:42 afalout Exp $
+# $Id: pack_perl.c,v 1.3 2002-07-31 15:30:29 mikeaubury Exp $
 #*/
 
 /**
@@ -179,7 +179,7 @@ open_packer (char *basename, char dir)
       outfile = fopen (buff, "w");
       if (outfile) {
          fprintf(outfile,"#!/bin/perl\n");
-         fprintf(outfile,"%report=(\n"); /* warning: unknown conversion type character `r' in format */
+         fprintf(outfile,"%%report=(\n"); /* warning: unknown conversion type character `r' in format */
 
 	 return 1;
       }
@@ -310,8 +310,8 @@ int
 output_string (char *name, char *val, int ptr, int isarr)
 {
 pr1();
-  if (isarr>=0) fprintf (outfile, "%d=>\"%s\"", isarr,escape_str(val,'"','\\'));
-	else fprintf (outfile, "\"%s\"=>\"%s\"", name,escape_str(val,'"','\\'));
+  if (isarr>=0) fprintf (outfile, "%d=>\'%s\'", isarr,escape_str(val,'\'','\\'));
+	else fprintf (outfile, "\"%s\"=>\'%s\'", name,escape_str(val,'\'','\\'));
   return 1;
 }
 

@@ -171,6 +171,7 @@ set_expr_int(struct expr *e,int a)
 %token MATCHES
 %token MINUS
 %token MINUTE
+%token MOD
 %token MONEY
 %token MONTH
 %token MULTIPLY
@@ -903,6 +904,8 @@ units_qual:
 value_expression:
 	value_expression DIVIDE value_expression
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
+	| value_expression MOD value_expression
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression POW value_expression
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression units_qual
@@ -1270,6 +1273,14 @@ val_expression:
 		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
 		$<expr>$.expr_u.expr->operand=EXPR_POW; 
 		}
+	 | val_expression MOD val_expression 
+		{ 
+		$<expr>$.type=EXPRTYPE_COMPLEX; $<expr>$.expr_u.expr=malloc(sizeof(struct complex_expr)); 
+		COPY($<expr>$.expr_u.expr->expr1,$<expr>1); 
+		COPY($<expr>$.expr_u.expr->expr2,$<expr>3); 
+		$<expr>$.expr_u.expr->operand=EXPR_MOD; 
+		}
+
 
 	| val_expression MULTIPLY val_expression
 		{ 

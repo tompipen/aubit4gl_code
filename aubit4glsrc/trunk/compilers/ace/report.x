@@ -53,6 +53,7 @@ enum expr_operands {
 	EXPR_MUL,
 	EXPR_DIV,
 	EXPR_POW,
+	EXPR_MOD,
 
 	EXPR_CLIP,
 	EXPR_USING,
