@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.18 2002-01-18 03:09:08 afalout Exp $
+# $Id: Makefile.in,v 1.19 2002-01-19 09:41:40 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -502,7 +502,7 @@ test.perl:
 prepare: ${PREPARE}
 
 unixprepare:
-#FIXME: chmod, touch, rm, mkdir - shouold not be needed!
+#FIXME: chmod, touch, rm, MKPATH - shouold not be needed!
 	(chmod a+x tools/project/mkproject)
 	(chmod a+x compilers/4glc/rules/bin/*)
 	(chmod a+x lib/bin/*)
@@ -697,11 +697,12 @@ install.aubitrc:
 #	@echo REPLACEWITH = ${REPLACEWITH}
 	sed -e "/${STARTWITH}/s/${STARTWITH}/${REPLACEWITH}/" ${INFILE} > /tmp/aubitrc.tmp
 ifeq "${AUBITRCFILEEXISTS}" ""
+	${MKPATH} ${AUBITETC}
 	mv /tmp/aubitrc.tmp ${AUBITETC}/aubitrc
 	chmod a+r ${AUBITETC}/aubitrc
 	@echo "Configuration files installed to ${AUBITETC}/aubitrc"
 else
-	@echo "Configuration file aubitrc exists in ${AUBITETC}/aubitrc - WILL NOT OVERWRITE"
+	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc - WILL NOT OVERWRITE"
 endif
 
 
@@ -852,13 +853,13 @@ createcleantar: installdrop installall tarinstall
 #--------------------------------
 source.tar:
 	${RMDIR} $(INSTALL_DIR)
-	mkdir $(INSTALL_DIR)
+	${MKPATH} $(INSTALL_DIR)
 	(cd $(INSTALL_DIR); autocvspasswd; cvs -z3 checkout $(AUBITCVSNAME))
 	(cd $(INSTALL_DIR)/$(AUBITCVSNAME); tar -cvzf $(SOURCETARNAME) * )
 
 source.tar.sf:
 	${RMDIR} $(INSTALL_DIR)
-	mkdir $(INSTALL_DIR)
+	${MKPATH} $(INSTALL_DIR)
 	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFNAME))
 	(cd $(INSTALL_DIR)/$(AUBITCVSSFNAME); tar -cvzf $(SOURCETARNAME) * )
 
@@ -873,7 +874,7 @@ man.tar.sf:
 #use "cvs export" instead "cvs checkout" to get code without CVS directories
 #	export CVS_RSH=
 	${RMDIR} $(INSTALL_DIR)
-	mkdir $(INSTALL_DIR)
+	${MKPATH} $(INSTALL_DIR)
 	(export CVSROOT=${CVSROOTSF}; cd $(INSTALL_DIR); autosfcvsanonpasswd; cvs -z8 checkout $(AUBITCVSSFMANNAME))
 	(cd $(INSTALL_DIR)/$(AUBITCVSSFMANNAME); tar -cvzf $(MANFILENAME) * )
 
@@ -939,8 +940,8 @@ endif
 
 install.tree.cy:
 	@cd $(INSTALL_DIR); \
-	mkdir $(INSTALL_DIR)/dll; \
-	mkdir $(INSTALL_DIR)/extralibs;
+	${MKPATH} $(INSTALL_DIR)/dll; \
+	${MKPATH} $(INSTALL_DIR)/extralibs;
 
 pack.cygwin:
 	${MAKE} ${MKNAME} installdrop INSTALL_DIR=${INSTALL_DIR}
@@ -1402,7 +1403,7 @@ rpm.build:
 		if [ ! -f ${SOURCETARBASENAME} ]; then \
 			${MAKE} ${MKNAME} clean.all; \
 			${RMDIR} /tmp/${NAMEVERBLD}; \
-			mkdir /tmp/${NAMEVERBLD}; \
+			${MKPATH} /tmp/${NAMEVERBLD}; \
 			${LN_S} ${AUBITDIR} /tmp/${NAMEVERBLD}/${NAMEVERBLD}; \
 			echo "Creating $(SOURCETARNAME) from ${NAMEVERBLD}/ ..."; \
 			(cd /tmp/${NAMEVERBLD}; tar -cvzf $(SOURCETARNAME) ${NAMEVERBLD}/* > /dev/null); \
