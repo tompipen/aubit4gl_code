@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.9 2002-06-29 13:12:02 afalout Exp $
+# $Id: read_dty.c,v 1.10 2003-01-28 15:19:51 mikeaubury Exp $
 #
 */
 
@@ -130,12 +130,16 @@ int
 get_dtype(char *tabname, char *colname,char *dbname,char **tablist)
 {
 	int a,b;
+	int rval;
+	int idtype;
+	int isize;
+
 	b=0;
 
 	if (strlen(tabname)!=0)
 		{
-		b=A4GLSQL_get_datatype(dbname,tabname,colname);
-		if (b>=0 ) return b;
+	  	rval = A4GLSQL_read_columns (tabname, colname, &idtype, &isize);
+		if (rval!=0 ) return idtype;
 		else return -1;
 		}
 
@@ -145,8 +149,8 @@ get_dtype(char *tabname, char *colname,char *dbname,char **tablist)
 	}
 
 	for (a=0;tablist[a]!=0;a++) {
-	    b=get_dtype(tablist[a],colname,dbname,0);
-	    if (b>=0) return b;
+  	    b= A4GLSQL_read_columns (tablist[a], colname, &idtype, &isize);
+	    if (b!=0) return idtype;
 	}
 
 return -1;
