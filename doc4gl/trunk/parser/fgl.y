@@ -3556,20 +3556,35 @@ module_entry
   | module_define_section  
 	;
 
+/**
+ * Optional Main or other functions definition.
+ * @todo : Change this rule name to op_func_or_main
+ */
 func_main_def	
   : /* could be empty file */
   | func_or_main2
   ;
 
+/**
+ * Not optional list of main or other kind of functions definition.
+ * @todo : Change the name ofthis rule to func_or_main_list
+ */
 func_or_main2 
   : func_or_main
 	| func_or_main2 func_or_main
 	;
 
+/**
+ * AT TERMINATION CALL statement.
+ * This is an extension to standard Informix 4gl.
+ */
 at_term_cmd 
   : AT_TERMINATION_CALL  identifier 
   ;
 
+/**
+ * Function or main definition.
+ */
 func_or_main	
   :	func_def
 	|	main_def
@@ -3584,29 +3599,51 @@ func_or_main
 	|	comment_cmd
 	;
 
+/**
+ *
+ */
 module_code 
   : code_cmd 
 	| whenever_cmd  
 	;
 
+/**
+ *
+ */
 op_code 
   : 
 	| code_cmd 
 	| whenever_cmd  
 	;
 
+/**
+ * Modular variables define section._
+ * 4gl code example:
+ *   DEFINE a SMALLINT
+ */
 module_define_section 
   : define_multiple 
   ;
 
-
+/** 
+ * The kind of function definition.
+ * The local function is an extension to standard Informix 4gl
+ * 4gl code examples:
+ *   FUNCTION
+ *   LOCAL FUNCTION
+ */
 ldeffunction 
   : FUNCTION 
 	| LOCAL_FUNCTION
   ;
 
 /*
- * Function definition 
+ * Function definition.
+ * 4gl code examples:
+ *   FUNCTION funcName(x,y)
+ *      ... define_statements ...
+ *      ... 4gl statements ...
+ *   END FUNCTION
  */
 func_def	
   : ldeffunction identifier OPEN_BRACKET  op_param_var_list CLOSE_BRACKET 
@@ -3617,54 +3654,105 @@ func_def
 
 /*
  * The end of the function rule 
+ * @todo : Understand if this rule is realy needed.
  */
 end_func_command 
   : END_FUNCTION 
   ;
 
-
+/**
+ * The specific MAIN function definition.
+ * 4gl code example:
+ *    MAIN 
+ *      ... define statements ...
+ *      ... fgl statements ...
+ *    END MAIN
+ */
 main_def
   :	MAIN define_section commands END_MAIN 
   ;
 
+/**
+ * The return statements
+ * 4gl code examples:
+ *   RETURN
+ *   RETURN a
+ *   RETURN 1, x.p
+ *   RETURN a+b
+ */
 return_cmd 
   : RETURN op_fgl_expr_ret_list 
   ;
 
+/**
+ * Optional 4gl expression list
+ * 4gl code examples:
+ *   a + 1
+ *   a + func() - 20
+ */
 op_fgl_expr_list 
   : 
 	| fgl_expr_list 
   ;
 
+/**
+ * The database statement.
+ * The schema is an extension to standard Informix 4gl.
+ * 4gl code example:
+ *    DATABASE xpto
+ */
 db_section	
   : DATABASE dbase_name 
 	| SCHEMA dbase_name 
   ;
 
+/**
+ * One GLOBALS section of a 4gl module.
+ */
 module_globals_section 
   : actual_globals_section 
   ;
 
+/**
+ *
+ */
 actual_globals_section 
   : xglobals_entry
 	| actual_globals_section xglobals_entry
   ;
 
+/**
+ *
+ */
 xglobals_entry 
   : globals_entry 
 	| module_code  
 	| db_section
   ;
 
+/**
+ *
+ */
 globals_entry
   : GLOBALS glob_section 
   ;
 
+/**
+ * The possible kind of globals: define statements or file name.
+ * 4gl code examples:
+ *   GLOBALS "globalsFile"
+ *   GLOBALS
+ *      ... define statements ...
+ *   END GLOBALS
+ */
 glob_section 
   : define_section END_GLOBALS 
   | file_name 
   ;
 
+/**
+ * This is an extension to standard Informix 4gl.
+ */
 mem_func_def 
   : MEMBER_FUNCTION identifier MEMBER_OF identifier OPEN_BRACKET
     op_param_var_list CLOSE_BRACKET
@@ -3678,64 +3766,131 @@ mem_func_def
 
 /* <MENU_STATEMENT> */
 
+/**
+ * The MENU statement.
+ * 4gl code example:
+ *   MENU "Options"
+ *      COMMAND "Op 1" "First option"
+ *        ... 4gl statements ...
+ *   END MENU
+ */
 menu_cmd	
   :	MENU menu_title menu_commands end_menu_command 
   ;
 
-
+/**
+ * The end menu
+ * @todo : Understand why this is a separated RULE.
+ */
 end_menu_command  
   : END_MENU 
   ;
 
+/**
+ * The possible menu declarative subsections.
+ * 4gl code examples:
+ *   BEFORE MENU 
+ *      ... 4gl statements ...
+ *   COMMAND "Op 1" 
+ *      ... 4gl statements ...
+ *   COMMAND KEY "X" "Op 1" "First option" HELP 100
+ *      ... 4gl statements ...
+ */
 menu_block_command 
   : BEFORE_MENU commands 
   | COMMAND opt_key menu_opt_name menu_optional_desc opt_help_no commands 
   | COMMAND opt_key opt_help_no commands 
   ;
 
+/**
+ * The list of possible menu commands
+ */
 menu_commands 
   : menu_block_command 
 	| menu_commands menu_block_command
 	;
 
+/**
+ * Optional key to use in the COMMAND of the MENU statement.
+ */
 opt_key	
   :	
 	| key_val 
 
+/**
+ * Name for a COMMAND substatement in the MENU statement.
+ * @todo : This should change name because it is not optional and 
+ *         is part of COMMAND. maybe "command_option_name"
+ */
 menu_opt_name	
   :	CHAR_VALUE 
   | variable 
   ;
 
+/**
+ * Optional description of the COMMAND substatement in the MENU statement.
+ * @todo : Change to opt_menu_description.
+ */
 menu_optional_desc	
   :
   | variable 
   | CHAR_VALUE 
 	;
 
+/**
+ * A NEXT option command to be used in the MENU events. The
+ * next option continue the menu execution in a specific 
+ * option.
+ * 4gl code example:
+ *    NEXT OPTION "Xpto"
+ */
 next_option_cmd 
   : NEXT_OPTION opt_name 
   ;
 
+/**
+ * The SHOW OPTION command of the MENU statement. This statement
+ * turns visible one option.
+ * 4gl code examples:
+ *   SHOW OPTION "Xpto"
+ *   SHOW OPTION "Xpto", "Xpta"
+ */
 show_option_cmd 
   : SHOW_OPTION opt_name_list 
   ;
 
+/**
+ * The HIDE OPTION command of the MENU statement. This statement
+ * turns invisible one option.
+ * 4gl code example:
+ *   HIDE OPTION "Xpto"
+ *   HIDE OPTION "Xpto", "Xpta"
+ */
 hide_option_cmd 
   : HIDE_OPTION opt_name_list 
   ;
 
+/**
+ * Name of a menu option.
+ * @todo : Change the rule name because it is not optional
+ */
 opt_name	
   :	ALL 
   | CHAR_VALUE 
   | variable 
   ;
 
+/**
+ * A comma separated menu option name.
+ */
 opt_name_list	
   :	opt_name
 	|	opt_name_list COMMA opt_name 
 	;
 
+/** 
+ * The title of the menu.
+ */
 menu_title 	
   :	variable 
   | CHAR_VALUE
@@ -3744,25 +3899,57 @@ menu_title
 /* </MENU_STATEMENT> */
 
 
-
+/**
+ * A special function type for menu(s).
+ * This is an extension to standard Informix 4gl.
+ * 4gl code example:
+ *    MENUHANDLER mhName
+ *      ... define of variables...
+ *      ... menu handler statements ...
+ *    END MENUHANDLER
+ */
 menu_def 
   : MENUHANDLER identifier  define_section menu_handler_elements END_MENUHANDLER
   ;
 
+/**
+ * A list of possible menu handler statements.
+ */
 menu_handler_elements 
   : menu_handler_element 
 	| menu_handler_elements menu_handler_element
   ;
 
+/**
+ * A menu handler statement / element.
+ * This is an extension to standard informix 4gl.
+ * 4gl code examples:
+ *    BEFORE SHOW MENU
+ *       ... 4gl statements...
+ *    ON xpto
+ *       ... 4gl statements...
+ */
 menu_handler_element 
   : BEFORE_SHOW_MENU commands 
   | ON identifier commands 
   ;
 
+/**
+ * The 4gl MESSAGE statement.
+ * 4gl code example:
+ *    MESSAGE 
+ */
 message_cmd 
   : msg_start msg_next 
   ;
 
+/**
+ * Optional part of message.
+ * This statement contains extensions to informix 4gl.
+ * 4gl code examples:
+ *    ATTRIBUTES (REVERSE,DIM) WAIT FOR KEY
+ *    WAIT FOR KEY
+ */
 msg_next 
   : 
  	| attributes_def op_msg_wait 
@@ -3770,6 +3957,11 @@ msg_next
 	| gui_message
   ;
 
+/**
+ * A Gui message to be used in the MESSAGE statements.
+ * This is an extension to Informix 4gl.
+ * 4gl code example:
+ */
 gui_message
   : gm_caption
   | gm_icon
@@ -3778,16 +3970,32 @@ gui_message
   | gm_returning_msg 
   ;
 
-
+/**
+ * The first part of the MESSAGE statement.
+ * 4gl code example:
+ *   MESSAGE "XXXX", i
+ */
 msg_start 
-  : KWMESSAGE reset_cnt fgl_expr_list 
+  : KWMESSAGE fgl_expr_list 
 	;
 
+/**
+ * Optional MESSAGE wait for key
+ * This is an extension to informix 4gl.
+ * 4gl code example:
+ *    WAIT FOR KEY
+ */
 op_msg_wait 
   : 
 	| WAIT_FOR_KEY 
   ;
 
+/**
+ * Not optional MESSAGE wait for key
+ * This is an extension to informix 4gl.
+ * 4gl code example:
+ *    WAIT FOR KEY
+ */
 msg_wait 
   : WAIT_FOR_KEY 
   ;
@@ -3795,25 +4003,43 @@ msg_wait
 
 /* <NEWVARIABLE_RULE> */
 
+/**
+ * This rule is not used.
+ * @todo : understand if it is necessary.
+ */
 variable_no_scope
   : variable 
   ;
 
-
+/**
+ * A variable definition.
+ * 4gl code example:
+ *   
+ */
 variable
   : var_int
   ;
 
-
+/**
+ *
+ */
 var_int 
   : var 
 	| DOLLAR var 
   ;
 
+/**
+ *
+ */
 varsetidentdot 
   : var DOT
   ;
 
+/**
+ * 4gl variable definition.
+ * 4gl code examples:
+ *   
+ */
 var
   : varsetidentdot dot_part_var
   | varsetidentdot identifier OPEN_SQUARE num_list CLOSE_SQUARE 
@@ -3824,39 +4050,73 @@ var
   | assoc_var_read
   ;
 
+/**
+ * Associative variable. This is a kind of hash include in aubit 
+ * syntax.
+ * This is an extension to informix 4gl.
+ * 4gl code example:
+ *   xpto<"ZZZ">
+ */
 assoc_var_read  
   : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
   ;
 
-
+/**
+ * Associative variable. This is a kind of hash include in aubit 
+ * syntax.
+ * This is an extension to informix 4gl.
+ * 4gl code example:
+ *   xpto<"ZZZ">
+ */
 assoc_var_write  
   : identifier OPEN_SHEV assoc_sub CLOSE_SHEV
   ;
 
+/**
+ * The key for associative variables.
+ */
 assoc_sub 
   : variable 
 	| CHAR_VALUE
   ;
 
+/**
+ * 
+ */
 dot_part_var
   : MULTIPLY 
 	| identifier 
   ;
 
+/**
+ *
+ */
 array_r_variable
   : identifier arr_subscripts
   ;
 
+/**
+ *
+ */
 array_r_variable_or_ident
   : identifier arr_subscripts
   ;
 
+/**
+ *
+ */
 arr_subscripts 
   : OPEN_SQUARE num_list CLOSE_SQUARE 
   | OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE 
   ;
 
-
+/**
+ * A comma separated list of numbers to be used in the array definition
+ * or access.
+ * 4gl code examples:
+ *    1,2
+ *    i,2,j
+ */
 num_list
   : num_list_element
   | num_list COMMA num_list_element
@@ -3950,6 +4210,9 @@ obind_var_ord
   : variable optional_asc_desc
 	;
 
+/**
+ * Optional acending or descending order, to be used things like ORDER.
+ */
 optional_asc_desc
   : 
 	| ASC 
@@ -3975,6 +4238,13 @@ init_bind_var
 
 /* <OPEN_STATEMENTS> */
 
+/**
+ * The OPEN WINDOW statement that opens a new window somewhere in the
+ * screen.
+ * 4gl code examples:
+ *    OPEN WINDOW wName AT 2, 10 WITH 2 ROWS, 5 COLUMNS
+ *    OPEN WINDOW wName AT 2, 10 WITH FORM "XX"
+ */
 open_window_cmd 
   : OPEN_WINDOW open_win_name AT coords WITH window_type win_attributes  
   ;
@@ -4067,15 +4337,24 @@ con_user_details
 
 /* <OPTIONS_STATEMENT> */
 
+/**
+ * The configuration of options statement.
+ */
 options_cmd 
   : OPTIONS opt_options
 	;
 
+/**
+ * Comma separated list of options.
+ */
 opt_options 
   : opt_allopts
 	| opt_options COMMA opt_allopts
 	;
 
+/**
+ * Allowed options that could be cofigurated.
+ */
 opt_allopts 	
   : COMMENT_LINE line_no 
 	| ERROR_LINE line_no 
@@ -4107,6 +4386,12 @@ opt_allopts
 
 /* <PREPARE_STATEMENT> */
 
+/**
+ * Dynamic SQL preparation.
+ * 4gl code examples:
+ *    PREPARE stXpto FROM sqlStr
+ *    USE SESSION connName FOR PREPARE stXpto FROM sqlStr
+ */
 prepare_cmd 
   : opt_use PREPARE stmt_id FROM var_or_char 
   ;
@@ -4116,6 +4401,13 @@ var_or_char
 	| CHAR_VALUE
 	;
 
+/**
+ * Execution of a prepared statement.
+ * 4gl code examples:
+ *   EXECUTE stXpto
+ *   EXECUTE stXpto USING var, 1, 3
+ *   EXECUTE IMEDIATE sqlStr
+ */
 execute_cmd 
   : EXECUTE stmt_id
   | EXECUTE stmt_id KW_USING ibind_var_list 
@@ -4131,12 +4423,27 @@ stmt_id
 
 /* <PROMPT_STATEMENT> */
 
+/**
+ * The 4gl interactive user prompt to the user.
+ * 4gl code examples:
+ *    PROMPT "Type something " FOR CHAR var 
+ *    PROMPT "Type something " FOR CHAR TIMEOUT 150
+ *    PROMPT "Type something " FOR CHAR var HELP 100
+ *    PROMPT "Type something " FOR CHAR var HELP 100 ATTRIBUTE(REVERSE)
+ */
 prompt_cmd	
   : PROMPT prompt_title opt_attributes FOR opt_char
     variable opt_timeout opt_help_no opt_attributes 
     prompt_key_sec 
   ;
 
+/**
+ * Optional timeout to use in the PROMPT statement.
+ * Define the amount of time that prompt wait for an answer.
+ * This is an extension to Informix 4gl.
+ * 4gl code example:
+ *    TIMEOUT 150
+ */
 opt_timeout
   :
   | TIMEOUT INT_VALUE 
@@ -4174,6 +4481,9 @@ prompt_title
 
 /* <PUT_STATEMENT> */
 
+/**
+ * 
+ */
 put_cmd 
   : PUT cursor_name  put_from
   ;
@@ -4198,6 +4508,9 @@ put_val
 
 /* <REPORT_RULE> */
 
+/**
+ * Start the execution of a report.
+ */
 start_cmd 
   : START_REPORT rep_name TO_PRINTER
 	| START_REPORT rep_name TO rout
@@ -4224,6 +4537,11 @@ output_cmd
     op_fgl_expr_list CLOSE_BRACKET
   ;
 
+/**
+ * Closing a report execution.
+ * 4gl code example:
+ *   FINISH REPORT xptoReport
+ */
 finish_cmd 
   : FINISH_REPORT rep_name
   ;
@@ -4265,6 +4583,9 @@ report_cmd
 	| skip_command
   ;
 
+/**
+ * The definiton of an amount of lines still needed.
+ */
 need_command 
   : NEED fgl_expr KWLINE 
   ;
@@ -4305,6 +4626,12 @@ print_command
   : PRINT opt_rep_expr_list opt_semi 
   ;
 
+/**
+ * Print the contents of a file in the report.
+ * 4gl code examples:
+ *   PRINT FILE fileName
+ *   PRINT FILE fileName;
+ */
 print_file_command 
   : PRINT_FILE char_or_var opt_semi 
   ;
@@ -4331,6 +4658,9 @@ blob_var
   :  variable 
   ;
 
+/**
+ * Optional semicolon to be used in the end of a PRINT statement in REPORTS.
+ */
 opt_semi 
   : 
   | SEMICOLON 
@@ -4479,6 +4809,13 @@ op_wordwrap
 
 /* <RUN_STATEMENT> */
 
+/**
+ * Run an external program making a fork and eventually a wait.
+ * 4gl code examples:
+ *   RUN "fgrep xx *" RETURNING x
+ *   RUN "vi" WITHOUT WAITING
+ *   RUN "vi" EXIT
+ */
 run_cmd 
   : RUN fgl_expr 
   | RUN fgl_expr RETURNING variable 
@@ -4542,15 +4879,31 @@ table_element_ss
 	| table_constraint_definition_ss 
 	; 
 
+/**
+ * The command to tell to the database to update the internal statistics.
+ * 4gl code examples:
+ *   UPDATE STATISTICS FOR TABLE xptoTable
+ *   UPDATE STATISTICS
+ */
 upd_stats_cmd 
   : UPDATESTATS_T	identifier 
 	| UPDATESTATS	
   ;
 
+/**
+ * The alter table SQL statement.
+ * 4gl code example:
+ *   ALTER TABLE xptoTable (
+ *      ???? 
+ *   )
+ */
 alter_cmd 
   : ALTER_TABLE identifier alter_clauses_ss 
   ;
 
+/**
+ * Comma separated of alter table possibilities.
+ */
 alter_clauses_ss
   : alter_clause_ss 
 	| alter_clauses_ss COMMA alter_clause_ss 
@@ -4609,6 +4962,12 @@ modify_column_clause_ss
   : table_element_ss 
   ;
 
+/**
+ * Possible lock modes of a table. Used in the create table statement.
+ * 4gl code examples:
+ *   LOCK MODE PAGE
+ *   LOCK MODE ROW
+ */
 alter_lock_mode 
   : LOCK_MODE_PAGE 
 	| LOCK_MODE_ROW 
@@ -4667,6 +5026,12 @@ op_fgl_expr
 
 /* <SLEEP_STATEMENT> */
 
+/**
+ * Sleeps for a specified number of miliseconds.
+ * 4gl code examples:
+ *    SLEEP 1
+ *    SLEEP numericVar
+ */
 sleep_cmd 
   : SLEEP fgl_expr 
   ;
@@ -4676,6 +5041,11 @@ sleep_cmd
 
 /* <SQL1_RULE> */
 
+/**
+ * Rollback of a transaction.
+ * 4gl code example:
+ *   ROLLBACK WORK
+ */
 rollback_statement
   : ROLLBACK_W 
 	;
@@ -4774,6 +5144,11 @@ op_asc_desc
 	| DESC
 	;
 
+/**
+ * Starting a new database transaction.
+ * 4gl code example:
+ *    BEGIN WORK
+ */
 begin_statement
   : BEGIN_WORK 
   ;
@@ -4802,7 +5177,7 @@ sql_cmd
   ;
 
 sql_commands 
-  :  schema_ss 
+  : schema_ss 
 	| schema_element_ss 
 	| commit_statement 
 	| misc_sql 
@@ -5126,6 +5501,9 @@ comparison_predicate_ss
 	| value_expression_ss op_not MATCHES pattern_ss op_escape 
 	;
 
+/**
+ * Comparison operator.
+ */
 comp_op
   : EQUAL
 	| NOT_EQUAL 
@@ -5136,8 +5514,8 @@ comp_op
   | MATCHES
 	| TILDE
 	//| LIKE {strcpy($<str>$,"likE");}
-	| LESS_THAN_EQ {strcpy($<str>$,"<=");}
-	| GREATER_THAN_EQ {strcpy($<str>$,">=");}
+	| LESS_THAN_EQ 
+	| GREATER_THAN_EQ 
 	;
 
 
@@ -5318,11 +5696,23 @@ e_curr
 	| FRACTION
 	;
 
+/**
+ * The possible database names.
+ * 4gl code examples:
+ *   "a_database"
+ *   varContainingDatabase
+ */
 dbase_name	
   :	identifier 
   |	CHAR_VALUE 
 	;
 
+/**
+ * Flushing of an insert cursor into the database.
+ * 4gl code examples:
+ *    FLUSH crXpto
+ *    USE SESSION connName FLUSH crXpto
+ */
 flush_cmd 
   : opt_use FLUSH fetch_cursor_name  
   ;
@@ -5479,15 +5869,31 @@ value_specification
   : literal
 	;
 
+/**
+ * Unload data from the database into a text file.
+ * 4gl code examples:
+ *    UNLOAD TO "xpto.u" DELIMITER "," SELECT * FROM xpto
+ *    USE SESSION connName UNLOAD TO "xpto.u" SELECT * FROM xpto
+ */
 unload_cmd 
   : opt_use UNLOAD_TO ufile opt_delim select_statement2_ss 
   ;
 
+/**
+ * Load data from a text file into a database table.
+ * 4gl code examples:
+ *    LOAD FROM "xpto.u" DELIMITER "," INSERT INTO xpto
+ *    LOAD FROM "xpto.u" DELIMITER "," INSERT INTO xpto(a,b,c)
+ *    USE SESSION connName LOAD FROM "xpto.u" DELIMITER "," INSERT INTO xpto
+ */
 load_cmd 
-  :  opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list 
+  : opt_use LOAD_FROM ufile opt_delim INSERT_INTO table_name opt_col_list 
   | opt_use LOAD_FROM ufile opt_delim variable 
   ;
 
+/**
+ * Optional delimiter to use in the load and unload statements.
+ */
 opt_delim 
   : 
 	| DELIMITER char_or_var 
@@ -5498,10 +5904,16 @@ char_or_var
 	| variable 
   ;
 
+/**
+ * An optional between brackets comma separated column list.
+ */
 opt_col_list
   : 
 	| OPEN_BRACKET col_list CLOSE_BRACKET 
 
+/**
+ * Not optional comma separated column list.
+ */
 col_list 
   : simple_column_name 
 	| col_list COMMA simple_column_name 
@@ -5516,6 +5928,12 @@ ufile
 	| variable
 	;
 
+/**
+ * Optional use of a specific Session to SQL actions.
+ * This is an extension to Informix 4gl.
+ * 4gl code example:
+ *    USE SESSION connName FOR
+ */
 opt_use 
   : 
 	| USE_SESSION conn_id FOR 
@@ -5544,14 +5962,31 @@ rencolname
   : identifier
 	;
 
+/**
+ * Releases a lock to a database table.
+ * 4gl code example:
+ *   UNLOCK TABLE xtpoTable
+ */
 unlock_stmt
   : UNLOCK_TABLE tab_name 
   ;
 
+/**
+ * Lock a database table.
+ * 4gl code examples:
+ *    LOCK TABLE xptoTable IN SHARE MODE
+ *    LOCK TABLE xptoTable IN EXCLUSIVE MODE
+ */
 lock_stmt 
   : LOCK_TABLE tab_name share_or_exclusive  
   ;
 
+/**
+ * Share or exclusive lock mode definition to lock statement.
+ * 4gl code example:
+ *   IN SHARE MODE
+ *   IN EXCLUSIVE MODE
+ */
 share_or_exclusive 
   : INSHARE
 	| INEXCLUSIVE
@@ -5996,6 +6431,11 @@ template_value :
 
 /* <UPDATE_RULE> */
 
+/**
+ * The SQL update statement to change data in the database.
+ * 4gl code examples:
+ *   UPDATE table SET ??? WHERE  table.a = 1
+ */
 update_statement_ss
   : UPDATE table_name set_clause_list_ss  where_upd_ss 
   ;
@@ -6130,6 +6570,9 @@ var_ident_ibind_ss
 
 /* <WHENEVER_STATEMENTS> */
 
+/**
+ * The whenever handling compiler directives.
+ */
 whenever_cmd 	
   :  WHENEVER_NOT_FOUND when_do
 	|  WHENEVER_SQLERROR when_do
@@ -6165,6 +6608,13 @@ function_name_when
 
 /* <WHILE_STATEMENT> */
 
+/**
+ * The while loop.
+ * 4gl code example:
+ *    WHILE i = 1 
+ *      .. 4gl statements...
+ *    END WHILE
+ */
 while_cmd 
   : WHILE fgl_expr commands END_WHILE 
   ;
@@ -6204,6 +6654,13 @@ current_win_cmd
 	|	CURRENT_WINDOW_IS win_name 
   ;
 
+/**
+ * In the OPEN WINDOW statement defines if its with fixed length or with
+ * a form.
+ * 4gl code example:
+ *   2 ROWS, 5 COLUMNS
+ *   FORM "XX"
+ */
 window_type	
   :	fgl_expr ROWS COMMA fgl_expr COLUMNS 
 	|	KWFORM fgl_expr 
@@ -6358,6 +6815,6 @@ commands_all1
 %%
 
 
-/* ===================== EOF (fgl.yacc) =========================== */
+/* ===================== EOF (fgl.y) =========================== */
 
 

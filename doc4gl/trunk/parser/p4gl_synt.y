@@ -615,6 +615,14 @@ function_def
 			op_local_variables 
 			fgl_statement_list
 		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("VERIFY"),lineno+1,$3);InLimbo=1; }
+	| RESOURCE '(' op_argument_list ')'  /* Just to fix Andrej problem */
+			op_local_variables 
+			fgl_statement_list
+		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("RESOURCE"),lineno+1,$3);InLimbo=1; }
+	| WARNING '(' op_argument_list ')'  /* Just to fix Andrej problem */
+			op_local_variables 
+			fgl_statement_list
+		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("WARNING"),lineno+1,$3);InLimbo=1; }
 	| IDENTIFIER '(' op_argument_list ')'   /* Funcoes vazias */
 			 op_local_variables 
 		END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
@@ -1232,6 +1240,8 @@ fgl_operator
 	| IS NOT 
 	| MATCHES
 	| NOT MATCHES
+	| LIKE
+	| NOT LIKE
 	| ','
 	;
 
@@ -1405,6 +1415,7 @@ var_name
   | LINES         { strcpy($$,"LINES");}
   | MAX           { strcpy($$,"MAX");}
   | MESSAGE                                    { strcpy($$,"MESSAGE");}
+  | MODE                                       { strcpy($$,"MODE");}
   | MONEY                                      { strcpy($$,"MONEY");}
   | NAME    complete_array_usage               { strcpy($$,"NAME");}
   | NAME          { strcpy($$,"NAME");}
@@ -1585,6 +1596,8 @@ function_call
   | VERIFY '(' op_call_parameters ')' { $$=CpStr("VERIFY()"); }
   | LENGTH '(' fgl_operand ')' { $$=CpStr("LENGTH(%s)",$3); }
   | DATE '(' fgl_operand ')'   { $$=CpStr("DATE(%s)",$3); }
+  | RESOURCE '(' fgl_operand ')'   { $$=CpStr("RESOURCE(%s)",$3); }
+  | WARNING '(' op_call_parameters ')'   { $$=CpStr("RESOURCE(%s)",$3); }
   /*| EXTEND '(' fgl_expression ',' dtqualifier TO dtqualifier ')'    */
                                { $$=CpStr("EXTEND()"); }
   | set_function_specification
@@ -1633,11 +1646,14 @@ output_command
   | TOP OF PAGE STRING
   ;
 
+/** 
+ * @todo : Fix the memory leak.
+ */
 order_by_section
   : ORDER EXTERNAL BY sort_specification_list
-	  { CleanNameList($4); }
+	  //{ CleanNameList($4); }
   | ORDER BY sort_specification_list             
-	  { CleanNameList($3); }
+	  //{ CleanNameList($3); }
   |
   ;
 
@@ -1727,7 +1743,7 @@ construct
   : CONSTRUCT 
     construct_variable_clause 
     op_attribute_clause 
-    help_clause
+    op_help_clause
     construct_management
 
 construct_variable_clause
@@ -1739,7 +1755,7 @@ construct_variable_clause
        {StInsertVariableUsage($3,lineno+1,ASSIGNMENT);}
 
 
-help_clause
+op_help_clause
   :
   | HELP NUMBER
 
@@ -1901,7 +1917,7 @@ input
   : INPUT 
     input_binding_clause 
     op_attribute_clause
-    help_clause
+    op_help_clause
     input_management
 
 input_binding_clause
@@ -1956,7 +1972,7 @@ input_array
   : INPUT ARRAY
     input_array_binding_clause 
     op_attribute_clause
-    help_clause
+    op_help_clause
     input_management
   ;
 
@@ -1972,7 +1988,7 @@ menu
   ;
 
 menu_control_list
-   : menu_control_list menu_control
+  : menu_control_list menu_control
   | menu_control
   ;
 
@@ -1983,24 +1999,44 @@ menu_control
 
 /* Menu command block */
 command_block
-  : COMMAND menu_option_def help_clause
+  : COMMAND menu_option_def op_help_clause
   ;
 
 /* Definição da opção / comando do menu */
 menu_option_def
-  : menu_key
-  | menu_key menu_option_value
-  | menu_key menu_option_value menu_option_value
-  | menu_option_value
-  | menu_option_value menu_option_value
+  : op_menu_key op_menu_option_name op_menu_option_description
   ;
 
-/* ??? Afectacoes sao para o bison funcionar */
-menu_option_value
+op_menu_option_name
+  :
+	| menu_option_name
+	;
+
+/**
+ * The name of a menu COMMAND.
+ */ 
+menu_option_name
   : named_value  { char *x=$1; }
-     /* VARIABLE USAGE */
   | STRING { char *x=$1; }
   ;
+
+op_menu_option_description
+  :
+	| menu_option_description
+	;
+
+/**
+ * The description of a menu COMMAND.
+ */
+menu_option_description
+  : named_value  { char *x=$1; }
+  | STRING { char *x=$1; }
+  ;
+
+op_menu_key
+  :
+	| menu_key
+	;
 
 menu_key
   : KEY '(' key_list ')'
@@ -2103,10 +2139,10 @@ option
   ;
 
 prompt
-  : PROMPT fgl_expression op_attribute_clause FOR named_value help_clause
+  : PROMPT fgl_expression op_attribute_clause FOR named_value op_help_clause
     op_attribute_clause prompt_on_key_list
      /* VARIABLE ASSIGNMENT */
-  | PROMPT fgl_expression op_attribute_clause FOR CHAR IDENTIFIER help_clause
+  | PROMPT fgl_expression op_attribute_clause FOR CHAR IDENTIFIER op_help_clause
     op_attribute_clause prompt_on_key_list
      /* VARIABLE ASSIGNMENT */
   ;
@@ -2919,7 +2955,7 @@ table_reference_list
       StIncrementTable(); 
      /* First try */
      InsertNameList(&$$,$1,$4,lineno+1); }
-  | table_reference_list ',' OUTER '(' table_reference ')'
+  | table_reference_list ',' OUTER '(' table_reference_list ')'
     { StInsertTable($5);   /* To remove */
       StIncrementTable(); 
      /* First try */
