@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.44 2003-01-02 11:01:58 psterry Exp $
+# $Id: sql.c,v 1.45 2003-01-04 17:32:27 psterry Exp $
 #
 */
 
@@ -971,7 +971,7 @@ A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 #ifdef DEBUG
 	/* {DEBUG} */{debug ("Bound any data... ni=%d no=%d hstmt=%p", sid->ni, sid->no, sid->hstmt);}
 #endif
-  return ODBC_exec_stmt (&sid->hstmt);
+  return ODBC_exec_stmt (sid->hstmt);
 }
 
 /**
