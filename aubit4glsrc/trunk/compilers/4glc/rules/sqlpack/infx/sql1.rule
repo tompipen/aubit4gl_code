@@ -705,16 +705,16 @@ data_type:
 ;
 
 char_string_type:
-	  CHAR
-	| CHAR OPEN_BRACKET length CLOSE_BRACKET
+	  KW_CHAR
+	| KW_CHAR OPEN_BRACKET length CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 ;
 
 exact_numeric_type:
 	| SERIAL  {strcpy($<str>$,"SERIAL");}
 	| SERIAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"SERIAL(%s)",$<str>3);}
-	| DECIMAL 
-	| DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET
+	| KW_DECIMAL 
+	| KW_DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET
 {sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);}
 	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET {
 		if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
@@ -732,7 +732,7 @@ exact_numeric_type:
 			strcpy($<str>$,"MONEY");
 		}
 	}
-        | DATE
+        | KW_DATE
 	| INTEGER
 	| SMALLINT
 	| NCHAR
@@ -751,7 +751,7 @@ exact_numeric_type:
 	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr
 {sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
 	| TEXT
-	| BYTE
+	| KW_BYTE
 	| VARCHAR
 	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
@@ -766,11 +766,11 @@ op_scale: {strcpy($<str>$,"");}
 ;
 
 approx_numeric_type:
-	FLOAT OPEN_BRACKET precision CLOSE_BRACKET
+	KW_FLOAT OPEN_BRACKET precision CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| REAL
 	| SMALLFLOAT
-	| FLOAT
+	| KW_FLOAT
 	| DOUBLE_PRECISION
 {sprintf($<str>$," %s",$<str>1);}
 ;
@@ -1112,7 +1112,7 @@ value_expression_complex_ss :
 	| SUM OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("SUM("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
 	| COUNT OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("COUNT("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
 	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_ob,$<sql_string>3,kw_cb,0);}
-	| DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,kw_cb,0);}
+	| KW_DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,kw_cb,0);}
 	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,kw_cb,0);}
 	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("EXTEND("),$<sql_string>3,kw_cb,0);}
 	| datetime_value_qualified { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}

@@ -232,7 +232,7 @@ upd_value_expression_complex_ss :
         | SUM OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(strdup("SUM("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
         | COUNT OPEN_BRACKET op_all upd_value_expression_ss CLOSE_BRACKET 	{$<sql_string>$=make_sql_string_and_free(strdup("COUNT("),strdup($<str>3),$<sql_string>4,kw_cb,0);}
         | identifier OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 		{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_ob,$<sql_string>3,kw_cb,0);}
-        | DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 		{$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,kw_cb,0);}
+        | KW_DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 		{$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,kw_cb,0);}
         | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET 			{$<sql_string>$=make_sql_string_and_free(kw_ob,$<sql_string>2,kw_cb,0);}
         | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET 			{$<sql_string>$=make_sql_string_and_free(strdup("EXTEND("),$<sql_string>3,kw_cb,0);}
         | datetime_value_qualified 						{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}

@@ -279,7 +279,7 @@ COLUMN fgl_expr_c
 insql=0;
 	$<ptr>$=A4GL_new_expr($<str>1);
 }  
-| GROUP {insql=1;set_ingroup();} rep_agg  {
+| KW_GROUP {insql=1;set_ingroup();} rep_agg  {
 	char buff[256];
       if (!isin_command("REPORT")) {
         a4gl_yyerror("This can only be done in a report!");YYERROR;
@@ -544,7 +544,7 @@ function_call_expr2:
 ;
 
 function_callb:
-DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+KW_DATE OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
 	$<ptr>$=A4GL_append_expr($<ptr>4,"aclfgl_date(1);");
 }
 | TIME OPEN_BRACKET {chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
@@ -800,7 +800,7 @@ builtin_expr : curr_v_clause {
                sprintf($<str>$,"A4GL_push_current(%s);",$<str>1);
 		$<ptr>$=A4GL_new_expr($<str>$);
           	}
-       | DATE  { inc_counter(); strcpy($<str>$,"A4GL_push_date_expr();");
+       | KW_DATE  { inc_counter(); strcpy($<str>$,"A4GL_push_date_expr();");
 		$<ptr>$=A4GL_new_expr($<str>$);
 	}
        | TIME  { inc_counter(); strcpy($<str>$,"A4GL_push_time_expr();");
@@ -826,7 +826,7 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 
 
 
-pdf_expr : fgl_expr_c POINTS  {
+pdf_expr : fgl_expr_c KW_POINTS  {
 		$<ptr>$=A4GL_append_expr($<ptr>1,"A4GL_push_double(-1);A4GL_pushop(OP_MULT);");
 	}
 		|  fgl_expr_c  MM     {

@@ -215,7 +215,7 @@ reserved_word :
 	|AVERAGE
 	|UNDERLINE
 	|MENU
-	|DATE
+	|KW_DATE
 ;
 */
 

@@ -30,7 +30,7 @@ opt_allopts 	: COMMENT_LINE line_no 		{ print_options('C',$<str>2); }
 		| INPUT_ATTR_FORM        	{ print_options('Y',"1"); }
 		| INPUT_ATTR_WINDOW      	{ print_options('Y',"2"); }
 		| DISPLAY attributes_def 	{ print_options('d',$<str>2);print_options('Z',"0"); }
-		| INPUT attributes_def   	{ print_options('i',$<str>2); print_options('Y',"0");}
+		| KW_INPUT attributes_def   	{ print_options('i',$<str>2); print_options('Y',"0");}
 		| INPUT_WRAP 			{ print_options('W',"1"); }
 		| INPUT_NO_WRAP 		{ print_options('W',"0"); }
 		| FOCONSTR 			{ print_options('f',"1"); }

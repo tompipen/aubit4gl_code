@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.99 2004-10-15 15:00:15 mikeaubury Exp $
+# $Id: lexer.c,v 1.100 2004-10-25 10:45:31 mikeaubury Exp $
 #*/
 
 /**
@@ -834,7 +834,7 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
   if (!always_allow(kwords[cnt].id,kwords[cnt].name)) {
 	if (isin_formhandler) {
 		int ok=0;
-		if (kwords[cnt].id==INPUT) {
+		if (kwords[cnt].id==KW_INPUT) {
   			if(allow_token_state (current_yylex_state, kwords[cnt].id)) ok=1;
 			else {
   				if(allow_token_state (current_yylex_state, FINPUT)) ok=1;
@@ -1391,7 +1391,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   /*if (chk4var)*/
   /*a = NAMED_GEN;*/
 
-  if (isin_formhandler) { if (a==INPUT) {a=FINPUT;} }
+  if (isin_formhandler) { if (a==KW_INPUT) {a=FINPUT;} }
   allow = allow_token_state (yystate, a);
   A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);
 

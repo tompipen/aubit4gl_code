@@ -36,7 +36,7 @@ gui_prompt_cmd :
 ;
 
 opt_char : /* empty */ {strcpy($<str>$,"0");}
-| CHAR {strcpy($<str>$,"1");}
+| KW_CHAR {strcpy($<str>$,"1");}
 ;
 
 

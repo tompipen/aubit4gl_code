@@ -404,7 +404,7 @@ output_command :
 pdf_output_commands : pdf_output_command | pdf_output_commands pdf_output_command;
 
 
-nval: nval_number POINTS {sprintf($<str>$,"-%f",atof($<str>1));}
+nval: nval_number KW_POINTS {sprintf($<str>$,"-%f",atof($<str>1));}
 	| nval_number INCHES {sprintf($<str>$,"-%f",atof($<str>1)*72.0); }
 	| nval_number MM     {sprintf($<str>$,"-%f",atof($<str>1)*2.83465);}
 	| nval_number        {sprintf($<str>$,"%f",atof($<str>1));} 

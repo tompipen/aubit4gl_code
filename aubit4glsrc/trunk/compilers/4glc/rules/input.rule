@@ -120,7 +120,7 @@ next_field	:	NEXT {sprintf($<str>$,"\"+\"");}
 		| 	field_name_as_struct {sprintf($<str>$,field_name_as_char($<field_entry>1));}
 ;
 
-input_cmd	:	INPUT inp_rest
+input_cmd	:	KW_INPUT inp_rest
 {
 print_input_1();
   A4GL_new_events();

@@ -17,7 +17,7 @@ attributes_def	: ATTRIBUTES OPEN_BRACKET {
 A4GL_debug("Got Attributes : %s",$<str>4);
 //start_state("attribute",0);
 }
-| SIZE OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
+| KW_SIZE OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
 ;
 
 attribs_sec	: attribute {strcpy($<str>$,$<str>1);}

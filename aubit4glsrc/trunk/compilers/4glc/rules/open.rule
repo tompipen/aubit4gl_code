@@ -17,7 +17,7 @@ op_at_statusbox :
 ;
 
 op_size_statusbox : 
-	| SIZE OPEN_BRACKET fgl_expr KW_COMMA fgl_expr CLOSE_BRACKET
+	| KW_SIZE OPEN_BRACKET fgl_expr KW_COMMA fgl_expr CLOSE_BRACKET
 ;
 
 open_statusbox_cmd :
