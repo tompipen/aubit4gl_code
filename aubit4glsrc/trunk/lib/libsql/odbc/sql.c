@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.18 2002-02-17 21:10:50 saferreira Exp $
+# $Id: sql.c,v 1.19 2002-02-18 22:27:36 saferreira Exp $
 #
 */
 
@@ -170,7 +170,6 @@ char *proc_bind_arr (char **b, int n, char t, HSTMT hstmt);
 void *bind_date (long *ptr_to_date_var);
 void ibind_column (int pos, struct BINDING *bind, HSTMT hstmt);
 void obind_column (int pos, struct BINDING *bind, HSTMT hstmt);
-//void set_status (int a, int sql);
 int ODBC_exec_prepared_sql (HSTMT hstmt);
 void add_cursor (struct s_cid *cid, char *cname);
 int ODBC_exec_stmt (HSTMT hstmt);
@@ -257,6 +256,57 @@ void
 exit_nicely (void)
 {
   exit (1);
+}
+
+/**
+ * Assign a value to the status global variable.
+ *
+ * @param a  The value to be set in status.
+ * @param sql A Flag that indicate if sqlca.sqlcoe will be assigned too:
+ *   - 0 : sqlca.sqlcode will be not assigned.
+ *   - Otherwise : sqlca.sqlcode will be assigned.
+ */
+void A4GLSQL_set_status (int a, int sql)
+{
+
+  status = a;
+  if (sql)
+    sqlca.sqlcode = a;
+  debug ("Status set to %d", a);
+}
+
+
+/**
+ * Check if there was an error and set sqlca.
+ *
+ * @param rc The return call error.
+ * @param hstmt The statement handle.
+ * @param c  A string to identify who and wy called this
+ * @param line Used just for debug
+ * @param file Used just for debug
+ */
+chk_rc_full (int rc, void *hstmt, char *c, int line, char *file)
+{
+  debug ("Chk_rc_full : rc=%d (%s) stmt=%p c=%s line=%d file=%s", rc,
+            decode_rc(rc), hstmt, c, line, file);
+
+  if (rc==SQL_SUCCESS) {
+     A4GLSQL_set_status(0,1);
+     return;
+  }
+
+
+if (hstmt) {
+  if (rc == SQL_NO_DATA_FOUND)
+    {
+      A4GLSQL_set_sqlca_sqlcode(100);
+      //set_sqlca (hstmt, c, 0,0 /* no error */);
+      A4GLSQL_set_status (100, 1);
+      return;
+    }
+
+  set_sqlca (hstmt, c, 0);
+  }
 }
 
 /**
@@ -542,24 +592,6 @@ find_cursor_for_decl (char *cname)
   else
     return 0;
 }
-
-/**
- * Assign a value to the status global variable.
- *
- * @param a  The value to be set in status.
- * @param sql A Flag that indicate if sqlca.sqlcoe will be assigned too:
- *   - 0 : sqlca.sqlcode will be not assigned.
- *   - Otherwise : sqlca.sqlcode will be assigned.
- */
-void A4GLSQL_set_status (int a, int sql)
-{
-
-  status = a;
-  if (sql)
-    sqlca.sqlcode = a;
-  debug ("Status set to %d", a);
-}
-
 
 /**
  * Prepare an sql statement.
@@ -1239,7 +1271,8 @@ int A4GLSQL_init_connection (char *dbName)
     u = empty;
   if (p == 0)
     p = empty;
-#ifdef DEBUG /* {DEBUG} */ { debug ("u=%s p=%s", u, p); }
+#ifdef DEBUG 
+  /* {DEBUG} */ { debug ("u=%s p=%s", u, p); }
 #endif
 
   if (A4GLSQL_make_connection (dbName, u, p))
@@ -3346,6 +3379,8 @@ char *A4GLSQL_get_curr_conn (void)
 }
 
 /**
+ * @todo : Check if not used and clear it
+ * @deprecated
  * 
  * @param cursname The cursor name.
  * @param opt
@@ -3388,6 +3423,10 @@ set_stmt_options (char *cursname, char *opt, char *val)
 
 }
 
+/**
+ * @todo : Confirm that this function is not used and remove it.
+ * @deprecated
+ */
 aclfgl_hstmt_get (int np)
 {
   int code;
@@ -3436,7 +3475,10 @@ aclfgl_hstmt_get (int np)
   return 1;
 }
 
-
+/**
+ * @todo Check if not used and remove it.
+ * @deprecated
+ */
 set_conn_options (char *sessname, char *opt, char *val)
 {
   HDBC *hdbc;
@@ -3541,7 +3583,14 @@ bind_date (long *ptr_to_date_var)
   return (void *) ptr;
 }
 
-void post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,HSTMT hstmt)
+/**
+ * Binding processing after fetch.
+ *
+ * @param use_binding A pointer to the binding structure.
+ * @param use_nbind A counter of the number of elements in the binding array.
+ * @param hstmt The statement handle.
+ */
+void post_fetch_proc_bind(struct BINDING *use_binding,int use_nbind,HSTMT hstmt)
 {
   int a;
   int zz;
@@ -3608,8 +3657,16 @@ debug("%s",buffstr);
 #endif
 }
 
-
-A4GLSQL_commit_rollback (int mode)
+/**
+ * Implementationin ODBC of the transaction statememtns (BEGIN WORK, 
+ * COMMIT WORK, ROLLBACK WORK).
+ *
+ * @param mode The transaction statement to execute:
+ *   - -1 : Begin work
+ *   - 0 : Rollback work
+ *   - 1 : Commit work
+ */
+void A4GLSQL_commit_rollback (int mode)
 {
   HSTMT hstmt = 0;
   char *ptr;
@@ -3657,35 +3714,14 @@ A4GLSQL_commit_rollback (int mode)
 
 }
 
-
-chk_rc_full (int rc, void *hstmt, char *c, int line, char *file)
-{
-  debug ("Chk_rc_full : rc=%d (%s) stmt=%p c=%s line=%d file=%s", rc,
-            decode_rc(rc), hstmt, c, line, file);
-
-  if (rc==SQL_SUCCESS) {
-     A4GLSQL_set_status(0,1);
-     return;
-  }
-
-
-if (hstmt) {
-  if (rc == SQL_NO_DATA_FOUND)
-    {
-      A4GLSQL_set_sqlca_sqlcode(100);
-      //set_sqlca (hstmt, c, 0,0 /* no error */);
-      A4GLSQL_set_status (100, 1);
-      return;
-    }
-
-  set_sqlca (hstmt, c, 0);
-}
-}
-
-
-
-
-A4GLSQL_unload_data(char *fname,char *delims, char *sql1) {
+/**
+ * ODBC implementation of the UNLOAD 4gl statement.
+ *
+ * @param fname File name where to unload the data.
+ * @param delims column separator to use.
+ * @param sql1 Sql select text to generate the unload data.
+ */
+void A4GLSQL_unload_data(char *fname,char *delims, char *sql1) {
   HSTMT hstmt;
 	int cnt=0;
   static char databuf[64000];
@@ -3704,14 +3740,14 @@ A4GLSQL_unload_data(char *fname,char *delims, char *sql1) {
 
   if (fout==0) {
         exitwith("Error opening file for unload");
-        return 0;
+        return;
   }
 
 
   if (hdbc == 0)
     {
       exitwith ("Not connected to database");
-      return 0;
+      return;
     }
   new_hstmt (&hstmt);
 
@@ -3770,6 +3806,11 @@ debug("All done...");
   sqlca.sqlerrd[1]=cnt;
 }
 
+/**
+ * Convert a date to the format setted in DBDATE.
+ *
+ * @param s The string with the date comming from the database.
+ */
 char *conv_date(char *s) {
 static char buff[20];
 static char sbuff[20];
@@ -3816,7 +3857,12 @@ return buff;
 }
 
 
-
+/**
+ * Decode a return call from the integer defined value to a string.
+ *
+ * @param a The integer value to be decoded.
+ * @return The value converted to string
+ */
 char *decode_rc(int a) {
 switch(a) {
 	case SQL_SUCCESS: return "SQL_SUCCESS";
@@ -3837,16 +3883,12 @@ RETCODE SQL_API SQLDataSources (HENV henv, UWORD fDirection,
 	}
 #endif
 
-
-
-/*
-  if (fCType==SQL_C_BINARY) {
-	debug("Adding blob data %p %p %d",rgbValue,hstmt,ipar);
-	set_blob_data(rgbValue,hstmt,ipar);
-  }
-*/
-
-
+/**
+ *
+ * @param rc 
+ * @param hstmt The statement handle.
+ * @return
+ */
 int chk_need_blob(int rc,HSTMT hstmt)  {
 struct fgl_int_loc *ptr=0;
 	debug("In chk_need_blob rc=%d",rc);
@@ -3856,11 +3898,25 @@ struct fgl_int_loc *ptr=0;
 
 }
 
-A4GLSQL_set_sqlca_sqlcode(int a) {
+/**
+ * Assign the sqlca.sqlcode with a value
+ *
+ * @param a The value to be assigned.
+ */
+void A4GLSQL_set_sqlca_sqlcode(int a) {
 	status=a;
 	sqlca.sqlcode=a;
 }
 
+/**
+ * Chck if a environment variable is set.
+ *
+ * @param A string containing the environment variable.
+ * @param a
+ * @return 
+ *   - TRUE : The variable is set and have YyTt
+ *   - FALSE  Otherwise.
+ */
 int chk_getenv(char *s,int a) {
 char *p;
 p=acl_getenv(s);
@@ -3879,16 +3935,25 @@ if (p[0]=='N'||p[0]=='n'||p[0]=='F'||p[0]=='f') {
 
 }
 
-
-
-
+/**
+ * PUT statement for cursors for insert.
+ * Not implemented.
+ *
+ * @param ibind The input bin array.
+ * @param n 
+ */
 A4GLSQL_put_insert(struct BINDING *ibind,int n) {
 	debug("Not implemented");
 	exitwith("Not implemented");
 
 }
 
-
+/**
+ * FLUSH CURSOR 4gl statement implementation.
+ * Not implemented in ODBC.
+ *
+ * @param The cursor name.
+ */
 A4GLSQL_flush_cursor(char *cursor) {
 	debug("Not implemented");
 	exitwith("Not implemented");

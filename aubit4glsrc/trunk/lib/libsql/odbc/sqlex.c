@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.9 2002-02-17 21:10:50 saferreira Exp $
+# $Id: sqlex.c,v 1.10 2002-02-18 22:27:36 saferreira Exp $
 #
 */
 
@@ -165,6 +165,8 @@ void set_default_logon ();
 #ifdef WIN32
 struct sql_options conn_options[] =
 */
+
+/** Connection options memory table - Windows version */
 struct xxsql_options conn_options[] =
 {
   {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
@@ -191,6 +193,7 @@ struct xxsql_options conn_options[] =
 
 
 //struct sql_options stmt_options[] =
+/** Statement options memory table - Windows version */
 struct xxsql_options stmt_options[] =
 {
   {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
@@ -220,6 +223,7 @@ struct xxsql_options stmt_options[] =
 #else
 
 //struct sql_options conn_options[] =
+/** Connection options memory table - unix version */
 struct xxsql_options conn_options[] =
 {
   {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
@@ -246,6 +250,7 @@ struct xxsql_options conn_options[] =
 
 
 //struct sql_options stmt_options[] =
+/** Statement options memory table - unix version */
 struct xxsql_options stmt_options[] =
 {
   {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
@@ -280,7 +285,16 @@ struct xxsql_options stmt_options[] =
 
 //scan_options (struct sql_options options[], char *s, char *p, long *r1, long *r2)
 
-scan_options (struct xxsql_options options[], char *s, char *p, long *r1, long *r2)
+/**
+ * @deprecated This a deprecation candidate.
+ * 
+ * @param options Options array to be scanned.
+ * @param s
+ * @param p
+ * @param r1
+ * @param r2
+ */
+scan_options(struct xxsql_options options[],char *s,char *p,long *r1,long *r2)
 {
   int a;
   long val;
@@ -325,8 +339,14 @@ scan_options (struct xxsql_options options[], char *s, char *p, long *r1, long *
     return -2;
 }
 
-int
-scan_conn (char *s, char *p, HDBC conn)
+/**
+ * @deprecated This a deprecation candidate.
+ *
+ * @param s
+ * @param p
+ * @param conn
+ */
+int scan_conn (char *s, char *p, HDBC conn)
 {
   long a, b;
   int rc;
@@ -367,6 +387,8 @@ scan_conn (char *s, char *p, HDBC conn)
 }
 
 /**
+ * @deprecated This a deprecation candidate.
+ *
  * @param s
  * @param p
  * @paramhstmt The statement handle.
@@ -399,9 +421,9 @@ int scan_stmt (char *s, char *p, HSTMT hstmt)
   return 1;
 }
 
-
-
-
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 int
 add_txt (char *s, int x, int hwnd)
 {
@@ -416,6 +438,9 @@ add_txt (char *s, int x, int hwnd)
   return 0;
 }
 
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 int
 clrline (int line[])
 {
@@ -427,6 +452,9 @@ clrline (int line[])
   return 0;
 }
 
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 int
 rm_txt (int a, int line[], int ign)
 {
@@ -439,6 +467,9 @@ rm_txt (int a, int line[], int ign)
   return 0;
 }
 
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 int
 remove_it (int a)
 {
@@ -446,10 +477,9 @@ remove_it (int a)
   return 0;
 }
 
-
-
-
-
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 ctol (char s)
 {
   char buff[2];
@@ -458,7 +488,9 @@ ctol (char s)
   return atoi (buff);
 }
 
-
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 char *
 generate_using_for_dmy (char *s, int size)
 {
@@ -537,11 +569,9 @@ generate_using_for_dmy (char *s, int size)
   return using_str;
 }
 
-
-
-
-
-
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 void *
 allocate_mem (int size, void *parent)
 {
@@ -568,6 +598,9 @@ allocate_mem (int size, void *parent)
   return alloc_mem[a].ptr;
 }
 
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 init_mem ()
 {
   int a;
@@ -578,6 +611,9 @@ init_mem ()
     }
 }
 
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 alloc_find_ptr (void *ptr)
 {
   int a;
@@ -589,6 +625,9 @@ alloc_find_ptr (void *ptr)
   return -1;
 }
 
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 alloc_find_parent (void *ptr, int start)
 {
   int a;
@@ -600,7 +639,9 @@ alloc_find_parent (void *ptr, int start)
   return -1;
 }
 
-
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 dealloc_mem (void *ptr)
 {
   int a = -1;
@@ -629,7 +670,9 @@ new_rescnt ()
   return rescnt++;
 }
 
-
+/**
+ * @deprecated This a candidate for cleaning.
+ */
 readfile_for_preload (char *f)
 {
   FILE *fi;
@@ -664,12 +707,19 @@ readfile_for_preload (char *f)
   debug ("}\n};\n");
 }
 
-/******************************************************************
+/* *****************************************************************
 
 			        BLOB relatad functions
 
 ******************************************************************/
 
+/**
+ * Get the blob data into the specified location (memory or file).
+ *
+ * @param blob Pointer to the blob location.
+ * @param hstmt The statement handle.
+ * @param colno the column number.
+ */
 get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 {
   FILE *f;
@@ -726,8 +776,15 @@ get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
   return 1;
 }
 
-
-
+/**
+ * Get the blob information from the statement handle into the specified 
+ * location.
+ *
+ * @param blob The file where the blob is located.
+ * @param hstmt The statement handle.
+ * @param colno The column number.
+ * @param cptr 
+ */
 get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
 {
   char buff[64000];
@@ -799,7 +856,11 @@ get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
   return cnt;
 }
 
-
+/**
+ * Set the blob information to the statement.
+ *
+ * @param hstmt The statement handle.
+ */
 set_blob_data(HSTMT hstmt) {
   int rc;
   struct fgl_int_loc *blob;
@@ -811,6 +872,15 @@ set_blob_data(HSTMT hstmt) {
   return rc;
 }
 
+/**
+ * Read a blob into the statement hande.
+ *
+ * Check the location of the blob anf if in a file open it.
+ * A the end frees the memory.
+ *
+ * @param hstmt The statement handle.
+ * @param blob Pointer to the the blob  location.
+ */
 set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob)
 {
   FILE *f;
@@ -869,8 +939,13 @@ set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob)
   return 1;
 }
 
-
-
+/**
+ * Read a blob information from a FILE and set it to the statement information.
+ *
+ * @param blob The file where the blob is located.
+ * @param hstmt The statement handle.
+ * @param b Pointer to the blob location.
+ */
 set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
 {
   char buff[64000];
