@@ -5,9 +5,10 @@
 * set the datatype conversion routines as required...
 ********************************************************************/
 
+
 /*
 #
-# $Id: a4gl_esql.h,v 1.18 2005-02-11 03:30:12 afalout Exp $
+# $Id: a4gl_esql.h,v 1.19 2005-02-11 10:12:08 afalout Exp $
 #
 */
 
