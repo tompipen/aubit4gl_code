@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.14 2002-10-22 06:43:36 afalout Exp $
+# $Id: data.c,v 1.15 2003-02-18 09:02:24 mikeaubury Exp $
 #*/
 
 /**
@@ -609,7 +609,8 @@ execute_selects (void)
 
   int colsize;
   int coltype;
-  char colname[256];
+  //char colname[256];
+char *colname;
   int vid = 0;
 
   /* char * nval; */
@@ -723,7 +724,7 @@ execute_selects (void)
 	     passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
 	     int A4GLSQL_next_column(char **colname, int *dtype,int *size); 
 	   */
-	  while (A4GLSQL_next_column ((char **) colname, &coltype, &colsize))
+	  while (A4GLSQL_next_column (&colname, &coltype, &colsize))
 	    {
 	      trim (colname);
 	      ace_add_variable (colname, 0, CAT_SQL, 0, coltype, colsize);

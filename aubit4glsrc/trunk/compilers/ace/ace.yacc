@@ -447,7 +447,7 @@ format_action :
 
 variable_sub: 
 NAMED  OPEN_SQUARE expr COMMA expr CLOSE_SQUARE
-|NAMED  OPEN_SQUARE expr CLOSE_SQUARE
+| NAMED  OPEN_SQUARE expr CLOSE_SQUARE
 | NAMED 
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.5 2002-10-20 12:02:37 afalout Exp $
+# $Id: dump.c,v 1.6 2003-02-18 09:02:24 mikeaubury Exp $
 #*/
 
 /**
@@ -112,7 +112,7 @@ main (int argc, char *argv[])
 
 
 
-  XDR xdrp;
+  //XDR xdrp;
   int a;
 
   if (argc != 2)
@@ -129,11 +129,14 @@ main (int argc, char *argv[])
       exit (2);
     }
 
+  fclose(f);
   memset (&this_report, 0, sizeof (struct report));
 
-  xdrstdio_create (&xdrp, f, XDR_DECODE);
+  //xdrstdio_create (&xdrp, f, XDR_DECODE);
 
-  a = xdr_report (&xdrp, &this_report);	//in lib/libform/form_xdr/formwrite2.c
+  //a = xdr_report (&xdrp, &this_report);	//in lib/libform/form_xdr/formwrite2.c
+
+  a=read_data_from_file("report",&this_report,argv[1]);
 
   if (!a)
     {

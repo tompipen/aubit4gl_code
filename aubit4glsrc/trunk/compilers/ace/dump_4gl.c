@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "report.h"
+#include "../../common/dataio/report.xs.h"
 /*
 # 4GL code generator
 #

@@ -8,7 +8,7 @@
 #endif
 
 
-#include "report.h"
+#include "../../common/dataio/report.xs.h"
 
 
 /* ================ from lex.yy.c ============================ */

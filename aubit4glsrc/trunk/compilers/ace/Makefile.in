@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.18 2003-01-15 11:43:33 afalout Exp $
+# $Id: Makefile.in,v 1.19 2003-02-18 09:02:23 mikeaubury Exp $
 #
 
 
@@ -55,33 +55,21 @@ include ${ROOT}/incl/Makefile-common
 ##                    Source code
 ## ==================================================================
 
-ifeq "${USE_RPCGEN}" "0"
-	#RPCGEN      =${CP} ${ROOT}/tools/cygwin/form_x_xdr.c ${ROOT}/tools/cygwin/form_x.h .
-    CMODS_XDR   =${ROOT}/tools/cygwin/report_xdr.c
-	REPORT_H    =${ROOT}/tools/cygwin/report.h
-else
-	#RPCGEN 		=@RPCGEN@ form_x.x
-    CMODS_XDR   =report_xdr.c
-	REPORT_H    =report.h
-endif
 
 ifeq "@YACC@" "no"
-	#LEX_YY_C	=${ROOT}/tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c
 	Y_TAB_C		=${ROOT}/tools/no_yacc/cygwin/compilers/ace/y.tab.c
 	CFLAGS      +=-I${ROOT}/tools/cygwin -I${ROOT}/tools/no_rpc/cygwin
 else
-	#LEX_YY_C	=lex.yy.c
 	Y_TAB_C		=y.tab.c
 endif
 
 
 
-CMODS       =${CMODS_XDR} ${Y_TAB_C} main.c data.c output.c tables.c fileio.c
-CMODS_DECOMP=${CMODS_XDR} dump.c
+CMODS       = ${Y_TAB_C} main.c data.c output.c tables.c fileio.c
+CMODS_DECOMP= dump.c
 #Mike's holding dump_4gl.c back for now - not in CVS
-CMODS_4GL    =${CMODS_XDR} dump_4gl.c
-CMODS_PERL   =${CMODS_XDR} ${Y_TAB_C} dump_perl.c data.c output.c tables.c fileio.c
-OBJS_XDR    =${CMODS_XDR:.c=.o}
+CMODS_4GL    = dump_4gl.c
+CMODS_PERL   = ${Y_TAB_C} dump_perl.c data.c output.c tables.c fileio.c
 OBJS		=${CMODS:.c=.o}
 OBJS_DECOMP =${CMODS_DECOMP:.c=.o}
 OBJS_4GL    =${CMODS_4GL:.c=.o}
@@ -97,7 +85,6 @@ CFLAGS      +=-I.
 
 #we don't want -Wall in CFLAGS when compiling rpcgen created c code because it
 #would give us bunch of warnings about unused varibles, that we cannot fix
-CFLAGS_REPORT_XDR_C		=$(CFLAGS:%-Wall=%)
 
 ALL 		=${ROOT}/bin/aace ${ROOT}/bin/adecompile ${ROOT}/bin/aace_perl ${ROOT}/bin/aace_4gl
 
@@ -131,17 +118,17 @@ ${ROOT}/bin/aace: ${OBJS}
 	${LD_EXE} -o $@  ${AUBIT_LIB} $^ ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
 #	${CP} $@ ${ROOT}/bin
 
-${ROOT}/bin/adecompile: ${REPORT_H} ${OBJS_DECOMP}
+${ROOT}/bin/adecompile:  ${OBJS_DECOMP}
 #	${CC} $(CFLAGS) ${OBJS_DECOMP} -o $@
 	${LD_EXE} -o $@ ${AUBIT_LIB} ${OBJS_DECOMP} ${LINK_LIBS} -L${LIBROOT} ${LINKLIBS}
 #	${CP} $@ ${ROOT}/bin
 
 #Cannot compile because dump_4gl.c is missing from CVS
-${ROOT}/bin/aace_4gl : ${REPORT_H} ${OBJS_4GL}
+${ROOT}/bin/aace_4gl :  ${OBJS_4GL}
 	${4GLPC} $(CFLAGS) ${OBJS_4GL} -o $@
 
 #Cannot compile because dump_perl.c is missing from CVS
-${ROOT}/bin/aace_perl : ${REPORT_H} ${OBJS_PERL}
+${ROOT}/bin/aace_perl :  ${OBJS_PERL}
 	${4GLPC} $(CFLAGS) ${OBJS_PERL} -o $@
 
 norpclib:
@@ -157,18 +144,14 @@ y.tab.c: ace.yacc
 lex.yy.c: ace.lex
 	${LEX} -i $^
 
-y.tab.o: ${Y_TAB_C} lex.yy.c ${REPORT_H}
+y.tab.o: ${Y_TAB_C} lex.yy.c 
 	${CC} $(CFLAGS) -c ${Y_TAB_C} -o $@
 
-data.o: ${REPORT_H} data.c
+data.o:  data.c
 	${CC} $(CFLAGS) -c data.c -o $@
 
-report_xdr.o: report_xdr.c
-	${CC} ${CFLAGS_REPORT_XDR_C} -c -o $@ $^
 
 
-${REPORT_H} report_xdr.c: report.x
-	@RPCGEN@ $^
 
 
 ## ==================================================================
@@ -202,7 +185,7 @@ test2: generate_aace aace_4gl
 ## ==================================================================
 
 clean:
-	${RM} *.bak .*.bak lex.yy.c y.tab.c report_xdr.c ${REPORT_H} y.output *.o \
+	${RM} *.bak .*.bak lex.yy.c y.tab.c   y.output *.o \
 	*.a *${SO_EXT} *.err aace adecompile debug.out
 
 
