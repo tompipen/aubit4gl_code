@@ -11,4 +11,14 @@ before compiling!
 
 
 
+To compile the postgres version you must also set
+
+	A4GL_LEXDIALECT=POSTGRES
+
+and make with
+	make asql_p.4ae
+
+
+
+You can then copy asql_p.4ae to be anything you want...
 

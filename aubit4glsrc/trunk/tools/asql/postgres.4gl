@@ -1,0 +1,774 @@
+code
+#undef UCHAR
+//EXEC SQL include sqltypes;
+EXEC sql include sql3types;
+EXEC sql include sqlca;
+EXEC SQL BEGIN DECLARE SECTION;
+int numberOfColumns=0;
+EXEC SQL END DECLARE SECTION;
+static int field_widths(void);
+extern FILE *out;
+extern FILE *exec_out;
+extern int outlines;
+extern int display_mode;
+extern int fetchFirst;
+static int get_size(int dtype,int size) ;
+
+#define DISPLAY_ACROSS 1
+#define DISPLAY_DOWN   2
+extern char **columnNames;
+extern int *columnWidths;
+#define EXEC_MODE_INTERACTIVE   0
+#define EXEC_MODE_FILE          1
+#define EXEC_MODE_OUTPUT        2
+
+int firstFetchInit=0;
+
+void cp_sqlca() ;
+int execute_select_prepare() {
+	open_display_file_c();
+
+	EXEC SQL WHENEVER SQLERROR CONTINUE;
+	EXEC SQL deallocate descriptor descExec;
+	
+	EXEC SQL allocate descriptor descExec ;cp_sqlca();
+	if (sqlca.sqlcode<0) return 0;
+	
+	EXEC SQL declare crExec CURSOR FOR stExec;cp_sqlca();
+       	if (sqlca.sqlcode<0) return 0;
+	
+	EXEC SQL open crExec ;cp_sqlca();
+	if (sqlca.sqlcode<0) return 0;
+
+	firstFetchInit=1;
+
+}
+
+
+
+void set_display_mode() {
+
+if (get_exec_mode_c()==0||get_exec_mode_c()==2) {
+        if (field_widths()>A4GL_get_curr_width()) {
+                display_mode=DISPLAY_DOWN;
+        } else {
+                display_mode=DISPLAY_ACROSS;
+        }
+} else {
+
+        if (field_widths()>132) {
+                display_mode=DISPLAY_DOWN;
+        } else {
+                display_mode=DISPLAY_ACROSS;
+        }
+}
+
+
+}
+endcode
+
+function get_db_err_msg(lv_code)
+define lv_code integer
+define lv_err1 char(255)
+define lv_err2 char(255)
+code
+rgetmsg(sqlca.sqlcode,lv_err1,sizeof(lv_err1));
+sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
+A4GL_trim(lv_err2);
+endcode
+return lv_err2
+end function
+
+
+
+
+
+function table_select(lv_prompt)
+define lv_prompt char(64)
+define lv_tabname char(255)
+define lv_cnt integer
+
+define lv_query char(1024)
+let lv_cnt=1
+
+
+let lv_query=" SELECT c.relname FROM pg_catalog.pg_class c",
+     " LEFT JOIN pg_catalog.pg_user u ON u.usesysid = c.relowner",
+     " LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace",
+     " WHERE c.relkind IN ('r','')",
+     " AND n.nspname NOT IN ('pg_catalog', 'pg_toast')",
+     " AND pg_catalog.pg_table_is_visible(c.oid)",
+     "  ORDER BY 1"
+
+
+prepare p_q from lv_query 
+
+declare c_gettables_drop cursor for p_q
+
+foreach c_gettables_drop into lv_tabname
+        call set_pick(lv_cnt,lv_tabname)
+        let lv_cnt=lv_cnt+1
+end foreach
+call set_pick_cnt(lv_cnt-1)
+
+call prompt_pick(lv_prompt,"") returning lv_tabname
+
+return lv_tabname
+end function
+
+
+
+
+
+
+# These next few functions are from misql.4gl
+# MISQL - Kerry's alternative to Informix-ISQL
+{
+MISQL is the result of work done on behalf of QUANTA SYSTEMS LTD,
+AUCKLAND, NEW ZEALAND, and has been placed in the public domain with
+their consent. There are no restrictions on how you can use it, but
+please always include a reference to QUANTA SYSTEMS LTD and myself
+in any derivative of this work.
+Cheers,
+Kerry Sainsbury (kerry@kcbbs.gen.nz, kerry@quanta.co.nz)
+}
+
+
+FUNCTION load_info(l_tabname)
+DEFINE   i            INTEGER,
+         l_tabid      INTEGER,
+         l_coltype    char(80),
+         l_collength  INTEGER
+DEFINE lv_buff char(255)
+define l_tabname char(255)
+define lv_colname char(19)
+define rpaginate integer
+define lv_query char(1024)
+
+
+while true
+
+   CALL open_display_file()
+#@ INFORMIX SPECIFIC....
+
+   MESSAGE "Loading column definitions..."
+
+let lv_query=" SELECT c.oid FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE pg_catalog.pg_table_is_visible(c.oid) AND c.relname ='",l_tabname clipped,"'"
+
+prepare p_qli1 from lv_query
+declare c_qli1 cursor for p_qli1
+open c_qli1 
+fetch c_qli1 into l_tabid
+
+   IF sqlca.sqlcode !=0 THEN
+	IF sqlca.sqlcode=100 THEN
+		ERROR "Table ", l_tabname clipped," was not found.."
+	END IF
+
+        IF  check_and_report_error() THEN
+      	   RETURN 
+        END IF
+   END IF
+close c_qli1
+
+
+let lv_query=" SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod) ",
+	" FROM pg_catalog.pg_attribute a ",
+	" WHERE a.attrelid = '",l_tabid using "<<<<<<<<<","' AND a.attnum > 0 AND NOT a.attisdropped ",
+	" ORDER BY a.attnum "
+
+code
+A4GL_debug("TABINFO Query = %s",lv_query);
+endcode
+
+   prepare p_qli2 from lv_query
+
+
+   DECLARE info_curs CURSOR FOR p_qli2
+
+
+   LET i = 0
+   FOREACH info_curs INTO lv_colname,l_coltype
+code
+	A4GL_debug("Fetch..");
+endcode
+      LET i = i + 1
+
+	let lv_colname=lv_colname
+      LET lv_buff = lv_colname," " ,l_coltype clipped
+code
+	A4GL_debug("TABINFO : %s",lv_buff);
+endcode
+        CALL add_to_display_file(lv_buff)
+
+   END FOREACH
+   let rpaginate=0
+
+code
+{
+extern int outlines;
+A4GL_debug("TABINFO : outlines=%d\n",outlines);
+   while (1) {
+             if (outlines<=0) break;
+             aclfgl_paginate(0);
+             rpaginate=A4GL_pop_int();
+             if (rpaginate!=0) break;
+   }
+}
+endcode
+
+if rpaginate=1 THEN
+	CONTINUE WHILE
+ELSE
+	EXIT WHILE
+END IF
+
+END WHILE
+MESSAGE ""
+
+END FUNCTION
+
+
+FUNCTION get_type(l_coltype, l_collength)
+DEFINE l_coltype     INTEGER,
+       l_collength   INTEGER,
+       type_text CHAR(41)
+
+    LET type_text=l_coltype using "<<<<", "(",l_collength using "<<<<<<<",")"
+
+
+
+RETURN type_text
+
+END FUNCTION
+
+
+
+
+function connection_connect()
+define lv_informixdir char(255)
+define lv_passwd char(255)
+define lv_username char(255)
+define lv_cnt integer
+define lv_server char(80)
+define a,x,y integer
+define buff char(255)
+let lv_informixdir=fgl_getenv("INFORMIXDIR")
+let lv_cnt=1
+clear screen
+call display_banner()
+#
+# In order to find out what connections are available
+# Have a look in the sqlhosts file
+#
+code
+{
+char fname[1024];
+FILE *f_in;
+char *ptr;
+A4GL_trim(lv_informixdir);
+sprintf(fname,"%s/etc/sqlhosts",lv_informixdir);
+f_in=fopen(fname,"r");
+if (f_in!=0)  {
+        while (1) {
+                if (feof(f_in)) break;
+                fgets(buff,sizeof(buff),f_in);
+                ptr=strchr(buff,'#'); if (ptr) {*ptr=0;}
+                ptr=strchr(buff,' '); if (ptr) {*ptr=0;}
+                ptr=strchr(buff,'\t'); if (ptr) {*ptr=0;}
+                A4GL_trim(buff);
+                if (strlen(buff)) {
+                        A4GL_debug("SQLHOSTS - buff='%s' (%d)",buff,strlen(buff));
+endcode
+                                call  set_pick(lv_cnt,buff)
+code
+                        //strcpy(mv_arr[lv_cnt-1],buff);
+                        lv_cnt++;
+                }
+        }
+}
+fclose(f_in);
+}
+endcode
+call set_pick_cnt(lv_cnt-1)
+if lv_cnt=1 then
+        error "Either the SQLHOSTS file cannot be read - or it is empty"
+end if
+
+let lv_server=prompt_pick("SELECT DATABASE SERVER >>","")
+
+if lv_server is null or lv_server matches " " then
+        return
+end if
+
+prompt "USER NAME >> " for lv_username
+
+if lv_username is null or lv_username=" " then
+else
+        prompt "PASSWORD >> " for lv_passwd
+        if lv_passwd is null or lv_passwd matches " " then
+                initialize lv_username to null
+        end if
+end if
+#
+code
+{
+static char buff[1024];
+A4GL_trim(lv_server);
+sprintf(buff,"INFORMIXSERVER=%s",lv_server);
+putenv(buff);
+}
+endcode
+call set_username(lv_username,lv_passwd)
+call select_db()
+end function
+
+
+
+
+code
+int
+printField (FILE * outputFile, int idx, char *descName)
+{
+  EXEC SQL BEGIN DECLARE SECTION;
+  int dataType;
+  int index ;
+  short indicator;
+  char buffer[32000]="";
+  int length;
+  int COUNT;
+  int INTVAR, BOOLVAR;
+  int INDICATOR;
+  int TYPE,LENGTH,OCTET_LENGTH,PRECISION,SCALE,NULLABLE,RETURNED_OCTET_LENGTH;
+  int DATETIME_INTERVAL_CODE;
+  char NAME[120];
+  char STRINGVAR[1024];
+  float FLOATVAR;
+  double DOUBLEVAR;
+  EXEC SQL END DECLARE SECTION;
+  char buff[255];
+  int rc = 0;
+index=idx;
+
+A4GL_debug("Getting details for index %d",index);
+ exec sql get descriptor descExec value :index
+         :TYPE = type,
+         :LENGTH = length, :OCTET_LENGTH=octet_length,
+         :RETURNED_OCTET_LENGTH=returned_octet_length,
+         :PRECISION = precision, :SCALE=scale,
+         :NULLABLE=nullable, :NAME=name,
+         :INDICATOR=indicator;cp_sqlca();
+
+ A4GL_debug("%2d\t%s (type: %d length: %d precision: %d scale: %d\n"
+ "\toctet_length: %d returned_octet_length: %d nullable: %d)\n\t= "
+                 ,index,NAME,TYPE,LENGTH,PRECISION,SCALE
+                 ,OCTET_LENGTH,RETURNED_OCTET_LENGTH,NULLABLE);
+
+
+        if (INDICATOR==-1) sprintf(buffer,"NULL\n");
+        else switch (TYPE)
+        {
+          case SQL3_BOOLEAN:
+                exec sql get descriptor descExec value :index :BOOLVAR=data;cp_sqlca();
+                sprintf(buffer,"%s\n",BOOLVAR ? "true":"false");
+                break;
+           case SQL3_NUMERIC:
+           case SQL3_DECIMAL:
+                if (SCALE==0)
+                {  exec sql get descriptor descExec value :index :INTVAR=data;cp_sqlca();
+                   sprintf(buffer,"%d",INTVAR);
+                }
+                else
+                {  exec sql get descriptor descExec value :index :FLOATVAR=data;cp_sqlca();
+                   sprintf(buffer,"%.*f",SCALE,FLOATVAR);
+                }
+                break;
+           case SQL3_INTEGER:
+           case SQL3_SMALLINT:
+                exec sql get descriptor descExec value :index :INTVAR=data;cp_sqlca();
+                sprintf(buffer,"%d",INTVAR);
+                break;
+           case SQL3_FLOAT:
+           case SQL3_REAL:
+                exec sql get descriptor descExec value :index :FLOATVAR=data;cp_sqlca();
+                sprintf(buffer,"%.*f",PRECISION,FLOATVAR);
+                break;
+           case SQL3_DOUBLE_PRECISION:
+                exec sql get descriptor descExec value :index :DOUBLEVAR=data;cp_sqlca();
+                sprintf(buffer,"%.*f",PRECISION,DOUBLEVAR);
+                break;
+           case SQL3_DATE_TIME_TIMESTAMP:
+                exec sql get descriptor descExec value :index
+                        :DATETIME_INTERVAL_CODE=datetime_interval_code,
+                        :STRINGVAR=data;cp_sqlca();
+                sprintf(buffer,"%d %s",DATETIME_INTERVAL_CODE,STRINGVAR);
+                break;
+           case SQL3_INTERVAL:
+                exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
+                sprintf(buffer,"%s",STRINGVAR);
+                break;
+           case SQL3_CHARACTER:
+           case SQL3_CHARACTER_VARYING:
+                exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
+                sprintf(buffer,"%s",STRINGVAR);
+                break;
+           default:
+                exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
+                sprintf(buffer,"<%s>",STRINGVAR);
+                break;
+        }
+
+A4GL_debug("BUFFER=%s",buffer);
+
+        if (display_mode==DISPLAY_DOWN) {
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+                        fprintf(outputFile,"%-20.20s %s\n",columnNames[idx-1],buffer);
+                } else {
+                        fprintf(exec_out,"%-20.20s %s\n",columnNames[idx-1],buffer);
+                }
+                outlines++;
+        } else {
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+
+                        A4GL_debug("EXECO '%s' '%20s' '%-20s'",buffer,buffer,buffer);
+                        fprintf(outputFile,"%-*s",columnWidths[idx-1],buffer);
+                }
+                else
+                        fprintf(exec_out,"%-*s",columnWidths[idx-1],buffer);
+        }
+
+
+  return 0;
+}
+
+
+int prepare_query_1(char *s) {
+EXEC SQL BEGIN DECLARE SECTION;
+char *p;
+EXEC SQL END DECLARE SECTION;
+int qry_type;
+p=s;
+                        EXEC SQL PREPARE stExec from :p;cp_sqlca();
+                        //if (ec_check_and_report_error()) { return -1; }
+                        //EXEC SQL ALLOCATE DESCRIPTOR "d1";
+                        //if (ec_check_and_report_error()) { return -1; }
+                        //EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1";
+
+
+                        qry_type=sqlca.sqlcode;
+			return qry_type;
+}
+
+
+
+int execute_query_1(int *raffected) {
+		*raffected=0;
+                         EXEC SQL EXECUTE stExec;cp_sqlca();
+                         if (ec_check_and_report_error()) { return 0; }
+                         *raffected=sqlca.sqlerrd[0];
+                         EXEC SQL FREE stExec;cp_sqlca();
+                         if (ec_check_and_report_error()) { return 0; }
+	return 1;
+}
+
+
+
+execute_select_free() {
+                          EXEC SQL CLOSE crExec;cp_sqlca();
+                          EXEC SQL free stExec;cp_sqlca();
+                          EXEC SQL free crExec;cp_sqlca();
+
+                          if (ec_check_and_report_error()) { A4GL_debug("EXEC ERR3"); return 0; }
+	return 1;
+}
+
+
+
+static int field_widths() {
+EXEC SQL BEGIN DECLARE SECTION;
+int index;
+int datatype;
+int size;
+char columnName[64];
+EXEC SQL END DECLARE SECTION;
+int totsize=0;
+exec sql get descriptor descExec :numberOfColumns = count;cp_sqlca();
+
+A4GL_assertion(numberOfColumns==0,"No number of columns found...");
+if (columnNames) {
+        int a;
+        for (a=0;columnNames[a];a++) free(columnNames[a]);
+        free(columnNames);
+        columnNames=0;
+}
+
+if (columnWidths) {
+        free(columnWidths);
+        columnWidths=0;
+}
+
+
+columnNames=malloc(sizeof(char*) * (numberOfColumns+1));
+columnWidths=malloc(sizeof(int) * (numberOfColumns+1));
+
+for(index=1;index<=numberOfColumns;index++) {
+        EXEC SQL GET DESCRIPTOR descExec VALUE:index:size=LENGTH,:datatype=TYPE,:columnName=NAME;cp_sqlca();
+        A4GL_trim(columnName);
+        columnNames[index-1]=strdup(columnName);
+
+        size=get_size(datatype,size);
+        if (size<strlen(columnNames[index-1])) size=strlen(columnNames[index-1]);
+
+
+        if (strlen(columnName)>size) {
+                size=strlen(columnName);
+        }
+        columnWidths[index-1]=size;
+        totsize+=size+1;
+}
+
+columnNames[numberOfColumns]=0;
+return totsize;
+
+}
+
+/******************************************************************************/
+int execute_sql_fetch(int *raffected) {
+int a;
+
+        EXEC SQL FETCH crExec INTO SQL DESCRIPTOR descExec; cp_sqlca();
+	A4GL_debug("Fetched");
+
+
+	if (firstFetchInit) {
+		A4GL_debug("Calcualting how to display");
+		set_display_mode();
+		firstFetchInit=0;
+	}
+
+
+        if (sqlca.sqlcode<0) {
+                A4GL_push_char("Fetch error...");
+                A4GL_display_error(0,0);
+                sleep(1);
+                return sqlca.sqlcode;
+        }
+
+        if (sqlca.sqlcode==100) {
+                return 100;
+        }
+
+
+        (*raffected)++;
+
+        if (display_mode==DISPLAY_ACROSS&&fetchFirst==1) {
+                for (a=0;a<numberOfColumns;a++) {
+                        if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+
+                                A4GL_assertion(out==0,"No output file (5)");
+                                fprintf(out,"%-*s ",columnWidths[a],columnNames[a]);
+                        }
+                        else {
+                                A4GL_assertion(exec_out==0,"No output file (6)");
+                                fprintf(exec_out,"%-*.*s ",columnWidths[a],columnWidths[a],columnNames[a]);
+                        }
+                }
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+                        A4GL_assertion(out==0,"No output file (7)");
+                        fprintf(out,"\n\n");
+                } else {
+                        A4GL_assertion(exec_out==0,"No output file (8)");
+                        fprintf(exec_out,"\n\n");
+                }
+
+                outlines+=2;
+                fetchFirst=0;
+        }
+
+        for (a=1;a<=numberOfColumns ;a++) {
+                if (printField(out,a,"descExec")==1) {
+                        A4GL_debug("Break Early %d of %d ",a,numberOfColumns);
+                        break;
+                }
+
+                if (a<numberOfColumns && display_mode==DISPLAY_ACROSS) {
+                        if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
+                                fprintf(out," ");
+                        else
+                                fprintf(exec_out," ");
+                }
+        }
+
+        if (display_mode==DISPLAY_ACROSS) {
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
+                        fprintf(out,"\n");
+                else
+                        fprintf(exec_out,"\n");
+                outlines++;
+        }
+
+        if (display_mode==DISPLAY_DOWN) {
+                if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)
+                        fprintf(out,"\n");
+                else
+                        fprintf(exec_out,"\n");
+
+                outlines++;
+        }
+
+        return sqlca.sqlcode;
+}
+
+
+
+
+/******************************************************************************/
+static int get_size(int dtype,int size) {
+	return 10;
+}
+
+
+
+void cp_sqlca() {
+a4gl_sqlca.sqlcode=sqlca.sqlcode;
+}
+endcode
+
+
+function select_db()
+define lv_cnt integer
+define lv_curr_db char(255)
+define lv_name char(255)
+define lv_newname char(255)
+define ndbs integer
+define a integer
+let lv_curr_db=get_db();
+
+LET ndbs=0
+code
+{
+EXEC SQL BEGIN DECLARE SECTION;
+char dbsname[80];
+EXEC SQL END DECLARE SECTION;
+
+EXEC SQL CONNECT TO template1 AS 'default';
+if (sqlca.sqlcode!=0) goto here;
+EXEC SQL DECLARE c_getdbs CURSOR FOR select datname from pg_catalog.pg_database;
+if (sqlca.sqlcode!=0) goto here;
+EXEC SQL  open c_getdbs;
+if (sqlca.sqlcode!=0) goto here;
+while (1)  {
+	EXEC SQL FETCH c_getdbs INTO :dbsname;
+	if (sqlca.sqlcode!=0) break;
+	strcpy(lv_name,dbsname);
+	ndbs++;
+endcode
+        call set_pick(ndbs,lv_name)
+code
+}
+here:
+}
+exec sql close c_getdbs;
+endcode
+
+
+call set_pick_cnt(ndbs)
+
+let lv_newname=prompt_pick("SELECT DATABASE >>","")
+
+if lv_newname is null then
+        let lv_newname=lv_curr_db
+end if
+
+if lv_newname is not null and lv_newname not matches " " then
+        whenever error continue
+
+        close database
+        database lv_newname
+
+        if sqlca.sqlcode=0 then
+                call set_curr_db(lv_newname)
+                call display_banner()
+                message "Database Opened (",lv_newname clipped,")" attribute(reverse)
+        else
+		message "Database not opened..." attribute(reverse)
+		sleep 1
+                call check_and_report_error()
+        end if
+end if
+
+end function
+
+
+function drop_db()
+define lv_cnt integer
+define lv_curr_db char(255)
+define lv_name char(255)
+define lv_newname char(255)
+define ndbs integer
+define lv_sql char(255)
+define a integer
+let lv_curr_db=get_db();
+
+code
+{
+#define MAXDBS 100
+#define FASIZ (MAXDBS * 19)
+char *dbsname[MAXDBS+1];
+char            dbsarea[FASIZ];
+
+ //sqlca.sqlcode = sqgetdbs(&ndbs, dbsname, MAXDBS, dbsarea, FASIZ);
+ sqlca.sqlcode=0;
+endcode
+
+let ndbs=0
+if sqlca.sqlcode!=0 then
+        call check_and_report_error()
+        return
+end if
+for a=1 to ndbs
+code
+        strcpy(lv_name,dbsname[a-1]);
+endcode
+        call set_pick(a,lv_name)
+end for
+code
+}
+
+
+
+endcode
+
+
+call set_pick_cnt(ndbs)
+let lv_newname=prompt_pick("DROP DATABASE >>","")
+if lv_newname is null then
+        let lv_newname=lv_curr_db
+end if
+
+
+
+if lv_newname is not null and lv_newname not matches " " then
+        whenever error continue
+
+        menu "CONFIRM >>"
+                command "YES" "Really Drop the database"
+
+                        let lv_sql="drop database ",lv_newname
+                        prepare p_drop from lv_sql
+                        execute p_drop
+
+                        if sqlca.sqlcode=0 then
+                                call set_curr_db("")
+                                call display_banner()
+                                message "Database dropped..."
+                        else
+                                call check_and_report_error()
+                        end if
+                        exit menu
+                command "NO" "Don't drop it"
+                        exit menu
+        end menu
+end if
+
+end function
