@@ -24,7 +24,7 @@ menu "Hello test"
         sleep 2
 		close window w1
 
-    command "prompt" "Prompt for user name"
+    	command "prompt" "Prompt for user name"
 		prompt "Enter your name :" for a
 		display "Hello ",a clipped
 
@@ -69,6 +69,7 @@ menu "Hello test"
 
 
 	command "exit"
+		error "Exit"
 		#display "Exit"
         exit menu
 end menu

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.46 2003-05-23 17:47:48 mikeaubury Exp $
+# $Id: compile_c.c,v 1.47 2003-05-30 17:07:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -160,7 +160,7 @@ static int pr_when_do (char *when_str, int when_code, int l, char *f,
 		       char *when_to);
 static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
-static void print_menu (int mn);
+static void print_menu (int mn,int n);
 
 void internal_A4GL_lex_printc (char *fmt, va_list * ap);
 void internal_A4GL_lex_printcomment (char *fmt, va_list * ap);
@@ -462,7 +462,7 @@ internal_A4GL_lex_printh (char *fmt, va_list * ap)
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-static void
+void
 printcomment (char *fmt, ...)
 {
   va_list ap;
@@ -740,7 +740,7 @@ print_exit_loop (int type, int n)
 {
   if (type == 'M')
     {
-      printc ("cmd_no=-3;continue;\n");
+      printc ("cmd_no_%d=-3;goto MENU_START_%d;\n",n,n);
     }
   if (type == 'P')
     {
@@ -2263,6 +2263,7 @@ print_foreach_start (void)
 }
 
 
+#ifdef MOVED_TO_SQL
 /**
  * The parser found END FOREACH.
  *
@@ -2277,6 +2278,7 @@ print_foreach_end (void)
 
   printc ("}\n");
 }
+#endif
 
 
 /**
@@ -3674,10 +3676,16 @@ print_move_window (char *n, int rel)
  * founds the MENU keyword.
  */
 void
-print_menu_1 (void)
+print_menu_1 (int n)
 {
-  printc ("{void *m;\n\nint cmd_no=-1;\n");
-  printc ("while (cmd_no!=-3) {\n switch(cmd_no)  {\n");
+  printc ("{void *m_%d;\n\nint cmd_no_%d=-1; /* n=%d */\n",n,n,n);
+  printc("MENU_START_%d: ;",n);
+  printc ("while (cmd_no_%d!=-3) {\n",n);
+  
+}
+
+void print_menu_1b(int n) {
+  printc(" switch(cmd_no_%d)  {\n",n);
 }
 
 /**
@@ -3687,7 +3695,7 @@ print_menu_1 (void)
  * by the parser.
  */
 static void
-print_menu (int mn)
+print_menu (int mn,int n)
 {
   int a;
   int c;
@@ -3697,20 +3705,20 @@ print_menu (int mn)
        menu_stack[mn][a].menu_key[0] != 0 ||
        menu_stack[mn][a].menu_help[0] != 0; a++)
     c = a;
-  printc ("m=(void *)A4GL_new_menu_create(%s,1,1,%d,0);\n", mmtitle[mn], 2);
+  printc ("m_%d=(void *)A4GL_new_menu_create(%s,1,1,%d,0);\n", n,mmtitle[mn], 2);
   for (a = 0;
        menu_stack[mn][a].menu_title[0] != 0
        || menu_stack[mn][a].menu_key[0] != 0
        || menu_stack[mn][a].menu_help[0] != 0; a++)
     {
 
-      printc ("A4GL_add_menu_option(m, %s,%s,%s,%d,0);\n",
+      printc ("A4GL_add_menu_option(m_%d, %s,%s,%s,%d,0);\n",n,
 	      menu_stack[mn][a].menu_title,
 	      menu_stack[mn][a].menu_key,
 	      menu_stack[mn][a].menu_help, menu_stack[mn][a].menu_helpno);
     }
 
-  printc ("A4GL_finish_create_menu(m);\nA4GL_disp_h_menu(m);cmd_no=-2;continue;\n");
+  printc ("A4GL_finish_create_menu(m_%d);\nA4GL_disp_h_menu(m_%d);cmd_no_%d=-2;continue;\n",n,n,n);
 }
 
 
@@ -3720,12 +3728,12 @@ print_menu (int mn)
  * This function implements the C code to terminate the menu scope
  */
 void
-print_end_menu_1 (void)
+print_end_menu_1 (int n)
 {
   printc ("\n}");
   printcomment (" /*end switch */\n");
-  printc ("if (cmd_no==-1) {\n");
-  print_menu (menu_cnt);
+  printc ("if (cmd_no_%d==-1) {\n",n);
+  print_menu (menu_cnt,n);
   printc ("}\n");
 }
 
@@ -3733,9 +3741,9 @@ print_end_menu_1 (void)
  * Print the execution of the menu loop to the generated C code.
  */
 void
-print_end_menu_2 (void)
+print_end_menu_2 (int n)
 {
-  printc ("cmd_no=A4GL_menu_loop(m);\n}A4GL_free_menu(m);\n");
+  printc ("cmd_no_%d=A4GL_menu_loop(m_%d);\n}A4GL_free_menu(m_%d);\n",n,n,n);
   printcomment ("/* end cwhile */\n");
   printcomment ("/* end menu */\n \n");
   printc ("}\n");
@@ -3766,9 +3774,9 @@ print_menu_block (int n)
  *   - COMMAND.
  */
 void
-print_menu_block_end ()
+print_menu_block_end (int n)
 {
-  printc ("break;");
+  printc ("cmd_no_%d=-2;goto MENU_START_%d;",n,n);
 }
 
 /**
@@ -3786,16 +3794,16 @@ print_menu_block_end ()
  * @param n The option name list (wich is just one if NEXT OPTION).
  */
 void
-print_option_op (int type, char *n)
+print_option_op (int type, char *n,int mn)
 {
   if (type == 'N')
-    printc ("A4GL_next_option(m,%s);\n", n);
+    printc ("A4GL_next_option(m_%d,%s);\n", mn,n);
 
   if (type == 'S')
-    printc ("A4GL_menu_show(m,%s,0);\n", n);
+    printc ("A4GL_menu_show(m_%d,%s,0);\n", mn,n);
 
   if (type == 'H')
-    printc ("A4GL_menu_hide(m,%s,0);\n", n);
+    printc ("A4GL_menu_hide(m_%d,%s,0);\n", mn,n);
 }
 
 /**

@@ -82,6 +82,7 @@ print_foreach_next (char *cursorname, char *into)
   printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", A4GL_strip_quotes (cursorname),
 	  into);
   print_copy_status ();
+  printc ("if (a4gl_sqlca.sqlcode==0) {\n");
   printc ("while (1) {\n");
   ni = print_bind ('i');
   no = print_bind ('o');
@@ -924,4 +925,20 @@ void
 print_sql_block_cmd (char *s)
 {
   printc ("EXEC SQL %s;", s);
+}
+
+/**
+ * The parser found END FOREACH.
+ *
+ * Prints to the generated output file the C implementation of the end of
+ * this statement (that is a C block close with }).
+ */
+void
+print_foreach_end (void)
+{
+  printc ("}");
+  printc ("}");
+  printcomment ("/* end of foreach while loop */\n");
+
+  printc ("}\n");
 }

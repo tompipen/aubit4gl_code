@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.31 2003-05-16 06:49:33 afalout Exp $
+# $Id: compile_perl.c,v 1.32 2003-05-30 17:07:40 mikeaubury Exp $
 #
 */
 
@@ -3342,7 +3342,7 @@ print_move_window (char *n, int rel)
  * @return
  */
 void
-print_menu_1 (void)
+print_menu_1 (int n)
 {
   printc ("{my ($m);\n\nmy ($cmd_no);\n$cmd_no=-1;\n");
   printc ("while ($cmd_no!=-3) {\nMENU_WHILE_LABEL:\n");

@@ -449,22 +449,23 @@ print_def_mn_file -> void
 print_move_window char* n,int rel -> void
 
 /* void print_menu_1 (void) */
-print_menu_1 -> void
+print_menu_1 int n -> void
+print_menu_1b int n -> void
 
 /* void print_end_menu_1 (void) */
-print_end_menu_1 -> void
+print_end_menu_1 int n -> void
 
 /* void print_end_menu_2(void) */
-print_end_menu_2 -> void
+print_end_menu_2 int n -> void
 
 /* void print_menu_block (int n) */
 print_menu_block int n -> void
 
 /* void print_menu_block_end () */
-print_menu_block_end -> void
+print_menu_block_end int n -> void
 
 /* void print_option_op (int type, char *n) */
-print_option_op int type,char* n -> void
+print_option_op int type,char* n,int mn -> void
 
 /* void print_at_termination (char *f) */
 print_at_termination char* f -> void

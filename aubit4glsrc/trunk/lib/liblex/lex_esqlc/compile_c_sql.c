@@ -545,3 +545,17 @@ print_sql_block_cmd (char *s)
 {
   printc ("/* %s */", s);
 }
+/**
+ * The parser found END FOREACH.
+ *
+ * Prints to the generated output file the C implementation of the end of
+ * this statement (that is a C block close with }).
+ */
+void
+print_foreach_end (void)
+{
+  printc ("}");
+  printcomment ("/* end of foreach while loop */\n");
+
+  printc ("}\n");
+}
