@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.95 2004-08-16 10:19:13 mikeaubury Exp $
+# $Id: curslib.c,v 1.96 2004-08-18 06:35:55 afalout Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.95 2004-08-16 10:19:13 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.96 2004-08-18 06:35:55 afalout Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -201,14 +201,15 @@ message (textarea * area, char *str, int x, int a)
 void
 A4GL_error_nobox (char *str_orig, int attr)
 {
-  int eline;
-  //WINDOW *w=0;
-  //PANEL *p;
-  //PANEL *o;
-  A4GL_chkwin ();
-  char str[512];
-A4GL_debug("start");
-  print_panel_stack();
+int eline;
+//WINDOW *w=0;
+//PANEL *p;
+//PANEL *o;
+char str[512];
+  
+	A4GL_chkwin ();
+	A4GL_debug("start");
+	print_panel_stack();
 
   if (curr_error_panel_visible)
     {

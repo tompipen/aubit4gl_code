@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.130 2004-06-08 18:20:17 mikeaubury Exp $
+# $Id: 4glpc,v 1.131 2004-08-18 06:35:55 afalout Exp $
 #
 
 ########################################################################
@@ -1303,7 +1303,9 @@ do
 		TO_OBJECT=1
 		ERREXT=.err
 		if test "$fname" = ""; then
-			echo "WARNING: output file not (yet) named. Using 'unknown' for log file"
+			if test "$A4GLVERBOSE" = "yes"; then			
+				echo "WARNING: output file not (yet) named. Using 'unknown' for log file"
+			fi
 			fname='unknown'
 		fi
 		ERRFILE="$fname$ERREXT"
@@ -1312,13 +1314,12 @@ do
 		EXECNAME="-1"
 		;;
    -noprefix)  #Something for Mike, to be passed to FGLCEXEC, NOT to CC
-	pass="-N \"$next\""
-        FGLCEXEC="$FGLCEXEC $pass"
-	if [ "$A4GLVERBOSE" = "yes" ]; then
-	        echo "FGLCEXEC=$FGLCEXEC"
-        fi
-
-   ;;
+		pass="-N \"$next\""
+		FGLCEXEC="$FGLCEXEC $pass"
+		if [ "$A4GLVERBOSE" = "yes" ]; then
+			echo "FGLCEXEC=$FGLCEXEC"
+		fi
+		;;
 
    *)	#everything else on command line 
 	if [ "$ISMAKE" = "-1" ]; then
