@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.24 2002-03-22 15:47:20 mikeaubury Exp $
+# $Id: sql.c,v 1.25 2002-04-12 18:57:03 saferreira Exp $
 #
 */
 
@@ -3006,6 +3006,183 @@ A4GLSQL_describe_stmt (char *stmt, int colno, int type)
   return z;
 }
 
+/** Statement used to iterate getting column information */
+static HSTMT hstmtGetColumns = 0;
+
+/** Column name */
+static char cn[256];
+
+static int dt;
+
+/** Precision */
+static long prec;
+
+/** Coulmn size */
+static int colsize;
+static char szcolsize[20];
+
+/**
+ * Gets information about columns from a table in the database engine.
+ *
+ * @param tabname The table that we wish to get information about it.
+ * @param colname The column name to get information about it.
+ * @param dtype A pointer to the variable where to put the data type.
+ * @param size A pointer to the variable where to put the size of the column
+ *  returned by the database.
+ * @return 
+ *   - 1 : Information readed.
+ *   - 0 : Error ocurred.
+ */
+int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+{
+  static char buff1[80];
+  static char buff2[255];
+  static char tq[256];
+  static char to[256];
+  static char tn[256];
+  static char dtname[256];
+  static long len;
+  static long scale;
+  static long radix;
+  static long nullable;
+  static char remarks[256];
+  static int a, b;
+  static int rc;
+  static int fetch_mode;
+  static int cnt;
+short nColumns;
+
+  hstmtGetColumns = 0;
+  if (hdbc == 0)
+  {
+    exitwith ("Not connected to database");
+    return 0;
+  }
+
+  if (hstmtGetColumns == 0)
+  {
+    debug ("Creating new statement");
+    new_hstmt (&hstmtGetColumns);
+  }
+
+  if (tabname != 0)
+    {
+      debug ("New search");
+      new_hstmt (&hstmtGetColumns);
+      debug ("Got Statement");
+
+      rc = SQLColumns (hstmtGetColumns,
+		       NULL, 0,
+		       NULL, 0,
+		       tabname,
+		       SQL_NTS,
+		       NULL, 0
+	);
+
+      if (rc!=SQL_SUCCESS) {
+		debug("Some problem with SQLColumns");
+      }
+
+      if (rc == SQL_ERROR)
+	{
+	  debug ("SQLColumns failed for table '%s'\n",tabname);
+          set_sqlca (hstmtGetColumns, "getting column info", 0);
+	  exitwith ("Error getting column info\n");
+	  return 0;
+	}
+
+      debug ("rc=%d\n", rc);
+
+       if (SQLNumResultCols( hstmtGetColumns, &nColumns)!=SQL_SUCCESS) {
+		debug("No NumResultCols");
+		nColumns=-1;
+       }
+
+     debug("nColumns=%d",nColumns);
+
+      a = 79;
+      b = 254;
+      rc=SQLBindCol (hstmtGetColumns, 1, SQL_C_CHAR, tq, 255, &outlen[1]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 2, SQL_C_CHAR, to, 255, &outlen[2]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 3, SQL_C_CHAR, tn, 255, &outlen[3]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 4, SQL_C_CHAR, cn, 255, &outlen[4]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 6, SQL_C_CHAR, dtname, 255, &outlen[6]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 5, SQL_C_LONG, &dt, 4, &outlen[5]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 7, SQL_C_LONG, &prec, 4, &outlen[7]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 8, SQL_C_LONG, &len, 4, &outlen[8]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 9, SQL_C_LONG, &scale, 4, &outlen[9]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 10, SQL_C_LONG, &radix, 4, &outlen[10]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 11, SQL_C_LONG, &nullable, 4, &outlen[11]);
+	debug("Rc=%d",rc);
+      rc=SQLBindCol (hstmtGetColumns, 12, SQL_C_CHAR, remarks, 255, &outlen[12]);
+	debug("Rc=%d",rc);
+      debug ("Bound columns\n");
+    
+  }
+}
+
+
+/**
+ * Iterate in getting information about all columns from a table from the 
+ * database engine.
+ *
+ * A4GLSQL_get_columns(char *tabname) should be called before this one.
+ *
+ * This is used to declare record like table.*
+ *
+ * @param colname The place where to put the column name
+ * @param dtype A pointer to the variable where to put the data type.
+ * @param size A pointer to the variable where to put the size of the column
+ *  returned by the database.
+ * @return 
+ *   - 1 : Information readed.
+ *   - 0 : Error ocurred.
+ */
+int A4GLSQL_next_column(char **colname, int *dtype,int *size)
+{
+  rc = SQLFetch (hstmtGetColumns);
+
+  if (rc == SQL_NO_DATA_FOUND || rc == SQL_ERROR)
+  {
+    return 0;
+  }
+
+  colsize = display_size (dt, prec, "");
+  sprintf (szcolsize, "%d", colsize);
+
+  if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
+  {
+    SQLFreeStmt (hstmtGetColumns, SQL_DROP);
+    return 0;
+  }
+  *colname = strdup(cn);
+  *size = prec;
+  *dtype = conv_sqldtype (dt, prec);
+  return 1;
+}
+
+/**
+ * Free all resources allocated in getting information about columns
+ * 
+ * @return 
+ *   - 0 : Descriptor dealocated
+ *   - 1 : Error ocurred.
+ */
+int A4GLSQL_end_get_columns(void)
+{
+  return 0;
+}
+
 
 /**
  * Gets information about columns from a table in the database engine.
@@ -3399,7 +3576,7 @@ A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 /**
  * Get the current session name.
  *
- * @return 
+ * @return The current connection name.
  */
 char *A4GLSQL_get_curr_conn (void)
 {

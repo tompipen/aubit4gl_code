@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.50 2002-04-03 13:14:22 mikeaubury Exp $
+# $Id: mod.c,v 1.51 2002-04-12 18:56:58 saferreira Exp $
 #
 */
 
@@ -1471,6 +1471,8 @@ void set_4gl_vars(void)
 /**
  * Open a database.
  *
+ * Called by the parser when found the 4gl DATABASE statement.
+ *
  * @param s The database name
  */
 void open_db (char *s)
@@ -1556,85 +1558,129 @@ static void trim_spaces (char *s)
   }
 }
 
-static int push_like2 (char *t2)
+/**
+ * Acces to the database and push a variable declaration for a simple
+ * like variable (the ones that are not like table.*)
+ *
+ * @param tableName The name of the table
+ * @param columnName The name of the column
+ *
+ * @return
+ *   - 0 : Column does not exist or an error ocurred.
+ *   - 1 : Type readed.
+ */
+static int pushLikeTableColumn(char *tableName,char *columnName)
+{
+  int rval;
+  int idtype;
+  int isize;
+  char csize[20];
+  char cdtype[20];
+  char buff[300];
+
+  debug ("pushLikeTableColumn()");
+  rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
+  if (rval == 0)
+  {
+    sprintf (buff, "%s.%s does not exist in the database",tableName,columnName);
+    yyerror (buff);
+    return 0;
+  }
+  sprintf (cdtype, "%d", idtype & 15);
+  sprintf (csize, "%d", isize);
+  trim_spaces (columnName);
+  push_type (rettype (cdtype), csize, (char *)0);
+  return 1;
+}
+
+/**
+ * Find all columns of a table from the database to declare a record like
+ * table.*
+ *
+ * @param tableName The name of the table
+ */
+static int pushLikeAllTableColumns(char *tableName)
+{
+  int rval;
+  int isize;
+  int idtype;
+  char colname[256];
+  char csize[20];
+  char cdtype[20];
+  char buff[300];
+
+  debug ("pushLikeAllTableColumns()");
+  rval = A4GLSQL_get_columns(tableName);
+  if (rval == 0 && tableName)
+  {
+    sprintf (buff, "%s does not exist in the database", tableName);
+    yyerror (buff);
+    return 1;
+  }
+
+  while (1)
+  {
+    colname[0] = 0;
+    debug ("Looking for table '%s' col '%s'", tableName, colname);
+
+    rval = A4GLSQL_next_column(colname,&idtype,&isize);
+
+    if (rval == 0 )
+      break;
+
+    sprintf (cdtype, "%d", idtype & 15);
+    sprintf (csize, "%d", isize);
+    debug ("%d %d", idtype, isize);
+    debug ("---> %s %s", cdtype, csize);
+    debug ("A4GLSQL_read_columns: Pushing %s %s %s", colname, cdtype, csize);
+    trim_spaces (colname);
+    push_name (colname, 0);
+    push_type (rettype (cdtype), csize, 0);
+  }
+  A4GLSQL_end_get_columns();
+  return 0;
+}
+
+/**
+ * The parser found a variable declared like table.column
+ * It needs to go to the database to find the data type in order to do the
+ * proper declaration, binds and convertions.
+ *
+ * @param t2 The table and column (table.column format)
+ */
+static void push_like2 (char *t2)
 {
   char buff[300];
   char buffer[300];
-  char *a;
-  char *b;
+  char *tableName;
+  char *columnName;
   char *c;
   char t[256];
-  char col[256];
-  int isize;
-  int idtype;
-  char csize[20];
-  char cdtype[20];
-  int rval;
-  char non[] = "0";
   debug ("In push_like2");
 
   if (db_used == 0)
-    {
-      sprintf (buff, "You cannot use LIKE without specifying a database");
-      yyerror (buff);
-      return;
-    }
+  {
+    sprintf (buff, "You cannot use LIKE without specifying a database");
+    yyerror (buff);
+    return;
+  }
 
   strcpy (t, t2);
   strcpy (buff, t);
   strcat (buff, ".");
 
-  a = strtok (buff, ".");	/* table name */
-  b = strtok (0, ".");		/* column name */
-  debug ("a='%s' b='%s'", a, b);
-  if (b)
-    {
-      rval = A4GLSQL_read_columns (a, b, &idtype, &isize);
-      if (rval == 0)
-	{
-	  sprintf (buff, "%s.%s does not exist in the database", a, b);
-	  yyerror (buff);
-	  return;
-	}
-      sprintf (cdtype, "%d", idtype & 15);
-      sprintf (csize, "%d", isize);
-      debug ("---> %s %s", cdtype, csize);
-      trim_spaces (b);
-      //push_name (b, 0);
-      push_type (rettype (cdtype), csize, (char *)0);
-      return 1;
-    }
+  tableName = strtok (buff, ".");	/* table name */
+  columnName = strtok (0, ".");		/* column name */
+  debug ("a='%s' b='%s'", tableName,columnName);
 
-  while (1)
-    {
-      col[0] = 0;
-      debug ("Looking for table '%s' col '%s'", a, col);
+  if (columnName)
+  {
+    pushLikeTableColumn(tableName,columnName);
+    return;
+  }
 
-      rval = A4GLSQL_read_columns (a, col, &idtype, &isize);
-
-      if (rval == 0 && a)
-	{
-	  sprintf (buff, "%s does not exist in the database", a);
-	  yyerror (buff);
-	  return;
-	}
-      if (rval == 0 && a == 0)
-	break;
-
-      a = 0;
-
-      sprintf (cdtype, "%d", idtype & 15);
-      sprintf (csize, "%d", isize);
-      debug ("%d %d", idtype, isize);
-      debug ("---> %s %s", cdtype, csize);
-      debug ("A4GLSQL_read_columns: Pushing %s %s %s", col, cdtype, csize);
-      trim_spaces (col);
-      push_name (col, 0);
-      push_type (rettype (cdtype), csize, 0);
-    }
-
-  return 0;
-
+  pushLikeAllTableColumns(tableName);
+  return;
 }
 
 /**
@@ -1648,7 +1694,7 @@ void push_like (char *t)
 {
 
   debug (">>>>>> %s\n", t);
-  push_like2 (t);
+  push_like2(t);
   debug ("<<<<<<\n");
 }
 

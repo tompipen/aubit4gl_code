@@ -26,7 +26,7 @@
 # Makefile for compiling the informix ESQL/C connection test.
 
 #
-# $Id: Makefile.in,v 1.4 2002-04-06 06:33:41 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-04-12 18:57:03 saferreira Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -43,7 +43,7 @@ CFLAGS+=-I../../../lib/libincl -L$(AUBITDIR)/lib
 OBJECTS=test_informix_util.ec test_informix.o connection_suite.o \
 		ddl_suite.o dml_suite.o
 
-LIBS=-lcheck ${AUBIT_LIB} -lPDF_NOPDF -lRPC_NORPC
+LIBS=-lcheck -laclshared -lPDF_NOPDF -lRPC_NORPC -lSQL_esql
 #this is linked to libUI_TUI:
 #-lncurses -lpanel -lform and should be @CURSES_LIB_NAME@
 #this is linked to libUI_GTK:
@@ -69,6 +69,14 @@ test_informix: ${OBJECTS}
 
 no_esql:
 	@echo "Configure did not found esql compiler - cannot compile tests."
+
+4gl: test_db.4ge
+	
+test_db.4ge: fgl_dml_suite.4gl fgl_ec_util.o
+	4glpc fgl_dml_suite.4gl fgl_ec_util.o -o test_db.4ge
+
+fgl_ec_util.o: fgl_ec_util.ec
+	$(ESQL) -c fgl_ec_util.ec
 
 ## ==================================================================
 ##                    Clean
