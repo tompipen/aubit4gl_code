@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.196 2003-09-11 23:05:41 afalout Exp $
+dnl # $Id: configure.in,v 1.197 2003-09-17 11:55:25 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -32,6 +32,11 @@ dnl #
 dnl #
 dnl #Process this file with autoconf to produce a configure script.
 dnl #This script is used to configure BOTH source code and binary distributions
+
+#Note: all command line switches like "--xxxx-wwwww" are automativaly
+#converted to shell variables in "xxxxx_wwwww" format.
+#--disable-xxx are not assigned "yes" by default
+#--with-xxx are assigned "yes" if no value was assigned on command line
 
 ## ==================================================================
 ##                             Initialise
@@ -65,14 +70,13 @@ T_MD=`$a4gl_shtool echo -n -e %B`
 T_ME=`$a4gl_shtool echo -n -e %b`
 
 
-#examlpe - USE iT
-AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
+#An example of using --enable-xxx :
+#AC_ARG_ENABLE(debug, [  --enable-debug          turn on debugging],
+#if test "$enableval" = "yes" ; then
+#    WITH_DEBUG=yes
+#fi)
 
-AC_ARG_ENABLE(debug, [  --enable-debug          turn on debugging],
-if test "$enableval" = "yes" ; then
-    WITH_DEBUG=yes
-fi)
-
+#Store parameters this script was invoked with
 CONFIGURE_COMMAND="$ac_configure_args"
 
 #location of additional Autoconf files
@@ -83,7 +87,7 @@ AC_CONFIG_AUX_DIR(etc/config)
 #to 'configure' on your system, and is local to your system. If found in
 #path, it will be invoked instead of just plain 'configure'
 #aubitconf script will typically have only one line, for example:
-#./configure --with-aubitconf --with-informix --with-jabber -with-iodbc=/blah/huh/iodbc ...etc
+#./configure --with-aubitconf --with-informix --with-jabber -with-iodbc=/blah/huh/iodbc $@ ...etc
 if test "$AUBITCONF_FLAG" != "running"; then
 
 	## ==================================================================
@@ -122,9 +126,21 @@ PHP_CONFIGURE_PART(Looking for configure parameters file:)
 
 AC_PATH_PROG(AUBITCONF, aubitconf, no)
 if test "$AUBITCONF" != "no"; then
-		if test "$with_aubitconf" != "yes" ; then
+		
+#use this instead :
+#if test "$with_all" = ""; then              with_all=yes        ;fi
+#AC_ARG_WITH(all,
+#[  --with-all[=yes/no]       Try to autodetect all available features. Defaults to
+#                          'yes'. Same as specifying --with-(sapdb pgsql sqlite
+#[
+# ...code...
+#],[
+#	AC_MSG_RESULT(Autodetect (--with-all) not specified.)
+#])
+
+		if test "$with_aubitconf" != "no" ; then
 			PHP_CONFIGURE_PART(Redirecting to 'aubitconf':)
-if test "$CONFIGURE_COMMAND" != ""; then
+			if test "$CONFIGURE_COMMAND" != ""; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        *** WARNING ***                             |
@@ -133,7 +149,7 @@ cat<<X
 | provides this functionality. Please verify your 'aubitconf' script |
 +--------------------------------------------------------------------+
 X
-fi
+			fi
 #| ingored, and ones provided in 'aubitconf' used instead. Use        |
 #| --with-aubitconf=no to disable this behaviour.                     |
 
@@ -152,10 +168,10 @@ fi
         else
             echo "'aubitconf' found, but disabled"
         fi
-fi
+fi #if test "$AUBITCONF" != "no"; then
 
-	else
-PHP_CONFIGURE_PART(Invoked from 'aubitconf'-use 'make settings' to see flags:)
+else #if test "$AUBITCONF_FLAG" != "running"; then
+	PHP_CONFIGURE_PART(Invoked from 'aubitconf'-use 'make settings' to see flags:)
 fi
 
 #This script will be used for configuring binary distributions
@@ -394,16 +410,18 @@ AC_SUBST(REDHAT_NAME)
 AC_SUBST(STRIP_EXECUTABLES)
 AC_SUBST(STRIP)
 AC_SUBST(WINDOWS_DRIVE)
+AC_SUBST(SYSDRIVE)
+AC_SUBST(WINDIR)
 AC_SUBST(CYGWIN_PATH)
 AC_SUBST(EFENCE)
 AC_SUBST(CINT)
 AC_SUBST(SQLITE_LDPATH)
 AC_SUBST(Q_ESQLC)
-
+AC_SUBST(AUBIT_LICENSE)
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
-AC_SUBST(IS_SOURCE_GTK)
+#AC_SUBST(IS_SOURCE_GTK)
 
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
@@ -416,6 +434,43 @@ AC_SUBST(HAVE_PDCURSES)
 AC_SUBST(DEBUG_BISON)
 AC_SUBST(YYDEBUG)
 AC_SUBST(INCLINES)
+
+
+#Install/deinstall files lists
+AC_SUBST(AMAKE_SH)
+AC_SUBST(AMAKE_BIN_EXE)
+AC_SUBST(ALL_SH)
+AC_SUBST(COMP_EXE)
+AC_SUBST(LIB_EXPORTLIB)
+AC_SUBST(COMP_LIBS)
+AC_SUBST(PLUGIN_YES)
+AC_SUBST(PLUGIN_YES_LINKABLE)
+AC_SUBST(ALL_LIBS)
+AC_SUBST(ALL_DOC)
+AC_SUBST(ALL_EXAMP)
+AC_SUBST(ALL_EXAMP_GUI)
+AC_SUBST(RUNTIME_EXE)
+AC_SUBST(ALL_MAKEFILE)
+AC_SUBST(CONVSQL_FILES)
+AC_SUBST(AMAKE_INCL_FILES)
+AC_SUBST(INCL_HEADERS_EC)
+AC_SUBST(INCL_HEADERS_EC_REMOVETHIS)
+AC_SUBST(ALL_INC)
+AC_SUBST(ROOT_FILES)
+AC_SUBST(ETC_FILES)
+AC_SUBST(INCL_MAKE)
+
+AC_SUBST(EXTRAFILE_1)
+AC_SUBST(EXTRAFILE_2)
+AC_SUBST(EXTRAFILE_3)
+AC_SUBST(EXTRAFILE_4)
+AC_SUBST(EXTRAFILE_5)
+AC_SUBST(EXTRAFILE_6)
+AC_SUBST(EXTRAFILE_7)
+AC_SUBST(EXTRAFILE_8)
+AC_SUBST(EXTRAFILE_9)
+AC_SUBST(EXTRAFILE_10)
+
 
 #files to be packaged into RPM, that are built optionaly because of external
 #dependencied. Also used for install/deinstall, and to tell make which files to
@@ -591,6 +646,459 @@ AC_SUBST(ISLIBFILE_28)
 AC_SUBST(ISLIBFILE_29)
 AC_SUBST(ISLIBFILE_30)
 
+
+#Executables (RPM)
+AC_SUBST(EXEFILE_1)
+AC_SUBST(EXEFILE_2)
+AC_SUBST(EXEFILE_3)
+AC_SUBST(EXEFILE_4)
+AC_SUBST(EXEFILE_5)
+AC_SUBST(EXEFILE_6)
+AC_SUBST(EXEFILE_7)
+AC_SUBST(EXEFILE_8)
+AC_SUBST(EXEFILE_9)
+AC_SUBST(EXEFILE_10)
+AC_SUBST(EXEFILE_11)
+AC_SUBST(EXEFILE_12)
+AC_SUBST(EXEFILE_13)
+AC_SUBST(EXEFILE_14)
+AC_SUBST(EXEFILE_15)
+AC_SUBST(EXEFILE_16)
+AC_SUBST(EXEFILE_17)
+AC_SUBST(EXEFILE_18)
+AC_SUBST(EXEFILE_19)
+AC_SUBST(EXEFILE_20)
+AC_SUBST(EXEFILE_21)
+AC_SUBST(EXEFILE_22)
+AC_SUBST(EXEFILE_23)
+AC_SUBST(EXEFILE_24)
+AC_SUBST(EXEFILE_25)
+AC_SUBST(EXEFILE_26)
+AC_SUBST(EXEFILE_27)
+AC_SUBST(EXEFILE_28)
+AC_SUBST(EXEFILE_29)
+AC_SUBST(EXEFILE_30)
+
+
+#executables (Windows)
+AC_SUBST(ISEXEFILE_1)
+AC_SUBST(ISEXEFILE_2)
+AC_SUBST(ISEXEFILE_3)
+AC_SUBST(ISEXEFILE_4)
+AC_SUBST(ISEXEFILE_5)
+AC_SUBST(ISEXEFILE_6)
+AC_SUBST(ISEXEFILE_7)
+AC_SUBST(ISEXEFILE_8)
+AC_SUBST(ISEXEFILE_9)
+AC_SUBST(ISEXEFILE_10)
+AC_SUBST(ISEXEFILE_11)
+AC_SUBST(ISEXEFILE_12)
+AC_SUBST(ISEXEFILE_13)
+AC_SUBST(ISEXEFILE_14)
+AC_SUBST(ISEXEFILE_15)
+AC_SUBST(ISEXEFILE_16)
+AC_SUBST(ISEXEFILE_17)
+AC_SUBST(ISEXEFILE_18)
+AC_SUBST(ISEXEFILE_19)
+AC_SUBST(ISEXEFILE_20)
+AC_SUBST(ISEXEFILE_21)
+AC_SUBST(ISEXEFILE_22)
+AC_SUBST(ISEXEFILE_23)
+AC_SUBST(ISEXEFILE_24)
+AC_SUBST(ISEXEFILE_25)
+AC_SUBST(ISEXEFILE_26)
+AC_SUBST(ISEXEFILE_27)
+AC_SUBST(ISEXEFILE_28)
+AC_SUBST(ISEXEFILE_29)
+AC_SUBST(ISEXEFILE_30)
+
+
+#Shell scripts:
+AC_SUBST(SHFILE_1)
+AC_SUBST(SHFILE_2)
+AC_SUBST(SHFILE_3)
+AC_SUBST(SHFILE_4)
+AC_SUBST(SHFILE_5)
+AC_SUBST(SHFILE_6)
+AC_SUBST(SHFILE_7)
+AC_SUBST(SHFILE_8)
+AC_SUBST(SHFILE_9)
+AC_SUBST(SHFILE_10)
+AC_SUBST(SHFILE_11)
+AC_SUBST(SHFILE_12)
+AC_SUBST(SHFILE_13)
+AC_SUBST(SHFILE_14)
+AC_SUBST(SHFILE_15)
+AC_SUBST(SHFILE_16)
+AC_SUBST(SHFILE_17)
+AC_SUBST(SHFILE_18)
+AC_SUBST(SHFILE_19)
+AC_SUBST(SHFILE_20)
+
+AC_SUBST(ISSHFILE_1)
+AC_SUBST(ISSHFILE_2)
+AC_SUBST(ISSHFILE_3)
+AC_SUBST(ISSHFILE_4)
+AC_SUBST(ISSHFILE_5)
+AC_SUBST(ISSHFILE_6)
+AC_SUBST(ISSHFILE_7)
+AC_SUBST(ISSHFILE_8)
+AC_SUBST(ISSHFILE_9)
+AC_SUBST(ISSHFILE_10)
+AC_SUBST(ISSHFILE_11)
+AC_SUBST(ISSHFILE_12)
+AC_SUBST(ISSHFILE_13)
+AC_SUBST(ISSHFILE_14)
+AC_SUBST(ISSHFILE_15)
+AC_SUBST(ISSHFILE_16)
+AC_SUBST(ISSHFILE_17)
+AC_SUBST(ISSHFILE_18)
+AC_SUBST(ISSHFILE_19)
+AC_SUBST(ISSHFILE_20)
+
+#Include files:
+AC_SUBST(INCFILE_1)
+AC_SUBST(INCFILE_2)
+AC_SUBST(INCFILE_3)
+AC_SUBST(INCFILE_4)
+AC_SUBST(INCFILE_5)
+AC_SUBST(INCFILE_6)
+AC_SUBST(INCFILE_7)
+AC_SUBST(INCFILE_8)
+AC_SUBST(INCFILE_9)
+AC_SUBST(INCFILE_10)
+AC_SUBST(INCFILE_11)
+AC_SUBST(INCFILE_12)
+AC_SUBST(INCFILE_13)
+AC_SUBST(INCFILE_14)
+AC_SUBST(INCFILE_15)
+AC_SUBST(INCFILE_16)
+AC_SUBST(INCFILE_17)
+AC_SUBST(INCFILE_18)
+AC_SUBST(INCFILE_19)
+AC_SUBST(INCFILE_20)
+
+AC_SUBST(ISINCFILE_1)
+AC_SUBST(ISINCFILE_2)
+AC_SUBST(ISINCFILE_3)
+AC_SUBST(ISINCFILE_4)
+AC_SUBST(ISINCFILE_5)
+AC_SUBST(ISINCFILE_6)
+AC_SUBST(ISINCFILE_7)
+AC_SUBST(ISINCFILE_8)
+AC_SUBST(ISINCFILE_9)
+AC_SUBST(ISINCFILE_10)
+AC_SUBST(ISINCFILE_11)
+AC_SUBST(ISINCFILE_12)
+AC_SUBST(ISINCFILE_13)
+AC_SUBST(ISINCFILE_14)
+AC_SUBST(ISINCFILE_15)
+AC_SUBST(ISINCFILE_16)
+AC_SUBST(ISINCFILE_17)
+AC_SUBST(ISINCFILE_18)
+AC_SUBST(ISINCFILE_19)
+AC_SUBST(ISINCFILE_20)
+
+
+#Examples:
+AC_SUBST(EXAMPFILE_1)
+AC_SUBST(EXAMPFILE_2)
+AC_SUBST(EXAMPFILE_3)
+AC_SUBST(EXAMPFILE_4)
+AC_SUBST(EXAMPFILE_5)
+AC_SUBST(EXAMPFILE_6)
+AC_SUBST(EXAMPFILE_7)
+AC_SUBST(EXAMPFILE_8)
+AC_SUBST(EXAMPFILE_9)
+AC_SUBST(EXAMPFILE_10)
+AC_SUBST(EXAMPFILE_11)
+AC_SUBST(EXAMPFILE_12)
+AC_SUBST(EXAMPFILE_13)
+AC_SUBST(EXAMPFILE_14)
+AC_SUBST(EXAMPFILE_15)
+AC_SUBST(EXAMPFILE_16)
+AC_SUBST(EXAMPFILE_17)
+AC_SUBST(EXAMPFILE_18)
+AC_SUBST(EXAMPFILE_19)
+AC_SUBST(EXAMPFILE_20)
+AC_SUBST(EXAMPFILE_21)
+AC_SUBST(EXAMPFILE_22)
+AC_SUBST(EXAMPFILE_23)
+AC_SUBST(EXAMPFILE_24)
+AC_SUBST(EXAMPFILE_25)
+AC_SUBST(EXAMPFILE_26)
+AC_SUBST(EXAMPFILE_27)
+AC_SUBST(EXAMPFILE_28)
+AC_SUBST(EXAMPFILE_29)
+AC_SUBST(EXAMPFILE_30)
+AC_SUBST(EXAMPFILE_31)
+AC_SUBST(EXAMPFILE_32)
+AC_SUBST(EXAMPFILE_33)
+AC_SUBST(EXAMPFILE_34)
+AC_SUBST(EXAMPFILE_35)
+AC_SUBST(EXAMPFILE_36)
+AC_SUBST(EXAMPFILE_37)
+AC_SUBST(EXAMPFILE_38)
+AC_SUBST(EXAMPFILE_39)
+AC_SUBST(EXAMPFILE_40)
+AC_SUBST(EXAMPFILE_41)
+AC_SUBST(EXAMPFILE_42)
+AC_SUBST(EXAMPFILE_43)
+AC_SUBST(EXAMPFILE_44)
+AC_SUBST(EXAMPFILE_45)
+AC_SUBST(EXAMPFILE_46)
+AC_SUBST(EXAMPFILE_47)
+AC_SUBST(EXAMPFILE_48)
+AC_SUBST(EXAMPFILE_49)
+AC_SUBST(EXAMPFILE_50)
+AC_SUBST(EXAMPFILE_51)
+AC_SUBST(EXAMPFILE_52)
+AC_SUBST(EXAMPFILE_53)
+AC_SUBST(EXAMPFILE_54)
+AC_SUBST(EXAMPFILE_55)
+AC_SUBST(EXAMPFILE_56)
+AC_SUBST(EXAMPFILE_57)
+AC_SUBST(EXAMPFILE_58)
+AC_SUBST(EXAMPFILE_59)
+AC_SUBST(EXAMPFILE_60)
+
+AC_SUBST(ISEXAMPFILE_1)
+AC_SUBST(ISEXAMPFILE_2)
+AC_SUBST(ISEXAMPFILE_3)
+AC_SUBST(ISEXAMPFILE_4)
+AC_SUBST(ISEXAMPFILE_5)
+AC_SUBST(ISEXAMPFILE_6)
+AC_SUBST(ISEXAMPFILE_7)
+AC_SUBST(ISEXAMPFILE_8)
+AC_SUBST(ISEXAMPFILE_9)
+AC_SUBST(ISEXAMPFILE_10)
+AC_SUBST(ISEXAMPFILE_11)
+AC_SUBST(ISEXAMPFILE_12)
+AC_SUBST(ISEXAMPFILE_13)
+AC_SUBST(ISEXAMPFILE_14)
+AC_SUBST(ISEXAMPFILE_15)
+AC_SUBST(ISEXAMPFILE_16)
+AC_SUBST(ISEXAMPFILE_17)
+AC_SUBST(ISEXAMPFILE_18)
+AC_SUBST(ISEXAMPFILE_19)
+AC_SUBST(ISEXAMPFILE_20)
+AC_SUBST(ISEXAMPFILE_21)
+AC_SUBST(ISEXAMPFILE_22)
+AC_SUBST(ISEXAMPFILE_23)
+AC_SUBST(ISEXAMPFILE_24)
+AC_SUBST(ISEXAMPFILE_25)
+AC_SUBST(ISEXAMPFILE_26)
+AC_SUBST(ISEXAMPFILE_27)
+AC_SUBST(ISEXAMPFILE_28)
+AC_SUBST(ISEXAMPFILE_29)
+AC_SUBST(ISEXAMPFILE_30)
+AC_SUBST(ISEXAMPFILE_31)
+AC_SUBST(ISEXAMPFILE_32)
+AC_SUBST(ISEXAMPFILE_33)
+AC_SUBST(ISEXAMPFILE_34)
+AC_SUBST(ISEXAMPFILE_35)
+AC_SUBST(ISEXAMPFILE_36)
+AC_SUBST(ISEXAMPFILE_37)
+AC_SUBST(ISEXAMPFILE_38)
+AC_SUBST(ISEXAMPFILE_39)
+AC_SUBST(ISEXAMPFILE_40)
+AC_SUBST(ISEXAMPFILE_41)
+AC_SUBST(ISEXAMPFILE_42)
+AC_SUBST(ISEXAMPFILE_43)
+AC_SUBST(ISEXAMPFILE_44)
+AC_SUBST(ISEXAMPFILE_45)
+AC_SUBST(ISEXAMPFILE_46)
+AC_SUBST(ISEXAMPFILE_47)
+AC_SUBST(ISEXAMPFILE_48)
+AC_SUBST(ISEXAMPFILE_49)
+AC_SUBST(ISEXAMPFILE_50)
+AC_SUBST(ISEXAMPFILE_51)
+AC_SUBST(ISEXAMPFILE_52)
+AC_SUBST(ISEXAMPFILE_53)
+AC_SUBST(ISEXAMPFILE_54)
+AC_SUBST(ISEXAMPFILE_55)
+AC_SUBST(ISEXAMPFILE_56)
+AC_SUBST(ISEXAMPFILE_57)
+AC_SUBST(ISEXAMPFILE_58)
+AC_SUBST(ISEXAMPFILE_59)
+AC_SUBST(ISEXAMPFILE_60)
+
+
+#Makefiles:
+AC_SUBST(MAKEFILE_1)
+AC_SUBST(MAKEFILE_2)
+AC_SUBST(MAKEFILE_3)
+AC_SUBST(MAKEFILE_4)
+AC_SUBST(MAKEFILE_5)
+AC_SUBST(MAKEFILE_6)
+AC_SUBST(MAKEFILE_7)
+AC_SUBST(MAKEFILE_8)
+AC_SUBST(MAKEFILE_9)
+AC_SUBST(MAKEFILE_10)
+AC_SUBST(MAKEFILE_11)
+AC_SUBST(MAKEFILE_12)
+AC_SUBST(MAKEFILE_13)
+AC_SUBST(MAKEFILE_14)
+AC_SUBST(MAKEFILE_15)
+AC_SUBST(MAKEFILE_16)
+AC_SUBST(MAKEFILE_17)
+AC_SUBST(MAKEFILE_18)
+AC_SUBST(MAKEFILE_19)
+AC_SUBST(MAKEFILE_20)
+
+AC_SUBST(ISMAKEFILE_1)
+AC_SUBST(ISMAKEFILE_2)
+AC_SUBST(ISMAKEFILE_3)
+AC_SUBST(ISMAKEFILE_4)
+AC_SUBST(ISMAKEFILE_5)
+AC_SUBST(ISMAKEFILE_6)
+AC_SUBST(ISMAKEFILE_7)
+AC_SUBST(ISMAKEFILE_8)
+AC_SUBST(ISMAKEFILE_9)
+AC_SUBST(ISMAKEFILE_10)
+AC_SUBST(ISMAKEFILE_11)
+AC_SUBST(ISMAKEFILE_12)
+AC_SUBST(ISMAKEFILE_13)
+AC_SUBST(ISMAKEFILE_14)
+AC_SUBST(ISMAKEFILE_15)
+AC_SUBST(ISMAKEFILE_16)
+AC_SUBST(ISMAKEFILE_17)
+AC_SUBST(ISMAKEFILE_18)
+AC_SUBST(ISMAKEFILE_19)
+AC_SUBST(ISMAKEFILE_20)
+
+
+#Documentation files:
+AC_SUBST(DOCFILE_1)
+AC_SUBST(DOCFILE_2)
+AC_SUBST(DOCFILE_3)
+AC_SUBST(DOCFILE_4)
+AC_SUBST(DOCFILE_5)
+AC_SUBST(DOCFILE_6)
+AC_SUBST(DOCFILE_7)
+AC_SUBST(DOCFILE_8)
+AC_SUBST(DOCFILE_9)
+AC_SUBST(DOCFILE_10)
+AC_SUBST(DOCFILE_11)
+AC_SUBST(DOCFILE_12)
+AC_SUBST(DOCFILE_13)
+AC_SUBST(DOCFILE_14)
+AC_SUBST(DOCFILE_15)
+AC_SUBST(DOCFILE_16)
+AC_SUBST(DOCFILE_17)
+AC_SUBST(DOCFILE_18)
+AC_SUBST(DOCFILE_19)
+AC_SUBST(DOCFILE_20)
+
+AC_SUBST(ISDOCFILE_1)
+AC_SUBST(ISDOCFILE_2)
+AC_SUBST(ISDOCFILE_3)
+AC_SUBST(ISDOCFILE_4)
+AC_SUBST(ISDOCFILE_5)
+AC_SUBST(ISDOCFILE_6)
+AC_SUBST(ISDOCFILE_7)
+AC_SUBST(ISDOCFILE_8)
+AC_SUBST(ISDOCFILE_9)
+AC_SUBST(ISDOCFILE_10)
+AC_SUBST(ISDOCFILE_11)
+AC_SUBST(ISDOCFILE_12)
+AC_SUBST(ISDOCFILE_13)
+AC_SUBST(ISDOCFILE_14)
+AC_SUBST(ISDOCFILE_15)
+AC_SUBST(ISDOCFILE_16)
+AC_SUBST(ISDOCFILE_17)
+AC_SUBST(ISDOCFILE_18)
+AC_SUBST(ISDOCFILE_19)
+AC_SUBST(ISDOCFILE_20)
+
+#Configuration files:
+AC_SUBST(CONFFILE_1)
+AC_SUBST(CONFFILE_2)
+AC_SUBST(CONFFILE_3)
+AC_SUBST(CONFFILE_4)
+AC_SUBST(CONFFILE_5)
+AC_SUBST(CONFFILE_6)
+AC_SUBST(CONFFILE_7)
+AC_SUBST(CONFFILE_8)
+AC_SUBST(CONFFILE_9)
+AC_SUBST(CONFFILE_10)
+AC_SUBST(CONFFILE_11)
+AC_SUBST(CONFFILE_12)
+AC_SUBST(CONFFILE_13)
+AC_SUBST(CONFFILE_14)
+AC_SUBST(CONFFILE_15)
+AC_SUBST(CONFFILE_16)
+AC_SUBST(CONFFILE_17)
+AC_SUBST(CONFFILE_18)
+AC_SUBST(CONFFILE_19)
+AC_SUBST(CONFFILE_20)
+
+#SQL conversion files
+AC_SUBST(CONVFILE_1)
+AC_SUBST(CONVFILE_2)
+AC_SUBST(CONVFILE_3)
+AC_SUBST(CONVFILE_4)
+AC_SUBST(CONVFILE_5)
+AC_SUBST(CONVFILE_6)
+AC_SUBST(CONVFILE_7)
+AC_SUBST(CONVFILE_8)
+AC_SUBST(CONVFILE_9)
+AC_SUBST(CONVFILE_10)
+AC_SUBST(CONVFILE_11)
+AC_SUBST(CONVFILE_12)
+AC_SUBST(CONVFILE_13)
+AC_SUBST(CONVFILE_14)
+AC_SUBST(CONVFILE_15)
+AC_SUBST(CONVFILE_16)
+AC_SUBST(CONVFILE_17)
+AC_SUBST(CONVFILE_18)
+AC_SUBST(CONVFILE_19)
+AC_SUBST(CONVFILE_20)
+
+AC_SUBST(ISCONVFILE_1)
+AC_SUBST(ISCONVFILE_2)
+AC_SUBST(ISCONVFILE_3)
+AC_SUBST(ISCONVFILE_4)
+AC_SUBST(ISCONVFILE_5)
+AC_SUBST(ISCONVFILE_6)
+AC_SUBST(ISCONVFILE_7)
+AC_SUBST(ISCONVFILE_8)
+AC_SUBST(ISCONVFILE_9)
+AC_SUBST(ISCONVFILE_10)
+AC_SUBST(ISCONVFILE_11)
+AC_SUBST(ISCONVFILE_12)
+AC_SUBST(ISCONVFILE_13)
+AC_SUBST(ISCONVFILE_14)
+AC_SUBST(ISCONVFILE_15)
+AC_SUBST(ISCONVFILE_16)
+AC_SUBST(ISCONVFILE_17)
+AC_SUBST(ISCONVFILE_18)
+AC_SUBST(ISCONVFILE_19)
+AC_SUBST(ISCONVFILE_20)
+
+#Amake files:
+AC_SUBST(ISAMAKEFILE_1)
+AC_SUBST(ISAMAKEFILE_2)
+AC_SUBST(ISAMAKEFILE_3)
+AC_SUBST(ISAMAKEFILE_4)
+AC_SUBST(ISAMAKEFILE_5)
+AC_SUBST(ISAMAKEFILE_6)
+AC_SUBST(ISAMAKEFILE_7)
+AC_SUBST(ISAMAKEFILE_8)
+AC_SUBST(ISAMAKEFILE_9)
+AC_SUBST(ISAMAKEFILE_10)
+AC_SUBST(ISAMAKEFILE_11)
+AC_SUBST(ISAMAKEFILE_12)
+AC_SUBST(ISAMAKEFILE_13)
+AC_SUBST(ISAMAKEFILE_14)
+AC_SUBST(ISAMAKEFILE_15)
+AC_SUBST(ISAMAKEFILE_16)
+AC_SUBST(ISAMAKEFILE_17)
+AC_SUBST(ISAMAKEFILE_18)
+AC_SUBST(ISAMAKEFILE_19)
+AC_SUBST(ISAMAKEFILE_20)
+
+
 ## ==================================================================
 ##                             Defaults
 ## ==================================================================
@@ -606,6 +1114,7 @@ FULLNAME="Aubit 4GL compiler"
 SHORTNAME="aubit4gl"
 AUBIT_WEBSITE=aubit4gl.sf.net
 AUBIT_PUBLISHER="Aubit project development team"
+AUBIT_LICENSE="GNU GPL/LGPL"
 COMPILE_DATE=`date +%d-%m-%Y`
 test_rpclib="1"
 GTKBUILD=no
@@ -617,10 +1126,16 @@ PIC="-fPIC"
 ODBC_LIB_NAME=noodbc
 USE_PDF=no
 PDFBUILD=no
+HAVE_POPLIB=no
 PERLBUILD=no
 JABBERBUILD=no
 AUBIT_DEBUG=1
+HAVE_RPCLIB=0
+EXDATA_MPZ=no
 IFMX_ESQLC=no
+Q_ESQLC=no
+XML_RPC=no
+CINT=no
 LCLINTEXE=no
 STRIP_EXECUTABLES=no
 cygwin=0
@@ -628,9 +1143,13 @@ INFORMIXC=$CC
 HAVE_CURSES=0
 HAVE_PDCURSES=0
 #FIXME: do not hard-code
-WINDOWS_DRIVE=D:
+#WINDOWS_DRIVE=D:
+#HOMEDRIVE is CygWin created environment variable
+WINDOWS_DRIVE=$HOMEDRIVE
 CYGWIN_PATH=/cygwin
-
+USE_RPCGEN=0
+#SYSTEMDRIVE is Windows created environment variable pointing to drive containing Windows OS
+SYSDRIVE=$SYSTEMDRIVE
 AC_EXEEXT
 AC_OBJEXT
 
@@ -720,6 +1239,91 @@ ALL_LINGUAS="en"
 dnl internationalization macros
 #AM_GNU_GETTEXT
 
+#examlpe - USE iT
+#AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
+
+
+if test "$with_all" = ""; then              with_all=yes        ;fi
+AC_ARG_WITH(all,
+[  --with-all[=yes/no]       Try to autodetect all available features. Defaults to
+                          'yes'. Same as specifying --with-(sapdb pgsql sqlite
+                          ecpg pdf gtk iksemel informix sqliteodbc sapodbc
+                          pgodbc iodbc unixodbc curses ...etc...)=yes.
+  --with-aubitconf=yes/no Enable/disable use of external parameter script
+                          named 'aubitconf'
+  --with-bin              Force configuring as binary distribution
+  --with-src              Force configuring as source code
+  --with-dot=DIR          dot tool is part of Graphviz, a graph visualization
+                          toolkit from AT&T and Lucent Bell Labs. One of DoxyGen
+                          visualisation options.
+  --with-www-name=name    Name of the web server URL to use
+  --with_glib=DIR         Specify explicit path to GLIB library.
+  --enable-yy-debug       for debbuging in function yyparse()
+  --enable-yacc-debug     Yacc Debugging
+  --enable-printc-debug   If INCLINES variable is set then the source target C
+                          file is generated with #line (for debugging purposes).
+  --enable-ac-debug       Enable AutoConf debugginf of 'configure' script.],
+[
+if test "$withval" != "no"; then
+	AC_MSG_RESULT(Trying to autodetect everything...)
+	#force this checks even if not specified on command line:
+
+	############ various ###########
+	if test "$with_pdf" = ""; then              with_pdf=yes        ;fi
+	if test "$with_iksemel" = ""; then          with_iksemel=yes    ;fi
+	if test "$with_xmlrpc" = ""; then           with_xmlrpc=yes     ;fi
+	if test "$with_rpc" = ""; then              FORCE_RPC=1         ;fi
+
+
+	############ database ##########
+	if test "$with_sapdb" = ""; then			with_sapdb=yes 		;fi
+	if test "$with_pgsql" = ""; then            with_pgsql=yes 		;fi
+	if test "$with_sqlite" = ""; then           with_sqlite=yes     ;fi
+	if test "$with_ecpg" = ""; then             with_ecpg=yes       ;fi
+	if test "$with_informix" = ""; then         with_informix=yes
+                                               force_informix=yes  ;fi
+	if test "$cygwin" != "1" ; then
+       #No point in making directly linked ODBC plug-ins on Windows - use odbc32
+       if test "$with_sqliteodbc" = ""; then   with_sqliteodbc=yes ;fi
+       if test "$with_sapodbc" = ""; then      with_sapodbc=yes    ;fi
+       if test "$with_pgodbc" = ""; then       with_pgodbc=yes     ;fi
+       if test "$with_ifxodbc" = ""; then      with_ifxodbc=yes    ;fi
+       if test "$with_iodbc" = ""; then        with_iodbc=yes      ;fi
+       if test "$with_unixodbc" = ""; then     with_unixodbc=yes   ;fi
+	fi
+
+    ############# User Interface ####
+	if test "$with_gtk" = ""; then              with_gtk=yes        ;fi
+	#if user did not explicitly asked for Pdcurses, and if not on MinGW (which don't have curses):
+#FIXME: we don't have $GCC_MINGW here!!!
+	if test "$with_curses" = "" && test "$with_pdcurses" = "" && test "$GCC_MINGW" != "yes"; then
+		with_curses=yes
+	fi
+
+	if test "$with_cint" = ""; then          	with_cint=yes 		;fi
+	if test "$with_mpz" = ""; then				with_mpz=yes 		;fi
+	if test "$with_pop" = ""; then          	with_pop=yes 		;fi
+	if test "$with_ecpg" = ""; then          	with_ecpg=yes 		;fi
+	if test "$with_esqlc" = ""; then            with_esqlc=yes 		;fi
+
+	if test "$with_fourj" = ""; then            with_fourj=yes 		;fi
+	if test "$with_hydra" = ""; then            with_hydra=yes 		;fi
+	if test "$with_i4gl" = ""; then         	with_i4gl=yes 		;fi
+	if test "$with_httpd" = ""; then            with_httpd=yes 		;fi
+	if test "$with_java" = ""; then     		with_java=yes   	;fi
+	if test "$with_efence" = ""; then     		with_efence=yes   	;fi
+	if test "$with_bison" = ""; then     		with_bison=yes   	;fi
+
+else
+	if test "$with_java" = ""; then     		with_java=no   		;fi
+	AC_MSG_RESULT(Autodetect (--with-all) disabled.)
+fi
+
+],[
+	AC_MSG_RESULT(Autodetect (--with-all) not specified.)
+])
+
+
 ## ==================================================================
 ##            Decide on install location for compiler files
 ## ==================================================================
@@ -745,7 +1349,8 @@ dnl internationalization macros
         fi
     fi
 
-LIB_PREFIX=$prefix/$SHORTNAME/lib
+INST_BASE=$prefix/$SHORTNAME
+LIB_PREFIX=$INST_BASE/lib
 
 A4GL_DBPATH=$aubitdir/tools:$prefix/$SHORTNAME/tools
 
@@ -796,6 +1401,12 @@ A4GL_DBPATH=$aubitdir/tools:$prefix/$SHORTNAME/tools
         #compiler to work on practiacally any system.
     fi
 
+#Install location - must install first:
+#Source code location:
+IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$aubitdir"
+#Location of GTK libraries - should be obsolete
+#IS_SOURCE_GTK="$HOMEDRIVE$CYGWIN_PATH/lib"
+
 
 ## ==================================================================
 ##       Define permanent list of libraries to build/install
@@ -804,54 +1415,374 @@ A4GL_DBPATH=$aubitdir/tools:$prefix/$SHORTNAME/tools
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
 
+#List of libraries needed by compiler(s):
 COMP_LIBS="LEX_EC LEX_C LEX_CS LEX_PERL"
+
+#Libraries that need 4glc (and in some cases fcompile) to build, and are
+#buit in all cases:
+#FIXME: A4GL_HTML should be linkable (LIB_EXPORTLIB), but we are using 4glpc to create dll,
+#and we don't get .a file...
+NEED_4GLC_ALL_libs="HELP_std A4GL_string A4GL_HTML"
+
+if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
+	#On CygWin/MinGW:
+
+	#make[3]: Entering directory `/usr/src/aubit/aubit4glsrc/lib/extra_libs/file'
+	#/usr/bin/bash 4glpc -as-dll libfile.4gl -o libA4GL_file.dll
+	#============ FIRST ERROR: ==============
+	#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1834):libfile.c: undefined reference to `trim_nl'
+	#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1846):libfile.c: undefined reference to `push_char'
+	#========================================
+	#See file  libA4GL_file.dll.err
+	#Error compiling... check  libA4GL_file.dll.err
+	NEED_4GLC_ALL_libs="$NEED_4GLC_ALL_libs A4GL_file"
+fi
 
 ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
-		DATA_struct_form HELP_std PACKER_MEMPACKED SQL_FILESCHEMA"
+		DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA $NEED_4GLC_ALL_libs"
 
+#libaubit4gl should be first, to avoid dependency chase
+LIB_EXPORTLIB=aubit4gl
 
-#Libraries that need 4glc (and in some cases fcompile) to build:
-NEED_4GLC_libs="HELP_std A4GL_file A4GL_string A4GL_pop A4GL_HTML"
-
-
-
-#Install location - must install first:
-#IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$prefix/$SHORTNAME"
-#Source code location:
-IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$aubitdir"
-IS_SOURCE_GTK="$HOMEDRIVE$CYGWIN_PATH/lib"
-
-    #Can't use 'let' - standard sh don't know that...
-	#let COUNTER=0
     COUNTER=0
-
-    #libaubit4gl should be first, to avoid dependency chase
-	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "LIBFILE_$COUNTER='$LIB_PREFIX/libaubit4gl$SO_EXT_LINKABLE'"
-	eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\libaubit4gl$SO_EXT_LINKABLE; DestDir: {app}\bin; Components: runtime'"
-	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	#Windows exports library:
-	eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\libaubit4gl$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
+	for FILE in $LIB_EXPORTLIB ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$LIB_EXPORTLIB$SO_EXT_LINKABLE'"
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$LIB_EXPORTLIB$SO_EXT_LINKABLE; DestDir: {app}\bin; Components: runtime'"
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		#Windows exports library:
+		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$LIB_EXPORTLIB$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
+    done
 
 	for FILE in $COMP_LIBS ; do
-		#let COUNTER=COUNTER+1
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
 		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: compiler'"
 	done
 
 	for FILE in $ALL_LIBS ; do
-		#let COUNTER=COUNTER+1
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
 		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
 	done
 
-#Note: all command line switches like "--xxxx-wwwww" are automativaly
-#converted to shell variables in "xxxxx_wwwww" format.
-#--disable-xxx are not assigned "yes" by default
-#--with-xxx are assigned "yes" if no value was assigned on command line
+
+## ==================================================================
+##       Define permanent list of executables to build/install
+## ==================================================================
+
+#List of executables that we allways make. Here so we don't have to maintain it
+#separately for RPM config file, install/deinstall and lib Makefile:
+
+AMAKE_BIN_EXE=aubit-config
+
+#Executables that are needed even in run-time distibutions:
+RUNTIME_EXE="loadmap fshow $AMAKE_BIN_EXE"
+
+COMP_EXE="4glc fcompile fdecompile mcompile mdecompile amkmessage unmkmessage \
+        aace adecompile convertsql aace_4gl aace_perl ecpg_wrap default_frm \
+        c2pcode checker runner runner_fgl"
+#xgen
+
+#needs missing source code
+#	BIN_EXE		+=fdecompile-j${EXEEXT}
+#user's manual choice:
+#	BIN_EXE		+=odbctest-unixODBC${EXE}
+#	BIN_EXE		+=odbctest-iodbc3${EXE}
+#	BIN_EXE		+=odbctest-iodbc2${EXE}
+
+
+#Source: @IS_SOURCE@\bin\aubit-config.exe; DestDir: {app}\bin; CopyMode: normal; Components: compiler
+#Source: @IS_SOURCE@\bin\4glc.exe; DestDir: {app}\bin; DestName: "4glc.exe"; CopyMode: alwaysoverwrite; Components: compiler
+#Source: @IS_SOURCE@\bin\fcompile.exe; DestDir: {app}\bin; Components: compiler
+#Source: @IS_SOURCE@\bin\fdecompile.exe; DestDir: {app}\bin; Components: compiler
+#Source: @IS_SOURCE@\bin\mcompile.exe; DestDir: {app}\bin; Components: compiler
+#Source: @IS_SOURCE@\bin\mdecompile.exe; DestDir: {app}\bin; Components: compiler
+#Source: @IS_SOURCE@\bin\amkmessage.exe; DestDir: {app}\bin; Components: compiler
+#Source: @IS_SOURCE@\bin\unmkmessage.exe; DestDir: {app}\bin; Components: compiler
+#Source: @IS_SOURCE@\bin\fshow.exe; DestDir: {app}\bin; Components: compiler
+#Source: @IS_SOURCE@\bin\loadmap.exe; DestDir: {app}\bin; Components: compiler
+#
+#Source: @IS_SOURCE@\lib\lib4glc.dll; DestDir: {app}\bin; Components: compiler
+
+
+
+    COUNTER=0
+	for FILE in $COMP_EXE ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXE_EXT'"
+		#DestName: "4glc.exe"; CopyMode: alwaysoverwrite;
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\$FILE$EXE_EXT; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+	done
+
+	for FILE in $RUNTIME_EXE ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "EXEFILE_$COUNTER='$INST_BASE/bin/$FILE$EXE_EXT'"
+		eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\$FILE$EXE_EXT; DestDir: {app}\bin; CopyMode: normal; Components: runtime'"
+	done
+
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "ISEXEFILE_$COUNTER='Source: $IS_SOURCE\bin\lib4glc.dll; DestDir: {app}\bin; CopyMode: normal; Components: compiler'"
+
+
+
+## ==================================================================
+##       Define permanent list of shell scripts to build/install
+## ==================================================================
+
+AMAKE_SH="amake amakeallo amakeallf genmake prepmake"
+ALL_SH="4glpc aubit ecpg_wrap $AMAKE_SH"
+#abug.sh
+
+#Source: @IS_SOURCE@\bin\4glpc; DestDir: {app}\bin; Components: Shell
+#Source: @IS_SOURCE@\install.sh; DestDir: {app}; Components: Shell
+#Source: @IS_SOURCE@\configure; DestDir: {app}; Components: Shell
+#;FIXME: create executables of this two, so we can use Amake without Bash:
+#Source: @IS_SOURCE@\bin\amake; DestDir: {app}\bin; Components: Shell
+#Source: @IS_SOURCE@\bin\aubit; DestDir: {app}\bin; Components: Shell
+
+    COUNTER=0
+	for FILE in $ALL_SH ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "SHFILE_$COUNTER='$INST_BASE/bin/$FILE'"
+		eval "ISSHFILE_$COUNTER='Source: $IS_SOURCE\bin\$FILE; DestDir: {app}\bin; Components: Shell'"
+	done
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "SHFILE_$COUNTER='$INST_BASE/configure'"
+
+
+## ==================================================================
+##       Define permanent list of Includes to build/install
+## ==================================================================
+
+#This header files become nececery to install when a4gl_esql.h was introduced.
+#As a chain reaction, practically all external Aubit header files become a
+#dependency. Most, if not all, are not really needed and should be removed
+#from installation scripts:
+INCL_HEADERS_EC="a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h"
+
+AMAKE_INCL_FILES="header.mki footer.mki footer-c.mki a4gl.mk q4gl.mk d4gl.mk i4gl.mk"
+
+#Here we come aggain  - a4gl_4gl_callable.h requires all of this:
+INCL_HEADERS_EC_REMOVETHIS="a4gl_libaubit4gl.h a4gl_API_lex.h a4gl_API_form.h \
+	a4gl_API_menu.h a4gl_API_msg.h a4gl_API_packer.h a4gl_API_ui.h \
+	a4gl_API_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
+	a4gl_incl_infx.h a4gl_API_esql.h a4gl_API_help.h"
+#	../common/dataio/form_x.x.h
+
+
+ALL_INC="a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
+        a4gl_API_exdata.h a4gl_API_exreport.h a4gl_API_form.h a4gl_API_help.h \
+		a4gl_API_menu.h a4gl_API_msg.h a4gl_API_rpc.h a4gl_API_sql.h a4gl_API_ui.h"
+
+#INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
+#		a4gl_API_lex.h a4gl_API_msg.h a4gl_libaubit4gl.h form_x.xs.h
+
+
+#not needed:
+#a4gl_API_esql.h a4gl_API_lex.h a4gl_API_packer.h
+
+#Source: @IS_SOURCE@\incl\a4gl_incl_4gldef.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_incl_4glhdr.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_4gl_callable.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_API_exdata.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_API_exreport.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_API_form.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_API_help.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_API_menu.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_API_msg.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_API_rpc.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_API_sql.h; DestDir: {app}\incl; Components: compiler
+#Source: @IS_SOURCE@\incl\a4gl_API_ui.h; DestDir: {app}\incl; Components: compiler
+#;not needed:
+#;Source: @IS_SOURCE@\incl\a4gl_API_esql.h; DestDir: {app}\incl; Components: compiler
+#;Source: @IS_SOURCE@\incl\a4gl_API_lex.h; DestDir: {app}\incl; Components: compiler
+#;Source: @IS_SOURCE@\incl\a4gl_API_packer.h; DestDir: {app}\incl; Components: compiler
+
+
+    COUNTER=0
+	for FILE in $ALL_INC ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "INCFILE_$COUNTER='$INST_BASE/incl/$FILE'"
+		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE\incl\$FILE; DestDir: {app}\incl; Components: compiler'"
+	done
+
+    COUNTER2=0
+	for FILE in $AMAKE_INCL_FILES ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		COUNTER2=`(expr $COUNTER2 + 1) 2>/dev/null`
+		eval "INCFILE_$COUNTER='$INST_BASE/incl/$FILE'"
+		eval "ISAMAKEFILE_$COUNTER2='Source: $IS_SOURCE\incl\$FILE; DestDir: {app}\incl; Components: Make'"
+	done
+
+## ==================================================================
+##       Define permanent list of examples to build/install
+## ==================================================================
+
+#ALL_EXAMP="`cd tools/test; ls *.4gl` `cd tools/test; ls *.per` `cd tools/test; ls *.msg`"
+#ALL_EXAMP_GUI="`cd tools/test/gui; ls *.4gl` `cd tools/test/gui; ls *.per`"
+ALL_EXAMP="testmenu.menu file.4gl form.per hello.4gl hello_db.4gl \
+		hello2.4gl helpfile.msg pdf_report.4gl test_build.4gl test_select.4gl \
+		testmenu.4gl assoc2.4gl testmpz.4gl"
+
+if test "$COMSPEC" != ""; then
+	ALL_EXAMP="$ALL_EXAMP make.bat"
+fi
+
+ALL_EXAMP_GUI="gui.per calc.per form-gui.per gui.4gl calc.4gl hello-gui.4gl \
+		multi.per radio.per widget.per"
+
+
+#Source: @IS_SOURCE@\tools\test\make.bat; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\testmenu.menu; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\file.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\form.per; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\hello.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\hello_db.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\hello2.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\helpfile.msg; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\pdf_report.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\test_build.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\test_select.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\testmenu.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\assoc2.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\testmpz.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\gui\gui.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\gui\calc.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\gui\form-gui.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\gui\gui.4gl; DestDir: {app}\tools\test\gui; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\gui\calc.4gl; DestDir: {app}\tools\test\gui; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\gui\hello-gui.4gl; DestDir: {app}\tools\test\gui; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\gui\multi.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\gui\radio.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
+#Source: @IS_SOURCE@\tools\test\gui\widget.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
+
+
+    COUNTER=0
+	for FILE in $ALL_EXAMP ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/$FILE'"
+		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\$FILE; DestDir: {app}\tools\test; Components: 4GLexamples'"
+	done
+
+	for FILE in $ALL_EXAMP_GUI ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "EXAMPFILE_$COUNTER='$INST_BASE/tools/test/gui/$FILE'"
+		eval "ISEXAMPFILE_$COUNTER='Source: $IS_SOURCE\tools\test\gui\$FILE; DestDir: {app}\tools\test\gui; Components: 4GLexamples'"
+	done
+
+#Now add Makefile to be used for installation only:
+ALL_EXAMP="$ALL_EXAMP Makefile"
+ALL_EXAMP_GUI="$ALL_EXAMP_GUI Makefile"
+
+## ==================================================================
+##       Define permanent list of Make files to build/install
+## ==================================================================
+
+INCL_MAKE="Makefile-common Makefile-install.mki"
+
+ALL_MAKEFILE="tools/test/Makefile tools/test/gui/Makefile Makefile"
+
+#;Source: @IS_SOURCE@\Makefile; DestDir: {app}; Components: Make
+#Source: @IS_SOURCE@\tools\test\gui\Makefile; DestDir: {app}\tools\test\gui; Components: Make
+#Source: @IS_SOURCE@\tools\test\Makefile; DestDir: {app}\tools\test; Components: Make
+#Source: @IS_SOURCE@\incl\Makefile-common; DestDir: {app}\incl; Components: Make
+#Source: @IS_SOURCE@\incl\Makefile-install.mki; DestDir: {app}\incl; Components: Make
+
+    COUNTER=0
+	for FILE in $ALL_MAKEFILE ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "MAKEFILE_$COUNTER='$INST_BASE/$FILE'"
+		FILEDIR=`dirname $FILE`
+		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE\$FILE; DestDir: {app}\$FILEDIR; Components: Make'"
+	done
+
+	for FILE in $INCL_MAKE ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "MAKEFILE_$COUNTER='$INST_BASE/incl/$FILE'"
+		eval "ISINCFILE_$COUNTER='Source: $IS_SOURCE\incl\$FILE; DestDir: {app}\incl; Components: Make'"
+	done
+
+
+## ==================================================================
+##       Define permanent list of documentation files to build/install
+## ==================================================================
+
+ALL_DOC="changelog.txt COPYING CREDITS LICENSE aubit4gl.ico"
+
+if test "$COMSPEC" != ""; then
+	ALL_DOC="$ALL_DOC README-Windows.txt"
+fi
+
+ROOT_FILES_DOC="README.txt"
+
+#; Run-time files
+#Source: @IS_SOURCE@\docs\aubit4gl.ico; DestDir: {app}\docs; Components: runtime
+#Source: @IS_SOURCE@\docs\changelog.txt; DestDir: {app}\docs; Components: runtime
+#Source: @IS_SOURCE@\docs\COPYING; DestDir: {app}\docs; Components: runtime
+#Source: @IS_SOURCE@\docs\CREDITS; DestDir: {app}\docs; Components: runtime
+#Source: @IS_SOURCE@\docs\LICENSE; DestDir: {app}\docs; Components: runtime
+
+#Source: @IS_SOURCE@\README.txt; DestDir: {app}; Components: help
+#Source: @IS_SOURCE@\tools\cygwin\readme-runtime.html; DestDir: {app}; Components: help
+
+    COUNTER=0
+	for FILE in $ALL_DOC ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "DOCFILE_$COUNTER='%doc $INST_BASE/docs/$FILE'"
+		eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\docs\$FILE; DestDir: {app}\docs; Components: runtime'"
+	done
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "DOCFILE_$COUNTER='%doc $INST_BASE/$ROOT_FILES_DOC'"
+	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\$ROOT_FILES_DOC; DestDir: {app}; Components: help'"
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "ISDOCFILE_$COUNTER='Source: $IS_SOURCE\tools\cygwin\readme-runtime.html; DestDir: {app}; Components: help'"
+
+## ==================================================================
+##       Define permanent list of conversion files to build/install
+## ==================================================================
+
+#FIXME: still to be added to RPM and Windows installers.
+CONVSQL_FILES="README.txt INFORMIX-ORACLE.cnv ORACLE-INFORMIX.cnv \
+		INFORMIX-POSTGRESQL.cnv POSTGRESQL-INFORMIX.cnv"
+
+    COUNTER=0
+	for FILE in $CONVSQL_FILES ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "CONVFILE_$COUNTER='%doc $INST_BASE/etc/convertsql/$FILE'"
+		eval "ISCONVFILE_$COUNTER='Source: $IS_SOURCE\etc\conversql\$FILE; DestDir: {app}\etc\convertsql; Components: runtime'"
+	done
+
+
+
+## ==================================================================
+##       Define permanent list of configuration files to build/install
+## ==================================================================
+
+ALL_CONF="$INST_BASE/configure $INST_BASE/etc/config/config.guess \
+		$INST_BASE/etc/config/config.sub $INST_BASE/etc/config/install-sh \
+		$INST_BASE/etc/config/missing $INST_BASE/etc/config/mkinstalldirs"
+
+#ROOT_FILES_CONF="$INST_BASE/install.sh"
+ROOT_FILES_CONF="install.sh"
+ETC_FILES="odbc.ini.example"
+
+    COUNTER=0
+	for FILE in $ALL_CONF ; do
+		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+		eval "CONFFILE_$COUNTER='$FILE'"
+	done
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "CONFFILE_$COUNTER='%config $INST_BASE/etc/$ETC_FILES'"
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "CONFFILE_$COUNTER='%config $INST_BASE/etc/aubitrc-bin.in'"
+
+
+ROOT_FILES="$ROOT_FILES_DOC $ROOT_FILES_CONF" # Makefile
+
+EXTRAFILE_1=$aubitdir/tools/cygwin/run.exe
+EXTRAFILE_2=$aubitdir/tools/metrics_4gl/4GL_metrics.cgi
 
 ## ==================================================================
 ##                              Debugging
@@ -1157,10 +2088,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	if test "$DOXYSEARCH" != "no" ; then
 		DOXY_BIN_ABSPATH=`dirname $DOXYSEARCH`
     fi
-
-	# dot tool is part of Graphviz, a graph visualization toolkit from AT&T
-	# and Lucent Bell Labs. One of DoxyGen options
-
+	
 	if test "$with_dot" != "no"; then
 		if test "$with_dot" != "yes"; then
 			old_PATH="$PATH"
@@ -1308,19 +2236,36 @@ fi
 
     
 PHP_CONFIGURE_PART(Checking for C interpreter:)
-	#FIXME: despite listing all this paths, cint executable will only be found
-    #if it's in the PATH - no idea why
+	
+AC_ARG_WITH(cint,
+[  --with-cint[=DIR]         Include CINT support.  DIR is the Cint base
+                          install directory, defaults to /usr/local.],
+[
 
-	save_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
-	LD_LIBRARY_PATH="/usr/local/cint:/opt/cint:$LD_LIBRARY_PATH"
+	if test "$withval" != "no"; then
+	
+		#FIXME: despite listing all this paths, cint executable will only be found
+	    #if it's in the PATH - no idea why
 
-	save_PATH=$PATH
-	PATH=/opt/cint:$PATH
+		save_LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
+		LD_LIBRARY_PATH="/usr/local/cint:/opt/cint:$LD_LIBRARY_PATH"
 
-	AC_PATH_PROG(CINT, cint, no, $PATH /usr/local/cint /opt/cint)
+		save_PATH=$PATH
+		PATH=/opt/cint:$PATH
 
-	LD_LIBRARY_PATH="$save_LD_LIBRARY_PATH"
-    PATH="$save_PATH"
+		AC_PATH_PROG(CINT, cint, no, $PATH /usr/local/cint /opt/cint)
+
+		LD_LIBRARY_PATH="$save_LD_LIBRARY_PATH"
+		PATH="$save_PATH"
+
+    else
+	  AC_MSG_RESULT(--with-cint disabled)
+    fi
+
+],[
+  AC_MSG_RESULT(--with-cint not specified)
+])
+
 
 ## ==================================================================
 ##                 Determine RPM build location
@@ -1361,65 +2306,113 @@ esac
 ## ==================================================================
 
 PHP_CONFIGURE_PART(Checking for 4Js BDL / Informix D4GL:)
-AC_PATH_PROG(FJS_PCOMPILER, fglcomp, no)
-AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
+AC_ARG_WITH(fourj,
+[  --with-fourj[=DIR]        Include 4Js compiler support.  DIR is the 4Js base
+                          install directory, defaults to xx.],
+[
+	if test "$withval" != "no"; then
+		AC_PATH_PROG(FJS_PCOMPILER, fglcomp, no)
+		AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+  AC_MSG_RESULT(--with-fourj not specified)
+])
+
 
 PHP_CONFIGURE_PART(Checking for Querix compiler:)
-#4gl code compiler have same name as Plexus  = fglc so we look for Form Compiler
-AC_PATH_PROG(QUERIX_COMP, fmpc, no)
+AC_ARG_WITH(hydra,
+[  --with-hydra[=DIR]        Include Querix Hydra compiler support.  DIR is the
+                          Querix base install directory, defaults to xx.],
+[
+	if test "$withval" != "no"; then
+		#4gl code compiler have same name as Plexus  = fglc so we look for Form Compiler
+		AC_PATH_PROG(QUERIX_COMP, fmpc, no)
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+  AC_MSG_RESULT(--with-hydra not specified)
+])
+
 
 
 if test "$cygwin" = "1" ; then
 	PHP_CONFIGURE_PART(Checking for Plexus XDP AD32 - FGLC Compiler:)
-	#same name as Querix:
-	#AC_PATH_PROG(PLEXUS_COMP, fglc, no)
-	AC_PATH_PROG(PLEXUS_COMP, mkesq, no)
+	AC_ARG_WITH(plexus,
+	[  --with-plexus[=DIR]       Include Plexus compiler support.  DIR is the Plexus
+                          base install directory, defaults to xx.],
+	[
+		if test "$withval" != "no"; then
+			#same name as Querix:
+			#AC_PATH_PROG(PLEXUS_COMP, fglc, no)
+			AC_PATH_PROG(PLEXUS_COMP, mkesq, no)
+		else
+			AC_MSG_RESULT(disabled)
+		fi
+	],[
+	  AC_MSG_RESULT(--with-plexus not specified)
+	])
 else
 	PHP_CONFIGURE_PART(Checking for Classic Informix 4gl P-code:)
-	AC_PATH_PROG(I4GL_PCOMPILER, fglpc, no)
-	AC_PATH_PROG(I4GL_PRUNTIME, fglgo, no)
+	AC_ARG_WITH(i4gl,
+	[  --with-i4gl[=DIR]         Include Informix compiler support.  DIR is Informix
+                          base install directory, defaults to xx.],
+	[
+		if test "$withval" != "no"; then
 
-    if test "$I4GL_PCOMPILER" != "no"; then
-		#For 4glWorks: try to understand whether this is 4gl4 or 4gl6, as you
-		#have to free cursors & statements differently
-		AC_MSG_CHECKING(fglpc version)
-		set `fglpc -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
-		if test "$1" != ""; then
-			#if test "$1" = "4" -a "$2" -lt "50"; then
-            if test "$1" -lt "5"; then
-				I4GL_PCOMPILER_VER=4
-				AC_MSG_RESULT($1.$2.$3 (series 4 or earler))
-	        else
-				I4GL_PCOMPILER_VER=6
-				AC_MSG_RESULT($1.$2.$3 (series 6 or later))
-	        fi
-        else
-			AC_MSG_ERROR(Cannot get fglpc version.)
-        fi
-    fi
+			AC_PATH_PROG(I4GL_PCOMPILER, fglpc, no)
+			AC_PATH_PROG(I4GL_PRUNTIME, fglgo, no)
 
-	PHP_CONFIGURE_PART(Checking for Classic Informix 4gl C-code:)
-	AC_PATH_PROG(I4GL_CCOMPILER, c4gl, no)
+		    if test "$I4GL_PCOMPILER" != "no"; then
+				#For 4glWorks: try to understand whether this is 4gl4 or 4gl6, as you
+				#have to free cursors & statements differently
+				AC_MSG_CHECKING(fglpc version)
+				set `fglpc -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+				if test "$1" != ""; then
+					#if test "$1" = "4" -a "$2" -lt "50"; then
+		            if test "$1" -lt "5"; then
+						I4GL_PCOMPILER_VER=4
+						AC_MSG_RESULT($1.$2.$3 (series 4 or earler))
+			        else
+						I4GL_PCOMPILER_VER=6
+						AC_MSG_RESULT($1.$2.$3 (series 6 or later))
+			        fi
+		        else
+					AC_MSG_ERROR(Cannot get fglpc version.)
+		        fi
+		    fi
 
-    if test "$I4GL_CCOMPILER" != "no"; then
-	#For 4glWorks: try to understand if the product is esql/c 5+
-	#aware, or is a special case, ie c4gl 4.x or is not esql/c
-	#aware in any way, shape or form (ie an rds only shop)
-		AC_MSG_CHECKING(c4gl version)
-		set `c4gl -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
-		if test "$1" != ""; then
-			#if test "$1" = "4" -a "$2" -lt "50"; then
-            if test "$1" -lt "5"; then
-				I4GL_CCOMPILER_VER=4
-				AC_MSG_RESULT($1.$2.$3 (series 4 or earler))
-	        else
-				I4GL_CCOMPILER_VER=6
-				AC_MSG_RESULT($1.$2.$3 (series 6 or later))
-	        fi
-        else
-			AC_MSG_ERROR(Cannot get c4gl version.)
-        fi
-    fi
+			PHP_CONFIGURE_PART(Checking for Classic Informix 4gl C-code:)
+			AC_PATH_PROG(I4GL_CCOMPILER, c4gl, no)
+
+		    if test "$I4GL_CCOMPILER" != "no"; then
+			#For 4glWorks: try to understand if the product is esql/c 5+
+			#aware, or is a special case, ie c4gl 4.x or is not esql/c
+			#aware in any way, shape or form (ie an rds only shop)
+				AC_MSG_CHECKING(c4gl version)
+				set `c4gl -v 2>/dev/null | head -1|sed -e 's/^INFORMIX-4GL Version //' -e 's/\./ /g'`
+				if test "$1" != ""; then
+					#if test "$1" = "4" -a "$2" -lt "50"; then
+		            if test "$1" -lt "5"; then
+						I4GL_CCOMPILER_VER=4
+						AC_MSG_RESULT($1.$2.$3 (series 4 or earler))
+			        else
+						I4GL_CCOMPILER_VER=6
+						AC_MSG_RESULT($1.$2.$3 (series 6 or later))
+			        fi
+		        else
+					AC_MSG_ERROR(Cannot get c4gl version.)
+		        fi
+		    fi
+		else
+			AC_MSG_RESULT(disabled)
+		fi
+	],[
+	  AC_MSG_RESULT(--with-i4gl not specified)
+	])
+
 fi
 
 ## ==================================================================
@@ -1430,58 +2423,64 @@ fi
 #install, FGLDOC web server support
 PHP_CONFIGURE_PART(Checking for Web server:)
 
-AC_PATH_PROG(APACHECTL, apachectl, no)
-AC_PATH_PROG(HTTPD, httpd, no)
+AC_ARG_WITH(httpd,
+[  --with-httpd[=DIR]        Include web server support.  DIR is the xx base
+                          install directory, defaults to xx.],
+[
+	if test "$withval" != "no"; then
+		AC_PATH_PROG(APACHECTL, apachectl, no)
+		AC_PATH_PROG(HTTPD, httpd, no)
 
-AC_MSG_CHECKING(Web server support)
-if test "$APACHECTL" != "no"; then
-	AC_MSG_RESULT(Apache)
-else
-	if test "$HTTPD" != "no"; then
-		AC_MSG_RESULT(httpd)
-    else
-		AC_MSG_RESULT(no)
-    fi
-fi
-
-#If we have web server:
-
-	if test "$APACHECTL" != "no"; then
-		AC_MSG_CHECKING(Apache configuration file)
-		if test -f /etc/httpd/conf/httpd.conf; then
-			APACHE_CONF=/etc/httpd/conf/httpd.conf
-			AC_MSG_RESULT($APACHE_CONF)
+		AC_MSG_CHECKING(Web server support)
+		if test "$APACHECTL" != "no"; then
+			AC_MSG_RESULT(Apache)
 		else
-			AC_MSG_RESULT(no)
+			if test "$HTTPD" != "no"; then
+				AC_MSG_RESULT(httpd)
+		    else
+				AC_MSG_RESULT(no)
+		    fi
 		fi
+
+		#If we have web server:
+
+			if test "$APACHECTL" != "no"; then
+				AC_MSG_CHECKING(Apache configuration file)
+				if test -f /etc/httpd/conf/httpd.conf; then
+					APACHE_CONF=/etc/httpd/conf/httpd.conf
+					AC_MSG_RESULT($APACHE_CONF)
+				else
+					AC_MSG_RESULT(no)
+				fi
+			fi
+
+			#FIXME: DO we have JSP needed for FGLDOC?
+
+		    if test "$APACHE_CONF" != ""; then
+				AC_MSG_CHECKING(Web server paths)
+				grep ScriptAlias $APACHE_CONF > /tmp/tmp_config_.tmp
+				CGI_DIR=`grep -v \# /tmp/tmp_config_.tmp | grep cgi-bin | awk '{print $3}' | sed -e 's/"//g'`
+				WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | head -1 | awk '{print $2}' | sed -e 's/"//g'`
+				AC_MSG_RESULT(OK ($WWW_DOCUMENT_ROOT)($CGI_DIR))
+		    fi
+
+
+			if test "$with_www_name" != "" ; then
+				WWW_HOST_NAME=$with_www_name
+		    else
+				WWW_HOST_NAME=localhost
+		    fi
+	else
+		AC_MSG_RESULT(disabled)
 	fi
-
-	#FIXME: DO we have JSP needed for FGLDOC?
-
-    if test "$APACHE_CONF" != ""; then
-		AC_MSG_CHECKING(Web server paths)
-		grep ScriptAlias $APACHE_CONF > /tmp/tmp_config_.tmp
-		CGI_DIR=`grep -v \# /tmp/tmp_config_.tmp | grep cgi-bin | awk '{print $3}' | sed -e 's/"//g'`
-		WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | head -1 | awk '{print $2}' | sed -e 's/"//g'`
-		AC_MSG_RESULT(OK ($WWW_DOCUMENT_ROOT)($CGI_DIR))
-    fi
-
-
-	if test "$with_www_name" != "" ; then
-		WWW_HOST_NAME=$with_www_name
-    else
-		WWW_HOST_NAME=localhost
-    fi
+],[
+  AC_MSG_RESULT(--with-httpd not specified)
+])
 
 
 ## ==================================================================
 ##                 Checks for SAP DB ESQL/C (pre-compiler) support
 ## ==================================================================
-
-#force this check even if not specified on command line:
-if test "$with_sapdb" = ""; then
-	with_sapdb=yes
-fi
 
 if test "$SAPDBROOT" = ""; then
 	SAPDBROOT=/opt/sapdb
@@ -1576,23 +2575,79 @@ AC_ARG_WITH(sapdb,
 	else
         SAPDB_ESQLC="no"
 		SAPDBDIR=
-		AC_MSG_RESULT(no)
+		AC_MSG_RESULT(disabled)
 	fi
 ],[
   AC_MSG_RESULT(--with-sapdb not specified)
 ])
+
+
+## ==================================================================
+##                 Checks for Querix ESQL/C support
+## ==================================================================
+
+PHP_CONFIGURE_PART(Checking for Querix ESQL/C support:)
+
+AC_ARG_WITH(esqlc,
+[  --with-esqlc[=DIR]        Include Querix ESQL/C support.  DIR is the Querix
+                          base install directory, defaults to
+                          ${QUERIXDIR:-nothing}.],
+[
+	if test "$withval" != "no"; then
+
+			#Querix ESQL/C compiler from Hydra 4:
+			AC_PATH_PROG(Q_ESQLC, esqlc, no)
+
+			#Qerix flags when using MSVC:
+			#CFLAGS=/nologo -DWINNT -Dgetenv=QXgetenv -MD -O2 -Y- $(INCLUDES)
+			#CFLAGS_DEBUG=/nologo -DWINNT -Dgetenv=QXgetenv -MD - Zi -GX -Od -Y- $(INCLUDES)
+
+			#FGL_LIBS="$(QUERIXDIR)\lib\libfgl.lib"
+			#FGL_LIBS_DEBUG="$(QUERIXDIR)\lib\libfgld.lib"
+			#SQL_LIB="$(QUERIXDIR)\lib\libsqlc.lib"
+			#SQL_LIB_DEBUG="$(QUERIXDIR)\lib\libsqlcd.lib"
+			#LINK_FLAGS=/nologo /subsystem:console /incremental:yes /machine:x86
+
+			#QX_LIBS=$(FGL_LIBS) $(SQL_LIB) $(LINK_FLAGS)
+			#QX_LIBS_DEBUG=$(FGL_LIBS_DEBUG) $(SQL_LIB_DEBUG) $(LINK_FLAGS) /debug
+
+
+			if test "$cygwin" = "1"; then
+				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
+				AC_PATH_PROG(MSVC_COMP, cl, no)
+				AC_PATH_PROG(MSVC_LINK, link, no)
+				if test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
+				then
+	                ESQLCC_OK="OK"
+                    MSVC_LINK="$MSVC_LINK /nologo"
+				fi
+			else
+                #on non-Windows platforms, native C compiler will do:
+				ESQLCC_OK="OK"
+			fi
+
+			if test "$Q_ESQLC" != "no" && test "$ESQLCC_OK" = "OK";
+			then
+				AC_MSG_RESULT(yes)
+            else
+				AC_MSG_RESULT(esqlc not in path or no compatible C compiler)
+                Q_ESQLC=no
+			fi
+
+    else
+	  AC_MSG_RESULT(disabled)
+    fi
+],[
+  AC_MSG_RESULT(--with-esqlc not specified)
+])
+
+
 
 #<This block was compied from PHP 3.x configure.in -------------------->
 
 ## ==================================================================
 ##                 Checks for Informix ESQL/C support
 ## ==================================================================
-
-#force this check even if not specified on command line:
-if test "$with_informix" = ""; then
-	with_informix=yes
-	force_informix=yes
-fi
 
 PHP_CONFIGURE_PART(Checking for Informix ESQL/C support:)
 
@@ -1630,9 +2685,6 @@ AC_ARG_WITH(informix,
 			#First check if we have esql installed at all:
 			AC_PATH_PROG(IFMX_ESQLC, esql, no)
 
-            #Querix ESQL/C compiler from Hydra 4:
-			AC_PATH_PROG(Q_ESQLC, esqlc, no)
-
 			if test "$cygwin" = "1"; then
 				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
 				AC_PATH_PROG(MSVC_COMP, cl, no)
@@ -1641,19 +2693,6 @@ AC_ARG_WITH(informix,
 				then
 	                ESQLCC_OK="OK"
                     MSVC_LINK="$MSVC_LINK /nologo"
-#Qerix flags when using MSVC:
-#CFLAGS=/nologo -DWINNT -Dgetenv=QXgetenv -MD -O2 -Y- $(INCLUDES)
-#CFLAGS_DEBUG=/nologo -DWINNT -Dgetenv=QXgetenv -MD - Zi -GX -Od -Y- $(INCLUDES)
-
-#FGL_LIBS="$(QUERIXDIR)\lib\libfgl.lib"
-#FGL_LIBS_DEBUG="$(QUERIXDIR)\lib\libfgld.lib"
-#SQL_LIB="$(QUERIXDIR)\lib\libsqlc.lib"
-#SQL_LIB_DEBUG="$(QUERIXDIR)\lib\libsqlcd.lib"
-#LINK_FLAGS=/nologo /subsystem:console /incremental:yes /machine:x86
-
-#QX_LIBS=$(FGL_LIBS) $(SQL_LIB) $(LINK_FLAGS)
-#QX_LIBS_DEBUG=$(FGL_LIBS_DEBUG) $(SQL_LIB_DEBUG) $(LINK_FLAGS) /debug
-
 				fi
 			else
                 #on non-Windows platforms, native C compiler will do:
@@ -1716,7 +2755,7 @@ AC_ARG_WITH(informix,
 		fi
 	else
 		INFORMIXDIR=
-		IFX_C_MAKE='touch functions/ifx.c'
+		#IFX_C_MAKE='touch functions/ifx.c'
 		AC_MSG_RESULT(no)
 	fi
 ],[
@@ -1740,10 +2779,6 @@ AC_ARG_WITH(informix,
 ## ==================================================================
 
 
-#force this check even if not specified on command line:
-if test "$with_pgsql" = ""; then
-	with_pgsql=yes
-fi
 
 PHP_CONFIGURE_PART(Checking for PostgresSQL library support:)
 AC_ARG_WITH(pgsql,
@@ -1831,16 +2866,12 @@ AC_ARG_WITH(pgsql,
 ##                 Checks for PostgreSQL ESQL/C pre-compiler
 ## ==================================================================
 
-#force this check even if not specified on command line:
-if test "$with_ecpg" = ""; then
-	with_ecpg=yes
-fi
 
 PHP_CONFIGURE_PART(Checking for PostgresSQL ESQL pre-compiler:)
 AC_ARG_WITH(ecpg,
-[  --with-ecpg[=DIR]        Include PostgresSQL ESQL/C pre-compiler support.
+[  --with-ecpg[=DIR]         Include PostgresSQL ESQL/C pre-compiler support.
                           DIR is the PostgresSQL ecpg base install directory,
-						  defaults to /usr.],
+                          defaults to /usr.],
 [
 #echo "withval=$withval"
 
@@ -1982,15 +3013,11 @@ AC_ARG_WITH(ecpg,
 	old_CFLAGS="$CFLAGS"
     old_PATH="$PATH"
 
-	#force this check even if not specified on command line:
-	if test "$with_sqlite" = ""; then
-		with_sqlite=yes
-	fi
 
 	PHP_CONFIGURE_PART(Checking for SQLite library support:)
 	AC_ARG_WITH(sqlite,
-	[  --with-sqlite[=DIR]        Include SQLite support.  DIR is the SQLite
-	                          base install directory, defaults to /usr.],
+	[  --with-sqlite[=DIR]       Include SQLite support.  DIR is the SQLite
+                          base install directory, defaults to /usr.],
 	[
         if test "$withval" != "no"; then
 
@@ -2062,21 +3089,13 @@ AC_ARG_WITH(ecpg,
 	old_LDFLAGS="$LDFLAGS"
 	old_CFLAGS="$CFLAGS"
 
-	#force this check even if not specified on command line:
-	if test "$with_sqliteodbc" = ""; then
-		#No point in making directly linked ODBC plug-ins on Windows - use odbc32
-		if test "$cygwin" != "1" ; then
-			with_sqliteodbc=yes
-        fi
-	fi
-
     #NOTE: sqlite ODBC driver needs iODBC or unixODB driver manager.
     #-lsqliteodbc will be linked with -liodbcinst or -lodbcinst
 
 	PHP_CONFIGURE_PART(Checking for SQLite ODBC library support:)
 	AC_ARG_WITH(sqliteodbc,
-	[  --with-sqliteodbc[=DIR]        Include SQLite ODBC support.  DIR is the SQLite
-	                          odbc base install directory, defaults to /usr/local/lib.],
+	[  --with-sqliteodbc[=DIR]   Include SQLite ODBC support.  DIR is the SQLite odbc
+                          base install directory, defaults to /usr/local/lib.],
 	[
 
 		if test "$withval" != "no"; then
@@ -2180,81 +3199,98 @@ AC_ARG_WITH(ecpg,
 ##                 Checks for Informix ODBC driver
 ## ==================================================================
 
-#FIXME: use: AC_ARG_WITH here, this is non-standard!
+	PHP_CONFIGURE_PART(Checking for Informix ODBC driver:)
 
-PHP_CONFIGURE_PART(Checking for Informix ODBC driver:)
+	AC_ARG_WITH(ifxodbc,
+	[  --with-ifxodbc[=DIR]      Include Informix ODBC support.  DIR is the Informix
+                          base install directory, defaults to $INFOMIXDIR.],
+	[
 
-if test "$cygwin" = "1"; then
-
-		#No point in making directly linked ODBC plug-ins on Windows - use odbc32
-        echo "Skipped - Windows"
-
-		#FIXME: this is not working, probably because it is a DLL and
-        #name does not start with "libxxxxx", or because there are no .a or .def files
-        #available, and linking cannot be done without them with a .dll file on Windows
-        #Anyway, directly linked ODBC Aubit plig-ins are only usefull when there is no
-        #ODBC manager present on machine, and all Windows installation have it, so just use
-        #Informix ODBC via MS manager plug-in (odbc32)...
-
-		#IVIF7912.DLL      INTERSOLV Informix ODBC driver - WIN
-        #this should be in WINDOWSDIR/system32 - but it's DLL !!!!
-		#AC_CHECK_LIB([ivif7912], [main])
-
-		#only two dll's in csdk280_tc1 - none have lib prefix
-		#AC_CHECK_LIB([clidll], [main])
-		#AC_CHECK_LIB([iclit09b], [main])
-else
-		#Shared drivers for use with ODBC managers (?)
-		#[INFORMIX 2.8 32-BIT]
-		#Driver=/extra/informix/lib/cli/iclis09a.so
-		#AC_CHECK_LIB([iclis09a], [main])
-		# FIXME: Replace `main' with a function in `-lxxxx':
-		#[INFORMIX 3.3 32-BIT]
-		#Driver=/extra/informix/lib/cli/iclis09b.so
-		#AC_CHECK_LIB([iclis09b], [main])
-
-		old_LIBS=$LIBS
-		old_LDFLAGS=$LDFLAGS
-		LDFLAGS="$LDFLAGS -L$INFORMIXDIR/lib/cli -L$INFORMIXDIR/lib/esql -Xlinker -rpath -Xlinker $INFORMIXDIR/lib/esql"
-		# FIXME: Replace `main' with a function in `-lifcli':
-		AC_CHECK_LIB([ifcli], [main])
-		LIBS=$old_LIBS
-		LDFLAGS=$old_LDFLAGS
+		if test "$withval" != "no"; then
+			if test "$withval" = "yes"; then
+				withval=$INFORMIXDIR
+            fi
 
 
-	if test "$ac_cv_lib_ifcli_main" = "yes"; then
-		HAVE_IFXODBC=yes
+			if test "$cygwin" = "1"; then
 
-		case $LD_LIBRARY_PATH in
-			*$INFORMIXDIR/lib/cli*)
-    	        ;;
-			*)
-				TMP=`cat /etc/ld.so.conf | grep $INFORMIXDIR/lib/cli`
-                if test "$TMP" = ""; then
-					WARN_LD_LIBRARY_PATH=1
-					WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IFXODBC"
-					ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
-                fi
-				;;
-		esac
-		INFORMIXODBC_WARNING=1
-	else
-		old_LIBS=$LIBS
-		old_LDFLAGS=$LDFLAGS
-		LDFLAGS="$LDFLAGS -L$INFORMIXDIR/lib/cli -L$INFORMIXDIR/lib/esql -Xlinker -rpath -Xlinker $INFORMIXDIR/lib/esql"
-		# FIXME: Replace `main' with a function in `-lifcli':
-		#		ivif7912.xx           INTERSOLV Informix ODBC driver - UNIX
-		#        Driver=/opt/informix/lib/ivinf7912.so
-		AC_CHECK_LIB([ivif7912], [main])
-		LIBS=$old_LIBS
-		LDFLAGS=$old_LDFLAGS
+				#No point in making directly linked ODBC plug-ins on Windows - use odbc32
+		        echo "Skipped - Windows"
 
-		if test "$ac_cv_lib_ivif7912_main" = "yes"; then
-			HAVE_IS_IFXODBC=yes
-			INFORMIXODBC_WARNING=1
-        fi
-	fi
-fi
+				#FIXME: this is not working, probably because it is a DLL and
+		        #name does not start with "libxxxxx", or because there are no .a or .def files
+		        #available, and linking cannot be done without them with a .dll file on Windows
+		        #Anyway, directly linked ODBC Aubit plig-ins are only usefull when there is no
+		        #ODBC manager present on machine, and all Windows installation have it, so just use
+		        #Informix ODBC via MS manager plug-in (odbc32)...
+
+				#IVIF7912.DLL      INTERSOLV Informix ODBC driver - WIN
+		        #this should be in WINDOWSDIR/system32 - but it's DLL !!!!
+				#AC_CHECK_LIB([ivif7912], [main])
+
+				#only two dll's in csdk280_tc1 - none have lib prefix
+				#AC_CHECK_LIB([clidll], [main])
+				#AC_CHECK_LIB([iclit09b], [main])
+			else
+
+				#Shared drivers for use with ODBC managers (?)
+				#[INFORMIX 2.8 32-BIT]
+				#Driver=/extra/informix/lib/cli/iclis09a.so
+				#AC_CHECK_LIB([iclis09a], [main])
+				# FIXME: Replace `main' with a function in `-lxxxx':
+				#[INFORMIX 3.3 32-BIT]
+				#Driver=/extra/informix/lib/cli/iclis09b.so
+				#AC_CHECK_LIB([iclis09b], [main])
+
+				old_LIBS=$LIBS
+				old_LDFLAGS=$LDFLAGS
+				LDFLAGS="$LDFLAGS -L$INFORMIXDIR/lib/cli -L$INFORMIXDIR/lib/esql -Xlinker -rpath -Xlinker $INFORMIXDIR/lib/esql"
+				# FIXME: Replace `main' with a function in `-lifcli':
+				AC_CHECK_LIB([ifcli], [main])
+				LIBS=$old_LIBS
+				LDFLAGS=$old_LDFLAGS
+
+
+				if test "$ac_cv_lib_ifcli_main" = "yes"; then
+					HAVE_IFXODBC=yes
+
+					case $LD_LIBRARY_PATH in
+						*$INFORMIXDIR/lib/cli*)
+			    	        ;;
+						*)
+							TMP=`cat /etc/ld.so.conf | grep $INFORMIXDIR/lib/cli`
+			                if test "$TMP" = ""; then
+								WARN_LD_LIBRARY_PATH=1
+								WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IFXODBC"
+								ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
+			                fi
+							;;
+					esac
+					INFORMIXODBC_WARNING=1
+				else
+					old_LIBS=$LIBS
+					old_LDFLAGS=$LDFLAGS
+					LDFLAGS="$LDFLAGS -L$INFORMIXDIR/lib/cli -L$INFORMIXDIR/lib/esql -Xlinker -rpath -Xlinker $INFORMIXDIR/lib/esql"
+					# FIXME: Replace `main' with a function in `-lifcli':
+					#		ivif7912.xx           INTERSOLV Informix ODBC driver - UNIX
+					#        Driver=/opt/informix/lib/ivinf7912.so
+					AC_CHECK_LIB([ivif7912], [main])
+					LIBS=$old_LIBS
+					LDFLAGS=$old_LDFLAGS
+
+					if test "$ac_cv_lib_ivif7912_main" = "yes"; then
+						HAVE_IS_IFXODBC=yes
+						INFORMIXODBC_WARNING=1
+			        fi
+				fi
+			fi
+		else
+			AC_MSG_RESULT(--with-ifxodbc disabled)
+		fi
+
+	],[
+	  AC_MSG_RESULT(--with-ifxodbc not specified)
+	])
 
 
 ## ==================================================================
@@ -2288,14 +3324,6 @@ fi
 #        $(CC) -c -DSQLODBC $(CCFLAGS) $(UNDEF) $(DEFINES) $(INCL) $<
 
 PHP_CONFIGURE_PART(Checking for SAP DB ODBC driver support:)
-
-#force this check even if not specified on command line:
-if test "$with_sapodbc" = ""; then
-	#No point in making directly linked ODBC plug-ins on Windows - use odbc32
-	if test "$cygwin" != "1" ; then
-		with_sapodbc=yes
-    fi
-fi
 
 AC_ARG_WITH(sapodbc,
 [  --with-sapodbc[=DIR]      Include SAP DB ODBC driver support.  DIR is the base
@@ -2378,14 +3406,6 @@ AC_ARG_WITH(sapodbc,
 ## ==================================================================
 
 PHP_CONFIGURE_PART(Checking for PostgreSQL ODBC driver support:)
-
-#force this check even if not specified on command line:
-if test "$with_pgodbc" = ""; then
-	#No point in making directly linked ODBC plug-ins on Windows - use odbc32
-	if test "$cygwin" != "1" ; then
-		with_pgodbc=yes
-    fi
-fi
 
 AC_ARG_WITH(pgodbc,
 [  --with-pgodbc[=DIR]       Include PostgreSQL ODBC driver support.  DIR is the
@@ -2490,14 +3510,6 @@ AC_ARG_WITH(pgodbc,
 ##                 Checks for iODBC ODBC manager support
 ## ==================================================================
 
-#force this check even if not specified on command line:
-if test "$with_iodbc" = ""; then
-	#No point in making directly linked ODBC plug-ins on Windows - use odbc32
-	if test "$cygwin" != "1" ; then
-		with_iodbc=yes
-    fi
-fi
-
 PHP_CONFIGURE_PART(Checking for iODBC support:)
 
 
@@ -2555,14 +3567,6 @@ AC_ARG_WITH(iodbc,
 
 
 PHP_CONFIGURE_PART(Checking for unixODBC support:)
-
-#force this check even if not specified on command line:
-if test "$with_unixodbc" = ""; then
-	#No point in making directly linked ODBC plug-ins on Windows - use odbc32
-	if test "$cygwin" != "1" ; then
-		with_unixodbc=yes
-    fi
-fi
 
 AC_ARG_WITH(unixodbc,
 [  --with-unixodbc[=DIR]     Include unixODBC support.  DIR is the unixODBC base
@@ -2743,11 +3747,6 @@ fi
 #AM_PATH_GTKMM(0.9.5,, [AC_MSG_ERROR([GTK not in path])])
 
 PHP_CONFIGURE_PART(Checking for GTK+ GUI support:)
-
-#force this check even if not specified on command line:
-if test "$with_gtk" = ""; then
-		with_gtk=yes
-fi
 
 AC_ARG_WITH(gtk,
 [  --with-gtk[=DIR]          Include GTK+ GUI support.  DIR is the GTK+ base
@@ -3012,12 +4011,6 @@ AC_MSG_RESULT($GTKBUILD ($GTK_NAME $GDK_NAME $GLIB_NAME))
 
 PHP_CONFIGURE_PART(Checking for Jabber support:)
 
-
-#force this check even if not specified on command line:
-if test "$with_iksemel" = ""; then
-	with_iksemel=yes
-fi
-
 AC_ARG_WITH(iksemel,
 [  --with-iksemel[=DIR]      Include Jabber/iksemel support.  DIR is the iksemel
                           install directory, defaults to /usr/local.],
@@ -3067,11 +4060,6 @@ AC_ARG_WITH(iksemel,
 ## ==================================================================
 
 PHP_CONFIGURE_PART(Checking for PDF support:)
-
-#force this check even if not specified on command line:
-if test "$with_pdf" = ""; then
-	with_pdf=yes
-fi
 
 AC_ARG_WITH(pdf,
 [  --with-pdf[=DIR]          Include PDF support.  DIR is the PDFlib
@@ -3139,44 +4127,48 @@ AC_ARG_WITH(pdf,
 
 PHP_CONFIGURE_PART(Checking for Sun RPC support:)
 
-#Note: on Linux, rpclib functions are in libc. On other systems, for
-#example Windows/CygWin, this will be a separate library that we will need
+if test "$FORCE_RPC" = "1"; then
 
-#First, let's see if RPC is in libraries we already have as default:
+	#Note: on Linux, rpclib functions are in libc. On other systems, for
+	#example Windows/CygWin, this will be a separate library that we will need
 
-#it is not enough to just test for function, you then have test for it's success by name!
-#and BTW, what's wrong with svctcp_create ?
-#AC_CHECK_FUNCS([svc_run])
-AC_CHECK_FUNCS([svctcp_create])
-AC_CHECK_HEADERS([ rpc/rpc.h rpc.h ])
-		#We will get #define HAVE___rpc_thread_svc_fdset in a4gl_incl_config.h, but no variables
-		#are defined when testing functions.
+	#First, let's see if RPC is in libraries we already have as default:
 
-#if test `eval echo '${'$as_ac_var'}'` != yes ; then
-#if test "$ac_cv_func___rpc_thread_svc_fdset" != "yes"; then
-if test "$ac_cv_func_svctcp_create" != "yes"; then
-	RPC_FUNC_INTERNAL=0
-	#This happened on ia64-unknown-linux-gnu
-	case $host in
-	*linux*)
-		AC_MSG_WARN(Ooops-you don't have RPC function in GLIBC, but you are on Linux?)
-		;;
-	esac
+	#it is not enough to just test for function, you then have test for it's success by name!
+	#and BTW, what's wrong with svctcp_create ?
+	#AC_CHECK_FUNCS([svc_run])
+	AC_CHECK_FUNCS([svctcp_create])
+	AC_CHECK_HEADERS([ rpc/rpc.h rpc.h ])
+			#We will get #define HAVE___rpc_thread_svc_fdset in a4gl_incl_config.h, but no variables
+			#are defined when testing functions.
 
-	#force this check even if not specified on command line:
-	if test "$with_rpc" = ""; then
-		with_rpc=yes
-	fi
-else
-	RPC_FUNC_INTERNAL=1
+	#if test `eval echo '${'$as_ac_var'}'` != yes ; then
+	#if test "$ac_cv_func___rpc_thread_svc_fdset" != "yes"; then
+	if test "$ac_cv_func_svctcp_create" != "yes"; then
+		RPC_FUNC_INTERNAL=0
+		#This happened on ia64-unknown-linux-gnu
+		case $host in
+		*linux*)
+			AC_MSG_WARN(Ooops-you don't have RPC function in GLIBC, but you are on Linux?)
+			;;
+		esac
 
-	if test "$AUBIT_SOURCE" = "1"; then #if compiling source code...
-		#...force this check even if not specified on command line:
-		if test "$with_rpc" = ""; then
+		#force this check even if not specified on command line:
+		if test "$with_rpc" = "" && test "$FORCE_RPC" = "1"; then
 			with_rpc=yes
 		fi
-    fi
-fi
+	else
+		RPC_FUNC_INTERNAL=1
+
+		if test "$AUBIT_SOURCE" = "1"; then #if compiling source code...
+			#...force this check even if not specified on command line:
+			if test "$with_rpc" = ""  && test "$FORCE_RPC" = "1"; then
+				with_rpc=yes
+			fi
+	    fi
+	fi
+
+fi #if test "$FORCE_RPC" = "1"
 
 AC_ARG_WITH(rpc,
 [  --with-rpc[=DIR]          Include RPC support.  DIR is the RPC base
@@ -3344,40 +4336,62 @@ CUSTOM_WITHVAL=0
 
 PHP_CONFIGURE_PART(Checking for XML-RPC support:)
 
-old_CFLAGS="$CFLAGS"
-old_LIBS="$LIBS"
+AC_ARG_WITH(xmlrpc,
+[  --with-xmlrpc[=DIR]       Include XML_RPC support.  DIR is the XML-RPC base
+                          install directory, defaults to /usr/local.],
+[
 
-#This will test for both w3c-libwww and xmlrpc-c, since all this depends on each other
-CLIENT_LIBS="-L/usr/local/lib -L/usr/lib -lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwzip"
-CFLAGS="$CFLAGS $CLIENT_LIBS"
-AC_CHECK_LIB([xmlrpc], [main])
+	if test "$withval" != "no"; then
 
-CFLAGS="$old_CFLAGS"
-LIBS="$old_LIBS"
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+	    fi
 
-if test $ac_cv_lib_xmlrpc_main = yes; then
+		old_CFLAGS="$CFLAGS"
+		old_LIBS="$LIBS"
 
-    #xmlrpc-c-config executable is NOT in current RPM!
-	AC_PATH_PROG(XMLRPC_C_CONFIG, xmlrpc-c-config, no)
+		#This will test for both w3c-libwww and xmlrpc-c, since all this depends on each other
+		CLIENT_LIBS="-L/usr/local/lib -L/usr/lib -lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwzip"
+		CFLAGS="$CFLAGS $CLIENT_LIBS"
+		AC_CHECK_LIB([xmlrpc], [main])
 
-	if test "$AUBIT_SOURCE" = "1" ; then
-	    #to compile from source code, we need headers too:
-		AC_CHECK_HEADERS([ xmlrpc.h xmlrpc_client.h ])
+		CFLAGS="$old_CFLAGS"
+		LIBS="$old_LIBS"
 
-		if test "$ac_cv_header_xmlrpc_h" = "yes" && test "$ac_cv_header_xmlrpc_client_h" = "yes" ; then
-			XML_RPC=yes
-        else
+		if test $ac_cv_lib_xmlrpc_main = yes; then
+
+		    #xmlrpc-c-config executable is NOT in current RPM!
+			AC_PATH_PROG(XMLRPC_C_CONFIG, xmlrpc-c-config, no)
+
+			if test "$AUBIT_SOURCE" = "1" ; then
+			    #to compile from source code, we need headers too:
+				AC_CHECK_HEADERS([ xmlrpc.h xmlrpc_client.h ])
+
+				if test "$ac_cv_header_xmlrpc_h" = "yes" && test "$ac_cv_header_xmlrpc_client_h" = "yes" ; then
+					XML_RPC=yes
+		        else
+					XML_RPC=no
+		        fi
+		    else
+				XML_RPC=yes
+		    fi
+		else
 			XML_RPC=no
-        fi
-    else
-		XML_RPC=yes
-    fi
-else
-	XML_RPC=no
-fi
+		fi
 
-AC_MSG_CHECKING(XML-RPC support)
-AC_MSG_RESULT($XML_RPC)
+		AC_MSG_CHECKING(XML-RPC support)
+		AC_MSG_RESULT($XML_RPC)
+    else
+		AC_MSG_RESULT(--with-rpc disabled)
+    fi
+
+],[
+	AC_MSG_RESULT(--with-rpc not specified)
+])
 
 
 ## ==================================================================
@@ -3385,43 +4399,84 @@ AC_MSG_RESULT($XML_RPC)
 ## ==================================================================
 
 PHP_CONFIGURE_PART(Checking for mpz library support:)
-AC_CHECK_LIB([gmp], [main])
 
-if test $ac_cv_lib_gmp_main = yes; then
+AC_ARG_WITH(mpz,
+[  --with-mpz[=DIR]          Include MPZ large integer support.  DIR is MPZ base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
 
-	if test "$AUBIT_SOURCE" = "1" ; then
-	    #to compile from source code, we need headers too:
-		AC_CHECK_HEADERS([ gmp.h ])
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+	    fi
 
-		if test "$ac_cv_header_gmp_h" = "yes"  ; then
-			EXDATA_MPZ=yes
-            EXDTYPE=MPZ
-        else
+		AC_CHECK_LIB([gmp], [main])
+
+		if test $ac_cv_lib_gmp_main = yes; then
+
+			if test "$AUBIT_SOURCE" = "1" ; then
+			    #to compile from source code, we need headers too:
+				AC_CHECK_HEADERS([ gmp.h ])
+
+				if test "$ac_cv_header_gmp_h" = "yes"  ; then
+					EXDATA_MPZ=yes
+		            EXDTYPE=MPZ
+		        else
+					EXDATA_MPZ=no
+		        fi
+		    else
+				EXDATA_MPZ=yes
+				EXDTYPE=MPZ
+		    fi
+		else
 			EXDATA_MPZ=no
-        fi
+		fi
     else
-		EXDATA_MPZ=yes
-		EXDTYPE=MPZ
+		AC_MSG_RESULT(disabled)
     fi
-else
-	EXDATA_MPZ=no
-fi
+],[
+	AC_MSG_RESULT(--with-rpc not specified)
+])
 
 
 ## ==================================================================
 ##            Check for POP support
 ## ==================================================================
 
+PHP_CONFIGURE_PART(Checking for POP libraries:)
+AC_ARG_WITH(pop,
+[  --with-pop[=DIR]          Include POP support.  DIR is the POP base
+                          install directory, defaults to /usr/local.],
+[
+	if test "$withval" != "no"; then
 
-	PHP_CONFIGURE_PART(Checking for POP libraries:)
+		if test "$withval" = "yes"; then
+	    	withval=/usr/local
+		else
+			#user specified custom withval
+		    CUSTOM_WITHVAL=1
+			ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
+	    fi
 
-	AC_CHECK_LIB([spopc], [main])
-	if test "$ac_cv_lib_spopc_main" = "yes"; then
+		AC_CHECK_LIB([spopc], [main])
+		if test "$ac_cv_lib_spopc_main" = "yes"; then
 
-		AC_CHECK_HEADERS([ libspopc.h ])
+			AC_CHECK_HEADERS([ libspopc.h ])
 
-		HAVE_POPLIB=1
+			HAVE_POPLIB=1
+	    fi
+
+    else
+		AC_MSG_RESULT(disabled)
     fi
+],[
+	AC_MSG_RESULT(--with-pop not specified)
+])
+
 
 ## ==================================================================
 ##            Check for Perl generating compiler support
@@ -3442,12 +4497,6 @@ fi
 	old_LIBS="$LIBS"
 	old_LDFLAGS="$LDFLAGS"
 	old_CFLAGS="$CFLAGS"
-
-	#force this check even if not specified on command line, if user did not
-	#explicitly asked for Pdcurses, and if not on MinGW (which don't have curses):
-	if test "$with_curses" = "" && test "$with_pdcurses" = "" && test "$GCC_MINGW" != "yes"; then
-		with_curses=yes
-	fi
 
 	PHP_CONFIGURE_PART(Checking for curses libraries:)
 	AC_ARG_WITH(curses,
@@ -3524,12 +4573,6 @@ fi
 		AC_MSG_RESULT(--with-curses not specified)
 	])
 
-
-	#force this check if not specified on command line, if we are on MinGW
-	#if test "$GCC_MINGW" = "yes" && test "$with_pdcurses" = ""; then
-	#	with_pdcurses=yes
-	#fi
-
 	#NOTE: attempt to compile Aubit TUI plug-in with CygWin curses using MingW GCC would fail
 	#because CygWin libraries need cygwin1.dll, and MinGW GCC would not link it in.
     #Hovewer, we can compile Aubit TUI plug-in with CygWin Curses using CygWin GCC, and then use
@@ -3574,7 +4617,7 @@ fi
 ## ==================================================================
 
 
-WITH_JAVA=yes
+USE_JAVA=yes
 JAVAINCLUDE=""
 JAVAPACKAGE=""
 
@@ -3582,15 +4625,15 @@ PHP_CONFIGURE_PART(Checking for Java JNI:)
 
 AC_ARG_WITH(java,[  --with-java=path        full path of Java Developers Kit, or no],[
 case $withval in
-    no) WITH_JAVA=no ;;
-    yes) WITH_JAVA=yes ;;
+    no) USE_JAVA=no ;;
+    yes) USE_JAVA=yes ;;
     *) JAVAPACKAGE=$withval
     ;;
 esac
 ])
 
-if test "$WITH_JAVA" != "no" ; then
-    WITH_JAVA=no
+if test "$with_java" != "no" ; then
+    USE_JAVA=no
 	AC_MSG_CHECKING(for Java header files for JNI)
 
 	#what about using GCC JNI?:
@@ -3618,11 +4661,11 @@ if test "$WITH_JAVA" != "no" ; then
         for i in $dirs ; do
 			if test -r "$i/jni.h"; then
                 JAVAINCLUDE="$i"
-                #WITH_JAVA=yes
+                #USE_JAVA=yes
 				break
             elif test -r "$i/include/jni.h"; then
 				JAVAINCLUDE="$i/include"
-                #WITH_JAVA=yes
+                #USE_JAVA=yes
                 break
             fi
         done
@@ -3632,20 +4675,20 @@ if test "$WITH_JAVA" != "no" ; then
         OCPPFLAGS="$CPPFLAGS"
         CPPFLAGS="-I$JAVAINCLUDE $OCPPFLAGS"
         AC_TRY_CPP([#include <jni.h>], [
-                WITH_JAVA=yes
+                USE_JAVA=yes
                 JAVAINCLUDE="-I$JAVAINCLUDE"
         ],)
         CPPFLAGS="$OCPPFLAGS"
     fi
 
     # if the above didn't work probably jni_md.h is missing
-    if test "WITH_JAVA" != "yes" ; then
+    if test "USE_JAVA" != "yes" ; then
         if test "$JAVAINCLUDE" != ""; then
             subdirs="$JAVAINCLUDE $JAVAINCLUDE/$MACHDEP $JAVAINCLUDE/$ac_md_system $JAVAINCLUDE/solaris $JAVAINCLUDE/genunix $JAVAINCLUDE/alpha $JAVAINCLUDE/win32 $JAVAINCLUDE/mvs"
             for i in $subdirs ; do
                 if test -r $i/jni_md.h; then
                     JAVAINCLUDE="-I$JAVAINCLUDE -I$i"
-                    WITH_JAVA=yes
+                    USE_JAVA=yes
                     break
                 fi
             done
@@ -3653,10 +4696,10 @@ if test "$WITH_JAVA" != "no" ; then
     fi
 
 	if test "$JAVAINCLUDE" = ""; then
-		WITH_JAVA=no
+		USE_JAVA=no
     fi
 
-    if test "$WITH_JAVA" = "no"; then
+    if test "$USE_JAVA" = "no"; then
         AC_MSG_RESULT(not found)
     else
 		GENERATED_FILES="$GENERATED_FILES bind/java/Makefile"
@@ -4446,33 +5489,6 @@ PLUGIN_NO_LINKABLE=
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.iksemel"
 	fi
 
-
-#On CygWin/MinGW:
-
-#make[3]: Entering directory `/usr/src/aubit/aubit4glsrc/lib/extra_libs/file'
-#/usr/bin/bash 4glpc -as-dll libfile.4gl -o libA4GL_file.dll
-#============ FIRST ERROR: ==============
-#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1834):libfile.c: undefined reference to `trim_nl'
-#d:\DOCUME~1\ADMINI~1\LOCALS~1\Temp/ccA9aaaa.o(.text+0x1846):libfile.c: undefined reference to `push_char'
-#========================================
-#See file  libA4GL_file.dll.err
-#Error compiling... check  libA4GL_file.dll.err
-
-
-
-    if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
-		PLUGIN_YES="$PLUGIN_YES A4GL_file"
-    else
-        PLUGIN_NO="$PLUGIN_NO A4GL_file"
-	fi
-
-    #FIXME: if this is uncoditional, move it to LIBFILE_XX not RPMFILE_xx
-	PLUGIN_YES="$PLUGIN_YES A4GL_string"
-
-	#FIXME: it should be linkable, bu we are using 4glpc to create dll, and we don't get .a file...
-	#PLUGIN_YES_LINKABLE="$PLUGIN_YES_LINKABLE A4GL_HTML"
-	PLUGIN_YES="$PLUGIN_YES A4GL_HTML"
-
 	if test "$HAVE_PGSQL_LIB" = "yes"; then
         #an simple PG plug-in with limited functionality (by Mike)
 		PLUGIN_YES="$PLUGIN_YES SQL_pg"
@@ -4531,6 +5547,7 @@ fi
     fi
 
 	if test "$HAVE_POPLIB" = "1"; then
+		#NOTE: needs 4glc
 		PLUGIN_YES="$PLUGIN_YES A4GL_pop"
     else
         PLUGIN_NO="$PLUGIN_NO A4GL_pop"
@@ -4567,10 +5584,10 @@ fi
 
 	if test "$SAPDB_ESQLC" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES ESQL_SAP"
-#if test "disabled" = ""; then
+if test "disabled" = ""; then
 		#Compile Aubit ESQL/C SQL connectivity plug-in using SAP DB ESQL/C compiler
 		PLUGIN_YES="$PLUGIN_YES SQL_esqlSAP"
-#fi
+fi
 	else
         PLUGIN_NO="$PLUGIN_NO SQL_esqlSAP ESQL_SAP"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sap.esqlc"

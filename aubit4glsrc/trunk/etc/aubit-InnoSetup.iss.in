@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.9 2003-08-18 06:18:33 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.10 2003-09-17 11:55:42 afalout Exp $
 ;
 
 
@@ -281,47 +281,82 @@ Source: E:\Program files\W2000\ISTool\isxdl.dll; DestDir: {tmp}; CopyMode: dontc
 
 ;=========================
 ; Compiler files
-Source: @IS_SOURCE@\bin\aubit-config.exe; DestDir: {app}\bin; CopyMode: normal; Components: compiler
-Source: @IS_SOURCE@\bin\4glc.exe; DestDir: {app}\bin; DestName: "4glc.exe"; CopyMode: alwaysoverwrite; Components: compiler
-Source: @IS_SOURCE@\bin\fcompile.exe; DestDir: {app}\bin; Components: compiler
-Source: @IS_SOURCE@\bin\fdecompile.exe; DestDir: {app}\bin; Components: compiler
-Source: @IS_SOURCE@\bin\mcompile.exe; DestDir: {app}\bin; Components: compiler
-Source: @IS_SOURCE@\bin\mdecompile.exe; DestDir: {app}\bin; Components: compiler
-Source: @IS_SOURCE@\bin\amkmessage.exe; DestDir: {app}\bin; Components: compiler
-Source: @IS_SOURCE@\bin\unmkmessage.exe; DestDir: {app}\bin; Components: compiler
-Source: @IS_SOURCE@\bin\fshow.exe; DestDir: {app}\bin; Components: compiler
-Source: @IS_SOURCE@\bin\loadmap.exe; DestDir: {app}\bin; Components: compiler
-
-Source: @IS_SOURCE@\lib\lib4glc.dll; DestDir: {app}\bin; Components: compiler
+@ISEXEFILE_1@
+@ISEXEFILE_2@
+@ISEXEFILE_3@
+@ISEXEFILE_4@
+@ISEXEFILE_5@
+@ISEXEFILE_6@
+@ISEXEFILE_7@
+@ISEXEFILE_8@
+@ISEXEFILE_9@
+@ISEXEFILE_10@
+@ISEXEFILE_11@
+@ISEXEFILE_12@
+@ISEXEFILE_13@
+@ISEXEFILE_14@
+@ISEXEFILE_15@
+@ISEXEFILE_16@
+@ISEXEFILE_17@
+@ISEXEFILE_18@
+@ISEXEFILE_19@
+@ISEXEFILE_20@
+@ISEXEFILE_21@
+@ISEXEFILE_22@
+@ISEXEFILE_23@
+@ISEXEFILE_24@
+@ISEXEFILE_25@
+@ISEXEFILE_26@
+@ISEXEFILE_27@
+@ISEXEFILE_28@
+@ISEXEFILE_29@
+@ISEXEFILE_30@
 
 ;headers:
-Source: @IS_SOURCE@\incl\a4gl_incl_4gldef.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_incl_4glhdr.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_4gl_callable.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_API_exdata.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_API_exreport.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_API_form.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_API_help.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_API_menu.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_API_msg.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_API_rpc.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_API_sql.h; DestDir: {app}\incl; Components: compiler
-Source: @IS_SOURCE@\incl\a4gl_API_ui.h; DestDir: {app}\incl; Components: compiler
-
-;not needed:
-;Source: @IS_SOURCE@\incl\a4gl_API_esql.h; DestDir: {app}\incl; Components: compiler
-;Source: @IS_SOURCE@\incl\a4gl_API_lex.h; DestDir: {app}\incl; Components: compiler
-;Source: @IS_SOURCE@\incl\a4gl_API_packer.h; DestDir: {app}\incl; Components: compiler
-
+@ISINCFILE_1@
+@ISINCFILE_2@
+@ISINCFILE_3@
+@ISINCFILE_4@
+@ISINCFILE_5@
+@ISINCFILE_6@
+@ISINCFILE_7@
+@ISINCFILE_8@
+@ISINCFILE_9@
+@ISINCFILE_10@
+@ISINCFILE_11@
+@ISINCFILE_12@
+@ISINCFILE_13@
+@ISINCFILE_14@
+@ISINCFILE_15@
+@ISINCFILE_16@
+@ISINCFILE_17@
+@ISINCFILE_18@
+@ISINCFILE_19@
+@ISINCFILE_20@
 
 
 ;=========================
-; Run-time files
-Source: @IS_SOURCE@\docs\aubit4gl.ico; DestDir: {app}\docs; Components: runtime
-Source: @IS_SOURCE@\docs\changelog.txt; DestDir: {app}\docs; Components: runtime
-Source: @IS_SOURCE@\docs\COPYING; DestDir: {app}\docs; Components: runtime
-Source: @IS_SOURCE@\docs\CREDITS; DestDir: {app}\docs; Components: runtime
-Source: @IS_SOURCE@\docs\LICENSE; DestDir: {app}\docs; Components: runtime
+; doc (runtime) files
+@ISDOCFILE_1@
+@ISDOCFILE_2@
+@ISDOCFILE_3@
+@ISDOCFILE_4@
+@ISDOCFILE_5@
+@ISDOCFILE_6@
+@ISDOCFILE_7@
+@ISDOCFILE_8@
+@ISDOCFILE_9@
+@ISDOCFILE_10@
+@ISDOCFILE_11@
+@ISDOCFILE_12@
+@ISDOCFILE_13@
+@ISDOCFILE_14@
+@ISDOCFILE_15@
+@ISDOCFILE_16@
+@ISDOCFILE_17@
+@ISDOCFILE_18@
+@ISDOCFILE_19@
+@ISDOCFILE_20@
 
 ;==========================
 ; List of libraries and plug-ins we allways make. Set by configure script:
@@ -415,90 +450,175 @@ Source: @IS_SOURCE@\docs\LICENSE; DestDir: {app}\docs; Components: runtime
 
 ;=========================
 ;Example code:
-Source: @IS_SOURCE@\tools\test\make.bat; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\testmenu.menu; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\file.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\form.per; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\hello.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\hello_db.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\hello2.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\helpfile.msg; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\pdf_report.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\test_build.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\test_select.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\testmenu.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\assoc2.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\testmpz.4gl; DestDir: {app}\tools\test; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\gui\gui.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\gui\calc.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\gui\form-gui.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\gui\gui.4gl; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\gui\calc.4gl; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\gui\hello-gui.4gl; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\gui\multi.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\gui\radio.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-Source: @IS_SOURCE@\tools\test\gui\widget.per; DestDir: {app}\tools\test\gui; Components: 4GLexamples
-
-;=========================
-; Help files:
-Source: @IS_SOURCE@\README.txt; DestDir: {app}; Components: help
-Source: @IS_SOURCE@\tools\cygwin\readme-runtime.html; DestDir: {app}; Components: help
+@ISEXAMPFILE_1@
+@ISEXAMPFILE_2@
+@ISEXAMPFILE_3@
+@ISEXAMPFILE_4@
+@ISEXAMPFILE_5@
+@ISEXAMPFILE_6@
+@ISEXAMPFILE_7@
+@ISEXAMPFILE_8@
+@ISEXAMPFILE_9@
+@ISEXAMPFILE_10@
+@ISEXAMPFILE_11@
+@ISEXAMPFILE_12@
+@ISEXAMPFILE_13@
+@ISEXAMPFILE_14@
+@ISEXAMPFILE_15@
+@ISEXAMPFILE_16@
+@ISEXAMPFILE_17@
+@ISEXAMPFILE_18@
+@ISEXAMPFILE_19@
+@ISEXAMPFILE_20@
+@ISEXAMPFILE_21@
+@ISEXAMPFILE_22@
+@ISEXAMPFILE_23@
+@ISEXAMPFILE_24@
+@ISEXAMPFILE_25@
+@ISEXAMPFILE_26@
+@ISEXAMPFILE_27@
+@ISEXAMPFILE_28@
+@ISEXAMPFILE_29@
+@ISEXAMPFILE_30@
+@ISEXAMPFILE_31@
+@ISEXAMPFILE_32@
+@ISEXAMPFILE_33@
+@ISEXAMPFILE_34@
+@ISEXAMPFILE_35@
+@ISEXAMPFILE_36@
+@ISEXAMPFILE_37@
+@ISEXAMPFILE_38@
+@ISEXAMPFILE_39@
+@ISEXAMPFILE_40@
+@ISEXAMPFILE_41@
+@ISEXAMPFILE_42@
+@ISEXAMPFILE_43@
+@ISEXAMPFILE_44@
+@ISEXAMPFILE_45@
+@ISEXAMPFILE_46@
+@ISEXAMPFILE_47@
+@ISEXAMPFILE_48@
+@ISEXAMPFILE_49@
+@ISEXAMPFILE_50@
+@ISEXAMPFILE_51@
+@ISEXAMPFILE_52@
+@ISEXAMPFILE_53@
+@ISEXAMPFILE_54@
+@ISEXAMPFILE_55@
+@ISEXAMPFILE_56@
+@ISEXAMPFILE_57@
+@ISEXAMPFILE_58@
+@ISEXAMPFILE_59@
+@ISEXAMPFILE_60@
 
 ;=========================
 ; Shell files (useless without bash!):
-Source: @IS_SOURCE@\bin\4glpc; DestDir: {app}\bin; Components: Shell
-Source: @IS_SOURCE@\install.sh; DestDir: {app}; Components: Shell
-Source: @IS_SOURCE@\configure; DestDir: {app}; Components: Shell
-;FIXME: create executables of this two, so we can use Amake without Bash:
-Source: @IS_SOURCE@\bin\amake; DestDir: {app}\bin; Components: Shell
-Source: @IS_SOURCE@\bin\aubit; DestDir: {app}\bin; Components: Shell
+;FIXME: create executables of amake and aubit, so we can use Amake without Bash:
+
+@ISSHFILE_1@
+@ISSHFILE_2@
+@ISSHFILE_3@
+@ISSHFILE_4@
+@ISSHFILE_5@
+@ISSHFILE_6@
+@ISSHFILE_7@
+@ISSHFILE_8@
+@ISSHFILE_9@
+@ISSHFILE_10@
+@ISSHFILE_11@
+@ISSHFILE_12@
+@ISSHFILE_13@
+@ISSHFILE_14@
+@ISSHFILE_15@
+@ISSHFILE_16@
+@ISSHFILE_17@
+@ISSHFILE_18@
+@ISSHFILE_19@
+@ISSHFILE_20@
+
 
 
 ;=========================
 ; Make files (MinGW includes mingw-make.exe):
-;Source: @IS_SOURCE@\Makefile; DestDir: {app}; Components: Make
-Source: @IS_SOURCE@\tools\test\gui\Makefile; DestDir: {app}\tools\test\gui; Components: Make
-Source: @IS_SOURCE@\tools\test\Makefile; DestDir: {app}\tools\test; Components: Make
-Source: @IS_SOURCE@\incl\Makefile-common; DestDir: {app}\incl; Components: Make
-Source: @IS_SOURCE@\incl\Makefile-install.mki; DestDir: {app}\incl; Components: Make
+@ISMAKEFILE_1@
+@ISMAKEFILE_2@
+@ISMAKEFILE_3@
+@ISMAKEFILE_4@
+@ISMAKEFILE_5@
+@ISMAKEFILE_6@
+@ISMAKEFILE_7@
+@ISMAKEFILE_8@
+@ISMAKEFILE_9@
+@ISMAKEFILE_10@
+@ISMAKEFILE_11@
+@ISMAKEFILE_12@
+@ISMAKEFILE_13@
+@ISMAKEFILE_14@
+@ISMAKEFILE_15@
+@ISMAKEFILE_16@
+@ISMAKEFILE_17@
+@ISMAKEFILE_18@
+@ISMAKEFILE_19@
+@ISMAKEFILE_20@
+
+
+; SQL conversion files:
+@ISCONVFILE_1@
+@ISCONVFILE_2@
+@ISCONVFILE_3@
+@ISCONVFILE_4@
+@ISCONVFILE_5@
+@ISCONVFILE_6@
+@ISCONVFILE_7@
+@ISCONVFILE_8@
+@ISCONVFILE_9@
+@ISCONVFILE_10@
+@ISCONVFILE_11@
+@ISCONVFILE_12@
+@ISCONVFILE_13@
+@ISCONVFILE_14@
+@ISCONVFILE_15@
+@ISCONVFILE_16@
+@ISCONVFILE_17@
+@ISCONVFILE_18@
+@ISCONVFILE_19@
+@ISCONVFILE_20@
+
+
 
 ;Amake files:
-Source: @IS_SOURCE@\incl\i4gl.mk; DestDir: {app}\incl; Components: Make
-Source: @IS_SOURCE@\incl\d4gl.mk; DestDir: {app}\incl; Components: Make
-Source: @IS_SOURCE@\incl\a4gl.mk; DestDir: {app}\incl; Components: Make
-Source: @IS_SOURCE@\incl\q4gl.mk; DestDir: {app}\incl; Components: Make
-Source: @IS_SOURCE@\incl\footer.mki; DestDir: {app}\incl; Components: Make
-Source: @IS_SOURCE@\incl\footer-c.mki; DestDir: {app}\incl; Components: Make
-Source: @IS_SOURCE@\incl\header.mki; DestDir: {app}\incl; Components: Make
+@ISAMAKEFILE_1@
+@ISAMAKEFILE_2@
+@ISAMAKEFILE_3@
+@ISAMAKEFILE_4@
+@ISAMAKEFILE_5@
+@ISAMAKEFILE_6@
+@ISAMAKEFILE_7@
+@ISAMAKEFILE_8@
+@ISAMAKEFILE_9@
+@ISAMAKEFILE_10@
+@ISAMAKEFILE_11@
+@ISAMAKEFILE_12@
+@ISAMAKEFILE_13@
+@ISAMAKEFILE_14@
+@ISAMAKEFILE_15@
+@ISAMAKEFILE_16@
+@ISAMAKEFILE_17@
+@ISAMAKEFILE_18@
+@ISAMAKEFILE_19@
+@ISAMAKEFILE_20@
+
 
 ;=========================
 ;GTK libs: (add GTK themes here:)
-; OBSOLETE - USE SEPAREATE GTK INSTALLER
-;Source: @IS_SOURCE_GTK@\iconv.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libatk-1.0-0.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libgdk_pixbuf-2.0-0.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libgdk-win32-2.0-0.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libglib-2.0-0.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libgmodule-2.0-0.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libgobject-2.0-0.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libgtk-win32-2.0-0.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libintl-1.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libpango-1.0-0.dll; DestDir: {app}\bin; Components: GTK
-;Source: @IS_SOURCE_GTK@\libpangowin32-1.0-0.dll; DestDir: {app}\bin; Components: GTK
-
-;Source: D:\cygwin\lib\pango\1.0.0\modules\pango-arabic-ft2.dll; DestDir: {app}\lib\pango\1.0.0\modules; Components: GTK
-;Source: D:\cygwin\lib\pango\1.0.0\modules\pango-basic-ft2.dll; DestDir: {app}\lib\pango\1.0.0\modules; Components: GTK
-;Source: D:\cygwin\lib\pango\1.0.0\modules\pango-basic-win32.dll; DestDir: {app}\lib\pango\1.0.0\modules; Components: GTK
-;Source: D:\cygwin\etc\pango\pango.modules; DestDir: {app}\etc\pango; Components: GTK
-;Source: D:\cygwin\usr\etc\gtk-2.0\gtk.immodules; DestDir: {app}\etc\gtk-2.0\; Components: GTK
 
 ;=========================
 ;SQLite
-Source: D:\WINNT\sqlite.exe; DestDir: {app}\bin; Components: SQLITE
-Source: D:\cygwin\lib\libsqlite.def; DestDir: {app}\bin; Components: SQLITE
-Source: D:\cygwin\lib\libsqlite.dll; DestDir: {app}\bin; Components: SQLITE
+Source: @WINDIR@\sqlite.exe; DestDir: {app}\bin; Components: SQLITE
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.def; DestDir: {app}\bin; Components: SQLITE
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; Components: SQLITE
 ; We need sqlite.dll for sqlite.exe and SQLite GUI tool (we added lib prefix)
-Source: D:\cygwin\lib\libsqlite.dll; DestDir: {app}\bin; DestName: "sqlite.dll"; Components: SQLITE
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; DestName: "sqlite.dll"; Components: SQLITE
 
 ;=========================
 ;SQLite database
@@ -512,7 +632,7 @@ Source: @IS_SOURCE@\tools\aubit.db; DestDir: {app}\tools; Components: SQLITE
 
 ; sqliteex.zip - 653 KB "SQLite Explorer" - schema browswe, query builder, no author/copyright
 ;                runs as exe only (439 kb not compresed), no help, does not remember last db, explain
-Source: D:\tmp\sqliteExplorer.exe; DestDir: {app}\bin; Components: SQLITE
+Source: @SYSDRIVE@\tmp\sqliteExplorer.exe; DestDir: {app}\bin; Components: SQLITE
 
 ; Discarded:
 ; Tadpole - very simple, has installer, 2.88 MB BDS style license
@@ -521,39 +641,39 @@ Source: D:\tmp\sqliteExplorer.exe; DestDir: {app}\bin; Components: SQLITE
 
 ;=========================
 ;SQLite ODBC Windows driver
-Source: D:\tmp\sqliteodbc\inst.exe; DestDir: {app}\bin; Components: SQLITEODBC; Check: SetSQLiteODBCinstalled
-Source: D:\tmp\sqliteodbc\uninst.exe; DestDir: {app}\bin; Components: SQLITEODBC
-Source: D:\tmp\sqliteodbc\license.terms; DestDir: {app}\bin; Components: SQLITEODBC
-Source: D:\tmp\sqliteodbc\README; DestDir: {app}\bin; Components: SQLITEODBC
-Source: D:\tmp\sqliteodbc\sqliteodbc.dll; DestDir: {app}\bin; Components: SQLITEODBC
-Source: D:\tmp\sqliteodbc\sqliteodbcu.dll; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SYSDRIVE@\tmp\sqliteodbc\inst.exe; DestDir: {app}\bin; Components: SQLITEODBC; Check: SetSQLiteODBCinstalled
+Source: @SYSDRIVE@\tmp\sqliteodbc\uninst.exe; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SYSDRIVE@\tmp\sqliteodbc\license.terms; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SYSDRIVE@\tmp\sqliteodbc\README; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbc.dll; DestDir: {app}\bin; Components: SQLITEODBC
+Source: @SYSDRIVE@\tmp\sqliteodbc\sqliteodbcu.dll; DestDir: {app}\bin; Components: SQLITEODBC
 
 
 ;=========================
 ;PDFlib (evaluation version)
-Source: D:\cygwin\usr\local\lib\libpdf.dll; DestDir: {app}\bin\; Components: PDFLIB
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\local\lib\libpdf.dll; DestDir: {app}\bin\; Components: PDFLIB
 
 ;=========================
 ;Helpers:
 Source: @IS_SOURCE@\tools\cygwin\run.exe; DestDir: {app}\bin; Components: util
-Source: D:\cygwin\bin\cygcheck.exe; DestDir: {app}\bin; Components: util
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygcheck.exe; DestDir: {app}\bin; Components: util
 
 ;=========================
 ; Curses UI
-Source: D:\cygwin\tmp\libUI_TUI.dll; DestDir: {app}\lib; Components: TUI
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\tmp\libUI_TUI.dll; DestDir: {app}\lib; Components: TUI
 
 ;=========================
 ; CygWin Curses libs
-Source: D:\cygwin\bin\cygncurses6.dll; DestDir: {app}\bin; Components: TUI
-Source: D:\cygwin\bin\cygform6.dll; DestDir: {app}\bin; Components: TUI
-Source: D:\cygwin\bin\cygpanel6.dll; DestDir: {app}\bin; Components: TUI
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygncurses6.dll; DestDir: {app}\bin; Components: TUI
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygform6.dll; DestDir: {app}\bin; Components: TUI
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygpanel6.dll; DestDir: {app}\bin; Components: TUI
 ;for CygWin curses to find terminfo, we have to set %HOME% to location ABOVE .terminfo directory.
 ;if HOME is not set, and CYGDIR is not set, curses will look only under C:\cygwin
-Source: D:\cygwin\usr\share\terminfo\c\cygwin; DestDir: {app}\.terminfo\c; Components: TUI
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\usr\share\terminfo\c\cygwin; DestDir: {app}\.terminfo\c; Components: TUI
 
 ;=========================
 ; CygWin support
-Source: D:\cygwin\bin\cygwin1.dll; DestDir: {app}\bin; Components: TUI
+Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\bin\cygwin1.dll; DestDir: {app}\bin; Components: TUI
 
 ;=========================
 ; GWD::4GL

@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.16 2003-07-26 04:47:15 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.17 2003-09-17 11:55:42 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -28,11 +28,11 @@ Summary: @FULLNAME@
 Name: @SHORTNAME@
 Version: @AUBIT_VERSION@.@AUBIT_BUILD@
 Release: 1
-Copyright: GNU GPL/LGPL
-Vendor: Aubit development team
-Packager: Andrej Falout <afalout@ihug.co.nz>
+Copyright: @AUBIT_LICENSE@
+Vendor: @AUBIT_PUBLISHER@
+Packager: Andrej Falout <andrej@falout.org>
 Group: Development/Languages
-URL: http://aubit4gl.sourceforge.net
+URL: http://@AUBIT_WEBSITE@
 Distribution: Red Hat Contrib-Net
 BuildArchitectures: @target_cpu@
 
@@ -50,7 +50,7 @@ Prefix: /opt
 
 #WARNNING: file name used here will need to be present on local system
 #at time of building RPM:
-Source: http://aubit4gl.sourceforge.net/files/%{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@.@ARCHEXT@
+Source: http://@AUBIT_WEBSITE@/files/%{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@.@ARCHEXT@
 
 #Patch: aubit4glsrc-%{version}.patch
 
@@ -107,6 +107,7 @@ make install
 %dir /opt/aubit4gl/bin
 %dir /opt/aubit4gl/lib
 %dir /opt/aubit4gl/etc
+%dir /opt/aubit4gl/etc/sqlconvert
 %dir /opt/aubit4gl/etc/config
 %dir /opt/aubit4gl/incl
 %dir /opt/aubit4gl/tools/test/gui
@@ -146,7 +147,6 @@ make install
 @RPMFILE_28@
 @RPMFILE_29@
 @RPMFILE_30@
-
 @RPMFILE_31@
 @RPMFILE_32@
 @RPMFILE_33@
@@ -207,90 +207,245 @@ make install
 @LIBFILE_29@
 @LIBFILE_30@
 
-#Executables:
-/opt/aubit4gl/bin/4glc
-/opt/aubit4gl/bin/fcompile
-/opt/aubit4gl/bin/fdecompile
-/opt/aubit4gl/bin/mcompile
-/opt/aubit4gl/bin/mdecompile
-#/opt/aubit4gl/bin/mkmess
-/opt/aubit4gl/bin/amkmessage
-/opt/aubit4gl/bin/unmkmessage
-
-/opt/aubit4gl/bin/loadmap
-/opt/aubit4gl/bin/fshow
-/opt/aubit4gl/bin/aubit-config
-/opt/aubit4gl/bin/xgen
-/opt/aubit4gl/bin/aace
-/opt/aubit4gl/bin/adecompile
-
-#FIXME:
-#error: File not found: /opt/aubit4gl/bin/convertsql
-#error: File not found: /opt/aubit4gl/bin/aace_4gl
-#error: File not found: /opt/aubit4gl/bin/aace_perl
-#error: File not found: /opt/aubit4gl/bin/ecpg_wrap
+#executables:
+@EXEFILE_1@
+@EXEFILE_2@
+@EXEFILE_3@
+@EXEFILE_4@
+@EXEFILE_5@
+@EXEFILE_6@
+@EXEFILE_7@
+@EXEFILE_8@
+@EXEFILE_9@
+@EXEFILE_10@
+@EXEFILE_11@
+@EXEFILE_12@
+@EXEFILE_13@
+@EXEFILE_14@
+@EXEFILE_15@
+@EXEFILE_16@
+@EXEFILE_17@
+@EXEFILE_18@
+@EXEFILE_19@
+@EXEFILE_20@
+@EXEFILE_21@
+@EXEFILE_22@
+@EXEFILE_23@
+@EXEFILE_24@
+@EXEFILE_25@
+@EXEFILE_26@
+@EXEFILE_27@
+@EXEFILE_28@
+@EXEFILE_29@
+@EXEFILE_30@
 
 #Shell scripts:
-/opt/aubit4gl/bin/4glpc
-/opt/aubit4gl/bin/amake
-/opt/aubit4gl/bin/amakeallo
-/opt/aubit4gl/bin/amakeallf
-/opt/aubit4gl/bin/aubit
-/opt/aubit4gl/bin/genmake
-/opt/aubit4gl/bin/prepmake
+@SHFILE_1@
+@SHFILE_2@
+@SHFILE_3@
+@SHFILE_4@
+@SHFILE_5@
+@SHFILE_6@
+@SHFILE_7@
+@SHFILE_8@
+@SHFILE_9@
+@SHFILE_10@
+@SHFILE_11@
+@SHFILE_12@
+@SHFILE_13@
+@SHFILE_14@
+@SHFILE_15@
+@SHFILE_16@
+@SHFILE_17@
+@SHFILE_18@
+@SHFILE_19@
+@SHFILE_20@
 
 
 #Include files:
-/opt/aubit4gl/incl/a4gl_incl_4glhdr.h
-/opt/aubit4gl/incl/a4gl_incl_4gldef.h
 
-/opt/aubit4gl/incl/header.mki
-#/opt/aubit4gl/incl/maximise.mki
-#/opt/aubit4gl/incl/a4gl-rules.mki
-/opt/aubit4gl/incl/footer-c.mki
-/opt/aubit4gl/incl/footer.mki
+@INCFILE_1@
+@INCFILE_2@
+@INCFILE_3@
+@INCFILE_4@
+@INCFILE_5@
+@INCFILE_6@
+@INCFILE_7@
+@INCFILE_8@
+@INCFILE_9@
+@INCFILE_10@
+@INCFILE_11@
+@INCFILE_12@
+@INCFILE_13@
+@INCFILE_14@
+@INCFILE_15@
+@INCFILE_16@
+@INCFILE_17@
+@INCFILE_18@
+@INCFILE_19@
+@INCFILE_20@
 
-/opt/aubit4gl/incl/a4gl.mk
-/opt/aubit4gl/incl/i4gl.mk
-/opt/aubit4gl/incl/q4gl.mk
-/opt/aubit4gl/incl/d4gl.mk
+
 
 #Examples:
-"/opt/aubit4gl/tools/test/*.4gl"
-"/opt/aubit4gl/tools/test/*.per"
-"/opt/aubit4gl/tools/test/*.msg"
-"/opt/aubit4gl/tools/test/gui/*.4gl"
-"/opt/aubit4gl/tools/test/gui/*.per"
+@EXAMPFILE_1@
+@EXAMPFILE_2@
+@EXAMPFILE_3@
+@EXAMPFILE_4@
+@EXAMPFILE_5@
+@EXAMPFILE_6@
+@EXAMPFILE_7@
+@EXAMPFILE_8@
+@EXAMPFILE_9@
+@EXAMPFILE_10@
+@EXAMPFILE_11@
+@EXAMPFILE_12@
+@EXAMPFILE_13@
+@EXAMPFILE_14@
+@EXAMPFILE_15@
+@EXAMPFILE_16@
+@EXAMPFILE_17@
+@EXAMPFILE_18@
+@EXAMPFILE_19@
+@EXAMPFILE_20@
+@EXAMPFILE_21@
+@EXAMPFILE_22@
+@EXAMPFILE_23@
+@EXAMPFILE_24@
+@EXAMPFILE_25@
+@EXAMPFILE_26@
+@EXAMPFILE_27@
+@EXAMPFILE_28@
+@EXAMPFILE_29@
+@EXAMPFILE_30@
+@EXAMPFILE_31@
+@EXAMPFILE_32@
+@EXAMPFILE_33@
+@EXAMPFILE_34@
+@EXAMPFILE_35@
+@EXAMPFILE_36@
+@EXAMPFILE_37@
+@EXAMPFILE_38@
+@EXAMPFILE_39@
+@EXAMPFILE_40@
+@EXAMPFILE_41@
+@EXAMPFILE_42@
+@EXAMPFILE_43@
+@EXAMPFILE_44@
+@EXAMPFILE_45@
+@EXAMPFILE_46@
+@EXAMPFILE_47@
+@EXAMPFILE_48@
+@EXAMPFILE_49@
+@EXAMPFILE_50@
+@EXAMPFILE_51@
+@EXAMPFILE_52@
+@EXAMPFILE_53@
+@EXAMPFILE_54@
+@EXAMPFILE_55@
+@EXAMPFILE_56@
+@EXAMPFILE_57@
+@EXAMPFILE_58@
+@EXAMPFILE_59@
+@EXAMPFILE_60@
+
 
 #Makefiles:
-/opt/aubit4gl/incl/Makefile-common
-/opt/aubit4gl/tools/test/Makefile
-/opt/aubit4gl/tools/test/gui/Makefile
-/opt/aubit4gl/Makefile
-/opt/aubit4gl/incl/Makefile-install.mki
+@MAKEFILE_1@
+@MAKEFILE_2@
+@MAKEFILE_3@
+@MAKEFILE_4@
+@MAKEFILE_5@
+@MAKEFILE_6@
+@MAKEFILE_7@
+@MAKEFILE_8@
+@MAKEFILE_9@
+@MAKEFILE_10@
+@MAKEFILE_11@
+@MAKEFILE_12@
+@MAKEFILE_13@
+@MAKEFILE_14@
+@MAKEFILE_15@
+@MAKEFILE_16@
+@MAKEFILE_17@
+@MAKEFILE_18@
+@MAKEFILE_19@
+@MAKEFILE_20@
 
 #Documentation files:
-%doc /opt/aubit4gl/README.txt
-%doc /opt/aubit4gl/docs/changelog.txt
-%doc /opt/aubit4gl/docs/COPYING
-%doc /opt/aubit4gl/docs/CREDITS
-%doc /opt/aubit4gl/docs/LICENSE
+@DOCFILE_1@
+@DOCFILE_2@
+@DOCFILE_3@
+@DOCFILE_4@
+@DOCFILE_5@
+@DOCFILE_6@
+@DOCFILE_7@
+@DOCFILE_8@
+@DOCFILE_9@
+@DOCFILE_10@
+@DOCFILE_11@
+@DOCFILE_12@
+@DOCFILE_13@
+@DOCFILE_14@
+@DOCFILE_15@
+@DOCFILE_16@
+@DOCFILE_17@
+@DOCFILE_18@
+@DOCFILE_19@
+@DOCFILE_20@
+
 
 #Configuration files:
-%config /opt/aubit4gl/etc/odbc.ini.example
-%config /opt/aubit4gl/etc/aubitrc-bin.in
-/opt/aubit4gl/configure
-/opt/aubit4gl/install.sh
-/opt/aubit4gl/etc/config/config.guess
-/opt/aubit4gl/etc/config/config.sub
-/opt/aubit4gl/etc/config/install-sh
-/opt/aubit4gl/etc/config/missing
-/opt/aubit4gl/etc/config/mkinstalldirs
+@CONFFILE_1@
+@CONFFILE_2@
+@CONFFILE_3@
+@CONFFILE_4@
+@CONFFILE_5@
+@CONFFILE_6@
+@CONFFILE_7@
+@CONFFILE_8@
+@CONFFILE_9@
+@CONFFILE_10@
+@CONFFILE_11@
+@CONFFILE_12@
+@CONFFILE_13@
+@CONFFILE_14@
+@CONFFILE_15@
+@CONFFILE_16@
+@CONFFILE_17@
+@CONFFILE_18@
+@CONFFILE_19@
+@CONFFILE_20@
+
+#SQL conversion files:
+@CONVFILE_1@
+@CONVFILE_2@
+@CONVFILE_3@
+@CONVFILE_4@
+@CONVFILE_5@
+@CONVFILE_6@
+@CONVFILE_7@
+@CONVFILE_8@
+@CONVFILE_9@
+@CONVFILE_10@
+@CONVFILE_11@
+@CONVFILE_12@
+@CONVFILE_13@
+@CONVFILE_14@
+@CONVFILE_15@
+@CONVFILE_16@
+@CONVFILE_17@
+@CONVFILE_18@
+@CONVFILE_19@
+@CONVFILE_20@
+
 
 
 ##############
 %changelog
 ##############
+* Wed Sep 17 2003 root <root@aptiva.falout.com>
+- All files set from Autoconf
 * Sun Aug 25 2002 root <root@aptiva.falout.com>
 - Synchronised files between tarball and RPM
 * Thu Dec 06 2001 root <root@aptiva.falout.com>

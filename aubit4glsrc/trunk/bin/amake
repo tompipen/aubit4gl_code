@@ -11,9 +11,9 @@
 #.mk files are expected to contain only definitions of source files
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
-
-# $Id: amake,v 1.22 2003-03-12 23:51:55 afalout Exp $
-
+#
+# $Id: amake,v 1.23 2003-09-17 11:55:41 afalout Exp $
+#
 #####################################################################
 
 #`--include-dir=dir'
@@ -22,7 +22,12 @@
 #several directories, the directories are searched in the order specified.
 
 if [ "$AUBITDIR" = "" ]; then
-    AUBITDIR=`aubit-config AUBITDIR`
+    AUBITDIR=`aubit-config AUBITDIR 2>/dev/null`
+	RET=$?
+	if [ "$RET" != "0" ]; then
+        echo "ERROR: aubit-config returned error code $RET. Stop."
+        exit 42
+    fi
 	if [ "$AUBITDIR" = "" ]; then
         echo "ERROR: AUBITDIR not set. Stop."
         exit 43
@@ -43,7 +48,6 @@ OVERRIDEINCLUDE=0
 HEADER="$AUBITDIR/incl/header.mki"
 FOOTER="$AUBITDIR/incl/footer.mki"
 
-AUBITDIR=`aubit-config AUBITDIR`
 #if you export MAKERULES, it will override 4gl make rules included in
 #standard header.mki:
 RULESDIR=$AUBITDIR/incl

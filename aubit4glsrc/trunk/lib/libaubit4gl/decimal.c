@@ -9,7 +9,8 @@ fgldecimal *A4GL_init_dec(fgldecimal *dec, int length, int digits) {
 }
 
 
-fgldecimal *A4GL_str_to_dec (char *str, fgldecimal *dec) {
+fgldecimal *
+A4GL_str_to_dec (char *str, fgldecimal *dec) {
 char head[256];
 char tail[256];
 char tmp[3];
@@ -25,13 +26,14 @@ char *ptr;
 char buff[256];
 int round_cnt;
 int carry;
-A4GL_debug("XYXY str to dec : %s",str);
 
-digits  =dec->dec_data[0]&127;
-decimals=dec->dec_data[1];
+	A4GL_debug("XYXY str to dec : %s",str);
 
-memset(head,0,256);
-memset(tail,0,256);
+	digits  =dec->dec_data[0]&127;
+	decimals=dec->dec_data[1];
+
+	memset(head,0,256);
+	memset(tail,0,256);
 
 /* Parse our string. */
 for (a=0;a<strlen(str);a++) {

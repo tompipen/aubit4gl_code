@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2003-04-07 07:12:21 afalout Exp $
+# $Id: Makefile.in,v 1.16 2003-09-17 11:55:41 afalout Exp $
 #
 
 ROOT        =../..
@@ -43,7 +43,8 @@ LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 CMODS           =mkmess.c
 OBJS			=${CMODS:.c=.o}
 
-ALL             =${ROOT}/bin/mkmess ${ROOT}/bin/amkmessage ${ROOT}/bin/unmkmessage
+ALL             =${ROOT}/bin/amkmessage ${ROOT}/bin/unmkmessage
+#Obsolete: ${ROOT}/bin/mkmess
 
 ## ==================================================================
 ##                    Targets
@@ -52,11 +53,9 @@ ALL             =${ROOT}/bin/mkmess ${ROOT}/bin/amkmessage ${ROOT}/bin/unmkmessa
 all: ${ALL}
 	@echo "Default targets (${ALL}) successfuly compiled."
 
+#Obsolete:
 ${ROOT}/bin/mkmess: ${OBJS}
-#	${CC} ${EXE_CFLAGS} $^ -o $@ ${AUBIT_LIB} ${C_DFLAGS}
 	${LD_EXE} $^ -o $@ ${AUBIT_LIB} -L${ROOT}/lib
-#	${LN} $@${EXE} ${ROOT}/bin/$@${EXE}
-
 
 ${ROOT}/bin/amkmessage: amkmessage.o
 	${LD_EXE} $^ -o $@ ${AUBIT_LIB} -L${ROOT}/lib

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.26 2003-09-10 10:32:50 afalout Exp $
+# $Id: Makefile.in,v 1.27 2003-09-17 11:55:42 afalout Exp $
 #
 
 ROOT		=../../..
@@ -199,10 +199,12 @@ ${LIBROOT}/libSQL_esqlSAP${SO_EXT}: esql_compatible.ec
 #cpc will allways add .cpc extension to any source files
 	cpp ${CPP_FLAGS} $^ -D__SAP__  -I${SAPDBROOT}/interfaces/precompiler/incl > sap_$^.cpc
 	${SAPDB_ESQLC} ${CPC_FLAGS} sap_$^ -I${ROOT}/incl 2>&1
-	${CC} -c -I${SAPDBROOT}/interfaces/precompiler/incl -I${ROOT}/incl -o sap_$^.o sap_$^.c
+	${CC} -c @SAPDB_INCDIR@ -I${ROOT}/incl -o sap_$^.o sap_$^.c
+#-I${SAPDBROOT}/interfaces/precompiler/incl
 #	rm sap_$^.cpc
 #	${CPCLNK} -shared sap_esql_compatible.ec.o
-	${CC} -shared sap_$^.o -o $@ -L${SAPDBROOT}/interfaces/precompiler/lib -lpcrl -lsqlca -ldl
+	${CC} -shared sap_$^.o -o $@ @SAPDB_LIBDIR@ -lpcrl -lsqlca -ldl
+#-L${SAPDBROOT}/interfaces/precompiler/lib
 
 ##################
 #PostgreSQL ESQL/C compiler:

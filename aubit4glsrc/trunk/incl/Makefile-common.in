@@ -25,11 +25,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.138 2003-08-20 07:39:32 afalout Exp $
+# $Id: Makefile-common.in,v 1.139 2003-09-17 11:55:42 afalout Exp $
 #
 
 
-#Make sure we are not picking things from environment that make uses 
+#Make sure we are not picking things from environment that make uses
 #automatcally:
 CFLAGS=
 LIBS=
@@ -493,7 +493,7 @@ SO_EXT=@SO_EXT@
 
 ########################
 #This is extension for LINKABLE libraries - linked at compile time. In Aubit
-#this is (or should be) onlu libaubit4gl:
+#this is (or should be) only libaubit4gl:
 SO_EXT_LINKABLE=@SO_EXT_LINKABLE@
 
 ARCHEXT			=@ARCHEXT@
@@ -548,7 +548,7 @@ ifdef COMSPEC #############Windows platform - CygWin/MinGW related:#############
 	GTKCONFIGCMD	=echo ${LIBVER}
     LDDCMD          =cygcheck
     #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
-	
+
 	PATH		:=${CYG_AUBITDIR}/lib:${CYG_AUBITDIR}/bin:${AUBITDIR}/lib:/usr/local/lib:${PATH}
 
 	#native-struct rewuired by GTK on Windows, but causes cc1: unrecognized option `-fnative-struct'
@@ -866,8 +866,11 @@ CONVSQL_DEST=$(INSTALL_DIR)/${CONVSQL_PATH}
 #definitions of names for binary distro file name:
 #This is also set in makefile-common by configure, but can change after
 #last configure run
-AUBITVERSION:=$(shell cat $(SOURCE)/tools/project/version)
-AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
+#AUBITVERSION:=$(shell cat $(SOURCE)/tools/project/version)
+#AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
+AUBITVERSION=@AUBIT_VERSION@
+AUBITBUILD=@AUBIT_BUILD@
+
 COMPILEDATE	:=$(shell date +%d-%m-%Y)
 
 
@@ -876,40 +879,29 @@ COMPILEDATE	:=$(shell date +%d-%m-%Y)
 ##                    To bin directory
 ## ==================================================================
 
-AMAKE_BIN_SCRIPTS=amake amakeallo amakeallf prepmake genmake
-AMAKE_BIN_EXE=aubit-config${EXEEXT}
+#AMAKE_BIN_SCRIPTS=amake amakeallo amakeallf prepmake genmake
+AMAKE_BIN_SCRIPTS=@AMAKE_SH@
 
-BIN_SCRIPTS =4glpc aubit ${AMAKE_BIN_SCRIPTS}
-BIN_EXE		=4glc${EXEEXT} fcompile${EXEEXT} xgen${EXEEXT} \
-			mcompile${EXEEXT} mdecompile${EXEEXT} fdecompile${EXEEXT} ${AMAKE_BIN_EXE} \
-            amkmessage${EXEEXT} unmkmessage${EXEEXT}
+#AMAKE_BIN_EXE=aubit-config${EXEEXT}
+AMAKE_BIN_EXE=@AMAKE_BIN_EXE@
 
-#mkmess${EXEEXT} \
+RUNTIME_EXE=@RUNTIME_EXE@
 
+#BIN_SCRIPTS =4glpc aubit ${AMAKE_BIN_SCRIPTS}
+BIN_SCRIPTS=@ALL_SH@
 
-#This two can fail to compile, when 4glc is not working:
-ifneq "$(shell ls $(SOURCE)/bin/loadmap${EXEEXT} 2> /dev/null)" ""
-	BIN_EXE		+=loadmap${EXEEXT}
-endif
-ifneq "$(shell ls $(SOURCE)/bin/fshow${EXEEXT} 2> /dev/null)" ""
-	BIN_EXE		+=fshow${EXEEXT}
-endif
+#BIN_EXE		=4glc${EXEEXT} fcompile${EXEEXT} xgen${EXEEXT} \
+#			mcompile${EXEEXT} mdecompile${EXEEXT} fdecompile${EXEEXT} ${AMAKE_BIN_EXE} \
+#            amkmessage${EXEEXT} unmkmessage${EXEEXT}
 
-#Building this is optional
-#FIXME: move this to configure
-#Cannot make ace without rpclib:
-ifneq "$(shell ls $(SOURCE)/bin/aace${EXEEXT} 2> /dev/null)" ""
-	BIN_EXE		+=aace${EXEEXT}
-endif
-#Cannot make ace without rpclib:
-ifneq "$(shell ls $(SOURCE)/bin/adecompile${EXEEXT} 2> /dev/null)" ""
-	BIN_EXE		+=adecompile${EXEEXT}
-endif
-#needs missing source code
+BIN_EXE=@COMP_EXE@ ${AMAKE_BIN_EXE} ${RUNTIME_EXE}
+
+#Building this is optional:
 ifneq "$(shell ls $(SOURCE)/bin/fdecompile-j${EXEEXT} 2> /dev/null)" ""
+	#needs missing source code
 	BIN_EXE		+=fdecompile-j${EXEEXT}
 endif
-#user's manual choice:
+#user's manual choice (make extra):
 ifneq "$(shell ls $(SOURCE)/bin/odbctest-unixODBC${EXE} 2> /dev/null)" ""
 	BIN_EXE		+=odbctest-unixODBC${EXE}
 endif
@@ -924,64 +916,71 @@ BIN_FILES   =${BIN_SCRIPTS} ${BIN_EXE}
 AMAKE_BIN_FILES	=${AMAKE_BIN_SCRIPTS} ${AMAKE_BIN_EXE}
 
 
+#Additional files to allways remove from bin, even if we would not install
+#them under current configuration:
+BIN_ALLWAYSCLEAN=$(notdir @EXTRAFILE_2@) $(notdir @EXTRAFILE_1@) \
+	odbctest-iodbc2${EXE} odbctest-iodbc3${EXE} odbctest-unixODBC${EXE}
+
 ## ==================================================================
 ##                    To lib directory
 ## ==================================================================
 
 #Lib files we build allways
-TMP_LIBFILES= \
-	@LIBFILE_1@ @LIBFILE_2@ @LIBFILE_3@ @LIBFILE_4@ @LIBFILE_5@ @LIBFILE_6@ \
-	@LIBFILE_7@ @LIBFILE_8@ @LIBFILE_9@ @LIBFILE_10@ @LIBFILE_11@ @LIBFILE_12@ \
-	@LIBFILE_13@ @LIBFILE_14@ @LIBFILE_15@ @LIBFILE_16@ @LIBFILE_17@ \
-	@LIBFILE_18@ @LIBFILE_19@ @LIBFILE_20@ @LIBFILE_21@ @LIBFILE_22@ \
-	@LIBFILE_23@ @LIBFILE_24@ @LIBFILE_25@ @LIBFILE_26@ @LIBFILE_27@ \
-	@LIBFILE_28@ @LIBFILE_29@ @LIBFILE_30@
+#TMP_LIBFILES= \
+#	@LIBFILE_1@ @LIBFILE_2@ @LIBFILE_3@ @LIBFILE_4@ @LIBFILE_5@ @LIBFILE_6@ \
+#	@LIBFILE_7@ @LIBFILE_8@ @LIBFILE_9@ @LIBFILE_10@ @LIBFILE_11@ @LIBFILE_12@ \
+#	@LIBFILE_13@ @LIBFILE_14@ @LIBFILE_15@ @LIBFILE_16@ @LIBFILE_17@ \
+#	@LIBFILE_18@ @LIBFILE_19@ @LIBFILE_20@ @LIBFILE_21@ @LIBFILE_22@ \
+#	@LIBFILE_23@ @LIBFILE_24@ @LIBFILE_25@ @LIBFILE_26@ @LIBFILE_27@ \
+#	@LIBFILE_28@ @LIBFILE_29@ @LIBFILE_30@
+#LIB_DEFAULT =$(notdir ${TMP_LIBFILES})
 
-LIB_DEFAULT =$(notdir ${TMP_LIBFILES})
+#LIB_DEFAULT=$(foreach prog,@ALL_LIBS@ @COMP_LIBS@,$(shell ${RM} ${MAXDIR}/${prog}${PRG_EXT}))
 
-#libFORM_GENERIC.dll': No such fi
-#libMENU_XDR.dll': No such file o
-#libRPC_XDR.dll': No such file or
-#libFORM_XDR.dll': No such file o
+#Only DLL we will actually link against - everything else is loaded at run-time:
+#LIB_EXPORTLIB 	+=libaubit4gl${SOEXP_EXT}
+LIB_EXPORTLIB   =@LIB_EXPORTLIB@
 
-#libXDRPACKER_menu_list.dll': No
-#libXDRPACKER_report.dll': No suc
-#libXDRPACKER_struct_form.dll': N
+#WARNING: Order here is important:
+TMP_LIBFILES	=$(addsuffix ${SO_EXT_LINKABLE},${LIB_EXPORTLIB}) $(addsuffix ${SO_EXT},@COMP_LIBS@ @ALL_LIBS@)
+LIB_DEFAULT		=$(addprefix lib,${TMP_LIBFILES})
 
-#libPACKER_XDR.dll': No such file
+ifneq "${COMSPEC}" ""
+	LIB_DEFAULT	+=$(addsuffix ${SOEXP_EXT},${LIB_EXPORTLIB})
+endif
 
+#LIB_DEFAULT=@ALL_LIBS@ @COMP_LIBS@
 LIB_SO		=${LIB_DEFAULT}
-
-#Only DLL wr will actually link against - everything else is loaded at run-time:
-LIB_EXPORTLIB 	+=libaubit4gl${SOEXP_EXT}
 
 #Lib files we build depending on available 3rd party support:
 #did not work by passing this directly to notdir:
-TMP_RPMFILES = \
-	@RPMFILE_1@ @RPMFILE_2@ @RPMFILE_3@ @RPMFILE_4@ @RPMFILE_5@ @RPMFILE_6@ \
-	@RPMFILE_7@ @RPMFILE_8@ @RPMFILE_9@ @RPMFILE_10@ @RPMFILE_11@ @RPMFILE_12@ \
-	@RPMFILE_13@ @RPMFILE_14@ @RPMFILE_15@ @RPMFILE_16@ @RPMFILE_17@ \
-	@RPMFILE_18@ @RPMFILE_19@ @RPMFILE_20@ @RPMFILE_21@ @RPMFILE_22@ \
-	@RPMFILE_23@ @RPMFILE_24@ @RPMFILE_25@ @RPMFILE_26@ @RPMFILE_27@ \
-	@RPMFILE_28@ @RPMFILE_29@ @RPMFILE_30@ \
-	@RPMFILE_31@ @RPMFILE_32@ @RPMFILE_33@ @RPMFILE_34@ @RPMFILE_35@ \
-	@RPMFILE_36@ @RPMFILE_37@ @RPMFILE_38@ @RPMFILE_39@ @RPMFILE_40@ \
-	@RPMFILE_41@ @RPMFILE_42@ @RPMFILE_43@ @RPMFILE_44@ @RPMFILE_45@ \
-	@RPMFILE_46@ @RPMFILE_47@ @RPMFILE_48@ @RPMFILE_49@ @RPMFILE_50@
+#TMP_RPMFILES = \
+#	@RPMFILE_1@ @RPMFILE_2@ @RPMFILE_3@ @RPMFILE_4@ @RPMFILE_5@ @RPMFILE_6@ \
+#	@RPMFILE_7@ @RPMFILE_8@ @RPMFILE_9@ @RPMFILE_10@ @RPMFILE_11@ @RPMFILE_12@ \
+#	@RPMFILE_13@ @RPMFILE_14@ @RPMFILE_15@ @RPMFILE_16@ @RPMFILE_17@ \
+#	@RPMFILE_18@ @RPMFILE_19@ @RPMFILE_20@ @RPMFILE_21@ @RPMFILE_22@ \
+#	@RPMFILE_23@ @RPMFILE_24@ @RPMFILE_25@ @RPMFILE_26@ @RPMFILE_27@ \
+#	@RPMFILE_28@ @RPMFILE_29@ @RPMFILE_30@ \
+#	@RPMFILE_31@ @RPMFILE_32@ @RPMFILE_33@ @RPMFILE_34@ @RPMFILE_35@ \
+#	@RPMFILE_36@ @RPMFILE_37@ @RPMFILE_38@ @RPMFILE_39@ @RPMFILE_40@ \
+#	@RPMFILE_41@ @RPMFILE_42@ @RPMFILE_43@ @RPMFILE_44@ @RPMFILE_45@ \
+#	@RPMFILE_46@ @RPMFILE_47@ @RPMFILE_48@ @RPMFILE_49@ @RPMFILE_50@
+#LIB_OPTIONAL =$(notdir ${TMP_RPMFILES})
+#LIB_OPTIONAL =@PLUGIN_YES@ @PLUGIN_YES_LINKABLE@
 
-LIB_OPTIONAL =$(notdir ${TMP_RPMFILES})
+TMP_RPMFILES=$(addprefix lib,@PLUGIN_YES@ @PLUGIN_YES_LINKABLE@)
+LIB_OPTIONAL=$(addsuffix ${SO_EXT},${TMP_RPMFILES})
 
-ifneq "$(shell ls $(SOURCE)/lib/libA4GL_file${SO_EXT} 2> /dev/null)" ""
-	LIB_SO			+=libA4GL_file${SO_EXT}
-endif
 
-ifneq "$(shell ls $(SOURCE)/lib/libA4GL_string${SO_EXT} 2> /dev/null)" ""
-	LIB_SO			+=libA4GL_string${SO_EXT}
-endif
-
-ifneq "$(shell ls $(SOURCE)/lib/libIM_JABBER${SO_EXT} 2> /dev/null)" ""
-	LIB_SO			+=libIM_JABBER${SO_EXT}
-endif
+#ifneq "$(shell ls $(SOURCE)/lib/libA4GL_file${SO_EXT} 2> /dev/null)" ""
+#	LIB_SO			+=libA4GL_file${SO_EXT}
+#endif
+#ifneq "$(shell ls $(SOURCE)/lib/libA4GL_string${SO_EXT} 2> /dev/null)" ""
+#	LIB_SO			+=libA4GL_string${SO_EXT}
+#endif
+#ifneq "$(shell ls $(SOURCE)/lib/libIM_JABBER${SO_EXT} 2> /dev/null)" ""
+#	LIB_SO			+=libIM_JABBER${SO_EXT}
+#endif
 
 LIB_FILES   		=${LIB_SO} ${LIB_OPTIONAL}
 
@@ -993,33 +992,37 @@ endif
 #Additional files to clean even if we would not install them under
 #current configuration:
 LIB_ALLWAYSCLEAN+=libA4GL_cint${SO_EXT} libMENU_XDR${SO_EXT} libUI_GTK${SO_EXT} \
-	libMENU_GENERIC${SO_EXT}
-
+	libMENU_GENERIC${SO_EXT} libSQL_esqlSAP${SO_EXT}
 
 ## ==================================================================
 ##                    To docs directory
 ## ==================================================================
 
-DOC_FILES		=changelog.txt COPYING CREDITS LICENSE aubit4gl.ico
-ifneq "${COMSPEC}" ""
-	DOC_FILES	+=README-Windows.txt
-endif
+#DOC_FILES		=changelog.txt COPYING CREDITS LICENSE aubit4gl.ico
+DOC_FILES		=@ALL_DOC@
+#ifneq "${COMSPEC}" ""
+#	DOC_FILES	+=README-Windows.txt
+#endif
 
 ## ==================================================================
 ##                    To test directory
 ## ==================================================================
 
-TEST_STD= \
-		assoc2.4gl  form.per    hello_db.4gl  pdf_report.4gl  testmpz.4gl \
-		hello2.4gl  helpfile.msg  test_build.4gl  test_select.4gl \
-		file.4gl    hello.4gl   Makefile      testmenu.4gl testmenu.menu
-ifneq "${COMSPEC}" ""
-	TEST_STD+=make.bat
-endif
+#TEST_STD= \
+#		assoc2.4gl  form.per    hello_db.4gl  pdf_report.4gl  testmpz.4gl \
+#		hello2.4gl  helpfile.msg  test_build.4gl  test_select.4gl \
+#		file.4gl    hello.4gl   Makefile      testmenu.4gl testmenu.menu
+#ifneq "${COMSPEC}" ""
+#	TEST_STD+=make.bat
+#endif
 
-TEST_GUI= \
-		calc.4gl  form-gui.per  gui.per        Makefile   radio.per \
-		calc.per  gui.4gl       hello-gui.4gl  multi.per  widget.per
+TEST_STD=@ALL_EXAMP@
+
+#TEST_GUI= \
+#		calc.4gl  form-gui.per  gui.per        Makefile   radio.per \
+#		calc.per  gui.4gl       hello-gui.4gl  multi.per  widget.per
+
+TEST_GUI=@ALL_EXAMP_GUI@
 
 TEST_FILES=$(addprefix gui/,$(TEST_GUI)) $(TEST_STD)
 
@@ -1027,7 +1030,8 @@ TEST_FILES=$(addprefix gui/,$(TEST_GUI)) $(TEST_STD)
 ##                    To etc directory
 ## ==================================================================
 
-ETC_FILES		=odbc.ini.example
+#ETC_FILES		=odbc.ini.example
+ETC_FILES       =@ETC_FILES@
 
 #This file is installed by copying etc/aubitrc.in to aubitrc-bin.in
 #but we still need to de-install it:
@@ -1040,7 +1044,7 @@ ETC_DEINST      =aubitrc-bin.in
 
 #FIXME: still to be added to RPM and Windows installers.
 
-CONVSQL_FILES 	=$(notdir $(wildcard ${CONVSQL_PATH}/*.cnv))
+CONVSQL_FILES 	=@CONVSQL_FILES@
 
 ## ==================================================================
 ##                    To user's HOME directory
@@ -1050,43 +1054,43 @@ CONVSQL_FILES 	=$(notdir $(wildcard ${CONVSQL_PATH}/*.cnv))
 #to override the global aubitrc
 #HOME_FILES		=etc/aubitrc
 
-## ==================================================================
-##                    To Aubit binary installation root directory
-## ==================================================================
-
-ROOT_FILES		=README.txt install.sh
 
 ## ==================================================================
 ##                    To incl directory
 ## ==================================================================
 
-AMAKE_INCL_FILES= \
-        header.mki footer.mki footer-c.mki \
-        a4gl.mk q4gl.mk d4gl.mk i4gl.mk
+#AMAKE_INCL_FILES= \
+#        header.mki footer.mki footer-c.mki \
+#        a4gl.mk q4gl.mk d4gl.mk i4gl.mk
+AMAKE_INCL_FILES=@AMAKE_INCL_FILES@
 
 #This header files become nececery to install when a4gl_esql.h was introduced.
 #As a chain reaction, practically all external Aubit header files become a
 #dependency. Most, if not all, are not really needed and should be removed
 #from installation scripts:
-INCL_HEADERS_EC = a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h
+#INCL_HEADERS_EC = a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h
+INCL_HEADERS_EC =@INCL_HEADERS_EC@
 
 #Here we come aggain  - a4gl_4gl_callable.h requires all of this:
-INCL_HEADERS_EC_REMOVETHIS=a4gl_libaubit4gl.h a4gl_API_lex.h a4gl_API_form.h \
-	a4gl_API_menu.h a4gl_API_msg.h a4gl_API_packer.h a4gl_API_ui.h \
-	a4gl_API_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
-	a4gl_incl_infx.h a4gl_API_esql.h a4gl_API_help.h
-#	../common/dataio/form_x.x.h
+#INCL_HEADERS_EC_REMOVETHIS=a4gl_libaubit4gl.h a4gl_API_lex.h a4gl_API_form.h \
+#	a4gl_API_menu.h a4gl_API_msg.h a4gl_API_packer.h a4gl_API_ui.h \
+#	a4gl_API_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
+#	a4gl_incl_infx.h a4gl_API_esql.h a4gl_API_help.h
+##	../common/dataio/form_x.x.h
+INCL_HEADERS_EC_REMOVETHIS=@INCL_HEADERS_EC_REMOVETHIS@
 
 #In file included from /opt/aubit4gl/incl/a4gl_API_ui.h:30,
 #/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1358:58: ../common/dataio/form_x.x.h: No such file or directory
 
+#INCL_HEADERS =a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
+#	${INCL_HEADERS_EC} ${INCL_HEADERS_EC_REMOVETHIS}
 
+INCL_HEADERS =@ALL_INC@ ${INCL_HEADERS_EC} ${INCL_HEADERS_EC_REMOVETHIS}
 
-INCL_HEADERS =a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
-	${INCL_HEADERS_EC} ${INCL_HEADERS_EC_REMOVETHIS}
+#INCL_MAKE   =Makefile-common Makefile-install.mki
+INCL_MAKE   =@INCL_MAKE@
 
-
-INCL_FILES	= Makefile-common Makefile-install.mki ${AMAKE_INCL_FILES} ${INCL_HEADERS}
+INCL_FILES	=${INCL_MAKE} ${AMAKE_INCL_FILES} ${INCL_HEADERS}
 
 #OBSOLETE: a4gl-rules.mki
 
@@ -1094,8 +1098,21 @@ INCL_FILES	= Makefile-common Makefile-install.mki ${AMAKE_INCL_FILES} ${INCL_HEA
 #		$(SOURCE)/common/dataio/form_x.x.h  $(SOURCE)/common/dataio/form_x.xs.h
 
 #do we want this or not in binary installation?
-INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
-		a4gl_API_lex.h a4gl_API_msg.h a4gl_libaubit4gl.h form_x.xs.h
+#INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
+#		a4gl_API_lex.h a4gl_API_msg.h a4gl_libaubit4gl.h form_x.xs.h
+
+
+#List of all make files we installed
+#ALL_MAKEFILE=@ALL_MAKEFILE@
+
+## ==================================================================
+##                    To Aubit binary installation root directory
+## ==================================================================
+
+#ROOT_FILES		=README.txt install.sh
+ROOT_FILES      =@ROOT_FILES@
+
+ROOT_ALLWAYSCLEAN=libtool
 
 
 ## ==================================================================
@@ -1129,40 +1146,34 @@ TOROOT		=$(addprefix $(ROOT_DIR)/,		$(ROOT_FILES))
 TOINCL		=$(addprefix $(INCL_DIR)/,		$(INCL_FILES))
 TOIDE       =$(addprefix $(IDE_DIR)/,		$(IDE_FILES))
 TOCONVSQL   =$(addprefix $(CONVSQL_DIR)/,	$(CONVSQL_FILES))
-
-
-AMAKE_TOBIN	=$(addprefix $(BIN_DIR)/,	$(AMAKE_BIN_FILES))
-AMAKE_TOINCL=$(addprefix $(INCL_DIR)/,	$(AMAKE_INCL_FILES))
+AMAKE_TOBIN	=$(addprefix $(BIN_DIR)/,		$(AMAKE_BIN_FILES))
+AMAKE_TOINCL=$(addprefix $(INCL_DIR)/,		$(AMAKE_INCL_FILES))
 
 ifneq "${COMSPEC}" ""
-    TOBIN	+=$(SOURCE)/tools/cygwin/run.exe
+    #TOBIN	+=$(SOURCE)/tools/cygwin/run.exe
+	TOBIN	+=@EXTRAFILE_1@
 endif
-TOBIN		+=$(SOURCE)/tools/metrics_4gl/4GL_metrics.cgi
+
+#TOBIN		+=$(SOURCE)/tools/metrics_4gl/4GL_metrics.cgi
+TOBIN		+=@EXTRAFILE_2@
 
 #deinstallation files with paths:
-FROMBIN		=$(addprefix $(BIN_DEST)/,	$(BIN_FILES))
-FROMLIB		=$(addprefix $(LIB_DEST)/,	$(LIB_FILES))  $(addprefix $(LIB_DEST)/,$(LIB_ALLWAYSCLEAN))
+FROMBIN		=$(addprefix $(BIN_DEST)/,	$(BIN_FILES)) \
+			 $(addprefix $(BIN_DEST)/,	$(BIN_ALLWAYSCLEAN))
+FROMLIB		=$(addprefix $(LIB_DEST)/,	$(LIB_FILES)) \
+			 $(addprefix $(LIB_DEST)/,	$(LIB_ALLWAYSCLEAN))
 FROMDOCS	=$(addprefix $(DOC_DEST)/,	$(DOC_FILES))
 FROMTEST	=$(addprefix $(TEST_DEST)/,	$(TEST_FILES))
-FROMETC		=$(addprefix $(ETC_DEST)/,	$(ETC_FILES)) $(addprefix $(ETC_DEST)/,	$(ETC_FILES_LEGACY)) $(addprefix $(ETC_DEST)/,	$(ETC_DEINST))
+FROMETC		=$(addprefix $(ETC_DEST)/,	$(ETC_FILES)) \
+			 $(addprefix $(ETC_DEST)/,	$(ETC_FILES_LEGACY)) \
+			 $(addprefix $(ETC_DEST)/,	$(ETC_DEINST))
 FROMHOME	=$(addprefix $(HOME_DEST)/,	$(HOME_FILES))
-FROMROOT	=$(addprefix $(ROOT_DEST)/,	$(ROOT_FILES)) $(ROOT_DEST)/libtool
-FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES))  $(addprefix $(INCL_DEST)/,	$(INCL_FILES_LEGACY))
+FROMROOT	=$(addprefix $(ROOT_DEST)/,	$(ROOT_FILES)) \
+			 $(addprefix $(ROOT_DEST)/,	$(ROOT_ALLWAYSCLEAN))
+FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES)) \
+			 $(addprefix $(INCL_DEST)/,	$(INCL_FILES_LEGACY))
 FROMIDE     =$(addprefix $(IDE_DEST)/,	$(IDE_FILES))
 FROMCONVSQL =$(addprefix $(CONVSQL_DEST)/,$(CONVSQL_FILES))
-
-
-#Additional files to allways remove from bin, ecen id we would not install
-#them under current configuration:
-ifneq "${COMSPEC}" ""
-	FROMBIN	+=$(INSTALL_DIR)/${BIN_PATH}/run.exe
-endif
-FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/4GL_metrics.cgi
-FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/loadmap${EXE}
-FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/mkmess${EXE}
-FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/odbctest-iodbc3${EXE}
-FROMBIN		+=$(INSTALL_DIR)/${BIN_PATH}/odbctest-unixODBC${EXE}
-
 
 ## ==================================================================
 ##                    Automatic build Settings

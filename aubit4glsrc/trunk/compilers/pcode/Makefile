@@ -24,11 +24,12 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2003-09-17 07:05:16 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2003-09-17 11:55:41 afalout Exp $
 #
 
 ROOT    =../..
 LIBROOT	=${ROOT}/lib
+BINROOT	=${ROOT}/bin
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -71,7 +72,12 @@ ifeq "${DBG}" "yes"
 	LINKLIBS    +=-lefence
 endif
 
-ALL             =c2pcode checker runner runner_fgl 
+ALL             =${BINROOT}/c2pcode ${BINROOT}/checker ${BINROOT}/runner \
+				${BINROOT}/runner_fgl
+#open.c is missing from CVS:
+#${BINROOT}/open_pcode
+
+#xgen not set up:
 #${LIBROOT}/libDATA_pcode${SO_EXT}
 
 #we don't want -Wall in CFLAGS when compiling rpcgen generated code because it would
@@ -98,22 +104,22 @@ XGENEXE    		=${ROOT}/bin/xgen
 all: ${ALL}
 	@echo "Default targets (${ALL}) compiled."
 
-checker: $(OBJ_CHECKER) npcode.h
+${BINROOT}/checker: $(OBJ_CHECKER) npcode.h
 	$(CC) -g -o $@ $(OBJ_CHECKER) ${LINKLIBS}
 
-c2pcode:  $(OBJ_C2PCODE) npcode.h
+${BINROOT}/c2pcode:  $(OBJ_C2PCODE) npcode.h
 	$(CC) -o $@ $(OBJ_C2PCODE) ${LINKLIBS}
 
-open_pcode:  open.o write.o npcode_xdr.o print.o
+${BINROOT}/open_pcode:  open.o write.o npcode_xdr.o print.o
 	$(CC) $^ -o $@ ${LINKLIBS}
 
 ${LIBROOT}/libDATA_pcode${SO_EXT} : npcode.xi.o npcode.xio.o npcode.xo.o
 	$(CC) -g -shared $^ -o $@
 
-runner: $(OBJ_RUNNER_C)
+${BINROOT}/runner: $(OBJ_RUNNER_C)
 	$(CC) -O2 -o $@ $(OBJ_RUNNER_C)
 
-runner_fgl: $(OBJ_RUNNER_A4GL)
+${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
 	$(CC) -O2 -o $@ $(OBJ_RUNNER_A4GL) ${LINKLIBS}
 
 

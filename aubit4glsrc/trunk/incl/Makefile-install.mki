@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.69 2003-08-20 07:39:32 afalout Exp $
+# $Id: Makefile-install.mki,v 1.70 2003-09-17 11:55:42 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -158,6 +158,7 @@ deinstall.files:
 #files created after installation, and by Autoconf:
 	${RM} $(INSTALL_DIR)/*.${ARCHEXT} $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
 	$(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin
+	${RM} $(addprefix $(INSTALL_DIR)/,${ALL_MAKEFILE})
 
 #######################################
 #delete installation tree (only if directories are now empty):

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.126 2003-09-10 10:32:35 afalout Exp $
+# $Id: Makefile.in,v 1.127 2003-09-17 11:55:02 afalout Exp $
 #
 
 ## ==================================================================
@@ -96,7 +96,9 @@ corecompile:
 	$(MAKE) -C compilers/menus
 	$(MAKE) -C compilers/ace
 	$(MAKE) -C compilers/helpcompile
+	$(MAKE) -C compilers/pcode
 	$(MAKE) -C lib loadmap
+	$(MAKE) -C tools/convertsql
 	@echo Aubit 4gl compiler core is now compiled
 
 api.headers:
@@ -259,6 +261,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C lib/libpacker/xml clean
 	$(MAKE) -C compilers/4glc/rules clean
 	$(MAKE) -C compilers/4glc clean
+	$(MAKE) -C compilers/pcode clean
 	$(MAKE) -C compilers/fcompile clean
 	$(MAKE) -C compilers/menus clean
 	$(MAKE) -C compilers/ace clean
@@ -612,6 +615,15 @@ rpm.build:
 ifeq "${RPM}" "new"
 	${RM} ${SRCTMP}
 	${RM} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}
+#	rm -rf /usr/src/redhat/BUILD/aubit4gl-0.42.19
+	rm -rf /usr/src/redhat/BUILD/aubit4gl*
+#OK rm -rf /usr/src/redhat/SOURCES/aubit4glsrc-0.42-20.tgz
+#	rm -rf /usr/src/redhat/SOURCES/${SOURCETARBASENAME}
+	rm -rf /usr/src/redhat/SOURCES/aubit4gl*
+	@echo "NOTE: if version numbers changed, run ./configure first!"
+	./config.status --file etc/aubit-rpm.spec
+	./config.status --file Makefile
+	./config.status --file incl/Makefile-common
 endif
 	@if [ ! -f ${SRCTMP} ]; then \
 		echo "(1) No ${SRCTMP}, making it..."; \
