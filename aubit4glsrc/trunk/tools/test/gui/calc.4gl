@@ -1,8 +1,18 @@
 main
-	open form  calc using calchandler
-	call set_window_title("4GL Calculator");
+	set pause mode on
 	hide window _variable("screen")
-	call run_gui()
+	set pause mode off
+	open form calc using calchandler
+	call set_window_title("4GL Calculator");
+
+	open form list using listhandler
+	call set_window_title("Previous results");
+
+code
+while (1) {
+	gui_run_til_no_more();
+}
+endcode
 end main
 
 
@@ -107,7 +117,14 @@ input lv_line from entered
 
 		let lv_doing=""
 		let lv_line=lv_num1  using "<<<<<<<<.<<<<"
+
+		current window is calc
 		display lv_line clipped to entered
+		current window is _variable("list")
+
+		display lv_line clipped to entered
+		current window is _variable("calc")
+		
 		let lv_doing="X"
 end input
 
@@ -116,4 +133,18 @@ BEFORE CLOSE FORM
 
 
 end formhandler
+
+formhandler listhandler
+#BEFORE OPEN FORM
+	#enable clearlist
+
+input lv_line from entered
+	
+	on entered
+		call list_delete(id_to_int(entered),0);
+end input
+
+end formhandler
+
+
 

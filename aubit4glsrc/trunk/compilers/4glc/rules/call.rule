@@ -47,7 +47,7 @@ ibind_var_list {
 	strcpy($<str>$,$<str>5);
 	}
    | SHARED char_or_var IN char_or_var OPEN_BRACKET {
-	set_status(0);
+	A4GLSQL_set_status(0);
 	new_counter();
 	}
 opt_func_call_args {

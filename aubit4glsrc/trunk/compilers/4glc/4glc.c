@@ -7,7 +7,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.11 2001-11-28 23:12:14 saferreira Exp $
+ * $Id: 4glc.c,v 1.12 2001-12-03 15:57:05 mikeaubury Exp $
  */
 
 //#include "../libincl/compiler.h"
@@ -146,7 +146,13 @@ main (int argc, char *argv[])
       printf ("Opened : %s\n", c);
     }
 
+  openmap(outputfilename);
+  if (!A4GLSQL_initlib()) {
+	printf("Error opening SQL Library - check A4GL_SQLTYPE is set correctly\n");
+	exit(1);
+  }
   x = yyparse ();
+
 
   if (yydebug)
     {

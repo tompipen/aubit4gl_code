@@ -11,12 +11,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: map.c,v 1.5 2001-11-27 23:50:52 saferreira Exp $
+* $Id: map.c,v 1.6 2001-12-03 15:57:05 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.5  2001/11/27 23:50:52  saferreira
+*	Some more warning fixes, documentation added and prototypes declared
+*	
 *	Revision 1.4  2001/11/21 22:56:16  saferreira
 *	Some compiler warnings fixed
 *	
@@ -67,21 +70,21 @@ void openmap (char *s)
 {
   char buff[256];
   debug ("openmap...");
-  if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0)
-  {
-    debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
-    debug ("Yep...\n");
-    sprintf (buff, "%s.map", s);
-    mapfile = fopen (buff, "w");
+  if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0 && mapfile==0)
+    {
+      debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
+      debug ("Yep...\n");
+      sprintf (buff, "%s.map", s);
+      mapfile = fopen (buff, "w");
 
-    if (mapfile == 0)
-	  {
-	    debug ("Unable to open map file");
-	    printf ("Unable to open map file\n");
-	    exit (1);
-	  }
-    debug ("Mapfile=%p", mapfile);
-  }
+      if (mapfile == 0)
+	{
+	  debug ("Unable to open map file");
+	  printf ("Unable to open map file\n");
+	  exit (1);
+	}
+      debug ("Mapfile=%p", mapfile);
+    }
 }
 
 /**

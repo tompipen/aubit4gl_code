@@ -6,7 +6,9 @@ modlevel=-1;
 //read_glob_var = 1; 
 print_variables(1);
 //read_glob_var = 0; 
-set_mod_level(varcnt);set_4gl_vars();set_mod_level(0);} define_section op_code {inmod();} func_main_def
+set_mod_level(varcnt);set_4gl_vars();set_mod_level(0);
+strcpy(curr_func,"[Module]");
+} define_section op_code {inmod();} func_main_def
 	;
 
 func_main_def	: /* could be empty file */

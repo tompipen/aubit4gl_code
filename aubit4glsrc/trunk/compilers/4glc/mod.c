@@ -16,12 +16,15 @@
 /*
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.33 2001-12-02 22:34:45 saferreira Exp $
+* $Id: mod.c,v 1.34 2001-12-03 15:57:05 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.33  2001/12/02 22:34:45  saferreira
+*	Some prototypes declared, warnings fixed and Doxygen comments added
+*	
 *	Revision 1.32  2001/11/30 21:34:00  saferreira
 *	Warnigs and prototypes fixed and Doxygen comments added
 *	
@@ -513,7 +516,16 @@ void inmod (void)
 
 static isin_command (char *cmd_type)
 {
+<<<<<<< mod.c
 
+  int a;
+  int flg = 0;
+  int oz;
+  int record;
+
+  dump_vars ();
+
+  debug ("/**********************************************************/\n");
   int z;
   if (ccnt == 0)
   {
@@ -759,7 +771,12 @@ static void dump_gvars(void)
 		 const_arr[a].ptr);
     }
 
+<<<<<<< mod.c
+  return a;
+
+=======
   fclose (f);
+>>>>>>> 1.33
 }
 
 /**
@@ -779,6 +796,10 @@ static char *ignull (char *ptr)
     return empty;
 }
 
+<<<<<<< mod.c
+
+setinc (a)
+=======
 /**
  * Dumps the contents of all of the array variable to a file named dumpvars.out.
  *
@@ -788,10 +809,31 @@ static char *ignull (char *ptr)
  *
  */
 void dump_vars (void)
+>>>>>>> 1.33
 {
+<<<<<<< mod.c
+  inc += a;
+}
+=======
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+=======
   FILE *f;
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+getinc ()
+{
+  return inc;
+}
+
+long
+scan_variable (char *s)
+{
+  char buff[256];
+=======
+>>>>>>> 1.33
   int a;
   if (getenv ("DUMPVARS") == 0)
     return;
@@ -844,9 +886,23 @@ void print_variables (int z)
       debug ("/* local variables */\n");
       for (a = modlevel; a < varcnt; a++)
 	{
+<<<<<<< mod.c
+	  dir = 1;
+	  a += 2;
+	}
 
+      if (a >= varcnt && dir == 1)
+	break;
+=======
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+      if (a < 0 && dir == -1)
+	break;
+=======
 	  if (vars[a].level == 0)
 	    print_variable (a, 'L');
+>>>>>>> 1.33
 
 	}
 
@@ -1285,6 +1341,19 @@ static long scan_variables (char *s, int mode)
 
 	}
 
+<<<<<<< mod.c
+  char db[132];
+  char buff[256];
+  strcpy (db, s);
+  A4GLSQL_set_status (0, 1);
+  A4GLSQL_init_connection (db);
+  if (A4GLSQL_get_status () != 0)
+    {
+      sprintf (buff, "Could not connect to database %s (%s)", s,
+	       A4GLSQL_get_sqlerrm ());
+      yyerror (buff);
+=======
+>>>>>>> 1.33
     }
   debug ("Variable not there : %s", s);
 
@@ -1343,13 +1412,47 @@ static long isvartype (char *s, int mode)
   strip_bracket (buff);
   debug ("Striped2\n");
   strcat (buff, ".");
+<<<<<<< mod.c
+
+  a = strtok (buff, ".");	/* table name */
+  b = strtok (0, ".");		/* column name */
+  debug ("a='%s' b='%s'", a, b);
+  if (b)
+    {
+      rval = A4GLSQL_read_columns (a, b, &idtype, &isize);
+      if (rval == 0)
+	{
+	  sprintf (buff, "%s.%s does not exist in the database", a, b);
+	  yyerror (buff);
+	  return;
+	}
+      sprintf (cdtype, "%d", idtype & 15);
+      sprintf (csize, "%d", isize);
+      debug ("---> %s %s", cdtype, csize);
+      trim_spaces (b);
+      //push_name (b, 0);
+      push_type (rettype (cdtype), csize, 0);
+      return 1;
+    }
+
+=======
   ptr = strtok (buff, ".");
   a = varcnt;
   dir = -1;
+>>>>>>> 1.33
   while (1)
     {
+<<<<<<< mod.c
+      col[0] = 0;
+      debug ("Looking for table '%s' col '%s'", a, col);
+
+      rval = A4GLSQL_read_columns (a, col, &idtype, &isize);
+
+      if (rval == 0 && a)
+=======
       a += dir;
       if (lvl > 0 && dir == -1)
+>>>>>>> 1.33
 	{
 	  dir = 1;
 	  a += 2;
@@ -1377,10 +1480,22 @@ static long isvartype (char *s, int mode)
 	      return atoi (vars[a].var_arrsize);
 	    }
 
+<<<<<<< mod.c
+      sprintf (cdtype, "%d", idtype & 15);
+      sprintf (csize, "%d", isize);
+      debug ("%d %d", idtype, isize);
+      debug ("---> %s %s", cdtype, csize);
+      debug ("A4GLSQL_read_columns: Pushing %s %s %s", col, cdtype, csize);
+      trim_spaces (col);
+      push_name (col, 0);
+      push_type (rettype (cdtype), csize, 0);
+    }
+=======
 	  if (flg && mode == 2)
 	    {
 	      return (strcmp (vars[a].var_type, "_RECORD") == 0);
 	    }
+>>>>>>> 1.33
 
 	  lvl++;
 	}
@@ -1713,11 +1828,64 @@ static int push_like2 (char *t2)
       yyerror (buff);
       return;
     }
+<<<<<<< mod.c
+}
 
+
+
+yyerrorf (char *fmt, ...)
+{
+  char buff[256];
+  va_list args;
+  va_start (args, fmt);
+  vsprintf (buff, fmt, args);
+  yyerror (buff);
+}
+=======
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+=======
   strcpy (t, t2);
   strcpy (buff, t);
   strcat (buff, ".");
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+#ifdef STILLUSEDQ
+add_string (char *s)
+{
+  static int cnt = 1;
+  return 0;
+  fprintf (hfile, ",\n%s", s);
+  return cnt++;
+}
+#endif
+
+strip_bracket (char *s)
+{
+  char buff[256];
+  int a;
+  int c = 0;
+  int f = 0;
+  //debug ("Stripping brackets from %s ", s);
+  for (a = 0; a <= strlen (s); a++)
+    {
+      if (s[a] == '[')
+	f++;
+      if (f == 0)
+	buff[c++] = s[a];
+      if (s[a] == ']')
+	f--;
+    }
+  strcpy (s, buff);
+  //debug ("-->%s ", s);
+}
+
+start_bind (char i, char *var)
+{
+  debug ("start_bind %c -  %s", i, var);
+=======
   a = strtok (buff, ".");	/* table name */
   b = strtok (0, ".");		/* column name */
   debug ("a='%s' b='%s'", a, b);
@@ -1738,14 +1906,39 @@ static int push_like2 (char *t2)
       push_type (rettype (cdtype), csize, (char *)0);
       return 1;
     }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  if (i == 'i')
+    {
+      ibindcnt = 0;
+    }
+  if (i == 'N')
+    {
+      nullbindcnt = 0;
+    }
+=======
   while (1)
     {
       col[0] = 0;
       debug ("Looking for table '%s' col '%s'", a, col);
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  if (i == 'o')
+    {
+      obindcnt = 0;
+    }
+=======
       rval = read_columns (a, col, &idtype, &isize);
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  if (i == 'O')
+    {
+      ordbindcnt = 0;
+    }
+=======
       if (rval == 0 && a)
 	{
 	  sprintf (buff, "%s does not exist in the database", a);
@@ -1754,9 +1947,21 @@ static int push_like2 (char *t2)
 	}
       if (rval == 0 && a == 0)
 	break;
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  if (i == 'f' || i == 'F')
+    {
+      fbindcnt = 0;
+    }
+=======
       a = 0;
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  if (var != 0)
+    return add_bind (i, var);
+=======
       sprintf (cdtype, "%d", idtype & 15);
       sprintf (csize, "%d", isize);
       debug ("%d %d", idtype, isize);
@@ -1766,11 +1971,30 @@ static int push_like2 (char *t2)
       push_name (col, 0);
       push_type (rettype (cdtype), csize, 0);
     }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  return 0;
+}
+=======
   return 0;
 
 }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+get_bind_cnt (char i)
+{
+  if (i == 'i')
+    return ibindcnt;
+  if (i == 'N')
+    return nullbindcnt;
+  if (i == 'o')
+    return obindcnt;
+  if (i == 'f' || i == 'F')
+    return fbindcnt;
+}
+=======
 /**
  * The parser found a new variable like table.column.
  *
@@ -1785,7 +2009,13 @@ void push_like (char *t)
   push_like2 (t);
   debug ("<<<<<<\n");
 }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+add_bind (char i, char *var)
+{
+  long dtype;
+=======
 /**
  * The parse found a new record like table.*
  *
@@ -1795,7 +2025,18 @@ void push_rectab (char *t)
 {
   push_like (t);
 }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  if (var[0] == '"')
+    {
+      dtype = (strlen (var) - 2) << 16;
+    }
+  else
+    {
+      dtype = scan_variable (var);
+    }
+=======
 /**
  * Insert a new menu title in the menu titles array.
  *
@@ -1807,10 +2048,18 @@ void push_menu_title (char *s)
 {
   strcpy (mmtitle[menu_cnt], s);
 }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  debug ("add_bind - dtype=%d (%s)\n", dtype, var);
+=======
 void push_blockcommand (char *cmd_type)
 {
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  if (i == 'i')
+=======
   debug ("START BLOCK %s", cmd_type);
   debug ("\n\n--------->%s\n\n", cmd_type);
   debug (" /* new block %s %d */\n", cmd_type, ccnt);
@@ -1819,20 +2068,95 @@ void push_blockcommand (char *cmd_type)
       || strcmp (cmd_type, "FUNC") == 0 ||
       strcmp (cmd_type, "REPORT") == 0 || strcmp (cmd_type, "GLOBALS") == 0 ||
       strcmp (cmd_type, "FORMHANDLER") == 0 || strcmp (cmd_type, "MENUHANDLER") == 0)
+>>>>>>> 1.33
     {
+<<<<<<< mod.c
+      if (dtype == -2)
+	{
+	  debug ("push_bind_rec...");
+	  push_bind_rec (var, i);
+	}
+      else
+	{
+	  strcpy (ibind[ibindcnt].varname, var);
+	  ibind[ibindcnt].dtype = dtype;
+	  ibindcnt++;
+	}
+      return ibindcnt;
+=======
       command_stack[ccnt].block_no = -1;
+>>>>>>> 1.33
     }
-  else
+
+  if (i == 'N')
     {
-
-      print_start_block (nblock_no);
-
-      command_stack[ccnt].block_no = nblock_no++;
+<<<<<<< mod.c
+      if (dtype == -2)
+	{
+	  debug ("push_bind_rec...");
+	  push_bind_rec (var, i);
+	}
+      else
+	{
+	  strcpy (nullbind[nullbindcnt].varname, var);
+	  nullbind[nullbindcnt].dtype = dtype;
+	  nullbindcnt++;
+	}
+      return nullbindcnt;
     }
+=======
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+
+
+  if (i == 'o')
+    {
+      if (dtype == -2)
+	{
+	  push_bind_rec (var, i);
+	}
+      else
+	{
+	  strcpy (obind[obindcnt].varname, var);
+	  obind[obindcnt].dtype = dtype;
+	  obindcnt++;
+	}
+      return obindcnt;
+    }
+=======
+      print_start_block (nblock_no);
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+  if (i == 'O')
+    {
+      if (dtype == -2)
+	push_bind_rec (var, i);
+      else
+	{
+	  strcpy (ordbind[ordbindcnt].varname, var);
+	  ordbind[ordbindcnt].dtype = dtype;
+	  ordbindcnt++;
+	}
+      return ordbindcnt;
+=======
+      command_stack[ccnt].block_no = nblock_no++;
+>>>>>>> 1.33
+    }
+<<<<<<< mod.c
+
+=======
   debug (" Added new block");
   ccnt++;
 }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+
+
+  if (i == 'f' || i == 'F')
+=======
 void add_continue_blockcommand (char *cmd_type)
 {
   int z;
@@ -1842,19 +2166,52 @@ void add_continue_blockcommand (char *cmd_type)
 /* more checks here ! */
 
   for (a = ccnt - 1; a > 0; a--)
+>>>>>>> 1.33
     {
+<<<<<<< mod.c
+      if (i == 'f')
+	dtype = -1;
+
+      if (dtype == -2)
+	push_bind_rec (var, i);
+      else
+=======
       if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+>>>>>>> 1.33
 	{
+<<<<<<< mod.c
+	  strcpy (fbind[fbindcnt].varname, var);
+	  fbind[fbindcnt].dtype = 0;
+	  fbindcnt++;
+	  return fbindcnt;
+=======
 	  print_continue_block (command_stack[a].block_no, 0);
 	  return;
+>>>>>>> 1.33
 	}
     }
 
 }
 
+<<<<<<< mod.c
+how_many_in_bind (char i)
+{
+  if (i == 'i')
+    return ibindcnt - 1;
+  if (i == 'N')
+    return nullbindcnt - 1;
+  if (i == 'o')
+    return obindcnt - 1;
+  if (i == 'O')
+    return ordbindcnt - 1;
+}
+=======
 static int iscontinuecmd (char *s)
 {
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+=======
   if (strcmp (s, "FOR") == 0)
     return 1;
   //if (strcmp(s,"FOREACH")==0) return 1;
@@ -1865,7 +2222,21 @@ static int iscontinuecmd (char *s)
   //if (strcmp(s,"CONSTRUCT")==0) return 1;
   //if (strcmp(s,"DISPLAY")==0) return 1;
   //if (strcmp(s,"PROMPT")==0) return 1;
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+
+continue_loop (char *cmd_type)
+{
+  int a;
+  int g = 0;
+  for (a = ccnt - 1; a >= 0; a--)
+    {
+
+      debug ("continue_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
+
+      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+=======
   return 0;
 }
 
@@ -1882,11 +2253,26 @@ void pop_blockcommand (char *cmd_type)
     {
 
       if (iscontinuecmd (cmd_type))
+>>>>>>> 1.33
 	{
+<<<<<<< mod.c
+	  g = 1;
+	  break;
+=======
 	  print_continue_block (command_stack[ccnt].block_no, 1);
+>>>>>>> 1.33
 	}
+<<<<<<< mod.c
+=======
       print_end_block (command_stack[ccnt].block_no);
+>>>>>>> 1.33
     }
+<<<<<<< mod.c
+  if (g == 0)
+    {
+      debug ("/* wanted to continue a %s but wasnt in one! */", cmd_type);
+      return;
+=======
 
   debug ("\n\n--------->%s\n\n", cmd_type);
 
@@ -1897,8 +2283,12 @@ void pop_blockcommand (char *cmd_type)
 
       return;
 
+>>>>>>> 1.33
     }
 
+<<<<<<< mod.c
+  print_continue_loop (command_stack[a].block_no);
+=======
   sprintf (err, "%s was not last block command (I've got a %s @ %d)\n",
 	   cmd_type, command_stack[ccnt].cmd_type, ccnt);
   debug (err);
@@ -1910,102 +2300,427 @@ void pop_blockcommand (char *cmd_type)
   debug ("------------------\n");
   yyerror (err);
   exit (0);
+>>>>>>> 1.33
 }
 
+<<<<<<< mod.c
+=======
 int in_command (char *cmd_type)
 {
+>>>>>>> 1.33
 
   int z;
 
-  debug ("Check for %s %d \n", cmd_type, ccnt);
+<<<<<<< mod.c
+exit_loop (char *cmd_type)
+{
+  int a;
+  int g = 0;
+  int printed = 0;
 
-  if (ccnt == 0)
+  for (a = ccnt - 1; a >= 0; a--)
     {
 
+      debug ("exit_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
+
+      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+	{
+	  g = 1;
+	  break;
+	}
+    }
+  if (g == 0)
+    {
+      debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
+      return;
+    }
+=======
+  debug ("Check for %s %d \n", cmd_type, ccnt);
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+  if (strcmp (cmd_type, "MENU") == 0)
+=======
+  if (ccnt == 0)
+>>>>>>> 1.33
+    {
+<<<<<<< mod.c
+      print_exit_loop ('M', 0);
+      printed = 1;
+    }
+=======
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+  if (strcmp (cmd_type, "PROMPT") == 0)
+    {
+      print_exit_loop ('P', 0);
+      printed = 1;
+=======
       debug ("Stack is empty\n");
       return 0;
+>>>>>>> 1.33
     }
 
+<<<<<<< mod.c
+
+  if (printed == 0)
+=======
   for (z = ccnt - 1; z >= 0; z--)
+>>>>>>> 1.33
     {
-
-      if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
-	continue;
-
-      if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
-	{
-
-	  debug ("OK\n");
-
-	  return 1;
-
-	}
-
+      print_exit_loop (0, command_stack[a].block_no);
     }
-
-  printf ("Not in a %s command\n", cmd_type);
-  yyerror ("Can't exit command");
-
-  return 0;
 }
 
 
+<<<<<<< mod.c
+push_report_block (char *why, char whytype)
+{
+  set_curr_block (0);
+  strcpy (report_stack[report_stack_cnt].why, why);
+  report_stack[report_stack_cnt].whytype = whytype;
+  print_repctrl_block ();
+  report_stack_cnt++;
+}
+
+=======
+      if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
+	continue;
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+get_curr_rep ()
+{
+  return report_cnt;
+}
+=======
+      if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
+	{
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+=======
+	  debug ("OK\n");
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+init_report_structure (struct rep_structure * rep)
+{
+  rep->top_margin = 3;
+  rep->bottom_margin = 3;
+  rep->left_margin = 5;
+  rep->right_margin = 132;
+  rep->page_length = 66;
+  rep->page_no = 0;
+  rep->printed_page_no = 0;
+  rep->line_no = 0;
+  rep->col_no = 0;
+  rep->output_mode = 'F';
+  strcpy (rep->output_loc, "\"stdout\"");
+}
+=======
+	  return 1;
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+pdf_init_report_structure (struct pdf_rep_structure *rep)
+{
+  rep->top_margin = -36.0;
+  rep->bottom_margin = -36.0;
+  rep->left_margin = -36.0;
+=======
+	}
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+  rep->page_length = -842.0;	// A4
+  rep->page_width = -595.0;	// A4
+=======
+    }
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+  rep->right_margin = rep->page_width - (2 * rep->left_margin);
+=======
+  printf ("Not in a %s command\n", cmd_type);
+  yyerror ("Can't exit command");
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+  rep->page_no = 0;
+  rep->printed_page_no = 0;
+  rep->line_no = 0.0;
+  rep->col_no = 0.0;
+  rep->output_mode = 'F';
+  rep->font_size = 10;
+  rep->paper_size = 1;
+  strcpy (rep->font_name, "\"Helvetica\"");
+  strcpy (rep->output_loc, "\"stdout\"");
+=======
+  return 0;
+>>>>>>> 1.33
+}
+
+#ifdef MOVEDTOCOMPILE_C
+print_call_out ()
+{
+  printc ("goto output_%d;\n", report_cnt);
+}
+
+<<<<<<< mod.c
+print_output_rep (struct rep_structure *rep)
+=======
 /**
  * Trim the New Line at the end of a string.
  * 
  * @param s The string to be trimmed
  */
 static void trim(char *s)
+>>>>>>> 1.33
 {
-  if (s[strlen (s) - 1] == '\n')
-    s[strlen (s) - 1] = 0;
+<<<<<<< mod.c
+  printc ("output_%d:\n", report_cnt);
+  printc ("rep.top_margin=%d;\n", rep->top_margin);
+  printc ("rep.bottom_margin=%d;\n", rep->bottom_margin);
+  printc ("rep.left_margin=%d;\n", rep->left_margin);
+  printc ("rep.right_margin=%d;\n", rep->right_margin);
+  printc ("rep.page_length=%d;\n", rep->page_length);
+  printc ("rep.page_no=%d;\n", rep->page_no);
+  printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
+  printc ("rep.line_no=%d;\n", rep->line_no);
+  printc ("rep.col_no=%d;\n", rep->col_no);
+  printc ("if (strlen(_rout2)==0)\n");
+  printc ("strcpy(rep.output_loc,%s);\n", rep->output_loc);
+  printc ("else strcpy(rep.output_loc,_rout2);\n");
+  printc ("if (strlen(_rout1)==0)\n");
+  printc ("rep.output_mode='%c';\n", rep->output_mode);
+  printc ("else rep.output_mode=_rout1[0];\n");
+  printc ("rep.report=&%s;\n", get_curr_rep_name ());
+  printc ("trim(rep.output_loc);");
+  print_rep_ret (report_cnt);
 }
 
-void push_gen (int a, char *s)
+pdf_print_output_rep (struct pdf_rep_structure *rep)
 {
+  printc ("output_%d:\n", report_cnt);
+  printc ("strcpy(rep.font_name,%s);\n", rep->font_name);
+  printc ("rep.font_size=%f;\n", rep->font_size);
+  printc ("rep.paper_size=%d;\n", rep->paper_size);
+
+  printc ("rep.top_margin=pdf_size(%f,'l',&rep);\n", rep->top_margin);
+  printc ("rep.bottom_margin=pdf_size(%f,'l',&rep);\n", rep->bottom_margin);
+  printc ("rep.page_length=pdf_size(%f,'l',&rep);\n", rep->page_length);
+  printc ("rep.left_margin=pdf_size(%f,'c',&rep);\n", rep->left_margin);
+  printc ("rep.right_margin=pdf_size(%f,'c',&rep);\n", rep->right_margin);
+  printc ("rep.page_width=pdf_size(%f,'c',&rep);\n", rep->page_width);
+
+  printc ("rep.page_no=%d;\n", rep->page_no);
+  printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
+
+  printc ("rep.line_no=%f;\n", rep->line_no);
+  printc ("rep.col_no=%f;\n", rep->col_no);
+
+  printc ("if (strlen(_rout2)==0)\n");
+  printc ("strcpy(rep.output_loc,%s);\n", rep->output_loc);
+  printc ("else strcpy(rep.output_loc,_rout2);\n");
+  printc ("if (strlen(_rout1)==0)\n");
+  printc ("rep.output_mode='%c';\n", rep->output_mode);
+  printc ("else rep.output_mode=_rout1[0];\n");
+  printc ("rep.report=&%s;\n", get_curr_rep_name ());
+  printc ("trim(rep.output_loc);");
+  print_rep_ret (report_cnt);
+=======
+  if (s[strlen (s) - 1] == '\n')
+    s[strlen (s) - 1] = 0;
+>>>>>>> 1.33
+}
+#endif
+
+<<<<<<< mod.c
+scan_orderby (char *varname, int cnt)
+=======
+void push_gen (int a, char *s)
+>>>>>>> 1.33
+{
+<<<<<<< mod.c
+  int a;
+  debug ("Scanning order by for %s %d", varname, ordbindcnt);
+  for (a = 0; a <= cnt; a++)
+    {
+      debug ("/* chk %s against %s */\n", varname, ordbind[a].varname);
+      if (aubit_strcasecmp (ordbind[a].varname, varname) == 0)
+	return a;
+    }
+  return -1;
+}
+
+
+reset_attrib (struct form_attr * form_attrib)
+{
+  debug ("Reseting attributes\n");
+  form_attrib->iswindow = 0;
+  form_attrib->form_line = 3;
+  form_attrib->error_line = -1;
+  form_attrib->comment_line = -2;
+  form_attrib->message_line = 1;
+  form_attrib->prompt_line = -2;
+  form_attrib->menu_line = 1;
+  form_attrib->border = 0;
+  form_attrib->attrib = 0;
+}
+=======
   debug ("Push %d %s\n", a, s);
   if (gen_stack_cnt[a] >= 90)
     {
       printf ("Out of stack!\n");
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+attr_code (char *s)
+{
+  debug ("Decoding colour %s\n", s);
+  if (strcmp (s, "BLACK") == 0)
+    return colour_code (COLOR_BLACK);
+  if (strcmp (s, "YELLOW") == 0)
+    return colour_code (COLOR_YELLOW);
+  if (strcmp (s, "BLUE") == 0)
+    return colour_code (COLOR_BLUE);
+  if (strcmp (s, "CYAN") == 0)
+    return colour_code (COLOR_CYAN);
+  if (strcmp (s, "MAGENTA") == 0)
+    return colour_code (COLOR_MAGENTA);
+  if (strcmp (s, "GREEN") == 0)
+    return colour_code (COLOR_GREEN);
+  if (strcmp (s, "RED") == 0)
+    return colour_code (COLOR_RED);
+  if (strcmp (s, "WHITE") == 0)
+    return colour_code (COLOR_WHITE);
+  if (strcmp (s, "REVERSE") == 0)
+    return A_REVERSE;
+  if (strcmp (s, "BLINK") == 0)
+    return A_BLINK;
+  if (strcmp (s, "UNDERLINE") == 0)
+    return A_UNDERLINE;
+  if (strcmp (s, "BOLD") == 0)
+    return A_BOLD;
+  if (strcmp (s, "NORMAL") == 0)
+    return A_NORMAL;
+  if (strcmp (s, "INVISIBLE") == 0)
+    return colour_code (COLOR_BLACK);
+  if (strcmp (s, "DIM") == 0)
+    return A_DIM;
+  return 0;
+=======
       exit (0);
     }
   strcpy (gen_stack[a][gen_stack_cnt[a]++], s);
+>>>>>>> 1.33
 }
 
+<<<<<<< mod.c
+colour_code (int a)
+=======
 /**
  * Not used
  */
 static char *pop_gen (int a)
+>>>>>>> 1.33
 {
+<<<<<<< mod.c
+  int z, b;
+  z = 1;
+#ifdef WIN32
+  return COLOR_PAIR (a + 1);
+#else
+  return COLOR_PAIR (a + 1);
+#endif
+=======
   gen_stack_cnt[a]--;
   gen_stack[a][gen_stack_cnt[a]];
+>>>>>>> 1.33
 }
+<<<<<<< mod.c
 
+=======
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+static
+bname (char *str, char *str1, char *str2)
+=======
 void pop_all_gen (int a, char *s)
+>>>>>>> 1.33
 {
+<<<<<<< mod.c
+  char fn[132];
+  int a;
+  char *ptr;
+  strcpy (fn, str);
+  for (a = strlen (fn); a >= 0; a--)
+=======
   int z;
   for (z = 0; z < gen_stack_cnt[a]; z++)
+>>>>>>> 1.33
     {
+<<<<<<< mod.c
+      if (fn[a] == '.')
+	{
+	  fn[a] = 0;
+	  break;
+	}
+=======
       if (z > 0)
 	debug ("%s ", s);
       debug ("%s", gen_stack[a][z]);
+>>>>>>> 1.33
     }
+<<<<<<< mod.c
+  ptr = &fn[a];
+  strcpy (str1, fn);
+  if (a >= 0)
+    strcpy (str2, ptr + 1);
+  else
+    str2[0] = 0;
+=======
+>>>>>>> 1.33
 }
 
+<<<<<<< mod.c
+get_single_key (char *s)
+{
+  char buff[2];
+  s[0] = s[1];
+  s[1] = 0;
+}
+=======
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+set_mod_level (int a)
+=======
 /**
  * Not used
  */
 static yyerrorf (char *fmt, ...)
+>>>>>>> 1.33
 {
+<<<<<<< mod.c
+  modlevel = a;
+=======
   char buff[256];
   va_list args;
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
   yyerror (buff);
+>>>>>>> 1.33
 }
 
+<<<<<<< mod.c
+long
+get_variable_dets (char *s, int *type, int *arrsize, int *size, int *level,
+		   char *arr)
+=======
 /**
  * Checks if a column is part of primary key
  *
@@ -2015,8 +2730,25 @@ static yyerrorf (char *fmt, ...)
  *   - 0 : The column is not part of PK 
  */
 static int is_pk (char *s)
+>>>>>>> 1.33
 {
   int a;
+<<<<<<< mod.c
+  long z;
+  char buff[256];
+  char *ptr;
+  int lvl = 0;
+  if (s[0] == '.' && s[1] == 0)
+    return -1;
+  if (s[0] == 0)
+    return -1;
+  strcpy (buff, s);
+  strip_bracket (buff);
+  strcat (buff, ".");
+  ptr = strtok (buff, ".");
+
+  for (a = 0; a < varcnt; a++)
+=======
   int cnt;
   char buff[256];
   debug ("Checking if %s is a pk in %s", s, pklist);
@@ -2025,10 +2757,52 @@ static int is_pk (char *s)
   {
     linked_split (pklist, cnt, buff);
     if (strcasecmp (s, buff) == 0)
+>>>>>>> 1.33
     {
+<<<<<<< mod.c
+      if (strcmp (vars[a].var_name, ptr) == 0 && vars[a].level == lvl)
+	{
+	  ptr = strtok (0, ".");
+
+	  if (ptr == 0)
+	    {
+	      z =
+		find_type (vars[a].var_type) +
+		(atoi (vars[a].var_size) << 16);
+	      *level = vars[a].level;
+	      *type = z;
+	      *arrsize = matoi (vars[a].var_arrsize);
+	      if (arr)
+		strcpy (arr, vars[a].var_arrsize);
+	      *size = matoi (vars[a].var_size);
+	      debug ("\n/* %s %s %s %s %d */\n",
+		     vars[a].var_name,
+		     vars[a].var_type,
+		     vars[a].var_size, vars[a].var_arrsize, vars[a].level);
+	      return z;
+	    }
+
+	  lvl++;
+
+	}
+
+=======
       debug ("Yes");
       return 1;
+>>>>>>> 1.33
     }
+<<<<<<< mod.c
+  return -1;
+}
+
+matoi (char *s)
+{
+  int a;
+  if (s == 0)
+    return 0;
+  a = atoi (s);
+  return a;
+=======
   }
   if (strlen (upd_using_notpk) > 0)
     strcat (upd_using_notpk, ",");
@@ -2036,10 +2810,20 @@ static int is_pk (char *s)
   upd_using_notpk_cnt++;
   debug ("No");
   return 0;
+>>>>>>> 1.33
 }
 
+<<<<<<< mod.c
+//char *
+=======
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+int
+push_bind_rec (char *s, char bindtype)
+=======
 int push_bind_rec (char *s, char bindtype)
+>>>>>>> 1.33
 {
   int a;
   long z;
@@ -2051,10 +2835,14 @@ int push_bind_rec (char *s, char bindtype)
   char *ptr;
   int lvl = 0;
 
+<<<<<<< mod.c
+  debug ("In push_bind_rec : %s\n", s);
+=======
   // The function should be declared here because they are thigly coupled
   int add_bind (char i, char *var);
 
   debug ("In push_bind_rec : %s\n", s);
+>>>>>>> 1.33
 
   strcpy (endoflist, "");
   if (strchr (s, '\n'))
@@ -2302,32 +3090,90 @@ int start_bind (char i, char *var)
     {
       ibindcnt = 0;
     }
+<<<<<<< mod.c
+
+  fprintf (f, "DATABASE=%s\n", get_hdrdbname ());
+=======
   if (i == 'N')
     {
       nullbindcnt = 0;
     }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  for (a = 0; a < varcnt; a++)
+=======
   if (i == 'o')
+>>>>>>> 1.33
     {
+<<<<<<< mod.c
+      fprintf (f, "%s %s %s %s %s %s %d\n",
+	       vars[a].var_name,
+	       vars[a].var_type,
+	       vars[a].var_size,
+	       vars[a].var_arrsize,
+	       vars[a].tabname, vars[a].pklist, vars[a].level);
+=======
       obindcnt = 0;
     }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+=======
   if (i == 'O')
     {
       ordbindcnt = 0;
+>>>>>>> 1.33
     }
+  fprintf (f, "***CONSTANTS***\n");
 
+<<<<<<< mod.c
+  for (a = 0; a < const_cnt; a++)
+=======
   if (i == 'f' || i == 'F')
+>>>>>>> 1.33
     {
+<<<<<<< mod.c
+      if (const_arr[a].scope == 'g')
+	fprintf (f, "%c %s %s\n", const_arr[a].type, const_arr[a].name,
+		 const_arr[a].ptr);
+=======
       fbindcnt = 0;
+>>>>>>> 1.33
     }
 
+<<<<<<< mod.c
+  fclose (f);
+}
+=======
   if (var != 0)
     return add_bind (i, var);
 
   return 0;
 }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+read_glob (char *s)
+{
+
+  FILE *f;
+  int a;
+  char line[256];
+  char ii[64];
+  char dbname[64];
+  char tname[128];
+  char pklist[1024];
+  strcpy (ii, s);
+  strcat (ii, ".glb");
+  f = mja_fopen (ii, "r");
+
+  if (f == 0)
+    {
+      debug ("Trying to compile globals file");
+      generate_globals_for (ii);
+      f = mja_fopen (ii, "r");
+=======
 int get_bind_cnt (char i)
 {
   if (i == 'i')
@@ -2384,6 +3230,7 @@ void continue_loop (char *cmd_type)
     {
       g = 1;
       break;
+>>>>>>> 1.33
     }
   }
   if (g == 0)
@@ -2394,6 +3241,21 @@ void continue_loop (char *cmd_type)
   print_continue_loop (command_stack[a].block_no);
 }
 
+<<<<<<< mod.c
+  if (f == 0)
+    {
+      fprintf (stderr, "Couldnt open globals file %s\n", ii);
+      exit (7);
+    }
+
+  debug ("OPening %s\n", ii);
+
+  fgets (line, 255, f);
+  strcpy (dbname, "");
+  sscanf (line, "DATABASE=%s", dbname);
+
+  if (strlen (dbname) > 0)
+=======
 /**
  * The parser found a EXIT instruction for a specific loop command.
  *
@@ -2425,7 +3287,13 @@ void exit_loop (char *cmd_type)
     debug ("exit_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
 
     if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+>>>>>>> 1.33
     {
+<<<<<<< mod.c
+      set_hdrdbname (dbname);
+      open_db (dbname);
+    }
+=======
       g = 1;
       break;
     }
@@ -2435,7 +3303,43 @@ void exit_loop (char *cmd_type)
     debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
     return;
   }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  debug ("DBNAME=%s from globals", dbname);
+  while (!feof (f))
+    {
+      fgets (line, 255, f);
+      if (feof (f))
+	break;
+      trim (line);
+      if (strcmp (line, "***CONSTANTS***") == 0)
+	break;
+
+      sscanf (line, "%s %s %s %s %s %s %d\n",
+	      vars[varcnt].var_name,
+	      vars[varcnt].var_type,
+	      vars[varcnt].var_size,
+	      vars[varcnt].var_arrsize, tname, pklist, &vars[varcnt].level);
+
+
+      vars[varcnt].tabname = strdup (tname);
+      vars[varcnt].pklist = strdup (pklist);
+
+      debug ("Read %s %s from globals file (%s %s)\n",
+	     vars[varcnt].var_name,
+	     vars[varcnt].var_type,
+	     vars[varcnt].tabname, vars[varcnt].pklist);
+      debug ("In full : %s %s %s %s %s %s %d\n",
+	     vars[varcnt].var_name,
+	     vars[varcnt].var_type,
+	     vars[varcnt].var_size,
+	     vars[varcnt].var_arrsize,
+	     vars[varcnt].tabname, vars[varcnt].pklist, vars[varcnt].level);
+      vars[varcnt].globflg = 'G';
+
+      if (varcnt >= MAXVARS)
+=======
   if (strcmp (cmd_type, "MENU") == 0)
   {
     print_exit_loop ('M', 0);
@@ -2612,6 +3516,7 @@ static bname (char *str, char *str1, char *str2)
   for (a = strlen (fn); a >= 0; a--)
     {
       if (fn[a] == '.')
+>>>>>>> 1.33
 	{
 	  fn[a] = 0;
 	  break;
@@ -2700,6 +3605,14 @@ long get_variable_dets (char *s, int *type, int *arrsize,
 
 
 
+<<<<<<< mod.c
+#ifdef NOLONGERUSED
+  read_glob_var = 1;
+  print_variables (1);
+  read_glob_var = 0;
+#endif
+
+=======
 void drop_counter(void)
 {
   count_counters--;
@@ -2710,14 +3623,33 @@ void new_counter (void)
   count_counters++;
   counters[count_counters] = 0;
 }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  //set_mod_level (varcnt);
+}
+=======
 int get_counter_val (void)
 {
   debug ("/* get_counter_val =  %d counter number %d*/\n",
 	 counters[count_counters], count_counters);
   return counters[count_counters];
 }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+char *
+upshift (char *a)
+{
+  int i;
+  static char buff[256];
+  strcpy (buff, a);
+  for (i = 0; i < strlen (buff); i++)
+    {
+      buff[i] = toupper (buff[i]);
+    }
+  return buff;
+=======
 int inc_counter (void)
 {
   return ++counters[count_counters];
@@ -2731,15 +3663,50 @@ int dec_counter (void)
 void reset_counter (void)
 {
   counters[count_counters] = 0;
+>>>>>>> 1.33
 }
 
+<<<<<<< mod.c
+char *
+downshift (char *a)
+=======
 void set_counter (int a)
+>>>>>>> 1.33
 {
+<<<<<<< mod.c
+  int i;
+  static char buff[256];
+  strcpy (buff, a);
+  for (i = 0; i < strlen (buff); i++)
+    {
+      buff[i] = tolower (buff[i]);
+    }
+  return buff;
+=======
   counters[count_counters] = a;
+>>>>>>> 1.33
 }
 
+<<<<<<< mod.c
+findex (char *str, char c)
+=======
 void inc_counter_by (int a)
+>>>>>>> 1.33
 {
+<<<<<<< mod.c
+  int a;
+  for (a = 0; a < strlen (str); a++)
+    {
+      if (str[a] == c)
+	return a;
+    }
+  return 0;
+}
+
+add_report_agg (char t, char *s1, char *s2, int a)
+{
+  if (use_group)
+=======
   counters[count_counters] += a;
   debug ("/* inc_by =  %d counter number %d*/\n",
 	 counters[count_counters], count_counters);
@@ -2757,6 +3724,7 @@ static add_arr_bind (char i, char *nvar)
   strcpy (var, nvar);
 
   if (isrecvariable (var))
+>>>>>>> 1.33
     {
       strcat (var, "[0].*");
     }
@@ -2891,6 +3859,11 @@ char *convstrsql (char *s)
 
 static void generate_globals_for (char *s)
 {
+<<<<<<< mod.c
+  debug ("whento = %p", p);
+  strcpy (when_to_tmp, p);
+}
+=======
   char buff[1024];
   char dirname[1024];
   char fname[1024];
@@ -2921,11 +3894,34 @@ static void generate_globals_for (char *s)
   system (buff);
   setenv ("NOCFILE", nocfile, 1);
 }
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+set_whenever (int c, char *p)
+{
+  int code;
+  int oldcode;
+  oldcode = c & 15;
+  debug ("MJA Set_whenever : %d %s", c, p);
+  c = c >> 4;
+  c = c << 4;
+  code = -1;
+  switch (c)
+    {
+    case WHEN_ERROR:
+      code = A_WHEN_ERROR;
+      break;
+=======
 
 void read_glob (char *s)
 {
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+    case WHEN_ANYERROR:
+      code = A_WHEN_ERROR;
+      break;
+=======
   FILE *f;
   int a;
   char line[256];
@@ -2936,7 +3932,33 @@ void read_glob (char *s)
   strcpy (ii, s);
   strcat (ii, ".glb");
   f = mja_fopen (ii, "r");
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+// Can someone explain the difference...
+      //case WHEN_ANYERROR:
+      //code = A_WHEN_ANYERROR;
+      //break;
+
+    case WHEN_SQLERROR:
+      code = A_WHEN_SQLERROR;
+      break;
+    case WHEN_WARNING:
+      code = A_WHEN_WARNING;
+      break;
+    case WHEN_SQLWARNING:
+      code = A_WHEN_SQLWARNING;
+      break;
+    case WHEN_NOTFOUND:
+      code = A_WHEN_NOTFOUND;
+      break;
+    case WHEN_SUCCESS:
+      code = A_WHEN_SUCCESS;
+      break;
+    case WHEN_SQLSUCCESS:
+      code = A_WHEN_SQLSUCCESS;
+      break;
+=======
   if (f == 0)
     {
       debug ("Trying to compile globals file");
@@ -2948,23 +3970,96 @@ void read_glob (char *s)
     {
       fprintf (stderr, "Couldnt open globals file %s\n", ii);
       exit (7);
+>>>>>>> 1.33
     }
+<<<<<<< mod.c
+=======
 
   debug ("OPening %s\n", ii);
 
   fgets (line, 255, f);
   strcpy (dbname, "");
   sscanf (line, "DATABASE=%s", dbname);
+>>>>>>> 1.33
 
+<<<<<<< mod.c
+  if (code == -1)
+=======
   if (strlen (dbname) > 0)
+>>>>>>> 1.33
     {
+<<<<<<< mod.c
+      printf ("Code=%d (%x) to %p\n", c, c, p);
+      yyerror ("Internal error setting whenever error...");
+      exit (0);
+=======
       set_hdrdbname (dbname);
       open_db (dbname);
+>>>>>>> 1.33
     }
 
+<<<<<<< mod.c
+  if (p)
+    {
+      strcpy (when_to[code], p);
+    }
+  else
+=======
   debug ("DBNAME=%s from globals", dbname);
   while (!feof (f))
+>>>>>>> 1.33
     {
+<<<<<<< mod.c
+      strcpy (when_to[code], when_to_tmp);
+    }
+  when_code[code] = oldcode;
+
+  print_clr_status ();
+}
+
+
+pcopy (char *s)
+{
+  if (ferr)
+    fprintf (ferr, "%s\n", s);
+}
+
+int
+add_constant (char t, char *ptr, char *name)
+{
+  char scope = 'm';
+  int x;
+  char buff[256];
+  x = 0;
+  //x = rwlookup (name);
+  if (x != 0)
+    {
+      adderr ("'%s' is a reserved word and cannot be used as a constant\n",
+	      name, "");
+      yyerror ("Constant Declaration Error");
+    }
+  debug ("Add constant\n");
+  x = check_for_constant (name, buff);
+  if (x)
+    {
+/* Note : this shouldnt actually happen! 
+   all constants should be replaced by this point anyway
+   eg
+   define constant a="Bibble"
+   define constant a="Wibble"
+   will parse as
+   define constant a="Bibble"
+   define constant "Bibble"="Wibble"
+ */
+      adderr ("Constant %s has already been defined (as '%s')", name, buff);
+      yyerror ("Duplicate Constant");
+    }
+
+  if (isin_command ("FUNC") || isin_command ("REPORT")
+      || isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER"))
+    {
+      scope = 'f';
+=======
       fgets (line, 255, f);
       if (feof (f))
 	break;
@@ -3000,6 +4095,7 @@ void read_glob (char *s)
 	  yyerror ("Too many variables");
 	}
       varcnt++;
+>>>>>>> 1.33
     }
 
   while (!feof (f))
@@ -3501,8 +4597,182 @@ char *ispdf (void)
   else
     return "pdf_";
 }
+<<<<<<< mod.c
 
+int
+iscontinuecmd (char *s)
+{
+
+  if (strcmp (s, "FOR") == 0)
+    return 1;
+  //if (strcmp(s,"FOREACH")==0) return 1;
+  if (strcmp (s, "WHILE") == 0)
+    return 1;
+  if (strcmp (s, "CASE") == 0)
+    return 1;
+  //if (strcmp(s,"CONSTRUCT")==0) return 1;
+  //if (strcmp(s,"DISPLAY")==0) return 1;
+  //if (strcmp(s,"PROMPT")==0) return 1;
+
+  return 0;
+}
+
+generate_globals_for (char *s)
+{
+  char buff[1024];
+  char dirname[1024];
+  char fname[1024];
+  char *ptr;
+  char nocfile[256];
+  strcpy (buff, s);
+
+  if (strchr (buff, '/'))
+    {
+      strcpy (dirname, buff);
+      ptr = strrchr (dirname, '/');
+      *ptr = 0;
+      ptr++;
+      strcpy (fname, ptr);
+    }
+  else
+    {
+      strcpy (dirname, ".");
+      strcpy (fname, buff);
+    }
+
+  strcpy (nocfile, acl_getenv ("NOCFILE"));
+  setenv ("NOCFILE", "Yes", 1);
+  ptr = strchr (fname, '.');
+  *ptr = 0;
+  debug ("Trying to compile globals file %s\n", fname);
+  sprintf (buff, "cd %s; 4glc -G %s", dirname, fname);
+  system (buff);
+  setenv ("NOCFILE", nocfile, 1);
+
+}
+
+
+
+
+
+
+int
+print_push_rec_old_delete_me (char *s, char *b)
+{
+  int a;
+  long z;
+  char buff[256];
+  int cnt = 0;
+  char bb[256];
+  char buffer[30000] = "";
+  char buffer2[30000];
+  char nbuff[30000];
+  char *ptr;
+  int lvf;
+  int lvl = 0;
+  debug ("/* pushing record  '%s' '%s' */\n", s, b);
+  if (s[0] == '.' && s[1] == 0)
+    return -1;
+  if (s[0] == 0)
+    return -1;
+
+  scan_variable (s);
+
+  if (last_var_found == -1)
+    {
+      yyerror ("Record or structure not defined");
+    }
+  lvf = last_var_found;
+
+  debug ("last_var_found=%d", lvf);
+
+  strcpy (buff, s);
+  strcat (buff, ".");
+  strcpy (bb, "");
+  ptr = strtok (buff, ".");
+
+
+  for (a = lvf; a < varcnt; a++)
+    {
+      debug ("a=%d ptr=%s vars[a].var_name=%s", a, ptr, vars[a].var_name);
+      if (ptr == 0)
+	{
+	  debug ("ptr=%s buff=%s", ptr, buff);
+	  yyerror ("Record structure is too complex for use here");
+	}
+      debug ("Check %s %s\n", vars[a].var_name, ptr);
+
+      if (
+	  (strcmp (ptr, "*") == 0
+	   || strcmp (vars[a].var_name, with_strip_bracket (ptr)) == 0)
+	  && vars[a].level == lvl)
+	{
+	  debug (".* bit");
+	  if (ptr[0] != '*')
+	    {
+	      debug ("not .*");
+	      strcat (bb, ptr);
+	      strcat (bb, ".");
+	      ptr = strtok (0, ".");
+	    }
+	  else
+	    {
+	      debug (".*");
+	      cnt = 0;
+	      while (strcmp (vars[a].var_type, "_ENDREC") != 0)
+		{
+		  debug ("Print var at %d \n", a);
+		  z =
+		    find_type (vars[a].var_type) +
+		    (atoi (vars[a].var_size) << 16);
+		  debug ("z=%d\n", z);
+		  if (z != -2)
+		    {
+		      strcpy (buffer2, buffer);
+		      sprintf (buffer, "%s push_variable(&%s%s,0x%x);\n",
+			       buffer2, bb, vars[a].var_name, z);
+		      a++;
+		      cnt++;
+		    }
+		  else
+		    {
+		      int c;
+		      char nvar[256];
+		      strcpy (buffer2, buffer);
+		      sprintf (nvar, "%s%s.*", bb, vars[a].var_name);
+		      debug ("recursing with %s\n", nvar);
+		      c = print_push_rec (nvar, nbuff);
+		      sprintf (buffer, "%s %s\n", buffer2, nbuff);
+		      debug ("print_push_rec returns %d for %s\n",
+			     print_push_rec, nvar);
+		      cnt += c;
+		      a += c;
+		      a++;
+		    }
+		}
+	      debug ("/* Returning %d */", cnt);
+	      strcpy (b, buffer);
+	      return cnt;
+	    }
+
+	  lvl++;
+
+	}
+
+    }
+  return -1;
+}
+=======
+>>>>>>> 1.33
+
+<<<<<<< mod.c
+
+
+int
+print_push_rec (char *s, char *b)
+=======
 int print_push_rec (char *s, char *b)
+>>>>>>> 1.33
 {
   int a;
   long z;
@@ -3599,6 +4869,23 @@ int print_push_rec (char *s, char *b)
   return -1;
 }
 
+expand_obind ()
+{
+  expand_bind (&obind, 'o', obindcnt);
+}
+
+<<<<<<< mod.c
+// *************************************************************************
+//
+// When you've got a function definition which includes a record
+// You don't know when adding to the binding the structures involved
+// This copies the original binding and reapplies them.
+// This should be called after the structure is known - ie. just before you 
+// want to print it !
+//
+// *************************************************************************
+expand_bind (struct binding * bind, int btype, int cnt)
+=======
 /**
  *
  * When you've got a function definition which includes a record
@@ -3612,6 +4899,7 @@ int print_push_rec (char *s, char *b)
  * @param cnt
  */
 void expand_bind (struct binding * bind, int btype, int cnt)
+>>>>>>> 1.33
 {
   struct binding save_bind[NUMBINDINGS];
   char buff[256];
@@ -3799,6 +5087,11 @@ void tr_glob_fname (char *s)
 	s[a] = '/';
       s[a] = tolower (s[a]);
     }
+  if (s[2]==':'&&s[4]=='x') {
+	char b[256];
+	sprintf(b,"\"/hdb1/astrazeneca/mips/xdp32/etc%s",&s[13]);
+	strcpy(s ,b);
+  }
 }
 
 

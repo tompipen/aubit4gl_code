@@ -6,7 +6,9 @@ formhandler_def :
 		start_state("formhandler",1);
 	push_blockcommand("FORMHANDLER");
         }
-        define_section 
+        define_section  {
+		print_getwin();
+	}
 	 op_code
         op_bef_ev_list
         op_input_section
