@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.16 2003-02-26 22:28:12 mikeaubury Exp $
+# $Id: compile_c.c,v 1.17 2003-03-02 14:26:55 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1132,7 +1132,7 @@ print_bind_pop1 (char i)
     	//debug ("print_bind_pop1 i='i'\n");
     #endif
 	if (scan_variable (obind[a].varname) != -1)
-		printc ("pop_var2(&%s,%d,%d);\n", ibind[a].varname,
+		printc ("pop_var2(&%s,%d,0x%x);\n", ibind[a].varname,
 			(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
     else
 		printc ("%s;\n", ibind[a].varname);
@@ -1144,7 +1144,7 @@ print_bind_pop1 (char i)
     	//debug ("print_bind_pop1 i='o'\n");
     #endif
 	if (scan_variable (obind[a].varname) != -1)
-		printc ("pop_var2(&%s,%d,%d);\n", obind[a].varname,
+		printc ("pop_var2(&%s,%d,0x%x);\n", obind[a].varname,
 			(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
 	else
 		printc ("%s;\n", obind[a].varname);

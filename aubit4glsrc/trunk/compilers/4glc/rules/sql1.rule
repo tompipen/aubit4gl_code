@@ -1017,7 +1017,7 @@ cur_part: {strcpy($<str>$," YEAR TO SECOND ");}
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
-cur_v_part: {strcpy($<str>$,"1,6");}
+cur_v_part: {strcpy($<str>$,"1,10");}
 | s_curr_v TO s_curr_v
 {sprintf($<str>$," %s ,%s",$<str>1,$<str>3);}
 ;

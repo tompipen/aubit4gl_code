@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.35 2003-02-16 11:24:41 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.36 2003-03-02 14:26:24 mikeaubury Exp $
 #
 */
 
@@ -772,12 +772,13 @@
     /* in debug.c */
 	void 			setarg0	(const char *argv0);
 	const char * 	getarg0	(void);
-
+/*
 	struct a4gl_dtime {
 	    int stime;
 	    int ltime;
 	    char data[32];
 	};
+*/
 
 
     /* ========================== from a4gl_dtypes.h ==================== */
@@ -1042,7 +1043,7 @@
 
 	/* ======================= From buildtin_d.c ====================*/
 
-	void 	push_dtime		(struct a4gl_dtime *p);
+	void 	push_dtime		(struct A4GLSQL_dtime *p);
 	void 	push_int		(int p);
 	void 	push_long		(long p);
 	void 	push_date		(long p);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.28 2003-02-23 02:32:38 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.29 2003-03-02 14:26:24 mikeaubury Exp $
 */
 
 /**
@@ -147,12 +147,13 @@
 	    int stime;     /**< The start qualifier */
 	    int ltime;     /**< The end qualifier */
 	    char data[32]; /**< The value of the interval variable */
-		int i_years;
-		int i_months;
-		int i_days;
-		int i_hours;
-		int i_minutes;
-		double i_seconds;
+		int  i_years;
+		int  i_months;
+		int  i_days;
+		int  i_hours;
+		int  i_minutes;
+		int  i_seconds;
+		long i_fractions;
 	};
 
 
@@ -216,6 +217,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 	int 	aclfgl_scr_line 	(int nargs);
 	int 	aclfgl_arr_curr 	(int nargs);
 	int     aclfgl_length 		(int nargs);
+	int acli_scroll(void *s,int n);
+	void acli_datetime(char *s,int n);
 
 
 	int     aclfgl_err_get		(int statusnumber); // CHECK
@@ -270,6 +273,10 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 	char *	aclfgli_str_to_id	(char *name);
 	int 	aclfgl_ascii		(int n);
 	void 	push_ascii			(void); /* stack.c */
+void acli_interval(char *s,int n);
+int ctodt               (void *a, void *b, int size);
+int ctoint              (void *a, void *b, int size);
+
 
 	//int     aclfgl_set_page		(void);
 	//int     aclfgl_get_page		(void);
