@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.12 2003-01-04 01:58:29 afalout Exp $
+# $Id: amake,v 1.13 2003-01-07 03:59:34 afalout Exp $
 
 #####################################################################
 
@@ -27,8 +27,8 @@ LOGFILE=amake.log
 OVERRIDEINCLUDE=0
 #HEADER="./header.mki"
 #FOOTER="./footer.mki"
-#HEADER="$AUBITDIR/incl/header.mki"
-#FOOTER="$AUBITDIR/incl/footer.mki"
+HEADER="$AUBITDIR/incl/header.mki"
+FOOTER="$AUBITDIR/incl/footer.mki"
 
 AUBITDIR=`aubit-config AUBITDIR`
 #if you export MAKERULES, it will override 4gl make rules included in
@@ -266,6 +266,8 @@ fi
     do
         echo "aMaking $ONEPROG"
 
+		COMPOSITE=/tmp/$USER-$ONEPROG
+
 		if test "$CLEANOBJECTS" = "1"
 	    then
             make -f $ONEPROG clean DEFAULT=$DEFAULT
@@ -286,23 +288,26 @@ fi
             fi
 		fi
 
+        #If mk file has no insludes, add them
+		HAS_INCLUDE=`grep include $ONEPROG`
+        if [ "$HAS_INCLUDE" = "" ]; then
+		#RET=$?
+		#if test $RET != "0"
+			if [ "$VERBOSE" = "1" ]
+            then
+					echo "Adding include..."
+            fi
+			OVERRIDEINCLUDE=1
+        fi
+
 		if test "$OVERRIDEINCLUDE" = "1"
         then
-			#see if we have include command in this .mk :
-			#grep include $ONEPROG > /dev/null
-			#RET=$?
-			#if test $RET != "0"
-			#then
-			#	OVERRIDEINCLUDE=1
-			#fi
-
 			if [ "$VERBOSE" = "1" ]
             then
 					echo "Overriding include..."
             fi
-			
+
 			INCLCMT="#include"
-			COMPOSITE=/tmp/$USER-$ONEPROG
 			sed -e "s%include%$INCLCMT%g" $ONEPROG > $COMPOSITE.tmp
 	        cat $HEADER $COMPOSITE.tmp $FOOTER > $COMPOSITE
 

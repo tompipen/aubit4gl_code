@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.44 2003-01-04 01:58:30 afalout Exp $
+# $Id: Makefile-install.mki,v 1.45 2003-01-07 03:59:57 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -73,6 +73,11 @@ endif
 else
 	@echo "ERROR: cannot find ${LOOKFOR_INFILE} - please run 'configure' "
 endif
+
+
+#fixme: create this target to allow user to install amake without compiling aubit
+install.amake:
+
 
 #######################################
 #Create links for bin programs to location of Aubit bynary installation:

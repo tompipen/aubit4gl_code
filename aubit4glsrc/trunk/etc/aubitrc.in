@@ -115,6 +115,12 @@ EXDTYPE=@EXDTYPE@
 # an output only library (ie it can't read back what its written).
 A4GL_PACKER=XML
 
+############
+#Procesing of reserved word is experimental. Set this to YES, if you want to
+#disable this functionality. When set to NO, compiler will try to process
+#most reserved words, instead of reporting the error.
+A4GL_RESERVEWORDS=NO
+
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs
 ## ===================================================================
