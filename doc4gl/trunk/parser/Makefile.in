@@ -4,7 +4,7 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Id: Makefile.in,v 1.6 2003-05-15 10:23:26 afalout Exp $
+# $Id: Makefile.in,v 1.7 2003-05-21 00:22:42 afalout Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
 #
@@ -79,6 +79,32 @@ P4GLPPOBJ= p4pp_lex.o m_p4glpp.o
 
 p4glpp: $(P4GLPPOBJ)
 	$(ESQL) -o $@ $(P4GLPPOBJ)
+
+
+#  ==========================================================================
+#  Make file manupulation tool
+#  ==========================================================================
+
+# Aubit
+mkf.4ae: mkf.4gl
+	aubit 4glc $^ -o $@
+
+# Informix
+mkf.4gi: mkf.4gl
+	fglpc  $^
+	cat mkf.4go > $@
+
+# 4Js / D4GL
+mkf.42r: mkf.4gl
+	fgl2p  -c $^
+	fgllink -O -o $@ mkf.42m /usr/fgl2c/lib/libfgl4js.42x
+
+# Querix
+mkf.4qe: mkf.4gl
+	fglc -a -w -D -I -z -Ig $^
+	gcc -c -I/opt/querix/./incl -DQUERIX mkf.c -o mkf.qo
+	gcc -I/opt/querix/./incl -DQUERIX -rdynamic -o $@ mkf.qo -L"/opt/querix/./lib" -lfgl -lsqlc
+
 
 #  ==========================================================================
 #  P4gl as library. Done for unit testing.
