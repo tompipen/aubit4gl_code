@@ -1,5 +1,4 @@
 main
-display "STarting"
 menu "Hello test"
     command "window" "Open a new window"
 	display "Window"
@@ -20,9 +19,8 @@ menu "Hello test"
 
 
 	command "exit"
-	display "Exit"
-
-        exit menu
+		display "Exit"
+        	exit menu
 end menu
 
 message "Exiting.."

@@ -159,14 +159,17 @@ initial_expr:
 int_sign real_number 
 {
         debug("init expr %s %s",$<str>1,$<str>2);
-        sprintf($<str>$,"push_double((double)%s%s)",$<str>1,$<str>2);
+	sprintf($<str>$,"%s%d",$<str>1,$<str>2);
+	sprintf($<str>$,get_push_literal('D',$<str>$));
+        //sprintf($<str>$,"push_double((double)%s%s)",$<str>1,$<str>2);
 	$<ptr>$=new_expr($<str>$);
         inc_counter();
 }
 | int_sign INT_VALUE 
 {
         debug("init expr int %s %d",$<str>1,atoi($<str>2));
-	sprintf($<str>$,"push_long((long)%s%d); /*1*/",$<str>1,atoi($<str>2));
+	sprintf($<str>$,"%s%d",$<str>1,$<str>2);
+	sprintf($<str>$,get_push_literal('L',$<str>$));
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
@@ -181,19 +184,22 @@ ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%d);",atoi($<str>2));inc_counter()
 }
 |
 CHAR_VALUE  {
-	sprintf($<str>$,"push_char(%s);",$<str>1);
+	sprintf($<str>$,get_push_literal('S',$<str>1));
+	//sprintf($<str>$,"push_char(%s);",$<str>1);
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
 | real_number 
 {
-	sprintf($<str>$,"push_double((double)%s);",$<str>1);
+	sprintf($<str>$,get_push_literal('D',$<str>1));
+	//sprintf($<str>$,"push_double((double)%s);",$<str>1);
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
 | INT_VALUE 
 {
-	sprintf($<str>$,"push_long((long)%d);/*2*/",atoi($<str>1));
+	sprintf($<str>$,get_push_literal('L',$<str>1));
+	//sprintf($<str>$,"push_long((long)%d);/*2*/",atoi($<str>1));
 	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
