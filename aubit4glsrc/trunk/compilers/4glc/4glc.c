@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.32 2002-09-22 23:02:35 afalout Exp $
+# $Id: 4glc.c,v 1.33 2002-09-26 06:10:27 afalout Exp $
 #
 */
 
@@ -39,25 +39,7 @@
 =====================================================================
 */
 
-
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <getopt.h> 			/* struct option */
-
-	#include "a4gl_4glc_4glc.h"
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_dlsql.h"
-	#include "a4gl_pointers.h"
-
-#else
-
-    #include "a4gl_4glc_int.h"
-
-#endif
-
+#include "a4gl_4glc_int.h"
 
 /*
 =====================================================================
@@ -70,28 +52,29 @@
 #else
 	int yydebug;
 #endif
-extern FILE *ferr;
-extern int yylineno;
-extern int yyleng;
-char yytext[] = "";
-extern int chk4var;
-extern int lcnt;
-extern FILE *yyin;
-int yyin_len;
-extern int glob_only;
-char *outputfilename;
-static char outputfile[132]; /** The output file name */
+extern 		FILE *ferr;
+extern int 	yylineno;
+extern int 	yyleng;
+extern int 	chk4var;
+extern int 	lcnt;
+extern 		FILE *yyin;
+extern int 	glob_only;
+extern char *outputfilename; /* Defined in libaubit4gl */
 extern char infilename[132];
-char errbuff[1024] = "";
-int globals_only = 0;
+extern long fpos; /** The current file position for direct fseek */
 
 /**
  * Flag that identifies if the compiler should generate function call stack
  * actualization.
  */
-static int genStackInfo = 1;
+static int 	genStackInfo = 1;
+static char outputfile[132]; /** The output file name */
 
-extern long fpos; /** The current file position for direct fseek */
+char 		yytext[] = "";
+int 		yyin_len;
+char 		errbuff[1024] = "";
+int 		globals_only = 0;
+
 
 /*
 =====================================================================

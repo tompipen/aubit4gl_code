@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.78 2002-09-26 00:52:41 afalout Exp $
+# $Id: Makefile-common.in,v 1.79 2002-09-26 06:10:45 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -296,11 +296,13 @@ else
 endif
 
 #LD Command to use for linking executables:
+LD_EXE              =${CC} ${RDYNAMIC}
 ifeq "${TARGET_OS}" "solaris"
 	#LD_EXE              =ld
 	LD_EXE              =${CC} ${RDYNAMIC}
-else
-	LD_EXE              =${CC} ${RDYNAMIC}
+endif
+ifeq "${TARGET_OS}" "darwin"
+	LD_EXE              =${CC} ${LDFLAGS} -ldl ${RDYNAMIC}
 endif
 
 ALL_LIBS			=@LIBS@
