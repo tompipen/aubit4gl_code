@@ -9,15 +9,14 @@
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 EXPECT_TO_FAIL_TESTS="82 487 488 490 240 670 696 "
-# 82(report),487 (Too many arguments to function `A4GL_acli_scroll'+488),
+# 82(report),487,488 (Too many arguments to function `A4GL_acli_scroll'),
 #490 (syntax on SCROOL DOWN ... BY) 
 #240 (numeric formating) 670 (syntax errors in generated EC code)
 #696 (Syntax in generated EC)
 
-# NOT expected to fail: 689
-
 #Not (yet) reported
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 205"
+#205 - help file
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
@@ -51,6 +50,139 @@ INVALID_TESTS="375 377 249 684 105 705 217"
 ##############################################################################
 
 ##
+# Convert SQL script for particular RDBMS dialect
+#
+# @param TYPE Type of conversion (ddl or data)
+# @param RDBMS Type of RDBMS to convert SQL dialect to
+# @param RESULT Filename of resulting converted SQL script
+##
+convert_sql() {
+TYPE=$1
+RDBMS=$2
+RESULT=$3
+SQL_DDL=./testdb-ddl.sql
+SQL_DATA=./testdb-data.sql
+TMP1=tmp1
+TMP2=tmp2
+
+	echo "Translating $TYPE script for $RDBMS ..."
+	case $RDBMS in
+	informix)
+		case $TYPE in
+		ddl)
+			cat $SQL_DDL | sed -e "s/systables/dummy_systables/g" | sed -e "s/sysusers/dummy_sysusers/g" > $TMP1
+			cat $TMP1 | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" > $TMP2
+			mv $TMP2 $RESULT
+			;;
+		data)
+			cat $SQL_DATA | sed -e "s/systables/dummy_systables/g" | sed -e "s/sysusers/dummy_sysusers/g" > $TMP1
+			cat $TMP1 | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" > $TMP2
+			mv $TMP2 $RESULT
+			;;
+		*)
+			echo "ERROR: unknown translation type: $TYPE"
+			exit 3
+			;;
+		esac
+		;;
+	postgres)
+		case $TYPE in
+		ddl)
+			cat $SQL_DDL | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > $TMP1			
+			mv $TMP1 $RESULT
+			;;
+		data)
+			cat $SQL_DATA | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > $TMP1			
+			mv $TMP1 $RESULT
+			;;
+		*)
+			echo "ERROR: unknown translation type: $TYPE"
+			exit 3
+			;;
+		esac
+		;;
+	*)
+		echo "ERROR: don't know how to translate SQL for $RDBMS"
+		exit 4
+		;;
+	esac
+	
+	rm -f $TMP1 $TMP2
+	
+}
+
+
+##
+# Run SQL script 
+#
+# @param RDBMS Type of RDBMS to create test database in
+# @param DB Database name
+# @param SCRIPT SQL script to run
+# @param File to log execution into
+##
+run_sql_script() {
+RDBMS=$1
+DB=$2
+SCRIPT=$3
+LOGFILE=$4
+LOGFILE_CMD="> $LOGFILE 2>&1"
+
+   case $RDBMS in
+	informix)
+		EXEC="dbaccess $DB -qcr $SCRIPT $LOGFILE_CMD"
+		eval $EXEC
+		RET=$?
+		;;
+	postgres)
+		EXEC="psql -d $DB -f $SCRIPT $LOGFILE_CMD"
+		eval $EXEC
+		RET=$?
+		;;
+	*)
+		echo "ERROR: don't know how to run script for $RDBMS"
+		exit 4
+		;;
+	esac
+	
+	if test "$RET" != "0"; then
+		echo "Statement:"
+		echo $EXEC
+		echo "returned code $RET. See $LOGFILE"
+		exit $RET
+	fi
+}
+
+
+##
+# Create a new test database.
+# Populte test data
+#
+# @param RDBMS Type of RDBMS to create test database in
+##
+new_testdb() {
+RDBMS=$1
+SCRIPT=converted.sql
+LOGFILE=/tmp/testdb.log
+	
+   case $RDBMS in
+	informix | postgres)
+		convert_sql ddl $RDBMS $SCRIPT
+		echo "Creating tables..."
+		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
+		convert_sql data $RDBMS $SCRIPT
+		echo "Loading data..."
+		run_sql_script $RDBMS $TEST_DB $SCRIPT $LOGFILE
+		;;
+	*)
+		echo "ERROR: don't know how to create test data for $RDBMS"
+		exit 4
+		;;
+	esac
+	
+	rm -f $SCRIPT
+}
+
+##
 # Create a new test.
 # Copy the template of the makefile into the directory and the .cvsignore also
 # Try to copy the files if they not exist but the directory yes.
@@ -59,8 +191,8 @@ INVALID_TESTS="375 377 249 684 105 705 217"
 # @param dir The name of the test.
 ##
 new_test() {
-  dir=$1
-  nothing_done="1"
+dir=$1
+nothing_done="1"
   echo "DIR $dir"
   if ! test -d $dir; then
     mkdir $dir
@@ -672,7 +804,7 @@ for a in $FLAGS; do
         # --imap-url         URL to use for image map
 
 		#PG:
-		cat ./testdb.sql | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > testdb-tmp.sql
+		cat ./testdb-ddl.sql | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > testdb-tmp.sql
 		#psql -d $TEST_DB -f testdb-tmp.sql  > /tmp/testdb.log 2>&1
 		
 		TO=XML
@@ -861,7 +993,7 @@ for a in $FLAGS; do
 		USE_SQLITE=1; export SKIP_EC_RUN=1; export A4GL_SQLTYPE=sqlite
         ;;
 
-	-sqlite-new)    #Create new SQLite database from testdb.sql
+	-sqlite-new)    #Create new SQLite database from scripts
 		USE_SQLITE=1; NEW_SQLITE=1
         ;;
 
@@ -943,7 +1075,7 @@ for a in $FLAGS; do
 
 		;;
 
-    -informix-new) 	#Create new Informix database from testdb.sql
+    -informix-new) 	#Create new Informix database from scripts
 		USE_ESQLI=1; NEW_IFMX=1
         ;;
 
@@ -965,7 +1097,7 @@ for a in $FLAGS; do
 		;;
 
 
-    -pg-new)         	#Create new PostgreSQL database from testdb.sql
+    -pg-new)         	#Create new PostgreSQL database from scripts
 		USE_PG=1; NEW_PG=1
         ;;
 
@@ -1072,7 +1204,7 @@ for a in $FLAGS; do
 
 		;;
 
-    -sap-new)         	#Create new SAP DB database from testdb.sql
+    -sap-new)         	#Create new SAP DB database from scripts
 		NEW_SAP=1; USE_SAP=1
 		;;
 
@@ -1288,7 +1420,7 @@ for a in $FLAGS; do
 
 
 		echo " TEST DATABASE CREATION:"
-		echo " -<x>-new    Create new database from testdb.sql. <x>="
+		echo " -<x>-new    Create new database from scripts. <x>="
 		echo "             sqlite | pg | informix | sap"
 
 		echo ""
@@ -2076,29 +2208,7 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
                 exit 8
             fi
         fi
-
-		echo "Creating tables and loading data..."
-
-		cat ./testdb.sql | sed -e "s/systables/dummy_systables/g" | sed -e "s/sysusers/dummy_sysusers/g" > ./testdb2.sql
-		
-		#cat ./testdb.sql | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//"| grep -v "systables" > testdb-tmp.sql
-		cat ./testdb2.sql | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" > testdb-tmp.sql
-		
-		dbaccess $TEST_DB -qcr ./testdb-tmp > /tmp/testdb.log 2>&1
-		RET=$?
-		if test "$RET" != "0"; then
-			echo "Statement returned code $RET. See /tmp/testdb.log"
-            exit 3
-        else
-			TMP=`cat /tmp/testdb.log | sed -e 's/OOPS//g' | grep syntaxerrorhasoccurred`
-			if test "$TMP" = ""; then
-                echo "Tables created and populated"
-	            rm ./testdb-tmp.sql
-			else
-                echo "Tables creation failed. See /tmp/testdb.log"
-                exit 8
-            fi
-		fi
+		new_testdb informix
     else
 		#if test "$NO_ECHO" != "1"; then
 		if test "$VERBOSE" = "1"; then
@@ -2202,23 +2312,7 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
         fi
 
 		echo "Creating tables and loading data..."
-		cat ./testdb.sql | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > testdb-tmp.sql
-		psql -d $TEST_DB -f testdb-tmp.sql  > /tmp/testdb.log 2>&1
-
-		RET=$?
-		if test "$RET" != "0"; then
-			echo "Statement returned code $RET. See /tmp/testdb.log"
-            exit 3
-        else
-			TMP=`cat /tmp/testdb.log | grep "ERROR:"`
-			if test "$TMP" = ""; then
-                echo "Tables created and populated"
-	            rm ./testdb-tmp.sql
-			else
-                echo "Tables creation failed. See /tmp/testdb.log"
-                exit 8
-            fi
-		fi
+		new_testdb postgres
     else
 		if test "$NO_ECHO" != "1"; then
 			echo "Found PostgreSQL database $TEST_DB"
@@ -2462,8 +2556,8 @@ NOT_CERT_CNT=0
 echo "" > $LOGFILE
 echo "===================== Test results ========================" >> $LOGFILE
 echo "" >> $LOGFILE
-echo "Flags: $FLAGS  Platform: $PLATFORM PWD=$CURR_DIR Date:`date`" >> $LOGFILE
-
+echo "Flags: $FLAGS" >> $LOGFILE
+echo "Platform: $PLATFORM" >> $LOGFILE
 if test "$ALL_DB" = "1"; then
 	#remove irelevant flags, keep -sqlite -nospace -defaults -esqli
 	#also remove ONE -sqlite, since it's a default added by -default switch
@@ -2473,7 +2567,8 @@ if test "$ALL_DB" = "1"; then
 fi
 echo "" >> $LOGFILE
 date >> $LOGFILE
-4glc -v  >> $LOGFILE
+4glc -v | grep Version >> $LOGFILE
+4glc -v | grep Build >> $LOGFILE
 echo "" >> $LOGFILE
 if test "$RUN_ONE" != ""; then
 	echo "Running test: $RUN_ONE" >> $LOGFILE
@@ -3335,7 +3430,8 @@ fi
 	$SKIP_PCODE_LIST $SKIP_TUI_LIST $SKIP_LONG_LIST $SKIP_CONSOLE_LIST \
 	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST \
 	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST"
-
+	#clipp it:
+	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
 if test "$SKIP_OTHER_LIST" != "" ; then 
 	echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
 fi
