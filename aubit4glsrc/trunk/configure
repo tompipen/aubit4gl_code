@@ -19422,7 +19422,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES XML-RPC"
 	else
         PLUGIN_NO="$PLUGIN_NO XML-RPC"
-		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.xmmlrpc"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.xmlrpc"
 	fi
 
 	if test "$HAVE_RPCLIB" != "0" && test "$GTKBUILD" != "no"; then

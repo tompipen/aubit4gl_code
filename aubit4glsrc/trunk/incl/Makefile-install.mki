@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.51 2003-01-25 12:21:26 afalout Exp $
+# $Id: Makefile-install.mki,v 1.52 2003-01-26 01:20:09 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -583,6 +583,14 @@ install.curses:
 	@echo "Package info & manuals: ${CURSES_INFO}"
 	@echo "FIXME: TO-DO"
 
+# 20: SAP DB Environment
+install.sapdb.env: ${SAPDBENV_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${SAPDBENV_INFO}"
+	@echo " "
+	@echo "SAP DB Environment installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
 ########################
 #Define how to get installation files:
 ${IODBC_RUNTIME_RPM}:
@@ -608,7 +616,7 @@ ${SAPODBC_RPM}:
 ${UNIXODBCDEV_RPM}:
 	${WGET} ${UNIXODBCDEV_PATH}/${UNIXODBCDEV_RPM}
 ${PGESQLC_RPM}:
-	${WGET} ${PGESQLC_RPM}/${PGESQLC_RPM}
+	${WGET} ${PGESQLC_PATH}/${PGESQLC_RPM}
 ${PGODBC_RPM}:
 	${WGET} ${PGODBC_PATH}/${PGODBC_RPM}
 ${MPZ_SRC_TGZ}:
@@ -622,6 +630,9 @@ ${CHECK_RPM}:
 	${WGET} ${CHECK_PATH}/${CHECK_RPM}?download
 ${SAPDBESQL_RPM}:
 	${WGET} ${SAPDBESQL_PATH}/${SAPDBESQL_RPM}
+${SAPDBENV_RPM}:
+	${WGET} ${SAPDBENV_PATH}/${SAPDBENV_RPM}
+
 
 # ============================== EOF ================================
 

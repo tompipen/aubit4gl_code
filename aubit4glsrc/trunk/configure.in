@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.143 2003-01-25 12:20:49 afalout Exp $
+dnl # $Id: configure.in,v 1.144 2003-01-26 01:19:38 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1488,6 +1488,12 @@ AC_ARG_WITH(sapodbc,
 		TMP_SAPODBC_INCLUDE="-I$withval/interfaces/odbc/incl"
 		TMP_SAPODBC_LFLAGS="-L$withval/interfaces/odbc/lib -L$withval/indep_prog/runtime/7300/lib"
         LIBS="-lsqlrte -lpcr -lpthread -lm"
+
+        #libpcr: WARNING: NOT part of the SAP DB ODBC RPM!!!
+        #/opt/sapdb/indep_prog/runtime/7300/lib/libpcr.so
+		#/opt/sapdb/interfaces/precompiler/lib/libpcr.a
+		#/opt/sapdb/interfaces/precompiler/runtime/7300/lib/libpcr.so
+
 
 		CPPFLAGS="$CPPFLAGS $TMP_SAPODBC_INCLUDE"
 		LDFLAGS="$LDFLAGS $TMP_SAPODBC_LFLAGS $TMP_SAPODBC_INCLUDE"
@@ -3228,7 +3234,7 @@ fi
         PLUGIN_YES="$PLUGIN_YES XML-RPC"
 	else
         PLUGIN_NO="$PLUGIN_NO XML-RPC"
-		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.xmmlrpc"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.xmlrpc"
 	fi
 
 	if test "$HAVE_RPCLIB" != "0" && test "$GTKBUILD" != "no"; then

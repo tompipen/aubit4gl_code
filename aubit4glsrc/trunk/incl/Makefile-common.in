@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.105 2003-01-25 12:21:26 afalout Exp $
+# $Id: Makefile-common.in,v 1.106 2003-01-26 01:20:08 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -1011,8 +1011,21 @@ TIME                =$(shell date +%H-%M-%S)
 #This one on SF will not work, because it used cookies to redirect:
 #RH_RPM_PATH		=http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS
 #This one had time out problems:
+#250 Directory successfully changed.
+#--> PORT 192,168,1,69,4,103
+#421 Timeout. Pay attention.
+#Invalid PORT.
+#Retrying.
+#
 #RH_RPM_PATH         =ftp://rpmfind.net/linux/redhat/7.3/en/os/i386/RedHat/RPMS
-RH_RPM_PATH         =ftp://ftp.redhat.com/pub/redhat/linux/7.3/en/os/i386/RedHat/RPMS/
+
+#RH_RPM_VER          =7.3
+RH_RPM_VER          =8.0
+
+RH_RPM_PATH			=ftp://ftp.redhat.com/pub/redhat/linux/${RH_RPM_VER}/en/os/i386/RedHat/RPMS/
+
+
+
 
 #List of all missing options as make targets to be installed, as determined
 #by autoconf:
@@ -1048,8 +1061,28 @@ PDFLIB_BIN_TGZ		=pdflib-4.0.3-Linux.tar.gz
 XMLRPC_INFO			=http://xmlrpc-c.sourceforge.net
 XMLRPC_PATH			=http://download.sourceforge.net/xmlrpc-c
 XMLRPC_RPM          =xmlrpc-c-devel-0.9.9-1.i386.rpm
+
 LIBWWW_PATH         =${RH_RPM_PATH}
-LIBWWW_RPM			=w3c-libwww-5.3.2-5.i386.rpm
+ifeq "${RH_RPM_VER}" "7.3"
+	LIBWWW_RPM			=w3c-libwww-5.3.2-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	LIBWWW_RPM			=w3c-libwww-5.4.0-1.i386.rpm
+endif
+
+
+#/bin/rpm -Uvh xmlrpc-c-devel-0.9.9-1.i386.rpm w3c-libwww-5.3.2-5.i386.rpm
+#warning: xmlrpc-c-devel-0.9.9-1.i386.rpm: V3 DSA signature: NOKEY, key ID ac00c6c2
+#warning: w3c-libwww-5.3.2-5.i386.rpm: V3 DSA signature: NOKEY, key ID db42a60e
+#error: Failed dependencies:
+#        xmlrpc-c is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_client.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_xmlparse.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_xmltok.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#make: *** [install.xmlrpc] Error 2
+
+
 
 ##################
 # 4: JABBER eksemel
@@ -1061,8 +1094,13 @@ IKSEMEL_TGZ         =${IKSEMEL_SRC}.tar.gz
 ##################
 # 5: swig
 SWIG_INFO           =http://www.swig.org
-SWIG_PATH           ${RH_RPM_PATH}
-SWIG_RPM			=swig-1.1p5-12.i386.rpm
+SWIG_PATH           =${RH_RPM_PATH}
+ifeq "${RH_RPM_VER}" "7.3"
+	SWIG_RPM			=swig-1.1p5-12.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	SWIG_RPM			=swig-1.1p5-20.i386.rpm
+endif
 
 ##################
 # 6: doxygen dot tool, used for drawing dependency graphs - part of Graphviz package
@@ -1080,7 +1118,12 @@ SAPODBC_RPM			=sapdb-callif-7.3.0.29-1.i386.rpm
 # 8: DoxyGen
 DOXYGEN_INFO        =http://www.stack.nl/~dimitri/doxygen/
 DOXYGEN_PATH		=${RH_RPM_PATH}
-DOXYGEN_RPM			=doxygen-1.2.14-4.i386.rpm
+ifeq "${RH_RPM_VER}" "7.3"
+	DOXYGEN_RPM			=doxygen-1.2.14-4.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	DOXYGEN_RPM			=doxygen-1.2.14-8.i386.rpm
+endif
 
 
 ##################
@@ -1097,21 +1140,37 @@ endif
 # 10: PGODBC
 PGODBC_INFO         =http://www.postgresql.org
 PGODBC_PATH         =${RH_RPM_PATH}
-PGODBC_RPM			=postgresql-odbc-7.2.1-5.i386.rpm
+ifeq "${RH_RPM_VER}" "7.3"
+	PGODBC_RPM			=postgresql-odbc-7.2.1-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	PGODBC_RPM			=postgresql-odbc-7.2.2-1.i386.rpm
+endif
 
 ##################
 # 11: unixODBC DEV headers
 #We will often find unixODBC already installed, but without header files...
 UNIXODBCDEV_INFO	=http://www.unixodbc.org
 UNIXODBCDEV_PATH    =${RH_RPM_PATH}
-UNIXODBCDEV_RPM		=unixODBC-devel-2.2.0-5.i386.rpm
+ifeq "${RH_RPM_VER}" "7.3"
+	UNIXODBCDEV_RPM		=unixODBC-devel-2.2.0-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	UNIXODBCDEV_RPM		=unixODBC-devel-2.2.2-3.i386.rpm
+endif
 
 ##################
 # 12: unixODBC
 UNIXODBC_INFO		=http://www.unixodbc.org
 UNIXODBC_PATH       =${RH_RPM_PATH}
-UNIXODBC_RPM		=unixODBC-2.2.0-5.i386.rpm
-UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.0-5.i386.rpm
+ifeq "${RH_RPM_VER}" "7.3"
+	UNIXODBC_RPM		=unixODBC-2.2.0-5.i386.rpm
+	UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.0-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	UNIXODBC_RPM		=unixODBC-2.2.2-3.i386.rpm
+	UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.2-3.i386.rpm
+endif
 
 ##################
 # 13: MPZ - gnu mp
@@ -1125,16 +1184,21 @@ MPZ_SRC_TGZ			=${MPZ_SRC}.tar.gz
 # 14: PG ESQL
 PGESQLC_INFO        =http://www.postgresql.org
 PGESQLC_PATH        =${RH_RPM_PATH}
-PGESQLC_RPM         =postgresql-devel-7.2.1-5.i386.rpm
+ifeq "${RH_RPM_VER}" "7.3"
+	PGESQLC_RPM         =postgresql-devel-7.2.1-5.i386.rpm
+endif
+ifeq "${RH_RPM_VER}" "8.0"
+	PGESQLC_RPM         =postgresql-devel-7.2.2-1.i386.rpm
+endif
 
 ##################
 # 15: libcheck
 CHECK_INFO			=http://check.sourceforge.net/
-CHECK_PATH			=http://prdownloads.sourceforge.net/check/
+CHECK_PATH			=http://download.sourceforge.net/check
 CHECK_RPM			=check-0.8.3-1.i386.rpm
 
 ##################
-# 16: SAPDB ESQL/C
+# 16: SAPDB ESQL/C, also needed by ODBC drivers
 SAPDBESQL_INFO      =http://www.sapdb.org
 SAPDBESQL_PATH      =ftp://ftp.sap.com/pub/sapdb/bin/linux
 SAPDBESQL_RPM       =sapdb-precompiler-7.3.0.29-1.i386.rpm
@@ -1151,7 +1215,11 @@ GTK_INFO			=http://www.gtk.org/
 # 19: curses - TUI
 CURSES_INFO			=http://www.gnu.org/software/ncurses/ncurses.html
 
-
+##################
+# 20: SAP DB environment, neeed by ESQLC precompiler
+SAPDBENV_INFO       =http://www.sapdb.org
+SAPDBENV_PATH       =ftp://ftp.sap.com/pub/sapdb/bin/linux
+SAPDBENV_RPM        =sapdb-ind-7.3.0.29-1.i386.rpm
 
 #=================================== EOF ================================
 
