@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh 
 #/bin/bash
 #this is main Aubit 4gl compiler .4gl files compiler script
 #You should not need to invoke actual compiler (4glc) directly
@@ -475,7 +475,7 @@ fi
 #echo FGLLIBS = $FGLLIBS
 #exit
 
-LIBS="-lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG -L$ODBC_LIB_DIR -l$ODBC_LIB_NAME"
+LIBS="-L/root/ncurses/ncurses-5.2/lib -lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG -L$ODBC_LIB_DIR -l$ODBC_LIB_NAME"
 
 if [ "$NOCFILE" = "Y" ]
 then

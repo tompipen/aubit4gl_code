@@ -8,13 +8,30 @@
 %option yylineno
 /*%option interactive*/
 %%
-[\n] {lineno++;colno=0;REJECT;}
+[\n] 	{lineno++;colno=0;graphics_mode=0;REJECT;}
 [ ]	{ colno++;}
-[	]	{ colno+=3;}
+[	]	{colno+=3;}
 [	 \n]	;
-
 <comment>"}"	{BEGIN INITIAL;}
-<comment>.	; 
+<comment>.	;
+<comment>[\n]	;
+
+"\\g" 	{
+		if (graphics_mode) graphics_mode=0;
+		else graphics_mode=1;
+	}
+
+--! 	; 
+	
+--[^!].*$ 	{if (in_screen_section) REJECT;}
+
+[pdqb]  { 
+	if (ignorekw==0) REJECT; 
+       	if (graphics_mode==0) REJECT;
+	colno++;
+       	strcpy(yylval.str, "+"); 
+	return (CH);
+}
 
 "database"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
 "instructions"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(INSTRUCTIONS);}
@@ -30,20 +47,18 @@
 "end"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_END);}
 "]"		{ strcpy(yylval.str, yytext); colno++;return(CLOSE_SQUARE);}
 [0-9]+|[0-9]*\.[0-9]+  	{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(NUMBER_VALUE);}
-\"[^\"]+\" { strcpy(yylval.str,yytext); return CHAR_VALUE;}
-[	 \n]	;
-"{" 		{if(in_screen_section!=0) {strcpy(yylval.str,yytext); return OPEN_BRACE;}
-else {	
-	BEGIN comment;
-	yymore();
-}
-}
 
+\"[^\"]+\" { strcpy(yylval.str,yytext); return CHAR_VALUE;}
+\"\" { strcpy(yylval.str,yytext); return CHAR_VALUE;}
+\'[^\']+\' { strcpy(yylval.str,yytext); return CHAR_VALUE;}
+\'\' { strcpy(yylval.str,yytext); return CHAR_VALUE;}
+[	 \n]	;
+"{" 		{ if(in_screen_section!=0) {strcpy(yylval.str,yytext); return OPEN_BRACE; } else {	BEGIN comment; yymore(); } }
 "}" 		{strcpy(yylval.str,yytext); return CLOSE_BRACE;}
 "@" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return ATSIGN;}
 ":" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COLON;}
 "." 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOT;}
-"|" 		{strcpy(yylval.str,yytext); colno++;return PIPE;}
+"|" 		{ strcpy(yylval.str,yytext); colno++; if (graphics_mode==0) return PIPE; else return NAMED; }
 "=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return EQUAL;}
 "tables" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TABLES;}
 "without" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WITHOUT;}
@@ -124,9 +139,12 @@ else {
 "listbox"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LISTBOX;}
 "button"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BUTTON;}
 "panel"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}
-[a-zA-Z]+[a-zA-Z\_0-9]*	{if (ignorekw) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); return(NAMED);}
-[a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{if (ignorekw!=1) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); return(NAMED);}
-.			{ strcpy(yylval.str,yytext);colno++;return CH;}
+[a-zA-Z]+[a-zA-Z\_0-9]*	{
+	if (ignorekw) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); return(NAMED);
+}
+[a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
+if (ignorekw!=1) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); return(NAMED);}
+.		{strcpy(yylval.str,yytext);colno++;return CH;}
 %%
 
 buffpos() {

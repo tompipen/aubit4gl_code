@@ -6,7 +6,7 @@
 #include "../../lib/libincl/dbform.h"
 #include "../../lib/libincl/debug.h"
 extern struct struct_scr_field *fld;
-
+int graphics_mode=0;
 extern int ignorekw;
 extern int lineno;
 extern int colno;
@@ -59,6 +59,7 @@ database_section screen_section op_table_section attribute_section op_instructio
 database_section :
 DATABASE FORMONLY {the_form.dbname=strdup("formonly");}
 | DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=($<str>2);}
+| DATABASE FORMONLY WITHOUT KW_NULL INPUT {the_form.dbname=("formonly");}
 | DATABASE dbname {the_form.dbname=strdup($<str>2);}
 ;
 
@@ -103,7 +104,7 @@ op_size :
 	l=atoi($<str>2);
         if (c>the_form.maxcol) the_form.maxcol=c;
         if (l>the_form.maxline) the_form.maxline=l;
-	printf("Set to %d %d\n",the_form.maxcol,the_form.maxline);
+	//printf("Set to %d %d\n",the_form.maxcol,the_form.maxline);
 }
 ;
 
@@ -198,6 +199,7 @@ op_table_section :
 table_def_list : 
 table_def 
 | table_def_list table_def
+| table_def_list COMMA table_def
 ;
 
 table_def : NAMED opequal { add_table($<str>2,$<str>1); } 
@@ -436,7 +438,9 @@ op_instruction_section :
 instruct_opts op_end;
 
 instruct_opts :  
-instruct_op | instruct_opts  instruct_op ;
+instruct_op_1 | instruct_opts  instruct_op_1 ;
+
+instruct_op_1 : instruct_op | instruct_op SEMICOLON;
 
 instruct_op :
 DELIMITERS CHAR_VALUE {
