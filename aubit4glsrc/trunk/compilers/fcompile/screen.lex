@@ -52,6 +52,16 @@
 screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_SCREEN_TITLE);}
 "type"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(TYPE);}
 "like" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LIKE;}
+
+"year" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return YEAR;}
+"month" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MONTH;}
+"day" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DAY;}
+"hour" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return HOUR;}
+"minute" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MINUTE;}
+"second" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SECOND;}
+"fraction" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return FRACTION;}
+
+
 "record"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(RECORD);}
 "formonly"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(FORMONLY);}
 "size"		{ if (ignorekw) REJECT;strcpy(yylval.str, yytext); return(KW_SIZE);}
@@ -125,6 +135,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "text" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_TEXT;}
 "varchar" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return VARCHAR;}
 "date" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_DATE;}
+"datetime" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DATETIME;}
 "float" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_FLOAT;}
 "smallfloat" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLFLOAT;}
 "smallint" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SMALLINT;}

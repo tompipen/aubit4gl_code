@@ -43,6 +43,7 @@ extern char *outputfilename;
 extern char *tablist[];
 /* extern FILE *yyin; */
 int in_screen_section=0;
+int dtype_size=0;
 
 /*
 =====================================================================
@@ -80,7 +81,7 @@ REQUIRED REVERSE VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 %token SERIAL KW_BYTE KW_TEXT VARCHAR SQL_VAR
 %token SQLONLY  WIDGET CONFIG
 %token COMPARISON KWOR KWAND KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
-
+%token YEAR MONTH DAY HOUR MINUTE SECOND FRACTION
 /* extensions */
 %token LISTBOX BUTTON KW_PANEL
 
@@ -195,6 +196,7 @@ some_text: named_or_kw {
 	}
 	strcpy($<str>$,buff);
 }
+;
 
 screen_element : 
 some_text {
@@ -286,6 +288,7 @@ add_table($<str>2,$<str>1);
 
 opequal :  {strcpy($<str>$,"");}
 | EQUAL table_qualifier  {sprintf($<str>$,"%s",$<str>2);}
+;
 
 table_qualifier : named_or_kw {sprintf($<str>$,"%s", $<str>1);}
 | named_or_kw COLON named_or_kw {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
@@ -379,6 +382,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->tabname=strdup("formonly");
 	fld->colname=strdup($<str>3);
         fld->datatype=atoi($<str>4);
+        fld->dtype_size=dtype_size;
 }
 | named_or_kw DOT named_or_kw {
 	fld->tabname=strdup($<str>1); 
@@ -580,45 +584,62 @@ named_or_kw {
 datatype : 
 KW_CHAR {
 	strcpy($<str>$,"0");
+	dtype_size=0;
 } 
 | KW_INT {
 	strcpy($<str>$,"2");
+	dtype_size=0;
 } 
 | KW_DATE {
 	strcpy($<str>$,"7");
+	dtype_size=0;
 } 
 | KW_FLOAT {
 	strcpy($<str>$,"3");
+	dtype_size=0;
 } 
 | SMALLFLOAT {
 	strcpy($<str>$,"4");
+	dtype_size=0;
 }
 | SMALLINT {
 	strcpy($<str>$,"1");
+	dtype_size=0;
 } 
-| KW_DECIMAL opt_dec_ext{
+| KW_DECIMAL opt_dec_ext {
 	strcpy($<str>$,"5");
+	dtype_size=atoi($<str>2);
 } 
 | MONEY opt_dec_ext {
 	strcpy($<str>$,"8");
+	dtype_size=atoi($<str>2);
 } 
-| DATETIME {
+| DATETIME opt_dt_ext {
 	strcpy($<str>$,"10");
+	dtype_size=atoi($<str>2);
 } 
-| INTERVAL {
+| INTERVAL opt_int_ext {
 	strcpy($<str>$,"14");
+	dtype_size=atoi($<str>2);
 }
 | SERIAL {
 	strcpy($<str>$,"6");
+	dtype_size=0;
 }
 | KW_BYTE {
 	strcpy($<str>$,"11");
+	dtype_size=0;
 }
 | KW_TEXT {
 	strcpy($<str>$,"12");
+	dtype_size=0;
 }
-| VARCHAR { strcpy($<str>$,"13");}
-| BUTTON { strcpy($<str>$,"90");}
+| VARCHAR { strcpy($<str>$,"13");
+	dtype_size=0;
+	}
+| BUTTON { strcpy($<str>$,"90");
+	dtype_size=0;
+	}
 
 ;
 
@@ -652,6 +673,77 @@ opt_dec_ext : {strcpy($<str>$,"");}
 	| OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"16.%d",atoi($<str>2));}
 	| OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d.%d",atoi($<str>2),atoi($<str>4));}
 ;
+
+opt_int_ext : {strcpy($<str>$,"");}
+	| int_start TO int_end
+	{
+	sprintf($<str>$,"%d",(atoi($<str>1)*16)+atoi($<str>3));
+	}
+;
+
+
+opt_unit_size: {
+debug("Nothing in fraction - assume 2");
+strcpy($<str>$,"2");} |  OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {
+debug("    %s",$<str>2);
+strcpy($<str>$,$<str>2);
+};
+
+dtfrac: NUMBER_VALUE {
+if (atoi($<str>1)>5) {
+yyerror("Fraction values are between 0 and 5");
+YYERROR;
+}
+}
+;
+
+int_start :  int_start_unit opt_unit_size {sprintf($<str>$,"%d",atoi($<str>2)*16+atoi($<str>1));}
+;
+
+int_start_unit : YEAR {strcpy($<str>$,"1");}
+| MONTH {strcpy($<str>$,"2");}
+| DAY {strcpy($<str>$,"3");}
+| HOUR {strcpy($<str>$,"4");}
+| MINUTE {strcpy($<str>$,"5");}
+| SECOND{strcpy($<str>$,"6");}
+| FRACTION opt_frac
+  {
+  debug("opt_frac returns %s",$<str>2);
+  sprintf($<str>$,"%d",atoi($<str>2)+6); }
+  ;
+
+  int_end : int_start_unit;
+
+opt_dt_ext : {strcpy($<str>$,"");}
+	| dt_start TO dt_end {sprintf($<str>$,"%d",atoi($<str>1)*16+atoi($<str>3));}
+;
+
+dt_start: dtime_val {strcpy($<str>$,$<str>1);}
+;
+
+dt_end: dtime_val {strcpy($<str>$,$<str>1);}
+;
+
+dtime_val :
+YEAR {strcpy($<str>$,"1");}
+| MONTH {strcpy($<str>$,"2");}
+| DAY {strcpy($<str>$,"3");}
+| HOUR {strcpy($<str>$,"4");}
+| MINUTE {strcpy($<str>$,"5");}
+| SECOND{strcpy($<str>$,"6");}
+| FRACTION opt_frac
+{
+debug("opt_frac returns %s",$<str>2);
+sprintf($<str>$,"%d",atoi($<str>2)+6); }
+;
+
+opt_frac: {
+debug("Nothing in fraction - assume 2");
+strcpy($<str>$,"2");} |  OPEN_BRACKET dtfrac CLOSE_BRACKET {
+debug("Read fraction .. ");
+debug("    %s",$<str>2);
+strcpy($<str>$,$<str>2);
+};
 
 
 op_where: {$<expr>$=0;} | where_clause {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.8 2002-06-29 13:12:01 afalout Exp $
+# $Id: dump.c,v 1.9 2003-02-04 12:40:31 mikeaubury Exp $
 #*/
 
 /**
@@ -124,7 +124,7 @@ int a;
 	printf("Delimiters : '%s'\n",f->delim);
 	printf("maxcol     : %d\n",f->maxcol);
 	printf("maxline    : %d\n",f->maxline);
-	printf("XDR Version: %d\n",f->fcompile_version);
+	printf("XDR Version: %ld\n",f->fcompile_version);
 	printf("Compiled   : %s\n",ctime(&f->compiled_time));
 
 	printf("Screens :%d\n",f->snames.snames_len);
@@ -159,7 +159,7 @@ dump_attributes(struct_form *f)
 		printf("   subscript[0] : %d\n",f->attributes.attributes_val[a].subscripts[0]);
 		printf("   subscript[1] : %d\n",f->attributes.attributes_val[a].subscripts[1]);
 		printf("   subscript[2] : %d\n",f->attributes.attributes_val[a].subscripts[2]);
-		printf("   datatype : %d\n",f->attributes.attributes_val[a].datatype);
+		printf("   datatype : %d (%d)\n",f->attributes.attributes_val[a].datatype,f->attributes.attributes_val[a].dtype_size);
 		printf("   dynamic  : %d\n",f->attributes.attributes_val[a].dynamic);
 		for (b=0;b<f->attributes.attributes_val[a].str_attribs.str_attribs_len;b++) 
 		{
@@ -178,7 +178,7 @@ dump_attributes(struct_form *f)
 		if (f->attributes.attributes_val[a].colours.colours_len)
 		{
 			int b;
-			printf("   Additional colours \n",f->attributes.attributes_val[a].colours.colours_len);
+			printf("   Additional colours (%d)\n",f->attributes.attributes_val[a].colours.colours_len);
 			for (b=0;b<f->attributes.attributes_val[a].colours.colours_len;b++)
 			{
 				printf("        colour=%d WHERE ",f->attributes.attributes_val[a].colours.colours_val[b].colour);
@@ -287,7 +287,7 @@ dump_expr(t_expression *expr,int lvl)
 
 	if (expr->itemtype==ITEMTYPE_SPECIAL) {
 		print_lvl(lvl);
-		printf("*%d",expr->u_expression_u.special);
+		printf("*%p",expr->u_expression_u.special);
 	}
 
 	if (expr->itemtype==ITEMTYPE_LIST) {
