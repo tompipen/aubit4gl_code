@@ -39,14 +39,14 @@ GTK
 
 
 UI
-	Implement proper message stack (current way doesn't work properly) (started)
-	Add fldbuf & infield for multiple fields
+	Implement proper message stack (current way doesn't work properly) **DONE
+	Add fldbuf & infield for multiple fields **DONE
 	
 
 Other unimplemented functions
 	put_insert *partial
 	INPUT ARRAY  ** DONE
-	ERROR - needs a window...
+	ERROR - needs a window... **DONE
 	get_fldbuf  ** DONE
 	check infield etc ** DONE
 
@@ -72,10 +72,10 @@ XML-RPC
 
 TUI
 	implement Field attribute hierarchy ** DONE
-	implement Field expression parsing
-	implement attribute 'lines' hierarchy
-	General cleanups..
-	clean up construct...
+	implement Field expression parsing ** DONE (for most expressions..)
+	implement attribute 'lines' hierarchy ** DONE
+	General cleanups.. 
+	clean up construct... ** DONE
     	Windows TUI uses strange characters
 
     	DISPLAY without AT erises the screen completely - sends to stdout 

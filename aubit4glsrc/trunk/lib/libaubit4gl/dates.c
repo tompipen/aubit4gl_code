@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.14 2003-08-06 20:27:47 mikeaubury Exp $
+# $Id: dates.c,v 1.15 2003-09-03 18:43:35 mikeaubury Exp $
 #
 */
 
@@ -492,5 +492,11 @@ A4GL_y2kmode (int yr)
 
 }
 
+
+int A4GL_days_in_month(int m,int y) {
+int leap;
+  leap = leap_year (y);
+    return days_in_month[leap][m];
+}
 
 /* ============================= EOF =============================== */

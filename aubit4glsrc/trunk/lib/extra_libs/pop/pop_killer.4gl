@@ -126,6 +126,8 @@ endcode
 		or subject="Re: Thank you!"
 		or subject="Re: Details"
 		or subject="Re: Approved"
+		or subject matches "Virus Found in message *"
+		or subject ="Undelivered Mail Returned to Sender"
  	then
 		if i+5<23 then
 		display "-" at i+5,6 attribute(red,reverse)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.34 2003-09-02 21:46:10 mikeaubury Exp $
+# $Id: ops.c,v 1.35 2003-09-03 18:43:35 mikeaubury Exp $
 #
 */
 
@@ -197,7 +197,6 @@ A4GL_debug("in_dt_ops");
     }
 
 
-
 		
 
   in.stime = pi->stime;
@@ -225,17 +224,20 @@ A4GL_debug("in_dt_ops");
 
 
   A4GL_decode_interval (&in, &ival_data[0]);
+
 /*
-	//printf("\n\nInterval : Y=%d\n",ival_data[0]);
-	//printf("Interval : M=%d\n",ival_data[1]);
-	//printf("Interval : D=%d\n",ival_data[2]);
-	//printf("Interval : H=%d\n",ival_data[3]);
-	//printf("Interval : M=%d\n",ival_data[4]);
-	//printf("Interval : S=%d\n",ival_data[5]);
-	//printf("Interval : F=%d\n",ival_data[6]);
+	printf("\n\nInterval : Y=%d\n",ival_data[0]);
+	printf("Interval : M=%d\n",ival_data[1]);
+	printf("Interval : D=%d\n",ival_data[2]);
+	printf("Interval : H=%d\n",ival_data[3]);
+	printf("Interval : M=%d\n",ival_data[4]);
+	printf("Interval : S=%d\n",ival_data[5]);
+	printf("Interval : F=%d\n",ival_data[6]);
 */
 
+
   A4GL_decode_datetime (&dt, &dtime_data[0]);
+
 
 /*
 	printf("Datetime : Y=%d\n",dtime_data[0]);
@@ -245,7 +247,9 @@ A4GL_debug("in_dt_ops");
 	printf("Datetime : M=%d\n",dtime_data[4]);
 	printf("Datetime : S=%d\n",dtime_data[5]);
 	printf("Datetime : F=%d\n",dtime_data[6]);
+
 */
+
 
   switch (op)
     {
@@ -284,15 +288,21 @@ A4GL_debug("in_dt_ops");
 
       // Days
       dtime_data[2] += ival_data[2];
-      while (dtime_data[2] >= 30)
+      while (dtime_data[2] > A4GL_days_in_month(dtime_data[1],dtime_data[0]))
 	{
+	//printf("day too high: %d %d m=%d y=%d\n",dtime_data[2],A4GL_days_in_month(dtime_data[1],dtime_data[0]),dtime_data[1],dtime_data[0]);
 	  dtime_data[1]++;
-	  dtime_data[2] -= 30;							    /** @todo Fix this **/
+	  while (dtime_data[1]>12) {
+			dtime_data[0]++;
+			dtime_data[1]-=12;
+	  }
+	  dtime_data[2] -= A4GL_days_in_month(dtime_data[1],dtime_data[0]);							    /** @todo Fix this **/
 	}
+
 
       // Months
       dtime_data[1] += ival_data[1];
-      while (dtime_data[1] >= 12)
+      while (dtime_data[1] > 12)
 	{
 	  dtime_data[0]++;
 	  dtime_data[1] -= 12;
@@ -302,6 +312,7 @@ A4GL_debug("in_dt_ops");
       dtime_data[0] += ival_data[0];
       ok = 1;
       break;
+
 
     case OP_SUB:
       // Fractions
@@ -372,6 +383,14 @@ A4GL_debug("in_dt_ops");
 
   if (ok)
     {
+	A4GL_debug("Datetime : Y=%d\n",dtime_data[0]);
+	A4GL_debug("Datetime : M=%d\n",dtime_data[1]);
+	A4GL_debug("Datetime : D=%d\n",dtime_data[2]);
+	A4GL_debug("Datetime : H=%d\n",dtime_data[3]);
+	A4GL_debug("Datetime : M=%d\n",dtime_data[4]);
+	A4GL_debug("Datetime : S=%d\n",dtime_data[5]);
+	A4GL_debug("Datetime : F=%d\n",dtime_data[6]);
+
       A4GL_debug("I reckon thats ok...");
       sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%05d",
 	       dtime_data[0],
