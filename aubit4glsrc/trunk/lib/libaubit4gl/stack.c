@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.112 2005-02-17 11:51:46 mikeaubury Exp $
+# $Id: stack.c,v 1.113 2005-02-17 12:01:23 mikeaubury Exp $
 #
 */
 
@@ -186,7 +186,7 @@ int num_local_binding[LOCAL_BINDINGS];
 //void          A4GL_push_current                    (int a, int b);
 //void          A4GL_push_time                               (void);
 //void          A4GL_push_disp_bind                  (struct BINDING *b, int n);
-//static int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
+//int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
 //static int A4GL_isparamdate (void);
 //void        A4GL_set_init                          (struct BINDING *b, int n);
 //int A4GL_push_binding (void *ptr, int num);
@@ -2173,7 +2173,6 @@ A4GL_push_disp_bind (void *vb, int n)
 }
 
 
-#ifdef NO_LONGER_USED
 /**
  *
  *
@@ -2243,7 +2242,6 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 #endif
   return -1;
 }
-#endif
 
 
 /**
