@@ -28,7 +28,11 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
   A4GL_chkwin ();
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
-  A4GL_debug("wprintw : '%s'",buff);
+  A4GL_debug("wprintw : %d %d   '%s' attr=%x",x,y,buff,attr);
+
+
+
+ A4GLSQL_set_status (0, 0);
 
 #ifdef WIDEC
 {
@@ -36,14 +40,12 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
   wchar_t *wp; 
   int w;
 
-
-
   wp=wc_strdup(buff);
-
-   
   len=wc_char_len(wp);
-  A4GL_debug("len=%d\n",len);
 
+
+  A4GL_debug("len=%d\n",len);
+  if (len==0) return;
   if (len==-1) {
 		A4GL_debug("Invalid long string!");
 		return;
@@ -53,7 +55,7 @@ A4GL_wprintw (void *win, int attr, int x, int y, char *fmt, ...)
     {
 	char buff[256];
 	w=wcwidth(wp[a],4);
-
+	if (w<0) break;
 	memset(buff,0,255);
 	wc_single_to_str(buff,wp[a]);
 	A4GL_debug("Printing character %d - w=%d (%s)\n",a,w,buff);
@@ -97,11 +99,14 @@ static wchar_t *wc_strdup(char *buff) {
 int len;
 int n;
 wchar_t *wp;
-  len=mbstowcs(NULL,buff,0)+10;
-  if (len<=0) return 0;
-  n = len * sizeof(wchar_t);
+  len=mbstowcs(NULL,buff,0);
+  if (len<=0) {
+		return 0;
+	}
+  n = (len+10) * sizeof(wchar_t);
   wp = (wchar_t *)malloc(n);
   len = mbstowcs(wp, buff, n);
+  wp[len]=0;
   if (len) return wp;
   free(wp);
   return 0;
@@ -112,7 +117,6 @@ wchar_t *wp;
 static int wc_char_len(wchar_t *s) {
 int a;
 if (s==0) return -1;
-
 for (a=0;s[a];a++) ;
 return a;
 }
@@ -140,7 +144,8 @@ static char *wc_to_str(char *s,wchar_t *src,int char_size) {
 int l;
 l=wcstombs(s, src, char_size);
 if (l) return s;
-else return 0;
+
+return 0;
 }
 /* Convert a wide string to a normal string */
 static char *wc_single_to_str(char *s,wchar_t src) {
@@ -150,7 +155,7 @@ buff[0]=src;
 buff[1]=0;
 l=wcstombs(s, buff, 16);
 if (l) return s;
-else return 0;
+return 0;
 }
 
 

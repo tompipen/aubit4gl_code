@@ -4,9 +4,7 @@
 #include "aubit_noform.h"
 #include <panel.h>
 
-int print_using = -1;
-void A4GL_LL_screen_redraw();
-void A4GL_LL_screen_update();
+void A4GL_LL_screen_refresh();
 
 
 /* A lot of this is copied from ncurses libform and hacked...
@@ -117,32 +115,14 @@ redraw_field (FIELD * f)
 //int ls;
   int row;
   char *xbuff;
-
-  if (print_using == -1)
-    {
-
-      if (A4GL_isyes (acl_getenv ("USEWPRINT")))
-	{
-	  	print_using = 0;
-	} else {
-      		if (A4GL_isyes (acl_getenv ("USEWPRINTC"))) {
-	  		print_using = 2;
-		} else {
-      			if (A4GL_isyes (acl_getenv ("USEADDW"))) {
-	  			print_using = 1;
-			}
-		}
-	}
-    }
-
-
-  if (print_using==-1) {
-	print_using=0;
-  }
+  WINDOW *wot;
+  A4GL_debug("Redraw field : %p",f);
 
 
   if (f == 0)
     {
+	char *ptr=0;
+	*ptr=0;
       A4GL_debug ("Can't draw nothing...");
       return;
     }
@@ -165,14 +145,9 @@ redraw_field (FIELD * f)
   x = f->fcol;
   w = Get_Form_Window (f->form);
 
-  A4GL_debug("window = %p",w);
 
 
-
-
-
-
-
+  memset(buff,0,buff_len);
 
   if ((!(f->opts&O_VISIBLE)) || (!(f->opts&O_PUBLIC)) || (f->fore&A_INVIS)) {	
 	A4GL_debug("ITS INVISIBLE!");
@@ -183,17 +158,12 @@ redraw_field (FIELD * f)
   	memcpy (buff, ptr[0], (f->cols * f->rows));
   }
 
-
   buff[(f->cols * f->rows)] = 0;
+A4GL_debug("buff=%s\n",buff);
 
   attr=(f->back | f->fore)&0xffffff00;
 
-  if (print_using!=2) {
-	A4GL_debug("Setting attr=%x",attr);
-  	wattrset(w,attr);
-  }
-
-
+ wot = (void *) A4GL_window_on_top_ign_menu ();
 
   if (f->rows > 1)
     {
@@ -202,82 +172,19 @@ redraw_field (FIELD * f)
 	{
 	  strncpy (xbuff, &buff[row * f->cols], f->cols);
 	  xbuff[f->cols] = 0;
-	  A4GL_debug ("Printing : %s @ %d,%d (multi line)\n", xbuff, x, y);
-
-	  if (print_using == 0)
-	    {
-	      mvwprintw (w, y + row, x, "%s", xbuff);
-	    }
-
-	  if (print_using==1) 
-	    {
-	      mvwaddstr (w, y + row, x, xbuff);
-	    }
-
-	  if (print_using==2) 
-	    {
-		int ccc;
-		for (ccc=0;ccc<strlen(xbuff);ccc++) {
- 			mvwaddch (w, y, x+ccc, attr + xbuff[ccc]);
-		}
-	    }
+	  A4GL_debug ("Printing : '%s' @ %d,%d (multi line)\n", xbuff, x, y);
+      		//A4GL_wprintw(wot,a,x,y,"%s",s);
+      		A4GL_wprintw(wot,attr,x,y+row,"%s",xbuff);
 	}
       free (xbuff);
     }
   else
     {
-      A4GL_debug ("Printing : %s @ %d,%d %x %x\n", buff, x, y,f->opts,f->fore);
-
-      if (print_using == 0) {
-     		if (A4GL_isyes (acl_getenv ("CLRFIRST"))) {
-			memset(clr_buff,' ',f->cols * f->rows);
-	  		clr_buff[f->cols * f->rows]=0;
-	  		mvwprintw (w, y, x, "%s", clr_buff);
-			A4GL_LL_screen_update();
-		}
-	  	mvwprintw (w, y, x, "%s", buff);
-		A4GL_LL_screen_update();
-	}
-
-      	if (print_using == 1) {
-     		if (A4GL_isyes (acl_getenv ("CLRFIRST"))) {
-			memset(clr_buff,' ',strlen(buff));
-	  		clr_buff[strlen(buff)]=0;
-	  		mvwaddstr (w, y, x, buff);
-			A4GL_LL_screen_update();
-		}
-	  	mvwaddstr (w, y, x, buff);
-		A4GL_LL_screen_update();
-	}
-
-        if (print_using == 2) {
-		int ccc;
-     		if (A4GL_isyes (acl_getenv ("CLRFIRST"))) {
-			memset(clr_buff,' ',f->cols * f->rows);
-	  		clr_buff[f->cols * f->rows]=0;
-	  		mvwprintw (w, y, x, "%s", clr_buff);
-			A4GL_LL_screen_update();
-		}
-
-		for (ccc=0;ccc<strlen(buff);ccc++) {
-     			if (A4GL_isyes (acl_getenv ("CLRFIRST"))) {
- 				mvwaddch (w, y, x+ccc, attr + ' ');
-			}
- 			mvwaddch (w, y, x+ccc, attr + buff[ccc]);
-		}
-		A4GL_LL_screen_update();
-	}
+      A4GL_debug ("Printing : %s @ %d,%d %x %x w=%p wot=%p\n", buff, x, y,f->opts,f->fore,w,wot);
+      A4GL_wprintw(wot,attr,x+1,y+1,"%s",buff);
     }
-
-   wrefresh(w); 
-		/* 
-		This is probably techincally wrong - 
-		but because its in a derwin and the panels don't seem to update properly
-		... HoHum
-		(Should be safe - as this should be the window on top)
-		*/
-
    A4GL_LL_screen_update();
+   wrefresh(w);
 
 }
 
@@ -605,6 +512,18 @@ A4GL_form_unpost_form (FORM * form)
   A4GL_debug("unpost form");
 
   werase(form->sub);  
+
+
+  //delwin(form->sub);
+  //delwin(Get_Form_Window(form));
+  //wrefresh(form->w);
+
+  //werase (Get_Form_Window (form));
+
+
+  //delwin (form->w);
+  //form->w = (WINDOW *) 0;
+
   form->status &= ~1;
   return E_OK;
 }
@@ -628,10 +547,15 @@ A4GL_debug("post_form");
   form->current=0;
 
   redraw_form (form);
+	
+  	A4GL_LL_screen_update();
+
 
   form->status |= 1;
 
-  redraw_current_field (form);
+  if (form->current) redraw_current_field (form);
+  redraw_form (form);
+
   if (A4GL_isyes(acl_getenv("OLDREFRESH"))) {
   	wrefresh(formwin); /* @ */
   } else {
