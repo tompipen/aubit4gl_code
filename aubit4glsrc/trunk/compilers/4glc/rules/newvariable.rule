@@ -56,7 +56,7 @@ var_int :
 	var | DOLLAR var {strcpy($<str>$,$<str>2);}
 ;
 
-varsetidentdot : var setident DOT
+varsetidentdot : var DOT
 ;
 
 var: 
@@ -267,8 +267,8 @@ lex_printcomment("/* %s */\n",$<str>1);
 let_var: let_array_r_variable {
 		debug("Array..");
 }
-| let_var setident DOT let_var_dot { sprintf ($<str>$, "%s.%s", $<str>1, $<str>4); }
-| let_var setident DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE
+| let_var DOT let_var_dot { sprintf ($<str>$, "%s.%s", $<str>1, $<str>3); }
+| let_var DOT identifier OPEN_SQUARE num_list CLOSE_SQUARE
 {
   int a;
   int b;
@@ -279,7 +279,7 @@ let_var: let_array_r_variable {
   if (strcmp($<str>1,"sqlca")==0) {
         strcpy($<str>1,"a4gl_sqlca");
   }
-  sprintf($<str>$,"%s.%s",$<str>1,$<str>4);
+  sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
 
          if (scan_variable($<str>$)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (5)",$<str>$);
@@ -295,13 +295,13 @@ let_var: let_array_r_variable {
 
   if (b != 0)
     {
-      sprintf ($<str>$, "%s.%s[%s-1] ", $<str>1, $<str>4,$<str>6);
+      sprintf ($<str>$, "%s.%s[%s-1] ", $<str>1, $<str>3,$<str>5);
       lex_printcomment ("/* array variable %s*/\n", $<str>$);
     }
   else
     {
-      sprintf(buff,"%s.%s",$<str>1,$<str>4);
-      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", buff, a, $<str>6);
+      sprintf(buff,"%s.%s",$<str>1,$<str>3);
+      sprintf ($<str>$, " let_substr(%s,%d,%s,0)", buff, a, $<str>5);
       addmap("Let Variable",buff,curr_func,yylineno,infilename);
       lex_printcomment ("/*character variable %s*/\n", $<str>$);
     }

@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.34 2003-04-05 07:55:52 mikeaubury Exp $
+#	 $Id: a4gl.mk,v 1.35 2003-04-08 19:05:10 mikeaubury Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.34 2003-04-05 07:55:52 mikeaubury Exp $
+#   @(#)$Id: a4gl.mk,v 1.35 2003-04-08 19:05:10 mikeaubury Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -82,7 +82,7 @@ A4GL_LINKLIBS_LFLAGS=-L${AUBITDIR}/lib
 
 ###########################
 #Flags to C compiler for compiling objects:
-AUCC_FLAGS			=-g -O2 -static -O -I${AUBITDIR}/incl -DAUBIT4GL
+AUCC_FLAGS			=-g -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 
 ###########################
 # A4GL C-code Compiler

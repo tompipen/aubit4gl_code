@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.84 2003-03-09 07:26:47 afalout Exp $
+# $Id: Makefile.in,v 1.85 2003-04-08 19:05:15 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -81,6 +81,7 @@ LIBRPCNORPC_PATH	=librpc/no_rpc
 LIBRPCXMLRPC_PATH	=librpc/xml_rpc
 LIBEXDATA_PATH		=libexdata
 LIBDATA_PATH		=${ROOT}/common/dataio
+LIBHELP_STD_PATH		=libhelp
 LIBMSGNATIVE_PATH	=libmsg/msg_native
 LIBIMJABBER_PATH	=${ROOT}/tools/jabber $@
 LOADMAP_PATH		=${ROOT}/tools/loadmap
@@ -112,6 +113,10 @@ LIBEXDATA_DEPS		=$(wildcard ${LIBEXDATA_PATH}/*.c) $(wildcard ${LIBEXDATA_PATH}/
 					$(wildcard ${LIBEXDATA_PATH}/Makefile) ${ALL_H}
 LIBSQLNOSQL_DEPS	=$(wildcard ${LIBSQLNOSQL_PATH}/*.c) $(wildcard ${LIBSQLNOSQL_PATH}/*.h) \
 					$(wildcard ${LIBSQLNOSQL_PATH}/Makefile) ${ALL_H}
+
+LIBHELP_STD_DEPS	=$(wildcard ${LIBHELP_STD_PATH}/*.c) $(wildcard ${LIBHELP_STD_PATH}/*.h) \
+					$(wildcard ${LIBHELP_STD_PATH}/Makefile) ${ALL_H}
+
 LIBSQLPG_DEPS		=$(wildcard ${LIBSQLPG_PATH}/*.cpp) $(wildcard ${LIBSQLPG_PATH}/*.h) \
 					$(wildcard ${LIBSQLPG_PATH}/Makefile) ${ALL_H}
 LIBSQLODBC_DEPS     =$(wildcard ${LIBSQLODBC_PATH}/*.c) $(wildcard ${LIBSQLODBC_PATH}/*.h) \
@@ -263,6 +268,8 @@ libSQL_esql${SO_EXT}: ${LIBSQLESQL_DEPS}
 libSQL_pg${SO_EXT}: ${LIBSQLPG_DEPS}
 	${MAKE} -C ${LIBSQLPG_PATH}
 
+libHELP_std${SO_EXT}: ${LIBHELP_STD_DEPS} ${4GLC} ${FCOMPILE}
+	${MAKE} -C ${LIBHELP_STD_PATH}
 
 ##############
 #libSQL_ (ODBC)
@@ -338,6 +345,9 @@ loadmap: ${LOADMAP_DEPS}
 ${4GLC}:
 	${MAKE} -C ${ROOT}/compilers/4glc
 
+${FCOMPILE}:
+	${MAKE} -C ${ROOT}/compilers/fcompile
+
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
@@ -393,6 +403,7 @@ clean.libpacker:
 clean.other:
 	${MAKE} -C ${LIBAUBIT4GL_PATH} clean
 	${MAKE} -C ${LIBMSGNATIVE_PATH} clean
+	${MAKE} -C ${LIBHELP_STD_PATH} clean
 	${MAKE} -C ${AUBITCONFIG_PATH} clean
 	${MAKE} -C ${LOADMAP_PATH} clean
 #	${MAKE} -C ${LIBLEXC_PATH} clean

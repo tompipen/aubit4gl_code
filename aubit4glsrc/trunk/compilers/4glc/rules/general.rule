@@ -73,14 +73,14 @@ addmap("Open Form",last_var,curr_func,yylineno,infilename);
 opt_help_no		:	{strcpy($<str>$,"0");} | HELP INT_VALUE {strcpy($<str>$,$<str>2);};
 
 
-identifier	: setident NAMED unsetident { 
-			strcpy($<str>$,downshift($<str>2)) ;
+identifier	:  NAMED  { 
+			strcpy($<str>$,downshift($<str>1)) ;
 }
 ;
 
 
-ident_or_var	: setident ident_p2 unsetident {
-			sprintf($<str>$,"%s",$<str>2) ;
+ident_or_var	: ident_p2  {
+			sprintf($<str>$,"%s",$<str>1) ;
 			}  
 ;
 
@@ -96,16 +96,6 @@ strcpy(last_var,downshift($<str>1));
 
 var_or_string : var | CHAR_VALUE;
 
-setident : {
-		debug("Setident\n");
-		/* chk4var=1; */
-	strcpy($<str>$,"");
-	   } ;
-
-unsetident : 	{
-		debug("Unsetident\n");
-		chk4var=0;
-		} ;
 field_name2	:	identifier {sprintf($<str>$,"\"%s\",1",$<str>1);}
 		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE
 {sprintf($<str>$,"\"%s\",%s",$<str>1,$<str>3);}

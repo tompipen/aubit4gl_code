@@ -991,14 +991,14 @@ column_name_specific: identifier col_arr
 addmap("Use Column",$<str>1,curr_func,yylineno,infilename);
 sprintf($<str>$,"%s%s",$<str>1,$<str>2);
 }
-	| table_name setident DOT identifier col_arr
+	| table_name DOT identifier col_arr
 {
-sprintf($<str>$,"%s.%s%s",$<str>1,$<str>4,$<str>5);
+sprintf($<str>$,"%s.%s%s",$<str>1,$<str>3,$<str>4);
 addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
 }
-	| table_name setident DOT MULTIPLY
+	| table_name  DOT MULTIPLY
  {
-sprintf($<str>$,"%s.%s",$<str>1,$<str>4);
+sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
 addmap("Use Column",$<str>$,curr_func,yylineno,infilename);
 }
 	;
@@ -1185,14 +1185,14 @@ select_statement2_ss:
 	};
 
 select_statement21_ss:
-	SELECT setident op_ad select_list_ss
+	SELECT  op_ad select_list_ss
         opt_into_sel_ss
 	table_expression_ss
         sel_p2_ss {
-	$<sql_string>$=make_sql_string($<str>1, " ",$<str>3," ",$<sql_string>4," ", $<sql_string>5," ", $<sql_string>6, " ",$<sql_string>7,0);
-	free($<sql_string>4);
+	$<sql_string>$=make_sql_string($<str>1, " ",$<str>2," ",$<sql_string>3," ", $<sql_string>4," ", $<sql_string>5, " ",$<sql_string>6,0);
+	free($<sql_string>3);
+	free($<sql_string>5);
 	free($<sql_string>6);
-	free($<sql_string>7);
 }
 ;
 
@@ -1227,17 +1227,17 @@ opt_into_sel_ss :  { start_bind('o',0);$<sql_string>$=make_sql_string("",0); }
 
 
 query_specification_ss:
-	SELECT setident op_ad select_list_ss table_expression_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ", $<sql_string>4," ",$<sql_string>5,0);
+	SELECT op_ad select_list_ss table_expression_ss {
+		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ", $<sql_string>3," ",$<sql_string>4,0);
+		free($<sql_string>3);
 		free($<sql_string>4);
-		free($<sql_string>5);
 
 	}
 ;
 
 subquery_ss:
-	OPEN_BRACKET SELECT setident op_ad select_list_ss table_expression_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string("(",$<str>2," ",$<str>4," ",$<sql_string>5," ",$<sql_string>6,")",0);
+	OPEN_BRACKET SELECT op_ad select_list_ss table_expression_ss CLOSE_BRACKET {
+		$<sql_string>$=make_sql_string("(",$<str>2," ",$<str>3," ",$<sql_string>4," ",$<sql_string>5,")",0);
 	}
 ;
 

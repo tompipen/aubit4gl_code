@@ -6,3 +6,5 @@ libHELP_std.so: helplib.4gl a4gl_xxhelp.afr.c
 
 a4gl_xxhelp.afr.c: a4gl_xxhelp.per
 	(export A4GL_PACKER=PACKED; export A4GL_FORMTYPE=GENERIC; fcompile -c a4gl_xxhelp.per)
+clean: 
+	rm -f a4gl_xxhelp.afr.c libHELP_std.so ../libHELP_std.so a4gl_xxhelp.afr.dat helplib.c helplib.glb helplib.h libHELP_std.so.err
