@@ -56,6 +56,11 @@ Obtaining the Aubit compiler
 
 	http://sourceforge.net/cvs/?group_id=32409
 
+	If using cvs client version 1.11.2 for anonymous checkout, a bug requires 
+	an empty cvspass in your home directory (nb echo "" > $HOME/.cvspass).  
+	This bug is corrected in later versions. (Thanks to Bernard)
+
+
 - OR -
 
 2) Obtain source code using source file distribution package

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.4 2002-10-07 11:06:30 afalout Exp $
+# $Id: Makefile.in,v 1.5 2003-05-25 03:47:40 afalout Exp $
 #
 
 ROOT        =../../..
@@ -37,6 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CMODS   	=pack_packed.c
+OBJS		=${CMODS:.c=.o}
 ALL 		=${LIBROOT}/libPACKER_PACKED${SO_EXT}
 
 LOCAL_IFLAGS=-I..
@@ -54,11 +55,30 @@ endif
 
 ALL: ${ALL}
 
-${LIBROOT}/libPACKER_PACKED${SO_EXT}: ${CMODS}
-	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#On HP-UX:
+#gcc   -g -O2 -g -Wall -DDEBUG -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H  -I/cassens/others/aubit/aubit4glsrc/incl -fPIC -I.. -b -o ../../libPACKER_PACKED.sl pack_packed.c
+#gcc: ../../libPACKER_PACKED.sl: No such file or directory
+#gcc: installation problem, cannot exec `cc1': No such file or directory
+#make[2]: *** [../../libPACKER_PACKED.sl] Error 1
+#make[2]: Leaving directory `/cassens/others/aubit/aubit4glsrc/lib/libpacker/packed'
+#make[1]: *** [libPACKER_PACKED.sl] Error 2
+#make[1]: Leaving directory `/cassens/others/aubit/aubit4glsrc/lib'
+#make: *** [corecompile] Error 2
+#
+#did this to fix
+#
+#gcc   -g -O2 -g -Wall -DDEBUG -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H  -I/cassens/others/aubit/aubit4glsrc/incl -fPIC -I../../compilers/fcompile -I../libaubit4gl -I..  -c -o pack_packed.o pack_packed.c
+#ld -b -o ../../libPACKER_PACKED.sl  pack_packed.o
+
+
+#${LIBROOT}/libPACKER_PACKED${SO_EXT}: ${CMODS}
+#	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+${LIBROOT}/libPACKER_PACKED${SO_EXT}: ${OBJS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 ## ==================================================================
 ##                          Clean

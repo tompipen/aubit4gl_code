@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.30 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: fcompile.c,v 1.31 2003-05-25 03:47:40 afalout Exp $
 #*/
 
 /**
@@ -172,12 +172,14 @@ main (int argc, char *argv[])
 	}
 
       if (strcmp (argv[cnt], "-c") == 0)
+      // compile to C, not to compiled form format
 	{
 	  as_c = 1;
 	  continue;
 	}
 
       if (strcmp (argv[cnt], "-d") == 0)
+      // secify database name to be used while compiling form
 	{
 	  cnt++;
 	  default_database = strdup (argv[cnt]);
@@ -208,6 +210,8 @@ main (int argc, char *argv[])
 
   A4GL_bname (c, a, b);
 
+  
+  //does not work - attempting to compile form without specifying .per extension will fail:
   if (b[0] == 0)
     {
       strcat (c, ".per");

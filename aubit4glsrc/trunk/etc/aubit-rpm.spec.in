@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.13 2003-02-12 23:05:30 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.14 2003-05-25 03:47:40 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -50,11 +50,7 @@ Prefix: /opt
 
 #WARNNING: file name used here will need to be present on local system
 #at time of building RPM:
-#Source: http://aubit4gl.sourceforge.net/files/@SHORTNAME@src-@AUBIT_VERSION@-@AUBIT_BUILD@.@ARCHEXT@
 Source: http://aubit4gl.sourceforge.net/files/%{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@.@ARCHEXT@
-#                                             aubit4glsrc-0.30RC3.114.tar.gz: No such file or directory
-#(1) No /usr/src/redhat/SOURCES/aubit4glsrc-0.30RC3-114.tar.gz, making it...
-#(2) No /tmp/aubit4glsrc-0.30RC3-114/aubit4glsrc-0.30RC3-114.tar.gz, making it...Creating /tmp/aubit4glsrc-0.30RC3-114/aubit4glsrc-0.30RC3-114.tar.gz from aubit4glsrc-0.30RC3-114/ ...
 
 #Patch: aubit4glsrc-%{version}.patch
 

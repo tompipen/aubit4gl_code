@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.171 2003-04-26 06:37:22 afalout Exp $
+dnl # $Id: configure.in,v 1.172 2003-05-25 03:47:20 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -220,6 +220,8 @@ AC_SUBST(IFX_LFLAGS)
 AC_SUBST(IFX_INCLUDE)
 AC_SUBST(IFX_C_MAKE)
 AC_SUBST(INFORMIXDIR)
+AC_SUBST(INFORMIXC)
+
 
 #Informix ODBC
 AC_SUBST(HAVE_IFXODBC)
@@ -471,6 +473,8 @@ IFMX_ESQLC=no
 LCLINTEXE=no
 STRIP_EXECUTABLES=no
 cygwin=0
+INFORMIXC=$CC
+
 
 #FIXME: do not hard-code
 WINDOWS_DRIVE=D:
@@ -533,6 +537,16 @@ case $host in
 		SO_EXT_LINKABLE=.dylib
 		;;
 
+	#hppa2.0w-hp-hpux11.00
+	*-hp-hpux*)
+        #on HP-UX only native C compiler is supported for compiling Informix
+        # ESQL/C generated C code?
+		INFORMIXC=c89
+        SO_EXT=.sl
+        SO_EXT_LINKABLE=$SO_EXT
+		SO_LDFLAGS="-b"
+        LDFLAGS_SHARED="-b"
+		;;
 
 	*-ibm-aix*)
 		PIC=

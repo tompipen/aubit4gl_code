@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.127 2003-04-13 06:23:45 afalout Exp $
+# $Id: Makefile-common.in,v 1.128 2003-05-25 03:47:40 afalout Exp $
 #
 
 
@@ -763,12 +763,15 @@ MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 ##                    Install Settings
 ## ==================================================================
 
-#FIXME: determine this from configure script:
+################################
 #RPM setup:
+#FIXME: determine this from configure script:
 #redhat 6:
 #RPMBUILDROOT=/root/redhat
 #redhat 7.2
 RPMBUILDROOT=/usr/src/redhat
+#Mandtrake:
+#RPMBUILDROOT=/usr/src/RPM
 
 BIN_PATH    =bin
 LIB_PATH    =lib

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.31 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: calldll.c,v 1.32 2003-05-25 03:47:40 afalout Exp $
 #
 */
 
@@ -319,49 +319,54 @@ A4GL_dl_openlibrary (char *type, char *p)
   sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type,
 	   plugin_name);
 #else
-#if defined(__DARWIN__)
-  sprintf (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type,
-	   plugin_name);
+	#if defined(__DARWIN__)
+	  sprintf (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type,
+		   plugin_name);
 
-  /*
-     void *handle;
-     void (*hw)(void);
-     void (*hh)(void);
-     printf("Loading \"libhello.dylib\" .....\n");
-     handle = dlopen("/Users/fujiik/sandbox/mypkg/src/libdl/test/libhello.dylib",RTLD_LAZY);
+	  /*
+	     void *handle;
+	     void (*hw)(void);
+	     void (*hh)(void);
+	     printf("Loading \"libhello.dylib\" .....\n");
+	     handle = dlopen("/Users/fujiik/sandbox/mypkg/src/libdl/test/libhello.dylib",RTLD_LAZY);
 
-     hw = dlsym(handle,"_helloworld");
-     (*hw)();
-     hh = dlsym(handle,"_hellohoge");
-     (*hh)();
+	     hw = dlsym(handle,"_helloworld");
+	     (*hw)();
+	     hh = dlsym(handle,"_hellohoge");
+	     (*hh)();
 
-     dlclose(handle);
+	     dlclose(handle);
 
-   */
+	   */
 
 
-#else
-#if defined(__MINGW32__)
+	#else
+		#if defined(__MINGW32__)
 
-//printf("Mingwin mode %s\n",acl_getenv("AUBITDIR"));
-  //printf("dl_openlibrary received %s %s\n",type, plugin_name);
-  //printf("1 plugin_name = %s\n",plugin_name);
-  char *aubitdirptr;
-  //printf("2 plugin_name = %s\n",plugin_name);
-  aubitdirptr = acl_getenv ("AUBITDIR");
-  //sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, plugin_name);
-  //printf("3 plugin_name = %s\n",plugin_name); // <<<<<<< FUCKED!!!!
-  sprintf (buff2, "%s/lib/lib%s", aubitdirptr, type);
-  //printf("buff2 = %s\n",buff2);
-  //printf("4 plugin_name = %s\n",plugin_name);
-  sprintf (buff, "%s_%s.dll", buff2, plugin_name);
-  //printf("buff = %s\n",buff);
-#else
-  /* all other platforms: */
-  sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type,
-	   plugin_name);
-#endif
-#endif
+		//printf("Mingwin mode %s\n",acl_getenv("AUBITDIR"));
+		  //printf("dl_openlibrary received %s %s\n",type, plugin_name);
+		  //printf("1 plugin_name = %s\n",plugin_name);
+		  char *aubitdirptr;
+		  //printf("2 plugin_name = %s\n",plugin_name);
+		  aubitdirptr = acl_getenv ("AUBITDIR");
+		  //sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, plugin_name);
+		  //printf("3 plugin_name = %s\n",plugin_name); // <<<<<<< FUCKED!!!!
+		  sprintf (buff2, "%s/lib/lib%s", aubitdirptr, type);
+		  //printf("buff2 = %s\n",buff2);
+		  //printf("4 plugin_name = %s\n",plugin_name);
+		  sprintf (buff, "%s_%s.dll", buff2, plugin_name);
+		  //printf("buff = %s\n",buff);
+		#else
+			#if defined(__HPUX__)
+			  sprintf (buff, "%s/lib/lib%s_%s.sl", acl_getenv ("AUBITDIR"), type,
+				   plugin_name);
+            #else
+			  /* all other platforms: */
+			  sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type,
+				   plugin_name);
+            #endif
+		#endif
+	#endif
 #endif
 
 #ifdef DEBUG
