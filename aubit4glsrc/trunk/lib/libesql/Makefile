@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2003-07-29 06:56:31 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2003-07-30 10:32:38 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -45,13 +45,13 @@ include ${ROOT}/incl/Makefile-common
 POSTGRESDIR=/usr/local/pgsql
 
 
-all: ${LIBROOT}/libESQL_INFORMIX.so
+all: ${LIBROOT}/libESQL_INFORMIX.so ${LIBROOT}/libESQL_POSTGRES.so
 
 ${LIBROOT}/libESQL_INFORMIX.so: helper_funcs_i.o
 	esql -static -Bstatic -g --shared $^ -o $@ -L${LIBROOT} -laubit4gl
 
 ${LIBROOT}/libESQL_POSTGRES.so: helper_funcs_p.o
-	gcc -static -Bstatic -g --shared $^ -o $@ -L${LIBROOT} -laubit4gl
+	gcc -static -Bstatic -g --shared $^ -o $@ -L${LIBROOT} -L${POSTGRESDIR}/lib -laubit4gl -lecpg -lecpg_compat -lpgtypes
 
 ## ==================================================================
 ##                              Sub-targets

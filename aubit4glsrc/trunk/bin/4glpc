@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.109 2003-07-26 04:47:15 afalout Exp $
+# $Id: 4glpc,v 1.110 2003-07-30 10:32:26 mikeaubury Exp $
 #
 
 ########################################################################
@@ -1245,7 +1245,7 @@ if [ "$A4GL_LEXTYPE" = "EC" ]
 then
 	#if [ "$A4GL_LEXDIALECT"  = "POSTGRES" ]
 	#then
-		FGLLIBS_COMMON="$FGLLIBS_COMMON -lesqlhelper_funcs"
+		FGLLIBS_COMMON="$FGLLIBS_COMMON "
 	#else
 
 	#fi

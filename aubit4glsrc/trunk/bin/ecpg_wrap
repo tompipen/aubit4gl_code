@@ -67,6 +67,5 @@ LD_RUN_PATH=$LD_RUN_PATH:$POSTGRESDIR/lib
 export LD_RUN_PATH
 
 echo gcc  -I$POSTGRESDIR/include $other_args $cfiles
-gcc  -I$POSTGRESDIR/include $other_args $cfiles 
-#-lesqlhelper_funcs_p -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes 
+gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes 
 		

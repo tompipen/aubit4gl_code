@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.4 2003-07-16 19:25:55 mikeaubury Exp $
+# $Id: form_x.x,v 1.5 2003-07-30 10:32:38 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  * that results in compiler warnings for unused variable
  */
 
-const FCOMILE_XDR_VERSION = 102;
+const FCOMILE_XDR_VERSION = 103;
 const FCOMILE_XDR_MAGIC = 0xa4fc1234;
 
 struct struct_metrics
@@ -49,6 +49,7 @@ struct struct_metrics
 	int x;
 	int  y;
 	int  w;
+	int  h;
 	int  scr;
 	int  delim_code;
 	string label<>;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.12 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: dump.c,v 1.13 2003-07-30 10:32:38 mikeaubury Exp $
 #*/
 
 /**
@@ -222,10 +222,11 @@ dump_metrics (struct_form * f)
   printf ("\nMetrics %d\n", f->metrics.metrics_len);
   for (a = 0; a < f->metrics.metrics_len; a++)
     {
-      printf ("a=%d x=%d y=%d w=%d scr=%d del=%d label='%s'\n", a,
+      printf ("a=%d x=%d y=%d w=%d h=%d scr=%d del=%d label='%s'\n", a,
 	      f->metrics.metrics_val[a].x,
 	      f->metrics.metrics_val[a].y,
 	      f->metrics.metrics_val[a].w,
+	      f->metrics.metrics_val[a].h,
 	      f->metrics.metrics_val[a].scr,
 	      f->metrics.metrics_val[a].delim_code,
 	      f->metrics.metrics_val[a].label);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.20 2003-07-29 20:34:34 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.21 2003-07-30 10:32:38 mikeaubury Exp $
 #*/
 
 /**
@@ -240,7 +240,7 @@ A4GL_error_with (char *s, char *a, char *b)
   printf (s, a, b);
 
   A4GL_debug ("\n");
-  exit (0);
+  exit (1);
 }
 
 /**
@@ -460,6 +460,7 @@ new_metric (int x, int y, int wid, int scr, int delim, char *label)
   the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].x = x - 1;
   the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].y = y - 1;
   the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].w = wid;
+  the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].h =1;
   the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].scr = scr;
   the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].delim_code =
     delim;
@@ -783,7 +784,7 @@ A4GL_add_srec_attribute (char *tab, char *col, char *thru)
  * @param fno The field number wanted
  * @return The index of the array of field number wanted
  */
-/*
+
 static int
 find_field_attr(int fno)
 {
@@ -800,7 +801,7 @@ find_field_attr(int fno)
   A4GL_debug("Not found (%d)",fno);
   return -1;
 }
-*/
+
 
 /**
  * Find the fields that are wordwrap for big strings input.
@@ -808,7 +809,7 @@ find_field_attr(int fno)
  * It seems not used
  * @todo Understand if its or not used and if so remove it
  */
-/*
+
 static void
 chk_for_wordwrap(void)
 {
@@ -829,7 +830,7 @@ chk_for_wordwrap(void)
     the_form.attributes.attributes_val[fno].tabname,
     the_form.attributes.attributes_val[fno].colname);
 
-    if (A4GL_has_bool_attribute( &the_form.attributes.attributes_val[fno] ,
+    if (!A4GL_has_bool_attribute( &the_form.attributes.attributes_val[fno] ,
         FA_B_WORDWRAP)) 
       continue;
 
@@ -854,14 +855,17 @@ chk_for_wordwrap(void)
       if (w1!=w||x1!=x||y1-b!=y) 
       {
         A4GL_debug("w1=%d w=%d x1=%d x=%d y1+b=%d y=%d", w1,w,x1,x,y1+b,y);
-        yyerror(
-	  "Wordwrapped fields must be the same width, start at the same place and be on consecutive lines"
+        A4GL_error_with(
+	  "Wordwrapped fields must be the same width, start at the same place and be on consecutive lines\n",0,0
 	);
       }
     }
+    // Now get rid of the extra metrics and make this a multiline field
+    the_form.metrics.metrics_val[the_form.fields.fields_val[a].metric.metric_val[0]].h=the_form.fields.fields_val[a].metric.metric_len;
+    the_form.fields.fields_val[a].metric.metric_len=1;
   }
 }
-*/
+
 
 /**
  * Write the compiled form file with the information parsed from the .per to memory
@@ -890,7 +894,7 @@ A4GL_write_form (void)
       strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
     }
 
-
+  chk_for_wordwrap();
   translate_form ();
 
   A4GL_debug ("Writing to %s\n", fname);

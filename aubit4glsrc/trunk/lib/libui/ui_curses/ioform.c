@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.56 2003-07-27 09:15:30 mikeaubury Exp $
+# $Id: ioform.c,v 1.57 2003-07-30 10:32:38 mikeaubury Exp $
 #*/
 
 /**
@@ -342,9 +342,12 @@ struct s_form_dets *formdets;
 	    (int) A4GL_make_field (formdets->fileform->metrics.metrics_val[a].
 				   y,
 				   formdets->fileform->metrics.metrics_val[a].
-				   x, 1,
+				   x,
+				  formdets->fileform->metrics.metrics_val[a].
+                                   h,
 				   formdets->fileform->metrics.metrics_val[a].
-				   w);
+				   w
+);
 	  formdets->form_fields[cnt++] =
 	    (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
 	  formdets->form_fields[cnt] = 0;
@@ -547,7 +550,7 @@ A4GL_set_field_attr (FIELD * field)
       field_opts_off (field, O_NULLOK);
     }
 
-  if (A4GL_has_bool_attribute (f, FA_B_WORDWRAP))
+  if (A4GL_has_bool_attribute (f, FA_B_COMPRESS))
     {
       field_opts_on (field, O_WRAP);
     }
@@ -1371,7 +1374,7 @@ A4GL_get_field_width (FIELD * f)
 {
   int x, y, a;
   dynamic_field_info (f, &y, &x, &a);
-  return x;
+  return x*y;
 }
 
 /**
@@ -1755,7 +1758,7 @@ A4GL_debug("Match 2");
           for (z = 0; z < fdets->fileform->records.records_val[srec_no].attribs.attribs_len; z++)
             {
 		int attr_no;
-		int mno;
+		//int mno;
               	attr_no = fdets->fileform->records.records_val[srec_no].attribs.attribs_val[z];
 		A4GL_debug("attr_no=%d - %s %s",attr_no, fdets->fileform->attributes.attributes_val[attr_no].tabname, fdets->fileform->attributes.attributes_val[attr_no].colname);	
 		if (strcmp(fdets->fileform->attributes.attributes_val[attr_no].colname,colname)==0) { // We've found our entry in the screen record
@@ -2227,8 +2230,8 @@ FIELD *
 A4GL_make_field (int frow, int fcol, int rows, int cols)
 {
   FIELD *f;
-  A4GL_debug ("Creating new field entry y=%d x=%d rows=%d width=%d\n", frow,
-	      fcol, rows, cols);
+  A4GL_debug ("Creating new field entry y=%d x=%d rows=%d width=%d\n", frow, fcol, rows, cols);
+  A4GL_debug ("Creating new field entry y=%d x=%d rows=%d width=%d\n", frow, fcol, rows, cols);
 
   f = new_field (rows, cols, frow, fcol, 0, 0);
 

@@ -24,12 +24,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.6 2003-07-16 19:25:55 mikeaubury Exp $
+# $Id: form_x.x,v 1.7 2003-07-30 10:32:38 mikeaubury Exp $
 #*/
 
 /**
  * @file
- * this file is processed by SUN rpcgen to create form_x_xdr.c and form_x.h
+ * this file is processed by:
+ *    SUN rpcgen to create form_x_xdr.c and form_x.h
+ *  or
+ *    xgen to create
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
@@ -38,7 +41,7 @@
  * that results in compiler warnings for unused variable
  */
 
-const FCOMILE_XDR_VERSION = 102;
+const FCOMILE_XDR_VERSION = 103;
 const FCOMILE_XDR_MAGIC = 0xa4fc1234;
 
 struct struct_metrics
@@ -46,6 +49,7 @@ struct struct_metrics
 	int x;
 	int  y;
 	int  w;
+	int  h;
 	int  scr;
 	int  delim_code;
 	string label<>;
@@ -127,7 +131,7 @@ struct struct_scr_field
     struct colours colours<>;
     int general_ptr;
     int flags;
-  };
+};
 
 struct struct_tables
   {
@@ -177,7 +181,7 @@ struct struct_form
 
 
 enum ITEMTYPES {
-     	ITEMTYPE_NULL=0,
+	ITEMTYPE_NULL=0,
 	ITEMTYPE_INT=1,
 	ITEMTYPE_CHAR=2,
 	ITEMTYPE_FIELD=3,
