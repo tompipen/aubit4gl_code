@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.33 2002-05-20 20:17:37 mikeaubury Exp $
+# $Id: Makefile.in,v 1.34 2002-05-28 10:32:04 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -56,31 +56,6 @@ endif
 ## ==================================================================
 
 ALL				=rules.t 4glc
-
-#ifneq "@PERLBUILD@" "no"
-    #FIXME: remove 4glp executable, make libA4GLLEX_xx loaded by dlopen()
-    #from 4glc executable depenfing on A4GL_OUTPUTLANG in aubitrc:
-#	ALL         +=4glp
-#endif
-
-
-#ifneq "${COMSPEC}" ""
-	#FIXME: it should be like this: try this again after Mike enables dlopen on libA4GLLEX_
-	#LIB_PERL	=dllA4GLLEX_PERL
-	#LIB_C		=dllA4GLLEX_C
-	#LIB_PERL_L  =-lA4GLLEX_PERL
-	#LIB_C_L     =-lA4GLLEX_C
-	#but it is instead like this:
-	#I cannot compile this as .dll because of problems with automatic exporting of structs. see mod.c
-	#so, we will create monolit 4glc - there is no Perl compiler on Windows at the moment anyway:
-#	LIB_C		=
-#    4GLCAOBJ	+=${4GLCOBJ_C}
-#else
-#	LIB_PERL	=../../lib/libA4GLLEX_PERL${SO_EXT}
-#	LIB_C		=../../lib/libA4GLLEX_C${SO_EXT}
-#	LIB_PERL_L  =-lA4GLLEX_PERL
-#	LIB_C_L     =-lA4GLLEX_C
-#endif
 
 CFLAGS			+=-I../../lib -I../../lib/libincl -I../../lib/liblex/lex_c -I. -I../fcompile -Irules @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
 

@@ -5,7 +5,7 @@
  */
 
 #ifndef FGLHDR_INCL
-	#define FGLHDR_INCL
+#define FGLHDR_INCL
 	#include <stdio.h>
 	#define fglerror(a,b) fgl_error(__LINE__,__FILE__,a,b)
 	#define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&strcmp(fldname,zzz)==0)
@@ -186,10 +186,14 @@
 	int pop_var2(void *p,int d,int s) ;
 	double ret_var(void *p,int d) ;
 	int pop_char(char *z,int size);
-	char *char_pop();
+	char *char_pop(void);
 	int pop_param(void *p,int d,int size);
+	//int pop_param (void *p, int d, int s);
+
 	void pop_params(struct BINDING *b,int n);
-	void push_param(void *p,int d);
+	//void push_param(void *p,int d);
+	void 	push_params 		(struct BINDING *b, int n);
+
 	void push_user();
 	void push_today();
 	int opboolean();
@@ -298,5 +302,5 @@
 
 	#define MENU_ALL "_AlL_"
 
-#endif //#ifndef FGLHDR_INCL
+#endif /* #ifndef FGLHDR_INCL */
 
