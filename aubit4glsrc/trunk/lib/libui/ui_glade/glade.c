@@ -123,7 +123,7 @@ printf("---> Name=%s\n",name);
 		while (1) {
 			if (!top_level_window(tlw)) break;
 			UILIB_A4GL_gui_run_til_no_more();
-			usleep(100); // small sleep..
+			a4gl_usleep(100); // small sleep..
 		}
     }
 

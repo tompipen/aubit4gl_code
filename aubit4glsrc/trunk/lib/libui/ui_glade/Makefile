@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.2 2004-09-24 06:29:06 afalout Exp $
+# $Id: Makefile,v 1.3 2004-12-05 19:16:42 mikeaubury Exp $
 #
 
 ROOT			=../../..
@@ -54,7 +54,7 @@ all: ${ALL}
 
 ${LIBROOT}/libUI_GLADE${SO_EXT}: ${OBJS}
 #	${CC} -g -shared $^ -o $@ ${LFLAGS}
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L$(ROOT)/lib -laubit4gl
 
 ## ==================================================================
 ##                              Clean
