@@ -51,20 +51,20 @@ extern "C"
 
 #include "sqltypes.h"
 
-#define COPY_DATA_IN_0(a4gl,pgres,size,x,y) A4GL_copy_char(pgres,a4gl,0,size,'i',x,y)
-#define COPY_DATA_IN_1(a4gl,pgres,size) A4GL_copy_smint(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_2(a4gl,pgres,size) A4GL_copy_int(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_3(a4gl,pgres,size) A4GL_copy_double(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_4(a4gl,pgres,size) A4GL_copy_float(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_5(a4gl,pgres,size) A4GL_copy_decimal(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_6(a4gl,pgres,size) A4GL_copy_int(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_7(a4gl,pgres,size) A4GL_copy_date(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_8(a4gl,pgres,size) A4GL_copy_money(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_9(a4gl,pgres,size) A4GL_copy_int(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_10(a4gl,pgres,size) A4GL_copy_datetime(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_11(a4gl,pgres,size) A4GL_copy_blob_byte(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_12(a4gl,pgres,size) A4GL_copy_blob_text(pgres,a4gl,0,size,'i')
-#define COPY_DATA_IN_13(a4gl,pgres,size) A4GL_copy_char(pgres,a4gl,0,size,'i')
+#define COPY_DATA_IN_0(a4gl,pgres,i,size,x,y) A4GL_copy_char(pgres,a4gl,i,size,'i',x,y)
+#define COPY_DATA_IN_1(a4gl,pgres,i,size) A4GL_copy_smint(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_2(a4gl,pgres,i,size) A4GL_copy_int(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_3(a4gl,pgres,i,size) A4GL_copy_double(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_4(a4gl,pgres,i,size) A4GL_copy_float(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_5(a4gl,pgres,i,size) A4GL_copy_decimal(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_6(a4gl,pgres,i,size) A4GL_copy_int(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_7(a4gl,pgres,i,size) A4GL_copy_date(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_8(a4gl,pgres,i,size) A4GL_copy_money(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_9(a4gl,pgres,i,size) A4GL_copy_int(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_10(a4gl,pgres,i,size) A4GL_copy_datetime(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_11(a4gl,pgres,i,size) A4GL_copy_blob_byte(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_12(a4gl,pgres,i,size) A4GL_copy_blob_text(pgres,a4gl,i,size,'i')
+#define COPY_DATA_IN_13(a4gl,pgres,i,size) A4GL_copy_char(pgres,a4gl,i,size,'i')
 
 
 // wrong? 

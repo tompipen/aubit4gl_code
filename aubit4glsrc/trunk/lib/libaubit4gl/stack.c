@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.107 2004-11-19 13:31:27 mikeaubury Exp $
+# $Id: stack.c,v 1.108 2004-11-26 08:56:20 mikeaubury Exp $
 #
 */
 
@@ -49,6 +49,7 @@
 
 #include <sys/time.h>
 #include <unistd.h>
+#include <ctype.h>
 #include "a4gl_libaubit4gl_int.h"
 
 
@@ -3132,11 +3133,22 @@ int A4GL_conversion_ok(int a) {
 }
 
 
-A4GL_pause_execution() {
+
+
+/* This function enables debugging - basically you can 
+put in a call to A4GL_pause_execution in the library then set a gdb breakpoint for this
+function call - this allows code like :
+
+if (a==1 || a==2) A4GL_pause_execution() // I wasn't expected a 1 or a 2 
+
+to be debugged...
+
+*/
+void A4GL_pause_execution(void) {
 	printf("--->\n");
 }
 
-a4gl_upshift(char *s) {
+void a4gl_upshift(char *s) {
 	int a;
 	for (a=0;a<strlen(s);a++) {
 		s[a]=toupper(s[a]);

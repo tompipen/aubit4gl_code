@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.36 2004-11-25 15:38:57 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.37 2004-11-26 08:56:26 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -108,25 +108,26 @@ make_sql_bind (char *sql, char *type)
 	    {
 	      for (a = 0; a < ibindcnt; a++)
 		{
-		  printc("%s",get_sql_type (a, 'i'));
+			char indicat[40];
+
+		  	printc("%s",get_sql_type (a, 'i'));
+                        if (!A4GLSQLCV_check_requirement("USE_INDICATOR")) {
+                                strcpy(indicat,"0");
+                        } else {
+                                sprintf(indicat,"native_binding_i_ind[%d].ptr",a);
+                        }
+
+
 		if ((ibind[a].dtype & 0xffff)==0   || (ibind[a].dtype & 0xffff)==DTYPE_VCHAR     ) {
-		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d,%d,%d);\n",
-			   ibind[a].dtype & 0xffff, 
-					/*ibind[a].varname, */
-					a,
-					
-				a,
-			   ibind[a].dtype >> 16,
-			ibind[a].start_char_subscript,
-			ibind[a].end_char_subscript
-);
+		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%s,%d,%d,%d); /* SQB */\n",
+			   ibind[a].dtype & 0xffff, a, a, indicat,ibind[a].dtype >> 16, ibind[a].start_char_subscript, ibind[a].end_char_subscript);
 		} else {
-		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d);\n",
+		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%s,%d); /* SQB2 */\n",
 			   ibind[a].dtype & 0xffff, 
 					/*ibind[a].varname, */
 					a,
 					
-				a,
+				a,indicat,
 			   ibind[a].dtype >> 16
 );
 
@@ -282,28 +283,26 @@ make_sql_bind_expr (char *sql, char *type)
 	    {
 	      for (a = 0; a < ibindcnt; a++)
 		{
+		char indicat[40];
 		  sprintf(b2,"%s\n",get_sql_type (a, 'i'));
+
+                        if (!A4GLSQLCV_check_requirement("USE_INDICATOR")) {
+                                strcpy(indicat,"0");
+                        } else {
+                                sprintf(indicat,"native_binding_i_ind[%d].ptr",a);
+                        }
+
+
       			ptr=addstr(ptr,&sz, b2);
 		if ((ibind[a].dtype & 0xffff)==0 || (ibind[a].dtype & 0xffff)==DTYPE_VCHAR) {
-		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d,%d,%d); /*E*/\n",
-			   ibind[a].dtype & 0xffff, 
-					/*ibind[a].varname, */
-					a,
-					
-				a,
-			   ibind[a].dtype >> 16,
-			ibind[a].start_char_subscript,
-			ibind[a].end_char_subscript
-);
+		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%s,%d,%d,%d); /*E*/\n",
+			   	ibind[a].dtype & 0xffff, a, a,indicat,
+	   			ibind[a].dtype >> 16,
+				ibind[a].start_char_subscript,
+				ibind[a].end_char_subscript);
 		} else {
-		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d); /*E*/\n",
-			   ibind[a].dtype & 0xffff, 
-					/*ibind[a].varname, */
-					a,
-					
-				a,
-			   ibind[a].dtype >> 16
-);
+		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%s,%d); /*E*/\n",
+			   ibind[a].dtype & 0xffff, a, a, indicat,ibind[a].dtype >> 16);
 
 		}
 		  strcat (buff_in, buff_small);
@@ -509,6 +508,7 @@ char buff_ind[255];
 	  sprintf (buff,"interval _vi_%d;", a);
 	  break;
 	}
+	strcat(buff,buff_ind);
     }
 
 
@@ -639,6 +639,7 @@ static char buff_ind[255];
 	  sprintf (buff,"interval _vi_%d;", a);
 	  break;
 	}
+	strcat(buff,buff_ind);
     }
 
 
@@ -787,6 +788,7 @@ static char buff_ind[255];
 	  sprintf (buff,"interval _vi_%d;", a);
 	  break;
 	}
+	strcat(buff,buff_ind);
     }
 
 
@@ -918,6 +920,7 @@ static char buff_ind[255];
 	  sprintf (buff,"char _vi_%d[30];", a);
 	  break;
 	}
+	strcat(buff,buff_ind);
     }
 
 

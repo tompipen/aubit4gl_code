@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.22 2004-11-18 16:29:47 pjfalbe Exp $
+# $Id: helper_funcs.ec,v 1.23 2004-11-26 08:56:25 mikeaubury Exp $
 #
 */
 
@@ -111,7 +111,6 @@ fgldecimal *a4gl;
 char b[255];
 short indicat=0;
 
-if (p_indicat) indicat=*p_indicat;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	infx=infxv;
 	a4gl=a4glv;
@@ -119,6 +118,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 	if (mode=='i') {
 		char *ptr;
+		if (A4GL_isnull(DTYPE_DECIMAL,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(DTYPE_DECIMAL,(void *)a4gl)) {rsetnull(CDECIMALTYPE,(void *)infx);return;}
 		A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
 		A4GL_push_variable(a4gl,(size<<16)+5);
@@ -138,6 +138,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 	if (mode=='o') {
 		char *ptr;
+		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-1||risnull(CDECIMALTYPE,(void*)infx)) { A4GL_setnull(DTYPE_DECIMAL,(void *)a4gl,size); return;}
 		memset(b,0,255);
 		dectoasc(infx,b,64,16);
@@ -174,7 +175,6 @@ dec_t *infx;
 #endif
 fgldecimal *a4gl;
 char b[65];
-if (p_indicat) indicat=*p_indicat;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	infx=infxv;
 	a4gl=a4glv;
@@ -182,6 +182,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 	if (mode=='i') {
 		char *ptr;
+		if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(DTYPE_MONEY,(void *)a4gl)) {
 #ifdef DIALECT_POSTGRES
 				rsetnull(CDECIMALTYPE,(void *)infx);
@@ -201,6 +202,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	if (mode=='o') {
 	        char *ptr;
 		int xisnull;
+		if (p_indicat) indicat=*p_indicat;
 
 #ifdef DIALECT_POSTGRES
                 xisnull=risnull(CDECIMALTYPE,(void *)infx);
@@ -257,12 +259,12 @@ short indicat=0;
 dtime_t *infx; struct A4GLSQL_dtime *a4gl;
 	infx=infxv;
 	a4gl=a4glv;
-if (p_indicat) indicat=*p_indicat;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 		if (mode=='i') {
 			char *ptr;
 			char buff[255];
+			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {rsetnull(CDTIMETYPE,(void *)infx);return;}
 			A4GL_push_dtime(a4gl);
 			ptr=A4GL_char_pop();
@@ -290,6 +292,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			char buff[255];
 			char *ptr;
 			int a;
+if (p_indicat) indicat=*p_indicat;
 #ifdef DIALECT_POSTGRES
 #ifdef HAVE_INT64_TIMESTAMP
 #error INT64 timestamp not implemented
@@ -332,12 +335,12 @@ else {
 }
 	infx=infxv;
 	a4gl=a4glv;
-if (p_indicat) indicat=*p_indicat;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 		if (mode=='i') {
 			char *ptr;
 			char buff[255];
+			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {rsetnull(CINVTYPE,(void *)infx);return;}
 			A4GL_push_interval(a4gl);
 			ptr=A4GL_char_pop();
@@ -373,6 +376,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			char buff[255];
 			char *ptr;
 			int a;
+			if (p_indicat) indicat=*p_indicat;
 #ifdef DIALECT_POSTGRES
 #ifdef HAVE_INT64_TIMESTAMP
 #error INT64 timestamp not implemented
@@ -403,8 +407,8 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 void ESQLAPI_A4GL_copy_interval(void *infxv, void *a4glv,short *p_indicat,int size,int mode)  {
 short indicat=0;
-if (p_indicat) indicat=*p_indicat;
 	printf("A4GL_copy_interval for postgres not implemented yet\n");
+	if (p_indicat) indicat=*p_indicat;
 
 }
 #endif
@@ -417,7 +421,6 @@ void
 ESQLAPI_A4GL_copy_char(char *infx,char *a4gl,short *p_indicat,int size,int mode,int x,int y) 
 {
 short indicat=0;
-if (p_indicat) indicat=*p_indicat;
 
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 A4GL_debug("Copy char : mode=%c",mode);
@@ -427,6 +430,7 @@ A4GL_debug("Copy char : indicat=%d",indicat);
 
 	if (mode=='i') {
 		A4GL_debug("Copy : '%s' from a4gl to rdbms",a4gl);
+			if (A4GL_isnull(0,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(0,(void *)a4gl)) {
 				rsetnull(CCHARTYPE,infx);
 			return;
@@ -438,6 +442,7 @@ A4GL_debug("Copy char : indicat=%d",indicat);
 		A4GL_trim(infx); // @todo -  what about varchars ... ?
 	}
 	if (mode=='o') {
+		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-1) { A4GL_setnull(0,(void *)a4gl,size); return;}
 		A4GL_debug("Copy : '%s' from rdbms to a4gl",infx);
 		if (risnull(CCHARTYPE,(void*)infx)) { A4GL_setnull(0,(void *)a4gl,size); return;}
@@ -463,9 +468,10 @@ short  mdy[3];
 int mdy_i[3];
 long orig_date;
 
-if (p_indicat) indicat=*p_indicat;
-A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
+
+	A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	if (mode=='i') {
+			if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(DTYPE_DATE,(void *)a4gl)) {rsetnull(CDATETYPE,(void *)infx);A4GL_debug("COPY IN NULL DATE");return;}
 		A4GL_get_date(*a4gl,&mdy_i[1],&mdy_i[0],&mdy_i[2]);
 		mdy[0]=mdy_i[0]; // In aubit - these are integers
@@ -476,7 +482,7 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	}
 
 	if (mode=='o') {
-
+		if (p_indicat) indicat=*p_indicat;
 #ifdef DIALECT_POSTGRES
 if (*infx==0) indicat=-1;
 #endif
@@ -500,13 +506,14 @@ void
 ESQLAPI_A4GL_copy_smint(short *infx,short *a4gl,short *p_indicat,int size,int mode) 
 {
 short indicat=0;
-if (p_indicat) indicat=*p_indicat;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	if (mode=='i') {
+			if (A4GL_isnull(1,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(1,(void *)a4gl)) {rsetnull(CSHORTTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
+		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-1||risnull(CSHORTTYPE,(void*)infx)) { A4GL_setnull(1,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
@@ -522,17 +529,18 @@ void
 ESQLAPI_A4GL_copy_int(long *infx,long *a4gl,short *p_indicat,int size,int mode) 
 {
 short indicat=0;
-if (p_indicat) indicat=*p_indicat;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 
 
 
 
 	if (mode=='i') {
+			if (A4GL_isnull(2,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(2,(void *)a4gl)) {rsetnull(CLONGTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
+		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-1||risnull(CLONGTYPE,(void*)infx)) { A4GL_setnull(2,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
@@ -548,13 +556,14 @@ void
 ESQLAPI_A4GL_copy_float(float *infx,float *a4gl,short *p_indicat,int size,int mode) 
 {
 short indicat=0;
-if (p_indicat) indicat=*p_indicat;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	if (mode=='i') {
+			if (A4GL_isnull(4,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(4,(void *)a4gl)) {rsetnull(CFLOATTYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
+		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-1||risnull(CFLOATTYPE,(void*)infx)) { A4GL_setnull(4,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}
@@ -570,13 +579,14 @@ void
 ESQLAPI_A4GL_copy_double(double *infx,double *a4gl,short *p_indicat,int size,int mode) 
 {
 short indicat=0;
-if (p_indicat) indicat=*p_indicat;
 A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 	if (mode=='i') {
+			if (A4GL_isnull(3,(void *)a4gl)) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(3,(void *)a4gl)) {rsetnull(CDOUBLETYPE,(void *)infx);return;}
 		*infx=*a4gl;
 	}
 	if (mode=='o') {
+		if (p_indicat) indicat=*p_indicat;
 		if (indicat==-1||risnull(CDOUBLETYPE,(void*)infx)) { A4GL_setnull(3,(void *)a4gl,size); return;}
 		*a4gl=*infx;
 	}

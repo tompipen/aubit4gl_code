@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.199 2004-11-26 03:57:53 afalout Exp $
+# $Id: compile_c.c,v 1.200 2004-11-26 08:56:26 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.199 2004-11-26 03:57:53 afalout Exp $";
+static char *module_id="$Id: compile_c.c,v 1.200 2004-11-26 08:56:26 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1375,7 +1375,6 @@ print_form_attrib (struct form_attr *form_attrib)
 	      form_attrib->prompt_line, form_attrib->menu_line,
 	      form_attrib->border, form_attrib->comment_line,
 	      form_attrib->message_line, form_attrib->attrib);
-  
 #endif
 }
 
