@@ -24,7 +24,7 @@
  * | contact licences@aubit4gl.org
  * +----------------------------------------------------------------------+
  *
- * $Id: decimal.h,v 1.1 2004-05-11 11:15:16 saferreira Exp $
+ * $Id: decimal.h,v 1.1 2004-05-11 14:02:13 saferreira Exp $
  */
 
 /**
