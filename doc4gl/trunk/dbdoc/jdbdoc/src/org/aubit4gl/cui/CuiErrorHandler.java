@@ -6,6 +6,7 @@
 package org.aubit4gl.cui;
 
 import org.aubit4gl.dbdocumenter.actions.ErrorHandler;
+import java.lang.Exception;
 
 /**
  * The error handler used when dbdocumenter is executed in CUI mode.
@@ -25,7 +26,7 @@ public class CuiErrorHandler extends ErrorHandler {
      * @param action The textual description of the action being executed.
      */
     public void handle(Exception e, String action) {
-        logger.error(action + " : " + e.getmessage());
+        logger.error(action + " : " + e.getMessage());
     }    
     
 }

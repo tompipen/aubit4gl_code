@@ -16,7 +16,7 @@ import org.apache.log4j.Category;
  */
 public abstract class ErrorHandler {
     
-    static Category logger = Category.getInstance(ErrorHandler.class.getName());
-    
+    //static Category logger = Category.getInstance(ErrorHandler.class.getName());
+    public Category logger = Category.getInstance(ErrorHandler.class.getName());
     public abstract void handle(Exception e, String action);
 }

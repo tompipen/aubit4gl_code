@@ -9,74 +9,6 @@ import java.sql.*;
 //import pt.despodata.java.ddata.*;
 //import pt.despodata.java.ddata.connection.*;
 import pt.moredata.dao.*;
-//import pt.moredata.*;
-/*
-
-compile:
-    [javac] Compiling 3 source files to /opt/aubit/doc4gl/dbdoc/navigator/jsp/build/WEB-INF/classes
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:9: package pt.despodata.java.ddata does not exist
-    [javac] import pt.despodata.java.ddata.*;
-    [javac] ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:10: package pt.despodata.java.ddata.connection does not exist
-    [javac] import pt.despodata.java.ddata.connection.*;
-    [javac] ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:146: cannot resolve symbol
-    [javac] symbol  : class DDataTableInfo
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 	public void showTableSummary(DDataTableInfo ti)
-    [javac]                                      ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:180: cannot resolve symbol
-    [javac] symbol  : class DDataTableInfo
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 	public void showTableDetail(DDataTableInfo tableInfo)
-    [javac]                                     ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:206: cannot resolve symbol
-    [javac] symbol  : class DDataFieldInfo
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 	public void showColumn(DDataFieldInfo columnInfo)
-    [javac]                                ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:79: cannot resolve symbol
-    [javac] symbol  : variable DDataSourcePool
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 		  Statement stmt=DDataSourcePool.getImplicitDataSource().
-    [javac]                                  ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:133: cannot resolve symbol
-    [javac] symbol  : class DDataTableInfo
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 			DDataTableInfo ti = new DDataTableInfo();
-    [javac]                         ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:133: cannot resolve symbol
-    [javac] symbol  : class DDataTableInfo
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 			DDataTableInfo ti = new DDataTableInfo();
-    [javac]                                                 ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:172: cannot resolve symbol
-    [javac] symbol  : class DDataTableInfo
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 		  DDataTableInfo ti = (DDataTableInfo)tableInfoList.get(i);
-    [javac]                   ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:172: cannot resolve symbol
-    [javac] symbol  : class DDataTableInfo
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 		  DDataTableInfo ti = (DDataTableInfo)tableInfoList.get(i);
-    [javac]                                        ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:193: cannot resolve symbol
-    [javac] symbol  : class DDataFieldInfo
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 		DDataFieldInfo ci;
-    [javac]                 ^
-    [javac] /opt/aubit/doc4gl/dbdoc/navigator/jsp/org/aubit4gl/dbdocumenter/navigator/TablesDocument.java:196: cannot resolve symbol
-    [javac] symbol  : class DDataFieldInfo
-    [javac] location: class org.aubit4gl.dbdocumenter.navigator.TablesDocument
-    [javac] 		  ci = (DDataFieldInfo)columns.get(i);
-    [javac]                         ^
-    [javac] 12 errors
-
-BUILD FAILED
-
-
-
-*/
 
 
 /**
@@ -137,8 +69,11 @@ public class TablesDocument
 	}
 
 	/**
-	 * Inicializa um array list que passa a conter a lista de tabelas 
+	 * Inicializa um array list que passa a conter a lista de tabelas
 	 * a documentar
+     *
+	 * Initialize an Array list that starts to contain the table list
+	 * to register
 	 */
 	private void initModuleTables()
 	{
@@ -147,8 +82,13 @@ public class TablesDocument
 		System.out.println("<BR>" + strSql);
 		try {
 		  //Statement stmt=DDataSourcePool.getImplicitDataSource().
-          Statement stmt=DataSourcePool.getImplicitDataSource().
+
+		  // it looks like class DataSourcePool was removed - see DAOPool.java
+            // cannot find method getImplicitDataSource anywhere!
+//		System.out.println("<BR>FIXXXMMMEEEE<BR>");
+		  Statement stmt=DataSourcePool.getImplicitDataSource().
 			  getConnection().createStatement();
+
 		  ResultSet rs = stmt.executeQuery(strSql);
 		  while ( rs.next() )
 			  tableList.add(rs.getString(1));
@@ -221,7 +161,7 @@ public class TablesDocument
 	  println("<TR BGCOLOR='white' CLASS='TableRowColor'>");
     println("<TD ALIGN='right' VALIGN='top' WIDTH='1%'><FONT SIZE='-1'>");
     println("<CODE>&nbsp;<A HREF=#" + 
-		  ti.getTable() + ">" + ti.getTable() + "</A></CODE></FONT></TD>"
+		  ti.getTableName() + ">" + ti.getTableName() + "</A></CODE></FONT></TD>"
     );
     println("<TD><CODE>" + ti.getRemarks() + "</CODE></TD>");
     println("</TR>");
@@ -255,8 +195,8 @@ public class TablesDocument
     	public void showTableDetail(DataTableInfo tableInfo)
 	{
 	  println("<BR>");
-    println("<A NAME='" + tableInfo.getTable().trim() + "'><!-- --></A>");
-    println("<H3>" + tableInfo.getTable().trim() + "</H3>");
+    println("<A NAME='" + tableInfo.getTableName().trim() + "'><!-- --></A>");
+    println("<H3>" + tableInfo.getTableName().trim() + "</H3>");
 
     println("<DL>");
     println("<DD>" + tableInfo.getRemarks().trim() + "</DD></DL>");
@@ -285,10 +225,14 @@ public class TablesDocument
 	{
 	  println("<TR BGCOLOR='white' CLASS='TableRowColor'>");
     println("<TD ALIGN='right' VALIGN='top' WIDTH='1%'><FONT SIZE='-1'>");
-    println("<CODE>&nbsp;" + 
-		  columnInfo.getColumn() + "</CODE></FONT></TD>"
+    println("<CODE>&nbsp;" +
+		  columnInfo.getColumnName() + "</CODE></FONT></TD>"
     );
-    println("<TD WIDTH='1%'><CODE>" + columnInfo.getDbDataType() + "</CODE></TD>");
+
+	//println("<TD WIDTH='1%'><CODE>" + columnInfo.getDbDataType() + "</CODE></TD>");
+    // there is no methot called getDbDataType in DataFieldInfo class !!
+	println("<TD WIDTH='1%'><CODE> FIXMEEEE </CODE></TD>");
+
     if ( columnInfo.getRemarks() == null || 
 		     columnInfo.getRemarks().trim().equals("") )
       println("<TD><CODE> - </CODE></TD>");
