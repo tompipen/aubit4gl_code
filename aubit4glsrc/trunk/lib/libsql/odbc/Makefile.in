@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2002-03-16 03:19:21 afalout Exp $
+# $Id: Makefile.in,v 1.15 2002-03-25 07:42:44 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -94,22 +94,22 @@ odbc32: 	clean show ${OBJECTS}
 
 libSQL_iodbc.so: CFLAGS+=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_iodbc.so: ${OBJECTS}
-	ld ${SO_LDFLAGS} $^ -o $@ @IODBC_LIBS@ @IODBC_LFLAGS@
+	${LD} ${SO_LDFLAGS} $^ -o $@ @IODBC_LIBS@ @IODBC_LFLAGS@
 	cp $@ ../..
 
 libSQL_unixodbc.so: CFLAGS+=-DUNIXODBC @UNIXODBC_INCLUDE@ @UNIXODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_unixodbc.so: ${OBJECTS}
-	ld ${SO_LDFLAGS} $^ -o $@ @UNIXODBC_LIBS@ @UNIXODBC_LFLAGS@
+	${LD} ${SO_LDFLAGS} $^ -o $@ @UNIXODBC_LIBS@ @UNIXODBC_LFLAGS@
 	cp $@ ../..
 
 libSQL_ifxodbc.so: CFLAGS+=-DIFXODBC -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/cli -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql ${LOCAL_CFLAGS}
 libSQL_ifxodbc.so: ${OBJECTS}
-	ld ${SO_LDFLAGS} $^ -o $@ -lifcli -rpath ${INFORMIXDIR}/lib/esql -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
+	${LD} ${SO_LDFLAGS} $^ -o $@ -lifcli -rpath ${INFORMIXDIR}/lib/esql -L${INFORMIXDIR}/lib/cli -L${INFORMIXDIR}/lib/esql
 	cp $@ ../..
 
 libSQL_pgodbc.so: CFLAGS+=-DPGODBC @PGODBC_INCLUDE@ @PGODBC_LFLAGS@ ${LOCAL_CFLAGS}
 libSQL_pgodbc.so: ${OBJECTS}
-	ld ${SO_LDFLAGS} $^ -o $@ -lpsqlodbc @PGODBC_LFLAGS@
+	${LD} ${SO_LDFLAGS} $^ -o $@ -lpsqlodbc @PGODBC_LFLAGS@
 	cp $@ ../..
 
 

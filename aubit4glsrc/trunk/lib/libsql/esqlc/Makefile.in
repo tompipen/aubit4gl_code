@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-02-25 05:55:54 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-03-25 07:42:44 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -67,7 +67,7 @@ endif
 ALL: ${ALL}
 
 libSQL_esql.so: ${OBJS}
-	ld $(SO_LDFLAGS) $^ -o $@
+	${LD} $(SO_LDFLAGS) $^ -o $@
 	cp $@ ../..
 
 ${OBJS}: ${SRC_C}

@@ -8,19 +8,19 @@ DEFS_V2= ${DEFS1} ${DEFS2} -DODBCVER=0x0200
 all: shexec unix iodbc3
 
 iodbc3: odbctest3.o
-	gcc -g -O2 -DODBCVER=0x0350 -o odbctest-iodbc3 odbctest3.o -L/opt/iODBC_3beta/iODBC/lib -liodbc
+	${CC} -g -O2 -DODBCVER=0x0350 -o odbctest-iodbc3 odbctest3.o -L/opt/iODBC_3beta/iODBC/lib -liodbc
 
 iodbc2: odbctest2.o
-	gcc -g -O2 -DODBCVER=0x0350 -o odbctest-iodbc2 odbctest2.o -L/usr/openlink/lib -liodbc
+	${CC} -g -O2 -DODBCVER=0x0350 -o odbctest-iodbc2 odbctest2.o -L/usr/openlink/lib -liodbc
 
 unix: odbctest3.o
-	gcc -g -O2 -DODBCVER=0x0350 -o odbctest-unixODBC odbctest3.o -L/opt/unixODBC/lib/ -lodbc
+	${CC} -g -O2 -DODBCVER=0x0350 -o odbctest-unixODBC odbctest3.o -L/opt/unixODBC/lib/ -lodbc
 
 odbctest2.o:
-	gcc $(DEFS_V2) -I.. -I./  -g -O2 -DODBCVER=0x0350 -c odbctest.c -o odbctest2.o
+	${CC} $(DEFS_V2) -I.. -I./  -g -O2 -DODBCVER=0x0350 -c odbctest.c -o odbctest2.o
 
 odbctest3.o:
-	gcc $(DEFS_V3) -I.. -I./  -g -O2 -DODBCVER=0x0350 -c odbctest.c -o odbctest3.o
+	${CC} $(DEFS_V3) -I.. -I./  -g -O2 -DODBCVER=0x0350 -c odbctest.c -o odbctest3.o
 
 
 

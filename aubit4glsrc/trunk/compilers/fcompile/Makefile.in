@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.19 2002-03-25 00:59:43 afalout Exp $
+# $Id: Makefile.in,v 1.20 2002-03-25 07:42:44 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -128,8 +128,8 @@ all:	 $(ALL)
 fcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall.a
 #	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
 #same as: why are we using 4glpc ?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -lm -laclall -lPDF_NOPDF -lRPC_NORPC
-#	gcc -g -O2 -DAUTOBANG -DDEBUG -I/usr/local/include -DWIN32 -fnative-struct -I../../lib -I. -I/usr/aubit/aubit4glsrc/tools/no_curses/cygwin -I/usr/aubit/aubit4glsrc/tools/no_rpc/cygwin -L../../lib -o fcompile fcompile.o formwrite2.o where.o y.tab.o -lm  -laclall -lRPC_NORPC -lPDF_NOPDF
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -lm -laclall -lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
+#	${CC} -g -O2 -DAUTOBANG -DDEBUG -I/usr/local/include -DWIN32 -fnative-struct -I../../lib -I. -I/usr/aubit/aubit4glsrc/tools/no_curses/cygwin -I/usr/aubit/aubit4glsrc/tools/no_rpc/cygwin -L../../lib -o fcompile fcompile.o formwrite2.o where.o y.tab.o -lm  -laclall -lRPC_NORPC -lPDF_NOPDF
 	${LN} fcompile${EXE} ../../bin/fcompile${EXE}
 
 #fcompile-noodbc: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall-noodbc.a

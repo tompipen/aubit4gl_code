@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.47 2002-03-25 00:59:39 afalout Exp $
+# $Id: configure.in,v 1.48 2002-03-25 07:42:40 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -238,6 +238,7 @@ AC_SUBST(target)
 AC_SUBST(target_cpu)
 AC_SUBST(ADD_LD_LIBRARY_PATH)
 AC_SUBST(PIC)
+AC_SUBST(LDFLAGS_SHARED)
 AC_SUBST(YACC)
 AC_SUBST(LEX)
 
@@ -277,7 +278,8 @@ HAVE_IODBC=no
 HAVE_UNIXODBC=no
 HAVE_IFXODBC=no
 HAVE_PGODBC=no
-PIC=-fPIC
+PIC="-fPIC"
+LDFLAGS_SHARED="-fPIC -shared"
 
 ODBC_LIB_NAME=noodbc
 A4GL_PDFTYPE=NOPDF
@@ -308,6 +310,7 @@ case $host in
 
 	*-ibm-aix*)
 		PIC=
+		LDFLAGS_SHARED="-s"
         ;;
 
 	*)

@@ -23,13 +23,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.43 2002-03-25 00:59:38 afalout Exp $
+# $Id: Makefile.in,v 1.44 2002-03-25 07:42:40 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
 include incl/Makefile-common
 
-#FIXME: this shou8ld be obsoleted by configure and aubitrc:
+#FIXME: this should be obsoleted by configure and aubitrc:
 #we don't want sub-makefiles to include above again: But we dont't went
 #to export this gloably, since it would affect 4glpc sctipt!
 #Instead, we want tp pass it to makefiles as command line parameter,
@@ -97,9 +97,9 @@ endif
 ## ==================================================================
 
 #When we package all binary builds using make allbindist, what we will build
-ALLBINDISTNAMESNOPDF=unixodbc-gtk-nopdf iodbc-gtk-nopdf unixodbc-nogtk-nopdf iodbc-nogtk-nopdf
-ALLBINDISTNAMESPDF	=unixodbc-gtk-pdf unixodbc-nogtk-pdf iodbc-gtk-pdf iodbc-nogtk-pdf
-ALLBINDISTNAMES		=${ALLBINDISTNAMESNOPDF} ${ALLBINDISTNAMESPDF}
+#ALLBINDISTNAMESNOPDF=unixodbc-gtk-nopdf iodbc-gtk-nopdf unixodbc-nogtk-nopdf iodbc-nogtk-nopdf
+#ALLBINDISTNAMESPDF	=unixodbc-gtk-pdf unixodbc-nogtk-pdf iodbc-gtk-pdf iodbc-nogtk-pdf
+#ALLBINDISTNAMES		=${ALLBINDISTNAMESNOPDF} ${ALLBINDISTNAMESPDF}
 
 ## ==================================================================
 ##                    Install Settings
@@ -124,9 +124,9 @@ TOBIN		=$(SOURCE)/bin/4glc${EXEEXT} $(SOURCE)/bin/4glpc $(SOURCE)/bin/fcompile${
             $(SOURCE)/bin/genmake $(SOURCE)/bin/mdecompile${EXEEXT} $(SOURCE)/bin/prepmake \
 			$(SOURCE)/bin/fdecompile${EXEEXT} $(SOURCE)/bin/fshow${EXEEXT}
 
-ifeq "$(GTKBUILD)" "yes"
-	TOBIN		+=$(SOURCE)/bin/fshow-gtk${EXEEXT}
-endif
+#ifeq "$(GTKBUILD)" "yes"
+#	TOBIN		+=$(SOURCE)/bin/fshow-gtk${EXEEXT}
+#endif
 
 ifeq "$(OUTPUTLANG)" "java"
 	TOBIN		+=$(SOURCE)/bin/fdecompile-j${EXEEXT}
@@ -188,12 +188,12 @@ ifeq "${PDFBUILD}" "yes"
     TOLIBCUI +=$(SOURCE)/lib/libPDF_PDF${SO_EXT}
 endif
 
-ifneq "$(ODBC)" "no"
-	ifeq "$(ODBC_LINK)" "static"
-		TOLIBGTK	+=$(SOURCE)/lib/libaclallgui-noodbc.a
-		TOLIBCUI	+=$(SOURCE)/lib/libaclall-noodbc.a
-    endif
-endif
+#ifneq "$(ODBC)" "no"
+#	ifeq "$(ODBC_LINK)" "static"
+#		TOLIBGTK	+=$(SOURCE)/lib/libaclallgui-noodbc.a
+#		TOLIBCUI	+=$(SOURCE)/lib/libaclall-noodbc.a
+#    endif
+#endif
 
 ifeq "${HAVE_UNIXODBC}" "yes"
 	TOLIBCUI	+=$(SOURCE)/lib/libSQL_unixodbc${SO_EXT}
@@ -294,14 +294,14 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
         endif
     endif
 
-	CYTOLIBGTK	=$(CYSOURCE)/lib/libaclallgui.a $(CYSOURCE)/lib/libUI_GTK.a
+#	CYTOLIBGTK	=$(CYSOURCE)/lib/libaclallgui.a $(CYSOURCE)/lib/libUI_GTK.a
 	#we still cannot compile this one: $(CYSOURCE)/lib/libUI_GTK_x.so
-	ifneq "$(ODBC)" "no"
-		ifeq "$(ODBC_LINK)" "static"
-			CYTOLIBGTK	+=$(CYSOURCE)/lib/libaclallgui-noodbc.a
+#	ifneq "$(ODBC)" "no"
+#		ifeq "$(ODBC_LINK)" "static"
+#			CYTOLIBGTK	+=$(CYSOURCE)/lib/libaclallgui-noodbc.a
 			#We still cannot compile this one :$(CYSOURCE)/lib/libUI_GTK-noodbc.a
-        endif
-    endif
+#        endif
+#    endif
 
 #	ifeq "$(GTKBUILD)" "yes"
 #	    ifeq "$(GLIBVER)" "old"
@@ -474,8 +474,8 @@ gtkgui:
 #	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui
 #	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
 #	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui libUI_GTK_x.so
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui UI_GTK_x
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile fshow-gtk
+#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui UI_GTK_x
+#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile fshow-gtk
 	@echo Aubit 4gl compiler GTK GUI is now compiled
 
 ide:
@@ -645,7 +645,7 @@ clean.bin:
 	mcompile-noodbc${EXE} loadmap${EXE} \
 	*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
 	4glc_perl${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
-	aubit-config${EXE} fshow${EXE} fshow-gtk${EXE} \
+	aubit-config${EXE} fshow${EXE} \
 	)
 
 clean.etc:
@@ -986,7 +986,7 @@ install.libs:
 
 #FIXME: want about -noodbc libs?
 	cp ${L5}/libUI_GTK.a ${LIBTARGET1}
-	cp ${L5}/libaclallgui.a ${LIBTARGET1}
+#	cp ${L5}/libaclallgui.a ${LIBTARGET1}
 	cp ${L5}/libaclall.a ${LIBTARGET1}
 	cp ${L3}/librpclib.a ${LIBTARGET1}
 
@@ -1007,7 +1007,7 @@ deinstall.libs:
 	${RM} /usr/lib/libgtk${LIBVER}.a
 #FIXME: what about -noodbc libs?
 	${RM} /usr/lib/libUI_GTK.a
-	${RM} /usr/lib/libaclallgui.a
+#	${RM} /usr/lib/libaclallgui.a
 	${RM} /usr/lib/libaclall.a
 	${RM} /usr/lib/librpclib.a
 
@@ -1666,8 +1666,8 @@ platform.common:
 	@uname -a >> $(OUT)
 	@${GTKCONFIGTEXT}  >> $(OUT)
 	@${GTKCONFIGCMD} >> $(OUT)
-	@echo "----- gcc -v ---------" >> $(OUT)
-	@gcc -v  >> $(OUT) 2>&1
+	@echo "----- ${CC} -v ---------" >> $(OUT)
+	@${CC} -v  >> $(OUT) 2>&1
 	@if [ -f "bin/4glc" ]; then \
 		echo "----- all shared libraries used by 4glc ---------" >> $(OUT) ; \
 		ls -al bin/4glc  >> $(OUT) ; \

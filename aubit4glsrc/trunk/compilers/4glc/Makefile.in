@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.19 2002-03-25 00:59:43 afalout Exp $
+# $Id: Makefile.in,v 1.20 2002-03-25 07:42:44 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -106,7 +106,7 @@ all: ${ALL}
 #	@echo OUTPUTLANG = $(OUTPUTLANG)
 #	${4GLPC} ${4GLPCFLAGS} -o $@ ${4GLCOBJ}
 #same as: why are we using 4glpc?
-#	gcc -O2 -g  -Irules -L/lib -L../../lib -g -L. -I. -o  4glc mod.o 4glc.o map.o rules/generated/states.o rules/generated/kw.o rules/generated/y.tab.o dim.o list.o compile_c.o compile_c_gtk.o lexer.o -I/usr/aubit/aubit4glsrc/incl -L/usr/aubit/aubit4glsrc/lib -L/lib/w32api -L/usr/local/lib -lm -lPDF_NOPDF -lRPC_NORPC -laclshared
+#	${CC} -O2 -g  -Irules -L/lib -L../../lib -g -L. -I. -o  4glc mod.o 4glc.o map.o rules/generated/states.o rules/generated/kw.o rules/generated/y.tab.o dim.o list.o compile_c.o compile_c_gtk.o lexer.o -I/usr/aubit/aubit4glsrc/incl -L/usr/aubit/aubit4glsrc/lib -L/lib/w32api -L/usr/local/lib -lm -lPDF_NOPDF -lRPC_NORPC -laclshared
 	${CC} ${CFLAGS} -L../../lib -o $@ ${4GLCOBJ} -laclall -lPDF_NOPDF -lRPC_NORPC
 #	-lm
 	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}

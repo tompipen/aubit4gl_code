@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.61 2002-03-25 00:59:43 afalout Exp $
+# $Id: 4glpc,v 1.62 2002-03-25 07:42:44 afalout Exp $
 #
 
 ########################################################################
@@ -498,12 +498,13 @@ fi
 LAST=""
 INCLDIR="-I$AUBITDIR/incl"
 
-if [ "$COMSPEC" = "" ]
-then
-	GCC=${GCC:-"cc"}
-else
-	GCC=${GCC:-"gcc"}
-fi
+#GCC and CC are set via aubitrc config file:
+#if [ "$COMSPEC" = "" ]
+#then
+#	GCC=${GCC:-"cc"}
+#else
+#	GCC=${GCC:-"gcc"}
+#fi
 
 GCC="$GCC -O2 -g"
 

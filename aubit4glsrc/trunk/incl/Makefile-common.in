@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.24 2002-03-22 08:28:58 afalout Exp $
+# $Id: Makefile-common.in,v 1.25 2002-03-25 07:42:44 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -193,7 +193,9 @@ INSTALL_CMD 		=install
 INSTALL     		=${INSTALL_CMD} -c -o ${INSTALL_USR} -g ${INSTALL_GRP}
 MKPATH      		=mkdir -p
 CPPFLAGS 			=
-LDFLAGS 			=-s
+#LDFLAGS 			=-s
+LDFLAGS_SHARED		=@LDFLAGS_SHARED@
+LD                  =ld
 ALL_LIBS			=@LIBS@
 AUTOCONF_CFLAGS     =@CFLAGS@
 #tipycally set by autoconf: AUTOCONF_CFLAGS     =-g -O2
@@ -459,8 +461,7 @@ export AUBIT_BIN_INSTALL
 
 #Rule to make Windows-CyGwin .dll and export library:
 %.dll %.def %.dll.a: $(DLLOBJS)
-#	@echo "Using single line gcc:"
-	gcc -shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -o $*.dll $(DLLOBJS) -Wl,--export-all-symbols  $(DLL_LDFLAGS) $(DLL_LDLIBS)
+	${CC} -shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -o $*.dll $(DLLOBJS) -Wl,--export-all-symbols  $(DLL_LDFLAGS) $(DLL_LDLIBS)
 #	cp $*.def $*.def.bak
 
 #make def file:

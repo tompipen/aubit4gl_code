@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-02-15 11:33:46 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-03-25 07:42:44 afalout Exp $
 #
 ifneq "${COMSPEC}" ""
 	ifeq "${PDFBUILD}" "no"
@@ -61,11 +61,11 @@ override CFLAGS+=-I.. -I../../compilers/fcompile @PDFLIB_I_FLAGS@ @PDFLIB_L_FLAG
 all: ${ALL}
 
 libPDF_PDF.so: ${OBJECTS_PDF}
-	ld @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@
+	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@
 	cp $@ ..
 
 libPDF_NOPDF.so: ${OBJECTS_NOPDF}
-	ld  $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@
+	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@
 	cp $@ ..
 
 NOPDF.dll: ${OBJECTS_NOPDF}

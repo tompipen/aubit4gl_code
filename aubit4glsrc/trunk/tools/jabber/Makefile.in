@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-01-20 04:18:42 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-03-25 07:42:44 afalout Exp $
 #
 
 include ../../incl/Makefile-common
@@ -49,7 +49,7 @@ test_im:
 	${SH} ${AMAKE} test_im ${AMAKE_FLAGS}
 
 lib4glim.o:
-	gcc lib4glim.c -c -o lib4glim.o
+	${CC} lib4glim.c -c -o lib4glim.o
 
 
 ### -----------------------------------------------------------------
@@ -58,7 +58,7 @@ lib4glim.o:
 
 #lib4glim can be compiled as executable for testing:
 exec4glim: lib4glim.c
-	gcc lib4glim.c -o exec4glim -liksemel -D__ASEXEC__
+	${CC} lib4glim.c -o exec4glim -liksemel -D__ASEXEC__
 
 #if you compile lib4glim.c as executable, then you can run it from command
 #line, like this. (note: in that case you will need configuration file,

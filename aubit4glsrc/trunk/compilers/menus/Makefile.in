@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.14 2002-03-25 00:59:43 afalout Exp $
+# $Id: Makefile.in,v 1.15 2002-03-25 07:42:44 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -106,7 +106,7 @@ norpclib:
 mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall.a
 #	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
 #same as: why are we using 4glpc ?
-	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -laclall -lPDF_NOPDF -lRPC_NORPC
+	${CC} ${CFLAGS} -L../../lib -o $@ ${OBJECTS} -laclall -lPDF_NOPDF -lRPC_SUNRPC ${RPCLIB_NAME}
 #-lm
 	${LN} mcompile${EXE} ../../bin/mcompile${EXE}
 
