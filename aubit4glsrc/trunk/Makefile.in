@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.146 2004-03-21 01:40:03 afalout Exp $
+# $Id: Makefile.in,v 1.147 2004-03-22 00:15:03 afalout Exp $
 #
 
 ## ==================================================================
@@ -526,7 +526,7 @@ include incl/Makefile-install.mki
 install: install.core install.Makefile-common install.setmod install.example \
 		install.manual install.config \
 		install.links install.aubitrc install.libs.links \
-		install.makefile-install
+		install.makefile-install install.libs.conf
 ifneq "${AUBITRCFILEEXISTS}" ""
 	@echo " "
 	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc"

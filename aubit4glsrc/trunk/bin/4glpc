@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.124 2004-03-08 02:43:21 afalout Exp $
+# $Id: 4glpc,v 1.125 2004-03-22 00:15:53 afalout Exp $
 #
 
 ########################################################################
@@ -840,14 +840,8 @@ do
    *.a) COMPCC="$COMPCC $a"
    ;;
 
-   *.o) COMPCC="$COMPCC $a"
-		EXECNAME="1"
-   ;;
-
-	#same as .o, needed to distinguish from I4GL objects in universal makefiles:
-	#but I don't know how to do OR here...? Like:
-	# *.o) || *.ao)
-   *.ao) COMPCC="$COMPCC $a"
+   #.ao behaves same as .o, needed to distinguish from I4GL objects in universal makefiles:
+   *.o | *.ao) COMPCC="$COMPCC $a"
 		EXECNAME="1"
    ;;
 

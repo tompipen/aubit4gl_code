@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install,v 1.10 2004-01-22 00:05:03 afalout Exp $
+# $Id: Makefile-install,v 1.11 2004-03-22 00:15:53 afalout Exp $
 #
 
 #This file gets installed to root of binary installation, under name "Makefile"
@@ -47,13 +47,34 @@ include incl/Makefile-install.mki
 ##                           Targets
 ## ------------------------------------------------------------------
 
-install: etc/aubitrc-bin
+install: etc/aubitrc-bin install.libs.conf
 	${MAKE} install.step2
 	@echo Aubit compiler binary disrtibution installed.
 
 #we have to restart make because we are reading some things in
 #Makefile-common that will be changed by "configure"
 install.step2: install.links install.aubitrc install.libs.links test
+
+
+#This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
+#But NOT libs that are linked and not dlopen()-ed (like libESQL_ and file...)
+#Same target is in Makefile-install.mki makefile (for source code distros) 
+#Can't put targets in MAkefile-common - I should create one include makefile 
+#for targets needed by both binary and source distros 
+install.libs.conf:
+ifneq "${LDCONFIG}" "no"
+ifeq "${GREP_LD_SO_CONF}" ""
+	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
+	@echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."
+	ldconfig
+	@echo "Refreshed ldconfig cache."
+else
+	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
+endif
+else
+	@echo "ldocnfig not found on your system"
+endif
+
 
 etc/aubitrc-bin:
 	./configure ${CPARAM}

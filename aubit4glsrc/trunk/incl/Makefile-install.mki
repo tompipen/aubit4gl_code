@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.73 2004-02-12 11:04:12 afalout Exp $
+# $Id: Makefile-install.mki,v 1.74 2004-03-22 00:15:53 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -109,15 +109,23 @@ endif
 
 
 #This will work only on Linux, and Aubit loads from $AUBITDIR.lib anyway:
-#install.libs.conf:
-#ifeq "${GREP_LD_SO_CONF}" ""
-#	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
-#	@echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."
-#	ldconfig
-#	@echo "Refreshed ldconfig cache."
-#else
-#	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
-#endif
+#But NOT libs that are linked and not dlopen()-ed (like libESQL_ and file...)
+#Same target is in Makefile-install makefile (for binary distros)
+#Can't put targets in MAkefile-common - I should create one include makefile 
+#for targets needed by both binary and source distros 
+install.libs.conf:
+ifneq "${LDCONFIG}" "no"
+ifeq "${GREP_LD_SO_CONF}" ""
+	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
+	@echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."
+	ldconfig
+	@echo "Refreshed ldconfig cache."
+else
+	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
+endif
+else
+	@echo "ldocnfig not found on your system"
+endif
 
 #######################################
 install.libs.links: deinstall.libs.links

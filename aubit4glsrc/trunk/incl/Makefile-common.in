@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.154 2004-03-21 00:47:21 afalout Exp $
+# $Id: Makefile-common.in,v 1.155 2004-03-22 00:15:53 afalout Exp $
 #
 
 
@@ -308,8 +308,13 @@ AR 					=ar rc
 BISON               =@BISON@
 #YACC is variable name we use all over the make files, for Bison command
 YACC                =$(strip ${BISON} @DEBUG_BISON@)
-#-i needed to create case insensitive scanner:
-LEX					=@LEX@ -i
+
+LEX					=@LEX@
+ifneq "${LEX}" "no"
+	#-i needed to create case insensitive scanner:
+	LEX				:=${LEX} -i
+endif
+
 NICE                =nice -20
 INSTALL_USR			=nobody
 INSTALL_GRP 		=nobody
@@ -748,9 +753,10 @@ INSTALL_DIR=${PREFIX}
 		REPLACEWITH=${NEWVALUE}
     endif
 
-	ifneq "$(shell  if test -w ${AUBITETC} ; then echo 1; fi)" "1"
-		DUMMY:=$(shell ${MKPATH} ${AUBITETC})
-    endif
+	#this DIRECTORY is created in configure
+	#ifneq "$(shell  if test -w ${AUBITETC} ; then echo 1; fi)" "1"
+	#	DUMMY:=$(shell ${MKPATH} ${AUBITETC})
+    #endif
 
 	#command line parameter to make : "make aubitrc=new"
     #this will force ${AUBITETC}/aubitrc to be overwriten with new one
@@ -758,11 +764,12 @@ INSTALL_DIR=${PREFIX}
 		AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
     endif
 
-	ifeq "${AUBITRCFILEEXISTS}" ""
-		#create path
-		DUMMY:=$(shell ${MKPATH} ${AUBITETC})
-		#AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
-	endif
+	#This DIRECTORY is created from configure
+	#ifeq "${AUBITRCFILEEXISTS}" ""
+	#	#create path
+	#	DUMMY:=$(shell ${MKPATH} ${AUBITETC})
+	#	#AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
+	#endif
 
 LDCONFIG=@LDCONFIG@
 ifneq "${LDCONFIG}" "no"
