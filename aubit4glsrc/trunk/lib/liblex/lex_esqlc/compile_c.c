@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.8 2003-02-17 15:40:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.9 2003-02-17 16:48:09 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2397,10 +2397,12 @@ void print_init_var(char *name,char *prefix,int alvl) {
 	int arrsizes[10];
 	int cnt;
 	int acnt;
+	int printing_arr;
 
 
 
 
+	printing_arr=0;
 	// Have we got a record ?
 	if (strchr(name,'.')) {
 		char buffx[1024];
@@ -2429,8 +2431,9 @@ void print_init_var(char *name,char *prefix,int alvl) {
 			yyerror("I was expecting a record..."); return;}
 
 		// is this an array ?
-		if (a) { 
+		if (a&&prefix2[strlen(prefix2)-1]!=']') { 
 			char buff_id[256];
+			printing_arr=1;
 			cnt=split_arrsizes(arr,&arrsizes);
 			printf("cnt=%d\n",cnt);
 			for (acnt=0;acnt<cnt;acnt++) {
@@ -2445,7 +2448,7 @@ void print_init_var(char *name,char *prefix,int alvl) {
 		}
 		print_init_var(ptr,prefix2,alvl);
 		
-		if (a) { 
+		if (printing_arr) {
 			for (acnt=0;acnt<cnt;acnt++) {
 				printc("} /* End init for */\n}\n"); alvl--; 
 			}
@@ -2468,8 +2471,9 @@ void print_init_var(char *name,char *prefix,int alvl) {
 	if (x<0) { yyerror("Couldn't find variable to null it...[1]"); return; }
 
 
-	if (a) { 
+	if (a&&prefix2[strlen(prefix2)-1]!=']') { 
 			char buff_id[256];
+			printing_arr=1;
 			cnt=split_arrsizes(arr,&arrsizes);
 			for (acnt=0;acnt<cnt;acnt++) {
 				sprintf(buff_id,"_fglcnt_%d",alvl);
@@ -2482,7 +2486,7 @@ void print_init_var(char *name,char *prefix,int alvl) {
 			}
 	}
 	printc("setnull(%d,&%s,%d);",d&0xffff,prefix2,size);
-	if (a) { 
+	if (printing_arr) { 
 			for (acnt=0;acnt<cnt;acnt++) {
 				printc("} /* End init for */\n}\n"); alvl--; 
 			}
