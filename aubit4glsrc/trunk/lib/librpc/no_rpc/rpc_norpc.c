@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_norpc.c,v 1.5 2003-01-11 17:05:53 mikeaubury Exp $
+# $Id: rpc_norpc.c,v 1.6 2003-01-12 13:47:38 mikeaubury Exp $
 #
 */
 
@@ -129,11 +129,12 @@ typedef struct menu_list menu_list;
 =====================================================================
 */
 
+void xdrmem_create(XDR *xdrs, caddr_t addr, u_int size, enum xdr_op op);
 static void local_exitwith (char *s);
 bool_t xdr_menu_list(XDR * xdrs,menu_list * objp);
 bool_t xdr_struct_form(XDR *xdrs, struct_form *objp);
-
-
+bool_t xdr_int(XDR *xdrs, int *ip);
+void xdrstdio_create(XDR *xdrs, FILE *file, enum xdr_op op);
 
 /*
 =====================================================================
@@ -146,11 +147,13 @@ bool_t xdr_struct_form(XDR *xdrs, struct_form *objp);
  * @todo Describe function
  */
 void
-xdrmem_create(xdrs, addr, size, op)
-	register XDR *xdrs;
+xdrmem_create(XDR *xdrs, caddr_t addr, u_int size, enum xdr_op op)
+/*
+	XDR *xdrs;
 	caddr_t addr;
 	u_int size;
 	enum xdr_op op;
+*/
 {
 	local_exitwith ("Could not xdrmem_create - noRPC build");
 }
@@ -160,10 +163,7 @@ xdrmem_create(xdrs, addr, size, op)
  *
  * @todo Describe function
  */
-bool_t
-xdr_int(xdrs, ip)
-	XDR *xdrs;
-	int *ip;
+bool_t xdr_int(XDR *xdrs, int *ip)
 {
 	local_exitwith ("Could not xdr_int - noRPC build");
 	return 0;
@@ -175,10 +175,7 @@ xdr_int(xdrs, ip)
  * @todo Describe function
  */
 void
-xdrstdio_create(xdrs, file, op)
-	register XDR *xdrs;
-	FILE *file;
-	enum xdr_op op;
+xdrstdio_create(XDR *xdrs, FILE *file, enum xdr_op op)
 {
 	local_exitwith ("Could not xdrstdio_create - noRPC build");
 }

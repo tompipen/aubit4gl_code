@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.25 2002-11-25 02:12:49 afalout Exp $
+# $Id: fglwrap.c,v 1.26 2003-01-12 13:47:38 mikeaubury Exp $
 #
 */
 
@@ -71,7 +71,9 @@
 int 	p_numargs	=0;
 int 	isdebug		=0;
 int 	ui_mode		=0;
-extern int errno;
+
+/* extern int errno; */
+#include <errno.h>
 
 char *	p_args[256];
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.20 2003-01-09 09:13:45 psterry Exp $
+# $Id: conv.c,v 1.21 2003-01-12 13:47:38 mikeaubury Exp $
 #
 */
 
@@ -238,7 +238,8 @@ int             dectod 			(void *zz, void *aa, int sz_ignore);
 	static void 	print_res_l 	(int ln, char *s);
 #endif
 
-extern int 		errno;
+#include <errno.h>
+/* extern int 		errno; */
 int 			lastsize;
 
 

@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
+void bname (char *str, char *str1, char *str2);
 
+int compile_ace_report (char *filename);
+int conv_out(char *fname) ;
 
 int main(int argc,char *argv[]) {
 int rval;
@@ -25,7 +28,7 @@ if (rval==0) {
 
 }
 
-conv_out(char *fname) {
+int conv_out(char *fname) {
 FILE *f_in;
 FILE *f_out;
 char buff[256];
@@ -60,6 +63,7 @@ while (1) {
 fprintf(f_out,"\n\nreport::run_report(\\%%report);\n\n");
 fclose(f_in);
 fclose(f_out);
+return 1;
 }
 
 

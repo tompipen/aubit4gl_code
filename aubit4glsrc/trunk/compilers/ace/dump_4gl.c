@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "report.h"
-
 /*
 # 4GL code generator
 #
@@ -60,17 +59,22 @@ void dump_functions (void );
 void dump_getdata (void );
 void dump_output (void );
 void dump_report (void );
-void print_inputs ();
+void print_inputs (void);
 void print_lvl (void );
 void print_set_params (void );
 void print_variable (int a);
 void print_variables (int class, int inrec);
+char * generate_order_by (struct select_stmts *ptr);
+char * decode_op (int op);
+void decode_call (struct cmd_call *cmd);
+char * decode_column (struct format *f);
+int     read_data_from_file     (char *datatype, void *ptr, char *filename) ;
 
 
 int
 main (int argc, char *argv[])
 {
-  FILE *f;
+  /*FILE *f; */
   int a;
 
   if (argc != 2)
@@ -276,7 +280,7 @@ void
 dump_getdata ()
 {
   int a;
-  int b;
+  /*int b; */
 
   struct select_stmts *ptr;
 
@@ -555,7 +559,7 @@ void
 decode_if (struct cmd_if *cmd)
 {
   printf ("IF ");
-  printf ("");
+  //printf ("");
   decode_expr (&cmd->condition);
   printf (" THEN \n");
   lvl++;
@@ -647,7 +651,7 @@ decode_block (struct commands *cmd)
     }
 }
 
-decode_call (struct cmd_call *cmd)
+void decode_call (struct cmd_call *cmd)
 {
   printf ("CALL %s (", cmd->fcall->fname);
   decode_list (cmd->fcall->lexpr);
@@ -806,7 +810,6 @@ replace_vars_sql (struct select_stmts *ptr)
   static char buff[30000];
   char *cptr;
   int a;
-  int c;
   char *lpos;
   strcpy (buff, "");
 

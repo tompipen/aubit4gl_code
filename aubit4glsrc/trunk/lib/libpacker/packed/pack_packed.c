@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.4 2002-08-18 05:00:27 afalout Exp $
+# $Id: pack_packed.c,v 1.5 2003-01-12 13:47:38 mikeaubury Exp $
 #*/
 
 /**
@@ -71,10 +71,12 @@
 #ifdef PORTABLE
 	#include <netinet/in.h>
 #else
+#ifndef htonl
 	#define htonl(x) (x)
 	#define htons(x) (x)
 	#define ntohl(x) (x)
 	#define ntohs(x) (x)
+#endif
 #endif
 
 /*
