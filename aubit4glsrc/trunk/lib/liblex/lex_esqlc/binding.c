@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.28 2004-01-28 21:47:16 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.29 2004-03-18 08:15:51 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -107,7 +107,7 @@ make_sql_bind (char *sql, char *type)
 	      for (a = 0; a < ibindcnt; a++)
 		{
 		  printc("%s",get_sql_type (a, 'i'));
-		if ((ibind[a].dtype & 0xffff)==0) {
+		if ((ibind[a].dtype & 0xffff)==0   || (ibind[a].dtype & 0xffff)==DTYPE_VCHAR     ) {
 		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d,%d,%d);\n",
 			   ibind[a].dtype & 0xffff, 
 					/*ibind[a].varname, */
@@ -152,7 +152,7 @@ make_sql_bind (char *sql, char *type)
 			} else {
 				sprintf(indicat,"native_binding_o_ind[%d].ptr",a);
 			}
-		if ((obind[a].dtype & 0xffff)==0) {
+		if ((obind[a].dtype & 0xffff)==0 || (obind[a].dtype & 0xffff)==DTYPE_VCHAR) {
 		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d,%d,%d);\n",
 			   obind[a].dtype & 0xffff, 
 				/*obind[a].varname, */
@@ -272,7 +272,7 @@ make_sql_bind_expr (char *sql, char *type)
 		{
 		  sprintf(b2,"%s\n",get_sql_type (a, 'i'));
       			ptr=addstr(ptr,&sz, b2);
-		if ((ibind[a].dtype & 0xffff)==0) {
+		if ((ibind[a].dtype & 0xffff)==0 || (ibind[a].dtype & 0xffff)==DTYPE_VCHAR) {
 		  sprintf (buff_small, "COPY_DATA_IN_%d(ibind[%d].ptr,native_binding_i[%d].ptr,%d,%d,%d); /*E*/\n",
 			   ibind[a].dtype & 0xffff, 
 					/*ibind[a].varname, */
@@ -318,7 +318,7 @@ make_sql_bind_expr (char *sql, char *type)
 			} else {
 				sprintf(indicat,"native_binding_o_ind[%d].ptr",a);
 			}
-		if ((obind[a].dtype & 0xffff)==0) {
+		if ((obind[a].dtype & 0xffff)==0  || (obind[a].dtype & 0xffff)==DTYPE_VCHAR  ) {
 		  sprintf (buff_small, "COPY_DATA_OUT_%d(obind[%d].ptr,native_binding_o[%d].ptr,%s,%d,%d,%d);\n",
 			   obind[a].dtype & 0xffff, 
 				/*obind[a].varname, */
@@ -464,7 +464,7 @@ char buff_ind[255];
 	  sprintf (buff,"text _vi_%d;", a);
 	  break;
 	case 13:
-	  sprintf (buff,"varchar _vi_%d;", a);
+	  sprintf (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
 	  break;
 	case 14:
 	  sprintf (buff,"interval _vi_%d;", a);
@@ -523,7 +523,7 @@ char buff_ind[255];
 	  sprintf (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  sprintf (buff,"varchar _vo_%d;", a);
+	  sprintf (buff,"char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
 	  break;
 	case 14:
 	  sprintf (buff,"interval _vo_%d;", a);
@@ -596,7 +596,7 @@ static char buff_ind[255];
 	  sprintf (buff,"text _vi_%d;", a);
 	  break;
 	case 13:
-	  sprintf (buff,"varchar _vi_%d;", a);
+	  sprintf (buff,"char _vi_%d[%d+1];", a, ibind[a].dtype >> 16);
 	  break;
 	case 14:
 	  sprintf (buff,"interval _vi_%d;", a);
@@ -663,7 +663,7 @@ static char buff_ind[255];
 	  sprintf (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  sprintf (buff,"varchar _vo_%d;", a);
+	  sprintf (buff,"char _vo_%d[%d+1];", a, obind[a].dtype >> 16);
 	  break;
 	case 14:
 	  sprintf (buff,"interval _vo_%d;", a);
