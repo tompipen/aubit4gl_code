@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.108 2004-11-11 14:55:38 mikeaubury Exp $
+# $Id: esql.ec,v 1.109 2004-11-11 17:24:57 mikeaubury Exp $
 #
 */
 
@@ -156,7 +156,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.108 2004-11-11 14:55:38 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.109 2004-11-11 17:24:57 mikeaubury Exp $";
 #endif
 
 
@@ -1031,18 +1031,11 @@ int arr_dtime[]={
       EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
 	TYPE =:dataType, DATA =:decimal_var;
       break;
-    case DTYPE_DATE:
-      fgl_date = (long *) bind[idx].ptr;
-      date_var = (long) *fgl_date;
-      EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
-	TYPE =:dataType, DATA =:date_var;
-      break;
     case DTYPE_MONEY:
-      fgl_money = (fglmoney *) bind[idx].ptr;
+	vptr=(void *)bind[idx].ptr;
+      fgl_money = (fglmoney *) vptr;
 	char_var=(char *)&fgl_money->dec_data[2];
-      if (deccvasc
-	  (char_var, strlen (char_var),
-	   &money_var))
+      if (deccvasc (char_var, strlen (char_var), &money_var))
 	{
 	/** @todo : We need to store this error */
 	  return 1;
@@ -1050,6 +1043,15 @@ int arr_dtime[]={
       EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
 	TYPE =:dataType, DATA =:money_var;
       break;
+
+    case DTYPE_DATE:
+      fgl_date = (long *) bind[idx].ptr;
+      date_var = (long) *fgl_date;
+      EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
+	TYPE =:dataType, DATA =:date_var;
+      break;
+
+
     case DTYPE_DTIME:
 
       fgl_dtime = (FglDatetime *) bind[idx].ptr;
@@ -1346,6 +1348,32 @@ int type;
 
       break;
 
+    case DTYPE_MONEY:
+    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:money_var =
+	DATA;
+        if (dataType==DTYPE_FLOAT || dataType==DTYPE_SMFLOAT) {
+                sqlca.sqlwarn.sqlwarn0='W';
+                sqlca.sqlwarn.sqlwarn4='W';
+        }
+      A4GL_debug ("MONEY...");
+      if (isSqlError ())
+	{
+	  A4GL_debug ("isSqlError...");
+	  return 1;
+	}
+
+      memset (tmpbuff, 0, 255);
+      if (dectoasc (&money_var, tmpbuff, 64, -1))
+	{
+	  return 1;
+	}
+      A4GL_debug ("tmpbuff=%s\n", tmpbuff);
+      A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
+
+
+      break;
+
+
 
     case DTYPE_DATE:
     	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:date_var = DATA;
@@ -1357,29 +1385,6 @@ int type;
       fgl_date = (long *) bind[idx].ptr;
       *fgl_date = date_var;
 	}
-      break;
-
-
-    case DTYPE_MONEY:
-    EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:money_var =
-	DATA;
-
-      A4GL_debug ("MONEY...");
-      if (isSqlError ())
-	{
-	  A4GL_debug ("isSqlError...");
-	  return 1;
-	}
-
-      memset (tmpbuff, 0, 255);
-      if (dectoasc (&decimal_var, tmpbuff, 64, -1))
-	{
-	  return 1;
-	}
-      A4GL_debug ("tmpbuff=%s\n", tmpbuff);
-      A4GL_stodec (tmpbuff, (void *)bind[idx].ptr, bind[idx].size);
-
-
       break;
 
 
