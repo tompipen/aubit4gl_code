@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.19 2004-08-05 17:19:40 mikeaubury Exp $
+# $Id: input_array.c,v 1.20 2004-09-29 15:09:07 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.19 2004-08-05 17:19:40 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.20 2004-09-29 15:09:07 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -659,14 +659,14 @@ iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt)
       if (fprop != 0)
 	{
 	  A4GL_debug ("Downshift?");
-	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
-	      && isalpha (a))
+	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (a)
+	      && a4gl_isalpha (a))
 	    {
 	      a = a4gl_tolower (a);
 	    }
 	  A4GL_debug ("Upshift ?");
-	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
-	      && isalpha (a))
+	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (a)
+	      && a4gl_isalpha (a))
 	    {
 	      a = a4gl_toupper (a);
 	    }
@@ -2069,7 +2069,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
 
 		  if (picture[i] == 'A')
 		    {
-		      if (isalpha (key))
+		      if (a4gl_isalpha (key))
 			ok = 1;
 		      else
 			ok = 0;
@@ -2270,7 +2270,7 @@ A4GL_debug("a=%d op=%d HEF",a,arr->fcntrl[a].op);
 
 		      if (picture[a] == 'A')
 			{
-			  if (!isalpha (ptr[a]))
+			  if (!a4gl_isalpha (ptr[a]))
 			    ptr[a] = ' ';
 			  continue;
 			}

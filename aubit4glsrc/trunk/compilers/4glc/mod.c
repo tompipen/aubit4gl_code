@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.180 2004-09-29 09:14:45 mikeaubury Exp $
+# $Id: mod.c,v 1.181 2004-09-29 15:08:56 mikeaubury Exp $
 #
 */
 
@@ -4235,6 +4235,13 @@ make_sql_string_and_free (char *first, ...)
   n = 0;
   va_start (ap, first);
   ptr = strdup (first);
+
+
+	if (first!=kw_comma && first!=kw_space) {
+		A4GL_debug("FREE %p (%s)\n",first,first); 
+		free(first);
+			first=0;
+	}
   l = strlen (ptr);
 
   while (1)
@@ -4247,7 +4254,11 @@ make_sql_string_and_free (char *first, ...)
       l++;			/* Extra space...*/
       ptr = realloc (ptr, l);
       strcat (ptr, next);
-	if (next!=kw_comma && next!=kw_space) free(next);
+	if (next!=kw_comma && next!=kw_space) {
+		
+		A4GL_debug("FREE %p (%s)\n",next,next); 
+		free(next);
+	}
     }
   return ptr;
 }

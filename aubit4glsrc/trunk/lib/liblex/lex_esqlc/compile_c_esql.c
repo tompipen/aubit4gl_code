@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.86 2004-09-20 13:33:44 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.87 2004-09-29 15:09:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.86 2004-09-20 13:33:44 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.87 2004-09-29 15:09:03 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -136,7 +136,7 @@ if (A4GL_isyes(acl_getenv("A4GL_EC_LOGSQL"))) {
 	}
 	printh("char _sql_stmt_%d[]={\n",sqlcnt);
 	for (a=0;a<strlen(buff);a++) {
-		if (isalpha(buff[a])||isdigit(buff[a])) {
+		if (a4gl_isalpha(buff[a])||isdigit(buff[a])) {
 			printh("'%c',",buff[a]);
 		} else {
 			printh("%3d,",buff[a]);

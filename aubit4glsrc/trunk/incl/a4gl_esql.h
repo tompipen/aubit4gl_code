@@ -32,6 +32,10 @@ extern "C"
 	#define VALID_DIALECT_FOUND
 #endif
 
+#ifdef DIALECT_INGRES
+	#include "a4gl_esql_ingres.h"
+	#define VALID_DIALECT_FOUND
+#endif
 
 #ifdef DIALECT_POSTGRES
 	#include "a4gl_esql_postgres.h"

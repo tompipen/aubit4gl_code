@@ -899,4 +899,26 @@ builtin_expr : curr_v_clause {
 	;
 
 
+
+curr_v_clause : CURRENT  cur_v_part 
+{strcpy($<str>$,$<str>2);}
+;
+
+
+cur_v_part: {strcpy($<str>$,"1,10");}
+| s_curr_v TO s_curr_v
+{sprintf($<str>$," %s ,%s",$<str>1,$<str>3);}
+;
+
+s_curr_v: YEAR {strcpy($<str>$,"1");} | MONTH  {strcpy($<str>$,"2");}| DAY  {strcpy($<str>$,"3");}| HOUR  {strcpy($<str>$,"4");}| MINUTE  {strcpy($<str>$,"5");}| SECOND  {strcpy($<str>$,"6");}| 
+FRACTION {
+sprintf($<str>$,"%d",6+2);
+}
+| FRACTION OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+sprintf($<str>$,"%d",atoi($<str>3)+6);
+}
+;
+
+
+
 /* ============================ expr.rule =========================== */

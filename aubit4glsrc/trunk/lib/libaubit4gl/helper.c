@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.35 2004-09-28 09:49:16 afalout Exp $
+# $Id: helper.c,v 1.36 2004-09-29 15:09:03 mikeaubury Exp $
 #
 */
 
@@ -1046,6 +1046,21 @@ return n;
 int a4gl_tolower(int n) {
 if (n>=0&&n<=255) n=tolower(n);
 return n;
+}
+
+int a4gl_isalpha(int n) {
+if (n>=0&&n<=255) return isalpha(n);
+else return 0;
+}
+
+int a4gl_islower(int n) {
+if (n>=0&&n<=255) return islower(n);
+else return 0;
+}
+
+int a4gl_isupper(int n) {
+if (n>=0&&n<=255) return isupper(n);
+else return 0;
 }
 
 

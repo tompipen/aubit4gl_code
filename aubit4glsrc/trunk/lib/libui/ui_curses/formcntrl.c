@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.65 2004-09-28 20:09:08 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.66 2004-09-29 15:09:04 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.65 2004-09-28 20:09:08 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.66 2004-09-29 15:09:04 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -508,7 +508,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 		  if (picture[i] == 'A')
 		    {
-		      if (isalpha (key))
+		      if (a4gl_isalpha (key))
 			ok = 1;
 		      else
 			ok = 0;
@@ -625,8 +625,8 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 				A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
 				} else {
                                 fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-                                if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a) && isalpha (a)) { a = a4gl_tolower (a); }
-                                if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a) && isalpha (a)) { a = a4gl_toupper (a); }
+                                if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (a) && a4gl_isalpha (a)) { a = a4gl_tolower (a); }
+                                if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (a) && a4gl_isalpha (a)) { a = a4gl_toupper (a); }
                                 A4GL_add_to_control_stack (sio, FORMCONTROL_KEY_PRESS, 0, 0, k);
                                 set_field_buffer (sio->currentfield,0,rbuff);
 				}
@@ -721,7 +721,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 
 		      if (picture[a] == 'A')
 			{
-			  if (!isalpha ((int)ptr[a]))
+			  if (!a4gl_isalpha ((int)ptr[a]))
 			    ptr[a] = ' ';
 			  continue;
 			}
@@ -1185,14 +1185,14 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
   if (fprop != 0)
     {
       A4GL_debug ("Downshift?");
-      if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
-	  && isalpha (a))
+      if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (a)
+	  && a4gl_isalpha (a))
 	{
 	  a = a4gl_tolower (a);
 	}
       A4GL_debug ("Upshift ?");
-      if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
-	  && isalpha (a))
+      if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (a)
+	  && a4gl_isalpha (a))
 	{
 	  a = a4gl_toupper (a);
 	}
@@ -1344,8 +1344,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
 
 	  A4GL_debug ("Downshift?");
-	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
-	      && isalpha (a))
+	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (a)
+	      && a4gl_isalpha (a))
 	    {
 	      a = a4gl_tolower (a);
 	    }
@@ -1353,8 +1353,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT)) {
 		int x_islower=0;
 		int x_isalpha=0;
-		x_islower=islower(a);
-		x_isalpha=isalpha(a);
+		x_islower=a4gl_islower(a);
+		x_isalpha=a4gl_isalpha(a);
 		if ( x_islower && x_isalpha ) {
 	      		a = a4gl_toupper (a);
 	    	}

@@ -364,7 +364,7 @@ main (int argc, char *argv[])
     }
 
 
-  if (0) {
+  if (getenv("LOGPCODE")) {
   	logfile = fopen ("pcode.run", "w");
   } else {
   	logfile = fopen ("/dev/null", "a");

@@ -1,7 +1,7 @@
 A4GL_LEXTYPE=C
 export A4GL_LEXTYPE
 unset A4GL_LEXDIALECT
-
+export A4GL_DUMP_CORE=Y
 unset DEBUG
 
 if [ "$1" != "" ] 
@@ -61,7 +61,6 @@ cp /home/aubit4gl/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
 cd /home/aubit4gl/aubit4gltest
 find /home/aubit4gl/aubit4gltest -name "*.4ae" -exec rm {} \;
 find /home/aubit4gl/aubit4gltest -name "*.afr*" -exec rm {} \;
-
 
 sh run_tests -clean
 sh run_tests -esqli

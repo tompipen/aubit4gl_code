@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.86 2004-09-02 15:57:42 mikeaubury Exp $
+# $Id: conv.c,v 1.87 2004-09-29 15:09:02 mikeaubury Exp $
 #
 */
 
@@ -1657,7 +1657,7 @@ A4GL_stod (void *str_v, void *date_v, int sz_ignore)
       strncpy (dbdate, A4GL_get_dbdate (), 10);
       for (p = dbdate; (*p > '\0') && (strlen (dmy) < 3); p++)
 	{
-	  if (isalpha (*p))
+	  if (a4gl_isalpha (*p))
 	    {
 	      *p = toupper (*p);
 	      strncat (dmy, p, 1);

@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.84 2004-09-10 11:26:59 mikeaubury Exp $
+# $Id: iarray.c,v 1.85 2004-09-29 15:09:04 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.84 2004-09-10 11:26:59 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.85 2004-09-29 15:09:04 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -666,14 +666,14 @@ iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt)
       if (fprop != 0)
 	{
 	  A4GL_debug ("Downshift?");
-	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
-	      && isalpha (a))
+	  if (A4GL_has_bool_attribute (fprop, FA_B_DOWNSHIFT) && a4gl_isupper (a)
+	      && a4gl_isalpha (a))
 	    {
 	      a = tolower (a);
 	    }
 	  A4GL_debug ("Upshift ?");
-	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
-	      && isalpha (a))
+	  if (A4GL_has_bool_attribute (fprop, FA_B_UPSHIFT) && a4gl_islower (a)
+	      && a4gl_isalpha (a))
 	    {
 	      a = a4gl_toupper (a);
 	    }
@@ -2124,7 +2124,7 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
 
 		  if (picture[i] == 'A')
 		    {
-		      if (isalpha (key))
+		      if (a4gl_isalpha (key))
 			ok = 1;
 		      else
 			ok = 0;
@@ -2317,7 +2317,7 @@ static int process_control_stack_internal (struct s_inp_arr *arr)
 
 		      if (picture[a] == 'A')
 			{
-			  if (!isalpha (ptr[a]))
+			  if (!a4gl_isalpha (ptr[a]))
 			    ptr[a] = ' ';
 			  continue;
 			}

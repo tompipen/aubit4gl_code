@@ -43,31 +43,31 @@ style "0" {  # Black
 	# This is used as the basis for all the others
 	# and applied if no attributes are applied.
 
-  	fg[NORMAL]       = "#000000"
-  	fg[ACTIVE]       = "#314a82"
-  	fg[PRELIGHT]     = "#415a92"
-  	fg[SELECTED]     = "#ffffff"
-  	fg[INSENSITIVE]  = "#969696"
+  	#fg[NORMAL]       = "#000000"
+  	#fg[ACTIVE]       = "#314a82"
+  	#fg[PRELIGHT]     = "#415a92"
+  	#fg[SELECTED]     = "#ffffff"
+  	#fg[INSENSITIVE]  = "#969696"
   	
 
   	#bg[NORMAL]       = "#a0a0ff"
   	#bg[ACTIVE]       = "#a0a0ff"
 
   	#bg[NORMAL]       = "#8080ff"
-  	bg[NORMAL]       = "#c0c0c0"
-  	bg[PRELIGHT]     = "#ffffff"
-  	bg[SELECTED]     = "#ffffff"
-  	bg[INSENSITIVE]  = "#ffffff"
-  	
-  	base[NORMAL]     = "#ffffff"
-  	base[SELECTED]   = "#a5abba"
-  	base[ACTIVE]     = "#ffffff"
-  	base[PRELIGHT]   = "#eaeaea"
-  	base[INSENSITIVE]= "#a0a0a0"
-  	
-  	text[INSENSITIVE]= "#000000"
-  	text[SELECTED]   = "#000000"
-  	text[ACTIVE]     = "#000000"
+  	bg[NORMAL]       = "#d9d9d9"
+  	#bg[PRELIGHT]     = "#ffffff"
+  	#bg[SELECTED]     = "#ffffff"
+  	#bg[INSENSITIVE]  = "#ffffff"
+  	#
+  	#base[NORMAL]     = "#ffffff"
+  	#base[SELECTED]   = "#a5abba"
+  	#base[ACTIVE]     = "#ffffff"
+  	#base[PRELIGHT]   = "#eaeaea"
+  	#base[INSENSITIVE]= "#a0a0a0"
+  	#
+  	#text[INSENSITIVE]= "#000000"
+  	#text[SELECTED]   = "#000000"
+  	#text[ACTIVE]     = "#000000"
 
   	font_name = "monospace 8"
 
@@ -83,7 +83,7 @@ style "2" { #GREEN
 }
 
 style "3" { #YELLOW 
-        fg[NORMAL]       = "#e0e000"
+        fg[NORMAL]       = "#d9d9d9"
 }
 
 style "4" { #BLUE 
@@ -131,7 +131,7 @@ style "12" { # reverse video + GREEN
 
 style "13" { # reverse video + YELLOW
         fg[NORMAL]       = "#ffffff"
-        bg[NORMAL]       = "#c0c000"
+        bg[NORMAL]       = "#d9d9d9"
 }
 
 style "14" { # reverse video + BLUE
@@ -166,7 +166,7 @@ style "200" { # invisible
 
 style "AppWindow" {
 	#base[NORMAL]="#ffffff"
-        bg[NORMAL]       = "#ffffff"
+        bg[NORMAL]       = "#d9d9d9"
         #bg[ACTIVE]       = "#ffffff"
 	#bg_pixmap[NORMAL]= "moon5.png"
 	#bg_pixmap[ACTIVE]= "bkg_img.png"
@@ -210,7 +210,6 @@ widget "*.MenuButtons" style "MenuButtons"
 
 widget "*.AppWindow" style "AppWindow"
 
-
 widget "*.0" style "0"
 widget "*.1" style "1"
 widget "*.2" style "2"
@@ -230,13 +229,12 @@ widget "*.15" style "15"
 widget "*.16" style "16"
 widget "*.18" style "18"
 
-#widget "*.80" style "80"
-widget "*.81" style "81"
-widget "*.82" style "82"
-widget "*.83" style "83"
-widget "*.84" style "84"
+#widget "*.81" style "81"
+#widget "*.82" style "82"
+#widget "*.83" style "83"
+#widget "*.84" style "84"
 #widget "*.85" style "85"
-widget "*.86" style "86"
+#widget "*.86" style "86"
 #widget "*.88" style "88"
 
 widget "*.200" style "200"

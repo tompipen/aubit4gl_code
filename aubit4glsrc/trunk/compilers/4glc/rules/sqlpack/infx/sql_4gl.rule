@@ -188,11 +188,41 @@ value_expression_initial_ss :
 		$<sql_string>$=strdup($<str>2);
 	}
 	| ATSIGN identifier DOT identifier {
-		$<sql_string>$=make_sql_string_and_free(strdup($<str>2),".",strdup($<str>4),0);
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),0);
 	}
 ;
 
 
+fgl_sql_statement: delete_statement_position {
+         A4GL_lex_printcomment("/*  delete 1 */\n");
+                print_exec_sql_bound($<str>1);
+                strcpy($<str>$,"Delete where current...");
+        }
+	| fetch_statement { strcpy($<str>$,"Fetch"); A4GL_lex_printcomment("/*  fetch */\n"); }
+	| select_statement_ss curs_forupdate {
+        	$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
+        	if (strstr($<str>2,"FOR UPDATE")) {
+                   printf("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");
+        	}
+                print_do_select($<sql_string>1);
+                strcpy($<str>$,"select");
+        }
+;
+
+
+dbase_name      :       identifier {strcpy($<str>$,$<str>1);}
+                |       identifier ATSIGN identifier {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}
+                |       CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
+;
+
+cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}                                                                                                                      ;                                                                                                                                                                                                                                                       colident: identifier                                                                                                                | identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}                                                     | CHAR_VALUE DOT identifier DOT identifier {                                                                                                if (A4GL_escape_quote_owner()) {                                                                                                    sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                   } else {                                                                                                                            sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                       }                                                                                                           }                                                                                                                   ;
+
+in_select_statement_ss:
+        SELECT op_ad select_list_ss table_expression_ss sel_p2_ss {
+                $<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>2),kw_space, $<sql_string>3, kw_space,$<sql_string>4, kw_space,$<sql_string>5,0);
+}
+
+;
 
 
 /* ========================= sql_4gl.rule ================================ */
