@@ -5,16 +5,13 @@
 */
 
 fgl_expr_c :
-/*
-initial_expr
-*/
  boolean_expr
-| report_only_expr
 | function_call_expr
 | fgl_expr_c fgl_next {
 	dec_counter();
 	$<ptr>$=A4GL_append_expr_expr($<ptr>1,$<ptr>2);
 }
+| report_only_expr
 | builtin_expr
 | pdf_expr
 | literal_expr { A4GL_debug("Got literal ptr=%p",$<ptr>1); }

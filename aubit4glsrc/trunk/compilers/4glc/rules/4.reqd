@@ -4,6 +4,7 @@
 %left KW_OR         
 %left KW_AND        
 %left KW_USING 
+%left WHERE
 %left NOT
 %left MATCHES     
 %left POWER
