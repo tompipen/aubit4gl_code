@@ -459,13 +459,26 @@ chk_word (FILE * f, char *str)
       return KW_CSTART;
     }
 
-  if (strcasecmp (p, "code") == 0 && xccode == 0)
+  if ( (strcasecmp (p, "--!code") == 0 
+|| strcasecmp (p, "code") == 0 
+)
+ && xccode == 0)
     {
       xccode = 1;
       return KW_CSTART;
     }
 
-  if (strcasecmp (p, "endcode") == 0 && xccode)
+  if (t==TYPE_EOF&&xccode) {
+	printf("Unexpected end of file - no endcode\n");
+	exit(0);
+  }
+
+  if ( (strcasecmp (p, "endcode") == 0 
+|| strcasecmp (p, "--!endcode") == 0 
+|| strcasecmp (p, "--!end code") == 0 
+|| strcasecmp (p, "end code") == 0 
+)
+&& xccode)
     {
       printc ("/* End of code */");
       xccode = 0;
