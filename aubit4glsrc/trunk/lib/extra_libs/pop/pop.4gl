@@ -1,12 +1,99 @@
 # This module required libspopc
 # http://brouits.free.fr/libspopc/
+
 code
 #include "libspopc.h"
 char *errmsg;
 static popsession *lv_mysession=0;
 void A4GLUI_initlib() {
 }
+
 endcode
+
+define msg_split_no integer
+define msg_from char(256)
+define msg_subject char(256)
+define msg_to char(256)
+define msg_cc char(256)
+define msg_date char(256)
+
+function popget(lv_msg,p_a)
+define lv_msg integer
+define p_a char(20)
+let p_a=upshift(p_a)
+call split_message(lv_msg)
+case p_a
+	when "FROM" 	return msg_from
+	when "TO" 	return msg_to
+	when "SUBJECT" 	return msg_subject
+	when "CC" 	return msg_cc
+	when "DATE" 	return msg_date
+	when "SIZE" 	return popmsgsize(lv_msg)
+end case
+end function
+
+function split_message(lv_msg) 
+define lv_msg integer
+define msg char(1000)
+
+if msg_split_no=lv_msg then
+	return
+else
+	let msg_split_no=lv_msg
+	let msg=popgethead(lv_msg)
+	
+code
+	A4GL_debug("MSG=%s",msg);
+endcode
+end if
+
+let msg_subject="No subject"
+let msg_from="No From"
+let msg_to="No To"
+let msg_cc=" "
+let msg_date=" "
+
+code
+{
+int markers[1000];
+int a;
+int c;
+int l;
+c=0;
+markers[c++]=0;
+l=strlen(msg);
+for (a=0;a<l;a++) {
+	if (msg[a]=='\n'||msg[a]=='\r') {
+		A4GL_debug("MJA Found end... %d %d",markers[c-1],a);
+		msg[a]=0;
+		if (markers[c-1]==a) {markers[c-1]++;continue;}
+		markers[c++]=a+1;
+	}
+}
+
+A4GL_debug("%d newlines found",c);
+
+for (a=0;a<c;a++) {
+	if (strncasecmp(&msg[markers[a]],"Subject:",8)==0) 	{ strncpy(msg_subject,&msg[markers[a]+8],255); continue; }
+	if (strncasecmp(&msg[markers[a]],"To:",3)==0) 		{ strncpy(msg_to,&msg[markers[a]+3],255); continue; }
+	if (strncasecmp(&msg[markers[a]],"Date:",5)==0) 	{ strncpy(msg_date,&msg[markers[a]+5],255); continue; }
+	if (strncasecmp(&msg[markers[a]],"CC:",3)==0) 		{ strncpy(msg_cc,&msg[markers[a]+3],255); continue; }
+	if (strncasecmp(&msg[markers[a]],"From:",5)==0) 	{ strncpy(msg_from,&msg[markers[a]+5],255); continue; }
+A4GL_debug("Unrecognised : %s",&msg[markers[a]]);
+}
+
+msg_subject[255]=0;
+msg_to[255]=0;
+msg_cc[255]=0;
+msg_date[255]=0;
+msg_from[255]=0;
+}
+endcode
+	
+	
+
+
+end function
 
 
 function poperr() 

@@ -1,5 +1,5 @@
 {
-	@(#)$Id: d4glmain.4gl,v 1.1.1.1 2001-08-20 02:37:08 afalout Exp $
+	@(#)$Id: d4glmain.4gl,v 1.2 2003-09-22 20:57:20 mikeaubury Exp $
 	@(#)Alternative D4GL compiling front-end
 	@(#)Control Program and support routines
 	@(#)Author: JL
@@ -31,18 +31,20 @@ MAIN
 	OPTIONS PROMPT LINE 24
 	CALL set_defaults()
 
-	LET prog_vers = rcs_munge("D4GL $Revision: 1.1.1.1 $ $Date: 2001-08-20 02:37:08 $")
-	LET rcs       = "@(#)$Id: d4glmain.4gl,v 1.1.1.1 2001-08-20 02:37:08 afalout Exp $"
+	LET prog_vers = rcs_munge("D4GL $Revision: 1.2 $ $Date: 2003-09-22 20:57:20 $")
+	LET rcs       = "@(#)$Id: d4glmain.4gl,v 1.2 2003-09-22 20:57:20 mikeaubury Exp $"
 	LET optstr    = "c:f:im:b:p:t:"
 	LET nfiles    = 0
 	LET iflag     = 'N'
 	LET optval    = ' '
+	CALL i4gl_getopt_init()
 
 	WHILE optval IS NOT NULL
 		CALL i4gl_getopt(optstr) RETURNING optval, optarg
 		IF optval IS NULL THEN
 			EXIT WHILE
 		END IF
+
 		CASE
 		WHEN optval = 'c'
 			LET file_prog = optarg

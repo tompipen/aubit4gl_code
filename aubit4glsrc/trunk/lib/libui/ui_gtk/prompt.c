@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.14 2003-09-09 19:01:22 mikeaubury Exp $
+# $Id: prompt.c,v 1.15 2003-09-22 20:57:20 mikeaubury Exp $
 #*/
 
 /**
@@ -147,6 +147,7 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   prompt->mode = 0;
   prompt->h = h;
   prompt->charmode = c;
+A4GL_debug("Prompt mode=%d",c);
   prompt->promptstr = promptstr;
   prompt->lastkey = 0;
   width -= strlen (promptstr);

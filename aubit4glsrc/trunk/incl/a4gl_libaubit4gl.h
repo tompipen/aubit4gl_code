@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.94 2003-09-15 13:07:24 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.95 2003-09-22 20:57:19 mikeaubury Exp $
 #
 */
 
@@ -601,6 +601,9 @@ struct input_array_attribs {
     int w;
     int menu_line;
     int attrib;
+    int gw_y;
+    int gw_x;
+    int gw_b;
   }
   ACL_Menu;
 

@@ -19,7 +19,7 @@ let arr[3,3]=" "
 open form ttt from "gui" #"ttt"
 display form ttt
 
-if get_ui_mode()=0 then
+if a4gl_get_ui_mode()=0 then
 	display "Use 1,2,3 for top row" at 4,40
 	display "Use 4,5,6 for middle row" at 5,40
 	display "Use 7,8,9 for bottom row" at 6,40
@@ -33,9 +33,9 @@ end if
 
 input a from dummy
 	before input
-		if get_ui_mode()!=0 THEN
+		#if a4gl_get_ui_mode()!=0 THEN
 			enable  a1,a2,a3,b1,b2,b3,c1,c2,c3
-		end if
+		#end if
 
 	on key('1') call set1(1,1)
 	on key('2') call set1(1,2)

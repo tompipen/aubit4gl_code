@@ -614,9 +614,9 @@ sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_fgl_getfldbuf(_inp_io,_inp_io_typ
 	inc_counter();
 
 } 
-| FIELDTOWIDGET OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"A4GL_push_int(fgl_fieldnametoid(\"\",%s));",$<str>3); $<ptr>$=A4GL_new_expr($<str>$); }
+| FIELDTOWIDGET OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",$<str>3); $<ptr>$=A4GL_new_expr($<str>$); }
 | ID_TO_INT OPEN_BRACKET field_name CLOSE_BRACKET {
-sprintf($<str>$,"A4GL_push_int(fgl_fieldnametoid(\"\",%s));",$<str>3); $<ptr>$=A4GL_new_expr($<str>$); 
+sprintf($<str>$,"A4GL_push_int(A4GL_fgl_fieldnametoid(\"\",%s));",$<str>3); $<ptr>$=A4GL_new_expr($<str>$); 
 addmap("Get Field",$<str>3,curr_func,yylineno,infilename);
 	inc_counter();
 }

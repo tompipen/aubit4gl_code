@@ -1,5 +1,5 @@
 {
-	@(#)$Id: getopt.4gl,v 1.1.1.1 2001-08-20 02:37:08 afalout Exp $
+	@(#)$Id: getopt.4gl,v 1.2 2003-09-22 20:57:20 mikeaubury Exp $
 	@(#)JLSS Informix Tools: General Library
 	@(#)Simulate GETOPT(3)
 	@(#)Author: JL
@@ -39,7 +39,7 @@ MAIN
 	DEFINE
 		optval	CHAR(1),
 		optarg	CHAR(80)
-
+	LET argind=0
 	CALL i4gl_getopt("abcf:t:x") RETURNING optval, optarg
 	WHILE optval IS NOT NULL
 		DISPLAY "optval = ", optval, " optarg = ", optarg CLIPPED
@@ -60,13 +60,14 @@ FUNCTION i4gl_getopt(optstr)
 		i       INTEGER
 
 	{ Initialisation }
-	IF argind <= 0 THEN
+	IF argind <= 0 or argind is null THEN
 		LET argind = 1
 		LET argnum = NUM_ARGS()
 		LET chridx = 1
 		LET arglen = 0
 		LET no_opt = FALSE
-		LET rcs   = "@(#)$Id: getopt.4gl,v 1.1.1.1 2001-08-20 02:37:08 afalout Exp $"
+		LET rcs   = "@(#)$Id: getopt.4gl,v 1.2 2003-09-22 20:57:20 mikeaubury Exp $"
+		
 	END IF
 
 	LET optarg = NULL
@@ -133,3 +134,7 @@ FUNCTION i4gl_getopt(optstr)
 
 END FUNCTION {i4gl_getopt}
 
+
+FUNCTION i4gl_getopt_init() 
+	LET argind=0
+END FUNCTION

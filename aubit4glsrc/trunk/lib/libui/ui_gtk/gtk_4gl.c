@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.17 2003-06-06 09:52:38 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.18 2003-09-22 20:57:19 mikeaubury Exp $
 #*/
 
 /**
@@ -379,7 +379,7 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 
   A4GL_debug ("Currwindow=%p MJA MJAMJA\n", win);
 
-  A4GL_set_current_window (GTK_WINDOW (win));
+  A4GL_set_current_window (win);
 
 
   A4GL_gtkwin_stack ((GtkWindow *) win, '+');
@@ -654,7 +654,7 @@ A4GL_read_form_gtk (char *fname, char *formname)
  * @param w A pointer to the GTK window to be made current.
  */
 void
-A4GL_set_current_window (GtkWindow * w)
+A4GL_set_current_window (void * w)
 {
 
   /*
@@ -962,7 +962,7 @@ void *
 A4GL_get_curr_win_gtk (void)
 {
   A4GL_debug ("Current window : %p", currwindow);
-  return (void *) GTK_WINDOW (currwindow);
+  return (void *) currwindow;
 }
 
 
@@ -1073,9 +1073,13 @@ A4GL_display_at (int n, int a)
 	{
 	  if (strlen (s))
 	    {
-	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
-				  A4GL_decode_colour_attr_aubit (a));
-	      gtk_label_set_text (lab, s);
+		GtkStyle *style;
+	      		A4GL_gui_set_field_fore ((GtkWidget *) lab, A4GL_decode_colour_attr_aubit (a));
+	      		gtk_label_set_text (lab, s);
+		    	style = gtk_style_new ();
+    			gdk_font_unref (style->font);
+    			style->font = gdk_font_load ("fixed");
+    			gtk_widget_set_style (GTK_WIDGET(lab), style);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
 	  else
@@ -1088,12 +1092,17 @@ A4GL_display_at (int n, int a)
 	{
 	  if (strlen (buff))
 	    {
+		GtkStyle *style;
 	      lab = (GtkLabel *) gtk_label_new (s);
 	      A4GL_gui_set_field_fore ((GtkWidget *) lab,
 				  A4GL_decode_colour_attr_aubit (a));
 	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
 			     y * YHEIGHT);
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
+		    	style = gtk_style_new ();
+    			gdk_font_unref (style->font);
+    			style->font = gdk_font_load ("fixed");
+    			gtk_widget_set_style (GTK_WIDGET(lab), style);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
 	}

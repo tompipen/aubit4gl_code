@@ -86,7 +86,7 @@ extern int gui_xwidth;
 extern int gui_yheight;
 #else
 int gui_xwidth = 8;
-int gui_yheight = 20;
+int gui_yheight = 22;
 #endif
 
 #define XWIDTH gui_xwidth
@@ -168,7 +168,7 @@ int A4GL_find_attrib_from_metric (struct_form * f, int metric_no);
 
 
 	/* gtk_4gl.c */
-void A4GL_set_current_window (GtkWindow * w);
+void A4GL_set_current_window (void * w);
 int A4GL_decode_colour_attr_aubit (int a);
 void A4GL_console_toggle (void);
 GtkWidget *A4GL_get_window_gtk (int a);

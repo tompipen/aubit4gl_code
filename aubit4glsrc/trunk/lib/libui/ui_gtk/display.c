@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display.c,v 1.7 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: display.c,v 1.8 2003-09-22 20:57:19 mikeaubury Exp $
 #*/
 
 /**
@@ -118,7 +118,12 @@ A4GL_display_generic (GtkWidget * k, char *s)
 
   if (strcasecmp (ptr, "LABEL") == 0)
     {
+	GtkStyle *style;
       gtk_label_set_text (GTK_LABEL (k), s);
+    style = gtk_style_new ();
+    gdk_font_unref (style->font);
+    style->font = gdk_font_load ("fixed");
+	gtk_widget_set_style (k, style);
       return 1;
     }
 
