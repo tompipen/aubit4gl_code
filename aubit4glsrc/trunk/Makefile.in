@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.133 2003-10-21 10:29:12 afalout Exp $
+# $Id: Makefile.in,v 1.134 2003-12-05 01:44:32 afalout Exp $
 #
 
 ## ==================================================================
@@ -1084,7 +1084,9 @@ lclint:
 gcc_symbols:
 	gcc -E -dM - </dev/null
 
+#######################
 #Run full set of tests
+#This target is invoked from aubitbuild.sh
 test.build:
 #run_tests script will determine what is available for testing based on
 #available libraries in lib

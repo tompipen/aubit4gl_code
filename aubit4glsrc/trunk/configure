@@ -7685,7 +7685,7 @@ ALL_LINGUAS="en"
 
 #examlpe - USE iT
 #AC_ARG_WITH(pdflibname,[  --with-pdflibname=name  set file name of generated library [default=pdf]],[PDFLIBNAME="$withval"])
-# $Id: configure,v 1.220 2003-11-28 06:00:54 afalout Exp $
+# $Id: configure,v 1.221 2003-12-05 01:44:32 afalout Exp $
 
 if test "$with_all" = ""; then              with_all=yes        ;fi
 
@@ -7912,7 +7912,7 @@ fi
 
 ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
-		DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA $NEED_4GLC_ALL_libs"
+		DATA_module DATA_struct_form PACKER_MEMPACKED SQL_FILESCHEMA $NEED_4GLC_ALL_libs"
 
 #libaubit4gl should be first, to avoid dependency chase
 LIB_EXPORTLIB=aubit4gl
@@ -25511,7 +25511,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.220 2003-11-28 06:00:54 afalout Exp $
+| $Id: configure,v 1.221 2003-12-05 01:44:32 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

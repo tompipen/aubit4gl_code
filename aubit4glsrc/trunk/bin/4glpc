@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.116 2003-11-15 07:39:56 afalout Exp $
+# $Id: 4glpc,v 1.117 2003-12-05 01:44:36 afalout Exp $
 #
 
 ########################################################################
@@ -38,6 +38,7 @@
 #will be obsoleted in the near future.
 ########################################################################
 
+#Find out if we are using MinGW C compiler (If on Windows)
 if [ "$COMSPEC" != "" ]; then
     #TMP=`type gcc | grep -i mingw`
 	TMP=`gcc -v 2>&1 | grep -i mingw`
@@ -444,8 +445,12 @@ NCC_PG="ecpg_wrap"
 NCC_IFX="esql"
 
 
-#CC is set via aubitrc config file:
-NCC="$CC " # -O2
+if test "$A4GL_FAKELEXTYPE" = "PCODE"; then
+    NCC="c2pcode_fgl "
+else
+	#CC is set via aubitrc config file:
+	NCC="$CC " # -O2
+fi
 
 #  -save-temps              Do not delete intermediate files
 #  -v                       Display the programs invoked by the compiler
