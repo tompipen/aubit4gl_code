@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.110 2003-11-13 15:06:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.111 2003-11-21 12:08:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1508,7 +1508,10 @@ print_param (char i)
   printc ("\n}; /* end of binding */\n");
   if (i == 'r')
     {
-      printc ("static char *rbindvarname[%d]={\n", fbindcnt);
+      printc ("static char *rbindvarname[%d]={\n", ONE_NOT_ZERO(fbindcnt));
+	if (fbindcnt==0) {printc("{0,0,0}");}
+
+
       for (b = 0; b < fbindcnt; b++)
 	{
 
@@ -1526,7 +1529,7 @@ print_param (char i)
       printc ("};\n");
     }
 
-  printc ("char *_paramnames[%d]={", fbindcnt);
+  printc ("char *_paramnames[%d]={", ONE_NOT_ZERO(fbindcnt));
 
   for (a = 0; a < fbindcnt; a++)
     {
