@@ -4,7 +4,8 @@ Peter and Jane learn how to use Aubit4GL
 Installation
 ------------
 
-Installation should be possible on most Linux distributions, and with some tweaking on most Unix and Windows machines too
+Installation should be possible on most Linux distributions, and with some 
+tweaking on most Unix and Windows machines too
 
 There are several possible sources for download
 
@@ -97,8 +98,9 @@ Eg (This is my list - yours will be different!) :
 
 These are pretty critical to the operation of aubit4gl..
 
-Everything is highly configurable and these shared libraries are of crucial importance...
-You'll notice that most of them have a libXXX_YYY.so format (except libaubit4gl.so) so for example :
+Everything is highly configurable and these shared libraries are of crucial 
+importance. You'll notice that most of them have a libXXX_YYY.so format 
+(except libaubit4gl.so) so for example :
 
 	libSQL_esql.so
 		XXX=SQL
@@ -144,8 +146,10 @@ Module types
 		libESQL_POSTGRES.so
 	
 
-	These are helper libraries use when A4GL_LEXTYPE=EC. The library used is taken from the A4GL_LEXDIALECT variable.
-	This library is used to copy between native types and aubit types (eg for decimals, dates etc)
+	These are helper libraries use when A4GL_LEXTYPE=EC. The library used 
+	is taken from the A4GL_LEXDIALECT variable.
+	This library is used to copy between native types and aubit types 
+	(eg for decimals, dates etc)
 
 	Not used when A4GL_LEXTYPE=C
 
@@ -163,7 +167,8 @@ Module types
 		libEXREPORT_NOPDF.so
 		libEXREPORT_PDF.so
 
-	Extended report handling. libEXREPORT_PDF relies on having pdflib installed. It will not be generated otherwise...
+	Extended report handling. libEXREPORT_PDF relies on having pdflib 
+	installed. It will not be generated otherwise...
 	PDF reports are experimental.
 	
 	FORM
@@ -173,7 +178,8 @@ Module types
 		libFORM_NOFORM.so
 		libFORM_XDR.so
 
-	This is used to read, write and processes a form file. the library is specified by the A4GL_FORMTYPE variable.
+	This is used to read, write and processes a form file. the library 
+	is specified by the A4GL_FORMTYPE variable.
 	eg A4GL_FORMTYPE=GENERIC
 
 
@@ -184,7 +190,8 @@ Module types
 
 	If you don't have libFORM_XDR.so, you'll need to use the GENERIC packers
 		$ export A4GL_FORMTYPE=GENERIC
-	You will then also need to specify the GENERIC packer by setting A4GL_PACKER (see PACKER)...
+	You will then also need to specify the GENERIC packer by setting 
+	A4GL_PACKER (see PACKER)...
 		
 	
 	HELP
@@ -204,9 +211,11 @@ Module types
 
 	Specifies the output format - currently on C and EC are supported.
 
-	For C generation, calls are made to internal SQL functions within the library specified by A4GL_SQLTYPE (see SQL)
+	For C generation, calls are made to internal SQL functions within 
+	the library specified by A4GL_SQLTYPE (see SQL)
 
-	For EC generation, a .ec file is generated which should be compiled used native database tools (like esql for informix and ecpg for postgres).
+	For EC generation, a .ec file is generated which should be compiled 
+	used native database tools (like esql for informix and ecpg for postgres).
 	If you can use EC generation - use it, performance will be better...
 	
 
@@ -270,7 +279,8 @@ Module types
 		libSQL_sqliteS.so
 		libSQL_unixodbc.so
 
-	This is probably the most important setting, specified through SQLTYPE - this determines how Aubit is going to talk 
+	This is probably the most important setting, specified through SQLTYPE - 
+	this determines how Aubit is going to talk 
 	to the database.
 	There are two distinct times that this is done :
 		1) At compile time
@@ -278,17 +288,20 @@ Module types
 
 	For EC generation
 		COMPILE TIME
-		the library controls detecting datatypes for LIKE and RECORD LIKE etc, 
+		the library controls detecting datatypes for LIKE and RECORD 
+		LIKE etc, 
 
 		RUN TIME
 		the runtime usage is limited to handling LOAD and UNLOAD statements
-		For postgres, setting A4GL_ESQL_UNLOAD=Y will call the ecpg builtin load and unload statements
+		For postgres, setting A4GL_ESQL_UNLOAD=Y will call the ecpg 
+		builtin load and unload statements
 		so this library doesn't need to be used at all...
 
 
 	For C generation
 		COMPILE TIME
-		the library controls detecting datatypes for LIKE and RECORD LIKE etc, 
+		the library controls detecting datatypes for LIKE and RECORD 
+		LIKE etc, 
 
 		RUN TIME
 		This handles all I/O with the database.
@@ -297,8 +310,10 @@ Module types
 		esql - Informix ESQL/C 'connector' - both runtime and compile time.
 			This required Informix ESQL/C to be installed & configured
 
-		unixodbc/ifxodbc - These require that ODBC has been correctly installed and configured
-			You MUST specify a username and password to connect to most databases this is done using SQLPWD and SQLUID:
+		unixodbc/ifxodbc - These require that ODBC has been correctly 
+		installed and configured
+			You MUST specify a username and password to connect to 
+			most databases this is done using SQLPWD and SQLUID:
 				$ export SQLUID=maubu
 				$ export SQLPWD=mypasswd
 
@@ -310,9 +325,11 @@ Module types
 		libUI_TUI.so
 		libUI_TUI_s.so
 
-	This specifies how data will be displayed to the user. This handles all the UI controls (prompt,display, input etc)
+	This specifies how data will be displayed to the user. This handles 
+	all the UI controls (prompt,display, input etc)
 	
-	CONSOLE - is a simple I/O module which does not use any control codes. Just printfs and fgets etc..
+	CONSOLE - is a simple I/O module which does not use any control codes. 
+		Just printfs and fgets etc..
 	TUI     - THIS IS THE ONE YOU SHOULD BE USING
 	HL_TUI  - The next version of TUI, abstracted to help make other HL_.. modules
 	HL_TUIN - Ignore
@@ -326,7 +343,8 @@ Module types
 		libXDRPACKER_report.so
 		libXDRPACKER_struct_form.so
 			
-	This is a helper module when FORMTYPE etc are set to XDR. These contain the actual XDR routines.
+	This is a helper module when FORMTYPE etc are set to XDR. These contain 
+	the actual XDR routines.
 
 
 
@@ -335,13 +353,17 @@ If you've got to here - check :
 
 	1) A4GL_UI=TUI
 
-	2a) A4GL_SQLTYPE=esql (and you have libSQL_esql.so) if you want to connect to an Informix database
-	2b) A4GL_SQLTYPE=unixodbc/ifxodbc - ensure that you have SQLUID and SQLPWD set...
+	2a) A4GL_SQLTYPE=esql (and you have libSQL_esql.so) if you want to 
+		connect to an Informix database
+	2b) A4GL_SQLTYPE=unixodbc/ifxodbc - ensure that you have SQLUID and 
+		SQLPWD set...
 
-	3) A4GL_LEXTYPE=EC for Esql/c generation (you must have Informix esql or Postgres ecpg installed)
+	3) A4GL_LEXTYPE=EC for Esql/c generation (you must have Informix esql 
+		or Postgres ecpg installed)
 	3.1) A4GL_LEXDIALECT=INFORMIX or  A4GL_LEXDIALECT=POSTGRES
 
-	4) A4GL_FORMTYPE=XDR (if you have it) or A4GL_FORMTYPE=GENERIC if you dont and set A4GL_PACKER=PACKED
+	4) A4GL_FORMTYPE=XDR (if you have it) or A4GL_FORMTYPE=GENERIC if you 
+		dont and set A4GL_PACKER=PACKED
 
 
 Finally

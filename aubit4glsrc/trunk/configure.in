@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.232 2004-07-10 11:41:51 afalout Exp $
+dnl # $Id: configure.in,v 1.233 2004-07-11 02:57:38 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1328,8 +1328,11 @@ AC_OBJEXT
 AC_MINGW32
 #  Checks for the MingW32 compiler environment. If present, sets shell variable
 #MINGW32 to `yes'. If not present, sets MINGW32 to the empty string.
+#WARNING-this gives NO when using MiGW GCC with CygWin tools
 
-
+AC_CYGWIN
+echo "MINGW32=$MINGW32"
+echo "CYGWIN=$CYGWIN"
 
 SO_EXT=.so
 SO_EXT_LINKABLE=$SO_EXT
@@ -2103,8 +2106,8 @@ if test -z "$MACHDEP"
 then
     if test -f /usr/lib/NextStep/software_version; then
         set X `hostinfo | grep 'NeXT Mach.*:' | \
-                sed -e 's/://' -e 's/\./_/'` && \
-        ac_sys_system=next && ac_sys_release=$4
+		sed -e 's/://' -e 's/\./_/'` && \
+		ac_sys_system=next && ac_sys_release=$4
         MACHDEP="$ac_sys_system$ac_sys_release$ac_sys_cpu"
     else
         ac_sys_system=`uname -s`
@@ -2114,9 +2117,9 @@ then
                 ac_sys_release=`uname -r`
         fi
         ac_md_system=`echo $ac_sys_system |
-                           tr -d '[/ ]' | tr '[[A-Z]]' '[[a-z]]'`
+		tr -d '[/ ]' | tr '[[A-Z]]' '[[a-z]]'`
         ac_md_release=`echo $ac_sys_release |
-                           tr -d '[/ ]' | sed 's/\..*//'`
+		tr -d '[/ ]' | sed 's/\..*//'`
         MACHDEP="$ac_md_system$ac_md_release"
     fi
     case MACHDEP in
@@ -2245,55 +2248,58 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	[
 
 	if test "$withval" != "no"; then
-
 		#AC_PROG_YACC
 		#if test "$YACC" != "bison -y"; then
 		#	#AC_PROG_YACC macro sets $YACC to "yacc" even when it's not present!
 		#	YACC=no
-        #    BISON=no
+		#    BISON=no
 		#	WARN_YACC=1
 		#else
 
 		if test "$withval" != "yes"; then
-            #user specified path to bison
+			#user specified path to bison
 			BISON_PATH=$withval
-        else
+		else
 			BISON_PATH="$PATH"
 		fi
 
 		AC_PATH_PROG(BISON, bison, no, $BISON_PATH)
 
-        if test "$BISON" != "no"; then
+		if test "$BISON" != "no"; then
 			AC_MSG_CHECKING(Bison version)
-
-
-			set `$BISON --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g' -e 's/[a-z]//g'`
-		    AC_MSG_RESULT($1.$2)
-
+			TMP_TMP=`$BISON --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g' -e 's/[a-z]//g'`
+			#On some versions of CygWin, did not strip letters -
+			#don't know why...so I had to use tr instead
+			TMP_TMP=`echo "$TMP_TMP" | tr -d '[[A-Z]]' | tr -d '[[a-z]]'`
+			set `echo $TMP_TMP`
+			AC_MSG_RESULT($1.$2)
+		
+			#On some versions of CygWin, did not strip letters -
+			#don't know why...
 			if test "$1" = "1" -a "$2" -lt "875"; then
-		        AC_MSG_WARN(** You will need Bison >= 1.875 if you'd)
-		        AC_MSG_WARN(** want to regenerate the Aubit parsers)
+		        	AC_MSG_WARN(** You will need Bison >= 1.875 if you'd)
+				AC_MSG_WARN(** want to regenerate the Aubit parsers)
 				#Will use preconfigured y.tab.c from /tools/no_yacc
 				#YACC=no
-                BISON=no
+				BISON=no
 				WARN_YACC=1
-	        else
+			else
 				BISON="$BISON -y"
 				#-y is Equivalent to -o y.tab.c; the parser output file is
 				#called y.tab.c, and the other  outputs  are  called
 				#y.output  and  y.tab.h.  The purpose of this switch
 				#is to imitate yacc's output file name  conventions.
 			fi
-        else
+		else
 			BISON=no
 			WARN_YACC=1
 			AC_MSG_WARN(cannot find bison in $BISON_PATH)
 		fi
-    else
+	else
 		BISON=no
 		WARN_YACC=1
 		AC_MSG_RESULT(Bison parser disbled)
-    fi
+	fi
 
 	],[
 	  AC_MSG_RESULT(--with-bison not specified)
@@ -3882,16 +3888,16 @@ AC_ARG_WITH(sapodbc,
 
 			AC_MSG_CHECKING(if we can use SAP ODBC)
 			if test "$HAVE_SAPODBC_HEADERS" != "yes" && test "$AUBIT_SOURCE" = "1" ; then
-            #we need headers only to compile source code
-			    AC_DEFINE(HAVE_SAPODBC,0,[ ])
+				#we need headers only to compile source code
+				AC_DEFINE(HAVE_SAPODBC,0,[ ])
 				AC_MSG_RESULT(no header files)
 			else
 				AC_MSG_RESULT(yes)
 				HAVE_SAPODBC=yes
-			    SAPODBC_INCLUDE="$TMP_SAPODBC_INCLUDE"
-			    SAPODBC_LFLAGS="$TMP_SAPODBC_LFLAGS"
-			    AC_DEFINE(HAVE_SAPODBC,1,[ ])
-            fi
+				SAPODBC_INCLUDE="$TMP_SAPODBC_INCLUDE"
+				SAPODBC_LFLAGS="$TMP_SAPODBC_LFLAGS"
+				AC_DEFINE(HAVE_SAPODBC,1,[ ])
+			fi
 		else
 		    AC_DEFINE(HAVE_SAPODBC,0,[ ])
 		fi
@@ -5439,8 +5445,17 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	#AC_HAVE_HEADERS(string.h fcntl.h sys/file.h sys/param.h)
 
    	AC_CHECK_HEADERS([search.h])
-	if test `eval echo '${'$as_ac_Header'}'` != yes; then
-	    #FIXME: stop if no search.h
+
+	if test "$GCC_MINGW" = "yes" ; then
+		#MinGW now has something called search.h but it's not complete
+		AC_MSG_WARN(Disabling MinGW search.h - not compatible)
+		as_ac_Header="no"
+		AC_DEFINE(HAVE_SEARCH_H,0,[ ])
+		HAVE_SEARCH_H=0
+	fi
+
+	TMP_TMP=`eval echo '${'$as_ac_Header'}'`
+	if test "$TMP_TMP" != "yes" -o "$HAVE_SEARCH_H" = "0" ; then
 		#a simple fix is to get a copy of search.h from the Darwin CVS tree's
 		#libedit pkg, as follows:
 		#cvs -d :pserver:(username)@anoncvs.opensource.apple.com:/cvs/Darwin login
@@ -5450,7 +5465,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
    		AC_MSG_WARN(Using Aubit provided search.h)
 
-    fi
+	fi
 
    	AC_CHECK_HEADERS([getopt.h])
 	if test `eval echo '${'$as_ac_Header'}'` != yes; then
@@ -5604,8 +5619,6 @@ case "$host" in
 
    	#this macros are in aclocal.m4 - run aclocal to create it :
 
-	AC_CYGWIN
-	AC_MINGW32
 	#AC_OBJEXT
 	#AC_EXEEXT
 
@@ -6730,7 +6743,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.232 2004-07-10 11:41:51 afalout Exp $
+| $Id: configure.in,v 1.233 2004-07-11 02:57:38 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

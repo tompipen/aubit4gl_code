@@ -15,48 +15,50 @@
 #Get settings
 if [ "$AUBITDIR" != "" ]
 then
-. $AUBITDIR/etc/aubitrc
+	. $AUBITDIR/etc/aubitrc
+else
+	echo "WARNING: AUBITDIR not set"
+	echo "ERROR: cannot read settings. STOP."
+	exit 3
 fi
 
 
 if [ $# -lt 1 -o "$1" = "--help" ]
 then
 	echo "Creates run-time loadable library API definition source code "
-    echo " "
+	echo " "
 	echo "Usage:   dlmagic <SpecFile> [<APIName>] [<EnvVar>] > <APIname>.c"
 	echo "  SpecFile - contains specifications for the API"
 	echo "  APIName - API name (will be overwritten by LIBRARY tag if declared"
 	echo "      in SpecFile)"
 	echo "  EnvVar - Environment variable to read (will be overwritten by"
 	echo "      VARIABLE tag if declared in the SpecFile)"
-    echo " "
-    echo "Example: "
-    echo "  dlmagic sqlapi.spec SQL SQLTYPE > API_SQL.c "
-    echo " "
+	echo " "
+	echo "Example: "
+	echo "  dlmagic sqlapi.spec SQL SQLTYPE > API_SQL.c "
+	echo " "
 	echo "SpecFile file format:"
 	echo "  func-name param-type param-name ... -> returns"
 	echo "  line beginning with * is a comment"
 	echo "  line beginning with # or / is included in the output Eg #define //comment etc"
-    echo " "
-    echo "Example input File :"
-    echo "	LIBRARY TEST"
-    echo "	VARIABLE VTEST"
-    echo "	* This is a comment - Note - there are no spaces for void* int* etc."
-    echo "	pdf_rep_print void* rep,int a,int s,int right_margin -> int*"
-    echo "	disp_fields int n int attr ... -> int"
-    echo " "
+	echo " "
+	echo "Example input File :"
+	echo "	LIBRARY TEST"
+	echo "	VARIABLE VTEST"
+	echo "	* This is a comment - Note - there are no spaces for void* int* etc."
+	echo "	pdf_rep_print void* rep,int a,int s,int right_margin -> int*"
+	echo "	disp_fields int n int attr ... -> int"
+	echo " "
 
 	exit 0
 fi
 
 specfile=$1
 
-if [ "$2" == "-h" ]
-then
+if [ "$2" = "-h" ] ; then
 	MAKE_HEADER=1
 else
-	if [ "$2" == "-H" ]
-	then
+	if [ "$2" = "-H" ] ; then
 		MAKE_HEADER=2
 	else
 		lib=$2
@@ -67,31 +69,26 @@ fi
 lib_prefix=
 api_prefix=
 
-if grep LIBRARY $specfile > /dev/null
-then
+if grep "^LIBRARY " $specfile > /dev/null ; then
 	lib=`$AWK '/^LIBRARY /{print $2}' $specfile`
 fi
 
-if grep VARIABLE $specfile > /dev/null
-then
+if grep "^VARIABLE " $specfile > /dev/null ; then
 	env=`$AWK '/^VARIABLE /{print $2}' $specfile`
 fi
 
 #if you want prefix to be added to API function names
-if grep API_PREFIX $specfile > /dev/null
-then
+if grep "^API_PREFIX " $specfile > /dev/null ; then
 	api_prefix=`$AWK '/^API_PREFIX /{print $2}' $specfile`
 fi
 
 #if you want prefix to be added to LIB functions calls
-if grep LIB_PREFIX $specfile > /dev/null
-then
+if grep "^LIB_PREFIX " $specfile > /dev/null ; then
 	lib_prefix=`$AWK '/^LIB_PREFIX /{print $2}' $specfile`
 fi
 
 #name of the headers file to be refgerenced with #include
-if grep HEADER_FILE $specfile > /dev/null
-then
+if grep "^HEADER_FILE " $specfile > /dev/null ; then
 	HEADER_FILE=`$AWK '/^HEADER_FILE /{print $2}' $specfile`
 fi
 
@@ -101,8 +98,7 @@ fi
 
 if [ "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2" ]
 then
-	if  [ $MAKE_HEADER = "2" ]
-	then
+	if  [ $MAKE_HEADER = "2" ] ; then
 		use_prefix=1
 	else
 		use_prefix=0
@@ -262,27 +258,27 @@ fi
 $AWK -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
 
 function ring(rtype) {
-if (rtype=="char*") { print "A4GL_debug(\"Returning (%s)\",A4GL_null_as_null(rval));"; return;}
-if (rtype=="void*") { print "A4GL_debug(\"Returning (%p)\",rval);"; return;}
-if (rtype=="int") { print "A4GL_debug(\"Returning '%d'\",rval);"; return;}
-print "A4GL_debug(\"Returning Unknown '%p'\",rval);"
-}
-
-function ping(rtype,name) {
-if (rtype=="char*")  return "(%s))"
-if (rtype=="char")  return "(%c)"
-if (rtype=="void*")  return "%p"
-if (rtype=="va_list*")  return "%p"
-if (rtype=="int") return "%d"
-return "%p" 
-#print "Unknown type : " rtype > "dlmagic.log"
+	if (rtype=="char*") { print "A4GL_debug(\"Returning (%s)\",A4GL_null_as_null(rval));"; return;}
+	if (rtype=="void*") { print "A4GL_debug(\"Returning (%p)\",rval);"; return;}
+	if (rtype=="int") { print "A4GL_debug(\"Returning '%d'\",rval);"; return;}
+	print "A4GL_debug(\"Returning Unknown '%p'\",rval);"
+	}
+	
+	function ping(rtype,name) {
+	if (rtype=="char*")  return "(%s))"
+	if (rtype=="char")  return "(%c)"
+	if (rtype=="void*")  return "%p"
+	if (rtype=="va_list*")  return "%p"
+	if (rtype=="int") return "%d"
+	return "%p" 
+	#print "Unknown type : " rtype > "dlmagic.log"
 }
 
 function pind(rtype,rname) {
-
-if (rtype=="char*")  return sprintf("A4GL_null_as_null(%s)",rname);
-return rname;
-#print "Unknown type : " rtype > "dlmagic.log"
+	
+	if (rtype=="char*")  return sprintf("A4GL_null_as_null(%s)",rname);
+	return rname;
+	#print "Unknown type : " rtype > "dlmagic.log"
 }
 
 

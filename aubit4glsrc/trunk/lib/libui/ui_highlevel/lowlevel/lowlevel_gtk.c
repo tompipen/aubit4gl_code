@@ -1,3 +1,4 @@
+
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
@@ -10,11 +11,8 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.46 2004-06-26 13:00:33 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.47 2004-07-11 02:58:03 afalout Exp $";
 
-
-#include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>     /* GDK_Down */
 
 #define A4GL_GTK_FONT_FIXED "Fixed 10"
 int gui_yheight=20; // 25
@@ -119,7 +117,7 @@ struct s_a4gl_gtk_form {
 };
 
 
-/************************************************************************************************/
+/****************************************************************************/
 
 int A4GL_getx_coords(int x) {
 int x1;
@@ -577,7 +575,7 @@ return;
   allocated_colors = 1;
 }
 
-/************************************************************************************************/
+/************************************************************************/
 
 int A4GL_LL_colour_code(int a) {
 	return a;

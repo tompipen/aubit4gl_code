@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../common/a4gl_lle.h"
-#include "API_process.h"
+//#include "API_process.h"
 int A4GLLOGREPPROC_initlib (void);
 int A4GL_setenv(char *v,char *val,int overwrite);
 

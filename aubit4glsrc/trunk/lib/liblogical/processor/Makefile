@@ -1,5 +1,5 @@
 # +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
 # | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
 # +----------------------------------------------------------------------+
@@ -24,11 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2004-05-25 20:39:48 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2004-07-11 02:58:03 afalout Exp $
 #
+ROOT		=../../..
+LIBROOT		=${ROOT}/lib
 
-LIBROOT		=${AUBITDIR}/lib
-ROOT		=${AUBITDIR}
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -37,14 +37,9 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-
 CFLAGS+=-Wall -g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC
 
 OBJS=process_report.o ../common/a4gl_lle.o API_process.o
-
-## ==================================================================
-##                              Targets
-## ==================================================================
 
 LD_EXE_FLAGS=-rdynamic
 
@@ -52,9 +47,12 @@ ifeq "${TARGET_OS}" "hpux"
 	LD_EXE_FLAGS=-a1 -z -Wl,+s -Wl,-E -lnsl
 endif
 
+## ==================================================================
+##                              Targets
+## ==================================================================
 
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
-	gcc  -g ${OBJS} -o $@  -L$(AUBITDIR)/lib -laubit4gl ${LD_EXE_FLAGS}
+	${CC} -g ${OBJS} -o $@  -L$(LIBROOT) -laubit4gl ${LD_EXE_FLAGS}
 
 API_process.c: API_process.spec
 	../../bin/dlmagic $^ > $@
@@ -68,6 +66,6 @@ API_process.h: API_process.spec
 
 clean:
 	${RM} *.o process_report ${ROOT}/bin/process_report API_process.h \
-	API_process.c
+	API_process.c *~
 
 
