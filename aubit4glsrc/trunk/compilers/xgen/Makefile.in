@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.7 2003-09-01 00:01:11 afalout Exp $
+# $Id: Makefile.in,v 1.8 2004-10-01 00:51:01 afalout Exp $
 #
 
 ROOT        =../..
@@ -97,6 +97,13 @@ ${API_HEADERS}:
 	${MAKE} -C ../../lib/libaubit4gl api.headers
 
 y.tab.o: ${API_HEADERS}
+
+show:
+	@echo "YACC=${YACC}"
+	@echo "Y_TAB_C_DEP=${Y_TAB_C_DEP}"
+	@echo "LEX=${LEX}"
+	@echo "LEX_YY_C=${LEX_YY_C}"
+
 
 ## ==================================================================
 ##                          Clean

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.162 2004-09-29 05:37:07 afalout Exp $
+# $Id: Makefile.in,v 1.163 2004-10-01 00:50:03 afalout Exp $
 #
 
 ## ==================================================================
@@ -110,7 +110,10 @@ corecompile:
 	$(MAKE) -C compilers/fcompile
 	$(MAKE) -C compilers/menus
 	$(MAKE) -C compilers/ace
+#FIXME: can't make pcode without Bison
+ifneq "${BISON}" "no"
 	$(MAKE) -C compilers/pcode
+endif
 	$(MAKE) -C lib loadmap
 	$(MAKE) -C tools/convertsql
 	$(MAKE) -C tools/afinderr
