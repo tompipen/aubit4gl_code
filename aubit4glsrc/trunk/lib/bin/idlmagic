@@ -1,0 +1,538 @@
+#!/bin/sh
+
+##########################################################################
+#
+# This script is used to create CORBA 'Interface Definition Language' (IDL)
+# file.
+#
+# A definition of what methods can be called on what objects need to be 
+# provided for both the caller and callee.  The only information which is 
+# required to make a caller able to call an object on a remote server is 
+# the IDL of the object.
+#
+# This enables Aubit plug-ins to reside on different machines on the network
+# For instance, you can run a 4GL program on PC1, but get it to use UI
+# plugin on PC2, efectibely creating a thin UI client.
+#
+# See 
+# http://www.gnome.org/projects/ORBit2/documentation.html
+# http://www.omg.org/technology/documents/formal/c_language_mapping.htm
+# C mappings : http://www.omg.org/docs/formal/99-07-39.pdf
+##########################################################################
+
+#Get settings
+if [ "$AUBITDIR" != "" ]
+then
+	. $AUBITDIR/etc/aubitrc
+else
+	echo "WARNING: AUBITDIR not set"
+	echo "ERROR: cannot read settings. STOP."
+	exit 3
+fi
+
+if [ $# -lt 1 -o "$1" = "--help" ]; then
+	echo "Creates CORBA IDL API definition file"
+	echo " "
+	echo "Usage:   idlmagic <SpecFile> [<APIName>] [<EnvVar>] > <APIname>.idl"
+	echo "  SpecFile - contains specifications for the API (.spec)"
+	echo "  APIName - API name (will be overwritten by LIBRARY tag if declared"
+	echo "      in SpecFile)"
+	echo "  EnvVar - Environment variable to read (will be overwritten by"
+	echo "      VARIABLE tag if declared in the SpecFile)"
+	echo " "
+	echo "Example: "
+	echo "  idlmagic sqlapi.spec SQL SQLTYPE > CORBA-API_SQL.idl "
+	echo " "
+	echo "SpecFile file format:"
+	echo "  func-name param-type param-name ... -> returns"
+	echo "  line beginning with * is a comment"
+	echo "  line beginning with # or / is included in the output Eg #define //comment etc"
+	echo " "
+	echo "Example input File :"
+	echo "	LIBRARY TEST"
+	echo "	VARIABLE VTEST"
+	echo "	* This is a comment - Note - there are no spaces for void* int* etc."
+	echo "	pdf_rep_print void* rep,int a,int s,int right_margin -> int*"
+	echo "	disp_fields int n int attr ... -> int"
+	echo " "
+
+	exit 0
+fi
+
+specfile=$1
+CREATE="idl"
+if [ "$2" = "-client" ] ; then
+	CREATE="client"
+fi
+if [ "$2" = "-server" ] ; then
+	CREATE="server"
+fi
+
+#	if [ "$2" = "-H" ] ; then
+#		MAKE_HEADER=2
+#	else
+#		lib=$2
+#		env=$3
+#	fi
+
+
+lib_prefix=
+api_prefix=
+
+if grep "^LIBRARY " $specfile > /dev/null ; then
+	lib=`$AWK '/^LIBRARY /{print $2}' $specfile`
+fi
+
+if grep "^VARIABLE " $specfile > /dev/null ; then
+	env=`$AWK '/^VARIABLE /{print $2}' $specfile`
+fi
+
+#if you want prefix to be added to API function names
+if grep "^API_PREFIX " $specfile > /dev/null ; then
+	api_prefix=`$AWK '/^API_PREFIX /{print $2}' $specfile`
+fi
+
+#if you want prefix to be added to LIB functions calls
+if grep "^LIB_PREFIX " $specfile > /dev/null ; then
+	lib_prefix=`$AWK '/^LIB_PREFIX /{print $2}' $specfile`
+fi
+
+#name of the headers file to be refgerenced with #include
+if grep "^HEADER_FILE " $specfile > /dev/null ; then
+	HEADER_FILE=`$AWK '/^HEADER_FILE /{print $2}' $specfile`
+fi
+
+#echo "/* Library=$lib env=$env */"
+
+if [ "$CREATE" = "idl" ]; then
+	#if  [ "$MAKE_HEADER" = "2" ] ; then
+	#	use_prefix=1
+	#else
+	#	use_prefix=0
+	#fi
+
+	$AWK -v use_prefix=$use_prefix -v lib="$lib" -v env="$env" \
+	-v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" \
+	-v HEADER_FILE="$HEADER_FILE" '
+	BEGIN {
+		FS="[ \t,]+"
+		print ""
+		print "/*"
+		print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
+		print " *"
+		print " * This file was created from .spec file of same name, using idlmagic script"
+		print " * - if you need to edit it, edit .spec file instad, and use [make filename.idl]"
+		print " * to re-create it."
+		print " *"
+		print " */"
+		print ""
+		print "/*"
+		print "====================================================================="
+		print "                    CORBA IDL definitions"
+		print "====================================================================="
+		print "*/"
+		##include <callback-server.idl>
+		print ""
+		print "module Examples {"
+		if (use_prefix==0) {
+			print "	interface " lib " {"
+		} else {
+			print "	interface " lib " {"
+		}
+		print ""
+	}
+	/^LIBRARY / {next}
+	/^#ifdef/ {next}
+	/^#undef/ {next}
+	/^#endif/ {next}
+	/^VARIABLE / {next}
+	/^HEADER_FILE / {next}
+	/^API_PREFIX / {next}
+	/^LIB_PREFIX / {next}
+	/^MAP / { map[$2]=$3; next}
+	/^#/ {print
+		next
+	}
+	/^\// {print
+		next
+	}
+    /^extern/ {print
+		next
+	}
+	/^\/\*/ {print
+		next
+	}
+	/^ \*/ {print
+		next
+	}
+	/^\*\// {print
+		next
+	}
+	/^$/ {next}
+	/^\*/ {next	}
+	/^[ 	]*$/ {next}
+	{
+	fname=$1
+	rtype="void"
+
+	c=0
+	for (a=2;a<=NF;a++) 
+	{
+		if ($a==" "||$a=="\t"||$a==",") continue;
+		param_type[c]=$a
+		if (param_type[c]=="->")
+		{
+			param_type[c]=""
+			a++
+			rtype=$a
+			#Map return types to CORBA types
+			if (rtype=="char*") {rtype="string"}
+			break
+		}
+
+		if (param_type[c]=="...")
+		{
+			param_name[c]=""
+			a++
+			c++
+			break
+		}
+
+
+		a++
+		param_name[c]=$a
+		c++;
+	}
+
+    if (c==0)
+    {
+		param_name[c]=""
+		param_type[c]="void"
+        c++
+    }
+
+
+	if (use_prefix==0) {
+		printf " " rtype " CORBA_" api_prefix fname "("
+	} else {
+		printf " " rtype " CORBA_" lib_prefix fname "("
+	}
+	va_start=""
+	args=""
+	for (b=0;b<c;b++)
+	{
+		#Map return types to CORBA types
+		if (param_type[b]=="char*") {param_type[b]="string"}
+		
+		#Decide on access type: in, inout etc
+		param_access[b]="in"
+		
+		printf("%s %s %s",param_access[b],param_type[b],param_name[b]);
+		
+		if (param_type[b]=="...")
+		{
+			va_start=last;
+			args=args ",&ap"
+		}
+		else
+		{
+			args=args "," param_name[b]
+		}
+
+		last=param_name[b]
+		
+		if (b<c-1)
+		{
+			printf(",");
+		}
+	}
+	args=substr(args,2)
+	#void echoString(in string input);
+	print ");"
+	print ""
+	}
+	' < $specfile
+	echo ""
+	echo "	};"
+	echo "};"
+	echo ""
+
+    exit 0
+fi	#CREATE=idl
+
+#############################################################################
+#				create client or server C code for CORBA
+#############################################################################
+
+COMMENTS=0
+DBG=0
+
+$AWK -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" \
+	-v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" \
+	-v CREATE="$CREATE" -v COMMENTS="$COMMENTS" -v DBG="$DBG" \
+	'
+
+function ring(rtype) {
+	if (rtype=="char*") { print "A4GL_debug(\"Returning (%s)\",A4GL_null_as_null(rval));"; return;}
+	if (rtype=="void*") { print "A4GL_debug(\"Returning (%p)\",rval);"; return;}
+	if (rtype=="int") { print "A4GL_debug(\"Returning '%d'\",rval);"; return;}
+	print "A4GL_debug(\"Returning Unknown '%p'\",rval);"
+	}
+	
+function ping(rtype,name) {
+	if (rtype=="char*")  return "(%s))"
+	if (rtype=="char")  return "(%c)"
+	if (rtype=="void*")  return "%p"
+	if (rtype=="va_list*")  return "%p"
+	if (rtype=="int") return "%d"
+	return "%p" 
+	#print "Unknown type : " rtype > "dlmagic.log"
+}
+
+function pind(rtype,rname) {
+	
+	if (rtype=="char*")  return sprintf("A4GL_null_as_null(%s)",rname);
+	return rname;
+	#print "Unknown type : " rtype > "dlmagic.log"
+}
+
+
+
+BEGIN {
+FS="[ 	,]+"
+if (COMMENTS=="1") {
+print "/*"
+if (CREATE=="") print " * CREATE is empty"
+else print " * CREATE=" CREATE 
+print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
+print " * @file"
+print " * File definition"
+print " *"
+print " * This file was created from .spec file of same name, using idlmagic script"
+print " * - if you need to edit it, edit .spec file instad, and use [make filename.c]"
+print " * to re-create it."
+print " *"
+print " * @todo Take the prototypes here declared. See if the functions are static"
+print " * or to be externally seen"
+print " * @todo Doxygen comments to add to functions"
+print " */"
+print ""
+print "/*******************************************************************"
+print "* (c) 1997-2002 Aubit Computing Ltd."
+print "*"
+print "*"
+print "********************************************************************/"
+print ""
+print ""
+}
+if (HEADER_FILE=="") print "#include \"a4gl_libaubit4gl_int.h\""
+else print "#include " HEADER_FILE 
+print ""
+if (DBG=="1") {
+print "#ifdef DEBUG"
+print "#ifndef DEBUG_SPEC_CORBA"
+print "#define DEBUG_SPEC_CORBA"
+print "#endif"
+print "#endif"
+}
+if (CREATE=="server") print "static void *libptr=0;"
+#print "static int (*func)();"
+#print "static double (*func_d)();"
+#print "void *A4GL_find_func(void *p,char *s);"
+if (CREATE=="server") print "int A4GL" lib "_initlib (void);"
+if (CREATE=="server") print "void A4GL" lib "_clrlibptr (void);"
+if (CREATE=="server") print "int dlclose (void *__handle);"
+if (CREATE=="server") print ""
+if (COMMENTS=="1") {
+if (CREATE=="server") print "/**"
+if (CREATE=="server") print " * Library init function."
+if (CREATE=="server") print " *"
+if (CREATE=="server") print " * @todo : explain ussage and parameters."
+if (CREATE=="server") print " * @return ."
+if (CREATE=="server") print " */"
+if (CREATE=="server") print ""
+}
+if (CREATE=="server") print "void A4GL" lib "_clrlibptr (void) {"
+if (CREATE=="server") print "    if (libptr) {dlclose(libptr);}"
+if (CREATE=="server") print "    libptr=0;"
+if (CREATE=="server") print "}"
+if (CREATE=="server") print ""
+if (CREATE=="server") print "int A4GL" lib "_initlib (void) {"
+if (CREATE=="server") print "typedef int (*x_func)(void);"
+if (CREATE=="server") print "static x_func func;";
+if (CREATE=="server") print "   libptr=(void *)A4GL_dl_openlibrary(\"" lib "\",acl_getenv(\"" env "\"));"
+if (CREATE=="server") print "   if (libptr==0) {"
+if (CREATE=="server") print "      A4GL_exitwith(\"Unable to open " $lib " library...\");"
+if (CREATE=="server") print "      return 0;"
+if (CREATE=="server") print "   }"
+if (CREATE=="server") print "   func=(x_func)A4GL_find_func_allow_missing(libptr,\"" lib_prefix "A4GL" lib "_initlib\");"
+if (CREATE=="server") print ""
+if (CREATE=="server") print "   if (func)"
+if (CREATE=="server") print "      return func();"
+if (CREATE=="server") print "   else"
+if (CREATE=="server") print "      return 1;"
+if (CREATE=="server") print "}"
+if (CREATE=="server") print ""
+print ""
+}
+/^LIBRARY / {next}
+/^#ifdef/ {if (DBG=="0") next}
+/^#undef/ {if (DBG=="0") next}
+/^#endif/ {if (DBG=="0") next}
+
+/^VARIABLE / {next}
+/^HEADER_FILE / {next}
+/^API_PREFIX / {next}
+/^LIB_PREFIX / {next}
+/MAP / { map[$2]=$3; next}
+/^#/ {print
+	next
+}
+/^\// {print
+	next
+}
+/^extern/ {print
+	next
+}
+/^ \*/ {print
+	next
+}
+/^\*\// {print
+	next
+}
+/^\*/ {next}
+/^$/ {next}
+
+/^[ 	]*$/ {next}
+{
+fname=$1
+call_fname=$1
+rtype="void"
+
+c=0
+for (a=2;a<=NF;a++) {
+
+param_type[c]=$a
+if (param_type[c]=="->") {
+	param_type[c]=""
+	a++
+	rtype=$a
+	break
+}
+
+if (param_type[c]=="...") {
+	param_name[c]=""
+    call_fname="internal_"fname
+	a++
+	c++
+	break
+}
+
+
+a++
+param_name[c]=$a
+c++;
+}
+
+
+#THIS SHOULD BE PART OF .spec file
+#print ""
+#print "/**"
+#print " * API call function for xyz ."
+#print " *"
+#print " * @todo : explain ussage and parameters."
+#print " * @param xyz Explain me..."
+#print " * @return xyz Explain me..."
+#print " */"
+#print ""
+
+if (CREATE=="server") printf rtype " CORBA_" api_prefix fname "("
+else printf rtype " " api_prefix fname "("
+va_start=""
+args=""
+dargs=""
+debug_args="Call to " rtype " " api_prefix fname "("
+
+for (b=0;b<c;b++) {
+	printf("%s %s",param_type[b],param_name[b]);
+	if (param_type[b]=="...") {
+		va_start=last;
+		args=args ",&ap"
+		dargs=dargs ",&ap"
+		if (b) debug_args=debug_args "," 
+		debug_args=debug_args ping("va_list*",param_name[b]);
+	} else {
+		if (b) debug_args=debug_args "," 
+		debug_args=debug_args ping(param_type[b],param_name[b])
+		args=args "," param_name[b]
+		dargs=dargs "," pind(param_type[b],param_name[b])
+	}
+	last=param_name[b]
+	if (b<c-1) {
+		printf(",");
+	}
+}
+args=substr(args,2)
+dargs=substr(dargs,2)
+print ") {"
+if (va_start!="") {print "va_list ap;"}
+if (rtype!="void") {
+	print rtype " rval;"
+}
+
+funccnt++;
+printf("typedef %s(*x_func_%d)(",rtype,funccnt)
+
+for (b=0;b<c;b++) {
+	xxtype=param_type[b]
+	gsub("[*]"," * ",xxtype)
+	gsub("  "," ",xxtype)
+	if (b) printf(",")
+	printf("%s ",xxtype) 
+}
+
+
+if (c==0) {
+	printf("void");
+}
+print ");"
+
+printf("static x_func_%s func_%s;\n",funccnt,funccnt)
+
+
+if (DBG=="1") print "#ifdef DEBUG_SPEC_CORBA"
+debug_args=debug_args ")"
+if (args!="")
+	if (DBG=="1") print "A4GL_debug(\"" debug_args "\\n\"," dargs ");"
+else
+	if (DBG=="1") print "A4GL_debug(\"" debug_args "\\n\");"
+if (DBG=="1") print "#endif"
+if (CREATE=="server") print "   if (libptr==0) A4GL" lib "_initlib();"
+if (map[call_fname]) cfname=map[call_fname];
+else cfname=call_fname;
+if (CREATE=="server") print "   func_" funccnt "=(x_func_" funccnt ")A4GL_find_func(libptr,\"" lib_prefix cfname "\");"
+
+if (va_start!="") {
+	print "   va_start(ap," va_start ");"
+}
+
+if (rtype=="void")
+	if (CREATE=="server") print "   func_" funccnt "(" args ");"
+	else print "   CORBA_" fname "(" args ");"
+else {
+	if (CREATE=="server") print "   rval=(" rtype ")func_" funccnt " (" args ");"
+	else  print "   rval=(" rtype ")CORBA_" fname " (" args ");"
+	if (DBG=="1") print "#ifdef DEBUG_SPEC_CORBA"
+	if (DBG=="1") print ring(rtype)
+	if (DBG=="1") print "#endif"
+	print "return rval;"
+}
+
+print "}"
+print ""
+
+}' < $specfile
+
+
+exit
+

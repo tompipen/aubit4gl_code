@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.48 2004-11-29 22:32:53 mikeaubury Exp $
+# $Id: calldll.c,v 1.49 2004-12-29 11:42:13 afalout Exp $
 #
 */
 
@@ -215,6 +215,9 @@ dlerror ()
 
 #if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
 
+//NOTE: this block applies to "pure" Windows C compilers like MS VC, Borland, etc
+//and NOT to MinGW which has dlopen()
+
 /*
 As per Microsoft's web site, an error value of zero specifies that the
 system was out of memory, the file was corrupt, or the relocation data was
@@ -225,7 +228,7 @@ freelibrary.
 
 
 /**
- * Loading of 4gl dll for native windows post. CygWin uses same
+ * Loading of 4gl dll for native windows port. CygWin uses same
  * code as UNIX, since it implements dlopen() as warper for Windows native
  * dll loader.
  *
@@ -242,36 +245,7 @@ A4GL_call_4gl_dll (char *filename, char *function, int args)
   return 0;
 }
 
-/*
-
-void *
-A4GL_find_func (void *dllhandle, char *func)
-{
-int (*func_ptr) (void);
-
-  return func_ptr;
-}
-
-void *
-A4GL_find_func_allow_missing (void *dllhandle, char *func)
-{
-  int (*func_ptr) (void);
-  return func_ptr;
-}
-
-void *
-A4GL_dl_openlibrary (char *type, char *name)
-{
-  void *dllhandle;
-  return dllhandle;
-}
-
-*/
-
-#else
-	/* implementation for UNIX and CygWin */
-
-
+#else /* implementation for UNIX, CygWin and MinGW */
 
 /**
  * When someone try to find a function that does not exist in the dll its

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.22 2004-03-24 11:06:29 mikeaubury Exp $
+# $Id: string.c,v 1.23 2004-12-29 11:42:14 afalout Exp $
 #
 */
 
@@ -217,9 +217,5 @@ A4GL_strnullcmp (char *s1, char *s2)
 }
 
 
-char *A4GL_null_as_null(char *s) {
-if (s==0) return "(null)";
-return s;
-}
 
 /* =================================== EOF ============================ */

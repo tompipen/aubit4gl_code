@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.76 2004-12-01 07:21:08 afalout Exp $
+# $Id: Makefile,v 1.1 2004-12-29 11:42:13 afalout Exp $
 #
 
 ROOT    	=../..
@@ -59,7 +59,7 @@ CMODS_API   =${API_C} ${API_SPEC:.spec=.c}
 COMMONSRC= \
 	attributes.c \
 	builtin.c builtin_d.c \
-	calldll.c conv.c compat.c \
+	calldll.c conv.c compat.c corba_server_util.c \
 	data_if.c dates.c dmy.c datatypes.c dataio.c decimal.c dynmem.c debug.c \
 	err.c error.c errfile.c extfile.c eval_field.c \
 	fglwrap.c funcs_d.c function_call_stack.c \

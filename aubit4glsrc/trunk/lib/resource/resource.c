@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.89 2004-12-24 08:51:05 mikeaubury Exp $
+# $Id: resource.c,v 1.90 2004-12-29 11:42:14 afalout Exp $
 #
 */
 
@@ -550,10 +550,9 @@ acl_getenv (char *s)
 {
 static char prefixed_string[1024];
 #ifdef DEBUG_VARIABLE_USAGE
-static FILE *fd1=0;
+	static FILE *fd1=0;
 #endif
 static char *value_not_set="VALUE_NOT_SET";
-
 //WHY was this static?
 //static char *ptr;
 char *ptr_env=0, *ptr_env_A4GL=0,*ptr_resources=0, *ptr_resources_A4GL=0, *ptr_registry=0, *ptr=0;
@@ -561,18 +560,14 @@ int cumulate = 0;
 char cumulate_char=0;
 static char cumulated_string[2048]="";
 static char cumulated_string_tmp[2048]="";
-
 #ifdef DEBUG_VARIABLE_USAGE
-if (fd1==0) {
-	fd1=fopen("/tmp/acl_getenv","w");
-}
+	if (fd1==0) {
+		fd1=fopen("/tmp/acl_getenv","w");
+	}
 #endif
-
-
 
 #ifdef USE_OPTIMISATION
 ptr=(char *)A4GL_find_pointer (s,STR_RESOURCE_VAL);
-
 
 if (ptr)  {
 	if (ptr==value_not_set)  { /* BEFORE you complain - this is RIGHT!
@@ -594,9 +589,6 @@ if (ptr)  {
 }
 
 #endif
-
-
-
 
 //printf("Looking for %s\n",s);
 //WARNING - strings returned by getenv() are linited to 125 charcters!

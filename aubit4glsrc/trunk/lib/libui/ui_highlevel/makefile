@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.37 2004-12-17 13:19:08 mikeaubury Exp $
+# $Id: makefile,v 1.38 2004-12-29 11:42:14 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -347,8 +347,186 @@ show:
 ##                              Clean
 ## ==================================================================
 
-clean:
+clean: clean.capi
 	${RM} *${SO_EXT} *.o *.bak testit API_lowlevel.c API_lowlevel.h \
 	lowlevel/*.bak a4gl_API_lowlevel.h
+
+## ==================================================================
+##                     CORBA/ORBit settings
+## ==================================================================
+
+ORBIT_VER		=1
+IDLMAGIC		=${LIBROOT}/bin/idlmagic
+ifeq "${ORBIT_VER}" "2"
+	PREFIX ?= /usr
+	ORBIT_IDL=$(PREFIX)/bin/orbit-idl-2
+	CAPI_CFLAGS=$(shell pkg-config ORBit-2.0 ORBit-CosNaming-2.0 --cflags)
+	CAPI_LDFLAGS=$(shell pkg-config ORBit-2.0 ORBit-CosNaming-2.0 --libs)
+else
+	ORBIT_IDL=orbit-idl
+	#there is apparently no diff between client and server targets:
+	CAPI_CFLAGS=$(shell orbit-config --cflags client)
+	CAPI_LDFLAGS=$(shell orbit-config --libs client)
+endif
+
+ifneq "${TARGET_OS}" "hpux"
+	ifneq "${TARGET_OS}" "cygwin"
+		ifneq "${GCC_MINGW}" "yes"
+            #all platforms except HP-UX, CygWin and MinGW:
+			LINK_LIBS_SERVER           =-ldl -lm
+		endif
+	endif
+else
+            #HP-UX only:
+			LINK_LIBS_SERVER           =-lcl -lm -lnsl
+endif
+
+
+CFLAGS	:=${CAPI_CFLAGS} ${CFLAGS} -D__CAPI__
+
+#Names of all Aubit interfaces to create CORBA APIs and cleants/servers for:
+API_NAMES		=sqlparse
+API_NAMES_UP	=${shell  echo "${API_NAMES}" | tr a-z A-Z   }
+#Files created by ORBIT_IDL from .idl:
+#File				Usage for Client	Usage for Server
+#CAPI_*.h			readonly			readonly
+#CAPI_*-common.c	readonly			readonly
+#CAPI_*-stubs.c		readonly			-
+#CAPI_*-skels.c		-					readonly
+#CAPI_*-skelimpl.c	-					template for user code
+#
+#		app							libaubit4gl										plug-in
+#--------------------------------------------------------------------------------------------------------------------
+#call A4GLSQLCV_convert_sql()---->	A4GLSQLCV_convert_sql() in API_sqlparse.c ---->	A4GLSQLCV_convert_sql in util.c
+#																					calls
+#																					A4GLSQLCV_convert_sql_internal() in same file
+#									
+#									
+
+#		app							libaubit4gl										CORBA API plug-in CLIENT					CORBA API plug-in SERVER		plug_in
+#-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#call A4GLSQLCV_convert_sql()---->	A4GLSQLCV_convert_sql() in API_sqlparse.c ---->	A4GLSQLCV_convert_sql in CORBA-client.c	--->CORBA_A4GLSQLCV_convert_sql()	A4GLSQLCV_convert_sql in util.c
+#																																calls 							calls
+#																																A4GLSQLCV_convert_sql()			A4GLSQLCV_convert_sql_internal() in same file
+#																																in API_sqlparse.c 										
+
+CLIENTS			=$(foreach api_name,${API_NAMES},lib${api_name}_CLIENT${SO_EXT})
+SERVERS			=$(foreach api_name,${API_NAMES},${api_name}-server${EXE_EXT})
+
+#Functions needed to pupport dlopen of 'real' plug-in on SERVER side"
+#A4GL_dl_openlibrary A4GL_find_func_allow_missing A4GL_find_func - libaubit4gl/calldll.c
+#acl_getenv - resource/resource.c
+#A4GL_exitwith - libaubit4gl/error.c
+
+DLOPEN_SUPPORT= ${LIBROOT}/libaubit4gl/calldll.o \
+				${LIBROOT}/resource/resource.o \
+				${LIBROOT}/libaubit4gl/error.o \
+				${LIBROOT}/libaubit4gl/pointers.o
+
+#Prevent 'make' from deleting our intermedate files:
+.PRECIOUS: %.o 
+.PRECIOUS: %.idl
+.PRECIOUS: %.c
+
+## ==================================================================
+##                        CORBA/ORBit targets
+## ==================================================================
+
+#######################################
+#Create all Aubit CORBA clients and servers
+capi: clean.capi capi.clients capi.servers
+	@echo "CORBA API clients/servers created:"
+	@echo "${CLIENTS} ${SERVERS}"
+
+
+#######################################
+#Create all Aubit CORBA clients (plug-ins)
+capi.clients: ${CLIENTS}
+	@echo "CORBA API clients created:"
+	@echo "${CLIENTS}"
+
+#######################################
+#Create all Aubit CORBA servers (executables that load 'real' plug-ins)
+capi.servers: ${SERVERS}
+	@echo "CORBA API servers created:"
+	@echo "${SERVERS}"
+
+######################################
+#Create Aubit CORBA plug-in for % API
+lib%_CLIENT${SO_EXT}: CAPI_%-common.o CAPI_%-stubs.o CAPI_%-client.o
+	${LD} ${SO_LDFLAGS} ${CAPI_LDFLAGS} -o $@ $^
+	cp $@ ${LIBROOT}/lib${shell echo "$*" | tr a-z A-Z }_CLIENT${SO_EXT}
+	@echo "Created: ${LIBROOT}/lib${shell echo "$*" | tr a-z A-Z }_CLIENT${SO_EXT}"
+
+
+#######################################
+#Create Aubit plug-in CORBA server for % API
+%-server${EXE_EXT}: CAPI_%-common.o CAPI_%-skels.o CAPI_%-skelimpl.o \
+	CAPI_%-server.o ${LIBROOT}/libaubit4gl/API_%.o ${DLOPEN_SUPPORT} \
+	LOCAL_corba_server_util.o
+	${CC} ${LDFLAGS} ${CAPI_LDFLAGS} -o $@ $^ ${LINK_LIBS_SERVER}
+
+
+## ==================================================================
+##                        CORBA/ORBit sub-targets
+## ==================================================================
+
+####################################
+#Compile a separate object specifically for use in CORBA server (with -D__CAPI__)
+LOCAL_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
+	${CC} ${CFLAGS} -c $^ -o $@
+
+${DLOPEN_SUPPORT}:
+	${MAKE} -C ${LIBROOT}/libaubit4gl
+	
+####################################
+#Create C function call wraper for CORBA client, from Aubit API .spec file
+#Calls to xxx() function are just forwarded to CORBA_xxx() function which is 
+#created by ORBIT_IDL from .idl file in turn created fron this same .spec file
+CAPI_%-client.c: ${LIBROOT}/libaubit4gl/API_%.spec ${IDLMAGIC}
+	${SH} ${IDLMAGIC} $< -client > $@
+
+####################################
+#Create C function call wraper for CORBA server, from Aubit API .spec file
+#Calls to CORBA_xxx() function are just forwarded to xxx() function, which
+#is expected to be handled by normal Aubit API_xx.c code and forwarded 
+#to 'normal' Aubit plug-in
+CAPI_%-server.c: ${LIBROOT}/libaubit4gl/API_%.spec ${IDLMAGIC}
+	${SH} ${IDLMAGIC} $< -server > $@
+	
+#######################################
+#Create skelimpl C code from .idl specification
+CAPI_%-skelimpl.c: CAPI_%.idl
+#CAPI_%.h CAPI_%-common.c CAPI_%-stubs.c CAPI_%-skels.c CAPI_%-skelimpl.c: CAPI_%.idl
+	$(ORBIT_IDL) --skeleton-impl $^
+
+#######################################
+#Create all needed (except skelimpl) CORBA C code from .idl specification
+CAPI_%.h CAPI_%-common.c CAPI_%-stubs.c CAPI_%-skels.c: CAPI_%.idl
+	$(ORBIT_IDL) $^
+	
+#######################################
+#Create CORBA .idl specification from Aubit API .spec file
+CAPI_%.idl: ${LIBROOT}/libaubit4gl/API_%.spec
+	${SH} ${IDLMAGIC} $< > $@
+
+## ==================================================================
+##                        CORBA/ORBit clean targets
+## ==================================================================
+
+#######################################
+#Clean all CAPI intermedate files
+clean.capi:
+	${RM} CAPI_*-common.c CAPI_*.h CAPI_*.idl CAPI_*-skels.c CAPI_*-stubs.c \
+		CAPI_*-skelimpl.c *~ *.ior *.ref *.o
+
+#######################################
+#Clean all CAPI intermedate files and targets
+#NOTE: cleans only local targets in this this dir, not lib/ or bin/
+clean.capi.distclean: clean.capi
+	${RM} ${CLIENTS} ${SERVERS}
+
+
+#################################### EOF ###################################
 
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.7 2004-12-27 10:52:22 afalout Exp $
+# $Id: Makefile,v 1.8 2004-12-29 11:41:13 afalout Exp $
 #
 
 ## ==================================================================
@@ -484,7 +484,7 @@ clean.makefiles:
 	lib/libpacker/perl/Makefile lib/libpacker/xdr/Makefile \
 	lib/libpacker/xml/Makefile lib/librpc/no_rpc/Makefile \
 	lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile \
-	lib/resource/Makefile tools/loadmap/Makefile lib/libaubit4gl/Makefile \
+	lib/resource/Makefile tools/loadmap/Makefile \
 	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile \
 	lib/liblex/lex_esqlc/Makefile \
 	lib/libexdata/Makefile lib/libsql/postgresql/Makefile \
@@ -623,18 +623,28 @@ else
 endif
 
 ########################
-#Check that Winsows setup  installed everything we expect, and not things
-install.check.winsetup: winsetup install.winsetup.silent install.check.winsetup.compare
+#Check that Winsows setup  installed everything we expect, and not things (FULL LOOP)
+install.check.winsetup: winsetup.deinstall winsetup install.winsetup.silent install.check.winsetup.compare
 	@echo "WinSetup checks OK"
 	
+########################
+#deinstall Windows setup
+winsetup.deinstall:
+#/SILENT shows only progress indicator, /VERYSILENT not even that
+	-d:/tmp/aubit4gl-silent/unins000.exe /VERYSILENT
+#Should be gone, but just in case:	
+	rm -rf d:/tmp/aubit4gl-silent
+
+########################
+#check files installed by Windows setup executable
 install.check.winsetup.compare:
 	export MAKINGAUBIT=0; export INSTALLDIR="d:/tmp/aubit4gl-silent" ;${SH} bin/4glpc.obsolete -chk-install
 
 ########################
 #Check that RPM installed everything we expect, and not things
-install.check.rpm:
-	export MAKINGAUBIT=0; export INSTALLDIR="xxyyzz" ;${SH} bin/4glpc.obsolete -chk-install
-	
+#install.check.rpm:
+#	export MAKINGAUBIT=0; export INSTALLDIR="xxyyzz" ;${SH} bin/4glpc.obsolete -chk-install
+#remove above?	
 	
 ########################
 #install compiler core files
@@ -887,8 +897,8 @@ rpm.check.deps:
 ###################	
 #Install created binary RPM and check it against binary installation 
 #created with 'make install' for consistency:
-#rpm.test: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
-rpm.install: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.9-1.i586.rpm
+rpm.install: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.${AUBITBUILD}-1.i586.rpm
+#rpm.install: RPM_FILE=${RPMBUILDROOT}/RPMS/i586/${AUBITNAME}-${AUBITVERSION}.9-1.i586.rpm
 rpm.install:
 #       --badreloc
 #              Used  with  --relocate,  permit  relocations on all
@@ -914,6 +924,7 @@ rpm.install:
 #######################
 rpm.deinstall:
 	-rpm --erase --noscripts aubit4gl
+#Should be gone, but just in case:	
 	rm -rf /tmp/aubit4gl-rpminstall	
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| aubit4gl RPM deinstalled"

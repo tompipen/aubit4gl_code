@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.94 2004-12-27 10:52:44 afalout Exp $
+# $Id: Makefile-install.mki,v 1.95 2004-12-29 11:42:12 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -362,7 +362,9 @@ ifdef COMSPEC
 	@echo "00 01 * * * /etc/cron.d/aubitbuild.cron.sh" >> ${OUT2}
 else
 #Start Linux job at 06:00:00 AM
-	@echo "00 06 * * * /etc/cron.d/aubitbuild.cron.sh" >> ${OUT2}
+#Why am I making a copy of aubitbuild.cron.sh anyway?
+#	@echo "00 06 * * * /etc/cron.d/aubitbuild.cron.sh" >> ${OUT2}
+	@echo "00 06 * * * ${AUBITDIR}/etc/aubitbuild.cron.sh" >> ${OUT2}
 endif
 	@echo "" >> ${OUT2}
 
@@ -400,29 +402,27 @@ ifdef COMSPEC
 #	mailhub=aptiva
 #	hostname=istation.falout.com
 else
+######################## UNIX #########################
 ifdef USE_DAILY_CRON
 #Just use daily cron job
 #What time does daily cron start? - WATCH OUT FOR UNIX/Windows overwriting each others download page!
 #looks like 04:02 AM?
 	${MAKE} copy.aubitbuild
 else
+#------------------------------- 
 #Install out own crontab, so we can set the start time
 #Just in case we forgot it in cron daily scripts directory:
 	${RM} /etc/cron.daily/aubitbuild.cron.sh
-
-#-------------------------------
 #Copy our cron script to cron directory
-	${MAKE} copy.aubitbuild
+#	${MAKE} copy.aubitbuild
 #Activate the crontab using prepared crontab script
 	crontab ${OUT2}
-	@echo "cron script /etc/cron.d/aubitbuild.cron.sh installed, using ${OUT2}"	
+#	@echo "cron script /etc/cron.d/aubitbuild.cron.sh installed, using ${OUT2}"
+	@echo "cron script ${AUBITDIR}/etc/aubitbuild.cron.sh installed, using ${OUT2}"
 	${MAKE} show.cron
-#We dont want to deinstall as part of install - let user deinstall:	
-#	${MAKE} deinstall.cron
-	${MAKE} show.cron	
 	@echo "Log goes to /var/log/cron.log"
 #-------------------------------
-	
+######################## end UNIX #########################
 endif
 endif
 	@echo "aubitbuild cron script installed."
@@ -452,10 +452,12 @@ show.cron:
 #show what crontab now has installed:
 	crontab -l
 #Is cron running?
+ifdef COMSPEC
 	ps -ef | grep cron
-ifdef COMSPEC	
 #Query the crontab Windows service:	
 	-cygrunsrv.exe -Q cron
+else
+	ps -ef | grep crond
 endif
 	
 
@@ -472,7 +474,7 @@ libltdl:
 winsetup:
 ifndef NOREFRESH
 	(cd ${AUBITDIR}; config.status --file etc/aubit-InnoSetup.iss)
-#	MAKINGAUBIT=0 ${SH} ${AUBITDIR}/bin/4glpc.obsolete -deps
+	MAKINGAUBIT=0 ${SH} ${AUBITDIR}/bin/4glpc.obsolete -deps
 endif
 	unix2dos -D ${AUBITDIR}/etc/aubit-InnoSetup.iss
 #	(cd "E:\Program files\W2000\My Inno Setup Extensions 3"; iscc "${WIN_CYGPATH}/${AUBITDIR}/etc/aubit-InnoSetup.iss")
@@ -918,6 +920,33 @@ install.libvncserver:
 	${MKPATH} /tmp/libvncserver
 	cd /tmp/libvncserver; cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/libvncserver co libvncserver
 
+	
+# ORBit docs and examples (examples need ORBit2) :
+install.orbit.example:
+	${WGET} http://www.gnome.org/projects/ORBit2/orbit-docs.tar.gz
+
+orbit.test:
+	cd /tmp; gunzip -c ${AUBIT_SRC_ROOT}/orbit-docs.tar.gz | tar -xvf -
+#This should build a documentation directory that contains this documentation 
+#in both sgml (docbook) and html, and an examples directory. Move to the 
+#examples directory, and go
+#	cd /tmp/orbit-docs; ./configure
+	cd /tmp/orbit-docs/examples/echo; make
+#Proceed similarly for the calculator example.
+#To actually run the echo example, open two windows up. Run echo-server in one 
+#and echo-client in the other (echo-server writes out the file echo.ref which 
+#echo-client reads). If you want to have fun now, compile orbit on a different 
+#machine, make echo-client on the different machine, move echo.ref from the
+#first machine to the second and run echo-client: eh voila - client/server 
+#over tcp/ip with the same code that ran using unix sockets on a single machine. 	
+#NOTE:
+#From ORBit 0.5.3, IIOP communications over IP sockets are disabled by default for security reasons. You should create an  /etc/orbitrc  (for a system-wide settings), or an  ~/.orbitrc  (for one user's setting) containing something like :
+#
+#ORBIIOPUSock=1
+#ORBIIOPIPv4=1
+#ORBIIOPIPv6=0
+#
+#Alternatively, you can also use command line parameters.
 
 ## ==================================================================
 ##                    Third-party products installation

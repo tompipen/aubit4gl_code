@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.48 2004-12-24 08:51:05 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.49 2004-12-29 11:42:13 afalout Exp $
 #
 */
 
@@ -210,40 +210,6 @@ acl_free_full (void *ptr, char *f, long line)
 {
   A4GL_debug ("Free %p %s %d", ptr,f,line);
   free (ptr);
-}
-
-/**
- * Trim the spaces at the rigth side of a string
- *
- * @param p The string to be trimmed.
- */
-void
-A4GL_trim (char *p)
-{
-  int a;
-  for (a = strlen (p) - 1; a >= 0; a--)
-    {
-      if (p[a] != ' ' && p[a] != '\t' && p[a] != '\n' && p[a] != '\r')
-	break;
-      p[a] = 0;
-    }
-}
-
-/**
- * Trim the spaces and new lines at the rigth side of a string.
- *
- * @param p The string to be trimmed.
- */
-void
-A4GL_trim_nl (char *p)
-{
-  int a;
-  for (a = strlen (p) - 1; a >= 0; a--)
-    {
-      if (p[a] != ' ' && p[a] != '\n' && p[a] != '\r' && p[a] != '\t')
-	break;
-      p[a] = 0;
-    }
 }
 
 
@@ -808,52 +774,4 @@ void A4GL_strmaxcpy(char *dest,char *src,int max) {
 }
 
 
-#ifdef strcpy
-#undef strcpy
-#endif
-char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
-  	int lsrc;
-	A4GL_assertion(src==0,"No source for strcpy..");
-
-	lsrc=strlen(src);
-	if (sd!=sizeof(char *)) {
-		if (lsrc>=sd) {
-			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
-			A4GL_assertion(1,"String overflow detected");
-		}
-	}
-	strcpy(dest,src);
-
-
-#ifdef DEBUG
-{
-// This just adds some debugging stuff - but this 
-// isn't applicable when called from the routines in dmy.c 
-// as they put some funny characters in the string as placeholders
-//
-	if (strcmp(f,"dmy.c")==0) return dest;
-
-
-// Quick - is it big ?
-	if (lsrc>255) {
-		char buff[3000];
-		strncpy(buff,src,2999);
-		buff[2999]=0;
-		A4GL_debug("Long string : %s\n",buff);
-	}
-
-// Does it look Good ?
-{
-	int a;
-	for (a=0;a<lsrc;a++) {
-		if (!isprint(src[a])&&src[a]!='\n'&&!ispunct(src[a])) {
-			A4GL_debug("bad char @%d for string '%s' (%d)\n",a,src,strlen(src));
-		}
-	}
-}
-}
-#endif
-	
-	return dest;
-}
 /* ============================== EOF ========================== */

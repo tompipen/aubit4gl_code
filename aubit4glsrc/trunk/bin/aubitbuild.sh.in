@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.59 2004-12-28 23:37:41 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.60 2004-12-29 11:42:12 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -791,8 +791,57 @@ function func_install () {
 
 		func_deinstall
 		EXEC="make install prefix=$AUBITBINDIR"; runexec
+		check_install bin
+		
 }
 
+#######################################
+function check_install () {
+#######################################
+#Check installation files
+type="$1"
+old_STOPONERROR=$STOPONERROR
+
+#This function esentially uses 4glpc.obsolet option -chk-install to compare
+#files installed with files in source code tree, both ways - it checks 
+#that (1) all files (minus expected exceptions) present in compiled source code
+#tree end up in bunary installation, and (2) that all files that end up in 
+#binary installation tree are expected there.
+
+#Note that we also check dependencies before making Windows setup,
+#and maybe RPM (with dubious purpose and results), but NOT for 
+#binary tarballs. see 4glpc.obsolete -deps flag
+
+	if test "$type" = "bin"; then
+		STOPONERROR=0   #Continue even if next statemets fails
+		#Just runs check script with -chk-install ; expects Aubit allready installed
+		EXEC="make install.check"; runexec
+		STOPONERROR=$old_STOPONERROR
+		return
+	fi
+	
+	if test "$type" = "rpm"; then 
+		STOPONERROR=0   #Continue even if next statemets fails
+		#Expects Aubit Windows setup executable to exist
+		EXEC="make winsetup.deinstall"; runexec
+		EXEC="make install.winsetup.silent"; runexec
+		EXEC="make install.check.winsetup.compare"; runexec
+		EXEC="make winsetup.deinstall"; runexec
+		STOPONERROR=$old_STOPONERROR
+		return
+	fi
+
+	if test "$type" = "winsetup"; then
+		STOPONERROR=0   #Continue even if next statemets fails
+		#rpm.test: rpm.deinstall rpm.install rpm.test.files rpm.deinstall
+		EXEC="make rpm.test"; runexec
+		STOPONERROR=$old_STOPONERROR
+		return
+	fi
+	
+	echo "ERROR: invalid type in check_install() : '$type'"
+}
+ 
 #######################################
 function func_clean_bininstall_tree () {
 #######################################
@@ -987,6 +1036,7 @@ function func_make_rpm () {
 		STOPONERROR=1
 		func_cd_srcdir
 		EXEC="make rpm"; runexec
+		check_install rpm
 	fi
 }
 
@@ -1026,6 +1076,7 @@ function func_create_win_installer () {
 
 			func_cd_srcdir
 		    EXEC="make winsetup"; runexec
+			check_install winsetup
 }
 
 ####################################

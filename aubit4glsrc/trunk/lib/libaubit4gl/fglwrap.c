@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.77 2004-12-17 13:19:02 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.78 2004-12-29 11:42:13 afalout Exp $
 #
 */
 
@@ -53,10 +53,6 @@
 //#define _PRELOAD_SQL_		/* pre-load SQL module */
 //#define _PRELOAD_REPORT_	/* pre-load EXREPORT module */
 #define _PRELOAD_UI_		/* pre-load UI module */
-
-
-int dying=0;
-
 
 
 /*
@@ -152,44 +148,7 @@ A4GL_debug("Close errlog");
   A4GL_debug ("End of program - exit(0).");
 }
 
-void
-A4GL_fgl_die(int n)
-{
-if (dying) return;
-dying++;
-if (dying>1) { exit(n); }
-  if (A4GL_isscrmode ())
-    {
-#ifdef DEBUG
-      A4GL_debug ("In screen mode - ending curses...");
-#endif
-      A4GL_gotolinemode ();
-    }
-  A4GL_close_database ();
-  A4GL_close_errorlog_file ();
-  A4GL_debug ("End of program - exit(%d).",n);
-  exit (n);
-}
 
-void
-A4GL_fgl_die_with_msg(int n,char *s)
-{
-if (dying) return;
-dying++;
-if (dying>1) { exit(n); }
-  if (A4GL_isscrmode ())
-    {
-#ifdef DEBUG
-      A4GL_debug ("In screen mode - ending curses...");
-#endif
-      A4GL_gotolinemode ();
-    }
-  A4GL_close_database ();
-  A4GL_close_errorlog_file ();
-  A4GL_debug ("End of program - exit(%d).",n);
-  printf("%s\n",s);
-  exit (n);
-}
 
 /**
  * function called on initialization of every Aubit compiled 4gl program:
@@ -427,38 +386,6 @@ int oval;
 	}
   }
 }
-
-/**
- * Checks if the string have some sort of yes (y,Y,1,true).
- *
- * @param s The string to be checked
- * @return - 1 : Is yes
- *         - 0 : Otherwise
- */
-int
-A4GL_isyes (char *s)
-{
-  if (s == 0)
-    {
-      //debug("isyes = false");
-      return 0;
-    }
-  //debug("isyes called with %s\n",s);
-  if (s[0] == 0)
-    {
-      //debug("isyes = false");
-      return 0;
-    }
-  if (s[0] == 'y' || s[0] == 'Y' || s[0] == '1'
-      || A4GL_aubit_strcasecmp (s, "true") == 0)
-    {
-      //debug("isyes = true");
-      return 1;
-    }
-  //debug("isyes = false");
-  return 0;
-}
-
 
 
 /**
