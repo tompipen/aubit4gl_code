@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.33 2003-03-09 07:06:16 afalout Exp $
+#	 $Id: a4gl.mk,v 1.34 2003-04-05 07:55:52 mikeaubury Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.33 2003-03-09 07:06:16 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.34 2003-04-05 07:55:52 mikeaubury Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -90,7 +90,7 @@ AUCC_FLAGS			=-g -O2 -static -O -I${AUBITDIR}/incl -DAUBIT4GL
 ifeq "${USE_4GLPC}" "1"
 	A4GL_CC_CMD     = ${AUBIT_CMD} ${SH} 4glpc
 else
-	A4GL_CC_CMD     = ${AUBIT_CMD} 4glc --clean
+	A4GL_CC_CMD     = ${AUBIT_CMD} 4glc --clean  ${EXTRA_4GLC}
 endif
 A4GL_CC_ENV     =
 A4GL_CC_FLAGS   = #-verbose

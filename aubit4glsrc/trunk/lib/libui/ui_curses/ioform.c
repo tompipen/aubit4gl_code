@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.13 2003-04-02 11:36:10 mikeaubury Exp $
+# $Id: ioform.c,v 1.14 2003-04-05 07:55:52 mikeaubury Exp $
 #*/
 
 /**
@@ -1956,7 +1956,7 @@ set_init_pop_attr (FIELD * field, int attr)
   debug ("set_init_pop_attr : display %s to field %d", ff, attr);
 
   f = (struct struct_scr_field *) (field_userptr (field));
-  assert (f != 0);
+  assertion (f == 0,"set_init_pop_attr - Pointer is zero...");
   debug ("f=%p", f);
 
   a = f->do_reverse;

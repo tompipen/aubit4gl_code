@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.19 2003-04-03 22:17:54 mikeaubury Exp $
+# $Id: compile.c,v 1.20 2003-04-05 07:55:29 mikeaubury Exp $
 #*/
 
 /**
@@ -184,7 +184,7 @@ char extra_ldflags[1024] = "";
   debug ("Arg 0 set to >%s<", getarg0 ());
 #endif
 
-  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0)
+  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0 || strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
     {
       //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
       strcpy (opt_list, "Gs:N:kKco::l::L::?hSVvftd:");
