@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.3 2002-12-24 08:57:45 mikeaubury Exp $
+# $Id: window.c,v 1.4 2003-01-14 08:26:29 mikeaubury Exp $
 #*/
 
 /**
@@ -275,6 +275,9 @@ getprompt_line_gtk(void)
 {
   GtkWidget *cwin;
 	cwin = (GtkWidget *)get_curr_win_gtk ();
+if (gtk_object_get_data (GTK_OBJECT (cwin), "currform")==0) {
+      return decode_line_gtk (std_dbscr.prompt_line);
+}
     return decode_line_gtk((int)gtk_object_get_data (GTK_OBJECT(cwin), "PROMPT_LINE"));
 }
 
@@ -287,7 +290,10 @@ int
 geterr_line_gtk(void)
 {
 GtkWidget *cwin;
-	cwin = (GtkWidget *)get_curr_win_gtk ();
+cwin = (GtkWidget *)get_curr_win_gtk ();
+if (gtk_object_get_data (GTK_OBJECT (cwin), "currform")==0) {
+      return decode_line_gtk (std_dbscr.error_line);
+}
   	return (int)gtk_object_get_data (GTK_OBJECT(cwin), "ERROR_LINE");
 }
 
@@ -299,9 +305,13 @@ GtkWidget *cwin;
 int
 getmsg_line_gtk(void)
 {
-GtkWidget *cwin;
+	GtkWidget *cwin;
 	cwin = (GtkWidget *)get_curr_win_gtk ();
+if (gtk_object_get_data (GTK_OBJECT (cwin), "currform")==0) {
+  	return (int)std_dbscr.message_line;
+} else {
   	return (int)gtk_object_get_data (GTK_OBJECT(cwin), "MESSAGE_LINE");
+}
 }
 
 /**

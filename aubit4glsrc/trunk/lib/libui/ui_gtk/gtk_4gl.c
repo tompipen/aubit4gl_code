@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.8 2002-12-26 02:25:12 afalout Exp $
+# $Id: gtk_4gl.c,v 1.9 2003-01-14 08:26:29 mikeaubury Exp $
 #*/
 
 /**
@@ -178,11 +178,17 @@ create_window_gtk (char *name, int x, int y, int w, int h,
   GtkWidget *wxx = 0;
   int isscreenwin = 0;
 
+debug("AAA - Message Line %d\n",message_line);
 if (form_line==0xff) { form_line=std_dbscr.form_line; }
-if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
+if (menu_line==0xff) { 
+		menu_line=std_dbscr.menu_line; 
+}
 if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
 if (error_line==0xff) { error_line=std_dbscr.error_line; }
 if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
+if (message_line==0xff) {message_line=std_dbscr.message_line;
+debug("Setting message line to default : %d\n",message_line);
+ }
 
 
   debug ("gui_create_window %s %d %d %d %d", name, x, y, w, h);
@@ -222,11 +228,11 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
 	}
       fixed = gtk_fixed_new ();
       win_screen = fixed;
-      gtk_widget_show (fixed);
+      gtk_widget_show (GTK_WIDGET(fixed));
       gtk_container_add (GTK_CONTAINER (win), fixed);
       gtk_widget_set_usize (GTK_WIDGET (win), w, h);
       gtk_object_set_data (GTK_OBJECT (fixed), "TOP", win);
-      gtk_widget_show (win);
+      gtk_widget_show (GTK_WIDGET(win));
       win = fixed;
       win_screen = win;
     }
@@ -348,7 +354,7 @@ if (isscreenwin == 1) {
 
   debug ("Currwindow=%p MJA MJAMJA\n", win);
 
-  set_current_window((GtkWindow*)win);
+  set_current_window(GTK_WINDOW(win));
 
 
   gtkwin_stack((GtkWindow *)win,'+');

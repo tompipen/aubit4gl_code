@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.42 2003-01-11 17:05:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.43 2003-01-14 08:26:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -673,7 +673,7 @@ print_exit_loop (int type, int n)
     }
   if (type == 'P')
     {
-      printc ("_p.mode=1;\n");
+      printc ("SET(\"s_prompt\",_p,\"mode\",1);\n");
     }
   if (type == 0)
     {

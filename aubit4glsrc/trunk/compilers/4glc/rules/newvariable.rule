@@ -444,8 +444,11 @@ identifier OPEN_SQUARE num_list CLOSE_SQUARE
   char arrbuff[256];
   lex_printcomment("/*..array_r_varid..*/");
 
-  get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff);
+if (get_variable_dets ($<str>1,&type,&arrsize,&size,&level,arrbuff)>=0) {
   sprintf($<str>$,"%s[%s-1]",$<str>1,$<str>3);
+} else {
+  sprintf($<str>$,"%s[%s]",$<str>1,$<str>3);
+}
 }
 ;
 

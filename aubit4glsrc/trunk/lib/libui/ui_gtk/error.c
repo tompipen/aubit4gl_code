@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: error.c,v 1.3 2003-01-14 08:26:29 mikeaubury Exp $
 #*/
 
 /**
@@ -151,22 +151,30 @@ msg_window_gtk(char *s)
   GtkWidget *label;
   GtkWidget *win;
   int msgline;
-
+debug("A0");
     cw = (GtkWidget *)get_curr_win_gtk(); 
+debug("A0.1");
 	win=gtk_object_get_data(GTK_OBJECT(cw),"MESSAGELABELWIN");
 
-	if (win) gtk_widget_destroy(win);
+	if (win) gtk_widget_destroy(GTK_WIDGET(win));
 	if (strlen(s)==0) return;
 
  	msgline = decode_line_gtk(getmsg_line_gtk ()); 
+	debug("A1 - msgline = %d",msgline);
 	win=gtk_fixed_new(); 
-        gtk_widget_set_usize (win,get_curr_width_gtk()*XWIDTH , YHEIGHT);  
+	debug("A2");
+        gtk_widget_set_usize (GTK_WIDGET(win),get_curr_width_gtk()*XWIDTH , YHEIGHT);  
+	debug("A2.1");
 	label=gtk_label_new(s);
+	debug("A3");
 	gtk_fixed_put(GTK_FIXED(win),label,0,0);
 	gtk_widget_show(win);
 
+	debug("A4");
 	gtk_fixed_put(GTK_FIXED(cw),win,0,(msgline-1)*YHEIGHT);
+	debug("A5");
    	gtk_widget_show(label);
+	debug("A6");
 	gtk_object_set_data(GTK_OBJECT(cw),"MESSAGELABELWIN",win);
 }
 
