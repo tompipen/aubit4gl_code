@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.41 2004-04-21 14:47:01 mikeaubury Exp $
+# $Id: report.c,v 1.42 2004-07-01 14:48:14 mikeaubury Exp $
 #
 */
 
@@ -1080,6 +1080,9 @@ free(s);
 static void report_write_int(struct rep_structure *rep, int n) {
 //unsigned char c;
 short s;
+
+// Forget optimising for now...
+/*
 	if (n<254) {
 		report_write_char(rep,n);
 		return;
@@ -1092,6 +1095,8 @@ short s;
 	}
 
 	report_write_char(rep,255);
+*/
+
 	n=htonl(n);
 	fwrite(&n,sizeof(n),1,rep->output);
 }

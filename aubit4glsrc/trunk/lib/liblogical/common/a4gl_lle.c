@@ -8,7 +8,7 @@
 #include <netinet/in.h>
 #endif
 
-
+int debug=0;
 
 void read_entry(struct r_report_block *block) ;
 
@@ -31,14 +31,18 @@ static int read_int ()
   short s;
   unsigned char c;
 
+
+/* Keep it simple for now */
+/*
   fread (&c, sizeof (c), 1, fin);
-  if (c<254) return c;
-  if (c==254) {
+  if (c<254||c==255) return c;
+  if (c>=254) {
   	fread (&s, sizeof (s), 1, fin);
 	return ntohs(s);
   }
-  fread (&n, sizeof (n), 1, fin);
+*/
 
+  fread (&n, sizeof (n), 1, fin);
   return ntohl(n);
 }
 
@@ -46,6 +50,10 @@ static char read_char ()
 {
   char n;
   fread (&n, sizeof (n), 1, fin);
+	if (!isprint((int)n)) {
+		printf("Suspect read_char (%d %x %c)\n",n,n,n);
+	}
+
   return n;
 }
 
@@ -181,6 +189,7 @@ static void read_block ()
   char buff_c;
   int cblock;
   //printf("Read block : %d\n",lvl);
+  if (debug) { printf("read block - lvl=%d \n",lvl); }
   lvl++;
   cblock = report->nblocks++;
   report->blocks = (struct r_report_block *) realloc (report->blocks, report->nblocks * sizeof (struct r_report_block));
@@ -188,14 +197,19 @@ static void read_block ()
   report->blocks[cblock].nentries = 0;
   report->blocks[cblock].entries = 0;
   report->blocks[cblock].line = read_int (); if (feof (fin)) { printf ("Unexpected EOF\n"); ok=0; return; }
+	if (debug) printf("line=%d\n",report->blocks[cblock].line);
   report->blocks[cblock].where = read_char (); if (feof (fin)) { printf ("Unexpected EOF\n"); ok=0; return; }
+	if (debug) printf("where=%c\n",report->blocks[cblock].where);
   report->blocks[cblock].why = read_string (); if (feof (fin)) { printf ("Unexpected EOF\n"); ok=0;return; }
+	if (debug) printf("where=%s\n",report->blocks[cblock].why);
   report->blocks[cblock].rb = read_int (); if (feof (fin)) { printf ("Unexpected EOF\n"); ok=0; return; }
-  //printf("Got report block : (%s %d %c %s %d)\n", report->blocks[cblock].mod, report->blocks[cblock].line, report->blocks[cblock].where, report->blocks[cblock].why, report->blocks[cblock].rb);
+
+  if (debug) { printf("read block - line=%d where=%c why=%s rb=%d\n", report->blocks[cblock].line,report->blocks[cblock].where,report->blocks[cblock].why,report->blocks[cblock].rb); }
 
   while (ok)
     {
       buff_c = read_char ();
+	if(debug) { printf("buff_c=%c\n",buff_c); }
       if (buff_c == ENTRY_BLOCK_END)
         {
           lvl--;
