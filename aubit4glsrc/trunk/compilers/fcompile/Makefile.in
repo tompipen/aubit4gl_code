@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.25 2002-04-15 05:04:29 afalout Exp $
+# $Id: Makefile.in,v 1.26 2002-04-15 10:59:13 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -98,11 +98,11 @@ fcompile: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
 	${LN} $@${EXE} ../../bin/$@${EXE}
 
 fdecompile-j : ${DECOMPILE} ${DUMP_JAVA}
-	${CC} ${CFLAGS} -L../../lib $^ -o $@ -lFORM_XDR
+	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB} -lFORM_XDR
 	${CP} $@ ../../bin
 
 fdecompile : ${DECOMPILE} ${DUMP_C}
-	${CC} ${CFLAGS} -L../../lib $^ -o $@ -lFORM_XDR
+	${CC} ${CFLAGS} -L../../lib $^ -o $@ ${AUBIT_LIB} -lFORM_XDR
 	${CP} $@ ../../bin
 
 fshow : fshow.4gl

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.47 2002-04-15 05:04:29 afalout Exp $
+# $Id: Makefile.in,v 1.48 2002-04-15 10:59:13 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -101,6 +101,8 @@ COMMONSRC= \
 
 CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
 OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
+OBJS_FORM_NOFORM  	=${CMODS_FORM_NOFORM:.c=.o}
+OBJS_FORM_XDR      =${CMODS_FORM_XDR:.c=.o}
 
 ## ==================================================================
 ##                              Options
@@ -219,7 +221,11 @@ libaubit4gl.so : $(OBJS) ${GUI_TUI}
 #	@RPCLIB_NAME@
 #-Map  mapfile
 
+libFORM_NOFORM.so : ${OBJS_FORM_NOFORM}
+	${LD} ${SO_LDFLAGS} -o $@ $^
 
+libFORM_XDR.so : ${OBJS_FORM_XDR}
+	${LD} ${SO_LDFLAGS} -o $@ $^
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
@@ -299,6 +305,7 @@ generated/tmperrs.h :
 
 error.c : generated/tmperrs.h
 array.o: array.c ../compilers/fcompile/form_x_xdr.c
+builtin.c: ../compilers/fcompile/form_x.h
 
 ## ==================================================================
 ##                       Targets in sub-makefiles

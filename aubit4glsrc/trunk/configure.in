@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.55 2002-04-15 00:22:52 afalout Exp $
+# $Id: configure.in,v 1.56 2002-04-15 10:59:06 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -686,7 +686,7 @@ WARNING: You specified Informix base install directory that is different
 
                 old_CFLAGS="$CFLAGS"
                 old_LDFLAGS="$LDFLAGS"
-			    
+
 				if test "`uname -s 2>/dev/null`" = "AIX"; then
 					IFX_CFLAGS="-D__H_LOCALEDEF"
 				fi
@@ -1767,12 +1767,15 @@ AC_ARG_WITH(rpc,
 AC_MSG_CHECKING(XML-RPC support)
 
 old_CFLAGS="$CFLAGS"
+old_LIBS="$LIBS"
 
 #This will test for both w3c-libwww and xmlrpc-c, since all this depends on each other
 CLIENT_LIBS="-L/usr/local/lib -lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp -lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher -lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux -lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse -lxmlrpc_xmltok -lwwwzip"
 CFLAGS="$CFLAGS $CLIENT_LIBS"
 AC_CHECK_LIB([xmlrpc], [main])
+
 CFLAGS="$old_CFLAGS"
+LIBS="$old_LIBS"
 
 if test $ac_cv_lib_xmlrpc_main = yes; then
 
