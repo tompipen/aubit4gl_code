@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.43 2003-01-14 08:26:29 mikeaubury Exp $
+# $Id: compile_c.c,v 1.44 2003-01-14 12:43:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3397,8 +3397,7 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
 {
   printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
   printc ("start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
-  printc
-    ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=prompt_loop(&_p);\n");
+  printc ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=prompt_loop(&_p);\n");
 }
 
 /**
@@ -3407,7 +3406,9 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
 void
 print_prompt_forchar (void)
 {
-  printc ("if (_fld_dr) break;\n");
+  	printc ("if (_fld_dr) {\n");
+	print_exit_loop ('P', 0);
+	printc("}\n");
 }
 
 /**
