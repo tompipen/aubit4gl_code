@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.80 2002-07-07 04:28:05 afalout Exp $
+# $Id: 4glpc,v 1.81 2002-07-13 05:31:52 afalout Exp $
 #
 
 ########################################################################
@@ -364,6 +364,10 @@ then
 	CFLAGS="-DOLD_INCL $CFLAGS"
 fi
 
+if [ "$AUBITDIR_SRC" = "1" ] #set from Makefile-common
+then
+	CFLAGS="-DSRC_TREE $CFLAGS"
+fi
 
 JABBER_LIB_DIR=$AUBITDIR/tools/jabber
 JABBER_LIB_NAME=jabber
@@ -1098,7 +1102,7 @@ else
 	    fi
    fi
 
-	eval "$DOIT $CC $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
+	eval "$DOIT $CC $CFLAGS $COMPCC $INCLDIR $FGLLIBSDIR $FGLLIBS $LIBSDIR $LIBS $GTKLIBS $LAST"
 	err_code=$?
 
 	if [ $err_code != 0 ]

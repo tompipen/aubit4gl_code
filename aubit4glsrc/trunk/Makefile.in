@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.73 2002-07-11 09:31:55 mikeaubury Exp $
+# $Id: Makefile.in,v 1.74 2002-07-13 05:31:51 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -155,8 +155,22 @@ TOTESTGUI	=$(TESTDIR)/gui/*.4gl $(TESTDIR)/gui/*.per $(TESTDIR)/gui/${MKFILNAME}
 TOETC		=$(SOURCE)/etc/odbc.ini.example
 TOHOME		=$(SOURCE)/a4glrc.example
 TOROOT		=$(SOURCE)/README.txt
-TOINCL		=$(SOURCE)/incl/a4gl_incl_4glhdr.h $(SOURCE)/incl/a4gl_incl_4gldef.h $(SOURCE)/incl/a4gl_incl_acl4glgui.h \
-				$(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki $(SOURCE)/incl/Makefile-common
+TOINCL		=$(SOURCE)/incl/a4gl_incl_4glhdr.h $(SOURCE)/incl/a4gl_incl_4gldef.h \
+				$(SOURCE)/incl/a4gl_incl_acl4glgui.h $(SOURCE)/incl/a4gl_libaubit4gl.h \
+				$(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki $(SOURCE)/incl/Makefile-common \
+				$(SOURCE)/common/dataio/form_x.x.h $(SOURCE)/incl/a4gl_API_sql.h \
+                $(SOURCE)/incl/a4gl_API_lex.h $(SOURCE)/incl/a4gl_API_form.h \
+				$(SOURCE)/incl/a4gl_API_menu.h $(SOURCE)/incl/a4gl_API_msg.h \
+				$(SOURCE)/common/dataio/form_x.x.h  $(SOURCE)/common/dataio/form_x.xs.h
+
+#../common/dataio/form_x.x.h: No such file or directory
+#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1796:30: a4gl_API_sql.h: No such file or directory
+#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1802:42: ../incl/a4gl_API_lex.h: No such file or directory
+#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1803:43: ../incl/a4gl_API_form.h: No such file or directory
+#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1804:43: ../incl/a4gl_API_menu.h: No such file or directory
+#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1805:42: ../incl/a4gl_API_msg.h: No such file or directory
+
+
 TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/${MKFILNAME}
 
 

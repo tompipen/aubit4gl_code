@@ -603,7 +603,7 @@
 
 	#define set_status(a) set_status(a,0)
 
-	/* 
+	/*
 	should be neede donly for Auibt compiled 4gl to C code:
 	#include "a4gl_incl_4gldef.h"
     */
@@ -1423,9 +1423,12 @@ So it will be included only in gui.c
 	#include <sys/types.h>
 	/*@=skipposixheaders@*/
 
-
     #ifndef _NO_FORM_X_H_
-		#include "../common/dataio/form_x.x.h"   /* struct_form */
+		#ifdef SRC_TREE
+			#include "../common/dataio/form_x.x.h"   /* struct_form */
+        #else
+			#include "form_x.x.h"   /* struct_form */
+        #endif
     #endif
 
 	/* ============================ others.c ================================ */

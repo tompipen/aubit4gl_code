@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.50 2002-07-07 08:46:04 afalout Exp $
+# $Id: Makefile-common.in,v 1.51 2002-07-13 05:31:52 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -78,6 +78,8 @@ ifeq "$(NOINCL)" "0"
     else
         AUBITDIR_SRC=1
 	endif
+
+    export AUBITDIR_SRC
 
 	#override AUBITDIR set in bloabal aubitrc, in case it is pointing
 	#to some other location then this source code tree; there is no point
@@ -233,6 +235,7 @@ C_DFLAGS            =-DDEBUG
 #This can be ovverriden from command line: "make OLD_INCL=0" to compile
 #with new include files:
 OLD_INCL=1
+export OLD_INCL
 
 ifeq "${OLD_INCL}" "1"
 	C_IFLAGS        +=-I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl -I$(AUBITDIR)/compilers/fcompile

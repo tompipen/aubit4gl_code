@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.25 2002-06-29 13:12:02 afalout Exp $
+# $Id: compile_c.c,v 1.26 2002-07-13 05:31:52 afalout Exp $
 #
 */
 
@@ -895,8 +895,6 @@ pr_report_agg_clr (void)
 void
 print_clr_status (void)
 {
-/*  printc ("set_status(0);\n"); */
-
   /* printc ("A4GLSQL_set_status(0);\n"); */
 }
 
@@ -1554,7 +1552,8 @@ print_returning (void)
   printc ("{\n");
   cnt = print_bind ('i');
   printc
-    ("if (_retvars!= %d) {if (_retvars!=-1) {if (status==0) A4GLSQL_set_status(-3001);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0);\n",
+    /* warning! : 	void    A4GLSQL_set_status 	(int a, int sql); */
+	("if (_retvars!= %d) {if (_retvars!=-1) {if (status==0) A4GLSQL_set_status(-3001,0);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
      cnt);
   printc ("pop_params(ibind,%d);}\n", cnt);
   printc ("}\n");
@@ -1614,7 +1613,7 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
 {
   real_print_expr (args);
   printc ("/* done print expr */");
-  printc ("{int _retvars;A4GLSQL_set_status(0);\n");
+  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   printc ("_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
 }
@@ -1636,7 +1635,7 @@ static void
 real_print_pdf_call (char *a1, struct expr_str *args, char *a3)
 {
   real_print_expr (args);
-  printc ("{int _retvars;A4GLSQL_set_status(0);\n");
+  printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
   printc ("_retvars=pdf_pdffunc(&rep,%s,%s);\n", a1, a3);
 }
@@ -1655,7 +1654,7 @@ print_call_shared (char *libfile, char *funcname, int nargs)
 {
   printc ("{int _retvars;\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
-  printc ("A4GLSQL_set_status(0);_retvars=call_4gl_dll(%s,%s,%d);\n",
+  printc ("A4GLSQL_set_status(0,0);_retvars=call_4gl_dll(%s,%s,%d);\n",
 	  libfile, funcname, nargs);
 }
 
@@ -3018,7 +3017,7 @@ print_report_2 (int pdf, char *repordby)
   cnt = print_param ('r');
   printc
     ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
-  printc ("    A4GLSQL_set_status(-5555);\n");
+  printc ("    A4GLSQL_set_status(-5555,0);\n");
   printc ("    return;\n");
   printc ("    }\n");
   printc ("if (nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);
