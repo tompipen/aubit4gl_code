@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.32 2005-03-09 15:14:42 mikeaubury Exp $
+# $Id: ui.c,v 1.33 2005-03-17 20:48:34 mikeaubury Exp $
 #
 */
 
@@ -338,6 +338,7 @@ void A4GL_display_at (int n, int a)
   A4GL_debug("Finding display_internal clr_end_of_line=%d",clr_end_of_line);
 
   if (strlen(s)) {
+	A4GL_debug("display_internal - attr =%x",a);
   	A4GL_display_internal (x, y, s, a, clr_end_of_line);
   } else {
 	if (clr_end_of_line && A4GL_was_last_empty() && n==1 && (tos_dtype &0xff)== 0 && tos_size == 0) {

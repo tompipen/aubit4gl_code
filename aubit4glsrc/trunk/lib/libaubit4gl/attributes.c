@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.29 2005-03-09 15:14:35 mikeaubury Exp $
+# $Id: attributes.c,v 1.30 2005-03-17 20:48:34 mikeaubury Exp $
 #*/
 
 /**
@@ -544,15 +544,16 @@ A4GL_determine_attribute_internal (struct s_std_attr *attrib_curr,
 
   if (r)
     {
-      A4GL_debug
-	("30 determine_attribute_internal - Attribute : %x %d %d %d %d %d %d %d",
+      A4GL_debug ("30 determine_attribute_internal - Attribute : %x %d %d %d %d %d %d %d",
 	 r->colour, r->normal, r->reverse, r->underline, r->bold, r->blink,
 	 r->dim, r->invisible);
+
+	return r;
     }
   else
     {
-      A4GL_debug
-	("30 determine_attribute_internal - Attribute : No attribute");
+      A4GL_debug ("30 determine_attribute_internal - Attribute : No attribute");
+	return r;
     }
 
   return r;
@@ -764,7 +765,7 @@ A4GL_debug("attr after = %x",attr);
     }
 
 
-  if (r->colour=0xf00 && r->dim &&r->bold && r->blink) {
+  if ((r->colour==0xf00) && r->dim &&r->bold && r->blink) {
 		A4GL_assertion(1,"Too many options set - probably corrupt attribute");
   }
   A4GL_debug (" MJAMJAMJA determined Attribute : %x %d %d %d %d %d %d",
