@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.147 2004-01-04 15:52:35 mikeaubury Exp $
+# $Id: mod.c,v 1.148 2004-01-16 11:26:15 mikeaubury Exp $
 #
 */
 
@@ -3622,8 +3622,7 @@ ispdf (void)
  *   - f or F :
  * @param cnt The number of elements in the bind array.
  */
-void
-expand_bind (struct binding_comp *bind, int btype, int cnt)
+void expand_bind (struct binding_comp *bind, int btype, int cnt)
 {
   char buff[256];
   int b1;
@@ -3631,9 +3630,10 @@ expand_bind (struct binding_comp *bind, int btype, int cnt)
   int b3;
   int dim;
   int xxxa;
-  struct binding_comp save_bind[20000];
-xxxa=0;
+  static struct binding_comp *save_bind=0;
 
+  xxxa=0;
+  save_bind=realloc(save_bind,sizeof(struct binding_comp)*cnt);
   for (xxxa = 0; xxxa < cnt; xxxa++)
     {
       strcpy (save_bind[xxxa].varname, bind[xxxa].varname);
