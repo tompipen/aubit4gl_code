@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.49 2003-09-15 13:07:26 mikeaubury Exp $
+# $Id: iarray.c,v 1.50 2003-09-17 07:59:29 mikeaubury Exp $
 #*/
 
 /**
@@ -759,15 +759,31 @@ process_key_press (struct s_inp_arr *arr, int a)
 	}
 
     case A4GLKEY_PGDN:
-      A4GL_newMovement (arr,
+	if (arr->arr_line+arr->scr_dim <=arr->arr_size) {
+      		A4GL_newMovement (arr,
 			arr->scr_line,
 			arr->arr_line + arr->scr_dim, arr->curr_attrib);
+	} else {
+		int d;
+		d=arr->arr_size-arr->arr_line;
+      		A4GL_newMovement (arr,
+			arr->scr_dim,
+			arr->arr_line + d, arr->curr_attrib);
+
+	}
       break;
 
     case A4GLKEY_PGUP:
-      A4GL_newMovement (arr,
+	if (arr->arr_line-arr->scr_dim>=1) {
+      		A4GL_newMovement (arr,
 			arr->scr_line,
 			arr->arr_line - arr->scr_dim, arr->curr_attrib);
+	} else {
+      		A4GL_newMovement (arr,
+			1,
+			1, arr->curr_attrib);
+	
+	}
       break;
 
 
