@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.8 2004-05-24 12:49:06 mikeaubury Exp $
+# $Id: esql_compatible.ec,v 1.9 2004-07-20 13:51:22 mikeaubury Exp $
 #
 */
 
@@ -362,7 +362,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.8 2004-05-24 12:49:06 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.9 2004-07-20 13:51:22 mikeaubury Exp $";
 #endif
 
 
@@ -732,6 +732,8 @@ int A4GLSQL_make_connection
 #ifndef __QUERIX__
   //Querix esql/c compiler chokes here:
   EXEC SQL connect to :dbName as 'default' user :userName using :passwd;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
     retval = 1;
@@ -838,6 +840,8 @@ int A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 #ifndef __QUERIX_FIX__
 	  EXEC SQL connect to :dbName as :connectionName
         user :userName using :password;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       free(userName);
       free(password);
@@ -1168,6 +1172,8 @@ A4GL_debug("Not null");
         LENGTH = :length,
         DATA = :char_var;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       break;
 
@@ -1180,6 +1186,8 @@ A4GL_debug("Not null");
         TYPE = :dataType,
         DATA = :smint_var;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       break;
     case DTYPE_INT:
@@ -1191,6 +1199,8 @@ A4GL_debug("Not null");
         TYPE = :dataType,
         DATA = :int_var;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       break;
     case DTYPE_FLOAT:
@@ -1202,6 +1212,8 @@ A4GL_debug("Not null");
         TYPE = :dataType,
         DATA = :float_var;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       break;
     case DTYPE_SMFLOAT:
@@ -1213,6 +1225,8 @@ A4GL_debug("Not null");
         TYPE = :dataType,
         DATA = :smfloat_var;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       break;
     case DTYPE_DECIMAL:
@@ -1228,6 +1242,8 @@ A4GL_debug("Not null");
         TYPE = :dataType,
         DATA = :decimal_var;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       break;
     case DTYPE_DATE:
@@ -1239,6 +1255,8 @@ A4GL_debug("Not null");
         TYPE = :dataType,
         DATA = :date_var;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       break;
     case DTYPE_MONEY:
@@ -1254,6 +1272,8 @@ A4GL_debug("Not null");
         TYPE = :dataType,
         DATA = :money_var;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       break;
     case DTYPE_DTIME:
@@ -1279,6 +1299,8 @@ A4GL_debug("Not null");
         DATA = :char_var,
 	LENGTH = :length;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 	if (sqlca.sqlcode!=0) {
 			A4GL_debug("Bugger - bombed");
@@ -1303,6 +1325,7 @@ A4GL_debug("Not null");
 #else
       //generates this:
 //      {char *__qxSql[] = { "SET Error! Error! ? VALUE ? TYPE = ? , DATA = ?", 0, };BIND __qxUseList[] = { { SQLVCHAR, 255}, { SQLINT, 4}, { SQLINT, 4}, { SQLINTRVAL, 0}, }; __qxUseList[0].sqldata=(char *)descriptorName; __qxUseList[1].sqldata=(char *)&index; __qxUseList[2].sqldata=(char *)&dataType; __qxUseList[3].sqldata=(char *)&interval_var; __qxUseList[3].sqllen=interval_var.in_qual; SQLCODE = SqlDdl(__qxSql,4,__qxUseList);}
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
       break;
     case DTYPE_TEXT:
@@ -1343,6 +1366,8 @@ static int processInputBind(char *descName,int bCount,struct BINDING *bind)
 #ifndef __PG_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if (sqlca.sqlcode==-480) {
 #ifndef __QUERIX_FIX__
@@ -1350,6 +1375,8 @@ static int processInputBind(char *descName,int bCount,struct BINDING *bind)
 #ifndef __PG_FIX__
 	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   }
 
@@ -1430,6 +1457,8 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
 #ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
     :indicator = INDICATOR, :length = LENGTH;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() ) {
 	A4GL_debug("Err1");
@@ -1560,6 +1589,8 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :dataType = TYPE,
         :interval_var = DATA;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 	  if ( isSqlError() )
         return 1;
@@ -1612,6 +1643,8 @@ static int allocateOutputDescriptor(char *descName,
 #ifndef __PG_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   A4GL_debug("Status=%d",sqlca.sqlcode);
   if (sqlca.sqlcode==-480) {
@@ -1623,6 +1656,8 @@ static int allocateOutputDescriptor(char *descName,
 #ifndef __PG_FIX__
 	EXEC SQL ALLOCATE DESCRIPTOR :descriptorName WITH MAX :bindCount;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   }
   A4GL_debug("Done");
@@ -1950,6 +1985,8 @@ A4GL_debug("allocateOutputDescriptorName - %s\n",sid->outputDescriptorName);
 		//-808   Not yet implemented
 		;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   A4GL_debug("a4.1");
   }
@@ -1977,6 +2014,8 @@ static int deallocateDescriptors(struct s_sid *sid)
     descriptorName = sid->inputDescriptorName;
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
     free(descriptorName);
     sid->inputDescriptorName=0;
@@ -1989,6 +2028,8 @@ static int deallocateDescriptors(struct s_sid *sid)
     descriptorName = sid->outputDescriptorName;
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 	free(descriptorName);
     sid->outputDescriptorName=0;
@@ -2643,6 +2684,8 @@ exec sql end declare section;
 #ifndef __QUERIX_FIX__
    EXEC SQL PUT :cursorName
 	USING_SQL_DESCRIPTOR $descriptorName ;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 }
 
@@ -2696,6 +2739,8 @@ static int printField(FILE *unloadFile,int idx,char *descName)
 #ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descUnload'  VALUE :index
     :indicator = INDICATOR, :dataType = TYPE;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if (indicator == -1) 
   {
@@ -2838,6 +2883,8 @@ static int printField(FILE *unloadFile,int idx,char *descName)
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :dataType = TYPE,
         :interval_var = DATA;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 	  if ( isSqlError() )
       {
@@ -2928,21 +2975,29 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
 	; //-808   Not yet implemented
 	//USING_SQL_DESCRIBE_DESCRIPTOR &descUnload;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 
 #endif
 
   if ( isSqlError() ) {
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
     return; // return 1;
   }
 #ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descUnload' :numberOfColumns = COUNT;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() ) {
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 	return; //return 1;
   }
@@ -2953,6 +3008,8 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
   if ( isSqlError() ) {
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 	return; // return 1;
   }
@@ -2976,6 +3033,8 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
   {
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
     return; // return 1;
   }
@@ -2994,10 +3053,14 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
 #else
 		USING_SQL_DESCRIPTOR &descUnload;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 	if ( isSqlError() ) {
 #ifndef __QUERIX_FIX__
 	  EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 	  return; // return 1;
     }
@@ -3027,6 +3090,8 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr,int nbind,struct BI
   //A4GL_debug("Here9");
 #ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
     rc = 1;
@@ -3139,6 +3204,8 @@ A4GLSQL_flush_cursor (char *cursor)
 */
 }
 
+
+#ifdef MOVED_TO_LIBAUBIT4GL
 /**
  * Execute an allready preparted SQL statement.
  *
@@ -3166,6 +3233,7 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
     return 1;
   return 0;
 }
+#endif
 
 /**
  * Start getting information about all columns from a table in the database 
@@ -3206,11 +3274,15 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 
 #ifndef __QUERIX_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' WITH MAX :MaxColumns;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if (sqlca.sqlcode==-480) {
 #ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadAllColumns' ;
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns' ;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   }
   if ( isSqlError() )
@@ -3229,6 +3301,8 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 	//-808   Not yet implemented
 	;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 
   if ( isSqlError() )
@@ -3241,6 +3315,8 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 
 #ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descReadAllColumns' :numberOfColumns = COUNT;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
@@ -3330,6 +3406,8 @@ int A4GLSQL_next_column(char **colname, int *dtype,int *size)
 #ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descReadAllColumns' VALUE :idx
     :columnName = NAME, :dataType = TYPE, :length = LENGTH;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
     return 0;
@@ -3353,6 +3431,8 @@ int A4GLSQL_end_get_columns(void)
 {
 #ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadAllColumns';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
@@ -3396,6 +3476,8 @@ A4GL_debug("SQL = %s",strSelect);
 
 #ifndef __QUERIX_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadColumns';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
@@ -3410,6 +3492,8 @@ A4GL_debug("SQL = %s",strSelect);
 	//-808   Not yet implemented
 	;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
@@ -3422,16 +3506,22 @@ A4GL_debug("SQL = %s",strSelect);
 #ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descReadColumns' VALUE 0
     :dataType = TYPE, :length = LENGTH;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
     return 1;
   }
 #ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
@@ -3476,6 +3566,8 @@ int A4GLSQL_read_columns(char *tabname,char *colname,int *dtype,int *size)
   }
 #ifndef __QUERIX_FIX__
   EXEC SQL ALLOCATE DESCRIPTOR 'descReadColumns';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
@@ -3490,11 +3582,15 @@ int A4GLSQL_read_columns(char *tabname,char *colname,int *dtype,int *size)
 	//-808   Not yet implemented
 	;
 #endif
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
 	return 0;
   }
@@ -3502,16 +3598,22 @@ int A4GLSQL_read_columns(char *tabname,char *colname,int *dtype,int *size)
 #ifndef __QUERIX_FIX__
   EXEC SQL GET DESCRIPTOR 'descReadColumns' VALUE 1
     :dataType = TYPE, :length = LENGTH;
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
 #ifndef __QUERIX_FIX__
 	EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
     return 0;
   }
 #ifndef __QUERIX_FIX__
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadColumns';
+#else
+	A4GL_assertion(1,"QUERIX missing functionality");
 #endif
   if ( isSqlError() )
   {
