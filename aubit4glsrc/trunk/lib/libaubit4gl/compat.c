@@ -1,6 +1,9 @@
 // This is just for compatibility with informix(tm) 4GL
 #include "a4gl_libaubit4gl_int.h"
 
+/* Prototypes for functions in here should be added to a4gl_incl_infx.h      */
+/* Any C programs using these functions should also include a4gl_incl_infx.h */
+#include "a4gl_incl_infx.h"
 
 void popquote(char *s,int size) {
 	pop_char(s,size);
