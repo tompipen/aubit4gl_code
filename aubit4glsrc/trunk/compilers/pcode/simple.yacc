@@ -28,13 +28,13 @@ extern module this_module;
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
-%token XOR_ASSIGN OR_ASSIGN TYPE_NAME FUNCTION FGLDATE   FGLDECIMAL FGLMONEY
+%token XOR_ASSIGN OR_ASSIGN TYPE_NAME  FGLDATE   FGLDECIMAL FGLMONEY
 %type <param> variable
 %type <define_var>   param dtype
 
 %token TYPEDEF EXTERN STATIC AUTO REGISTER
 %token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
-%token STRUCT UNION ENUM ELLIPSIS
+%token STRUCT UNION ENUM ELLIPSIS FUNCTION
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 %token ON_KEY BEF_ROW AFT_ROW AFTER_INP
@@ -77,33 +77,25 @@ tu : function_definition
 	|  define_entry_op_set
 ;
 
-
-/*
-op_define_entry_op_set_group : 
-	| define_entry_op_set_group
+op_function: | FUNCTION 
 ;
-define_entry_op_set_group : 
-	define_entry_op_set
-	| define_entry_op_set_group define_entry_op_set
-;
-*/
 
 
 function_definition :
-	 FUNCTION IDENTIFIER '(' fparm  ')' '{'			{ 
+	 op_function IDENTIFIER '(' fparm  ')' '{'			{ 
 		add_function($<str>2,$<define_variables>4,0); } 	func_block 
 				{ end_function(); }
-	| FUNCTION STATIC IDENTIFIER '(' fparm  ')' '{'		{ add_function($<str>3,$<define_variables>5,1); } 	func_block { end_function(); }
-	| FUNCTION STATIC dtype IDENTIFIER '(' fparm  ')' '{'	{ add_function($<str>4,$<define_variables>6,1); } 	func_block { end_function(); }
-	| FUNCTION dtype IDENTIFIER '(' fparm  ')' '{'		{ add_function($<str>3,$<define_variables>5,0); } 	func_block { end_function(); }
+	| op_function STATIC IDENTIFIER '(' fparm  ')' '{'		{ add_function($<str>3,$<define_variables>5,1); } 	func_block { end_function(); }
+	| op_function STATIC dtype IDENTIFIER '(' fparm  ')' '{'	{ add_function($<str>4,$<define_variables>6,1); } 	func_block { end_function(); }
+	| op_function dtype IDENTIFIER '(' fparm  ')' '{'		{ add_function($<str>3,$<define_variables>5,0); } 	func_block { end_function(); }
 
-	| FUNCTION dtype IDENTIFIER '(' VOID  ')' '{'		{ add_function($<str>3,0,0); } 				func_block { end_function(); }
-	| FUNCTION STATIC dtype IDENTIFIER '(' VOID  ')' '{'	{ add_function($<str>4,0,1); } 				func_block { end_function(); }
-	| FUNCTION STATIC IDENTIFIER '(' VOID  ')' '{'		{ add_function($<str>3,0,1); } 				func_block { end_function(); }
+	| op_function dtype IDENTIFIER '(' VOID  ')' '{'		{ add_function($<str>3,0,0); } 				func_block { end_function(); }
+	| op_function STATIC dtype IDENTIFIER '(' VOID  ')' '{'	{ add_function($<str>4,0,1); } 				func_block { end_function(); }
+	| op_function STATIC IDENTIFIER '(' VOID  ')' '{'		{ add_function($<str>3,0,1); } 				func_block { end_function(); }
 
-	| FUNCTION dtype IDENTIFIER '('  ')' '{'		{ add_function($<str>3,0,0); } 				func_block { end_function(); }
-	| FUNCTION STATIC dtype IDENTIFIER '('  ')' '{'		{ add_function($<str>4,0,1); } 				func_block { end_function(); }
-	| FUNCTION STATIC IDENTIFIER '('  ')' '{'		{ add_function($<str>3,0,1); } 				func_block { end_function(); }
+	| op_function dtype IDENTIFIER '('  ')' '{'		{ add_function($<str>3,0,0); } 				func_block { end_function(); }
+	| op_function STATIC dtype IDENTIFIER '('  ')' '{'		{ add_function($<str>4,0,1); } 				func_block { end_function(); }
+	| op_function STATIC IDENTIFIER '('  ')' '{'		{ add_function($<str>3,0,1); } 				func_block { end_function(); }
 ;
 
 
@@ -355,17 +347,21 @@ s_expr_list : set_internal 		{$<e_id>$=new_param_list_returns_long($<e_id>1);}
 
 
 
-op_define_qualifier :  
-	/* */	 {$<i>$=CAT_NORMAL;set_type(0);}
-	| STATIC {$<i>$=CAT_STATIC;set_type(1);}
+define_qualifier :  
+	STATIC {$<i>$=CAT_STATIC;set_type(1);}
 	| EXTERN {$<i>$=CAT_EXTERN;set_type(2);}
 ;
 
 	
 
 
-define_entry: op_define_qualifier opd_define_entry  op_set { set_master_type($<i>1); }
-	| FUNCTION op_define_qualifier func_def_entry
+define_entry: 
+	opd_define_entry op_set { set_master_type(CAT_NORMAL); }
+	| qualified opd_define_entry  op_set { set_master_type($<i>1); }
+;
+
+qualified : define_qualifier {$<i>$=$<i>1;}
+	| qualified define_qualifier  {$<i>$=$<i>1|$<i>2;}
 ;
 
 opd_define_entry:  

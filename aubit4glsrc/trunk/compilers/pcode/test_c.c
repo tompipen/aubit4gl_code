@@ -1,5 +1,5 @@
 
-A4GL_FUNCTION main (int n)
+A4GL_FUNCTION int main (int n)
 {
   int a;
   int b[10]={10,11,12,13,14,15,16,17,18,19,20};

@@ -116,7 +116,7 @@ void count();
 "extern"		{ count(); return(EXTERN); }
 
 "a4gl_function"		{ count(); return(FUNCTION); }
-"a4gl_internal_function"		{ count(); return(FUNCTION); }
+"a4gl_internal_function"	{ count(); return(FUNCTION); }
 "a4gl_report"		{ count(); return(FUNCTION); }
 "a4gl_main"		{ count(); return(FUNCTION); }
 
