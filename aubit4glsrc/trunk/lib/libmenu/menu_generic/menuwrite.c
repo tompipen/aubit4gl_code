@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.6 2003-01-27 05:47:35 afalout Exp $
+# $Id: menuwrite.c,v 1.7 2003-03-07 08:11:56 afalout Exp $
 #*/
 
 /**
@@ -112,7 +112,7 @@ error_with (char *s, char *a, char *b)
 
 
 /**
- * write the compiled menu data to file in Sun RPC XDR format
+ * write the compiled menu data to file in libPACKER format
  *
  * @todo Describe function
  */

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.15 2003-02-22 01:52:19 afalout Exp $
+# $Id: Makefile.in,v 1.16 2003-03-07 08:11:55 afalout Exp $
 #
 
 ROOT        =../..
@@ -79,13 +79,25 @@ ifeq "${USE_RPCGEN}" "0"
 	#Is there any point in doing this? Not on Windows, since unresolved dependencies are not
     #allowed at link time, and we have no RPCLIB to link with anyway:
 	ifneq "${TARGET_OS}" "cygwin"
-		ALL			+=${RPC}
+		ifneq "${GCC_MINGW}" "yes"
+            #No point in making XDR format libraries with CygWin Sun RPC, usign MinGW GCC - they
+            #Would depend on cygwin1.dll, and MinGW GCC would not link it in. We can use XDR libs
+            #compiled using CygWin GCC, if we provide cygwin1.dll at runtime, but why do we
+            #want to use XDR format any more - we have PACKED, and XML?
+			ALL			+=${RPC}
+        endif
     endif
 else
 	RPCGEN_FORM		=@RPCGEN@ form_x.x
 	RPCGEN_REPORT   =@RPCGEN@ report.x
 	RPCGEN_MENU     =@RPCGEN@ menu_x.x
-	ALL				+=${RPC}
+	ifneq "${GCC_MINGW}" "yes"
+		#No point in making XDR format libraries with CygWin Sun RPC, usign MinGW GCC - they
+        #Would depend on cygwin1.dll, and MinGW GCC would not link it in. We can use XDR libs
+        #compiled using CygWin GCC, if we provide cygwin1.dll at runtime, but why do we
+        #want to use XDR format any more - we have PACKED, and XML?
+		ALL				+=${RPC}
+    endif
 endif
 ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl

@@ -430,13 +430,13 @@ print_fetch_3 (char *ftp, char *into)
   	char sbuff[256];
 	strcpy(sbuff,ftp);
 	ptr=strchr(sbuff,',');
-	if (ptr==0) { yyerror("Internal Error FETCH1"); return; }
+	if (ptr==0) { a4gl_yyerror("Internal Error FETCH1"); return; }
 	*ptr=0;
 	strcpy(cname,sbuff);
 	ptr++;
 
 	ptr2=strchr(ptr,',');
-	if (ptr==0) { yyerror("Internal Error FETCH2"); return; }
+	if (ptr==0) { a4gl_yyerror("Internal Error FETCH2"); return; }
 	*ptr2=0;
 	fp1=atoi(ptr);
 	ptr2++;
@@ -448,12 +448,12 @@ print_fetch_3 (char *ftp, char *into)
   	char sbuff[256];
 	strcpy(sbuff,ftp);
 	ptr=strchr(sbuff,',');
-	if (ptr==0) { yyerror("Internal Error FETCH3"); return; }
+	if (ptr==0) { a4gl_yyerror("Internal Error FETCH3"); return; }
 	*ptr=0;
 	strcpy(cname,sbuff);
 	ptr++;
 	ptr2=strchr(ptr,',');
-	if (ptr==0) { yyerror("Internal Error FETCH4"); return; }
+	if (ptr==0) { a4gl_yyerror("Internal Error FETCH4"); return; }
 	*ptr2=0;
 	fp1=atoi(ptr);
 	poped=1;
@@ -485,7 +485,7 @@ print_fetch_3 (char *ftp, char *into)
   }
 
   if (strcmp(buff,"EMPTY")==0) {
-	yyerror("error calculating fetch instruction");
+	a4gl_yyerror("error calculating fetch instruction");
 	return;
   }
 
@@ -591,7 +591,7 @@ char buff[256];
 
 
   if (strstr(a2,"INTO $")!=0) {
-	  	yyerror("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
+	  	a4gl_yyerror("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
 		return;
   }
 
@@ -600,7 +600,7 @@ char buff[256];
   }
 
   if (atoi(a1)&&h2) {
-		yyerror("Updates are not allowed on a scroll cursor");
+		a4gl_yyerror("Updates are not allowed on a scroll cursor");
 		return;
   }
 

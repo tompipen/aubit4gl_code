@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.29 2003-03-02 14:26:24 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.30 2003-03-07 08:11:55 afalout Exp $
 */
 
 /**
@@ -379,6 +379,18 @@ be used in applications which link to the library).
 */
 
 
+	#if ( defined(__CYGWIN__) || defined(__MINGW32__) )
+        #define __NEED_DLL_IMPORT__
+    #endif
+
+    #ifdef __NEED_DLL_IMPORT__
+		#define dll_export __declspec(dllexport)
+		#define dll_import extern __declspec(dllimport) /* for complex vars that can't be auto imported */
+	#else
+		#define dll_export
+		#define dll_import extern
+	#endif
+
     #ifndef _DEFINE_STATUSVARS_  /* set from fglwrap.c --ONLY-- */
 	    /* for everything except libaubit4gl: */
 
@@ -395,7 +407,8 @@ be used in applications which link to the library).
         extern long quit_flag; 			/** 4gl quit ocurred global flag */
     #else
 		/* only in libaubit4gl */
-        sqlca_struct sqlca; 			/** Sqlca variable */
+		//dll_import sqlca_struct sqlca; 	/** Sqlca variable */
+        dll_export sqlca_struct sqlca; 	/** Sqlca variable */
 		long status; 					/** 4gl global status variable */
         long int_flag; 					/** 4gl interrupt ocurred global flag */
         long quit_flag;					/** 4gl quit ocurred global flag */

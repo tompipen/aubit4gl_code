@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-10-30 01:46:45 afalout Exp $
+# $Id: Makefile.in,v 1.8 2003-03-07 08:11:56 afalout Exp $
 #
 
 LIBROOT=../..
@@ -52,7 +52,7 @@ endif
 
 ALL=${LIBROOT}/libMENU_NOMENU${SO_EXT}
 
-CFLAGS	:=-I.. -I${ROOT}/compilers/menus ${CFLAGS} -I${ROOT}/compilers/menus  -I${LIBROOT}/libui/ui_gtk
+CFLAGS	:=-I.. -I${ROOT}/compilers/menus ${CFLAGS} -I${ROOT}/common/dataio
 
 ## ==================================================================
 ##                              Targets
@@ -63,9 +63,9 @@ all: ${ALL}
 
 ${LIBROOT}/libMENU_NOMENU${SO_EXT} : ${OBJS_MENU_NOMENU}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.19 2003-03-06 22:40:00 mikeaubury Exp $
+# $Id: compile_c.c,v 1.20 2003-03-07 08:11:56 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2439,9 +2439,8 @@ void print_init_var(char *name,char *prefix,int alvl) {
 
 		x=get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
 
-		if (x==-1) { yyerror("Couldn't find variable to null it...[2]"); return; }
-		if (x!=-2) {
-			yyerror("I was expecting a record..."); return;}
+		if (x==-1) { a4gl_yyerror("Couldn't find variable to null it...[2]"); return; }
+		if (x!=-2) { a4gl_yyerror("I was expecting a record..."); return;}
 
 		// is this an array ?
 		if (a&&prefix2[strlen(prefix2)-1]!=']') { 
@@ -2479,7 +2478,7 @@ void print_init_var(char *name,char *prefix,int alvl) {
 
 	x=get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
 
-	if (x<0) { yyerror("Couldn't find variable to null it...[1]"); return; }
+	if (x<0) { a4gl_yyerror("Couldn't find variable to null it...[1]"); return; }
 
 
 	if (a&&prefix2[strlen(prefix2)-1]!=']') { 

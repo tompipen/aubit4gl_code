@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.165 2003-03-07 04:37:10 afalout Exp $
+dnl # $Id: configure.in,v 1.166 2003-03-07 08:10:54 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2669,25 +2669,28 @@ fi
 ## ==================================================================
 
 	#if test "$GCC_MINGW" != "yes"; then
+	
+	
 	if test "$with_pdcurses" = "" && test "$GCC_MINGW" != "yes"; then
 		HAVE_PDCURSES=0
 		PHP_CONFIGURE_PART(Checking for curses libraries:)
 
-		if test "$GCC_MINGW" = "yes"; then
-			#when running MinGW GCC in CygWin environment, we can try using CygWin curses:
-			case "$host" in
-			*-*-cygwin | *-*-cygwin* )
-				CYG_LFLAGS="-L$WINDOWS_DRIVE$CYGWIN_PATH/lib"
-				CYG_IFLAGS="-I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include/ncurses -I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include"
-				old_LIBS="$LIBS"
-				old_LDFLAGS="$LDFLAGS"
-				old_CFLAGS="$CFLAGS"
-				LDFLAGS="$LDFLAGS $CYG_LFLAGS"
-				CFLAGS="$CFLAGS $CYG_LFLAGS"
-
-				;;
-			esac
-        fi
+		#This would fail because CygWin libraries need cygwin1.dll, and MinGW GCC would not link it in
+		#if test "$GCC_MINGW" = "yes"; then
+		#	#when running MinGW GCC in CygWin environment, we can try using CygWin curses:
+		#	case "$host" in
+		#	*-*-cygwin | *-*-cygwin* )
+		#		CYG_LFLAGS="-L$WINDOWS_DRIVE$CYGWIN_PATH/lib"
+		#		CYG_IFLAGS="-I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include/ncurses -I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include"
+		#		old_LIBS="$LIBS"
+		#		old_LDFLAGS="$LDFLAGS"
+		#		old_CFLAGS="$CFLAGS"
+		#		LDFLAGS="$LDFLAGS $CYG_LFLAGS"
+		#		CFLAGS="$CFLAGS $CYG_LFLAGS"
+        #
+		#		;;
+		#	esac
+        #fi
 
 		# FIXME: Replace `main' with a function in `-lcurses':
 		AC_CHECK_LIB([curses], [main])
@@ -2750,7 +2753,12 @@ fi
 		CFLAGS="$old_CFLAGS"
 		LIBS="$old_LIBS"
 
-	else #$with_pdcurses was specified
+	else #$with_pdcurses was specified, or we are using MinGW GCC
+   		#NOTE: attempt to compile Aubit TUI plug-in with CygWin curses using MingW GCC would fail 
+		#because CygWin libraries need cygwin1.dll, and MinGW GCC would not link it in.
+        #Hovewer, we can compile Aubit TUI plug-in with CygWin Curses using CygWin GCC, and then use
+        #that with the rest of Aubit compielr compiled natively (using MinGW GCC) - if we make
+        #cygwin1.dll accessible at run-time.
 		HAVE_CURSES=0
 		#there is not ncurses on Win32 - but we can try Pdcurses: OOPS - no go - no forms support -
         #check again in some time
@@ -3258,11 +3266,15 @@ if test "$default_menu" != ""; then
 	#User can force MENU driver default with --default-menu=xxxx switch
 	A4GL_MENUTYPE="$default_menu"
 else
-	if test "$HAVE_RPCLIB" != "0"; then
-		A4GL_MENUTYPE="XDR"
-    fi
+	
+    #Why would we want XDR menu as default in any case?
+	#if test "$HAVE_RPCLIB" != "0"; then
+	#	A4GL_MENUTYPE="XDR"
+	#fi
 
-	A4GL_MENUTYPE="GENERIC"
+	if test "$GTKBUILD" != "no"; then
+		A4GL_MENUTYPE="GENERIC"
+    fi
 
 fi
 

@@ -12,7 +12,7 @@
 #that make a program, one program per .mk file. See examples in $AUBITDIR/incl
 #and $AUBITDIT/tools/test
 
-# $Id: amake,v 1.20 2003-03-02 03:29:51 afalout Exp $
+# $Id: amake,v 1.21 2003-03-07 08:11:54 afalout Exp $
 
 #####################################################################
 
@@ -392,7 +392,7 @@ fi
 		#make[1]: *** [AZ4.ao] Error 99
         #but I get number 2 here. Maybe Make does not exit with error code
         #returned by failed command, and sets it's own error cod instad?
-		let RET=$?
+		RET=$?
 
 		if [ "$COMPOSITE_IS_TMP" = "1" ]; then
 			if [ "$VERBOSE" = "1" ]

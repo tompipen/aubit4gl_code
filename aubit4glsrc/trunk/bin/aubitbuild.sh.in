@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.19 2003-03-03 23:05:35 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.20 2003-03-07 08:11:55 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -657,6 +657,12 @@ fi
 if test "$WINSETUP" = "1"; then
     ################## make Windows installer #######################
 
+    #Move already created tarball out of the way, since we will need to do a "make clean.all"
+	NEWTARBALL=/var/tmp/$TARBALLBASENAME
+	mv $TARBALL $NEWTARBALL
+    TARBALL=$NEWTARBALL
+
+
     NEWPATH=
 	TMP=`echo $PATH | grep M-i-n-G-W`
 	if test "$TMP" != ""; then
@@ -692,10 +698,10 @@ if test "$WINSETUP" = "1"; then
     #now we need to configure and build it from source code again:
     STOPONERROR=1
     LOGFILE=$CLEANLOG
-echo "---------------------------------"
-echo $PATH
-type gcc
-echo "---------------------------------"
+#echo "---------------------------------"
+#echo $PATH
+	type gcc
+#echo "---------------------------------"
     EXEC="make clean.all"; runexec
 #    LOGFILE=$CONFIGLOG
 	LOGFILE=/tmp/mingw-config.log
@@ -881,15 +887,20 @@ if test "$COMPARE" = "1"; then
 			rm -f /tmp/$SOURCETARBASENAME
 	    fi
 		EXEC="$AUTOSFSCPGET $SCPPATH/$SOURCETARBASENAME"; runexec
-		diff /tmp/$SOURCETARBASENAME $SOURCETARNAME
-		RET=$?
-		if test $RET != "0"
-		then
-	        echo "Error: /tmp/$SOURCETARBASENAME and $SOURCETARNAME are different"
-			ls -al /tmp/$SOURCETARBASENAME
-			ls -al $SOURCETARNAME
-			exit 54
-	    fi
+
+        if [ -f /tmp/$SOURCETARBASENAME ]; then
+			diff /tmp/$SOURCETARBASENAME $SOURCETARNAME
+			RET=$?
+			if test $RET != "0"
+			then
+		        echo "Error: /tmp/$SOURCETARBASENAME and $SOURCETARNAME are different"
+				ls -al /tmp/$SOURCETARBASENAME
+				ls -al $SOURCETARNAME
+				exit 54
+		    fi
+        else
+            echo "Download of $SOURCETARBASENAME failed"
+        fi
     fi
 
 	if test "$TARBALLBASENAME" != ""; then
@@ -897,15 +908,20 @@ if test "$COMPARE" = "1"; then
 			rm -f /tmp/$TARBALLBASENAME
 	    fi
 		EXEC="$AUTOSFSCPGET $SCPPATH/$TARBALLBASENAME"; runexec
-		diff /tmp/$TARBALLBASENAME $TARBALL
-		RET=$?
-		if test $RET != "0"
-		then
-	        echo "Error: /tmp/$TARBALLBASENAME and $TARBALL are different"
-			ls -al /tmp/$TARBALLBASENAME
-			ls -al $TARBALL
-			exit 54
-	    fi
+		
+		if [ -f /tmp/$TARBALLBASENAME ]; then
+			diff /tmp/$TARBALLBASENAME $TARBALL
+			RET=$?
+			if test $RET != "0"
+			then
+		        echo "Error: /tmp/$TARBALLBASENAME and $TARBALL are different"
+				ls -al /tmp/$TARBALLBASENAME
+				ls -al $TARBALL
+				exit 54
+		    fi
+        else
+            echo "Downlaod of $TARBALLBASENAME failed"
+        fi
     fi
 
 	if test "$WINSETUPEXE" != ""; then
@@ -937,7 +953,7 @@ if test "$COMPARE" = "1"; then
                 fi
 			fi
         else
-			echo "download failed for /tmp/$WINSETUPEXE_BASENAME"
+			echo "Download of $WINSETUPEXE_BASENAME failed"
         fi
     fi
 
@@ -947,15 +963,19 @@ if test "$COMPARE" = "1"; then
 				rm -f /tmp/$SOURCERPMBASENAME
 		    fi
 			EXEC="$AUTOSFSCPGET $SCPPATH/$SOURCERPMBASENAME"; runexec
-			diff /tmp/$SOURCERPMBASENAME $SOURCERPM
-			RET=$?
-			if test $RET != "0"
-			then
-		        echo "Error: /tmp/$SOURCERPMBASENAME and $SOURCERPM are different"
-				ls -al /tmp/$SOURCERPMBASENAME
-				ls -al $SOURCERPM
-				exit 54
-		    fi
+			if [ -f /tmp/$SOURCERPMBASENAME ]; then
+				diff /tmp/$SOURCERPMBASENAME $SOURCERPM
+				RET=$?
+				if test $RET != "0"
+				then
+			        echo "Error: /tmp/$SOURCERPMBASENAME and $SOURCERPM are different"
+					ls -al /tmp/$SOURCERPMBASENAME
+					ls -al $SOURCERPM
+					exit 54
+			    fi
+            else
+                echo "Download of $SOURCERPMBASENAME failed"
+            fi
         fi
 
 
@@ -964,15 +984,19 @@ if test "$COMPARE" = "1"; then
 				rm -f /tmp/$BINRPMBASENAME
 		    fi
 			EXEC="$AUTOSFSCPGET $SCPPATH/$BINRPMBASENAME"; runexec
-			diff /tmp/$BINRPMBASENAME $BINRPM
-			RET=$?
-			if test $RET != "0"
-			then
-		        echo "Error: /tmp/$BINRPMBASENAME and $BINRPM are different"
-				ls -al /tmp/$BINRPMBASENAME
-				ls -al $BINRPM
-				exit 54
-		    fi
+			if [ -f /tmp/$BINRPMBASENAME ]; then
+				diff /tmp/$BINRPMBASENAME $BINRPM
+				RET=$?
+				if test $RET != "0"
+				then
+			        echo "Error: /tmp/$BINRPMBASENAME and $BINRPM are different"
+					ls -al /tmp/$BINRPMBASENAME
+					ls -al $BINRPM
+					exit 54
+			    fi
+            else
+                echo "Download of $BINRPMBASENAME failed"
+            fi
 		fi
     fi
 
