@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.30 2003-03-01 13:07:19 mikeaubury Exp $
+# $Id: conv.c,v 1.31 2003-03-01 14:18:47 mikeaubury Exp $
 #
 */
 
@@ -3573,7 +3573,7 @@ dump (char *s)
   char buff[256] = "";
   char buff2[256] = "";
   sprintf (buff, "Dump : %p\n", s);
-  for (a = 0; a <= 31; a++)
+  for (a = 0; a <= 7; a++)
     {
       sprintf (buff2, "%02x ", s[a] & 0xff);
       strcat (buff, buff2);

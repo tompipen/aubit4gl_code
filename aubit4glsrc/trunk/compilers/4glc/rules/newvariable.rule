@@ -175,7 +175,7 @@ identifier arr_subscripts
     }
   else
     {
-      sprintf ($<str>$, " substr(%s,%d,%s,0)/*3*/", $<str>1, (int)scan_variable ($<str>1), $<str>2);
+      sprintf ($<str>$, " substr(%s,0x%x,%s,0)/*3*/", $<str>1, (int)scan_variable ($<str>1), $<str>2);
              addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
       lex_printcomment ("/*character variable %s*/\n", $<str>$);
       	dec_counter();

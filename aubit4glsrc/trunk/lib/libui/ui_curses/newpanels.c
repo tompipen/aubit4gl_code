@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.13 2003-02-28 17:43:15 mikeaubury Exp $
+# $Id: newpanels.c,v 1.14 2003-03-01 14:18:48 mikeaubury Exp $
 #*/
 
 /**
@@ -515,8 +515,8 @@ void
 remove_window (char *win_name)
 {
   int a;
-  WINDOW *win;
-  PANEL *panel;
+  WINDOW *win=0;
+  PANEL *panel=0;
   chkwin ();
 #ifdef DEBUG
   gui_closewin (win_name);

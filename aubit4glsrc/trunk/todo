@@ -61,6 +61,8 @@ SQL Parser
 	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
 	Bind substrings (also used in displays/inputs) ******** PARTIAL (Generates but not coded in library)
 
+
+
 SQL plugins
     unixODBC bug (see bug db on SF)
     Finish native PostgreSQL plugin (Sergio), create SAP DB native

@@ -222,25 +222,9 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 	if (m.type==1) { 
 		fprintf(cfi,"   if (!input_start_array(\"%s\",1,&r->%s.%s_len)) return 0;\n",m.name,buff,m.name);
 		fprintf(cfi,"   {\n");
-		fprintf(cfi,"      int cnt;\n");
+		fprintf(cfi,"      int cnt; if (r->%s.%s_len) {\n",buff,m.name);
 	        fprintf(cfi,"      r->%s.%s_val=malloc(r->%s.%s_len*sizeof(r->%s.%s_val[0]));\n", buff,m.name, buff,m.name, buff,m.name);
 	        fprintf(cfi,"      for (cnt=0;cnt<r->%s.%s_len;cnt++) {\n",buff,m.name);
-		
-        /*
-
-		form_x.xi.c: In function `input_u_expression':
-		form_x.xi.c:336: warning: passing arg 2 of `input_listitem' from incompatible pointer type
-
-        generated code:
-
-		if (!input_listitem("list",&r->u_expression_u.list.list_val[cnt],0,cnt)) return 0;
-
-        prototype:
-
-		int input_listitem(char *rn,struct u_expression *r,int isptr,int arr) ;
-
-        */
-
 		if (m.pointer==0) fprintf(cfi,"         if (!input_%s(\"%s\",&r->%s.%s_val[cnt],0,cnt)) return 0;\n",s,m.name,buff,m.name);
 		if (m.pointer==1) {
 			fprintf(cfi,"\n   if (!input_ptr_ok()) r->%s.%s_val[cnt]=0;\n",buff,m.name);
@@ -249,6 +233,7 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 				s,m.name,buff,m.name);
 		}
 	        fprintf(cfi,"      }\n");
+	        fprintf(cfi,"   } else {r->%s.%s_val=0;}\n",buff,m.name);
 		fprintf(cfi,"   }\n");
 		fprintf(cfi,"   if (!input_end_array(\"%s\",1)) return 0;\n",s);
 		return;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.42 2003-02-27 18:24:20 mikeaubury Exp $
+# $Id: esql.ec,v 1.43 2003-03-01 14:18:48 mikeaubury Exp $
 #
 */
 
@@ -127,7 +127,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.42 2003-02-27 18:24:20 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.43 2003-03-01 14:18:48 mikeaubury Exp $";
 #endif
 
 /*
@@ -1089,6 +1089,8 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
   FglDatetime *fgl_dtime;
   FglInterval *fgl_interval;
 
+  char tmpbuff[256];
+
   dataType = getIfmxDataType(bind[idx].dtype);
   length   = bind[idx].size; // unfix datatype ?
 
@@ -1107,7 +1109,7 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
     return 0;
   }
 
-  debug("datatype : %d",dataType);
+  debug("MJAMJA datatype : %d",dataType);fflush(stdout);
   switch (dataType)
   {
     case DTYPE_CHAR:
@@ -1154,20 +1156,29 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
         return 1;
       *(float *)bind[idx].ptr = smfloat_var;
       break;
+
+
+
     case DTYPE_DECIMAL:
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :dataType = TYPE,
         :decimal_var = DATA;
-      if ( isSqlError() )
+         debug("DECIMAL...");
+      if ( isSqlError() ) {
+         debug("isSqlError...");
         return 1;
-      fgl_decimal = malloc(sizeof(fgldecimal));
-      if ( dectoasc(&decimal_var,fgl_decimal->data,64,-1) )
+	}
+
+      memset(tmpbuff,0,255);
+      if ( dectoasc(&decimal_var,tmpbuff,64,-1) )
       {
-	/** @todo : Store the error somewhere */
         return 1;
       }
-      (FglDecimal *)bind[idx].ptr = fgl_decimal;
+	debug("tmpbuff=%s\n",tmpbuff);
+      stodec(tmpbuff,bind[idx].ptr,bind[idx].size);
       break;
+
+
     case DTYPE_DATE:
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :dataType = TYPE,
@@ -1190,21 +1201,25 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
       }
       (fgldecimal *)bind[idx].ptr = fgl_decimal;
       break;
+
+
+
     case DTYPE_DTIME:
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :dataType = TYPE,
         :dtime_var = DATA;
       if ( isSqlError() )
         return 1;
-      fgl_dtime = malloc(sizeof(FglDatetime));
-      if ( dttoasc(&dtime_var,fgl_dtime->data) )
+      if ( dttoasc(&dtime_var,tmpbuff) )
       {
-	debug("Error with datetime");
-	/** @todo : Store the error somewhere */
-        return 1;
+		return 1;
       }
-      (FglDatetime *)bind[idx].ptr = fgl_dtime;
+	printf("tmpbuff=%s\n",tmpbuff);
+      ctodt(tmpbuff, (FglDatetime *)bind[idx].ptr,bind[idx].size);
       break;
+
+
+
     case DTYPE_INTERVAL:
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :dataType = TYPE,
@@ -1303,7 +1318,8 @@ static int processOutputBind(char *descName,int bCount,struct BINDING *bind)
  */
 char *getDescriptorName(char *statementName,char bindType)
 {
-  char *descriptorName = malloc(sizeof(statementName+6));
+  char *descriptorName;
+  descriptorName = malloc(strlen(statementName)+6);
   sprintf(descriptorName,"%s_%cbind",statementName,bindType);
   return descriptorName;
 }
@@ -1503,6 +1519,7 @@ static int deallocateDescriptors(struct s_sid *sid)
     descriptorName = sid->inputDescriptorName;
     EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
     free(descriptorName);
+    sid->inputDescriptorName=0;
   }
   if ( isSqlError() )
     rc = 1;
@@ -1512,6 +1529,7 @@ static int deallocateDescriptors(struct s_sid *sid)
     descriptorName = sid->outputDescriptorName;
     EXEC SQL DEALLOCATE DESCRIPTOR :descriptorName;
     free(descriptorName);
+    sid->outputDescriptorName=0;
   }
   if ( isSqlError() )
     rc = 1;
@@ -1538,10 +1556,12 @@ static int processPosStatementBinds(struct s_sid *sid)
       		return 1;
 	}
   }
+
   if ( deallocateDescriptors(sid) == 1 ) {
 	debug("Deallocating failed..");
         return 1;
   }
+
   debug("All Ok in posStatementBinds");
   return 0;
 }
