@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.8 2003-03-28 08:07:22 mikeaubury Exp $
+# $Id: iarray.c,v 1.9 2003-03-29 16:48:31 mikeaubury Exp $
 #*/
 
 /**
@@ -152,22 +152,51 @@ idraw_arr (struct s_inp_arr *disp, int no)
 
 int iarr_loop (struct s_inp_arr *arr,int init) {
 int a=0;
+static int i_want_to_move_line=0;
+static int movement;
+char buff[256];
+static int cnt=0;
+cnt++;
 
-debug("In iarr_loop");
-      debug("MJAMJA currform set to %p arr->screen_io->currform=%p iarr_loop - init=%d",arr->currform,arr->screen_io->currform,init);
   if (arr->cntrl != 0)
     {
-	debug("MJA - Got cntrl");
       a = arr->cntrl;
       arr->cntrl = 0;
     } else {
 	// Form loop....
 	debug("MJA - Calling form_loop - init=%d",init);
 	a=form_loop(arr->screen_io,init);
+	i_want_to_move_line=0;
+	if (m_lastkey==A4GLKEY_UP) {
+		i_want_to_move_line=-1;
+	}
+
+	if ( m_lastkey==A4GLKEY_DOWN) {
+		i_want_to_move_line=1;
+	}
+
     }
 
-	debug("iarr_loop returning %d",a);
-	return a;
+
+
+
+    if (i_want_to_move_line!=0) {
+	    debug("Here...");
+	    sprintf(buff,"Move %d",cnt);
+	    movement=i_want_to_move_line;
+	    i_want_to_move_line=0;
+	    error_box(buff);
+	    arr->cntrl=0-a;
+	    return -11;
+    }
+
+    if (movement!=0) {
+	    error_box("Moving");
+	    movement=0;
+    }
+
+    debug("iarr_loop returning %d",a);
+    return a;
 }
 
 

@@ -77,8 +77,7 @@ ibind_var_list {
 	}
 opt_func_call_args {
    sprintf($<str>$,"%d",get_counter_val());drop_counter();
-}
-CLOSE_BRACKET opt_return {
+} CLOSE_BRACKET opt_return {
         print_expr ((struct expr_str *)$<ptr>7);  
 	print_call_shared($<str>4,$<str>2,atoi($<str>8));
 	print_returning();

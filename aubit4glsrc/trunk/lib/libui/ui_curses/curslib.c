@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.18 2003-03-28 08:07:21 mikeaubury Exp $
+# $Id: curslib.c,v 1.19 2003-03-29 16:48:31 mikeaubury Exp $
 #*/
 
 /**
@@ -350,6 +350,7 @@ debug("error_box - screen_width=%d pos=%d",screen_width(),pos);
   do_pause ();
   remove_window ("error");
   zrefresh ();
+  debug("All done in error box");
   mja_setcolor (NORMAL_TEXT);
 }
 
@@ -757,7 +758,9 @@ char buff[80];
   zrefresh ();
   abort_pressed = FALSE;
   doupdate ();
+  debug("getch_win...");
   getch_win ();
+  debug("Done getch_win");
   remove_window ("pause");
   mja_setcolor (NORMAL_TEXT);
 }

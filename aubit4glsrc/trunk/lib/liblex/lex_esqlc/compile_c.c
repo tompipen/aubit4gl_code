@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.23 2003-03-28 08:07:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.24 2003-03-29 16:48:31 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -674,7 +674,7 @@ void
 print_continue_loop (int n,char *cmd_type)
 {
 if (strcmp(cmd_type,"INPUT")==0||strcmp(cmd_type,"CONSTRUCT")==0) {
-	printc("_fld_dr=-99;\n");
+	printc("_fld_dr= -99;\n");
 }
   printc ("goto CONTINUE_BLOCK_%d;", n);
 }
@@ -1841,17 +1841,17 @@ print_construct_1 (void)
 void
 print_construct_2 (char *driver)
 {
-  printc ("if (_fld_dr==-95) {\n");
+  printc ("if (_fld_dr== -95) {\n");
   printc ("   break;\n}\n");
-  printc ("if (_fld_dr==-98) {\n");
+  printc ("if (_fld_dr== -98) {\n");
   printc
-    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-97;continue;\n}\n");
-  printc ("_fld_dr=%s;\n", driver);
-  printc ("if (_fld_dr==-1) {\n");
+    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
+  printc ("_fld_dr= %s;\n", driver);
+  printc ("if (_fld_dr== -1) {\n");
   printc
-    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-98;continue;\n}\n");
+    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
   printc ("if (_fld_dr==0) {\n");
-  printc ("   _fld_dr=-95;continue;\n}\n");
+  printc ("   _fld_dr= -95;continue;\n}\n");
   add_continue_blockcommand ("CONSTRUCT");
   printc ("debug(\"form_loop=%%d\",_fld_dr);");
   printc ("\n}\n push_constr(&_inp_io);\n pop_params(ibind,1);\n }\n");
@@ -1878,10 +1878,10 @@ int k;
 	start_bind ('i', constr_str);
 	k = print_bind ('i');
 	ccc = print_constr ();
-	printc ("int _fld_dr=-100;char *fldname;char _inp_io[%d];\n",
+	printc ("int _fld_dr= -100;char *fldname;char _inp_io[%d];\n",
 		sizeof (struct s_screenio) + 10);
 	printc ("while(_fld_dr!=0){\n");
-	printc ("if (_fld_dr==-100) {\n");
+	printc ("if (_fld_dr== -100) {\n");
 	printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
 	printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
 	printc ("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
@@ -1904,7 +1904,7 @@ int k;
 
 	printc
 	  ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
-	printc ("_fld_dr=-99;\n");
+	printc ("_fld_dr= -99;\n");
 }
 
 
@@ -2098,7 +2098,7 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll,char *attr)
   printc ("SET(\"s_disp_arr\",_dispio,\"srec\",0);\n");
   printc
     ("SET(\"s_disp_arr\",_dispio,\"arr_elemsize\",sizeof(%s[0]));\n",
-     arrvar); printc ("_fld_dr=-1;\n");
+     arrvar); printc ("_fld_dr= -1;\n");
   printc ("while (_fld_dr!=0) {\n");
   printc ("_fld_dr=disp_arr(&_dispio,%s,\"%s\",%s,%s);\n", arrvar, srec, attr,scroll);
 }
@@ -2607,15 +2607,15 @@ print_input_1 (void)
 void
 print_input_2 (char *s)
 {
-  printc ("if (_fld_dr==-95) {/* after input */\n");
+  printc ("if (_fld_dr== -95) {/* after input */\n");
   printc ("   break;\n}\n");
-  printc ("if (_fld_dr==-98) {/* before field */\n");
-  printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-97;continue;\n}\n");
+  printc ("if (_fld_dr== -98) {/* before field */\n");
+  printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -97;continue;\n}\n");
   printc ("_fld_dr=%s;_forminit=0;\n", s);
-  printc ("if (_fld_dr==-1) {/* after field */\n");
-  printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-98;continue;\n}\n");
+  printc ("if (_fld_dr== -1) {/* after field */\n");
+  printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr= -98;continue;\n}\n");
   printc ("if (_fld_dr==0) { /* after input 2 */\n");
-  printc ("   _fld_dr=-95;continue;\n}\n");
+  printc ("   _fld_dr= -95;continue;\n}\n");
   add_continue_blockcommand ("INPUT");
   printc ("\n}\n");
   pop_blockcommand ("INPUT");
@@ -2642,11 +2642,11 @@ void
 print_input (int byname, char *defs, char *helpno, char *fldlist)
 {
   int ccc;
-  printc ("{int _fld_dr=-100;char *fldname;char _inp_io[%d];",
+  printc ("{int _fld_dr= -100;char *fldname;char _inp_io[%d];",
 	  sizeof (struct s_screenio));
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
-  printc ("if (_fld_dr==-100) {\n");
+  printc ("if (_fld_dr== -100) {\n");
   printc ("/*");
   push_blockcommand ("INPUT");
   printc ("*/");
@@ -2677,7 +2677,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist)
     }
   printc
     ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
-  printc ("_fld_dr=-99;\n");
+  printc ("_fld_dr= -99;\n");
 }
 
 
@@ -2701,11 +2701,11 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   push_blockcommand ("INPUT");
   printc ("*/");
   printcomment ("/* input */\n");
-  printc ("{int _fld_dr=-100;\nchar *fldname;\nint _forminit=1;");
+  printc ("{int _fld_dr= -100;\nchar *fldname;\nint _forminit=1;");
   printc ("char _inp_io[%d];\n", sizeof (struct s_inp_arr)+10);
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
-  printc ("if (_fld_dr==-100) {\n");
+  printc ("if (_fld_dr== -100) {\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"no_arr\",get_count());\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"binding\",obind);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"nbind\",%d);\n", cnt);
@@ -2725,7 +2725,7 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
   printc
     ("SET(\"s_inp_arr\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
-     srec); printc ("_fld_dr=-1;continue;\n");
+     srec); printc ("_fld_dr= -1;continue;\n");
   sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs, srec, attr);
   return buff2;
 }

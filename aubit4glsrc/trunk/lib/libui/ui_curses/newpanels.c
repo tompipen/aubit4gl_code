@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.21 2003-03-28 08:07:23 mikeaubury Exp $
+# $Id: newpanels.c,v 1.22 2003-03-29 16:48:31 mikeaubury Exp $
 #*/
 
 /**
@@ -1218,11 +1218,15 @@ getch_swin (WINDOW * window_ptr)
   while (1)
     {
       halfdelay (1);
-      a = wgetch (window_ptr);
+      //a = wgetch (window_ptr);
+      a = getch ();
+      	debug("Got a as %d\n",a);
+
       if (a == KEY_MOUSE)
 	{
 	  debug ("Mouse event...");
 	}
+
       if (aborted)
 	{
 	  debug ("Aborted!");

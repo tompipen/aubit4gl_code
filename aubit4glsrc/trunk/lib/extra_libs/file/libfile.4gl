@@ -215,7 +215,7 @@ code
         printf("FIXME: don't know what to do with feof() on CygWin\n");
 	#else
 		r=feof(handle);
-    #endif
+    	#endif
 endcode
 	
 	RETURN r

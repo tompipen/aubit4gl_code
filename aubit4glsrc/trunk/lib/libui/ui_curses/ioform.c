@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.11 2003-03-28 08:07:22 mikeaubury Exp $
+# $Id: ioform.c,v 1.12 2003-03-29 16:48:31 mikeaubury Exp $
 #*/
 
 /**
@@ -1196,9 +1196,12 @@ turn_field_on (FIELD * f)
 void
 turn_field_on2 (FIELD * f, int a)
 {
+
   struct struct_scr_field *fprop;
+  assertion(f==0,"Field is zero in turn_field_on2");
   debug ("Turn field on %p %d", f, a);
   fprop = (struct struct_scr_field *) (field_userptr (f));
+  assertion(fprop==0,"Field has no properties");
   debug ("turn_field_on2 a=%d fprop=%p", a, fprop);
   debug ("Turn Field On %s %s", fprop->tabname, fprop->colname);
   field_opts_on (f, O_ACTIVE);
