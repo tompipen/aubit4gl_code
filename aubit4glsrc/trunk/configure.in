@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.230 2004-07-04 23:59:23 afalout Exp $
+dnl # $Id: configure.in,v 1.231 2004-07-06 23:33:43 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3234,26 +3234,23 @@ AC_ARG_WITH(pgsql,
 ##                 Checks for PostgreSQL ESQL/C pre-compiler
 ## ==================================================================
 
-
 PHP_CONFIGURE_PART(Checking for PostgresSQL ESQL pre-compiler:)
 AC_ARG_WITH(ecpg,
 [  --with-ecpg[=DIR]         Include PostgresSQL ESQL/C pre-compiler support.
                           DIR is the PostgresSQL ecpg base install directory,
                           defaults to /usr.],
 [
-echo 0
 if test "$HAS_LIB_PQ" != "1"; then
     withval="no"
 	AC_MSG_WARN(Disabled testing for PG ESQL compiler - libpg was not detected)
 fi
 
-  if test "$withval" != "no"; then
+if test "$withval" != "no"; then
 	if test "$withval" = "yes"; then
 		withval=/usr
     fi
 
 	AC_PATH_PROG(PG_ESQLC, ecpg, no, $withval/bin:$PATH)
-echo 1
 	test -d "$withval/include" && ECPG_INCDIR="$withval/include"
 	if test "$ECPG_INCDIR" = "" ; then 
 		AC_MSG_WARN(cannot determine include path under $withval)
@@ -3263,7 +3260,7 @@ echo 1
 	if test "$ECPG_LIBDIR" = "" ; then 
 		AC_MSG_WARN(cannot determine library path under $withval)
 	fi	
-echo 2	
+
 	ECPG_IFLAGS="-I$ECPG_INCDIR -I$ECPG_INCDIR/postgresql/informix/esql"	
 	#In case we are working from not installed CVS code:
 	#ECPG_LFLAGS="-L$withval/compatlib -L$withval/ecpglib -L$withval/pgtypeslib"
@@ -3297,7 +3294,7 @@ echo 2
 	    	AC_MSG_RESULT(No-Cannot read version number)
 			PG_ESQLC_IFXCOMPAT=no
         fi
-echo 3
+
 		#we at least need to know if we have headers
 		#for compiling things like SQL_c_ecpg that do not need IFX compatibility
 		
@@ -3349,8 +3346,10 @@ echo 3
             
 			#Make sure we have libpq - 
 			#we can't depend on the same checks in Pglib section, becaue it may be disabled
-echo 4
-            if test "$PGSQL_WITHVAL" = "" -o "$PGSQL_WITHVAL" = "yes" ; then
+
+            if test "$PGSQL_WITHVAL" = ""; then 
+				# -o "$PGSQL_WITHVAL" = "yes" ; then
+				#if PGSQL_WITHVAL was "yes", we allready assigned default
 				PGSQL_WITHVAL=/usr/local
             fi
 
@@ -3363,7 +3362,7 @@ echo 4
 				test -d "$PGSQL_WITHVAL/include/postgresql" && PGSQL_INCDIR=$PGSQL_WITHVAL/include/postgresql
 				#RH 7.2: /usr/include/pgsql/libpq-fe.h
 				test -d /usr/include/pgsql && PGSQL_INCDIR=/usr/include/pgsql
-				if test "PGSQL_INCDIR" = "" ; then 
+				if test "$PGSQL_INCDIR" = "" ; then 
 					AC_MSG_WARN(cannot determine include path under $PGSQL_WITHVAL)
 				fi
 			fi
@@ -3375,12 +3374,18 @@ echo 4
 
 		    old_CFLAGS=$CFLAGS; old_LDFLAGS=$LDFLAGS; old_LIBS=$LIBS; old_CPPFLAGS="$CPPFLAGS"
 		    
-			CFLAGS="$CFLAGS -I$PGSQL_INCDIR";
+			CFLAGS="$CFLAGS -I$PGSQL_INCDIR $ECPG_IFLAGS";
 			#LDFLAGS="$LDFLAGS $PGSQL_LFLAGS"
 			LDFLAGS="$LDFLAGS -L$ECPG_LIBDIR"
 		    LIBS="$LIBS $PGSQL_LIBS";
 			CPPFLAGS="$CPPFLAGS -I$PGSQL_INCDIR"
 
+			AC_MSG_RESULT(CFLAGS=$CFLAGS)
+			AC_MSG_RESULT(LDFLAGS=$LDFLAGS)
+			AC_MSG_RESULT(LIBS=$LIBS)
+			AC_MSG_RESULT(CPPFLAGS=$CPPFLAGS)
+			AC_MSG_RESULT(ECPG_IFLAGS=$ECPG_IFLAGS)
+			
 			#headers needed to make libSQL_c_ecpg.so (esql_simple_ecpg.c):
 			AC_CHECK_HEADERS([ ecpgtype.h ecpglib.h ecpgerrno.h sqlca.h sql3types.h ])
 
@@ -3401,14 +3406,14 @@ echo 4
 			else
 				HAVE_PG_ESQL_HEADERS_LIB=no
 			fi
-echo 5			
+
 			if test "$ac_cv_header_libpq_fe_h" = "yes" \
-				&& test "$ac_cv_header_ecpgtype_h" = "yes" \
-				&& test "$ac_cv_header_ecpglib_h" = "yes" \
-				&& test "$ac_cv_header_ecpgerrno_h" = "yes" \
-				&& test "$ac_cv_header_sqlca_h" = "yes" \
-				&& test "$ac_cv_header_sql3types_h" = "yes" \
-				&& test "$HAVE_PG_ESQL_HEADERS_LIB" = "yes";
+				-a "$ac_cv_header_ecpgtype_h" = "yes" \
+				-a "$ac_cv_header_ecpglib_h" = "yes" \
+				-a "$ac_cv_header_ecpgerrno_h" = "yes" \
+				-a "$ac_cv_header_sqlca_h" = "yes" \
+				-a "$ac_cv_header_sql3types_h" = "yes" \
+				-a "$HAVE_PG_ESQL_HEADERS_LIB" = "yes";
 			then
 				HAVE_PG_ESQL_HEADERS=yes
             else
@@ -3449,16 +3454,19 @@ echo 5
                 PG_ESQLC=no
 		    	AC_MSG_WARN(Disabled ecpg - no headers)
 		    fi
-echo 6
+
 			CFLAGS=$old_CFLAGS; LDFLAGS=$old_LDFLAGS; LIBS=$old_LIBS; CPPFLAGS="$old_CPPFLAGS"
-  else
-    AC_MSG_RESULT(disabled)
-  fi
+	else
+		AC_MSG_RESULT(No - ecpg not found)
+	fi
+else
+	AC_MSG_RESULT(disabled)
+fi
 ],[
   AC_MSG_RESULT(--with-ecpg not specified)
 ])
 
-exit
+#exit
 
 ## ==================================================================
 ##                 Checks for SQLite support
@@ -6709,7 +6717,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.230 2004-07-04 23:59:23 afalout Exp $
+| $Id: configure.in,v 1.231 2004-07-06 23:33:43 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
