@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.200 2005-02-22 18:51:19 mikeaubury Exp $
+# $Id: mod.c,v 1.201 2005-02-23 12:16:33 mikeaubury Exp $
 #
 */
 
@@ -51,6 +51,7 @@
 #include "a4gl_4glc_int.h"
 #include "variables.h"
 #include <ctype.h>
+#include <errno.h>
 /*
 =====================================================================
                     Constants definitions
@@ -4856,10 +4857,7 @@ dump_features=A4GL_isyes(acl_getenv("DUMP_FEATURES"));
 if (dump_features==0) return;
 A4GL_set_sql_features();
 f=fopen(sql_features,"r");
-if (f==0) {
-		printf("Unable to open features file (%s)\n",sql_features);
-		return;
-}
+if (f==0) { return; }
 while (1) {
 	strcpy(buff,"");
 	fgets(buff,256,f);
@@ -4886,6 +4884,7 @@ void A4GL_add_feature(char *feature) {
 	static int dump_features=-1;
 	static int failed=0;
 	FILE *f;
+	printf("%s\n",feature);
 	if (dump_features==-1) {
 		dump_features=A4GL_isyes(acl_getenv("DUMP_FEATURES"));
 	}
@@ -4895,7 +4894,7 @@ void A4GL_add_feature(char *feature) {
 		A4GL_set_sql_features();
 		f=fopen(sql_features,"a");
 		if (f==0) {
-			if (failed==0) printf("Unable to open features file (%s)\n",sql_features);
+			if (failed==0) printf("Unable to open features file (%s) - %d\n",sql_features,errno);
 			failed++;
 			return;
 		}
