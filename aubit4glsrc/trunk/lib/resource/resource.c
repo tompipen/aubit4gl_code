@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.22 2002-10-27 22:34:11 afalout Exp $
+# $Id: resource.c,v 1.23 2002-11-28 06:43:18 afalout Exp $
 #
 */
 
@@ -72,9 +72,6 @@
 	HKEY 	newkey = 0; //not sure if this is correct!!!
 #endif
 
-
-
-
 struct str_resource *user_resource = 0;
 int loaded_resources=0;
 struct str_resource *build_resource=0;
@@ -82,156 +79,173 @@ int build_resource_cnt=0;
 
 struct str_resource builtin_resource[] =
 {
-/* defaults for environment */
-  {"A4GL_UI",    "TUI"},
-  {"ACL_MOUSE",   "N"},
+
+	/* Loadable modules/library configuration */
 #ifdef __MINGW32__
-  {"A4GL_SQLTYPE", "odbc32"},
+  {"A4GL_SQLTYPE", 		"odbc32"},
 #else
-  {"A4GL_SQLTYPE", "nosql"},
+  {"A4GL_SQLTYPE", 		"nosql"},
 #endif
-  {"A4GL_FORMTYPE", "GENERIC"},
-  {"A4GL_PACKER", "XML"},
-  {"CONSOLE", "N"},            /* FIXME: NOCURSES is now A4GL_UI=CONSOLE */
-  {"GUIPORT", ""},
-  {"A4GL_LEXTYPE","C"},
-  {"DBDATE", "MDY4/"},
-  {"DBANSIWARN", "N"},
-  {"DBBLOBBUF", "64"},
-  {"DBCENTURY", "C"},
-  {"DBDELIMITER", "|"},
-  {"DBEDIT", "vi"},
-  {"DBFLTMASK", "2"},
-  {"DBLANG", "<ACLDIR>"},
-  {"DBMONEY", "#."},
-  {"DBPATH", "."},
-  {"DBPRINT", "lp"},
-  {"ACLCCOMP", "cc"},
-  {"AUBIT_Y2K", "70"},
-  {"MAP4GL", "N"},
-  {"LOGNAME", "UNKNOWN"},
-  {"NOCLOBBER","N"},
+  {"A4GL_UI",    		"TUI"},
+  {"A4GL_FORMTYPE", 	"GENERIC"},
+  {"A4GL_PACKER", 		"XML"},
+  {"A4GL_PDFTYPE", 		"NOPDF"},    	/* libEXREPORT_xxxx */
+  {"A4GL_LEXTYPE",		"C"},
+  {"A4GL_RPCTYPE",		"NORPC"},
+  {"A4GL_MENUTYPE",		"NOMENU"},
+  {"A4GL_MSGTYPE",		"NATIVE"},
+  {"EXDTYPE",           ""},
+//  {"AUBITDIR",			"@aubitdir@  we should try setting AUBITDIR relative to location of invoked executable, if not already set
+
+	/* defaults for environment */
+	/*
+	INCLINES Adds originating line number of each created target language statemtn
+	coresponding to 4gl source code, to created target language source code,
+	which is usefull for debugging. Like:
+		#line 2 "../tools/test/test_build.4gl"
+	*/
+  {"INCLINES",			"yes"},
+  {"AUBITETC",			"/etc/opt/aubit4gl"}, /* points to default location of Aubit config files */
+  {"DBDATE", 			"MDY4/"},
+  {"DBANSIWARN", 		"N"},
+  {"DBBLOBBUF", 		"64"},
+  {"DBCENTURY", 		"C"},
+  {"DBDELIMITER", 		"|"},
+  {"DBEDIT", 			"vi"},
+  {"DBFLTMASK", 		"2"},
+  {"DBLANG", 			"<ACLDIR>"},
+  {"DBMONEY", 			"#."},
+  {"DBPATH", 			"."},
+  {"DBPRINT", 			"lp"},
+  {"ACLCCOMP", 			"cc"},
+  {"ACL_MOUSE",   		"N"},
+  {"AUBIT_Y2K", 		"70"},
+  {"MAP4GL", 			"N"},
+  {"LOGNAME", 			"UNKNOWN"},
+  {"NOCLOBBER",			"N"},
 #ifdef WIN32
-  {"EXTENDED_FETCH", "Y"},
+  {"EXTENDED_FETCH",	"Y"},
 #else
-  {"EXTENDED_FETCH", "Y"}, /* This won't always work ! */
+  {"EXTENDED_FETCH", 	"Y"}, /* This won't always work ! */
 #endif
-  {"ACLDIR", "/usr/acl"},
-  {"ACLTEMP", "tempdsn"},
-  {"HELPTEXT", "Help"},
-  {"ERROR_MSG", "Press Any Key"},
-  {"PAUSE_MSG", "Press Any Key"},
-  {"FIELD_ERROR_MSG","Error in field"},
+  {"ACLDIR", 			"/usr/acl"},
+  {"ACLTEMP", 			"tempdsn"},
+  {"HELPTEXT", 			"Help"},
+  {"ERROR_MSG", 		"Press Any Key"},
+  {"PAUSE_MSG", 		"Press Any Key"},
+  {"FIELD_ERROR_MSG",	"Error in field"},
 
-  {"MENUCSELECT", "0"},
-  {"MENUCTITLE", "0"},
-  {"MENUCNORMAL", "0"},
-  {"MENUCHIGHLIGHT", "<>"},
+  {"MENUCSELECT", 		"0"},
+  {"MENUCTITLE", 		"0"},
+  {"MENUCNORMAL", 		"0"},
+  {"MENUCHIGHLIGHT", 	"<>"},
 
-  {"MENUMSELECT", "0"},
-  {"MENUMTITLE", "0"},
-  {"MENUMNORMAL", "0"},
-  {"MENUMHIGHLIGHT", "<>"},
+  {"MENUMSELECT", 		"0"},
+  {"MENUMTITLE", 		"0"},
+  {"MENUMNORMAL", 		"0"},
+  {"MENUMHIGHLIGHT", 	"<>"},
 
 /* abbr week days */
-  {"_DAY0", "Sun"},
-  {"_DAY1", "Mon"},
-  {"_DAY2", "Tue"},
-  {"_DAY3", "Wed"},
-  {"_DAY4", "Thu"},
-  {"_DAY5", "Fri"},
-  {"_DAY6", "Sat"},
+  {"_DAY0", 			"Sun"},
+  {"_DAY1", 			"Mon"},
+  {"_DAY2", 			"Tue"},
+  {"_DAY3", 			"Wed"},
+  {"_DAY4", 			"Thu"},
+  {"_DAY5", 			"Fri"},
+  {"_DAY6", 			"Sat"},
 
-/* full week days */
-  {"_FDAY0", "Sunday"},
-  {"_FDAY1", "Monday"},
-  {"_FDAY2", "Tuesday"},
-  {"_FDAY3", "Wednesday"},
-  {"_FDAY4", "Thursday"},
-  {"_FDAY5", "Friday"},
-  {"_FDAY6", "Saturday"},
+	/* full week days */
+  {"_FDAY0", 			"Sunday"},
+  {"_FDAY1", 			"Monday"},
+  {"_FDAY2", 			"Tuesday"},
+  {"_FDAY3", 			"Wednesday"},
+  {"_FDAY4", 			"Thursday"},
+  {"_FDAY5", 			"Friday"},
+  {"_FDAY6", 			"Saturday"},
 
-/* abbr months */
-  {"_MON1", "Jan"},
-  {"_MON2", "Feb"},
-  {"_MON3", "Mar"},
-  {"_MON4", "Apr"},
-  {"_MON5", "May"},
-  {"_MON6", "Jun"},
-  {"_MON7", "Jul"},
-  {"_MON8", "Aug"},
-  {"_MON9", "Sep"},
-  {"_MON10", "Oct"},
-  {"_MON11", "Nov"},
-  {"_MON12", "Dec"},
+	/* abbr months */
+  {"_MON1", 			"Jan"},
+  {"_MON2", 			"Feb"},
+  {"_MON3", 			"Mar"},
+  {"_MON4", 			"Apr"},
+  {"_MON5", 			"May"},
+  {"_MON6", 			"Jun"},
+  {"_MON7", 			"Jul"},
+  {"_MON8", 			"Aug"},
+  {"_MON9", 			"Sep"},
+  {"_MON10", 			"Oct"},
+  {"_MON11", 			"Nov"},
+  {"_MON12", 			"Dec"},
 
-/* Full months */
-  {"_FMON1", "January"},
-  {"_FMON2", "February"},
-  {"_FMON3", "March"},
-  {"_FMON4", "April"},
-  {"_FMON5", "May"},
-  {"_FMON6", "June"},
-  {"_FMON7", "July"},
-  {"_FMON8", "August"},
-  {"_FMON9", "September"},
-  {"_FMON10", "October"},
-  {"_FMON11", "November"},
-  {"_FMON12", "December"},
+	/* Full months */
+  {"_FMON1", 			"January"},
+  {"_FMON2", 			"February"},
+  {"_FMON3", 			"March"},
+  {"_FMON4", 			"April"},
+  {"_FMON5", 			"May"},
+  {"_FMON6", 			"June"},
+  {"_FMON7", 			"July"},
+  {"_FMON8", 			"August"},
+  {"_FMON9", 			"September"},
+  {"_FMON10", 			"October"},
+  {"_FMON11", 			"November"},
+  {"_FMON12", 			"December"},
 
-/* addition for days */
-  {"_DAYTH1", "st"},
-  {"_DAYTH2", "nd"},
-  {"_DAYTH3", "rd"},
-  {"_DAYTH4", "th"},
-  {"_DAYTH5", "th"},
-  {"_DAYTH6", "th"},
-  {"_DAYTH7", "th"},
-  {"_DAYTH8", "th"},
-  {"_DAYTH9", "th"},
-  {"_DAYTH10", "th"},
-  {"_DAYTH11", "th"},
-  {"_DAYTH12", "th"},
-  {"_DAYTH13", "th"},
-  {"_DAYTH14", "th"},
-  {"_DAYTH15", "th"},
-  {"_DAYTH16", "th"},
-  {"_DAYTH17", "th"},
-  {"_DAYTH18", "th"},
-  {"_DAYTH19", "th"},
-  {"_DAYTH20", "th"},
-  {"_DAYTH21", "st"},
-  {"_DAYTH22", "nd"},
-  {"_DAYTH23", "rd"},
-  {"_DAYTH24", "th"},
-  {"_DAYTH25", "th"},
-  {"_DAYTH26", "th"},
-  {"_DAYTH27", "th"},
-  {"_DAYTH28", "th"},
-  {"_DAYTH29", "th"},
-  {"_DAYTH30", "th"},
-  {"_DAYTH31", "st"},
-/* default lines... */
-  {"_FORMLINE", "3"},
-  {"_MENULINE", "1"},
-  {"_PROMPTLINE", "1"},
-  {"_ERRORLINE", "-1"},
-  {"_MESSAGELINE", "-2"},
-  {"_COMMENTLINE", "-2"},
+	/* addition for days */
+  {"_DAYTH1", 			"st"},
+  {"_DAYTH2", 			"nd"},
+  {"_DAYTH3", 			"rd"},
+  {"_DAYTH4", 			"th"},
+  {"_DAYTH5", 			"th"},
+  {"_DAYTH6", 			"th"},
+  {"_DAYTH7", 			"th"},
+  {"_DAYTH8", 			"th"},
+  {"_DAYTH9", 			"th"},
+  {"_DAYTH10",			"th"},
+  {"_DAYTH11", 			"th"},
+  {"_DAYTH12", 			"th"},
+  {"_DAYTH13", 			"th"},
+  {"_DAYTH14", 			"th"},
+  {"_DAYTH15", 			"th"},
+  {"_DAYTH16", 			"th"},
+  {"_DAYTH17", 			"th"},
+  {"_DAYTH18", 			"th"},
+  {"_DAYTH19", 			"th"},
+  {"_DAYTH20", 			"th"},
+  {"_DAYTH21", 			"st"},
+  {"_DAYTH22", 			"nd"},
+  {"_DAYTH23", 			"rd"},
+  {"_DAYTH24", 			"th"},
+  {"_DAYTH25", 			"th"},
+  {"_DAYTH26", 			"th"},
+  {"_DAYTH27", 			"th"},
+  {"_DAYTH28", 			"th"},
+  {"_DAYTH29", 			"th"},
+  {"_DAYTH30", 			"th"},
+  {"_DAYTH31", 			"st"},
 
-/* WINDOWS Compilation options */
-  {"W32LIBSDIR", "-L/acl/lib"},
-  {"W32LIBS", "-lpdcurs -lgdi32 -luser32 -lwsock32"},
-  {"W32FGLLIBSDIR", "-L/acl/lib"},
+	/* default lines */
+  {"_FORMLINE", 		"3"},
+  {"_MENULINE", 		"1"},
+  {"_PROMPTLINE", 		"1"},
+  {"_ERRORLINE", 		"-1"},
+  {"_MESSAGELINE", 		"-2"},
+  {"_COMMENTLINE", 		"-2"},
+
+	/* WINDOWS Compilation options */
+  {"W32LIBSDIR", 		"-L/acl/lib"},
+  {"W32LIBS", 			"-lpdcurs -lgdi32 -luser32 -lwsock32"},
+  {"W32FGLLIBSDIR", 	"-L/acl/lib"},
   {"W32FGLLIBS_SHARED", "-laclshared -lm"},
-  {"W32ODBC", "-lodbc32 -lodbccp32"},
-  {"W32FGLLIBS", "-laclall -lm"},
-  {"W32INCLDIR", "-I/acl/incl"},
-  {"W32GCC", "gcc -s -O"},
+  {"W32ODBC", 			"-lodbc32 -lodbccp32"},
+  {"W32FGLLIBS", 		"-laclall -lm"},
+  {"W32INCLDIR", 		"-I/acl/incl"},
+  {"W32GCC", 			"gcc -s -O"},
 
-/* End of definitions */
+	/* End of definitions */
   {"", "0"}
 };
+
 
 /*
 =====================================================================
@@ -252,7 +266,15 @@ static char * find_str_resource (char *s);
 int replace_str_resource (char *s, char *neww);
 void dump_all_resource_vars(void);
 
+#if (defined(WIN32) && ! defined(__CYGWIN__))
 
+long get_regkey (char *key, char *data, int n);
+int set_regkey (char *key, char *data);
+void createkey (void);
+void get_anykey (HKEY whence, char *key, char *key2, char *data, int n);
+char * get_login (void);
+
+#endif
 
 /*
 =====================================================================
@@ -387,7 +409,9 @@ acl_getenv (char *s)
 {
 char prefixed_string[256];
 //char *prefixed_string;
-static char *ptr;
+//WHY was this static?
+//static char *ptr;
+char *ptr;
 
   /* First try in environmet, with a prefix */
   sprintf(prefixed_string,"A4GL_%s",s);
@@ -402,12 +426,14 @@ static char *ptr;
 #ifdef __MINGW32__
   if ( ptr == 0 ) {
 	/* try in Windows registry */
-    static char buff[256];
+    /* why was this static? */
+	//static char buff[256];
+    char buff[256];
     if (get_regkey(s,buff,255)) {
         //ptr = (char *)buff;
         ptr = buff;
     } else {
-	    if (get_regkey(prefixed_string,buff,255)) {
+		if (get_regkey(prefixed_string,buff,255)) {
 	        //ptr = (char *)buff;
             ptr = buff;
 	    }
@@ -427,10 +453,11 @@ static char *ptr;
 
   if (ptr==0)
   {
-  	return "";
+	/* debug("Could not find value for %s\n",s); */
+	return "";
   } else {
 	if (strcmp (s, "DEBUG") != 0) {
-		//printf("returning %s=%s\n",s,ptr);
+		/* debug("returning %s=%s\n",s,ptr); */
     }
 	return ptr;
   }
@@ -543,8 +570,13 @@ set_regkey (char *key, char *data)
 long
 get_regkey (char *key, char *data, int n)
 {
-  LONG a;
-  DWORD l;
+LONG a;
+DWORD l;
+
+	#ifdef DEBUG
+		debug("serching Windows registry for %s",key);
+	#endif
+
   l = REG_SZ; //type of registry data - string
   if (newkey == 0) {
 	createkey ();

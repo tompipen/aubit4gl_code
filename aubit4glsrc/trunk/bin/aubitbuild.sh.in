@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.9 2002-11-23 06:05:34 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.10 2002-11-28 06:43:18 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -434,6 +434,10 @@ if test "$MAKE" = "1"; then
 			EXEC="$AUBITSRCDIR/configure --prefix=$AUBITBINDIR"; runexec
         fi
 
+        #deinall first, so that we don't accidentally link with CygWin dependent/non-dependent
+		#libaubit4gl still in the path:
+		EXEC="make deinstall"; runexec
+
 		EXEC="make clean.all"; runexec
 
 		STOPONERROR=0   #Continue even if next statemets fails
@@ -451,7 +455,7 @@ if test "$MAKE" = "1"; then
 			#Unknown command: `update -d'
 			EXEC="$AUTO_CVS update"; runexec
         fi
-		
+
 		TMP=`echo $PATH | grep MinGW`
         if test "$TMP" != ""; then
             #we already have MinGW in the path, but we first need to make CygWin version
@@ -610,6 +614,11 @@ if test "$WINSETUP" = "1"; then
 	if test "$TMP" != ""; then
     	#For Windows setup installer we need Windows native version,
         #but we so far compiled only Cygwin version
+
+        #deinall first, so that we don't accidentally link with CygWin dependent
+		#libaubit4gl still in the path"
+		EXEC="make deinstall"; runexec
+
         NEWPATH=`echo $PATH | sed -e 's/M-i-n-G-W/MinGW/'g`
         PATH=$NEWPATH
         export PATH
@@ -630,6 +639,11 @@ if test "$WINSETUP" = "1"; then
         if test "$TMP" != ""; then
             echo "ERROR: libaubit4gl.dll depends on cygwin1.dll"
         fi
+		TMP=`cygcheck.exe bin/4glc.exe | grep cygwin1.dll`
+        if test "$TMP" != ""; then
+            echo "ERROR: 4glc.exe depends on cygwin1.dll"
+        fi
+
 
 	fi
 
@@ -922,6 +936,12 @@ if test "$CLEAN" = "1" && test "$COMPARED_OK" = "1"; then
 	    rm -rf $RPMBUILD_PATH/aubit4gl-*
     	rm -rf $RPMSRC_PATH/aubit4glsrc-*
     fi
+
+
+	#We don't want to leave Aubit in path:
+	EXEC="make deinstall"; runexec
+
+
 fi
 
 echo "******* LOG END ********" >> $LOGFILE

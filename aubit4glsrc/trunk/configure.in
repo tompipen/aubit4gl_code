@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.132 2002-11-23 06:05:25 afalout Exp $
+dnl # $Id: configure.in,v 1.133 2002-11-28 06:43:08 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -812,7 +812,7 @@ if test "$CC" = "gcc"; then
                     #BUT-then CygWin things there is a directory called /cygwin in HIS root!
                     #but how to get a directory name CygWin was installed in, if different then default?
 					#aubitdir="/cygwin$aubitdir"
-					AC_MSG_WARN(Using MinGW GCC. $CFLAGS)
+					AC_MSG_WARN(Using MinGW GCC.)
 					old_CFLAGS="$CFLAGS"
 					old_CPPFLAGS="$CPPFLAGS"
 					old_LDFLAGS="$LDFLAGS"

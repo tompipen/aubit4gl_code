@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.3 2002-11-23 06:05:35 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.4 2002-11-28 06:43:18 afalout Exp $
 ;
 
 
@@ -81,8 +81,8 @@ Name: Make; Description: Make Files; Types: full
 Name: GTK; Description: GTK+ GUI libraries; Types: full standard runtime
 Name: util; Description: "Utilities "; Types: full standard runtime
 Name: GWD; Description: GWD editor and IDE Files; Types: full
-Name: TUI; Description: Character UI support (needs CygWin libs); Types: full
-Name: CygWinLib; Description: CygWin library); Types: full
+Name: TUI; Description: Character UI support (needs CygWin library); Types: full
+Name: CygWinLib; Description: CygWin library; Types: full
 
 [Types]
 Name: standard; Description: Standard installation
@@ -206,11 +206,17 @@ Source: @IS_SOURCE_GTK@\libintl-1.dll; DestDir: {app}\bin; Components: GTK
 Source: @IS_SOURCE_GTK@\libpango-1.0-0.dll; DestDir: {app}\bin; Components: GTK
 Source: @IS_SOURCE_GTK@\libpangowin32-1.0-0.dll; DestDir: {app}\bin; Components: GTK
 
+Source: D:\cygwin\lib\pango\1.0.0\modules\pango-arabic-ft2.dll; DestDir: {app}\lib\pango\1.0.0\modules; Components: GTK
+Source: D:\cygwin\lib\pango\1.0.0\modules\pango-basic-ft2.dll; DestDir: {app}\lib\pango\1.0.0\modules; Components: GTK
+Source: D:\cygwin\lib\pango\1.0.0\modules\pango-basic-win32.dll; DestDir: {app}\lib\pango\1.0.0\modules; Components: GTK
+Source: D:\cygwin\etc\pango\pango.modules; DestDir: {app}\etc\pango; Components: GTK
+Source: D:\cygwin\usr\etc\gtk-2.0\gtk.immodules; DestDir: {app}\etc\gtk-2.0\; Components: GTK
+
 ;=========================
 ;Helpers:
 ;Source: @IS_SOURCE@\bin\run.exe; DestDir: {app}\bin; Components: util
 Source: @IS_SOURCE@\tools\cygwin\run.exe; DestDir: {app}\bin; Components: util
-
+Source: D:\cygwin\bin\cygcheck.exe; DestDir: {app}\bin; Components: util
 
 ;=========================
 ; Curses UI
@@ -221,62 +227,73 @@ Source: D:\cygwin\tmp\libUI_TUI.dll; DestDir: {app}\lib; Components: TUI
 Source: D:\cygwin\bin\cygncurses6.dll; DestDir: {app}\bin; Components: TUI
 Source: D:\cygwin\bin\cygform6.dll; DestDir: {app}\bin; Components: TUI
 Source: D:\cygwin\bin\cygpanel6.dll; DestDir: {app}\bin; Components: TUI
-
+;for CygWin curses to find terminfo, we have to set %HOME% to location ABOVE .terminfo directory.
+;if HOME is not set, and CYGDIR is not set, curses will look only under C:\cygwin
+Source: D:\cygwin\usr\share\terminfo\c\cygwin; DestDir: {app}\.terminfo\c; Components: TUI
 
 ;=========================
 ; CygWin support
-Source: D:\cygwin\bin\cygwin1.dll; DestDir: {app}\bin; Components: CygWinLib, TUI
+Source: D:\cygwin\bin\cygwin1.dll; DestDir: {app}\bin; Components: CygWinLib TUI
 
 ;=========================
 ; GWD::4GL
-Source: @IS_SOURCE@/tools/gwd/README.html; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/bin/README.txt; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/bin/rcp.pif; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/geterfil.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/gettoc.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/makeErr.ini; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/putback.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/rcompile.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/rd4gl.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/rdebug.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/rmake.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/rmax.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/ropen.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/rrun.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/rsave.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/settoc.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/bat/takeout.bat; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/get.ini; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/gwd.ini; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/plwin.ini; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/remote.ini; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/syntax.hgl; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro4.bmp; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro5.bmp; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro6.bmp; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro9.bmp; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/tool1.bmp; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/tool11.bmp; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/config.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/next_err.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/putback.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/rcompile.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/rdebug.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/re.sh; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/return_re.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/rmake.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/ropen.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/rrun.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/rsave.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/strip_err.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/client/script/remote/takeout.c; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/server/GWDagents/gettoc.sh; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rcompile.sh; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rd4gl.sh; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rgrep.sh; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rmake.sh; DestDir: {pf}\GWD\xx; Components: GWD
-Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rrun.sh; DestDir: {pf}\GWD\xx; Components: GWD
+
+;to bat:
+Source: @IS_SOURCE@/tools/gwd/client/bat/geterfil.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/gettoc.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/makeErr.ini; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/putback.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rcompile.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rd4gl.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rdebug.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rmake.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rmax.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/ropen.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rrun.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/rsave.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/settoc.bat; DestDir: {pf}\GWD\bat; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/bat/takeout.bat; DestDir: {pf}\GWD\bat; Components: GWD
+
+; to script/remote:
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/config.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/next_err.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/putback.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rcompile.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rdebug.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/re.sh; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/return_re.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rmake.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/ropen.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rrun.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/rsave.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/strip_err.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/script/remote/takeout.c; DestDir: {pf}\GWD\script\remote; Components: GWD
+
+; to GWD root:
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro4.bmp; DestDir: {pf}\GWD; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro5.bmp; DestDir: {pf}\GWD; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro6.bmp; DestDir: {pf}\GWD; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/macro9.bmp; DestDir: {pf}\GWD; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/tool1.bmp; DestDir: {pf}\GWD; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/icons/tool11.bmp; DestDir: {pf}\GWD; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/syntax.hgl; DestDir: {pf}\GWD; Components: GWD
+
+;to gwd-4gl
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/get.ini; DestDir: {pf}\GWD\gwd-4gl; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/gwd.ini; DestDir: {pf}\GWD\gwd-4gl; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/plwin.ini; DestDir: {pf}\GWD\gwd-4gl; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/client/i-gwd/remote.ini; DestDir: {pf}\GWD\gwd-4gl; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/README.html; DestDir: {pf}\GWD\gwd-4gl; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/bin/README.txt; DestDir: {pf}\GWD\gwd-4gl; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/bin/rcp.pif; DestDir: {pf}\GWD\gwd-4gl; Components: GWD
+
+;to gwd-4gl\GWDagents
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/gettoc.sh; DestDir: {pf}\GWD\gwd-4gl\GWDagents; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rcompile.sh; DestDir: {pf}\GWD\gwd-4gl\GWDagents; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rd4gl.sh; DestDir: {pf}\GWD\gwd-4gl\GWDagents; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rgrep.sh; DestDir: {pf}\GWD\gwd-4gl\GWDagents; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rmake.sh; DestDir: {pf}\GWD\gwd-4gl\GWDagents; Components: GWD
+Source: @IS_SOURCE@/tools/gwd/server/GWDagents/rrun.sh; DestDir: {pf}\GWD\gwd-4gl\GWDagents; Components: GWD
 
 [INI]
 Filename: {app}\@FULLNAME@ on the Web.url; Section: InternetShortcut; Key: URL; String: http://@AUBIT_WEBSITE@; Flags: uninsdeleteentry
@@ -309,8 +326,13 @@ Root: HKLM; Subkey: Software\Aubit project\Aubit 4GL compiler; ValueType: string
 ;small program to do that and execute it via the [Run] section.
 ;User-specific environment variables:
 Root: HKCU; Subkey: Environment; ValueType: expandsz; ValueName: Path; ValueData: "{code:GetUserPath};{app}\bin;{code:GetMinGWPath}\bin"
+;HOME is needed _ONLY_ when using CygWin Curses, to find terminfo
+Root: HKCU; Subkey: Environment; ValueType: expandsz; ValueName: HOME; ValueData: "{app}"
+
 ;Now same for system-wide environment:
 Root: HKLM; Subkey: SYSTEM\CurrentControlSet\Control\Session Manager\Environment; ValueType: expandsz; ValueName: Path; ValueData: "{code:GetSystemPath};{app}\bin;{code:GetMinGWPath}\bin"
+;HOME is needed _ONLY_ when using CygWin Curses, to find terminfo
+Root: HKLM; Subkey: SYSTEM\CurrentControlSet\Control\Session Manager\Environment; ValueType: expandsz; ValueName: HOME; ValueData: "{app}"
 ;This fake key is added just to invoke EnvUpdate function, since I did not find
 ;a better way to invoke it:
 Root: HKCU; Subkey: Environment; ValueType: string; ValueName: DUMMY; ValueData: {code:EnvUpdate}
