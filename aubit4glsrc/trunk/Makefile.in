@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.149 2004-03-23 23:24:00 afalout Exp $
+# $Id: Makefile.in,v 1.150 2004-03-25 05:24:31 afalout Exp $
 #
 
 ## ==================================================================
@@ -946,25 +946,31 @@ refresh.all: refresh.noyacc refresh.norpcgen refresh.norpclib refresh.perl
 #refresh pre-compiled parser files that are used for compilation on
 #platforms that don't have Yacc (Bison) installed, or have incompatible version
 #from Yacc created files:
+#NOTE: diff exits with status 0 when files ARE DIFFERENT 
+
+#  An exit status of 0 means no  differences  were  found,  1
+#       means some differences were found, and 2 means trouble.
+
+
 refresh.noyacc:
 ifneq "${YACC}" "no"
-	@x=0; \
-	if diff -q compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h > /dev/null ; then x=1; fi; \
-	if diff -q compilers/4glc/rules/generated/kw.h tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h > /dev/null ; then x=1; fi; \
-	if diff -q compilers/4glc/mk_states_1.h tools/no_yacc/cygwin/compilers/4glc/mk_states_1.h > /dev/null ; then x=1; fi; \
-	if diff -q compilers/4glc/mk_states.h tools/no_yacc/cygwin/compilers/4glc/mk_states.h > /dev/null ; then x=1; fi; \
-	if diff -q compilers/4glc/mk_states.c tools/no_yacc/cygwin/compilers/4glc/mk_states.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile/y.tab.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus/lex.yy.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus/y.tab.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/xgen/y.tab.c tools/no_yacc/cygwin/compilers/xgen/y.tab.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/xgen/lex.yy.c tools/no_yacc/cygwin/compilers/xgen/lex.yy.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace/y.tab.c > /dev/null ; then x=1; fi; \
-	if diff -q compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace/lex.yy.c > /dev/null ; then x=1; fi; \
-	if test "$x" = "1"; then \
-		echo "Need to update"; \
+	@update=0; \
+	diff -q compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/4glc/rules/generated/kw.h tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/4glc/mk_states_1.h tools/no_yacc/cygwin/compilers/4glc/mk_states_1.h > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/4glc/mk_states.h tools/no_yacc/cygwin/compilers/4glc/mk_states.h > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/4glc/mk_states.c tools/no_yacc/cygwin/compilers/4glc/mk_states.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile/lex.yy.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile/y.tab.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus/lex.yy.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus/y.tab.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/xgen/y.tab.c tools/no_yacc/cygwin/compilers/xgen/y.tab.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/xgen/lex.yy.c tools/no_yacc/cygwin/compilers/xgen/lex.yy.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/ace/y.tab.c tools/no_yacc/cygwin/compilers/ace/y.tab.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	diff -q compilers/ace/lex.yy.c tools/no_yacc/cygwin/compilers/ace/lex.yy.c > /dev/null ; x=$$?; if test "$$x" != "0"; then update="1"; fi; \
+	if test "$$update" != "0"; then \
+		echo "Updating no_yacc files..."; \
 		${CP} compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated; \
 		${CP} compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated; \
 		${CP} compilers/4glc/rules/generated/kw.h tools/no_yacc/cygwin/compilers/4glc/rules/generated; \
