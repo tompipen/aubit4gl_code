@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.3 2003-01-10 23:12:22 saferreira Exp $
+# $Id: postgresql.cpp,v 1.4 2003-01-12 21:28:44 saferreira Exp $
 #
 */
 
@@ -94,6 +94,7 @@
     //#include "a4gl_lib_sql_pg_int.h"
   #include <stdio.h>
   #include "a4gl_incl_4gldef.h"
+  #include "a4gl_API_sql.h"
   #include <postgresql/libpq-fe.h>
   #include "PgConnection.h"
   #include "ConnectionException.h"
@@ -107,6 +108,10 @@ using namespace Aubit4glSql_postgresql;
 /** The postgres driver object */
 static PgDriver pgDriver;
 
+extern "C" void exitwith(char *str);
+extern "C" void set_errm (char *str);
+extern "C" void debug (char *str);
+
 /*
 =====================================================================
                     Variables definitions
@@ -118,7 +123,7 @@ static PgDriver pgDriver;
 #endif
 
 #ifndef lint
-  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.3 2003-01-10 23:12:22 saferreira Exp $";
+  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.4 2003-01-12 21:28:44 saferreira Exp $";
 #endif
 
 
@@ -128,28 +133,6 @@ char lasterrorstr[1024] = "";
 /** The global (not named) statement count, to generate unique names */
 // @todo : This should be at the driver if necessary
 static int statementCount = 0;
-
-/** Indicate if an error as ocurred in order to return error codes */
-static int errorOcurred;
-
-/**
- * Information about a connection to a database.
- *
- * This type should be expanded to use a global connection manager in aubit
- *
- * @todo : Put this in a connection manager
- */
-typedef struct {
-  char *connectionName; /**< The name of the connection - This is unique */
-  char *databaseName;   /**< The name of the database */
-  char connector;       /**< The aubit connector used */
-  char *userName;       /**< User name used for estabilishing the connection */
-  char *password;       /**< The password used to connect */
-  void *connectionInfo; /**< A pointer to a connector specific information */
-}DbConnection;
-
-/** The current connection name */
-char *currentConnection;
 
 /** The counter of columns to get datatypes */
 static int getColumnsOrder = 0;
@@ -165,13 +148,6 @@ static int getColumnsMax = 0;
 =====================================================================
 */
 
-
-/*
-extern "C" void setConnectionManager(AubitConnectionManager _connManager)
-{
-  connectionManager = connManager;
-}
-*/
 
 /**
  * Check if there was an sql error. Uses ESQL/C XOpen global variable SQLSTATE.
@@ -204,6 +180,9 @@ static int isNotFound()
 /**
  * Get the status value.
  *
+ * @todo Check if the status should be getted from the current connection 
+ * object using the libpq function for this.
+ *
  * @return The value to be assigned to status.
  */
 extern "C" int A4GLSQL_get_status(void)
@@ -224,25 +203,10 @@ extern "C" char *A4GLSQL_get_sqlerrm (void)
 /**
  * Initialization of the sql library.
  *
- * Just initialize the error handling.
+ * @todo It is here that the PgDriver object should be initialized.
  */
-extern "C" void A4GLSQL_initsqllib (void) 
+extern "C" int A4GLSQL_initsqllib (void) 
 {
-  currentConnection = NULL;
-}
-
-/**
- * Get a unique name for a global (not named) statement.
- * To obtain it increment the static statementCount.
- *
- * @return The global statement count @return The global statement count.
- */
-static char *getGlobalStatementName(void)
-{
-  static char statementName[10];
-
-  sprintf(statementName,"st_%d",statementCount);
-  return statementName;
 }
 
 /**
@@ -257,8 +221,8 @@ static char *getGlobalStatementName(void)
  * @param usr The user name to establish the connection.
  * @param pwd The password of the user to set the connection.
  */
-extern "C" int A4GLSQL_init_session (const char *sessname, const char *dsn, 
-const char *usr, const char *pwd)
+extern "C" int A4GLSQL_init_session (char *sessname, char *dsn, 
+char *usr, char *pwd)
 {
   char *conninfo;
   
@@ -285,7 +249,7 @@ const char *usr, const char *pwd)
 /**
  * Connects to a database.
  *
- * @todo: programs that do not use DATBASE or CONNECT or SESSION,
+ * @todo: programs that do not use DATABASE or CONNECT or SESSION,
  * should not call this function, but they DO!
  *
  * @param server The database name. If null the libpq try to see in the 
@@ -298,10 +262,14 @@ const char *usr, const char *pwd)
  *   - 1 : Connection estabilished.
  *   - 0 : there was an error connecting to database.
  */
-extern "C" int A4GLSQL_make_connection (
-  const char *server,const char *uid_p,const char *pwd_p)
+extern "C" int A4GLSQL_make_connection (UCHAR *server,UCHAR *uid_p,UCHAR *pwd_p)
 {
-  return A4GLSQL_init_session ("default", server, uid_p, pwd_p);
+  return A4GLSQL_init_session (
+    "default", 
+    (char *)server, 
+    (char *)uid_p, 
+    (char *)pwd_p
+  );
 }
 
 /**
@@ -317,7 +285,7 @@ extern "C" int A4GLSQL_make_connection (
  */
 extern "C" int A4GLSQL_init_connection (char *dbName)
 {
-  return A4GLSQL_make_connection (dbName,(char *)0,(char *)0);
+  return A4GLSQL_make_connection ((UCHAR *)dbName,(UCHAR *)0,(UCHAR *)0);
 }
 
 /**
@@ -333,6 +301,7 @@ extern "C" int A4GLSQL_close_session (char *sessname)
   if ( !pgDriver.existConnection(sessname) )
   {
     // Error - Connection with that name does not exist
+    // @todo : Set the status, sqlca and error code.
     return 1;
   }
   pgDriver.disconnect(sessname);
@@ -355,6 +324,8 @@ extern "C" int A4GLSQL_close_connection(void)
 
 /**
  * Inicializa a informação sobre o estabelecimento da conexão à base de dados.
+ *
+ * @todo : This function should pass to PgConnection class.
  *
  * @param dbname The database name.
  * @param userName The name of the user.
@@ -415,7 +386,7 @@ extern "C" char *A4GLSQL_get_curr_conn(void)
 {
   char *name;
 
-  /*
+  /* @todo : Finish it
   try {
     PgConnection &currentConnection = pgDriver.getCurrentConnection();
   }
@@ -432,15 +403,10 @@ extern "C" char *A4GLSQL_get_curr_conn(void)
 /**
  * Gets the database name of the current connection.
  *
- * @todo : Implement the mechanism.
- *
- * We need to store the current connection somewhere.
- *
- * @param cursor Understand wats the idea of the cursor.
  * @return The current database name.
  *    - NULL if no current connection.
  */
-extern "C" const char *A4GLSQL_get_currdbname(char *cursor)  
+extern "C" char *A4GLSQL_get_currdbname()  
 {
   char *currConnName;
   PgConnection connection;
@@ -449,49 +415,21 @@ extern "C" const char *A4GLSQL_get_currdbname(char *cursor)
   } 
   catch (ConnectionException& e)
   {
-    // @todo Assign the status and the error message
+    // @todo Assign the status, sqlca and the error message
     return NULL;
   }
 
-  return connection.getDatabaseName();
+  // @todo : Possible memory leak here
+  return strdup(connection.getDatabaseName());
 }
-
-/**
- * Get the connection name for a database.
- * 
- * The connections are stored in the connection manager.
- *
- * This connection manager is for now local to ESQL but should be expanded
- * for all connectors at some time.
- *
- *
- * @param databaseName The name of the database.
- * @return 
- *   - The connection name
- *   - NULL : If no connection for that specific database opened or an error 
- *            ocurred.
- */
-static char *getConnectionForDatabase(char *databaseName)
-{
-  register int i;
-
-  try {
-    PgConnection& connection = pgDriver.getConnectionToDatabase(databaseName);
-  }
-  catch (ConnectionException e)
-  {
-    // @todo Set the status and error message
-    return NULL;
-  }
-  // @todo : Finish this
-}
-
 
 /**
  * Create an sql statement structure.
  *
  * The structure s_sid is necesary because the compiler generate code that work
  * with it.
+ *
+ * @todo : Check and fix this function and pass it to a class.
  *
  * @param ibind The input bind array.
  * @param ni Number of elements in the input bind array.
@@ -503,17 +441,20 @@ static char *getConnectionForDatabase(char *databaseName)
 static struct s_sid *newStatement(
   struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s)
 {
-  struct s_sid *sid = malloc(sizeof(struct s_sid));
+  typedef struct s_sid S_sid;
+  S_sid *sid = (S_sid *)malloc(sizeof(S_sid));
 
   sid->select        = strdup(s);
   sid->ibind         = ibind;
   sid->ni            = ni;
   sid->obind         = obind;
   sid->no            = no;
+  /*
   sid->statementName = strdup(getGlobalStatementName());
 
   statementName = sid->statementName;
   statementText = sid->select;
+  */
   return sid;
 }
 
@@ -534,8 +475,11 @@ static struct s_sid *prepareSqlStatement(
   struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s)
 {
   struct s_sid *sid = newStatement(ibind,ni,obind,no,s);
-  PreparedStatement statement;
+	/** @todo : Implement this
+  PgConnection & pgConnection = pgDriver.getCurrentConnection();
+  PreparedStatement statement = pgConnection.prepareStatement(s);
   statement.prepare(s);
+  */
   return sid;
 }
 
@@ -564,7 +508,7 @@ extern "C" struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDI
  * @param dataType The aubit 4gl data type.
  * @return The informix data type.
  */
-static getIfmxDataType(int dataType)
+static int getIfmxDataType(int dataType)
 {
   return dataType;
 }
@@ -572,13 +516,7 @@ static getIfmxDataType(int dataType)
 /**
  * Bind the value to input descriptor entry.
  *
- * Part of this code is copied from DBD::Informix.
- *
- * @todo : Put the specifics of each ESQLC version just as LF done
- * in DBD.
- * @todo : Put the nulls working.
- * @todo : Implement the blob stuff
- * @todo : Terminate the data types.
+ * @todo This mechanism should pass to one of the classes.
  *
  * @param descName The name for using as a global descriptor.
  * @param idx The position of the bound being setted 
@@ -598,6 +536,8 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
  * Makes the bind of the input variables to pass to the statement to a 
  * global ESQL descriptor area.
  *
+ * @todo : This function should go to one of the classes.
+ *
  * @param descName The name for using as a global descriptor.
  * @param bCount The number of values to bind.
  * @param bind A pointer to the bind array.
@@ -607,9 +547,11 @@ static int bindInputValue(char *descName,int idx,struct BINDING *bind)
  */
 static int processInputBind(char *descName,int bCount,struct BINDING *bind)
 {
-  for ( i = 0 ; i < bindCount ; i++ )
+	/* @todo :Implement this
+  for ( int i = 0 ; i < bindCount ; i++ )
     if ( bindInputValue(descriptorName,i,bind) == 1 )
       return 1;
+      */
   return 0;
 }
 
@@ -618,11 +560,7 @@ static int processInputBind(char *descName,int bCount,struct BINDING *bind)
  *
  * Part of this code is copied from DBD::Informix.
  *
- * @todo : Put the specifics of each ESQLC version just as LF done
- * in DBD.
- * @todo : Put the nulls working.
- * @todo : Implement the blob stuff
- * @todo : Terminate the data types.
+ * @todo : This mechanism should go to one of the classes.
  *
  * @param descName The name for using as a global descriptor.
  * @param idx The position of the bound being setted 
@@ -641,6 +579,8 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
  * Allocate the output descriptors because they must exist before the 
  * execution of the statement.
  *
+ * @todo : I think that this is not necessary here
+ *
  * @param descName The name for using as a global descriptor.
  * @param bCount The number of values to bind.
  * @param bind A pointer to the bind array.
@@ -658,6 +598,8 @@ static int allocateOutputDescriptor(char *descName,
  * Makes the bind of the input variables to pass to the statement to a 
  * global ESQL descriptor area.
  *
+ * @todo : I think that this is not necessary here
+ *
  * @param descName The name for using as a global descriptor.
  * @param bCount The number of values to bind.
  * @param bind A pointer to the bind array.
@@ -673,6 +615,8 @@ static int processOutputBind(char *descName,int bCount,struct BINDING *bind)
 /**
  * Generate the descriptor name.
  *
+ * @todo : I think that this is not necessary here
+ *
  * @param statementName The name of the statement to build descriptor name.
  * @param type The descriptor type:
  *   - I : Descriptor for input bind.
@@ -681,7 +625,7 @@ static int processOutputBind(char *descName,int bCount,struct BINDING *bind)
  */
 char *getDescriptorName(char *statementName,char bindType)
 {
-  char *descriptorName = malloc(sizeof(statementName+6));
+  char *descriptorName = (char *)malloc(sizeof(statementName+6));
   sprintf(descriptorName,"%s_%cbind",statementName,bindType);
   return descriptorName;
 }
@@ -714,7 +658,7 @@ static int getStatementBindType(struct s_sid *sid)
  *
  * The type of the statement is choosed acording the bind available.
  *
- * @todo : Assertions
+ * @todo : This should go to one of the classes. 
  *
  * @param sid The statement information.
  * @return
@@ -743,12 +687,15 @@ extern "C" struct s_sid *A4GLSQL_prepare_sql (char *s)
 /**
  * Store the information of a prepared statement in a global data structure.
  *
- * @param pname The prepare statement name.
+ * @todo The prepared statement should be stored in the connection object.
+ *
+ * @param pname The prepared statement name.
  * @param sid A pointer to the statement information.
  * @return Allways 0
  */
 extern "C" int A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
 {
+	/*
   if (sid)
   {
     add_pointer (pname, PRECODE, sid);
@@ -758,6 +705,7 @@ extern "C" int A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
   {
     return 0;
   }
+  */
 }
 
 /**
@@ -777,6 +725,8 @@ extern "C" int A4GLSQL_execute_sql_from_ptr(char *pname, int ni, char **ibind)
  * Process the binds of a statement before the execution.
  *
  * the structure s_sid is expanded to have the descriptor names.
+ *
+ * @todo This is not necessary here.
  * 
  * @param sid A pointer to the statement identification structure.
  * @return
@@ -791,6 +741,8 @@ static int processPreStatementBinds(struct s_sid *sid)
 /**
  * Dealocate the descriptors used in a statement.
  *
+ * @todo : This should be made in the prepared statement desctruction.
+ *
  * @param sid The statement information.
  * @return
  *  - 0 : Connection closed.
@@ -804,6 +756,8 @@ static int deallocateDescriptors(struct s_sid *sid)
 
 /**
  * Process the binds of a statement after the execution.
+ *
+ * @todo : Even if it is necessary should be made in the statement class
  *
  * the structure s_sid is expanded to have the descriptor names.
  * 
@@ -830,6 +784,8 @@ static int processPosStatementBinds(struct s_sid *sid)
  *
  * Used when the SELECT is a direct SELECT INTO in 4gl code.
  *
+ * @todo : This should be made in one of the classes.
+ *
  * @param sid The statement information that should be prepared.
  * @return
  *  - 0 : Connection closed.
@@ -838,7 +794,7 @@ static int processPosStatementBinds(struct s_sid *sid)
  */
 int A4GLSQL_execute_implicit_select (struct s_sid *sid)
 {
-  debug("PG : execute_implicit_select");
+  //debug("PG : execute_implicit_select");
   if (sid == 0)
     return -1;
 
@@ -911,6 +867,8 @@ extern "C" struct s_sid *A4GLSQL_prepare_select (
  *
  * @todo : Fix other cursor types.
  * @todo : Insert an assertion.
+ * @todo : Understand what cursors do i have in postgresql.
+ * @todo : This should be made in some separate class.
  *
  * @param upd_hold Indicate if the cursor is for update and(or) with hold
  *   - 0 : Not for update and without hold.
@@ -945,6 +903,8 @@ static int getCursorType(int upd_hold,int scroll)
 /**
  * Declare a cursor.
  *
+ * @todo : This shoud be made in a specific class.
+ *
  * @todo : Include assertions.
  *
  * @param upd_hold Indicate if the cursor is for update or with hold.
@@ -964,45 +924,14 @@ extern "C" struct s_cid *A4GLSQL_declare_cursor(
   int retval = 0;
   struct s_cid *cursorIdentification;
 
-  if ( sid == (struct s_sid *)0 )
-    return (struct s_cid *)0;
-
-  cursorIdentification = malloc(sizeof(struct s_cid));
-  cursorIdentification->statement = sid;
-  statementName = sid->statementName;
-  switch (getCursorType(upd_hold,scroll))
-  {
-    case SIMPLE:
-      break;
-    case SIMPLE_SCROLL:
-      break;
-    case FOR_UPDATE:
-      /** @todo : Fix the for update that hould be in prepared select */
-      /*
-      EXEC SQL DECLARE :cursorName CURSOR FOR :statementName FOR UPDATE;
-      */
-      break;
-    case FOR_UPDATE_WITH_HOLD:
-      /*
-      EXEC SQL DECLARE :cursorName SCROLL CURSOR FOR :statementName
-	WITH HOLD FOR UPDATE;
-	*/
-      break;
-    case WITH_HOLD:
-      break;
-    otherwise:
-      /** @todo : Assign an error code  */
-      return (struct s_cid *)0;
-  }
-  if ( isSqlError() )
-    return (struct s_cid *)0;
-  add_pointer (cursname, PRECODE, cursorIdentification);
   return cursorIdentification;
 }
 
 
 /**
  * Open a cursor already declared.
+ *
+ * @todo : This should be made in the PgConnection object.
  *
  * @todo : Terminate the function implementation.
  * @todo : Using its not OK
@@ -1046,9 +975,9 @@ static int getFetchType(int fetch_mode,int fetch_when)
 
   if ( fetch_when == 1 )
   {
-    if ( fetch_mode == FETCH_ABSOLUTE )
+    if ( fetch_mode == FETCH__ABSOLUTE )
       return FETCH_FIRST;
-    else if ( fetch_mode == FETCH_RELATIVE )
+    else if ( fetch_mode == FETCH__RELATIVE )
       return FETCH_NEXT;
     else
       exitwith ("Invalid cursor type");
@@ -1056,18 +985,18 @@ static int getFetchType(int fetch_mode,int fetch_when)
 
   if ( fetch_when == -1 )
   {
-    if ( fetch_mode == FETCH_ABSOLUTE )
+    if ( fetch_mode == FETCH__ABSOLUTE )
       return FETCH_LAST;
-    else if ( fetch_mode == FETCH_RELATIVE )
+    else if ( fetch_mode == FETCH__RELATIVE )
       return FETCH_PREVIOUS;
     else
       exitwith ("Invalid cursor type");
   }
 
-  if ( fetch_mode == FETCH_ABSOLUTE )
+  if ( fetch_mode == FETCH__ABSOLUTE )
     return FETCH__ABSOLUTE;
 
-  if ( fetch_mode == FETCH_RELATIVE )
+  if ( fetch_mode == FETCH__RELATIVE )
     return FETCH__RELATIVE;
   exitwith ("Invalid cursor type");
   return -1;
@@ -1075,6 +1004,8 @@ static int getFetchType(int fetch_mode,int fetch_when)
 
 /**
  * Fetch a cursor into the binding variables.
+ *
+ * @todo : Most of this should be made by ResultSet class
  *
  * @param cursor_name A string containing the 4gl cursor name.
  * @param fetch_mode The type of the fetch to be made:
@@ -1095,49 +1026,6 @@ extern "C" int A4GLSQL_fetch_cursor (char *cursor_name,
 		      int fetch_mode, int fetch_when, int nobind,
 		      struct BINDING *obind)
 {
-  struct s_sid *sid;
-  struct s_cid *cid;
-
-  cid = (struct s_cid *)find_pointer_val (cursorName, PRECODE);
-  sid = (struct s_sid *) cid->statement;
-  if ( sid == (struct s_sid *)0 )
-  {
-    /** @todo : Proper error handling */
-    return 1;
-  }
-
-  sid->obind = obind;
-  sid->no = nobind;
-  /** @todo : Maybe input bind should be cleaned (if exist) */
-  if ( processPreStatementBinds(sid) == 1 )
-    return 1;
-  descriptorName = sid->outputDescriptorName;
-
-  switch (getFetchType(fetch_mode,fetch_when))
-  {
-    case FETCH_FIRST:
-      break;
-    case FETCH_LAST:
-      break;
-    case FETCH_NEXT:
-      break;
-    case FETCH_PREVIOUS:
-      break;
-    case FETCH_CURRENT:
-      break;
-    case FETCH__RELATIVE:
-      break;
-    case FETCH__ABSOLUTE:
-      break;
-    otherwise:
-      exitwith ("Invalid fetch");
-  }
-  if ( isSqlError() )
-    return 1;
-  if ( isNotFound() )
-    return 0;
-  if ( processPosStatementBinds(sid) == 1 )
-    return 1;
   return 0;
 }
 
@@ -1154,22 +1042,14 @@ extern "C" int A4GLSQL_fetch_cursor (char *cursor_name,
  *   - 1 : Data inserted in the cursor.
  *   - 0 : An error as ocurred.
  */
-extern "C" int A4GLSQL_put_insert (struct BINDING *ibind, int n)
+extern "C" void A4GLSQL_put_insert (struct BINDING *ibind, int n)
 {
-  /*
-  if ( ibind != (struct BINDING *)0 && nibind > 0 )
-  {
-    descriptorName = getDescriptorName(statementName,'I');
-
-    if ( processInputBind(descriptorName,nibind,ibind) == 1)
-      exitwith ("Error binding");
-  }
-  */
-  //EXEC SQL PUT :cursorName FROM :state
 }
 
 /**
  * Print the information to the file acording to the data type
+ *
+ * @this should be implemented in an unload class
  * 
  * @param unloadFile A pointer to the opened unload file
  * @param idx The index of the column to be printed
@@ -1192,6 +1072,7 @@ static int printField(FILE *unloadFile,int idx,char *descName)
  * Unload the data to a file acording to SQL statemement with
  * columns separated by a delimiter.
  *
+ * @todo : Implement this in a specific class.
  * @todo : Implement the unload
  * @todo : Merge the code to a connector library in order to have just
  *         one function to do it.
@@ -1204,26 +1085,15 @@ static int printField(FILE *unloadFile,int idx,char *descName)
  *   - 1 : There was an error unloading the data.
  *   - 0 : Data unloaded to file.
  */
-extern "C" int A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
+extern "C" void A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
 {
-  int cnt=0;
-  static char databuf[64000];
-  FILE *unloadFile;
-  int rc = 0;
-
-  unloadFile = mja_fopen(fname,"wt");
-  if ( unloadFile == (FILE *)0 )
-  {
-    /** @todo : Generate some error code compatible with informix 4gl */
-    return 1;
-  }
-  return 0;
 }
 
 /**
  * Implementationin ODBC of the transaction statements (BEGIN WORK, 
  * COMMIT WORK, ROLLBACK WORK).
  *
+ * @todo : Implement this in the connection object.
  * @todo : Change the variable.
  * @todo : See wath is TRANSMODE.
  * @param mode The transaction statement to execute:
@@ -1234,22 +1104,8 @@ extern "C" int A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr)
  *  - 0 : Instruction executed.
  *  - 1 : An error as ocurred.
  */
-extern "C" int A4GLSQL_commit_rollback (int mode)
+extern "C" void A4GLSQL_commit_rollback (int mode)
 {
-  debug ("In commit_rollback");
-
-  switch (mode)
-  {
-    case -1:
-      break;
-    case 0:
-      break;
-    case 1:
-      break;
-  }
-  if ( isSqlError() )
-    return 1;
-  return 0;
 }
 
 /**
@@ -1258,22 +1114,16 @@ extern "C" int A4GLSQL_commit_rollback (int mode)
  * There should be a global strucutre or array where to store all the
  * prepared statements.
  *
+ * @todo : This is implemented inside connection class.
  * @todo : The mode should be used for something.
  *
  * @param pname The statement name.
- * @param mode
  * @return 
  *   - A pointer to the structure found in the tree.
  *   - 0 : The structure was not found
  */
-extern "C" struct s_sid *A4GLSQL_find_prepare (char *pname, int mode)
+extern "C" struct s_sid *A4GLSQL_find_prepare (char *pname)
 {
-  struct s_sid *ptr;
-
-  set_errm (pname);
-  ptr = (struct s_sid *)find_pointer_val (pname, PRECODE);
-  if (ptr)
-    return ptr;
   return (struct s_sid *)0;
 }
 
@@ -1287,13 +1137,14 @@ extern "C" struct s_sid *A4GLSQL_find_prepare (char *pname, int mode)
  *  - 0 : Instruction executed.
  *  - 1 : An error as ocurred.
  */
-extern "C" int A4GLSQL_flush_cursor (char *cursor)
+extern "C" void A4GLSQL_flush_cursor (char *cursor)
 {
-  return 0;
 }
 
 /**
- * Execute an allready preparted SQL statement.
+ * Execute an allready prepared SQL statement.
+ *
+ * @todo Implement this in the PreparedStatement class
  *
  * @param pname  The prepared statement name.
  * @param ni Number of elements in the input bind.
@@ -1308,7 +1159,7 @@ extern "C" int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 
   debug("ESQL : A4GLSQL_execute_sql");
   /** @todo : Fix the mode that is not used now */
-  sid = A4GLSQL_find_prepare (pname, 0);
+  sid = A4GLSQL_find_prepare (pname);
   sid->ibind = ibind;
   sid->ni    = ni;
   if ( processPreStatementBinds(sid) == 1 )
@@ -1324,6 +1175,8 @@ extern "C" int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  * Start getting information about all columns from a table in the database 
  * engine.
  *
+ * @todo : Implement this with getMetaData of Connection class.
+ *
  * This is used to declare record like table.*
  *
  * @param tabname The table that we wish to get information about it.
@@ -1335,7 +1188,8 @@ extern "C" int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
-extern "C" int A4GLSQL_get_columns(char *tabname)
+extern "C" int A4GLSQL_get_columns(char *tabname, char *colname, 
+		                   int *dtype, int *size)
 {
   return 1;
 }
@@ -1347,6 +1201,8 @@ extern "C" int A4GLSQL_get_columns(char *tabname)
  *
  * A4GLSQL_get_columns(char *tabname) should be called before this one.
  *
+ * @todo Use DatabaseMetadata to do it.
+ *
  * This is used to declare record like table.*
  *
  * @param colname The place where to put the column name
@@ -1357,13 +1213,15 @@ extern "C" int A4GLSQL_get_columns(char *tabname)
  *   - 1 : Information readed.
  *   - 0 : Error ocurred.
  */
-extern "C" int A4GLSQL_next_column(char *colname, int *dtype,int *size)
+extern "C" int A4GLSQL_next_column(char **colname, int *dtype,int *size)
 {
   return 1;
 }
 
 /**
  * Free all resources allocated in getting information about columns
+ *
+ * @todo Free(s) a DatabaseMetaData object.
  * 
  * @return 
  *   - 0 : Descriptor dealocated
@@ -1378,6 +1236,7 @@ extern "C" int A4GLSQL_end_get_columns(void)
 /**
  * Gets information about columns from a table in the database engine.
  *
+ * @todo : Use DatabaseMetaData
  * @todo : Put this working with .*
  * @todo : Remove if not used.
  *
@@ -1402,6 +1261,7 @@ static int getDataType(char *connName, char *tabname,char *colname,
  * Aparently the compiler is waiting for an iteration in the columns of a
  * table.
  *
+ * @todo : Use database metadata.
  * @todo : Put this working with .*
  * @todo : Use the getDataType()
  *
@@ -1422,6 +1282,8 @@ extern "C" int A4GLSQL_read_columns(char *tabname,char *colname,int *dtype,int *
 /**
  * Get the datatype of a column in the database engine.
  *
+ * @todo : Use database metadata.
+ *
  * @todo : Understand if this function is used somewhere.
  *
  * @param db The database name.
@@ -1437,7 +1299,7 @@ extern "C" int A4GLSQL_get_datatype (char *db, char *tab, char *col)
   int length;
   char *connectionName;
 
-  connectionName = getConnectionForDatabase(db);
+  //connectionName = pgDriver.getConnectionNameForDatabase(db);
   if ( connectionName == NULL )
     return -1;
 
@@ -1449,22 +1311,25 @@ extern "C" int A4GLSQL_get_datatype (char *db, char *tab, char *col)
 /**
  * Close a cursor opened.
  *
+ * @todo : Use the connection class
+ *
  * @param currname The name of the cursor.
  * @return
  */
 extern "C" int A4GLSQL_close_cursor(char *currname)  
 {
-  return 0;
+  return 1;
 }
 
 /**
  * @todo : Understand if this function is used.
  */
-int
-extern "C" A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
+extern "C" int A4GLSQL_fill_array (int mx, char **arr1, int szarr1, 
+		    char **arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
   exitwith ("Could not fill_array - noODBC build");
+  return 1;
 }
 
 /**
@@ -1476,16 +1341,16 @@ extern "C" A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int
  * @param a The value to be assigned to sqlca.sqlcode
  * @return Allways 0
  */
-extern "C" int A4GLSQL_set_sqlca_sqlcode (int a)
+extern "C" void A4GLSQL_set_sqlca_sqlcode (int a)
 {
   status = a;
   sqlca.sqlcode = a;
-  return 0;
 }
 
 /**
  * Describe an sql statement.
  *
+ * @todo : Implement it with the preparedStatement.getMetaData()
  * @todo : Understand where this is used.
  *
  * @param stmt The text with the statement to be described.

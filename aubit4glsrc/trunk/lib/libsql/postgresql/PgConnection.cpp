@@ -14,13 +14,22 @@
 using namespace Aubit4glSql_postgresql;
 
 /**
- * Class constructor
+ *  The default constructor.
+ */
+PgConnection::PgConnection()
+{
+  statementCount = 0;
+}
+
+/**
+ * One convenient constructor.
  *
  * @param _dbName
  * @param _connName
  */
 PgConnection::PgConnection(const char *_dbName, const char *_connName)
 {
+  PgConnection();
   databaseName = strdup(_dbName);
   connectionName = strdup(_connName);
 }
@@ -64,6 +73,20 @@ const char *PgConnection::getDatabaseName()
 char *PgConnection::getErrorMessage()
 {
   return errorMessage;
+}
+
+/**
+ * Get a unique name for a global (not named) statement.
+ * To obtain it increment the static statementCount.
+ *
+ * @return The global statement count @return The global statement count.
+ */
+char *PgConnection::getGlobalStatementName(void)
+{
+  static char statementName[10];
+
+  sprintf(statementName,"st_%d",statementCount);
+  return statementName;
 }
 
 /**

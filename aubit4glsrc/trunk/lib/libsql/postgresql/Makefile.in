@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.2 2002-09-25 05:42:16 afalout Exp $
+# $Id: Makefile.in,v 1.3 2003-01-12 21:28:44 saferreira Exp $
 #
 
 ROOT    =../../..
@@ -38,12 +38,16 @@ include ../../../incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
+SRC=postgresql.cpp ConnectionException.cpp PgConnection.cpp \
+PgDriver.cpp PreparedStatement.cpp
+OBJS=${SRC:.cpp=.o}
 CFLAGS+=-I..
+CXXFLAGS=$(CFLAGS)
 
-ifeq "${COMSPEC}" ""
-    ALL=libSQL_nosql${SO_EXT}
+ifdef ${COMSPEC}
+    ALL=dllSQL_pg.dll
 else
-    ALL=nosql.dll
+    ALL=libSQL_pg${SO_EXT}
 endif
 
 ## ==================================================================
@@ -52,15 +56,13 @@ endif
 
 ALL: ${ALL}
 
-nosql${SO_EXT}: libSQL_nosql${SO_EXT}
-
-libSQL_nosql${SO_EXT}: nosql.o
-	${LD} ${SO_LDFLAGS} $^ -o $@
+libSQL_pg${SO_EXT}: $(OBJS)
+	${LD} ${SO_LDFLAGS} $^ -Lpq -o $@
 	${CP} $@ ${LIBROOT}
 
-nosql.dll: nosql.o
-	${MAKE} libSQL_nosql.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L../.."
-	${CP} libSQL_nosql.dll libSQL_nosql${DLL_EXPORTLIB_EXT} ${LIBROOT}
+## ==================================================================
+##                          Windows targets
+## ==================================================================
 
 
 ## ==================================================================

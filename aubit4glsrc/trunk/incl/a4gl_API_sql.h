@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.6 2002-10-22 06:43:36 afalout Exp $
+# $Id: a4gl_API_sql.h,v 1.7 2003-01-12 21:28:26 saferreira Exp $
 #
 */
 
@@ -50,6 +50,9 @@ define it in any case? */
 
 /* ==================== from a4gl_database.h ============== */
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 	/**
 	 * An SQL statement identification structure.
@@ -89,6 +92,7 @@ define it in any case? */
 	char * 	A4GLSQL_get_curr_conn 	(void);
 	char *	A4GLSQL_get_sqlerrm 	(void);
 	int 	A4GLSQL_read_columns	(char *tabname, char *colname, int *dtype, int *size);
+	/** @todo : Wy use UCHAR and not char *? */
 	int 	A4GLSQL_make_connection	(UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p);
 	int 	A4GLSQL_get_datatype   	(char *db, char *tab, char *col);
 	int 	A4GLSQL_init_session   	(char *sessname, char *dsn, char *usr, char *pwd);
@@ -128,6 +132,9 @@ define it in any case? */
 
 	// used only in Informix ESQL plug-in
 	int A4GLSQL_close_connection(void);
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif /* ifndef DLSQLDEF_INCL */

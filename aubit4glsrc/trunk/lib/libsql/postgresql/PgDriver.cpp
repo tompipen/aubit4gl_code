@@ -219,3 +219,17 @@ PgConnection PgDriver::getConnectionToDatabase(const char *dbName)
 {
 	// @todo Implement it
 }
+
+/**
+ * Get the connection name for a database name.
+ *
+ * @param dbName The name of the database.
+ * @return
+ *   - The name of the connection.
+ *   - NULL : No such connection.
+ */
+const char *PgDriver::getConnectionNameToDatabase(const char *dbName)
+{
+	// @todo Implement it
+  return "XX";
+}
