@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.40 2004-03-24 11:45:48 mikeaubury Exp $
+# $Id: calldll.c,v 1.41 2004-04-21 14:45:35 mikeaubury Exp $
 #
 */
 
@@ -43,6 +43,8 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
+
+#ifndef CSCC
 
 #if defined(__hpux__) //HP-UX UNIX OS
 #define USE_SHL 1
@@ -684,6 +686,6 @@ A4GL_debug("nfile=%s\n",A4GL_null_as_null(nfile));
 
 }
 #endif /* #if (defined(WIN32) && ! defined(__CYGWIN__)) */
-
+#endif /* CSCC */
 
 /* ============================= EOF ================================== */

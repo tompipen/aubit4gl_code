@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.74 2004-03-29 09:11:24 mikeaubury Exp $
+# $Id: conv.c,v 1.75 2004-04-21 14:45:36 mikeaubury Exp $
 #
 */
 
@@ -1338,7 +1338,7 @@ A4GL_stosf (void *aa, void *zz, int sz_ignore)
 int
 A4GL_dectol (void *zz, void *aa, int sz_ignore)
 {
-  static char buff[65];
+  static char buff_dectol[65];
   long *a;
   char *z;
 int rval;
@@ -1346,8 +1346,8 @@ int rval;
   a = (long *) aa;
   z = (char *) zz;
   A4GL_debug ("dectol");
-  A4GL_dectos (z, buff, 64);
-  rval=A4GL_stol (buff, a, 0);
+  A4GL_dectos (z, buff_dectol, 64);
+  rval=A4GL_stol (buff_dectol, a, 0);
   A4GL_debug("rval=%d",rval);
   return rval;
 }
@@ -1365,17 +1365,17 @@ int rval;
 int
 A4GL_dectoi (void *zz, void *aa, int sz_ignore)
 {
-  static char buff[65];
+  static char buff_dectoi[65];
   short *a;
   char *z;
 int rval;
   A4GL_debug ("dectoi");
   a = (short *) aa;
   z = (char *) zz;
-  A4GL_dectos (z, buff, 64);
-  A4GL_debug("--> %s\n",A4GL_null_as_null(buff));
+  A4GL_dectos (z, buff_dectoi, 64);
+  A4GL_debug("--> %s\n",A4GL_null_as_null(buff_dectoi));
 
-  rval=A4GL_stoi (buff, a, 0);
+  rval=A4GL_stoi (buff_dectoi, a, 0);
 
   return rval;
 }
@@ -1393,13 +1393,13 @@ int rval;
 int
 A4GL_dectod (void *zz, void *aa, int sz_ignore)
 {
-  char buff[65];
+  char buff_dectod[65];
   long *a;
   char *z;
   a = (long *) aa;
   z = (char *) zz;
-  A4GL_dectos (z, buff, 64);
-  return A4GL_stol (buff, a, 0);
+  A4GL_dectos (z, buff_dectod, 64);
+  return A4GL_stol (buff_dectod, a, 0);
 }
 
 /**

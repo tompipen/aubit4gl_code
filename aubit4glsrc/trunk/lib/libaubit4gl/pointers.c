@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.25 2004-02-20 14:39:52 mikeaubury Exp $
+# $Id: pointers.c,v 1.26 2004-04-21 14:47:00 mikeaubury Exp $
 #
 */
 
@@ -48,9 +48,10 @@
 
 #define TXT_LEN 128
 
-#define  FIND(a) (tfind(a,(void *)&root,A4GL_strcmpare))
-#define  ADD(a) (tsearch(a,(void *)&root,A4GL_strcmpare))
-#define  DELETE(a) (tdelete(a,(void *)&root,A4GL_strcmpare))
+
+#define  FIND(a) (tfind((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
+#define  ADD(a) (tsearch((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
+#define  DELETE(a) (tdelete((char *)a,(void *)&root,(int(*)(const void *, const void *))A4GL_strcmpare))
 
 /*
 =====================================================================
@@ -88,6 +89,7 @@ struct s_node
 //#if defined(__DARWIN__) || defined (WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 //actually, should use  #if HAVE_SEARCH_H
 #if HAVE_SEARCH_H
+#error "I thought It'd been commented out.."
 //#  include <search.h>
 #else
 
@@ -117,11 +119,11 @@ typedef struct node_t
 }
 node;
 
-node *tsearch (char *key, node ** rootp, int (*compar) ());
-node *tdelete (char *key, node ** rootp, int (*compar) ());
+node *tsearch (char *key, node ** rootp, int (*compar) (const void *l,const void *r));
+node *tdelete (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
 void twalk (node * root, void *act);
 	// void twalk(node *root, VISIT action);
-node *tfind (char *key, node ** rootp, int (*compar) ());
+node *tfind (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
 #endif
 
 /*
@@ -209,7 +211,7 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
   struct s_node *buff;
   struct s_node *buff_add;
   struct s_node buff2;
-  struct s_node *node;
+  struct s_node *anode;
   char ptrchar[800];
   A4GL_trim (orig_name);
   //A4GL_debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
@@ -224,12 +226,12 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
   if (a)
     {
       //A4GL_debug ("Found an existing one %p\n", a);
-      node = *(struct s_node **) a;
-      //A4GL_debug ("Node = %p\n", node);
-      //A4GL_debug ("Node=%p name=%s\n", node, node->name);
+      anode = *(struct s_node **) a;
+      //A4GL_debug ("Node = %p\n", anode);
+      //A4GL_debug ("Node=%p name=%s\n", anode, anode->name);
       sprintf (ptrchar, ">%p", buff->ptr);
       //A4GL_debug ("Copied ptr\n");
-      node->ptr = ptr;
+      anode->ptr = ptr;
       //A4GL_debug ("Copy buffer %s\n", ptrchar);
       strcpy (buff2.name, ptrchar);
       //A4GL_debug ("And find its pointer\n");
@@ -237,14 +239,14 @@ A4GL_add_pointer (char *orig_name, char type, void *ptr)
       if (a)
 	{
 	  //A4GL_debug ("Found ptr... \n");
-	  node = *(struct s_node **) a;
+	  anode = *(struct s_node **) a;
 #if ! defined(__MINGW32__)
 	  DELETE (&buff2);
 #endif
 
-	  //A4GL_debug ("Try to free %p\n", node);
-	  strcpy (node->name, "======");
-	  free (node);
+	  //A4GL_debug ("Try to free %p\n", anode);
+	  strcpy (anode->name, "======");
+	  free (anode);
 	}
       else
 	{
@@ -279,7 +281,7 @@ void *
 A4GL_find_pointer (const char *pname, char t)
 {
   struct s_node buff;
-  struct s_node *node;
+  struct s_node *anode;
   void *a;
 
   buff.name[0] = t;
@@ -291,10 +293,10 @@ A4GL_find_pointer (const char *pname, char t)
   ////A4GL_debug ("A=%p", a);
   if (a != NULL)
     {
-      node = *(struct s_node **) a;
+      anode = *(struct s_node **) a;
 
-      //A4GL_debug ("30 Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
-      return node->ptr;
+      //A4GL_debug ("30 Returning %s %c %p", &anode->name[1], anode->name[0], anode->ptr);
+      return anode->ptr;
     }
   else
     {
@@ -313,7 +315,7 @@ A4GL_find_pointer (const char *pname, char t)
 void
 print_ptr_stack (void)
 {
-  twalk (root, A4GL_action);
+  twalk (root, (void(*)(const void *nodep, const VISIT which, const int depth)) A4GL_action);
 }
 
 /**
@@ -328,7 +330,7 @@ A4GL_del_pointer (char *pname, char t)
   void *a;
   struct s_node *buff;
   struct s_node buff2;
-  struct s_node *node;
+  struct s_node *anode;
   char ptrchar[800];
   buff = (struct s_node *) malloc (sizeof (struct s_node));
   buff->name[0] = t;
@@ -338,18 +340,18 @@ A4GL_del_pointer (char *pname, char t)
   a = FIND (buff);
   if (a)
     {
-      node = *(struct s_node **) a;
-      sprintf (ptrchar, ">%p", node->ptr); // Was buff
+      anode = *(struct s_node **) a;
+      sprintf (ptrchar, ">%p", anode->ptr); // Was buff
       strcpy (buff2.name, ptrchar);
       a = FIND (&buff2);
       if (a)
 	{
-	  node = *(struct s_node **) a;
+	  anode = *(struct s_node **) a;
 #if ! defined(__MINGW32__)
 	  DELETE (&buff2);
 #endif
-	  strcpy (node->name, "======");
-	  free (node);
+	  strcpy (anode->name, "======");
+	  free (anode);
 	}
 #if ! defined(__MINGW32__)
       DELETE (buff);
@@ -387,7 +389,7 @@ int
 A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
 {
   struct s_node buff;
-  struct s_node *node;
+  struct s_node *anode;
   void *a;
   //A4GL_debug ("Finding pointer to pointer %p", ptr);
   sprintf (buff.name, ">%p", ptr);
@@ -398,12 +400,12 @@ A4GL_find_pointer_ptr (char *name, char *type, void *ptr)
   //A4GL_debug ("Find returns %p", a);
   if (a)
     {
-      node = *(struct s_node **) a;
-      node = (struct s_node *) node->ptr;
+      anode = *(struct s_node **) a;
+      anode = (struct s_node *) anode->ptr;
 
-      //A4GL_debug ("Copying.. %s", node->name);
-      *type = node->name[0];
-      strcpy (name, &node->name[1]);
+      //A4GL_debug ("Copying.. %s", anode->name);
+      *type = anode->name[0];
+      strcpy (name, &anode->name[1]);
       return 1;
     }
   else
@@ -462,7 +464,7 @@ A4GL_has_pointer (char *pname, char t)
        key;
      register node **
        rootp;
-     int (*compar) ();
+     int (*compar) (const void *l,const void *r);
 {
   register node *q;
 
@@ -501,7 +503,7 @@ node *
 tdelete (key, rootp, compar)
      char *key;			/* key to be deleted */
      register node **rootp;	/* address of the root of tree */
-     int (*compar) ();		/* comparison function */
+     int (*compar) (const void *l,const void *r);		/* comparison function */
 {
   node *p;
   register node *q;
@@ -555,13 +557,20 @@ tdelete (key, rootp, compar)
  * @todo Describe function
  */
 static void
-trecurse (root, action, level)
-     register node *root;	/* Root of the tree to be walked */
-     register void (*action) ();	/* Function to be called at each node */
-     register int level;
+trecurse (
+node *root, void (*action)(void *,int ,int ), int level)
 {
-  if (root->left == (struct node_t *) 0 && root->right == (struct node_t *) 0)
-    (*action) (root, leaf, level);
+#ifdef N
+     register node *root;	/* Root of the tree to be walked */
+     register void (*action) (void *,int,int);	/* Function to be called at each node */
+     register int level;
+#endif
+  if (root->left == (struct node_t *) 0 && root->right == (struct node_t *) 0) { 
+		(*action) ((void *)root, 
+				(int)(leaf), 
+					(int)level
+		);
+	}
   else
     {
       (*action) (root, preorder, level);
@@ -573,6 +582,8 @@ trecurse (root, action, level)
       (*action) (root, endorder, level);
     }
 }
+
+
 
 /**
  * Walk the nodes of a tree .
@@ -609,7 +620,7 @@ twalk (node * root, void *act)
  *   - 0 : Key not found in the tree.
  *   - 1 : Key found in the tree.
  */
-node * tfind (char *key, register node ** rootp, int (*compar) ())
+node * tfind (char *key, register node ** rootp, int (*compar) (const void *l,const void *r))
 {
   if (rootp == (struct node_t **) 0)
     return ((struct node_t *) 0);

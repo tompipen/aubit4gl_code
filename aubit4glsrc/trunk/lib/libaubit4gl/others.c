@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.38 2004-03-14 10:41:49 mikeaubury Exp $
+# $Id: others.c,v 1.39 2004-04-21 14:46:58 mikeaubury Exp $
 #
 */
 
@@ -352,17 +352,17 @@ A4GL_set_last_key (int a)
  */
 char * A4GL_strip_quotes (char *s)
 {
-  static char buff[1024];
+  static char buff_sq[1024];
   if ((s[0] == '"' || s[0] == '\'') && s[strlen (s) - 1] == s[0])
     {
-      strcpy (buff, &s[1]);
-      buff[strlen (buff) - 1] = 0;
+      strcpy (buff_sq, &s[1]);
+      buff_sq[strlen (buff_sq) - 1] = 0;
     }
   else
     {
-      strcpy (buff, s);
+      strcpy (buff_sq, s);
     }
-  return buff;
+  return buff_sq;
 }
 
 

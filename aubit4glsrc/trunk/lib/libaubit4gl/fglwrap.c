@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.60 2004-04-20 17:47:25 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.61 2004-04-21 14:45:59 mikeaubury Exp $
 #
 */
 
@@ -827,6 +827,10 @@ A4GL_def_int (void)
 //This conditional will happen ONLY when NOT compiling on Windows, or when compiling on Windows
 // with CygWin compiler
 
+
+#ifndef CSCC
+
+
 /**
  * Stop the DEFER INTERRUPT in unix systems.
  */
@@ -944,7 +948,7 @@ A4GL_def_int (void)
       A4GL_exitwith ("Could not defer interrupt");
     }
 }
-
+#endif
 
 // ######################################################################
 #endif  //#if (defined(WIN32) && ! defined(__CYGWIN__))

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.31 2004-03-17 13:33:55 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.32 2004-04-21 14:46:03 mikeaubury Exp $
 #
 */
 
@@ -535,7 +535,8 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 		(strcasecmp (acl_getenv ("FORMAT_OVERFLOW"), "ROUND") == 0))
 	      {
 	 A4GL_debug ("trying fmt=%s", fmt);
-		return (a4gl_using (str, s, fmt, num));
+		a4gl_using (str, s, fmt, num);
+		return ;
 	      }
 	  }
 	// default is to use the strict I4GL behaviour, stars

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.13 2003-10-21 13:52:01 mikeaubury Exp $
+# $Id: dmy.c,v 1.14 2004-04-21 14:45:58 mikeaubury Exp $
 #
 */
 
@@ -159,7 +159,7 @@ A4GL_using_date (int dn, char *us)
   int m;
   int y;
   int dno;
-  static char buff[256];
+  static char buff_using_date[256];
   char buff2[256];
 
   char *using_strs[] = {
@@ -181,11 +181,11 @@ A4GL_using_date (int dn, char *us)
   /* if no format is given, use DBDATE */
   if ((us == 0) || (*us == '\0'))
     {
-      strcpy (buff, A4GL_dbdate_to_using (""));
+      strcpy (buff_using_date, A4GL_dbdate_to_using (""));
     }
   else
     {
-      strcpy (buff, us);
+      strcpy (buff_using_date, us);
     }
 
   A4GL_get_date (dn, &d, &m, &y);
@@ -219,10 +219,10 @@ A4GL_using_date (int dn, char *us)
   /* replace the ddmmyy etc with something the user cant have used */
   for (a = 0; using_strs[a][0] != 0; a++)
     {
-        strcpy (buff2, A4GL_dategsub (buff, using_strs[a], rusing_strs[a]));
-        strcpy (buff, buff2);
-        strcpy (buff2, A4GL_dategsub (buff, UCusing_strs[a], rusing_strs[a]));
-        strcpy (buff, buff2);
+        strcpy (buff2, A4GL_dategsub (buff_using_date, using_strs[a], rusing_strs[a]));
+        strcpy (buff_using_date, buff2);
+        strcpy (buff2, A4GL_dategsub (buff_using_date, UCusing_strs[a], rusing_strs[a]));
+        strcpy (buff_using_date, buff2);
     }
 
   /* now replace these with what the user wants - this gets around d
@@ -230,18 +230,18 @@ A4GL_using_date (int dn, char *us)
 
   for (a = 0; rusing_strs[a][0] != 0; a++)
     {
-      if (strstr (buff, rusing_strs[a]) != 0)
+      if (strstr (buff_using_date, rusing_strs[a]) != 0)
 	{
 	  flg = 1;
-	  strcpy (buff2, A4GL_dategsub (buff, rusing_strs[a], rep_strs[a]));
-	  strcpy (buff, buff2);
+	  strcpy (buff2, A4GL_dategsub (buff_using_date, rusing_strs[a], rep_strs[a]));
+	  strcpy (buff_using_date, buff2);
 	}
     }
 
   if (flg == 0)
     return 0;
 
-  return buff;
+  return buff_using_date;
 }
 
 /**
@@ -251,21 +251,21 @@ A4GL_using_date (int dn, char *us)
 char *
 A4GL_dategsub (char *s, char *r, char *p)
 {
-  static char buff[256];
+  static char buff_dategsub[256];
   char buff2[256];
   char buff3[256];
   char *ptr;
-  buff[0] = 0;
+  buff_dategsub[0] = 0;
   strcpy (buff2, s);
   while ((ptr = (char *) strstr (buff2, r)))
     {
-      strncat (buff, buff2, ptr - buff2);
-      strcat (buff, p);
+      strncat (buff_dategsub, buff2, ptr - buff2);
+      strcat (buff_dategsub, p);
       strcpy (buff3, ptr + strlen (r));
       strcpy (buff2, buff3);
     }
-  strcat (buff, buff2);
-  return buff;
+  strcat (buff_dategsub, buff2);
+  return buff_dategsub;
 }
 
 /*

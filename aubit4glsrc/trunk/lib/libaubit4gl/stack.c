@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.89 2004-04-13 18:06:03 mikeaubury Exp $
+# $Id: stack.c,v 1.90 2004-04-21 14:47:25 mikeaubury Exp $
 #
 */
 
@@ -938,13 +938,13 @@ A4GL_debug("51 Have data");
       int ok = 0;
       int eql;
       char *s;
-      static int cntsql = 0;
+      static int cntsql_0 = 0;
       char cname[256];
       char tmpvar[256];
       struct BINDING ibind[] = {
 	{&tmpvar, 0, 255}
       };			/* end of binding */
-      sprintf (cname, "chkin_%d", cntsql++);
+      sprintf (cname, "chkin_%d", cntsql_0++);
 
       s = A4GL_char_pop ();
       A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
@@ -997,7 +997,7 @@ A4GL_debug("51 Have data");
       int ok = 0;
       char *s;
       char tmpvar[256];
-      static int cntsql = 0;
+      static int cntsql_1 = 0;
       char cname[256];
 
       struct BINDING ibind[] = { {&tmpvar, 0, 255} };	/* end of binding */
@@ -1008,7 +1008,7 @@ A4GL_debug("51 Have data");
       int n;
 
       A4GL_debug ("OP_EXISTS - OP_NOTEXISTS...");
-      sprintf (cname, "chkex%d", cntsql++);
+      sprintf (cname, "chkex%d", cntsql_1++);
       A4GL_debug ("Popping binding...");
 
       dbind = A4GL_pop_binding (&n);
@@ -1786,7 +1786,7 @@ int first;
   if (strchr(z1,'/') && A4GL_stod (z1, &adate, 0) == 1) // Looks a bit like a date...
     {
 
-	if (!A4GL_isnull(DTYPE_DATE,&adate)) {
+	if (!A4GL_isnull(DTYPE_DATE,(void *)&adate)) {
       		A4GL_debug ("String looks like it is a date...");
 
 		if (first==0) 

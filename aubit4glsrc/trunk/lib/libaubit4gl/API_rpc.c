@@ -1,146 +1,125 @@
 /*
-# +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
-# +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
-# +----------------------------------------------------------------------+
-# | This program is free software; you can redistribute it and/or modify |
-# | it under the terms of one of the following licenses:                 |
-# |                                                                      |
-# |  A) the GNU General Public License as published by the Free Software |
-# |     Foundation; either version 2 of the License, or (at your option) |
-# |     any later version.                                               |
-# |                                                                      |
-# |  B) the Aubit License as published by the Aubit Development Team and |
-# |     included in the distribution in the file: LICENSE                |
-# |                                                                      |
-# | This program is distributed in the hope that it will be useful,      |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
-# | GNU General Public License for more details.                         |
-# |                                                                      |
-# | You should have received a copy of both licenses referred to here.   |
-# | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
-# +----------------------------------------------------------------------+
-#
-# $Id: API_rpc.c,v 1.16 2004-04-21 10:53:01 mikeaubury Exp $
-#
-*/
-
-/**
+ * lib=RPC env=A4GL_RPCTYPE lib_prefix= api_prefix=
  * @file
+ * File definition
  *
- * @todo Add Doxygen A4GL_comments to file
+ * This file was created from .spec file of same name, using dlmagic script
+ * - if you need to edit it, edit .spec file instad, and use [make filename.c]
+ * to re-create it.
+ *
+ * @todo Add Doxygen comments to file
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
  */
 
-/*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
+/*******************************************************************
+* (c) 1997-2002 Aubit Computing Ltd.
+*
+*
+********************************************************************/
+
 
 #include "a4gl_libaubit4gl_int.h"
 
-/*
-=====================================================================
-                    Variables definitions
-=====================================================================
-*/
-
-static void *libptr = 0;
-
-/*
-=====================================================================
-                    Functions prototypes
-=====================================================================
-*/
-
-int A4GL_register_func(char *s,void *ptr) ;
-int A4GL_unregister_func(char *s,void *ptr) ;
-int A4GL_server_run(long service) ;
-
-/*
-=====================================================================
-                    Functions definitions
-=====================================================================
-*/
-
+static void *libptr=0;
+int A4GLRPC_initlib (void);
+void A4GLRPC_clrlibptr (void);
+int dlclose (void *__handle);
 
 /**
+ * Library init function.
  *
- * @todo Describe function
+ * @todo : explain ussage and parameters.
+ * @return .
  */
-int
-A4GLRPC_initlib (void)
-{
 
-  static int (*A4GL_func) (void);
-  A4GL_debug ("Opening RPC library");
-  libptr = (void *) A4GL_dl_openlibrary ("RPC", acl_getenv ("RPCTYPE"));
+void A4GLRPC_clrlibptr (void) {
+    if (libptr) {dlclose(libptr);}
+    libptr=0;
+}
 
-  A4GL_debug ("libptr=%p\n", libptr);
-
-  if (libptr == 0)
-    {
-      A4GL_exitwith ("Unable to open RPC library.");
+int A4GLRPC_initlib (void) {
+int (*func)(void);
+   libptr=(void *)A4GL_dl_openlibrary("RPC",acl_getenv("A4GL_RPCTYPE"));
+   if (libptr==0) {
+      A4GL_exitwith("Unable to open  library...");
       return 0;
-    }
+   }
+   func=A4GL_find_func_allow_missing(libptr,"A4GLRPC_initlib");
 
-  A4GL_func = A4GL_find_func_allow_missing (libptr, "A4GLRPC_initlib");
-
-  if (A4GL_func)
-    return A4GL_func ();
-  else
-    return 1;
+   if (func)
+      return func();
+   else
+      return 1;
 }
 
 
+/* int A4GL_remote_func_call (char *host, int async, char *funcname, int port, int np) */
+/* int A4GL_register_func(char *s,void *ptr)  */
+/* int A4GL_unregister_func(char *s,void *ptr)  */
+/* int A4GL_server_run(long service)  */
+int A4GL_remote_func_call(char* host,int async,char* funcname,int port,int np) {
+int rval;
+static int (*func_1)(char *  ,int ,char *  ,int ,int );
+#ifdef DEBUG
+A4GL_debug("Call to int A4GL_remote_func_call((%s)),%d,(%s)),%d,%d)\n",A4GL_null_as_null(host),async,A4GL_null_as_null(funcname),port,np);
+#endif
+   if (libptr==0) A4GLRPC_initlib();
+   func_1=A4GL_find_func(libptr,"A4GL_remote_func_call");
+   rval=(int)func_1 (host,async,funcname,port,np);
+#ifdef DEBUG
+A4GL_debug("Returning %d",rval);
 
-
-/**
- *
- * @todo Describe function
- */
-int
-A4GL_remote_func_call (char *host, int async, char *funcname, int port, int np)
-{
-  static int (*A4GL_func) (char *host,int async,char *funcname,int port,int np);
-  A4GL_debug ("remote_func_call - libptr=%p\n",libptr);
-  if (libptr == 0)
-    A4GLRPC_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_remote_func_call");
-  return A4GL_func (host, async, funcname, port, np);
-
+#endif
+return rval;
 }
 
+int A4GL_register_func(char* s,void* ptr) {
+int rval;
+static int (*func_2)(char *  ,void *  );
+#ifdef DEBUG
+A4GL_debug("Call to int A4GL_register_func((%s)),%p)\n",A4GL_null_as_null(s),ptr);
+#endif
+   if (libptr==0) A4GLRPC_initlib();
+   func_2=A4GL_find_func(libptr,"A4GL_register_func");
+   rval=(int)func_2 (s,ptr);
+#ifdef DEBUG
+A4GL_debug("Returning %d",rval);
 
-int A4GL_register_func(char *s,void *ptr) {
-  static int (*A4GL_func) (char *s,void *ptr);
-  A4GL_debug ("remote_func_call - libptr=%p\n");
-  if (libptr == 0) A4GLRPC_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_register_func");
-  return A4GL_func (s,ptr);
+#endif
+return rval;
 }
 
+int A4GL_unregister_func(char* s,void* ptr) {
+int rval;
+static int (*func_3)(char *  ,void *  );
+#ifdef DEBUG
+A4GL_debug("Call to int A4GL_unregister_func((%s)),%p)\n",A4GL_null_as_null(s),ptr);
+#endif
+   if (libptr==0) A4GLRPC_initlib();
+   func_3=A4GL_find_func(libptr,"A4GL_unregister_func");
+   rval=(int)func_3 (s,ptr);
+#ifdef DEBUG
+A4GL_debug("Returning %d",rval);
 
-int A4GL_unregister_func(char *s,void *ptr) {
-  static int (*A4GL_func) (char *s,void *ptr);
-  A4GL_debug ("remote_func_call - libptr=%p\n");
-  if (libptr == 0) A4GLRPC_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_unregister_func");
-  return A4GL_func (s,ptr);
+#endif
+return rval;
 }
 
 int A4GL_server_run(long service) {
-  static int (*A4GL_func) (long s);
-  A4GL_debug ("remote_func_call - libptr=%p\n");
-  if (libptr == 0) A4GLRPC_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_server_run");
-  return A4GL_func (service);
+int rval;
+static int (*func_4)(long );
+#ifdef DEBUG
+A4GL_debug("Call to int A4GL_server_run(%p)\n",service);
+#endif
+   if (libptr==0) A4GLRPC_initlib();
+   func_4=A4GL_find_func(libptr,"A4GL_server_run");
+   rval=(int)func_4 (service);
+#ifdef DEBUG
+A4GL_debug("Returning %d",rval);
+
+#endif
+return rval;
 }
 
-
-
-
-/* ============================== EOF ================================= */

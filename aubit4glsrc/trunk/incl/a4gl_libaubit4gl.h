@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.121 2004-04-15 21:16:37 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.122 2004-04-21 14:45:09 mikeaubury Exp $
 #
 */
 
@@ -59,6 +59,8 @@
      Constants definitions
      =====================================================================
    */
+
+
 
 #if (defined(__CYGWIN__))
   /* we do not want code to behave as native Windows code if we are
@@ -429,7 +431,11 @@
   /* header automatically created with AutoConf-configure */
 	#include "a4gl_incl_config.h"
 #endif
-
+#ifdef CSCC
+#define NO_UNIX_HEADERS
+#undef HAVE_SEARCH_H
+#undef HAVE_NETINET_IN_H
+#endif
 	#ifndef __NO_STDARG__
 		#include <stdarg.h>		/* va_start(), va-list ... */
 	#endif
@@ -745,6 +751,33 @@ int A4GL_readkey(void);
 			     int border);
   char *A4GL_glob_window (int x, int y, int w, int h, int border);
   void *A4GL_find_pointer (const char *pname, char t);
+
+
+  struct s_form_attr
+  {
+    int mode;
+    int colour;
+    char border;
+    int inpattr;
+    int dispattr;
+    int nextkey;
+    int prevkey;
+    int input_wrapmode;
+    int comment_line;
+    int form_line;
+    int menu_line;
+    int message_line;
+    int prompt_line;
+    int fcnt;
+    int insmode;
+    int error_line;
+    int inskey;
+    int delkey;
+    int helpkey;
+    int acckey;
+    int fieldconstr;
+    int sqlintr;
+  };
 
   /* OBJECTMODULE is defined ONLY in keys.c */
 #ifdef OBJECTMODULE
@@ -1450,7 +1483,7 @@ void A4GL_display_at (int n, int a);
 
   /* ============================ maths.c ================================ */
   void *A4GL_find_op_function (int dtype1, int dtype2, int op);
-  void A4GL_add_op_function (int dtype1, int dtype2, int op, void *function);
+  void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
   /* ============================ translate.c ============================ */
 
@@ -1651,33 +1684,6 @@ void A4GL_display_at (int n, int a);
     int attrib;
   };
 
-
-
-  struct s_form_attr
-  {
-    int mode;
-    int colour;
-    char border;
-    int inpattr;
-    int dispattr;
-    int nextkey;
-    int prevkey;
-    int input_wrapmode;
-    int comment_line;
-    int form_line;
-    int menu_line;
-    int message_line;
-    int prompt_line;
-    int fcnt;
-    int insmode;
-    int error_line;
-    int inskey;
-    int delkey;
-    int helpkey;
-    int acckey;
-    int fieldconstr;
-    int sqlintr;
-  };
 
 
 

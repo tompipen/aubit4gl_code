@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.40 2004-04-20 17:47:49 mikeaubury Exp $
+# $Id: report.c,v 1.41 2004-04-21 14:47:01 mikeaubury Exp $
 #
 */
 
@@ -178,10 +178,10 @@ static char *
 gen_rep_tab_name (void *p)
 {
   int a;
-  static char buff[256];
+  static char buff_0[256];
   a = (int) p;
-  sprintf (buff, "rtab%d", ((int) a) & 0xfffffff);
-  return buff;
+  sprintf (buff_0, "rtab%d", ((int) a) & 0xfffffff);
+  return buff_0;
 }
 
 
@@ -579,7 +579,7 @@ nm (int n)
 static char *
 sz (int d, int s)
 {
-  static char buff[256];
+  static char buff_1[256];
   switch (d & 15)
     {
     case 1:
@@ -601,12 +601,12 @@ sz (int d, int s)
 
     case 0:
     case 13:
-      sprintf (buff, "(%d)", s);
-      return buff;
+      sprintf (buff_1, "(%d)", s);
+      return buff_1;
 
     case 14:
-      sprintf (buff, "year to second(5)");
-      return buff;
+      sprintf (buff_1, "year to second(5)");
+      return buff_1;
     }
   return "";
 }
@@ -619,9 +619,9 @@ sz (int d, int s)
 char *
 A4GL_decode_datatype (int dtype, int dim)
 {
-  static char buff[256];
-  sprintf (buff, "%s %s", nm (dtype), sz (dtype, dim));
-  return buff;
+  static char buff_2[256];
+  sprintf (buff_2, "%s %s", nm (dtype), sz (dtype, dim));
+  return buff_2;
 }
 
 /**
@@ -632,7 +632,7 @@ static char *
 A4GL_mk_temp_tab (struct BINDING *b, int n)
 {
   int a;
-  static char buff[30000];
+  static char buff_3[30000];
   char tmpbuff[256];
 
   /*
@@ -641,19 +641,19 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
      Andrej say: yes it can!
    */
 
-  sprintf (buff, "create temp table %s (\n", gen_rep_tab_name (b));
+  sprintf (buff_3, "create temp table %s (\n", gen_rep_tab_name (b));
   //sprintf (buff, "create  table %s (\n", gen_rep_tab_name (b));
 
   for (a = 0; a < n; a++)
     {
       if (a)
-	strcat (buff, ",\n");
+	strcat (buff_3, ",\n");
       sprintf (tmpbuff, "c%d %s %s", a, nm (b[a].dtype),
 	       sz (b[a].dtype, b[a].size));
-      strcat (buff, tmpbuff);
+      strcat (buff_3, tmpbuff);
     }
-  strcat (buff, ")");
-  return buff;
+  strcat (buff_3, ")");
+  return buff_3;
 }
 
 /**

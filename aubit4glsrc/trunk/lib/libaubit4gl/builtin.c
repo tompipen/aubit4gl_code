@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.56 2004-03-24 11:45:48 mikeaubury Exp $
+# $Id: builtin.c,v 1.57 2004-04-21 14:45:33 mikeaubury Exp $
 #
 */
 
@@ -981,7 +981,7 @@ void A4GL_acli_scroll (int n,...)
 {
 va_list ap;
 va_start(ap,n);
-  return A4GL_acli_scroll_ap(n,&ap);
+  A4GL_acli_scroll_ap(n,&ap);
 }
 
 
