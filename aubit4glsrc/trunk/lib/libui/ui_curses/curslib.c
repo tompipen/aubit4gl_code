@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.8 2002-11-23 06:05:35 afalout Exp $
+# $Id: curslib.c,v 1.9 2002-11-23 07:11:55 afalout Exp $
 #*/
 
 /**
@@ -1260,81 +1260,82 @@ puttext (int x1, int y1, int x2, int y2, char *buf)
 void
 A4GLUI_ui_init (int argc, char *argv[])
 {
-//  int mcode;
 #define BLANK ' '
-#ifdef DEBUG
-  debug ("Initializing curses environment");
-#endif
-  if (!env_option_set ("NOCURSES"))	/* FIXME: this is now A4GL_UI=CONSOLE */
-    {
-      initscr ();
-      bkgdset (BLANK);
-      start_color ();
 
-#ifndef __sun__
-	#ifndef __sparc__
-	  //curses function not available on Solaris (!!!!?????)
-	  use_default_colors ();
-    #endif
-#endif
-      cbreak ();
-      noecho ();
-      nonl ();
-      intrflush (stdscr, TRUE);
-      keypad (stdscr, TRUE);
-
-#ifdef DEBUG
-      debug ("Done that");
-      debug ("Initializing curses windows and colors");
-#endif
-
-      start_color ();
-#ifdef DEBUG
-      debug ("init pairs");
-#endif
-      init_colour_pairs ();
-#ifdef DEBUG
-      debug ("init windows");
-#endif
-      init_windows ();
-      /*
-         mja_gotoxy(1,1);
-         tui_print("(c) 1996-1998 Aubit Computing Ltd");
-       */
-#ifdef DEBUG
-      debug ("Clear a bit of the screen");
-#endif
-      mja_gotoxy (1, 1);
-      /* print("                                 "); */
-      tui_print ("                                 ");
-      zrefresh ();
-#ifdef NCURSES_MOUSE_VERSION
 	#ifdef DEBUG
-	      debug ("Turning Mouse on");
+		debug ("Initializing curses environment");
 	#endif
-	#ifdef WIN32
-		#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
-			#ifdef DEBUG
-			      debug ("Turning WIN32 mouse on\n");
-			#endif
-		      if (env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
-		#endif
-	#else
-	      if (env_option_set ("ACL_MOUSE"))
-		{
-		#ifdef DEBUG
-			  debug ("Turning UNIX mouse on\n");
-		#endif
-		int mcode;
-		mcode = mousemask (ALL_MOUSE_EVENTS, 0);
-		#ifdef DEBUG
-			  debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
-		#endif
-		}
-	#endif
-#endif
-    }
+	if (!env_option_set ("NOCURSES"))	/* FIXME: this is now A4GL_UI=CONSOLE */
+    {
+		initscr ();
+		bkgdset (BLANK);
+		start_color ();
 
+		#ifndef __sun__
+			#ifndef __sparc__
+			  //curses function not available on Solaris (!!!!?????)
+			  use_default_colors ();
+		    #endif
+		#endif
+		cbreak ();
+		noecho ();
+		nonl ();
+		intrflush (stdscr, TRUE);
+		keypad (stdscr, TRUE);
+
+		#ifdef DEBUG
+			debug ("Done that");
+			debug ("Initializing curses windows and colors");
+		#endif
+
+		start_color ();
+		#ifdef DEBUG
+			debug ("init pairs");
+		#endif
+			init_colour_pairs ();
+		#ifdef DEBUG
+			debug ("init windows");
+		#endif
+		init_windows ();
+		/*
+        mja_gotoxy(1,1);
+        tui_print("(c) 1996-1998 Aubit Computing Ltd");
+		*/
+		#ifdef DEBUG
+			debug ("Clear a bit of the screen");
+		#endif
+		mja_gotoxy (1, 1);
+		/* print("                                 "); */
+		tui_print ("                                 ");
+		zrefresh ();
+		#ifdef NCURSES_MOUSE_VERSION
+			#ifdef DEBUG
+				debug ("Turning Mouse on");
+			#endif
+			#ifdef WIN32
+				#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
+					#ifdef DEBUG
+					      debug ("Turning WIN32 mouse on\n");
+					#endif
+				      if (env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
+				#endif
+			#else
+			    if (env_option_set ("ACL_MOUSE"))
+				{
+					#ifdef DEBUG
+						debug ("Turning UNIX mouse on\n");
+					#endif
+					{
+						int mcode;
+						mcode = mousemask (ALL_MOUSE_EVENTS, 0);
+						#ifdef DEBUG
+							  debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
+						#endif
+			        }
+				}
+			#endif
+		#endif
+    }
 }
 
 

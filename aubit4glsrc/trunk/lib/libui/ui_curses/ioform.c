@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.3 2002-09-17 09:38:02 afalout Exp $
+# $Id: ioform.c,v 1.4 2002-11-23 07:11:55 afalout Exp $
 #*/
 
 /**
@@ -51,19 +51,19 @@
 =====================================================================
 */
 
-#define POS_FIRST 1
-#define POS_VERY_FIRST 2
-#define POS_VERY_LAST 4
-#define POS_LAST 8
+#define POS_FIRST 		1
+#define POS_VERY_FIRST 	2
+#define POS_VERY_LAST 	4
+#define POS_LAST 		8
 
 /* SYSTEM Defines - dont change! */
 
-#define DEFAULT -1
-#define YES 1
-#define YES_COMPRESS 2
-#define CASEON 1
-#define CASEOFF 0
-#define OPTIONS long
+#define DEFAULT 		-1
+#define YES 			1
+#define YES_COMPRESS 	2
+#define CASEON 			1
+#define CASEOFF 		0
+#define OPTIONS 		long
 
 /*
 =====================================================================
@@ -71,19 +71,19 @@
 =====================================================================
 */
 
-extern WINDOW *currwin;
-int m_lastkey = 0;
-int tab_cnt = 0;
-int srec_cnt = 0;
-extern int errno;
-char delimiters[4];
+extern WINDOW 	*	currwin;
+int 				m_lastkey = 0;
+int 				tab_cnt = 0;
+int 				srec_cnt = 0;
+extern int 			errno;
+char 				delimiters[4];
 
-int lastc = 0;
-int nline;
-int fline;
-int ncol;
-char dbname[64];
-long inp_current_field = 0;
+int 				lastc = 0;
+int 				nline;
+int 				fline;
+int 				ncol;
+char 				dbname[64];
+long 				inp_current_field = 0;
 
 /*
 =====================================================================
@@ -94,67 +94,67 @@ long inp_current_field = 0;
 
 /** @todo Take this prototype definition for a header file */
 
-extern char *replace_sql_var (char *s);
-char *read_string_dup (FILE * ofile);
-struct s_form_dets *getfromform (FORM * f);
-char *string_width (char *a);
-WINDOW *create_window (char *name, int x, int y, int w, int h, int border);
-void set_fields2 (int nv, struct BINDING * vars, int d, int n,...);
-int display_fields (FORM * mform, int n, ...);
-extern char * find_attribute (struct s_form_dets *f, int field_no);
-void debug_print_field_opts (FIELD * a);
-void mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
-void set_field_pop_attr (FIELD * field, int attr);
-int find_field_no (FIELD * f, struct s_screenio *sio);
-void do_after_field (FIELD * f, struct s_screenio * sio);
-int get_metric_for (struct s_form_dets * form, FIELD * f);
-int get_field_width (FIELD * f);
-int page_for_nfield (struct s_screenio * s);
-int proc_key (int a, FORM * mform, struct s_screenio * s);
-int form_field_chk (struct s_screenio *sio, int m);
-int form_field_constr (struct s_screenio *sio, int m);
-int get_curr_metric (struct s_form_dets *form);
-int page_for_pfield (struct s_screenio * s);
+extern char *	replace_sql_var 	(char *s);
+char *			read_string_dup 	(FILE * ofile);
+struct s_form_dets *getfromform 	(FORM * f);
+char *			string_width 		(char *a);
+WINDOW *		create_window 		(char *name, int x, int y, int w, int h, int border);
+void 			set_fields2 		(int nv, struct BINDING * vars, int d, int n,...);
+int 			display_fields 		(FORM * mform, int n, ...);
+extern char * 	find_attribute 		(struct s_form_dets *f, int field_no);
+void 			debug_print_field_opts (FIELD * a);
+void 			mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
+void 			set_field_pop_attr 	(FIELD * field, int attr);
+int 			find_field_no 		(FIELD * f, struct s_screenio *sio);
+void 			do_after_field 		(FIELD * f, struct s_screenio * sio);
+int 			get_metric_for 		(struct s_form_dets * form, FIELD * f);
+int 			get_field_width 	(FIELD * f);
+int 			page_for_nfield 	(struct s_screenio * s);
+int 			proc_key 			(int a, FORM * mform, struct s_screenio * s);
+int 			form_field_chk 		(struct s_screenio *sio, int m);
+int 			form_field_constr 	(struct s_screenio *sio, int m);
+int 			get_curr_metric 	(struct s_form_dets *form);
+int 			page_for_pfield 	(struct s_screenio * s);
 
-void field_autonext (FIELD * f);
-void field_dynamic (FIELD * f);
-void field_invisible (FIELD * f);
-void field_noentry (FIELD * f);
-void set_field_attr (FIELD * field);
-int req_field (struct s_screenio *s, ...);
-int form_loop (struct s_screenio * s);
-void set_init_value (FIELD * f, void *ptr, int dtype);
-int get_metric_no (struct s_form_dets * form, FIELD * f);
-int turn_field_off (FIELD * f);
-void turn_field_on (FIELD * f);
-void turn_field_on2 (FIELD * f, int a);
-void set_init_pop (FIELD * f);
-int set_fields (struct s_screenio *sio);
-int field_name_match (FIELD * f, char *s);
-void disp_fields (int n, int attr, va_list * ap);
-int gen_field_chars (FIELD *** field_list, struct s_form_dets *formdets,
-                     va_list * ap);
+void 			field_autonext 		(FIELD * f);
+void 			field_dynamic 		(FIELD * f);
+void 			field_invisible 	(FIELD * f);
+void 			field_noentry 		(FIELD * f);
+void 			set_field_attr 		(FIELD * field);
+int 			req_field 			(struct s_screenio *s, ...);
+int 			form_loop 			(struct s_screenio * s);
+void 			set_init_value 		(FIELD * f, void *ptr, int dtype);
+int 			get_metric_no 		(struct s_form_dets * form, FIELD * f);
+int 			turn_field_off 		(FIELD * f);
+void 			turn_field_on 		(FIELD * f);
+void 			turn_field_on2 		(FIELD * f, int a);
+void 			set_init_pop 		(FIELD * f);
+int 			set_fields 			(struct s_screenio *sio);
+int 			field_name_match 	(FIELD * f, char *s);
+void 			disp_fields 		(int n, int attr, va_list * ap);
+int 			gen_field_chars 	(FIELD *** field_list, struct s_form_dets *formdets,
+				                     va_list * ap);
 
-void do_before_field (FIELD * f, struct s_screenio *sio);
-void dump_fields (FIELD * fields[]);
-void set_init_pop_attr (FIELD * field, int attr);
-int push_constr (struct s_screenio *s);
+void 			do_before_field 	(FIELD * f, struct s_screenio *sio);
+void 			dump_fields 		(FIELD * fields[]);
+void 			set_init_pop_attr 	(FIELD * field, int attr);
+int 			push_constr 		(struct s_screenio *s);
 
-FIELD * scan_for_field (char *s);
-void set_infield_from_stack (void);
-int get_curr_infield(void);
-int fgl_infield (char *s, int a);
-int fgl_getfldbuf (char *s, int a);
-int key_prompt (int a, FORM * mform, struct s_prompt * prompt);
-void reset_delims (struct s_form_dets * formdets, char *delims);
-int page_for_field (struct s_screenio * s, FIELD * f);
-int page_for_cfield (struct s_screenio * s);
-void clr_form (int to_default);
-void disp_form_fields (int n, int attr, char *formname,...);
-int curr_metric_is_last (void);
-int curr_metric_is_first (void);
-int curr_metric_is_veryfirst (void);
-int curr_metric_is_verylast (void);
+FIELD * 		scan_for_field 		(char *s);
+void 			set_infield_from_stack (void);
+int 			get_curr_infield	(void);
+int 			fgl_infield 		(char *s, int a);
+int 			fgl_getfldbuf 		(char *s, int a);
+int 			key_prompt 			(int a, FORM * mform, struct s_prompt * prompt);
+void 			reset_delims 		(struct s_form_dets * formdets, char *delims);
+int 			page_for_field 		(struct s_screenio * s, FIELD * f);
+int 			page_for_cfield 	(struct s_screenio * s);
+void 			clr_form 			(int to_default);
+void 			disp_form_fields 	(int n, int attr, char *formname,...);
+int 			curr_metric_is_last (void);
+int 			curr_metric_is_first (void);
+int 			curr_metric_is_veryfirst (void);
+int 			curr_metric_is_verylast (void);
 
 /*
 =====================================================================
