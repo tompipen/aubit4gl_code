@@ -545,6 +545,11 @@ static void print_unable_to_parse() {
 static void add_sql(int n,char *s) {
 static int last_was_err=0;
 static char *last_s=0;
+
+if (n==-1) {
+	last_s=0;
+	return;
+}
 	if (n!=11) {
 		if (last_was_err&&last_s) {
 			last_was_err=0;
@@ -573,6 +578,7 @@ static char * A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target
 	int a;
 	static char *ptr=0;
 	int l;
+	add_sql(-1,"");
 	A4GL_debug("A4GLSQLCV_convert_sql_internal %s %s %s %d",source_dialect, target_dialect, sql, from_file);
 
 	sprintf(buff,"%s_%s",source_dialect, target_dialect);
