@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.9 2004-12-02 08:20:31 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.10 2004-12-02 09:25:53 mikeaubury Exp $
 }
 
 {**
@@ -40,10 +40,16 @@
 
 code
 	#include <stdio.h>
+	#include <stdlib.h>
 	#define CHANNEL_IN		'L'
 	#define CHANNEL_OUT		'M'
 	#define CHANNEL_DELIM		'N'
 	#define CHANNEL_PIPE		'P'
+
+void *A4GL_find_pointer (const char *pname, char t);
+int A4GL_has_pointer (const char *pname, char t);
+void A4GL_del_pointer (char *pname, char t);
+void A4GL_add_pointer (char *orig_name, char type, void *ptr);
 endcode
 
 
@@ -273,24 +279,9 @@ define nvars integer
 
 end function
 
-code
-aclfgl_fgl_write(int nargs) { // NOT USED
-	char *handle;
-	FILE *f;
-	char delim;
-	
-		handle=A4GL_char_pop();
-		A4GL_trim(handle);
-		nargs--;
-	
-		if (A4GL_has_pointer(handle,CHANNEL_OUT)) {
-		}
-	
-	return 0;
-}
-endcode
 
 code
+int
 aclfgl_read(int ni,void *i,int no,void *o) {
 char *handle;
 char buff[20000];
@@ -369,7 +360,7 @@ endcode
 
 code
 #ifdef USING_BINDING
-aclfgl_write(int ni,void *i,int no,void *o) {
+int aclfgl_write(int ni,void *i,int no,void *o) {
 char *handle;
 FILE *f;
 char buff[20000];
@@ -431,6 +422,7 @@ px=(char **)malloc(sizeof(char *)*n);
 while (nn) {
 		nn--;
 		ptr2=A4GL_char_pop();
+		A4GL_trim(ptr2);
 		l+=strlen(ptr2)+2;
 		px[nn]=ptr2;
 }
@@ -462,7 +454,6 @@ for (a=1;a<n;a++) {
 			free(ptr);
 			return 0;
 	}
-
 	fprintf(f,"%s\n",ptr);
 	free(ptr);
 	for (a=0;a<n;a++) free(px[a]);
