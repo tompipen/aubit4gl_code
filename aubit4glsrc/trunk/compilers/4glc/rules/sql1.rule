@@ -664,7 +664,7 @@ op_not: {strcpy($<str>$,"");}
 
 comparison_predicate:
 	value_expression op_not IS_NULL
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3);}
+{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression op_not IS_NOT_NULL
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| value_expression comp_op value_expression

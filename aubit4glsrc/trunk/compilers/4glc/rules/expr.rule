@@ -3,19 +3,30 @@ initial_expr
 | boolean_expr
 | report_only_expr
 | function_call_expr
-| fgl_expr_c fgl_next {dec_counter(); sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+| fgl_expr_c fgl_next {
+	dec_counter(); 
+	$<ptr>$=append_expr_expr($<ptr>1,$<ptr>2);
+}
 | builtin_expr
 | pdf_expr
-| literal_expr
-| MINUS fgl_expr_c {sprintf($<str>$,"push_int(0);%s pushop(OP_SUB);",$<str>2);}
-| PLUS fgl_expr_c {sprintf($<str>$,"%s",$<str>2);}
+| literal_expr {
+	debug("Got literal ptr=%p",$<ptr>1);
+}
+| MINUS fgl_expr_c {
+	$<ptr>$=new_expr("push_int(0);");
+	$<ptr>$=append_expr_expr($<ptr>$,$<ptr>2);
+	$<ptr>$=append_expr($<ptr>$,"pushop(OP_SUB);");
+}
+| PLUS fgl_expr_c {
+$<ptr>$=$<ptr>2;
+}
 ;
 
 fgl_next:
   and_or_expr
 | comparison_expr
 | in_expr
-| SPACES { sprintf($<str>$,"add_spaces();"); }
+| SPACES { $<ptr>$=new_expr("add_spaces();"); }
 | interval_expr
 | null_expr
 | string_match_expr
@@ -30,7 +41,7 @@ op_fgl_expr_ret_list: {strcpy($<str>$,"0");} | fgl_expr_ret_list
 ;
 
 
-fgl_expr_ret : fgl_expr | KW_NULL {strcpy($<str>$,"push_null()");}
+fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=new_expr("push_null()");}
 ;
 
 fgl_expr_ret_list 	: fgl_expr_ret
@@ -73,46 +84,54 @@ fgl_expr {debug("L1\n");set_counter(1);sprintf($<str>$,"1");}
 
 fgl_expr_concat	: 	fgl_expr {sprintf($<str>$,"%d",get_counter_val());}
 		| 	fgl_expr_concat COMMA fgl_expr
-{printc("pushop(OP_CONCAT);\n");dec_counter();sprintf($<str>$,"%d",get_counter_val());}
+{
+printc("pushop(OP_CONCAT);\n");
+dec_counter();sprintf($<str>$,"%d",get_counter_val());
+}
 ;
 
 
-fgl_expr: fgl_expr_c {printc("%s\n",$<str>1);}
+fgl_expr: fgl_expr_c {
+print_expr($<ptr>1);
+}
 ;
 
 op_int_sign : {strcpy($<str>$,"");} | int_sign
 ;
 
 int_sign	: PLUS 
-{strcpy($<str>$,"+");}
+{
+strcpy($<str>$,"+");
+}
 		| MINUS 
-{strcpy($<str>$,"-");}
+{
+strcpy($<str>$,"-");
+}
 ;
 
-
-char_subscript	:	OPEN_SQUARE arr_expr CLOSE_SQUARE 
-{printcomment("/* CHAR ATTRIB */\n");}
-		| 	OPEN_SQUARE arr_expr COMMA arr_expr CLOSE_SQUARE 
-{printcomment("/* CHAR ATTRIB 2 */\n");}
-;
 
 /****************************************************************/
 
 boolean_expr:
 NOT fgl_expr_c {
-        sprintf($<str>$,"%s pushop(OP_NOT);",$<str>2);
+	
+        //sprintf($<str>$,"%s pushop(OP_NOT);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_NOT);");
 }
 | KW_TRUE  
 {
-        sprintf($<str>$,"push_int(1);");
+        //sprintf($<str>$,"push_int(1);");
+	$<ptr>$=new_expr("push_int(1);");
         inc_counter();
 }
 | KW_FALSE 
 {
-        sprintf($<str>$,"push_int(0);");inc_counter();
+        //sprintf($<str>$,"push_int(0);");
+	inc_counter();
+	$<ptr>$=new_expr("push_int(0);");
 }
-| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { strcpy($<str>$,$<str>2); }
-| PLUS OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { strcpy($<str>$,$<str>3); }
+| OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
+| PLUS OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>3; }
 ;
 
 initial_expr: 
@@ -120,33 +139,42 @@ int_sign real_number
 {
         debug("init expr %s %s",$<str>1,$<str>2);
         sprintf($<str>$,"push_double((double)%s%s)",$<str>1,$<str>2);
+	$<ptr>$=new_expr($<str>$);
         inc_counter();
 }
 | int_sign INT_VALUE 
 {
         debug("init expr int %s %d",$<str>1,atoi($<str>2));
-	sprintf($<str>$,"push_long((long)%s%d);",$<str>1,atoi($<str>2));
+	sprintf($<str>$,"push_long((long)%s%d); /*1*/",$<str>1,atoi($<str>2));
+	$<ptr>$=new_expr($<str>$);
 	inc_counter();
 }
 ;
 
 literal_expr: 
-ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%d);",atoi($<str>2));inc_counter(); }
-| ASCII variable { sprintf($<str>$,"push_ascii(%s);",$<str>2); inc_counter();}
+ASCII INT_VALUE { sprintf($<str>$,"push_ascii(%d);",atoi($<str>2));inc_counter(); 
+	$<ptr>$=new_expr($<str>$);
+}
+| ASCII variable { sprintf($<str>$,"push_ascii(%s);",$<str>2); inc_counter();
+	$<ptr>$=new_expr($<str>$);
+}
 |
 CHAR_VALUE  {
-sprintf($<str>$,"push_char(%s);",$<str>1);
-inc_counter();
+	sprintf($<str>$,"push_char(%s);",$<str>1);
+	$<ptr>$=new_expr($<str>$);
+	inc_counter();
 }
 | real_number 
 {
-sprintf($<str>$,"push_double((double)%s);",$<str>1);
-inc_counter();
+	sprintf($<str>$,"push_double((double)%s);",$<str>1);
+	$<ptr>$=new_expr($<str>$);
+	inc_counter();
 }
 | INT_VALUE 
 {
-sprintf($<str>$,"push_long((long)%d);",atoi($<str>1));
-inc_counter();
+	sprintf($<str>$,"push_long((long)%d);/*2*/",atoi($<str>1));
+	$<ptr>$=new_expr($<str>$);
+	inc_counter();
 }
 | variable THRU variable {
 char r1[256];
@@ -155,6 +183,7 @@ char buff[256];
 char kp[40000];
 char *ptr1;
 char *ptr2;
+void *p1;
 int v1;
 int v2;
 int a;
@@ -201,11 +230,13 @@ debug("r1=%s",r1);
         v2=last_var_found;
         debug("v2=%d",v2);
  
-	strcpy($<str>$,"");
+	p1=new_expr("");
+	$<ptr>$=p1;
         for (a=v1;a<=v2;a++) {
-		strcpy(kp,$<str>$);
+	char bbz[256];
                 sprintf(buff,"%s.%s",r1,get_var_name(a));
-		sprintf($<str>$,"%s push_variable(%s,0x%x);",kp,buff,scan_variable(buff));
+		sprintf(bbz,"push_variable(%s,0x%x);",buff,scan_variable(buff));
+		append_expr(p1,bbz);
         }
 }
 | variable  {
@@ -214,8 +245,6 @@ debug("r1=%s",r1);
    int flg=0;
    a=scan_variable($<str>1);
    if (a>=0) {
-
-
           if (aubit_strcasecmp($<str>1,"today")==0) {
                flg=1;
                sprintf($<str>$,"push_today();");
@@ -240,7 +269,8 @@ debug("r1=%s",r1);
    inc_counter();
    }
 
-if (a==-1) { sprintf($<str>$,"push_char(%s);",$<str>1);inc_counter(); }
+if (a==-1) { sprintf($<str>$,"push_char(%s);",$<str>1);inc_counter();
+ }
 
 if (a==-2) {
         char b[40000];
@@ -250,7 +280,10 @@ if (a==-2) {
 	debug("Copy");
         strcpy($<str>$,b);
         }
-   }
+
+
+$<ptr>$=new_expr($<str>$);
+}
 
 ;
 
@@ -258,11 +291,13 @@ if (a==-2) {
 report_only_expr:
 COLUMN fgl_expr_c 
 {
-sprintf($<str>$,"%s %sset_column(&rep);",$<str>2,ispdf());
+	sprintf($<str>$,"%sset_column(&rep);",ispdf());
+	$<ptr>$=append_expr($<ptr>2,$<str>$);
 }
 | COLUMNS fgl_expr_c 
 {
-sprintf($<str>$,"%s %sset_column(&rep);",$<str>2,ispdf());
+sprintf($<str>$,"%sset_column(&rep);",ispdf());
+$<ptr>$=append_expr($<ptr>2,$<str>$);
 }
 | rep_agg  {
    if (!in_command("REPORT")) {
@@ -277,7 +312,8 @@ insql=0;
       } 
       insql=0; 
 	printcomment("/* rep_Agg = %s\n*/",$<str>3);
-      sprintf($<str>$,$<str>3);
+        sprintf($<str>$,$<str>3);
+	$<ptr>$=new_expr($<str>$);
       }
 
 
@@ -286,100 +322,138 @@ insql=0;
 and_or_expr: 
 AND fgl_expr_c 
 {
-sprintf($<str>$,"%s pushop(OP_AND);",$<str>2);
+	//sprintf($<str>$,"%s pushop(OP_AND);",$<str>2);
+	$<ptr>$=append_expr($<ptr>2,"pushop(OP_AND);");
 }
 | OR fgl_expr_c 
 {
-sprintf($<str>$,"%s pushop(OP_OR);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_OR);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_OR);");
 }
 ;
 
 in_expr:
- IN OPEN_BRACKET reset_cnt fgl_expr_list CLOSE_BRACKET
-| NOT_IN OPEN_BRACKET reset_cnt fgl_expr_list CLOSE_BRACKET
+ IN OPEN_BRACKET reset_cnt fgl_expr_list CLOSE_BRACKET {
+printc("#error IN (..) not implemented yet\n");
+}
+/* FIXME */
+| NOT_IN OPEN_BRACKET reset_cnt fgl_expr_list CLOSE_BRACKET {
+printc("#error NOT IN (..) not implemented yet\n");
+/* FIXME */
+}
 ;
 
 null_expr:
 IS_NULL  
-{ sprintf($<str>$,"pushop(OP_ISNULL);"); }
+{ 
+sprintf($<str>$,"pushop(OP_ISNULL);"); 
+	$<ptr>$=new_expr($<str>$);
+}
 | IS_NOT_NULL 
-{ sprintf($<str>$,"pushop(OP_ISNOTNULL);"); }
+{ 
+sprintf($<str>$,"pushop(OP_ISNOTNULL);"); 
+$<ptr>$=new_expr($<str>$);
+}
 ;
 
 string_match_expr:
  MATCHES fgl_expr_c 
 {
-sprintf($<str>$,"%s pushop(OP_MATCHES);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_MATCHES);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);");
 }
 | NOT_MATCHES fgl_expr_c 
 { 
-sprintf($<str>$,"%s pushop(OP_MATCHES);pushop(OP_NOT);",$<str>2); 
+//sprintf($<str>$,"%s pushop(OP_MATCHES);pushop(OP_NOT);",$<str>2); 
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_MATCHES);pushop(OP_NOT);");
 }
 | LIKE fgl_expr_c 
 {
-sprintf($<str>$," %s pushop(OP_LIKE);",$<str>2);
+//sprintf($<str>$," %s pushop(OP_LIKE);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);");
 } 
 | NOT_LIKE fgl_expr_c 
 {
-sprintf($<str>$,"pushop(OP_LIKE);pushop(OP_NOT);",$<str>2); 
+//sprintf($<str>$,"pushop(OP_LIKE);pushop(OP_NOT);",$<str>2); 
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_LIKE);pushop(OP_NOT);");
 }
 ;
 
 clip_expr: 
 CLIPPED {
 sprintf($<str>$,"pushop(OP_CLIP);");
+$<ptr>$=new_expr($<str>$);
 inc_counter();
 }
 ;
 using_expr:
 USING fgl_expr_c {
 sprintf($<str>$,"%s pushop(OP_USING);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_USING);");
 }
 ;
 
 math_expr:
 PLUS fgl_expr_c {
-sprintf($<str>$,"%s pushop(OP_ADD);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_ADD);",$<str>2);
+debug("PLUS in math_expr $<ptr>2 = %p",$<ptr>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_ADD);");
 }
 | MINUS fgl_expr_c {
-sprintf($<str>$,"%s pushop(OP_SUB);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_SUB);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_SUB);");
 }
 | MULTIPLY fgl_expr_c {
       sprintf($<str>$,"%s pushop(OP_MULT);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_MULT);");
 }
 | DIVIDE  fgl_expr_c {
-sprintf($<str>$,"%s pushop(OP_DIV);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_DIV);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_DIV);");
 }
 | MOD fgl_expr_c {
-sprintf($<str>$,"%s pushop(OP_MOD);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_MOD);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_MOD);");
 }
 | POWER fgl_expr_c {
-sprintf($<str>$,"%s pushop(OP_POWER);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_POWER);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_POWER);");
 }
 ;
 
 comparison_expr: 
-EQUAL           fgl_expr_c { sprintf($<str>$,"/*=*/%s pushop(OP_EQUAL);/*EOF =*/",$<str>2); }
-| EQUAL_EQUAL   fgl_expr_c { sprintf($<str>$,"%s pushop(OP_EQUAL);",$<str>2); }
+EQUAL           fgl_expr_c { 
+//sprintf($<str>$,"%s pushop(OP_EQUAL);",$<str>2); 
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_EQUAL);");
+}
+| EQUAL_EQUAL   fgl_expr_c { 
+sprintf($<str>$,"%s pushop(OP_EQUAL);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_EQUAL);");
+}
 | LESS_THAN       fgl_expr_c 
 {
-sprintf($<str>$,"%s pushop(OP_LESS_THAN);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_LESS_THAN);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_LESS_THAN);");
 }
 | GREATER_THAN    fgl_expr_c 
 {
-sprintf($<str>$,"%s pushop(OP_GREATER_THAN);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_GREATER_THAN);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_GREATER_THAN);");
 }
 | NOT_EQUAL       fgl_expr_c 
 {
-sprintf($<str>$,"%s pushop(OP_NOT_EQUAL);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_NOT_EQUAL);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_NOT_EQUAL);");
 }
 | LESS_THAN_EQ    fgl_expr_c 
 {
-sprintf($<str>$,"%s pushop(OP_LESS_THAN_EQ);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_LESS_THAN_EQ);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_LESS_THAN_EQ);");
 }
 | GREATER_THAN_EQ fgl_expr_c 
 {
-sprintf($<str>$,"%s pushop(OP_GREATER_THAN_EQ);",$<str>2);
+//sprintf($<str>$,"%s pushop(OP_GREATER_THAN_EQ);",$<str>2);
+$<ptr>$=append_expr($<ptr>2,"pushop(OP_GREATER_THAN_EQ);");
 }
 ;
 
@@ -403,26 +477,52 @@ CLOSE_BRACKET
 {
 int cnt;
 cnt=1;
-sprintf($<str>$,"%s {int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {set_status(-3001);chk_err(%d,\"%s\");}\n}\n}\n", $<str>4,$<str>1,$<str>5, lastlineno,infilename);
+print_expr($<ptr>4);
+sprintf($<str>$,"{int _retvars;\n_retvars=aclfgl_%s(%s); {\nif (_retvars!= 1 ) {set_status(-3001);chk_err(%d,\"%s\");}\n}\n}\n", $<str>1,$<str>5, lastlineno,infilename);
+$<ptr>$=new_expr($<str>$);
 inc_counter();
 }
 ;
 
 function_callb:
-DATE OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_date(1);\n",$<str>4,$<str>1);inc_counter();} 
-| MONTH OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_month(1);\n",$<str>4,$<str>1);inc_counter();} 
-| DAY OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_day(1);\n",$<str>4,$<str>1);inc_counter();} 
-| YEAR OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {sprintf($<str>$,"%s aclfgl_year(1);\n",$<str>4,$<str>1);inc_counter();} 
+DATE OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+//sprintf($<str>$,"%s aclfgl_date(1);\n",$<str>4,$<str>1);
+	$<ptr>$=append_expr($<ptr>4,"aclfgl_date(1);");
+inc_counter();} 
+| MONTH OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+//sprintf($<str>$,"%s aclfgl_month(1);\n",$<str>4,$<str>1);
+	$<ptr>$=append_expr($<ptr>4,"aclfgl_month(1);");
+inc_counter();} 
+| DAY OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+//sprintf($<str>$,"%s aclfgl_day(1);\n",$<str>4,$<str>1);
+	$<ptr>$=append_expr($<ptr>4,"aclfgl_day(1);");
+inc_counter();} 
+| YEAR OPEN_BRACKET {inc_counter();chk4var=1;} fgl_expr_c {chk4var=0;} CLOSE_BRACKET {
+//sprintf($<str>$,"%s aclfgl_year(1);\n",$<str>4,$<str>1);
+	$<ptr>$=append_expr($<ptr>4,"aclfgl_year(1);");
+inc_counter();} 
 ;
 
 
 function_call_expr:
 function_callb
-| GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET { int cnt; sprintf($<str>$,"{int _retvars;\n_retvars=fgl_getfldbuf(%s);\nif (_retvars != 1 ) {set_status(-3001);chk_err(%d,\"%s\");}\n}\n", $<str>3, lastlineno,infilename); } 
-| FIELDTOWIDGET OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"push_int(fgl_fieldnametoid(%s));",$<str>3); }
-| INFIELD OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"push_int(fgl_infield(%s));",$<str>3); }
+| GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET { 
+int cnt; 
+sprintf($<str>$,"{int _retvars;\n_retvars=fgl_getfldbuf(%s);\nif (_retvars != 1 ) {set_status(-3001);chk_err(%d,\"%s\");}\n}\n", 
+	$<str>3, lastlineno,infilename); 
+	$<ptr>$=new_expr($<str>$);
+
+} 
+| FIELDTOWIDGET OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"push_int(fgl_fieldnametoid(%s));",$<str>3); 
+	$<ptr>$=new_expr($<str>$);
+}
+| INFIELD OPEN_BRACKET field_name CLOSE_BRACKET {sprintf($<str>$,"push_int(fgl_infield(%s));",$<str>3); 
+	$<ptr>$=new_expr($<str>$);
+}
 | FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET 
-	{ sprintf($<str>$,"push_int(fgl_fieldtouched(%s));",$<str>3); }
+	{ sprintf($<str>$,"push_int(fgl_fieldtouched(%s));",$<str>3); 
+	$<ptr>$=new_expr($<str>$);
+}
 | builtin_funcs
 | function_call_expr2
 ;
@@ -430,23 +530,43 @@ function_callb
 builtin_expr : curr_v_clause {
 		inc_counter();
                sprintf($<str>$,"push_current(%s);",$<str>1);
+		$<ptr>$=new_expr($<str>$);
           	}
-               | DATE  { inc_counter(); sprintf($<str>$,"push_today();");}
+               | DATE  { inc_counter(); sprintf($<str>$,"push_today();");
+		$<ptr>$=new_expr($<str>$);
+		}
 
 ;
 
 builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET 
-{ sprintf($<str>$,"%s upshift_stk();",$<str>3);}
+{ 
+//sprintf($<str>$,"%s upshift_stk();",$<str>3);
+	$<ptr>$=append_expr($<ptr>3,"upshift_stk();");
+}
 |               DOWNSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
-{ sprintf($<str>$,"%s upshift_stk();",$<str>3);}
-| ASCII OPEN_BRACKET INT_VALUE CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%d);",atoi($<str>3));}
-| ASCII OPEN_BRACKET variable CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%s);",$<str>3);}
+{ 
+	//sprintf($<str>$,"%s upshift_stk();",$<str>3);
+	$<ptr>$=append_expr($<ptr>3,"downshift_stk();");
+}
+| ASCII OPEN_BRACKET INT_VALUE CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%d);",atoi($<str>3));
+	$<ptr>$=new_expr($<str>$);
+}
+| ASCII OPEN_BRACKET variable CLOSE_BRACKET { sprintf($<str>$,"push_ascii(%s);",$<str>3);
+	$<ptr>$=new_expr($<str>$);
+}
 ;
 
-pdf_expr : fgl_expr_c POINTS  {sprintf($<str>$,"%s push_double(-1);pushop(OP_MULT)",$<str>1);}
-        |  fgl_expr_c  MM     {sprintf($<str>$,"%s push_double(-28.3465);pushop(OP_MULT);",$<str>1);}
-        |  fgl_expr_c INCHES     {sprintf($<str>$,"%s push_double(-72.0);pushop(OP_MULT);",$<str>1);}
+pdf_expr : fgl_expr_c POINTS  {
+//sprintf($<str>$,"%s push_double(-1);pushop(OP_MULT)",$<str>1);
+	$<ptr>$=append_expr($<ptr>3,"push_double(-1);pushop(OP_MULT);");
+}
+        |  fgl_expr_c  MM     {
+//sprintf($<str>$,"%s push_double(-28.3465);pushop(OP_MULT);",$<str>1);
+	$<ptr>$=append_expr($<ptr>3,"push_double(-28.3465);pushop(OP_MULT);");
+}
+        |  fgl_expr_c INCHES     {
+//sprintf($<str>$,"%s push_double(-72.0);pushop(OP_MULT);",$<str>1);
+	$<ptr>$=append_expr($<ptr>3,"push_double(-72.0);pushop(OP_MULT);");
+}
 ;
-
-
 

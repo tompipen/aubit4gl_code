@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.17 2001-10-18 01:31:01 afalout Exp $
+* $Id: mod.c,v 1.18 2001-10-28 14:46:38 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.17  2001/10/18 01:31:01  afalout
+*	*** empty log message ***
+*	
 *	Revision 1.16  2001/10/18 00:01:30  afalout
 *	NoODBC build on CygWin
 *	
@@ -110,6 +113,13 @@ int inc = 0;
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+
+
+struct expr_str {
+        char *expr;
+        struct expr_str *next;
+};
+
 #include "rules/generated/y.tab.h"
 #include "../../lib/libincl/report.h"
 #include "rules/generated/kw.h"
@@ -4653,4 +4663,57 @@ if (isarrvariable (buff)) {
 			strcat(s,ptr);
 		}
 
+}
+
+void *new_expr(char *value) {
+	struct expr_str *ptr;
+	debug("new_expr");
+	ptr=malloc(sizeof(struct expr_str));
+	ptr->next=0;
+	ptr->expr=strdup(value);
+	debug("newexpr : %s -> %p\n",value,ptr);
+	return ptr;
+}
+
+void *append_expr(struct expr_str *orig_ptr,char *value) {
+struct expr_str *ptr;
+
+	debug("append_expr %p",orig_ptr);
+
+	ptr=new_expr(value);
+	if (orig_ptr->next==0) 
+		orig_ptr->next=ptr;
+	else {
+		exitwith("Error - overwriting expression in list...");
+		exit(2);
+	}
+	debug("Appended expr");
+	return orig_ptr;
+}
+
+void *append_expr_expr(struct expr_str *orig_ptr,struct expr_str *second_ptr) {
+struct expr_str *ptr;
+	debug("append_expr_expr");
+	ptr=second_ptr;
+	if (orig_ptr->next==0) 
+		orig_ptr->next=ptr;
+	else {
+		exitwith("Error - overwriting expression in list...");
+		exit(2);
+	}
+	return orig_ptr;
+}
+
+print_expr(struct expr_str *ptr) {
+void *optr;
+	debug("Print expr... %p",ptr);
+	while (ptr) {
+		debug("Printing %p",ptr->expr);
+		printc("%s\n",ptr->expr);
+		free(ptr->expr);
+		optr=ptr;
+		debug("going to %p",ptr->next);
+		ptr=ptr->next;
+		free(optr);
+	}
 }

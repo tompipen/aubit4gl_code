@@ -2,7 +2,7 @@ call_cmd	: FCALL call_ext {strcpy($<str>$,"CALL");}
 ;
 
 call_ext :
-    function_callb RETURNING variable { printc("%s pop_var(&%s,%d);\n",$<str>1,$<str>3,scan_variable($<str>3)); }
+    function_callb RETURNING variable { print_expr($<ptr>1);printc("pop_var(&%s,%d);\n",$<str>3,scan_variable($<str>3)); }
    | GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET RETURNING 
    { printc("{int _retvars;\n");printc("_retvars=fgl_getfldbuf(%s);\n",$<str>3); start_bind('i',0);} ibind_var_list
    { int cnt;
@@ -30,7 +30,10 @@ call_ext :
    CLOSE_BRACKET 
    {
 	debug("D0");
-   printc("%s {int _retvars;set_status(0);\n",$<str>4);
+   printc("/* print expr */");
+   print_expr($<ptr>4);
+   printc("/* done print expr */");
+   printc("{int _retvars;set_status(0);\n");
 	debug("D01");
    printc("_retvars=aclfgl_%s(%s);\n",$<str>1,$<str>5);
 	debug("D1");
@@ -57,7 +60,8 @@ CLOSE_BRACKET opt_return {
    char buff[256];
 printc("{int _retvars;\n");
 strcpy($<str>$,"");
-printc("%s set_status(0);_retvars=call_4gl_dll(%s,%s,%s);\n",$<str>7,$<str>4,$<str>2,$<str>8);
+print_expr($<ptr>7);
+printc("set_status(0);_retvars=call_4gl_dll(%s,%s,%s);\n",$<str>4,$<str>2,$<str>8);
    sprintf(buff,"%s:%s",$<str>2,$<str>4);
 	addmap('s',buff,curr_func,yylineno,infilename);
    	printc("{\n");
@@ -81,7 +85,8 @@ printc("%s set_status(0);_retvars=call_4gl_dll(%s,%s,%s);\n",$<str>7,$<str>4,$<s
    }
    CLOSE_BRACKET 
    {
-   printc("%s {int _retvars;\n",$<str>10);
+	print_expr($<ptr>10);
+   printc("{int _retvars;\n");
    }
    opt_return_remote
    { int cnt;
@@ -119,12 +124,20 @@ opt_return_remote 	: {start_bind('i',0);strcpy($<str>$,"0");}
 
 
 opt_func_call_args : 
-		/*empty*/ {strcpy($<str>$,"");}
-		| func_call_args 
+		/*empty*/ {
+		$<ptr>$=new_expr("");
+	}
+		| func_call_args  {
+		$<ptr>$=$<ptr>1;
+		}
 ;
 
 func_call_args	: func_arg
-		| func_call_args COMMA func_arg {sprintf($<str>$,"%s %s",$<str>1,$<str>3);}
+		{$<ptr>$=$<ptr>1; }
+		| func_call_args COMMA func_arg {
+		$<ptr>$=append_expr_expr($<ptr>1,$<ptr>3);
+//sprintf($<str>$,"%s %s",$<str>1,$<str>3);
+}
 
 ;
 
