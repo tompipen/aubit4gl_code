@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: console.c,v 1.2 2003-02-05 03:34:55 mikeaubury Exp $
 #*/
 
 /**
@@ -154,12 +154,20 @@ int z;
 char *s=0;
 char *ptr = 0;
 char *buff=0;
+
+debug("In display : ");
+debug_print_stack();
 x=pop_int();
 y=pop_int();
+debug("Popped X & Y");
 s=malloc(2);
 s[0]=0;
+
+
+
   for (z = 0; z <= n - 1; z++)
     {
+  	debug("POP");
         ptr=char_pop();
         debug("DISPLAY_AT : '%s'\n",ptr);
         buff=realloc(buff,strlen(s)+strlen(ptr)+1);
