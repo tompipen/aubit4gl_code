@@ -32,6 +32,7 @@ extern int scr;
 int in_comment;
 long fileseek=0;
 int ltab=0;
+int replicate_bug=0;
 
 dll_import struct_form the_form;
 
@@ -199,9 +200,10 @@ some_text: named_or_kw {
 	int a;
 	static char buff[256];
 	strcpy(buff,$<str>1);
-
-	for (a=0;a<strlen(buff);a++) {
-		if (buff[a]=='_') buff[a]=' ';
+	if (!A4GL_isyes(acl_getenv("NORMSCORE"))) {
+		for (a=0;a<strlen(buff);a++) {
+			if (buff[a]=='_') buff[a]=' ';
+		}
 	}
 	strcpy($<str>$,buff);
 } 
@@ -210,6 +212,7 @@ some_text: named_or_kw {
 
 screen_element : 
 some_text {
+        //printf("%s %d %d %d %d %d %s\n","_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
         A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	colno+=strlen($<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
@@ -218,9 +221,9 @@ some_text {
 }
 | field  { ltab=0; }
 | KW_TAB {
-	if (colno==0) {colno=4; ltab=1;}
+	if (colno==0&&replicate_bug) {colno=4; ltab=1;}
 	else {
-		if (colno==4) {colno=16;}
+		if (colno==4&&replicate_bug) {colno=16;}
 		else {
 			colno++;
 			while ((colno%8)!=0) {colno++;}
@@ -259,6 +262,7 @@ some_text {
 
 | ch_list {
 	//char buff[256];
+	//printf("str1=%s colno=%d\n",$<str>1,colno+1);
 	A4GL_add_field("_label",colno+1,lineno,strlen($<str>1),scr,0,$<str>1);
 	//printf("colno was %d for '%s'\n",colno,$<str>1);
 	colno+=strlen($<str>1);
@@ -315,6 +319,7 @@ field_element : field_tag_name_scr {
 			} 
 		| field_element PIPE  {
 				/* field elements = name x y width screen_no endswith'|' */
+				colno++;
 				if (colno>the_form.maxcol) the_form.maxcol=colno; 
 				if (lineno>the_form.maxline) the_form.maxline=lineno;
 				if (openwith=='[')
@@ -668,7 +673,7 @@ field_name : named_or_kw {
 ;
 
 
-op_ws : | ws
+op_ws : {strcpy($<str>$,"");} | ws {strcpy($<str>$,$<str>1);}
 ;
 
 ws: ws_elem | ws ws_elem
@@ -677,9 +682,12 @@ ws: ws_elem | ws ws_elem
 ws_elem:
  KW_WS {colno++;}
 |  KW_TAB {
-       	colno++;
-       	while ((colno%8)!=0) {colno++;}
-	colno--;
+	colno++;
+	while ((colno%8)!=0) {colno++;}
+
+       	//colno++;
+       	//while ((colno%8)!=0) {colno++;}
+	//colno--;
 }
 ;
 
@@ -694,10 +702,11 @@ named_or_kw  {
 ;
 
 field_tag_name_scr : 
-op_ws named_or_kw op_ws {
+op_ws named_or_kw {
+	colno+=strlen($<str>2);
+} op_ws {
 	strcpy($<str>$,$<str>2);
 	A4GL_make_downshift($<str>$);
-	colno+=strlen($<str>2);
 	}
 ;
 
