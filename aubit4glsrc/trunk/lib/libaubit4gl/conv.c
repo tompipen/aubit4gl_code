@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.76 2004-05-12 08:15:54 mikeaubury Exp $
+# $Id: conv.c,v 1.77 2004-05-21 15:45:46 mikeaubury Exp $
 #
 */
 
@@ -2772,7 +2772,7 @@ A4GL_valid_dt (char *s, int *data)
   A4GL_debug ("Splitting '%s'\n", A4GL_null_as_null(s));
   cnt = 0;
   buff_size = strlen (buff);
-  for (a = 1; a < buff_size; a++)
+  for (a = 0; a < buff_size; a++)
     {
 
       if (buff[a] == '.')
