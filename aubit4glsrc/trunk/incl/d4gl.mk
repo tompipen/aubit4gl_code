@@ -1,4 +1,4 @@
-#   @(#)$Id: d4gl.mk,v 1.1.1.1 2001-08-20 02:36:00 afalout Exp $
+#   @(#)$Id: d4gl.mk,v 1.2 2001-09-27 10:27:46 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -90,7 +90,10 @@ D4GL_SUFFIXES = .4gl .per .42f .42e .42o .42r .42m .msg .42h
 .4gl.42m:
 #	${D4GL_PC} -c $*.4gl
 #using VPATH:
-	${D4GL_PC} -c $^
+#	${D4GL_PC} -c $^
+	${D4GL_PC} -c $<
+#	${A4GL_CC} $< -c -o ${OBJSTORE}$@
+
 
 .4gl.42r:
 #	${D4GL_PC} -c $*.4gl

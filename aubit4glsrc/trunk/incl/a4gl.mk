@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.8 2001-09-23 09:16:33 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.9 2001-09-27 10:27:46 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -99,6 +99,12 @@ A4GL_SUFFIXES = .ao .4gl .c .4ae .afr .per .iem .msg .hlp
 
 #	mv $*.o $@
 
+%.aox:  %.mk
+	@echo "Trying to make library $*.aox $^"
+#	@echo "Trying to make library $*.aox using ${MAXDIR}/winds/$*.mk"
+#	${MAKE} -f ${MAXDIR}/winds/$*.mk
+	${MAKE} -f $^
+#	amake ${MAXDIR}/winds/$*.mk
 
 # Rules for compiling A4GL form files
 #.per.frm:

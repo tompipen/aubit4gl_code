@@ -1,20 +1,50 @@
 #!/bin/sh
 #set -x
 
+CURRDIR=$PWD
+
 #cd $HOME
 
-build=`cat project/build`
-build=`expr $build + 1`
-echo $build > project/build
-version=`cat project/version`
+PROJECTC=$CURRDIR/../../lib/generated/project.c
+#PROJECTC=$CURRDIR/../../lib/project.c
 
-cd lib
+PROJECTC2=$PROJECTC
+#PROJECTC2=$CURRDIR/../../lib/generated/crap.c
+
+
+##########################
+#get current build number:
+##########################
+#build=`cat project/build`
+build=`cat build`
+
+#############################
+#Get current version number:
+##############################
+#version=`cat project/version`
+version=`cat version`
+
+if [ "$1" = "-increase" ]
+then
+	echo "Increasing build number..."
+	#########################
+	#Increase build counter:
+	#########################
+	#build=`expr $build + 1`
+    let build=build+1
+	echo $build > build
+fi
+
+
+######################
+#Write project.c file:
+######################
 
 echo "
 
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
-*               project definition - automatically generated - do not modify 
+*               project definition - automatically generated - do not modify
 *
 * \$Id\$
 *
@@ -34,7 +64,19 @@ char *internal_version() {
 }
 
 
-" > generated/project.c
+" > $PROJECTC
+
+
+#if [ "1" = "2" ]
+#then
+
+
+#######################################################
+#grep all C files in lib to create rest of project.c:
+#######################################################
+
+cd $CURRDIR/../../lib
+
 
 #grep "\$Id" *.c | nawk '
 grep "\$Id" *.c | awk '
@@ -56,7 +98,21 @@ print "strcpy(m,internal_versions[a].module);"
 print "strcpy(id,internal_versions[a].id);"
 print "}"
 }
-' >> project.c
+' >> $PROJECTC2
+
+#fi
+
+#It should look like this:
+
+#struct s_ver_modules { char module[32]; char id[132];} internal_versions[]={
+#{"Module","ID Version Info"},
+#{"",0}
+#};
+#
+#set_version(int a,char *m,char *id) {
+#strcpy(m,internal_versions[a].module);
+#strcpy(id,internal_versions[a].id);
+#}
 
 
 

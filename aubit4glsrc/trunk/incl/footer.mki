@@ -71,16 +71,19 @@ endif
 FILES.42m = ${FILES.4gl:.4gl=.42m}
 FILES.42f = ${FILES.per:.per=.42f}
 FILES.42h = ${FILES.msg:.msg=.42h}
+FILES.42x = ${FILES.lib:.lib=.42x}
 
 #Informix:
 FILES.4go = ${FILES.4gl:.4gl=.4go}
 FILES.frm = ${FILES.per:.per=.frm}
 FILES.iem = ${FILES.msg:.msg=.iem}
+FILES.4gx = ${FILES.lib:.lib=.4gx}
 
 #Aubit:
-FILES.ao = ${FILES.4gl:.4gl=.ao}
+FILES.ao  = ${FILES.4gl:.4gl=.ao}
 FILES.afr = ${FILES.per:.per=.afr}
 FILES.hlp = ${FILES.msg:.msg=.hlp}
+FILES.aox = ${FILES.lib:.lib=.aox}
 
 
 #$(addprefix prefix,names...)
@@ -106,14 +109,17 @@ endif
 
 
 DEBRIS.prog = ${PROG.42r} ${PROG.42e} ${PROG.4ge} ${PROG.4gi} ${PROG.4ae}
-DEBRIS.d4gl = ${FILES.42m} ${FILES.42f} ${FILES.42h}
+DEBRIS.d4gl = ${FILES.42m} ${FILES.42h} #${FILES.42f}
 DEBRIS.i4gl = ${FILES.4go} ${FILES.frm} ${FILES.iem}
-DEBRIS.aubit = 	${FILES.ao} ${FILES.afr} ${FILES.hlp} ${FILES.4gl:.4gl=.c} \
+DEBRIS.aubit = 	${FILES.ao} ${FILES.hlp} ${FILES.4gl:.4gl=.c} \
 				${FILES.4gl:.4gl=.h} ${FILES.per:.per=.c} \
 				${FILES.4gl:.4gl=.glb} \
 				${OBJSTORE}${PROG.4ae} \
                 $(addprefix ${OBJSTORE}, ${FILES.ao}) \
 
+#cleaning forms when *.per is used to specify them , will cause
+#manu recompilations of all forms:
+#${FILES.afr}
 #				$(addprefix ${FORMSTORE}, ${FILES.afr}) \
 #				$(addprefix ${FORMSTORE}, ${FILES.frm})
 
@@ -127,7 +133,7 @@ ${DBASE.sch}:
 	${D4GL_SC} ${D4GL_SC_FLAGS} ${DBASE}
 
 clean:
-	${RM} ${DEBRIS.prog} ${DEBRIS.i4gl} ${DEBRIS.d4gl} ${DEBRIS.aubit}
+	@${RM} ${DEBRIS.prog} ${DEBRIS.i4gl} ${DEBRIS.d4gl} ${DEBRIS.aubit} > /dev/null
 
 aubit	  :	${PROG.4ae} ${FILES.afr} ${FILES.hlp}
 d4gl-pcode:	${PROG.42r} ${FILES.42f} ${FILES.42h}
@@ -138,14 +144,15 @@ querix    : ${PROG.42r} ${FILES.42f} ${FILES.42h}
 
 aubitforms: ${FILES.afr}
 
-${PROG.42r}:	${DBASE.sch} ${FILES.42m}
+${PROG.42r}:	${DBASE.sch} ${FILES.42m} ${FILES.42x}
 #	${D4GL_PL} -o $@ ${FILES.42m} ${D4GL_PL_LDFLAGS}
 #using VPATH:
 #FIXME: but if we don't use explict ${FILES.42m}, .sch listes in prerequests
 #will be passed to compiler?
+	@echo xx
 	${D4GL_PL} -o $@ $^ ${D4GL_PL_LDFLAGS}
 
-${PROG.4ae}:	${FILES.ao}
+${PROG.4ae}:	${FILES.ao} ${FILES.aox}
 #	${A4GL_CC} -o ${EXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG}
 	${TARGETCMD}
 	@echo CHANGED: $?

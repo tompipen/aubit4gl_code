@@ -1035,11 +1035,39 @@ function compglobals {
 function runamake {
 ###################
 
+                #allsinglelibs.mk is just a collector for all single
+                #file compilations, when using prepmake:
+                if [ "$i" = "allsinglelibs.mk" ]
+                then
+                    return
+                fi
+
                 #########################################################
-				#it can also be .aox and dummy.ao (allsinglelibs.mk) !!!
+				#set filename of resulting target:
                 #########################################################
+				#FIXME: it can also be dummy.ao (allsinglelibs.mk) !!!
 				EXECFILE=`basename $i .mk`.4ae;
 				EXECFILEAOX=`basename $i .mk`.aox;
+
+                #########################################################
+                #Clean targed and objects as configured:
+                #########################################################
+				if test "$FULLCLEAN" = "1"
+                then
+					amake $i clean
+				fi
+
+				if test "$TARGETCLEAN" = "1"
+                then
+					#pass -cleantarget to amake instead
+					#if [ -f $EXECFILE ]
+	                #then
+					#	rm $EXECFILE
+	                #fi
+					#FIXME: need to code it!
+					amake $i cleantarget
+                fi
+
 
                 #########################################################
 				#if we allrealy have this one linked in storrage dir, skip it:
@@ -1076,14 +1104,6 @@ function runamake {
                     fi
 					return
                 fi
-
-                #########################################################
-                #pass -cleantarget to amake instead
-                #########################################################
-				#if [ -f $EXECFILE ]
-                #then
-				#	rm $EXECFILE
-                #fi
 
 				let ATTEMPTED=ATTEMPTED+1
 
@@ -1154,35 +1174,6 @@ function runamake {
 					cat $i.make.log >> /tmp/allmakeerr.log
 
                     #########################################################
-                    #can we link with alt compiler?
-                    #########################################################
-                    #if -compatfile was specified
-
-					if test "$USECOMPATFILE" = "1"
-		            then
-						amake -verbose $i d4gl-pcode > $i.alt.log 2> $i.make.alt.log
-						RET=$?
-
-						if test $RET != "0"
-						then
-			                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
-							if [ "$VERBOSE" = "1" ]
-						    then
-								echo "Ignoring error - $i fails to link with alt compiler too."
-		                    fi
-							echo "Ignoring error - $i fails to link with alt compiler too." >> $AMAKEERRORLOG
-		                    echo $i >> $ALTLINKFAILLIST
-							return
-                        else
-							if [ "$VERBOSE" = "1" ]
-						    then
-								echo "Links OK with alt compiler: $i."
-		                    fi
-							echo "Links OK with alt compiler: $i." >> $AMAKEERRORLOG
-						fi
-					fi
-
-                    #########################################################
 					#get name make failed on:
                     #########################################################
 					PROBLEMFILE=$(cat $i.make.log | grep "make: ***" | awk '{print $3}')
@@ -1190,7 +1181,7 @@ function runamake {
 
 					if test $RET != "0"
 					then
-		                echo "error in: PROBLEMFILE=$(cat $i.make.log | grep "make: ***" | awk '{print $3}')"
+		                echo "error in PROBLEMFILE formula"
         		        exit 44
 		            fi
 
@@ -1198,7 +1189,7 @@ function runamake {
 					PROBLEMFILE=`echo $X | sed -e "/./s/\]//"`
 					if [ "$SCRIPTDEBUG" = "1" ]
 				    then
-						echo 1 $PROBLEMFILE
+						echo Problem file name was $PROBLEMFILE
                     fi
 
 					#/usr/aubit/aubit4glsrc/bin/amakeallo: /usr/aubit/aubit4glsrc/bin/amake: Text file busy
@@ -1215,7 +1206,7 @@ function runamake {
                         #we did have .ao, so we failed on 4gl compile
 						if [ "$SCRIPTDEBUG" = "1" ]
 					    then
-							echo "was 4gl"
+							echo "Problem file was 4gl"
                         fi
 						PROBLEMFILE=$Y.4gl;
 
@@ -1233,7 +1224,7 @@ function runamake {
                         	#we did have .4ae, so we failed on maikng executable.
 							if [ "$SCRIPTDEBUG" = "1" ]
 						    then
-								echo "was exec"
+								echo "Problem file was exec"
                             fi
 							PROBLEMFILE=$Y.exec;
                         else
@@ -1244,10 +1235,22 @@ function runamake {
 	                        	#we did have .aox, so we failed on linking library.
 								if [ "$SCRIPTDEBUG" = "1" ]
 							    then
-									echo "was lib"
+									echo "Problem file was lib"
                                 fi
 								PROBLEMFILE=$Y.lib;
                             else
+
+#------------------- Running amake -verbose A1F.mk ----------------------
+#1 No
+#Failed on No, not .ao, .aox or .4ae ? STOP.
+								
+# amake -verbose A1F.mk
+#Command is: make -f A1F.mk
+#make: *** No rule to make target `pinqwind.aox', needed by `A1F.4ae'.  Stop.
+#ERROR: amake failed.
+
+#FIXME : add -quiet to prepmake
+
 								echo "Failed on $PROBLEMFILE, not .ao, .aox or .4ae ? STOP."
     	                        exit 33
                             fi
@@ -1363,7 +1366,8 @@ function runamake {
 
 					if test "$USECOMPATFILE" = "1"
 		            then
-						amake -verbose $i d4gl-pcode > $i.alt.log 2> $i.make.alt.log
+						#amake -verbose $i d4gl-pcode > $i.alt.log 2> $i.make.alt.log
+                        amake -verbose $i d4gl-pcode > $i.alt.log 2>&1
 						RET=$?
 
 						if test $RET != "0"
@@ -1373,9 +1377,15 @@ function runamake {
 						    then
 								echo "Ignoring error - $i fails to link with alt compiler too."
 		                    fi
-							echo "Ignoring error - $i fails to link with alt compiler too." >> $AMAKEERRORLOG
-		                    echo $i >> $ALTLINKFAILLIST
-							return
+							if [ "$SCRIPTDEBUG" = "1" ]
+						    then
+								echo "Ignoring error - $i fails to link with alt compiler too:" >> $AMAKEERRORLOG
+			                    echo $i >> $ALTLINKFAILLIST
+								echo "################################################# $PWD/$i" >> $AMAKEERRORLOG 2>&1
+	                            cat $i.alt.log >> $AMAKEERRORLOG
+								echo "#########################################################" >> $AMAKEERRORLOG 2>&1
+                            fi
+        					return
                         else
 							if [ "$VERBOSE" = "1" ]
 						    then
@@ -1442,10 +1452,12 @@ function makecurrentdir {
 				then
                     echo "Text file busy =  Error 126"
 					echo "Text file busy =  Error 126" >> $AMAKEERRORLOG
-                    return
+                    exit 11
+                    #return
                 else
-					echo "prepmake failed"
-					echo "prepmake failed"  >> $AMAKEERRORLOG
+					echo "prepmake failed ($RET)"
+					echo "prepmake failed ($RET)"  >> $AMAKEERRORLOG
+                    #exit 12
         	        return
                 fi
             fi
@@ -1603,7 +1615,8 @@ function doit {
 	GOBACKLINES=20
 	GOAFTERLINES=10
     FULLCLEAN=0
-    COMPATIBLE=0
+	TARGETCLEAN=0
+	COMPATIBLE=0
 	USECOMPATFILE=0
     VERBOSE=0
     SCRIPTDEBUG=0
@@ -1612,6 +1625,7 @@ function doit {
 	TESTCONTINUE=0
 	AMAKE=0
 	MOVETOSTORE=1
+
 
     #------------- strings: ------------------
 
@@ -1655,6 +1669,37 @@ function doit {
 	   ##########
 	   case $a in
 	   ##########
+
+       -cmp)     	#amakeallo -r -compatfile -maxmodeminimal -nonglob
+		            RECURSIVE=1
+					COMPATIBLE=1
+					USECOMPATFILE=1
+	                MAXMODE=1
+					MAXMODE2=1
+					NONGLOBAFTERGLOBERR=1
+
+					VERBOSE=1
+                    SCRIPTDEBUG=1
+
+	   ;;
+
+
+       -link)
+					#amakeallo -r -compatfile -maxmodeminimal -amake
+		            RECURSIVE=1
+					COMPATIBLE=1
+					USECOMPATFILE=1
+	                MAXMODE=1
+					MAXMODE2=1
+					AMAKE=1
+
+					#TARGETCLEAN=1
+					FULLCLEAN=1
+					CLEANMK=1
+					VERBOSE=1
+                    SCRIPTDEBUG=1
+
+	   ;;
 
 	   -x)
 	        for file in *.ae; do

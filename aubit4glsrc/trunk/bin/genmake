@@ -19,21 +19,137 @@ then
     exit 2
 fi
 
-FIRST=`basename $1`
+	#filer out crap:
+    CMDLINE=
+    CMDLINEBASENAME=
+	CNT=0
+    CNTALL=0
+    CNTSKIP=0
+	###########
+	for a in $@
+    ###########
+	do
+        let CNTALL=CNTALL+1
+		DIRNAME=`dirname $a`
+        FULLNAME=$a
+		a=`basename $a`
+		if ! [ "$a" = "libfgl4js.42x" -o "$a" = "crap" ]
+        then
+	        let CNT=CNT+1
+            if [ "$DIRNAME" != "" ] && [ "$DIRNAME" != "." ]
+            then
+	            if [ "$DIRNAME" != "$PWD" ]
+    	        then
+					#PROBLEMFILE=`echo $X | sed -e "/./s/\]//"`
+					#LASTDIR=`echo $DIRNAME | sed -e "/$MAXDIR/s/$MAXDIR//"`
+					A1=$(echo $MAXDIR | sed -e "s/\//\\\\\//g")
+					A2=$(echo $DIRNAME | sed -e "s/$A1//")
+					#echo "DIRNAME = $DIRNAME"
+                    #echo "LASTDIR = $LASTDIR"
+					if [ "$A2" != "/gprog" ] && [ "$A2" != "/gform" ]
+                    then
+						#if this happens, add it to vpath
+						echo "$FULLNAME points outside current dir, to $A2. STOP."
+    	                exit 67
+                    fi
+                fi
+            fi
+			STRIPPATH=`basename $a`
+			CMDLINE="$CMDLINE $a"
+			CMDLINEBASENAME="$CMDLINEBASENAME $STRIPPATH"
+
+   			#first and  second can't be .42x
+            ##########
+			case $a in
+            ##########
+
+            *.42x)
+				if test "$CNT" = "1" -o "$CNT" = "2"
+                then
+                    echo "Got $a in first or second position. STOP"
+                    exit 56
+                fi
+            ;;
+
+            *)
+				if test "$CNT" = "1"
+	            then
+					#FIRST=`basename $a`
+	                FIRST=$a
+	            fi
+	            if test "$CNT" = "2"
+	            then
+					#SECOND=`basename $a`
+	                SECOND=$a
+	            fi
+	        ;;
+
+			####
+			esac
+			####
+
+
+
+        else
+            let CNTSKIP=CNTSKIP+1
+		fi
+    ####
+	done
+    ####
 
 PROG=`basename $FIRST .4go`
 if [ "$PROG" != "$FIRST" ]
 then
     IS4GO="1"
+    IS42M="0"
     ISLIB="1"
+    OBJEXT=4go
+    PROGEXT=4gi
+	LIBEXT=4go
+
 else
+	PROG=`basename $FIRST .42m`
+	if [ "$PROG" != "$FIRST" ]
+	then
+	    IS4GO="0"
+	    IS42M="1"
+    	ISLIB="1"
+        OBJEXT=42m
+        PROGEXT=42r
+	    LIBEXT=42x
+
+    else
+	    IS4GO="0"
+	    IS42M="0"
+		ISLIB="0"
+    fi
+fi
+
+if test "$ISLIB" = "0"
+then
 	PROG=`basename $FIRST .4gi`
 	if [ "$PROG" != "$FIRST" ]
 	then
 	    IS4GI="1"
+		FJSLINKLINE=0
+        OBJEXT=4go
+        PROGEXT=4gi
+		LIBEXT=4go
 	else
-        echo "Cannot recognise extension of $1. STOP."
-        exit 4
+		PROG=`basename $FIRST .42r`
+		if [ "$PROG" != "$FIRST" ]
+		then
+		    IS4GI="1"
+            #we are extracting components from 4Js link line, not from
+            #dependencies list:
+			FJSLINKLINE=1
+            OBJEXT=42m
+            PROGEXT=42r
+	        LIBEXT=42x
+        else
+			echo "Cannot recognise extension of $FIRST STOP."
+    	    exit 4
+        fi
 	fi
 fi
 
@@ -41,6 +157,8 @@ fi
 	#HEADERNAME=header.mki
 	FOOTERNAME='${AUBITDIR}/incl/footer.mki'
 	FORMFILES=
+    LIBLIST=
+    FGLLIST=
 
 
 #if we revceived only prog name and one 4gl file, AND program name is one
@@ -49,16 +167,16 @@ if [ $# = "2" ] && [ "$ISLIB" = "1" ]
 then
     IS_SINGLE_LIB="1"
 	FILENAME=allsinglelibs.mk
-	fname=`basename $2 .4go`
+	fname=`basename $SECOND .$OBJEXT`
 	fname=`basename $fname .4gl`
 
     if ! [ -f $FILENAME ]
     then
 		echo include $HEADERNAME > $FILENAME
 		echo >> $FILENAME
-		echo #we are using this dummy name only to get all in objects- >> $FILENAME
-        echo #it will not be used for anything - and it will possibly >> $FILENAME
-        echo #even fail to link: >> $FILENAME
+		echo '#we are using this dummy name only to get all in objects-' >> $FILENAME
+        echo '#it will not be used for anything - and it will possibly' >> $FILENAME
+        echo '#even fail to link:' >> $FILENAME
 		echo "PROG		= dummy.lib"  >> $FILENAME
 		echo >> $FILENAME
 		echo "GLOBALS.4gl	= $fname.4gl" >> $FILENAME
@@ -85,20 +203,18 @@ else
     fi
 	echo >> $FILENAME
 
-	fname=`basename $2 .4go`
+	fname=`basename $SECOND .$OBJEXT`
 	fname=`basename $fname .4gl`
 	echo "GLOBALS.4gl	= $fname.4gl" >> $FILENAME
-
 	echo >> $FILENAME
-	echo 'FILES.4gl	= \' >> $FILENAME
-	echo '		${GLOBALS.4gl} \' >> $FILENAME
-	###########
-	for a in $@
-    ###########
+
+	##################
+	for a in $CMDLINE
+    ##################
 	do
-		if ! [ "$1" = $a ] 		#it's program name
+		if ! [ "$FIRST" = $a ] 		#it's program name
         then
-	        if ! [ "$2" = $a ]  #it's GLOBALS file
+	        if ! [ "$SECOND" = $a ]  #it's GLOBALS file
             then
 
 			##########
@@ -106,9 +222,11 @@ else
 	        ##########
 
 			#*.42m) || *.4go) HOW THE HELL DO YOU DO _OR_here ?
-			*.4go)
-				fname=`basename $a .4go`
-                EXT=ao
+			#*.4go)
+            *.$OBJEXT)
+				fname=`basename $a .$OBJEXT`
+                #EXT=ao
+                EXT=4gl
 
 				#cinqwind is BOTH a 4gl and library (.42x, .aox) name
                 #which is VERY stupid thing to do, and should be fixed in Maximise;
@@ -117,12 +235,27 @@ else
 				#Maybe I shoud use "fgllink..." line to get files, and not dependencies?)
 				if [ "$fname" = "cinqwind" -o "$fname" = "invwind" -o "$fname" = "lic_keys" -o "$fname" = "pinqwind" -o "$fname" = "wcustwind" -o "$fname" = "wordrwin" -o "$fname" = "wpinqwind" ]
                 then
-					EXT=aox
+					if [ "$OBJEXT" = "4go" ]
+                    then
+						#EXT=aox
+						#if [ "$LIBLIST" = "" ]
+					    #then
+						#	#echo '		${FILES.lib} \' >> $FILENAME
+                	    #fi
+						LIBLIST="$LIBLIST $fname.lib"
+                    else
+    	                FGLLIST="$FGLLIST $fname.$EXT"
+                    fi
+                else
+                    FGLLIST="$FGLLIST $fname.$EXT"
                 fi
 
-	            echo "			$fname.$EXT \\" >> $FILENAME
-
 			;;
+
+            *.$LIBEXT)
+				fname=`basename $a .$LIBEXT`
+                LIBLIST="$LIBLIST $fname.lib"
+            ;;
 
 			#*.42f) || *.frm)
 	        *.frm)
@@ -131,7 +264,19 @@ else
 	        ;;
 
 	        *) echo "ERROR: what the hell is $a"
-	            exit 1
+
+				echo "IS4GO = $IS4GO"
+			    echo "IS42M = $IS42M"
+		    	echo "ISLIB = $ISLIB"
+		        echo "$OBJEXT"
+		        echo "$PROGEXT"
+			    echo "$LIBEXT"
+                echo "---------------------------x"
+				echo $CMDLINEBASENAME
+                echo "---------------------------x"
+                echo $FIRST $SECOND
+				#echo $@
+				exit 1
 
 	        ;;
 
@@ -145,7 +290,60 @@ else
     ####
 
 	echo >> $FILENAME
-   	if [ "$ISLIB" != "1" ]
+
+    ############################
+	#Write all libs to makefile:
+    ############################
+	if [ "$LIBLIST" != "" ]
+    then
+
+		echo 'FILES.lib	= \' >> $FILENAME
+		#################
+		for a in $LIBLIST
+	    #################
+		do
+            echo "			$a \\" >> $FILENAME
+        ####
+        done
+        ####
+
+		echo >> $FILENAME
+    fi
+
+    ############################
+	#Write all 4gl's to makefile:
+    ############################
+	if [ "$FGLLIST" != "" ]
+    then
+		echo 'FILES.4gl	= \' >> $FILENAME
+		echo '			${GLOBALS.4gl} \' >> $FILENAME
+
+		#if [ "$LIBLIST" != "" ]
+		#then
+		#	echo '			${FILES.lib} \' >> $FILENAME
+        #fi
+
+		#################
+		for a in $FGLLIST
+	    #################
+		do
+            echo "			$a \\" >> $FILENAME
+        ####
+		done
+        ####
+
+		echo >> $FILENAME
+    #else
+        #This can happen with porgrams that have only one 4gl file
+		#echo FGLLIST is empty
+        #exit 44
+
+	fi
+
+    ############################
+	#Write all forms to makefile:
+    ############################
+	if [ "$ISLIB" != "1" ]
     then
 
 		if [ "$FORMFILES" = "" ]
@@ -164,6 +362,9 @@ else
 	    fi
     fi
 	
+    ############################
+	#Write footer to makefile:
+    ############################
 	echo >> $FILENAME
     #echo "#-------------------------------------" >> $FILENAME
 	#echo >> $FILENAME

@@ -85,8 +85,16 @@ function r_fgllink {
 	#we alos don't want to strip extension from object name, it may be library
 	#target, not executable:
 	#---------------------------------------------------------
-	TOREPLACE=fgllink
-	INCLCMT='	genmake $(@F) $(^F) #'$TOREPLACE
+
+	if test "$FROMDEPS" = "1"
+    then
+		TOREPLACE=fgllink
+		INCLCMT='	genmake $(@F) $(^F) #'$TOREPLACE
+    else
+		#fgllink -o  $G/P11.42r $L $G/P11.42m $G/P11a.42m ...
+		TOREPLACE="fgllink -o"
+		INCLCMT='	genmake '
+    fi
 	replace
 	#---------------------------------------------------------
 
@@ -152,8 +160,15 @@ function r_fglpc {
 	#we need all fglpc replaced with commands, since in winds most files
 	#are not programs, but library functions.
 	#---------------------------------------------------------
-	TOREPLACE="fglpc"
-	INCLCMT='	genmake $(@F) $(^F) #'$TOREPLACE
+	#if test "$FROMDEPS" = "1"
+    #then
+		TOREPLACE="fglpc"
+		INCLCMT='	genmake $(@F) $(^F) #'$TOREPLACE
+    #else
+	#	#fglpc -a -p $P P11.4gl;fgl2p P11.4gl;mv P11.42m $G
+	#	TOREPLACE="fgllink -o"
+	#	INCLCMT='	genmake '
+    #fi
 	replace
 	#---------------------------------------------------------
 }
@@ -172,6 +187,10 @@ function r_fglpc {
 	GENMAKE=genmake
     DOALL=1
 
+
+    #If you want to extract components from list of dependencies, instead
+	#directly form link line, change this to 1:
+    FROMDEPS=0
 
 	###########
 	for a in $@
@@ -305,13 +324,11 @@ function r_fglpc {
 	touch *.4gl
 	make -f $RESULTMAKEFILE > prepmake.log 2>&1
 	RET=$?
-
-   	echo "----------------------- Finished running make ---------------------------"
-
+	
 	echo " "
-	if test $RET != "0"
+	if test "$RET" != "0"
 	then
-	    if test $VERBOSE = 1
+	    if test "$VERBOSE" = "1"
         then
             tail prepmake.log
 		   	echo "----------------------- Finished running make ---------------------------"
@@ -319,7 +336,7 @@ function r_fglpc {
 		echo "Error preparing make file, see $RESULTMAKEFILE and prepmake.log"
 	    exit 1
 	else
-
+	   	echo "----------------------- Finished running make ---------------------------"
 		#if we created single libs file, we need to add footer at the end:
 		FOOTERNAME='${AUBITDIR}/incl/footer.mki'
 
