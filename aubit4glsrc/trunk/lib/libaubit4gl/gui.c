@@ -508,9 +508,7 @@ void A4GL_init_wsock (void)
       err = WSAStartup (MAKEWORD (1, 1), &wsaData);
       if (err)
 	{
-	  A4GL_exitwith ("Error Starting Winsock");
-	  A4GL_mja_endwin ();
-	  exit (0);
+	  A4GL_assertion (1,"Error Starting Winsock");
 	}
     }
   started = 1;
