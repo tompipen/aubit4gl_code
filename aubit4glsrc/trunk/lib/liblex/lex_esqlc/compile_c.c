@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.95 2003-09-11 10:42:26 mikeaubury Exp $
+# $Id: compile_c.c,v 1.96 2003-09-13 18:59:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -606,6 +606,11 @@ print_report_ctrl (void)
   A4GL_debug
     ("/* ********************************************************** */\n");
   printc ("report%d_ctrl:\n", report_cnt);
+  printc ("if (rep.lines_in_header      ==-1) rep.lines_in_header=%d;",rep_struct.lines_in_header);
+  printc ("if (rep.lines_in_first_header==-1) rep.lines_in_first_header=%d;",rep_struct.lines_in_first_header);
+  printc ("if (rep.lines_in_trailer     ==-1) rep.lines_in_trailer=%d;",rep_struct.lines_in_trailer);
+
+
   printc ("A4GL_debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
   printc ("    if (acl_ctrl==REPORT_OPS_COMPLETE) return;\n\n");
   printc ("    if (acl_ctrl==REPORT_SENDDATA) {\n");
@@ -620,9 +625,17 @@ print_report_ctrl (void)
 
   if (rep_type == REP_TYPE_NORMAL)
     {
-      printc
-	("if (acl_ctrl==REPORT_LASTDATA) {if (_useddata) %s(0,REPORT_LASTROW);_started=0;if (rep.output) {fclose(rep.output);rep.output=0;}return;}\n",
-	 get_curr_rep_name ());
+      printc ("if (acl_ctrl==REPORT_LASTDATA) {");
+      printc ("  if (_useddata) {");
+      printc ("   %s(0,REPORT_LASTROW);", get_curr_rep_name ());
+      printc ("   if (rep.line_no==0&&rep.page_no==0) A4GL_rep_print(&rep,0,0,0);"); // MJA 13092003
+      printc ("   A4GL_skip_top_of_page(&rep,1);");
+      printc ("}");
+      printc ("  _started=0;");
+      printc ("  if (rep.output) {fclose(rep.output);rep.output=0;}");
+      printc ("  return;");
+      printc ("}\n");
+
     }
   else
     {
@@ -654,40 +667,40 @@ print_report_ctrl (void)
   for (a = 0; a < report_stack_cnt; a++)
     {
       /* on last row */
-      if (*get_report_stack_whytype (a) == 'L')
+      if (get_report_stack_whytype (a) == 'L')
 	printc
 	  ("if (acl_ctrl==REPORT_LASTROW) { acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
       /* on every row */
-      if (*get_report_stack_whytype (a) == 'E')
+      if (get_report_stack_whytype (a) == 'E')
 	printc
 	  ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
       /* before group of */
-      if (*get_report_stack_whytype (a) == 'B')
+      if (get_report_stack_whytype (a) == 'B')
 	printc
 	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
 	   get_report_stack_why (a), report_cnt, a);
 
       /* after group of */
-      if (*get_report_stack_whytype (a) == 'A')
+      if (get_report_stack_whytype (a) == 'A')
 	printc
 	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
 	   get_report_stack_why (a), report_cnt, a);
 
-      if (*get_report_stack_whytype (a) == 'T')
+      if (get_report_stack_whytype (a) == 'T')
 	printc
-	  ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=REPORT_PAGEHEADER;goto rep_ctrl%d_%d;}\n",
+	  ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-      if (*get_report_stack_whytype (a) == 'P')
+      if (get_report_stack_whytype (a) == 'P')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-      if (*get_report_stack_whytype (a) == 'p')
+      if (get_report_stack_whytype (a) == 'p')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&(rep.page_no!=1||(rep.page_no==1&&rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
@@ -830,11 +843,16 @@ static void
 print_output_rep (struct rep_structure *rep)
 {
   printc ("output_%d:\n", report_cnt);
+  printc ("rep.lines_in_header=-1;\n");
+  printc ("rep.lines_in_trailer=-1;\n");
+  printc ("rep.lines_in_first_header=-1;\n");
+  printc ("rep.print_section=0;\n");
   printc ("rep.top_margin=%d;\n", rep->top_margin);
   printc ("rep.bottom_margin=%d;\n", rep->bottom_margin);
   printc ("rep.left_margin=%d;\n", rep->left_margin);
   printc ("rep.right_margin=%d;\n", rep->right_margin);
   printc ("rep.page_length=%d;\n", rep->page_length);
+  printc ("rep.header=0;\n");
   printc ("rep.page_no=%d;\n", rep->page_no);
   printc ("rep.printed_page_no=%d;\n", rep->printed_page_no);
   printc ("rep.line_no=%d;\n", rep->line_no);
@@ -866,6 +884,11 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("strcpy(rep.font_name,%s);\n", rep->font_name);
   printc ("rep.font_size=%f;\n", rep->font_size);
   printc ("rep.paper_size=%d;\n", rep->paper_size);
+  printc ("rep.header=0;\n");
+  printc ("rep.lines_in_header=-1;\n");
+  printc ("rep.lines_in_trailer=-1;\n");
+  printc ("rep.lines_in_first_header=-1;\n");
+  printc ("rep.print_section=0;\n");
 
   printc ("rep.top_margin=A4GL_pdf_size(%f,'l',&rep);\n", rep->top_margin);
   printc ("rep.bottom_margin=A4GL_pdf_size(%f,'l',&rep);\n",
@@ -3216,7 +3239,7 @@ print_skip_lines (void)
 void
 print_skip_top (void)
 {
-  printc ("A4GL_%sskip_top_of_page(&rep);\n", ispdf ());
+  printc ("A4GL_%sskip_top_of_page(&rep,0);\n", ispdf ());
 }
 
 /**
@@ -3402,7 +3425,14 @@ print_report_2 (int pdf, char *repordby)
 
   printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   int _g,_p;\n");
-  printc ("   A4GL_rep_print(&rep,0,1,0);");
+
+
+  // This was put in to force a page header if
+  // data was sent - but not used..
+  // But this prints too early here...
+  //printc ("   A4GL_rep_print(&rep,0,1,0);");
+
+
   printc ("   _g=A4GL_chk_params(rbind,%d,_ordbind,%s);\n", cnt, repordby);
   printc
     ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
@@ -3445,6 +3475,9 @@ print_report_2 (int pdf, char *repordby)
   }
 
   printc ("}\n");
+
+
+
   printc (" ");
   printc ("if (acl_ctrl==REPORT_START) {\n");
   printc ("   A4GL_pop_char(_rout2,254);\n");
