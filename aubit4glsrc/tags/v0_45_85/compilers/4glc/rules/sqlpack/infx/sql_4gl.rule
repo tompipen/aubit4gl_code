@@ -1,0 +1,233 @@
+/*
+=====================================================================
+                        Source: sql_4gl.rule
+=====================================================================
+*/
+
+
+fetch_statement:
+	FETCH 
+    {
+      print_fetch_1();
+    } 
+  fetch_part opt_into_fetch_part
+    {
+      print_fetch_2();
+      print_fetch_3($<str>3,$<str>4);
+    }
+;
+
+declare_cursor_name  :       ident_or_var {sprintf($<str>$,"%s",$<str>1);doing_declare=1;}
+;
+
+fetch_part: 
+	fetch_place  fetch_cursor_name
+{sprintf($<str>$,"%s, %s",$<str>2,$<str>1);
+addmap("Fetch Cursor",$<str>2,curr_func,yylineno,infilename);
+}
+        | fetch_cursor_name
+{sprintf($<str>$,"%s, %d, 1",$<str>1,FETCH_RELATIVE);
+
+addmap("Fetch Cursor",$<str>1,curr_func,yylineno,infilename);
+}
+;
+
+opt_into_fetch_part: {
+A4GL_debug("no into\n");
+strcpy($<str>$,"0,0");
+} | INTO {
+ A4GL_debug("FETCH INTO  ...");
+	/* start_bind('i',0,-1); */
+    start_bind('o',0);
+}
+    obind_var_list 
+{
+	int no;
+	no=get_bind_cnt('o');
+	sprintf($<str>$,"%d,obind",no);
+}
+;
+
+opt_foreach_into_fetch_part: {
+A4GL_debug("no into\n");
+strcpy($<str>$,"0,0");
+} | 
+	INTO {
+ A4GL_debug("FETCH INTO  ...");
+	/* start_bind('i',0,-1); */
+    start_bind('o',0);
+}
+        obind_var_list {
+}
+;
+
+fetch_place : 
+	FIRST {
+		sprintf($<str>$,"%d,1",FETCH_ABSOLUTE);}
+	| LAST
+		{sprintf($<str>$,"%d,-1",FETCH_ABSOLUTE);}
+	| NEXT
+		{sprintf($<str>$,"%d,1",FETCH_RELATIVE);}
+	| PREVIOUS
+		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
+	| PRIOR
+		{sprintf($<str>$,"%d,-1",FETCH_RELATIVE);}
+	| CURRENT
+		{sprintf($<str>$,"%d,0",FETCH_RELATIVE);}
+	| RELATIVE fgl_expr
+		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_RELATIVE);}
+	| ABSOLUTE fgl_expr
+		{sprintf($<str>$,"%d,A4GL_pop_long()",FETCH_ABSOLUTE);}
+;
+
+
+delete_statement_position:
+	DELETE_FROM table_name WHERE_CURRENT_OF fetch_cursor_name
+{
+ 
+rm_quotes($<str>4);
+sprintf($<str>$," %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4
+);}
+	;
+
+
+
+var_ident_qchar: var_ident {strcpy($<str>$,$<str>1);}
+	| var_ident ATSIGN identifier {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}
+	| CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
+;
+
+sql_cmd : opt_use {insql=1;} sql_commands {
+print_undo_use($<str>1);
+insql=0;strcpy($<str>$,$<str>3);}
+;
+
+
+
+flush_cmd : opt_use
+	FLUSH fetch_cursor_name  {
+	print_flush_cursor($<str>3);
+		addmap("Flush Cursor",$<str>3,curr_func,yylineno,infilename);
+print_undo_use($<str>1);
+		}
+
+;
+
+declare_cmd : opt_use DECLARE declare_cursor_name CURSOR FOR cursor_specification_all_ss {insql=0;chk4var=0;}  {
+		print_declare("",$<sql_string>6,$<str>3,0,0);
+		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
+		print_undo_use($<str>1);
+		doing_declare=0;
+	}
+	| opt_use DECLARE declare_cursor_name CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+		print_declare("",$<sql_string>7,$<str>3,2,0); 
+		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
+		print_undo_use($<str>1);
+		doing_declare=0;
+	}
+
+        | opt_use DECLARE declare_cursor_name SCROLL_CURSOR_FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+		print_declare("",$<sql_string>5,$<str>3,0,1); 
+		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
+		print_undo_use($<str>1);
+		doing_declare=0;
+	}
+       	| opt_use DECLARE declare_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;}  {
+		print_declare("",$<sql_string>7,$<str>3,2,1); 
+		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
+		print_undo_use($<str>1);
+		doing_declare=0;
+	}
+;
+ 
+curs_forupdate : {strcpy($<str>$,"");} 
+		| FOR_UPDATE {strcpy($<str>$," FOR UPDATE");} 
+		| FOR_UPDATE_OF cur_update_list {sprintf($<str>$," FOR UPDATE OF %s",$<str>2);} 
+		;
+
+
+cursor_specification_all_ss:
+	cursor_specification_sel_ss {
+		$<sql_string>$=$<sql_string>1;
+	}
+	| insert_statement_ss { 
+		$<sql_string>$=make_sql_string_and_free(strdup(print_curr_spec(1,$<sql_string>1)),0);
+	}
+;
+
+cursor_specification_sel_ss:
+	 stmt_id {
+		start_bind('i',0);
+		start_bind('o',0);
+		$<sql_string>$=make_sql_string_and_free(strdup(print_curr_spec(2,$<str>1)) ,0);
+	}
+	| select_statement_ss_str  curs_forupdate {
+		 char *ptr;
+		ptr=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
+	 	$<sql_string>$=strdup(A4GL_CV_print_select_all(ptr)); free(ptr); 
+	}
+;
+
+
+
+value_expression_initial_ss :
+	value_expression_complex_ss {
+			/*
+			if (strlen(current_upd_table)) {
+				push_gen(UPDVAL,$<sql_string>1);
+			}
+			*/
+		$<sql_string>$=$<sql_string>1;
+	}
+	| var_ident_ibind_ss 	{
+		$<sql_string>$=$<sql_string>1;
+	}
+	| subquery_ss { $<sql_string>$=$<sql_string>1; }
+	| ALL subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ALL "),$<sql_string>2,0); }
+	| ANY subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ANY "),$<sql_string>2,0); }
+	| SOME subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("SOME "),$<sql_string>2,0); }
+	| ATSIGN identifier {
+		$<sql_string>$=strdup($<str>2);
+	}
+	| ATSIGN identifier DOT identifier {
+		$<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),0);
+	}
+;
+
+
+fgl_sql_statement: delete_statement_position {
+         A4GL_lex_printcomment("/*  delete 1 */\n");
+                A4GL_CV_print_exec_sql_bound($<str>1);
+                strcpy($<str>$,"Delete where current...");
+        }
+	| fetch_statement { strcpy($<str>$,"Fetch"); A4GL_lex_printcomment("/*  fetch */\n"); }
+	| select_statement_ss_str curs_forupdate {
+		char *ptr;
+        	ptr=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
+ 		$<sql_string>$=strdup(A4GL_CV_print_select_all(ptr)); free(ptr); 
+
+        	if (strstr($<str>2,"FOR UPDATE")) {
+                   printf("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");
+        	}
+                A4GL_CV_print_do_select($<sql_string>$);
+                strcpy($<str>$,"select");
+        }
+;
+
+
+dbase_name      :       identifier {strcpy($<str>$,$<str>1);}
+                |       identifier ATSIGN identifier {sprintf($<str>$,"%s@%s",$<str>1,$<str>3);}
+                |       CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
+;
+
+cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list KW_COMMA colident {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}                                                                                                                      ;                                                                                                                                                                                                                                                       colident: identifier                                                                                                                | identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}                                                     | CHAR_VALUE DOT identifier DOT identifier {                                                                                                if (A4GL_escape_quote_owner()) {                                                                                                    sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                   } else {                                                                                                                            sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);                                       }                                                                                                           }                                                                                                                   ;
+
+in_select_statement_ss:
+        SELECT op_ad select_list_ss table_expression_2_ss sel_p2_ss {
+                $<sql_string>$=make_sql_string_and_free(strdup($<str>1), kw_space,strdup($<str>2),kw_space, $<sql_string>3, kw_space,$<sql_string>4, kw_space,$<sql_string>5,0);
+}
+
+;
+
+
+/* ========================= sql_4gl.rule ================================ */

@@ -1,0 +1,10 @@
+label_cmd :  LABEL  {
+char buff[256];
+A4GL_debug("Label : %s\n",get_idents(0));
+strcpy(buff,get_idents(0));
+A4GL_convlower(buff);
+print_label(buff);
+}
+;
+
+

@@ -1,0 +1,17 @@
+# rules for converting Informix SQL to Postgres-compatible syntax
+
+#This file is probably obsolete? Seems like INFORMIX-POSTGRES.cnv is the 
+#one to use?
+
+DOUBLE_TO_SINGLE_QUOTES
+MATCHES_TO_REGEX
+TABLE_ALIAS_AS
+COLUMN_ALIAS_AS
+ANSI_UPDATE_SYNTAX
+CONSTRAINT_NAME_BEFORE
+SUBSTRING_FUNCTION = substr
+REPLACE rowid = oid
+REPLACE today = date(now())
+REPLACE current year to second = now()
+REPLACE unique = distinct
+

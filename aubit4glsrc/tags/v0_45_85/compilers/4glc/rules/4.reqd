@@ -1,0 +1,33 @@
+%token <str> NAME
+%left UMINUS
+%left KW_COMMA
+%left KW_OR         
+%left KW_AND        
+%left KW_USING 
+%left NOT
+%left MATCHES     
+%left POWER
+%left LESS_THAN 
+%left GREATER_THAN 
+%left EQUAL 
+%left GREATER_THAN_EQ 
+%left LESS_THAN_EQ 
+%left NOT_EQUAL
+%left MINUS PLUS
+%token FINPUT
+%left DIVIDE MULTIPLY
+%left MOD
+%right COMMAND
+%token NUMBER_VALUE
+%token CHAR_VALUE
+%token INT_VALUE
+%token NAMED_GEN
+/* %token COMMENT */
+%token CLINE
+%token SQLLINE
+%token KW_CSTART
+%token KW_CEND
+%token USER_DTYPE
+%token SQL_TEXT
+%token KW_WHENEVER_SET
+%token COMMENT

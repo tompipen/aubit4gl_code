@@ -1,0 +1,174 @@
+###########################################################################
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+###########################################################################
+
+#	 $Id: header.mki,v 1.19 2003-08-23 00:42:58 afalout Exp $
+
+############################################
+#   Aubit 4gl compiler - amake system
+#
+# Standard header for amake-style .mk files
+############################################
+
+ifndef AMAKE
+	AMAKE	=amake
+endif
+
+#if we have to build 4Js .sch file, where to put it, and where to look
+#for it: WARNING: SCWORK is max specific, but we need it here, because it's
+#needed in rules include file, so it must occur BEFORE it is included.
+SCH_DIR		=${SCWORK}
+
+#set FGLDBPATH to location where we placed .sch file, so that 4Js compiler
+#can find it
+FGLDBPATH	:=${SCH_DIR}:${FGLDBPATH}
+export FGLDBPATH
+
+PWD	:=$(shell pwd)
+
+#show additional debugging messages
+#VERBOSE		=1
+
+#If you want to ignore some compiler's errors, for instance, to see if
+#everything else will work, set this to -
+#FAIL_LINK=-
+#FAIL_CMPL_4GL=-
+#FAIL_CMPL_C=-
+#FAIL_CMPL_FRM=-
+#FAIL_CMPL_HLP=-
+
+####################
+#You can specify which rules will be included, in environment
+#variable MAKERULES. "amake" script is a good place to do this.
+#if you don't, all rules available will be included:
+ifdef MAKERULES
+	include $(MAKERULES)
+else
+	include $(wildcard $(AUBITDIR)/incl/*.mk)
+
+    ####################
+	#Or, you can comment out above stmt, and pick one or more here:
+	#include $(AUBITDIR)/incl/i4gl.mk
+	#include $(AUBITDIR)/incl/d4gl.mk
+	#include $(AUBITDIR)/incl/a4gl.mk
+	#include $(AUBITDIR)/incl/q4gl.mk
+endif
+
+####################
+#You can specify default target here, but of course, as everything else,
+#you can override it from command line:
+#DEFAULT=d4gl-pcode
+DEFAULT		=aubit
+
+####################
+#Since there should be nothing hard-coded in .mk or footer.mk,
+#defining command names to be used later shouls also be done here:
+RM 			= rm -f
+
+####################
+#You can define defaults for some dependencies here, that are common
+#programs you plan to compile. It can allways be overwritten later,
+#if you have exceptions:
+#FILES.msg 	= ap.txt
+
+####################
+#This is a convinient way to get all forms in current dir compiled. If you
+#do know specific form files used by each program, you will specify this in
+#individual .mk files, in which case this will be unused; if you don't,
+#than you will just write FORMS.per=ALLFORMS.per in .mk (you could also
+#rename ALLFORMS.per here to be called FORMS.per, and then you don't even
+#need to do that:
+ALLFORMS.per	=$(wildcard *.per)
+
+
+####################
+#define path for make to find .sch files i fnot in current dir:
+ifdef FGLDBPATH
+	vpath %.sch ${FGLDBPATH}
+endif
+
+####################
+#define compiler dependent extension, for use in vpath:
+ifeq "$(DEFAULT)" "aubit"
+	
+	#create shared or static libraries (collections of objects); default is static
+	#LIBS_LINK=SHARED
+	#compile objects for static or dynamic linking; default is static
+	#OBJS_LINK=SHARED
+
+	ifeq "${OBJS_LINK}" "SHARED"
+		OBJ=${A4GL_SOB_EXT}
+    else
+		OBJ=${A4GL_OBJ_EXT}
+    endif
+	ifeq "${LIBS_LINK}" "SHARED"
+		LIB=${A4GL_SOL_EXT}
+    else
+		LIB=${A4GL_LIB_EXT}
+    endif
+	PRG=${A4GL_EXE_EXT}
+	HLP=${A4GL_HLP_EXT}
+	FRM=${A4GL_FRM_EXT}
+	MENU=${A4GL_MNU_EXT}
+endif
+
+ifeq "$(DEFAULT)" "i4gl-pcode"
+	FRM=${I4GL_FRM_EXT}
+	OBJ=${I4GL_OBJ_EXT}
+	PRG=${I4GL_PRG_EXT}
+	HLP=${I4GL_HLP_EXT}
+	LIB=${I4GL_LIB_EXT}
+
+endif
+
+ifeq "$(DEFAULT)" "d4gl-pcode"
+	FRM=${D4GL_FRM_EXT}
+	OBJ=${D4GL_OBJ_EXT}
+	PRG=${D4GL_PRG_EXT}
+	HLP=${D4GL_HLP_EXT}
+	LIB=${D4GL_LIB_EXT}
+endif
+
+ifeq "$(DEFAULT)" "querix"
+	FRM=${Q4GL_FRM_EXT}
+	OBJ=${Q4GL_OBJ_EXT}
+	PRG=${Q4GL_PRG_EXT}
+	HLP=${Q4GL_HLP_EXT}
+	LIB=${Q4GL_LIB_EXT}
+endif
+
+####################
+#FGLDBPATH is 4Js env var that points to directory where .sch files can be
+#found; if this is not set, we will not know where to put it, 'mv' command
+#will have no destination and fail. So we do this to prevent it form failing
+#and leanve created .sch file in current directory:
+ifndef FGLDBPATH
+	SCHMVCMD=@\#
+else
+	SCHMVCMD=mv
+	vpath %.sch ${FGLDBPATH}
+endif
+
+ifneq "${AMAKE_ADDRULES}" ""
+    ####################
+	#add applications specific configuration.
+    #You should keep this file generic enough to cover all
+    #compilations on your system, and isolate applications specific
+    #configuration, if needed, like this.
+    #See this file for examples of vpath usage: erp/etc/max_rules.mki
+	include ${AMAKE_ADDRULES}
+endif
+#------------------------ EOF ------------------------------

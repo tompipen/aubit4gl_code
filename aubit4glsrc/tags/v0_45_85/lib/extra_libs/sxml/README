@@ -1,0 +1,74 @@
+
+This is a wrapper library for the very small sxml library...
+
+
+AUTHOR file for the library :
+	Patrizio Bruno
+
+	patrizio@dada.it
+	scain@firenze.net
+
+http://freshmeat.net/projects/sxml/
+
+SXML is a little library to parse/generate configuration files in a restricted 
+XML format similar to that used by GLADE, Freshmeat, and others.
+
+http://scain.firenze.net/sxml.tar.gz
+
+From the sxml library docs :
+
+/*
+ * XML handling
+ */
+
+ /* XML parse functions */
+int sxml_readfile(const char *path, SXML **sxmlp);
+ - This function reads the file <path> and fill up the *sxmlp tree
+
+SXML *sxml_get_next(SXML *head, const char *name, int which);
+ - Given a starting point <head> this functions retrieves the <which>
+   branch named <name> standing at the same level of head.
+
+SXML *sxml_get_sub(SXML *head, const char *name, int which);
+ - Given a starting <head> point this functions retrieves the <which>
+   branch named <name> standing at the first sublevel of head.
+
+char *sxml_get_value(SXML *head, const char *name, int which);
+ - Given a starting point <head>  this functions retrieves the <which>
+   branch named <name> standing at the same level of head and containing
+   plain text.
+
+ /* XML generation functions */
+int sxml_writefile(const char *path, const SXML *sxml);
+ - Dump the SXML tree pointed by <sxml> to the file <path>.
+
+size_t sxml_createbuf(char **outbuffer, const char *head, const SXML *sxml);
+ - Create an XML buffer <*outbuffer>  unindented as a NULL terminated string,
+   putting <head> as the XML header. If <*outbuffer> results already allocated
+   the function will reallocate it appending the new buffer, else if
+   <*outbuffer> is NULL it first allocates it using calloc().
+   Returns the size of the string on SUCCESS, and 0 on error setting
+   sxml_errno.
+
+SXML *sxml_put_next(SXML **head, char *name);
+ - Create an empty branch at the same level of <*head> naming it
+   <name>. Returns a pointer to the created branch.
+
+SXML *sxml_put_sub(SXML **head, char *name);
+ - Create an empty branch at the first free sublevel of <*head> naming it
+   <name>. Returns a pointer to the created branch.
+
+char *sxml_put_value(SXML *xmlp, char *value);
+ - Assign a text value to <xmlp>. <xmlp> is the return value of sxml_put_next
+   or sxml_put_sub. Returns a pointer to the newly allocated buffer
+   for <value>.
+
+ /* error handling */
+char *sxml_errstr(int retval);
+ - sxml_readfile and sxml_writefile return a positive integer value on FAILURE
+   or 0 on SUCCESS.
+   This function converts these values to a human readable text.
+
+Functions, those do not return integer values representing errors, set the
+global variable "sxml_errno" which can be used as an argument for 'sxml_errstr'
+

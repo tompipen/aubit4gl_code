@@ -1,0 +1,255 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.18 2004-09-28 09:49:19 afalout Exp $
+#
+
+LIBROOT	=../..
+ROOT	=../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+#require XDR frunctions, part of Sun RPClib:
+CMODS_MENU_XDR		=${ROOT}/compilers/menus/menu_x_xdr.c loadmenu.c menuwrite.c
+OBJS_MENU_XDR     	=${CMODS_MENU_XDR:.c=.o}
+
+#we cannot compile GTK code with  -Wstrict-prototypes because
+#GTK+ supplied libraries have many functions declared without parameters
+CFLAGS_GTK_C 		=$(CFLAGS:%-Wstrict-prototypes=%)
+
+#FIXME: libMENU should not depend on GTK: one day, it should work
+#with Swing or Qt just as well
+
+## ==================================================================
+##                              Options-old
+## ==================================================================
+
+#XX ifneq "$(GLIBVER)" "old"
+#XX 	ifneq "$(GLIBVER)" "" #GLIBVER was manualy specified
+#XX 		ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
+#XX 			GTKLIB_CFLAGS	:=$(shell @PKG_CONFIG@ --cflags $(GLIBVER))
+#XX 			GDKLIB_CFLAGS	:=$(shell @PKG_CONFIG@ --cflags $(GDKVER))
+#XX         endif
+#XX 		GLIB_CFLAGS		=$(GTKLIB_CFLAGS) $(GDKLIB_CFLAGS) -I${GTKPATH}/include
+#XX     else #GLIBVER is empty
+#XX 		ifneq "@GTK_CONFIG@" "no" #GTK_CONFIG
+#XX 			GLIB_CFLAGS		:=$(shell @GTK_CONFIG@ --cflags)
+#XX 			xxGTKLIBS		:=$(shell @GTK_CONFIG@ --libs)
+#XX 			#we cannot have -rdynamic and -shared at the same time:
+#XX 			GTKLIBS			=$(subst -rdynamic,,${xxGTKLIBS})
+#XX         else
+#XX 			ifneq "@PKG_CONFIG@" "no" #PKG_CONFIG
+#XX                 #for this we already set CFLAGS in configure
+#XX 				#GLIB_CFLAGS		:=$(shell @PKG_CONFIG@ --cflags glib)
+#XX 				#GLIB_CFLAGS		:=$(shell @PKG_CONFIG@ --cflags @GTK_NAME@)
+#XX 				#-lgtk -lgdk -lgmodule-1.3 -lglib-1.3 -liconv -lintl
+#XX 				#GLIB_LIBS		:=$(shell @PKG_CONFIG@ --libs-only-l gtk+-1.3-win32-production)
+#XX             endif
+#XX         endif
+#XX     endif
+#XX else #GLIBVER="old"
+#XX 	GLIB_CFLAGS=-I/usr/lib/glib/include
+#XX 	ifdef COMSPEC
+#XX 		GLIB_CFLAGS+=-I/usr/src/gtk+ -I/usr/src/gtk+/gdk -I/usr/src/glib
+#XX     else
+#XX 		GLIB_CFLAGS+=-I/usr/include/gtk-1.2 -I/usr/include/glib-1.2
+#XX     endif
+#XX endif
+#XX
+#XX CFLAGS+=${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I${ROOT}/compilers/fcompile
+
+## ==================================================================
+##                              GTK options
+## ==================================================================
+
+
+GLIB_CFLAGS		=@GLIB_CFLAGS@
+GTK_INC_PATH	=@GTK_INC_PATH@
+GTK_LIB_PATH	=@GTK_LIB_PATH@
+GTKLIBS			=@GTKLIBS@
+
+ifeq "${WIN_PATH}" "1"
+	#under cygwin path /usr/lib/ is actailly a symling to /lib, but "real" Windows
+    #app (like MingGW) don't know anythign about links! So for now we will add path to
+    #there.   -ID:/cygwin/usr/lib/glib-2.0/include
+    ADD_ME=-I${WIN_CYGPATH}/lib/glib-2.0/include -I${WIN_CYGPATH}/lib/gtk-2.0/include
+
+	GLIB_CFLAGS	:=$(subst -I,-I${WIN_CYGPATH},${GLIB_CFLAGS}) ${ADD_ME}
+	GTK_INC_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_INC_PATH}) ${ADD_ME}
+	GTK_LIB_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_LIB_PATH}) ${ADD_ME}
+endif
+
+GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS})
+
+#Need to find better sollution for this:
+GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
+
+
+#This must NOT be += because it would place affitional parameters AFTER
+#existing parameters already in CFLAGS: we must not do this, because if
+#specific path is needed to RPClib, it MUST be BEFORE other potenitially
+#conflicting paths:
+CFLAGS	:=@RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/menus \
+		-I${LIBROOT}/libincl ${CFLAGS} -I${ROOT}/compilers/menus \
+		-I${LIBROOT}/libui/ui_gtk -I../../libui -I.. ${GLIB_CFLAGS} ${GTK_INC_PATH}
+####CFLAGS			+=-I.. -I. -I${ROOT}/incl -I${ROOT}/common/dataio ${GLIB_CFLAGS} ${GTK_INC_PATH} ${GTK_LIB_PATH}
+#CFLAGS	:=-I${ROOT}/compilers/menus ${CFLAGS} -I${ROOT}/compilers/menus -I${ROOT}/common/dataio
+#XX CFLAGS+=${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@ -I${ROOT}/compilers/fcompile
+
+CFLAGS			:=$(subst /target/build,/usr,${CFLAGS})
+GTK_LIB_PATH    :=$(subst /target/build,/usr,${GTK_LIB_PATH})
+
+CFLAGS		 	:=$(subst /target,/usr,${CFLAGS})
+GTK_LIB_PATH 	:=$(subst /target,/usr,${GTK_LIB_PATH})
+
+
+ifeq "${WIN_PATH}" "1"
+	GTK_LIB_PATH 	:=$(subst -L,-L${WIN_CYGPATH},${GTK_LIB_PATH})  -L${WIN_CYGPATH}/lib
+endif
+
+#we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
+#give us bunch of warnings about unised varibles, that we cannot fix
+#because this file is generated by rpcgen:
+CFLAGS_FORM_X_XDR_C =$(CFLAGS:%-Wall=%)
+
+# We don't want -Wmissing-declarations and -Wmissing-prototypes when
+# compiling C code created by 4glc, since it is not creating prototypes,
+# so we get lots of warnings:
+CFLAGS_4GLC2 		=$(CFLAGS:%-Wmissing-declarations=%)
+CFLAGS_4GLC1 		=$(CFLAGS_4GLC2:%-Wmissing-prototypes=%)
+CFLAGS_4GLC 		=$(CFLAGS_4GLC1:%-Wstrict-prototypes=%)
+
+#we cannot compile GTK code with  -Wstrict-prototypes because
+#GTK+ supplied libraries have many functions declared without parameters
+CFLAGS_GTK_C 		=$(CFLAGS:%-Wstrict-prototypes=%)
+
+#Fails with error: initializer element is not computable at load time:
+ifeq "${NON_PEDANTIC_OK}" "1"
+	CFLAGS_4GLC 	:=$(CFLAGS_4GLC:%-pedantic=%)
+endif
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS		=-L${LIBROOT} -laubit4gl
+#No need to add UI_GTK any more?
+#	LINKLIBS		=-L${LIBROOT} -laubit4gl -lUI_GTK
+endif
+
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+ifneq "@HAVE_RPCLIB@" "0"
+	ALL			+=${LIBROOT}/libMENU_XDR${SO_EXT}
+endif
+
+#we don't want -Wall in CFLAGS when compiling menu_x_xdr.c because it would
+#give us bunch of warnings about unused varibles, that we cannot fix
+#because this file is generated by rpcgen:
+CFLAGS_MENU_X_XDR_C =$(CFLAGS:%-Wall=%)
+
+## RPC type and XDR are not the same thing. RPC type represents Remote
+#Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
+#but regardless of that, XDR functions (also conatained in Sun RPC libraries)
+#are needed by forms and menus functionality, and without it user would not
+#ba able to compile or open forms and menus, since they compiled output
+#file format is outpudte in XDR format for portability:
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Default targets (${ALL}) built successfully."
+
+${LIBROOT}/libMENU_XDR${SO_EXT} : ${OBJS_MENU_XDR}
+#Old:
+#	${LD} ${SO_LDFLAGS} -o $@ $^ @GTK_LIB_PATH@ ${GTKLIBS} ${RPCLIB_NAME} ${LINKLIBS}
+#from menu_generic:
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${GTK_LIB_PATH} ${LINKLIBS} ${GTKLIBS} ${RPCLIB_NAME}
+
+## ==================================================================
+##                             Sub Targets
+## ==================================================================
+
+ci: $(CMODS)
+	ci -l  $^
+
+${ROOT}/compilers/menus/menu_x_xdr.c  ${ROOT}/compilers/menus/menu_x.h:
+	${MAKE} -C ${ROOT}/compilers/menus rpc
+
+${ROOT}/compilers/menus/menu_x_xdr.o: ${ROOT}/compilers/menus/menu_x_xdr.c
+	${CC} ${CFLAGS_MENU_X_XDR_C} -c -o $@ $^
+
+#loadmenu.o: loadmenu.c
+#	${CC} ${CFLAGS_GTK_C} -c -o $@ $^
+
+#cannot use strict prototiping when includign GTK headers:
+%.o: %.c
+	${CC} ${CFLAGS_GTK_C} -c -o $@ $^
+
+
+## ==================================================================
+##                        Dependencies
+## ==================================================================
+
+#${ROOT}/compilers/menus/menu_x_xdr.o: ${ROOT}/compilers/menus/menu_x.h
+
+#error.c : generated/tmperrs.h
+#array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
+#builtin.c: ${ROOT}/compilers/fcompile/form_x.h
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
+	form_x_xdr.c form_x.h project.c aubit-config \
+	core \
+	*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
+	*.base *.exp *.def
+
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+

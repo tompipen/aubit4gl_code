@@ -1,0 +1,111 @@
+#! /usr/bin/awk -f
+#	merge_index - merges index file into main TOC file
+#
+#	Marco Greco (marcog@ctonline.it), Catania, Italy
+#
+#	Initial release: Sep 97
+#	Current release: Oct 97
+#
+#				NOTICE
+# 	Permission to use, copy, modify and redistribute this software and
+#	its documentation is hereby granted without fee provided that
+#
+#	- all copies of the software and related documentation contain this
+#	  notice and authorship information, UNMODIFIED
+#
+#	- no fee is charged for the physical act of redistributing this
+#	  software or modified copies thereof
+# 
+#	THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND,
+#	EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+#	WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+#
+#	IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, INCIDENTAL,
+#	INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND, OR ANY DAMAGES WHATSOEVER
+#	RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER OR NOT ADVISED
+#	OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF LIABILITY, ARISING
+#	OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# 
+#	ALL RISKS CONNECTED TO THE USE OF THIS SOFTWARE OR IMPOSSIBILITY 
+#	THEREOF LIE SOLELY ON YOU.
+#	USE OF THIS SOFTWARE CONSTITUES AGREEMENT WITH THE ABOVE TERMS 
+#	AND CONDITIONS.
+#
+
+BEGIN		{
+
+# verify args
+		    if (ARGC!=3)
+		    {
+			print "bad # of arguments"
+			exit
+		    }
+
+# set record separator
+		    FS="\"#"
+
+# get TOC file name
+		    indexfile=ARGV[2]
+		    ARGV[2]=""
+
+# get HTML file name
+		    if ((getline firstTOCrow< indexfile)<0)
+		    {
+			exit
+		    }
+		    htmlfile=firstTOCrow
+		    sub("[^\"]*\"", "", htmlfile)
+		    sub("#.*", "", htmlfile)
+		    in_index=0
+		}
+
+#index already printed - do a plain copy
+(indexfile=="") {
+		    print
+		    next
+		}
+
+#skip all index entries up to the </UL>
+(in_index)	{
+		    in_index=($0!="</UL>")
+		    if (!in_index) indexfile=""
+		    next
+		}
+
+# found the entry!
+($2==htmlfile) && (indexfile!="")
+		{
+		    in_index=1
+
+# if a link with no local anchor, print it anyway
+		    if (!match($0, "#"))
+		    {
+			print
+			print "<UL>"
+		    }
+
+#print index
+		    print firstTOCrow
+		    while ((getline a<indexfile)>0)
+			print a
+		    print "</UL>"
+		    firstTOCrow=""
+		    next
+		}
+
+#print everithing else as usual
+		{
+		    print
+		}
+
+#if in the end we haven't output anything, now's a good time to do it
+END		{
+		    if (firstTOCrow!="")
+		    {
+			print "<UL>"
+			print firstTOCrow
+			while ((getline a<indexfile)>0)
+			    print a
+			print "</UL>"
+		    }
+		}

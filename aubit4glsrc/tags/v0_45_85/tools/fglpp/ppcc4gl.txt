@@ -1,0 +1,93 @@
+From: tec@netcom.com (Tim Cargile)
+Message-Id: <tecC7q3q0.Aw3@netcom.com>
+Subject: Re: #defines in 4gl
+Date: Fri, 28 May 1993 06:08:24 GMT
+Reply-To: tec@netcom.com (Tim Cargile)
+Organization: NETCOM On-line Communication Services (408 241-9760 guest)
+X-Informix-List-Id: <news.3477>
+
+In article <1ttg96INNiat@emory.mathcs.emory.edu> archer!ciesla@stairs.att.com writes:
+} For years, I've wished 4GL had a feature that would allow the
+} use of #define, #ifdef, #else, #include, . . .
+} 
+} Has anyone figured out a way to do this in spite of Informix?  And you folks
+} at Informix:  Why has this feature never been supported in the language?
+}
+
+I started pre-processing Informix languages in 1986 while installing
+a modification to a 200 line "calc" section into 40 ACE reports
+(I didn't desire to convert it to a C function for some reason?).
+I went on to pre-process sperform and thought (still do) seriously about
+applying pp to SQL scripts.
+
+The pre-processor of choice was "cpp" because of my familiarity with C
+and its capabilities (include directories, etc).  Pre-processing was
+implemented via shell scripts and placed into makefile "rules" sections.
+The scripts had names like "ppcace" (pre-process and compile ace).
+
+When 4GL arrived, I wrote a 4GL pp script (cpp-based), but hesitated
+to introduce pp'd 4GL with the client (at the time) because of fears that
+it would be judged as heretical by employees.   I mothballed it.
+
+Later, it was used successfully for a major project by that client when
+I disclosed it.  The project leaders were C programmers, of course.
+
+I've seen the intent to use "m4" once by a major software developer once
+and tried it myself ONCE.  I personally found m4's syntax so alien and its
+capabilities so limited in "header inclusion" it was dropped.
+In Relational Application Group's (RAG) Informix development environment
+model, header files are BASE directory referenced and I recall having to
+apply some tricks with M4 in order to avoid hard-coding full-paths into
+"include" statements.
+
+    The trick I believe in using pp'd 4GL is to use it judiciously.
+
+This subject is highly-religious, but I can tell you that there was nearly
+a mutiny by the 4GL developers on the above project when people started
+nesting "includes" too deep.  I saw several program "mains" on the project
+with "ifdefs" nested 15 deep in order to get (probably over-maximized)
+source code sharing.  I also saw a > 2000 line "include" file containing
+dozens of "ifdefs" to get re-usable (shared) "after/before" field logic.
+It was "slightly" unreadable - which is worse that "totally" unreadable
+... one keeps trying.
+
+Along with providing reasonable source code reusablity, centralization,
+etc. and all the other GOOD things, I find pre-processing very useful for
+providing literal constant declaration for enhanced documentation.
+
+One can also do cute things like (if one has the nerve/power):
+
+#include "i4gldefs.4gh"
+#include "msgdefs.4gh"
+
+#define BOOLEAN integer  (this would actually be in i4gldefs, of course)
+
+main
+        define l_is_it_or_not BOOLEAN
+
+        if g_what is TRUE then
+			let l_is_it_or_not = TRUE
+		end if
+end main
+
+----------------------------------------------------------------------------
+Anyway, I'm including a ppcc4gl script that has seen actual, recent service
+(but under makefile rules - rarely from the command line and not very often
+from the r4gl menu system, either.)
+
+It supports DEBUG and XACTION environment variables for conditional
+debug/transaction compilation.  The "cc -E" invocation to get "cpp" might
+have to be adjusted according to platform.  Also, the pre-processed files
+are retained for RDS debugger availability and error correction.
+There is a similar script for RDS - "pprc4gl".
+
+
+
+    - Good Luck
+
+   +-------------------------------+----------------------------------+
+   | Tim Cargile                   | INTERNET: tec@netcom4.netcom.com |
+   | Relational Applications Group | Bus.    : 510-743-8211           |
+   | POB 31171 Oakland, CA 94604   | FAX     : 510-743-0971           |
+   +-------------------------------+----------------------------------+
+   What this country needs is a good 5 cent Informix Survival Kit

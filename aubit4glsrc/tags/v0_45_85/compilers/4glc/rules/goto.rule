@@ -1,0 +1,18 @@
+/*
+=====================================================================
+                        Source: goto.rule
+=====================================================================
+*/
+
+
+goto_cmd : GOTO label_goto {
+	char buff[256];
+	strcpy(buff,$<str>2);
+	A4GL_convlower(buff);
+	print_goto(buff);
+}
+;
+
+label_goto      :       identifier
+                |       COLON identifier {sprintf($<str>$,"%s",$<str>2);}
+                ;

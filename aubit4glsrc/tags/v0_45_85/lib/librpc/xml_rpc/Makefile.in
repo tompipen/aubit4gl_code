@@ -1,0 +1,132 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   xml_rpc makefile	         |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.11 2004-09-28 09:49:22 afalout Exp $
+#
+
+
+ROOT    =../../..
+LIBROOT =../..
+
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+override NOINCL=0
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+CMODS_RPC		=xmlrpc_client.c xmlrpc_server.c
+				
+OBJS_RPC		=${CMODS_RPC:.c=.o}
+OBJS_NORPC		=${CMODS_NORPC:.c=.o}
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+ifneq "@XMLRPC_C_CONFIG@" "no"
+	CLIENT_CFLAGS       :=$(shell @XMLRPC_C_CONFIG@ libwww-client --cflags)
+	CLIENT_LIBS         :=$(shell @XMLRPC_C_CONFIG@ libwww-client --ldadd)
+else
+	CLIENT_LIBS =-L/usr/local/lib \
+	-lxmlrpc_client -lwwwxml -lxmltok -lxmlparse -lwwwinit -lwwwapp \
+	-lwwwhtml -lwwwtelnet -lwwwnews -lwwwhttp -lwwwmime -lwwwgopher \
+	-lwwwftp -lwwwfile -lwwwdir -lwwwcache -lwwwstream -lwwwmux \
+	-lwwwtrans -lwwwcore -lwwwutils -lmd5 -ldl -lxmlrpc -lxmlrpc_xmlparse \
+	-lxmlrpc_xmltok
+
+endif
+
+
+ifneq "@XML_RPC@" "no"
+	ALL			+=${LIBROOT}/libRPC_XMLRPC${SO_EXT}
+endif
+
+
+#This must NOT be += because it would place affitional parameters AFTER
+#existing parameters already in CFLAGS: we must not do this, because if
+#specific path is needed to RPClib, it MUST be BEFORE other potenitially
+#conflicting paths:
+CFLAGS				:=-I.. -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl ${CFLAGS} ${CLIENT_CFLAGS}
+
+#we cannot compile XMLRPC code with  -Wstrict-prototypes because
+#XML-RPC lib supplied libraries have many functions declared without parameters
+CFLAGS_XMLRPC_C =$(CFLAGS:%-Wstrict-prototypes=%)
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Default targets (${ALL}) built successfully."
+
+${LIBROOT}/libRPC_XMLRPC${SO_EXT}: ${OBJS_RPC}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${CLIENT_LIBS} ${LINKLIBS}
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
+
+
+## ==================================================================
+##                       Windows 32 DLL Targets
+## ==================================================================
+
+#dlllibRPC_XMLRPC: ${CMODS_RPC}
+#	${MAKE} libRPC_XMLRPC.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_PDFLIBNAME} ${AUBIT_LIB}" DLL_LDFLAGS="@RPCLIB_LFLAGS@ @RPCLIB_INCLUDE@ ${RPCLIB_NAME} ${PDF_LIBNAME} -L${LIBROOT} -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile"
+#	${CP} libRPC_XMLRPC.dll libRPC_XMLRPC.dll.a ${LIBROOT}
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core *.base \
+	*.exp *.def
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+xmlrpc_client.o: xmlrpc_client.c
+	${CC} ${CFLAGS_XMLRPC_C} -c -o $@ $^
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+

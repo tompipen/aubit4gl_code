@@ -1,0 +1,85 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.17 2004-09-28 09:49:21 afalout Exp $
+#
+
+ROOT        =../..
+LIBROOT     =..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+CFLAGS			+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile \
+				@PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
+
+ALL 			=${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}
+
+ifneq "${PDFBUILD}" "no"
+	ALL 		+=${LIBROOT}/libEXREPORT_PDF${SO_EXT}
+endif
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+OBJECTS_NOPDF	=nopdf.o
+OBJECTS_PDF		=has_pdf.o
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+
+${LIBROOT}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
+	${LD} @PDFLIB_L_FLAGS@ -lpdf $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS}
+
+${LIBROOT}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
+	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@ ${LINKLIBS}
+
+#NOPDF.dll: ${OBJECTS_NOPDF}
+#	${MAKE} libEXREPORT_NOPDF.dll DLLOBJS="${OBJECTS_NOPDF}"
+#	${CP} libEXREPORT_NOPDF.dll ${LIBROOT}
+#	${CP} libEXREPORT_NOPDF.dll.a ${LIBROOT}
+
+#PDF.dll:
+#	@echo "Ooops: PDFlib on Windows?"
+
+
+## ==================================================================
+##                              Clean
+## ==================================================================
+
+clean:
+	${RM} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
+
+
+# ----------------------------- EOF ---------------------------------
