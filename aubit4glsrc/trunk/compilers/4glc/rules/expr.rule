@@ -572,6 +572,10 @@ addmap("Get Field",$<str>3,curr_func,yylineno,infilename);
 	{ sprintf($<str>$,"push_int(fgl_fieldtouched(%s));",$<str>3); 
 	$<ptr>$=new_expr($<str>$);
 }
+| NOT_FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET 
+	{ sprintf($<str>$,"push_int(!fgl_fieldtouched(%s));",$<str>3); 
+	$<ptr>$=new_expr($<str>$);
+}
 | builtin_funcs
 | function_call_expr2
 ;
