@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.269 2004-12-17 05:21:49 afalout Exp $
+dnl # $Id: configure.in,v 1.270 2004-12-19 08:11:24 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -556,6 +556,7 @@ AC_SUBST(EFENCE)
 AC_SUBST(CINT)
 AC_SUBST(CINTSYSDIR)
 AC_SUBST(SQLITE_LDPATH)
+AC_SUBST(SQLITE_LIBNAME)
 AC_SUBST(Q_ESQLC)
 AC_SUBST(AUBIT_LICENSE)
 AC_SUBST(PCRE_INC_PATH)
@@ -3021,9 +3022,12 @@ AC_ARG_WITH(iksemel,
 						if test "$COMSPEC" != ""; then
 							x=`$CYGPATH -u $withval` 
 						fi
-						#Only static lib created by compiling from source on Windows
-						#THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
-						#JABBER#$x/bin/libiksemel.dll"
+						if test "$COMSPEC" != ""; then
+							#Note that on Windows the dll will misteriously be liniked with 
+							#file libiksemel-3.dll and NOT libiksemel.dll as you would expect
+							THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+								JABBER#$x/bin/libiksemel-3.dll"
+						fi
 					fi
 					
 				else
@@ -3063,10 +3067,10 @@ if test "$enable_stop_iksemel" = "yes" ; then
 	exit
 fi
 
-if test "$COMSPEC" != "" -a "$JABBERBUILD" = "yes"; then
-	echo "Jabber disabled on Windows - Aubit code incompatible with current version"
-	JABBERBUILD="no"
-fi
+#if test "$COMSPEC" != "" -a "$JABBERBUILD" = "yes"; then
+#	echo "Jabber disabled on Windows - Aubit code incompatible with current version"
+#	JABBERBUILD="no"
+#fi
 
 
 ## ==================================================================
@@ -5220,6 +5224,7 @@ fi
 	old_LIBS="$LIBS"
 	old_LDFLAGS="$LDFLAGS"
 	old_CFLAGS="$CFLAGS"
+	old_CPPFLAGS="$CPPFLAGS"
     old_PATH="$PATH"
 
 
@@ -5229,14 +5234,17 @@ fi
                           base install directory, defaults to /usr.],
 	[
         if test "$withval" != "no"; then
-
 	        if test "$withval" = "yes"; then
             	if test "$GCC_MINGW" = "yes"; then
 					#Note that on CygWin /usr/lib is a symlink to /lib
 					#but when we convert paths to native Windows paths, 
 					#<CYGDIR>/usr/lib DOES NOT EXIST - because native Windows
 					#executables know nothing about CygWin symlinking!!!!
-					withval="/"
+					if test "$COMSPEC" != "" -a "$MSYS_ROOTDIR" != ""; then
+						withval="$MSYS_ROOTDIR/local"
+					else
+						withval=/usr/local
+					fi
 				else
 					withval="/usr"
 				fi
@@ -5247,7 +5255,17 @@ fi
 			#readline library is needed to link SQLite
 			AC_CHECK_LIB([readline], [main])
 
-			AC_PATH_PROG(SQLITE, sqlite, no)
+			AC_PATH_PROG(SQLITE, sqlite3, no)
+			if test "$SQLITE" = "no"; then
+				AC_PATH_PROG(OLD_SQLITE, sqlite, no)
+				if test "$OLD_SQLITE" != "no"; then
+					SQLITE="$OLD_SQLITE"
+					SQLITE_LIBNAME="sqlite"
+				fi
+			else
+				SQLITE_VER=3
+				SQLITE_LIBNAME="sqlite3"
+			fi
 
 	        if test "$SQLITE" != "no" -a "$COMSPEC" = ""; then
 				#we found executable, set withval to the place
@@ -5268,21 +5286,42 @@ fi
 			AC_MSG_RESULT($SQLITE_ROOT)
 			
 			SQLITE_LDPATH="$SQLITE_ROOT/lib"
-			LDFLAGS="-L$SQLITE_LDPATH"
-			CLFAGS="-I$SQLITE_ROOT/include"
+			LDFLAGS="-L$SQLITE_LDPATH $LDFLAGS"
+			CFLAGS="-I$SQLITE_ROOT/include $CFLAGS"
+			CPPFLAGS="-I$SQLITE_ROOT/include $CPPFLAGS"
 
-			# FIXME: Replace `main' with a function in `-lc':
-			AC_CHECK_LIB([sqlite], [main])
+			if test "$SQLITE_VER" = "3"; then
+				# FIXME: Replace `main' with a function in `-lc':
+				#WARNING- cant use variable as library name here - test will 
+				#work ok, but resulting variable we need ($ac_cv_lib_sqlite_main)
+				#will end up empty
+				AC_CHECK_LIB([sqlite3], [main])
+			else
+				# FIXME: Replace `main' with a function in `-lc':
+				AC_CHECK_LIB([sqlite], [main])
+			fi
 			
 			#I don't think we need sqlite.h - we are using private copy of
 			#it as sqlite-local.h in lib/libsql/odbc
-			#as well as sqliteodbc.h and sqliteodbc.c
-			AC_CHECK_HEADERS([ sqlite.h ])
-
-			if test "$ac_cv_lib_sqlite_main" = "yes" ; then
+			#as well as private copy of sqliteodbc.h and sqliteodbc.c
+			if test "$SQLITE_VER" = "3"; then
+				AC_CHECK_HEADERS([ sqlite3.h ])
+			else
+				AC_CHECK_HEADERS([ sqlite.h ])
+			fi
+			
+			AC_MSG_CHECKING(if we can use SQLite)
+			if test "$ac_cv_lib_sqlite_main" = "yes" -o "$ac_cv_lib_sqlite3_main" = "yes"; then
 				SQLITE_LIB=1
+				AC_MSG_RESULT(yes)
 				# test for availability of sqlite_libversion()
-				AC_CHECK_LIB(sqlite,sqlite_libversion,SQLITE_LIBVERSION=1,SQLITE_LIBVERSION=0)
+				if test "$SQLITE_VER" = "3"; then
+					AC_CHECK_LIB(sqlite3,sqlite3_libversion,SQLITE_LIBVERSION=1,SQLITE_LIBVERSION=0)
+					AC_CHECK_LIB(sqlite3,sqlite_version,SQLITE_VERSION=1,SQLITE_VERSION=0)
+				else
+					AC_CHECK_LIB(sqlite,sqlite_libversion,SQLITE_LIBVERSION=1,SQLITE_LIBVERSION=0)
+					AC_CHECK_LIB(sqlite,sqlite_version,SQLITE_VERSION=1,SQLITE_VERSION=0)
+				fi
 				AC_SUBST(SQLITE_LIBVERSION)
 
 				AC_MSG_CHECKING(for default SQLite database)
@@ -5297,25 +5336,25 @@ fi
 					AC_MSG_RESULT(Created $SQLITE_DB)
 				fi
 				
-#Error on line 660: Source file 
-#"F:\cygwin\usr\src\aubit\aubit4glsrc\etc\d/cygwin\lib\libsqlite.def" does not exist.				
-				
-#Source: @WINDIR@\sqlite.exe; DestDir: {app}\bin; Components: SQLITE
-#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.def; DestDir: {app}\bin; Components: SQLITE
-#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; Components: SQLITE
-#; We need sqlite.dll for sqlite.exe and SQLite GUI tool (we added lib prefix)
-#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; DestName: "sqlite.dll"; Components: SQLITE
-	
 				if test "$COMSPEC" != "" -a "$COLLECT_THIRD_PARTY" = "1"; then
 					a=`$CYGPATH -u "$WINDIR"`
 					#b=`$CYGPATH -u "$CYGWIN_PATH_WIN"`
 					b=
-					THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
-						SQLITE#$a/sqlite.exe \
-						SQLITE#$b/lib/libsqlite.def \
-						SQLITE#$b/lib/libsqlite.dll \
-						SQLITE#$b/lib/libsqlite.dll!sqlite.dll"
+					if test "$SQLITE_VER" = "3"; then
+						THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+							SQLITE#$a/sqlite3.exe \
+							SQLITE#$b/lib/libsqlite3.dll \
+							SQLITE#$b/lib/libsqlite3.dll!sqlite3.dll"
+					else
+						THIRD_PARTY_FILES="$THIRD_PARTY_FILES \
+							SQLITE#$a/sqlite.exe \
+							SQLITE#$b/lib/libsqlite.def \
+							SQLITE#$b/lib/libsqlite.dll \
+							SQLITE#$b/lib/libsqlite.dll!sqlite.dll"
+					fi
 				fi
+			else
+				AC_MSG_RESULT(no-missing library)
 			fi
         else
 			AC_MSG_RESULT(disabled)
@@ -5328,8 +5367,13 @@ fi
 	LIBS="$old_LIBS"
 	LDFLAGS="$old_LDFLAGS"
 	CFLAGS="$old_CFLAGS"
+	CPPFLAGS="$old_CPPFLAGS"
     PATH="$old_PATH"
 
+if test "$enable_stop_sqlite" = "yes" ; then
+	exit
+fi
+	
 ## ==================================================================
 ##                 Checks for SQLite ODBC support
 ## ==================================================================
@@ -7115,7 +7159,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		unset ac_cv_header_dlfcn_h
 
         old_CPPFLAGS="$CPPFLAGS"
-		#old_CLFAGS="$CFLAGS"
+		#old_CFLAGS="$CFLAGS"
 
 		case $host in
 			*-apple-darwin*)
@@ -7176,8 +7220,29 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AC_FUNC_MEMCMP
 	AC_TYPE_SIGNAL
 	AC_FUNC_VPRINTF
-	AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setlocale strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
+	AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp setlocale strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
 
+	#select() and index() are used in Jabber 
+	#there is apprently an index() func somewhere in libaubit4gl or in some lib
+	#linked with it (on Windows)
+	AC_CHECK_FUNC(select,AC_DEFINE(HAVE_SELECT))
+	AC_CHECK_FUNC(index,AC_DEFINE(HAVE_INDEX))
+
+	if test "$GCC_MINGW" = "yes"; then
+		dnl This is for Msys/Mingw
+		if test "$HAVE_SELECT" != "1"; then
+		  AC_MSG_CHECKING([for select in ws2_32])
+		  AC_TRY_LINK([#include <winsock2.h>],
+			 [select(0,(fd_set *)NULL,(fd_set *)NULL,(fd_set *)NULL,(struct timeval *)NULL);],
+			 [ dnl worked!
+			 AC_MSG_RESULT([yes])
+			 HAVE_SELECT="1"
+			 AC_DEFINE_UNQUOTED(HAVE_SELECT,1)],
+			 [AC_MSG_WARN(You cant compile Jabber without a select)]
+			 )
+		fi
+	fi
+	
     #all used in lib/libaubit4gl.so:
     #On Solaris, all this are in -lsocket
 	AC_CHECK_FUNCS([socket recv accept bind setsockopt getservbyname listen])
@@ -7355,7 +7420,7 @@ if test "$default_sql" != ""; then
 			A4GL_LEXTYPE=EC
         ;;
 
-		pgodbc | ifxodbc | sapodbc | unixodbc | iodbc | odbc32 | sqliteodbc | esql)
+		pgodbc | ifxodbc | sapodbc | unixodbc | iodbc | odbc32 | sqlite | sqliteodbc | esql)
 			A4GL_LEXTYPE=C
         ;;
 
@@ -7474,27 +7539,29 @@ else
 
 	############# SQLite via ODBC ####################
 	#This will never happen, since SQLIte native connector will allways "win"
-	if test "$SQLITE_LIB" = "1" && test "$SQLITE_ODBC" = "1"; then
+	if test "$SQLITE_LIB" = "1" -a "$SQLITE_ODBC" = "1"; then
 		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=sqliteodbc
         A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
     fi
 
 	############# SQLite native connector ####################
+	#It is not really native - it does not call SQLite API directly,
+	#but instead it uses SQLite ODBC driver code to create plug-in
+	#linked with Aubit ODBC code and SQLIte ODBC code - therefore it looks 
+	#like a native driver but interanlly it used ODBC API
 	if test "$SQLITE_LIB" = "1" ; then
 		A4GL_LEXTYPE=C
-		A4GL_SQLTYPE=sqlite
-        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
+		#FIXME: how do we know if we have 'S'tatic one?
+		if test "$SQLITE_VER" = "3"; then
+			A4GL_SQLTYPE=sqlite3S
+			A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE sqlite3"
+		else
+			A4GL_SQLTYPE=sqliteS
+			A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE sqlite"
+		fi
     fi
 
-	if test "$AUBIT_SOURCE" = "0" -a "$A4GL_SQLTYPE" = "nosql"; then
-		########## SQLite engine staticaly linked with Aubit plug-in #############
-		if test "$SQLITE_LIB" = "1" ; then
-			A4GL_LEXTYPE=C
-			A4GL_SQLTYPE=sqliteS
-	        A4GL_SQLTYPE_DETECTED="$A4GL_SQLTYPE_DETECTED $A4GL_SQLTYPE"
-    	fi
-    fi
 fi
 
 AC_MSG_RESULT($A4GL_SQLTYPE)
@@ -7884,11 +7951,11 @@ PLUGIN_NO_LINKABLE=
         fi
 	fi
 
-	#this is made by 'make extra'
+	#this is made by 'make extra' -- check this stmt, I dont think so
 	if test "$JABBERBUILD" != "no"; then
-        PLUGIN_YES_LINKABLE="$PLUGIN_YES_LINKABLE IM_JABBER"
+        PLUGIN_YES_LINKABLE="$PLUGIN_YES_LINKABLE IM_JABBER IM_JABBERs"
 	else
-        PLUGIN_NO_LINKABLE="$PLUGIN_NO_LINKABLE IM_JABBER"
+        PLUGIN_NO_LINKABLE="$PLUGIN_NO_LINKABLE IM_JABBER IM_JABBERs"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.iksemel"
 	fi
 
@@ -7947,15 +8014,19 @@ fi
 
 	#SQLite native connection
 	if test "$SQLITE_LIB" = "1"; then
-		PLUGIN_YES="$PLUGIN_YES SQL_sqlite"
-		if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
-			#no static SQLite library supplied for Windows
-			PLUGIN_YES="$PLUGIN_YES SQL_sqliteS"
+		if test "$SQLITE_VER" = "3"; then	
+			PLUGIN_YES="$PLUGIN_YES SQL_sqlite3 SQL_sqlite3S"
 		else
-			PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS SQL_sqliteS"
-        fi
+			PLUGIN_YES="$PLUGIN_YES SQL_sqlite"
+			if test "$GCC_MINGW" != "yes" -a "$cygwin" != "1"; then
+				PLUGIN_YES="$PLUGIN_YES SQL_sqliteS"
+			else
+				#no static SQLite library supplied for Windows in V2
+				PLATFORM_UNAVAILABLE_OPTIONS="$PLATFORM_UNAVAILABLE_OPTIONS SQL_sqliteS"
+			fi
+		fi
     else
-        PLUGIN_NO="$PLUGIN_NO SQL_sqlite SQL_sqliteS"
+        PLUGIN_NO="$PLUGIN_NO SQL_sqlite SQL_sqliteS SQL_sqlite3 SQL_sqlite3S"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sqlite"
     fi
 	
@@ -8135,9 +8206,6 @@ if test "$THIRD_PARTY_FILES" != ""; then
 			echo "DEST_NAME=$DEST_NAME"
 		fi
 		if test -f "$PATH_FILE"; then
-			#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; Components: SQLITE
-			#Source: @WINDOWS_DRIVE@@CYGWIN_PATH@\lib\libsqlite.dll; DestDir: {app}\bin; DestName: "sqlite.dll"; Components: SQLITE
-
 			#let COUNTER=COUNTER+1
 			COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 			if test "$DEST_NAME" = ""; then 
@@ -8198,7 +8266,6 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 lib/libui/ui_curses/Makefile
                 lib/resource/Makefile
                 lib/libsql/nosql/Makefile
-                lib/libsql/odbc/Makefile
                 lib/libsql/esqlc/Makefile
                 lib/libsql/postgresql/Makefile
                 lib/libsql/sapdb/Makefile
@@ -8551,7 +8618,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.269 2004-12-17 05:21:49 afalout Exp $
+| $Id: configure.in,v 1.270 2004-12-19 08:11:24 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

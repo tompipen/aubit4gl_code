@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.90 2004-12-17 05:23:48 afalout Exp $
+# $Id: Makefile-install.mki,v 1.91 2004-12-19 08:12:38 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -775,13 +775,19 @@ SQLITE_RPM_LIB=sqlite-devel-2.8.5-1.i386.rpm
 SQLITE_RPM_DEV=sqlite-2.8.5-1.i386.rpm
 
 SQLITE_WIN_PATH=http://sqlite.org
-SQLITE_WIN_LIB=sqlitedll.zip
-SQLITE_WIN_EXE=sqlite.zip
+#SQLITE_WIN_LIB=sqlitedll.zip
+SQLITE_WIN_LIB=sqlitedll-3_0_8.zip
+#SQLITE_WIN_EXE=sqlite.zip
+SQLITE_WIN_EXE=sqlite-3_0_8.zip
+
+SQLITE_SRC_NAME=sqlite-3.0.8
+SQLITE_SRC_TAR_GZ=${SQLITE_SRC_NAME}.tar.gz
+
 
 #ODBC driver for SQLite:
 SQLITE_ODBC_INFO=http://www.ch-werner.de/sqliteodbc
 SQLITE_ODBC_PATH=http://www.ch-werner.de/sqliteodbc
-SQLITE_ODBC_SRC=sqliteodbc-0.53
+SQLITE_ODBC_SRC=sqliteodbc-0.65
 SQLITE_ODBC_TGZ_SRC=${SQLITE_ODBC_SRC}.tar.gz
 SQLITE_ODBC_WIN=sqliteodbc-win32.zip
 
@@ -1313,6 +1319,9 @@ install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} \
 # 26: SQLite
 
 ifdef COMSPEC
+ifdef SQLITE_BIN
+##################################
+#Install Windows binaries
 install.sqlite: ${SQLITE_WIN_LIB} ${SQLITE_WIN_EXE}
 	${UNZIP} ${SQLITE_WIN_LIB} -d ${SYSTEMDRIVE}/tmp
 	${UNZIP} ${SQLITE_WIN_EXE} -d ${SYSTEMDRIVE}/WINNT
@@ -1323,6 +1332,23 @@ install.sqlite: ${SQLITE_WIN_LIB} ${SQLITE_WIN_EXE}
 	cp ${SYSTEMDRIVE}/tmp/sqlite.def /usr/lib/libsqlite.def
 	cp ${SYSTEMDRIVE}/tmp/sqlite.dll /usr/lib/libsqlite.dll
 else
+###################################
+#Compile from source code (Windows)
+install.sqlite: ${SQLITE_SRC_TAR_GZ}
+#warning: not path in tarball!
+	${MKPATH} ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}
+	cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}; tar --gunzip -xf ${CYG_AUBITDIR}/$^
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; ./configure"
+	@echo "Unpacked and configure SQLite source in /tmp/${SQLITE_SRC_NAME}/sqlite"	
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; make"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; make dll"
+	@echo "Compiled SQLite source in /tmp/${SQLITE_SRC_NAME}/sqlite"
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; make install"
+#make install will NOT install dll - and we have to also add 'lib' prefix
+	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; cp ./sqlite3.dll /usr/local/lib/libsqlite3.dll"
+	@echo "Installed SQLite to /usr/local"
+endif
+else
 install.sqlite: ${SQLITE_RPM_LIB} ${SQLITE_RPM_DEV}
 	${RPM} -i $^
 endif
@@ -1332,14 +1358,37 @@ endif
 	@echo "SQLite installed.  Please re-run 'configure' to detect changes."
 	@echo " "
 
+##########################
 #SQLite ODBC driver:
 ifdef COMSPEC
+ifdef SQLITEODBC_BIN
+############################################
+#Install SQLite precompiled Windows binaries 
 install.sqlite.odbc: ${SQLITE_ODBC_WIN}
 	${UNZIP} ${SQLITE_ODBC_WIN} -d ${SYSTEMDRIVE}/tmp/sqliteodbc
 	cd ${SYSTEMDRIVE}/tmp/sqliteodbc; inst.exe
 #There is no .a/.def file there, so we can't link with this anyway...
 #	cp ${SYSTEMDRIVE}/tmp/sqliteodbc/sqliteodbc.dll /lib/libsqliteodbc.dll
 else
+############################################
+#Compile from source code (Windows)
+install.sqlite.odbc: ${SQLITE_ODBC_TGZ_SRC}
+#	${MKPATH} ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}
+#	cd ${SYSTEMDRIVE}/tmp/${SQLITE_ODBC_SRC}; tar --gunzip -xf ${CYG_AUBITDIR}/$^
+	cd ${SYSTEMDRIVE}/tmp; tar --gunzip -xf ${CYG_AUBITDIR}/$^
+	@echo "SQLite ODBC configure demands both 2.x and 3.x version to be installed"
+	@echo " to make V3 - also wants standard odbc headers in UNIX locations"
+	@echo " You will need to edit configure.in yourself"
+#	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; ./configure"
+#	@echo "Unpacked and configure SQLite source in /tmp/${SQLITE_SRC_NAME}/sqlite"	
+#	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; make"
+#	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; make dll"
+#	@echo "Compiled SQLite source in /tmp/${SQLITE_SRC_NAME}/sqlite"
+#	${MSYS_SH} "${MSYS_CONF}; cd ${SYSTEMDRIVE}/tmp/${SQLITE_SRC_NAME}/sqlite; make install"
+#	@echo "Installed SQLite ODBC to /usr/local"
+endif
+else
+#UNIX-Compile from source code
 install.sqlite.odbc: ${SQLITE_ODBC_TGZ_SRC}
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	cd /tmp/${SQLITE_ODBC_SRC}; ./configure; make; make install
@@ -1723,7 +1772,11 @@ ${LIBWWW_SRC_ZIP}:
 	${WGET} ${LIBWWW_SRC_PATH}/$@
 ${PDCURSES_SRC_TAR_GZ}:
 	${WGET} ${PDCURSES_WIN_PATH}/$@
-
+${SQLITE_SRC_TAR_GZ}:
+	${WGET} ${SQLITE_PATH}/$@
+	
+	
+	
 #############################################
 #       SQLite tests
 #############################################

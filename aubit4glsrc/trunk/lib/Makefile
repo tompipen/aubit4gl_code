@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2004-12-15 07:51:48 afalout Exp $
+# $Id: Makefile,v 1.2 2004-12-19 08:12:38 afalout Exp $
 #
 
 ROOT    =..
@@ -378,12 +378,18 @@ libSQL_sqliteodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 #requires SQLite library on the system
 libSQL_sqlite${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} sqlite
+#Same, but version 3
+libSQL_sqlite3${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} sqlite3
 
 #Compiled with SQLite ODBC driver source code in Aubit CVS and statically
 #linked with SQLite database engine ligrary (self sufficient - used mainly 
 #for binary distributions to provide "always there" SQL functionality)
 libSQL_sqliteS${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} sqlite.static
+#Same, but version 3
+libSQL_sqlite3S${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} sqlite3.static
 
 
 ##############
@@ -459,6 +465,9 @@ libMSG_NATIVE${SO_EXT}: ${LIBMSGNATIVE_DEPS}
 libIM_JABBER${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
 	$(MAKE) -C ${LIBIMJABBER_PATH} $@
 
+libIM_JABBERs${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
+	$(MAKE) -C ${LIBIMJABBER_PATH} $@
+	
 libA4GL_cint${SO_EXT_LINKABLE}:
 	cd ../cint; ${SH} make_cintlib
 

@@ -24,14 +24,13 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2004-12-14 02:46:07 afalout Exp $
+# $Id: Makefile,v 1.2 2004-12-19 08:12:41 afalout Exp $
 #
 
 ROOT        =../..
 LIBROOT		=${ROOT}/lib
 
 include ../../incl/Makefile-common
-override NOINCL=0
 
 ## ==================================================================
 ##                              Settings
@@ -42,31 +41,65 @@ AMAKE_FLAGS	=${VERBOSE_FLAG} A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOS
 #AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
 
 ifneq "${JABBERBUILD}" "no"
-    ALL 	=test_im
+    ALL 	=${LIBROOT}/libIM_JABBER${SO_EXT} test_im.4ae
 else
     ALL 	=no_libs
 endif
 
 CFLAGS		+=${IKSEMEL_I_FLAGS}
 
+ifdef COMSPEC
+	#The Win32 API has WinSock, which is a BSD-ish sockets implementation
+	#_including_ select().  When you use MingW, you get the Win32 API version,
+	#and when you use Cygwin (without -mno-cygwin) you get the special version
+	#that Cygwin provides that is a bit slower but works on other types of file
+	#descriptors besides just sockets.
+	LINKLIBS		+=-lws2_32
+	#Note: dll is installed in /bin not /lib
+	IKSEMEL_L_PATH_WIN=${shell echo "${IKSEMEL_L_FLAGS}" | sed -e 's/-L//' | sed -e 's/\/lib/\/bin/'}
+	IKSEMEL_L_PATH=${shell cygpath -u "${IKSEMEL_L_PATH_WIN}"}
+	PATH:=${IKSEMEL_L_PATH}:${PATH}
+	export PATH
+endif
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 all: ${ALL}
+	@echo "Default targets (${ALL}) compiled"
+	
+test_im.4ae: ${LIBROOT}/libIM_JABBER${SO_EXT} test_im.afr.dat test_im.4gl
+#	${SH} ${AMAKE} test_im ${AMAKE_FLAGS}
+	${SH} aubit 4glc test_im.4gl -o test_im.4ae -L${LIBROOT} -lIM_JABBER
 
-test_im:
-	${SH} ${AMAKE} test_im ${AMAKE_FLAGS}
-
+test_im.afr.dat: test_im.per
+	${SH} aubit fcompile $^ 
+	
 #lib4glim.o:
 #	${CC} lib4glim.c -c -o $@
 
+#Dynamically linked:
+#Note that on Windows the dll will misteriously be liniked with 
+#file libiksemel-3.dll and NOT libiksemel.dll as you would expect
 libIM_JABBER${SO_EXT}: ${LIBROOT}/libIM_JABBER${SO_EXT}
 ${LIBROOT}/libIM_JABBER${SO_EXT}: lib4glim.o
-	${LD} ${SO_LDFLAGS} -o $@ $^ -liksemel ${IKSEMEL_L_FLAGS}
+	${LD} ${SO_LDFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@ ${LINKLIBS} -liksemel
 ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} ${LIBROOT}/$@.a
+#We will still need the dll.a untill we dlopen() it instead of linking 
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
+
+
+#Statically linked:
+libIM_JABBERs${SO_EXT}: ${LIBROOT}/libIM_JABBERs${SO_EXT}
+${LIBROOT}/libIM_JABBERs${SO_EXT}: lib4glim.o
+#WARNING: order is EXTREMELY important for static linking on Windows!
+	${LD} ${SO_LDFLAGS} $^ ${IKSEMEL_L_FLAGS} -o $@  \
+		-static -liksemel ${LINKLIBS} 
+ifeq "${SO_EXT}" ".dll"
+#We will still need the dll.a untill we dlopen() it instead of linking 
+	${MV} TMP${SOEXP_EXT} $@.a
 endif
 
 
@@ -79,21 +112,32 @@ no_libs:
 
 #lib4glim can be compiled as executable for testing:
 exec4glim: lib4glim.c
-	${CC} lib4glim.c -o exec4glim -liksemel -D__ASEXEC__
+	${CC} ${CFLAGS} $^ -o $@ ${IKSEMEL_L_FLAGS} ${LINKLIBS} -liksemel -D__ASEXEC__
 
-#if you compile lib4glim.c as executable, then you can run it from command
-#line, like this. (note: in that case you will need configuration file,
-#"4glim.conf" that lokks like this:
-#	LOG mylogfile.log
-#	DEBUG
-#	USER myusername@jabber.org
-#	PASS mypassword
-test: exec4glim
+#Send a test message using just library
+testlib: exec4glim 4glim.conf
 	echo "This is my message to you" | exec4glim
+	
+#Create configuration file:
+#Before use, make sure account (aubit-test) is still valid, as jabber.org
+#occasionally deletes unused accounts
+4glim.conf:
+	@echo "LOG mylogfile.log" > $@
+	@echo "DEBUG" >> $@
+	@echo "USER aubit-test@jabber.org" >> $@
+	@echo "PASS aubit" >> $@
+
+#Run a 4GL program to test IM functionality
+test4gl: test_im.4ae
+	rm -f debug.out
+	A4GL_UI=HL_TUIN DEBUG=ALL ./test_im.4ae
 	
 show:
 	@echo "CFLAGS=${CFLAGS}"
 	@echo "IKSEMEL_I_FLAGS=${IKSEMEL_I_FLAGS}"
+	@echo "IKSEMEL_L_PATH_WIN=${IKSEMEL_L_PATH_WIN}"
+	@echo "IKSEMEL_L_PATH=${IKSEMEL_L_PATH}"
+	@echo "PATH=${PATH}"
 	
 ## ==================================================================
 ##                              Clean

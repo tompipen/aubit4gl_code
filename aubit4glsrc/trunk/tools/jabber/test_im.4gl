@@ -149,6 +149,7 @@ define
 
     initialize rcv_msg, rcv_from to null
 
+#FIXME: why cant this trim be done with CLIPPED? Was it a bug?
 code
 {
     trim(msg);
@@ -156,8 +157,19 @@ code
 	trim(im_log);
 	trim(im_user);
 	trim(im_pass);
+	
+	success = aclfgl_fgl_4glim(msg,timeout,address,receive,
+		rcv_msg,rcv_from,im_log,im_user,im_pass,im_debug);
+}
+endcode
+	#Defined in libIM_JABBER:
+	#Cant call it likt that from 4GL, need to push etc
+	#let success = fgl_4glim(msg,timeout,address,receive,
+	#	rcv_msg,rcv_from,im_log,im_user,im_pass,im_debug)
+		
+code
+{
 
-    success = fgl_4glim(msg,timeout,address,receive,rcv_msg,rcv_from,im_log,im_user,im_pass,im_debug);
 
 	trim(rcv_msg);
 	trim (rcv_from);

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.172 2004-12-15 06:40:34 afalout Exp $
+# $Id: Makefile-common.in,v 1.173 2004-12-19 08:12:38 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -931,6 +931,22 @@ JABBERBUILD			=@JABBERBUILD@
 IKSEMEL_I_FLAGS		=@IKSEMEL_I_FLAGS@
 IKSEMEL_L_FLAGS		=@IKSEMEL_L_FLAGS@
 
+SQLITE_LIBNAME		=@SQLITE_LIBNAME@
+SQLITE_LDPATH		=@SQLITE_LDPATH@
+
+IODBC_INCLUDE		=@IODBC_INCLUDE@ 
+IODBC_LFLAGS		=@IODBC_LFLAGS@
+IODBC_LIBS			=@IODBC_LIBS@
+
+UNIXODBC_LFLAGS		=@UNIXODBC_LFLAGS@
+UNIXODBC_LIBS		=@UNIXODBC_LIBS@ 
+
+PGODBC_INCLUDE		=@PGODBC_INCLUDE@ 
+PGODBC_LFLAGS		=@PGODBC_LFLAGS@	
+PGODBC_LIBNAME		=@PGODBC_LIBNAME@ 
+
+SAPODBC_INCLUDE		=@SAPODBC_INCLUDE@ 
+SAPODBC_LFLAGS		=@SAPODBC_LFLAGS@ 
 
 
 ## ==================================================================

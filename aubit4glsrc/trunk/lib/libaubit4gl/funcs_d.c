@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.44 2004-12-17 13:19:02 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.45 2004-12-19 08:12:39 afalout Exp $
 #
 */
 
@@ -788,14 +788,16 @@ int a_isprint(int a) {
 	return 0;
 }
 
-char *a_strchr(char *s,int c) {
+//replacement for index() function missing on MinGW
+char *
+a_strchr(char *s,int c) {
 int a;
-if (s==0) return 0;
-
-for (a=0;a<strlen(s);a++) {
-        if (s[a]==c) return &s[a];
-}
-return 0;
+	if (s==0) return 0;
+	
+	for (a=0;a<strlen(s);a++) {
+			if (s[a]==c) return &s[a];
+	}
+	return 0;
 }
 
 

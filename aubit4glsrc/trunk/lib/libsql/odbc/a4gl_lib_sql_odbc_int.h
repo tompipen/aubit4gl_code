@@ -110,17 +110,18 @@
 
     #ifdef SQLITEODBC
         /* SQLite ODBC driver does not provide ODBC header files */
-			#ifndef FAR
-				#define FAR
-			#endif
-	#ifdef MJA
-		#include "sql.h"
-		#include "sqlext.h"
-	#else
-		#include "../../../tools/odbctest/incl/sql.h"
-		#include "../../../tools/odbctest/incl/sqlext.h"
-	
-	#endif
+		#ifndef FAR
+			#define FAR
+		#endif
+		#ifdef MJA
+			//Looks like Mike's private thing?
+			#include "sql.h"
+			#include "sqlext.h"
+		#else
+			//use headers we have in Aubit CVS:
+			#include "../../../tools/odbctest/incl/sql.h"
+			#include "../../../tools/odbctest/incl/sqlext.h"
+		#endif
 		//#include <odbcinst.h>
 		#define __UCHAR_DEFINED__
 		#define __ODBC_DEFINED__
