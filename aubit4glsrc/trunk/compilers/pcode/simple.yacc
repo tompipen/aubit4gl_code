@@ -44,6 +44,7 @@ char buff[20];
 %token KW_A_PUSH_OP
 %token KW_A_CHK_ERR
 %token KW_A_CLR_ERR
+%token KW_A_ERRCHK
 
 %start translation_unit
 
@@ -148,6 +149,29 @@ fgl_funcs :
 	| KW_A_CLR_ERR '(' ')' {
 			add_clr_err();
 	}
+	| KW_A_ERRCHK '(' int_val ',' STRING_LITERAL ','  
+		int_val ',' STRING_LITERAL ','
+		int_val ',' STRING_LITERAL ','
+		int_val ',' STRING_LITERAL ','
+		int_val ',' STRING_LITERAL ','
+		int_val ',' STRING_LITERAL 
+			')' {
+			struct cmd_errchk *ptr;
+			ptr=malloc(sizeof(struct cmd_errchk));
+			ptr->line=$<e>3->param_u.n;
+			ptr->module_name=add_string($<str>5);
+			ptr->modes[0]=$<e>7->param_u.n;
+			ptr->modes[1]=$<e>11->param_u.n;
+			ptr->modes[2]=$<e>15->param_u.n;
+			ptr->modes[3]=$<e>19->param_u.n;
+			ptr->modes[4]=$<e>23->param_u.n;
+			ptr->actions[0]=add_string($<str>9);
+			ptr->actions[1]=add_string($<str>13);
+			ptr->actions[2]=add_string($<str>17);
+			ptr->actions[3]=add_string($<str>21);
+			ptr->actions[4]=add_string($<str>25);
+			add_errchk(ptr);
+	}
 ;
 
 
@@ -195,7 +219,7 @@ has_structparam:
 				}
 	| has_structparam  param_semi 	{ 
 				struct define_variables *v;
-				char buff[80];
+				//char buff[80];
 				v=$<define_variables>1;
 				v->var_len++;
 				v->var_val=realloc(v->var_val, sizeof(struct variable_element)*v->var_len);
@@ -244,7 +268,7 @@ param : dtype   id_list 			{$<define_var>$=$<define_var>1; $<define_var>$->name_
 				$<define_var>$->i_arr_size[2]=x;
 
 	}
-	| dtype id_list '['  ']' 		{	struct param *sz;
+	| dtype id_list '['  ']' 		{	//struct param *sz;
 								$<define_var>$=$<define_var>1; 
 								$<define_var>$->name_id=add_id($<str>2);
 								$<define_var>$->i_arr_size[0]=-1;

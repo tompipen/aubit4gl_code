@@ -20,7 +20,9 @@ struct s_assign {
 int A4GL_set_line (char *s, long l);
 #define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 #else
+#ifndef A4GL_debug
 #define A4GL_debug nullfunc
+#endif
 #endif
 
 
@@ -120,3 +122,13 @@ void end_define (void);
 void set_master_set (struct param *set);
 long end_block(void);
 void set_type (int a);
+int special_cmd(struct cmd *c);
+int open_and_run (char *lv_progname);
+void nullfunc();
+int yylex(void);
+long add_errchk(void *n);
+int do_compiler_start(int argc,char *argv[]);
+int yyerror (char *s);
+void print_errchk(struct cmd_errchk *e);
+long find_pcode_function (char *s);
+int add_string (char *s);

@@ -93,6 +93,7 @@ void count();
 "A4GL_push_char"	{if (use_4gl_kw) return KW_A_PUSH_CHAR; else REJECT;}
 "A4GL_chk_err"		{if (use_4gl_kw) return KW_A_CHK_ERR; else REJECT;}
 "aclfgli_clr_err_flg"	{if (use_4gl_kw) return KW_A_CLR_ERR; else REJECT;}
+"ERRCHK"	{if (use_4gl_kw) return KW_A_ERRCHK; else REJECT;}
 
 
 "auto"			{ count(); return(AUTO); }

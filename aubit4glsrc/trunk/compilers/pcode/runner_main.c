@@ -45,6 +45,7 @@ char *cmd_type_str[] = {
   "CMD_DISPLAY_AT",
   "CMD_PUSH_OP",
   "CMD_CLR_ERR",
+  "CMD_ERRCHK",
   ""
 };
 

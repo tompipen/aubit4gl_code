@@ -58,6 +58,7 @@ char *cmd_type_str[] = {
   "CMD_DISPLAY_AT",
   "CMD_PUSH_OP",
   "CMD_CLR_ERR",
+  "CMD_ERRCHK",
   ""
 };
 */
@@ -295,6 +296,9 @@ print_command (long func_id, long pc, struct cmd *cmd)
     case CMD_CLR_ERR:
 	print_clr_err();
 	break;
+    case CMD_ERRCHK:
+	print_errchk(cmd->cmd_u.c_errchk);
+	break;
 
     case CMD_NULL:
       fprintf (stderr, "NULL COMMAND - SHOULDN'T HAPPEN\n");
@@ -311,6 +315,11 @@ void print_push_char(int n)  {
 
 void print_push_int(int n)  {
 	printf("A4GL_push_int(%d)",n);
+}
+
+
+void print_errchk(struct cmd_errchk *e) {
+	printf("ERRCHK\n");
 }
 
 

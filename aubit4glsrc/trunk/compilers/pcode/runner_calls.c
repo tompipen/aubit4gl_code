@@ -570,38 +570,71 @@ int aa() {
 }
 
 
+
+
+
 void * find_by_dlself(char *s)
 {
-  static void *self=(void *)-1;
+  static void *so_libs[10]={
+	  		(void *)-1,
+	  		(void *)-1,
+	  		(void *)-1,
+	  		(void *)-1,
+	  		(void *)-1,
+	  		(void *)-1,
+	  		(void *)-1,
+	  		(void *)-1,
+	  		(void *)-1,
+	  		(void *)-1
+					};
+
+
   void *ptr=0;
   char buff[255];
-A4GL_debug("Looking at me...\n");
-  if(self==(void *)-1) {
-	A4GL_debug("Trying to open\n");
-	//self = (void *)dlopen (0, LT_DLGLOBAL|LT_DLLAZY_OR_NOW);
-
-	self = (void *)dlopen (0, RTLD_LAZY);
-	//self = (void *)dlopen ("/home/aubit4gl/sourceforge/aubit4glsrc/lib/libaubit4gl.so", RTLD_LAZY);
-
-        if (self==0) {
-			A4GL_debug("Error : %s\n",dlerror());
-	}
-	A4GL_debug("Self = %p\n",self);
-  }
-
-  if (self)
-    {
-#ifdef NEED_DL_UNDERSCORE
-	sprintf(buff,"_%s",s);
+  char *ptr1;
+  int a;
+  char *fname;
+  if (so_libs[0]==-1) {
+  	for (a=0;a<10;a++) {
+	  	if (a==0) {
+		  	fname=0;
+ 	  	}  else {
+		  	sprintf(buff,"FGLRUNNER_LIB%d",a);
+#ifdef STDCALLS
+		  	fname=getenv(buff);
 #else
-	strcpy(buff,s);
+		  	fname=acl_getenv(buff);
 #endif
+		  	if (fname==0||strlen(fname)==0) {
+			  	so_libs[a]=0;
+			  	continue;
+		  	}
+	  	}
+	
+		so_libs[a] = (void *)dlopen (fname, RTLD_LAZY);
 
-A4GL_debug("Looking for %s\n",buff);
-      ptr=dlsym (self,buff);
+		if (fname) {
+			A4GL_debug("Opening %s -> %p",fname,so_libs[a]);
+		} else {
+			A4GL_debug("Opening self -> %p",so_libs[a]);
+		}
+  	}
+   }
+		  
+  for (a=0;a<10;a++) {
+  	if (so_libs[a]) {
+#ifdef NEED_DL_UNDERSCORE
+		sprintf(buff,"_%s",s);
+#else
+		strcpy(buff,s);
+#endif
+		A4GL_debug("Looking for %s\n",buff);
+      		ptr=dlsym (so_libs[a],buff);
+		if (ptr) return ptr;
+	}
     }
 
-    return ptr;
+    return 0;
 }
 #else
 

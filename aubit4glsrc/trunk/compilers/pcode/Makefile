@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.13 2003-10-27 17:27:04 mikeaubury Exp $
+# $Id: Makefile,v 1.14 2003-10-28 09:48:23 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -173,7 +173,7 @@ runner_calls_c.o : runner_calls.c calls.h std_calls.h
 
 
 runner_calls_fgl.o : runner_calls.c calls.h fgl_calls.h
-	$(CC) ${CFLAGS} -g -c runner_calls.c -DFGLCALLS -I$(ROOT)/incl -o $@
+	$(CC) ${CFLAGS} -DUSE_A4GL_DEBUG=1 -g -c runner_calls.c -DFGLCALLS -I$(ROOT)/incl -o $@
 
 
 runner_execute_c.o : runner_execute.c 

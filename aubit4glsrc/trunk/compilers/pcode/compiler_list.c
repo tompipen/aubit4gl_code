@@ -62,7 +62,7 @@ add_label (char *label)
   e.data = (char *) current_function->cmds.cmds_len;
 
 #if ! defined (__CYGWIN__) && ! defined (__MINGW32__)
-  ep = hsearch (e, ENTER);
+  ep = (ENTRY *)hsearch (e, ENTER);
 #endif
 
   if (!ep)
@@ -83,7 +83,7 @@ find_label (char *label)
   e.key = label;
 
 #if ! defined (__CYGWIN__) && ! defined (__MINGW32__)
-  ep = hsearch (e, FIND);
+  ep = (ENTRY *)hsearch (e, FIND);
 #endif
   if (!ep)
     return -1;

@@ -13,7 +13,7 @@ extern module this_module;
 #define FglDecimal long
 #define fgldate long
 
-
+/*
 static char *op_str[]={
         "EOP_EQUAL",
         "EOP_GT",
@@ -33,6 +33,7 @@ static char *op_str[]={
 ,0
 
 };
+*/
 
 
 int

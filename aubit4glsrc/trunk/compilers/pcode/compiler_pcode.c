@@ -47,6 +47,7 @@ char *cmd_type_str[] = {
   "CMD_DISPLAY_AT",
   "CMD_PUSH_OP",
   "CMD_CLR_ERR",
+  "CMD_ERRCHK",
   ""
 };
 
@@ -221,8 +222,13 @@ new_command (enum cmd_type cmd_type, void *ptr)
     case CMD_PUSH_INT:
       CURRENT_CMD.cmd_u.c_push_int = (int)ptr;
       break;
+
     case CMD_CHK_ERR:
       CURRENT_CMD.cmd_u.c_chk_err_lineno = (long) ptr;
+      break;
+
+    case CMD_ERRCHK:
+      CURRENT_CMD.cmd_u.c_errchk = (struct cmd_errchk *) ptr;
       break;
 
     case CMD_CLR_ERR:
@@ -461,6 +467,9 @@ add_if (struct param *e, char *true, char *false)
 
 long add_chk_err(int n) {
   return new_command (CMD_CHK_ERR, (void *)n);
+}
+long add_errchk(void *n) {
+  return new_command (CMD_ERRCHK, (void *)n);
 }
 
 long add_clr_err(void) {
