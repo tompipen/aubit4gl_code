@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.101 2003-09-18 06:13:44 mikeaubury Exp $
+# $Id: compile_c.c,v 1.102 2003-09-20 07:48:09 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1782,7 +1782,7 @@ print_form_is_compiled (char *s, char *packer, char *formtype)
   //printf("%s - %s - %s\n",s,packer,formtype);
   printc ("A4GL_add_compiled_form(\"%s\",%s,%s,compiled_form_%s);\n", s,
 	  packer, formtype, s);
-  printh ("extern char *compiled_form_%s;\n", s);
+  printh ("extern char compiled_form_%s[];\n", s);
 }
 
 /**

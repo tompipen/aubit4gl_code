@@ -101,6 +101,7 @@ function libhelp_showhelp(filename, n)
 code
 A4GL_debug("filename=%s",filename);
 	trim(filename);
+	A4GL_debug("compiled_form_a4gl_xxhelp=%p",&compiled_form_a4gl_xxhelp);
 endcode
 
 	call form_is_compiled(a4gl_xxhelp,"MEMPACKED","GENERIC");
@@ -264,21 +265,36 @@ code
 		}
 		else
 		{
+			A4GL_debug("Header OK");
 			//fprintf(stderr, "Header OK\n");
 		}
 	}
 	if( ok )
 	{
 		msgcount = header[2] * 256 + header[3];
+		A4GL_debug("Count=%d",msgcount);
 		//fprintf(stderr, "Count = %d\nNow reading index block\n", 
 		//	msgcount );
 		for(i=0; i<msgcount; i++)
 		{
 			if(fread(indexrec,1,8,infile)< 8) ok = 0;
+
 			if(ok ) {
+				A4GL_debug("%d %d %d %d %d %d %d %d",
+indexrec[0],
+indexrec[1],
+indexrec[2],
+indexrec[3],
+indexrec[4],
+indexrec[5],
+indexrec[6],
+indexrec[7]);
                                 memcpy(&msgno,indexrec,2);
                                 //msgno=A4GL_ntohs(msgno);
+				A4GL_debug("msgno=%d",msgno);
                                 msgno=ntohs(msgno);
+				A4GL_debug("now msgno=%d (n=%d)",msgno,n);
+
 			}
 			else
 			{

@@ -11,6 +11,7 @@ line_no		:
 	| FIRST {strcpy($<str>$,"1");}
 	| INT_VALUE {strcpy($<str>$,$<str>1);}
 	| variable {strcpy($<str>$,$<str>1);}
+	| OFF {strcpy($<str>$,"0");}
 ;
 
 file_name	:	CHAR_VALUE | cvariable 

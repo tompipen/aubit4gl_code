@@ -36,6 +36,7 @@ key_value_1 : 	FKEY /*{strcpy($<str>$,"F1");printf("--F1\n");}*/
         |       KWDOWN {strcpy($<str>$,"down");}
         |       RETURN {strcpy($<str>$,"return");}
         |       DELETE {strcpy($<str>$,"delete");}
+        |       INSERT {strcpy($<str>$,"insert");}
         |       TAB {strcpy($<str>$,"tab");}
         |       LEFT {strcpy($<str>$,"left");}
         |       RIGHT {strcpy($<str>$,"right");}     

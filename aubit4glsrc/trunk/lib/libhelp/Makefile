@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2003-07-20 06:53:25 afalout Exp $
+# $Id: Makefile,v 1.11 2003-09-20 07:47:50 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -52,7 +52,7 @@ FCOMPILE=${ROOT}/bin/fcompile
 ## ==================================================================
 
 ${LIBROOT}/libHELP_std${SO_EXT}: helplib.${FGLC_OUTPUT_EXT} a4gl_xxhelp.afr.c
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${SH} ${ROOT}/bin/4glpc ${LINKLIBS} -g -as-dll $^ -o $@
+	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${SH} ${ROOT}/bin/4glpc ${LINKLIBS} -g -DPORTABLE -as-dll $^ -o $@
 #	gcc -shared -Wl,--out-implib=TMP.dll.a -Wl,--export-all-symbols -I../../incl -o $@ $^ -L.. -laubit4gl
 #WARNING: cannot use 4glc directly, because of broken getopt_long() on CygWin (-o will not be recognized)
 #	export A4GL_SQLTYPE=nosql; ${4GLC} --shared $^ -o $@
@@ -63,7 +63,7 @@ ${LIBROOT}/libHELP_std${SO_EXT}: helplib.${FGLC_OUTPUT_EXT} a4gl_xxhelp.afr.c
 
 
 helplib.${FGLC_OUTPUT_EXT}: helplib.4gl
-	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC} --namespace "aclfgli_" $^
+	export A4GL_SQLTYPE=nosql; export A4GL_LEXTYPE=C; ${4GLC}  --namespace "aclfgli_" $^
 
 a4gl_xxhelp.afr.c: a4gl_xxhelp.per
 	(export A4GL_PACKER=PACKED; export A4GL_FORMTYPE=GENERIC; export A4GL_SQLTYPE=nosql; ${FCOMPILE} -c $^)
