@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.96 2004-09-20 17:06:13 mikeaubury Exp $
+# $Id: esql.ec,v 1.97 2004-09-21 13:53:20 mikeaubury Exp $
 #
 */
 
@@ -143,7 +143,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.96 2004-09-20 17:06:13 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.97 2004-09-21 13:53:20 mikeaubury Exp $";
 #endif
 
 
@@ -2490,8 +2490,14 @@ printField (FILE * unloadFile, int idx, char *descName)
 	}
       char_var = malloc (length + 1);
       EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
-      A4GL_trim (char_var);
-      fprintf (unloadFile, "%s", char_var);
+      if (strlen(char_var)) {
+      	A4GL_trim (char_var);
+	if (strlen(char_var)) {
+      		fprintf (unloadFile, "%s", char_var);
+	} else {
+      		fprintf (unloadFile, " ");
+	}
+      }
       free (char_var);
       break;
     case DTYPE_SMINT:
