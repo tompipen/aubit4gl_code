@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.26 2004-11-11 16:17:04 mikeaubury Exp $
+# $Id: ui.c,v 1.27 2004-11-11 16:23:20 mikeaubury Exp $
 #
 */
 
@@ -347,6 +347,7 @@ void A4GL_display_at (int n, int a)
 
   free (s);
   A4GL_debug ("Done Display@");
+  A4GL_clr_last_was_empty();
 
   if (!aclfgli_get_err_flg()) { A4GLSQL_set_status(0,0); }
   //return 1;

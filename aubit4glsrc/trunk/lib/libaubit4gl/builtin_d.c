@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.51 2004-11-11 16:17:04 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.52 2004-11-11 16:23:20 mikeaubury Exp $
 #
 */
 
@@ -323,6 +323,10 @@ last_was_empty=0;
 
 int A4GL_was_last_empty() {
 	return last_was_empty;
+}
+
+void A4GL_clr_last_was_empty() {
+	last_was_empty=0;
 }
 
 void A4GL_push_empty_char(void) {
