@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.64 2004-03-04 16:27:49 mikeaubury Exp $
+# $Id: resource.c,v 1.65 2004-03-12 14:07:08 whaslbeck Exp $
 #
 */
 
@@ -335,6 +335,16 @@ struct str_resource builtin_resource[] = {
   {"A4GL_RM_CMD", "rm -f"},
   {"A4GL_DEBUG_LEVEL", "10"},
   {"GTK_INC_PATH", ""},		//this ently is to prevent core dumps on Windows when thsi value is not set
+
+  /* L10N stuff */
+  {"A4GL_DIALOG_OK", "OK"},
+  {"A4GL_DIALOG_CANCEL", "Cancel"},
+  {"A4GL_DIALOG_ABORT", "Abort"},
+  {"A4GL_DIALOG_RETRY", "Retry"},
+  {"A4GL_DIALOG_IGNORE", "Ignore"},
+  {"A4GL_DIALOG_YES", "Yes"},
+  {"A4GL_DIALOG_NO", "No"},
+  {"A4GL_DIALOG_ERROR", "Error"},
 
   /* End of definitions */
   {"", "0"}

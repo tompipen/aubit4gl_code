@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.29 2004-03-12 10:24:12 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.30 2004-03-12 14:10:07 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
@@ -329,35 +329,44 @@ dialog_callback (GtkWidget * widget, gpointer data)
 static void
 add_button (GtkDialog * win, int but_code)
 {
-  char *txt = "";
+  char *txt;
+  char *txt_utf;
   GtkButton *but;
+
   switch (but_code)
     {
-    case 1:
-      txt = "OK";
+    case BUTTON_OK:
+      txt = acl_getenv("A4GL_DIALOG_OK");
       break;
-    case 2:
-      txt = "Cancel";
+    case BUTTON_CANCEL:
+      txt = acl_getenv("A4GL_DIALOG_CANCEL");
       break;
-    case 3:
-      txt = "Abort";
+    case BUTTON_ABORT:
+      txt = acl_getenv("A4GL_DIALOG_ABORT");
       break;
-    case 4:
-      txt = "Retry";
+    case BUTTON_RETRY:
+      txt = acl_getenv("A4GL_DIALOG_RETRY");
       break;
-    case 5:
-      txt = "Ignore";
+    case BUTTON_IGNORE:
+      txt = acl_getenv("A4GL_DIALOG_IGNORE");
       break;
-    case 6:
-      txt = "Yes";
+    case BUTTON_YES:
+      txt = acl_getenv("A4GL_DIALOG_YES");
       break;
-    case 7:
-      txt = "No";
+    case BUTTON_NO:
+      txt = acl_getenv("A4GL_DIALOG_NO");
       break;
+    default:
+      txt = "FIXME: unknown Button";
+      A4GL_debug("add_button: unknown button-code: %d\n", but_code);
     }
 
+  txt_utf=g_locale_to_utf8(txt, -1, NULL, NULL, NULL);
+
   gtk_object_set_data (GTK_OBJECT (win), "RETURNS", 0);
-  but = (GtkButton *) gtk_button_new_with_label (txt);
+  but = (GtkButton *) gtk_button_new_with_label (txt_utf);
+  g_free(txt_utf);
+
   gtk_object_set_data (GTK_OBJECT (but), "BUTCODE", (gpointer) but_code);
   gtk_object_set_data (GTK_OBJECT (but), "DIALOGWIN", win);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->action_area), (GtkWidget *) but);
@@ -380,15 +389,20 @@ int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis
 
   gtk_signal_connect (GTK_OBJECT (win),
                       "delete_event", GTK_SIGNAL_FUNC (gtk_true), NULL);
-  label_utf=g_locale_to_utf8(msg, -1, NULL, NULL, NULL);
+  if(msg)
+    label_utf=g_locale_to_utf8(msg, -1, NULL, NULL, NULL);
+  else
+    label_utf=NULL;
   label = (GtkLabel *) gtk_label_new (label_utf);
   g_free(label_utf);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->vbox),
                      GTK_WIDGET (label));
 
-
-  if (strlen (caption))
-    gtk_window_set_title (GTK_WINDOW (win), caption);
+  if (strlen (caption)) {
+    label_utf=g_locale_to_utf8(caption, -1, NULL, NULL, NULL);
+    gtk_window_set_title (GTK_WINDOW (win), label_utf);
+    g_free(label_utf);
+  }
 
   switch (buttons)
     {
@@ -708,11 +722,9 @@ A4GL_debug("Created window %p for h=%d w=%d y=%d x=%d b=%d",win, h, w, y, x, bor
 }
 
 void A4GL_LL_error_box(char* str,int attr) {
+  char *error=acl_getenv("A4GL_DIALOG_ERROR");
 
-#define BUTTONS_OK    0
-#define BUTTON_OK     1
-
-    A4GL_gtkdialog ("Error", "", BUTTONS_OK, BUTTON_OK, 0, str);
+  A4GL_gtkdialog (error, "", BUTTONS_OK, BUTTON_OK, 0, str);
 }
 
 
