@@ -6,6 +6,50 @@
 #
 ###########################################################################
 
+##
+# Create a new test.
+# Copy the template of the makefile into the directory and the .cvsignore also
+# Try to copy the files if they not exist but the directory yes.
+# Exit the program after doing it.
+#
+# @param dir The name of the test.
+##
+new_test() {
+  dir=$1
+  nothing_done="1"
+  echo "DIR $dir"
+  if ! test -d $dir; then
+    mkdir $dir
+    cp template/prog.4gl template/.cvsignore $dir
+    if ! test "$NO_CVS" = "1"; then
+      cvs add $dir
+      cvs add $dir/makefile $dir/prog.4gl $dir/.cvsignore
+    fi
+    echo "Template for test $dir created. Steps to complete:"
+    echo " 1) edit test files to create test code"
+    echo " 2) describe test in makefile"
+    echo " 3) perform 'cvs add' on additional files test needs, if any"
+    echo " 4) perform 'cvs commit'"
+    nothing_done=0
+  fi
+
+  if ! test -f $dir/makefile; then
+    cp template/makefile $dir
+    echo "makefile added from template"
+    nothing_done="0"
+  fi
+  if ! test -f $dir/.cvsignore; then
+    cp template/.cvsignore $dir
+    echo ".cvsignore added from template"
+    nothing_done="0"
+  fi
+
+  if test $nothing_done = "1"; then
+    echo "ERROR: test $a already exists with makefile and .cvsignore"
+  fi
+  exit
+}
+
 #######s###############
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 EXPECT_TO_FAIL_TESTS="1 82 487 488 490 240 670 696 702"
@@ -41,10 +85,9 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 
 ######################
 #Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 249 684 105 705 720 217"
+INVALID_TESTS="375 377 249 684 105 705 217"
 #105 - missing database schemma
 #705 - It is not possible to convert between the specified types.
-#720 - Diferent string value
 #217 - -as-dll problem with 4glpc
 
 ##############################################################################
@@ -261,23 +304,7 @@ for a in $FLAGS; do
 	fi
 
    if test "$NEW_TEST" = "1"; then
-        if test -d $a; then
-            echo "ERROR: test $a already exists"
-			exit 5
-        else
-            mkdir $a
-            cp template/makefile template/prog.4gl template/.cvsignore $a
-			cvs add $a
-			cvs add $a/makefile $a/prog.4gl $a/.cvsignore
-			echo " "
-            echo "Template for test $a created. Steps to complete:"
-            echo " 1) edit test files to create test code"
-            echo " 2) describe test in makefile"
-            echo " 3) perform 'cvs add' on additional files test needs, if any"
-            echo " 4) perform 'cvs commit'"
-			echo " "			
-		fi
-        exit
+     new_test $a
    fi
 
    case $a in
@@ -296,6 +323,12 @@ for a in $FLAGS; do
 			NEW_TEST="1"
             continue
             ;;
+      -new-nocvs)
+			  #create new test
+			  NEW_TEST="1"
+			  NO_CVS="1"
+        continue
+       ;;
         -info)
 			#Show information about the test
 			INFO_TEST="1"

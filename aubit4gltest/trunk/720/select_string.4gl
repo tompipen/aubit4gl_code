@@ -3,8 +3,8 @@ DATABASE test1
 
 MAIN
   DEFINE lv_keyColumn SMALLINT
-  DEFINE lv_singleQuoted CHAR(10)
-  DEFINE lv_doubleQuoted CHAR(10)
+  DEFINE lv_singleQuoted CHAR(20)
+  DEFINE lv_doubleQuoted CHAR(20)
   DEFINE exitStatus SMALLINT
 
   LET exitStatus = 0
