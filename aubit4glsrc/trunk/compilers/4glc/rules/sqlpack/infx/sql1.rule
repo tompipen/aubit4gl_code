@@ -911,21 +911,8 @@ colident: identifier
 	
 */
 
-/*
 
-select_statement_full_ss : select_statement_ss  
-	{
-	$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),0);
-	if (strstr($<str>2,"FOR UPDATE")) {
-		printf("Warning SELECT ... FOR UPDATE when not declaring a cursor currently has no locking effect\n");
-	}
-}
-;
-*/
-
-
-
-select_statement_ss:
+select_statement_ss_str:
 	SELECT 
 	op_ad 
 	{ start_bind('i',0); }
@@ -934,9 +921,9 @@ select_statement_ss:
 	table_expression_ss
         sel_p2_ss {
 		char *ptr;
-                ptr=make_sql_string_and_free(strdup("SELECT "),strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,0);
-		$<sql_string>$=strdup(print_select_all(ptr));
-		free(ptr);
+                $<sql_string>$=make_sql_string_and_free(strdup("SELECT "),strdup($<str>2), $<sql_string>4,kw_space, $<sql_string>6, kw_space,$<sql_string>7,kw_space,$<sql_string>8,0);
+
+		/*$<sql_string>$=strdup(print_select_all(ptr)); free(ptr); */
 }
 ;
 
