@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.15 2004-03-24 11:06:29 mikeaubury Exp $
+# $Id: API_rpc.c,v 1.16 2004-04-21 10:53:01 mikeaubury Exp $
 #
 */
 
@@ -56,7 +56,6 @@ static void *libptr = 0;
 =====================================================================
 */
 
-static int (*A4GL_func) ();
 int A4GL_register_func(char *s,void *ptr) ;
 int A4GL_unregister_func(char *s,void *ptr) ;
 int A4GL_server_run(long service) ;
@@ -76,6 +75,7 @@ int
 A4GLRPC_initlib (void)
 {
 
+  static int (*A4GL_func) (void);
   A4GL_debug ("Opening RPC library");
   libptr = (void *) A4GL_dl_openlibrary ("RPC", acl_getenv ("RPCTYPE"));
 
@@ -105,6 +105,7 @@ A4GLRPC_initlib (void)
 int
 A4GL_remote_func_call (char *host, int async, char *funcname, int port, int np)
 {
+  static int (*A4GL_func) (char *host,int async,char *funcname,int port,int np);
   A4GL_debug ("remote_func_call - libptr=%p\n",libptr);
   if (libptr == 0)
     A4GLRPC_initlib ();
@@ -115,6 +116,7 @@ A4GL_remote_func_call (char *host, int async, char *funcname, int port, int np)
 
 
 int A4GL_register_func(char *s,void *ptr) {
+  static int (*A4GL_func) (char *s,void *ptr);
   A4GL_debug ("remote_func_call - libptr=%p\n");
   if (libptr == 0) A4GLRPC_initlib ();
   A4GL_func = A4GL_find_func (libptr, "A4GL_register_func");
@@ -123,6 +125,7 @@ int A4GL_register_func(char *s,void *ptr) {
 
 
 int A4GL_unregister_func(char *s,void *ptr) {
+  static int (*A4GL_func) (char *s,void *ptr);
   A4GL_debug ("remote_func_call - libptr=%p\n");
   if (libptr == 0) A4GLRPC_initlib ();
   A4GL_func = A4GL_find_func (libptr, "A4GL_unregister_func");
@@ -130,6 +133,7 @@ int A4GL_unregister_func(char *s,void *ptr) {
 }
 
 int A4GL_server_run(long service) {
+  static int (*A4GL_func) (long s);
   A4GL_debug ("remote_func_call - libptr=%p\n");
   if (libptr == 0) A4GLRPC_initlib ();
   A4GL_func = A4GL_find_func (libptr, "A4GL_server_run");

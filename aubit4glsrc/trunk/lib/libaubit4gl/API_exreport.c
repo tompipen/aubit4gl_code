@@ -1,352 +1,206 @@
 /*
-# +----------------------------------------------------------------------+
-# | Aubit 4gl Language Compiler Version $.0                              |
-# +----------------------------------------------------------------------+
-# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
-# +----------------------------------------------------------------------+
-# | This program is free software; you can redistribute it and/or modify |
-# | it under the terms of one of the following licenses:                 |
-# |                                                                      |
-# |  A) the GNU General Public License as published by the Free Software |
-# |     Foundation; either version 2 of the License, or (at your option) |
-# |     any later version.                                               |
-# |                                                                      |
-# |  B) the Aubit License as published by the Aubit Development Team and |
-# |     included in the distribution in the file: LICENSE                |
-# |                                                                      |
-# | This program is distributed in the hope that it will be useful,      |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
-# | GNU General Public License for more details.                         |
-# |                                                                      |
-# | You should have received a copy of both licenses referred to here.   |
-# | If you did not, or have any questions about Aubit licensing, please  |
-# | contact afalout@ihug.co.nz                                           |
-# +----------------------------------------------------------------------+
-#
-# $Id: API_exreport.c,v 1.17 2004-02-10 13:50:20 mikeaubury Exp $
-#
-*/
-
-/**
+ * lib=EXREPORT env=A4GL_PDFTYPE lib_prefix= api_prefix=
  * @file
- * PDF Report Implementation functions.
+ * File definition
  *
- * @todo Add Doxygen A4GL_comments to file
+ * This file was created from .spec file of same name, using dlmagic script
+ * - if you need to edit it, edit .spec file instad, and use [make filename.c]
+ * to re-create it.
+ *
+ * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
- * @todo Doxygen A4GL_comments to add to functions
+ * @todo Doxygen comments to add to functions
  */
 
-/*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
+/*******************************************************************
+* (c) 1997-2002 Aubit Computing Ltd.
+*
+*
+********************************************************************/
 
-
-#ifdef OLD_INCL
-
-#include <stdio.h>
-
-#include "a4gl_dbform.h"
-#include "a4gl_report.h"
-#include "a4gl_debug.h"
-#include "a4gl_stack.h"
-#include "a4gl_aubit_lib.h"
-
-
-#else
 
 #include "a4gl_libaubit4gl_int.h"
 
+static void *libptr=0;
+int A4GLEXREPORT_initlib (void);
+void A4GLEXREPORT_clrlibptr (void);
+int dlclose (void *__handle);
+
+/**
+ * Library init function.
+ *
+ * @todo : explain ussage and parameters.
+ * @return .
+ */
+
+void A4GLEXREPORT_clrlibptr (void) {
+    if (libptr) {dlclose(libptr);}
+    libptr=0;
+}
+
+int A4GLEXREPORT_initlib (void) {
+int (*func)(void);
+   libptr=(void *)A4GL_dl_openlibrary("EXREPORT",acl_getenv("A4GL_PDFTYPE"));
+   if (libptr==0) {
+      A4GL_exitwith("Unable to open  library...");
+      return 0;
+   }
+   func=A4GL_find_func_allow_missing(libptr,"A4GLEXREPORT_initlib");
+
+   if (func)
+      return func();
+   else
+      return 1;
+}
+
+
+/* void A4GL_pdf_rep_print (void *rep, int a, int s, int right_margin) */
+/* void A4GL_pdf_fputmanyc (FILE * f, int c, int cnt) */
+/* void A4GL_pdf_set_column (void *rep) */
+/* void A4GL_pdf_skip_to (void *rep, double a) */
+/* void A4GL_pdf_skip_by (void *rep, double a) */
+/* void A4GL_pdf_aclfgli_skip_lines (void *rep) */
+/* void A4GL_pdf_need_lines (void *rep) */
+/* void A4GL_pdf_skip_top_of_page (void *rep) */
+/* void A4GL_pdf_set_info (void *p,char *creator)  */
+/* void A4GL_pdf_rep_close (void *p) */
+/* double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p) */
+/* void A4GL_pdf_pdffunc (void *p, char *fname, int n) */
+/* void A4GL_pdf_blob_print (void *p, void *blob, char *type, int cr) */
+void A4GL_pdf_rep_print(void* rep,int a,int s,int right_margin) {
+static void (*func_1)(void *  ,int ,int ,int );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_rep_print(%p,%d,%d,%d)\n",rep,a,s,right_margin);
 #endif
-
-double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
-/*
-=====================================================================
-                    Variables definitions
-=====================================================================
-*/
-
-static void *libptr = 0;
-
-/*
-=====================================================================
-                    Functions prototypes
-=====================================================================
-*/
-
-
-static int (*A4GL_func) ();
-
-/* static double 	(*func_d)			(); */
-static double (*A4GL_func_d) (double f, char c, struct pdf_rep_structure * p);
-
-
-/* void *			find_func			(void *p,char *s); in calldll.c */
-extern void *A4GL_find_func_double (void *dllhandle, char *func);	/* in calldll.c */
-void A4GL_pdf_skip_by (void *rep, double a);
-double A4GL_pdf_metric (int a, char c, void *rep);
-void A4GL_pdf_aclfgli_skip_lines (void *rep);
-void A4GL_pdf_fputmanyc (FILE * f, int c, int cnt);
-void A4GL_pdf_set_column (void *rep);
-void A4GL_pdf_rep_print (void *rep, int a, int s, int right_margin);
-void A4GL_pdf_skip_to (void *rep, double a);
-void A4GL_pdf_need_lines (void *rep);
-void A4GL_pdf_skip_top_of_page (void *rep);
-void A4GL_pdf_add_spaces (void);
-void A4GL_pdf_rep_close (void *p);
-void A4GL_pdf_pdffunc (void *p, char *fname, int n);
-void A4GL_pdf_blob_print (void *p, void *blob, char *type, int cr);
-
-/*
-=====================================================================
-                    Functions definitions
-=====================================================================
-*/
-
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GLREPORT_initlib (void)
-{
-
-  libptr = (void *) A4GL_dl_openlibrary ("EXREPORT", acl_getenv ("A4GL_PDFTYPE"));
-
-  A4GL_debug ("libptr=%p\n", libptr);
-  A4GL_debug ("A4GL_PDFTYPE=%s\n", acl_getenv ("A4GL_PDFTYPE"));
-
-  if (libptr == 0)
-    {
-      A4GL_exitwith ("Unable to open EXREPORT library.");
-      return;
-    }
-
-  A4GL_func = A4GL_find_func_allow_missing (libptr, "A4GLREPORT_initlib");
-
-  /*
-     if (func)
-     return func();
-     else
-     return 1;
-   */
-
-  A4GL_func ();
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_1=A4GL_find_func(libptr,"A4GL_pdf_rep_print");
+   func_1(rep,a,s,right_margin);
 }
 
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_rep_print (void *rep, int a, int s, int right_margin)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_rep_print");
-  A4GL_func (rep, a, s, right_margin);
+void A4GL_pdf_fputmanyc(FILE* f,int c,int cnt) {
+static void (*func_2)(FILE *  ,int ,int );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_fputmanyc(%p,%d,%d)\n",f,c,cnt);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_2=A4GL_find_func(libptr,"A4GL_pdf_fputmanyc");
+   func_2(f,c,cnt);
 }
 
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_fputmanyc (FILE * f, int c, int cnt)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_fputmanyc");
-  A4GL_func (f, c, cnt);
+void A4GL_pdf_set_column(void* rep) {
+static void (*func_3)(void *  );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_set_column(%p)\n",rep);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_3=A4GL_find_func(libptr,"A4GL_pdf_set_column");
+   func_3(rep);
 }
 
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_set_column (void *rep)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_set_column");
-  A4GL_func (rep);
+void A4GL_pdf_skip_to(void* rep,double a) {
+static void (*func_4)(void *  ,double );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_skip_to(%p,%p)\n",rep,a);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_4=A4GL_find_func(libptr,"A4GL_pdf_skip_to");
+   func_4(rep,a);
 }
 
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_skip_to (void *rep, double a)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_skip_to");
-  A4GL_func (rep, a);
+void A4GL_pdf_skip_by(void* rep,double a) {
+static void (*func_5)(void *  ,double );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_skip_by(%p,%p)\n",rep,a);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_5=A4GL_find_func(libptr,"A4GL_pdf_skip_by");
+   func_5(rep,a);
 }
 
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_skip_by (void *rep, double a)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_skip_by");
-  A4GL_func (rep, a);
+void A4GL_pdf_aclfgli_skip_lines(void* rep) {
+static void (*func_6)(void *  );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_aclfgli_skip_lines(%p)\n",rep);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_6=A4GL_find_func(libptr,"A4GL_pdf_aclfgli_skip_lines");
+   func_6(rep);
 }
 
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_aclfgli_skip_lines (void *rep)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_aclfgli_skip_lines");
-  A4GL_func (rep);
+void A4GL_pdf_need_lines(void* rep) {
+static void (*func_7)(void *  );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_need_lines(%p)\n",rep);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_7=A4GL_find_func(libptr,"A4GL_pdf_need_lines");
+   func_7(rep);
 }
 
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_need_lines (void *rep)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_need_lines");
-  A4GL_func (rep);
+void A4GL_pdf_skip_top_of_page(void* rep) {
+static void (*func_8)(void *  );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_skip_top_of_page(%p)\n",rep);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_8=A4GL_find_func(libptr,"A4GL_pdf_skip_top_of_page");
+   func_8(rep);
 }
 
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_skip_top_of_page (void *rep)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_skip_top_of_page");
-  A4GL_func (rep);
+void A4GL_pdf_set_info(void* p,char* creator) {
+static void (*func_9)(void *  ,char *  );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_set_info(%p,(%s)))\n",p,A4GL_null_as_null(creator));
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_9=A4GL_find_func(libptr,"A4GL_pdf_set_info");
+   func_9(p,creator);
 }
 
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_add_spaces (void)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_add_spaces");
-  A4GL_func ();
+void A4GL_pdf_rep_close(void* p) {
+static void (*func_10)(void *  );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_rep_close(%p)\n",p);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_10=A4GL_find_func(libptr,"A4GL_pdf_rep_close");
+   func_10(p);
 }
 
-/*
-** Fairly sure these are internal functions
+double A4GL_pdf_size(double f,char c,void* p) {
+double rval;
+static double (*func_11)(double ,char ,void *  );
+#ifdef DEBUG
+A4GL_debug("Call to double A4GL_pdf_size(%p,(%c),%p)\n",f,c,p);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_11=A4GL_find_func(libptr,"A4GL_pdf_size");
+   rval=(double)func_11 (f,c,p);
+#ifdef DEBUG
+A4GL_debug("Returning Unknown %p",rval);
 
-So define them as static then.
-
-void pdf_new_page(void *p) {
-  if (libptr==0) A4GLREPORT_initlib();
-  func=find_func(libptr,"A4GL_pdf_new_page");
-  func(p);
+#endif
+return rval;
 }
 
-
-
-void A4GL_pdf_set_info (void *p,char *creator) {
-  if (libptr==0) A4GLREPORT_initlib();
-  func=find_func(libptr,"A4GL_pdf_set_info");
-  func(p,creator);
+void A4GL_pdf_pdffunc(void* p,char *fname,int n) {
+static void (*func_12)(void *  ,char ,int );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_pdffunc(%p,(%c),%d)\n",p,*fname,n);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_12=A4GL_find_func(libptr,"A4GL_pdf_pdffunc");
+   func_12(p,*fname,n);
 }
 
-pdf_move(void *p) {
-  if (libptr==0) A4GLREPORT_initlib();
-  func=find_func(libptr,"A4GL_pdf_move");
-  func(f,c,cnt);
-}
-*/
-
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_rep_close (void *p)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_rep_close");
-  A4GL_func (p);
+void A4GL_pdf_blob_print(void* p,void* blob,char* type,int cr) {
+static void (*func_13)(void *  ,void *  ,char *  ,int );
+#ifdef DEBUG
+A4GL_debug("Call to void A4GL_pdf_blob_print(%p,%p,(%s)),%d)\n",p,blob,A4GL_null_as_null(type),cr);
+#endif
+   if (libptr==0) A4GLEXREPORT_initlib();
+   func_13=A4GL_find_func(libptr,"A4GL_pdf_blob_print");
+   func_13(p,blob,type,cr);
 }
 
-
-/**
- *
- * @todo Describe function
- */
-/* pdf_size(double f, char c,void *p) */
-double
-A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p)
-{
-  double d;
-  A4GL_debug ("Trying to find A4GL_pdf_size - libptr=%p", libptr);
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func_d = A4GL_find_func_double (libptr, "A4GL_pdf_size");
-
-  d = A4GL_func_d (f, c, p);
-  A4GL_debug ("Got size as : %lf", d);
-  return d;
-}
-
-
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_pdffunc (void *p, char *fname, int n)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_pdffunc");
-  A4GL_func (p, fname, n);
-}
-
-
-
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_pdf_blob_print (void *p, void *blob, char *type, int cr)
-{
-  if (libptr == 0)
-    A4GLREPORT_initlib ();
-  A4GL_func = A4GL_find_func (libptr, "A4GL_pdf_blob_print");
-  A4GL_func (p, blob, type, cr);
-}
-
-/* ================================= EOF ============================= */
