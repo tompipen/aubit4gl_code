@@ -213,5 +213,8 @@ need_ifx_version:
 #"0" means "don't care"
 transaction:
 	@echo "0"
-	
+
+need_compat:
+	@echo "1"
+
 # ============================= EOF ================================

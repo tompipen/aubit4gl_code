@@ -21,7 +21,7 @@ MAIN
 	)
 	LET exitStatus = 0
 	INSERT INTO xpto VALUES (1,"Hello world")
-	UPDATE xpto set (a_column) = ("Hello")
+	UPDATE xpto set (a_column,keyColumn) = ("Hello",1)
   IF sqlca.sqlawarn[6] != "W" THEN
 	  DISPLAY "An warning was not issued after non ansi update"
 		LET exitStatus = 1

@@ -213,5 +213,9 @@ need_ifx_version:
 #"0" means "don't care"
 transaction:
 	@echo "0"
+
+se_required:
+	@echo "1"
+
 	
 # ============================= EOF ================================

@@ -1984,7 +1984,7 @@ if test "$CLEAN" = "1" -a "$RUN_ONE" = ""; then
 		#editor's backup files
 		EXEC='	$FIND . "(" -name "*~" -o -name "*.bak"
 		-o -name ".#*"  -o -name ".*~"
-		")" -exec rm {} \;'
+		")" -exec rm  {} \;'
 		
 		eval $EXEC
 	fi
@@ -3072,6 +3072,7 @@ do
 	#see if Makefile contains description
 	desc_txt=`$MAKE -s -C $a desc 2>/dev/null`
 
+	echo "desc_txt = $desc_txt"
 	if test "$desc_txt" != "" ; then
 		#see if this description is unchanged from template, which 
 		#means that developer who added the test forgot to descibe it
@@ -3096,7 +3097,7 @@ do
 		##############
 		#get info from makefile
 		IS_DB_TEST=`$MAKE -s -C $a db_test 2>/dev/null`
-		ec_test=`$MAKE -s -C $a  ec_test 2>/dev/null`
+		ec_test=`$MAKE -s -C $a ec_test 2>/dev/null`
 		IS_NOSILENT_TEST=`$MAKE -s -C $a nosilent_test 2>/dev/null`
 		IS_TUI_TEST=`$MAKE -s -C $a tui_test 2>/dev/null`
 		IS_FORM_TEST=`$MAKE -s -C $a form_test 2>/dev/null`
@@ -3120,239 +3121,257 @@ do
 		NOPREFIX=`$MAKE -s -C $a noprefix 2>/dev/null`
 		if [ "$NOPREFIX" = "1" ]
 		then	
-			export A4GL_NAMESPACE=""
+			export A4GL_NAMESPACE=" "
+		else
+			unset A4GL_NAMESPACE
 		fi
-		OLD_DESC=0
-	else
-		OLD_DESC=1
-		#get info from this script
-		
-		#Do not have equivalent in script descriptions:
-		#ec_test - DOES! EC_TESTS but it's not used 
-		#compat_test
 
-		for b in $REPORT_TESTS; do
-			if test "$b" = "$a"; then
-				IS_REPORT_TEST=1
-			fi
-		done
+		NEED_COMPAT=`$MAKE -s -C $a need_compat 2>/dev/null`
 
-		for b in $UNKNOWN_TESTS; do
-			if test "$b" = "$a"; then
-				IS_UNKNOWN_TEST=1
-			fi
-		done
-		for b in $DB_TESTS; do
-			if test "$b" = "$a"; then
-				IS_DB_TEST=1
-			fi
-		done
-		
-		for b in $NOSILENT_TESTS; do
-			if test "$b" = "$a"; then
-				IS_NOSILENT_TEST=1
-			fi
-		done
-		
-		for b in $TUI_TESTS; do
-			if test "$b" = "$a"; then
-				IS_TUI_TEST=1
-			fi
-		done
-		
-		for b in $GRAPHIC_TESTS; do
-			if test "$b" = "$a"; then
-				IS_GRAPHIC_TEST=1
-			fi
-		done
-		
-		for b in $ALL_DESCRIBED_TESTS; do
-			if test "$b" = "$a"; then
-				IS_DESCRIBED=1
-			fi
-		done
-		for b in $CONSOLE_PROMPT_TESTS; do
-			if test "$b" = "$a"; then
-				IS_CONSOLE_PROMPT_TEST=1
-			fi
-		done
-		for b in $DUMP_SCREEN_TESTS; do
-			if test "$b" = "$a"; then
-				IS_DUMP_SCREEN_TEST=1
-			fi
-		done
-		for b in $FORM_TESTS; do
-			if test "$b" = "$a"; then
-				IS_FORM_TEST=1
-			fi
-		done
-		for b in $LONG_TESTS; do
-			if test "$b" = "$a"; then
-				IS_LONG_TEST=1
-			fi
-		done
-		for b in $CERT_TESTS; do
-			if test "$b" = "$a"; then
-				IS_CERT_TEST=1
-			fi
-		done
-		for b in $OBSOLETE_TESTS; do
-			if test "$b" = "$a"; then
-				IS_OBSOLETE_TEST=1
-			fi
-		done
-		
-		for b in $PCODE_ENABLED; do
-			if test "$b" = "$a"; then
-				IS_PCODE_ENABLED=1
-			fi
-		done
-	fi
+		if [ "$NEED_COMPAT" = "1" ]
+		then	
+			echo "SET"
+			export A4GL_COMPAT_MODE="Y"
+			export CFLAGS="-I$AUBITDIR/incl -I$AUBITDIR/incl/compat "
+		else
+			unset A4GL_COMPAT_MODE
+		fi
 
-	#Test information that is allways held only in this script, and NOT
-	#in makefiles	
-	for b in $EXPECT_TO_FAIL_TESTS; do
-		if test "$b" = "$a"; then
-			IS_EXPECT_TO_FAIL_TEST=1
-		fi
-	done
-	for b in $INVALID_TESTS; do
-		if test "$b" = "$a"; then
-			IS_INVALID_TEST=1
-		fi
-	done
-	
-	
-	###############
-	#Show test info and continue loop
-	if test "$INFO_TEST" = "1"; then
 
-		#echo "db_test=$db_test"
-		
-		echo " ------------------- Info for test $a -----------------------"		
+			OLD_DESC=0
+		else
+			OLD_DESC=1
+			#get info from this script
+			
+			#Do not have equivalent in script descriptions:
+			#ec_test - DOES! EC_TESTS but it's not used 
+			#compat_test
 
-		if test "$TEMPLATE_COMMENT" = "1"; then 
-			echo "WARNING: test still contains template comment in makefile"
-			TEMPLATE_COMMENT_CNT=`(expr $TEMPLATE_COMMENT_CNT + 1) 2>/dev/null`
-			TEMPLATE_COMMENT_LIST="$TEMPLATE_COMMENT_LIST $a"
+			for b in $REPORT_TESTS; do
+				if test "$b" = "$a"; then
+					IS_REPORT_TEST=1
+				fi
+			done
+
+			for b in $UNKNOWN_TESTS; do
+				if test "$b" = "$a"; then
+					IS_UNKNOWN_TEST=1
+				fi
+			done
+			for b in $DB_TESTS; do
+				if test "$b" = "$a"; then
+					IS_DB_TEST=1
+				fi
+			done
+			
+			for b in $NOSILENT_TESTS; do
+				if test "$b" = "$a"; then
+					IS_NOSILENT_TEST=1
+				fi
+			done
+			
+			for b in $TUI_TESTS; do
+				if test "$b" = "$a"; then
+					IS_TUI_TEST=1
+				fi
+			done
+			
+			for b in $GRAPHIC_TESTS; do
+				if test "$b" = "$a"; then
+					IS_GRAPHIC_TEST=1
+				fi
+			done
+			
+			for b in $ALL_DESCRIBED_TESTS; do
+				if test "$b" = "$a"; then
+					IS_DESCRIBED=1
+				fi
+			done
+			for b in $CONSOLE_PROMPT_TESTS; do
+				if test "$b" = "$a"; then
+					IS_CONSOLE_PROMPT_TEST=1
+				fi
+			done
+			for b in $DUMP_SCREEN_TESTS; do
+				if test "$b" = "$a"; then
+					IS_DUMP_SCREEN_TEST=1
+				fi
+			done
+			for b in $FORM_TESTS; do
+				if test "$b" = "$a"; then
+					IS_FORM_TEST=1
+				fi
+			done
+			for b in $LONG_TESTS; do
+				if test "$b" = "$a"; then
+					IS_LONG_TEST=1
+				fi
+			done
+			for b in $CERT_TESTS; do
+				if test "$b" = "$a"; then
+					IS_CERT_TEST=1
+				fi
+			done
+			for b in $OBSOLETE_TESTS; do
+				if test "$b" = "$a"; then
+					IS_OBSOLETE_TEST=1
+				fi
+			done
+			
+			for b in $PCODE_ENABLED; do
+				if test "$b" = "$a"; then
+					IS_PCODE_ENABLED=1
+				fi
+			done
 		fi
-		
-		if test "$OLD_DESC" = "1" \
-			-a "$IS_DESCRIBED" = "1" \
-			-a "$IS_UNKNOWN_TEST" != "1"; \
-		then
-			echo "Please migrate folowing test info from 'run_tests' script to makefile:"
-			echo ""
-			MIGRATE_DESC_CNT=`(expr $MIGRATE_DESC_CNT + 1) 2>/dev/null`
-			MIGRATE_DESC_LIST="$MIGRATE_DESC_LIST $a"			
-		fi
-		
-		if test "$desc_txt" != "" ; then
-			echo ""
-			echo $desc_txt
-			echo ""
-			HAS_DESC_TXT_CNT=`(expr $HAS_DESC_TXT_CNT + 1) 2>/dev/null`
-		fi
-		
-		if test "$IS_REPORT_TEST" = "1"; then
-			echo "Test contains REPORT block"
-			IS_REPORT_TEST_CNT=`(expr $IS_REPORT_TEST_CNT + 1) 2>/dev/null`
-		fi
-		if test "$EXPECT_CODE" != "0" ; then
-			if test "$EXPECT_CODE" = "x" ; then
-				echo "Test is expected to exit with non-zero code"			
-			else
-				echo "Test is expected to exit with code $EXPECT_CODE"
+
+		#Test information that is allways held only in this script, and NOT
+		#in makefiles	
+		for b in $EXPECT_TO_FAIL_TESTS; do
+			if test "$b" = "$a"; then
+				IS_EXPECT_TO_FAIL_TEST=1
 			fi
-			NON_ZERO_EXIT_CNT=`(expr $NON_ZERO_EXIT_CNT + 1) 2>/dev/null`
-		fi
-		if test "$COMPILE_ONLY" = "1" ; then
-			echo "Test is compile only, no execution will be attempted"
-			COMPILE_ONLY_CNT=`(expr $COMPILE_ONLY_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_PCODE_ENABLED" = "1" ; then
-			#All tests descxribed by makefiel are P-code enabled amyway
-			echo "Test is P-CODE testing enabled"
-			IS_PCODE_ENABLED_CNT=`(expr $IS_PCODE_ENABLED_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_DESCRIBED" != "1" ; then
-			echo "*** Test not described ***"
-			NOT_DESCRIBED_CNT=`(expr $NOT_DESCRIBED_CNT + 1) 2>/dev/null`
-			NOT_DESCRIBED_LIST="$NOT_DESCRIBED_LIST $a"
-		fi
-		if test "$IS_INVALID_TEST" = "1"; then 
-			echo "**** TEST MARKED INVALID IN run_tests ******"
-			IS_INVALID_CNT=`(expr $IS_INVALID_CNT + 1) 2>/dev/null`
-			IS_INVALID_LIST="$IS_INVALID_LIST $a"
-		fi
-		if test "$IS_EXPECT_TO_FAIL_TEST" = "1"; then 
-			echo "**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******"
-			EXPECT_FAIL_CNT=`(expr $EXPECT_FAIL_CNT + 1) 2>/dev/null`
-			EXPECT_FAIL_LIST="$EXPECT_FAIL_LIST $a"
-		fi
-		if test "$IS_DB_TEST" = "1"; then
-			echo "Test needs database"
-			IS_DB_TEST_CNT=`(expr $IS_DB_TEST_CNT + 1) 2>/dev/null`
-		fi
-		if test "$ec_test" = "1"; then
-			echo "Uses/require ESQL compiler output, instead of C output"
-			IS_EC_TEST_CNT=`(expr $IS_EC_TEST_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_NOSILENT_TEST" = "1"; then
-			echo "Test will fail if not running on screen (curses)"
-			IS_NOSILENT_CNT=`(expr $IS_NOSILENT_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_TUI_TEST" = "1"; then
-			echo "Test uses curses and/or screeen dump and may fail when TERM!=xterm"
-			echo "Anything that uses a screen dump may have specific attributes set which may"
-			echo "fail if TERM!=xterm"
-			echo "This core dumps on MinGW and messes up the terminal completely."
-			echo "On Cygwin they don't core dump, but this tests fail"
-			IS_TUI_TEST_CNT=`(expr $IS_TUI_TEST_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_FORM_TEST" = "1"; then
-			echo "Test uses .per form files"
-			IS_FORM_TEST_CNT=`(expr $IS_FORM_TEST_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_GRAPHIC_TEST" = "1"; then
-			echo "Test that use graphic characters in forms that may be platform dependent"
-			IS_GRAPHIC_TEST_CNT=`(expr $IS_GRAPHIC_TEST_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_CONSOLE_PROMPT_TEST" = "1"; then
-			echo "Test waits for user's input in CONSOLE mode, because automated testing"
-			echo "was not implemented there, so we must skip them untill this is implemented"
-			IS_CONSOLE_PROMPT_CNT=`(expr $IS_CONSOLE_PROMPT_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_DUMP_SCREEN_TEST" = "1"; then
-			echo "test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so"
-			echo "it won't work in CONSOLE mode"
-			IS_DUMP_SCREEN_CNT=`(expr $IS_DUMP_SCREEN_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_LONG_TEST" = "1"; then
-			echo "Test takes more then 10 minutes to compile or run"
-			IS_LONG_CNT=`(expr $IS_LONG_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_CERT_TEST" = "1"; then
-			echo "Tests is certified to run (with -eci) If it fails, something was probably broken"
-			echo "in current code."
-			IS_CERT_CNT=`(expr $IS_CERT_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_OBSOLETE_TEST" = "1"; then
-			echo "test is superceeded or obsoleted and should be silently skipped"
-			IS_OBSOLETE_CNT=`(expr $IS_OBSOLETE_CNT + 1) 2>/dev/null`
-			IS_OBSOLETE_LIST="$IS_OBSOLETE_LIST $a"
-		fi
-		if test "$compat_test" = "1"; then
-			echo "Test can be run using any 4GL compatible compiler, not just Aubit"
-			IS_COMPAT_CNT=`(expr $IS_COMPAT_CNT + 1) 2>/dev/null`
-		fi
-		if test "$IS_UNKNOWN_TEST" = "1"; then 
-			echo "Test is clasified as UNKNOWN - please corect this."
-			UNKNOWN_TEST_CNT=`(expr $UNKNOWN_TEST_CNT + 1) 2>/dev/null`			
-			echo ""
-		fi		
+		done
+		for b in $INVALID_TESTS; do
+			if test "$b" = "$a"; then
+				IS_INVALID_TEST=1
+			fi
+		done
+		
+		
+		###############
+		#Show test info and continue loop
+		if test "$INFO_TEST" = "1"; then
 
-		if test "$NEED_TRANSACTION" = "2" ; then
+			#echo "db_test=$db_test"
+			
+			echo " ------------------- Info for test $a -----------------------"		
+
+			if test "$TEMPLATE_COMMENT" = "1"; then 
+				echo "WARNING: test still contains template comment in makefile"
+				TEMPLATE_COMMENT_CNT=`(expr $TEMPLATE_COMMENT_CNT + 1) 2>/dev/null`
+				TEMPLATE_COMMENT_LIST="$TEMPLATE_COMMENT_LIST $a"
+			fi
+			
+			if test "$OLD_DESC" = "1" \
+				-a "$IS_DESCRIBED" = "1" \
+				-a "$IS_UNKNOWN_TEST" != "1"; \
+			then
+				echo "Please migrate folowing test info from 'run_tests' script to makefile:"
+				echo ""
+				MIGRATE_DESC_CNT=`(expr $MIGRATE_DESC_CNT + 1) 2>/dev/null`
+				MIGRATE_DESC_LIST="$MIGRATE_DESC_LIST $a"			
+			fi
+			
+			if test "$desc_txt" != "" ; then
+				echo ""
+				echo $desc_txt
+				echo ""
+				HAS_DESC_TXT_CNT=`(expr $HAS_DESC_TXT_CNT + 1) 2>/dev/null`
+			fi
+			
+			if test "$IS_REPORT_TEST" = "1"; then
+				echo "Test contains REPORT block"
+				IS_REPORT_TEST_CNT=`(expr $IS_REPORT_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$EXPECT_CODE" != "0" ; then
+				if test "$EXPECT_CODE" = "x" ; then
+					echo "Test is expected to exit with non-zero code"			
+				else
+					echo "Test is expected to exit with code $EXPECT_CODE"
+				fi
+				NON_ZERO_EXIT_CNT=`(expr $NON_ZERO_EXIT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$COMPILE_ONLY" = "1" ; then
+				echo "Test is compile only, no execution will be attempted"
+				COMPILE_ONLY_CNT=`(expr $COMPILE_ONLY_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_PCODE_ENABLED" = "1" ; then
+				#All tests descxribed by makefiel are P-code enabled amyway
+				echo "Test is P-CODE testing enabled"
+				IS_PCODE_ENABLED_CNT=`(expr $IS_PCODE_ENABLED_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_DESCRIBED" != "1" ; then
+				echo "*** Test not described ***"
+				NOT_DESCRIBED_CNT=`(expr $NOT_DESCRIBED_CNT + 1) 2>/dev/null`
+				NOT_DESCRIBED_LIST="$NOT_DESCRIBED_LIST $a"
+			fi
+			if test "$IS_INVALID_TEST" = "1"; then 
+				echo "**** TEST MARKED INVALID IN run_tests ******"
+				IS_INVALID_CNT=`(expr $IS_INVALID_CNT + 1) 2>/dev/null`
+				IS_INVALID_LIST="$IS_INVALID_LIST $a"
+			fi
+			if test "$IS_EXPECT_TO_FAIL_TEST" = "1"; then 
+				echo "**** TEST EXPECTED TO FAIL BECAUSE OF THE AUBIT4GL BUG ******"
+				EXPECT_FAIL_CNT=`(expr $EXPECT_FAIL_CNT + 1) 2>/dev/null`
+				EXPECT_FAIL_LIST="$EXPECT_FAIL_LIST $a"
+			fi
+			if test "$IS_DB_TEST" = "1"; then
+				echo "Test needs database"
+				IS_DB_TEST_CNT=`(expr $IS_DB_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$ec_test" = "1"; then
+				echo "Uses/require ESQL compiler output, instead of C output"
+				IS_EC_TEST_CNT=`(expr $IS_EC_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_NOSILENT_TEST" = "1"; then
+				echo "Test will fail if not running on screen (curses)"
+				IS_NOSILENT_CNT=`(expr $IS_NOSILENT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_TUI_TEST" = "1"; then
+				echo "Test uses curses and/or screeen dump and may fail when TERM!=xterm"
+				echo "Anything that uses a screen dump may have specific attributes set which may"
+				echo "fail if TERM!=xterm"
+				echo "This core dumps on MinGW and messes up the terminal completely."
+				echo "On Cygwin they don't core dump, but this tests fail"
+				IS_TUI_TEST_CNT=`(expr $IS_TUI_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_FORM_TEST" = "1"; then
+				echo "Test uses .per form files"
+				IS_FORM_TEST_CNT=`(expr $IS_FORM_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_GRAPHIC_TEST" = "1"; then
+				echo "Test that use graphic characters in forms that may be platform dependent"
+				IS_GRAPHIC_TEST_CNT=`(expr $IS_GRAPHIC_TEST_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_CONSOLE_PROMPT_TEST" = "1"; then
+				echo "Test waits for user's input in CONSOLE mode, because automated testing"
+				echo "was not implemented there, so we must skip them untill this is implemented"
+				IS_CONSOLE_PROMPT_CNT=`(expr $IS_CONSOLE_PROMPT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_DUMP_SCREEN_TEST" = "1"; then
+				echo "test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so"
+				echo "it won't work in CONSOLE mode"
+				IS_DUMP_SCREEN_CNT=`(expr $IS_DUMP_SCREEN_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_LONG_TEST" = "1"; then
+				echo "Test takes more then 10 minutes to compile or run"
+				IS_LONG_CNT=`(expr $IS_LONG_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_CERT_TEST" = "1"; then
+				echo "Tests is certified to run (with -eci) If it fails, something was probably broken"
+				echo "in current code."
+				IS_CERT_CNT=`(expr $IS_CERT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$IS_OBSOLETE_TEST" = "1"; then
+				echo "test is superceeded or obsoleted and should be silently skipped"
+				IS_OBSOLETE_CNT=`(expr $IS_OBSOLETE_CNT + 1) 2>/dev/null`
+				IS_OBSOLETE_LIST="$IS_OBSOLETE_LIST $a"
+			fi
+			if test "$compat_test" = "1"; then
+				echo "Test can be run using any 4GL compatible compiler, not just Aubit"
+				IS_COMPAT_CNT=`(expr $IS_COMPAT_CNT + 1) 2>/dev/null`
+			fi
+			if test "$need_compat" = "1"; then
+				echo "Test requires Aubit to be in compatibility mode"
+			fi
+			if test "$IS_UNKNOWN_TEST" = "1"; then 
+				echo "Test is clasified as UNKNOWN - please corect this."
+				UNKNOWN_TEST_CNT=`(expr $UNKNOWN_TEST_CNT + 1) 2>/dev/null`			
+				echo ""
+			fi		
+
+			if test "$NEED_TRANSACTION" = "2" ; then
 			echo "Database MUST NOT have transactions enabled for this test."
 		fi
 		if test "$NEED_TRANSACTION" = "1" ; then
@@ -3546,7 +3565,6 @@ do
 		###############################################################
 		#Check if we need to swiths transaction logging mode in RDBMS
 		###############################################################
-		
 		if test "$DB_HAS_TRANSACTION" != "NULL" ; then 
 			if test "$NEED_TRANSACTION" = "1" -a "$DB_HAS_TRANSACTION" != "1" ; then 
 				if test "$USE_ESQLI" = "1" -o "$ODBC_USE_DB" = "IFX"; then		
@@ -3630,7 +3648,7 @@ do
 			echo "Cleaning $CURR_DIR/$a ..."
 		fi
 
-		EXEC="$FIND $CURR_DIR/$a $CLEAN_FIND_FILES -exec rm {} \;"
+		EXEC="$FIND $CURR_DIR/$a $CLEAN_FIND_FILES -exec rm  {} \;"
 		eval $EXEC
 
 		if test "$VERBOSE" = "1"; then 

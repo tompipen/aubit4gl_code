@@ -15,6 +15,7 @@ MAIN
 	LET  ret_float = pop_ret_float(a_float)
   IF ret_float != 2949.3829398204382 THEN
 	  DISPLAY "The float pop(ed) to stack was not correctly return(ed)."
+	  DISPLAY ret_float, " ",2949.3829398204382
 		LET exitStatus = 1
 	END IF
 
@@ -22,6 +23,7 @@ MAIN
 	LET  ret_float = pop_ret_float(a_float)
   IF ret_float != 323829949 THEN
 	  DISPLAY "The float pop(ed) to stack was not correctly return(ed)."
+	  DISPLAY ret_float, " ",323829949
 		LET exitStatus = 1
 	END IF
 	EXIT PROGRAM exitStatus

@@ -214,4 +214,6 @@ need_ifx_version:
 transaction:
 	@echo "0"
 	
+noprefix:
+	@echo "1"
 # ============================= EOF ================================

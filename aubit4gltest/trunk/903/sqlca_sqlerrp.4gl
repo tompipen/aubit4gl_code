@@ -15,7 +15,7 @@ MAIN
 	  DISPLAY "Wrong sqlca it as not assigned sqlcode"
 		LET exitStatus = 1
 	END IF
-	{ Informix 4gl does not assign sqlerrp. Shit
+	{ Informix 4gl does not assign sqlerrp. Darn
   IF sqlca.sqlerrp IS NULL THEN
 	  DISPLAY "SQL Error parameter is NULL"
 		LET exitStatus = 1

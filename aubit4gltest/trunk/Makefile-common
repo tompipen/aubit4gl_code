@@ -67,7 +67,7 @@ ifeq "${USE_COMP}" "aubit"
 		DEFAULT_LINK=cp prog${A4GL_OBJ_EXT} progname${A4GL_EXE_EXT}
 	else
 	#define default linking action
-		DEFAULT_LINK=${A4GL_FGLC} $^ -o $@
+		DEFAULT_LINK=${A4GL_FGLC} ${A4GL_OTHERS} $^ -o $@
 	endif
 	OUT=out
 	RUNNER=
@@ -206,7 +206,7 @@ else
 endif
 
 CLEAN_FILES=*.bak *.o *.4ae *.ao *.ec *.cpc *.h *.glb \
-    ${MODULES} ${FORMS} *.4pe.dat *.4pe.xml ${ADD_CLEAN} *.c out *.err  \
+    ${MODULES} ${FORMS} *.4pe.dat *.4pe.xml ${ADD_CLEAN}  out *.err  \
     pcode.run *.tmp out.ifx out.querix out.4js *.4go *.warn
 
 ifneq "${TARGET_EXT}" ""
@@ -236,13 +236,15 @@ endif
 #	amkmessage $^ $@
 	
 	
+.o.c:
+	echo "Hello $<"
 ################
 #Clean everything created by compiling and running the test
 #since this is the will be first target listed in makefile when this make file is
 #included this becomes the default target (when user types just "make" without
 #specifying the target)
 clean:
-	rm -f ${CLEAN_FILES}
+	rm  -f ${CLEAN_FILES}
 
 	
 show:
@@ -264,6 +266,7 @@ show:
 	@echo 'DEFAULT_RUN=${DEFAULT_RUN}'
 	@echo 'NAMED_RUN=${NAMED_RUN}'
 	@echo 'DEFAULT_DIFF=${DEFAULT_DIFF}'
+	@echo 'MODULES=${MODULES}'
 	@echo 'NAMED_DIFF=${NAMED_DIFF}'	
 	
 	
