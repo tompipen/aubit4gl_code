@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.81 2004-05-24 12:49:07 mikeaubury Exp $
+# $Id: sql.c,v 1.82 2004-06-14 17:46:26 mikeaubury Exp $
 #
 */
 
@@ -237,7 +237,7 @@ int conv_4gl_to_c[] = {
   SQL_C_DOUBLE,			/* decimal != double  need to change this */
   SQL_C_LONG,
   SQL_C_DATE,
-  SQL_C_DOUBLE,			/* as for decimal money != double */
+  SQL_C_DOUBLE,			/* as for decimal,  money != double */
   9999,
 #ifdef SQL_C_DATETIME
   SQL_C_DATETIME,     // Was timestamp
@@ -2189,12 +2189,14 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 
   int k = 0;
 
-  if (bind->dtype == 7)
+  if (bind->dtype == DTYPE_DATE && A4GL_isyes(acl_getenv("BINDDATEASINT")))
     {
-      rc = A4GL_newSQLSetParam ((SQLHSTMT )hstmt,
-			   pos,
-			   SQL_INTEGER, SQL_INTEGER, 0, 0, bind->ptr, NULL);
+	A4GL_debug("dtype=7");
+	// Bind it as an integer...
+      	rc = A4GL_newSQLSetParam ((SQLHSTMT )hstmt, pos, SQL_INTEGER, SQL_INTEGER, 0, 0, bind->ptr, NULL);
+        A4GL_debug("rc=%d\n",rc);
       /* chk_rc (rc, hstmt, "SQLSetParam"); */
+	return;
     }
 
 #ifdef DEBUG
@@ -2203,6 +2205,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 	A4GL_debug(" is a string : %s",bind->ptr);
   }
 #endif
+
   if (bind->dtype != 0)
     size = 0;
   else
@@ -2212,10 +2215,28 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
   if (bind->dtype==0) {
   A4GL_debug(" Binding : %s ",bind->ptr);
   }
-  A4GL_debug ("Call SQLSetParam h=%p p=%d dt=%d dt=%d size=%d k=%d ptr=%p", hstmt,
-	 pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k,
-	 bind->ptr);
+  A4GL_debug ("Call SQLSetParam h=%p p=%d dt=%d dt=%d size=%d k=%d ptr=%p", hstmt, pos, conv_4gl_to_c[bind->dtype], conv_4gl_to_c[bind->dtype], size, k, bind->ptr);
 #endif
+
+  if (bind->dtype == DTYPE_DATE)
+    {
+	ACLDATE *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
+	void *ptr;
+	int d,m,y;
+	ptr=bind->ptr;
+	p= (ACLDATE *)A4GL_bind_date ((long *) ptr);
+	A4GL_get_date(*(int *)ptr,&y,&m,&d);
+	p->date.year=y;
+	p->date.month=m;
+	p->date.day=d;
+        bind->ptr = p;
+
+#ifdef DEBUG
+      A4GL_debug ("Bound date...\n");
+#endif
+    }
+
+
   rc = A4GL_newSQLSetParam ((SQLHSTMT )hstmt, pos,
 		       conv_4gl_to_c[bind->dtype],
 		       conv_4gl_to_c[bind->dtype], size, k, bind->ptr, NULL);
@@ -3420,8 +3441,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	  A4GL_debug ("Year=%d Month=%d Day=%d", date1->date.year,
 		 date1->date.month, date1->date.day);
 #endif
-	  zz = A4GL_gen_dateno (date1->date.day,
-			   date1->date.month, date1->date.year);
+	  zz = A4GL_gen_dateno (date1->date.day, date1->date.month, date1->date.year);
 	  *((long *) date1->ptr) = zz;
 	}
 
