@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.160 2003-02-22 11:06:12 afalout Exp $
+dnl # $Id: configure.in,v 1.161 2003-02-25 04:14:44 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -327,7 +327,8 @@ AC_SUBST(ADD_LD_LIBRARY_PATH)
 AC_SUBST(PIC)
 AC_SUBST(LDFLAGS)
 AC_SUBST(LDFLAGS_SHARED)
-AC_SUBST(YACC)
+#AC_SUBST(YACC)
+AC_SUBST(BISON)
 AC_SUBST(LEX)
 AC_SUBST(LCLINTEXE)
 AC_SUBST(SO_EXT)
@@ -807,23 +808,68 @@ else
 fi
 
 if test "$AUBIT_SOURCE" = "1" ; then
-	AC_PROG_YACC
-	if test "$YACC" != "bison -y"; then
-		#AC_PROG_YACC macro sets $YACC to "yacc" even when it's not present!
-		YACC=no
-		WARN_YACC=1
-	else
-		AC_MSG_CHECKING(Bison version)
-		set `bison --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
-	    AC_MSG_RESULT($1.$2)
 
-		if test "$1" = "1" -a "$2" -lt "875"; then
-	        AC_MSG_WARN(You will need Bison 1.875 if you'd want to regenerate the Aubit parsers)
-			#Will use preconfigured y.tab.c from /tools/no_yacc
-			YACC=no
-			WARN_YACC=1
-        fi
+	#force this check even if not specified on command line:
+	if test "$with_bison" = ""; then
+		with_bison=yes
 	fi
+
+	AC_ARG_WITH(bison,
+	[  --with-bison[=DIR]   Use Bison as YACC to recompile Aubit parsers. DIR is the base
+	                          directory of Bison executable, defaults to /usr/bin.],
+	[
+		
+	if test "$withval" != "no"; then
+
+		#AC_PROG_YACC
+		#if test "$YACC" != "bison -y"; then
+		#	#AC_PROG_YACC macro sets $YACC to "yacc" even when it's not present!
+		#	YACC=no
+        #    BISON=no
+		#	WARN_YACC=1
+		#else
+
+		if test "$withval" != "yes"; then
+            #user specified path to bison
+			BISON_PATH=$withval
+        else
+			BISON_PATH="$PATH"
+		fi
+
+		AC_PATH_PROG(BISON, bison, no, $BISON_PATH)
+
+        if test "$BISON" != "no"; then
+			AC_MSG_CHECKING(Bison version)
+			set `$BISON --version|head -1|sed -e 's/^GNU Bison version //' -e 's/^bison (GNU Bison) //' -e 's/\./ /g'`
+		    AC_MSG_RESULT($1.$2)
+
+			if test "$1" = "1" -a "$2" -lt "875"; then
+		        AC_MSG_WARN(You will need Bison 1.875 if you'd want to regenerate the Aubit parsers)
+				#Will use preconfigured y.tab.c from /tools/no_yacc
+				#YACC=no
+                BISON=no
+				WARN_YACC=1
+	        else
+				BISON="$BISON -y"
+				#-y is Equivalent to -o y.tab.c; the parser output file is
+				#called y.tab.c, and the other  outputs  are  called
+				#y.output  and  y.tab.h.  The purpose of this switch
+				#is to imitate yacc's output file name  conventions.
+			fi
+        else
+			BISON=no
+			WARN_YACC=1
+			AC_MSG_WARN(cannot find bison in $BISON_PATH)
+		fi
+    else
+		BISON=no
+		WARN_YACC=1
+		AC_MSG_RESULT(disbled)
+    fi
+
+	],[
+	  AC_MSG_RESULT(--with-bison not specified)
+	])
 
 	AC_PATH_PROG(DOXYGEN, doxygen, no)
 	AC_PATH_PROG(CVS_CLIENT, cvs, no)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.61 2003-02-24 19:02:53 mikeaubury Exp $
+# $Id: compile_c.c,v 1.62 2003-02-25 04:15:36 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -3491,7 +3491,7 @@ print_while_3 (void)
  * insert cursors.
  */
 void
-print_put (void)
+print_put (char * cname)
 {
   int n;
   printc ("{\n");

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.9 2003-02-24 07:52:51 afalout Exp $
+# $Id: compile.c,v 1.10 2003-02-25 04:15:33 afalout Exp $
 #*/
 
 /**
@@ -135,6 +135,7 @@ int index;
 int silent = 0;
 int verbose = 0;
 int todo = 0;
+int flength = 0;
 
 char opt_list[40]="";
 char a[128]="";
@@ -146,6 +147,7 @@ char l_path[1028]="";
 char l_libs[1028]="";
 char buff[4000]="";
 char all_objects[4000]="";
+static FILE *filep = 0;
 static char output_object[128]="";
 static struct option long_options[] =
   {
@@ -227,7 +229,15 @@ static struct option long_options[] =
             printf ("Error: -o flag specified with no parameter\n");
 			printf("optind=%s\n", argv[optind]);
 			printf("option_index=%s\n", argv[option_index]);
+            /*
 
+[root@aptiva common]# aubit 4glc --clean  ccorpwind.4gl -c -o ccorpwind.ao
+Error: -o flag specified with no parameter
+optind=ccorpwind.ao
+option_index=SAPDBROOT=/opt/sapdb
+
+
+            */
 			exit (5);
         }
 
@@ -482,14 +492,37 @@ static struct option long_options[] =
 	    }
         else
         {
-			//Since there was no error code returned from C compiler/linker,
-			// *.xxx.err file (if it exist) will contain linker warnings only
-			sprintf (buff,"mv %s.err %s.warn",output_object,output_object);
-			#ifdef DEBUG
-				debug("Runnung %s",buff);
-	        #endif
-			ret=system (buff);
 
+			sprintf (buff,"%s.err",output_object);
+            filep = fopen (buff, "r");
+            //	f = mja_fopen (ii, "r");
+			fseek(filep,0,SEEK_END);
+			flength=ftell(filep);
+            fclose(filep);
+
+
+			/* The 'proper' way to do it is with 'stat' - but this isn't too portable (even
+			though it should be). */
+
+            if (flength) {
+				/*
+				Since there was no error code returned from C compiler/linker,
+				*.xxx.err file (when it exist and is not 0 size ) will contain
+				linker warnings only
+                */
+
+				debug ("%s file size is not zero %d\n",buff,flength);
+
+				sprintf (buff,"mv %s.err %s.warn",output_object,output_object);
+				#ifdef DEBUG
+					debug("Runnung %s",buff);
+		        #endif
+				ret=system (buff);
+
+            } else {
+                //err file will be deleted if clean_aftercomp is set
+				//printf ("%s file size is zero %d\n",buff,flength);
+            }
 
 
 			if (clean_aftercomp)
@@ -542,11 +575,12 @@ static struct option long_options[] =
 static int
 compile_4gl(int compile_object,char a[128],char incl_path[128],int silent,int verbose,char output_object[128])
 {
-int x, ret;
+int x, ret, flength;
 char buff[1028];
 char single_output_object[128]="";
 char c[128]; //The 4gl file
 char *ptr;
+static FILE *filep = 0;
 
   /* store the directory part of file name, if any, so we can use it for GLOBALS
   file compilation, if nececery */
@@ -652,7 +686,7 @@ char *ptr;
 
 
 	   {
-       /* strip path from input file name, so our object allways and up in 
+       /* strip path from input file name, so our object allways and up in
 	   current directory - otherwise make file will not be able to find it using
        VPATH when making objects for current explicit target.
 	   FIXME: this should be done ONLY when -o option on command line did not have
@@ -693,20 +727,58 @@ char *ptr;
 		if (ret) {
 			printf ("Error compiling %s.c - check %s.c.err\n",a,a);
 			printf ("Failed command was: %s\n",buff);
-			//printf ("Exit code is: %d\n",ret);
 			//fixme: show err file
             return ret;
         }
 		else
 		{
-			//Since there was no error code returned from C compiler,
-			// *.c.err file (if it exist) will contain C compiler warnings only
-			sprintf (buff,"mv %s.c.err %s.c.warn",a,a);
-			#ifdef DEBUG
-				debug("Runnung %s",buff);
-	        #endif
-			ret=system (buff);
+			
+			/* determine the c.err file size */
+			sprintf (buff,"%s.c.err",a);
+            filep = fopen (buff, "r");
+            //	f = mja_fopen (ii, "r");
+			fseek(filep,0,SEEK_END);
+			flength=ftell(filep);
+            fclose(filep);
 
+
+			/* The 'proper' way to do it is with 'stat' - but this isn't too portable (even
+			though it should be). */
+
+            if (flength) {
+				/*
+				Since there was no error code returned from C compiler,
+				*.c.err file (when it exist and is not 0 size ) will contain
+				compiler warnings only
+				
+				PC9b.c:2439: warning: unknown escape sequence `\,'
+
+				src/ap/P34k.mk:			PC9b.4gl \
+				src/ap/P34l.mk:			PC9b.4gl \
+				src/ap/P34.mk:			PC9b.4gl \
+				src/ap/P34m.mk:			PC9b.4gl \
+				src/ap/P34p.mk:			PC9b.4gl \
+				src/ap/P34q.mk:			PC9b.4gl \
+				src/ap/P34r.mk:			PC9b.4gl \
+				src/ap/P34s.mk:			PC9b.4gl \
+				src/ap/P3A.mk:			PC9b.4gl \
+				src/ap/PCL.mk:GLOBALS.4gl	= PC9b.4gl
+
+
+				*/
+
+
+				debug ("%s file size is not zero %d\n",buff,flength);
+				sprintf (buff,"mv %s.c.err %s.c.warn",a,a);
+				#ifdef DEBUG
+					debug("Runnung %s",buff);
+		        #endif
+				ret=system (buff);
+
+            } else {
+                //c.err file will be deleted if clean_aftercomp is set
+				//printf ("%s file size is zero %d\n",buff,flength);
+            }
 
 			if (clean_aftercomp)
 			{

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.82 2003-02-07 04:01:44 afalout Exp $
+# $Id: Makefile.in,v 1.83 2003-02-25 04:15:35 afalout Exp $
 #
 
 ROOT    =..
@@ -57,7 +57,7 @@ LIBPACKERPACKED_PATH=libpacker/packed
 LIBPACKERPERL_PATH  =libpacker/perl
 LIBPACKERXDR_PATH   =libpacker/xdr
 LIBPACKERXML_PATH   =libpacker/xml
-LIBLEXC_PATH   		=liblex/lex_c
+#LIBLEXC_PATH   		=liblex/lex_c
 LIBLEXEC_PATH  		=liblex/lex_esqlc
 LIBLEXPERL_PATH   	=liblex/lex_perl
 LIBEXREPORTPDF_PATH =libpdf
@@ -126,8 +126,8 @@ LIBPACKERXDR_DEPS	=$(wildcard ${LIBPACKERXDR_PATH}/*.c) $(wildcard ${LIBPACKERXD
 					$(wildcard ${LIBPACKERXDR_PATH}/Makefile)
 LIBPACKERXML_DEPS	=$(wildcard ${LIBPACKERXML_PATH}/*.c) $(wildcard ${LIBPACKERXML_PATH}/*.h) \
 					$(wildcard ${LIBPACKERXML_PATH}/Makefile)
-LIBLEXC_DEPS		=$(wildcard ${LIBLEXC_PATH}/*.c) $(wildcard ${LIBLEXC_PATH}/*.h) \
-					$(wildcard ${LIBLEXC_PATH}/Makefile)
+#LIBLEXC_DEPS		=$(wildcard ${LIBLEXC_PATH}/*.c) $(wildcard ${LIBLEXC_PATH}/*.h) \
+#					$(wildcard ${LIBLEXC_PATH}/Makefile)
 LIBLEXEC_DEPS		=$(wildcard ${LIBLEXEC_PATH}/*.c) $(wildcard ${LIBLEXEC_PATH}/*.h) \
 					$(wildcard ${LIBLEXEC_PATH}/Makefile)
 LIBLEXPERL_DEPS		=$(wildcard ${LIBLEXPERL_PATH}/*.c) $(wildcard ${LIBLEXPERL_PATH}/*.h) \
@@ -178,13 +178,13 @@ libaubit4gl${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
 ##############
 #libLEX_
 
-libLEX_C${SO_EXT}: ${LIBLEXC_DEPS}
-	${MAKE} -C ${LIBLEXC_PATH}
+#libLEX_C${SO_EXT}: ${LIBLEXC_DEPS}
+#	${MAKE} -C ${LIBLEXC_PATH}
 
 libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
 	${MAKE} -C ${LIBLEXPERL_PATH}
 
-libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
+libLEX_C${SO_EXT} libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
 	${MAKE} -C ${LIBLEXEC_PATH}
 
 ##############
@@ -391,7 +391,7 @@ clean.other:
 	${MAKE} -C ${LIBMSGNATIVE_PATH} clean
 	${MAKE} -C ${AUBITCONFIG_PATH} clean
 	${MAKE} -C ${LOADMAP_PATH} clean
-	${MAKE} -C ${LIBLEXC_PATH} clean
+#	${MAKE} -C ${LIBLEXC_PATH} clean
 	${MAKE} -C ${LIBLEXEC_PATH} clean
 	${MAKE} -C ${LIBLEXPERL_PATH} clean
 	${MAKE} -C ${LIBEXDATA_PATH} clean

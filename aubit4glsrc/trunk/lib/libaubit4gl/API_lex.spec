@@ -386,7 +386,7 @@ print_while_2 -> void
 /* void print_while_3 (void) */
 print_while_3 -> void
 
-/* void print_put () */
+/* void print_put (char* cname) */
 print_put char* cname -> void
 
 /* void print_prepare (char *stmt, char *sqlvar) */
