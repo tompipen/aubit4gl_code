@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.36 2002-08-19 07:58:17 afalout Exp $
+# $Id: Makefile.in,v 1.37 2002-08-29 15:47:23 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -132,7 +132,7 @@ lex.yy.c: $(SOURCES.lex)
 ifeq "@LEX@" "no"
 	${CP} ${LEX_YY_C} .
 else
-	${NICE} ${LEX} $(SOURCES.lex)
+	${NICE} ${LEX} -i $(SOURCES.lex)
 endif
 
 rpc: form_x_xdr.c
