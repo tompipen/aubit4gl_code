@@ -1,4 +1,5 @@
 //static void A4GL_do_pause (void);
+#include <curses.h>
 static int A4GL_curses_to_aubit (int a);
 static int A4GL_curses_to_aubit_int (int a);
 #include "a4gl_libaubit4gl.h"
@@ -7,7 +8,6 @@ static int A4GL_curses_to_aubit_int (int a);
 #include "hl_proto.h"
 #include "lowlevel.h"
 #include "a4gl_API_lowlevel.h"
-#include <curses.h>
 #include <ctype.h>
 
 /*
@@ -31,7 +31,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.36 2004-11-17 10:40:48 mikeaubury Exp $ 
+ $Id: lowlevel_tui.c,v 1.37 2004-12-06 21:21:22 mikeaubury Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -66,7 +66,7 @@ Looks like it was removed in Curses 5.3???!
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.36 2004-11-17 10:40:48 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.37 2004-12-06 21:21:22 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
