@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.76 2004-02-15 10:21:29 mikeaubury Exp $
+# $Id: sql.c,v 1.77 2004-02-20 13:19:27 mikeaubury Exp $
 #
 */
 
@@ -1347,6 +1347,7 @@ strcpy(dbName,dbName_f);
 A4GL_trim(dbName);
 //#ifdef SQLITEODBC
 #ifdef SQLITE_DIRECT
+{
 char a[128], b[128], tmp[2048];
 char *FullPathDBname;
 
@@ -1397,6 +1398,7 @@ char *FullPathDBname;
 		A4GL_debug ("SQLite database file not found in DBPATH='%s'",acl_getenv("DBPATH"));
 		A4GL_exitwith ("SQLite database file not found in DBPATH");
     }
+}
 #endif
 
 #ifdef DEBUG
