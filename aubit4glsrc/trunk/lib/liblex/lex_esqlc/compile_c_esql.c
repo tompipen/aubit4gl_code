@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.113 2005-03-17 07:56:20 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.114 2005-03-17 09:46:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.113 2005-03-17 07:56:20 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.114 2005-03-17 09:46:13 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1444,7 +1444,7 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 
     }
 
-  if (last_no||last_ni) printc ("} /* DC 1*/\n");
+  printc ("} /* DC 1*/\n");
   clr_suppress_lines ();
 
 }
@@ -1481,7 +1481,7 @@ extern int obindcnt;
 		last_no=no;
                 if (obindcnt) {bt++;}
                 if (ibindcnt) {bt+=2;}
-  		if (bt) printc("{ /* cs1 */");
+  		if (bt||1) printc("{ /* cs1 */");
 		if (bt&1) print_bind_definition('o');
 		if (bt&2) print_bind_definition('i');
 		if (bt&1) print_bind_set_value('o');
