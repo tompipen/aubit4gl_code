@@ -739,8 +739,9 @@ void A4GL_LL_initialize_display(void ) {
   char buff[255];
   char buff2[255];
   gtk_init (0, 0);
-  if (acl_getenv("CELL_HEIGHT")) { gui_yheight=atoi(acl_getenv("CELL_HEIGHT")); }
-  if (acl_getenv("CELL_WIDTH"))  { gui_xwidth=atoi(acl_getenv("CELL_WIDTH")); }
+  if (acl_getenv("CELL_HEIGHT")) { if (strlen(acl_getenv("CELL_HEIGHT"))) gui_yheight=atoi(acl_getenv("CELL_HEIGHT")); }
+  if (acl_getenv("CELL_WIDTH"))  { if (strlen(acl_getenv("CELL_WIDTH"))) gui_xwidth=atoi(acl_getenv("CELL_WIDTH")); }
+  	printf("--->%d %d\n",gui_xwidth,gui_yheight);
   A4GL_run_gtkrc();
 
   A4GL_alloc_colors ();
