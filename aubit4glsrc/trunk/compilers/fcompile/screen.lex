@@ -68,6 +68,7 @@ screen[ 	]*title		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(KW_S
 "minute" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MINUTE;}
 "second" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return SECOND;}
 "fraction" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return FRACTION;}
+"validate" 			{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return VALIDATE;}
 
 
 "record"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(RECORD);}
