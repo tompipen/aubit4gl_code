@@ -169,20 +169,25 @@ end function
 
 
 function prompt_pick(lv_txt,lv_value)
-define lv_txt char(80)
+define lv_txt2,lv_txt char(80)
 define lv_value char(80)
 define lv_cnt integer
 define lv_found integer
 define lv_doneit integer
+
+define lv_counter integer
 call clear_screen_portion()
 
 if mv_cnt >=1 then
 	let int_flag=false
 
-
+		let lv_counter=0
 	while true
+		let lv_counter=lv_counter+1
+		let lv_txt2=lv_txt clipped,lv_Counter using "<<<<<<"
 		call show_pick()
-		prompt lv_txt clipped for lv_value #attribute(normal)
+		let int_flag=false
+		prompt lv_txt2 clipped for lv_value #attribute(normal)
 	
 		on key(down)
 			if mv_curr_option+1<=mv_cnt then
@@ -227,7 +232,9 @@ if mv_cnt >=1 then
 			continue prompt
 		
 		end prompt
-		if fgl_lastkey()!=fgl_keyval("ENTER") then
+
+
+		if fgl_lastkey()!=fgl_keyval("ENTER") and fgl_lastkey()!=fgl_keyval(".") and fgl_lastkey()!=fgl_keyval(",") and int_flag=false then
 			continue while
 		end if
 	

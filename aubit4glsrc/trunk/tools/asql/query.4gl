@@ -40,7 +40,12 @@ define lv_runnext integer
 let lv_runnext=0
 	
 	if not has_db() then
+		message "CALLING SELECT_DB" sleep 1
 		call select_db()
+		message "CALLED SELECT_DB" sleep 1
+	end if
+	if not has_db() then
+		return
 	end if
 
 while true

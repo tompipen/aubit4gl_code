@@ -1056,6 +1056,7 @@ endcode
 
 call set_pick_cnt(ndbs)
 let lv_newname=prompt_pick("SELECT DATABASE >>","")
+Message "lv_newname=",lv_newname sleep 1
 if lv_newname is null then
         let lv_newname=lv_curr_db
 end if
