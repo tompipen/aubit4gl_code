@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.1 2002-04-17 00:01:36 afalout Exp $
+# $Id: fglwrap.c,v 1.2 2002-04-19 13:07:32 mikeaubury Exp $
 #
 */
 
@@ -388,8 +388,8 @@ static void ass_clrmem (char **a, int sz)
  * Executed in run-time by the generated C code.
  *
  * @param a key
- * @param s
- * @param d
+ * @param s - size of string (+1 for null already added)
+ * @param d - size of key array
  * @param str key
  * @param size The number of elements of the associative array.
  * @param rw
@@ -408,7 +408,7 @@ int ass_hash (char **a, int s, int d, char *str, long size,int rw)
 
 
 	#ifdef DEBUG
-		/* {DEBUG} */ {  debug("In ass_hash"); }
+		/* {DEBUG} */ {  debug("In ass_hash a= %p",a); }
 	#endif
 	
 	t = 0;
@@ -431,8 +431,12 @@ int ass_hash (char **a, int s, int d, char *str, long size,int rw)
 		/* {DEBUG} */ {      debug("clean it");}
 		#endif
 		
-		ass_clrmem (a, size);
-	  a[0] == (char *) 0;
+	  ass_clrmem (a, size);
+	  for (t=0;t<d;t++) {
+			a[t]=0;
+	  }
+	  t=0;
+
 	}
 
 	#ifdef DEBUG
@@ -459,7 +463,7 @@ int ass_hash (char **a, int s, int d, char *str, long size,int rw)
 
 	  for (p = 0; p < s; p++)
 	    {
-	      t = t + buff[p];
+	      t = t + buff[p]*(p+1);
 	    }
 
 	#ifdef DEBUG
@@ -469,13 +473,17 @@ int ass_hash (char **a, int s, int d, char *str, long size,int rw)
 	  if (t == 0) t++;
 	  start = t;
 
-	#ifdef DEBUG
+	debug("Test");
 		/* {DEBUG} */ {  debug("B hash code = %d",t); 	}
-	#endif
-
+		/* {DEBUG} */ {  debug("addr1= %p",a); 	}
+		/* {DEBUG} */ {  debug("addr2= %p",a[t]); 	}
+	
 	  while ((a[t] != 0))
 	    {
-	      	if (strcmp ((char *)&a[t], buff) == 0) {
+			#ifdef DEBUG
+				/* {DEBUG} */ {      debug(" checking = %d a[t]=%p",t,a[t]);	}
+			#endif
+	      	if (strcmp ((char *)a[t], buff) == 0) {
 				#ifdef DEBUG
 					/* {DEBUG} */ {	  debug("Found it -> t=%d\n", t); }
 				#endif
@@ -499,7 +507,8 @@ int ass_hash (char **a, int s, int d, char *str, long size,int rw)
 
 	debug ("t=%d\n", t);
 	if (rw==0) {
-		strcpy ((char *)&a[t], buff);
+		a[t]=realloc(a[t],strlen(buff)+1);
+		strcpy ((char *)a[t], buff);
 		#ifdef DEBUG
 			/* {DEBUG} */ {  debug(" returning %d",t);}
 		#endif
