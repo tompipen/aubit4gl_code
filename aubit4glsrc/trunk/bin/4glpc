@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.58 2002-03-09 10:45:09 afalout Exp $
+# $Id: 4glpc,v 1.59 2002-03-19 11:07:54 afalout Exp $
 #
 
 ########################################################################
@@ -1370,10 +1370,11 @@ fi
 #    fi
 #fi
 
-if [ "$COMSPEC" != "" ] && [ "$MAKE4GLPC" != "Yes" ]; then
-	FGLLIBS_SHARED="$FGLLIBS_SHARED -lcurses"
-	FGLLIBS_STATIC="$FGLLIBS_STATIC -lcurses"
-fi
+#-lcurses should now link only to libUI_TUI
+#if [ "$COMSPEC" != "" ] && [ "$MAKE4GLPC" != "Yes" ]; then
+#	FGLLIBS_SHARED="$FGLLIBS_SHARED -lcurses"
+#	FGLLIBS_STATIC="$FGLLIBS_STATIC -lcurses"
+#fi
 
 if [ "$A4GLDEBUG" = "yes" ]
 then

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2002-03-16 03:19:21 afalout Exp $
+# $Id: Makefile.in,v 1.17 2002-03-19 11:07:54 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -52,7 +52,7 @@ ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
 	endif
 endif
 
-CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules @RPCLIB_INCLUDE@
+CFLAGS			+=-I../../lib -I../../lib/libincl -I../fcompile -Irules @RPCLIB_INCLUDE@ @CURSES_INC_PATH@
 #override CFLAGS	+=-I../fcompile #-I../mcompile
 
 #debbuging in function yyparse() and then export YYDEBUG=1 to environment

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.43 2002-03-17 09:36:00 afalout Exp $
+# $Id: configure.in,v 1.44 2002-03-19 11:07:54 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -242,6 +242,7 @@ AC_SUBST(LEX)
 
 #curses:
 AC_SUBST(CURSES_LIB_PATH)
+AC_SUBST(CURSES_INC_PATH)
 AC_SUBST(HAVE_CURSES)
 AC_SUBST(CURSES_LIB_NAME)
 
@@ -1826,6 +1827,7 @@ AC_CHECK_LIB([curses], [main])
         fi
 	else
 		HAVE_CURSES=0
+		CURSES_INC_PATH="-I$aubitdir/tools/no_curses/cygwin"
 		if [ "$AUBITGUI" = "CONSOLE" ]; then
 			AC_MSG_WARN(No curses or GTK detected - your only screen UI will be CONSOLE)
         else

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2002-03-16 03:19:21 afalout Exp $
+# $Id: Makefile.in,v 1.17 2002-03-19 11:07:54 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,7 +37,7 @@ override NOINCL=0
 ## ==================================================================
 
 4GLPCFLAGS		=-make-compile -static -verbose -nogtk -L../../lib
-CFLAGS 			+=-I../../lib -I.
+CFLAGS 			+=-I../../lib -I. @CURSES_INC_PATH@
 ALL		 		= fcompile fshow
 
 ifeq "$(OUTPUTLANG)" "java"
