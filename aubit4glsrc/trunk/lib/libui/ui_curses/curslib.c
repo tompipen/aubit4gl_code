@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.66 2003-11-16 15:26:53 mikeaubury Exp $
+# $Id: curslib.c,v 1.67 2003-12-11 15:41:26 mikeaubury Exp $
 #*/
 
 /**
@@ -310,7 +310,7 @@ A4GL_error_nobox (char *str,int attr)
   else attr=A4GL_decode_aubit_attr (attr, 'w');
   wattrset (w, attr);
   A4GL_debug("Calling subwin_print...");
-  A4GL_subwin_print (w, str);
+  A4GL_subwin_print (w, "%s",str);
   //wrefresh(w);
 #ifdef DEBUG
   A4GL_debug ("YY REVERSE");
