@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.20 2005-01-12 11:15:21 mikeaubury Exp $
+# $Id: simple.c,v 1.21 2005-02-16 08:32:06 mikeaubury Exp $
 #*/
 
 
@@ -87,7 +87,7 @@ int curr_colno = 0;
 
 
 PGconn *con;
-PGresult *res;
+PGresult *res=0;
 char *pghost = "";
 char *pgport = NULL;
 char *pgoptions = NULL;
@@ -198,7 +198,6 @@ A4GLSQL_initsqllib (void)
 }
 
 
-//PGresult *res;
 int nfields = 0;
 
 int
@@ -231,22 +230,21 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 
   switch (PQresultStatus (res))
     {
-    case PGRES_COMMAND_OK:
-    case PGRES_TUPLES_OK:
-      nfields = PQntuples (res);
-      A4GL_debug ("Returns %d fields", nfields);
-	if (nfields) return 1;
+    	case PGRES_COMMAND_OK:
+    	case PGRES_TUPLES_OK:
+      		nfields = PQntuples (res);
+      		A4GL_debug ("Returns %d fields", nfields);
+		if (nfields) return 1;
 
-		case PGRES_EMPTY_QUERY:
-		case PGRES_COPY_OUT:
-		case PGRES_COPY_IN:
-		case PGRES_BAD_RESPONSE:
-		case PGRES_NONFATAL_ERROR:
-		case PGRES_FATAL_ERROR:
-
-  	A4GL_set_errm (tabname);
-  	A4GL_exitwith ("Unexpected postgres return code\n");
-	return 0;
+	case PGRES_EMPTY_QUERY:
+	case PGRES_COPY_OUT:
+	case PGRES_COPY_IN:
+	case PGRES_BAD_RESPONSE:
+	case PGRES_NONFATAL_ERROR:
+	case PGRES_FATAL_ERROR:
+  		A4GL_set_errm (tabname);
+  		A4GL_exitwith ("Unexpected postgres return code\n");
+		return 0;
     }
   A4GL_set_errm (tabname);
   A4GL_exitwith ("Table not found\n");
@@ -269,6 +267,10 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   static char cname[256];
   //int a;
   char *colptr;
+  strcpy(colname,"");
+  *dtype=0;
+  *size=0;
+
   if (con == 0)
     {
       A4GL_exitwith ("Not connected to database");
@@ -278,11 +280,20 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
     return 0;
 
   colptr = PQgetvalue (res, curr_colno, 0);
-  strcpy (cname, colptr);
-  *colname = cname;
+  if (colptr) {
+  	strcpy (cname, colptr);
+  	*colname = cname;
+  } else {
+  	strcpy (cname, "UNKNOWN");
+  	*colname = cname;
+	
+  }
   colptr = PQgetvalue (res, curr_colno, 1);
-
+  if (!colptr) {
+	colptr="character(1)";
+  }
   fixtype (colptr, dtype, size);
+  
 //printf("dtype=%d size=%d\n",*dtype,*size);
 
   curr_colno++;
@@ -446,17 +457,18 @@ char val[65];
 char *ptr=0;
 int nrows=0;
 int a;
+PGresult *res2;
 	
 	
   sprintf(buff, "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", acl_getenv("A4GL_SYSCOL_VAL"),tabname,colname);
+  A4GL_debug("buff=%s",buff);
+  res2 = PQexec (con, buff);
 
-  res = PQexec (con, buff);
-
-  switch (PQresultStatus (res))
+  switch (PQresultStatus (res2))
     {
     case PGRES_COMMAND_OK:
     case PGRES_TUPLES_OK:
-      	nrows = PQntuples (res);
+      	nrows = PQntuples (res2);
       	A4GL_debug ("Returns %d fields", nfields);break;
 	case PGRES_NONFATAL_ERROR:
 		return 0;
@@ -467,7 +479,7 @@ int a;
 	case PGRES_BAD_RESPONSE:
 
 	case PGRES_FATAL_ERROR:
-		A4GL_debug("Got : %d",PQresultStatus (res));
+		A4GL_debug("Got : %d",PQresultStatus (res2));
   		A4GL_set_errm (tabname);
   		A4GL_exitwith ("Unexpected postgres return code\n");
 	return -1;
@@ -476,9 +488,8 @@ int a;
   if (!nrows) {
 	return 0;
   }
-
   for (a=0;a<nrows;a++) {
-		strcpy(val,PQgetvalue(res,a,0));
+		strcpy(val,PQgetvalue(res2,a,0));
 		ptr=A4GL_add_validation_elements_to_expr(ptr,val);
 
   }
