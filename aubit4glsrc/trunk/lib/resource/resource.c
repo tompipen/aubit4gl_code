@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.58 2004-01-06 12:22:16 mikeaubury Exp $
+# $Id: resource.c,v 1.59 2004-01-16 16:35:43 mikeaubury Exp $
 #
 */
 
@@ -88,6 +88,7 @@ struct str_resource builtin_resource[] = {
 #else
   {"A4GL_SQLTYPE", "nosql"},
 #endif
+  {"RM_COMMENTS_FIRST","Y"},
   {"A4GL_UPSCOL_ATT","syscolatt"},
   {"A4GL_UPSCOL_VAL","syscolval"},
   {"A4GL_UI", "TUI"}, 			//should this be CONSOLE ?
@@ -166,7 +167,6 @@ struct str_resource builtin_resource[] = {
   {"MENUMTITLE", "0"},
   {"MENUMNORMAL", "0"},
   {"MENUMHIGHLIGHT", "<>"},
-  {"A4GL_REMOVE_COMMENTS_FIRST","Y"},
 
 /* abbr week days */
   {"_DAY0", "Sun"},
