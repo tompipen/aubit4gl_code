@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.57 2005-01-27 16:29:46 mikeaubury Exp $
+# $Id: report.c,v 1.58 2005-02-04 15:37:44 mikeaubury Exp $
 #
 */
 
@@ -341,6 +341,7 @@ gen_rep_tab_name (void *p)
   int a;
   static char buff_0[256];
   a = (int) p;
+	 a=1;
   sprintf (buff_0, "rtab%d", ((int) a) & 0xfffffff);
   return buff_0;
 }
@@ -838,6 +839,8 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
      Andrej say: yes it can!
    */
 
+
+
   sprintf (buff_3, "create temp table %s (\n", gen_rep_tab_name (b));
   //sprintf (buff, "create  table %s (\n", gen_rep_tab_name (b));
 
@@ -850,6 +853,8 @@ A4GL_mk_temp_tab (struct BINDING *b, int n)
       strcat (buff_3, tmpbuff);
     }
   strcat (buff_3, ")");
+
+
   return buff_3;
 }
 
@@ -915,12 +920,14 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 
   *reread = A4GL_duplicate_binding (b, n);
 
+
   sprintf (buff, "select * from %s order by ", gen_rep_tab_name (b));
 
   for (a1 = 0; a1 < no; a1++)
     {
       ok = 0;
       A4GL_debug ("Looking for %p", o[a1]);
+
       if (a1)
 	strcat (buff, ",");
       for (a2 = 0; a2 < n; a2++)
@@ -941,17 +948,18 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 	  return 0;
 	}
     }
-  A4GL_debug ("Got select statement as : %s\n", buff);
-  sprintf (tbuff, "_%d", (int) gen_rep_tab_name (b));
-  A4GLSQL_declare_cursor (0,
-			  A4GLSQL_prepare_select (ibind, 0, obind, 0, buff),
-			  0, tbuff);
 
-  if (a4gl_sqlca.sqlcode != 0)
-    return 0;
+
+  A4GL_debug ("Got select statement as : %s\n", buff);
+  sprintf (tbuff, "c_%d", (int) gen_rep_tab_name (b));
+
+
+  A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, 0, obind, 0, buff), 0, tbuff);
+  if (a4gl_sqlca.sqlcode != 0) return 0;
+
+
   A4GLSQL_open_cursor ( tbuff,0,0);
-  if (a4gl_sqlca.sqlcode != 0)
-    return 0;
+  if (a4gl_sqlca.sqlcode != 0) return 0;
 
 
   return 0;
@@ -967,8 +975,9 @@ A4GL_report_table_fetch (struct BINDING *reread, int n, struct BINDING *b)
 {
   char tbuff[1024];
 
-  sprintf (tbuff, "_%d", (int) gen_rep_tab_name (b));
+  sprintf (tbuff, "c_%d", (int) gen_rep_tab_name (b));
   A4GLSQL_set_sqlca_sqlcode (0);
+	
   A4GLSQL_fetch_cursor (tbuff, 2, 1, n, reread);
   A4GL_push_params (reread, n);
 

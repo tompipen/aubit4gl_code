@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.68 2005-01-17 13:35:40 mikeaubury Exp $
+# $Id: ops.c,v 1.69 2005-02-04 15:37:43 mikeaubury Exp $
 #
 */
 
@@ -2469,6 +2469,7 @@ A4GL_display_float (void *ptr, int size, int size_c,
       A4GL_push_double (a);
       A4GL_push_char (using_buff);
       A4GL_pushop (OP_USING);
+      A4GL_pop_char (buff_10, size_c);
       return buff_10;
     }
   return buff_10;
