@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.175 2004-08-09 11:59:27 mikeaubury Exp $
+# $Id: compile_c.c,v 1.176 2004-08-10 13:42:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.175 2004-08-09 11:59:27 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.176 2004-08-10 13:42:20 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -72,6 +72,7 @@ static char *module_id="$Id: compile_c.c,v 1.175 2004-08-09 11:59:27 mikeaubury 
 =====================================================================
 */
 
+#define FGL_PLUS_PLUS
 int isin_command (char *cmd_type);
 /*
 void add_function_to_header (char *identifier, int parms);

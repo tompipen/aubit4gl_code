@@ -27,7 +27,7 @@ char parent_name[256]="";
 void CLASS_set_class_name(char *name) {
 char buff[1024];
 char *ptr;
-ptr=strrchr(infilename,"/");
+ptr=strrchr(infilename,'/');
 if (ptr) {
 	ptr++;
 } else {
@@ -57,6 +57,7 @@ void CLASS_set_parent_name(char *name) {
 
 
 void CLASS_add_method(char *name,char *sig) {
+printf(">> %s %s\n",name,sig);
 nmethods++;
 methods=realloc(methods,sizeof(struct s_method)*nmethods);
 methods[nmethods-1].name=strdup(name);
@@ -117,11 +118,16 @@ printc("char *aclfglclass__parent(){ static char *tmp=\"%s\"; return tmp;}",pare
 
 printc("char **aclfglclass__methods() {");
 printc("static char *tmp[]={");
+if (nmethods) {
 for (a=0;a<nmethods;a++) {
 	printc("%c\"%s\"",a?',':' ',methods[a].name);
 }
+printc(",0}; ");
+} else {
+	printc("0};");
+}
 
-printc(",0}; return tmp;}");
+printc("return tmp;\n}");
 
 }
 

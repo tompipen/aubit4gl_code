@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.176 2004-07-09 07:05:11 mikeaubury Exp $
+# $Id: mod.c,v 1.177 2004-08-10 13:40:20 mikeaubury Exp $
 #
 */
 
@@ -1304,6 +1304,7 @@ set_4gl_vars (void)
   variable_action (-1, "aiplib_status", "", "", "a4gl_add_variable");
   variable_action (-1, "long", "", "", "push_type");
 
+//printf("--> M\n");
   set_current_variable_scope ('m');
 }
 

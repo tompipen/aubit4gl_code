@@ -22,7 +22,7 @@ struct variable **list_parent = 0;
 /* Externally callable (non-static) functions */
 
 
-int read_class (char *s);
+int read_class (char *s,int is_parent);
 
 /* static functions declared here */
 static void write_variable_header (struct variable *v);
@@ -396,30 +396,19 @@ write_variable_function (struct variable *v)
 int nline = 0;
 
 int
-read_class (char *s)
+read_class (char *s, int is_parent)
 {
   char *dbname;
   int is_schema;
   //int a;
   int pvars;
-  int pid;
+  int pid = 0;
   extern struct variable **list_class;	/* Our List */
   extern int list_class_cnt;	/* Our List */
   extern int list_class_alloc;	/* Our List */
   struct variable np;
   nline = 0;
-
-/* 
-Two thing ye should know about a class...
-
-	Its data
-	Its member functions
-
-Our reflection system means we should be able to obtain a list of members (using aclfglclass_methods for C generation)
-and the data should be stored in a similar format to a .glb file in a string array called aclfglclass_variable (one char * per line)
-
-*/
-
+printf("read_class : %s\n",s);
 
   class_variable_data = CLASS_get_variable (s);
   class_members = CLASS_get_members (s);
@@ -431,8 +420,9 @@ and the data should be stored in a similar format to a .glb file in a string arr
     }
   else
     {
-	if (strcmp(s,"default_object")!=0) {
-      		printf ("Warning - unable to open class file for %s\n",s);
+      if (strcmp (s, "default_object") != 0)
+	{
+	  printf ("Warning - unable to open class file for %s\n", s);
 	}
       return 0;
     }
@@ -463,92 +453,112 @@ and the data should be stored in a similar format to a .glb file in a string arr
 
   pvars--;
 
-  // First - read our parent 
 
-  if (pvars >= 0)
+
+  if (is_parent)
     {
-      int a;
-      //printf("Allocating space for %d entries\n",pvars + 1+list_class_cnt);
-      list_class =
-	realloc (list_class,
-		 sizeof (struct variable *) * (pvars + 1 + list_class_cnt));
-      list_class_alloc += pvars;
-      if (list_class_cnt == 0)
+      // First - read our parent 
+
+      if (pvars >= 0)
 	{
-	  list_class[0] = malloc (sizeof (struct variable));
-	  list_class[0]->variable_type = VARIABLE_TYPE_RECORD;
-	  list_class[0]->names.name = strdup ("this_class_c");
-	  list_class[0]->names.next = 0;
-	  list_class[0]->user_system = 'U';
-	  list_class[0]->scope = 'P';
-	  list_class[0]->is_array = 0;
-	  list_class[0]->is_static = 0;
-	  list_class[0]->is_extern = 0;
-	  for (a = 0; a < MAX_ARR_SUB; a++)
-	    list_class[0]->arr_subscripts[a] = 0;
-	  list_class[0]->src_module = strdup ("IMPLICIT");
-	  list_class[0]->data.v_record.variables = 0;
-	}
-      read_variable_header (&np);
+	  int a;
+	  //printf("Allocating space for %d entries\n",pvars + 1+list_class_cnt);
+	  list_class = realloc (list_class, sizeof (struct variable *) * (pvars + 1 + list_class_cnt));
+	  list_class_alloc += pvars;
+	  if (list_class_cnt == 0)
+	    {
+	      list_class[0] = malloc (sizeof (struct variable));
+	      list_class[0]->variable_type = VARIABLE_TYPE_RECORD;
+	      list_class[0]->names.name = strdup ("this_class_c");
+	      list_class[0]->names.next = 0;
+	      list_class[0]->user_system = 'U';
+	      list_class[0]->scope = 'P';
+	      list_class[0]->is_array = 0;
+	      list_class[0]->is_static = 0;
+	      list_class[0]->is_extern = 0;
+	      for (a = 0; a < MAX_ARR_SUB; a++)
+		list_class[0]->arr_subscripts[a] = 0;
+	      list_class[0]->src_module = strdup ("IMPLICIT");
+	      list_class[0]->data.v_record.variables = 0;
+	      list_class[0]->data.v_record.record_alloc = 0;
+	      list_class[0]->data.v_record.record_cnt = 0;
+
+	    }
+	  read_variable_header (&np);
 
 
 
-      list_class[0]->data.v_record.record_alloc++;
-      list_class[0]->data.v_record.record_cnt++;
-      pid = list_class[0]->data.v_record.record_cnt - 1;
-      list_class[0]->data.v_record.variables =
-	realloc (list_class[0]->data.v_record.variables,
-		 sizeof (struct variable *) *
-		 list_class[0]->data.v_record.record_alloc);
-      list_class[0]->data.v_record.linked = 0;
+	  list_class[0]->data.v_record.record_alloc++;
+	  list_class[0]->data.v_record.record_cnt++;
+	  pid = list_class[0]->data.v_record.record_cnt - 1;
+	  printf ("pid=%d\n", list_class[0]->data.v_record.record_cnt - 1);
+	  list_class[0]->data.v_record.variables =
+	    realloc (list_class[0]->data.v_record.variables,
+		     sizeof (struct variable *) *
+		     list_class[0]->data.v_record.record_alloc);
+	  list_class[0]->data.v_record.linked = 0;
 
 
 
-      list_class[0]->data.v_record.variables[pid] =
-	malloc (sizeof (struct variable));
+	  list_class[0]->data.v_record.variables[pid] =
+	    malloc (sizeof (struct variable));
 
 //printf("THISCNT= %d\n",list_class[0]->data.v_record.record_cnt);
-      memcpy (list_class[0]->data.v_record.variables[pid], &np,
-	      sizeof (struct variable));
+	  memcpy (list_class[0]->data.v_record.variables[pid], &np,
+		  sizeof (struct variable));
 
 
-      if (pvars >= 1)
-	{
-	  for (a = 0; a < pvars; a++)
+	  if (pvars >= 1)
 	    {
-	      //printf("Copy entry %d of %d (%d)\n",a,pvars,list_class_cnt+a);
-	      list_class[a + list_class_cnt] =
-		malloc (sizeof (struct variable));
-	      memset (list_class[a + list_class_cnt], 0,
-		      sizeof (struct variable));
-	      read_variable_header (list_class[a + list_class_cnt]);
-	      if (list_class[a + list_class_cnt]->variable_type == 4)
+	      for (a = 0; a < pvars; a++)
 		{
-		  char buff[1024];
-		  //char *ptr;
-		  sprintf (buff, "%s.%s", s,
-			   list_class[a + list_class_cnt]->names.name);
-		  //printf ("FUNC : %s\n", buff);
-		  list_class[a + list_class_cnt]->names.name = strdup (buff);
+		  list_class[a + list_class_cnt] =
+		    malloc (sizeof (struct variable));
+		  memset (list_class[a + list_class_cnt], 0,
+			  sizeof (struct variable));
+		  read_variable_header (list_class[a + list_class_cnt]);
+		  if (list_class[a + list_class_cnt]->variable_type == 4)
+		    {
+		      char buff[1024];
+		      sprintf (buff, "%s.%s", s, list_class[a + list_class_cnt]->names.name);
+		      list_class[a + list_class_cnt]->names.name =
+			strdup (buff);
 
+		    }
 		}
+
 	    }
+	  list_class_cnt += pvars;
+	  list_class_alloc = list_class_cnt;
 
 	}
-      list_class_cnt += pvars;
-      list_class_alloc = list_class_cnt;
+      else
+	{
+	  printf ("Nothing to read in...\n");
+	}
 
-    }
-  else
-    {
-      printf ("Nothing to read in...\n");
-    }
+      dump_variable_records (list_class, list_class_cnt, 0);
 
-//printf("DUMPING CLASS %d\n",list_class_cnt);
-  dump_variable_records (list_class, list_class_cnt, 0);
+    } else {
+	int a;
+	struct variable v;
+	char buff[256];
+	printf("dim_Set_name : %s\n",s);
+/*
+	v->names.name=strdup(s);
+	v->names.alias=name;
+	v->names.next=0;
+*/
+
+
+	//dim_set_name(s);
+	//dim_push_record();
+	//dim_push_name("_object_data",""); dim_push_type("char","100","");
+	//dim_push_name("_object_type",""); dim_push_type("long","4","");
+	//dim_pop_record();
+    }
   return 1;
 }
-
 
 
 
@@ -888,6 +898,11 @@ rm_class_copy (char *s)
     ptr += 6;
   return ptr;
 }
+
+
+
+
+
 
 
 /* ================================ EOF =================================== */

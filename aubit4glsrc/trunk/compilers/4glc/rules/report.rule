@@ -167,16 +167,20 @@ report_cmd :
 	| skip_command
 ;
 
-need_command : NEED fgl_expr {start_state("skip",1);} KWLINE {
+need_command : NEED fgl_expr {
+//start_state("skip",1);
+} KWLINE {
 	print_need_lines();
-	start_state("skip",0);
+	//start_state("skip",0);
 }
 ;
 
 op_lines : {strcpy($<str>$,"0");} | KWLINE {strcpy($<str>$,"1");}
 ;
 
-skip_command : SKIP INT_VALUE {start_state("KWLINE",1);} op_lines {
+skip_command : SKIP INT_VALUE {
+//start_state("KWLINE",1);
+} op_lines {
 double n;
 char buff[256];
 strcpy(buff,$<str>4);
@@ -190,7 +194,7 @@ if (buff[0]=='1') {
 } else {
 	if (rep_type!=REP_TYPE_PDF) { a4gl_yyerror("SKIP BY is only in PDF reports"); YYERROR; } print_skip_by(n);
 }
-start_state("KWLINE",0); 
+//start_state("KWLINE",0); 
 }
 	| SKIP_TO_TOP { print_skip_top(); }
 	| FONT_SIZE nval { print_niy("FONT SIZE"); }

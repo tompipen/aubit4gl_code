@@ -1,3 +1,4 @@
+#ifdef NOLONGERREQUIRED
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -24,12 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dim.c,v 1.18 2003-05-15 07:10:19 mikeaubury Exp $
+# $Id: dim.c,v 1.19 2004-08-10 13:40:20 mikeaubury Exp $
 #*/
 
 /**
- * @file
- * Implements stack functions for helping in the parsing.
  */
 
 /*
@@ -120,6 +119,7 @@ dim_add (int a, char *s1, char *s2, char *s3)
   struct s_dimitem *itm;
   struct s_dimitem *itm2;
 
+  printf ("dim_add %d %s %s %p\n", a, s1, s2, s3);
   A4GL_debug ("dim_add %d %p %p %p\n", a, s1, s2, s3);
 
   if (a == SETNAME)
@@ -383,3 +383,4 @@ push_dim (char *a)
 
 
 /* ================================ EOF ============================= */
+#endif

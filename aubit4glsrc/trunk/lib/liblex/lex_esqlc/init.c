@@ -24,16 +24,19 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: init.c,v 1.9 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: init.c,v 1.10 2004-08-10 13:42:21 mikeaubury Exp $
 */
 
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: init.c,v 1.9 2004-02-10 13:50:20 mikeaubury Exp $";
+static char *module_id="$Id: init.c,v 1.10 2004-08-10 13:42:21 mikeaubury Exp $";
 void printc (char *fmt, ...);
 
 void print_function_variable_init (void);
 void print_nullify (char n);
 int A4GL_doing_pcode (void);
+
+#define PRINT_CONSTANTS
+
 
 void
 print_module_variable_init (void)
@@ -55,4 +58,15 @@ if (!A4GL_doing_pcode()) {
   printc ("init_module_variables();");
   print_nullify ('F');
 }
+}
+
+void print_Constant(int type, char *vv) {
+#ifdef PRINT_CONSTANTS
+	if (type==1) {
+		printc("char *%s;",vv);
+	}
+	if (type==2) {
+		printc("int %s;",vv);
+	}
+#endif
 }

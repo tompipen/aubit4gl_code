@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.44 2004-07-09 07:05:12 mikeaubury Exp $
+# $Id: variables.c,v 1.45 2004-08-10 13:40:20 mikeaubury Exp $
 #
 */
 
@@ -52,7 +52,9 @@
 /* */
 
 extern char *outputfilename;
-
+#define PRINT_CONSTANTS
+char scopes[200];
+int scopes_cnt=0;
 
 /******************************************************************************/
 /* Prototypes of static functions in this module...*/
@@ -130,6 +132,9 @@ struct variable **list_local;
 int list_local_cnt;
 int list_local_alloc;
 
+struct variable **list_types;
+int list_types_cnt;
+int list_types_alloc;
 
 /* Current variable...*/
 struct variable *curr_v[RECORD_LEVELS];
@@ -174,6 +179,17 @@ initialize_v (void)
   v_initialized = 1;
 }
 
+
+void push_scope(void) {
+	scopes[scopes_cnt]=get_current_variable_scope();
+	scopes_cnt++;
+}
+
+void pop_scope(void) {
+	//printf("poped variable scope\n");
+	scopes_cnt--;
+	set_current_variable_scope(scopes[scopes_cnt]);
+}
 
 
 /******************************************************************************/
@@ -280,13 +296,13 @@ add_linked_columns (struct linked_variable *linked, char *collist_orig)
  * @param function - the calling function
  */
 void
-variable_action (int category, char *name, char *type, char *n,
-		 char *function)
+variable_action (int category, char *name, char *type, char *n, char *function)
 {
   static int record_cnt = 0;
   char scope;
   static int adding_assoc = 0;
   struct name_list *ptr;
+  struct variable *tmp_var;
 #define MODE_ADD_CONSTANT  	1
 #define MODE_ADD_RECORD    	2
 #define MODE_ADD_TYPE      	3
@@ -298,6 +314,7 @@ variable_action (int category, char *name, char *type, char *n,
 #define MODE_ADD_TO_SCOPE	9
 #define MODE_ADD_END_ASSOC	10
 #define MODE_ADD_FUNCTION	11
+#define MODE_ADD_DIM	12
 
 /* DEBUGGING Stuff for mode settings... */
 #ifdef DEBUGGING
@@ -313,7 +330,8 @@ variable_action (int category, char *name, char *type, char *n,
     "ADD_ENDRECORD",
     "ADD_TO_SCOPE",
     "ADD_END_ASSOC",
-    "ADD_FUNCTION"
+    "ADD_FUNCTION",
+    "ADD_DIM"
   };
 #endif
 
@@ -353,6 +371,10 @@ A4GL_debug("scope=%c",scope);
   if (strcmp (function, "add_constant") == 0 && mode == 0)
     {
       mode = MODE_ADD_CONSTANT;
+    }
+  if (strcmp (function, "push_dim") == 0 && mode == 0)
+    {
+      mode = MODE_ADD_DIM;
     }
 
   if (strcmp (function, "add_function") == 0 && mode == 0)
@@ -441,6 +463,15 @@ A4GL_debug("scope=%c",scope);
       make_function (name, record_cnt);
       break;
 
+    case MODE_ADD_DIM:
+	ptr=&curr_v[record_cnt]->names;
+	tmp_var=find_dim(name);
+      	curr_v[record_cnt]=malloc(sizeof(struct variable));
+	memcpy(curr_v[record_cnt],tmp_var,sizeof(struct variable));
+      	memcpy(&curr_v[record_cnt]->names,ptr,sizeof(struct name_list));
+      	add_to_scope (record_cnt, 0);
+      	curr_v[record_cnt] = 0;
+      break;
 
     case MODE_ADD_RECORD:
       curr_v[record_cnt]->variable_type = VARIABLE_TYPE_RECORD;
@@ -460,6 +491,7 @@ A4GL_debug("scope=%c",scope);
       break;
 
     case MODE_ADD_TYPE:
+	//printf("Add new type : %d %s %s\n",record_cnt,name,type);
       curr_v[record_cnt]->data.v_simple.datatype = find_type (name);
       curr_v[record_cnt]->data.v_simple.dimensions[0] = atoi (type);
       curr_v[record_cnt]->data.v_simple.dimensions[1] = 0;
@@ -720,7 +752,6 @@ add_to_scope (int record_cnt, int unroll)
   struct variable *orig;
   variable_holder = 0;
   scope = get_current_variable_scope ();
-
   if (unroll == 0)
     {
 
@@ -826,6 +857,16 @@ add_to_scope (int record_cnt, int unroll)
 	  alloc = &list_local_alloc;
 	}
 
+      if (scope == 'T')
+	{
+	  sprintf (local_scope, "T");
+	  variable_holder = &list_types;
+	  counter = &list_types_cnt;
+	  alloc = &list_types_alloc;
+		//printf("SCOPE : T\n");
+	}
+
+
     }
 
 
@@ -872,6 +913,7 @@ add_to_scope (int record_cnt, int unroll)
   curr_v[record_cnt]->names.alias = 0;
 
   curr_v[record_cnt]->scope = get_current_variable_scope ();
+//printf("ADD TO SCOPE: %s : %c\n",curr_v[record_cnt]->names.name,get_current_variable_scope());
 
   if (record_cnt == 0 && get_current_variable_scope () != 'G'
       && (curr_v[record_cnt]->variable_type == VARIABLE_TYPE_SIMPLE
@@ -1254,6 +1296,8 @@ dump_var_records (void)
   dump_variable_records (list_module, list_module_cnt, 0);
   printf ("Local\n");
   dump_variable_records (list_local, list_local_cnt, 0);
+  printf ("Types\n");
+  dump_variable_records (list_types, list_types_cnt, 0);
   printf ("END\n\n");
 }
 
@@ -1388,6 +1432,7 @@ dump_variable_records (struct variable **v, int cnt, int lvl)
 void
 set_current_variable_scope (char n)
 {
+//printf("SET CVS = %c\n",n);
   variable_scope = n;
 }
 
@@ -1396,6 +1441,7 @@ static char
 get_current_variable_scope (void)
 {
   char scope = 'm';
+  if (variable_scope=='T') return 'T';
 
   if (isin_command ("FUNC") || isin_command ("REPORT")
       || isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER")
@@ -2827,6 +2873,7 @@ print_variable (struct variable *v, char scope, int level)
     {
       /* Maybe we should print out #define's for these ?*/
       /* Maybe not - they should already have been converted by lexer.c*/
+		print_Constant_1(v->names.name,&v->data.v_const);
     }
 
 
@@ -2944,7 +2991,13 @@ print_nullify (char type)
 
       for (a = 0; a < list_cnt; a++)
 	{
-	  if (list[a]->variable_type != VARIABLE_TYPE_CONSTANT)
+	int print=0;
+	if (list[a]->variable_type != VARIABLE_TYPE_CONSTANT) print=1;
+	#ifdef PRINT_CONSTANTS
+		print=1;
+	#endif
+		
+	  if (print)
 	    {
 	      add_bind ('N', list[a]->names.name);
 	    }
@@ -3056,4 +3109,33 @@ void set_last_class_var(char *s) {
 char *get_last_class_var(void) {
 	//printf("Get last_class_var : %s\n",last_class_var);
 	return last_class_var;
+}
+
+
+void print_Constant_1(char *name,struct constant_data *c) {
+	//printf("name=%s %p\n",name,c); fflush(stdout);
+	if (c->consttype==CONST_TYPE_CHAR)    { print_Constant(1 ,name); }
+	if (c->consttype==CONST_TYPE_FLOAT)   { print_Constant(2 ,name); }
+	if (c->consttype==CONST_TYPE_INTEGER) { print_Constant(3 ,name); }
+}
+
+
+struct variable *find_dim(char *s) {
+struct variable *p;
+p=find_variable_in (s, list_types, list_types_cnt);
+return p;
+}
+
+
+
+
+void push_dim(char *s) {
+  struct variable *ptr;
+  ptr=find_dim(s);
+  if (!ptr) {
+		a4gl_yyerror("Invalid datatype");
+		return ;
+  }
+
+variable_action (0, s, 0, 0, "push_dim");
 }

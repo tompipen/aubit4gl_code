@@ -94,6 +94,25 @@ while (fgets(buff,255,f)) {
 return 1;
 }
 
+int A4GL_open_class_dll(char *s) {
+char buff[512];
+FILE *f;
+strcpy(buff,s);
+strcat(buff,acl_getenv("A4GL_DLL_EXT"));
+printf("Looking for : %s\n",buff);
+f=A4GL_open_file_classpath(buff);
+
+if (f) { // We've found our dll...
+	fclose(f);
+	// 
+	read_class(s,0);
+} else {
+	return 0;
+}
+
+
+return 1;
+}
 
 
 void import_package(char *s) {
@@ -102,16 +121,19 @@ FILE *f;
 
 f=A4GL_open_file_classpath(s);
 if (f==0 ) {
+	int ok=0;
 	if (strcmp(s,"default") == 0 ) {
 		// We don't care if this one isn't there...
 		return;
 	}
 
-        a4gl_yyerror("Unable to open package description");
+	ok=A4GL_open_class_dll(s) ;
+
+	if (!ok) {
+        	a4gl_yyerror("Unable to open package description");
+	}
         return;
 }
-
-
 read_package_contents(f);
 
 }

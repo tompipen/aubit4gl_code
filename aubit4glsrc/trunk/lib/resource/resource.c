@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.77 2004-07-01 11:51:41 afalout Exp $
+# $Id: resource.c,v 1.78 2004-08-10 13:42:24 mikeaubury Exp $
 #
 */
 
@@ -150,7 +150,6 @@ struct str_resource builtin_resource[] = {
   {"TARGET", CONFIGURED_TARGET},
   {"TARGET_OS", CONFIGURED_TARGET_OS},
   {"AUBIT_Y2K", "70"},
-
   {"MAP4GL", "N"},
   {"SCROLLBACKTO1","Y"}, // Allow Display Array to move back to srec[1] when scr_line>1
   {"LOGNAME", "UNKNOWN"},
@@ -332,13 +331,13 @@ struct str_resource builtin_resource[] = {
   {"A4GL_SOL_EXT", ".asx"},      	// shared library
   {"A4GL_EXE_EXT", ".4ae"},			// executable
 
-/* This is not needed, since GCC will add .exe/.dll extension automatically on Windows
-#if (defined (__CYGWIN__) || defined (__MINGW32__))
+#if (defined (__CYGWIN__) || defined (__MINGW32__)) // I'd like them anyway
   {"A4GL_EXE_EXT", 		".exe"},
   {"A4GL_DLL_EXT", 		".dll"},
 #else
-*/
-
+  {"A4GL_EXE_EXT", 		""},
+  {"A4GL_DLL_EXT", 		".so"},
+#endif
 
 
   /* can't use del on Windows, does not accept forward slash in the path */

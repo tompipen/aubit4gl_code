@@ -11,6 +11,7 @@
 $AWK '
 BEGIN {
 	cnt=1;
+	print "#ifdef NOLONGERREQUIRED"
 }
 
 /^#/ {next}
@@ -84,7 +85,7 @@ END {
 	cnt++
 	}
 	print "}"
-	print ""
+	print "#endif"
 	print "/* ============================= EOF ============================= */"
 	print ""
 }' data/defstates > generated/states.c

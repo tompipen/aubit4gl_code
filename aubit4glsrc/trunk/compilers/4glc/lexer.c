@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.91 2004-07-09 07:05:11 mikeaubury Exp $
+# $Id: lexer.c,v 1.92 2004-08-10 13:40:20 mikeaubury Exp $
 #*/
 
 /**
@@ -890,8 +890,7 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
 	}
     }
 
-  if (states != -1)
-    start_state (buff, states);
+  /* if (states != -1) start_state (buff, states); */
 
 	
   if (cnt>10000|| cnt <0) {	char *ptr=0;*ptr=0; } /* Sanity check */
@@ -1388,8 +1387,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
       if (allow_token_state (yystate, USER_DTYPE) && a == NAMED_GEN)
 	{
-	  if (A4GL_find_datatype (upshift (buff)))
-	    {
+	  if (find_dim (downshift (buff))) {
 	      a = USER_DTYPE;
 	    }
 	}

@@ -25,15 +25,17 @@ print_module_variable_init();
 		} 
 	op_extends  { 
 		char buff[256];
-		printf("Calling read_class (%s)\n",$<str>4);  
+		printf("Calling read_class (%s,1)\n",$<str>4);  
 		sprintf(buff,"\"%s\"",$<str>4);
+		variable_action (-1, "_parent_name", buff, "c", "add_constant");
+		/*
 		if (strcmp($<str>$,"default_object")!=0) {
-			variable_action (-1, "_parent_name", buff, "c", "add_constant");
 		}
+		*/
 	}
 	define_section { 
 		pop_record();in_record--;
-		read_class($<str>4); 
+		read_class($<str>4,1); 
 		print_variables(); 
 		class_set_parent();
 		} 

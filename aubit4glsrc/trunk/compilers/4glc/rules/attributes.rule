@@ -11,9 +11,11 @@ opt_attributes:	/*empty*/ {
 		| attributes_def {strcpy($<str>$,$<str>1);}
 ;
 
-attributes_def	: ATTRIBUTES OPEN_BRACKET {start_state("attribute",1);} attribs_sec CLOSE_BRACKET {strcpy($<str>$,$<str>4);
+attributes_def	: ATTRIBUTES OPEN_BRACKET {
+//start_state("attribute",1);
+} attribs_sec CLOSE_BRACKET {strcpy($<str>$,$<str>4);
 A4GL_debug("Got Attributes : %s",$<str>4);
-start_state("attribute",0);
+//start_state("attribute",0);
 }
 | SIZE OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET
 ;
@@ -50,7 +52,7 @@ win_attributes:	/*empty*/
 
 win_attributes_def	: 	ATTRIBUTES OPEN_BRACKET {
 A4GL_debug("win_attributes_def");
-start_state("attribute",1);
+//start_state("attribute",1);
 A4GL_debug("Started states");
 form_attrib.attrib=0;
 form_attrib.comment_line=0xff;
@@ -59,7 +61,9 @@ form_attrib.error_line=0xff;
 form_attrib.menu_line=0xff;
 form_attrib.message_line=0xff;
 form_attrib.prompt_line=0xff;
-} wattribs_sec CLOSE_BRACKET {start_state("attribute",0);strcpy($<str>$,"");
+} wattribs_sec CLOSE_BRACKET {
+//start_state("attribute",0);
+strcpy($<str>$,"");
 }
 ;
 
