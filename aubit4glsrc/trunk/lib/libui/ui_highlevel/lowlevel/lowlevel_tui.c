@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.19 2004-03-04 16:27:49 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.20 2004-03-26 11:28:57 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -1517,7 +1517,11 @@ A4GL_LL_dump_screen (int n)
 	}
       else
 	{
+      	if (ptr[0] == '+') {
+	  f = fopen (&ptr[1], "a");
+	} else {
 	  f = fopen (ptr, "w");
+	}
 	}
     }
   else

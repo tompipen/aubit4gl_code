@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "a4gl_lib_ui_tui_int.h"
-static char *module_id="$Id: dump_scr.c,v 1.9 2004-01-17 11:10:31 mikeaubury Exp $";
+static char *module_id="$Id: dump_scr.c,v 1.10 2004-03-26 11:27:44 mikeaubury Exp $";
 
 FILE *f;
 
@@ -89,7 +89,11 @@ int
 		if (ptr[0]=='|') {
 			f=popen(&ptr[1],"w");
 		} else {
-			f=fopen(ptr,"w");
+			if (ptr[0]=='+') {
+				f=fopen(&ptr[1],"a");
+			} else {
+				f=fopen(ptr,"w");
+			}
 		}
   } else {
   	f = fopen (ptr, "w");
