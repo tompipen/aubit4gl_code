@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.26 2004-04-21 14:47:00 mikeaubury Exp $
+# $Id: pointers.c,v 1.27 2004-04-21 19:24:25 mikeaubury Exp $
 #
 */
 
@@ -89,8 +89,7 @@ struct s_node
 //#if defined(__DARWIN__) || defined (WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
 //actually, should use  #if HAVE_SEARCH_H
 #if HAVE_SEARCH_H
-#error "I thought It'd been commented out.."
-//#  include <search.h>
+#  include <search.h>
 #else
 
 
