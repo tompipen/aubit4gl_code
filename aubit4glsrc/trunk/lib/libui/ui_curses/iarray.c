@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.77 2004-03-20 21:05:49 mikeaubury Exp $
+# $Id: iarray.c,v 1.78 2004-04-01 18:11:40 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.77 2004-03-20 21:05:49 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.78 2004-04-01 18:11:40 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1636,10 +1636,10 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib,
 		} else {
 	      		attrib --;
 		}
-		A4GL_debug("attrib now : %d",attrib);
-	      if (attrib >= arr->srec->attribs.attribs_len)
+		A4GL_debug("attrib now : %d of %d",attrib,arr->srec->attribs.attribs_len);
+	      if (attrib >= arr->srec->attribs.attribs_len && attrib>=0)
 		{
-		  A4GL_debug("attrib now : %d - too far to the right",attrib);
+		  A4GL_debug("attrib now : %d - too far to the right (%d)",attrib,arr->srec->attribs.attribs_len);
 		  attrib = 0;
 		  scr_line++;
 		  arr_line++;
@@ -1655,8 +1655,10 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib,
 
 	      if (attrib < 0)
 		{
-		  attrib = arr->srec->attribs.attribs_len;
+		  attrib = 0; //arr->srec->attribs.attribs_len-1;
+		why=0;
 		  A4GL_debug("attrib now : %d - too far to the left",attrib);
+		
 		  scr_line--;
 		  arr_line--;
 		}
