@@ -1,8 +1,3 @@
- FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS
- FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS
- FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS
- FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS FIX WARNINGS
-
 
 Please occasionally remove items that are completed from this list.
 
@@ -23,161 +18,11 @@ Please occasionally remove items that are completed from this list.
 
 
 Enhancements
-	SQL grammar extension - 4Js compatible
-    =====================
-	With SQL blocks, the SQL syntax of INFORMIX 7.3 is supported in the 4GL
-	language (Until now, the syntax was limited to INFORMIX SQL 4.1). Except
-	for some special SQL statements, any new and future SQL command can be
-	used from a 4GL program.
 
 	SQL / END SQL blocks
 
-	Syntax:
-	SQL
-	  <stmt>
-	END SQL
-
-	Warning: <stmt> must be a preparable statement.
-
-	Example:
-
-	SQL
-	       CREATE TABLE mytab (
-	              emp_no      INTEGER,
-	              emp_name    CHAR(20),
-	              emp_salary  DECIMAL(16,4)
-	       )
-	END SQL
-
-	Host variables
-
-	SQL blocks can include host variables to be passed to the backend, the 
-	dollar character must prefix 4GL variables:
-
-	Example:
-
-
-	DEFINE emp ARRAY[10] OF
-	       RECORD
-	           no          INTEGER,
-	           name        CHAR(20),
-	           salary      DECIMAL(16,4)
-	       END RECORD
-
-	  {... fill the emp[*].* record array ...}
-
-	   FOR i = 1 TO 10
-	       SQL
-	          INSERT INTO mytab  VALUES (
-	                 $emp[i].no,
-	                 $emp[i].name,
-	                 $emp[i].salary
-	          )
-	       END SQL
-	   END FOR
-
-	Result variables
-
-	An INTO list can be used inside SQL blocks to receive the data from a 
-	SELECT statement. As host variables, the dollar character must prefix target variables:
-
-	Example:
-
-
-	SQL
-	    SELECT emp_name,
-	           emp_salary
-	      INTO
-	           $emp.name,
-	           $emp.salary
-	     FROM employee
-	      WHERE emp.no = $emp.no
-	END SQL
-
-	Using the THRU keyword
-
-	The THRU keyword is supported:
-
-	Example:
-
-
-	SQL
-	    INSERT INTO cust (key,name,address,phone)
-	      VALUES ( $r_cust.key THRU $r_cust.phone )
-	END SQL
-
-
-	The STAR
-
-	The usage of a star character as record field list indicator is also supported:
-
-	Example:
-
-
-	SQL
-	    UPDATE cust SET * = $r_cust.*
-	      WHERE cust.no = $custno
-	END SQL
-
-
 	EXECUTE IMMEDIATE
-    ===================================
-
-	A new 4GL instruction is supported to execute SQL statements directly:
-
-	Syntax:
-	EXECUTE IMMEDIATE {<string>|<char variable>}
-
-	Example:
-
-	MAIN
-	   DEFINE stmt CHAR(200)
-
-	   EXECUTE IMMEDIATE “UPDATE tab SET col=col *10”
-
-	   LET stmt = “INSERT INTO tab VALUES (12,’ccc’)”
-	   EXECUTE IMMEDIATE stmt
-
-	END MAIN
-
-	1.1.EXECUTE stmt with INTO clause
-
-	The EXECUTE instruction supports now the INTO clause:
-
-	Syntax:
-	EXECUTE stmt [USING var-list] [INTO var-list]
-
-	Example:
-
-	MAIN
-	   DEFINE n,c INTEGER
-	   PREPARE s1 FROM
-	     ‘SELECT COUNT(*) FROM customer WHERE col>?’
-	   LET n = 20
-	   EXECUTE s1 USING n INTO c
-	END MAIN
-
-
-	The concatenation operator
-    ============================
-
-	The standard SQL string concatenation operator ‘||’ is now supported in the 4GL language.
-
-	Syntax:
-
-	       <string-expr> || <string-expr>
-
-
-	This is a real operator which can be used in any place where 4GL accepts character string expressions:
-
-	Examples:
-
-	 LET fullname = firstname || ‘ ‘ || lastname
-
-	 CALL open_file( filename || ‘.txt’ )
-
-
-	The comma is still supported
+	The concatenation operator <string-expr> || <string-expr>
 
 
 
@@ -215,11 +60,11 @@ SQL Parser
 	Bind substrings (also used in displays/inputs) ******** PARTIAL (Generates but not coded in library)
 
 SQL plugins
-	unixODBC bug (see bug db on SF)
+    unixODBC bug (see bug db on SF)
     Finish native PostgreSQL plugin (Sergio), create SAP DB native
     show error when SQLUID/SQLPWD is not set on DEFINE ... LIKE
     Handle DSN-less connections (should be able to connect using CONNECT stmt, even without explicit DSN in odbc.ini)
-    Befor using SQLUID and SQLPWD, odbc.ini should be examined for default username/password
+    Before using SQLUID and SQLPWD, odbc.ini should be examined for default username/password (?!!! - are you sure ?!)
 
 ACE
 	ace now uses xgen - enable Windows make files
@@ -233,8 +78,9 @@ TUI
 	implement attribute 'lines' hierarchy
 	General cleanups..
 	clean up construct...
-    Windows TUI uses strange characters
-    DISPLAY without AT erises the screen completely - sends to stdout 
+    	Windows TUI uses strange characters
+
+    	DISPLAY without AT erises the screen completely - sends to stdout 
 		- should display _OVER_ existing display/screen
 		(** THIS IS CURSES FAULT **NOT** Aubit...)
 
@@ -244,7 +90,7 @@ PERL
 CVS
     start branch tagging in CVS
 
-Buils system & make files
+Build system & make files
     Create commit and update targets to handle CVS commits and updates
     in Commit: 
 		handle update of no_yacc, no_perl...etc files before commit
