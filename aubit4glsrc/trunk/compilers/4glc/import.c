@@ -86,7 +86,7 @@ if (f==0) return 0;
 while (fgets(buff,255,f)) {
 	if (buff[0]=='#') continue;
         sscanf(buff,"%s %s",module,function);
-        printf("Import %s, %s\n",module,function);
+        A4GL_debug("Import %s, %s\n",module,function);
 	a=add_file(module);
 	add_function(a,function,FLIST_NORMAL,0);
 }
@@ -100,24 +100,7 @@ void import_package(char *s) {
 char buff[256];
 FILE *f;
 
-sprintf(buff,"%s/import/%s",acl_getenv("AUBITETC"),s);
-f=fopen(buff,"r");
-A4GL_debug("Try : %s = %p\n",buff,f);
-
-if (f==0) {
-        sprintf(buff,"%s/etc/import/%s",acl_getenv("AUBITDIR"),s);
-        f=fopen(buff,"r");
-	A4GL_debug("Try : %s = %p\n",buff,f);
-}
-
-
-if (f==0) {
-        sprintf(buff,"./%s",s);
-        f=fopen(buff,"r");
-	A4GL_debug("Try : %s = %p\n",buff,f);
-}
-
-
+f=A4GL_open_file_classpath(s);
 if (f==0 ) {
 	if (strcmp(s,"default") == 0 ) {
 		// We don't care if this one isn't there...

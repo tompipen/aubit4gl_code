@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.83 2004-07-05 16:16:18 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.84 2004-08-09 11:59:27 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.83 2004-07-05 16:16:18 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.84 2004-08-09 11:59:27 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -174,6 +174,7 @@ print_exec_sql_bound (char *s)
 {
   int c;
   printc ("{/* Start exec_sql_bound */\n");
+set_suppress_lines();
   c = print_bind_definition ('i');
   printc ("/* printed bind - print conversions */");
   print_bind_set_value('i');
@@ -182,6 +183,7 @@ print_exec_sql_bound (char *s)
   printc ("\nEXEC SQL %s; /* exec_sql_bound */\n", s);
   print_copy_status ();
   printc ("}\n");
+clr_suppress_lines();
 }
 
 /**

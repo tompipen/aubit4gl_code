@@ -431,7 +431,9 @@ and the data should be stored in a similar format to a .glb file in a string arr
     }
   else
     {
-      printf ("Warning - unable to open class file\n");
+	if (strcmp(s,"default_object")!=0) {
+      		printf ("Warning - unable to open class file for %s\n",s);
+	}
       return 0;
     }
 

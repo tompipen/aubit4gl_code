@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.174 2004-07-10 09:48:34 mikeaubury Exp $
+# $Id: compile_c.c,v 1.175 2004-08-09 11:59:27 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.174 2004-07-10 09:48:34 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.175 2004-08-09 11:59:27 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -247,13 +247,13 @@ print_space (void)
 
 
 void set_suppress_lines(void) {
-	printc("\n/* SUPPRESS */\n");
+	//printc("\n/* SUPPRESS */\n");
 	suppress_lines++;
 }
 
 void clr_suppress_lines(void) {
 	suppress_lines--;
-	printc("\n/* !SUPPRESS */\n");
+	//printc("\n/* !SUPPRESS */\n");
 }
 
 

@@ -66,5 +66,8 @@ class_entries :
 
 
 class_entry: func_def
+| module_code
+| whenever_cmd
+
 ;
 

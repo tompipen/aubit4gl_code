@@ -190,11 +190,8 @@ variable_entry :
 		void *p1;
 
 		if (strchr($<str>1,'\n')==0) {
-			//printf("Finding %s",$<str>1);
    			a=scan_variable($<str>1);
-			//printf(" a=%d\n",a);
 		} else {
-			printf("Its a thru - setting a to -2\n");
 			a=-2;
 		}
 

@@ -188,9 +188,7 @@ dtype	:
 		|	NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {push_type("char",$<str>3,0);}
 		|	NVARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET {push_type("char",$<str>3,0);}
 		|	INTEGER {push_type("long",0,0);}
-		| 	AS define_ident {
-A4GL_debug("Using specified type...");
-push_dim($<str>2);}
+		| 	AS define_ident { A4GL_debug("Using specified type..."); push_dim($<str>2);}
 		|	SMALLINT {push_type("int",0,0);}
 		|	KWFORM {push_type("form",0,0);}
 		|	STATUSBOX {push_type("form",0,0);}
