@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.266 2004-12-14 06:50:42 afalout Exp $
+dnl # $Id: configure.in,v 1.267 2004-12-15 06:39:37 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -579,6 +579,8 @@ AC_SUBST(PD_CURSES_INC_PATH)
 AC_SUBST(PD_CURSES_LIB_NAME)
 AC_SUBST(PD_CURSES_DRIVE)
 AC_SUBST(PD_CURSES_CYGDRIVE)
+AC_SUBST(XCURSES_CFLAGS)
+AC_SUBST(XCURSES_LIBS)
 		
 
 #debug
@@ -6766,6 +6768,18 @@ fi
 			#withval is 'yes', assign default
 			withval=/usr
 		fi
+		echo "withval=$withval"
+		#cr** - how do this paths work anyway?
+		#AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no, "$withval/bin" $PATH )
+		export PATH="$withval/bin:$PATH"
+		AC_PATH_PROG(XCURSES_CONFIG, xcurses-config, no )
+		if test "$XCURSES_CONFIG" != "no"; then 
+			XCURSES_CFLAGS=`$XCURSES_CONFIG --cflags`
+			XCURSES_LIBS=`$XCURSES_CONFIG --libs`
+			HAVE_XCURSES=1
+		fi
+
+		
 		if test -d "$withval"; then
 			if test -f "$withval/curses.dll"; then 
 				PD_CURSES_LIB_PATH="-L$withval"
@@ -7636,6 +7650,11 @@ else
 		fi
 	fi
 
+	if test "$HAVE_XCURSES" = "1"; then
+	#	A4GL_UI="HL_TUIX"
+		A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIX"	
+	fi
+	
 	if test "$GTKBUILD" != "no"; then
 		A4GL_UI="HL_GTK"
 		A4GL_UI_DETECTED="$A4GL_UI_DETECTED $A4GL_UI"
@@ -7741,6 +7760,12 @@ PLUGIN_NO_LINKABLE=
 		fi
 	fi
 
+	if test "$HAVE_XCURSES" = "1"; then
+	
+	else
+		PLUGIN_NO="$PLUGIN_NO UI_HL_TUIX" 
+	fi
+	
 	if test "$PDFBUILD" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES EXREPORT_PDF"
 	else
@@ -8510,7 +8535,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.266 2004-12-14 06:50:42 afalout Exp $
+| $Id: configure.in,v 1.267 2004-12-15 06:39:37 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

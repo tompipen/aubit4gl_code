@@ -1,5 +1,5 @@
 #
-# $Id: makefile,v 1.7 2004-12-14 06:52:14 afalout Exp $
+# $Id: makefile,v 1.8 2004-12-15 06:40:33 afalout Exp $
 #
 
 ROOT		=../..
@@ -56,7 +56,7 @@ $(LIBROOT)/libSQLPARSE_INFORMIX${SO_EXT}: y.tab.o
 ## ==================================================================
 	
 main.o: main.c
-	${CC} -c -DTEST $<
+	${CC} ${CFLAGS} -c -DTEST $<
 
 m2.lex: gen_lex 2.reqd
 	${SH} gen_lex > $@

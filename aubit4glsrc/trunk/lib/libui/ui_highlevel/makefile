@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.33 2004-12-08 16:16:18 mikeaubury Exp $
+# $Id: makefile,v 1.34 2004-12-15 06:40:34 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -33,9 +33,13 @@ ROOT		=../../..
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
 HOSTNAME		:=$(shell echo $$HOSTNAME)
+
+.PHONY: all clean 
+
 ## ==================================================================
 ##                              GTK+ Options
 ## ==================================================================
+
 CFLAGS+=-g ${GTK_INC_PATH} ${GTK_LIB_PATH}
 
 ifeq "${WIN_PATH}" "1"
@@ -108,6 +112,10 @@ endif
 ## ==================================================================
 ##                              Curses Options
 ## ==================================================================
+
+PDCURSES_OBJ		=lowlevel_tui_noform.o form_tui.o width_narrow.o
+PDCURSESX_OBJ		=lowlevel_tui_noformX.o form_tui.o width_narrow.o
+PDCURSESX_CFLAGS	=${XCURSES_CFLAGS} -DXCURSES -I${ROOT}/incl -I..
 
 ifneq "${HAVE_CURSES}" "0"
 	ALL					+=${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
@@ -194,19 +202,19 @@ ${LIBROOT}/libUI_HL_TUI${SO_EXT}: $(OBJS) lowlevel_tui.o width_narrow.o
 #This also enables PDcurses to be used instead of Ncurses, since PDcurses have 
 #no libform implementation (PDcurses are only Curses implementation available for Windows)
 libUI_HL_TUIN${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
-${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
+${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) ${PDCURSES_OBJ}
 	${LD} -g ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  
 
 #Statically linked TUIN
 libUI_HL_TUINs${SO_EXT}: ${LIBROOT}/libUI_HL_TUINs${SO_EXT}
-${LIBROOT}/libUI_HL_TUINs${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
+${LIBROOT}/libUI_HL_TUINs${SO_EXT}: $(OBJS) ${PDCURSES_OBJ}
 	${LD} -g ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} \
 		${PD_CURSES_LIB_NAME}
 #		d:/cygwin/tmp/pdcurs26/win32/panel.a d:/cygwin/tmp/pdcurs26/win32/pdcurses.a		
 
 #Debug version of TUIN, using debug library libpanel_g
 libUI_HL_TUIN-DEBUG${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}
-${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
+${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}: $(OBJS) ${PDCURSES_OBJ}
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}  -lpanel_g -lncurses_g -lgpm
 
 #Not shure what this is? Mike?
@@ -214,6 +222,26 @@ libUI_HL_TUINW${SO_EXT}: ${LIBROOT}/libUI_HL_TUINW${SO_EXT}
 ${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform_wide.o form_tui.o width_wide.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -L/usr/local/widec/lib -static -lpanelw_g -lncursesw_g
 
+#TUI linked with Xcurses from PDcurses
+#
+#To use XCurses with an existing curses program, you need to make one
+#      change to your code:
+#      Call XCursesExit() just before exiting from your program. eg.
+#     
+#     #ifdef XCURSES
+#      XCursesExit();
+#     #endif
+#      exit(0);
+#     
+#      This call is required to enable the child X process to shut down cleanly
+#      and free up the shared memory it used.
+#
+libUI_HL_TUIX${SO_EXT}: ${LIBROOT}/libUI_HL_TUIX${SO_EXT}
+${LIBROOT}/libUI_HL_TUIX${SO_EXT}: CFLAGS=${PDCURSESX_CFLAGS}
+${LIBROOT}/libUI_HL_TUIX${SO_EXT}: clean $(OBJS) ${PDCURSESX_OBJ} 
+	${LD} ${SO_LDFLAGS} -o $@ $(OBJS) ${PDCURSESX_OBJ} ${LINKLIBS} ${XCURSES_LIBS} -lXpanel
+	
+	
 #Standard GTK+ based plug-in
 libUI_HL_GTK${SO_EXT}: ${LIBROOT}/libUI_HL_GTK${SO_EXT}
 ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o width_narrow.o
@@ -243,6 +271,9 @@ lowlevel_tui.o: lowlevel/lowlevel_tui.c
 lowlevel_tui_noform.o: lowlevel/lowlevel_tui.c
 	${CC} ${CFLAGS} -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 
+lowlevel_tui_noformX.o: lowlevel/lowlevel_tui.c
+	${CC} ${PDCURSESX_CFLAGS} -DNO_CURSES_FORM -c -Ilowlevel -I. $^ -o $@
+	
 lowlevel_tui_noform_wide.o: lowlevel/lowlevel_tui.c
 	${CC} ${CFLAGS} -DWIDEC -DNO_CURSES_FORM -c -I$(ROOT)/incl -I. -Ilowlevel $^ -o $@
 
@@ -298,6 +329,8 @@ show:
 	@echo "PD_CURSES_DRIVE=${PD_CURSES_DRIVE}"
 	@echo "HAS_PDCURSES_STATIC_OBJS=${HAS_PDCURSES_STATIC_OBJS}"
 	@echo "DO_PDCURSES=${DO_PDCURSES}"	
+	@echo "XCURSES_CFLAGS=${XCURSES_CFLAGS}"
+	@echo "XCURSES_LIBS=${XCURSES_LIBS}"
 	
 ## ==================================================================
 ##                              Clean

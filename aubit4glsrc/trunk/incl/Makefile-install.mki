@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.88 2004-12-13 01:55:32 afalout Exp $
+# $Id: Makefile-install.mki,v 1.89 2004-12-15 06:40:34 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -801,6 +801,8 @@ PDCURSES_WIN_PATH		=http://umn.dl.sourceforge.net/sourceforge/pdcurses
 PDCURSES_WIN_ZIP		=pdc25_vc_w32.zip
 PDCURSES_SRC			=pdcurs26
 PDCURSES_SRC_ZIP		=${PDCURSES_SRC}.zip
+PDCURSES_SRC_UNIX		=PDCurses-2.6
+PDCURSES_SRC_TAR_GZ		=${PDCURSES_SRC_UNIX}.tar.gz
 ifdef COMSPEC
 	PDCURSES_WIN_INSTALLDIR	=$(shell  cygpath -u ${HOMEDRIVE})/${PDCURSES_SRC}-mingw
 endif
@@ -1428,8 +1430,8 @@ endif
 
 ##################
 # 29: PDcurses
-install.pdcurses: ${PDCURSES_SRC_ZIP} ${PDCURSES_WIN_ZIP}
 ifdef COMSPEC
+install.pdcurses: ${PDCURSES_SRC_ZIP} ${PDCURSES_WIN_ZIP}
 #	rm -rf ${PDCURSES_WIN_INSTALLDIR}
 #First, install MSVC pre-compiled binaries, containing the .dll that we
 #dont get when compiling from source code using MinGW GCC"
@@ -1454,9 +1456,17 @@ ifdef COMSPEC
 	@echo "use --with-pdcurses=${PDCURSES_WIN_INSTALLDIR}"
 	@echo "flag to ./configure for Aubit to detect it."
 else
+install.pdcurses: ${PDCURSES_SRC_TAR_GZ} 
+ifdef PCURSES_BIN
 #	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	${UNZIP} $^ -d /tmp
 	cd /tmp/${PDCURSES_SRC}; ./configure; make; make install
+else
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${PDCURSES_SRC_UNIX}; ./configure --prefix=/usr/local/pdcurses
+	cd /tmp/${PDCURSES_SRC_UNIX}; make
+	cd /tmp/${PDCURSES_SRC_UNIX}; make install
+endif
 endif	
 	@echo " "
 	@echo "Package info & manuals: ${PDCURSES_INFO}"
@@ -1690,7 +1700,8 @@ ${XMLRPC_SRC_TAR_GZ}:
 	${WGET} ${XMLRPC_SRC_PATH}/$@
 ${LIBWWW_SRC_ZIP}:
 	${WGET} ${LIBWWW_SRC_PATH}/$@
-
+${PDCURSES_SRC_TAR_GZ}:
+	${WGET} ${PDCURSES_WIN_PATH}/$@
 
 #############################################
 #       SQLite tests

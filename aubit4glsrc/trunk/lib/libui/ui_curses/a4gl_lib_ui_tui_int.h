@@ -8,8 +8,18 @@
 
 #if HAVE_PDCURSES
 	#define _SKIP_AAAA_		//don't include anything from form.h
-	#include <curses.h>
-	#include <panel.h>
+	#ifdef XCURSES
+		#include <xcurses.h>
+	#else
+		#include <curses.h>
+	#endif
+
+	#ifdef XCURSES
+		#include <xpanel.h>
+	#else
+		#include <panel.h>
+	#endif
+
 	#include <D:/cygwin/usr/include/ncurses/form.h>
 #else
 	#ifndef _NO_FORM_H_
@@ -22,7 +32,11 @@
 		#endif
 	#else
 		#ifndef _NO_PANEL_H_
-			#include <panel.h>
+			#ifdef XCURSES
+				#include <xpanel.h>
+			#else
+				#include <panel.h>
+			#endif
 		#endif
 	#endif
 #endif

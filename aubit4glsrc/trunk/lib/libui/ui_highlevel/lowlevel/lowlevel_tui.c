@@ -1,5 +1,11 @@
 //static void A4GL_do_pause (void);
-#include <curses.h>
+
+#ifdef XCURSES
+	#include <xcurses.h>
+#else
+	#include <curses.h>
+#endif
+	
 static int A4GL_curses_to_aubit (int a);
 static int A4GL_curses_to_aubit_int (int a);
 #include "a4gl_libaubit4gl.h"
@@ -31,7 +37,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.40 2004-12-09 23:59:15 afalout Exp $ 
+ $Id: lowlevel_tui.c,v 1.41 2004-12-15 06:40:35 afalout Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -64,9 +70,15 @@ Looks like it was removed in Curses 5.3???!
 #include "aubit_noform.h"
 #endif
 
-#include <panel.h>
+
+#ifdef XCURSES
+	#include <xpanel.h>
+#else
+	#include <panel.h>
+#endif
+
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.40 2004-12-09 23:59:15 afalout Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.41 2004-12-15 06:40:35 afalout Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -1588,11 +1600,11 @@ A4GL_LL_dump_screen (int n)
 
   if (mode == 3)
     {
-	#if ! defined(__MINGW32__)
+	#if (! defined(__MINGW32__) && ! defined (XCURSES))
 		scr_dump (ptr);
 		return 0;		
 	#else
-        A4GL_debug ("scr_dump not implemented in PDcurses- try mode=1 instead");
+        A4GL_debug ("scr_dump not implemented in PDcurses/Xcurses - try mode=1 instead");
  		mode=1;
 	#endif
       return 0;
@@ -1791,7 +1803,24 @@ void
 A4GL_LL_initialize_display ()
 {
   A4GL_debug ("LL_initialize_display *************************");
-  initscr ();
+  
+  
+  /*
+     To get the most out of XCurses in your curses application you need
+      to call Xinitscr() rather than initscr(). This allows you to pass
+      your program name and resource overrides to XCurses.
+     
+      The program name is used as the title of the X window, and for defining X
+      resources specific to your program.
+  */
+  
+  	#ifdef XCURSES
+		Xinitscr ();
+	#else
+		initscr ();
+	#endif
+	
+	
   if (A4GL_isyes(acl_getenv("NO_ALT_SCR"))) {
   	try_to_stop_alternate_view();
   }
@@ -1801,16 +1830,17 @@ A4GL_LL_initialize_display ()
     {
       start_color ();
       refresh ();
-#ifndef __sun__
-#ifndef __sparc__
-#if ! defined(__MINGW32__)
-		A4GL_debug ("use_default_colors not available");
-      //curses function not available on Solaris (!!!!?????) and PDcurses
-      use_default_colors ();
-      have_default_colors = 1;
-#endif
-#endif
-#endif
+	  	#if (! defined(__sun__) && ! defined (__sparc__))	
+			#if (! defined(__MINGW32__) && ! defined (XCURSES))
+				//curses function not available on Solaris (!!!!?????) and PDcurses
+				use_default_colors ();
+				have_default_colors = 1;
+			#else
+				A4GL_debug ("use_default_colors not available with PDcurses/Xcurses");
+			#endif
+		#else
+			A4GL_debug ("use_default_colors not available on Solaris/Sparc");
+		#endif
     }
 
   cbreak ();

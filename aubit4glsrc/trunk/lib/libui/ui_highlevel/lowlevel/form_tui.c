@@ -2,7 +2,12 @@
 #include <string.h>
 #include "a4gl_libaubit4gl.h"
 #include "aubit_noform.h"
-#include <panel.h>
+#ifdef XCURSES
+	#include <xpanel.h>
+#else
+	#include <panel.h>
+#endif
+
 
 void A4GL_LL_screen_refresh();
 

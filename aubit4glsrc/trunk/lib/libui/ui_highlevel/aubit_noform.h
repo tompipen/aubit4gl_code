@@ -1,4 +1,9 @@
-#include <curses.h>
+#ifdef XCURSES
+	#include <xcurses.h>
+#else
+	#include <curses.h>
+#endif
+
 /* A lot of this is copied from ncurses libform and hacked...
  That software contains :
  ****************************************************************************

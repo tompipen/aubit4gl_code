@@ -30,7 +30,12 @@ static char * local_trim (char *s);
 #ifndef I4GL_RDS
 
 #include <stdio.h>
-#include <curses.h>
+#ifdef XCURSES
+	#include <xcurses.h>
+#else
+	#include <curses.h>
+#endif
+
 #include <errno.h>
 
 #ifndef QUERIX  
@@ -177,7 +182,12 @@ char *buff;
 ** From 4Js mailing list
 */
 
-#include <curses.h>
+#ifdef XCURSES
+	#include <xcurses.h>
+#else
+	#include <curses.h>
+#endif
+
 #include <stdio.h>
 
 int	

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.171 2004-12-14 06:52:14 afalout Exp $
+# $Id: Makefile-common.in,v 1.172 2004-12-15 06:40:34 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -910,6 +910,9 @@ PD_CURSES_INC_PATH	=@PD_CURSES_INC_PATH@
 PD_CURSES_LIB_NAME	=@PD_CURSES_LIB_NAME@
 PD_CURSES_DRIVE		=@PD_CURSES_DRIVE@
 PD_CURSES_CYGDRIVE	=@PD_CURSES_CYGDRIVE@
+XCURSES_CFLAGS		=@XCURSES_CFLAGS@
+XCURSES_LIBS		=@XCURSES_LIBS@
+
 
 LIBPQ_FE_H_IFLAGS	=@LIBPQ_FE_H_IFLAGS@
 

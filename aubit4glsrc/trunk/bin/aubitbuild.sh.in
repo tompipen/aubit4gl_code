@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.50 2004-12-14 06:52:12 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.51 2004-12-15 06:40:32 afalout Exp $
 #
 
 #--------------------------------------------------------------------
@@ -499,9 +499,13 @@ UP_URLENCODED="$3"
 		return
 	fi
 	rm -f $WGET_LOG
-echo "Trying to ls: .$LOCAL_FILE."
+	if test "$SH_DEBUG" = "1"; then 
+		echo "Trying to ls: .$LOCAL_FILE."
+	fi
 	FILESIZE_LOCAL=`ls -al "$LOCAL_FILE" | awk '{print $5}';`
-echo "xx"	
+	if test "$SH_DEBUG" = "1"; then	
+		echo "xx"
+	fi
 	if test "$FILESIZE_LOCAL" = ""; then 
 		echo "ERROR: failed to get file size for local file:"
 		echo "$LOCAL_FILE"
@@ -1237,8 +1241,10 @@ the_file="$1"
 	START_TIME=`date +%s`
 	EXEC="$AUTO_SF_SCP $the_file"; runexec
 	EXIT_TIME=`date +%s`
-	let TOOK_TIME=EXIT_TIME - START_TIME
-	if test "$VERBOSE" = "1"; then
+	#let TOOK_TIME=EXIT_TIME - START_TIME
+	let TOOK_TIME=EXIT_TIME-START_TIME
+
+#	if test "$VERBOSE" = "1"; then
 
 #winsetup took 6769.1 seconds to upload	
 		the_script="`type auto_sf_scp | awk '{print $3}'`"
@@ -1248,7 +1254,7 @@ the_file="$1"
 		if test "$timeout" = "$TOOK_TIME"; then
 			echo "WARNING: did 'expect' timeout kill scp?"
 		fi
-	fi
+#	fi
 	
 }
 
