@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.13 2002-10-20 12:02:37 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.14 2002-10-20 23:13:32 afalout Exp $
 */
 
 /**
@@ -304,10 +304,12 @@ be used in applications which link to the library).
     /* for everything except libaubit4gl: */
 
 		/** Sqlca variable */
-		//#ifndef _SQLCA_DEFINED_
-		//    #define _SQLCA_DEFINED_
+		// _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
+        // that also define sqlca:
+		#ifndef _SQLCA_DEFINED_
+		    #define _SQLCA_DEFINED_
 			extern sqlca_struct sqlca;
-	    //#endif
+	    #endif
 
 		/** 4gl global status variable */
 		//#ifndef DEFINE_STATUS
