@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.91 2003-07-26 06:46:12 afalout Exp $
+# $Id: Makefile.in,v 1.92 2003-07-27 06:08:43 afalout Exp $
 #
 
 ROOT    =..
@@ -88,6 +88,7 @@ LIBIMJABBER_PATH	=${ROOT}/tools/jabber $@
 LOADMAP_PATH		=${ROOT}/tools/loadmap
 AUBITCONFIG_PATH	=resource
 FILESCHEMA_PATH     =libsql/schema_in_file
+LIBPOP_PATH     	=extra_libs/pop
 
 
 #Specify dependencies for libraries, so they get rebuilt if dependencies change:
@@ -152,6 +153,9 @@ LIBESQLCHELPER_DEPS	=$(wildcard ${LIBESQLCHELPER_PATH}/*.c) $(wildcard ${LIBESQL
 					$(wildcard ${LIBESQLCHELPER_PATH}/Makefile) ${ALL_H}
 LIBSTRING_DEPS		=$(wildcard ${LIBSTRING_PATH}/*.c) $(wildcard ${LIBSTRING_PATH}/*.h) \
 					$(wildcard ${LIBSTRING_PATH}/Makefile) ${ALL_H}
+
+LIBPOP_DEPS			=$(wildcard ${LIBPOP_PATH}/*.4gl) $(wildcard ${LIBESQLCHELPER_PATH}/Makefile) ${ALL_H}
+
 LIBHTML_DEPS		=$(wildcard ${LIBHTML_PATH}/*.c) $(wildcard ${LIBHTML_PATH}/*.h) \
 					$(wildcard ${LIBHTML_PATH}/Makefile) ${ALL_H}
 LIBSQLESQL_DEPS		=$(wildcard ${LIBSQLESQL_PATH}/*.ec) $(wildcard ${LIBSQLESQL_PATH}/*.h) \
@@ -347,6 +351,9 @@ libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
 
 libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
 	$(MAKE) -C ${LIBSTRING_PATH}
+
+libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
+	$(MAKE) -C ${LIBPOP_PATH}
 
 libesqlhelper_funcs${SO_EXT}: ${4GLC} ${LIBESQLCHELPER_DEPS}
 	$(MAKE) -C ${LIBESQLCHELPER_PATH}

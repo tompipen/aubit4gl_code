@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.65 2003-07-26 04:47:15 afalout Exp $
+# $Id: Makefile-install.mki,v 1.66 2003-07-27 06:08:43 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -693,7 +693,14 @@ install.sqlite.odbc: ${SQLITE_ODBC_TGZ_SRC}
 
 ##################
 # 27: libspopc
-install.libspopc:
+install.libspopc: ${SPOPC_TGZ_SRC}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${SPOPC_SRC}; ./configure; make; make install
+	@echo " "
+	@echo "Package info & manuals: ${SPOPC_INFO}"
+	@echo " "
+	@echo "POP library installed.  Please re-run 'configure' to detect changes."
+	@echo " "
 
 
 
@@ -783,13 +790,16 @@ ${LIBUNGIF_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/$@
 ${AUDIOFILE_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/$@
-
 ${SQLITE_RPM_LIB}:
 	${WGET} ${SQLITE_PATH}/$@
 ${SQLITE_RPM_DEV}:
 	${WGET} ${SQLITE_PATH}/$@
 ${SQLITE_ODBC_TGZ_SRC}:
 	${WGET} ${SQLITE_ODBC_PATH}/$@
+${SPOPC_TGZ_SRC}:
+	${WGET} ${SPOPC_PATH}/$@
+
+
 
 
 test.sqlite.odbc: test_sqlite_odbc test_sqlite

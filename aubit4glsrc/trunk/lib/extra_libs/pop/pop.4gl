@@ -78,10 +78,12 @@ end function
 function popgetmsg(lv_msg)
 define lv_msg integer
 code
+{
 char *ptr;
 ptr=popgetmsg(lv_mysession,lv_msg);
 A4GL_push_param(ptr,256);
 return 1;
+}
 endcode
 end function
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.131 2003-07-26 04:47:15 afalout Exp $
+# $Id: Makefile-common.in,v 1.132 2003-07-27 06:08:43 afalout Exp $
 #
 
 
@@ -1429,6 +1429,10 @@ SQLITE_ODBC_TGZ_SRC=${SQLITE_ODBC_SRC}.tar.gz
 #################
 # 27: libspopc
 SPOPC_INFO=http://brouits.free.fr/libspopc/
+SPOPC_PATH=http://brouits.free.fr/libspopc
+SPOPC_SRC=libspopc-0.5.7
+SPOPC_TGZ_SRC=${SPOPC_SRC}.tgz
+
 
 
 #=================================== EOF ================================
