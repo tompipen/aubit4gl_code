@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.10 2004-10-23 13:36:31 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.11 2004-10-25 12:20:35 mikeaubury Exp $
 #
 */
 
@@ -88,7 +88,7 @@ A4GL_debug("A4GL_process_stack_op_other");
 	{&tmpvar, 0, 255}
       };			/* end of binding */
       sprintf (cname, "chkin_%d", cntsql_0++);
-
+	memset(tmpvar,0,255);
       s = A4GL_char_pop ();
       A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
       A4GLSQL_set_sqlca_sqlcode (0);
@@ -97,9 +97,8 @@ A4GL_debug("A4GL_process_stack_op_other");
 	struct BINDING *ibind;
 	struct BINDING obind[] = { {0, 0, 0} };	/* end of binding */
 	ibind = A4GL_pop_binding (&n);
-	A4GLSQL_declare_cursor (0,
-				A4GLSQL_prepare_select (ibind, n, obind, 0,
-							s), 0, cname);
+		A4GL_debug("declare - binding : %d\n",n);
+	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, n, obind, 0, s), 0, cname);
       }
       if (a4gl_status != 0)
 	{

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.11 2004-08-31 20:46:54 mikeaubury Exp $
+# $Id: esql_compatible.ec,v 1.12 2004-10-25 12:21:58 mikeaubury Exp $
 #
 */
 
@@ -362,7 +362,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.11 2004-08-31 20:46:54 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.12 2004-10-25 12:21:58 mikeaubury Exp $";
 #endif
 
 
@@ -1481,12 +1481,14 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
 #ifndef __QUERIX_FIX__
 	  EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :length = LENGTH;
+	A4GL_debug("Got %s\n",char_var);
       if ( isSqlError() )
         return 1;
       char_var = malloc(length + 1);
       EXEC SQL GET DESCRIPTOR :descriptorName  VALUE :index
         :char_var = DATA;
       strcpy(bind[idx].ptr,char_var);
+	A4GL_debug("Copied : %s\n",char_var);
       free(char_var);
       break;
     case DTYPE_SMINT:

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.18 2004-10-25 11:23:14 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.19 2004-10-25 12:20:35 mikeaubury Exp $
 #
 */
 
@@ -456,7 +456,7 @@ a=A4GL_cv_str_to_func (s, strlen(s));
 if (a==0) return 0; // I don't know what they are talking about...
 
 if (conversion_rules==0) {
-	printf("No rules loaded\n");
+	//printf("No rules loaded\n");
 	return 0;
 }
 

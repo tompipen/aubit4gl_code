@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.102 2004-10-23 13:36:33 mikeaubury Exp $
+# $Id: esql.ec,v 1.103 2004-10-25 12:21:58 mikeaubury Exp $
 #
 */
 
@@ -152,7 +152,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.102 2004-10-23 13:36:33 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.103 2004-10-25 12:21:58 mikeaubury Exp $";
 #endif
 
 
@@ -1257,6 +1257,7 @@ int type;
     case DTYPE_CHAR:
     case DTYPE_VCHAR:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:length = LENGTH;
+	A4GL_debug("1");
       if (isSqlError ())
 	return 1;
       char_var = malloc (length + 1);
@@ -1270,9 +1271,12 @@ int type;
 		}
 	{char *ptr;
 		ptr=bind[idx].ptr;
-      strncpy (ptr, char_var,length);
-	ptr[bind[idx].size]=0;
-	//ptr[length]=0;
+      		strncpy (ptr, char_var,length);
+		ptr[bind[idx].size]=0;
+		A4GL_push_char(ptr);
+		A4GL_pop_char(ptr,length);
+		//if (length<bind[idx.size])  ptr[length]=0;
+
 	}
       free (char_var);
       break;
