@@ -203,6 +203,7 @@ if(strlen(s)>plen) {
 		p[c++]='\'';
 	}
 	p[c]=0;
+return p;
 }
 endcode
 
