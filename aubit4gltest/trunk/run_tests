@@ -1334,6 +1334,12 @@ for a in $FLAGS; do
 done
 ####
 
+if test "$A4GL_UI" = "CONSOLE" -a "$UI" != "CONSOLE"; then
+	echo "WARNING: A4GL_UI is set to CONSOLE in environment"
+fi
+
+
+
 if test "$A4GL_FORMTYPE" = "GENERIC" -a "$A4GL_PACKER" = "PACKED" -a "$PLATFORM" = "MINGW"; then
 	EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_MINGW_PACKED"
 fi	
@@ -1686,6 +1692,10 @@ fi
 for TEST_NO in $ALL_TESTS
 #########################
 do
+	if test "$SH_DBG" = "1"; then
+		echo "Loop start: test $TEST_NO"
+	fi
+
 	if test "$TIME_LOOP" = "1"; then 
 		LOOP_START_TIME=`date +%s`
 	fi
@@ -1702,9 +1712,12 @@ do
 		fi
 	fi
 	
-	
 	if test "$TEST_RANGE" = "1"; then 
-		if test "$TEST_NO" -lt "$TEST_RANGE_FROM"; then 
+		if test "$TEST_NO" -lt "$TEST_RANGE_FROM"; then
+echo "skip to $TEST_RANGE_FROM"
+			if test "$VERBOSE" = "1"; then 
+				echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bSkipping to test $TEST_RANGE_FROM ($TEST_NO)   "
+			fi
 			continue
 		fi
 		if test "$TEST_NO" -gt "$TEST_RANGE_TO"; then 
@@ -2029,7 +2042,7 @@ do
 	
 	#decide if we WANT to skip it
 	do_skip
-	if test "$DO_SKIP" = "1"; then 
+	if test "$DO_SKIP" = "1"; then
 		continue
 	fi
 	
@@ -2374,7 +2387,7 @@ do
 		#Compile list of all failed SQL features:
 		if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
 			#If test is not compile only and has SQL features described...
-#echo 1		
+		
 			for used_feature in $SQL_FEATURES_USED ; do
 				#...for every feature used in this failed test... 
 				ALLREADY_LISTED=0

@@ -2818,6 +2818,7 @@ check_skip() {
 			SKIP_REASON="blacklisted"
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 4"
 	    fi
+		
 		if test "$IS_TUI_TEST" != "1" -a "$ONLY_TUI" = "1"; then
 			SKIP_REASON="non-TUI"
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 5"			
@@ -2828,12 +2829,13 @@ check_skip() {
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 6"
 			SKIP_EXPECT_FAIL_LIST="$SKIP_EXPECT_FAIL_LIST $TEST_NO"
 		fi
+	
 		if test "$IS_LONG_TEST" = "1" -a "$SKIP_LONG" = "1"; then
 			SKIP_REASON="long running"
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 7"
 			SKIP_LONG_LIST="$SKIP_LONG_LIST $TEST_NO"
 	    fi
-		if test "$UI" = "CONSOLE" && (test "$IS_CONSOLE_PROMPT_TEST" = "1" -o "$IS_DUMP_SCREEN_TEST" = "1" -o test "$IS_FORM_TEST" = "1") ; then
+		if test "$UI" = "CONSOLE" && (test "$IS_CONSOLE_PROMPT_TEST" = "1" -o "$IS_DUMP_SCREEN_TEST" = "1" -o "$IS_FORM_TEST" = "1") ; then
 			SKIP_REASON="in CONSOLE mode - uses forms or dump_screen()."
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 8"
 			SKIP_CONSOLE_LIST="$SKIP_CONSOLE_LIST $TEST_NO"
@@ -2848,7 +2850,7 @@ check_skip() {
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 10"
 			SKIP_NODESC_LIST="$SKIP_NODESC_LIST $TEST_NO"
 	    fi
-		
+
 		check_skip_non_db
 		
 		if test "$IS_DB_TEST" = "1" -a "$NO_DB" = "1"; then
@@ -2883,6 +2885,7 @@ check_skip() {
 			SKIP_REASON_CODES="$SKIP_REASON_CODES 17"
 			SKIP_NO_CRON_LIST="$SKIP_NO_CRON_LIST $TEST_NO"
 	    fi
+		
 		if test "$USE_COMP" != "aubit"; then
 			#tests that apply only to non-Aubit 4GL compilers
 			if test "$NEED_IFX_VERSION" != "" -a "$NEED_IFX_VERSION" != "0"; then
@@ -2955,6 +2958,8 @@ check_skip() {
 		fi
 		
 	fi #IS_INVALID_TEST
+#echo "vncviewer -via mike@212.23.14.59 192.168.2.212:0"
+#exit
 
 }	
 
