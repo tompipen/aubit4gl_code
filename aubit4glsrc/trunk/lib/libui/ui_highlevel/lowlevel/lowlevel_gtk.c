@@ -837,8 +837,12 @@ void A4GL_LL_screen_update(void ) {
 
 
 int A4GL_LL_screen_width(void ) {
-        if (acl_getenv("COLUMNS")) return atoi(acl_getenv("COLUMNS"));
-	return 80;
+	int w=80;
+        if (acl_getenv("COLUMNS")) {
+			if (strlen(acl_getenv("COLUMNS"))) w=atoi(acl_getenv("COLUMNS"));
+	}
+	printf("screen width=%d\n",w);
+	return w;
 }
 
 
