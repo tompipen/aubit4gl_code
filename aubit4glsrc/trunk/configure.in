@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.126 2002-10-30 23:44:33 afalout Exp $
+dnl # $Id: configure.in,v 1.127 2002-11-06 11:41:57 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1647,32 +1647,44 @@ AC_ARG_WITH(unixodbc,
 		LDFLAGS=$old_LDFLAGS
 
 		if test $ac_cv_lib_odbc_main = yes; then
-			ODBC_LIB_NAME=odbc
-			HAVE_UNIXODBC=yes
-		    UNIXODBC_INCLUDE=-I$withval/include
-		    UNIXODBC_LFLAGS=-L$withval/lib
-		    UNIXODBC_LIBS=-lodbc
+			if test "$AUBIT_SOURCE" = "1" ; then
+				#CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
+				AC_CHECK_HEADERS([sql.h])
+				TMP=`eval echo '${'$as_ac_Header'}'`
+		        if test "$TMP" = "yes"; then
+					AC_CHECK_HEADERS([sqlext.h])
+					TMP=`eval echo '${'$as_ac_Header'}'`
+			        if test "$TMP" = "yes"; then
+						AC_CHECK_HEADERS([odbcinst.h])
+						TMP=`eval echo '${'$as_ac_Header'}'`
+				        if test "$TMP" = "yes"; then
+						    $HAVE_UNIXODBC_HEADERS=1
+                        fi
+                    fi
+                fi
+			else
+			    $HAVE_UNIXODBC_HEADERS=1
+			fi
 
-			#ODBC_INCDIR=$withval/include
-		    #ODBC_LIBDIR=$withval/lib
-		    #ODBC_LFLAGS=-L$ODBC_LIBDIR
-		    #ODBC_INCLUDE=-I$ODBC_INCDIR
-		    #ODBC_LIBS=-lodbc
-		    ODBC_TYPE=unixODBC
-		    AC_DEFINE(HAVE_UNIXODBC,1,[ ])
-		    #AC_MSG_RESULT(yes)
+			if test "$HAVE_UNIXODBC_HEADERS" = "1" ; then
+				ODBC_LIB_NAME=odbc
+				HAVE_UNIXODBC=yes
+			    UNIXODBC_INCLUDE=-I$withval/include
+			    UNIXODBC_LFLAGS=-L$withval/lib
+			    UNIXODBC_LIBS=-lodbc
+
+			    ODBC_TYPE=unixODBC
+			    AC_DEFINE(HAVE_UNIXODBC,1,[ ])
+            else
+				AC_MSG_WARNING(unixODBC libraries present but headers are missing.)
+				AC_DEFINE(HAVE_UNIXODBC,0,[ ])
+            fi
 		else
-			#ODBC_INCDIR=$withval/include
-		    #ODBC_LIBDIR=$withval/lib
-		    #ODBC_LFLAGS=-L$ODBC_LIBDIR
-		    #ODBC_INCLUDE=-I$ODBC_INCDIR
-		    #ODBC_LIBS=-lodbc
-		    #ODBC_TYPE=unixODBC
 		    AC_DEFINE(HAVE_UNIXODBC,0,[ ])
-		    #AC_MSG_RESULT(no)
 		fi
 	else
 		AC_MSG_RESULT(disbled)
+	    AC_DEFINE(HAVE_UNIXODBC,0,[ ])
 	fi
 ],[
 	AC_MSG_RESULT(--with-unixodbc not specified)

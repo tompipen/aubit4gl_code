@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.6 2002-11-05 05:36:03 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.7 2002-11-06 11:42:23 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -845,7 +845,7 @@ if test "$CLEAN" = "1" && test "$COMPARED_OK" = "1"; then
 	    rm -rf $RPMBUILD_PATH/aubit4gl-*
     	rm -rf $RPMSRC_PATH/aubit4glsrc-*
     fi
-
+fi
 
 echo "******* LOG END ********" >> $LOGFILE
 echo "******* `date` ********" >> $LOGFILE
