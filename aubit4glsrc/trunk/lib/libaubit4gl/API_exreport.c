@@ -68,14 +68,14 @@ int (*func)(void);
 /* double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p) */
 /* void A4GL_pdf_pdffunc (void *p, char *fname, int n) */
 /* void A4GL_pdf_blob_print (void *p, void *blob, char *type, int cr) */
-void A4GL_pdf_rep_print(void* rep,int a,int s,int right_margin) {
-static void (*func_1)(void *  ,int ,int ,int );
+void A4GL_pdf_rep_print(void* rep,int a,int s,int right_margin,int why) {
+static void (*func_1)(void *  ,int ,int ,int ,int );
 #ifdef DEBUG
-A4GL_debug("Call to void A4GL_pdf_rep_print(%p,%d,%d,%d)\n",rep,a,s,right_margin);
+A4GL_debug("Call to void A4GL_pdf_rep_print(%p,%d,%d,%d,%d)\n",rep,a,s,right_margin,why);
 #endif
    if (libptr==0) A4GLEXREPORT_initlib();
    func_1=A4GL_find_func(libptr,"A4GL_pdf_rep_print");
-   func_1(rep,a,s,right_margin);
+   func_1(rep,a,s,right_margin,why);
 }
 
 void A4GL_pdf_fputmanyc(FILE* f,int c,int cnt) {
@@ -184,14 +184,20 @@ A4GL_debug("Returning Unknown %p",rval);
 return rval;
 }
 
-void A4GL_pdf_pdffunc(void* p,char *fname,int n) {
-static void (*func_12)(void *  ,char ,int );
+int A4GL_pdf_pdffunc(void* p,char* fname,int n) {
+int rval;
+static int (*func_12)(void *  ,char *  ,int );
 #ifdef DEBUG
-A4GL_debug("Call to void A4GL_pdf_pdffunc(%p,(%c),%d)\n",p,*fname,n);
+A4GL_debug("Call to int A4GL_pdf_pdffunc(%p,(%s)),%d)\n",p,A4GL_null_as_null(fname),n);
 #endif
    if (libptr==0) A4GLEXREPORT_initlib();
    func_12=A4GL_find_func(libptr,"A4GL_pdf_pdffunc");
-   func_12(p,*fname,n);
+   rval=(int)func_12 (p,fname,n);
+#ifdef DEBUG
+A4GL_debug("Returning %d",rval);
+
+#endif
+return rval;
 }
 
 void A4GL_pdf_blob_print(void* p,void* blob,char* type,int cr) {

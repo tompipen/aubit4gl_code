@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.20 2004-05-12 08:15:56 mikeaubury Exp $
+# $Id: ui.c,v 1.21 2004-05-18 19:34:11 mikeaubury Exp $
 #
 */
 
@@ -336,6 +336,8 @@ A4GL_debug("Finding display_internal");
 
   free (s);
   A4GL_debug ("Done Display@");
+
+  if (!aclfgli_get_err_flg()) { A4GLSQL_set_status(0,0); }
   //return 1;
 }
 
