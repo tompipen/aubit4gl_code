@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-04-02 08:50:34 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-09-25 05:42:16 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -90,17 +90,17 @@ all: ${ALL}
 odbctest-iodbc3: odbctest3.o
 #	${CC} ${CFLAGS} -DODBCVER=0x0350 -o $@ $^ -L/opt/iODBC_3beta/iODBC/lib -liodbc
 	${CC} ${CFLAGS} -o $@ $^ @IODBC_LFLAGS@ @IODBC_LIBS@
-	cp $@ ../../bin
+	${CP} $@ ../../bin
 
 odbctest-iodbc2: odbctest2.o
 #	${CC} ${CFLAGS} -DODBCVER=0x0350 -o $@ $^ -L/usr/openlink/lib -liodbc
 	${CC} ${CFLAGS} -o $@ $^ @IODBC_LFLAGS@ @IODBC_LIBS@
-	cp $@ ../../bin
+	${CP} $@ ../../bin
 
 odbctest-unixODBC: odbctest3.o
 #	${CC} ${CFLAGS} -DODBCVER=0x0350 -o $@ $^ -L/opt/unixODBC/lib/ -lodbc
 	${CC} ${CFLAGS} -o $@ $^ @UNIXODBC_LFLAGS@ @UNIXODBC_LIBS@
-	cp $@ ../../bin
+	${CP} $@ ../../bin
 
 ## ==================================================================
 ##                              Sub Targets
@@ -124,7 +124,7 @@ odbctest3.o:
 
 shexec:
 	chmod a+x autotest*
-#	autotest* cp  ../../bin
+#	autotest* ${CP} ../../bin
 
 ## ==================================================================
 ##                              Clean

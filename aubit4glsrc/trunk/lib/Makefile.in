@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.66 2002-09-23 05:13:02 afalout Exp $
+# $Id: Makefile.in,v 1.67 2002-09-25 05:42:13 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -101,13 +101,13 @@ libRPC_XMLRPC.dll:
 ## ==================================================================
 
 
-libLEX_C.so:
+libLEX_C${SO_EXT}:
 	${MAKE} -C liblex/lex_c
 
-libLEX_PERL.so:
+libLEX_PERL${SO_EXT}:
 	${MAKE} -C liblex/lex_perl
 
-libMSG_NATIVE.so:
+libMSG_NATIVE${SO_EXT}:
 	${MAKE} -C libmsg/msg_native
 
 libUI_GTK${SO_EXT}:
@@ -128,65 +128,65 @@ loadmap:
 libaubit4gl${SO_EXT} :
 	${MAKE} -C libaubit4gl
 
-libFORM_NOFORM.so :
+libFORM_NOFORM${SO_EXT} :
 	${MAKE} -C libform/noform $@
 
 libFORM_XDR${SO_EXT} :
 	${MAKE} -C libform/form_xdr $@
 
-libMENU_NOMENU.so :
+libMENU_NOMENU${SO_EXT} :
 	${MAKE} -C libmenu/menu_nomenu $@
 
-libMENU_XDR.so :
+libMENU_XDR${SO_EXT} :
 #	${MAKE} -C libmenu/menu_xdr $@
 	${MAKE} -C libmenu/menu_xdr
 
-libEXREPORT_PDF.so:
+libEXREPORT_PDF${SO_EXT}:
 	${MAKE} -C libpdf $@
 
-libEXREPORT_NOPDF.so:
+libEXREPORT_NOPDF${SO_EXT}:
 	${MAKE} -C libpdf $@
 
-libPACKER_PACKED.so:
+libPACKER_PACKED${SO_EXT}:
 	${MAKE} -C libpacker/packed
 
-libPACKER_PERL.so:
+libPACKER_PERL${SO_EXT}:
 	${MAKE} -C libpacker/perl
 
-libPACKER_XDR.so:
+libPACKER_XDR${SO_EXT}:
 	${MAKE} -C libpacker/xdr
 
-libPACKER_XML.so:
+libPACKER_XML${SO_EXT}:
 	${MAKE} -C libpacker/xml
 
-libSQL_nosql.so:
-	${MAKE} -C libsql/nosql nosql.so
+libSQL_nosql${SO_EXT}:
+	${MAKE} -C libsql/nosql
 
-libSQL_iodbc.so:
+libSQL_iodbc${SO_EXT}:
 	${MAKE} -C libsql/odbc iodbc
 
-libSQL_unixodbc.so:
+libSQL_unixodbc${SO_EXT}:
 	${MAKE} -C libsql/odbc unixodbc
 
 libSQL_esql${SO_EXT}:
 	${MAKE} -C libsql/esqlc
 
-libSQL_ifxodbc.so:
+libSQL_ifxodbc${SO_EXT}:
 	${MAKE} -C libsql/odbc ifxodbc
 
-libSQL_pgodbc.so:
+libSQL_pgodbc${SO_EXT}:
 	${MAKE} -C libsql/odbc pgodbc
 
-libSQL_sapodbc.so:
+libSQL_sapodbc${SO_EXT}:
 	${MAKE} -C libsql/odbc sapodbc
 
-libRPC_XDR.so:
+libRPC_XDR${SO_EXT}:
 	${MAKE} -C librpc/sun_rpc $@
 
-libRPC_NORPC.so:
+libRPC_NORPC${SO_EXT}:
 	${MAKE} -C librpc/no_rpc $@
 
-libRPC_XMLRPC.so:
+libRPC_XMLRPC${SO_EXT}:
 	${MAKE} -C librpc/xml_rpc $@
 
 libEXDTYPE_mpz${SO_EXT}:
@@ -225,7 +225,7 @@ libA4GL_HTML${SO_EXT}:
 clean : \
 	clean.generated clean.libsql clean.libpdf clean.libincl clean.librpc \
 	clean.other clean.libui
-	${RM} core *.out *.glb *.so *.a  *.bak *.dll *.stackdump *.err *.base *.exp \
+	${RM} core *.out *.glb *${SO_EXT} *.a  *.bak *.dll *.stackdump *.err *.base *.exp \
     bin/*.bak liblex/*.bak libpacker/*.bak libsql/*.bak
 
 clean.generated:

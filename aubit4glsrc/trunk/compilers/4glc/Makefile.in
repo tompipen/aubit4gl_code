@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.43 2002-09-24 04:39:43 afalout Exp $
+# $Id: Makefile.in,v 1.44 2002-09-25 05:42:13 afalout Exp $
 #
 
 ROOT		=../..
@@ -151,7 +151,7 @@ lclint: $(CMODS)
 ## ==================================================================
 
 clean: clean.rules.generated clean.rules
-	${RM} *.so *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .*.bak .\#* 4glp *.log *.dll *.dll.a
+	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .*.bak .\#* 4glp *.log *.dll *.dll.a
 
 clean.rules.generated:
 	(cd ${GENRULES}; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule *.output *.bak .*.bak)

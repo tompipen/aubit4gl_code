@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2002-07-07 08:46:04 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-09-25 05:42:15 afalout Exp $
 #
 
 
@@ -91,7 +91,7 @@ CFLAGS_XMLRPC_C =$(CFLAGS:%-Wstrict-prototypes=%)
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libRPC_XMLRPC.so: ${OBJS_RPC}
+libRPC_XMLRPC${SO_EXT}: ${OBJS_RPC}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${CLIENT_LIBS}
 	${CP} $@ ${LIBROOT}
 
@@ -109,7 +109,7 @@ dlllibRPC_XMLRPC: ${CMODS_RPC}
 
 clean :
 #	${RM} $(OBJS) $(OBJS_DEBUG)
-	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core
+	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err core
 	${RM} *.base *.exp libRPC_XMLRPC.def
 
 ## ==================================================================

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-04-02 08:50:27 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-09-25 05:42:14 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -35,10 +35,10 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-libA4GL_file.so: libfile.4gl
+libA4GL_file${SO_EXT}: libfile.4gl
 	${SH} 4glpc -as-dll $^ -o $@
 	${CP} $@ ../..
 
 
 clean:
-	${RM} *.out *.c *.h *.so *.err *.bak *.glb *.h
+	${RM} *.out *.c *.h *${SO_EXT} *.err *.bak *.glb *.h

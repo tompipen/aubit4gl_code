@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-07-07 08:46:04 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-09-25 05:42:15 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -45,7 +45,7 @@ OBJS				=${CMODS:.c=.o}
 ## ==================================================================
 
 CFLAGS				+=-I.. -I../../libincl -I../../../compilers/fcompile
-ALL 				=libMSG_NATIVE.so
+ALL 				=libMSG_NATIVE${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -54,7 +54,7 @@ ALL 				=libMSG_NATIVE.so
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libMSG_NATIVE.so : ${OBJS}
+libMSG_NATIVE${SO_EXT} : ${OBJS}
 	${LD} ${SO_LDFLAGS} -o $@ $^
 	${CP} $@ ../..
 
@@ -90,7 +90,7 @@ readmsg.o: ../../../compilers/fcompile/form_x.h
 ## ==================================================================
 
 clean :
-	${RM} $(OBJS) core *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll \
+	${RM} $(OBJS) core *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll \
 	*.stackdump *.err *.base *.exp
 
 ## ==================================================================

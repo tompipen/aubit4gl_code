@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.9 2002-09-08 09:41:06 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.10 2002-09-25 05:42:13 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -183,23 +183,6 @@ make install
 @LIBFILE_28@
 @LIBFILE_29@
 @LIBFILE_30@
-
-#/opt/aubit4gl/lib/libaubit4gl.so
-#/opt/aubit4gl/lib/libEXREPORT_NOPDF.so
-#/opt/aubit4gl/lib/libRPC_NORPC.so
-#/opt/aubit4gl/lib/libFORM_NOFORM.so
-#/opt/aubit4gl/lib/libMENU_NOMENU.so
-#/opt/aubit4gl/lib/libSQL_nosql.so
-#/opt/aubit4gl/lib/libUI_CONSOLE.so
-#/opt/aubit4gl/lib/libMSG_NATIVE.so
-#/opt/aubit4gl/lib/libLEX_C.so
-#/opt/aubit4gl/lib/libLEX_PERL.so
-#/opt/aubit4gl/lib/libDATA_menu_list.so
-#/opt/aubit4gl/lib/libDATA_report.so
-#/opt/aubit4gl/lib/libDATA_struct_form.so
-#/opt/aubit4gl/lib/libPACKER_PERL.so
-#/opt/aubit4gl/lib/libPACKER_PACKED.so
-#/opt/aubit4gl/lib/libPACKER_XML.so
 
 #Executables:
 /opt/aubit4gl/bin/4glc

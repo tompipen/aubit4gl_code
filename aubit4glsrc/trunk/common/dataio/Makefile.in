@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.7 2002-09-24 09:29:43 afalout Exp $
+# $Id: Makefile.in,v 1.8 2002-09-25 05:42:13 afalout Exp $
 #
 
 ROOT        =../..
@@ -85,7 +85,7 @@ XGENEXE    		=${ROOT}/compilers/xgen/xgen
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-#ld  -o ../../lib/libDATA_struct_form.so form_x.xi.o form_x.xio.o form_x.xo.o -r
+#ld  -o ../../lib/libDATA_struct_form${SO_EXT} form_x.xi.o form_x.xio.o form_x.xo.o -r
 
 ${LIBROOT}/libDATA_struct_form${SO_EXT}: form_x.xi.o form_x.xio.o form_x.xo.o
 #	${LD} $(CFLAGS) ${SHARED} -o $@ $^

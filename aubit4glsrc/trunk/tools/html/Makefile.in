@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2002-09-08 10:38:20 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-09-25 05:42:16 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -69,9 +69,9 @@ simple_html.sf:
 	@echo "simple_html sh script created"
 
 
-libA4GL_HTML.so: libahtmllib.4gl
+libA4GL_HTML${SO_EXT}: libahtmllib.4gl
 	${SH} 4glpc -as-dll $^ -o $@
-	cp $@ ../../../lib
+	${CP} $@ ../../../lib
 
 
 ## ==================================================================
@@ -80,11 +80,11 @@ libA4GL_HTML.so: libahtmllib.4gl
 
 #This will copy to local cgi-bin:
 copy.cgi: simple_html.4ae simple_html
-	@if [ -d /usr/Apache-JServ/webserver/cgi-bin ] ;then cp simple_html.4ae simple_html /usr/Apache-JServ/webserver/cgi-bin; fi
+	@if [ -d /usr/Apache-JServ/webserver/cgi-bin ] ;then ${CP} simple_html.4ae simple_html /usr/Apache-JServ/webserver/cgi-bin; fi
 	@echo "Programs copied to local cgi-bin"
 
 copy.css:
-	@if [ -d /usr/Apache-JServ/webserver/cgi-bin ] ;then cp *.css /usr/Apache-JServ/webserver/cgi-bin; fi
+	@if [ -d /usr/Apache-JServ/webserver/cgi-bin ] ;then ${CP} *.css /usr/Apache-JServ/webserver/cgi-bin; fi
 
 #This will use expect script "autosfscp-cgi" to provide password:
 put.cgi: simple_html.4ae simple_html
@@ -98,7 +98,8 @@ put.cgi.manual: simple_html.4ae simple_html
 
 #this will put any file to cgi-bin on SF: "make put.manual FILE=myfile"
 put.manual:
-	scp $(FILE) afalout@aubit4gl.sourceforge.net:/home/groups/a/au/aubit4gl/cgi-bin
+	scp $(FILE) afalout@aubit4gl
+	urceforge.net:/home/groups/a/au/aubit4gl/cgi-bin
 
 
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.15 2002-09-17 08:12:52 afalout Exp $
+# $Id: Makefile.in,v 1.16 2002-09-25 05:42:15 afalout Exp $
 #
 
 ROOT		=../../..
@@ -74,7 +74,7 @@ endif
 
 ALL: ${ALL}
 
-libSQL_esql.so: ${OBJS}
+libSQL_esql${SO_EXT}: ${OBJS}
 	${LD} -L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
 		-L$(INFORMIXDIR)/lib/cli $(SO_LDFLAGS) $^ @IFX_LIBS@ -o $@
 	${CP} $@ ${LIBROOT}
@@ -102,7 +102,7 @@ ${LIBROOT}/libaubit4gl.def:
 ## ==================================================================
 
 clean:
-	${RM} *.o *.so *.bak *.c *.obj *.c_ *.a *.dll *.lnk *.map *.exp *.lib
+	${RM} *.o *${SO_EXT} *.bak *.c *.obj *.c_ *.a *.dll *.lnk *.map *.exp *.lib
 
 #------------------------------- EOF -------------------------------
 

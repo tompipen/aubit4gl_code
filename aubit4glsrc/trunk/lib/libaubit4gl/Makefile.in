@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.30 2002-09-23 05:13:02 afalout Exp $
+# $Id: Makefile.in,v 1.31 2002-09-25 05:42:14 afalout Exp $
 #
 
 ROOT    	=../..
@@ -116,7 +116,7 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-${LIBROOT}/libaubit4gl.so : $(OBJS)
+${LIBROOT}/libaubit4gl${SO_EXT} : $(OBJS)
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINK_LIBS}
 #	${CP} $@ ..
 
@@ -186,7 +186,7 @@ builtin.o: ../../compilers/fcompile/form_x.h
 clean : clean.generated
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
 		form_x_xdr.c form_x.h project.c core \
-		*.out *.glb *.so *.a  *.o  *.bak *.dll *.stackdump *.err \
+		*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.dll *.stackdump *.err \
 		*.base *.exp libaubit4gl.def
 
 clean.generated:

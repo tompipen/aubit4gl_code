@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.2 2002-07-07 08:46:04 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-09-25 05:42:14 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -78,7 +78,7 @@ CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/fcompile 
 ##                              Targets
 ## ==================================================================
 
-libFORM_NOFORM.so : ${OBJS_FORM_NOFORM}
+libFORM_NOFORM${SO_EXT} : ${OBJS_FORM_NOFORM}
 	${LD} ${SO_LDFLAGS} -o $@ $^
 	${CP} $@ ../..
 
@@ -117,7 +117,7 @@ clean :
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c
 	${RM} form_x_xdr.c form_x.h project.c aubit-config
 	${RM} loadmap loadmap.c loadmap.h core
-	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
+	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
 	${RM} *.base *.exp libaubit4gl.def
 
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-07-14 08:09:55 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-09-25 05:42:14 afalout Exp $
 #
 
 ROOT        =../../..
@@ -48,7 +48,7 @@ override NOINCL=0
 ifneq "${COMSPEC}" ""
 	ALL         = dllLEX_C
 else
-	ALL         = libLEX_C.so
+	ALL         = libLEX_C${SO_EXT}
 endif
 
 CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
@@ -59,7 +59,7 @@ CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/
 
 ALL: ${ALL}
 
-libLEX_C.so : ${4GLCOBJ_C}
+libLEX_C${SO_EXT} : ${4GLCOBJ_C}
 	${LD} ${SO_LDFLAGS} -o $@ $^
 	${CP} $@ ${LIBROOT}
 
@@ -107,7 +107,7 @@ ${ROOT}/compilers/4glc/rules/generated/kw.h ${ROOT}/compilers/4glc/rules/generat
 ## ==================================================================
 
 clean:
-	${RM} *.so *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glp *.log *.dll *.dll.a
+	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glp *.log *.dll *.dll.a
 
 
 #--------------------------------- EOF -----------------------------

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: Makefile.in,v 1.2 2002-09-25 05:42:15 afalout Exp $
 #
 
 LIBROOT=../..
@@ -128,7 +128,7 @@ CFLAGS_MENU_X_XDR_C =$(CFLAGS:%-Wall=%)
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libMENU_XDR.so : ${OBJS_MENU_XDR}
+libMENU_XDR${SO_EXT} : ${OBJS_MENU_XDR}
 	${LD} ${SO_LDFLAGS} @GTK_LIB_PATH@ @GTKLIBS@ ${GTKLIBS} ${RPCLIB_NAME} -o $@ $^
 	${CP} $@ ${LIBROOT}
 
@@ -180,7 +180,7 @@ clean :
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
 	form_x_xdr.c form_x.h project.c aubit-config \
 	loadmap loadmap.c loadmap.h core \
-	*.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
+	*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
 	*.base *.exp libaubit4gl.def
 
 

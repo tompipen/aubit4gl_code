@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-09-21 08:37:31 afalout Exp $
+# $Id: Makefile.in,v 1.9 2002-09-25 05:42:13 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -76,7 +76,7 @@ generated/fgl.yacc: *.rule *.reqd generated/kw.yh generated/single_words.rule
 # A Bison parser, will use fgl.yacc to create y.tab.c from it
 generated/y.tab.c: ${Y_TAB_C_DEP}
 ifeq "@YACC@" "no"
-	cp ${Y_TAB_C_DEP} .
+	${CP} ${Y_TAB_C_DEP} .
 else
 	(cd generated; unset DEBUG; ${YACC} -d -v fgl.yacc)
 endif

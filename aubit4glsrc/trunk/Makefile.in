@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.88 2002-09-23 10:23:52 afalout Exp $
+# $Id: Makefile.in,v 1.89 2002-09-25 05:41:51 afalout Exp $
 #
 
 ## ==================================================================
@@ -132,7 +132,7 @@ libstring:
 	$(MAKE) -C lib/extra_libs/string
 
 libhtml:
-	$(MAKE) -C tools/html libA4GL_HTML.so
+	$(MAKE) -C tools/html libA4GL_HTML${SO_EXT}
 
 adbaccess:
 	$(MAKE) -C tools/adbaccess use.amake
@@ -141,7 +141,7 @@ odbctest:
 	$(MAKE) -C tools/odbctest
 
 jabber:
-	$(MAKE) -C tools/jabber libIM_JABBER.so
+	$(MAKE) -C tools/jabber libIM_JABBER${SO_EXT}
 
 adbload:
 	$(MAKE) -C tools/adbload
@@ -684,7 +684,7 @@ libtool:
 #	cp /usr/local/share/libtool/config.* /usr/local/share/libtool/lt* etc/config
 #	cp /usr/local/share/libtool/ltconfig /usr/local/share/libtool/ltmain.in etc/config
 	(cd etc/config; ./ltconfig ./ltmain.sh)
-	cp etc/config/libtool .
+	${CP} etc/config/libtool .
 
 
 
@@ -738,8 +738,8 @@ show.platform: platform.common
 
 platform: OUT = $(PLATFORMINFO)
 platform: savesettings platform.common
-	@cp $(OUT) $(INSTALL_DIR)
-	@cp $(OUT) ${PLATFORMINFOFULL}
+	@${CP} $(OUT) $(INSTALL_DIR)
+	@${CP} $(OUT) ${PLATFORMINFOFULL}
 	@echo "platform: See result in ${OUT}"
 	@echo "Also copied to $(INSTALL_DIR)/$(OUT) and ${PLATFORMINFOFULL}"
 

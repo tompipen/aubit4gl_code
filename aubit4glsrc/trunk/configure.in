@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.101 2002-09-25 01:27:02 afalout Exp $
+# $Id: configure.in,v 1.102 2002-09-25 05:41:52 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2849,12 +2849,12 @@ LIB_PREFIX=$prefix/aubit4gl/lib
 
 	#this is made by 'make extra'
 	if test "$JABBERBUILD" != "no"; then
-		RPMFILE_20=$LIB_PREFIX/libIM_JABBER.so
+		RPMFILE_20=$LIB_PREFIX/libIM_JABBER$SO_EXT
 	fi
 
-	RPMFILE_21=$LIB_PREFIX/libA4GL_file.so
-	RPMFILE_22=$LIB_PREFIX/libA4GL_string.so
-	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML.so
+	RPMFILE_21=$LIB_PREFIX/libA4GL_file$SO_EXT
+	RPMFILE_22=$LIB_PREFIX/libA4GL_string$SO_EXT
+	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT
 	#RPMFILE_24=$LIB_PREFIX/
 	#RPMFILE_25=$LIB_PREFIX/
 	#RPMFILE_26=$LIB_PREFIX/
