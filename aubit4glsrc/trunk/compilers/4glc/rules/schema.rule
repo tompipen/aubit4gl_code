@@ -33,7 +33,7 @@ create_c_2_ss  :
 
 
 create_c_1  : 
-	CREATE_IDX idx_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);} 
+	CREATE_IDX table_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);} 
 	| CREATE_DATABASE ident_or_var {
 		a4gl_yyerror("You cannot create a database from within Aubit4gl....");
 	}
