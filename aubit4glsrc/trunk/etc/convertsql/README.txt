@@ -123,3 +123,27 @@ The possible directives are listed below:
    eg. 
       REPLACE_COMMAND set isolation to dirty read =
 
+
+
+
+
+
+New Directives
+
+ MONEY_AS_DECIMAL
+	Use the DECIMAL datatype in place of MONEY
+
+ STRIP_ORDER_BY_INTO_TEMP
+	Strips order by's from select...into temp
+	
+ ADD_CASCADE
+	Adds the keyword CASCADE to a drop table
+
+ OMIT_NO_LOG
+	Ignores any "WITH NO LOG" on an into temp
+
+
+
+ SQL_CURRENT_FUNCTION = functionname
+	Use a function for generating the current date/time - this function should accept two parameters 
+	"from" and "to" which are text strings eg "YEAR","SECOND"
