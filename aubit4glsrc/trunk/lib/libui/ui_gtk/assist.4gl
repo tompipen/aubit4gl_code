@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.4 2003-01-27 05:47:36 afalout Exp $
+# $Id: assist.4gl,v 1.5 2003-02-08 06:48:10 afalout Exp $
 
 # ASSIST.4gl
 #
@@ -283,6 +283,9 @@ code
 	gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->cancel_button),
 	                                       "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
 	                                       (gpointer) file_selector);
+#else
+    printf ("FIXME: disabled stuff in assist.4gl");
+    exit (4);
 #endif
 	/* Display that dialog */
 

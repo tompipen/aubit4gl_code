@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: aubitbuild.sh.in,v 1.15 2003-01-30 11:54:38 afalout Exp $
+# $Id: aubitbuild.sh.in,v 1.16 2003-02-08 06:47:58 afalout Exp $
 #
 
 #Use this script in corn for Aubit nightly automatic builds
@@ -183,6 +183,9 @@ SRPM_PATH=/usr/src/redhat/SRPMS
 RPM_PATH=/usr/src/redhat/RPMS/i586
 RPMBUILD_PATH=/usr/src/redhat/BUILD
 RPMSRC_PATH=/usr/src/redhat/SOURCES
+
+
+VERBOSE=1
 
 ## ==================================================================
 ##                      Platform dependent Configuration
@@ -541,7 +544,7 @@ if test "$MAKE" = "1"; then
 	        if test "$TMP" = ""; then
 	            echo "ERROR: libaubit4gl.dll DOES NOT depend on cygwin1.dll"
 	        fi
-            #store libUI_TUI.dll so we can psckage it with cygwin1.dll for native windows port later:
+            #store libUI_TUI.dll so we can package it with cygwin1.dll for native windows port later:
             cp lib/libUI_TUI.dll /tmp
 		fi
 
@@ -651,10 +654,10 @@ else
 	BINRPMBASENAME=`basename $BINRPM`
 fi
 
-
 if test "$WINSETUP" = "1"; then
     ################## make Windows installer #######################
 
+    NEWPATH=
 	TMP=`echo $PATH | grep M-i-n-G-W`
 	if test "$TMP" != ""; then
     	#For Windows setup installer we need Windows native version,
@@ -670,15 +673,16 @@ if test "$WINSETUP" = "1"; then
             #there is no MinGW in the path at all, add it:
 			NEWPATH="D:/MinGW/bin:$PATH"
             echo "Added MinGW to the PATH"
-        fi
+		fi
     fi
 
+    if [ "$NEWPATH" != "" ]; then
         PATH=$NEWPATH
         export PATH
 		if test "$VERBOSE" = "1"; then
 			echo "PATH changed to $PATH"
         fi
-
+    fi
 
         #deinall first, so that we don't accidentally link with CygWin dependent
 		#libaubit4gl still in the path"
@@ -1016,7 +1020,14 @@ echo "******* `date` ********" >> $LOGFILE
 echo "***********************" >> $LOGFILE
 echo " " >> $LOGFILE
 
+if test "$VERBOSE" = "1"; then
+    echo "Successfully reached the end of aubitbuild.sh script. Exiting."
+fi
+
 echo " "
+
+
+
 
 #done
 exit 0

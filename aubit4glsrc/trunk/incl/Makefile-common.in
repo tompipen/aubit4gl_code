@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.115 2003-02-04 05:21:40 afalout Exp $
+# $Id: Makefile-common.in,v 1.116 2003-02-08 06:48:10 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -189,10 +189,13 @@ endif
 
 GCC_MINGW=@GCC_MINGW@
 
+#Needed for fixing include paths in UI_GTK:
+#FIXME: find a way to get this from Autoconf:
+WIN_CYGPATH	=D:/cygwin
+
+
 ifeq "${GCC_MINGW}" "yes"
     WIN_PATH	=1
-	#Needed for fixing include paths in UI_GTK:
-	WIN_CYGPATH	=D:/cygwin
     #AUBITDIR	:=${WIN_CYGPATH}${AUBITDIR}
 	#this would incalidate all LINK_LIBS+=-laubit4gl that we need:
 	#TARGET_OS	=mingw

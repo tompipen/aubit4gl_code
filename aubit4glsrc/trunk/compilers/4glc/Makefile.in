@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.55 2003-02-07 04:01:41 afalout Exp $
+# $Id: Makefile.in,v 1.56 2003-02-08 06:48:10 afalout Exp $
 #
 
 ROOT		=../..
@@ -122,7 +122,7 @@ all: ${ALL}
 ${ROOT}/bin/4glc: ${4GLCAOBJ}
 	${LD_EXE} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB}
 #ifeq "${STRIP_EXECUTABLES}" "yes"
-	${STRIP} -o $@-strip $@
+	${STRIP} -o $@-strip${EXEEXT} $@${EXEEXT}
 #endif
 
 ## ==================================================================

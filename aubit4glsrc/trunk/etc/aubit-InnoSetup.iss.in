@@ -23,7 +23,7 @@
 ; | contact afalout@ihug.co.nz                                           |
 ; +----------------------------------------------------------------------+
 ;
-; $Id: aubit-InnoSetup.iss.in,v 1.6 2003-01-29 02:57:09 afalout Exp $
+; $Id: aubit-InnoSetup.iss.in,v 1.7 2003-02-08 06:48:10 afalout Exp $
 ;
 
 
@@ -192,7 +192,7 @@ Source: @IS_SOURCE@\incl\header.mki; DestDir: {app}\incl; Components: Make
 Source: @IS_SOURCE@\incl\a4gl.mk; DestDir: {app}\incl; Components: Make
 Source: @IS_SOURCE@\incl\Makefile-common; DestDir: {app}\incl; Components: Make
 Source: @IS_SOURCE@\incl\Makefile-install.mki; DestDir: {app}\incl; Components: Make
-Source: @IS_SOURCE@\incl\maximise.mki; DestDir: {app}\incl; Components: Make
+;Source: @IS_SOURCE@\incl\maximise.mki; DestDir: {app}\incl; Components: Make
 Source: @IS_SOURCE@\incl\q4gl.mk; DestDir: {app}\incl; Components: Make
 
 ;=========================
