@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.7 2003-01-12 21:28:26 saferreira Exp $
+# $Id: a4gl_API_sql.h,v 1.8 2003-01-14 06:22:50 psterry Exp $
 #
 */
 
@@ -47,12 +47,7 @@ define it in any case? */
 #ifndef DLSQLDEF_INCL
 #define DLSQLDEF_INCL
 
-
 /* ==================== from a4gl_database.h ============== */
-
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
 
 	/**
 	 * An SQL statement identification structure.
@@ -92,12 +87,13 @@ extern "C" {
 	char * 	A4GLSQL_get_curr_conn 	(void);
 	char *	A4GLSQL_get_sqlerrm 	(void);
 	int 	A4GLSQL_read_columns	(char *tabname, char *colname, int *dtype, int *size);
-	/** @todo : Wy use UCHAR and not char *? */
 	int 	A4GLSQL_make_connection	(UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p);
 	int 	A4GLSQL_get_datatype   	(char *db, char *tab, char *col);
 	int 	A4GLSQL_init_session   	(char *sessname, char *dsn, char *usr, char *pwd);
 	int 	A4GLSQL_set_conn   		(char *sessname);
-	int 	A4GLSQL_close_session   (char *sessname);
+	int		A4GLSQL_dbms_type 		(void);
+	char *	A4GLSQL_dbms_name 		(void);
+	int		A4GLSQL_close_session   (char *sessname);
 	int 	A4GLSQL_add_prepare   	(char *pname, struct s_sid *sid);
 	int 	A4GLSQL_open_cursor   	(int ni, char *s);
 	void 	A4GLSQL_put_insert		(struct BINDING *ibind,int n);
@@ -132,10 +128,19 @@ extern "C" {
 
 	// used only in Informix ESQL plug-in
 	int A4GLSQL_close_connection(void);
-#ifdef __cplusplus
-}
-#endif
 
+/* ======================= sqlconvert.c ==================== */
+
+#define DBMS_INFORMIX	 0
+#define DBMS_SAPDB	 1
+#define DBMS_POSTGRESQL	 2
+#define DBMS_MYSQL	 3
+#define DBMS_ORACLE	 4
+#define DBMS_SQLSERVER	 5
+#define DBMS_INTERBASE	 6
+#define DBMS_OTHER    	99
+
+void convert_sql( int dbms, char *sql );
 
 #endif /* ifndef DLSQLDEF_INCL */
 
