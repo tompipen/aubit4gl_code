@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.77 2004-03-17 15:14:32 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.78 2004-05-20 15:58:14 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.77 2004-03-17 15:14:32 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.78 2004-05-20 15:58:14 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -730,7 +730,7 @@ print_fetch_3 (char *ftp, char *into)
   printc ("int _fp;");
   printc ("EXEC SQL END DECLARE SECTION;");
 
-  if (strstr (ftp, "pop_int") == 0)
+  if (strstr (ftp, "pop_long") == 0)
     {
       char *ptr;
       char *ptr2;
@@ -782,7 +782,7 @@ print_fetch_3 (char *ftp, char *into)
       *ptr2 = 0;
       fp1 = atoi (ptr);
       poped = 1;
-      printc ("_fp=A4GL_pop_int();");
+      printc ("_fp=A4GL_pop_long();");
     }
 
   strcpy (buff, "EMPTY");
