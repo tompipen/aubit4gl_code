@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.94 2005-02-11 16:52:39 mikeaubury Exp $
+# $Id: resource.c,v 1.95 2005-02-14 14:26:14 mikeaubury Exp $
 #
 */
 
@@ -555,7 +555,7 @@ find_str_resource (char *s)
 
 char * acl_getenv (char *s) {
 	char *ptr;
-	if (strstr(s,"HELP")) A4GL_pause_execution();
+	//if (strstr(s,"HELP")) A4GL_pause_execution();
 	ptr=acl_getenv_internal(s,1);
 	return ptr;
 }
