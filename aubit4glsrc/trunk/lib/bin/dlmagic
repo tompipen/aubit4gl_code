@@ -95,7 +95,7 @@ if [ "$MAKE_HEADER" == "1" ]
 then
 	$AWK -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
 	BEGIN {
-		FS="[ 	,]"
+		FS="[ \t,]+"
 		print ""
 		print "/*"
 		print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
@@ -157,6 +157,7 @@ then
 	c=0
 	for (a=2;a<=NF;a++) 
 	{
+		if ($a==" "||$a=="\t"||$a==",") continue;
 		param_type[c]=$a
 		if (param_type[c]=="->")
 		{
@@ -226,8 +227,26 @@ fi
 
 
 $AWK -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" '
+
+function ring(rtype) {
+if (rtype=="char*") { print "A4GL_debug(\"Returning (%s)\",rval);"; return;}
+if (rtype=="void*") { print "A4GL_debug(\"Returning (%p)\",rval);"; return;}
+if (rtype=="int") { print "A4GL_debug(\"Returning '%d'\",rval);"; return;}
+print "A4GL_debug(\"Returning Unknown '%p'\",rval);"
+}
+function ping(rtype,name) {
+if (rtype=="char*")  return "(%s)"
+if (rtype=="char")  return "(%c)"
+if (rtype=="void*")  return "%p"
+if (rtype=="va_list*")  return "%p"
+if (rtype=="int") return "%d"
+return "%p" 
+#print "Unknown type : " rtype > "dlmagic.log"
+}
+
+
 BEGIN {
-FS="[ 	,]"
+FS="[ 	,]+"
 print "/*"
 print " * lib=" lib " env=" env " lib_prefix=" lib_prefix " api_prefix=" api_prefix
 print " * @file"
@@ -316,6 +335,7 @@ rtype="void"
 
 c=0
 for (a=2;a<=NF;a++) {
+
 param_type[c]=$a
 if (param_type[c]=="->") {
 	param_type[c]=""
@@ -353,13 +373,18 @@ c++;
 printf rtype " " api_prefix fname "("
 va_start=""
 args=""
+debug_args="Call to " rtype " " api_prefix fname "("
+
 for (b=0;b<c;b++) {
 	printf("%s %s",param_type[b],param_name[b]);
 	if (param_type[b]=="...") {
 		va_start=last;
 		args=args ",&ap"
-	}
-	else {
+		if (b) debug_args=debug_args "," 
+		debug_args=debug_args ping("va_list*",param_name[b]);
+	} else {
+		if (b) debug_args=debug_args "," 
+		debug_args=debug_args ping(param_type[b],param_name[b])
 		args=args "," param_name[b]
 	}
 	last=param_name[b]
@@ -370,7 +395,17 @@ for (b=0;b<c;b++) {
 args=substr(args,2)
 print ") {"
 if (va_start!="") {print "va_list ap;"}
+if (rtype!="void") {
+	print rtype " rval;"
+}
 
+print "#ifdef DEBUG"
+debug_args=debug_args ")"
+if (args!="")
+print "A4GL_debug(\"" debug_args "\\n\"," args ");"
+else
+print "A4GL_debug(\"" debug_args "\\n\");"
+print "#endif"
 print "   if (libptr==0) A4GL" lib "_initlib();"
 print "   func=A4GL_find_func(libptr,\"" lib_prefix call_fname "\");"
 if (va_start!="") {
@@ -379,9 +414,13 @@ if (va_start!="") {
 
 if (rtype=="void")
 	print "   func(" args ");"
-else
-#	print "   return func(" args ");"
-	printf "   return (" rtype ")func(" args ");"
+else {
+	print "   rval=(" rtype ")func(" args ");"
+	print "#ifdef DEBUG"
+	print ring(rtype)
+	print "#endif"
+	print "return rval;"
+}
 
 print "}"
 print ""

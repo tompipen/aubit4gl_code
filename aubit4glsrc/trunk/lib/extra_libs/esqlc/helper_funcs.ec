@@ -176,13 +176,16 @@ int mdy_i[3];
 		mdy[0]=mdy_i[0]; // In aubit - these are integers
 		mdy[1]=mdy_i[1]; // so we need to copy them into the shorts
 		mdy[2]=mdy_i[2]; // That informix is expecting
+		A4GL_debug("copy_date : mode=i - %d %d %d",mdy[0],mdy[1],mdy[2]);
 		rmdyjul(mdy,infx); // Set the informix one
 	}
 
 	if (mode=='o') {
 		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
+		A4GL_debug("Got date as : '%d' %x",*infx,*infx);
 		rjulmdy(*infx,mdy); 				// Get the MDY from informix
 		//printf("%d %d %d\n",mdy[1],mdy[0],mdy[2]);
+		A4GL_debug("copy_date : mode=o - %d %d %d",mdy[0],mdy[1],mdy[2]);
 		*a4gl=A4GL_gen_dateno(mdy[1],mdy[0],mdy[2]); 	// And use it to generate an aubit.
 	}
 }
