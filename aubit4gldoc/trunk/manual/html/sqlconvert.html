@@ -68,7 +68,7 @@ The result is:<pre>
 <p>
 Special configuration files are used to indicate what conversions are needed. They are located in the directory /opt/aubit4gl/etc/convertsql (this can be changed by setting the environment variable <i>A4GL_SQLCNVPATH</i> to an alternative location).
 <p>
-There is one file for each combination of source and target dialect, each file being named as <i>source</i>-<i>target</i>.cnv.  For example, the rules for translating from Informix to PostgreSQL are in a file called <i>INFORMIX-POSTGRES.cnv</i>, in which the conversion rules for the above example are given as:<pre>
+There is one file for each combination of source and target dialect, each file being named as <i>source</i>-<i>target</i>.cnv.  For example, the rules for translating from Informix to PostgreSQL are in a file called <i>INFORMIX-POSTGRESQL.cnv</i>, in which the conversion rules for the above example are given as:<pre>
 DOUBLE_TO_SINGLE_QUOTES
 MATCHES_TO_REGEX
 SUBSTRING_FUNCTION = substr
