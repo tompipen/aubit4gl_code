@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.117 2005-03-28 20:23:24 mikeaubury Exp $
+# $Id: sql.c,v 1.118 2005-03-29 11:24:14 mikeaubury Exp $
 #
 */
 
@@ -94,6 +94,7 @@ void *A4GLSQL_prepare_sql_internal (char *s);
 void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
 int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
 void *A4GL_bind_datetime (void *ptr_to_dtime_var);
+void * A4GL_bind_interval (void *ptr_to_ival);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 #define FETCH_ABSOLUTE 		1
 #define FETCH_RELATIVE 		2
@@ -277,6 +278,15 @@ typedef struct tagACLDTIME
 }
 ACLDTIME;
 
+typedef struct tagACLIVAL
+{
+  union {
+  	char ival_c[65];
+  } ival_u;
+  struct ival *ptr;
+}
+ACLIVAL;
+
 
 /**
  * Conversion table between 4gl and C data types.
@@ -295,8 +305,8 @@ int conv_4gl_to_c[] = {
   -1,
   SQL_C_BINARY,
   SQL_C_BINARY,
-  SQL_C_CHAR,
-  SQL_C_TIME
+  SQL_C_CHAR, /* Varchar */
+  SQL_C_CHAR  /* Interval */
 };
 
 
@@ -336,7 +346,7 @@ int fgl_sizes[] = {
   0,
   0,
   -1,
-  0
+  20
 };
 
 /**
@@ -995,6 +1005,10 @@ A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)	/* mja */
 void *
 A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
 {
+#if (ODBCVER >= 0x0300)
+  //static SQLUINTEGER is_scrollable=SQL_SCROLLABLE;
+  //static SQLUINTEGER isnot_scrollable=SQL_NONSCROLLABLE;
+#endif
   struct s_sid *nsid;
   struct s_cid *cid;
   struct s_sid *sid;
@@ -1044,17 +1058,39 @@ A4GLSQL_declare_cursor (int upd_hold, void *vsid, int scroll, char *cursname)
 #ifdef DEBUG
   A4GL_debug ("Got statement");
 #endif
+
+
+
   if (scroll)
     {
 #ifdef DEBUG
       A4GL_debug ("Setting dynamic cursor");
 #endif
-      rc =
-	SQLSetStmtOption ((SQLHSTMT) nsid->hstmt, SQL_CURSOR_TYPE,
-			  SQL_CURSOR_STATIC);
-      if (rc == 1)
-	rc = 0;
-      chk_rc (rc, nsid->hstmt, "SQLSetScrollOption SCROLL_STATIC");
+
+#if (ODBCVER >= 0x0300)
+      A4GL_debug("Setting cursor type to scrollable");
+      rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_TYPE, (SQLPOINTER)SQL_CURSOR_STATIC, 0);
+      A4GL_debug("set stmt attr rc=%d",rc);
+      rc = SQLSetStmtAttr ((SQLHSTMT) nsid->hstmt, SQL_ATTR_CURSOR_SCROLLABLE, (SQLPOINTER)SQL_SCROLLABLE, 0);
+      A4GL_debug("set stmt attr rc=%d",rc);
+
+      if (rc==1) {
+		//SQLINTEGER bl;
+		SQLINTEGER sl;
+		SQLUINTEGER r=99;
+		SQLUINTEGER r2=99;
+		SQLGetStmtAttr(nsid->hstmt,SQL_ATTR_CURSOR_SCROLLABLE,&r,sizeof(r),&sl);
+		SQLGetStmtAttr(nsid->hstmt,SQL_ATTR_CURSOR_TYPE,&r2,sizeof(r2),&sl);
+		// It didn't like that ?
+		A4GL_debug("Asked for %x - got %x %x",SQL_SCROLLABLE, r,r2);
+      }
+
+#else
+      rc = SQLSetStmtOption ((SQLHSTMT) nsid->hstmt, SQL_CURSOR_TYPE, SQL_CURSOR_STATIC);
+#endif
+
+      if (rc == 1) rc = 0;
+      chk_rc (rc, nsid->hstmt, "SQLSetStmtOption SCROLL_STATIC");
       A4GL_debug (" rc = %d\n", rc);
     }
 #ifdef DEBUG
@@ -1532,21 +1568,38 @@ A4GLSQL_fetch_cursor (char *cursor_name,
 	if (strcmp("INGRES",A4GLSQL_dbms_dialect())==0) use_extended_fetch=0;
  } 
 
+ A4GL_debug("use_Extended_fetch=%d\n",use_extended_fetch);
 
-  if (use_extended_fetch==1) 
+  if (use_extended_fetch==1 && mode!=SQL_FETCH_NEXT) 
     {
 
 #ifdef DEBUG
-      A4GL_debug ("Calling SQLextended fetch with %p %d %d",
-		  cid->statement->hstmt, mode, fetch_when);
+      A4GL_debug ("Calling SQLextended/SQLFetchScroll fetch with %p %d %d", cid->statement->hstmt, mode, fetch_when);
 #endif
       nr = 1;
-      rc = SQLExtendedFetch ((SQLHSTMT) cid->statement->hstmt, mode, fetch_when,
-			  &nr, &nrs[0]);
+
+
+#if (ODBCVER >= 0x0300)
+
+      A4GL_debug("FetchScroll %d %d",mode,fetch_when);
+
+      //printf("%d %d (%d %d %d %d %d)\n",mode,fetch_when,SQL_FETCH_PRIOR,SQL_FETCH_NEXT,SQL_FETCH_FIRST,SQL_FETCH_LAST);
+      rc=SQLFetchScroll((SQLHSTMT) cid->statement->hstmt,mode,fetch_when);
+#else
+	A4GL_debug("ExtendedFetch");
+      rc = SQLExtendedFetch ((SQLHSTMT) cid->statement->hstmt, mode, fetch_when, &nr, &nrs[0]);
+#endif
+
+
+
+
+
       chk_rc (rc, cid->statement->hstmt, "SQLExtendedFetch");
-    }
-  else
-    {
+    } else {
+	A4GL_debug("Normal fetch");
+	if (mode!=SQL_FETCH_NEXT) {
+			printf("WARNING: Fetching next and not supposed to..\n");
+	}
       rc = SQLFetch ((SQLHSTMT) cid->statement->hstmt);
       chk_rc (rc, cid->statement->hstmt, "SQLFetch");
     }
@@ -2518,9 +2571,15 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
     {
       bind->ptr = A4GL_bind_date ((long *) bind->ptr);
     }
+
   if (bind->dtype == DTYPE_DTIME)
     {
       bind->ptr = A4GL_bind_datetime ((void *) bind->ptr);
+    }
+
+  if (bind->dtype == DTYPE_INTERVAL)
+    {
+      bind->ptr = A4GL_bind_interval ((void *) bind->ptr);
     }
 
 
@@ -2674,7 +2733,28 @@ ensure_as_char();
     }
 
 
-  if (bind->dtype == DTYPE_DECIMAL)
+
+  if (bind->dtype == DTYPE_INTERVAL)
+    {
+      ACLIVAL *p;		//@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
+ 	char buff[50];
+      void *ptr;
+      //int d,m,y;
+      A4GL_debug ("Binding Datetime original pointer=%p", bind->ptr);
+
+        ptr = bind->ptr;
+        p = (ACLIVAL *) A4GL_bind_interval (ptr);
+	ensure_as_char();
+       A4GL_inttoc (ptr, buff, bind->size);
+       A4GL_trim (buff);
+      strcpy (p->ival_u.ival_c, buff);
+      size_c = strlen (buff);
+      bind->ptr = p;
+    }
+
+
+
+  if (bind->dtype == DTYPE_DECIMAL || bind->dtype == DTYPE_MONEY)
     {
       double *p;		//@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
       void *ptr;
@@ -3496,6 +3576,7 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
       hstmtGetColumns = 0;
       return 0;
     }
+	A4GL_convlower(cn);
   *colname = cn;
   *dtype = conv_sqldtype (dt, prec);
   if (dt==SQL_TIME) { *dtype=DTYPE_DTIME; prec=0x46; }
@@ -3725,6 +3806,7 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
       return 0;
     }
   strcpy (colname, cn);
+  A4GL_convlower(colname);
   *dtype = conv_sqldtype (dt, prec);
   if (dt==SQL_TIME) { *dtype=DTYPE_DTIME; prec=0x46; }
   *size = prec;
@@ -4098,6 +4180,21 @@ if (dtime_as_char) {
   return (void *) ptr;
 }
 
+void * A4GL_bind_interval (void *ptr_to_ival)
+{
+  ACLIVAL *ptr;
+
+  ptr = malloc (sizeof (ACLIVAL));
+  strcpy (ptr->ival_u.ival_c, "");
+  ptr->ptr = ptr_to_ival;
+  return (void *) ptr;
+}
+
+
+
+
+
+
 /**
  * Binding processing after fetch.
  *
@@ -4113,6 +4210,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
   int zz;
   ACLDATE *date1;
   ACLDTIME *dt1;
+  ACLIVAL *iv1;
 #ifdef DEBUG
   A4GL_debug ("In post_fetch_proc_bind...");
 #endif
@@ -4247,6 +4345,26 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 	}
 
 
+      if (use_binding[bind_counter].dtype == DTYPE_INTERVAL)
+	{
+
+	  char buff[256];
+	  iv1 = use_binding[bind_counter].ptr;
+	  strcpy (buff, iv1->ival_u.ival_c);
+	  A4GL_push_char (buff);
+	  A4GL_setnull (DTYPE_INTERVAL, iv1->ptr, use_binding[bind_counter].size);
+	  A4GL_pop_param (iv1->ptr, DTYPE_INTERVAL, use_binding[bind_counter].size);
+	  continue;
+	}
+
+
+
+
+
+
+
+
+
       if (use_binding[bind_counter].dtype == DTYPE_DTIME)
 	{
 
@@ -4340,15 +4458,13 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 
 	    }
 	  A4GL_push_char (buff);
-	  A4GL_setnull (DTYPE_DTIME, dt1->ptr,
-			use_binding[bind_counter].size);
-	  A4GL_pop_param (dt1->ptr, DTYPE_DTIME,
-			  use_binding[bind_counter].size);
+	  A4GL_setnull (DTYPE_DTIME, dt1->ptr, use_binding[bind_counter].size);
+	  A4GL_pop_param (dt1->ptr, DTYPE_DTIME, use_binding[bind_counter].size);
 	  continue;
 	}
 
 
-      if (use_binding[bind_counter].dtype == DTYPE_DECIMAL)
+      if (use_binding[bind_counter].dtype == DTYPE_DECIMAL || use_binding[bind_counter].dtype == DTYPE_MONEY)
 	{
 	  // We've actually selected into a double...
 	  double d;
@@ -4381,6 +4497,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind,
 	if (use_binding[a].dtype == DTYPE_CHAR
 	    || use_binding[a].dtype == DTYPE_VCHAR
 	    || use_binding[a].dtype == DTYPE_DECIMAL
+	    || use_binding[a].dtype == DTYPE_MONEY
 	    || use_binding[a].dtype == DTYPE_DTIME)
 	  {
 	    A4GL_debug ("Need to add size to dtype");
@@ -4671,7 +4788,15 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,
 		}
 	      else
 		{
-		  fprintf (fout, "%s%c", databuf, delims[0]);
+		if (coltype[colcnt] ==SQL_DOUBLE) {
+			if (strchr(databuf,'.') ||strchr(databuf,',') ||strchr(databuf,'e')  )  {
+		  		fprintf (fout, "%s%c", databuf, delims[0]);
+			} else {
+		  		fprintf (fout, "%s.0%c", databuf, delims[0]);
+			}
+		} else {
+		  	fprintf (fout, "%s%c", databuf, delims[0]);
+		}
 		}
 	    }
 	}

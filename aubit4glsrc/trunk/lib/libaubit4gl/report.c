@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.63 2005-03-28 20:23:23 mikeaubury Exp $
+# $Id: report.c,v 1.64 2005-03-29 11:24:13 mikeaubury Exp $
 #
 */
 
@@ -931,7 +931,7 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no,
 
   sprintf (buff, "select * from %s order by ", gen_rep_tab_name (b));
 
-  //A4GL_unload_report_table(b) ; // This is useful for debugging....
+  A4GL_unload_report_table(b) ; // This is useful for debugging....
 
   for (a1 = 0; a1 < no; a1++)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.207 2005-03-09 15:14:27 mikeaubury Exp $
+# $Id: mod.c,v 1.208 2005-03-29 11:22:31 mikeaubury Exp $
 #
 */
 
@@ -4224,7 +4224,6 @@ fix_update_expr (int mode)
   char *ccol;
   strcpy (big_buff, "SET ");
 
-
   if (mode == 1)
     {
       /* It will only be a '*' anyway....*/
@@ -4272,6 +4271,7 @@ dump_updvals();
     {
       if (a)
 	strcat (big_buff, ",");
+	//printf("col=%s\n",gen_stack[UPDCOL][a]);
       sprintf (buff, "%s=%s", gen_stack[UPDCOL][a], gen_stack[UPDVAL][a]);
       strcat (big_buff, buff);
     }

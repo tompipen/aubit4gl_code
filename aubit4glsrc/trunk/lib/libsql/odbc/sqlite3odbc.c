@@ -2,7 +2,7 @@
  * @file sqlite3odbc.c
  * SQLite3 ODBC Driver main module.
  *
- * $Id: sqlite3odbc.c,v 1.1 2004-12-19 08:24:52 afalout Exp $
+ * $Id: sqlite3odbc.c,v 1.2 2005-03-29 11:24:14 mikeaubury Exp $
  *
  * Copyright (c) 2004 Christian Werner <chw@ch-werner.de>
  *
@@ -9283,6 +9283,7 @@ begin_again:
 	/*
 	 * INSERT/UPDATE/DELETE results are immediately released.
 	 */
+	//set_last_serial(sqlite_last_insert_rowid());
 	freeresult(s, -1);
 	s->nrows = sqlite3_changes(d->sqlite);
 	goto done;

@@ -43,7 +43,7 @@ set_clause_list_ss:
 			 add_feature("UPDATE_COLUMNLIST_EQ_VALUELIST");
 		$<sql_string>$=make_sql_string_and_free(strdup("SET ("),strdup($<str>2),strdup(")=("),$<sql_string>6,kw_cb,0);
 
-		if (A4GL_isyes(acl_getenv("FIXUPDATE"))) { 
+		if (A4GL_isyes(acl_getenv("FIXUPDATE"))||1) { 
 			$<sql_string>$=strdup(fix_update_expr(0)); 
 			ansi_violation("Update (..)=(..)",0);
 		}  else {

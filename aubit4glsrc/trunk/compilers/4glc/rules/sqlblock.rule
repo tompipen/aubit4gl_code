@@ -26,7 +26,7 @@ sql_block :
 sql_block_entry:
 	SQL_TEXT  { strcpy($<str>$,$<str>1); }
 	| INTO obind_var_list { 
-		strcpy($<str>$,""); /* strcpy($<str>$,A4GL_get_into_part(doing_declare,get_bind_cnt('o'))); */ 
+		strcpy($<str>$,A4GL_get_into_part(doing_declare,get_bind_cnt('o')));
 		}
 	| DOLLAR var_ident_ibind_ss { strcpy($<str>$,$<sql_string>2); }
 	| sqlblock_kw
