@@ -2816,22 +2816,22 @@
   <NUMBER>960</NUMBER>
   <DESCRIPTION>CHAR limits</DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>961</NUMBER>
   <DESCRIPTION>DATE limits</DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
-  <STATUS>OK</STATUS>
+  <STATUS>TBD</STATUS>
 
   <NUMBER>962</NUMBER>
   <DESCRIPTION>DECIMAL limits</DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
-  <STATUS>OK</STATUS>
+  <STATUS>TBD</STATUS>
 
   <NUMBER>963</NUMBER>
   <DESCRIPTION>DOUBLE limits</DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
-  <STATUS>OK</STATUS>
+  <STATUS>TBD</STATUS>
 
   <NUMBER>964</NUMBER>
   <DESCRIPTION>FLOAT limits</DESCRIPTION>
@@ -2973,6 +2973,9 @@
 	-- Whenever warnings
 	-- All whenevers
 	-- Data types limits/interval
+	-- Reserved words
+	-- Expressions
+	-- Implicit convertion of numeric types
 	-- Built in functions
 	    arg_val
 			arr_count
