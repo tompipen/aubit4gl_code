@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.15 2004-11-26 13:50:35 mikeaubury Exp $
+# $Id: display_array.c,v 1.16 2004-11-26 13:57:41 mikeaubury Exp $
 #*/
-static char *module_id="$Id: display_array.c,v 1.15 2004-11-26 13:50:35 mikeaubury Exp $";
+static char *module_id="$Id: display_array.c,v 1.16 2004-11-26 13:57:41 mikeaubury Exp $";
 /**
  * @file
  * Implementation of Display Array
@@ -750,7 +750,7 @@ UILIB_A4GL_disp_arr_v2 (void *dispv, void *ptr, char *srecname, int attrib,int s
  *   - 1 : Everithing OK.
  *   - 0 : There was an error.
  */
-/*
+
 static int
 set_scrline_da (int np)
 {
@@ -767,16 +767,16 @@ set_scrline_da (int np)
 #ifdef DEBUG
   {    A4GL_debug ("Set scrline...%d", a);  }
 #endif
-    return 1;
+    return 0;
 }
-*/
+
 
 
 /**
  *
  * @param np Number of parameters.
  */
-/*
+
 static int
 set_arrline_da (int np)
 {
@@ -793,12 +793,12 @@ set_arrline_da (int np)
 #ifdef DEBUG
   {    A4GL_debug ("Set arrline... %d", a);  }
 #endif
-    return 1;
+    return 0;
 }
-*/
+
 
 int
-aclfgl_set_arrline(int np)
+UILIB_aclfgl_set_arrline(int np)
 {
 	if (cmode=='D') {
 		return set_arrline_da(np);
@@ -817,8 +817,8 @@ return 0;
  * @deprecated Removal candidate.
  */
 
-static int
-aclfgl_fgl_set_scrline(int np)
+int
+UILIB_aclfgl_fgl_set_scrline(int np)
 {
   if (cmode=='D') {
     return set_scrline_da(np);
@@ -827,7 +827,7 @@ aclfgl_fgl_set_scrline(int np)
   if (cmode=='I') {
     return set_scrline_ia(np);
   }
-  exitwith("set_scrline() may only be called when in a display/input array");
+  A4GL_exitwith("set_scrline() may only be called when in a display/input array");
   return 0;
 }
 

@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.22 2004-11-17 10:40:48 mikeaubury Exp $
+# $Id: input_array.c,v 1.23 2004-11-26 13:57:41 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.22 2004-11-17 10:40:48 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.23 2004-11-26 13:57:41 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -1149,10 +1149,7 @@ if (rval<0&&rval!=-1) {
 }
 
 
-/**
- * I think its not used because the function that calls it its not used
- */
-/*
+/* this is used by the fgl_set_scrline function */
 int
 set_scrline_ia (int np)
 {
@@ -1169,14 +1166,11 @@ set_scrline_ia (int np)
 #ifdef DEBUG
   {    A4GL_debug ("Set scrline...%d", a);  }
 #endif
-  return 1;
+  return 0;
 }
-*/
 
-/**
- * I think its not used because the function that calls it its not used
- */
-/*
+
+/* this is used by the fgl_set_arrline function */
 int
 set_arrline_ia (int np)
 {
@@ -1193,9 +1187,9 @@ set_arrline_ia (int np)
 #ifdef DEBUG
   {    A4GL_debug ("Set arrline... %d", a);  }
 #endif
-    return 1;
+    return 0;
 }
-*/
+
 
 /**
  * Not used
