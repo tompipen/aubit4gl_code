@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.36 2003-05-05 13:17:56 mikeaubury Exp $
+# $Id: compile_c.c,v 1.37 2003-05-07 07:34:25 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -535,10 +535,6 @@ print_report_ctrl(void)
     ("/* ********************************************************** */\n");
   printc ("report%d_ctrl:\n", report_cnt);
   printc ("debug(\"ctrl=%%d nargs=%%d\",acl_ctrl,nargs);\n");
-/*
-   printc("    if (acl_ctrl==REPORT_START) goto start_%d;\n",report_cnt);
-   printc("    if (acl_ctrl==REPORT_FINISH) goto finish_%d;\n",report_cnt);
- */
   printc ("    if (acl_ctrl==REPORT_OPS_COMPLETE) return;\n\n");
   printc ("    if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   /* check for after group of */\n");
@@ -546,10 +542,9 @@ print_report_ctrl(void)
   printc ("   /* check for before group of */\n");
   printc ("    }\n\n");
 
-  /*if (report_stack[a].whytype=='F') printc("if (acl_ctrl==REPORT_FINISH) call %s(0,REPORT_LASTROW)\n", report_cnt,a); */
 
-  printc ("if (acl_ctrl==REPORT_FINISH) {%s(0,REPORT_LASTDATA);return;}\n",
-	  get_curr_rep_name ());
+  printc ("if (acl_ctrl==REPORT_FINISH) {%s(0,REPORT_LASTDATA);return;}\n", get_curr_rep_name ());
+
   if (rep_type == REP_TYPE_NORMAL)
     {
       printc
@@ -563,6 +558,22 @@ print_report_ctrl(void)
 	 get_curr_rep_name ());
 
     }
+
+  if (rep_type == REP_TYPE_NORMAL)
+    {
+      printc
+	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;if (rep.output) fclose(rep.output);return;}\n",
+	 get_curr_rep_name ());
+    }
+  else
+    {
+      printc
+	("if (acl_ctrl==REPORT_TERMINATE) {_started=0;pdf_rep_close(&rep);return;}\n",
+	 get_curr_rep_name ());
+
+    }
+
+
   printc ("    if (acl_ctrl==REPORT_AFTERDATA ) {\n");
   pr_report_agg ();
   printc ("    }\n");
@@ -3117,32 +3128,23 @@ print_report_2 (int pdf, char *repordby)
   printc ("static int _useddata=0;\n");
   printc ("static int _started=0;\n");
   cnt = print_param ('r');
-  printc
-    ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
+  printc ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");
   printc ("    A4GLSQL_set_status(-5555,0);\n");
   printc ("    return;\n");
   printc ("    }\n");
   printc ("if (nargs!=%d&&acl_ctrl==REPORT_SENDDATA) {", cnt);
   printc ("fglerror(ERR_BADNOARGS,ABORT);pop_args(nargs);return 0;}\n");
   printc ("if (acl_ctrl==REPORT_LASTDATA) {\n   int _p;\n");
-  printc
-    ("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
-     get_curr_rep_name ());
+  printc ("   if (_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=1;_p--) %s(_p,REPORT_AFTERGROUP);}\n", get_curr_rep_name ());
   printc ("}\n");
   printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
-  printc
-    ("pop_params(rbind,%d);add_row_report(&rbind,%d);\nreturn;}",
-     cnt, cnt); printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
+  printc ("pop_params(rbind,%d);add_row_report(&rbind,%d);\nreturn;}", cnt, cnt); printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   int _g,_p;\n");
   printc ("   _g=chk_params(&rbind,%d,&_ordbind,%s);\n", cnt, repordby);
-  printc
-    ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
-     get_curr_rep_name ());
+  printc ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n", get_curr_rep_name ());
   printc ("   pop_params(rbind,%d);\n", cnt);
   printc ("   if (_useddata==0) {_g=1;}\n");
-  printc
-    ("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",
-     get_curr_rep_name ());
+  printc ("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n", get_curr_rep_name ());
   printc ("   _useddata=1;\n");
 /*  print_rep_ret (); */
 	print_rep_ret (report_cnt);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.30 2003-05-07 06:47:31 mikeaubury Exp $
+# $Id: newpanels.c,v 1.31 2003-05-07 07:35:24 mikeaubury Exp $
 #*/
 
 /**
@@ -45,6 +45,7 @@
 */
 
 #include "a4gl_lib_ui_tui_int.h"
+#include <ctype.h>
 
 /*
 =====================================================================
@@ -1470,10 +1471,12 @@ display_error (int a,int wait)
 void
 mja_endwin (void)
 {
-  set_scrmode('L');
-  printf ("\n");
-  fflush (stdout);
-  endwin ();
+  if (isscrmode ()) {
+  	set_scrmode('L');
+  	printf ("\n");
+  	fflush (stdout);
+  	endwin ();
+  }
 }
 
 /**
