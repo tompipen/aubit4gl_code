@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.197 2004-11-23 13:40:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.198 2004-11-25 15:38:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.197 2004-11-23 13:40:22 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.198 2004-11-25 15:38:57 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -383,6 +383,9 @@ open_outfile (void)
     {
       if (A4GLSQLCV_check_requirement ("USE_INDICATOR")) {
       		fprintf (outfile, "#define ESQL_USING_INDICATORS\n");
+	}
+	if (esql_type()==4) {
+      		fprintf (outfile, "EXEC SQL WHENEVER SQLERROR CONTINUE;\n");
 	}
       fprintf (outfile, "#include \"a4gl_esql.h\"\n");
     }
@@ -1570,7 +1573,7 @@ print_param (char i)
   if (i=='r') {
     printc ("struct BINDING _rbind[%d]={ \n", ONE_NOT_ZERO(fbindcnt));
   } else {
-    printc ("struct BINDING %cbind[%d]={ \n", i, ONE_NOT_ZERO(fbindcnt));
+    printc ("struct BINDING %cbind[%d]={ /* %d */\n", i, ONE_NOT_ZERO(fbindcnt),fbindcnt);
   }
       if (fbindcnt == 0)
 	{
@@ -1614,11 +1617,11 @@ print_param (char i)
       printc ("};\n");
     }
 
-  printc ("char *_paramnames[%d]={", fbindcnt+1);
+  printc ("char *_paramnames[%d]={ /* %d */", fbindcnt+1,fbindcnt);
 
   for (a = 0; a < fbindcnt; a++)
     {
-      if (a) printc ("\"%s\",", fbind[a].varname);
+      printc ("\"%s\",", fbind[a].varname);
     }
     printc("0");
   printc ("};");

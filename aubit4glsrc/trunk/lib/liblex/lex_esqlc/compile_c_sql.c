@@ -1,7 +1,7 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.41 2004-10-29 19:13:20 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.42 2004-11-25 15:38:57 mikeaubury Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
@@ -18,7 +18,7 @@ void
 print_exec_sql (char *s)
 {
   printc
-    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_glob_sql(\"%s\",0,0));\n",
+    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(0,0,0,0,\"%s\"));\n",
      s);
 }
 
@@ -37,8 +37,7 @@ print_exec_sql_bound (char *s)
   c = print_bind_definition ('i');
   print_bind_set_value ('i');
   printc
-    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_glob_sql(\"%s\",%d,ibind));\n",
-     s, c);
+    ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\"));\n", c,s);
   printc ("}\n");
 }
 
@@ -187,8 +186,7 @@ print_linked_cmd (int type, char *var)
 	   ni, no, buff);
       if (type == 'D' || type == 'U')
 	printc
-	  ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_glob_sql(\"%s\",%d,ibind));",
-	   buff, ni);
+	  ("A4GLSQL_execute_implicit_sql(A4GLSQL_prepare_select(ibind,%d,0,0,\"%s\"));",  ni,buff);
       printc ("}\n");
     }
   else

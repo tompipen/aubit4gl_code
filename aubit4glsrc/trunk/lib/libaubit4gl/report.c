@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.53 2004-11-11 16:28:53 pjfalbe Exp $
+# $Id: report.c,v 1.54 2004-11-25 15:36:46 mikeaubury Exp $
 #
 */
 
@@ -879,7 +879,7 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
     }
   strcat (buff, ")");
   A4GL_debug ("Attempting to execute %s\n", buff);
-  x = (void *) A4GLSQL_prepare_glob_sql (buff, n, b);
+  x = (void *) A4GLSQL_prepare_select ( b,n,0,0,buff);
   A4GL_debug ("x=%p\n", x);
   A4GLSQL_execute_implicit_sql (x);
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);

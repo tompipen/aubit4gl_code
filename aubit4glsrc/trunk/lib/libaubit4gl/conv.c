@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.92 2004-11-12 13:30:19 mikeaubury Exp $
+# $Id: conv.c,v 1.93 2004-11-25 15:36:46 mikeaubury Exp $
 #
 */
 
@@ -709,6 +709,7 @@ data[6]=0;
  
 
   valid=A4GL_valid_dt (a, data,size);
+	A4GL_debug("valid=%d\n",valid);
 
   if (valid==2 && (d->ltime!=d->stime)) valid=0;
 
@@ -2829,7 +2830,7 @@ void A4GL_assertion_failed(char *s)  {
 void
 A4GL_assertion (int a, char *s)
 {
-A4GL_debug("Assertion ? a=%d s=%s",a,s);
+/* A4GL_debug("Assertion ? a=%d s=%s",a,s); */
 if (a) {
 	A4GL_assertion_failed(s);
 }
@@ -2872,7 +2873,7 @@ int A4GL_valid_dt (char *s, int *data,int size)
 
   strcpy (buff, s);
   ptr[0] = &buff[0];
-  A4GL_debug ("Splitting '%s'\n", A4GL_null_as_null(s));
+  A4GL_debug ("Splitting '%s' size=%d\n", A4GL_null_as_null(s),size);
   cnt = 0;
   buff_size = strlen (buff);
   for (a = 0; a < buff_size; a++)
@@ -2926,6 +2927,7 @@ int A4GL_valid_dt (char *s, int *data,int size)
 
   if (strcmp (type, "") == 0)
     {
+	
       dt_type = 0;
     }
 
@@ -3023,12 +3025,28 @@ int A4GL_valid_dt (char *s, int *data,int size)
 	}
     }
 
-  if (dt_type == -1)
-    return 0;
-  if (dt_type == 0 && strlen (ptr[0]))
-    return 2;			/* single number.. */
-  if (dt_type == 0 && strlen (ptr[0]) == 0)
+  if (dt_type == -1) {
+	A4GL_debug("dt_type==-1");
+    	return 0;
+  }
+  if (dt_type == 0 && strlen (ptr[0])) {
+  	a = size>> 4;
+  	b = size& 15;
+	A4GL_debug("DIGIT %d %d",a,b);
+	if (a==b) { 
+		if (a==1) data[0]=atoi(ptr[0]);
+		if (a==2) data[1]=atoi(ptr[0]);
+		if (a==3) data[2]=atoi(ptr[0]);
+		if (a==4) data[3]=atoi(ptr[0]);
+		if (a==5) data[4]=atoi(ptr[0]);
+		if (a==6) data[5]=atoi(ptr[0]);
+	}
+        return 2;			/* single number.. */
+	}
+  if (dt_type == 0 && strlen (ptr[0]) == 0) {
+	A4GL_debug("Nothing");
     return 0;			/* nothing... */
+  }
 
   b = dt_type & 15;
   a = dt_type >> 4;
@@ -3045,6 +3063,7 @@ int A4GL_valid_dt (char *s, int *data,int size)
       data[i] = 0;
     }
 
+A4GL_debug("a=%d b=%d\n",a,b);
   for (i = a; i <= b; i++)
     {
       A4GL_debug ("i=%d i-a=%d\n", i, i - a);
@@ -3080,6 +3099,7 @@ int A4GL_valid_dt (char *s, int *data,int size)
 	}
       else
 	{
+	A4GL_debug("data[%d-1]=%s",i,ptr[i-a]);
 	  data[i - 1] = atoi (ptr[i - a]);
 	}
 

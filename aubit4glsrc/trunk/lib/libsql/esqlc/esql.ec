@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.111 2004-11-17 10:40:45 mikeaubury Exp $
+# $Id: esql.ec,v 1.112 2004-11-25 15:38:59 mikeaubury Exp $
 #
 */
 
@@ -156,7 +156,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.111 2004-11-17 10:40:45 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.112 2004-11-25 15:38:59 mikeaubury Exp $";
 #endif
 
 
@@ -830,7 +830,10 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
   char *statementText;
   EXEC SQL end declare section;
   char *s_internal;
-  struct s_sid *sid = newStatement (ibind, ni, obind, no, s);
+  struct s_sid *sid;
+
+
+  sid = newStatement (ibind, ni, obind, no, s);
   s_internal = strdup (s);
   A4GL_trim (s_internal);
   A4GL_debug ("PrepareSQL : %s", s_internal);

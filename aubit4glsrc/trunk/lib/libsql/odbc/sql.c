@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.91 2004-11-23 13:40:23 mikeaubury Exp $
+# $Id: sql.c,v 1.92 2004-11-25 15:38:59 mikeaubury Exp $
 #
 */
 
@@ -65,6 +65,13 @@
 */
 
 
+void * A4GLSQL_prepare_sql_internal (char *s);
+void * A4GLSQL_find_prepare (char *pname);
+int A4GLSQL_execute_sql (char *pname, int ni, void *vibind) ;
+void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind);
+int A4GLSQL_make_connection (char * server, char * uid_p, char * pwd_p);
+void * A4GL_bind_datetime (void *ptr_to_dtime_var);
+void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 #define FETCH_ABSOLUTE 		1
 #define FETCH_RELATIVE 		2
 #define DTYPE_DATE 			7
@@ -236,7 +243,7 @@ typedef struct tagACLDTIME
 #else
   TIMESTAMP_STRUCT dtime;
 #endif
-  void *ptr;
+  struct A4GLSQL_dtime *ptr;
 }
 ACLDTIME;
 
@@ -633,14 +640,15 @@ A4GL_find_cursor_for_decl (char *cname)
     return 0;
 }
 
+
+#ifdef IS_THIS_USED
 /**
  * Prepare an sql statement.
  *
  * @param s A string with the sql statement to be prepared.
  * @return A pointer to the statement information structure.
  */
-void *
-A4GLSQL_prepare_sql_internal (char *s)
+void * A4GLSQL_prepare_sql_internal (char *s)
 {
   struct s_sid *sid;
   int rc;
@@ -686,6 +694,7 @@ A4GLSQL_prepare_sql_internal (char *s)
       return 0;
     }
 }
+#endif
 
 
 /**
@@ -695,8 +704,7 @@ A4GLSQL_prepare_sql_internal (char *s)
  * @param mode Not used.
  * @return A pointer to the statement strucuture, 0 otherwise.
  */
-void *
-A4GLSQL_find_prepare (char *pname)
+void * A4GLSQL_find_prepare (char *pname)
 {
   struct s_sid *ptr;
 
@@ -718,8 +726,7 @@ A4GLSQL_find_prepare (char *pname)
  * @param ibind The input binding array used.
  * @return
  */
-int
-A4GLSQL_execute_sql (char *pname, int ni, void *vibind) 
+int A4GLSQL_execute_sql (char *pname, int ni, void *vibind) 
 {
   struct s_sid *sid;
 struct BINDING *ibind;
@@ -758,7 +765,7 @@ ibind=vibind;
  * @param no The number of output elements binded.
  * @param s The text of the select statement.
  */
-void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int no, char *s)
+void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int no, char *s) /* mja */
 {
   struct s_sid *sid;
   int rc;
@@ -817,6 +824,7 @@ void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int 
   return 0;
 }
 
+#ifdef IS_THIS_USED
 /**
  * Prepare a global SQL statement
  *
@@ -825,8 +833,7 @@ void * A4GLSQL_prepare_select_internal (void *vibind, int ni, void *vobind, int 
  * @param ibind The input bind
  * @return A pointer to an SQL statement information strucutre.
  */
-void *
-A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)
+void * A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind) /* mja */
 {
   struct s_sid *sid;
   struct BINDING *ibind;
@@ -874,6 +881,7 @@ A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void *vibind)
       return 0;
     }
 }
+#endif
 
 /**
  * Declare a cursor.
@@ -980,8 +988,7 @@ sid=vsid;
       return 0;
     }
 #ifdef DEBUG
-  A4GL_debug ("A4GLSQL_execute_implicit_sql: no=%d ni=%d sql=%s", sid->no, sid->ni,
-	 sid->select);
+  A4GL_debug ("A4GLSQL_execute_implicit_sql: no=%d ni=%d sql=%s", sid->no, sid->ni, sid->select);
   A4GL_debug ("Calling proc_bind()");
 #endif
 
@@ -993,6 +1000,8 @@ sid=vsid;
 #endif
 
   rc = ODBC_exec_stmt ((SQLHSTMT)sid->hstmt);
+  A4GL_debug("Got rc as %d\n",rc);
+
 #ifdef FREE
   if (rc) {
   	/* free up malloc'ed memory */
@@ -1004,10 +1013,12 @@ sid=vsid;
   sid->select=0;
   free (sid);
 #endif
-
-
   return (rc);
 }
+
+
+
+
 
 /**
  * Execute an implicit select instruction.
@@ -1040,6 +1051,7 @@ sid=vsid;
 #endif
   a = ODBC_exec_select ((SQLHSTMT)sid->hstmt);
 
+
   if (a) {
 	A4GL_post_fetch_proc_bind (sid->obind, sid->no, (SQLHSTMT )&sid->hstmt);
   	SQLFreeStmt ((SQLHSTMT)sid->hstmt, SQL_DROP);
@@ -1066,9 +1078,7 @@ A4GLSQL_open_cursor (char *s,int ni,void *ibind)
   unsigned long rowcount;
   int save_ni=-1;
   struct s_sid *sid;
-
-  struct BINDING *save_ibind;
-
+  struct BINDING *save_ibind=0;
   int rc;
 
 
@@ -1850,8 +1860,7 @@ A4GL_display_size (SWORD coltype, UDWORD collen, UCHAR * colname)
  *   - 1 : Connection estabilished.
  *   - 0 : there was an error connecting to database.
  */
-int
-A4GLSQL_make_connection (char * server, char * uid_p, char * pwd_p)
+int A4GLSQL_make_connection (char * server, char * uid_p, char * pwd_p)
 {
 RETCODE rc;
 char uid[256] = "";
@@ -1968,28 +1977,39 @@ ODBC_set_dbms_info (void)
   short len;
 
   rc = SQLGetInfo (hdbc, SQL_DBMS_NAME, dbms_name, (short) 64, &len);
-
+  A4GL_debug("DIALECT : %s\n",dbms_name);
   strcpy (dbms_dialect, "");
+
   if (strncasecmp (dbms_name, "informix", 8) == 0)
     {
       strcpy (dbms_dialect, "INFORMIX");
     }
+
   if (strncasecmp (dbms_name, "sapdb", 5) == 0)
     {
       strcpy (dbms_dialect, "SAPDB");
     }
+
   if (strncasecmp (dbms_name, "postgr", 6) == 0)
     {
       strcpy (dbms_dialect, "POSTGRESQL");
     }
+
   if (strncasecmp (dbms_name, "oracl", 5) == 0)
     {
       strcpy (dbms_dialect, "ORACLE");
     }
+
   if (strncasecmp (dbms_name, "mysql", 5) == 0)
     {
       strcpy (dbms_dialect, "MYSQL");
     }
+
+  if (strncasecmp (dbms_name, "SQLite", 6) == 0)
+    {
+      strcpy (dbms_dialect, "SQLITE");
+    }
+
   /* ( later, this will be set from user-editable config files ) */
 }
 
@@ -2083,7 +2103,7 @@ int
 ODBC_exec_stmt (SQLHSTMT hstmt)
 {
   int rc;
-  int rowcount;
+  long rowcount;
 #ifdef DEBUG
   A4GL_debug ("In ODBC_exec_stmt %p",hstmt);
 #endif
@@ -2260,7 +2280,7 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 #endif
 
   if (bind->dtype == DTYPE_DATE)  { bind->ptr = A4GL_bind_date ((long *) bind->ptr); }
-  if (bind->dtype == DTYPE_DTIME) { bind->ptr = A4GL_bind_datetime ((long *) bind->ptr); }
+  if (bind->dtype == DTYPE_DTIME) { bind->ptr = A4GL_bind_datetime ((void *) bind->ptr); }
 
 
 
@@ -2343,9 +2363,9 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
     {
 	ACLDTIME *p; //@todo FIXME - THIS WILL CREATE A MEMORY LEAK - NEED TO CLEAN THIS AFTER ITS FINISHED BEING USED...
 	int arr[10];
-	char buff[50];
+	//char buff[50];
 	void *ptr;
-	int d,m,y;
+	//int d,m,y;
 	A4GL_debug("Binding Date original pointer=%p",bind->ptr);
 	ptr=bind->ptr;
 	p= (ACLDTIME *)A4GL_bind_datetime (ptr);
@@ -2354,7 +2374,7 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
 	A4GL_trim(buff);
 	strcpy(p->dtime,buff);
 #else
-	A4GL_decode_datetime(ptr,&arr);
+	A4GL_decode_datetime((struct A4GLSQL_dtime*)ptr,&arr[0]);
 	p->dtime.year=arr[0];
 	p->dtime.month=arr[1];
 	p->dtime.day=arr[2];
@@ -2362,6 +2382,7 @@ A4GL_debug("ibind_column %d",bind->dtype,DTYPE_DECIMAL);
 	p->dtime.minute=arr[4];
 	p->dtime.second=arr[5];
 	p->dtime.fraction=arr[6];
+
 #endif
         bind->ptr = p;
     }
@@ -2546,7 +2567,7 @@ ODBC_exec_prepared_sql (SQLHSTMT hstmt)
   /* Execute the SQL statement. */
   if (rc != SQL_SUCCESS)
     {
-	int a;
+	//int a;
 #ifdef DEBUG
       A4GL_debug ("Oh dear.... %d", rc);
 #endif
@@ -3566,12 +3587,24 @@ A4GL_bind_date (long *ptr_to_date_var)
   return (void *) ptr;
 }
 
-void *
-A4GL_bind_datetime (void *ptr_to_dtime_var)
+void * A4GL_bind_datetime (void *ptr_to_dtime_var)
 {
-  ACLDATE *ptr;
+  ACLDTIME *ptr;
 
   ptr = malloc (sizeof (ACLDTIME));
+  
+#ifdef DTIME_AS_CHAR
+	strcpy(ptr->dtime,"");
+#else
+	ptr->dtime.year=-1;
+	ptr->dtime.month=-1;
+	ptr->dtime.day=-1;
+	ptr->dtime.hour=-1;
+	ptr->dtime.minute=-1;
+	ptr->dtime.second=-1;
+#endif
+
+
   ptr->ptr = ptr_to_dtime_var;
   return (void *) ptr;
 }
@@ -3589,6 +3622,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
   int a;
   int zz;
   ACLDATE *date1;
+  ACLDTIME *dt1;
 
 #ifdef DEBUG
   A4GL_debug ("In post_fetch_proc_bind...");
@@ -3644,10 +3678,73 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	}
       if (use_binding[a].dtype == DTYPE_DTIME)
 	{
-		printf("BOUND DATETIME\n"); // @fixme
+		
+	char buff[256];
+	char buff2[256];
+	int s;int e;
+	  	dt1 = use_binding[a].ptr;
+#ifdef DTIME_AS_CHAR
+		strcpy(buff,dt1->dtime);
+#else
+	strcpy(buff,"");
+	s=use_binding[a].size>>4;
+	e=use_binding[a].size&0xf;
+
+	if (s>1) dt1->dtime.year=0;
+	if (s>2) dt1->dtime.month=0;
+	if (s>3) dt1->dtime.day=0;
+	if (s>4) dt1->dtime.hour=0;
+	if (s>5) dt1->dtime.minute=0;
+	if (s>6) dt1->dtime.second=0;
+
+	
+	if (strlen(buff)||dt1->dtime.year) { sprintf(buff2,"%04d",dt1->dtime.year); strcat(buff,buff2); }
+
+	if (strlen(buff)||dt1->dtime.month) { 
+		if (e>=2) {
+			sprintf(buff2,"%02d",dt1->dtime.month); 
+			if (strlen(buff)) strcat(buff,"-");
+			strcat(buff,buff2); 
+		}
+	}
+	if (strlen(buff)||dt1->dtime.day) { 
+		if (e>=3) {
+			sprintf(buff2,"%02d",dt1->dtime.day); 
+			if (strlen(buff)) strcat(buff,"-");
+			strcat(buff,buff2); 
+		}
+	}
+	if (strlen(buff)||dt1->dtime.hour) { 
+		if (e>=4) {
+			sprintf(buff2,"%02d",dt1->dtime.hour); 
+			if (strlen(buff)) strcat(buff," ");
+			strcat(buff,buff2); 
+		}
 	}
 
 
+	if (strlen(buff)||dt1->dtime.minute) { 
+		if (e>=5) {
+			sprintf(buff2,"%02d",dt1->dtime.minute); 
+			if (strlen(buff)) strcat(buff,":");
+			strcat(buff,buff2); 
+		}
+	}
+	if (strlen(buff)||dt1->dtime.second) { 
+		if (e>=6) {
+			sprintf(buff2,"%02d",dt1->dtime.second); 
+			if (strlen(buff)) strcat(buff,":");
+			strcat(buff,buff2); 
+		}
+	}
+
+#endif
+		A4GL_push_char(buff);
+		A4GL_setnull(DTYPE_DTIME,dt1->ptr,use_binding[a].size);
+		A4GL_pop_param(dt1->ptr,DTYPE_DTIME,use_binding[a].size);
+	}
+
+	
 	if (use_binding[a].dtype == DTYPE_DECIMAL) {
 		// We've actually selected into a double...
 		double d;
@@ -3671,7 +3768,7 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	int dtype;
 
 
-	if (use_binding[a].dtype==DTYPE_CHAR || use_binding[a].dtype==DTYPE_VCHAR || use_binding[a].dtype==DTYPE_DECIMAL ) {
+	if (use_binding[a].dtype==DTYPE_CHAR || use_binding[a].dtype==DTYPE_VCHAR || use_binding[a].dtype==DTYPE_DECIMAL ||  use_binding[a].dtype==DTYPE_DTIME ) {
 		A4GL_debug("Need to add size to dtype");
 	  dtype = use_binding[a].dtype + ENCODE_SIZE (use_binding[a].size);
 	} else {
@@ -3686,7 +3783,11 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 	  }
 	else
 	  {
-	    A4GL_push_variable (use_binding[a].ptr, dtype);
+		if ((dtype&15)==DTYPE_DTIME) {
+			A4GL_push_char("<datetime>");
+		} else {
+	    		A4GL_push_variable (use_binding[a].ptr, dtype);
+		}
 	  }
 	cptr = A4GL_char_pop ();
 	sprintf (bf, "%d) %d %d : %s", a, use_binding[a].dtype,

@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.35 2004-11-23 13:40:22 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.36 2004-11-25 15:38:57 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -193,6 +193,17 @@ make_sql_bind (char *sql, char *type)
 			comma=',';
 		}
  		printc("};\n");
+ 		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
+			char comma=' ';
+      			printc("struct BINDING native_binding_i_ind[]={\n");
+			if(ibindcnt==0) { printc("{0,0,0}"); }
+			for (a=0;a<ibindcnt;a++) {
+				printc(" %c{&_vii_%d,%d,%d}",comma,a,2,4);
+				comma=',';
+			}
+ 			printc("};\n");
+		}
+
 
 
 
@@ -209,15 +220,14 @@ make_sql_bind (char *sql, char *type)
  		printc("};\n");
 		
  		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
-		char comma=' ';
-      		printc("struct BINDING native_binding_o_ind[]={\n");
-		if(obindcnt==0) { printc("{0,0,0}"); }
-		for (a=0;a<obindcnt;a++) {
-			printc(" %c{&_voi_%d,%d,%d}",comma,a,2,4);
-			comma=',';
-		}
- 		printc("};\n");
-		
+			char comma=' ';
+      			printc("struct BINDING native_binding_o_ind[]={\n");
+			if(obindcnt==0) { printc("{0,0,0}"); }
+			for (a=0;a<obindcnt;a++) {
+				printc(" %c{&_voi_%d,%d,%d}",comma,a,2,4);
+				comma=',';
+			}
+ 			printc("};\n");
 		}
 
 
@@ -362,7 +372,22 @@ make_sql_bind_expr (char *sql, char *type)
 			ptr=addstr(ptr,&sz,buff);
 			comma=',';
 		}
+
  		ptr=addstr(ptr,&sz,"};\n");
+		
+ 		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
+			char comma=' ';
+      			ptr=addstr(ptr,&sz,"struct BINDING native_binding_i_ind[]={\n");
+			if(ibindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0}"); }
+			for (a=0;a<ibindcnt;a++) {
+				char buff[255];
+				sprintf(buff," %c{&_vii_%d,%d,%d}",comma,a,2,4);
+				ptr=addstr(ptr,&sz,buff);
+				comma=',';
+			}
+ 			ptr=addstr(ptr,&sz,"};\n");
+		}
+
 
 
 
@@ -381,18 +406,18 @@ make_sql_bind_expr (char *sql, char *type)
  		ptr=addstr(ptr,&sz,"};\n");
 		
  		if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
-		char comma=' ';
-      		ptr=addstr(ptr,&sz,"struct BINDING native_binding_o_ind[]={\n");
-		if(obindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0}"); }
-		for (a=0;a<obindcnt;a++) {
-			char buff[255];
-			sprintf(buff," %c{&_voi_%d,%d,%d}",comma,a,2,4);
-			ptr=addstr(ptr,&sz,buff);
-			comma=',';
+			char comma=' ';
+      			ptr=addstr(ptr,&sz,"struct BINDING native_binding_o_ind[]={\n");
+			if(obindcnt==0) { ptr=addstr(ptr,&sz,"{0,0,0}"); }
+			for (a=0;a<obindcnt;a++) {
+				char buff[255];
+				sprintf(buff," %c{&_voi_%d,%d,%d}",comma,a,2,4);
+				ptr=addstr(ptr,&sz,buff);
+				comma=',';
+			}
+ 			ptr=addstr(ptr,&sz,"};\n");
 		}
- 		ptr=addstr(ptr,&sz,"};\n");
-		
-		}
+
 	}
     }
 	return ptr;
@@ -430,6 +455,9 @@ char buff_ind[255];
 
   if (ioro == 'i')
     {
+
+      if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { sprintf(buff_ind,"  short _vii_%d;",a); } else { strcpy(buff_ind,""); }
+
       switch (ibind[a].dtype & 0xffff)
 	{
 	case 0:
@@ -486,11 +514,8 @@ char buff_ind[255];
 
   if (ioro == 'o')
     {
- 	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) {
-		sprintf(buff_ind,"  short _voi_%d;",a);
-	} else {
-		strcpy(buff_ind,"");
-	}
+
+ 	if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { sprintf(buff_ind,"  short _voi_%d;",a); } else { strcpy(buff_ind,""); }
 
       switch (obind[a].dtype & 0xffff)
 	{
@@ -534,7 +559,7 @@ char buff_ind[255];
 	  sprintf (buff,"text _vo_%d;", a);
 	  break;
 	case 13:
-	  sprintf (buff,"varchar _vo_%d;", a /*, obind[a].dtype >> 16 */);
+	  sprintf (buff,"varchar _vo_%d[%d];", a , obind[a].dtype >> 16 );
 	  break;
 	case 14:
 	  sprintf (buff,"interval _vo_%d;", a);
@@ -554,6 +579,7 @@ static char buff[255];
 static char buff_ind[255];
   if (ioro == 'i')
     {
+      if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { sprintf(buff_ind,"  short _vii_%d;",a); } else { strcpy(buff_ind,""); }
       switch (ibind[a].dtype & 0xffff)
 	{
 	case 0:
@@ -701,6 +727,7 @@ static char buff[255];
 static char buff_ind[255];
   if (ioro == 'i')
     {
+      if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { sprintf(buff_ind,"  short _vii_%d;",a); } else { strcpy(buff_ind,""); }
       switch (ibind[a].dtype & 0xffff)
 	{
 	case 0:
@@ -839,6 +866,7 @@ static char buff[255];
 static char buff_ind[255];
   if (ioro == 'i')
     {
+      if (A4GLSQLCV_check_requirement("USE_INDICATOR")) { sprintf(buff_ind,"  short _vii_%d;",a); } else { strcpy(buff_ind,""); }
       switch (ibind[a].dtype & 0xffff)
 	{
 	case 0:

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.40 2004-11-17 13:50:53 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.41 2004-11-25 15:36:46 mikeaubury Exp $
 #
 */
 
@@ -798,9 +798,11 @@ return 0;
 #endif
 char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	int a;
+  	int lsrc;
 
+	lsrc=strlen(src);
 	if (sd!=sizeof(char *)) {
-		if (strlen(src)>=sd) {
+		if (lsrc>=sd) {
 			A4GL_debug("String overflow detected : %s %d (%d>=%d)",f,l,strlen(src),sd);
 			A4GL_assertion(1,"String overflow detected");
 		}
@@ -817,12 +819,15 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 
 
 // Quick - is it big ?
-	if (strlen(src)>255) {
-		A4GL_debug("Long string : %s\n",src);
+	if (lsrc>255) {
+		char buff[3000];
+		strncpy(buff,src,2999);
+		buff[2999]=0;
+		A4GL_debug("Long string : %s\n",buff);
 	}
 
 // Does it look Good ?
-	for (a=0;a<strlen(src);a++) {
+	for (a=0;a<lsrc;a++) {
 		if (!isprint(src[a])&&src[a]!='\n'&&!ispunct(src[a])) {
 			A4GL_debug("bad char @%d for string '%s' (%d)\n",a,src,strlen(src));
 		}

@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.96 2004-11-23 13:40:23 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.97 2004-11-25 15:38:57 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.96 2004-11-23 13:40:23 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.97 2004-11-25 15:38:57 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -157,10 +157,15 @@ if (A4GL_isyes(acl_getenv("A4GL_EC_LOGSQL"))) {
 void
 print_exec_sql (char *s)
 {
+  A4GL_debug("In print_exec_sql");
   A4GL_save_sql(s,0);
+  A4GL_debug("saved");
+
   if (strlen(s)) {
+  	A4GL_debug("Here");
   	printc ("\nEXEC SQL %s; /* exec_sql */\n", s);
   }
+  	A4GL_debug("Done");
   print_copy_status ();
 }
 
@@ -500,7 +505,7 @@ print_prepare (char *xstmt, char *sqlvar)
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*7*/\n");
   printc ("char *_s;\n");
   printc ("\nEXEC SQL END DECLARE SECTION;\n");
-  printc ("_s=strdup(%s);\n", sqlvar);
+  printc ("_s=strdup(CONVERTSQL(%s));\n", sqlvar);
   printc ("\nEXEC SQL PREPARE %s FROM :_s;\n", stmt, sqlvar);
 A4GL_save_sql("PREPARE %s",sqlvar);
 

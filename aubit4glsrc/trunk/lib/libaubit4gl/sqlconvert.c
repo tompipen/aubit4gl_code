@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.28 2004-11-19 13:31:27 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.29 2004-11-25 15:36:46 mikeaubury Exp $
 #
 */
 
@@ -61,6 +61,8 @@ char *cvsql_names[]={
   "CVSQL_REPLACE",
   "CVSQL_REPLACE_EXPR",
   "CVSQL_REPLACE_CMD",
+  "CVSQL_REPLACE_SQLCONST",
+  "CVSQL_REPLACE_SQLFUNC",
   "CVSQL_DOUBLE_TO_SINGLE",
   "CVSQL_MATCHES_TO_LIKE",
   "CVSQL_MATCHES_TO_REGEX",
@@ -101,6 +103,7 @@ char *cvsql_names[]={
   "CVSQL_RENAME_TABLE_AS_ALTER_TABLE",
   "CVSQL_RENAME_COLUMN_AS_ALTER_TABLE",
   "CVSQL_FAKE_IMMEDIATE",
+  "CVSQL_TEMP_AS_DECLARE_GLOBAL",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -121,6 +124,8 @@ enum cvsql_type
   CVSQL_REPLACE,
   CVSQL_REPLACE_EXPR,
   CVSQL_REPLACE_CMD,
+  CVSQL_REPLACE_SQLCONST,
+  CVSQL_REPLACE_SQLFUNC,
   CVSQL_DOUBLE_TO_SINGLE,
   CVSQL_MATCHES_TO_LIKE,
   CVSQL_MATCHES_TO_REGEX,
@@ -161,6 +166,7 @@ enum cvsql_type
   CVSQL_RENAME_TABLE_AS_ALTER_TABLE,
   CVSQL_RENAME_COLUMN_AS_ALTER_TABLE,
   CVSQL_FAKE_IMMEDIATE,
+  CVSQL_TEMP_AS_DECLARE_GLOBAL,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -232,10 +238,24 @@ char *A4GL_cv_lastnonblank (char *str);
 */
 char * A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sql) {
 	char *sql_new;
+	A4GL_debug("A4GL_convert_sql_new : %s",sql);
+
+  	if (strcmp(source_dialect,target_dialect)==0 && (!A4GL_isyes(acl_getenv("ALWAYS_CONVERT")))) {
+		return sql;
+  	}
+
+  	if (A4GL_isyes(acl_getenv("NEVER_CONVERT"))) {
+		return sql;
+	}
+
+
+
 	// Silently drop source dialect for now - it should be picked up from A4GL_SQLDIALECT anyway...
 	//
 	sql_new=A4GLSQLCV_convert_sql(target_dialect,sql);
-	return sql_new;
+	A4GL_debug("Translates to %s",sql_new);
+
+	return A4GLSQLCV_check_sql(sql_new);
 }
 
 
@@ -338,6 +358,9 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 {
   char buff[256];
   sprintf (buff, "%s_%s", source_dialect, target_dialect);
+  A4GL_debug("Load convert : %s %s",source_dialect,target_dialect);
+
+
   //printf("Looking for : %s\n",buff);
 
   if (A4GL_has_pointer (buff, SQL_CONVERSION))
@@ -401,7 +424,10 @@ static void A4GL_cv_fnlist (char *source, char *target)
       conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len);
       conversion_rules[conversion_rules_cnt - 1].data.from = 0;
       conversion_rules[conversion_rules_cnt - 1].data.to = 0;
-A4GL_trim(t);
+	if (t) {
+		A4GL_debug("Loaded convertion ---> %d %s\n",conversion_rules[conversion_rules_cnt - 1].type,cvsql_names[conversion_rules[conversion_rules_cnt - 1].type]);
+	}
+	A4GL_trim(t);
       /* get the argument list, A4GL_strip off leading = sign */
       t += len;
       t = A4GL_cv_next_token (t, &len, 0);
@@ -461,6 +487,7 @@ A4GL_trim(t);
 char *A4GLSQLCV_check_sql(char *s ) {
 int b;
 static char *buff=0;
+
 A4GL_debug("check sql : %s\n",s);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_CMD) {
@@ -470,17 +497,20 @@ for (b=0;b<conversion_rules_cnt;b++) {
 	}
 }
 
+A4GL_debug("check sql 2\n");
 buff=realloc(buff,strlen(s)*2+1000);
 strcpy(buff,s);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE) {
 		if (A4GL_strcasestr(buff,conversion_rules[b].data.from)!=0 ) {
 			//char b2[256];
-			//printf("%s = %s", conversion_rules[b].data.from,conversion_rules[b].data.to);
+			printf("%s = %s\n", conversion_rules[b].data.from,conversion_rules[b].data.to);
+	
 			A4GL_cvsql_replace_str (buff, conversion_rules[b].data.from,conversion_rules[b].data.to );
 		}
 	}
 }
+A4GL_debug("returning\n");
 return buff;
 }
 
@@ -510,7 +540,7 @@ int sq=0;
 int dq=0;
 l=strlen(buff)*2+1000;
 buff2=realloc(buff2,l);
-
+A4GL_debug("replace_str");
 for (a=0;a<=strlen(buff);a++) {
 	int ok_to_replace; // We only want to replace whole words...
 	ok_to_replace=0;
@@ -558,7 +588,9 @@ for (b=0;b<conversion_rules_cnt;b++) {
 		}
 	}
 }
+
 return buff;
+
 }
 
 
@@ -569,14 +601,15 @@ return buff;
 char *A4GLSQLCV_generate_current(char *from,char *to) {
 static char buff[256];
 char *ptr;
+int hr;
 if (from==0) from="YEAR";
 if (to==0)   to="SECOND";
 
+hr=A4GLSQLCV_check_requirement("SQL_CURRENT_FUNCTION");
 
-                ptr=acl_getenv("SQL_CURRENT_FUNCTION");
-                if (ptr!=0) { if (strlen(ptr)==0) ptr=0; }
-
-                if (ptr) {
+                if (hr) {
+			char *ptr;
+			ptr=conversion_rules[hr-1].data.from;
                         sprintf(buff,"%s('%s','%s')",ptr,from,to);
                 } else {
                         sprintf(buff,"CURRENT %s TO %s",from,to);
@@ -596,8 +629,12 @@ if (A4GL_isyes(acl_getenv(s))) {
 	return 1;
 }
 a=A4GL_cv_str_to_func (s, strlen(s));
+A4GL_debug("Checking for a type %d\n",a);
 
-if (a==0) return 0; // I don't know what they are talking about...
+if (a==0) {
+	A4GL_debug("WARNING : Unknown type : %s",s);
+	return 0; // I don't know what they are talking about...
+}
 
 if (conversion_rules==0) {
 	//printf("No rules loaded\n");
@@ -628,12 +665,11 @@ static char buff[256];
 
 char *A4GLSQLCV_matches_string(char *str,char *esc) {
 static char buff[1024];
-
-if (0&&A4GLSQLCV_check_requirement("MATCHES_TO_LIKE")) {
+if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_LIKE")) {
 		sprintf(buff,"LIKE %s",CV_matches("LIKE",str,esc));
 		return buff;
 }
-if (0&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEX")) {
+if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEX")) {
 		sprintf(buff,"~ %s",CV_matches("~",str,esc));
 		return buff;
 }
@@ -697,6 +733,10 @@ int A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_REPLACE_EXPR;
   if (strncasecmp (p, "REPLACE_COMMAND", len) == 0)
     return CVSQL_REPLACE_CMD;
+  if (strncasecmp (p, "REPLACE_SQLCONST", len) == 0)
+    return CVSQL_REPLACE_SQLCONST;
+  if (strncasecmp (p, "REPLACE_SQLFUNC", len) == 0)
+    return CVSQL_REPLACE_SQLFUNC;
   if (strncasecmp (p, "DOUBLE_TO_SINGLE_QUOTES", len) == 0)
     return CVSQL_DOUBLE_TO_SINGLE;
   if (strncasecmp (p, "MATCHES_TO_LIKE", len) == 0)
@@ -747,6 +787,7 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "RENAME_TABLE_AS_ALTER_TABLE", len) == 0) return CVSQL_RENAME_TABLE_AS_ALTER_TABLE;
   if (strncasecmp (p, "RENAME_COLUMN_AS_ALTER_TABLE", len) == 0) return CVSQL_RENAME_COLUMN_AS_ALTER_TABLE;
   if (strncasecmp (p, "FAKE_IMMEDIATE", len) == 0) return CVSQL_FAKE_IMMEDIATE;
+  if (strncasecmp (p, "TEMP_AS_DECLARE_GLOBAL", len) == 0) return CVSQL_TEMP_AS_DECLARE_GLOBAL;
   //if (strncasecmp (p, "", len) == 0) return CVSQL_;
 
 
@@ -960,10 +1001,12 @@ A4GL_cvsql_matches_regex (char *sql, char *args)
 {
   A4GL_cvsql_matches (sql, "~");
 }
+#endif
 
 
-char *CV_matches(char *typ,char *string,char *esc) {
-char buff[1024];
+char *CV_matches(char *type,char *string,char *esc) {
+static char buff[1024];
+int a;
 	if (string[0]!='\'') {
 		// Can't change a string we cant see....
 		// maybe if we call a stored procedure or
@@ -984,21 +1027,21 @@ char buff[1024];
 		char small[20];
 
 		if (string[a]=='?') {
-			if (typ[0]=='~') strcpy(small,".");
+			if (type[0]=='~') strcpy(small,".");
 			else strcpy(small,"_");
 			strcat(buff,small);
 			continue;
 		}
 
 		if (string[a]=='*') {
-			if (typ[0]=='~') strcpy(small,".*");
+			if (type[0]=='~') strcpy(small,".*");
 			else strcpy(small,"%");
 			strcat(buff,small);
 			continue;
 		}
 
-		if (typ[0]=='~'&&(string[a]=='*'||string[a]=='.')) { strcat(buff,"\\"); }
-		if (typ[0]!='~'&&(string[a]=='%'||string[a]=='_')) { strcat(buff,"\\"); }
+		if (type[0]=='~'&&(string[a]=='*'||string[a]=='.')) { strcat(buff,"\\"); }
+		if (type[0]!='~'&&(string[a]=='%'||string[a]=='_')) { strcat(buff,"\\"); }
 
 		small[0]=string[a];
 		small[1]=0;
@@ -1009,6 +1052,8 @@ char buff[1024];
 return buff;
 }
 
+
+#ifdef NOT_USED
 /*
  * Converts 'matches' phrase into one with 'like', or a postgresql regexp.
  *
@@ -1822,13 +1867,13 @@ if (strncasecmp(s,"DATETIME(",9)==0) {
                 if (hr) {
                         char *ptr;
 			char *xx;
-		xx=conversion_rules[hr-1].data.from;
+			xx=conversion_rules[hr-1].data.from;
                         ptr=strdup(&s[9]);
-
                         ptr[strlen(ptr)-1]=0;
                         sprintf(buff,"%s(\"%s\")",xx,ptr);
                         free(ptr);
                         return buff;
+			
                 }
         }
 
@@ -1845,7 +1890,7 @@ if (strncasecmp(s,"INTERVAL(",9)==0) {
                 if (hr) {
                         char *ptr;
 			char *xx;
-		xx=conversion_rules[hr-1].data.from;
+			xx=conversion_rules[hr-1].data.from;
                         ptr=strdup(&s[9]);
                         ptr[strlen(ptr)-1]=0;
                         sprintf(buff,"%s(\"%s\")",xx,ptr);
@@ -1877,6 +1922,33 @@ if (A4GLSQLCV_check_requirement("ESQL_UNLOAD_FULL_PATH")) {
 }
 
 
+char *A4GLSQLCV_select_into_temp(char *sel,char *lp,char *tabname)  {
+char *ptr;
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+	ptr=malloc(strlen(sel)+2000);
+	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,sel);
+return ptr;
+} else {
+	ptr=malloc(strlen(sel)+2000);
+	sprintf(ptr,"%s %s",sel,lp);
+	return ptr;
+}
+return 0;
+}
+
+char *A4GLSQLCV_create_temp_table(char *tabname,char *elements,char *extra,char *oplog) {
+char *ptr;
+ptr=malloc(strlen(tabname)+strlen(elements)+strlen(extra)+strlen(oplog)+1000);
+
+if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s ( %s ) ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,elements);
+} else {
+	sprintf(ptr,"CREATE TEMP TABLE %s (%s) %s %s",tabname,elements,extra,oplog);
+}
+
+return ptr;
+}
+
 
 
 char *A4GLSQLCV_rencol(char *tabname,char *colname,char *ncolname) {
@@ -1896,5 +1968,48 @@ if (A4GLSQLCV_check_requirement("RENAME_TABLE_AS_ALTER_TABLE")) {
 } else {
 	sprintf(buff,"RENAME TABLE %s TO %s",tabname,ntabname);
 }
+return buff;
+}
+
+
+/*
+string can be USER or TODAY - return the equivilent...
+*/
+char *A4GLSQLCV_get_sqlconst(char *s) {
+int b;
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_REPLACE_SQLCONST) {
+		if (strcasecmp(s,conversion_rules[b].data.from)==0) {
+			return conversion_rules[b].data.to;
+		}
+	}
+}
+
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_REPLACE_EXPR) {
+		if (strcasecmp(s,conversion_rules[b].data.from)==0) {
+			return conversion_rules[b].data.to;
+		}
+	}
+}
+
+return s;
+}
+
+
+
+A4GLSQLCV_sql_func(char *f,char *param) {
+static char buff[256];
+int b;
+sprintf(buff,"%s(%s)",f,param);
+for (b=0;b<conversion_rules_cnt;b++) {
+	if (conversion_rules[b].type==CVSQL_REPLACE_SQLFUNC) {
+		if (strcasecmp(f,conversion_rules[b].data.from)==0) {
+			sprintf(buff,conversion_rules[b].data.to,param);
+			break;
+		}
+	}
+}
+
 return buff;
 }

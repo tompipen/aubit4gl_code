@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.20 2004-11-23 13:40:21 mikeaubury Exp $
+# $Id: sql.c,v 1.21 2004-11-25 15:36:46 mikeaubury Exp $
 #
 */
 
@@ -256,15 +256,19 @@ A4GLSQL_set_conn (char *sessname)
  * @return A statement identification structure pointer.
  */
 /* int -- struct s_sid * in sql.c */
+
+#ifdef NO_LONGER_USED
 struct s_sid *
 A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 {
   if (must_convert)
     {
+	A4GL_debug("curr_sess->dbms_dialect=%s",curr_sess->dbms_dialect);
       s=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
     }
   return (struct s_sid *) A4GLSQL_prepare_glob_sql_internal (s, ni, ibind);
 }
+#endif
 
 
 /**
@@ -298,6 +302,7 @@ struct s_sid* A4GLSQL_prepare_sql (char *s)
   if (must_convert)
     {
       //s = A4GL_apisql_strdup (s);
+	A4GL_debug("curr_sess->dbms_dialect=%s",curr_sess->dbms_dialect);
       s=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
     }
   return (struct s_sid *) A4GLSQL_prepare_select (0,0,0,0,s);
@@ -341,6 +346,7 @@ A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
   if (must_convert)
     {
       //s = A4GL_apisql_strdup (s);
+	A4GL_debug("curr_sess->dbms_dialect=%s",curr_sess->dbms_dialect);
       s=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, s);
     }
   return (struct s_sid *) A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s);
@@ -363,6 +369,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BIND
   if (must_convert)
     {
       //sql1 = A4GL_apisql_strdup (sql1);
+	A4GL_debug("curr_sess->dbms_dialect=%s",curr_sess->dbms_dialect);
       sql1=A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1);
     }
   A4GL_trim(fname);
@@ -606,13 +613,13 @@ A4GLSQL_add_prepare (char *pname, void *vsid)
 }
 
 
-
+/*
 void*
 A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void  *ibind)
 {
   return A4GLSQL_prepare_select (ibind, ni, (struct BINDING *) 0, 0, s);
 }
-
+*/
 
 /*
 void * A4GLSQL_prepare_sql (char *s)
