@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.8 2003-05-16 06:49:34 afalout Exp $
+# $Id: assist.4gl,v 1.9 2003-06-06 09:52:37 mikeaubury Exp $
 
 # ASSIST.4gl
 #
@@ -111,7 +111,7 @@ define s char(256)
 #define w integer
 code
 CHK_UI
-	trim(s);
+	A4GL_trim(s);
 	gtk_window_set_title(GTK_WINDOW(find_curr_window()),s);
 endcode
 #
@@ -124,7 +124,7 @@ function get_window_title(s)
 define s char(256)
 code
 CHK_UI
-	trim(s);
+	A4GL_trim(s);
 	gtk_window_set_title(GTK_WINDOW(A4GL_get_curr_win_gtk()),s);
 endcode
 end function
@@ -138,10 +138,10 @@ define s char(256)
 define w integer
 code
 CHK_UI
-	trim(s);
+	A4GL_trim(s);
 	w=(int)A4GL_make_pixmap(s);   //warning: assignment makes integer from pointer without a cast
 
-	trim(s);
+	A4GL_trim(s);
 	//gtk_window_set_icon(GTK_WINDOW(find_curr_window()),w,0,0); ?
 endcode
 #
@@ -260,9 +260,9 @@ code
 	
 	
 	CHK_UI
-	trim(title);
-	trim(deffile);
-	trim(pattern);
+	A4GL_trim(title);
+	A4GL_trim(deffile);
+	A4GL_trim(pattern);
 	file_selector = gtk_file_selection_new(title);
 	gtk_file_selection_set_filename(GTK_FILE_SELECTION(file_selector),deffile);
 	gtk_file_selection_complete(GTK_FILE_SELECTION(file_selector),pattern);
@@ -587,7 +587,7 @@ define str char(512)
 code
 CHK_UI
 	s=tolist(GTK_WIDGET(s));
-trim(str);
+A4GL_trim(str);
 gtk_clist_insert((GtkCList *)s,(gint)n,(char **)&str);
 endcode
 end function
@@ -620,7 +620,7 @@ CHK_UI
 {
 GtkWidget *widget;
 GtkWidget *cw;
-trim(lv_config);
+A4GL_trim(lv_config);
 widget=A4GL_make_widget("pixmap",lv_config,w);
 gtk_widget_show(widget);
 cw=GTK_WIDGET(A4GL_get_curr_win_gtk());

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.11 2003-05-15 07:10:41 mikeaubury Exp $
+# $Id: readforms.c,v 1.12 2003-06-06 09:52:36 mikeaubury Exp $
 #*/
 
 /**
@@ -459,8 +459,9 @@ int
 A4GL_has_bool_attribute (void *f, int boolval)
 {
   A4GL_debug ("via A4GL_has_bool_attribute in lib");
-  real_has_bool_attribute (f, boolval);
+  return real_has_bool_attribute (f, boolval);
 }
+
 static int
 real_has_bool_attribute (struct struct_scr_field *f, int boolval)
 {
@@ -529,7 +530,7 @@ do_translate_form (struct_form * the_form)
 
 
 void
-A4GLFORM_initlib ()
+A4GLFORM_initlib (void)
 {
   // Does nothing...
 }

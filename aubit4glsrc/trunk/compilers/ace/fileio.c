@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fileio.c,v 1.6 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: fileio.c,v 1.7 2003-06-06 09:52:35 mikeaubury Exp $
 #*/
 
 /**
@@ -63,6 +63,8 @@ int lineno;
 int colno;
 int ignorekw = 0;
 int yywrap (void);
+void
+a4gl_ace_yyerror (char *s);
 
 /*
 =====================================================================

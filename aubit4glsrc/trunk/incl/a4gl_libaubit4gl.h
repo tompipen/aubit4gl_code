@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.56 2003-06-06 07:30:46 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.57 2003-06-06 09:52:35 mikeaubury Exp $
 #
 */
 
@@ -1484,6 +1484,52 @@ extern "C"
   void a4gl_usleep (int a);
   void A4GL_pause (char *s);
 
+
+
+
+
+int
+A4GL_acli_scroll (void *s, int n);
+int
+aclfgl_a4gl_get_ui_mode (int n);
+int
+aclfgl_a4gl_get_info (int np);
+void
+A4GL_set_last_field_name (char *s);
+char *
+A4GL_get_last_field_name (char *s);
+void
+A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm);
+void *
+A4GL_read_form (char *s, char *p);
+int
+A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt);
+void
+A4GL_in_in_ops (int op);
+int
+A4GL_get_escape_chr (void);
+int
+A4GL_get_curr_width_gtk (void);
+int aclfgli_libhelp_showhelp(int helpno);
+void
+a4gl_basename (char **ppsz);
+void
+A4GL_display_internal (int x, int y, char *s, int a, int clr_line);
+void
+A4GL_error_nobox (char *str);
+void
+A4GL_clr_error_nobox (void);
+int
+A4GL_fgl_getfldbuf_ap (char *s, int n);
+int A4GL_fgl_fieldtouched_input_ap(struct s_screenio *s, va_list *ap);
+void A4GL_core_dump(void);
+void
+A4GL_set_core_dump (void);
+int A4GL_has_errorlog (void);
+int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
+void A4GL_close_errorlog_file (void);
+void A4GL_set_last_outfile (char *s);
+
 /* 
    used by display routines to convert a datatype 
    to a string suitable for display 
@@ -1493,9 +1539,42 @@ extern "C"
 #define DISPLAY_TYPE_DISPLAY_AT 2
 #define DISPLAY_TYPE_DISPLAY_TO 3
 
+
+#ifndef _DEFINE_STATUSVARS_     /* set from fglwrap.c --ONLY-- */
+  /* for everything except libaubit4gl: */
+
+#ifndef _SQLCA_DEFINED_
+  /*
+     _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
+     that also define sqlca:
+   */
+#define _SQLCA_DEFINED_
+#endif
+
+  extern long a4gl_status;                            /** 4gl global status variable */
+  extern long int_flag;                                       /** 4gl interrupt ocurred global flag */
+  extern long quit_flag;                              /** 4gl quit ocurred global flag */
+#else
+  /* only in libaubit4gl */
+  dll_export sqlca_struct a4gl_sqlca;       /** Sqlca variable -- DEFINED WHERE ??? --*/
+  long a4gl_status;                                                     /** 4gl global status variable */
+  long int_flag;                                                /** 4gl interrupt ocurred global flag */
+  long quit_flag;                                               /** 4gl quit ocurred global flag */
+#endif
+
+
+
+
 #ifdef __cplusplus
 }
 #endif
+
+
+
+
+
+
+
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

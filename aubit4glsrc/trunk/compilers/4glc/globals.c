@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.16 2003-06-06 07:30:46 mikeaubury Exp $
+# $Id: globals.c,v 1.17 2003-06-06 09:52:14 mikeaubury Exp $
 #
 */
 
@@ -99,6 +99,8 @@ static void read_variable_record (FILE * f, struct variable *v);
 static void read_variable_assoc (FILE * f, struct variable *v);
 static void read_variable_constant (FILE * f, struct variable *v);
 static void generate_globals_for (char *s);
+static void write_variable_function (FILE * f, struct variable *v) ;
+static void read_variable_function (FILE * f, struct variable *v) ;
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.10 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: match.c,v 1.11 2003-06-06 09:52:35 mikeaubury Exp $
 #*/
 
 /**
@@ -53,7 +53,7 @@
 #else
 
 #include "a4gl_libaubit4gl_int.h"
-
+#include <ctype.h>
 #endif
 
  /*

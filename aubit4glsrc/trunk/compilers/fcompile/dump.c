@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.11 2003-05-15 07:10:37 mikeaubury Exp $
+# $Id: dump.c,v 1.12 2003-06-06 09:52:35 mikeaubury Exp $
 #*/
 
 /**
@@ -97,6 +97,7 @@ static void dump_metrics (struct_form * f);
 static void dump_fields_desc (struct_form * f);
 static void dump_records (struct_form * f);
 static void dump_tables (struct_form * f);
+void dump_form_desc (struct_form * f);
 void dump_expr (t_expression * expr, int lvl);
 void print_lvl (int lvl);
 

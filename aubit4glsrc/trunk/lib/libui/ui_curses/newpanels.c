@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.38 2003-05-25 04:32:41 afalout Exp $
+# $Id: newpanels.c,v 1.39 2003-06-06 09:52:37 mikeaubury Exp $
 #*/
 
 /**
@@ -135,7 +135,7 @@ int A4GL_get_curr_border (void);
 void display_at2 (char *z, int x, int y, int a);
 int A4GL_decode_line (int l);
 //void  A4GL_display_error           (int a,int wait);
-void A4GL_add_compiled_form (char *s, char *frm);
+//void A4GL_add_compiled_form (char *s, char *frm);
 //int   A4GL_open_form                       (char *name);
 //void  A4GL_close_form                      (char *formname);
 //int   A4GL_disp_form                       (char *name, int attr);
@@ -165,7 +165,7 @@ WINDOW *A4GL_display_form_win (WINDOW * w, char *name, struct s_form_dets *f);
 					//int attrib);
 
 
-void *A4GL_read_form (char *fname, char *formname);
+//void *A4GL_read_form (char *fname, char *formname);
 //LIBEXPORT void A4GL_hide_window    (char *winname);
 //LIBEXPORT void A4GL_show_window    (char *winname);
 //LIBEXPORT int A4GL_movewin                 (char *winname, int absol);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.16 2003-05-15 07:10:39 mikeaubury Exp $
+# $Id: datatypes.c,v 1.17 2003-06-06 09:52:35 mikeaubury Exp $
 #
 */
 
@@ -103,7 +103,7 @@ static void *libptr = 0;
 =====================================================================
 */
 
-int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
+//int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
 extern void A4GL_add_default_operations (void);	/* in ops.c */
 void A4GL_add_default_datatypes (void);
 static int (*A4GL_func) (void);

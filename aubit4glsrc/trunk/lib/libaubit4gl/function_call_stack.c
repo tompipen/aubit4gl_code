@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.14 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.15 2003-06-06 09:52:35 mikeaubury Exp $
 #*/
 
 /**
@@ -81,8 +81,8 @@ char *A4GLSTK_getStackTrace (void);
 int A4GLSTK_isStackInfo (void);
 #endif
 
-void A4GLSTK_initFunctionCallStack (void);
-void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
+//void A4GLSTK_initFunctionCallStack (void);
+//void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
 
 
 /*

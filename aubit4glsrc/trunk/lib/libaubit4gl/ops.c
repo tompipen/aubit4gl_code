@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.14 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: ops.c,v 1.15 2003-06-06 09:52:35 mikeaubury Exp $
 #
 */
 
@@ -67,8 +67,8 @@ void A4GL_dt_in_ops (int op);
 void A4GL_in_dt_ops (int op);
 void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 void A4GL_dt_dt_ops (int op);
-int A4GL_ctodt (void *a, void *b, int size);
-int A4GL_ctoint (void *a, void *b, int size);
+//int A4GL_ctodt (void *a, void *b, int size);
+//int A4GL_ctoint (void *a, void *b, int size);
 
 
 char *A4GL_display_int (void *ptr, int size, int size_c,
@@ -159,7 +159,7 @@ A4GL_in_dt_ops (int op)
   int dtime_data[10];
   int d1;
   int s1;
-  void *ptr1;
+  //void *ptr1;
   struct ival *pi;
   struct A4GLSQL_dtime *pd;
   int ok = 0;
@@ -361,7 +361,7 @@ A4GL_in_dt_ops (int op)
 
       //0123456789012345678901234
       //0000-MM-30 23:57:10.00000
-
+      ptr=0;
       switch (start)
 	{
 	case 1:
@@ -385,6 +385,10 @@ A4GL_in_dt_ops (int op)
 	case 7:
 	  ptr = &buff[18];
 	  break;
+	}
+    if (ptr==0) {
+		A4GL_exitwith("Internal error in_dt_ops");
+		return;
 	}
 
       dt.stime = start;
@@ -518,14 +522,14 @@ A4GL_in_in_ops (int op)
   int ival_data2[10];
   int d1, d2;
   int s1, s2;
-  void *ptr1;
+  //void *ptr1;
   struct ival *pi1;
   struct ival *pi2;
   struct ival in;
-  int ok = 0;
-  char buff[256];
-  int start;
-  char *ptr;
+  //int ok = 0;
+  //char buff[256];
+  //int start;
+  //char *ptr;
   int se1;
   int se2;
   double d_i1;
@@ -694,16 +698,16 @@ A4GL_dt_dt_ops (int op)
   int dtime_data2[10];
   int d1, d2;
   int s1, s2;
-  void *ptr1;
+  //void *ptr1;
   struct A4GLSQL_dtime *pi;
   struct A4GLSQL_dtime *pd;
   struct ival in;
-  int ok = 0;
+  //int ok = 0;
   char buff[256];
-  int start;
-  char *ptr;
-  double d_d1;
-  double d_d2;
+  //int start;
+  //char *ptr;
+  //double d_d1;
+  //double d_d2;
 
   if (op != (OP_SUB))
     {

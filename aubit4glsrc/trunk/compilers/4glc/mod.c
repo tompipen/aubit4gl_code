@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.129 2003-06-06 07:30:46 mikeaubury Exp $
+# $Id: mod.c,v 1.130 2003-06-06 09:52:14 mikeaubury Exp $
 #
 */
 
@@ -247,6 +247,10 @@ void a4gl_add_variable (char *name, char *type, char *n);
 
 char *get_namespace (char *s);
 char *make_sql_string (char *first, ...);
+void do_print_menu_1(void) ;
+void do_print_menu_block_end(void) ;
+int get_blk_no(void) ;
+char *do_clobbering(char *f,char *s) ;
 
 /*
 =====================================================================
@@ -3798,12 +3802,12 @@ dump_updvals ()
 }
 
 
-int do_print_menu_1(void) {
+void do_print_menu_1(void) {
 	print_menu_1(get_blk_no());
 	print_menu_1b(get_blk_no());
 }
 
-int do_print_menu_block_end(void) {
+void do_print_menu_block_end(void) {
 	print_menu_block_end(get_blk_no());
 }
 
@@ -3860,7 +3864,6 @@ char b1[256];
 	}
 
 
-	printf("%s %d\n",buff_orig,strlen(buff_orig));
 
 	if (strlen(buff_orig)<=20) { // Extra 2 for the quotes...
 		clob_arr[clob_arr_cnt-1].orig=strdup(buff_orig);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.36 2003-05-15 07:10:36 mikeaubury Exp $
+# $Id: 1.reqd,v 1.37 2003-06-06 09:52:35 mikeaubury Exp $
 #
 */
 
@@ -179,6 +179,10 @@ char *		make_sql_string(char *first,...);
 void copy_gen (int a, int b);
 char *get_namespace (char *s);
 void set_yytext (char *s);
+int isin_command (char *cmd_type);
+int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
+char *do_clobbering(char *f,char *s);
+
 
 #include "../generic.h"
 

@@ -64,12 +64,12 @@ var_ident_ibind_ss :  var2
 | var2 THRU var2 
 {
 char r1[256];
-char r2[256];
+//char r2[256];
 char buff[256];
 char was_str[40000];
-char *ptr1;
-char *ptr2;
-int aa;
+//char *ptr1;
+//char *ptr2;
+//int aa;
 int z = 0,a = 0;
 struct variable *v_r;
 struct variable *v_1;

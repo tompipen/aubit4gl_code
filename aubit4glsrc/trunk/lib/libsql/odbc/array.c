@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.8 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: array.c,v 1.9 2003-06-06 09:52:37 mikeaubury Exp $
 #
 */
 
@@ -319,7 +319,7 @@ int
 A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
 		    int mode, char *info)
 {
-  HSTMT hstmt;
+  SQLHSTMT hstmt;
   char tq[256];
   char to[256];
   char tn[256];
@@ -337,7 +337,7 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
   int a, b;
   int rc;
   int cnt;
-  HSTMT ret;
+  SQLHSTMT ret;
 
 
 
@@ -351,7 +351,7 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2, int szarr2,
       return 0;
     }
 
-  ret = A4GL_new_hstmt (&hstmt);
+  ret = (SQLHSTMT)A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
 
 #ifdef DEBUG
   A4GL_debug ("Getting columns for '%s'", info);

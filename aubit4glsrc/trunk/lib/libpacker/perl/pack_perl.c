@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.6 2003-05-15 07:10:43 mikeaubury Exp $
+# $Id: pack_perl.c,v 1.7 2003-06-06 09:52:36 mikeaubury Exp $
 #*/
 
 /**
@@ -50,6 +50,7 @@
 */
 
 #include "a4gl_lib_packer_perl_int.h"
+#include <ctype.h>
 
 /*
 =====================================================================

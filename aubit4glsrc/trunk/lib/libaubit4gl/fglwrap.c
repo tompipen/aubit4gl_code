@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.38 2003-05-25 04:32:41 afalout Exp $
+# $Id: fglwrap.c,v 1.39 2003-06-06 09:52:35 mikeaubury Exp $
 #
 */
 
@@ -88,7 +88,7 @@ extern int A4GL_start_gui (void);
 void A4GL_nodef_init (void);
 //void A4GL_fgl_end (void);
 //void A4GL_fgl_start (int nargs, char *argv[]);
-void A4GL_system_run (int a);
+//void A4GL_system_run (int a);
 void A4GL_generateError (char *str, char *fileName, int lineno);
 void A4GL_null_func (void);
 int A4GL_ass_hash (char **a, int s, int d, char *str, long size, int rw);
@@ -823,7 +823,7 @@ A4GL_nodef_init ()
 }
 
 
-void A4GL_core_dump() {
+void A4GL_core_dump(void) {
   if (A4GL_isscrmode ())
     {
 #ifdef DEBUG
@@ -844,7 +844,7 @@ void A4GL_core_dump() {
 }
 
 void
-A4GL_set_core_dump ()
+A4GL_set_core_dump (void)
 {
   struct sigaction sa;
   int ret;

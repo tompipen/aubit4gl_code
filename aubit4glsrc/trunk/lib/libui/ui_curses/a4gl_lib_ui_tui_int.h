@@ -44,7 +44,7 @@ int A4GL_colour_code (int a);
 
 
 	/* ======================= in curslib.c  ======================= */
-void A4GL_error_nobox (char *str);
+//void A4GL_error_nobox (char *str);
 void A4GL_set_bkg (WINDOW * win, int attr);
 void A4GL_clear_prompt (struct s_prompt *prmt);
 

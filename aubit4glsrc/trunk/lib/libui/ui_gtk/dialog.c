@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.5 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: dialog.c,v 1.6 2003-06-06 09:52:38 mikeaubury Exp $
 #*/
 
 /**
@@ -77,8 +77,8 @@
 
 int A4GL_gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 	       char *msg);
-void aclfgli_pr_message (int a, int wait);
-void A4GL_display_error (int a, int wait);
+//void aclfgli_pr_message (int a, int wait);
+//void A4GL_display_error (int a, int wait);
 
 /*
 =====================================================================

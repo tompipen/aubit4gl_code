@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.16 2003-05-15 07:10:46 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.17 2003-06-06 09:52:38 mikeaubury Exp $
 #*/
 
 /**
@@ -79,7 +79,7 @@ GtkWindow *console = 0;
 GtkWidget *console_list;
 char currwinname[256];
 static void show_form (GtkWindow * mainfrm, GtkFixed * form);
-struct s_form_dets *A4GL_read_form (char *fname, char *formname);
+//struct s_form_dets *A4GL_read_form (char *fname, char *formname);
 void A4GL_dump_object (GtkObject * o);
 char *A4GL_get_currwin_name (void);
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.31 2003-05-25 03:47:40 afalout Exp $
+# $Id: fcompile.c,v 1.32 2003-06-06 09:52:35 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
 		                    Includes
 =====================================================================
 */
-
+#define yyparse a4gl_form_yyparse
 #include "a4gl_fcompile_int.h"
 
 /*
@@ -84,6 +84,7 @@ int fstart;
 char *default_database = 0;
 //int A4GLF_open_db (char *s);
 void usage (char *s);
+void a4gl_form_yyerror (char *s);
 
 /*
 =====================================================================

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.20 2003-05-15 07:10:42 mikeaubury Exp $
+# $Id: loadmenu.c,v 1.21 2003-06-06 09:52:36 mikeaubury Exp $
 #*/
 
 /**
@@ -74,7 +74,7 @@ static GtkWidget *real_load_menu (char *fname, char *menu_id, int mode,
 
 char *A4GL_mn_caption (char *s);
 char *A4GL_mn_help (char *s);
-void A4GL_show_menu (char *menuid, void *handler);
+//void A4GL_show_menu (char *menuid, void *handler);
 void A4GL_endis_menuitems (int en_dis, ...);
 
 /*

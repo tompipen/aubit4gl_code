@@ -5,6 +5,7 @@
 /* Any C programs using these functions should also include a4gl_incl_infx.h */
 #include "a4gl_incl_infx.h"
 
+void trim(char *s);
 //void rsetnull(int d,void *ptr);
 
 

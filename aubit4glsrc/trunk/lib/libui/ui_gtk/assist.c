@@ -64,7 +64,7 @@ extern
 long quit_flag;
 extern 
 long a4gl_status;
-dll_import 
+extern 
 struct {
 long sqlcode;
 char sqlerrm [72+1];
@@ -121,7 +121,7 @@ static char _functionName[] = "set_window_title";
    init_module_variables();
    A4GL_pop_params(fbind,1);
    CHK_UI
-   	trim(s);
+   	A4GL_trim(s);
    	gtk_window_set_title(GTK_WINDOW(find_curr_window()),s);
    /* End of code */
    A4GLSTK_popFunction();
@@ -144,7 +144,7 @@ static char _functionName[] = "get_window_title";
    init_module_variables();
    A4GL_pop_params(fbind,1);
    CHK_UI
-   	trim(s);
+   	A4GL_trim(s);
    	gtk_window_set_title(GTK_WINDOW(A4GL_get_curr_win_gtk()),s);
    /* End of code */
    A4GLSTK_popFunction();
@@ -168,9 +168,9 @@ static char _functionName[] = "set_window_icon";
    init_module_variables();
    A4GL_pop_params(fbind,1);
    CHK_UI
-   	trim(s);
+   	A4GL_trim(s);
    	w=(int)A4GL_make_pixmap(s);   //warning: assignment makes integer from pointer without a cast
-   	trim(s);
+   	A4GL_trim(s);
    	//gtk_window_set_icon(GTK_WINDOW(find_curr_window()),w,0,0); ?
    /* End of code */
    A4GLSTK_popFunction();
@@ -324,9 +324,9 @@ static char _functionName[] = "get_filename";
    	
    	
    	CHK_UI
-   	trim(title);
-   	trim(deffile);
-   	trim(pattern);
+   	A4GL_trim(title);
+   	A4GL_trim(deffile);
+   	A4GL_trim(pattern);
    	file_selector = gtk_file_selection_new(title);
    	gtk_file_selection_set_filename(GTK_FILE_SELECTION(file_selector),deffile);
    	gtk_file_selection_complete(GTK_FILE_SELECTION(file_selector),pattern);
@@ -904,7 +904,7 @@ static char _functionName[] = "list_insert";
    A4GL_pop_params(fbind,3);
    CHK_UI
    	s=tolist(GTK_WIDGET(s));
-   trim(str);
+   A4GL_trim(str);
    gtk_clist_insert((GtkCList *)s,(gint)n,(char **)&str);
    /* End of code */
    A4GLSTK_popFunction();
@@ -1002,7 +1002,7 @@ static char _functionName[] = "splat_with_image";
    {
    GtkWidget *widget;
    GtkWidget *cw;
-   trim(lv_config);
+   A4GL_trim(lv_config);
    widget=A4GL_make_widget("pixmap",lv_config,w);
    gtk_widget_show(widget);
    cw=GTK_WIDGET(A4GL_get_curr_win_gtk());

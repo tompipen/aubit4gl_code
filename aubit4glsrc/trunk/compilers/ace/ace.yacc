@@ -10,6 +10,7 @@
 #define _NO_YYPARSE_PROTO_
 /* #define _NO_YYLEX_PROTO_ */
 #include "a4gl_ace_int.h"
+#include <ctype.h>
 
 /*
 =====================================================================
@@ -27,6 +28,7 @@ extern int ignorekw;
 static char temp_tab_name[256]="";
 char *ordby[256];
 int ordbycnt=0;
+void *memdup(void *p,int l);
 
 #define DUP(x) memdup(&x,sizeof(x))
 #define COPY(x,y) memcpy(&x,&y,sizeof(x))
@@ -497,8 +499,9 @@ literal: CHAR_VALUE {
 {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
        ;
 
-
+/*
 op_order_by_clause: {strcpy($<str>$,"");} | order_by_clause;
+*/
 
 order_by_clause:
 	ORDER_BY {
@@ -581,6 +584,7 @@ tname: table_name
 		ace_add_table($<str>1,$<str>2);
 		}
 ;
+
 
 
 tname_list : table_reference | tname_list COMMA table_reference { sprintf($<str>$," %s,%s ",$<str>1,$<str>3);  }
@@ -753,19 +757,27 @@ op_all: {strcpy($<str>$,"");}
 
 
 
+/*
 variable_specification:
 	COLON identifier  identifier
 	;
+*/
 
+/*
 length: int_val
 ;
+*/
 
 
+/*
 char_string_type:
           CHAR
         | CHAR OPEN_BRACKET length CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
         ;
+*/
+
+
 table_name:
 	CHAR_VALUE { sprintf($<str>$," %s",(char *)A4GL_strip_quotes($<str>1)); }
 	| table_identifier {sprintf($<str>$,$<str>1); }
@@ -773,6 +785,7 @@ table_name:
 	| CHAR_VALUE DOT table_identifier { sprintf($<str>$,"\\\"%s\\\"%s%s",(char *)A4GL_strip_quotes($<str>1),$<str>2,$<str>3);  }
 
 	;
+
 
 db_name : identifier;
 
@@ -803,12 +816,14 @@ real_number :
 	NUMBER_VALUE | DOT INTVAL {sprintf($<str>$,"0.%s",$<str>2);}
 ;
 
+/*
 s_curr_v: YEAR {strcpy($<str>$,"0");} | MONTH  {strcpy($<str>$,"5");}| DAY  {strcpy($<str>$,"8");}| HOUR  {strcpy($<str>$,"11");}| MINUTE  {strcpy($<str>$,"14");}| SECOND  {strcpy($<str>$,"17");}| FRACTION {strcpy($<str>$,"23");};
 e_curr_v: YEAR {strcpy($<str>$,"4");} | MONTH  {strcpy($<str>$,"7");}| DAY  {strcpy($<str>$,"10");}| HOUR  {strcpy($<str>$,"13");}| MINUTE  {strcpy($<str>$,"16");}| SECOND  {strcpy($<str>$,"19");}| FRACTION {strcpy($<str>$,"25");};
-
-
+*/
+/*
 s_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
 e_curr: YEAR | MONTH | DAY | HOUR | MINUTE | SECOND | FRACTION;
+*/
 
 
 
@@ -820,7 +835,7 @@ select_statement:
 }
 ;
 
-
+/*
 in_select_statement:
 	SELECT op_ad select_list table_expression sel_p2 {
              char buff[30000];
@@ -829,6 +844,7 @@ in_select_statement:
              sprintf($<str>$,"push_char(\"%s\");",buff);
 }
 ;
+*/
 
 select_statement2:
 	select_statement2_1  ;
@@ -858,7 +874,7 @@ op_no_log: {strcpy($<str>$,"");} | WITH_NO_LOG {strcpy($<str>$," WITH NO LOG");}
 
 tmp_tabname: identifier
 ;
-
+/*
 op_into_temp :
 {
 strcpy($<str>$,"");} | INTO TEMP tmp_tabname op_no_log
@@ -868,7 +884,7 @@ strcpy(temp_tab_name,$<str>3);
 }
 ;
 
-
+*/
 
 
 
@@ -1019,7 +1035,7 @@ command:
 	}
 ;
 
-
+/*
 block_commands: command {
 	$<cmd>$.cmd_type=CMD_BLOCK;
 
@@ -1046,6 +1062,8 @@ block_commands: command {
 
 }
 ;
+*/
+
 
 call_command :  KW_CALL func_identifier OPEN_BRACKET op_val_expr_list CLOSE_BRACKET {
 		$<cmd>$.cmd_type=CMD_CALL;

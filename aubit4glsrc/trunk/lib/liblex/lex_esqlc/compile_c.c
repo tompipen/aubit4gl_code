@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.49 2003-06-01 14:03:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.50 2003-06-06 09:52:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -78,6 +78,7 @@ char *get_namespace (char *s);
 void print_init_var (char *name, char *prefix, int alvl);
 void
 printcomment (char *fmt, ...);
+int is_builtin_func (char *s);
 
 /*
 =====================================================================

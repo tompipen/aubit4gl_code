@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.14 2003-05-16 06:49:33 afalout Exp $
+# $Id: compile_c_gtk.c,v 1.15 2003-06-06 09:52:36 mikeaubury Exp $
 #
 */
 
@@ -99,7 +99,7 @@ char lname[256];
 
 
 extern void printc (char *fmt, ...);	/* in API_lex.c */
-extern void A4GL_lex_printh (char *fmt, ...);	/* in API_lex.c */
+//extern void A4GL_lex_printh (char *fmt, ...);	/* in API_lex.c */
 extern void printh (char *fmt, ...);	/* in API_lex.c */
 
 /*

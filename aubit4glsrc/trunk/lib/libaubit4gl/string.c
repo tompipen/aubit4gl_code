@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.19 2003-05-22 08:04:52 mikeaubury Exp $
+# $Id: string.c,v 1.20 2003-06-06 09:52:36 mikeaubury Exp $
 #
 */
 
@@ -47,6 +47,7 @@
 
 
 #include "a4gl_libaubit4gl_int.h"
+#include <ctype.h>
 
 
 /*

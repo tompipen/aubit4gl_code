@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.40 2003-05-22 08:04:50 mikeaubury Exp $
+# $Id: builtin.c,v 1.41 2003-06-06 09:52:35 mikeaubury Exp $
 #
 */
 
@@ -96,11 +96,8 @@ char * aclfgl_fgl_strtosend (char *str);
 int aclfgl_winexecwait (char *exec_string);
 
 int aclfgl_winexec (char *exec_string);
-void
-A4GL_close_errorlog_file (void);
 int aclfgli_show_help (int a);
 
-int A4GL_has_errorlog (void);
 /**
  * Does nothing
  * fglwrap calls this to make sure this file is included in any

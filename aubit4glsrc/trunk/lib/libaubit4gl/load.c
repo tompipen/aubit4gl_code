@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.18 2003-05-19 18:06:53 mikeaubury Exp $
+# $Id: load.c,v 1.19 2003-06-06 09:52:35 mikeaubury Exp $
 #
 */
 
@@ -251,7 +251,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
       /* get columns from database */
       A4GL_debug ("Getting columns from database");
       cnt =
-	A4GLSQL_fill_array (MAXLOADCOLS, (char **) col_list, MAXCOLLENGTH - 1,
+	A4GLSQL_fill_array (MAXLOADCOLS, (char *) col_list, MAXCOLLENGTH - 1,
 			    0, 0, "COLUMNS", 0, tabname);
 
     }
@@ -343,13 +343,13 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
 int
 A4GLSQL_load_data_str (char *fname, char *delims, char *sqlstmt)
 {
-  va_list ap;
-  char *colname;
+  //va_list ap;
+  //char *colname;
   int cnt = 0;
   char delim;
   int nfields;
   int lineno = 0;
-  char *insertstr;
+  //char *insertstr;
   char filename[256];
   FILE *p;
   struct BINDING *ibind = 0;
