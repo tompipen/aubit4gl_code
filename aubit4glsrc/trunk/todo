@@ -29,8 +29,9 @@ Enhancements
 
 ESQL/C
 	Fix OPEN USING in esql/c (in sql) 
-	Fix OPEN USING in esql/c (in lex) *** DONE IN LEX
-	Fix FETCH (relative/absolute etc) *** DONE
+	Fix OPEN USING in esql/c (in lex)                     *** DONE IN LEX
+	Fix FETCH (relative/absolute etc)                     *** DONE
+	Fix Declare SCROLL/WITH HOLD/FOR UPDATE in esql/c LEX *** DONE
 	Fix Declare INTO in esql/c LEX
 	Other fixes in ESQL/C output driver
 	

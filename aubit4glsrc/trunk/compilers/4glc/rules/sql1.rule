@@ -1072,7 +1072,7 @@ declare_cmd : opt_use DECLARE fetch_cursor_name CURSOR FOR cursor_specification_
 		print_undo_use($<str>1);
 	}
        	| opt_use DECLARE fetch_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel_ss {insql=0;chk4var=0;} curs_forupdate {
-		print_declare($<str>9,$<sql_string>7,$<str>3,0,1); 
+		print_declare($<str>9,$<sql_string>7,$<str>3,2,1); 
 		addmap("Declare Cursor",$<str>3,curr_func,yylineno,infilename);
 		print_undo_use($<str>1);
 	}

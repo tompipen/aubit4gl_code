@@ -386,8 +386,9 @@ void
 print_sql_commit (int t)
 {
 	if (t==-1) printc ("EXEC SQL BEGIN WORK;\n", t);
-	if (t==0) printc ("EXEC SQL ROLLBACK WORK;\n", t);
-	if (t==1) printc ("EXEC SQL COMMIT WORK;\n", t);
+	if (t==0)  printc ("EXEC SQL ROLLBACK WORK;\n", t);
+	if (t==1)  printc ("EXEC SQL COMMIT WORK;\n", t);
+
   print_copy_status();
 }
 
@@ -574,8 +575,8 @@ print_flush_cursor (char *s)
  * @param a2 The cursor specification generated struct s_sid variable name.
  * @param a3 The cursor name.
  * @param h1 Flag to indicate if the cursor is with hold.
- *   - 0 :
- *   - 2 :
+ *   - 0 : not WITH HOLD
+ *   - 2 : WITH HOLD
  * @param h2 Flag that indicate if the cursor is with scroll:
  *   - 0 : The cursor its not with scroll
  *   - 1 : The cursor is with scroll
@@ -583,9 +584,11 @@ print_flush_cursor (char *s)
 void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
-  printc ("/* %s+%d,%s,%d,%s */\n", a1, h1, a2, h2, a3);
-  printc(" /* nibind=%d a2=%s*/\n",get_bind_cnt('i'),a2);
-  printc(" /* nobind=%d a3=%s */\n",get_bind_cnt('o'),a3);
+char buff[256];
+  //printc ("/* print_declare a1=%s h1=%d a2=%s h2=%d a3=%s */\n", a1, h1, a2, h2, a3);
+  //printc(" /* nibind=%d a2=%s*/\n",get_bind_cnt('i'),a2);
+  //printc(" /* nobind=%d a3=%s */\n",get_bind_cnt('o'),a3);
+
 
   if (strstr(a2,"INTO $")!=0) {
 	  	yyerror("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
@@ -596,9 +599,22 @@ print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 	  	printc("{");
   }
 
-  printc ("EXEC SQL DECLARE %s",strip_quotes(a3));
-  printc(" CURSOR FOR %s;\n",strip_quotes(a2));
+  if (atoi(a1)&&h2) {
+		yyerror("Updates are not allowed on a scroll cursor");
+		return;
+  }
 
+  sprintf(buff,"EXEC SQL DECLARE %s",strip_quotes(a3));
+  if (h2) {strcat(buff," SCROLL");}
+  strcat(buff," CURSOR");
+  if (h1) {strcat(buff," WITH HOLD");}
+
+  printc("%s FOR",buff);
+  printc("     %s ",strip_quotes(a2));
+  if (atoi(a1)) {
+	printc("     FOR UPDATE");
+  }
+  printc(";");
   print_copy_status();
   printc ("}\n");
 
