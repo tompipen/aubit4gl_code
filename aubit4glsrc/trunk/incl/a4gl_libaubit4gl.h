@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.125 2004-05-25 18:24:18 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.126 2004-06-09 06:03:17 mikeaubury Exp $
 #
 */
 
@@ -1488,7 +1488,7 @@ void A4GL_display_at (int n, int a);
 
   /* ============================ maths.c ================================ */
   void *A4GL_find_op_function (int dtype1, int dtype2, int op);
-  void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
+  //void A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops));
 
   /* ============================ translate.c ============================ */
 

@@ -412,11 +412,11 @@ read_class (char *s)
   int a;
   int pvars;
   int pid;
-  nline = 0;
   extern struct variable **list_class;	/* Our List */
   extern int list_class_cnt;	/* Our List */
   extern int list_class_alloc;	/* Our List */
   struct variable np;
+  nline = 0;
 
 /* 
 Two thing ye should know about a class...

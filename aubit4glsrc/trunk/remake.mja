@@ -51,6 +51,7 @@ cd /home/aubit4gl/aubit4glsrc/tools/asql
 make asql_i.4ae
 make asql_p.4ae
 cp asql_i.4ae asql_p.4ae  /home/aubit4gl/aubit4gl/bin
+sleep 5
 
 cd /home/aubit4gl/aubit4glsrc/tools/afinderr
 cp /home/aubit4gl/aubit4glsrc/bin/afinderr /home/aubit4gl/aubit4gl/bin
@@ -64,6 +65,7 @@ find /home/aubit4gl/aubit4gltest -name "*.afr*" -exec rm {} \;
 sleep 3
 
 sh run_tests -esqli
+
 if grep -y "Fail" build.log 
 then
 	echo "Test Failed"

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_gtk.c,v 1.3 2004-06-08 18:58:53 whaslbeck Exp $
+# $Id: menu_gtk.c,v 1.4 2004-06-09 06:03:18 mikeaubury Exp $
 #*/
 
 /**
@@ -57,7 +57,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_incl_4gldef.h"
-#include "../forms.h"
+#include "../hl_forms.h"
 
 #include "lowlevel.h"
 #include "formdriver.h"
@@ -67,7 +67,7 @@
 #include "menu_x.x.h"
 
 
-static char *module_id="$Id: menu_gtk.c,v 1.3 2004-06-08 18:58:53 whaslbeck Exp $";
+static char *module_id="$Id: menu_gtk.c,v 1.4 2004-06-09 06:03:18 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>

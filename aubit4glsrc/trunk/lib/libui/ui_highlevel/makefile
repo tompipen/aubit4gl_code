@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.22 2004-05-21 13:34:11 mikeaubury Exp $
+# $Id: makefile,v 1.23 2004-06-09 06:03:17 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -36,7 +36,8 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 ##                              GTK+ Options
 ## ==================================================================
-CFLAGS+=-I/opt/gnome/include/gtk-2.0 -I/opt/gnome/lib/gtk-2.0/include -I/opt/gnome/include/atk-1.0 -I/opt/gnome/include/pango-1.0 -I/usr/X11R6/include -I/usr/include/freetype2 -I/opt/gnome/include/glib-2.0 -I/opt/gnome/lib/glib-2.0/include -Wl,--export-dynamic -L/opt/gnome/lib -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangoxft-1.0 -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
+CFLAGS+=${GTK_INC_PATH} ${GTK_LIB_PATH}
+
 
 
 ifeq "${WIN_PATH}" "1"
@@ -165,7 +166,8 @@ ${LIBROOT}/libUI_HL_TUINW${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o wid
 
 
 ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o width_narrow.o
-	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangoxft-1.0 -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
+	${LD} ${GTK_LIB_PATH} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTKLIBS} -Wl,--export-dynamic -L/opt/gnome/lib  ${GTKLIBS}
+		
 
 width_narrow.o: width.c
 	gcc -DNO_WIDEC width.c ${CFLAGS} -c -o width_narrow.o

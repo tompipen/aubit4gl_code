@@ -1,6 +1,6 @@
-static char *module_id="$Id: forms.c,v 1.11 2004-06-01 20:29:13 whaslbeck Exp $";
+static char *module_id="$Id: forms.c,v 1.12 2004-06-09 06:03:17 mikeaubury Exp $";
 
-#include "forms.h"
+#include "hl_forms.h"
 #include "hl_proto.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_API_lowlevel.h"
