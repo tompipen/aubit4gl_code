@@ -898,6 +898,13 @@ any_kword :
 | YELLOW
 | TYPE
 | LIKE
+|YEAR 
+|MONTH 
+|DAY 
+|HOUR 
+|MINUTE 
+|SECOND 
+|FRACTION
 
 ;
 %%
