@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.38 2003-09-03 19:10:41 mikeaubury Exp $
+# $Id: calldll.c,v 1.39 2004-01-31 09:01:18 mikeaubury Exp $
 #
 */
 
@@ -665,7 +665,7 @@ A4GL_debug("nfile=%s\n",nfile);
     {
       A4GL_debug ("No library handle");
       A4GL_exitwith ("Unable to load shared library file");
-      return 0;
+      return -1;
     }
 
   func_ptr = dlsym (dllhandle, nfunc);
@@ -674,7 +674,7 @@ A4GL_debug("nfile=%s\n",nfile);
     {
       A4GL_debug ("No function handle");
       A4GL_exitwith ("Unable to load function from shared libary");
-      return 0;
+      return -1;
     }
 
   A4GL_debug ("Calling function");

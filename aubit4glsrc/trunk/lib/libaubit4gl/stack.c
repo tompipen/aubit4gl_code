@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.81 2004-01-18 12:57:39 mikeaubury Exp $
+# $Id: stack.c,v 1.82 2004-01-31 09:01:19 mikeaubury Exp $
 #
 */
 
@@ -1976,7 +1976,7 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 	  A4GL_debug ("char - sz=%d", sz);
 	}
 
-      buff = malloc (sz + 1);
+      buff = malloc (sz + 10);
       A4GL_debug ("Calling conv...");
 
       A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, sz);
