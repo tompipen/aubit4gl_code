@@ -1950,11 +1950,13 @@ if test "$IS_ODBC_MANAGER" = "1"; then
 	fi
 fi
 
+#for now - don't delete the .c files - some of them are not generated
+# but in the scripts
 CLEAN_FIND_FILES='"(" -name "*.4ae" -o -name "*.afr" -o -name "*.afr.*" 
 		-o -name "*.o" -o -name "*.ao" -o -name "*.out" -o -name "*.glb" 
 		-o -name "*.err" -o -name "output.log" -o -name "errlog" 
 		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
-		-o -name "*.ec" -o -name "*.h" -o -name "*.c" -o -name "pcode.run" 
+		-o -name "*.ec" -o -name "*.h" -o -name "pcode.run" 
 		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
 		-o -name "*.so" -o -name "*.dll" -o -name "*.iem"  -o -name "*.42f"
 		-o -name "*.log" -o -name "*.4qe" -o -name "*.qo" -o -name "*.42r"
@@ -3115,7 +3117,11 @@ do
 		NEED_IFX_VERSION=`$MAKE -s -C $a need_ifx_version 2>/dev/null`
 		
 		NEED_TRANSACTION=`$MAKE -s -C $a transaction 2>/dev/null`
-		
+		NOPREFIX=`$MAKE -s -C $a noprefix 2>/dev/null`
+		if [ "$NOPREFIX" = "1" ]
+		then	
+			export A4GL_NAMESPACE=""
+		fi
 		OLD_DESC=0
 	else
 		OLD_DESC=1
