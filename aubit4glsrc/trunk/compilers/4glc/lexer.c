@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.46 2003-02-05 22:33:34 mikeaubury Exp $
+# $Id: lexer.c,v 1.47 2003-02-10 12:32:56 mikeaubury Exp $
 #*/
 
 /**
@@ -792,11 +792,28 @@ cnt = 0;
         yyline[0]='\0';
         yyline_len=0;
         if (yyline_fpos < a ) {
+
+#ifndef OLDWAY
+	  int tl;
+	  static char tmpbuff[2000];
+          fseek (f, yyline_fpos, SEEK_SET);
+	  tl=ftell(f);
+	  fread(tmpbuff,a-tl,1,f);
+	  tmpbuff[a-tl]=0;
+	  strcpy(&yyline[yyline_len],tmpbuff);
+	  yyline_len+=a-tl;
+
+#else
           fseek (f, yyline_fpos, SEEK_SET);
           while (ftell(f) < a ) {
-            yyline[yyline_len++]= getc(f);
-            yyline[yyline_len]='\0';
+            	yyline[yyline_len++]= getc(f);
+            	yyline[yyline_len]='\0';
           }
+#endif
+
+
+
+
         }
         else {
           fseek (f, a, SEEK_SET);
@@ -904,7 +921,7 @@ yylex (void *pyylval, int yystate)
   if (a>last_pc) {
 		last_pc=a;
 		if (strcmp(acl_getenv("PRINTPROGRESS"),"Y")==0)
-			printf("%d %% complete\n",last_pc);
+			printf("%d %% complete\r",last_pc);
   }
   }
 

@@ -140,6 +140,7 @@ reserved_word :
 	|CLEAR
 	|CLIPPED
 	|CLOSE
+	|LABEL
 	|CONSTANT
 	|CONSTRUCT
 	|COUNT

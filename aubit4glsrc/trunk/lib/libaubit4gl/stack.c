@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.37 2003-02-07 12:58:52 mikeaubury Exp $
+# $Id: stack.c,v 1.38 2003-02-10 12:33:11 mikeaubury Exp $
 #
 */
 
@@ -1273,6 +1273,7 @@ push_current (int a, int b)
   int month, year;		/* ch, yflag; */
   char buff[50];
   char buff2[50];
+  debug("push_current %d %d\n",a,b);
 /*  setlocale(LC_ALL,""); */
   debug ("In push_current");
   (void) time (&now);
@@ -1294,8 +1295,9 @@ push_current (int a, int b)
     );
   debug ("Time is %s", buff);
   buff[b] = 0;
-  debug ("a=%d");
+  debug ("a=%d",a);
   strcpy (buff2, &buff[a]);
+  debug("Pushing %s",buff2);
   push_char (buff2);
   debug ("All done...");
 }

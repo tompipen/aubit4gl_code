@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.32 2003-01-29 14:35:05 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.33 2003-02-10 12:33:10 mikeaubury Exp $
 #
 */
 
@@ -915,7 +915,7 @@
 	int 	pop_var2		(void *p,int d,int s) ;
 	double 	ret_var			(void *p,int d) ;
 	int 	pop_char		(char *z,int size);
-	char *	char_pop		(void);
+	//char *	char_pop		(void);
 	int 	pop_param		(void *p,int d,int size);
 	void 	pop_params		(struct BINDING *b,int n);
 	void 	push_param		(void *p,int d);

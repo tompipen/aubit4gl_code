@@ -689,7 +689,7 @@ comparison_predicate:
 	| value_expression op_not BETWEEN value_expression KW_AND value_expression
 {sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	| value_expression op_not LIKE pattern op_escape
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+{sprintf($<str>$," %s %s Like %s %s",$<str>1,$<str>2,$<str>4,$<str>5);}
 
 	;
 
@@ -701,7 +701,7 @@ comp_op:
         | NOT_MATCHES
         | NOT_LIKE
 	| MATCHES
-	| LIKE
+	| LIKE {sprintf($<str>$,"likE");}
 	| LESS_THAN_EQ {sprintf($<str>$,"<=");}
 	| GREATER_THAN_EQ {sprintf($<str>$,">=");}
 	;
@@ -869,7 +869,7 @@ cur_part: {strcpy($<str>$," YEAR TO SECOND ");}
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
-cur_v_part: {strcpy($<str>$,"");}
+cur_v_part: {strcpy($<str>$,"0,17");}
 | s_curr_v TO e_curr_v
 {sprintf($<str>$," %s ,%s",$<str>1,$<str>3);}
 ;

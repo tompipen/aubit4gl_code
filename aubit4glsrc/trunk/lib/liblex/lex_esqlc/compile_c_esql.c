@@ -213,7 +213,7 @@ print_linked_cmd (int type, char *var)
 void
 print_locate (char where, char *var, char *fname)
 {
-  printc ("locate_var(&%s,'%c',%s);/* FIXME */\n", var, where, fname);
+  printc ("locate_var(&%s,'%c',%s);  /* FIXME */\n", var, where, fname);
 }
 
 
@@ -236,8 +236,8 @@ print_put (void)
   int n;
   printc ("{\n");
   n = print_bind ('i');
-print_conversions('i');
-  printc ("EXEC SQL PUT /*fixme - cursorname ? */\n", n);
+  print_conversions('i');
+  printc ("EXEC SQL PUT /*FIXME - cursorname ? */\n", n);
   print_copy_status();
   printc ("}\n");
 }

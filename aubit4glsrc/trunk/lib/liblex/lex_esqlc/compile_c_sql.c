@@ -220,7 +220,7 @@ print_put (void)
   int n;
   printc ("{\n");
   n = print_bind ('i');
-  printc ("put_insert(&ibind,%d);\n", n);
+  printc ("A4GLSQL_put_insert(&ibind,%d);\n", n);
   printc ("}\n");
 }
 

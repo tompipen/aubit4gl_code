@@ -21,3 +21,8 @@ void retflo(float *a) {
 	push_float(b);
 
 }
+
+
+void rsetnull(int d,void *ptr) {
+	setnull(d,ptr,0);
+}

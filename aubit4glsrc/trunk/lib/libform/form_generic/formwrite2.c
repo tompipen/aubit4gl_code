@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.9 2003-02-06 23:45:16 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.10 2003-02-10 12:33:11 mikeaubury Exp $
 #*/
 
 /**
@@ -1072,10 +1072,11 @@ add_str_attr (void *f, int type, char *str)
 {
   real_add_str_attr (f, type, str);
 }
+
 static void
 real_add_str_attr (struct struct_scr_field *f, int type, char *str)
 {
-  debug ("add_str_attr %d - '%s'\n", type, str);
+  debug ("add_str_attr %p %d - '%s'\n", f,type, str);
   if (str[0] != '\n')
     str = char_val (str);
   else

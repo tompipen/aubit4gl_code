@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.23 2003-01-29 11:31:58 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.24 2003-02-10 12:33:10 mikeaubury Exp $
 */
 
 /**
@@ -218,6 +218,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
 	int     aclfgl_showhelp 	(int helpnumber);
 	int 	aclfgl_fgl_getenv 	(int nargs);
 	int		aclfgl_mdy			(int nargs);
+        char *char_pop(void );
 
 
 	/* ======================= From buildtin_d.c ====================*/

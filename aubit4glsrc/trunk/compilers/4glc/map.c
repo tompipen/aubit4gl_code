@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.24 2003-02-07 04:01:42 afalout Exp $
+# $Id: map.c,v 1.25 2003-02-10 12:32:57 mikeaubury Exp $
 #*/
 
 /**
@@ -784,6 +784,7 @@ compile_4gl(char c[128],int compile_object,char a[128],char incl_path[128],int s
 {
 int x, ret;
 char buff[456];
+static char *file_buffer;
 
   /*
   File MUST be opened in binary mode on Windows, to be able to process
@@ -791,11 +792,16 @@ char buff[456];
   */
   yyin = mja_fopen (c, "rb");
 
+  //printf("Buffer size : %d\n",BUFSIZ);
+  //file_buffer=malloc(30000);
+  //setbuf(yyin,file_buffer);
+
   if (yyin == 0)
   {
     printf ("Error opening file : %s\n", c);
     exit (1);
   }
+
 
   fseek(yyin,0,SEEK_END);
   yyin_len=ftell(yyin);

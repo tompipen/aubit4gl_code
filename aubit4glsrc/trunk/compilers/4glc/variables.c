@@ -1853,18 +1853,18 @@ if (list==0) {
 	return 0;
 }
 
-printf("list->records_cnt=%d\n",list->records_cnt);
+//printf("list->records_cnt=%d\n",list->records_cnt);
 
 for (a=0;a<list->records_cnt;a++) {
-	printf("a=%d\n",a);
+	//printf("a=%d\n",a);
 	dtype=list->list[a]->variable->data.v_simple.datatype;
 	size=list->list[a]->variable->data.v_simple.dimensions[0];
 	dtype+=size<<16;
 
 	sprintf(buff,"push_variable(&%s,0x%x);",  list->list[a]->name, dtype);
-	printf("**** %s\n",buff);
+	//printf("**** %s\n",buff);
 	append_expr(*b,buff);
-	printf("a=%d list->records_cnt=%d\n",a,list->records_cnt);
+	//printf("a=%d list->records_cnt=%d\n",a,list->records_cnt);
 }
 return list->records_cnt;
 

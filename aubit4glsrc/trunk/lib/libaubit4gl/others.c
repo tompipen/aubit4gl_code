@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.20 2002-12-16 16:46:06 mikeaubury Exp $
+# $Id: others.c,v 1.21 2003-02-10 12:33:10 mikeaubury Exp $
 #
 */
 
@@ -459,6 +459,9 @@ int
 has_str_attribute (struct struct_scr_field * f, int str)
 {
   int a;
+if (f==0) {
+	assertion(1,"has_str_attribute passed null pointer..");
+}
   for (a = 0; a < f->str_attribs.str_attribs_len; a++)
     {
       if (f->str_attribs.str_attribs_val[a].type == str)
