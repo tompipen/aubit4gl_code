@@ -655,3 +655,4 @@ struct s_kw {
 #define INPUT 1649
 #define END 1650
 #define INT_TO_ID 1651
+#define TIMEOUT 1652

@@ -5,13 +5,13 @@ if [ "$1" != "" ]
 then
 	cvs update -d 
 	make cleanall
-	./configure  --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql
+	./configure  --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb 
 fi
 
 
 
 cd /home/aubit4gl/sourceforge/aubit4glsrc
-make log
+make -k log
 
 if [ $? != 0 ]
 then
