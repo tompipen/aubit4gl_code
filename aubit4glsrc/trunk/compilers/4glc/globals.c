@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.20 2003-07-30 07:23:12 mikeaubury Exp $
+# $Id: globals.c,v 1.21 2003-11-20 13:12:00 mikeaubury Exp $
 #
 */
 
@@ -460,7 +460,11 @@ generate_globals_for (char *s)
     }
 
   strcpy (nocfile, acl_getenv ("NOCFILE"));
+#ifdef MSVC
+  putenv("NOCFILE=Yes");
+#else
   setenv ("NOCFILE", "Yes", 1);
+#endif
   ptr = strchr (fname, '.');
   *ptr = 0;
 #ifdef DEBUG
@@ -480,7 +484,11 @@ generate_globals_for (char *s)
   A4GL_debug ("Executing system call: %s\n", buff);
 #endif
   system (buff);
+#ifdef MSVC
+  putenv("NOCFILE=Y");
+#else
   setenv ("NOCFILE", nocfile, 1);
+#endif
 #ifdef DEBUG
   if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
     {
