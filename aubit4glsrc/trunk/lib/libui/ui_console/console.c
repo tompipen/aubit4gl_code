@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.4 2003-04-23 16:37:22 mikeaubury Exp $
+# $Id: console.c,v 1.5 2003-04-28 13:45:24 mikeaubury Exp $
 #*/
 
 /**
@@ -146,40 +146,9 @@ char *s;
  * @todo Describe function
  */
 void
-display_at (int n, int a)
+display_internal (int x,int y,char *s,int a,int clr_line)
 {
-int x;
-int y;
-int z;
-char *s=0;
-char *ptr = 0;
-char *buff=0;
-
-debug("In display : ");
-debug_print_stack();
-x=pop_int();
-y=pop_int();
-debug("Popped X & Y");
-s=malloc(2);
-s[0]=0;
-
-
-
-  for (z = 0; z <= n - 1; z++)
-    {
-  	debug("POP %d of %d",z,n-1);
-        ptr=char_pop();
-        debug("DISPLAY_AT : '%s'\n",ptr);
-        buff=realloc(buff,strlen(s)+strlen(ptr)+1);
-        s=realloc(s,strlen(s)+strlen(ptr)+1);
-        sprintf(buff,"%s%s",ptr,s);
-        strcpy(s,buff);
-        debug("s='%s' %p\n",s,s);
-    }
     printf("%s\n",s);
-    free(ptr);
-    free(s);
-    free(buff);
 }
 
 
@@ -555,5 +524,11 @@ prompt=vprompt;
 return 1;
 }
 
+int iscurrborder(void ) {
+return 0;
+}
 
+int get_curr_width(void ) {
+	return 132;
+}
 /* ========================== EOF =============================== */
