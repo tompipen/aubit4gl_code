@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.12 2002-10-20 12:02:37 afalout Exp $
+# $Id: debug.c,v 1.13 2002-12-24 08:57:36 mikeaubury Exp $
 #
 */
 
@@ -134,11 +134,15 @@ debug_full (char *fmt,...)
         Why are we printing this to stderr in any case, it is allready
         written to debug.out ?
         */
-        /*
+        
+
+
+		/* This code is so we can debug the GTK messages we get */
 		if (strcmp(acl_getenv("A4GL_UI"),"GTK")==0) {
-                fprintf(stderr,"%s\n",buff);
-        }
-        */
+                	fprintf(stderr,"%s\n",buff);
+			fflush(stderr);
+        	}
+        
       if (buff[strlen (buff) - 1] != ':')
         fprintf (debugfile, "\n");
       fflush (debugfile);

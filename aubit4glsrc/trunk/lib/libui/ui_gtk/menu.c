@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.5 2002-11-10 06:45:20 afalout Exp $
+# $Id: menu.c,v 1.6 2002-12-24 08:57:45 mikeaubury Exp $
 #*/
 
 /**
@@ -445,7 +445,9 @@ GtkWindow *cwin;
 GtkWidget *w;
 
   debug ("Create window - title=%s", title);
-  cwin = (GtkWindow *)get_curr_win_gtk ();
+  cwin = GTK_WINDOW(get_curr_win_gtk ());
+  debug("Got cwin as %p\n",cwin);
+
   menubar = (GtkWidget *)gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
 
   if (menubar)

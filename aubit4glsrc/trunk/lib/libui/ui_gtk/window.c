@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.2 2002-08-13 11:56:48 afalout Exp $
+# $Id: window.c,v 1.3 2002-12-24 08:57:45 mikeaubury Exp $
 #*/
 
 /**
@@ -220,6 +220,7 @@ void
 remove_window (char *s)
 {
   GtkWidget *cwin;
+  GtkWidget *cwin_2;
 
   debug("Removing window %s",s);
                                                
@@ -230,14 +231,21 @@ remove_window (char *s)
       set_errm (s);
       return;
     } 
-  cwin = (GtkWidget *)find_pointer (s, WINCODE);
-  cwin = gtk_object_get_data (GTK_OBJECT(cwin), "TOP");
-  debug("cwin=%p win_screen=%p",cwin,win_screen);
+
+  cwin_2 = (GtkWidget *)find_pointer (s, WINCODE);
+  dump_object(cwin_2);
+
+  cwin = gtk_object_get_data (GTK_OBJECT(cwin_2), "TOP");
+  dump_object(cwin);
+
+  debug("cwin_2=%p cwin=%p win_screen=%p",cwin_2,cwin,win_screen);
+
   gtk_widget_destroy (cwin);
+  gtk_widget_destroy (cwin_2);
   del_pointer (s, WINCODE);
   gui_run_til_no_more ();
   dump_gtkwinstack();
-  gtkwin_stack((GtkWindow *)cwin,'-');
+  gtkwin_stack((GtkWindow *)cwin_2,'-');
   dump_gtkwinstack();
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.6 2002-10-22 06:43:37 afalout Exp $
+# $Id: gtk_4gl.c,v 1.7 2002-12-24 08:57:45 mikeaubury Exp $
 #*/
 
 /**
@@ -338,8 +338,10 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   gtk_signal_connect (GTK_OBJECT (win), "delete_event",
 		      GTK_SIGNAL_FUNC (delete_event), win);
 
+if (isscreenwin == 1) {
   gtk_signal_connect (GTK_OBJECT (win), "destroy",
 		      GTK_SIGNAL_FUNC (destroy_event), win);
+}
 
   gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
 		      GTK_SIGNAL_FUNC (keypress), win);
@@ -887,7 +889,7 @@ GtkWindow *
 get_curr_win_gtk (void)
 {
   debug("Current window : %p",currwindow);
-  return currwindow;
+  return GTK_WINDOW(currwindow);
 }
 
 
@@ -1288,3 +1290,9 @@ char *get_currwin_name() {
 /* ================================ EOF ================================ */
 
 
+
+void dump_object(GtkObject *o) {
+	debug("Object : %p\n");
+	debug("type:%d ",o->klass->type);
+
+}
