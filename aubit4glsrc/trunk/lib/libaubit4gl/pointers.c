@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.8 2002-06-25 03:22:30 afalout Exp $
+# $Id: pointers.c,v 1.9 2002-09-26 07:18:02 afalout Exp $
 #
 */
 
@@ -312,7 +312,7 @@ find_pointer (const char *pname, char t)
 void
 print_ptr_stack(void)
 {
-  twalk(root, action);       
+  twalk(root, action);
 }
 
 /**
@@ -443,7 +443,10 @@ has_pointer (char *pname, char t)
  */
 /*LINTLIBRARY*/
 
-#ifdef WIN32
+//#ifdef WIN32
+
+#if (defined(__MACH__) && defined(__APPLE__)) || defined WIN32
+//# if (defined __STDC__ && __STDC__) || defined WIN32
 
 
 node *tsearch(key, rootp, compar)
