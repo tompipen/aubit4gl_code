@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: tables.c,v 1.2 2002-07-21 06:41:48 afalout Exp $
+# $Id: tables.c,v 1.3 2002-07-30 17:52:10 mikeaubury Exp $
 #*/
 
 /**
@@ -102,7 +102,7 @@ void add_column (struct table * table, char *colname, int size, int dtype);
 void
 reset_sql_stuff(void)
 {
-	printf("Resetting\n");
+	//printf("Resetting\n");
 	tables=0;
 	last_table=0;
 	sel_col_start=0;
@@ -115,10 +115,10 @@ void
 check_sql_columns(void) 
 {
 struct select_columns *ptr_last;
-printf("Printing columns used in last select : \n");
+//printf("Printing columns used in last select : \n");
 	ptr_last=sel_col_start;
 	while (ptr_last->next!=0) {
-		printf(" COLUMN : %s\n",ptr_last->alias);
+		//printf(" COLUMN : %s\n",ptr_last->alias);
 		ptr_last=ptr_last->next;
 	}
 }
@@ -135,18 +135,18 @@ struct select_columns *ptr_last;
 /*char buff1[256];
 char buff2[256];
 char buff3[256];*/
-	printf("Adding  %s %s\n",colname,alias);
+	//printf("Adding  %s %s\n",colname,alias);
 	ptr=malloc(sizeof(struct select_columns));
 	ptr->table=0;
 	ptr->column=strdup(colname);
 	ptr->alias=strdup(alias);
 	ptr->next=0;
 	if (sel_col_start==0) {
-			printf("Add start\n");
+			//printf("Add start\n");
 			sel_col_start=ptr;
 	} else {
 		ptr_last=sel_col_start;
-		printf("Append\n");
+		//printf("Append\n");
 		while (ptr_last->next!=0) {
 			ptr_last=ptr_last->next;
 		}

@@ -471,7 +471,9 @@ order_by_clause_read:
 /*************************************************************************/
 
 
-literal: CHAR_VALUE {strcpy($<str>$,$<str>1);}
+literal: CHAR_VALUE {
+		sprintf($<str>$,"\"%s\"",$<str>1);
+	}
         | NUMERIC
         | real_number
         | INTVAL
@@ -913,6 +915,10 @@ value_expression:
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 	| literal
 	| identifier
+	| identifier OPEN_SQUARE int_val CLOSE_SQUARE                {sprintf($<str>$," %s[%s]",$<str>1,$<str>3);}
+	| identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  {sprintf($<str>$," %s[%s,%s]",$<str>1,$<str>3,$<str>5);}
+	| identifier DOT identifier OPEN_SQUARE int_val CLOSE_SQUARE                {sprintf($<str>$," %s.%s[%s]",$<str>1,$<str>3,$<str>5);}
+	| identifier DOT identifier OPEN_SQUARE int_val COMMA int_val CLOSE_SQUARE  {sprintf($<str>$," %s.%s[%s,%s]",$<str>1,$<str>3,$<str>5,$<str>7);}
 	| DOLLAR identifier
 {
 if (find_variable($<str>2)==-1) { yyerror("Error - undefined variable\n"); }

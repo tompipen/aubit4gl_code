@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.9 2002-07-30 10:24:57 mikeaubury Exp $
+# $Id: data.c,v 1.10 2002-07-30 17:52:10 mikeaubury Exp $
 #*/
 
 /**
@@ -234,7 +234,7 @@ add_variable (char *name, char *dstring, int category, int pno, int dtype,
 
   if (dim == 0)
     {
-      printf ("Decoding datatype %s\n", dstring);
+      //printf ("Decoding datatype %s\n", dstring);
       ob = strchr (dstring, '(');
       if (ob)
 	{
@@ -336,7 +336,7 @@ add_select (char *sql, char *temptabname)
   int whereposcnt = 0;
   char buffer[80];
 
-
+//printf(":-> %s\n",sql);
   /*
      sql may contain newlines, these signify special data in the select 
      statement...
@@ -670,7 +670,9 @@ execute_selects (void)
 	{
 	  strcat (nstatement, " INTO TEMP a4gl_drep1234");
 	}
+
       //printf("-->%s\n",nstatement);
+
       psql =
 	(void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic,
 					 dif_get_bind (xo), 0, nstatement);
