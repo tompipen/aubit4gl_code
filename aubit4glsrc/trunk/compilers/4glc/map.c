@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.16 2002-11-10 06:45:19 afalout Exp $
+# $Id: map.c,v 1.17 2002-11-25 02:12:49 afalout Exp $
 #*/
 
 /**
@@ -72,7 +72,8 @@ int 		yyin_len;
 	int yydebug; 				/* if !-DYYDEBUG, we need to define it here */
 #endif
 
-
+char gcc_exec[128];
+char pass_options[456];
 
 /*
 =====================================================================
@@ -81,7 +82,8 @@ int 		yyin_len;
 */
 
 void 		setGenStackInfo		(int _genStackInfo);
-static int  compile_4gl			(char c[128],int compile_object, char a[128],char incl_path[128]);
+static int  compile_4gl			(char c[128],int compile_object, char a[128],char incl_path[128],int silent, int verbose);
+int         initArguments		(int argc, char *argv[]);
 
 /*
 =====================================================================
@@ -136,7 +138,7 @@ openmap (char *s)
  * @param t The x4gl element type
  * @param s The name of the element
  * @param w The scope where the element was declared
- *    - MAIN 
+ *    - MAIN
  *    - MODULE
  *    - Function name
  * @param l The line number in the source code where the implementation was
@@ -365,28 +367,37 @@ isGenStackInfo(void)
 static void
 printUsage(char *argv[])
 {
-  printf("Usage %s [options] file.4gl [file.4gl ...]\n", argv[0]);
+  printf("Aubit 4GL compiler usage: %s [options] file.4gl [file.4gl ...]\n", argv[0]);
   printf("Options:\n");
   printf("\n");
-  
-  printf("When A4GL_LEX=C :\n");
+
+  /* FIXME: make sure we don't have conflict with GCC options */
+
+  printf("When A4GL_LEXTYPE=C :\n");
   printf("  -c compile to object(s), do not link\n");
-  printf("  -o [outfile] compile to object(s), link into executable\n");
-  printf("  -d [outfile] compile to object(s), link into shared library\n");
-  printf("  -l [outfile] compile to object(s), link into static library\n");
+  printf("  -o[outfile] compile to object(s), link into executable\n");
+  printf("  -d[outfile] compile to object(s), link into shared library\n");
+  printf("  -l[outfile] compile to object(s), link into static library\n");
   printf("  (no flags) compile to C only\n");
   printf("\n");
-  
-  printf("When A4GL_LEX=PERL :\n");
+
+  printf("When A4GL_LEXTYPE=PERL :\n");
   printf("  (no flags) compile to Perl only\n");
   printf("\n");
 
   printf("Other options :\n");
   printf("  -G     | --globals         : Generate the globals map file\n");
-  printf("  -s 0|1 | --stack_trace 0|1 : Include the stack trace in file:\n");
-  printf("     0 - Don't generate\n");
-  printf("     1 - Generate(Default)\n");
-  printf("  If 'outfile' was not specified, it is generated from first 4gl file name specified\n");
+  printf("  -S     | --silent          : no output other then errors\n");
+  printf("  -V     | --verbose         : Verbose output\n");
+  printf("  -v     | --version         : Show compiler version and exit\n");
+  printf("  -f     | --version_full    : Show full compiler version and details\n");
+  printf("  -h|-?  | --help            : Show this help and exit\n");
+  printf("  -tTYPE | --lextype         : output language, TYPE=C(default) or PERL\n");
+  printf("  -s0|1  | --stack_trace 0|1 : Include the stack trace in file:\n");
+  printf("                             : 0-Don't generate  1-Generate(Default)\n");
+  printf("If 'outfile' was not specified, it is generated from first 4gl file name\n");
+  printf("specified. All options that are not recognised, are passed to C compiler,\n");
+  printf("if -c -o -d or -l was specified.\n");
   printf("\n");
 }
 
@@ -411,8 +422,13 @@ int compile_exec = 0;
 int compile_so = 0;
 int compile_lib = 0;
 int si;
-int x;
+int x = 0;
 int ret;
+int index;
+int silent = 0;
+int verbose = 0;
+int todo = 0;
+
 char opt_list[40];
 char a[128];
 char b[128];
@@ -421,11 +437,18 @@ char incl_path[128];
 char l_path[128];
 char l_libs[128];
 char buff[456];
+char all_objects[456];
+char output_object[128];
 static struct option long_options[] =
   {
-    {"globals",     0, 0, 'G'},
-    {"stack_trace", 1, 0, 's'},
-    {"help", 		0, 0, '?'},
+    {"globals",     	0, 0, 'G'},
+    {"stack_trace", 	1, 0, 's'},
+    {"help", 			0, 0, '?'},
+    {"silent", 			0, 0, 'S'},
+    {"verbose", 		0, 0, 'V'},
+    {"version", 		0, 0, 'v'},
+    {"version_full",	0, 0, 'f'},
+    {"lextype",			0, 0, 't'},
     {0, 0, 0, 0},
   };
 
@@ -433,24 +456,81 @@ static struct option long_options[] =
 		debug ("Parsing the comand line arguments\n");
     #endif
 
-	/* see http://www.gnu.org/software/gengetopt for inspiration */
+	/* see
+		http://www.gnu.org/software/gengetopt
+		http://www.gnu.org/manual/glibc-2.2.3/html_node/libc_516.html
+        for inspiration.
+	*/
 
-  if (strcmp (acl_getenv ("A4GL_LEX"), "C") == 0)
+  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0)
   {
-    strcpy(opt_list,"Gs:codl?h");
+    strcpy(opt_list,"Gs:co::d::l::?hSVvft");
   }
 
-  if (strcmp (acl_getenv ("A4GL_LEX"), "PERL") == 0)
+  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
   {
-    strcpy(opt_list,"Gs:?h");
+    strcpy(opt_list,"Gs:?hSVvft");
   }
+
+  /* this call will intercept -v and -vfull arguments, that can be only
+  arguments on command line anyway */
+  if (argc > 1) {
+	check_and_show_id ("4GL Compiler", argv[1]);
+  } else {
+	printUsage(argv);
+    exit(0);
+  }
+
+  strcpy (output_object,"");
 
   while ( ( i = getopt_long (argc, argv, opt_list,
                         long_options, &option_index) ) != -1)
   {
     switch(i)
     {
-      case 'G':              /* Global generate only */
+      case 'c':              /* Compile resulting C file(s) to object */
+		if (compile_lib) 	{printf("Cannot specify -l and -c together.\n"); exit(7);}
+		if (compile_exec) 	{printf("Cannot specify -o and -c together.\n"); exit(7);}
+		if (compile_so) 	{printf("Cannot specify -d and -c together.\n"); exit(7);}
+
+		compile_object = 1;
+		//cannot specify object target name for each source file:
+		//sprintf (output_object,"%s",optarg);
+		break;
+
+      case 'o':              /* Link resulting object(s) into executable */
+		if (compile_object) {printf("Cannot specify -c and -o together.\n"); exit(7);}
+		if (compile_so) 	{printf("Cannot specify -d and -o together.\n"); exit(7);}
+		if (compile_lib) 	{printf("Cannot specify -l and -o together.\n"); exit(7);}
+
+		compile_exec = 1;
+		compile_object = 1;
+		
+		sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
+		//sprintf (output_object,"%s",optarg);
+		break;
+
+      case 'd':              /* Link resulting object(s) into shared library */
+		if (compile_object) {printf("Cannot specify -c and -d together.\n"); exit(7);}
+		if (compile_exec) 	{printf("Cannot specify -o and -d together.\n"); exit(7);}
+		if (compile_lib) 	{printf("Cannot specify -l and -d together.\n"); exit(7);}
+
+		compile_so = 1;
+		compile_object = 1;
+		sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
+		break;
+
+      case 'l':              /* Link resulting object(s) into static library */
+		if (compile_object) {printf("Cannot specify -c and -l together.\n"); exit(7);}
+		if (compile_exec) 	{printf("Cannot specify -o and -l together.\n"); exit(7);}
+		if (compile_so) 	{printf("Cannot specify -d and -l together.\n"); exit(7);}
+
+		compile_lib = 1;
+		compile_object = 1;
+		sprintf (output_object,"%s",(NULL == optarg) ? "" : optarg);
+		break;
+
+      case 'G':              /* generate Globals file only */
 		globals_only = 1;
         break;
 
@@ -464,38 +544,42 @@ static struct option long_options[] =
         setGenStackInfo(si);
         break;
 
-      case 'c':              /* Compile resulting C file(s) to object */
-		compile_object = 1;
-		break;
-
-      case 'o':              /* Link resulting object(s) into executable */
-		compile_exec = 1;
-		compile_object = 1;
-		break;
-
-      case 'd':              /* Link resulting object(s) into shared library */
-		compile_so = 1;
-		compile_object = 1;
-		break;
-
-      case 'l':              /* Link resulting object(s) into static library */
-		compile_lib = 1;
-		compile_object = 1;
-		break;
-
       case '?':             /* Help */
       case 'h':
 		printUsage(argv);
         exit(0);
+
+      case 'S':             /* Silent */
+        silent = 1;
+        verbose = 0;
+        break;
+
+      case 'V':             /* Verbose */
+        verbose = 1;
+        silent = 0;
+        break;
+
+      case 'v':             /* Show version - needed for long opts*/
+		check_and_show_id ("4GL Compiler", "-v");
+        exit (0);
+
+	  case 'f':             /* Show version - needed for long opts*/
+		check_and_show_id ("4GL Compiler", "-vfull");
+        exit (0);
+
+       default : 			/* Catch all.  */
+		printf("Invalid option=%s\n", argv[optind]);
+		printf("Invalid option=%s\n", argv[option_index]);
+		exit (1);
     }
   }
 
-  if ( optind >= argc )
-  {
-    printf("No file name defined\n");
-    printUsage(argv);
-    exit(1);
-  }
+	if ( optind >= argc )
+	{
+		printf("No file name defined\n");
+		printUsage(argv);
+		exit(1);
+	}
 
 	#if YYDEBUG != 0
     	#ifdef DEBUG
@@ -508,44 +592,24 @@ static struct option long_options[] =
 		#endif
 	#endif
 
-  if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
-  {
-   	#ifdef DEBUG
-		debug ("Yacc Debugging on\n");
-    #endif
-    yydebug = 1;
-  }
-  else
-  {
-    yydebug = 0;
-  }
+	if (strcmp (acl_getenv ("YYDEBUG"), "") != 0)
+	{
+	   	#ifdef DEBUG
+			debug ("Yacc Debugging on\n");
+	    #endif
+    	yydebug = 1;
+	}
+	else
+	{
+		yydebug = 0;
+	}
 
-  init_datatypes();
-  #ifdef DEBUG
-	  debug("after init_datatypes\n");
-  #endif
+	init_datatypes();
 
-  if (!A4GLSQL_initlib()) {
-	printf("4glc: Error opening SQL Library (A4GL_SQLTYPE=%s)\n", acl_getenv("A4GL_SQLTYPE"));
-	exit(1);
-  }
-
-  check_and_show_id ("4GL Compiler", argv[optind]);
-  outputfilename = outputfile; /* set in check_and_show_id ? */
-  strcpy (c, argv[optind]);
-  bname (c, a, b);
-
-  /* whe now have to specify extensions, since we can put multiple source files
-    on command line.
-  if (b[0] == 0)
-  {
-    strcat (c, ".4gl");  // use ommited the extension
-	bname (c, a, b);
-  }
-  */
-
-  	strcpy (outputfilename, a);
-	strcpy (infilename, c);
+	if (!A4GLSQL_initlib()) {
+		printf("4glc: Error opening SQL Library (A4GL_SQLTYPE=%s)\n", acl_getenv("A4GL_SQLTYPE"));
+		exit(1);
+	}
 
     /* prepare CC flags */
     /* FIXME: migrate this to user resources */
@@ -556,45 +620,123 @@ static struct option long_options[] =
 	strcat (l_path,acl_getenv ("AUBITDIR"));
 	strcat (l_path,"/lib");
     strcpy (l_libs,"-laubit4gl");
+    strcpy (gcc_exec,"gcc");
+
+	strcpy (all_objects,"");
+	strcpy (pass_options,"");
+
+	for (index = optind; index < argc; index++)
+    {
+    	//printf ("Non-option argument %s\n", argv[index]);
+
+		outputfilename = outputfile; /* set where ? */
+
+		strcpy (c, argv[index]);
+		bname (c, a, b);
+
+		/* FIXME: we should no longer assume anything about parameters on command
+        line, if we want to be able to pass flags to CC */
+		/*
+		if (b[0] == 0)
+		{
+			strcat (c, ".4gl"); 	// assume 4gl file name
+			bname (c, a, b);
+		}
+        */
+
+		if (strcmp (b, "4gl") == 0) {
+			strcpy (outputfilename, a);
+			strcat (all_objects,a);
+			strcat (all_objects,".o ");
+			strcpy (infilename, c);
+			#ifdef DEBUG
+				debug ("Compiling %s\n", infilename);
+            #endif
+
+			if (strcmp (output_object, "") == 0) {
+				strcpy (output_object,a);
+
+                if (compile_exec) {
+                    #if (defined (__CYGWIN__) || defined (__MINGW32__))
+						strcat (output_object,".exe");
+                    #endif
+                }
+                if (compile_so) {
+                    #if (defined (__CYGWIN__) || defined (__MINGW32__))
+						strcat (output_object,".dll");
+                    #else
+						strcat (output_object,".so");
+                    #endif
+                }
+                if (compile_lib) {
+					strcat (output_object,".a ");
+                }
+
+            }
+
+            todo++;
+			x = compile_4gl(c,compile_object,a,incl_path,silent,verbose);
+        } else {
+			/* FIXME:
+                just pass stuff you don't understand to CC */
+			/*
+			printf ("Don't know how to process %s\n", c);
+			exit (5);
+            */
+			if (! silent) {
+				printf ("Pass trough option: %s\n",c);
+		    }
+
+			strcat (pass_options,c);
+			strcat (pass_options," ");
+        }
 
 
-    //fixme: put all 4gl files on command line in array, and loop here:
-    //while (1) 
-	//{
-		x = compile_4gl(c,compile_object,a,incl_path);
-    //}
-
-  debug("after compile_4gl()");
-
-  if ( x == 0 )
-  {
-    if (compile_exec)
-	{
-		//FIXME: change this to linking
-		sprintf (buff,"gcc %s.c -o %s %s %s %s",a,a,incl_path,l_path,l_libs);
-		printf ("%s\n",buff);
-		sprintf (buff,"%s > %s.err 2>&1",buff,a);
-		debug("Runnung $s",buff);
-		ret=system (buff);
-		if (ret) {
-			printf ("Error compiling %s.c - check %s.err\n",a,a);
-			//fixme: show err file
+		if ( x )
+        {
+            exit (x);
         }
 
 	}
 
+    if (! todo) {
+		if (! silent) {
+			printf ("Warning: no 4gl input files - nothing to do.\n");
+	    }
+        exit (1);
+	}
+
+
+
+    if (compile_exec)
+	{
+		sprintf (buff,"%s -rdynamic %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
+	}
+
     if (compile_so)
 	{
-		printf ("Shared lib linking not implemented");
+		sprintf (buff,"%s -shared %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
 	}
 
     if (compile_lib)
 	{
-		printf ("Static lib linking not implemented");
+		sprintf (buff,"%s -static %s -o %s %s %s %s",gcc_exec,all_objects,output_object,l_path,l_libs,pass_options);
 	}
 
-
-  }
+    if (compile_exec || compile_so || compile_lib) {
+		if (! silent) {
+			printf ("%s\n",buff);
+	    }
+		sprintf (buff,"%s > %s.err 2>&1",buff,output_object);
+		#ifdef DEBUG
+			debug("Runnung %s",buff);
+	    #endif
+		ret=system (buff);
+		if (ret) {
+			printf ("Error compiling %s - check %s.err\n",output_object,output_object);
+			//fixme: show err file
+	    }
+    }
 
   return x;
 }
@@ -608,7 +750,7 @@ static struct option long_options[] =
  * @param
  */
 static int
-compile_4gl(char c[128],int compile_object,char a[128],char incl_path[128])
+compile_4gl(char c[128],int compile_object,char a[128],char incl_path[128],int silent,int verbose)
 {
 int x, ret;
 char buff[456];
@@ -636,6 +778,11 @@ char buff[456];
 
   openmap(outputfilename);
 
+  
+  if (! silent) {
+	printf ("Tranlsating to %s: %s\n",acl_getenv ("A4GL_LEXTYPE"),c);
+		    }
+
   x = yyparse (); /* we core dump here on Darwin */
   #ifdef DEBUG
 	  debug("after yyparse\n");
@@ -655,8 +802,10 @@ char buff[456];
   {
 	if (compile_object)
 	{
-		sprintf (buff, "gcc %s.c -c -o %s.o %s",a,a,incl_path);
-		printf ("%s\n",buff);
+		sprintf (buff, "%s %s.c -c -o %s.o %s %s",gcc_exec,a,a,incl_path,pass_options);
+		if (! silent) {
+			printf ("%s\n",buff);
+        }
 		sprintf (buff,"%s > %s.err 2>&1",buff,a);
 		#ifdef DEBUG
 			debug("Runnung $s",buff);

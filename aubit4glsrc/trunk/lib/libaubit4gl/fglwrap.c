@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.24 2002-10-22 06:43:36 afalout Exp $
+# $Id: fglwrap.c,v 1.25 2002-11-25 02:12:49 afalout Exp $
 #
 */
 
@@ -787,11 +787,13 @@ clob(char *s,char *p)
  * 
  * @return A string pointer with the serial number.
  */
+/*
 char *
 get_serno(void)
 {
 	return "XXXXXXXXXX";
 }
+*/
 
 /**
  * Check and show the aubit compiler ID
@@ -802,25 +804,31 @@ get_serno(void)
 void 
 check_and_show_id(char *program, char *arg1)
 {
-  char mod[32];
-  char id[132];
-  int a;
+char mod[32];
+char id[132];
+int a;
 
-	if (strcmp(arg1,"-v")==0) 
+	if (strcmp(arg1,"-v")==0)
 	{
-	    printf("(c) 1997-2002 Aubit Computing Ltd\n%s\n\n",program);
-	    printf("Serial Number %s\n\nVersion       %s\nBuild Level   %d\n",
+	    printf("(c) 1997-2002 Aubit project\n%s\n\n",program);
+	    /*
+		printf("Serial Number %s\n\nVersion       %s\nBuild Level   %d\n",
 			  get_serno(),internal_version(),internal_build()
 			);
+        */
+		printf("Version       %s\nBuild Level   %d\n",
+			  internal_version(),internal_build()
+			);
+
 	    exit(0);
 	}
 
 	if (strcmp(arg1,"-vfull")==0)
 	{
-    printf("(c) 1997-2002 Aubit Computing Ltd\n%s\n\n",program);
-	  printf("Serial Number %s\n\nVersion       %s\nBuild Level   %d\n",
-			get_serno(),internal_version(),internal_build()
-		);
+		printf("(c) 1997-2002 Aubit project\n%s\n\n",program);
+		printf("Version       %s\nBuild Level   %d\n",
+			  internal_version(),internal_build()
+			);
 	  for (a=0;;a++)
 		{
 	    set_version(a,mod,id);
