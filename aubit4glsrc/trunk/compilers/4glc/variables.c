@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.42 2004-05-13 18:13:00 whaslbeck Exp $
+# $Id: variables.c,v 1.43 2004-05-17 16:03:51 mikeaubury Exp $
 #
 */
 
@@ -611,9 +611,9 @@ make_function (char *name, int record_cnt)
 
   if (class_cnt==0) set_current_variable_scope ('g');
 
-printf("MAKE FUNCTION : %s\n",name);
+//printf("MAKE FUNCTION : %s\n",name);
 
-  A4GL_debug ("MAKE FUNCTION : %s\n", name);
+  //A4GL_debug ("MAKE FUNCTION : %s\n", name);
   local_v = (struct variable *) malloc (sizeof (struct variable));
   local_v->names.name = strdup (name);
   A4GL_convlower (local_v->names.name);
