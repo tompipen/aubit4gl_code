@@ -13,6 +13,7 @@ If you need to change something, edit assist.4gl, and NOT assist.c
 		                    Includes
 =====================================================================
 */
+#define INCLUDING_LIB_INCL_TOO
 #define ALLOW_BOTH_LIB_AND_CALL
 #include "a4gl_lib_ui_gtk_int.h"
 /*

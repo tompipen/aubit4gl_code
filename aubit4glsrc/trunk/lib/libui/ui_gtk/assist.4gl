@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.10 2003-07-28 07:04:14 mikeaubury Exp $
+# $Id: assist.4gl,v 1.11 2003-08-01 08:32:16 mikeaubury Exp $
 
 # ASSIST.4gl
 #
@@ -47,7 +47,7 @@ If you need to change something, edit assist.4gl, and NOT assist.c
 =====================================================================
 */
 
-
+#define INCLUDING_LIB_INCL_TOO
 #define ALLOW_BOTH_LIB_AND_CALL
 #include "a4gl_lib_ui_gtk_int.h"
 

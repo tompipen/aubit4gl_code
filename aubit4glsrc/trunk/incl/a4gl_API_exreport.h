@@ -1,4 +1,5 @@
-
+#ifndef EXREPORT_H
+#define EXREPORT_H
 #ifdef __cplusplus
 extern "C"
 {
@@ -9,4 +10,5 @@ extern "C"
 
 #ifdef __cplusplus
 }
+#endif
 #endif

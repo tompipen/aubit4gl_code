@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.79 2003-07-28 07:03:34 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.80 2003-08-01 08:32:09 mikeaubury Exp $
 #
 */
 
@@ -752,7 +752,6 @@ int A4GL_readkey(void);
   /* ======================== from debug.h ======================== */
 
 
-  void A4GL_debug_full (char *fmt, ...);
   void A4GL_exitwith_sql (char *s);
   void A4GL_set_errm (char *s);
 
@@ -956,6 +955,22 @@ enum cmd_types {
 #define DECODE_SIZE(x) 	(x>>16)
 
   char *A4GL_new_string (int a);
+
+
+#ifndef ALREADY_DONE_POP_PUSH_ETC
+  void A4GL_debug_full (char *fmt, ...);
+  int A4GLSTK_isStackInfo (void);
+  char *acl_getenv (char *);
+  char *A4GLSTK_getStackTrace (void);
+  void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
+  void A4GLSTK_popFunction (void);
+  void A4GL_pushop (int a);
+  void A4GL_chk_err (int lineno, char *fname);
+  void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
+  void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
+  void A4GL_push_null (int dtype,int size);
+  char *a4gl_substr (char *s, int dtype, int a, int b, ...);
+  int A4GL_set_line (char *s, long l);
   int A4GL_pop_bool (void);
   short A4GL_pop_int (void);
   long A4GL_pop_long (void);
@@ -964,17 +979,36 @@ enum cmd_types {
   double A4GL_pop_double (void);
   int A4GL_pop_var (void *p, int d);
   int A4GL_pop_var2 (void *p, int d, int s);
-  double A4GL_ret_var (void *p, int d);
   int A4GL_pop_char (char *z, int size);
-  //char *        A4GL_char_pop                (void);
   int A4GL_pop_param (void *p, int d, int size);
   void A4GL_pop_params (struct BINDING *b, int n);
   void A4GL_push_param (void *p, int d);
   void A4GL_push_params (struct BINDING *b, int n);
   void A4GL_push_user (void);
   void A4GL_push_today (void);
-  int A4GL_opboolean (void);
+
+void A4GL_fgl_end_4gl_0 (void);
+void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
+void A4GL_display_at (int n, int a);
+  void A4GL_push_dtime (struct A4GLSQL_dtime *p);
+  void A4GL_push_int (short p);
+  void A4GL_push_long (long p);
+  void A4GL_push_date (long p);
+  void A4GL_push_float (float p);
+  void A4GL_push_dec (char *p, int ismoney,int size);
+  void A4GL_push_double (double p);
+  void A4GL_push_chars (char *p, int dtype, int size);
+  void A4GL_push_char (char *p);
+  void A4GL_push_variable (void *ptr, int dtype);
+  void A4GL_push_interval (struct ival *p);
   void A4GL_pop_args (int a);
+#endif
+
+
+
+  double A4GL_ret_var (void *p, int d);
+
+  int A4GL_opboolean (void);
   void A4GL_debug_print_stack (void);
   void print_stack (void);
   void A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename);
@@ -1075,7 +1109,6 @@ enum cmd_types {
 #define WARN 					2
 
 #ifndef NODEBUG
-  int A4GL_set_line (char *s, long l);
 #define A4GL_debug A4GL_set_line(__FILE__,__LINE__);A4GL_debug_full
 #else
 #define A4GL_debug null_func
@@ -1093,7 +1126,6 @@ enum cmd_types {
 
 /* These two need a4gl in lower case... */
   char *a4gl_let_substr (char *ca, int dtype, int a, int b, ...);
-  char *a4gl_substr (char *s, int dtype, int a, int b, ...);
 
 
   void A4GL_include_builtin_in_exe (void);
@@ -1107,17 +1139,6 @@ enum cmd_types {
 
   /* ======================= From buildtin_d.c ==================== */
 
-  void A4GL_push_dtime (struct A4GLSQL_dtime *p);
-  void A4GL_push_int (short p);
-  void A4GL_push_long (long p);
-  void A4GL_push_date (long p);
-  void A4GL_push_float (float p);
-  void A4GL_push_dec (char *p, int ismoney,int size);
-  void A4GL_push_double (double p);
-  void A4GL_push_chars (char *p, int dtype, int size);
-  void A4GL_push_char (char *p);
-  void A4GL_push_variable (void *ptr, int dtype);
-  void A4GL_push_interval (struct ival *p);
 
   int A4GL_func_clip (void);
   void A4GL_func_concat (void);
@@ -1135,7 +1156,6 @@ enum cmd_types {
   char *A4GL_find_str_resource_int (char *search, int a);
   struct str_resource *A4GL_build_user_resources (void);
   int A4GL_env_option_set (char *s);
-  char *acl_getenv (char *);
 
 
   /* ========================== gui_io.c ================================= */
@@ -1237,21 +1257,17 @@ enum cmd_types {
 
 
 
-  void A4GL_pushop (int a);
   char *A4GL_params_on_stack (char *_paramnames[], int n);
   int A4GL_isnull (int type, char *buff);
   void A4GL_setnull (int type, void *buff, int size);
   char *A4GL_lrtrim (char *z);
   void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr);
   void A4GL_drop_param (void);
-  void A4GL_push_null (int dtype,int size);
   void A4GL_init_blob (struct fgl_int_loc *p);
   int A4GL_read_param (void *p, int d, int size, int c);
   int A4GL_conv_to_interval (int a);
   int A4GL_chknull_boolean (int n, int n1, int n2,int d1,int d2);
   int A4GL_chknull (int n, int n1, int n2,int d1,int d2);
-  void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
-  void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
 
   /* ============================ calldll.c ============================== */
   void *A4GL_dl_openlibrary (char *type, char *name);
@@ -1267,7 +1283,6 @@ enum cmd_types {
   void A4GL_assertion (int a, char *s);
 
   /* ============================ fglwrap.c ============================== */
-  void A4GL_chk_err (int lineno, char *fname);
   int A4GL_fgl_error (int a, char *s, int err, int stat);
   int A4GL_isyes (char *s);
   char *get_serno (void);
@@ -1300,10 +1315,6 @@ enum cmd_types {
   void A4GL_gui_actmenu (long ld);
 
   /* ============================ function_call_stack.c =================== */
-  int A4GLSTK_isStackInfo (void);
-  char *A4GLSTK_getStackTrace (void);
-  void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
-  void A4GLSTK_popFunction (void);
 
   /* ============================ err.c =================================== */
   char *A4GL_err_print (int a, char *s);
@@ -1671,7 +1682,7 @@ int
 A4GL_get_escape_chr (void);
 int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *fprop);
 //int A4GL_get_curr_width_gtk (void);
-int aclfgli_libhelp_showhelp(int helpno);
+//int aclfgli_libhelp_showhelp(int helpno);
 void
 a4gl_basename (char **ppsz);
 //void A4GL_display_internal (int x, int y, char *s, int a, int clr_line);
@@ -1691,8 +1702,6 @@ void A4GL_set_last_outfile (char *s);
 void A4GL_ltrim(char *s) ;
 void A4GL_fgl_die(int n);
 char *A4GL_init_dec (char *s, int len, int d);
-void A4GL_fgl_end_4gl_0 (void);
-void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
 
 /* 
    used by display routines to convert a datatype 
@@ -1749,7 +1758,6 @@ struct s_field_name_list {
 
 int A4GL_menu_hide (ACL_Menu * menu, ...);
 int A4GL_menu_show (ACL_Menu * menu, ...);
-void A4GL_display_at (int n, int a);
 void A4GL_set_scrmode (char a);
 int A4GL_isscrmode (void);
 int A4GL_islinemode (void);

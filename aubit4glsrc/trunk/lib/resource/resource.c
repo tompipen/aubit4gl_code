@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.45 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: resource.c,v 1.46 2003-08-01 08:32:16 mikeaubury Exp $
 #
 */
 
@@ -93,6 +93,7 @@ struct str_resource builtin_resource[] = {
   {"A4GL_PACKER", "XML"},
   {"A4GL_PDFTYPE", "NOPDF"},	/* libEXREPORT_xxxx */
   {"A4GL_LEXTYPE", "C"},
+  {"A4GL_LEXDIALECT", "INFORMIX"}, // If they set LEXTYPE TO EC - this is the default
   {"A4GL_RPCTYPE", "NORPC"},
   {"A4GL_MENUTYPE", "NOMENU"},
   {"A4GL_MSGTYPE", "NATIVE"},

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.6 2003-08-01 01:03:26 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.7 2003-08-01 08:32:09 mikeaubury Exp $
 */
 
 /**
@@ -90,27 +90,28 @@ void A4GL_set_column (struct rep_structure *rep);
 void A4GL_set_help_file (char *fname);
 
 
+#define ALREADY_DONE_POP_PUSH_ETC
+
+
 double A4GL_pop_double(void);
 int A4GL_pop_bool (void);
 short A4GL_pop_int (void);
 long A4GL_pop_long (void);
 long A4GL_pop_date (void);
 float A4GL_pop_float (void);
+void A4GL_debug_full (char *fmt, ...);
 int A4GL_pop_var (void *p, int d);
 int A4GL_pop_var2 (void *p, int d, int s);
 int A4GL_pop_char (char *z, int size);
 int A4GL_pop_param (void *p, int d, int size);
 void A4GL_pop_params (struct BINDING *b, int n);
-void A4GL_pop_args (int a);
-
-//void A4GL_push_disp_bind (void *b, int n);
-//void A4GL_push_time (void);
-//void A4GL_push_current (int a, int b);        /* stack.c */
-//void A4GL_push_ascii (void);  /* stack.c */
 void A4GL_push_param (void *p, int d);
-void A4GL_push_params (struct BINDING *b, int n);
 void A4GL_push_user (void);
 void A4GL_push_today (void);
+void A4GL_push_params (struct BINDING *b, int n);
+void A4GL_pop_args (int a);
+int A4GL_set_line (char *s, long l);
+char *a4gl_substr (char *s, int dtype, int a, int b, ...);
 void A4GL_push_dtime (struct A4GLSQL_dtime *p);
 void A4GL_push_int (short p);
 void A4GL_push_long (long p);
@@ -122,10 +123,12 @@ void A4GL_push_chars (char *p, int dtype, int size);
 void A4GL_push_char (char *p);
 void A4GL_push_variable (void *ptr, int dtype);
 void A4GL_push_interval (struct ival *p);
+char *acl_getenv (char *);
 void A4GL_pushop (int a);
 void A4GL_push_null (int dtype,int size);
 void A4GL_push_bind (struct BINDING *b, int n, int no, int elemsize);
 void A4GL_push_bind_reverse (struct BINDING *b, int n, int no, int elemsize);
+void A4GL_chk_err (int lineno, char *fname);
 int A4GLSTK_isStackInfo (void);
 char *A4GLSTK_getStackTrace (void);
 void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
@@ -133,11 +136,7 @@ void A4GLSTK_popFunction (void);
 void A4GL_fgl_end_4gl_0 (void);
 void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
 void A4GL_display_at (int n, int a);
-int A4GL_set_line (char *s, long l);
-void A4GL_debug_full (char *fmt, ...);
-void A4GL_chk_err (int lineno, char *fname);
-char *a4gl_substr (char *s, int dtype, int a, int b, ...);
-char *acl_getenv (char *);
+
 
 #define A4GL_FUNCTION
 #define A4GL_INTERNAL_FUNCTION
