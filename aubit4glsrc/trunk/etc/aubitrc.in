@@ -83,7 +83,7 @@ A4GL_LEXTYPE=@A4GL_LEXTYPE@
 
 ############
 #When A4GL_LEXTYPE=EC, specify type of EC compiler to be used
-#Options: (INFORMIX), POSTGRES
+#Options: (INFORMIX), POSTGRES, SAPDB
 A4GL_LEXDIALECT=@A4GL_LEXDIALECT@
 
 ############
@@ -293,6 +293,9 @@ CC="@CC@"
 AWK=@AWK@
 
 GTK_INC_PATH="@GTK_INC_PATH@"
+
+#full path to SAP-DB ESQL/C pre-compier (does not have to be in the path)
+A4GL_SAPDB_ESQLC=@SAPDB_ESQLC@
 
 #################
 #Depending on installed 4gl compilers, amake can compile same definition

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.31 2003-07-20 06:53:24 afalout Exp $
+# $Id: compile.c,v 1.32 2003-07-23 07:07:32 afalout Exp $
 #*/
 
 /**
@@ -931,7 +931,7 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 	    }
 	  else
 	    {
-	      /* user did not specify output file using -o, or specified output 
+	      /* user did not specify output file using -o, or specified output
 	         file did not have Aubit object extension */
 
 	      //FIXME: we can compile shared or static here
@@ -980,14 +980,25 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
 
 		    } else {
+			  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
+              {
+
+				/* /opt/sapdb/interfaces/precompiler/bin/cpc hello <<- no .cpc extension ! */
+
+       			  sprintf (buff, "%s %s -c -o %s %s %s",
+				   acl_getenv ("A4GL_SAPDB_ESQLC"), aa, single_output_object, incl_path,
+				   pass_options);
+
+
+              } else {
+
 				//"A4GL_LEXDIALECT"="INFORMIX" - default
 				//  esql  ./hello.ec -c -o ./hello.ao -I/opt/aubit4gl/incl  2> ./hello.ec.err
 
        			  sprintf (buff, "esql %s.ec -c -o %s %s %s",
 				   aa, single_output_object, incl_path,
 				   pass_options);
-
-
+              }
 		    }
 	    } else { /* Pure C compiler output */
 

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.179 2003-07-21 12:42:13 afalout Exp $
+dnl # $Id: configure.in,v 1.180 2003-07-23 07:07:12 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -498,8 +498,8 @@ LCLINTEXE=no
 STRIP_EXECUTABLES=no
 cygwin=0
 INFORMIXC=$CC
-
-
+HAVE_CURSES=0
+HAVE_PDCURSES=0
 #FIXME: do not hard-code
 WINDOWS_DRIVE=D:
 CYGWIN_PATH=/cygwin
@@ -879,10 +879,11 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	fi
 
 	AC_ARG_WITH(bison,
-	[  --with-bison[=DIR]   Use Bison as YACC to recompile Aubit parsers. DIR is the base
-	                          directory of Bison executable, defaults to /usr/bin.],
+	[  --with-bison[=DIR]        Use Bison as YACC to recompile Aubit parsers. DIR is
+                          the base directory of Bison executable, defaults
+                          to /usr/bin.],
 	[
-		
+
 	if test "$withval" != "no"; then
 
 		#AC_PROG_YACC
@@ -938,8 +939,9 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
 	#AC_MSG_CHECKING(Electric Fence debugging)
 	AC_ARG_WITH(efence,
-	[  --with-efence[=DIR]   Use Electric Fence library for debugging. DIR is the base
-	                          directory of efence library, defaults to /usr/local/lib.],
+	[  --with-efence[=DIR]       Use Electric Fence library for debugging. DIR is the
+                          base directory of efence library, defaults
+                          to /usr/local/lib.],
 	[
 	if test "$withval" != "no"; then
 
@@ -1310,7 +1312,7 @@ fi
 PHP_CONFIGURE_PART(Checking for SAP DB ESQL/C support:)
 
 AC_ARG_WITH(sapdb,
-[  --with-sapdb[=DIR]   Include SAP DB ESQL/C support.  DIR is the Sap DB base
+[  --with-sapdb[=DIR]        Include SAP DB ESQL/C support.  DIR is the Sap DB base
                           install directory, defaults to ${SAPDBROOT:-nothing}.],
 [
 	if test "$withval" != "no"; then
@@ -1398,8 +1400,9 @@ fi
 PHP_CONFIGURE_PART(Checking for Informix ESQL/C support:)
 
 AC_ARG_WITH(informix,
-[  --with-informix[=DIR]   Include Informix ESQL/C support.  DIR is the Informix base
-                          install directory, defaults to ${INFORMIXDIR:-nothing}.],
+[  --with-informix[=DIR]     Include Informix ESQL/C support.  DIR is the Informix
+                          base install directory, defaults to
+                          ${INFORMIXDIR:-nothing}.],
 [
 	if test "$withval" != "no"; then
 		if test "$INFORMIXDIR" = "" && test "$force_informix" != "yes" ; then
@@ -1548,7 +1551,7 @@ fi
 
 PHP_CONFIGURE_PART(Checking for PostgresSQL ESQL and library support:)
 AC_ARG_WITH(pgsql,
-[  --with-pgsql[=DIR]      Include PostgresSQL support.  DIR is the PostgresSQL
+[  --with-pgsql[=DIR]        Include PostgresSQL support.  DIR is the PostgresSQL
                           base install directory, defaults to /usr/local/pgsql.],
 [
 
@@ -1766,7 +1769,7 @@ if test "$with_sapodbc" = ""; then
 fi
 
 AC_ARG_WITH(sapodbc,
-[  --with-sapodbc[=DIR]    Include SAP DB ODBC driver support.  DIR is the base
+[  --with-sapodbc[=DIR]      Include SAP DB ODBC driver support.  DIR is the base
                           install directory, defaults to /opt/sapdb.],
 [
 	if test "$withval" != "no"; then
@@ -1853,8 +1856,8 @@ if test "$with_pgodbc" = ""; then
 fi
 
 AC_ARG_WITH(pgodbc,
-[  --with-pgodbc[=DIR]    Include PostgreSQL ODBC driver support.  DIR is the base
-                          install directory, defaults to /usr.],
+[  --with-pgodbc[=DIR]       Include PostgreSQL ODBC driver support.  DIR is the
+                          base install directory, defaults to /usr.],
 [
   #PHP_WITH_SHARED
 	if test "$withval" != "no"; then
@@ -1958,7 +1961,7 @@ PHP_CONFIGURE_PART(Checking for iODBC support:)
 
 
 AC_ARG_WITH(iodbc,
-[  --with-iodbc[=DIR]      Include iODBC/Openlink support.  DIR is the iODBC base
+[  --with-iodbc[=DIR]        Include iODBC/Openlink support.  DIR is the iODBC base
                           install directory, defaults to /usr/local.],
 [
   #PHP_WITH_SHARED
@@ -2021,7 +2024,7 @@ if test "$with_unixodbc" = ""; then
 fi
 
 AC_ARG_WITH(unixodbc,
-[  --with-unixodbc[=DIR]   Include unixODBC support.  DIR is the unixODBC base
+[  --with-unixodbc[=DIR]     Include unixODBC support.  DIR is the unixODBC base
                           install directory, defaults to /usr/local.],
 [
 	#PHP_WITH_SHARED
@@ -2104,9 +2107,9 @@ if test -z "$ODBC_TYPE"; then
 PHP_CONFIGURE_PART(Checking for Easysoft ODBC-ODBC Bridge support:)
 #AC_MSG_CHECKING(for Easysoft ODBC-ODBC Bridge support)
 AC_ARG_WITH(esoob,
-[  --with-esoob[=DIR]      Include Easysoft OOB support. DIR is the OOB base
-                          install directory,
-                          defaults to /usr/local/easysoft/oob/client.],
+[  --with-esoob[=DIR]        Include Easysoft OOB support. DIR is the OOB base
+                          install directory, defaults to
+                          /usr/local/easysoft/oob/client.],
 [
   #PHP_WITH_SHARED
   if test "$withval" = "yes"; then
@@ -2208,7 +2211,7 @@ if test "$with_gtk" = ""; then
 fi
 
 AC_ARG_WITH(gtk,
-[  --with-gtk[=DIR]      Include GTK+ GUI support.  DIR is the GTK+ base
+[  --with-gtk[=DIR]          Include GTK+ GUI support.  DIR is the GTK+ base
                           install directory, defaults to /usr/local.],
 [
 	if test "$withval" != "no"; then
@@ -2477,7 +2480,7 @@ if test "$with_iksemel" = ""; then
 fi
 
 AC_ARG_WITH(iksemel,
-[  --with-iksemel[=DIR]   Include Jabber/iksemel support.  DIR is the iksemel
+[  --with-iksemel[=DIR]      Include Jabber/iksemel support.  DIR is the iksemel
                           install directory, defaults to /usr/local.],
 [
 	#PHP_WITH_SHARED
@@ -2532,7 +2535,7 @@ if test "$with_pdf" = ""; then
 fi
 
 AC_ARG_WITH(pdf,
-[  --with-pdf[=DIR]       Include PDF support.  DIR is the pdflibl
+[  --with-pdf[=DIR]          Include PDF support.  DIR is the pdflibl
                           install directory, defaults to /usr/local.],
 [
 	#PHP_WITH_SHARED
@@ -2623,7 +2626,7 @@ else
 fi
 
 AC_ARG_WITH(rpc,
-[  --with-rpc[=DIR]   Include RPC support.  DIR is the RPC base
+[  --with-rpc[=DIR]          Include RPC support.  DIR is the RPC base
                           install directory, defaults to /usr/local.],
 [
 
@@ -2866,131 +2869,138 @@ if test "$PERL" != no; then
 fi
 
 ## ==================================================================
-##                       Checks for curses library
+##               Checks for curses/ncurses/PDcurses library
 ## ==================================================================
 
-	#if test "$GCC_MINGW" != "yes"; then
-	
-	
-	if test "$with_pdcurses" = "" && test "$GCC_MINGW" != "yes"; then
-		HAVE_PDCURSES=0
-		PHP_CONFIGURE_PART(Checking for curses libraries:)
+	#Store current values
+	old_LIBS="$LIBS"
+	old_LDFLAGS="$LDFLAGS"
+	old_CFLAGS="$CFLAGS"
 
-		#This would fail because CygWin libraries need cygwin1.dll, and MinGW GCC would not link it in
-		#if test "$GCC_MINGW" = "yes"; then
-		#	#when running MinGW GCC in CygWin environment, we can try using CygWin curses:
-		#	case "$host" in
-		#	*-*-cygwin | *-*-cygwin* )
-		#		CYG_LFLAGS="-L$WINDOWS_DRIVE$CYGWIN_PATH/lib"
-		#		CYG_IFLAGS="-I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include/ncurses -I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include"
-		#		old_LIBS="$LIBS"
-		#		old_LDFLAGS="$LDFLAGS"
-		#		old_CFLAGS="$CFLAGS"
-		#		LDFLAGS="$LDFLAGS $CYG_LFLAGS"
-		#		CFLAGS="$CFLAGS $CYG_LFLAGS"
-        #
-		#		;;
-		#	esac
-        #fi
+	#force this check even if not specified on command line, if user did not
+	#explicitly asked for Pdcurses, and if not on MinGW (which don't have curses):
+	if test "$with_curses" = "" && test "$with_pdcurses" = "" && test "$GCC_MINGW" != "yes"; then
+		with_curses=yes
+	fi
 
-		# FIXME: Replace `main' with a function in `-lcurses':
-		AC_CHECK_LIB([curses], [main])
-		if test "$ac_cv_lib_curses_main" = "yes"; then
+	PHP_CONFIGURE_PART(Checking for curses libraries:)
+	AC_ARG_WITH(curses,
+	[  --with-curses[=DIR]       Include curses support. DIR is the curses base
+                          install directory, defaults to /lib.
+                          This will probe for Ncurses, then for curses.],
+	[
+
+	  if test "$withval" = "no"; then
+		AC_MSG_RESULT(Disabled)
+      else
+
+		#User specified location of curses library with --with-curses=path
+		if test "$withval" != "yes"; then
+			CURSES_LIB_PATH="-L$withval"
+            CURSES_INC_PATH="-I$withval"
+		else
+			CURSES_LIB_PATH="-L/lib"
+        fi
+
+		LDFLAGS="$CURSES_LIB_PATH $LDFLAGS"
+		CFLAGS="$CURSES_INC_PATH $CFLAGS"
+
+		#First test for New Curses (ncurses)
+		# FIXME: Replace `main' with a function in `-lncurses':
+		AC_CHECK_LIB([ncurses], [main])
+		if test "$ac_cv_lib_ncurses_main" = "yes"; then
+			#We found "ncurses" library
 			#fixme: check version of curses - how?
+	        HAVE_CURSES=1
+			AC_DEFINE(HAVE_NCURSES_H)
+		else
+			#"ncurses" library was NOT found, try curses
+			# FIXME: Replace `main' with a function in `-lcurses':
+			AC_CHECK_LIB([curses], [main])
+			if test "$ac_cv_lib_curses_main" = "yes"; then
+				#fixme: check version of curses - how?
+		        HAVE_CURSES=1
+				AC_DEFINE(HAVE_CURSES_H)
+	        fi
+		fi
+        if test "$HAVE_CURSES" = "1"; then
+			AC_DEFINE(HAVE_CURSES)
 			case $host in
 				*-apple-darwin*)
 					CURSES_LIB_NAME="-lSystem"
 					;;
 				*)
-					CURSES_LIB_NAME="-lcurses -lform -lpanel"
-			        ;;
+					CURSES_LIB_NAME="-lform -lpanel"
+					if test "$ac_cv_lib_curses_main" = "yes"; then
+						CURSES_LIB_NAME="-lcurses $CURSES_LIB_NAME"
+                    else
+						CURSES_LIB_NAME="-lncurses $CURSES_LIB_NAME"
+                    fi
+					;;
 			esac
-			AC_DEFINE(HAVE_CURSES)
-	        HAVE_CURSES=1
-		    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
-			CURSES_LIB_PATH="-L/lib"
-			AC_DEFINE(HAVE_CURSES_H)
-		else
-			# FIXME: Replace `main' with a function in `-lcurses':
-			AC_CHECK_LIB([ncurses], [main])
-
-			if test "$ac_cv_lib_ncurses_main" = "yes"; then
-				#fixme: check version of ncurses - how?
-				case $host in
-					*-apple-darwin*)
-						CURSES_LIB_NAME="-lSystem"
-						;;
-					*)
-						CURSES_LIB_NAME="-lncurses -lform -lpanel"
-				        ;;
-				esac
-				AC_DEFINE(HAVE_CURSES)
-		        HAVE_CURSES=1
-			    #AC_CHECK_FUNC(PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES))
-
-				if test "$CYG_LFLAGS" = ""; then
-					CURSES_LIB_PATH="-L/lib"
-                else
-					CURSES_LIB_PATH="$CYG_LFLAGS"
-					CURSES_INC_PATH="$CYG_IFLAGS"
-
-                fi
-				AC_DEFINE(HAVE_NCURSES_H)
-
-	        else
-				HAVE_CURSES=0
-				CURSES_INC_PATH="-I$aubitdir/tools/no_curses/cygwin"
-	        fi
+        else
+			CURSES_INC_PATH="-I$aubitdir/tools/no_curses/cygwin"
+            CURSES_LIB_PATH=
 		fi
 
+
+		#This is more or less just a diagnostic check in the case we fail
+        #for some reason in detecting curses/ncurses:
 		#form and panel are part of curses - but not PDcurses
 		#AIX: Both form and panel h files are part of ncurses. Install it.
 		# FIXME: Replace `main' with a function in `-lform':
 		AC_CHECK_LIB([form], [main])
 		# FIXME: Replace `main' with a function in `-lpanel':
 		AC_CHECK_LIB([panel], [main])
+      fi
 
-		LDFLAGS="$old_LDFLAGS"
-		CFLAGS="$old_CFLAGS"
-		LIBS="$old_LIBS"
+	],[
+		AC_MSG_RESULT(--with-curses not specified)
+	])
 
-	else #$with_pdcurses was specified, or we are using MinGW GCC
-   		#NOTE: attempt to compile Aubit TUI plug-in with CygWin curses using MingW GCC would fail 
-		#because CygWin libraries need cygwin1.dll, and MinGW GCC would not link it in.
-        #Hovewer, we can compile Aubit TUI plug-in with CygWin Curses using CygWin GCC, and then use
-        #that with the rest of Aubit compielr compiled natively (using MinGW GCC) - if we make
-        #cygwin1.dll accessible at run-time.
-		HAVE_CURSES=0
-		#there is not ncurses on Win32 - but we can try Pdcurses: OOPS - no go - no forms support -
-        #check again in some time
-		PHP_CONFIGURE_PART(Checking for PDcurses:)
-		AC_ARG_WITH(pdcurses,
-		[  --with-pdcurses[=DIR]      Include PDcurses support. DIR is the PDcurses base
-		                          install directory,
-		                          defaults to /cygdrive/d/pdc25_vc_w32.],
-		[
-		  if test "$withval" = "yes"; then
-		    withval=/cygdrive/d/pdc25_vc_w32
-		  fi
 
-		  if test "$withval" != "no"; then
-
-			CURSES_LIB_PATH="-L$withval"
-			CURSES_INC_PATH="-I$withval"
-			#CURSES_LIB_NAME="-lcurses"
-			CURSES_LIB_NAME="$withval/curses.dll"
-            HAVE_PDCURSES=1
-			AC_DEFINE(HAVE_PDCURSES,1,[ ])
-		    AC_MSG_RESULT(yes)
-		  else
-		    AC_MSG_RESULT(disabled)
-			HAVE_PDCURSES=0
-		  fi
-		],[
-			AC_MSG_RESULT(--with-pdcurses not specified)
-			HAVE_PDCURSES=0
-		])
+	#force this check if not specified on command line, if we are on MinGW
+	if test "$GCC_MINGW" = "yes" && test "$with_pdcurses" = ""; then
+		with_pdcurses=yes
 	fi
+
+	#NOTE: attempt to compile Aubit TUI plug-in with CygWin curses using MingW GCC would fail
+	#because CygWin libraries need cygwin1.dll, and MinGW GCC would not link it in.
+    #Hovewer, we can compile Aubit TUI plug-in with CygWin Curses using CygWin GCC, and then use
+    #that with the rest of Aubit compielr compiled natively (using MinGW GCC) - if we make
+    #cygwin1.dll accessible at run-time.
+
+	#there is not ncurses on Win32 - but we can try Pdcurses: OOPS - no go - no forms support -
+    #check again in some time
+		
+	PHP_CONFIGURE_PART(Checking for PDcurses:)
+	AC_ARG_WITH(pdcurses,
+	[  --with-pdcurses[=DIR]     Include PDcurses support. DIR is the PDcurses base
+                          install directory, defaults to
+                          /cygdrive/d/pdc25_vc_w32.],
+	[
+	  if test "$withval" = "yes"; then
+	    withval=/cygdrive/d/pdc25_vc_w32
+	  fi
+	  if test "$withval" != "no"; then
+		CURSES_LIB_PATH="-L$withval"
+		CURSES_INC_PATH="-I$withval"
+		#CURSES_LIB_NAME="-lcurses"
+		CURSES_LIB_NAME="$withval/curses.dll"
+        HAVE_PDCURSES=1
+		AC_DEFINE(HAVE_PDCURSES,1,[ ])
+	    AC_MSG_RESULT(yes)
+	  else
+		AC_MSG_RESULT(disabled)
+	  fi
+	],[
+		AC_MSG_RESULT(--with-pdcurses not specified)
+	])
+
+	#Restore stored values:
+	LDFLAGS="$old_LDFLAGS"
+	CFLAGS="$old_CFLAGS"
+	LIBS="$old_LIBS"
 
 
 ## ==================================================================
@@ -3578,6 +3588,13 @@ else
 	#if test "$CS_COMPILER" != "no"; then
 	#	A4GL_LEXTYPE="CS"
     #fi
+
+	
+	#SAP-DB ESQL/C pre-compiler output
+	if test "$SAPDB_ESQLC" != "no"; then
+		A4GL_LEXTYPE=EC
+		A4GL_LEXDIALECT=SAPDB
+    fi
 
 
 	#If we have PostgreSQL ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE

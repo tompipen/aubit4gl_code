@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.69 2003-07-22 19:32:55 mikeaubury Exp $
+# $Id: compile_c.c,v 1.70 2003-07-23 07:07:33 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -250,16 +250,21 @@ open_outfile (void)
 		{
 
 		case 1:
-		  strcat (c, ".ec");
+		  strcat (c, ".ec"); /* Informic ESQL/C */
 		  break;
 		case 2:
+		  strcat (c, ".cpc"); /* PostgreSQL ESQL/C compiler */
+		  break;
+		case 3: /* SAPDB pre-compiler also uses .cpc extension */
 		  strcat (c, ".cpc");
 		  break;
+
 		}
     }
   else
     {
 		if (strcmp(acl_getenv("A4GL_LEXTYPE"),"CS")==0) {
+            // C#
 	      		strcat (c, ".csp");
 		} else {
 	      		strcat (c, ".c");
@@ -289,6 +294,10 @@ open_outfile (void)
 	case 2:
 	  fprintf (outfile, "#define DIALECT_POSTGRES\n");
 	  break;
+	case 3:
+	  fprintf (outfile, "#define DIALECT_SAPDB\n");
+	  break;
+
 	}
     }
 
@@ -4575,6 +4584,11 @@ esql_type ()
   if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
     {
       return 2;
+    }
+
+  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0)
+    {
+      return 3;
     }
 
   return 1;			// Assume informix

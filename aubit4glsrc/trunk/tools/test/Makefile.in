@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.40 2003-05-16 03:08:14 afalout Exp $
+# $Id: Makefile.in,v 1.41 2003-07-23 07:07:33 afalout Exp $
 #
 
 ROOT    =../..
@@ -161,7 +161,7 @@ clean:
 	test_build *.hlp *.exe *.stackdump *.err *.c *.tmp *.42m *.glb \
 	*.42r rr1.pdf *.ao *.log *.4ge *.pl *.pm pdf_report solitaire test_select test_mpz \
 	test_build.c ${FILES.4gl:.4gl=.h} assoc file *.aso .\#* \
-	*${A4GL_FRM_EXT} *${A4GL_MNU_EXT} *.aox *.warn
+	*${A4GL_FRM_EXT} *${A4GL_MNU_EXT} *.aox *.warn *.ec
 
 clean.sub:
 ifneq "${AUBIT_BIN_INSTALL}" "1"
