@@ -1424,12 +1424,14 @@ end function
 #####################################################################
 function load_info_tables() 
 define lv_tabname char(18)
-declare c_info_tables cursor for select tabname from systables where tabid>99
+declare c_info_tables cursor for 
+	select tabname from systables where tabid>99
 call add_to_display_file("TableName")
 call add_to_display_file(" ")
 foreach c_info_tables into lv_tabname
 call add_to_display_file(lv_tabname)
 end foreach
+return 1
 end function
 
 
