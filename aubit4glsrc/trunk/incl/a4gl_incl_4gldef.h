@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.51 2003-08-02 04:19:48 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.52 2003-08-02 10:41:12 afalout Exp $
 */
 
 /**
@@ -457,17 +457,22 @@ your library and in your applications - above should only
 be used in applications which link to the library).
 */
 
+  /*
+     DLL building support on win32 hosts;  mostly to workaround their
+     ridiculous implementation of data symbol exporting. See exaple in libltdl/
+   */
+
 
 #if ( defined(__CYGWIN__) || defined(__MINGW32__) )
-#define __NEED_DLL_IMPORT__
+	#define __NEED_DLL_IMPORT__
 #endif
 
 #ifdef __NEED_DLL_IMPORT__
-#define dll_export __declspec(dllexport)
-#define dll_import extern __declspec(dllimport)	// for complex vars that can't be auto imported
+	#define dll_export __declspec(dllexport)
+	#define dll_import extern __declspec(dllimport)	// for complex vars that can't be auto imported
 #else
-#define dll_export
-#define dll_import extern
+	#define dll_export
+	#define dll_import extern
 #endif
 
 

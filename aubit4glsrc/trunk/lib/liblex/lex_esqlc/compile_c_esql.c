@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.45 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.46 2003-08-02 10:41:12 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1378,9 +1378,15 @@ sz (int d, int s)
 
 
 void print_report_table(char *repname,char type, int c) {
-extern struct binding_comp fbind[];
-extern struct binding_comp ibind[];
-extern struct binding_comp obind[];
+
+dll_import struct binding_comp fbind[];
+//extern struct binding_comp fbind[];
+dll_import struct binding_comp ibind[];
+//extern struct binding_comp ibind[];
+dll_import struct binding_comp obind[];
+//extern struct binding_comp obind[];
+
+
 static char iname[256];
 static char cname[256];
 char buff[10000];

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.81 2003-08-02 04:19:48 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.82 2003-08-02 10:41:12 afalout Exp $
 #
 */
 
@@ -51,8 +51,8 @@
 #define _AUBIT_LIB_INCL_EXT_
 
 #ifdef __cplusplus
-extern "C"
-{
+	extern "C"
+	{
 #endif
   /*
      =====================================================================
@@ -66,37 +66,37 @@ extern "C"
      UNIX-like environment. When you see ifdef WIN32 in Aubit code, this
      applies ONLY to Windows native compilers, like MingWin, MSVC or
      Borland */
-#undef WIN32
+	#undef WIN32
 
-  /* missing from rpcgen generated form_x.h on CygWin: */
-#define bool_t int
-#define u_int unsigned int
+	  /* missing from rpcgen generated form_x.h on CygWin: */
+	#define bool_t int
+	#define u_int unsigned int
 
-//remove        #define __NEED_DLL_IMPORT__
+	//remove        #define __NEED_DLL_IMPORT__
 
 #endif
 
   /* if WIN32 is still defined, that means that __CYGWIN__was not defined */
 #if (defined(WIN32) && ! defined(__CYGWIN__) && ! defined(__MINGW32__))
-#define __NATIVE_WINDOWS__
+	#define __NATIVE_WINDOWS__
 
-  int strncasecmp (char *a, char *b, int c);
+	  int strncasecmp (char *a, char *b, int c);
 #endif
 
 #if defined(__MINGW32__)
-#undef WIN32
+	#undef WIN32
 
-  //#define assert("inside __MINGW32__" == 0)
+	//#define assert("inside __MINGW32__" == 0)
 
-#if defined(WIN32)
-  //#if (defined(WIN32) && ! defined(__CYGWIN__))
-#define assert("inside W32 defined" == 0)
-#endif
+	#if defined(WIN32)
+		//#if (defined(WIN32) && ! defined(__CYGWIN__))
+		#define assert("inside W32 defined" == 0)
+	#endif
 
-  /* missing from rpcgen generated form_x.h on CygWin: */
-#define bool_t int
+	/* missing from rpcgen generated form_x.h on CygWin: */
+	#define bool_t int
 
-//remove        #define __NEED_DLL_IMPORT__
+	//remove        #define __NEED_DLL_IMPORT__
 
   /*
      #define __WIN32__ 1
@@ -107,31 +107,14 @@ extern "C"
 
 #if (defined(__MACH__) && defined(__APPLE__))
 
-#define __DARWIN__
+	#define __DARWIN__
 
-#define bool_t int
-  ///usr/include/rpc/auth.h:105: undefined type, found `XDR'
-  //#include "rpc/xdr.h"
-#define	enum_t	int
+	#define bool_t int
+	///usr/include/rpc/auth.h:105: undefined type, found `XDR'
+	//#include "rpc/xdr.h"
+	#define	enum_t	int
 
 #endif
-
-  /*
-     DLL building support on win32 hosts;  mostly to workaround their
-     ridiculous implementation of data symbol exporting. See exaple in libltdl/
-   */
-
-//remove
-/*
-    #ifdef __NEED_DLL_IMPORT__
-		#define dll_export __declspec(dllexport)
-		#define dll_import extern __declspec(dllimport) // for complex vars that can't be auto imported
-	#else
-		#define dll_export
-		#define dll_import extern
-	#endif
-*/
-
 
   /* ======================= from a4gl_constats.h ================== */
 

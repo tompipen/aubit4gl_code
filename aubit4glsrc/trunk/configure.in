@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.184 2003-07-27 06:08:35 afalout Exp $
+dnl # $Id: configure.in,v 1.185 2003-08-02 10:40:57 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -100,9 +100,14 @@ if test "$AUBITCONF_FLAG" != "running"; then
 		echo "a=1;" >> order.c
 		echo "ptr=(char *)&a;" >> order.c
 
-		echo 'printf("%d%d",ptr\1330\135,ptr\1331\135);' > order.tmp
-	    xx=`cat order.tmp`
-		echo -e "$xx" >> order.c
+		if test "$COMSPEC" = ""; then
+			echo 'printf("%d%d",ptr\1330\135,ptr\1331\135);' > order.tmp
+		    xx=`cat order.tmp`
+			echo -e "$xx" >> order.c
+        else
+			#echo 'printf("%d%d",ptr[0],ptr[1]);' > order.tmp
+			echo -e 'printf("%d%d",ptr\1330\135,ptr\1331\135);' >> order.c
+        fi
 
 		echo "}" >> order.c
 		echo "" >> order.c
@@ -3182,9 +3187,9 @@ fi
 
 
 	#force this check if not specified on command line, if we are on MinGW
-	if test "$GCC_MINGW" = "yes" && test "$with_pdcurses" = ""; then
-		with_pdcurses=yes
-	fi
+	#if test "$GCC_MINGW" = "yes" && test "$with_pdcurses" = ""; then
+	#	with_pdcurses=yes
+	#fi
 
 	#NOTE: attempt to compile Aubit TUI plug-in with CygWin curses using MingW GCC would fail
 	#because CygWin libraries need cygwin1.dll, and MinGW GCC would not link it in.
@@ -3663,7 +3668,7 @@ if test "$default_sql" != ""; then
 	#User can force SQL driver default with --default-odbc=xxxx switch
 
 	case "$default_sql" in
-		ec-i | ec-pg | ec-sap)
+		ec-i | ec-pg | ec-sap | ec-querix)
 			A4GL_LEXTYPE=EC
         ;;
 
@@ -3742,6 +3747,15 @@ else
 		A4GL_LEXDIALECT=INFORMIX
         A4GL_SQLTYPE=ignored-ec
     fi
+
+    ########## Querix ESQL/C compiler ############
+	#If we have Querix ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
+    #setting - this will limit Aubit DB connectivity to Querix supported RDBMS ONLY.
+	#if test "$Q_ESQLC" != "no" ; then
+	#	A4GL_LEXTYPE=EC
+	#	A4GL_LEXDIALECT=QUERIX
+    #    A4GL_SQLTYPE=ignored-ec
+    #fi
 
 
 	############# native drivers ####################
