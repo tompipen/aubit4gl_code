@@ -737,7 +737,7 @@ char_string_type:
 exact_numeric_type:
 	NUMERIC OPEN_BRACKET precision op_scale CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
-	| SERIAL 
+	| SERIAL  {strcpy($<str>$,"SERIAL");}
 	| DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET
 	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}

@@ -32,12 +32,13 @@ op_no_log :
 
 idx_column_list : 
 idx_column | 
-idx_column_list COMMA idx_column
+idx_column_list COMMA idx_column 
+{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
 ;
 
 idx_column : 
- identifier ASC
-| identifier DESC
+ identifier ASC {sprintf($<str>$,"%s ASC",$<str>1);}
+| identifier DESC {sprintf($<str>$,"%s DESC",$<str>1);}
 | identifier;
 
 
