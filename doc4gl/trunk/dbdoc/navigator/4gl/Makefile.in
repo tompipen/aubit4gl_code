@@ -1,3 +1,4 @@
+
 #  ============================================================================
 #
 #  Copyright 1992 DESPODATA - Lisboa, PORTUGAL
@@ -35,18 +36,22 @@ FGEI=.4gi
 
 ALL=bdesquema$(FGEI) modulos$(FGEI) BdeUtil$(FGEI)
 
-SCRIPTS=bdesquema modulos
+
+#SCRIPTS=bdesquema modulos
+
+#Scripts we need to create:
 BDESQUEMA=./bdesquema
-MODULOS=/modulos
+MODULOS=./modulos
+BDEUTIL=./bdeutil
 
 FORMS = par_bde.frm ged_mod.frm ged_mtab.frm
 
 
-#FIXME: get thsi from Autoconf
-4GLCOMP=d4gl-pcode
+#4GLCOMP=d4gl-pcode
 #4GLCOMP=aubit
 #4GLCOMP=querix
 #4GLCOMP=i4gl-pcode
+4GLCOMP=${COMP_4GL}
 
 #  ============================================================================
 #  Compila todos .4go(s)
@@ -98,40 +103,66 @@ old.install: $(ALL)
 	cp $(FORMS) $(FGLFORM)
 	cp $(SCRIPTS) $(BINDIR)
 
-install: make.bdesquema make.modulos
-	cp ${BDESQUEMA} /usr/bin
-	cp ${MODULOS} /usr/bin
+install: make.bdesquema make.modulos make.bdeutil
+	chmod a+x ${BDESQUEMA} ${MODULOS} ${BDEUTIL}
+	${MV} ${BDESQUEMA} ${MODULOS} ${BDEUTIL} /usr/bin
 #where should this go?
 #	cp JoinTabelas.class /usr/appl/html-docs
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|    DBdoc 4GL browser installed. You can run it by typing:          |"
+	@echo "|    '${BDESQUEMA}' or '${MODULOS}' or '${BDEUTIL}' "
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 make.bdesquema:
-	@echo "if [ $# -lt 1 ]" > ${BDESQUEMA}
-	@echo "then" >> ${BDESQUEMA}
+	@echo "if [ \$$# -lt 1 ]; then" > ${BDESQUEMA}
 	@echo "	echo 'Usage: bdesquema database_name'" >> ${BDESQUEMA}
 	@echo "	echo" >> ${BDESQUEMA}
 	@echo "	exit 1" >> ${BDESQUEMA}
 	@echo "else" >> ${BDESQUEMA}
-	@echo "	DATABASE=$$1" >> ${BDESQUEMA}
-	@echo "	DBPATH=$$DBPATH:${DOC4GLSRCDIR}/dbdoc/navigator/4gl/forms" >> ${BDESQUEMA}
+	@echo "	DATABASE=\$$1" >> ${BDESQUEMA}
+	@echo "	DBPATH=\$$DBPATH:${DOC4GLSRCDIR}/dbdoc/navigator/4gl/forms" >> ${BDESQUEMA}
 	@echo "	export DBPATH" >> ${BDESQUEMA}
 	@echo "fi" >> ${BDESQUEMA}
-	@echo "fglgo ${DOC4GLSRCDIR}/dbdoc/navigator/4gl/bdesquema $DATABASE 'INT' '???'" >> ${BDESQUEMA}
+	@echo "${FGLRUNNER} ${DOC4GLSRCDIR}/dbdoc/navigator/4gl/bdesquema \$$DATABASE 'INT' '???'" >> ${BDESQUEMA}
 	@echo " " >> ${BDESQUEMA}
 
 make.modulos:
 	@echo "# Utilitario para geracao de modulos e associacao de tabelas a modulos" > ${MODULOS}
-	@echo "if [ $# -lt 1 ]" >> ${MODULOS}
-	@echo "then" >> ${MODULOS}
-	@echo "   echo 'Usage: modulos databse_name '" >> ${MODULOS}
+	@echo "if [ \$$# -lt 1 ]; then" >> ${MODULOS}
+	@echo " echo 'Usage: modulos databse_name '" >> ${MODULOS}
 	@echo "	echo" >> ${MODULOS}
 	@echo "	exit 1" >> ${MODULOS}
 	@echo "else" >> ${MODULOS}
-	@echo "	DATABASE=$$1" >> ${MODULOS}
-	@echo "	DBPATH=$$DBPATH:${DOC4GLSRCDIR}/dbdoc/navigator/4gl/forms" >> ${MODULOS}
+	@echo "	DATABASE=\$$1" >> ${MODULOS}
+	@echo "	DBPATH=\$$DBPATH:${DOC4GLSRCDIR}/dbdoc/navigator/4gl/forms" >> ${MODULOS}
 	@echo "	export DBPATH" >> ${MODULOS}
 	@echo "fi" >> ${MODULOS}
-	@echo "fglgo ${DOC4GLSRCDIR}/dbdoc/navigator/4gl/modulos $DATABASE" >> ${MODULOS}
+	@echo "${FGLRUNNER} ${DOC4GLSRCDIR}/dbdoc/navigator/4gl/modulos \$$DATABASE" >> ${MODULOS}
 	@echo " " >> ${MODULOS}
+
+make.bdeutil:
+	@echo "# " > ${BDEUTIL}
+	@echo "if [ \$$# -lt 1 ]; then" >> ${BDEUTIL}
+	@echo " echo 'Usage: bdeutil databse_name '" >> ${BDEUTIL}
+	@echo "	echo" >> ${BDEUTIL}
+	@echo "	exit 1" >> ${BDEUTIL}
+	@echo "else" >> ${BDEUTIL}
+	@echo "	DATABASE=\$$1" >> ${BDEUTIL}
+	@echo "	DBPATH=\$$DBPATH:${DOC4GLSRCDIR}/dbdoc/navigator/4gl/forms" >> ${BDEUTIL}
+	@echo "	export DBPATH" >> ${BDEUTIL}
+	@echo "fi" >> ${BDEUTIL}
+	@echo "${FGLRUNNER} ${DOC4GLSRCDIR}/dbdoc/navigator/4gl/BdeUtil \$$DATABASE" >> ${BDEUTIL}
+	@echo " " >> ${BDEUTIL}
+
+deinstall:
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|            FIXME: not implemented                                  |"
+#	@echo "|             DBdoc 4GL browser de-installed.                        |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 #  ============================================================================
 #  Limpa a directoria corrente

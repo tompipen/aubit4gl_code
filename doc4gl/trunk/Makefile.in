@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.15 2003-05-26 10:06:36 afalout Exp $
+#  $Id: Makefile.in,v 1.16 2003-07-13 06:11:00 afalout Exp $
 #
 #  ==========================================================================
 
@@ -14,7 +14,7 @@ include FgldocDefs.mk
 #                           Settings
 # =========================================================================
 
-ALL				=parser manager
+ALL				=parser manager dbdoc
 ALL.INSTALL		=install.parser install.manager install.dbdoc
 
 ifneq "@TOMCAT_DIR@" "no"
@@ -62,6 +62,9 @@ parser:
 # Compile Doc4GL Browser component (JSP/Java)
 browser:
 	$(MAKE) -C browser all
+
+dbdoc:
+	$(MAKE) -C dbdoc
 
 ###########################
 # Compile Doc4GL Manager compinent (Perl)

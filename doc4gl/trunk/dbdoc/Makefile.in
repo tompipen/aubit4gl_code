@@ -7,8 +7,9 @@ include ${ROOT}/FgldocDefs.mk
 #                           Settings
 # =========================================================================
 
-
 ALL=navigator manager jdbdoc
+
+.PHONY: ${ALL} all install deinstall clean
 
 # =========================================================================
 #                           Targets
@@ -86,7 +87,7 @@ install.manager:
 	@echo ""
 
 install.navigator:
-	${MAKE} -C navigator
+	${MAKE} -C navigator install
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             DBdoc navigator components successfully installed.     |"
@@ -95,7 +96,7 @@ install.navigator:
 
 
 install.jdbdoc:
-	${MAKE} -C jdbdoc
+	${MAKE} -C jdbdoc install
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "|             DBdoc jdbdoc component successfully installed.         |"
@@ -106,18 +107,21 @@ install.jdbdoc:
 #                           Deinstall
 # =========================================================================
 
-deinstall:
+deinstall: deinstall.navigator deinstall.jdbdoc deinstall.manager
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
-	@echo "|             FIXME- not implemented.                                |"
-#	@echo "|             DBdoc successfully de-installed.                       |"
+	@echo "|             DBdoc successfully de-installed.                       |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
 deinstall.navigator:
-deinstall.jdbdoc:
-deinstall.manager:
+	${MAKE} -C navigator deinstall
 
+deinstall.jdbdoc:
+	${MAKE} -C jdbdoc deinstall
+
+deinstall.manager:
+	${MAKE} -C manager deinstall
 
 # =========================================================================
 #                           Clean

@@ -3,10 +3,12 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.1 2003-05-26 10:30:42 afalout Exp $
+#  $Id: Makefile.in,v 1.2 2003-07-13 06:11:07 afalout Exp $
 #  =========================================================================
 
-include ../FgldocDefs.mk
+ROOT=../..
+
+include ${ROOT}/FgldocDefs.mk
 
 # =========================================================================
 #                              Settings - names and paths
@@ -450,7 +452,14 @@ clean:
 	$(RM) *.class *.jar *.bak *.log
 	$(RM) web/*.bak
 	$(RM) web/WEB-INF/*.bak
-	$(RM) pt/moredata/fgldocumenter/browser/*.bak
+	$(RM) src/org/aubit4gl/cui/*.bak
+	$(RM) src/org/aubit4gl/dbdocumenter/*.bak
+	$(RM) src/org/aubit4gl/dbdocumenter/actions/*.bak
+	$(RM) src/org/aubit4gl/dbdocumenter/builder/*.bak
+	$(RM) src/org/aubit4gl/dbdocumenter/factory/*.bak
+	$(RM) src/org/aubit4gl/dbdocumenter/gui/*.bak
+	$(RM) src/org/aubit4gl/dbdocumenter/model/*.bak
+	$(RM) src/org/aubit4gl/dbdocumenter/repository/*.bak
 	rm -rf classes
 	rm -rf build
 ifneq "${ANT}" "no"
@@ -458,8 +467,13 @@ ifneq "${ANT}" "no"
 endif
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
-	@echo "|             Doc4gl browser source code now clean.                  |"
+	@echo "|             DBdoc JSP browser source code now clean.               |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
+
+Makefile: Makefile.in build.properties.in
+	cd ${ROOT}; config.status --file=dbdoc/jdbdoc/Makefile; cd -
+	cd ${ROOT}; config.status --file=dbdoc/jdbdoc/build.properties; cd -
+
 
 # =================================== EOF =================================

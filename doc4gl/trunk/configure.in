@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.15 2003-05-26 10:06:36 afalout Exp $
+dnl # $Id: configure.in,v 1.16 2003-07-13 06:11:01 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -350,7 +350,8 @@ AC_SUBST(JSP_APP_NAME)
 AC_SUBST(JSP_DBAPP_NAME)
 AC_SUBST(PERL_APP_NAME)
 
-
+AC_SUBST(FGLRUNNER)
+AC_SUBST(COMP_4GL)
 ## ==================================================================
 ##                             Defaults
 ## ==================================================================
@@ -398,7 +399,8 @@ SO_EXT=.so
 SO_EXT_LINKABLE=$SO_EXT
 ARCHEXT=tgz
 TOMCAT_DIR=no
-
+FGLRUNNER=
+COMP_4GL=
 
 #Defining the name of the database as part of Doc4GL does not make much sense;
 #Each application we document using Doc4GL will tend to have it's own database
@@ -1246,7 +1248,7 @@ fi
 #Perl::Getopt module
 
 ## ==================================================================
-##                 Checks for other 4gl compiles
+##                 Checks for 4gl compiles
 ## ==================================================================
 
 PHP_CONFIGURE_PART(Checking for 4Js BDL / Informix D4GL:)
@@ -1256,6 +1258,9 @@ AC_PATH_PROG(FJS_PRUNTIME, fglrun, no)
 PHP_CONFIGURE_PART(Checking for Querix compiler:)
 #4gl code compiler have same name as Plexus  = fglc so we look for Form Compiler
 AC_PATH_PROG(QUERIX_COMP, fmpc, no)
+
+PHP_CONFIGURE_PART(Checking for Aubit compiler:)
+AC_PATH_PROG(AUBIT_FRONT, aubit, no)
 
 
 if test "$cygwin" = "1" ; then
@@ -1283,7 +1288,7 @@ else
 				AC_MSG_RESULT($1.$2.$3 (series 6 or later))
 	        fi
         else
-			AC_MSG_WARN(Cannot get fglpc version.)
+			AC_MSG_ERROR(Cannot get fglpc version.)
         fi
     fi
 
@@ -1306,10 +1311,69 @@ else
 				AC_MSG_RESULT($1.$2.$3 (series 6 or later))
 	        fi
         else
-			AC_MSG_WARN(Cannot get c4gl version.)
+			AC_MSG_ERROR(Cannot get c4gl version.)
         fi
 	fi
 fi
+
+#if test "$I4GL_CCOMPILER" = "no" && test "$I4GL_PCOMPILER" = "no"; then
+#	AC_MSG_ERROR(Please install Informix 4gl compiler.)
+#fi
+
+
+## ==================================================================
+##            Decide on default 4GL compiler
+## ==================================================================
+
+if test "$with_4gl" != ""; then
+	#User can force SQL driver default with --default-odbc=xxxx switch
+	COMP_4GL="$with_4gl"
+    FGLRUNNER=fixme
+else
+    #In reverse order of preference:
+
+    #Names used folow names used by amake to define compiler specific targets
+
+	#d4gl-ccode is no longer supported by 4Js (?)
+
+	#Plexus
+	if test "$PLEXUS_COMP" != "no" ; then
+		COMP_4GL=plexus
+	fi
+
+	#Aubit
+    #FIXME: it shoud be prefered one, but at the moment has problems with
+    #navigator 4GL code:
+	if test "$AUBIT_FRONT" != "no" ; then
+		COMP_4GL=aubit
+	fi
+
+    #Querix
+	if test "$QUERIX_COMP" != "no" ; then
+		COMP_4GL=querix
+	fi
+
+	#Classic Informix 4gl C-code
+	if test "$I4GL_CCOMPILER" != "no" ; then
+		COMP_4GL=i4gl-ccode
+    fi
+
+	#Classic Informix 4gl P-code
+	if test "$I4GL_PCOMPILER" != "no" ; then
+		COMP_4GL=i4gl-pcode
+        FGLRUNNER=$I4GL_PRUNTIME
+    fi
+
+	#Informix D4GL or 4Js BDL
+	if test "$FJS_PCOMPILER" != "no" ; then
+		COMP_4GL=d4gl-pcode
+        FGLRUNNER=$FJS_PRUNTIME
+    fi
+
+fi
+
+AC_MSG_RESULT(Default 4GL compiler set to $COMP_4GL)
+
 
 
 ## ==================================================================
@@ -1636,6 +1700,8 @@ if test "$doc4gl_SOURCE" = "1" ; then
                 browser/build.properties
                 dbdoc/navigator/jsp/build.properties
                 dbdoc/navigator/jsp/Makefile
+                dbdoc/jdbdoc/build.properties
+                dbdoc/jdbdoc/Makefile
 				etc/fgldocrc
                 docs/Doxyfile
 				dbdoc/navigator/Makefile

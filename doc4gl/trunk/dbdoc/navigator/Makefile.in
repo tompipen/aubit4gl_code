@@ -9,12 +9,14 @@ include ${ROOT}/FgldocDefs.mk
 
 ALL=4gl jsp
 
+.PHONY : ${ALL} all install clean
+
 # =========================================================================
 #                           Targets
 # =========================================================================
 
 all: ${ALL}
-	@echo "All done"
+	@echo "All done {$ALL}"
 
 #4GL based browser
 4gl:
@@ -25,7 +27,8 @@ all: ${ALL}
 
 #"Old" JSP based browser
 jsp:
-	${MAKE} -C jsp
+#Fails to compile at the moment, so we'll ignore it with an "-"
+	-${MAKE} -C jsp
 
 # =========================================================================
 #                           Install
@@ -43,8 +46,26 @@ install.cgi:
 
 
 install.jsp:
-	${MAKE} -C jsp install
+#Fails to compile at the moment, so we'll ignore it with an "-"
+	-${MAKE} -C jsp install
 
+# =========================================================================
+#                           De-install
+# =========================================================================
+
+deinstall: deinstall.4gl deinstall.cgi deinstall.jsp
+
+
+deinstall.4gl:
+	${MAKE} -C 4gl deinstall
+
+
+deinstall.cgi:
+	${MAKE} -C cgi deinstall
+
+
+deinstall.jsp:
+	${MAKE} -C jsp deinstall
 
 # =========================================================================
 #                           Clean
@@ -60,7 +81,6 @@ clean:
 	@echo "|             DBdoc navigator source code tree now clean.            |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
-
 
 
 Makefile: Makefile.in

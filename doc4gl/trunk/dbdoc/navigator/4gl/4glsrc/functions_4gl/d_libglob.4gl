@@ -132,33 +132,44 @@ END GLOBALS
 #########################################################################
 #########################################################################
 
+#Could not find this functions anywhere - they are probably C code functions.
 
 function icgi_start()
-    return 0
+	display "FIXME: call to dummy finction"
+	exit program (5)
+	return 0
 end function
 
 
 
 function d_unlink(something)
 define something char(100)
-    return 0
+	display "FIXME: call to dummy finction"
+	exit program (5)
+	return 0
 end function
 
 
 #	let pr_parametros.ficheiro   = "/tmp/bdes.",d_getpid() using "<<<<<"
 function d_getpid()
-    return 0
+	display "FIXME: call to dummy finction"
+	exit program (5)
+	return 0
 end function
 
 
 #"text/html"
 function icgi_mimetype(type)
 define type char (100)
+	display "FIXME: call to dummy finction"
+	exit program (5)
 end function
 
 function d_run(comm)
   define comm char(64)
-    return 0
+	display "FIXME: call to dummy finction"
+	exit program (5)
+	return 0
 end function
 
 

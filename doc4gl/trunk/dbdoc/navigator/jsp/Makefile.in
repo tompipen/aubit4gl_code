@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.2 2003-05-27 08:29:23 afalout Exp $
+#  $Id: Makefile.in,v 1.3 2003-07-13 06:11:07 afalout Exp $
 #  =========================================================================
 
 ROOT=../../..
@@ -81,7 +81,7 @@ else
 	APP_INSTALLED=0
 endif
 
-
+.PHONY: all install deinstall clean ant
 
 # =========================================================================
 #                        	   Targets
@@ -452,7 +452,8 @@ show:
 #############################
 # Clean the source code tree; leave only files that are in the CVS:
 clean:
-	$(RM) *.class *.jar *.bak *.log
+#do not delete *.jar, it will delete oltp-stable-src.jar we need
+	$(RM) *.class *.bak *.log
 	$(RM) web/*.bak
 	$(RM) web/WEB-INF/*.bak
 	$(RM) org/aubit4gl/dbdocumenter/navigator/*.bak
