@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.19 2002-02-18 22:27:36 saferreira Exp $
+# $Id: sql.c,v 1.20 2002-03-01 07:41:46 mikeaubury Exp $
 #
 */
 
@@ -2237,9 +2237,9 @@ IGNOREEXITWITH
  *
  * @param s The string to be printed.
  */
-void exitwith2 (char *s)
+void do_we_still_need_this_exitwith2 (char *s)
 {
-  mja_endwin ();
+  //mja_endwin ();
 #ifdef DEBUG
 /* {DEBUG} */
   {

@@ -7,6 +7,7 @@
 #include "../../lib/libincl/compiler.h"
 #include <stdio.h>
 #include <string.h>
+#include <curses.h>
 #include "../../lib/libincl/dbform.h"
 #include "../../lib/libincl/debug.h"
 #include "where.h"

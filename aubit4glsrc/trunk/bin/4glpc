@@ -3,7 +3,6 @@
 #There are several problems with SH on CygWin - not sure how to do this to be compatible
 #with users that don't have bash on there *NIX platforms ....?
 #!/bin/sh
-
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
@@ -30,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.52 2002-02-22 13:22:23 afalout Exp $
+# $Id: 4glpc,v 1.53 2002-03-01 07:41:45 mikeaubury Exp $
 #
 
 ########################################################################
@@ -373,10 +372,11 @@ PATH=$AUBITDIR/bin:$PATH
 
 if [ "$GTKGUI" = "" ]
 then
+
     #if [ -f  $AUBITDIR/lib/libaclsharedgui.so/dll ]
-    if [ "$GTKBUILD" = "yes" ]
+    if [ "$GTKBUILD" = "yes" -a 0 ]
 	then
-		export GTKGUI="Yes"
+	export GTKGUI="Yes"
     	export ui=gui
     else
 		export GTKGUI="no"
@@ -384,6 +384,7 @@ then
     fi
 fi
 
+unset GTKGUI
 
 
 COMPCC=""
@@ -1401,7 +1402,9 @@ else
         fi
 fi
 
-LIBS="-lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG"
+#LIBS="-lform$DDEBUG -lpanel$DDEBUG -lncurses$DDEBUG"
+
+LIBS=""
 
 if test "$COMSPEC" = ""; then
 	LIBS="$LIBS -rdynamic"

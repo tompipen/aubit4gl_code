@@ -50,7 +50,8 @@ input a from dummy
 	on key('8') call set1(3,2)
 	on key('9') call set1(3,3)
 end input
-
+message "All done"
+sleep 4
 end main
 
 

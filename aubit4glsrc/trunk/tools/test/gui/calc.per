@@ -1,8 +1,9 @@
 database formonly
 screen
 {
-   [f1                ]  
 
+   [f1                ]  
+                   [f2]
    [a][b][c]   [z] 
    [d][e][f]   [y]
    [g][h][i]   [x]
@@ -13,6 +14,7 @@ screen
 end
 attributes
 f1=formonly.entered;
+f2=formonly.prec, widget="combo",config="list=1,2";
 a=formonly.b1,widget="button",config="label='1'";
 b=formonly.b2,widget="button",config="label='2'";
 c=formonly.b3,widget="button",config="label='3'";

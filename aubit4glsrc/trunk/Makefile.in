@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.34 2002-02-26 07:54:02 afalout Exp $
+# $Id: Makefile.in,v 1.35 2002-03-01 07:41:42 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -141,8 +141,8 @@ ifneq "$(ODBC)" "no"
 endif
 
 #FIXME: what am I doing with all this .so in lib/ ? Some are just links....
-#aclshared-noodbc.so     libaclshared-noodbc.so     libgtk4gl.so
-#aclshared.so            libaclshared.so            libgtk4gl_x.so
+#aclshared-noodbc.so     libaclshared-noodbc.so     libUI_GTK.so
+#aclshared.so            libaclshared.so            libUI_GTK_x.so
 #aclsharedgui-noodbc.so  libaclsharedgui-noodbc.so
 #aclsharedgui.so         libaclsharedgui.so
 
@@ -150,19 +150,19 @@ endif
 #libaclall-noodbc.a  libaclall.a  libaclallgui-noodbc.a  libaclallgui.a
 
 
-TOLIBGTK	=$(SOURCE)/lib/libgtk4gl${SO_EXT} $(SOURCE)/lib/libaclsharedgui${SO_EXT} $(SOURCE)/lib/libgtk4gl_x${SO_EXT}
+TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libaclsharedgui${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
 TOLIBCUI	=$(SOURCE)/lib/libaclshared${SO_EXT} $(SOURCE)/lib/libPDF_NOPDF${SO_EXT} $(SOURCE)/lib/libSQL_nosql${SO_EXT}
 
 ifneq "${STATICLIB_INST}" "no"
-	TOLIBGTK+=$(SOURCE)/lib/libgtk4gl.a $(SOURCE)/lib/libaclallgui.a $(SOURCE)/lib/libgtk4gl_x.a
+	TOLIBGTK+=$(SOURCE)/lib/libUI_GTK.a $(SOURCE)/lib/libaclallgui.a $(SOURCE)/lib/libUI_GTK_x.a
 	TOLIBCUI+=$(SOURCE)/lib/libaclall.a
 endif
 
 TOLIB_EXPORTLIB =$(SOURCE)/lib/libaclshared${SOEXP_EXT} \
             $(SOURCE)/lib/libPDF_NOPDF${SOEXP_EXT} $(SOURCE)/lib/libSQL_nosql${SOEXP_EXT}
 
-TOLIBGTK_EXPORTLIB	=$(SOURCE)/lib/libgtk4gl${SOEXP_EXT} $(SOURCE)/lib/libaclsharedgui${SOEXP_EXT} \
-					$(SOURCE)/lib/libgtk4gl_x${SOEXP_EXT}
+TOLIBGTK_EXPORTLIB	=$(SOURCE)/lib/libUI_GTK${SOEXP_EXT} $(SOURCE)/lib/libaclsharedgui${SOEXP_EXT} \
+					$(SOURCE)/lib/libUI_GTK_x${SOEXP_EXT}
 
 
 ifneq "${COMSPEC}" ""
@@ -179,9 +179,9 @@ ifneq "$(ODBC)" "no"
 		TOLIBGTK	+=$(SOURCE)/lib/libaclallgui-noodbc.a
 
 		#FIXME:
-		#cp: /usr/aubit/aubit4glsrc/lib/libgtk4gl-noodbc.so: No such file or directory
+		#cp: /usr/aubit/aubit4glsrc/lib/libUI_GTK-noodbc.so: No such file or directory
 		#ifndef COMSPEC
-		#	TOLIBGTK	+= $(SOURCE)/lib/libgtk4gl-noodbc.so
+		#	TOLIBGTK	+= $(SOURCE)/lib/libUI_GTK-noodbc.so
 	    #endif
 		TOLIBCUI	+=$(SOURCE)/lib/libaclall-noodbc.a
     endif
@@ -286,14 +286,14 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
         endif
     endif
 
-	#FIXME: where is $(CYSOURCE)/lib/libgtk4gl.so
-	#libgtk4gl is .a only, no .so on CygWin ???
-	CYTOLIBGTK	=$(CYSOURCE)/lib/libaclallgui.a $(CYSOURCE)/lib/libgtk4gl.a
-	#we still cannot compile this one: $(CYSOURCE)/lib/libgtk4gl_x.so
+	#FIXME: where is $(CYSOURCE)/lib/libUI_GTK.so
+	#libUI_GTK is .a only, no .so on CygWin ???
+	CYTOLIBGTK	=$(CYSOURCE)/lib/libaclallgui.a $(CYSOURCE)/lib/libUI_GTK.a
+	#we still cannot compile this one: $(CYSOURCE)/lib/libUI_GTK_x.so
 	ifneq "$(ODBC)" "no"
 		ifeq "$(ODBC_LINK)" "static"
 			CYTOLIBGTK	+=$(CYSOURCE)/lib/libaclallgui-noodbc.a
-			#We still cannot compile this one :$(CYSOURCE)/lib/libgtk4gl-noodbc.a
+			#We still cannot compile this one :$(CYSOURCE)/lib/libUI_GTK-noodbc.a
         endif
     endif
 
@@ -459,14 +459,15 @@ corecompile: libs
 
 libs:
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libtui
 	@echo Aubit 4gl core libraries are now compiled
 
 gtkgui:
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib all_gui
 #	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui
-#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui libgtk4gl_x.so
-	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui gtk4gl_x
+#	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui libUI_GTK_x.so
+	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C lib/libgui UI_GTK_x
 	$(MAKE) ${MKNAME} ${BUGMAKEFLAGS} -C compilers/fcompile fshow-gtk
 	@echo Aubit 4gl compiler GTK GUI is now compiled
 
@@ -962,7 +963,7 @@ install.libs:
 	cp ${L2}/libgtk${LIBVER}.a ${LIBTARGET1}
 
 #FIXME: want about -noodbc libs?
-	cp ${L5}/libgtk4gl.a ${LIBTARGET1}
+	cp ${L5}/libUI_GTK.a ${LIBTARGET1}
 	cp ${L5}/libaclallgui.a ${LIBTARGET1}
 	cp ${L5}/libaclall.a ${LIBTARGET1}
 	cp ${L3}/librpclib.a ${LIBTARGET1}
@@ -983,7 +984,7 @@ deinstall.libs:
 	${RM} /usr/lib/libgdk${LIBVER}.a
 	${RM} /usr/lib/libgtk${LIBVER}.a
 #FIXME: what about -noodbc libs?
-	${RM} /usr/lib/libgtk4gl.a
+	${RM} /usr/lib/libUI_GTK.a
 	${RM} /usr/lib/libaclallgui.a
 	${RM} /usr/lib/libaclall.a
 	${RM} /usr/lib/librpclib.a

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.27 2002-02-26 07:54:04 afalout Exp $
+# $Id: Makefile.in,v 1.28 2002-03-01 07:41:45 mikeaubury Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -38,7 +38,7 @@ override NOINCL=0
 CMODS_PROJECT	=project.c
 GUI_TUI			=gui_tui.o
 GUI_GTK			=gui_gtk.o
-GUI_SRC         =gui.c
+GUI_SRC         =ui.c
 CMODS_NOSQL		=libsql/odbc/nosql.c
 CMODS_ODBCSQL   =libsql/odbc/sql.c
 CMODS_ODBCEX    =libsql/odbc/sqlex.c
@@ -52,6 +52,9 @@ CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c rpc_stack_xdr.c
 
 COMMONSRC= \
 	array.c \
+	gui.c \
+	debug.c keys.c \
+	extfile.c \
 	bogus.c builtin.c builtin_d.c \
 	calldll.c conv.c colours.c curslib.c \
 	data_if.c dates.c dmy.c \
