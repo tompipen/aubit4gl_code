@@ -2030,12 +2030,34 @@ aubit_version=`aubit 4glc -v | grep Version | awk '{print $2}'`
 aubit_build=`aubit 4glc -v | grep Build | awk '{print $3}'`
 #Only when non-Aubit 4gl compiler is used
 comp_version=""
-let total_time=FINISH_ALL_TIME - START_TIME
-c_ver=`gcc --version | grep gcc `
-#FIXME: adapt for PG/SAP/Querix :
-esql_ver=`esql -V | grep Version | awk '{print $3}'`
+
+#No spaces!
+let total_time=FINISH_ALL_TIME-START_TIME
+#echo "check this: total_time=FINISH_ALL_TIME - START_TIME"
+#echo "($total_time = $FINISH_ALL_TIME - $START_TIME)"
+
+#c_ver=`gcc --version | grep gcc `
+c_ver=`gcc --version`
+
+if test "$A4GL_LEXTYPE" = "EC"; then
+	#FIXME: adapt for SAP/Querix/Ingres :
+	if test "$USE_ECP" = "1" -o "$A4GL_LEXDIALECT" = "POSTGRES"; then
+		esql_ver=`$POSTGRES_BIN/ecpg --version`
+	fi
+	if test "$USE_ECI" = "1" -o "$A4GL_LEXDIALECT" = "INFORMIX"; then
+		esql_ver=`esql -V | grep Version | awk '{print $3}'`
+	fi
+fi
+
 #Fixme - addapt for non-Informix engines
-db_ver=`dbaccess -V | grep Version | awk '{print $3}'`
+case "$DB_TYPE" in 
+	PG-IFX-74 | PG-74 | PG-80)  db_ver=`$POSTGRES_BIN/postmaster --version` ;;
+	IFX-OL) db_ver=`dbaccess -V | grep Version | awk '{print $3}'` ;;
+	IFX-SE) db_ver="$DB_TYPE";;
+	SQLITE)  db_ver="$DB_TYPE";;
+	*)  db_ver="Unknown type: $DB_TYPE";;
+esac
+
 set `$MAKE --version | head -1 | sed -e 's/^GNU Make version //' -e 's/^GNU Make //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
 make_ver="$1.$2.$3"
 sh_ver=`$SH --version | grep version | awk '{print $4}'`

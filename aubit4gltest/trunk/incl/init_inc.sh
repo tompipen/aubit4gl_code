@@ -371,6 +371,7 @@ for a in $FLAGS; do
 
 		-db-features-doc)
 			echo "Preparing catalogue of db features, please wait..."
+			TEST_WEBCVS_URL="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest"
 			FEATURES_STATUS_TMP="features_status.tmp"
 			TEST_FEATURES_TMP="tests_features.tmp"
 			OUT_TMP=out.tmp
@@ -379,6 +380,67 @@ for a in $FLAGS; do
 				FINAL_OUT=support_status.html
 			else
 				FINAL_OUT=support_status.txt
+			fi
+			#'results_$HOSTNAME$U$date_stamp.unl'
+			#'test_run_$HOSTNAME$U$date_stamp.unl'
+			LAST_RESULTS=`ls -al --sort=t results_$HOSTNAME* 2> /dev/null | head -4 | grep ":" | head -1 | awk '{print $9}'`
+			if test "$LAST_RESULTS" = ""; then 
+				echo "WARNING: no results files (results_HOSTNAME_DATE.unl) found"
+			fi
+			TEST_DATE=`echo "$LAST_RESULTS" | sed -e 's/results_aptiva_//' | sed -e 's/_/ /' | awk '{print $1}'`
+			TEST_TIME=`echo "$LAST_RESULTS" | sed -e 's/results_aptiva_//' | sed -e 's/_/ /' | awk '{print $2}' | sed -e 's/.unl//'`
+			U="_"
+			TEST_RUN_UNL="test_run_$HOSTNAME$U$TEST_DATE$U$TEST_TIME.unl"
+			#echo $LAST_RESULTS
+			#echo $TEST_DATE
+			#echo $TEST_TIME
+			#echo $TEST_RUN_UNL
+			if test ! -f $TEST_RUN_UNL ; then
+				echo "ERROR: $TEST_RUN_UNL missing"
+				exit 5
+			else
+#         1             2     3    4         5                            6                                                                                       
+#13-02-2005_18-35-52|aptiva|root|UNIX|i386-redhat-linux-gnu|Linux aptiva 2.4.7-10 #1 Thu Sep 6 17:21:28 EDT 2001 i586 unknown
+#                 7
+#|-eci -described -nolong -err-with-log -aubitrc-test -nospace -cert -ecp -silent
+#    8  9 10     11  12  13         14     14      16            17
+#|0.49|36||1108279276||9.51.UC1|9.21.UC4|3.79.1|2.05.8(1)-release||
+
+#         1        2       3       4           5          6 
+#echo "$time$dl$host$dl$user$dl$platform$dl$os_name$dl$os_version
+#      7          8                9              10              11
+#$dl$flags$dl$aubit_version$dl$aubit_build$dl$comp_version$dl$total_time
+#     12         13          14        15          16         17
+#$dl$c_ver$dl$esql_ver$dl$db_ver$dl$make_ver$dl$sh_ver$dl$LOG_TEXT$dl" 
+
+				RESULTS_HOST=`cut --fields=2 --delimiter="|" $TEST_RUN_UNL`
+				#RESULTS_USER=`cut --fields=3 --delimiter="|" $TEST_RUN_UNL`
+				RESULTS_PLATFORM=`cut --fields=4 --delimiter="|" $TEST_RUN_UNL`
+				RESULTS_OSNAME=`cut --fields=5 --delimiter="|" $TEST_RUN_UNL`
+				RESULTS_OS_VER=`cut --fields=6 --delimiter="|" $TEST_RUN_UNL`
+				RESULTS_FLAGS=`cut --fields=7 --delimiter="|" $TEST_RUN_UNL`
+				
+				RESULTS_AUBIT_VER=`cut --fields=8 --delimiter="|" $TEST_RUN_UNL`
+				RESULTS_AUBIT_BUILD=`cut --fields=9 --delimiter="|" $TEST_RUN_UNL`
+				#Only when non-Aubit 4gl compiler is used:
+				RESULTS_COMP_VER=`cut --fields=10 --delimiter="|" $TEST_RUN_UNL`
+				
+				RESULTS_TOTAL_TIME=`cut --fields=11 --delimiter="|" $TEST_RUN_UNL`
+
+				RESULTS_C_COMP_VER=`cut --fields=12 --delimiter="|" $TEST_RUN_UNL`
+#temp:				
+if test "$RESULTS_C_COMP_VER" = ""; then
+	RESULTS_C_COMP_VER=`gcc --version`
+fi
+				RESULTS_ESQL_VER=`cut --fields=13 --delimiter="|" $TEST_RUN_UNL`
+#temp. override:
+RESULTS_ESQL_VER=`$POSTGRES_BIN/ecpg --version`				
+				RESULTS_DB_VER=`cut --fields=14 --delimiter="|" $TEST_RUN_UNL`
+#TEmp overide:
+RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
+				#RESULTS_MAKE_VER=`cut --fields=15 --delimiter="|" $TEST_RUN_UNL`
+				#RESULTS_SH_VER=`cut --fields=16 --delimiter="|" $TEST_RUN_UNL`
+				RESULTS_LOG_TEXT=`cut --fields=17 --delimiter="|" $TEST_RUN_UNL`				
 			fi
 			#Create list of features
 			cat etc/db_features.conf | grep -v "^#" | cut --fields=5,20,21 --delimiter=" " > $FEATURES_STATUS_TMP
@@ -425,27 +487,11 @@ for a in $FLAGS; do
 						;;
 				esac
 			done
-			
-			#echo "See $OUT_TMP"
-			
-			#P_LIST=`grep "|POSSIBLE|" $OUT_TMP | tr "|" " "`
-			#S_LIST=`grep "|SUPPORTED|" $OUT_TMP`
-			#D_LIST=`grep "|DEPENDS|" $OUT_TMP`
-			#I_LIST=`grep "|IMPOSSIBLE|" $OUT_TMP`
-			#U_LIST=`grep "|UNTESTED|" $OUT_TMP`
-
-			#'results_$HOSTNAME$U$date_stamp.unl'
-			#'test_run_$HOSTNAME$U$date_stamp.unl'
-			LAST_RESULTS=`ls -al --sort=t "results_$HOSTNAME*" 2> /dev/null | head -4 | grep ":" | head -1 | awk '{print $9}'`
-			if test "$LAST_RESULTS" = ""; then 
-				echo "WARNING: no results files (results_HOSTNAME_DATE.unl) found"
-			fi
-			
 			if test "$HTML" = "1"; then 
 				echo "<html><head>"  >> $FINAL_OUT
 				echo "<meta http-equiv='Content-Language' content='en-us'>"  >> $FINAL_OUT
 				echo "<meta http-equiv='Content-Type' content='text/html; charset=windows-1252'>"  >> $FINAL_OUT
-				TITLE="Aubit 4GL: SQL & database features support status for PostgreSQL 7.4 with IFX patch"
+				TITLE="Aubit 4GL: SQL & database features support and usage status"
 				echo "<title>$TITLE</title></head><body>"  >> $FINAL_OUT
 				echo "<h1 align='center'>$TITLE</h1><BR>"  >> $FINAL_OUT
 				echo "Links: <br>" >> $FINAL_OUT
@@ -454,7 +500,111 @@ for a in $FLAGS; do
 				echo "<a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/docs/catalogue.txt?view=markup">Tests catalogue (.txt)</a><br>"  >> $FINAL_OUT				
 				echo "<a href="http://developer.mimer.se/validator/">Mimer SQL Validator</a><br>"  >> $FINAL_OUT
 				echo "<a href="http://dev.mysql.com/tech-resources/crash-me.php">Database Server Feature Comparisons</a><br>"  >> $FINAL_OUT
+				echo "<a href="http://dev.mysql.com/tech-resources/crash-me.php?res_id=450">Database Server Feature Comparison: PostgreSQL-7.3.3, Informix-7.24UC5</a><br>"  >> $FINAL_OUT				
 				echo "<br><br>" >> $FINAL_OUT
+
+
+				
+				echo "Testing conditions:<br>" >> $FINAL_OUT
+					
+				echo "<div align="left">" >> $FINAL_OUT
+				echo "  <table border="1" id="table2">" >> $FINAL_OUT
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>Host name</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_HOST</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>Platform</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_PLATFORM</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>OS name</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_OSNAME</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>OS version</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_OS_VER</td>" >> $FINAL_OUT
+				#RESULTS_USER
+				echo "    </tr>" >> $FINAL_OUT
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>Test flags (expanded)</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_FLAGS</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>Aubit 4GL compiler version (major.minor)</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_AUBIT_VER</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>Aubit 4GL compiler build</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_AUBIT_BUILD</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				#Only when non-Aubit 4gl compiler is used
+				if test "$RESULTS_COMP_VER" != ""; then
+					echo "    <tr>" >> $FINAL_OUT
+					echo "      <td>Non-Aubit 4GL compiler version</td>" >> $FINAL_OUT
+					echo "      <td>$RESULTS_COMP_VER</td>" >> $FINAL_OUT
+					echo "    </tr>" >> $FINAL_OUT
+				fi
+				#Disabled - huge number!
+				#echo "    <tr>" >> $FINAL_OUT
+				#echo "      <td>Tests total run time (seconds)</td>" >> $FINAL_OUT
+				#echo "      <td>$RESULTS_TOTAL_TIME</td>" >> $FINAL_OUT
+				#echo "    </tr>" >> $FINAL_OUT
+				
+
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>C compiler version (GCC)</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_C_COMP_VER</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>Used ESQL/C compiler version</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_ESQL_VER</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>Used database version</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_DB_VER</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				#RESULTS_MAKE_VER
+				#RESULTS_SH_VER
+				if test "$RESULTS_LOG_TEXT" != ""; then
+					echo "    <tr>" >> $FINAL_OUT
+					echo "      <td>Teest custom log text</td>" >> $FINAL_OUT
+					echo "      <td>$RESULTS_LOG_TEXT</td>" >> $FINAL_OUT
+					echo "    </tr>" >> $FINAL_OUT
+				fi
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>This report created on</td>" >> $FINAL_OUT
+				echo "      <td>`date`</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
+				
+				echo "  </table>" >> $FINAL_OUT
+				echo "</div>" >> $FINAL_OUT
+				echo "<br><br>" >> $FINAL_OUT
+			else
+				echo "RESULTS_HOST $RESULTS_HOST" >> $FINAL_OUT
+				echo "RESULTS_PLATFORM $RESULTS_PLATFORM" >> $FINAL_OUT
+				echo "RESULTS_OSNAME $RESULTS_OSNAME" >> $FINAL_OUT
+				echo "RESULTS_OS_VER $RESULTS_OS_VER" >> $FINAL_OUT				
+				#RESULTS_USER				
+				echo "RESULTS_FLAGS $RESULTS_FLAGS" >> $FINAL_OUT
+				echo "RESULTS_AUBIT_VER $RESULTS_AUBIT_VER" >> $FINAL_OUT
+				echo "RESULTS_AUBIT_BUILD $RESULTS_AUBIT_BUILD" >> $FINAL_OUT
+				#Only when non-Aubit 4gl compiler is used
+				if test "$RESULTS_COMP_VER" != ""; then
+					echo "RESULTS_COMP_VER $RESULTS_COMP_VER" >> $FINAL_OUT
+				fi
+				#Disabled - huge number!
+				#echo "RESULTS_TOTAL_TIME $RESULTS_TOTAL_TIME" >> $FINAL_OUT
+				echo "RESULTS_C_COMP_VER $RESULTS_C_COMP_VER" >> $FINAL_OUT
+				echo "RESULTS_ESQL_VER $RESULTS_ESQL_VER" >> $FINAL_OUT
+				echo "RESULTS_DB_VER $RESULTS_DB_VER" >> $FINAL_OUT				
+				#RESULTS_MAKE_VER
+				#RESULTS_SH_VER
+				if test "$RESULTS_LOG_TEXT" != ""; then 
+					echo "RESULTS_LOG_TEXT $RESULTS_LOG_TEXT" >> $FINAL_OUT
+				fi
+			
 			fi
 			
 			STAT_LIST="SUPPORTED DEPENDS POSSIBLE IMPOSSIBLE UNTESTED"
@@ -492,7 +642,6 @@ for a in $FLAGS; do
 				THIS_STAT_LIST=`grep "|$STAT|" $OUT_TMP | tr "|" " "`
 				CNT=0
 				for col in $THIS_STAT_LIST; do
-#echo $col				
 					let CNT=CNT+1
 					case $CNT in
 					1) LABEL="$col";;
@@ -501,7 +650,6 @@ for a in $FLAGS; do
 					4) TEST_CNT="$col";;
 					5) TEST_LIST="$col"; CNT=0
 						TEST_LIST=`echo $TEST_LIST | tr "_" " "`
-#echo $TEST_CNT
 						#here we have the list of tests that use that feature
 						#now we have to check if this tests really worked 
 						#for this database:
@@ -524,10 +672,10 @@ for a in $FLAGS; do
 
 								RESULT=`echo $x | cut --fields=3 --delimiter="|"`
 								if test "$RESULT" = "1"; then
-									TEST_WORKING_CNT=TEST_WORKING_CNT+1
+									let TEST_WORKING_CNT=TEST_WORKING_CNT+1
 									TEST_WORKING_LIST="$TEST_WORKING_LIST $AN_TEST"
 								else
-									TEST_FAILED_CNT=TEST_FAILED_CNT+1
+									let TEST_FAILED_CNT=TEST_FAILED_CNT+1
 									TEST_FAILED_LIST="$TEST_FAILED_LIST $AN_TEST"
 								fi
 							
@@ -560,15 +708,30 @@ for a in $FLAGS; do
 						if test "$HTML" = "1"; then
 							TMP=$TEST_LIST
 							TEST_LIST=""
-							for test in $TMP; do
-								TEST_LIST="$TEST_LIST <a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/">$test</a>"
+							for test_no in $TMP; do
+								if test "$test_no" != "..." -a "$test_no" != "NONE"; then 
+									TEST_LIST="$TEST_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no</a>"
+								else
+									TEST_LIST="$TEST_LIST $test_no"
+								fi
 							done
-							TMP=$TEST_WORKING_LIST
-							TEST_WORKING_LIST=""
-							for test in $TMP; do
-								TEST_WORKING_LIST="$TEST_WORKING_LIST <a href="http://cvs.sourceforge.net/viewcvs.py/aubit4gl/aubit4gltest/">$test</a>"
-							done
-						
+							if test "$TEST_WORKING_LIST" != ""; then
+								TMP=$TEST_WORKING_LIST
+								TEST_WORKING_LIST=""
+								for test_no in $TMP; do
+									if test "$test_no" != "..." -a "$test_no" != "NONE"; then
+										TEST_WORKING_LIST="$TEST_WORKING_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no</a>"
+									else
+										TEST_WORKING_LIST="$TEST_WORKING_LIST $test_no"										
+									fi
+								done
+							else
+								if test "$STAT" = "SUPPORTED"; then
+									TEST_WORKING_LIST="WARNING!<br>NONE!"
+								else
+									TEST_WORKING_LIST="NONE"
+								fi
+							fi
 						
 							echo "<tr>" >> $FINAL_OUT
 							echo "  <td>$LABEL</td>" >> $FINAL_OUT

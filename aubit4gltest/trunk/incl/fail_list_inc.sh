@@ -106,26 +106,23 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ECP="1 76 98 110 376 530 535 584 587 739 900 903 913 \
-	630 670 748 1208 1220 1221 1228"
-#1 afinderr -213 /opt/aubit/aubit4glsrc/help/help_ecpg.iem: ECPG_MISSING_INDICATOR -213 http://aubit.com/mantis/view.php?id=687	
+EXPECT_TO_FAIL_TESTS_ECP="1 76 98 110 376 530 535 584 587 670 739 900 \
+	903 913 1208 1220 1228 "
+#1 'xdt is null' BUT SHOULD BE 'xdt is 12:01:02' http://aubit.com/mantis/view.php?id=687 AND http://aubit.com/mantis/view.php?id=517
 #76 (datetime-ecpg issue) http://aubit.com/mantis/bug_view_page.php?bug_id=0000479
 #98 serial insert ignores non-zero value http://aubit.com/mantis/view.php?id=604
 #110 COPY delimiter must be a single character http://aubit.com/mantis/view.php?id=693
 #376 core in 4glc : http://aubit.com/mantis/view.php?id=688
-#530,535 (syntax) http://aubit.com/mantis/bug_view_page.php?bug_id=0000485
+#530 (TABLENAME_DB_USER_TABLE),535 (CREATE_TABLE_IN)  (syntax) http://aubit.com/mantis/bug_view_page.php?bug_id=0000485
 #584 587 prepared DATABASE stmt fails with -220 http://aubit.com/mantis/view.php?id=694
+#670 error in ecpg generated C code http://www.aubit.com/mantis/view.php?id=696
 #739 A row was deleted from a temp table with no log http://aubit.com/mantis/view.php?id=692
 #900 A wrong select give a zero sqlca http://aubit.com/mantis/view.php?id=690
 #903 Wrong sqlca it as not assigned sqlcode http://aubit.com/mantis/view.php?id=691
 #913 An warning was not issued with a DB with transactions http://aubit.com/mantis/view.php?id=689
+#1208 1228 UNLOAD TO SELECT FROM cant open file http://www.aubit.com/mantis/view.php?id=697
+#1220 select one more filed then it exsist in the table http://www.aubit.com/mantis/view.php?id=698
 
-#630 LOAD FROM INSERT INTO 
-#670 error in ecpg generated C code
-#748 FETCH issue
-#1208 1228 UNLOAD TO SELECT FROM cant open file
-#1220 select one more filed then it exsist in the table
-#1221 fails with -ecp (both DECLARE cursor into and FOREACH into return empty)
 
 # --------------------------------------------------------------------------
 #							-sqlite and -sqlite-odbc

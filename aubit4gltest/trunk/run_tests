@@ -648,7 +648,8 @@ for a in $FLAGS; do
             fi
             exit 9
         fi
-
+		#Test #1 fails without it:
+		export A4GL_USE_INDICATOR=Y
 		;;
 
 
