@@ -23,72 +23,62 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2002-07-07 04:28:10 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-09-09 06:51:01 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
 
+ROOT    =../../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
-override NOINCL=0
+include ${ROOT}/incl/Makefile-common
+#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-ifdef COMSPEC
-	ifdef MONOLIT
-		ADDFLAGS= -mno-cygwin
-	endif
-endif
+ALL=forms 4gl
 
-ifneq "${AUBIT_BIN_INSTALL}" "1"
-	FCOMPILE	=../../../bin/fcompile
-	MKMESS      =../../../bin/mkmess
-	FGLPCEXEC	=${SH} ../../../bin/4glpc
-else
-	FCOMPILE	=aubit fcompile
-	MKMESS      =aubit mkmess
-	FGLPCEXEC	=aubit 4glpc
-endif
-
-ALL=other 4gl regression.4gl regression.per 4glguionly
-
-#no longer needed:
+#no longer needed? (CHECK!)
 #ADDFLAGS=-fnative-struct
-#ADDFLAGS=-verbose
+
+IMAGES=aubit.xpm  img1.xpm  linux.xpm
+FORMS.per=gui.per widget.per radio.per multi.per form-gui.per calc.per
+FORMS.frm=${FORMS.per:.per=.frm}
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-all: forms 4gl
+all: ${ALL}
 
-4gl: demo game
+4gl: hello-gui game calc
 
-menu:
-	(mcompile menu.menu)
-#	(mcompile -c menu.menu)
+hello-gui: hello-gui.4gl
+	${FGLPCEXEC} $^ -o $@ ${ADDFLAGS}
 
-demo:
-	(${FGLPCEXEC} hello-gui.4gl -o hello-gui ${ADDFLAGS})
+game: gui.4gl
+	${FGLPCEXEC} $^ -o $@ ${ADDFLAGS}
 
-game:
-	(${FGLPCEXEC} gui.4gl -o gui ${ADDFLAGS})
+calc: calc.4gl
+	${FGLPCEXEC} $^ -o $@ ${ADDFLAGS}
 
-forms:
-	(${FCOMPILE} gui.per)
-	(${FCOMPILE} widget.per)
-	(${FCOMPILE} radio.per)
-	(${FCOMPILE} multi.per)
-	(${FCOMPILE} form-gui.per)
+forms: ${FORMS.frm}
 
 help:
 	@echo "use 'make' to compile examples with GTK GUI"
 
+%.frm: %.per
+	${FCOMPILE} $^
+
+
+## ==================================================================
+##                              Clean
+## ==================================================================
+
 clean:
-	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.c *.o
-	${RM} *.hlp *.exe *.stackdump *.err
-	${RM} gui hello-gui
+	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.c *.o \
+	*.hlp *.exe *.stackdump *.err gui hello-gui *.glb
 
 #------------------------------- EOF ---------------------------

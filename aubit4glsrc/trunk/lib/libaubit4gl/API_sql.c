@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.19 2002-08-31 06:19:59 afalout Exp $
+# $Id: API_sql.c,v 1.20 2002-09-09 06:51:01 afalout Exp $
 #
 */
 
@@ -779,7 +779,7 @@ A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 
 /**
  * Called by the 4gl starting function, analyse the resources in order
- * to decide wich dynamic library it uses to establish the connection to the 
+ * to decide wich dynamic library it uses to establish the connection to the
  * database.
  *
  * @return The pointer to the function loaded.
@@ -809,6 +809,21 @@ global_A4GLSQL_get_sqlerrm (void)
 {
 	return sqlca.sqlerrm;
 }
+
+
+/**
+ * Used only in Informix esql/c plug-in
+ *
+ * @return
+ */
+int
+A4GLSQL_close_connection(void)
+{
+  if (libptr==0) A4GLSQL_initlib();
+  func=find_func(libptr,"A4GLSQL_close_connection");
+  return func();
+}
+
 
 
 /* =============================== EOF ============================== */

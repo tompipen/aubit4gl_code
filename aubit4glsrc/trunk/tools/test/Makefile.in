@@ -23,33 +23,21 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.21 2002-08-29 09:10:32 afalout Exp $
+# $Id: Makefile.in,v 1.22 2002-09-09 06:51:01 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
 
-#All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
-override NOINCL=0
+ROOT    =../..
 
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+#override NOINCL=0
 #override MAKINGAUBIT=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
-
-ifneq "${AUBIT_BIN_INSTALL}" "1"
-	FCOMPILE	=../../bin/fcompile
-	MKMESS      =../../bin/mkmess
-	FGLPCEXEC	=${SH} ../../bin/4glpc
-	MCOMPILE	=../../bin/mcompile
-else
-	FCOMPILE	=aubit fcompile
-	MKMESS      =aubit mkmess
-	FGLPCEXEC	=aubit 4glpc
-	MCOMPILE	=aubit mcompile
-endif
-
 
 #4GLPCFLAGS		=-verbose -settings
 
@@ -59,44 +47,42 @@ ifdef COMSPEC
 	endif
 endif
 
+DEFAULT=other 4gldemo
 
-ifeq "$(ODBC)" "no"
-	ifeq "$(ODBC_LINK)" "static"
-		4GLPCFLAGS+= -noodbc
-		4GLPCTESTFLAGS+= -noodbc
-    endif
-endif
+SUB=guidemos langdemos
 
-#remove this:
-4GLPCTESTFLAGS +=-I..
+REGRES=regressiontests dbtests
 
+ALL=${DEFAULT} assoc pdf_report file test_select testmenu testmpz ${SUB} ${REGRES}
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-
-#ALL=other 4gl regression.4gl regression.per
-ALL=other 4gl
-
+default: ${DEFAULT}
+	@echo "Default simple demo targets successfully compiled"
+	@echo "Try 'make all' for more example code"
 
 all: ${ALL}
-	@echo default targets successfully compiled
+	@echo all targets successfully compiled
 
-4gl:
-	@echo AUBITDIR in Makefile=${AUBITDIR}
+sub: ${SUB}
+	@echo targets in sub directories successfully compiled
+
+4gldemo:
+#	@echo AUBITDIR in Makefile=${AUBITDIR}
 	${FGLPCEXEC} ${4GLPCFLAGS} hello.4gl -o hello
 	${FGLPCEXEC} ${4GLPCFLAGS} hello2.4gl -o hello2
 	${FGLPCEXEC} ${4GLPCFLAGS} hello_db.4gl -o hello_db
-	@echo 4gl targets successfully compiled
+	@echo 4gl demo targets successfully compiled
 
-#this will fail unless you compiled Aubit compiler to enable PDF functionality:
-pdf:
-	${FGLPCEXEC} ${4GLPCFLAGS} -lpdf pdf_report.4gl -o pdf_report
-	@echo PDF targets successfully compiled
+pdf_report: pdf_report.4gl
+	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
 
+assoc: assoc2.4gl
+	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
 
-#This is used from root makefile, to test id compiler is working after building it:
+#This is used from root makefile, to test if compiler is working after building it:
 test.build:
 	${RM} test_build.c test_build.h test_build.o test_build test_build.exe
 	${FGLPCEXEC} -settings -verbose ${4GLPCTESTFLAGS} test_build.4gl -o test_build
@@ -105,8 +91,14 @@ test.perl:
 	cd tools/test; 4glc_perl test_build.4gl
 	cd tools/test; perl test_build.pl
 
-filetest: file.4gl
-	${FGLPCEXEC} ${4GLPCFLAGS} file.4gl -o filetest
+file: file.4gl
+	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
+
+testmpz: testmpz.4gl
+	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
+
+test_select: test_select.4gl
+	${FGLPCEXEC} ${4GLPCFLAGS} $^ -o $@
 
 #Move this to gui/
 testmenu: testmenu-menu
@@ -118,7 +110,27 @@ testmenu-menu:
 other:
 	${FCOMPILE} form.per
 	${MKMESS} helpfile
-	@echo Other targets successfully compiled
+
+
+## ==================================================================
+##                          Targets in sub-makefiles
+## ==================================================================
+
+#GUI demo code
+guidemos:
+	${MAKE} -C gui all
+
+#Internationalisation demo code
+langdemos:
+	${MAKE} -C lang lang
+
+#This is test suite of Informix ESQL driver, not a demo program
+dbtests:
+	${MAKE} -C db
+
+#This is regression test, not demo code
+regressiontests:
+	${MAKE} -C regression
 
 ## ==================================================================
 ##                          Help
@@ -132,7 +144,7 @@ help:
 ## ==================================================================
 
 
-clean: clean.sub
+clean:
 	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae \
 	hello hello2 hello_db test_build filetest *.hlp *.exe *.stackdump *.exe \
 	*.err *.c torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl \
@@ -142,6 +154,9 @@ clean: clean.sub
 clean.sub:
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	${MAKE} -C regression clean
+	${MAKE} -C db clean
+	${MAKE} -C lang clean
+	${MAKE} -C gui clean
 endif
 
 # ============================== EOF ================================

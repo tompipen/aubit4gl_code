@@ -23,11 +23,13 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.3 2002-04-24 08:12:21 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-09-09 06:51:01 afalout Exp $
 #
 
+ROOT    =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 
 
 ## ==================================================================
@@ -47,6 +49,7 @@ CFORM			= form4gl
 CFLAGS 			= -O
 LIBS 			=
 MAKEFLAGS 		=""
+AMAKE           =${SH} ${ROOT}/bin/amake
 
 ## ==================================================================
 ##                        Source and object files
@@ -69,7 +72,7 @@ FORMS.frm	=${FILES.per:.per=.frm}
 ## ==================================================================
 
 all:
-	@echo "specify target: misql.4ge misql.4gi or misql.4ae"
+	@echo "specify target: misql.4ge misql.4gi misql.4ae or use.amake"
 
 #Informix-4gl C-code
 misql.4ge: $(BINS4GE) ${FORMS.frm}
@@ -83,17 +86,11 @@ misql.4gi: $(BINS4GI) ${FORMS.frm}
 forms: ${FORMS.frm}
 
 
-
 misql.4ae: ${FILES.ao} ${FILES.afr}
-#	4glpc coxxc04.4gl -c -o coxxc04.ao
-#	4glpc coxxq01.4gl -c -o coxxq01.ao
-#	4glpc coxxx03.4gl -c -o coxxx03.ao
-#	4glpc misql.4gl -c -o misql.ao
-#	4glpc *.per ${FILES.ao} -o misql.4ae
 	4glpc ${FILES.ao} -o $@
 
-amake:
-	amake misql.mk
+use.amake:
+	${AMAKE} misql.mk
 
 ## ==================================================================
 ##                        Clean

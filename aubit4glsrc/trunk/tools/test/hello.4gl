@@ -6,6 +6,7 @@ define bxxx record
 	a integer,
 	b integer
 end record
+define a char(40)
 
 let axxx=1
 menu "Hello test"
@@ -15,6 +16,10 @@ menu "Hello test"
 		display "   Hello  World   " at 2,2 attribute(cyan,reverse)
         sleep 2
 		close window w1
+
+    command "prompt" "Prompt for user name"
+		prompt "Enter your name :" for a
+		display "Hello ",a clipped
 
 	command "form" "Open a form "
 		#display "Form"

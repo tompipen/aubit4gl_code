@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.60 2002-09-08 09:41:06 afalout Exp $
+# $Id: Makefile-common.in,v 1.61 2002-09-09 06:51:01 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -49,6 +49,8 @@ AUBIT_VERSION=@AUBIT_VERSION@
 AUBIT_BUILD=@AUBIT_BUILD@
 COMPILE_DATE=@COMPILE_DATE@
 TARGET=@target@
+
+SUBDIR:=$(shell pwd)
 
 ## ==================================================================
 ##                    Read configuration file(s)
@@ -368,11 +370,14 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 	FCOMPILE	=${AUBIT_SRC_ROOT}/bin/fcompile
 	MKMESS      =${AUBIT_SRC_ROOT}/bin/mkmess
 	FGLPCEXEC	=${SH} ${AUBIT_SRC_ROOT}/bin/4glpc
+	MCOMPILE	=${AUBIT_SRC_ROOT}/bin/mcompile
 else
 	FCOMPILE	=aubit fcompile
 	MKMESS      =aubit mkmess
 	FGLPCEXEC	=aubit 4glpc
+	MCOMPILE	=aubit mcompile
 endif
+
 
 #install location:
 ifdef COMSPEC
@@ -622,6 +627,14 @@ xx%.def: $(DLLOBJS)
 xx%.dll.a: $(DLLOBJS)
 	dlltool --export-all --output-exp $@ $^
 
+%mak: Makefile.in
+	cd ${AUBITDIR} && CONFIG_FILES=$(SUBDIR)/Makefile CONFIG_HEADERS= $(SH) ./config.status
+
+
+#Cannot be here because it's a targer - not a rule
+#allmk: all.Makefile
+#all.Makefile:
+#	cd ${AUBITDIR} && $(SH) ./config.status
 
 ## ==================================================================
 ##                    Install/deinstall

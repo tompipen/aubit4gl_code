@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.4 2002-08-19 10:17:23 afalout Exp $
+# $Id: a4gl_API_sql.h,v 1.5 2002-09-09 06:51:01 afalout Exp $
 #
 */
 
@@ -108,7 +108,7 @@ define it in any case? */
 	int 	A4GLSQL_get_columns 	(char *tabname, char *colname, int *dtype, int *size);
 	void    A4GLSQL_set_status 		(int a, int sql);
 	int     A4GLSQL_close_cursor 	(char *cname);
-	
+
 	int 	A4GLSQL_execute_implicit_sql	(struct s_sid *sid);
 	int 	A4GLSQL_execute_sql_from_ptr 	(char *pname, int ni, char **ibind);
 	int 	A4GLSQL_execute_implicit_select (struct s_sid *sid);
@@ -125,6 +125,9 @@ define it in any case? */
 
 	int 	A4GLSQL_fill_array		(int mx, char **arr1, int szarr1,
 		char **arr2, int szarr2, char *service, int mode, char *info);
+
+	// used only in Informix ESQL plug-in
+	int A4GLSQL_close_connection(void);
 
 
 #endif /* ifndef DLSQLDEF_INCL */
