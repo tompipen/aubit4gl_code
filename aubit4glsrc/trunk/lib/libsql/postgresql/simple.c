@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.9 2004-03-14 10:40:58 afalout Exp $
+# $Id: simple.c,v 1.10 2004-03-23 13:10:22 mikeaubury Exp $
 #*/
 
 
@@ -392,12 +392,11 @@ fixtype (char *type, int *d, int *s)
 void *
 A4GLSQL_get_validation_expr(char *tabname,char *colname) 
 {
-//EXEC SQL BEGIN DECLARE SECTION;
 char buff[300];
 char val[65];
 char *ptr=0;
-//EXEC SQL END DECLARE SECTION;
-int cnt;
+int nrows=0;
+int a;
 
     A4GL_debug ("Ooops - A4GLSQL_get_validation_expr not implemented in simple PG plug-in");
 	return 0;
@@ -407,27 +406,43 @@ int cnt;
 	
 	
 	
-	/*
-	
-	sprintf(buff,
-		"select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'",
-		acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
-	EXEC SQL PREPARE p_get_val FROM :buff;
-	if (sqlca.sqlcode!=0) return 0;
-	EXEC SQL DECLARE c_get_val CURSOR FOR p_get_val;
-	if (sqlca.sqlcode!=0) return 0;
-	EXEC SQL OPEN c_get_val ;
-	if (sqlca.sqlcode!=0) return 0;
+	sprintf(buff, "select attrval from %s where attrname='INCLUDE' and tabname='%s' and colname='%s'", acl_getenv("A4GL_UPSCOL_VAL"),tabname,colname);
 
-	while (1) {
-		EXEC SQL FETCH c_get_val INTO  :val;
-		if (sqlca.sqlcode!=0) break;
+
+  res = PQexec (con, buff);
+
+
+  switch (PQresultStatus (res))
+    {
+    case PGRES_COMMAND_OK:
+    case PGRES_TUPLES_OK:
+      	nrows = PQntuples (res);
+      	A4GL_debug ("Returns %d fields", nfields);
+
+    case PGRES_EMPTY_QUERY:
+    case PGRES_COPY_OUT:
+	case PGRES_COPY_IN:
+	case PGRES_BAD_RESPONSE:
+	case PGRES_NONFATAL_ERROR:
+	case PGRES_FATAL_ERROR:
+  	A4GL_set_errm (tabname);
+  	A4GL_exitwith ("Unexpected postgres return code\n");
+	return 0;
+    }
+
+  if (!nrows) {
+	return 0;
+  }
+
+  for (a=0;a<nrows;a++) {
+		strcpy(val,PQgetvalue(res,a,0));
 		ptr=A4GL_add_validation_elements_to_expr(ptr,val);
-		// Process it...
-	}
-	return ptr;
+
+  }
+  PQclear(res);
+
+  return ptr;
 	
-	*/
 }
 
 

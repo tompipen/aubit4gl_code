@@ -169,6 +169,28 @@ up_or_down :
 	| KWDOWN_BY INT_VALUE {sprintf($<str>$,"-%s",$<str>2);}
 	| KWUP {strcpy($<str>$,"1");} 
 	| KWDOWN {strcpy($<str>$,"-1");}
+	| KWUP_BY variable {
+  		int a;
+  		a=scan_variable($<str>2)&15;
+  		if (a!=1&&a!=2) {
+    		a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
+    		YYERROR;
+    		/* error processing */;
+  		}
+  		sprintf($<str>$,"%s",fgl_add_scope($<str>2,0));
+	}
+	| KWDOWN_BY variable {
+  		int a;
+  		a=scan_variable($<str>2)&15;
+  		if (a!=1&&a!=2) {
+    		a4gl_yyerror("Only INTEGER/SMALLINT variables may be here");
+    		YYERROR;
+    		/* error processing */;
+  		}
+  		sprintf($<str>$,"%s",fgl_add_scope($<str>2,0));
+	}
+
+
 ;
 
 op_help : {strcpy($<str>$,"");} | HELP INT_VALUE

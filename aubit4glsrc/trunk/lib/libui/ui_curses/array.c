@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.30 2004-03-19 19:24:53 mikeaubury Exp $
+# $Id: array.c,v 1.31 2004-03-23 13:10:22 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.30 2004-03-19 19:24:53 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.31 2004-03-23 13:10:22 mikeaubury Exp $";
 
 
 
@@ -927,7 +927,7 @@ int orig_set=0;
 
 
 
-void UILIB_A4GL_acli_scroll(char *arr,int n,int dir) {
+void UILIB_A4GL_acli_scroll_ap(int n,va_list *ap) {
 struct s_form_dets *f;
 int a;
 int srec_no;
@@ -942,12 +942,23 @@ int mno;
 
 int dim;
 int nfields;
+int dir;
+char *arr;
+arr=va_arg(*ap,char *);
+
+if (n<0) {
+        dir=-1;
+        n=0-n;
+} else {
+        dir=1;
+}
+
 
 
 if (n>1) {
 	int cnt;
 	for (cnt=0;cnt<n;cnt++) {
-	     UILIB_A4GL_acli_scroll(arr,1,dir);
+	     A4GL_acli_scroll(dir,arr,0,0,0);
         }
 	return;
 }

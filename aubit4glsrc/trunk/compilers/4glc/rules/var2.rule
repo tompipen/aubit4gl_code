@@ -113,6 +113,7 @@ var_ident_ibind_ss :  var2_as_string
 | var2_as_string THRU var2_as_string {
 char buff[256];
 char was_str[40000];
+char lstr[1024];
 int z = 0,a = 0;
 strcpy(was_str,"");
 printf("THRU : %s %s\n",$<str>1,$<str>3);
@@ -124,10 +125,13 @@ a=get_bind_cnt('i');
 printf("get_bind_cnt=%d\n",a);
 z=add_bind('i',buff);
 z-=a;
-for (a=0;a<z;a++)  {
-         if (strlen(was_str)) {strcat(was_str,",");}
-         strcat(was_str,"?");
-}
+
+strcpy(was_str,A4GL_set_var_sql(doing_declare,z));
+//for (a=0;a<z;a++)  {
+         //if (strlen(was_str)) {strcat(was_str,",");}
+	 //strcat(was_str,A4GL_set_var_sql(doing_declare,1));
+//}
+
 
 
 	/* split_record(buff,&v_r,&v_1,&v_2);
@@ -142,16 +146,20 @@ for (a=0;a<z;a++)  {
 			a=get_bind_cnt('i');
 			z=add_bind('i',buff);
 			z-=a;
+			if (strlen(was_str)) {strcat(was_str,",");}
+			strcat(was_str,A4GL_set_var_sql(doing_declare,z));
         	}
 
-		for (a=0;a<z;a++)  {
-			if (strlen(was_str)) {strcat(was_str,",");}
-         		strcat(was_str,"?");
-		}
+		//for (a=0;a<z;a++)  {
+			//if (strlen(was_str)) {strcat(was_str,",");}
+         		//strcat(was_str,"?");
+		//}
 		v_loop=get_next_variable(v_r,v_loop,v_2);
 	}
 */
-	$<sql_string>$=strdup(was_str);
+
+
+$<sql_string>$=strdup(was_str);
 }
 ;
 

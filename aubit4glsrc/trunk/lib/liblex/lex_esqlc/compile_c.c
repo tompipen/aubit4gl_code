@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.150 2004-03-19 19:24:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.151 2004-03-23 13:10:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.150 2004-03-19 19:24:52 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.151 2004-03-23 13:10:22 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -3308,7 +3308,7 @@ static char buff[256];
 void
 print_scroll (char *flds, char *updown)
 {
-  printc ("A4GL_acli_scroll(%s,%s);\n", flds, updown);
+  printc ("A4GL_acli_scroll(%s,%s,0,0);\n", updown,flds);
 }
 
 
