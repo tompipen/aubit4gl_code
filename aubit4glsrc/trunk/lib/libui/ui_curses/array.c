@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.18 2003-12-03 12:23:24 mikeaubury Exp $
+# $Id: array.c,v 1.19 2003-12-09 11:23:44 mikeaubury Exp $
 #*/
 
 /**
@@ -318,7 +318,7 @@ disp_loop (struct s_disp_arr *arr)
   struct s_form_dets *form;
   int a;
   int redisp;
-  int acckey;
+  //int acckey;
   FORM *mform;
   int act_as;
   A4GL_chkwin();
@@ -326,6 +326,7 @@ disp_loop (struct s_disp_arr *arr)
   form = arr->currform;
   m_lastkey = 0;
   A4GL_set_array_mode ('D');
+  abort_pressed=0;
 
 #ifdef DEBUG
   {
@@ -342,32 +343,44 @@ disp_loop (struct s_disp_arr *arr)
 
 draw_arr (arr, 2, arr->arr_line);
 draw_arr (arr, -1, arr->arr_line);
-//pos_form_cursor(mform);
-
-
-//A4GL_mja_wrefresh (currwin);
 
 #ifdef DEBUG
   {
     A4GL_debug ("FORM=%p", mform);
   }
 #endif
+
   if (arr->cntrl != 0)
     {
+	A4GL_debug("Got some cntrl to do.. %d",arr->cntrl);
       a = arr->cntrl;
+	A4GL_debug("Got some cntrl to do.. %d",arr->cntrl);
       arr->cntrl = 0;
     }
   else
     {
 	//A4GL_zrefresh();
-      A4GL_reset_processed_onkey ();
-      a = A4GL_getch_win ();
-      A4GL_debug("Got a as %x\n",a);
-      m_lastkey = a;
+	arr->processed_onkey=0;
+        a = A4GL_getch_win ();
+        arr->cntrl=-400;
+	arr->processed_onkey=a;
+        m_lastkey = a;
+        A4GL_debug("Got a as %x (%d)\n",a,a);
+	if (a!=-1 && !abort_pressed) return -90;
+	else return 0;
     }
 
 
-
+  if (a==-400) {
+        A4GL_debug("Got a as %x last time\n",arr->processed_onkey);
+	if (arr->processed_onkey!=0) {
+        	A4GL_debug("Got a as %x last time - and it wasn't handled\n",arr->processed_onkey);
+		a=arr->processed_onkey;
+		arr->processed_onkey=0;
+	}  else {
+		return -1;
+	}
+  }
   redisp = 0;
   act_as=a;
 
@@ -532,7 +545,7 @@ draw_arr (arr, -1, arr->arr_line);
 		break;
 
     case -100:
-	if (!A4GL_has_processed_onkey()) {
+	if (!arr->processed_onkey) {
 		A4GL_debug("Is accept!");
       		return 0;			/* ACCEPT */
 	}
@@ -542,7 +555,7 @@ draw_arr (arr, -1, arr->arr_line);
     case 26:			/* control-z */
       return 0;
     }
-  return -90;
+  return -99;
 }
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.50 2003-12-04 19:06:12 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.51 2003-12-09 11:23:44 mikeaubury Exp $
 #
 */
 
@@ -2007,10 +2007,12 @@ print_display_form (char *s, char *a)
  */
 void
 print_display_array_p1 (char *arrvar, char *srec, char *scrollfield,
-			char *attr)
+			char *attr,void *v_input_attr)
 /* void print_display_array_p1 (char *arrvar, char *srec, char *attr) */
 {
   int cnt;
+  struct input_array_attribs *ptr_input_attr;
+  ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printcomment ("/* Display array */\n");
   printc ("{int _fld_dr;\nchar _dispio[%d];\n",
 	  sizeof (struct s_disp_arr) + 10);

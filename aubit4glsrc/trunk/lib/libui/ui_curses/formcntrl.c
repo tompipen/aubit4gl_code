@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.36 2003-10-26 19:12:03 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.37 2003-12-09 11:23:44 mikeaubury Exp $
 #*/
 
 /**
@@ -390,7 +390,7 @@ process_control_stack (struct s_screenio *sio)
       if (sio->fcntrl[a].state == 75)
 	{
 	  	new_state = 50;
-  	  	if (!A4GL_has_processed_onkey()) {
+  	  	if (sio->processed_onkey!=0) {
 			A4GL_proc_key_input (sio->fcntrl[a].extent, sio->currform->form, sio);
 		}
 		rval=-1;
@@ -841,9 +841,9 @@ A4GL_form_loop (void *vs,int init)
 //}
 A4GL_mja_pos_form_cursor (mform);
 
-  A4GL_reset_processed_onkey ();
 // Wait for a key..
   a = A4GL_getch_win ();
+  s->processed_onkey=a;
   m_lastkey = a;
   A4GL_set_last_key (a);
      A4GL_clr_error_nobox("A4GL_form_loop");

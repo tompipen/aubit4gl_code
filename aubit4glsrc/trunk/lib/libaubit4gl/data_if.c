@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.21 2003-11-12 17:36:10 mikeaubury Exp $
+# $Id: data_if.c,v 1.22 2003-12-09 11:23:44 mikeaubury Exp $
 #
 */
 
@@ -103,6 +103,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
     void *fcntrl;
     int fcntrl_cnt;
     int attrib;
+	int processed_onkey;
   };
 
   struct s_s_screenio_1 *val;
@@ -133,6 +134,19 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
 	  return (void *) 1;
 	}
     }
+  if (strcmp (name, "processed_onkey") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->processed_onkey;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->processed_onkey);
+      if (mode == GETSETSET)
+	{
+	  val->processed_onkey = (int) var;
+	  return (void *) 1;
+	}
+    }
+
 
   if (strcmp (name, "currform") == 0)
     {
@@ -342,6 +356,8 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
     int count;
     int display_attrib;
     int scr_dim;
+	int curr_line_is_new;
+	int processed_onkey;
   };
 
   struct s_s_inp_arr_1 *val;
@@ -361,6 +377,19 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
     }
 
   val = (struct s_s_inp_arr_1 *) ptr;
+
+  if (strcmp (name, "processed_onkey") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->processed_onkey;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->processed_onkey);
+      if (mode == GETSETSET)
+	{
+	  val->processed_onkey = (int) var;
+	  return (void *) 1;
+	}
+    }
 
 
   if (strcmp (name, "mode") == 0)
@@ -811,6 +840,9 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
     void *f;
     void *field;
     int h;
+	int insmode;
+	int processed_onkey;
+
   };
 
   struct s_s_prompt_1 *val;
@@ -841,6 +873,19 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
 	  return (void *) 1;
 	}
     }
+  if (strcmp (name, "processed_onkey") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->processed_onkey;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->processed_onkey);
+      if (mode == GETSETSET)
+	{
+	  val->processed_onkey = (int) var;
+	  return (void *) 1;
+	}
+    }
+
 
   if (strcmp (name, "mode") == 0)
     {
@@ -1234,6 +1279,8 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
     void *binding;
     int nbind;
     int cntrl;
+	int attribute;
+	int processed_onkey;
   };
 
   struct s_s_disp_arr_1 *val;
@@ -1250,6 +1297,19 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
     }
 
   val = (struct s_s_disp_arr_1 *) ptr;
+
+  if (strcmp (name, "processed_onkey") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->processed_onkey;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->processed_onkey);
+      if (mode == GETSETSET)
+	{
+	  val->processed_onkey = (int) var;
+	  return (void *) 1;
+	}
+    }
 
   if (strcmp (name, "no_fields") == 0)
     {

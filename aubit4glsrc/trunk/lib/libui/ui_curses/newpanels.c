@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.76 2003-11-28 09:46:24 mikeaubury Exp $
+# $Id: newpanels.c,v 1.77 2003-12-09 11:23:45 mikeaubury Exp $
 #*/
 
 /**
@@ -1401,7 +1401,7 @@ A4GL_getch_swin (WINDOW * window_ptr)
     {
       return A4GL_get_gui_char ();
     }
-  A4GL_reset_processed_onkey();
+  //A4GL_reset_processed_onkey();
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
   A4GL_set_abort (0);
   a=A4GL_readkey();

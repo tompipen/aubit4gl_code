@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.114 2003-12-04 19:30:40 mikeaubury Exp $
+# $Id: compile_c.c,v 1.115 2003-12-09 11:23:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -806,7 +806,7 @@ print_continue_loop (int n, char *cmd_type)
   if (strcmp (cmd_type, "INPUT") == 0 || strcmp (cmd_type, "CONSTRUCT") == 0)
     {
       printc
-	("if (_fld_dr==-95) {A4GL_req_field(&_inp_io,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n");
+	("if (_fld_dr==-95) {A4GL_req_field(&_sio,_inp_io_type,'0',\"0\",0,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n");
       printc ("_fld_dr= -1;\n");
     }
 
@@ -843,7 +843,7 @@ print_exit_loop (int type, int n)
     }
   if (type == 'P')
     {
-      printc ("SET(\"s_prompt\",_p,\"mode\",1);\n");
+      printc ("SET(\"s_prompt\",_sio,\"mode\",1);\n");
     }
   if (type == 0)
     {
@@ -1802,7 +1802,7 @@ void
 print_getfldbuf (char *fields)
 {
   printc ("{int _retvars;\n");
-  printc ("_retvars=A4GL_fgl_getfldbuf(_inp_io,_inp_io_type,%s,0,0);\n",
+  printc ("_retvars=A4GL_fgl_getfldbuf(_sio,_inp_io_type,%s,0,0);\n",
 	  fields);
   start_bind ('i', 0);
 }
@@ -1867,12 +1867,12 @@ print_field_func (char type, char *name, char *var)
     }
 
   if (type == 'I')
-    printc ("A4GL_push_int(A4GL_fgl_infield(_inp_io,_inp_io_type,%s,0,0));",
+    printc ("A4GL_push_int(A4GL_fgl_infield(_sio,_inp_io_type,%s,0,0));",
 	    name);
 
   if (type == 'T')
     printc
-      ("A4GL_push_int(A4GL_fgl_fieldtouched(_inp_io,_inp_io_type,%s,0,0));",
+      ("A4GL_push_int(A4GL_fgl_fieldtouched(_sio,_inp_io_type,%s,0,0));",
        name);
 
 
@@ -2113,7 +2113,7 @@ print_construct_2 (char *driver)
     }
   printc ("\n}\n");
   pop_blockcommand ("CONSTRUCT");
-  printc (" A4GL_push_constr(&_inp_io);\n ");
+  printc (" A4GL_push_constr(&_sio);\n ");
   printc (" A4GL_pop_params(ibind,1);");
   printc ("}\n");
 }
@@ -2143,26 +2143,25 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
   k = print_bind ('i');
   ccc = print_constr ();
   printc
-    ("int _fld_dr= -100;char *fldname;char _inp_io[%d]; char _inp_io_type='C';\n",
-     sizeof (struct s_screenio) + 10);
+    ("int _fld_dr= -100;char *fldname;char _sio[%d]; char _inp_io_type='C'; char *_sio_kw=\"s_screenio\";\n", sizeof (struct s_screenio) + 10);
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
   printc ("if (_fld_dr== -100) {\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
-  printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%d);\n", cattr);
+  printc ("SET(\"s_screenio\",_sio,\"vars\",ibind);\n");
+  printc ("SET(\"s_screenio\",_sio,\"novars\",%d);\n", ccc);
+  printc ("SET(\"s_screenio\",_sio,\"attrib\",%d);\n", cattr);
   printc
-    ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d);\n", MODE_CONSTRUCT);
+    ("SET(\"s_screenio\",_sio,\"currform\",A4GL_get_curr_form(1));\n");
+  printc ("SET(\"s_screenio\",_sio,\"currentfield\",0);\n");
+  printc ("SET(\"s_screenio\",_sio,\"currentmetrics\",0);\n");
+  printc ("SET(\"s_screenio\",_sio,\"constr\",constr_flds);\n");
+  printc ("SET(\"s_screenio\",_sio,\"mode\",%d);\n", MODE_CONSTRUCT);
   if (byname == 1)
     {
       printc (" /* byname */");
 
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),");
+	("SET(\"s_screenio\",_sio,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio,\"field_list\"),(void *)GET(\"s_screenio\",_sio,\"currform\"),");
       print_field_bind_constr ();
       printc (" ,0));\n");
     }
@@ -2170,12 +2169,12 @@ print_construct_3 (int byname, char *constr_str, char *fld_list, char *attr,
     {
       printc (" /* not byname */");
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	("SET(\"s_screenio\",_sio,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio,\"field_list\"),(void *)GET(\"s_screenio\",_sio,\"currform\"),%s,0));\n",
 	 fld_list);
     }
 
   printc
-    ("{int _sf; _sf=A4GL_set_fields(&_inp_io); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
+    ("{int _sf; _sf=A4GL_set_fields(&_sio); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
   printc ("_fld_dr= -1;\n");
 }
 
@@ -2212,7 +2211,7 @@ void
 print_onkey_1 (char *key_list_str)
 {
   printc ("if (ON_KEY(\"%s\")) {\n", key_list_str);
-  printc ("A4GL_processed_onkey();\n");
+  printc ("A4GL_processed_onkey_v2(_sio_kw,_sio);\n");
 }
 
 /**
@@ -2361,22 +2360,24 @@ print_display_form (char *s, char *a)
  * @param attr The attributes
  */
 void
-print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr)
+print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr, void *v_input_attr)
 {
   int cnt;
+  struct input_array_attribs *ptr_input_attr;
+  ptr_input_attr = (struct input_array_attribs *) v_input_attr;
   printcomment ("/* Display array */\n");
-  printc ("{int _fld_dr;\nchar _dispio[%d];\n",
+  printc ("{int _fld_dr;\nchar _sio[%d];char *_sio_kw=\"s_disp_arr\";\n",
 	  sizeof (struct s_disp_arr) + 10);
   cnt = print_arr_bind ('o');
-  printc ("SET(\"s_disp_arr\",_dispio,\"no_arr\",A4GL_get_count());\n");
-  printc ("SET(\"s_disp_arr\",_dispio,\"binding\",obind);\n");
-  printc ("SET(\"s_disp_arr\",_dispio,\"nbind\",%d);\n", cnt);
-  printc ("SET(\"s_disp_arr\",_dispio,\"srec\",0);\n");
+  printc ("SET(\"s_disp_arr\",_sio,\"no_arr\",A4GL_get_count());\n");
+  printc ("SET(\"s_disp_arr\",_sio,\"binding\",obind);\n");
+  printc ("SET(\"s_disp_arr\",_sio,\"nbind\",%d);\n", cnt);
+  printc ("SET(\"s_disp_arr\",_sio,\"srec\",0);\n");
   printc
-    ("SET(\"s_disp_arr\",_dispio,\"arr_elemsize\",sizeof(%s[0]));\n", arrvar);
+    ("SET(\"s_disp_arr\",_sio,\"arr_elemsize\",sizeof(%s[0]));\n", arrvar);
   printc ("_fld_dr= -1;\n");
   printc ("while (_fld_dr!=0) {\n");
-  printc ("_fld_dr=A4GL_disp_arr(&_dispio,%s,\"%s\",%s,%s);\n", arrvar, srec,
+  printc ("_fld_dr=A4GL_disp_arr(&_sio,%s,\"%s\",%s,%s);\n", arrvar, srec,
 	  attr, scroll);
 }
 
@@ -2923,17 +2924,17 @@ print_next_field (char *s)
 
   if (strcmp (s, "\"+\"") == 0)
     {
-      printc ("A4GL_req_field(&_inp_io,_inp_io_type,'+',%s,0,0);\n", s);
+      printc ("A4GL_req_field(&_sio,_inp_io_type,'+',%s,0,0);\n", s);
     }
   else
     {
       if (strcmp (s, "\"-\"") == 0)
 	{
-	  printc ("A4GL_req_field(&_inp_io,_inp_io_type,'-',%s,0,0);\n", s);
+	  printc ("A4GL_req_field(&_sio,_inp_io_type,'-',%s,0,0);\n", s);
 	}
       else
 	{
-	  printc ("A4GL_req_field(&_inp_io,_inp_io_type,'!',%s,0,0);\n", s);
+	  printc ("A4GL_req_field(&_sio,_inp_io_type,'!',%s,0,0);\n", s);
 	}
     }
 
@@ -3037,7 +3038,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
 {
   int ccc;
   printc
-    ("{int _fld_dr= -100;char *fldname;char _inp_io[%d]; char _inp_io_type='I';",
+    ("{int _fld_dr= -100;char *fldname;char _sio[%d]; char _inp_io_type='I';char *_sio_kw=\"s_screenio\";",
      sizeof (struct s_screenio) + 10);
   printc ("int _forminit=1;\n");
   printc ("while(_fld_dr!=0){\n");
@@ -3048,33 +3049,33 @@ print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
   printc ("/* input by name */");
   ccc = print_bind ('i');
   printc
-    ("SET(\"s_screenio\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
-  printc ("if ((int)GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"attrib\",%d);\n", attr);
-  printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
-  printc ("SET(\"s_screenio\",_inp_io,\"help_no\",%s);\n", helpno);
-  printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
-  printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
+    ("SET(\"s_screenio\",_sio,\"currform\",A4GL_get_curr_form(1));\n");
+  printc ("if ((int)GET(\"s_screenio\",_sio,\"currform\")==0) break;\n");
+  printc ("SET(\"s_screenio\",_sio,\"vars\",ibind);\n");
+  printc ("SET(\"s_screenio\",_sio,\"attrib\",%d);\n", attr);
+  printc ("SET(\"s_screenio\",_sio,\"novars\",%d);\n", ccc);
+  printc ("SET(\"s_screenio\",_sio,\"help_no\",%s);\n", helpno);
+  printc ("SET(\"s_screenio\",_sio,\"currentfield\",0);\n");
+  printc ("SET(\"s_screenio\",_sio,\"currentmetrics\",0);\n");
+  printc ("SET(\"s_screenio\",_sio,\"mode\",%d+%s);\n", MODE_INPUT, defs);
   if (byname)
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),");
+	("SET(\"s_screenio\",_sio,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio,\"field_list\"),(void *)GET(\"s_screenio\",_sio,\"currform\"),");
       print_field_bind (ccc);
       printc
-	(",0)); if ((int)GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
+	(",0)); if ((int)GET(\"s_screenio\",_sio,\"nfields\")==-1) break;\n");
     }
   else
     {
       printc
-	("SET(\"s_screenio\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_inp_io,\"field_list\"),(void *)GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	("SET(\"s_screenio\",_sio,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_screenio\",_sio,\"field_list\"),(void *)GET(\"s_screenio\",_sio,\"currform\"),%s,0));\n",
 	 fldlist);
       printc
-	("if ((int)GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
+	("if ((int)GET(\"s_screenio\",_sio,\"nfields\")==-1) break;\n");
     }
   printc
-    ("{int _sf; _sf=A4GL_set_fields(&_inp_io); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
+    ("{int _sf; _sf=A4GL_set_fields(&_sio); A4GL_debug(\"_sf=%%d\",_sf);if(_sf==0) break;\n}\n");
   printc ("_fld_dr= -1;\n");
 }
 
@@ -3101,64 +3102,64 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("*/");
   printcomment ("/* input */\n");
   printc ("{int _fld_dr= -100;\nchar *fldname;\nint _forminit=1;");
-  printc ("char _inp_io[%d];char _inp_io_type='A';\n",
+  printc ("char _sio[%d];char _inp_io_type='A';char *_sio_kw=\"s_inp_arr\";\n",
 	  sizeof (struct s_inp_arr) + 10);
   cnt = print_arr_bind ('o');
   printc ("while (_fld_dr!=0) {\n");
   printc ("if (_fld_dr== -100) {\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"no_arr\",A4GL_get_count());\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"binding\",obind);\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"nbind\",%d);\n", cnt);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"srec\",0);\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"scr_dim\",0);\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"help_no\",%s);\n", helpno);
+  printc ("SET(\"s_inp_arr\",_sio,\"no_arr\",A4GL_get_count());\n");
+  printc ("SET(\"s_inp_arr\",_sio,\"binding\",obind);\n");
+  printc ("SET(\"s_inp_arr\",_sio,\"nbind\",%d);\n", cnt);
+  printc ("SET(\"s_inp_arr\",_sio,\"srec\",0);\n");
+  printc ("SET(\"s_inp_arr\",_sio,\"scr_dim\",0);\n");
+  printc ("SET(\"s_inp_arr\",_sio,\"inp_flags\",%d);\n", inp_flags);
+  printc ("SET(\"s_inp_arr\",_sio,\"help_no\",%s);\n", helpno);
   printc
-    ("SET(\"s_inp_arr\",_inp_io,\"arr_elemsize\",sizeof(%s[0]));\n", arrvar);
+    ("SET(\"s_inp_arr\",_sio,\"arr_elemsize\",sizeof(%s[0]));\n", arrvar);
   printc
-    ("SET(\"s_inp_arr\",_inp_io,\"arr_size\",sizeof(%s)/sizeof(%s[0]));\n",
+    ("SET(\"s_inp_arr\",_sio,\"arr_size\",sizeof(%s)/sizeof(%s[0]));\n",
      arrvar, arrvar);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"currform\",A4GL_get_curr_form(1));\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n", inp_flags);
-  printc ("if ((int)GET(\"s_inp_arr\",_inp_io,\"currform\")==0) break;\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"currentfield\",0);\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"currentmetrics\",0);\n");
-  printc ("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
+  printc ("SET(\"s_inp_arr\",_sio,\"currform\",A4GL_get_curr_form(1));\n");
+  printc ("SET(\"s_inp_arr\",_sio,\"inp_flags\",%d);\n", inp_flags);
+  printc ("if ((int)GET(\"s_inp_arr\",_sio,\"currform\")==0) break;\n");
+  printc ("SET(\"s_inp_arr\",_sio,\"currentfield\",0);\n");
+  printc ("SET(\"s_inp_arr\",_sio,\"currentmetrics\",0);\n");
+  printc ("SET(\"s_inp_arr\",_sio,\"mode\",%d+%s);\n", MODE_INPUT, defs);
 
   if (ptr_input_attr->curr_row_display)
-    printc ("SET(\"s_inp_arr\",_inp_io,\"curr_display\",%s);\n",
+    printc ("SET(\"s_inp_arr\",_sio,\"curr_display\",%s);\n",
 	    ptr_input_attr->curr_row_display);
   else
-    printc ("SET(\"s_inp_arr\",_inp_io,\"curr_display\",0);\n");
+    printc ("SET(\"s_inp_arr\",_sio,\"curr_display\",0);\n");
 
 
   if (ptr_input_attr->count)
     {
-      printc ("SET(\"s_inp_arr\",_inp_io,\"count\",%s);\n",
+      printc ("SET(\"s_inp_arr\",_sio,\"count\",%s);\n",
 	      ptr_input_attr->count);
       printc ("A4GL_push_long(%s); aclfgl_set_count(1);\n",
 	      ptr_input_attr->count);
     }
   else
-    printc ("SET(\"s_inp_arr\",_inp_io,\"count\",-1);\n");
+    printc ("SET(\"s_inp_arr\",_sio,\"count\",-1);\n");
 
   if (ptr_input_attr->maxcount)
-    printc ("SET(\"s_inp_arr\",_inp_io,\"maxcount\",%s);\n",
+    printc ("SET(\"s_inp_arr\",_sio,\"maxcount\",%s);\n",
 	    ptr_input_attr->maxcount);
   else
-    printc ("SET(\"s_inp_arr\",_inp_io,\"maxcount\",-1);\n");
+    printc ("SET(\"s_inp_arr\",_sio,\"maxcount\",-1);\n");
 
-  printc ("SET(\"s_inp_arr\",_inp_io,\"allow_insert\",%d);\n",
+  printc ("SET(\"s_inp_arr\",_sio,\"allow_insert\",%d);\n",
 	  ptr_input_attr->allow_insert);
-  printc ("SET(\"s_inp_arr\",_inp_io,\"allow_delete\",%d);\n",
+  printc ("SET(\"s_inp_arr\",_sio,\"allow_delete\",%d);\n",
 	  ptr_input_attr->allow_delete);
 
 
   printc
-    ("SET(\"s_inp_arr\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),(void *)GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
+    ("SET(\"s_inp_arr\",_sio,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_sio,\"field_list\"),(void *)GET(\"s_inp_arr\",_sio,\"currform\"),\"%s.*\",0,0));\n",
      srec);
   printc ("_fld_dr= -1;continue;\n");
-  sprintf (buff2, "A4GL_inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs,
+  sprintf (buff2, "A4GL_inp_arr(&_sio,%s,\"%s\",%s,_forminit);\n", defs,
 	   srec, attr);
   return buff2;
 }
@@ -3177,7 +3178,7 @@ char *
 A4GL_get_formloop_str (int type)
 {
   if (type == 0)		/* Input, Input by name */
-    return "A4GL_form_loop(&_inp_io,_forminit)";
+    return "A4GL_form_loop(&_sio,_forminit)";
 
   return "";
 }
@@ -3817,10 +3818,10 @@ print_undo_use (char *s)
 void
 print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout)
 {
-  printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
-  printc ("A4GL_start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
+  printc ("{char _sio[%d];int _fld_dr;char *_sio_kw=\"s_prompt\";\n", sizeof (struct s_prompt));
+  printc ("A4GL_start_prompt(&_sio,%s,%s,%s,%s);\n", a1, a2, a3, a4);
   printc
-    ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_p,%d);\n",
+    ("while ((int)GET(\"s_prompt\",_sio,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_sio,%d);\n",
      timeout);
 }
 

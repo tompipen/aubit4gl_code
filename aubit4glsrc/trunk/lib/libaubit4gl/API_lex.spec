@@ -205,7 +205,7 @@ print_display char* fmt,char* expr,char* attr -> void
 print_display_form char* s,char* a -> void
 
 /* void print_display_array_p1 (char *arrvar, char *srec, char *scroll,char *attr) */
-print_display_array_p1 char* arrvar,char* srec,char* scroll,char* attr -> void
+print_display_array_p1 char* arrvar,char* srec,char* scroll,char* attr,void* iattr -> void
 
 /* void print_display_array_p2 () */
 print_display_array_p2 -> void

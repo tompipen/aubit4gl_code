@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.11 2003-11-28 09:46:24 mikeaubury Exp $
+# $Id: ui.c,v 1.12 2003-12-09 11:23:44 mikeaubury Exp $
 #
 */
 
@@ -576,6 +576,12 @@ int ls;
     return s;
 }
 
+
+/* This is a bad kludge - moved to the scren IO portions
+   so it doesn't overlap
+*/
+
+/*
 int processed_onkey;
 
 void A4GL_processed_onkey() {
@@ -589,7 +595,22 @@ void A4GL_reset_processed_onkey() {
 int A4GL_has_processed_onkey() {
 	return processed_onkey;
 }
+*/
 
+
+
+
+void A4GL_processed_onkey_v2(char *iot,char *base) {
+int *ptr;
+	A4GL_debug("In A4GL_processed_onkey_v2");
+	ptr=GETPTR(iot,base,"processed_onkey");
+	if (ptr==0) {
+		A4GL_debug("Darn - no processed_onkey %s (%p)",iot,base);
+	} else {
+		A4GL_debug("Processed key... %d in %s @ %p",*ptr,iot,base);
+		*ptr=0;
+	}
+}
 
 
 

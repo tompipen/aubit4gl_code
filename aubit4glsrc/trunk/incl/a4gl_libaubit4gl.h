@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.102 2003-11-28 09:46:11 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.103 2003-12-09 11:23:44 mikeaubury Exp $
 #
 */
 
@@ -380,7 +380,7 @@
 #define AFT_ROW  			(_fld_dr==-11)
 #define BEFORE_INP  			(_fld_dr==-99)
 #define AFTER_INP  			(_fld_dr==-95)
-#define ON_KEY(zzz) 			(_fld_dr==-90&&A4GL_chk_iskey(zzz))
+#define ON_KEY(zzz) 			(_fld_dr==-90&&A4GL_chk_iskey(_sio,_sio_kw,zzz))
 
 #define set_status(a) 			A4GL_set_status(a,0)
 
@@ -1493,6 +1493,7 @@ void A4GL_display_at (int n, int a);
     struct s_formcontrol *fcntrl;
     int fcntrl_cnt;
     int attrib;
+    int processed_onkey;
   };
 
   typedef struct s_screenio  Tscreenio;
@@ -1513,6 +1514,7 @@ void A4GL_display_at (int n, int a);
     int nbind;
     int cntrl;
     int attribute;
+    int processed_onkey;
   };
 
   struct s_inp_arr
@@ -1557,6 +1559,7 @@ void A4GL_display_at (int n, int a);
     int display_attrib;
     int scr_dim;
     int curr_line_is_new;
+    int processed_onkey;
   };
 
 
@@ -1573,6 +1576,7 @@ void A4GL_display_at (int n, int a);
     void *field;
     int h;
 	int insmode;
+    int processed_onkey;
   };
 
   //void *A4GL_get_curr_form (int warn_if_no_form);	/* in API_ui.c libtui/newpanels.c libgui/input.c */

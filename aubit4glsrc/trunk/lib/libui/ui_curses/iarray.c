@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.55 2003-10-26 19:12:03 mikeaubury Exp $
+# $Id: iarray.c,v 1.56 2003-12-09 11:23:45 mikeaubury Exp $
 #*/
 
 /**
@@ -612,8 +612,8 @@ iarr_loop (struct s_inp_arr *arr)
 
       A4GL_mja_pos_form_cursor (mform);
       abort_pressed = 0;
-      A4GL_reset_processed_onkey ();
       a = A4GL_getch_win ();
+      arr->processed_onkey=a;
       if (abort_pressed)
 	{
 	  a = -1;
@@ -1930,7 +1930,7 @@ process_control_stack (struct s_inp_arr *arr)
 	{
 	  //struct struct_scr_field *fprop;
 	  new_state = 25;
-	  if (!A4GL_has_processed_onkey ())
+	  if (arr->processed_onkey!=0)
 	    {
 	      A4GL_debug ("process_key_press");
 		if (field_opts(arr->currentfield)&O_BLANK) {

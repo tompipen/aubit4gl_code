@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.30 2003-11-26 08:56:19 mikeaubury Exp $
+# $Id: variables.c,v 1.31 2003-12-09 11:23:40 mikeaubury Exp $
 #
 */
 
@@ -1544,7 +1544,12 @@ isvartype (char *s, int mode)
 {
   struct variable *v;
   v = find_variable_ptr (s);
-
+  if(v==0) {
+	extern char *yytext;
+	set_yytext(s);
+	a4gl_yyerror("Variable not found");
+	return 0;
+  }
   if (mode == 1)
     {				// Isarray
       return v->is_array;

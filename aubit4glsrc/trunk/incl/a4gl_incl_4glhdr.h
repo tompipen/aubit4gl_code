@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4glhdr.h,v 1.28 2003-10-11 08:41:38 afalout Exp $
+# $Id: a4gl_incl_4glhdr.h,v 1.29 2003-12-09 11:23:44 mikeaubury Exp $
 */
 
 /**
@@ -65,7 +65,7 @@ extern "C"
 #define AFT_ROW  (_fld_dr==-11)
 #define BEFORE_INP  (_fld_dr==-99)
 #define AFTER_INP  (_fld_dr==-95)
-#define ON_KEY(zzz)  (_fld_dr==-90&&A4GL_chk_iskey(zzz))
+#define ON_KEY(zzz)  (_fld_dr==-90&&A4GL_chk_iskey(_sio,_sio_kw,zzz))
 //#define set_status(a) set_status(a,0)
 #define DEF_ASS(uass,d) char * uass[d]={(char *)-1}
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.13 2003-08-15 18:35:44 mikeaubury Exp $
+# $Id: screen.c,v 1.14 2003-12-09 11:23:44 mikeaubury Exp $
 #*/
 
 /**
@@ -131,15 +131,18 @@ A4GL_find_attribute (struct s_form_dets *f, int field_no)
 
 
 int
-A4GL_chk_iskey (char *keys)
+A4GL_chk_iskey (char *base,char *iot,char *keys)
 {
   char *k;
   char s[256];
+  int processed_onkey;
 
+   processed_onkey=GET(iot,base,"processed_onkey");
 
 // Has our key already been handled somewhere ?
 //
-if (A4GL_has_processed_onkey()) {
+if (processed_onkey==0) {
+        A4GL_debug("In A4GL_processed_onkey_v2");
 	A4GL_debug("Already handled...");
 	return 0; 
 }

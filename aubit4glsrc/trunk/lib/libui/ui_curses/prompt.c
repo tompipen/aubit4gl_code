@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.33 2003-12-04 19:31:16 mikeaubury Exp $
+# $Id: prompt.c,v 1.34 2003-12-09 11:23:45 mikeaubury Exp $
 #*/
 
 /**
@@ -357,8 +357,8 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
   	pos_form_cursor (mform);
 	abort_pressed=0;
 	was_aborted=0;
-  	A4GL_reset_processed_onkey();
   	a=A4GL_real_getch_swin (p);
+        prompt->processed_onkey=a;
 	A4GL_debug("Read character... %d",a);
   	A4GL_clr_error_nobox("prompt");
 	prompt_last_key=a;
@@ -379,7 +379,7 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
 		abort_pressed=1;
 		//A4GL_error_nobox("ABORT 2",0);
 	}
-	if (!A4GL_has_processed_onkey()) {
+	if (prompt->processed_onkey!=0) {
 		a=prompt_last_key;
 	} else {
 		prompt_last_key=0;

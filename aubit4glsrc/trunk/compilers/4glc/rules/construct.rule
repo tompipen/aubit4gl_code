@@ -22,13 +22,13 @@ constr_rest:
 BY_NAME variable ON constr_col_list opt_defs op_help opt_attributes
 {
 	print_construct_3(1,$<str>2,0,$<str>7,atoi($<str>7));
-	strcpy($<str>$,"A4GL_form_loop(&_inp_io[0],_forminit)"); /* FIXME */
+	strcpy($<str>$,"A4GL_form_loop(&_sio[0],_forminit)"); /* FIXME */
 	reset_constr();
 }
 | variable ON constr_col_list opt_defs FROM fld_list op_help opt_attributes
 {
 	print_construct_3(0,$<str>1,$<str>6,$<str>8,atoi($<str>8));
-	strcpy($<str>$,"A4GL_form_loop(&_inp_io[0],_forminit)"); /* FIXME */
+	strcpy($<str>$,"A4GL_form_loop(&_sio[0],_forminit)"); /* FIXME */
 	reset_constr();
 }
 ;
