@@ -526,8 +526,8 @@ function_call_expr2:
 		$<ptr>$=append_expr($<ptr>4,$<str>$);
 		inc_counter();
 		}
-| identifier COLON COLON identifier OPEN_BRACKET {
-        sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>4);
+| identifier DOUBLE_COLON identifier OPEN_BRACKET {
+        sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>3);
 	debug("NEWFORMAT : %s\n",$<str>$);
         A4GLSQL_set_status(0,0);
         new_counter();
@@ -537,12 +537,12 @@ function_call_expr2:
 } CLOSE_BRACKET {
 	char buff[256];
         char *ptr;
-        strcpy(buff,$<str>6);
+        strcpy(buff,$<str>5);
         ptr=strchr(buff,',');
         *ptr=0;
         ptr++;
-	sprintf($<str>$,"{int _retvars;\n_retvars=call_4gl_dll(%s,%s,%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");pop_args(_retvars);push_null();}\n}\n}\n", buff,ptr,atoi($<str>8), lastlineno,infilename);
-	$<ptr>$=append_expr($<ptr>7,$<str>$);
+	sprintf($<str>$,"{int _retvars;\n_retvars=call_4gl_dll(%s,%s,%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);chk_err(%d,\"%s\");pop_args(_retvars);push_null();}\n}\n}\n", buff,ptr,atoi($<str>7), lastlineno,infilename);
+	$<ptr>$=append_expr($<ptr>6,$<str>$);
 }
 
 ;

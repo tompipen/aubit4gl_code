@@ -493,7 +493,7 @@ define_section  {
 }
 pdf_report_section 
 {
-print_variables();
+//print_variables();
 resize_paper(&pdf_rep_struct);
 	print_report_2(1,$<str>11);
 debug("SET rordcnt=%d (%s)",rordcnt,$<str>11);

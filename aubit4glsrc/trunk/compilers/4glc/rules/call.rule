@@ -84,8 +84,8 @@ CLOSE_BRACKET opt_return {
 	print_returning();
 	print_end_call_shared();
 }
-   | identifier COLON COLON identifier  OPEN_BRACKET {
-	sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>4);
+   | identifier DOUBLE_COLON identifier  OPEN_BRACKET {
+	sprintf($<str>$,"\"%s\",\"%s\"",$<str>1,$<str>3);
 	A4GLSQL_set_status(0,0);
 	new_counter();
 	}
@@ -95,13 +95,13 @@ CLOSE_BRACKET opt_return {
 CLOSE_BRACKET opt_return {
 	char buff[256];
 	char *ptr;
-	debug("STR6 = %s",$<str>6);
-	strcpy(buff,$<str>6);
+	debug("STR6 = %s",$<str>5);
+	strcpy(buff,$<str>5);
 	ptr=strchr(buff,',');
 	*ptr=0;
 	ptr++;
-        print_expr ((struct expr_str *)$<ptr>7);  
-	print_call_shared(buff,ptr,atoi($<str>8));
+        print_expr ((struct expr_str *)$<ptr>6);  
+	print_call_shared(buff,ptr,atoi($<str>7));
 	print_returning();
 	print_end_call_shared();
 }
