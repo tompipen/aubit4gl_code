@@ -16104,7 +16104,7 @@ insql=0;strcpy(yyval.str,yyvsp[0].str);}
   case 1455:
 #line 7122 "fgl.yacc"
     {
-			print_exec_sql(yyvsp[0].str);
+			print_exec_sql(convstrsql(yyvsp[0].str));
 			printf("Warning: Informix specific SQL @ line %d\n",yylineno);
 			strcpy(yyval.str,"InfxSpecificSql");
 	}

@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.129 2004-05-19 15:10:00 mikeaubury Exp $
+# $Id: 4glpc,v 1.130 2004-06-08 18:20:17 mikeaubury Exp $
 #
 
 ########################################################################
@@ -446,6 +446,13 @@ then
 else
 	COMPCC=""
 fi
+
+if [ "$A4GL_COMPAT_MODE" = "Y" ]
+then
+	echo "COMPAT MODE..."
+	COMPCC="-I$AUBITDIR/incl/compat"
+fi
+
 
 #old_incl is obsolete:
 #if [ "$OLD_INCL" != "0" ] #OLD_INCL is set in Makefile-common
@@ -1354,6 +1361,11 @@ fi
 #-lFORM/MENU/MSG_xxx is here temporary, untill this lib is dlopen() enabled:
 #FGLLIBS_COMMON="-laubit4gl -lFORM_$A4GL_FORMTYPE -lMENU_$A4GL_MENUTYPE -lMSG_$A4GL_MSGTYPE"
 FGLLIBS_COMMON="-laubit4gl"
+if [ "$A4GL_NEED_COMPAT" = "1" ]
+then
+	FGLLIBS_COMMON="$FGLLIBS_COMMON -ldecimal"
+fi
+
 
 if [ "$COMSPEC" = "" ]
 then

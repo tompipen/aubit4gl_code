@@ -32,15 +32,18 @@ define
 	mv_namespace 		char(256),
 	mv_output 		char(256),
 	mv_compile_4gl		char(256),
-	mv_compile_4gl_opts		char(256),
+	mv_compile_4gl_opts	char(256),
 	mv_compile_c 		char(256),
 	mv_compile_c_opts 	char(256),
+	mv_compile_c_debug 	char(256),
 	mv_compile_pec 		char(256),
 	mv_compile_pec_opts 	char(256),
 	mv_preprocess 		char(256),
 	mv_preprocess_opts	char(256),
 	mv_link 		char(256),
 	mv_link_opts 		char(256),
+	mv_link_debug 		char(256),
+	mv_dll_opts 		char(256),
 	mv_include 		char(512),
 	mv_libs			char(512)
 
@@ -81,6 +84,7 @@ define lv_pack char(256)
 			mv_preprocess_opts,
 			mv_show_errtail,
 			mv_link,
+			mv_dll_opts,
 			mv_link_opts 		to null
 
 	initialize mv_newest_obj to null
@@ -93,7 +97,7 @@ define lv_pack char(256)
 	let mv_make_dll=0
 	let mv_map=0
 	let mv_noerrcode=0
-	let mv_shared=0
+	let mv_shared=1
 	let mv_stacktrace=1
 	let mv_system4gl=0
 	let mv_verbose=0
@@ -118,6 +122,7 @@ define lv_pack char(256)
 
 	LET mv_compile_c	=fgl_getenv("A4GL_C_COMP")
 	LET mv_compile_c_opts	=fgl_getenv("A4GL_C_OPTS")
+	LET mv_compile_c_debug	=fgl_getenv("A4GL_C_DEBUG")
 
 	LET mv_compile_pec	=fgl_getenv("A4GL_EC_COMP")
 	LET mv_compile_pec_opts	=fgl_getenv("A4GL_EC_OPTS")
@@ -127,6 +132,7 @@ define lv_pack char(256)
 
 	LET mv_link		=fgl_getenv("A4GL_LINK")
 	LET mv_link_opts	=fgl_getenv("A4GL_LINK_OPTS")
+	LET mv_dll_opts		=fgl_getenv("A4GL_DLL_OPTS")
 
 	LET mv_stage="OBJ0?"
 
@@ -142,7 +148,7 @@ define lv_pack char(256)
 	end if
 
 	if mv_compile_4gl is null or mv_compile_4gl matches " " then
-		let mv_compile_4gl		="4glc"
+		let mv_compile_4gl	="4glc"
 	end if
 
 	if mv_link is null or mv_link matches " " then
@@ -150,16 +156,27 @@ define lv_pack char(256)
 	end if
 
 	if mv_link_opts is null or mv_link_opts matches " " then
-		let mv_link_opts="-L",fgl_getenv("AUBITDIR") clipped,"/lib"
+		let mv_link_opts	="-L",fgl_getenv("AUBITDIR") clipped,"/lib"
 	end if
 		
+	if mv_dll_opts is null or mv_dll_opts matches " " then
+		let mv_dll_opts		="--shared "
+	end if
 
 	if mv_compile_c is null or mv_compile_c matches " " then
 		let mv_compile_c	="gcc"
 	end if
 
+	if mv_compile_c_debug is null or mv_compile_c_debug matches " " then
+		let mv_compile_c_debug	="-g"
+	end if
+
+	if mv_link_debug is null or mv_link_debug matches " " then
+		let mv_link_debug	="-g"
+	end if
+
 	if mv_compile_pec is null or mv_compile_pec matches " " then
-		let mv_compile_pec	="esql"
+		let mv_compile_pec	="esql -e "
 	end if
 
 	if mv_preprocess is null or mv_preprocess matches " " then
@@ -170,6 +187,7 @@ define lv_pack char(256)
 	if mv_compile_pec_opts is null then let mv_compile_pec_opts=" " end if
 
 	LET mv_lextype=fgl_getenv("A4GL_LEXTYPE")
+
 	if mv_lextype is null or mv_lextype matches " " then
 		LET mv_lextype="C"
 	else
@@ -178,6 +196,14 @@ define lv_pack char(256)
 			IF mv_lexdialect is null or mv_lexdialect matches " " then
 				LET mv_lexdialect="INFORMIX"
 			END IF
+
+
+			# This should be somewhere else...
+			LET mv_compile_c="esql"
+			LET mv_link="esql"
+
+
+
 		end if
 	end if
 
@@ -197,6 +223,8 @@ DEFINE lv_type CHAR(40)
 DEFINE lv_output_type CHAR(20)
 DEFINE lv_output char(255)
 DEFINE lv_cnt integer
+
+
 
   LET lv_num_args=num_args()
   IF lv_num_args=0 then
@@ -253,7 +281,7 @@ DEFINE lv_cnt integer
 
 	# Does it look like a shared library ?
 	let lv_type=generate_ext("DLL")
-	if lv_arg matches "*.so" or lv_arg matches lv_type then # Its a library
+	if lv_arg matches "*.so" or lv_arg matches lv_type or mv_make_dll then # Its a library
 		LET lv_output_type="DLL"
 	end if
 
@@ -353,6 +381,7 @@ DEFINE lv_cnt integer
 		WHEN "-o"			let a=a+1 let mv_output=arg_val(a) continue for
 
 		WHEN "-c"			let mv_stage="OBJ" continue for
+		WHEN "-e"			let mv_stage="C" continue for
 
 		WHEN "--compile-4gl-only"	let mv_stage="EC" continue for
 		WHEN "--compile-only"		let mv_stage="OBJ" continue for
@@ -375,6 +404,7 @@ DEFINE lv_cnt integer
 
 		WHEN "--verbose"		let mv_verbose=mv_verbose+1 continue for
 		WHEN "-V"			let mv_verbose=mv_verbose+1 continue for
+
 		WHEN "-V1"			let mv_verbose=1 continue for
 		WHEN "-V2"			let mv_verbose=2 continue for
 		WHEN "-V3"			let mv_verbose=3 continue for
@@ -384,8 +414,15 @@ DEFINE lv_cnt integer
 		WHEN "--silent"			let mv_verbose=0 continue for
 		WHEN "-q"			let mv_verbose=0 continue for
 
-		WHEN "--shared"			let mv_shared=1 continue for
-		WHEN "--static"			let mv_shared=0 continue for
+		WHEN "--shared"			
+						display "--shared is depreciated - use '--use-shared' instead"
+						let mv_shared=1 continue for
+		WHEN "--static"			
+						display "--static is depreciated - use '--use-static' instead"
+						let mv_shared=0 continue for
+
+		WHEN "--use-shared"			let mv_shared=1 continue for
+		WHEN "--use-static"			let mv_shared=0 continue for
 
 		WHEN "--system4gl"		let mv_system4gl=1 continue for
 		WHEN "-4"			let mv_system4gl=1 continue for
@@ -410,8 +447,14 @@ DEFINE lv_cnt integer
 		WHEN "--nomap"			let mv_map=0 continue for
 		WHEN "--make-compile"		let mv_makecompile=1 continue for
 
+		WHEN "-g"			let mv_debug=1 continue for
 		WHEN "--debug"			let mv_debug=1 continue for
-		WHEN "--as-dll"			let mv_make_dll=1 continue for
+
+		WHEN "--as-dll"			let mv_make_dll=1 let mv_stage="DLL" 
+						if mv_output="" or mv_output is null then
+							let mv_output="a.out",get_ext("DLL")
+						end if
+						continue for
 		WHEN "-X4glc"			let a=a+1 let mv_compile_4gl_opts=mv_compile_4gl_opts clipped," " ,arg_val(a) continue for
 		WHEN "-Xlinker"			let a=a+1 let mv_link_opts=mv_link_opts clipped," " ,arg_val(a) continue for
 		WHEN "-Xcompiler"		let a=a+1 let mv_compile_c_opts=mv_compile_c_opts clipped," ",arg_val(a) continue for
@@ -420,6 +463,8 @@ DEFINE lv_cnt integer
 
 		WHEN "--ansi-warn"		call aclfgl_setenv("A4GL_ANSI_WARN","Y")
 		WHEN "--ansi-error"		call aclfgl_setenv("A4GL_ANSI_ERROR","Y")
+		WHEN "--no-ansi-warn"		call aclfgl_setenv("A4GL_ANSI_WARN","N")
+		WHEN "--no-ansi-error"		call aclfgl_setenv("A4GL_ANSI_ERROR","N")
 
 	END CASE
 
@@ -470,6 +515,7 @@ DEFINE lv_cnt integer
 	if lv_arg matches "*.o" 
 	   or lv_arg matches "*.ao" 
 	   or lv_arg matches lv_type then
+		display "A5 :",lv_arg
 		call add_obj(lv_arg)
 		continue for
 	end if
@@ -520,12 +566,25 @@ DEFINE lv_cnt integer
 	call usg()
    end for
 
-   display ""
-   #display "Generate a ",mv_stage
+   if mv_verbose>=3 then
+   	display ""
+   	display "Generate a ",mv_stage
+   end if
 
 
-   if mv_stage="EXE" THEN
-	call run_link(mv_output)
+   if mv_stage="EXE" or mv_stage="DLL" THEN
+	if mv_stage matches "DLL" THEN
+		let mv_make_dll=1
+		if mv_output matches "*.*" then
+	
+			call run_link(mv_output)
+		else
+			let mv_output=mv_output clipped,get_ext("DLL")
+			call run_link(mv_output)
+		end if
+	ELSE
+		call run_link(mv_output)
+	end if
    end if
 
 end main
@@ -538,7 +597,6 @@ define lv_from,lv_to char(5)
 define lv_base char(512)
 define lv_new char(512)
 define lv_new2 char(512)
-
 LET lv_base=lv_fname
 
 code
@@ -557,7 +615,7 @@ LET lv_new=lv_base
 
 
 IF lv_from="4GL"  THEN
-	IF lv_to="EXE" THEN 
+	IF lv_to="EXE" or lv_to="DLL" THEN 
 		CALL make_into(lv_fname,"4GL","OBJ")
 		RETURN
 	END IF
@@ -566,7 +624,7 @@ IF lv_from="4GL"  THEN
 	IF lv_to="C" and mv_lextype="EC" THEN
 		# We want a preprocessed EC not a -> C
 		CALL make_into(lv_fname,"4GL","EC")
-		LET lv_new=lv_base clipped,".ec"
+		LET lv_new=lv_base clipped,get_ext("EC")
 		call run_4glc(lv_fname,lv_new,lv_base)
 		call make_into(lv_new,"EC","PEC")
 		RETURN
@@ -575,25 +633,26 @@ IF lv_from="4GL"  THEN
 
 	CASE lv_to
 		WHEN "C"
-			LET lv_new=lv_base clipped,".c"
+			LET lv_new=lv_base clipped,get_ext("C")
 			call run_4glc(lv_fname,lv_new,lv_base)
 			RETURN
 
 		WHEN "EC"
-			LET lv_new=lv_base clipped,".ec"
+			
+			LET lv_new=lv_base clipped,get_ext("EC")
 			call run_4glc(lv_fname,lv_new,lv_base)
 			RETURN
 
 		WHEN "OBJ"
 			IF mv_lextype="EC" THEN
 				call make_into(lv_fname,"4GL","EC")
-				LET lv_new=lv_base clipped,".ec"
-				LET lv_new2=lv_base clipped,".o"
+				LET lv_new=lv_base clipped,get_ext("EC")
+				LET lv_new2=lv_base clipped,get_ext("OBJ")
 				call make_into(lv_new,"EC","OBJ")
 			ELSE
 				call make_into(lv_fname,"4GL","C")
-				LET lv_new=lv_base clipped,".c"
-				LET lv_new2=lv_base clipped,".o"
+				LET lv_new=lv_base clipped,get_ext("C")
+				LET lv_new2=lv_base clipped,get_ext("OBJ")
 				call make_into(lv_new,"C","OBJ")
 			END IF
 		OTHERWISE
@@ -609,25 +668,25 @@ END IF
 
 
 IF lv_from="C" and lv_to="OBJ" THEN
-	LET lv_new=lv_base clipped,".o"
+	LET lv_new=lv_base clipped,get_ext("OBJ")
 	CALL run_compile(lv_fname,lv_new,lv_base)
 	RETURN
 END IF
 
 IF lv_from="EC" and lv_to="PEC" THEN
-	LET lv_new=lv_base clipped,".c"
+	LET lv_new=lv_base clipped,get_ext("C")
 	CALL run_esql_prec(lv_fname,lv_new,lv_base)
 	RETURN
 END IF
 
 IF lv_from="EC" and lv_to="OBJ" THEN
 	IF mv_esql_to_c_first THEN
-		LET lv_new=lv_base clipped,".c"
+		LET lv_new=lv_base clipped,get_ext("C")
 		CALL make_into(lv_fname,"EC","PEC")
-		LET lv_new=lv_base clipped,".c"
+		LET lv_new=lv_base clipped,get_ext("C")
 		CALL make_into(lv_new,"C","OBJ")
 	ELSE
-		LET lv_new=lv_base clipped,".o"
+		LET lv_new=lv_base clipped,get_ext("OBJ")
 		CALL run_compile_esql(lv_fname,lv_new,lv_base)
 	END IF
 
@@ -732,6 +791,23 @@ end if
 return lv_type
 end function
 
+
+function get_ext(lv_otype)
+define lv_otype,lv_type char(100)
+let lv_type=lv_otype
+let lv_type="A4GL_",lv_type clipped,"_EXT"
+let lv_type=fgl_getenv(lv_type)
+
+if lv_type is null or lv_type matches " " then
+	LET lv_type=".",downshift(lv_otype)
+else
+	let lv_type=lv_type
+end if
+
+return lv_type
+end function
+
+
 ################################################################################
 
 function run_4glc(lv_fname,lv_new,lv_base)
@@ -796,7 +872,7 @@ if mv_system4gl then
 	let lv_runstr=lv_runstr clipped," --system4gl"
 end if
 
-let mv_errfile=lv_base clipped,".err"
+let mv_errfile=lv_base clipped,get_ext("ERR")
 let lv_runstr=lv_runstr clipped," ",lv_fname clipped," 2> ",mv_errfile
 
 if mv_verbose>=2 then
@@ -814,11 +890,28 @@ define p_status integer
 define p_filename char(512)
 define p_runstr char(1024)
 define lv_runstr char(1024)
+define lv_errsize integer
+
 if p_status > 255 then
 	let p_status=p_status/256
 end if
 
-if p_status=0 then return end if
+let lv_errsize=file_size(mv_errfile)
+if lv_errsize<0 then
+	display "Error - unable to find the size of the error file"
+	exit program 99
+end if
+
+if lv_errsize>0 then
+	if p_status=0 then
+		display "Warning : Error file is not empty - but I got no error"
+	end if
+end if
+
+if p_status=0 then 
+	call remove_file(mv_errfile)
+	return 
+end if
 
 display "Error compiling ",p_filename clipped
 if mv_verbose>=1 then
@@ -826,14 +919,15 @@ if mv_verbose>=1 then
 end if
 
 if mv_show_errtail then
-	let lv_runstr="tail -12 ",mv_errfile clipped
-	run lv_runstr clipped
+	call tail_file(mv_errfile,12);
 end if
+
 if mv_noerrcode then
 	exit program p_status
 else
 	exit program
 end if
+
 end function
 
 ################################################################################
@@ -841,8 +935,35 @@ function run_esql_prec(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
+define lv_runstr char(1024)
+define lv_status integer
 
+if mv_verbose>=1 then
 	DISPLAY "ESQL_PREC     :",lv_fname clipped," ",lv_new clipped
+end if
+
+if mv_makecompile then
+	if mv_verbose>=3 then
+		display "Make Compile - checking file times"
+	end if
+	if compare_file_times(lv_fname,lv_new) then
+		if mv_verbose>=2 then
+			display "Make Compile specified - file skipped as ",lv_new clipped, " is newer than ",lv_fname clipped
+		end if
+		return
+	end if
+end if
+
+let mv_errfile=lv_base clipped,get_ext("ERR")
+let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped,
+		" ",lv_fname clipped," 2> ",mv_errfile
+
+if mv_verbose>=2 then
+	display lv_runstr clipped
+end if
+
+run lv_runstr clipped returning lv_status
+call check_exit_status(lv_status,lv_fname,lv_runstr)
 end function
 
 
@@ -854,6 +975,11 @@ define lv_new char(512)
 define lv_base char(512)
 define lv_runstr char(1024)
 define lv_status integer
+
+if mv_verbose>=1 then
+	DISPLAY "RUN_COMPILE     :",lv_fname clipped," ",lv_new clipped
+end if
+
 
 if mv_makecompile then
 	if mv_verbose>=3 then
@@ -868,14 +994,22 @@ if mv_makecompile then
 	end if
 end if
 
-let mv_errfile=lv_base clipped,".err"
-let lv_runstr=mv_compile_c clipped," ",mv_compile_c_opts clipped," ",mv_include clipped," -o ",lv_new clipped,
+let mv_errfile=lv_base clipped,get_ext("ERR")
+
+let lv_runstr=mv_compile_c clipped," ",mv_compile_c_opts clipped," "
+
+if mv_debug then
+	let lv_runstr=lv_runstr clipped," ",mv_compile_c_debug
+end if
+
+let lv_runstr=lv_runstr clipped, " ",mv_include clipped," -o ",lv_new clipped,
 		" -c ",lv_fname clipped," 2> ",mv_errfile
 if mv_verbose>=2 then
 	display lv_runstr clipped
 end if
 run lv_runstr clipped returning lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)
+
 call add_obj(lv_new)
 end function
 
@@ -905,7 +1039,8 @@ end if
 DISPLAY "RUN_COMP_ESQL :",lv_fname clipped," ",lv_new clipped
 
 
-let mv_errfile=lv_base clipped,".err"
+let mv_errfile=lv_base clipped,get_ext("ERR")
+
 let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " -c ",lv_fname clipped," 2> ",mv_errfile
 if mv_verbose>=2 then
         display lv_runstr clipped
@@ -938,25 +1073,41 @@ end if
 
 
 
-let mv_errfile=lv_output clipped,".err"
-let lv_runstr=mv_link clipped," ",mv_link_opts clipped," ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," 2>",mv_errfile clipped
+let mv_errfile=lv_output clipped,get_ext("ERR")
+
+let lv_runstr=mv_link clipped," ",mv_link_opts clipped," "
+
+if mv_make_dll then
+	let lv_runstr=lv_runstr clipped," ",mv_dll_opts
+end if
+
+if mv_debug then
+	let lv_runstr=lv_runstr clipped," ",mv_link_debug
+end if
+
+let lv_runstr=lv_runstr clipped, " ",mv_objects clipped, " -o ",lv_output clipped," ",mv_libs clipped," 2>",mv_errfile clipped
 
 
 if mv_verbose>=2 then
 	display lv_runstr clipped
 end if
 
-display "OBJECTS       : ",mv_objects clipped
+if mv_verbose>=4 then
+	display "OBJECTS       : ",mv_objects clipped
+end if
 run lv_runstr clipped returning lv_status
 
+if mv_verbose>=5 then
 display "Ran command"
+end if
 call check_exit_status(lv_status,lv_output,lv_runstr)
 end function
 
 function add_obj(lv_obj)
 define lv_obj char(256)
-
-	DISPLAY "ADD OBJ : ",lv_obj
+	if mv_verbose>=5 then
+		DISPLAY "ADD OBJ : ",lv_obj
+	end if
 	LET mv_objects=mv_objects clipped," ",lv_obj
 
 	if mv_newest_obj is null then
@@ -970,3 +1121,66 @@ define lv_obj char(256)
 end function
 
 
+function tail_file(mv_file,n)
+define mv_file char(512)
+define n integer
+define a integer
+code
+{
+FILE *f;
+char *ptr;
+A4GL_trim(mv_file);
+f=fopen(mv_file,"r");
+if (f!=0) {
+	fseek(f,0,SEEK_END);
+	a=ftell(f);
+	rewind(f);
+	ptr=malloc(a+1);
+	fread(ptr,a,1,f);
+	fclose(f);
+	while (a) {
+		if (ptr[a]=='\n') {
+			if (n==0) {
+				printf("%s",&ptr[a+1]);
+				break;
+			}
+			n--;
+		}
+		a--;
+	}
+	free(ptr);
+}
+}
+endcode
+end function
+
+
+function file_size(s)
+define s char(512)
+define l integer
+let l=-1
+code
+{
+FILE *f;
+A4GL_trim(s);
+f=fopen(s,"r");
+if (f) {
+	fseek(f,0,SEEK_END);
+	l=ftell(f);
+	fclose(f);
+}
+}
+endcode
+return l
+end function
+
+
+function remove_file(s)
+define s char(512)
+code
+{
+A4GL_trim(s);
+unlink(s);
+}
+endcode
+end function

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.77 2004-05-21 15:45:46 mikeaubury Exp $
+# $Id: conv.c,v 1.78 2004-06-08 18:21:11 mikeaubury Exp $
 #
 */
 
@@ -934,20 +934,22 @@ int
 A4GL_ftodec (void *a, void *z, int size)
 {
   char *eptr;
-  int ndig;
-  int ndec;
-  char buff[65];
+  int h;
+  int t;
+  char buff[650];
   char fmt[16];
-
-  ndig = size >> 8;
-  ndec = size & 0xff;
+  h=size;
+  t = h;
+  h = h / 256;
+  t = t - h * 256;
   errno = 0;
-  A4GL_init_dec (z, ndig, ndec);
+  A4GL_debug ("converting %s to a decimal (%x) %d,%d", A4GL_null_as_null(a), size, h, t);
+  A4GL_init_dec (z, h, t);
 A4GL_debug("ftodec... %lf" ,*(double *)a);
-  if (ndec >= 0)
+  if (t >= 0)
     {
        //set format to the number of digits needed, to force round-off
-      sprintf (fmt, "%%-32.%df", ndec+1);
+      sprintf (fmt, "%%-32.%df", t+1);
 	A4GL_debug("Format=%s",A4GL_null_as_null(fmt));
     }
   else
