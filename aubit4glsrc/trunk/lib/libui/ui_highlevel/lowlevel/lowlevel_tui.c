@@ -16,6 +16,11 @@ static int A4GL_curses_to_aubit_int (int a);
 #include "a4gl_API_lowlevel.h"
 #include <ctype.h>
 
+#ifdef XCURSES
+	extern bool trace_on;
+#endif
+
+
 /*
 
 Curses.h in Aubit tree (taken from Linux) has waddwstr:
@@ -37,7 +42,7 @@ Assuming someone defined _XOPEN_SOURCE_EXTENDED...
 
 My curses.h is:
 
- $Id: lowlevel_tui.c,v 1.41 2004-12-15 06:40:35 afalout Exp $ 
+ $Id: lowlevel_tui.c,v 1.42 2004-12-16 09:11:52 afalout Exp $ 
  #define NCURSES_VERSION_MAJOR 5
  #define NCURSES_VERSION_MINOR 3 
  #define NCURSES_VERSION_PATCH 20030802
@@ -78,7 +83,7 @@ Looks like it was removed in Curses 5.3???!
 #endif
 
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.41 2004-12-15 06:40:35 afalout Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.42 2004-12-16 09:11:52 afalout Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -814,15 +819,8 @@ A4GL_LL_make_window_top (void *w)
   top_panel (w);
 }
 
-
-
-
-
-
 int scr_width = -1;
 int scr_height = -1;
-
-
 
 int
 A4GL_LL_screen_width (void)
@@ -1802,32 +1800,90 @@ A4GL_LL_screen_mode ()
 void
 A4GL_LL_initialize_display ()
 {
-  A4GL_debug ("LL_initialize_display *************************");
+#ifdef DEBUG	
+	A4GL_debug ("LL_initialize_display *************************");
+#endif	
   
   
   /*
+  
+ To use XCurses with an existing curses program, you need to make one
+ change to your code:
+
+ Call XCursesExit() just before exiting from your program. eg.
+
+#ifdef XCURSES
+ XCursesExit();
+#endif
+ exit(0);
+
+ This call is required to enable the child X process to shut down cleanly
+ and free up the shared memory it used.
+  
      To get the most out of XCurses in your curses application you need
       to call Xinitscr() rather than initscr(). This allows you to pass
       your program name and resource overrides to XCurses.
      
       The program name is used as the title of the X window, and for defining X
       resources specific to your program.
+	  
+		Resources may also be passed as a parameter to the Xinitscr() function.
+		The parameter is a string in the form of switches. eg. to set the color
+		"red" to "indianred", and the number of lines to 30, the string passed to 
+		Xinitscr would be:
+		"-colorRed indianred -lines 30"
+		-colorBlack  midnightblue
+	  
   */
   
   	#ifdef XCURSES
-		Xinitscr ();
+		#ifdef DEBUG
+			//trace_on=1;
+			//PDC_debug("Set trace_on=1 from Aubit lowlevel_tui.c\n");
+			A4GL_debug ("calling Xinitscr()");
+		#endif
+		/* PDC_debug defined in PDcurses pdcdebug.c - writes to ./trace file
+		Note that PDcurses need to be compiled with -DPDCDEBUG for most
+		of them to work
+		#ifdef PDCDEBUG
+		   if (trace_on) PDC_debug("%s:shmid_Xcurscr %d shmkey_Xcurscr %d LINES %d COLS %d\n",(XCursesProcess)?"     X":"CURSES",shmid_Xcurscr,shmkey_Xcurscr,LINES,COLS);
+		#endif
+		#ifdef PDCDEBUG
+		   say ("cursesprocess exiting from Xinitscr\n");
+		#endif
+		*/		
+		//Xinitscr is defined in PDcurses initscr.c
+		//returns WINDOW*  stdscr=NULL;  - the default screen window  
+		stdscr=Xinitscr( 0, NULL );  //(argc, argv);
+		#ifdef DEBUG	
+			A4GL_debug ("returned from Xinitscr()");
+		#endif	
 	#else
 		initscr ();
 	#endif
 	
 	
   if (A4GL_isyes(acl_getenv("NO_ALT_SCR"))) {
+	/* 
+	When using some terminals types in curses mode, an alternate screen is employed so that
+	when the application finishes (or otherwise enters line mode), the original screen will 
+	be redisplayed. Setting this option attempts to disable this screen swapping so that the
+	original screen is used for the 4GL display.
+	*/
+	#ifdef DEBUG	
+		A4GL_debug ("calling try_to_stop_alternate_view()");
+	#endif	
+	
   	try_to_stop_alternate_view();
   }
 
   if (has_colors () == FALSE);
   else
     {
+	#ifdef DEBUG	
+		A4GL_debug ("setting up colors...");
+	#endif	
+
       start_color ();
       refresh ();
 	  	#if (! defined(__sun__) && ! defined (__sparc__))	
@@ -1842,12 +1898,32 @@ A4GL_LL_initialize_display ()
 			A4GL_debug ("use_default_colors not available on Solaris/Sparc");
 		#endif
     }
-
+	#ifdef DEBUG	
+		A4GL_debug ("calling cbreak()");
+	#endif	
   cbreak ();
+	#ifdef DEBUG	
+		A4GL_debug ("calling noecho()");
+	#endif	
+  
   noecho ();
+	#ifdef DEBUG	
+		A4GL_debug ("calling nonl()");
+	#endif	
+  
   nonl ();
+	#ifdef DEBUG	
+		A4GL_debug ("calling intrflush()");
+	#endif	
+  
   intrflush (stdscr, TRUE);
   keypad (stdscr, TRUE);
+  
+	#ifdef DEBUG	
+		A4GL_debug ("after call to keypad()");
+	#endif	
+  
+  
   if (has_colors ())
     {
       //start_color ();
@@ -1868,39 +1944,39 @@ A4GL_LL_initialize_display ()
 
 
 #ifdef NCURSES_MOUSE_VERSION
-#ifdef DEBUG
-  A4GL_debug ("Turning Mouse on");
+	#ifdef DEBUG
+		A4GL_debug ("Turning Mouse on");
+	#endif
+	#ifdef WIN32
+		#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
+			#ifdef DEBUG
+				A4GL_debug ("Turning WIN32 mouse on\n");
+			#endif
+			if (A4GL_env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
+		#endif
+	#else
+	  	if (A4GL_env_option_set ("ACL_MOUSE")) {
+			#ifdef DEBUG
+				A4GL_debug ("Turning UNIX mouse on\n");
+			#endif
+			{
+				int mcode;
+				mcode = mousemask (ALL_MOUSE_EVENTS, 0);
+				#ifdef DEBUG
+					A4GL_debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
+				#endif
+			}
+		}
+	#endif
 #endif
-#ifdef WIN32
-#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
-#ifdef DEBUG
-  A4GL_debug ("Turning WIN32 mouse on\n");
-#endif
-  if (A4GL_env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
-#endif
-#else
-  if (A4GL_env_option_set ("ACL_MOUSE"))
-    {
-#ifdef DEBUG
-      A4GL_debug ("Turning UNIX mouse on\n");
-#endif
-      {
-	int mcode;
-	mcode = mousemask (ALL_MOUSE_EVENTS, 0);
-#ifdef DEBUG
-	A4GL_debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
-#endif
-      }
-    }
-#endif
-#endif
-  refresh ();
+
+	refresh ();
+  
+#ifdef DEBUG	
+	A4GL_debug ("LL_initialize_display - done");
+#endif	
+  
 }
-
-
-
-
-
 
 /************* PROMPT IMPLEMENTATION ************/
 

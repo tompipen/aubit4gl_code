@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.35 2004-12-15 07:51:49 afalout Exp $
+# $Id: makefile,v 1.36 2004-12-16 09:11:51 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -113,7 +113,8 @@ endif
 ##                              Curses Options
 ## ==================================================================
 
-PDCURSESX_CFLAGS	=${XCURSES_CFLAGS} -DXCURSES -I${ROOT}/incl -I..
+PDCURSESX_CFLAGS	=${XCURSES_CFLAGS} -DXCURSES -I${ROOT}/incl -I.. \
+	${CWARN} -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H
 
 ifneq "${HAVE_CURSES}" "0"
 	ALL					+=${LIBROOT}/libUI_HL_TUI${SO_EXT} ${LIBROOT}/libUI_HL_TUIN${SO_EXT}
