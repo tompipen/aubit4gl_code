@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.5 2003-10-20 12:18:59 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.6 2004-07-17 09:02:51 mikeaubury Exp $
 #*/
 
 /**
@@ -62,16 +62,6 @@
 
 #include <ctype.h>
 
-#ifdef PORTABLE
-#include <netinet/in.h>
-#else
-#ifndef htonl
-#define htonl(x) (x)
-#define htons(x) (x)
-#define ntohl(x) (x)
-#define ntohs(x) (x)
-#endif
-#endif
 
 /*
 =====================================================================
@@ -158,7 +148,7 @@ input_short (char *name, short *val, int ptr, int isarr)
   int a;
   A4GL_debug ("Input short %s", name);
   a = A4GL_memfile_fread ((char *)val, 1, sizeof (short), (void *)infile);
-  *val = ntohs (*val);
+  *val = a4gl_ntohs (*val);
   return a;
 
 }
@@ -203,7 +193,7 @@ input_long (char *name, long *val, int ptr, int isarr)
   A4GL_debug ("Reading long %s", name);
   a = A4GL_memfile_fread ((char *)val, 1, sizeof (long), (void *)infile);
   A4GL_debug("Got a as %d val=%d (%x)\n",a,*val,*val);
-  *val = ntohl (*val);
+  *val = a4gl_ntohl (*val);
   A4GL_debug ("->Got long %s  as %x\n", name, *val);
   return a;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.1 2004-05-13 14:38:19 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.2 2004-07-17 09:02:51 mikeaubury Exp $
 #*/
 
 /**
@@ -62,18 +62,6 @@
    Not set if we are going to use native integers
  (On some platforms these may be the same, on others they won't be)
 -----------------------------------------------------------------------------
-*/
-/* - moved to libaubit4gl.h
-#ifdef PORTABLE
-	#include <netinet/in.h>
-#else
-	#ifndef htonl
-		#define htonl(x) (x)
-		#define htons(x) (x)
-		#define ntohl(x) (x)
-		#define ntohs(x) (x)
-	#endif
-#endif
 */
 #include <ctype.h>
 
@@ -348,7 +336,7 @@ int
 output_short (char *name, short val, int ptr, int isarr)
 {
   A4GL_debug ("Outputing SHORT %s : 0x%x", name, val);
-  val = htons (val);
+  val = a4gl_htons (val);
   return fwrite (&val, 1, sizeof (val), outfile);
 }
 
@@ -386,7 +374,7 @@ output_long (char *name, long val, int ptr, int isarr)
 {
   int a;
   A4GL_debug ("Outputing LONG %s - 0x%x\n", name, val);
-  val = htonl (val);
+  val = a4gl_htonl (val);
   a = fwrite (&val, 1, sizeof (val), outfile);
   A4GL_debug ("a=%d\n", a);
   return a;
@@ -548,7 +536,7 @@ input_short (char *name, short *val, int ptr, int isarr)
 {
   int a;
   a = fread (val, 1, sizeof (short), infile);
-  *val = ntohs (*val);
+  *val = a4gl_ntohs (*val);
   return a;
 
 }
@@ -583,7 +571,7 @@ input_long (char *name, long *val, int ptr, int isarr)
   /* long n; */
   a = fread (val, 1, sizeof (long), infile);
 
-  *val = ntohl (*val);
+  *val = a4gl_ntohl (*val);
   return a>0;
 }
 

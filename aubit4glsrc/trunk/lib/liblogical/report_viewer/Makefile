@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2004-03-19 11:05:10 afalout Exp $
+# $Id: Makefile,v 1.8 2004-07-17 09:02:51 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -44,7 +44,7 @@ LFLAGS=` pkg-config --libs --cflags gtk+-2.0` -L$(AUBITDIR)/lib -laubit4gl
 ## ==================================================================
 
 ${ROOT}/bin/report_viewer: report_viewer.c main.c ../common/a4gl_lle.o
-	cc -g $^ -o $@ ${LFLAGS} 
+	cc -g $^ -o $@ ${LFLAGS}  -I$(AUBITDIR)/incl
 	
 ## ==================================================================
 ##                              Clean

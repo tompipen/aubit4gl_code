@@ -14,6 +14,7 @@ struct r_report *rep;
 
 #define XWIDTH 10
 #define YHEIGHT 15
+int fake_clicked(int a,int b);
 
 GtkWidget *create_block (int n);
 void msgbox (char *title, char *txt);
@@ -406,7 +407,7 @@ start_lle ()
   gtk_misc_set_alignment (GTK_MISC (l), 0, 0);
   gtk_container_add (GTK_CONTAINER (vbox_in_sw), l);
 
-
+  LR_setup_callback(fake_clicked);
   LR_show_layout_rest (report_internal,vbox_in_sw,rbx,rbs);
 
   gtk_widget_show_all (window);

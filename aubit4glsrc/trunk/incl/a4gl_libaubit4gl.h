@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.128 2004-07-10 09:48:34 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.129 2004-07-17 09:02:49 mikeaubury Exp $
 #
 */
 
@@ -1405,6 +1405,17 @@ void A4GL_display_at (int n, int a);
   int A4GL_get_gui_char (void);
   void A4GL_gui_actmenu (long ld);
 
+
+
+long a4gl_htonl(long x);
+long a4gl_ntohl(long x);
+
+
+short a4gl_htons(long x);
+short a4gl_ntohs(long x);
+
+
+
   /* ============================ function_call_stack.c =================== */
 
   /* ============================ err.c =================================== */
@@ -1900,7 +1911,6 @@ int a4gl_tolower(int n);
 
 
 #if HAVE_NETINET_IN_H
-//fdef PORTABLE
 	#include <netinet/in.h>
 #else
 	#ifndef htonl

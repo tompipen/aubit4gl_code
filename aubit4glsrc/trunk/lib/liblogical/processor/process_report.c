@@ -96,10 +96,55 @@ if (argc-off != 4 && argc-off!=3 )
 			exit(2);
 		}
   } else {
-	if (!RP_default_file(report,errbuff,rbx,rbs)) {
-		printf("No default file could be generated :\n%s\n",errbuff);
-		exit(2);
-	}
+		char default_filter[256];
+		strcpy(default_filter,"");
+		
+		FILE *f=0;
+		/* First off - lets see if we can find a specific filter... */
+		if (report->max_col<=80&&strlen(default_filter)==0)  { 
+			sprintf(default_filter,"%s/lib/default_%s_narrow.lrf",acl_getenv("AUBITDIR"),argv[1+off]); 
+			A4GL_debug("Looking for %s\n",default_filter);
+			f=fopen(default_filter,"r");
+		} 
+
+		if (report->max_col<=132&&f==0) { 
+			sprintf(default_filter,"%s/lib/default_%s_normal.lrf",acl_getenv("AUBITDIR"),argv[1+off]); 
+			A4GL_debug("Looking for %s\n",default_filter);
+			f=fopen(default_filter,"r");
+		}
+
+		if (report->max_col>132&&f==0)  { 
+			sprintf(default_filter,"%s/lib/default_%s_wide.lrf",acl_getenv("AUBITDIR"),argv[1+off]); 
+			A4GL_debug("Looking for %s\n",default_filter);
+			f=fopen(default_filter,"r");
+		}
+
+		/* Finally - try just a standard default */
+		if (f==0)  { 
+			sprintf(default_filter,"%s/lib/default_%s.lrf",acl_getenv("AUBITDIR"),argv[1+off]); 
+			A4GL_debug("Looking for %s\n",default_filter);
+			f=fopen(default_filter,"r");
+		}
+		
+
+		if (f!=0) {
+			fclose(f);
+			A4GL_debug("Found %s\n",default_filter);
+			if (!load_filter_file_header(default_filter, &fin_filter, buff)) {
+				printf("Unable to open filter file : %s\n",buff);
+				exit(2);
+			}
+			if (!RP_load_file(report,fin_filter)) {
+				printf("Unable to open filter file : %s\n",buff);
+				exit(2);
+			}
+		}
+
+
+		if (!RP_default_file(report,errbuff,rbx,rbs)) {
+			printf("No default file could be generated :\n%s\n",errbuff);
+			exit(2);
+		}
   }
 
   // at this point - we've loaded the report, and the backend should have a filter...

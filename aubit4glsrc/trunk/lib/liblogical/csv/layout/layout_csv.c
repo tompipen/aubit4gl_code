@@ -17,7 +17,9 @@ GtkTargetEntry target_entry[] = {
   {DRAG_TARGET_NAME_0, 0, DRAG_TARGET_INFO_0}
 };
 
-int fake_clicked(int a,int b);
+//int fake_clicked(int a,int b);
+
+int (*fake_clicked_ptr)(int a,int b) =0;
 
 GtkTargetEntry target_block[] = {
   {DRAG_TARGET_NAME_1, 0, DRAG_TARGET_INFO_1}
@@ -125,6 +127,11 @@ create_integer_spin_button (void)
   return spinner;
 }
 
+
+void LR_setup_callback(void *p) {
+	fake_clicked_ptr=p;
+}
+
 void
 do_drag_data_received (GtkWidget * widget, GdkDragContext * dc, gint x,
 		       gint y, GtkSelectionData * selection_data, guint info,
@@ -214,7 +221,7 @@ evt_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
 	      printf ("rb=%d entry=%d\n", rb, entry);
 	      if (rb >= 0)
 		{
-		  fake_clicked (rb, entry);
+		  fake_clicked_ptr (rb, entry);
 		}
 	    }
 	}

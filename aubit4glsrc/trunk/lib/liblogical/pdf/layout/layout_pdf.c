@@ -187,3 +187,7 @@ int LR_load_file(void *report, FILE *fin,void *rbx,int rbs) {
 }
 
 
+void LR_setup_callback(void *p) {
+}
+
+

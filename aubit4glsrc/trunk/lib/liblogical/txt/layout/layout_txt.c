@@ -41,4 +41,8 @@ int LR_load_file(void *report, FILE *fin,void *rbx, int rbs) {
 	return 1;
 }
 
+void LR_setup_callback(void *p) {
+//
+}
+
 

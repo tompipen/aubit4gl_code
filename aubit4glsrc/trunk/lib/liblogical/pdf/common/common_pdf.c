@@ -9,9 +9,9 @@ struct pdf_layout layout;
 
 void pdf_default_file() {
 	strcpy(layout.fontname,"Courier");
-	layout.fontsize=8;
-	layout.leftmargin=0;
-	layout.topmargin=0;
+	layout.fontsize		=8;
+	layout.leftmargin	=0;
+	layout.topmargin	=0;
 	layout.paper_type	=PAPER_TYPE_A4;
 	layout.paper_orient	=PAPER_ORIENT_AUTO;
 }

@@ -46,12 +46,12 @@ static int read_int ()
   if (c<254||c==255) return c;
   if (c>=254) {
   	fread (&s, sizeof (s), 1, fin);
-	return ntohs(s);
+	return a4gl_ntohs(s);
   }
 */
 
   fread (&n, sizeof (n), 1, fin);
-  return ntohl(n);
+  return a4gl_ntohl(n);
 }
 
 static char read_char ()

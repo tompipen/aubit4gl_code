@@ -10,3 +10,4 @@ LR_setup_block void* report int b void* evt void* label -> void
 LR_save_file void* report FILE* fout void* rbx int rbs -> int
 LR_load_file void* report FILE* fin void* rbx int rbs -> int
 LR_process_file void* report FILE* fout FILE* filter -> int
+LR_setup_callback void* ptr -> void

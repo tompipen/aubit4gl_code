@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <gtk/gtk.h>
 #include <string.h>
+#include "a4gl_libaubit4gl.h"
 #include "../common/a4gl_lle.h"
 
 struct r_report *report;
@@ -32,7 +33,7 @@ main (int argc, char *argv[])
 
   gtk_init (&argc, &argv);
 
-  printf ("Time    : %s\n", ctime (&report->ctime));
+  //printf ("Time    : %s\n", ctime (&report->ctime));
 
   printf ("Pages : %d maximum lines/page :%d maximum column position:%d\n",
 	  report->max_page, report->max_line, report->max_col);

@@ -15,24 +15,8 @@ Logical Layout Engine header file
 -----------------------------------------------------------------------------
 */
 
-#if (defined (PORTABLE) && ! defined (__MINGW32__)) || (defined (hpux))
-	#include <netinet/in.h>
-#else
-	#ifndef htonl
-		#define htonl(x) (x)
-	#endif
-	#ifndef htons
-		#define htons(x) (x)
-	#endif
-	#ifndef ntohl
-		#define ntohl(x) (x)
-	#endif
-	#ifndef ntohs
-		#define ntohs(x) (x)
-	#endif
-#endif
 
-
+#include "a4gl_libaubit4gl.h"
 
 #define ENTRY_START 1
 #define ENTRY_BLOCK 2

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: amkmessage.c,v 1.10 2004-05-17 15:48:08 mikeaubury Exp $
+# $Id: amkmessage.c,v 1.11 2004-07-17 09:02:49 mikeaubury Exp $
 #*/  
   
 /**
@@ -85,17 +85,6 @@
  (On some platforms these may be the same, on others they won't be)
 -----------------------------------------------------------------------------
 */
-
-#if defined (PORTABLE) && ! defined (__MINGW32__)
-	#include <netinet/in.h>
-#else
-	#ifndef htonl
-		#define htonl(x) (x)
-		#define htons(x) (x)
-		#define ntohl(x) (x)
-		#define ntohs(x) (x)
-	#endif
-#endif
 
 
 
