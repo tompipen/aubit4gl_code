@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.9 2003-09-18 06:13:44 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.10 2003-09-30 14:59:55 mikeaubury Exp $
 #
 */
 
@@ -332,7 +332,11 @@ long orig_date;
 	}
 
 	if (mode=='o') {
-		if (indicat==-1||risnull(CDATETYPE,(void*)infx)||*infx==0) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
+
+#ifdef DIALECT_POSTGRES
+if (*infx==0) indicat=-1;
+#endif
+		if (indicat==-1||risnull(CDATETYPE,(void*)infx)) { A4GL_setnull(DTYPE_DATE,(void *)a4gl,size); return;}
 		A4GL_debug("Got date as : '%d' %x",*infx,*infx);
 		orig_date=*infx;
 		rjulmdy(orig_date,mdy); 				// Get the MDY from informix
