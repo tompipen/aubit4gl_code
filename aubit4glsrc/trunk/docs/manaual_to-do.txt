@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.20 2003-07-21 09:22:08 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.21 2003-08-02 04:19:41 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4276,4 +4276,315 @@ The transfer tool is independent of the database. It's in the src/org/hsqldb/uti
 
 
 ==============================================================================
+
+I've added
+
+	SCHEMA dbname
+
+to aubit4gl...
+
+
+
+On Thursday 17 July 2003 1:00 am, Andrej Falout wrote:
+> I like this Genero "SCHEMA" thingy...
+>
+> There will be other very interesting ideas in Genero - especially  in web
+> services and XML space... Hope they finish it in this century.
+>
+> Just FYI
+>
+> Yours, Andrej Falout, http://falout.org/disclaimer.html
+> Project manager, Aubit project: http://aubit4gl.sf.net
+> Business Data Architect, http://encos.com
+> HTML formatted email sent to me WILL BE DELETED AUTOMATICALLY
+> PLEASE NOTE: afalout<at>xtra.co.nz account will expire soon.
+> Please use andrej<at>falout<dot>org for all correspondence.
+>
+> -----Original Message-----
+> From: owner-fourjs-users@4js.com [mailto:owner-fourjs-users@4js.com]On
+> Behalf Of Michael Horst
+> Sent: Thursday, 17 July 2003 04:46
+> To: fourjs-users@4js.com
+> Subject: Re: [fourjs-users] Re: DATABASE compiler directive
+>
+> Schmid, John wrote:
+> >database development         # These could be in a globals.4gl file.
+>
+> This will force a connection to "development" at startup.
+> It may fail at client side.
+>
+> The only way of making 4gl independent from database name is
+>
+> ----- with Genero:
+> SCHEMA development
+> MAIN
+>     ...
+>   DATABASE MyDeploymentDb
+>     ...
+> END MAIN
+>
+>
+> ----- With BDL and Genero:
+> DATABASE development
+>
+> FUNCTION main()
+>     ...
+>    DATABASE MyDeploymentDb
+>     ...
+> END FUNCTION
+>
+> In both cases fglrun will find main and starts up
+> the same way except
+>
+> # does not make database connect
+> FUNCTION main()
+> END FUNCTION
+>
+> # includes database connect.
+> MAIN
+> END MAIN
+>
+> HIH Michael
+>
+> >define ...
+> >
+> >main
+> >   # Get the actual name from the environment
+> >   let other_db = fgl_getenv("MY_DATABASE")
+> >   database other_db
+> >   ...
+> >end main
+
+
+=====================================================================
+
+http://groups.google.co.nz/groups?dq=&hl=en&lr=&ie=UTF-8&threadm=akipag%24t0m%241%40terabinaries.xmission.com&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8%26group%3Dcomp.databases.informix
+
+
+http://groups.google.co.nz/groups?dq=&hl=en&lr=&ie=UTF-8&threadm=3D6CE406.3040007%40hotmail.com&prev=/groups%3Fhl%3Den%26lr%3D%26ie%3DUTF-8%26group%3Dcomp.databases.informix
+
+=====================================================================
+
+On Saturday 26 July 2003 4:57 am, Andrej Falout wrote:
+> I set up an A4GL_LEXDIALECT=SAPDB. (in 4glc - not in 4glpc)
+>
+> Surprisingly, it compiled everything I tried. Complains only on invalid SQL
+> statements not supported by SAP DB.
+>
+
+> >
+> > Most of the stuff should be very easy now a lot of work has been done for
+> > postgres's ecpg...
+> >
+
+You'll probably find some of the invalid statements were invalid in postgres
+and some work around has been added:
+
+
+A4GL_USE_INDICATOR=YES
+Adds indicators to SQL statements to check for nulls
+
+
+A4GL_ESQL_UNLOAD=YES
+Uses UNLOAD within ESQL if supported
+
+
+A4GL_USE_ALIAS_AS=YES
+Uses the 'AS' keyword for select column aliases , eg
+
+select tabid tid from systables -> select tabid AS 'tid' from systables
+
+
+A4GL_FIXUPDATE=YES
+Rewrites the Update (col1,col2,col3)=(val1,val2,val3) -> update
+col1=val1,col2=val2,col3=val3
+
+
+
+A4GL_SQL_CURRENT_FUNCTION=somename
+When SQL encounters CURRENT  - it calls this function instead with two string
+parameters ('START' to 'END')
+
+select current year to minute from systables where tabid=1 ->
+select somename('year','minute') from systables where tabid=1
+
+
+
+A4GL_OMIT_NO_LOG=YES
+This does not include the ' WITH NO LOG' at the end of a create temp table
+when the original SQL does.
+create temp table a(a integer) WITH NO LOG ->
+	create temp table a(a integer)
+
+
+
+You'll also need to write a a4gl_esql_sapdb.h and edit a4gl_esql.h to include
+it.
+If you don't - it defaults to using informix's version
+
+You'll also need to create an esqlhelper_funcs version to copy between sapdb
+datatypes and aubit datatypes..
+> > The first thing to do is write an esqlhelper_funcs routine (most of which
+> > will be the same as the existing one...)
+
+
+
+===========================================================================
+
+
+I just committed SQLite ODBC driver and native connector plug-in support for Aubit compiler.
+
+http://www.hwaci.com/sw/sqlite/
+
+From the home page:
+
+"SQLite is a C library that implements an embeddable SQL database engine. Programs that link with the SQLite library can have SQL database access without running a separate RDBMS process. The distribution comes with a standalone command-line access program (sqlite) that can be used to administer an SQLite database and which serves as an example of how to use the SQLite library.
+
+SQLite is not a client library used to connect to a big database server. SQLite is the server. The SQLite library reads and writes directly to and from the database files on disk."
+
+This should be the easiest way to get database support for Aubit so far - SQLite is a full SQL database engine (RDBMS) in single shared library. Key advantages over traditional RDBMS like MySQL, PostgreSQL or Informix are:
+
+1) No need to install/configure ANY database engine to use/compile/develop with Aubit compiler - just drop one library file on your system, and you have database engine to use!
+
+2) When using native connectivity to SQLite - no messing with database connectivity - no ODBC, no ESQL/C - nothing to do and nothing to go wrong. When using ODBC, I hope that following provided instructions should be simple enough.
+
+3) You can create self sufficient distribution of your 4GL application - compile your 4GL code with Aubit compiler, add that and Aubit run-time (which will include SQLite engine library) to your package and your users/customers will be able to install and run your app in no time. You can even distribute your app with demo database with demo data.
+
+4) Exchange of databases - SQLite databases are stored in just one file, and this file is portable between systems. This among other applications will be great for debugging.
+
+5) SQLite is EXTREMELY fast, even faster then MySQL
+
+Limitations:
+
+a) See SQLite home page for SQL language limitations. Very few.
+
+b) I did not see this explicitly stated, but I assume that SQLite is a single-user database.
+
+TO-DO:
+
+* Find out why Aubit generates "Error: Could not disconnect from database" when program exits.
+* Test SQL compatibility
+* use $DBPATH to find SQLite .db file, so that user don't have to specify full path & file name in DATABASE statement. Append .db extension automatically. DATABASE 'xyz' should be resolved to <full_path>xyz.db before calling dbopen()
+
+HOW-TO
+------
+
+This instructions are for Linux/Intel, RPM based distributions ONLY.
+
+0) update Aubit source code (from CVS or tgz file once it's refreshed)
+
+1) Only if you wish to use ODBC connection:
+If you are not sure if you have unixODBC or iODBC ODBC manager installed, run "./configure" to find out. Examine it's output, you should see:
+
+Checking for iODBC support:
+checking for main in -liodbc... yes
+
+and/or
+
+Checking for unixODBC support:
+checking for main in -lodbc... yes
+checking for sql.h... yes
+checking for sqlext.h... yes
+checking for odbcinst.h... yes
+
+If you don't, install iODBC or unixODBC manager. SQLite ODBC driver uses there header files to compile, and on top of that, links created ODBC driver library with manager libraries. Don't ask why... Aubit native SQLite plug-in uses ODBC headers from Aubit source code tree, and does not link with anything other then SQLite itself, so you don't need to install anything else.
+
+You can try using "make install.iodbc" and/or "make install.unixodbc"
+
+1b) If you did not allready (in step 1), run ./configure to refresh make files.
+
+2) Install SQLite: "make install.sqlite"
+
+3) Install SQLite ODBC driver: "make install.sqlite.odbc" if you wish to use SQLite ODBC connector.
+
+4) run "./configure". This will check for SQLite and SQLite ODBC driver, create SQLite test database (in tools/aubit.db) and add needed entry in your /etc/odbc.ini - you will need to be user "root" to do that! You should see:
+
+Checking for SQLite library support:
+checking for sqlite... /usr/bin/sqlite
+checking for main in -lsqlite... yes
+checking for sqlite.h... yes
+checking for sqlite_libversion in -lsqlite... yes
+checking for default SQLite database... Created in tools/aubit.db
+
+Checking for SQLite ODBC library support:
+checking for main in -lsqliteodbc... yes
+checking for default SQLite odbc.ini entry... Added
+
+5) run "make clean.all; make" to create Aubit SQLITE ODBC plug-in and compile Aubit source code.
+
+6) run "make install"
+
+7) run "test.sqlite". You should see message:
+
+	"Aubit native connection to SQLite successful."
+
+  If you installed SQLite ODBC, run "test.sqlite.odbc". You should see message:
+
+	"Aubit connection to SQLite via ODBC successful."
+
+Let me know if you don't...
+
+Note: to use SQLite ODBC connection from your 4GL code, you will need to make sure that
+A4GL_LEXTYPE=C and A4GL_SQLTYPE=sqliteodbc when compiling/running your 4GL code.
+
+To use SQLite native connector, set A4GL_LEXTYPE=C and A4GL_SQLTYPE=sqlite (or A4GL_SQLTYPE=sqliteS for statically linked one)
+
+Aubit native SQLite plug-in is built in two variants; dynamically linked against SQLite (libSQL_sqlite.so) and statically with SQLite engine (libSQL_sqliteS.so). Static one is primarily intended for distribution with Aubit binary distros (tgz, rpm and Windows installer).
+
+Note #2: Aubit native SQLite connector plug-in is really a cheat: Aubit ODBC connector is linked together with modified code of SQLite ODBC driver to create it. So Aubit code calls API_sql, which calls Aubit ODBC plug-in code, which calls SQLite ODBC code, which calls SQLite library functions. I could make it a separate plug-in by replacing the ODBC calls with actual code form ODBC driver, but because of the nature of how SQLite works, I can see no motivation to do so.
+
+Some hints:
+
+If your connection via ODBC fails (with a message like "Error: Could not connect to database" from Aubit programs) use "isql" (this is NOT Informix "isql" - it's part of unixODBC package) tool to test your ODBC connection (if you installed unixODBC) or Aubit provide tools in "tools/odbctest"
+
+Use "sqlite" tool to manipulate SQLite databases (see "sqlite -help"). You could also use Aubit provided equivalent of dbaccess, called misql.4ae (see tools/adbaccess) or your favorite ODBC front-end.
+
+Why should you care about Aubit ODBC plug-ins for specific ODBC RDBMS sources, when you can connect to any ODBC source using ODBC managers anyway: Because not everyone will have ODBC manager installed on all systems.
+
+Why should you care about native connectors, when you can connect via ODBC: Because ODBC connectivity, both direct and via ODBC managers will require ODBC driver for particular RDBMS to be installed on the system.
+
+Why should you care about ODBC connectivity when you have native plug-in: because when using native plug-in you will only be able connect to that particular RDBMS at the same time, since Aubit does not have connection management (yet). OTOH, ODBC manager do, so you can open and use connections to different RDBMS at the same time.
+
+Why should you care about any other method of connection to RDBMS when you can use Aubit ESQL/C output to perform connectivity (informix, PostgreSQL and SAP DB): Because code compiled that way will be able to connect ONLY to that RDBMS, and will need full recompile to change back-end RDBMS.
+
+Why should you care about ESQL/C output, when you have native/and or ODBC connectors: because native ESQL/C compilers can work much close to the RDBMS API, allowing target-specific functionality not possible via ODBC or connection library API. For example, by using Aubit PostgreSQL EC output, your code can use most Informix specific SQL statements against PostgreSQL RDBMS (note: requires latest CVS version of PostgreSQL EC compiler (V 3.0), and patched PostgreSQL engine - at the moment, untill 7.4 is released)
+
+============================================================================
+
+PostgreSQL Informix comatibility:
+
+> can you please comment on level of Informix SQL dialect compatibility that PG patched this way will have? Exceptions?
+>
+> Also, what are the chances to get this patches accepted in PG CVS?
+
+We haven't done too much towards dialect compatibility;
+
+update foo set (c1,c2,...) = ( v1, v2, ...) is now supported
+select .... into table is somewhat supported
+some aliases for things like today have been added
+load/unload ala informix have been added
+where current of on a with hold cursor is functional.
+
+much of the compatibility is realized with ecpg.
+
+There still remains a fundamental difference in the way postgres handles
+transactions ( ie MVCC)
+
+some of these patches may never make it into CVS, they likely won't make
+it for 7.4, we were too late.
+
+Dave
+
+> > the major ones are in the tarball, load-HEAD.diff, and wherecur.diff.gz
+> >
+> > I will make a single unified diff and send it to you.
+> >
+> > At this moment there is no license information on them, but they retain
+> > my copyright.
+> >
+> > Dave Cramer <dave@fastcrypt.com>
+> > fastcrypt
+>
+
+==========================================================================
 

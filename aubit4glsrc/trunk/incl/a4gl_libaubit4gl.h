@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.80 2003-08-01 08:32:09 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.81 2003-08-02 04:19:48 afalout Exp $
 #
 */
 
@@ -570,6 +570,7 @@ struct input_array_attribs {
   }
   int_list;
 
+/* moved to a4GL_incl_4gldef.h becuse it's needed in A4GL_API_ui.h
 
   typedef struct ACL_Menu_Opts
   {
@@ -601,7 +602,7 @@ struct input_array_attribs {
     int num_opts;
     int abort_pressed;
     ACL_Menu_Opts *first;
-    ACL_Menu_Opts *last;	/* used for wrapping round */
+    ACL_Menu_Opts *last;	// used for wrapping round
     void *menu_win;
     int curr_page;
     int max_page;
@@ -610,6 +611,8 @@ struct input_array_attribs {
     int attrib;
   }
   ACL_Menu;
+
+*/
 
   typedef struct s_field_geometry
   {

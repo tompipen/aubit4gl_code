@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.50 2003-07-27 17:28:19 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.51 2003-08-02 04:19:48 afalout Exp $
 */
 
 /**
@@ -178,6 +178,48 @@ struct s_constr_list {char *tabname;char *colname;};
 
 	/** 4gl Datetime data type definition */
   typedef struct ival FglInterval;
+
+  typedef struct ACL_Menu_Opts
+  {
+    char opt_title[80];
+    char optkey[80];
+    int optlength;
+    int opt_no;
+    int help_no;
+    int optpos;
+    int attributes;
+    char shorthelp[80];
+    struct ACL_Menu_Opts *next_option;
+    struct ACL_Menu_Opts *prev_option;
+    int page;
+  }
+  ACL_Menu_Opts;
+
+  typedef struct
+  {
+    char menu_title[80];
+    int menu_type;
+    char window_name[20];
+    ACL_Menu_Opts *curr_option;
+    int menu_offset;
+    int mn_offset;
+    int x;
+    int y;
+    int help_no;
+    int num_opts;
+    int abort_pressed;
+    ACL_Menu_Opts *first;
+    ACL_Menu_Opts *last;	/* used for wrapping round */
+    void *menu_win;
+    int curr_page;
+    int max_page;
+    int w;
+    int menu_line;
+    int attrib;
+  }
+  ACL_Menu;
+
+
 
 /* This prototypes should be created by 4glc, in assist.h, but they are not.
 in any case , since the need to exist when compiling 4gl code, they need to be

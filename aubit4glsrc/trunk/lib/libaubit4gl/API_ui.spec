@@ -9,6 +9,7 @@ VARIABLE A4GL_UI
 * Name of the header file to be referenced with #include
 *HEADER_FILE API_ui.h
 
+* don't include a4gl_libaubit4gl.h - a4gl_libaubit4gl.h includes this header!
 /* #include "a4gl_libaubit4gl.h" */
 #include <stdarg.h>
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.132 2003-07-27 06:08:43 afalout Exp $
+# $Id: Makefile-common.in,v 1.133 2003-08-02 04:19:48 afalout Exp $
 #
 
 
@@ -1044,16 +1044,22 @@ AMAKE_INCL_FILES= \
 #As a chain reaction, practically all external Aubit header files become a
 #dependency. Most, if not all, are not really needed and should be removed
 #from installation scripts:
-INCL_HEADERS_EC = a4gl_esql.h  a4gl_esql_infx.h a4gl_esql_postgres.h
+INCL_HEADERS_EC = a4gl_esql.h a4gl_esql_infx.h a4gl_esql_postgres.h
 
-#INCL_HEADERS_EC_REMOVETHIS=a4gl_libaubit4gl.h a4gl_API_lex.h a4gl_API_form.h \
-#	a4gl_API_menu.h a4gl_API_msg.h a4gl_API_packer.h a4gl_API_ui.h \
-#	a4gl_API_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
-#	a4gl_incl_infx.h
+#Here we come aggain  - a4gl_4gl_callable.h requires all of this:
+INCL_HEADERS_EC_REMOVETHIS=a4gl_libaubit4gl.h a4gl_API_lex.h a4gl_API_form.h \
+	a4gl_API_menu.h a4gl_API_msg.h a4gl_API_packer.h a4gl_API_ui.h \
+	a4gl_API_exdata.h a4gl_API_exreport.h a4gl_API_sql.h a4gl_API_rpc.h \
+	a4gl_incl_infx.h a4gl_API_esql.h a4gl_API_help.h
 #	../common/dataio/form_x.x.h
 
-INCL_HEADERS =a4gl_incl_4glhdr.h a4gl_incl_4gldef.h ${INCL_HEADERS_EC} \
-	${INCL_HEADERS_EC_REMOVETHIS}
+#In file included from /opt/aubit4gl/incl/a4gl_API_ui.h:30,
+#/opt/aubit4gl/incl/a4gl_libaubit4gl.h:1358:58: ../common/dataio/form_x.x.h: No such file or directory
+
+
+
+INCL_HEADERS =a4gl_incl_4glhdr.h a4gl_incl_4gldef.h a4gl_4gl_callable.h \
+	${INCL_HEADERS_EC} ${INCL_HEADERS_EC_REMOVETHIS}
 
 
 INCL_FILES	= Makefile-common Makefile-install.mki ${AMAKE_INCL_FILES} ${INCL_HEADERS}

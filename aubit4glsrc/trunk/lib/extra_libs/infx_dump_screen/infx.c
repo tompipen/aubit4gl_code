@@ -1,3 +1,11 @@
+/*
+
+just to help with testing (so one can use the same function to do a screen
+dump for aubit and Informix)
+
+*/
+
+
 #include <stdio.h>
 #include <ncurses.h>
 #include "fglsys.h"
