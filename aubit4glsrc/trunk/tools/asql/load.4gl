@@ -37,13 +37,13 @@ char *colptr[MAXLOADCOLS];
 
 
 
-extern FILE *unloadFile;
 char delims[256];
 char *delim;
 FILE *loadFile=0;
 
 static char *safe_quotes(char *s);
 
+extern FILE *unloadFile;
 
 
 
@@ -62,18 +62,18 @@ int b;
 	unloadFile=fopen(e->fname,"w");
 
 	if (unloadFile==0) {
-		sqlca.sqlcode=-806;
+		set_sqlcode(-806);
 		return 0;
 	}
 
 	raffected=0;
 	display_mode_unload(1);
 	if (execute_select_prepare()) {
-		while (sqlca.sqlcode==0) {
+		while (get_sqlcode()==0) {
 			b=execute_sql_fetch(&raffected);
 			if (b!=0) break;
 		}
-		if (sqlca.sqlcode!=100)  raffected=-1;
+		if (get_sqlcode()!=100)  raffected=-1;
 	} else {
 		raffected=-1;
 	}
@@ -124,7 +124,7 @@ stripnlload (char *s, char delim)
     }
 }
 
-
+#ifdef MOVED
 int asql_load_data(struct element *e) {
 EXEC SQL BEGIN DECLARE SECTION;
 char ins_str[32000];
@@ -141,21 +141,10 @@ int lineno=0;
         strcpy(delim,"|");
 
 	if (loadFile) fclose(loadFile);
-
-        if (e->delim) {
-                if (strlen(e->delim)) {
-                        strcpy(delim,e->delim);
-                }
-        }
-
+        if (e->delim) { if (strlen(e->delim)) { strcpy(delim,e->delim); } }
         loadFile=fopen(e->fname,"r");
-
-        if (loadFile==0) {
-		sqlca.sqlcode=-805;
-                return 0;
-        }
+        if (loadFile==0) { set_sqlcode(-805); return 0; }
 	ok=0;
-
 	while (1) {
       		fgets (loadbuff, LOADBUFFSIZE - 1, loadFile);
 	        if (feof (loadFile)) {
@@ -174,20 +163,16 @@ int lineno=0;
 			strcat(ins_str,smbuff);
 		}
 		strcat(ins_str,")");
-
 		EXEC SQL prepare p_loadit from :ins_str;
 		EXEC SQL execute p_loadit;
-		if (sqlca.sqlcode!=0) {
-			break;
-		}
+		if (get_sqlcode()!=0) { break; }
 	}
 	fclose(loadFile);
 	loadFile=0;
 	return lineno;
-
 }
 
-
+#endif
 static char *safe_quotes(char *s) {
 static char *p=0;
 char *p2=0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.89 2004-06-03 11:33:07 mikeaubury Exp $
+# $Id: esql.ec,v 1.90 2004-07-21 06:36:45 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.89 2004-06-03 11:33:07 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.90 2004-07-21 06:36:45 mikeaubury Exp $";
 #endif
 
 
@@ -1591,6 +1591,7 @@ A4GLSQL_prepare_sql_internal (char *s)
  * @param sid A pointer to the statement information.
  * @return Allways 0
  */
+#ifdef MOVED_TO_LIBAUBIT4GL
 int
 A4GLSQL_add_prepare (char *pname, void *vsid)
 {
@@ -1606,6 +1607,9 @@ sid=vsid;
       return 0;
     }
 }
+#endif
+
+
 
 /**
  * Not used.

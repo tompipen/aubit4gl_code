@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.82 2004-06-14 17:46:26 mikeaubury Exp $
+# $Id: sql.c,v 1.83 2004-07-21 06:36:46 mikeaubury Exp $
 #
 */
 
@@ -1661,6 +1661,8 @@ A4GL_find_prepare2 (char *pname)
   return 0;
 }
 
+
+#ifdef MOVED_TO_LIBAUBIT4GL
 /**
  * Add a prepare statement to the pointer tree.
  *
@@ -1683,6 +1685,7 @@ sid=vsid;
     }
 
 }
+#endif
 
 /**
  * If A4GL_debug was set print Error.

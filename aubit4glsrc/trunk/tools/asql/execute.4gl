@@ -210,16 +210,6 @@ end function
 
 
 code
-int ec_check_and_report_error() {
-	
-	if (sqlca.sqlcode<0) {
-		aclfgl_check_and_report_error(0);
-		return 1;
-	} else {
-		return 0;
-	}
-
-}
 
 
 void set_display_lines() {
@@ -366,7 +356,7 @@ repeat_query: ;
 	A4GL_debug("EXEC Repeat query out=%p\n",out);
 				if (execute_select_prepare()) {
 
-					if (sqlca.sqlcode<0) goto end_query;
+					if (get_sqlcode()<0) goto end_query;
 
 					while (1) {
 					int b;
@@ -417,7 +407,7 @@ A4GL_assertion(out==0,"No output file (2)");
 					if (!execute_select_free()) goto end_query;
 					
 				} else {
-					A4GL_debug("Error with %s - %d",p,sqlca.sqlcode);
+					A4GL_debug("Error with %s - %d",p,get_sqlcode());
 					goto end_query;
 					
 				}
@@ -526,7 +516,7 @@ fclose(f);
 
 
 int isSqlError () {
-	if (sqlca.sqlcode<0) return 1;
+	if (get_sqlcode()<0) return 1;
 	return 0;
 }
 
@@ -702,7 +692,7 @@ return w;
 
 char *get_qry_msg(int qry_type,int n) {
 static char buff[256];
-if (sqlca.sqlcode>=0) {
+if (get_sqlcode()>=0) {
 	if (qry_type<=MAX_QRY) {
 		sprintf(buff,qry_strings[qry_type],n);
 	} else {
@@ -710,11 +700,11 @@ if (sqlca.sqlcode>=0) {
 	}
 } else {
 	char *ptr;
-	A4GL_push_int(sqlca.sqlcode);
+	A4GL_push_int(get_sqlcode());
 	aclfgl_get_db_err_msg(1);
 	ptr=A4GL_char_pop();
 	A4GL_trim(ptr);
-	sprintf(buff,"Error %d : %s",sqlca.sqlcode,ptr);
+	sprintf(buff,"Error %d : %s",get_sqlcode(),ptr);
 	free(ptr);
 }
 	return buff;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql_compatible.ec,v 1.9 2004-07-20 13:51:22 mikeaubury Exp $
+# $Id: esql_compatible.ec,v 1.10 2004-07-21 06:36:46 mikeaubury Exp $
 #
 */
 
@@ -362,7 +362,7 @@ static int processPreStatementBinds(struct s_sid *sid);
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.9 2004-07-20 13:51:22 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql_compatible.ec,v 1.10 2004-07-21 06:36:46 mikeaubury Exp $";
 #endif
 
 
@@ -1909,18 +1909,6 @@ int A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
   }
 }
 
-/**
- * Not used.
- *
- * @param prepared statement name.
- * @param ni Number of binded input parameters.
- * @param The input bind array.
- * @return Allways 0
- */
-int A4GLSQL_execute_sql_from_ptr(char *pname, int ni, char **ibind)
-{
-  return 0;
-}
 
 /**
  * Process the binds of a statement before the execution.

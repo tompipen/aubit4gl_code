@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.25 2004-06-25 13:49:12 mikeaubury Exp $
+# $Id: Makefile,v 1.26 2004-07-21 06:36:46 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -57,10 +57,11 @@ OBJS_C			=lex.yy.o simple_parse.o dir.o
 #Version specific objects
 OBJS_PG_ONLY	=postgres${A4GL_OBJ_EXT}
 OBJS_IFX_ONLY	=infx${A4GL_OBJ_EXT}
+OBJS_GEN_ONLY	=generic${A4GL_OBJ_EXT}
 
 ################
 #All objects that will need celaning, without prefix
-CLEAN_OBJS		=${OBJS_4GL} ${OBJS_PG_ONLY} ${OBJS_IFX_ONLY}
+CLEAN_OBJS		=${OBJS_4GL} ${OBJS_PG_ONLY} ${OBJS_IFX_ONLY} ${OBJS_GEN_ONLY}
 
 ################
 #All objects for Postgres version
@@ -71,6 +72,10 @@ OBJS_PG			=$(addprefix pg_,${OBJS_4GL}) ${OBJS_C} \
 #All objects for Informix version
 OBJS_IFX		=$(addprefix ifx_,${OBJS_4GL}) ${OBJS_C} \
 				$(addprefix ifx_,${OBJS_IFX_ONLY})
+
+
+OBJS_GEN		=$(addprefix gen_,${OBJS_4GL}) ${OBJS_C} \
+				$(addprefix gen_,${OBJS_GEN_ONLY})
 
 ## ==================================================================
 ##                              Options
@@ -98,6 +103,7 @@ ifneq "${IFMX_ESQLC}" "no"
 	ALL			+=asql_i${A4GL_EXE_EXT}
 endif
 
+ALL			+=asql_g${A4GL_EXE_EXT}
 ################
 #4gl compiler command line to use
 4GLPC			=${SH} ${ROOT}/bin/4glpc
@@ -162,6 +168,15 @@ asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
+asql_g${A4GL_EXE_EXT}: 
+asql_g${A4GL_EXE_EXT}: ${OBJS_GEN}
+	${4GLPC} ${4GLPCFLAGS} $^ -o $@ ${LINKLIBS} 
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|           Successfuly compiled Generic version of asql             |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
 ################
 #Target to make asql PostgreSQL version
 asql_p${A4GL_EXE_EXT}: A4GL_LEXDIALECT=POSTGRES
@@ -192,6 +207,8 @@ lex.yy.c: parse.l
 ifx_%${A4GL_OBJ_EXT}: %.4gl
 	${COMP4GL}
 
+gen_%${A4GL_OBJ_EXT}: %.4gl
+	A4GL_LEXTYPE=C ${COMP4GL}
 ################
 #Rule to make objects from 4GL file - Postgres version
 pg_%.ao: %.4gl
@@ -229,7 +246,7 @@ run.p:
 ## ==================================================================
 
 clean:
-	${RM} ${ALL} ${OBJS_PG} ${OBJS_IFX} \
+	${RM} ${ALL} ${OBJS_PG} ${OBJS_IFX} ${OBJS_GEN} \
     ${CLEAN_OBJS:.ao=.h} ${CLEAN_OBJS:.ao=.glb} ${CLEAN_OBJS:.ao=.cpc} \
 	${CLEAN_OBJS:.ao=.ec} ${CLEAN_OBJS:.ao=.c} \
     *.bak *.err *.warn lex.yy.c

@@ -1273,3 +1273,35 @@ function check_db(dbname)
 define dbname char(255)
 return dbname
 end function
+
+code
+
+int get_sqlcode(void ) {
+return sqlca.sqlcode;
+}
+
+void set_sqlcode(int n) {
+sqlca.sqlcode=n;
+}
+
+
+int ec_check_and_report_error() {
+
+        if (sqlca.sqlcode<0) {
+                aclfgl_check_and_report_error(0);
+                return 1;
+        } else {
+                return 0;
+        }
+
+}
+
+
+
+int asql_load_data(struct element *e) {
+}
+
+
+
+
+endcode

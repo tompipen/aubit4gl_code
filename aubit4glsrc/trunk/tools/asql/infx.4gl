@@ -1636,6 +1636,23 @@ database lv_dbname
 end function
 
 code
+
+int ec_check_and_report_error() {
+
+        if (sqlca.sqlcode<0) {
+                aclfgl_check_and_report_error(0);
+                return 1;
+        } else {
+                return 0;
+        }
+
+}
+
+
+int get_sqlcode() { return sqlca.sqlcode; }
+int set_sqlcode(int n) { sqlca.sqlcode=n; }
+
+
 void trim_trailing_0(char *buffer) {
 int a;
 char *ptr;
@@ -1673,3 +1690,21 @@ end if
 end function
 
 
+
+
+code
+
+
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+
+int asql_load_data(struct element *e) {
+// @ FIXME
+}
+endcode
