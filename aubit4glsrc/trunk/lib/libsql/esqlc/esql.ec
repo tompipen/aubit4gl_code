@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.114 2004-12-07 15:28:01 mikeaubury Exp $
+# $Id: esql.ec,v 1.115 2004-12-09 07:26:48 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.114 2004-12-07 15:28:01 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.115 2004-12-09 07:26:48 mikeaubury Exp $";
 #endif
 
 
@@ -1773,6 +1773,10 @@ processPreStatementBinds (struct s_sid *sid)
   EXEC SQL END DECLARE SECTION;
   int rv = 0;
   A4GL_debug ("a1");
+
+
+
+
   if (sid->ibind != (struct BINDING *) 0 && sid->ni > 0)
     {
       A4GL_debug ("a2");
@@ -1880,6 +1884,10 @@ int numberOfColumns;
   char warnbuff[10];
 exec sql end declare section;
 memset(warnbuff,0,10);
+
+
+
+
  A4GL_debug ("All ok %d %c%c%c%c%c%c?",sqlca.sqlcode, sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5);
 
 n=sid->outputDescriptorName;
@@ -1963,6 +1971,9 @@ struct s_sid *sid;
   EXEC SQL end declare section;
 sid=vsid;
 
+
+
+
   A4GL_debug ("ESQL : execute_implicit_select");
   if (sid == 0)
     {
@@ -1971,6 +1982,9 @@ sid=vsid;
     }
 
   statementName = sid->statementName;
+
+
+
   A4GL_debug ("ESQL : pre");
   if (processPreStatementBinds (sid) == 1)
     {
@@ -1978,6 +1992,8 @@ sid=vsid;
       error_just_in_case ();
       return 1;
     }
+
+
 
   A4GL_debug ("ESQL : exec");
   if (executeStatement (sid) == 1)

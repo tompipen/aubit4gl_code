@@ -1,4 +1,4 @@
-identifier: NAMED
+identifier: NAMED | reserved_word
 ;
 
 fetch_cursor_name: NAMED
@@ -63,12 +63,13 @@ individual_sql_statement :
 ;
 
 select_statement_ss_str_cfu:
-	select_statement_ss_str op_curs_for_update { sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
+	select_statement_ss_str curs_forupdate { sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
 ;
 
-
+/*
 op_curs_for_update:  | curs_forupdate
 ;
+*/
 
 curs_forupdate : {strcpy($<str>$,"");}
                 | FOR_UPDATE {strcpy($<str>$," FOR UPDATE");}
@@ -145,15 +146,99 @@ value_expression_initial_ss :
         | ALL subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ALL "),$<sql_string>2,0); }
         | ANY subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ANY "),$<sql_string>2,0); }
         | SOME subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("SOME "),$<sql_string>2,0); }
+/*
+I THINK THESE ARE 4GL ONLY
         | ATSIGN identifier {
                 $<sql_string>$=strdup($<str>2);
         }
         | ATSIGN identifier DOT identifier {
                 $<sql_string>$=make_sql_string_and_free(strdup($<str>2),strdup("."),strdup($<str>4),0);
         }
+*/
 ;
 
 
 op_fgl_expr :  {strcpy($<str>$,0);}
 	| INT_VALUE {strcpy($<str>$,$<str>1);}
+;
+
+
+reserved_word:
+CONSTRAINT
+|REFERENCES
+|SMALLFLOAT
+|NCHAR
+|NVARCHAR
+|DELIMITER
+|EXCLUSIVE
+|DATABASE
+|DATETIME
+|DISTINCT
+|FRACTION
+|INTERVAL
+|RESOURCE
+|SMALLINT
+|BETWEEN
+|CONNECT
+|DEFAULT
+|INTEGER
+|MATCHES
+|VARCHAR
+|DELETE
+|ESCAPE
+|EXISTS
+|EXTEND
+|HAVING
+|INSERT
+|MINUTE
+|MODIFY
+|REVOKE
+|SECOND
+|SERIAL
+|UNIQUE
+|UPDATE
+|VALUES
+|ALTER
+|CHECK
+|COUNT
+|GRANT
+|INDEX
+|MONEY
+|MONTH
+|DESC
+|DROP
+|HOUR
+|INTO
+|LIKE
+|REAL
+|SOME
+|TEXT
+|YEAR
+|XSET
+|ADD
+|ALL
+|ANY
+|ASC
+|AVG
+|DAY
+|DBA
+|FOR
+|XMAX
+|XMIN
+|NOT
+|SUM
+|AS
+|BY
+|IN
+|ON
+|TO
+|BEFORE
+|ILIKE
+|FILLFACTOR
+|KW_CHAR
+|KW_DECIMAL
+|KW_FLOAT
+|KW_BYTE
+|KW_DATE
+|KW_DOW
 ;

@@ -94,7 +94,7 @@ static void A4GL_CV_print_exec_sql_bound(char *s);
 static char* A4GL_get_into_part(int d,int n);
 static char *  fix_update_expr (int mode);
 static char *A4GL_get_undo_use(void);
-static char *A4GL_strip_quotes (char *s);
+//static char *A4GL_strip_quotes (char *s);
 static int gen_cnt (int a);
 static void ansi_violation(char *s,int n);
 static int A4GL_escape_quote_owner(void);

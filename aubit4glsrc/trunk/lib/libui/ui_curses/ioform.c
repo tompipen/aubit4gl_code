@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.106 2004-11-30 17:38:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.107 2004-12-09 07:26:49 mikeaubury Exp $
 #*/
 static char *module_id =
-  "$Id: ioform.c,v 1.106 2004-11-30 17:38:01 mikeaubury Exp $";
+  "$Id: ioform.c,v 1.107 2004-12-09 07:26:49 mikeaubury Exp $";
 /**
  * @file
  *
@@ -84,7 +84,6 @@ extern WINDOW *currwin;
 //int m_lastkey = 0;
 int tab_cnt = 0;
 int srec_cnt = 0;
-extern int errno;
 char delimiters[4];
 char *A4GL_fld_data_ignore_format (struct struct_scr_field *fprop,
 				   char *fld_data);
@@ -2717,8 +2716,8 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
 {
   char buff2[8024];
   int a;
-  int b;
-  int errno;
+  int b; 
+  int xerrno;
   b = A4GL_get_field_width_w (field);
   strcpy (buff2, buff);
   a = strlen (buff2);
@@ -2736,8 +2735,8 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
       A4GL_debug ("No padding required '%s'", buff);
     }
 
-  errno = set_field_buffer (field, nbuff, buff2);
-  A4GL_debug ("Setting %p %d to %s (%d)", field, nbuff, buff2, errno);
+  xerrno = set_field_buffer (field, nbuff, buff2);
+  A4GL_debug ("Setting %p %d to %s (%d)", field, nbuff, buff2, xerrno);
   A4GL_debug ("field buffer set to '%s'", field_buffer (field, 0));
   A4GL_debug ("Currwin=%p", currwin);
   pos_form_cursor (field->form);

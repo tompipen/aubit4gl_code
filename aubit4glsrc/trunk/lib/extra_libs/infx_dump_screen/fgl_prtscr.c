@@ -43,6 +43,7 @@ LET lv_out = " | lp -s -c "             # Send to printer
 #include <stdio.h>
 #include <stdlib.h> 
 #include <fcntl.h>
+#include <errno.h>
 
 
 /*
@@ -138,7 +139,7 @@ aclfgl_dump_screen (int pcnt)
 	int ret;
 #ifdef DEBUG
 	long cur_date;
-	extern int errno;
+	//extern int errno;
 	FILE *fptr;
 	time(&cur_date);
 	//fptr = fopen("time_file.tmp","a");

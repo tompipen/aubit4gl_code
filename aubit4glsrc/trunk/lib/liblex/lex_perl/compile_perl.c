@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.54 2004-11-05 16:59:26 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.55 2004-12-09 07:26:47 mikeaubury Exp $
 #
 */
 
@@ -611,7 +611,7 @@ print_exit_loop (int type, int n)
  * @return
  */
 void
-print_rep_ret (int report_cnt,int n)
+print_rep_ret (int report_cnt, int n)
 {
   printc ("goto report%d_ctrl;\n\n", report_cnt);
 }
@@ -642,7 +642,7 @@ print_output_rep (struct rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
   printc ("trim(rep.output_loc);");
-  print_rep_ret (report_cnt,0);
+  print_rep_ret (report_cnt, 0);
 
 }
 
@@ -680,7 +680,7 @@ pdf_print_output_rep (struct pdf_rep_structure *rep)
   printc ("else rep.output_mode=_rout1[0];\n");
   printc ("rep.report=&%s;\n", get_curr_rep_name ());
   printc ("trim(rep.output_loc);");
-  print_rep_ret (report_cnt,0);
+  print_rep_ret (report_cnt, 0);
 }
 
 /**
@@ -968,10 +968,10 @@ print_form_attrib (struct form_attr *form_attrib)
 	  form_attrib->message_line, form_attrib->attrib);
   A4GL_debug ("Printing attributes\n");
   A4GL_debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
-	 form_attrib->form_line, form_attrib->error_line,
-	 form_attrib->prompt_line, form_attrib->menu_line,
-	 form_attrib->border, form_attrib->comment_line,
-	 form_attrib->message_line, form_attrib->attrib);
+	      form_attrib->form_line, form_attrib->error_line,
+	      form_attrib->prompt_line, form_attrib->menu_line,
+	      form_attrib->border, form_attrib->comment_line,
+	      form_attrib->message_line, form_attrib->attrib);
 }
 
 /**
@@ -1803,7 +1803,8 @@ print_construct_2 (char *driver)
  * @return
  */
 void
-print_construct_3 (int byname, char *constr_str, char *field_list,char *attr,int cattr)
+print_construct_3 (int byname, char *constr_str, char *field_list, char *attr,
+		   int cattr)
 {
   int ccc;
   int k;
@@ -2007,7 +2008,7 @@ print_display_form (char *s, char *a)
  */
 void
 print_display_array_p1 (char *arrvar, char *srec, char *scrollfield,
-			char *attr,void *v_input_attr)
+			char *attr, void *v_input_attr)
 /* void print_display_array_p1 (char *arrvar, char *srec, char *attr) */
 {
   int cnt;
@@ -2134,11 +2135,12 @@ print_foreach_next (char *cursorname, int using, char *into)
 {
   printc ("set_sqlca_sqlcode(0);\n");
   //printc ("open_cursor(0,%s);\n", cursorname);
-  print_open_cursor(cursorname,using);
-  printc("if ($aubit4gl_pl::sqlca_sqlcode==0) {");
+  print_open_cursor (cursorname, using);
+  printc ("if ($aubit4gl_pl::sqlca_sqlcode==0) {");
   printc ("while (1) {\n");
   printc ("fetch_cursor(%s,%d,1,%s);\n", cursorname, FETCH_RELATIVE, into);
-  printc ("if ($aubit4gl_pl::sqlca_sqlcode<0||$aubit4gl_pl::sqlca_sqlcode==100) break;\n");
+  printc
+    ("if ($aubit4gl_pl::sqlca_sqlcode<0||$aubit4gl_pl::sqlca_sqlcode==100) break;\n");
 }
 
 
@@ -2153,8 +2155,8 @@ print_foreach_end (char *cname)
   printc ("}");
   printcomment ("# end of foreach while loop \n");
   printc ("}\n");
-  print_close('C',cname);
-  printc("}");
+  print_close ('C', cname);
+  printc ("}");
 }
 
 
@@ -2392,10 +2394,12 @@ print_input_2 (char *s)
   printc ("if (_fld_dr==-95) {/* after input */\n");
   printc ("   break;\n}\n");
   printc ("if (_fld_dr==-98) {/* before field */\n");
-  printc ("   fldname=aubit4gl_pl::A4GL_char_pop(); _fld_dr=-97;continue;\n}\n");
+  printc
+    ("   fldname=aubit4gl_pl::A4GL_char_pop(); _fld_dr=-97;continue;\n}\n");
   printc ("_fld_dr=%s;_forminit=0;\n", s);
   printc ("if (_fld_dr==-1) {/* after field */\n");
-  printc ("   fldname=aubit4gl_pl::A4GL_char_pop(); _fld_dr=-98;continue;\n}\n");
+  printc
+    ("   fldname=aubit4gl_pl::A4GL_char_pop(); _fld_dr=-98;continue;\n}\n");
   printc ("if (_fld_dr==0) { /* after input 2 */\n");
   printc ("   _fld_dr=-95;continue;\n}\n");
   add_continue_blockcommand ("INPUT");
@@ -2411,7 +2415,7 @@ print_input_2 (char *s)
  * @return
  */
 void
-print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
+print_input (int byname, char *defs, char *helpno, char *fldlist, int attr)
 {
   int ccc;
   printc ("{int _fld_dr=-100;char *fldname;char _inp_io[%d];",
@@ -2461,7 +2465,7 @@ print_input (int byname, char *defs, char *helpno, char *fldlist,int attr)
  */
 char *
 print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
-		   char *attr,void *inp_attr)
+		   char *attr, void *inp_attr)
 {
   static char buff2[256];
   int cnt;
@@ -2678,7 +2682,7 @@ print_locate (char where, char *var, char *fname)
  * @return
  */
 void
-print_start_report (char *repname, char *where, char *out,char *dim)
+print_start_report (char *repname, char *where, char *out, char *dim)
 {
   printc ("push_char(\"%s\");\n", where);
   printc ("push_char(%s);\n", out);
@@ -2740,7 +2744,7 @@ print_need_lines (void)
 void
 print_skip_lines (double d)
 {
-  printc("A4GL_push_int(%d)",(int)d);
+  printc ("A4GL_push_int(%d)", (int) d);
   printc ("%saclfgli_skip_lines(&rep);\n", ispdf ());
 }
 
@@ -2763,7 +2767,7 @@ print_skip_top (void)
 void
 print_skip_by (double nval)
 {
-  printc ("pdf_skip_by(&rep,%d);\n", (int)nval);
+  printc ("pdf_skip_by(&rep,%d);\n", (int) nval);
 }
 
 /**
@@ -2834,7 +2838,7 @@ A4GL_get_default_scaling (void)
  * @return
  */
 void
-print_order_by_type (int type,int cnt)
+print_order_by_type (int type, int cnt)
 {
   printc ("static int fgl_rep_orderby=%d;\n", type);
 }
@@ -2900,7 +2904,7 @@ print_report_2 (int pdf, char *repordby)
     ("   if (_g>0) { _useddata=1;for (_p=_g;_p<=(sizeof(_ordbind)/sizeof(struct BINDING));_p++) %s(_p,REPORT_BEFOREGROUP);}\n",
      get_curr_rep_name ());
   printc ("   _useddata=1;\n");
-  print_rep_ret (report_cnt,0);
+  print_rep_ret (report_cnt, 0);
   printc ("}\n\n");
   printc ("if (acl_ctrl==REPORT_FINISH) {\n");
   printc ("    if (fgl_rep_orderby==1) {\n");
@@ -2929,7 +2933,7 @@ print_report_2 (int pdf, char *repordby)
   printc ("   _started=1;\n");
   printc ("goto output_%d;\n", report_cnt);
   printc ("}\n\n");
-  print_rep_ret (report_cnt,0);
+  print_rep_ret (report_cnt, 0);
   if (pdf)
     pdf_print_output_rep (&pdf_rep_struct);
   else
@@ -3005,12 +3009,13 @@ print_push_variable (char *s)
  * @return
  */
 void
-print_message (int type, char *attr, int wait,int n)
+print_message (int type, char *attr, int wait, int n)
 {
   if (type == 0)
-    printc ("aubit4gl_pl::aclfgli_pr_message(%s,%d,%d);\n", attr, wait,n);
+    printc ("aubit4gl_pl::aclfgli_pr_message(%s,%d,%d);\n", attr, wait, n);
   else
-    printc ("aubit4gl_pl::aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait,n);
+    printc ("aubit4gl_pl::aclfgli_pr_message_cap(%d,%d,%d);\n", attr, wait,
+	    n);
 }
 
 /**
@@ -3089,7 +3094,7 @@ print_while_3 (void)
  * @return
  */
 void
-print_put (char *cname,char *putvals)
+print_put (char *cname, char *putvals)
 {
   int n;
   printc ("{\n");
@@ -3148,11 +3153,11 @@ print_execute (char *stmt, int using)
 void
 print_execute_immediate (char *stmt)
 {
-  static int cnt=0;
+  static int cnt = 0;
   char buff[256];
-  sprintf(buff,"p_%d_%lx",cnt++,time(0));
-  print_prepare(buff,stmt);
-  print_execute(buff,0);
+  sprintf (buff, "p_%d_%lx", cnt++, time (0));
+  print_prepare (buff, stmt);
+  print_execute (buff, 0);
 }
 
 /**
@@ -3161,12 +3166,13 @@ print_execute_immediate (char *stmt)
  * @return
  */
 void
-print_prompt_1 (char *a1, char *a2, char *a3, char *a4,int timeout)
+print_prompt_1 (char *a1, char *a2, char *a3, char *a4, int timeout)
 {
   printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
   printc ("aubit4gl_pl::start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
   printc
-    ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=aubit4gl_pl::prompt_loop(&_p,%d);\n",timeout);
+    ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=aubit4gl_pl::prompt_loop(&_p,%d);\n",
+     timeout);
 }
 
 /**
@@ -3245,11 +3251,14 @@ print_open_session (char *s, char *v, char *user)
 void
 print_open_cursor (char *cname, int has_using)
 {
-  if (has_using) {
-  printc ("aubit4gl_pl::open_cursor(%s,ni,ibind);\n",cname);
-  } else {
-  printc ("aubit4gl_pl::open_cursor(%s,0,0);\n",cname);
-  }
+  if (has_using)
+    {
+      printc ("aubit4gl_pl::open_cursor(%s,ni,ibind);\n", cname);
+    }
+  else
+    {
+      printc ("aubit4gl_pl::open_cursor(%s,0,0);\n", cname);
+    }
 }
 
 
@@ -3404,7 +3413,7 @@ print_end_menu_2 (int n)
  * @return
  */
 void
-print_menu_block (int mnno,int n)
+print_menu_block (int mnno, int n)
 {
   printc (" if ($cmd_no==%d) {\n", n);
 }
@@ -3426,7 +3435,7 @@ print_menu_block_end (int n)
  * @return
  */
 void
-print_option_op (int type, char *n,int mn)
+print_option_op (int type, char *n, int mn)
 {
   if (type == 'N')
     printc ("aubit4gl_pl::next_option(m,%s);\n", n);
@@ -3853,7 +3862,8 @@ print_define (char *varstring, int isstatic_extern)
  * @return
  */
 void
-print_start_record (int isstatic_extern, char *vname,char *arrsize,int level)
+print_start_record (int isstatic_extern, char *vname, char *arrsize,
+		    int level)
 {
   printing_record++;
   /*
@@ -3871,10 +3881,10 @@ print_start_record (int isstatic_extern, char *vname,char *arrsize,int level)
  * @return
  */
 void
-print_end_record (char *vname, char *arrsize,int level)
+print_end_record (char *vname, char *arrsize, int level)
 {
   printing_record--;
-  if (atoi(arrsize) == -1)
+  if (atoi (arrsize) == -1)
     {
       printc ("}; \n", vname);
     }
@@ -3883,7 +3893,7 @@ print_end_record (char *vname, char *arrsize,int level)
       printc ("} %s[%s];\n", vname, arrsize);
     }
 
-  printc ("my $%s=a4glStruct_%s->new();", vname,vname);
+  printc ("my $%s=a4glStruct_%s->new();", vname, vname);
 }
 
 
@@ -4167,32 +4177,39 @@ A4GL_bad_identifiers (char *s)
   return 0;
 }
 
-void print_module_variable_init(void) {
+void
+print_module_variable_init (void)
+{
 // Do nothing
 }
 
-void                                            
-print_cmd_start ()                              {                                               
-	  printc ("\n\naclfgli_clr_err_flg();\n\n");    
-}                                               
-														
+void
+print_cmd_start ()
+{
+  printc ("\n\naclfgli_clr_err_flg();\n\n");
+}
+
 /**                                             
  *                                              
 * @todo Describe function                      
-  */                                             
-void                                            
-print_cmd_end ()                                
-  {                                               
-	 //printc("\naclfgli_clr_err_flg()\n\n");      
-	printc ("\n/* End command */\n");             
+  */
+void
+print_cmd_end ()
+{
+  //printc("\naclfgli_clr_err_flg()\n\n");      
+  printc ("\n/* End command */\n");
 }
 
-char *get_column_transform(char *s) {  
-return s;                              
-}                                      
-void                        
-A4GL_lex_parsed_fgl ()      {
-printc("/* END OF 4GL */");
+char *
+get_column_transform (char *s)
+{
+  return s;
+}
+
+void
+A4GL_lex_parsed_fgl ()
+{
+  printc ("/* END OF 4GL */");
 }
 
 
@@ -4210,25 +4227,25 @@ print_alloc_arr (char *s, char *d)
   for (a = 0; a < l; a++)
     {
       if (d[a] == '(' && a == 0)
-        {
-          ptr = &d[a + 1];
-          continue;
-        }
+	{
+	  ptr = &d[a + 1];
+	  continue;
+	}
 
       if (d[a] == '[' && d[a + 1] == '(')
-        {
-          ptr = &d[a + 2];
-          continue;
-        }
+	{
+	  ptr = &d[a + 2];
+	  continue;
+	}
 
       if (d[a] == ')' && d[a + 1] == '-' && d[a + 2] == '1'
-          && d[a + 3] == ']')
-        {
-          d[a] = 0;
-          a += 3;
-          dim[dimcnt++] = atoi (ptr);
+	  && d[a + 3] == ']')
+	{
+	  d[a] = 0;
+	  a += 3;
+	  dim[dimcnt++] = atoi (ptr);
 
-        }
+	}
     }
   printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
   if (dim[4] == 0)
@@ -4268,25 +4285,25 @@ print_realloc_arr (char *s, char *d)
   for (a = 0; a < l; a++)
     {
       if (d[a] == '(' && a == 0)
-        {
-          ptr = &d[a + 1];
-          continue;
-        }
+	{
+	  ptr = &d[a + 1];
+	  continue;
+	}
 
       if (d[a] == '[' && d[a + 1] == '(')
-        {
-          ptr = &d[a + 2];
-          continue;
-        }
+	{
+	  ptr = &d[a + 2];
+	  continue;
+	}
 
       if (d[a] == ')' && d[a + 1] == '-' && d[a + 2] == '1'
-          && d[a + 3] == ']')
-        {
-          d[a] = 0;
-          a += 3;
-          dim[dimcnt++] = atoi (ptr);
+	  && d[a + 3] == ']')
+	{
+	  d[a] = 0;
+	  a += 3;
+	  dim[dimcnt++] = atoi (ptr);
 
-        }
+	}
     }
   printc ("// ALLOC ARR %s -> %d %d %d", s, dim[0], dim[1], dim[2]);
   if (dim[4] == 0)
@@ -4310,7 +4327,7 @@ print_realloc_arr (char *s, char *d)
       dim[0] = 1;
     }
   l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
-  printc ("%s=realloc(%s,%d * sizeof(%s[0]));", s, s,l, s);
+  printc ("%s=realloc(%s,%d * sizeof(%s[0]));", s, s, l, s);
 }
 
 void
@@ -4319,10 +4336,9 @@ print_dealloc_arr (char *s)
   printc ("free(%s);", s);
 }
 
-void A4GL_add_put_string(char *s) {
+void
+A4GL_add_put_string (char *s)
+{
 }
 
 /* ================================ EOF ============================== */
-
-
-

@@ -61,7 +61,8 @@ mkdir -p /home/aubit4gl/aubit4gl/help
 cp /home/aubit4gl/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
 
 
-
+cd /home/aubit4gl/aubit4gltest
+sh rerun ALL
 echo "No testing..."
 exit
 

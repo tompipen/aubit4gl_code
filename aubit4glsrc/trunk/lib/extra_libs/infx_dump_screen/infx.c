@@ -31,6 +31,7 @@ static char * local_trim (char *s);
 
 #include <stdio.h>
 #include <curses.h>
+#include <errno.h>
 
 #ifndef QUERIX  
 	#ifndef FOURJS
@@ -65,7 +66,7 @@ char *buff;
 
 #ifdef DEBUG
 	long cur_date;
-	extern int errno;
+	//extern int errno;
 	FILE *fptr;
 	time(&cur_date);
 	//fptr = fopen("time_file.tmp","a");

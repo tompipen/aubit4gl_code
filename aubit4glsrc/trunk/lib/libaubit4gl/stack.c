@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.108 2004-11-26 08:56:20 mikeaubury Exp $
+# $Id: stack.c,v 1.109 2004-12-09 07:26:47 mikeaubury Exp $
 #
 */
 
@@ -3092,14 +3092,17 @@ A4GL_lrtrim (char *z)
 {
   static char rstr[100000];
   int a;
+  int sz;
   strcpy (rstr, "");
   A4GL_debug ("15 COpied");
-
-  for (a = 0; a < strlen (z); a++)
+  sz=strlen(z);
+  for (a = 0; a < sz; a++)
     {
       if (z[a] != ' ')
 	{
-	  strncpy (rstr, &z[a],100000);
+	  sz-=a;
+	  if (sz-a>100000) {sz=100000;}
+	  strncpy (rstr, &z[a],sz);
 	  rstr[99999]=0;
 	  break;
 	}

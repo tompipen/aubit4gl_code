@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.22 2004-11-17 10:40:44 mikeaubury Exp $
+# $Id: readforms.c,v 1.23 2004-12-09 07:26:47 mikeaubury Exp $
 #*/
 
 /**
@@ -43,6 +43,7 @@
 */
 
 #include "a4gl_lib_form_generic_int.h"
+#include <errno.h>
 
 /*
 =====================================================================
@@ -77,7 +78,7 @@
 
 int tab_cnt = 0;
 int srec_cnt = 0;
-extern int errno;
+//extern int errno;
 char delimiters[4];
 
 int lastc = 0;

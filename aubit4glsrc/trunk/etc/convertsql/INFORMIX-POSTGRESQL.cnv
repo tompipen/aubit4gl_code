@@ -5,8 +5,6 @@
 #
 
 
-#Seems like INFORMIX-POSTGRESQL.cnv is obsolete? 
-
 
 DOUBLE_TO_SINGLE_QUOTES
 MATCHES_TO_REGEX

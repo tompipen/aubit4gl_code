@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.41 2004-11-25 15:36:46 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.42 2004-12-09 07:26:47 mikeaubury Exp $
 #
 */
 
@@ -318,10 +318,18 @@ void
 A4GL_pad_string (char *ptr, int size)
 {
   int a;
+  int p;
+  int s;
+  s=strlen(ptr);
+  p=size-strlen(ptr);
+  
+  if (p>0) {memset(&ptr[s],' ',p);}
+/*
   for (a = strlen (ptr); a < size; a++)
     {
       ptr[a] = ' ';
     }
+*/
   ptr[size] = 0;
 }
 
@@ -799,6 +807,7 @@ return 0;
 char *A4GL_strcpy(char *dest,char *src,char *f,int l,int sd) {
 	int a;
   	int lsrc;
+	A4GL_assertion(src==0,"No source for strcpy..");
 
 	lsrc=strlen(src);
 	if (sd!=sizeof(char *)) {

@@ -733,8 +733,9 @@ A4GL_debug("Looking for first - maxfield=%d\n",form->maxfield);
 			
 			if ((form->status&2)==0) { // Overwrite mode...
 		A4GL_debug("T2.2");
-				A4GL_debug("OVERWRITE CHARACTER : %c",c);
+				A4GL_debug("OVERWRITE CHARACTER : %c @ %d",c,form->curcol);
 				cfield_buffer[form->curcol]=c;
+				A4GL_debug("%s",cfield_buffer);
 			} else {
 				char *rest_of_line;
 		A4GL_debug("T2.3");

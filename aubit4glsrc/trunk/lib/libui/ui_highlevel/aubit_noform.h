@@ -1,6 +1,5 @@
 #include <curses.h>
 /* A lot of this is copied from ncurses libform and hacked...
-
  That software contains :
  ****************************************************************************
  * Copyright (c) 1998,2000 Free Software Foundation, Inc.                   *

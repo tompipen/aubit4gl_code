@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.55 2004-12-07 21:57:40 whaslbeck Exp $
+# $Id: builtin_d.c,v 1.56 2004-12-09 07:26:47 mikeaubury Exp $
 #
 */
 
@@ -364,20 +364,15 @@ A4GL_push_char (char *p)
 
   if (p[0] == 0 && p[1] != 0)
     {
-      A4GL_debug ("pc1");
       ptr = (char *) A4GL_new_string_set (strlen (p) + 1, p);
       ptr[0] = 0;
       ptr[1] = 1;
     }
   else
     {
-      A4GL_debug ("pc2");
       ptr = (char *) A4GL_new_string_set (strlen (p), p);
-      A4GL_debug ("pc2.1");
     }
-  A4GL_debug ("pc3");
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE (strlen (p))));
-      A4GL_debug ("pc4");
 }
 
 /**
@@ -887,6 +882,7 @@ void
 A4GL_push_variable (void *ptr, int dtype)
 {
 
+
   if (A4GL_isnull(dtype&DTYPE_MASK,ptr)) {
 		A4GL_debug("Variable was null dtype=%d %x ptr=%p",dtype&DTYPE_MASK,dtype,ptr);
 		A4GL_push_null(dtype&DTYPE_MASK,DECODE_SIZE(dtype));
@@ -935,57 +931,49 @@ A4GL_push_variable (void *ptr, int dtype)
     case DTYPE_VCHAR:
       A4GL_push_char (ptr);
       return;
-      //push_chars(ptr,dtype,DECODE_SIZE(dtype));return;break;
     case 1:
       A4GL_debug ("SMALLINT= %d\n", *(short *) ptr);
       A4GL_push_int (*(short *) ptr);
       return;
-      break;
     case 2:
       A4GL_debug ("LONG");
       A4GL_push_long (*(long *) ptr);
       return;
-      break;
     case 6:
       A4GL_debug ("LONG");
       A4GL_push_long (*(long *) ptr);
       return;
-      break;
     case 7:
       A4GL_debug ("DATE");
       A4GL_push_date (*(long *) ptr);
       return;
-      break;
     case 3:
       A4GL_debug ("DOUBLE");
       A4GL_push_double (*(double *) ptr);
       return;
-      break;
     case 5:
       	A4GL_debug ("DECIMAL");
       	A4GL_push_dec (ptr, 0,dtype>>16);
       return;
-      break;
     case 8:
       A4GL_debug ("MONEY");
       A4GL_push_dec (ptr, 1,dtype>>16);
       return;
-      break;
     case 4:
       A4GL_debug ("FLOAT");
       A4GL_push_float (*(float *) ptr);
       return;
-      break;
     case DTYPE_TEXT:
     case DTYPE_BYTE:
       push_byte (ptr);
-      break;
+      return;
 
     case DTYPE_DTIME:
       A4GL_debug ("pushing dtime");
       A4GL_push_dtime (ptr);
       return;
     case DTYPE_INTERVAL:
+		A4GL_debug("Interval - %d %d",dtype,DTYPE_INTERVAL);
       A4GL_push_interval (ptr);
       return;
     }

@@ -347,13 +347,15 @@ static int asql_yyerror(char *s) {
 		char buff[200];
 		int c;
 		A4GL_debug("Here\n");
-		printf("Here\n");
+		printf("Here : %s in  %s\n",s,Sql); sleep (1);
 		c=sql_string_cnt;
 		c-=20;
 		if (c<0) {c=0; }
 		strncpy(buff,&Sql[sql_string_cnt],199);
 		buff[199]=0;
 		A4GL_debug("MEMREAD syntax error %s\n",buff);
+		printf("MEMREAD syntax error %s\n",buff);
+		printf("                                         ^\n");
 	}
 	was_ok=0;
 	return 0;
