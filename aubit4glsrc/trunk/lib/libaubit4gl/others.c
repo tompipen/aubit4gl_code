@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.17 2002-10-13 01:40:34 afalout Exp $
+# $Id: others.c,v 1.18 2002-11-12 21:34:08 afalout Exp $
 #
 */
 
@@ -511,6 +511,59 @@ get_srec (char *name)
     return (struct struct_screen_record *) &form->fileform->
       records.records_val[a];
 }
+
+
+#ifdef YYPRINT
+  /* Give the individual parser a way to print the precise meaning
+     of a token, for further debugging info.  */
+
+//YYPRINT (stderr, yychar, yylval)
+aubit_yyprint (stderr, yychar, yylval)
+{
+
+    //do your output here
+
+}
+#endif
+
+
+
+void
+a4gl_usleep(int a) {
+
+/* cygwin headers has no prototype for usleep(), but have the function
+    on POSIX/ANSI sustems thsi is usually in unistd.h:
+	extern int usleep (__useconds_t __useconds) __THROW;
+
+    Mingwin header stdlib.h has _sleep() but suggest to use Windows API
+    finstion Sleep() instead (see winbase.h) .
+
+	The usleep() function will cause the calling thread to be suspended
+	from execution until either the number of real-time microseconds
+	specified by the argument useconds has elapsed or a signal is
+	delivered to the calling thread and its action is to invoke a
+	signal-catching function or to terminate the process.
+	The suspension time may be longer than requested due to the
+	scheduling of other activity by the system.
+
+*/
+
+#ifdef __MINGW32__
+    #include <winbase.h>
+    DWORD b;
+
+	b = a / 1000;
+
+	//There is no usleep provided on MinGW
+	Sleep (b);  /* SECONDS - __NOT__ micro!!! */
+#else
+	usleep (a); /* microseconds !!!!! */
+#endif
+
+}
+
+
+
 
 /* ============================== EOF ========================== */
 

@@ -24,11 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-09-25 05:42:16 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-11-12 21:34:08 afalout Exp $
 #
 
+ROOT=../..
+
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
@@ -59,18 +62,24 @@ ALL 		=shexec
 #FIXME: what if we have PGODBC, IXFODBC, ODBC32 or ... instead of this?
 
 ifneq "@HAVE_UNIXODBC@" "no"
-	ALL 	+=odbctest-unixODBC
+	ALL 	+=${ROOT}/bin/odbctest-unixODBC
 endif
 
 ifneq "@HAVE_IODBC@" "no"
 	ifeq "@IODBC_VERSION@" "???"
-		ALL +=odbctest-iodbc2
+		ALL +=${ROOT}/bin/odbctest-iodbc2
     else
-		ALL +=odbctest-iodbc3
+		ALL +=${ROOT}/bin/odbctest-iodbc3
     endif
 endif
 
 SOURCE		=odbctest.c
+
+#to avoid missing __fpclassify for SAP DB ODBC driver, link with
+#math library (/usr/lib/libm.so)
+ADDLIBS=-lm
+
+
 
 #This scripts rely on expect and need manual mods to parameters to work:
 #autotest-ifx-iodbc
@@ -87,20 +96,14 @@ all: ${ALL}
 	@echo "Default targets (${ALL}) compiled successfully"
 	@echo "See examples of automated usage in autotest-* scripts."
 
-odbctest-iodbc3: odbctest3.o
-#	${CC} ${CFLAGS} -DODBCVER=0x0350 -o $@ $^ -L/opt/iODBC_3beta/iODBC/lib -liodbc
-	${CC} ${CFLAGS} -o $@ $^ @IODBC_LFLAGS@ @IODBC_LIBS@
-	${CP} $@ ../../bin
+${ROOT}/bin/odbctest-iodbc3: odbctest3.o
+	${CC} ${CFLAGS} -o $@ $^ @IODBC_LFLAGS@ @IODBC_LIBS@ ${ADDLIBS}
 
-odbctest-iodbc2: odbctest2.o
-#	${CC} ${CFLAGS} -DODBCVER=0x0350 -o $@ $^ -L/usr/openlink/lib -liodbc
-	${CC} ${CFLAGS} -o $@ $^ @IODBC_LFLAGS@ @IODBC_LIBS@
-	${CP} $@ ../../bin
+${ROOT}/bin/odbctest-iodbc2: odbctest2.o
+	${CC} ${CFLAGS} -o $@ $^ @IODBC_LFLAGS@ @IODBC_LIBS@ ${ADDLIBS}
 
-odbctest-unixODBC: odbctest3.o
-#	${CC} ${CFLAGS} -DODBCVER=0x0350 -o $@ $^ -L/opt/unixODBC/lib/ -lodbc
-	${CC} ${CFLAGS} -o $@ $^ @UNIXODBC_LFLAGS@ @UNIXODBC_LIBS@
-	${CP} $@ ../../bin
+${ROOT}/bin/odbctest-unixODBC: odbctest4.o
+	${CC} ${CFLAGS} -o $@ $^ @UNIXODBC_LFLAGS@ @UNIXODBC_LIBS@ ${ADDLIBS}
 
 ## ==================================================================
 ##                              Sub Targets
@@ -113,23 +116,28 @@ odbctest-unixODBC: odbctest3.o
 #@IODBC_INCLUDE@
 
 #iODBC V2:
-odbctest2.o:
+odbctest2.o: ${SOURCE}
 #	${CC} $(DEFS_V2) ${CFLAGS} -I.. -I./ -c ${SOURCE} -o $@
-	${CC} $(DEFS_V2) ${CFLAGS} -c ${SOURCE} -o $@
+	${CC} $(DEFS_V2) ${CFLAGS} -c ${SOURCE} -o $@ -DIODBC
 
-#iODBC V3 and unixODBC:
-odbctest3.o:
+#iODBC V3:
+odbctest3.o: ${SOURCE}
 #	${CC} $(DEFS_V3) ${CFLAGS} -I.. -I./ -c ${SOURCE} -o $@
-	${CC} $(DEFS_V3) ${CFLAGS} -c ${SOURCE} -o $@
+	${CC} $(DEFS_V3) ${CFLAGS} -c ${SOURCE} -o $@ -DIODBC
+
+#unixODBC:
+odbctest4.o: ${SOURCE}
+	${CC} $(DEFS_V3) ${CFLAGS} -c ${SOURCE} -o $@ -DUNIXODBC
+
 
 shexec:
 	chmod a+x autotest*
-#	autotest* ${CP} ../../bin
+#	${CP} ../../bin
 
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean:
-	rm -f *.o *.bak odbctest-iodbc* odbctest-unixODBC
+	${RM} *.o *.bak odbctest-iodbc* odbctest-unixODBC
 

@@ -1,7 +1,7 @@
 /*
  *  odbctest.c
  *
- *  $Id: odbctest.c,v 1.1 2001-09-14 06:06:30 afalout Exp $
+ *  $Id: odbctest.c,v 1.2 2002-11-12 21:34:08 afalout Exp $
  *
  *  Sample ODBC program
  *
@@ -28,11 +28,15 @@
 #include <stdio.h>
 #include <string.h>
 
-//#include "isql.h"
-#include <sql.h>
+#ifdef UNIXODBC
+	#include <sql.h>
+	#include <sqlext.h>
+#elif
+	//IODBC
+	#include "isql.h"
+	#include "isqlext.h"
+#endif
 
-//#include "isqlext.h"
-#include <sqlext.h>
 
 #define MAXCOLS		32
 

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.130 2002-11-09 05:40:27 afalout Exp $
+dnl # $Id: configure.in,v 1.131 2002-11-12 21:33:47 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -609,7 +609,7 @@ fi
 AC_MSG_CHECKING(YY Debugging)
 if test "$enable_yy_debug" = "yes" ; then
 	#for debbuging in function yyparse() export YYDEBUG=1 to environment:
-	YYDEBUG="-DYYDEBUG=1 -DYYERROR_VERBOSE"
+	YYDEBUG="-DYYDEBUG=1 -DYYERROR_VERBOSE -DYYPRINT=aubit_yyprint"
     AC_MSG_RESULT(enabled, export YYDEBUG=1 to environment to turn it on.)
 else
     AC_MSG_RESULT(disabled, specify --enable-yy-debug to turn it on.)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.4 2002-08-18 08:36:29 afalout Exp $
+# $Id: main.c,v 1.5 2002-11-12 21:34:08 afalout Exp $
 #*/
 
 /**
@@ -325,6 +325,23 @@ write_genout(void)
 	//fprintf(hf,"int input_end_union (char *s, char *n);\n");
 	//fprintf(hf,"int input_enum (char *name, int *d);\n");
 }
+
+
+//this function in normally in libaubit4gl, but xgen is not linked with it:
+
+#ifdef YYPRINT
+  /* Give the individual parser a way to print the precise meaning
+     of a token, for further debugging info.  */
+
+//YYPRINT (stderr, yychar, yylval)
+aubit_yyprint (stderr, yychar, yylval)
+{
+
+    //do your output here
+
+}
+#endif
+
 
 
 /* ================================= EOF ============================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.27 2002-11-10 06:45:19 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.28 2002-11-12 21:34:08 afalout Exp $
 #
 */
 
@@ -1434,6 +1434,14 @@
     /* =========================== dataio.c =============================*/
 	int 	read_data_from_file	(char *datatype, void *ptr, char *filename) ;
 	int 	write_data_to_file	(char *datatype, void *ptr, char *filename) ;
+
+
+    /* prompt.c */
+
+	void a4gl_usleep(int a);
+
+
+
 
 #endif /* #ifndef _AUBIT_LIB_INCL_EXT_ */
 

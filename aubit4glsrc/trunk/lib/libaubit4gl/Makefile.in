@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.41 2002-10-22 06:43:36 afalout Exp $
+# $Id: Makefile.in,v 1.42 2002-11-12 21:34:08 afalout Exp $
 #
 
 ROOT    	=../..
@@ -59,7 +59,7 @@ COMMONSRC= \
 	others.c \
 	pointers.c \
 	read_dty.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
-	screen.c sleep.c stack.c string.c \
+	screen.c stack.c string.c \
 	translate.c
 
 CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API} debug.o
