@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
 #include <ctype.h>
-static char *module_id="$Id: menu.c,v 1.11 2004-08-31 20:46:56 mikeaubury Exp $";
+static char *module_id="$Id: menu.c,v 1.12 2004-09-27 18:58:38 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
@@ -150,8 +150,8 @@ A4GL_display_menu (ACL_Menu * menu)
   A4GL_debug ("In display_menu");
   if (menu->gw_x < 0)
     {
-      char *ptr = 0;
-      *ptr = 0;
+      //char *ptr = 0;
+      //*ptr = 0;
     }
   A4GL_clr_menu_disp (menu);
   if (strlen (menu->menu_title) > 0)
@@ -227,8 +227,8 @@ A4GL_display_menu (ACL_Menu * menu)
     }
   if (menu->gw_x < 0)
     {
-      char *ptr = 0;
-      *ptr = 0;
+      //char *ptr = 0;
+      //*ptr = 0;
     }
 
   A4GL_LL_screen_update ();

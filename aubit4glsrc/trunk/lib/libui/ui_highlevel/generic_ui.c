@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.28 2004-08-31 20:46:56 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.29 2004-09-27 18:58:38 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -511,16 +511,21 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
      A4GL_clr_menu_disp (menu);
      A4GL_debug ("f3");
    */
+
+
   if (menu->gw_x < 0)
     {
-      char *ptr = 0;
-      *ptr = 0;
+	A4GL_debug("gw_x is less than zero!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      //char *ptr = 0;
+      //*ptr = 0;
     }
+
   A4GL_display_menu (menu);
   if (menu->gw_x < 0)
     {
-      char *ptr = 0;
-      *ptr = 0;
+	A4GL_debug("gw_x is less than zero!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      //char *ptr = 0;
+      //*ptr = 0;
     }
   A4GL_debug ("f4");
 
