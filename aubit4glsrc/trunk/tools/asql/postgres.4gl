@@ -539,6 +539,9 @@ int a;
         EXEC SQL FETCH crExec INTO SQL DESCRIPTOR descExec; cp_sqlca();
 	A4GL_debug("Fetched");
 
+        if (sqlca.sqlcode==100) {
+                return 100;
+        }
 
 	if (firstFetchInit) {
 		A4GL_debug("Calcualting how to display");
@@ -554,9 +557,6 @@ int a;
                 return sqlca.sqlcode;
         }
 
-        if (sqlca.sqlcode==100) {
-                return 100;
-        }
 
 
         (*raffected)++;
