@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.32 2004-11-11 16:19:16 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.33 2004-11-12 18:03:49 pjfalbe Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -1420,10 +1420,36 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
 }
 
 
+int
+ UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv)
+{
+  int a;
+  void ***field_list;
+  struct s_form_dets *formdets;
+  struct s_field_name_list *list;
+
+  field_list = field_listv;
+  formdets = formdetsv;
+  list = listv;
+
+  a = A4GL_gen_field_list_from_slist_internal (field_list, formdets, 9999, list);
+  return a;
+}
+
+int A4GL_gen_field_list (void *** field_list, struct s_form_dets *formdets, int max_number, va_list * ap)
+{
+  struct s_field_name_list list;
+
+  A4GL_make_field_slist_from_ap(&list,ap);
+
+  return A4GL_gen_field_list_from_slist_internal (field_list, formdets, max_number, &list);
+
+}
+
+
 
 int
-A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
-		     int a, va_list * ap)
+A4GL_gen_field_list_from_slist_internal (void ***field_list, struct s_form_dets *formdets, int a, struct s_field_name_list *list)
 {
   int z;
   int z1;
@@ -1446,34 +1472,21 @@ A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
   }
 
 #ifdef DEBUG
-  {
-    A4GL_debug ("gen_field_list - %p %p %d %p", field_list, formdets, a, ap);
-  }
 #endif
   A4GL_debug ("field_list=%p", field_list);
   A4GL_debug ("Here 2");
-  /*
-     *field_list = calloc (a, sizeof (FIELD *));
-     *field_list = calloc (1024, sizeof (FIELD *));
-
-     A4GL_dump_srec (&formdets);
-   */
 
   for (z1 = 0; z1 <= a; z1++)
     {
       A4GL_debug ("Getting first %d", z1);
-      s = va_arg (*ap, char *);	/* This is suspect.... */
 
-      if (s == 0)
-	break;
+        if (z1>=list->nfields) break;
+        s=list->field_name_list[z1].fname;
+        if (s == 0) {
+                break;
+        }
 
-      A4GL_debug ("Got first %s", s);
-
-      f = (int) va_arg (*ap, int *);
-      A4GL_debug ("f=%d\n", f);
-      if (f > 0)
-	f--;
-
+      f = list->field_name_list[z1].fpos;
       A4GL_debug (" got field number as %d ", f);
 
 
@@ -1615,11 +1628,6 @@ A4GL_gen_field_list (void ***field_list, struct s_form_dets *formdets,
 	}
 
     }
-/*
-  s = va_arg (*ap, char *);
-  if (s != 0)
-    A4GL_debug ("Trailing fields ignored");
-*/
 
 
   *field_list = calloc (cnt + 1, sizeof (void *));
