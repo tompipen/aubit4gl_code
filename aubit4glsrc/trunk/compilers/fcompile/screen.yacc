@@ -402,12 +402,14 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->colname=strdup($<str>3);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        fld->dtype_size=A4GL_get_dtype_size();
         //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 }
 | named_or_kw {
 	fld->colname=strdup($<str>1);
 	fld->not_null=0;
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
+        fld->dtype_size=A4GL_get_dtype_size();
         //if (fld->datatype==DTYPE_SERIAL) { A4GL_add_bool_attr(fld,FA_B_NOENTRY); }
 };
 
@@ -697,9 +699,9 @@ CHAR_VALUE   { strcpy($<str>$,A4GL_char_val($<str>1)); }
 
 ;
 
-opt_dec_ext : {strcpy($<str>$,"");}
-	| OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"16.%d",atoi($<str>2));}
-	| OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d.%d",atoi($<str>2),atoi($<str>4));}
+opt_dec_ext : {sprintf($<str>$,"%d",(16<<8) + 2);}
+	| OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d",((atoi($<str>2)+2)<<8)+2);}
+	| OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d",(atoi($<str>2)<<8)+atoi($<str>4));}
 ;
 
 opt_int_ext : {strcpy($<str>$,"");}

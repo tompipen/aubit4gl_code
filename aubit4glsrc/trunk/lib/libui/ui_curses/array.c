@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.20 2003-12-12 16:14:57 mikeaubury Exp $
+# $Id: array.c,v 1.21 2003-12-24 18:07:03 mikeaubury Exp $
 #*/
 
 /**
@@ -860,8 +860,113 @@ int orig_set=0;
 
 
 
+void UILIB_A4GL_acli_scroll(char *arr,int n,int dir) {
+struct s_form_dets *f;
+int a;
+int srec_no;
+char barr[256];
+char *ptr;
+FIELD ***buff;
+int b;
+int attr;
+FIELD *field;
+int fno;
+int mno;
+
+int dim;
+int nfields;
+
+
+if (n>1) {
+	int cnt;
+	for (cnt=0;cnt<n;cnt++) {
+	     UILIB_A4GL_acli_scroll(arr,1,dir);
+        }
+	return;
+}
+
+
+f=UILIB_A4GL_get_curr_form (1);
+strcpy(barr,arr);
+
+ptr=strchr(barr,'.');
+
+if (ptr==0) {
+        A4GL_exitwith("Internal error - expected a .* in screen record");
+        return;
+}
+
+*ptr=0;
+
+A4GL_debug("barr=%s",barr);
+srec_no=A4GL_find_srec(f->fileform,barr);
+
+if (srec_no==-1) {
+        A4GL_exitwith("Unknown screen record");
+        return;
+}
+
+A4GL_debug("srec_no=%d nrows=%d attribs=%d",srec_no,
+f->fileform->records.records_val[srec_no].dim,
+f->fileform->records.records_val[srec_no].attribs.attribs_len);
+buff=malloc(sizeof(char *) * f->fileform->records.records_val[srec_no].dim);
+
+
+for (a=0;a<f->fileform->records.records_val[srec_no].dim;a++) {
+	buff[a]=malloc(sizeof(char *) * f->fileform->records.records_val[srec_no].attribs.attribs_len);
+}
+
+dim=f->fileform->records.records_val[srec_no].dim;
+nfields=f->fileform->records.records_val[srec_no].attribs.attribs_len;
+for (b=0;b<nfields;b++) {
+	for (a=0;a<dim;a++) {
+		attr=f->fileform->records.records_val[srec_no].attribs.attribs_val[b];
+      		fno = f->fileform->attributes.attributes_val[attr].field_no;
+		mno=f->fileform->fields.fields_val[fno].metric.metric_val[a];
+		field=f->fileform->metrics.metrics_val[mno].field;
+		A4GL_debug("SCROLL %s [ %d] . %d = %p (%s)",barr,a,b,field,field_buffer(field,0));
+		buff[a][b]=field;
+	}
+}
+
+
+if (dir==-1) {
+	for (a=dim-1;a>0;a--) {
+		for (b=0;b<nfields;b++) {
+			A4GL_debug("field[%d][%d] = buffer[%d][%d]",a,b,a-1,b);
+			ptr=field_buffer(buff[a-1][b],0);
+			A4GL_debug("              = %s",ptr);
+			set_field_buffer(buff[a][b],0,ptr);
+		}
+	}
+	for (b=0;b<nfields;b++) {
+			set_field_buffer(buff[0][b],0,"");
+	}
+}
+
+if (dir==1) {
+	for (a=0;a<dim-1;a++) {
+		for (b=0;b<nfields;b++) {
+			A4GL_debug("field[%d][%d] = buffer[%d][%d]",a,b,a+1,b);
+			ptr=field_buffer(buff[a+1][b],0);
+			A4GL_debug("              = %s",ptr);
+			set_field_buffer(buff[a][b],0,ptr);
+		}
+	}
+	for (b=0;b<nfields;b++) {
+			set_field_buffer(buff[dim-1][b],0,"");
+	}
+}
+
+
+
+
+
+
+}
 
 
 
 
 /* =============================== EOF ============================ */
+

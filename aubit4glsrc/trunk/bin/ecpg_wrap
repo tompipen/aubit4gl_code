@@ -1,5 +1,5 @@
 
-SH_DEBUG=0
+SH_DEBUG=1
 
 
 if test "$SH_DEBUG" = "1"; then
@@ -90,10 +90,17 @@ do
 	then
 		c=$d/`basename "$a" `
 		b=$d/`basename "$c" ".$ECPG_EXT"`
+		bc=$d/`basename "$c" ".c"`
+		bo=$d/`basename "$c" ".o"`
 	else
 		c=`basename "$a" `
 		b=`basename "$c" ".$ECPG_EXT"`
 		b2=./`basename "$c" ".$ECPG_EXT"`
+
+		bc=`basename "$c" ".c"`
+		bc2=./`basename "$c" ".c"`
+		bo=`basename "$c" ".o"`
+		bo2=./`basename "$c" ".o"`
 	fi
 
 	if [ $b.$ECPG_EXT = $a -o $b2.$ECPG_EXT = $a ]
@@ -102,6 +109,22 @@ do
 		shift
 		continue
 	fi
+
+
+	if [ $bc.c = $a -o $bc2.c = $a ]
+	then
+		csrcs="$csrcs $a"
+		shift
+		continue
+	fi
+
+	if [ $bo.o = $a -o $bo2.o = $a ]
+	then
+		ofiles="$ofiles $a"
+		shift
+		continue
+	fi
+
 
 	if [ $a = "-o" ]
 	then
@@ -166,10 +189,15 @@ do
 done
 
 if [ $COMPILE_OBJ = 1 -o "$ofiles" = "" ]; then
-	exit 0
+	if [ "$csrcs" = "" ]; then
+		if test "$SH_DEBUG" = "1"; then
+		echo "COMPILE_OBJ or no ofiles other_args=$other_args"
+		fi
+		exit 0
+	fi
 fi
 
-GCC_RUN="gcc $ofiles $PG_IFLAGS $other_args  -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm -L$AUBITDIR/lib -laubit4gl $output"
+GCC_RUN="gcc $ofiles $csrcs $PG_IFLAGS $other_args  -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm -L$AUBITDIR/lib -laubit4gl $output"
 echo $GCC_RUN
 eval $GCC_RUN
 RET=$?
