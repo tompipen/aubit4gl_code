@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.50 2002-02-19 09:18:33 afalout Exp $
+# $Id: 4glpc,v 1.51 2002-02-19 09:57:16 afalout Exp $
 #
 
 ########################################################################
@@ -48,10 +48,11 @@
 	OVERWRITE_CONFIG=0
 #	USE_CONFIGURE=1
 
-#if [ ! "$COMSPEC" = "" ]
-#then
+#FIXME: we should use shared linking on UNIX too:
+if [ ! "$COMSPEC" = "" ]
+then
 	USE_SHARED="Yes"
-#fi
+fi
 
 
 #############
@@ -1369,7 +1370,6 @@ then
 	echo ------------------------------------------------------------------
 fi
 
-
 if [ "$USE_SHARED" = "Yes" ]
 then
 		if [ "$ODBC_LIB_NAME" != "noodbc" ]
@@ -1378,9 +1378,11 @@ then
     	    then
         		ODBC=$ODBC_SHARED
 	        fi
-			FGLLIBS="$FGLLIBS_SHARED $ODBC"
-        else
-	        FGLLIBS="$FGLLIBS_SHARED"
+			if [ "$ODBC" != "no" ]; then
+				FGLLIBS="$FGLLIBS_SHARED $ODBC"
+            fi
+		else
+			FGLLIBS="$FGLLIBS_SHARED"
 		fi
 else
 		if [ "$ODBC_LIB_NAME" != "noodbc" ]
