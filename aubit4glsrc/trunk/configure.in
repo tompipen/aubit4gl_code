@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.259 2004-12-01 07:19:19 afalout Exp $
+dnl # $Id: configure.in,v 1.260 2004-12-07 01:41:56 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -529,6 +529,8 @@ AC_SUBST(CONFIGURE_COMMAND)
 AC_SUBST(GCC_VERSION_MAJOR)
 AC_SUBST(GCC_VERSION_MINOR)
 AC_SUBST(GCC_MINGW)
+AC_SUBST(GCC_HOME_WINPATH)
+AC_SUBST(GCC_HOME_CYGPATH)
 AC_SUBST(HAS_CHECK)
 AC_SUBST(WGET)
 AC_SUBST(REDHAT_VER)
@@ -557,6 +559,7 @@ AC_SUBST(HAVE_CURSES)
 AC_SUBST(CURSES_LIB_NAME)
 
 AC_SUBST(HAVE_PDCURSES)
+AC_SUBST(HAS_PDCURSES_STATIC_OBJS)
 AC_SUBST(PD_CURSES_LIB_PATH)
 AC_SUBST(PD_CURSES_INC_PATH)
 AC_SUBST(PD_CURSES_LIB_NAME)
@@ -1438,11 +1441,27 @@ SLASH=\\
 INFORMIXC=$CC
 HAVE_CURSES=0
 HAVE_PDCURSES=0
-#FIXME: do not hard-code
-#WINDOWS_DRIVE=D:
-#HOMEDRIVE is CygWin created environment variable
-WINDOWS_DRIVE=$HOMEDRIVE
-CYGWIN_PATH=/cygwin
+#HOMEDRIVE is CygWin created environment variable, points to Windows 
+#installation disk (or is it location of $HOME directories?)
+#WINDOWS_DRIVE=$HOMEDRIVE
+WINDOWS_DRIVE=`cygpath -W / | sed -e 's/\// /g' | awk '{print $2}'`
+
+#cygpath has this options
+#System information:
+#  -A, --allusers        use `All Users' instead of current user for -D, -P
+#  -D, --desktop         output `Desktop' directory and exit
+#  -H, --homeroot        output `Profiles' directory (home root) and exit
+#  -P, --smprograms      output Start Menu `Programs' directory and exit
+#  -S, --sysdir          output system directory and exit
+#  -W, --windir          output `Windows' directory and exit
+
+#Path where CygWin is intalled, in Windows format (tipically 'C:\cygwin'):
+CYGWIN_PATH_WIN=`cygpath -w /`
+#Path where CygWin is installed, without the drive letter (tipically '/cygwin')
+CYGWIN_PATH=`cygpath -m / | sed -e 's/:/ /g' | awk '{print $2}'`
+#Windows drive letter of the drive on which CygWin is installed (without column)
+CYGWIN_DRIVE=`cygpath -m / | sed -e 's/:/ /g' | awk '{print $1}'`
+
 USE_RPCGEN=0
 #SYSTEMDRIVE is Windows created environment variable pointing to drive containing Windows OS
 SYSDRIVE=$SYSTEMDRIVE
@@ -1801,14 +1820,11 @@ A4GL_DBPATH=$aubitdir/tools:$INST_BASE/tools
         #compiler to work on practiacally any system.
     fi
 
-#Install location - must install first:
+#InnoSetup Install location - must install first:
 #Source code location (#MUST use backslash for InnoSetup):
-#IS_SOURCE=`echo "$HOMEDRIVE$CYGWIN_PATH$aubitdir" | sed -e 's/\//\\/g'`
-IS_SOURCE=`echo "D:/cygwin/usr/src/aubit/aubit4glsrc" | sed -e 's/\//\\\\/g'`
-
-#Location of GTK libraries - should be obsolete
-#IS_SOURCE_GTK="$HOMEDRIVE$CYGWIN_PATH/lib"
-
+#IS_SOURCE=`cygpath -m `pwd` | sed -e 's/\//\\\\/g'`
+PWD=`pwd`
+IS_SOURCE=`cygpath -w $PWD`
 
 ## ==================================================================
 ##       Define permanent list of libraries to build/install
@@ -2632,7 +2648,7 @@ if test "$CC" = "gcc"; then
 					#should not really need drive letter?
                     #also, if adding drive letter with : , it then we add AUBITDIR to PATH, : will be
                     #interperted as separator (when using CygWin tools), and make PATH invalid
-					aubitdir="$HOMEDRIVE$CYGWIN_PATH$aubitdir"
+					aubitdir="$CYGWIN_DRIVE:$CYGWIN_PATH$aubitdir"
                     #BUT-then CygWin things there is a directory called /cygwin in HIS root!
                     #but how to get a directory name CygWin was installed in, if different then default?
 					#aubitdir="$CYGWIN_PATH$aubitdir"
@@ -2654,6 +2670,12 @@ if test "$CC" = "gcc"; then
 					#$WINDOWS_DRIVE/MinGW/include/stdint.h:27: conflicting types for `int8_t'
 					#$WINDOWS_DRIVE$CYGWIN_PATH/usr/include/sys/types.h:128: previous declaration of `int8_t'
 
+					#Determine GCC install path:
+					x=`type gcc | awk '{print $3}'`; 
+					a=`dirname $x`; b=`dirname $a`; 
+					GCC_HOME_WINPATH=`cygpath -w "$b"`
+					GCC_HOME_CYGPATH=`cygpath -u "$b"`
+					
 					CFLAGS="$old_CFLAGS"
 					CPPFLAGS="$old_CPPFLAGS"
 					LDFLAGS="$old_LDFLAGS"
@@ -5234,29 +5256,9 @@ AC_ARG_WITH(gtk,
 
 		#########################################################
 		if test "$GTK_USE_CONFIG" = "no"; then
-            #try to assign paths manually:
 			AC_MSG_WARN(cannot find pkg-config or gtk-config)
-			AC_MSG_WARN(Trying to guess GTK configuration manually)
-			GTK_LIB_PATH="-L$withval/lib"
-			GTK_INC_PATH="-I$withval/include -I$withval/include/gdk -I$withval/lib/gtk+/include -I$withval -I$withval/gdk"
-			GTKLIBS="-lgtk -lgdk"
-
-			#Some GTK distros on CygWin have a naming probem!
-			if test "$ac_cv_lib_glib_1_3_dll_main" = "yes"; then
-				"ac_cv_lib_glib_1_3_dll_main = $ac_cv_lib_glib_1_3_dll_main"
-				GTKLIBS="$GTKLIBS -lglib-1.3.dll "
-				GTK_INC_PATH="$GTK_INC_PATH -I$withval/include/glib-2.0 -I$withval/lib/glib-2.0/include"
-		    else
-				GTKLIBS="$GTKLIBS -lglib"
-		    fi
-
-            #This way user can specify explicit path to GLIB using --with-glib=path
-			if test "$with_glib" != ""; then
-				GTK_INC_PATH="$GTK_INC_PATH -I$with_glib"
-			fi
-			AC_DEFINE(HAVE_GTK,1,[ ])
-			GTKBUILD=yes
-			GTK_REAL_VERSION=unknown
+			AC_DEFINE(HAVE_GTK,0,[ ])
+			GTKBUILD=no
 		fi
 
 		AC_MSG_CHECKING(GTK usability )
@@ -5413,8 +5415,8 @@ AC_ARG_WITH(pdf,
 			TEST_PDFLIB_I_FLAGS="-I$withval/include"
 			TEST_PDFLIB_L_FLAGS="-L$withval/lib"
         else
-			TEST_PDFLIB_I_FLAGS="-ID:/cygwin$withval/include"
-			TEST_PDFLIB_L_FLAGS="-LD:/cygwin$withval/lib"
+			TEST_PDFLIB_I_FLAGS="-I$CYGWIN_DRIVE:$CYGWIN_PATH$withval/include"
+			TEST_PDFLIB_L_FLAGS="-L$CYGWIN_DRIVE:$CYGWIN_PATH$withval/lib"
         fi
 
 		TEST_PDFLIB_FLAGS="$TEST_PDFLIB_I_FLAGS $TEST_PDFLIB_L_FLAGS"
@@ -6067,22 +6069,52 @@ fi
 				#On windows everything is in one directory
 				PD_CURSES_INC_PATH="-I$withval"
 			fi
+			
 			if test "$HAVE_PDCURSES" = "1"; then 
 				AC_DEFINE(HAVE_PDCURSES,1,[ ])
 				AC_MSG_RESULT(yes)
-				#Check if we have objects needed to make statically linked TUIN
-				AC_MSG_CHECKING(PDcurses static link objects)
-				PDCURSES_STATIC_PATH="d:/cygwin/tmp/pdcurs26/win32"
-				if test -f "$PDCURSES_STATIC_PATH/panel.a" -a -f "$PDCURSES_STATIC_PATH/pdcurses.a" ; then
-					AC_MSG_RESULT(yes)
-					HAS_PDCURSES_STATIC_OBJS=1
-				else
-					AC_MSG_RESULT(no)
-				fi
 			else
 				AC_DEFINE(HAVE_PDCURSES,0,[ ])
 				AC_MSG_RESULT(no - missing curses library (.so or .dll))
 			fi
+			
+			#Note: pre-compiled binaries of PDcurses for Windows are currently
+			#available only as MS VC compiled, which includes .dll only, 
+			#so we cant link it statically. As taking care of another .dll 
+			#and its PATH is a pain, it is easier for us to link it statically.
+			#To get static .a objects for static linking, we have to compile from
+			#sources (see 'make install.pdcurses') but then there is no .dll
+			
+			#TODO: First install pre-compiled MS VC binaries (.dll) then build
+			#static objects from sources, and add them (install) to the same
+			#location we installed .dll to - so we can have both
+			
+			#Check if we have objects needed to make statically linked HL_TUIN (HL_TUINs)
+			#PDCURSES_STATIC_PATH="$CYGWIN_DRIVE:$CYGWIN_PATH/tmp/pdcurs26/win32"
+			PDCURSES_STATIC_PATH="$PDCURSES_WINPATH"
+			if test -f "$PDCURSES_STATIC_PATH/panel.a" \
+				-a -f "$PDCURSES_STATIC_PATH/pdcurses.a";  then
+
+					old_CPPFLAGS="$CPPFLAGS"
+					
+					#NOTE: MinGW GCC understands only native Windows path format
+					PD_CURSES_LIB_PATH="-L$PDCURSES_WINPATH"
+					PD_CURSES_LIB_NAME="$PDCURSES_WINPATH/pdcurses.a $PDCURSES_WINPATH/panel.a"
+					PD_CURSES_INC_PATH="-I$PDCURSES_WINPATH"
+					
+					CPPFLAGS="$PD_CURSES_INC_PATH $CPPFLAGS" 
+					AC_CHECK_HEADERS([ curses.h panel.h ])
+					#Cant check libraries with AC_CHECK_LIB([dl], [main])
+					#because they don't have 'lib' prefix
+					CPPFLAGS="$old_CPPFLAGS"
+					AC_MSG_CHECKING(PDcurses static link objects)					
+					AC_MSG_RESULT(yes)
+					HAS_PDCURSES_STATIC_OBJS=1
+			else
+				AC_MSG_CHECKING(PDcurses static link objects)			
+				AC_MSG_RESULT(no)
+			fi
+			
 		else
 			HAVE_PDCURSES=0
 			AC_DEFINE(HAVE_PDCURSES,0,[ ])
@@ -6098,8 +6130,7 @@ fi
 				PD_CURSES_DRIVE=$1
 			else
 				#No drive leter - so same as CygWin drive
-				#HOMEDRIVE is CygWin created environment variable
-				PD_CURSES_DRIVE=`echo $HOMEDRIVE | sed -e 's/\://'`
+				PD_CURSES_DRIVE=$CYGWIN_DRIVE
 			fi
 			PD_CURSES_CYGDRIVE="/cygdrive/$PD_CURSES_DRIVE"
 		fi
@@ -6115,6 +6146,9 @@ fi
 	CFLAGS="$old_CFLAGS"
 	LIBS="$old_LIBS"
 
+if test "$enable_stop_pdcurses" = "yes" ; then
+	exit
+fi
 
 ## ==================================================================
 ##         Checks for Java binding (JNI)
@@ -6876,13 +6910,12 @@ else
 	else
 		#we can compile only HL_TUIN with PDcurses
 		if test "$HAVE_PDCURSES" = "1"; then
-			if test "$HAS_PDCURSES_STATIC_OBJS" = "1" ; then
+			A4GL_UI="HL_TUIN"
+			A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN"
+		fi
+		if test "$HAS_PDCURSES_STATIC_OBJS" = "1" ; then
 				A4GL_UI="HL_TUINs"
-				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN HL_TUINs"
-			else
-				A4GL_UI="HL_TUIN"
-				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUIN"
-			fi
+				A4GL_UI_DETECTED="$A4GL_UI_DETECTED HL_TUINs"
 		fi
 	fi
 
@@ -6957,10 +6990,14 @@ PLUGIN_NO_LINKABLE=
         PLUGIN_YES="$PLUGIN_YES UI_TUI UI_HL_TUI UI_HL_TUIN"
         	#add UI_HL_TUINs
 	else
-		if test "$HAVE_PDCURSES" = "1"; then
+		if test "$HAVE_PDCURSES" = "1" -o "$HAS_PDCURSES_STATIC_OBJS" = "1"; then
 			#no curses, but found PDcurses
 			#can make only UI_TUIN with PDcurses
-    	    PLUGIN_YES="$PLUGIN_YES UI_HL_TUIN"
+			if test "$HAVE_PDCURSES" = "1"; then 
+    	    	PLUGIN_YES="$PLUGIN_YES UI_HL_TUIN"
+			else
+				PLUGIN_NO="$PLUGIN_NO UI_HL_TUIN"
+			fi
 			if test "$HAS_PDCURSES_STATIC_OBJS" = "1"; then 
 				PLUGIN_YES="$PLUGIN_YES UI_HL_TUINs"
 			else
@@ -7665,7 +7702,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.259 2004-12-01 07:19:19 afalout Exp $
+| $Id: configure.in,v 1.260 2004-12-07 01:41:56 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.85 2004-12-06 23:47:42 afalout Exp $
+# $Id: Makefile-install.mki,v 1.86 2004-12-07 01:43:56 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -310,33 +310,50 @@ endif
 install.cron: OUT2 = ${HOME}/aubitbuild.cron
 install.cron:
 ifdef COMSPEC
+#Note - it appears that even after the service is "removed" it is just 
+#"marked to be removed" and it actually takes a reboot for it to dissapear
+#from services list, so that a new one can be installed?
+#
+#Copy our cron script to cron directory
 	${CP} etc/aubitbuild.cron.sh /etc/cron.d/
+#Make it executable	
 	chmod a+x /etc/cron.d/*
-#prepare the crontab to install:
+#prepare the crontab file to install:
 	@echo "" > ${OUT2}
 	@echo "MAILTO=andrej@aptiva" >> ${OUT2}
 	@echo "SHELL=${SH}" >> ${OUT2}
 	@echo "00 06 * * * /etc/cron.d/aubitbuild.cron.sh" >> ${OUT2}
 	@echo "" >> ${OUT2}
+#Activate the crontab using prepared crontab script
 	crontab ${OUT2}
-#show whats installed:
+#show what crontab now has installed:
 	crontab -l
 	@echo "cron script /etc/cron.d/aubitbuild.cron.sh installed, using ${OUT2}"
-#Activate cron daemon as Windows service:
+#Query the crontab Windows service:	
+	cygrunsrv.exe -Q cron
+#Stop Windows service:
 	cygrunsrv -E cron
+#Remove Windows service:
 	cygrunsrv -R cron
-	cygrunsrv -I cron -p /usr/sbin/cron -a -D -o -e"CYGWIN=tty ntsec"
+#Install cron as Windows service:
+#	cygrunsrv -I cron -p /usr/sbin/cron -a -D -o -e"CYGWIN=tty ntsec"
+	cygrunsrv -I cron -p /usr/sbin/cron -a -D -o
+#Start the service:	
 	cygrunsrv -S cron
+#Set correct permisions:	
 	chmod 1777 /var/cron
 	chmod 1777 /var/cron/tabs
 	chmod 640 /var/cron/tabs/*
 	chgrp SYSTEM /var/cron/tabs/*
-#IS cron running?
+#Is cron running?
 	ps -ef | grep cron
+#Query the crontab Windows service again:
+	cygrunsrv.exe -Q cron	
 #CygWin diagnostic:
 #	cygcheck -s -r -v
 	@echo "You will need ssmtp.exe IN THE PATH to get mail from cron."
 	@echo "Check your /etc/ssmtp/ssmtp.conf for 'root' 'mailhub' and 'hostname' entries."
+	@echo "Log goes to /var/log/cron.log"
 #	root=postmaster
 #	mailhub=aptiva
 #	hostname=istation.falout.com
@@ -724,6 +741,9 @@ PDCURSES_WIN_PATH		=http://umn.dl.sourceforge.net/sourceforge/pdcurses
 PDCURSES_WIN_ZIP		=pdc25_vc_w32.zip
 PDCURSES_SRC			=pdcurs26
 PDCURSES_SRC_ZIP		=${PDCURSES_SRC}.zip
+ifdef COMSPEC
+	PDCURSES_WIN_INSTALLDIR	=$(shell  cygpath -u ${HOMEDRIVE})/${PDCURSES_SRC}-mingw
+endif
 
 ##################
 # 30: PCRE - Perl Compatible Regular Expressions 
@@ -1251,21 +1271,24 @@ endif
 # 29: PDcurses
 install.pdcurses: ${PDCURSES_SRC_ZIP}
 ifdef COMSPEC
-	@echo "COMSPEC=${COMSPEC}"
 	-mkdir /tmp/${PDCURSES_SRC}
 	cd /tmp/${PDCURSES_SRC}; /bin/unzip ${CYG_AUBITDIR}/$^ -d /tmp/${PDCURSES_SRC}
-#	cd /tmp/${PDCURSES_SRC}; ./configure; make; make install
-	cd /tmp/${PDCURSES_SRC}/win32; make -f mingwin32.mak \
-		PDCURSES_HOME=d:/cygwin/tmp/pdcurs26 CC_HOME=d:/MinGW
+	cd /tmp/${PDCURSES_SRC}/win32; ${MAKE} -f mingwin32.mak \
+		PDCURSES_HOME=`cygpath -w /tmp/${PDCURSES_SRC}` CC_HOME=${GCC_HOME_WINPATH}
 #There is no install target there, have to install it manually:
-	-mkdir /cygdrive/d/${PDCURSES_SRC}-mingw
-	cp panel.a pdcurses.a /cygdrive/d/${PDCURSES_SRC}-mingw
-#TODO - also need headers!	
+	-mkdir ${PDCURSES_WIN_INSTALLDIR}
+	${CP} /tmp/${PDCURSES_SRC}/win32/panel.a \
+		/tmp/${PDCURSES_SRC}/win32/pdcurses.a ${PDCURSES_WIN_INSTALLDIR}
+	${CP} /tmp/${PDCURSES_SRC}/curses.h /tmp/${PDCURSES_SRC}/curspriv.h \
+		/tmp/${PDCURSES_SRC}/panel.h ${PDCURSES_WIN_INSTALLDIR}
 #Demos:
 #newdemo.exe  testcurs.exe firework.exe tuidemo.exe xmas.exe
 #Other files of possible interest:
 #pdcurses.ico pdcurses.rc w95-bcc.rsp wccwin32.lrf bccwin32.lrf
 #curses.def curses_lcc.def  
+	@echo "Installed PDcurses in ${PDCURSES_WIN_INSTALLDIR}"
+	@echo "use --with-pdcurses=${PDCURSES_WIN_INSTALLDIR}"
+	@echo "flag to ./configure for Aubit to detect it."
 else
 #	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 	unzip $^ -d /tmp

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.167 2004-12-01 07:21:08 afalout Exp $
+# $Id: Makefile-common.in,v 1.168 2004-12-07 01:43:55 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -235,9 +235,9 @@ WINDOWS_DRIVE   =@WINDOWS_DRIVE@
 CYGWIN_PATH     =@CYGWIN_PATH@
 
 #Substitute Windows drive notation (C: D: E: etc.) with CygWin path mapping
-CYG_AUBITDIR	:=$(subst C:,/cygdrive/c,${AUBITDIR})
-CYG_AUBITDIR	:=$(subst D:,/cygdrive/d,${CYG_AUBITDIR})
-
+ifdef COMSPEC
+	CYG_AUBITDIR	:=$(shell cygpath -u ${AUBITDIR})
+endif
 
 ## ==================================================================
 ##                   Global Makefile variables
@@ -836,7 +836,7 @@ endif
 #	on user's rights) or $HOME/.bashrc (? $HOME/.profile), and source this
 #	file as ".$HOME/.bashrc". This should also work immediately.
 #
-#/usr/local/lib should alwayys be in there !
+#/usr/local/lib should always be in there !
 ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@:/usr/local/lib
 #ADD_LD_LIBRARY_PATH_SPACE=${ADD_LD_LIBRARY_PATH::/=--}
 #ADD_LD_LIBRARY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRARY_PATH} | sed -e "s%:% %g")
@@ -869,6 +869,9 @@ export PATH
 
 #Convert Autoconf variables into Make variables here, so we don't need to
 #process every make file with Autoconf:
+
+GCC_HOME_WINPATH=@GCC_HOME_WINPATH@
+GCC_HOME_CYGPATH=@GCC_HOME_CYGPATH@
 PGSQL_INCDIR=@PGSQL_INCDIR@
 PGSQL_INCLUDE=@PGSQL_INCLUDE@
 PGSQL_LIBDIR=@PGSQL_LIBDIR@
@@ -896,6 +899,7 @@ CURSES_LIB_PATH		=@CURSES_LIB_PATH@
 CURSES_LIB_NAME 	=@CURSES_LIB_NAME@
 
 HAVE_PDCURSES   	=@HAVE_PDCURSES@
+HAS_PDCURSES_STATIC_OBJS =@HAS_PDCURSES_STATIC_OBJS@
 PD_CURSES_LIB_PATH	=@PD_CURSES_LIB_PATH@
 PD_CURSES_INC_PATH	=@PD_CURSES_INC_PATH@
 PD_CURSES_LIB_NAME	=@PD_CURSES_LIB_NAME@

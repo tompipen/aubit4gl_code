@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.167 2004-11-29 07:24:30 afalout Exp $
+# $Id: Makefile.in,v 1.168 2004-12-07 01:40:55 afalout Exp $
 #
 
 ## ==================================================================
@@ -1222,7 +1222,7 @@ show:
 	@echo "INSTALL_DIR=${INSTALL_DIR}"
 	@echo "PREFIX=${PREFIX}"
 	@echo "AUBITNAME=${AUBITNAME}"
-
+	@echo "CYG_AUBITDIR=${CYG_AUBITDIR}"
 
 
 show.platform: OUT="/tmp/showplatform"

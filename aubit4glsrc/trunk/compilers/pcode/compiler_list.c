@@ -2,6 +2,9 @@
 	/* missing from rpcgen generated .h on CygWin: */
 	#define bool_t int
 	#define u_int unsigned int
+	
+	
+	#include "a4gl_libaubit4gl.h" //ENTRY
 #endif
 
 #ifdef RPCGEN_HEADERS

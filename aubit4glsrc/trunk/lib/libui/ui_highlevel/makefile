@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.31 2004-09-28 09:49:25 afalout Exp $
+# $Id: makefile,v 1.32 2004-12-07 01:43:58 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -58,9 +58,9 @@ GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS})
 
 #Need to find better sollution for this:
 #dropline.net and other installers have -lintl, but zip has -lintl-1
-ifeq "${HOSTNAME}" "istation"
-	GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
-endif
+#ifeq "${HOSTNAME}" "istation"
+#	GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
+#endif
 
 CFLAGS				+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} \
 					${GTK_LIB_PATH} -I/usr/local/include/ncurses
@@ -117,6 +117,14 @@ ifneq "${HAVE_CURSES}" "0"
 else
 	ifneq "${HAVE_PDCURSES}" "0"
 		ALL				+=${LIBROOT}/libUI_HL_TUIN${SO_EXT}
+		DO_PDCURSES		=1
+	endif
+	ifneq "${HAS_PDCURSES_STATIC_OBJS}" "0"
+		ALL				+=${LIBROOT}/libUI_HL_TUINs${SO_EXT}
+		DO_PDCURSES		=1
+	endif
+		
+	ifeq "${DO_PDCURSES}" "1"
 		CURSES_LIB_PATH	=${PD_CURSES_LIB_PATH}
 		CURSES_INC_PATH	=${PD_CURSES_INC_PATH}
 		CURSES_LIB_NAME	=${PD_CURSES_LIB_NAME}
@@ -193,7 +201,8 @@ ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o widt
 libUI_HL_TUINs${SO_EXT}: ${LIBROOT}/libUI_HL_TUINs${SO_EXT}
 ${LIBROOT}/libUI_HL_TUINs${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o width_narrow.o
 	${LD} ${CURSES_LIB_PATH} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} \
-		d:/cygwin/tmp/pdcurs26/win32/panel.a d:/cygwin/tmp/pdcurs26/win32/pdcurses.a
+		${PD_CURSES_LIB_NAME}
+#		d:/cygwin/tmp/pdcurs26/win32/panel.a d:/cygwin/tmp/pdcurs26/win32/pdcurses.a		
 
 #Debug version of TUIN, using debug library libpanel_g
 libUI_HL_TUIN-DEBUG${SO_EXT}: ${LIBROOT}/libUI_HL_TUIN-DEBUG${SO_EXT}
@@ -287,6 +296,8 @@ show:
 	@echo "WIN_PATH=${WIN_PATH}"
 	@echo "PD_CURSES_CYGDRIVE=${PD_CURSES_CYGDRIVE}"
 	@echo "PD_CURSES_DRIVE=${PD_CURSES_DRIVE}"
+	@echo "HAS_PDCURSES_STATIC_OBJS=${HAS_PDCURSES_STATIC_OBJS}"
+	@echo "DO_PDCURSES=${DO_PDCURSES}"	
 	
 ## ==================================================================
 ##                              Clean
