@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.9 2003-04-07 16:26:48 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.10 2003-04-26 15:45:30 mikeaubury Exp $
 #*/
 
 /**
@@ -393,13 +393,16 @@ output_bool (char *name, int val, int ptr, int isarr)
 int
 output_string (char *name, char *val, int ptr, int isarr)
 {
-
+int a;
+//char buff[10];
   print_level ();
   debug ("in output_string() outfile=%p\n",outfile);
 
-  fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"STRING\"%s>%s</ATTR>\n", name,
-	   pr_elem (isarr, ptr), val);
-
+  fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"STRING\"%s>",name, pr_elem (isarr, ptr));
+  for (a=0;a<strlen(val);a++) {
+		fprintf(outfile,"%02x",val[a]);
+  }
+  fprintf(outfile,"</ATTR>\n");
 
   debug ("exit output_string()\n");
 
@@ -625,12 +628,29 @@ input_bool (char *name, int *val, int ptr, int isarr)
 int
 input_string (char *name, char **val, int ptr, int isarr)
 {
+  char *buff;
+  char *pptr;
+  char buffer[3];
+  char c;
+  int b;
+  int a;
   /* <ATTR NAME=\"%s\" TYPE=\"STRING\"%s>%s</ATTR> */
 
   chk (val);
   if (!getaline ())
     return 0;
-  *val = strdup (find_contents (ibuff));
+  buff = find_contents (ibuff);
+  pptr=malloc((strlen(buff)/2)+1);
+  buffer[2]=0;
+  b=0;
+  for (a=0;a<strlen(buff);a+=2) {
+	buffer[0]=buff[a];
+	buffer[1]=buff[a+1];
+	sscanf(buffer,"%02x",&c);
+   	pptr[b++]=c;
+   	pptr[b]=0;
+  }
+  *val=pptr;
   return contentok;
 }
 
