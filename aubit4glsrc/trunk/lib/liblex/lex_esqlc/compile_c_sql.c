@@ -74,7 +74,7 @@ print_foreach_next (char *cursorname, char *into)
   ni = print_bind ('o');
   printc ("A4GLSQL_fetch_cursor(%s,%d,1,%d,obind);\n", cursorname,
 	  FETCH_RELATIVE, ni);
-  printc ("if (sqlca.sqlcode<0||sqlca.sqlcode==100) break;\n");
+  printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
 }
 
 /**

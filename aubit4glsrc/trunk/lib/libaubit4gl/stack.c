@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.46 2003-03-05 22:24:37 mikeaubury Exp $
+# $Id: stack.c,v 1.47 2003-03-08 10:22:51 mikeaubury Exp $
 #
 */
 
@@ -861,14 +861,14 @@ push_param (void *p, int d)
 							s), 0, cname);
       }
       free(s);
-      if (status != 0)
+      if (a4gl_status != 0)
 	{
 	  drop_param ();
 	  push_int (0);
 	}
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GLSQL_open_cursor (0, cname);
-      if (status != 0)
+      if (a4gl_status != 0)
 	{
 	  drop_param ();
 	  push_int (0);
@@ -876,7 +876,7 @@ push_param (void *p, int d)
       while (1)
 	{
 	  A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind);
-	  if (status != 0)
+	  if (a4gl_status != 0)
 	    break;
 	  debug ("MJA tmpvar=%s\n", tmpvar);
 	  push_param (tmpvar, 0);
@@ -925,7 +925,7 @@ push_param (void *p, int d)
 	free(s);
       A4GLSQL_declare_cursor (0,  prep , 0, cname);
 
-      if (status != 0)
+      if (a4gl_status != 0)
 	{
 	  push_int (0);
 	  return;
@@ -933,18 +933,18 @@ push_param (void *p, int d)
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GLSQL_open_cursor (0, cname);
       debug ("opened cursor");
-      if (status != 0)
+      if (a4gl_status != 0)
 	{
 	  push_int (0);
 	  return;
 	}
       A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind);
       debug ("fetched");
-      if (status == 0)
+      if (a4gl_status == 0)
 	ok = 1;
-      if (status == 100)
+      if (a4gl_status == 100)
 	ok = 0;
-      if (status != 0 && status != 100)
+      if (a4gl_status != 0 && a4gl_status != 100)
 	{
 	  debug ("Some error with the exists stuff.");
 	  push_int (0);
@@ -1300,7 +1300,7 @@ void gettimeofday(struct timeval* t,void* timezone)
 
 
 
-#ifdef ANOTHER_EXAMPLE_OF GETTIMEOFDAY
+#ifdef ANOTHER_EXAMPLE_OF_GETTIMEOFDAY
 
 // see http://sources.redhat.com/ml/gdb/2001-05/msg00076.html
 // http://www.linuxjournal.com/article.php?sid=5574

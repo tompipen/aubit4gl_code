@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.16 2003-03-07 04:37:35 afalout Exp $
+# $Id: data.c,v 1.17 2003-03-08 10:22:51 mikeaubury Exp $
 #*/
 
 /**
@@ -61,7 +61,7 @@
 
 struct report this_report;
 #ifdef OLD_INCL
-extern int status;
+extern int a4gl_status;
 #endif
 extern char *outputfilename;
 extern char *ordby[256];
@@ -679,7 +679,7 @@ char *colname;
       psql =
 	(void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic,
 					 dif_get_bind (xo), 0, nstatement);
-      status = 0;
+      a4gl_status = 0;
       if (psql == 0)
 	{
 	  printf ("Some error preparing SQL (Error %d)\n",
@@ -801,7 +801,7 @@ void
 yyerror_sql (char *s)
 {
   char buff[256];
-  sprintf (buff, "%s - %d", s, (int) status);	/*  warning: int format, long int arg (arg 4)
+  sprintf (buff, "%s - %d", s, (int) a4gl_status);	/*  warning: int format, long int arg (arg 4)
 						 */
   a4gl_ace_yyerror (buff);
 }

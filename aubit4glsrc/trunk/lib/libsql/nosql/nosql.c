@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.22 2003-01-29 11:31:58 mikeaubury Exp $
+# $Id: nosql.c,v 1.23 2003-03-08 10:22:52 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
 */
 
 #include "a4gl_lib_sql_int.h"
-extern sqlca_struct sqlca;
+extern sqlca_struct a4gl_sqlca;
 /*
 =====================================================================
                     Variables definitions
@@ -85,9 +85,9 @@ A4GLSQL_xset_status (int a)
 void
 A4GLSQL_set_status (int a, int sql)
 {
-  status = a;
+  a4gl_status = a;
   if (sql)
-	sqlca.sqlcode = a;
+	a4gl_sqlca.sqlcode = a;
   debug ("Status set to %d", a);
 }
 
@@ -110,7 +110,7 @@ A4GLSQL_init_connection (char *dbName)
 int
 A4GLSQL_get_status (void)
 {
-  return sqlca.sqlcode;
+  return a4gl_sqlca.sqlcode;
 }
 
 /**
@@ -312,8 +312,8 @@ A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
 void
 A4GLSQL_set_sqlca_sqlcode (int a)
 {
-  status = a;
-  sqlca.sqlcode = a;
+  a4gl_status = a;
+  a4gl_sqlca.sqlcode = a;
 }
 
 /**

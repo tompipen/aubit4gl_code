@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.8 2003-02-14 10:18:48 mikeaubury Exp $
+# $Id: ioform.c,v 1.9 2003-03-08 10:22:52 mikeaubury Exp $
 #*/
 
 /**
@@ -1468,14 +1468,14 @@ disp_fields (int n, int attr, va_list * ap)
   struct s_form_dets *formdets;
   FIELD **field_list;
   int nofields;
-  status = 0;
+  a4gl_status = 0;
 
   debug ("In disp_fields");
   formdets = get_curr_form ();
 #ifdef DEBUG
-  {    debug ("Status=%d formdets=%p", status, formdets);  }
+  {    debug ("Status=%d formdets=%p", a4gl_status, formdets);  }
 #endif
-  if (status != 0)
+  if (a4gl_status != 0)
     return;
   flg = 0;
 

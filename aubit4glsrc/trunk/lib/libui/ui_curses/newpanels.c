@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.17 2003-03-07 09:40:52 mikeaubury Exp $
+# $Id: newpanels.c,v 1.18 2003-03-08 10:22:52 mikeaubury Exp $
 #*/
 
 /**
@@ -1534,7 +1534,7 @@ display_error (int a,int wait)
   }
   debug ("error_box done");
   acl_free (s);
-  status = 0;
+  a4gl_status = 0;
 }
 
 
@@ -1658,9 +1658,9 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
 
   debug ("reading file %s - name=%s", buff,name);
-  status = 0;
+  a4gl_status = 0;
   form = read_form (buff, name);
-  if (status != 0) return 0;
+  if (a4gl_status != 0) return 0;
 
   if (form==0) {
 	exitwith("Unable to create form");
@@ -1736,7 +1736,7 @@ open_form (char *name)
 
   form = read_form (buff, name);
   debug("Read form returns %d status = %d\n",form);
-  if (status != 0)
+  if (a4gl_status != 0)
     {
 	debug("Some problem opening form...");
       acl_free (s);

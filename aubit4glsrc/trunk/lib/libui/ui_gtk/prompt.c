@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.8 2003-02-16 13:24:41 mikeaubury Exp $
+# $Id: prompt.c,v 1.9 2003-03-08 10:22:52 mikeaubury Exp $
 #*/
 
 /**
@@ -189,7 +189,7 @@ start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af)
   prompt->f = 0;
   A4GLSQL_set_status (0, 0);
 
-  if (status != 0) return (prompt->mode = 2);
+  if (a4gl_status != 0) return (prompt->mode = 2);
 
   A4GLSQL_set_status (0, 0);
 

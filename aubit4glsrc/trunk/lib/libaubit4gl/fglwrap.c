@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.29 2003-02-24 19:55:51 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.30 2003-03-08 10:22:51 mikeaubury Exp $
 #
 */
 
@@ -351,8 +351,8 @@ generateError(char *str,char *fileName,int lineno)
     sprintf(str,"Error in '%s'@%d\rErr=%d.\r%s.",
       fileName,
       lineno,
-      (int)status,
-      err_print(status,sqlca.sqlerrm)
+      (int)a4gl_status,
+      err_print(a4gl_status,a4gl_sqlca.sqlerrm)
     );
   }
   else
@@ -361,8 +361,8 @@ generateError(char *str,char *fileName,int lineno)
      "Program stopped at '%s', line number %d.\nError status number %d.\n%s.\n",
       fileName,
       lineno,
-      (int)status,
-      err_print(status,sqlca.sqlerrm)
+      (int)a4gl_status,
+      err_print(a4gl_status,a4gl_sqlca.sqlerrm)
     );
   }
   if ( A4GLSTK_isStackInfo() )
@@ -384,7 +384,7 @@ chk_err(int lineno,char *fname)
   	{debug("Checking exit status");}
   #endif
 
-  if (status >= 0) 
+  if (a4gl_status >= 0) 
     return;
 
   if (isscrmode())
@@ -421,7 +421,7 @@ chk_err(int lineno,char *fname)
 void 
 set_errm(char *s)
 {
-	strcpy(sqlca.sqlerrm,s);
+	strcpy(a4gl_sqlca.sqlerrm,s);
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.30 2003-03-07 08:11:55 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.31 2003-03-08 10:22:51 mikeaubury Exp $
 */
 
 /**
@@ -44,8 +44,9 @@
  */
 
 #ifndef FGLDEF_INCL
-#define FGLDEF_INCL
 
+#define FGLDEF_INCL
+#include <stdio.h>
 	#define fglbyte struct fgl_int_loc
 	#define fgltext struct fgl_int_loc
 
@@ -366,10 +367,10 @@ int ctoint              (void *a, void *b, int size);
 /*
 to fix the _nm_status error (if status is an int) change
 
-extern int status;
+extern int a4gl_status;
 
 to
-__attribute__((dllimport))extern int status;
+__attribute__((dllimport))extern int a4gl_status;
 
 That's the ugly, short-hand way.  For some reason, auto-import
 doesn't always work.  Search the mailing lists for more correct
@@ -402,14 +403,14 @@ be used in applications which link to the library).
 			#define _SQLCA_DEFINED_
 	    #endif
 
-        extern long status; 			/** 4gl global status variable */
+        extern long a4gl_status; 			/** 4gl global status variable */
         extern long int_flag;			/** 4gl interrupt ocurred global flag */
         extern long quit_flag; 			/** 4gl quit ocurred global flag */
     #else
 		/* only in libaubit4gl */
 		//dll_import sqlca_struct sqlca; 	/** Sqlca variable */
-        dll_export sqlca_struct sqlca; 	/** Sqlca variable */
-		long status; 					/** 4gl global status variable */
+        dll_export sqlca_struct a4gl_sqlca; 	/** Sqlca variable */
+		long a4gl_status; 					/** 4gl global status variable */
         long int_flag; 					/** 4gl interrupt ocurred global flag */
         long quit_flag;					/** 4gl quit ocurred global flag */
 	#endif

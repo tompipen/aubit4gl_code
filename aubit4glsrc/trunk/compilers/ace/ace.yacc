@@ -19,7 +19,7 @@
 
 extern struct report this_report;
 #ifdef OLD_INCL
-	extern int status;
+	extern int a4gl_status;
 #endif
 extern int lineno;
 extern int colno;
@@ -256,7 +256,7 @@ db_section:
 	| DATABASE NAMED END {
 		this_report.dbname=strdup($<str>2);
 		A4GLSQL_init_connection ($<str>2);
-		if (status!=0) {
+		if (a4gl_status!=0) {
 			a4gl_ace_yyerror("Unable to connect to database");
 		}
 	}

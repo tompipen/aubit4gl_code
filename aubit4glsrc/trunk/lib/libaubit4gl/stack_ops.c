@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.2 2003-03-02 14:06:58 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.3 2003-03-08 10:22:51 mikeaubury Exp $
 #
 */
 
@@ -97,7 +97,7 @@ void process_stack_op_other(int d) {
 				A4GLSQL_prepare_select (ibind, n, obind, 0,
 							s), 0, cname);
       }
-      if (status != 0)
+      if (a4gl_status != 0)
 	{
 	  drop_param ();
 	  push_int (0);
@@ -105,7 +105,7 @@ void process_stack_op_other(int d) {
 	free(s);
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GLSQL_open_cursor (0, cname);
-      if (status != 0)
+      if (a4gl_status != 0)
 	{
 	  drop_param ();
 	  push_int (0);
@@ -113,7 +113,7 @@ void process_stack_op_other(int d) {
       while (1)
 	{
 	  A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind);
-	  if (status != 0)
+	  if (a4gl_status != 0)
 	    break;
 	  debug ("MJA tmpvar=%s\n", tmpvar);
 	  push_param (tmpvar, 0);
@@ -162,7 +162,7 @@ void process_stack_op_other(int d) {
 	free(s);
       A4GLSQL_declare_cursor (0,  prep , 0, cname);
 
-      if (status != 0)
+      if (a4gl_status != 0)
 	{
 	  push_int (0);
 	  return;
@@ -170,18 +170,18 @@ void process_stack_op_other(int d) {
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GLSQL_open_cursor (0, cname);
       debug ("opened cursor");
-      if (status != 0)
+      if (a4gl_status != 0)
 	{
 	  push_int (0);
 	  return;
 	}
       A4GLSQL_fetch_cursor (cname, 2, 1, 1, ibind);
       debug ("fetched");
-      if (status == 0)
+      if (a4gl_status == 0)
 	ok = 1;
-      if (status == 100)
+      if (a4gl_status == 100)
 	ok = 0;
-      if (status != 0 && status != 100)
+      if (a4gl_status != 0 && a4gl_status != 100)
 	{
 	  debug ("Some error with the exists stuff.");
 	  push_int (0);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_server.c,v 1.10 2002-08-13 11:56:48 afalout Exp $
+# $Id: rpc_server.c,v 1.11 2003-03-08 10:22:52 mikeaubury Exp $
 #*/
 
 /**
@@ -152,7 +152,7 @@ arg1=&arg;
 
 	result.return_values_val=malloc(sizeof(object_data)*z);
 	result.return_values_val[0].dtype=2;	
-	result.return_values_val[0].single_dtype_u.longval=status;
+	result.return_values_val[0].single_dtype_u.longval=a4gl_status;
 
 	for (a=z;a>1;a--) {
 		ptr=result.return_values_val;

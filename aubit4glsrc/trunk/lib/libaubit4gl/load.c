@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.12 2003-02-17 17:10:57 mikeaubury Exp $
+# $Id: load.c,v 1.13 2003-03-08 10:22:51 mikeaubury Exp $
 #
 */
 
@@ -311,7 +311,7 @@ int a;
 	debug("EXECUTE SQL cnt=%d",cnt);
       A4GLSQL_execute_sql("load",cnt,ibind);
 
-      if (status!=0) {
+      if (a4gl_status!=0) {
 	   sprintf(buff,"%d",cnt);
            set_errm(buff);
            exitwith("Error reading load file at line %s");

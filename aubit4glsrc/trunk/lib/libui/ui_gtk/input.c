@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.6 2002-11-19 18:18:56 mikeaubury Exp $
+# $Id: input.c,v 1.7 2003-03-08 10:22:52 mikeaubury Exp $
 #*/
 
 /**
@@ -629,12 +629,12 @@ GtkWidget **field_list;
 GtkWidget *formdets;
 int nofields;
 
-  status = 0;
+  a4gl_status = 0;
   debug_last_field_created ("disp_fields1 ");
   debug ("In disp_fields");
   formdets = get_curr_form ();
 
-  if (status != 0)
+  if (a4gl_status != 0)
     return;
 
   flg = 0;

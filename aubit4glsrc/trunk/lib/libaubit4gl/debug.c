@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.19 2003-02-24 07:53:06 afalout Exp $
+# $Id: debug.c,v 1.20 2003-03-08 10:22:51 mikeaubury Exp $
 #
 */
 
@@ -42,7 +42,7 @@
 
 
 #include "a4gl_libaubit4gl_int.h"
-extern sqlca_struct sqlca;
+extern sqlca_struct a4gl_sqlca;
 
 /*
 =====================================================================
@@ -133,7 +133,7 @@ debug_full (char *fmt,...)
       va_start (args, fmt);
       vsprintf (buff, fmt, args);
       if (buff[strlen (buff) - 1] != ':')
-        fprintf (debugfile, "%-20s %-6d status=%6ld sqlca.sqlcode=%6ld\n ", g_fname, g_lineno, status, sqlca.sqlcode);
+        fprintf (debugfile, "%-20s %-6d status=%6ld sqlca.sqlcode=%6ld\n ", g_fname, g_lineno, a4gl_status, a4gl_sqlca.sqlcode);
 
       fprintf (debugfile, "%s\n", buff);
 

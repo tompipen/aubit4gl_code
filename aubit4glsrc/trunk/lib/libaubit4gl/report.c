@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.13 2003-02-11 10:44:02 mikeaubury Exp $
+# $Id: report.c,v 1.14 2003-03-08 10:22:51 mikeaubury Exp $
 #
 */
 
@@ -77,7 +77,7 @@ void 				rep_file_print		(struct rep_structure *rep,
 										char *fname, int opt_semi);
 
 char *              decode_datatype		(int dtype,int dim);
-extern sqlca_struct sqlca;
+extern sqlca_struct a4gl_sqlca;
 
 
 /*
@@ -529,9 +529,9 @@ char tbuff[1024];
 	sprintf(tbuff,"_%d",(int)gen_rep_tab_name(b));
 	A4GLSQL_declare_cursor (0, A4GLSQL_prepare_select (ibind, 0, obind, 0, buff), 0, tbuff);
 
-	if (sqlca.sqlcode!=0) return 0;
+	if (a4gl_sqlca.sqlcode!=0) return 0;
 	A4GLSQL_open_cursor (0, tbuff);
-	if (sqlca.sqlcode!=0) return 0;
+	if (a4gl_sqlca.sqlcode!=0) return 0;
 
 
 return 0;
@@ -552,7 +552,7 @@ char tbuff[1024];
 	A4GLSQL_fetch_cursor (tbuff, 2, 1, n, reread);
 	push_params(reread,n);
 
-	if (sqlca.sqlcode==0) return 1;
+	if (a4gl_sqlca.sqlcode==0) return 1;
 	A4GLSQL_set_sqlca_sqlcode (0);
 	return 0;
 }

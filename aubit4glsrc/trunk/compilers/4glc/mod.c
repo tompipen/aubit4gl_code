@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.110 2003-03-07 04:37:34 afalout Exp $
+# $Id: mod.c,v 1.111 2003-03-08 10:22:43 mikeaubury Exp $
 #
 */
 
@@ -1120,13 +1120,11 @@ variable_action(-1,"int_flag","","","a4gl_add_variable");
 variable_action(-1,"long","","","push_type");
 variable_action(-1,"quit_flag","","","a4gl_add_variable");
 variable_action(-1,"long","","","push_type");
-variable_action(-1,"status","","","a4gl_add_variable");
+variable_action(-1,"a4gl_status","","","a4gl_add_variable");
 variable_action(-1,"long","","","push_type");
-
 variable_action(-1,"time","","","a4gl_add_variable");
 variable_action(-1,"char","8","","push_type");
-
-variable_action(-1,"sqlca","","","a4gl_add_variable");
+variable_action(-1,"a4gl_sqlca","","","a4gl_add_variable");
 variable_action(-1,"_RECORD","","","push_type");
 variable_action(-1,"sqlcode","","","a4gl_add_variable");
 variable_action(-1,"long","","","push_type");
@@ -1142,7 +1140,13 @@ variable_action(-1,"char","8","","push_type");
 variable_action(-1,"sqlstate","","","a4gl_add_variable");
 variable_action(-1,"char","9","","push_type");
 variable_action(-1,"","_ENDREC","","a4gl_add_variable");
+
 variable_action(-1,"notfound","100","i","add_constant");
+
+// @todo - QUICK HACK
+variable_action(-1,"sqlca","a4gl_sqlca","C","add_constant");
+variable_action(-1,"status","a4gl_status","C","add_constant");
+
 variable_action(-1,"false","0","i","add_constant");
 variable_action(-1,"true","1","i","add_constant");
 variable_action(-1,"today","","","a4gl_add_variable");

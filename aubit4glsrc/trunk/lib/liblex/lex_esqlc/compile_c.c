@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.20 2003-03-07 08:11:56 afalout Exp $
+# $Id: compile_c.c,v 1.21 2003-03-08 10:22:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -252,6 +252,14 @@ char *ptr;
     }
 
   fprintf (outfile, "#define fgldate long\n");
+  if (doing_esql()) {
+	switch (esql_type()) {
+		case 1: fprintf(outfile,"#define DIALECT_INFORMIX\n");break;
+		case 2: fprintf(outfile,"#define DIALECT_POSTGRES\n");break;
+	}
+  }
+
+
   fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
   if (doing_esql()) {
   	fprintf (outfile, "#include \"a4gl_esql.h\"\n");
@@ -943,51 +951,51 @@ prchkerr (int l, char *f)
   #ifdef DEBUG
 	  debug ("MJA prchkerr %d %s", l, f);
   #endif
-  printc ("if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || %d)) {\n",
+  printc ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || %d)) {\n",
 	  when_code[A_WHEN_SUCCESS] == WHEN_CALL
 	  || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
-  /*printc("debug(\"status=%%d sqlca.sqlcode=%%d\",status,sqlca.sqlcode);\n"); */
+  /*printc("debug(\"a4gl_status=%%d a4gl_sqlca.sqlcode=%%d\",a4gl_status,a4gl_sqlca.sqlcode);\n"); */
   printcomment ("/* NOTFOUND */");
 
   a =
-    pr_when_do ("   if (sqlca.sqlcode==100)",
+    pr_when_do ("   if (a4gl_sqlca.sqlcode==100)",
 		when_code[A_WHEN_NOTFOUND], l, f, when_to[A_WHEN_NOTFOUND]);
   printc ("/* SQLERROR */");
 
   a =
-    pr_when_do ("   if (sqlca.sqlcode<0&&status==sqlca.sqlcode)",
+    pr_when_do ("   if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode)",
 		when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
 
 #ifdef ANYERRORISCAUSINGPROBS
   printc ("/* ANYERROR */");
 
   a =
-    pr_when_do ("   if (status<0||sqlca.sqlcode<0)",
+    pr_when_do ("   if (a4gl_status<0||a4gl_sqlca.sqlcode<0)",
 		when_code[A_WHEN_ANYERROR], l, f, when_to[A_WHEN_ANYERROR]);
 #endif
 
   printc ("/* ERROR */");
   a =
-    pr_when_do ("   if (status<0)", when_code[A_WHEN_ERROR], l, f,
+    pr_when_do ("   if (a4gl_status<0)", when_code[A_WHEN_ERROR], l, f,
 		when_to[A_WHEN_ERROR]);
   printcomment ("/* SQLWARNING */");
   a =
-    pr_when_do ("   if (sqlca.sqlcode==0&&sqlca.sqlawarn[0]=='W')",
+    pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_sqlca.sqlawarn[0]=='W')",
 		when_code[A_WHEN_SQLWARNING], l, f,
 		when_to[A_WHEN_SQLWARNING]);
   printcomment ("/* WARNING */");
   a =
     pr_when_do
-    ("   if (aclfgli_get_err_flg()&&sqlca.sqlcode==0&&(sqlca.sqlawarn[0]=='w'||sqlca.sqlawarn[0]=='W'))",
+    ("   if (aclfgli_get_err_flg()&&a4gl_sqlca.sqlcode==0&&(a4gl_sqlca.sqlawarn[0]=='w'||a4gl_sqlca.sqlawarn[0]=='W'))",
      when_code[A_WHEN_WARNING], l, f, when_to[A_WHEN_WARNING]);
   printcomment ("/* SQLSUCCESS */");
   a =
-    pr_when_do ("   if (sqlca.sqlcode==0&&status==0)",
+    pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)",
 		when_code[A_WHEN_SQLSUCCESS], l, f,
 		when_to[A_WHEN_SQLSUCCESS]);
   printcomment ("/* SUCCESS */");
   a = pr_when_do (
-	  "   if (sqlca.sqlcode==0&&status==0)",
+	  "   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)",
 	  when_code[A_WHEN_SUCCESS], 
 		l, 
 		f,
@@ -1534,7 +1542,7 @@ print_remote_func (char *identifier)
 {
   printh ("int aclfgl_%s(int np);\n", identifier);
   printc
-    ("status=0;register_func(\"%s\",aclfgl_%s);if (status<0) chk_err(%d,_module_name);\n",
+    ("a4gl_status=0;register_func(\"%s\",aclfgl_%s);if (a4gl_status<0) chk_err(%d,_module_name);\n",
      identifier, identifier, yylineno);
 }
 
@@ -1581,7 +1589,7 @@ print_returning (void)
     /* warning! : 	void    A4GLSQL_set_status 	(int a, int sql); */
 // I've added the check back in - even if its -1....
 // I'm not sure why it went in...
-	("if (_retvars!= %d) {if (_retvars!=-1||1) {if (status==0) A4GLSQL_set_status(-3001,0);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
+	("if (_retvars!= %d) {if (_retvars!=-1||1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
      cnt);
   printc ("pop_params(ibind,%d);}\n", cnt);
   printc ("}\n");
@@ -2352,7 +2360,7 @@ print_import (char *func, int nargs)
   printc ("long _argc[%d];\n", nargs);
   printc ("long _retval;");
   printc
-    ("   if (nargs!=%d) {status=-30174;pop_args(nargs);return 0;}\n",
+    ("   if (nargs!=%d) {a4gl_status=-30174;pop_args(nargs);return 0;}\n",
      nargs, yylineno); for (a = 1; a <= nargs; a++)
     {
       printc ("   _argc[%d]=pop_int();\n", nargs - a);
@@ -3735,7 +3743,7 @@ void
 print_func_args (int c)
 {
   printc(
-	  "if (nargs!=%d) {status=-30174;pop_args(nargs);return 0;}\n",
+	  "if (nargs!=%d) {a4gl_status=-30174;pop_args(nargs);return 0;}\n",
 		c,
     yylineno
 	); 
@@ -3790,7 +3798,7 @@ print_fgllib_start (char *db)
   if (db[0] != 0)
     {
       print_init_conn (db);
-      printc ("if (sqlca.sqlcode<0) chk_err(%d,_module_name);\n", lastlineno);
+      printc ("if (a4gl_sqlca.sqlcode<0) chk_err(%d,_module_name);\n", lastlineno);
     }
   print_function_variable_init();
 }

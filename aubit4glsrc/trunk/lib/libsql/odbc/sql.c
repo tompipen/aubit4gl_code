@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.55 2003-03-08 04:23:04 afalout Exp $
+# $Id: sql.c,v 1.56 2003-03-08 10:22:52 mikeaubury Exp $
 #
 */
 
@@ -282,7 +282,7 @@ int convneg_sql_to_4gl[15] =
 
 #if (defined(WIN32) && ! defined(__CYWIN__)) /* && defined DLL_EXPORT */
 
-	dll_export sqlca_struct sqlca;
+	dll_export sqlca_struct a4gl_sqlca;
 	dll_export int status;
 
 	#include <windows.h>
@@ -301,7 +301,7 @@ int convneg_sql_to_4gl[15] =
 #endif /* WIN32 && DLL_EXPORT */
 
 
-dll_import sqlca_struct sqlca;
+dll_import sqlca_struct a4gl_sqlca;
 
 
 /*
@@ -322,9 +322,9 @@ void
 A4GLSQL_set_status (int a, int sql)
 {
 
-  status = a;
+  a4gl_status = a;
   if (sql)
-    sqlca.sqlcode = a;
+    a4gl_sqlca.sqlcode = a;
   debug ("Status set to %d", a);
 }
 
@@ -717,7 +717,7 @@ int rc;
       #ifdef DEBUG
 		  debug ("Prepared '%s'\n", s);
       #endif
-      if (sqlca.sqlcode < 0) {
+      if (a4gl_sqlca.sqlcode < 0) {
         #ifdef DEBUG
 			debug("Returning 0");
         #endif
@@ -731,7 +731,7 @@ int rc;
   else
     {
       /* not an sql error */
-      if (status == 0)
+      if (a4gl_status == 0)
 		exitwith ("Memory Allocation Error");
       #ifdef DEBUG
 		  debug ("Some error generating hstmt");
@@ -780,7 +780,7 @@ A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
       rc = SQLPrepare ( sid->hstmt, sid->select, SQL_NTS);
 	  chk_rc (rc, sid->hstmt, "SQLPrepare");
       /* set_sqlca (sid->hstmt, "Prepare_glob_sql : After Prepare", 0); */
-      if (sqlca.sqlcode>=0) {
+      if (a4gl_sqlca.sqlcode>=0) {
       #ifdef DEBUG
 		  debug ("Prepared %s as %p\n", s, sid->hstmt);
       #endif
@@ -1007,7 +1007,7 @@ int rc;
   #endif
 
   curs = cid->statement->select;
-  status=0;
+  a4gl_status=0;
   if (ni==0) { /* No USING on the open.. */
   	proc_bind (cid->statement->ibind, cid->statement->ni, 'i',  cid->statement->hstmt);
 
@@ -1042,7 +1042,7 @@ int rc;
   }
 
 
-  if (status!=0)  {
+  if (a4gl_status!=0)  {
 	return 0;
   }
 
@@ -1092,7 +1092,7 @@ int rc;
   rc = SQLRowCount ( cid->statement->hstmt,(SQLINTEGER*) &rowcount);
 
   /* chk_rc (rc, cid->statement->hstmt, "SQLRowCount"); */
-  sqlca.sqlerrd[1] = rowcount;
+  a4gl_sqlca.sqlerrd[1] = rowcount;
   return 0;
 }
 
@@ -1374,7 +1374,7 @@ A4GLSQL_xset_status(int a)
 int 
 A4GLSQL_get_status (void)
 {
-  return sqlca.sqlcode;
+  return a4gl_sqlca.sqlcode;
 }
 
 /**
@@ -1385,7 +1385,7 @@ A4GLSQL_get_status (void)
 char *
 A4GLSQL_get_sqlerrm (void)
 {
-  return sqlca.sqlerrm;
+  return a4gl_sqlca.sqlerrm;
 }
 
 /**
@@ -1898,7 +1898,7 @@ RETCODE rc;
 	#endif
       if (strlen(s1)==0) strcpy(s1,"00000");
 
-      strcpy (sqlca.sqlstate, s1);
+      strcpy (a4gl_sqlca.sqlstate, s1);
 
       if (strcmp (s1, "00000") == 0)
 	{
@@ -1920,7 +1920,7 @@ RETCODE rc;
 	#ifdef DEBUG
 		debug ("'%s' '%s' (%d %d)", s1, s2, errno, errno2);
 	#endif
-      strncpy (sqlca.sqlerrm, s2, 72);
+      strncpy (a4gl_sqlca.sqlerrm, s2, 72);
       A4GLSQL_set_status (errno, 1);
       #ifdef DEBUG
 		  debug ("Setting lasterrorstr to '%s'", s2);
@@ -1931,7 +1931,7 @@ RETCODE rc;
 	  debug("Done that - getting rowcount");
   #endif
   rc = SQLRowCount (hstmt, &rowcount);
-  sqlca.sqlerrd[1] = rowcount;
+  a4gl_sqlca.sqlerrd[1] = rowcount;
 }
 
 /**
@@ -3409,7 +3409,7 @@ FILE *fout;
   rc = SQLFreeStmt (hstmt, SQL_DROP);
   fclose(fout);
   chk_rc (rc, hstmt, "SQLFreeStmt");
-  sqlca.sqlerrd[1]=cnt;
+  a4gl_sqlca.sqlerrd[1]=cnt;
 }
 
 /**
@@ -3522,8 +3522,8 @@ chk_need_blob(int rc,HSTMT hstmt)
 void
 A4GLSQL_set_sqlca_sqlcode(int a)
 {
-    status=a;
-    sqlca.sqlcode=a;
+    a4gl_status=a;
+    a4gl_sqlca.sqlcode=a;
 }
 
 /**

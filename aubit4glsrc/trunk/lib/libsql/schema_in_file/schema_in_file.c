@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.1 2003-02-19 11:49:04 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.2 2003-03-08 10:22:52 mikeaubury Exp $
 #*/
 
 /**
@@ -79,6 +79,9 @@ FILE *f_db_in;
 
 */
 
+
+
+#ifdef DONTTHINKWENEED
 /**
  *
  * @todo Describe function
@@ -90,6 +93,7 @@ A4GLSQL_set_status (int a, int sql)
   if (sql) sqlca.sqlcode = a;
   debug ("Status set to %d", a);
 }
+#endif
 
 /**
  *

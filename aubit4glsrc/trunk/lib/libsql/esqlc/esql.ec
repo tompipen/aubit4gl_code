@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.44 2003-03-03 21:11:05 mikeaubury Exp $
+# $Id: esql.ec,v 1.45 2003-03-08 10:22:52 mikeaubury Exp $
 #
 */
 
@@ -74,6 +74,12 @@
 //provided in Informix headers instead.
 //WARNING: Since sqlca is used in many places in Aubit code, is this safe?
 #define _SQLCA_DEFINED_
+
+$include sqlca;
+
+#include "a4gl_incl_4gldef.h"
+
+extern sqlca_struct a4gl_sqlca;
 
 #if defined (WIN32) || defined (__CYGWIN__)
 	#define _NO_FORM_H_
@@ -127,20 +133,9 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.44 2003-03-03 21:11:05 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.45 2003-03-08 10:22:52 mikeaubury Exp $";
 #endif
 
-/*
-#ifdef WIN32
-	int status;
-#endif
-*/
-
-/*
-#ifdef OLD_INCL
-	typedef unsigned char UCHAR;
-#endif
-*/
 
 char lasterrorstr[1024] = "";
 
@@ -2960,8 +2955,8 @@ A4GLSQL_fill_array (int mx, char **arr1, int szarr1, char **arr2, int szarr2,
 void
 A4GLSQL_set_sqlca_sqlcode (int a)
 {
-  status = a;
-  sqlca.sqlcode = a;
+  //a4gl_status = a;
+  //a4gl_sqlca.sqlcode = a;
   /* return 0; */
 }
 

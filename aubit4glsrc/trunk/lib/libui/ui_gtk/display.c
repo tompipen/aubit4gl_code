@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display.c,v 1.4 2002-11-23 08:45:10 mikeaubury Exp $
+# $Id: display.c,v 1.5 2003-03-08 10:22:52 mikeaubury Exp $
 #*/
 
 /**
@@ -179,7 +179,7 @@ display_generic (GtkWidget * k, char *s)
    	pop_var2(&da,7,0);
 	debug("Got date as %d\n",da);
 
-	if (status!=0) return 1;
+	if (a4gl_status!=0) return 1;
 	debug("Everything seems ok...");
 
    	push_variable(&da,0x7); aclfgl_day(1);

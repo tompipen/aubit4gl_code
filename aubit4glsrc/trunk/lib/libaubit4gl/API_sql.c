@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.29 2003-02-16 11:34:41 mikeaubury Exp $
+# $Id: API_sql.c,v 1.30 2003-03-08 10:22:51 mikeaubury Exp $
 #
 */
 
@@ -47,7 +47,7 @@
 
 
 #include "a4gl_libaubit4gl_int.h"
-extern sqlca_struct sqlca;
+extern sqlca_struct a4gl_sqlca;
 /*
 =====================================================================
                     Variables definitions
@@ -215,8 +215,8 @@ A4GLSQL_set_status (int a, int sql)
 {
   debug("A4GLSQL_set_status");
 
-  status = a;
-  if (sql) sqlca.sqlcode = a;
+  a4gl_status = a;
+  if (sql) a4gl_sqlca.sqlcode = a;
   if (a!=0||sql!=0) aclfgli_set_err_flg();
   debug ("Status set to %d", a);
 }
@@ -264,11 +264,11 @@ A4GLSQL_init_connection   (char *dbName)
 int
 A4GLSQL_get_status   (void)
 {
-	debug("Status=%d sqlca.sqlcode=%d",status,sqlca.sqlcode);
+	debug("Status=%d sqlca.sqlcode=%d",a4gl_status,a4gl_sqlca.sqlcode);
 
-	if (status==0&&sqlca.sqlcode<0) status=sqlca.sqlcode;
+	if (a4gl_status==0&&a4gl_sqlca.sqlcode<0) a4gl_status=a4gl_sqlca.sqlcode;
 
-	return status ;
+	return a4gl_status ;
 }
 
 /**
@@ -670,6 +670,7 @@ A4GLSQL_declare_cursor    (int upd_hold, struct s_sid *sid, int scroll, char *cu
 void
 A4GLSQL_set_sqlca_sqlcode   (int a)
 {
+debug("set_sqlca_sqlcode... %d\n",a);
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_set_sqlca_sqlcode");
   func(a);
@@ -887,8 +888,15 @@ of globals when making windows .dll
 char *
 global_A4GLSQL_get_sqlerrm (void)
 {
-	return sqlca.sqlerrm;
+	return a4gl_sqlca.sqlerrm;
 }
+
+void global_A4GLSQL_set_sqlcode (int n)
+{
+                a4gl_sqlca.sqlcode=n;
+                a4gl_status=n;
+}
+
 
 /**
  * Used only in Informix esql/c plug-in

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.4 2003-02-16 13:24:17 mikeaubury Exp $
+# $Id: prompt.c,v 1.5 2003-03-08 10:22:52 mikeaubury Exp $
 #*/
 
 /**
@@ -164,7 +164,7 @@ int a;
     debug ("Form f = %p", f);
   prompt->f = f;
   A4GLSQL_set_status (0, 0);
-  if (status != 0)
+  if (a4gl_status != 0)
     return (prompt->mode = 2);
   d = derwin (p, 0, 0, width+1, 1);
   set_form_win (f, p);

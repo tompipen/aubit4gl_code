@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.36 2003-03-02 14:26:24 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.37 2003-03-08 10:22:51 mikeaubury Exp $
 #
 */
 
@@ -373,7 +373,7 @@
 	#define ACL_MN_SHOW 	0x0000
 	#define ACL_MN_HIDE 	0x0001
 	#define A_BORDER 		0x400
-	#define wchk() if (sqlca.sqlcode<0) werror_hand(__FILE__,__LINE__)
+	#define wchk() if (a4gl_sqlca.sqlcode<0) werror_hand(__FILE__,__LINE__)
 
 
     /* ==================== from incl_4glhdr.h =========================*/

@@ -76,7 +76,7 @@ print_foreach_next (char *cursorname, char *into)
 {
   int ni;
   int no;
-  printc ("sqlca.sqlcode=0;\n");
+  printc ("a4gl_sqlca.sqlcode=0;\n");
   printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", strip_quotes(cursorname),into);
   print_copy_status();
   printc ("while (1) {\n");
@@ -87,7 +87,7 @@ print_foreach_next (char *cursorname, char *into)
   print_copy_status();
   print_conversions('o');
 
-  printc ("if (sqlca.sqlcode<0||sqlca.sqlcode==100) break;\n");
+  printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
 }
 
 /**
@@ -522,8 +522,12 @@ print_init_conn (char *db)
     printc ("EXEC SQL CONNECT TO $s AS 'default';\n");
     printc("}");
   }
-  else
-    printc ("EXEC SQL CONNECT TO \"%s\" AS 'default';\n",db);
+  else {
+    switch(esql_type()) {
+	case 1: printc ("EXEC SQL CONNECT TO \"%s\" AS 'default';\n",db); break;
+    	case 2: printc ("EXEC SQL CONNECT TO %s AS 'default';\n",db);break;
+	}
+  }
   print_copy_status();
 }
 
@@ -754,7 +758,7 @@ get_undo_use (void)
 
 
 static void print_copy_status() {
-	printc("A4GLSQL_set_status(sqlca.sqlcode,1);");
+	printc("A4GLSQL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
 }
 
 
