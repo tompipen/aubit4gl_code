@@ -29,6 +29,11 @@ FGL=list_validate_like_star.4gl
 #This is set in comon make file; overide it if you need to here
 #A4GL_KEYFILE=keys.in
 #A4GL_KEYDELAY=10000
+ifeq "${A4GL_SYSCOL_VAL}" ""
+                A4GL_SYSCOL_VAL=a4gl_syscolval
+                export A4GL_SYSCOL_VAL
+endif
+
 
 ## ======================================================================
 ##                  Local Setings - automatic

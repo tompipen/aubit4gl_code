@@ -21,10 +21,10 @@ MAIN
     aDateTime DATETIME HOUR TO HOUR
   )
 
-  LET lv_dttime = 23 
+  LET lv_dttime = "23"
   INSERT INTO xpto (keyColumn,aDatetime) VALUES (1,lv_dttime)
 
-  UPDATE xpto SET aDatetime = 23 UNITS HOUR
+  UPDATE xpto SET aDatetime = "23" #UNITS HOUR
 
   SELECT keyColumn, aDateTime UNITS HOUR
 	  INTO lv_keyColumn, lv_dttime

@@ -51,6 +51,11 @@ ifneq "${A4GL_KEYFILE}" ""
 	export A4GL_KEYFILE A4GL_KEYDELAY
 endif
 
+
+ifeq "${A4GL_OMIT_NO_LOG}" ""
+	A4GL_OMIT_NO_LOG="N"
+	export A4GL_OMIT_NO_LOG
+endif
 ## ======================================================================
 ##                 	Local Targets
 ## ======================================================================
