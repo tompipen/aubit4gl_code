@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.79 2004-05-21 15:34:52 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.80 2004-05-24 20:02:11 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.79 2004-05-21 15:34:52 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.80 2004-05-24 20:02:11 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -81,7 +81,7 @@ static char *module_id="$Id: compile_c_esql.c,v 1.79 2004-05-21 15:34:52 mikeaub
 
 #include "a4gl_lib_lex_esqlc_int.h"
 char * A4GL_dtype_sz (int d, int s);
-
+void make_sql_bind (char *sql, char *type);
 	extern int fbindcnt;
 /*
 =====================================================================
@@ -115,6 +115,38 @@ char * A4GL_mk_temp_tab (struct BINDING *b, int n);
 =====================================================================
 */
 
+
+static void A4GL_save_sql(char *s,char *s2) ;
+
+
+
+
+static void A4GL_save_sql(char *s,char *s2) {
+static int sqlcnt=0;
+char *buff;
+int a;
+extern int yylineno;
+if (A4GL_isyes(acl_getenv("A4GL_EC_LOGSQL"))) {
+	if (s2==0) {
+		buff=strdup(s);
+	} else {
+		buff=malloc(strlen(s)+strlen(s2));
+		sprintf(buff,s,s2);
+	}
+	printh("char _sql_stmt_%d[]={\n",sqlcnt);
+	for (a=0;a<strlen(buff);a++) {
+		if (isalpha(buff[a])||isdigit(buff[a])) {
+			printh("'%c',",buff[a]);
+		} else {
+			printh("%3d,",buff[a]);
+		}
+		if ((a%20)==19) printh("\n");
+	}
+	printh("0};\n");
+	printc ("A4GL_logsql(%d,_module_name,_sql_stmt_%d);",yylineno,sqlcnt++);
+	free(buff);
+} 
+}
 /**
  * Print the C implementation of the execution of the SQL statement allready
  * readed.
@@ -124,7 +156,7 @@ char * A4GL_mk_temp_tab (struct BINDING *b, int n);
 void
 print_exec_sql (char *s)
 {
-
+  A4GL_save_sql(s,0);
   printc ("EXEC SQL %s; /* exec_sql */\n", s);
   print_copy_status ();
 }
@@ -145,6 +177,7 @@ print_exec_sql_bound (char *s)
   printc ("/* printed bind - print conversions */");
   print_bind_set_value('i');
   print_conversions ('i');
+  A4GL_save_sql(s,0);
   printc ("EXEC SQL %s; /* exec_sql_bound */\n", s);
   print_copy_status ();
   printc ("}\n");
@@ -169,18 +202,22 @@ print_close (char type, char *name)
       break;
     case 'D':
 	if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
+  	 	A4GL_save_sql("CLOSE DATABASE",0);
       		printc ("EXEC SQL CLOSE DATABASE;\n");
 	} else {
+  		A4GL_save_sql("DISCONNECT 'default'",0);
       		printc ("EXEC SQL DISCONNECT 'default';\n");
 	}
       printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(0);");
       print_copy_status ();
       break;
     case 'S':
+A4GL_save_sql("CLOSE SESSION %s",A4GL_strip_quotes (name));
       printc ("EXEC SQL CLOSE SESSION %s;\n", A4GL_strip_quotes (name));
       print_copy_status ();
       break;
     case 'C':
+A4GL_save_sql("CLOSE SESSION %s", A4GL_strip_quotes (name));
       printc ("EXEC SQL CLOSE %s;\n", A4GL_strip_quotes (name));
       print_copy_status ();
       break;
@@ -220,6 +257,7 @@ print_foreach_next (char *xcursorname, char *using, char *into)
   print_bind_set_value('i');
   print_bind_set_value('o');
   print_conversions ('i');
+A4GL_save_sql("FETCH %s", A4GL_strip_quotes (cursorname));
   printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",
 	  cursorname, A4GL_get_into_part (0,no), ni, no);
   printc("internal_recopy_%s_o_Dir();",cursorname);
@@ -241,6 +279,7 @@ print_foreach_next (char *xcursorname, char *using, char *into)
 void
 print_free_cursor (char *s)
 {
+A4GL_save_sql("FREE %s", s);
   printc ("EXEC SQL FREE %s\n", s);
   print_copy_status ();
 }
@@ -328,12 +367,14 @@ print_linked_cmd (int type, char *var)
 
       if (type == 'S')
 	{
+A4GL_save_sql(buff,0);
 	  printc ("EXEC SQL %s; /* linked - S */", buff);
 	  print_copy_status ();
 	}
 
       if (type == 'D' || type == 'U')
 	{
+A4GL_save_sql(buff,0);
 	  printc ("EXEC SQL %s; /* linked - D/U */", buff);
 	  print_copy_status ();
 	}
@@ -377,6 +418,7 @@ print_locate (char where, char *var, char *fname)
 void
 print_set_conn (char *conn)
 {
+A4GL_save_sql("SET CONNECTION %s",conn);
   printc ("EXEC SQL SET CONNECTION %s;\n", conn);
   print_copy_status ();
 }
@@ -400,6 +442,7 @@ print_put (char *xcname,char *putvals)
   print_bind_set_value('i');
   print_conversions ('i');
   printc("internal_recopy_%s_i_Dir();",cname);
+A4GL_save_sql("PUT %s",cname);
   printc ("EXEC SQL PUT %s /* '%s' */\n", cname,putvals);
 
   if (A4GL_isyes(acl_getenv("USE_BINDING_FOR_PUT"))==0) {
@@ -447,6 +490,7 @@ print_prepare (char *xstmt, char *sqlvar)
   printc ("EXEC SQL END DECLARE SECTION;\n");
   printc ("_s=strdup(%s);\n", sqlvar);
   printc ("EXEC SQL PREPARE %s FROM :_s;\n", stmt, sqlvar);
+A4GL_save_sql("PREPARE %s",sqlvar);
 
   printc ("free(_s);\n}\n");
   print_copy_status ();
@@ -472,6 +516,7 @@ print_execute (char *stmt, int using)
 
   if (using == 0)
     {
+	A4GL_save_sql("EXECUTE %s", A4GL_strip_quotes (stmt));
       printc ("EXEC SQL EXECUTE %s;\n", A4GL_strip_quotes (stmt));
       print_copy_status ();
     }
@@ -486,7 +531,7 @@ print_execute (char *stmt, int using)
       print_bind_set_value ('i');
       print_conversions ('i');
 
-
+     A4GL_save_sql("EXECUTE %s USING ...", A4GL_strip_quotes (stmt));
       printc ("EXEC SQL EXECUTE %s USING \n", A4GL_strip_quotes (stmt));
       for (a = 0; a < ni; a++)
 	{
@@ -506,6 +551,7 @@ print_execute (char *stmt, int using)
       printc ("{ /* EXECUTE */\n");
       no = print_bind_definition ('o');
       print_bind_set_value ('o');
+A4GL_save_sql("EXECUTE %s INTO ...", A4GL_strip_quotes (stmt));
       printc ("EXEC SQL EXECUTE %s INTO \n", A4GL_strip_quotes (stmt));
       for (a = 0; a < no; a++)
 	{
@@ -533,6 +579,7 @@ print_execute (char *stmt, int using)
 
       print_conversions ('i');
 
+A4GL_save_sql("EXECUTE %s INTO ... USING ...", A4GL_strip_quotes (stmt));
       printc ("EXEC SQL EXECUTE %s ", A4GL_strip_quotes (stmt));
 
 	printc(" INTO ");
@@ -608,6 +655,7 @@ print_open_session (char *s, char *v, char *user)
 	//printc("if (A4GL_esql_db_open(-1)) {");
 	//print_close('D',"");
 	//printc("}");
+A4GL_save_sql("CONNECT TO '%s'", v);
   	printc ("EXEC SQL CONNECT TO  '%s' AS %s", v,s);
 	if (strlen(user)) {
 		printc("USER :_u USING :_p");
@@ -654,6 +702,7 @@ print_open_cursor (char *xcname, char *using)
 	}
 
       printc("internal_recopy_%s_i_Dir();",cname);
+A4GL_save_sql("OPEN '%s'", cname);
       printc ("\nEXEC SQL OPEN  %s USING /* %d variables */",
 	      cname, n);
       for (a = 0; a < n; a++)
@@ -674,6 +723,7 @@ print_open_cursor (char *xcname, char *using)
   else
     {
       printc("internal_recopy_%s_i_Dir();",cname);
+A4GL_save_sql("OPEN '%s'", cname);
       printc ("\nEXEC SQL OPEN  %s; /* No using */\n", cname);
 	/*printc("A4GL_char_pop();");*/
     }
@@ -689,12 +739,18 @@ print_open_cursor (char *xcname, char *using)
 void
 print_sql_commit (int t)
 {
-  if (t == -1)
+  if (t == -1) {
+A4GL_save_sql("BEGIN WORK",0);
     printc ("EXEC SQL BEGIN WORK;\n", t);
-  if (t == 0)
+  }
+  if (t == 0) {
+A4GL_save_sql("ROLLBACK WORK",0);
     printc ("EXEC SQL ROLLBACK WORK;\n", t);
-  if (t == 1)
+  }
+  if (t == 1) {
+A4GL_save_sql("COMMIT WORK",0);
     printc ("EXEC SQL COMMIT WORK;\n", t);
+  }
 
   print_copy_status ();
 }
@@ -839,6 +895,7 @@ print_fetch_3 (char *ftp, char *into)
 
   printc("/* ... no=%d*/",no);
   printc ("%s %s ;", buff, A4GL_get_into_part (0,no));
+A4GL_save_sql(buff,0);
   if (strcmp (into, "0,0") != 0)
     {
       print_copy_status ();
@@ -879,6 +936,7 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
 
       /*printc ("EXEC SQL PREPARE acl_p_set_db FROM $setdb;");*/
       /*printc ("EXEC SQL EXECUTE acl_p_set_db;\n");	*/
+A4GL_save_sql("DATABASE $s",0);
 	printc("EXEC SQL DATABASE $s;\n");
 
       printc ("}");
@@ -886,9 +944,11 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
       switch (esql_type ())
 	{
 	case 1:
+A4GL_save_sql("DATABASE %s",db);
 	  printc ("EXEC SQL DATABASE %s;\n", db);
 	  break;
 	case 2:
+A4GL_save_sql("DATABASE %s",db);
 	  printc ("EXEC SQL DATABASE %s;\n", db);
 	  break;
 	}
@@ -904,6 +964,7 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
 	print_close('D',"");
 	printc("}");
       printc ("s=A4GL_char_pop();A4GL_trim(s);\n");
+A4GL_save_sql("CONNECT TO $s AS 'default'",0);
       printc ("EXEC SQL CONNECT TO $s AS 'default';\n");
       printc ("}");
     }
@@ -911,14 +972,17 @@ if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
     {
 	printc("if (A4GL_esql_db_open(-1)) {");
 	print_close('D',"");
+A4GL_save_sql("DISCONNECT default'",0);
       		/*printc ("EXEC SQL DISCONNECT 'default';\n");*/
 	printc("}");
       switch (esql_type ())
 	{
 	case 1:
+A4GL_save_sql("CONNECT TO \"%s\" AS 'default'",db);
 	  printc ("EXEC SQL CONNECT TO \"%s\" AS 'default';\n", db);
 	  break;
 	case 2:
+A4GL_save_sql("CONNECT TO %s AS 'default'",db);
 	  printc ("EXEC SQL CONNECT TO %s AS 'default';\n", db);
 	  break;
 	}
@@ -942,6 +1006,7 @@ void
 print_do_select (char *s)
 {
 /*int ni;*/
+A4GL_save_sql(s,0);
   printc ("EXEC SQL %s;\n/* do_select */", s);
   print_copy_status ();
   print_conversions ('o');
@@ -958,6 +1023,7 @@ print_do_select (char *s)
 void
 print_flush_cursor (char *s)
 {
+A4GL_save_sql("FLUSH %s",A4GL_strip_quotes(s));
   printc ("EXEC SQL FLUSH %s;\n", A4GL_strip_quotes(s));
   print_copy_status ();
 }
@@ -1036,6 +1102,7 @@ printc("/* a1=%s a2=%s a3=%s */",a1,a2,a3);
     }
 
   printc ("%s FOR", buff);
+A4GL_save_sql("DECLARE CURSOR FOR %s",a2);
   printc ("     %s ", A4GL_strip_quotes (a2));
   /*if (strlen (a1))*/
     /*{*/
@@ -1237,6 +1304,7 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
 				printc("A4GL_trim(_unlfname);");
 			}
 
+A4GL_save_sql("UNLOAD : %s",sql);
   			printc ("EXEC SQL UNLOAD TO %s DELIMITER %s %s ;",filename,delim_s,sql);
 
 			if (file[0]!='"') { 
@@ -1312,6 +1380,7 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
                                 printc("A4GL_trim(_loadfname);");
 			}
 
+A4GL_save_sql("LOAD : %s",tab);
 	printc ("EXEC SQL LOAD FROM %s DELIMITER %s ",filename,delim_s);
 
 
@@ -1428,6 +1497,7 @@ printc("{");
 	print_bind_set_value('i');
 	print_bind_set_value('o');
   print_conversions('i');
+A4GL_save_sql(s,0);
   printc ("EXEC SQL %s;", s);
   print_copy_status ();
   print_conversions ('o');
