@@ -1147,20 +1147,18 @@ unlock_stmt:
 ;
 
 lock_stmt :
-	LOCK_TABLE tab_name IN share_or_exclusive MODE {
-		sprintf($<str>$,"%s %s %s %s %s",
+	LOCK_TABLE tab_name share_or_exclusive  {
+		sprintf($<str>$,"%s %s %s",
 					$<str>1,
 					$<str>2,
-					$<str>3,
-					$<str>4,
-					$<str>5
+					$<str>3
 					);
 		}
 ;
 
 share_or_exclusive :
-	SHARE
-	| EXCLUSIVE
+	INSHARE
+	| INEXCLUSIVE
 ;
 
 

@@ -346,7 +346,7 @@ printc("/* New report : %s */\n\n\n",$<str>3);
 printc("int acl_fglr_%s (int nargs,int acl_ctrl) {\n", $<str>3,$<str>3); 
 push_blockcommand("REPORT");
 }
-fparam_var_list CLOSE_BRACKET 
+op_param_var_list CLOSE_BRACKET 
 {
 lastlineno=yylineno;
 }
@@ -461,7 +461,7 @@ printc("/* New report : %s */\n\n\n",$<str>3);
 printc("int acl_fglr_%s (int nargs,int acl_ctrl) {\n", $<str>3,$<str>3); 
 push_blockcommand("REPORT");
 }
-fparam_var_list CLOSE_BRACKET 
+op_param_var_list CLOSE_BRACKET 
 {
 lastlineno=yylineno;
 }

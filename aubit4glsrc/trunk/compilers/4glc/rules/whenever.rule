@@ -15,7 +15,7 @@ set_whenever(WHEN_ERROR+atoi($<str>2),0);
 }
 		|  WHENEVER_SQLWARNING when_do
 {set_whenever(WHEN_SQLWARNING|atoi($<str>2),0);}
-		|  WHENEVER WARNING when_do
+		|  WHENEVER_WARNING when_do
 {set_whenever(WHEN_WARNING|atoi($<str>2),0);}
 		|  WHENEVER_SUCCESS when_do
 {set_whenever(WHEN_SUCCESS|atoi($<str>2),0);}
