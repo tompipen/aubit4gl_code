@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.2 2003-02-19 08:46:38 mikeaubury Exp $
+# $Id: compile.c,v 1.3 2003-02-19 09:35:51 mikeaubury Exp $
 #*/
 
 /**
@@ -781,6 +781,56 @@ set_yytext(char *s)
 }
 
 
+#define ANSI_MODE_IGNORE 0
+#define ANSI_MODE_WARN   1
+#define ANSI_MODE_ERROR  2
+
+
+static int get_ansi_mode(void ) {
+static int ansi_mode=-1;
+	if (ansi_mode==-1) {
+
+		ansi_mode=ANSI_MODE_IGNORE;
+
+		if (isyes(acl_getenv("ANSI_WARN"))) {
+			ansi_mode=ANSI_MODE_WARN;
+		}
+
+		if (isyes(acl_getenv("ANSI_ERROR"))) {
+			ansi_mode=ANSI_MODE_ERROR;
+		}
+	}
+	return ansi_mode;
+}
+
+/**
+ * Warn about syntax which is a violation of ANSI 
+ *
+ * @param s - string containing a description of the warning
+ * @param severity - 0 for only a warning  (where the compiler could correct)
+ *                   1 for an error (where the compiler can't fix it to ansi)
+ *
+ */
+void ansi_violation(char *s,int severity) {
+char buff[256];
+	switch (get_ansi_mode()) {
+		case ANSI_MODE_IGNORE: return ;
+		case ANSI_MODE_WARN:   
+				if (severity==0) {
+					printf("Warning : Corrected ANSI violation : %s @ line %d\n",s,yylineno); 
+				} else {
+					printf("Warning : ANSI violation : %s @ line %d\n",s,yylineno); 
+				}
+					return ;
+	}
+// Must be an ansi error....
+
+	if (severity==0) {
+	 	printf("Warning : Corrected ANSI violation : %s @ line %d\n",s,yylineno) ; return ;
+	}
+	sprintf(buff,"Error: ANSI violation - %s",s);
+	yyerror(buff);
+}
 
 /* ==================================== EOF =============================== */
 

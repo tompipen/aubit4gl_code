@@ -24,7 +24,8 @@ coords		:	a_number COMMA a_number {sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
 display_coords	:	coords;
 
 field_name	:	
-		identifier {sprintf($<str>$,"\"%s\",1",$<str>1);}
+		identifier {
+			sprintf($<str>$,"\"%s\",1",$<str>1);}
 		| INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { sprintf($<str>$,"int_to_id(%s)",$<str>3); }
 		| identifier DOT INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET { sprintf($<str>$,"int_to_id(%s.%s)",$<str>1,$<str>5); }
 		| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE
@@ -75,11 +76,6 @@ opt_help_no		:	{strcpy($<str>$,"0");} | HELP INT_VALUE {strcpy($<str>$,$<str>2);
 identifier	: setident NAMED unsetident { 
 			strcpy($<str>$,downshift($<str>2)) ;
 }
-/*
-| reserved_word  { strcpy($<str>$,downshift($<str>1)) ; }
-*/
-
-
 ;
 
 

@@ -26,12 +26,16 @@ sprintf($<str>$," %s %s",$<str>1,$<str>2);
 
 set_clause_list: 
     special_upd_clause
-    | OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
+    | OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);
+	ansi_violation("Update (..)=(..)",1);
+	}
     | upd_columns 
 ;
 
 special_upd_clause : 
-	MULTIPLY EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$,"%s %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+	MULTIPLY EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET {sprintf($<str>$,"%s %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);
+	ansi_violation("Update (..)=(..)",1);
+}
 	| MULTIPLY EQUAL upd_val_list  {
 		char *ptr;
 		ptr=$<str>3;
@@ -41,6 +45,7 @@ special_upd_clause :
 		} else {
 			sprintf($<str>$," %s %s(%s) ",$<str>1,$<str>2,$<str>3);
 		}
+		ansi_violation("Update (..)=(..)",1);
 		}
 ;
 
@@ -729,7 +734,10 @@ predicate:
 op_all: {strcpy($<str>$,"");}
 	| ALL
 	| DISTINCT
-	| UNIQUE
+	| UNIQUE {
+		ansi_violation("Use DISTINCT not UNIQUE",0);
+		strcpy($<str>$,"DISTINCT ");
+	}
 	;
 
 
@@ -1069,7 +1077,11 @@ subquery:
 op_ad: {strcpy($<str>$,"");}
 	| ALL {strcpy($<str>$,"ALL");}
 	| DISTINCT {strcpy($<str>$,"DISTINCT");}
-	| UNIQUE {strcpy($<str>$,"DISTINCT");}
+	| UNIQUE {strcpy($<str>$,"DISTINCT");
+		ansi_violation("Use DISTINCT not UNIQUE",0);
+		strcpy($<str>$,"DISTINCT ");
+
+}
 	;
 
 select_list: 

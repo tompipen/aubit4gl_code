@@ -2373,7 +2373,6 @@ int a;
 struct variable **list=0;
 int list_cnt=0;
 
-printf("print_nullify called :%c\n",type);
 
 debug("AUTONULL ?");
 

@@ -635,6 +635,7 @@ get_into_part int n -> char*
 set_var_sql int n -> char*
 
 lex_parsed_fgl -> void
+bad_identifiers char* ident -> int
 /*  ============================== EOF ================================= */
 
 

@@ -25,7 +25,12 @@ define_set :
 def_part : def_part2 |  def_part COMMA def_part2
 ;
 
-define_ident : {in_define=1;} identifier {in_define=0;strcpy($<str>$,$<str>2);}
+define_ident : {in_define=1;} identifier {in_define=0;strcpy($<str>$,$<str>2);
+                        set_yytext($<str>$);
+                        if (bad_identifiers($<str>$)) {
+                                yyerror("You can't use this identifier as it is a reserved word in the target language");
+                        }
+}
 ;
 
 def_part2:	 
