@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.12 2003-02-07 12:59:10 mikeaubury Exp $
+# $Id: curslib.c,v 1.13 2003-03-02 16:36:31 mikeaubury Exp $
 #*/
 
 /**
@@ -552,7 +552,7 @@ aclfgl_fgl_drawbox (int n)
 int x, y, w, h, c;
 int xx, yy;
 void *ptr;
-  
+void *win;
   c = 0;
   if (n == 5)
     c = pop_int ();
@@ -560,29 +560,32 @@ void *ptr;
   y = pop_int ();
   w = pop_int ();
   h = pop_int ();
-  ptr = (void *) find_pointer ("screen", WINCODE);
+  debug("h=%d y+h=%d",h,y+h);
+  win = find_pointer ("screen", WINCODE);
+
+  #define PMOVE(x,y,c) 	mvwaddch(win,(y-1),(x-1),c)
+
   for (xx = x + 1; xx <= x + w - 1; xx++)
     {
-      wmove (ptr, y - 1, xx - 1);
-      wprintw (ptr, "-");
-      wmove (ptr, y + h - 1, xx - 1);
-      wprintw (ptr, "-");
+      PMOVE( xx,y,'A');
+
+      PMOVE (xx,y+h,'B');
     }
+
   for (yy = y + 1; yy <= y + h - 1; yy++)
     {
-      wmove (ptr, yy - 1, x - 1);
-      wprintw (ptr, "|");
-      wmove (ptr, yy - 1, x - 1 + w);
-      wprintw (ptr, "|");
+      PMOVE ( x,yy ,'|');
+
+  	PMOVE ( x+w,yy ,'|');
     }
-  wmove (ptr, y - 1, x - 1);
-  wprintw (ptr, "+");
-  wmove (ptr, y - 1, x + w - 1);
-  wprintw (ptr, "+");
-  wmove (ptr, y + h - 1, x - 1);
-  wprintw (ptr, "+");
-  wmove (ptr, y + h - 1, x + w - 1);
-  wprintw (ptr, "+");
+
+  PMOVE ( x,y-1 ,'p');
+  PMOVE (x+w,y ,'q');
+
+  PMOVE (x,y + h ,'b');
+
+  PMOVE (x+w,y + h ,'d');
+
   mja_refresh ();
   return 0;
 }
@@ -3741,6 +3744,7 @@ refresh_after_system (void)
 {
   mja_refresh ();
 }
+
 
 
 /* ============================== EOF ============================== */

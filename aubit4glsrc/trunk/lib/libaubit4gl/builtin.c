@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.25 2003-03-02 15:23:43 mikeaubury Exp $
+# $Id: builtin.c,v 1.26 2003-03-02 16:35:40 mikeaubury Exp $
 #
 */
 
@@ -836,14 +836,6 @@ int aclfgl_ascii(int n) {
 }
 
 
-/**
- * @todo - implement aclfgl_fgl_drawbox
- *
-**/
-int aclfgl_fgl_drawbox(int n) {
-	//exitwith("fgl_drawbox not implemented yet");
-	return 0;
-}
 
 /**
  * @todo - implement acli_scroll
