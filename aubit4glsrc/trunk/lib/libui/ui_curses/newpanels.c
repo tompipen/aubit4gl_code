@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.28 2003-04-28 12:29:51 mikeaubury Exp $
+# $Id: newpanels.c,v 1.29 2003-04-28 13:38:45 mikeaubury Exp $
 #*/
 
 /**
@@ -1392,98 +1392,8 @@ getmenu_line (void)
  * @todo Describe function
  */
 void
-display_at (int n, int a)
+display_internal (int x, int y,char *s,int a,int clr_line)
 {
-int b;
-int z;
-int x, y;
-char *s=0;
-char *ptr;
-char *buff=0;
-
-/* MJA Fix clear to end of line bug */
-
-int tos_size;
-int tos_dtype;
-void *tos_ptr;
-int clr_end_of_line=0;
-
-
-    /*
-  debug("Colors = %d pairs = %d ",COLORS,COLOR_PAIRS);
-  debug("CHYYPE_LONG = %d",CHTYPE_LONG);
-  */
-    debug ("Color pair for attribute=%d", PAIR_NUMBER (a));
-
-
- 
-
-//debug_print_stack();
-  debug ("***************************** popx");
-  x = 0;
-  y = 0;
-
-  x = pop_int ();
-  debug ("x=%d", x);
-  debug ("***************************** popy");
-  y = pop_int ();
-  debug ("y=%d", y);
-  debug (">display_at x=%d y=%d attribute %x", x, y, a);
-  s=malloc(2);
-  s[0]=0;
-
-
-
-
-
-
-
-  get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
-
-
-  debug("TOP1 = %d %d %p\n",tos_dtype%256,tos_size,tos_ptr);
-
-  if (tos_dtype%256==0 && tos_size==0) {
-	clr_end_of_line=1;
-  }
-
-
-debug_print_stack();
-  debug("Got %d arguments",n);
-
-  for (z = 0; z <= n - 1; z++)
-    {
-        get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
-	ptr=0;
-	if (has_datatype_function_i (tos_dtype&DTYPE_MASK, "DISPLAY")) {
-		char *(*function) (void *,int,int,struct struct_scr_field *,int);
-		function=get_datatype_function_i (tos_dtype&DTYPE_MASK, "DISPLAY");
-
-		if (x==-1&&y==-1) {
-			ptr=function(tos_ptr,tos_size,-1,(struct struct_scr_field *)0,DISPLAY_TYPE_DISPLAY);
-		} else {
-			ptr=function(tos_ptr,tos_size,-1,(struct struct_scr_field *)0,DISPLAY_TYPE_DISPLAY_AT);
-		}
-
-		if (ptr!=0) {
-			drop_param();
-		}
-	}
-
-	if (ptr==0) {
-		ptr=char_pop();
-	}
-
-	debug("DISPLAY_AT : '%s'\n",ptr);
-	buff=realloc(buff,strlen(s)+strlen(ptr)+1);
-	s=realloc(s,strlen(s)+strlen(ptr)+1);
-	sprintf(buff,"%s%s",ptr,s);
-	strcpy(s,buff);
-	debug("s='%s' %p\n",s,s);
-    }
-
-  debug ("display_at: Popped  '%s' x=%d y=%d", s,x,y);
-
   if (x == -1 && y == -1)
     {
       debug ("Line mode display");
@@ -1496,39 +1406,20 @@ debug_print_stack();
     }
   else
     {
+	int b;
 	int line_length;
       /* WINDOW *win; */
 
       chkwin ();
-      debug ("Screen mode");
       b = xwattr_get (currwin);
-	debug("XX4 REVERSE");
-      debug ("changed attribute from %x to %x reverse=%x", b, a, A_REVERSE);
       a4glattr_wattrset (window_on_top (), a);
       gui_print (a, s);
       mja_gotoxy (x, y);
-
-
-	if (iscurrborder()) {
-		line_length=get_curr_width()-x;
-	} else {
-		line_length=get_curr_width()-x+1;
-	}
-
-	line_length++;
-	if (strlen(s)>line_length) {
-		debug("'%s' seems to long to display... - I'm gonna trim it..",s);
-		s[line_length]=0;
-		
-	}
-      
-	debug("s='%s'",s);
-
-	tui_print ("%s", s);
-	if (clr_end_of_line) {
+      tui_print ("%s", s);
+      if (clr_line) {
 		debug("Clearing line...");
 		wclrtoeol(window_on_top());
-	}
+      }
 
       debug (">> printed %s", s);
 
@@ -1537,13 +1428,6 @@ debug_print_stack();
       mja_wrefresh (window_on_top ());
       mja_refresh ();
     }
-#ifdef DEBUG
-  {    debug ("End of display");  }
-#endif
- debug("Free-ing");
-	debug("s='%s' %p\n",s,s);
-  free (s);
- debug("Freed");
 }
 
 

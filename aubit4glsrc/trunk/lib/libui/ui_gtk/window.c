@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.6 2003-04-23 16:37:30 mikeaubury Exp $
+# $Id: window.c,v 1.7 2003-04-28 13:38:49 mikeaubury Exp $
 #*/
 
 /**
@@ -258,7 +258,7 @@ remove_window (char *s)
  * @return The width of the current window.
  */
 int
-get_curr_width_gtk(void)
+get_curr_width(void)
 {
   GtkWidget *cwin;
   int width;
@@ -328,6 +328,11 @@ GtkWidget *cwin;
 	cwin = (GtkWidget *)get_curr_win_gtk ();
   	return (int)gtk_object_get_data (GTK_OBJECT(cwin), "BORDER");
 
+}
+
+int iscurrborder() {
+	if (get_curr_border_gtk()) return 1;
+	else return 0;
 }
 
 /**

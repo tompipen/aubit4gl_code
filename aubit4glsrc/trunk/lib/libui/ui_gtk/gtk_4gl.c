@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.13 2003-04-23 16:37:30 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.14 2003-04-28 13:38:47 mikeaubury Exp $
 #*/
 
 /**
@@ -911,6 +911,55 @@ get_curr_win_gtk (void)
 }
 
 
+
+void display_internal(int x,int y,char *s,int a,int clr_line) {
+GtkFixed *cwin;
+GtkLabel *lab;
+char buff[256];
+  if (x == -1 && y == -1)
+    {
+      printf ("%s\n", s);
+      add_to_console (s);
+    }
+  else
+    {
+      x--; y--;
+      cwin = (GtkFixed *) get_curr_win_gtk ();
+      sprintf (buff, "LABEL_%d_%d", x, y);
+      lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
+
+      if (lab)
+        {
+          if (strlen (s))
+            {
+              gui_set_field_fore((GtkWidget *)lab, decode_colour_attr_aubit(a));
+              gtk_label_set_text (lab, s);
+              gtk_widget_show (GTK_WIDGET (lab));
+            }
+          else
+            {
+              gtk_widget_destroy (GTK_WIDGET (lab));
+              gtk_object_set_data (GTK_OBJECT (cwin), buff, 0);
+            }
+        }
+      else
+        {
+          if (strlen (buff))
+            {
+              lab = (GtkLabel *) gtk_label_new (s);
+       	      gui_set_field_fore((GtkWidget *)lab, decode_colour_attr_aubit(a));
+              gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH, y * YHEIGHT);
+              gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
+              gtk_widget_show (GTK_WIDGET (lab));
+            }
+        }
+    }
+  gui_run_til_no_more ();
+
+
+}
+
+
 /**
  * GTK GUI implementation of DISPLAY AT 4gl statement.
  *
@@ -952,8 +1001,7 @@ char buff[256];
     }
   else
     {
-      x--;
-      y--;
+      x--; y--;
       cwin = (GtkFixed *) get_curr_win_gtk ();
       sprintf (buff, "LABEL_%d_%d", x, y);
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
@@ -962,34 +1010,27 @@ char buff[256];
 	{
 	  if (strlen (s))
 	    {
-
       		gui_set_field_fore((GtkWidget *)lab, decode_colour_attr_aubit(a));
-
 	      gtk_label_set_text (lab, s);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
 	  else
 	    {
 	      gtk_widget_destroy (GTK_WIDGET (lab));
-
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, 0);
 	    }
 	}
       else
 	{
-
 	  if (strlen (buff))
 	    {
 	      lab = (GtkLabel *) gtk_label_new (s);
       	gui_set_field_fore((GtkWidget *)lab, decode_colour_attr_aubit(a));
-
-		  gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
-			     y * YHEIGHT);
+		  gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH, y * YHEIGHT);
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
 	}
-
     }
   gui_run_til_no_more ();
 

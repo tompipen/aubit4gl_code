@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.6 2002-12-24 08:57:45 mikeaubury Exp $
+# $Id: menu.c,v 1.7 2003-04-28 13:38:47 mikeaubury Exp $
 #*/
 
 /**
@@ -373,7 +373,7 @@ va_list *ap)
   gtk_object_set_data (GTK_OBJECT (menubar), "MASTERWIN", cwin);
   gtk_widget_show (menubar);
 
-  gtk_widget_set_usize (GTK_WIDGET (menubar),get_curr_width_gtk()*XWIDTH , YHEIGHT);
+  gtk_widget_set_usize (GTK_WIDGET (menubar),get_curr_width()*XWIDTH , YHEIGHT);
   printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, menubar);
 
   gtk_fixed_put((GtkFixed *)cwin, menubar, 0, 0);
@@ -460,7 +460,7 @@ GtkWidget *w;
   gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", menubar);
   gtk_object_set_data (GTK_OBJECT (menubar), "MASTERWIN", cwin);
   gtk_widget_show (menubar);
-  gtk_widget_set_usize (GTK_WIDGET (menubar),get_curr_width_gtk()*XWIDTH , YHEIGHT);
+  gtk_widget_set_usize (GTK_WIDGET (menubar),get_curr_width()*XWIDTH , YHEIGHT);
   gtk_object_set_data (GTK_OBJECT (menubar),"NOPTS", (gpointer)0);
   printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, menubar);
   gtk_fixed_put ((GtkFixed *)cwin, menubar, 0, 0);

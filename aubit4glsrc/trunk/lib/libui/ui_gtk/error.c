@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.3 2003-01-14 08:26:29 mikeaubury Exp $
+# $Id: error.c,v 1.4 2003-04-28 13:38:46 mikeaubury Exp $
 #*/
 
 /**
@@ -88,7 +88,7 @@ error_window_gtk(char *s)
 	debug("Error line :%d",errline);
 
 	win=gtk_fixed_new(); 
-  gtk_widget_set_usize (win,get_curr_width_gtk()*XWIDTH , YHEIGHT);
+  gtk_widget_set_usize (win,get_curr_width()*XWIDTH , YHEIGHT);
 	label=gtk_label_new(s);
 	gtk_fixed_put(GTK_FIXED(win),label,0,0);
 	gtk_widget_show(win);
@@ -163,7 +163,7 @@ debug("A0.1");
 	debug("A1 - msgline = %d",msgline);
 	win=gtk_fixed_new(); 
 	debug("A2");
-        gtk_widget_set_usize (GTK_WIDGET(win),get_curr_width_gtk()*XWIDTH , YHEIGHT);  
+        gtk_widget_set_usize (GTK_WIDGET(win),get_curr_width()*XWIDTH , YHEIGHT);  
 	debug("A2.1");
 	label=gtk_label_new(s);
 	debug("A3");
