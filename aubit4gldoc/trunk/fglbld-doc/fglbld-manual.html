@@ -10,7 +10,7 @@
 <h2 align="center">FGLBLD</h2>
 
 <p align="center">(4GL Build)</p>
-<h3 align="center">An Informix-4GL Application Generator<br>
+<h3 align="center">An x4GL Application Generator<br>
 User Guide and Reference Manual</h3>
 <h4 align="center">Version 6.12 (6.5)</h4>
 <hr>
@@ -55,7 +55,7 @@ User Guide and Reference Manual</h3>
   <li><a href="#The FORM file">The FORM file</a></li>
   <li><a href="#The MAKEFILE">The MAKEFILE</a></li>
   <li><a href="#The HELP file">The HELP file</a></li>
-  <li><a href="#The auxilliary files">The auxilliary files</a></li>
+  <li><a href="#The auxilliary files">The auxiliary files</a></li>
 </ul>
 <h2><a href="#MODIFYING FGLBLD SOURCE">MODIFYING FGLBLD SOURCE</a></h2>
 <ul>
@@ -77,8 +77,8 @@ User Guide and Reference Manual</h3>
       <li><a href="#Miscellaneous functions">Miscellaneous functions</a></li>
     </ul>
   </li>
-  <li><a href="#Custom versions of fglgo and fgldb">Custom versions of fglgo and
-    fgldb</a></li>
+  <li><a href="#Custom versions of fglgo and fgldb">Custom versions of <i>fglgo</i> and
+    <i>fgldb</i></a></li>
 </ul>
 <h2><a href="#FGLBLD Installation">FGLBLD Installation</a></h2>
 <ul>
@@ -96,8 +96,8 @@ User Guide and Reference Manual</h3>
 <hr>
 <h2><a name="INTRODUCTION">INTRODUCTION</a></h2>
 <p>FGLBLD is an application generator for xxx which generates 4GL code suitable for use
-with any x4gl compatible compiler (Inforrmix, 4Js, Querix, Aubit...). It generates code to handle a particular style of interaction
-which is termed a Simplified Perform Interface or SPI. This is analogous to a customized
+with any x4gl compatible compiler (Informix, 4Js, Querix, Aubit...). It generates code to handle a particular style of interaction
+which is termed a <i><b> Simplified Perform Interface</b></i> or SPI. This is analogous to a customized
 version of the xxx program xxx.&nbsp;</p>
 <p>In the hands of an experienced user, FGLBLD can be used to create a custom
 application in less than an hour with a complete set of default help messages,
@@ -109,7 +109,7 @@ as part of the function name.&nbsp;</p>
 <p>This document is a user guide to the product. It covers the use of the
 product, the structure of the code, how to modify the code, how to install the
 product and what could be improved. It assumes a good working knowledge of 4GL
-and xxx and a reasonable understanding of shell scripts -- not normally a problem if the
+and xxx and a reasonable understanding of shell scripts - not normally a problem if the
 other requirements are met. It does not hold your hand and take you through
 every keystroke.&nbsp;</p>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
@@ -117,7 +117,7 @@ every keystroke.&nbsp;</p>
 <h2><a name="SUMMARY">SUMMARY</a></h2>
 <p>FGLBLD is an application generator for xxx which can generate high-quality
 programs from just 5 pieces of information specified by the programmer (the
-database, the table, the primary key, the menu title and the basename for the
+database, the table, the primary key, the menu title and the <i> basename</i> for the
 files). All the code used by the generated program is supplied as source code so
 there are no hidden libraries.</p>
 <p>The generated code is easily modifiable; FGLBLD supplies code generators
@@ -126,12 +126,12 @@ generated program) to select the required input value from a list, and also code
 which simplifies the validation and display of data from joining tables.&nbsp;</p>
 <p>
 Although it does not eliminate all xxx programming (only the simplest of application
-would need no improvements beyond reorganising the layout of the screen form),
+would need no improvements beyond reorganizing the layout of the screen form),
 FGLBLD does speed up the development process greatly.</p>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <hr>
 <h3><a name="What is an SPI">What is an SPI?</a></h3>
-<p>As mentioned above, an SPI is a Simplified Perform Interface. To understand
+<p>As mentioned above, an SPI is a <i><b> Simplified Perform Interface</b></i>. To understand
 what is meant by this, it is helpful to understand what the regular xxx interface
 looks like.&nbsp;</p>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
@@ -144,8 +144,10 @@ user to see what they are doing. It is basically very easy to use: there are six
 important options (query, next, previous, add, remove, update), six minor
 options (screen, table, master, detail, current, output), and the exit option.
 The main menu for xxx is illustrated in Figure 1.</p>
-<p>The PERFORM main menu</p>
+<blockquote>
+<p><i>The PERFORM main menu</i></p>
 <p>FIXME: Fig 1. perform.pic</p>
+</blockquote>
 <p>xxx works with one active table at a time (in the figure, the active table is
 customers), though there may be a number of tables listed in one form. The
 important options allow the user to work on the current table and to:&nbsp;</p>
@@ -179,8 +181,10 @@ complicated data validation, choosing from lists of possible data values,
 complicated lookups for data, properly cascaded deletes, and also extra
 constraints on the user -- even different constraints on different users.&nbsp;</p>
 <p>The basic SPI menu offers the eight options shown in Figure 2.&nbsp;</p>
+<blockquote>
 <p>FIXME: Fig 2</p>
 <p>"A main menu generated by FGLBLD." fglmenu.pic</p>
+</blockquote>
 <p>The Exit option is the way of terminating the menu and does not need further
 discussion.&nbsp;</p>
 <p> The Query, Next and Previous options allow the user to specify which
@@ -213,19 +217,19 @@ which to edit the code for an SPI, to recompile it or run it.</p>
 distribution comes in two flavors depending on whether compiled xxx or Informix-RDS
 is in use. If the distribution is for compiled xxx, there are just two user-level
 commands, namely fglbld and de-fluff. If the distribution is for Informix-RDS,
-you also get a command called mkfglgo.&nbsp;</p>
+you also get a command called <i> mkfglgo</i>.&nbsp;</p>
 <p> The main command that users see is fglbld.
 This is actually a shell script which amends the environment so that the rest of
 FGLBLD will work correctly and then runs the program that gives the user the
 menu and so on.&nbsp;</p>
-<p>Defluff is a filter which removes certain comments from the code generated
+<p><i>Defluff</i> is a filter which removes certain comments from the code generated
 by fglbld. These comments indicate how the code could be modified if required,
 but the comments in, for example, the input validation functions are repeated
-for every function and are frequently unwanted. Defluff removes these
+for every function and are frequently unwanted. <i> Defluff</i> removes these
 comments.&nbsp;</p>
-<p>Mkfglgo is used to create a custom version of fglgo and fgldb. It copies the
+<p><i>Mkfglgo</i> is used to create a custom version of <i> fglgo</i> and <i> fgldb</i>. It copies the
 necessary source code into the current directory (including a makefile) and then
-compiles both fglgo and fgldb. If required, the set of functions can be extended
+compiles both <i> fglgo</i> and <i> fgldb</i>. If required, the set of functions can be extended
 by the user.</p>
 <p>These three scripts are normally installed in one of the standard bin
 directories on the system: the default directory would be $INFORMIXDIR/bin.&nbsp;</p>
@@ -325,24 +329,42 @@ operations, but if the primary key is a simple integer (or a SERIAL or DATE
 column) or a character string, it is more natural to use these instead.&nbsp;</p>
 <p>The only disadvantage of using D-Lists is if Informix-RDS is in use; because
 they are written in C, the D-List routines have to be incorporated into customized
-versions of fglgo and fgldb. The script mkfglgo is provided with FGLBLD to
+versions of <i> fglgo</i> and <i> fgldb</i>. The script <i> mkfglgo</i> is provided with FGLBLD to
 create these programs.</p>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <hr>
 <h2><a name="USING FGLBLD">USING FGLBLD</a></h2>
 <p>FGLBLD can be run in either of two ways. Simply typing:&nbsp;</p>
-<p>&nbsp;&nbsp;&nbsp; fglbld&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> &nbsp;<i>fglbld</i>&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p> runs the
 program and is the normal way of using it. Alternatively, typing:&nbsp;</p>
-<p> <i>&nbsp;&nbsp;&nbsp; fglbld
-database</i> &nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> &nbsp; <i> fglbld
+database</i> &nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p> will pre-select the specified database. The database can be changed
 within fglbld; if it is not pre-selected (or if the pre-selected database cannot
 be opened), it will have to be specified using either the Database option in the
 main menu or before any code is generated. The main menu is illustrated in
 Figure 3.</p>
+<blockquote>
 <p>FXIME: Fig 3</p>
 <p>"The FGLBLD main menu." mainmenu.pic</p>
+</blockquote>
 <ul>
   <li>The SPI option generates an SPI;&nbsp;</li>
   <li> the Popup option leads to a submenu which
@@ -395,7 +417,7 @@ that may be specified. The mandatory items are:&nbsp;</p>
   <li>the table name,&nbsp;</li>
   <li>the primary key of table,&nbsp;</li>
   <li>the menu name,&nbsp;</li>
-  <li>the basename of the files.</li>
+  <li>the <i> basename</i> of the files.</li>
 </ul>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <h4>Specifying the table name</h4>
@@ -422,7 +444,7 @@ the Same option allows you to choose from the same list as before; and the Exit
 option exits the popup without selecting anything. If the criteria ever returns
 an empty list of names, you will be shown the menu again.</p>
 <p>If the search criteria select more than thirty table names, only the first
-thirty will be shown; you will have to respecify the criteria if the required
+thirty will be shown; you will have to re-specify the criteria if the required
 table is not in the list. When the database changes, any previous list of table
 names is forgotten. This table popup function is also used when creating a popup
 function or a fetch function.&nbsp;</p>
@@ -449,12 +471,12 @@ supplied by xxx; if you supply one too, two colons will appear when the program 
 run.&nbsp;</p>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <h4>Specifying the menu name</h4>
-<p>Finally, the basename of the generated files is specified. This is restricted
+<p>Finally, the <i> basename</i> of the generated files is specified. This is restricted
 to seven lower-case characters because the xxx source files will be given an extra
 letter and `.4gl' as a suffix, which uses up to 12 characters, and 2 characters
 will be needed for the `s.' prefix supplied by SCCS, giving a total of 14
 characters which is as long a name as System V Unix allows. All the generated
-files will start with the specified basename, but the standard files which are
+files will start with the specified <i> basename</i>, but the standard files which are
 copied into the directory will have other names.&nbsp;</p>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <h4>Specifying the options</h4>
@@ -501,12 +523,12 @@ defined, FGLBLD will generate the code. It does this in 9 phases:&nbsp;</p>
 <ol>
   <li>Generate a default form.&nbsp;<br>
  If the form contains more than one screen of data,
-or if any of the fields is split onto several lines, fglbld.alt (the code
+or if any of the fields is split onto several lines, <i> fglbld.alt</i> (the code
 generator script) produces a warning that the form needs editing.&nbsp;</li>
   <li>Generate the default help message file.&nbsp;<br>
  Most of the help messages are
 properly helpful, but the field level help messages for input and update are
-just `This is the default help message for Table.column.'&nbsp;</li>
+just `This is the default help message for <i> Table.column</i>.'&nbsp;</li>
   <li>Generate the main, globals and cursor files.&nbsp;<br>
  These files are simply copies of
 the templates.&nbsp;</li>
@@ -533,19 +555,37 @@ warning were generated, the program can now be run.&nbsp;</p>
 deliberately) create a new file with the same name as some existing file, you
 will get one or two cryptic messages. If you have not previously offended like
 this, you will see a message such as:&nbsp;</p>
-<p>&nbsp;&nbsp;&nbsp; mv filename.4gl o.filename.4gl&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> mv filename.4gl o.filename.4gl</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p> If you
 have already committed the same offence, you will get a message such as:&nbsp;</p>
-<p>&nbsp;&nbsp;&nbsp; rm -f
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> rm -f
 o.filename.4gl&nbsp;<br>
-&nbsp;&nbsp;&nbsp; mv filename.4gl o.filename.4gl&nbsp;</p>
+          mv filename.4gl o.filename.4gl&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <hr>
 <h3><a name="The Pop-up menu">The Pop-up menu</a></h3>
 <p>The pop-up option in the main menu leads to the sub-menu shown in Figure
 4.&nbsp;</p>
+<blockquote>
 <p>FIXME: fig 4</p>
 <p>The Popup menu. popmenu.pic</p>
+</blockquote>
 <p>The Conditional option is used to generate a conditional popup -- the type
 which allows the user to specify what they wish to choose from. The
 Unconditional option is used to generate an unconditional popup -- the type
@@ -555,12 +595,12 @@ main menu.&nbsp;</p>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <hr>
 <h3><a name="Which type of popup">Which type of popup?</a></h3>
-<p> Popups let the user choose from a list of possible values.&nbsp;</p>
+<p> Pop-ups let the user choose from a list of possible values.&nbsp;</p>
 <p>To be effective, the list should not be so long that the user gets annoyed
 with having to scroll through the list to find the required value. An
 unconditional popup is all that will be needed when a user will only have to
 choose between a few possible values.&nbsp;</p>
-<p> Unconditional popups frequently need an
+<p> Unconditional pop-ups frequently need an
 argument which indicates which subset of a large number of possible values
 should be shown.</p>
 <p>A conditional popup is needed when there are a very large
@@ -625,8 +665,16 @@ name entered in the form and the `.4gl' suffix.&nbsp;</p>
 two places where a message is produced which refers to what the user is
 selecting. For example, when the chosen table contained a list of jobs, the two
 messages were:&nbsp;</p>
-<p>&nbsp;&nbsp;&nbsp; MESSAGE &quot;Use cursor keys to choose job: ESC to select&quot;&nbsp;<br>
-&nbsp;&nbsp;&nbsp; MESSAGE &quot;Some jobs not displayed&quot;&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> MESSAGE &quot;Use cursor keys to choose job: ESC to select&quot;&nbsp;<br>
+ MESSAGE &quot;Some jobs not displayed&quot;&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>Because FGLBLD is not psychic, the user has to specify what should be put
 into these messages in the fifth field, the one which is labeled `What is being
 selected'. The value entered should be the singular (e.g. `job'). If the name
@@ -678,35 +726,55 @@ all the data has been entered in the form.&nbsp;</p>
 <p> The Name option allows you to change
 the name of the program being worked on. It is always set when you generate a
 new piece of code, and it can also be set via the menu option. It actually
-defines the basename of the program; the other options will extend this name as
+defines the <i> basename</i> of the program; the other options will extend this name as
 appropriate so that they operate on the correct files.&nbsp;</p>
 <p>The name of the current program is shown on the status line of the menu as
 soon as possible. If the name is specified from a menu, it is displayed
 immediately; if the name is specified as part of the data in a form, it is only
 displayed after the all the data has been entered in the form.&nbsp;</p>
 <p>The Build option runs xxx to build the application. It actually runs:&nbsp;</p>
-<p>&nbsp;&nbsp;&nbsp; ${MAKE:-make} -f program.mk ${FGLBLD_I4GL:-rds}&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> ${MAKE:-make} -f program.mk ${FGLBLD_I4GL:-rds}</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p> If the exit status from xxx is 0,
 the next option is Run;&nbsp; otherwise, the next option is Modify.&nbsp;</p>
 <p> Note that FGLBLD
 does not normally create `.4ge' files, though the rules in the makefile can be
 modified to do so very easily.&nbsp;</p>
 <p>The Run option effectively runs the command below:&nbsp;</p>
-<p>&nbsp;&nbsp;&nbsp; case
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0"> case
 &quot;$FGLBLD_I4GL&quot; in&nbsp;<br>
 &nbsp;&nbsp;&nbsp; c4gl) program;;&nbsp;<br>
 &nbsp;&nbsp;&nbsp; *) ${FGLGO:-fglgo} program;;&nbsp;<br>
-&nbsp;&nbsp;&nbsp; esac</p>
+          esac</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <hr>
 <h3><a name="Modifying the source code">Modifying the source code</a></h3>
 <p>The Modify option leads to the sub-menu shown in Figure 5.&nbsp;</p>
+<blockquote>
 <p>FIXME: Fig 5</p>
 <p>The Modify menu. modmenu.pic</p>
+</blockquote>
 <p>If the Source option is chosen, it leads to the sub-menu shown in Figure
 6.&nbsp;</p>
+<blockquote>
 <p>FIXME: fig 6</p>
 <p>The Source menu srcmenu.pic</p>
+</blockquote>
 <p>If the Form option is chosen, the extension `.4pr' is added to the program
 name and the editor specified by DBEDIT (default vi) is run to allow you to edit
 the file. Similarly, if the Makefile option is chosen, the extension `.mk' is
@@ -721,7 +789,7 @@ Cursor, Main and Globals options add the extensions `r.4gl', `c.4gl', `m.4gl',
 and `g.4gl' and then run the editor.&nbsp;</p>
 <p> These options are used when the program
 name is the name specified when an SPI was generated. The Other option is used
-when the program name is the basename of a popup function or a fetch function or
+when the program name is the <i> basename</i> of a popup function or a fetch function or
 some other piece of xxx code; it adds the extension `.4gl' and runs the editor. The
 Exit option exits from the menu without editing anything. All the options edit a
 single file and then return to the Modify menu shown in Figure 5.</p>
@@ -738,15 +806,15 @@ be set by the user to affect its behavior are:</p>
 compiled xxx is used. If it is set to c4gl, compiled xxx is used; otherwise,
 Informix-RDS is used.</li>
   <li>FGLGO<br>
-    This can be set to use a custom interpreter; one standard setting would be
-fgldb to debug programs rather than just interpret them.</li>
+    This can be set to use a custom interpreter; one standard setting would be <i>
+fgldb</i> to debug programs rather than just interpret them.</li>
   <li>DBEDIT<br>
     This controls the editor used. If it is not set, vi is assumed.</li>
   <li>MAKE<br>
     This controls the name of the xxx program that is run. Some installations use
-alternative versions of such as rmk, cake, nmake.</li>
+alternative versions of such as <i> rmk, cake, nmake</i>.</li>
 </ul>
-<p>Rmk is available through
+<p><i>Rmk</i> is available through
 Sphinx. It has a better understanding of than standard versions of . Except that
 it does not have the concept of `.KEEP_STATE:', it is as powerful as the version
 of under SunOS, plus it understands better than that version does (but only by a
@@ -789,7 +857,8 @@ which the file was generated from.&nbsp;</li>
 are enclosed in braces `{}'. Any comments started by a hash `#' can be deleted.&nbsp;</li>
   <li>
 Hash comments normally indicate a possible set of code which could be used in
-place of (or as well as) the functional code in the function. The defluff script removes hash comments that would match the sed pattern `/#
+place of (or as well as) the functional code in the function. The <i> defluff</i> script removes hash comments that would match the
+    <i> sed</i> pattern `/#
 [A-Z]/'; the actual script is more complex because it handles both the case
 where the hash comes after some code and where the comment is all there is on
 the line.&nbsp;</li>
@@ -805,7 +874,11 @@ ignores the state of QUIT_FLAG completely.</li>
 example is called consult and contains three tables. The first table, <i><b>Clients</b></i>,
 briefly describes clients; they are the people who pay for work to be done. </p>
 <p>"The CLIENTS table." </p>
-<blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
   <p>{<br>
   @(#)clients.sql 1.1 89/10/09<br>
   @(#)Create Clients Table <br>
@@ -825,11 +898,19 @@ briefly describes clients; they are the people who pay for work to be done. </p>
   <p>{PRIMARY KEY Clients(Clientid) } </p>
   <p>CREATE UNIQUE INDEX clients_1<br>
   ON clients(clientid); </p>
-</blockquote>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>The second table, <b><i>Jobs</i></b>, describes jobs done on behalf of
 clients; there may be several jobs for each client.</p>
 <p>"The JOBS table."</p>
-<blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
   <p>{<br>
   @(#)jobs.sql 1.1 89/10/09<br>
   @(#)Create Jobs Table <br>
@@ -851,12 +932,20 @@ clients; there may be several jobs for each client.</p>
   } </p>
   <p>CREATE UNIQUE INDEX jobs_1<br>
   ON jobs(jobid); CREATE INDEX jobs_2 ON jobs(clientid); </p>
-</blockquote>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>The third table, <b><i>Timesheet</i></b>, records the time spent working on
 different jobs. This version is for a single-user database so there is no
 identification of the consultant doing the work. </p>
 <p> "The TIMESHEET table." </p>
-<blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
   <p>{<br>
   @(#)times.sql 1.1 89/10/09<br>
   @(#)Create Timesheet Table <br>
@@ -878,7 +967,11 @@ identification of the consultant doing the work. </p>
   <p>CREATE UNIQUE INDEX timesheet_1<br>
   ON timesheet(ts_date, jobid, ts_from); CREATE INDEX timesheet_2<br>
   ON timesheet(jobid); </p>
-</blockquote>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>As you can see from the descriptions, the <b><i>Timesheet</i></b> table
 cross-references the <i><b>Jobs</b></i> table, and the Jobs table
 cross-references the Clients table.&nbsp; </p>
@@ -891,13 +984,17 @@ filename specified was `ts'. </p>
 <h3><a name="The GLOBALS file ctsg.4gl">The GLOBALS file ctsg.4gl</a> </h3>
 <p>This is essentially very simple. It defines a working record wr_timesheet
 which is used for all input and insert/delete/update operations, a null record
-nr_timesheet which is initialised to nulls, and a copy record cp_timesheet which
+nr_timesheet which is initialized to nulls, and a copy record cp_timesheet which
 contains the previous inserted or displayed value. The copy record is used when
 the program user presses control-P or F6. There is also a control record
 ct_timesheet which wraps most of the control information needed by FGLBLD into a
 single record. </p>
 <p> "The globals file." </p>
-<blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
   <p>{<br>
   @(#)tsg.4gx 1.3 90/02/19<br>
   @(#)Built by: FGLBLD Version 6.10 (09/02/1990)<br>
@@ -917,15 +1014,19 @@ single record. </p>
     direction INTEGER, { Moving forwards/backwards }<br>
     rep_query INTEGER, { Report enquiry constructed? }<br>
     rowid INTEGER, { Rowid is not part of wr_timesheet }<br>
-    query_done SMALLINT { General query con- structed? }</p>
+    query_done SMALLINT { General query constructed? }</p>
   </blockquote>
   <p>END RECORD</p>
   <p>END GLOBALS </p>
-</blockquote>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <hr>
 <h3><a name="The MAIN file ctsm.4gl">The MAIN file ctsm.4gl</a> </h3>
-<p>This file will not be shown in full -- it's big and boring. It seldom needs
+<p>This file will not be shown in full - it's big and boring. It seldom needs
 much changing. The cursor positioning code should not be changed without serious
 study.&nbsp; </p>
 <p><a href="#Table of Contents">Back to Table of Contents</a> </p>
@@ -933,7 +1034,11 @@ study.&nbsp; </p>
 <h3><a name="The main program">The main program</a> </h3>
 <p>The default main program is very simple: </p>
 <p>"The main program." </p>
-<blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
   <p>{<br>
   @(#)tsm 1.3 90/02/19<br>
   @(#)Built by: FGLBLD Version 6.10 (09/02/1990)<br>
@@ -961,21 +1066,25 @@ study.&nbsp; </p>
     CALL wcl_timesheet()</p>
   </blockquote>
   <p>END MAIN </p>
-</blockquote>
-<p>The variable sccs is there to allow version control information to be
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
+<p>The variable <i> sccs </i> is there to allow version control information to be
 embedded in the software. It is assumed that the generated code will be
 installed under xxx. Apart from setting options and the help file, it defers
-interrupt and quit signals, opens the window and initialises the SPI with
+interrupt and quit signals, opens the window and initializes the SPI with
 wop_timesheet, calls the main menu function mnu_timesheet, and then closes the
 window and terminates the SPI with wcl_timesheet. </p>
 <p>There is probably merit in the argument which says that the window handling
-should be done separately from the SPI initialisation and termination. There
+should be done separately from the SPI initialization and termination. There
 should probably be a function whd_timesheet which would do all the window
 handling controlled by an argument -- it would be a case statement -- and there
-should be another function spi_timesheet which controls the initialisation and
+should be another function spi_timesheet which controls the initialization and
 termination
 of the SPI. This would not matter in the basic SPI, but would simplify the
-division of labour if several SPIs were to be handled by one program.&nbsp; </p>
+division of labor if several SPIs were to be handled by one program.&nbsp; </p>
 <p><a href="#Table of Contents">Back to Table of Contents</a> </p>
 <hr>
 <h3><a name="The main menu">The main menu</a> </h3>
@@ -984,7 +1093,11 @@ mnu_timesheet function provides the main menu. This should not need much
 attention unless you wish to change an option name or if you modify the behavior
 of the Add option. Note the systematic structure of the options. </p>
 <p>"The main menu (extracts)." </p>
-<blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
   <p>FUNCTION mnu_timesheet()</p>
   <blockquote>
     <p>DEFINE<br>
@@ -1072,7 +1185,11 @@ of the Add option. Note the systematic structure of the options. </p>
     <p>CALL wio_timesheet(3)</p>
   </blockquote>
   <p>END FUNCTION {do_timesheet} </p>
-</blockquote>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>One pleasant feature of the FGLBLD SPI is that if you use `N' for Next once
 and subsequently use RETURN to continue stepping through the list, the list
 flashes up the message `No more rows going forwards' and changes the default
@@ -1269,8 +1386,8 @@ information available to the program, including the previous record which was
 added (which is available in the copy record cp_timesheet). </p>
 <p>By default, it uses the INITIALIZE statement. (In versions of FGLBLD up to
 and including 6.05, this routine is far from optimal -- there should be a record
-which is initialised via INITIALIZE once, and this record should be copied into
-the working record; after that, specific initialisations can be performed if
+which is initialized via INITIALIZE once, and this record should be copied into
+the working record; after that, specific initializations can be performed if
 necessary.) </p>
 <p>The function spf_timesheet should never need modifying; it simply sets the
 previous field number in the field control record. </p>
@@ -1280,7 +1397,11 @@ previous field number in the field control record. </p>
 inp_timesheet is extremely long and repetitious because xxx forces it to be like
 that if it is to handle all the input requirements sensibly. </p>
 <p>"The input function (extracts)." </p>
-<blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
   <p>{<br>
   @(#)tsi.4gl 1.3 90/02/19<br>
   @(#)Built by: FGLBLD Version 6.10 (09/02/1990)<br>
@@ -1403,8 +1524,11 @@ that if it is to handle all the input requirements sensibly. </p>
     <p>RETURN instatus</p>
   </blockquote>
   <p>END FUNCTION {inp_timesheet}</p>
-</blockquote>
-<p>... </p>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>The main feature of the code is that a single validation function is called
 for each field for each of the BEFORE FIELD and AFTER FIELD actions, and also
 for the popup (control-B/F5) and copy (control-P/F6) functionality.&nbsp; </p>
@@ -1416,13 +1540,13 @@ KEY (F6, CONTROL-P) clause -- if that is provided. </p>
 <p>This is disastrous because when some aspect of the validation changes, one of
 the blocks is forgotten and the validation applied now depends on how the data
 was entered by the user.&nbsp; </p>
-<p>By channelling all these bits through a single function
+<p>By channeling all these bits through a single function
 (for each field), there is some chance that consistent validation will be
 applied however user enters the data. It is, of course, possible to subvert this
 intention, but on your own head be it! </p>
 <p>Note that there is an abandon input key in the form of the ON KEY (F8,
-CONTROL-E) clause. This was originally provided to solve the problem that in
-fgldb, an interrupt transfers control back to the debugger and does not
+CONTROL-E) clause. This was originally provided to solve the problem that in <i>
+fgldb</i>, an interrupt transfers control back to the debugger and does not
 terminate the input statement; similarly a quit would only transfer control, not
 terminate the input. These keys provide a route to terminate the loop cleanly,
 and are sufficiently useful to be retained permanently.&nbsp; </p>
@@ -1436,7 +1560,11 @@ provided). </p>
 <h4>The validation functions</h4>
 <p>A standard, complete validation function fresh out of FGLBLD is shown below.</p>
 <p>"The standard validation function."</p>
-<blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
   <p># Validation Functions <br>
   # ******************** <br>
   # Unless a non-null value is assigned to retval, <br>
@@ -1488,7 +1616,11 @@ provided). </p>
     <p>RETURN retval</p>
   </blockquote>
   <p>END FUNCTION {v01_timesheet} </p>
-</blockquote>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>The first thing to note is that there are a large number of hash comments,
 most of which can be deleted immediately. If the field is to acquire a popup,
 the skeletal popup code should be removed and the code which is hash-commented
@@ -1499,8 +1631,12 @@ should not be done in other circumstances -- something which is unlikely to be
 sensible.</p>
 <p>If a field should have a popup, the code below can be regarded as a sort of
 template for the validation process. </p>
-<p>"A validation function with popups." </p>
-<blockquote>
+<p>"A validation function with pop-ups." </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
   <p>{ Validation code for Timesheet.jobid } <br>
   FUNCTION v04_timesheet(vcode)</p>
   <blockquote>
@@ -1538,7 +1674,11 @@ template for the validation process. </p>
     <p>RETURN retval</p>
   </blockquote>
   <p>END FUNCTION {v04_timesheet} </p>
-</blockquote>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <hr>
 <h3><a name="The REPORT file">The REPORT file</a></h3>
@@ -1559,7 +1699,7 @@ fetch functions for these lookups. </p>
 Consequently, it will need to be extended and written properly. Originally, as
 the code suggests, there was a hook in the report which could dynamically
 configure the dimensions of a report. This facility still works in compiled xxx but
-is not available in Informix-RDS (because the interpreters fglgo and fgldb do
+is not available in Informix-RDS (because the interpreters<i> fglgo</i> and <i> fgldb</i> do
 not compile), so it is omitted from the standard distribution. </p>
 <p><a href="#Table of Contents">Back to Table of Contents</a> </p>
 <hr>
@@ -1568,13 +1708,13 @@ not compile), so it is omitted from the standard distribution. </p>
 This means translating the column names into sensible labels, modifying the
 layout so that things align better and so on. It also means adding sensible
 attributes, especially COMMENTS for those fields with a popup so the user is
-reminded that there are popups.&nbsp; </p>
+reminded that there are pop-ups.&nbsp; </p>
 <p> Note that the form provided by FGLBLD has a blank
 line before the end of the screen; this is necessary to avoid having comments
 and messages overwriting the data on the bottom line of the form.&nbsp; </p>
 <p> Do not reorder
 the fields on the form or in the attribute section without consulting the
-section on modifying the order of the fields -- this is a very tricky subject to
+section on modifying the order of the fields - this is a very tricky subject to
 deal with.&nbsp; </p>
 <p> By all means add lookup fields to help the user understand the coding
 on the form. One convention for these fields is to define the screen record
@@ -1590,7 +1730,15 @@ to the list FILES.frm with the extension `.frm in place of `.4pr'.&nbsp; </p>
 to put the object files into a library, you will need to handle the library
 rules instead. If you ever create code which uses the globals file, do not
 forget to add the dependency lines of the form shown by: </p>
-<p>tsc.4go tsc.o: tsg.4gl </p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">tsc.4go tsc.o: tsg.4gl</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>However, before you add such a rule, ask yourself `why does this code use the
 globals file at all?' There <u>are</u> reasons for doing so, but it is seldom
 necessary. </p>
@@ -1603,22 +1751,30 @@ want to modify some of the other messages; the language is a bit stilted in some
 places because it has to be applicable to any possible table. </p>
 <p><a href="#Table of Contents">Back to Table of Contents</a> </p>
 <hr>
-<h3><a name="The auxilliary files">The auxilliary files</a> </h3>
+<h3><a name="The auxilliary files">The auxiliary files</a> </h3>
 <p>The other files provided by FGLBLD should not need changing. The files
-repdest.4gl and repdest.4pr implement the function report_destination; you may
+repdest.4gl and repdest.4pr implement the function <i> report_destination</i>; you may
 wish to modify this. If you are using compiled xxx and have got hold of the code to
 dynamically configure report dimensions, you will want to use this to change the
 layout of a report to screen to 23 lines, with no (zero) top margin, bottom
 margin and left margin. </p>
-<p>The file informix.mk contains the rules that xxx needs to understand how to
+<p>The file <i> informix.mk</i> contains the rules that xxx needs to understand how to
 compile xxx files of most sorts. If your version of xxx does not understand the rules,
 the chances are you have a very old version and you would do better to get hold
 of rmk. If your version of xx understands lines of the form:&nbsp;</p>
-<p>&nbsp;&nbsp;&nbsp; include ${BASEDIRECTORY}/etc/informix.mk&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">&nbsp;include ${BASEDIRECTORY}/etc/informix.mk&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>
-then it is recommended that you put a copy of informix.mk in one central
+then it is recommended that you put a copy of <i> informix.mk</i> in one central
 directory (e.g. the project's etc directory) and use lines like the one above in
-the makefiles.</p>
+the <i> makefiles</i>.</p>
 <p>If you think of modifying the rules to handle functions such as ensuring that
 when a program is compiled, a link in a remote directory is kept up to date,
 then if your version of xxx does not support the construct above, get hold of a
@@ -1647,9 +1803,11 @@ Sphinx know. </p>
 <hr>
 <h2><a name="FGLBLD SUPPORT CODE">FGLBLD SUPPORT CODE</a> </h2>
 <p>There are two parts of FGLBLD that use the support code. First of all, some
-code is needed with each generated program; this means the D-List code, the xxx rules informix.mk, and the files perfaux.4gl, repdest.4gl, repdest.4pr and
-popstr.c. </p>
-<p>Second, there is the code needed by the custom version of fglgo and fgldb. At
+code is needed with each generated program; this means the D-List code, the xxx rules
+<i> informix.mk</i>, and the files <i> perfaux.4gl, repdest.4gl, repdest.4pr</i> and
+<i>
+popstr.c</i>. </p>
+<p>Second, there is the code needed by the custom version of <i> fglgo</i> and <i> fgldb</i>. At
 first sight, this should be the same as the code needed by the generated code;
 however, if FGLBLD is compiled using Informix-RDS, it has to be run with a
 custom runner which has a number of extra functions in it, and these are also
@@ -1677,14 +1835,14 @@ at the manual pages or the source code. </p>
 <p><a href="#Table of Contents">Back to Table of Contents</a> </p>
 <hr>
 <h3><a name="MAKE rules">MAKE rules</a> </h3>
-<p>The file informix.mk is used to tell Augmented Make (which is the version
+<p>The file <i> informix.mk</i> is used to tell Augmented Make (which is the version
 normally available on System V Unix) how to compile xxx programs. The rules are
 included by the include directive in the makefile generated by FGLBLD. Only one
 copy is needed per directory; it is not altered when FGLBLD creates it. </p>
 <p>There is one oddity already mentioned, namely that the forms which are
 generated by FGLBLD have the extension `.4pr' instead of `.per' as would
 normally be used. This allows you to distinguish between form files for use with
-xxx and ones for use with (xxx). The rules in informix.mk handle both extensions and
+xxx and ones for use with (xxx). The rules in <i> informix.mk</i> handle both extensions and
 give `.4pr' files precedence over `.per' files. </p>
 <p>The rules do not cover converting `.4gl' files into `.ec' or `.c' files --
 there is not normally any need to do this, and if there is, you can probably
@@ -1696,8 +1854,8 @@ converting `.ec' files into `.c' files. </p>
 <h3><a name="Transaction Logs">Transaction Logs</a></h3>
 <p>If the database has a transaction log, all operations using update cursors
 must occur inside a transaction. Further, when the transaction is committed (or
-rolled back), all active (open) cursors are closed. The seemingly anti-social
-behaviour makes life difficult for programmers, but simplifies the transaction
+rolled back), all active (open) cursors are closed. The seemingly anti-social behavior
+makes life difficult for programmers, but simplifies the transaction
 handling code inside the database agent and also corresponds to the ANSI
 standard definition of how COMMIT WORK should behave.&nbsp;</p>
 <p> It also means that the
@@ -1736,19 +1894,35 @@ conditional test which checks whether there is a log or not. The functions are: 
   <li>CALL commit_work() </li>
   <li>CALL rollback_work(). </li>
 </ul>
-<p>There is an additional function end_work which takes an argument: if the
+<p>There is an additional function <i> end_work</i> which takes an argument: if the
 argument is zero, it does COMMIT WORK, otherwise it does ROLLBACK WORK: </p>
-<p>&nbsp;&nbsp;&nbsp; CALL end_work(opstatus)&nbsp;</p>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">CALL end_work(opstatus)&nbsp;</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p> To find out whether there is a transaction log
 present, there is a function called translog which returns 1 (true) if there is
 a transaction log present and 0 (false) if not. This routine only tests the
 database once, so it is not an expensive operation, but the other routines are
 the only ones that need to use it normally.</p>
-<blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">
 <p>IF translog () THEN<br>
 &nbsp;&nbsp;&nbsp; MESSAGE &quot;Transaction Logging is enabled&quot; <br>
 END IF </p>
-</blockquote>
+        </td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>By using these routines, a program can be created which will work correctly
 whether or not the database has a transaction log. These transaction handling
 routines are part of the code in the file perfaux.4gl which is produced every
@@ -1761,8 +1935,8 @@ and the program continues to work correctly.&nbsp; </p>
 <hr>
 <h3><a name="Miscellaneous functions">Miscellaneous functions</a> </h3>
 <p> There are two other routines in
-perfaux.4gl; these are shell_escape which is a primitive but effective way of
-letting the user get access to the operating system, and check_interrupt which
+perfaux.4gl; these are <i> shell_escape</i> which is a primitive but effective way of
+letting the user get access to the operating system, and <i> check_interrupt</i> which
 is called inside the main menu generated by FGLBLD to clear the interrupt flag
 and produce a suitable warning message. </p>
 <p>The shell escape routine can usefully have several extra features added;
@@ -1771,7 +1945,7 @@ secondly, security control could be added so that only privileged users could do
 shell escapes at all. This second change would need to be part of an integrated
 security control package.&nbsp; </p>
 <p> In code developed by Sphinx, the startup code in the
-MAIN program would call a function (normally called std_options) with a set of
+MAIN program would call a function (normally called <i> std_options</i>) with a set of
 arguments to identify the program, the help message file, the error log file and
 any necessary security clearance. This function would also set the options in a
 project-standard way. This enforces a uniform approach to options. </p>
@@ -1781,25 +1955,28 @@ project-standard way. This enforces a uniform approach to options. </p>
 <h3><a name="Custom versions of fglgo and fgldb">Custom versions of fglgo and
 fgldb</a> </h3>
 <p>
-The shell script mkfglgo provided with an Informix-RDS version of FGLBLD copies
+The shell script <i> mkfglgo</i> provided with an Informix-RDS version of FGLBLD copies
 the necessary source files from the FGLBLD private directory top the current
-directory and then compiles fgldb and fglgo, in that order, using the makefile
-i4glrds.mk, which is also provided. If you wish to add extra functions to your
-custom versions of fglgo and fgldb, you will need to edit the makefile and also
-fgiusr.c. When you add the functions to the list inside fgiusr.c, prepare the
+directory and then compiles <i> fgldb</i> and <i> fglgo</i>, in that order, using the makefile
+<i>i4glrds.mk</i>, which is also provided. If you wish to add extra functions to your
+custom versions of fglgo and fgldb, you will need to edit the makefile and also <i>
+fgiusr.c</i>. When you add the functions to the list inside <i> fgiusr.c</i>, prepare the
 external declaration in the same format as the one for round (for example). Then
 jump to the bottom of the file and (using vi) do what it says in the comment. </p>
 <p>There is a complete set of documentation for the various facilities which are
-included in these versions of fglgo and fgldb: take a good look -- there may be
+included in these versions of <i> fglgo</i> and <i> fgldb</i>: take a good look
+- there may be
 some pleasant surprises in store for you.&nbsp; </p>
 <p><a href="#Table of Contents">Back to Table of Contents</a> </p>
 <hr>
 <h3><a name="FGLBLD Installation">FGLBLD Installation</a> </h3>
 <p> The FGLBLD installation process is
-closely modelled on the system described in the document `Distributing
-Software', or maybe the process described there is closely modelled on the
+closely modeled on the system described in the document `Distributing
+Software', or maybe the process described there is closely modeled on the
 installation process developed for FGLBLD -- the relationship is close in either
 case. </p>
+<p>FGLBLD source code, as well as pre-compiled binaries are available from <a href="http://aubit4gl.sourceforge.net" target="_blank">Aubit
+project</a>. Source code is also available from Aubit project CVS. </p>
 <p><a href="#Table of Contents">Back to Table of Contents</a> </p>
 <hr>
 <h3><a name="Compiling FGLBLD">Compiling FGLBLD</a> </h3>
@@ -1810,7 +1987,7 @@ megabyte on the file system where the software is to be installed unless you do
 some backup and cleanup work prior to installing the software.&nbsp; </p>
 <p> There is some
 minimal configuration work to be done. There are two variants of the
-case-insensitive match option to grep; some versions use `-i' and others use
+case-insensitive match option to <i> grep</i>; some versions use `-i' and others use
 `-y'. The `.alt' scripts are distributed to use the `-y' option and may need to
 be modified to suit your system. </p>
 <p>To compile the software, type the relevant one of the commands: </p>
@@ -1822,14 +1999,14 @@ be modified to suit your system. </p>
 called <i>Distribution</i> which will contain all the material to be copied onto
 the distribution media. The distribution media should be made by changing into
 the Distribution directory and then archiving everything in that directory and
-below using cpio or tar as required. </p>
+below using <i> cpio</i> or <i> tar</i> as required. </p>
 <p>If the software is only to be installed on the local machine, it can be
 installed by running the installation process in the <i>Distribution</i>
 directory -- see the section on `Installing FGLBLD'.&nbsp; </p>
 <p> If there are any problems,
 the most likely problems are: </p>
 <ul>
-  <li>Your machine does not support ranlib. Modify Makefile so that the RANLIB line
+  <li>Your machine does not support <i> ranlib</i>. Modify Makefile so that the RANLIB line
 reads: RANLIB=: ranlib</li>
   <li>Insufficient space on the disc. You will have to make sufficient space.</li>
 </ul>
@@ -1845,10 +2022,16 @@ of spare disc space.&nbsp; </p>
 no files need special privileges, it could be installed by some other user
 provided the install script was suitably hacked -- all it requires is one line
 added after the line which starts&nbsp; </p>
-<blockquote>
-<p>`uid=';&nbsp;<br>
-uid=0 </p>
-</blockquote>
+<div align="left">
+  <blockquote>
+    <table border="0" bgcolor="#C0C0C0">
+      <tr>
+        <td bgcolor="#C0C0C0">`uid=';&nbsp;<br>
+          uid=0</td>
+      </tr>
+    </table>
+  </blockquote>
+</div>
 <p>The installation is performed by running ./install in the directory into
 which the software was copied. All the configuration parameters can be modified
 by setting environment variables. The required parameters are: </p>
@@ -1885,7 +2068,7 @@ to their search path. </p>
 conform to local (or project) standards. The code generators are kept in $FGLBLDDIR/bin
 and have the extension `.alt'.&nbsp;</p>
 <p> The template files are all kept in $FGLBLDDIR/src.
-Note that fglbld.alt generates all the code in the input and report files `<i>programi.4gl</i>'
+Note that <i> fglbld.alt</i> generates all the code in the input and report files `<i>programi.4gl</i>'
 and `<i>programr.4gl</i>' without using a template, and that all the
 modifications made to generated forms are made within the `.alt' scripts.</p>
 <p><b>Tip</b>: if you are not creating a second installation of FGLBLD for a
@@ -1910,9 +2093,9 @@ generate a shell script that runs the code generator shell script rather than
 have all the skeletal code embedded within the xxx program. This has many
 advantages, not least of which are that the xxx is simpler and it is infinitely
 easier to modify the shell scripts than it is to modify xxx code, even with
-Informix-RDS. The code basically uses cp and sed and echo to generate the code,
+Informix-RDS. The code basically uses <i> cp</i> and <i> sed</i> and <i> echo</i> to generate the code,
 and fortunately, all modern shells have echo as a built-in command so the
-overhead of process forking and execing is reduced. </p>
+overhead of process forking and <i> execing </i> is reduced. </p>
 <p><a href="#Table of Contents">Back to Table of Contents</a> </p>
 <hr>
 <h2><a name="WHAT IS MISSING">WHAT IS MISSING</a>? </h2>
@@ -1938,7 +2121,7 @@ next set of Master data, and then use the Detail option again.&nbsp; </p>
 <p> Using xxx, this
 process can be simplified because the user can be allowed to enter the master
 data, and when that is done, the program can give the user an INPUT ARRAY to
-enter the Detail data (no questions asked, no fiddle-faddle, just enter the
+enter the Detail data (no questions asked, no <i> fiddle-faddle</i>, just enter the
 data). </p>
 <p>It does COMMIT WORK, for the second time, the program can insert all the data
 into the database, and the user can add the next master information. The update
@@ -1987,8 +2170,8 @@ FGLBLD-generated code are: </p>
   <li>A proper mechanism for passing arrays and records as arguments to
     functions. </li>
   <li>Better control within INPUT ARRAY. </li>
-  <li>The ability to specify that <i><b>n</b></i> rows of data have been
-    initialised in the INPUT ARRAY and that the user cannot add rows to this list, nor delete rows from
+  <li>The ability to specify that <i><b>n</b></i> rows of data have been initialized
+    in the INPUT ARRAY and that the user cannot add rows to this list, nor delete rows from
     the list.</li>
 </ul>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
@@ -2003,7 +2186,7 @@ the user before any code was generated, and that FGLBLD would handle the
 reordered input automatically.&nbsp;</p>
 <p> More detailed information may be provided so that
 the generated code can automatically generate the code for the columns which
-need popup functions, and possibly even do some of the validation handling. This would need code to handle an INPUT ARRAY pre-initialised with the
+need popup functions, and possibly even do some of the validation handling. This would need code to handle an INPUT ARRAY pre-initialized with the
 complete list of the table's columns.&nbsp;</p>
 <p> It would be possible to generate fetch
 functions with a larger cache than the one record cache currently in use.&nbsp;</p>
@@ -2024,14 +2207,15 @@ and the converse is often true), and so on.</p>
 <hr>
 <h2><a name="CREDITS">CREDITS</a></h2>
 <p>Jonathan Leffler<br>
-Sphinx Ltd.<br>
 6th October 1989</p>
-<p>HTML version created by by Andrej Falout<br>
+<p>HTML version created by Andrej Falout<br>
 16/07/2002</p>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <hr>
 <h2><a name="LICENSE">LICENSE</a></h2>
-<p>&nbsp;</p>
+<p>FGLGEN source code is available under GNU GPL license. Code created by FGLGEN
+is not subject to this license, and user is free to apply any license to it he
+chooses.</p>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
 <hr>
 <p><a href="#Table of Contents">Back to Table of Contents</a></p>
