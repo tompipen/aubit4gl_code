@@ -11,17 +11,29 @@ define n integer
 #database stores7
 database maindb
 
+
+#You may want to try with a small mod, change it to an order by on the select
+#and an order external in the report - otherwise it has to create and populate
+#a table which may be where the problem lies (not set it to read - only have
+#you ?)
+
+
 	declare c1 cursor for
 		select tabname,colname,colno from systables,syscolumns
 		where systables.tabid=syscolumns.tabid
-		and systables.tabid>99
+		and systables.tabid<99
+		#and systables.tabid>99
 		order by 1,2,3
+
 
         start report r1  to "rr1.pdf"
 	foreach c1 into t,c,n
-        	output to report r1 (t,c,n)
+        	display "Processing table ", t clipped
+			output to report r1 (t,c,n)
 	end foreach
 	finish report r1
+
+    display "Finished, see result in rr1.pdf"
 
 end main
 
