@@ -70,11 +70,13 @@ numero                          [0-9]+
 
 
 
-<INITIAL>{letra}{letra_ou_digito}*  { if (IsGlobals())
-		     BEGIN GLOBALS;
-			 else
-			   ECHO;
-			 IncrementFunction();
+<INITIAL>{letra}{letra_ou_digito}*  {
+		if (IsGlobals()) {
+		    BEGIN GLOBALS;
+		} else {
+			ECHO;
+        }
+		IncrementFunction();
      }
 
 <GLOBALS>{separator}+               { ECHO ;                            }
@@ -106,42 +108,124 @@ IncrementFunction()
 	if (strcasecmp(yytext,"function") == 0 ||
 	    strcasecmp(yytext,"main")     == 0 ||
 	    strcasecmp(yytext,"report")   == 0 )
+    {
 		Functions++;
+    }
 }
 
 /*
- * Inclui o ficheiro de globals
+ * Include GLOBALS file
  * A proxima versao poderia tambem retirar os comentarios
  * TODO - As funções incluidas não são somadas e deveriam ser
  */ 
 IncluiFicheiro(NomeFicheiro)
 char *NomeFicheiro;
 {
-   FILE *FicheiroIncluido;
-	char  NmFicheiro[64];
-	char  str[256];
-	char *s;
-	int  ch;
+FILE *FicheiroIncluido;
+char  NmFicheiro[64];
+char  str[256];
+char  buff[10];
+char *s;
+int  i;
+int buffcnt=0;
+char ch; // it was int - why?
+
 
 	/* Retirar aspas */
 	strcpy(NmFicheiro, NomeFicheiro+1);
 	NmFicheiro[strlen(NmFicheiro)-1] = '\0';
 
 	fprintf(yyout,"\nINC_GLOBALS \"%s\"\n",NmFicheiro);
-   FicheiroIncluido = fopen(NmFicheiro,"r");
+	FicheiroIncluido = fopen(NmFicheiro,"r");
 	if ( FicheiroIncluido == (FILE *)0)
 	{
-		printf("p4glpp: Ficheiro incluido nao existente ou sem permissoes (%s)\n",
+		//printf("p4glpp: Ficheiro incluido nao existente ou sem permissoes (%s)\n",
+        printf("p4glpp: File included via GLOBALS does not exist - check permisions (%s)\n",
 				 NmFicheiro);
 		exit(1);
 	}
+
+    strcpy(buff,"");
+
 	while ( !feof(FicheiroIncluido) )
 	{
 		ch = getc(FicheiroIncluido);
-	   if ( ! feof(FicheiroIncluido) )
+
+        //accumulate last 10 characters in the buffer
+		if (buffcnt == 10) {
+			for ( i = 1 ; i < 11 ; i++ ) {
+                buff[i-1]=buff[i];
+            }
+            buff[10]=ch;
+		} else {
+            buff[buffcnt]=ch;
+            buffcnt++;
+        }
+
+		//printf("%d(%s)\n",buffcnt,buff);
+
+		if ( ! feof(FicheiroIncluido) ) {
 		   putc(ch,yyout);
+        }
+
+		if 	(
+			(strcmp("GLOBALS \"",buff) == 0 ) || (strcmp("globals \"",buff) == 0 ) ||
+			(strcmp("GLOBALS '",buff) == 0 ) || (strcmp("globals '",buff) == 0 )
+			)
+		{
+
+            //not going to happen because buff = 10 chars, we compare only 9
+            /*
+			printf("Found 'GLOBALS filename' statement in included file %s\n",NomeFicheiro);
+			printf("TODO: this file needs to be included too!\n");
+            */
+		}
+
+        //TODO - make it case insensitive
+		if ( (strcmp("END GLOBALS",buff) == 0 ) || (strcmp("end globals",buff) == 0 ) ) {
+			/* 
+			
+			This is a very silly way to prevent from including MAIN, functions or report
+            blocks via "GLOABALS filename" stmt.
+
+            I tried to do this with if ( ! InInclude ) but failed - got parsing errors. This would be
+            the only correct way to do this - EVERYTHING between INC_GLOBALS and END INC_GLOBALS
+            must be ignored except GLOBALS ... END GLOBALS block(s) and "GLOBALS filename" statement(s)
+            if present (which need to be expaned/included too)
+
+
+            Problem is that in 4GL language is perfectly valid to use as GLOBALS file a module
+            that countains functions; but since we just dump a whole GLOBALS file in temporary
+            file to be parsed by p4gl, p4gl will "think" this functions are actual part of the
+            module it's parsing - WHICH IS WRONG
+
+            This is silly because:
+                1) test for END GLOBALS is not case insensiitve and will fail to
+                    detect, for example "End Globals"
+                2) There can be more then one GLOBALS ... END GLOBALS block in included file
+
+            4GL language rules state that GLOBALS ... END GLOABALS must be before any
+            funtion (MAIN, FUNCTION, REPORT) blocks, so that is OK.
+
+            We also want to ignore any MODULAR variables defined in included file, but this will not
+            happen if they are defined before GLOBALS ... END GLOBALS block.
+
+            On top of that, GLOBALS file can include other GLOBALS files itself, and we are not
+            handling that at all...
+
+            */
+
+			//FIXME: p4gl (fgldoc actually) "thinks" ther was an error if p4pp prints ANYTHING to stdout...
+			//printf("Reached END GLOBALS, exiting...\n");
+			break; //exit while
+        }
+
 	}
-	fprintf(yyout,"END INC_GLOBALS");
+
+	fprintf(yyout,"\nEND INC_GLOBALS\n");
+
+	fclose (FicheiroIncluido);
+
 }
 
 /**

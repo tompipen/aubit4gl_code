@@ -2,8 +2,8 @@
 /*  ==========================================================================
  *
  *   Author : Sergio Ferreira
- *   $Date: 2003-12-10 11:48:07 $
- *   $Id: p4gl_lex.l,v 1.6 2003-12-10 11:48:07 afalout Exp $
+ *   $Date: 2003-12-15 05:17:36 $
+ *   $Id: p4gl_lex.l,v 1.7 2003-12-15 05:17:36 afalout Exp $
  *
  *   Lexical analyzer for the p4gl parser
  *
@@ -15,7 +15,7 @@
 #include "p4gl.h"
 #include "y.tab.h"
 
-//static char *rcsid = "$Id: p4gl_lex.l,v 1.6 2003-12-10 11:48:07 afalout Exp $";
+//static char *rcsid = "$Id: p4gl_lex.l,v 1.7 2003-12-15 05:17:36 afalout Exp $";
 
 int lineno=1;         /* Source line number counter */
 
@@ -40,8 +40,8 @@ quoted_string                   \'([^'\n]|\\['\n])*\'
                               CopyToken(yytext,STRING);
                               return(STRING); }
 
-{quoted_string}             { /* ECHO; */  CopyToken(yytext,STRING); return(STRING);  }
-{double_quoted_string}      { /* ECHO; */  CopyToken(yytext,STRING); return(STRING);  }
+{quoted_string}             { CopyToken(yytext,STRING); return(STRING);  }
+{double_quoted_string}      { CopyToken(yytext,STRING); return(STRING);  }
 
 
 [0-9]+                      { CopyToken(yytext,NUMBER); return(NUMBER); }

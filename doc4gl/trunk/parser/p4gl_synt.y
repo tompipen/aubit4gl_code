@@ -337,9 +337,9 @@ op_define_globals
  * @todo : Define another way to do this.
  */
 op_inc_globals
-	: INC_GLOBALS STRING                
+	: INC_GLOBALS STRING
 	{
-		char *x=$2;
+		//char *x=$2;
 		InInclude = 1;
 
 		//P4glDebug("xxGLOBALS file =%s=\n",$2);

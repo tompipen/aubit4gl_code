@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <varargs.h>
 #include "p4gl_symtab.h"
+#include "p4gl.h"
 
 /**
  * Execute the actions defined as parameters.
@@ -19,21 +20,26 @@
  * This function is executed after the parsing terminated and the abstract
  * tree reordering.
  *
- * Uses the parameters as stored in global variables InsertInDatabase and 
+ * Uses the parameters as stored in global variables InsertInDatabase and
  * repositoryFormat
  */
 void executeActions(void)
 {
   if ( InsertInDatabase )
   {
-    if ( repositoryFormat == INSLIB )
+    if ( repositoryFormat == INSLIB ) {
 	    InsertInslib();
-	  else
+    } else {
       insertP4glRep();
+    }
   }
 
-  if ( generateFglDoc )
+  //P4glDebug("after Done inserting\n");
+
+  if ( generateFglDoc ){
+	  //P4glDebug("Calling genFglDoc()\n");
 	  genFglDoc();
+  }
 }
 
 /**
@@ -50,4 +56,7 @@ int parseFgl(void)
 	  return 1;
   return 0;
 }
+
+
+/* ======================================= EOF ===================================== */
 

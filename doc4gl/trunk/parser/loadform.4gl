@@ -106,9 +106,14 @@ define
         smallint,
     hush
         char(1),
-	reason_1,reason_2,reason_3,reason_4,reason_5,reason_6,reason_7,
-    exit_on_error, insert_disabled
-        smallint
+	reason_1,reason_2,reason_3,reason_4,reason_5,reason_6,reason_7,reason_8,
+    exit_on_error, insert_disabled,fatal_exit,nofunc_cnt
+        smallint,
+
+	pa_nofunc array [5000] of record
+		function_name char(64)
+    end record
+
 
 
 {**
@@ -166,6 +171,7 @@ define
             when "endrun"
 				call expand_libs()      #add modules specified by library to modules associated with target using the library
 				call function_calls()   #For each function call registeres by p4gl, find function/module called
+                call globals_incl()     #For each GLOBALS include registered by p4gl, find included module
 			otherwise
                 display "ERROR: unknown type"
 				call show_usage()
@@ -175,7 +181,7 @@ define
 		#CLOSE SESSION s_ifmx
         close database
 
-	else #less tehn 5 parameters on the command line
+	else #less then 5 parameters on the command line
        case arg_val(1)
 		when "interactive"  #Interactive mode - show menu of interactive options
 	        let interactive = true
@@ -190,6 +196,12 @@ define
     		let db = "maxdev"
 			database db
 			call count_data()
+
+		when "glob" #see above - synonym
+			let db = "maxdev"
+			database db
+			call globals_incl()     #For each GLOBALS include registered by p4gl, find included module
+
 	   otherwise
            call show_usage()
 		   exit program (2)
@@ -281,6 +293,7 @@ function clean()
 
 				delete from systableext
 
+				delete from p4gl_func_calls #pupulated by loadform
 				delete from p4gl_function_call #populated by p4gl
 				delete from p4gl_fun_parameter #populated by plgl
 
@@ -288,11 +301,16 @@ function clean()
 				delete from p4gl_fun_return
 				delete from p4gl_fun_process
 
+				delete from p4gl_glob_module	#loadform
+				delete from p4gl_glob_incl		#p4gl
+
+				delete from p4gl_globals_usage #p4gl
 
 				delete from p4gl_function #populated by p4gl
 				delete from p4gl_module_prog    #populated by mkf
 				delete from p4gl_module #populated by p4gl
 				delete from p4gl_program        #populated by mkf
+
 
 				#don't clean p4gl_process
 				#don't clean p4gl_package
@@ -324,7 +342,7 @@ function main_menu()
 		                command "4Unused" "Tables not referenced by 4gl or per files"
 		                    call rep_unused_tables()
 
-						command "exit" "Exit program"
+						command "exit" "Exit menu"
 				            exit menu
                     end menu
 
@@ -333,7 +351,7 @@ function main_menu()
                     menu "Modules"
 						command "3Unused" "TODO-Modules not referenced by make files"
 
-						command "exit" "Exit program"
+						command "exit" "Exit menu"
 				            exit menu
                     end menu
 
@@ -352,7 +370,7 @@ function main_menu()
 					call flag_ext_tables()
                     call fixup()
 
-				command "exit" "Exit program"
+				command "exit" "Exit menu"
 		            exit menu
             end menu
 
@@ -2465,7 +2483,7 @@ function count_data()
 define
     cnt integer
 
-#total tables listed here = 36 (36 in model)
+#total tables listed here = 38 (36 in model)
 
     display ""
     display "================== jDbdoc ==============="
@@ -2494,11 +2512,11 @@ define
 #populated from multiple sources:
 	select count (*) into cnt from p4gl_form_process
     display "p4gl_form_process=	", cnt, 			"	p4gl(TODO),loadform(OK)"
-# 1380 in db, but Processed 1655 form files # warning_cnt=10 formonly=3033 error comp=0
-# 275 forms did not have any attributes, or theywhere formonly?
+# 1385 in db, but Processed 1655 form files # warning_cnt=10 formonly=3033 error comp=0
+# so 275 forms did not have any attributes, or they where formonly? Possibly, but check
 
 	select count (*) into cnt from p4gl_form
-    display "p4gl_form=		", cnt, 				"	p4gl(TODO),loadform(OK?)"
+    display "p4gl_form=		", cnt, 				"	p4gl(TODO),loadform(OK)"
 	select count (*) into cnt from p4gl_table_process
     display "p4gl_table_process=	", cnt,         "	p4gl(OK),loadform(OK)"
 	select count (*) into cnt from p4gl_column_process
@@ -2528,12 +2546,15 @@ define
     display "p4gl_form_table=	", cnt, 			"	loadform(OK)"
 	select count (*) into cnt from p4gl_form_attribute_type
     display "p4gl_form_attribute_type", cnt, 		"	loadform(OK)"
+	select count (*) into cnt from p4gl_glob_module
+    display "p4gl_glob_module	", cnt, 		"	loadform(OK)"
+
 
 #populated by mkf only:
 	select count (*) into cnt from p4gl_module_prog
     display "p4gl_module_prog=	", cnt,			"	mkf(OK)"
 	select count (*) into cnt from p4gl_program
-    display "p4gl_program=		", cnt,			"	mkf(OK?)"     #1019 (1132 .mk files)
+    display "p4gl_program=		", cnt,			"	mkf(OK?)"     #1026 (1132 .mk files) 106 missing?
 
 #populated by p4gl only:
 	select count (*) into cnt from p4gl_table_usage
@@ -2543,7 +2564,7 @@ define
 	select count (*) into cnt from p4gl_call_parameter
     display "p4gl_call_parameter=	", cnt,			"	p4gl(TODO)"
 	select count (*) into cnt from p4gl_globals_usage
-    display "p4gl_globals_usage=	", cnt,			"	p4gl(TODO)"
+    display "p4gl_globals_usage=	", cnt,			"	p4gl(OK)"
 	select count (*) into cnt from p4gl_mod_todo
     display "p4gl_mod_todo=		", cnt,			"	p4gl(CHECK-FIX)"
 	select count (*) into cnt from p4gl_function
@@ -2553,17 +2574,20 @@ define
 	select count (*) into cnt from p4gl_fun_return
     display "p4gl_fun_return=	", cnt,			"	p4gl(OK)-ONLY from comment"
 	select count (*) into cnt from p4gl_fun_process
-    display "p4gl_fun_process=	", cnt,			"	p4gl(OK)-only from comment"
+    display "p4gl_fun_process=	", cnt,			"	p4gl(OK?)-only from comment?"   # 4427 out of 5820 functions
 	select count (*) into cnt from p4gl_fun_parameter
     display "p4gl_fun_parameter=	", cnt,			"	p4gl(OK)"
 	select count (*) into cnt from p4gl_form_usage
     display "p4gl_form_usage=	", cnt,			"	p4gl(TODO)"
+	select count (*) into cnt from p4gl_glob_incl
+    display "p4gl_glob_incl=		", cnt,			"	p4gl(OK)"
+
 
 #populated by other methods:
 	select count (*) into cnt from p4gl_excel
     display "p4gl_excel=		", cnt,			"	TEMP(OK)"
 	select count (*) into cnt from p4gl_func_calls
-    display "p4gl_func_calls=	", cnt, 		"	p4gl_endrun(TODO)"
+    display "p4gl_func_calls=	", cnt, 		"	p4gl_endrun(OK?)" #2508 resolved but have 34125 calls!
 	display ""
 
 
@@ -3250,6 +3274,37 @@ define
 
 end function #fixup()
 
+function check_nofunction(p_function_name)
+define
+    cnt smallint,
+    p_function_name char(64)
+
+    for cnt = 1 to nofunc_cnt
+        if p_function_name = pa_nofunc[cnt].function_name then
+	        return true
+        end if
+    end for
+
+    return false
+
+end function
+
+
+function add_nofunction(p_function_name)
+define
+    p_function_name char(64)
+
+    let nofunc_cnt = nofunc_cnt+1
+
+    if nofunc_cnt = 5000 then
+        display "	pa_nofunc array full"
+        exit program 55
+    end if
+
+	let pa_nofunc[nofunc_cnt].function_name = p_function_name
+
+end function
+
 {**
  * For each function call registeres by p4gl, find function/module called
  *
@@ -3265,10 +3320,10 @@ define
     in_this_group, target_match_cnt, same_targets, cnt, this_match_id,
     err_cnt,all_same,calling_target_cnt,prev_mach_id,err_nofunction,
     err_parameters,err_makefile,err_makefile_multi,defined_cnt,tmp_cnt,
-    did_match,ret
+    did_match,ret,in_mk,err_log_empty
         smallint,
 	still_unresolved_calls,no_called_function,
-	resolved_calls,total_calls
+	resolved_calls,total_calls,call_have_func,counter
         integer,
     calling_func_process
         char (20),
@@ -3290,7 +3345,8 @@ define
 	let err_parameters = 0
 	let err_makefile = 0
 	let err_makefile_multi = 0
-
+    let err_log_empty = 0
+    let nofunc_cnt=0
 
     let insert_disabled = 0
 
@@ -3301,6 +3357,7 @@ define
 	let reason_5 = 0
 	let reason_6 = 0
 	let reason_7 = 0
+	let reason_8 = 0
 
     initialize previous_module_name to null
 	initialize previous_calls_func_name to null
@@ -3310,7 +3367,9 @@ define
 
 	create temp table dd_temp2(load_field char (300))
 
-    declare f1 cursor for
+
+	{something wrong here...
+	declare f1 cursor for
         select * from p4gl_function_call
             where function_call_id not in
 				(select function_call_id from p4gl_func_calls)
@@ -3322,10 +3381,64 @@ define
             #we need order by for testing if we already processed this call
 			order by module_name,calls_func_name
 
+		--43
+		select count (*) from p4gl_function_call
+		where function_call_id not in
+		(select function_call_id from p4gl_func_calls)
+		and exists (select * from p4gl_function where
+		p4gl_function.function_name = p4gl_function_call.calls_func_name)
+		;
+
+
+		--145
+		select count (*) from p4gl_function_call,p4gl_function
+		where
+		p4gl_function_call.function_call_id not in
+		(select function_call_id from p4gl_func_calls)
+		and
+		p4gl_function.function_name = p4gl_function_call.calls_func_name
+		;
+    }
+
+
+	declare f1 cursor for
+        select * from p4gl_function_call
+            where function_call_id not in
+				(select function_call_id from p4gl_func_calls)
+            #let's not try to resolve calls to function that we failed to
+            #register (p4gl probably crashed)
+			#...or maybe we can grep for them? Hopefully Sergio will fix p4gl so we don't have to...
+			--and exists (select * from p4gl_function where
+            --   p4gl_function.function_name = p4gl_function_call.calls_func_name)
+            #we need order by for testing if we already processed this call
+			order by module_name,calls_func_name
+
+
+
+    let counter = 0
 	######################################
 	foreach f1 into p_p4gl_function_call.*
     ######################################
         #for each function call registered
+
+        let counter = counter + 1
+
+        if check_nofunction(p_p4gl_function_call.calls_func_name) then
+            continue foreach
+        end if
+
+        #check if we have function called
+		select count (*) into cnt from p4gl_function where
+         p4gl_function.function_name = p_p4gl_function_call.calls_func_name
+
+        if cnt = 0 then
+            display "No function ",p_p4gl_function_call.calls_func_name clipped
+            call add_nofunction(p_p4gl_function_call.calls_func_name)
+			continue foreach
+		end if
+
+
+
 
         if p_p4gl_function_call.module_name = previous_module_name
         and p_p4gl_function_call.calls_func_name = previous_calls_func_name
@@ -3345,10 +3458,10 @@ define
 			let previous_calls_func_name = p_p4gl_function_call.calls_func_name
         end if
 
-
         #Get number of functions with name of the called function
 		select count(*) into function_called_cnt from p4gl_function
                 where function_name = p_p4gl_function_call.calls_func_name
+                and id_package = p_p4gl_function_call.id_package
 
         #get number of parameters passed in a call
         select count(*) into params_passed from p4gl_call_parameter
@@ -3370,37 +3483,70 @@ define
 			select module_name into p_module_name
                 from p4gl_function
                     where function_name = p_p4gl_function_call.calls_func_name
+                    and id_package = p_p4gl_function_call.id_package
+
+
+            #check if parameters/returns match
+            if 1=2 then #disbler - p4gl does not store this at the moment
+
+		        #get number of parameters expected by this functions
+		        select count(*) into params_expected from p4gl_fun_parameter
+        		    where id_package = p_p4gl_function.id_package
+                    and module_name = p_module_name
+                    and function_name = p_p4gl_function_call.calls_func_name
+
+				#TODO: p4gl_fun_return table is populated only form commnets, not from code
+                #get number of parameters returned by this function
+		        select count(*) into params_returned from p4gl_fun_return
+        		    where id_package = p_p4gl_function.id_package
+                    and module_name = p_module_name
+                    and function_name = p_p4gl_function_call.calls_func_name
+
+
+				if params_passed <> params_expected then
+                    display "WARNING: parameters in call to only function DO NOT MATCH"
+                end if
+
+				if params_to_return <> params_returned then
+                    display "WARNING: parameters returned in call to only function DO NOT MATCH"
+                end if
+
+                #TODO: also check variable types in call/return
+
+            end if
 
 			call insert_function_calls
    	            (p_p4gl_function_call.function_call_id,
-				".",
+				p_p4gl_function_call.id_package, #".",
 				p_module_name,
 				p_p4gl_function_call.calls_func_name,
 				p_p4gl_function_call.function_name,
 				p_p4gl_function_call.module_name,
 				"only one",1)
 
-				#p_p4gl_function_call.calls_func_name,
-				#p_p4gl_function_call.calls_module_name)
+            #TODO-since we have only one, maybe we can insert this relationship for ALL
+            #calls to this function in ALL modules, and save some time? (3 select count(*) and
+            #we may use insert cursor which is faster...) But we would in that case forfit the
+            #opportunity to check paramters/returns for each call...
 
             continue foreach
         else
        		if function_called_cnt = 0 then
                 #probaly p4gl crashed...
 				
-                #Maybe we can grep for them - if we disable checking if function 
+                #Maybe we can grep for them - if we disable checking if function
 				#exists at all in cursor definition...
 
 				#we are explicity asking for functions called that DO exist!
-				display "Should not happen!!!"
-                exit foreach
-
-
-				#display "cannot find function named ",
-					#p_p4gl_function_call.calls_func_name clipped
+				display "cannot find function named ",
+					p_p4gl_function_call.calls_func_name clipped
                 let err_cnt = err_cnt + 1
                 let err_nofunction = err_nofunction + 1
-                continue foreach
+
+				display "Should not happen!!! 456"
+				let fatal_exit = true
+				exit foreach
+                #continue foreach
             end if
 
 			#there are multiple functions with same name
@@ -3521,11 +3667,10 @@ populated at all at the moment!
 
             if match_cnt = 1 then
                 #only one function with this name matches call/return parameters
-				
-				#should not happen because we disabled this above...
 
+				#should not happen because we disabled this above...
                 display "what the ... ????"
-                exit program
+				exit program 15
 
 				call insert_function_calls
 	   	            (p_p4gl_function_call.function_call_id,
@@ -3536,17 +3681,14 @@ populated at all at the moment!
 					p_p4gl_function_call.module_name,
 					"only one matching parameters",2)
 
-					#p_p4gl_function_call.calls_func_name,
-					#p_p4gl_function_call.calls_module_name)
-				#exit program
 	            continue foreach
-
             else
 	            if match_cnt = 0 then
                     display "Unable to match - no function matches this call's parameters/returns!"
 	                let err_cnt = err_cnt + 1
                     let err_parameters = err_parameters + 1
                     if exit_on_error then
+		                let fatal_exit = true
 						exit foreach
                     else
                         continue foreach
@@ -3726,9 +3868,9 @@ populated at all at the moment!
                                 end if
                             else
                                 if same_targets > 1 then
-                                    display "should not happen?"
+                                    display "should not happen? 18"
                                     #unless some make file specifies same module more then once...
-                                    exit program
+                                    exit program 18
                                 else
                                     #this function/module has same name and same
                                     #parameters as the one we called, but is not part
@@ -3883,7 +4025,7 @@ populated at all at the moment!
 								pa_match[this_match_id].function_name clipped,
 								" that failed to parse:",tmp_cnt
 
-{ 
+{
 
 p4gl parser creates one temporaty file from 4gl module it's scanning and ALL
 files declared as GLOBALS "filename.4gl" BEFORE it parses it.
@@ -3929,27 +4071,65 @@ function write_order in module po_mod.4gl is NOT part of target E11
 }
 
                             if tmp_cnt = 0 then
-								#Cannot match, and cannot find out why this target function is missing
-								display "SHOULD NOT HAPPEN! Is /tmp/p4gl.log empty?"
-								if exit_on_error then
-			                        exit foreach
-	                            else
-	                                continue foreach
-	                            end if
+                                
+								#see if this module is reference in any makefiles
+								select count(*) into in_mk
+                                    from p4gl_module_prog
+                                        where module_name = p_p4gl_function_call.module_name
+                                        and id_package = p_p4gl_function_call.id_package
+
+
+								#if p_p4gl_function_call.module_name <> "M4A.4gl" then
+                                if in_mk > 0 then
+
+									#Cannot match, and cannot find out why this target function is missing
+									display "SHOULD NOT HAPPEN! Is /tmp/p4gl.log empty?"
+
+                                    let err_log_empty=err_log_empty+1
+									if exit_on_error then
+										let fatal_exit = true
+										exit foreach
+		                            else
+		                                continue foreach
+		                            end if
+                                else
+	                                #Happens when module issuing a call is not in any makefiles
+									#for example input_qtys (0/0) in M4A.4gl ==> show_ware
+
+									display "WARNING: ",p_p4gl_function_call.module_name clipped,
+	                                    "is not in any makefiles"
+									continue foreach
+                                end if
+
                             else
 	                            if tmp_cnt = 1 then
-display "TODO - insert me"
-									{
 									let this_match_id = pa_matches[1].match_id
+
+				                    #check if we have this module
+				                    select * from p4gl_module
+				                        where module_name = module_basename
+                                        and id_package=pa_match[this_match_id].id_package
+
+				                    if status = NOTFOUND then
+				                        #Add module to satisfy the constraint
+										insert into p4gl_module
+				                            (id_package,module_name,comments)
+				                            values (pa_match[this_match_id].id_package,module_basename,
+											"Failed to parse-added automatically")
+#xxxxx here
+				                    end if
+
+
+
 									call insert_function_calls
 					    	            (p_p4gl_function_call.function_call_id,
 										pa_match[this_match_id].id_package,
-										pa_match[this_match_id].module_name,
+										module_basename,	#	pa_match[this_match_id].module_name,
 										pa_match[this_match_id].function_name,
 										p_p4gl_function_call.function_name,
 										p_p4gl_function_call.module_name,
-										"only one in target definition based on makefile-multiple targets but all same",7)
-                                    }
+										"found one module failed to parse containing function",8)
+
                                 else
                                     display "Multiple modules failed to parse - will NOT insert"
 								end if
@@ -3991,14 +4171,74 @@ display "TODO - insert me"
 							#TODO: what now?
 							display "WARNING: unable to match - multiple matches:"
 	                        display "         target_match_cnt=",target_match_cnt
-	                        display "         SHOULD NOT HAPPEN!"
-			                let err_cnt = err_cnt + 1
+	                        display "         SHOULD NOT HAPPEN! 987"
+
+							{
+
+							should not happen - but it does. In this example, same module (E52a.4gl) is linked in 4 targets
+							(E52 E52_M E52_S E5X) with combination of 3 diffenert modules containing function called
+							"picklist" (E52c.4gl E52d.4gl E52e.4gl). In effect, same call will reach different function
+							depending on program it is LINKED in. We have 2 choices:
+
+							1) Fix parameters/returns check, and hope they are different and only one will match (yeah, right....)
+
+							2) Rename "picklist" functions in (E52c.4gl E52d.4gl E52e.4gl) to
+							"picklist_E52c" "picklist_E52d" "picklist_E52e" AND make conditional call in E52a to them based on
+							program name. Something like
+
+							    if arg_val(0) = "E52" or arg_val(0) = "E5X" then call picklist_E52c() end if
+							    if arg_val(0) = "E52_S" then call picklist_E52d() end if
+							    if arg_val(0) = "E52_M" then call picklist_E52e() end if
+
+							IN GENERAL, WE WILL HAVE TO MAKE FUNCTION NAMES UNIQUE SOONER THEN LATER!
+
+
+							========== create_picklist (0/0) in E52a.4gl ==> picklist
+							Found 3 functions named picklist
+							FIXME: faking parameters check...
+							OK: params expected: 0 passed: 0
+							OK: params returned: 0 to return: 0
+							OK: params expected: 0 passed: 0
+							OK: params returned: 0 to return: 0
+							OK: params expected: 0 passed: 0
+							OK: params returned: 0 to return: 0
+							3 function called picklist in module group E52*
+							TODO: rename this functions to make then unique!
+							>>>>calling function in module E52a.4gl is part of target E52
+							function picklist in module E52c.4gl is part of same target E52 <<<<
+							function picklist in module E52d.4gl is NOT part of target E52
+							function picklist in module E52e.4gl is NOT part of target E52
+
+							>>>>calling function in module E52a.4gl is part of target E52_M
+							function picklist in module E52c.4gl is NOT part of target E52_M
+							function picklist in module E52d.4gl is NOT part of target E52_M
+							function picklist in module E52e.4gl is part of same target E52_M   <<<<
+
+							>>>>calling function in module E52a.4gl is part of target E52_S
+							function picklist in module E52c.4gl is NOT part of target E52_S
+							function picklist in module E52d.4gl is part of same target E52_S   <<<<
+							function picklist in module E52e.4gl is NOT part of target E52_S
+
+							>>>>calling function in module E52a.4gl is part of target E5X
+							function picklist in module E52c.4gl is part of same target E5X  <<<<<
+							function picklist in module E52d.4gl is NOT part of target E5X
+							function picklist in module E52e.4gl is NOT part of target E5X
+
+							originating module is part of      4 targets
+							E52e.4gl<>E52c.4gl
+							WARNING: unable to match - multiple matches:
+							         target_match_cnt=     4
+							         SHOULD NOT HAPPEN!
+							}
+
+							let err_cnt = err_cnt + 1
                             let err_makefile_multi = err_makefile_multi + 1
-	                        if exit_on_error then
-								exit foreach
-                            else
+	                        #if exit_on_error then
+							#   let fatal_exit = true
+							#	exit foreach
+                            #else
                                 continue foreach
-                            end if
+                            #end if
                         end if
 					end if
 
@@ -4016,13 +4256,37 @@ display "TODO - insert me"
 
     drop table dd_temp2
 
+    display "Processed ",counter using "<<<<<<&", " function call declarations"
+
+    display "nofunc_cnt=",nofunc_cnt
+
+    for cnt = 1 to nofunc_cnt
+        display pa_nofunc[cnt].function_name clipped
+    end for
+
+{
+Processed 19815 function call declarations
+nofunc_cnt=   128
+}
+
+
+	if fatal_exit then
+        exit program 88
+    end if
+
+
     display ""
+    display "================================ Summary ==================================="
 	display "Total Errors (unable to match):",err_cnt
-	display "No matching function name:",err_nofunction
-	display "No matching parameters:",err_parameters
-	display "No match based on makefile:",err_makefile
-	display "No match because of multiple makefiles/targets:",err_makefile_multi
+	display "	No matching function name:",err_nofunction
+	display "	No matching parameters:",err_parameters
+	display "	No match based on makefile:",err_makefile
+	display "	No match because of multiple makefiles/targets:",err_makefile_multi
+	display "	Nothing relevant in p4gl log: ",err_log_empty
+
+
     display ""
+    display "Matched based on:"
 	display reason_1 using "####&"," unique"
 	display reason_2 using "####&"," unique matching parameters"
 	display reason_3 using "####&"," in same module as calling function"
@@ -4030,32 +4294,16 @@ display "TODO - insert me"
 	display reason_5 using "####&"," unique in module group (based on file name)"
 	display reason_6 using "####&"," unique in target definition based on makefile"
 	display reason_7 using "####&"," unique in target definition based on makefile-multiple targets" # but all same
-
+	display reason_8 using "####&"," found one module failed to parse containing function"
     display ""
 
-    let reason_1 = reason_6 + reason_7
-	display "Had to use makefile to resolve calls ",reason_1 using "###&", 
-		" times - not good"
+    let cnt = reason_6 + reason_7
+	display "Had to use makefile to resolve calls ",cnt using "###&"," times - not good"
     display ""
 
-		select count (*) into still_unresolved_calls from p4gl_function_call
-            where function_call_id not in
-				(select function_call_id from p4gl_func_calls)
-                #order by function_name
-            and exists (select * from p4gl_function where
-               p4gl_function.function_name = p4gl_function_call.calls_func_name)
-
-    display still_unresolved_calls using "####&"," calls still unresolved"
-
-{
-
-  586 calls still unresolved
-23081 calls have no called function registered in Doc4GL db
-17039 calls resolved, out of 40706
-
-}
 
 #takes forever....
+{
 		select count (*) into no_called_function from p4gl_function_call
             where
 				#I don't care if call was resolved or not - it cannot be anyway if function does not exist?
@@ -4069,15 +4317,39 @@ display "TODO - insert me"
 				p4gl_function.function_name = p4gl_function_call.calls_func_name)
 
 
-    display no_called_function using "####&",
-		" calls have no called function registered in Doc4GL db" #p4gl crashed or failed otherwise
+        select count (unique function_name) from p4gl_function
 
-		select count (*) into resolved_calls from p4gl_func_calls
-		select count (*) into total_calls from p4gl_function_call
+        select count (unique calls_func_name) from p4gl_function_call
 
-    display resolved_calls using "####&"," calls resolved, out of ", 
-		total_calls  using "####&"
+}
+
+	select count (*) into call_have_func from p4gl_function_call,p4gl_function
+            where	p4gl_function.function_name = p4gl_function_call.calls_func_name
+
+	select count (*) into total_calls from p4gl_function_call
+
+	#p4gl crashed or failed otherwise
+	let no_called_function=total_calls-call_have_func
+	display no_called_function using "####&"," calls have no called function registered in Doc4GL db"
+
+	select count (*) into resolved_calls from p4gl_func_calls
+
+    display resolved_calls using "####&"," calls resolved, out of ",total_calls  using "####&"
 	display insert_disabled using "####&", " resolved calls not inserted (unsure)"
+
+	#something strange here: got only    43 calls still unresolved...
+	select count (*) into still_unresolved_calls from p4gl_function_call
+		where function_call_id not in
+			(select function_call_id from p4gl_func_calls)
+        and exists (select * from p4gl_function where
+             p4gl_function.function_name = p4gl_function_call.calls_func_name)
+	display still_unresolved_calls using "####&"," calls still unresolved, buit should be resolvable based on curson"
+
+    # ...but 26437 here:
+	let still_unresolved_calls=total_calls-resolved_calls-no_called_function
+	display still_unresolved_calls using "####&"," calls still unresolved, buit should be resolvable"
+
+
 	display ""
 
 {
@@ -4150,7 +4422,16 @@ define
             #certenty: 100% (unless all functions failed to register with p4gl)
             let do_insert = true
 			let reason_1 = reason_1 + 1
-        when 2  #" only one matching parameters"
+        
+		
+            #TODO-since we have only one, maybe we can insert this relationship for ALL
+            #calls to this function in ALL modules, and save some time? (3 select count(*) and
+            #we may use insert cursor which is faster...) But we would in that case forfit the
+            #opportunity to check paramters/returns for each call...
+
+
+
+		when 2  #" only one matching parameters"
             #certenty: 0% (p4gl currently does not extract all information)
 			#let do_insert = true
 			let reason_2 = reason_2 + 1
@@ -4176,9 +4457,13 @@ define
             #certenty: 100% but we should not use it to remove dependency on make files
 			let do_insert = true
 			let reason_7 = reason_7 + 1
-        otherwise
+        when 8  #found one module failed to parse containing function
+            #certenty: 90-100% but we should not use it to remove dependency on make files
+			let do_insert = true
+			let reason_8 = reason_8 + 1
+		otherwise
             display "Invalid reason ",explain_type
-            exit program
+            exit program 55
     end case
 
 
@@ -4207,6 +4492,18 @@ define
 		foreach i1 into p_p4gl_function_call.*
         ######################################
         #for each call to function calls_func_name originating in module calling_module_name
+
+    	    if debug2 then
+				display "INS:>",p_p4gl_function_call.function_call_id,"<>",
+					p_p4gl_function_call.id_package clipped ,"<>",
+					calls_module_name clipped, "<>",
+					p_p4gl_function_call.calls_func_name clipped, "<"
+            end if
+
+
+#TODO: use insert cursor here to speed up, instead of inserting one by one - especially
+#if we are going to do a bulk insert when only one function with called name exists 
+#(secufunc, maxmsg...)
 
 			insert into p4gl_func_calls
 		    (function_call_id,calls_id_package,calls_module_name,calls_func_name)
@@ -4380,6 +4677,87 @@ define
     display "Expanded ",counter using "<<<&"," targets using libraries."
 
 end function #expand_libs()
+
+#For each GLOBALS include registered by p4gl, find included module
+function globals_incl()
+define
+    p_p4gl_glob_incl record like p4gl_glob_incl.*,
+    p_module_included like p4gl_glob_module.module_included,
+    counter integer
+
+    declare inc1 cursor for
+        select * from p4gl_glob_incl
+            where not exists
+				(select * from p4gl_glob_module where
+                    p4gl_glob_module.glob_incl_id = p4gl_glob_incl.glob_incl_id)
+
+    let counter = 0
+    ####################################
+	foreach inc1 into p_p4gl_glob_incl.*
+    ####################################
+        let counter = counter + 1
+
+
+        {
+		display p_p4gl_glob_incl.glob_incl_id,
+			p_p4gl_glob_incl.module_including clipped, 			-- name of the module INCLUDING file via GLOBALS stmt.
+		    p_p4gl_glob_incl.glob_filename clipped,       		-- filename specified in GLOBALS stmt.
+			p_p4gl_glob_incl.id_package clipped
+        }
+
+
+        #extract module name from file name
+        let p_module_included= -- name of the module INCLUDED in GLOBALS stmt.
+            my_basename(p_p4gl_glob_incl.glob_filename)
+
+        display "Module >", p_module_included clipped,
+           	"< included from >", p_p4gl_glob_incl.module_including clipped,"<"
+
+        #do we have this module?
+        select * from p4gl_module
+            where module_name = p_module_included
+            and id_package = p_p4gl_glob_incl.id_package
+
+        if status = notfound then
+            display "ERROR: module >", p_module_included clipped,
+            	"< included from >", p_p4gl_glob_incl.module_including clipped,"< not found."
+            { This can happen when we are
+				a) missing a module or
+                b) p4gl crashed while scaning it
+            }
+
+			#exit program (33)
+
+
+            #Add module to satisfy the constraint
+			insert into p4gl_module
+	            (id_package,module_name,comments)
+                values (p_p4gl_glob_incl.id_package,p_module_included,
+				"Module was missing when processing GLOBALS includes - automatically added. Investigate")
+
+
+        end if
+
+        #display ">",p_p4gl_glob_incl.glob_incl_id,"<>",
+		#	p_module_included clipped,"<>",p_p4gl_glob_incl.id_package clipped ,"<"
+
+		#insert it:
+        insert into p4gl_glob_module (glob_incl_id,module_included,id_package)
+            	values (p_p4gl_glob_incl.glob_incl_id,p_module_included,p_p4gl_glob_incl.id_package)
+
+
+    ###########
+	end foreach
+    ###########
+    close inc1
+    free inc1
+
+	display "Associated ", counter using "<<<<<&", " GLOBALS modules"
+
+
+end function #globals_incl()
+
+
 
 # =============================== EOF ==================================
 

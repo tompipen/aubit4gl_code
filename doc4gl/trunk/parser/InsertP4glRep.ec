@@ -122,13 +122,39 @@ static void deleteModule(idPackage,moduleName)
   exec sql delete from p4gl_function
     where id_package = :idPackage and module_name = :moduleName;
 
-  StatDesc = "Delete p4gl_module_prog"; // this is populated from mkf and will be invalidate id this is deleted
+  StatDesc = "Delete p4gl_module_prog"; // this is populated from mkf and will be invalidate if this is deleted
   exec sql delete from p4gl_module_prog
     where id_package = :idPackage and module_name = :moduleName;
+
+  StatDesc = "Delete p4gl_glob_module"; // this is populated from loadform and will be invalidate if this is deleted
+  exec sql delete from p4gl_glob_module
+    where glob_incl_id in
+	(select glob_incl_id
+        from p4gl_glob_incl
+        where p4gl_glob_incl.id_package = :idPackage
+		and p4gl_glob_incl.module_including = :moduleName);
+
+/*
+FIXME: if error occurs here, we will see something like:
+ SQL Error encountered at Delete p4gl_glob_module: -217
+make: *** [doc4gl.test] Error 1
+
+BUT fgldoc WILL NOT NOTICE THE ERROR and say:
+	[LOG] : AS6.4gl Parsed
+ AND CONTINUE!!!!
+*/
+
+
+
+  StatDesc = "Delete p4gl_glob_incl";
+  exec sql delete from p4gl_glob_incl
+    where id_package = :idPackage and module_including = :moduleName;
 
   StatDesc = "Delete p4gl_module";
   exec sql delete from p4gl_module
     where id_package = :idPackage and module_name = :moduleName;
+
+
 
 }
 
@@ -1089,7 +1115,10 @@ int a;
   insertFunctions();
   insertFunctionCalls();
 
-  insertGlobalsFiles();
+  //insertGlobalsFiles();
+  insertGlobalsFiles(P4glCb.package,P4glCb.module);
+
+  P4glDebug("Done inserting\n");
 
 //exit (4);
 
@@ -1100,17 +1129,79 @@ int a;
  * Insert information about GLOBALS files referenced in this module to the
  * the repository.
  */
-void
-insertGlobalsFiles(void) {
+static void
+insertGlobalsFiles(package,module)
+    char *package;
+    char *module;
+{
 int i;
-	
-	
+  exec sql begin declare section;
+    char *idPackage;
+    char *moduleName;
+    char *globFilename;
+  exec sql end declare section;
+
+
+  idPackage = package;
+  moduleName = module;
+
+//  idPackage    = P4glCb.package;
+//  moduleName   = P4glCb.module;
+
+  P4glDebug("GLOBALS files in module >%s< package >%s<:\n",moduleName,idPackage);
+
 	for (i=0 ; i < P4glCb.idx_globais ; i++) 	/* foreach file referenced as GLOBALS in this module */
     {
-	   P4glDebug("GLOBALS file %d=>%s<\n",i,P4glCb.globais[i].nome_ficheiro);
+        globFilename=strdup(P4glCb.globais[i].nome_ficheiro);
+		P4glDebug("  %d=>%s<\n",i,globFilename);
+
+		exec sql
+			insert into p4gl_glob_incl
+	        (glob_incl_id,module_including,glob_filename,id_package)
+    	    values
+        	(0,:moduleName,:globFilename,:idPackage);
+
+
     }
 
 }
+
+/*     This tables are NOT in Case Studio model - add them !
+
+--table containing each occurrence of GLOBALS filename statement
+--populated by p4gl
+
+create table p4gl_glob_incl (
+	glob_incl_id serial,                    -- primary key
+	module_including char(64) not null,     -- name of the module INCLUDING file via GLOBALS stmt.
+    glob_filename char(254) not null,       -- filename specified in GLOBALS stmt.
+	id_package char(64) not null,
+        primary key (glob_incl_id),
+		foreign key (id_package,module_including)
+		  references p4gl_module (id_package,module_name)
+
+);
+
+
+--table relating each occurance of GLOBALS stmt with a module that is included with it
+--populated by endrun (loadforms.4gl) after all modules are known/loaded
+
+--drop table p4gl_glob_module;
+
+create table p4gl_glob_module (
+	glob_incl_id integer,            		-- id of the GLOBALS statement
+	module_included char(64) not null,  	-- name of the module INCLUDED in GLOBALS stmt.
+	id_package char(64) not null,
+		primary key (glob_incl_id),
+		foreign key (glob_incl_id)
+		  references p4gl_glob_incl (glob_incl_id),
+		foreign key (id_package,module_included)
+		  references p4gl_module (id_package,module_name)
+);
+
+
+
+*/
 
 
 /* ================================ EOF ================================== */
