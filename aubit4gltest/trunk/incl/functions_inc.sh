@@ -25,7 +25,10 @@ is_unknown=$IS_UNKNOWN_TEST
 is_cert=$IS_CERT_TEST
 is_obsolete=$IS_OBSOLETE_TEST
 is_described=$IS_DESCRIBED
-test_desc_txt=$desc_txt
+#echo ">$desc_txt<"
+test_desc_txt=`echo $desc_txt | tr "\n" " " | tr "|" " "`
+#echo ">$test_desc_txt<"
+#exit
 test_compat_test=$compat_test
 expect_code=$EXPECT_CODE
 se_required=$SE_REQUIRED
