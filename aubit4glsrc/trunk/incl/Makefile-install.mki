@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.57 2003-01-27 03:50:30 afalout Exp $
+# $Id: Makefile-install.mki,v 1.58 2003-01-27 05:47:35 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -293,7 +293,7 @@ install.aubitbuild.cron:
 	@echo "LOGFILE=/tmp/cron.log" >> ${OUT}
 	@echo "SH=${SH}" >> ${OUT}
 	@echo "MAILFILE=/tmp/aubitbuild.mail" >> ${OUT}
-	@echo "MAILADDR=afalout@ihug.co.nz" >> ${OUT}
+	@echo "MAILADDR=andrej@falout.org" >> ${OUT}
 	@echo "" >> ${OUT}
 	@echo ". /etc/bashrc > /dev/null" >> ${OUT}
 	@echo "" >> ${OUT}
@@ -331,7 +331,7 @@ install.aubitbuild.cron:
 	@echo "" >> ${OUT}
 #prepare the crontab to install:
 	@echo "" > ${OUT2}
-	@echo "MAILTO=afalout@ihug.co.nz" >> ${OUT2}
+	@echo "MAILTO=andrej@falout.org" >> ${OUT2}
 	@echo "SHELL=${SH}" >> ${OUT2}
 	@echo "00 06 * * * ${OUT}" >> ${OUT2}
 	@echo "" >> ${OUT2}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.48 2003-01-24 08:36:22 afalout Exp $
+# $Id: sql.c,v 1.49 2003-01-27 05:47:35 afalout Exp $
 #
 */
 
@@ -84,6 +84,14 @@
 =====================================================================
                     Functions prototypes
 =====================================================================
+*/
+
+/*
+getlogin not available in mingw see syscalls.c.x
+
+#ifdef __MINGW32__
+	extern char *getlogin (void);
+#endif
 */
 
 struct s_cid *	A4GLSQL_find_cursor (char *cname);
@@ -1215,7 +1223,11 @@ A4GLSQL_init_connection (char *dbName)
    *  if SQLPWD not set, then prompt user if we can
   */
   u = acl_getenv ("SQLUID");
+#if ( ! defined(__MINGW32__))
   if (u==0 || *u=='\0')  u = getlogin();
+//we have something simmilar somewhere in libaubit4gl for WIN32 - find it and use it instead getlogin()
+
+#endif
   if (u==0 || *u=='\0')  u = acl_getenv("LOGNAME");
   if (u==0)  u = empty;
 

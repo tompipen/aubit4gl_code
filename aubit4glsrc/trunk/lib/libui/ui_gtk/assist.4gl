@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.3 2003-01-20 09:50:37 mikeaubury Exp $
+# $Id: assist.4gl,v 1.4 2003-01-27 05:47:36 afalout Exp $
 
 # ASSIST.4gl
 #
@@ -78,42 +78,6 @@ extern GtkWidget *currwindow;
 
 void * find_curr_window(void);
 void store_filename(GtkFileSelection *selector, gpointer user_data);
-
-/* This prototypes should be created by 4glc, in assist.h, but they are not:
-
-assist.c:70: warning: no previous declaration for `aclfgl_set_window_title'
-assist.c:92: warning: no previous declaration for `aclfgl_get_window_title'
-assist.c:114: warning: no previous declaration for `aclfgl_set_window_icon'
-assist.c:139: warning: no previous declaration for `aclfgl_run_gui'
-assist.c:160: warning: no previous declaration for `aclfgl_set_frame_style'
-assist.c:181: warning: no previous declaration for `aclfgl_yeild'
-assist.c:199: warning: no previous declaration for `aclfgl_set_window_type'
-assist.c:220: warning: no previous declaration for `aclfgl_set_prompt_style'
-assist.c:247: warning: no previous declaration for `aclfgl_get_filename'
-assist.c:321: warning: no previous declaration for `aclfgl_app_top_get'
-assist.c:350: warning: no previous declaration for `aclfgl_app_hide'
-assist.c:368: warning: no previous declaration for `aclfgl_app_show'
-assist.c:386: warning: no previous declaration for `aclfgl_app_maximize'
-assist.c:404: warning: no previous declaration for `aclfgl_app_minimize'
-assist.c:422: warning: no previous declaration for `aclfgl_app_restore'
-assist.c:440: warning: no previous declaration for `aclfgl_entry_max_chars_set'
-assist.c:466: warning: no previous declaration for `aclfgl_entry_selected_cut'
-assist.c:489: warning: no previous declaration for `aclfgl_entry_selected_copy'
-assist.c:512: warning: no previous declaration for `aclfgl_entry_selected_paste'
-assist.c:535: warning: no previous declaration for `aclfgl_entry_selection_set'
-assist.c:568: warning: no previous declaration for `aclfgl_entry_text_get'
-assist.c:596: warning: no previous declaration for `aclfgl_field_hide'
-assist.c:619: warning: no previous declaration for `aclfgl_field_show'
-assist.c:640: warning: no previous declaration for `aclfgl_form_caption_get'
-assist.c:658: warning: no previous declaration for `aclfgl_form_hide'
-assist.c:676: warning: no previous declaration for `aclfgl_form_show'
-assist.c:694: warning: no previous declaration for `aclfgl_form_is_open'
-assist.c:724: warning: no previous declaration for `aclfgl_list_count_get'
-assist.c:747: warning: no previous declaration for `aclfgl_list_current_get'
-assist.c:774: warning: no previous declaration for `aclfgl_list_delete'
-assist.c:801: warning: no previous declaration for `aclfgl_list_insert'
-assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
-*/
 
 /*
 =====================================================================
@@ -190,7 +154,7 @@ function run_gui()
 code
 CHK_UI
   while (1) {
-	usleep(100);
+    a4gl_usleep (100);
 	gui_run_til_no_more ();
   }
 endcode
@@ -291,45 +255,46 @@ define deffile char(256)
 define pattern char(256)
 code
 {
-GtkWidget *b;
-GtkWidget *w;
-CHK_UI
-trim(title);
-trim(deffile);
-trim(pattern);
-file_selector = gtk_file_selection_new(title);
-gtk_file_selection_set_filename(GTK_FILE_SELECTION(file_selector),deffile);
-gtk_file_selection_complete(GTK_FILE_SELECTION(file_selector),pattern);
-
-b=GTK_FILE_SELECTION(file_selector)->ok_button;
-w=GTK_FILE_SELECTION(file_selector)->fileop_dialog;
-
-//gtk_window_set_modal(w,1);
-
-gtk_signal_connect (GTK_OBJECT (b), "clicked", GTK_SIGNAL_FUNC (store_filename), 0);
-                        
-/* Ensure that the dialog box is destroyed when the user clicks a button. */
-
-gtk_signal_connect_object (GTK_OBJECT (b),
-                                       "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
-                                       (gpointer) file_selector);
-
-gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->cancel_button),
-                                       "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
-                                       (gpointer) file_selector);
-
-/* Display that dialog */
-
-gtk_widget_show (file_selector);
-while (1) {
+	GtkWidget *b;
+	GtkWidget *w;
 	
-	usleep(100);
- 	gui_run_til_no_more ();
-	if (strlen(selected_filename)!=0) {
-		break;
+	
+	CHK_UI
+	trim(title);
+	trim(deffile);
+	trim(pattern);
+	file_selector = gtk_file_selection_new(title);
+	gtk_file_selection_set_filename(GTK_FILE_SELECTION(file_selector),deffile);
+	gtk_file_selection_complete(GTK_FILE_SELECTION(file_selector),pattern);
+
+	b=GTK_FILE_SELECTION(file_selector)->ok_button;
+	w=GTK_FILE_SELECTION(file_selector)->fileop_dialog;
+
+	//gtk_window_set_modal(w,1);
+
+	gtk_signal_connect (GTK_OBJECT (b), "clicked", GTK_SIGNAL_FUNC (store_filename), 0);
+
+	/* Ensure that the dialog box is destroyed when the user clicks a button. */
+#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
+	gtk_signal_connect_object (GTK_OBJECT (b),
+	                                       "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+	                                       (gpointer) file_selector);
+
+	gtk_signal_connect_object (GTK_OBJECT (GTK_FILE_SELECTION(file_selector)->cancel_button),
+	                                       "clicked", GTK_SIGNAL_FUNC (gtk_widget_destroy),
+	                                       (gpointer) file_selector);
+#endif
+	/* Display that dialog */
+
+	gtk_widget_show (file_selector);
+	while (1) {
+	    a4gl_usleep (100);
+	 	gui_run_til_no_more ();
+		if (strlen(selected_filename)!=0) {
+			break;
+		}
 	}
-}
-strcpy(fname,selected_filename);
+	strcpy(fname,selected_filename);
 }
 endcode
 return fname

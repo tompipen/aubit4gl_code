@@ -1,30 +1,13 @@
 
+#ifndef _A4GL_LIB_UI_INT_H_
+#define _A4GL_LIB_UI_INT_H_
 
-#include "a4gl_lib_ui_int.h"
+	#include "a4gl_lib_ui_int.h"
 
 
 	#include <gtk/gtk.h>
 	#include <gdk/gdkkeysyms.h>         /* GDK_Down */
 
-
-/*
-	#include "a4gl_gtk_buttons.h"
-	#include "a4gl_gtk_display.h"
-	#include "a4gl_gtk_params.h"
-	#include "a4gl_gtk_color.h"
-	#include "a4gl_gtk_frm.h"
-	#include "a4gl_gtk_widget.h"
-	#include "a4gl_gtk_cr_funcs.h"
-	#include "a4gl_gtk_get_fld_val.h"
-	#include "a4gl_gtk_widget_prot.h"
-	#include "a4gl_gtk_d2.h"
-	#include "a4gl_gtk_gtk_4gl.h"
-	#include "a4gl_gtk_dims.h"
-	#include "a4gl_gtk_handler.h"
-*/
-
-
-	/* #include "a4gl_gtk_cr_funcs.h" */
 
 	struct s_widget_funcs {
 		/* GtkWidget *(*construct)(); */ /* warning: function declaration isn't a prototype */
@@ -206,7 +189,7 @@
 
 	void *find_param (char *name);
 
-
+#endif
 
 /* ================================ EOF =============================== */
 

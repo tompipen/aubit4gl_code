@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.20 2003-01-21 08:25:51 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.21 2003-01-27 05:47:35 afalout Exp $
 */
 
 /**
@@ -151,6 +151,47 @@
 
 	/** 4gl Datetime data type definition */
 	typedef struct ival FglInterval;
+
+/* This prototypes should be created by 4glc, in assist.h, but they are not.
+in any case , since the need to exist when compiling 4gl code, they need to be
+here.
+
+FIXME: declare this prototypes here:
+
+
+assist.c:70: warning: no previous declaration for `aclfgl_set_window_title'
+assist.c:92: warning: no previous declaration for `aclfgl_get_window_title'
+assist.c:114: warning: no previous declaration for `aclfgl_set_window_icon'
+assist.c:160: warning: no previous declaration for `aclfgl_set_frame_style'
+assist.c:181: warning: no previous declaration for `aclfgl_yeild'
+assist.c:199: warning: no previous declaration for `aclfgl_set_window_type'
+assist.c:220: warning: no previous declaration for `aclfgl_set_prompt_style'
+assist.c:247: warning: no previous declaration for `aclfgl_get_filename'
+assist.c:321: warning: no previous declaration for `aclfgl_app_top_get'
+assist.c:350: warning: no previous declaration for `aclfgl_app_hide'
+assist.c:368: warning: no previous declaration for `aclfgl_app_show'
+assist.c:386: warning: no previous declaration for `aclfgl_app_maximize'
+assist.c:404: warning: no previous declaration for `aclfgl_app_minimize'
+assist.c:422: warning: no previous declaration for `aclfgl_app_restore'
+assist.c:440: warning: no previous declaration for `aclfgl_entry_max_chars_set'
+assist.c:466: warning: no previous declaration for `aclfgl_entry_selected_cut'
+assist.c:489: warning: no previous declaration for `aclfgl_entry_selected_copy'
+assist.c:512: warning: no previous declaration for `aclfgl_entry_selected_paste'
+assist.c:535: warning: no previous declaration for `aclfgl_entry_selection_set'
+assist.c:568: warning: no previous declaration for `aclfgl_entry_text_get'
+assist.c:596: warning: no previous declaration for `aclfgl_field_hide'
+assist.c:619: warning: no previous declaration for `aclfgl_field_show'
+assist.c:640: warning: no previous declaration for `aclfgl_form_caption_get'
+assist.c:658: warning: no previous declaration for `aclfgl_form_hide'
+assist.c:676: warning: no previous declaration for `aclfgl_form_show'
+assist.c:694: warning: no previous declaration for `aclfgl_form_is_open'
+assist.c:724: warning: no previous declaration for `aclfgl_list_count_get'
+assist.c:747: warning: no previous declaration for `aclfgl_list_current_get'
+assist.c:774: warning: no previous declaration for `aclfgl_list_delete'
+assist.c:801: warning: no previous declaration for `aclfgl_list_insert'
+assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
+*/
+
 
 
     /* ===================== from builtin.c =================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.5 2003-01-21 08:25:54 afalout Exp $
+# $Id: menuwrite.c,v 1.6 2003-01-27 05:47:35 afalout Exp $
 #*/
 
 /**
@@ -137,7 +137,6 @@ menu_list *	ptr;
 
   debug("calling write_data_to_file\n",the_menus.menus.menus_len);
 
-//  a=write_data_to_file("report",&the_menus,fname);
   a=write_data_to_file("menu_list",&the_menus,fname);
 
 	debug ("returned from write_data_to_file()");
@@ -148,13 +147,11 @@ menu_list *	ptr;
 	}
 
 
-	debug ("before fclose");
 //	xdr_destroy(&xdrp);
 	if (fxx) {
 		//what is this closing anyway?
 		fclose(fxx);
     }
-	debug ("after fclose");
 
 	if (as_c) {
 		int cnt=0;

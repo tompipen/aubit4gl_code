@@ -1,6 +1,6 @@
 # When running Aubit programs as CGI in web server, use A4GL_UI=CONSOLE
 
-# $Id: libahtmllib.4gl,v 1.5 2002-09-08 10:38:20 afalout Exp $
+# $Id: libahtmllib.4gl,v 1.6 2003-01-27 05:47:36 afalout Exp $
 
 ########################################################################
 #ANSI C libraryes for CGI programing:
@@ -793,9 +793,18 @@ function show_webserver_vars_page()
 ####################################
 
 	call html_start_body()
-	call page_menu()
+
+#	call page_menu()
+#page_menu function is supposed to be defined in the ptogram itself - and on Windows this would
+#cause undefined error. anyway, library should not depend on the functions defined in ptogram using it
+
+
+
 	call show_webserver_vars()
-	call standard_footer()
+
+#	call standard_footer()
+#same comment sa for page_menu()
+
 	call html_end_body()
 
 end function
