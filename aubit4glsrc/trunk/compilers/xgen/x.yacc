@@ -299,6 +299,7 @@ sprintf(buff,"%s%s",cu[cu_cnt],m.name);
 %token SEMICOLON
 %token STRUCT
 %token STAR
+%token VOID
 %token NAMED
 %token UNION
 %token SWITCH
@@ -629,11 +630,13 @@ union: UNION NAMED SWITCH OPEN_BRACKET  {
 union_list: union_element | union_list union_element
 ;
 
+uelement : VOID | element
+;
 union_element:  CASE case_val COLON  {
 	fprintf(cfo,"case %s:\n",$<str>2);
 	fprintf(cfi,"case %s:\n",$<str>2);
 	}
-	element SEMICOLON {
+	uelement SEMICOLON {
 	fprintf(cfo,"         break;\n");
 	fprintf(cfi,"         break;\n");
 	}

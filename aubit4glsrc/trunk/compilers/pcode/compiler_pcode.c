@@ -37,6 +37,16 @@ char *cmd_type_str[] = {
   "CMD_GOTO_PC",
   "CMD_RETURN",
   "CMD_NOP",
+  "CMD_PUSH_LONG",
+  "CMD_PUSH_INT",
+  "CMD_PUSH_CHAR",
+  "CMD_CHK_ERR",
+  "CMD_PUSH_VARIABLE",
+  "CMD_END_4GL_0",
+  "CMD_END_4GL_1",
+  "CMD_DISPLAY_AT",
+  "CMD_PUSH_OP",
+  "CMD_CLR_ERR",
   ""
 };
 
@@ -200,6 +210,25 @@ new_command (enum cmd_type cmd_type, void *ptr)
     case CMD_RETURN:
       CURRENT_CMD.cmd_u.c_return = (struct param *) ptr;
       break;
+
+    case CMD_PUSH_LONG:
+      CURRENT_CMD.cmd_u.c_push_long = (int) ptr;
+      break;
+
+    case CMD_PUSH_CHAR:
+      CURRENT_CMD.cmd_u.c_push_char = (int) ptr;
+      break;
+
+    case CMD_PUSH_INT:
+      CURRENT_CMD.cmd_u.c_push_int = (int)ptr;
+      break;
+    case CMD_CHK_ERR:
+      CURRENT_CMD.cmd_u.c_chk_err_lineno = (long) ptr;
+      break;
+
+    case CMD_CLR_ERR:
+      break;
+	
 
     default:
       printf ("Unknown Command : %d", cmd_type);
@@ -428,6 +457,35 @@ add_if (struct param *e, char *true, char *false)
   f->goto_true = (long) true;
   f->goto_false = (long) false;
   return new_command (CMD_IF, f);
+
+}
+
+long add_chk_err(int n) {
+  return new_command (CMD_CHK_ERR, (void *)n);
+}
+
+long add_clr_err(int n) {
+  return new_command (CMD_CLR_ERR, 0);
+}
+
+long add_push_long(int n) {
+  return new_command (CMD_PUSH_LONG, (void *)n);
+}
+
+long add_push_char(char *s) {
+	int n;
+        char *ptr;
+	char *eptr;
+	ptr=strdup(&s[1]);
+	eptr=&ptr[strlen(ptr)-1];
+	*eptr=0;
+	
+	n=add_string(ptr);
+  	return new_command (CMD_PUSH_CHAR, (void *)n);
+}
+
+long add_push_int(int n) {
+  return new_command (CMD_PUSH_INT, (void *)n);
 }
 
 long

@@ -28,6 +28,36 @@ extern long aiplib_status;
 
 
 
+int A4GL_pcode_ecall(char *x,int a,int params) {
+  long npc;
+  long rval;
+  struct param p;
+
+	p.param_type=PARAM_TYPE_LIST;
+	
+	p.param_u.p_list=malloc(sizeof(struct param_list));
+	p.param_u.p_list->list.list_len=1;
+	p.param_u.p_list->list.list_val=malloc(sizeof(struct param));
+	p.param_u.p_list->list.list_val[0].param_type=PARAM_TYPE_LITERAL_INT;
+	p.param_u.p_list->list.list_val[0].param_u.n=params;
+
+
+  npc = find_pcode_function (x);
+
+  if (npc != -1) {
+      rval=run_function (npc, &p);
+  } else {
+  	call_c_function (x, &p, &rval);
+  }
+
+
+  if (rval!=1) { A4GLSQL_set_status(-3001,0);A4GL_chk_err(a,this_module.module_name);}
+return 1;
+}
+
+
+
+
 struct call_funcs system_funcs[]={
 	{ &A4GLSQL_set_status,			"A4GLSQL_set_status",			"044"},
 	{ &A4GLSTK_initFunctionCallStack,	"A4GLSTK_initFunctionCallStack",	"0"},
@@ -38,7 +68,7 @@ struct call_funcs system_funcs[]={
 	{ &A4GL_chk_err,			"A4GL_chk_err",				"044"},
 	{ &A4GL_cr_window,			"A4GL_cr_window",			"44444444444"},
 	{ &A4GL_cr_window_form,			"A4GL_cr_window_form",			"44444444444"},
-	{ &A4GL_disp_fields,			"A4GL_disp_fields",			"044V"},
+	{ &A4GL_disp_fields,			"A4GL_disp_fields",			0},
 	{ &A4GL_disp_h_menu,			"A4GL_disp_h_menu",			"44"},
 	{ &A4GL_display_at,			"A4GL_display_at",			"044"},
 	{ &A4GL_display_error,			"A4GL_display_error",			"044"},
@@ -53,6 +83,7 @@ struct call_funcs system_funcs[]={
 	{ &A4GL_push_char,			"A4GL_push_char",			"04"},
 	{ &A4GL_push_int,			"A4GL_push_int",			"02"},
 	{ &A4GL_pop_int,			"A4GL_pop_int",			"4"},
+	{ &A4GL_pop_bool,			"A4GL_pop_bool",			"4"},
 	{ &A4GL_push_long,			"A4GL_push_long",			"04"},
 	{ &A4GL_push_variable,			"A4GL_push_variable",			"044"},
 	{ &A4GL_pushop,				"A4GL_pushop",				"04"},
@@ -61,8 +92,12 @@ struct call_funcs system_funcs[]={
 	{ &A4GL_set_option_value,		"A4GL_set_option_value",		"014"},
 	{ &A4GL_sleep_i,			"A4GL_sleep_i",				"0"},
 	{ &A4GL_start_prompt,			"A4GL_start_prompt",			"444444"},
+	{ &A4GL_new_menu_create,		"A4GL_new_menu_create",			"444444"},
+	{ &A4GL_menu_loop,		"A4GL_menu_loop",			"44"},
 	{ &aclfgli_clr_err_flg,			"aclfgli_clr_err_flg",			"0"},
 	{ &aclfgli_get_err_flg,			"aclfgli_get_err_flg",			"4"},
+	{ &A4GL_pcode_ecall,			"ECALL",			"0444"},
+	{ &aclfgl_fgl_getenv,			"aclfgl_fgl_getenv",			"44"},
 
 
 	{ &printf,				"printf",				0},  // Just for testing
@@ -96,4 +131,37 @@ void *resolve_externs(char *name) {
 	      if (strcmp (name, "err_status") == 0) { return 0; }
 	      if (strcmp (name, "aiplib_status") == 0) { return 0; }
 	return -1;
+}
+
+
+int special_cmd(struct cmd *c) {
+
+
+	if (c->cmd_type==CMD_PUSH_LONG) {
+			A4GL_push_long(c->cmd_u.c_push_long);
+			return 1;
+	}
+
+	if (c->cmd_type==CMD_PUSH_INT) {
+			A4GL_push_int(c->cmd_u.c_push_int);
+			return 1;
+	}
+
+	if (c->cmd_type==CMD_PUSH_CHAR) {
+			A4GL_push_char(this_module.string_table.string_table_val[c->cmd_u.c_push_char].s);
+			return 1;
+	}
+
+	if (c->cmd_type==CMD_CLR_ERR) {
+			aclfgli_clr_err_flg();
+			return 1;
+	}
+
+	if (c->cmd_type==CMD_CHK_ERR) {
+			A4GL_chk_err(c->cmd_u.c_chk_err_lineno,this_module.module_name);
+			return 1;
+	}
+
+	printf("Unknown command : %d\n",c->cmd_type);
+	return 0;
 }

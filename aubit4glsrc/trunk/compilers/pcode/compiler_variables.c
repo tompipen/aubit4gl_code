@@ -849,6 +849,8 @@ move_define (struct cmd_block *from, struct cmd_block *to)
   from->c_vars.c_vars_len = 0;
 //free(from->c_vars.c_vars_val);
   from->c_vars.c_vars_val = 0;
+end_define_gen (to);
+
 }
 
 /* 

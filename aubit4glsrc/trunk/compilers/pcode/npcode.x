@@ -20,7 +20,18 @@ enum cmd_type {
 	CMD_GOTO_LABEL,
 	CMD_GOTO_PC,
 	CMD_RETURN,
-	CMD_NOP
+	CMD_NOP,
+/* 4gl specific */
+	CMD_PUSH_LONG	,
+	CMD_PUSH_INT	,
+	CMD_PUSH_CHAR	,
+	CMD_CHK_ERR	,
+	CMD_PUSH_VARIABLE,
+	CMD_END_4GL_0	,
+	CMD_END_4GL_1,
+	CMD_DISPLAY_AT	,
+	CMD_PUSH_OP,
+	CMD_CLR_ERR
 
 };
 
@@ -199,6 +210,12 @@ struct cmd_set_var1 {
 	int set;
 };
 
+struct cmd_display_at {
+	short x;
+	short y;
+};
+
+
 /* An individual command */
 union cmd switch(enum cmd_type cmd_type) {
 	case CMD_BLOCK: 	struct cmd_block 	*c_block;
@@ -210,7 +227,24 @@ union cmd switch(enum cmd_type cmd_type) {
 	case CMD_GOTO_LABEL: 	long 			c_goto_str;
 	case CMD_GOTO_PC: 	long 			c_goto_pc;
 	case CMD_RETURN: 	struct param 		*c_return;
+
+	case CMD_CLR_ERR:
+	case CMD_END_4GL_0:	
+	case CMD_END_4GL_1:
 	case CMD_NOP: 		void;
+
+	case CMD_PUSH_LONG:     long			c_push_long;
+	case CMD_PUSH_INT:	short 			c_push_int;
+	case CMD_CHK_ERR: 	long c_chk_err_lineno;
+	case CMD_PUSH_CHAR:	long 			c_push_char;
+
+/*
+	case CMD_CHK_ERR		=103,
+	case CMD_PUSH_VARIABLE	=104,
+*/
+	case CMD_DISPLAY_AT:	struct cmd_display_at c_disp_at;
+	case CMD_PUSH_OP:	long   c_push_op;
+
 };
 
 struct call_stack {

@@ -35,6 +35,16 @@ char *cmd_type_str[] = {
   "CMD_GOTO_PC",
   "CMD_RETURN",
   "CMD_NOP",
+  "CMD_PUSH_LONG",
+  "CMD_PUSH_INT",
+  "CMD_PUSH_CHAR",
+  "CMD_CHK_ERR",
+  "CMD_PUSH_VARIABLE",
+  "CMD_END_4GL_0",
+  "CMD_END_4GL_1",
+  "CMD_DISPLAY_AT",
+  "CMD_PUSH_OP",
+  "CMD_CLR_ERR",
   ""
 };
 
@@ -337,9 +347,17 @@ Now we've done our function startup - we can get on with actually running it...
 	  fprintf (logfile, "Leaving function\n");
 	  execute_end_block ();
 	  return i;
+
+
+
 	default:
-	  fprintf (stderr, "Unimplemented command in runner_main.c\n");
-	  exit (1);
+	  if (!special_cmd(c)) {
+	  	fprintf (stderr, "Unimplemented command in runner_main.c\n");
+	  	exit (1);
+	  } else {
+		pc++;
+		break;
+	  }
 	}
     }
   fprintf (logfile, "Leaving function badly\n");

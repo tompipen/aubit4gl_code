@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2003-10-02 14:27:35 mikeaubury Exp $
+# $Id: Makefile,v 1.11 2003-10-16 17:40:39 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -154,11 +154,11 @@ ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
 npcode.xi.o npcode.xio.o npcode.xo.o: npcode.x ${XGENEXE}
 	${XGENEXE} $< something
 
-runner_calls_c.o : runner_calls.c
-	$(CC) ${CFLAGS} -g -c $^ -DSTDCALLS -o $@
+runner_calls_c.o : runner_calls.c calls.h std_calls.h 
+	$(CC) ${CFLAGS} -g -c runner_calls.c -DSTDCALLS -o $@
 
-runner_calls_fgl.o : runner_calls.c
-	$(CC) ${CFLAGS} -g -c $^ -DFGLCALLS -I$(ROOT)/incl -o $@
+runner_calls_fgl.o : runner_calls.c calls.h fgl_calls.h
+	$(CC) ${CFLAGS} -g -c runner_calls.c -DFGLCALLS -I$(ROOT)/incl -o $@
 
 npcode_xdr.o: npcode_xdr.c
 	$(CC) ${RPC_CFLAGS} -c -o $@ $^

@@ -49,6 +49,7 @@
 "int"      {strcpy(yylval.str,yytext); return INT;}
 "short"      {strcpy(yylval.str,yytext); return SHORT;}
 "long"      {strcpy(yylval.str,yytext); return LONG;}
+"void"      {strcpy(yylval.str,yytext); return VOID;}
 "double"      {strcpy(yylval.str,yytext); return DOUBLE;}
 "opaque"      {strcpy(yylval.str,yytext); return OPAQUE;}
 "bool"         {strcpy(yylval.str,yytext); return BOOL;}

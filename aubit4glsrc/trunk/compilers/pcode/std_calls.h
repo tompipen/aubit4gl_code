@@ -15,3 +15,8 @@ void init_calls(int argc,char *argv[]) {
 void *resolve_externs (char *name) {
 	return (void *) -1;
 }
+
+
+void special_cmd(struct cmd *c) {
+	return 0;
+}

@@ -426,7 +426,7 @@ call_c_function (char *s, struct param *p, long *r)
       if (strlen (sig) - 1 != list->list.list_len)
 	{
 	  printf
-	    ("Mismatch in parameters to function - expecting %d got %d\n",
+	    ("Mismatch in parameters to function %s - expecting %d got %d\n",s,
 	     strlen (sig) - 1, list->list.list_len);
 	  exit (21);
 	}
@@ -436,7 +436,7 @@ call_c_function (char *s, struct param *p, long *r)
       if (strlen (sig) - 1 != 0)
 	{
 	  printf
-	    ("Mismatch in parameters to function - expecting %d got %d\n",
+	    ("Mismatch in parameters to function %s - expecting %d got %d\n",s,
 	     strlen (sig) - 1, list->list.list_len);
 	  exit (21);
 	}

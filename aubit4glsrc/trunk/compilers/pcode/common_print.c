@@ -48,11 +48,26 @@ char *cmd_type_str[] = {
   "CMD_GOTO_PC",
   "CMD_RETURN",
   "CMD_NOP",
+  "CMD_PUSH_LONG",
+  "CMD_PUSH_INT",
+  "CMD_PUSH_CHAR",
+  "CMD_CHK_ERR",
+  "CMD_PUSH_VARIABLE",
+  "CMD_END_4GL_0",
+  "CMD_END_4GL_1",
+  "CMD_DISPLAY_AT",
+  "CMD_PUSH_OP",
+  "CMD_CLR_ERR",
   ""
 };
 */
 
+void print_push_int(int n)  ;
+void print_push_long(int n)  ;
+void print_chk_err(int lineno) ;
+void print_push_char(int n)  ;
 static void print_command (long func_id, long pc, struct cmd *cmd);
+void  print_clr_err(void) ;
 
 void
 print_use_variable (struct use_variable *v)
@@ -205,7 +220,7 @@ print_call (struct cmd_call *c)
 {
   char *x;
   x = GET_ID (c->func_id);
-  printf ("%s\n", x);
+  printf ("CALL FUNCTION %s\n", x);
   print_params (c->params);
 }
 
@@ -260,6 +275,27 @@ print_command (long func_id, long pc, struct cmd *cmd)
     case CMD_RETURN:
       print_call_return (cmd->cmd_u.c_return);
       break;
+
+    case CMD_PUSH_LONG: 
+	print_push_long(cmd->cmd_u.c_push_long);
+	break;
+
+    case CMD_PUSH_CHAR: 
+	print_push_char(cmd->cmd_u.c_push_char);
+	break;
+
+    case CMD_PUSH_INT: 
+	print_push_int(cmd->cmd_u.c_push_int);
+	break;
+
+    case CMD_CHK_ERR:
+	print_chk_err(cmd->cmd_u.c_chk_err_lineno);
+	break;
+
+    case CMD_CLR_ERR:
+	print_clr_err();
+	break;
+
     case CMD_NULL:
       fprintf (stderr, "NULL COMMAND - SHOULDN'T HAPPEN\n");
       exit (2);
@@ -267,6 +303,25 @@ print_command (long func_id, long pc, struct cmd *cmd)
 
   printf ("\n");
 
+}
+
+void print_push_char(int n)  {
+	printf("A4GL_push_char(\"%s\")",GET_ID(n));
+}
+
+void print_push_int(int n)  {
+	printf("A4GL_push_int(%d)",n);
+}
+
+
+void  print_clr_err(void) {
+	printf("aclfgli_clr_err_flg()");
+}
+void print_chk_err(int lineno) {
+	printf("A4GL_chk_err(%d,_modulename)",lineno);
+}
+void print_push_long(int n)  {
+	printf("A4GL_push_long(%d)",n);
 }
 
 

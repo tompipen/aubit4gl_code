@@ -38,6 +38,12 @@ char buff[20];
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 %token ON_KEY BEF_ROW
+%token KW_A_PUSH_LONG 
+%token KW_A_PUSH_INT
+%token KW_A_PUSH_CHAR
+%token KW_A_PUSH_OP
+%token KW_A_CHK_ERR
+%token KW_A_CLR_ERR
 
 %start translation_unit
 
@@ -121,10 +127,28 @@ cmd :
 	| return ';'
 	| expr ';'
 /* 4GL specific shortcuts */
-
+	| fgl_funcs
 ;
 
 
+
+fgl_funcs :
+	KW_A_PUSH_LONG '(' int_val ')' {
+			add_push_long($<e>3->param_u.n);
+	}
+	| KW_A_PUSH_INT '(' int_val ')' {
+			add_push_int($<e>3->param_u.n);
+	}
+	| KW_A_PUSH_CHAR '(' STRING_LITERAL ')' {
+			add_push_char($<str>3);
+	}
+	| KW_A_CHK_ERR '(' int_val ',' IDENTIFIER ')' {
+			add_chk_err($<e>3->param_u.n);
+	}
+	| KW_A_CLR_ERR '(' ')' {
+			add_clr_err();
+	}
+;
 
 
 
