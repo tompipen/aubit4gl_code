@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: amkmessage.c,v 1.9 2004-03-21 16:03:23 mikeaubury Exp $
+# $Id: amkmessage.c,v 1.10 2004-05-17 15:48:08 mikeaubury Exp $
 #*/  
   
 /**
@@ -188,12 +188,13 @@ main (int argc, char *argv[])
       exit (2);
     }
   A4GL_debug ("%d messages found\n", count);
-  
+  //printf("Writing header\n");
     //fputs("FE68\n",outfile);
     fwrite2 ("\xFE\x68", outfile);
-  
+  //printf("Wriring Count : %d\n",count);
     //fprintf(outfile,"%04X\n",count);
     out2 (count, outfile);
+    //printf("Done write of count\n");
   
 /****************************** 
 	Pass 2
@@ -286,7 +287,7 @@ main (int argc, char *argv[])
       else
 	
 	{
-	  fprintf (outfile, s);
+	  fprintf (outfile, "%s",s);
 	}
     }
   fclose (outfile);
@@ -358,13 +359,16 @@ int
 out2 (int n, FILE * f) 
 {
   char s[2];
-  int nn;
+  short nn;
+  //printf("out2\n");
   nn=htons(n);
   memcpy(s,&nn,2);
   //s[0] = n / 256;
   //s[1] = n % 256;
-//printf("Writing %d as %d\n",n,nn);
-  return fwrite2 (s, f);
+//printf("Calling fwrite2 Writing %d as %d\n",n,nn);
+  nn=fwrite2 (&s[0], f);
+  //printf("!out2\n");
+  return nn;
 }
 
 
@@ -375,6 +379,7 @@ int
 fwrite2 (char *s, FILE * f) 
 {
   size_t n;
+  //printf("Writing %x %x\n",s[0]&0xff,s[1]&0xff);
   n = fwrite (s, 1, 2, f);
   return (int) n;
 }
