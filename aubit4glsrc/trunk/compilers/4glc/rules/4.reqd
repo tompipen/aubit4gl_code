@@ -26,3 +26,4 @@
 %token SQLLINE
 %token KW_CSTART
 %token KW_CEND
+%token USER_DTYPE

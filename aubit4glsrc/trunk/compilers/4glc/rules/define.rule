@@ -204,7 +204,7 @@ push_type("struct_dtime",$<str>2,0);
 }
 		| 	INTERVAL interval_qual {push_type("struct_ival",$<str>2,0);}
 		|  like_var {push_like($<str>1);lex_printcomment("/*added(XXXXX)\n */");}
-		|  identifier {
+		|  USER_DTYPE {
 			char buff[256];
 			strcpy(buff,$<str>1);
 			debug("Got a rogue datatype");

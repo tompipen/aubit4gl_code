@@ -223,6 +223,8 @@
 	{
 	  char varname[132];
 	  int dtype;
+	  int start_char_subscript;
+	  int end_char_subscript;
 	};
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.43 2003-01-29 11:31:21 mikeaubury Exp $
+# $Id: 4glc.c,v 1.44 2003-02-17 12:03:10 mikeaubury Exp $
 #
 */
 
@@ -88,7 +88,7 @@ struct str_resource *user_resource = 0;
 	setarg0(argv[0]);
 	debug("Initializing 4glc\n");
 	init_states ();
-	yydebug = 0;
+	yydebug = 1;
 
 	/* load settings from config file(s): */
 	user_resource = build_user_resources();

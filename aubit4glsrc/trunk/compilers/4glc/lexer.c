@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.52 2003-02-14 10:18:22 mikeaubury Exp $
+# $Id: lexer.c,v 1.53 2003-02-17 12:03:14 mikeaubury Exp $
 #*/
 
 /**
@@ -48,8 +48,8 @@
 =====================================================================
 */
 
-#include "a4gl_4glc_int.h"
 #include "y.tab.h"
+#include "a4gl_4glc_int.h"
 #include "memfile.h"
 
 
@@ -955,7 +955,7 @@ return 0;
  *  more tokens.
  *
  *  The purpose is give tokens to the syntatic parser (made in yacc/bison).
- *
+ * @todo - convert identifier to USER_DTYPE if required....
  */
 int
 //yylex (void)
@@ -964,16 +964,17 @@ yylex (void *pyylval, int yystate,void *yys1,void *yys2)
   int a;
   char buff[1024];
   char buffval[20480];
+int allow;
   static int last_pc = 0;
   int r;
   short *stack_cnt;
 
 
-  debug ("In yylex ... yystate=%d", yystate);
+  debug("In yylex ... yystate=%d\n", yystate);
   //printf("%p %d  %p %p\n",pyylval,yystate,yys1,yys2);
-  for (stack_cnt=(short *)yys2;stack_cnt>=(short *)yys1;stack_cnt--) {
+  //for (stack_cnt=(short *)yys2;stack_cnt>=(short *)yys1;stack_cnt--) {
 		//printf(" -->%d\n",*stack_cnt);
-  }
+  //}
 
 
   if (yyin == 0)
@@ -996,11 +997,18 @@ yylex (void *pyylval, int yystate,void *yys1,void *yys2)
 
   a = chk_word (yyin, buff);
 
-  debug ("chk_word returns token=%d, buff=%s", a, buff);
+  debug ("chk_word returns token=%d, buff=%s\n", a, buff);
 
   //if (chk4var)
   //a = NAMED_GEN;
 
+
+allow=allow_token_state(yystate,a);
+debug("Allow_token_State = %d\n",allow);
+if (allow==0) a=NAMED_GEN;
+
+
+#ifdef OLDSTUFF
   /* variables/identifiers with the same names as 4GL keywords 
    * can easily be confused - any keyword tokens (they start from 1000) 
    * need to be checked. If the current parser state is expecting an
@@ -1010,10 +1018,14 @@ yylex (void *pyylval, int yystate,void *yys1,void *yys2)
       a != KW_FALSE && a != KW_NULL &&
       (strcmp (acl_getenv ("A4GL_RESERVEWORDS"), "YES") != 0))
     {
-      r = wants_kw_token (yystate, a);
+      //r=chk_for_kw_in(yys1,yys2,a,buff);
 
 
-      debug ("wants_kw_token -> %d state = %d a=%d", r,yystate,a);
+
+      //r = wants_kw_token (yystate, a);
+
+
+      //printf ("wants_kw_token -> %d state = %d a=%d", r,yystate,a);
       switch (r)
 	{
 	case 0:
@@ -1028,14 +1040,19 @@ yylex (void *pyylval, int yystate,void *yys1,void *yys2)
 	  if (is_commandkw (a) == 0 && !sql_kword(a)) {
 	    a = NAMED_GEN;
 	  }
-	  break;
+	 break;
 	case 3:
 	  /* treat as identifier, unless token starts a command */
 	  if (is_commandkw (a) == 0)
 	    a = NAMED_GEN;
 	}
 
+
+
+
     }
+#endif
+
 
   if (a == 2 || a == NAMED_GEN)
     {
@@ -1086,7 +1103,7 @@ yylex (void *pyylval, int yystate,void *yys1,void *yys2)
     }
   word_cnt = 0;
 
-  debug ("lexer returns  a=%d, buff=%s\n", a, buff);
+ debug ("lexer returns  a=%d, buff=%s\n", a, buff);
 
   return a;
 }
@@ -1159,31 +1176,44 @@ get_idents (int a)
   return idents[a];
 }
 
+
 /*
 chk_for_kw_in(short *yys1,short *yys2,int a,char *buff) {
 short *stack_cnt;
 int r;
 int could_be;
-printf("\n\n");
 could_be=0;
+
   for (stack_cnt=yys2;stack_cnt>=yys1;stack_cnt--) {
-		printf(" Current State -->%d (%s)\n",*stack_cnt,buff);
       		r = wants_kw_token (*stack_cnt, a);
+		if (r==1) {
+			if (scan_variable (buff) == -1) r=0;
+			else return a;
+		}
 		printf("r=%d\n",r);
+		if (r==2) {
+			printf("Y");
+			could_be++;
+		}
+		if (r==3) {
+			printf("X");
+			could_be++;
+		}
+ }
+ if (could_be) return 2;
+ return 0;
 
 		if (r==0) {
-  			printf("COuld be = %d\n",could_be);
-			if (!could_be) return a;
+			return a;
 		}
 
 		if (r==2) {
-			could_be++;
 			//return NAMED_GEN;
+			continue;
 		}
 
 		if (r==3) {
-			could_be++;
-			//return NAMED_GEN;
+			continue;
 		}
 
  		if (r==1) {
@@ -1192,8 +1222,8 @@ could_be=0;
 		}
   }
 
-  if (could_be) return NAMED_GEN;
-  return a;
+  return NAMED_GEN;
 }
 */
+
 /* ================================== EOF ========================= */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.25 2003-02-16 13:35:54 mikeaubury Exp $
+# $Id: 1.reqd,v 1.26 2003-02-17 12:04:10 mikeaubury Exp $
 #
 */
 
@@ -77,7 +77,6 @@
 #endif
 #define YYPURE 1
 #define YYLEX_PARAM yystate,yyssa,yyssp
-#define YYDEBUG 1
 #define INCASE 		0
 #define INCONSTRUCT 1
 #define INDISPLAY 	2
@@ -92,7 +91,11 @@
 #define UPDVAL 		1
 #define SELINTO 	2
 #define PUTVAL 		3
+
+// Hehe - This one is pretty cool if you have a fairly recent version of bison
 #define YYERROR_VERBOSE
+
+#define YYDEBUG 1
 
 
 /* prevent warning for redundant declaration of yyparse: */
@@ -176,6 +179,7 @@ struct 		form_attr form_attrib;
 
 %}
 %pure_parser
+//glr-parser
 %start module
 %union	  {
 

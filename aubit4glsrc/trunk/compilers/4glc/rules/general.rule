@@ -75,7 +75,9 @@ opt_help_no		:	{strcpy($<str>$,"0");} | HELP INT_VALUE {strcpy($<str>$,$<str>2);
 identifier	: setident NAMED unsetident { 
 			strcpy($<str>$,downshift($<str>2)) ;
 }
+/*
 | reserved_word  { strcpy($<str>$,downshift($<str>1)) ; }
+*/
 
 
 ;
@@ -179,7 +181,7 @@ reserved_word :
 	|AVERAGE
 	|UNDERLINE
 	|MENU
-	|KWMESSAGE
+	|DATE
 ;
 
 

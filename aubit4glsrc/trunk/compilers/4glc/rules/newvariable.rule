@@ -84,7 +84,7 @@ var:
          else
          {
              debug ("Is string...");
-             sprintf ($<str>$, " substr(%s,%d,%s,0) /*1*/", buff,
+             sprintf ($<str>$, " substr(%s , %d , %s , 0 ) /*1*/", buff,
                       (int)scan_variable (buff), $<str>4);
 
              addmap("Use Variable",buff,curr_func,yylineno,infilename);
@@ -391,10 +391,7 @@ func_def_var : identifier | identifier DOT identifier {sprintf($<str>$,"%s.%s",$
 ;
 
 ibind_var : variable  {lex_printcomment("/* Variable */\n");}
-	| variable THRU variable {
-			debug("Got an ibind thru...");
-			sprintf($<str>$,"%s\n%s",$<str>1,$<str>3);
-		}
+	| variable THRU variable { debug("Got an ibind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
 	| CHAR_VALUE 
 	| real_number {sprintf($<str>$,"\"%s\"",$<str>1);}
 	| INT_VALUE {sprintf($<str>$,"\"%s\"",$<str>1);}
@@ -412,6 +409,7 @@ strcpy($<str>$,"");
 obind_var : variable   {
 	addmap("OBIND",$<str>1,curr_func,yylineno,infilename);
 	}
+	| variable THRU variable { debug("Got an obind thru..."); sprintf($<str>$,"%s\n%s",$<str>1,$<str>3); }
 ;
 
 

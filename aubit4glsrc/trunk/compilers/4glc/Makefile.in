@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.59 2003-02-17 05:07:13 afalout Exp $
+# $Id: Makefile.in,v 1.60 2003-02-17 12:03:11 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -50,8 +50,8 @@ ifeq "${GCC_MINGW}" "yes"
 	CFLAGS		+=-I${ROOT}/tools/getopt
 endif
 
-WANTKW_C		=wantkw.c
-Y_OUTPUT		=rules/generated/y.output
+WANTKW_C		= mk_states.c
+Y_OUTPUT		= rules/generated/y.output
 
 
 #temp. workarounds for older versions of bizon y.output format:
@@ -161,11 +161,11 @@ ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 
 #${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
 
-wantkw.c: wantkw_gen.pl ${Y_OUTPUT}
+mk_states.c: mk_states_c ${Y_OUTPUT}
 ifeq "${HOSTNAME}" "${HOSTNAME_SPEC}"
 	cp ${Y_OUTPUT} rules/generated/y.output
 endif
-	@PERL@ $<
+	@SH@ $<
 #the "t" file is some kind of temporary file created by wantkw_gen.pl
 	${RM} t
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.101 2003-02-16 04:25:42 afalout Exp $
+# $Id: mod.c,v 1.102 2003-02-17 12:03:16 mikeaubury Exp $
 #
 */
 
@@ -1794,8 +1794,31 @@ add_bind (char i, char *var)
 	}
       else
 	{
-	  strcpy (ibind[ibindcnt].varname, var);
-	  ibind[ibindcnt].dtype = dtype;
+	  ibind[ibindcnt].start_char_subscript=0;
+	  ibind[ibindcnt].end_char_subscript=0;
+	  if (strncmp(var," substr(",8)!=0) {
+	  	strcpy (ibind[ibindcnt].varname, var);
+	  	ibind[ibindcnt].dtype = dtype;
+	  } else {
+		char buff[256];
+		char buff2[256];
+		int s_dtype;
+		int s_sstart;
+		int s_send;
+		int a;
+		strcpy(buff2,&var[8]);
+
+		a=sscanf(buff2,"%s , %d , %d , %d) /*1*/",buff,&s_dtype,&s_sstart,&s_send);
+		if (a!=4) {
+			yyerror("Internal error - (split substr)");
+		}
+		if (s_send==0) s_send=s_sstart;
+	  	strcpy (ibind[ibindcnt].varname, buff);
+	  	ibind[ibindcnt].dtype = s_dtype;
+		ibind[ibindcnt].start_char_subscript=s_sstart;
+		ibind[ibindcnt].end_char_subscript=s_send;
+		printf("%s %d %d %d\n",ibind[ibindcnt].varname,ibind[ibindcnt].dtype,ibind[ibindcnt].start_char_subscript,ibind[ibindcnt].end_char_subscript);
+	  }
 	  ibindcnt++;
 	}
       return ibindcnt;
