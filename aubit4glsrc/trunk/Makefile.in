@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.89 2002-09-25 05:41:51 afalout Exp $
+# $Id: Makefile.in,v 1.90 2002-09-27 03:57:28 afalout Exp $
 #
 
 ## ==================================================================
@@ -677,15 +677,16 @@ test.full:
 #	automake --add-missing
 
 
-libtool:
+libtool: @LIBTOOL_DEPS@
 #copy:
 #config.guess   config.sub   ltconfig   ltmain.in
 #from local libtool directory:
 #	cp /usr/local/share/libtool/config.* /usr/local/share/libtool/lt* etc/config
 #	cp /usr/local/share/libtool/ltconfig /usr/local/share/libtool/ltmain.in etc/config
-	(cd etc/config; ./ltconfig ./ltmain.sh)
-	${CP} etc/config/libtool .
-
+#old 1.3	(cd etc/config; ./ltconfig ./ltmain.sh)
+#old 1.3	${CP} etc/config/libtool .
+#for libtool 1.4:
+	$(SH) ./config.status --recheck
 
 
 ## ------------------------------------------------------------------

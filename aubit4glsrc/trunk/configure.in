@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.108 2002-09-26 06:35:11 afalout Exp $
+# $Id: configure.in,v 1.109 2002-09-27 03:57:29 afalout Exp $
 #
 #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -164,7 +164,12 @@ AC_CANONICAL_SYSTEM
 AC_DISABLE_STATIC
 
 #make: *** No rule to make target `etc/config/ltmain.sh'.  Stop.
+#Using `AC_PROG_RANLIB' is rendered obsolete by `AC_PROG_LIBTOOL'
+#Note: The libltdl library included with all libtool versions will only work on
+#Darwin when dlcompat is installed.
 AC_PROG_LIBTOOL
+AM_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
 
 ## ==================================================================
 ##                Define what will get substituted
@@ -303,6 +308,7 @@ AC_SUBST(LEX)
 #AC_SUBST(PREFIX)
 AC_SUBST(LCLINTEXE)
 AC_SUBST(SO_EXT)
+AC_SUBST(SO_EXT_LINKABLE)
 AC_SUBST(GETOPT_LONG)
 
 #curses:
@@ -420,6 +426,7 @@ IFMX_ESQLC=no
 LCLINTEXE=no
 cygwin=0
 SO_EXT=.so
+SO_EXT_LINKABLE=$SO_EXT
 
 #defaults for aubitrc:
 A4GL_SQLTYPE=nosql
@@ -453,7 +460,10 @@ case $host in
 
 	#powerpc-apple-darwin5.5 (Andrej on SF CF)
 	*-apple-darwin*)
-		SO_EXT=.dylib
+		#for dlopen() libs:
+		SO_EXT=.bundle
+        #for libaubit4gl:
+		SO_EXT_LINKABLE=.dylib
 		;;
 
 
@@ -481,7 +491,7 @@ dnl internationalization macros
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
 LIBFILE_1=$LIB_PREFIX/libEXREPORT_NOPDF${SO_EXT}
-LIBFILE_2=$LIB_PREFIX/libaubit4gl${SO_EXT}
+LIBFILE_2=$LIB_PREFIX/libaubit4gl${SO_EXT_LINKABLE}
 LIBFILE_3=$LIB_PREFIX/libRPC_NORPC${SO_EXT}
 LIBFILE_4=$LIB_PREFIX/libFORM_NOFORM${SO_EXT}
 LIBFILE_5=$LIB_PREFIX/libSQL_nosql${SO_EXT}
@@ -707,7 +717,6 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 AC_PROG_AWK
 #FIXME: stop if no gawk (if configuring source code tree) - awk will fail
 if test "$AWK" = "awk"; then
@@ -2891,12 +2900,12 @@ LIB_PREFIX=$prefix/aubit4gl/lib
 
 	#this is made by 'make extra'
 	if test "$JABBERBUILD" != "no"; then
-		RPMFILE_20=$LIB_PREFIX/libIM_JABBER$SO_EXT
+		RPMFILE_20=$LIB_PREFIX/libIM_JABBER$SO_EXT_LINKABLE
 	fi
 
 	RPMFILE_21=$LIB_PREFIX/libA4GL_file$SO_EXT
 	RPMFILE_22=$LIB_PREFIX/libA4GL_string$SO_EXT
-	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT
+	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
 	#RPMFILE_24=$LIB_PREFIX/
 	#RPMFILE_25=$LIB_PREFIX/
 	#RPMFILE_26=$LIB_PREFIX/

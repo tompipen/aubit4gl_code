@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.16 2002-09-26 11:08:49 afalout Exp $
+# $Id: calldll.c,v 1.17 2002-09-27 03:57:39 afalout Exp $
 #
 */
 
@@ -42,37 +42,26 @@
 =====================================================================
 */
 
+#include "a4gl_libaubit4gl_int.h"
 
-#ifdef OLD_INCL
-	
-	#include <string.h> /* strcpy() strcat() */
-
-	/*
-	 **********************************************************************
-	 * Under Cygwin, we can use the dl family of calls, but we need to jump
-	 * through some hoops first. Specifically, we need to include
-	 * <cygwin/cygwin_dll.h> and we need to use the DECLARE_CYGWIN_DLL()
-	 * macro. During the link phase, we must use __cygwin_dll_entry@12 as
-	 * the entry point. See http://sources.redhat.com/cygwin/dl-docs.html.
-	 * http://cygwin.com/faq/faq.html#SEC106
-	 * http://www.neuro.gatech.edu/users/cwilson/cygutils/V1.1/dll-stuff/
-	 ***********************************************************************
-	 */
-
-	#if defined(__CYGWIN__)
-		#include <cygwin/cygwin_dll.h>
-	#endif
-
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_libaubit4gl_int.h"
-
+/*
+ **********************************************************************
+ * Under Cygwin, we can use the dl family of calls, but we need to jump
+ * through some hoops first. Specifically, we need to include
+ * <cygwin/cygwin_dll.h> and we need to use the DECLARE_CYGWIN_DLL()
+ * macro. During the link phase, we must use __cygwin_dll_entry@12 as
+ * the entry point. See http://sources.redhat.com/cygwin/dl-docs.html.
+ * http://cygwin.com/faq/faq.html#SEC106
+ * http://www.neuro.gatech.edu/users/cwilson/cygutils/V1.1/dll-stuff/
+ ***********************************************************************
+ */
+#if defined(__CYGWIN__)
+	#include <cygwin/cygwin_dll.h>
 #endif
 
-
+#ifndef WIN32
+	#include <dlfcn.h>
+#endif
 
 /*
 =====================================================================
@@ -91,10 +80,7 @@ char tempbuff[1024];
 static void 	badfunc 		(void);
 static int 		nullfunc		(void);
 int 			call_4gl_dll 	(char *filename, char *function, int args);
-/* extern void * 	find_func 		(void *dllhandle, char *func); */
 void *          find_func_double (void *dllhandle, char *func);
-
-
 
 /*
 =====================================================================
@@ -125,7 +111,7 @@ call_4gl_dll (char *filename, char *function, int args)
 #else
 	/* implementation for UNIX and CygWin */
 
-#include <dlfcn.h>
+
 
 /**
  * When someone try to find a function that does not exist in the dll its
@@ -174,7 +160,7 @@ dl_openlibrary (char *type, char *name)
 	  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, name);
 	#else
 		#if (defined(__MACH__) && defined(__APPLE__))
-		  sprintf (buff, "%s/lib/lib%s_%s.dylib", acl_getenv ("AUBITDIR"), type, name);
+		  sprintf (buff, "%s/lib/lib%s_%s.bundle", acl_getenv ("AUBITDIR"), type, name);
 
           /*
 	        void *handle;
@@ -224,9 +210,13 @@ find_func (void *dllhandle, char *func)
 {
 int (*func_ptr) (void);
 
-  debug("find_func: Finding pointer to DLL function %s\n",func);
+	#if (defined(__MACH__) && defined(__APPLE__))
+		sprintf (tempbuff, "_%s",func);
+	#else
+		sprintf (tempbuff, "%s",func);
+	#endif
 
- sprintf (tempbuff, "%s",func);
+  debug("find_func: Finding pointer to DLL function %s\n",tempbuff);
 
   if (dllhandle == 0)
   {
@@ -234,7 +224,7 @@ int (*func_ptr) (void);
 	exitwith("Could not open shared library");
     	/* return badfunc; */
   }
-  func_ptr = dlsym (dllhandle, func);
+  func_ptr = dlsym (dllhandle, tempbuff);
 	debug("Got %p",func_ptr);
   if (func_ptr == 0)
   {
@@ -262,7 +252,12 @@ find_func_double (void *dllhandle, char *func)
   double (*func_ptr) (void);
   debug("find_func_double: Finding pointer to DLL function %s which returns a double\n",func);
 
- sprintf (tempbuff, "%s",func);
+	#if (defined(__MACH__) && defined(__APPLE__))
+		sprintf (tempbuff, "_%s",func);
+	#else
+		sprintf (tempbuff, "%s",func);
+	#endif
+
 
   if (dllhandle == 0)
   {
@@ -270,7 +265,7 @@ find_func_double (void *dllhandle, char *func)
 	exitwith("Could not open share library");
     	return badfunc;
   }
-  func_ptr = dlsym (dllhandle, func);
+  func_ptr = dlsym (dllhandle, tempbuff);
 	debug("Got %p",func_ptr);
   if (func_ptr == 0)
   {
@@ -291,14 +286,19 @@ find_func_allow_missing (void *dllhandle, char *func)
   int (*func_ptr) (void);
   debug("find_func_allow_missing: Finding pointer to DLL function %s\n",func);
   
- sprintf (tempbuff, "%s",func);
+ 	#if (defined(__MACH__) && defined(__APPLE__))
+		sprintf (tempbuff, "_%s",func);
+	#else
+		sprintf (tempbuff, "%s",func);
+	#endif
+
 
   if (dllhandle == 0)
   {
 	/*  exitwith ("2: Non-existing function (%s) called in DLL",func); */
 	return &badfunc;
   }
-  func_ptr = dlsym (dllhandle, func);
+  func_ptr = dlsym (dllhandle, tempbuff);
 
   if (func_ptr==0) return &nullfunc;
   return func_ptr;
@@ -316,15 +316,22 @@ find_func_allow_missing (void *dllhandle, char *func)
 int
 call_4gl_dll (char *filename, char *function, int args)
 {
-  void *dllhandle;
-  char buff[512];
-  char nfunc[256];
-  char nfile[256];
-  int (*func_ptr) (int);
-  int a;
+void *dllhandle;
+char buff[512];
+char nfunc[256];
+char nfile[256];
+int (*func_ptr) (int);
+int a;
+  
   A4GLSQL_set_status (0,0);
   strcpy (nfile, filename);
-  strcpy (nfunc, "aclfgl_");
+  
+	#if (defined(__MACH__) && defined(__APPLE__))
+		strcpy (nfunc, "aclfgl__");
+	#else
+		strcpy (nfunc, "aclfgl_");
+	#endif
+
   strcat (nfunc, function);
   trim (nfunc);
   trim (nfile);

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.82 2002-09-26 11:35:54 afalout Exp $
+# $Id: Makefile-common.in,v 1.83 2002-09-27 03:57:39 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -346,11 +346,16 @@ FAIL_OK             =-
 #         independent code,  suitable  for  dynamic  linking,
 #         even if branches need large displacements.
 #FIXME: is it OK to have -fPIC when creating executables, not libraries?
-#On Darwin Autoconf will set PIC = -fno-common
 PIC					=@PIC@
 ifeq "${TARGET_OS}" "darwin"
-	#will just -fPIC be enough?
-	PIC				=@PIC@ -fPIC
+	#On Darwin Autoconf will set PIC = -fno-common
+	#The generation of position-independent code (PIC) is the default is the
+	#default on Darwin. Actually, PowerPC code is position-independent by design,
+	#so there is no performance or space penalty involved. So, you don't need to
+	#specify a PIC option when compiling code for a shared library or module.
+	#However, the linker doesn't allow "common" symbols in shared libraries,
+	#so you must use the -fno-common compiler option.
+	#PIC				=@PIC@ -fPIC
 endif
 USE_RPCGEN			=@USE_RPCGEN@
 HAVE_RPCLIB			=@HAVE_RPCLIB@
@@ -374,7 +379,11 @@ endif
 #we no longer compile static libs on any platform - remove this
 #STATICLIB_INST=no
 
+#This is extension for LOADABLE libraries - using dlopen():
 SO_EXT=@SO_EXT@
+#This is extension for LINKABLE libraries - linked at compile time. In Aubit
+#this is (or should be) onlu libaubit4gl:
+SO_EXT_LINKABLE=@SO_EXT_LINKABLE@
 
 	ARCHEXT			=tar.gz
     DIRSEP			=/
@@ -441,10 +450,31 @@ endif
 ifeq "${TARGET_OS}" "darwin"
 		#SO_LDFLAGS	=-r ${LDFLAGS}
 		#This is to make ONLY dlopen() loadable library, not a standard
-        #shared one, ("bundle") so we will need separate setting for 
+        #shared one, ("bundle") so we will need separate setting for
 		#libaubit4gl.dynlib
 		SO_LDFLAGS	=-flat_namespace -bundle -undefined suppress ${LDFLAGS}
 endif
+
+## ==================================================================
+##                              Libtool configuration
+## ==================================================================
+
+
+#/bin/sh ../../libtool --mode=link gcc  -g -O2  -o mkmess  mkmess.o -laubit4gl -lcheck -lpanel -lform -ldl -lcurses -lc -lgmp
+
+#From Makefie:
+#LIBTOOL = $(SHELL) $(top_builddir)/libtool
+#LIBTOOL_DEPS = etc/config/ltmain.sh
+#...
+#LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+#CCLD = $(CC)
+#LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+
+LIBTOOL = @LIBTOOL@
+LIBTOOL_DEPS = @LIBTOOL_DEPS@
+LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 
 ####################### from aubitbuild-multi.mk ####################

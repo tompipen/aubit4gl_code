@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.34 2002-09-26 12:12:34 afalout Exp $
+# $Id: Makefile.in,v 1.35 2002-09-27 03:57:39 afalout Exp $
 #
 
 ROOT    	=../..
@@ -79,7 +79,7 @@ DLMAGIC				=${LIBROOT}/bin/dlmagic
 ifdef COMSPEC
 	ALL				=dllaubit4gl
 else                
-    ALL				=${LIBROOT}/libaubit4gl${SO_EXT}
+    ALL				=${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE}
 endif
 
 CFLAGS              +=-I.
@@ -110,15 +110,19 @@ endif
 
 
 ifeq "${TARGET_OS}" "darwin"
-		#SO_LDFLAGS	=-r ${LDFLAGS}
 		#This is to make ONLY dlopen() loadable library, not a standard
         #shared one, ("bundle") so we will need separate setting for
 		#libaubit4gl.dynlib
-		#SO_LDFLAGS	=-flat_namespace -bundle -undefined suppress ${LDFLAGS}
+		#
+		#cc -dynamiclib -install_name /usr/local/lib/libfoo.2.dylib \
+		# -compatibility_version 2.4 -current_version 2.4.5 \
+		# -o libfoo.2.4.5.dylib source.o code.o
+
         SO_LDFLAGS1=$(SO_LDFLAGS:%-flat_namespace=%)
 		SO_LDFLAGS2=$(SO_LDFLAGS1:%-bundle=%)
 		SO_LDFLAGS3=$(SO_LDFLAGS2:%-undefined=%)
-		SO_LDFLAGS_NOBUNDLE=-r $(SO_LDFLAGS3:%suppress=%)
+		#SO_LDFLAGS_NOBUNDLE=-r $(SO_LDFLAGS3:%suppress=%)
+		SO_LDFLAGS_NOBUNDLE=-dynamiclib $(SO_LDFLAGS3:%suppress=%)
 else
 		SO_LDFLAGS_NOBUNDLE=${SO_LDFLAGS}
 endif
@@ -131,7 +135,7 @@ endif
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-${LIBROOT}/libaubit4gl${SO_EXT} : $(OBJS)
+${LIBROOT}/libaubit4gl${SO_EXT_LINKABLE} : $(OBJS)
 	${LD} ${SO_LDFLAGS_NOBUNDLE} -o $@ $^ ${LINK_LIBS}
 
 ## ==================================================================
@@ -200,7 +204,7 @@ builtin.o: ../../compilers/fcompile/form_x.h
 clean : clean.generated
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
 		form_x_xdr.c form_x.h project.c core \
-		*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.dll *.stackdump *.err \
+		*.out *.glb *${SO_EXT_LINKABLE} *.a  *.o  *.bak *.dll *.stackdump *.err \
 		*.base *.exp libaubit4gl.def
 
 clean.generated:
