@@ -471,7 +471,7 @@ call_c_function (char *s, struct param *p, long *r)
     }
   if (ptr_function == 0)
     {
-      printf ("Function was not declared...%s\n", s);
+      printf ("Function was not declared...'%s'\n", s);
       exit (1);
     }
   x = ptr (ptr_function, p);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.80 2003-12-29 20:41:52 mikeaubury Exp $
+# $Id: lexer.c,v 1.81 2004-01-13 17:34:26 mikeaubury Exp $
 #*/
 
 /**
@@ -884,6 +884,7 @@ chk_word (FILE * f, char *str)
     }
   /* end of code/endcode block handling */
 
+
   /* skip comments, do not return these to parser */
   if (t == KWS_COMMENT)
     {
@@ -897,12 +898,64 @@ chk_word (FILE * f, char *str)
       strcpy (str, "");
       return -1;
     }
+  
 
   /* save the current input file location, as we have to do some
    * reading ahead when checking for multi-word keywords
    */
   strcpy (buff, p);
-  return chk_word_more (f, buff, p, str, t);
+  t=chk_word_more (f, buff, p, str, t);
+
+  switch(t) {
+	case WHENEVER_ERROR_CONTINUE:  		set_whento(""); 	set_whenever(WHEN_ERROR+WHEN_CONTINUE,0);	t=KWS_COMMENT;break;
+	case WHENEVER_ERROR_STOP:  		set_whento(""); 	set_whenever(WHEN_ERROR+WHEN_STOP,0);		t=KWS_COMMENT;break;
+	case WHENEVER_ERROR_GOTO:  		set_whento(idents[0]); 	set_whenever(WHEN_ERROR+WHEN_GOTO,0);		t=KWS_COMMENT;break;
+	case WHENEVER_ERROR_CALL:  		set_whento(idents[0]); 	set_whenever(WHEN_ERROR+WHEN_CALL,0);		t=KWS_COMMENT;break;
+
+	case WHENEVER_ANY_ERROR_CONTINUE:  	set_whento(""); 	set_whenever(WHEN_ANYERROR+WHEN_CONTINUE,0);	t=KWS_COMMENT;break;
+	case WHENEVER_ANY_ERROR_STOP:  		set_whento(""); 	set_whenever(WHEN_ANYERROR+WHEN_STOP,0);	t=KWS_COMMENT;break;
+	case WHENEVER_ANY_ERROR_GOTO:  		set_whento(idents[0]); 	set_whenever(WHEN_ANYERROR+WHEN_GOTO,0);	t=KWS_COMMENT;break;
+	case WHENEVER_ANY_ERROR_CALL:  		set_whento(idents[0]); 	set_whenever(WHEN_ANYERROR+WHEN_CALL,0);	t=KWS_COMMENT;break;
+
+	case WHENEVER_NOT_FOUND_CONTINUE:  	set_whento(""); 	set_whenever(WHEN_NOTFOUND+WHEN_CONTINUE,0);	t=KWS_COMMENT;break;
+	case WHENEVER_NOT_FOUND_STOP:  		set_whento(""); 	set_whenever(WHEN_NOTFOUND+WHEN_STOP,0);	t=KWS_COMMENT;break;
+	case WHENEVER_NOT_FOUND_GOTO:  		set_whento(idents[0]); 	set_whenever(WHEN_NOTFOUND+WHEN_GOTO,0);	t=KWS_COMMENT;break;
+	case WHENEVER_NOT_FOUND_CALL:  		set_whento(idents[0]); 	set_whenever(WHEN_NOTFOUND+WHEN_CALL,0);	t=KWS_COMMENT;break;
+
+	case WHENEVER_SQLSUCCESS_CONTINUE:  	set_whento(""); 	set_whenever(WHEN_SQLSUCCESS+WHEN_CONTINUE,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SQLSUCCESS_STOP:  	set_whento(""); 	set_whenever(WHEN_SQLSUCCESS+WHEN_STOP,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SQLSUCCESS_GOTO:  	set_whento(idents[0]); 	set_whenever(WHEN_SQLSUCCESS+WHEN_GOTO,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SQLSUCCESS_CALL:  	set_whento(idents[0]); 	set_whenever(WHEN_SQLSUCCESS+WHEN_CALL,0);	t=KWS_COMMENT;break;
+
+	case WHENEVER_SUCCESS_CONTINUE:  	set_whento(""); 	set_whenever(WHEN_SUCCESS+WHEN_CONTINUE,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SUCCESS_STOP:  		set_whento(""); 	set_whenever(WHEN_SUCCESS+WHEN_STOP,0);		t=KWS_COMMENT;break;
+	case WHENEVER_SUCCESS_GOTO:  		set_whento(idents[0]); 	set_whenever(WHEN_SUCCESS+WHEN_GOTO,0);		t=KWS_COMMENT;break;
+	case WHENEVER_SUCCESS_CALL:  		set_whento(idents[0]); 	set_whenever(WHEN_SUCCESS+WHEN_CALL,0);		t=KWS_COMMENT;break;
+
+	case WHENEVER_SQLERROR_CONTINUE:  	set_whento(""); 	set_whenever(WHEN_SQLERROR+WHEN_CONTINUE,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SQLERROR_STOP:  		set_whento(""); 	set_whenever(WHEN_SQLERROR+WHEN_STOP,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SQLERROR_GOTO:  		set_whento(idents[0]); 	set_whenever(WHEN_SQLERROR+WHEN_GOTO,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SQLERROR_CALL:  		set_whento(idents[0]); 	set_whenever(WHEN_SQLERROR+WHEN_CALL,0);	t=KWS_COMMENT;break;
+
+	case WHENEVER_SQLWARNING_CONTINUE:  	set_whento(""); 	set_whenever(WHEN_SQLWARNING+WHEN_CONTINUE,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SQLWARNING_STOP:  	set_whento(""); 	set_whenever(WHEN_SQLWARNING+WHEN_STOP,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SQLWARNING_GOTO:  	set_whento(idents[0]); 	set_whenever(WHEN_SQLWARNING+WHEN_GOTO,0);	t=KWS_COMMENT;break;
+	case WHENEVER_SQLWARNING_CALL:  	set_whento(idents[0]); 	set_whenever(WHEN_SQLWARNING+WHEN_CALL,0);	t=KWS_COMMENT;break;
+
+	case WHENEVER_WARNING_CONTINUE:  	set_whento(""); 	set_whenever(WHEN_WARNING+WHEN_CONTINUE,0);	t=KWS_COMMENT;break;
+	case WHENEVER_WARNING_STOP:  		set_whento(""); 	set_whenever(WHEN_WARNING+WHEN_STOP,0);		t=KWS_COMMENT;break;
+	case WHENEVER_WARNING_GOTO:  		set_whento(idents[0]); 	set_whenever(WHEN_WARNING+WHEN_GOTO,0);		t=KWS_COMMENT;break;
+	case WHENEVER_WARNING_CALL:  		set_whento(idents[0]); 	set_whenever(WHEN_WARNING+WHEN_CALL,0);		t=KWS_COMMENT;break;
+   }
+
+  if (t == KWS_COMMENT)
+    {
+      strcpy (str, p);
+      return chk_word (f, str);
+    }
+
+
+  return t;
 }
 
 
@@ -1136,6 +1189,18 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
     }
 
   a = chk_word (yyin, buff);
+
+
+
+
+
+
+
+
+
+
+
+
 
   A4GL_debug ("chk_word returns token=%d, buff=%s state=%d\n", a, buff, yystate);
 

@@ -92,7 +92,7 @@ add_block_to_stack (int pc, struct cmd_block *b)
 	  if (b->c_vars.c_vars_val[a].category == CAT_STATIC)
 	    {
 	      b->c_vars.c_vars_val[a].category = CAT_ALLOC_STATIC;
-	printf("MALLOC : %d\n",b->c_vars.c_vars_val[a].var->total_size);
+	//printf("MALLOC : %d\n",b->c_vars.c_vars_val[a].var->total_size);
 	      b->c_vars.c_vars_val[a].var->offset = (long) malloc (b->c_vars.c_vars_val[a].var->total_size);
 	    }
 
@@ -128,7 +128,7 @@ add_block_to_stack (int pc, struct cmd_block *b)
     {
       callstack[callstack_cnt - 1].mem_for_vars =
 	(long) malloc (callstack[callstack_cnt - 1].mem_to_alloc);
-	printf("MALLOC : %d\n",callstack[callstack_cnt - 1].mem_to_alloc);
+	//printf("MALLOC : %d\n",callstack[callstack_cnt - 1].mem_to_alloc);
     }
   else
     {
@@ -224,7 +224,7 @@ set_var (long pc, struct cmd_set_var *sv)
   else
     {
       evaluate_param (uset_var, &x);
-      A4GL_debug ("=");
+      //A4GL_debug ("=");
       use_var = &sv->variable;
       ptr = get_var_ptr (use_var);
       if (ptr)
@@ -249,7 +249,7 @@ set_var_once (long pc, struct cmd_set_var1 *sv)
   if (sv->set)
     return;
   evaluate_param (&sv->value, &x);
-  A4GL_debug ("=");
+  //A4GL_debug ("=");
   use_var = &sv->variable;
 
   ptr = get_var_ptr (use_var);
@@ -269,13 +269,13 @@ call_function (long pc, struct npcmd_call *c)
   long rval;
 
   x = GET_ID (c->func_id);
-  A4GL_debug (" --> %s\n", x);
+  //A4GL_debug (" --> %s\n", x);
   npc = find_pcode_function (x);
   if (npc != -1)
     {
       return run_function (npc, c->params);
     }
-  A4GL_debug ("Not a 4gl function - must be C\n");
+  //A4GL_debug ("Not a 4gl function - must be C\n");
   call_c_function (x, c->params, &rval);
   return rval;
 }
@@ -294,6 +294,7 @@ int indirect;
   char pointer_or_offset = 'N';
   char *rptr = 0;
 //int *rptr_i=0;
+
 
 
   if (uv->defined_in_block_pc == -1)
@@ -372,6 +373,8 @@ int indirect;
       rptr = ptr;
     }
 
+
+
   if (!rptr)
     {
       fprintf (logfile, "****** Variable pointer not found\n");
@@ -432,8 +435,12 @@ if (ve_main->i_arr_size[0]) {
 	//   printf("%s",buff)
 	// This should return &buff which should be the same as &buff[0]
 	//
-	if (indirect==0 && uv->sub.sub_len==0) {
-		indirect=-1;
+
+	//printf("Variable indirection.. %d\n",uv->sub.sub_len);
+
+	if (uv->sub.sub_len==0) {
+	//printf("indirect set to -1\n");
+	indirect=-1;
 	}
 }
 A4GL_debug("Indirection=%d ptr=%p \n",indirect,rptr);

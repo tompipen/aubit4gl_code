@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.34 2004-01-06 15:54:51 mikeaubury Exp $
+# $Id: fcompile.c,v 1.35 2004-01-13 17:34:43 mikeaubury Exp $
 #*/
 
 /**
@@ -337,4 +337,18 @@ A4GLF_open_db (char *s)
     }
 }
 
+
+char *rm_dup_quotes(char *s) {
+char *x;
+int a;
+int c;
+x=strdup(s);
+c=0;
+for (a=0;a<strlen(s);a++) {
+	if (s[a]=='"'&&s[a+1]=='"') continue;
+	x[c++]=s[a];
+}
+x[c]=0;
+return x;
+}
 /* ================================== EOF ============================= */

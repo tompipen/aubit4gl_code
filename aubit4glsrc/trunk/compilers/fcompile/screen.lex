@@ -86,6 +86,7 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 
 
 \"[^\"]+\" { if (in_screen_section==1) REJECT; strcpy(yylval.str,yytext); return CHAR_VALUE;}
+\"(\"\"|[^"])*\" { if (in_screen_section==1) REJECT; strcpy(yylval.str,(char *)rm_dup_quotes(yytext)); return CHAR_VALUE;}
 \"\" {  if (in_screen_section==1) REJECT;strcpy(yylval.str,yytext); return CHAR_VALUE;}
 \'[^\']+\' {  if (in_screen_section==1) REJECT;strcpy(yylval.str,yytext); return CHAR_VALUE;}
 

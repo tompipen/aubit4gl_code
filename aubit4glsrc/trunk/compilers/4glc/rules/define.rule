@@ -17,7 +17,6 @@ define_multiple	:
 define_set :
 	DEFINE {dtypelist[0]=0;A4GL_lex_printcomment("/* define */\n");} def_part  {A4GL_lex_printcomment("/*end def */\n");} opt_semi
 	| dim_section
-	| whenever_cmd
 ;
 
 

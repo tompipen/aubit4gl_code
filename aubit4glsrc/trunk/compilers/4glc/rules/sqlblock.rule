@@ -75,7 +75,6 @@ sql_block_entry:
 | CONST
 | CONSTANT
 | CONSTRUCT
-| CONTINUE
 | COUNT
 | CREATE
 | CURRENT
@@ -325,7 +324,6 @@ sql_block_entry:
 | WAIT
 | WAITING
 | WHEN
-| WHENEVER
 | WHERE
 | WHILE
 | WHITE

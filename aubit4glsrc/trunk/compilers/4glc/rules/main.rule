@@ -66,16 +66,15 @@ func_or_main	:	func_def
 		|	report_def
 		|	pdf_report_def
                 |       menu_def
-		| 	whenever_cmd 
                 |       formhandler_def
 		|	code_cmd
 		| 	import_m
 		|	comment_cmd
 		;
 
-module_code : code_cmd | whenever_cmd  ;
+module_code : code_cmd   ;
 
-op_code : | code_cmd | whenever_cmd  ;
+op_code : | code_cmd   ;
 
 module_define_section : define_multiple 
 ;

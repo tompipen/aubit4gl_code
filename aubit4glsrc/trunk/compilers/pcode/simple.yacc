@@ -143,11 +143,13 @@ fgl_funcs :
 	| KW_A_PUSH_CHAR '(' STRING_LITERAL ')' {
 			add_push_char($<str>3);
 	}
+/*
 	| KW_A_PUSH_CHAR '(' variable ')' {
 			add_push_charv($<e>3);
 	}
+*/
 	| KW_A_PUSH_CHAR '(' op_expr_list ')' {
-		add_call($<str>1,$<e>3);
+		add_call("A4GL_push_char",$<e>3);
 	}
 	| KW_A_CHK_ERR '(' int_val ',' IDENTIFIER ')' {
 			add_chk_err($<e>3->param_u.n);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.71 2004-01-12 21:37:19 mikeaubury Exp $
+# $Id: esql.ec,v 1.72 2004-01-13 17:34:43 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.71 2004-01-12 21:37:19 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.72 2004-01-13 17:34:43 mikeaubury Exp $";
 #endif
 
 
@@ -2445,7 +2445,7 @@ A4GLSQL_unload_data (char *fname, char *delims, char *sqlStr, int nbind,
   if (isSqlError ())
     return;			/* return 1; */
 
-  EXEC SQL ALLOCATE DESCRIPTOR 'descUnload' WITH MAX 256;
+  EXEC SQL ALLOCATE DESCRIPTOR 'descUnload' WITH MAX 1024;
 
 
   EXEC SQL DESCRIBE stUnload USING SQL DESCRIPTOR 'descUnload';
@@ -2675,7 +2675,7 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
   EXEC SQL BEGIN DECLARE SECTION;
   char strSelect[640];
   int numberOfColumns;
-  int MaxColumns = 1024;		//we will be able to process tables with maximum 254 columns
+  int MaxColumns = 1024;		//we will be able to process tables with maximum 1024 columns
   EXEC SQL END DECLARE SECTION;
 
   sprintf (strSelect, "select * from %s\n", tabname);
@@ -3254,7 +3254,7 @@ while (1) {
         sprintf(buff,"A4GL_push_char(\"%s\");",ptrn);
 
         if (ptr==0) {
-                ptr=A4GL_new_expr(buff);
+                ptr=(struct expr_str *)A4GL_new_expr(buff);
         } else {
                 A4GL_append_expr(ptr,buff);
         }

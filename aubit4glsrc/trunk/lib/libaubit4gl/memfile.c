@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.9 2004-01-09 11:29:45 mikeaubury Exp $
+# $Id: memfile.c,v 1.10 2004-01-13 17:34:43 mikeaubury Exp $
 #
 */
 
@@ -47,6 +47,7 @@
 //#include <stdlib.h>
 //#include <string.h>
 
+void A4GL_remove_comments_in_memfile(FILE *f) ;
 
 //#include "memfile.h"  // why is this not in "a4gl_libaubit4gl_int.h" ?
 
@@ -340,11 +341,16 @@ FILE *last;
     {
       A4GL_debug ("pos = %ld buff_len = %ld f=%x in=%x\n", pos, buff_len, f, in);
       //a4gl_yyerror ("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
-      return feof (f);
+      return ;
     }
 
 
     for (a=0;a<buff_len;a++) {
+
+	if (buff[a]=='\n') type=0; 	// newlines always reset everything.
+					// That way - if we get confused - it won't propagate too far..
+					//
+
         if (strncmp(&buff[a],"\ncode\n",6)==0) {
 			type+=1;
 	}
@@ -387,6 +393,7 @@ FILE *last;
         }
         if (buff[a]=='{'&&type==0) {
                 for (b=a;buff[b]!='}';b++) {
+			if (buff[b]=='\n') continue;
 			buff[b]=' ';
 		}
 		buff[b]=' ';
