@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.10 2002-09-26 07:27:22 afalout Exp $
+# $Id: pointers.c,v 1.11 2002-09-26 07:35:52 afalout Exp $
 #
 */
 
@@ -57,12 +57,6 @@
 		                    Includes
 =====================================================================
 */
-
-
-
-#ifndef WIN32
-	#include <search.h>
-#endif
 
 #include "a4gl_libaubit4gl_int.h"
 
@@ -99,7 +93,7 @@ struct s_node
 
 	/* TSEARCH(3C) */
 	/** The type of the visit made to an element of the tree */
-	typedef enum { preorder, postorder, endorder, leaf } VISIT;
+	//typedef enum { preorder, postorder, endorder, leaf } VISIT;
 
 	/** A node tree information */
 	typedef struct node_t
@@ -447,7 +441,7 @@ register node	**rootp;	/* address of tree root */
  *
  * @todo Describe function
  */
-int	
+int
 (*compar)(void);		/* ordering function */
 {
     register node *q;
