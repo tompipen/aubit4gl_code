@@ -9,6 +9,7 @@ end record
 define a char(40)
 
 let axxx=1
+
 menu "Hello test"
     command "window" "Open a new window"
 		#display "Window"
