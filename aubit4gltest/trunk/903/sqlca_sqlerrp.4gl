@@ -9,7 +9,7 @@ MAIN
 
 	WHENEVER ERROR CONTINUE
 	LET exitStatus = 0
-	LET lv_sql_str = "SELEC xx FRM a_table WHRE col=8"
+	LET lv_sql_str = "SELECT xx FROM a_missing_table WHERE col=8"
 	PREPARE st_sql FROM lv_sql_str
   IF sqlca.sqlerrp IS NULL THEN
 	  DISPLAY "SQL Error parameter is NULL"

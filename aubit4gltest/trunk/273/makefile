@@ -109,8 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+	@echo "This checks that a fields default value (as defined in the form) is not used during a construct"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -212,6 +211,6 @@ need_ifx_version:
 #If database this test runs against MUST NOT have transactions support, set to "2"
 #"0" means "don't care"
 transaction:
-	@echo "1"
+	@echo "0"
 	
 # ============================= EOF ================================
