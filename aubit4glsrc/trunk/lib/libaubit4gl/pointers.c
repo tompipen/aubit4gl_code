@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.13 2002-09-26 07:44:50 afalout Exp $
+# $Id: pointers.c,v 1.14 2002-09-26 08:00:13 afalout Exp $
 #
 */
 
@@ -452,10 +452,12 @@ int
     {
 	int r;
 
-    //Andrej: temp. commented out for debug on Darwin
-	//if ((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
-	//    return (*rootp);		/* we found it! */
 
+#ifdef WIN32
+    //Andrej: temp. commented out for debug on Darwin
+	if ((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
+	    return (*rootp);		/* we found it! */
+#endif
 
 	rootp = (r < 0) ?
 	    &(*rootp)->left :		/* T3: follow left branch */
@@ -493,16 +495,18 @@ int
 	if (rootp == (struct node_t **)0 || (p = *rootp) == (struct node_t *)0)
 	return ((struct node_t *)0);
 
+#ifdef WIN32
  //Andrej: temp commented out for debug on Darwin
-//	while ((cmp = (*compar)(key, (*rootp)->key)) != 0)
-//	{
-//		p = *rootp;
-//		rootp = (cmp < 0) ?
-//	    &(*rootp)->left :		/* follow left branch */
-//	    &(*rootp)->right;		/* follow right branch */
-//		if (*rootp == (struct node_t *)0)
-//	    	return ((struct node_t *)0);	/* key not found */
-//  }
+	while ((cmp = (*compar)(key, (*rootp)->key)) != 0)
+	{
+		p = *rootp;
+		rootp = (cmp < 0) ?
+	    &(*rootp)->left :		/* follow left branch */
+	    &(*rootp)->right;		/* follow right branch */
+		if (*rootp == (struct node_t *)0)
+	    	return ((struct node_t *)0);	/* key not found */
+	}
+#endif
 
 
     r = (*rootp)->right;			/* D1: */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.15 2002-09-17 08:12:51 afalout Exp $
+# $Id: mcompile.c,v 1.16 2002-09-26 07:59:58 afalout Exp $
 #*/
 
 /**
@@ -78,6 +78,7 @@ menu_option_item * new_option(menu *m);
 */
 
 extern int as_c;
+//int as_c=1;
 
 #ifdef YYDEBUG
 	extern int yydebug;
@@ -85,23 +86,23 @@ extern int as_c;
 	int yydebug;
 #endif /*  */
 
-extern int yylineno;
-extern long fileseek;
-extern int yyleng;
-extern char yytext[];
-extern int chk4var;
-extern int lcnt;
-extern int lineno;
-extern FILE *yyin;
-int ignorekw = 0;
-int colno = 0;
-int as_c=1;
-int lineno = 0;
-char *outputfilename;
-char outputfile[132];
-extern struct menu_list the_menus;
-void *stackmenus[1000];
-int menu_cnt=0;
+extern int 		yylineno;
+extern long 	fileseek;
+extern int 		yyleng;
+extern char 	yytext[];
+extern int 		chk4var;
+extern int 		lcnt;
+extern int 		lineno;
+extern FILE *	yyin;
+extern char *	outputfilename;
+extern struct 	menu_list the_menus;
+
+int 			ignorekw = 0;
+int 			colno = 0;
+int 			lineno = 0;
+char 			outputfile[132];
+void *			stackmenus[1000];
+int 			menu_cnt=0;
 
 
 /*
