@@ -9,9 +9,18 @@ var_ident :  var2
 {
 	if (scan_variable($<str>1)!=-1)
 	{
-		print_push_variable($<str>1);
+		char c;
+		char buff[1024];
+			sprintf(buff,"%s",fgl_add_scope($<str>1,0));
+
+		print_push_variable(buff);
+
 		strcpy($<str>$,"?");
+
+	} else {
+		strcpy($<str>$,$<str>1);
 	}
+
 }
 ;
 

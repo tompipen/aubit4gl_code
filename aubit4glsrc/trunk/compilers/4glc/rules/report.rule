@@ -107,7 +107,7 @@ push_report_block(buff,'B');
 set_curr_block(a+1);
 }
 commands {print_rep_ret(0);}
-	| AFTGROUP variable 
+	| AFTGROUP variable
 { 
 int a;
 char buff[80];

@@ -53,7 +53,7 @@ strcpy($<str>$,$<str>2);}
 ;
 
 
-fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null()");}
+fgl_expr_ret : fgl_expr | KW_NULL {$<ptr>$=A4GL_new_expr("A4GL_push_null(2,0)");}
 ;
 
 fgl_expr_ret_list 	: fgl_expr_ret
@@ -544,7 +544,7 @@ function_call_expr2:
         ptr=strchr(buff,',');
         *ptr=0;
         ptr++;
-	sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_call_4gl_dll(%s,%s,%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");A4GL_pop_args(_retvars);A4GL_push_null();}\n}\n}\n", buff,ptr,atoi($<str>7), lastlineno,infilename);
+	sprintf($<str>$,"{int _retvars;\n_retvars=A4GL_call_4gl_dll(%s,%s,%d); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");A4GL_pop_args(_retvars);A4GL_push_null(2,0);}\n}\n}\n", buff,ptr,atoi($<str>7), lastlineno,infilename);
 	$<ptr>$=A4GL_append_expr($<ptr>6,$<str>$);
 }
 

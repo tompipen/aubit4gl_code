@@ -302,6 +302,7 @@ int a4gl_yyparse (void);
 #endif
 #endif
 
+char *fgl_add_scope(char *s,int always);
 	//void    set_str                               (char *s);
 void set_str (void *y, char *s);
 void set_hdrdbname (char *s);

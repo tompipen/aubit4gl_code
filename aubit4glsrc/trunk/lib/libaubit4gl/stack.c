@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.61 2003-06-25 11:36:58 mikeaubury Exp $
+# $Id: stack.c,v 1.62 2003-06-25 21:46:39 mikeaubury Exp $
 #
 */
 
@@ -668,7 +668,11 @@ A4GL_push_param (void *p, int d)
 
       if ((d & DTYPE_MASK) == 0 && size == 0)
 	{
-	  size = strlen (p);
+		if (p) {
+	  		size = strlen (p);
+		} else {
+			size=0;
+		}
 #ifdef DEBUG
 	  A4GL_debug ("Defaulting size");
 #endif

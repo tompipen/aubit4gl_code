@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.55 2003-06-25 07:48:40 mikeaubury Exp $
+# $Id: compile_c.c,v 1.56 2003-06-25 21:46:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2953,7 +2953,7 @@ print_let_manyvars (char *nexprs)
 void
 print_push_null (void)
 {
-  printc ("A4GL_push_null();\n");
+  printc ("A4GL_push_null(2,0);\n");
 }
 
 /* Linked stuff */

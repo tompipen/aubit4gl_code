@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.73 2003-05-22 12:14:14 mikeaubury Exp $
+# $Id: lexer.c,v 1.74 2003-06-25 21:46:31 mikeaubury Exp $
 #*/
 
 /**
@@ -1161,6 +1161,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	a = SQL_TEXT;
     }
 
+
   A4GL_debug ("-> %d (NAMED_GEN=%d)\n", a, NAMED_GEN);
 #ifdef OLDSTUFF
   /* variables/identifiers with the same names as 4GL keywords 
@@ -1211,13 +1212,13 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   if (a == 2 || a == NAMED_GEN)
     {
-      A4GL_debug ("  Constant check returns %d",
-	     check_for_constant (buff, buffval));
+      A4GL_debug ("  Constant check returns %d", check_for_constant (buff, buffval));
 
       switch (check_for_constant (buff, buffval))
 	{
 	case 0:
 	  break;
+
 	case 1:
 	  A4GL_debug (" Constant switch %s Char", buffval);
 	  strcpy (buff, buffval);

@@ -47,7 +47,7 @@ display_array_cmd : DISPLAY_ARRAY {
 		} 
 	use_arr_var TO identifier DOT MULTIPLY opt_scroll opt_attributes 
 		{
-		print_display_array_p1($<str>3,$<str>5,$<str>8,$<str>9);
+		print_display_array_p1(fgl_add_scope($<str>3,0),$<str>5,$<str>8,$<str>9);
 		}
 	disp_rest {
 		add_continue_blockcommand ("DISPLAY");  

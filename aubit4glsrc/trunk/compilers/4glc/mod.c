@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.130 2003-06-06 09:52:14 mikeaubury Exp $
+# $Id: mod.c,v 1.131 2003-06-25 21:46:31 mikeaubury Exp $
 #
 */
 
@@ -700,12 +700,13 @@ findex (char *str, char c)
  *   - A numeric code number identifiing the data type (@see find_type())
  */
 static long
-scan_variables (char *s, int mode)
+scan_variables (char *s_n, int mode)
 {
   //int a;
 
   //long z;
   long z_new;
+   char s[1024];
   char buff[256];
   char buff2[256];
   //char *ptr;
@@ -716,6 +717,7 @@ scan_variables (char *s, int mode)
   int dtype;
   int size;
   int vval;
+  strcpy(s,s_n);
 
   //last_var_found = -1;
 
@@ -742,6 +744,7 @@ scan_variables (char *s, int mode)
 	  strcpy (buff2, &s[findex (s, ')') + 1]);
 	  buff[findex (buff, '(')] = 0;
 	  strcat (buff, buff2);
+	printf("DOWNSHIFT : %s\n",buff);
 	  A4GL_convlower (buff);
 	}
       else
@@ -1849,18 +1852,30 @@ is_pk (char *s)
  * @param var The variable name to be binded.
  */
 int
-add_bind (char i, char *var)
+add_bind (char i, char *var_i)
 {
   long dtype;
+char c;
+char var[2048]="";
 
-  if (var[0] == '"')
+strcpy(var,var_i);
+
+  if (var_i[0] == '"')
     {
       dtype = (strlen (var) - 2) << 16;
+	strcpy(var,var_i);
     }
   else
     {
-      dtype = scan_variable (var);
+      dtype = scan_variable (var_i);
+
+
+	if (i=='f') strcpy(var,fgl_add_scope(var_i,'L'));
+	else        strcpy(var,fgl_add_scope(var_i,0));
+
     }
+
+
   A4GL_debug ("add_bind - dtype=%x (%s) i=%c\n", dtype, var, i);
 
   if (i == 'i')
@@ -2340,11 +2355,17 @@ int
 scan_orderby (char *varname, int cnt)
 {
   int a;
+char b1[256];
+char b2[256];
   A4GL_debug ("Scanning order by for %s %d", varname, ordbindcnt);
   for (a = 0; a <= cnt; a++)
     {
+	strcpy(b1,varname);
+	if (b1[0]>='A'&&b1[0]<='Z'&&b1[1]=='_') { strcpy(b1,&varname[2]); }
+	strcpy(b2,ordbind[a].varname);
+	if (b2[0]>='A'&&b2[0]<='Z'&&b2[1]=='_') { strcpy(b2,&ordbind[a].varname[2]); }
       A4GL_debug ("/* chk %s against %s */\n", varname, ordbind[a].varname);
-      if (A4GL_aubit_strcasecmp (ordbind[a].varname, varname) == 0)
+      if (A4GL_aubit_strcasecmp (b1, b2) == 0)
 	return a;
     }
   return -1;
@@ -2582,17 +2603,19 @@ add_arr_bind (char i, char *nvar)
 {
   long dtype;
   char var[256];
-  strcpy (var, nvar);
 
-  if (isrecvariable (var))
+
+  if (isrecvariable (nvar))
     {
-      strcat (var, "[0].*");
+      strcat (nvar, "[0].*");
     }
   else
     {
-      strcat (var, "[0]");
+      strcat (nvar, "[0]");
     }
 
+        if (i=='f') strcpy(var,fgl_add_scope(nvar,'L'));
+        else        strcpy(var,fgl_add_scope(nvar,0));
   dtype = scan_variable (var);
 
   A4GL_debug ("/* add_arr_bind %c %s %x */\n", i, var, dtype);
@@ -3900,5 +3923,34 @@ static char buff[256];
 }
 
 
+char *fgl_add_scope(char *s,int n) {
+char c;
+static char buffer[256];
+char buffer2[256];
+
+if (!A4GL_isyes(acl_getenv("MARK_SCOPE"))) {
+	return s;
+}
+
+strcpy(buffer2,s);
+
+
+if (buffer2[0]>='A'&&buffer2[0]<='Z'&&buffer2[1]=='_') { char buff[1024]; strcpy(buff,&buffer2[2]); strcpy(buffer2,buff); }
+
+if (n==0) {
+  if (buffer2[0]==' ') {
+                c='S';
+  } else {
+        c=find_variable_scope(buffer2);
+  }
+} else {
+	c=n;
+}
+
+  if (c!='S') sprintf(buffer,"%c_%s",c,buffer2);
+  else        sprintf(buffer,"%s",buffer2);
+
+return buffer;
+}
 /* ================================= EOF ============================= */
 

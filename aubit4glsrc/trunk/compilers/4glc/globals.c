@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.17 2003-06-06 09:52:14 mikeaubury Exp $
+# $Id: globals.c,v 1.18 2003-06-25 21:46:31 mikeaubury Exp $
 #
 */
 
@@ -700,7 +700,7 @@ read_variable_header (FILE * f, struct variable *v)
   read_global_char (f, "USER_SYSTEM", &v->user_system);
   read_global_int (f, "IS_ARRAY", &v->is_array);
   read_global_string (f, "SRC_MODULE", &v->src_module, 1);
-
+  v->scope='G';
 
   for (a = 0; a < MAX_ARR_SUB; a++)
     {

@@ -80,7 +80,7 @@ identifier	:  NAMED  {
 
 
 ident_or_var	: ident_p2  {
-			sprintf($<str>$,"%s",$<str>1) ;
+			sprintf($<str>$,"%s",downshift($<str>1)) ;
 			}  
 ;
 

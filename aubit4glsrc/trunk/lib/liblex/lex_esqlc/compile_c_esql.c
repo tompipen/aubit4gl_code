@@ -852,7 +852,11 @@ void
 print_unload (char *file, char *delim, char *sql)
 {
 
-  printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/);\n", file, delim, sql);
+  if (A4GL_isyes(acl_getenv("ESQL_UNLOAD"))) {
+  	printc ("EXEC SQL UNLOAD TO %s DELIMITER %s %s ;",file,delim,sql);
+  } else {
+  	printc ("A4GLSQL_unload_data(%s,%s, /*1*/ \"%s\" /*2*/);\n", file, delim, sql);
+  }
   //printc ("/* UNLOAD NOT IMPLEMENTED YET */");
 }
 
@@ -872,7 +876,32 @@ print_unload (char *file, char *delim, char *sql)
 void
 print_load (char *file, char *delim, char *tab, char *list)
 {
-  printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
+  if (A4GL_isyes(acl_getenv("ESQL_UNLOAD"))) {
+	if (strlen(list)==1) 
+  		printc ("EXEC SQL LOAD FROM %s DELIMITER %s INSERT INTO %s  ;",file,delim,tab);
+	else {	
+		char *ptr;
+		char buff[100];
+		int p=0;
+		list[strlen(list)-2]=0;
+		ptr=list;
+  			printc ("EXEC SQL LOAD FROM %s DELIMITER %s INSERT INTO %s (",file,delim,tab);
+		while (1) {
+			strcpy(buff,ptr);
+			ptr=strchr(buff,',');
+			if (ptr) *ptr=0;
+			printc("%c%s",p?',':' ',A4GL_strip_quotes(buff));
+
+			p++;
+			if (ptr==0) break;
+			ptr++;
+		}
+		printc(");");
+			
+	}
+  } else {
+  	printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
+  }
   //printc ("/* LOAD NOT IMPLEMENTED YET */");
 }
 

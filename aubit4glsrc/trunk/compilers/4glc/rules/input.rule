@@ -169,7 +169,7 @@ curr_input_array_attribs.allow_delete=1;
 curr_input_array_attribs.curr_row_display=0;
 inp_flags=0;} opt_attributes
 {
-strcpy($<str>$,print_input_array($<str>2,$<str>8,$<str>3,$<str>5,$<str>10,&curr_input_array_attribs));
+strcpy($<str>$,print_input_array(fgl_add_scope($<str>2,0),$<str>8,$<str>3,$<str>5,$<str>10,&curr_input_array_attribs));
 }
 ;
 

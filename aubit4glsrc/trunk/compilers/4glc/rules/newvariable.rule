@@ -5,10 +5,28 @@
 */
 
 
+variable_no_scope: variable {
+char buff[256];
+char buff2[256];
+strcpy(buff,$<str>1);
+
+if (buff[0]>='A'&&buff[0]<='Z'&&buff[1]=='_') {
+	strcpy(buff2,&buff[2]);
+} else {
+	strcpy(buff2,buff);
+}
+
+strcpy($<str>$,buff2);
+}
+
+;
+
+
 variable: var_int
 {
 char buff[256];
 char buff2[256];
+char c;
 int n;
 
 if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
@@ -30,7 +48,8 @@ if (strncmp(buff," ASSOCIATE_",11)!=0) {
 
 strcpy($<str>$,buff);
 A4GL_debug("Checking variable '%s'",buff);
-n=scan_variable(buff);
+strcpy(buff2,buff);
+n=scan_variable(buff2);
 
   A4GL_debug("scan variable returns -> %d\n",n);
 
@@ -39,13 +58,22 @@ n=scan_variable(buff);
            a4gl_yyerror(buff2);
            exit (0);
   }
+
+  strcpy(buff2,$<str>1);
+
+
   if (strstr(buff,".*") && n!=-2) {
 		char *ptr;
+		strcpy(buff,$<str>1);
 		printf("WARNING : Using a .* on a non-record - %s\n",$<str>1);
 		ptr=strstr(buff,".*");
 		*ptr=0;
-		strcpy($<str>$,buff);
+                
+		sprintf($<str>$,"%s",fgl_add_scope(buff,0));
+  } else {
+                	sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
   }
+
  
   mcnt = 0;
 }
@@ -78,6 +106,7 @@ var:
 	}
          sprintf(buff,"%s.%s",$<str>1,$<str>2);
          if (scan_variable(buff)==-1) {
+	
            sprintf(buff2,"'%s' does not represent a defined variable (2)",buff);
            a4gl_yyerror(buff2);
            YYERROR;
@@ -96,8 +125,8 @@ var:
          else
          {
              A4GL_debug ("Is string...");
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", buff, (int)scan_variable (buff), $<str>4);
-      	dec_counter();
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff,0), (int)scan_variable (buff), $<str>4);
+      		dec_counter();
 
              addmap("Use Variable",buff,curr_func,yylineno,infilename);
              A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
@@ -134,7 +163,7 @@ var:
 		char buff2[256];
              A4GL_debug("Is array...");
              sprintf (buff2, "%s[%s]", buff, change_arr_elem($<str>4));
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", buff2, (int)scan_variable (buff2), $<str>4);
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1*/", fgl_add_scope(buff2,0), (int)scan_variable (buff2), $<str>4);
              A4GL_lex_printcomment ("/* array variable %s num_arr_elem=%d arrbuff=%d*/\n", $<str>$,num_arr_elem($<str>4),num_arr_elem(arrbuff));
       	dec_counter();
          }
@@ -222,7 +251,7 @@ char arrbuff[256];
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " a4gl_substr(%s , 0x%x , %s , 0 ) /*1.1*/", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
+        sprintf ($<str>$, " a4gl_substr(%s , 0x%x , %s , 0 ) /*1.1*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
       	dec_counter();
   } else {
  
@@ -235,7 +264,7 @@ char arrbuff[256];
     }
   else
     {
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.2*/", $<str>1, (int)scan_variable ($<str>1), $<str>2);
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.2*/", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
              addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
       	dec_counter();
@@ -277,7 +306,7 @@ identifier arr_subscripts
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.3*/", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.3*/", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
       	dec_counter();
   } else {
  
@@ -289,7 +318,7 @@ identifier arr_subscripts
     }
   else
     {
-             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.4*/", $<str>1, (int)scan_variable ($<str>1), $<str>2);
+             sprintf ($<str>$, " a4gl_substr(%s , %d , %s , 0 ) /*1.4*/", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
              addmap("Use Variable",$<str>1,curr_func,yylineno,infilename);
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
       	dec_counter();
@@ -342,6 +371,7 @@ num_list_element: arr_expr
 let_variable: let_var
 {
 char buff[256];
+char c;
 if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
 if (strncmp($<str>1,"sqlca.",6)==0) {
         char xbuff[256];
@@ -358,6 +388,8 @@ A4GL_convlower(buff);
 }
 strcpy($<str>$,buff);
 A4GL_lex_printcomment("/* %s */\n",$<str>1);
+
+
   if (scan_variable (buff) == -1&&buff[0]!=' ')
     {
       A4GL_lex_printcomment ("/*NOt a variable*/");
@@ -365,6 +397,8 @@ A4GL_lex_printcomment("/* %s */\n",$<str>1);
       a4gl_yyerror(buff);
     }
 
+
+  sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
   mcnt = 0;
 };
 
@@ -405,7 +439,7 @@ let_var: let_array_r_variable {
   else
     {
       sprintf(buff,"%s.%s",$<str>1,$<str>3);
-      sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M4 */", buff, a, $<str>5);
+      sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M4 */", fgl_add_scope(buff,0), a, $<str>5);
       addmap("Let Variable",buff,curr_func,yylineno,infilename);
       A4GL_lex_printcomment ("/*character variable %s*/\n", $<str>$);
     }
@@ -441,7 +475,7 @@ let_var: let_array_r_variable {
   if (b != 0)
     {
       sprintf (buff, "%s.%s[%s-1] ", $<str>1, $<str>3,$<str>5);
-      sprintf ($<str>$, " a4gl_let_substr(%s,%x,%s,0) /* M1 */", buff, a, $<str>8);
+      sprintf ($<str>$, " a4gl_let_substr(%s,%x,%s,0) /* M1 */", fgl_add_scope(buff,0), a, $<str>8);
       A4GL_lex_printcomment ("/* subscript on array variable %s*/\n", $<str>$);
     }
   else
@@ -485,7 +519,7 @@ identifier arr_subscripts
 	ptr=strchr(lbuff,':');
 	*ptr=0;
         sprintf (tmpbuff, "%s[%s]", $<str>1, change_arr_elem(lbuff));
-        sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M2 */", tmpbuff, (int)scan_variable (tmpbuff), rbuff);
+        sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M2 */", fgl_add_scope(tmpbuff,0), (int)scan_variable (tmpbuff), rbuff);
   } else {
   	b = isarrvariable ($<str>1);
   	a = scan_variable ($<str>1);
@@ -506,7 +540,7 @@ identifier arr_subscripts
     }
   else
     {
-      sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M3 */", $<str>1, (int)scan_variable ($<str>1), $<str>2);
+      sprintf ($<str>$, " a4gl_let_substr(%s,%d,%s,0) /* M3 */", fgl_add_scope($<str>1,0), (int)scan_variable ($<str>1), $<str>2);
 
       addmap("Let Variable",$<str>1,curr_func,yylineno,infilename);
       A4GL_debug ("/*character variable %s*/\n", $<str>$);

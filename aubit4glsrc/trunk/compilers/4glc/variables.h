@@ -29,6 +29,7 @@ struct record_list_entry
 struct name_list
 {
   char *name;
+  char *alias;
   struct name_list *next;
 };
 
@@ -88,6 +89,7 @@ struct variable
   struct name_list names;
   int variable_type;
   char user_system;
+  char scope;
   int is_array;
   int is_static;
   int is_extern;
@@ -102,7 +104,6 @@ struct variable
   }
   data;
   char *src_module;
-
 };
 
 /* Interface functions */

@@ -19,7 +19,7 @@ OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
     YYERROR;
     /* error processing */;
   }
-  sprintf($<str>$,"%s",$<str>1);
+  sprintf($<str>$,"%s",fgl_add_scope($<str>1,0));
 }
 ;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.23 2003-05-15 07:10:20 mikeaubury Exp $
+# $Id: variables.c,v 1.24 2003-06-25 21:46:31 mikeaubury Exp $
 #
 */
 
@@ -593,6 +593,7 @@ make_function (char *name, int record_cnt)
   local_v = (struct variable *) malloc (sizeof (struct variable));
   local_v->names.name = strdup (name);
   A4GL_convlower (local_v->names.name);
+  
   local_v->names.next = 0;
   local_v->variable_type = VARIABLE_TYPE_FUNCTION_DECLARE;
   local_v->user_system = get_variable_user_system ();
@@ -862,6 +863,29 @@ add_to_scope (int record_cnt, int unroll)
     }
 
   ptr = *variable_holder;
+
+
+
+  curr_v[record_cnt]->names.alias=0;
+
+  curr_v[record_cnt]->scope=get_current_variable_scope();
+
+  if (record_cnt==0&&get_current_variable_scope()!='G'
+	&& (
+   curr_v[record_cnt]->variable_type==VARIABLE_TYPE_SIMPLE
+ ||curr_v[record_cnt]->variable_type==VARIABLE_TYPE_RECORD
+ ||curr_v[record_cnt]->variable_type==VARIABLE_TYPE_ASSOC)
+) {
+		char buff[256];
+	if (A4GL_isyes(acl_getenv("MARK_SCOPE"))) {
+		sprintf(buff,"%c_",get_current_variable_scope());
+		A4GL_convupper(buff);
+		strcat(buff,curr_v[record_cnt]->names.name);
+		curr_v[record_cnt]->names.alias=strdup(buff);
+	} 
+  }
+
+
   ptr[*counter] = curr_v[record_cnt];
   (*counter)++;
   return 1;
@@ -1013,6 +1037,7 @@ find_variable_ptr (char *s)
 {
   struct variable *ptr;
 
+  if (s[0]>='A'&&s[0]<='Z'&&s[1]=='_') { char buff[1024]; strcpy(buff,&s[2]); strcpy(s,buff); }
 
 // First we look locally - then at module level - then globally
 
@@ -1057,9 +1082,16 @@ find_variable (char *s_in, int *dtype, int *size, int *is_array,
   struct variable *ptr;
   char s[1024];
 
+  if (s_in[0]==' ') return 1;
   strcpy (s, s_in);
   strip_bracket (s);
 
+  if (s[0]>='A'&&s[0]<='Z'&&s[1]=='_') {
+	char buff[1024];
+	strcpy(buff,&s[2]);
+	strcpy(s,buff);
+  }
+	
   ptr = find_variable_ptr (s);
 
 
@@ -1095,6 +1127,11 @@ find_variable (char *s_in, int *dtype, int *size, int *is_array,
   // We will probably have a simple variables at this point...
   if (ptr->variable_type == VARIABLE_TYPE_SIMPLE)
     {
+
+
+
+
+	
       if (dtype)
 	*dtype = ptr->data.v_simple.datatype;
 
@@ -1103,7 +1140,6 @@ find_variable (char *s_in, int *dtype, int *size, int *is_array,
 
       if (is_array)
 	*is_array = ptr->is_array;
-
       return 1;
     }
 
@@ -1623,6 +1659,8 @@ check_for_constant (char *name, char *buff)
 {
   struct variable *v;
   int dbg = 0;
+  //char buff2[256];
+strcpy(buff,name);
 
 
   if (dbg)
@@ -1638,7 +1676,7 @@ check_for_constant (char *name, char *buff)
     return 0;
 
 
-  v = find_variable_ptr (name);
+  v = find_variable_ptr (buff);
 
   if (dbg)
     {
@@ -1960,7 +1998,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
       // Can we find it - is it declared ?
       if (v_record == 0)
 	{
-	  printf ("Whoops - record not found for %s\n", record2);
+	  printf ("Whoops - record not found for %s (1)\n", record2);
 	  a4gl_yyerror ("Record not found");
 	  return 0;
 	}
@@ -2001,7 +2039,7 @@ split_record_list (char *s, char *prefix, struct record_list *list)
 
       if (v_record == 0)
 	{
-	  printf ("Whoops - record not found for %s\n", record1);
+	  printf ("Whoops - record not found for %s(2)\n", record1);
 	  a4gl_yyerror ("Record not found");
 	  return 0;
 	}
@@ -2319,6 +2357,7 @@ print_variable (struct variable *v, char scope, int level)
 {
   int static_extern_flg;
   char arrbuff[256];
+  char name[256];
   static_extern_flg = 0;
   strcpy (arrbuff, "-1");
   // are we dealing with the sqlca variable ?
@@ -2375,13 +2414,21 @@ print_variable (struct variable *v, char scope, int level)
 	}
     }
 
-
+  strcpy(name,v->names.name);
+  if (level==0&&(A4GL_isyes(acl_getenv("MARK_SCOPE")))) {
+  	//printf("%s %c %c %c\n",name,v->user_system,v->scope,scope);
+	if (is_system_variable(name)) ;
+	else {
+  		if (v->scope=='G'||v->scope=='g') { sprintf(name,"G_%s",v->names.name); }
+  		if (v->scope=='M'||v->scope=='m') { sprintf(name,"M_%s",v->names.name); }
+  		if (v->scope=='L'||v->scope=='l') { sprintf(name,"L_%s",v->names.name); }
+	}
+  }
 
   if (v->variable_type == VARIABLE_TYPE_SIMPLE)
     {
       char tmpbuff[256];
-      sprintf (tmpbuff, "%s %s", rettype_integer (v->data.v_simple.datatype),
-	       v->names.name);
+      sprintf (tmpbuff, "%s %s", rettype_integer (v->data.v_simple.datatype), name);
 
       if (v->is_array)
 	{
@@ -2406,14 +2453,14 @@ print_variable (struct variable *v, char scope, int level)
   if (v->variable_type == VARIABLE_TYPE_RECORD)
     {
       int a;
-      print_start_record (static_extern_flg, v->names.name);
+      print_start_record (static_extern_flg, name);
       for (a = 0; a < v->data.v_record.record_cnt; a++)
 	{
 	  struct variable *next_v;
 	  next_v = v->data.v_record.variables[a];
 	  print_variable (next_v, scope, level + 1);
 	}
-      print_end_record (v->names.name, arrbuff);
+      print_end_record (name, arrbuff);
       return;
     }
 
@@ -2571,3 +2618,56 @@ print_nullify (char type)
 
 
 }
+
+
+char find_variable_scope(char *s_in) {
+  struct variable *ptr;
+  char s[1024];
+  strcpy (s, s_in);
+
+  if (s[0]>='A'&&s[0]<='Z'&&s[1]=='_') { char buff[1024]; strcpy(buff,&s[2]); strcpy(s,buff); }
+
+  if (is_system_variable(s)) {
+		return 'S';
+  }
+
+  strip_bracket (s);
+
+  ptr = find_variable_ptr (s);
+  if (ptr==0) {
+		 return 0;
+  }
+  if (ptr->scope==0) {
+		return 'G';
+  }
+
+  return toupper(ptr->scope);
+}
+
+
+
+static int is_system_variable(char *s) {
+	if (strcmp(s,"int_flag")==0) return 1;
+	if (strcmp(s,"quit_flag")==0) return 1;
+	if (strcmp(s,"a4gl_status")==0) return 1;
+	if (strncmp(s,"a4gl_sqlca",10)==0) return 1;
+	if (strcmp(s,"notfound")==0) return 1;
+	if (strcmp(s,"false")==0) return 1;
+	if (strcmp(s,"true")==0) return 1;
+	if (strcmp(s,"today")==0) return 1;
+	if (strcmp(s,"user")==0) return 1;
+	if (strcmp(s,"pageno")==0) return 1;
+	if (strcmp(s,"lineno")==0) return 1;
+	if (strcmp(s,"time")==0) return 1;
+	if (strcmp(s,"usrtime")==0) return 1;
+	if (strcmp(s,"curr_hwnd")==0) return 1;
+	if (strcmp(s,"curr_form")==0) return 1;
+	if (strcmp(s,"err_file_name")==0) return 1;
+	if (strcmp(s,"err_file_no")==0) return 1;
+	if (strcmp(s,"curr_file_name")==0) return 1;
+	if (strcmp(s,"curr_line_no")==0) return 1;
+	if (strcmp(s,"err_status")==0) return 1;
+	if (strcmp(s,"aiplib_status")==0) return 1;
+return 0;
+}
+
