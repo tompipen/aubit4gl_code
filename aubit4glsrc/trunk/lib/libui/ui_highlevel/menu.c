@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
 #include <ctype.h>
-static char *module_id="$Id: menu.c,v 1.7 2004-03-19 19:24:53 mikeaubury Exp $";
+static char *module_id="$Id: menu.c,v 1.8 2004-03-24 19:03:05 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
@@ -100,6 +100,10 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   A4GL_debug ("completed disp_h_menu");
 #endif
   /*set_window(owin); */
+ if (menu->menu_offset>1000) {
+	char *ptr=0;
+	*ptr=0;
+	}
 }
 
 
@@ -321,12 +325,29 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 void
 A4GL_clr_menu_disp (ACL_Menu * menu)
 {
-  char buff[1024];
-  memset (buff, ' ', 1024);
-  A4GL_debug ("Clearing menu clr_menu_disp");
-  buff[UILIB_A4GL_get_curr_width () - menu->menu_offset + 1] = 0;
-  A4GL_wprintw ((void *)A4GL_get_currwin (), 0, menu->menu_offset - 1, menu->gw_y,
-		buff);
+  static char buff[1025];
+  int off;  
+  int w;
+  void *cw;
+  int y;
+  A4GL_debug ("Clearing menu clr_menu_disp - %p",menu);
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  memset (buff, ' ', 1023);
+  buff[1024]=0;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+
+  w=UILIB_A4GL_get_curr_width ();
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  off=menu->menu_offset;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  buff[w - off + 1] = 0;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  y=menu->gw_y;
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  cw=A4GL_get_currwin ();
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
+  A4GL_wprintw (cw, 0, off - 1, y, buff);
+  if (menu->menu_offset > 1000) { char *ptr=0; *ptr=0; }
 }
 
 

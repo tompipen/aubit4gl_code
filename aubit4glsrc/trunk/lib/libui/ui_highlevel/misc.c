@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.12 2004-03-19 19:24:53 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.13 2004-03-24 19:03:05 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1343,4 +1343,9 @@ void UILIB_A4GL_finish_screenio(void *sio, char *siotype) {
                 A4GL_comments(0);
         }
 
+}
+
+void * UILIB_A4GL_create_menu (void* m, char *id, int mode, void *handler) {
+	return A4GL_LL_create_menu(m,id,mode,handler);
+	
 }

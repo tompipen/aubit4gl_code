@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.37 2004-03-19 23:02:36 whaslbeck Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.38 2004-03-24 19:06:04 mikeaubury Exp $";
 
 
 #include <gtk/gtk.h>
@@ -1691,7 +1691,7 @@ int
 
   if (prompt->mode == 1)
     {
-      char buff[10024];
+      static char buff[10024];
       strcpy (buff, A4GL_LL_field_buffer (prompt->field, 0));
       A4GL_trim (buff);
 

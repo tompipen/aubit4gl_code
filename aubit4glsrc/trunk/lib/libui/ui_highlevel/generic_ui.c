@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.13 2004-03-24 11:06:30 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.14 2004-03-24 19:03:04 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 
@@ -725,7 +725,7 @@ UILIB_A4GL_new_menu_create (char *title, int x, int y, int mn_type,
   A4GL_chkwin ();
   strcpy (buff, title);
   A4GL_trim (buff);
-  menu = malloc (sizeof (ACL_Menu) + 100);
+  menu = malloc (sizeof (ACL_Menu) + 0);
   strcpy (menu->menu_title, buff);
   A4GL_trim (menu->menu_title);
   menu->menu_type = mn_type;

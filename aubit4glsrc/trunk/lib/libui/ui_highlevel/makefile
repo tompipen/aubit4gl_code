@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.14 2004-03-24 11:06:30 mikeaubury Exp $
+# $Id: makefile,v 1.15 2004-03-24 19:03:05 mikeaubury Exp $
 #
 
 LIBROOT		=../..
@@ -60,6 +60,7 @@ CFLAGS			:=$(subst /target/build,/usr,${CFLAGS})
 GTK_LIB_PATH    :=$(subst /target/build,/usr,${GTK_LIB_PATH})
 
 CFLAGS		 	:=$(subst /target,/usr,${CFLAGS})
+CFLAGS			+=-fPIC
 GTK_LIB_PATH 	:=$(subst /target,/usr,${GTK_LIB_PATH})
 
 #-mms-bitfields or -fnative-struct
@@ -156,7 +157,7 @@ ${LIBROOT}/libUI_HL_TUIN${SO_EXT}: $(OBJS) lowlevel_tui_noform.o form_tui.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${CURSES_LIB_NAME_NO_FORM}  ${CURSES_LIB_PATH}
 
 ${LIBROOT}/libUI_HL_GTK${SO_EXT}: $(OBJS) lowlevel_gtk.o widget_gtk.o menu_gtk.o
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} ${GTK_LIB_PATH} ${GTKLIBS}
+	${LD} ${SO_LDFLAGS} -fPIC -o $@ $^ ${LINKLIBS} ${GTK_LIB_PATH} ${GTKLIBS}
 
 ## ==================================================================
 ##                              Sub-Targets
