@@ -75,7 +75,11 @@ AUBITETC=/etc/opt/aubit4gl
 #Default for binary distribution:/opt/aubit4gl
 #Usually set using --prefix=/path to "configure" script
 #Must NOT be enclosed in quotes!
+#NOTE: 'make install' will automatically change this setting when 
+#installing 'aubitrc' outside of Aubit source code tree
 AUBITDIR=@aubitdir@
+#Used by automated tests script (run_tests) to find source code as needed
+AUBITDIR_SRC=@aubitdir@
 
 ############
 #Full path to CINT C-code interpreter, if installed, othewise "no"
@@ -476,6 +480,7 @@ A4GL_MONEY_AS_DECIMAL=Y
 #List of Informix libraries esql compiler is using; needed in 4glpc to make
 #shared library
 IFX_LIBS="@IFX_LIBS@"
+
 
 #-------------------------------- EOF -----------------------------
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.14 2003-12-18 20:41:46 mikeaubury Exp $
+# $Id: rpc_client.c,v 1.15 2004-03-29 06:25:11 afalout Exp $
 #*/
 
 /**
@@ -166,16 +166,23 @@ A4GL_fgl_rpc_1 (char *host, char *func, int np)
   result_1 = A4GL_call_remote_func_1 (call_remote_func_1_arg1, clnt);
 #endif
 
-  A4GL_debug ("After RPC Call");
+  	A4GL_debug ("After RPC Call");
 
   if (result_1 == NULL)
     {
-      A4GL_exitwith ("Call failed");
+		A4GL_exitwith ("RPC call failed");
+	  /* we should let 4GL program handle this failure, but this is apprently not
+	  	working. If we don't exit here, we will loop indefinitely, which is not
+		very helpfull since it gices user impression that application hanged.
+		so I will add explicit exit here.
+		We also need to show user WHAT and WHY failed here
+	  */
+	  exit (1);
       return 0;
     }
 
-  A4GL_debug ("Program returns status %d", result_1->return_values_val[0].single_dtype_u.longval);
-  A4GL_debug ("Number of returned variables=%d", result_1->return_values_len - 1);
+	A4GL_debug ("Program returns status %d", result_1->return_values_val[0].single_dtype_u.longval);
+	A4GL_debug ("Number of returned variables=%d", result_1->return_values_len - 1);
 
   for (a = 1; a <= result_1->return_values_len - 1; a++)
     {

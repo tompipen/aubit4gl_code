@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.12 2004-03-19 11:05:03 afalout Exp $
+# $Id: sqlconvert.c,v 1.13 2004-03-29 06:25:10 afalout Exp $
 #
 */
 
@@ -43,12 +43,20 @@
  *
  * To test SQL for ANSI SQL 92 99 and 2003 compatibiolity, see:
  * http://developer.mimer.com/validator
- * http://sqlfairy.sf.net
- * http://www.equivalentscript.com
- * 
- * http://www.vembu.com
+ * http://sqlfairy.sf.net (Perl, DDL only)
+ * http://www.equivalentscript.com (comertial, not much else then DDL Orracle/SQLserver)
+ * http://www.sqissql.com (Java)
+ * http://www.vembu.com (comertial, Java)
  * http://ldbc.sf.net (Java)
  * http://www.crossdb.com (Java)
+ * http://www.jasmine.org.uk/~simon/bookshelf/papers/babelql/babelql.html (DDL, C pre-processor based)
+ * http://www.jnetdirect.com (SQL->XML->SQL - Java)
+ * http://www.sqlapi.com (C++, commertial?)
+ Perl - see:
+ 	SQL::Parser
+	SQL::Statement
+	
+ 
  * Four Js ODI manuals 
  */
 
