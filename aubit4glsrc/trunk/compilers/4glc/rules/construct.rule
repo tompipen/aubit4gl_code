@@ -13,15 +13,15 @@ end_constr {
 
 
 constr_rest:
-BY_NAME variable ON constr_col_list opt_defs  opt_attributes
+BY_NAME variable ON constr_col_list opt_defs op_help opt_attributes
 {
-	print_construct_3(1,$<str>2,$<str>6);
+	print_construct_3(1,$<str>2,$<str>7);
 	sprintf($<str>$,"form_loop(&_inp_io)"); /* FIXME */
 	reset_constr();
 }
-| variable ON constr_col_list opt_defs FROM fld_list  opt_attributes
+| variable ON constr_col_list opt_defs FROM fld_list op_help opt_attributes
 {
-	print_construct_3(0,$<str>1,$<str>7);
+	print_construct_3(0,$<str>1,$<str>8);
 	sprintf($<str>$,"form_loop(&_inp_io)"); /* FIXME */
 	reset_constr();
 }

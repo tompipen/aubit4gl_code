@@ -41,3 +41,4 @@ print "};"
 ' *.c libsql/odbc/*.c libsql/esqlc/*.ec libsql/nosql/nosql.c > generated/tmperrs.h
 
 
+

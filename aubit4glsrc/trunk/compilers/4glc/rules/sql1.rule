@@ -7,9 +7,9 @@ update_statement:
 
 where_upd : {strcpy($<str>$,"");}
 	| WHERE_CURRENT_OF fetch_cursor_name { 
-pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); 
-rm_quotes($<str>2);
-sprintf($<str>$," %s %s",$<str>1,$<str>2);
+		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!"); 
+		rm_quotes($<str>2);
+		sprintf($<str>$," %s %s",$<str>1,$<str>2);
 }
 	| WHERE search_condition 
 {
@@ -185,7 +185,10 @@ fetch_target_list:
 
 delete_statement_position:
 	DELETE_FROM table_name WHERE_CURRENT_OF fetch_cursor_name
-{sprintf($<str>$," %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4
+{
+ 
+rm_quotes($<str>4);
+sprintf($<str>$," %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4
 );}
 	;
 

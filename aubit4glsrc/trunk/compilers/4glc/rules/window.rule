@@ -16,8 +16,8 @@ print_clr_window("\"screen\"");
 }
 		|	CLEARWIN win_name { print_clr_window($<str>2); }
 		|	CLEARSTAT win_name { print_clr_window($<str>2); }
-		|	CLEARFORM {
-	print_clr_form(0,0,0);
+		|	CLEARFORM op_to_defs {
+	print_clr_form(0,0,$<str>2);
 }
 		|	CLEARFORM form_name op_clr_fields  op_to_defs {
 	print_clr_form($<str>2,$<str>3,$<str>4);
