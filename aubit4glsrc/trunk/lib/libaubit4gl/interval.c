@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.13 2003-05-15 07:10:40 mikeaubury Exp $
+# $Id: interval.c,v 1.14 2003-08-06 20:27:47 mikeaubury Exp $
 #
 */
 
@@ -152,15 +152,20 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
     {
     case 2:
       data[1] += data[0] * 12;
+	data[0]=0;
       break;			/* Month */
     case 4:
       data[3] += data[2] * 24;
+	data[2]=0;
       break;			/* Hour */
     case 5:
       data[4] += data[2] * 24 * 60 + data[3] * 60;
+	data[2]=0;
+	data[3]=0;
       break;			/* Minute */
     case 6:
       data[5] += data[2] * 24 * 60 * 60 + data[3] * 60 * 60 + data[4] * 60;
+	data[2]=0;data[3]=0;data[4]=0;
       break;			/* Second */
     }
 
@@ -174,6 +179,17 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
   i->i_minutes = data[4];
   i->i_seconds = data[5];
   i->i_fractions = data[6];
+
+  A4GL_debug ("Normalized data %d %d %d %d %d %d %d",
+	data[0],
+	data[1],
+	data[2],
+	data[3],
+	data[4],
+	data[5],
+	data[6]
+);
+
 
   if (v1 >= 7)
     {
@@ -574,6 +590,14 @@ A4GL_decode_interval (struct ival *ival, int *data)
   data[4] = ival->i_minutes;
   data[5] = ival->i_seconds;
   data[6] = ival->i_fractions;
+  A4GL_debug("Y %d M %d D %d  H %d M %d S %d F %d",
+data[0],
+data[1],
+data[2],
+data[3],
+data[4],
+data[5],
+data[6]);
 
 }
 

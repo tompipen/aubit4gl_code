@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.67 2003-07-15 17:09:05 mikeaubury Exp $
+# $Id: stack.c,v 1.68 2003-08-06 20:27:47 mikeaubury Exp $
 #
 */
 
@@ -2447,10 +2447,13 @@ A4GL_conv_to_interval (int a)
       d = d * 60;
     case OP_SECOND:
       d = d;
+	sprintf(buff,"%f",d);
     }
   A4GL_debug ("11 D now set to %lf", d);
   A4GL_debug ("11 a=%d %d %d %d\n", a, OP_YEAR, OP_MONTH, OP_HOUR);
 
+
+ A4GL_debug("Buff = %s",buff);
   // d will now be a number of years or a number of seconds.
   if ((a == (OP_YEAR)) || (a == (OP_MONTH)))
     {

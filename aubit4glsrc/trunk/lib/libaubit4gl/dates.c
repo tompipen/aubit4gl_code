@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.13 2003-06-25 11:36:58 mikeaubury Exp $
+# $Id: dates.c,v 1.14 2003-08-06 20:27:47 mikeaubury Exp $
 #
 */
 
@@ -180,12 +180,19 @@ static long
 gen_dateno2 (int day, int month, int year)
 {
   long temp;
-  if (month < 1 || month > 12)
+  if (month < 1 || month > 12) {
+		A4GL_debug("Invalid Month");
     return DATE_INVALID;
-  if (day < 1)
+	}
+  if (day < 1) {
+	A4GL_debug("Invalid date (<1)");
+
     return DATE_INVALID;
-  if (day > days_in_month[leap_year (year)][month])
+	}
+  if (day > days_in_month[leap_year (year)][month]) {
+	A4GL_debug("Invalid date (>month end)");
     return DATE_INVALID;
+	}
   temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1)
     + A4GL_day_in_year (day, month, year);
   return temp - EPOCH;
@@ -212,7 +219,8 @@ A4GL_gen_dateno (int day, int month, int year)
   z = gen_dateno2 (day, month, year);
   if (z == DATE_INVALID)
     {
-      A4GL_exitwith ("Invalid date");
+      //A4GL_exitwith ("Invalid date");
+	return z;
     }
   return z;
 }
@@ -233,6 +241,9 @@ get_yr (int d)
     return d;
   e = (int) ((double) (d - 13 + EPOCH) / 365.2425) + 1;
   h = A4GL_gen_dateno (31, 12, e);
+
+  if (h==DATE_INVALID) return h;
+
   /*l=gen_dateno(1,1,e); */
   while (1)
     {
@@ -276,6 +287,9 @@ A4GL_get_month (int d)
     return d;
   year = get_yr (d);
   day = d - A4GL_gen_dateno (1, 1, year) + 1;
+  if (day==DATE_INVALID) {
+	return day;
+  }
   leap = leap_year (year);
   for (i = 1; i <= 12; i++)
     {
@@ -307,6 +321,9 @@ A4GL_get_date (int d, int *day, int *mn, int *yr)
   year = get_yr (d);
   A4GL_debug("YEAR = %d\n",year);
   *day = d - A4GL_gen_dateno (1, 1, year) + 1;
+
+  if (*day==DATE_INVALID) return 0;
+
   leap = leap_year (year);
   A4GL_debug("leap=%d\n",leap);
   for (i = 1; i <= 12; i++)

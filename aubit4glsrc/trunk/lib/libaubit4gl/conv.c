@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.56 2003-07-28 22:04:45 mikeaubury Exp $
+# $Id: conv.c,v 1.57 2003-08-06 20:27:47 mikeaubury Exp $
 #
 */
 
@@ -4251,7 +4251,7 @@ A4GL_valid_int (char *s, int *data, int size)
     }
 
   size_type = (size >> 4) & 15;
-  A4GL_debug ("In valid_int\n");
+  A4GL_debug ("In valid_int size=%x\n",size);
   if (strlen (s) > 30)
     {
       A4GL_debug ("Too long - '%s' (%d)\n", s, strlen (s));

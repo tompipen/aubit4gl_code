@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.29 2003-07-28 22:04:45 mikeaubury Exp $
+# $Id: ops.c,v 1.30 2003-08-06 20:27:47 mikeaubury Exp $
 #
 */
 
@@ -179,6 +179,7 @@ A4GL_in_dt_ops (int op)
   int start;
   char *ptr;
 
+A4GL_debug("in_dt_ops");
   A4GL_get_top_of_stack (2, &d1, &s1, (void **) &pd);
 
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &pi);
@@ -555,6 +556,7 @@ A4GL_in_in_ops (int op)
   double d_i1;
   double d_i2;
 
+A4GL_debug("in_in_ops");
 // d2 op d1
   A4GL_get_top_of_stack (2, &d2, &s2, (void **) &pi2);
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &pi1);
@@ -631,6 +633,7 @@ A4GL_in_in_ops (int op)
       df2 /= 100000.0;
       d_i1 += df1;
       d_i2 += df2;
+	A4GL_debug("d_i1=%f d_i2=%f",d_i1,d_i2);
     }
 
 
@@ -638,6 +641,24 @@ A4GL_in_in_ops (int op)
     {
     case OP_ADD:
       d_i1 = d_i2 + d_i1;
+      if (se1 == 2)
+	{
+	  char buff[256];
+	  sprintf (buff, "%f", d_i1);
+	  acli_interval (buff, 0x822);
+	  return;
+	}
+      else
+	{
+	  char buff[256];
+	  sprintf (buff, "%f", d_i1);
+		A4GL_debug("Converting : %s to interval second to second",buff);
+	  acli_interval (buff, 0x867); // was 866
+	  return;
+	}
+
+
+
     case OP_SUB:
       d_i1 = d_i2 - d_i1;
       if (se1 == 2)
@@ -651,7 +672,8 @@ A4GL_in_in_ops (int op)
 	{
 	  char buff[256];
 	  sprintf (buff, "%f", d_i1);
-	  acli_interval (buff, 0x866);
+		A4GL_debug("Converting : %s to interval second to second",buff);
+	  acli_interval (buff, 0x867); // Was 866
 	  return;
 	}
 
