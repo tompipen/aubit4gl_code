@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.63 2003-02-22 01:52:19 afalout Exp $
+# $Id: Makefile.in,v 1.64 2003-02-23 03:14:06 afalout Exp $
 #
 
 ROOT		=../..
@@ -169,9 +169,13 @@ ifeq "${HOSTNAME}" "${HOSTNAME_SPEC}"
 	cp ${Y_OUTPUT} rules/generated/y.output
 endif
 	@echo "Y_OUTPUT=${Y_OUTPUT}"
+ifneq "${YACC}" "no"
 	@SH@ $<
 #the "t" file is some kind of temporary file created by wantkw_gen.pl
 	${RM} t
+else
+	${CP} ${ROOT}/tools/no_yacc/cygwin/compilers/4glc/mk_states* .
+endif
 
 ## ==================================================================
 ##                            Dependencies
@@ -208,7 +212,7 @@ lclint: $(CMODS)
 
 clean: clean.rules.generated clean.rules
 	${RM} *${SO_EXT} *.o *.err *.a *.exe *.bak .*.bak .\#* \
-	*.log *.dll *.dll.a *.def wantkw.c wantkw.h
+	*.log *.dll *.dll.a *.def wantkw.c wantkw.h mk_states_1.h mk_states.h mk_states.c
 
 clean.rules.generated:
 	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule \

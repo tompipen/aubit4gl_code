@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.121 2003-02-22 11:06:57 afalout Exp $
+# $Id: Makefile-common.in,v 1.122 2003-02-23 03:14:34 afalout Exp $
 #
 
 #Workarounf for Informix installers messing up libphtread:
@@ -441,40 +441,54 @@ ifeq "${TARGET_OS}" "solaris"
 	AUBIT_LIB			+=-lc
 endif
 
+########################
 #do not install static libraries on CygWin:
 #we no longer compile static libs on any platform - remove this
 #STATICLIB_INST=no
 
+########################
 #This is extension for LOADABLE libraries - using dlopen():
 SO_EXT=@SO_EXT@
+
+########################
 #This is extension for LINKABLE libraries - linked at compile time. In Aubit
 #this is (or should be) onlu libaubit4gl:
 SO_EXT_LINKABLE=@SO_EXT_LINKABLE@
 
-	ARCHEXT			=@ARCHEXT@
-    DIRSEP			=/
-	#on unix, we expect to have WWW set in environment
-	#WWW			=/data2/htdocs
-	GTKCONFIGTEXT	=echo "----- gtk-config --version ---------"
-	GTKCONFIGCMD	=gtk-config --version
-    LDDCMD          =ldd
+ARCHEXT			=@ARCHEXT@
+DIRSEP          =/
+#on unix, we expect to have WWW set in environment
+#WWW            =/data2/htdocs
+GTKCONFIGTEXT   =echo "----- gtk-config --version ---------"
+GTKCONFIGCMD    =gtk-config --version
+LDDCMD          =ldd
 
-    #FIXME: add -g from configure
-	#FIXME: verify that we need -fPIC in CFLAGS
-	CFLAGS      +=${PIC}
+########################
+#FIXME: add -g from configure
+#FIXME: verify that we need -fPIC in CFLAGS
+CFLAGS      +=${PIC}
 
-	#flags to linker, when making shared libraries:
-	SO_LDFLAGS	=-shared
+########################
+#flags to linker, when making shared libraries:
+SO_LDFLAGS  =-shared
 
-	#flags to CC when making and linking executables:
-	EXE_CFLAGS  =${RDYNAMIC}
-	EXEEXT		=
-	LN			=${LN_H}
-	#we should not use hard links when we are installing, because this
-    #can cause errors like "Invalid cross-device link" when source
-    #and destination is on different deveices:
-	LN_S_LIB    =${LN_S}
-	CPEXE		=${LN_H}
+########################
+#list of Aubit plug-ins (loadable modules) that are to be linked statically
+#with all external libraries (eg. libUI_TUI with Curses libraries)
+#PLUGIN_STATIC=esql
+
+########################
+#flags to CC when making and linking executables:
+EXE_CFLAGS  =${RDYNAMIC}
+EXEEXT      =
+LN          =${LN_H}
+
+########################
+#we should not use hard links when we are installing, because this
+#can cause errors like "Invalid cross-device link" when source
+#and destination is on different deveices:
+LN_S_LIB    =${LN_S}
+CPEXE       =${LN_H}
 
 
 ## ==================================================================

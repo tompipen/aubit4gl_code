@@ -24,16 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.17 2003-01-22 10:55:38 afalout Exp $
+# $Id: Makefile.in,v 1.18 2003-02-23 03:14:34 afalout Exp $
 #
 
 ROOT		=../../..
 LIBROOT		=../..
 
-
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-#override NOINCL=0
 
 ## ==================================================================
 ##                              Options
@@ -44,10 +42,54 @@ SRC_C				=${SRC:.ec=.c}
 OBJS				=${SRC_C:.c=.o}
 
 #CFLAGS are used only by C compiler on UNIX, not by ESQL/C or MSVC compilers:
-CFLAGS				+=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile -I${INFORMIXDIR} \
-						-I${INFORMIXDIR}/incl/esql -I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl
+CFLAGS				+=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
+					-I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql \
+					-I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl
 
-ESQL_INCLPATH		=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl -I$(AUBITDIR)/incl ${C_IFLAGS}
+ESQL_INCLPATH		=-I.. -I${LIBROOT} -I${ROOT}/compilers/fcompile \
+					-I${LIBROOT}/libincl -I$(AUBITDIR)/incl ${C_IFLAGS}
+
+LD_LFLAGS           =-L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
+                    -L$(INFORMIXDIR)/lib/cli
+
+IFX_LIBS            =@IFX_LIBS@
+
+
+ifneq "$(findstring esql,${PLUGIN_STATIC})" ""
+	
+	#Remove any -shared flags and add the -static one:
+	SO_LDFLAGS      :=-static $(filter-out -shared,${SO_LDFLAGS})
+
+	#Must include libaubit4gl when linking statically, since statically linked
+    #libs cannot have unresolved symbols at link-time. This one still has to be
+    #linked in shared mode, since we don't make libaubit4gl.a (Thank God...)
+	LD_POSTFLAGS    =-L${LIBROOT} -shared -laubit4gl
+
+	#Don't know why, but -static flag was not enough, I still got everything
+	#linked shared - so we had to explicitly name objects to link statically:
+    #(Probably because we use gcc not ldd directly to do linking, and gcc
+    #found the -shared flag at the end where we need it for libaubit4gl)
+
+    #Separate Informix from non-informix libraries:
+	ONLY_IFX_LIBS   :=$(filter -lif%,${IFX_LIBS})
+    NON_IFX_LIBS    :=$(filter-out -lif%,${IFX_LIBS})
+
+    #Change -l notation into full object file name:
+	ONLY_IFX_LIBS	:=$(subst -lif,libif,${ONLY_IFX_LIBS})
+	ONLY_IFX_LIBS	:=$(addsuffix .a,${ONLY_IFX_LIBS})
+
+    #Seaparate libs in lib/ from libs in lib/esql/
+	IFXLIBS_LIB     :=$(filter libifasf.a,${ONLY_IFX_LIBS})
+	IFXLIBS_LIB_ESQL:=$(filter-out libifasf.a,${ONLY_IFX_LIBS})
+
+	#Add full path:
+	IFXLIBS_LIB		:=$(addprefix $(INFORMIXDIR)/lib/,${IFXLIBS_LIB})
+	IFXLIBS_LIB_ESQL:=$(addprefix $(INFORMIXDIR)/lib/esql/,${IFXLIBS_LIB_ESQL})
+
+	#Final result:
+	IFX_LIBS		:=${IFXLIBS_LIB} ${IFXLIBS_LIB_ESQL} ${NON_IFX_LIBS}
+endif
+
 
 ifdef COMSPEC
     #since we are using ESQL/C compiler, and then MSVC, this define is not automatic:
@@ -65,7 +107,7 @@ ifdef COMSPEC
 
 else
 #    ESQL_INCLPATH	=-I${LIBROOT} -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl
-	ALL				=libSQL_esql${SO_EXT}
+	ALL				=${LIBROOT}/libSQL_esql${SO_EXT}
 endif
 
 ## ==================================================================
@@ -74,10 +116,12 @@ endif
 
 ALL: ${ALL}
 
-libSQL_esql${SO_EXT}: ${OBJS}
-	${LD} -L$(INFORMIXDIR)/lib -L $(INFORMIXDIR)/lib/esql \
-		-L$(INFORMIXDIR)/lib/cli $(SO_LDFLAGS) $^ @IFX_LIBS@ -o $@
-	${CP} $@ ${LIBROOT}
+${LIBROOT}/libSQL_esql${SO_EXT}: ${OBJS}
+#	@echo "ONLY_IFX_LIBS=${ONLY_IFX_LIBS}"
+#	@echo "IFXLIBS_LIB=${IFXLIBS_LIB}"
+#	@echo "IFXLIBS_LIB_ESQL=${IFXLIBS_LIB_ESQL}"
+#	@echo "NON_IFX_LIBS=${NON_IFX_LIBS}"
+	${LD} ${LD_LFLAGS} $(SO_LDFLAGS) $^ ${IFX_LIBS} -o $@ ${LD_POSTFLAGS}
 
 ${OBJS}: $(SRC)
 	@IFMX_ESQLC@ -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} ${C_DFLAGS}
