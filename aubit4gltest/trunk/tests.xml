@@ -2826,10 +2826,10 @@
   <NUMBER>962</NUMBER>
   <DESCRIPTION>DECIMAL limits</DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>963</NUMBER>
-  <DESCRIPTION>DOUBLE limits</DESCRIPTION>
+  <DESCRIPTION>SMALLFLOAT limits</DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
   <STATUS>TBD</STATUS>
 
@@ -2841,12 +2841,12 @@
   <NUMBER>965</NUMBER>
   <DESCRIPTION>INT limits</DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>966</NUMBER>
   <DESCRIPTION>MONEY limits</DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>967</NUMBER>
   <DESCRIPTION>SMALLINT limits</DESCRIPTION>
@@ -2854,9 +2854,9 @@
   <STATUS>TBD</STATUS>
 
   <NUMBER>968</NUMBER>
-  <DESCRIPTION>SMALLFLOAT limits</DESCRIPTION>
+  <DESCRIPTION>VARCHAR limits</DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
-  <STATUS>TBD</STATUS>
+  <STATUS>OK</STATUS>
 
   <NUMBER>969</NUMBER>
   <DESCRIPTION>TEXT limits</DESCRIPTION>
@@ -2879,7 +2879,7 @@
   <STATUS>OK</STATUS>
 
   <NUMBER>973</NUMBER>
-  <DESCRIPTION>VARCHAR limits</DESCRIPTION>
+  <DESCRIPTION></DESCRIPTION>
   <TEST_GOAL>DATA TYPE</TEST_GOAL>
   <STATUS>OK</STATUS>
 
@@ -2963,6 +2963,9 @@
   <TEST_GOAL>DECIMAL</TEST_GOAL>
   <STATUS>TBD</STATUS>
 
+	-- Data types limits/interval
+	-- Implicit convertion of data types
+	-- Expressions
 	-- Selects :
 	-- Set optimization
 	-- Put
@@ -2972,10 +2975,7 @@
 	-- Integration with Informix 4gl 
 	-- Whenever warnings
 	-- All whenevers
-	-- Data types limits/interval
 	-- Reserved words
-	-- Expressions
-	-- Implicit convertion of numeric types
 	-- Built in functions
 	    arg_val
 			arr_count
