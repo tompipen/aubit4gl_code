@@ -25,7 +25,7 @@ MAIN
 	  LET exitStatus = 1
 	END IF
 
-	LET lv_varchar = "1-1-1"
+	LET lv_varchar = "1-1-0001" # 1-1-1 was being y2k fixup'd to 1-1-2001
 	LET date_variable = lv_varchar
 	IF date_variable != mdy(1,1,1) THEN
 		DISPLAY "Error in lowest date : ", date_variable
