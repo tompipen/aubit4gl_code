@@ -414,7 +414,7 @@ prompt "USER NAME >> " for lv_username
 
 if lv_username is null or lv_username=" " then
 else
-        prompt "PASSWORD >> " for lv_passwd
+        prompt "PASSWORD >> " for lv_passwd attribute(invisible)
         if lv_passwd is null or lv_passwd matches " " then
                 initialize lv_username to null
         end if
@@ -1632,7 +1632,7 @@ end function
 
 function check_db(dbname)
 define dbname char(255)
-if dbname matches "*@" then
+if dbname matches "*@*" then
 	return dbname
 else
 	let dbname=dbname clipped,"@",fgl_getenv("INFORMIXSERVER")
