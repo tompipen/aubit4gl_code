@@ -1,4 +1,3 @@
-
 {
 Make file manupulation tool
 
@@ -40,16 +39,7 @@ Other tables are empty or have only one row
 
 }
 
-
-##########################################################
-#FIXME: mkf.4gl is not processing libraries - see P21.mk
-#after this is done, we will have to, when using make files to determine function
-#calls, first expand file list of targets to inslude files as specified by .lib
-#target(s) !!!! (in loadform.4gl)
-##########################################################
-
 database maxdev
-
 
 globals
 
@@ -199,7 +189,7 @@ define
             when "-clean" 	#clean tables we populate in this program and exit
                 delete from p4gl_module_prog
 				delete from p4gl_program
-                display "Data in tables p4gl_program p4gl_module_prog deleted"
+                display "All Data in tables p4gl_program p4gl_module_prog deleted"
                 exit program
 
             when "-g" 		#generate target info based on functions data
@@ -462,6 +452,29 @@ end function
  *
  *}
 function output_all()
+define
+    target_name_with_ext char(20)
+
+    if target_type = 2 then #target is library
+        let target_name_with_ext = target clipped, ".lib"
+    else
+		let target_name_with_ext = target clipped
+	end if
+
+    if insert_data then
+        delete from p4gl_module_prog
+            where program_name = target_name_with_ext
+
+		delete from p4gl_program
+            where program_name = target_name_with_ext
+
+        if verbose then
+	        display "Data in tables p4gl_program p4gl_module_prog for target ",
+    	        target_name_with_ext clipped,
+				" deleted"
+        end if
+
+    end if
 
     call db_process()
     call db_target()
@@ -547,8 +560,7 @@ function db_target()
 define
     target_name_with_ext char(20)
 
-
-    if target_type = 2 then
+    if target_type = 2 then #target is library
         let target_name_with_ext = target clipped, ".lib"
     else
 		let target_name_with_ext = target clipped
@@ -595,6 +607,7 @@ define
 
 
     if target_type = 2 then
+        #target is a library
         let target_name_with_ext = target clipped, ".lib"
     else
 		let target_name_with_ext = target clipped
@@ -618,7 +631,7 @@ define
         end if
 
         if insert_data then
-			
+
 			#Doc4gl inserts module names with extension, so we must too:
 			select * from p4gl_module
 	            where module_name = module_name_with_ext
@@ -629,7 +642,7 @@ define
 				#We would expect that this should never happen, but it DOES,
                 #since Doc4GL p4gl core dumps or fails in parsing, and does
                 #not insert all modules it should...
-				
+
 
 				#-691	Missing key in referenced table for referential constraint
 				#constraint-name.
@@ -788,9 +801,24 @@ end function
  *}
 function db_libs()
 define
-    counter smallint
+    counter smallint,
+    p_p4gl_module_prog record
+        program_name char(64),
+        id_package char(64),
+        module_name char(64)
+    end record,
+    module_name_with_ext char(20),
+    target_name_with_ext char(20),
+    tmp_cnt integer
 
     if ga_libs_cnt = 0 then return end if
+
+    if target_type = 2 then
+        #target is a library
+        let target_name_with_ext = target clipped, ".lib"
+    else
+		let target_name_with_ext = target clipped
+	end if
 
     if verbose then
 		display "Libraries:"
@@ -799,11 +827,120 @@ define
 	##############################
 	for counter = 1 to ga_libs_cnt
     ##############################
-        if verbose then
-			display "    ", ga_libs[counter] clipped
+
+	    let module_name_with_ext=ga_libs[counter] clipped,".lib"
+
+		if verbose then
+			display "    ", module_name_with_ext clipped
         end if
 
-        #FIXME: no libraries dependency table
+        #FIXME: no libraries dependency table - do we really want it?
+
+        #if we have this library modules already, just expand it immediately
+        #I can think of no benefit of using libraries like this anyway,
+        #and we really need to know which modules are in use by which programs
+        #to track function calls, tables ussage, etc.
+        select count(*) into tmp_cnt
+			from p4gl_module_prog
+            	where program_name = module_name_with_ext
+
+        if tmp_cnt > 0 then
+            declare lib1 cursor for
+                select * from p4gl_module_prog
+		            where program_name = module_name_with_ext
+
+            ######################################
+			foreach lib1 into p_p4gl_module_prog.*
+            ######################################
+				#We can skip all constraints checks because we did that when inserting the library itself
+
+				if verbose then
+					display "    ", p_p4gl_module_prog.module_name clipped
+		        end if
+
+		        if insert_data then
+		            #check for cases when make file includes same module twice. SQL
+		            #will fail with not very usefull constraint violation message, that
+		            #will not tell us much, so we have to do this manually here
+		            #FIXME: do a status chech instead if we fail, and then show SQL.
+
+		            select * from p4gl_module_prog where
+		                     program_name = target_name_with_ext
+		                     and
+		                     module_name = p_p4gl_module_prog.module_name
+
+		            if status = NOTFOUND then
+				        insert into p4gl_module_prog (program_name, id_package, module_name)
+				            values (target_name_with_ext,this_package,p_p4gl_module_prog.module_name)
+		            else
+		                display "WARNING:", target_name_with_ext clipped,
+							" already has ",p_p4gl_module_prog.module_name clipped,
+							" relation"
+		                #So what? Somebody listed same module more then once by mistake,
+                        #or it was duplicated in library...continue
+						#exit program (5)
+		            end if
+		        end if
+            ###########
+			end foreach
+            ###########
+            close lib1
+            free lib1
+
+            continue for
+        end if
+
+
+        ########################################################################
+        #if we don't just insert it - we will expand later when we execute "endrun"
+
+		#if verbose then
+			display "    Did not find library"
+        #end if
+
+        if insert_data then
+
+			#Doc4gl inserts module names with extension, so we must too:
+			select * from p4gl_module
+	            where module_name = module_name_with_ext
+
+	        if
+				status = NOTFOUND
+			then
+                #we must insert xxx.lib as a module, because of referential integrity
+
+				select * from p4gl_package
+                    where id_package = this_package
+
+                if status = NOTFOUND then
+                    insert into p4gl_package (id_package, comments)
+                        values (this_package,"Default package - automatically generated")
+                    display "WARNING: added default package ", this_package
+                end if
+
+				insert into p4gl_module (id_package,module_name,deprecated)
+	                values (this_package,module_name_with_ext,"Y") #Yes/No
+
+			end if
+
+            #check for cases when make file includes same module twice. SQL
+            #will fail with not very usefull constraint violation message, that
+            #will not tell us much, so we have to do this manually here
+            #FIXME: do a status chech instead if we fail, and then show SQL.
+
+            select * from p4gl_module_prog where
+                     program_name = target_name_with_ext
+                     and
+                     module_name = module_name_with_ext
+
+            if status = NOTFOUND then
+		        insert into p4gl_module_prog (program_name, id_package, module_name)
+		            values (target_name_with_ext,this_package,module_name_with_ext)
+            else
+                display "ERROR:", target_name_with_ext clipped, " already has ",module_name_with_ext clipped, " relation"
+                exit program (5)
+            end if
+        end if
 
     #######
 	end for
@@ -1337,10 +1474,13 @@ end function
  *}
 function output_makefile(p_program_name,has_existing_mkf,unresolved_cnt,unresolved_top_cnt)
 define
-	cnt,has_existing_mkf,found_it,orig_make_modules_cnt,unresolved_cnt,unresolved_top_cnt
-    smallint,
+	cnt,has_existing_mkf,found_it,orig_make_modules_cnt,unresolved_cnt,
+	unresolved_top_cnt,ret
+    	smallint,
     p_program_name, mkf_file, p_id_process
         char (64),
+    run_string
+        char (400),
     no_match
         char(1),
     p_p4gl_module_prog record like p4gl_module_prog.*
@@ -1463,8 +1603,27 @@ define
            and function_name = "main"
 
         let mkf_file = "/opt/aubit/apps/erp/src/",
-			downshift(p_id_process) clipped,"/",
-			p_program_name clipped,".amk"
+			downshift(p_id_process) clipped,"/"
+
+        #check if that path exists
+        let run_string ="ls ",mkf_file clipped," > /dev/null 2>&1"
+        run run_string returning ret
+
+        if ret then
+            display "ERROR: directory ",mkf_file," does not exist - wil not create makefile"
+            return
+		end if
+
+        let mkf_file = mkf_file clipped,p_program_name clipped,".amk"
+
+{
+TODO - we can probably speed-up stuff if we acouid multiple calls to same function
+IN THE WHOLE MODULE - there is no way on earth they would leed to a different
+called function....
+
+same when resolving function calls in loadform.4gl - when you get one resolved,
+just point the remaining calls in that module to the same destination function
+}
 
 		start report rep_mkf to mkf_file
         output to report rep_mkf(p_program_name)
@@ -1498,7 +1657,7 @@ OUTPUT
 	TOP MARGIN 0
 	BOTTOM MARGIN 0
 	#PAGE LENGTH 65
-    PAGE LENGTH 1
+    PAGE LENGTH 5 #1
 
 FORMAT
 
