@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.14 2003-11-19 17:08:02 mikeaubury Exp $
+# $Id: Makefile,v 1.15 2003-12-04 09:09:35 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -102,7 +102,7 @@ endif
 #4gl compiler flags
 #-G stops esql/c putting #lines in the output so its easier to debug
 #4GLPCFLAGS		=-g
-4GLPCFLAGS		=-O2
+4GLPCFLAGS		= -g -O2
 
 ################
 #Full make line to use when compiling 4gl objects
@@ -121,6 +121,7 @@ COMP4GL			=${4GLPC} ${4GLPCFLAGS} -c $^ -o $@
 #There may be an argument for putting this editing routine into a separate
 #module (one key compatible TUI mode one, one that just uses the aubit UI
 #routines) - but thats for later...
+
 LINKLIBS		=-lUI_TUI
 
 ## ==================================================================
