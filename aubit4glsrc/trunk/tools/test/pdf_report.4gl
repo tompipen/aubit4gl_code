@@ -53,7 +53,7 @@ define n integer
 
 format
 first page header
-	call pdf_function("set_font_size",16);
+	call pdf_function("set_font_size",16)
 	print column 2 inches,"Table Dump First Page"
 
 page header
@@ -67,7 +67,7 @@ on every row
 	print column 2 inches,c
 
 before group of t
-	display "Processing table", t
+	display "Processing table: ", t
 	print "";
 	call pdf_function("set_font_size",20);
 	call pdf_function("set_parameter","underline","true");

@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 * 
-* $Id: sql.c,v 1.1 2001-12-03 15:44:37 mikeaubury Exp $
+* $Id: sql.c,v 1.2 2001-12-10 20:17:30 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.1  2001/12/03 15:44:37  mikeaubury
+*	New dl sql stuff
+*	
 *	Revision 1.11  2001/11/21 22:56:18  saferreira
 *	Some compiler warnings fixed
 *	
@@ -2463,7 +2466,7 @@ int conv_sqldtype (int sqldtype, int sdim)
 
 
 char *
-get_currdbname ()
+A4GLSQL_get_currdbname ()
 {
   return OldDBname;
 }
@@ -2560,7 +2563,7 @@ return 0;
 
 
 long
-describe_stmt (char *stmt, int colno, int type)
+A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
   struct s_sid *sid;
   HSTMT *hstmt;

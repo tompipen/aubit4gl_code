@@ -480,7 +480,7 @@ pdf_functions :
 		}
    		CLOSE_BRACKET
    		{
-		print_pdf_call($<str>3,$<str>6,$<str>7);
+		print_pdf_call($<str>3,$<ptr>6,$<str>7);
    		}
    		opt_return
    		{

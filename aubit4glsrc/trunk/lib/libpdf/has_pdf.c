@@ -1,0 +1,409 @@
+/**
+ * @file
+ * PDF Report Implementation functions.
+ *
+ * @todo Add Doxygen comments to file
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+/******************************************************************************
+* (c) 1997-1998 Aubit Computing Ltd.
+*
+*
+*******************************************************************************/
+#include <stdio.h>
+
+#include "../libincl/dbform.h"
+#include "../libincl/report.h"
+#include "../libincl/debug.h"
+#include "../libincl/stack.h"
+#include "pdflib.h"
+
+double pdf_size(double f, char c,struct pdf_rep_structure *p) ;
+void pdf_skip_by(struct pdf_rep_structure *rep,double a) ;
+double pdf_metric(int a,char  c,struct pdf_rep_structure *rep);
+void pdf_aclfgli_skip_lines(struct pdf_rep_structure *rep);
+void pdf_fputmanyc(FILE *f,int c,int cnt);
+void pdf_set_column(struct pdf_rep_structure *rep);
+
+// a = number to pop
+// s = semi colon at the end
+void pdf_rep_print (struct pdf_rep_structure *rep, int a, int s,int right_margin)
+{
+  int b;
+  int cnt;
+  char *str;
+  debug ("In rep_print");
+  if (right_margin!=0) {
+                debug("***** WARNING ***** wordwrap margin not implemented..");
+  }
+  if (rep->line_no == 0 && rep->page_no == 0)
+    {
+      if (rep->output_mode == 'F')
+	{
+	  if (strcmp (rep->output_loc, "stdout")==0)
+	    {
+	      push_char("");
+	      push_int(-1);
+	      push_int(-1);
+	      display_at(1,0);
+	      rep->output = stdout;
+	    }
+	  else
+	    {
+	    	rep->pdf_ptr=PDF_new();
+		debug("Opening file: %s\n",rep->output_loc);
+		if (PDF_open_file(rep->pdf_ptr,rep->output_loc)==-1) {
+			exitwith("Error opening output\n");
+			return;
+		}
+	debug("Set info");
+		pdf_set_info(rep->pdf_ptr,"A4GL");
+	//debug("New page");
+		//pdf_new_page(rep);
+	    }
+	}
+      else
+	{
+	  rep->output = popen (rep->output_loc, "w");
+	  if (rep->output == 0)
+	    {
+	      exitwith("Could not open report output");
+	      return;
+	    }
+	}
+    }
+
+  if (rep->line_no == 0)
+    {
+	debug("New page...");
+      pdf_new_page(rep);
+	debug("set line 1");
+      rep->line_no = pdf_metric(1,'l',rep);
+	debug("Adding to page no...");
+      rep->page_no++;
+      debug ("Need page header");
+
+      pdf_skip_by(rep,0.0-rep->top_margin);
+      rep->report (0, REPORT_PAGEHEADER);
+    }
+
+  debug ("Popping %d parameters", a);
+  if (a > 0)
+    {
+
+    if (rep->col_no==0) {
+         rep->col_no+=rep->left_margin;
+    }
+        for (b = 0; b < a; b++)
+	{
+	
+	  debug("A\n");
+	  str = char_pop ();
+	  debug ("Popped '%s'...",str);
+	  debug ("Popped %s\n", str);
+          pdf_move(rep);
+	  PDF_show (rep->pdf_ptr, str);
+	  debug("Adding %f to col_no\n",pdf_metric(strlen(str),'c',rep));
+          rep->col_no+=pdf_metric(strlen(str),'c',rep);
+	  acl_free(str);
+	}
+        pdf_move(rep);
+    }
+  debug ("Newline : %d", s);
+
+  if (s == 0)
+    {
+      debug("B\n");
+      pdf_move(rep);
+      rep->col_no=0;
+	debug("CR\n");
+      rep->line_no+=pdf_metric(1,'l',rep);
+
+      if (rep->line_no > rep->page_length - rep->bottom_margin)
+	{
+	  rep->line_no = 0;
+	  pdf_rep_print (rep, 0, 0,0);
+        }
+    }
+  fflush(rep->output);
+debug("Done\n");
+  return ;
+}
+
+
+void pdf_fputmanyc(FILE *f,int c,int cnt) {
+int a;
+	for (a=0;a<cnt;a++) fputc(c,f);
+}
+
+void pdf_set_column(struct pdf_rep_structure *rep) {
+double a;
+double needn;
+debug("Set column");
+a=pdf_size(pop_double(),'c',rep);
+
+if (rep->col_no==0.0) {
+debug("setcol");
+     rep->col_no=pdf_metric(1,'c',rep);
+}
+
+needn=a - rep->col_no + rep->left_margin; // -pdf_metric(1,'c',rep);
+
+
+//if (rep->col_no==pdf_metric(1,'c',rep)) needn+=pdf_metric(1,'c',rep);
+
+#ifdef DEBUG
+/* {DEBUG} */ {debug("needn=%ld",needn);
+}
+#endif
+
+if (needn>0) {
+        //fputmanyc(rep->output,' ',(int)needn);
+        rep->col_no+=needn;
+#ifdef DEBUG
+/* {DEBUG} */ {        debug("Colno increased by %d",needn);
+}
+#endif
+} else {
+#ifdef DEBUG
+/* {DEBUG} */ {debug("Already past that point");
+}
+#endif
+}
+push_char("");
+} 
+
+
+void pdf_skip_to(struct pdf_rep_structure *rep,double a) {
+	debug("pdf_skip_by");
+	a=pdf_size(a,'l',rep);
+	rep->line_no=a;
+}
+
+
+void pdf_skip_by(struct pdf_rep_structure *rep,double a) {
+	debug("pdf_skip_by");
+	a=pdf_size(a,'l',rep);
+	rep->line_no+=a;
+	debug("DOne skip by line_no=%f",rep->line_no);
+}
+
+void pdf_aclfgli_skip_lines(struct pdf_rep_structure *rep) {
+long a;
+long b;
+debug("skip lines");
+a=pop_long();
+rep->line_no+=pdf_metric(a,'l',rep);
+}
+
+void pdf_need_lines(struct pdf_rep_structure *rep) {
+int a;
+debug("need lines");
+a=pdf_metric(pop_int(),'l',rep);
+if (rep->line_no > (rep->page_length - rep->bottom_margin -a))
+      pdf_skip_top_of_page(rep);
+}
+
+pdf_skip_top_of_page(struct pdf_rep_structure *rep) {
+int z;
+z=rep->page_no;
+
+while (z==rep->page_no) {
+     push_char("");
+     pdf_rep_print(rep,1,0,0);
+}
+
+}
+
+pdf_add_spaces()
+{
+int a;
+char str[1000];
+a=pop_int();
+if (a>=1000) a=999;
+memset(str,' ',a);
+str[a]=0;
+push_char(str);
+}
+
+
+
+pdf_new_page(struct pdf_rep_structure *p) {
+debug("NEW PAGE : %d\n",p->page_no);
+	//PDF_begin_page(p->pdf_ptr, width, height); 
+if (p->page_no) {
+	PDF_end_page(p->pdf_ptr);
+}
+
+debug("Begin page\n");
+	PDF_begin_page(p->pdf_ptr, p->page_width, p->page_length); 
+debug("Done\n");
+debug("find font %s\n",p->font_name);
+	p->font = PDF_findfont(p->pdf_ptr, p->font_name, "winansi",0  ); 
+
+	if (p->font<0) {
+		exitwith("Unable to locate font");
+		return 0;
+	} else {
+		debug("findfont ok");
+	}
+		
+debug("set font\n");
+	PDF_setfont(p->pdf_ptr, p->font, p->font_size); 
+debug("ok!\n");
+}
+
+pdf_set_info (void *p,char *creator)
+{
+  PDF_set_info (p, "Creator",  creator);
+  PDF_set_info (p, "Author",   "Auto");
+  PDF_set_info (p, "Title",    "Auto");
+}
+
+
+pdf_move(struct pdf_rep_structure *p) {
+      debug("Move to %f %f",p->col_no,p->line_no);
+      PDF_set_text_pos(p->pdf_ptr,p->col_no, p->page_length-p->line_no);
+}
+
+pdf_rep_close(struct pdf_rep_structure *p) {
+debug("Closing report %f\n",p->line_no);
+	if (p->line_no!=0.0) {
+debug("A");
+		PDF_end_page(p->pdf_ptr);
+debug("A");
+		PDF_close(p->pdf_ptr);
+	}
+debug("All done...");
+}
+
+
+double pdf_size(double f, char c,struct pdf_rep_structure *p) {
+debug("pdf_size");
+	if (f<0) return 0-f;
+	else return pdf_metric((int)f,c,p);
+}
+
+
+double pdf_metric(int a,char  c,struct pdf_rep_structure *p) {
+debug("pdf_metric a=%d c=%c p=%p",a,c,p);
+
+if (c=='c') {
+		debug("metric C %d %c",a,c);
+		return (double)((double)a*PDF_stringwidth(p->pdf_ptr,"W",p->font,p->font_size));
+} else {	
+	debug("metric L %d %c",a,c);
+		return (double)(a*p->font_size); //18
+}
+}
+
+aclpdf(struct pdf_rep_structure *p,char *fname,int n) {
+char *ptr;
+int a;
+double d;
+
+	if (strcmp(fname,"set_parameter")==0) {
+		char *ptr1;
+		char *ptr2;
+		ptr2=char_pop();
+		ptr1=char_pop();
+		PDF_set_parameter(p->pdf_ptr,ptr1,ptr2);
+		acl_free(ptr1);
+		acl_free(ptr2);
+		return 0;
+	}
+	if (strcmp(fname,"set_value")==0) {
+		char *ptr1;
+		int a;
+		a=pop_int();
+		ptr1=char_pop();
+		debug("Setting pdf value %s to %d\n",ptr1,a);
+		PDF_set_value(p->pdf_ptr,ptr1,a);
+		acl_free(ptr1);
+		return 0;
+	}
+
+
+	if (strcmp(fname,"set_font_size")==0) {
+		d=pop_double();
+		p->font_size=d;
+		PDF_setfont(p->pdf_ptr, p->font,p->font_size); 
+	return 0;
+	}
+
+	if (strcmp(fname,"set_font_name")==0) { 
+		ptr=char_pop();
+		strcpy(p->font_name,ptr);
+		acl_free(ptr);
+		a= PDF_findfont(p->pdf_ptr, p->font_name, "winansi",0  );
+		if (a<0) {
+			exitwith("Unable to locate font");
+			return 0;
+		} else {
+		debug ("Findfont ok");
+	}
+		p->font =a;
+		PDF_setfont(p->pdf_ptr, p->font, p->font_size); 
+	return 0;
+	}
+return 0;
+}
+
+
+
+pdf_blob_print(struct pdf_rep_structure *p,struct fgl_int_loc *blob,char *type,int cr) {
+int n;
+double sx;
+double sy;
+int x,y;
+
+sx=pop_double();
+sy=pop_double();
+debug("Scaling by %f %f",sx,sy);
+  if (blob->where != 'F' && blob->where != 'M')
+    {
+      exitwith ("Blob not located");
+      return 0;
+    }
+
+  if (blob->where!='F') {
+	exitwith("Not implemented yet...\n");
+	return 0;
+  }
+
+	debug("Opening blob\n");
+	n=PDF_open_image_file(p->pdf_ptr,type,blob->filename,"",0);
+	debug("Image handle=%d\n",n);
+
+	if (n<0) {
+		exitwith("Unable to open file %s %s",type,blob->filename);
+		return 0;
+	}
+		
+  	y = PDF_get_value (p->pdf_ptr, "imageheight", n);
+  	x = PDF_get_value (p->pdf_ptr, "imagewidth", n);
+
+	y=(int)((double)y * sy);
+	x=(int)((double)x * sx);
+
+	debug("Placing heght of image =%d line=%f length=%f",
+		y,p->line_no,
+		p->page_length);
+
+	PDF_place_image(p->pdf_ptr,n,p->col_no,p->page_length-p->line_no-y,sx);
+	
+	debug("Closing");
+	PDF_close_image(p->pdf_ptr,n);
+	p->line_no=p->line_no+(double)y;
+	p->col_no=p->col_no+(double)x;
+	push_char("");
+	pdf_rep_print (p, 1, cr,0);
+}
+
+
+void A4GLPDF_initlib () {
+	PDF_boot();
+}
+
