@@ -24,12 +24,14 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.29 2003-02-12 23:05:34 afalout Exp $
+# $Id: resource.c,v 1.30 2003-02-17 05:07:14 afalout Exp $
 #
 */
 
 /**
  * @file
+ * Defined default settings for configuration variables, and functionality needed
+ * to read configuration setting from configuration file(s) like "aubitrc"
  *
  * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static
@@ -81,7 +83,7 @@ struct str_resource builtin_resource[] =
 {
 
 	/* Loadable modules/library configuration */
-#ifdef __MINGW32__
+#if (defined (__MINGW32__) || defined (__CYGWIN__))
   {"A4GL_SQLTYPE", 		"odbc32"},
 #else
   {"A4GL_SQLTYPE", 		"nosql"},
@@ -97,17 +99,20 @@ struct str_resource builtin_resource[] =
   {"EXDTYPE",           ""},
 //  {"AUBITDIR",			"@aubitdir@  we should try setting AUBITDIR relative to location of invoked executable, if not already set
 
-	/* defaults for environment */
 	/*
 	INCLINES Adds originating line number of each created target language statemtn
 	coresponding to 4gl source code, to created target language source code,
 	which is usefull for debugging. Like:
 		#line 2 "../tools/test/test_build.4gl"
+    It can increase compile time significantly, so the default should be "no"
 	*/
   {"INCLINES",			"no"},   ///"yes" or "no"
-
-  {"A4GL_RESERVEWORDS", "NO"},
+#if (defined (__MINGW32__))
+  {"AUBITETC",			"D:/cygwin/etc/opt/aubit4gl"}, /* points to default location of Aubit config files */
+#else
   {"AUBITETC",			"/etc/opt/aubit4gl"}, /* points to default location of Aubit config files */
+ #endif
+  {"A4GL_RESERVEWORDS", "NO"},
   {"DBDATE", 			"MDY4/"},
   {"DBANSIWARN", 		"N"},
   {"DBBLOBBUF", 		"64"},
@@ -733,7 +738,7 @@ FILE *resourcefile=0;
 
 	/* ----------------- from /etc/opt/aubit4gl/aubitrc */
 
-	sprintf(buff,"/etc/opt/aubit4gl/%s","aubitrc");
+	sprintf(buff,"%s/%s",acl_getenv("AUBITETC"),"aubitrc");
 	resourcefile=fopen(buff,"r");
 	if (resourcefile!=0)
 	{
@@ -748,6 +753,27 @@ FILE *resourcefile=0;
 	};
 
 	/* -----------------  from $AUBITDIR/etc/aubitrc */
+
+    /*
+    AUBITDIR on Windows, when using CygWin tools to compile MingWin native
+    compiler will be UNIX style, and point to CygWin installation (and will not
+    start with drive leter, etc.)
+
+    Since environment variables override configuration file settings when 
+	calling aclfgl_getenv(), this will give us AUBITDIR that is unreachable
+    from native Windows executables, that know nothing about CygWin path mapping
+
+    As one of the consequences, the following statement will fail to find
+    aubitrc configuration file in AUBITDIR specified in this manner, because it
+    will try to open file
+
+        /something/aubitrc
+
+        but file is actually
+
+        X:/cygwin/something/aubitrc
+
+    */
 
 	sprintf(buff,"%s/etc/%s",acl_getenv("AUBITDIR"),"aubitrc");
 	resourcefile=fopen(buff,"r");

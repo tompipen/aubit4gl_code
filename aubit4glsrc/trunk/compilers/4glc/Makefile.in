@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.58 2003-02-10 23:01:10 mikeaubury Exp $
+# $Id: Makefile.in,v 1.59 2003-02-17 05:07:13 afalout Exp $
 #
 
 ROOT		=../..
@@ -64,6 +64,7 @@ endif
 
 CMODS_EXE       =4glc.c
 CMODS_LIB       =\
+				compile.c \
 				dim.c \
 				list.c lexer.c memfile.c \
 				mod.c map.c variables.c globals.c \

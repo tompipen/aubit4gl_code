@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.117 2003-02-10 02:08:27 afalout Exp $
+# $Id: Makefile-common.in,v 1.118 2003-02-17 05:07:14 afalout Exp $
 #
 
 #Workarounf for Informix installers messing up libphtread:
@@ -173,6 +173,11 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 	AUBITDIR=${AUBIT_SRC_ROOT}
 endif
 
+
+WINDOWS_DRIVE   =@WINDOWS_DRIVE@
+CYGWIN_PATH     =@CYGWIN_PATH@
+
+#Substitute Windows drive notation (C: D: E: etc.) with CygWin path mapping
 CYG_AUBITDIR	:=$(subst C:,/cygdrive/c,${AUBITDIR})
 CYG_AUBITDIR	:=$(subst D:,/cygdrive/d,${CYG_AUBITDIR})
 
@@ -194,7 +199,7 @@ GCC_MINGW=@GCC_MINGW@
 
 #Needed for fixing include paths in UI_GTK:
 #FIXME: find a way to get this from Autoconf:
-WIN_CYGPATH	=D:/cygwin
+WIN_CYGPATH	=${WINDOWS_DRIVE}${CYGWIN_PATH}
 
 
 ifeq "${GCC_MINGW}" "yes"
@@ -606,7 +611,11 @@ INSTALL_DIR=${PREFIX}/${AUBITNAME}
 
 	ifneq "${INFILE}" ""
 		OLDVALUE:=$(shell grep "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
-		NEWVALUE:=$(shell echo "AUBITDIR=$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
+		ifeq "${GCC_MINGW}" "yes"
+			NEWVALUE:=$(shell echo "AUBITDIR=${WIN_CYGPATH}$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
+        else
+			NEWVALUE:=$(shell echo "AUBITDIR=$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
+        endif
 		STARTWITH=^${OLDVALUE}
 		REPLACEWITH=${NEWVALUE}
     endif

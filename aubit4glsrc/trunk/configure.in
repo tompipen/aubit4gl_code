@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.156 2003-02-07 04:00:36 afalout Exp $
+dnl # $Id: configure.in,v 1.157 2003-02-17 05:06:37 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -329,13 +329,11 @@ AC_SUBST(LDFLAGS)
 AC_SUBST(LDFLAGS_SHARED)
 AC_SUBST(YACC)
 AC_SUBST(LEX)
-#AC_SUBST(PREFIX)
 AC_SUBST(LCLINTEXE)
 AC_SUBST(SO_EXT)
 AC_SUBST(SO_EXT_LINKABLE)
 AC_SUBST(GETOPT_LONG)
 AC_SUBST(ARCHEXT)
-#PHP_SUBST_OLD(CONFIGURE_COMMAND)
 AC_SUBST(CONFIGURE_COMMAND)
 AC_SUBST(GCC_VERSION_MAJOR)
 AC_SUBST(GCC_VERSION_MINOR)
@@ -346,6 +344,10 @@ AC_SUBST(REDHAT_VER)
 AC_SUBST(REDHAT_NAME)
 AC_SUBST(STRIP_EXECUTABLES)
 AC_SUBST(STRIP)
+AC_SUBST(WINDOWS_DRIVE)
+AC_SUBST(CYGWIN_PATH)
+
+
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -469,6 +471,9 @@ LCLINTEXE=no
 STRIP_EXECUTABLES=no
 cygwin=0
 
+#FIXME: do not hard-code
+WINDOWS_DRIVE=D:
+CYGWIN_PATH=/cygwin
 
 AC_EXEEXT
 AC_OBJEXT
@@ -609,10 +614,10 @@ LIBFILE_29=
 LIBFILE_30=
 
 #Install location - must install first:
-#IS_SOURCE="$HOMEDRIVE\\cygwin$prefix\\$SHORTNAME"
+#IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$prefix/$SHORTNAME"
 #Source code location:
-IS_SOURCE="$HOMEDRIVE/cygwin$aubitdir"
-IS_SOURCE_GTK="$HOMEDRIVE/cygwin/lib"
+IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$aubitdir"
+IS_SOURCE_GTK="$HOMEDRIVE$CYGWIN_PATH/lib"
 
 #Note: all command line switches like "--xxxx-wwwww" are automativaly
 #converted to shell variables in "xxxxx_wwwww" format.
@@ -889,16 +894,16 @@ if test "$CC" = "gcc"; then
 					#should not really need drive letter?
                     #also, if adding drive letter with : , it then we add AUBITDIR to PATH, : will be
                     #interperted as separator (when using CygWin tools), and make PATH invalid
-					aubitdir="$HOMEDRIVE/cygwin$aubitdir"
+					aubitdir="$HOMEDRIVE$CYGWIN_PATH$aubitdir"
                     #BUT-then CygWin things there is a directory called /cygwin in HIS root!
                     #but how to get a directory name CygWin was installed in, if different then default?
-					#aubitdir="/cygwin$aubitdir"
+					#aubitdir="$CYGWIN_PATH$aubitdir"
 					AC_MSG_WARN(Using MinGW GCC.)
 					old_CFLAGS="$CFLAGS"
 					old_CPPFLAGS="$CPPFLAGS"
 					old_LDFLAGS="$LDFLAGS"
 
-					TMP_IFLAGS="-ID:/cygwin/usr/include"
+					TMP_IFLAGS="-I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include"
                     CFLAGS=" $CFLAGS $TMP_IFLAGS"
 					CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
 
@@ -906,10 +911,10 @@ if test "$CC" = "gcc"; then
 					#unset ac_cv_header_dlfcn_h
 					#AC_CHECK_HEADERS([dlfcn.h])
 	                #exit
-					#In file included from d:/MinGW/include/inttypes.h:6,
+					#In file included from $WINDOWS_DRIVE/MinGW/include/inttypes.h:6,
 					#                 from configure:9489:
-					#d:/MinGW/include/stdint.h:27: conflicting types for `int8_t'
-					#D:/cygwin/usr/include/sys/types.h:128: previous declaration of `int8_t'
+					#$WINDOWS_DRIVE/MinGW/include/stdint.h:27: conflicting types for `int8_t'
+					#$WINDOWS_DRIVE$CYGWIN_PATH/usr/include/sys/types.h:128: previous declaration of `int8_t'
 
 					CFLAGS="$old_CFLAGS"
 					CPPFLAGS="$old_CPPFLAGS"
@@ -2564,8 +2569,8 @@ fi
 			#when running MinGW GCC in CygWin environment, we can try using CygWin curses:
 			case "$host" in
 			*-*-cygwin | *-*-cygwin* )
-				CYG_LFLAGS="-LD:/cygwin/lib"
-				CYG_IFLAGS="-ID:/cygwin/usr/include/ncurses -ID:/cygwin/usr/include"
+				CYG_LFLAGS="-L$WINDOWS_DRIVE$CYGWIN_PATH/lib"
+				CYG_IFLAGS="-I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include/ncurses -I$WINDOWS_DRIVE$CYGWIN_PATH/usr/include"
 				old_LIBS="$LIBS"
 				old_LDFLAGS="$LDFLAGS"
 				old_CFLAGS="$CFLAGS"
