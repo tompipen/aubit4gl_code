@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.66 2003-03-28 08:07:15 mikeaubury Exp $
+# $Id: lexer.c,v 1.67 2003-04-02 08:48:49 mikeaubury Exp $
 #*/
 
 /**
@@ -1038,7 +1038,7 @@ static int last_pc = 0;
 
 
 allow=allow_token_state(yystate,a);
-debug("Allow_token_State = %d\n",allow);
+debug("Allow_token_State = %d state=%d\n",allow,yystate);
 
 
 if (sql_mode==0) {

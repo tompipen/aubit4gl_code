@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.113 2003-03-28 08:07:16 mikeaubury Exp $
+# $Id: mod.c,v 1.114 2003-04-02 08:48:51 mikeaubury Exp $
 #
 */
 
@@ -1146,8 +1146,8 @@ variable_action(-1,"","_ENDREC","","a4gl_add_variable");
 variable_action(-1,"notfound","100","i","add_constant");
 
 // @todo - QUICK HACK
-variable_action(-1,"sqlca","a4gl_sqlca","C","add_constant");
-variable_action(-1,"status","a4gl_status","C","add_constant");
+//variable_action(-1,"sqlca","a4gl_sqlca","C","add_constant");
+//variable_action(-1,"status","a4gl_status","C","add_constant");
 
 variable_action(-1,"false","0","i","add_constant");
 variable_action(-1,"true","1","i","add_constant");

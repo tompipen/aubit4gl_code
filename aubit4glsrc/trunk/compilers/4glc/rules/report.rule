@@ -243,7 +243,7 @@ rep_expr : fgl_expr op_wordwrap {
 ;
 
 rep_agg : 
-SUM       OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+SUM OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
 {
 int a;
 a=add_report_agg('S',$<ptr>3,$<ptr>5,racnt);

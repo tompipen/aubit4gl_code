@@ -10,6 +10,16 @@ variable: var_int
 char buff[256];
 char buff2[256];
 int n;
+
+if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
+if (strncmp($<str>1,"sqlca.",6)==0) { 
+	char xbuff[256];
+	char xbuff2[256];
+	strcpy(xbuff,"a4gl_sqlca.");
+	strcpy(xbuff2,$<str>1);
+	strcat(xbuff,&xbuff2[6]);
+	strcpy($<str>1,xbuff);
+}
 strcpy(buff,$<str>1);
 lex_printcomment("/* .. var %s*/",buff);
 if (buff[0]!=' ') addmap("Use Variable",buff,curr_func,yylineno,infilename);
@@ -64,6 +74,9 @@ var:
 
          lex_printcomment("/* OPEN_SQUARE.. */\n");
 
+	if (strcmp($<str>1,"sqlca")==0) {
+		strcpy($<str>1,"a4gl_sqlca");
+	}
          sprintf(buff,"%s.%s",$<str>1,$<str>2);
          if (scan_variable(buff)==-1) {
            sprintf(buff2,"'%s' does not represent a defined variable (2)",buff);
@@ -225,9 +238,17 @@ num_list_element: arr_expr
 let_variable: let_var
 {
 char buff[256];
+if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
+if (strncmp($<str>1,"sqlca.",6)==0) {
+        char xbuff[256];
+        char xbuff2[256];
+        strcpy(xbuff,"a4gl_sqlca.");
+        strcpy(xbuff2,$<str>1);
+        strcat(xbuff,&xbuff2[6]);
+        strcpy($<str>1,xbuff);
+}
 strcpy(buff,$<str>1);
 addmap("Let Variable",buff,curr_func,yylineno,infilename);
-
 if (strncmp(buff," ASSOCIATE_",11)!=0) {
 convlower(buff);
 }
@@ -254,7 +275,10 @@ let_var: let_array_r_variable {
   char buff[256];
   char buff2[256];
   lex_printcomment("/*array variable .let. */");
-
+  if (strcmp($<str>1,"status")==0) { strcpy($<str>1,"a4gl_status"); }
+  if (strcmp($<str>1,"sqlca")==0) {
+        strcpy($<str>1,"a4gl_sqlca");
+  }
   sprintf($<str>$,"%s.%s",$<str>1,$<str>4);
 
          if (scan_variable($<str>$)==-1) {

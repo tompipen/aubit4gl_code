@@ -295,8 +295,7 @@ insql=0;
 	char buff[256];
       if (!in_command("REPORT")) {
         a4gl_yyerror("This can only be done in a report!");YYERROR;
-      } 
-      insql=0; 
+      } insql=0; 
 	lex_printcomment("/* rep_Agg = %s\n*/",$<str>3);
         strcpy(buff,$<str>3);
 	debug("report aggregate :  %s",buff);
