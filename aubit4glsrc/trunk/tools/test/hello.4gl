@@ -72,6 +72,8 @@ menu "Hello test"
 		error "Exit"
 		#display "Exit"
         exit menu
+	command key(f2)
+		error "F2 pressed"
 end menu
 
 #message "Exiting.."

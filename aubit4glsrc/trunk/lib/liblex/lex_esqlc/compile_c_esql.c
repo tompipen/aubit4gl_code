@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.59 2003-11-12 11:22:10 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.60 2003-12-04 19:06:12 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1540,7 +1540,8 @@ if (type=='M') { /* Make the table */
 }
 
 
-
+void A4GL_add_put_string(char *s) {
+}
 
 
 /* ================================== EOF =============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.76 2003-10-26 19:12:01 mikeaubury Exp $
+# $Id: stack.c,v 1.77 2003-12-04 19:06:12 mikeaubury Exp $
 #
 */
 
@@ -87,6 +87,16 @@ void A4GL_process_stack_op_other (int d);
 
 //extern int errno;
 
+#if defined(__hpux__)
+#define BYTE_ALIGN_SET
+#define BYTE_ALIGN_HP
+#endif
+
+#ifndef BYTE_ALIGN_SET
+#define BYTE_ALIGN_x86
+#endif 
+
+#ifdef BYTE_ALIGN_x86
 int nset[MAX_DTYPE][9] = {
   {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// CHAR
   {0x0, 0x80, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// SMINT
@@ -104,6 +114,26 @@ int nset[MAX_DTYPE][9] = {
   {0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// VCHAR
   {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN} 	// INTERVAL
 };
+#else
+int nset[MAX_DTYPE][9] = {
+  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// CHAR
+  {0x80, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// SMINT
+  {0x80, 0x0, 0x0, 0x00, IGN, IGN, IGN, IGN, IGN}, 	// INT
+  {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, IGN},// FLOAT
+  {0xff, 0xff, 0xff, 0xff, IGN, IGN, IGN, IGN, IGN}, 	// SMFLOAT
+  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN}, 	// DECIMAL
+  {0x80, 0x0, 0x0, 0x00, IGN, IGN, IGN, IGN, IGN}, 	// SERIAL
+  {0x80, 0x0, 0x0, 0x00, IGN, IGN, IGN, IGN, IGN}, 	// DATE
+  {0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN, IGN, IGN}, 	// MONEY
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},  	// EMPTY
+  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN}, 	// DTIME
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// BYTE
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// TEXT
+  {0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN}, 	// VCHAR
+  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN} 	// INTERVAL
+};
+
+#endif
 
 /**
  * Parameter definition type

@@ -409,6 +409,9 @@ call_c_function (char *s, struct param *p, long *r)
 		case PARAM_TYPE_USE_VAR:
 		  strcat (buff, "4");
 		  break;	// A guess...
+		case PARAM_TYPE_CALL:
+		  strcat (buff, "4");
+		  break;	// A guess...
 		default:
 		  ok = 0;
 		  printf ("Can't figure it out...%d\n",

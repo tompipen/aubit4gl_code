@@ -646,6 +646,7 @@ print_import_legacy char* s -> void
 print_cmd_end -> void
 
 A4GL_get_into_part int d int n -> char*
+A4GL_add_put_string char* buff -> void
 
 A4GL_set_var_sql int d int n -> char*
 

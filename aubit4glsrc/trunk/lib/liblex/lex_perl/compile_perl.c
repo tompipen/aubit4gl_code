@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.49 2003-10-13 18:30:47 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.50 2003-12-04 19:06:12 mikeaubury Exp $
 #
 */
 
@@ -4310,6 +4310,9 @@ void
 print_dealloc_arr (char *s)
 {
   printc ("free(%s);", s);
+}
+
+void A4GL_add_put_string(char *s) {
 }
 
 /* ================================ EOF ============================== */

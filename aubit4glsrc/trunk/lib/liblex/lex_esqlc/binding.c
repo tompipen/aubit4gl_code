@@ -493,6 +493,14 @@ static void print_sql_type_postgres (int a, char ioro)
 }
 
 
+void liblex_add_ibind(int dtype,char *var) {
+	strcpy(ibind[ibindcnt].varname,var);
+	ibind[ibindcnt].start_char_subscript=0;
+	ibind[ibindcnt].end_char_subscript=0;
+	ibind[ibindcnt].dtype=dtype;
+	ibindcnt++;
+}
+
 char *
 A4GL_dtype_sz (int d, int s)
 {
