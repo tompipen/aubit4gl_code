@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_perl.c,v 1.55 2004-12-09 07:26:47 mikeaubury Exp $
+# $Id: compile_perl.c,v 1.56 2004-12-09 13:50:29 mikeaubury Exp $
 #
 */
 
@@ -4340,5 +4340,26 @@ void
 A4GL_add_put_string (char *s)
 {
 }
+
+
+
+
+
+
+
+
+
+void print_Constant(int type, char *vv) {
+
+}
+
+
+void A4GL_internal_lex_printcomment (char *fmt, va_list * ap) {
+}
+
+
+
+
+
 
 /* ================================ EOF ============================== */
