@@ -111,12 +111,15 @@ if test "$USE_ESQLI" = "1" -o "$NEW_IFMX" = "1" -o "$ODBC_USE_DB" = "IFX"; then
 		if test "$VERBOSE" = "1"; then
 			echo "Found Informix database $TEST_DB"
         fi
-		SQL="select is_logging from sysdatabases where name = 'test1'"
+		SQL="select is_logging from sysdatabases where name = '$TEST_DB'"
         DB_HAS_TRANSACTION=`echo "$SQL" | $DBACCESS sysmaster 2>/dev/null | grep -v is_logging`
 		#Trim it:
 		DB_HAS_TRANSACTION=`echo $DB_HAS_TRANSACTION`
 		if test "$VERBOSE" = "1" ; then
-			echo "DB_HAS_TRANSACTION=$DB_HAS_TRANSACTION"
+			echo "DB_HAS_TRANSACTION=$DB_HAS_TRANSACTION"		
+			if test "$DB_HAS_TRANSACTION" != "1" -a "$DB_HAS_TRANSACTION" != "0"; then 
+				echo "WARNING: failed to determine Informix database transaction support state"
+			fi
 		fi
     fi
 
@@ -474,10 +477,10 @@ EOF`
     if test "$TEST" != "" || test "$NEW_SAP" = "1"; then
         echo "Creating SAP DB database $TEST_DB"
 
-        if ! test -d /root/test1; then
-			mkdir /root/test1
+        if ! test -d /root/$TEST_DB; then
+			mkdir /root/$TEST_DB
         fi
-        chmod a+xrw /root/test1
+        chmod a+xrw /root/$TEST_DB
         chmod a+rw /tmp/credbtmp.log
 		COMMAND="sh $SAPDBROOT/testdb/create_demo_db.sh $TEST_DB  > /tmp/credbtmp.log"
 		su --preserve-environment -c "$COMMAND" sapdb

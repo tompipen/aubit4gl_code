@@ -189,6 +189,14 @@ for a in $FLAGS; do
         #we already got this one set
         ;;
 
+	-loop-10)
+		LOOP_TIMES=10
+		;;
+	
+	-loop-100)
+		LOOP_TIMES=100
+		;;
+		
 	-aubitrc-test)	#Use aubitrc in aubit4gltest directory to override local installation settings
 		export A4GL_INIFILE="$CURR_DIR/aubitrc-testing"
 		;;
@@ -1108,6 +1116,26 @@ for a in $FLAGS; do
 done
 ####
 
+if test "$LOOP_TIMES" != ""; then 
+	if test "$RUN_ONE" != ""; then
+		ALL_TESTS=""
+		CNT=0
+		while [ "1" = "1" ] ; do
+			CNT=`(expr $CNT + 1) 2>/dev/null`
+			ALL_TESTS="$ALL_TESTS $RUN_ONE"
+			if test "$CNT" = "$LOOP_TIMES"; then 
+				break
+			fi
+		done
+		echo "Looping test #$RUN_ONE $LOOP_TIMES times" 
+		RUN_ONE=""
+	else
+		echo "Cant loop multiple tests"
+		exit 5
+	fi
+fi
+
+
 if test "$TEST_RANGE" = "1"; then
 	if test "$TEST_RANGE_FROM" = "" -o "$TEST_RANGE_TO" = ""; then
 		echo "ERROR: missing from or to value with -range"
@@ -1378,7 +1406,6 @@ rm -f $CURR_DIR/$ERROR_LOG
 if test "$SILENT" = "1" && test "$NO_ECHO" != "1"; then
 	echo "Running test(s)..."
 fi
-
 #########################
 for TEST_NO in $ALL_TESTS
 #########################

@@ -1,12 +1,7 @@
 #This file conatains lists of all tests expected to fail
 #it is used as include from main testing execution script
 
-#fails at random?
-#348 349 351
-
-
 #-esqli NOT expected to fail:  109 296 351 (3)
-#-eci NOT expected to fail:  296 (2)
 
 ######################
 #Teats expected to fail with -ifxodbc (in addition to EXPECT_TO_FAIL_TESTS)
@@ -50,7 +45,7 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 #NOTE: <*> = OK with -esqli
-EXPECT_TO_FAIL_TESTS="240 670 706 278 766 767 962 976 987 296"
+EXPECT_TO_FAIL_TESTS="240 670 706 278 766 767 962 976 987 296 348 349 351 350"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #670 (syntax errors in generated EC code) http://aubit.com/mantis/bug_view_page.php?bug_id=0000477
 #706 (expression in SQL syntax error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000515
@@ -61,6 +56,11 @@ EXPECT_TO_FAIL_TESTS="240 670 706 278 766 767 962 976 987 296"
 #976 (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
 #987 same ?
 #296 Unable to read form.
+#348 349 351 350 fail at random ?!!
+#
+
+#348 - Fail (141 but expecting 0)
+
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
 EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
