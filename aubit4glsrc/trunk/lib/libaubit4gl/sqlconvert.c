@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.2 2003-01-17 23:32:54 psterry Exp $
+# $Id: sqlconvert.c,v 1.3 2003-02-01 21:50:42 psterry Exp $
 #
 */
 
@@ -57,7 +57,34 @@
 
 #define isquote(x) ((x)=='\"'||(x)=='\'')
 #define istabcol(x) (isalnum(x)||(x)=='.'||(x)=='_')
+#define iswordch(x) (isalnum(x)||(x)=='_')
 #define iscmpop(x) ((x)=='='||(x)=='!'||(x)=='>'||(x)=='<')
+#define isoperator(x)  (strchr("+-*/%|^",(x)) != NULL)
+
+/*
+=====================================================================
+                    Variable definitions
+=====================================================================
+*/
+
+/* struct to hold list of functions from conversion file(s) */
+typedef void (*func_t)(char *, char *);
+struct fnlist {
+  func_t  funcp; 
+  char *  args;
+  struct  fnlist *next;
+};
+/* struct for list of conversions currently loaded */
+struct cvlist {
+  char    source[40];
+  char    target[40];
+  struct  fnlist *fnlistp;
+  struct  cvlist *next;
+};
+struct cvlist *cvlistptr = NULL;
+
+/* empty string that can be pointed to */
+char empty[] = "";
 
 /*
 =====================================================================
@@ -65,19 +92,32 @@
 =====================================================================
 */
 
-void cvsql_double_to_single( char *sql );
+struct fnlist * cv_fnlist( char *source, char *target );
+func_t cv_str_to_func(char *p, int len);
+
+void cvsql_double_single( char *sql, char *args );
 void cvsql_rowid( char *sql, char *oid );
+void cvsql_split_update( char *sql, char *args );
+void cvsql_matches_like( char *sql, char *args );
+void cvsql_matches_regex( char *sql, char *args );
 void cvsql_matches( char *sql, char *typ );
 void cvsql_substring( char *sql, char *func );
-void cvsql_alias_as( char *sql );
+void cvsql_tab_alias( char *sql, char *args );
+void cvsql_col_alias( char *sql, char *args );
+void cvsql_replace( char *sql, char *args );
 
-char * cv_find_token( char *p, char *str );
-char * cv_next_token( char *p, int *n );
-int cv_is_clause_word( char *p, int n );
+char * cv_nth_list_item( char *p, int n, int *len );
+char * cv_find_token( char *p, char *str, int skipb );
+char * cv_find_closing( char *p );
+int cv_num_tokens( char *p );
+char * cv_nth_token( char *p, int n, int *len );
+char * cv_next_token( char *p, int *len, int dot );
+int cv_is_clause_word( char *p, int len );
 void cv_replacestr( char *p, int n, char *s ) ;
 void cv_inschstr( char *p, char c ) ;
 void cv_delchstr( char *p, int n ) ;
 char * cv_unqstrstr( char *str, char *word );
+char * cv_lastnonblank( char *str );
 
 /*
 =====================================================================
@@ -86,8 +126,8 @@ char * cv_unqstrstr( char *str, char *word );
 */
 
 /*
- * Converts an Informix/A4GL style SQL string
- * to one acceptable to the target DBMS
+ * Converts an SQL command string written for a specific DBMS to
+ * a format acceptable to another target DBMS.
  * 
  * @param  source   SQL dialect statement is written in
  * @param  target   SQL dialect understood by the DBMS
@@ -96,8 +136,9 @@ char * cv_unqstrstr( char *str, char *word );
 void
 convert_sql( char *source_dialect, char *target_dialect, char *sql )
 {
+ struct fnlist *p = NULL;
 
-debug("convert_sql: source=%s, target=%s, sql=%s",
+ debug("convert_sql: source=%s, target=%s, sql=%s",
 		source_dialect, target_dialect, sql);
 
  if ( (source_dialect == NULL) || (target_dialect == NULL) ||  
@@ -106,24 +147,133 @@ debug("convert_sql: source=%s, target=%s, sql=%s",
    return;
  }
 
- if ( strncmp(target_dialect,"POSTGRES",8)==0 )
- {
-    cvsql_double_to_single( sql );
-    cvsql_matches( sql, "~" );
-    cvsql_substring( sql, "substr" );
-    cvsql_rowid( sql, "oid" );
-    return;
- }
+ p = cv_fnlist( source_dialect, target_dialect );
 
- if ( strncmp(target_dialect,"ORACLE",6)==0 )
+ while ( p )
  {
-    cvsql_double_to_single( sql );
-    cvsql_matches( sql, "like" );
-    cvsql_rowid( sql, "oid" );
-    return;
+   if ( p->funcp ) {
+        p->funcp( sql, p->args );
+   }
+   p = p->next;
  }
 
  debug("  convert_sql returns %s", sql);
+}
+
+/*
+ * Loads up conversion files and returns a pointer to a
+ * linked list of conversion functions to be called.
+ *
+ * @param  source  source dialect
+ * @param  target  target dialect
+ */
+struct fnlist *
+cv_fnlist( char *source, char *target  )
+{
+char buff[201];
+struct cvlist *cv;
+struct fnlist *p = NULL;
+FILE *fh;
+char *t;
+int len;
+
+ /* do we have this conversion loaded ? */
+ cv = cvlistptr;
+ while ( cv ) {
+   if ( (strcasecmp(cv->source, source) == 0) &&
+        (strcasecmp(cv->target, target) == 0) )
+   {
+      return cv->fnlistp;
+   }
+   cv = cv->next;
+ }
+
+ /* no we don't, so malloc a new struct for the conversion
+  * info, and load the file (named "source-target.cnv")
+ */
+ cv = cvlistptr;
+ cvlistptr = (struct cvlist *) malloc(sizeof(struct cvlist));
+ strcpy(cvlistptr->source,source);
+ strcpy(cvlistptr->target,target);
+ cvlistptr->fnlistp = NULL;
+ if ( cv ) cv->next = cvlistptr;
+
+ strcpy(buff,acl_getenv("SQLCNVPATH"));
+ if ( buff[0] == '\0' ) strcpy(buff,"/opt/aubit4gl/etc/convertsql");
+ len = strlen(buff);
+ sprintf(&buff[len],"/%s-%s.cnv",source,target);
+
+ debug("loading sql conversion file %s", buff);
+
+ if ( (fh = fopen(buff,"r")) == NULL ) {
+    debug("failed to open file");
+    return cvlistptr->fnlistp;  /* NULL */
+ }
+
+ /* each line of the file consists of a function name and
+  * optional arguments.  Ignore lines starting with "#".
+  */
+ while ( fgets(buff,200,fh) )
+ {
+   if ( (t = cv_next_token(buff, &len, 0)) == NULL ) continue;
+   if ( *t == '#' ) continue;
+   if ( p ) {
+      p->next = (struct fnlist *) malloc(sizeof(struct fnlist));
+      p = p->next;
+   }
+   else {
+      cvlistptr->fnlistp = (struct fnlist *) malloc(sizeof(struct fnlist));
+      p = cvlistptr->fnlistp;
+   }
+   p->funcp = cv_str_to_func(t,len);
+   p->args = &empty[0];
+   p->next = NULL;
+   /* get the argument list, strip off leading = sign */
+   t += len;
+   t = cv_next_token(t, &len, 0);
+   if ( t && len == 1 && *t == '=') t = cv_next_token((t+len), &len, 0);
+   if (t) {
+     len = strlen(t);
+     while (len > 0 && isspace(t[len-1]) ) len--;
+     if ( len > 0 ) {
+       p->args = malloc(len+1);
+       strncpy(p->args,t,len);
+       p->args[len]='\0';
+     }
+   }
+ }
+ fclose(fh);
+
+ return cvlistptr->fnlistp;
+}
+
+func_t cv_str_to_func(char *p, int len)
+{
+
+  if (strncasecmp(p,"REPLACE",len)==0)
+     { return &cvsql_replace; }
+  if (strncasecmp(p,"REPLACE_EXPR",len)==0)
+     { return &cvsql_replace; }
+  if (strncasecmp(p,"REPLACE_COMMAND",len)==0)
+     { return &cvsql_replace; }
+  if (strncasecmp(p,"DOUBLE_TO_SINGLE_QUOTES",len)==0)
+     { return &cvsql_double_single; }
+  if (strncasecmp(p,"MATCHES_TO_LIKE",len)==0)
+     { return &cvsql_matches_like; }
+  if (strncasecmp(p,"MATCHES_TO_REGEX",len)==0)
+     { return &cvsql_matches_regex; }
+  if (strncasecmp(p,"SUBSTRING_FUNCTION",len)==0)
+     { return &cvsql_substring; }
+  if (strncasecmp(p,"TABLE_ALIAS_AS",len)==0)
+     { return &cvsql_tab_alias; }
+  if (strncasecmp(p,"COLUMN_ALIAS_AS",len)==0)
+     { return &cvsql_col_alias; }
+  if (strncasecmp(p,"ANSI_UPDATE_SYNTAX",len)==0)
+     { return &cvsql_split_update; }
+
+  debug("NOT IMPLEMENTED: %s", p);
+
+  return NULL;
 }
 
 /*
@@ -135,7 +285,7 @@ debug("convert_sql: source=%s, target=%s, sql=%s",
  * @param  sql  string holding SQL statement
  */
 void
-cvsql_double_to_single( char *sql )
+cvsql_double_single( char *sql, char *args )
 {
   char *p;
   int quote=0;
@@ -191,24 +341,111 @@ cvsql_double_to_single( char *sql )
 void
 cvsql_rowid( char *sql, char *oid ) {
  char *t;
- int n;
+ int len;
 
  t=sql;
- while ( (t = cv_next_token(t, &n)) != NULL )
+ while ( (t = cv_next_token(t, &len, 0)) != NULL )
  {
    char *p = 0;
-   if ( strncasecmp(t,"rowid",n)==0 ) {
+   if ( strncasecmp(t,"rowid",len)==0 ) {
 	   p = t;
    }
    else {
-     if ( strncasecmp(&t[n-6],".rowid",6)==0 ) p = &t[n-5];
+     if ( strncasecmp(&t[len-6],".rowid",6)==0 ) p = &t[len-5];
    }
    if ( p > 0 ) {
        cv_replacestr( p, 5, oid);
        t += strlen("rowid") - strlen(oid);
    }
-   t += n;
+   t += len;
  }
+}
+
+/*
+ * Converts an Informix style update to the standard format
+ * ie.
+ *    update tbl set ( a, b, c, ... ) = ( x, y, z, ... ) 
+ * to
+ *    update tbl set a = x, b = y, c = z, ... 
+ *
+ * @param  sql   SQL statement string
+ */
+void
+cvsql_split_update( char *sql, char *args ) {
+ char *t;
+ char *p;
+ int n;
+ char *ob1;  // first opening bracket
+ char *cb1;  // first closing bracket
+ char *ob2;  // second opening bracket
+ char *cb2;  // second closing bracket
+ char *s;    // pointer to temp. buffer
+
+ /* the statement must start with "update tablename set ( " ... 
+ */
+ t = cv_next_token(sql,&n, 0);
+ if (strncasecmp(t,"update",n) != 0 ) return;
+ t = cv_next_token(&t[n],&n, 0);
+ t = cv_next_token(&t[n],&n, 0);
+ if (strncasecmp(t,"set",n) != 0 ) return;
+ t = cv_next_token(&t[n],&n, 0);
+ if ( *t != '(' ) return;
+ ob1 = t;
+
+ if ( (cb1 = cv_find_closing(ob1)) == NULL ) return;
+ t = cv_next_token( &cb1[1], &n, 0);
+ if ( *t != '=' ) return;
+ t = cv_next_token( &t[n], &n, 0);
+ if ( *t != '(' ) return;
+ ob2 = t;
+ if ( (cb2 = cv_find_closing(ob2)) == NULL ) return;
+
+ /* create a temp. buffer to build the new 'set' clause */
+ n = cb2 - ob1;
+ s = malloc(n);
+ s[0] = '\0';
+
+ /* scan each pair of brackets, extracting col = value pairs */
+ *ob1 = ' ';
+ *cb1 = '\0';
+ *ob2 = ' ';
+ *cb2 = '\0';
+
+ {
+ char *o1=ob1;
+ char *o2=ob2;
+  while ( (p = cv_find_token(++o1,",",1)) )
+  {
+   t = cv_find_token(++o2,",", 1);
+   strncat(s,o1,(p-o1));
+   strcat(s,"=");
+   strncat(s,o2,(t-o2));
+   strcat(s,",");
+   o1=p;
+   o2=t;
+  }
+  strncat(s,o1,(cb1-o1));
+  strcat(s,"=");
+  if (o2++ < cb2) strncat(s,o2,(cb2-o2));
+ }
+
+ *cb1 = ' ';
+ *cb2 = ' ';
+
+ cv_replacestr( ob1, (cb2-ob1+1), s );
+
+ free(s);
+}
+
+
+void
+cvsql_matches_like( char *sql, char *args ) {
+   cvsql_matches( sql, "like" );
+}
+
+void
+cvsql_matches_regex( char *sql, char *args ) {
+   cvsql_matches( sql, "~" );
 }
 
 /*
@@ -226,15 +463,15 @@ cvsql_matches( char *sql, char *typ ) {
  char *t_matches;
  char *t_string;
  char *p;
- int n;
+ int len;
 
- while ( (t_matches = cv_find_token(sql,"matches") ) )
+ while ( (t_matches = cv_find_token(sql,"matches",0) ) )
  {
    /* found 'matches', proceed only if next token is a quoted string
     */
    sql = &t_matches[7];
-   if (! (t_string = cv_next_token(sql, &n)) ) break;
-   sql = &t_string[n];
+   if (! (t_string = cv_next_token(sql, &len, 0)) ) break;
+   sql = &t_string[len];
    if (! isquote(*t_string) ) continue;
 
    if ( typ[0] == '~' ) {
@@ -247,11 +484,11 @@ cvsql_matches( char *sql, char *typ ) {
    */
    cv_replacestr(t_matches,7,typ);
    sql = &t_matches[strlen(typ)];
-   t_string = cv_next_token( sql, &n );
-   sql = &t_string[n];
+   t_string = cv_next_token( sql, &len, 0);
+   sql = &t_string[len];
 
    /* convert the quoted string ... */
-   for ( p=t_string+1; n > 2; p++, n-- )
+   for ( p=t_string+1; len > 2; p++, len-- )
    {
      if ( typ[0]=='~' ) {
         /* regex: "*" -> ".*" , "?" -> "."
@@ -296,12 +533,12 @@ cvsql_substring( char *sql, char *func ) {
  char *t, *p;
  char *t_col=0;
  char *t_left=0;
- int n;
+ int len;
 
  /* seek and convert anything like  " (table.)column [ ... ] " */
- while ( (t = cv_next_token(sql, &n) ) )
+ while ( (t = cv_next_token(sql, &len, 0) ) )
  {
-   sql = &t[n];
+   sql = &t[len];
 
    if ( istabcol(*t) ) {
       // we have found a possible column name, save pointer
@@ -347,30 +584,30 @@ cvsql_substring( char *sql, char *func ) {
  * @param  sql   SQL statement string
  */
 void
-cvsql_alias_as( char *sql ) {
+cvsql_tab_alias( char *sql, char *args ) {
  char *t;
- int n;
+ int len;
  int state = 0;
 
  /* main loop scans entire string because multiple 'from' clauses
   * are possible in 'union' selects
  */
  t=sql;
- while ( (t = cv_next_token(t,&n) ) )
+ while ( (t = cv_next_token(t,&len, 0) ) )
  {
    /* don't start alias checking until we reach a 'from' clause */
    if ( state==0 ) {
-      if (strncasecmp(t,"from",n)==0 ) state = 1;
-      t += n;
+      if (strncasecmp(t,"from",len)==0 ) state = 1;
+      t += len;
       continue;
    }
    /* a comma or 'outer' means to expect a table name next */
-   if (*t == ',' || strncasecmp(t,"outer",n)==0 ) {
+   if (*t == ',' || strncasecmp(t,"outer",len)==0 ) {
        state = 1;
    }
    else {
      /* check for any keyword that marks the end of the from clause */
-     if ( cv_is_clause_word(t,n) ) { state = 0;
+     if ( cv_is_clause_word(t,len) ) { state = 0;
      }
      else {
        /* this must be a table name, so expect an alias next */
@@ -380,8 +617,8 @@ cvsql_alias_as( char *sql ) {
           /* we already had the table name, so if this word is
 	   * not "as", then it must be an alias so we insert "as"
 	   */
-          if ( strncasecmp(t,"as",n)==0 ) {
-               t = cv_next_token( (t+n), &n );
+          if ( strncasecmp(t,"as",len)==0 ) {
+               t = cv_next_token( (t+len), &len, 0);
           }
 	  else {
              cv_replacestr( t, 0, "as ");
@@ -391,10 +628,137 @@ cvsql_alias_as( char *sql ) {
        }
      }
    }
-    t += n;
+    t += len;
  }
 
 }
+
+
+/*
+ * Inserts 'as' before alias names in the expressions in a select list
+ * eg.
+ *     select code, sum(total_cost/purch_qty) unit_price, ...
+ * to
+ *     select code, sum(total_cost/purch_qty) AS unit_price, ...
+ *
+ * @param  sql   SQL statement string
+ */
+void
+cvsql_col_alias( char *sql, char *args ) {
+ char *t;
+ char *p;
+ char *from;
+ int len, n;
+
+ /* main loop scans entire string because 'select' clauses
+  * can appear more than once, in unions and sub-queries.
+ */
+ t=sql;
+ while ( (t = cv_next_token(t,&len,0) ) )
+ {
+   /* don't start alias checking until we reach a 'select' clause */
+   
+   if (strncasecmp(t,"select",len) != 0 ) {
+      t += len;
+      continue;
+   }
+
+   t += len;
+
+   /* presumably in a select, so locate the terminating 'from'
+    * */
+   if ( (from = cv_find_token(t,"from", 1)) == NULL ) continue;
+
+   /* temporarily null-terminate up to the 'from', and look
+    * for any comma-separated columns/expressions 
+   */
+   *from = '\0';
+   n = 0;
+   while ( (p = cv_nth_list_item(t, ++n, &len)) ) {
+     if ( len > 2 )
+     {
+        char c;
+        char *a = NULL;
+	char *b = NULL;
+	int i,l;
+        c = p[len];
+        p[len] = '\0';
+	/* expect more than 1 token, the last is a valid column
+	 * identifier and the second last is anything except an
+	 * operator (+,-,/, etc.) */
+        if ( (i = cv_num_tokens(p)) > 1 ) {
+           a = cv_nth_token(p, i, &l);
+	   if ( isalnum(*a) ) {
+               b = cv_nth_token(p, (i-1), &l);
+	       if (isoperator(*b) || (strncasecmp(b,"as",l)==0)) {
+                  b = NULL;
+	       }
+               else {
+                  b = a;
+	       }
+	   }
+	}
+        p[len] = c;
+        if ( b ) {
+             *from = 'f';
+             cv_replacestr( b, 0, "as ");
+             from += 3;
+             *from = '\0';
+        }
+     }
+   }
+
+   /* remove the temporary null-termination */
+   *from = 'f';
+
+   t = from;
+ }
+
+}
+
+/*
+ * Replaces a string in a SQL statement. The search string must
+ * begin on a token.
+ *
+ * @param   sql   string holding SQL statement
+ * @param   str   search/replace as "before = after"
+ */
+void
+cvsql_replace( char *sql, char *args )
+{
+ char srch[100];
+ char *rplc;
+ char *t;
+ int slen;
+ int len;
+
+ /* extract the search and replace strings from args */
+ if ( args == NULL || args[0] == '\0') return;
+ if ( (t = strchr(args,'=')) == NULL ) return;
+ rplc = cv_next_token((t+1), &len, 0);
+ if ( rplc == NULL ) rplc = empty;
+ if ( (slen = t - args + 1) < 1 ) return;
+ strncpy(srch,args,slen);
+ srch[--slen]='\0';
+ while (srch[slen-1] == ' ') srch[--slen] = '\0';
+
+ /* locate any token that matches the start of the search string */
+ t=sql;
+ while ( (t = cv_next_token(t, &len, 1)) != NULL )
+ {
+   if ( strncasecmp(t,srch,len)==0 )
+   {
+     if ( strncasecmp(t,srch,slen)==0 )
+     {
+        cv_replacestr(t, slen, rplc);
+        t += strlen(rplc) - slen;
+     }
+   }
+   t += len;
+ }
+
+}
+
 
 /* ----------------------------------------------------------------
  * Helper functions for reading SQL strings and processing them
@@ -407,21 +771,134 @@ cvsql_alias_as( char *sql ) {
  * - table.column is regarded a single token
 */
 
+
+/*
+ * Returns pointer to the nth element (string) in a comma separated
+ * list, such as 'select column/expression' lists or 'from table ...'
+ * If there is no such item, return NULL
+ *
+ * @param  p    pointer into SQL statement string
+ * @param  n    1,2,3... which item
+ * @param  *len   points to an int that'll hold the string length
+ */
+char *
+cv_nth_list_item( char *p, int n, int *len )
+{
+ char *p2 = NULL;
+
+  while ( n-- > 0 )
+  {
+    if ( (p2 = cv_find_token(p,",", 1)) == NULL ) {
+       p2 = cv_lastnonblank(p);
+       p2--;
+       break;
+    }
+    if ( n == 0 ) break;
+    p = p2+1;
+  }
+
+  if ( n == 0 && p2 >= p ) {
+     *len = p2-p;
+     return p;
+  }
+
+  *len = 0;
+  return (char *) 0;
+}
+
 /*
  * Locates the next occurence of a given token string in a statement
  *
- * @param  p    pointer into SQL statement string
- * @param  str  the string to look for
+ * @param  p      pointer into SQL statement string
+ * @param  str    the string to look for
+ * @param  skipb  set to true to skip over text inside brackets
  */
 char *
-cv_find_token( char *p, char *str )
+cv_find_token( char *p, char *str, int skipb )
+{
+ int len = 0;
+ int l = strlen(str);
+ while ( (p = cv_next_token(p,&len,0) ) )
+ {
+   if ( len==l && strncasecmp(p,str,len)==0 ) return p;
+   if ( skipb && *p == '(' ) {
+       p = cv_find_closing(p);
+       if ( p == NULL ) return p;
+       len = 1;
+   }
+   p += len;
+ }
+ return (char *) 0;
+}
+
+/*
+ * Locates an opening bracket's matching (closing) bracket
+ *
+ * @param  p    points to opening bracket ([{
+ */
+char *
+cv_find_closing( char *p )
+{
+ int  len = 0;
+ char ob, cb;
+ int  lv;
+
+ ob = *p++;
+ switch ( ob ) {
+   case '(': cb = ')'; break;
+   case '[': cb = ']'; break;
+   case '{': cb = '}'; break;
+   default:
+        return (char *) 0;
+ }
+
+ lv = 1;
+ while ( (p = cv_next_token(p,&len,0)) )
+ {
+   if ( *p == cb ) {
+      lv--;
+      if ( lv < 1 ) return p;
+   }
+   if ( *p == ob ) lv++;
+   p += len;
+ }
+
+ return (char *) 0;
+}
+
+
+/*
+ * Counts the number of tokens in a string
+ *
+ * @param  p     pointer into SQL statement string
+ */
+int
+cv_num_tokens( char *p )
 {
  int n = 0;
- int l = strlen(str);
- while ( (p = cv_next_token(p,&n) ) )
+ int len;
+ while ( p && (p = cv_next_token(p,&len,0)) )
  {
-   if ( n==l && strncasecmp(p,str,n)==0 ) return p;
-   p += n;
+   p += len;
+   n++;
+ }
+ return n;
+}
+
+/*
+ * Locates the nth token in a string
+ *
+ * @param  p     pointer into SQL statement string
+ * @param  n     the number of the token (1,2,3,...)
+ * @param  *len  pointer to location to store token length
+ */
+char *
+cv_nth_token( char *p, int n, int *len )
+{
+ while ( n-- > 0 ) {
+   if ( (p = cv_next_token(p,len,0)) == NULL ) break;
+   if ( n == 0 ) return p;
+   p += *len;
  }
  return (char *) 0;
 }
@@ -431,9 +908,10 @@ cv_find_token( char *p, char *str )
  *
  * @param  p    pointer into SQL statement string
  * @param  *n   points to an int that'll hold the token length
+ * @param  dot  treat dot (.) as a separate token
  */
 char *
-cv_next_token( char *p, int *n )
+cv_next_token( char *p, int *len, int dot )
 {
  char *p2;
  int slash=0;
@@ -442,7 +920,7 @@ cv_next_token( char *p, int *n )
  while ( *p > 0 && isspace(*p) ) p++;
 
  if (*p == '\0') {
-      if (n>0) *n = 0;
+      if (len>0) *len = 0;
       return (char *) 0;
  }
 
@@ -471,15 +949,21 @@ cv_next_token( char *p, int *n )
    }
    else {
      /* any sequence comprising table, keyword, number, etc. */ 
-     if ( istabcol(*p) )
-     {
-       while ( *p2>0 && istabcol(*p2) ) p2++;
+     if ( dot ) {
+       if ( iswordch(*p) ) {
+         while ( *p2>0 && iswordch(*p2) ) p2++;
+       }
+     }
+     else {
+       if ( istabcol(*p) ) {
+         while ( *p2>0 && istabcol(*p2) ) p2++;
+       }
      }
    }
  }
  /* note, if none of the above, then we return a single char
   */
-  if (n>0) *n = p2 - p;
+  if (len>0) *len = p2 - p;
   return p;
 }
 
@@ -487,21 +971,21 @@ cv_next_token( char *p, int *n )
  * Returns true if token pointed to in a keyword marks
  * the start of a SQL clause
  *
- * @param  p   pointer into SQL statement string
- * @param  n   length of token string
+ * @param  p    pointer into SQL statement string
+ * @param  len  length of token string
  */
 int
-cv_is_clause_word( char *p, int n ) {
+cv_is_clause_word( char *p, int len ) {
 
-  if ( strncasecmp(p,"select",n)==0  || strncasecmp(p,"from",n)==0 ||
-       strncasecmp(p,"where",n)==0  || strncasecmp(p,"having",n)==0 ||
-       strncasecmp(p,"union",n)==0  || strncasecmp(p,"into",n)==0 )
+  if ( strncasecmp(p,"select",6)==0  || strncasecmp(p,"from",4)==0 ||
+       strncasecmp(p,"where",5)==0  || strncasecmp(p,"having",6)==0 ||
+       strncasecmp(p,"union",5)==0  || strncasecmp(p,"into",4)==0 )
   {
        return 1;
   }
-  if ( strncasecmp(p,"group",n)==0 || strncasecmp(p,"order",n)==0 )
+  if ( strncasecmp(p,"group",5)==0 || strncasecmp(p,"order",5)==0 )
   {
-     if (strncasecmp( cv_next_token(p,NULL), "by", 2)==0) return 1;
+     if (strncasecmp( cv_next_token(p,NULL,0), "by", 2)==0) return 1;
   }
   return 0;
 }
@@ -604,6 +1088,28 @@ cv_unqstrstr( char *str, char *word )
     }
  }
  return ( (char *) 0);
+}
+
+/*
+ * Returns a pointer to the last non-blank char in a string,
+ * or to the start of string if there isn't one.
+ *
+ * @param  str   A null terminated string
+ */
+char *
+cv_lastnonblank( char *str )
+{
+ char *p;
+ int n;
+
+  p = str;
+  if ( (n = strlen(str)) > 0 )
+  {
+    p += n;
+    while ( (p > str) && (isspace(*p)) ) p--;
+  }
+
+  return(p);
 }
 
 /* ============================= EOF ================================ */
