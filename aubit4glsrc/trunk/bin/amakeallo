@@ -163,6 +163,7 @@ function analiseerror {
 					else
 	                    #we have no err file, no object err file, and no core was dumped:
 						echo "NOT a core dump. UNKNOWN failure reason."  >> $ERRORLOG
+						echo "NOT a core dump. UNKNOWN failure reason."
 						let COMPFAILUNKNOWN=COMPFAILUNKNOWN+1
 					fi;
                 fi
@@ -533,7 +534,8 @@ function compileit {
 	    	then
 		        echo "File $DEPENDGLOB4GLFILE need to be prepared before $PWH/$i"
 	        fi
-	        echo "File $DEPENDGLOB4GLFILE need to be prepared before $PWD/$i"  >> $ERRORLOG 2>&1;
+	        echo "File $DEPENDGLOB4GLFILE need to be prepared before $PWD/$i"  >> $ERRORLOG
+	        echo "File $DEPENDGLOB4GLFILE need to be prepared before $PWD/$i"  >> $GLOBLOG
 
             DIRNAME=`dirname $DEPENDGLOB4GLFILE`
 	        DEPEND4GLFILE=`basename $DEPENDGLOB4GLFILE .glb`.4gl;
@@ -546,8 +548,9 @@ function compileit {
 		    	then
 					echo "$DEPEND4GLFILE not found - aborting"
                 fi
-                echo "$DEPEND4GLFILE not found - aborting"  >> $ERRORLOG 2>&1;
-			    let NO4GLNOGLBFILE=NO4GLNOGLBFILE+1
+                echo "$DEPEND4GLFILE not found - aborting"  >> $ERRORLOG
+                echo "$DEPEND4GLFILE not found - aborting"  >> $GLOBLOG
+				let NO4GLNOGLBFILE=NO4GLNOGLBFILE+1
 		        echo "##########################################################" >> $ERRORLOG
 				return
 			fi
@@ -581,7 +584,8 @@ function compileit {
 	    		then
 					echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."
 	            fi
-				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $ERRORLOG 2>&1;
+				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $ERRORLOG
+				echo "Compiling $DEPENDGLOB4GLFILE from $PWD failed ($RET)."  >> $GLOBLOG
 				WASERROR=1
 				let COMPFAIL4GL=COMPFAIL4GL+1
 		        echo "##########################################################" >> $ERRORLOG
@@ -594,6 +598,8 @@ function compileit {
 				fi
 
 	        fi
+
+			echo "Compiling $DEPENDGLOB4GLFILE from $PWD OK ($RET)."  >> $GLOBLOG
 
 	        #now try it again:
 		    err_msg=`eval "$COMPCMD"`
@@ -1185,7 +1191,8 @@ function doit {
         then
 			#In Maximise, order of compilation is important, and we also
             #need to skip some directories
-			ALLSUBDIRS="winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo cm contr dvfund lawmods"
+			#ALLSUBDIRS="winds csimods main ar eo fa gl in jm lc qe re ss ap pu wo cm contr dvfund lawmods"
+			ALLSUBDIRS="winds main ar gl ap"
             SKIPDIRS="aform aprog forms prog gform gprog qform qprog"
         else
 			ALLSUBDIRS=`ls -l |
