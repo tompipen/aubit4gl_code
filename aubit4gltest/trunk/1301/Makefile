@@ -196,3 +196,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE DDL_DEFAULT_VALUE DDL_DATETIME \
 	DDL_DEFAULT_DATETIME"
 	
+
+runtime_err_check:
+	@echo "0"
+

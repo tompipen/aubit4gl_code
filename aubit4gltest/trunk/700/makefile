@@ -216,3 +216,7 @@ sql_features_used:
 	@echo "DROP_TABLE DROP_SYNONYM CREATE_TABLE CREATE_SYNONYM \
 		META_INSERT_SYNONYM CURSOR_SELECT"
 
+
+runtime_err_check:
+	@echo "0"
+

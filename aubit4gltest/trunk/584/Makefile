@@ -189,8 +189,12 @@ unknown_test:
 # ============================= EOF ================================
 
 ansi_sql_compat:
-	@echo "1"
+	@echo "0"
 
 sql_features_used:
-	@echo "DATABASE"
+	@echo "DATABASE_PREPARED"
 	
+
+runtime_err_check:
+	@echo "0"
+

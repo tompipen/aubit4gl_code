@@ -217,3 +217,7 @@ sql_features_used:
 		INSERT_COLUMNLIST_EQ_VALUELIST ANSI_UPDATE CURSOR_SELECT \
 		FUNC_DATETIME FUNC_INTERVAL"
 
+
+runtime_err_check:
+	@echo "0"
+

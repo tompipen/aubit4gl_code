@@ -195,3 +195,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE GRANT"
 
 
+
+runtime_err_check:
+	@echo "0"
+

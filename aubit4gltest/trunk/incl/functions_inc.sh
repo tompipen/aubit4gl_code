@@ -3,6 +3,68 @@
 #							Functions
 ##############################################################################
 
+#################################################
+#Check for compile-only, skip and tests with no run-time error checking
+function make_test_attrib_label () {
+test_no="$1"
+LAST_RESULTS="$2"
+CATALOGUE_UNL_FILE="$3"
+
+	if test "$test_no" = ""; then
+		echo "ERROR: test_no is empty"
+		exit 5
+	fi
+
+	#Get data from tests results
+	x=`grep "|$test_no|" $LAST_RESULTS`
+	SKIP_REASON=`echo $x | cut --fields=4 --delimiter="|"`
+	EXPECT_FAIL=`echo $x | cut --fields=5 --delimiter="|"`
+	
+	#Get data from tests catalogue (descriptions)
+	y=`grep "|$test_no|" $CATALOGUE_UNL_FILE | cut --fields=22 --delimiter="|"`
+#echo "test_no=$test_no"
+#echo "y=$y"	
+	COMPILE_ONLY=`echo $y | cut --field=1 --delimiter="|"`
+#echo "COMPILE_ONLY=$COMPILE_ONLY"
+#exit
+	
+	#TODO: dont have it in catalog.unl - should add it there
+	RUNTIME_ERR_CHECK=`$MAKE -s -C $test_no runtime_err_check 2>/dev/null`
+
+	#we start by assuming that this test passed - no point for calculating
+	#confidence for anything else
+	THIS_TEST_CONFIDENCE=5
+	DESC=""
+	
+	if test "$RUNTIME_ERR_CHECK" = "0"; then
+		THIS_TEST_CONFIDENCE=3
+		DESC="<font color='#FF0000'>E</font>$DESC"
+	fi
+	#EXPECT_FAIL?
+	if test "$COMPILE_ONLY" = "1"; then
+		THIS_TEST_CONFIDENCE=2
+		DESC="<font color='#FF0000'>C</font>$DESC"
+	fi
+	if test "$SKIP_REASON" != ""; then
+		THIS_TEST_CONFIDENCE=0
+		DESC="S$DESC"
+	fi
+	
+	if test "$EXPANDED_CONFIDENCE" = "1"; then
+		if test "$DESC" != ""; then
+			DESC="($DESC$THIS_TEST_CONFIDENCE)"
+		else
+			DESC="($THIS_TEST_CONFIDENCE)"
+		fi
+	else
+		if test "$DESC" != ""; then
+			DESC="($DESC)"
+		fi
+	fi
+
+}
+
+
 function activate_use_cache () {
 		if test -f $CURR_DIR/etc/cache_IS_DB_TEST.txt ; then
 			USE_CACHE=1
@@ -131,7 +193,7 @@ fi
 		#Initialise counters:
 		CNT=0 ;	FIELD_CNT=0; ROW_CNT=0; DOTS_CNT=0
 		D_CNT=0; S_CNT=0; C_CNT=0; P_CNT=0; F_CNT=0; X_CNT=0
-		POSIBLE_CNT=0; SUPPORTED_CNT=0; IMPOSSIBLE_CNT=0; DEPEND_CNT=0
+		POSIBLE_CNT=0; SUPPORTED_CNT=0; IMPOSSIBLE_CNT=0; DEPEND_CNT=0; IGNORED_CNT=0
 		D_P_CNT=0; D_S_CNT=0; D_I_CNT=0; D_D_CNT=0
 		S_P_CNT=0; S_S_CNT=0; S_I_CNT=0; S_D_CNT=0
 		C_P_CNT=0; C_S_CNT=0; C_I_CNT=0; C_D_CNT=0
@@ -214,6 +276,8 @@ fi
 					let IMPOSSIBLE_CNT=IMPOSSIBLE_CNT+1 ;;
 				D) SQL_FEATURES_NON_ANSI_DEPEND="$SQL_FEATURES_NON_ANSI_DEPEND $field"
 					let DEPEND_CNT=DEPEND_CNT+1 ;;
+				G) SQL_FEATURES_NON_ANSI_IGNORED="$SQL_FEATURES_NON_ANSI_IGNORED $field"
+					let IGNORED_CNT=IGNORED_CNT+1 ;;
 				*) echo "ERROR: FEATURE_STATUS=$FEATURE_STATUS"
 					exit 5 ;;
 				esac
@@ -258,6 +322,9 @@ fi
 			echo "Depend on back-end ($DEPEND_CNT):"
 			echo "$SQL_FEATURES_NON_ANSI_DEPEND"
 			echo "Depend by type: DDL=$D_D_CNT SQL=$S_D_CNT Con=$C_D_CNT Proc=$P_D_CNT Func=$F_D_CNT Mix=$X_D_CNT"
+			echo 
+			echo "Ignored ($IGNORED_CNT):"
+			echo "$SQL_FEATURES_NON_ANSI_IGNORED"
 			echo 
 			echo "All described features totals:"
 			echo "DDL=$D_CNT SQL=$S_CNT Con=$C_CNT Proc=$P_CNT Func=$F_CNT Mixed=$X_CNT Total=$ROW_CNT"
@@ -373,7 +440,8 @@ fi
 			else
 				#Skip all features expected to fail
 				INCOMPAT_FEATURE_LIST="$SQL_FEATURES_NON_ANSI_POSIBLE \
-								$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
+								$SQL_FEATURES_NON_ANSI_IMPOSIBLE \
+								$SQL_FEATURES_NON_ANSI_IGNORED"
 							#should I add Depends here?
 			fi
 			;;
@@ -3355,7 +3423,9 @@ fi
 		#This is bad; DB tests should have SQL/db features used described	
 		echo "ERROR: Not ANSI compatible but have no features description : $NOT_ANSI_NO_SQL_FEATURES_DESC" >> $LOGFILE
 	fi
-	
+	if test "$NO_RUNTIME_ERR_CHECK_LIST" != ""; then
+		echo "WARNING: PASS tests taht perform no run-time error checking ($NO_RUNTIME_ERR_CHECK_CNT): $NO_RUNTIME_ERR_CHECK_LIST" >> $LOGFILE	
+	fi
 	if test "$PASS_INCOMPAT_SQL" != ""; then
 		#This is certanly wrong; need to change feature status; test cannot\
 		#possibly pass if feature is incompatible

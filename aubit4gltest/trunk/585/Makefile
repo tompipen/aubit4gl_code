@@ -195,3 +195,7 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST EXECUTE_USING"
 
+
+runtime_err_check:
+	@echo "0"
+

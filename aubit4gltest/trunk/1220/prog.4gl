@@ -2,7 +2,6 @@ database test1
 
 main
 define a,b,c char(10)
-
 #display "create temp table..."
 	create temp table t1 ( 
 		a char(10),

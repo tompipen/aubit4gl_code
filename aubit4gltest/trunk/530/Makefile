@@ -205,3 +205,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE TABLENAME_DB_USER_TABLE"
 	
 	
+
+runtime_err_check:
+	@echo "0"
+

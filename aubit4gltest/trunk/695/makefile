@@ -224,3 +224,7 @@ sql_features_used:
 		CURSOR_SELECT"
 
 
+
+runtime_err_check:
+	@echo "0"
+

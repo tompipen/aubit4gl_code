@@ -195,3 +195,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TEMP_TABLE ANSI_INSERT UNLOAD_TO ANSI_DELETE \
 		LOAD_FROM_INSERT_INTO ANSI_SELECT"
 
+
+runtime_err_check:
+	@echo "0"
+

@@ -194,3 +194,7 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "SET_EXPLAIN"
 
+
+runtime_err_check:
+	@echo "0"
+

@@ -216,3 +216,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST \
 		UPDATE_SET_VALUE_WITH_SUBSELECT CURSOR_SELECT"
 
+
+runtime_err_check:
+	@echo "0"
+

@@ -11,17 +11,26 @@
 #lists that applu to Aubit compiler, since it anticipated that tests that fail 
 #using -eci will not work with any other Aubit configuration
 #NOTE: <*> = OK with -esqli
-EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987"
+#      <P> = OK with -ecp
+EXPECT_TO_FAIL_TESTS="240 766 767 962 976 987 "
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
-#766 (Key CONTROL-H was 49     and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
+#766 (Key CONTROL-H was 49 and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
 #767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
-#962 (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
-#976 (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
-#987 same ?
+#962 <P> (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
+#976 <P> (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
+#987 <P> same ?
 #233 failed once, but cant reproduce??
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 63 104 244 272 1222 1230 1232"
+#New (all work with -ecp):
+#63 
+#104 
+#244 
+#272 
+#1222 
+#1230 
+#1232
 
 #Tests that may fail for reasons other then Aubit bug (config issues)
 #590 Cannot open EXPLAIN output file. (Works with -ecp because its ignored) 	
@@ -106,23 +115,26 @@ EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ECP="1 76 98 110 376 530 535 584 587 670 739 900 \
-	903 913 1208 1220 1228 "
+EXPECT_TO_FAIL_TESTS_ECP="1 76 98 376 530 535 670 900 903 913"
 #1 'xdt is null' BUT SHOULD BE 'xdt is 12:01:02' http://aubit.com/mantis/view.php?id=687 AND http://aubit.com/mantis/view.php?id=517
 #76 (datetime-ecpg issue) http://aubit.com/mantis/bug_view_page.php?bug_id=0000479
 #98 serial insert ignores non-zero value http://aubit.com/mantis/view.php?id=604
-#110 COPY delimiter must be a single character http://aubit.com/mantis/view.php?id=693
+#CLOSED 110 COPY delimiter must be a single character http://aubit.com/mantis/view.php?id=693
 #376 core in 4glc : http://aubit.com/mantis/view.php?id=688
 #530 (TABLENAME_DB_USER_TABLE),535 (CREATE_TABLE_IN)  (syntax) http://aubit.com/mantis/bug_view_page.php?bug_id=0000485
-#584 587 prepared DATABASE stmt fails with -220 http://aubit.com/mantis/view.php?id=694
+#CLOSED 584 587 prepared DATABASE stmt fails with -220 http://aubit.com/mantis/view.php?id=694
 #670 error in ecpg generated C code http://www.aubit.com/mantis/view.php?id=696
-#739 A row was deleted from a temp table with no log http://aubit.com/mantis/view.php?id=692
+#CLOSED 739 A row was deleted from a temp table with no log http://aubit.com/mantis/view.php?id=692
 #900 A wrong select give a zero sqlca http://aubit.com/mantis/view.php?id=690
 #903 Wrong sqlca it as not assigned sqlcode http://aubit.com/mantis/view.php?id=691
 #913 An warning was not issued with a DB with transactions http://aubit.com/mantis/view.php?id=689
-#1208 1228 UNLOAD TO SELECT FROM cant open file http://www.aubit.com/mantis/view.php?id=697
-#1220 select one more filed then it exsist in the table http://www.aubit.com/mantis/view.php?id=698
+#CLOSED 1208 1228 UNLOAD TO SELECT FROM cant open file http://www.aubit.com/mantis/view.php?id=697
+#CLOSED 1220 select one more filed then it exsist in the table http://www.aubit.com/mantis/view.php?id=698
 
+#1) No issue:			1 76 670 739 1208
+#2) beyond scope:		98 110 530 584 903 913 240 766 767 962 976
+#3) That's a problem: 	900
+#4) Don't understand test: 376 (core dump)
 
 # --------------------------------------------------------------------------
 #							-sqlite and -sqlite-odbc

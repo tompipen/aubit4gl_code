@@ -195,3 +195,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST FREE_CURSOR"
 
 
+
+runtime_err_check:
+	@echo "0"
+

@@ -229,4 +229,12 @@ sql_features_used:
 ansi_sql_compat:
 	@echo ""
 
+#################
+#If test does not perform any error checking at run-time, set this to 0
+#If it does (in 4GL code, exit status, using diff on created files, etc)
+#then set it to 1. If unknown or unsure, leave empty
+runtime_err_check:
+	@echo ""
+
+	
 # ============================= EOF ================================

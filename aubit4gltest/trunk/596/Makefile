@@ -201,3 +201,7 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE BEGIN_WORK LOCK_TABLE_EXCLUSIVE ROLLBACK_WORK"
 
+
+runtime_err_check:
+	@echo "0"
+

@@ -1699,6 +1699,7 @@ rm -f $CURR_DIR/$ERROR_LOG
 	IS_CONSOLE_PROMPT_CNT=0
 	IS_DUMP_SCREEN_CNT=0
 	IS_LONG_CNT=0
+	NO_RUNTIME_ERR_CHECK_CNT=0
 	IS_CERT_CNT=0
 	IS_NO_CRON_CNT=0
 	IS_OBSOLETE_CNT=0
@@ -1928,6 +1929,7 @@ do
 		compat_test=`$MAKE -s -C $TEST_NO compat_test 2>/dev/null`
 		IS_UNKNOWN_TEST=`$MAKE -s -C $TEST_NO unknown_test 2>/dev/null`
 		EXPECT_CODE=`$MAKE -s -C $TEST_NO expect_code 2>/dev/null`
+		RUNTIME_ERR_CHECK=`$MAKE -s -C $TEST_NO runtime_err_check 2>/dev/null`
 		if test "$EXPECT_CODE" = "" ; then
 			EXPECT_CODE=0
 		fi
@@ -2429,6 +2431,14 @@ do
 			#change_setting "compat_test" "1" "$TEST_NO"
 		fi
 	
+		if test "$RUNTIME_ERR_CHECK" = "0"; then 
+			if test "$SHOW_ITEM_RESULT" = "1"; then 
+				echo "NOTE: $TEST_NO does not perform ANY run-time erorr checking!"  >> $LOGFILE
+				echo "NOTE: Therefore, PASS result is questionable."  >> $LOGFILE
+			fi
+			NO_RUNTIME_ERR_CHECK_LIST="$NO_RUNTIME_ERR_CHECK_LIST $TEST_NO"
+			let NO_RUNTIME_ERR_CHECK_CNT=NO_RUNTIME_ERR_CHECK_CNT+1
+		fi
 		if test "$IS_EXPECT_TO_FAIL_TEST" = "1" ; then
 			if test "$SHOW_ITEM_RESULT" = "1"; then 
 				echo "NOTE: $TEST_NO was expected to fail, but passed!"  >> $LOGFILE

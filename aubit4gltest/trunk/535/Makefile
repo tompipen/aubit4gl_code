@@ -206,3 +206,7 @@ sql_features_used:
 		CREATE_TABLE_NEXT_SIZE CREATE_TABLE_LOCK_MODE"
 
 	
+
+runtime_err_check:
+	@echo "0"
+

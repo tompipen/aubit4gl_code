@@ -204,3 +204,7 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DATABASE_QUALIFIED_PATH"
 	
+
+runtime_err_check:
+	@echo "0"
+

@@ -375,44 +375,37 @@ for a in $FLAGS; do
 			FEATURES_STATUS_TMP="features_status.tmp"
 			TEST_FEATURES_TMP="tests_features.tmp"
 			OUT_TMP=out.tmp
+			EXPANDED_CONFIDENCE=1
 			HTML=1
 			if test "$HTML" = "1"; then
 				FINAL_OUT=support_status.html
 			else
 				FINAL_OUT=support_status.txt
 			fi
-			#'results_$HOSTNAME$U$date_stamp.unl'
-			#'test_run_$HOSTNAME$U$date_stamp.unl'
 			LAST_RESULTS=`ls -al --sort=t results_$HOSTNAME* 2> /dev/null | head -4 | grep ":" | head -1 | awk '{print $9}'`
 			if test "$LAST_RESULTS" = ""; then 
-				echo "WARNING: no results files (results_HOSTNAME_DATE.unl) found"
+				echo "ERROR: no results files (results_HOSTNAME_DATE.unl) found"
+				exit 1
+			else
+				if test ! -f $LAST_RESULTS ; then
+					echo "ERROR: results file ($LAST_RESULTS) missing"
+					exit 2
+				fi
 			fi
-			TEST_DATE=`echo "$LAST_RESULTS" | sed -e 's/results_aptiva_//' | sed -e 's/_/ /' | awk '{print $1}'`
-			TEST_TIME=`echo "$LAST_RESULTS" | sed -e 's/results_aptiva_//' | sed -e 's/_/ /' | awk '{print $2}' | sed -e 's/.unl//'`
+			
+			if test ! -f $CATALOGUE_UNL_FILE ; then
+				echo "ERROR: catalogue file ($CATALOGUE_UNL_FILE) missing"
+				exit 2
+			fi
+			U="_"
+			TEST_DATE=`echo "$LAST_RESULTS" | sed -e "s/results_$HOSTNAME$U//" | sed -e 's/_/ /' | awk '{print $1}'`
+			TEST_TIME=`echo "$LAST_RESULTS" | sed -e "s/results_$HOSTNAME$U//" | sed -e 's/_/ /' | awk '{print $2}' | sed -e 's/.unl//'`
 			U="_"
 			TEST_RUN_UNL="test_run_$HOSTNAME$U$TEST_DATE$U$TEST_TIME.unl"
-			#echo $LAST_RESULTS
-			#echo $TEST_DATE
-			#echo $TEST_TIME
-			#echo $TEST_RUN_UNL
 			if test ! -f $TEST_RUN_UNL ; then
 				echo "ERROR: $TEST_RUN_UNL missing"
 				exit 5
 			else
-#         1             2     3    4         5                            6                                                                                       
-#13-02-2005_18-35-52|aptiva|root|UNIX|i386-redhat-linux-gnu|Linux aptiva 2.4.7-10 #1 Thu Sep 6 17:21:28 EDT 2001 i586 unknown
-#                 7
-#|-eci -described -nolong -err-with-log -aubitrc-test -nospace -cert -ecp -silent
-#    8  9 10     11  12  13         14     14      16            17
-#|0.49|36||1108279276||9.51.UC1|9.21.UC4|3.79.1|2.05.8(1)-release||
-
-#         1        2       3       4           5          6 
-#echo "$time$dl$host$dl$user$dl$platform$dl$os_name$dl$os_version
-#      7          8                9              10              11
-#$dl$flags$dl$aubit_version$dl$aubit_build$dl$comp_version$dl$total_time
-#     12         13          14        15          16         17
-#$dl$c_ver$dl$esql_ver$dl$db_ver$dl$make_ver$dl$sh_ver$dl$LOG_TEXT$dl" 
-
 				RESULTS_HOST=`cut --fields=2 --delimiter="|" $TEST_RUN_UNL`
 				#RESULTS_USER=`cut --fields=3 --delimiter="|" $TEST_RUN_UNL`
 				RESULTS_PLATFORM=`cut --fields=4 --delimiter="|" $TEST_RUN_UNL`
@@ -424,20 +417,18 @@ for a in $FLAGS; do
 				RESULTS_AUBIT_BUILD=`cut --fields=9 --delimiter="|" $TEST_RUN_UNL`
 				#Only when non-Aubit 4gl compiler is used:
 				RESULTS_COMP_VER=`cut --fields=10 --delimiter="|" $TEST_RUN_UNL`
-				
 				RESULTS_TOTAL_TIME=`cut --fields=11 --delimiter="|" $TEST_RUN_UNL`
-
 				RESULTS_C_COMP_VER=`cut --fields=12 --delimiter="|" $TEST_RUN_UNL`
 #temp:				
-if test "$RESULTS_C_COMP_VER" = ""; then
-	RESULTS_C_COMP_VER=`gcc --version`
-fi
+#if test "$RESULTS_C_COMP_VER" = ""; then
+#	RESULTS_C_COMP_VER=`gcc --version`
+#fi
 				RESULTS_ESQL_VER=`cut --fields=13 --delimiter="|" $TEST_RUN_UNL`
 #temp. override:
 RESULTS_ESQL_VER=`$POSTGRES_BIN/ecpg --version`				
 				RESULTS_DB_VER=`cut --fields=14 --delimiter="|" $TEST_RUN_UNL`
 #TEmp overide:
-RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
+#RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 				#RESULTS_MAKE_VER=`cut --fields=15 --delimiter="|" $TEST_RUN_UNL`
 				#RESULTS_SH_VER=`cut --fields=16 --delimiter="|" $TEST_RUN_UNL`
 				RESULTS_LOG_TEXT=`cut --fields=17 --delimiter="|" $TEST_RUN_UNL`				
@@ -449,7 +440,7 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 			rm -f $OUT_TMP $FINAL_OUT
 			
 			FEATURES_STATUS=`cat $FEATURES_STATUS_TMP`
-			CNT=0; P_CNT=0;S_CNT=0;D_CNT=0;I_CNT=0;U_CNT=0;
+			CNT=0; P_CNT=0;S_CNT=0;D_CNT=0;I_CNT=0;U_CNT=0;G_CNT=0;
 			for col in $FEATURES_STATUS ; do
 				let CNT=CNT+1
 				#echo "$CNT = $col"
@@ -460,6 +451,7 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 						S) STATUS_NAME="SUPPORTED"; let S_CNT=S_CNT+1;;
 						D) STATUS_NAME="DEPENDS"; let D_CNT=D_CNT+1;;
 						I) STATUS_NAME="IMPOSSIBLE"; let I_CNT=I_CNT+1;;
+						G) STATUS_NAME="IGNORED"; let G_CNT=G_CNT+1;;
 						*) echo "ERROR: STATUS=$STATUS"; exit 5;;
 						esac
 						;;
@@ -502,11 +494,7 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 				echo "<a href="http://dev.mysql.com/tech-resources/crash-me.php">Database Server Feature Comparisons</a><br>"  >> $FINAL_OUT
 				echo "<a href="http://dev.mysql.com/tech-resources/crash-me.php?res_id=450">Database Server Feature Comparison: PostgreSQL-7.3.3, Informix-7.24UC5</a><br>"  >> $FINAL_OUT				
 				echo "<br><br>" >> $FINAL_OUT
-
-
-				
 				echo "Testing conditions:<br>" >> $FINAL_OUT
-					
 				echo "<div align="left">" >> $FINAL_OUT
 				echo "  <table border="1" id="table2">" >> $FINAL_OUT
 				echo "    <tr>" >> $FINAL_OUT
@@ -547,12 +535,10 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 					echo "    </tr>" >> $FINAL_OUT
 				fi
 				#Disabled - huge number!
-				#echo "    <tr>" >> $FINAL_OUT
-				#echo "      <td>Tests total run time (seconds)</td>" >> $FINAL_OUT
-				#echo "      <td>$RESULTS_TOTAL_TIME</td>" >> $FINAL_OUT
-				#echo "    </tr>" >> $FINAL_OUT
-				
-
+				echo "    <tr>" >> $FINAL_OUT
+				echo "      <td>Tests total run time (seconds)</td>" >> $FINAL_OUT
+				echo "      <td>$RESULTS_TOTAL_TIME</td>" >> $FINAL_OUT
+				echo "    </tr>" >> $FINAL_OUT
 				echo "    <tr>" >> $FINAL_OUT
 				echo "      <td>C compiler version (GCC)</td>" >> $FINAL_OUT
 				echo "      <td>$RESULTS_C_COMP_VER</td>" >> $FINAL_OUT
@@ -581,6 +567,25 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 				echo "  </table>" >> $FINAL_OUT
 				echo "</div>" >> $FINAL_OUT
 				echo "<br><br>" >> $FINAL_OUT
+				
+				echo "Legend:<br>" >> $FINAL_OUT
+				echo "<br>" >> $FINAL_OUT
+				echo "(n): for preceding test number, as follows:<br>" >> $FINAL_OUT
+				echo "E=test does not perform any run-time Error checking<br>" >> $FINAL_OUT
+				echo "S=test was Skipped<br>" >> $FINAL_OUT
+				echo "C=test is Compile only - it was not executed<br>" >> $FINAL_OUT
+				if test "$EXPANDED_CONFIDENCE" = "1"; then 
+					echo "x=Confidence estimate for this test (1-5)<br>" >> $FINAL_OUT
+				fi
+				echo "<br>" >> $FINAL_OUT
+				echo "Other symbols:<br>" >> $FINAL_OUT
+				if test "$EXPANDED_CONFIDENCE" = "1"; then
+					echo "[C/A/A/P]: confidence that feature works (0-5) COMBINED/AVERAGE/ABSOLUTE/PROPORTIONAL<br>" >> $FINAL_OUT
+				else
+					echo "[C]: confidence that feature works (0-5) COMBINED<br>" >> $FINAL_OUT
+				fi
+				echo "...=Indicates that not all test numbers belonging to that group are listed (max=5)<br>" >> $FINAL_OUT
+				echo "<br><br>" >> $FINAL_OUT				
 			else
 				echo "RESULTS_HOST $RESULTS_HOST" >> $FINAL_OUT
 				echo "RESULTS_PLATFORM $RESULTS_PLATFORM" >> $FINAL_OUT
@@ -607,7 +612,7 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 			
 			fi
 			
-			STAT_LIST="SUPPORTED DEPENDS POSSIBLE IMPOSSIBLE UNTESTED"
+			STAT_LIST="SUPPORTED DEPENDS IGNORED POSSIBLE IMPOSSIBLE UNTESTED"
 			#STAT_LIST="UNTESTED"
 			for STAT in $STAT_LIST; do
 				case $STAT in
@@ -615,6 +620,7 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 					SUPPORTED) STAT_CNT="$S_CNT";;
 					DEPENDS) STAT_CNT="$D_CNT";;
 					IMPOSSIBLE) STAT_CNT="$I_CNT";;
+					IGNORED) STAT_CNT="$G_CNT";;
 					UNTESTED) STAT_CNT="$U_CNT";;
 					*) echo "ERROR: STAT=$STAT"; exit 5;;
 				esac
@@ -622,7 +628,7 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 				if test "$HTML" = "1"; then			
 					echo "<div align='left'>"  >> $FINAL_OUT
 					echo "  <table border='1' id='table$STAT'>"  >> $FINAL_OUT
-					echo "  <tr><td colspan='6' bgcolor='#C0C0C0'><p align='center'>$STAT</td></tr>"  >> $FINAL_OUT
+					echo "  <tr><td colspan='6' bgcolor='#C0C0C0'><p align='center'>$STAT ($STAT_CNT)</td></tr>"  >> $FINAL_OUT
 					echo "<tr>" >> $FINAL_OUT
 					echo "  <td>Feature</td>" >> $FINAL_OUT
 					echo "  <td>Type</td>" >> $FINAL_OUT
@@ -649,6 +655,7 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 					3);;#STATUS_NAME
 					4) TEST_CNT="$col";;
 					5) TEST_LIST="$col"; CNT=0
+					 	echo -n "$LABEL "
 						TEST_LIST=`echo $TEST_LIST | tr "_" " "`
 						#here we have the list of tests that use that feature
 						#now we have to check if this tests really worked 
@@ -678,20 +685,72 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 									let TEST_FAILED_CNT=TEST_FAILED_CNT+1
 									TEST_FAILED_LIST="$TEST_FAILED_LIST $AN_TEST"
 								fi
-							
 							done
 						fi
-
-						if test "$TEST_WORKING_CNT" -gt "5"; then 
-							CNT2=0; REDUCED_TEST_LIST=""
+						if test "$TEST_WORKING_CNT" -gt "0"; then
+							#get confidence for each (working) test,
+							#reorder list to show tests with high confidence first (tests
+							#that are not compile-only, and tests that do
+							#perform run-time error checking
+							CNT2=0;
+							LIST_0="";LIST_2="";LIST_3="";LIST_4="";LIST_5="";
+							CNT_0=0;CNT_2=0;CNT_3=0;CNT_4=0;CNT_5=0;
 							for t in $TEST_WORKING_LIST; do
 								let CNT2=CNT2+1
-								REDUCED_TEST_LIST="$REDUCED_TEST_LIST $t"
+								make_test_attrib_label "$t" "$LAST_RESULTS" "$CATALOGUE_UNL_FILE"
+								case $THIS_TEST_CONFIDENCE in
+									0) LIST_0="$LIST_0 $t"; let CNT_0=CNT_0+1;;
+									2) LIST_2="$LIST_2 $t"; let CNT_2=CNT_2+1;;
+									3) LIST_3="$LIST_3 $t"; let CNT_3=CNT_3+1;;
+									xx4) LIST_4="$LIST_4 $t"; let CNT_4=CNT_4+1;;
+									5) LIST_5="$LIST_5 $t"; let CNT_5=CNT_5+1;;
+									*) echo "ERROR: THIS_TEST_CONFIDENCE=$THIS_TEST_CONFIDENCE"; exit 3;;
+								esac
+							done
+							#After all tests for this feature are rated,
+							#calculate confidence in this feature:
+							let SUM_CONF=CNT_0+CNT_2+CNT_3+CNT_4+CNT_5
+							#Percentage:
+							AVG_CONF=`perl -e '$X=shift @ARGV;$Y=shift @ARGV;;$Z=int($X*100/($Y));print "$Z";' $SUM_CONF $TEST_WORKING_CNT`
+							#Reduce to 1-5 range:
+							let FEATURE_CONFIDENCE_AVERAGE=($AVG_CONF/2)/10
+							FEATURE_CONFIDENCE_ABSOLUTE=0
+							if test "$CNT_2" -gt "0"; then FEATURE_CONFIDENCE_ABSOLUTE=2; fi
+							if test "$CNT_3" -gt "0"; then FEATURE_CONFIDENCE_ABSOLUTE=3; fi
+							if test "$CNT_4" -gt "0"; then FEATURE_CONFIDENCE_ABSOLUTE=4; fi
+							if test "$CNT_5" -gt "0"; then FEATURE_CONFIDENCE_ABSOLUTE=5; fi
+							
+							#Proportional-assign value based on number of tests working
+							if test "$TEST_WORKING_CNT" -gt "5"; then 
+								FEATURE_CONFIDENCE_PROPORTIONAL="5"
+							else
+								FEATURE_CONFIDENCE_PROPORTIONAL="$TEST_WORKING_CNT"
+							fi
+							
+							#TODO: assign value to NUMBER of tests in each confidence group;
+							#so that if we have 10 tests in group 2, and one in 5, 
+							#we don't get too high score
+							
+							
+							#Combined - calculate median from average, absolute and proportional
+							let FEATURE_CONFIDENCE_COMBINED=(FEATURE_CONFIDENCE_AVERAGE+FEATURE_CONFIDENCE_ABSOLUTE+FEATURE_CONFIDENCE_PROPORTIONAL)/3
+							
+							#Reorder list, high confidence first
+							TEST_WORKING_LIST="$LIST_5 $LIST_4 $LIST_3 $LIST_2 $LIST_0"
+						else
+							FEATURE_CONFIDENCE=0
+						fi
+						
+						if test "$TEST_WORKING_CNT" -gt "5"; then
+							CNT2=0; REDUCED_WORKING_TEST_LIST=""
+							for t in $TEST_WORKING_LIST; do
+								let CNT2=CNT2+1
+								REDUCED_WORKING_TEST_LIST="$REDUCED_WORKING_TEST_LIST $t"
 								if test "$CNT2" = "5"; then
 									break
 								fi
 							done
-							TEST_WORKING_LIST="$REDUCED_TEST_LIST ..."
+							TEST_WORKING_LIST="$REDUCED_WORKING_TEST_LIST ..."
 						fi
 						if test "$TEST_CNT" -gt "5"; then 
 							CNT2=0; REDUCED_TEST_LIST=""
@@ -709,8 +768,9 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 							TMP=$TEST_LIST
 							TEST_LIST=""
 							for test_no in $TMP; do
-								if test "$test_no" != "..." -a "$test_no" != "NONE"; then 
-									TEST_LIST="$TEST_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no</a>"
+								if test "$test_no" != "..." -a "$test_no" != "NONE"; then
+									make_test_attrib_label "$test_no" "$LAST_RESULTS" "$CATALOGUE_UNL_FILE"
+									TEST_LIST="$TEST_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no$DESC</a>"
 								else
 									TEST_LIST="$TEST_LIST $test_no"
 								fi
@@ -720,14 +780,15 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 								TEST_WORKING_LIST=""
 								for test_no in $TMP; do
 									if test "$test_no" != "..." -a "$test_no" != "NONE"; then
-										TEST_WORKING_LIST="$TEST_WORKING_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no</a>"
+										make_test_attrib_label "$test_no" "$LAST_RESULTS" "$CATALOGUE_UNL_FILE"
+										TEST_WORKING_LIST="$TEST_WORKING_LIST <a href='$TEST_WEBCVS_URL/$test_no'>$test_no$DESC</a>"
 									else
 										TEST_WORKING_LIST="$TEST_WORKING_LIST $test_no"										
 									fi
 								done
 							else
 								if test "$STAT" = "SUPPORTED"; then
-									TEST_WORKING_LIST="WARNING!<br>NONE!"
+									TEST_WORKING_LIST="<font color='#FF0000'>NONE</font>"
 								else
 									TEST_WORKING_LIST="NONE"
 								fi
@@ -738,7 +799,11 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 							echo "  <td>$TYPE_NAME</td>" >> $FINAL_OUT
 							echo "  <td>$TEST_CNT</td>" >> $FINAL_OUT
 							echo "  <td>$TEST_LIST</td>" >> $FINAL_OUT
-							echo "  <td>$TEST_WORKING_CNT</td>" >> $FINAL_OUT
+							if test "$EXPANDED_CONFIDENCE" = "1"; then
+								echo "  <td>$TEST_WORKING_CNT [<font color="#0000FF">$FEATURE_CONFIDENCE_COMBINED</font>/$FEATURE_CONFIDENCE_AVERAGE/$FEATURE_CONFIDENCE_ABSOLUTE/$FEATURE_CONFIDENCE_PROPORTIONAL]</td>" >> $FINAL_OUT
+							else
+								echo "  <td>$TEST_WORKING_CNT [<font color="#0000FF">$FEATURE_CONFIDENCE_COMBINED</font>]</td>" >> $FINAL_OUT
+							fi
 							echo "  <td>$TEST_WORKING_LIST</td>" >> $FINAL_OUT
 							echo "</tr>" >> $FINAL_OUT
 						else
@@ -772,6 +837,95 @@ RESULTS_DB_VER=`$POSTGRES_BIN/postmaster --version`
 			echo "Done: see $FINAL_OUT"
 			exit
 			;;
+
+		-no-run) #establish no-runtime erro checking base on comments in makefile
+			ALL_DIRS=[0-9]*
+			#ALL_DIRS=1004
+			#ALL_DIRS=250
+            for a in $ALL_DIRS; do
+				#echo $a
+				MK=`ls $a/?akefile 2> /dev/null`
+				if test "$MK" = ""; then
+					continue
+				fi
+				if test -f $MK; then
+					FOUND=0; MAYBE=0;
+					LOOK_FOR="no run-time error check"
+					TMP=`grep -i "$LOOK_FOR" $MK`
+					RET=$?
+					if test "$RET" = "0"; then
+						FOUND=1
+						FOUND_LIST="$FOUND_LIST $a"
+						echo "FOUND ($a): $TMP"
+					fi
+					if test "$FOUND" = "0"; then
+						LOOK_FOR="no run-time check"
+						TMP=`grep -i "$LOOK_FOR" $MK`
+						RET=$?
+						if test "$RET" = "0"; then
+							FOUND=1
+							FOUND_LIST="$FOUND_LIST $a"
+							echo "FOUND ($a): $TMP"
+						fi
+					fi
+					
+					if test "$FOUND" = "0"; then
+						LOOK_FOR="run-time"
+						TMP=`grep -i "$LOOK_FOR" $MK`
+						RET=$?
+						if test "$RET" = "0"; then
+							MAYBE=1
+							MAYBE_LIST="$MAYBE_LIST $a"
+							echo "MAYBE ($a): $TMP"
+						fi
+					fi
+					if test "$FOUND" = "0" -a "$MAYBE" = 0; then
+						LOOK_FOR="error check"
+						TMP=`grep -i "$LOOK_FOR" $MK`
+						RET=$?
+						if test "$RET" = "0"; then
+							MAYBE=1
+							MAYBE_LIST="$MAYBE_LIST $a"
+							echo "MAYBE ($a): $TMP"
+						fi
+					fi
+					if test "$FOUND" = "0" -a "$MAYBE" = 0; then
+						LOOK_FOR="time error"
+						TMP=`grep -i "$LOOK_FOR" $MK`
+						RET=$?
+						if test "$RET" = "0"; then
+							MAYBE=1
+							MAYBE_LIST="$MAYBE_LIST $a"
+							echo "MAYBE ($a): $TMP"
+						fi
+					fi
+					
+				#else
+					#echo "no makefile in $a" 
+				fi
+	 		done
+			
+			echo "MAYBE_LIST=$MAYBE_LIST"
+			echo "FOUND_LIST=$FOUND_LIST"
+			
+			LIST="$MAYBE_LIST $FOUND_LIST"
+			
+			for b in $LIST; do
+				IS_SET=`$MAKE -s -C $b runtime_err_check 2>/dev/null`
+				if test "$IS_SET" != ""; then
+					echo "Allready set ($b)"
+				else
+					echo "Adding $b"
+					change_setting runtime_err_check "0" $b
+					#exit
+				fi
+			
+			done
+			
+			exit
+			;;
+		
+
 			
         -find) #find word in 4gl code
 			FIND_WORD="1"

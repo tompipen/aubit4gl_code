@@ -212,3 +212,7 @@ sql_features_used:
 	@echo "DEFINE_LIKE ANSI_DELETE INSERT_COLUMNLIST_EQ_VALUELIST \
 		UPDATE_SET_STAR CURSOR_SELECT"
 
+
+runtime_err_check:
+	@echo "0"
+

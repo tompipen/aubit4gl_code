@@ -207,3 +207,7 @@ sql_features_used:
 	
 	
 	
+
+runtime_err_check:
+	@echo "0"
+

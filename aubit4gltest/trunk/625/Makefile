@@ -195,3 +195,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLCODE ANSI_SELECT \
 		ANSI_DELETE"
 
+
+runtime_err_check:
+	@echo "0"
+

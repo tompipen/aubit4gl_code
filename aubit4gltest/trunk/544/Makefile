@@ -194,3 +194,7 @@ ansi_sql_compat:
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE DDL_UNIQUE "
 
+
+runtime_err_check:
+	@echo "0"
+

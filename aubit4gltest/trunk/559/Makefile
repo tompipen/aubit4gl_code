@@ -196,3 +196,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE ALTER_TABLE_ADD_BEFORE"
 
 
+
+runtime_err_check:
+	@echo "0"
+

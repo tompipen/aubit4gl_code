@@ -192,6 +192,10 @@ ansi_sql_compat:
 	@echo "0"
 	
 sql_features_used:
-	@echo "FREE_CURSOR"
+	@echo "FREE_CURSOR DATABASE_PREPARED"
 
+
+
+runtime_err_check:
+	@echo "0"
 

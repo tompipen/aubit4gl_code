@@ -79,6 +79,7 @@ compile: progname${TARGET_EXT} ${FORMS} ${HELP}
 ################
 #Run the compiled test
 run: compile
+	-chmod a+rw .
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
@@ -109,7 +110,10 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "Simple unload test for MID 591"
+	@echo "Simple unload test for MID 591 \
+		Note that for this test to work, in most cases, the database \
+		engine needs to have sufficient privileges to write to the test \
+		directory"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -173,7 +177,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped

@@ -207,9 +207,18 @@ need_ifx_version:
 # ============================= EOF ================================
 
 ansi_sql_compat:
-	@echo "1"
+	@echo "0"
 
 sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE DDL_SERIAL DDL_MONEY DDL_DATE DDL_DATETIME \
-			ANSI_INSERT ANSI_SELECT DROP_TABLE"
+			ANSI_INSERT ANSI_SELECT DROP_TABLE \
+			DDL_DATETIME_Y2Y DDL_DATETIME_Y2M DDL_DATETIME_Y2D DDL_DATETIME_Y2H \
+			DDL_DATETIME_Y2M DDL_DATETIME_Y2S DDL_DATETIME_Y2F DDL_DATETIME_Y2F2"
+
+			
+			
+			
+
+runtime_err_check:
+	@echo "0"
 

@@ -197,3 +197,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE CREATE_SYNONYM"
 
 
+
+runtime_err_check:
+	@echo "0"
+

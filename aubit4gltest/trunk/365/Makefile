@@ -192,3 +192,7 @@ sql_features_used:
 	@echo "SELECT_COUNT IFX_SYSTABLES"
 	
 
+
+runtime_err_check:
+	@echo "0"
+

@@ -198,3 +198,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE CLUSTER_INDEX CREATE_INDEX_ASC DESC_INDEX \
 		INDEX_FILLFACTOR"
 
+
+runtime_err_check:
+	@echo "0"
+

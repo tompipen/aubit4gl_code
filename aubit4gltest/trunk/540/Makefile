@@ -196,3 +196,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE DDL_PRIMARY_KEY DDL_REFERENCES"
 
 
+
+runtime_err_check:
+	@echo "0"
+

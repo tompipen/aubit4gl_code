@@ -195,3 +195,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TEMP_TABLE INSERT_COLUMNLIST_EQ_VALUELIST \
 		ANSI_UPDATE ANSI_SELECT"
 
+
+runtime_err_check:
+	@echo "0"
+

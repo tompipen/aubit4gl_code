@@ -211,3 +211,7 @@ sql_features_used:
 	DDL_DATE DDL_DATETIME DDL_INTERVAL DDL_NCHAR DDL_NVARCHAR DDL_TEXT DDL_BYTE"
 
 
+
+runtime_err_check:
+	@echo "0"
+

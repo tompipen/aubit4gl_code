@@ -213,3 +213,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE DDL_DATE DDL_DATETIME UPDATE_COLUMNLIST_EQ_VALUELIST FUNC_INTERVAL FUNC_EXTEND"
 	
 
+
+runtime_err_check:
+	@echo "0"
+

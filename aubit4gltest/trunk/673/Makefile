@@ -196,3 +196,7 @@ sql_features_used:
 			DDL_INTERVAL ANSI_INSERT UPDATE_COLUMNLIST_EQ_VALUELIST \
 			ANSI_SELECT ANSI_SELECT DROP_TABLE"
 
+
+runtime_err_check:
+	@echo "0"
+

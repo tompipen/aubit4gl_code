@@ -200,3 +200,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE DDL_PRIMARY_KEY"
 
 	
+
+runtime_err_check:
+	@echo "0"
+

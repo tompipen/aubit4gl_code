@@ -196,3 +196,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLCODE ANSI_SELECT \
 		DELETE_FROM_WHERE_EXISTS_SUBSELECT"
 
+
+runtime_err_check:
+	@echo "0"
+

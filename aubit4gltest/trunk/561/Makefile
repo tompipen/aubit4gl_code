@@ -196,3 +196,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE DDL_PRIMARY_KEY DDL_CONSTRAINT ALTER_TABLE \
 		DDL_DEFAULT_VALUE"
 
+
+runtime_err_check:
+	@echo "0"
+

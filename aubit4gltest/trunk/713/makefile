@@ -217,3 +217,7 @@ sql_features_used:
 		INSERT_COLUMNLIST_EQ_VALUELIST ANSI_DELETE CURSOR_SELECT \
 		META_DELETE_FROM_SYNONYM"
 
+
+runtime_err_check:
+	@echo "0"
+

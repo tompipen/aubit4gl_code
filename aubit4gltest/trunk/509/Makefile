@@ -192,3 +192,7 @@ unknown_test:
 ansi_sql_compat:
 	@echo "1"
 
+
+runtime_err_check:
+	@echo "0"
+

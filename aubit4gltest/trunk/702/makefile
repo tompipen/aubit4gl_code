@@ -218,3 +218,7 @@ sql_features_used:
 	 FUNC_INTERVAL FUNC_EXTEND"
 	
 
+
+runtime_err_check:
+	@echo "0"
+

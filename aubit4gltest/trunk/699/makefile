@@ -216,3 +216,7 @@ sql_features_used:
 	@echo "DROP_TABLE DROP_VIEW CREATE_TABLE CREATE_VIEW_AS_SELECT \
 		META_INSERT_MULTITABLE_VIEW SQLCA_SQLCODE"
 
+
+runtime_err_check:
+	@echo "0"
+

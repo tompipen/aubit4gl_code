@@ -195,3 +195,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE ALTER_TABLE_LOCK_MODE"
 	
 	
+
+runtime_err_check:
+	@echo "0"
+

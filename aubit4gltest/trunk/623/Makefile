@@ -196,3 +196,7 @@ sql_features_used:
 		DELETE_FROM_WHERE_ALL_SUBSELECT DELETE_FROM_WHERE_ANY_SUBSELECT \
 		DELETE_FROM_WHERE_SOME_SUBSELECT"
 
+
+runtime_err_check:
+	@echo "0"
+

@@ -196,3 +196,7 @@ sql_features_used:
 			DDL_INTERVAL ANSI_INSERT ANSI_DELETE ANSI_SELECT SQLCA_SQLCODE DROP_TABLE"
 	
 
+
+runtime_err_check:
+	@echo "0"
+

@@ -231,7 +231,8 @@ transaction:
 #See run_tests script for full list of features the are checked against
 sql_features_used:
 	@echo "SELECT_INTO_TEMP DROP_TABLE CREATE_TABLE BEGIN_WORK ROLLBACK_WORK \
-		ORDER_BY_ASC ORDER_BY_DESC SQLCA_SQLCODE CLOSE_CURSOR"
+		ORDER_BY_ASC ORDER_BY_DESC SQLCA_SQLCODE CLOSE_CURSOR \
+		SELECT_INTO_TEMP_WITH_NO_LOG"
 		
 # ============================= EOF ================================
 

@@ -216,3 +216,7 @@ sql_features_used:
 	@echo "DROP_TABLE CREATE_TABLE DDL_DATETIME \
 		INSERT_COLUMNLIST_EQ_VALUELIST ANSI_UPDATE CURSOR_SELECT"
 
+
+runtime_err_check:
+	@echo "0"
+

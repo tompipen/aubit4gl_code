@@ -205,3 +205,7 @@ sql_features_used:
 	@echo "CREATE_TEMP_TABLE_NO_LOG"
 	
 	
+
+runtime_err_check:
+	@echo "0"
+

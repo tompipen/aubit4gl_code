@@ -213,3 +213,7 @@ sql_features_used:
 		UPDATE_COLUMNLIST_EQ_VALUELIST CURSOR_SELECT \
 		FUNC_DATETIME FUNC_INTERVAL"
 
+
+runtime_err_check:
+	@echo "0"
+
