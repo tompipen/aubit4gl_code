@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.24 2002-08-19 07:58:18 afalout Exp $
+# $Id: Makefile-install.mki,v 1.25 2002-08-24 07:02:49 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -39,9 +39,10 @@
 #<block for binary install Makefile ======================================>
 
 ## ==================================================================
-##                    install.x
+##                    install targets
 ## ==================================================================
 
+#Prepare and install global aubitrc
 install.aubitrc:
 ifneq "${INFILE}" ""
 ifneq "${AUBIT_BIN_INSTALL}" "1"
@@ -66,10 +67,9 @@ else
 	@echo "ERROR: cannot find ${LOOKFOR_INFILE} - please run 'configure' "
 endif
 
-install.links:
-#This links bin programs to location of Aubit bynary installation:
+#Create links for bin programs to location of Aubit bynary installation:
+install.links: deinstall.bin.links
 	${MKPATH} ${BIN_INSTALL_LINK}
-	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
 	${LN_S} $(INSTALL_DIR)/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
 	${LN_S} $(INSTALL_DIR)/bin/aubit ${BIN_INSTALL_LINK}/aubit
 	@echo "Links to Aubit compiler installed to ${BIN_INSTALL_LINK}/ "
@@ -89,101 +89,46 @@ install.libs.links: deinstall.libs.links
 	${LN_S} $(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
 
 ## ==================================================================
-##                    deinstall.x
+##                    deinstall targets
 ## ==================================================================
 
-#remove links to libraries:
-deinstall.libs.links:
-	${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
-#everything else is here for old versions, since it is no longer installed
-#out of AUBITDIR - and it should be removed in next version:
-	${RM} ${LIB_INSTALL_LINK}/libaclsharedgui${SO_EXT} ${LIB_INSTALL_LINK}/libaclshared${SO_EXT} \
-	${LIB_INSTALL_LINK}/libgtk4gl${SO_EXT} ${LIB_INSTALL_LINK}/libgtk4gl_x${SO_EXT} \
-	${LIB_INSTALL_LINK}/libPDF_NOPDF${SO_EXT} ${LIB_INSTALL_LINK}/libPDF_PDF${SO_EXT} \
-	${LIB_INSTALL_LINK}/libRPC_NORPC${SO_EXT} ${LIB_INSTALL_LINK}/libRPC_SUNRPC${SO_EXT} \
-	${LIB_INSTALL_LINK}/libFORM_XDR${SO_EXT} ${LIB_INSTALL_LINK}/libFORM_NOFORM${SO_EXT} \
-	${LIB_INSTALL_LINK}/libMENU_XDR${SO_EXT} ${LIB_INSTALL_LINK}/libMENU_NOMENU${SO_EXT} \
-	${LIB_INSTALL_LINK}/libMSG_NATIVE${SO_EXT}
-
-
-#remove links to binaries:
-deinstall.bin.links:
-	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
-
 #we could just drop the whole $(INSTALL_DIR) tree, but this is not very safe;
-#in the case user placed some files there (stupido!) he will hate us 
+#in the case user placed some files there (stupido!) he will hate us
 #nevertheless, so we will remove file-by-file:
-deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
+deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build \
+				deinstall.files deinstall.tree deinstall.ldconfig
+	@echo ""
+	@echo "Aubit compiler de-installed."
+	@echo "Config file in ${AUBITETC} was NOT deleted."
+
+xxx:
+#	@echo ${FROMBIN} ${FROMLIB} ${FROMDOCS} ${FROMTEST} ${FROMETC} \
+#	${FROMROOT} ${FROMINCL} ${FROMIDE}
+	@echo ${FROMDOCS}
+	@echo $(DOC_DEST)
+	@echo $(DOC_FILES)
+
+xx:
+	@echo $(ETC_FILES_LEGACY)
+	@echo ${FROMETC}
+
+
+#Deinstall all installed files:
+deinstall.files:
+#Run clean from makefiles first:
 	-${MAKE} -C $(INSTALL_DIR)/tools/test clean
 	-${MAKE} -C $(INSTALL_DIR)/tools/test/gui clean
-#Core compiler files:
-	${RM} $(INSTALL_DIR)/bin/4glc${EXEEXT} $(INSTALL_DIR)/bin/4glpc $(INSTALL_DIR)/bin/fcompile${EXEEXT} \
-		$(INSTALL_DIR)/bin/mcompile${EXEEXT} $(INSTALL_DIR)/bin/mkmess${EXEEXT} $(INSTALL_DIR)/bin/amake \
-		$(INSTALL_DIR)/bin/amakeallo $(INSTALL_DIR)/bin/amakeallf \
-		$(INSTALL_DIR)/bin/loadmap${EXEEXT} $(INSTALL_DIR)/bin/aubit $(INSTALL_DIR)/bin/aubit-config${EXEEXT} \
-		$(INSTALL_DIR)/bin/genmake $(INSTALL_DIR)/bin/mdecompile${EXEEXT} $(INSTALL_DIR)/bin/prepmake \
-		$(INSTALL_DIR)/bin/fdecompile${EXEEXT} $(INSTALL_DIR)/bin/fshow${EXEEXT} \
-		$(INSTALL_DIR)/bin/fshow-gtk${EXEEXT} $(INSTALL_DIR)/bin/4glp${EXEEXT} \
-        $(INSTALL_DIR)/bin/xgen${EXEEXT}
-
-	${RM} $(INSTALL_DIR)/README.txt $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
-		$(INSTALL_DIR)/incl/4glhdr.h $(INSTALL_DIR)/incl/acl4glgui.h \
-		$(INSTALL_DIR)/incl/4gldef.h $(INSTALL_DIR)/incl/*.mk \
-		$(INSTALL_DIR)/incl/a4gl_incl_4gldef.h  $(INSTALL_DIR)/incl/a4gl_incl_4glhdr.h  \
-		$(INSTALL_DIR)/incl/*.mki $(INSTALL_DIR)/incl/Makefile-common \
-		$(INSTALL_DIR)/incl/a4gl_API_form.h  $(INSTALL_DIR)/incl/a4gl_API_msg.h  $(INSTALL_DIR)/incl/a4gl_libaubit4gl.h \
-		$(INSTALL_DIR)/incl/a4gl_API_lex.h   $(INSTALL_DIR)/incl/a4gl_API_sql.h  $(INSTALL_DIR)/incl/form_x.x.h \
-		$(INSTALL_DIR)/incl/a4gl_API_menu.h  $(INSTALL_DIR)/incl/a4gl_incl_acl4glgui.h  $(INSTALL_DIR)/incl/form_x.xs.h \
-		$(INSTALL_DIR)/lib/libaclall.a $(INSTALL_DIR)/lib/libaubit4gl.a \
-		$(INSTALL_DIR)/lib/libaubit4gl${SO_EXT} $(INSTALL_DIR)/lib/libaclshared${SO_EXT} \
-		$(INSTALL_DIR)/lib/libPDF_NOPDF${SO_EXT} $(INSTALL_DIR)/lib/libSQL_nosql${SO_EXT} \
-    	$(INSTALL_DIR)/lib/libaclsharedgui${SO_EXT} $(INSTALL_DIR)/lib/libgtk4gl${SO_EXT} \
-		$(INSTALL_DIR)/lib/libgtk4gl_x${SO_EXT} $(INSTALL_DIR)/lib/libaclallgui.a  \
-		$(INSTALL_DIR)/lib/libgtk4gl_x.a  $(INSTALL_DIR)/lib/libSQL_unixodbc${SO_EXT} \
-        $(INSTALL_DIR)/lib/libSQL_iodbc${SO_EXT} $(INSTALL_DIR)/lib/libSQL_esql${SO_EXT}  \
-		$(INSTALL_DIR)/lib/libSQL_ifxodbc${SO_EXT}  $(INSTALL_DIR)/lib/libSQL_pgodbc${SO_EXT} \
-        $(INSTALL_DIR)/lib/libPDF_PDF${SO_EXT} $(INSTALL_DIR)/lib/libgtk4gl.a \
-		$(INSTALL_DIR)/lib/libSQL_odbc32${SO_EXT} $(INSTALL_DIR)/lib/libUI_GTK.a \
-		$(INSTALL_DIR)/lib/libUI_GTK${SO_EXT} $(INSTALL_DIR)/lib/libUI_GTK_x.a \
-		$(INSTALL_DIR)/lib/libUI_GTK_x${SO_EXT} $(INSTALL_DIR)/lib/libUI_TUI${SO_EXT} \
-		$(INSTALL_DIR)/lib/libRPC_NORPC${SO_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SO_EXT} \
-		$(INSTALL_DIR)/lib/libRPC_CONSOLE${SO_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SO_EXT} \
-        $(INSTALL_DIR)/lib/libRPC_XDR${SO_EXT} $(INSTALL_DIR)/lib/libEXREPORT_PDF${SO_EXT} \
-        $(INSTALL_DIR)/lib/libEXREPORT_NOPDF${SO_EXT} $(INSTALL_DIR)/lib/libA4GLLEX_C${SO_EXT} \
-		$(INSTALL_DIR)/lib/libA4GLLEX_PERL${SO_EXT} $(INSTALL_DIR)/lib/libFORM_XDR${SO_EXT} \
-		$(INSTALL_DIR)/lib/libFORM_NOFORM${SO_EXT} $(INSTALL_DIR)/lib/libMENU_NOMENU${SO_EXT} \
-		$(INSTALL_DIR)/lib/libMENU_XDR${SO_EXT} $(INSTALL_DIR)/lib/libRPC_XMLRPC${SO_EXT} \
-		$(INSTALL_DIR)/lib/libMSG_NATIVE${SO_EXT} $(INSTALL_DIR)/lib/libLEX_C${SO_EXT}  $(INSTALL_DIR)/lib/libLEX_PERL${SO_EXT}
-
-#windows dll export libraries:
-ifneq "${COMSPEC}" ""
-	${RM} $(INSTALL_DIR)/lib/libaclshared${SOEXP_EXT} $(INSTALL_DIR)/lib/libPDF_NOPDF${SOEXP_EXT} \
-	$(INSTALL_DIR)/lib/libSQL_nosql${SOEXP_EXT} $(INSTALL_DIR)/lib/libgtk4gl${SOEXP_EXT} \
-	$(INSTALL_DIR)/lib/libaclsharedgui${SOEXP_EXT} $(INSTALL_DIR)/lib/libgtk4gl_x${SOEXP_EXT} \
-    $(INSTALL_DIR)/lib/libSQL_odbc32${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_GTK${SOEXP_EXT} \
-	$(INSTALL_DIR)/lib/libUI_TUI${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_GTK_x${SOEXP_EXT} \
-	$(INSTALL_DIR)/lib/libRPC_NORPC${SOEXP_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SOEXP_EXT} \
-	$(INSTALL_DIR)/lib/libRPC_CONSOLE${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SOEXP_EXT} \
-	$(INSTALL_DIR)/lib/libRPC_XDR${SOEXP_EXT} $(INSTALL_DIR)/lib/libEXREPORT_NOPDF${SOEXP_EXT} \
-    $(INSTALL_DIR)/lib/libaubit4gl${SOEXP_EXT} $(INSTALL_DIR)/lib/libFORM_XDR${SOEXP_EXT}
-endif
-
-#examples:
-	${RM} $(INSTALL_DIR)/tools/test/*.4gl $(INSTALL_DIR)/tools/test/*.per \
-		$(INSTALL_DIR)/tools/test/Makefile $(INSTALL_DIR)/tools/test/*.msg
-	${RM} $(INSTALL_DIR)/tools/test/gui/*.4gl $(INSTALL_DIR)/tools/test/gui/*.per \
-		$(INSTALL_DIR)/tools/test/gui/Makefile
-#manual
-	${RM} $(INSTALL_DIR)/docs/changelog.txt $(INSTALL_DIR)/docs/COPYING $(INSTALL_DIR)/docs/CREDITS \
-		$(INSTALL_DIR)/docs/LICENSE $(INSTALL_DIR)/docs/aubit4gl.ico
-#config examples
-	${RM} $(INSTALL_DIR)/etc/odbc.ini.example $(INSTALL_DIR)/etc/aubitrc-bin.in
+#Remove files as they are installed - Do not remove files from ${FROMHOME}
+	${RM} ${FROMBIN} ${FROMLIB} ${FROMDOCS} ${FROMTEST} ${FROMETC} \
+	${FROMROOT} ${FROMINCL} ${FROMIDE}
+#Drop Autoconf support directory:
 	rm -rf $(INSTALL_DIR)/etc/config
+#files created after installation, and by Autoconf:
+	${RM} $(INSTALL_DIR)/*.tgz $(INSTALL_DIR)/configure $(INSTALL_DIR)/Makefile \
+	$(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin
 
-#files created by configure:
-	${RM} $(INSTALL_DIR)/config.log $(INSTALL_DIR)/config.status $(INSTALL_DIR)/etc/aubitrc-bin
-
-#delete this directories only if they are now empty:
+#delete installation tree (only if directories are now empty):
+deinstall.tree:
 	-rmdir $(INSTALL_DIR)/bin
 	-rmdir $(INSTALL_DIR)/lib
 	-rmdir $(INSTALL_DIR)/etc
@@ -194,6 +139,11 @@ endif
 	-rmdir $(INSTALL_DIR)/docs
 	-rmdir $(INSTALL_DIR)
 
+
+#Whay do we need LD_LIBRARY_PATH any more? For external libs out of path, like
+#Informix ESQL/C, ODBC, GTK...
+#Remove entries added to system configuration for libraries paths
+deinstall.ldconfig:
 ifneq "${LDCONFIG}" "no"
 #remove entry from library path config file:
 ifeq "${GREP_LD_SO_CONF}" ""
@@ -208,11 +158,16 @@ endif
 else
 	@echo FIXME: remove stuff from .bashrc
 endif
-	@echo ""
-	@echo "Aubit compiler de-installed."
-	@echo "Config file in ${AUBITETC} was NOT deleted."
 
-#stuff left over from aubitbuild.sh:
+#remove links to libraries:
+deinstall.libs.links:
+	${RM} ${LIB_INSTALL_LINK}/libaubit4gl${SO_EXT}
+
+#remove links to binaries:
+deinstall.bin.links:
+	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
+
+#stuff left over from automatic nightly builds (aubitbuild.sh):
 deinstall.build:
 	${RM} $(INSTALL_DIR)/*.htm $(INSTALL_DIR)/*.tmp $(INSTALL_DIR)/*.html
 

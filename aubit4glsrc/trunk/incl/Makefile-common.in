@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.55 2002-08-13 11:56:47 afalout Exp $
+# $Id: Makefile-common.in,v 1.56 2002-08-24 07:02:49 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -452,8 +452,6 @@ else
 	FGLPCEXEC	=aubit 4glpc
 endif
 
-PREFIX=@prefix@
-
 #install location:
 ifdef COMSPEC
 	#on Windows, dll libraries need to be in the path
@@ -474,8 +472,8 @@ else
 	LIB_INSTALL_LINK=/usr/lib
 endif
 
+PREFIX=@prefix@
 BIN_INSTALL_LINK=/usr/bin
-
 INSTALL_DIR=${PREFIX}/aubit4gl
 
 #Set AUBITDIR in aubitrc settings:
@@ -702,4 +700,296 @@ xx%.def: $(DLLOBJS)
 xx%.dll.a: $(DLLOBJS)
 	dlltool --export-all --output-exp $@ $^
 
-#----------------------------- EOF -----------------------------
+
+## ==================================================================
+##                    Install/deinstall
+## ==================================================================
+
+## ==================================================================
+##                    Install Settings
+## ==================================================================
+
+#FIXME: determine this from configure script:
+#RPM setup:
+#redhat 6:
+#RPMBUILDROOT=/root/redhat
+#redhat 7.2
+RPMBUILDROOT=/usr/src/redhat
+
+BIN_PATH    =bin
+LIB_PATH    =lib
+DOC_PATH    =docs
+TEST_PATH   =tools/test
+ETC_PATH    =etc
+INCL_PATH   =incl
+IDE_PATH  	=tools/ide
+
+
+#installation files sourcing paths. This is generally the same as destination
+#paths, but with different SOURCE path.
+SOURCE 		=${AUBIT_SRC_ROOT}
+BIN_DIR     =$(SOURCE)/${BIN_PATH}
+LIB_DIR     =$(SOURCE)/${LIB_PATH}
+DOC_DIR    	=$(SOURCE)/${DOC_PATH}
+TEST_DIR    =$(SOURCE)/${TEST_PATH}
+TEST_DIR_STD=$(TEST_DIR)
+TEST_DIR_GUI=$(TEST_DIR)/gui
+ETC_DIR    	=$(SOURCE)/${ETC_PATH}
+HOME_DIR    =$(SOURCE)
+ROOT_DIR    =$(SOURCE)
+INCL_DIR    =$(SOURCE)/${INCL_PATH}
+IDE_DIR    	=$(SOURCE)/${IDE_PATH}
+
+#Paths to install to:
+BIN_DEST	=$(INSTALL_DIR)/${BIN_PATH}
+LIB_DEST	=$(INSTALL_DIR)/${LIB_PATH}
+DOC_DEST   	=$(INSTALL_DIR)/${DOC_PATH}
+TEST_DEST   =$(INSTALL_DIR)/${TEST_PATH}
+TEST_DEST_STD =$(TEST_DEST)
+TEST_DEST_GUI =$(TEST_DEST)/gui
+ETC_DEST   	=$(INSTALL_DIR)/${ETC_PATH}
+HOME_DEST   =$(HOME)
+ROOT_DEST	=$(INSTALL_DIR)
+INCL_DEST	=$(INSTALL_DIR)/${INCL_PATH}
+IDE_DEST   	=$(INSTALL_DIR)/${IDE_PATH}
+
+##################################################
+#definitions of names for binary distro file name:
+#This is also set in makefile-common by configure, but can change after
+#last configure run
+AUBITVERSION:=$(shell cat $(SOURCE)/tools/project/version)
+AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
+COMPILEDATE	:=$(shell date +%d-%m-%Y)
+
+
+
+## ==================================================================
+##                    To bin directory
+## ==================================================================
+
+BIN_SCRIPTS =amake amakeallo amakeallf 4glpc aubit prepmake genmake
+BIN_EXE		=4glc${EXEEXT} fcompile${EXEEXT} xgen${EXEEXT} \
+			mcompile${EXEEXT} mkmess${EXEEXT} loadmap${EXEEXT} \
+			aubit-config${EXEEXT} mdecompile${EXEEXT} fdecompile${EXEEXT} \
+			fshow${EXEEXT}
+
+#ifeq "$(OUTPUTLANG)" "java"
+ifneq "$(shell ls $(SOURCE)/bin/fdecompile-j${EXEEXT} 2> /dev/null)" ""
+	BIN_EXE		+=fdecompile-j${EXEEXT}
+endif
+
+ifneq "$(shell ls $(SOURCE)/bin/odbctest-unixODBC${EXE} 2> /dev/null)" ""
+	BIN_EXE		+=odbctest-unixODBC${EXE}
+endif
+
+ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc3${EXE} 2> /dev/null)" ""
+	BIN_EXE		+=odbctest-iodbc3${EXE}
+endif
+
+ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc2${EXE} 2> /dev/null)" ""
+	BIN_EXE		+=odbctest-iodbc2${EXE}
+endif
+
+BIN_FILES   =${BIN_SCRIPTS} ${BIN_EXE}
+
+
+## ==================================================================
+##                    To lib directory
+## ==================================================================
+
+LIB_SO		=libLEX_PERL${SO_EXT} \
+			libaubit4gl${SO_EXT} libEXREPORT_NOPDF${SO_EXT} \
+			libSQL_nosql${SO_EXT} libUI_CONSOLE${SO_EXT} \
+			libRPC_NORPC${SO_EXT} libFORM_NOFORM${SO_EXT} \
+            libMENU_NOMENU${SO_EXT} libMSG_NATIVE${SO_EXT} \
+            libLEX_C${SO_EXT}
+
+#LIB_EXPORTLIB =libaubit4gl${SOEXP_EXT} \
+#            libEXREPORT_NOPDF${SOEXP_EXT} libSQL_nosql${SOEXP_EXT} \
+#            libUI_CONSOLE${SOEXP_EXT} libRPC_NORPC${SOEXP_EXT} \
+#            libFORM_NOFORM${SOEXP_EXT} libMENU_NOMENU${SOEXP_EXT}
+
+#Only DLL wr will actually link against - everything else is loaded at run-time:
+LIB_EXPORTLIB 	+=libaubit4gl${SOEXP_EXT}
+
+
+ifneq "${GTKBUILD}" "no"
+	LIB_SO			+=libUI_GTK${SO_EXT}
+endif
+
+
+ifneq "@HAVE_RPCLIB@" "0"
+	LIB_SO			+=libRPC_XDR${SO_EXT} libMENU_XDR${SO_EXT} libFORM_XDR${SO_EXT}
+#	LIB_EXPORTLIB 	+=libRPC_XDR${SOEXP_EXT} libMENU_XDR${SOEXP_EXT} libFORM_XDR${SOEXP_EXT}
+endif
+
+ifeq "@XML_RPC@" "yes"
+	LIB_SO			+=libRPC_XMLRPC${SO_EXT}
+#	LIB_EXPORTLIB 	+=libRPC_XMLRPC${SOEXP_EXT}
+endif
+
+ifneq "@HAVE_CURSES@" "0"
+	LIB_SO			+=libUI_TUI${SO_EXT}
+#	LIB_EXPORTLIB 	+=libUI_TUI${SOEXP_EXT}
+endif
+
+ifneq "${COMSPEC}" ""
+	LIB_SO			+=libSQL_odbc32${SO_EXT}
+#	LIB_EXPORTLIB	+=libSQL_odbc32${SOEXP_EXT}
+endif
+
+ifeq "${PDFBUILD}" "yes"
+    LIB_SO 			+=libEXREPORT_PDF${SO_EXT}
+endif
+
+ifeq "${HAVE_UNIXODBC}" "yes"
+	LIB_SO			+=libSQL_unixodbc${SO_EXT}
+endif
+
+ifeq "${HAVE_IODBC}" "yes"
+	LIB_SO			+=libSQL_iodbc${SO_EXT}
+endif
+
+ifneq "@IFMX_ESQLC@" "no"
+	LIB_SO			+=libSQL_esql${SO_EXT}
+endif
+
+ifneq "@HAVE_IFXODBC@" "no"
+	LIB_SO			+=libSQL_ifxodbc${SO_EXT}
+endif
+
+ifneq "@HAVE_PGODBC@" "no"
+	LIB_SO			+=libSQL_pgodbc${SO_EXT}
+endif
+
+ifneq "$(shell ls $(SOURCE)/lib/libA4GL_file${SO_EXT} 2> /dev/null)" ""
+	LIB_SO			+=libA4GL_file${SO_EXT}
+endif
+
+ifneq "$(shell ls $(SOURCE)/lib/libA4GL_string${SO_EXT} 2> /dev/null)" ""
+	LIB_SO			+=libA4GL_string${SO_EXT}
+endif
+
+ifneq "$(shell ls $(SOURCE)/lib/libIM_JABBER${SO_EXT} 2> /dev/null)" ""
+	LIB_SO			+=libIM_JABBER${SO_EXT}
+endif
+
+LIB_FILES   		=${LIB_SO}
+
+ifneq "${COMSPEC}" ""
+	LIB_FILES +=${LIB_EXPORTLIB}
+endif
+
+## ==================================================================
+##                    To docs directory
+## ==================================================================
+
+DOC_FILES		=changelog.txt COPYING CREDITS LICENSE aubit4gl.ico
+
+## ==================================================================
+##                    To test directory
+## ==================================================================
+
+TEST_STD= \
+		assoc2.4gl  form.per    hello_db.4gl  pdf_report.4gl  testmpz.4gl \
+		basic.4gl   hello2.4gl  helpfile.msg  test_build.4gl  test_select.4gl \
+		file.4gl    hello.4gl   Makefile      testmenu.4gl
+
+TEST_GUI= \
+		calc.4gl  form-gui.per  gui.per        Makefile   radio.per \
+		calc.per  gui.4gl       hello-gui.4gl  multi.per  widget.per
+
+TEST_FILES=$(addprefix gui/,$(TEST_GUI)) $(TEST_STD)
+
+## ==================================================================
+##                    To etc directory
+## ==================================================================
+
+ETC_FILES		=odbc.ini.example
+
+#This file is installed by ciopying etc/aubitrc.in to aubitrc-bin.in
+#but we still need to de-install it:
+ETC_DEINST      =aubitrc-bin.in
+
+## ==================================================================
+##                    To user's HOME directory
+## ==================================================================
+
+HOME_FILES		=etc/aubitrc
+
+## ==================================================================
+##                    To Aubit binary installation root directory
+## ==================================================================
+
+ROOT_FILES		=README.txt
+
+## ==================================================================
+##                    To incl directory
+## ==================================================================
+
+
+INCL_FILES	= \
+		a4gl_incl_4glhdr.h a4gl_incl_4gldef.h Makefile-common \
+		a4gl.mk header.mki maximise.mki a4gl-rules.mki footer-c.mki i4gl.mk \
+		q4gl.mk d4gl.mk footer.mki Makefile-install.mki
+
+#FIXME: what about this:
+#		$(SOURCE)/common/dataio/form_x.x.h  $(SOURCE)/common/dataio/form_x.xs.h
+
+#do we want this or not in binary installation?
+
+INCL_FILES_LEGACY=a4gl_API_form.h a4gl_API_menu.h a4gl_API_sql.h form_x.x.h \
+		a4gl_API_lex.h a4gl_API_msg.h a4gl_libaubit4gl.h form_x.xs.h
+
+
+
+## ==================================================================
+##                    To ide directory
+## ==================================================================
+
+#FIXME: replace this with binary executables:
+#IDE_files       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/Makefile
+
+#IDE installs:
+#/usr/local/bin/ide
+#/usr/local/4glide/ide.4ae
+#/usr/local/4glide/d4glinpt.afr d4glopts.afr
+#/usr/local/4glide/d4glhelp.iem
+
+
+## ==================================================================
+##                    Derived files lists with paths
+## ==================================================================
+
+#installation files with paths:
+TOBIN		=$(addprefix $(BIN_DIR)/,	$(BIN_FILES))
+TOLIB		=$(addprefix $(LIB_DIR)/,	$(LIB_FILES))
+TODOCS		=$(addprefix $(DOC_DIR)/,	$(DOC_FILES))
+#TOTEST		=$(addprefix $(TEST_DIR)/,	$(TEST_FILES))
+TOTEST_STD  =$(addprefix $(TEST_DIR_STD)/,	$(TEST_STD))
+TOTEST_GUI	=$(addprefix $(TEST_DIR_GUI)/,	$(TEST_GUI))
+TOETC		=$(addprefix $(ETC_DIR)/,	$(ETC_FILES))
+TOHOME		=$(addprefix $(HOME_DIR)/,	$(HOME_FILES))
+TOROOT		=$(addprefix $(ROOT_DIR)/,	$(ROOT_FILES))
+TOINCL		=$(addprefix $(INCL_DIR)/,	$(INCL_FILES))
+TOIDE       =$(addprefix $(IDE_DIR)/,	$(IDE_FILES))
+
+
+#deinstallation files with paths:
+FROMBIN		=$(addprefix $(BIN_DEST)/,	$(BIN_FILES))
+FROMLIB		=$(addprefix $(LIB_DEST)/,	$(LIB_FILES))
+FROMDOCS	=$(addprefix $(DOC_DEST)/,	$(DOC_FILES))
+FROMTEST	=$(addprefix $(TEST_DEST)/,	$(TEST_FILES))
+FROMETC		=$(addprefix $(ETC_DEST)/,	$(ETC_FILES)) $(addprefix $(ETC_DEST)/,	$(ETC_FILES_LEGACY)) $(addprefix $(ETC_DEST)/,	$(ETC_DEINST))
+FROMHOME	=$(addprefix $(HOME_DEST)/,	$(HOME_FILES))
+FROMROOT	=$(addprefix $(ROOT_DEST)/,	$(ROOT_FILES))
+FROMINCL	=$(addprefix $(INCL_DEST)/,	$(INCL_FILES))  $(addprefix $(INCL_DEST)/,	$(INCL_FILES_LEGACY))
+FROMIDE     =$(addprefix $(IDE_DEST)/,	$(IDE_FILES))
+
+
+
+
+
+
+#=================================== EOF ================================
+

@@ -23,199 +23,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.79 2002-08-19 07:58:03 afalout Exp $
+# $Id: Makefile.in,v 1.80 2002-08-24 07:01:51 afalout Exp $
 #
+
+## ==================================================================
+##                    Includes
+## ==================================================================
 
 #All stuff common to more then one Aubit compiler make file is there:
 include incl/Makefile-common
-
-## ==================================================================
-##                    Install Settings
-## ==================================================================
-
-#RPM setup:
-#redhat 6:
-#RPMBUILDROOT=/root/redhat
-#redhat 7.2
-RPMBUILDROOT=/usr/src/redhat
-
-
-SOURCE 		=.
-#installation files
-TESTDIR     =$(SOURCE)/tools/test
-DOCDIR     	=$(SOURCE)/docs
-IDEDIR     	=$(SOURCE)/tools/ide
-TOBIN		=$(SOURCE)/bin/4glc${EXEEXT} $(SOURCE)/bin/4glpc $(SOURCE)/bin/fcompile${EXEEXT} $(SOURCE)/bin/xgen${EXEEXT} \
-			$(SOURCE)/bin/mcompile${EXEEXT} $(SOURCE)/bin/mkmess${EXEEXT} $(SOURCE)/bin/amake \
-			$(SOURCE)/bin/amakeallo $(SOURCE)/bin/amakeallf \
-			$(SOURCE)/bin/loadmap${EXEEXT} $(SOURCE)/bin/aubit $(SOURCE)/bin/aubit-config${EXEEXT} \
-            $(SOURCE)/bin/genmake $(SOURCE)/bin/mdecompile${EXEEXT} $(SOURCE)/bin/prepmake \
-			$(SOURCE)/bin/fdecompile${EXEEXT} $(SOURCE)/bin/fshow${EXEEXT}
-
-#ifeq "$(GTKBUILD)" "yes"
-#	TOBIN		+=$(SOURCE)/bin/fshow-gtk${EXEEXT}
-#endif
-
-ifeq "$(OUTPUTLANG)" "java"
-	TOBIN		+=$(SOURCE)/bin/fdecompile-j${EXEEXT}
-endif
-
-TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT}
-#$(SOURCE)/lib/libUI_GTK_x${SO_EXT}
-TOLIBCUI	=$(SOURCE)/lib/libaubit4gl${SO_EXT} $(SOURCE)/lib/libEXREPORT_NOPDF${SO_EXT} \
-			$(SOURCE)/lib/libSQL_nosql${SO_EXT} $(SOURCE)/lib/libUI_CONSOLE${SO_EXT} \
-			$(SOURCE)/lib/libRPC_NORPC${SO_EXT} $(SOURCE)/lib/libFORM_NOFORM${SO_EXT} \
-            $(SOURCE)/lib/libMENU_NOMENU${SO_EXT} $(SOURCE)/lib/libMSG_NATIVE${SO_EXT}
-
-
-ifneq "$(shell ls $(SOURCE)/lib/libLEX_C${SO_EXT} 2> /dev/null)" ""
-	TOLIBCUI		+=$(SOURCE)/lib/libLEX_C${SO_EXT}
-	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libLEX_C${SOEXP_EXT}
-endif
-
-ifneq "@PERLBUILD@" "no"
-	#Perl compiler is compiled in "extra" and is optional
-	ifneq "$(shell ls $(SOURCE)/lib/libLEX_PERL${SO_EXT} 2> /dev/null)" ""
-		TOLIBCUI	+=$(SOURCE)/lib/libLEX_PERL${SO_EXT}
-		#TOBIN		+=$(SOURCE)/bin/4glp${EXEEXT}
-    endif
-endif
-
-ifneq "@HAVE_RPCLIB@" "0"
-	TOLIBCUI		+=$(SOURCE)/lib/libRPC_XDR${SO_EXT} $(SOURCE)/lib/libMENU_XDR${SO_EXT} $(SOURCE)/lib/libFORM_XDR${SO_EXT}
-	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libRPC_XDR${SOEXP_EXT} $(SOURCE)/lib/libMENU_XDR${SOEXP_EXT} $(SOURCE)/lib/libFORM_XDR${SOEXP_EXT}
-endif
-
-ifeq "@XML_RPC@" "yes"
-	TOLIBCUI		+=$(SOURCE)/lib/libRPC_XMLRPC${SO_EXT}
-	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libRPC_XMLRPC${SOEXP_EXT}
-endif
-
-
-ifneq "@HAVE_CURSES@" "0"
-	TOLIBCUI	+=$(SOURCE)/lib/libUI_TUI${SO_EXT}
-endif
-
-
-ifneq "${STATICLIB_INST}" "no"
-	TOLIBCUI+=$(SOURCE)/lib/libaubit4gl.a
-endif
-
-TOLIB_EXPORTLIB +=$(SOURCE)/lib/libaubit4gl${SOEXP_EXT} \
-            $(SOURCE)/lib/libEXREPORT_NOPDF${SOEXP_EXT} $(SOURCE)/lib/libSQL_nosql${SOEXP_EXT} \
-            $(SOURCE)/lib/libUI_CONSOLE${SOEXP_EXT} $(SOURCE)/lib/libRPC_NORPC${SOEXP_EXT} \
-            $(SOURCE)/lib/libFORM_NOFORM${SOEXP_EXT} $(SOURCE)/lib/libMENU_NOMENU${SOEXP_EXT}
-
-ifneq "@HAVE_CURSES@" "0"
-	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libUI_TUI${SOEXP_EXT}
-endif
-
-ifneq "@HAVE_RPCLIB@" "0"
-#	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libRPC_SUNRPC${SOEXP_EXT}
-	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libRPC_XDR${SOEXP_EXT}
-endif
-
-
-TOLIBGTK_EXPORTLIB	=$(SOURCE)/lib/libUI_GTK${SOEXP_EXT} 
-#$(SOURCE)/lib/libUI_GTK_x${SOEXP_EXT}
-
-ifneq "${COMSPEC}" ""
-	TOLIBCUI			+=$(SOURCE)/lib/libSQL_odbc32${SO_EXT}
-	TOLIB_EXPORTLIB		+=$(SOURCE)/lib/libSQL_odbc32${SOEXP_EXT}
-endif
-
-ifeq "${PDFBUILD}" "yes"
-    TOLIBCUI +=$(SOURCE)/lib/libEXREPORT_PDF${SO_EXT}
-endif
-
-ifeq "${HAVE_UNIXODBC}" "yes"
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_unixodbc${SO_EXT}
-endif
-ifeq "${HAVE_IODBC}" "yes"
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_iodbc${SO_EXT}
-endif
-
-ifneq "@IFMX_ESQLC@" "no"
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_esql${SO_EXT}
-endif
-
-ifneq "@HAVE_IFXODBC@" "no"
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_ifxodbc${SO_EXT}
-endif
-
-ifneq "@HAVE_PGODBC@" "no"
-	TOLIBCUI	+=$(SOURCE)/lib/libSQL_pgodbc${SO_EXT}
-endif
-
-MKFILNAME	=Makefile
-
-TODOCS		=$(SOURCE)/docs/changelog.txt $(SOURCE)/docs/COPYING $(SOURCE)/docs/CREDITS $(SOURCE)/docs/LICENSE
-TOTEST		=$(TESTDIR)/*.4gl $(TESTDIR)/*.per $(TESTDIR)/${MKFILNAME} $(TESTDIR)/*.msg
-TOTESTGUI	=$(TESTDIR)/gui/*.4gl $(TESTDIR)/gui/*.per $(TESTDIR)/gui/${MKFILNAME}
-TOETC		=$(SOURCE)/etc/odbc.ini.example
-TOHOME		=$(SOURCE)/a4glrc.example
-TOROOT		=$(SOURCE)/README.txt
-TOINCL		=$(SOURCE)/incl/a4gl_incl_4glhdr.h $(SOURCE)/incl/a4gl_incl_4gldef.h \
-				$(SOURCE)/incl/a4gl_libaubit4gl.h \
-				$(SOURCE)/incl/*.mk $(SOURCE)/incl/*.mki $(SOURCE)/incl/Makefile-common \
-				$(SOURCE)/common/dataio/form_x.x.h $(SOURCE)/incl/a4gl_API_sql.h \
-                $(SOURCE)/incl/a4gl_API_lex.h $(SOURCE)/incl/a4gl_API_form.h \
-				$(SOURCE)/incl/a4gl_API_menu.h $(SOURCE)/incl/a4gl_API_msg.h \
-				$(SOURCE)/common/dataio/form_x.x.h  $(SOURCE)/common/dataio/form_x.xs.h
-
-TOIDE       =$(IDEDIR)/*.4gl $(IDEDIR)/*.c $(IDEDIR)/*.sh $(IDEDIR)/*.msg $(IDEDIR)/*.per $(IDEDIR)/${MKFILNAME}
-
-
-#FIXME: results of extra compilations should be in install/deinstall
-#and RPM target too: (also add to clean.all)
-
-
-ifneq "$(shell ls $(SOURCE)/lib/libA4GL_file${SO_EXT} 2> /dev/null)" ""
-	TOLIBCUI	+=$(SOURCE)/lib/libA4GL_file${SO_EXT}
-endif
-
-ifneq "$(shell ls $(SOURCE)/lib/libA4GL_string${SO_EXT} 2> /dev/null)" ""
-	TOLIBCUI	+=$(SOURCE)/lib/libA4GL_string${SO_EXT}
-endif
-
-ifneq "$(shell ls $(SOURCE)/lib/libIM_JABBER${SO_EXT} 2> /dev/null)" ""
-	TOLIBCUI	+=$(SOURCE)/lib/libIM_JABBER${SO_EXT}
-endif
-
-ifneq "$(shell ls $(SOURCE)/bin/odbctest-unixODBC${EXE} 2> /dev/null)" ""
-	TOBIN		+=$(SOURCE)/bin/odbctest-unixODBC${EXE}
-endif
-
-ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc3${EXE} 2> /dev/null)" ""
-	TOBIN		+=$(SOURCE)/bin/odbctest-iodbc3${EXE}
-endif
-
-ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc2${EXE} 2> /dev/null)" ""
-	TOBIN		+=$(SOURCE)/bin/odbctest-iodbc2${EXE}
-endif
-
-
-#IDE installs:
-#/usr/local/bin/ide
-#/usr/local/4glide/ide.4ae
-#/usr/local/4glide/d4glinpt.afr d4glopts.afr
-#/usr/local/4glide/d4glhelp.iem
-
-#stuff made by doxy make no sense in binary distro
-
-##################################################
-#definitions of names for bynary distro file name:
-#FIXME: thi is set in makefile-common by configure:
-AUBITVERSION:=$(shell cat $(SOURCE)/tools/project/version)
-AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
-COMPILEDATE	:=$(shell date +%d-%m-%Y)
-
-## ==================================================================
-##                    CVS Settings
-## ==================================================================
-
-AUBITCVSSFNAME=aubit4glsrc
-NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
 
 ## ==================================================================
 ##                    Platform dependent Settings
@@ -229,7 +45,7 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
 	WWW				=\\\\APTIVA\\ROOT\\data2\\htdocs
 	GTKCONFIGTEXT	=echo "----- gtk-version form makefile -------"
 	GTKCONFIGCMD	=echo ${LIBVER}
-    LDDCMD          =cygcheck 	#echo "no ldd available on CygWin"
+    LDDCMD          =cygcheck
     #we need makefile for aubit binary build on CygWin to install dll/ and extralibs/
 
 else ####################### Platform is UNIX ##############################
@@ -248,6 +64,8 @@ endif
 ##                    Nightly builds Settings
 ## ==================================================================
 
+AUBITCVSSFNAME=aubit4glsrc
+NAMEVERBLD=${AUBITCVSSFNAME}-${AUBITVERSION}.${AUBITBUILD}
 
 PLATFORMSTRING	=compile-platform-info
 PLATFORMINFO	=${PLATFORMSTRING}.txt
@@ -259,15 +77,7 @@ SOURCETARNAME	=$(SOURCE)/$(SOURCETARBASENAME)
 ##                    Define default target
 ## ==================================================================
 
-#ALL				+=Makefile settings corecompile
-ALL					=settings corecompile
-
-#ifeq "$(GTKBUILD)" "yes"
-#	ALL += gtkgui
-#endif
-
-ALL +=test
-
+ALL					=settings corecompile test
 ALL_EXTRA  			=libfile libstring ide odbctest
 
 #FIXME: All stuff that should be in ALL_EXTRA, but does not compile:
@@ -284,8 +94,6 @@ endif
 ifneq "@DOXYGEN@" "no"
 	ALL_EXTRA  		+=doxy
 endif
-
-#FIXME: libhtml adbaccess adbload perl.
 
 ## ==================================================================
 ##                              Targets
@@ -305,18 +113,12 @@ log:
 	@echo "Logging make process to make.log, please wait..."
 	@${MAKE} > make.log 2>&1
 	@echo "make finished successfuly, see make.log for details."
-#	WARNLINES=`grep -c "warning:" make.log`
-#	@echo "Toatal compiler warnings: ${WARNLINES}"
-#	@echo "Toatal compiler warnings: $(shell grep -c "warning:" make.log)"
 	@echo "Toatal compiler warnings: `grep -c 'warning:' make.log`"
-
 
 corecompile:
 	$(MAKE) -C compilers/xgen
 	$(MAKE) -C common/dataio
 	$(MAKE) -C lib
-#	$(MAKE) -C lib/libtui
-#	$(MAKE) -C compilers/4glc/rules
 	$(MAKE) -C compilers/4glc
 	$(MAKE) -C compilers/fcompile
 	$(MAKE) -C compilers/menus
@@ -366,7 +168,7 @@ adbload:
 	$(MAKE) -C tools/adbload
 
 ## ==================================================================
-##                              Perl compiler
+##                        Perl compiler
 ## ==================================================================
 
 perl: perl.compiler perl.lib test.perl
@@ -388,7 +190,6 @@ test.perl:
 ##            DoxyGen doccumentation creation
 ## ------------------------------------------------------------------
 
-#create Doxy documentation
 doxy: docs/doxy/html/index.html
 
 docs/doxy/html/index.html:
@@ -408,15 +209,6 @@ endif
 doxy.make:
 	rm -rf docs/doxy/html
 	doxygen docs/doxy/Doxyfile
-#Now copy the file
-#
-#     /opt/aubit/aubit4glsrc/docs/doxy/html/doxysearch.cgi
-#
-#to the directory where the CGI binaries are located and don't forget to run
-#
-#     /opt/aubit/aubit4glsrc/docs/doxy/html/installdox
-#
-#to replace any dummy links.
 	@echo DoxyGen doccumentation created and placed in docs/doxy/html
 
 doxy.install.www:
@@ -428,7 +220,10 @@ doxy.install.www:
 	@echo Point your web browser to @WWW_HOST_NAME@/projects/Aubit4GL/doxy/html/index.html
 
 doxy.install.search:
-	cp docs/doxy/html/doxysearch.cgi @CGI_DIR@
+	${CP} docs/doxy/html/doxysearch.cgi @CGI_DIR@
+#run docs/doxy/html/installdox to replace any dummy links:
+	@docs/doxy/html/installdox
+
 
 ## ==================================================================
 ##                              Clean
@@ -441,11 +236,11 @@ doxy.install.search:
 clean:
 	@echo FIXME: only cleanall works
 
+#will clean EVERYTHING that is not source file from CVS
 distclean: clean.all clean.config
 
+#will clean EVERYTHING that is not source file from CVS appart from Autoconf generated stuff
 clean.all: cleanall
-
-#will clean EVERYTHING that is not source file from CVS
 cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install clean.swig clean.project
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean
@@ -479,11 +274,11 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install cle
 	${RM} lib/swig/lib_wrap.doc
 	@echo Aubit 4gl compiler source tree is now clean
 
+#This will clean everything created with Autoconf configure script:
 clean.config: clean.configure
 clean.configure: clean.makefiles clean.settings clean.splint
 	${RM} config.log config.status incl/config.h incl/a4gl_incl_config.h \
 	docs/doxy/Doxyfile etc/aubit-rpm.spec
-#incl/a4gl-rules.mki
 
 clean.settings:
 	${RM} etc/a4glrc etc/aubitbuild.mk etc/aubitenv etc/aubitrc
@@ -514,6 +309,10 @@ clean.makefiles:
 	lib/libui/ui_gtk/Makefile Makefile \
 	lib/libexdata/Makefile lib/libsql/postgresql/Makefile
 
+clean.splint:
+	${RM} lclint.log compilers/fcompile/lclint.log compilers/helpcompile/lclint.log \
+	compilers/menus/lclint.log lib/libaubit4gl/lclint.log
+
 
 clean.root:
 #We must not clean *.log when running make process to make.log:
@@ -523,14 +322,9 @@ clean.root:
 	aubit4gl.lsm aubitdownload-template.htm rpmbuild.log \
     tmpdlpage1.html
 
-clean.splint:
-	${RM} lclint.log compilers/fcompile/lclint.log compilers/helpcompile/lclint.log \
-	compilers/menus/lclint.log lib/libaubit4gl/lclint.log
-
-
 #FIXME: move this to appropriate makefile :
-	${RM} compilers/fcompile/fshow.glb compilers/fcompile/fshow.h
-	${RM} tools/ide/debug.out tools/adbaccess/debug.out
+	${RM} compilers/fcompile/fshow.glb compilers/fcompile/fshow.h \
+	tools/ide/debug.out tools/adbaccess/debug.out
 
 clean.rpc:
 	${RM} compilers/fcompile/form_x_xdr.c compilers/menus/menu_x_xdr.c \
@@ -577,14 +371,17 @@ clean.build:
 ##                              Install
 ## ==================================================================
 #FIXME: this should use ${INSTALL}
-#FIXME: install .a4glrc in $HOME too
 #make icons for KDE and GNOME: to IDE, to manual
 
-install: install.core install.example install.manual install.config \
+#all targets common to installing compiled source code, AND installing
+#binary distributions are in here:
+#THIS INCLUDE MUST BE HERE SINCE IT STARTS WITH A TARGET!!!!
+include incl/Makefile-install.mki
+
+install: install.core install.Makefile-common install.setmod install.example \
+		install.manual install.config \
 		install.links install.aubitrc install.libs.links \
 		install.makefile-install
-#install.libs.conf
-	
 ifneq "${AUBITRCFILEEXISTS}" ""
 	@echo " "
 	@echo "WARNING: Configuration file aubitrc exists in ${AUBITETC}/aubitrc"
@@ -594,94 +391,76 @@ ifneq "${AUBITRCFILEEXISTS}" ""
 	@echo " "
 endif
 	@echo Aubit compiler installed to $(INSTALL_DIR)
-#platform
-#etc/aubit-auto.spec
 
-install.core: install.tree install.gtk
-	${CP} $(TOBIN) $(INSTALL_DIR)/bin
-	chmod a+x $(INSTALL_DIR)/bin/*
-	$(CP) $(TOROOT) $(INSTALL_DIR)
-	$(CP) $(TOINCL) $(INSTALL_DIR)/incl
-	$(CP) $(TOLIBCUI) $(INSTALL_DIR)/lib
-ifneq "${COMSPEC}" ""
-	$(CP) ${TOLIB_EXPORTLIB} $(INSTALL_DIR)/lib
-endif
-	@echo "#AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not in Aubit compiler source code tree:" > /tmp/Makefile-common
-	@echo "AUBIT_BIN_INSTALL=1" >> /tmp/Makefile-common
-	@cat $(SOURCE)/incl/Makefile-common >> /tmp/Makefile-common
-	@mv /tmp/Makefile-common $(INSTALL_DIR)/incl
+#install compiler core files
+install.core: install.tree
+	${CP} $(TOBIN) $(BIN_DEST)
+	$(CP) $(TOROOT) $(ROOT_DEST)
+	$(CP) $(TOINCL) $(INCL_DEST)
+	$(CP) $(TOLIB) $(LIB_DEST)
 	@echo Aubit 4gl core compiler files installed
 
-install.gtk:
-ifeq "${GTKBUILD}" "yes"
-	$(CP) $(TOLIBGTK) $(INSTALL_DIR)/lib
-ifneq "${COMSPEC}" ""
-	$(CP) ${TOLIBGTK_EXPORTLIB} $(INSTALL_DIR)/lib
-endif
-endif
+#Prepare and install Makefile-common make include
+install.Makefile-common:
+	@echo "#AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not in Aubit compiler source code tree:" > /tmp/Makefile-common
+	@echo "AUBIT_BIN_INSTALL=1" >> /tmp/Makefile-common
+	@cat $(INCL_DIR)/Makefile-common >> /tmp/Makefile-common
+	@mv /tmp/Makefile-common $(INCL_DEST)
 
-install.config:
-	$(CP) ${TOETC} $(INSTALL_DIR)/etc
+#set file level permisions and attributes
+install.setmod:
+	chmod a+x $(BIN_DEST)/*
+
+#install configuration settings
+install.config: install.home
+	$(CP) ${TOETC} $(ETC_DEST)
 	@echo "Configuration examples installed to $(INSTALL_DIR)/etc"
 
+#Install files in user's home directory
+install.home:
+	$(CP) ${TOHOME} $(HOME_DEST)
+
+#Example files
 install.example:
-	$(CP) $(TOTEST) $(INSTALL_DIR)/tools/test
-ifeq "${GTKBUILD}" "yes"
-	$(CP) $(TOTESTGUI) $(INSTALL_DIR)/tools/test/gui
-endif
+#	$(CP) $(TOTEST) $(TEST_DEST)
+	$(CP) $(TOTEST_STD) $(TEST_DEST_STD)
+	$(CP) $(TOTEST_GUI) $(TEST_DEST_GUI)
 	@echo Aubit 4gl compiler programming examples are now installed
 
+#Documentation files
 install.manual:
-	$(CP) $(TODOCS) $(INSTALL_DIR)/docs
-#	$(CP) $(TODOCS2) $(INSTALL_DIR)/docs/manual/html
+	$(CP) $(TODOCS) $(DOC_DEST)
+#	$(CP) $(TODOCS2) $(DOC_DEST)/manual/html
 	@echo Aubit 4gl compiler manual is now installed
 
-installide:
-	${MAKE} ${MKNAME} -C tools/ide install.aubit
+#install IDE binary files
+#This is not done by default. Check if user compiled IDE first
+install.ide:
+	${MAKE} -C tools/ide install.aubit
 	@echo Aubit 4gl compiler IDE is now installed
 
-packide:
-	${CP} ${TOIDE} $(INSTALL_DIR)/IDE
+#Install IDE source files in Aubit installation tree
+pack.ide:
+	${CP} ${TOIDE} $(IDE_DEST)
 
-installdrop:
-	${RMDIR} $(INSTALL_DIR)
-
+#Create installation tree
 install.tree:
-	${MKPATH} $(INSTALL_DIR)/bin $(INSTALL_DIR)/lib $(INSTALL_DIR)/etc \
-	$(INSTALL_DIR)/incl $(INSTALL_DIR)/tools/test/gui $(INSTALL_DIR)/docs
-#	${MKPATH} $(INSTALL_DIR)/lib
-#	${MKPATH} $(INSTALL_DIR)/etc
-#	${MKPATH} $(INSTALL_DIR)/incl
-#	${MKPATH} $(INSTALL_DIR)/tools/test/gui
-#	${MKPATH} $(INSTALL_DIR)/docs
-
+	${MKPATH} $(BIN_DEST) $(LIB_DEST) $(ETC_DEST) \
+	$(INCL_DEST) $(TEST_DEST)/gui $(DOC_DEST)
 	@echo "Aubit 4gl compiler instalation tree created"
 
-#install.links.source:
-#this links bin programs to location of Aubit source code:
-#	${MKPATH} ${BIN_INSTALL_LINK}
-#	${LN_S} ${AUBITDIR}/bin/aubit-config ${BIN_INSTALL_LINK}/aubit-config
-#	${LN_S} ${AUBITDIR}/bin/aubit ${BIN_INSTALL_LINK}/aubit
-
 install.makefile-install:
-	${CP} etc/Makefile-install $(INSTALL_DIR)/Makefile
-	${CP} incl/Makefile-install.mki $(INSTALL_DIR)/incl
-	${CP} -r etc/config/ $(INSTALL_DIR)/etc
-	${CP} etc/aubitrc.in $(INSTALL_DIR)/etc/aubitrc-bin.in
-#Not all installations will have autoconf, and especially not version 2.5 or up
-#we need to have already generated configure in CVS
-#BUT-we better do this from main (root-source code) configure.in and use it
-#for binar distribution too, with --with-bin switch
-#	(cd etc; autoconf)
-#	${CP} etc/configure $(INSTALL_DIR)
-	${CP} configure $(INSTALL_DIR)
-#all targets common to installing compiled source code, AND installing
-#binary distributions are in here:
-###################################
-include incl/Makefile-install.mki
-###################################
+	${CP} etc/Makefile-install $(ROOT_DEST)/Makefile
+	${CP} incl/Makefile-install.mki $(INCL_DEST)
+	${CP} -r etc/config/ $(ETC_DEST)
+	${CP} etc/aubitrc.in $(ETC_DEST)/aubitrc-bin.in
+	${CP} configure $(ROOT_DEST)
 
 deinstall: deinstall.all
+
+## ==================================================================
+##                           Packaging
+## ==================================================================
 
 tarinstall: platform
 #FIXME: check if it exists first
@@ -690,6 +469,10 @@ tarinstall: platform
 
 createcleantar: installdrop installall tarinstall
 	@echo "Aubit 4gl compiler binary disribution is now in $(SOURCE)/$(TARNAME)"
+
+#we should not use this
+#installdrop:
+#	${RMDIR} $(INSTALL_DIR)
 
 tar: clean.all
 #COMPILE_DATE=20-01-2002
@@ -720,10 +503,6 @@ pack.amake:
 	echo "See HOWTO at https://sourceforge.net/docman/?group_id=32409" > /tmp/pack_amake/README.txt
 	(cd /tmp/pack_amake; tar -cvzf $(SOURCE)/amake.tar.gz * )
 
-
-## ------------------------------------------------------------------
-##                       Binary distribution Targets
-## ------------------------------------------------------------------
 
 cleantar:
 	$(RM) *.${ARCHEXT}
@@ -844,7 +623,7 @@ aubit4gl.lsm:
 	@echo send this file to 'lsm@execpc.com' with the subject 'add'. >> ${OUTFILE}
 
 ## ------------------------------------------------------------------
-##                       Other Targets
+##                       Other Targets (Misc.)
 ## ------------------------------------------------------------------
 
 #This will increase build number; use it before releasing compiled binaries.
@@ -864,14 +643,11 @@ commit.build.step2:
 	@cvs commit -m "commit.build ${BULDNO}" > commit.log
 	@echo "Build ${BUILDNO} Commit finished. See file './commit.log'"
 
+#Compile example code
 demo:
 	${MAKE} ${MKNAME} -C tools/test
 	@echo Aubit 4gl compiler examples are now compiled
 
-
-#obsolete - allreadwrite:
-#obsolete - 	chmod -R a+rw *
-#obsolete -
 help:
 	@echo
 	@echo This is Aubit 4gl compiler makefile help
@@ -911,7 +687,57 @@ help.options:
 	@echo
 	@echo
 
-#--------------------- debugging -----------------------------
+
+## ------------------------------------------------------------------
+##                       Maintainance utility targets
+## ------------------------------------------------------------------
+
+#refresh pre-compiled parser files that are used for compilation on
+#platforms that don't have Yacc installed, from Yacc created files:
+refresh.noyacc:
+	${CP} compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated
+	${CP} compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated
+	${CP} compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile
+	${CP} compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile
+	${CP} compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus
+	${CP} compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus
+
+#Find c files with same names
+find.dup.c.files:
+	find . -name "*.c" -exec basename {} \; | sort | uniq -c | grep -v " 1"
+
+#compile examples and run them
+test.install:
+	(cd $(INSTALL_DIR)/tools/test; ${MAKE}; ./hello; cd gui; ${MAKE}; ./hello_gui)
+
+#Clean and rebuild everything, install, compile examples and run them
+test.full:
+	${MAKE} clean.all
+	./configure
+	${MAKE}
+	${MAKE} install
+	${MAKE} test.install
+
+
+#Create Makefile.in files from Makefile.am
+#automake:
+#	automake --add-missing
+
+
+libtool:
+#copy:
+#config.guess   config.sub   ltconfig   ltmain.in
+#from local libtool directory:
+#	cp /usr/local/share/libtool/config.* /usr/local/share/libtool/lt* etc/config
+#	cp /usr/local/share/libtool/ltconfig /usr/local/share/libtool/ltmain.in etc/config
+	(cd etc/config; ./ltconfig ./ltmain.sh)
+	cp etc/config/libtool .
+
+
+
+## ------------------------------------------------------------------
+##                       Make and build proccess Debugging
+## ------------------------------------------------------------------
 
 savesettings: OUT = $(PLATFORMINFO)
 savesettings: newfile settings.common
@@ -990,16 +816,21 @@ platform.common:
 #FIXME: info needed for binary disrto: kernel version, ODBC lib version, PDF version,...
 
 
-debug.filenames:
-	@echo ${TEMPLATENAME} >> ${OUT}
-	@echo ${TEMPLATENAMETXT} >> ${OUT}
-	@echo ${TEMPLATESRC} >> ${OUT}
-	@echo ${TEMPLATENAMEINFO} >> ${OUT}
-	@echo ${PLATFORMINFO} >> ${OUT}
-	@echo ${PLATFORMINFOFULL} >> ${OUT}
+settings.rc:
+	@echo
+	@echo "A1 [/etc/opt/aubit4gl/aubitrc] =${A1}"
+	@echo "A2 [/opt/aubit4gl/etc/aubitrc] =${A2}"
+	@echo "A3 [../etc/aubitrc]            =${A3}"
+	@echo "A4 [etc/aubitrc]               =${A4}"
+	@echo "A5 [~/.aubit4gl/aubitrc]       =${A5}"
+	@echo "A6 [./.aubitrc]                =${A6}"
+	@echo "A7 ['$A4GL_INIFILE' ]            =${A7}"
+	@echo
 
 
-# ------------------------------ testing ----------------------------
+## ------------------------------------------------------------------
+##         Static code error and warning checking (Splint)
+## ------------------------------------------------------------------
 
 splint: lclint
 lclint:
@@ -1015,56 +846,6 @@ lclint:
 	@echo "All SPLint warnings: "
 	@echo "                          Reported  Suppressed"
 	@echo "`grep "^Total" lclint.log`"
-
-
-settings.rc:
-	@echo
-	@echo "A1 [/etc/opt/aubit4gl/aubitrc] =${A1}"
-	@echo "A2 [/opt/aubit4gl/etc/aubitrc] =${A2}"
-	@echo "A3 [../etc/aubitrc]            =${A3}"
-	@echo "A4 [etc/aubitrc]               =${A4}"
-	@echo "A5 [~/.aubit4gl/aubitrc]       =${A5}"
-	@echo "A6 [./.aubitrc]                =${A6}"
-	@echo "A7 ['$A4GL_INIFILE' ]            =${A7}"
-	@echo
-
-find.dup.c.files:
-	find . -name "*.c" -exec basename {} \; | sort | uniq -c | grep -v " 1"
-
-
-configure:
-	autoconf --localdir=etc/config
-
-test.install:
-	cd $(INSTALL_DIR)/tools/test
-	${MAKE}
-	./hello
-	cd gui
-	${MAKE}
-	./hello_gui
-
-test.full:
-	${MAKE} clean.all
-	./configure
-	${MAKE}
-	${MAKE} install
-	${MAKE} test.install
-
-
-#refresh pre-compiled parser files that are used for compilation on 
-#platforms that don't have Yacc installed, from Yacc created files:
-refresh.noyacc:
-	${CP} compilers/4glc/rules/generated/y.tab.c tools/no_yacc/cygwin/compilers/4glc/rules/generated
-	${CP} compilers/4glc/rules/generated/y.tab.h tools/no_yacc/cygwin/compilers/4glc/rules/generated
-	${CP} compilers/fcompile/lex.yy.c tools/no_yacc/cygwin/compilers/fcompile
-	${CP} compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile
-	${CP} compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus
-	${CP} compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus
-
-
-config.status:
-	${SH} config.status
-
 
 ## ---------------------------- EOF ----------------------------------
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.10 2002-08-19 10:17:23 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.11 2002-08-24 07:02:50 afalout Exp $
 #
 */
 
@@ -484,11 +484,11 @@
     and therefore makes ALL Aubit code dependent on it!
     *******************************************************/
 	#ifndef _NO_FORM_X_H_
-		#ifdef SRC_TREE
+		//#ifdef SRC_TREE
 			#include "../common/dataio/form_x.x.h"   /* struct_form */
-        #else
-			#include "form_x.x.h"   /* struct_form */
-        #endif
+        //#else
+			//#include "form_x.x.h"   /* struct_form */
+        //#endif
     #endif
 
 
