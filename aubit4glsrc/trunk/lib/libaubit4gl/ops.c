@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.73 2005-02-17 11:51:45 mikeaubury Exp $
+# $Id: ops.c,v 1.74 2005-02-23 11:18:37 mikeaubury Exp $
 #
 */
 
@@ -304,6 +304,8 @@ static void A4GL_char_char_ops (int op)
   b = A4GL_char_pop ();
   a = A4GL_char_pop ();
 
+  A4GL_debug("a='%s' b='%d' op=%d\n,a,b,op);
+
   if (A4GL_isnull (DTYPE_CHAR, (void *) &a) || A4GL_isnull (DTYPE_CHAR, (void *) &b)) { A4GL_push_null (DTYPE_CHAR, 0); free(a); free(b); return; }
   else { A4GL_debug ("OK - neither is null"); } 
 
@@ -311,6 +313,7 @@ static void A4GL_char_char_ops (int op)
   A4GL_trim(a);
 
 
+  A4GL_debug("a='%s' b='%d' op=%d and they're trimmed\n,a,b,op);
 
   switch (op)
     {
