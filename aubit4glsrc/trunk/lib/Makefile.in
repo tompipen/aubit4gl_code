@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.90 2003-07-26 04:47:15 afalout Exp $
+# $Id: Makefile.in,v 1.91 2003-07-26 06:46:12 afalout Exp $
 #
 
 ROOT    =..
@@ -297,6 +297,9 @@ libSQL_sqliteodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 
 libSQL_sqlite${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} sqlite
+
+libSQL_sqliteS${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} sqlite.static
 
 libSQL_odbc32.dll: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} odbc32

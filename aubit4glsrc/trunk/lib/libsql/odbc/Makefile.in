@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.29 2003-07-26 04:47:16 afalout Exp $
+# $Id: Makefile.in,v 1.30 2003-07-26 06:46:13 afalout Exp $
 #
 
 ROOT    =../../..
@@ -39,7 +39,7 @@ include ${ROOT}/incl/Makefile-common
 
 #FIXME: why do we need fcompile headers and RPC lib includes here?
 C_LOCAL_IFLAGS  		=-I.. -I${LIBROOT}/compilers/fcompile
-CFLAGS				+=${C_LOCAL_IFLAGS} 
+CFLAGS				+=${C_LOCAL_IFLAGS}
 #@RPCLIB_INCLUDE@
 CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
 CFLAGS_NOSTRICTPROTO		=$(CFLAGS:%-Wstrict-prototypes=%)
@@ -67,7 +67,13 @@ ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 
-.PHONY : clean all allodbc iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc odbc32 sqlite
+
+CFLAGS_SQLITE=-DDONTINCLUDEDATASOURCES -DSQLITEODBC ${CFLAGS_NOREDUND} \
+	-I${ROOT}/tools/odbtest/incl -DHAVE_USLEEP=1 -DHAVE_LOCALECONV=1 \
+	-DHAVE_LIBVERSION=1 -I. -DWITHOUT_DRIVERMGR
+#-DHAVE_IODBC=1
+
+.PHONY : clean all allodbc iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc odbc32 sqlite sqlite.static
 
 ## ==================================================================
 ##                              Targets
@@ -75,7 +81,7 @@ endif
 
 all :
 	@echo "Must specify target (because clean is not working.)"
-	@echo "Targets: iodbc unixodbc ifxodbc pgodbc odbc32 sapodbc allodbc sqliteodbc sqlite"
+	@echo "Targets: iodbc unixodbc ifxodbc pgodbc odbc32 sapodbc allodbc sqliteodbc sqlite sqlite.static"
 
 
 allodbc: iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc sqlite
@@ -102,6 +108,10 @@ sqliteodbc: clean ${LIBROOT}/libSQL_sqliteodbc${SO_EXT}
 
 sqlite: clean ${LIBROOT}/libSQL_sqlite${SO_EXT}
 	@echo "SQLite native Aubit plug-in compiled successfully"
+
+sqlite.static: clean ${LIBROOT}/libSQL_sqliteS${SO_EXT}
+	@echo "SQLite native Aubit plug-in (static link) compiled successfully"
+
 
 odbc32: 	clean ${OBJECTS} ${LIBROOT}/libSQL_odbc32${SO_EXT}
 #	${MAKE} libSQL_odbc32.dll DLLOBJS="${OBJECTS}" DLL_LDLIBS="${AUBIT_LIB} -lodbc32" DLL_LDFLAGS="-L${LIBROOT}"
@@ -139,14 +149,19 @@ ${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -
 ${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqliteodbc
 
-#FIXME: remove -DHAVE_IODBC=1 and use odbc headers from -I${ROOT}/tools/odbtest/incl
-#so user don't have to have iODBC installed
-#FIXME: use $DBPATH to dinf SQLite .db file, so that user don't have to specify
+#FIXME: use $DBPATH to find SQLite .db file, so that user don't have to specify
 #full path & file name in DATABASE statement. Append .db extension automaticaly.
 #DATABSE 'xyz' should be resolved to <full_path>xyz.db before calling dbopen()
-${LIBROOT}/libSQL_sqlite${SO_EXT}: CFLAGS:=-DDONTINCLUDEDATASOURCES -DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbtest/incl -DHAVE_IODBC=1 -DHAVE_USLEEP=1 -DHAVE_LOCALECONV=1 -DHAVE_LIBVERSION=1 -I. -DWITHOUT_DRIVERMGR
+#* Find out why Aubit generates "Error: Could not disconnect from database" when program exits.
+#* Test SQL compatibility
+${LIBROOT}/libSQL_sqlite${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}
 ${LIBROOT}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqlite
+
+#SQLite plug-in statically linked with SQLite library/engine:
+${LIBROOT}/libSQL_sqliteS${SO_EXT}: CFLAGS:=${CFLAGS_SQLITE}
+${LIBROOT}/libSQL_sqliteS${SO_EXT}: ${OBJECTS} sqliteodbc.o
+	${LD} ${SO_LDFLAGS} $^ -o $@ /usr/lib/libsqlite.a
 
 
 ## ==================================================================

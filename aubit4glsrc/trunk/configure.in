@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.181 2003-07-26 04:47:01 afalout Exp $
+dnl # $Id: configure.in,v 1.182 2003-07-26 06:46:01 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -4098,6 +4098,7 @@ fi
 	#SQLite native connection
 	if test "$SQLITE_LIB" = "1"; then
 		RPMFILE_28=$LIB_PREFIX/libSQL_sqlite$SO_EXT
+		RPMFILE_31=$LIB_PREFIX/libSQL_sqliteS$SO_EXT
 		PLUGIN_YES="$PLUGIN_YES SQLITE"
     else
         PLUGIN_NO="$PLUGIN_NO SQLITE"
@@ -4121,7 +4122,7 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
-    #RPMFILE_31=$LIB_PREFIX/lib$SO_EXT
+
     #RPMFILE_32=$LIB_PREFIX/lib$SO_EXT
     #RPMFILE_33=$LIB_PREFIX/lib$SO_EXT
     #RPMFILE_34=$LIB_PREFIX/lib$SO_EXT

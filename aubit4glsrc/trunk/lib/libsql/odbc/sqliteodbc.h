@@ -45,7 +45,7 @@ MODIFICATIONS.
  * @file sqliteodbc.h
  * Header file for SQLite ODBC driver.
  *
- * $Id: sqliteodbc.h,v 1.1 2003-07-26 04:47:16 afalout Exp $
+ * $Id: sqliteodbc.h,v 1.2 2003-07-26 06:46:13 afalout Exp $
  *
  * Copyright (c) 2001-2003 Christian Werner <chw@ch-werner.de>
  *
@@ -93,11 +93,13 @@ MODIFICATIONS.
 #endif
 
 #include "sqlite.h"
-#ifdef HAVE_IODBC
-#include <iodbcinst.h>
-#endif
-#if defined(HAVE_UNIXODBC) || defined(_WIN32)
-#include <odbcinst.h>
+#ifndef WITHOUT_DRIVERMGR
+	#ifdef HAVE_IODBC
+		#include <iodbcinst.h>
+	#endif
+	#if defined(HAVE_UNIXODBC) || defined(_WIN32)
+		#include <odbcinst.h>
+	#endif
 #endif
 
 #ifndef SQL_API
