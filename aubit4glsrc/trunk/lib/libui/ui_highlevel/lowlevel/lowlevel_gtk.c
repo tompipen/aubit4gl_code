@@ -10,7 +10,7 @@
 #include "hl_proto.h"
 #include <ctype.h>
 
-static char *module_id="$Id: lowlevel_gtk.c,v 1.33 2004-03-14 15:59:19 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_gtk.c,v 1.34 2004-03-16 10:45:25 whaslbeck Exp $";
 
 
 #include <gtk/gtk.h>
@@ -914,6 +914,10 @@ void A4GL_LL_initialize_display(void ) {
   //char *gtkrc;
   //char buff[255];
   //char buff2[255];
+
+  gtk_disable_setlocale(); /* tell GTK to NOT call setlocale(LC_ALL,"")! */
+                           /* the only place where setlocate() should */
+			   /* be called is lib/libaubit4gl/fglwrap.c */
   gtk_init (0, 0);
   if (acl_getenv("CELL_HEIGHT")) { if (strlen(acl_getenv("CELL_HEIGHT"))) gui_yheight=atoi(acl_getenv("CELL_HEIGHT")); }
   if (acl_getenv("CELL_WIDTH"))  { if (strlen(acl_getenv("CELL_WIDTH"))) gui_xwidth=atoi(acl_getenv("CELL_WIDTH")); }
