@@ -182,8 +182,8 @@ add_str_attr void* f,int type,char* str -> void
 /* void add_bool_attr(struct struct_scr_field *f,int type) */
 add_bool_attr void* f,int type -> void
 
-
-chk_iskey char* keys -> int
+/* no longer required... */
+* chk_iskey char* keys -> int
 
 
 /*  ============================== EOF ================================= */

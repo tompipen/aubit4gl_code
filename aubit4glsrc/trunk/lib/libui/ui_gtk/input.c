@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.5 2002-10-22 06:43:37 afalout Exp $
+# $Id: input.c,v 1.6 2002-11-19 18:18:56 mikeaubury Exp $
 #*/
 
 /**
@@ -203,7 +203,7 @@ form_loop (struct s_screenio * s)
     {				/* key pressed... */
       int k;
       k = which_key ();
-      printf ("KEY PRESSED 0x%x\n", k);
+      //printf ("KEY PRESSED 0x%x\n", k);
       clear_something ();
       k = gui_proc_key_input (k);
 
@@ -222,7 +222,7 @@ form_loop (struct s_screenio * s)
 	debug("Returning %d\n",a);
 	return a;
 	}
-      printf ("A=%d\n", a);
+      //printf ("A=%d\n", a);
       return -90;
     }
 

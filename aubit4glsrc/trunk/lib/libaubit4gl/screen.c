@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.5 2002-06-25 03:22:30 afalout Exp $
+# $Id: screen.c,v 1.6 2002-11-19 18:18:56 mikeaubury Exp $
 #*/
 
 /**
@@ -125,6 +125,35 @@ find_attribute (struct s_form_dets *f, int field_no)
   debug ("Couldnt find entry for field no %d\n", field_no);
   return 0;
 
+}
+
+
+
+int
+chk_iskey (char *keys)
+{
+  char *k;
+  char s[256];
+  strcpy (s, keys);
+  strcat (s, "|");
+  debug ("Chk keys %s\n", s);
+
+  if (strcmp (keys, "->ANY") == 0)
+    return 1;
+
+  k = strtok (s, "|");
+  while (1)
+    {
+      debug ("Chk keys (%s - %d %d )\n", k, key_val (k), get_lastkey ());
+      if (key_val (k) == get_lastkey ())
+        {
+          return 1;
+        }
+      k = strtok (0, "|");
+      if (k == 0)
+        return 0;
+    }
+  return 0;
 }
 
 /* ============================ EOF ============================ */

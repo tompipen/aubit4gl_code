@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.6 2002-11-12 21:34:08 afalout Exp $
+# $Id: prompt.c,v 1.7 2002-11-19 18:18:56 mikeaubury Exp $
 #*/
 
 /**
@@ -251,14 +251,14 @@ int action;
     {                           /*  key pressed... */
       int k;
       k = which_key ();
-      printf ("KEY PRESSED 0x%x\n", k);fflush(stdout);
+      //printf ("KEY PRESSED 0x%x\n", k);fflush(stdout);
       set_last_key (k);
       clear_something ();
   }
 
   prompt->lastkey = gui_get_lastkey ();
 
-  printf("lastkey = %x\n",prompt->lastkey);
+  //printf("lastkey = %x\n",prompt->lastkey);
 
   if (prompt->lastkey == 10 || prompt->lastkey == 13 || prompt->lastkey==0xff0d || prompt->lastkey==0xff8d)
       {

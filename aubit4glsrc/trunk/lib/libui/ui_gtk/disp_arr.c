@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.3 2002-10-22 06:43:37 afalout Exp $
+# $Id: disp_arr.c,v 1.4 2002-11-19 18:18:56 mikeaubury Exp $
 #*/
 
 /**
@@ -306,12 +306,12 @@ disp_loop (struct s_disp_arr *arr)
       if (action == 1)
 	{			/*  key pressed... */
 	  k = which_key ();
-	  printf ("KEY PRESSED 0x%x\n", k);
+	  //printf ("KEY PRESSED 0x%x\n", k);
 
 	  clear_something ();
 
 	  k = gui_proc_key_display_array (k);
-	  printf ("k=%x Down=%x Up=%x\n", k, GDK_Down, GDK_Up);
+	  //printf ("k=%x Down=%x Up=%x\n", k, GDK_Down, GDK_Up);
 
 	  if (k == 0)
 	    {

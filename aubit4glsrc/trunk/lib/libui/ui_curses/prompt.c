@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.1 2002-06-26 06:11:44 afalout Exp $
+# $Id: prompt.c,v 1.2 2002-11-19 18:18:56 mikeaubury Exp $
 #*/
 
 /**
@@ -73,6 +73,8 @@ static int curses_to_aubit(int a);
 int start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
 int proc_key_prompt (int a, FORM * mform, struct s_prompt * prompt);
 int prompt_loop (struct s_prompt * prompt);
+
+int         chkwin                          (void);
 
 /*
 =====================================================================
@@ -280,6 +282,7 @@ prompt_loop (struct s_prompt * prompt)
   int a;
   WINDOW *p;
   FORM *mform;
+chkwin();
   mform = prompt->f;
   p = prompt->win;
 #ifdef DEBUG
