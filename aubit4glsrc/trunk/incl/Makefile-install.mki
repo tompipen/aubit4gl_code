@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.6 2002-02-02 11:57:23 afalout Exp $
+# $Id: Makefile-install.mki,v 1.7 2002-02-03 22:24:33 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -184,19 +184,21 @@ test:
 
 
 ldconfig:
-ifneq "@LDCONFIG@" "no"
+ifneq "${LDCONFIG}" "no"
 	@echo "Adding to ${LD_SO_CONF} :"
 	@echo " "
-	@for apath in ${ADD_LD_LIBRATY_PATH_SPACE}; do X=`grep $$apath ${LD_SO_CONF}`; if test "$$X" = ""; then echo $$apath ; echo $$apath >> ${LD_SO_CONF}; fi; done;
+	@for apath in ${ADD_LD_LIBRARY_PATH_SPACE}; do X=`grep $$apath ${LD_SO_CONF}`; if test "$$X" = ""; then echo $$apath ; echo $$apath >> ${LD_SO_CONF}; fi; done;
 	@echo " "
 	ldconfig
 	@echo "Refreshed ldconfig cache."
 else
+#FIXME: grep ${HOME}/.bashrc first, to see if have this already.
+	@echo "Adding to ${HOME}/.bashrc :"
 	@echo ' ' >> ${HOME}/.bashrc
 	@echo '#Added automatically by Aubit 4gl compiler confgure: ' >> ${HOME}/.bashrc
-	@echo 'export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:${ADD_LD_LIBRATY_PATH}' >> ${HOME}/.bashrc
+	@echo 'export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:${ADD_LD_LIBRARY_PATH}' >> ${HOME}/.bashrc
 	@echo "Added to your ${HOME}/.bashrc script LD_LIBRARY_PATH definition:"
-	@echo "${ADD_LD_LIBRATY_PATH}"
+	@echo "${ADD_LD_LIBRARY_PATH}"
 	@echo "Please source this file, by typing:"
 	@echo "    . ${HOME}/.bashrc"
 	@echo "BEFORE you attempt to compile Aubit source code, or run Aubit programs."

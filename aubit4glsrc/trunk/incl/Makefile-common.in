@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.13 2002-02-02 11:57:23 afalout Exp $
+# $Id: Makefile-common.in,v 1.14 2002-02-03 22:24:33 afalout Exp $
 #
 
 
@@ -382,7 +382,8 @@ INSTALL_DIR=${PREFIX}/aubit4gl
 		AUBITRCFILEEXISTS:=$(shell ls ${AUBITETC}/aubitrc 2>/dev/null)
     endif
 
-ifneq "@LDCONFIG@" "no"
+LDCONFIG=@LDCONFIG@
+ifneq "${LDCONFIG}" "no"
 	LD_SO_CONF=/etc/ld.so.conf
 	GREP_LD_SO_CONF:=$(shell grep ${INSTALL_DIR}/lib ${LD_SO_CONF})
 	GREP_LD_SO_CONF_REMOVE:=$(shell echo "${GREP_LD_SO_CONF}" | sed -e "s/\//\\\\\//g")
@@ -406,10 +407,10 @@ endif
 #	on user's rights) or $HOME/.bashrc (? $HOME/.profile), and source this
 #	file as ".$HOME/.bashrc". This should also work immediately.
 #
-ADD_LD_LIBRATY_PATH=@ADD_LD_LIBRATY_PATH@
-#ADD_LD_LIBRATY_PATH_SPACE=${ADD_LD_LIBRATY_PATH::/=--}
-#ADD_LD_LIBRATY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRATY_PATH} | sed -e "s%:% %g")
-ADD_LD_LIBRATY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRATY_PATH} |  sed -e "s/:/ /g")
+ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@
+#ADD_LD_LIBRARY_PATH_SPACE=${ADD_LD_LIBRARY_PATH::/=--}
+#ADD_LD_LIBRARY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRARY_PATH} | sed -e "s%:% %g")
+ADD_LD_LIBRARY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRARY_PATH} |  sed -e "s/:/ /g")
 
 #</options needed also for binary disrto makefile========================>
 

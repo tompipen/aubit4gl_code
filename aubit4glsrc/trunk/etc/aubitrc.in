@@ -176,7 +176,7 @@ ODBC_LIB_DIR=/usr/lib
 #and on non-Linux platforms to .bashrc of the user, but this applies only to
 #that user.
 #that installed compiler, but
-ADD_LD_LIBRATY_PATH=@ADD_LD_LIBRATY_PATH@
+ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@
 
 ###############################
 #GTK+ 2.0 configuration

@@ -33,7 +33,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.12 2002-01-30 21:14:04 saferreira Exp $
+# $Id: sql.c,v 1.13 2002-02-03 22:24:33 afalout Exp $
 #
 */
 
@@ -192,6 +192,18 @@ dll_export sqlca_struct sqlca;
 
 dll_export int status;
 
+#ifdef __CYGWIN__
+#include <windows.h>
+int WINAPI
+sqldll_init(HANDLE h, DWORD reason, void *foo)
+{
+  return 1;
+}
+
+#endif
+
+
+
 void
 exit_nicely ()
 {
@@ -208,7 +220,7 @@ debug("Setting parameter %d to type %d (%d) %d (%d)",ipar,fSqlType,SQL_C_BINARY,
 if (fCType==SQL_C_BINARY) {
 	debug("Setting blob data");
 	cbval=0;
-	rc=SQLBindParameter(hstmt, ipar, SQL_PARAM_INPUT, SQL_C_BINARY, SQL_LONGVARBINARY, 0, 0, rgbValue, 0, &cbval); 
+	rc=SQLBindParameter(hstmt, ipar, SQL_PARAM_INPUT, SQL_C_BINARY, SQL_LONGVARBINARY, 0, 0, rgbValue, 0, &cbval);
 	cbval=SQL_LEN_DATA_AT_EXEC(64000);
    	chk_rc(rc,hstmt,"SQLBindParameter");
 return rc;

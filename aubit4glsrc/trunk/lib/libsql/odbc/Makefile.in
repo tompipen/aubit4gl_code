@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-01-25 12:20:42 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-02-03 22:24:33 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -94,7 +94,7 @@ ifxodbc: 	clean show libSQL_ifxodbc.so
 pgodbc: 	clean show libSQL_pgodbc.so
 	@echo "PostgreSQL ODBC target compiled successfully"
 
-odbc32: 	clean show libSQL_odbc32.so
+odbc32: 	clean show libSQL_odbc32.dll
 	@echo "Windows ODBC target compiled successfully"
 
 
@@ -119,11 +119,43 @@ libSQL_pgodbc.so: ${OBJECTS}
 	ld ${SO_LDFLAGS} $^ -o $@ -lpsqlodbc
 	cp $@ ../..
 
-
 libSQL_odbc32.so: CFLAGS+=${LOCAL_CFLAGS}
 libSQL_odbc32.so: ${OBJECTS}
 	ld ${SO_LDFLAGS} $^ -o $@ -lodbc32
 	cp $@ ../..
+
+
+libSQL_odbc32.dll: CFLAGS+=${LOCAL_CFLAGS}
+libSQL_odbc32.dll: ${OBJECTS}
+	gcc -s -Wl,--base-file,mydll.base -o mydll.dll mydll.o -Wl,-e,_mydll_init@12
+	dlltool --base-file mydll.base --def mydll.def --output-exp mydll.exp --dllname mydll.dll
+	gcc -s -Wl,--base-file,mydll.base,mydll.exp -o mydll.dll mydll.o -Wl,-e,_mydll_init@12
+	dlltool --base-file mydll.base --def mydll.def --output-exp mydll.exp --dllname mydll.dll
+	gcc -Wl,mydll.exp -o mydll.dll mydll.o -Wl,-e,_mydll_init@12
+	dlltool --def mydll.def --dllname mydll.dll --output-lib mydll.a
+#Now, when you build your program, you link against the import library:
+#gcc -o myprog myprog.o mydll.a
+
+
+#see example from http://sources.redhat.com/cygwin/cygwin-ug-net/dll.html
+$(A_DLLNAME).dll: $(A_DLLOBJS)
+	echo "EXPORTS" > $(A_DLLNAME).def
+	gcc -s -Wl,--base-file,$(A_DLLNAME).base -o $(A_DLLNAME).dll $(A_DLLOBJS) -Wl,-e,_$(A_DLLNAME)_init@12
+	dlltool --base-file $(A_DLLNAME).base --def $(A_DLLNAME).def --output-exp $(A_DLLNAME).exp --dllname $(A_DLLNAME).dll
+	gcc -s -Wl,--base-file,$(A_DLLNAME).base,$(A_DLLNAME).exp -o $(A_DLLNAME).dll $(A_DLLOBJS) -Wl,-e,_$(A_DLLNAME)_init@12
+	dlltool --base-file $(A_DLLNAME).base --def $(A_DLLNAME).def --output-exp $(A_DLLNAME).exp --dllname $(A_DLLNAME).dll
+	gcc -Wl,$(A_DLLNAME).exp -o $(A_DLLNAME).dll $(A_DLLOBJS) -Wl,-e,_$(A_DLLNAME)_init@12
+	dlltool --def $(A_DLLNAME).def --dllname $(A_DLLNAME).dll --output-lib $(A_DLLNAME).a
+
+
+
+# This rule builds the Cygwin Python DLL
+#LDSHARED=	gcc -shared -Wl,--enable-auto-image-base
+#DLLLIBRARY=	libpython$(VERSION).dll
+libpython$(VERSION).dll.a: $(LIBRARY_OBJS)
+	dlltool --export-all --output-def $@ $^
+	$(LDSHARED) -Wl,--out-implib=$@ -o $@ $^
+
 
 
 .PHONY : show

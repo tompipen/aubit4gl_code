@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.28 2002-02-03 04:18:02 afalout Exp $
+# $Id: configure.in,v 1.29 2002-02-03 22:24:31 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -215,7 +215,7 @@ AC_SUBST(PERLBUILD)
 AC_SUBST(LDCONFIG)
 AC_SUBST(target)
 AC_SUBST(target_cpu)
-AC_SUBST(ADD_LD_LIBRATY_PATH)
+AC_SUBST(ADD_LD_LIBRARY_PATH)
 
 #DoxyGen
 AC_SUBST(DOXYGEN)
@@ -403,7 +403,7 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		fi
 
 		if test "$with_dot" != "yes"; then
-			PATH=$old_PATH
+			PATH="$old_PATH"
 	    fi
 	else
 		HAVE_DOT=NO
@@ -573,10 +573,10 @@ WARNING: You specified Informix base install directory that is different
 
 			if test "$withval" != "yes"; then
 				WARN_LD_LIBRARY_PATH=1
-	            ADD_LD_LIBRATY_PATH="$withval/lib:$withval/lib/esql:$ADD_LD_LIBRATY_PATH"
+	            ADD_LD_LIBRARY_PATH="$withval/lib:$withval/lib/esql:$ADD_LD_LIBRARY_PATH"
             else
 				WARN_LD_LIBRARY_PATH=1
-	            ADD_LD_LIBRATY_PATH="$INFORMIXDIR/lib:$INFORMIXDIR/lib/esql:$ADD_LD_LIBRATY_PATH"
+	            ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib:$INFORMIXDIR/lib/esql:$ADD_LD_LIBRARY_PATH"
 			fi
 
 			#First check if we haev esql installed at all:
@@ -757,7 +757,7 @@ AC_ARG_WITH(pgsql,
 		withval=/usr/local
     else
 		WARN_LD_LIBRARY_PATH=1
-        ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
+        ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
 
     PGSQL_INCDIR=$withval/include
@@ -890,7 +890,7 @@ else
 		HAVE_IFXODBC=yes
 
 		WARN_LD_LIBRARY_PATH=1
-        ADD_LD_LIBRATY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRATY_PATH"
+        ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
 
 
 #		INFORMIXODBC_WARNING="
@@ -953,7 +953,7 @@ AC_ARG_WITH(pgodbc,
 	    	withval=/usr
 		else
 			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRATY_PATH="$withval/lib:$ADD_LD_LIBRATY_PATH"
+            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_LIBS=$LIBS
@@ -1050,7 +1050,7 @@ AC_ARG_WITH(iodbc,
 	    	withval=/usr/local
 		else
 			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRATY_PATH="$withval/lib:$ADD_LD_LIBRATY_PATH"
+            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_LIBS=$LIBS
@@ -1109,7 +1109,7 @@ AC_ARG_WITH(unixodbc,
     	withval=/usr/local
 	else
 		WARN_LD_LIBRARY_PATH=1
-        ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
+        ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
     fi
 
 	if test "$withval" != "no"; then
@@ -1171,10 +1171,10 @@ AC_ARG_WITH(esoob,
   if test "$withval" = "yes"; then
     withval=/usr/local/easysoft/oob/client
 	WARN_LD_LIBRARY_PATH=1
-	ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
+	ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   else
 	WARN_LD_LIBRARY_PATH=1
-    ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
+    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   fi
 
 
@@ -1220,7 +1220,7 @@ AC_ARG_WITH(custom-odbc,
     withval=/usr/local
   else
 	WARN_LD_LIBRARY_PATH=1
-    ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
+    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
   fi
   if test "$withval" != "no"; then
     ODBC_INCDIR=$withval/include
@@ -1245,8 +1245,8 @@ fi
 ##                  Check for GTK+ GUI support
 ## ==================================================================
 
-AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+#AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
+#AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
 
 #force this check even if not specified on command line:
@@ -1263,24 +1263,14 @@ AC_ARG_WITH(gtk,
 	    	withval=/usr/local
 		else
 			WARN_LD_LIBRARY_PATH=1
-		    ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
+		    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
 		fi
 
-        #If pkg-config was not found, but --with-gtk path was specified,
-        #try this, it will work on some CygWin GTK ports
-		if test "$GTK_CONFIG" = "no"; then
-			old_PATH=$PATH
-			PATH="$PATH:$withval/bin"
-			AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
-	        PATH=$old_PATH
-        fi
-
-		if test "$PKG_CONFIG" = "no"; then
-			old_PATH=$PATH
-			PATH="$PATH:$withval/bin"
-			AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-	        PATH=$old_PATH
-        fi
+		old_PATH="$PATH"
+		PATH="$PATH:$withval/bin"
+		AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
+		AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+        PATH="$old_PATH"
 
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
@@ -1414,7 +1404,7 @@ AC_ARG_WITH(iksemel,
 	    	withval=/usr/local
 		else
 			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRATY_PATH="$withval/lib:$ADD_LD_LIBRATY_PATH"
+            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_LIBS=$LIBS
@@ -1463,7 +1453,7 @@ AC_ARG_WITH(pdf,
 	    	withval=/usr/local
 		else
 			WARN_LD_LIBRARY_PATH=1
-            ADD_LD_LIBRATY_PATH="$withval/lib:$ADD_LD_LIBRATY_PATH"
+            ADD_LD_LIBRARY_PATH="$withval/lib:$ADD_LD_LIBRARY_PATH"
 		fi
 
 		old_LIBS=$LIBS
@@ -1562,13 +1552,13 @@ AC_ARG_WITH(rpc,
 	    	withval=/usr/local
 		else
 			WARN_LD_LIBRARY_PATH=1
-		    ADD_LD_LIBRATY_PATH="$withval:$ADD_LD_LIBRATY_PATH"
+		    ADD_LD_LIBRARY_PATH="$withval:$ADD_LD_LIBRARY_PATH"
 	    fi
 
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
-        old_PATH=$PATH
-        PATH=$withval/rpcgen:$PATH
+        old_PATH="$PATH"
+        PATH="$withval/rpcgen:$PATH"
         TEST_I_FLAGS="-I$withval/include -I$withval/rpc -I$withval"
         TEST_L_FLAGS="-L$withval/lib"
 		LDFLAGS="$LDFLAGS $TEST_I_FLAGS $TEST_L_FLAGS"
@@ -1577,7 +1567,7 @@ AC_ARG_WITH(rpc,
 		AC_PATH_PROG(RPCGEN, rpcgen, no)
 		LIBS=$old_LIBS
 		LDFLAGS=$old_LDFLAGS
-        PATH=$old_PATH
+        PATH="$old_PATH"
 
 		if test "$RPCGEN" = "no"; then
 		    AC_DEFINE(HAVE_RPCGEN,0,[ ])
@@ -1855,7 +1845,11 @@ if test "$WARN_LD_LIBRARY_PATH" != ""; then
     echo "We will try to do this automatically for you:"
     echo ""
 
-    make ldconfig
+	if test "$ADD_LD_LIBRARY_PATH" != ""; then
+	    make ldconfig
+    else
+		echo "ERROR: ADD_LD_LIBRATY_PATH is empty."
+    fi
 
 fi
 

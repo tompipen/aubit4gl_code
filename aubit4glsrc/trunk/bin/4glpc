@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 # --norc --noprofile
 #There are several problems with SH on CygWin - not sure how to do this to be compatible
 #with users that don't have bash on there *NIX platforms ....?
@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.45 2002-01-29 11:07:53 afalout Exp $
+# $Id: 4glpc,v 1.46 2002-02-03 22:24:32 afalout Exp $
 #
 
 ########################################################################
@@ -502,8 +502,8 @@ fi
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:.:
 #$AUBITDIR/extlibs
 
-#ADD_LD_LIBRATY_PATH is defined by 'configure' in aubitrc
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADD_LD_LIBRATY_PATH
+#ADD_LD_LIBRARY_PATH is defined by 'configure' in aubitrc
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADD_LD_LIBRARY_PATH
 
 
 
