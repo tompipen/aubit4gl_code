@@ -1364,7 +1364,8 @@ function runamake {
                                 else
 									if [ "$PROBLEMFILE" = "No" ]
 									then
-										echo "#make: *** No rule to make target"
+										echo "ERROR was = make: *** No rule to make target"
+										echo "ERROR was = make: *** No rule to make target" >> $AMAKEERRORLOG
 	                                fi
 
 #----------- Running amake -verbose G27b.mk d4gl-pcode ---------------
@@ -1373,8 +1374,16 @@ function runamake {
 #Failed on No, not 42m, 42x 42f or 42r ? STOP.
 
 
-									echo "Failed on $PROBLEMFILE, not $OBJEXT, $LIBEXT $FORMEXT or $PROGEXT ? STOP."
-	    	                        exit 33
+#----------- Running amake -verbose E53.mk aubit ---------------
+#Problem file name was No
+##make: *** No rule to make target
+#Failed on No, not ao, aox afr or 4ae ? STOP.
+
+									echo "While making $i in $PWD :"
+									echo "While making $i in $PWD :" >> $AMAKEERRORLOG
+									echo "Failed on $PROBLEMFILE, not $OBJEXT, $LIBEXT $FORMEXT or $PROGEXT ?"
+									echo "Failed on $PROBLEMFILE, not $OBJEXT, $LIBEXT $FORMEXT or $PROGEXT ?" >> $AMAKEERRORLOG
+									#exit 33
                                 fi
                             fi
                         fi
@@ -1415,7 +1424,7 @@ function runamake {
 						    then
 								echo "Ignoring error - duplicate. ($i)"
 		                    fi
-							echo "Ignoring error - duplicate. ($i)"  >> $AMAKEERRORLOG
+							echo "Ignoring error - duplicate. ($i) $PROBLEMFILE in $LINKFAILLIST "  >> $AMAKEERRORLOG
 							let DUPLICATE=DUPLICATE+1
                             return
                         fi
@@ -1901,7 +1910,7 @@ function doit {
 					COMPATIBLE=1    #-Compat
 					USECOMPATFILE=1 #-Compatfile
 	                MAXMODE=1   	#-Maxmode
-					MAXMODE2=1  	#-Maxmodemimimal
+					#MAXMODE2=1  	#-Maxmodemimimal
 					AMAKE=1         #-amake
 
 					#TARGETCLEAN=1  #call amake with clean.target
