@@ -93,7 +93,7 @@ FORMONLY COMMENT
 REQUIRED REVERSE QUERYCLEAR VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 %token SERIAL KW_BYTE KW_TEXT VARCHAR SQL_VAR KW_NONSPACE
 %token SQLONLY  WIDGET CONFIG KW_NL
-%token COMPARISON LESSTHAN GREATERTHAN KWOR KWAND KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
+%token COMPARISON LESSTHAN GREATERTHAN KWOR KWAND KWAND1 KWWHERE KWNOT KWBETWEEN KWIN XVAL KWNULLCHK KWNOTNULLCHK
 %token YEAR MONTH DAY HOUR MINUTE SECOND FRACTION
 /* extensions */
 %token LISTBOX BUTTON KW_PANEL DISPLAYONLY ALLOWING  
@@ -658,42 +658,35 @@ sprintf($<str>$,"%d",atoi($<str>1)+atoi($<str>2));
 ;
 
 color : 
-BLACK {
-	strcpy($<str>$,"0");
-}
-| BLUE {
-	strcpy($<str>$,"4");
-}
-| GREEN {
-	strcpy($<str>$,"2");
-}
-| CYAN {
-	strcpy($<str>$,"6"); 
-}
-| RED {
-	strcpy($<str>$,"1");
-}
-| MAGENTA {
-	strcpy($<str>$,"5"); 
-}
-| WHITE {
-	strcpy($<str>$,"7");
-}
-| YELLOW {
-	strcpy($<str>$,"3");
-}
-| REVERSE {
-	sprintf($<str>$,"%d",A4GL_get_attr_from_string("REVERSE"));
-}
-| LEFT {
-	sprintf($<str>$,"%d",A4GL_get_attr_from_string("LEFT"));
-}
-| BLINK {
-	sprintf($<str>$,"%d",A4GL_get_attr_from_string("BLINK"));
-}
-| UNDERLINE {
-	sprintf($<str>$,"%d",A4GL_get_attr_from_string("UNDERLINE"));
-};
+	BLACK { strcpy($<str>$,"0"); }
+| 	BLUE { strcpy($<str>$,"4"); }
+| 	GREEN { strcpy($<str>$,"2"); }
+| 	CYAN { strcpy($<str>$,"6"); }
+| 	RED { strcpy($<str>$,"1"); }
+| 	MAGENTA { strcpy($<str>$,"5"); }
+| 	WHITE { strcpy($<str>$,"7"); }
+| 	YELLOW { strcpy($<str>$,"3"); }
+
+|	NUMBER_VALUE { 
+			char *ptr;
+			
+			ptr=$<str>1;
+			if (strlen(ptr) > 1) {
+	        		yyerror("Colour number out of range 0-7");
+			}
+			if (*ptr>='0'||*ptr<='7') ;
+			else {
+	        		yyerror("Colour number out of range 0-7");
+			}
+		strcpy($<str>$,$<str>1);
+		}
+
+| 	REVERSE { sprintf($<str>$,"%d",A4GL_get_attr_from_string("REVERSE")); }
+| 	LEFT { sprintf($<str>$,"%d",A4GL_get_attr_from_string("LEFT")); }
+| 	BLINK { sprintf($<str>$,"%d",A4GL_get_attr_from_string("BLINK")); }
+| 	UNDERLINE { sprintf($<str>$,"%d",A4GL_get_attr_from_string("UNDERLINE")); }
+
+;
 
 op_instruction_section : 
 | INSTRUCTIONS {
