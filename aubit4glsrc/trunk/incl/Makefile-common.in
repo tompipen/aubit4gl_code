@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.108 2003-01-26 04:53:15 afalout Exp $
+# $Id: Makefile-common.in,v 1.109 2003-01-26 06:09:58 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -1060,7 +1060,14 @@ PDFLIB_BIN_TGZ		=pdflib-4.0.3-Linux.tar.gz
 # 3: XML-RPC
 XMLRPC_INFO			=http://xmlrpc-c.sourceforge.net
 XMLRPC_PATH			=http://download.sourceforge.net/xmlrpc-c
-XMLRPC_RPM          =xmlrpc-c-devel-0.9.9-1.i386.rpm
+XMLRPC_RPM          =xmlrpc-c-0.9.9-1.i386.rpm
+XMLRPC_DEV_RPM      =xmlrpc-c-devel-0.9.9-1.i386.rpm
+#        xmlrpc-c is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_client.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_xmlparse.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+#        libxmlrpc_xmltok.so.3 is needed by xmlrpc-c-devel-0.9.9-1
+
 
 LIBWWW_PATH         =${RH_RPM_PATH}
 ifeq "${RH_RPM_VER}" "7.3"
@@ -1069,19 +1076,6 @@ endif
 ifeq "${RH_RPM_VER}" "8.0"
 	LIBWWW_RPM			=w3c-libwww-5.4.0-1.i386.rpm
 endif
-
-
-#/bin/rpm -Uvh xmlrpc-c-devel-0.9.9-1.i386.rpm w3c-libwww-5.3.2-5.i386.rpm
-#warning: xmlrpc-c-devel-0.9.9-1.i386.rpm: V3 DSA signature: NOKEY, key ID ac00c6c2
-#warning: w3c-libwww-5.3.2-5.i386.rpm: V3 DSA signature: NOKEY, key ID db42a60e
-#error: Failed dependencies:
-#        xmlrpc-c is needed by xmlrpc-c-devel-0.9.9-1
-#        libxmlrpc.so.3 is needed by xmlrpc-c-devel-0.9.9-1
-#        libxmlrpc_client.so.3 is needed by xmlrpc-c-devel-0.9.9-1
-#        libxmlrpc_xmlparse.so.3 is needed by xmlrpc-c-devel-0.9.9-1
-#        libxmlrpc_xmltok.so.3 is needed by xmlrpc-c-devel-0.9.9-1
-#make: *** [install.xmlrpc] Error 2
-
 
 
 ##################
@@ -1239,6 +1233,15 @@ ifeq "${RH_RPM_VER}" "8.0"
 	GTK_ATK_DEV_RPM     =atk-devel-1.0.3-1.i386.rpm
 	XFREE86_DEV_RPM     =XFree86-devel-4.2.0-72.i386.rpm
 	GNOME_LIBS_DEVEL    =gnome-libs-devel-1.4.1.2.90-22.i386.rpm
+
+	FREETYPE_DEV_RPM    =freetype-devel-2.1.2-7.i386.rpm
+	FONTCONFIG_DEV_RPM	=fontconfig-devel-2.0-3.i386.rpm
+	XFT_DEV_RPM         =Xft-devel-2.0-1.i386.rpm
+    GTKPLUS_DEV_RPM     =gtk+-devel-1.2.10-22.i386.rpm
+	ORBIT_DEV_RPM       =ORBit-devel-0.5.13-5.i386.rpm
+	IMLIB_DEV_RPM		=imlib-devel-1.9.13-9.i386.rpm
+	ESOUND_DEV_RPM      =esound-devel-0.2.28-1.i386.rpm
+
 
 
 endif

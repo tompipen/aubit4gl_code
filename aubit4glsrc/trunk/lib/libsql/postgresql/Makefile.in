@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2003-01-15 11:43:33 afalout Exp $
+# $Id: Makefile.in,v 1.5 2003-01-26 06:09:58 afalout Exp $
 #
 
 ROOT    =../../..
@@ -43,7 +43,7 @@ OBJS	=${SRC:.cpp=.o}
 CFLAGS	+=-I.. @PGSQL_INCLUDE@
 CXXFLAGS=$(CFLAGS)
 
-ALL=${LIBROOT}/libSQL_pg${SO_EXT}
+ALL		=${LIBROOT}/libSQL_pg${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -53,7 +53,7 @@ ALL: ${ALL}
 
 ${LIBROOT}/libSQL_pg${SO_EXT}: $(OBJS)
 	${LD} ${SO_LDFLAGS} $^ @PGSQL_LIBS@ -o $@
-	${CP} $@ ${LIBROOT}
+#	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                              Clean

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.54 2003-01-26 04:53:15 afalout Exp $
+# $Id: Makefile-install.mki,v 1.55 2003-01-26 06:09:58 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -431,7 +431,7 @@ install.pdflib: ${PDFLIB_SRC_TGZ}
 
 ######################
 # 3: install XML-RPC and libWWW
-install.xmlrpc: ${XMLRPC_RPM} ${LIBWWW_RPM}
+install.xmlrpc: ${XMLRPC_RPM} ${LIBWWW_RPM} ${XMLRPC_DEV_RPM}
 	${RPM} -Uvh $^
 	@echo "Package info & manuals: ${XMLRPC_INFO}"
 	@echo " "
@@ -515,7 +515,7 @@ install.pg.odbc.first: ${PGODBC_RPM}
 	@echo " "
 
 #we need the source code to extract iodbc.h and other headers, missing in other PG distributions:
-install.pg.src: {PGODBC_SRC_TGZ}
+install.pg.src: ${PGODBC_SRC_TGZ}
 	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
 #	cd /tmp/${PGODBC_SRC_SRC}; ${SH} autogen.sh; ./configure; make; make install
 	mkdir -p /usr/include/pgsql/iodbc
@@ -620,7 +620,10 @@ install.sapdb.env: ${SAPDBENV_RPM}
 
 #########################
 # 21: GTK+ dev packages:
-install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} ${GTK_PANGO_DEV_RPM} ${GTK_ATK_DEV_RPM} ${XFREE86_DEV_RPM} ${GNOME_LIBS_DEVEL}
+install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} \
+	${GTK_PANGO_DEV_RPM} ${GTK_ATK_DEV_RPM} ${XFREE86_DEV_RPM} ${GNOME_LIBS_DEVEL} \
+	${FREETYPE_DEV_RPM} ${FONTCONFIG_DEV_RPM} ${XFT_DEV_RPM} ${GTKPLUS_DEV_RPM} \
+	${ORBIT_DEV_RPM} ${IMLIB_DEV_RPM} ${ESOUND_DEV_RPM}
 	${RPM} -i $^
 	@echo "Package info & manuals: ${GTK_DEV_INFO}"
 	@echo " "
@@ -645,6 +648,8 @@ ${IFXESQLC_BIN_ZIP}:
 	${WGET} ${IFXESQLC_PATH}/${IFXESQLC_BIN_ZIP}
 ${XMLRPC_RPM}:
 	${WGET} ${XMLRPC_PATH}/${XMLRPC_RPM}
+${XMLRPC_DEV_RPM}:
+	${WGET} ${XMLRPC_PATH}/$@
 ${LIBWWW_RPM}:
 	${WGET} ${LIBWWW_PATH}/${LIBWWW_RPM}
 ${SAPODBC_RPM}:
@@ -675,7 +680,7 @@ ${GTK_GDK_DEV_RPM}:
 ${GTK_GLIB_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/${GTK_GLIB_DEV_RPM}
 ${PGODBC_SRC_TGZ}:
-	${WGET} ${PGODBC_SRC_PATH}/${PGODBC_SRC_TGZ}
+	${WGET} ${PGODBC_SRC_PATH}/$@
 ${GTK_PANGO_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/${GTK_PANGO_DEV_RPM}
 ${GTK_ATK_DEV_RPM}:
@@ -684,6 +689,22 @@ ${XFREE86_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/${XFREE86_DEV_RPM}
 ${GNOME_LIBS_DEVEL}:
 	${WGET} ${GTK_DEV_PATH}/${GNOME_LIBS_DEVEL}
+
+
+${FREETYPE_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${FREETYPE_DEV_RPM}
+${FONTCONFIG_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${FONTCONFIG_DEV_RPM}
+${XFT_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${XFT_DEV_RPM}
+${GTKPLUS_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTKPLUS_DEV_RPM}
+${ORBIT_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${ORBIT_DEV_RPM}
+${IMLIB_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${IMLIB_DEV_RPM}
+${ESOUND_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${ESOUND_DEV_RPM}
 
 
 

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.146 2003-01-26 04:52:56 afalout Exp $
+dnl # $Id: configure.in,v 1.147 2003-01-26 06:09:54 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -1912,8 +1912,7 @@ AC_ARG_WITH(gtk,
 
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
-		LDFLAGS="$LDFLAGS -L$withval/lib"
-		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
+		LDFLAGS="$LDFLAGS -L$withval/lib -L/usr/lib"
 
 		# FIXME: Replace `main' with a function in `-lgdk':
 		AC_CHECK_LIB([gdk], [main])
@@ -2045,10 +2044,11 @@ AC_ARG_WITH(gtk,
 								AC_MSG_WARN(cannot extract names from pkg-config.)
 
 								if test "$HAVE_GTKLIBS" = ""; then
-									AC_MSG_WARN(Trying to verify some trace of GTK+ libraries-please wait...)
-									LIBGLIBTMP=`find / -name libglib* 2>/dev/null`
-    	                            LIBGDKTMP=`find / -name libgdk* 2>/dev/null`
-        	                        LIBGTKTMP=`find / -name libgtk* 2>/dev/null`
+									AC_MSG_WARN(Trying to find some trace of GTK+ libraries-please wait...)
+									#can This be /usr/local/lib too?
+									LIBGLIBTMP=`find /usr/lib -name libglib* 2>/dev/null`
+    	                            LIBGDKTMP=`find /usr/lib -name libgdk* 2>/dev/null`
+        	                        LIBGTKTMP=`find /usr/lib -name libgtk* 2>/dev/null`
 
 									if test "$LIBGLIBTMP" != "" && test "$LIBGDKTMP" != "" && test "$LIBGTKTMP" != ""; then
 							        	AC_MSG_WARN(you apparently have GTK+ run-time libraries installed.)
@@ -3345,13 +3345,14 @@ fi
 	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
 	PLUGIN_YES="$PLUGIN_YES FILE STRING HTML"
 
-
+    #temp disabled
     if test "$HAVE_PGSQL_LIB" = "xxyes"; then
 		RPMFILE_24=$LIB_PREFIX/libSQL_pg$SO_EXT
         PLUGIN_YES="$PLUGIN_YES PG_NATIVE"
 	else
         PLUGIN_NO="$PLUGIN_NO PG_NATIVE"
-		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
+		#temp disabled
+		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
 
 	if test "$DOTTOOL" = "no"; then
@@ -3659,20 +3660,27 @@ cat<<X
 +--------------------------------------------------------------------+
 |                        ***   NOTE  ***                             |
 | One or more optional modules will not be built, because required   |
-| libraries or programs where not detected. If this computer is      |
-| connected to the Internet, you should be able to install all of    |
-| them automaticall by using command 'make missing.optional'.        |
-| Otherwise, please install this options manually, if you wish to use|
-| this Aubit compiler extended functionality:                        |
-|                                                                    |
-| $PLUGIN_NO
+| libraries or programs where not detected.                          |
+X
+if test "$WGET" != "no" && test "$RPM" != "no" && (test "$REDHAT_VER" = "8.0" || test "$REDHAT_VER" = "7.3") ; then
+cat<<X
+| If this computer is connected to the Internet,                     |
+|  you should be able to install all of them automaticall by using   |
+|  command 'make missing.optional'.                                  |
 |                                                                    |
 | make targets to install this options are:                          |
 | $INSTALL_MISSING_OPTIONAL
 |                                                                    |
 | You can install individual options as spercified in output of      |
-| 'make help.optional' command                                       |
+| 'make help.optional' command. Otherwise:                           |
 |                                                                    |
+X
+fi
+cat<<X
+| Please install this options manually, if you wish to use           |
+| this Aubit compiler extended functionality:                        |
+|                                                                    |
+| $PLUGIN_NO
 X
 fi
 if test "$enable_ac_debug" = "yes" ; then

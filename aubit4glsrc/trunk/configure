@@ -11881,12 +11881,11 @@ fi
 
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
-		LDFLAGS="$LDFLAGS -L$withval/lib"
-		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
+		LDFLAGS="$LDFLAGS -L$withval/lib -L/usr/lib"
 
 		# FIXME: Replace `main' with a function in `-lgdk':
 
-echo "$as_me:11889: checking for main in -lgdk" >&5
+echo "$as_me:11888: checking for main in -lgdk" >&5
 echo $ECHO_N "checking for main in -lgdk... $ECHO_C" >&6
 if test "${ac_cv_lib_gdk_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -11894,7 +11893,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lgdk  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 11897 "configure"
+#line 11896 "configure"
 #include "confdefs.h"
 
 int
@@ -11906,16 +11905,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:11909: \"$ac_link\"") >&5
+if { (eval echo "$as_me:11908: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:11912: \$? = $ac_status" >&5
+  echo "$as_me:11911: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:11915: \"$ac_try\"") >&5
+  { (eval echo "$as_me:11914: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:11918: \$? = $ac_status" >&5
+  echo "$as_me:11917: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_gdk_main=yes
 else
@@ -11926,7 +11925,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:11929: result: $ac_cv_lib_gdk_main" >&5
+echo "$as_me:11928: result: $ac_cv_lib_gdk_main" >&5
 echo "${ECHO_T}$ac_cv_lib_gdk_main" >&6
 if test $ac_cv_lib_gdk_main = yes; then
   cat >>confdefs.h <<EOF
@@ -11939,7 +11938,7 @@ fi
 
 		# FIXME: Replace `main' with a function in `-lglib':
 
-echo "$as_me:11942: checking for main in -lglib" >&5
+echo "$as_me:11941: checking for main in -lglib" >&5
 echo $ECHO_N "checking for main in -lglib... $ECHO_C" >&6
 if test "${ac_cv_lib_glib_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -11947,7 +11946,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lglib  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 11950 "configure"
+#line 11949 "configure"
 #include "confdefs.h"
 
 int
@@ -11959,16 +11958,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:11962: \"$ac_link\"") >&5
+if { (eval echo "$as_me:11961: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:11965: \$? = $ac_status" >&5
+  echo "$as_me:11964: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:11968: \"$ac_try\"") >&5
+  { (eval echo "$as_me:11967: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:11971: \$? = $ac_status" >&5
+  echo "$as_me:11970: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_glib_main=yes
 else
@@ -11979,7 +11978,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:11982: result: $ac_cv_lib_glib_main" >&5
+echo "$as_me:11981: result: $ac_cv_lib_glib_main" >&5
 echo "${ECHO_T}$ac_cv_lib_glib_main" >&6
 if test $ac_cv_lib_glib_main = yes; then
   cat >>confdefs.h <<EOF
@@ -12003,7 +12002,7 @@ fi
 
 		# FIXME: Replace `main' with a function in `-lgtk':
 
-echo "$as_me:12006: checking for main in -lgtk" >&5
+echo "$as_me:12005: checking for main in -lgtk" >&5
 echo $ECHO_N "checking for main in -lgtk... $ECHO_C" >&6
 if test "${ac_cv_lib_gtk_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -12011,7 +12010,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lgtk  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 12014 "configure"
+#line 12013 "configure"
 #include "confdefs.h"
 
 int
@@ -12023,16 +12022,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:12026: \"$ac_link\"") >&5
+if { (eval echo "$as_me:12025: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:12029: \$? = $ac_status" >&5
+  echo "$as_me:12028: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:12032: \"$ac_try\"") >&5
+  { (eval echo "$as_me:12031: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:12035: \$? = $ac_status" >&5
+  echo "$as_me:12034: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_gtk_main=yes
 else
@@ -12043,7 +12042,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:12046: result: $ac_cv_lib_gtk_main" >&5
+echo "$as_me:12045: result: $ac_cv_lib_gtk_main" >&5
 echo "${ECHO_T}$ac_cv_lib_gtk_main" >&6
 if test $ac_cv_lib_gtk_main = yes; then
   cat >>confdefs.h <<EOF
@@ -12059,7 +12058,7 @@ fi
 		test "$ac_cv_lib_glib_main" != yes &&
 		test "$ac_cv_lib_gdk_main" != yes); then
 
-echo "$as_me:12062: checking for main in -lgdk-2.0" >&5
+echo "$as_me:12061: checking for main in -lgdk-2.0" >&5
 echo $ECHO_N "checking for main in -lgdk-2.0... $ECHO_C" >&6
 if test "${ac_cv_lib_gdk_2_0_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -12067,7 +12066,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lgdk-2.0  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 12070 "configure"
+#line 12069 "configure"
 #include "confdefs.h"
 
 int
@@ -12079,16 +12078,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:12082: \"$ac_link\"") >&5
+if { (eval echo "$as_me:12081: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:12085: \$? = $ac_status" >&5
+  echo "$as_me:12084: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:12088: \"$ac_try\"") >&5
+  { (eval echo "$as_me:12087: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:12091: \$? = $ac_status" >&5
+  echo "$as_me:12090: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_gdk_2_0_main=yes
 else
@@ -12099,7 +12098,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:12102: result: $ac_cv_lib_gdk_2_0_main" >&5
+echo "$as_me:12101: result: $ac_cv_lib_gdk_2_0_main" >&5
 echo "${ECHO_T}$ac_cv_lib_gdk_2_0_main" >&6
 if test $ac_cv_lib_gdk_2_0_main = yes; then
   cat >>confdefs.h <<EOF
@@ -12110,7 +12109,7 @@ EOF
 
 fi
 
-echo "$as_me:12113: checking for main in -lglib-2.0" >&5
+echo "$as_me:12112: checking for main in -lglib-2.0" >&5
 echo $ECHO_N "checking for main in -lglib-2.0... $ECHO_C" >&6
 if test "${ac_cv_lib_glib_2_0_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -12118,7 +12117,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lglib-2.0  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 12121 "configure"
+#line 12120 "configure"
 #include "confdefs.h"
 
 int
@@ -12130,16 +12129,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:12133: \"$ac_link\"") >&5
+if { (eval echo "$as_me:12132: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:12136: \$? = $ac_status" >&5
+  echo "$as_me:12135: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:12139: \"$ac_try\"") >&5
+  { (eval echo "$as_me:12138: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:12142: \$? = $ac_status" >&5
+  echo "$as_me:12141: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_glib_2_0_main=yes
 else
@@ -12150,7 +12149,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:12153: result: $ac_cv_lib_glib_2_0_main" >&5
+echo "$as_me:12152: result: $ac_cv_lib_glib_2_0_main" >&5
 echo "${ECHO_T}$ac_cv_lib_glib_2_0_main" >&6
 if test $ac_cv_lib_glib_2_0_main = yes; then
   cat >>confdefs.h <<EOF
@@ -12161,7 +12160,7 @@ EOF
 
 fi
 
-echo "$as_me:12164: checking for main in -lgtk-2.0" >&5
+echo "$as_me:12163: checking for main in -lgtk-2.0" >&5
 echo $ECHO_N "checking for main in -lgtk-2.0... $ECHO_C" >&6
 if test "${ac_cv_lib_gtk_2_0_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -12169,7 +12168,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lgtk-2.0  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 12172 "configure"
+#line 12171 "configure"
 #include "confdefs.h"
 
 int
@@ -12181,16 +12180,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:12184: \"$ac_link\"") >&5
+if { (eval echo "$as_me:12183: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:12187: \$? = $ac_status" >&5
+  echo "$as_me:12186: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:12190: \"$ac_try\"") >&5
+  { (eval echo "$as_me:12189: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:12193: \$? = $ac_status" >&5
+  echo "$as_me:12192: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_gtk_2_0_main=yes
 else
@@ -12201,7 +12200,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:12204: result: $ac_cv_lib_gtk_2_0_main" >&5
+echo "$as_me:12203: result: $ac_cv_lib_gtk_2_0_main" >&5
 echo "${ECHO_T}$ac_cv_lib_gtk_2_0_main" >&6
 if test $ac_cv_lib_gtk_2_0_main = yes; then
   cat >>confdefs.h <<EOF
@@ -12217,7 +12216,7 @@ fi
 			test "$ac_cv_lib_glib_2_0_main" != yes &&
 			test "$ac_cv_lib_gdk_2_0_main" != yes); then
 
-echo "$as_me:12220: checking for main in -lgdk-1.2" >&5
+echo "$as_me:12219: checking for main in -lgdk-1.2" >&5
 echo $ECHO_N "checking for main in -lgdk-1.2... $ECHO_C" >&6
 if test "${ac_cv_lib_gdk_1_2_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -12225,7 +12224,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lgdk-1.2  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 12228 "configure"
+#line 12227 "configure"
 #include "confdefs.h"
 
 int
@@ -12237,16 +12236,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:12240: \"$ac_link\"") >&5
+if { (eval echo "$as_me:12239: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:12243: \$? = $ac_status" >&5
+  echo "$as_me:12242: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:12246: \"$ac_try\"") >&5
+  { (eval echo "$as_me:12245: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:12249: \$? = $ac_status" >&5
+  echo "$as_me:12248: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_gdk_1_2_main=yes
 else
@@ -12257,7 +12256,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:12260: result: $ac_cv_lib_gdk_1_2_main" >&5
+echo "$as_me:12259: result: $ac_cv_lib_gdk_1_2_main" >&5
 echo "${ECHO_T}$ac_cv_lib_gdk_1_2_main" >&6
 if test $ac_cv_lib_gdk_1_2_main = yes; then
   cat >>confdefs.h <<EOF
@@ -12268,7 +12267,7 @@ EOF
 
 fi
 
-echo "$as_me:12271: checking for main in -lglib-1.2" >&5
+echo "$as_me:12270: checking for main in -lglib-1.2" >&5
 echo $ECHO_N "checking for main in -lglib-1.2... $ECHO_C" >&6
 if test "${ac_cv_lib_glib_1_2_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -12276,7 +12275,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lglib-1.2  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 12279 "configure"
+#line 12278 "configure"
 #include "confdefs.h"
 
 int
@@ -12288,16 +12287,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:12291: \"$ac_link\"") >&5
+if { (eval echo "$as_me:12290: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:12294: \$? = $ac_status" >&5
+  echo "$as_me:12293: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:12297: \"$ac_try\"") >&5
+  { (eval echo "$as_me:12296: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:12300: \$? = $ac_status" >&5
+  echo "$as_me:12299: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_glib_1_2_main=yes
 else
@@ -12308,7 +12307,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:12311: result: $ac_cv_lib_glib_1_2_main" >&5
+echo "$as_me:12310: result: $ac_cv_lib_glib_1_2_main" >&5
 echo "${ECHO_T}$ac_cv_lib_glib_1_2_main" >&6
 if test $ac_cv_lib_glib_1_2_main = yes; then
   cat >>confdefs.h <<EOF
@@ -12319,7 +12318,7 @@ EOF
 
 fi
 
-echo "$as_me:12322: checking for main in -lgtk-1.2" >&5
+echo "$as_me:12321: checking for main in -lgtk-1.2" >&5
 echo $ECHO_N "checking for main in -lgtk-1.2... $ECHO_C" >&6
 if test "${ac_cv_lib_gtk_1_2_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -12327,7 +12326,7 @@ else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lgtk-1.2  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
-#line 12330 "configure"
+#line 12329 "configure"
 #include "confdefs.h"
 
 int
@@ -12339,16 +12338,16 @@ main ();
 }
 _ACEOF
 rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:12342: \"$ac_link\"") >&5
+if { (eval echo "$as_me:12341: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
   ac_status=$?
-  echo "$as_me:12345: \$? = $ac_status" >&5
+  echo "$as_me:12344: \$? = $ac_status" >&5
   (exit $ac_status); } &&
          { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:12348: \"$ac_try\"") >&5
+  { (eval echo "$as_me:12347: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
-  echo "$as_me:12351: \$? = $ac_status" >&5
+  echo "$as_me:12350: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
   ac_cv_lib_gtk_1_2_main=yes
 else
@@ -12359,7 +12358,7 @@ fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:12362: result: $ac_cv_lib_gtk_1_2_main" >&5
+echo "$as_me:12361: result: $ac_cv_lib_gtk_1_2_main" >&5
 echo "${ECHO_T}$ac_cv_lib_gtk_1_2_main" >&6
 if test $ac_cv_lib_gtk_1_2_main = yes; then
   cat >>confdefs.h <<EOF
@@ -12466,15 +12465,16 @@ EOF
 
 								GTKBUILD=yes
                             else
-								{ echo "$as_me:12469: WARNING: cannot extract names from pkg-config." >&5
+								{ echo "$as_me:12468: WARNING: cannot extract names from pkg-config." >&5
 echo "$as_me: WARNING: cannot extract names from pkg-config." >&2;}
 
 								if test "$HAVE_GTKLIBS" = ""; then
-									{ echo "$as_me:12473: WARNING: Trying to verify some trace of GTK+ libraries-please wait..." >&5
-echo "$as_me: WARNING: Trying to verify some trace of GTK+ libraries-please wait..." >&2;}
-									LIBGLIBTMP=`find / -name libglib* 2>/dev/null`
-    	                            LIBGDKTMP=`find / -name libgdk* 2>/dev/null`
-        	                        LIBGTKTMP=`find / -name libgtk* 2>/dev/null`
+									{ echo "$as_me:12472: WARNING: Trying to find some trace of GTK+ libraries-please wait..." >&5
+echo "$as_me: WARNING: Trying to find some trace of GTK+ libraries-please wait..." >&2;}
+									#can This be /usr/local/lib too?
+									LIBGLIBTMP=`find /usr/lib -name libglib* 2>/dev/null`
+    	                            LIBGDKTMP=`find /usr/lib -name libgdk* 2>/dev/null`
+        	                        LIBGTKTMP=`find /usr/lib -name libgtk* 2>/dev/null`
 
 									if test "$LIBGLIBTMP" != "" && test "$LIBGDKTMP" != "" && test "$LIBGTKTMP" != ""; then
 							        	{ echo "$as_me:12480: WARNING: you apparently have GTK+ run-time libraries installed." >&5
@@ -19842,12 +19842,14 @@ fi
 	RPMFILE_23=$LIB_PREFIX/libA4GL_HTML$SO_EXT_LINKABLE
 	PLUGIN_YES="$PLUGIN_YES FILE STRING HTML"
 
+    #temp disabled
     if test "$HAVE_PGSQL_LIB" = "xxyes"; then
 		RPMFILE_24=$LIB_PREFIX/libSQL_pg$SO_EXT
         PLUGIN_YES="$PLUGIN_YES PG_NATIVE"
 	else
         PLUGIN_NO="$PLUGIN_NO PG_NATIVE"
-		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
+		#temp disabled
+		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
 
 	if test "$DOTTOOL" = "no"; then
@@ -19898,9 +19900,9 @@ else
 
 fi
 
-  echo "$as_me:19901: result: " >&5
+  echo "$as_me:19903: result: " >&5
 echo "${ECHO_T}" >&6
-  echo "$as_me:19903: result: ${T_MD}Creating files:${T_ME}" >&5
+  echo "$as_me:19905: result: ${T_MD}Creating files:${T_ME}" >&5
 echo "${ECHO_T}${T_MD}Creating files:${T_ME}" >&6
 
 cat >confcache <<\_ACEOF
@@ -19982,7 +19984,7 @@ DEFS=-DHAVE_CONFIG_H
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:19985: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:19987: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -20158,7 +20160,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:20161: error: ambiguous option: $1
+    { { echo "$as_me:20163: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -20177,7 +20179,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:20180: error: unrecognized option: $1
+  -*) { { echo "$as_me:20182: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -20284,7 +20286,7 @@ do
   "etc/aubitrc-bin" ) CONFIG_FILES="$CONFIG_FILES etc/aubitrc-bin" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "incl/a4gl_incl_config.h" ) CONFIG_HEADERS="$CONFIG_HEADERS incl/a4gl_incl_config.h" ;;
-  *) { { echo "$as_me:20287: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:20289: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -20729,7 +20731,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:20732: creating $ac_file" >&5
+    { echo "$as_me:20734: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -20747,7 +20749,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:20750: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:20752: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -20760,7 +20762,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:20763: error: cannot find input file: $f" >&5
+           { { echo "$as_me:20765: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -20821,7 +20823,7 @@ for ac_file in : $CONFIG_HEADERS; do test "x$ac_file" = x: && continue
   * )   ac_file_in=$ac_file.in ;;
   esac
 
-  test x"$ac_file" != x- && { echo "$as_me:20824: creating $ac_file" >&5
+  test x"$ac_file" != x- && { echo "$as_me:20826: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
 
   # First look for the input files in the build tree, otherwise in the
@@ -20832,7 +20834,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:20835: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:20837: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -20845,7 +20847,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:20848: error: cannot find input file: $f" >&5
+           { { echo "$as_me:20850: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
@@ -20962,7 +20964,7 @@ cat >>$CONFIG_STATUS <<\EOF
   rm -f $tmp/in
   if test x"$ac_file" != x-; then
     if cmp -s $ac_file $tmp/config.h 2>/dev/null; then
-      { echo "$as_me:20965: $ac_file is unchanged" >&5
+      { echo "$as_me:20967: $ac_file is unchanged" >&5
 echo "$as_me: $ac_file is unchanged" >&6;}
     else
       ac_dir=`$as_expr X"$ac_file" : 'X\(.*[^/]\)//*[^/][^/]*/*$' \| \
@@ -21227,20 +21229,27 @@ cat<<X
 +--------------------------------------------------------------------+
 |                        ***   NOTE  ***                             |
 | One or more optional modules will not be built, because required   |
-| libraries or programs where not detected. If this computer is      |
-| connected to the Internet, you should be able to install all of    |
-| them automaticall by using command 'make missing.optional'.        |
-| Otherwise, please install this options manually, if you wish to use|
-| this Aubit compiler extended functionality:                        |
-|                                                                    |
-| $PLUGIN_NO
+| libraries or programs where not detected.                          |
+X
+if test "$WGET" != "no" && test "$RPM" != "no" && (test "$REDHAT_VER" = "8.0" || test "$REDHAT_VER" = "7.3") ; then
+cat<<X
+| If this computer is connected to the Internet,                     |
+|  you should be able to install all of them automaticall by using   |
+|  command 'make missing.optional'.                                  |
 |                                                                    |
 | make targets to install this options are:                          |
 | $INSTALL_MISSING_OPTIONAL
 |                                                                    |
 | You can install individual options as spercified in output of      |
-| 'make help.optional' command                                       |
+| 'make help.optional' command. Otherwise:                           |
 |                                                                    |
+X
+fi
+cat<<X
+| Please install this options manually, if you wish to use           |
+| this Aubit compiler extended functionality:                        |
+|                                                                    |
+| $PLUGIN_NO
 X
 fi
 if test "$enable_ac_debug" = "yes" ; then
@@ -21284,13 +21293,13 @@ X
 
 fi
 
-echo "$as_me:21287: result: " >&5
+echo "$as_me:21296: result: " >&5
 echo "${ECHO_T}" >&6
-echo "$as_me:21289: result: Thank you for using Aubit 4gl compiler." >&5
+echo "$as_me:21298: result: Thank you for using Aubit 4gl compiler." >&5
 echo "${ECHO_T}Thank you for using Aubit 4gl compiler." >&6
-echo "$as_me:21291: result:               $AUBIT_PUBLISHER" >&5
+echo "$as_me:21300: result:               $AUBIT_PUBLISHER" >&5
 echo "${ECHO_T}              $AUBIT_PUBLISHER" >&6
-echo "$as_me:21293: result: " >&5
+echo "$as_me:21302: result: " >&5
 echo "${ECHO_T}" >&6
 
 #------------------------------ EOF --------------------------------
