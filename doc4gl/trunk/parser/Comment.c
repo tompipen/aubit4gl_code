@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * Functions to manage a Comment structure (a kind of object point of view)
+ * Function implementation to manage a Comment structure.
  *
  * @todo : Functions to handle the rest of the fields of Comment
  */

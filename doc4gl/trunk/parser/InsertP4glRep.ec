@@ -71,6 +71,10 @@ static void deleteModule(idPackage,moduleName)
   exec sql delete from p4gl_fun_todo
     where id_package = :idPackage and module_name = :moduleName;
 
+  StatDesc = "Delete p4gl_form_usage";
+  exec sql delete from p4gl_form_usage 
+    where id_package = :idPackage and module_name = :moduleName;
+
   StatDesc = "Delete p4gl_fun_process";
   exec sql delete from p4gl_fun_process 
     where id_package = :idPackage and module_name = :moduleName;
@@ -81,6 +85,10 @@ static void deleteModule(idPackage,moduleName)
 
   StatDesc = "Delete p4gl_function";
   exec sql delete from p4gl_function
+    where id_package = :idPackage and module_name = :moduleName;
+
+  StatDesc = "Delete p4gl_mod_todo";
+  exec sql delete from p4gl_mod_todo 
     where id_package = :idPackage and module_name = :moduleName;
 
   StatDesc = "Delete p4gl_module";
@@ -97,19 +105,43 @@ static void deleteModule(idPackage,moduleName)
  * @param moduleName The 4gl module name.
  * @param comments The comments of the module.
  */
-static void insertModule(idPackage,moduleName,comments)
-  exec sql begin declare section;
-    PARAMETER char *idPackage;
-    PARAMETER char *moduleName;
-    PARAMETER char *comments;
-  exec sql end declare section;
+static void insertModule(package,module,comments)
+    char *package;
+    char *module;
+	  Comment *comments;
 {
+  exec sql begin declare section;
+    char *idPackage;
+    char *moduleName;
+		char *author;
+		char *revision;
+		char *deprecated;
+    char *commentsText;
+  exec sql end declare section;
   StatDesc = "insert p4gl_module";
-  if ( comments == NULL )
-    comments=" ";
+
+	idPackage = package;
+	moduleName = module;
+  author = comments->author;
+  if ( author == NULL )
+	  author = " ";
+
+  revision = comments->revision;
+  if ( revision == NULL )
+	  revision = " ";
+
+  if ( comments->deprecated == 1 )
+	  deprecated = "Y";
+	else
+	  deprecated = "N";
+
+  commentsText = getCommentBuffer(comments);
+  if ( commentsText == NULL )
+    commentsText=" ";
   /* printf("Comments <%s>\n",comments); */
-  exec sql insert into p4gl_module (id_package,module_name,comments) values
-    (:idPackage,:moduleName,:comments);
+  exec sql insert into p4gl_module (id_package,module_name,author,revision,deprecated,comments) 
+	  values
+      (:idPackage,:moduleName,:author,:revision,:deprecated,:commentsText);
 }
 
 /**
@@ -458,6 +490,8 @@ static void insertFunction(int idxFunction)
     char *functionType;
     char *comments;
     char *deprecated;
+    char *author;
+    char *since;
   exec sql end declare section;
 
   StatDesc = "insert p4gl_function";
@@ -470,19 +504,34 @@ static void insertFunction(int idxFunction)
   else
     functionType = "R";
 
-  if ( getCommentDeprecated(FUNCAO(idxFunction).parsedDoc))
-    deprecated = "Y";
-  else
-    deprecated = "N";
-
+  if ( FUNCAO(idxFunction).parsedDoc != (Comment *)0 ) {
+    if ( getCommentDeprecated(FUNCAO(idxFunction).parsedDoc))
+      deprecated = "Y";
+    else
+      deprecated = "N";
+  
+    author = FUNCAO(idxFunction).parsedDoc->author;
+	  if ( author == NULL )
+	    author = " ";
+  
+    since = FUNCAO(idxFunction).parsedDoc->since;
+	  if ( since == NULL )
+	    since = " ";
+	}
+	else {
+	  deprecated = "N";
+		author = " ";
+		since = " ";
+	}
+  
   if ( comments == (char *)0 )
     comments=" ";
   exec sql insert into p4gl_function (
       id_package,module_name,
-      function_name,function_type,deprecated,comments
+      function_name,function_type,deprecated,comments,author,since
     )
     values (:idPackage,:moduleName,:functionName,:functionType,:deprecated,
-            :comments);
+            :comments,:author,:since);
   insertFunctionParameters(idxFunction);
   insertFunctionReturns(idxFunction);
   insertFunctionProcess(idxFunction);
@@ -549,7 +598,7 @@ void insertP4glRep(void)
   insertModule(
     P4glCb.package,
     P4glCb.module,
-    getCommentBuffer(P4glCb.parsedComment)
+    P4glCb.parsedComment
   );
   insertFunctions();
 }

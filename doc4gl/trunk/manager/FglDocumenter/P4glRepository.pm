@@ -2,10 +2,10 @@
 
 #  =========================================================================
 #
-#  Métodos diversos para interação com um repositório de formato p4gl
+#  Methods to interact with a repository in p4gl format.
 #
 #  $Author: saferreira $
-#  $Id: P4glRepository.pm,v 1.3 2003-04-14 17:58:03 saferreira Exp $
+#  $Id: P4glRepository.pm,v 1.4 2003-05-12 11:29:45 saferreira Exp $
 #
 #  @todo Correcto tratamento de erros e mensagens
 #  @todo Retirar dependencia directa de outros packages (sempre por objecto)
@@ -319,6 +319,7 @@ sub execSql
   my $obj    = shift;
   my $sqlStr = shift;
   my $numRecords;
+	#print "$sqlStr\n";
   unless ( $numRecords = $obj->{connection}->getConnection()->do($sqlStr))
   {
     $obj->{err}->error(
@@ -356,6 +357,11 @@ sub create
   $rv = $obj->execSql(qq/create table p4gl_module (
     id_package char(64) not null references p4gl_package (id_package),
     module_name char(64) not null,
+		author char(64),
+		revision char(64),
+    deprecated     char(1) default 'N' 
+      not null check (deprecated in ('Y','N')),
+		since char(64),
     comments varchar(255),
     primary key (id_package,module_name)
   );
@@ -372,6 +378,17 @@ sub create
   );
   /);
 
+  $rv = $obj->execSql(qq/create table p4gl_mod_todo (
+    id_package char(64) not null,
+    module_name char(64) not null,
+    item_num smallint not null,
+    comments char(255),
+    primary key (id_package,module_name,item_num),
+    foreign key (id_package,module_name) references 
+      p4gl_module (id_package,module_name)
+  );
+  /);
+
 
   $rv = $obj->execSql(qq/create table p4gl_function (
     id_package     char(64) not null,
@@ -381,6 +398,8 @@ sub create
       not null check (function_type in ('F','R')),
     deprecated     char(1) default 'N' 
       not null check (deprecated in ('Y','N')),
+		author char(64),
+		since char(64),
     comments       varchar(255),
     foreign key (id_package,module_name) references 
       p4gl_module (id_package,module_name),
@@ -447,6 +466,18 @@ sub create
     function_name char(50) not null,
     item_num smallint not null,
     comments char(255),
+    primary key (id_package,module_name,function_name,item_num),
+    foreign key (id_package,module_name,function_name)
+      references p4gl_function (id_package,module_name,function_name)
+  );
+  /);
+
+  $rv = $obj->execSql(qq/create table p4gl_form_usage (
+    id_package char(64) not null,
+    module_name char(64) not null,
+    function_name char(50) not null,
+    item_num smallint not null,
+    form_name char(64),
     primary key (id_package,module_name,function_name,item_num),
     foreign key (id_package,module_name,function_name)
       references p4gl_function (id_package,module_name,function_name)

@@ -10,11 +10,12 @@
  *
  * The parsing itself is made with a specific state machine.
  *
- * @todo : Syntaxe para tipo de accao sobre tabelas.
+ * @todo : Make some syntax for table actions
+ * @todo : Change the logic of the file level comments algorithm
  *
  * $Author: saferreira $
- * $Revision: 1.4 $
- * $Id: ParseComment.c,v 1.4 2003-04-14 17:58:07 saferreira Exp $
+ * $Revision: 1.5 $
+ * $Id: ParseComment.c,v 1.5 2003-05-12 11:29:58 saferreira Exp $
  *
  */
 
@@ -36,6 +37,7 @@ static int commentLineStarted = 0;
 static int commentState = IN_COMMENT;
 
 /* Definição da tag corrente */
+/** @todo : This should be an enumeradted */
 #define NO_TAG         -1
 #define TAG_PROCESS    0
 #define TAG_PARAMETER  1
@@ -65,6 +67,7 @@ static Comment *currentComment;
 static void initComment(Comment *comm,int bufferSize)
 {
   comm->processIdx        = 0;
+  comm->file              = 0;
 	comm->buffer            = (char *)malloc(bufferSize * sizeof(char));
 	*comm->buffer           = '\0';
 	comm->processIdx        = 0;
@@ -313,15 +316,14 @@ void writeCommentIdentifier(char *id)
 
 /**
  * Set the current comment as the module documentation comment.
- * Now is implemented in order to ignore @file.
- * @todo : Implement it
  */
 void setModuleDocument(void)
 {
+  currentComment->file = 1;
 }
 
 /**
- * Foi descoberta a tag @process. Muda para o estado correspondente
+ * It was found the @process process tag. changes to the corresponding state.
  */
 void startProcess(void)
 {
@@ -331,7 +333,7 @@ void startProcess(void)
 }
 
 /**
- * Foi descoberta uma tag parameter
+ * It was found a parameter tag.
  */
 void startParameter(void)
 {

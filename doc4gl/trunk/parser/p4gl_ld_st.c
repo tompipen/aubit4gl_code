@@ -15,8 +15,8 @@
  * Moredata - Lisboa, PORTUGAL
  *                                                       
  * $Author: saferreira $
- * $Revision: 1.5 $
- * $Date: 2003-04-14 17:58:08 $
+ * $Revision: 1.6 $
+ * $Date: 2003-05-12 11:29:58 $
  *                                                       
  * Programa      : Carregamento de informação sobre os módulos numa arvore
  *                 abstracta em memoria
@@ -58,18 +58,18 @@ void P4glPreProcessing(void)
 {
    char comand[512];
 
-	// @todo : We should not use tmpnam
-	FicheiroTemp  = tmpnam((char *)0);
-	FicheiroParam = (char *)malloc(strlen(FicheiroTemp)+4);
-	/* Devia existir uma inicializacao do dbug para html
-	if ( dbug ) printf("Ficheiro pre-processado %s\n", FicheiroTemp);
-	*/
-	sprintf(FicheiroParam,"%s.par",FicheiroTemp);
-	sprintf(comand,"p4glpp %s %s %s", FicheiroInput,FicheiroTemp,FicheiroParam);
-	/* Tem de se testar o exit status e um novo argumento para verificar se nao
-		conseguiu resolver o include */
+  // @todo : We should not use tmpnam
+  FicheiroTemp  = tmpnam((char *)0);
+  FicheiroParam = (char *)malloc(strlen(FicheiroTemp)+4);
+  /* Devia existir uma inicializacao do dbug para html
+  if ( dbug ) printf("Ficheiro pre-processado %s\n", FicheiroTemp);
+  */
+  sprintf(FicheiroParam,"%s.par",FicheiroTemp);
+  sprintf(comand,"p4glpp %s %s %s", FicheiroInput,FicheiroTemp,FicheiroParam);
+  /* Tem de se testar o exit status e um novo argumento para verificar se nao
+    conseguiu resolver o include */
    if ( system(comand) )
-		P4glError(ERROR_EXIT,"Unable to Pre-process source (%s)\n",FicheiroInput);
+    P4glError(ERROR_EXIT,"Unable to Pre-process source (%s)\n",FicheiroInput);
 }
 
 /**
@@ -81,27 +81,27 @@ void P4glPreProcessing(void)
 void initSymtab(void)
 {
    register int  i,j;
-	FILE          *FlPtrParam;
-	char          str[128];
+  FILE          *FlPtrParam;
+  char          str[128];
 
-	P4glVerbose("Initializing\n");
+  P4glVerbose("Initializing\n");
 
-	P4glCb.variaveis_mod = (VARS *)0;
-	P4glCb.var_globais   = (VARS *)0;
-	P4glCb.UtilGlob      = 0;
-	P4glCb.idx_var_glob  = 0;
+  P4glCb.variaveis_mod = (VARS *)0;
+  P4glCb.var_globais   = (VARS *)0;
+  P4glCb.UtilGlob      = 0;
+  P4glCb.idx_var_glob  = 0;
 
 
-	FlPtrParam = fopen(FicheiroParam,"r");
-	if (FlPtrParam == (FILE *)0)
-	  P4glError(ERROR_EXIT,"Unable to read parameter file (%s)\n",FicheiroParam);
-	if (fgets (str, 80,  FlPtrParam) == NULL) 
-	  P4glError(ERROR_EXIT,"Format error in parameter file\n");
-	for ( i = 1 ; str[i] != '\0' && str[i] != '=' ; i++);
-	P4glCb.NumFunc = atoi(str+i+1);
-	fclose(FlPtrParam);
+  FlPtrParam = fopen(FicheiroParam,"r");
+  if (FlPtrParam == (FILE *)0)
+    P4glError(ERROR_EXIT,"Unable to read parameter file (%s)\n",FicheiroParam);
+  if (fgets (str, 80,  FlPtrParam) == NULL) 
+    P4glError(ERROR_EXIT,"Format error in parameter file\n");
+  for ( i = 1 ; str[i] != '\0' && str[i] != '=' ; i++);
+  P4glCb.NumFunc = atoi(str+i+1);
+  fclose(FlPtrParam);
 
-	P4glCb.functions = calloc(P4glCb.NumFunc, sizeof(FUNCTION));
+  P4glCb.functions = calloc(P4glCb.NumFunc, sizeof(FUNCTION));
 }
 
 /**
@@ -112,21 +112,20 @@ void initSymtab(void)
  */
 static void StInsertModGlobVariableDeclaration(char *NomeVariavel,int linha)
 {
-	defineOrGlobalsOcurred();
   if ( P4glCb.variaveis_mod == (VARS *)0 )
-	{
-		 P4glCb.variaveis_mod = (VARS *)calloc(MAXGLBVARS,sizeof(VARS));
-		 P4glCb.idx_var_mod   = 0;
-	}
-	P4glCb.variaveis_mod[P4glCb.idx_var_mod].nome= (char *)malloc(
+  {
+     P4glCb.variaveis_mod = (VARS *)calloc(MAXGLBVARS,sizeof(VARS));
+     P4glCb.idx_var_mod   = 0;
+  }
+  P4glCb.variaveis_mod[P4glCb.idx_var_mod].nome= (char *)malloc(
     strlen(NomeVariavel)+1
   );
-	strcpy(P4glCb.variaveis_mod[P4glCb.idx_var_mod].nome  , NomeVariavel);
-	P4glCb.variaveis_mod[P4glCb.idx_var_mod].linha      = linha;
-	P4glCb.variaveis_mod[P4glCb.idx_var_mod].tipo = (char *)0; 
-	P4glCb.idx_var_mod++;
-	if ( P4glCb.idx_var_mod >= MAXGLBVARS )
-		P4glError(ERROR_EXIT,"Modular variable array overflow - Line %d\n",linha);
+  strcpy(P4glCb.variaveis_mod[P4glCb.idx_var_mod].nome  , NomeVariavel);
+  P4glCb.variaveis_mod[P4glCb.idx_var_mod].linha      = linha;
+  P4glCb.variaveis_mod[P4glCb.idx_var_mod].tipo = (char *)0; 
+  P4glCb.idx_var_mod++;
+  if ( P4glCb.idx_var_mod >= MAXGLBVARS )
+    P4glError(ERROR_EXIT,"Modular variable array overflow - Line %d\n",linha);
 }
 
 /**
@@ -139,24 +138,23 @@ static void StInsertModGlobVariableDeclaration(char *NomeVariavel,int linha)
 static void StInsertGlobalVariableDeclaration(
   char *NomeVariavel,char *DataType,int linha)
 {
-	defineOrGlobalsOcurred();
   if ( P4glCb.var_globais == (VARS *)0 )
-	{
-		 P4glCb.var_globais = (VARS *)calloc(MAXGLBVARS,sizeof(VARS));
-		 P4glCb.idx_var_glob   = 0;
-	}
-	P4glCb.var_globais[P4glCb.idx_var_glob].nome     = (char *)strdup(
+  {
+     P4glCb.var_globais = (VARS *)calloc(MAXGLBVARS,sizeof(VARS));
+     P4glCb.idx_var_glob   = 0;
+  }
+  P4glCb.var_globais[P4glCb.idx_var_glob].nome     = (char *)strdup(
     NomeVariavel
   );
-	P4glCb.var_globais[P4glCb.idx_var_glob].linha    = linha;
-	P4glCb.var_globais[P4glCb.idx_var_glob].tipo     = strdup(DataType);
-	if ( InInclude )
-	   P4glCb.var_globais[P4glCb.idx_var_glob].tipo_dec = IN_INCLUDE;
-	else
-	   P4glCb.var_globais[P4glCb.idx_var_glob].tipo_dec = IN_MODULE;
-	P4glCb.idx_var_glob++;
-	if ( P4glCb.idx_var_glob >= MAXGLBVARS )
-		P4glError(ERROR_EXIT,"Global variable array overflow - Line %d\n",linha);
+  P4glCb.var_globais[P4glCb.idx_var_glob].linha    = linha;
+  P4glCb.var_globais[P4glCb.idx_var_glob].tipo     = strdup(DataType);
+  if ( InInclude )
+     P4glCb.var_globais[P4glCb.idx_var_glob].tipo_dec = IN_INCLUDE;
+  else
+     P4glCb.var_globais[P4glCb.idx_var_glob].tipo_dec = IN_MODULE;
+  P4glCb.idx_var_glob++;
+  if ( P4glCb.idx_var_glob >= MAXGLBVARS )
+    P4glError(ERROR_EXIT,"Global variable array overflow - Line %d\n",linha);
 }
 
 /**
@@ -176,29 +174,29 @@ static void StInsertGlobalVariableDeclaration(
 static void StInsVarDeclaration(char *NomeVariavel,char *DataType,int linha)
 {
 
-	if ( InGlobals )                        /* Variavel global */
-	{
-		StInsertGlobalVariableDeclaration(NomeVariavel,DataType,linha);
-		return;
-	}
+  if ( InGlobals )                        /* Variavel global */
+  {
+    StInsertGlobalVariableDeclaration(NomeVariavel,DataType,linha);
+    return;
+  }
 
-	if ( InLimbo )                          /* Variavel modular */
-	{
-		StInsertModGlobVariableDeclaration(NomeVariavel,linha);
-		return;
-	}
+  if ( InLimbo )                          /* Variavel modular */
+  {
+    StInsertModGlobVariableDeclaration(NomeVariavel,linha);
+    return;
+  }
 
    if ( Variaveis == (VARS *)0 )           /* Local variable */
-	{
-		 Variaveis    = (VARS *)calloc(MAXVARS,sizeof(VARS));
-		 IdxVariaveis = 0;
-	}
-	Variaveis[IdxVariaveis].nome        = strdup(NomeVariavel);
-	Variaveis[IdxVariaveis].linha       = linha;
-	Variaveis[IdxVariaveis].tipo        = strdup(DataType);
-	IdxVariaveis++;
-	if ( IdxVariaveis >= MAXVARS )
-		P4glError(ERROR_EXIT,"Local variable array overflow\n");
+  {
+     Variaveis    = (VARS *)calloc(MAXVARS,sizeof(VARS));
+     IdxVariaveis = 0;
+  }
+  Variaveis[IdxVariaveis].nome        = strdup(NomeVariavel);
+  Variaveis[IdxVariaveis].linha       = linha;
+  Variaveis[IdxVariaveis].tipo        = strdup(DataType);
+  IdxVariaveis++;
+  if ( IdxVariaveis >= MAXVARS )
+    P4glError(ERROR_EXIT,"Local variable array overflow\n");
 }
 
 /**
@@ -211,7 +209,7 @@ void CleanNameList(NAME_LIST *List)
    register int i;
 
    for ( i = 0 ; i < List->idx ; i++ )
-		free(List->nome[i]);
+    free(List->nome[i]);
    free(List);
 }
 
@@ -225,10 +223,10 @@ void StInsVarListDeclaration(NAME_LIST *List,char *DataType)
 {
    register int i;
 
-	if ( InRecord )       /* Sub-variables are not inserted!...yet */
-		return;
+  if ( InRecord )       /* Sub-variables are not inserted!...yet */
+    return;
 
-	for (i = 0 ; i < List->idx ; i++ )
+  for (i = 0 ; i < List->idx ; i++ )
     StInsVarDeclaration(List->nome[i],DataType,List->line[i]);
   CleanNameList(List);
 }
@@ -261,14 +259,14 @@ static int IsModuleVariable(char *nome)
 {
    register int i;
 
-	/*printf("Vai ve se e global ao modulo \n"); */
+  /*printf("Vai ve se e global ao modulo \n"); */
    for ( i = 0 ; i < P4glCb.idx_var_mod ; i++ )
-	{
-	/*printf("Vai comparar %s com %s\n", nome, P4glCb.variaveis_mod[i].nome);*/
-		if (strcasecmp(nome,P4glCb.variaveis_mod[i].nome)==0)
-			return 1;
-	}
-	return 0;
+  {
+  /*printf("Vai comparar %s com %s\n", nome, P4glCb.variaveis_mod[i].nome);*/
+    if (strcasecmp(nome,P4glCb.variaveis_mod[i].nome)==0)
+      return 1;
+  }
+  return 0;
 }
 
 /**
@@ -283,11 +281,11 @@ static int IsGlobalVariable(char *nome)
    register int i;
 
    for ( i = 0 ; i < P4glCb.idx_var_glob ; i++ )
-	{
-		if (strcasecmp(nome,P4glCb.var_globais[i].nome)==0)
-			return 1;
-	}
-	return 0;
+  {
+    if (strcasecmp(nome,P4glCb.var_globais[i].nome)==0)
+      return 1;
+  }
+  return 0;
 }
 
 /*
@@ -304,49 +302,49 @@ void StInsertVariableUsage(char *nome,int linha,int utilizacao)
 {
   VAR_USAGE *Next;
   VAR_USAGE *Previous;
-	char      Nome[64];
+  char      Nome[64];
 
-	strcpy(Nome,nome);
-	BaseName(Nome);
-	/* ??? Isto nao foi testado */
-	if ( IsFglInternalVariable(Nome) )
-		return;
+  strcpy(Nome,nome);
+  BaseName(Nome);
+  /* ??? Isto nao foi testado */
+  if ( IsFglInternalVariable(Nome) )
+    return;
 
-	/* Podia aproveitar para ver se ha conflito de locais e globais */
+  /* Podia aproveitar para ver se ha conflito de locais e globais */
   if ( IsLocalVariable(Nome) || IsModuleVariable(Nome))
-	{
-		/* printf("Utilizacao de variavel local %s\n",Nome); */
-		return;
-	}
-	else
-	{
-		if (IsGlobalVariable(Nome))
-		   P4glCb.UtilGlob++;
-		else
-			return;
-	} 
+  {
+    /* printf("Utilizacao de variavel local %s\n",Nome); */
+    return;
+  }
+  else
+  {
+    if (IsGlobalVariable(Nome))
+       P4glCb.UtilGlob++;
+    else
+      return;
+  } 
    /* printf("Utilizacao de variavel global %s\n",Nome);  */
 
-	Next = FUNCAO_CURR.var_usage;
-	Previous = Next;
+  Next = FUNCAO_CURR.var_usage;
+  Previous = Next;
    while (Next != (VAR_USAGE *)0)
-	{
-		/*printf("Posicionar\n");*/
-	   Previous = Next;
-		Next = Next->next;
-	}
-	/*printf("Alocar\n"); */
+  {
+    /*printf("Posicionar\n");*/
+     Previous = Next;
+    Next = Next->next;
+  }
+  /*printf("Alocar\n"); */
    Next = (VAR_USAGE *)malloc(sizeof(VAR_USAGE));
-	if ( FUNCAO_CURR.var_usage == (VAR_USAGE *)0)
-		FUNCAO_CURR.var_usage = Next;
-	else
-	   Previous->next = Next;
-	Next->nome = (char *)malloc(strlen(Nome)+1);
-	strcpy(Next->nome,Nome);
-	Next->linha      = linha;
-	Next->utilizacao = utilizacao;
-	Next->next       = (VAR_USAGE *)0;
-	/* printf("Utilizacao de global %s\n",Nome); */
+  if ( FUNCAO_CURR.var_usage == (VAR_USAGE *)0)
+    FUNCAO_CURR.var_usage = Next;
+  else
+     Previous->next = Next;
+  Next->nome = (char *)malloc(strlen(Nome)+1);
+  strcpy(Next->nome,Nome);
+  Next->linha      = linha;
+  Next->utilizacao = utilizacao;
+  Next->next       = (VAR_USAGE *)0;
+  /* printf("Utilizacao de global %s\n",Nome); */
 }
 
 
@@ -360,7 +358,7 @@ void StInsertVariableListUsage(NAME_LIST *List,int utilizacao)
 {
    register int i;
 
-	for (i = 0 ; i < List->idx ; i++ )
+  for (i = 0 ; i < List->idx ; i++ )
     StInsertVariableUsage(List->nome[i],List->line[i],utilizacao);
   CleanNameList(List);
 }
@@ -378,15 +376,15 @@ void StInsertCursorDeclaration(char *NomeCursor,int Tipo,short Prepared)
   P4glCb.cursores[P4glCb.idx_cursores].nome = (char *)malloc(
     strlen(NomeCursor)+1
   );
-	strcpy(P4glCb.cursores[P4glCb.idx_cursores].nome,NomeCursor);
+  strcpy(P4glCb.cursores[P4glCb.idx_cursores].nome,NomeCursor);
   P4glCb.cursores[P4glCb.idx_cursores].tipo        = Tipo;
   P4glCb.cursores[P4glCb.idx_cursores].FuncNum     = P4glCb.idx_funcoes;
   P4glCb.cursores[P4glCb.idx_cursores].prepared    = Prepared;
 
-	/* Referencing the cursor at the select statement */
-	FUNCAO_CURR.idx_sql--;
-	SQL_STMT_CURR.cursor = P4glCb.idx_cursores;
-	FUNCAO_CURR.idx_sql++;
+  /* Referencing the cursor at the select statement */
+  FUNCAO_CURR.idx_sql--;
+  SQL_STMT_CURR.cursor = P4glCb.idx_cursores;
+  FUNCAO_CURR.idx_sql++;
 
    P4glCb.idx_cursores++;
 }
@@ -405,25 +403,25 @@ void StInsertCursorUsage(char *nome,int linha,int utilizacao)
    CUR_USAGE *Next;
    CUR_USAGE *Previous;
 
-	         /* Podia aproveitar para ver se ha conflito de locais e globais */
+           /* Podia aproveitar para ver se ha conflito de locais e globais */
 
-	Next = FUNCAO_CURR.cur_usage;
-	Previous = Next;
+  Next = FUNCAO_CURR.cur_usage;
+  Previous = Next;
    while (Next != (CUR_USAGE *)0)
-	{
-	   Previous = Next;
-		Next = Next->next;
-	}
+  {
+     Previous = Next;
+    Next = Next->next;
+  }
    Next = (CUR_USAGE *)malloc(sizeof(CUR_USAGE));
-	if ( FUNCAO_CURR.cur_usage == (CUR_USAGE *)0)
-		FUNCAO_CURR.cur_usage = Next;
-	else
-	   Previous->next = Next;
-	Next->nome       = (char *)malloc(strlen(nome)+1);
-	strcpy(Next->nome,nome);
-	Next->linha      = linha;
-	Next->utilizacao = utilizacao;
-	Next->next       = (CUR_USAGE *)0;
+  if ( FUNCAO_CURR.cur_usage == (CUR_USAGE *)0)
+    FUNCAO_CURR.cur_usage = Next;
+  else
+     Previous->next = Next;
+  Next->nome       = (char *)malloc(strlen(nome)+1);
+  strcpy(Next->nome,nome);
+  Next->linha      = linha;
+  Next->utilizacao = utilizacao;
+  Next->next       = (CUR_USAGE *)0;
 }
 
 /* 
@@ -439,9 +437,9 @@ void defineFound(void)
    register int i;
 
    for ( i = 0 ; i < IdxVariaveis ; i++ );
-	/*printf("Variavel %s do tipo %d\n",Variaveis[i].nome,Variaveis[i].tipo);*/
+  /*printf("Variavel %s do tipo %d\n",Variaveis[i].nome,Variaveis[i].tipo);*/
  
-	 /* Copiar para arrays da tabela de simbolos e reinicializar pointers */
+   /* Copiar para arrays da tabela de simbolos e reinicializar pointers */
 }
 
 /**
@@ -451,32 +449,32 @@ void defineFound(void)
  * @param nome The name found to the parameter
  */
 static void writeParameterToDoc(
-	Parameters *docParameter,char  *nome, int idxFunction)
+  Parameters *docParameter,char  *nome, int idxFunction)
 {
   int parameterDocumented;
-	register int i;
+  register int i;
 
-	parameterDocumented = 0;
-	for ( i = 0 ; i < docParameter->idxParameters ; i++ )
+  parameterDocumented = 0;
+  for ( i = 0 ; i < docParameter->idxParameters ; i++ )
   {
-	  if ( strcasecmp(nome,docParameter->name[i]) == 0 )
-		{
+    if ( strcasecmp(nome,docParameter->name[i]) == 0 )
+    {
       docParameter->dataType[i] = (char *)getParameterDataType(
-			  idxFunction,
-			  nome
-			);
-			parameterDocumented = 1;
-		}
+        idxFunction,
+        nome
+      );
+      parameterDocumented = 1;
+    }
   }
   if ( parameterDocumented == 0 )
-	{
-		addParameter(docParameter,nome,"--");
+  {
+    addParameter(docParameter,nome,"--");
     docParameter->dataType[docParameter->idxParameters]=
-			(char *)getParameterDataType(
-			  idxFunction,
-			  nome
-		);
-	}
+      (char *)getParameterDataType(
+        idxFunction,
+        nome
+    );
+  }
 }
 
 /**
@@ -488,23 +486,23 @@ static void writeParameterToDoc(
 static void writeParameterComments(int idxFunction)
 {
   Comment    *parsedDoc;
-	NAME_LIST  *parametros;
+  NAME_LIST  *parametros;
   Parameters *docParameter;
-	register int j;
+  register int j;
 
-	parsedDoc  = P4glCb.functions[idxFunction].parsedDoc;
-	parametros = P4glCb.functions[idxFunction].parametros;
+  parsedDoc  = P4glCb.functions[idxFunction].parsedDoc;
+  parametros = P4glCb.functions[idxFunction].parametros;
 
-	if ( parametros == (NAME_LIST *)0 )
-	  return;
+  if ( parametros == (NAME_LIST *)0 )
+    return;
 
-	if ( parsedDoc == (Comment *)0 )
-	  return;
+  if ( parsedDoc == (Comment *)0 )
+    return;
 
-	docParameter = parsedDoc->parameterList;
-	
-	for ( j = 0 ; j < parametros->idx ; j++ )
-		writeParameterToDoc(docParameter,parametros->nome[j],idxFunction);
+  docParameter = parsedDoc->parameterList;
+  
+  for ( j = 0 ; j < parametros->idx ; j++ )
+    writeParameterToDoc(docParameter,parametros->nome[j],idxFunction);
 }
 
 /**
@@ -516,35 +514,35 @@ static void writeParameterComments(int idxFunction)
 static void fillTableUsage(FUNCTION *function)
 {
   Comment    *parsedDoc;
-	register int j;
+  register int j;
 
-	if ( function->parsedDoc == (Comment *)0 )
-	  return;
+  if ( function->parsedDoc == (Comment *)0 )
+    return;
 
-	for ( j = 0 ; j <= getCommentTableUsageIdx(parsedDoc) ; j++ )
-	  addFunctionTableUsage(function,getCommentTableUsage(parsedDoc,j));
+  for ( j = 0 ; j <= getCommentTableUsageIdx(parsedDoc) ; j++ )
+    addFunctionTableUsage(function,getCommentTableUsage(parsedDoc,j));
 
-	for ( j = 0 ; j <= getFunctionSqlIdx(function) ; j++ )
-	{
-		TableUsage *tableUsage;
-		SQL *sql;
-		register int k;
+  for ( j = 0 ; j <= getFunctionSqlIdx(function) ; j++ )
+  {
+    TableUsage *tableUsage;
+    SQL *sql;
+    register int k;
 
-		sql = getFunctionSql(function,j);
+    sql = getFunctionSql(function,j);
 
-		for ( k = 0 ; k < getSqlTableIdx(sql); k++ )
-		{
-			char *tableName;
+    for ( k = 0 ; k < getSqlTableIdx(sql); k++ )
+    {
+      char *tableName;
 
-			tableName = getSqlTable(sql,k);
-		  tableUsage = newTableUsage();
-		  setTableUsageTableName(tableName,tableUsage);
+      tableName = getSqlTable(sql,k);
+      tableUsage = newTableUsage();
+      setTableUsageTableName(tableName,tableUsage);
       setTableUsageFoundAs(TU_SQL,tableUsage);
       setTableUsageOperation(sql->operacao,tableUsage);
       setTableUsageLineNumber(TU_UNDEFINED,tableUsage);
-	    addFunctionTableUsage(function,tableUsage);
-		}
-	}
+      addFunctionTableUsage(function,tableUsage);
+    }
+  }
 }
 
 /**
@@ -561,40 +559,40 @@ void StInsertFunction(char *functionName,int ultima_linha,NAME_LIST *arguments)
 {
   char *GetListConcat();
 
-	/*fprintf(stderr,"Found %s\n",functionName); */
-	// ??? Provavelmente não deveria ser assim
-	Downshift(functionName);
+  /*fprintf(stderr,"Found %s\n",functionName); */
+  // ??? Provavelmente não deveria ser assim
+  Downshift(functionName);
 
-	if (strcmp(functionName,"paradarsorte") == 0)
-		return;
+  if (strcmp(functionName,"paradarsorte") == 0)
+    return;
 
-	if (IsFglFunction(functionName))  /* Nao insere funcoes internas */
-		return;
+  if (IsFglFunction(functionName))  /* Nao insere funcoes internas */
+    return;
 
-	strcpy(P4glCb.functions[P4glCb.idx_funcoes].name,functionName);
-	P4glCb.functions[P4glCb.idx_funcoes].n_linhas = 
-	   P4glCb.functions[P4glCb.idx_funcoes].linha - ultima_linha;
-	/* Podem existir funções sem parametros */
-	if ( arguments != (NAME_LIST *)0 )
-	  FUNCAO_CURR.ParamTxt      = GetListConcat(arguments,",");
-	else
-	  FUNCAO_CURR.ParamTxt      = (char *)0;
-	FUNCAO_CURR.parametros    = arguments;
-	FUNCAO_CURR.variaveis     = Variaveis;
-	FUNCAO_CURR.idx_var       = IdxVariaveis;
-	writeParameterComments(P4glCb.idx_funcoes);
-	FUNCAO_CURR.Include       = InInclude;
-	FUNCAO_CURR.NInstrucoes   = FunctionStatementCount;
-	fillTableUsage(&(FUNCAO_CURR));
-	/* @todo : Fix this crossed validation
-	if ( P4glCb.idx_funcoes >= P4glCb.NumFunc )
-		P4glError(ERROR_EXIT,
-				"Function number diferent then in first pass %d (found %d)\n",
-				P4glCb.idx_funcoes,
-				P4glCb.NumFunc
-		);
-		*/
-	P4glCb.idx_funcoes++;
+  strcpy(P4glCb.functions[P4glCb.idx_funcoes].name,functionName);
+  P4glCb.functions[P4glCb.idx_funcoes].n_linhas = 
+     P4glCb.functions[P4glCb.idx_funcoes].linha - ultima_linha;
+  /* Podem existir funções sem parametros */
+  if ( arguments != (NAME_LIST *)0 )
+    FUNCAO_CURR.ParamTxt      = GetListConcat(arguments,",");
+  else
+    FUNCAO_CURR.ParamTxt      = (char *)0;
+  FUNCAO_CURR.parametros    = arguments;
+  FUNCAO_CURR.variaveis     = Variaveis;
+  FUNCAO_CURR.idx_var       = IdxVariaveis;
+  writeParameterComments(P4glCb.idx_funcoes);
+  FUNCAO_CURR.Include       = InInclude;
+  FUNCAO_CURR.NInstrucoes   = FunctionStatementCount;
+  fillTableUsage(&(FUNCAO_CURR));
+  /* @todo : Fix this crossed validation
+  if ( P4glCb.idx_funcoes >= P4glCb.NumFunc )
+    P4glError(ERROR_EXIT,
+        "Function number diferent then in first pass %d (found %d)\n",
+        P4glCb.idx_funcoes,
+        P4glCb.NumFunc
+    );
+    */
+  P4glCb.idx_funcoes++;
 }
 
 /**
@@ -608,13 +606,13 @@ void StInsertFunction(char *functionName,int ultima_linha,NAME_LIST *arguments)
  */
 void StInsertLineFunction(int linha,int functionType)
 {
-	P4glCb.functions[P4glCb.idx_funcoes].linha = linha;
-	P4glCb.functions[P4glCb.idx_funcoes].functionType = functionType;
-	Variaveis = (VARS *)0;
-	IdxVariaveis=0;
-	FunctionStatementCount = 0;
-	/* Triger the documentation state machine event */
-	defineFunctionOcurred();
+  P4glCb.functions[P4glCb.idx_funcoes].linha = linha;
+  P4glCb.functions[P4glCb.idx_funcoes].functionType = functionType;
+  Variaveis = (VARS *)0;
+  IdxVariaveis=0;
+  FunctionStatementCount = 0;
+  /* Store the last documentation comment */
+  defineFunctionOcurred();
 }
 
 /**
@@ -644,15 +642,15 @@ char *NmArg;
  */
 void StInsertFunctionCall(char *FunctionName,int linha)
 {
-	Downshift(FunctionName);
-	if (IsFglFunction(FunctionName))  /* Nao insere funcoes internas */
-		return;
+  Downshift(FunctionName);
+  if (IsFglFunction(FunctionName))  /* Nao insere funcoes internas */
+    return;
 
-	if ( IDX_FC_CURR >= MAXCALL )
-	{
-		P4glError(ERROR_EXIT,"CALL(s) by function Stack Overflow (%d)\n",MAXCALL);
-		return;
-	}
+  if ( IDX_FC_CURR >= MAXCALL )
+  {
+    P4glError(ERROR_EXIT,"CALL(s) by function Stack Overflow (%d)\n",MAXCALL);
+    return;
+  }
    strcpy(FUNCAO_CURR.FunctionCall[IDX_FC_CURR].name,FunctionName);
    FUNCAO_CURR.FunctionCall[IDX_FC_CURR].linha = linha;
    IDX_FC_CURR++;
@@ -714,9 +712,9 @@ void StIncrementTable(void)
  */
 void StInsertSQL(int operacao,int linha)
 {
-	SQL_STMT_CURR.operacao = operacao;
-	SQL_STMT_CURR.cursor   = -1;
-	FUNCAO_CURR.idx_sql++;
+  SQL_STMT_CURR.operacao = operacao;
+  SQL_STMT_CURR.cursor   = -1;
+  FUNCAO_CURR.idx_sql++;
 }
 
 /**
@@ -728,7 +726,7 @@ void StInsertSQL(int operacao,int linha)
  */
 void StInsertSQLTxt(char *SqlTxt)
 {
-	SQL_STMT_CURR.texto = SqlTxt;
+  SQL_STMT_CURR.texto = SqlTxt;
 }
 
 
@@ -764,27 +762,27 @@ void OrderSymtab(void)
 {
    register int i;
    
-	 /*
-	if (!InsertInDatabase)
-		return;
-		*/
-	P4glVerbose("Symbol table post-treatment\n");
-		/* Ordenar lista de funcoes */
+   /*
+  if (!InsertInDatabase)
+    return;
+    */
+  P4glVerbose("Symbol table post-treatment\n");
+    /* Ordenar lista de funcoes */
   qsort(P4glCb.functions, P4glCb.idx_funcoes,sizeof(FUNCTION),FuncCmp);
-	for (i=0 ; i < P4glCb.idx_funcoes ; i++)
-	{
-		/* Funcoes executadas */
+  for (i=0 ; i < P4glCb.idx_funcoes ; i++)
+  {
+    /* Funcoes executadas */
       qsort(P4glCb.functions[i].FunctionCall, 
-				P4glCb.functions[i].idx_function_call,
-				sizeof(FUNC_CALL),FunctionCallCmp);
+        P4glCb.functions[i].idx_function_call,
+        sizeof(FUNC_CALL),FunctionCallCmp);
 
-		/* Falta utilizacao de tabelas */
-	}
+    /* Falta utilizacao de tabelas */
+  }
 
-	/* Outras modificações */
-	P4glCb.module = P4glCb.NmFicheiroInput;
-	//strcpy(P4glCb.package,P4glCb.directoria);
-	//printf("Package %s\n", P4glCb.package);
+  /* Outras modificações */
+  P4glCb.module = P4glCb.NmFicheiroInput;
+  //strcpy(P4glCb.package,P4glCb.directoria);
+  //printf("Package %s\n", P4glCb.package);
 }
 
 
@@ -804,21 +802,21 @@ void OrderSymtab(void)
  */
 void InsertNameList(NAME_LIST **Destino,NAME_LIST *Origem,char *Nome,int Linha)
 {
-	if ( Origem == (NAME_LIST *)0 )
-	{
-		*Destino = (NAME_LIST *)malloc(sizeof(NAME_LIST));
-		if ( *Destino == (NAME_LIST *)0 )
+  if ( Origem == (NAME_LIST *)0 )
+  {
+    *Destino = (NAME_LIST *)malloc(sizeof(NAME_LIST));
+    if ( *Destino == (NAME_LIST *)0 )
       fprintf(stderr,"Não há mais memória (InsertNameList)\n");
-		(*Destino)->idx = 0;
-	}
-	else
-		*Destino = Origem;
-	(*Destino)->nome[(*Destino)->idx] = (char *)malloc(strlen(Nome)+1);
-	strcpy((*Destino)->nome[(*Destino)->idx],Nome);
-	(*Destino)->line[(*Destino)->idx] = Linha;
-	(*Destino)->idx++;
-	if ((*Destino)->idx > MAX_NAMES_IN_LIST )
-		P4glError(ERROR_EXIT,"List of names Stack Overflow\n");
+    (*Destino)->idx = 0;
+  }
+  else
+    *Destino = Origem;
+  (*Destino)->nome[(*Destino)->idx] = (char *)malloc(strlen(Nome)+1);
+  strcpy((*Destino)->nome[(*Destino)->idx],Nome);
+  (*Destino)->line[(*Destino)->idx] = Linha;
+  (*Destino)->idx++;
+  if ((*Destino)->idx > MAX_NAMES_IN_LIST )
+    P4glError(ERROR_EXIT,"List of names Stack Overflow\n");
 }
 
 /**
@@ -830,23 +828,23 @@ void InsertNameList(NAME_LIST **Destino,NAME_LIST *Origem,char *Nome,int Linha)
 char *GetListConcat(NAME_LIST *List, char *ch)
 {
   register int i;
-	char *Destino;
-	int  len;
+  char *Destino;
+  int  len;
 
-	len = 0;
-	/* Isto se calhar ficava mais eficaz se utiliza-se o realoc */
-	for (i = 0 ; i < List->idx ; i++ )
-		len += strlen(List->nome[i])+1;
+  len = 0;
+  /* Isto se calhar ficava mais eficaz se utiliza-se o realoc */
+  for (i = 0 ; i < List->idx ; i++ )
+    len += strlen(List->nome[i])+1;
 
-	Destino = (char *)malloc(len + 1);
-	Destino[0] = '\0';
-	for (i = 0 ; i < List->idx ; i++ )
-	{
-		if ( i > 0 )
-			strcat(Destino,ch);
-		strcat(Destino,List->nome[i]);
+  Destino = (char *)malloc(len + 1);
+  Destino[0] = '\0';
+  for (i = 0 ; i < List->idx ; i++ )
+  {
+    if ( i > 0 )
+      strcat(Destino,ch);
+    strcat(Destino,List->nome[i]);
    }
-	return Destino;
+  return Destino;
 }
 
 /**
@@ -861,8 +859,8 @@ static void PrintNameList(NAME_LIST *List)
 {
    register int i;
 
-	for (i = 0 ; i < List->idx ; i++ )
-		printf("--Nome %s\n",List->nome[i]);
+  for (i = 0 ; i < List->idx ; i++ )
+    printf("--Nome %s\n",List->nome[i]);
 }
 
 
@@ -874,13 +872,13 @@ static void PrintNameList(NAME_LIST *List)
  */
 void CleanP4gl(void)
 {
-	if ( !dbug )
-	{
+  if ( !dbug )
+  {
       unlink(FicheiroTemp);
       unlink(FicheiroParam);
-	}
-	else
-		printf("ATENCAO : Temporarios nao foram limpos !\n");
+  }
+  else
+    printf("ATENCAO : Temporarios nao foram limpos !\n");
 }
 
 
@@ -892,11 +890,11 @@ void CleanP4gl(void)
  */
 void GlobalsInclude(char *NmFicheiro)
 {
-	if ( P4glCb.idx_globais >= MAXGLOB )
-		P4glError(ERROR_EXIT,"Include stack overflow\n");
-	tiraAspas(NmFicheiro);
+  if ( P4glCb.idx_globais >= MAXGLOB )
+    P4glError(ERROR_EXIT,"Include stack overflow\n");
+  tiraAspas(NmFicheiro);
    strcpy(P4glCb.globais[P4glCb.idx_globais].nome_ficheiro,NmFicheiro);
-	P4glCb.idx_globais++;
+  P4glCb.idx_globais++;
 }
 
 /**
@@ -945,7 +943,7 @@ int isLoadStdComments()
  */
 void setModuleComment(Comment *comment)
 {
-	P4glCb.parsedComment = comment;
+  P4glCb.parsedComment = comment;
 }
 
 /**
@@ -955,7 +953,7 @@ void setModuleComment(Comment *comment)
  */
 void setFunctionComment(Comment *comment)
 {
-	FUNCAO_CURR.parsedDoc = comment;
+  FUNCAO_CURR.parsedDoc = comment;
 }
 
 /**
@@ -963,7 +961,7 @@ void setFunctionComment(Comment *comment)
  */
 void incrementNumFgldoc(void)
 {
-	P4glCb.numFglDoc++;
+  P4glCb.numFglDoc++;
 }
 
 /**

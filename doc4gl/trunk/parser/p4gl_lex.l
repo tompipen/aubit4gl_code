@@ -2,8 +2,8 @@
 /*  ==========================================================================
  *
  *   Author : Sergio Ferreira
- *   $Date: 2003-04-14 17:58:09 $
- *   $Id: p4gl_lex.l,v 1.4 2003-04-14 17:58:09 saferreira Exp $
+ *   $Date: 2003-05-12 11:29:58 $
+ *   $Id: p4gl_lex.l,v 1.5 2003-05-12 11:29:58 saferreira Exp $
  *
  *   Lexical analyzer for the p4gl parser
  *
@@ -15,9 +15,10 @@
 #include "p4gl.h"
 #include "y.tab.h"
 
-//static char *rcsid = "$Id: p4gl_lex.l,v 1.4 2003-04-14 17:58:09 saferreira Exp $";
+//static char *rcsid = "$Id: p4gl_lex.l,v 1.5 2003-05-12 11:29:58 saferreira Exp $";
 
 int lineno=1;         /* Source line number counter */
+
 
 %}
 
@@ -35,9 +36,9 @@ quoted_string                   \'([^'\n]|\\['\n])*\'
 "--"                        { readLineComment(); }
 
 "\""                        { readString();
-															/* Falta copiar a string */
+                              /* Falta copiar a string */
                               CopyToken(yytext,STRING); 
-															return(STRING); }
+                              return(STRING); }
 {quoted_string}             { CopyToken(yytext,STRING); return(STRING); }
 
 [0-9]+                      { CopyToken(yytext,NUMBER); return(NUMBER); }
@@ -74,31 +75,31 @@ yywrap()
 char *appendStr(char *strAppended,char *strToAppend)
 {
   int originalLen;
-	int toAppendLen;
-	int neededLen;
-	char *retStr;
+  int toAppendLen;
+  int neededLen;
+  char *retStr;
 
-	if ( strAppended == (char *)0 )
-	  originalLen = 0;
+  if ( strAppended == (char *)0 )
+    originalLen = 0;
   else
-	  originalLen = strlen(strAppended);
+    originalLen = strlen(strAppended);
 
-	toAppendLen = strlen(strToAppend);
-	/*printf("Original len %d ; to append %d\n",originalLen,toAppendLen);*/
-	neededLen = originalLen + toAppendLen;
-	if ( strAppended == (char *)0 )
-	{
-		/*printf("MALLOC\n");*/
-	  retStr = malloc(neededLen);
-	}
+  toAppendLen = strlen(strToAppend);
+  /*printf("Original len %d ; to append %d\n",originalLen,toAppendLen);*/
+  neededLen = originalLen + toAppendLen;
+  if ( strAppended == (char *)0 )
+  {
+    /*printf("MALLOC\n");*/
+    retStr = malloc(neededLen);
+  }
   else
-	{
-		/*printf("REALLOC %s\n",strAppended);*/
+  {
+    /*printf("REALLOC %s\n",strAppended);*/
     retStr = realloc(strAppended,neededLen);
-	}
-	strcat(retStr,strToAppend);
-	/*printf("Alocar %d bytes \n",neededLen);*/
-	return retStr;
+  }
+  strcat(retStr,strToAppend);
+  /*printf("Alocar %d bytes \n",neededLen);*/
+  return retStr;
 }
 
 /** 
@@ -118,19 +119,19 @@ char *lexgets(char *str,int NumberOfChr)
 {
    register int i,ch;
 
-	for ( i = 0 ; i < NumberOfChr-1 ; i++ )
-	{
-		ch = p4glLexInput();
+  for ( i = 0 ; i < NumberOfChr-1 ; i++ )
+  {
+    ch = p4glLexInput();
     if ( ch == EOF )
-			return NULL;
-		if (ch == '\0' )
-			return NULL;
-		if (ch == '\n')
-		  break;
-		str[i] = ch;
-	}
-	str[i] = '\0';
-	return "";
+      return NULL;
+    if (ch == '\0' )
+      return NULL;
+    if (ch == '\n')
+      break;
+    str[i] = ch;
+  }
+  str[i] = '\0';
+  return "";
 }
 
 /**
@@ -141,16 +142,16 @@ char *lexgets(char *str,int NumberOfChr)
  */
 char *ensureCapacity(char *str,int incrementSize,int neededSize)
 {
-	char *retStr;
-	int multFactor;
+  char *retStr;
+  int multFactor;
 
-	multFactor = neededSize / incrementSize;
-	if ( multFactor <= 0 )
-	  multFactor = 1;
+  multFactor = neededSize / incrementSize;
+  if ( multFactor <= 0 )
+    multFactor = 1;
   if ( neededSize % incrementSize != 0 )
-	  multFactor++;
-	retStr = (char *)realloc(str,incrementSize*multFactor);
-	return retStr;
+    multFactor++;
+  retStr = (char *)realloc(str,incrementSize*multFactor);
+  return retStr;
 }
 
 /**
@@ -172,41 +173,41 @@ readString()
 { 
   char str[256];
   int j=0, ch, lookAheadCh;
-	int stringFinished = 0;
+  int stringFinished = 0;
 
-	while ( stringFinished == 0)
-	{
-	  ch = p4glLexInput();
+  while ( stringFinished == 0)
+  {
+    ch = p4glLexInput();
     if ( ch == EOF )
-			break;
-		str[j] = ch; j++;
-	  switch ( ch )
-		{
-		  case '"':  /* Fazer lookahead para ver se é escape de aspas */
-				lookAheadCh = p4glLexInput(); 
-				if ( lookAheadCh != '"' )
-				{
-		      unput(lookAheadCh);
-	        stringFinished = 1;
-				}
-				else
-				{
-		      str[j] = lookAheadCh; 
-					j++;
-				}
-			  break;
-			case '\\':  // Everything after \ is consumed, even "
-				lookAheadCh = p4glLexInput(); 
-		    str[j] = lookAheadCh; 
-								j++;
-			  break;
-			case '\n':
+      break;
+    str[j] = ch; j++;
+    switch ( ch )
+    {
+      case '"':  /* Fazer lookahead para ver se é escape de aspas */
+        lookAheadCh = p4glLexInput(); 
+        if ( lookAheadCh != '"' )
+        {
+          unput(lookAheadCh);
+          stringFinished = 1;
+        }
+        else
+        {
+          str[j] = lookAheadCh; 
+          j++;
+        }
+        break;
+      case '\\':  // Everything after \ is consumed, even "
+        lookAheadCh = p4glLexInput(); 
+        str[j] = lookAheadCh; 
+                j++;
+        break;
+      case '\n':
         lineno++; 
-				break;
-		}
-		fflush(stdout);
+        break;
+    }
+    fflush(stdout);
   }
-	str[j] = '\0';
+  str[j] = '\0';
 }
 
 /*
@@ -223,8 +224,8 @@ int   Num;
 {
    register int i;
 
-	for ( i = Num-1 ; i >= 0 ; i-- )
-		unput(str[i]);
+  for ( i = Num-1 ; i >= 0 ; i-- )
+    unput(str[i]);
 }
 
 

@@ -1,1265 +1,1268 @@
-				/**
-				 * @file
-				 * Analisador sintatico e semântico de linguagem 4gl
-				 *
-				 * Diminutivos utilizados:
-				 *   - TOK : Token
-				 *   - op  : Optional
-				 */
+/**
+ * @file
+ * Analisador sintatico e semântico de linguagem 4gl
+ *
+ * Diminutivos utilizados:
+ *   - TOK : Token
+ *   - op  : Optional
+ */
 
-				%{
+%{
 
-				#include <stdio.h>
-				#include <alloca.h>
-				#include "p4gl_symtab.h"
+#include <stdio.h>
+#include <alloca.h>
+#include "p4gl_symtab.h"
 
-				char *CpStr();
-				char *GetListConcat();
+char *CpStr();
+char *GetListConcat();
 
-				extern int lineno;             /* 4GL Source current line */
-				%}
+extern int lineno;             /* 4GL Source current line */
+%}
 
 
-				%union {                         /* Union for token information (number, etc) */
-					char            y_sym[40];
-					char            y_string[128];
-					int             y_num;
-					int             y_cursor_type;
-					VAR_DECLARATION y_var;
-					char            *y_text;             /* Para textos diversos - dinamico */
-					NAME_LIST       *y_name_list;        /* Array de listas de variaveis */
-					}
+%union {                         /* Union for token information (number, etc) */
+	char            y_sym[40];
+	char            y_string[128];
+	int             y_num;
+	int             y_cursor_type;
+	VAR_DECLARATION y_var;
+	char            *y_text;             /* Para textos diversos - dinamico */
+	NAME_LIST       *y_name_list;        /* Array de listas de variaveis */
+	}
 
-				/* 
-				 *  Simbolos terminais
-				 */
+/* 
+ *  Simbolos terminais
+ */
 
-				%token <y_sym>    IDENTIFIER
-				%token <y_string> STRING
-				%token <y_num>    NUMBER
+%token <y_sym>    IDENTIFIER
+%token <y_string> STRING
+%token <y_num>    NUMBER
 
-				%token  ABORT ABSOLUTE ADD AFTER ALL ALLOCATE ALTER AND ANSI ANY APPEND
-				%token  ARRAY AS ASC ASCENDING ASCII AT ATTACH ATTRIBUTE ATTRIBUTES AUDIT
-				%token  AUTHORIZATION AUTONEXT 
+%token  ABORT ABSOLUTE ADD AFTER ALL ALLOCATE ALTER AND ANSI ANY APPEND
+%token  ARRAY AS ASC ASCENDING ASCII AT ATTACH ATTRIBUTE ATTRIBUTES AUDIT
+%token  AUTHORIZATION AUTONEXT 
 
-				%token  BEFORE BEGIN_TOK BETWEEN BLINK BOLD BORDER BOTH BOTTOM BREAK
-				%token  BUFFERED BY BYTE
+%token  BEFORE BEGIN_TOK BETWEEN BLINK BOLD BORDER BOTH BOTTOM BREAK
+%token  BUFFERED BY BYTE
 
-				/* To remove */
-				%token  BLUE 
-				%token  BLACK
+/* To remove */
+%token  BLUE 
+%token  BLACK
 
-				%token  CALL CASCADE CASE CHAR CHECK CLEAR CLIPPED CLOSE CLUSTER COLUMN
-				%token  COLUMNS COMMAND COMMENT COMMIT COMMITTED COMPRESS 
-				%token  CONSTRAINED CONSTRAINT CONSTRAINTS CONSTRUCT CONTINUE
-				%token  CONTROL COUNT CREATE CURRENT CURSOR 
+%token  CALL CASCADE CASE CHAR CHECK CLEAR CLIPPED CLOSE CLUSTER COLUMN
+%token  COLUMNS COMMAND COMMENT COMMIT COMMITTED COMPRESS 
+%token  CONSTRAINED CONSTRAINT CONSTRAINTS CONSTRUCT CONTINUE
+%token  CONTROL COUNT CREATE CURRENT CURSOR 
 
-				/* To remove */
-				%token   CYAN
+/* To remove */
+%token   CYAN
 
-				%token  DATABASE DATE DATETIME DAY
-				%token  DEC DECLARE DEFAULT DEFAULTS DEFER DEFERRED DEFINE DELETE
-				%token  DELIMITER DELIMITERS DESC DESCENDING DETACH
-				%token  DIAGNOSTICS DIM DIRTY DISABLE DISABLED DISPLAY DISTINCT
-				%token  DOUBLE DOWN DROP
+%token  DATABASE DATE DATETIME DAY
+%token  DEC DECLARE DEFAULT DEFAULTS DEFER DEFERRED DEFINE DELETE
+%token  DELIMITER DELIMITERS DESC DESCENDING DETACH
+%token  DIAGNOSTICS DIM DIRTY DISABLE DISABLED DISPLAY DISTINCT
+%token  DOUBLE DOWN DROP
 
-				%token  ELSE ENABLE ENABLED END_TOK ERROR ESCAPE EVERY EXCLUSIVE
-				%token  EXECUTE EXISTS EXIT EXP EXPO EXPLAIN EXTEND EXTENT 
-				%token  EXTERNAL
+%token  ELSE ENABLE ENABLED END_TOK ERROR ESCAPE EVERY EXCLUSIVE
+%token  EXECUTE EXISTS EXIT EXP EXPO EXPLAIN EXTEND EXTENT 
+%token  EXTERNAL
 
-				%token  FALSE_TOK FETCH FIELD FILE_TOK FILLFACTOR FILTERING FINISH FIRST FLOAT 
-				%token  FLUSH FOR FOREACH FOREIGN FORM FORMAT FORMONLY FOUND FRACTION FRAGMENT
-				%token  FREE FROM FUNCTION_TOK
+%token  FALSE_TOK FETCH FIELD FILE_TOK FILLFACTOR FILTERING FINISH FIRST FLOAT 
+%token  FLUSH FOR FOREACH FOREIGN FORM FORMAT FORMONLY FOUND FRACTION FRAGMENT
+%token  FREE FROM FUNCTION_TOK
 
-				%token  GLOBAL GLOBALS_TOK GO GOTO GRANT GREATER_OR_EQUAL GROUP
-
-				/* To remove */
-				%token  GREEN 
-
-				%token  HAVING HEADER HELP HEX HIDE HIGH HOLD HOUR
-
-				%token  IF IMMEDIATE IN INC_GLOBALS INDEX INDEXES
-				%token  INITIALIZE INPUT INSERT INSTRUCTIONS INTEGER INTERRUPT
-				%token  INTERVAL INTO INVISIBLE IS ISOLATION 
-
-				%token  KEY
-
-				%token  LABEL LAST LEADING LEFT LENGTH    LESS_OR_EQUAL LET LIKE LINE LINES
-				%token  LOAD LOCATE LOCK LOG LONG LOW
-
-				/* To remove */
-				%token  MAGENTA 
-
-				%token  MAIN MARGIN MATCHES MEDIUM MEMORY MENU MESSAGE MINUTE
-				%token  MOD MODE MODIFY MONEY 
-
-				%token  MAX       /* Devia passar a ser funcao interna */
-
-				%token  NAME NCHAR NEED NEXT NO NONE NORMAL NOT NOT_EQUAL
-				%token  NULL_TOK NVARCHAR
-
-				%token  OF OFF ON OPEN OPTIMIZATION OPTION OPTIONS OR ORDER OTHERWISE
-				%token  OUTER OUTPUT
-
-				%token  PAGE PAGENO PAUSE PDQPRIORITY PICTURE PIPE PRECISION PREPARE PREVIOUS
-				%token  PRIMARY PRINT PRINTER PRIOR PRIVILEGES PROCEDURE
-				%token  PROGRAM PROMPT PUBLIC PUT
-
-				%token  QUIT
-
-				%token  RAISE READ REAL RECORD REFERENCES REFERENCING
-				%token  RELATIVE REMOVE RENAME REPEATABLE
-				%token  REPORT REQUIRED RESOURCE RESTRICT RETURN RETURNING
-				%token  REVERSE REVOKE RIGHT ROBIN ROLLBACK ROLLFORWARD ROUND ROW 
-				%token  ROWS RUN
-
-				/* To remove */
-				%token  RED 
-
-				%token  SCREEN SCROLL SECOND SELECT SERIAL 
-				%token  SET SHARE SHOW SKIP SLEEP SMALLFLOAT
-				%token  SMALLINT SOME SPACES SQL_TOK SQLERROR SQLWARNING
-				%token  STABILITY START STATISTICS STEP STOP 
-				%token  SYNONYM 
-
-				%token  TAB TABLE TABLES TEMP TEXT THEN THROUGH THRU TIME TO TOP TOTAL
-				%token  TRAILER TRANSACTION TRUE_TOK
-
-				%token  UNCOMMITTED UNCONSTRAINED UNDERLINE UNION UNIQUE UNITS UNLOAD UNLOCK
-				%token  UP UPDATE USER USING
-
-				%token  VALIDATE VALUES VARCHAR VARIABLES VERIFY VIEW
-
-				%token  WAIT WAITING WARNING WHEN WHENEVER WHERE WHILE WHITE WINDOW WITH
-				%token  WITHOUT WORDWRAP WORK WRAP 
-
-
-				/* To remove */
-				%token  YEAR YELLOW
-
-
-				%token '{'
-				%token '}'
-				%token '['
-				%token ']'
-				%token ','
-				%token '.'
-				%token '*'
-				%token ';'
-				%token '='
-				%token '<'
-				%token '>'
-				%token '@'
-
-
-				%token  UINTEGER   /* Unsigned e Signed integer */
-				%token  SINTEGER
-
-				%type       <y_sym>              number
-				%type       <y_sym>              literal
-				%type       <y_sym>              var_name
-				%type       <y_sym>              named_value
-				%type       <y_sym>              string_or_var
-				%type       <y_cursor_type>      cursor_type
-				%type       <y_sym>              cursor_name
-				%type       <y_name_list>        named_value_list
-				%type       <y_name_list>        table_reference_list
-				%type       <y_name_list>        op_argument_list       
-				%type       <y_name_list>        variable_list_declaration       
-				%type       <y_sym>              table_name
-				%type       <y_sym>              table_identifier
-				%type       <y_sym>              table_reference
-				%type       <y_sym>              fgl_basic_operand
-				%type       <y_sym>              fgl_operand
-				%type       <y_sym>              unload_target
-
-				%type       <y_text>             fgl_simple_data_type
-				%type       <y_text>             fgl_data_type
-				%type       <y_text>             array_data_type         
-				%type       <y_num>              cursor_specification
-				%type       <y_text>             record_data_type        decimal    money  
-				%type       <y_text>             datetime current        interval   varchar 
-				%type       <y_text>             op_char_length          char       dtqualifier
-				%type       <y_text>             maximum_and_reserve     float
-				%type       <y_text>             op_precision_and_scale  
-
-				%type       <y_text>             op_group_by_clause
-				%type       <y_text>             group_by_clause
-				%type       <y_text>             op_having_clause
-				%type       <y_text>             having_clause
-				%type       <y_text>             column_specification
-				%type       <y_text>             column_specification_list
-				%type       <y_text>             column_name
-				%type       <y_text>             column_identifier
-				%type       <y_text>             op_order_by_clause
-				%type       <y_text>             sort_specification_list
-				%type       <y_text>             sort_specification
-				%type       <y_text>             op_asc_desc
-				%type       <y_text>             select_list
-				%type       <y_text>             value_expression_list
-				%type       <y_text>             value_expression
-				%type       <y_text>             factor
-				%type       <y_text>             primary
-				%type       <y_text>             op_as_field
-				%type       <y_text>             set_function_specification
-				%type       <y_text>             distinct_set_function
-				%type       <y_text>             all_set_function
-				%type       <y_text>             all_set_function
-				%type       <y_text>             op_where_clause
-				%type       <y_text>             op_all
-				%type       <y_text>             where_clause
-				%type       <y_text>             search_condition
-				%type       <y_text>             boolean_term
-				%type       <y_text>             boolean_factor
-				%type       <y_text>             boolean_primary
-				%type       <y_text>             predicate
-				%type       <y_text>             comparison_predicate
-				%type       <y_text>             between_predicate
-				%type       <y_text>             in_predicate
-				%type       <y_text>             like_predicate
-				%type       <y_text>             matches_predicate
-				%type       <y_text>             null_predicate
-				%type       <y_text>             quantified_predicate
-				%type       <y_text>             exists_predicate
-				%type       <y_text>             comp_op
-				%type       <y_text>             op_not
-				%type       <y_text>             table_expression
-				%type       <y_text>             from_clause
-				%type       <y_text>             quantifier
-				%type       <y_sym>              value_specification
-				%type       <y_sym>              parameter_specification
-				%type       <y_sym>              variable_specification
-				%type       <y_sym>              sql_literal
-				%type       <y_sym>              pattern
-				%type       <y_sym>              escape_character
-				%type       <y_sym>              op_escape
-				%type       <y_sym>              target_specification
-				%type       <y_text>             op_call_parameters
-				%type       <y_text>             function_call
-				%type       <y_text>             select_statement
-				%type       <y_text>             insert_statement
-				%type       <y_text>             update_statement_search
-				%type       <y_text>             update_statement_position
-				%type       <y_text>             set_clause_list
-				%type       <y_text>             set_clause_ansi_list
-				%type       <y_text>             set_clause_ansi
-				%type       <y_text>             set_clause_infx
-				%type       <y_text>             update_columns
-				%type       <y_text>             update_column_list
-				%type       <y_text>             op_insert_column_list
-				%type       <y_text>             insert_column_list
-				%type       <y_text>             insert_value_list
-				%type       <y_text>             insert_value
-				%type       <y_text>             query_term
-				%type       <y_text>             query_specification
-				%type       <y_text>             query_expression
-				%type       <y_text>             delete_statement_search
-				%type       <y_text>             delete_statement_position
-
-				%type       <y_text>             time_expression
-				%type       <y_text>             interval_value
-				%type       <y_text>             datetime_value
-				%type       <y_text>             date_value
-				%type       <y_text>             datetime_literal
-				%type       <y_text>             op_interval_sign
-				%type       <y_text>             op_datetime_qualifier
-				%type       <y_text>             numeric_time_interval
-				%type       <y_text>             op_num
-
-				/* Preparação para novas expressões  
-				character_expression
-				%type       <y_text>             op_subscript
-				%type       <y_text>             op_character_format_list
-				%type       <y_text>             character_format
-				%type       <y_text>             number_expression
-				%type       <y_text>             simple_number_expression
-				%type       <y_text>             number_operator
-				%type       <y_text>             mod_exp_operator
-				%type       <y_text>             literal_number
-				%type       <y_text>             op_decimals
-				%type       <y_text>             fgl_boolean_expression
-				%type       <y_text>             fgl_simple_boolean_expression
-				%type       <y_text>             op_not_list
-				%type       <y_text>             not_list
-				%type       <y_text>             op_not
-				%type       <y_text>             boolean_comparison
-				%type       <y_text>             set_membership_test
-				%type       <y_text>             fgl_expression_list
-				%type       <y_text>             string_comparison
-				%type       <y_text>             integer_expression
-				%type       <y_text>             pure_integers
-				%type       <y_text>             pure_integer
-				%type       <y_text>             literal_integer
-				%type       <y_text>             null_test
-				%type       <y_text>             relational_comparison
-				 */
-
-				%token    ','
-				%token    COLON
-				%token    SEMICOLON
-				%right    NEG  
-				%left    '/' '*'
-				%left    '+' '-'
-				%left    '=' NOT_EQUAL '>' '<' GREATER_OR_EQUAL LESS_OR_EQUAL 
-
-
-				%start fgl_source
-
-				%%
-
-				/* ======================= HIGH LEVEL DEFINITIONS */
-
-				fgl_source
-					: op_database op_variable_dec_list op_function_list
-
-				op_variable_dec_list
-					:
-					| op_variable_dec_list globals_list
-					| op_variable_dec_list define_list
-					| globals_list
-					| define_list
-
-				globals_list
-					: globals_list globals
-					| globals
-
-				globals
-					: op_define_globals
-					| op_inc_globals
-
-				op_define_globals
-					 : GLOBALS_TOK                         { InGlobals = 1; InLimbo=0;   }
-						op_define_list END_TOK GLOBALS_TOK   
-							{ InGlobals = 0; InLimbo=1; defineOrGlobalsOcurred();}
-					;
-
-																				/* Included global variable by pre-processing */
-				op_inc_globals
-					: INC_GLOBALS STRING                { InInclude = 1;GlobalsInclude($2);
-																		 back_lineno = lineno-2;           }
-						op_database
-						op_define_globals
-						op_function_list
-						END_TOK INC_GLOBALS               
-							{ InInclude = 0; lineno=back_lineno; defineOrGlobalsOcurred(); }
-					;
-
-				/*
-				 * Tem de se afectar um estado e nao fazer nada se estas estiverem 
-				 * num include
-				 */
-				op_function_list
-					:
-					| function_list
-					;
-
-				op_database
-					: 
-					| database
-					;
-
-				/*  ====================== VARIABLE DEFINITION */
-				op_define_list
-					:
-					| op_define_list define_statement
-					| define_statement
-					;
-
-				define_list
-					: define_list define_statement
-					| define_statement
-					;
-
-				define_statement
-					: DEFINE 
-						variable_definition_list op_semicolon
-					{ defineFound(); }
-					;
-
-				variable_definition_list
-					: variable_definition_list ',' variable_declaration
-					| variable_declaration
-					;
-
-				variable_declaration
-					: variable_list_declaration fgl_data_type
-																					{ StInsVarListDeclaration($1,$2);} 
-					;
-
-				variable_list_declaration
-					: variable_list_declaration ',' var_name
-																				 { InsertNameList(&$$,$1,$3,lineno+1);    }
-					| var_name
-																{ InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1); }
-					;
-
-				fgl_data_type
-					: fgl_simple_data_type                   { $$ = CpStr($1); }
-					| LIKE table_identifier '.' column_name  { $$ = CpStr("LIKE %s.%s",$2,$4); } 
-					| LIKE IDENTIFIER ':' table_identifier '.' column_name  { $$ = CpStr("LIKE %s.%s",$2,$4); } 
-					| array_data_type                        { $$ = CpStr($1); }
-					| record_data_type                       { $$ = CpStr($1); }
-					| TEXT                                   { $$ = CpStr("TEXT"); }
-					| BYTE                                   { $$ = CpStr("BYTE"); }
-					| SERIAL                                 { $$ = CpStr("SERIAL"); }
-					;
-
-				array_data_type
-					: ARRAY '[' array_dim ']' OF fgl_data_type { $$ = $6; }
-
-				/* ??? Aqui existem conflitos  */
-				/* ??? As afectacoes sao so para o bison funcionar */
-				array_dim
-					: NUMBER                         { int x; x = $1; }
-					| NUMBER ',' NUMBER              { int x; x = $1; x=$3; }
-					| NUMBER ',' NUMBER ',' NUMBER   { int x; x = $1; x=$3; x=$5;}
-					;
-
-				/* Tenho de limpar as variaveis entretanto descobertas pois sao sub-variaveis */
-				/* TODO - Esta regra está agranelada */
-				record_data_type
-					:    RECORD                             { InRecord = 1; }
-									variable_definition_list 
-							 END_TOK RECORD                     { InRecord = 0;  $$=CpStr("RECORD");}
-					| RECORD LIKE table_identifier '.' '*'  {$$=CpStr("RECORD LIKE %s.*",$3); }
-					| RECORD LIKE IDENTIFIER ':' table_identifier '.' '*'  {$$=CpStr("RECORD LIKE %s.*",$5); }
-					| RECORD LIKE IDENTIFIER '@' IDENTIFIER ':' table_identifier '.' '*'  {$$=CpStr("RECORD LIKE %s.*",$7); }
-					;
-
-				fgl_simple_data_type
-					: INTEGER        { $$ = CpStr("INTEGER"); }
-					| SMALLINT       { $$ = CpStr("SMALLINT"); }
-					| decimal        { $$ = CpStr($1); }
-					| money          { $$ = CpStr($1); }
-					| float          { $$ = CpStr($1); }
-					| SMALLFLOAT     { $$ = CpStr("SMALLFLOAT"); }
-					| REAL           { $$ = CpStr(SMALLFLOAT); }
-					| DATE           { $$ = CpStr("DATE"); }
-					| char           { $$ = CpStr($1); }
-					| datetime       { $$ = CpStr($1); }
-					| current        { $$ = CpStr($1); }
-					| interval       { $$ = CpStr($1); }
-					| varchar        { $$ = CpStr($1); }
-					;
-
-				datetime
-					: DATETIME dtqualifier TO dtqualifier
-												{ $$ = CpStr("DATETIME %s TO %s",$2,$4); }
-					| DATETIME dtqualifier TO dtqualifier '(' NUMBER ')'
-												{ $$ = CpStr("DATETIME %s TO %s (%d)",$2,$4,$6); }
-					;
-
-				/* ??? Faltam ainda alguns casos */
-				interval
-					: INTERVAL dtqualifier TO dtqualifier
-												{ $$ = CpStr("INTERVAL %s TO %s",$2,$4); }
-					| INTERVAL dtqualifier op_precision TO dtqualifier op_precision
-												{ $$ = CpStr("INTERVAL %s TO %s (??)",$2,$5); }
-					;
-
-				op_precision
-					:
-					| '(' NUMBER ')'
-					;
-
-				current
-					: CURRENT
-									{ $$ = CpStr("CURRENT"); }
-					| CURRENT current_qualifier TO current_qualifier
-									{ $$ = CpStr("CURRENT"); }
-
-				current_qualifier
-					: IDENTIFIER   { char *x;   x = $1; }
-					| dtqualifier  { char *x;   x=CpStr($1); }
-					
-				dtqualifier 
-					: IDENTIFIER op_precision_and_scale { $$ = CpStr($1); } 
-					| HOUR op_precision_and_scale       { $$ = CpStr("HOUR"); } 
-					| MINUTE op_precision_and_scale     { $$ = CpStr("MINUTE"); }
-					| SECOND op_precision_and_scale     { $$ = CpStr("SECOND");}
-					| FRACTION op_precision_and_scale   { $$ = CpStr("FRACTION"); }
-					| YEAR op_precision_and_scale       { $$ = CpStr("YEAR");}
-					| DAY op_precision_and_scale        { $$ = CpStr("DAY"); }
-					;
-
-				char 
-					: CHAR op_char_length  { $$ = CpStr("CHAR %s",$2); }
-					;
-
-				op_char_length
-					:                      { $$ = CpStr(""); }
-					| '(' NUMBER ')'       { $$ = CpStr("(%d)",$2); }
-					;
-
-				varchar
-					: VARCHAR maximum_and_reserve  { $$ = CpStr("VARCHAR %s",$2); }
-					;
-
-				maximum_and_reserve
-					: '(' NUMBER ')'               { $$ = CpStr("(%d)", $2); }
-					| '(' NUMBER ',' NUMBER ')'    { $$ = CpStr("(%d,%d)", $2,$4); }
-					;
-
-				decimal
-					 : DEC op_precision_and_scale   { $$ = CpStr("DECIMAL %s",$2); }
-					;
-
-				money
-					 : MONEY op_precision_and_scale { $$ = CpStr("MONEY %s",$2); }
-					 ;
-
-				float
-					: float_synonim '(' NUMBER ')' { $$ = CpStr("FLOAT (%d)",$3); }
-					| float_synonim                { $$ = CpStr("FLOAT"); }
-					;
-
-				float_synonim
-					: FLOAT
-					| DOUBLE PRECISION
-					;
-
-				op_precision_and_scale
-					:                              { $$ = CpStr(""); }
-					| '(' NUMBER ')'               { $$ = CpStr("(%d)",$2); }
-					| '(' NUMBER ',' NUMBER ')'    { $$ = CpStr("(%d,%d)",$2,$4); }
-					;
-
-				array_indexes
-					: fgl_expression
-					| fgl_expression ',' fgl_expression
-					| fgl_expression ',' fgl_expression ',' fgl_expression
-					;
-
-				/* ======================== FUNCTIONS */
-
-				function_list
-					: function_list        function_definition
-					| function_definition
-					/* ??? Se isto comecar a estourar pode ser daqui */
-					|  /* Sem funcoes  - Isto da tres conflitos */
-					;
-
-				function_definition
-					: main
-					| function
-					| report
-					;
-
-				main
-						: MAIN                    { StInsertLineFunction(lineno+1,FUNCTION_TYPE); InLimbo = 0;}
-						op_local_variables fgl_statement_list   {StInsertFunction(strdup("MAIN"),lineno+1,(NAME_LIST *)0);}
-						END_TOK MAIN                         { InLimbo = 1; }
-						;
-
-				/* Ver como sao os posicionais com execucao parcial de funcoes */
-				function
-					: FUNCTION_TOK { StInsertLineFunction(lineno+1,FUNCTION_TYPE); InLimbo = 0;}
-						function_def
-					;
-
-				function_def
-					: IDENTIFIER '(' op_argument_list ')' 
-							op_local_variables 
-							fgl_statement_list
-						END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
-					| IDENTIFIER '(' op_argument_list ')'   /* Funcoes vazias */
-							 op_local_variables 
-						END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
-					;
-
-				op_argument_list
-					:                          {$$ = (NAME_LIST *)0;}
-					| op_argument_list ',' 
-							IDENTIFIER            {InsertNameList(&$$,$1,$3,lineno+1);}
-					| IDENTIFIER              {InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1);}
-					;
-
-				op_local_variables
-					:
-					| op_define_list
-					;
-
-				/*  ====================== 4gl STATEMENTS               */
-				op_fgl_statement_list
-					:
-					| fgl_statement_list
-					;
-
-				fgl_statement_list
-					: fgl_statement_list fgl_statement op_semicolon { FunctionStatementCount++; }
-					| fgl_statement op_semicolon                    { FunctionStatementCount++; }
-					;
-
-				fgl_statement
-					: flow_control
-					| storage_manipulation
-					| screen_interaction  
-					| sql_statement
-					| compiler_directives 
-					| input_action      /* Como estamos a fazer um xref nao e preciso validar*/
-					| construct_action  /* Como estamos a fazer um xref nao e preciso validar*/
-					| display_action    /* Como estamos a fazer um xref nao e preciso validar*/
-					| report_statement
-					| PUT cursor_name FROM fgl_expression
-																	 { StInsertCursorUsage($2,lineno+1,CURSOR_PUT);}
-					| FLUSH cursor_name 
-																	 { StInsertCursorUsage($2,lineno+1,CURSOR_FLUSH);}
-					| unload
-					| load
-					;
-
-				unload
-					: UNLOAD TO unload_target op_delimiter query_specification
-						 {  if ( $3[0] != '\"' ) StInsertVariableUsage($3,lineno+1,READ_VAR);  }
-					/*   Esta regra esta a dar erro */
-					| UNLOAD TO unload_target op_delimiter named_value
-						 {  if ( $3[0] != "\"" ) StInsertVariableUsage($3,lineno+1,READ_VAR);
-							StInsertVariableUsage($5,lineno+1,READ_VAR);                       }
-							/**/
-					;
-
-				unload_target
-					: named_value                                         { strcpy($$,$1);   }
-					| STRING                                              { strcpy($$,$1);   }
-					;
-
-				op_delimiter
-					:
-					| DELIMITER STRING
-					| DELIMITER named_value
-					;
-
-				load
-					: LOAD FROM STRING op_delimiter 
-							INSERT INTO table_name op_insert_column_list
-																		 { StInsertTable($7);
-																				StIncrementTable(); }
-					| LOAD FROM named_value op_delimiter 
-							INSERT INTO table_name op_insert_column_list
-																			{ StInsertVariableUsage($3,lineno+1,READ_VAR); 
-																			 StInsertTable($7);
-																				StIncrementTable(); }
-					;
-
-				/*  ============================ Control structures     */
-				flow_control
-					: call
-					| case
-					| database
-					| exit_program
-					| FINISH REPORT IDENTIFIER
-																			 { StInsertFunctionCall($3,lineno+1);
-																StUpdFCUsage("FINISH REPORT"); }
-					| for
-					| FOREACH cursor_name fgl_statement_list END_TOK FOREACH
-																{ StInsertCursorUsage($2,lineno+1,CURSOR_FETCH);}
-					| FOREACH cursor_name END_TOK FOREACH               /* ???? Futuro Lixo */
-																{ StInsertCursorUsage($2,lineno+1,CURSOR_FETCH);}
-					| FOREACH cursor_name op_st_using INTO named_value_list fgl_statement_list 
-						END_TOK FOREACH
-																{ StInsertVariableListUsage($5,ASSIGNMENT); 
-																	StInsertCursorUsage($2,lineno+1,CURSOR_FETCH);}
-																															/* ???? Futuro Lixo */
-					| FOREACH cursor_name op_st_using INTO named_value_list END_TOK FOREACH 
-																{ StInsertVariableListUsage($5,ASSIGNMENT); 
-																	StInsertCursorUsage($2,lineno+1,CURSOR_FETCH);}
-					| goto
-					| if
-					| LABEL IDENTIFIER ':'
-					| OUTPUT TO REPORT IDENTIFIER '(' op_call_parameters ')'
-																			 { StInsertFunctionCall($4,lineno+1);
-																StUpdFCUsage("OUTPUT TO REPORT"); }
-					| RETURN fgl_return_list
-					| run
-					| start_report
-					| while 
-					| continues_and_exits
-					| print_statement                           /* Isto nao eh flow control */
-					| menu_action
-					;
-
-				op_st_using
-					:
-					| USING named_value_list
-					;
-
-				op_semicolon 
-					: 
-					| ';'
-
-				database
-					: DATABASE database_name op_exclusive
-					;
-
-				/* ??? Afectacoes so para o bison funcionar */
-				database_name
-					: IDENTIFIER '@' IDENTIFIER   { char *x; x = $1;x=$3; }
-					| IDENTIFIER                  { char *x; x = $1; }
-					;
-
-				op_exclusive
-					:
-					| EXCLUSIVE
-					;
-
-				exit_program
-					: EXIT PROGRAM
-					| EXIT PROGRAM fgl_expression
-					| EXIT PROGRAM '(' fgl_expression ')'
-					;
-
-				/* Como e para fazer um X ref nao e preciso ver se esta a fazer exit while
-					fora de um while
-					Se calhar podia-se fazer uma exit_list e continue_list
-				 */
-				continues_and_exits
-					: EXIT WHILE
-					| CONTINUE WHILE
-					| EXIT FOR
-					| EXIT CASE
-					| CONTINUE FOR
-					| EXIT FOREACH
-					| CONTINUE FOREACH
-					;
-
-				fgl_return_list   
-					:
-					| fgl_return_list ',' fgl_expression
-					| fgl_expression
-					;
-
-				call
-					: CALL function_call RETURNING returning_list 
-																		{ StUpdFCUsage("CALL RETURNING"); }
-					| CALL function_call                   { StUpdFCUsage("CALL"); }
-					;
-
-				returning_list
-					: returning_list ',' named_value
-																		 { StInsertVariableUsage($3,lineno+1,READ_VAR);} 
-					| named_value
-																		 { StInsertVariableUsage($1,lineno+1,READ_VAR);} 
-					;
-
-					/* ??? Esta regra pode dar conflitos por causa da concatenacao de strings */
-				op_call_parameters
-					:                                         { $$=""; }
-					| op_call_parameters ',' fgl_expression   { $$=CpStr("%s,%s",$1,""); }
-					| op_call_parameters THRU fgl_expression  { $$=CpStr("%s THRU %s",$1,""); }
-					| fgl_expression                          { $$=CpStr("%s",""); }
-					;
-
-				case                                            /* Case single criterion */
-					: CASE fgl_expression when_list op_otherwise END_TOK CASE
-																				/* Case Multiple criteria */
-					| CASE when_list op_otherwise END_TOK CASE
-					;
-
-				/* Falta o tratamento do exit case */
-				when_list
-					: when_list when
-					| when
-					;
-
-				when
-					: WHEN fgl_expression fgl_statement_list
-							 /* ??? Isto acaba quando a fgl_expression for opcional */
-					| WHEN fgl_expression 
-					;
-
-				op_otherwise
-					:
-					| OTHERWISE fgl_statement_list
-							 /* ??? Isto acaba quando a fgl_expression for opcional */
-					| OTHERWISE     
-					;
-
-				/* This one have a shift reduce conflict */
-				if
-					: IF fgl_expression THEN fgl_statement_list else END_TOK IF
-							 /* ??? Isto acaba quando a fgl_expression for opcional */
-					| IF fgl_expression THEN else END_TOK IF
-					;
-
-				else
-					: ELSE fgl_statement_list
-							 /* ??? Isto acaba quando a fgl_expression for opcional */
-					| ELSE 
-					| /* Sem else */
-					;
-
-				while
-					: WHILE fgl_expression fgl_statement_list END_TOK WHILE
-					| WHILE fgl_expression END_TOK WHILE
-					;
-
-				/* Se calhar tambem devia ter expressoes no start */
-				for
-					: FOR IDENTIFIER '=' fgl_expression 
-						TO fgl_expression 
-							 op_step fgl_statement_list
-						END_TOK FOR
-							 /* ??? Isto acaba quando a fgl_expression for opcional */
-					| FOR IDENTIFIER '=' fgl_expression TO fgl_expression op_step END_TOK FOR
-					;
-
-				/* ??? Tem de se aceitar expressoes no STEP */
-				op_step
-					:
-					| STEP NUMBER
-					| STEP '-' NUMBER
-					| STEP IDENTIFIER         { StInsertVariableUsage($2,lineno+1,READ_VAR); }
-					;
-
-				goto
-					: GO TO ':' IDENTIFIER
-					| GO TO IDENTIFIER
-					| GOTO ':' IDENTIFIER
-					| GOTO IDENTIFIER
-					;
-
-				start_report
-					: START REPORT IDENTIFIER op_to_report
-																			 { StInsertFunctionCall($3,lineno+1); 
-																StUpdFCUsage("START TO REPORT"); }
-					;
-
-				op_to_report
-					:
-					| TO STRING
-					| TO named_value          { StInsertVariableUsage($2,lineno+1,READ_VAR); }
-					| TO PRINTER
-					| TO PIPE STRING
-					| TO PIPE named_value     { StInsertVariableUsage($3,lineno+1,READ_VAR); }
-					;
-				 
-				/* O opcional clipped esta aqui um bocado estranho */
-				run 
-					: RUN STRING                 op_returning_or_waiting
-					| RUN '(' STRING ')'         op_returning_or_waiting
-					| RUN '(' named_value ')'    op_returning_or_waiting
-																		 { StInsertVariableUsage($3,lineno+1,READ_VAR); }
-					| RUN named_value op_clipped op_returning_or_waiting
-																		 { StInsertVariableUsage($2,lineno+1,READ_VAR); }
-					;
-
-				op_returning_or_waiting
-					:
-					| RETURNING named_value    { StInsertVariableUsage($2,lineno+1,READ_VAR); }
-					| WITHOUT WAITING
-					;
-
-				/*  ============================ Storage Manipulation   */
-				storage_manipulation
-					: let
-					| initialize
-					| FREE named_value 
-					| locate
-					;
-					/* ??? Falta 
-						| validate
-					 */
-
-				let 
-					: LET named_value '=' fgl_expression 
-						 { StInsertVariableUsage($2,lineno+1,ASSIGNMENT);} 
-					| LET named_value '.' '*' '=' named_value '.' '*'
-						 { StInsertVariableUsage($2,lineno+1,ASSIGNMENT);
-							 StInsertVariableUsage($6,lineno+1,READ_VAR);
-						} 
-					;
-
-				initialize
-					: INITIALIZE named_value_list TO NULL_TOK
-						{ StInsertVariableListUsage($2,ASSIGNMENT); }
-					;
-
-					/* Falta o initialize like */
-
-				locate 
-					: LOCATE named_value_list IN MEMORY {StInsertVariableListUsage($2,READ_VAR);}
-					| LOCATE named_value_list IN FILE_TOK 
-																	{StInsertVariableListUsage($2,READ_VAR);}
-					| LOCATE named_value_list IN FILE_TOK STRING
-																						{StInsertVariableListUsage($2,READ_VAR);}
-					| LOCATE named_value_list IN FILE_TOK IDENTIFIER
-																						{ StInsertVariableListUsage($2,READ_VAR);
-																							StInsertVariableListUsage($5,READ_VAR);}
-					;
-					/* Depois se ve */
-					/*| LOCATE named_value_list IN FILE named_value */
-
-				/*  ============================ Fgl expressions (Very simplified) */
-
-				/* Fgl expression nao e usada no SQL e como tal pode-se usar 
-				 * Para insercao de utilizacao de variaveis */
-				 /* ??? Afectacoes sao para o bison funcionar */
-				/* Restruturação de expressões 4gl
-				/* TODO - Notação cientifica com Enum em number */
-				/* 
-				fgl_expression
-					: time_expression  
-						{ char *x=$1; }
-					| character_expression  
-						{ char *x=$1; }
-					| number_expression  
-						{ char *x=$1; }
-					| integer_expression  
-						{ char *x=$1; }
-					| fgl_boolean_expression  
-						{ char *x=$1; }
-					| NOT fgl_expression  
-					|'(' fgl_expression ')'  
-					;
-
-				character_expression
-					: STRING        op_subscript op_character_format_list 
-						{ $$=""; }
-					| function_call op_subscript op_character_format_list 
-						{ $$=""; }
-					| named_value   op_subscript op_character_format_list 
-						{ $$=""; }
-					;
-
-				op_subscript
-					:
-						{ $$=""; }
-					| '[' integer_expression ']'
-						{ $$=""; }
-					| '[' integer_expression ',' integer_expression ']'
-						{ $$=""; }
-					;
-
-				op_character_format_list
-					:
-						{ $$=""; }
-					| op_character_format_list character_format
-						{ $$=""; }
-					;
-
-				character_format
-					: clipped
-						{ $$=""; }
-					| using
-						{ $$=""; }
-					;
-
-				number_expression
-					: simple_number_expression
-						{ $$=""; }
-					| simple_number_expression mod_exp_operator
-						{ $$=""; }
-					| simple_number_expression number_operator number_expression
-						{ $$=""; }
-					;
-
-				simple_number_expression
-					: op_signal literal_number
-						{ $$=""; }
-					| op_signal named_value
-						{ $$=""; }
-					| op_signal function_call
-						{ $$=""; }
-					| op_signal fgl_boolean_expression
-						{ $$=""; }
-					| op_signal fgl_boolean_expression
-						{ $$=""; }
-					;
-
-				number_operator
-					: '+'
-						{ $$=""; }
-					| '-'
-						{ $$=""; }
-					| '*'
-						{ $$=""; }
-					| '/'
-						{ $$=""; }
-					;
-
-				mod_exp_operator
-					: MOD
-						{ $$=""; }
-					| EXPO
-						{ $$=""; }
-					;
-
-				literal_number
-					: op_signal NUMBER op_decimals 
-						{ $$=""; }
-					| op_signal '.' NUMBER
-						{ $$=""; }
-					;
-
-				op_decimals
-					:
-						{ $$=""; }
-					| '.' NUMBER
-						{ $$=""; }
-					;
-
-
-				fgl_boolean_expression
-					: fgl_simple_boolean_expression 
-						{ $$=""; }
-					| fgl_simple_boolean_expression AND fgl_boolean_expression 
-						{ $$=""; }
-					| fgl_simple_boolean_expression OR  fgl_boolean_expression 
-						{ $$=""; }
-					;
-
-				fgl_simple_boolean_expression
-					: op_not_list fgl_expression
-						{ $$=""; }
-					| op_not_list boolean_comparison
-						{ $$=""; }
-					| op_not_list function_call
-						{ $$=""; }
-					| op_not_list TRUE_TOK
-						{ $$=""; }
-					| op_not_list FALSE_TOK
-						{ $$=""; }
-					;
-					
-				op_not_list
-					:
-						{ $$=""; }
-					| not_list
-						{ $$=""; }
-					;
-
-				not_list
-					: NOT 
-						{ $$=""; }
-					| NOT not_list
-						{ $$=""; }
-					;
-
-				op_not
-					:
-						{ $$=""; }
-					| NOT
-						{ $$=""; }
-					;
-
-				boolean_comparison
-					: string_comparison
-						{ $$=""; }
-					| set_membership_test
-						{ $$=""; }
-					| null_test
-						{ $$=""; }
-					| relational_comparison
-						{ $$=""; }
-					;
-
-				string_comparison
-					: character_expression op_not MATCHES STRING op_escape
-						{ $$=""; }
-					;
-
-				set_membership_test
-					: fgl_expression op_not IN '(' fgl_expression_list ')'
-						{ $$=""; }
-					;
-
-				fgl_expression_list
-					: fgl_expression
-						{ $$=""; }
-					| fgl_expression ',' fgl_expression_list
-						{ $$=""; }
-					;
-
-				null_test
-					: fgl_expression IS op_not NULL_TOK
-						{ $$=""; }
-					;
-
-				relational_comparison
-					: fgl_expression '=' fgl_expression
-						{ $$=""; }
-					| fgl_expression '<' fgl_expression
-						{ $$=""; }
-					| fgl_expression '>' fgl_expression
-						{ $$=""; }
-					| fgl_expression LESS_OR_EQUAL fgl_expression
-						{ $$=""; }
-					| fgl_expression GREATER_OR_EQUAL fgl_expression
-						{ $$=""; }
-					| fgl_expression NOT_EQUAL fgl_expression
-						{ $$=""; }
-					;
-
-				integer_expression
-					: pure_integers
-						{ $$=""; }
-					| date_value '-' date_value
-						{ $$=""; }
-					;
-
-				pure_integers
-					: pure_integer
-						{ $$=""; }
-					| pure_integer integer_operator pure_integers
-						{ $$=""; }
-					;
-
-				pure_integer
-					: op_signal literal_integer 
-						{ $$=""; }
-					| op_signal function_call
-						{ $$=""; }
-					| op_signal named_value
-						{ $$=""; }
-					| op_signal fgl_boolean_expression
-						{ $$=""; }
-					;
-
-
-				literal_integer
-					: op_signal NUMBER
-						{ $$=""; }
-					;
-
-					*/
-				/* FIQUEI AQUI */
-
-
-				/* Expressões antigas */
-				fgl_expression
-					: fgl_expression op_spaces fgl_operator_list fgl_operand  { char *x; x=$4; }
-					| fgl_expression op_spaces fgl_operator_list fgl_expression 
-					| fgl_operand  { char *x; x=$1; }
-					| NOT fgl_expression
-					| op_signal '(' fgl_expression ')' 
-					| time_expression { char *x; x=$1; }
-					;
-
-				op_spaces
-					:
-					| SPACES
-					;
-
-				/* Quando meti esta lista deu mais alguns 100 conflitos reduce/reduce */
-				fgl_operator_list
-					: fgl_operator_list fgl_operator
-					| fgl_operator
-					;
-
-				fgl_operator
-					: '+'
-					| '-'
-					| '*'
-					| '/'
-					| MOD
-					| EXPO                                                 /* ** Operator */
-					| AND
-					| OR 
-					| '='
-					| '<'
-					| '>'
-					| LESS_OR_EQUAL
-					| GREATER_OR_EQUAL
-					| NOT_EQUAL
-					| IS 
-					| IS NOT 
-					| MATCHES
-					| NOT MATCHES
-					| ','
-					;
-
-				/*
-				 * Tem tambem operandos dos reports
-				 * Devia devolver pelo $$: 
-				 *    - Tipo: String, Constante(literal), Funcao, NomeVariavel (tabela, etc)
-				 *    - Nome
-				 * ATENCAO : Apenas devolve o nome se este for named_value, caso contrario
-				 *           devolve NULL
-				 */
-				fgl_operand
-					: fgl_basic_operand op_fgl_operand_format_list
-						{  copystr($$,$1); }
-					;
-
-				op_fgl_operand_format_list
-					:
-					| op_fgl_operand_format_list fgl_operand_format
-					| fgl_operand_format
-										//{printf("Fgl operand format\n");}
-					;
-
-				fgl_operand_format
-					: CLIPPED 
-					| USING STRING 
-						//{printf("Using string \n");}
-					| wordwrap
-					| units
-					;
-
-				/*
-				 * ??? Como se vai detectar a diferenca entre nome de tabela e 
-				 *     estrutura ou coluna e variavel ???
-				 *  Para ja tem de passar a devolver qualquer coisa pelo $$
-				 * O problema eh que o named value pode ser um nome de tabela ou coluna
-				 */
-				fgl_basic_operand
-					: literal              { strcpy($$,$1); }
-					| STRING               { strcpy($$,$1); }
-					| function_call        { strcpy($$,$1);
-													 StUpdFCUsage("EXPRESSION"); }
-					| named_value          {  strcpy($$,$1);
-																	StInsertVariableUsage($1,lineno+1,READ_VAR); }
-					| '-' named_value          {  strcpy($$,$2);
-																	StInsertVariableUsage($2,lineno+1,READ_VAR); }
-					| '+' named_value          {  strcpy($$,$2);
-																	StInsertVariableUsage($2,lineno+1,READ_VAR); }
-					| ASCII named_value    { $$[0]='\0'; }
-					| ASCII '(' NUMBER ')' { $$[0]='\0'; }
-					| ASCII '(' named_value ')' { $$[0]='\0'; }
-					| ASCII NUMBER         { $$[0]='\0'; }
-					| PAGENO               { $$[0]='\0'; }
-																						/* Isto devia ser so para print */
-					| GROUP function_call  { $$[0]='\0'; }
-					| COLUMN fgl_expression   { $$[0]='\0';} /* 
-																	 StInsertVariableUsage($2,lineno+1,READ_VAR); }*/
-						/* ??? Faltam formatacoes de datetimes e intervals */
-					| current              { $$[0]='\0'; }
-					| TIME                 { $$[0]='\0'; }
-					| TRUE_TOK             { $$[0]='\0'; }
-					| FALSE_TOK            { $$[0]='\0'; }
-					/* ??? O number tem de ser named_value ou NUMBER */
-					/*
-					| NUMBER SPACES        { $$[0]='\0'; }
-					*/
-					;
-
-					
-
-				wordwrap
-					: WORDWRAP RIGHT MARGIN NUMBER
-					| WORDWRAP 
-					;
-
-				op_signal
-					:
-					| '+'
-					| '-'
-
-				literal
-					: number op_format_qualifier { strcpy($$,$1); }
-					| '+' number op_format_qualifier { strcpy($$,$2); }
-					| '-' number op_format_qualifier { strcpy($$,$2); }
-					/* ???  Nao funciona nao sei porque 
-					: op_signal number op_format_qualifier { strcpy($$,$2); }
-					*/
-
-				number
-					: NUMBER              { sprintf($$,"%d",$1); }
-					| NUMBER '.' NUMBER   { sprintf($$,"%d.%d",$1,$3); }
-					| '.' NUMBER          { sprintf($$,"0.%d",$2); }
-					;
-
-				/* Para os UNITS, using, etc */
+%token  GLOBAL GLOBALS_TOK GO GOTO GRANT GREATER_OR_EQUAL GROUP
+
+/* To remove */
+%token  GREEN 
+
+%token  HAVING HEADER HELP HEX HIDE HIGH HOLD HOUR
+
+%token  IF IMMEDIATE IN INC_GLOBALS INDEX INDEXES
+%token  INITIALIZE INPUT INSERT INSTRUCTIONS INTEGER INTERRUPT
+%token  INTERVAL INTO INVISIBLE IS ISOLATION 
+
+%token  KEY
+
+%token  LABEL LAST LEADING LEFT LENGTH    LESS_OR_EQUAL LET LIKE LINE LINES
+%token  LOAD LOCATE LOCK LOG LONG LOW
+
+/* To remove */
+%token  MAGENTA 
+
+%token  MAIN MARGIN MATCHES MEDIUM MEMORY MENU MESSAGE MINUTE
+%token  MOD MODE MODIFY MONEY 
+
+%token  MAX       /* Devia passar a ser funcao interna */
+
+%token  NAME NCHAR NEED NEXT NO NONE NORMAL NOT NOT_EQUAL
+%token  NULL_TOK NVARCHAR
+
+%token  OF OFF ON OPEN OPTIMIZATION OPTION OPTIONS OR ORDER OTHERWISE
+%token  OUTER OUTPUT
+
+%token  PAGE PAGENO PAUSE PDQPRIORITY PICTURE PIPE PRECISION PREPARE PREVIOUS
+%token  PRIMARY PRINT PRINTER PRIOR PRIVILEGES PROCEDURE
+%token  PROGRAM PROMPT PUBLIC PUT
+
+%token  QUIT
+
+%token  RAISE READ REAL RECORD REFERENCES REFERENCING
+%token  RELATIVE REMOVE RENAME REPEATABLE
+%token  REPORT REQUIRED RESOURCE RESTRICT RETURN RETURNING
+%token  REVERSE REVOKE RIGHT ROBIN ROLLBACK ROLLFORWARD ROUND ROW 
+%token  ROWS RUN
+
+/* To remove */
+%token  RED 
+
+%token  SCREEN SCROLL SECOND SELECT SERIAL 
+%token  SET SHARE SHOW SKIP SLEEP SMALLFLOAT
+%token  SMALLINT SOME SPACES SQL_TOK SQLERROR SQLWARNING
+%token  STABILITY START STATISTICS STEP STOP 
+%token  SYNONYM 
+
+%token  TAB TABLE TABLES TEMP TEXT THEN THROUGH THRU TIME TO TOP TOTAL
+%token  TRAILER TRANSACTION TRUE_TOK
+
+%token  UNCOMMITTED UNCONSTRAINED UNDERLINE UNION UNIQUE UNITS UNLOAD UNLOCK
+%token  UP UPDATE USER USING
+
+%token  VALIDATE VALUES VARCHAR VARIABLES VERIFY VIEW
+
+%token  WAIT WAITING WARNING WHEN WHENEVER WHERE WHILE WHITE WINDOW WITH
+%token  WITHOUT WORDWRAP WORK WRAP 
+
+
+/* To remove */
+%token  YEAR YELLOW
+
+
+%token '{'
+%token '}'
+%token '['
+%token ']'
+%token ','
+%token '.'
+%token '*'
+%token ';'
+%token '='
+%token '<'
+%token '>'
+%token '@'
+
+
+%token  UINTEGER   /* Unsigned e Signed integer */
+%token  SINTEGER
+
+%type       <y_sym>              number
+%type       <y_sym>              literal
+%type       <y_sym>              var_name
+%type       <y_sym>              named_value
+%type       <y_sym>              string_or_var
+%type       <y_cursor_type>      cursor_type
+%type       <y_sym>              cursor_name
+%type       <y_name_list>        named_value_list
+%type       <y_name_list>        table_reference_list
+%type       <y_name_list>        op_argument_list       
+%type       <y_name_list>        variable_list_declaration       
+%type       <y_sym>              table_name
+%type       <y_sym>              table_identifier
+%type       <y_sym>              table_reference
+%type       <y_sym>              fgl_basic_operand
+%type       <y_sym>              fgl_operand
+%type       <y_sym>              unload_target
+
+%type       <y_text>             fgl_simple_data_type
+%type       <y_text>             fgl_data_type
+%type       <y_text>             array_data_type         
+%type       <y_num>              cursor_specification
+%type       <y_text>             record_data_type        decimal    money  
+%type       <y_text>             datetime current        interval   varchar 
+%type       <y_text>             op_char_length          char       dtqualifier
+%type       <y_text>             maximum_and_reserve     float
+%type       <y_text>             op_precision_and_scale  
+
+%type       <y_text>             op_group_by_clause
+%type       <y_text>             group_by_clause
+%type       <y_text>             op_having_clause
+%type       <y_text>             having_clause
+%type       <y_text>             column_specification
+%type       <y_text>             column_specification_list
+%type       <y_text>             column_name
+%type       <y_text>             column_identifier
+%type       <y_text>             op_order_by_clause
+%type       <y_text>             sort_specification_list
+%type       <y_text>             sort_specification
+%type       <y_text>             op_asc_desc
+%type       <y_text>             select_list
+%type       <y_text>             value_expression_list
+%type       <y_text>             value_expression
+%type       <y_text>             factor
+%type       <y_text>             primary
+%type       <y_text>             op_as_field
+%type       <y_text>             set_function_specification
+%type       <y_text>             distinct_set_function
+%type       <y_text>             all_set_function
+%type       <y_text>             op_where_clause
+%type       <y_text>             op_all
+%type       <y_text>             where_clause
+%type       <y_text>             search_condition
+%type       <y_text>             boolean_term
+%type       <y_text>             boolean_factor
+%type       <y_text>             boolean_primary
+%type       <y_text>             predicate
+%type       <y_text>             comparison_predicate
+%type       <y_text>             between_predicate
+%type       <y_text>             in_predicate
+%type       <y_text>             like_predicate
+%type       <y_text>             matches_predicate
+%type       <y_text>             null_predicate
+%type       <y_text>             quantified_predicate
+%type       <y_text>             exists_predicate
+%type       <y_text>             comp_op
+%type       <y_text>             op_not
+%type       <y_text>             table_expression
+%type       <y_text>             from_clause
+%type       <y_text>             quantifier
+%type       <y_sym>              value_specification
+%type       <y_sym>              parameter_specification
+%type       <y_sym>              variable_specification
+%type       <y_sym>              sql_literal
+%type       <y_sym>              pattern
+%type       <y_sym>              escape_character
+%type       <y_sym>              op_escape
+%type       <y_sym>              target_specification
+%type       <y_text>             op_call_parameters
+%type       <y_text>             function_call
+%type       <y_text>             select_statement
+%type       <y_text>             insert_statement
+%type       <y_text>             update_statement_search
+%type       <y_text>             update_statement_position
+%type       <y_text>             set_clause_list
+%type       <y_text>             set_clause_ansi_list
+%type       <y_text>             set_clause_ansi
+%type       <y_text>             set_clause_infx
+%type       <y_text>             update_columns
+%type       <y_text>             update_column_list
+%type       <y_text>             op_insert_column_list
+%type       <y_text>             insert_column_list
+%type       <y_text>             insert_value_list
+%type       <y_text>             insert_value
+%type       <y_text>             query_term
+%type       <y_text>             query_specification
+%type       <y_text>             query_expression
+%type       <y_text>             delete_statement_search
+%type       <y_text>             delete_statement_position
+
+%type       <y_text>             time_expression
+%type       <y_text>             interval_value
+%type       <y_text>             datetime_value
+%type       <y_text>             date_value
+%type       <y_text>             datetime_literal
+%type       <y_text>             op_interval_sign
+%type       <y_text>             op_datetime_qualifier
+%type       <y_text>             numeric_time_interval
+%type       <y_text>             op_num
+
+/* Preparação para novas expressões  
+character_expression
+%type       <y_text>             op_subscript
+%type       <y_text>             op_character_format_list
+%type       <y_text>             character_format
+%type       <y_text>             number_expression
+%type       <y_text>             simple_number_expression
+%type       <y_text>             number_operator
+%type       <y_text>             mod_exp_operator
+%type       <y_text>             literal_number
+%type       <y_text>             op_decimals
+%type       <y_text>             fgl_boolean_expression
+%type       <y_text>             fgl_simple_boolean_expression
+%type       <y_text>             op_not_list
+%type       <y_text>             not_list
+%type       <y_text>             op_not
+%type       <y_text>             boolean_comparison
+%type       <y_text>             set_membership_test
+%type       <y_text>             fgl_expression_list
+%type       <y_text>             string_comparison
+%type       <y_text>             integer_expression
+%type       <y_text>             pure_integers
+%type       <y_text>             pure_integer
+%type       <y_text>             literal_integer
+%type       <y_text>             null_test
+%type       <y_text>             relational_comparison
+ */
+
+%token    ','
+%token    COLON
+%token    SEMICOLON
+%right    NEG  
+%left    '/' '*'
+%left    '+' '-'
+%left    '=' NOT_EQUAL '>' '<' GREATER_OR_EQUAL LESS_OR_EQUAL 
+
+
+%start fgl_source
+
+%%
+
+/* ======================= HIGH LEVEL DEFINITIONS */
+
+fgl_source
+	: op_database op_variable_dec_list op_function_list
+
+op_variable_dec_list
+	:
+	| op_variable_dec_list globals_list
+	| op_variable_dec_list define_list
+	| globals_list
+	| define_list
+
+globals_list
+	: globals_list globals
+	| globals
+
+globals
+	: op_define_globals
+	| op_inc_globals
+
+op_define_globals
+	 : GLOBALS_TOK                         { InGlobals = 1; InLimbo=0;   }
+		op_define_list END_TOK GLOBALS_TOK   
+			{ InGlobals = 0; InLimbo=1; }
+	;
+
+/**
+ * Included global code by pre-processing.
+ * @todo : Define another way to do this.
+ */
+op_inc_globals
+	: INC_GLOBALS STRING                { InInclude = 1;GlobalsInclude($2);
+														 back_lineno = lineno-2;           }
+		op_database
+		op_define_globals
+		op_define_list
+		op_function_list
+		END_TOK INC_GLOBALS               
+			{ InInclude = 0; lineno=back_lineno; }
+	;
+
+/*
+ * Tem de se afectar um estado e nao fazer nada se estas estiverem 
+ * num include
+ */
+op_function_list
+	:
+	| function_list
+	;
+
+op_database
+	: 
+	| database
+	;
+
+/*  ====================== VARIABLE DEFINITION */
+op_define_list
+	:
+	| op_define_list define_statement
+	| define_statement
+	;
+
+define_list
+	: define_list define_statement
+	| define_statement
+	;
+
+define_statement
+	: DEFINE 
+		variable_definition_list op_semicolon
+	{ defineFound(); }
+	;
+
+variable_definition_list
+	: variable_definition_list ',' variable_declaration
+	| variable_declaration
+	;
+
+variable_declaration
+	: variable_list_declaration fgl_data_type
+																	{ StInsVarListDeclaration($1,$2);} 
+	;
+
+variable_list_declaration
+	: variable_list_declaration ',' var_name
+																 { InsertNameList(&$$,$1,$3,lineno+1);    }
+	| var_name
+												{ InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1); }
+	;
+
+fgl_data_type
+	: fgl_simple_data_type                   { $$ = CpStr($1); }
+	| LIKE table_identifier '.' column_name  { $$ = CpStr("LIKE %s.%s",$2,$4); } 
+	| LIKE IDENTIFIER ':' table_identifier '.' column_name  { $$ = CpStr("LIKE %s.%s",$2,$4); } 
+	| array_data_type                        { $$ = CpStr($1); }
+	| record_data_type                       { $$ = CpStr($1); }
+	| TEXT                                   { $$ = CpStr("TEXT"); }
+	| BYTE                                   { $$ = CpStr("BYTE"); }
+	| SERIAL                                 { $$ = CpStr("SERIAL"); }
+	;
+
+array_data_type
+	: ARRAY '[' array_dim ']' OF fgl_data_type { $$ = $6; }
+
+/* ??? Aqui existem conflitos  */
+/* ??? As afectacoes sao so para o bison funcionar */
+array_dim
+	: NUMBER                         { int x; x = $1; }
+	| NUMBER ',' NUMBER              { int x; x = $1; x=$3; }
+	| NUMBER ',' NUMBER ',' NUMBER   { int x; x = $1; x=$3; x=$5;}
+	;
+
+/* Tenho de limpar as variaveis entretanto descobertas pois sao sub-variaveis */
+/* TODO - Esta regra está agranelada */
+record_data_type
+	:    RECORD                             { InRecord = 1; }
+					variable_definition_list 
+			 END_TOK RECORD                     { InRecord = 0;  $$=CpStr("RECORD");}
+	| RECORD LIKE table_identifier '.' '*'  {$$=CpStr("RECORD LIKE %s.*",$3); }
+	| RECORD LIKE IDENTIFIER ':' table_identifier '.' '*'  {$$=CpStr("RECORD LIKE %s.*",$5); }
+	| RECORD LIKE IDENTIFIER '@' IDENTIFIER ':' table_identifier '.' '*'  {$$=CpStr("RECORD LIKE %s.*",$7); }
+	;
+
+fgl_simple_data_type
+	: INTEGER        { $$ = CpStr("INTEGER"); }
+	| SMALLINT       { $$ = CpStr("SMALLINT"); }
+	| decimal        { $$ = CpStr($1); }
+	| money          { $$ = CpStr($1); }
+	| float          { $$ = CpStr($1); }
+	| SMALLFLOAT     { $$ = CpStr("SMALLFLOAT"); }
+	| REAL           { $$ = CpStr(SMALLFLOAT); }
+	| DATE           { $$ = CpStr("DATE"); }
+	| char           { $$ = CpStr($1); }
+	| datetime       { $$ = CpStr($1); }
+	| current        { $$ = CpStr($1); }
+	| interval       { $$ = CpStr($1); }
+	| varchar        { $$ = CpStr($1); }
+	;
+
+datetime
+	: DATETIME dtqualifier TO dtqualifier
+								{ $$ = CpStr("DATETIME %s TO %s",$2,$4); }
+	| DATETIME dtqualifier TO dtqualifier '(' NUMBER ')'
+								{ $$ = CpStr("DATETIME %s TO %s (%d)",$2,$4,$6); }
+	;
+
+/* ??? Faltam ainda alguns casos */
+interval
+	: INTERVAL dtqualifier TO dtqualifier
+								{ $$ = CpStr("INTERVAL %s TO %s",$2,$4); }
+	| INTERVAL dtqualifier op_precision TO dtqualifier op_precision
+								{ $$ = CpStr("INTERVAL %s TO %s (??)",$2,$5); }
+	;
+
+op_precision
+	:
+	| '(' NUMBER ')'
+	;
+
+current
+	: CURRENT
+					{ $$ = CpStr("CURRENT"); }
+	| CURRENT current_qualifier TO current_qualifier
+					{ $$ = CpStr("CURRENT"); }
+
+current_qualifier
+	: IDENTIFIER   { char *x;   x = $1; }
+	| dtqualifier  { char *x;   x=CpStr($1); }
+	
+dtqualifier 
+	: IDENTIFIER op_precision_and_scale { $$ = CpStr($1); } 
+	| HOUR op_precision_and_scale       { $$ = CpStr("HOUR"); } 
+	| MINUTE op_precision_and_scale     { $$ = CpStr("MINUTE"); }
+	| SECOND op_precision_and_scale     { $$ = CpStr("SECOND");}
+	| FRACTION op_precision_and_scale   { $$ = CpStr("FRACTION"); }
+	| YEAR op_precision_and_scale       { $$ = CpStr("YEAR");}
+	| DAY op_precision_and_scale        { $$ = CpStr("DAY"); }
+	;
+
+char 
+	: CHAR op_char_length  { $$ = CpStr("CHAR %s",$2); }
+	;
+
+op_char_length
+	:                      { $$ = CpStr(""); }
+	| '(' NUMBER ')'       { $$ = CpStr("(%d)",$2); }
+	;
+
+varchar
+	: VARCHAR maximum_and_reserve  { $$ = CpStr("VARCHAR %s",$2); }
+	;
+
+maximum_and_reserve
+	: '(' NUMBER ')'               { $$ = CpStr("(%d)", $2); }
+	| '(' NUMBER ',' NUMBER ')'    { $$ = CpStr("(%d,%d)", $2,$4); }
+	;
+
+decimal
+	 : DEC op_precision_and_scale   { $$ = CpStr("DECIMAL %s",$2); }
+	;
+
+money
+	 : MONEY op_precision_and_scale { $$ = CpStr("MONEY %s",$2); }
+	 ;
+
+float
+	: float_synonim '(' NUMBER ')' { $$ = CpStr("FLOAT (%d)",$3); }
+	| float_synonim                { $$ = CpStr("FLOAT"); }
+	;
+
+float_synonim
+	: FLOAT
+	| DOUBLE PRECISION
+	;
+
+op_precision_and_scale
+	:                              { $$ = CpStr(""); }
+	| '(' NUMBER ')'               { $$ = CpStr("(%d)",$2); }
+	| '(' NUMBER ',' NUMBER ')'    { $$ = CpStr("(%d,%d)",$2,$4); }
+	;
+
+array_indexes
+	: fgl_expression
+	| fgl_expression ',' fgl_expression
+	| fgl_expression ',' fgl_expression ',' fgl_expression
+	;
+
+/* ======================== FUNCTIONS */
+
+function_list
+	: function_list        function_definition
+	| function_definition
+	/* ??? Se isto comecar a estourar pode ser daqui */
+	|  /* Sem funcoes  - Isto da tres conflitos */
+	;
+
+function_definition
+	: main
+	| function
+	| report
+	;
+
+main
+		: MAIN                    { StInsertLineFunction(lineno+1,FUNCTION_TYPE); InLimbo = 0;}
+		op_local_variables fgl_statement_list   {StInsertFunction(strdup("MAIN"),lineno+1,(NAME_LIST *)0);}
+		END_TOK MAIN                         { InLimbo = 1; }
+		;
+
+/* Ver como sao os posicionais com execucao parcial de funcoes */
+function
+	: FUNCTION_TOK { StInsertLineFunction(lineno+1,FUNCTION_TYPE); InLimbo = 0;}
+		function_def
+	;
+
+function_def
+	: IDENTIFIER '(' op_argument_list ')' 
+			op_local_variables 
+			fgl_statement_list
+		END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
+	| IDENTIFIER '(' op_argument_list ')'   /* Funcoes vazias */
+			 op_local_variables 
+		END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
+	;
+
+op_argument_list
+	:                          {$$ = (NAME_LIST *)0;}
+	| op_argument_list ',' 
+			IDENTIFIER            {InsertNameList(&$$,$1,$3,lineno+1);}
+	| IDENTIFIER              {InsertNameList(&$$,(NAME_LIST *)0,$1,lineno+1);}
+	;
+
+op_local_variables
+	:
+	| op_define_list
+	;
+
+/*  ====================== 4gl STATEMENTS               */
+op_fgl_statement_list
+	:
+	| fgl_statement_list
+	;
+
+fgl_statement_list
+	: fgl_statement_list fgl_statement op_semicolon { FunctionStatementCount++; }
+	| fgl_statement op_semicolon                    { FunctionStatementCount++; }
+	;
+
+fgl_statement
+	: flow_control
+	| storage_manipulation
+	| screen_interaction  
+	| sql_statement
+	| compiler_directives 
+	| input_action      /* Como estamos a fazer um xref nao e preciso validar*/
+	| construct_action  /* Como estamos a fazer um xref nao e preciso validar*/
+	| display_action    /* Como estamos a fazer um xref nao e preciso validar*/
+	| report_statement
+	| PUT cursor_name FROM fgl_expression
+													 { StInsertCursorUsage($2,lineno+1,CURSOR_PUT);}
+	| FLUSH cursor_name 
+													 { StInsertCursorUsage($2,lineno+1,CURSOR_FLUSH);}
+	| unload
+	| load
+	;
+
+unload
+	: UNLOAD TO unload_target op_delimiter query_specification
+		 {  if ( $3[0] != '\"' ) StInsertVariableUsage($3,lineno+1,READ_VAR);  }
+	/*   Esta regra esta a dar erro */
+	| UNLOAD TO unload_target op_delimiter named_value
+		 {  if ( $3[0] != "\"" ) StInsertVariableUsage($3,lineno+1,READ_VAR);
+			StInsertVariableUsage($5,lineno+1,READ_VAR);                       }
+			/**/
+	;
+
+unload_target
+	: named_value                                         { strcpy($$,$1);   }
+	| STRING                                              { strcpy($$,$1);   }
+	;
+
+op_delimiter
+	:
+	| DELIMITER STRING
+	| DELIMITER named_value
+	;
+
+load
+	: LOAD FROM STRING op_delimiter 
+			INSERT INTO table_name op_insert_column_list
+														 { StInsertTable($7);
+																StIncrementTable(); }
+	| LOAD FROM named_value op_delimiter 
+			INSERT INTO table_name op_insert_column_list
+															{ StInsertVariableUsage($3,lineno+1,READ_VAR); 
+															 StInsertTable($7);
+																StIncrementTable(); }
+	;
+
+/*  ============================ Control structures     */
+flow_control
+	: call
+	| case
+	| database
+	| exit_program
+	| FINISH REPORT IDENTIFIER
+															 { StInsertFunctionCall($3,lineno+1);
+												StUpdFCUsage("FINISH REPORT"); }
+	| for
+	| FOREACH cursor_name fgl_statement_list END_TOK FOREACH
+												{ StInsertCursorUsage($2,lineno+1,CURSOR_FETCH);}
+	| FOREACH cursor_name END_TOK FOREACH               /* ???? Futuro Lixo */
+												{ StInsertCursorUsage($2,lineno+1,CURSOR_FETCH);}
+	| FOREACH cursor_name op_st_using INTO named_value_list fgl_statement_list 
+		END_TOK FOREACH
+												{ StInsertVariableListUsage($5,ASSIGNMENT); 
+													StInsertCursorUsage($2,lineno+1,CURSOR_FETCH);}
+																											/* ???? Futuro Lixo */
+	| FOREACH cursor_name op_st_using INTO named_value_list END_TOK FOREACH 
+												{ StInsertVariableListUsage($5,ASSIGNMENT); 
+													StInsertCursorUsage($2,lineno+1,CURSOR_FETCH);}
+	| goto
+	| if
+	| LABEL IDENTIFIER ':'
+	| OUTPUT TO REPORT IDENTIFIER '(' op_call_parameters ')'
+															 { StInsertFunctionCall($4,lineno+1);
+												StUpdFCUsage("OUTPUT TO REPORT"); }
+	| RETURN fgl_return_list
+	| run
+	| start_report
+	| while 
+	| continues_and_exits
+	| print_statement                           /* Isto nao eh flow control */
+	| menu_action
+	;
+
+op_st_using
+	:
+	| USING named_value_list
+	;
+
+op_semicolon 
+	: 
+	| ';'
+
+database
+	: DATABASE database_name op_exclusive
+	;
+
+/* ??? Afectacoes so para o bison funcionar */
+database_name
+	: IDENTIFIER '@' IDENTIFIER   { char *x; x = $1;x=$3; }
+	| IDENTIFIER                  { char *x; x = $1; }
+	;
+
+op_exclusive
+	:
+	| EXCLUSIVE
+	;
+
+exit_program
+	: EXIT PROGRAM
+	| EXIT PROGRAM fgl_expression
+	| EXIT PROGRAM '(' fgl_expression ')'
+	;
+
+/* Como e para fazer um X ref nao e preciso ver se esta a fazer exit while
+	fora de um while
+	Se calhar podia-se fazer uma exit_list e continue_list
+ */
+continues_and_exits
+	: EXIT WHILE
+	| CONTINUE WHILE
+	| EXIT FOR
+	| EXIT CASE
+	| CONTINUE FOR
+	| EXIT FOREACH
+	| CONTINUE FOREACH
+	;
+
+fgl_return_list   
+	:
+	| fgl_return_list ',' fgl_expression
+	| fgl_expression
+	;
+
+call
+	: CALL function_call RETURNING returning_list 
+														{ StUpdFCUsage("CALL RETURNING"); }
+	| CALL function_call                   { StUpdFCUsage("CALL"); }
+	;
+
+returning_list
+	: returning_list ',' named_value
+														 { StInsertVariableUsage($3,lineno+1,READ_VAR);} 
+	| named_value
+														 { StInsertVariableUsage($1,lineno+1,READ_VAR);} 
+	;
+
+	/* ??? Esta regra pode dar conflitos por causa da concatenacao de strings */
+op_call_parameters
+	:                                         { $$=""; }
+	| op_call_parameters ',' fgl_expression   { $$=CpStr("%s,%s",$1,""); }
+	| op_call_parameters THRU fgl_expression  { $$=CpStr("%s THRU %s",$1,""); }
+	| fgl_expression                          { $$=CpStr("%s",""); }
+	;
+
+case                                            /* Case single criterion */
+	: CASE fgl_expression when_list op_otherwise END_TOK CASE
+																/* Case Multiple criteria */
+	| CASE when_list op_otherwise END_TOK CASE
+	;
+
+/* Falta o tratamento do exit case */
+when_list
+	: when_list when
+	| when
+	;
+
+when
+	: WHEN fgl_expression fgl_statement_list
+			 /* ??? Isto acaba quando a fgl_expression for opcional */
+	| WHEN fgl_expression 
+	;
+
+op_otherwise
+	:
+	| OTHERWISE fgl_statement_list
+			 /* ??? Isto acaba quando a fgl_expression for opcional */
+	| OTHERWISE     
+	;
+
+/* This one have a shift reduce conflict */
+if
+	: IF fgl_expression THEN fgl_statement_list else END_TOK IF
+			 /* ??? Isto acaba quando a fgl_expression for opcional */
+	| IF fgl_expression THEN else END_TOK IF
+	;
+
+else
+	: ELSE fgl_statement_list
+			 /* ??? Isto acaba quando a fgl_expression for opcional */
+	| ELSE 
+	| /* Sem else */
+	;
+
+while
+	: WHILE fgl_expression fgl_statement_list END_TOK WHILE
+	| WHILE fgl_expression END_TOK WHILE
+	;
+
+/* Se calhar tambem devia ter expressoes no start */
+for
+	: FOR IDENTIFIER '=' fgl_expression 
+		TO fgl_expression 
+			 op_step fgl_statement_list
+		END_TOK FOR
+			 /* ??? Isto acaba quando a fgl_expression for opcional */
+	| FOR IDENTIFIER '=' fgl_expression TO fgl_expression op_step END_TOK FOR
+	;
+
+/* ??? Tem de se aceitar expressoes no STEP */
+op_step
+	:
+	| STEP NUMBER
+	| STEP '-' NUMBER
+	| STEP IDENTIFIER         { StInsertVariableUsage($2,lineno+1,READ_VAR); }
+	;
+
+goto
+	: GO TO ':' IDENTIFIER
+	| GO TO IDENTIFIER
+	| GOTO ':' IDENTIFIER
+	| GOTO IDENTIFIER
+	;
+
+start_report
+	: START REPORT IDENTIFIER op_to_report
+															 { StInsertFunctionCall($3,lineno+1); 
+												StUpdFCUsage("START TO REPORT"); }
+	;
+
+op_to_report
+	:
+	| TO STRING
+	| TO named_value          { StInsertVariableUsage($2,lineno+1,READ_VAR); }
+	| TO PRINTER
+	| TO PIPE STRING
+	| TO PIPE named_value     { StInsertVariableUsage($3,lineno+1,READ_VAR); }
+	;
+ 
+/* O opcional clipped esta aqui um bocado estranho */
+run 
+	: RUN STRING                 op_returning_or_waiting
+	| RUN '(' STRING ')'         op_returning_or_waiting
+	| RUN '(' named_value ')'    op_returning_or_waiting
+														 { StInsertVariableUsage($3,lineno+1,READ_VAR); }
+	| RUN named_value op_clipped op_returning_or_waiting
+														 { StInsertVariableUsage($2,lineno+1,READ_VAR); }
+	;
+
+op_returning_or_waiting
+	:
+	| RETURNING named_value    { StInsertVariableUsage($2,lineno+1,READ_VAR); }
+	| WITHOUT WAITING
+	;
+
+/*  ============================ Storage Manipulation   */
+storage_manipulation
+	: let
+	| initialize
+	| FREE named_value 
+	| locate
+	;
+	/* ??? Falta 
+		| validate
+	 */
+
+let 
+	: LET named_value '=' fgl_expression 
+		 { StInsertVariableUsage($2,lineno+1,ASSIGNMENT);} 
+	| LET named_value '.' '*' '=' named_value '.' '*'
+		 { StInsertVariableUsage($2,lineno+1,ASSIGNMENT);
+			 StInsertVariableUsage($6,lineno+1,READ_VAR);
+		} 
+	;
+
+initialize
+	: INITIALIZE named_value_list TO NULL_TOK
+		{ StInsertVariableListUsage($2,ASSIGNMENT); }
+	;
+
+	/* Falta o initialize like */
+
+locate 
+	: LOCATE named_value_list IN MEMORY {StInsertVariableListUsage($2,READ_VAR);}
+	| LOCATE named_value_list IN FILE_TOK 
+													{StInsertVariableListUsage($2,READ_VAR);}
+	| LOCATE named_value_list IN FILE_TOK STRING
+																		{StInsertVariableListUsage($2,READ_VAR);}
+	| LOCATE named_value_list IN FILE_TOK IDENTIFIER
+																		{ StInsertVariableListUsage($2,READ_VAR);
+																			StInsertVariableListUsage($5,READ_VAR);}
+	;
+	/* Depois se ve */
+	/*| LOCATE named_value_list IN FILE named_value */
+
+/*  ============================ Fgl expressions (Very simplified) */
+
+/* Fgl expression nao e usada no SQL e como tal pode-se usar 
+ * Para insercao de utilizacao de variaveis */
+ /* ??? Afectacoes sao para o bison funcionar */
+/* Restruturação de expressões 4gl
+/* TODO - Notação cientifica com Enum em number */
+/* 
+fgl_expression
+	: time_expression  
+		{ char *x=$1; }
+	| character_expression  
+		{ char *x=$1; }
+	| number_expression  
+		{ char *x=$1; }
+	| integer_expression  
+		{ char *x=$1; }
+	| fgl_boolean_expression  
+		{ char *x=$1; }
+	| NOT fgl_expression  
+	|'(' fgl_expression ')'  
+	;
+
+character_expression
+	: STRING        op_subscript op_character_format_list 
+		{ $$=""; }
+	| function_call op_subscript op_character_format_list 
+		{ $$=""; }
+	| named_value   op_subscript op_character_format_list 
+		{ $$=""; }
+	;
+
+op_subscript
+	:
+		{ $$=""; }
+	| '[' integer_expression ']'
+		{ $$=""; }
+	| '[' integer_expression ',' integer_expression ']'
+		{ $$=""; }
+	;
+
+op_character_format_list
+	:
+		{ $$=""; }
+	| op_character_format_list character_format
+		{ $$=""; }
+	;
+
+character_format
+	: clipped
+		{ $$=""; }
+	| using
+		{ $$=""; }
+	;
+
+number_expression
+	: simple_number_expression
+		{ $$=""; }
+	| simple_number_expression mod_exp_operator
+		{ $$=""; }
+	| simple_number_expression number_operator number_expression
+		{ $$=""; }
+	;
+
+simple_number_expression
+	: op_signal literal_number
+		{ $$=""; }
+	| op_signal named_value
+		{ $$=""; }
+	| op_signal function_call
+		{ $$=""; }
+	| op_signal fgl_boolean_expression
+		{ $$=""; }
+	| op_signal fgl_boolean_expression
+		{ $$=""; }
+	;
+
+number_operator
+	: '+'
+		{ $$=""; }
+	| '-'
+		{ $$=""; }
+	| '*'
+		{ $$=""; }
+	| '/'
+		{ $$=""; }
+	;
+
+mod_exp_operator
+	: MOD
+		{ $$=""; }
+	| EXPO
+		{ $$=""; }
+	;
+
+literal_number
+	: op_signal NUMBER op_decimals 
+		{ $$=""; }
+	| op_signal '.' NUMBER
+		{ $$=""; }
+	;
+
+op_decimals
+	:
+		{ $$=""; }
+	| '.' NUMBER
+		{ $$=""; }
+	;
+
+
+fgl_boolean_expression
+	: fgl_simple_boolean_expression 
+		{ $$=""; }
+	| fgl_simple_boolean_expression AND fgl_boolean_expression 
+		{ $$=""; }
+	| fgl_simple_boolean_expression OR  fgl_boolean_expression 
+		{ $$=""; }
+	;
+
+fgl_simple_boolean_expression
+	: op_not_list fgl_expression
+		{ $$=""; }
+	| op_not_list boolean_comparison
+		{ $$=""; }
+	| op_not_list function_call
+		{ $$=""; }
+	| op_not_list TRUE_TOK
+		{ $$=""; }
+	| op_not_list FALSE_TOK
+		{ $$=""; }
+	;
+	
+op_not_list
+	:
+		{ $$=""; }
+	| not_list
+		{ $$=""; }
+	;
+
+not_list
+	: NOT 
+		{ $$=""; }
+	| NOT not_list
+		{ $$=""; }
+	;
+
+op_not
+	:
+		{ $$=""; }
+	| NOT
+		{ $$=""; }
+	;
+
+boolean_comparison
+	: string_comparison
+		{ $$=""; }
+	| set_membership_test
+		{ $$=""; }
+	| null_test
+		{ $$=""; }
+	| relational_comparison
+		{ $$=""; }
+	;
+
+string_comparison
+	: character_expression op_not MATCHES STRING op_escape
+		{ $$=""; }
+	;
+
+set_membership_test
+	: fgl_expression op_not IN '(' fgl_expression_list ')'
+		{ $$=""; }
+	;
+
+fgl_expression_list
+	: fgl_expression
+		{ $$=""; }
+	| fgl_expression ',' fgl_expression_list
+		{ $$=""; }
+	;
+
+null_test
+	: fgl_expression IS op_not NULL_TOK
+		{ $$=""; }
+	;
+
+relational_comparison
+	: fgl_expression '=' fgl_expression
+		{ $$=""; }
+	| fgl_expression '<' fgl_expression
+		{ $$=""; }
+	| fgl_expression '>' fgl_expression
+		{ $$=""; }
+	| fgl_expression LESS_OR_EQUAL fgl_expression
+		{ $$=""; }
+	| fgl_expression GREATER_OR_EQUAL fgl_expression
+		{ $$=""; }
+	| fgl_expression NOT_EQUAL fgl_expression
+		{ $$=""; }
+	;
+
+integer_expression
+	: pure_integers
+		{ $$=""; }
+	| date_value '-' date_value
+		{ $$=""; }
+	;
+
+pure_integers
+	: pure_integer
+		{ $$=""; }
+	| pure_integer integer_operator pure_integers
+		{ $$=""; }
+	;
+
+pure_integer
+	: op_signal literal_integer 
+		{ $$=""; }
+	| op_signal function_call
+		{ $$=""; }
+	| op_signal named_value
+		{ $$=""; }
+	| op_signal fgl_boolean_expression
+		{ $$=""; }
+	;
+
+
+literal_integer
+	: op_signal NUMBER
+		{ $$=""; }
+	;
+
+	*/
+/* FIQUEI AQUI */
+
+
+/* Expressões antigas */
+fgl_expression
+	: fgl_expression op_spaces fgl_operator_list fgl_operand  { char *x; x=$4; }
+	| fgl_expression op_spaces fgl_operator_list fgl_expression 
+	| fgl_operand  { char *x; x=$1; }
+	| NOT fgl_expression
+	| op_signal '(' fgl_expression ')' 
+	| time_expression { char *x; x=$1; }
+	;
+
+op_spaces
+	:
+	| SPACES
+	;
+
+/* Quando meti esta lista deu mais alguns 100 conflitos reduce/reduce */
+fgl_operator_list
+	: fgl_operator_list fgl_operator
+	| fgl_operator
+	;
+
+fgl_operator
+	: '+'
+	| '-'
+	| '*'
+	| '/'
+	| MOD
+	| EXPO                                                 /* ** Operator */
+	| AND
+	| OR 
+	| '='
+	| '<'
+	| '>'
+	| LESS_OR_EQUAL
+	| GREATER_OR_EQUAL
+	| NOT_EQUAL
+	| IS 
+	| IS NOT 
+	| MATCHES
+	| NOT MATCHES
+	| ','
+	;
+
+/*
+ * Tem tambem operandos dos reports
+ * Devia devolver pelo $$: 
+ *    - Tipo: String, Constante(literal), Funcao, NomeVariavel (tabela, etc)
+ *    - Nome
+ * ATENCAO : Apenas devolve o nome se este for named_value, caso contrario
+ *           devolve NULL
+ */
+fgl_operand
+	: fgl_basic_operand op_fgl_operand_format_list
+		{  copystr($$,$1); }
+	;
+
+op_fgl_operand_format_list
+	:
+	| op_fgl_operand_format_list fgl_operand_format
+	| fgl_operand_format
+						//{printf("Fgl operand format\n");}
+	;
+
+fgl_operand_format
+	: CLIPPED 
+	| USING STRING 
+		//{printf("Using string \n");}
+	| wordwrap
+	| units
+	;
+
+/*
+ * ??? Como se vai detectar a diferenca entre nome de tabela e 
+ *     estrutura ou coluna e variavel ???
+ *  Para ja tem de passar a devolver qualquer coisa pelo $$
+ * O problema eh que o named value pode ser um nome de tabela ou coluna
+ */
+fgl_basic_operand
+	: literal              { strcpy($$,$1); }
+	| STRING               { strcpy($$,$1); }
+	| function_call        { strcpy($$,$1);
+									 StUpdFCUsage("EXPRESSION"); }
+	| named_value          {  strcpy($$,$1);
+													StInsertVariableUsage($1,lineno+1,READ_VAR); }
+	| '-' named_value          {  strcpy($$,$2);
+													StInsertVariableUsage($2,lineno+1,READ_VAR); }
+	| '+' named_value          {  strcpy($$,$2);
+													StInsertVariableUsage($2,lineno+1,READ_VAR); }
+	| ASCII named_value    { $$[0]='\0'; }
+	| ASCII '(' NUMBER ')' { $$[0]='\0'; }
+	| ASCII '(' named_value ')' { $$[0]='\0'; }
+	| ASCII NUMBER         { $$[0]='\0'; }
+	| PAGENO               { $$[0]='\0'; }
+																		/* Isto devia ser so para print */
+	| GROUP function_call  { $$[0]='\0'; }
+	| COLUMN fgl_expression   { $$[0]='\0';} /* 
+													 StInsertVariableUsage($2,lineno+1,READ_VAR); }*/
+		/* ??? Faltam formatacoes de datetimes e intervals */
+	| current              { $$[0]='\0'; }
+	| TIME                 { $$[0]='\0'; }
+	| TRUE_TOK             { $$[0]='\0'; }
+	| FALSE_TOK            { $$[0]='\0'; }
+	/* ??? O number tem de ser named_value ou NUMBER */
+	/*
+	| NUMBER SPACES        { $$[0]='\0'; }
+	*/
+	;
+
+	
+
+wordwrap
+	: WORDWRAP RIGHT MARGIN NUMBER
+	| WORDWRAP 
+	;
+
+op_signal
+	:
+	| '+'
+	| '-'
+
+literal
+	: number op_format_qualifier { strcpy($$,$1); }
+	| '+' number op_format_qualifier { strcpy($$,$2); }
+	| '-' number op_format_qualifier { strcpy($$,$2); }
+	/* ???  Nao funciona nao sei porque 
+	: op_signal number op_format_qualifier { strcpy($$,$2); }
+	*/
+
+number
+	: NUMBER              { sprintf($$,"%d",$1); }
+	| NUMBER '.' NUMBER   { sprintf($$,"%d.%d",$1,$3); }
+	| '.' NUMBER          { sprintf($$,"0.%d",$2); }
+	;
+
+/* Para os UNITS, using, etc */
 op_format_qualifier
   :
   | units
@@ -1418,7 +1421,7 @@ date_value
   //| named_value op_using { char *x; x = $1; }
   /* Só para resolver o today - 
 	   This fucks expressions */
-					//| IDENTIFIER op_using { char *x; printf("DATE VALUE\n");x = $1; }
+	//| IDENTIFIER op_using { char *x; printf("DATE VALUE\n");x = $1; }
   /* | TODAY op_using Ficou em função */
   
 datetime_value

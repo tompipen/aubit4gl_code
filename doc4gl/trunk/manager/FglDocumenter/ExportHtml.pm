@@ -11,8 +11,8 @@
 #  @todo : O HTML localizado não está completo
 #
 #  $Author: saferreira $
-#  $Date: 2003-04-14 17:58:01 $
-#  $Id: ExportHtml.pm,v 1.3 2003-04-14 17:58:01 saferreira Exp $
+#  $Date: 2003-05-12 11:29:45 $
+#  $Id: ExportHtml.pm,v 1.4 2003-05-12 11:29:45 saferreira Exp $
 #
 # ============================================================================
 
@@ -30,12 +30,12 @@ use FglDocumenter::FglDocLocation;
 #  =========================================================================
 sub new
 {
-	my $exportHtml = {
+  my $exportHtml = {
     "err"                => 0,
-	  "log"                => 0,
+    "log"                => 0,
     "progressListener"   => 0,
-	  "dbh"                => 0,
-		"originalDir"        => "",
+    "dbh"                => 0,
+    "originalDir"        => "",
     "destinationDir"     => "",
     "ignoreExistDir"     => 1,
     "flagErro"           => 0,
@@ -44,15 +44,15 @@ sub new
     "packages"           => 0,
     "processes"          => 0,
     "files"              => 0,
-	  "packageMethods"     => 0,
-	  "methods"            => 0,
-	  "packagesStr"        => "Directórios",
-	  "modulesStr"         => "Módulos",
-	  "moduleInformation"  => 0,
-	  "lh"                 => 0,
-	};
-	bless $exportHtml, "FglDocumenter::ExportHtml";
-	return $exportHtml;
+    "packageMethods"     => 0,
+    "methods"            => 0,
+    "packagesStr"        => "Directórios",
+    "modulesStr"         => "Módulos",
+    "moduleInformation"  => 0,
+    "lh"                 => 0,
+  };
+  bless $exportHtml, "FglDocumenter::ExportHtml";
+  return $exportHtml;
 }
 
 
@@ -62,8 +62,8 @@ sub new
 sub setRepository
 {
   my $obj = shift;
-	$obj->{repository} = shift;
-	$obj->{dbh} = $obj->{repository}->getConnection();
+  $obj->{repository} = shift;
+  $obj->{dbh} = $obj->{repository}->getConnection();
 }
 
 
@@ -73,7 +73,7 @@ sub setRepository
 sub setError
 {
   my $obj = shift;
-	$obj->{err} = shift;
+  $obj->{err} = shift;
 }
 
 #  ===========================================================================
@@ -82,7 +82,7 @@ sub setError
 sub setLog
 {
   my $obj = shift;
-	$obj->{log} = shift;
+  $obj->{log} = shift;
 }
 
 #  ===========================================================================
@@ -193,8 +193,8 @@ sub getPackageName
 {
   my $obj = shift;
   my $dirName = dirname($_[0]);
-	chomp($dirName);
-	return $dirName;
+  chomp($dirName);
+  return $dirName;
 }
 
 #  ===========================================================================
@@ -204,28 +204,28 @@ sub getPackageName
 sub selectPackages
 {
   my $obj = shift;
-	$obj->{packages} = ();
+  $obj->{packages} = ();
   my $sth = $obj->{dbh}->prepare(q% SELECT id_package FROM p4gl_package %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de package",
-		  "Can't prepare select from p4gl_package\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de package",
+      "Can't prepare select from p4gl_package\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de package",
-	    "Can't select from p4gl_package\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de package",
+      "Can't select from p4gl_package\n$DBI::errstr"
     );
   my(@row);
   my(@packageList);
   while (@row = $sth->fetchrow_array())
   {
-		push(@packageList,$row[0]);
+    push(@packageList,$row[0]);
   }
-	$obj->{packages} = \@packageList;
+  $obj->{packages} = \@packageList;
   undef $sth;
 }
 
@@ -235,32 +235,32 @@ sub selectPackages
 sub selectProcesses
 {
   my $obj = shift;
-	$obj->{processes} = ();
+  $obj->{processes} = ();
   my $sth = $obj->{dbh}->prepare(q%
-	  SELECT id_process FROM p4gl_process
-	%);
+    SELECT id_process FROM p4gl_process
+  %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de processos",
-		  "Can't prepare select from processes\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de processos",
+      "Can't prepare select from processes\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de processos",
-	    "Can't select from p4gl_process\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de processos",
+      "Can't select from p4gl_process\n$DBI::errstr"
     );
   my(@row);
   my(@processList);
   while (@row = $sth->fetchrow_array())
   {
-		my $processId = $row[0];
-	  $processId =~ s/^ *//g; $processId =~ s/ *$//g;
-		push(@processList,$processId);
+    my $processId = $row[0];
+    $processId =~ s/^ *//g; $processId =~ s/ *$//g;
+    push(@processList,$processId);
   }
-	$obj->{processes} = \@processList;
+  $obj->{processes} = \@processList;
   undef $sth;
 }
 
@@ -274,43 +274,43 @@ sub selectDetailProcesses
   my $obj = shift;
   my $parentProcess = shift;
   my $sth;
-	if ( $parentProcess eq "top" )
-	{
+  if ( $parentProcess eq "top" )
+  {
     $sth = $obj->{dbh}->prepare(qq%
-	    SELECT id_process FROM p4gl_process 
-		    where sub_process_of is null
-	  %);
-	}
-	else
-	{
+      SELECT id_process FROM p4gl_process 
+        where sub_process_of is null
+    %);
+  }
+  else
+  {
     $sth = $obj->{dbh}->prepare(qq%
-	    SELECT id_process FROM p4gl_process 
-		    where sub_process_of = '$parentProcess'
-	  %);
-	}
+      SELECT id_process FROM p4gl_process 
+        where sub_process_of = '$parentProcess'
+    %);
+  }
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de processos",
-		  "Can't prepare select from processes\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de processos",
+      "Can't prepare select from processes\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de processos",
-	    "Can't select from p4gl_process\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de processos",
+      "Can't select from p4gl_process\n$DBI::errstr"
     );
   my(@row);
   my(@processList);
   while (@row = $sth->fetchrow_array())
   {
-		my $processId = $row[0];
-	  $processId =~ s/^ *//g; $processId =~ s/ *$//g;
-		push(@processList,$processId);
+    my $processId = $row[0];
+    $processId =~ s/^ *//g; $processId =~ s/ *$//g;
+    push(@processList,$processId);
   }
   undef $sth;
-	return \@processList;
+  return \@processList;
 }
 
 #  ===========================================================================
@@ -324,32 +324,32 @@ sub selectProcessName
 {
   my $obj = shift;
   my $processId = shift;
-	my $dispProcess;
+  my $dispProcess;
   my $sth = $obj->{dbh}->prepare(qq%
-	    SELECT disp_process FROM p4gl_process 
-		    where id_process = '$processId'
-	%);
+      SELECT disp_process FROM p4gl_process 
+        where id_process = '$processId'
+  %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Select of process name",
-		  "Can't prepare select from processes\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Select of process name",
+      "Can't prepare select from processes\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de processos",
-	    "Can't select from p4gl_process\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de processos",
+      "Can't select from p4gl_process\n$DBI::errstr"
   );
-	my @row;
+  my @row;
   if (@row = $sth->fetchrow_array())
   {
-		$dispProcess = $row[0];
-	  $dispProcess =~ s/^ *//g; $dispProcess =~ s/ *$//g;
+    $dispProcess = $row[0];
+    $dispProcess =~ s/^ *//g; $dispProcess =~ s/ *$//g;
   }
   undef $sth;
-	return $dispProcess;
+  return $dispProcess;
 }
 
 #  ===========================================================================
@@ -359,8 +359,8 @@ sub getFileName
 {
   my $obj = shift;
   my $fileName = basename($_[0]);
-	chomp($fileName);
-	return $fileName;
+  chomp($fileName);
+  return $fileName;
 }
 
 #  ===========================================================================
@@ -372,23 +372,23 @@ sub testCreateDir
 {
   my $obj = shift;
   my $dir = shift;
-	if ( -d $dir )
-	{
-		if ( $obj->{ignoreExistDir} == 0 )
-		{
-		  return 0;
-		}
+  if ( -d $dir )
+  {
+    if ( $obj->{ignoreExistDir} == 0 )
+    {
+      return 0;
+    }
     $obj->{log}->log("Directory $dir exists allready \n");
-		return 1;
-	}
+    return 1;
+  }
 
-	unless (mkdir($dir) )
-	{
-	  $obj->{err}->error(
-			"Criaçao de directorio para gerar html",
-		  "Error creating $dir :$!"
-    );		
-		return 0;
+  unless (mkdir($dir) )
+  {
+    $obj->{err}->error(
+      "Criaçao de directorio para gerar html",
+      "Error creating $dir :$!"
+    );    
+    return 0;
   }
   $obj->{log}->log("Directory $dir created \n");
   return 1;
@@ -436,44 +436,44 @@ sub createDirTree
 {
   my $obj = shift;
   $obj->{log}->log("Creating directory tree in %s\n",
-	  $obj->{destinationDir}
-	);
+    $obj->{destinationDir}
+  );
 
-	# mkdir dest_dir
-	if ( $obj->testCreateDir($obj->{destinationDir}) == 0 )
-	{
-	  return 0;
-	}
+  # mkdir dest_dir
+  if ( $obj->testCreateDir($obj->{destinationDir}) == 0 )
+  {
+    return 0;
+  }
 
-	# mkdir html
-	if ( $obj->testCreateDir($obj->{destinationDir} . "/html" ) == 0 )
-	{
-	  return 0;
-	}
+  # mkdir html
+  if ( $obj->testCreateDir($obj->{destinationDir} . "/html" ) == 0 )
+  {
+    return 0;
+  }
 
-	# Para cada processo mkdir $processName
-	my $arrayRef = $obj->{processes};
-	my @array = @$arrayRef;
-	my $process;
-	foreach $process ( @array )
-	{
-	  if ( $obj->testCreateDir($obj->{destinationDir} . "/$process" ) == 0 )
-	  {
-	    return 0;
-	  }
-	}
-	
-	# Para cada package mkdir $processName
-	my $arrayRef = $obj->{packages};
-	my @array = @$arrayRef;
-	my $package;
-	foreach $package ( @array )
-	{
-	  if ( $obj->testCreateDir($obj->{destinationDir} . "/$package" ) == 0 )
-	  {
-	    return 0;
-	  }
-	}
+  # Para cada processo mkdir $processName
+  my $arrayRef = $obj->{processes};
+  my @array = @$arrayRef;
+  my $process;
+  foreach $process ( @array )
+  {
+    if ( $obj->testCreateDir($obj->{destinationDir} . "/$process" ) == 0 )
+    {
+      return 0;
+    }
+  }
+  
+  # Para cada package mkdir $processName
+  my $arrayRef = $obj->{packages};
+  my @array = @$arrayRef;
+  my $package;
+  foreach $package ( @array )
+  {
+    if ( $obj->testCreateDir($obj->{destinationDir} . "/$package" ) == 0 )
+    {
+      return 0;
+    }
+  }
 }
 
 #  ===========================================================================
@@ -489,25 +489,25 @@ sub createDirTree
 sub genModulesForProcess
 {
   my $obj = shift;
-	my $processId = shift;
+  my $processId = shift;
   my $modListRef = $obj->selectModulesForProcess($processId);
-	my @moduleList = @$modListRef;
-	my $modulesHtmlName;
-	my $destinationPath;
-	if ( $processId eq "AllModules" )
-	{
-	  $modulesHtmlName = $obj->{destinationDir} . "/AllModules.html";
-	  $destinationPath = "./";
-		
+  my @moduleList = @$modListRef;
+  my $modulesHtmlName;
+  my $destinationPath;
+  if ( $processId eq "AllModules" )
+  {
+    $modulesHtmlName = $obj->{destinationDir} . "/AllModules.html";
+    $destinationPath = "./";
+    
   }
-	else
-	{
-	  $modulesHtmlName = $obj->{destinationDir} . "/$processId/modules.html";
-	  $destinationPath = "../";
-	}
+  else
+  {
+    $modulesHtmlName = $obj->{destinationDir} . "/$processId/modules.html";
+    $destinationPath = "../";
+  }
   open(MODPROCHTML, "> $modulesHtmlName") || 
-	  die "Cant open $modulesHtmlName : $!";
-	my $allFuncStr = $obj->{lh}->maketext("All functions");
+    die "Cant open $modulesHtmlName : $!";
+  my $allFuncStr = $obj->{lh}->maketext("All functions");
   printf MODPROCHTML qq|
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Frameset//EN""http://www.w3.org/TR/REC-html40/frameset.dtd">
 <!--NewPage-->
@@ -526,12 +526,12 @@ sub genModulesForProcess
 
 <TABLE BORDER="0" WIDTH="100%">
   <TR><TD NOWRAP><FONT CLASS="FrameItemFont">
-			<!--
-		  <A HREF="AllFunctions.html" TARGET="descriptionsFrame">
-				$allFuncStr
-			</A>
-			-->
-	</FONT>
+      <!--
+      <A HREF="AllFunctions.html" TARGET="descriptionsFrame">
+        $allFuncStr
+      </A>
+      -->
+  </FONT>
   <P>
 
   <FONT size="+1" CLASS="FrameHeadingFont">$obj->{modulesStr}</FONT>
@@ -539,13 +539,13 @@ sub genModulesForProcess
 
   my $module;
   foreach $module (@moduleList)
-	{
+  {
     printf(MODPROCHTML qq|
 <BR>
 <FONT CLASS="FrameItemFont">
 <A HREF="%s/%s.html" TARGET="descriptionsFrame">%s</A></FONT>
 |,
-		  $destinationPath,$module,$module
+      $destinationPath,$module,$module
     );
   }
 
@@ -569,44 +569,44 @@ sub genModulesForProcess
 sub selectModulesForProcess
 {
   my $obj = shift;
-	my $processId = shift;
-	my $sth;
-	if ( $processId eq "AllModules" )
-	{
+  my $processId = shift;
+  my $sth;
+  if ( $processId eq "AllModules" )
+  {
     $sth = $obj->{dbh}->prepare(qq% 
-	    SELECT unique module_name FROM p4gl_module 
-	  %);
-	}
-	else
-	{
+      SELECT unique module_name FROM p4gl_module 
+    %);
+  }
+  else
+  {
     $sth = $obj->{dbh}->prepare(qq% 
-	    SELECT unique module_name FROM p4gl_fun_process 
-		  WHERE id_process = '$processId'
-	  %);
-	}
+      SELECT unique module_name FROM p4gl_fun_process 
+      WHERE id_process = '$processId'
+    %);
+  }
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Selecção de package",
-		  "Can't prepare select from p4gl_package\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Selecção de package",
+      "Can't prepare select from p4gl_package\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de package",
-	    "Can't select from p4gl_packaghe\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de package",
+      "Can't select from p4gl_packaghe\n$DBI::errstr"
     );
   my(@row);
   my(@moduleList);
   while (@row = $sth->fetchrow_array())
   {
-		my $module = $row[0];
-	  $module =~ s/^ *//g; $module =~ s/ *$//g;
-		push(@moduleList,$module);
+    my $module = $row[0];
+    $module =~ s/^ *//g; $module =~ s/ *$//g;
+    push(@moduleList,$module);
   }
   undef $sth;
-	return \@moduleList;
+  return \@moduleList;
 }
 
 #  ===========================================================================
@@ -616,7 +616,7 @@ sub selectModulesForProcess
 sub genDescriptionForProcess($object,$process)
 {
   my $obj = shift;
-	my $processId = shift;
+  my $processId = shift;
 }
 
 #  ===========================================================================
@@ -625,14 +625,14 @@ sub genDescriptionForProcess($object,$process)
 sub genProcessesDocumentation
 {
   my $obj = shift;
-	my $arrayRef = $obj->{processes};
-	my @array = @$arrayRef;
-	my $process;
-	foreach $process ( @array )
-	{
-	  $obj->genModulesForProcess($process);
-	  $obj->genDescriptionForProcess($process);
-	}
+  my $arrayRef = $obj->{processes};
+  my @array = @$arrayRef;
+  my $process;
+  foreach $process ( @array )
+  {
+    $obj->genModulesForProcess($process);
+    $obj->genDescriptionForProcess($process);
+  }
 }
 
 #  ===========================================================================
@@ -656,9 +656,9 @@ sub genPackagesDocumentation
 sub genHtml
 {
   my $obj = shift;
-	$obj->genBaseDocumentation();
-	$obj->genProcessesDocumentation();
-	$obj->genPackagesDocumentation();
+  $obj->genBaseDocumentation();
+  $obj->genProcessesDocumentation();
+  $obj->genPackagesDocumentation();
 }
 
 
@@ -669,18 +669,18 @@ sub genHtml
 sub genBaseDocumentation
 {
   my $obj = shift;
-	$obj->genCss();
-	$obj->genTreeviewJs();
-	$obj->genTreeHtml();
-	$obj->genTreeJs();
-	$obj->copyGifs();
+  $obj->genCss();
+  $obj->genTreeviewJs();
+  $obj->genTreeHtml();
+  $obj->genTreeJs();
+  $obj->copyGifs();
   $obj->genIndexHtml();
-	$obj->genIndexAllHtml();
-	$obj->genAllProcessesHtml();
-	$obj->genModulesForProcess("AllModules");
-	# @todo Meter a gerar all modules ????
-	#$obj->genAllModulesFrameHtml();
-	$obj->genHtmlForeachModule();
+  $obj->genIndexAllHtml();
+  $obj->genAllProcessesHtml();
+  $obj->genModulesForProcess("AllModules");
+  # @todo Meter a gerar all modules ????
+  #$obj->genAllModulesFrameHtml();
+  $obj->genHtmlForeachModule();
 }
 
 #  ===========================================================================
@@ -689,7 +689,7 @@ sub genBaseDocumentation
 sub genCss()
 {
   my $obj = shift;
-	my $cssName = $obj->{destinationDir} . "/stylesheet.css";
+  my $cssName = $obj->{destinationDir} . "/stylesheet.css";
   open(CSS, "> $cssName") || die "Cant open $cssName";
   printf CSS qq|
 /* Fgldoc style sheet */
@@ -730,7 +730,7 @@ body { background-color: #FFFFFF }
 sub genTreeHtml
 {
   my $obj = shift;
-	my $treehtmName = $obj->{destinationDir} . "/tree.html";
+  my $treehtmName = $obj->{destinationDir} . "/tree.html";
   open(TREEHTM, "> $treehtmName") || die "Cant open $treehtmName";
   print TREEHTM qq|
 <html><head>
@@ -753,16 +753,16 @@ initializeDocument()
 sub genTreeJs
 {
   my $obj = shift;
-	my $treejsName = $obj->{destinationDir} . "/tree.js";
+  my $treejsName = $obj->{destinationDir} . "/tree.js";
   open(TREEJS, "> $treejsName") || die "Cant open $treejsName";
   my $str = $obj->{lh}->maketext("Processes");
   my $str2 = $obj->{lh}->maketext("All modules");
   printf TREEJS qq|
   foldersTree = gFld("<b>$str</b>", "", "")
   insDoc(foldersTree, 
-	  gLnk("$str2", "", "AllModules.html", "modulesFrame"))
+    gLnk("$str2", "", "AllModules.html", "modulesFrame"))
 |;
-	$obj->genJsForProcess("top","foldersTree","TOP");
+  $obj->genJsForProcess("top","foldersTree","TOP");
 }
 
 #  ===========================================================================
@@ -780,38 +780,38 @@ sub genJsForProcess
   my $lastFolder = shift;
   my $refProcs = $obj->selectDetailProcesses($parentProcess);
   my $processDisplayName;
-	# @todo : receber uma hash com disp_process.
-	my @processList = @$refProcs;
-	if ( $#processList >= 0 )
-	{
-		my $processName = $parentProcess;
-		if ( $parentProcess eq "top" )
-		{
-		  #$processName = "Processos";
-		}
-		else
-		{
+  # @todo : receber uma hash com disp_process.
+  my @processList = @$refProcs;
+  if ( $#processList >= 0 )
+  {
+    my $processName = $parentProcess;
+    if ( $parentProcess eq "top" )
+    {
+      #$processName = "Processos";
+    }
+    else
+    {
       $processDisplayName = $obj->selectProcessName($parentProcess);
-	    print TREEJS qq%
+      print TREEJS qq%
   $parentProcess = insFld($lastFolder, gFld("$processDisplayName", "", "files.html"))
 %;
-	    $lastFolder = $parentProcess;
-		}
-	}
-	else
-	{
+      $lastFolder = $parentProcess;
+    }
+  }
+  else
+  {
     $processDisplayName = $obj->selectProcessName($parentProcess);
-	  print TREEJS qq%
+    print TREEJS qq%
   insDoc($lastFolder, 
-	  gLnk("$processDisplayName", "", "$parentProcess/modules.html","modulesFrame"))
+    gLnk("$processDisplayName", "", "$parentProcess/modules.html","modulesFrame"))
 %;
-	}
-	my $i = 0;
-	while ( $i <= $#processList )
-	{
+  }
+  my $i = 0;
+  while ( $i <= $#processList )
+  {
     $obj->genJsForProcess($processList[$i],$lastFolder);
-		$i++;
-	}
+    $i++;
+  }
 }
 
 #  ===========================================================================
@@ -820,32 +820,32 @@ sub genJsForProcess
 sub copyGifs
 {
   my $obj = shift;
-	my $destinationDir = $obj->{destinationDir};
-	my $sourceDir      = FglDocumenter::FglDocLocation::getLocation() . "/img";
+  my $destinationDir = $obj->{destinationDir};
+  my $sourceDir      = FglDocumenter::FglDocLocation::getLocation() . "/img";
   system "cp $sourceDir/ftv2blank.gif        $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2doc.gif          $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2folderclosed.gif $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2folderopen.gif   $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2lastnode.gif     $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2link.gif         $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2mlastnode.gif    $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2mnode.gif        $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2node.gif         $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2plastnode.gif    $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2pnode.gif        $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
   system "cp $sourceDir/ftv2vertline.gif     $destinationDir" 
-	  || die "Cant copy file : $!";
+    || die "Cant copy file : $!";
 }
 
 #  ===========================================================================
@@ -856,7 +856,7 @@ sub copyGifs
 sub genTreeviewJs
 {
   my $obj = shift;
-	my $tvjsName = $obj->{destinationDir} . "/treeview.js";
+  my $tvjsName = $obj->{destinationDir} . "/treeview.js";
   open(TVJS, "> $tvjsName") || die "Cant open $tvjsName";
   printf TVJS qq^
 //**************************************************************** 
@@ -944,7 +944,7 @@ function propagateChangesInState(folder)
       if (folder.isLastNode) 
         folder.nodeImg.src = "ftv2mlastnode.gif" 
       else 
-	  folder.nodeImg.src = "ftv2mnode.gif" 
+    folder.nodeImg.src = "ftv2mnode.gif" 
     folder.iconImg.src = "ftv2folderopen.gif" 
     for (i=0; i<folder.nChildren; i++) 
       folder.children[i].display() 
@@ -955,7 +955,7 @@ function propagateChangesInState(folder)
       if (folder.isLastNode) 
         folder.nodeImg.src = "ftv2plastnode.gif" 
       else 
-	  folder.nodeImg.src = "ftv2pnode.gif" 
+    folder.nodeImg.src = "ftv2pnode.gif" 
     folder.iconImg.src = "ftv2folderclosed.gif" 
     for (i=0; i<folder.nChildren; i++) 
       folder.children[i].hide() 
@@ -1370,7 +1370,7 @@ selectedFolder=0
 sub genIndexHtml
 {
   my $obj = shift;
-	my $indexHtmlName = $obj->{destinationDir} . "/index.html";
+  my $indexHtmlName = $obj->{destinationDir} . "/index.html";
   open(INDEXHTML, "> $indexHtmlName") || die "Cant open $indexHtmlName";
   printf INDEXHTML qq|
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd>
@@ -1401,7 +1401,7 @@ Link to <A HREF="overview-summary.html">Non-frame version.</A></NOFRAMES>
 |;
   close (INDEXHTML);
 
-	my $overviewHtmlName = $obj->{destinationDir} . "/overview-summary.html";
+  my $overviewHtmlName = $obj->{destinationDir} . "/overview-summary.html";
   open(OVERVIEWHTML, "> $overviewHtmlName") || die "Cant open $overviewHtmlName";
   printf OVERVIEWHTML qq|
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN""http://www.w3.org/TR/REC-html40/loose.dtd>
@@ -1435,18 +1435,18 @@ sub genIndexAllHtml
 sub genAllProcessesHtml()
 {
   my $obj = shift;
-	my $allProcessesHtmlName = $obj->{destinationDir} . "/all_processes.html";
+  my $allProcessesHtmlName = $obj->{destinationDir} . "/all_processes.html";
   open(ALLPROCHTML, "> $allProcessesHtmlName") || 
-	  die "Cant open $allProcessesHtmlName $!";
-	my $str = $obj->{lh}->maketext("All modules");
-	my $str2 = $obj->{lh}->maketext("Package");
+    die "Cant open $allProcessesHtmlName $!";
+  my $str = $obj->{lh}->maketext("All modules");
+  my $str2 = $obj->{lh}->maketext("Package");
   print ALLPROCHTML qq|
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Frameset//EN""http://www.w3.org/TR/REC-html40/frameset.dtd">
 <!--NewPage-->
 <HTML>
 
   <HEAD>
-	  <!-- Generated by fgldoc on ??? TODO ???? -->
+    <!-- Generated by fgldoc on ??? TODO ???? -->
     <TITLE>All Processes</TITLE>
     <LINK REL ="stylesheet" TYPE="text/css" HREF="stylesheet.css" TITLE="Style">
   </HEAD>
@@ -1461,28 +1461,28 @@ sub genAllProcessesHtml()
 
 <TABLE BORDER="0" WIDTH="100%">
   <TR><TD NOWRAP><FONT CLASS="FrameItemFont">
-		<A HREF="AllModules.html" TARGET="modulesFrame">
-		  $str
-		</A>
-	</FONT>
+    <A HREF="AllModules.html" TARGET="modulesFrame">
+      $str
+    </A>
+  </FONT>
   <P>
 
   <FONT size="+1" CLASS="FrameHeadingFont">
-		$str2
-	</FONT>
+    $str2
+  </FONT>
 |;
 
-	my $arrayRef = $obj->{processes};
-	my @array = @$arrayRef;
-	my $process;
-	foreach $process ( @array )
-	{
+  my $arrayRef = $obj->{processes};
+  my @array = @$arrayRef;
+  my $process;
+  foreach $process ( @array )
+  {
     printf(ALLPROCHTML qq|
 <BR>
 <FONT CLASS="FrameItemFont">
 <A HREF="%s/modules.html" TARGET="modulesFrame">%s</A></FONT>
 |,
-		  $process,$process
+      $process,$process
     );
   }
 
@@ -1513,28 +1513,28 @@ sub genNavBar
 {
   my $obj = shift;
   my $locationAnchor = shift;
-	my $urlPath = shift;
-	my $dumm = shift;
-	my $overviewBgColor = "#EEEEFF";
-	my $packageBgColor  = "#EEEEFF";
-	my $moduleBgColor   = "#EEEEFF";
-	if ( $_[2] eq "OVERVIEW" )
-	{
-	  $overviewBgColor = "#FFFFFF";
-	}
-	elsif ( $_[2] eq "PACKAGE" )
-	{
-	  $packageBgColor = "#FFFFFF";
-	}
-	elsif ( $_[2] eq "MODULE" )
-	{
-	  $moduleBgColor = "#FFFFFF";
-	}
-	#my $str = $obj->{lh}->maketext("Overview");
-	#my $str2 = $obj->{lh}->maketext("Package");
+  my $urlPath = shift;
+  my $dumm = shift;
+  my $overviewBgColor = "#EEEEFF";
+  my $packageBgColor  = "#EEEEFF";
+  my $moduleBgColor   = "#EEEEFF";
+  if ( $_[2] eq "OVERVIEW" )
+  {
+    $overviewBgColor = "#FFFFFF";
+  }
+  elsif ( $_[2] eq "PACKAGE" )
+  {
+    $packageBgColor = "#FFFFFF";
+  }
+  elsif ( $_[2] eq "MODULE" )
+  {
+    $moduleBgColor = "#FFFFFF";
+  }
+  #my $str = $obj->{lh}->maketext("Overview");
+  #my $str2 = $obj->{lh}->maketext("Package");
   #my $str3 = $obj->{lh}->maketext("Module");
-	my $str = "";
-	my $str2 = "";
+  my $str = "";
+  my $str2 = "";
   my $str3 = "";
   my $navString = qq|
 <!-- ========== START OF NAVBAR ========== -->
@@ -1548,37 +1548,37 @@ sub genNavBar
     <TR ALIGN="center" VALIGN="top">
 
       <TD BGCOLOR="$overviewBgColor" CLASS="NavBarCell1Rev"> &nbsp;
-		    <FONT CLASS="NavBarFont1Rev"><B>
-				  $str
-				</B></FONT>&nbsp;</TD>
+        <FONT CLASS="NavBarFont1Rev"><B>
+          $str
+        </B></FONT>&nbsp;</TD>
   
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
-		    <FONT CLASS="$packageBgColor">
-				  $str2
-				</FONT>&nbsp;</TD>
+        <FONT CLASS="$packageBgColor">
+          $str2
+        </FONT>&nbsp;</TD>
   
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
-		    <FONT CLASS="$moduleBgColor">
-				  $str3
-				</FONT>&nbsp;</TD>
+        <FONT CLASS="$moduleBgColor">
+          $str3
+        </FONT>&nbsp;</TD>
   
-		<!-- Por enquanto nenhum destes se usa
+    <!-- Por enquanto nenhum destes se usa
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
-		    <A HREF="overview-tree.html">
-			  <FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
-  
-      <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
-		    <A HREF="deprecated-list.html">
-				  <FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
+        <A HREF="overview-tree.html">
+        <FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
-		    <A HREF="index-all.html"><FONT CLASS="NavBarFont1">
-			    <B>Index</B></FONT></A>&nbsp;</TD>
+        <A HREF="deprecated-list.html">
+          <FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
-		    <A HREF="help-doc.html"><FONT CLASS="NavBarFont1">
-			    <B>Help</B></FONT></A>&nbsp;</TD>
-				-->
+        <A HREF="index-all.html"><FONT CLASS="NavBarFont1">
+          <B>Index</B></FONT></A>&nbsp;</TD>
+  
+      <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
+        <A HREF="help-doc.html"><FONT CLASS="NavBarFont1">
+          <B>Help</B></FONT></A>&nbsp;</TD>
+        -->
     </TR>
   </TABLE>
 
@@ -1589,20 +1589,20 @@ sub genNavBar
 </TD>
 </TR>
 
-		<!-- Por enquanto nenhum destes se usa
+    <!-- Por enquanto nenhum destes se usa
   <TR>
     <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
       &nbsp;PREV&nbsp;
       &nbsp;NEXT</FONT></TD>
   
     <TD BGCOLOR="white" CLASS="NavBarCell2">
-	    <FONT SIZE="-2">
+      <FONT SIZE="-2">
         <A HREF="index.html" TARGET="_top"><B>FRAMES</B></A>  &nbsp;&nbsp;
-		    <A HREF="overview-summary.html" TARGET="_top"><B>NO FRAMES</B></A>
-		  </FONT>
+        <A HREF="overview-summary.html" TARGET="_top"><B>NO FRAMES</B></A>
+      </FONT>
     </TD>
   </TR>
-	-->
+  -->
 </TABLE>
 <!-- =========== END OF NAVBAR =========== -->
 |;
@@ -1618,10 +1618,10 @@ sub getPackageRef
 {
   my $obj = shift;
   my $dotDot = $_[0];
-	$dotDot =~ s|/.*/|/../|g;
-	$dotDot =~ s|^.[^/]/|../|g;
-	$dotDot =~ s|/.[^/]$|/..|g;
-	return $dotDot;
+  $dotDot =~ s|/.*/|/../|g;
+  $dotDot =~ s|^.[^/]/|../|g;
+  $dotDot =~ s|/.[^/]$|/..|g;
+  return $dotDot;
 }
 
 #  ===========================================================================
@@ -1630,34 +1630,34 @@ sub getPackageRef
 sub selectAllModules
 {
   my $obj = shift;
-	my $module = shift;
+  my $module = shift;
 
   my $sth = $obj->{dbh}->prepare(q% 
-	  SELECT module_name FROM p4gl_module 
+    SELECT module_name FROM p4gl_module 
   %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Selecção de modulo",
-		  "Can't prepare select from p4gl_module\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Selecção de modulo",
+      "Can't prepare select from p4gl_module\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de modulo",
-	    "Can't select from p4gl_module\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de modulo",
+      "Can't select from p4gl_module\n$DBI::errstr"
     );
   my(@row);
   my(@moduleList);
   while (@row = $sth->fetchrow_array())
   {
-		my $module = $row[0];
-	  $module =~ s/^ *//g; $module =~ s/ *$//g;
-		push(@moduleList,$module);
+    my $module = $row[0];
+    $module =~ s/^ *//g; $module =~ s/ *$//g;
+    push(@moduleList,$module);
   }
   undef $sth;
-	return \@moduleList;
+  return \@moduleList;
 }
 
 #  ===========================================================================
@@ -1666,13 +1666,13 @@ sub selectAllModules
 sub genHtmlForeachModule
 {
   my $obj = shift;
-	my $modListRef = $obj->selectAllModules();
-	my @moduleList = @$modListRef;
-	my $module;
-	foreach $module ( @moduleList )
-	{
-	  $obj->genHtmlForModule($module);
-	}
+  my $modListRef = $obj->selectAllModules();
+  my @moduleList = @$modListRef;
+  my $module;
+  foreach $module ( @moduleList )
+  {
+    $obj->genHtmlForModule($module);
+  }
 }
 
 #  ===========================================================================
@@ -1681,44 +1681,45 @@ sub genHtmlForeachModule
 sub selectModuleInformation
 {
   my $obj = shift;
-	my $module = shift;
+  my $module = shift;
 
-	my $str = qq%
-	  SELECT module_name,comments 
+  my $sth = $obj->{dbh}->prepare(qq% 
+    SELECT module_name,author,revision,deprecated,since,comments 
 		FROM p4gl_module 
 		WHERE module_name='$module'
-  %;
-  my $sth = $obj->{dbh}->prepare(qq% 
-	  SELECT module_name,comments FROM p4gl_module WHERE module_name='$module'
   %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de modulo",
-		  "Can't prepare select from p4gl_module\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de modulo",
+      "Can't prepare select from p4gl_module\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de modulo",
-	    "Can't select from p4gl_module\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de modulo",
+      "Can't select from p4gl_module\n$DBI::errstr"
     );
   my(@row);
-	my %moduleInformation;
+  my %moduleInformation;
   if (@row = $sth->fetchrow_array())
   {
-		%moduleInformation = (
-		  'moduleName' => $row[0],
-		  'comments'   => $row[1]
+    %moduleInformation = (
+      'moduleName' => $row[0],
+      'author' => $row[1]
+      'revision' => $row[2]
+      'deprecated' => $row[3]
+      'since' => $row[4]
+      'comments' => $row[5]
     );
   }
   undef $sth;
-	$obj->{moduleInformation} = \%moduleInformation;
+  $obj->{moduleInformation} = \%moduleInformation;
 
-	$obj->selectModuleFunctions();
-	$obj->selectModuleTableUsage();
-	$obj->selectModuleVariables();
+  $obj->selectModuleFunctions();
+  $obj->selectModuleTableUsage();
+  $obj->selectModuleVariables();
 }
 
 #  ===========================================================================
@@ -1727,40 +1728,40 @@ sub selectModuleInformation
 sub selectModuleFunctions
 {
   my $obj = shift;
-	my $modRef = $obj->{moduleInformation};
-	my $module = $modRef->{moduleName};
+  my $modRef = $obj->{moduleInformation};
+  my $module = $modRef->{moduleName};
   my $sth = $obj->{dbh}->prepare(qq% 
-	  SELECT function_name, function_type, comments 
-		FROM p4gl_function
-		WHERE module_name = '$module'
-	%);
+    SELECT function_name, function_type, comments 
+    FROM p4gl_function
+    WHERE module_name = '$module'
+  %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de modulo",
-		  "Can't prepare select from p4gl_module\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de modulo",
+      "Can't prepare select from p4gl_module\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de modulo",
-	    "Can't select from p4gl_module\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de modulo",
+      "Can't select from p4gl_module\n$DBI::errstr"
     );
   my(@row);
   my(@functionList);
   while (@row = $sth->fetchrow_array())
   {
-		my %functionInformation = (
-		  'function_name'    => $row[0],
-		  'function_type'    => $row[1],
-		  'comments'         => $row[2]
-		);
-		push(@functionList,\%functionInformation);
+    my %functionInformation = (
+      'function_name'    => $row[0],
+      'function_type'    => $row[1],
+      'comments'         => $row[2]
+    );
+    push(@functionList,\%functionInformation);
   }
 
-	$modRef->{functionList} = \@functionList;
-	$obj->{moduleInformation} = $modRef;
+  $modRef->{functionList} = \@functionList;
+  $obj->{moduleInformation} = $modRef;
   undef $sth;
 }
 
@@ -1770,36 +1771,36 @@ sub selectModuleFunctions
 sub selectModuleTableUsage
 {
   my $obj = shift;
-	my $modRef = $obj->{moduleInformation};
-	my $module = $modRef->{moduleName};
+  my $modRef = $obj->{moduleInformation};
+  my $module = $modRef->{moduleName};
   my $sth = $obj->{dbh}->prepare(qq% 
-	  SELECT unique table_name
-		FROM p4gl_table_usage
-		WHERE module_name = '$module' 
-	%);
+    SELECT unique table_name
+    FROM p4gl_table_usage
+    WHERE module_name = '$module' 
+  %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de modulo",
-		  "Can't prepare select from p4gl_table_usage\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de modulo",
+      "Can't prepare select from p4gl_table_usage\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de tabela",
-	    "Can't select from p4gl_table_usage\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de tabela",
+      "Can't select from p4gl_table_usage\n$DBI::errstr"
     );
   my(@row);
   my(@tableUsageList);
   while (@row = $sth->fetchrow_array())
   {
-		my $tableName = $row[0];
-		push(@tableUsageList,$tableName);
+    my $tableName = $row[0];
+    push(@tableUsageList,$tableName);
   }
 
-	$modRef->{tableUsageList} = \@tableUsageList;
-	$obj->{moduleInformation} = $modRef;
+  $modRef->{tableUsageList} = \@tableUsageList;
+  $obj->{moduleInformation} = $modRef;
   undef $sth;
 }
 
@@ -1818,18 +1819,18 @@ sub selectModuleVariables
 sub genHtmlForModule
 {
   my $obj = shift;
-	my $module = shift;
-	$obj->selectModuleInformation($module);
-	my $moduleHtmlName = $obj->{destinationDir} . "/${module}.html";
+  my $module = shift;
+  $obj->selectModuleInformation($module);
+  my $moduleHtmlName = $obj->{destinationDir} . "/${module}.html";
   open(MODULEHTML, "> $moduleHtmlName") || 
-	  die "Cant open $moduleHtmlName : $!";
-	$obj->printModuleHeader($module);
-	$obj->printFieldSummary($module);
-	$obj->printMethodsSummary($module);
-	$obj->printTableUsageSummary($module);
-	$obj->printMethodsDetail($module);
-	$obj->printFieldDetail($module);
-	$obj->printDocTrailer($module);
+    die "Cant open $moduleHtmlName : $!";
+  $obj->printModuleHeader($module);
+  $obj->printFieldSummary($module);
+  $obj->printMethodsSummary($module);
+  $obj->printTableUsageSummary($module);
+  $obj->printMethodsDetail($module);
+  $obj->printFieldDetail($module);
+  $obj->printDocTrailer($module);
   close(MODULEHTML);
 }
 
@@ -1849,7 +1850,7 @@ http://www.w3.org/tr/rec-html40/frameset.dtd'>
   <!-- Generated by fgldoc on \@todo Meter date -->
   <TITLE> Documentation for 4gl Module: $module </TITLE>
   <LINK REL ='stylesheet' TYPE='text/css' 
-	HREF='stylesheet.css' TITLE='Style'>
+  HREF='stylesheet.css' TITLE='Style'>
 </HEAD>
 
 <BODY BGCOLOR='white'>
@@ -1865,26 +1866,40 @@ sub printModuleHeader
   my $obj = shift;
   my $module = shift;
   $obj->printHeader($module);
-	my $navBar = $obj->genNavBar("navbar_top","","OVERVIEW");
+  my $navBar = $obj->genNavBar("navbar_top","","OVERVIEW");
   print MODULEHTML "$navBar";
-	$obj->printHeaderModuleData($module);
-}
-
-#  ===========================================================================
-#  Gera para o ficheiro a informação contida no header relativo ao módulo
-#  ===========================================================================
-sub printHeaderModuleData
-{
-  my $obj = shift;
-  my $module = shift;
   print MODULEHTML qq|
   <!-- ======== START OF MODULE DATA ======== -->
   <HR>
   <H2>Module  $module</H2>
   <P> $obj->{moduleInformation}->{comments}
-  <HR>
-  <P>
 |;
+
+	my $author = obj->{moduleInformation}->{author};
+  $author =~ s/^ *//g;
+	if ( ! $author eq "" ) {
+    print MODULEHTML "<BR><B>Author</B>: $author\n";
+	}
+
+	my $revision = obj->{moduleInformation}->{revision};
+  $revision =~ s/^ *//g;
+	if ( ! $revision eq "" ) {
+    print MODULEHTML "<BR><B>Revision</B>: $revision\n";
+	}
+
+	my $since = obj->{moduleInformation}->{since};
+  $since =~ s/^ *//g;
+	if ( ! $since eq "" ) {
+    print MODULEHTML "<BR><B>Since</B>: $since\n";
+	}
+
+	my $deprecated = obj->{moduleInformation}->{deprecated};
+  $deprecated =~ s/^ *//g;
+	if ( ! $deprecated eq "Y" ) {
+    print MODULEHTML "<BR><B>Warning</B>: This module is deprecated\n";
+	}
+
+  print MODULEHTML "<HR><P>\n";
 }
 
 
@@ -1907,19 +1922,19 @@ sub printMethodsSummary
 {
   my $obj = shift;
 
-	# Desreferenciar / desempacotar informaçao
-	my $modRef = $obj->{moduleInformation};
-	my %moduleInformation = %$modRef;
-	my $funcRef = $moduleInformation{functionList};
-	my @functionList = @$funcRef;
+  # Desreferenciar / desempacotar informaçao
+  my $modRef = $obj->{moduleInformation};
+  my %moduleInformation = %$modRef;
+  my $funcRef = $moduleInformation{functionList};
+  my @functionList = @$funcRef;
 
   $obj->printMethodSummaryHeader();
-	my $i;
+  my $i;
   for ( $i = 0 ; $i <= $#functionList ; $i++ )
-	{
-		my $funcInfRef = $functionList[$i];
+  {
+    my $funcInfRef = $functionList[$i];
     $obj->printMethodSummaryBody($funcInfRef);
-	}
+  }
   print MODULEHTML "</TABLE>\n";
 }
 
@@ -1929,7 +1944,7 @@ sub printMethodsSummary
 sub printMethodSummaryHeader
 {
   my $obj = shift;
-	my $str = $obj->{lh}->maketext("Function Summary");
+  my $str = $obj->{lh}->maketext("Function Summary");
 
   print MODULEHTML qq|
   &nbsp;
@@ -1939,7 +1954,7 @@ sub printMethodSummaryHeader
   <TABLE BORDER='1' CELLPADDING='3' CELLSPACING='0' WIDTH='100%'>
     <TR BGCOLOR='#CCCCFF' CLASS='TableHeadingColor'>
       <TD COLSPAN=2><FONT SIZE='+2'><B>$str</B></FONT>
-			</TD>
+      </TD>
     </TR>
 |;
 }
@@ -1951,18 +1966,18 @@ sub printMethodSummaryBody
 {
   my $obj = shift;
   my $funcInfRef = shift;
-	my %functionInformation = %$funcInfRef;
+  my %functionInformation = %$funcInfRef;
 
-	my $functionName = $functionInformation{function_name};
-	my $comments     = $functionInformation{comments};
+  my $functionName = $functionInformation{function_name};
+  my $comments     = $functionInformation{comments};
 
   print MODULEHTML qq|
   <TR BGCOLOR='white' CLASS='TableRowColor'>
-		<TD><CODE><B>
-	    <A HREF='#$functionName()'>$functionName()</A></B></CODE>
+    <TD><CODE><B>
+      <A HREF='#$functionName()'>$functionName()</A></B></CODE>
       <BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	    $comments
-		</TD>
+      $comments
+    </TD>
   </TR>
 |;
 }
@@ -1974,19 +1989,19 @@ sub printTableUsageSummary
 {
   my $obj = shift;
 
-	# Desreferenciar / desempacotar informaçao
-	my $modRef = $obj->{moduleInformation};
-	my %moduleInformation = %$modRef;
-	my $tableRef = $moduleInformation{tableUsageList};
-	my @tableUsageList = @$tableRef;
+  # Desreferenciar / desempacotar informaçao
+  my $modRef = $obj->{moduleInformation};
+  my %moduleInformation = %$modRef;
+  my $tableRef = $moduleInformation{tableUsageList};
+  my @tableUsageList = @$tableRef;
 
   $obj->printTableUsageSummaryHeader();
-	my $i;
+  my $i;
   for ( $i = 0 ; $i <= $#tableUsageList ; $i++ )
-	{
-		my $tableName = $tableUsageList[$i];
+  {
+    my $tableName = $tableUsageList[$i];
     $obj->printTableUsageSummaryBody($tableName);
-	}
+  }
   print MODULEHTML "</TABLE>\n";
 }
 
@@ -1996,7 +2011,7 @@ sub printTableUsageSummary
 sub printTableUsageSummaryHeader
 {
   my $obj = shift;
-	my $str = $obj->{lh}->maketext("Table Usage Summary");
+  my $str = $obj->{lh}->maketext("Table Usage Summary");
 
   print MODULEHTML qq|
   &nbsp;
@@ -2006,7 +2021,7 @@ sub printTableUsageSummaryHeader
   <TABLE BORDER='1' CELLPADDING='3' CELLSPACING='0' WIDTH='100%'>
     <TR BGCOLOR='#CCCCFF' CLASS='TableHeadingColor'>
       <TD COLSPAN=2><FONT SIZE='+2'><B>$str</B></FONT>
-			</TD>
+      </TD>
     </TR>
 |;
 }
@@ -2021,8 +2036,8 @@ sub printTableUsageSummaryBody
 
   print MODULEHTML qq|
   <TR BGCOLOR='white' CLASS='TableRowColor'>
-		<TD><CODE><B>$tableName</B></CODE>
-		</TD>
+    <TD><CODE><B>$tableName</B></CODE>
+    </TD>
   </TR>
 |;
 }
@@ -2034,21 +2049,21 @@ sub printTableUsageSummaryBody
 sub printMethodsDetail
 {
   my $obj = shift;
-	my $moduleName = shift;
+  my $moduleName = shift;
 
-	# Desreferenciar / desempacotar informaçao
-	my $modRef = $obj->{moduleInformation};
-	my %moduleInformation = %$modRef;
-	my $funcRef = $moduleInformation{functionList};
-	my @functionList = @$funcRef;
+  # Desreferenciar / desempacotar informaçao
+  my $modRef = $obj->{moduleInformation};
+  my %moduleInformation = %$modRef;
+  my $funcRef = $moduleInformation{functionList};
+  my @functionList = @$funcRef;
 
   $obj->printMethodDetailHeader();
-	my $i;
+  my $i;
   for ( $i = 0 ; $i <= $#functionList ; $i++ )
-	{
-		my $funcInfRef = $functionList[$i];
+  {
+    my $funcInfRef = $functionList[$i];
     $obj->printMethodDetailBody($moduleName,$funcInfRef);
-	}
+  }
   print MODULEHTML "<!-- ========= END OF CLASS DATA ========= --> <HR>\n";
 }
 
@@ -2058,7 +2073,7 @@ sub printMethodsDetail
 sub printMethodDetailHeader
 {
   my $obj = shift;
-	my $str = $obj->{lh}->maketext("Function Detail");
+  my $str = $obj->{lh}->maketext("Function Detail");
   print MODULEHTML qq|
   <!-- ============ METHOD DETAIL ========== -->
   <HR>
@@ -2067,8 +2082,8 @@ sub printMethodDetailHeader
   <TR BGCOLOR='#CCCCFF' CLASS='TableHeadingColor'>
   <TD COLSPAN=1><FONT SIZE='+2'>
   <B>
-	  $str
-	</B></FONT></TD>
+    $str
+  </B></FONT></TD>
   </TR>
   </TABLE>
 |;
@@ -2077,29 +2092,30 @@ sub printMethodDetailHeader
 
 #  ===========================================================================
 #  Preenche os dados relativos ao detalhe de cada método 
+#  @todo : Print deprecated, author, since, forms, tables.
 #  @param moduleName The name of the moduke being documented.
 #  @param idxFunction Indice da função na tabela de simbolos
 #  ===========================================================================
 sub printMethodDetailBody
 {
   my $obj = shift;
-	my $moduleName = shift;
+  my $moduleName = shift;
   my $funcInfRef = shift;
-	my %functionInformation = %$funcInfRef;
+  my %functionInformation = %$funcInfRef;
 
-	my $functionName = $functionInformation{function_name};
-	my $comments     = $functionInformation{comments};
+  my $functionName = $functionInformation{function_name};
+  my $comments     = $functionInformation{comments};
 
   print MODULEHTML qq|
-	<HR>
+  <HR>
   <A NAME='$functionName()'><!-- --></A><H3>$functionName</H3>
 |;
-	$obj->printFunctionPrototype($moduleName,$functionName);
+  $obj->printFunctionPrototype($moduleName,$functionName);
   print MODULEHTML "<DL><DD>$comments</DD>\n";
 
-	$obj->printFunctionParameters($moduleName,$functionName);
-	$obj->printFunctionReturns($moduleName,$functionName);
-	$obj->printFunctionTodos($moduleName,$functionName);
+  $obj->printFunctionParameters($moduleName,$functionName);
+  $obj->printFunctionReturns($moduleName,$functionName);
+  $obj->printFunctionTodos($moduleName,$functionName);
 
   print MODULEHTML "</DL>\n";
 }
@@ -2110,75 +2126,75 @@ sub printMethodDetailBody
 sub printFunctionPrototype
 {
   my $obj = shift;
-	my $moduleName = shift;
-	my $functionName = shift;
-	$functionName =~ s/^ *//g; $functionName =~ s/ *$//g;
+  my $moduleName = shift;
+  my $functionName = shift;
+  $functionName =~ s/^ *//g; $functionName =~ s/ *$//g;
 
-	print MODULEHTML "<PRE>\n";
+  print MODULEHTML "<PRE>\n";
 
   my $sth = $obj->{dbh}->prepare(qq% 
-	  SELECT function_type FROM p4gl_function 
-		  WHERE module_name='$moduleName' and function_name = '$functionName'
+    SELECT function_type FROM p4gl_function 
+      WHERE module_name='$moduleName' and function_name = '$functionName'
   %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de parametro de função",
-		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de parametro de função",
+      "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de parametro de função",
-	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de parametro de função",
+      "Can't select from p4gl_fun_parameter\n$DBI::errstr"
     );
-	my $haveParameters = 0;
+  my $haveParameters = 0;
   my(@row);
-	my %moduleInformation;
+  my %moduleInformation;
   if (@row = $sth->fetchrow_array())
-	{
-	  my $functionType = $row[0];
-		if ( $functionType eq "R" ) {
-	    print MODULEHTML "REPORT ";
-		}
-		else {
-	    print MODULEHTML "FUNCTION ";
-		}
-	}
-	print MODULEHTML "$functionName(";
+  {
+    my $functionType = $row[0];
+    if ( $functionType eq "R" ) {
+      print MODULEHTML "REPORT ";
+    }
+    else {
+      print MODULEHTML "FUNCTION ";
+    }
+  }
+  print MODULEHTML "$functionName(";
 
   $sth = $obj->{dbh}->prepare(qq% 
-	  SELECT var_name FROM p4gl_fun_parameter 
-		  WHERE module_name='$moduleName' and function_name = '$functionName'
+    SELECT var_name FROM p4gl_fun_parameter 
+      WHERE module_name='$moduleName' and function_name = '$functionName'
   %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de parametro de função",
-		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de parametro de função",
+      "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de parametro de função",
-	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de parametro de função",
+      "Can't select from p4gl_fun_parameter\n$DBI::errstr"
     );
-	my $haveParameters = 0;
+  my $haveParameters = 0;
   my(@row);
-	my %moduleInformation;
-	my $i = 0;
+  my %moduleInformation;
+  my $i = 0;
   while (@row = $sth->fetchrow_array())
-	{
-		if ( $i > 0 ) { print MODULEHTML ","; }
-	  my $varName = $row[0];
-	  $varName =~ s/^ *//g; $varName =~ s/ *$//g;
-		print MODULEHTML "$varName";
-		$i++;
-	}
-	print MODULEHTML ")";
-	print MODULEHTML "</PRE>\n";
+  {
+    if ( $i > 0 ) { print MODULEHTML ","; }
+    my $varName = $row[0];
+    $varName =~ s/^ *//g; $varName =~ s/ *$//g;
+    print MODULEHTML "$varName";
+    $i++;
+  }
+  print MODULEHTML ")";
+  print MODULEHTML "</PRE>\n";
 }
 
 #  ===========================================================================
@@ -2189,56 +2205,56 @@ sub printFunctionPrototype
 sub printFunctionParameters
 {
   my $obj = shift;
-	my $moduleName = shift;
-	my $functionName = shift;
-	my $varName;
-	my $dataType;
-	my $comments;
+  my $moduleName = shift;
+  my $functionName = shift;
+  my $varName;
+  my $dataType;
+  my $comments;
 
   my $sth = $obj->{dbh}->prepare(qq% 
-	  SELECT var_name, data_type, comments FROM p4gl_fun_parameter 
-		  WHERE module_name='$moduleName' and function_name = '$functionName'
+    SELECT var_name, data_type, comments FROM p4gl_fun_parameter 
+      WHERE module_name='$moduleName' and function_name = '$functionName'
   %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de parametro de função",
-		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de parametro de função",
+      "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de parametro de função",
-	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de parametro de função",
+      "Can't select from p4gl_fun_parameter\n$DBI::errstr"
     );
-	my $haveParameters = 0;
+  my $haveParameters = 0;
   my(@row);
-	my %moduleInformation;
+  my %moduleInformation;
   while (@row = $sth->fetchrow_array())
   {
-		if ( !$haveParameters )
-		{
-			$haveParameters = 1;
+    if ( !$haveParameters )
+    {
+      $haveParameters = 1;
       print MODULEHTML qq|
-	    <BR><DD>
-	    <DL>
-	    <DT><B>Parameters:</B>
+      <BR><DD>
+      <DL>
+      <DT><B>Parameters:</B>
       |;
-		}
-	  $varName = $row[0];
-	  $dataType = $row[1];
-	  $comments = $row[2];
-	  $obj->printParameter($varName,$dataType,$comments);
+    }
+    $varName = $row[0];
+    $dataType = $row[1];
+    $comments = $row[2];
+    $obj->printParameter($varName,$dataType,$comments);
   }
   undef $sth;
 
   if ( $haveParameters )
-	{
+  {
     print MODULEHTML qq|
-	  </DT></DL></DD>
+    </DT></DL></DD>
   |;
-	}
+  }
 }
 
 #  ===========================================================================
@@ -2250,11 +2266,11 @@ sub printFunctionParameters
 sub printParameter
 {
   my $obj = shift;
-	my $varName = shift;
-	my $dataType = shift;
-	my $comments = shift;
+  my $varName = shift;
+  my $dataType = shift;
+  my $comments = shift;
   print MODULEHTML qq|
-	  <DD><CODE>$varName  $dataType</CODE> $comments
+    <DD><CODE>$varName  $dataType</CODE> $comments
 |;
 }
 
@@ -2266,54 +2282,54 @@ sub printParameter
 sub printFunctionReturns
 {
   my $obj = shift;
-	my $moduleName = shift;
-	my $functionName = shift;
-	my $varName;
-	my $dataType;
-	my $comments;
+  my $moduleName = shift;
+  my $functionName = shift;
+  my $varName;
+  my $dataType;
+  my $comments;
 
   my $sth = $obj->{dbh}->prepare(qq% 
-	  SELECT var_name, data_type, comments FROM p4gl_fun_return 
-		  WHERE module_name='$moduleName' and function_name = '$functionName'
+    SELECT var_name, data_type, comments FROM p4gl_fun_return 
+      WHERE module_name='$moduleName' and function_name = '$functionName'
   %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de parametro de função",
-		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de parametro de função",
+      "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de parametro de função",
-	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de parametro de função",
+      "Can't select from p4gl_fun_parameter\n$DBI::errstr"
     );
-	my $haveReturn = 0;
+  my $haveReturn = 0;
   my(@row);
-	my %moduleInformation;
+  my %moduleInformation;
   while (@row = $sth->fetchrow_array())
   {
-		if ( !$haveReturn )
-		{
-			$haveReturn = 1;
+    if ( !$haveReturn )
+    {
+      $haveReturn = 1;
       print MODULEHTML qq|
-	    <BR><DD>
-	    <DL>
-	    <DT><B>Return Values:</B>
+      <BR><DD>
+      <DL>
+      <DT><B>Return Values:</B>
       |;
-		}
-	  $varName = $row[0];
-	  $dataType = $row[0];
-	  $comments = $row[2];
-	  $obj->printParameter($varName,$dataType,$comments);
+    }
+    $varName = $row[0];
+    $dataType = $row[0];
+    $comments = $row[2];
+    $obj->printParameter($varName,$dataType,$comments);
   }
   undef $sth;
 
-	if ( $haveReturn )
-	{
+  if ( $haveReturn )
+  {
     print MODULEHTML qq|
-	  </DT></DL></DD>
+    </DT></DL></DD>
   |;
   }
 }
@@ -2327,52 +2343,52 @@ sub printFunctionReturns
 sub printFunctionTodos
 {
   my $obj = shift;
-	my $moduleName = shift;
-	my $functionName = shift;
-	my $comments;
+  my $moduleName = shift;
+  my $functionName = shift;
+  my $comments;
 
   my $sth = $obj->{dbh}->prepare(qq% 
-	  SELECT comments FROM p4gl_fun_todo 
-		  WHERE module_name='$moduleName' and function_name = '$functionName'
+    SELECT comments FROM p4gl_fun_todo 
+      WHERE module_name='$moduleName' and function_name = '$functionName'
   %);
   if ( ! $sth )
-	{
-		$obj->{err}->error(
-		  "Seleção de parametro de função",
-		  "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
+  {
+    $obj->{err}->error(
+      "Seleção de parametro de função",
+      "Can't prepare select from p4gl_fun_parameter\n$DBI::errstr"
     );
-		return;
-	}
+    return;
+  }
   $sth->execute() || 
-		$obj->{err}->error(
-		  "Selecção de parametro de função",
-	    "Can't select from p4gl_fun_parameter\n$DBI::errstr"
+    $obj->{err}->error(
+      "Selecção de parametro de função",
+      "Can't select from p4gl_fun_parameter\n$DBI::errstr"
     );
-	my $haveTodo = 0;
+  my $haveTodo = 0;
   my(@row);
-	my %moduleInformation;
+  my %moduleInformation;
   while (@row = $sth->fetchrow_array())
   {
-		if ( !$haveTodo )
-		{
-			$haveTodo = 1;
+    if ( !$haveTodo )
+    {
+      $haveTodo = 1;
       print MODULEHTML qq|
-	    <BR><DD>
-	    <DL>
-	    <DT><B>Todo task list:</B>
+      <BR><DD>
+      <DL>
+      <DT><B>Todo task list:</B>
       |;
-		}
-	  $comments = $row[0];
+    }
+    $comments = $row[0];
     print MODULEHTML "<DD><CODE>$comments</CODE>\n";
   }
   undef $sth;
 
   if ( $haveTodo )
-	{
+  {
     print MODULEHTML qq|
-	  </DT></DL></DD>
+    </DT></DL></DD>
   |;
-	}
+  }
 }
 
 #  ===========================================================================
@@ -2391,7 +2407,7 @@ sub printFieldDetail
 sub printDocTrailer
 {
   my $obj = shift;
-	my $navBar = $obj->genNavBar("navbar_bottom","","OVERVIEW");
+  my $navBar = $obj->genNavBar("navbar_bottom","","OVERVIEW");
   print MODULEHTML qq|$navBar
   <HR>
   </BODY>
@@ -2405,7 +2421,7 @@ sub printDocTrailer
 sub initL10N
 {
   my $obj = shift;
-	$obj->{"modulesStr"} = $obj->{lh}->maketext("Modules");
+  $obj->{"modulesStr"} = $obj->{lh}->maketext("Modules");
 }
 
 #  ===========================================================================
@@ -2415,13 +2431,13 @@ sub initL10N
 sub export
 {
   my $obj = shift;
-	$obj->selectPackages();
-	$obj->selectProcesses();
-	$obj->{originalDir} = getcwd();
-	$obj->createDirTree();
-	$obj->initL10N();
+  $obj->selectPackages();
+  $obj->selectProcesses();
+  $obj->{originalDir} = getcwd();
+  $obj->createDirTree();
+  $obj->initL10N();
   $obj->genHtml();
-	chdir($obj->{originalDir}) || die "Can go again to original directory";
+  chdir($obj->{originalDir}) || die "Can go again to original directory";
 }
 
 return 1;

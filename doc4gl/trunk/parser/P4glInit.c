@@ -339,7 +339,6 @@ void initP4glPhaseOne(void)
   P4glCb.package           = strdup(".");
   P4glCb.insertProcess     = 1;
   initDatabase();
-  initCommentStateMachine();
 
   /* Variaveis temporarias para passagem de valores entre regras */
   /* Lixo para remover quando se implementar o $$ na maioria das regras */
