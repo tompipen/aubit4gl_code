@@ -4,15 +4,22 @@
 
 <%@ page import="pt.moredata.fgldocumenter.browser.P4glConnection" %>
 
+  <!-- Values starting with DOC4GL_ will get replaced automatically by make file install target -->
+<!--
+org.apache.jasper.JasperException: Cannot find any information on 
+property 'connectionType' in a bean of type 'pt.moredata.fgldocumenter.browser.P4glConnection'
+-->
+
+
 <jsp:useBean id="implicitDS" scope="session" class="pt.moredata.fgldocumenter.browser.P4glConnection">
-  <jsp:setProperty name="implicitDS" property="connectionType" value="jdbc"/>
-  <jsp:setProperty name="implicitDS" property="sgbdUrl"        value="informix-sqli"/>
-  <jsp:setProperty name="implicitDS" property="hostName" value="localhost"/>
-  <jsp:setProperty name="implicitDS" property="service"  value="1530"/>
-  <jsp:setProperty name="implicitDS" property="dbName"   value="p4gl_repository"/>
-  <jsp:setProperty name="implicitDS" property="server"  value="INFORMIXSERVER=unstable"/>
-  <jsp:setProperty name="implicitDS" property="userName" value="sergio"/>
-  <jsp:setProperty name="implicitDS" property="password" value="jfola45"/>	
+  <jsp:setProperty name="implicitDS" property="connectionType" 	value="DOC4GL_CONNECTIONTYPE"/>
+  <jsp:setProperty name="implicitDS" property="sgbdUrl"        	value="DOC4GL_SGDBURL"/>
+  <jsp:setProperty name="implicitDS" property="hostName"		value="DOC4GL_HOSTNAME"/>
+  <jsp:setProperty name="implicitDS" property="service"  		value="DOC4GL_SERVICE"/>
+  <jsp:setProperty name="implicitDS" property="dbName"   		value="DOC4GL_DBNAME"/>
+  <jsp:setProperty name="implicitDS" property="server"  		value="DOC4GL_SERVER"/>
+  <jsp:setProperty name="implicitDS" property="userName" 		value="DOC4GL_USERNAME"/>
+  <jsp:setProperty name="implicitDS" property="password" 		value="DOC4GL_PASSWORD"/>
 	<% implicitDS.connect(); %>
 </jsp:useBean>
 

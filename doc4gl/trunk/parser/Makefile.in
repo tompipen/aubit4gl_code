@@ -4,9 +4,7 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Date: 2003-01-12 23:51:49 $
-# $Author: afalout $
-# $Id: Makefile.in,v 1.4 2003-01-12 23:51:49 afalout Exp $
+# $Id: Makefile.in,v 1.5 2003-01-14 07:28:58 afalout Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
 #
@@ -20,6 +18,11 @@ include ../FgldocDefs.mk
 #  Compilation of all programs
 #  ============================================================================
 all: p4gl p4glpp
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl parser successfully compiled.                   |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 .PHONY:install clean deinstall tags
 
@@ -38,12 +41,12 @@ p4gl : $(P4GLOBJ) m_p4gl.o
 # Compilation of esql/c API for inserting in the repository
 p4gl_ins_rep.o: p4gl_ins_rep.ec
 	$(ESQL) $(CFLAGS) -c p4gl_ins_rep.ec $(CFLAGS)
-	rm p4gl_ins_rep.c
+	${RM} p4gl_ins_rep.c
 
 # TODO - Fazer regra genérica
 # Compilation of esql/c API for inserting in the repository
 InsertP4glRep.o: InsertP4glRep.ec
-	$(ESQL) $(CFLAGS) -c InsertP4glRep.ec 
+	$(ESQL) $(CFLAGS) -c InsertP4glRep.ec
 
 #  ============================================================================
 #  Geração do lexer para os comentários
@@ -58,14 +61,14 @@ CommentLexer.o: CommentLexer.l
 #  Sera que o GNU make mudou as regras ?
 #  ==========================================================================
 p4gl_lex.o : p4gl_lex.l m_p4gl.c
-	flex -t p4gl_lex.l > p4gl_lex.c
+	${LEX} -t p4gl_lex.l > p4gl_lex.c
 	$(CC) -c p4gl_lex.c
-	rm p4gl_lex.c
+	${RM} p4gl_lex.c
 
 p4pp_lex.o : p4pp_lex.l m_p4glpp.c
-	flex -t p4pp_lex.l > p4pp_lex.c
+	${LEX} -t p4pp_lex.l > p4pp_lex.c
 	$(CC) -c p4pp_lex.c
-	rm p4pp_lex.c
+	${RM} p4pp_lex.c
 
 #  ==========================================================================
 #  4gl Pre-Processor
@@ -81,30 +84,41 @@ p4glpp: $(P4GLPPOBJ)
 #  P4gl as library. Done for unit testing.
 #  ==========================================================================
 p4gl.a : $(P4GLOBJ) p4glpp
-	ar rv p4gl.a $(P4GLOBJ) 
+	ar rv p4gl.a $(P4GLOBJ)
 
 #  ==========================================================================
 #  Generate tag(s) file
 #  ==========================================================================
-tags: 
+tags:
 	@-rm tags
 	touch *c
 	ctags *.c
 
 #  ==========================================================================
-#  Install the software 
+#  Install the software
 #  ==========================================================================
 install:
-	cp p4gl p4glpp $(BINDIR)
+	${INSTALL} p4gl p4glpp $(BINDIR)
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl parser successfully installed.                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
 
 deinstall:
-	${RM} -f ${BINDIR}/p4gl ${BINDIR}/p4glpp
+	${RM} ${BINDIR}/p4gl ${BINDIR}/p4glpp
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl parser successfully de-installed.               |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 #  ==========================================================================
 #  Cleaning of all the garbage
 #  ==========================================================================
 clean:
-	--rm -f *.o p4gl p4glpp lex.yy.c y.tab.h a.out core y.output sqexplain.out \
+	${RM} *.o p4gl p4glpp lex.yy.c y.tab.h a.out core y.output sqexplain.out \
 	*.4go *.4gi *.4ge *.a  InsertP4glRep.c
 
 

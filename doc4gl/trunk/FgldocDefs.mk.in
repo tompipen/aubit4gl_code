@@ -3,17 +3,36 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.7 2003-01-12 09:24:09 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.8 2003-01-14 07:28:31 afalout Exp $
 #
 #  ==========================================================================
 
-# Settings to compile the 4gl parser
+############################
+#programs / commands to use:
 YACC			=@YACC@
-YFLAGS			=-d
 LEX				=@LEX@
+ESQL			=@IFMX_ESQLC@ -static
+PERL            =@PERL@
+ANT             =@ANT@
+JAVAC           =@JAVAC@
+WGET            =@WGET@
+RPM             =@RPM@
+INSTALL			=cp
+RM				=rm -f
+
+############################
+#additional flag to commands:
+YFLAGS			=-d
+
 #CFLAGS			=-g
 CFLAGS			=@CFLAGS@
-ESQL			=@IFMX_ESQLC@ -static
+
+#user name/password used to invoke TomCat administration commnds from and/build.xml
+#FIXME: set this from autoconf
+TOMCAT_USER     =admin
+TOMCAT_PASSWORD =tomcat
+
+ANT_FLAGS       =-Dmanager.username=${TOMCAT_USER} -Dmanager.password=${TOMCAT_PASSWORD}
 
 #  ==========================================================================
 #  The place where the executables will to be installed
@@ -43,37 +62,34 @@ NAV_DIR			=$(TOMCAT_DIR)/webapps/fgldocumenter
 #  ==========================================================================
 CLASS_DIR		=$(NAV_DIR)/WEB-INF/classes
 
-ANT             =@ANT@
-JAVAC           =@JAVAC@
-WGET            =@WGET@
-RPM             =@RPM@
 
-INSTALL			=cp
-RM				=rm -f
+###############################################
+#connection settings for JSP, used in index.jsp:
+DOC4GL_USERNAME=@DBD_INFORMIX_USERNAME@
+DOC4GL_PASSWORD=@DBD_INFORMIX_PASSWORD@
+DOC4GL_SERVER=@DOC4GL_SERVER@
+DOC4GL_DBNAME=@DOC4GL_DB@
+DOC4GL_SERVICE=@DOC4GL_SERVICE@
+DOC4GL_HOSTNAME=@DOC4GL_HOSTNAME@
+DOC4GL_SGDBURL=@DOC4GL_SGDBURL@
+DOC4GL_CONNECTIONTYPE=@DOC4GL_CONNECTIONTYPE@
 
 
-# =====
+#location where shared jar files can be found / storred
+JAVA_SHARED		=/usr/share/java
 
-#Used for installing third party Java compinents and Tomcat:
+
+#location for installing third party Java components and Tomcat:
 BASE=/usr/local/src
 
 #  ==========================================================================
 #                   Jakarta TomCat installation files and paths
 #  ==========================================================================
 
-#old:
-#JAKARTA_RPM_PATH=http://jakarta.apache.org/builds/jakarta-tomcat-4.0/release/v4.0.4/rpms
-#TOMCAT4_RPM     =tomcat4-4.0.4-le.2jpp.noarch.rpm
-#SERVLETAPI_RPM	=servletapi4-4.0.4-1jpp.noarch.rpm
-#REGEX_RPM		=regexp-1.2-10jpp.noarch.rpm
-#XERCES_RPM		=xerces-j1-1.4.4-10jpp.noarch.rpm
-#tomcat4-webapps-4.0.4-le.2jpp.noarch.rpm
-
 JAKARTA_RPM_PATH=http://jakarta.apache.org/builds/jakarta-tomcat-4.0/release/v4.1.18/rpms
 TOMCAT4_RPM     =tomcat4-4.1.18-full.1jpp.noarch.rpm
 ADMINWEBAPPS_RPM=tomcat4-admin-webapps-4.1.18-full.1jpp.noarch.rpm
 WEBAPPS			=tomcat4-webapps-4.1.18-full.1jpp.noarch.rpm
-# tomcat4-4.1.18-le.1jpp.noarch.rpm                 08-Jan-2003 06:57  2.8M
 
 TOMCAT_RPMS     =${TOMCAT4_RPM} ${ADMINWEBAPPS_RPM} ${WEBAPPS}
 
@@ -83,5 +99,9 @@ TOMCAT_RPMS     =${TOMCAT4_RPM} ${ADMINWEBAPPS_RPM} ${WEBAPPS}
 
 BLACKDOWN_JSDK_PATH=ftp://metalab.unc.edu/pub/linux/devel/lang/java/blackdown.org/JDK-1.3.1/i386/FCS-02b
 BLACKDOWN_JSDK	=j2sdk-1.3.1-02b-FCS-linux-i386.bin
+
+#Informix JDBC driver:
+IFX_JDBC_PKG	=jdbc_sql221jc3.zip
+IFX_JDBC_PKG_PATH=ftp://ftp.software.ibm.com/software/data/informix/downloads
 
 # ============================= EOF ========================================

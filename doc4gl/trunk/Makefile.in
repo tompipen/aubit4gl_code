@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.7 2003-01-12 23:51:18 afalout Exp $
+#  $Id: Makefile.in,v 1.8 2003-01-14 07:28:31 afalout Exp $
 #
 #  ==========================================================================
 
@@ -26,6 +26,7 @@ endif
 endif
 endif
 
+#list of all targets taht would install _ALL_ Perl modules Doc4GL needs:
 ALL.PERLMODS	= install.cpan install.dbi install.tk install.unit \
 				install.dbd-informix install.dumper
 
@@ -42,20 +43,27 @@ ALL.PERLMODS	= install.cpan install.dbi install.tk install.unit \
 all: ${ALL}
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| Doc4gl default targets (${ALL}) successfully compiled."
-	@echo "|                Execute 'make install' to install it.               |"
+	@echo "| Doc4gl default targets :                                           |"
+	@echo "| ${ALL} "
+	@echo "| successfully compiled. Execute 'make install' to install it.       |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
 parser:
 	$(MAKE) -C parser all
 
-manager:
-#	$(MAKE) -C manager all
-	$(MAKE) -C manager
-
 browser:
 	$(MAKE) -C browser all
+
+manager:
+#This will invoke makefile created by Perl MakeMaker from Makefile.PL:
+	$(MAKE) -C manager
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl manager successfully compiled.                  |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
 
 # =========================================================================
 #                           	Install
@@ -64,32 +72,37 @@ browser:
 install: ${ALL.INSTALL}
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| Doc4gl default install targets (${ALL.INSTALL}) installed."
-	@echo "|       See User's manual for usage instructions                     |"
+	@echo "| Doc4gl default install targets :                                   |"
+	@echo "| ${ALL.INSTALL} "
+	@echo "| installed. See User's manual for usage instructions                |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
 install.parser:
 	$(MAKE) -C parser install
 
+install.browser:
+	$(MAKE) -C browser install
+
 install.manager:
-#makefile vreated using Makfeil.PL does not have install target
-#	$(MAKE) -C manager install
-#Not sure what this is doing:
-	$(MAKE) -C manager
+#This will invoke makefile created by Perl MakeMaker from Makefile.PL, so we
+#need to do some preparation work here:
 	mkdir -p $(PERL_MODULE_DIR)/img
 	mkdir -p $(PERL_MODULE_DIR)/L10N
 	${INSTALL} manager/fgldoc ${BINDIR}
 	chmod a+x ${BINDIR}/fgldoc
 	$(MAKE) -C manager install
+#This will be installed by Perl generated makefile, now obsolete (check!)
 #	${INSTALL} manager/FglDocumenter/*.pm $(PERL_MODULE_DIR)
 #	${INSTALL} manager/FglDocumenter/img/*.gif $(PERL_MODULE_DIR)/img
 #	${INSTALL} manager/FglDocumenter/L10N/*.pm $(PERL_MODULE_DIR)/L10N
-	@echo "fgldoc installed in ${BINDIR}"
-	@echo "Perl modules installed in $(PERL_MODULE_DIR)"
-
-install.browser:
-	$(MAKE) -C browser install
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl manager successfully instaled to:               |"
+	@echo "| fgldoc executable in : ${BINDIR}"
+	@echo "| Perl modules in      : $(PERL_MODULE_DIR)"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 # =========================================================================
 #                           Deinstall
@@ -115,7 +128,7 @@ clean.sql:
 
 clean.manager:
 	$(MAKE) -C manager clean
-#Perl created makefile (from Makefile.PL) will rename Makefle to Makefile.old
+#Perl created makefile - from Makefile.PL - will rename Makefle to Makefile.old
 #so we have to restore that:
 	cd manager; mv Makefile.old Makefile
 	cd manager; ${RM} *.bak pm_to_blib
@@ -143,8 +156,10 @@ clean.makefile:
 #Fixme: is there a way to accept all defaults when installing using CPAN
 #and avoid all this prompting?
 
+#This will install _ALL_ Perl modules Doc4GL needs:
 all.perlmods: ${ALL.PERLMODS}
 
+#This will install only Perl modules that are detected as missing by Autoconf:
 missing.perlmods: @MISSING_PERLMODS@
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
@@ -158,10 +173,10 @@ missing.perlmods: @MISSING_PERLMODS@
 #much of the same functionality as CPAN.pm.
 #manual: http://search.cpan.org/author/JHI/perl-5.8.0/lib/CPAN.pm
 install.tk:
-	perl -MCPAN -e 'install Bundle::Tk'
+	${PERL} -MCPAN -e 'install Bundle::Tk'
 
 install.unit:
-	perl -MCPAN -e 'install Test::Unit'
+	${PERL} -MCPAN -e 'install Test::Unit'
 
 install.dbd-informix:
 ifneq "@DBD_INFORMIX_USERNAME@" ""
@@ -170,7 +185,7 @@ ifneq "@DBD_INFORMIX_PASSWORD@" ""
 	export DBD_INFORMIX_DATABASE=@DOC4GL_DB@; \
 	export DBD_INFORMIX_USERNAME=@DBD_INFORMIX_USERNAME@; \
 	export DBD_INFORMIX_PASSWORD=@DBD_INFORMIX_PASSWORD@; \
-	perl -MCPAN -e 'install DBD::Informix')
+	${PERL} -MCPAN -e 'install DBD::Informix')
 else
 	@echo "ERROR: Informix DB password not specified. Cannot install DBD::Informix"
 	@echo "re-run configure like this, to specify them:"
@@ -183,17 +198,16 @@ else
 endif
 
 install.cpan:
-	perl -MCPAN -e 'install Bundle::CPAN'
+	${PERL} -MCPAN -e 'install Bundle::CPAN'
 
 install.dbi:
-	perl -MCPAN -e 'install Bundle::DBI'
+	${PERL} -MCPAN -e 'install Bundle::DBI'
 
 install.dumper:
-	perl -MCPAN -e 'install XML::Dumper'
+	${PERL} -MCPAN -e 'install XML::Dumper'
 
 install.maketxt:
-	perl -MCPAN -e 'install Locale::Maketext'
-
+	${PERL} -MCPAN -e 'install Locale::Maketext'
 
 # =========================================================================
 #                           Install Tomcat and it's dependencies
@@ -206,8 +220,8 @@ install.jdk: ${BASE}/${BLACKDOWN_JSDK}
 	cd ${BASE}; ./${BLACKDOWN_JSDK}
 	@echo ""
 	@echo "Plese set in your configuration scripts ('profile' or equivalent):"
-	@echo "  export JAVA_HOME=${BASE}/j2sdk1.3.1"
-	@echo "  export PATH=$$PATH:$$JAVA_HOME/bin"
+	@echo "  export JAVA_HOME=${BASE}/j2sdk1.3.1 ---VERIFY---!"
+	@echo '  export PATH=$PATH:$JAVA_HOME/bin'
 	@echo ""
 
 ${BASE}/${BLACKDOWN_JSDK}:
@@ -228,12 +242,6 @@ ${WEBAPPS}:
 
 get.tomcat: ${TOMCAT_RPMS}
 install.tomcat:  ${TOMCAT_RPMS}
-#	${RPM} -i ${SERVLETAPI_RPM}
-#	${RPM} -i ${REGEX_RPM}
-#	${RPM} -i ${XERCES_RPM}
-##	${RPM} -i ${TOMCAT4_RPM}
-##	${RPM} -i ${ADMINWEBAPPS_RPM}
-##	${RPM} -i ${WEBAPPS}
 	${RPM} -i $^
 	@echo "Tomcat Notes:"
 	@echo "If you wanted TomCat started at boot, run:"
@@ -250,7 +258,7 @@ install.tomcat:  ${TOMCAT_RPMS}
 	@echo "Start Tomcat Point browser at :"
 	@echo "  http://localhost:8080 and try to view available services."
 	@echo ""
-	@echo "If TomCat fail to strt, examine:"
+	@echo "If TomCat fail to start, examine:"
 	@echo "  /var/log/tomcat4/catalina.out"
 	@echo ""
 	@echo "Now edit /etc/tomcat4/tomcat4.conf to reflect your system's configuration."
@@ -258,6 +266,8 @@ install.tomcat:  ${TOMCAT_RPMS}
 	@echo "Then re-run Doc4GL configure script, to detect changes in the configuration."
 	@echo ""
 
+
+#NOT TESTED!!!
 install.ant:
 	wget http://jakarta.apache.org/builds/jakarta-ant/release/v1.4.1/bin/jakarta-ant-1.4.1-bin.tar.gz
 	wget http://jakarta.apache.org/builds/jakarta-ant/release/v1.4.1/bin/jakarta-ant-1.4.1-optional.jar
@@ -270,6 +280,7 @@ install.ant:
 #cp /var/tomcat4/common/lib/xerces.jar $ANT_HOME/lib/.
 	cp $BASE/jakarta-ant-1.4.1/lib/jakarta-ant-1.4.1-optional.jar $BASE/jakarta-ant-1.4.1/lib/optional.jar
 
+#NOT TESTED!!!
 install.junit:
 	wget http://download.sourceforge.net/junit/junit3.7.zip
 	unzip $BASE/junit3.7.zip
@@ -277,8 +288,20 @@ install.junit:
 	export CLASSPATH=$CLASSPATH:$JUNIT_HOME/junit.jar
 
 
-#Setup OGSA to run under Tomcat.
-#ant -Dtomcat.dir=$TOMCAT_HOME deployTomcat
+${IFX_JDBC_PKG}:
+	${WGET} ${IFX_JDBC_PKG_PATH}/${IFX_JDBC_PKG}
 
+install.informix_jdbc: ${IFX_JDBC_PKG}
+	mkdir -p /tmp/ifxjdbc
+	unzip ${IFX_JDBC_PKG} -d /tmp/ifxjdbc
+	${JAVA} -cp /tmp/ifxjdbc/setup.jar run -silent -P product.installLocation=${INFORMIXDIR}/jdbc
+	cp ${INFORMIXDIR}/jdbc/lib/ifxjdbc.jar ${JAVA_SHARED}
+#FIXME: do we have to copy this under Tomcat? any config files to edit? (server.xml?)
+	@@echo "add the following line to your profile:"
+	@echo 'export CLASSPATH=$INFORMIXDIR/jdbc/lib/ifxjdbc.jar:$CLASSPATH'
+#ALTERNATIVE:
+#if we unpack this jar like this:
+#	cd ${INFORMIXDIR}/jdbc/lib; jar xvf ifxjdbc.jar
+#we can copy all filed to ${JAVA_SHARED}, and set CLASSPATH to ${JAVA_SHARED}
 
 # =============================== EOF ======================================

@@ -11,9 +11,13 @@
         Informix database repository.
 	</description>
 
+<!--
+
+is this section needed at all? we don't have a servlet - only jsp and few class
+files, plus images ...
     <servlet>
         <servlet-name>fgldocumenter</servlet-name>
-        <servlet-class>pt.moredata.fgldocumenter.browser.Login</servlet-class>
+        <servlet-class>pt.moredata.fgldocumenter.browser</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -21,4 +25,19 @@
         <url-pattern>/fgldocumenter</url-pattern>
     </servlet-mapping>
 
+
+    <servlet>
+        <servlet-name>HelloServlet</servlet-name>
+        <servlet-class>mypackage.Hello</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>HelloServlet</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+-->
+
+
 </web-app>
+
+

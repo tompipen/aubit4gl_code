@@ -24,7 +24,7 @@
                              image files), including the WEB-INF subdirectory
                              and its configuration file contents.
 
-     $Id: build.xml,v 1.2 2003-01-12 09:22:45 afalout Exp $
+     $Id: build.xml,v 1.3 2003-01-14 07:28:58 afalout Exp $
 -->
 
 
@@ -123,10 +123,11 @@
   <property name="dist.home"     value="${basedir}/dist"/>
   <property name="docs.home"     value="${basedir}/docs"/>
   <property name="manager.url"   value="http://localhost:8080/manager"/>
-  <property name="src.home"      value="${basedir}/pt"/> <!-- CHANGE TO src! -->
+  <property name="src.home"      value="${basedir}/pt/moredata/fgldocumenter/browser"/> <!-- CHANGE TO src! -->
   <property name="web.home"      value="${basedir}/web"/>
 
-  <!-- this should be in your local build.properties file : -->
+  <!-- this will be passed from ant commands from makefile.
+  you can also define it in your local build.properties file : -->
   <property name="manager.username"      value="admin"/>
   <property name="manager.password"      value="tomcat"/>
 
@@ -158,6 +159,16 @@
   <taskdef name="list"    classname="org.apache.catalina.ant.ListTask"/>
   <taskdef name="reload"  classname="org.apache.catalina.ant.ReloadTask"/>
   <taskdef name="remove"  classname="org.apache.catalina.ant.RemoveTask"/>
+
+<!-- not used currently: -->
+  <taskdef name="deploy"    classname="org.apache.catalina.ant.DeployTask"/>
+  <taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask"/>
+  <taskdef name="roles"     classname="org.apache.catalina.ant.RolesTask"/>
+  <taskdef name="start"     classname="org.apache.catalina.ant.StartTask"/>
+  <taskdef name="stop"      classname="org.apache.catalina.ant.StopTask"/>
+  <taskdef name="undeploy"  classname="org.apache.catalina.ant.UndeployTask"/>
+
+
 
 
 <!--  ==================== Compilation Control Options ==================== -->
@@ -270,9 +281,26 @@
 
   <target name="clean"
    description="Delete old build and dist directories">
-    <delete dir="${build.home}"/>
+
+    <delete>
+        <fileset dir=".">
+            <include name="**/*.class"/>
+        </fileset>
+    </delete>
+
+	<delete dir="${build.home}"/>
     <delete dir="${dist.home}"/>
+
+    <delete file="fgldocumenter.war"/>
+    <!--
+	<delete dir="apidoc"/>
+    <delete dir="classes"/>
+    -->
+
   </target>
+
+
+
 
 
 
@@ -287,18 +315,19 @@
 
 -->
 
-  <target name="compile" depends="prepare"
-   description="Compile Java sources">
+  <target name="compile" depends="prepare" description="Compile package fgldocumenter">
 
     <!-- Compile Java classes as necessary -->
     <mkdir    dir="${build.home}/WEB-INF/classes"/>
-    <javac srcdir="${src.home}"
+
+	<javac srcdir="${src.home}"
           destdir="${build.home}/WEB-INF/classes"
             debug="${compile.debug}"
       deprecation="${compile.deprecation}"
          optimize="${compile.optimize}">
         <classpath refid="compile.classpath"/>
     </javac>
+    <echo message="Fgldocumenter browser compiled"/>
 
     <!-- Copy application resources -->
     <copy  todir="${build.home}/WEB-INF/classes">
@@ -307,7 +336,78 @@
 
   </target>
 
+<!-- ==================== WAR (web application archive ) Target ========== -->
 
+    <target name="war" depends="compile">
+        <!-- To make a standalone app: -->
+        <!-- 1. Create a myapp.mf manifest somewhere. -->
+        <!-- 2. Put in it: -->
+        <!--    Manifest-Version: 1.0 -->
+        <!--    Main-Class: com.foo.Main -->
+        <!-- 3. Pass to <jar>: manifest="myapp.mf" -->
+        <war warfile="${basedir}/fgldocumenter.war"
+             webxml="build/WEB-INF/web.xml"
+             compress="true" basedir="build">
+            <exclude name="**/*.java"/>
+            <exclude name="**/*.bak"/>
+            <exclude name="**/*.form"/>
+            <exclude name="myapp.mf"/>
+            <exclude name="apidoc"/>
+        </war>
+    </target>
+
+
+
+
+<!-- ==================== Install Target ================================== -->
+
+<!--
+
+  The "install" target tells the specified Tomcat 4 installation to dynamically
+  install this web application and make it available for execution.  It does
+  *not* cause the existence of this web application to be remembered across
+  Tomcat restarts; if you restart the server, you will need to re-install all
+  this web application.
+
+  If you have already installed this application, and simply want Tomcat to
+  recognize that you have updated Java classes (or the web.xml file), use the
+  "reload" target instead.
+
+  NOTE:  This target will only succeed if it is run from the same server that
+  Tomcat is running on.
+
+  NOTE:  This is the logical opposite of the "remove" target.
+
+-->
+
+  <target name="install" depends="compile,war"
+   description="Install application to servlet container">
+
+<!--
+if I specify war file I created, Tomcat will fail to start it.
+There is obviously something wrong with war file I created... or more
+probaby with web/WEB-INF/web.xml that is used as suource...
+
+	<install url="${manager.url}"
+        username="${manager.username}"
+        password="${manager.password}"
+            path="${app.path}"
+             war="file://${basedir}/fgldocumenter.war"/>
+
+The URL specified by the war parameter must identify a directory on this 
+server that contains the "unpacked" version of a web application, or the
+absolute URL of a web application archive (WAR) file that contains this 
+application. Correct the value specified by the war parameter.
+
+-->
+
+	<install url="${manager.url}"
+        username="${manager.username}"
+        password="${manager.password}"
+            path="${app.path}"
+             war="file://${build.home}"/>
+
+  </target>
 
 <!-- ==================== Dist Target ===================================== -->
 
@@ -339,40 +439,6 @@
          basedir="${build.home}"/>
 
     <!-- Copy additional files to ${dist.home} as necessary -->
-
-  </target>
-
-
-
-<!-- ==================== Install Target ================================== -->
-
-<!--
-
-  The "install" target tells the specified Tomcat 4 installation to dynamically
-  install this web application and make it available for execution.  It does
-  *not* cause the existence of this web application to be remembered across
-  Tomcat restarts; if you restart the server, you will need to re-install all
-  this web application.
-
-  If you have already installed this application, and simply want Tomcat to
-  recognize that you have updated Java classes (or the web.xml file), use the
-  "reload" target instead.
-
-  NOTE:  This target will only succeed if it is run from the same server that
-  Tomcat is running on.
-
-  NOTE:  This is the logical opposite of the "remove" target.
-
--->
-
-  <target name="install" depends="compile"
-   description="Install application to servlet container">
-
-    <install url="${manager.url}"
-        username="${manager.username}"
-        password="${manager.password}"
-            path="${app.path}"
-             war="file://${build.home}"/>
 
   </target>
 
