@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.12 2003-07-12 08:03:03 mikeaubury Exp $
+# $Id: input.c,v 1.13 2003-07-18 16:17:32 mikeaubury Exp $
 #*/
 
 /**
@@ -82,13 +82,12 @@ static int gui_proc_key_input (int a);
 static int gui_form_field_constr (void);
 static int gui_form_field_chk (void);
 
-void A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap);
+//void A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap);
 
-extern char *A4GL_replace_sql_var (char *s);	/* others.c */
+//extern char *A4GL_replace_sql_var (char *s);	/* others.c */
 
 //int A4GL_form_loop (struct s_screenio * s);
-int A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin,
-			va_list * ap);
+//int A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list * ap);
 //void A4GL_disp_fields (int n, int attr, va_list * ap);
 //int A4GL_push_constr (struct s_screenio *s);
 //void A4GL_fgl_infield (char *s, int a);
@@ -504,12 +503,15 @@ A4GL_gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
  * @return The number of elements returned.
  */
 int
-A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list * ap)
+A4GL_gen_field_chars_ap (void* field_listv, void * cwinv, va_list * ap)
 {
   int a;
   //va_list ap;
   //va_start (ap, cwin);
-
+  GtkWidget ***field_list;
+  GtkWindow *cwin;
+  field_list=field_listv;
+  cwin=cwinv;
   A4GL_debug ("XXX1");
   a = A4GL_gen_field_list_gtk (field_list, GTK_WINDOW (cwin), 9999, ap);
   return a;
@@ -637,7 +639,7 @@ A4GL_gui_set_field_pop_attr (GtkWidget * w, int attr)
  * @param ... The list of fields.
  * @return
  */
-void
+int
 A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 {
   int a;
@@ -652,7 +654,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   formdets = A4GL_get_curr_form (1);
 
   if (a4gl_status != 0)
-    return;
+    return 0;
 
   flg = 0;
   A4GL_debug_last_field_created ("disp_fields2 ");
@@ -674,6 +676,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
       A4GL_gui_set_field_pop_attr (field_list[a], attr);
     }
   A4GL_debug_last_field_created ("disp_fields3 ");
+return 1;
 }
 
 
@@ -946,7 +949,7 @@ A4GL_field_name_match_gtk (GtkWidget * f, char *s)
 /**
  *
  */
-void
+int
 A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap)
 {
   void *cwin;
@@ -959,13 +962,14 @@ A4GL_disp_form_fields_ap (int n, int attr, char *s, va_list * ap)
   if (w == 0)
     {
       A4GL_exitwith ("Form not open");
-      return;
+      return 0;
     }
   A4GL_debug ("Swapping %p for %p", w, cwin);
   A4GL_set_current_window (w);
   A4GL_disp_fields (n, attr, ap);
   A4GL_debug ("Swapping %p for %p", cwin, w);
   A4GL_set_current_window (cwin);
+return 1;
 }
 
 

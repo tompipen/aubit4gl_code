@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.8 2003-07-12 08:03:03 mikeaubury Exp $
+# $Id: disp_arr.c,v 1.9 2003-07-18 16:17:32 mikeaubury Exp $
 #*/
 
 /**
@@ -70,8 +70,7 @@ void A4GL_iclear_srec_line (struct struct_screen_record *srec, int line);
 void A4GL_set_array_mode (int type);
 //int A4GL_disp_arr (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 
-int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname,
-		 int attrib, va_list * ap);
+//int A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 /*
 =====================================================================
                     Functions definitions
@@ -506,13 +505,13 @@ disp_loop (struct s_disp_arr *arr)
  * @param attrib The attributes
  */
 int
-A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
-	     va_list * ap)
+A4GL_disp_arr_ap (void *dispv, void *ptr, char *srecname, int attrib, va_list * ap)
 {
   int a;
   int nofields;
   GtkWidget **field_list;
-
+struct s_disp_arr  *disp;
+  disp=dispv;
   curr_arr = disp;
   A4GL_debug ("In A4GL_disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);
   if (disp->srec == 0)

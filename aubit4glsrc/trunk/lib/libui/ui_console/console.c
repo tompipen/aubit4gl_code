@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.9 2003-07-15 22:52:32 mikeaubury Exp $
+# $Id: console.c,v 1.10 2003-07-18 16:17:31 mikeaubury Exp $
 #*/
 
 /**
@@ -71,18 +71,16 @@ void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap);
 void A4GL_ui_init (int argc, char *argv[]);
 //void aclfgli_pr_message (int attr,int wait);
 //void A4GL_display_error (int a,int wait);
-void *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
-			   int help_no);
-void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
-		      int help_no, int attr);
-void A4GL_finish_create_menu (ACL_Menu * menu);
-char *A4GL_disp_h_menu (ACL_Menu * menu);
+//void *A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no);
+//void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc, int help_no, int attr);
+//void A4GL_finish_create_menu (ACL_Menu * menu);
+//char *A4GL_disp_h_menu (ACL_Menu * menu);
 void A4GL_redisplay_menu (ACL_Menu * menu);
-int A4GL_menu_loop (ACL_Menu * menu);
-void A4GL_free_menu (ACL_Menu * menu);
+//int A4GL_menu_loop (ACL_Menu * menu);
+//void A4GL_free_menu (ACL_Menu * menu);
 //void sleep_i(void);
-void A4GL_menu_hide (ACL_Menu * menu, va_list * ap);
-void A4GL_menu_show (ACL_Menu * menu, va_list * ap);
+//void A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap);
+//void A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap);
 //void A4GL_start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af);
 //void prompt_loop(struct s_prompt * prompt);
 
@@ -271,11 +269,10 @@ A4GL_finish_create_menu (ACL_Menu * menu)
  *
  * @todo Describe function
  */
-char *
+void
 A4GL_disp_h_menu (ACL_Menu * menu)
 {
 /* Does nothing */
-  return 0;
 }
 
 
@@ -361,7 +358,7 @@ A4GL_menu_loop (ACL_Menu * menu)
  * 4GL CALL
  * @todo Describe function
  */
-void
+int
 A4GL_free_menu (ACL_Menu * menu)
 {
   ACL_Menu_Opts *opt1, *opt2;
@@ -372,6 +369,7 @@ A4GL_free_menu (ACL_Menu * menu)
       free (opt1);
       opt1 = opt2;
     }
+return 1;
 }
 
 /**
@@ -407,20 +405,22 @@ but we need dummy finction to satisfy API_ui
  * 4GL CALL
  * @todo Describe function
  */
-void
-A4GL_menu_hide (ACL_Menu * menu, va_list * ap)
+int
+A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap)
 {
   A4GL_menu_attrib (menu, 0, *ap);
+return 1;
 }
 
 /**
  * 4GL CALL
  * @todo Describe function
  */
-void
-A4GL_menu_show (ACL_Menu * menu, va_list * ap)
+int
+A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap)
 {
   A4GL_menu_attrib (menu, 1, *ap);
+return 1;
 }
 
 /**

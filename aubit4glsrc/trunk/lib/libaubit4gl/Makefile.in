@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.52 2003-07-18 08:31:36 mikeaubury Exp $
+# $Id: Makefile.in,v 1.53 2003-07-18 16:17:31 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -62,7 +62,8 @@ COMMONSRC= \
 	pointers.c \
 	read_dty.c readkeys.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
 	screen.c sqlconvert.c stack_ops.c stack.c string.c sqlca.c \
-	translate.c
+	translate.c \
+	ui.c
 
 CMODS               =${COMMONSRC} ${LIBROOT}/generated/${CMODS_PROJECT} ${CMODS_API} debug.o
 OBJS_API			=${CMODS_API:.c=.o}
@@ -232,6 +233,12 @@ api: ${OBJS_API}
 API_msg.c: API_msg.spec
 	${SH} ${DLMAGIC} $^ > $@
 	${SH} ${DLMAGIC} $^ -h > ${INCL_PATH}/a4gl_$*.h
+
+
+API_ui.c: API_ui.spec
+	${SH} ${DLMAGIC} API_ui.spec > $@
+	${SH} ${DLMAGIC} API_ui.spec -h > ${INCL_PATH}/a4gl_$*.h
+
 
 API_packer.c: API_packer.spec
 	${SH} ${DLMAGIC} $^ > $@

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.9 2003-07-15 22:52:32 mikeaubury Exp $
+# $Id: array.c,v 1.10 2003-07-18 16:17:31 mikeaubury Exp $
 #*/
 
 /**
@@ -461,10 +461,13 @@ disp_loop (struct s_disp_arr *arr)
  * @param attrib The attributes
  */
 int
-A4GL_disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
+A4GL_disp_arr_ap (
+void *dispv, void *ptr, char *srecname, int attrib,
 	     va_list * ap)
 {
   int a;
+struct s_disp_arr *disp;
+disp=dispv;
   A4GL_chkwin();
   curr_arr_disp = disp;
   A4GL_debug ("In A4GL_disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);

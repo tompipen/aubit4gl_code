@@ -2,7 +2,7 @@ if [ "$1" != "" ]
 then
 	cvs update -d 
 	make cleanall
-	./configure --with-efence=/usr/lib --with-pgsql=/usr/local/pgsql
+	./configure  --with-pgsql=/usr/local/pgsql
 fi
 make log
 cd /home/aubit4gl/sourceforge/aubit4glsrc

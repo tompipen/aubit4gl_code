@@ -459,7 +459,7 @@ print_end_menu_1 int n -> void
 print_end_menu_2 int n -> void
 
 /* void print_menu_block (int n) */
-print_menu_block int n -> void
+print_menu_block int n int menu_no -> void
 
 /* void print_menu_block_end () */
 print_menu_block_end int n -> void

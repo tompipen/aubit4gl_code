@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.46 2003-07-15 22:52:20 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.47 2003-07-18 16:17:31 mikeaubury Exp $
 */
 
 /**
@@ -272,7 +272,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   int aclfgl_sqrt (int nargs);
 
   int A4GL_gen_field_chars (void ***field_list, void *formdets, ...);
-  int A4GL_set_fields (void *sio);
+  //int A4GL_set_fields (void *sio);
   void aclfgli_clr_err_flg (void);
   void A4GL_set_option_value (char type, int keyval);
   int aclfgli_get_err_flg (void);
@@ -280,75 +280,67 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   void A4GL_clr_fields (int to_defaults,  ...);
 
   int A4GL_chk_iskey (char *keys);
-  int A4GL_fgl_infield (char *s, int a);
-  int A4GL_disp_fields (int n, int attr, ...);
-  void A4GL_disp_fields_ap (int n, int attr, va_list * ap);
+  //int A4GL_fgl_infield (char *s, int a);
+  void A4GL_disp_fields (int n, int attr, ...);
+  //void A4GL_disp_fields_ap (int n, int attr, va_list * ap);
 
   int A4GL_fgl_getfldbuf (char *fields, int n, ...);
   void A4GL_set_init (struct BINDING *b, int n);
-  int A4GL_start_prompt (void *prompt, int ap, int c, int h, int af);	// Not really a char *prompt - but in an app it is...
-  void A4GL_display_error (int attr, int wait);
+  //int A4GL_start_prompt (void *prompt, int ap, int c, int h, int af);	// Not really a char *prompt - but in an app it is...
+  //void A4GL_display_error (int attr, int wait);
   int A4GL_req_field (void *s, int size,char type,...);
-void * A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no);
-  void A4GL_set_infield_from_stack (void);
-  int A4GL_form_loop (void *s,int init);
+//void * A4GL_new_menu_create (char *title, int x, int y, int mn_type, int help_no);
+  //void A4GL_set_infield_from_stack (void);
+  //int A4GL_form_loop (void *s,int init);
   void aclfgli_pr_message (int attr, int wait,int nexpr);
-  int A4GL_push_constr (void *s);	// really a s_screenio - but not in an app
-  int A4GL_cr_window_form (char *name, int iswindow, int form_line,
-		      int error_line, int prompt_line, int menu_line,
-		      int border, int comment_line, int message_line,
-		      int attrib);
-  void A4GL_remove_window (char *win_name);
-  int A4GL_prompt_loop (void *prompt);
+  //int A4GL_push_constr (void *s);	// really a s_screenio - but not in an app
+  //int A4GL_cr_window_form (char *name, int iswindow, int form_line, int error_line, int prompt_line, int menu_line, int border, int comment_line, int message_line, int attrib);
+  //void A4GL_remove_window (char *win_name);
+  //int A4GL_prompt_loop (void *prompt);
   void A4GL_push_disp_bind (void *b, int n);
   void A4GL_fgl_start (int nargs, char *argv[]);
   void A4GLSTK_initFunctionCallStack (void);
   void A4GL_fgl_end (void);
-  int A4GL_open_form (char *name);
-  int A4GL_disp_form (char *name, int attr);
-  void A4GL_close_form (char *name);
+  //int A4GL_open_form (char *name);
+  //int A4GL_disp_form (char *name, int attr);
+  //void A4GL_close_form (char *name);
   void A4GL_system_run (int a);
   void A4GL_push_time (void);
-  int A4GL_movewin (char *winname, int absol);
-  void A4GL_hide_window (char *winname);
-  void A4GL_show_window (char *winname);
-  void A4GL_clr_window (char *winname);
-  void A4GL_sleep_i (void);
-  int A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib, ...);
-  void *A4GL_cr_window (char *s, int iswindow, int form_line,
-		   int error_line, int prompt_line, int menu_line,
-		   int border, int comment_line, int message_line,
-		   int attrib);
+  //int A4GL_movewin (char *winname, int absol);
+  //void A4GL_hide_window (char *winname);
+  //void A4GL_show_window (char *winname);
+  //void A4GL_clr_window (char *winname);
+  //void A4GL_sleep_i (void);
+  //int A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib, ...);
+  //void *A4GL_cr_window (char *s, int iswindow, int form_line, int error_line, int prompt_line, int menu_line, int border, int comment_line, int message_line, int attrib);
 
 
-  int A4GL_disp_form_fields (int n, int attr, char *formname, ...);
+  //int A4GL_disp_form_fields (int n, int attr, char *formname, ...);
 
-  int A4GL_current_window (char *win_name);
-  void A4GL_next_option (void *menu, char *nextopt);
-  int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like,
-		     int disable, void *handler_e,
-		     void (*handler_c (int a, int b)));
-  void *A4GL_make_pixmap (char *filename);
-  int A4GL_fgl_fieldnametoid (char *f, char *s, int n);
-  void *A4GL_get_curr_win_gtk (void);
-  int aclfgl_aclfgl_dump_screen (int n);
+  //int A4GL_current_window (char *win_name);
+  //void A4GL_next_option (void *menu, char *nextopt);
+  //int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)));
+  //void *A4GL_make_pixmap (char *filename);
+  //int A4GL_fgl_fieldnametoid (char *f, char *s, int n);
+  //void *A4GL_get_curr_win_gtk (void);
+  //int aclfgl_aclfgl_dump_screen (int n);
 
-  int A4GL_set_fields_inp_arr (void *sio);
-  int A4GL_endis_fields (int en_dis, ...);
-  void A4GL_clr_form (int to_defaults);
-  void A4GL_clr_form_fields (int to_defaults, char *defs);
+  //int A4GL_set_fields_inp_arr (void *sio);
+  //int A4GL_endis_fields (int en_dis, ...);
+  //void A4GL_clr_form (int to_defaults);
+  //void A4GL_clr_form_fields (int to_defaults, char *defs);
 
   /* ============= from assist.4gl/.c ======================= */
-  int aclfgl_a4gl_run_gui (int nargs);
+  //int aclfgl_a4gl_run_gui (int nargs);
   /* ============== from curslib.c =========================== */
-  int aclfgl_fgl_drawbox (int n);
+  //int aclfgl_fgl_drawbox (int n);
   //void  aclfgl_fgl_drawbox (int n);
 
   /* ======================= API_ui.c ===================== */
 
 //does not A4GL_match actual function definition:
-  int aclfgl_set_page (int nargs);
-  int aclfgl_get_page (int nargs);
+  //int aclfgl_set_page (int nargs);
+  //int aclfgl_get_page (int nargs);
 
   /* ======================= builtin.c  ================== */
   void aclfgli_current (int a, int b);

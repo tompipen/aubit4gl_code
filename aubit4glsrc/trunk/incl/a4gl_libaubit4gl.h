@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.74 2003-07-15 22:52:20 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.75 2003-07-18 16:17:31 mikeaubury Exp $
 #
 */
 
@@ -545,22 +545,6 @@ extern "C"
   /* definitions used both in Aubit compiler code and at run-time */
 #include "a4gl_incl_4gldef.h"
 
-  /* API prototypes */
-#include "a4gl_API_lex.h"	/* generated from .spec */
-#include "a4gl_API_form.h"	/* generated from .spec */
-#include "a4gl_API_menu.h"	/* generated from .spec */
-#include "a4gl_API_msg.h"	/* generated from .spec */
-#include "a4gl_API_packer.h"	/* generated from .spec */
-#include "a4gl_API_exdata.h"	/* created manually */
-#include "a4gl_API_ui.h"	/* created manually */
-#include "a4gl_API_exreport.h"	/* created manually */
-#include "a4gl_API_sql.h"	/* created manually */
-#include "a4gl_API_rpc.h"	/* created manually */
-
-#ifndef _NO_FORM_X_H_
-#include "../common/dataio/form_x.x.h"	/* struct_form */
-#endif
-
 
 /*
 =====================================================================
@@ -661,6 +645,7 @@ struct input_array_attribs {
     char form_name[19];
   }
   gen_form;
+
 
 /*
 =====================================================================
@@ -1368,6 +1353,11 @@ enum cmd_types {
 
   int A4GL_net_keyval (char *v);
   void A4GL_convupper (char *s);
+
+#ifndef _NO_FORM_X_H_
+#include "../common/dataio/form_x.x.h"	/* struct_form */
+#endif
+
 #ifndef _NO_FORM_X_H_		/* if we don't include form_x.h, this would generate errors : */
   int A4GL_find_srec (struct_form * fd, char *name);
   /* struct struct_scr_field defined in fcompile/form_x.h */
@@ -1468,6 +1458,8 @@ enum cmd_types {
     int attrib;
   };
 
+  typedef struct s_screenio  Tscreenio;
+
   struct s_disp_arr
   {
     int no_fields;
@@ -1544,9 +1536,9 @@ enum cmd_types {
 	int insmode;
   };
 
-  void *A4GL_get_curr_form (int warn_if_no_form);	/* in API_ui.c libtui/newpanels.c libgui/input.c */
+  //void *A4GL_get_curr_form (int warn_if_no_form);	/* in API_ui.c libtui/newpanels.c libgui/input.c */
   int load_data (char *fname, char *delims, char *tabname, ...);
-  int A4GL_inp_arr (void *disp, int ptr, char *srecname, int attrib, int init);
+  //int A4GL_inp_arr (void *disp, int ptr, char *srecname, int attrib, int init);
   int set_scrline_ia (int np);
   int set_arrline_ia (int np);
   struct struct_screen_record *A4GL_get_srec (char *name);
@@ -1594,6 +1586,52 @@ enum cmd_types {
   };
 
 
+
+  struct s_form_attr
+  {
+    int mode;
+    int colour;
+    char border;
+    int inpattr;
+    int dispattr;
+    int nextkey;
+    int prevkey;
+    int input_wrapmode;
+    int comment_line;
+    int form_line;
+    int menu_line;
+    int message_line;
+    int prompt_line;
+    int fcnt;
+    int insmode;
+    int error_line;
+    int inskey;
+    int delkey;
+    int helpkey;
+    int acckey;
+    int fieldconstr;
+    int sqlintr;
+  };
+
+
+
+  struct s_form_dets            /* taken from a4gl_dbform.h */
+  {
+    /* this was just
+       struct_form *fileform;
+       and it worked on Linux, but not on CygWin...??????
+     */
+    /* #ifndef _NO_FORM_X_H_ what was this about??? */
+    struct struct_form *fileform;
+    /* #endif */
+    struct s_form_attr form_details;
+    void *form;
+    int fields_cnt;
+    int currentmetrics;
+    void *form_fields[1024];
+    void *currentfield;
+  };
+
   /* ============================ errfile.c =============================== */
   void A4GL_write_cont (FILE * f);
 
@@ -1632,20 +1670,17 @@ A4GL_in_in_ops (int op);
 int
 A4GL_get_escape_chr (void);
 int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *fprop);
-int
-A4GL_get_curr_width_gtk (void);
+//int A4GL_get_curr_width_gtk (void);
 int aclfgli_libhelp_showhelp(int helpno);
 void
 a4gl_basename (char **ppsz);
-void
-A4GL_display_internal (int x, int y, char *s, int a, int clr_line);
+//void A4GL_display_internal (int x, int y, char *s, int a, int clr_line);
 void
 A4GL_error_nobox (char *str,int attr);
 void
 A4GL_clr_error_nobox (void);
-int
-A4GL_fgl_getfldbuf_ap (char *s, int n);
-int A4GL_fgl_fieldtouched_input_ap(struct s_screenio *s, va_list *ap);
+//int A4GL_fgl_getfldbuf_ap (char *s, int n,...);
+//int A4GL_fgl_fieldtouched_input_ap(Tscreenio *s,  va_list *ap);
 void A4GL_core_dump(void);
 void
 A4GL_set_core_dump (void);
@@ -1709,6 +1744,41 @@ struct s_field_name_list {
 	struct s_field_name *field_name_list;
 };
 	
+
+
+int A4GL_menu_hide (ACL_Menu * menu, ...);
+int A4GL_menu_show (ACL_Menu * menu, ...);
+void A4GL_display_at (int n, int a);
+void A4GL_set_scrmode (char a);
+int A4GL_isscrmode (void);
+int A4GL_islinemode (void);
+int A4GL_disp_form_fields (int n, int attr, char *formname, ...);
+int A4GL_endis_fields (int en_dis, ...);
+int A4GL_disp_arr (void *disp, void *ptr, char *srecname, int attrib, ...);
+int A4GL_open_gui_form (char *name_orig, int absolute, int nat, char *like, int disable, void *handler_e, void (*handler_c (int a, int b)));
+
+
+
+void A4GL_lex_printc(char* fmt,... );
+void A4GL_lex_printh(char* fmt,... );
+void A4GL_lex_printcomment(char* fmt,... );
+
+
+  /* API prototypes */
+#include "a4gl_API_lex.h"	/* generated from .spec */
+#include "a4gl_API_form.h"	/* generated from .spec */
+#include "a4gl_API_menu.h"	/* generated from .spec */
+#include "a4gl_API_msg.h"	/* generated from .spec */
+#include "a4gl_API_packer.h"	/* generated from .spec */
+#include "a4gl_API_ui.h"	/* generated from .spec */
+
+
+#include "a4gl_API_exdata.h"	/* created manually */
+#include "a4gl_API_exreport.h"	/* created manually */
+#include "a4gl_API_sql.h"	/* created manually */
+#include "a4gl_API_rpc.h"	/* created manually */
+
+
 
 
 #ifdef __cplusplus

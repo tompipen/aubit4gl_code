@@ -360,23 +360,25 @@ A4GL_next_option (void *vmenu, char *nextopt)
 }
 
 
-void
+int
 A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap)
 {
   A4GL_debug ("Menu hide\n");
   A4GL_menu_attrib (menu, 0, ap);
+return 1;
 }
 
 /**
  * 4GL CALL
  * @todo Describe function
  */
-void
+int 
 A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap)
 {
   A4GL_debug ("Show");
   A4GL_menu_attrib (menu, 1, ap);
   A4GL_find_shown (menu, 0, 1);
+return 1;
 }
 
 

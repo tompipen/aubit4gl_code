@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.50 2003-07-16 19:25:55 mikeaubury Exp $
+# $Id: ioform.c,v 1.51 2003-07-18 16:17:32 mikeaubury Exp $
 #*/
 
 /**
@@ -297,14 +297,16 @@ A4GL_make_label (int frow, int fcol, char *label)
  *  struct and assigns the pointer to integers.
  */
 int
-A4GL_read_metrics (struct s_form_dets *formdets)
+A4GL_read_metrics (void *formdetsv)
 {
+struct s_form_dets *formdets;
   int a, n;
   int last_field = -1;
   int cnt = 0;
   int lscr = 1;
   int lfieldscr = -1;
   char delims[3][2];
+  formdets=formdetsv;
   delims[0][0] = formdets->fileform->delim[0];
   delims[1][0] = formdets->fileform->delim[1];
   delims[2][0] = formdets->fileform->delim[2];
@@ -1036,12 +1038,14 @@ if (ptr) {
  * @todo Describe function
  */
 int
-A4GL_read_fields (struct s_form_dets *formdets)
+A4GL_read_fields (void *formdetsv)
 {
+struct s_form_dets *formdets;
   int a, n;
   int n1, a1;
   int metric_no;
   char *ptr;
+formdets=formdetsv;
   A4GL_chkwin ();
   n = formdets->fileform->fields.fields_len;
   A4GL_debug ("Got %d fields\n", n);
@@ -1755,7 +1759,7 @@ A4GL_field_name_match (FIELD * f, char *s)
  * 4GL CALL
  * @todo Describe function
  */
-void
+int
 A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 {
   int a;
@@ -1774,7 +1778,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   }
 #endif
   if (a4gl_status != 0)
-    return;
+    return 0;
   flg = 0;
 
   A4GL_debug (" field_list = %p", &field_list);
@@ -1789,7 +1793,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 
   if (nofields<0) {
 	A4GL_debug("Failed to find fields");
-	return ;
+	return 0;
   }
   
   for (a = nofields; a >= 0; a--)
@@ -1811,6 +1815,7 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
       A4GL_debug ("set_init_pop complete");
     }
   A4GL_mja_wrefresh (currwin);
+return 1;
 }
 
 
@@ -1820,10 +1825,13 @@ A4GL_disp_fields_ap (int n, int attr, va_list * ap)
  * @todo Describe function
  */
 int
-A4GL_gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets, va_list * ap)
+A4GL_gen_field_chars_ap (void* field_listv, void *formdetsv, va_list * ap)
 {
   int a;
+FIELD *** field_list; struct s_form_dets *formdets;
 
+field_list=field_listv;
+formdets=formdetsv;
 #ifdef DEBUG
   {
     A4GL_debug ("Starting A4GL_gen_field_chars %p %p", field_list, formdets);
@@ -2893,7 +2901,7 @@ A4GL_fgl_infield (char *s, int a)
  * @todo Describe function
  */
 int
-A4GL_fgl_getfldbuf_ap (char *s, int n)
+A4GL_fgl_getfldbuf_ap (char *s, int n,va_list *ap)
 {
   struct s_form_dets *f;
   FIELD *fld;
@@ -3438,11 +3446,12 @@ A4GL_clr_form (int to_default)
  * 4GL CALL
  * @todo Describe function
  */
-void
+int
 A4GL_disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 {
   A4GL_chkwin();
   A4GL_exitwith ("Not implemented for TUI mode");
+return 0;
 }
 
 
@@ -3594,7 +3603,7 @@ aclfgl_set_page (int n)
  * @todo Describe function
  */
 int
-aclfgl_get_page (int n)
+aclfgl_a4gl_get_page (int n)
 {
   struct s_form_dets *f;
   f = A4GL_get_curr_form (1);
@@ -3614,13 +3623,16 @@ static void A4GL_bomb_out (void)
 
 
 int
-A4GL_fgl_fieldtouched_input_array_ap (struct s_inp_arr *s, va_list * ap)
+A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
 {
   int a;
   int c;
   int b;
   FIELD **field_list;
   int found;
+
+struct s_inp_arr  *s;
+s=sv;
 A4GL_debug("fgl_fieldtouched");
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   if (c >= 0)
@@ -3670,13 +3682,15 @@ A4GL_debug("fgl_fieldtouched");
 
 
 int
-A4GL_fgl_fieldtouched_input_ap (struct s_screenio *s, va_list * ap)
+A4GL_fgl_fieldtouched_input_ap (void *sv , va_list * ap)
 {
   int a;
   int c;
   int b;
   FIELD **field_list;
   int found;
+struct s_screenio *s;
+s=sv;
 A4GL_debug("fgl_fieldtouched");
   c = A4GL_gen_field_chars_ap (&field_list, s->currform, ap);
   if (c >= 0)

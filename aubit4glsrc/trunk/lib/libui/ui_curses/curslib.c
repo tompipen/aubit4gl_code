@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.46 2003-07-15 22:52:32 mikeaubury Exp $
+# $Id: curslib.c,v 1.47 2003-07-18 16:17:31 mikeaubury Exp $
 #*/
 
 /**
@@ -196,7 +196,7 @@ void A4GL_endit (void);
 int A4GL_disp_horiz_menu (char *title, int y, int mn_type);
 
 void A4GL_set_option (ACL_Menu * menu, int opt);
-void A4GL_free_menu (ACL_Menu * menu);
+//void A4GL_free_menu (ACL_Menu * menu);
 void A4GL_disp_h_menu (ACL_Menu * menu);
 int A4GL_menu_loop (ACL_Menu * menu);
 int A4GL_seldir (char *filespec, char *filename);
@@ -1597,7 +1597,7 @@ A4GL_set_option (ACL_Menu * menu, int opt)
  * 4GL CALL
  * @todo Describe function
  */
-void
+int
 A4GL_free_menu (ACL_Menu * menu)
 {
   ACL_Menu_Opts *opt1, *opt2;
@@ -1627,6 +1627,7 @@ A4GL_free_menu (ACL_Menu * menu)
 #ifdef DEBUG
   A4GL_debug ("Deleted window");
 #endif
+return 1;
 }
 
 /**

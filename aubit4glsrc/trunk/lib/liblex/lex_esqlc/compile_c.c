@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.65 2003-07-15 22:52:32 mikeaubury Exp $
+# $Id: compile_c.c,v 1.66 2003-07-18 16:17:31 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -165,9 +165,9 @@ static void pr_report_agg (void);
 static void pr_report_agg_clr (void);
 static void print_menu (int mn, int n);
 
-void 		A4GL_internal_lex_printc (char *fmt, va_list * ap);
-void 		A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
-void 		A4GL_internal_lex_printh (char *fmt, va_list * ap);
+//void 		A4GL_internal_lex_printc (char *fmt, va_list * ap);
+//void 		A4GL_internal_lex_printcomment (char *fmt, va_list * ap);
+//void 		A4GL_internal_lex_printh (char *fmt, va_list * ap);
 
 static void real_print_expr (struct expr_str *ptr);
 static void real_print_func_call (char *identifier, struct expr_str *args,

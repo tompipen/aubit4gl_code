@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.13 2003-07-15 17:09:05 mikeaubury Exp $
+# $Id: attributes.c,v 1.14 2003-07-18 16:17:31 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
-char * A4GL_get_currwin_name (void);
+//char * A4GL_get_currwin_name (void);
 
 /*
 =====================================================================

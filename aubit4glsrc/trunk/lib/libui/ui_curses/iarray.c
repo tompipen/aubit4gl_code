@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.26 2003-07-15 22:52:32 mikeaubury Exp $
+# $Id: iarray.c,v 1.27 2003-07-18 16:17:32 mikeaubury Exp $
 #*/
 
 /**
@@ -63,7 +63,7 @@ extern WINDOW *currwin;
 struct s_inp_arr *curr_arr_inp;
 //void A4GL_mja_set_current_field (FORM * form, FIELD * field);
 //int A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m);
-int A4GL_req_field_input_array (struct s_inp_arr *arr,char typpe, va_list *ap) ;
+//int A4GL_req_field_input_array (struct s_inp_arr *arr,char typpe, va_list *ap) ;
 
 struct s_movement
 {
@@ -1902,11 +1902,13 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int attr, int arr_line,
 
 
 
-int A4GL_req_field_input_array (struct s_inp_arr *arr,char type, va_list *ap) 
+int A4GL_req_field_input_array ( void *arrv, char type, va_list *ap) 
 {
+struct s_inp_arr *arr;
 /* fieldname + = next - = previous */
   int a;
   FIELD **ptr;
+arr=arrv;
 
   if (type=='+')
     {				// Next field next

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.18 2003-07-18 07:56:26 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.19 2003-07-18 16:17:32 mikeaubury Exp $
 #*/
 
 /**
@@ -62,7 +62,7 @@ void A4GL_mja_pos_form_cursor (FORM * form);
 
 int A4GL_form_field_chk (struct s_screenio *sio, int m);
 int A4GL_form_field_constr (struct s_screenio *sio, int m);
-int A4GL_req_field_input (struct s_screenio *s, char type, va_list *ap);
+//int A4GL_req_field_input (struct s_screenio *s, char type, va_list *ap);
 int A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s);
 int A4GL_get_curr_metric (struct s_form_dets *form);
 int A4GL_page_for_nfield (struct s_screenio *s);
@@ -523,12 +523,14 @@ process_control_stack (struct s_screenio *sio)
 
 
 int
-A4GL_req_field_input (struct s_screenio *s, char type, va_list *ap)
+A4GL_req_field_input ( void *sv, char type, va_list *ap)
 { 
+struct s_screenio *s;
 /* fieldname + = next - = previous */
   int a;
   FIELD **ptr;
   //char *field_name;
+s=sv;
 
 
   if (type=='+') { // Next field next

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.8 2003-07-12 08:03:03 mikeaubury Exp $
+# $Id: widget.c,v 1.9 2003-07-18 16:17:32 mikeaubury Exp $
 #*/
 
 /**
@@ -130,7 +130,7 @@ struct s_widgets widgets[] = {
 this should be in a4gl_aubit_lib.h but it's different all over the
 place - see a4gl_aubit_lib.h
 */
-int A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, ...);
+//int A4GL_gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, ...);
 
 GtkWidget *A4GL_make_widget (char *widget, char *config, int w);
 char *A4GL_decode_config (struct_form * f, int a);
@@ -143,7 +143,7 @@ int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event,
 		gpointer func_data);
 #endif
 int A4GL_strnullcmp (char *s1, char *s2);
-int A4GL_widget_name_match (GtkWidget * w, char *name);
+//int A4GL_widget_name_match (GtkWidget * w, char *name);
 
 /*
 =====================================================================
@@ -507,9 +507,11 @@ KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
  * @return
  */
 int
-A4GL_widget_name_match (GtkWidget * w, char *name)
+A4GL_widget_name_match (void *wv,  char *name)
 {
+GtkWidget * w;
   void *s;
+w=wv;
   if (w == 0)
     return 0;
   s = gtk_object_get_data (GTK_OBJECT (w), "Attribute");

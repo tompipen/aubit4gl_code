@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.59 2003-07-15 22:52:33 mikeaubury Exp $
+# $Id: newpanels.c,v 1.60 2003-07-18 16:17:32 mikeaubury Exp $
 #*/
 
 /**
@@ -1864,7 +1864,7 @@ A4GL_cr_window (char *s,
  * @todo Describe function
  */
 int
-A4GL_cr_window_form (char *name,
+A4GL_cr_window_form (char *namet,
 		int iswindow,
 		int form_line,
 		int error_line,
@@ -1875,12 +1875,14 @@ A4GL_cr_window_form (char *name,
   int x, y, w, h;
   char *s;
   char buff[132];
+  char name[256];
   struct s_form_dets *form;
   WINDOW *win;
   A4GL_debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
 	 name, iswindow, form_line, error_line, prompt_line, menu_line,
 	 border, comment_line, message_line, attrib);
-
+  strcpy(name,namet);
+  A4GL_trim(name);
   A4GL_chkwin();
 /*
   if (form_line == 0xff)
