@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_norpc.c,v 1.2 2002-07-21 06:41:49 afalout Exp $
+# $Id: rpc_norpc.c,v 1.3 2002-09-26 00:30:41 afalout Exp $
 #
 */
 
@@ -43,29 +43,49 @@
 =====================================================================
 */
 
-
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-
-	/* FIXME: how come this two where not needed on ISTATION, but is ARMADA:*/
-	#include <rpc/types.h>  	/* needed for xdr.h */
-	#include <rpc/xdr.h> 		/* defines XDR, etc... */
-
-	#include "a4gl_formxw.h"
-	#include "a4gl_debug.h"
-
-#else
-
-    #include "a4gl_lib_rpc_xdr_int.h"
-
-#endif
+#include "a4gl_libaubit4gl.h"
 
 /*
 =====================================================================
                     Variables definitions
 =====================================================================
 */
+
+
+/* All following definitions where copied from RPC header files, whith sole
+purpose to mainatian consistent API prototypes - since function calls use,
+for example, variable "XDR" we have to define it somehow, even in absence of
+actuall RPC functionallity on the system. Since this is jsut a dummy plug-in
+that just returns "can't do it" messages, this really don't matter much, but yes
+we know it's ugly...
+*/
+
+#define bool_t int
+
+enum xdr_op {
+	XDR_ENCODE=0,
+	XDR_DECODE=1,
+	XDR_FREE=2
+};
+
+typedef struct {
+	enum xdr_op	x_op;		/* operation; fast additional param */
+	struct xdr_ops {
+		bool_t	(*x_getlong)();	/* get a long from underlying stream */
+		bool_t	(*x_putlong)();	/* put a long to " */
+		bool_t	(*x_getbytes)();/* get some bytes from " */
+		bool_t	(*x_putbytes)();/* put some bytes to " */
+		u_int	(*x_getpostn)();/* returns bytes off from beginning */
+		bool_t  (*x_setpostn)();/* lets you reposition the stream */
+		long *	(*x_inline)();	/* buf quick ptr to buffered data */
+		void	(*x_destroy)();	/* free privates of this xdr_stream */
+	} *x_ops;
+	caddr_t 	x_public;	/* users' data */
+	caddr_t		x_private;	/* pointer to private data */
+	caddr_t 	x_base;		/* private used for position info */
+	int		x_handy;	/* extra private word */
+} XDR;
+
 
 struct menu_option_item {
 	char *id;
@@ -97,6 +117,7 @@ struct menu_list {
 };
 typedef struct menu_list menu_list;
 
+
 /*
 =====================================================================
                     Functions prototypes
@@ -106,6 +127,7 @@ typedef struct menu_list menu_list;
 static void local_exitwith (char *s);
 bool_t xdr_menu_list(XDR * xdrs,menu_list * objp);
 bool_t xdr_struct_form(XDR *xdrs, struct_form *objp);
+
 
 
 /*

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.18 2002-09-26 00:14:47 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.19 2002-09-26 00:36:18 afalout Exp $
 #
 */
 
@@ -72,7 +72,7 @@
 	#if (defined(__MACH__) && defined(__APPLE__))
 		#define bool_t int
 		///usr/include/rpc/auth.h:105: undefined type, found `XDR'
-        #include "rpc/xdr.h"
+        //#include "rpc/xdr.h"
 		#define	enum_t	int
 
     #endif

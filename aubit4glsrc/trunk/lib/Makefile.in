@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.68 2002-09-25 22:01:39 afalout Exp $
+# $Id: Makefile.in,v 1.69 2002-09-26 00:34:08 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -80,9 +80,6 @@ libMENU_NOMENU.dll :
 
 libRPC_XDR.dll:
 	${MAKE} -C librpc/sun_rpc dlllibRPC_XDR
-
-libRPC_NORPC.dll:
-	${MAKE} -C librpc/no_rpc dlllibRPC_NORPC
 
 libRPC_XMLRPC.dll:
 	${MAKE} -C librpc/xml_rpc dlllibRPC_XMLRPC
@@ -176,7 +173,7 @@ libRPC_XDR${SO_EXT}:
 	${MAKE} -C librpc/sun_rpc $@
 
 libRPC_NORPC${SO_EXT}:
-	${MAKE} -C librpc/no_rpc $@
+	${MAKE} -C librpc/no_rpc
 
 libRPC_XMLRPC${SO_EXT}:
 	${MAKE} -C librpc/xml_rpc $@
