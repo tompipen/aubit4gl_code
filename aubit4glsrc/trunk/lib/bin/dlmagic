@@ -1,3 +1,44 @@
+#!/bin/sh
+
+##########################################################################
+#
+#This script is used to create API C source file for Aubit libraraies to be loaded
+#at run-time using dlopen() function call.
+#
+##########################################################################
+
+
+if [ $# -lt 3 -o "$1" = "--help" ]
+then
+	echo "Usage:   dlmagic <InputFile> <Library> <EnvVar>"
+    echo " "
+	echo "	Input File="
+	echo "	Library= (will be overwritten by anything in the file)"
+	echo "	EnvVar= Environment variable to switch on (will be overwritten by"
+	echo "		anything in the file)"
+    echo " "
+	echo "Input file should be of the format:"
+	echo "       func-name param-type param-name ... -> returns"
+	echo "	Any line beginning with a * is a comment"
+	echo "	Any line beginning with a # is included in the output..."
+	echo "	Eg #define, #include etc."
+    echo " "
+    echo "Example File :"
+    echo " "
+    echo "	LIBRARY TEST"
+    echo "	VARIABLE VTEST"
+    echo "	#include <stdio.h>"
+    echo "	* This is a comment - Note - there are no spaces for void* int* etc."
+    echo "	pdf_rep_print void* rep,int a,int s,int right_margin -> int*"
+    echo "	disp_fields int n int attr ... -> int"
+    echo " "
+
+	exit 0
+fi
+
+
+
+
 # $1 = Input File
 # $2 = Library (will be overwritten by anything in the file)
 # $3 = Environment variable to switch on (will be overwritten by anything in the file)
@@ -147,12 +188,3 @@ print ""
 
 exit
 
-
-Example File :
-
-LIBRARY TEST
-VARIABLE VTEST
-#include <stdio.h>
-* This is a comment - Note - there are no spaces for void* int* etc.
-pdf_rep_print void* rep,int a,int s,int right_margin -> int*
-disp_fields int n int attr ... -> int
