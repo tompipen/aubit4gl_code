@@ -24,11 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2004-05-25 17:47:07 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2004-05-25 20:39:48 mikeaubury Exp $
 #
 
-LIBROOT		=../..
-ROOT		=../../..
+LIBROOT		=${AUBITDIR}/lib
+ROOT		=${AUBITDIR}
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
@@ -46,8 +46,15 @@ OBJS=process_report.o ../common/a4gl_lle.o API_process.o
 ##                              Targets
 ## ==================================================================
 
+LD_EXE_FLAGS=-rdynamic
+
+ifeq "${TARGET_OS}" "hpux"
+	LD_EXE_FLAGS=-a1 -z -Wl,+s -Wl,-E -lnsl
+endif
+
+
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
-	gcc -rdynamic -g ${OBJS} -o $@  -L$(AUBITDIR)/lib -laubit4gl
+	gcc  -g ${OBJS} -o $@  -L$(AUBITDIR)/lib -laubit4gl ${LD_EXE_FLAGS}
 
 API_process.c: API_process.spec
 	../../bin/dlmagic $^ > $@

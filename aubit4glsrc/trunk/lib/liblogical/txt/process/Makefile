@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.7 2004-05-25 17:47:08 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2004-05-25 20:39:49 mikeaubury Exp $
 #
 
 ROOT		=${AUBITDIR}
@@ -37,13 +37,15 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  -fPIC
+CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  -fPIC 
+
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 ${LIBROOT}/libLOGREPPROC_TXT.so : process_txt.o
+	#gcc  -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
 	gcc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
 
 process_txt.o: ../../layout_engine/API_layout.h

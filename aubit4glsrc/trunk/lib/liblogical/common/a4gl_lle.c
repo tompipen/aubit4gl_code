@@ -4,6 +4,11 @@
 #include <ctype.h>
 #define FILE_VERSION 2
 #include "a4gl_lle.h"
+#ifdef hpux
+#include <netinet/in.h>
+#endif
+
+
 
 void read_entry(struct r_report_block *block) ;
 

@@ -20,7 +20,7 @@ then
 		echo Making $a/$b
 		echo ""
 		cd $AUBITDIR/lib/liblogical/$a/$b
-		make $@
+		gmake $@
 	done
 else
 		echo ""
@@ -28,6 +28,6 @@ else
 	echo Making $a
 	echo ""
 	cd $AUBITDIR/lib/liblogical/$a
-	make $@
+	gmake $@
 fi
 done

@@ -89,8 +89,9 @@ int RP_process_report (char *buff)
   int x, y;
   int page;
   int last_page = -1;
+  int sz;
   page_touched = 0;
-
+printf("RP_process\n"); fflush(stdout);
   if (rep_fout) fclose(rep_fout);
 
   rep_fout=0;
@@ -110,7 +111,10 @@ int RP_process_report (char *buff)
 		return 0;
   }
 	
-  lines = malloc (sizeof (char *) * report->page_length);
+  sz =(sizeof (char *) * report->page_length);
+  printf("Alloc %d bytes\n"); fflush(stdout);
+  lines = malloc (sz);
+  printf("lines=%p\n",lines);
 
   for (a = 0; a < report->page_length; a++)
     {

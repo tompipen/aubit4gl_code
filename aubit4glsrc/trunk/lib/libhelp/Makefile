@@ -24,11 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.19 2004-05-12 10:54:19 mikeaubury Exp $
+# $Id: Makefile,v 1.20 2004-05-25 20:41:10 mikeaubury Exp $
 #
 
-ROOT    	=../..
-LIBROOT		=..
+ROOT    	=${AUBITDIR}
+LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
