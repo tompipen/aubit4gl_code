@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.44 2003-02-04 18:13:14 psterry Exp $
+# $Id: lexer.c,v 1.45 2003-02-05 00:05:00 mikeaubury Exp $
 #*/
 
 /**
@@ -49,6 +49,7 @@
 */
 
 #include "a4gl_4glc_int.h"
+#include "y.tab.h"
 
 
 /*
