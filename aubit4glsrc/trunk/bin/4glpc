@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.91 2003-01-14 12:23:47 mikeaubury Exp $
+# $Id: 4glpc,v 1.92 2003-01-17 23:03:57 afalout Exp $
 #
 
 ########################################################################
@@ -748,7 +748,8 @@ do
 			if ! [ -s $fname.c ]
     	    then
 				#True if file exists and has  a  size  greater  than  zero.
-                echo "Created $fname.c is zero size !"
+                echo "Created $fname.c is zero size ! Message is:"
+                echo $err_msg
 
 				if [ "$A4GLVERBOSE" = "yes" ]
 				then

@@ -4,6 +4,23 @@
 # Standard header for amake-style .mk files
 ############################################
 
+#if we have to build 4Js .sch file, where to put it, and where to look
+#for it: WARNING: SCWORK is max specific, but we need it here, because it's
+#needed in rules include file, so it must occur BEFORE it is included.
+SCH_DIR=${SCWORK}
+
+#set FGLDBPATH to location where we placed .sch file, so that 4Js compiler
+#can find it
+FGLDBPATH=${SCH_DIR}
+export FGLDBPATH
+
+#show additional debugging messages
+VERBOSE=1
+
+#If you want to ignore link errors, for instance, to see if everything else 
+#will compileset this to -
+FAIL_LINK=-
+
 ####################
 #You can specify which rules will be included, in environment
 #variable MAKERULES. "amake" script is a good place to do this.
@@ -59,6 +76,46 @@ ALLFORMS.per= $(wildcard *.per)
 ifdef FGLDBPATH
 	vpath %.sch ${FGLDBPATH}
 endif
+
+####################
+#define compiler dependent extension, fir use in vpath:
+#FIXME: move this is rules files - can't do that, if more then one is included,
+#they would overwrite each other! (?)
+ifeq "$(MKTARGET)" "aubit"
+	FRM=.xml.frm
+	OBJ=.4ao
+	PRG=.4ae
+#FIXME:
+	HLP=.msg
+	LIB=.aox
+endif
+
+ifeq "$(MKTARGET)" "i4gl-pcode"
+	FRM=.frm
+	OBJ=.4go
+	PRG=.4gi
+#FIXME:
+	HLP=.msg
+	LIB=.4gx
+endif
+
+ifeq "$(MKTARGET)" "d4gl-pcode"
+	FRM=.42f
+	OBJ=.42o
+	PRG=.42r
+#FIXME:
+	HLP=.msg
+	LIB=.42x
+endif
+
+ifeq "$(MKTARGET)" "querix"
+	FRM=.pic
+	OBJ=.qo
+	PRG=.4qe
+	HLP=.qms
+	LIB=.qox
+endif
+
 
 ifdef MAXDIR
     ####################

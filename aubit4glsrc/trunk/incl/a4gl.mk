@@ -1,4 +1,4 @@
-#   @(#)$Id: a4gl.mk,v 1.15 2002-10-13 11:44:39 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.16 2003-01-17 23:04:05 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -16,9 +16,9 @@
 
 
 ifdef COMSPEC
-	SH=bash
+    SH=bash aubit
 else
-	SH=sh
+    SH=sh aubit
 endif
 
 A4GL_CLEAN_FLAGS = *.ao *.bak *.h *.err *.glb *.hlp *.4ae *.afr

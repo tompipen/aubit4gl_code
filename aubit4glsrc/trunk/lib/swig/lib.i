@@ -1,3 +1,13 @@
+// ========================================================================
+// this is SWIG warper specification file
+// it will be processed by SWIG executale, to create Aubit 4gl library warper
+// for use with Aubit 4gl compiler Perl code output compiler runner -
+// "aubit4gl_pl.pm". Note that this Perl Module (.pm) needs to be installed
+// to global Perl moduled locations, or Perl @INC path has to be modifies,
+// for it to be accessible to Perl interpreter
+//
+// ========================================================================
+
 %module aubit4gl_pl
 %include typemaps.i
 %apply int *BOTH {int *in_out}; 

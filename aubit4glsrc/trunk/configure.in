@@ -12,7 +12,7 @@ dnl # |     any later version.                                               |
 dnl # |                                                                      |
 dnl # |  B) the Aubit License as published by the Aubit Development Team and |
 dnl # |     included in the distribution in the file: LICENSE                |
-dnl # |                                                                     |
+dnl # |                                                                      |
 dnl # | This program is distributed in the hope that it will be useful,      |
 dnl # | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
 dnl # | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.137 2003-01-15 11:43:27 afalout Exp $
+dnl # $Id: configure.in,v 1.138 2003-01-17 23:03:17 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only

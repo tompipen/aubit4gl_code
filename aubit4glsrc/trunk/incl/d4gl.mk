@@ -1,4 +1,4 @@
-#   @(#)$Id: d4gl.mk,v 1.3 2001-10-04 05:49:24 afalout Exp $
+#   @(#)$Id: d4gl.mk,v 1.4 2003-01-17 23:04:05 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -67,7 +67,7 @@ D4GL_MC         = ${D4GL_MC_CMD} ${D4GL_MC_FLAGS}
 D4GL_PA         = ${D4GL_PA_CMD} ${D4GL_PA_FLAGS}
 D4GL_SC         = ${D4GL_SC_CMD} ${D4GL_SC_FLAGS}
 
-D4GL_SUFFIXES = .4gl .per .42f .42e .42o .42r .42m .msg .42h .sch
+D4GL_SUFFIXES = .4gl .per .42f .42e .42o .42r .42m .msg .42h .sch .42x
 
 # Add the D4GL suffixes to the standard suffix list
 .SUFFIXES: ${D4GL_SUFFIXES}
@@ -132,7 +132,11 @@ eerr%.42x:
 #${DBASE.sch}:
 %.sch:
 	${D4GL_SC} ${D4GL_SC_FLAGS} ${DBASE}
-	${SCHMVCMD} ${DBASE}.sch ${FGLDBPATH}
+#ifneq "${FGLDBPATH}" ""
+#	${SCHMVCMD} ${DBASE}.sch ${FGLDBPATH}
+#else
+	mv ${DBASE}.sch ${SCH_DIR}
+#endif
 
 
 %.42x:  %.mk

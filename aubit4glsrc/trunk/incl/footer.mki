@@ -1,15 +1,14 @@
 #############################################################################
-#   Aubit 4gl compiler - make system
+#   Aubit 4gl compiler - 'Amake' make system
 #
-#footer for all .mk files
+# footer for all .mk files
 #
-#do not put ANY hard coded names here!!!!!
+# do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.14 2003-01-04 01:58:30 afalout Exp $
+# $Id: footer.mki,v 1.15 2003-01-17 23:04:06 afalout Exp $
 #############################################################################
 
 ifneq "$(DBASE)" ""
-	#DBASE.sch = ${FGLDBPATH}/${DBASE}.sch
 	DBASE.sch = ${DBASE}.sch
 endif
 
@@ -18,8 +17,12 @@ PROGTYPE  = $(suffix ${PROG})
 #for ld to find .aox libs
 export LD_RUN_PATH=${LIBSTORE}
 
-ifeq "$(PROGTYPE)" ".lib"
+# =======================================================================
+#       Set options/extensions for compiling a program or library
+# =======================================================================
 
+ifeq "$(PROGTYPE)" ".lib"
+	#we are making a library
 	ifeq "${PROG}" "dummy.lib"
         SKIPLINKING=1
 		TARGETCMD=@echo Name dummy.lib was used, final linking skipped.
@@ -28,85 +31,79 @@ ifeq "$(PROGTYPE)" ".lib"
 		TARGETCMD=ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
     endif
 
-
-	#ifeq "$(LIBSTORE)" ""
     ifeq "$(POINTTOSTORE)" "1"
-		PROG.42r  = $(LIBSTORE)${PROG:.lib=.42x} #D4GL/4Js p-code
-		PROG.42e  = $(LIBSTORE)${PROG:.lib=.42o} #D4GL/4Js c-code
-		PROG.4ge  = $(LIBSTORE)${PROG:.lib=.4gx} #I4GL c-code
-		PROG.4gi  = $(LIBSTORE)${PROG:.lib=.4go} #I4GL p-code
-		PROG.4ae  = $(LIBSTORE)${PROG:.lib=.aox} #aubit
-    else
-		PROG.42r  = ${PROG:.lib=.42x} #D4GL/4Js p-code
-		PROG.42e  = ${PROG:.lib=.42o} #D4GL/4Js c-code
-		PROG.4ge  = ${PROG:.lib=.4gx} #I4GL c-code
-		PROG.4gi  = ${PROG:.lib=.4go} #I4GL p-code
-		PROG.4ae  = ${PROG:.lib=.aox} #aubit
-	endif
+		ADDLIBSTORE=$(LIBSTORE)
+    endif
+
+	PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=.42x} #D4GL/4Js p-code
+	PROG.42e  = $(ADDLIBSTORE)${PROG:.lib=.42o} #D4GL/4Js c-code
+	PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=.4gx} #I4GL c-code
+	PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=.4go} #I4GL p-code
+	PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=.aox} #aubit
+	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=.qox} #Querix
 
 else
+    #we are making a program
 	LIBFLAG=
     TARGETCMD=${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG} #--rpath${LIBSTORE} #-L${LIBSTORE}
 
 	#ifeq "$(EXECSTORE)" ""
     ifeq "$(POINTTOSTORE)" "1"
-		PROG.42r  = ${EXECSTORE}${PROG}.42r #D4GL/4Js p-code
-		PROG.42e  = ${EXECSTORE}${PROG}.42e #D4GL/4Js c-code
-		PROG.4ge  = ${EXECSTORE}${PROG}.4ge #I4GL c-code
-		PROG.4gi  = ${EXECSTORE}${PROG}.4gi #I4GL p-code
-		PROG.4ae  = ${EXECSTORE}${PROG}.4ae #aubit
-    else
-		PROG.42r  = ${PROG}.42r #D4GL/4Js p-code
-		PROG.42e  = ${PROG}.42e #D4GL/4Js c-code
-		PROG.4ge  = ${PROG}.4ge #I4GL c-code
-		PROG.4gi  = ${PROG}.4gi #I4GL p-code
-		PROG.4ae  = ${PROG}.4ae #aubit
+		ADDEXECSTORE=${EXECSTORE}
     endif
-endif
 
-
-#ifneq "$(LIBSTORE)" ""
-ifeq "$(POINTTOSTORE)" "1"
-	FILES.42x = $(addprefix $(LIBSTORE), ${FILES.lib:.lib=.42x})
-	FILES.4gx = $(addprefix $(LIBSTORE), ${FILES.lib:.lib=.4gx})
-	FILES.aox = $(addprefix $(LIBSTORE), ${FILES.lib:.lib=.aox})
-else
-	FILES.42x = ${FILES.lib:.lib=.42x}
-	FILES.4gx = ${FILES.lib:.lib=.4gx}
-	FILES.aox = ${FILES.lib:.lib=.aox}
-endif
-#ifneq "$(OBJSTORE)" ""
-ifeq "$(POINTTOSTORE)" "1"
-	FILES.42m = $(addprefix ${OBJSTORE}, ${FILES.4gl:.4gl=.42m})
-	FILES.4go = $(addprefix ${OBJSTORE}, ${FILES.4gl:.4gl=.4go})
-	FILES.ao  = $(addprefix ${OBJSTORE}, ${FILES.4gl:.4gl=.ao})
-else
-	FILES.42m = ${FILES.4gl:.4gl=.42m}
-	FILES.4go = ${FILES.4gl:.4gl=.4go}
-	FILES.ao  = ${FILES.4gl:.4gl=.ao}
-endif
-#ifneq "$(FORMSTORE)" ""
-ifeq "$(POINTTOSTORE)" "1"
-	FILES.42f = $(addprefix ${FORMSTORE}, ${FILES.per:.per=.42f})
-	FILES.frm = $(addprefix ${FORMSTORE}, ${FILES.per:.per=.frm})
-	FILES.afr = $(addprefix ${FORMSTORE}, ${FILES.per:.per=.afr})
-else
-	FILES.42f = ${FILES.per:.per=.42f}
-	FILES.frm = ${FILES.per:.per=.frm}
-	FILES.afr = ${FILES.per:.per=.afr}
+	PROG.42r  = ${ADDEXECSTORE}${PROG}.42r #D4GL/4Js p-code
+	PROG.42e  = ${ADDEXECSTORE}${PROG}.42e #D4GL/4Js c-code
+	PROG.4ge  = ${ADDEXECSTORE}${PROG}.4ge #I4GL c-code
+	PROG.4gi  = ${ADDEXECSTORE}${PROG}.4gi #I4GL p-code
+	PROG.4ae  = ${ADDEXECSTORE}${PROG}.4ae #aubit
+	PROG.4qe  = ${ADDEXECSTORE}${PROG}.4qe #Querix
 
 endif
-#ifneq "$(HELPSTORE)" ""
-ifeq "$(POINTTOSTORE)" "1"
-	FILES.42h = $(addprefix ${HELPSTORE}, ${FILES.msg:.msg=.42h})
-	FILES.iem = $(addprefix ${HELPSTORE}, ${FILES.msg:.msg=.iem})
-	FILES.hlp = $(addprefix ${HELPSTORE}, ${FILES.msg:.msg=.hlp})
-else
-	FILES.42h = ${FILES.msg:.msg=.42h}
-	FILES.iem = ${FILES.msg:.msg=.iem}
-	FILES.hlp = ${FILES.msg:.msg=.hlp}
-endif
 
+# =======================================================================
+#       Set extensions for compiling library/objects/forms/help files
+# =======================================================================
+
+#Libraries:
+	ifeq "$(POINTTOSTORE)" "1"
+		ADDLIBSTORE=$(LIBSTORE)
+	endif
+	FILES.42x = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=.42x})
+	FILES.4gx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=.4gx})
+	FILES.aox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=.aox})
+	FILES.qox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=.qox})
+
+#OBJECTS
+	ifeq "$(POINTTOSTORE)" "1"
+		ADDOBJSTORE=${OBJSTORE}
+	endif
+	FILES.42m = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=.42m})
+	FILES.4go = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=.4go})
+	FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=.ao})
+	FILES.qo  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=.qo})
+
+#FORMS
+	ifeq "$(POINTTOSTORE)" "1"
+		ADDFORMSTORE=${FORMSTORE}
+	endif
+	FILES.42f = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.42f})
+	FILES.frm = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.frm})
+	FILES.afr = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.afr})
+	FILES.pic = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.pic})
+
+#HELP
+	ifeq "$(POINTTOSTORE)" "1"
+		ADDHELPSTORE=${HELPSTORE}
+	endif
+	FILES.42h = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=.42h})
+	FILES.iem = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=.iem})
+	FILES.hlp = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=.hlp})
+	FILES.qms = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=.qms})
+
+# =======================================================================
+#                   Define Clean target settings
+# =======================================================================
 
 DEBRIS.prog = ${PROG.42r} ${PROG.42e} ${PROG.4ge} ${PROG.4gi} ${PROG.4ae}
 DEBRIS.d4gl = 	${FILES.42m} 	${FILES.42h}
@@ -124,6 +121,10 @@ ifneq "$(FILES.lib)" ""
 	DEBRIS.d4gl.libs =	${LIBSTORE}${FILES.42x}
 endif
 
+# =======================================================================
+#                              Targets
+# =======================================================================
+
 
 default:	${DEFAULT}
 
@@ -133,32 +134,40 @@ touch.all:
 	@touch -c ${FILES.4gl} ${FILES.per} ${FILES.msg}
 	@echo "Touched all source files in current dorectory"
 
-clean.target:
-	@${RM} ${DEBRIS.prog}
-	@echo "All targets deleted"
-
-clean: clean.target
-	@${RM} ${DEBRIS.i4gl} ${DEBRIS.d4gl} ${DEBRIS.aubit}
-	@echo "All intermediate files and target deleted"
-
-clean.most: clean
-	@${RM} ${DEBRIS.aubit.forms} ${DEBRIS.i4gl.forms}
-	@echo "All forms deleted"
-
-clean.all: clean.most
-	@${RM} ${DEBRIS.aubit.libs}
-	@echo "All libraries deleted"
+# =======================================================================
+#                      Compiler dependent Targets
+# =======================================================================
 
 aubit	  :	${PROG.4ae} ${FILES.afr} ${FILES.hlp}
 d4gl-pcode:	${PROG.42r} ${FILES.42f} ${FILES.42h}
 d4gl-ccode:	${PROG.42e} ${FILES.42f} ${FILES.42h}
 i4gl-pcode:	${PROG.4gi} ${FILES.frm} ${FILES.iem}
 i4gl-ccode:	${PROG.4ge} ${FILES.frm} ${FILES.iem}
-querix    : ${PROG.42r} ${FILES.42f} ${FILES.42h}
+querix    : ${PROG.4qe} ${FILES.pic} ${FILES.qms}
 plexus:
 
-aubitforms: ${FILES.afr}
+# =======================================================================
+#                            Aubit Targets
+# =======================================================================
 
+########################
+#Build C-code program
+${PROG.4ae}:	${FILES.ao} ${FILES.aox}
+	${FAIL_LINK}${TARGETCMD}
+#	@echo CHANGED: $?
+ifeq "$(MOVETARGETTOSTORE)" "1"
+ifneq "$(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null)" ""
+		${TARGETMVCMD} $(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null) ${EXECSTORE}
+endif
+endif
+#	@echo OK: ${PROG.4ae}
+
+# =======================================================================
+#                            4Js Targets
+# =======================================================================
+
+#########################
+#Build P-code program
 ${PROG.42r}:	${FILES.42m} ${FILES.42x}
 #	${D4GL_PL} -o $@ $^ ${D4GL_PL_LDFLAGS}
 ifeq "${SKIPLINKING}" "1"
@@ -179,39 +188,49 @@ ifneq "$(shell ls ${PROG.42r} ${FILES.42m} 2> /dev/null)" ""
 		${TARGETMVCMD} $(shell ls ${PROG.42r} ${FILES.42m} 2> /dev/null) ${EXECSTORE}
 endif
 endif
-	@echo OK: ${PROG.42r}
+#	@echo OK: ${PROG.42r}
 
-
-${PROG.4ae}:	${FILES.ao} ${FILES.aox}
-	${TARGETCMD}
-#	@echo CHANGED: $?
-ifeq "$(MOVETARGETTOSTORE)" "1"
-ifneq "$(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null)" ""
-		${TARGETMVCMD} $(shell ls ${PROG.4ae} ${FILES.ao} 2> /dev/null) ${EXECSTORE}
-endif
-endif
-	@echo OK: ${PROG.4ae}
-
+########################
+#Build C-code program
 #${PROG.42e}:	${DBASE.sch} ${FILES.42o}
 ${PROG.42e}:	${FILES.42o} ${FILES.42x}
 	${D4GL_CL} -o $@ ${FILES.42o} ${D4GL_CL_LDFLAGS}
 
+# =======================================================================
+#                            Informix Targets
+# =======================================================================
+
+#########################
+#Build P-code program
 ${PROG.4gi}: ${FILES.4go}
 #	@echo xwzhere
 #	${I4GL_PL} -o $@ ${FILES.4go} ${I4GL_PL_LDFLAGS}
 	${I4GL_PL} $^ > $@
 
-#%.4go : %.4gl
-#	ddd
-
+########################
+#Build C-code program
 ${PROG.4ge}:	${FILES.o}
 	${I4GL_CC} -o $@ ${FILES.o}   ${I4GL_CC_LDFLAGS}
 
-debug:
-	@echo ***DEBUG 1:*** ${FILES.ao}
 
-enddebug:
-	@echo ***DEBUG END***
+# =======================================================================
+#                            Querix Targets
+# =======================================================================
+
+########################
+#Build C-code program
+${PROG.4qe}:	${FILES.qo} ${FILES.pic} ${FILES.qms}
+ifeq "${VERBOSE}" "1"
+	@echo "Linking Querix: $@"
+endif
+	${FAIL_LINK}${Q4GL_CL} -o $@ ${FILES.qo} ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+ifeq "${VERBOSE}" "1"
+	@echo "$@: OK"
+endif
+
+# =======================================================================
+#                          Define dependencies
+# =======================================================================
 
 #is this causing everything to recompile when GLOBALS file is changed?
 #No, something else...
@@ -222,11 +241,39 @@ ${FILES.4go}:	${GLOBALS.4gl}
 ${FILES.o}:		${GLOBALS.4gl}
 ${FILES.ao}:	${GLOBALS.4gl}
 
+# =======================================================================
+#                          Install Targets
+# =======================================================================
+
+
 install: ${FILES.42m} ${PROG.42r} ${FILES.42f} ${FILES.42h}
 	mv ${FILES.42m} ${PROG.42r} ${MAXDIR}/gprog
 	-mv ${FILES.42h} ${MAXDIR}/gprog
 	-mv ${FILES.42f} ${MAXDIR}/gform
 
+# =======================================================================
+#                          Clean Targets
+# =======================================================================
+
+clean.target:
+	@${RM} ${DEBRIS.prog}
+	@echo "All targets deleted"
+
+clean: clean.target
+	@${RM} ${DEBRIS.i4gl} ${DEBRIS.d4gl} ${DEBRIS.aubit}
+	@echo "All intermediate files and target deleted"
+
+clean.most: clean
+	@${RM} ${DEBRIS.aubit.forms} ${DEBRIS.i4gl.forms}
+	@echo "All forms deleted"
+
+clean.all: clean.most
+	@${RM} ${DEBRIS.aubit.libs}
+	@echo "All libraries deleted"
+
+# =======================================================================
+#                          Help
+# =======================================================================
 
 help:
 	@echo "Targets: (default=${DEFAULT})"
@@ -235,6 +282,15 @@ help:
 	@echo "FORMS: aubitforms"
 	@echo "INSTALL: install"
 
+# =======================================================================
+#                  Debugging and misc. targets
+# =======================================================================
+
+debug:
+	@echo ***DEBUG 1:*** ${FILES.ao}
+
+enddebug:
+	@echo ***DEBUG END***
 
 show:
 	@echo DEFAULT=${DEFAULT}
@@ -246,4 +302,4 @@ show:
 	@echo FILES.per = ${FILES.per}
 
 
-#------------------------ EOF ------------------------------
+# =============================== EOF ==================================

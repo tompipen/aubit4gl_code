@@ -8,15 +8,16 @@
 
 
 #Clean everything:
-#yeah right-we don't have makefile at this point!
 #should we move "@PERL@ Makefile.PL" before this?
-make clean
+if [ -f Makefile ]; then
+	make clean
+fi
 
 #Create SWIG warpers:
 #FIXME: take Perl version from configure:
 @SWIG@ -v -perl5 -shadow lib.i
 
-#Create Makefile:
+#Create Makefile using Perl MakeMaker, from Makefile.PL:
 @PERL@ Makefile.PL
 
 #Build:
