@@ -18,7 +18,7 @@
 	#define USE_SHL 1
 #endif
 
-#ifdef USE_SHL
+#if USE_SHL
 	#include <dl.h>
 #endif
 
@@ -27,14 +27,15 @@
 #ifndef CAN_DLOPEN_SELF
 	#define CAN_DLOPEN_SELF 1
 #endif
+
 #ifndef HAVE_DLFCN_H
 	#define HAVE_DLFCN_H 1
 #endif
+
 #ifndef NEED_DL_UNDERSCORE
-	#define NEED_DL_UNDERSCORE
+	#define NEED_DL_UNDERSCORE 0
 #endif	
 
-#ifdef CAN_DLOPEN_SELF
 
 #if HAVE_DLFCN_H
 	#include <dlfcn.h>
@@ -49,6 +50,7 @@
 #    define LT_DLGLOBAL         0
 #  endif
 #endif
+
 
 /* We may have to define LT_DLLAZY_OR_NOW in the command line if we
    find out it does not work in some platform. */
@@ -70,7 +72,9 @@
 #      endif
 #    endif
 #  endif
-#endif
+
+
+
 
 /* void print_module(void) ; */
 module this_module;
@@ -616,6 +620,8 @@ void * find_by_dlself(char *s)
   //char *ptr1;
   int a;
   char *fname;
+
+
   if ((long)so_libs[0]==-1) {
   	for (a=0;a<10;a++) {
 	  	if (a==0) {
@@ -633,6 +639,7 @@ void * find_by_dlself(char *s)
 		  	}
 	  	}
 	
+
 		so_libs[a] = (void *)dlopen (fname, RTLD_LAZY);
 
 		if (fname) {
@@ -645,7 +652,7 @@ void * find_by_dlself(char *s)
 		  
   for (a=0;a<10;a++) {
   	if (so_libs[a]) {
-#ifdef NEED_DL_UNDERSCORE
+#if NEED_DL_UNDERSCORE
 		sprintf(buff,"_%s",s);
 #else
 		strcpy(buff,s);

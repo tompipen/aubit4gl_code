@@ -183,6 +183,7 @@ REPORT_TERMINATE	{strcpy(yytext,"-9999"); count(); return CONSTANT;}
 "void"			{ count(); return(VOID); }
 "volatile"		{ count(); return(VOLATILE); }
 "while"			{ count(); return(WHILE); }
+"__LINE__"		{ sprintf(yytext,"%d",yylineno); count(); return(CONSTANT);}
 {L}({L}|{D})*		{ count(); return(check_type()); }
 
 0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
