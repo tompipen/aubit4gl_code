@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.26 2002-01-27 07:00:36 afalout Exp $
+# $Id: Makefile.in,v 1.27 2002-01-29 11:07:45 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -1392,35 +1392,52 @@ aubit4gl.lsm:
 
 
 ## ------------------------------------------------------------------
-##                      DoxyGen doccumentation
+##            DoxyGen doccumentation creation
 ## ------------------------------------------------------------------
 
-#create Doxy for local developer use, with _NO_ CGI search and _NO_ graphs:
-doxy: doxy.make doxy.message
+#create Doxy documentation
+doxy:
+ifneq "@DOXYGEN@" "no"
+	${MAKE} doxy.make
+ifneq "@WWW_DOCUMENT_ROOT@" ""
+	${MAKE} doxy.install.www
+endif
+ifneq "@CGI_DIR@" ""
+	${MAKE} doxy.install.search
+endif
+	@echo To use it, open file 'docs/doxy/html/index.html' in your web browser
+else
+	@echo "Sorry DOXYGEN not installed"
+endif
 
 doxy.make:
 	rm -rf docs/doxy/html
 	doxygen docs/doxy/Doxyfile
+	
+#Now copy the file
+#
+#     /opt/aubit/aubit4glsrc/docs/doxy/html/doxysearch.cgi
+#
+#to the directory where the CGI binaries are located and don't forget to run
+#
+#     /opt/aubit/aubit4glsrc/docs/doxy/html/installdox
+#
+#to replace any dummy links.
 
-
-#create Doxy for use on web site, with CGI search and graphs:
-doxy.www: doxy.make.www doxy.install.www doxy.install.search doxy.message
-
-doxy.make.www:
-	rm -rf docs/doxy/html
-	doxygen docs/doxy/Doxyfile-www
-
-doxy.install.search:
-	cp docs/doxy/html/doxysearch.cgi ${APACHEDIR}/cgi-bin
+	@echo DoxyGen doccumentation created and placed in docs/doxy/html
 
 doxy.install.www:
-	rm -rf ${WWW}/projects/Aubit4GL/doxy/html
-	cp -r docs/doxy/html ${WWW}/projects/Aubit4GL/doxy/html
-	cd ${WWW}/projects/Aubit4GL/doxy/html; doxytag -s search.idx
+	rm -rf @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
+	cp -r docs/doxy/html @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
+	cd @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html; doxytag -s search.idx
+	@echo DoxyGen doccumentation installed in web server path :
+	@echo @WWW_DOCUMENT_ROOT@/projects/Aubit4GL/doxy/html
+	@echo Point your web browser to @WWW_HOST_NAME@/projects/Aubit4GL/doxy/html/index.html
 
-doxy.message:
-	@echo DoxyGen doccumentation created and placed in docs/doxy/html
-	@echo To use it, open file 'index.html' in your web browser
+doxy.install.search:
+	cp docs/doxy/html/doxysearch.cgi @CGI_DIR@
+
+
 
 ## ------------------------------------------------------------------
 ##                       Other Targets
@@ -1649,6 +1666,12 @@ settings.rc:
 
 find.dup.c.files:
 	find . -name "*.c" -exec basename {} \; | sort | uniq -c | grep -v " 1"
+
+
+configure:
+	autoconf --localdir=etc/config
+
+
 
 ## ---------------------------- EOF ----------------------------------
 

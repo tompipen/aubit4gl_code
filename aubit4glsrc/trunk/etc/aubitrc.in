@@ -169,6 +169,14 @@ ODBCLIBDIR=@oldincludedir@
 #returns "${exec_prefix}/lib" and we cannot process variables here
 ODBC_LIB_DIR=/usr/lib
 
+####################
+#names of libraries paths 'configure' detected outside of standard
+#library search paths; note that they will be adde to ld.so.conf
+#automatically (but this applies onl;y to run-time loader, and not linekr)
+#and on non-Linux platforms to .bashrc of the user, but this applies only to
+#that user.
+#that installed compiler, but
+ADD_LD_LIBRATY_PATH=@ADD_LD_LIBRATY_PATH@
 
 ###############################
 #GTK+ 2.0 configuration

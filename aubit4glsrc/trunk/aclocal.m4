@@ -503,7 +503,7 @@ AC_DEFUN(AC_LIBTOOL_LINKER_OPTION,
        $2=yes
      fi
    fi
-   $rm conftest* 
+   $rm conftest*
    LDFLAGS="$save_LDFLAGS"
 ])
 
@@ -988,7 +988,7 @@ fi
 AC_DEFUN([AC_LIBTOOL_PROG_CC_PIC],
 [AC_REQUIRE([_LT_AC_SYS_COMPILER])dnl
 
-AC_ARG_WITH(pic, 
+AC_ARG_WITH(pic,
   [  --with-pic              try to use only PIC/non-PIC objects [default=use both]],
 pic_mode="$withval", pic_mode=default)
 test -z "$pic_mode" && pic_mode=default
@@ -3044,7 +3044,7 @@ fi
 # _LT_AC_TAGCONFIG
 # ----------------
 AC_DEFUN([_LT_AC_TAGCONFIG],
-[AC_ARG_WITH(tags, 
+[AC_ARG_WITH(tags,
   [  --with-tags=TAGS        include an alternate configuration],
   tagnames="$withval", tagnames=)
 
@@ -3724,7 +3724,7 @@ esac
 
 # AC_LIBLTDL_CONVENIENCE([DIRECTORY])
 # -----------------------------------
-# sets LIBLTDL to the link flags for the libltdl convenience library and 
+# sets LIBLTDL to the link flags for the libltdl convenience library and
 # INCLTDL to the include flags for the libltdl header and adds
 # --enable-ltdl-convenience to the configure arguments.  Note that LIBLTDL
 # and INCLTDL are not AC_SUBSTed, nor is AC_CONFIG_SUBDIRS called.  If

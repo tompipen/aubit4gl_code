@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.24 2002-01-27 07:00:36 afalout Exp $
+# $Id: configure.in,v 1.25 2002-01-29 11:07:46 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -153,6 +153,20 @@ AC_SUBST(LDCONFIG)
 AC_SUBST(target)
 AC_SUBST(ADD_LD_LIBRATY_PATH)
 
+#DoxyGen
+AC_SUBST(DOXYGEN)
+AC_SUBST(HAVE_DOT)
+AC_SUBST(DOT_PATH)
+AC_SUBST(DOXY_BIN_ABSPATH)
+
+#http server
+AC_SUBST(CGI_DIR)
+AC_SUBST(APACHECTL)
+AC_SUBST(HTTPD)
+AC_SUBST(APACHE_CONF)
+AC_SUBST(WWW_HOST_NAME)
+AC_SUBST(WWW_DOCUMENT_ROOT)
+
 ## ==================================================================
 ##                             Defaults
 ## ==================================================================
@@ -265,6 +279,35 @@ if test "$AUBIT_SOURCE" = "1" ; then
 
 	AC_PATH_PROG(DOXYGEN, doxygen, no)
 	AC_PATH_PROG(CVS_CLIENT, cvs, no)
+	AC_PATH_PROG(DOXYSEARCH, doxysearch, no)
+    if test "$DOXYSEARCH" != "no" ; then
+		DOXY_BIN_ABSPATH=`dirname $DOXYSEARCH`
+    fi
+
+	# dot tool is part of Graphviz, a graph visualization toolkit from AT&T
+	# and Lucent Bell Labs. One of DoxyGen options
+
+	if test "$with_dot" != "no"; then
+		if test "$with_dot" != "yes"; then
+			old_PATH="$PATH"
+	        PATH="$with_dot:$PATH"
+	    fi
+
+		AC_PATH_PROG(DOTTOOL, dot, no)
+
+		if test "$DOTTOOL" != "no"; then
+			HAVE_DOT=YES
+			DOT_PATH=`dirname "$DOTTOOL"`
+		else
+			HAVE_DOT=NO
+		fi
+
+		if test "$with_dot" != "yes"; then
+			PATH=$old_PATH
+	    fi
+	else
+		HAVE_DOT=NO
+	fi
 
 fi
 
@@ -286,7 +329,6 @@ AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbi
 if test -n "$PROG_SENDMAIL"; then
   AC_DEFINE(HAVE_SENDMAIL)
 fi
-
 
 ## ==================================================================
 ##                 Checks for other 4gl compiles
@@ -317,23 +359,63 @@ else
 fi
 
 ## ==================================================================
-##                 Checks for web server CGI support
+##                 Checks for web server support
 ## ==================================================================
 
 #see if we can enable Aubit CGI/HTMLlib compile, DoxyGen web
 #install, FGLDOC web server support
 
-AC_MSG_CHECKING(Web server support)
 AC_PATH_PROG(APACHECTL, apachectl, no)
 AC_PATH_PROG(HTTPD, httpd, no)
 
+AC_MSG_CHECKING(Web server support)
+if test "$APACHECTL" != "no"; then
+	AC_MSG_RESULT(Apache)
+else
+	if test "$HTTPD" != "no"; then
+		AC_MSG_RESULT(httpd)
+    else
+		AC_MSG_RESULT(no)
+    fi
+fi
+
 #If we have web server:
+
+	if test "$APACHECTL" != "no"; then
+		AC_MSG_CHECKING(Apache configuration file)
+		if test -f /etc/httpd/conf/httpd.conf; then
+			APACHE_CONF=/etc/httpd/conf/httpd.conf
+			AC_MSG_RESULT($APACHE_CONF)
+		else
+			AC_MSG_RESULT(no)
+		fi
+	fi
+
 
 	#DO we have JSP needed for FGLDOC?
 
     #Where is CGI directory?
+    if test "$APACHE_CONF" != ""; then
+		AC_MSG_CHECKING(Web server paths)
+			#ScriptAlias /cgi-bin/ "/var/www/cgi-bin/"
+			grep ScriptAlias $APACHE_CONF > /tmp/tmp_config_.tmp
+			TMP=`grep -v \# /tmp/tmp_config_.tmp`
+			#echo 2: $TMP
+            #echo --------------------------
+			TMP2=`echo $TMP | grep cgi-bin | awk '{print $3}' | sed -e 's/"//'`
+			#echo A: $TMP2
+			#to remove second quote
+			CGI_DIR=`echo $TMP2 | sed -e 's/"//'`
+			#echo B: $CGI_DIR
+			WWW_DOCUMENT_ROOT=`grep ^DocumentRoot $APACHE_CONF | awk '{print $2}'`
+		AC_MSG_RESULT(OK)
+    fi
 
-
+	if test "$with_www_name" != "" ; then
+		WWW_HOST_NAME=$with_www_name
+    else
+		WWW_HOST_NAME=localhost
+    fi
 
 
 #<This block was compied from PHP 3.x configure.in -------------------->
@@ -1542,7 +1624,8 @@ if test "$AUBIT_SOURCE" = "1" ; then
                 tools/jabber/Makefile
                 tools/odbctest/Makefile
                 tools/test/gui/Makefile
-                tools/test/Makefile])
+                tools/test/Makefile
+				docs/doxy/Doxyfile])
 
 else
 
@@ -1552,6 +1635,8 @@ else
 fi
 
 AC_OUTPUT
+
+#AC_OUTPUT(config/Makefile config/sqlcmd.ins, ln config/Makefile . ; ln config/sqlcmd.ins .)
 
 
 ## ==================================================================

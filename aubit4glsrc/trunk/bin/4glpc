@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.44 2002-01-26 13:40:46 afalout Exp $
+# $Id: 4glpc,v 1.45 2002-01-29 11:07:53 afalout Exp $
 #
 
 ########################################################################
@@ -499,8 +499,13 @@ fi
 #with same names in the path, like odbc. This will put path to library we
 #are currently compiling for in front, and pick up correct one:
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib:.:
 #$AUBITDIR/extlibs
+
+#ADD_LD_LIBRATY_PATH is defined by 'configure' in aubitrc
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ADD_LD_LIBRATY_PATH
+
+
 
 if [ "$ODBC_LIB_NAME" != "noodbc" ]
 then
@@ -1303,51 +1308,29 @@ else
 
 fi
 
-if test "1" = "1" ; then
-#we __HAVE__ to link with one or the other, this is NOT dinamically loaded
+#if test "1" = "1" ; then
+#if test "$MAKINGAUBIT" != "1"
+	#we __HAVE__ to link with one or the other, this is NOT dinamically loaded
+    #everything that links to acl library eill need one or the other -
+    #this includes all compilers and all compiled programs
+    #we dhould NEVER link with -lpdf directly -  only -lPDF_PDF and
+    #-lPDF_PDF should be linked with -lpdf
+
 	if [ "$A4GL_PDFTYPE" = "PDF" ] && [ "$USE_PDF" = "yes" ]
 	then
 		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_PDF"
 		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_PDF"
 	else
-		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
+        FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
 		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_NOPDF"
-	    	#FGLLIBS_STATIC="$FGLLIBS_STATIC ../../lib/libPDF_NOPDF.so"
+	    #FGLLIBS_STATIC="$FGLLIBS_STATIC ../../lib/libPDF_NOPDF.so"
 	fi
-fi
-
-if [ "$A4GLDEBUG" = "yes" ]
-then
-	echo ------------------------------------------------------------------
-	echo FGLLIBS_SHARED = $FGLLIBS_SHARED
-	echo FGLLIBS_STATIC = $FGLLIBS_STATIC
-	echo ------------------------------------------------------------------
-fi
-
-
-if [ "$USE_PDF" = "yes" ]
-then
-	#we don't want to link PDF libs in compiler, if USE_PDF is specified via
-    #a4glrc - each makefile should pass explicit -lpdf as needed
-	if [ "$MAKE4GLPC" != "Yes" ]
-    then
-		if test "$MAKINGAUBIT" = "1"
-		then
-			if [ "$A4GLVERBOSE" = "yes" ]
-			then
-	        echo "NOTE: invoked from Aubit compiler main makefile"
-		    fi
-        else
-			FGLLIBS_SHARED="$FGLLIBS_SHARED -lpdf"
-			FGLLIBS_STATIC="$FGLLIBS_STATIC -lpdf"
-        fi
-    fi
-	else
-		# I put this here to the compilation work but i am not sure if its the best 
-		# solution. Sergio
-		FGLLIBS_SHARED="$FGLLIBS_SHARED -lPDF_NOPDF"
-		FGLLIBS_STATIC="$FGLLIBS_STATIC -lPDF_NOPDF"
-fi
+#else
+#	if [ "$A4GLVERBOSE" = "yes" ]
+#	then
+#		echo "NOTE: invoked from Aubit compiler main makefile"
+#    fi
+#fi
 
 if ! [ "$COMSPEC" = "" ]
 then
