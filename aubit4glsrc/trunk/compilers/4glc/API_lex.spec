@@ -671,7 +671,7 @@ print_realloc_arr char* s char* dim -> void
 get_in_exists_sql char* s char t -> void*
 
 print_free_convertable char* report_name -> void
-print_convert_report char* report_name char* fout char* type char* layoutfile  -> void
+print_convert_report char* report_name char* fout char* type char* layoutfile char* file_or_pipe -> void
 print_Constant int type char* v -> void
 
 CLASS_print_reflector -> void

@@ -65,11 +65,31 @@ with_entry:
  
 
 convert_cmd : 	CONVERT_REPORT rep_name TO var_or_char AS var_or_char KW_USING var_or_char {
-			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8);
+			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"FILE");
 		}
  		| CONVERT_REPORT rep_name TO var_or_char AS var_or_char {
-			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"");
+			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"","FILE");
 		}
+ 		| CONVERT_REPORT rep_name TO_PIPE var_or_char AS var_or_char {
+			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"","PIPE");
+		}
+ 		| CONVERT_REPORT rep_name TO_FILE var_or_char AS var_or_char {
+			print_convert_report($<str>2, $<str>4,$<str>6,"\"\"","PIPE");
+		}
+ 		| CONVERT_REPORT rep_name TO_PRINTER AS var_or_char {
+			print_convert_report($<str>2, "acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
+		}
+
+ 		| CONVERT_REPORT rep_name TO_PIPE var_or_char AS var_or_char KW_USING var_or_char {
+			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"PIPE");
+		}
+ 		| CONVERT_REPORT rep_name TO_FILE var_or_char AS var_or_char KW_USING var_or_char {
+			print_convert_report($<str>2, $<str>4,$<str>6,$<str>8,"PIPE");
+		}
+ 		| CONVERT_REPORT rep_name TO_PRINTER AS var_or_char KW_USING var_or_char {
+			print_convert_report($<str>2, "acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
+		}
+
 ;
 
 rout : CHAR_VALUE | cvariable
@@ -104,12 +124,42 @@ finish_cmd : FINISH_REPORT rep_name {
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char KW_USING var_or_char {
 		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8);
+		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"FILE");
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char AS var_or_char KW_USING var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"FILE");
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char AS var_or_char KW_USING var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,$<str>4,$<str>6,$<str>8,"PIPE");
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER AS var_or_char KW_USING var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,$<str>7,"PIPE");
 		print_free_convertable($<str>2);
 	}
 	| FINISH_REPORT rep_name CONVERTING_TO var_or_char AS var_or_char {
 		print_finish_report($<str>2);
-		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"");
+		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO_PIPE var_or_char AS var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","PIPE");
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO_PRINTER var_or_char AS var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,"acl_getenv(\"DBPRINT\")",$<str>5,"\"\"","PIPE");
+		print_free_convertable($<str>2);
+	}
+	| FINISH_REPORT rep_name CONVERTING_TO_FILE var_or_char AS var_or_char {
+		print_finish_report($<str>2);
+		print_convert_report($<str>2,$<str>4,$<str>6,"\"\"","FILE");
 		print_free_convertable($<str>2);
 	}
 	
