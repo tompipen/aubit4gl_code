@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fileio.c,v 1.2 2002-08-29 09:10:31 afalout Exp $
+# $Id: fileio.c,v 1.3 2002-09-26 08:05:18 afalout Exp $
 #*/
 
 /**
@@ -50,25 +50,19 @@
 =====================================================================
 */
 
-extern FILE *yyin;
-char outputfile[132];
-int lineno;
-int colno;
-int ignorekw = 0;
-char *outputfilename;
-#ifdef YYDEBUG
-extern int yydebug;
-#else /*  */
-int yydebug;
-#endif /*  */
+extern FILE *	yyin;
+extern char *	outputfilename; /* defined in libaubit4gl */
+//#ifdef YYDEBUG
+extern int 		yydebug; /* defined in y.tab.c */
+//#else /*  */
+//int yydebug;
+//#endif /*  */
 
-
-
-
-
-int yywrap (void);
-
-
+char 			outputfile[132];
+int 			lineno;
+int 			colno;
+int 			ignorekw = 0;
+int 			yywrap (void);
 
 /*
 =====================================================================
@@ -138,6 +132,10 @@ ace_bname (char *str, char *str1, char *str2)
 }
 */
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 compile_ace_report (char *filename)
 {
