@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-02-05 06:41:59 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-02-19 09:18:34 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -35,33 +35,121 @@ override NOINCL=0
 ##                              Options
 ## ==================================================================
 
-override CFLAGS+=-I../.. -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql
+SRC=esql.ec
+
+override CFLAGS+=-I../.. -I../../../compilers/fcompile -I${INFORMIXDIR} -I${INFORMIXDIR}/incl/esql -Ic:/INFORMIX
+#-Ic:/xdp32/Incl
+
+ESQL_INCLPATH	=-I../.. -I../../../compilers/fcompile -I../../libincl
 
 ifdef COMSPEC
-#    ESQL_FLAGS		=-D__CYGWIN__
-#    ESQL_INCLPATH	=-I..\.. -I..\..\..\compilers\fcompile
+    ESQL_FLAGS		=-D__CYGWIN__
+    ESQL_INCLPATH	+=-I..\.. -I..\..\..\compilers\fcompile -I..\..\libincl
+	#we must NOT use CygWin headers, on Windows we must compile with MSVC,
+    #since it's the only supported compiler by esql/c on Windows
+	#-Ic:/cygwin/usr/include
+	ALL			=dllSQL_esql
 else
-    ESQL_INCLPATH	=-I../.. -I../../../compilers/fcompile
+#    ESQL_INCLPATH	=-I../.. -I../../../compilers/fcompile -I../../libincl
+	ALL			=libSQL_esql${SO_EXT}
 endif
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
+ALL: ${ALL}
+
 libSQL_esql.so: esql.o
 #libSQL_esql.so: esql.c
 	ld  $(SO_LDFLAGS) esql.o -o libSQL_esql.so
 	cp libSQL_esql.so ../..
 
+
+libSQL_esql.dll: esql.o
+libSQL_esql.dll: DLLOBJS="esql.o"
+libSQL_esql.dll: DLL_LDLIBS="-laclshared"
+libSQL_esql.dll: DLL_LDFLAGS="-L../.."
+#	${MAKE} libSQL_odbc32.dll DLLOBJS="${OBJECTS}" DLL_LDLIBS="-laclshared -lodbc32" DLL_LDFLAGS="-L../.."
+#	cp libSQL_odbc32.dll ../..
+#	cp libSQL_odbc32.dll.a ../..
+#	@echo "Windows ODBC target compiled successfully"
+
 esql.o: esql.c
 
-esql.c:
+esql.c: esql.ec
 #	${ESQL_EC} -e $<
-	esql -c esql.ec ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH}
+#  -e, -p          Preprocess only (no compilation or linking).
+#-dcmdl          Displays command lines of all programs invoked.
+	esql -dcmdl -o libSQL_esql.dll -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX
+#Plexus ESQL/C:
+#	esqlc -c $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH}
+
+
+
+
+#esql-w32.c: DEF=../../libaclshared.def
+#esql-w32.c: DEF=libaclshared-esql.def
+#esql-w32.c: SRC=esql-w32.ec
+#esql-w32.c: ${SRC} ${DEF}
+dllSQL_esql: ${SRC} ${DEF}
+#	${ESQL_EC} -e $<
+#  -e, -p          Preprocess only (no compilation or linking).
+#-dcmdl          Displays command lines of all programs invoked.
+#-c              Preprocess and compile only (no linking).
+#  -target:<t>     Specifies target type to be created.  <t> is one of:
+#                   'exe'(default) or 'dll'.
+#   <file.def>      Specifies a module definition file to be linked.
+	esql -dcmdl -o libSQL_esql.dll -target:dll $^ ${ESQL_FLAGS} -I${INFORMIXDIR} ${ESQL_INCLPATH} -Ic:/INFORMIX ../../libaclshared.dll.a
+#	-cc /LD
+	cp libSQL_esql.dll ../..
+
+#cl.exe options:
+#/LD Create .DLL
+
+
+../../libaclshared.def:
+	make -C ../.. dllaclshared
+
+
+#cl.exe -c /D_X86_ /D_CONSOLE /MD /DWIN32 esql-w32.c
+
+
+#create .obj file from .def
+xxx:
+#	echo "-DLL -DEF:libaclshared-esql.def -OUT:esql-w32.dll -MAP -SUBSYSTEM:CONSOLE esql-w32.obj C:\INFORMIX\lib\isqlt09a.lib C:\INFORMIX\lib\igl4n304.lib C:\INFORMIX\lib\iglxn304.lib C:\INFORMIX\lib\igo4n304.lib netapi32.lib wsock32.lib user32.lib winmm.lib" > xxx.lnk
+	echo "-DEF:libaclshared-esql.def -OUT:xxx.obj -MAP -SUBSYSTEM:CONSOLE " > xxx.lnk
+	link.exe @xxx.lnk
+
+
 
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean:
-	rm -f *.o *.so *.bak *.c
+	rm -f *.o *.so *.bak *.c *.obj *.c_ *.a *.dll *.lnk *.map *.exp *.lib
+
+#------------------------------- EOF -------------------------------
+
+
+#gcc -g -O2 -IC:\INFORMIX/incl/esql -I. -DAUTOBANG -DDEBUG -I/usr/local/include -
+#DWIN32 -I../.. -I../../../compilers/fcompile -IC:\INFORMIX -IC:\INFORMIX/incl/es
+#ql    -c -o esql.o esql.c
+#In file included from C:INFORMIX/headers/sqltypes.h:13,
+#                 from C:INFORMIX/headers/sql.h:30,
+#                 from esql.ec:37:
+#/usr/include/wchar.h:24: parse error before `wcslen'
+
+
+#esql -c esql.ec -D__CYGWIN__ -IC:\INFORMIX -I..\.. -I..\..\..\compilers\fcompile
+# -I..\..\libincl
+#INFORMIX-ESQL Version 9.14.TC1
+#Microsoft (R) 32-bit C/C++ Optimizing Compiler Version 11.00.7022 for 80x86
+#Copyright (C) Microsoft Corp 1984-1997. All rights reserved.
+#
+#esql.c
+#esql.ec(37) : fatal error C1083: Cannot open include file: 'headers/sql.h': No s
+#uch file or directory
+#esql: error -55904: Error in spawned program.
+#make: *** [esql.c] Error 1

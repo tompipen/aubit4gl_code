@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.9 2002-02-17 21:10:50 saferreira Exp $
+# $Id: nosql.c,v 1.10 2002-02-19 09:18:34 afalout Exp $
 #*/
 
 /**
@@ -172,6 +172,8 @@ A4GLSQL_get_status ()
   return sqlca.sqlcode;
 }
 
+
+//function moved to lib/dlsql.c:
 char *
 A4GLSQL_get_sqlerrm ()
 {
@@ -215,15 +217,61 @@ Solution  1:
 	//return t.sqlerrm; // request for member `sqlerrm' in something not a structure or union
     */
 
-    /*
-    Original function:
-		return sqlca.sqlerrm;
 
-    */
-//	return sqlca.sqlerrm;
+/*
+  #redefine it:
+  long long * local_ll_var = &dll_global_ll_var;
+
+  #assign it:
+  dll_global_ll_var = -31;
+  *local_ll_var = -31;
+
+  #use it:
+  printf ("  directly                  : %lld\n", dll_global_ll_var);
+  printf ("  directly(sortof)          : %lld\n", *local_ll_var);
+
+*/
 
 
-	return 0;
+/*
+        extern struct s extern_struct;
+        extern_struct.field -->
+           { volatile struct s *t=&extern_struct; t->field }
+
+or
+
+        extern long long extern_ll;
+        extern_ll -->
+          { volatile long long * local_ll=&extern_ll; *local_ll }
+
+*/
+
+
+#ifdef __CYGWIN__
+
+	//	extern sqlca_struct sqlca;
+	//sqlca_struct * local_sqlca = &sqlca;
+	//sqlca_struct * local_sqlca = &sqlca;
+
+//    struct local_sqlca * sqlca = &sqlca;
+//	return local_sqlca.sqlerrm;
+
+	//char * local_sqlerrm[73] = &sqlca.sqlerrm;
+
+	//char * local_sqlerrm = &sqlca.sqlerrm;
+	//return local_sqlerrm;
+
+#else
+	//Original function:
+	//return sqlca.sqlerrm;
+
+#endif
+
+	return global_A4GLSQL_get_sqlerrm ();
+
+
+
+//	return 0;
 
 }
 

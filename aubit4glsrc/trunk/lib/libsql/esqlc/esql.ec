@@ -24,43 +24,101 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.3 2002-01-25 12:20:42 afalout Exp $
+# $Id: esql.ec,v 1.4 2002-02-19 09:18:34 afalout Exp $
 #
 */
 
+/*
+since on Windows only ESQL/C supported compiler is Visual C++,
+we must be carefull not to include anything that will conflict with
+MSVC here, since resulting .c need to be compiled and linked by MSVC
+*/
+
+#ifdef xxxblah_WIN32
+
+	//in sqltypes.h:
+	//typedef PVOID HSTMT;
+
+
+	#ifndef FAR
+	#define FAR
+	#endif
+
+
+	//only Informix .h fire to mention HSTMT at all is sqlucode.h
+	//this definitions are taken from sqltypes.h from iODBC
+	typedef void FAR *		HSTMT;
+	typedef signed short 		SWORD;
+
+	//from sql.c:
+	int rc;
+
+#endif
+
 #define DEFINE_SQLCA
 
-#ifndef __CYGWIN__
-#include "incl/esql/sqlca.h"
-#else
-#include "headers/sql.h"
+
+//#ifndef WIN32
+//#include "incl/esql/sqlca.h"
+//#else
+//#include "headers/sql.h"
 //ext, types, ucode
+//#endif
+
+
+#ifndef WIN32
+	#include <stdio.h>
+	#include <string.h>
+	//#include "libincl/debug.h"
+	#include "libincl/database.h"
+	//#include "libincl/stack.h"
+	#include "libincl/pointers.h"
+	#include "libincl/dtypes.h"
+	#include <stdlib.h>
+#else
+//	#include </progra~1/DevStudio/VC/include/stdio.h>
+	#include <stdio.h>
+	#include <windows.h>
+    int status;
+	#include "libincl/pointers.h"
+	#include "libincl/dtypes.h"
+	#include "libincl/database.h"
+/*
+		#ifndef PAN32
+			#define PAN32
+			#include <panel32.h>
+		#endif
+*/
+
 #endif
 
 
-#include <stdio.h>
-#include <string.h>
-//#include "libincl/debug.h"
-#include "libincl/database.h"
-//#include "libincl/stack.h"
-#include "libincl/pointers.h"
-#include "libincl/dtypes.h"
-#include <stdlib.h>
-EXEC SQL include sqlca;
+
+//EXEC SQL include ..\..\libincl\sqlca.h;
+EXEC SQL include sqlca.h;
+//sqlda.h from Plexus?? there is no sqlds.h on Windows esql/c
+//also no sqliapi.h on Windows
 EXEC SQL include sqlda;
+
 
 long pcnt=0;
 
-#include <stdarg.h>
-#include "libincl/dtypes.h"
-
-
-// stack.h will eventually include stdlib.h, which uses getenv(), so
-// we need to set GETENV_OK and only then include debug.h
-#include "libincl/stack.h"
-#define GETENV_OK
-#include "libincl/debug.h"
-
+#ifndef WIN32
+	#include <stdarg.h>
+#else
+    #define _NO_FORM_H_
+    #define _NO_CURSES_H_
+	#define _NO_PANEL_H_
+	#define _NO_CURSLIB_H_
+	#define FORMXW //form_x.h
+    #define _NO_DBFORM_H_
+#endif
+	// stack.h will eventually include stdlib.h, which uses getenv(), so
+	// we need to set GETENV_OK and only then include debug.h
+	#include "libincl/stack.h"
+	#define GETENV_OK
+	#include "libincl/debug.h"
+//#endif
 
 
 
@@ -82,6 +140,8 @@ A4GLSQL_initlib ()
   /* Does nothing */
 }
 
+
+/*
 void
 A4GLSQL_xset_status (int a)
 {
@@ -97,7 +157,7 @@ A4GLSQL_set_status (int a, int sql)
     sqlca.sqlcode = a;
   debug ("Status set to %d", a);
 }
-
+*/
 
 int
 A4GLSQL_init_connection (char *dbName)
@@ -108,18 +168,19 @@ $database $b;
  
 }
 
-
+/*
 int
 A4GLSQL_get_status ()
 {
   return sqlca.sqlcode;
 }
 
-
+*/
 char *
 A4GLSQL_get_sqlerrm ()
 {
-  return sqlca.sqlerrm;
+	return global_A4GLSQL_get_sqlerrm ();
+	//return sqlca.sqlerrm;
 }
 
 
@@ -184,9 +245,11 @@ A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 int
 A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 {
-$char stmt[64];
+//$char stmt[64];
+$char stmt[256];
 struct sqlda *udesc;
 struct sqlvar_struct *col;
+int tmp;
 
   if (sid == 0)
     {
@@ -199,12 +262,43 @@ struct sqlvar_struct *col;
       return 0;
     }
 
-  strcpy(stmt,get_uniqname_1(sid->hstmt));
+    /*
+	incllib/database.h :
+		struct s_sid {
+			struct BINDING *ibind;
+			struct BINDING *obind;
+			int ni;
+			int no;
+			char *select;
+			void *hstmt;  <<<<<<<<<<<<<<<<<<
+		};
+    */
+
+
+    #ifndef WIN32
+		//esql.ec(389) : error C2371: 'get_uniqname_xx1' : redefinition; different basic types
+		strcpy(stmt,get_uniqname_xx1(sid->hstmt));
+		/*
+		tmp=sid->hstmt;
+		strcpy(stmt,get_uniqname_xx1(tmp));
+	    */
+    #else
+		exitwith ("Could not get_uniqname - see bug in esql.ec");
+	#endif
 
   EXEC SQL describe  $stmt into udesc;
 
-  proc_bind (sid->obind, sid->no, 'o', sid->hstmt);
-  proc_bind (sid->ibind, sid->ni, 'i', sid->hstmt);
+	#ifndef WIN32
+		//in sql.c: int proc_bind (struct BINDING *b, int n, char t, HSTMT hstmt)
+        //so how the hell do I call it from here? this function(s) need to be
+        //moved of dlsql.c if they are to used form somewhere else then ODBC
+        //dll
+		proc_bind (sid->obind, sid->no, 'o', sid->hstmt);
+		proc_bind (sid->ibind, sid->ni, 'i', sid->hstmt);
+    #else
+		exitwith ("Could not proc_bind - function is in wrong object - see in esql.ec");
+	#endif
+
 }
 
 int A4GLSQL_close_session (char *sessname)
@@ -263,10 +357,16 @@ $char *sql;
   sid->ni = ni;
   sid->obind = obind;
   sid->no = no;
-  A4GLSQL_set_status (0, 1); 
-  strcpy(b,get_uname());
+  A4GLSQL_set_status (0, 1);
+  
+    #ifndef WIN32
+		strcpy(b,get_uname());
+    #else
+		exitwith ("Could not get_uname - where is this defined? See esql.ec");
+    #endif
+
   sid->hstmt=pcnt;
-  EXEC SQL prepare $b from :sql;  
+  EXEC SQL prepare $b from :sql;
 }
 
 
@@ -277,13 +377,13 @@ A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
   exitwith ("Could not declare_cursor - noODBC build");
 }
 
-
+/*
 int A4GLSQL_set_sqlca_sqlcode (int a)
 {
   status = a;
   sqlca.sqlcode = a;
 }
-
+*/
 
 int
 A4GLSQL_open_cursor (int ni, char *s)
@@ -336,13 +436,22 @@ A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 
 //---------------------------- EOF ------------------------------
 
+
 char *get_uniqname() {
 	pcnt++;
-	return  get_uniqname_1(pcnt);
+
+    #ifndef WIN32
+		return  get_uniqname_xx1(pcnt);
+    #else
+		exitwith ("Could not get_uniqname - see bug in esql.ec");
+    #endif
+
 }
 
-char *get_uniqname_1(int a) {
+
+char *get_uniqname_xx1(int a) {
 	static char buff[256];
 	sprintf(buff,"a4glx_%d",a);
 	return buff;
+    return "";
 }

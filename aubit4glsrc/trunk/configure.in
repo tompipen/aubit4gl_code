@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.32 2002-02-15 11:33:41 afalout Exp $
+# $Id: configure.in,v 1.33 2002-02-19 09:18:31 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -604,7 +604,13 @@ WARNING: You specified Informix base install directory that is different
 			#First check if we haev esql installed at all:
 			AC_PATH_PROG(IFMX_ESQLC, esql, no)
 
-			if test "$IFMX_ESQLC" != "no" ;
+			if test "$cygwin" = "1"; then
+				#on Windows, we need Micro$loth or Bordland C compiler to use ESQL/C:
+				AC_PATH_PROG(MSVC_COMP, cl, no)
+				AC_PATH_PROG(MSVC_LINK, link, no)
+			fi
+
+			if test "$IFMX_ESQLC" != "no" && test "$MSVC_COMP" != "no" && test "$MSVC_LINK" != "no" ;
 			then
 				IFX_INCLUDE=-I$IFX_INCDIR
 				IFX_LFLAGS=$IFX_LIBDIR
@@ -651,7 +657,7 @@ WARNING: You specified Informix base install directory that is different
 ])
 
 
-if test "$cygwin" = "1"; then
+if test "$xxxcygwin" = "1"; then
 
 	AC_MSG_WARN(esql/c support on Windows temporaraly disabled.)
 
@@ -1678,7 +1684,7 @@ else
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_SQLTYPE=unixodbc
 	fi
-	if test "$cygwin" = "1"; then
+	if test "$xxxxcygwin" = "1"; then
 		#A4GL_SQLTYPE=odbc32
 
         echo "WARNING: SQL on Windows temporaraly disabled"

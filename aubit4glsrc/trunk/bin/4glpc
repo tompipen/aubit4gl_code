@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.49 2002-02-15 12:09:09 afalout Exp $
+# $Id: 4glpc,v 1.50 2002-02-19 09:18:33 afalout Exp $
 #
 
 ########################################################################
@@ -47,6 +47,12 @@
     FGLCEXEC=4glc
 	OVERWRITE_CONFIG=0
 #	USE_CONFIGURE=1
+
+#if [ ! "$COMSPEC" = "" ]
+#then
+	USE_SHARED="Yes"
+#fi
+
 
 #############
 #this internal variable points to default location of Aubit config files

@@ -4288,7 +4288,7 @@ echo "${ECHO_T}--with-informix not specified" >&6
 
 fi;
 
-if test "$cygwin" = "1"; then
+if test "$xxxcygwin" = "1"; then
 
 	{ echo "$as_me:4293: WARNING: esql/c support on Windows temporaraly disabled." >&5
 echo "$as_me: WARNING: esql/c support on Windows temporaraly disabled." >&2;}
@@ -6804,7 +6804,7 @@ else
 	if test "$HAVE_UNIXODBC" = "yes" ; then
 		A4GL_SQLTYPE=unixodbc
 	fi
-	if test "$cygwin" = "1"; then
+	if test "$xxxxcygwin" = "1"; then
 		#A4GL_SQLTYPE=odbc32
 
         echo "WARNING: SQL on Windows temporaraly disabled"

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.16 2002-02-15 11:33:46 afalout Exp $
+# $Id: Makefile-common.in,v 1.17 2002-02-19 09:18:34 afalout Exp $
 #
 
 
@@ -446,14 +446,25 @@ export LD_LIBRARY_PATH
 #AUBIT_BIN_INSTALL is needed for make files and 4glpc to know they are not
 #in Aubit compiler source code tree; it is added to this file by "make install"
 export AUBIT_BIN_INSTALL
-#----------------------------- EOF -----------------------------
 
+## ==================================================================
+##                      Common rules
+## ==================================================================
 
+#Rule to make Windows-CyGwin .dll and export library:
 %.dll %.def %.dll.a: $(DLLOBJS)
-#$(DLL_NAME) $(DLL_EXP_DEF) $(DLL_EXP_LIB): $(DLL_OBJS)
-#	gcc -shared -Wl,--out-implib=$(DLL_EXP_LIB) -o $(DLL_NAME) $(DLL_OBJS) -Wl,--export-all-symbols $(DLL_LDLIBS)
-	@echo "Using single line gcc:"
-	gcc -shared -Wl,--out-implib=$*.dll.a -o $*.dll $(DLLOBJS) -Wl,--export-all-symbols  $(DLL_LDFLAGS) $(DLL_LDLIBS)
-#	cp $@.a $@.a.bak
+#	@echo "Using single line gcc:"
+	gcc -shared  -Wl,--output-def=$*.def -Wl,--out-implib=$*.dll.a -o $*.dll $(DLLOBJS) -Wl,--export-all-symbols  $(DLL_LDFLAGS) $(DLL_LDLIBS)
+#	cp $*.def $*.def.bak
+
+#make def file:
+#$(DLL_EXP_DEF): $(DLL_OBJS)
+xx%.def: $(DLLOBJS)
+	dlltool --export-all --output-def $@ $^
+#--no-delete
+#	cp $@ $@.bak
 
 
+
+
+#----------------------------- EOF -----------------------------
