@@ -93,9 +93,9 @@ void LR_show_layout_rest (void *vreport, void* vvbox_in_sw,void *rbx, int rbs)
   //GtkWidget *l;
 
 GtkWidget *vbox_in_sw;
+  int block;
 vbox_in_sw=vvbox_in_sw;
 
-  int block;
 
   gtk_rc_parse_string (style_cell);
   gtk_rc_parse_string (style_cell_disable);

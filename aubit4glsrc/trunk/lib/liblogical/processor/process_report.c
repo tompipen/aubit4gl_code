@@ -96,10 +96,10 @@ if (argc-off != 4 && argc-off!=3 )
 			exit(2);
 		}
   } else {
+		FILE *f=0;
 		char default_filter[256];
 		strcpy(default_filter,"");
 		
-		FILE *f=0;
 		/* First off - lets see if we can find a specific filter... */
 		if (report->max_col<=80&&strlen(default_filter)==0)  { 
 			sprintf(default_filter,"%s/lib/default_%s_narrow.lrf",acl_getenv("AUBITDIR"),argv[1+off]); 
