@@ -4,10 +4,5 @@
 =====================================================================
 */
 
-comment_cmd : COMMENT {
-/* This aint used - its filtered by the lexer first... */
-	A4GL_lex_printc("FIXME : Comment : %s\n");
-}
-;
 
 

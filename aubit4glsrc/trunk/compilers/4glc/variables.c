@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.38 2004-03-14 15:59:17 mikeaubury Exp $
+# $Id: variables.c,v 1.39 2004-03-15 20:16:54 mikeaubury Exp $
 #
 */
 
@@ -2685,10 +2685,15 @@ print_variable (struct variable *v, char scope, int level)
 	    }
 	}
 
-      if (v->data.v_simple.datatype == 0)
+      if (v->data.v_simple.datatype == 0 || v->data.v_simple.datatype==DTYPE_VCHAR)
 	{			/* Its a 'char' (may need varchar & friends too...*/
-	  print_define_char (tmpbuff, v->data.v_simple.dimensions[0],
-			     static_extern_flg);
+
+
+		if (v->data.v_simple.datatype == 0) {
+	  		print_define_char (tmpbuff, v->data.v_simple.dimensions[0], static_extern_flg);
+		} else {
+	  		print_define_char (tmpbuff, v->data.v_simple.dimensions[0], static_extern_flg); // Allow extra space to store the size...
+		}
 	}
       else
 	{

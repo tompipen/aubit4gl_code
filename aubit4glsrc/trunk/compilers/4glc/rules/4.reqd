@@ -29,3 +29,4 @@
 %token USER_DTYPE
 %token SQL_TEXT
 %token KW_WHENEVER_SET
+%token COMMENT

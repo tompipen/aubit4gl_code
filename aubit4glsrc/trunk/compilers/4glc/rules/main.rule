@@ -71,7 +71,7 @@ func_or_main	:	func_def
                 |       formhandler_def
 		|	code_cmd
 		| 	import_m
-		|	comment_cmd
+		/* |	comment_cmd */
 		|       whenever_cmd
 		;
 

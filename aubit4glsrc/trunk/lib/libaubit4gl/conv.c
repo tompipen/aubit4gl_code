@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.71 2004-03-14 15:59:17 mikeaubury Exp $
+# $Id: conv.c,v 1.72 2004-03-15 20:17:11 mikeaubury Exp $
 #
 */
 
@@ -248,6 +248,26 @@ int A4GL_dectod (void *zz, void *aa, int sz_ignore);
 int A4GL_d_to_dt(void *a,void *b,int size) ;
 int A4GL_dt_to_d(void *a,void *b,int size) ;
 
+
+/* Varchar handling */
+int A4GL_vctoc (void *a, void *b, int size);
+int A4GL_vctovc (void *a, void *b, int size);
+int A4GL_ctovc (void *a, void *b, int size);
+int A4GL_vctoint (void *a, void *b, int size);
+int A4GL_vctoi (void *a, void *b, int size);
+int A4GL_vctol (void *a, void *b, int size);
+int A4GL_vctod (void *a, void *b, int size);
+int A4GL_vctosf (void *a, void *b, int size);
+int A4GL_dectovc(void *a, void *b, int size);
+int A4GL_mdectovc(void *a, void *b, int size);
+int A4GL_vctof(void *a, void *b, int size);
+int A4GL_vctodec(void *a, void *b, int size);
+int A4GL_vctomdec(void *a, void *b, int size);
+int A4GL_vctodt(void *a, void *b, int size);
+
+
+
+
 #ifdef TEST
 static void exercise (void);
 static void print_res_l (int ln, char *s);
@@ -287,20 +307,20 @@ A4GL_setc, A4GL_seti, A4GL_setl, A4GL_setf,
  */
 int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
 {
-  { A4GL_ctoc, A4GL_stoi, A4GL_stol, A4GL_stof, A4GL_stosf, A4GL_stodec, A4GL_stol, A4GL_stod, A4GL_stomdec, NO, A4GL_ctodt, NO, NO, OK, A4GL_ctoint} ,
+  { A4GL_ctoc, A4GL_stoi, A4GL_stol, A4GL_stof, A4GL_stosf, A4GL_stodec, A4GL_stol, A4GL_stod, A4GL_stomdec, NO, A4GL_ctodt, NO, NO, A4GL_ctovc, A4GL_ctoint} ,
   { A4GL_itoc, A4GL_itoi, A4GL_itol, A4GL_itof, A4GL_itosf, A4GL_itodec, A4GL_itol, A4GL_itod, A4GL_itomdec, NO, NO, NO, NO, A4GL_itovc, NO} ,
   { A4GL_ltoc, A4GL_ltoi, A4GL_ltol, A4GL_ltof, A4GL_ltosf, A4GL_ltodec, A4GL_ltol, A4GL_ltod, A4GL_ltomdec, NO, NO, NO, NO, A4GL_ltovc, NO} ,
   { A4GL_ftoc, A4GL_ftoi, A4GL_ftol, A4GL_ftof, A4GL_ftosf, A4GL_ftodec, A4GL_ftol, A4GL_ftod, A4GL_ftomdec, NO, NO, NO, NO, A4GL_ftovc, NO} ,
   { A4GL_sftoc, A4GL_sftoi, A4GL_sftol, A4GL_sftof, A4GL_sftosf, A4GL_sftodec, A4GL_sftol, A4GL_sftod, A4GL_sftomdec, NO, NO, NO, NO, A4GL_sftovc, NO} ,
-  { A4GL_dectos, A4GL_dectoi, A4GL_dectol, A4GL_dectof, A4GL_dectosf, A4GL_dectodec, A4GL_dectol, NO, A4GL_dectomdec, NO, NO, NO, NO, A4GL_dectos, NO} ,
+  { A4GL_dectos, A4GL_dectoi, A4GL_dectol, A4GL_dectof, A4GL_dectosf, A4GL_dectodec, A4GL_dectol, NO, A4GL_dectomdec, NO, NO, NO, NO, A4GL_dectovc, NO} ,
   { A4GL_ltoc, A4GL_ltoi, A4GL_ltol, A4GL_ltof, A4GL_ltosf, A4GL_ltodec, A4GL_ltol, A4GL_ltod, A4GL_ltomdec, NO, NO, NO, NO, A4GL_ltovc, NO} , 
   { A4GL_dtos, A4GL_dtoi, A4GL_dtol, A4GL_dtof, A4GL_dtosf, A4GL_dtodec, A4GL_dtof, A4GL_ltol, A4GL_dtomdec, NO, A4GL_d_to_dt, NO, NO, A4GL_dtovc, NO} ,
-  { A4GL_mdectos, A4GL_mdectoi, A4GL_mdectol, A4GL_mdectof, A4GL_mdectosf, A4GL_mdectodec, A4GL_mdectol, NO, A4GL_mdectomdec, NO, NO, NO, NO, A4GL_mdectos, NO} ,
+  { A4GL_mdectos, A4GL_mdectoi, A4GL_mdectol, A4GL_mdectof, A4GL_mdectosf, A4GL_mdectodec, A4GL_mdectol, NO, A4GL_mdectomdec, NO, NO, NO, NO, A4GL_mdectovc, NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO} ,
   { A4GL_dttoc, NO, NO, NO, NO, NO, NO, A4GL_dt_to_d, NO,NO,A4GL_dttodt, NO, NO, NO, NO,NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_btob, NO, NO, NO} ,
   { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_btob, NO, NO} ,
-  { NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO} ,
+  { A4GL_vctoc, A4GL_vctoi, A4GL_vctol, A4GL_vctof, A4GL_vctosf, A4GL_vctodec, A4GL_vctol, A4GL_vctod, A4GL_vctomdec, NO, A4GL_vctodt, NO, NO, A4GL_vctovc, A4GL_vctoint} ,
   { A4GL_inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_inttoint}
 };
 
@@ -1752,7 +1772,11 @@ A4GL_dtovc (void *aa, void *zz, int sz_ignore)
   char *z;
   a = (int *) aa;
   z = (char *) zz;
-  return A4GL_dtos (a, z, 6);
+  if (A4GL_dtos (a, z, 6)) {
+		A4GL_trim(z);
+		return 1;
+  } 
+  return 0;
 }
 
 
@@ -1935,8 +1959,13 @@ A4GL_itovc (void *aa, void *zz, int c)
   char *z;
   z = (char *) zz;
   a = (short *) aa;
-  A4GL_itoc (a, z, c);
-  return 1;
+
+  if (A4GL_itoc (a, z, c)) {
+	A4GL_trim(z);
+	return 1;
+  } else {
+	return 0;
+  }
 }
 
 
@@ -2060,8 +2089,11 @@ A4GL_ltovc (void *aa, void *zz, int c)
   char *z;
   a = (long *) aa;
   z = (char *) zz;
-  A4GL_ltoc (a, z, c);
-  return 1;
+  if (A4GL_ltoc (a, z, c)) {
+	A4GL_trim(z);
+	return 1;
+  }
+  return 0;
 }
 
 /**
@@ -2198,9 +2230,12 @@ A4GL_ftovc (void *aa, void *zz, int c)
   char *z;
   a = (double *) aa;
   z = (char *) zz;
-  A4GL_ftoc (a, z, c);
+  if (A4GL_ftoc (a, z, c)) {
+	A4GL_trim(z);
+	return 1;
+  }
 
-  return 1;
+  return 0;
 }
 
 /**
@@ -2329,8 +2364,11 @@ A4GL_sftovc (void *aa, void *zz, int c)
   char *z;
   a = (float *) aa;
   z = (char *) zz;
-  A4GL_sftoc (a, z, c);
-  return 1;
+  if (A4GL_sftoc (a, z, c)) {
+	A4GL_trim(z);
+	return 1;
+  }
+  return 0;
 }
 
 /**
@@ -2368,6 +2406,75 @@ A4GL_ftof (void *aa, void *bb, int c)
   b = (double *) bb;
   *b = *a;
   return 1;
+}
+
+int A4GL_vctoc (void *a, void *b, int size) {
+	return A4GL_ctoc(a,b,size);
+}
+
+int A4GL_vctovc (void *a, void *b, int size) {
+	memset(b,0,size);
+	strncpy(b,a,size);
+	return 1;
+}
+
+int A4GL_ctovc (void *a, void *b, int size) {
+	memset(b,0,size);
+	strncpy(b,a,size);
+	return 1;
+}
+
+int A4GL_vctoint (void *a, void *b, int size) {
+	return  A4GL_ctoint(a,b,size);
+}
+
+int A4GL_vctoi (void *a, void *b, int size) {
+	return  A4GL_stoi(a,b,size);
+}
+
+int A4GL_vctol (void *a, void *b, int size) {
+	return  A4GL_stol(a,b,size);
+}
+
+int A4GL_vctod (void *a, void *b, int size) {
+	return  A4GL_stod(a,b,size);
+}
+
+int A4GL_vctosf (void *a, void *b, int size) {
+	return  A4GL_stosf(a,b,size);
+}
+
+int A4GL_dectovc(void *a, void *b, int size) {
+if (A4GL_dectos(a,b,size)) {
+	A4GL_trim(b);
+	return 1;
+}
+return 0;
+
+}
+
+int A4GL_mdectovc(void *a, void *b, int size) {
+if (A4GL_dectos(a,b,size)) {
+	A4GL_trim(b);
+	return 1;
+}
+return 0;
+}
+
+int A4GL_vctof(void *a, void *b, int size) {
+	return  A4GL_stof(a,b,size);
+}
+
+int A4GL_vctodec(void *a, void *b, int size) {
+	return  A4GL_stodec(a,b,size);
+}
+
+int A4GL_vctomdec(void *a, void *b, int size) {
+	return  A4GL_stomdec(a,b,size);
+}
+
+int A4GL_vctodt(void *a, void *b, int size) {
+	return  A4GL_ctodt(a,b,size);
 }
 
 /**
@@ -2594,32 +2701,12 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   if (ptr == NO)
     {
       A4GL_debug ("No! - %d %d", dtype1, dtype2);
-
-
-
       setdtype[dtype2 & DTYPE_MASK] (p2);
-
-
-
-
       return -1;
-
-
-
-
     }
 
-{
-  //A4GL_debug("dtype1=0x%x dtype2=0x%x",dtype1,dtype2);
-  //A4GL_debug("Masked : dtype1=%d dtype2=%d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK);
-}
-
+  A4GL_debug("Conv %d %d\n",dtype1 & DTYPE_MASK,dtype2 & DTYPE_MASK);
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);
-
- {
-  //A4GL_debug("rval=%x\n",rval);
-  }
-
 
   return rval;
 }

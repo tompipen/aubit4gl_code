@@ -18,10 +18,13 @@ dim_dtype            :
                               |            CHAR {dim_push_type("char","1",0);}
 
                               |            CHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {dim_push_type("char",$<str>3,0);}
-                              |            VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
-{dim_push_type("char",$<str>3,0);}
-                              |            VARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE
-CLOSE_BRACKET {dim_push_type("char",$<str>3,0);}
+                              |            VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+						dim_push_type("varchar",$<str>3,0);
+				}
+                              |            VARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET {
+						char buff[256];
+						sprintf(buff,"%d",atoi($<str>3)*256+atoi($<str>5));
+						dim_push_type("varchar",buff,0);}
                               |            INTEGER {dim_push_type("long",0,0);}
                               |            SMALLINT {dim_push_type("integer",0,0);}
                               |            KWFORM {dim_push_type("FORM",0,0);}

@@ -69,7 +69,6 @@ sql_block_entry:
 | COLUMNS
 | COMMA
 | COMMAND
-| COMMENT
 | COMMIT
 | CONNECT
 | CONST

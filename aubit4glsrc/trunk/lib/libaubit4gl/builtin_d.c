@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.40 2004-03-01 07:06:47 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.41 2004-03-15 20:17:11 mikeaubury Exp $
 #
 */
 
@@ -867,6 +867,9 @@ A4GL_push_variable (void *ptr, int dtype)
   switch (dtype & DTYPE_MASK)
     {
     case 0:
+      A4GL_push_char (ptr);
+      return;
+    case DTYPE_VCHAR:
       A4GL_push_char (ptr);
       return;
       //push_chars(ptr,dtype,DECODE_SIZE(dtype));return;break;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.164 2004-03-14 16:33:09 mikeaubury Exp $
+# $Id: mod.c,v 1.165 2004-03-15 20:16:54 mikeaubury Exp $
 #
 */
 
@@ -1352,8 +1352,10 @@ rettype (char *s)
 
   if (strcmp (s, "11") == 0)
     strcpy (rs, "fglbyte");
+
   if (strcmp (s, "12") == 0)
     strcpy (rs, "fgltext");
+
   if (strcmp (s, "13") == 0)
     strcpy (rs, "char");
   if (strcmp (s, "14") == 0)
