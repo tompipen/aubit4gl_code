@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.15 2003-01-30 17:40:11 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.16 2003-02-05 00:24:51 mikeaubury Exp $
 #
 */
 
@@ -269,6 +269,8 @@ push_chars(char * p,int dtype,int size)
 	char *ptr;
 	debug("In push_chars - %s\n",p);
 	ptr=(char *)new_string_set(strlen(p),p);
+	//push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
+	debug("Using dtype : %d",(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
 	push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(size)));
 }
 
@@ -283,6 +285,7 @@ void
 push_char(char * p)
 {
 	char *ptr;
+	debug("Push_char %s\n",p);
 	if (p[0]==0&&p[1]!=0) {
 		ptr=(char *)new_string_set(strlen(p)+1,p);
 		ptr[0]=0;
@@ -291,6 +294,7 @@ push_char(char * p)
 		ptr=(char *)new_string_set(strlen(p),p);
 	}
 	push_param(ptr,(DTYPE_CHAR+DTYPE_MALLOCED+ENCODE_SIZE(strlen(p))));
+	debug("ADDED : %s to stack...",p);
 }
 
 /**

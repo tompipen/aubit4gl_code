@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.34 2003-01-30 17:40:11 mikeaubury Exp $
+# $Id: stack.c,v 1.35 2003-02-05 00:24:51 mikeaubury Exp $
 #
 */
 
@@ -146,7 +146,7 @@ int num_local_binding[LOCAL_BINDINGS];
 
 
 void * 		pop_binding 			(int *n);
-void 		push_ascii 				(int a);
+void 		push_ascii 				(void);
 void 		push_current 			(int a, int b);
 void 		push_time 				(void);
 void		push_disp_bind 			(struct BINDING *b, int n);
@@ -608,7 +608,7 @@ push_param (void *p, int d)
 					 alloc_params_cnt);
     }
 
-  if (params != 0 && params_cnt < alloc_params_cnt - NUM_PARAM)
+  if (params != 0 && params_cnt < alloc_params_cnt - NUM_PARAM && params_cnt>1)
     {
       debug ("Allocating less space for stack\n");
       alloc_params_cnt -= NUM_PARAM;
@@ -1214,9 +1214,11 @@ push_user (void)
  * @return
  */
 void
-push_ascii (int a)
+push_ascii () 
 {
+int a;
   char buff[3];
+  a=pop_int();
   buff[0] = a;
   buff[1] = 0;
   push_char (buff);

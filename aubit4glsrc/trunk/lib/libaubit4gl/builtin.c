@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.13 2003-01-30 11:54:38 afalout Exp $
+# $Id: builtin.c,v 1.14 2003-02-05 00:24:51 mikeaubury Exp $
 #
 */
 
@@ -238,6 +238,11 @@ substr (char *ca, int dtype, int a, int b,...)
 {
   static char *np = 0;
   static char *np2 = 0;
+  va_list ap;
+  printf ("a=%d b=%d\n",a,b);
+  va_start(ap,b);
+  va_end(ap);
+
 #ifdef DEBUG
   {    debug ("substr");  }
 #endif
@@ -247,6 +252,12 @@ substr (char *ca, int dtype, int a, int b,...)
     acl_free (np2);
   np = strdup (ca);
   np2 = strdup (ca);
+
+
+if (b==0) {
+		b=a;
+			printf("Fixed");
+}
 
   if (np[0] == 0)
     {
@@ -273,6 +284,7 @@ substr (char *ca, int dtype, int a, int b,...)
 #ifdef DEBUG
   {    debug (">>>>Set to %s", np2);  }
 #endif
+  printf("np2= '%s'\n",np2);
   return np2;
 }
 
@@ -732,6 +744,12 @@ static char buff[1024];
 	strcpy(buff,name);
 	trim(buff);
 	return buff;
+}
+
+int aclfgl_ascii(int n) {
+		int a;
+		push_ascii();
+		return 1;
 }
 /* ================================== EOF ============================= */
 
