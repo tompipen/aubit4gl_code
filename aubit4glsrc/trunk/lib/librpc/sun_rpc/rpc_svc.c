@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_svc.c,v 1.11 2003-05-15 07:10:44 mikeaubury Exp $
+# $Id: rpc_svc.c,v 1.12 2004-04-21 21:26:33 mikeaubury Exp $
 #*/
 
 /**
@@ -73,10 +73,10 @@ int A4GL_rpc_svc_run (void);
 =====================================================================
 */
 
-int A4GL_server_run (long port);
-int A4GL_register_func (char *s, void *ptr);
-int A4GL_unregister_func (char *s);
-void A4GL_stop_serving (void);
+//int A4GL_server_run (long port);
+//int A4GL_register_func (char *s, void *ptr);
+//int A4GL_unregister_func (char *s);
+//void A4GL_stop_serving (void);
 
 /*
 =====================================================================

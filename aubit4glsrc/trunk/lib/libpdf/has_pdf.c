@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.14 2003-11-05 08:14:53 afalout Exp $
+# $Id: has_pdf.c,v 1.15 2004-04-21 21:26:25 mikeaubury Exp $
 #*/
 
 /**
@@ -62,8 +62,8 @@
 
 #endif
 
-double
-A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
+#ifdef NOT_REQUIRED
+double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
 /*
 =====================================================================
                     Functions prototypes
@@ -72,14 +72,11 @@ A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
 
 /* double 	pdf_size		(double f, char c,struct pdf_rep_structure *p) ; */
 void A4GL_pdf_skip_by (struct pdf_rep_structure *rep, double a);
-double A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *rep);
 void A4GL_pdf_aclfgli_skip_lines (struct pdf_rep_structure *rep);
 void A4GL_pdf_fputmanyc (FILE * f, int c, int cnt);
 void A4GL_pdf_set_column (struct pdf_rep_structure *rep);
-void A4GL_pdf_move (struct pdf_rep_structure *p);
 void A4GL_pdf_set_info (void *p, char *creator);
 void A4GL_pdf_skip_top_of_page (struct pdf_rep_structure *rep);
-int A4GL_pdf_new_page (struct pdf_rep_structure *p);
 
 void A4GL_pdf_rep_print (struct pdf_rep_structure *rep, int a, int s,
 		    int right_margin);
@@ -90,6 +87,10 @@ void A4GL_pdf_rep_close (struct pdf_rep_structure *p);
 int aclpdf (struct pdf_rep_structure *p, char *fname, int n);
 int A4GL_pdf_blob_print (struct pdf_rep_structure *p, struct fgl_int_loc *blob,
 		    char *type, int cr);
+#endif
+int A4GL_pdf_new_page (struct pdf_rep_structure *p);
+double A4GL_pdf_metric (int a, char c, struct pdf_rep_structure *rep);
+void A4GL_pdf_move (struct pdf_rep_structure *p);
 
 /*
 =====================================================================
@@ -105,10 +106,12 @@ int A4GL_pdf_blob_print (struct pdf_rep_structure *p, struct fgl_int_loc *blob,
  * @todo Describe function
  */
 void
-A4GL_pdf_rep_print (struct pdf_rep_structure *rep, int a, int s, int right_margin)
+A4GL_pdf_rep_print (void *vrep, int a, int s, int right_margin)
 {
   int b;
   char *str;
+struct pdf_rep_structure *rep;
+rep=vrep;
 
   A4GL_debug ("In rep_print");
   if (right_margin != 0)
@@ -231,11 +234,14 @@ A4GL_pdf_fputmanyc (FILE * f, int c, int cnt)
  * @todo Describe function
  */
 void
-A4GL_pdf_set_column (struct pdf_rep_structure *rep)
+A4GL_pdf_set_column (void *vrep)
 {
   double a;
   double needn;
   double req;
+struct pdf_rep_structure *rep;
+rep=vrep;
+
   A4GL_debug ("Set column");
   req=(double)A4GL_pop_double ();
   a = A4GL_pdf_size(req , 'c', rep);
@@ -288,8 +294,11 @@ A4GL_pdf_set_column (struct pdf_rep_structure *rep)
  * @todo Describe function
  */
 void
-A4GL_pdf_skip_to (struct pdf_rep_structure *rep, double a)
+A4GL_pdf_skip_to (void *vrep, double a)
 {
+struct pdf_rep_structure *rep;
+rep=vrep;
+
   A4GL_debug ("pdf_skip_by");
   a = A4GL_pdf_size (a, 'l', rep);
   //printf("SKIP TO : %f",a);
@@ -302,8 +311,11 @@ A4GL_pdf_skip_to (struct pdf_rep_structure *rep, double a)
  * @todo Describe function
  */
 void
-A4GL_pdf_skip_by (struct pdf_rep_structure *rep, double a)
+A4GL_pdf_skip_by (void *vrep, double a)
 {
+struct pdf_rep_structure *rep;
+rep=vrep;
+
   A4GL_debug ("pdf_skip_by");
   a = A4GL_pdf_size (a, 'l', rep);
   rep->line_no += a;
@@ -315,9 +327,12 @@ A4GL_pdf_skip_by (struct pdf_rep_structure *rep, double a)
  * @todo Describe function
  */
 void
-A4GL_pdf_aclfgli_skip_lines (struct pdf_rep_structure *rep)
+A4GL_pdf_aclfgli_skip_lines (void *vrep)
 {
   long a;
+struct pdf_rep_structure *rep;
+rep=vrep;
+
 
   A4GL_debug ("skip lines");
   a = A4GL_pop_long ();
@@ -329,9 +344,12 @@ A4GL_pdf_aclfgli_skip_lines (struct pdf_rep_structure *rep)
  * @todo Describe function
  */
 void
-A4GL_pdf_need_lines (struct pdf_rep_structure *rep)
+A4GL_pdf_need_lines (void *vrep)
 {
   int a;
+struct pdf_rep_structure *rep;
+rep=vrep;
+
   A4GL_debug ("need lines");
   a = A4GL_pdf_metric (A4GL_pop_int (), 'l', rep);
   if (rep->line_no > (rep->page_length - rep->bottom_margin - a))
@@ -343,9 +361,12 @@ A4GL_pdf_need_lines (struct pdf_rep_structure *rep)
  * @todo Describe function
  */
 void
-A4GL_pdf_skip_top_of_page (struct pdf_rep_structure *rep)
+A4GL_pdf_skip_top_of_page (void *vrep)
 {
   int z;
+struct pdf_rep_structure *rep;
+rep=vrep;
+
   z = rep->page_no;
 
   while (z == rep->page_no)
@@ -442,8 +463,11 @@ A4GL_pdf_move (struct pdf_rep_structure *p)
  * @todo Describe function
  */
 void
-A4GL_pdf_rep_close (struct pdf_rep_structure *p)
+A4GL_pdf_rep_close (void *vp)
 {
+struct pdf_rep_structure *p;
+p=vp;
+
   A4GL_debug ("Closing report %f\n", p->line_no);
   if (p->line_no != 0.0)
     {
@@ -461,9 +485,12 @@ A4GL_pdf_rep_close (struct pdf_rep_structure *p)
  * @todo Describe function
  */
 double
-A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p)
+A4GL_pdf_size (double f, char c, void *vp)
 {
   int size;
+struct pdf_rep_structure *p;
+p=vp;
+
   A4GL_debug ("pdf_size (%lf %c %p)", f, c, p);
 
   if (f < 0)
@@ -572,14 +599,19 @@ aclpdf (struct pdf_rep_structure *p, char *fname, int n)
  *
  * @todo Describe function
  */
-int
-A4GL_pdf_blob_print (struct pdf_rep_structure *p, struct fgl_int_loc *blob,
-		char *type, int cr)
+
+
+void A4GL_pdf_blob_print (void *vp, void *vblob, char *type, int cr)
 {
   int n;
   double sx;
   double sy;
   int x, y;
+struct pdf_rep_structure *p;
+struct fgl_int_loc *blob;
+p=vp;
+blob=vblob;
+
 
   sx = A4GL_pop_double ();
   sy = A4GL_pop_double ();
@@ -587,13 +619,13 @@ A4GL_pdf_blob_print (struct pdf_rep_structure *p, struct fgl_int_loc *blob,
   if (blob->where != 'F' && blob->where != 'M')
     {
       A4GL_exitwith ("Blob not located");
-      return 0;
+      return ;
     }
 
   if (blob->where != 'F')
     {
       A4GL_exitwith ("Not implemented yet...\n");
-      return 0;
+      return ;
     }
 
   A4GL_debug ("Opening blob\n");
@@ -604,7 +636,7 @@ A4GL_pdf_blob_print (struct pdf_rep_structure *p, struct fgl_int_loc *blob,
     {
       /* exitwith("Unable to open file %s %s",type,blob->filename); */
       A4GL_exitwith ("Unable to open file.");
-      return 0;
+      return ;
     }
 
   y = PDF_get_value (p->pdf_ptr, "imageheight", n);
@@ -631,15 +663,18 @@ A4GL_pdf_blob_print (struct pdf_rep_structure *p, struct fgl_int_loc *blob,
   p->col_no = p->col_no + (double) x;
   A4GL_push_char ("");
   A4GL_pdf_rep_print (p, 1, cr, 0);
-  return 1;
+  return;
 }
 
 
 
-int A4GL_pdf_pdffunc (struct pdf_rep_structure *p,char *fname,int n) {
+void A4GL_pdf_pdffunc (void *vp,char *fname,int n) {
 char *ptr;
 int a;
 double d;
+struct pdf_rep_structure *p;
+p=vp;
+
 
         if (strcmp(fname,"set_parameter")==0) {
                 char *ptr1;
@@ -649,7 +684,7 @@ double d;
                 PDF_set_parameter(p->pdf_ptr,ptr1,ptr2);
                 acl_free(ptr1);
                 acl_free(ptr2);
-                return 0;
+                return ;
         }
         if (strcmp(fname,"moveto")==0) {
                 float f1;
@@ -657,11 +692,11 @@ double d;
                 f2=A4GL_pop_double();
                 f1=A4GL_pop_double();
                 PDF_moveto(p->pdf_ptr,f1,f2);
-                return 0;
+                return ;
         }
         if (strcmp(fname,"stroke")==0) {
                 PDF_stroke(p->pdf_ptr);
-                return 0;
+                return ;
         }
 
 
@@ -671,7 +706,7 @@ double d;
                 f2=A4GL_pop_double();
                 f1=A4GL_pop_double();
                 PDF_lineto(p->pdf_ptr,f1,f2);
-                return 0;
+                return ;
         }
 
 
@@ -684,7 +719,7 @@ double d;
                 A4GL_debug("Setting pdf value %s to %d\n",ptr1,a);
                 PDF_set_value(p->pdf_ptr,ptr1,a);
                 acl_free(ptr1);
-                return 0;
+                return ;
         }
 
 
@@ -692,7 +727,7 @@ double d;
                 d=A4GL_pop_double();
                 p->font_size=d;
                 PDF_setfont(p->pdf_ptr, p->font,p->font_size);
-        return 0;
+        return ;
         }
 
         if (strcmp(fname,"set_font_name")==0) {
@@ -702,13 +737,13 @@ double d;
                 a= PDF_findfont(p->pdf_ptr, p->font_name, "winansi",0  );
                 if (a<0) {
                         A4GL_exitwith("Unable to locate font");
-                        return 0;
+                        return ;
                 }
                 p->font =a;
                 PDF_setfont(p->pdf_ptr, p->font, p->font_size);
-        return 0;
+        return ;
         }
-return 0;
+return ;
 }
 
 
