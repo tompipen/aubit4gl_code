@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.187 2004-11-25 15:45:41 mikeaubury Exp $
+# $Id: mod.c,v 1.188 2004-11-27 15:36:56 mikeaubury Exp $
 #
 */
 
@@ -4645,14 +4645,14 @@ char *A4GL_decode_packtype(char *s) {
 void A4GL_CV_print_exec_sql(char *s) {
 	char *ptr;
 	ptr=A4GLSQLCV_check_sql(s);
-	print_exec_sql(s);
+	print_exec_sql(ptr);
 }
 
 
 void A4GL_CV_print_exec_sql_bound(char *s) {
 	char *ptr;
 	ptr=A4GLSQLCV_check_sql(s);
-	print_exec_sql_bound(s);
+	print_exec_sql_bound(ptr);
 }
 
 void A4GL_CV_print_do_select(char *s) {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.141 2004-11-16 14:44:00 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.142 2004-11-27 15:37:58 mikeaubury Exp $
 #
 */
 
@@ -2012,7 +2012,7 @@ int a4gl_tolower(int n);
 #include "a4gl_sql.h"	/* generated from .spec */
 
 
-#include "a4gl_API_exdata.h"	/* created manually */
+#include "a4gl_exdata.h"	/* created manually */
 #include "a4gl_API_exreport.h"	/* created manually */
 #include "a4gl_API_sql.h"	/* created manually */
 #include "a4gl_API_rpc.h"	/* created manually */

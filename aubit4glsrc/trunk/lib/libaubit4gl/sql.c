@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.21 2004-11-25 15:36:46 mikeaubury Exp $
+# $Id: sql.c,v 1.22 2004-11-27 15:37:59 mikeaubury Exp $
 #
 */
 
@@ -139,8 +139,9 @@ if (A4GL_isyes(acl_getenv("A4GL_LOGSQLERR")) && (strlen(m)||strlen(p))) {
           return;
         }
 	strcpy(a4gl_sqlca.sqlerrm,m);
-	strcpy(a4gl_sqlca.sqlerrp,p);
-}
+	strncpy(a4gl_sqlca.sqlerrp,p,8);
+	a4gl_sqlca.sqlerrp[8]=0;
+}	
 
 
 
@@ -154,7 +155,7 @@ void A4GLSQL_set_sqlerrd( int a0, int a1, int a2, int a3, int a4, int a5) {
 	a4gl_sqlca.sqlerrd[3]=a3;
 	a4gl_sqlca.sqlerrd[4]=a4;
 
-	if (A4GL_isyes(acl_getenv("SWAP_SQLCA62"))) {
+	if (A4GLSQLCV_check_requirement("SWAP_SQLCA62")) {
 		a4gl_sqlca.sqlerrd[5]=a1;
 	} else {
 		a4gl_sqlca.sqlerrd[5]=a5;

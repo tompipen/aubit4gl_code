@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.97 2004-11-25 15:38:57 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.98 2004-11-27 15:37:59 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.97 2004-11-25 15:38:57 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.98 2004-11-27 15:37:59 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1161,6 +1161,7 @@ A4GL_save_sql("DECLARE CURSOR FOR %s",a2);
   printh("static struct BINDING *acli_bo_%s=0;\n",cname);
   printh("static struct BINDING *acli_nbi_%s=0;\n",cname);
   printh("static struct BINDING *acli_nbo_%s=0;\n",cname);
+  printh("static struct BINDING *acli_nbii_%s=0;\n",cname);
   printh("static struct BINDING *acli_nboi_%s=0;\n",cname);
   /*printh("#undef ibind\n#undef obind\n");*/
   /*printh("#define ibind acli_bi_%s\n",A4GL_strip_quotes(a3));*/
@@ -1169,7 +1170,9 @@ A4GL_save_sql("DECLARE CURSOR FOR %s",a2);
   printh("\n\nstatic void internal_recopy_%s_i_Dir(void) {\n",cname);
   printh("struct BINDING *ibind;\n");
   printh("struct BINDING *native_binding_i;\n");
+  printh("struct BINDING *native_binding_i_ind;\n");
   printh("ibind=acli_bi_%s;\n",cname);
+  printh("native_binding_i_ind=acli_nbii_%s;\n",cname);
   printh("native_binding_i=acli_nbi_%s;\n",cname);
   print_conversions('I');
 
@@ -1184,11 +1187,12 @@ A4GL_save_sql("DECLARE CURSOR FOR %s",a2);
   printh("native_binding_o_ind=acli_nboi_%s;\n",cname);
   print_conversions('O');
   printh("}\n");
-  printh("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no,struct BINDING *noi) {\n",cname);
+  printh("\n\nstatic void internal_set_%s(struct BINDING *i,struct BINDING *o,struct BINDING *ni,struct BINDING *no,struct BINDING *nii,struct BINDING *noi) {\n",cname);
   printh("acli_bi_%s=i;\n",cname);
   printh("acli_bo_%s=o;\n",cname);
   printh("acli_nbi_%s=ni;\n",cname);
   printh("acli_nbo_%s=no;\n",cname);
+  printh("acli_nbii_%s=nii;\n",cname);
   printh("acli_nboi_%s=noi;\n",cname);
   printh("}\n");
 
@@ -1196,16 +1200,23 @@ intprflg=0;
 if (last_ni) intprflg++;
 if (last_no) intprflg+=2;
 printc("/* intprflg=%d last_ni=%d last_no=%d */\n",intprflg, last_ni,last_no);
-if (!A4GLSQLCV_check_requirement("USE_INDICATOR"))
-	sprintf(buff,"0");
-else
-	sprintf(buff,"native_binding_o_ind");
+
 
 switch (intprflg) {
-	case 3: printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o,%s);",cname,buff); break;
-	case 2: printc("internal_set_%s(0,obind,0,native_binding_o,%s);",cname,buff); break;
-	case 1: printc("internal_set_%s(ibind,0,native_binding_i,0,0);",cname); break;
-	case 0: printc("internal_set_%s(0,0,0,0,0);",cname); break;
+	case 3: 
+				if (!A4GLSQLCV_check_requirement("USE_INDICATOR")) sprintf(buff,"0,0");
+				else sprintf(buff,"native_binding_i_ind,native_binding_o_ind");
+				printc("internal_set_%s(ibind,obind,native_binding_i,native_binding_o,%s);",cname,buff); break;
+	case 2: 
+				if (!A4GLSQLCV_check_requirement("USE_INDICATOR")) sprintf(buff,"0,0");
+				else sprintf(buff,"0,native_binding_o_ind");
+				printc("internal_set_%s(0,obind,0,native_binding_o,%s);",cname,buff); break;
+	case 1: 
+				if (!A4GLSQLCV_check_requirement("USE_INDICATOR")) sprintf(buff,"0,0");
+				else sprintf(buff,"native_binding_i_ind,0");
+				printc("internal_set_%s(ibind,0,native_binding_i,0,%s);",cname,buff); break;
+	case 0: 
+				printc("internal_set_%s(0,0,0,0,0,0);",cname); break;
 	default: printc("#error No internal_set written\n");break;
 	
 }
@@ -1861,12 +1872,12 @@ extern char buff_in[];
 	sprintf(cname,"aclfgl_c%d_%d",type,ncnt++);
         buffer=malloc(255+strlen(sql));
 
-        ptr=A4GL_new_expr("{ EXEC SQL BEGIN DECLARE SECTION;/*6*/\nint _npc;char _np[256];\nEXEC SQL END DECLARE SECTION;");
+        ptr=A4GL_new_expr("{ EXEC SQL BEGIN DECLARE SECTION;/*6*/\nint _npc;short _npi;char _np[256];\nEXEC SQL END DECLARE SECTION;");
 
 
         n=print_bind_expr(ptr,'i');
         A4GL_append_expr(ptr,buff_in);
-	sprintf(buffer,"sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR for %s;",cname,sql);
+	sprintf(buffer,"sqlca.sqlcode=0;\nEXEC SQL DECLARE %s CURSOR WITH HOLD FOR %s;",cname,sql);
         A4GL_append_expr(ptr,buffer);
 
 
@@ -1874,7 +1885,7 @@ extern char buff_in[];
         A4GL_append_expr(ptr,buff);
 
 	if (type=='E') {
-        	sprintf(buff,"\nEXEC SQL FETCH %s;\n",cname);
+        	sprintf(buff,"\nEXEC SQL FETCH %s INTO :_np;\n",cname);
         	A4GL_append_expr(ptr,buff);
 		sprintf(buff,"} if (sqlca.sqlcode==0) A4GL_push_int(1);");
         	A4GL_append_expr(ptr,buff);
@@ -1884,7 +1895,7 @@ extern char buff_in[];
 	}
 
 	if (type=='e') {
-        	sprintf(buff,"\nEXEC SQL FETCH %s;\n",cname);
+        	sprintf(buff,"\nEXEC SQL FETCH %s INTO :_np;\n",cname);
         	A4GL_append_expr(ptr,buff);
 		sprintf(buff,"} if (sqlca.sqlcode==100) A4GL_push_int(1);");
         	A4GL_append_expr(ptr,buff);
@@ -1896,11 +1907,11 @@ extern char buff_in[];
 
        	sprintf(buff,"_npc=0;while (1) {\n");
        	A4GL_append_expr(ptr,buff);
-      	sprintf(buff,"\nEXEC SQL FETCH %s INTO $_np;\n",cname);
+      	sprintf(buff,"\nEXEC SQL FETCH %s INTO :_np INDICATOR :_npi;\n",cname);
        	A4GL_append_expr(ptr,buff);
       	sprintf(buff,"if (sqlca.sqlcode!=0) break;\n");
        	A4GL_append_expr(ptr,buff);
-   	sprintf(buff,"A4GL_push_char(_np);_npc++;\n");
+   	sprintf(buff,"if (_npi>=0) A4GL_push_char(_np); else A4GL_push_null(2,0); _npc++;\n");
        	A4GL_append_expr(ptr,buff);
 	sprintf(buff,"}\nA4GL_push_int(_npc);");
        	A4GL_append_expr(ptr,buff);

@@ -98,12 +98,7 @@ DTYPE_ALIAS INTERVAL SECOND TO FRACTION=CHAR(20)
 DTYPE_ALIAS INTERVAL SECOND (2) TO FRACTION=CHAR(20)
 DTYPE_ALIAS INTERVAL SECOND TO FRACTION(2)=CHAR(20)
 DTYPE_ALIAS INTERVAL SECOND (2) TO FRACTION(2)=CHAR(20)
-
-
-
-
-
-REPLACE NVARCHAR=VARCHAR
+DTYPE_ALIAS NVARCHAR=VARCHAR
 
 
 
@@ -120,9 +115,9 @@ REPLACE_SQLCONST rowid = oid
 # REPLACE_SQLFUNC day = date_part('DAY',%s::timestamp with time zone)
 # REPLACE_SQLFUNC dow = date_part('DOW',%s::timestamp with time zone)
 
-REPLACE current year to second = now()
-REPLACE current year to fraction(5) = now()
-REPLACE current year to fraction(3) = now()
+REPLACE_EXPR current year to fraction(3) = now()
+REPLACE_EXPR current year to fraction(5) = now()
+REPLACE_EXPR current year to second = now()
 
 # No obvious replacement for these - so effectively remove them
 REPLACE_COMMAND SET EXPLAIN ON = 
@@ -172,3 +167,5 @@ NO_SERIAL_START_VALUE
 
 RENAME_TABLE_AS_ALTER_TABLE
 RENAME_COLUMN_AS_ALTER_TABLE
+
+SWAP_SQLCA62
