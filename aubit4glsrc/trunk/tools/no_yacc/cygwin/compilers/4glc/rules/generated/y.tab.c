@@ -17991,7 +17991,7 @@ pop_blockcommand("WHILE");
 
   case 2134:
 #line 8928 "fgl.yacc"
-    { print_clr_window("\"screen\""); }
+    { print_current_window("\"screen\""); print_clr_window("\"screen\""); }
     break;
 
   case 2135:
