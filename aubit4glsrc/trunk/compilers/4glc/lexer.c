@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.100 2004-10-25 10:45:31 mikeaubury Exp $
+# $Id: lexer.c,v 1.101 2004-10-26 11:56:44 mikeaubury Exp $
 #*/
 
 /**
@@ -1523,6 +1523,8 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
    * associated with the token.
    */
   /*set_str (buff);*/
+
+  if (a==CONCAT_PIPES) { strcpy(buff,"||"); }
   set_str (pyylval, buff);
 
   lastword = buff;
@@ -1744,6 +1746,11 @@ int is_sql_kw(int a) {
 	if (a==OPEN_BRACKET) return 1;
 	if (a==DOLLAR) return 1;
 	if (a==NAMED_GEN) return 1;
+	if (a==END_SQL) return 1;
+	if (a==GREATER_THAN_EQ) return 1;
+	if (a==LESS_THAN_EQ) return 1;
+	if (a==NOT_EQUAL) return 1;
+	if (a==CONCAT_PIPES) return 1;
 	if (a==END_SQL) return 1;
 	if (a==-1) return 1;
 

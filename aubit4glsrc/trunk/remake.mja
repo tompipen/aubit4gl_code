@@ -20,7 +20,7 @@ fi
 
 
 cd /home/aubit4gl/aubit4glsrc
-make -j3 log
+make  log
 
 if [ $? != 0 ]
 then
@@ -64,10 +64,24 @@ cd /home/aubit4gl/aubit4gltest
 find /home/aubit4gl/aubit4gltest -name "*.4ae" -exec rm {} \;
 find /home/aubit4gl/aubit4gltest -name "*.afr*" -exec rm {} \;
 
-sh run_tests -clean
 A4GL_DUMP_CORE=Y
 export A4GL_DUMP_CORE
-sh run_tests -esqli -silent -log-unl 
+
+
+sh run_tests -clean
+mv *.unl  old
+sh run_tests -esqli -silent -log-unl -log-text="ESQLI"
+sh ./load_unl "ESQLI"
+
+mv *.unl old
+sh run_tests -clean
+sh run_tests -eci -silent -log-unl -log-text="ECI"
+sh ./load_unl "ECI"
+
+mv *.unl old
+sh run_tests -clean
+sh run_tests -ecp -silent -log-unl -ignore-conf-error -log-text="ECP"
+sh ./load_unl "ECP"
 
 if grep -y "Fail" build.log 
 then

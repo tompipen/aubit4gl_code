@@ -4,7 +4,6 @@ Please occasionally remove items that are completed from this list.
 
 4GL compiler/libraries
 ----------------------
-	Interval and datetime arithmetic...
 	fix PACKER=PACKED on MinGW (see test 11/y.per) (-xml)
 	find out what is causing different spaces in reports (-nospace) (see test #24)
 
@@ -42,7 +41,6 @@ Enhancements
 
 ESQL/C
 ------
-	Fix OPEN USING in esql/c (in sql)
 	Other fixes in ESQL/C output driver
 
 
@@ -59,12 +57,11 @@ GTK
 
 Other unimplemented functions
 -----------------------------
-	put_insert *partial
 
 
 SQL Parser
 ----------
-	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
+	Separate SQL parser into different YACC file (to allow for multiple SQL dialects) ** PARTIAL
 	Bind substrings (also used in displays/inputs) ******** PARTIAL (Generates but not coded in library)
 	implement grant and revoke
 

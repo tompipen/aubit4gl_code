@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.88 2004-10-02 08:04:36 mikeaubury Exp $
+# $Id: conv.c,v 1.89 2004-10-26 11:56:46 mikeaubury Exp $
 #
 */
 
@@ -1874,7 +1874,6 @@ A4GL_itoc (void *aa, void *zz, int size)
   char buff[256];
   local_a=*(short *)aa;
   local_a_int=local_a;
-
   z = (char *) zz;
   if (A4GL_digittoc (&local_a_int, z, fmt, DTYPE_SMINT, size))
     {

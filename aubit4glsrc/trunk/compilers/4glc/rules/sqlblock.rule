@@ -16,6 +16,10 @@ sqlblock_kw :
 	| CLOSE_BRACKET
 	| DOLLAR
 	| NAMED_GEN
+	| CONCAT_PIPES  {strcpy($<str>$,"||");}
+	| LESS_THAN_EQ  {strcpy($<str>$,"<=");}
+	| GREATER_THAN_EQ  {strcpy($<str>$,">=");}
+	| NOT_EQUAL {char buff[255];sprintf(buff,$<str>1); if (buff[0]=='<') {strcpy($<str>$,"<>");} else {strcpy($<str>$,"!=");} }
 ;
 
 
