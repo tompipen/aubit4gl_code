@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.4 2004-05-21 15:34:51 mikeaubury Exp $
+# $Id: sql.c,v 1.5 2004-05-24 14:31:14 mikeaubury Exp $
 #
 */
 
@@ -102,10 +102,13 @@ A4GLSQL_set_status (int a, int sql)
 
 // if ((!aclfgli_get_err_flg ()) || a>=0) {
   a4gl_status = a;
+
   if (sql)
     a4gl_sqlca.sqlcode = a;
-  if (a != 0 || sql != 0)
+
+  if (a != 0 || sql != 0) {
     aclfgli_set_err_flg ();
+    }
   A4GL_debug ("Status set to %d", a);
 //} else {
 	A4GL_debug("Status set to %d and errflg is set - not setting it to %d/%d",a4gl_status,a,sql);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.30 2004-05-18 15:43:47 mikeaubury Exp $
+# $Id: helper.c,v 1.31 2004-05-24 14:31:13 mikeaubury Exp $
 #
 */
 
@@ -755,7 +755,7 @@ A4GL_strip_pc (char *s, char *d)
 **  License along with this library; if not, write to the Free
 **  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
+#ifdef INCLUDE_USR_FUNCS
 
 /* Some bits stripped out */
 
@@ -848,6 +848,8 @@ aclfgl_w_rowid_s (int arg)
   ptr[pos] = value;
   return (0);
 }
+#endif 
+
 
 /**
  *
@@ -997,6 +999,18 @@ a=A4GL_char_pop();
 A4GL_setenv(a,b,1);
 return 0;
 }
+
+
+int a4gl_toupper(int n) {
+if (n>=0&&n<=255) n=toupper(n);
+return n;
+}
+
+int a4gl_tolower(int n) {
+if (n>=0&&n<=255) n=tolower(n);
+return n;
+}
+
 
 /* =================================== EOF ============================= */
 
