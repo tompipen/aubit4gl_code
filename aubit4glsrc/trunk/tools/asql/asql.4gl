@@ -12,6 +12,7 @@ main
 define lv_a integer
 define lv_cnt integer
 initialize mv_curr_db to null
+call edit_init()
 
 
 # if you don't want to see the banner

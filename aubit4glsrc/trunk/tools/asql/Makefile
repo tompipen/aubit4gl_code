@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.12 2003-11-16 01:57:56 afalout Exp $
+# $Id: Makefile,v 1.13 2003-11-16 14:46:21 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -41,7 +41,8 @@ include 		${ROOT}/incl/Makefile-common
 #Objects that originate in 4GL code
 OBJS_4GL		= \
 				asql.ao connection_menu.ao pick.ao database.ao main_menu.ao \
-				query.ao session.ao table.ao execute.ao paginate.ao
+				query.ao session.ao table.ao execute.ao paginate.ao cedit.ao \
+				filehand.ao
 
 ################
 #Objects that do not originate in 4GL code - version independent

@@ -1,150 +1,8 @@
 
 code
 #include "simple.h"
-int init_filename=1;
-endcode
-
-# We need to store the filename
-# a user types in for choose/save/load
-define mv_filename char(255)
-
-# we also need to store our current SQL
-# somewhere
-# so we'll create a temp file that
-# we can edit
-define mv_tmpinfile char(255) # Filename
-define mv_fin integer         # fopen file handle
-define mv_qry char(32000)
-define frm_is_open integer
-
-# We need to define this for 4GL
-define form_line_width constant 75
-# And for C
-code
-#define form_line_width 75
-
-
 char **read_directory(char *dir,char *spec);
 endcode
-
-
-################################################################################
-function remove_tmpfile()
-code
-if (init_filename==0) {
-	unlink(mv_tmpinfile);
-}
-endcode
-end function
-
-
-################################################################################
-function open_tmpfile()
-code
-mv_fin=(long)fopen(mv_tmpinfile,"w");
-endcode
-end function
-
-################################################################################
-function open_read_tmpfile()
-code
-mv_fin=(long)fopen(mv_tmpinfile,"r");
-A4GL_assertion(mv_fin==0,"Tried to read tmpfile failed");
-endcode
-end function
-
-
-################################################################################
-function close_tmpfile()
-if mv_fin then
-code
-	fclose((FILE *)mv_fin);
-	mv_fin=0;
-endcode
-end if
-end function
-
-
-
-
-################################################################################
-function init_filename()
-define do_init integer
-define fin integer
-
-
-code
-{
-do_init=init_filename;
-mv_fin=0;
-init_filename=0;
-frm_is_open=0;
-sprintf(mv_tmpinfile,"/tmp/a4gl_%d",getpid());
-endcode
-
-call open_tmpfile()
-
-if mv_fin=0 then
-	error "Unable to write temporary file",mv_tmpinfile
-	exit program
-end if
-
-call close_tmpfile()
-
-
-if do_init then
-	initialize mv_filename to null
-	let mv_qry=""
-end if
-code
-}
-endcode
-
-end function
-
-################################################################################
-function write_tmpfile()
-call open_tmpfile()
-if mv_fin=0 then
-	return
-end if
-code
-{
-char *qry;
-char qry_orig[32000];
-char buff[255];
-int buffshort;
-memset(qry_orig,0,32000);
-strcpy(qry_orig,mv_qry);
-qry=qry_orig;
-
-A4GL_trim(qry);
-while (1) {
-	memset(buff,0,255);
-	strncpy(buff,qry,form_line_width+1);
-	buff[form_line_width+1]=0;
-	if (strlen(buff)==0) break;
-	
-	buffshort=strlen(buff);
-	if (buff[form_line_width]==' ') {
-		A4GL_trim(buff);
-		fprintf((FILE*)mv_fin,"%s\n",buff);
-	} else {
-		fprintf((FILE*)mv_fin,"%s",buff);
-	}
-	qry+=form_line_width+1;
-	if (buffshort<form_line_width+1) break;
-}
-//free(qry_orig);
-}
-endcode
-call close_tmpfile();
-
-end function
-
-
-
-
 
 ################################################################################
 function query_menu()
@@ -218,18 +76,19 @@ while true
 			if qry_new() then
 				let lv_runnext=1
 			end if
-			call display_qry()
+			call display_tmp_file()
 	
 		when 2
 			Call set_exec_mode(0)
+			call open_tmpfile("r")
 			call qry_run()
 			let lv_runnext=1
 
 		when 3
-			if qry_modify() then
+			if qry_modify("MODIFY") then
 				let lv_runnext=1
 			end if
-			call display_qry()
+			call display_tmp_file()
 		when 4
 			if qry_edit() then
 				let lv_runnext=1
@@ -241,24 +100,24 @@ while true
 				error "Some SQL error"
 			end if
 			Call set_exec_mode(0)
-			call display_qry()
+			call display_tmp_file()
 
 		when 6
 			if qry_choose() then
 				let lv_runnext=1
 			end if
-			call display_qry()
+			call display_tmp_file()
 
 		when 7
 			call qry_save()
-			call display_qry()
+			call display_tmp_file()
 
 		when 8
 			call qry_info()
 	
 		when 9
 			call qry_drop()
-			call display_qry()
+			call display_tmp_file()
 
 		when 10 exit while
 	end case
@@ -273,112 +132,9 @@ end function
 ################################################################################
 function qry_new()
 	# Clear down our temporary file
-	call open_tmpfile()
+	call open_tmpfile("w")
 	call close_tmpfile()
-	return qry_modify()
-end function
-
-################################################################################
-function read_file(lv_fname)
-define lv_fname char(256)
-code
-A4GL_trim(lv_fname);
-if (strcmp(lv_fname,"-")==0) 
-	mv_fin=(long)stdin;
-else
-	mv_fin=(long)fopen(lv_fname,"r");
-	if (mv_fin==0) {
-		strcat(lv_fname,".sql");
-		mv_fin=(long)fopen(lv_fname,"r");
-	}
-
-endcode
-
-if mv_fin=0 then
-	error "Unable to open file : ",lv_fname
-	sleep 1
-	return
-end if
-code
-{
-char *qry;
-char qry_orig[32000];
-char buff[255];
-int buffshort;
-memset(mv_qry,0,sizeof(mv_qry));
-strcpy(mv_qry,"");
-while (1) {
-	if (feof((FILE *)mv_fin)) break;
-	memset(buff,0,255);
-	fgets(buff,255,(FILE *)mv_fin);
-	// Our current line is too short
-	// pad it with spaces
-	if (strlen(buff)<form_line_width) {
-		memset(&buff[strlen(buff)],' ',255);
-		buff[form_line_width+1]=0;
-	}
-	strcat(mv_qry,buff);
-}
-}
-fclose((FILE *)mv_fin);
-A4GL_debug("--->%s",mv_qry);
-endcode
-
-end function
-
-################################################################################
-function read_tmpfile()
-call open_read_tmpfile()
-if mv_fin=0 then
-	error "Unable to open tmpfile"
-	return
-end if
-code
-{
-char *qry;
-char qry_orig[32000];
-char buff[255];
-int buffshort;
-strcpy(mv_qry,"");
-while (1) {
-	if (feof((FILE *)mv_fin)) break;
-	memset(buff,0,255);
-	fgets(buff,255,(FILE *)mv_fin);
-	// Our current line is too short
-	// pad it with spaces
-	if (buff[strlen(buff)-1]=='\n')
-		buff[strlen(buff)-1]=0;
-
-	if (strlen(buff)<form_line_width) {
-		memset(&buff[strlen(buff)],' ',255);
-		buff[form_line_width+1]=0;
-	}
-	strcat(mv_qry,buff);
-	A4GL_debug("Added : %s to mv_qry",buff);
-}
-}
-endcode
-let mv_qry=mv_qry
-call close_tmpfile();
-end function
-
-################################################################################
-function display_qry()
-define lv_a,lv_b,lv_c integer
-	call clear_screen_portion()
-	let mv_qry=mv_qry clipped
-
-	if mv_qry is not null and mv_qry!=" " then
-		let lv_a=1
-		for lv_c=1 to 16
-			if lv_a > length(mv_qry) then
-				exit for
-			end if
-			let lv_b=lv_a+form_line_width
-			display mv_qry[lv_a,lv_b] at 5+lv_c,2
-			let lv_a=lv_b+1
-		end for
-	end if
+	return qry_modify("NEW")
 end function
 
 
@@ -388,16 +144,14 @@ end function
 ################################################################################
 function qry_run()
 define a integer
-call open_read_tmpfile()
 code
 {
 extern FILE *yyin;
 extern struct element *list;
 extern int list_cnt;
 
-A4GL_assertion(mv_fin==0,"No input tmp file");
 
-yyin=(FILE *)mv_fin;
+yyin=(FILE *)get_curr_mvfin();
 clr_stmt();
 a=yyparse();
 a=list_cnt;
@@ -427,11 +181,10 @@ let lv_systemstr=fgl_getenv("DBEDIT")
 if lv_systemstr is null or lv_systemstr is null matches " " then
 	let lv_systemstr="vi"
 end if
-let lv_systemstr=lv_systemstr clipped," ", mv_tmpinfile
+let lv_systemstr=lv_systemstr clipped," ", get_tmp_fname()
 run lv_systemstr returning lv_stat
 
-call read_tmpfile()
-call display_qry()
+call display_tmp_file()
 
 return 1
 end function
@@ -500,16 +253,13 @@ case lv_query_out
                 let lv_amode="w"
 end case
 
-call open_read_tmpfile()
+call open_tmpfile("r")
 code
 {
 extern FILE *yyin;
 extern struct element *list;
 extern int list_cnt;
-
-A4GL_assertion(mv_fin==0,"No input tmp file");
-
-yyin=(FILE *)mv_fin;
+yyin=(FILE *)get_curr_mvfin();
 clr_stmt();
 a=yyparse();
 a=list_cnt;
@@ -549,14 +299,12 @@ endcode
 
 call set_pick_cnt(a);
 
-call prompt_pick("CHOOSE >> ",mv_filename) returning lv_fname
+call prompt_pick("CHOOSE >> ","") returning lv_fname
 if lv_fname is not null then
 	let lv_fname=lv_fname clipped,".sql"
 	error "Filename : ",lv_fname
-	let mv_filename=lv_fname
-	call read_file(lv_fname)
-	call write_tmpfile()
-	call display_qry()
+	call copy_file(lv_fname,get_tmp_fname())
+	call display_tmp_file()
 	return 1
 end if
 return 0
@@ -564,13 +312,19 @@ return 0
 end function
 
 
+################################################################################
 function execute_file(lv_fname)
 define lv_fname char(255)
-call init_filename()
+	call init_filename()
 	call set_exec_mode(1)
-	call read_file(lv_fname)
-	call write_tmpfile()
-	call open_read_tmpfile()
+
+	if lv_fname!="-" then
+		call copy_file(lv_fname,get_tmp_fname())
+		call open_tmpfile("r")
+	else
+		call open_tmpfile_as_stdin()
+	end if
+
 	call qry_run()
 end function
 
@@ -578,9 +332,14 @@ end function
 function qry_save()
 define lv_fname char(255)
 call set_pick_cnt(0)
-call prompt_pick("SAVE >> ",mv_filename) returning lv_fname
-error "Not implemented yet"
-sleep 1
+call prompt_pick("SAVE >> ","") returning lv_fname
+if lv_fname not matches "*.sql" then
+	let lv_fname=lv_fname clipped,".sql"
+end if
+
+if lv_fname != " " then
+	call copy_file(get_tmp_fname(),lv_fname)
+end if
 end function
 
 ################################################################################
@@ -613,7 +372,7 @@ endcode
 
 call set_pick_cnt(a);
 
-call prompt_pick("DROP >> ",mv_filename) returning lv_fname
+call prompt_pick("DROP >> ","") returning lv_fname
 
 
 if lv_fname is not null then
@@ -638,80 +397,25 @@ end function
 
 
 
-code
-#ifndef DIALECT_POSTGRES
-#include <ncurses.h>
-#include <form.h>
-#else
-#define KEY_MAX         0777            /* Maximum key value is 0633 */
-#define REQ_NEXT_LINE    (KEY_MAX + 19) /* move to next line in field   */
-#define REQ_PREV_LINE    (KEY_MAX + 20) /* move to prev line in field   */
-#define REQ_BEG_LINE     (KEY_MAX + 25) /* move to beginning of line    */
-#define REQ_END_LINE     (KEY_MAX + 26) /* move after last char in line */
-#define REQ_NEW_LINE     (KEY_MAX + 31) /* insert/overlay new line      */
-#define REQ_INS_LINE     (KEY_MAX + 33) /* insert blank line at cursor  */
-#define REQ_DEL_LINE     (KEY_MAX + 36) /* delete line at cursor        */
-#define REQ_SCR_FLINE    (KEY_MAX + 43) /* scroll field forward a line  */
-#define REQ_SCR_BLINE    (KEY_MAX + 44) /* scroll field backward a line */
-#define REQ_SCR_HFLINE   (KEY_MAX + 51) /* horizontal scroll line          */
-#define REQ_SCR_HBLINE   (KEY_MAX + 52) /* horizontal scroll line          */
-#endif
-endcode
+
 ################################################################################
-function qry_modify()
+function qry_modify(p_modify)
+define p_modify char(6)
+
 	set pause mode off
 	call clear_screen_portion()
-	call read_tmpfile()
-
-	display "NEW:    ESC    = Done editing      CTRL-A = Typeover/Insert     CTRL-R = Redraw","" at 1,1
-	display "        CTRL-X = Delete character  CTRL-D = Delete rest of line","" at 2,1
-
-	if not frm_is_open then
-		open window w1 at 6,1 with form "qryfrm" attributes(form line 1)
+	if not edit_load_file() then
+		call edit(p_modify)
+	else
+		error "Internal Error..."
 	end if
+	call display_banner()
+	call display_tmp_file()
 
-	let int_flag=false
-
-	let mv_qry=mv_qry clipped
-
-
-
-code
-A4GL_trim(mv_qry);
-A4GL_debug("Query=%s",mv_qry);
-endcode
-	input mv_qry without defaults from info_line  attribute(green)
-
-	on key(up)
-code
-		A4GL_int_form_driver(GET("s_screenio",_inp_io,"cform"),REQ_PREV_LINE);
-endcode
-
-
-	on key(down)
-code
-		A4GL_int_form_driver(GET("s_screenio",_inp_io,"cform"),REQ_NEXT_LINE);
-endcode
-	on key(return)
-code
-		A4GL_int_form_driver(GET("s_screenio",_inp_io,"cform"),REQ_NEW_LINE);
-endcode
-
-
-
-	end input
 	
-	close window w1
-	let frm_is_open=0
 	if int_flag=true then
-		error "INT PRESSED"
-		call read_tmpfile()
-		call display_qry()
 		return 0
 	else
-		error "WRITING"
-		call write_tmpfile()
-		call display_qry()
 		return 1
 	end if
 
