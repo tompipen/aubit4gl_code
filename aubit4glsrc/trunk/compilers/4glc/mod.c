@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.190 2004-11-29 22:28:57 mikeaubury Exp $
+# $Id: mod.c,v 1.191 2004-12-06 10:34:45 mikeaubury Exp $
 #
 */
 
@@ -61,8 +61,8 @@
 #define GEN_STACKS 		10
 #define MAXVARS 		2000
 #define EMPTY 			"----"
-#define MAXMENU 		10
-#define MAXMENUOPTS 	10
+//#define MAXMENU 		50
+//#define MAXMENUOPTS 	50
 
 #define UPDCOL 0
 #define UPDVAL 1
@@ -733,6 +733,10 @@ pop_record (void)
 void
 push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
 {
+
+  A4GL_debug ("Menu %d Option %d '%s'", mn, mnopt, A4GL_null_as_null(b));
+A4GL_assertion(mn>=MAXMENU,"Ran out of menu spaces");
+A4GL_assertion(mnopt>=MAXMENUOPTS,"Ran out of option slots");
   strcpy (menu_stack[mn][mnopt - 1].menu_title, b);
   strcpy (menu_stack[mn][mnopt - 1].menu_help, c);
   strcpy (menu_stack[mn][mnopt - 1].menu_key, a);
@@ -743,7 +747,6 @@ push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
   menu_stack[mn][mnopt].menu_title[0] = 0;
   menu_stack[mn][mnopt].menu_help[0] = 0;
   menu_stack[mn][mnopt].menu_key[0] = 0;
-  A4GL_debug ("Menu %d Option %d '%s'", mn, mnopt, A4GL_null_as_null(b));
 }
 
 /**

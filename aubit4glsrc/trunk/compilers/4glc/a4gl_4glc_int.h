@@ -213,8 +213,8 @@ void ansi_violation (char *s, int severity);
 
 
 
-#define MAXMENU 		10
-#define MAXMENUOPTS 	10
+#define MAXMENU 		50
+#define MAXMENUOPTS 	50
 #define NUMBINDINGS 	20480
 #define REPORTSTACKSIZE 256
 
