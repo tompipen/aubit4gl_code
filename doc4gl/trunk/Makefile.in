@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.3 2003-01-02 10:15:36 afalout Exp $
+#  $Id: Makefile.in,v 1.4 2003-01-03 02:11:20 afalout Exp $
 #
 #  ==========================================================================
 
@@ -14,18 +14,24 @@ include FgldocDefs.mk
 #                           Settings
 # =========================================================================
 
-#All we need for parser is C and ESQL/C compiler. configure would fail if they
-#are missing, and this Makefile would not be created, so we can assume this
-#will work:
 ALL				=parser
 ALL.INSTALL		=install.parser install.manager
 
-#for browser we need...
-#ALL			+=browser
-#ALL.INSTALL	+=install.browser
+ifneq "@JAVAC@" "no"
+	ALL			+=browser
+endif
+
+ifneq "@TOMCAT_DIR@" "no"
+	ALL.INSTALL	+=install.browser
+endif
+
+ALL.PERLMODS	= install.cpan install.dbi install.tk install.unit \
+				install.dbd-informix
 
 .PHONY:all parser manager browser install clean install.parser \
-		install.manager install.browser deinstall
+		install.manager install.browser deinstall install.cpan install.dbi \
+		install.tk install.unit install.dbd-informix missing.perlmods \
+        all.perlmods
 
 
 # =========================================================================
@@ -33,6 +39,12 @@ ALL.INSTALL		=install.parser install.manager
 # =========================================================================
 
 all: ${ALL}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Doc4gl default targets (${ALL}) successfully compiled."
+	@echo "|                Execute 'make install' to install it.               |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 parser:
 	$(MAKE) -C parser all
@@ -48,6 +60,12 @@ browser:
 # =========================================================================
 
 install: ${ALL.INSTALL}
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Doc4gl default install targets (${ALL.INSTALL}) installed."
+	@echo "|       See User's manual for usage instructions                     |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 install.parser:
 	$(MAKE) -C parser install
@@ -78,6 +96,19 @@ clean:
 #                           Install Perl modules
 # =========================================================================
 
+#Fixme: is there a way to accept all defaults when installing using CPAN
+#and avoid all this prompting?
+
+all.perlmods: ${ALL.PERLMODS}
+
+missing.perlmods: @MISSING_PERLMODS@
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|                          *** NOTE ***                              |"
+	@echo "|         Doc4gl missing Perl modules installation finished          |"
+	@echo "|       Please re-run 'configure' to update changed configureation   |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 #if you're using ActivePerl on Windows, the PPM (Perl Package Manager) has
 #much of the same functionality as CPAN.pm.
@@ -89,12 +120,23 @@ install.unit:
 	perl -MCPAN -e 'install Test::Unit'
 
 install.dbd-informix:
-#FIXME: set this from configure:
-	(export DBI_DBNAME=p4gl_repository; \
-	export DBD_INFORMIX_DATABASE=p4gl_repository; \
-	export DBD_INFORMIX_USERNAME=root; \
-	export DBD_INFORMIX_PASSWORD=xxxx; \
+ifneq "@DBD_INFORMIX_USERNAME@" ""
+ifneq "@DBD_INFORMIX_PASSWORD@" ""
+	(export DBI_DBNAME=@DOC4GL_DB@; \
+	export DBD_INFORMIX_DATABASE=@DOC4GL_DB@; \
+	export DBD_INFORMIX_USERNAME=@DBD_INFORMIX_USERNAME@; \
+	export DBD_INFORMIX_PASSWORD=@DBD_INFORMIX_PASSWORD@; \
 	perl -MCPAN -e 'install DBD::Informix')
+else
+	@echo "ERROR: Informix DB password not specified. Cannot install DBD::Informix"
+	@echo "re-run configure like this, to specify them:"
+	@echo "./configure --with-ifx-uname=MyUserName --with-ifx-pwd=MyPassword"
+endif
+else
+	@echo "ERROR: Informix DB user name not specified. Cannot install DBD::Informix"
+	@echo "re-run configure like this, to specify them:"
+	@echo "./configure --with-ifx-uname=MyUserName --with-ifx-pwd=MyPassword"
+endif
 
 install.cpan:
 	perl -MCPAN -e 'install Bundle::CPAN'

@@ -3,7 +3,7 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.4 2003-01-02 21:44:52 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.5 2003-01-03 02:11:20 afalout Exp $
 #
 #  ==========================================================================
 
@@ -11,8 +11,8 @@
 YACC			=@YACC@
 YFLAGS			=-d
 LEX				=@LEX@
-CFLAGS			=-g
-#CFLAGS			=@CFLAGS@
+#CFLAGS			=-g
+CFLAGS			=@CFLAGS@
 ESQL			=@IFMX_ESQLC@ -static
 
 #  ==========================================================================
@@ -29,7 +29,7 @@ PERL_MODULE_DIR	=@PERL_MODULE_DIR@/FglDocumenter
 #  ==========================================================================
 #  Place where Tomcat or other jsp container is installed
 #  ==========================================================================
-TOMCAT_DIR		=/usr/local/jakarta-tomcat
+TOMCAT_DIR		=@TOMCAT_DIR@
 
 #  ==========================================================================
 #  Application dir inside tomcat, or other jsp container.
