@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2004-03-19 09:57:07 mikeaubury Exp $
+# $Id: Makefile,v 1.6 2004-03-19 11:05:26 afalout Exp $
 #
 
 LIBROOT		=../../..
@@ -37,15 +37,14 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -I$(AUBITDIR)/lib/libaubit4gl -I$(AUBITDIR)/incl 
+CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl 
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-../../../libLOGREPPROC_TXT.so : process_txt.o
-	cc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(AUBITDIR)/lib -laubit4gl 
-
+${LIBROOT}/libLOGREPPROC_TXT.so : process_txt.o
+	cc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
 
 process_txt.o: ../../layout_engine/API_layout.h
 
@@ -57,4 +56,6 @@ process_txt.o: ../../layout_engine/API_layout.h
 ## ==================================================================
 
 clean:
-	${RM} ../../../libLOGREPPROC_TXT.so *.o
+	${RM} ${LIBROOT}/libLOGREPPROC_TXT.so *.o
+	
+	

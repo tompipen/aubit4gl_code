@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.3 2004-03-19 09:57:06 mikeaubury Exp $
+# $Id: makefile,v 1.4 2004-03-19 11:05:09 afalout Exp $
 #
 
 LIBROOT		=../../..
@@ -45,7 +45,8 @@ OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 ##                              Targets
 ## ==================================================================
 
-../../../libLOGREPPROC_CSV.so: ${OBJS}
+
+${LIBROOT}/libLOGREP_PROC_CSV.so: ${OBJS}
 	cc -fPIC -shared ${OBJS} -o $@
 	
 ## ==================================================================
@@ -53,5 +54,5 @@ OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 ## ==================================================================
 
 clean:
-	${RM} *.o ../../../libLOGREP_PROC_CSV.so
+	${RM} *.o ${LIBROOT}/libLOGREP_PROC_CSV.so
 	

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.11 2004-03-14 10:40:58 afalout Exp $
+# $Id: sqlconvert.c,v 1.12 2004-03-19 11:05:03 afalout Exp $
 #
 */
 
@@ -43,6 +43,9 @@
  *
  * To test SQL for ANSI SQL 92 99 and 2003 compatibiolity, see:
  * http://developer.mimer.com/validator
+ * http://sqlfairy.sf.net
+ * http://www.equivalentscript.com
+ * 
  * http://www.vembu.com
  * http://ldbc.sf.net (Java)
  * http://www.crossdb.com (Java)

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2004-03-19 09:57:06 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2004-03-19 11:05:10 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -51,6 +51,6 @@ ${ROOT}/bin/report_viewer: report_viewer.c main.c ../common/a4gl_lle.o
 ## ==================================================================
 
 clean: 
-	${RM} report_viewer *.o
+	${RM} ${ROOT}/bin/report_viewer *.o
 	
 	

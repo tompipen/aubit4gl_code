@@ -1,7 +1,7 @@
 /*
  *  odbctest.c
  *
- *  $Id: odbctest.c,v 1.5 2003-05-12 14:24:42 mikeaubury Exp $
+ *  $Id: odbctest.c,v 1.6 2004-03-19 11:05:27 afalout Exp $
  *
  *  Sample ODBC program
  *
@@ -31,19 +31,26 @@
 
 
 #if (defined (__CYGWIN__) || defined (__MINGW32__))
-#include <windows.h>
-#include <sqlext.h>
+	#include <windows.h>
+	#include <sqlext.h>
 #else
-
-#ifdef UNIXODBC
-#include <sql.h>
-#include <sqlext.h>
-#endif
-
-#ifdef IODBC
-#include "isql.h"
-#include "isqlext.h"
-#endif
+	#ifdef UNIXODBC
+		#include <sql.h>
+		#include <sqlext.h>
+	#endif
+	
+	#ifdef IODBC
+		#ifdef OLDIODBC
+			//#include <iodbc.h>
+			#include <isql.h>
+			#include <isqlext.h>
+		#else
+			#include <sql.h>
+			#include <sqlext.h>
+			#include <sqltypes.h>
+		#endif
+		
+	#endif
 #endif
 
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.37 2003-09-10 10:32:50 afalout Exp $
+# $Id: Makefile.in,v 1.38 2004-03-19 11:05:26 afalout Exp $
 #
 
 ROOT    =../../..
@@ -39,13 +39,12 @@ include ${ROOT}/incl/Makefile-common
 
 #FIXME: why do we need fcompile headers and RPC lib includes here?
 C_LOCAL_IFLAGS  		=-I.. -I${LIBROOT}/compilers/fcompile
-CFLAGS				+=${C_LOCAL_IFLAGS}
+CFLAGS					+=${C_LOCAL_IFLAGS}
 #@RPCLIB_INCLUDE@
 CFLAGS_NOREDUND			=$(CFLAGS:%-Wredundant-decls=%)
-CFLAGS_NOSTRICTPROTO		=$(CFLAGS:%-Wstrict-prototypes=%)
+CFLAGS_NOSTRICTPROTO	=$(CFLAGS:%-Wstrict-prototypes=%)
 LCLINT_CFLAGS   		=${C_IFLAGS} ${C_LOCAL_IFLAGS}
-OBJECTS				=sql.o sqlex.o array.o
-
+OBJECTS					=sql.o sqlex.o array.o
 
 #`-rpath dir'
 #           Add a directory to the runtime  library  search  path.
@@ -64,8 +63,8 @@ LD_RUN_PATH =${INFORMIXDIR}/lib/esql
 #IFX_RPATH	=-rpath ${INFORMIXDIR}/lib/esql
 
 
-CFLAGS_SQLITE	=-DDONTINCLUDEDATASOURCES -DSQLITEODBC -DHAVE_LIBVERSION=1 -DWITHOUT_DRIVERMGR  \
-				${CFLAGS_NOREDUND} -DHAVE_LOCALECONV=1 \
+CFLAGS_SQLITE	=-DDONTINCLUDEDATASOURCES -DSQLITEODBC -DHAVE_LIBVERSION=1 \
+				-DWITHOUT_DRIVERMGR ${CFLAGS_NOREDUND} -DHAVE_LOCALECONV=1 \
 				-L@SQLITE_LDPATH@ -I${ROOT}/tools/odbtest/incl -I.
 
 ifeq "${TARGET_OS}" "cygwin"
@@ -92,7 +91,8 @@ endif
 #endif
 
 
-.PHONY : clean all allodbc iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc odbc32 sqlite sqlite.static
+.PHONY : clean all allodbc iodbc unixodbc ifxodbc pgodbc sapodbc \
+	sqliteodbc odbc32 sqlite sqlite.static
 
 ## ==================================================================
 ##                              Targets

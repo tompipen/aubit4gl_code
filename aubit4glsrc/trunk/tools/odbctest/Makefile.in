@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.7 2003-02-19 22:28:40 afalout Exp $
+# $Id: Makefile.in,v 1.8 2004-03-19 11:05:27 afalout Exp $
 #
 
 ROOT=../..
@@ -129,14 +129,15 @@ odbctest2.o: ${SOURCE}
 	${CC} $(DEFS_V2) ${CFLAGS} -c ${SOURCE} -o $@ -DIODBC
 
 #iODBC V3:
+odbctest3.o: CFLAGS:=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${CFLAGS_NOREDUND} ${CFLAGS}
 odbctest3.o: ${SOURCE}
 #	${CC} $(DEFS_V3) ${CFLAGS} -I.. -I./ -c ${SOURCE} -o $@
 	${CC} $(DEFS_V3) ${CFLAGS} -c ${SOURCE} -o $@ -DIODBC
 
 #unixODBC:
+odbctest4.o: CFLAGS:=-DUNIXODBC @UNIXODBC_LFLAGS@ ${CFLAGS}
 odbctest4.o: ${SOURCE}
 	${CC} $(DEFS_V3) ${CFLAGS} -c ${SOURCE} -o $@ -DUNIXODBC
-
 
 shexec:
 	chmod a+x autotest*

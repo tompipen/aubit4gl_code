@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2004-03-19 09:57:07 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2004-03-19 11:05:26 afalout Exp $
 #
 
 LIBROOT		=../../..
@@ -37,14 +37,14 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-I$(AUBITDIR)/lib/libaubit4gl -I$(AUBITDIR)/incl
-LFLAGS=-L$(AUBITDIR)/lib -laubit4gl `pkg-config --libs --cflags gtk+-2.0`
+CFLAGS=-I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl
+LFLAGS=-L$(ROOT)/lib -laubit4gl `pkg-config --libs --cflags gtk+-2.0`
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-../../../libLOGREP_TXT.so : layout_txt.c
+${LIBROOT}/libLOGREP_TXT.so : layout_txt.c
 	cc -rdynamic -shared -g $^ -o $@ ${CFLAGS} ${LFLAGS}
 
 ## ==================================================================
@@ -52,6 +52,6 @@ LFLAGS=-L$(AUBITDIR)/lib -laubit4gl `pkg-config --libs --cflags gtk+-2.0`
 ## ==================================================================
 
 clean:
-	${RM} ../../../libLOGREP_TXT.so *.o
+	${RM} ${LIBROOT}/libLOGREP_TXT.so *.o
 	
 	
