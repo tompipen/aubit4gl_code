@@ -206,13 +206,6 @@ define rpaginate integer
 define lv_query char(1024)
 
 
-while true
-
-   CALL open_display_file()
-#@ INFORMIX SPECIFIC....
-
-   MESSAGE "Loading column definitions..."
-
 let lv_query=" SELECT c.oid FROM pg_catalog.pg_class c LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE pg_catalog.pg_table_is_visible(c.oid) AND c.relname ='",l_tabname clipped,"'"
 
 prepare p_qli1 from lv_query
@@ -262,29 +255,6 @@ endcode
         CALL add_to_display_file(lv_buff)
 
    END FOREACH
-   let rpaginate=0
-
-code
-{
-extern int outlines;
-A4GL_debug("TABINFO : outlines=%d\n",outlines);
-   while (1) {
-             if (outlines<=0) break;
-             aclfgl_paginate(0);
-             rpaginate=A4GL_pop_int();
-             if (rpaginate!=0) break;
-   }
-}
-endcode
-
-if rpaginate=1 THEN
-	CONTINUE WHILE
-ELSE
-	EXIT WHILE
-END IF
-
-END WHILE
-MESSAGE ""
 
 END FUNCTION
 
@@ -547,6 +517,7 @@ char *p;
 EXEC SQL END DECLARE SECTION;
 int qry_type;
 p=s;
+if (type>='1'&&type<='4') return 255;
 
 qry_type=0;
    if (prepared) {
@@ -927,41 +898,47 @@ end function
 
 function load_info_indexes(lv_tabname)
 define lv_tabname char(255)
-
+return 0
 end function
 
 
 function load_info_priv(lv_tabname)
 define lv_tabname char(255)
 error "Not Implemented"
+return 0
 end function
 
 
 function load_info_ref(lv_tabname)
 define lv_tabname char(255)
 error "Not Implemented"
+return 0
 end function
 
 
 function load_info_status(lv_tabname)
 define lv_tabname char(255)
+return 0
 end function
 
 
 function load_info_constraints(lv_tabname)
 define lv_tabname char(255)
 error "Not Implemented"
+return 0
 end function
 
 
 function load_info_triggers(lv_tabname)
 define lv_tabname char(255)
+return 0
 end function
 
 
 function load_info_fragments(lv_tabname)
 define lv_tabname char(255)
 error "Not Implemented"
+return 0
 end function
 
 function table_info()
@@ -993,32 +970,56 @@ define lv_cont integer
                 let lv_txt="INFO - ",lv_tabname
                 menu lv_txt
                         command "Columns"
-                                call load_info_columns(lv_tabname)
+				CALL open_display_file()
+                                if load_info_columns(lv_tabname) then
+					CALL do_paginate()
+				end if
 
                         command "Indexes"
-                                call load_info_indexes(lv_tabname)
+				CALL open_display_file()
+                                if load_info_indexes(lv_tabname) then
+					CALL do_paginate()
+				end if
 
                         command "Privileges"
-                                call load_info_priv(lv_tabname)
+				CALL open_display_file()
+                                if load_info_priv(lv_tabname) then
+					CALL do_paginate()
+				end if
 
                         command "References"
-                                call load_info_ref(lv_tabname)
+				CALL open_display_file()
+                                if load_info_ref(lv_tabname) then
+					CALL do_paginate()
+				end if
 
                         command "Status"
-                                call load_info_status(lv_tabname)
+				CALL open_display_file()
+                                if load_info_status(lv_tabname) then
+					CALL do_paginate()
+				end if
 
                         command "cOnstraints"
-                                call load_info_constraints(lv_tabname)
+				CALL open_display_file()
+                                if load_info_constraints(lv_tabname) then
+					CALL do_paginate()
+				end if
 
                         command "triGgers"
-                                call load_info_triggers(lv_tabname)
+				CALL open_display_file()
+                                if load_info_triggers(lv_tabname) then
+					CALL do_paginate()
+				end if
 
                         command "Table"
                                 let lv_cont=1
                                 exit menu
 
                         command "Fragments"
-                                call load_info_fragments(lv_tabname)
+				CALL open_display_file()
+                                if load_info_fragments(lv_tabname) then
+					CALL do_paginate()
+				end if
 
                         command "Exit"
                                 let lv_cont=0
@@ -1030,4 +1031,25 @@ define lv_cont integer
         end if
         end while
 
+end function
+
+
+FUNCTION do_paginate()
+define rpaginate integer
+code
+   while (1) {
+        extern int outlines;
+
+             if (outlines<=0) break;
+             aclfgl_paginate(0);
+             rpaginate=A4GL_pop_int();
+             if (rpaginate!=0) break;
+   }
+endcode
+
+END FUNCTION
+
+FUNCTION load_info_tables()
+	display "Not implemented"
+	sleep 1
 end function

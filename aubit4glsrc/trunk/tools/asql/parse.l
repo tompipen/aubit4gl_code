@@ -41,6 +41,8 @@ unload[ \t\v\f]*to	{ count(); return(KW_UNLOAD); }
 info[ \t\v\f]*columns[ \t\v\f]*for { count(); return(KW_INFO_COL); }
 info[ \t\v\f]*status[ \t\v\f]*for  { count(); return(KW_INFO_STAT); }
 info[ \t\v\f]*indexes[ \t\v\f]*for { count(); return(KW_INFO_IDX); }
+info[ \t\v\f]*access[ \t\v\f]*for { count(); return(KW_INFO_PRIV); }
+info[ \t\v\f]*privileges[ \t\v\f]*for { count(); return(KW_INFO_PRIV); }
 info[ \t\v\f]*tables 		   { count(); return(KW_INFO_TABLES); }
 {L}({L}|{D})*		{ count(); return(IDENTIFIER); }
 0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }

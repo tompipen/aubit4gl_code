@@ -23,6 +23,7 @@
 #define KW_INFO_STAT 279
 #define KW_INFO_IDX 280
 #define KW_INFO_TABLES 281
+#define KW_INFO_PRIV 282
 
 
 struct element {

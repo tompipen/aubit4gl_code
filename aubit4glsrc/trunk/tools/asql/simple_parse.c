@@ -76,6 +76,7 @@ int a;
 int into_temp=0;
 int need_fname=0;
 int need_delim=0;
+int need_tabname=0;
 
 	while (1) {
 		a=yylex();
@@ -92,9 +93,8 @@ int need_delim=0;
 				strcpy(buff,A4GL_strip_quotes(buff));
 				e->fname=strdup(buff);
 				// We also need to remove the UNLOAD ... bit...
-				printf("Scrapping %s\n",ptr);
-				free(ptr);
-				ptr=0;
+				//printf("Scrapping %s\n",ptr);
+				free(ptr); ptr=0;
 				need_fname=0;
 				continue;
 			}
@@ -103,11 +103,20 @@ int need_delim=0;
 
                 if (need_delim&&a==STRING_LITERAL) {
                         e->delim=strdup(yylval.str);
-                        free(ptr);
-                        ptr=0;
+                        free(ptr); ptr=0;
                         need_delim=0;
 			continue;
                 }
+
+		if (need_tabname) {
+			if (a==IDENTIFIER) {
+				e->fname=strdup(yylval.str);
+                        	free(ptr);ptr=0;
+				need_tabname=0;
+				continue;
+			}
+		}
+
 
 		if (a==KW_OBRACE) {
 			while (a&&a!=KW_CBRACE) a=yylex();
@@ -170,7 +179,14 @@ int need_delim=0;
 			if (a==KW_INSERT) e->type='I';
 			if (a==KW_DELETE) e->type='D';
 			if (a==KW_SELECT) e->type='S';
+
+			if (a==KW_INFO_COL) {e->type='1';need_tabname=1;}
+			if (a==KW_INFO_STAT) {e->type='2';need_tabname=1;}
+			if (a==KW_INFO_TABLES) e->type='3';
+			if (a==KW_INFO_PRIV) {e->type='4';need_tabname=1;}
+
 			if (e->type=='?') e->type='O';
+
 			e->lineno=line;
 			into_temp=0;
 		}
@@ -179,7 +195,7 @@ int need_delim=0;
 		else        ptr_new=make_sql_string(ptr,yylval.str,0);
 
 		if (ptr) {
-			free(ptr);
+			free(ptr); ptr=0;
 		}
 		ptr=ptr_new;
 		

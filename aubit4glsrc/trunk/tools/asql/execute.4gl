@@ -65,6 +65,8 @@ struct element {
         int lineno;
         char type;
         char *stmt;
+        char *delim;
+        char *fname;
 };
 
 char *get_qry_msg(int qry_type,int n);
@@ -78,6 +80,7 @@ void display_mode_unload(int a) {
 	else display_mode=0;
 	
 }
+
 
 endcode
 
@@ -115,7 +118,14 @@ define lv_str char(256)
 code
 A4GL_assertion(out==0,"No output file (1)");
 A4GL_trim(lv_str);
-if (out) fprintf(out,"%s\n",lv_str);
+
+
+
+if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+fprintf(out,"%s\n",lv_str);
+} else {
+fprintf(exec_out,"%s\n",lv_str);
+}
 outlines++;
 endcode
 end function
@@ -134,15 +144,27 @@ for a=1 to length(lv_str)
 code
 	if (lv_str[a-1]=='\n' || lv_str[a-1]=='\r') {
 		lv_col=0;
-	 	fprintf(out,"\n");
+		if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+	 			fprintf(out,"\n");
+		} else {
+	 			fprintf(exec_out,"\n");
+		}
 	} else {
-	     fprintf(out,"%c",lv_str[a-1]);
+		if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+	     		fprintf(out,"%c",lv_str[a-1]);
+		} else {
+	     		fprintf(exec_out,"%c",lv_str[a-1]);
+		}
 	}
 endcode
 	let lv_col=lv_col+1
 	if lv_col=80 then
 code
+if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
 	 	fprintf(out,"\n");
+} else {
+	 	fprintf(exec_out,"\n");
+}
 		lv_col=1;
 endcode
 	end if
@@ -280,7 +302,12 @@ code
 				else {
 					if (list[a].type=='L'|| list[a].type=='l') asql_load_data(&list[a]);
 					else {
-						if (!execute_query_1(&raffected)) goto end_query;
+	
+						if (list[a].type>='1'&&list[a].type<='4') {
+							if (!asql_info(&list[a])) goto end_query;
+						} else {
+							if (!execute_query_1(&raffected)) goto end_query;
+						}
 					}
 				}
 			} else {
@@ -491,6 +518,32 @@ A4GL_debug("open_display_file_c succeeded - %s",outfname);
 
 
 
+int asql_info(struct element *e) {
+int a;
+
+if (out==0) {open_display_file_c();
+}
+
+if (e->type=='3') {
+		aclfgl_load_info_tables(0);
+		a=A4GL_pop_int();
+		return a;
+}
+
+A4GL_push_char(e->fname);
+
+switch (e->type) {
+		case '1': aclfgl_load_info_columns(1);break;
+		case '2': aclfgl_load_info_status(1);break;
+		case '4': aclfgl_load_info_priv(1);break;
+}
+a=A4GL_pop_int();
+if (exec_mode==EXEC_MODE_INTERACTIVE) {
+	aclfgl_do_paginate(0);
+}
+return a;
+}
+
 
 
 /******************************************************************************/
@@ -660,3 +713,4 @@ return lv_rval
 end function
 
 		
+

@@ -50,6 +50,7 @@ extern int *columnWidths;
 FILE *unloadFile=0;
 endcode
 
+#####################################################################
 function get_db_err_msg(lv_code)
 define lv_code integer
 define lv_err1 char(255)
@@ -66,6 +67,7 @@ end function
 
 
 
+#####################################################################
 function table_select(lv_prompt)
 define lv_prompt char(64)
 define lv_tabname char(255)
@@ -118,12 +120,6 @@ define lv_colname char(19)
 define rpaginate integer
 
 
-while true
-
-   CALL open_display_file()
-#@ INFORMIX SPECIFIC....
-
-   MESSAGE "Loading column definitions..."
    SELECT tabid
      INTO l_tabid
      FROM systables
@@ -134,11 +130,10 @@ while true
 		ERROR "Table ", l_tabname clipped," was not found.."
 	END IF
         IF  check_and_report_error() THEN
-      	   RETURN 
+      	   RETURN  0
         END IF
    END IF
 
-   MESSAGE "Tabid=",l_tabid
 
    DECLARE info_curs CURSOR FOR
     SELECT colname,coltype, collength, colno
@@ -151,34 +146,11 @@ while true
       LET i = i + 1
 
       LET lv_buff = lv_colname," " ,get_type(l_coltype, l_collength)
-code
-	A4GL_debug("INFO : %s",lv_buff);
-endcode
         CALL add_to_display_file(lv_buff)
    END FOREACH
-   let rpaginate=0
-code
-{
-extern int outlines;
 
-   while (1) {
-             if (outlines<=0) break;
-             aclfgl_paginate(0);
-             rpaginate=A4GL_pop_int();
-             if (rpaginate!=0) break;
-   }
-}
-endcode
 
-if rpaginate=1 THEN
-	CONTINUE WHILE
-ELSE
-	EXIT WHILE
-END IF
-
-END WHILE
-MESSAGE ""
-
+return 1
 END FUNCTION
 
 
@@ -364,6 +336,7 @@ END FUNCTION
 
 
 
+#####################################################################
 function connection_connect()
 define lv_informixdir char(255)
 define lv_passwd char(255)
@@ -687,7 +660,13 @@ EXEC SQL BEGIN DECLARE SECTION;
 char *p;
 EXEC SQL END DECLARE SECTION;
 int qry_type;
+
+if (type>='1'&&type<='4') return 255;
+
 p=s;
+
+//printf("%c %s\n",type,s);
+
                         EXEC SQL PREPARE stExec from :p;cp_sqlca();
                         if (ec_check_and_report_error()) { return -1; }
 
@@ -937,6 +916,7 @@ return 10;
 endcode
 
 
+#####################################################################
 function select_db()
 define lv_cnt integer
 define lv_curr_db char(255)
@@ -996,7 +976,7 @@ end if
 end function
 
 
-
+#####################################################################
 function drop_db()
 define lv_cnt integer
 define lv_curr_db char(255)
@@ -1070,18 +1050,91 @@ end function
 
 
 
+#####################################################################
 function load_info_priv(lv_tabname)
 define lv_tabname char(255)
-error "Not Implemented"
+define lv_tabid integer
+define lv_outline char(80)
+define lv_grantee char(8)
+define lv_tabauth char(8)
+let lv_tabid=get_tabid(lv_tabname)
+declare c_getpriv cursor for
+        select grantee, tabauth
+from systabauth where tabid=lv_tabid
+
+
+let lv_outline="User         Select             Update             Insert  Delete  Index  Alter"
+#               1            14                 33                 52      60      68     75
+ 
+call add_to_display_file(lv_outline)
+call add_to_display_file(" ")
+
+foreach c_getpriv into lv_grantee,lv_tabauth
+	let lv_outline=lv_grantee
+	
+	if lv_tabauth[1]="S" or lv_tabauth[1]="s" then
+		let lv_outline[14,32]="All"
+	end if
+
+	if lv_tabauth[2]="U" or lv_tabauth[2]="u" then
+		let lv_outline[33,51]="All"
+	end if
+
+	if lv_tabauth[4]="I" or lv_tabauth[4]="i" then
+		let lv_outline[52,59]="Yes"
+	else
+		let lv_outline[52,59]="No"
+	end if
+
+	if lv_tabauth[5]="D" or lv_tabauth[5]="d" then
+		let lv_outline[60,67]="Yes"
+	else
+		let lv_outline[60,67]="No"
+	end if
+
+	if lv_tabauth[6]="x" or lv_tabauth[6]="x" then
+		let lv_outline[68,74]="Yes"
+	else
+		let lv_outline[68,74]="No"
+	end if
+
+	if lv_tabauth[7]="A" or lv_tabauth[7]="a" then
+		let lv_outline[75,80]="Yes"
+	else
+		let lv_outline[75,80]="No"
+	end if
+
+	if lv_tabauth[3]="*" then
+		select distinct colauth[1] into lv_tabauth from syscolauth where tabid=lv_tabid
+		if lv_tabauth[1]="S" or lv_tabauth[1]="s" then
+			let lv_outline[14,32]="Some"
+		end if
+	
+		select distinct colauth[2] into lv_tabauth from syscolauth where tabid=lv_tabid
+		if lv_tabauth[1]="U" or lv_tabauth[1]="u" then
+			let lv_outline[33,51]="Some"
+		end if
+	end if
+
+	call add_to_display_file(lv_outline)
+end foreach
+
+return 1
 end function
 
 
+#####################################################################
 function load_info_ref(lv_tabname)
 define lv_tabname char(255)
+define lv_tabid integer
+let lv_tabid=get_tabid(lv_tabname)
 error "Not Implemented"
+
+return 1
 end function
 
 
+#####################################################################
 function load_info_status(lv_tabname)
 define lv_tabname char(255)
 define lv_rec record
@@ -1093,33 +1146,68 @@ define lv_rec record
 	created date
 	
 end record
+define lv_str char(255)
+define lv_nrows integer
+define lv_outline char(80)
+
+let lv_nrows=0
+let lv_str="select count(*) from ",lv_tabname
+whenever error continue
+prepare p_nrows from lv_str
+declare c_get_nrows cursor for p_nrows
+open c_get_nrows
+fetch c_get_nrows into lv_nrows
+close c_get_nrows
+whenever error stop
+let sqlca.sqlcode=0
 
 select tabname,owner,rowsize,nrows,ncols,created into lv_rec.* 
 from systables 
 where tabname=lv_tabname
 
 if sqlca.sqlcode=0 then
-	call clear_screen_portion()
-	display "Table Name          ",lv_rec.tabname at 9,1
-	display "Owner               ",lv_rec.owner   at 10,1
-	display "Row Size            ",lv_rec.rowsize at 11,1
-	display "Number Of Rows      ",lv_rec.nrows   at 12,1
-	display "Number Of Columns   ",lv_rec.ncols   at 13,1
-	display "Date Created        ",lv_rec.created at 14,1
+	call add_to_display_file(" ")
+	call add_to_display_file(" ")
+	call add_to_display_file(" ")
+
+	let lv_outline="Table Name          ",lv_rec.tabname
+	call add_to_display_file(lv_outline)
+	let lv_outline="Owner               ",lv_rec.owner 
+	call add_to_display_file(lv_outline)
+	let lv_outline="Row Size            ",lv_rec.rowsize 
+	call add_to_display_file(lv_outline)
+	let lv_outline="Number Of Rows      ",lv_nrows," (Last Update Statistics:",lv_rec.nrows using "<<<<<<",")"  
+	call add_to_display_file(lv_outline)
+	let lv_outline="Number Of Columns   ",lv_rec.ncols  
+	call add_to_display_file(lv_outline)
+	let lv_outline="Date Created        ",lv_rec.created
+	call add_to_display_file(lv_outline)
 else
-	error "Unable to locate table details"
+	display "BAD...."
+	sleep 1
+	return 0
 end if
+
+return 1
 end function
 
 
+#####################################################################
 function load_info_constraints(lv_tabname)
 define lv_tabname char(255)
+define lv_tabid integer
+let lv_tabid=get_tabid(lv_tabname)
+
 error "Not Implemented"
+return 
+
 end function
 
+#####################################################################
 function get_tabid(lv_tabname)
 define lv_tabname char(255)
 define lv_tabid integer
+let lv_tabname=downshift(lv_tabname)
 select tabid into lv_tabid from systables
 where tabname=lv_tabname
 if sqlca.sqlcode=0 then
@@ -1131,6 +1219,7 @@ else
 end if
 end function
 
+#####################################################################
 function load_info_triggers(lv_tabname)
 define lv_tabname char(255)
 define lv_trigname char(255)
@@ -1145,10 +1234,15 @@ define lv_systrig record
 end record
 define lv_str char(5000)
 define lv_s1,lv_s2 integer
+
+
 let lv_tabid=get_tabid(lv_tabname)
+
 if lv_tabid is null then
 	return
 end if
+
+
 declare c_gettrigs cursor for
 	select trigname from systriggers where tabid=lv_tabid
 
@@ -1166,10 +1260,8 @@ call prompt_pick("INFO FOR TRIGGER >>","") returning lv_trigname
 
 
 if lv_trigname is null or lv_trigname = " " then
-	return
+	return 0
 end if
-
-CALL open_display_file()
 
 select trigname,event,old,new into lv_systrig.* from  systriggers
 where tabid=lv_tabid
@@ -1218,20 +1310,25 @@ A4GL_debug("lv_str=%s",lv_str);
 endcode
 CALL add_to_display_file_wrapped(lv_str)
 call add_to_display_file("")
-
-CALL do_paginate()
-
+return 1
 end function
 
 
 
 
+#####################################################################
 function load_info_fragments(lv_tabname)
 define lv_tabname char(255)
+define lv_tabid integer
+
+let lv_tabid=get_tabid(lv_tabname)
 error "Not Implemented"
+return 1
+
 end function
 
 
+#####################################################################
 function table_info()
 define lv_tabname char(255)
 define lv_txt char(255)
@@ -1260,32 +1357,55 @@ define lv_cont integer
                 let lv_txt="INFO - ",lv_tabname
                 menu "Info"
 			command "Columns"
-                		call load_info_columns(lv_tabname)
+				CALL open_display_file()
+                		if load_info_columns(lv_tabname) then
+					call do_paginate()
+				end if
 
 			command "Indexes"
-                		call load_info_indexes(lv_tabname)
+				CALL open_display_file()
+                		if  load_info_indexes(lv_tabname) then
+					call do_paginate()
+				end if
 
 			command "Privileges"
-				call load_info_priv(lv_tabname)
+				CALL open_display_file()
+				if  load_info_priv(lv_tabname) then
+					call do_paginate()
+				end if
 
 			command "References"
-				call load_info_ref(lv_tabname)
+				CALL open_display_file()
+				if  load_info_ref(lv_tabname) then
+					call do_paginate()
+				end if
 
 			command "Status"
-				call load_info_status(lv_tabname)
+				call open_display_file()
+				if load_info_status(lv_tabname) then
+					call do_paginate()
+				end if
 
 			command "cOnstraints"
-				call load_info_constraints(lv_tabname)
+				#CALL open_display_file()
+				call load_info_constraints(lv_tabname) 
+				#call do_paginate()
 
 			command key "G" "triGgers"
-				call load_info_triggers(lv_tabname)
+				call open_display_file()
+				if load_info_triggers(lv_tabname) then
+					call do_paginate()
+				end if
 
 			command "Table"
 				let lv_cont=1
 				exit menu
 
 			command "Fragments"
-				call load_info_fragments(lv_tabname)
+				call open_display_file()
+				if load_info_fragments(lv_tabname) then
+					call do_paginate()
+				end if
 
 			command "Exit"
 				let lv_cont=0
@@ -1300,6 +1420,20 @@ define lv_cont integer
 end function
 
 
+#####################################################################
+function load_info_tables() 
+define lv_tabname char(18)
+declare c_info_tables cursor for select tabname from systables where tabid>99
+call add_to_display_file("TableName")
+call add_to_display_file(" ")
+foreach c_info_tables into lv_tabname
+call add_to_display_file(lv_tabname)
+end foreach
+end function
+
+
+
+#####################################################################
 function load_info_indexes(lv_tabname)
 define lv_tabname char(255)
 define lv_tabid integer
@@ -1313,8 +1447,11 @@ define lv_cnt integer
 define lv_colno integer
 Define lv_colname char(18)
 define lv_outfile char(255)
+define lv_outline char(255)
+define lv_old_index char(20)
 
-let lv_outfile=get_out_fname()
+let lv_old_index=" "
+
 
 
 let lv_tabid=get_tabid(lv_tabname)
@@ -1337,54 +1474,43 @@ select idxname,idxtype,clustered,
 from sysindexes where tabid=lv_tabid
 order by idxtype desc,idxname
 
-start report rindex to lv_outfile
+let lv_outline=" "
+let lv_outline="Index Name"
+let lv_outline[20,24]="Type"
+let lv_outline[30,40]="Cluster"
+let lv_outline[40,50]="Columns"
+
+CALL add_to_display_file(lv_outline)
 foreach  c_getindex into lv_rec.*, lv_p[1], lv_p[2], lv_p[3], lv_p[4], lv_p[5], lv_p[6], lv_p[7], lv_p[8]
 
 for lv_cnt=1 to 8
 	if lv_p[lv_cnt]!=0 then
 		let lv_colno=lv_p[lv_cnt]
 		select colname into lv_colname from syscolumns where tabid=lv_tabid and colno=lv_colno
-		output to report rindex (lv_rec.idx_name,lv_rec.type,lv_rec.clust,lv_cnt,lv_colname)
+		let lv_outline=" "
+		if lv_old_index!=lv_rec.idx_name then
+			if lv_old_index!=" " then
+				CALL add_to_display_file(" ")
+			end if
+			let lv_old_index=lv_rec.idx_name
+			let lv_outline=lv_rec.idx_name
+
+			if lv_rec.type="U" then
+				let lv_outline[20,30]="Unique"
+			else
+				let lv_outline[20,30]="Dupls"
+			end if
+			if lv_rec.type="C" then
+				let lv_outline[30,40]="Yes"
+			else
+				let lv_outline[30,40]="No"
+			end if
+		end if
+		let lv_outline[40,255]=lv_colname
+		CALL add_to_display_file(lv_outline)
 	end if
 end for
 end foreach
-
-finish report rindex
-call set_outlines(lv_outfile)
-call do_paginate()
 end function
 
-
-report rindex(idx_name,type,clust,colno,colname)
-define idx_name,colname char(18)
-define type,clust char(1)
-define colno integer
-output
-left margin 0
-top margin 0
-
-order external by idx_name
-format
-
-first page header 
-print "Index Name",column 20,"Type",column 30,"Cluster",column 40,"Columns"
-skip 1 line
-
-before group of idx_name
-print idx_name,column 20;
-if type="U" then print "Unique",column 30; end if
-if type="D" then print "Dupls",column 30; end if
-
-if clust="C" then print "Yes"; end if
-if clust="-" then print "No"; end if
-if clust is null then print "Null"; end if
-if clust = " " then print "No"; end if
-
-on every row
-print column 40,colname
-
-after group of idx_name
-print " "
-
-end report
 
