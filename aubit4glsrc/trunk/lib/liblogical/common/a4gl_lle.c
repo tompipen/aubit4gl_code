@@ -4,9 +4,6 @@
 #include <ctype.h>
 #define FILE_VERSION 2
 #include "a4gl_lle.h"
-#ifdef hpux
-#include <netinet/in.h>
-#endif
 
 int debug=0;
 
@@ -23,7 +20,18 @@ static void read_block ();
 void free_report() ;
 
 struct r_report *report;
+/*
+#if defined (__MINGW32__)
 
+int isblank(int n) {
+	if (n==' ') return 1;
+	if (n=='\t') return 1;
+	return 0;
+}
+
+
+#endif
+*/
 
 static int read_int ()
 {

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.159 2004-07-10 11:42:32 afalout Exp $
+# $Id: Makefile-common.in,v 1.160 2004-07-11 23:54:54 afalout Exp $
 #
 
 
@@ -36,7 +36,7 @@ LIBS=
 
 #MUST be here - it will be used by make "shell" commands
 SH				=@SH@
-SHELL				:=${SH}
+SHELL			:=${SH}
 
 #Workarounf for Informix installers messing up libphtread:
 LD_LIBRARY_PATH			:=/lib:${LD_LIBRARY_PATH}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.28 2004-07-01 11:51:40 afalout Exp $
+# $Id: pointers.c,v 1.29 2004-07-11 23:54:54 afalout Exp $
 #
 */
 
@@ -109,8 +109,9 @@ struct s_node
 	
 	
 	#if defined(__MINGW32__)
-		//why was this line commented out?
-		typedef enum { preorder, postorder, endorder, leaf } VISIT;
+		//why was this line commented out? BECAUSE IT'S DEFINED IN 
+		//incl/a4gl_libaubit4gl.h
+		//typedef enum { preorder, postorder, endorder, leaf } VISIT;
 	#endif
 	
 	//why is this line commented out?

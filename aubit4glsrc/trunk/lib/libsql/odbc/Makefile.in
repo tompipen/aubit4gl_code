@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.38 2004-03-19 11:05:26 afalout Exp $
+# $Id: Makefile.in,v 1.39 2004-07-11 23:54:55 afalout Exp $
 #
 
 ROOT    =../../..
@@ -138,9 +138,9 @@ odbc32: 	clean ${OBJECTS} ${LIBROOT}/libSQL_odbc32${SO_EXT}
 #	${CP} libSQL_odbc32.dll.a ${LIBROOT}
 ${LIBROOT}/libSQL_odbc32${SO_EXT} : ${OBJECTS}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} -lodbc32
-ifeq "${SO_EXT}" ".dll"
-	${MV} TMP${SOEXP_EXT} $@.a
-endif
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
 	@echo "Windows ODBC target compiled successfully"
 
 ${LIBROOT}/libSQL_iodbc${SO_EXT}: CFLAGS:=-DIODBC @IODBC_INCLUDE@ @IODBC_LFLAGS@ ${CFLAGS_NOREDUND}

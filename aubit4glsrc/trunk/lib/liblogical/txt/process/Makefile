@@ -24,10 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.8 2004-05-25 20:39:49 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2004-07-11 23:54:54 afalout Exp $
 #
 
-ROOT		=${AUBITDIR}
+ROOT		=../../../..
 LIBROOT		=${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  -fPIC 
+CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl -fPIC 
 
 
 ## ==================================================================
@@ -45,14 +45,19 @@ CFLAGS=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  -fPIC
 ## ==================================================================
 
 ${LIBROOT}/libLOGREPPROC_TXT.so : process_txt.o
-	#gcc  -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
-	gcc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
-
-process_txt.o: ../../layout_engine/API_layout.h
+#	gcc  -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
+#	gcc -rdynamic -shared -g $^ -o $@ ${CFLAGS} -L$(ROOT)/lib -laubit4gl 
+	${LD} ${SO_LDFLAGS} -o $@ $^ -L$(LIBROOT) -laubit4gl
+	
+process_txt.o: ../../layout_engine/API_layout.h ../../processor/API_process.h
 
 ../../layout_engine/API_layout.h:
 	${MAKE} -C ../../layout_engine API_layout.h
 
+../../processor/API_process.h: ../../processor/API_process.spec
+	${LIBROOT}/bin/dlmagic $^ -h > $@
+
+	
 ## ==================================================================
 ##                              Clean
 ## ==================================================================

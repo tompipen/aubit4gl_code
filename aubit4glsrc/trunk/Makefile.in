@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.152 2004-07-10 11:41:45 afalout Exp $
+# $Id: Makefile.in,v 1.153 2004-07-11 23:54:31 afalout Exp $
 #
 
 ## ==================================================================
@@ -59,6 +59,18 @@ ifneq "@DOXYGEN@" "no"
 	ALL_EXTRA  		+=doxy
 endif
 
+LIBLOGICAL_BUILD=bin/process_report lib/libLOGREPPROC_TXT.so lib/libLOGREP_PROC_CSV.so
+
+LIBLOGICAL_GTK2_DEPEND=lib/libLOGREP_CSV.so bin/layout_engine bin/report_viewer \
+	lib/libLOGREP_TXT.so
+LIBLOGICAL_PDF_DEPEND=lib/libLOGREP_PROC_PDF.so lib/libLOGREP_PDF.so
+
+ifeq "${GTK_VERSION}" "2.0"
+	LIBLOGICAL_BUILD+=${LIBLOGICAL_GTK2_DEPEND}
+endif
+ifeq "${PDFBUILD}" "yes"
+	LIBLOGICAL_BUILD+=${LIBLOGICAL_PDF_DEPEND}
+endif
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -125,52 +137,66 @@ endif
 #sh make_static
 #sh make_simple
 
+api.headers:
+	$(MAKE) -C lib/libaubit4gl api.headers
 
-#Creates executables: 
-#	process_report layout_engine report_viewer
-#Creates libs: 
-#	libLOGREP_TXT.so libLOGREPPROC_TXT.so 
-#	libLOGREP_CSV.so libLOGREP_PROC_CSV.so
-liblogical:
-#process_report:
-	$(MAKE) -C lib/liblogical/processor
-#libLOGREPPROC_TXT.so
-	$(MAKE) -C lib/liblogical/txt/process
-#libLOGREP_PROC_CSV.so:
-	$(MAKE) -C lib/liblogical/csv/process	
-ifeq "${GTK_VERSION}" "2.0"
-#libLOGREP_CSV.so:
-	$(MAKE) -C lib/liblogical/csv/layout
-#layout_engine:
-	$(MAKE) -C lib/liblogical/layout_engine
-#report_viewer
-	$(MAKE) -C lib/liblogical/report_viewer
-#libLOGREP_TXT.so:
-	$(MAKE) -C lib/liblogical/txt/layout	
-else
+## ==================================================================
+##                              LibLogical targets
+## ==================================================================
+
+liblogical: ${LIBLOGICAL_BUILD} 
+ifneq "${GTK_VERSION}" "2.0"
 	@echo " "
 	@echo " ** WARNING:"	
-	@echo " ** GTK+ version 2 not detected (have ${GTK_VERSION}) skipped 4 targets"
+	@echo " ** GTK+ version 2 not detected (have ${GTK_VERSION}) skipped targets:"
+	@echo "${LIBLOGICAL_GTK2_DEPEND}"
+	@echo " "	
+endif	
+ifneq "${PDFBUILD}" "yes"
+	@echo " "
+	@echo " ** WARNING:"	
+	@echo " ** PDF library not detected, skipped targets:"
+	@echo "${LIBLOGICAL_PDF_DEPEND}"
 	@echo " "	
 endif	
 	@echo " "
 	@echo "+--------------------------------------------------------------------+"
-	@echo "| liblogical: done "
+	@echo "| Successfuly built liblogical targets:                              |"
+	@echo "| ${LIBLOGICAL_BUILD}"
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 
+bin/process_report:
+	$(MAKE) -C lib/liblogical/processor
+bin/layout_engine:
+	$(MAKE) -C lib/liblogical/layout_engine
+bin/report_viewer:
+	$(MAKE) -C lib/liblogical/report_viewer
+
+lib/libLOGREPPROC_TXT.so:
+	$(MAKE) -C lib/liblogical/txt/process
+lib/libLOGREP_TXT.so:
+	$(MAKE) -C lib/liblogical/txt/layout
+lib/libLOGREP_PROC_CSV.so:
+	$(MAKE) -C lib/liblogical/csv/process
+lib/libLOGREP_CSV.so:
+	$(MAKE) -C lib/liblogical/csv/layout
+lib/libLOGREP_PROC_PDF.so:
+	$(MAKE) -C lib/liblogical/pdf/process
+lib/libLOGREP_PDF.so:
+	$(MAKE) -C lib/liblogical/pdf/layout
+
+	
 clean.liblogical:
 	$(MAKE) -C lib/liblogical/processor clean
+	$(MAKE) -C lib/liblogical/layout_engine clean
+	$(MAKE) -C lib/liblogical/report_viewer clean
 	$(MAKE) -C lib/liblogical/txt/layout clean
 	$(MAKE) -C lib/liblogical/txt/process clean
 	$(MAKE) -C lib/liblogical/csv/layout clean
 	$(MAKE) -C lib/liblogical/csv/process clean
-	$(MAKE) -C lib/liblogical/layout_engine clean
-	$(MAKE) -C lib/liblogical/report_viewer clean
-
-
-api.headers:
-	$(MAKE) -C lib/libaubit4gl api.headers
+	$(MAKE) -C lib/liblogical/pdf/layout clean
+	$(MAKE) -C lib/liblogical/pdf/process clean
 
 ## ==================================================================
 ##                              Extra

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.41 2004-07-03 11:57:30 mikeaubury Exp $
+# $Id: others.c,v 1.42 2004-07-11 23:54:54 afalout Exp $
 #
 */
 
@@ -730,5 +730,16 @@ int aclfgl_aclfgl_read_pipe(int nargs)
 
 /* End of inclusion */
 
+
+#if defined (__MINGW32__)
+
+int isblank(int n) {
+	if (n==' ') return 1;
+	if (n=='\t') return 1;
+	return 0;
+}
+
+
+#endif
 
 /* ============================== EOF ========================== */

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2004-07-01 11:51:41 afalout Exp $
+# $Id: Makefile.in,v 1.11 2004-07-11 23:54:55 afalout Exp $
 #
 
 LIBROOT	=../..
@@ -54,6 +54,7 @@ GLIB_CFLAGS		=@GLIB_CFLAGS@
 GTK_INC_PATH	=@GTK_INC_PATH@
 GTK_LIB_PATH	=@GTK_LIB_PATH@
 GTKLIBS			=@GTKLIBS@
+HOSTNAME		:=$(shell echo $$HOSTNAME)
 
 ifeq "${WIN_PATH}" "1"
 #ifeq "" "$(findstring cygdrive,${GTK_INC_PATH})"
@@ -65,24 +66,27 @@ ifeq "" "$(findstring :,${GTK_INC_PATH})"
 
 	GLIB_CFLAGS	:=$(subst -I,-I${WIN_CYGPATH},${GLIB_CFLAGS}) ${ADD_ME}
 	GTK_INC_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_INC_PATH}) ${ADD_ME}
-	GTK_LIB_PATH:=$(subst -I,-I${WIN_CYGPATH},${GTK_LIB_PATH}) ${ADD_ME}
+	GTK_LIB_PATH:=$(subst -L,-L${WIN_CYGPATH},${GTK_LIB_PATH}) -L${WIN_CYGPATH}/lib
 endif
 endif
 
 GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS})
 
 #Need to find better sollution for this:
-#dropline.net has -lintl, not -lintl-1 
-#GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
+#dropline.net and other installers have -lintl, but zip has -lintl-1
+ifeq "${HOSTNAME}" "istation"
+	GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
+endif
 
-CFLAGS			+=-I.. -I. -I${ROOT}/incl -I${ROOT}/common/dataio ${GLIB_CFLAGS} ${GTK_INC_PATH} ${GTK_LIB_PATH}
+CFLAGS			+=-I.. -I. -I${ROOT}/incl -I${ROOT}/common/dataio ${GLIB_CFLAGS} \
+					${GTK_INC_PATH} ${GTK_LIB_PATH}
 #CFLAGS	:=-I${ROOT}/compilers/menus ${CFLAGS} -I${ROOT}/compilers/menus -I${ROOT}/common/dataio
 
 CFLAGS			:=$(subst /target/build,/usr,${CFLAGS})
-GTK_LIB_PATH		:=$(subst /target/build,/usr,${GTK_LIB_PATH})
+GTK_LIB_PATH	:=$(subst /target/build,/usr,${GTK_LIB_PATH})
 
-CFLAGS		 	:=$(subst /target,/usr,${CFLAGS})
-GTK_LIB_PATH 		:=$(subst /target,/usr,${GTK_LIB_PATH})
+CFLAGS			:=$(subst /target,/usr,${CFLAGS})
+GTK_LIB_PATH	:=$(subst /target,/usr,${GTK_LIB_PATH})
 
 
 ifeq "${WIN_PATH}" "1"
@@ -151,7 +155,14 @@ ci: $(CMODS)
 %.o: %.c
 	${CC} ${CFLAGS_GTK_C} -c -o $@ $^
 
-
+show:
+	@echo "GLIB_CFLAGS=${GLIB_CFLAGS}"
+	@echo "GTK_INC_PATH=${GTK_INC_PATH}"
+	@echo "GTK_LIB_PATH=${GTK_LIB_PATH}"
+	@echo "GTKLIBS=${GTKLIBS}"
+	@echo "HOSTNAME=${HOSTNAME}"
+	@echo "HOSTNAME= $$HOSTNAME"
+	
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.26 2004-07-05 11:04:51 mikeaubury Exp $
+# $Id: makefile,v 1.27 2004-07-11 23:54:55 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -32,7 +32,7 @@ ROOT		=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-
+HOSTNAME		:=$(shell echo $$HOSTNAME)
 ## ==================================================================
 ##                              GTK+ Options
 ## ==================================================================
@@ -50,7 +50,7 @@ ifeq "" "$(findstring :,${GTK_INC_PATH})"
 
 	GLIB_CFLAGS	:=$(subst -I,-I${WIN_CYGPATH},${GLIB_CFLAGS}) ${ADD_ME}
 	GTK_INC_PATH	:=$(subst -I,-I${WIN_CYGPATH},${GTK_INC_PATH}) ${ADD_ME}
-	GTK_LIB_PATH	:=$(subst -I,-I${WIN_CYGPATH},${GTK_LIB_PATH}) ${ADD_ME}
+	GTK_LIB_PATH	:=$(subst -L,-L${WIN_CYGPATH},${GTK_LIB_PATH}) -L${WIN_CYGPATH}/lib
 endif
 #endif
 endif
@@ -58,8 +58,10 @@ endif
 GTKLIBS			:=$(subst -rdynamic,,${GTKLIBS}) 
 
 #Need to find better sollution for this:
-#dropline.net has -lintl, not -lintl-1 
-#GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
+#dropline.net and other installers have -lintl, but zip has -lintl-1
+ifeq "${HOSTNAME}" "istation"
+	GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
+endif
 
 CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} ${GTK_INC_PATH} ${GTK_LIB_PATH} -I/usr/local/include/ncurses
 

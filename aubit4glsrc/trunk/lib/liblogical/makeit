@@ -1,5 +1,5 @@
-# eventually - there will be a proper Makefile
-# here - but for now....
+# This script should be obsoleted.
+# please use "make liblogical" in Aubit source code root
 
 
 
