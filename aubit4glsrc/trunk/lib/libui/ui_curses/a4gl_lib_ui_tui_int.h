@@ -1,6 +1,6 @@
 
 
-#include "a4gl_lib_ui_int.h"
+	#include "a4gl_lib_ui_int.h"
 
 
 	/* #include "a4gl_tui_tui.h" */
@@ -43,16 +43,10 @@
 	/* ======================= in curslib.c  ======================= */
 	void error_nobox(char *str);
 	void set_bkg(WINDOW *win,int attr);
-#ifdef OLD_INCL
-	#include "a4gl_prompt.h"	/* struct s_prompt */
-#endif
 	void clear_prompt (struct s_prompt *prmt);
 
 
 	/*  ======================= in ioform.c ======================= */
-#ifdef OLD_INCL
-	#include "a4gl_dbform.h" /* struct s_form_dets */
-#endif
 	void start_form (struct s_form_dets *s);
     void set_arr_fields (int n, int attr, ...);
     void disp_arr_fields (int n, int fonly, int attr, ...);
@@ -96,11 +90,6 @@
     void set_array_mode(int type);
 
 
-
-
-
-
-
 	/* =============== from a4gl_tui_attr_list.h ============== */
 
 
@@ -126,4 +115,19 @@
 	};
 
 	#endif
+
+#ifdef __sun__
+	#ifdef __sparc__
+		/*
+		 Error: can't open DLL /home/users/a/af/afalout/aubit4glsrc/lib/libUI_TUI.so - ld.so.1:
+		 hello: fatal: relocation error: file /home/users/a/af/afalout/aubit4glsrc/lib/libUI_TUI.so:
+		 symbol newscr: referenced symbol not found - STOP
+		*/
+
+		//from ncurses/curses.h:
+		extern WINDOW   *newscr;
+    #endif
+#endif
+
+/* ================================ EOF ================================== */
 
