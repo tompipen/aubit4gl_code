@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.40 2003-02-26 22:28:11 mikeaubury Exp $
+# $Id: stack.c,v 1.41 2003-03-01 13:07:19 mikeaubury Exp $
 #
 */
 
@@ -980,6 +980,7 @@ push_param (void *p, int d)
 
   switch (d)
     {
+	int r;
 
     case OP_MATCHES:
       if (chknull (2, n1, n2))
@@ -988,9 +989,11 @@ push_param (void *p, int d)
       c1 = char_pop ();
 
 #ifdef DEBUG
-	debug ("Check for %s matches %s", c1, c2);
+	debug ("MJAMJAMJA Check for %s matches %s", c1, c2);
 #endif
-      push_int (mja_match (c1, c2, 'M'));
+r=mja_match (c1, c2, 'M');
+	debug("mja_match returns %d\n",r);
+      push_int (r);
       acl_free (c1);
       acl_free (c2);
       break;

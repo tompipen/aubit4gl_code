@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.29 2003-02-28 17:43:15 mikeaubury Exp $
+# $Id: conv.c,v 1.30 2003-03-01 13:07:19 mikeaubury Exp $
 #
 */
 
@@ -624,6 +624,7 @@ ctodt (void *a, void *b, int size)
 
   d->ltime = size % 16;
   d->stime = size >> 4;
+  debug("d->ltime=%d d->stime=%d\n",d->ltime,d->stime);
 
   if (valid_dt (a, data))
     {
@@ -2909,6 +2910,8 @@ dec_to_str (char *s, int size)
   int c,x,a,k;
   static char buff[DBL_DIG1];
   int dot_printed=-1;
+  int blank=0;
+  char buff2[200];
 
   l = NUM_DIG (s);  // length of decimal in bytes
   d = NUM_DEC (s);  // number of digits to right of decimal point
@@ -2936,7 +2939,7 @@ dec_to_str (char *s, int size)
 
   // skip initial 2-byte 'header' and leading zero bytes before dec. point
   a = OFFSET_DEC(s);
-  while (s[a] == 0 && a < x) { a++; }
+  while (s[a] == 0 && a < x) { blank+=2;a++; }
 
   // scan digits (0-9) of number, packed two per byte/char
   for ( ; a <= l + 1; a++)
@@ -2954,17 +2957,21 @@ dec_to_str (char *s, int size)
       // append ascii char for left-hand digit, unless
       // it's an unecessary leading zero
       buff[c] = ((int) k / 10) + '0';
-      if ( buff[c]=='0' && (c==0 || buff[0]=='-')) { buff[c] = 0; } else c++;
+      if ( buff[c]=='0' && (c==0 || buff[c-1]=='-')) { blank++;buff[c] = 0; } else c++;
 
       // similarly for right-hand digit
       buff[c] = (int) k % 10 + '0';
-      if ( c==0 && buff[c]=='0' ) { buff[c] = 0; } else c++;
+      if ( buff[c]=='0' && (c==0 || buff[c-1]=='-') ) {blank++; buff[c] = 0; } else c++;
     }
 
   if (dot_printed&&d%2==1) {
 	buff[dot_printed+d+1]=0;
   }
-  debug("returning: %s\n",buff);
+  memset(buff2,' ',199);
+  buff2[blank]=0;
+  strcat(buff2,buff);
+  strcpy(buff,buff2);
+  debug("returning: %s - blank=%d\n",buff,blank);
   return buff;
 }
 
@@ -4071,6 +4078,10 @@ void decode_datetime(struct a4gl_dtime *d, int *data) {
   int sizes[] = { 4, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
   char delim[] = "-- ::.*****";
   int data_internal[20];
+  if (d==0||data==0) {
+	assertion(d==0,"d=0 in decode_datetime");
+	assertion(data==0,"data=0 in decode_datetime");
+  }
 
   for (x=0;x<10;x++) {
 	data[x]=0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.11 2003-01-15 11:43:33 afalout Exp $
+# $Id: rexp2.c,v 1.12 2003-03-01 13:07:19 mikeaubury Exp $
 #
 */
 
@@ -155,6 +155,7 @@ int error;
                 SINGLECHAR = '?';
         }
 
+		debug("Calling matche...");
 		error = matche(str2,str1);
 		if (error==MATCH_VALID) return 1;
 			else return 0;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.7 2002-10-22 06:43:36 afalout Exp $
+# $Id: match.c,v 1.8 2003-03-01 13:07:19 mikeaubury Exp $
 #*/
 
 /**
@@ -310,6 +310,7 @@ matche (register char *p, register char *t)
       BOOLEAN member_match;       /* have I matched the [..] construct? */
       BOOLEAN loop;               /* should I terminate? */
 
+debug("In matche...");
       for ( ; *p; p++, t++)
       {
             /* if this is the end of the text
@@ -323,6 +324,7 @@ matche (register char *p, register char *t)
 
             /* determine and react to pattern type */
 
+debug("Looking at %c\n",*p);
             switch (*p)
             {
             case C_QUERY:                     /* single any character match */
@@ -346,7 +348,7 @@ matche (register char *p, register char *t)
                         invert = TRUE;
                         p++;
                   }
-
+		  debug("A1");
                   /* if closing bracket here or at range start then we have a
                         malformed pattern */
 
@@ -354,10 +356,12 @@ matche (register char *p, register char *t)
                   {
                         return MATCH_PATTERN;
                   }
+		  debug("A1");
 
                   member_match = FALSE;
                   loop = TRUE;
 
+		  debug("A1");
                   while (loop)
                   {
                         /* if end of construct then loop is done */
@@ -370,11 +374,14 @@ matche (register char *p, register char *t)
 
                         /* matching a '!', '^', '-', '\' or a ']' */
 
-                        if (*p == '\\')
-                        {
-                              range_start = range_end = *++p;
-                        }
-                        else  range_start = range_end = *p;
+                        //if (*p == '\\')
+                        //{
+				//debug("SLash!");
+                              //range_start = range_end = *++p;
+                        //}
+                        //else  {
+				range_start = range_end = *p;
+			//}
 
                         /* if end of pattern then bad pattern (Missing ']') */
 
@@ -449,16 +456,16 @@ matche (register char *p, register char *t)
                                     return MATCH_PATTERN;
 
                               /* skip exact match */
-                              if (*p == '\\')
-                              {
-                                    p++;
-
-                                    /* if end of text then
-                                       we have a bad pattern */
-
-                                    if (!*p)
-                                          return MATCH_PATTERN;
-                              }
+                              //if (*p == '\\')
+                              //{
+                                    //p++;
+//
+                                    ///* if end of text then
+                                       //we have a bad pattern */
+//
+                                    //if (!*p)
+                                          //return MATCH_PATTERN;
+                              //}
 
                               /* move to next pattern char */
 
@@ -469,16 +476,16 @@ matche (register char *p, register char *t)
             }
             case '\\':  /* next character is quoted and must match exactly */
 
-                  /* move pattern pointer to quoted char and fall through */
+                  ///* move pattern pointer to quoted char and fall through */
 
                   p++;
 
-                  /* if end of text then we have a bad pattern */
+                  ///* if end of text then we have a bad pattern */
 
                   if (!*p)
                         return MATCH_PATTERN;
 
-                  /* must match this character exactly */
+                  ///* must match this character exactly */
 
             default:
                   if (*p != *t)
@@ -487,9 +494,10 @@ matche (register char *p, register char *t)
       }
       /* if end of text not reached then the pattern fails */
 
-      if (*t)
-            return MATCH_END;
-      else  return MATCH_VALID;
+      if (*t) return MATCH_END;
+      else  {
+	return MATCH_VALID;
+      }
 }
 
 
@@ -582,6 +590,7 @@ match( char *p, char *t )
       int error_type;
 
       error_type = matche(p,t);
+      debug("error_type=%d - VALID=%d\n",error_type,MATCH_VALID);
       return (error_type == MATCH_VALID ) ? TRUE : FALSE;
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.8 2003-02-28 17:43:15 mikeaubury Exp $
+# $Id: ops.c,v 1.9 2003-03-01 13:07:19 mikeaubury Exp $
 #
 */
 
@@ -386,6 +386,7 @@ int s1;
 void *ptr1;
 struct a4gl_dtime *pi;
 struct a4gl_dtime *pd;
+struct ival in;
 int ok=0;
 char buff[256];
 int start;
@@ -394,11 +395,12 @@ double d_d1;
 double d_d2;
 
 if (op != (OP_SUB)) {
+	debug("Can only subtract datetimes...");
 	push_int(0);
+	return;
 }
 // d2 - d1
 	get_top_of_stack (2, &d1, &s1, (void **) &pd);
-
 	get_top_of_stack (1, &d1, &s1, (void **) &pi);
 
 
@@ -447,11 +449,20 @@ if (op != (OP_SUB)) {
 	if (dtime_data2[0]||dtime_data2[1]) {
 		// YEAR TO MONTH interval
 		sprintf(buff,"%4d-%02d",dtime_data2[0],dtime_data2[1]);
+		debug("Got buff as : %s\n",buff);
+
+        	ctoint(buff,in,1298);
+		push_interval(&in);
+
+		
 	} else {
 		sprintf(buff,"%d %02d:%02d:%02d.%05d",dtime_data2[2],dtime_data2[3],dtime_data2[4],dtime_data2[5],dtime_data2[6]);
+		debug("Got buff as : %s\n",buff);
+        	ctoint(buff,in,1334);
+		push_interval(&in);
 	}
  
-	push_char(buff);
+	
 }
 
 /**
