@@ -22,7 +22,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.236 2004-09-08 10:03:50 afalout Exp $
+dnl # $Id: configure.in,v 1.237 2004-09-08 15:01:22 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3208,6 +3208,12 @@ AC_ARG_WITH(informix,
 ],[
   AC_MSG_RESULT(--with-informix not specified)
 ])
+
+#on Windows, we MUST quote INFORMIXDIR
+#On UNIX, we MUST NOT quote it
+if test "$COMSPEC" != ""; then 
+	INFORMIXDIR="'$INFORMIXDIR'"
+fi
 
 
 #if test "$cygwin" = "1"; then
@@ -6840,7 +6846,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.236 2004-09-08 10:03:50 afalout Exp $
+| $Id: configure.in,v 1.237 2004-09-08 15:01:22 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -113,7 +113,11 @@ fi
 
 for a in $srcs
 do
-	ESQL_RUN="esql -thread -e $a"
+	if test "$COMSPEC" = ""; then 
+		ESQL_RUN="esql -e $a"
+	else
+		ESQL_RUN="esql -thread -e $a"
+	fi
     #-C INFORMIX_SE
     echo $ESQL_RUN
     eval $ESQL_RUN
@@ -167,7 +171,7 @@ if test "$COMSPEC" != "" ; then
 		\"$INFORMIXDIR/$LIB/isqlt09a.dll\" \"$INFORMIXDIR/$LIB/igl4n304.dll\" \
 		\"$INFORMIXDIR/$LIB/iglxn304.dll\" \"$INFORMIXDIR/$LIB/igo4n304.dll\" "
 else
-	GCC_INFX="-mms-bitfields"
+	GCC_INFX="-mms-bitfields $IFX_LIBS -L$INFORMIXDIR/lib/esql -L$INFORMIXDIR/lib"
 fi
 
 #DO NOT link in -lESQL_INFORMIX - it is dlopen()ed

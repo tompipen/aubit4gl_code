@@ -484,7 +484,8 @@ A4GL_MONEY_AS_DECIMAL=Y
 #double quote anything with path in it
 IFX_LIBS='@IFX_LIBS@'
 
-INFORMIXDIR='@INFORMIXDIR@'
+#Must not use quotes on UNIX or ESQL will not be able to find esqlc executable
+INFORMIXDIR=@INFORMIXDIR@
 
 #-------------------------------- EOF -----------------------------
 
