@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.4 2003-05-15 07:10:45 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.5 2003-07-21 12:42:26 afalout Exp $
 #*/
 
 /**
@@ -48,7 +48,7 @@
   */
 
 #include "a4gl_lib_sql_int.h"
-extern sqlca_struct sqlca;
+extern sqlca_struct a4gl_sqlca;
 /*
 =====================================================================
                     Variables definitions
@@ -91,7 +91,7 @@ A4GLSQL_set_status (int a, int sql)
 {
   status = a;
   if (sql)
-    sqlca.sqlcode = a;
+    a4gl_sqlca.sqlcode = a;
   A4GL_debug ("Status set to %d", a);
 }
 #endif
@@ -122,7 +122,7 @@ A4GLSQL_init_connection (char *dbName)
 int
 A4GLSQL_get_status (void)
 {
-  return sqlca.sqlcode;
+  return a4gl_sqlca.sqlcode;
 }
 
 /**
