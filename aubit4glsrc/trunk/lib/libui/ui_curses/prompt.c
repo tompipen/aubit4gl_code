@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.16 2003-07-04 19:13:21 mikeaubury Exp $
+# $Id: prompt.c,v 1.17 2003-07-07 14:20:24 mikeaubury Exp $
 #*/
 
 /**
@@ -129,12 +129,12 @@ A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af)
   if (ap)
     {
       set_field_fore (sarr[0], A4GL_decode_aubit_attr (ap, 'f'));
-      set_field_back (sarr[0], A4GL_decode_aubit_attr (ap, 'b'));
+      set_field_back (sarr[0], A4GL_decode_aubit_attr (ap, 'b')); // maybe need 'B' for whole field..
     }
   if (af)
     {
       set_field_back (sarr[1], A4GL_decode_aubit_attr (af, 'f'));
-      set_field_fore (sarr[1], A4GL_decode_aubit_attr (af, 'b'));
+      set_field_fore (sarr[1], A4GL_decode_aubit_attr (af, 'b')); // maybe need 'B' for whole field..
     }
 
   field_opts_on (sarr[1], O_NULLOK);
@@ -394,16 +394,15 @@ A4GL_curses_to_aubit (int a)
     return A4GLKEY_RIGHT;
   if (a == KEY_ENTER)
     return A4GLKEY_ENTER;
+
   //if (a==KEY_PGDN) return A4GLKEY_PGDN;
   //if (a==KEY_PGUP) return A4GLKEY_PGUP;
   //if (a==KEY_INS) return A4GLKEY_INS;
   //if (a==KEY_DEL) return A4GLKEY_DEL;
-  if (a == KEY_HOME)
-    return A4GLKEY_HOME;
-  if (a == KEY_END)
-    return A4GLKEY_END;
-  if (a == KEY_CANCEL)
-    return A4GLKEY_CANCEL;
+
+  if (a == KEY_HOME) return A4GLKEY_HOME;
+  if (a == KEY_END) return A4GLKEY_END;
+  if (a == KEY_CANCEL) return A4GLKEY_CANCEL;
 
   if (a == KEY_DC) return A4GLKEY_DC;
   if (a == KEY_DL) return A4GLKEY_DL;

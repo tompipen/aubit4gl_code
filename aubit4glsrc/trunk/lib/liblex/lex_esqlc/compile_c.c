@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.60 2003-07-04 19:13:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.61 2003-07-07 14:20:24 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -2881,6 +2881,24 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("SET(\"s_inp_arr\",_inp_io,\"currentfield\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"currentmetrics\",0);\n");
   printc ("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
+
+  if (ptr_input_attr->curr_row_display) printc ("SET(\"s_inp_arr\",_inp_io,\"curr_display\",%s);\n", ptr_input_attr->curr_row_display);
+  else  printc ("SET(\"s_inp_arr\",_inp_io,\"curr_display\",0);\n");
+
+
+  if (ptr_input_attr->count) {
+		printc ("SET(\"s_inp_arr\",_inp_io,\"count\",%s);\n", ptr_input_attr->count);
+		printc ("A4GL_push_long(%s); aclfgl_set_count(1);\n", ptr_input_attr->count);
+	}
+  else printc ("SET(\"s_inp_arr\",_inp_io,\"count\",-1);\n");
+
+  if (ptr_input_attr->maxcount) printc ("SET(\"s_inp_arr\",_inp_io,\"maxcount\",%s);\n", ptr_input_attr->maxcount);
+  else 				printc ("SET(\"s_inp_arr\",_inp_io,\"maxcount\",-1);\n");
+
+  printc ("SET(\"s_inp_arr\",_inp_io,\"allow_insert\",%d);\n", ptr_input_attr->allow_insert);
+  printc ("SET(\"s_inp_arr\",_inp_io,\"allow_delete\",%d);\n", ptr_input_attr->allow_delete);
+
+
   printc
     ("SET(\"s_inp_arr\",_inp_io,\"nfields\",A4GL_gen_field_chars((void ***)GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),(void *)GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
      srec);

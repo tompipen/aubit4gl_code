@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.18 2003-06-18 19:21:02 mikeaubury Exp $
+# $Id: data_if.c,v 1.19 2003-07-07 14:20:23 mikeaubury Exp $
 #
 */
 
@@ -327,6 +327,8 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
     int curr_display_i;
     int maxcount;
     int count;
+    int display_attrib;
+    int scr_dim;
   };
 
   struct s_s_inp_arr_1 *val;
@@ -506,7 +508,32 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 	}
     }
 
+  if (strcmp (name, "scr_dim") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) val->scr_dim;
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->scr_dim);
+      if (mode == GETSETSET)
+	{
+	  val->scr_dim = (int) var;
+	  return (void *) 1;
+	}
+    }
 
+
+  if (strcmp (name, "display_attrib") == 0)
+    {
+      if (mode == GETSETGET)
+        return (void *) val->display_attrib;
+      if (mode == GETSETGETPTR)
+        return (void *) &(val->display_attrib);
+      if (mode == GETSETSET)
+        {
+          val->display_attrib = (int) var;
+          return (void *) 1;
+        }
+    }
   if (strcmp (name, "nfields") == 0)
     {
       if (mode == GETSETGET)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.44 2003-07-04 19:13:21 mikeaubury Exp $
+# $Id: ioform.c,v 1.45 2003-07-07 14:20:24 mikeaubury Exp $
 #*/
 
 /**
@@ -567,7 +567,7 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
  if (!(colour&AUBIT_ATTR_REVERSE) && do_reverse==1) { ; }  // Maybe we should warn on these
 
  set_field_fore (field, A4GL_decode_aubit_attr (colour,'f'));
- set_field_back (field, A4GL_decode_aubit_attr (colour,'b'));
+ set_field_back (field, A4GL_decode_aubit_attr (colour,'B'));
 
 return;
 
@@ -2320,7 +2320,8 @@ A4GL_debug("In display_field_contents");
 
     }
 
-  A4GL_pop_char (ff, A4GL_get_field_width (field));
+  A4GL_pop_char (ff, field_width);
+	A4GL_debug("set_field_contents : '%s'",ff);
   A4GL_mja_set_field_buffer (field, 0, ff);
   free(ff);
 
@@ -2386,7 +2387,7 @@ A4GL_set_init_pop_attr (FIELD * field, int attr)
 
 
 
-
+#ifdef MOVED_TO_IARRAY
 /**
  *
  * @todo Describe function
@@ -2426,6 +2427,7 @@ A4GL_iarr_arr_fields (int n, int fonly, int attr, ...)
 	}
     }
 }
+#endif
 
 
 

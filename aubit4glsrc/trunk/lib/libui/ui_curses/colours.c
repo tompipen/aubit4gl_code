@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.8 2003-06-25 07:48:41 mikeaubury Exp $
+# $Id: colours.c,v 1.9 2003-07-07 14:20:24 mikeaubury Exp $
 #*/
 
 /**
@@ -208,6 +208,12 @@ A4GL_decode_aubit_attr (int a, char s)
       ca = A4GL_decode_colour_attr_aubit (a);
     }
 
+  if (s == 'B')
+    {
+      ca = A4GL_decode_colour_attr_aubit (a);
+      if (strstr (attr, "REVERSE"))
+	ca += A_REVERSE;
+    }
 A4GL_debug("Returning ca = %d %x",ca,ca);
   return ca;
 }

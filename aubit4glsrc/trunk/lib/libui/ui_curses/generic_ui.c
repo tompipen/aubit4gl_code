@@ -1,5 +1,36 @@
 #include "a4gl_lib_ui_tui_int.h"
 
+void A4GL_size_menu (ACL_Menu * menu);
+void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list ap);
+void A4GL_gsub (char *str);
+int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
+void A4GL_move_bar (ACL_Menu * menu, int a);
+int A4GL_find_char (ACL_Menu * menu, int key);
+int A4GL_new_do_keys (ACL_Menu * menu, int a);
+char *A4GL_string_width (char *s);
+int A4GL_mjalen (char *str);
+void A4GL_set_option (ACL_Menu * menu, int opt);
+int A4GL_seldir (char *filespec, char *filename);
+void A4GL_stripbracket (char *str);
+void A4GL_menu_hide_ap (ACL_Menu * menu, va_list * ap);
+void *A4GL_decode_clicked (void);
+void A4GL_display_menu (ACL_Menu * menu);
+void A4GL_clr_menu_disp (ACL_Menu * menu);
+void A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
+                 int type);
+int A4GL_gui_startmenu (char *s, long a);
+ACL_Menu *A4GL_new_menu_create (char *title, int x, int y, int mn_type,
+                           int help_no);
+void A4GL_add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
+                      int helpno, int attr);
+
+//void A4GL_set_option_value (char type, int keyval);
+
+
+
+void A4GL_finish_create_menu (ACL_Menu * menu);
+void A4GL_menu_show_ap (ACL_Menu * menu, va_list * ap);
+
 char *
 A4GL_string_width (char *s)
 {
@@ -60,6 +91,7 @@ int
 A4GL_new_do_keys (ACL_Menu * menu, int a)
 {
   ACL_Menu_Opts *opt1;
+  int fc;
   if (a==A4GL_key_val("LEFT")) { a=A4GLKEY_LEFT; }
   if (a==A4GL_key_val("RIGHT")) { a=A4GLKEY_RIGHT; }
   if (a==A4GL_key_val("UP")) { a=A4GLKEY_UP; }
@@ -69,6 +101,13 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
 
   opt1 = (ACL_Menu_Opts *) menu->curr_option;
   A4GL_debug ("new_do_keys A=%d", a);
+
+  fc= A4GL_find_char (menu, a);
+
+  if (fc) return 1;
+
+
+
   if (a == 8 || a == ' ' || a == A4GLKEY_DOWN || a == A4GLKEY_RIGHT || a == A4GLKEY_UP || a == A4GLKEY_LEFT || a == 0xffff /* click */ ) // BACKSPACE ?
     {
       A4GL_move_bar (menu, a);
@@ -91,7 +130,7 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
     }
   A4GL_debug ("Dropped through");
 
-  return A4GL_find_char (menu, a);
+  return fc;
 }
 
 int

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.12 2003-07-04 19:13:21 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.13 2003-07-07 14:20:24 mikeaubury Exp $
 #*/
 
 /**
@@ -409,39 +409,41 @@ process_control_stack (struct s_screenio *sio)
   if (sio->fcntrl[a].op == FORMCONTROL_BEFORE_FIELD)
     {
       struct struct_scr_field *fprop;
-	int attr;
-      ptr_movement = (struct s_movement *) sio->fcntrl[a].parameter;
-      new_state = 0;
-      sio->curr_attrib = ptr_movement->attrib_no;
-      A4GL_debug ("Before field - fieldname=%p", sio->fcntrl[a].field_name);
-      A4GL_debug ("Before field - fieldname=%s isnull = %d", sio->fcntrl[a].field_name,A4GL_isnull(sio->vars[sio->curr_attrib].dtype,sio->vars[sio->curr_attrib].ptr));
+      int attr;
+	A4GL_debug("FORM_BEFORE_FIELD - state=%d",sio->fcntrl[a].state);
+
+      if (sio->fcntrl[a].state == 99)
+        {
+          	new_state = 50;
+      		ptr_movement = (struct s_movement *) sio->fcntrl[a].parameter;
+      		sio->curr_attrib = ptr_movement->attrib_no;
+
+      	  	A4GL_push_long ((long) sio->field_list[sio->curr_attrib]);
+          	A4GL_push_char (sio->fcntrl[a].field_name);
+		A4GL_debug("Setting rval to -197");
+		rval=-197;
+        }
+
+      if (sio->fcntrl[a].state == 50) 
+	{
+   	  	sio->currentfield = sio->field_list[sio->curr_attrib];
+      		set_current_field (sio->currform->form, sio->currentfield);
+      		sio->currform->currentfield=sio->currentfield;
+      		pos_form_cursor (sio->currform->form);
+		A4GL_debug("Processed after users 'BEFORE FIELD'");
+      		pos_form_cursor (sio->currform->form);
+      		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+      		attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop);
+      		if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
+      		A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
+      		A4GL_comments (fprop);
+      		new_state = 0;
+		A4GL_debug("Setting rval to -1");
+		//rval=-99;
+        }
 
 
-      sio->currentfield = sio->field_list[sio->curr_attrib];
-      set_current_field (sio->currform->form, sio->currentfield);
-      pos_form_cursor (sio->currform->form);
-      sio->currform->currentfield=sio->currentfield;
-      fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-      attr=A4GL_determine_attribute(FGL_CMD_INPUT,sio->attrib, fprop);
-      if (attr != 0) A4GL_set_field_attr_with_attr (sio->currentfield,attr, FGL_CMD_INPUT);
 
-
-
-      A4GL_set_init_value (sio->currentfield, sio->vars[sio->curr_attrib].ptr, sio->vars[sio->curr_attrib].dtype+ENCODE_SIZE(sio->vars[sio->curr_attrib].size));
-
-
-
-	A4GL_debug("Adding comments...");
-
-
-      A4GL_comments (fprop);
-
-      A4GL_push_long ((long) sio->currentfield);
-      A4GL_push_char (sio->fcntrl[a].field_name);
-	A4GL_debug("New current field set to %p",sio->currentfield);
-      A4GL_debug ("doing Before field - fieldname=%s isnull = %d", sio->fcntrl[a].field_name,A4GL_isnull(sio->vars[sio->curr_attrib].dtype,sio->vars[sio->curr_attrib].ptr));
-
-      rval = -197;
     }
 
 

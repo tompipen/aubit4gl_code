@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.70 2003-07-04 09:43:38 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.71 2003-07-07 14:19:56 mikeaubury Exp $
 #
 */
 
@@ -1523,6 +1523,8 @@ enum cmd_types {
     int curr_display_i;
     int maxcount;
     int count;
+    int display_attrib;
+    int scr_dim;
   };
 
 
