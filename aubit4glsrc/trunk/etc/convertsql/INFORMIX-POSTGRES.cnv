@@ -116,6 +116,9 @@ REPLACE_SQLCONST rowid = oid
 # REPLACE_SQLFUNC day = date_part('DAY',%s::timestamp with time zone)
 # REPLACE_SQLFUNC dow = date_part('DOW',%s::timestamp with time zone)
 
+REPLACE_SQLFUNC ascii = chr(%s)
+REPLACE_SQLFUNC ord = ascii(%s)
+
 REPLACE_EXPR current year to fraction(3) = now()
 REPLACE_EXPR current year to fraction(5) = now()
 REPLACE_EXPR current year to second = now()

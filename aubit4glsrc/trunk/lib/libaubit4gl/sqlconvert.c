@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.33 2004-12-01 07:21:08 afalout Exp $
+# $Id: sqlconvert.c,v 1.34 2004-12-03 08:08:44 mikeaubury Exp $
 #
 */
 
@@ -65,6 +65,7 @@ char *cvsql_names[]={
   "CVSQL_DOUBLE_TO_SINGLE",
   "CVSQL_MATCHES_TO_LIKE",
   "CVSQL_MATCHES_TO_REGEX",
+  "CVSQL_MATCHES_TO_GLOB",
   "CVSQL_SUBSTRING_FUNCTION",
   "CVSQL_TABLE_ALIAS_AS",
   "CVSQL_COLUMN_ALIAS_AS",
@@ -103,6 +104,8 @@ char *cvsql_names[]={
   "CVSQL_RENAME_COLUMN_AS_ALTER_TABLE",
   "CVSQL_FAKE_IMMEDIATE",
   "CVSQL_TEMP_AS_DECLARE_GLOBAL",
+  "CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL",
+  "CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS",
   "CVSQL_SWAP_SQLCA62",
   "CVSQL_NO_ORDBY_INTO_TEMP",
   "CVSQL_DTYPE_ALIAS"
@@ -130,6 +133,7 @@ enum cvsql_type
   CVSQL_DOUBLE_TO_SINGLE,
   CVSQL_MATCHES_TO_LIKE,
   CVSQL_MATCHES_TO_REGEX,
+  CVSQL_MATCHES_TO_GLOB,
   CVSQL_SUBSTRING_FUNCTION,
   CVSQL_TABLE_ALIAS_AS,
   CVSQL_COLUMN_ALIAS_AS,
@@ -168,6 +172,8 @@ enum cvsql_type
   CVSQL_RENAME_COLUMN_AS_ALTER_TABLE,
   CVSQL_FAKE_IMMEDIATE,
   CVSQL_TEMP_AS_DECLARE_GLOBAL,
+  CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL,
+  CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS,
   CVSQL_SWAP_SQLCA62,
   CVSQL_NO_ORDBY_INTO_TEMP,
   CVSQL_DTYPE_ALIAS
@@ -255,10 +261,13 @@ char * A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *s
 
 	// Silently drop source dialect for now - it should be picked up from A4GL_SQLDIALECT anyway...
 	//
+	A4GL_debug("sql=%s\n",sql);
 	sql_new=A4GLSQLCV_convert_sql(target_dialect,sql);
 	A4GL_debug("Translates to %s",sql_new);
 
-	return A4GLSQLCV_check_sql(sql_new);
+	sql_new=A4GLSQLCV_check_sql(sql_new);
+	A4GL_debug("check_sql.. %s",sql_new);
+	return sql_new;
 }
 
 
@@ -523,7 +532,6 @@ A4GL_debug("Alias : '%s'\n",s);
 
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_DTYPE_ALIAS) {
-		A4GL_debug("--> '%s' = '%s' ? \n",conversion_rules[b].data.from,s);
 		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
 			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
 			return conversion_rules[b].data.to;
@@ -610,7 +618,6 @@ int b;
 static char *buff=0;
 buff=realloc(buff,strlen(s)*2+1000);
 strcpy(buff,s);
-
 
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_EXPR) {
@@ -700,10 +707,16 @@ if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_LIKE")) {
 		sprintf(buff,"LIKE %s",CV_matches("LIKE",str,esc));
 		return buff;
 }
+
 if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_REGEX")) {
 		sprintf(buff,"~ %s",CV_matches("~",str,esc));
 		return buff;
 }
+if (1&&A4GLSQLCV_check_requirement("MATCHES_TO_GLOB")) {
+		sprintf(buff,"GLOB %s",CV_matches("~",str,esc));
+		return buff;
+}
+
 
 if (strlen(esc)) {
 		sprintf(buff,"MATCHES %s %s",str,esc);
@@ -774,6 +787,8 @@ int A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_MATCHES_TO_LIKE;
   if (strncasecmp (p, "MATCHES_TO_REGEX", len) == 0)
     return CVSQL_MATCHES_TO_REGEX;
+  if (strncasecmp (p, "MATCHES_TO_GLOB", len) == 0)
+    return CVSQL_MATCHES_TO_GLOB;
   if (strncasecmp (p, "SUBSTRING_FUNCTION", len) == 0)
     return CVSQL_SUBSTRING_FUNCTION;
   if (strncasecmp (p, "TABLE_ALIAS_AS", len) == 0)
@@ -819,6 +834,8 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "RENAME_COLUMN_AS_ALTER_TABLE", len) == 0) return CVSQL_RENAME_COLUMN_AS_ALTER_TABLE;
   if (strncasecmp (p, "FAKE_IMMEDIATE", len) == 0) return CVSQL_FAKE_IMMEDIATE;
   if (strncasecmp (p, "TEMP_AS_DECLARE_GLOBAL", len) == 0) return CVSQL_TEMP_AS_DECLARE_GLOBAL;
+  if (strncasecmp (p, "SELECT_INTO_TEMP_AS_DECLARE_GLOBAL", len) == 0) return CVSQL_SELECT_INTO_TEMP_AS_DECLARE_GLOBAL;
+  if (strncasecmp (p, "SELECT_INTO_TEMP_AS_CREATE_TEMP_AS", len) == 0) return CVSQL_SELECT_INTO_TEMP_AS_CREATE_TEMP_AS;
   //if (strncasecmp (p, "", len) == 0) return CVSQL_;
 
 
@@ -1958,15 +1975,25 @@ if (A4GLSQLCV_check_requirement("ESQL_UNLOAD_FULL_PATH")) {
 
 char *A4GLSQLCV_select_into_temp(char *sel,char *lp,char *tabname)  {
 char *ptr;
-if (A4GLSQLCV_check_requirement("TEMP_AS_DECLARE_GLOBAL")) {
+
+if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_DECLARE_GLOBAL")) {
 	ptr=malloc(strlen(sel)+2000);
 	sprintf(ptr,"DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY",tabname,sel);
-return ptr;
-} else {
-	ptr=malloc(strlen(sel)+2000);
-	sprintf(ptr,"%s %s",sel,lp);
 	return ptr;
 }
+
+if (A4GLSQLCV_check_requirement("SELECT_INTO_TEMP_AS_CREATE_TEMP_AS")) {
+	ptr=malloc(strlen(sel)+2000);
+	sprintf(ptr,"CREATE TEMP TABLE %s AS %s ",tabname,sel);
+	return ptr;
+}
+
+
+
+
+ptr=malloc(strlen(sel)+2000);
+sprintf(ptr,"%s %s",sel,lp);
+return ptr;
 return 0;
 }
 
@@ -2011,9 +2038,26 @@ string can be USER or TODAY - return the equivilent...
 */
 char *A4GLSQLCV_get_sqlconst(char *s) {
 int b;
+char *c;
+static char buff[200];
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_SQLCONST) {
 		if (strcasecmp(s,conversion_rules[b].data.from)==0) {
+
+			if (strcasecmp(conversion_rules[b].data.to,"$TODAY")==0) {
+				A4GL_push_today();
+				c=A4GL_char_pop();
+				sprintf(buff,"'%s'",c);
+				return buff;
+			} 
+			if (strcasecmp(conversion_rules[b].data.to,"$USER")==0) {
+				A4GL_push_user();
+				c=A4GL_char_pop();
+				sprintf(buff,"'%s'",c);
+				return buff;
+			} 
+
+
 			return conversion_rules[b].data.to;
 		}
 	}

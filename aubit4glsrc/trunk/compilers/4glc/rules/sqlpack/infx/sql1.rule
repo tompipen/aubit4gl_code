@@ -1043,9 +1043,8 @@ sel_p2_ss : { $<sql_string>$=strdup(""); }
 
 
 sel_finish: {$<sql_string>$=strdup("");}
-	| order_by_clause  { printf("1\n"); $<sql_string>$=strdup($<str>1); }
+	| order_by_clause  {  $<sql_string>$=strdup($<str>1); }
 	| order_by_clause INTO_TEMP tmp_tabname op_no_log { 
-	printf("2\n");
 	if (A4GLSQLCV_check_requirement("STRIP_ORDER_BY_INTO_TEMP")) {
 		$<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>3),kw_space,strdup($<str>4),0);
 		strcpy(last_tmp_name,$<str>3);
@@ -1055,7 +1054,6 @@ sel_finish: {$<sql_string>$=strdup("");}
 	}
 }
 	| INTO_TEMP tmp_tabname op_no_log { 
-	printf("3\n");
 $<sql_string>$=make_sql_string_and_free(strdup("INTO TEMP "),strdup($<str>2),kw_space,strdup($<str>3),0); strcpy(last_tmp_name,$<str>2);} 
 ;
 
@@ -1177,7 +1175,7 @@ value_expression_complex_ss :
 	| KW_DOW OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func("DOW",$<sql_string>3));}
 	| KW_DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=
 strdup(A4GLSQLCV_sql_func("DATE",$<sql_string>3));}
-	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_ob,$<sql_string>3,kw_cb,0);}
+	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=strdup(A4GLSQLCV_sql_func($<str>1,$<sql_string>3));}
 	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,kw_cb,0);}
 	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {
 			$<sql_string>$=$<sql_string>3;

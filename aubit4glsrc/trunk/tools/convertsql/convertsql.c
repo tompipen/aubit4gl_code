@@ -11,6 +11,7 @@ int buffsize = 4000;		// initial size of statement buffer
 int incrsize = 2000;		// increase by this amount when using realloc()
 
 
+
 /*
  * Does the actual work of reading standard input, converting each
  * statement where necessary, and writing the result to stdout.
@@ -45,10 +46,11 @@ process_stdin (char *dialect_in, char *dialect_out)
 	  /* we have an unquoted semi-colon; process what we have
 	     * in the statement buffer, then clear for the next one
 	   */
+		A4GL_debug("Converting : %s from %s %s\n",buff, dialect_in, dialect_out);
 	  ptr=A4GL_convert_sql_new (dialect_in, dialect_out, buff);
 	  strcpy(buff,ptr);
 	  trimbuff ();
-	  printf ("%s\n", buff);
+	  printf("%s\n",buff);
 	  clearbuff ();
 	  continue;
 	}
@@ -80,6 +82,7 @@ process_stdin (char *dialect_in, char *dialect_out)
   if (bc > 1)
     {
       ptr=A4GL_convert_sql_new (dialect_in, dialect_out, buff);
+	  strcpy(buff,ptr);
       trimbuff ();
       printf ("%s\n", buff);
     }
@@ -97,7 +100,7 @@ process_stdin (char *dialect_in, char *dialect_out)
 void
 clearbuff ()
 {
-  memset (buff, ' ', buffsize);
+  memset (buff, 0, buffsize);
   buff[buffsize] = '\0';
   bp = buff;
   bc = 0;

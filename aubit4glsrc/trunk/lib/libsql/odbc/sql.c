@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.93 2004-12-02 09:33:23 mikeaubury Exp $
+# $Id: sql.c,v 1.94 2004-12-03 08:08:45 mikeaubury Exp $
 #
 */
 
@@ -81,6 +81,8 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 #define MAXCOLS 			100
 #define MAX_NUM_PRECISION 	15
 #define MAX_NUM_STRING_SIZE (MAX_NUM_PRECISION + 5)
+
+int in_transaction=0;
 
 
 #define chk_rc(rc,stmt,call) A4GL_chk_rc_full(rc,(void *)stmt,call,__LINE__,__FILE__)
@@ -2103,6 +2105,7 @@ int
 ODBC_exec_stmt (SQLHSTMT hstmt)
 {
   int rc;
+	int fake_tr=0;
   long rowcount;
 #ifdef DEBUG
   A4GL_debug ("In ODBC_exec_stmt %p",hstmt);
@@ -2110,7 +2113,15 @@ ODBC_exec_stmt (SQLHSTMT hstmt)
   if (hstmt==0) {
 	return 0;
   }
+
+// if we're not already in a transaction - start one
+if(!in_transaction) { fake_tr=1;A4GLSQL_commit_rollback (-1); }
+
   rc = SQLExecute ((SQLHSTMT )hstmt);
+
+// And finish it
+if(fake_tr) { if (rc==0) A4GLSQL_commit_rollback (1); else  A4GLSQL_commit_rollback (0); }
+
 
 
 #ifdef DEBUG
@@ -3639,7 +3650,9 @@ A4GL_post_fetch_proc_bind (struct BINDING *use_binding, int use_nbind, HSTMT hst
 
       if (use_binding[a].dtype == DTYPE_CHAR) {
 		A4GL_debug("Found string @ %d = '%s'",a,use_binding[a].ptr);
+		if (strlen(use_binding[a].ptr)) { // Its not null 
 		A4GL_pad_string(use_binding[a].ptr, use_binding[a].size);
+		}
       }
 
 
@@ -3852,14 +3865,20 @@ A4GLSQL_commit_rollback (int mode)
       A4GL_debug ("Native Transaction Mode:%d", mode);
 #endif
       A4GL_new_hstmt ((SQLHSTMT *)&hstmt);
-      if (mode == -1)
+      if (mode == -1) {
+		in_transaction=1;
 	SQLExecDirect (hstmt, "BEGIN WORK", SQL_NTS);
+      }
 
-      if (mode == 0)
-	SQLExecDirect (hstmt, "ROLLBACK WORK", SQL_NTS);
+      if (mode == 0) {
+		in_transaction=0;
+		SQLExecDirect (hstmt, "ROLLBACK WORK", SQL_NTS);
+	}
 
-      if (mode == 1)
+      if (mode == 1) {
+	in_transaction=0;
 	SQLExecDirect (hstmt, "COMMIT WORK", SQL_NTS);
+	}
 
       A4GL_set_sqlca (hstmt, "Commit/Rollback", 0);
 
@@ -3913,7 +3932,9 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, v
 
   sql2 = strdup (sql1);
 
-  rc = SQLExecDirect (hstmt, sql2, SQL_NTS);
+  SQLPrepare ((SQLHSTMT)hstmt, sql2, SQL_NTS);
+  A4GL_proc_bind (ibind, nbind, 'i', (SQLHSTMT)hstmt);
+  rc = SQLExecute(hstmt);
   chk_rc (rc, hstmt, "unload_data");
   if (a4gl_sqlca.sqlcode<0) return;
 

@@ -411,7 +411,7 @@ struct ilist {
 
 void file_out_indent(int cnt);
 int is_sql_kw(int a);
-char *make_substr(char *colname,struct ilist *int_list);
+char *make_substr(char *colname,struct ilist *intlist);
 struct variable *find_dim(char *s);
 int has_function(char *s,char *file,struct flist *ptr);
 void push_object (char *objtype);

@@ -255,7 +255,7 @@ char arrbuff[256];
       	dec_counter();
   } else {
  
-  if (((type & 0xffff) != 0) || (arrsize>0))
+  if ( ( (type & 0xffff) != DTYPE_CHAR &&  (type & 0xffff) != DTYPE_VCHAR) || (arrsize>0))
     {
 		A4GL_debug("MJA Path 1");
       A4GL_lex_printcomment("/* changing optbase for array: %s */\n",$<str>2);

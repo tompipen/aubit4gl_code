@@ -288,7 +288,9 @@ static char *get_bad_sql() {
 	if (input_from_file) {
 		return "BAD SQL";
 	} else {
-		strncpy(buff,&Sql[this_sql_start],sql_string_cnt-this_sql_start);
+		if (sql_string_cnt-this_sql_start>0) {
+			strncpy(buff,&Sql[this_sql_start],sql_string_cnt-this_sql_start);
+		}
 	}
 	return buff;
 }
@@ -538,7 +540,6 @@ static char *last_s=0;
 		stmts=realloc(stmts,sizeof(struct sql_stmt)*stmts_cnt);
 		stmts[stmts_cnt-1].type=n;
 		stmts[stmts_cnt-1].val=s;
-
 		mark_sql_start();
 	} else {
 		last_was_err=1;

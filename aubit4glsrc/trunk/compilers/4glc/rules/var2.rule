@@ -132,7 +132,7 @@ str3=strdup(variable_usage_as_string($<var_usg>3,VAR_USG_ANY));
 strcpy(was_str,"");
 sprintf(buff,"%s\n%s",str1,str3);
 a=get_bind_cnt('i');
-printf("get_bind_cnt=%d\n",a);
+/*printf("get_bind_cnt=%d\n",a); */
 z=add_bind('i',buff);
 z-=a;
 strcpy(was_str,A4GL_set_var_sql(doing_declare,z));

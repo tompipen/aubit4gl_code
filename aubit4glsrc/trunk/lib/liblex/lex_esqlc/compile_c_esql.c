@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.98 2004-11-27 15:37:59 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.99 2004-12-03 08:08:44 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.98 2004-11-27 15:37:59 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.99 2004-12-03 08:08:44 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -1425,57 +1425,81 @@ if (strncmp(sql,"SELECT ",7)==0) isvar=0;
 void
 print_load (char *file, char *delim, char *tab, char *list)
 {
-char filename[256];
-char delim_s[256];
-if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
+  char filename[256];
+  char delim_s[256];
 
-  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD")) {
-			if (file[0]=='"') { 
-				sprintf(filename,"'%s'",A4GL_strip_quotes(file)); 
-			} else {
-                                sprintf(filename,":_loadfname");
-                                printc("{");
-                                printc("\nEXEC SQL BEGIN DECLARE SECTION;/*5*/");
-                                printc("char _loadfname[512];");
-                                printc("\nEXEC SQL END DECLARE SECTION;");
-                                printc("strcpy(_loadfname,%s);",file);
-                                printc("A4GL_trim(_loadfname);");
-			}
-
-A4GL_save_sql("LOAD : %s",tab);
-	printc ("\nEXEC SQL LOAD FROM %s DELIMITER %s ",filename,delim_s);
-
-
-	if (strlen(list)==1) printc (" INSERT INTO %s  ;",tab);
-	else {	
-		char *ptr;
-		char buff[100];
-		int p=0;
-		list[strlen(list)-2]=0;
-		ptr=list;
-  			printc (" INSERT INTO %s (",tab);
-		while (1) {
-			strcpy(buff,ptr);
-			ptr=strchr(buff,',');
-			if (ptr) *ptr=0;
-			printc("%c%s",p?',':' ',A4GL_strip_quotes(buff));
-
-			p++;
-			if (ptr==0) break;
-			ptr++;
-		}
-		printc(");");
-			
+  if (A4GLSQLCV_check_requirement ("ESQL_UNLOAD"))
+    {
+      printc ("{");
+      printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*5*/");
+      printc ("char _loadfname[512];");
+      printc ("char _delim[64];");
+      printc ("\nEXEC SQL END DECLARE SECTION;");
+      if (file[0] == '"')
+	{
+	  sprintf (filename, "'%s'", A4GL_strip_quotes (file));
 	}
-	if (file[0]!='"') {
-		printc("}");
+      else
+	{
+	  sprintf (filename, ":_loadfname");
+	  printc ("strcpy(_loadfname,%s);", file);
+	  printc ("A4GL_trim(_loadfname);");
+	  if (A4GLSQLCV_check_requirement ("ESQL_UNLOAD_FULL_PATH"))
+	    {
+	      printc ("A4GLSQLCV_check_fullpath(_loadfname);");
+	    }
 	}
-  	print_copy_status ();
-  } else {
-  	printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
-  }
+
+
+      if (delim[0] == '"')
+	{
+	  sprintf (delim_s, "\'%s\'", A4GL_strip_quotes (delim));
+	}
+      else
+	{
+	  printc ("strcpy(_delim,%s);", delim);
+	  strcpy (delim_s, ":_delim");
+	}
+
+      A4GL_save_sql ("LOAD : %s", tab);
+      printc ("\nEXEC SQL LOAD FROM %s DELIMITER %s ", filename, delim_s);
+
+
+      if (strlen (list) == 1)
+	printc (" INSERT INTO %s  ;", tab);
+      else
+	{
+	  char *ptr;
+	  char buff[100];
+	  int p = 0;
+	  list[strlen (list) - 2] = 0;
+	  ptr = list;
+	  printc (" INSERT INTO %s (", tab);
+	  while (1)
+	    {
+	      strcpy (buff, ptr);
+	      ptr = strchr (buff, ',');
+	      if (ptr)
+		*ptr = 0;
+	      printc ("%c%s", p ? ',' : ' ', A4GL_strip_quotes (buff));
+
+	      p++;
+	      if (ptr == 0)
+		break;
+	      ptr++;
+	    }
+	  printc (");");
+
+	}
+      printc ("}");
+      print_copy_status ();
+    }
+  else
+    {
+      printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab,
+	      list);
+    }
 }
-
 /**
  * @todo Desribe
  *
