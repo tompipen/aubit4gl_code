@@ -1,12 +1,15 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.16 2001-10-18 00:01:30 afalout Exp $
+* $Id: mod.c,v 1.17 2001-10-18 01:31:01 afalout Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.16  2001/10/18 00:01:30  afalout
+*	NoODBC build on CygWin
+*	
 *	Revision 1.15  2001/10/05 18:16:40  mikeaubury
 *	Fixes
 *	
@@ -346,17 +349,17 @@ with_strip_bracket (char *buff)
 add_variable (char *name, char *type, char *n)
 {
 
-//  debug ("In mod.c : add_variable\n");
+	debug ("In mod.c : add_variable (name = %s type = %s n = %d varcnt = %d)\n", name,type,n,varcnt);
+
   vars[varcnt].level = in_record;
 
-//  debug ("In mod.c : add_variable (1)\n");
 
   if (name != 0)
     strcpy (vars[varcnt].var_name, name);
 
   else
     strcpy (vars[varcnt].var_name, EMPTY);
-//  debug ("In mod.c : add_variable (2)\n");
+
   if (type != 0)
 
     strcpy (vars[varcnt].var_type, type);
@@ -364,27 +367,27 @@ add_variable (char *name, char *type, char *n)
   else
     strcpy (vars[varcnt].var_type, EMPTY);
 
-  debug ("In mod.c : add_variable (3)\n");
+//  debug ("In mod.c : add_variable (3)\n");
 
   if (n != 0) {
-	debug ("In mod.c : add_variable (3a)\n");
-    debug ("/* global variables: name = %d */\n", name);     	/* global variables: name = 50439268 */
-	debug ("/* global variables: varcnt = %d */\n", varcnt);  	/* global variables: varcnt = 18 */
-    debug ("/* global variables: n = %d */\n", n); 				/* global variables: n = 2563 */
-
-	debug ("In mod.c : add_variable (3a2)\n");
+	//debug ("In mod.c : add_variable (3a)\n");
+    //debug ("/* global variables: name = %d */\n", name);     	/* global variables: name = 50439268 */
+	//debug ("/* global variables: varcnt = %d */\n", varcnt);  	/* global variables: varcnt = 18 */
+    //debug ("/* global variables: n = %d */\n", n); 				/* global variables: n = 2563 */
     // we core dump here on CygWin:
+
+    debug ("assigning vars[varcnt].var_size ...\n");
 	strcpy (vars[varcnt].var_size, n);
     debug ("/* global variables: vars[varcnt].var_size = %d */\n", vars[varcnt].var_size);
 
   }
   else
   {
-	debug ("In mod.c : add_variable (3b)\n");
+//	debug ("In mod.c : add_variable (3b)\n");
 	strcpy (vars[varcnt].var_size, EMPTY);
   }
 
-  debug ("In mod.c : add_variable (4)\n");
+//  debug ("In mod.c : add_variable (4)\n");
 
   strcpy (vars[varcnt].var_arrsize, EMPTY);
 
@@ -479,6 +482,8 @@ print_variables (int z)
 
 push_name (char *a, char *n)
 {
+
+  debug ("In mod.c : push_name  a = %s n = %d \n", a, n);
 
   add_variable (a, 0, n);
 
@@ -583,6 +588,7 @@ pop_record ()
 {
 
   //in_record--;
+  debug ("In mod.c : pop_record\n");
 
   add_variable (0, "_ENDREC", 0);
 
