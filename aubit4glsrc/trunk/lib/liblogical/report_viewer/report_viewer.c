@@ -112,7 +112,7 @@ label_clicked (GtkWidget * widget, GdkEventButton * event, gpointer user_data)
   GtkWidget *status;
   char *style;
   char txt[255];
-  char rc_string[256];
+  //char rc_string[256];
   int rb;
   int entry;
   if (!selectable)
@@ -176,7 +176,7 @@ label_clicked_block (GtkWidget * widget, GdkEventButton * event,
   GtkWidget *status;
   char *style;
   char txt[255];
-  char rc_string[256];
+  //char rc_string[256];
   int block;
   char *where_why;
 
@@ -361,7 +361,7 @@ gtk_widget_set_usize (GTK_WIDGET (window),500,300);
 	    (GtkWidget *) gtk_object_get_data (GTK_OBJECT (notebook), buff);
 	  if (fixed)
 	    {
-	      char rc_string[256];
+	      //char rc_string[256];
 	      char buff_style[256];
 	      GtkWidget *evt;
 

@@ -10,6 +10,7 @@
 #else
 	#include "npcode.xs.h"
 #endif
+#include <string.h>
 #include "npcode_defs.h"
 void comment (void );
 int check_type (void);

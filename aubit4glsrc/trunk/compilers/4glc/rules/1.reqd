@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.59 2004-12-10 19:05:59 mikeaubury Exp $
+# $Id: 1.reqd,v 1.60 2004-12-19 10:38:50 mikeaubury Exp $
 #
 */
 
@@ -210,6 +210,11 @@ char *kw_comma=",";
 char *kw_space=" ";
 char *kw_ob="(";
 char *kw_cb=")";
+
+
+char *A4GL_strcpy(char *d,char *s,char *fname,int l,int sdest);
+#define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
+
 
 #include "../generic.h"
 #include "../field_handling.h"

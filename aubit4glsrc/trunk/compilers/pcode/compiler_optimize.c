@@ -17,7 +17,7 @@
 
 extern module this_module;
 int really = 0;
-
+void remove_nop_params (void );
 
 
 
@@ -79,8 +79,6 @@ compare_list (struct param *pa, struct param *pb)
 int
 compare_call (struct param *pa, struct param *pb)
 {
-  int a;
-
 
   if (pa->param_u.c_call->func_id != pb->param_u.c_call->func_id)
     return 0;
@@ -168,7 +166,7 @@ replace_param (int from, int to)
 	      if (list->param_type != PARAM_TYPE_LIST)
 		{
 		  printf
-		    ("Odd - was expecting a list - %d paramID : %d @ %d\n",
+		    ("Odd - was expecting a list - %d paramID : %ld @ %d\n",
 		     list->param_type,
 		     this_module.params.params_val[a].param_u.c_call->
 		     func_params_param_id, a);
@@ -349,7 +347,7 @@ optimize ()
   int *old_pc_to_new_pc = 0;
   int rm_params;
   int stage;
-  int match;
+  //int match;
   int cnts[255];
 
 
@@ -647,7 +645,7 @@ optimize ()
 
 
 
-remove_nop_params ()
+void remove_nop_params (void )
 {
   int a;
   int b;

@@ -236,11 +236,9 @@ process_add_list (struct use_variable *var_orig, long value, int once,
 
       if (use_array_this_level == 0)
 	{
-	  int a, b, c;
+	  int a, b;
 	  int npid_a;
 	  int npid_b;
-	  int npid_c;
-	  int value_from_list;
 	  int param_id;
 	  int param_id2;
 

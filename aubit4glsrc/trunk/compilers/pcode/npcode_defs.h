@@ -120,25 +120,38 @@ long end_main (void);
 void move_defines (void);
 void end_define_module (void);
 
-void init_calls (int argc, char **argv);
-void *resolve_externs (char *name);
 
 
-long end_function ();
-void set_master_type (int type);
-long add_return (long r_i);
-long add_if (long e_i, char *true, char *false);
-long add_goto (char *label);
+
+
+long add_block (void *ptr_c_vars);
+long add_break (int a);
 long add_call (char *funcname, long params_i);
-long add_push_long (int n);
-long add_push_int (int n);
-long add_push_char (char *s);
 long add_chk_err (int n);
 long add_clr_err (void);
-long add_break (int a);
 long add_continue (int a);
-long add_block (void *ptr_c_vars);
-
+long add_ecall (char *s, int a, int b);
+long add_errchk_40000 (void *n);
+long add_errchk_40010 (void *n);
+long add_errchk_40110 (void *n);
+long add_errchk (void *n);
+long add_goto (char *label);
+long add_if (long e_i, char *true, char *false);
+long add_pop_args (int n);
+long add_pop_function() ;
+long add_push_char (char *s);
+long add_push_charv (long e_i);
+long add_push_int (int n);
+long add_push_long (int n) ;
+long add_push_op (char *n);
+long add_push_substr(long e);
+int has_named_struct (char *s);
+long add_return (long r_i);
+long add_set_line (char *module,int line);
+long end_function ();
+void init_calls (int argc, char **argv);
+void *resolve_externs (char *name);
+void set_master_type (int type);
 void end_define (void);
 void set_master_set (long set);
 long end_block (void);
@@ -163,6 +176,8 @@ void set_expr_n(int n,int v);
 void make_new_param(int *n,struct param **p);
 void set_indirection(int n,int up_down);
 struct use_variable *get_use_variable(int n);
+struct cmd_block *get_base(int block_pc);
+long new_command (enum cmd_type cmd_type, void *ptr);
 
 #ifdef NEED_CMD_TYPE_STR
 static char *cmd_type_str[] = {

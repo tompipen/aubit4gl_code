@@ -219,7 +219,7 @@ int special_cmd(struct cmd *c) {
 	}
 
 	if (c->cmd_type==CMD_CHK_ERR) {
-			fprintf(logfile,"CHKERR %d %s\n",c->cmd_u.c_chk_err_lineno,this_module.module_name);
+			fprintf(logfile,"CHKERR %ld %s\n",c->cmd_u.c_chk_err_lineno,this_module.module_name);
 			A4GL_chk_err(c->cmd_u.c_chk_err_lineno,this_module.module_name);
 			return 1;
 	}
@@ -235,26 +235,26 @@ int special_cmd(struct cmd *c) {
 	}
 
 	if (c->cmd_type==CMD_ERRCHK) {
-			fprintf(logfile,"ERRCHK %d\n", c->cmd_u.c_errchk->line);
+			fprintf(logfile,"ERRCHK %ld\n", c->cmd_u.c_errchk->line);
 			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;
 	}
 	if (c->cmd_type==CMD_ERRCHK_40110) {
-			fprintf(logfile,"ERRCHK %d\n", c->cmd_u.c_errchk->line);
+			fprintf(logfile,"ERRCHK %ld\n", c->cmd_u.c_errchk->line);
 			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;
 	}
 	if (c->cmd_type==CMD_ERRCHK_40010) {
-			fprintf(logfile,"ERRCHK %d\n", c->cmd_u.c_errchk->line);
+			fprintf(logfile,"ERRCHK %ld\n", c->cmd_u.c_errchk->line);
 			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;
 	}
 
 	if (c->cmd_type==CMD_ERRCHK_40000) {
-			fprintf(logfile,"ERRCHK %d\n", c->cmd_u.c_errchk->line);
+			fprintf(logfile,"ERRCHK %ld\n", c->cmd_u.c_errchk->line);
 			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compiler_main.c,v 1.12 2004-09-28 09:49:12 afalout Exp $
+# $Id: compiler_main.c,v 1.13 2004-12-19 10:39:20 mikeaubury Exp $
 #*/
 
 /**
@@ -39,6 +39,7 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 
 #if (defined(__CYGWIN__)) || defined(__MINGW32__)
 	/* missing from rpcgen generated .h on CygWin: */

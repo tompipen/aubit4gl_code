@@ -9,6 +9,8 @@
 #else
 	#include "npcode.xs.h"
 #endif
+#include <stdlib.h>
+#include <string.h>
 #include "npcode_defs.h"
 
 int while_cnt=0;
@@ -500,14 +502,14 @@ opd_define_entry:
 ;
 
 
-
+/*
 func_def_entry:
-/* Function prototypes - we'll just ignore all of these.... */
-	 IDENTIFIER '(' fparm  ')' ';' {strcpy($<str>$,"");}
+	 IDENTIFIER '(' fparm  ')' ';' {strcpy($<str>$,"");} 
 	| IDENTIFIER '(' VOID  ')' ';' {strcpy($<str>$,"");}
 	| dtype IDENTIFIER '('  fparm  ')' ';' {strcpy($<str>$,"");}
 	| dtype IDENTIFIER '(' VOID  ')' ';' {strcpy($<str>$,"");}
 ;
+*/
 
 
 dtype_int_val :
@@ -565,7 +567,7 @@ dtype :
 						v=add_named_struct($<str>1);
 						printf("v=%p\n",v);
 						e=new_variable_struct(v);
-						printf("e=%d\n",e);
+						printf("e=%p\n",e);
 						$<define_var>$=e;
 						printf("Get : %p\n",$<define_var>$);
 					}

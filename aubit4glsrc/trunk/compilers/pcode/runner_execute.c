@@ -5,6 +5,7 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 
 
 #ifdef RPCGEN_HEADERS
@@ -813,7 +814,7 @@ get_var_ptr (struct use_variable *uv, int *size)
 	      // We've got an element....
 		if (uv->sub.sub_val[a].x1element!=-1) {
 		if (uv->sub.sub_val[a].x1element>=ve_main->next.next_len) {
-			printf("Got confused - too many elements %d %d\n",uv->sub.sub_val[a].x1element,ve_main->next.next_len);
+			printf("Got confused - too many elements %ld %d\n",uv->sub.sub_val[a].x1element,ve_main->next.next_len);
 			exit(4);
 		}
 	      ve_sub = &ve_main->next.next_val[uv->sub.sub_val[a].x1element];

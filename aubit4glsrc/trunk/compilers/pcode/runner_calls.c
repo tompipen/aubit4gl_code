@@ -13,6 +13,7 @@
 #include "npcode_defs.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #if defined(__hpux__) //HP-UX UNIX OS
 	#define USE_SHL 1

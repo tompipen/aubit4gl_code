@@ -6,6 +6,8 @@
 #define NEED_CMD_TYPE_STR
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #ifdef RPCGEN_HEADERS
 	#include "npcode.h"
 #else

@@ -231,6 +231,9 @@ evaluate_param_into_integer(struct param *e, long *x)
 	  case EOP_AND:
 	    *x = (a && b);
 	    return 1;
+	  case EOP_MOD:
+	    *x = (a % b);
+	    return 1;
 
 	  }
 	fprintf (stderr, "unhandled struct param_op %i\n",

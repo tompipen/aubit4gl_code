@@ -11,6 +11,7 @@
 #endif
 
 #include "npcode_defs.h"
+#include <string.h>
 
 
 struct cmd_block *curr_block = 0;
@@ -397,7 +398,7 @@ mk_use_variable (long p_i, long arr_i1,long arr_i2, long arr_i3, char *id, char 
       u->sub.sub_val = 0;
       if (arr_i1)
 	{
-      	struct cmd *command;
+      	//struct cmd *command;
  
 // command = &this_module.functions.functions_val[this_module.functions.  functions_len - 1].cmds.cmds_val[p->param_u.  uv-> defined_in_block_pc];
 	 
@@ -613,7 +614,7 @@ add_named_struct (char *s)
   exit (1);
 }
 
-has_named_struct (char *s)
+int has_named_struct (char *s)
 {
   int a;
   for (a = 0; a < named_structs_cnt; a++)

@@ -304,8 +304,7 @@ printf("\n");
   printf ("DTYPE= %ld ", ve->dtype);
   if (ve->i_arr_size[0])
     {
-      printf ("ARRAY [%d][%d][%d] ", ve->i_arr_size[0], ve->i_arr_size[1],
-	      ve->i_arr_size[2]);
+      printf ("ARRAY [%ld][%ld][%ld] ", ve->i_arr_size[0], ve->i_arr_size[1], ve->i_arr_size[2]);
     }
 
   printf ("total_size=%ld ", ve->total_size);

@@ -77,14 +77,13 @@ set_externs ()
       if (find_function (call_list[a]) != -1) continue;
       this_module.external_function_table.external_function_table_val[n] = add_id (call_list[a]);
       A4GL_debug ("CALLS : %s\n", call_list[a]);
-	printf("%s %d\n",call_list[a],called[a]);
+	printf("%s %ld\n",call_list[a],called[a]);
       n++;
     }
 }
 
 
-void
-add_called (char *s)
+void add_called (char *s)
 {
   int a;
   for (a = 0; a < ncalls; a++)
@@ -282,8 +281,7 @@ new_command (enum cmd_type cmd_type, void *ptr)
 }
 
 
-long
-add_call (char *funcname, long params_i)
+long add_call (char *funcname, long params_i)
 {
   struct npcmd_call *c;
   c = malloc (sizeof (struct npcmd_call));
@@ -294,8 +292,7 @@ add_call (char *funcname, long params_i)
 }
 
 
-long
-add_block (void *ptr_c_vars)
+long add_block (void *ptr_c_vars)
 {
   struct cmd_block *blk;
   long pc;
@@ -314,8 +311,7 @@ add_block (void *ptr_c_vars)
 }
 
 
-long
-xadd_set_var (struct use_variable *var_orig, long value, int once)
+long xadd_set_var (struct use_variable *var_orig, long value, int once)
 {
   struct cmd_set_var *v=0;
   struct cmd_set_var1 *v1=0;
@@ -360,7 +356,7 @@ printf("\n\nAdd set var\n");
       for (a = 0; a < base->c_vars.c_vars_len; a++)
 	{
 	  printf ("Bibble\n");
-	  printf ("ID : %d\n", base->c_vars.c_vars_val[a].variable_id);
+	  printf ("ID : %ld\n", base->c_vars.c_vars_val[a].variable_id);
 	  if (base->c_vars.c_vars_val[a].variable_id == vid)
 	    {
 	      found = a;
@@ -376,12 +372,12 @@ printf("\n\nAdd set var\n");
 
       variable = &base->c_vars.c_vars_val[found];
       printf ("var=%p\n", variable);
-      printf ("Variable ID =%d\n", variable->variable_id);
+      printf ("Variable ID =%ld\n", variable->variable_id);
       printf ("Variable VAR =%p\n", variable->var);
       printf ("Variable NAME =%s\n", GET_ID (variable->var->name_id));
 
       printf ("Next cnt= %d\n", variable->var->next.next_len);
-      printf ("Array Sizes= %d %d %d\n", variable->var->i_arr_size[0],
+      printf ("Array Sizes= %ld %ld %ld\n", variable->var->i_arr_size[0],
 	      variable->var->i_arr_size[1], variable->var->i_arr_size[2]);
 
 
@@ -394,7 +390,7 @@ printf("\n\nAdd set var\n");
 		int a;
  		for (a=0;a<var->sub.sub_len;a++) {
 
-  	printf ("%d   x1=%d sub1=%d sub2=%d sub3=%d\n", a,var->sub.sub_val[a].x1element, var->sub.sub_val[a].x1subscript_param_id[a], var->sub.sub_val[a].x1subscript_param_id[1], var->sub.sub_val[a].x1subscript_param_id[2]);
+  	printf ("%d   x1=%ld sub1=%ld sub2=%ld sub3=%ld\n", a,var->sub.sub_val[a].x1element, var->sub.sub_val[a].x1subscript_param_id[a], var->sub.sub_val[a].x1subscript_param_id[1], var->sub.sub_val[a].x1subscript_param_id[2]);
 
 		}
 	}
@@ -404,7 +400,7 @@ printf("\n\nAdd set var\n");
 	{
 	int a;
 	  	printf ("Got a sub_len on the assignment - so not looking for all of variable - len= %d\n", var->sub.sub_len);
-	  	printf ("x1=%d sub1=%d sub2=%d sub3=%d\n", var->sub.sub_val[0].x1element, var->sub.sub_val[0].x1subscript_param_id[0], var->sub.sub_val[0].x1subscript_param_id[1], var->sub.sub_val[0].x1subscript_param_id[2]);
+	  	printf ("x1=%ld sub1=%ld sub2=%ld sub3=%ld\n", var->sub.sub_val[0].x1element, var->sub.sub_val[0].x1subscript_param_id[0], var->sub.sub_val[0].x1subscript_param_id[1], var->sub.sub_val[0].x1subscript_param_id[2]);
 
 		if (var->sub.sub_val[0].x1element!=-1) {
 	  		a=0;
@@ -475,7 +471,7 @@ printf("\n\nAdd set var\n");
 		       subparam->param_u.p_list->list_param_id.
 		       list_param_id_len; b++)
 		    {
-		      printf ("sub : %d = %d\n", b,
+		      printf ("sub : %d = %ld\n", b,
 			      subparam->param_u.p_list->list_param_id.
 			      list_param_id_val[b]);
 		    }
@@ -517,7 +513,7 @@ printf("\n\nAdd set var\n");
 		      var2->sub.sub_val[0].x1subscript_param_id[1] = npid_b;
 		      print_use_variable (var2);
 
-		      printf ("\nSetting to param ID %d (%d, %d) n=%d\n",
+		      printf ("\nSetting to param ID %ld (%d, %d) n=%d\n",
 			      subparam->param_u.p_list->list_param_id.
 			      list_param_id_val[b], a, b, n);
 		      if (subparam->param_u.p_list->list_param_id.
@@ -587,7 +583,6 @@ printf("\n\nAdd set var\n");
 	      while (1)
 		{
 		  int npid;
-			char *ptr=0;
 			printf("Straight assign\n");
 		  if (a >= this_module.params.params_val[value].param_u.p_list-> list_param_id.list_param_id_len) break;
 
@@ -652,8 +647,7 @@ current_pc ()
 
 
 
-long
-add_goto (char *label)
+long add_goto (char *label)
 {
   int a;
   a = find_label (label);
@@ -708,8 +702,7 @@ end_block ()
   return new_command (CMD_END_BLOCK, b);
 }
 
-long
-add_if (long e_i, char *true, char *false)
+long add_if (long e_i, char *true, char *false)
 {
   struct npcmd_if *f;
   f = malloc (sizeof (struct npcmd_if));
@@ -720,19 +713,16 @@ add_if (long e_i, char *true, char *false)
 
 }
 
-long
-add_chk_err (int n)
+long add_chk_err (int n)
 {
   return new_command (CMD_CHK_ERR, (void *) n);
 }
 
-long
-add_errchk (void *n)
+long add_errchk (void *n)
 {
   return new_command (CMD_ERRCHK, (void *) n);
 }
-long
-add_errchk_40110 (void *n)
+long add_errchk_40110 (void *n)
 {
 if (n==0) {
 	printf("BAD errchk_40110\n");
@@ -741,8 +731,7 @@ if (n==0) {
   return new_command (CMD_ERRCHK_40110, (void *) n);
 }
 
-long
-add_errchk_40010 (void *n)
+long add_errchk_40010 (void *n)
 {
 if (n==0) {
 	printf("BAD errchk_40010\n");
@@ -752,8 +741,7 @@ if (n==0) {
 }
 
 
-long
-add_errchk_40000 (void *n)
+long add_errchk_40000 (void *n)
 {
 if (n==0) {
 	printf("BAD errchk_40000\n");
@@ -763,8 +751,7 @@ if (n==0) {
 }
 
 
-long
-add_clr_err (void)
+long add_clr_err (void)
 {
   return new_command (CMD_CLR_ERR, 0);
 }
@@ -782,8 +769,7 @@ long add_pop_function() {
   return new_command (CMD_POP_FUNCTION,(void *)0);
 }
 
-long
-add_ecall (char *s, int a, int b)
+long add_ecall (char *s, int a, int b)
 {
   struct ecall *xptr;
   char *ptr;
@@ -801,23 +787,20 @@ add_ecall (char *s, int a, int b)
 
 
 
-long
-add_set_stat (int a)
+long add_set_stat (int a)
 {
   //struct ecall *ptr;
   return new_command (CMD_SET_STAT, (void *) a);
 }
 
 
-long
-add_set_line (char *module,int line)
+long add_set_line (char *module,int line)
 {
   	return new_command (CMD_SET_LINE, (void *) line);
 }
 
 
-long
-add_pop_args (int n)
+long add_pop_args (int n)
 {
   	return new_command (CMD_POP_ARGS, (void *) n);
 }
@@ -825,8 +808,7 @@ add_pop_args (int n)
 
 
 
-long
-add_push_op (char *n)
+long add_push_op (char *n)
 {
   int ni;
   ni = atoi (n);
@@ -844,8 +826,7 @@ add_push_op (char *n)
   return new_command (CMD_PUSH_OP, (void *) ni);
 }
 
-long
-add_push_char (char *s)
+long add_push_char (char *s)
 {
   int n;
   char *ptr;
@@ -858,29 +839,25 @@ add_push_char (char *s)
   return new_command (CMD_PUSH_CHAR, (void *) n);
 }
 
-long
-add_push_charv (long e_i)
+long add_push_charv (long e_i)
 {
   return new_command (CMD_PUSH_CHARV, (void *) e_i);
 }
 
 
-long
-add_push_int (int n)
+long add_push_int (int n)
 {
   return new_command (CMD_PUSH_INT, (void *) n);
 }
 
-long
-add_break (int a)
+long add_break (int a)
 {
   char buff[256];
   sprintf (buff, "_while_e_%d", a);
   return add_goto (buff);
 }
 
-long
-add_continue (int a)
+long add_continue (int a)
 {
   char buff[256];
   sprintf (buff, "_while_c_%d", a);
@@ -1077,8 +1054,7 @@ resolve_gotos ()
 }
 
 
-int
-add_id (char *s)
+int add_id (char *s)
 {
   int a;
   A4GL_debug ("Finding %s\n", s);
@@ -1108,8 +1084,7 @@ add_id (char *s)
 
 
 
-void
-add_function (char *function_name, struct define_variables *v, int is_static)
+void add_function (char *function_name, struct define_variables *v, int is_static)
 {
   int a;
   struct npfunction *curr_func;
@@ -1203,8 +1178,7 @@ in_function (void)
 }
 
 
-long
-add_return (long r)
+long add_return (long r)
 {
   return new_command (CMD_RETURN, (void *) r);
 }
