@@ -1,4 +1,32 @@
-
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   root makefile              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: 4glc.c,v 1.14 2002-01-10 11:38:16 afalout Exp $
+#
+*/
 
 /**
  * @file
@@ -7,7 +35,7 @@
 
 /*
  *
- * $Id: 4glc.c,v 1.13 2002-01-03 21:42:38 saferreira Exp $
+ * $Id: 4glc.c,v 1.14 2002-01-10 11:38:16 afalout Exp $
  */
 
 #include <stdio.h>
@@ -35,7 +63,7 @@ char errbuff[1024] = "";
 int globals_only = 0;
 
 /**
- * It breaks the file name to take the file name without extension and dir name
+ * Breaks the file name to take the file name without extension and dir name
  *
  * @param str The file name 
  * @param str1
@@ -64,7 +92,7 @@ static void bname (char *str, char *str1, char *str2)
 }
 
 /**
- * The starting function.
+ * The main entry point function of 4glc compiler.
  *
  * @param argc The argument count
  * @param argv The argument values
@@ -80,6 +108,10 @@ main (int argc, char *argv[])
   init_states ();
 
   yydebug = 0;
+
+	//load settings from config file(s):
+	build_user_resources();
+
 
   if (argc > 1)
     {
@@ -98,11 +130,6 @@ main (int argc, char *argv[])
 	{
 	  printf ("Yacc Debugging on\n");
 	  yydebug = 1;
-	}
-      else
-	{
-	  //printf ("Yacc debugging off\n");
-	  yydebug = 0;
 	}
 
       strcpy (c, argv[fname_arg_no]);
@@ -126,7 +153,7 @@ main (int argc, char *argv[])
     }
   else
     {
-      printf ("Usage %s filename[.4gl]\n", argv[0]);
+      printf ("Usage %s [-G] filename[.4gl]\n", argv[0]);
       exit (1);
     }
   if (yyin == 0)

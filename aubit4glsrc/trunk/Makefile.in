@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.13 2002-01-09 07:25:47 afalout Exp $
+# $Id: Makefile.in,v 1.14 2002-01-10 11:38:13 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -200,7 +200,9 @@ AUBITVERSION:=$(shell cat $(SOURCE)/tools/project/version)
 AUBITBUILD	:=$(shell cat $(SOURCE)/tools/project/build)
 COMPILEDATE	:=$(shell date +%d-%m-%Y)
 
-
+LD_SO_CONF=/etc/ld.so.conf
+GREP_LD_SO_CONF:=$(shell grep ${INSTALL_DIR}/lib ${LD_SO_CONF})
+GREP_LD_SO_CONF_REMOVE:=$(shell echo "${GREP_LD_SO_CONF}" | sed -e "s/\//\\\\\//g")
 
 ## ==================================================================
 ##                    CVS Settings
@@ -608,13 +610,15 @@ clean.project:
 #FIXME: which files go to TOLIBCUI, when not compiled with GTK?
 #make icons for KDE and GNOME: to IDE, to manual
 
-install: install.core install.example install.manual install.config install.links install.aubitrc
+install: install.core install.example install.manual install.config \
+		install.links install.aubitrc install.libs.conf
 	@echo Aubit compiler installed to $(INSTALL_DIR)
 #platform
 #etc/aubit-auto.spec
 
 install.core: install.tree install.gtk
 	${CP} $(TOBIN) $(INSTALL_DIR)/bin
+	chmod a+x $(INSTALL_DIR)/bin/*
 	$(CP) $(TOROOT) $(INSTALL_DIR)
 	$(CP) $(TOINCL) $(INSTALL_DIR)/incl
 	$(CP) $(TOLIBCUI) $(INSTALL_DIR)/lib
@@ -691,10 +695,23 @@ install.links:
 	${LN_S} $(INSTALL_DIR)/bin/aubit $(PREFIX)/bin/aubit
 	@echo "Links to Aubit compiler installed to $(PREFIX)/bin/ "
 
+install.libs.conf:
+ifeq "${GREP_LD_SO_CONF}" ""
+	echo "$(INSTALL_DIR)/lib" >> ${LD_SO_CONF}
+	@echo "Added $(INSTALL_DIR)/lib entry to ${LD_SO_CONF}."
+	ldconfig
+	@echo "Refreshed ldconfig cache."
+else
+	@echo "${GREP_LD_SO_CONF} entry in ${LD_SO_CONF} already exists."
+endif
+
+
 deinstall:
 #deinstall: installdrop
 #we could just trop the whole $(INSTALL_DIR) tree, but this is not very safe;
 #in the case user placed some files there (stupido!) he will hate us nevertheless
+	-${MAKE} -c $(INSTALL_DIR)/tools/test clean
+	-${MAKE} -c $(INSTALL_DIR)/tools/test/gui clean
 #Core compiler files:
 	${RM} $(INSTALL_DIR)/bin/4glc $(INSTALL_DIR)/bin/4glpc $(INSTALL_DIR)/bin/fcompile \
 		$(INSTALL_DIR)/bin/mcompile $(INSTALL_DIR)/bin/mkmess $(INSTALL_DIR)/bin/amake \
@@ -718,15 +735,25 @@ deinstall:
 	${RM} $(INSTALL_DIR)/etc/odbc.ini.example
 
 #delete this directories only if they are now empty:
-	rmdir $(INSTALL_DIR)/bin
-	rmdir $(INSTALL_DIR)/lib
-	rmdir $(INSTALL_DIR)/etc
-	rmdir $(INSTALL_DIR)/incl
-	rmdir $(INSTALL_DIR)/tools/test/gui
-	rmdir $(INSTALL_DIR)/tools/test
-	rmdir $(INSTALL_DIR)/tools
-	rmdir $(INSTALL_DIR)/docs
-	rmdir $(INSTALL_DIR)
+	-rmdir $(INSTALL_DIR)/bin
+	-rmdir $(INSTALL_DIR)/lib
+	-rmdir $(INSTALL_DIR)/etc
+	-rmdir $(INSTALL_DIR)/incl
+	-rmdir $(INSTALL_DIR)/tools/test/gui
+	-rmdir $(INSTALL_DIR)/tools/test
+	-rmdir $(INSTALL_DIR)/tools
+	-rmdir $(INSTALL_DIR)/docs
+	-rmdir $(INSTALL_DIR)
+#remove entry from library path config file:
+ifeq "${GREP_LD_SO_CONF}" ""
+	@echo "$(INSTALL_DIR)/lib entry in ${LD_SO_CONF} does not exist."
+else
+	sed -e "/${GREP_LD_SO_CONF_REMOVE}/s/${GREP_LD_SO_CONF_REMOVE}//" ${LD_SO_CONF} > /tmp/ld_so_conf.tmp
+	mv /tmp/ld_so_conf.tmp ${LD_SO_CONF}
+	@echo "Removed ${GREP_LD_SO_CONF} entry from ${LD_SO_CONF}."
+	ldconfig
+	@echo "Refreshed ldconfig cache."
+endif
 
 	${RM} $(PREFIX)/bin/aubit-config $(PREFIX)/bin/aubit
 	@echo "Aubit compiler de-installed. Config file in ${AUBITETC} "

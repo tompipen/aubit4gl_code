@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.10 2002-01-09 04:05:10 afalout Exp $
+# $Id: Makefile.in,v 1.11 2002-01-10 11:38:16 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -35,8 +35,13 @@ include ../../incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-4GLPCFLAGS=
-FGLPCEXEC=${SH} ../../bin/4glpc
+#FCOMPILE	=aubit fcompile
+#MKMESS      =aubit mkmess
+FCOMPILE	=../../bin/fcompile
+MKMESS      =../../bin/mkmess
+FGLPCEXEC	=${SH} ../../bin/4glpc
+4GLPCFLAGS	=
+
 
 ifdef COMSPEC
 	ifdef MONOLIT
@@ -106,8 +111,8 @@ filetest: file.4gl
 	${FGLPCEXEC} ${4GLPCFLAGS} file.4gl -o filetest
 
 other:
-	fcompile form.per
-	mkmess helpfile
+	${FCOMPILE} form.per
+	${MKMESS} helpfile
 #FIXME: we don't have any menu examples?
 	@echo Other targets successfully compiled
 
@@ -146,7 +151,7 @@ regression.4gl.q:
 ####### regression-test-per ##########
 
 regression.per:
-	fcompile regression-test-per.per
+	${FCOMPILE} regression-test-per.per
 
 regression.per.4js:
 	fglform regression-test-per.per
@@ -177,7 +182,7 @@ fail.4gl.ifx:
 ####### regression-fails-per ##########
 
 fail.per:
-	fcompile regression-fails-per.per
+	${FCOMPILE} regression-fails-per.per
 
 fail.per.4js:
 	fglform regression-fails-per.per

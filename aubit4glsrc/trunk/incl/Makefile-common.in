@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.3 2002-01-09 04:05:10 afalout Exp $
+# $Id: Makefile-common.in,v 1.4 2002-01-10 11:38:16 afalout Exp $
 #
 
 .EXPORT_ALL_VARIABLES:
@@ -52,12 +52,33 @@ ifeq "$(NOINCL)" "0"
 		A1:=${AUBITRCFILE}
 	endif
 
+
+    #check if now AUBITDIR points to Aubit source tree or not. We will have
+    #${AUBITDIR}/compilers directory only if it points to source code tree:
+	TMP:=$(shell ls ${AUBITDIR}/compilers ${NOERR})
+	ifeq "${AUBITDIR_SRC}" ""
+        AUBITDIR_SRC=0
+    else
+        AUBITDIR_SRC=1
+	endif
+
 	#override AUBITDIR set in bloabal aubitrc, in case it is pointing
 	#to some other location then this source code tree; there is no point
 	#to have AUBITDIR set in any other way then by "configure", when
     #compiling Aibt compiler source code; it can cause bad combination of
     #libraries, and in this place, it may cause completely wron include
     #of aubitrc configured different then we want it while compiling
+
+    #check if this file is included from make file in Aubit source tree or 
+	#not. If we are not, we should not override AUBITDIR
+	#TMP:=$(shell ls ${AUBITDIR}/compilers ${NOERR})
+	#ifeq "${AUBITDIR_SRC}" ""
+    #    AUBITDIR_SRC=0
+    #else
+    #    AUBITDIR_SRC=1
+	#endif
+
+
 	AUBITDIR=${AUBIT_SRC_ROOT}
 
 	ifneq "${AUBITDIR}" ""
@@ -106,6 +127,7 @@ ifeq "$(NOINCL)" "0"
 endif
 
 #in all cases, override AUBITDIR set in any other way then by "configure"
+#for compiling Aubit compiler from source code
 AUBITDIR=${AUBIT_SRC_ROOT}
 
 PATH:=${AUBITDIR}/bin:${PATH}

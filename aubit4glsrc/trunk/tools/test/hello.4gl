@@ -10,7 +10,7 @@ end record
 let axxx=1
 menu "Hello test"
     command "window" "Open a new window"
-	display "Window"
+		#display "Window"
 		open window w1 at 10,30 with 3 rows,20 columns attribute(border)
 		display "   Hello  World   " at 2,2 attribute(cyan,reverse)
         sleep 2
@@ -57,8 +57,6 @@ menu "Hello test"
 			display "MY_TEST = ", env clipped at 4, 5 #6
 
 
-            sleep 3
-
 		{
 			#this DISPLAY will work OK:
 			let env = "something"
@@ -70,11 +68,11 @@ menu "Hello test"
 
 
 	command "exit"
-		display "Exit"
-        	exit menu
+		#display "Exit"
+        exit menu
 end menu
 
-message "Exiting.."
+#message "Exiting.."
 end main
 
 
