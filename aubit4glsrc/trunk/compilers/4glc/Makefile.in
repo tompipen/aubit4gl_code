@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.51 2003-01-06 06:15:30 psterry Exp $
+# $Id: Makefile.in,v 1.52 2003-01-24 08:36:20 afalout Exp $
 #
 
 ROOT		=../..
@@ -76,9 +76,8 @@ endif
 OBJS_LIB		=${CMODS_LIB:.c=.o}
 
 #Use this to create dependency for the parser:
-RULES_SRC_tmp		=$(wildcard rules/*.reqd)
-RULES_SRC_tmp		+=$(wildcard rules/*.rule)
-RULES_SRC			=$(addprefix rules/,$(RULES_SRC_tmp))
+RULES_SRC		=$(wildcard rules/*.reqd) $(wildcard rules/*.rule)
+#RULES_SRC			=$(addprefix rules/,$(RULES_SRC_tmp))
 
 ## ==================================================================
 ##                    Options
@@ -140,7 +139,7 @@ endif
 rules/generated/y.tab.o: ${Y_TAB_C}
 	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I${ROOT}/lib/liblex/lex_c -I.
 
-${Y_TAB_C}:
+${Y_TAB_C}: ${RULES_SRC}
 	${MAKE} -C rules
 
 ../fcompile/form_x.h:

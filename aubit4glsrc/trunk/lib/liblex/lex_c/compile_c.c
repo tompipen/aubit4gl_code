@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.44 2003-01-14 12:43:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.45 2003-01-24 08:36:22 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1562,7 +1562,7 @@ print_pop_variable (char *s)
 
 
 /**
- * Print the C implementation of the call to fgl_getfldbuff() internal 
+ * Print the C implementation of the call to fgl_getfldbuff() internal
  * 4gl function.
  *
  * Called after the parser found a call to getfldbuff() function
@@ -2274,14 +2274,19 @@ print_foreach_end (void)
 /**
  * Print the C implementation of the FREE CURSOR 4gl statement.
  *
- * Not used and do not generate any implementation. 
+ * Not used and do not generate any implementation.
+ *
+ * FIXME: function exists in odbc/sql.c
  *
  * @param c The cursor name.
  */
 void
 print_free_cursor (char *s)
 {
-  printc ("/* FREE CUROSR .. FIXME */\n");
+  printc ("/* FREE CURSOR .. FIXME */\n");
+
+//struct s_cid * A4GLSQL_free_cursor (char *cname)
+
 }
 
 /**
@@ -3523,7 +3528,8 @@ print_clr_form (char *formname, char *clr, char *defs)
   if (formname == 0)
     printc ("clr_form(%d);", atoi (defs));
   else
-    print_niy ("Clear Form fields");
+    //print_niy ("Clear Form fields");
+	printc ("clr_form_fields(%d,%s);", atoi (defs),clr);
 }
 
 /**
@@ -3539,7 +3545,10 @@ print_clr_form (char *formname, char *clr, char *defs)
 void
 print_clr_fields (char *flds, char *defs)
 {
-  print_niy ("Clear Fields");
+
+	printc ("clr_fields(%d,%s);", atoi (defs),flds);
+
+  //print_niy ("Clear Fields");
 }
 
 /**

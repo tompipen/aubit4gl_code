@@ -5,7 +5,7 @@
 #
 # do not put ANY hard coded names here!!!!!
 #
-# $Id: footer.mki,v 1.16 2003-01-21 08:25:51 afalout Exp $
+# $Id: footer.mki,v 1.17 2003-01-24 08:36:21 afalout Exp $
 #############################################################################
 
 ifneq "$(DBASE)" ""
@@ -16,6 +16,27 @@ PROGTYPE  = $(suffix ${PROG})
 
 #for ld to find .aox libs
 export LD_RUN_PATH=${LIBSTORE}
+
+
+#If we did not include rules files for all compilers, we must at least specify
+#extensions for the targets defined in this file, to avoid warning from make:
+# warning: overriding commands for target `xyz'
+
+ifeq "${I4GL_PRG_EXT}" ""
+	I4GL_PRG_EXT=.I4GL_RULES_NOT_INCLUDED
+endif
+ifeq "${A4GL_PRG_EXT}" ""
+	A4GL_PRG_EXT=.A4GL_RULES_NOT_INCLUDED
+endif
+ifeq "${Q4GL_PRG_EXT}" ""
+	Q4GL_PRG_EXT=.Q4GL_RULES_NOT_INCLUDED
+endif
+ifeq "${D4GL_PRG_EXT}" ""
+	D4GL_PRG_EXT=.D4GL_RULES_NOT_INCLUDED
+endif
+
+
+
 
 # =======================================================================
 #       Set options/extensions for compiling a program or library
@@ -29,35 +50,37 @@ ifeq "$(PROGTYPE)" ".lib"
     else
 		#-fPIC will apparently not work on AIX - we should autoconf this file
 		TARGETCMD=ld -fPIC -shared $< -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
+        #$< represents onlyt the FIRST in the dependency list? So how do we use vpath here?
     endif
 
     ifeq "$(POINTTOSTORE)" "1"
 		ADDLIBSTORE=$(LIBSTORE)
     endif
 
-	PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=.42x} #D4GL/4Js p-code
+	PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=${DQ4GL_LIB_EXT}} #D4GL/4Js p-code
 	PROG.42e  = $(ADDLIBSTORE)${PROG:.lib=.42o} #D4GL/4Js c-code
-	PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=.4gx} #I4GL c-code
-	PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=.4go} #I4GL p-code
-	PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=.aox} #aubit
-	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=.qox} #Querix
+	PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=.4cx} #I4GL c-code
+	PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_LIB_EXT}} #I4GL p-code
+	PROG.4ae  = $(ADDLIBSTORE)${PROG:.lib=${A4GL_LIB_EXT}} #aubit
+	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=${Q4GL_LIB_EXT}} #Querix
 
 else
     #we are making a program
 	LIBFLAG=
-    TARGETCMD=${A4GL_CC} -o ${xxEXECSTORE}$@ $< ${A4GL_CC_LDFLAGS} ${LIBFLAG} #--rpath${LIBSTORE} #-L${LIBSTORE}
+	#$< represents onlyt the FIRST in the dependency list? So how do we use vpath here?
+	TARGETCMD=${A4GL_CC} -o ${xxEXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG} #--rpath${LIBSTORE} #-L${LIBSTORE}
 
 	#ifeq "$(EXECSTORE)" ""
     ifeq "$(POINTTOSTORE)" "1"
 		ADDEXECSTORE=${EXECSTORE}
     endif
 
-	PROG.42r  = ${ADDEXECSTORE}${PROG}.42r #D4GL/4Js p-code
+	PROG.42r  = ${ADDEXECSTORE}${PROG}${D4GL_PRG_EXT} #D4GL/4Js p-code
 	PROG.42e  = ${ADDEXECSTORE}${PROG}.42e #D4GL/4Js c-code
 	PROG.4ge  = ${ADDEXECSTORE}${PROG}.4ge #I4GL c-code
-	PROG.4gi  = ${ADDEXECSTORE}${PROG}.4gi #I4GL p-code
-	PROG.4ae  = ${ADDEXECSTORE}${PROG}.4ae #aubit
-	PROG.4qe  = ${ADDEXECSTORE}${PROG}.4qe #Querix
+	PROG.4gi  = ${ADDEXECSTORE}${PROG}${I4GL_PRG_EXT} #I4GL p-code
+	PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_PRG_EXT} #aubit
+	PROG.4qe  = ${ADDEXECSTORE}${PROG}${Q4GL_PRG_EXT} #Querix
 
 endif
 
@@ -69,58 +92,65 @@ endif
 	ifeq "$(POINTTOSTORE)" "1"
 		ADDLIBSTORE=$(LIBSTORE)
 	endif
-	FILES.42x = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=.42x})
-	FILES.4gx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=.4gx})
-	FILES.aox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=.aox})
-	FILES.qox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=.qox})
+	FILES.42x = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${D4GL_LIB_EXT}})
+	FILES.4gx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${I4GL_LIB_EXT}})
+	FILES.aox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_LIB_EXT}})
+	FILES.qox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${Q4GL_LIB_EXT}})
 
 #OBJECTS
 	ifeq "$(POINTTOSTORE)" "1"
 		ADDOBJSTORE=${OBJSTORE}
 	endif
-	FILES.42m = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=.42m})
-	FILES.4go = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=.4go})
-	FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=.ao})
-	FILES.qo  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=.qo})
+	FILES.42m = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${D4GL_OBJ_EXT}})
+	FILES.4go = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${I4GL_OBJ_EXT}})
+	FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${A4GL_OBJ_EXT}})
+	FILES.qo  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${Q4GL_OBJ_EXT}})
 
 #FORMS
 	ifeq "$(POINTTOSTORE)" "1"
 		ADDFORMSTORE=${FORMSTORE}
 	endif
-	FILES.42f = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.42f})
-	FILES.frm = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.frm})
-#	FILES.afr = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.afr})
-	FILES.afr = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.frm.xml})
-	FILES.pic = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=.pic})
+	FILES.42f = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=${D4GL_FRM_EXT}})
+	FILES.frm = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=${I4GL_FRM_EXT}})
+	FILES.afr = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=${A4GL_FRM_EXT}})
+	FILES.pic = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=${Q4GL_FRM_EXT}})
 
 #HELP
 	ifeq "$(POINTTOSTORE)" "1"
 		ADDHELPSTORE=${HELPSTORE}
 	endif
-	FILES.42h = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=.42h})
-	FILES.iem = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=.iem})
-	FILES.hlp = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=.hlp})
-	FILES.qms = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=.qms})
+	FILES.42h = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=${D4GL_HLP_EXT}})
+	FILES.iem = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=${I4GL_HLP_EXT}})
+	FILES.hlp = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=${A4GL_HLP_EXT}})
+	FILES.qms = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=${Q4GL_HLP_EXT}})
 
 # =======================================================================
 #                   Define Clean target settings
 # =======================================================================
 
-DEBRIS.prog = ${PROG.42r} ${PROG.42e} ${PROG.4ge} ${PROG.4gi} ${PROG.4ae}
-DEBRIS.d4gl = 	${FILES.42m} 	${FILES.42h}
-DEBRIS.i4gl = 	${FILES.4go} 	${FILES.iem}
-DEBRIS.aubit = 	${FILES.ao} 	${FILES.hlp}
-DEBRIS.aubit += ${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h} ${FILES.4gl:.4gl=.glb}
+#Program targets:
+DEBRIS.prog 		= ${PROG.42r} ${PROG.42e} ${PROG.4ge} ${PROG.4gi} ${PROG.4ae}
 
+#objects and help files:
+DEBRIS.d4gl 		= 	${FILES.42m} 	${FILES.42h}
+DEBRIS.i4gl 		= 	${FILES.4go} 	${FILES.iem}
+DEBRIS.aubit 		= 	${FILES.ao} 	${FILES.hlp}
 
-DEBRIS.aubit.forms = ${FILES.afr} ${FILES.per:.per=.c}
-DEBRIS.i4gl.forms = ${FILES.frm}
+#C compilers intermediate files
+DEBRIS.aubit 		+= ${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h} ${FILES.4gl:.4gl=.glb}
+
+#Forms
+DEBRIS.aubit.forms 	= ${FILES.afr} ${FILES.per:.per=.c}
+DEBRIS.i4gl.forms 	= ${FILES.frm}
 
 
 ifneq "$(FILES.lib)" ""
 	DEBRIS.aubit.libs =	${LIBSTORE}${FILES.aox}
 	DEBRIS.d4gl.libs =	${LIBSTORE}${FILES.42x}
 endif
+
+#Common rubbish:
+DEBRIS.common 		= *.bak *.err
 
 # =======================================================================
 #                              Targets
@@ -154,6 +184,7 @@ plexus:
 ########################
 #Build C-code program
 ${PROG.4ae}:	${FILES.ao} ${FILES.aox}
+#	@echo FILES.ao = ${FILES.ao}
 	${FAIL_LINK}${TARGETCMD}
 #	@echo CHANGED: $?
 
@@ -263,7 +294,7 @@ clean.target:
 	@echo "All targets deleted"
 
 clean: clean.target
-	@${RM} ${DEBRIS.i4gl} ${DEBRIS.d4gl} ${DEBRIS.aubit}
+	@${RM} ${DEBRIS.i4gl} ${DEBRIS.d4gl} ${DEBRIS.aubit} ${DEBRIS.common}
 	@echo "All intermediate files and target deleted"
 
 clean.most: clean

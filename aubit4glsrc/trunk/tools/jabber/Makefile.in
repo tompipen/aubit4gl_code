@@ -24,8 +24,11 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.8 2002-09-25 05:42:16 afalout Exp $
+# $Id: Makefile.in,v 1.9 2003-01-24 08:36:23 afalout Exp $
 #
+
+ROOT        =../..
+LIBROOT		=${ROOT}/lib
 
 include ../../incl/Makefile-common
 override NOINCL=0
@@ -58,10 +61,10 @@ test_im:
 #lib4glim.o:
 #	${CC} lib4glim.c -c -o $@
 
-
-libIM_JABBER${SO_EXT}: lib4glim.o
+libIM_JABBER${SO_EXT}: ${LIBROOT}/libIM_JABBER${SO_EXT}
+${LIBROOT}/libIM_JABBER${SO_EXT}: lib4glim.o
 	${LD} ${SO_LDFLAGS} -o $@ $^ -liksemel @IKSEMEL_L_FLAGS@
-	${CP} $@ ../../lib
+#	${CP} $@ ../../lib
 
 no_libs:
 	@echo "IksEmEl library was not detected on your system. Stop."

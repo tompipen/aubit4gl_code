@@ -121,6 +121,23 @@ A4GL_PACKER=XML
 #most reserved words, instead of reporting the error.
 A4GL_RESERVEWORDS=NO
 
+############
+#Conversion of SQL statements in 4GL code, to the SQL dialect of target RDBMS
+#Conversion is only done if you set A4GL_SQLCONVERT=YES and only if
+#the dialect used by the program differs from that used by the DBMS
+#interface.
+A4GL_SQLCONVERT=YES
+
+############
+#Declares the SQL dialect of SQL code in 4GL source code.
+#an 4GL directive to change the default SQL dialect at runtime is:
+#       SET SQL DIALECT TO ORACLE
+#by default the system assumes the 4GL application is using Informix SQL
+#syntax, but this can be changed by setting, for example:
+#A4GL_SQLDIALECT=ORACLE
+
+
+
 ## ===================================================================
 ##     Run-time settings for Aubit compiled programs
 ## ===================================================================

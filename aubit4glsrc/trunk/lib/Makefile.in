@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.77 2003-01-21 08:25:52 afalout Exp $
+# $Id: Makefile.in,v 1.78 2003-01-24 08:36:22 afalout Exp $
 #
 
 ROOT    =..
@@ -55,7 +55,9 @@ LIBPACKERPACKED_PATH=libpacker/packed
 LIBPACKERPERL_PATH  =libpacker/perl
 LIBPACKERXDR_PATH   =libpacker/xdr
 LIBPACKERXML_PATH   =libpacker/xml
-
+LIBLEXC_PATH   		=liblex/lex_c
+LIBLEXPERL_PATH   	=liblex/lex_perl
+LIBEXREPORTPDF_PATH =libpdf
 
 #Specify dependencies for libraries, so they get rebuilt if dependencies change:
 #FIXME: do this for all libraries in this make file
@@ -79,6 +81,16 @@ LIBPACKERXDR_DEPS	=$(wildcard ${LIBPACKERXDR_PATH}/*.c) $(wildcard ${LIBPACKERXD
 LIBPACKERXML_DEPS	=$(wildcard ${LIBPACKERXML_PATH}/*.c) $(wildcard ${LIBPACKERXML_PATH}/*.h) \
 					$(wildcard ${LIBPACKERXML_PATH}/Makefile)
 
+
+LIBLEXC_DEPS		=$(wildcard ${LIBLEXC_PATH}/*.c) $(wildcard ${LIBLEXC_PATH}/*.h) \
+					$(wildcard ${LIBLEXC_PATH}/Makefile)
+LIBLEXPERL_DEPS		=$(wildcard ${LIBLEXPERL_PATH}/*.c) $(wildcard ${LIBLEXPERL_PATH}/*.h) \
+					$(wildcard ${LIBLEXPERL_PATH}/Makefile)
+
+LIBEXREPORTPDF_DEPS	=$(wildcard ${LIBEXREPORTPDF_PATH}/*.c) $(wildcard ${LIBEXREPORTPDF_PATH}/*.h) \
+					$(wildcard ${LIBEXREPORTPDF_PATH}/Makefile)
+
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
@@ -99,11 +111,11 @@ libaubit4gl${SO_EXT_LINKABLE} : ${LIBAUBIT4GL_DEPS}
 ##############
 #libLEX_
 
-libLEX_C${SO_EXT}:
-	${MAKE} -C liblex/lex_c
+libLEX_C${SO_EXT}: ${LIBLEXC_DEPS}
+	${MAKE} -C ${LIBLEXC_PATH}
 
-libLEX_PERL${SO_EXT}:
-	${MAKE} -C liblex/lex_perl
+libLEX_PERL${SO_EXT}: ${LIBLEXPERL_DEPS}
+	${MAKE} -C ${LIBLEXPERL_PATH}
 
 ##############
 #libUI_
@@ -144,11 +156,11 @@ libMENU_XDR${SO_EXT} : ${LIBMENUXDR_DEPS}
 ##############
 #libREPORT_
 
-libEXREPORT_PDF${SO_EXT}:
-	${MAKE} -C libpdf $@
+libEXREPORT_PDF${SO_EXT}: ${LIBEXREPORTPDF_DEPS}
+	${MAKE} -C ${LIBEXREPORTPDF_PATH}
 
-libEXREPORT_NOPDF${SO_EXT}:
-	${MAKE} -C libpdf
+libEXREPORT_NOPDF${SO_EXT}: ${LIBEXREPORTPDF_DEPS}
+	${MAKE} -C ${LIBEXREPORTPDF_PATH}
 
 ##############
 #libPACKER_
@@ -308,8 +320,8 @@ clean.other:
 	${MAKE} -C libmsg/msg_native clean
 	${MAKE} -C resource clean
 	${MAKE} -C ${ROOT}/tools/loadmap clean
-	${MAKE} -C liblex/lex_c clean
-	${MAKE} -C liblex/lex_perl clean
+	${MAKE} -C ${LIBLEXC_PATH} clean
+	${MAKE} -C ${LIBLEXPERL_PATH} clean
 	${MAKE} -C libexdata clean
 
 ## ==================================================================

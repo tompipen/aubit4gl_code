@@ -1629,7 +1629,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.3 2003-01-15 11:43:33 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.4 2003-01-24 08:36:21 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3373,3 +3373,214 @@ Again - check the license:
 #
 */
 
+
+======================================================================
+
+
+
+If your putting module level variables before the globals:
+
+The current stratergy (which needs fixing for other reasons) uses an indicator
+in the variable static to mark the end of the globals/start of the module
+level and another for the end of the module level/start of the local level.
+
+This will almost certainly screw up if you don't have them in that order....
+
+
+========================================================================
+
+Hi all
+
+I have committed some major changes to API_sql.c, API_odbc.c and related
+files, to effect the following:
+
+- conversion of SQL syntax from one dialect to another is now handled
+  in API_sql.c  (the interfaces in libsql no longer have to do this )
+
+- conversion is only done if you set A4GL_SQLCONVERT=YES and only if
+  the dialect used by the program differs from that used by the DBMS
+  interface.
+
+- by default the system assumes the 4GL application is using Informix SQL
+  syntax, but this can be changed by setting, for example,
+  A4GL_SQLDIALECT=ORACLE.
+
+- a new function A4GLSQL_set_dialect( ... ) has been added, to allow for
+  a new 4GL directive to change the default SQL dialect at runtime
+  ( syntax still to be implememented - Mike ?)
+  eg.
+      SET SQL DIALECT TO ORACLE
+
+- Sergio, conversion can be automated for the native Postgres interface
+  if you just include the following function :
+
+  char *
+  A4GLSQL_dbms_dialect( void )
+  {
+     return "POSTGRESQL";
+  }
+
+Note - I had to fiddle calldll.c (changed nullfuunc from static) so that
+       I could prevent Aubit from dropping dead if the interface doesn't
+       have the new optional _dbms_xxx functions.
+
+I will continue to expand sqlconvert.c over the next few weeks, and I
+will also look at some kind of user editable conversion config file.
+
+
+NB : MULTIPLE SIMULTANEOUS INTERFACES/CONNECTIONS
+
+I had to change API_sql.c to keep a list of open sessions so that I could
+keep track of what SQL conversions were required. If you look at the code,
+particularly the use of the linked list of sessions - is it possible to
+load more than one interface and include libptr along with the session
+info and get the system to switch dll's on the fly each time you change
+session ?
+
+Philip Sterry
+
+
+=========================================================================
+
+
+
+Just to clarify about Aubit extensions in general;
+
+Aubit 4gl compiler is a programming language translator, meaning, it takes the 4GL source code, and spits out another programming language, currently C or Perl.
+
+Therefore, when using C output (default), extensions normally used by C compiler can be applied, and passed to 4glpc compiler script:
+
+Typically, in C, that would be:
+	4glpc -c module1.4gl -o module1.o
+	4glpc -c module2.4gl -o module2.o
+	4glpc -o program1 module1.o module2.o
+
+...and this will work just fine. Now, there is an issue of distinguishing between Aubit compiled programs and objects, and there are some existing conventions that people coming with experience of other 4gl compilers are aware of, and familiar with. For instance, users if I-4gl, C-compiled compiler, are used to something like:
+
+	4glpc -c module1.4gl -o module1.o
+	4glpc -c module2.4gl -o module2.o
+	4glpc -o program1.4ge module1.o module2.o
+
+(i-4gl c compiled actually outputs .ec, which is compiled by ESQL/C compiler to C, and then with native compiler to .o)
+
+...and this will work just fine. Now, there is an issue of multi-4gl compiler environments, and multi-4gl compiler make files and make rules, like in Aubit's own Amake: not only you want to know which objects are compiled with particular compiler, you _HAVE_ to know, because make rules are _EXTENSIONS_ based. Therefore, to make this environment work, and tools like Amake work, we have to "invent" unique extensions for every compilers, and every file type, even if we don't really need them to compile and rune one program (Good example of this is a executable name, that will compile and run just fine without ANY extension).
+
+Inside Amake, for example, Aubit extensions are defined as:
+
+A4GL_PRG_EXT=.4ae
+A4GL_OBJ_EXT=.ao
+A4GL_FRM_EXT=.afr.xml
+A4GL_HLP_EXT=.hlp
+A4GL_LIB_EXT=.aox
+A4GL_MNU_EXT=.mnu.xml
+
+...in make include file called a4gl.mk. Same file for other compilers are called i4gl.mk, q4gl.mk and d4gl.mk, and contain equivalents for appropriate 4gl compiler.
+
+NOTE: Aubit currently can have different extensions for forms and menus, that are dependent on the output packer used, but that's a different issue)
+
+Same is defined in Aubit compiler and libraries, in file resource.c, as extensions used for compiling (now that 4glc can be used directly to compile objects and programs, instead of invoking it via 4glpc script) and at run-time, for opening form, help, and menu files.
+
+Therefore, while not necessary, it is highly recommended to follow this naming scheme, in which case above commands will become:
+
+	4glpc -c module1.4gl -o module1.ao
+	4glpc -c module2.4gl -o module2.ao
+	4glpc -o program1.4ae module1.ao module2.ao
+
+While this extensions are not enforced, and can even be overridden form aubitrc, it is recommended way to do this.
+
+HTH,
+
+Yours, Andrej Falout, http://falout.org/disclaimer.html
+Project manager, Aubit project: http://aubit4gl.sf.net
+Software architect, MakeTXT.com
+PLEASE NOTE: All HTML email sent to me WILL BE DELETED AUTOMATICALLY WITHOUT READING.
+
+==========================================================================
+
+sh aubit sh 4glpc   P29f.4gl -c -o P29f.ao
+============ FIRST ERROR: ==============
+#                               (1) = Insert voucher & distributions
+#                               (2) = Update voucher & distributions
+#                               (3) = Update distributions only
+#
+database maindb
+
+globals
+   define
+      pr_batch_num like batch.batch_num,
+      pr_ordhead record like ordhead.*, # only uses order_num
+|____________________________________^
+| Error at line 16, character 38
+| ordhead does not exist in the database ()
+      pr_orderline record like orderline.*,
+      pr_voucherdist record like voucherdist.*
+========================================
+See file P29f.err
+make[2]: [P29f.ao] Error 2 (ignored)
+sh aubit sh 4glpc   /opt/aubit/apps/erp/src/common/conv_rate.4gl -c -o conv_rate.ao
+
+
+
+sh aubit sh 4glpc   /opt/aubit/apps/erp/src/common/wshorwin.4gl -c -o wshorwin.ao
+============ FIRST ERROR: ==============
+
+#        wshorwin.4gl - show_mborders
+#                       Ordhead Lookup with attached Inquiry (mbordwin)
+#                       returns order_num
+database maindb
+function show_mborders(cmpy,filter_text)
+   define
+      cmpy like company.cmpy_code,
+      msgresp char(1),
+      pr_ordhead record like ordhead.*,
+|____________________________________^
+| Error at line 11, character 38
+| ordhead does not exist in the database ()
+      pr_customer record like customer.*,
+      pa_ordhead array[800] of record
+========================================
+See file /opt/aubit/apps/erp/src/common/wshorwin.err
+make[2]: [wshorwin.ao] Error 2 (ignored)
+
+
+
+Making library pinqwind.aox using /opt/aubit/apps/erp/src/common/pinqwind.mk
+amake -f /opt/aubit/apps/erp/src/common/pinqwind.mk
+aMaking pinqwind.mk
+make[3]: Entering directory `/opt/aubit/apps/erp/src/common'
+make[3]: -f: No such file or directory
+make[3]: *** No rule to make target `-f'.  Stop.
+make[3]: Leaving directory `/opt/aubit/apps/erp/src/common'
+ERROR: amake failed.
+See .err files generated
+make[2]: *** [pinqwind.aox] Error 1
+make[2]: Leaving directory `/opt/aubit/apps/erp/src/ap'
+ERROR: amake failed.
+make[1]: *** [ap] Error 1
+make[1]: Leaving directory `/opt/aubit/apps/erp'
+
+
+
+
+sh aubit sh 4glpc   psepwind.4gl -c -o psepwind.ao
+============ FIRST ERROR: ==============
+end function
+
+
+function valid_pallet(cmpy,whom,pr_cust_code,pr_ware_code,verbose_ind)
+   define
+      cmpy like company.cmpy_code,
+      whom like maxuser.sign_on_code,
+      pr_cust_code like customer.cust_code,
+      pr_ware_code like location.ware_code,
+      pr_mbparms record like mbparms.*,
+|____________________________________^
+| Error at line 339, character 38
+| mbparms does not exist in the database ()
+      pr_prodstatus record like prodstatus.*,
+      pr_customer record like customer.*,
+========================================
+See file psepwind.err
+make: *** [psepwind.ao] Error 2
+ERROR: amake failed.
+See .err files generated

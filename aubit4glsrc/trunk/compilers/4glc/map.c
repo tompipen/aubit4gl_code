@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.20 2003-01-21 08:25:49 afalout Exp $
+# $Id: map.c,v 1.21 2003-01-24 08:36:20 afalout Exp $
 #*/
 
 /**
@@ -170,9 +170,10 @@ closemap (void)
 
 /**
  * Read and parse the globals file (if found).
- *
+ * FIXME: there is a function called read_glob() in mod.c - ONE OF THEM IS OBSOLETE
  * @param fname The globals file name
  */
+/*
 int
 read_globals (char *fname)
 {
@@ -192,13 +193,14 @@ fin = yyin;
       return -1;
     }
 
-  lex_printc ("/***********************************************************/\n");
+  lex_printc ("// ***********************************************************\n");
   return (yyparse ());
-  lex_printc ("/***********************************************************/\n");
+  lex_printc ("// ***********************************************************\n");
   glob_only = 0;
   yyin = fin;
   return 0;
 }
+*/
 
 /**
  * Remove the quotes from a quoted string.

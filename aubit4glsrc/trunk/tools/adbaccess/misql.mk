@@ -1,6 +1,5 @@
-include ${AUBITDIR}/incl/header.mki
 
-PROG		= misql
+PROG		= adbaccess
 
 #This program is not using GLOBALS statement
 GLOBALS.4gl	= misql.4gl
@@ -24,9 +23,4 @@ FILES.per	= \
 		coxxq01f.per \
 		coxxq01h.per \
 		coxxq01j.per
-
-include ${AUBITDIR}/incl/footer.mki
-
-
-
 

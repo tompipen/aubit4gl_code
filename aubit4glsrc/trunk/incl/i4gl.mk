@@ -1,4 +1,4 @@
-#   @(#)$Id: i4gl.mk,v 1.3 2003-01-04 01:58:30 afalout Exp $
+#   @(#)$Id: i4gl.mk,v 1.4 2003-01-24 08:36:22 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -84,6 +84,13 @@ RM            = rm -f       # Delete files
 
 ###############################################################################
 # Define suffixes which are recognised.
+
+I4GL_PRG_EXT=.4gi
+I4GL_OBJ_EXT=.4go
+I4GL_FRM_EXT=.frm
+I4GL_HLP_EXT=.iem
+I4GL_LIB_EXT=.4gx
+
 I4GL_SUFFIXES = .o .4go .4gl .ec .c .4ge .frm .per .iem .msg .4gi
 .SUFFIXES:	${I4GL_SUFFIXES}
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.46 2003-01-21 08:25:51 afalout Exp $
+# $Id: Makefile-install.mki,v 1.47 2003-01-24 08:36:21 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -379,4 +379,92 @@ winsetup:
 #Setup program should now be at ${AUBITDIR}\etc\Output\setup.exe
 
 #</block for binary install Makefile ===================================>
+
+
+## ==================================================================
+##                    Third-party products installation
+## ==================================================================
+
+#NOTE: settings are in Makefiele-common.in
+
+
+missing.optional: ${INSTALL_MISSING_OPTIONAL}
+	@echo " "
+	@echo "All missing optional components installed. Please re-run 'configure' to detect changes."
+	@echo " "
+
+
+########################
+#Define how to get installation files:
+${IODBC_RUNTIME_RPM}:
+	${WGET} ${IODBC_PATH}/${IODBC_RUNTIME_RPM}
+${IODBC_SDK_RPM}:
+	${WGET} ${IODBC_PATH}/${IODBC_SDK_RPM}
+${IODBC_GUI_RPM}:
+	${WGET} ${IODBC_PATH}/${IODBC_GUI_RPM}
+${PDFLIB_SRC_TGZ}:
+	${WGET} ${PDFLIB_PATH}/${PDFLIB_SRC_TGZ}
+${IKSEMEL_TGZ}:
+	${WGET} ${IKSEMEL_PATH}/${IKSEMEL_TGZ}
+${GRAPHVIZ_RPM}:
+	${WGET} ${GRAPHVIZ_PATH}/${GRAPHVIZ_RPM}
+
+########################
+# Install iODBC ODBC manager
+install.iodbc: ${IODBC_RUNTIME_RPM} ${IODBC_SDK_RPM} ${IODBC_GUI_RPM}
+#Conflicts with unixODBC:
+	-cp /etc/odbc.ini /etc/odbc.ini.${TIME}.bak
+	-cp /etc/odbcinst.ini /etc/odbcinst.ini.${TIME}.bak
+#with unixODBC-devel
+	-cp /usr/include/sql.h /usr/include/sql.h.${TIME}.bak
+	-cp /usr/include/sqlext.h /usr/include/sqlext.h.${TIME}.bak
+	-cp /usr/include/sqltypes.h /usr/include/sqltypes.h.${TIME}.bak
+	${RPM} -i --replacefiles $^
+	@echo " "
+	@echo "Created backup copies of following files, if they existed:"
+	@echo "   /etc/odbc.ini /etc/odbcinst.ini /usr/include/sql.h"
+	@echo "   /usr/include/sqlext.h /usr/include/sqltypes.h"
+	@echo "by adding extension <current_time>.bak to them."
+	@echo "Please review, and edit if appropriate."
+	@echo "Package info & manuals: ${IODBC_INFO}"
+	@echo " "
+	@echo "iODBC ODBC manager installed. Please re-run 'configure' to detect changes."
+	@echo " "
+
+########################
+#Install PDFlib:
+install.pdflib: ${PDFLIB_SRC_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/${PDFLIB_SRC_TGZ}
+	cd /tmp/${PDFLIB_SRC}; ./configure; make; make install
+	@echo "Package info & manuals: ${PDFLIB_INFO}"
+	@echo " "
+	@echo "PDFlib compiled and installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#   - add LIBDIR to the `LD_RUN_PATH' environment variable
+#     during linking
+#   - use the `-Wl,--rpath -Wl,LIBDIR' linker flag
+
+######################
+#Install IksEmEl lib:
+install.iksemel: ${IKSEMEL_TGZ}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/${IKSEMEL_TGZ}
+	cd /tmp/${IKSEMEL_SRC}; ${SH} autogen.sh; ./configure; make; make install
+	@echo "Package info & manuals: ${IKSEMEL_INFO}"
+	@echo " "
+	@echo "IksEmEl compiled and installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+
+######################
+#install GRAPHVIZ that contains Dot tool
+install.dot: ${GRAPHVIZ_RPM}
+	${RPM} -i ${GRAPHVIZ_RPM}
+	@echo "Package info & manuals: ${GRAPHVIZ_INFO}"
+	@echo " "
+	@echo "Graphviz and Dot tool installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+
+# ============================== EOF ================================
 

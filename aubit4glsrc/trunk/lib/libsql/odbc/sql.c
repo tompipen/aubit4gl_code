@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.47 2003-01-17 23:25:25 psterry Exp $
+# $Id: sql.c,v 1.48 2003-01-24 08:36:22 afalout Exp $
 #
 */
 
@@ -1288,7 +1288,7 @@ A4GLSQL_get_sqlerrm (void)
 
 /**
  * Free the resources allocated for a cursor.
- *
+ * FIXME: in free.rule, we still print just FIXME comment...
  * The cursor is found in the pointer tree.
  *
  * @param cname The cursor name.

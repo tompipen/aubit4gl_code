@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.101 2003-01-21 08:25:51 afalout Exp $
+# $Id: Makefile-common.in,v 1.102 2003-01-24 08:36:21 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -628,7 +628,8 @@ endif
 #	on user's rights) or $HOME/.bashrc (? $HOME/.profile), and source this
 #	file as ".$HOME/.bashrc". This should also work immediately.
 #
-ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@
+#/usr/local/lib should alwayys be in there !
+ADD_LD_LIBRARY_PATH=@ADD_LD_LIBRARY_PATH@:/usr/local/lib
 #ADD_LD_LIBRARY_PATH_SPACE=${ADD_LD_LIBRARY_PATH::/=--}
 #ADD_LD_LIBRARY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRARY_PATH} | sed -e "s%:% %g")
 ADD_LD_LIBRARY_PATH_SPACE:=$(shell echo ${ADD_LD_LIBRARY_PATH} |  sed -e "s/:/ /g")
@@ -999,6 +1000,113 @@ SOURCETARNAME		=$(SOURCE)/$(SOURCETARBASENAME)
 DOXY_WWWPATH        =projects/Aubit4GL/doxy
 
 
+
+## ==================================================================
+##                    Third-party products installation settings
+## ==================================================================
+
+WGET				=@WGET@
+RPM					=@RPM@
+TIME                =$(shell date +%H-%M-%S)
+INSTALL_MISSING_OPTIONAL =@INSTALL_MISSING_OPTIONAL@
+
+##################
+#iODBC ODBC manager
+IODBC_INFO          =http://www.iodbc.org
+IODBC_PATH			=http://www.iodbc.org/dist
+#Archive contains Driver Manager Runtime (iODBC Shared Libraries &
+#Template ".odbc.ini" file) in a RPM (release 3.0.6)
+IODBC_RUNTIME_RPM   =libiodbc-3.0.6-2.i386-glibc21.rpm
+#Archive contains Driver Manager Development (iODBC Static Libraries &
+#Header files) in a RPM Package (release 3.0.6)
+IODBC_SDK_RPM       =libiodbc-devel-3.0.6-2.i386-glibc21.rpm
+#Archive contains graphical administrator and plugins in a RPM
+#package (release 3.0.6)
+IODBC_GUI_RPM       =libiodbc-admin-3.0.6-2.i386-glibc21.rpm
+
+
+##################
+#PDF pdflib
+PDFLIB_INFO			=http://www.pdflib.com
+PDFLIB_PATH         =http://www.pdflib.com/pdflib/download
+PDFLIB_SRC          =pdflib-4.0.3
+PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
+#NOTE: Binary packages of PDFlib will require licansing, otherwise they will print
+#stuff on your pages!
+PDFLIB_BIN_TGZ		=pdflib-4.0.3-Linux.tar.gz
+
+##################
+#JABBER eksemel
+IKSEMEL_INFO		=http://iksemel.jabberstudio.org
+IKSEMEL_PATH        =http://files.jabberstudio.org/iksemel
+IKSEMEL_SRC         =iksemel-0.0.1
+IKSEMEL_TGZ         =${IKSEMEL_SRC}.tar.gz
+
+##################
+#swig
+SWIG_INFO           =http://www.swig.org
+
+##################
+#doxygen dot tool, used for drawing dependency graphs - part of Graphviz package
+GRAPHVIZ_INFO		=http://www.research.att.com/sw/tools/graphviz/
+GRAPHVIZ_PATH       =http://www.graphviz.org/pub/graphviz
+GRAPHVIZ_RPM		=graphviz-1.8.10-4.i386.rpm
+
+##################
+#DoxyGen
+DOXYGEN_INFO        =http://www.stack.nl/~dimitri/doxygen/
+
+##################
+#GTK+ - GUI
+GTK_INFO			=http://www.gtk.org/
+
+##################
+#curses - TUI
+CURSES_INFO			=http://www.gnu.org/software/ncurses/ncurses.html
+
+##################
+#Sun RPC - XDR and Sun RPC
+SUNRPC_INFO         =
+
+##################
+#IFX ESQL/C
+IFXESQLC_INFO       =http://www.ibm.com/informix
+
+
+##################
+#IFXODBC
+IFXODBC_INFO        =http://www.ibm.com/informix
+
+
+##################
+#PGODBC
+PGODBC_INFO         =http://www.postgresql.org
+
+##################
+#PG ESQL
+PGESQLC_INFO        =http://www.postgresql.org
+
+
+##################
+#unixODBC
+UNIXODBC_INFO		=http://www.unixodbc.org
+
+##################
+#XML-RPC
+XMLRPC_INFO			=http://xmlrpc-c.sourceforge.net
+
+##################
+#MPZ - gnu mp
+MPZ_INFO            =http://swox.com/gmp
+MPZ_MANUAL			=http://www.gnu.org/manual/gmp/html_mono/gmp.html
+MPZ_PATH            =ftp://mirrors.kernel.org/gnu/gmp
+MPZ_SRC             =gmp-4.1.2
+MPZ_SRC_TGZ			=${MPZ_SRC}/.tar.gz
+
+
+##################
+#SAPODBC
+SAPODBC_INFO        =http://www.sapdb.org
 
 
 #=================================== EOF ================================

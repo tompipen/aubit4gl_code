@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.108 2003-01-22 10:55:25 afalout Exp $
+# $Id: Makefile.in,v 1.109 2003-01-24 08:35:43 afalout Exp $
 #
 
 ## ==================================================================
@@ -682,6 +682,7 @@ help:
 	@echo For more help use:
 	@echo "  make help.options"
 	@echo "  make help.targets"
+	@echo "  make help.optional"
 	@echo
 
 help.targets:
@@ -711,6 +712,19 @@ help.options:
 	@echo "  PREFIX= where to install binaries, default is $PREFIX"
 	@echo
 	@echo
+
+help.optional:
+	@echo
+	@echo "Currently available automatic installation targets:"
+	@echo " missing.optional: Install all options as detected mising by configure"
+	@echo "  This would invoke this targets:"
+	@echo "  ${INSTALL_MISSING_OPTIONAL}"
+	@echo " install.iodbc: Install iODBC ODBC driver manager"
+	@echo " install.pdflib: Install PDF library"
+	@echo " install.iksemel: Install Jabber library"
+	@echo " install.dot: Install DoxyGen Dot tool, part of Graphviz package"
+	@echo
+
 
 
 ## ------------------------------------------------------------------

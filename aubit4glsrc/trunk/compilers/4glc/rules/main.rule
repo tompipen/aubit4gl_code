@@ -188,13 +188,6 @@ char b[256];
 	debug("Reading globals file %s\n",b);
 	rm_quote(b);
 	read_glob(b);
-	/*
-	if (glob_only==0) {
-	         debug("Opening globals file\n");
-	         a=read_globals($<str>1);
-	         debug("Done globals file\n");
-	         }
-	*/
 }
 ;
 

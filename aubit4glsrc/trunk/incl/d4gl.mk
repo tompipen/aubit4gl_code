@@ -1,4 +1,4 @@
-#   @(#)$Id: d4gl.mk,v 1.4 2003-01-17 23:04:05 afalout Exp $
+#   @(#)$Id: d4gl.mk,v 1.5 2003-01-24 08:36:21 afalout Exp $
 #
 #   @(#)$Product: INFORMIX D4GL Programmer's Environment Version 2.00.UC2 (1998-07-31) $
 #
@@ -66,6 +66,16 @@ D4GL_FC         = ${D4GL_FC_CMD} ${D4GL_FC_FLAGS}
 D4GL_MC         = ${D4GL_MC_CMD} ${D4GL_MC_FLAGS}
 D4GL_PA         = ${D4GL_PA_CMD} ${D4GL_PA_FLAGS}
 D4GL_SC         = ${D4GL_SC_CMD} ${D4GL_SC_FLAGS}
+
+
+#######################
+# Define suffixes which are recognised.
+
+D4GL_PRG_EXT=.42r
+D4GL_OBJ_EXT=.42o
+D4GL_FRM_EXT=.42f
+D4GL_HLP_EXT=.42h
+D4GL_LIB_EXT=.42x
 
 D4GL_SUFFIXES = .4gl .per .42f .42e .42o .42r .42m .msg .42h .sch .42x
 

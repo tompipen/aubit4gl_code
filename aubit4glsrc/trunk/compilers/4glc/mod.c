@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.93 2003-01-21 08:25:49 afalout Exp $
+# $Id: mod.c,v 1.94 2003-01-24 08:36:20 afalout Exp $
 #
 */
 
@@ -3301,12 +3301,14 @@ char nocfile[256];
 
 }
 
+
+
 /**
  * Read the gobals file (.glb).
- *
+ * FIXME: there is a function called read_globals() in mod.c - ONE OF THEM IS OBSOLETE
  * @param s The file name (without .glb extension).
  */
-void 
+void
 read_glob (char *s)
 {
 FILE *f;
@@ -3318,6 +3320,13 @@ char pklist[1024];
 
   	strcpy (ii, s);
 	strcat (ii, ".glb");
+   	#ifdef DEBUG
+		/* CRAP! I already have downshifted file name here!!! */
+		debug ("Trying to open globals file %s\n", ii);
+    	fprintf (stderr, "Trying to open globals file %s\n", ii);
+    #endif
+
+
 	f = mja_fopen (ii, "r");
 
 	if (f == 0)
@@ -3352,7 +3361,7 @@ char pklist[1024];
 	#ifdef DEBUG
 		debug ("DBNAME=%s from globals", dbname);
     #endif
-  
+
 	while (!feof (f))
     {
     	fgets (line, 255, f);
@@ -3412,7 +3421,7 @@ char pklist[1024];
 	char ct;
     char cn[256];
     char cv[256];
-      
+
 		fgets (line, 255, f);
 		if (feof (f))
 			break;
@@ -3432,7 +3441,7 @@ char pklist[1024];
 
 /**
  * Upshift a string.
- * 
+ *
  * @param a The string to be upshifted.
  * @return A static buffer with a copy of the string upshifted.
  */
@@ -4439,9 +4448,9 @@ length_expr (struct expr_str * ptr)
 }
 
 
-/** 
+/**
  * This is something internal for Mike?
- *
+ * It's called from main.rule, in function file_name, for GLOBALS file names
  * @param s
  */
 void
@@ -4451,8 +4460,11 @@ tr_glob_fname (char *s)
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '\\')
-	s[a] = '/';
-      s[a] = tolower (s[a]);
+		s[a] = '/';
+
+		#ifdef MIKES_WORKAROUND_FOR_FILES_COPY_FROM_WINDOWS
+			s[a] = tolower (s[a]);
+        #endif
     }
 }
 

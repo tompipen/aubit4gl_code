@@ -82,42 +82,40 @@ ifdef FGLDBPATH
 endif
 
 ####################
-#define compiler dependent extension, fir use in vpath:
-#FIXME: move this is rules files - can't do that, if more then one is included,
-#they would overwrite each other! (?)
+#define compiler dependent extension, for use in vpath:
 ifeq "$(MKTARGET)" "aubit"
-	FRM=.frm.xml
-	OBJ=.4ao
-	PRG=.4ae
-#FIXME:
-	HLP=.msg
-	LIB=.aox
+	FRM=${A4GL_FRM_EXT}
+	OBJ=${A4GL_OBJ_EXT}
+	PRG=${A4GL_PRG_EXT}
+	HLP=${A4GL_HLP_EXT}
+	LIB=${A4GL_LIB_EXT}
+	MENU=${A4GL_MNU_EXT}
+
 endif
 
 ifeq "$(MKTARGET)" "i4gl-pcode"
-	FRM=.frm
-	OBJ=.4go
-	PRG=.4gi
-#FIXME:
-	HLP=.msg
-	LIB=.4gx
+	FRM=${I4GL_FRM_EXT}
+	OBJ=${I4GL_OBJ_EXT}
+	PRG=${I4GL_PRG_EXT}
+	HLP=${I4GL_HLP_EXT}
+	LIB=${I4GL_LIB_EXT}
+
 endif
 
 ifeq "$(MKTARGET)" "d4gl-pcode"
-	FRM=.42f
-	OBJ=.42o
-	PRG=.42r
-#FIXME:
-	HLP=.msg
-	LIB=.42x
+	FRM=${D4GL_FRM_EXT}
+	OBJ=${D4GL_OBJ_EXT}
+	PRG=${D4GL_PRG_EXT}
+	HLP=${D4GL_HLP_EXT}
+	LIB=${D4GL_LIB_EXT}
 endif
 
 ifeq "$(MKTARGET)" "querix"
-	FRM=.pic
-	OBJ=.qo
-	PRG=.4qe
-	HLP=.qms
-	LIB=.qox
+	FRM=${Q4GL_FRM_EXT}
+	OBJ=${Q4GL_OBJ_EXT}
+	PRG=${Q4GL_PRG_EXT}
+	HLP=${Q4GL_HLP_EXT}
+	LIB=${Q4GL_LIB_EXT}
 endif
 
 
