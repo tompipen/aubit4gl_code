@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.13 2002-01-19 09:41:40 afalout Exp $
+# $Id: configure.in,v 1.14 2002-01-20 04:18:41 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -42,8 +42,11 @@ AUBIT_BUILD=`cat tools/project/build`
 
 #AC_INIT([Aubit4gl],[0.2],[aubit4gl-discuss@lists.sourceforge.net])
 AC_INIT([Aubit4gl],[$AUBIT_VERSION.$AUBIT_BUILD],[aubit4gl-discuss@lists.sourceforge.net])
+#location of additional Autoconf files
 AC_CONFIG_AUX_DIR(etc/config)
+#FIXME: what is this?
 AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
+#Location of llobal header to receive "#define xxxxx y" replacements:
 AC_CONFIG_HEADER([incl/config.h])
 
 AC_CANONICAL_SYSTEM
@@ -52,7 +55,7 @@ AC_CANONICAL_SYSTEM
 ##                Define what will get substituted
 ## ==================================================================
 
-AC_SUBST(aubitdir)dnl
+AC_SUBST(aubitdir)
 AC_SUBST(COMPILE_DATE)
 AC_SUBST(AUBIT_VERSION)
 AC_SUBST(AUBIT_BUILD)
@@ -64,36 +67,36 @@ AC_SUBST(IFX_INCLUDE)
 AC_SUBST(IFX_C_MAKE)
 AC_SUBST(INFORMIXDIR)
 
-AC_SUBST(USE_PDF)dnl
-AC_SUBST(PDFBUILD)dnl
-AC_SUBST(A4GL_PDFTYPE)dnl
+AC_SUBST(USE_PDF)
+AC_SUBST(PDFBUILD)
+AC_SUBST(A4GL_PDFTYPE)
 
-AC_SUBST(A4GL_SQLTYPE)dnl
-AC_SUBST(ODBC_LIB_NAME)dnl
+AC_SUBST(A4GL_SQLTYPE)
+AC_SUBST(ODBC_LIB_NAME)
 
-AC_SUBST(HAVE_UNIXODBC)dnl
+AC_SUBST(HAVE_UNIXODBC)
 AC_SUBST(UNIXODBC_INCLUDE)
 AC_SUBST(UNIXODBC_LFLAGS)
 AC_SUBST(UNIXODBC_LIBS)
 
-AC_SUBST(HAVE_IODBC)dnl
+AC_SUBST(HAVE_IODBC)
 AC_SUBST(IODBC_INCLUDE)
 AC_SUBST(IODBC_LFLAGS)
 AC_SUBST(IODBC_LIBS)
 
-AC_SUBST(GTKBUILD)dnl
-AC_SUBST(AUBITGUI)dnl
-AC_SUBST(JABBERBUILD)dnl
-AC_SUBST(PERL)dnl
-AC_SUBST(PERLBUILD)dnl
+AC_SUBST(GTKBUILD)
+AC_SUBST(AUBITGUI)
+AC_SUBST(JABBERBUILD)
+AC_SUBST(PERL)
+AC_SUBST(PERLBUILD)
 
 ## ==================================================================
 ##                             Defaults
 ## ==================================================================
 
 
-#need to do this again, since the earluer one was before initialisation,
-#and will not ger in substitution otherwise:
+#need to do this again, since the earlyer one was before initialisation,
+#and will not get in substitution otherwise:
 AUBIT_VERSION=`cat tools/project/version`
 AUBIT_BUILD=`cat tools/project/build`
 
@@ -117,13 +120,14 @@ AUBIT_DEBUG=1
 case "$target_os" in
 	linux-gnu)
 	    #echo "Linux gnu"
-    	test_rpclib="0"
+        #rpclib is part of clib on Linux
+		test_rpclib="0"
 		;;
 	*linux*)
 	    test_rpclib="0"
 		;;
 	cygwin)
-	    ODBC=odbc32;
+		ODBC=odbc32;
     	ODBCMANAGER=$ODBC;
         ;;
     *)
@@ -167,16 +171,19 @@ AC_PROG_RANLIB
 AC_PROG_AWK
 AC_PATH_PROG(PERL, perl, no)
 AC_PATH_PROG(SWIG, swig, no)
-AC_PATH_PROG(RPCGEN, rpcgen, no)
-AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 AC_PATH_PROG(SH, sh, /bin/sh)
 AC_PATH_PROG(DOXYGEN, doxygen, no)
 AC_PATH_PROG(CVS_CLIENT, cvs, no)
 AC_PATH_PROG(LDD, ldd, no)
 
-AC_CHECK_SIZEOF(long, 8)
-AC_CHECK_SIZEOF(int, 4)
+#FIXME: stop if rpcgen is not found on any platform other then Windows
+AC_PATH_PROG(RPCGEN, rpcgen, no)
+
+#Fixme: set GTKBUILD=no if one of this two is not found, even if libraries
+#are installed
+AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
+AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+
 
 #AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbin /usr/etc /etc /usr/ucblib)
 #if test -n "$PROG_SENDMAIL"; then
@@ -475,6 +482,43 @@ AC_ARG_WITH(pgsql,
 
 
 ## ==================================================================
+##                 Checks for Informix ODBC driver
+## ==================================================================
+
+# FIXME: Replace `main' with a function in `-lxxxx':
+AC_CHECK_LIB([ifxodbc], [main])
+
+if test $ac_cv_lib_ifxodbc_main = yes; then
+	HAVE_IFXODBC=yes
+fi
+
+
+## ==================================================================
+##                 Checks for PostgreSQL ODBC driver
+## ==================================================================
+
+#libpsqlodbc.so
+
+# FIXME: Replace `main' with a function in `-lpsqlodbc':
+AC_CHECK_LIB([psqlodbc], [main])
+
+if test $ac_cv_lib_psqlodbc_main = yes; then
+	HAVE_PGODBC=yes
+fi
+
+#FIXME:
+#warn user to run /usr/share/pgsql/odbc.sql script to add aditional
+# PostgreSQL catalog extensions and functions for ODBC compliance
+#do the same for ODBC managers, if you detect PH database installes
+
+#FIXME:
+#also check for headers, since they are not in PG ODBC RPM, they are
+#in postgresql-devel, including /usr/lib/libpsqlodbc.a (so we don't need 
+#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
+#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
+
+
+## ==================================================================
 ##                 Checks for iODBC ODBC manager support
 ## ==================================================================
 
@@ -736,10 +780,10 @@ then
   # FIXME: Replace `main' with a function in `-lrpclib':
 	AC_CHECK_LIB([rpclib], [main])
 	if test $ac_cv_lib_rpclib_main != yes; then
-		AC_MSG_ERROR(-lrpclib not found. Please install RPC library. Stop.)
+		AC_MSG_ERROR( "librpclib" not found. Please install RPC library. Stop.)
 	fi
-#else
-#  AC_MSG_RESULT([Not checking rpclib because we are in Linux])
+else
+	AC_MSG_RESULT([Not checking rpclib because it's part of clib on Linux])
 fi
 
 ## ==================================================================
@@ -767,10 +811,18 @@ AC_CHECK_LIB([dl], [main])
 # FIXME: Replace `main' with a function in `-lform':
 AC_CHECK_LIB([form], [main])
 # FIXME: Replace `main' with a function in `-lodbc32':
-AC_CHECK_LIB([odbc32], [main])
+#not much point in checking this, it will allways be available on Windows,
+#and does not exist anywhere else:
+#AC_CHECK_LIB([odbc32], [main])
 # FIXME: Replace `main' with a function in `-lpanel':
 AC_CHECK_LIB([panel], [main])
 
+#fixme: check version of curses
+#AIX: Both form and panel h files are part of ncurses. Install it.
+
+
+
+#fixme: stop if we don;t have any of above.
 
 ## ==================================================================
 ##                       Checks for header files
@@ -788,6 +840,10 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 
+AC_CHECK_SIZEOF(long, 8)
+AC_CHECK_SIZEOF(int, 4)
+
+
 ## ==================================================================
 ##                   Checks for library functions
 ## ==================================================================
@@ -799,6 +855,7 @@ AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setenv setlocale socket strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
 
+#Should we check here for rpclib finctions on Linux?
 
 ## ==================================================================
 ##           Define which files we will substitute @xxx@ in
@@ -854,7 +911,7 @@ fi
 echo ""
 echo "Aubit 4gl compiler source code is now configured."
 echo "Execute 'make' to compile it."
-echo "Thank you for using Aubit 4gl."
+echo "Thank you for using Aubit 4gl." s
 echo ""
 
 #------------------------------ EOF --------------------------------

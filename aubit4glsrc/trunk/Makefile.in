@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.19 2002-01-19 09:41:40 afalout Exp $
+# $Id: Makefile.in,v 1.20 2002-01-20 04:18:40 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -370,6 +370,9 @@ FTPLOCATION		=$(WWW)${DIRSEP}projects${DIRSEP}Aubit4GL${DIRSEP}download
 TEMPLATENAME	=aubit4gl-bin-$(OS)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)---template--.${ARCHEXT}
 TEMPLATENAMETXT	=aubit4gl-bin-$(OS)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)---txttemplate--.${ARCHEXT}
 TEMPLATESRC		=aubit4gl-src--template--.${ARCHEXT}
+
+#script (SCP) to use to get html template
+AUTOSFSCPGET	=autosfscpget
 
 TARNAMENOEXT	=aubit4gl-bin-$(OS)-$(ODBCMANAGER)-$(GUITYPE)-$(PDFTYPE)-$(AUBITVERSION)-$(AUBITBUILD)-$(COMPILEDATE)
 TARNAME			=${TARNAMENOEXT}.${ARCHEXT}
@@ -1174,7 +1177,7 @@ endif
 getdlpage:
 	${RM} ${DLTMP1} ${DLTMP2} ${TEMPLATEFILEBASE}
 #	@cp $(TEMPLATEFILE) ${DLTMP1}
-	autosfscpget ${SCPPATH}/${TEMPLATEFILEBASE}
+	${AUTOSFSCPGET} ${SCPPATH}/${TEMPLATEFILEBASE}
 	@if [ -f ${TEMPLATEFILEBASE} ]; then \
 		cp ${TEMPLATEFILEBASE} ${DLTMP1}; \
     else \
@@ -1229,7 +1232,7 @@ endif
 restore.dl.names:
 ifeq "$(USELOCALUPLOAD)" "0"
 	@if ! [ -f ${CYBUILDNAMES} ]; then \
-		autosfscpget ${SCPPATH}/${CYBUILDNAMES}; \
+		${AUTOSFSCPGET} ${SCPPATH}/${CYBUILDNAMES}; \
 	fi
 endif
 	@if [ -f ${CYBUILDNAMES} ]; then \
@@ -1264,7 +1267,7 @@ endif
 cy.restore.dl.names:
 ifeq "$(USELOCALUPLOAD)" "0"
 	@if ! [ -f ${UNIXBUILDNAMES} ]; then \
-		autosfscpget ${SCPPATH}/${UNIXBUILDNAMES}; \
+		${AUTOSFSCPGET} ${SCPPATH}/${UNIXBUILDNAMES}; \
     fi
 #else
 #when USELOCALUPLOAD=1, filename ${UNIXBUILDNAMES} includes path
@@ -1280,7 +1283,7 @@ endif
 cy.restore.src.dl.names:
 ifeq "$(USELOCALUPLOAD)" "0"
 	@if ! [ -f ${UNIXSRCBUILDNAMES} ]; then \
-		autosfscpget ${SCPPATH}/${UNIXSRCBUILDNAMES}; \
+		${AUTOSFSCPGET} ${SCPPATH}/${UNIXSRCBUILDNAMES}; \
     fi
 endif
 	@if [ -f ${UNIXSRCBUILDNAMES} ]; then \
@@ -1292,7 +1295,7 @@ endif
 restore.src.dl.names:
 ifeq "$(USELOCALUPLOAD)" "0"
 	@if ! [ -f ${CYSRCBUILDNAMES} ]; then \
-		autosfscpget ${SCPPATH}/${CYSRCBUILDNAMES} ; \
+		${AUTOSFSCPGET} ${SCPPATH}/${CYSRCBUILDNAMES} ; \
     fi
 endif
 	@if [ -f ${CYSRCBUILDNAMES} ]; then \
@@ -1619,7 +1622,7 @@ settings.common:
 	@echo "LIBCFLAGS       = ${LIBCFLAGS}" >> ${OUT}
 	@echo "LD_LIBRARY_PATH = ${LD_LIBRARY_PATH}" >> ${OUT}
 	@echo -------------------------------------------------- >> ${OUT}
-	@echo COMPILEDATE=$(COMPILEDATE) AUBITVERSION=$(AUBITVERSION) AUBITBUILD=$(AUBITBUILD) OS=$(OS) >> ${OUT}
+	@echo COMPILEDATE=$(COMPILEDATE) AUBITVERSION=$(AUBITVERSION) AUBITBUILD=$(AUBITBUILD) >> ${OUT}
 	@echo AUBITDIR=${AUBITDIR} OS=$(OS) >> ${OUT}
 	@echo -------------------------------------------------- >> ${OUT}
 
