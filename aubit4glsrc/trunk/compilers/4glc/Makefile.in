@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.69 2004-01-23 09:53:23 mikeaubury Exp $
+# $Id: Makefile.in,v 1.70 2004-01-23 13:49:49 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -70,7 +70,7 @@ CMODS_LIB       =\
 				compile.c \
 				dim.c \
 				list.c lexer.c memfile.c ../../lib/generated/std_funcs.c field_handling.c \
-				mod.c map.c variables.c globals.c \
+				mod.c map.c variables.c globals.c lex.c API_lex.c \
 				rules/generated/states.c \
 				rules/generated/kw.c \
                 ${Y_TAB_C} \
@@ -173,6 +173,12 @@ ${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 
 ../fcompile/form_x.h:
 	${MAKE} -C ../fcompile rpc
+
+
+API_lex.c: API_lex.spec
+        ../../lib/bin/dlmagic API_lex.spec > API_lex.c
+        ../../lib/bin/dlmagic  API_lex.spec -h > API_lex.h
+
 
 #${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
 
