@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.21 2004-04-02 09:14:12 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.22 2004-04-05 10:09:42 saferreira Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -172,6 +172,12 @@ void A4GL_do_pause (void)
   UILIB_A4GL_remove_window ("pause");
 }
 
+/**
+ * Convert a curses key to 4gl key.
+ *
+ * @param The code of the curses key.
+ * @return The 4gl code key.
+ */
 static int A4GL_curses_to_aubit_int (int a)
 {
   int b;

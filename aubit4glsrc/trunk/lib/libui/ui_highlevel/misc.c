@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.14 2004-04-02 09:14:11 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.15 2004-04-05 10:09:41 saferreira Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1110,6 +1110,11 @@ A4GL_switch_to_scr_mode (void)
 }
 
 
+/**
+ * This function is called whenever the user hit a key
+ *
+ * @return A value corresponding to the key typed.
+ */
 int
 A4GL_getch_win (void)
 {
