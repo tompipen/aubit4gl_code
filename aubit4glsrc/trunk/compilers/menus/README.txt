@@ -40,14 +40,14 @@ BEFORE SHOW MENU
 
 ON mn_2
 	DISPLAY "Hello World"
-ON mn_3 
+ON mn_3
 	EXIT PROGRAM
 
 END MENUHANDLER
 --------------------------------------------------------------------------------
 
 
-By default menus are loaded from a file called "menu.mnu", you can specify an 
+By default menus are loaded from a file called "menu.mnu", you can specify an
 alternate filename by using  a FROM clause :
 
 	eg. SHOW MENU my_menu USING my_menuhandler FROM "myfile"
@@ -107,8 +107,9 @@ You can also specify an image for an option in addition to the caption :
 Note : At present all images must be in .xpm format
 
 
-Although not fully implemented yet, you can also specify attributes for an 
-option. Currently the only option allowed is 'RIGHT' [not implemented] which will right align the menu item (Often used for Help), although there may be 
+Although not fully implemented yet, you can also specify attributes for an
+option. Currently the only option allowed is 'RIGHT' [not implemented] 
+which will right align the menu item (Often used for Help), although there may be
 others later...
 
 
@@ -133,7 +134,8 @@ END MENU
 
 
 The above example will probably not appear as you'd imagine, the menu is 
-displayed across the screen, what you'd normally have is a File menu, with the options listed as a drop down menu.
+displayed across the screen, what you'd normally have is a File menu, with 
+the options listed as a drop down menu.
 
 This is done using SUBMENUs. These have the same parameters as options :
 
@@ -216,7 +218,7 @@ A complete example :
 
 --------------------------------------------------------------------------------
 MENU file
-		OPTION mn_new    "New" 
+		OPTION mn_new    "New"
 		OPTION mn_open   "Open"
 		OPTION mn_save   "Save"
 		OPTION mn_saveas "Save As"
@@ -229,7 +231,7 @@ MENU mymenu
 
 
 	SUBMENU mn_edit "_Edit"
-		OPTION mn_cut  IMAGE="m1.xpm"  "Cut"  
+		OPTION mn_cut  IMAGE="m1.xpm"  "Cut"
 		OPTION mn_copy Image="Copy.xpm" "Copy"
 		OPTION mn_paste "Pastxxxxxxxxxxxxxxxxxxxxxxxxe"
 		SUBMENU mn_zoom "Zoom"
@@ -260,7 +262,7 @@ In this example - your program could 'SHOW MENU' mymenu or file.
 Handling menu options
 In code, options can be enabled or disabled using
 	ENABLE MENUITEM id
-or 
+or
 	DISABLE MENUITEM id
 
 Note :

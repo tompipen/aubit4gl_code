@@ -1,9 +1,14 @@
 main
 display "STarting"
 menu "WIN Hello test"
-	before menu 
+	before menu
 		hide option "Close Form"
-    	command "Window" "Open a new window"
+
+    command "MH" "Menu handler test"
+        call mh_test()
+
+
+	command "Window" "Open a new window"
 		display "Window"
 		open window w1 at 10,30 with 3 rows,20 columns attribute(border)
 		display "   Hello  World   " at 2,2 attribute(cyan,reverse)
@@ -27,6 +32,30 @@ menu "WIN Hello test"
 		show option "Form"
 
 
+    command "MultiTab"
+
+        call multitab()
+
+    command "Radio form" "Open Radio form in new window"
+        	open window w4 at 2,2 with form "radio" attribute(border)
+
+            menu "Radio form"
+                command "Exit" "Close this window and return to previous menu"
+                    exit menu
+            end menu
+			close window w4
+
+
+    command "Widget form" "Open Widget form in new window"
+        	open window w5 at 2,2 with form "widget" attribute(border)
+
+            menu "Widget form"
+                command "Exit" "Close this window and return to previous menu"
+                    exit menu
+            end menu
+			close window w5
+
+
 	command "Exit" "Exit demo"
 		display "Exit"
         exit menu
@@ -34,5 +63,79 @@ end menu
 
 message "Exiting.."
 end main
+
+
+function multitab()
+
+    menu "MultiTab"
+
+
+    command "As window" "Open Multi tab form in new window"
+        	open window w3 at 2,2 with form "multi" attribute(border)
+
+            menu "MultiTab form"
+                command "Exit" "Close this window and return to previous menu"
+                    exit menu
+            end menu
+			close window w3
+
+
+    command "As form" "Open Multi tab form in existing window (screen)"
+
+			open form f3 from "multi"
+			display form f3
+
+            menu "MultiTab form"
+                command "Exit" "Close this form and return to previous menu"
+                    exit menu
+            end menu
+			close form f3
+            #clear form #NOT IMPLEMENTED ERROR
+            clear window screen
+			clear screen
+            current window is screen
+
+    command "Exit" "Return to previous menu"
+            exit menu
+
+    end menu
+
+
+end function
+
+
+####################
+function mh_test()
+####################
+
+	SHOW MENU my_menu USING my_menuhandler #default = "menu.mnu"
+	#SHOW MENU my_menu USING my_menuhandler FROM "myfile"
+
+#	ENABLE MENUITEM id
+
+#	DISABLE MENUITEM id
+
+
+
+end function
+
+############################
+MENUHANDLER my_menuhandler
+############################
+
+DEFINE testvar char(20)
+
+	BEFORE SHOW MENU
+		ENABLE MENUITEM mn_1 # You can use MENUITEM or MENUITEMS here
+		ENABLE MENUITEMS mn_2,mn_3
+		DISABLE MENUITEM mn_1,mn_3
+		DISABLE MENUITEMS mn_1
+
+	ON mn_2
+		DISPLAY "Hello World"
+	ON mn_3
+		EXIT PROGRAM
+
+END MENUHANDLER
 
 
