@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.17 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: readforms.c,v 1.18 2002-07-13 10:36:31 afalout Exp $
 #*/
 
 /**
@@ -69,10 +69,31 @@
 
 #else
 
+	//prevent form_x.xs.h from including from form_x.x.h
+	#define  _NO_FORM_X_H_
+
     #include "a4gl_lib_form_xdr_int.h"
-    #include "form_x.h"
+    //#include "form_x.h"
+    //#include "../../../common/dataio/form_x.xs.h"
+
+	/* Most of the time we'll want to use the xgen generated .h file - not the rpcgen one */
+	#ifndef USE_XDR_H
+		#include "../../../common/dataio/form_x.x.h"
+	#else
+		#include "../../../common/dataio/form_x.h"
+	#endif
+
+    /* duplicated from a4gl_libaubit4gl.h : */
+		int 	find_srec 			(struct_form * fd, char *name);
+        /* struct struct_scr_field defined in fcompile/form_x.h */
+		int 	has_str_attribute 	(struct struct_scr_field * f, int str);
+		int 	attr_name_match 	(struct struct_scr_field *field, char *s);
+		char *	get_str_attribute 	(struct struct_scr_field *f, int str);
+
+
 
 #endif
+
 
 
 

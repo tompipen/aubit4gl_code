@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.14 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.15 2002-07-13 10:36:31 afalout Exp $
 #*/
 
 /**
@@ -67,8 +67,21 @@
 
 #else
 
-    #include "a4gl_lib_form_xdr_int.h"
-    #include "form_x.h"
+	//prevent form_x.xs.h from including from form_x.x.h
+	#define  _NO_FORM_X_H_
+
+	#include "a4gl_lib_form_xdr_int.h"
+    //#include "form_x.h"
+
+	/* Most of the time we'll want to use the xgen generated .h file - not the rpcgen one */
+	#ifndef USE_XDR_H
+		#include "../../../common/dataio/form_x.x.h"
+	#else
+		#include "../../../common/dataio/form_x.h"
+	#endif
+
+    /* duplicated from a4gl_libaubit4gl.h : */
+		int 	has_str_attribute 	(struct struct_scr_field * f, int str);
 
 #endif
 
@@ -120,6 +133,7 @@ static void real_set_field (char *s, struct struct_scr_field *f);
 static void real_add_str_attr(struct struct_scr_field *f,int type,char *str);
 static void real_add_bool_attr(struct struct_scr_field *f,int type);
 static int real_isolated_xdr_struct_form( XDR *xdrp, struct struct_form *the_form);
+int isolated_xdr_struct_form( void* xdrp, void* the_form);
 
 
 /*

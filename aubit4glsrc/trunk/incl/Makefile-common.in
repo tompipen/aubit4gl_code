@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.51 2002-07-13 05:31:52 afalout Exp $
+# $Id: Makefile-common.in,v 1.52 2002-07-13 10:36:16 afalout Exp $
 #
 
 #If we later need to know if this makefile was included or not:
@@ -69,19 +69,7 @@ ifeq "$(NOINCL)" "0"
 		A1:=${AUBITRCFILE}
 	endif
 
-
-    #check if now AUBITDIR points to Aubit source tree or not. We will have
-    #${AUBITDIR}/compilers directory only if it points to source code tree:
-	TMP:=$(shell ls ${AUBITDIR}/compilers ${NOERR})
-	ifeq "${AUBITDIR_SRC}" ""
-        AUBITDIR_SRC=0
-    else
-        AUBITDIR_SRC=1
-	endif
-
-    export AUBITDIR_SRC
-
-	#override AUBITDIR set in bloabal aubitrc, in case it is pointing
+	#override AUBITDIR set in gloabal aubitrc, in case it is pointing
 	#to some other location then this source code tree; there is no point
 	#to have AUBITDIR set in any other way then by "configure", when
     #compiling Aibt compiler source code; it can cause bad combination of
@@ -129,6 +117,20 @@ ifeq "$(NOINCL)" "0"
 		#	A4:=${AUBITRCFILE}
 	    #endif
 
+    #check if now AUBITDIR points to Aubit source tree or not. We will have
+    #${AUBITDIR}/compilers directory only if it points to source code tree:
+	TMP:=$(shell ls ${AUBITDIR}/compilers ${NOERR})
+	ifeq "${TMP}" ""
+        AUBITDIR_SRC=0
+    else
+        AUBITDIR_SRC=1
+		C_DFLAGS        +=-DSRC_TREE
+	endif
+
+    export AUBITDIR_SRC
+
+	#C_DFLAGS        +=xx${AUBITDIR}xx
+	#C_DFLAGS        +=xx${AUBITDIR_SRC}xx
 
 	AUBITRCFILE:=$(shell ls ~/.aubit4gl/aubitrc ${NOERR})
 	ifneq "${AUBITRCFILE}" ""
@@ -230,7 +232,7 @@ NON_PEDANTIC_OK		=1
 #cannot use -pedantic, too much warnings
 CWARN               =-Wall -Wredundant-decls -Wmissing-declarations -Wmissing-prototypes -Wstrict-prototypes
 C_IFLAGS            =-I/usr/local/include
-C_DFLAGS            =-DDEBUG
+C_DFLAGS			+=-DDEBUG
 
 #This can be ovverriden from command line: "make OLD_INCL=0" to compile
 #with new include files:
@@ -240,6 +242,7 @@ export OLD_INCL
 ifeq "${OLD_INCL}" "1"
 	C_IFLAGS        +=-I$(AUBITDIR)/incl -I$(AUBITDIR)/lib/libincl -I$(AUBITDIR)/compilers/fcompile
 	C_DFLAGS        +=-DOLD_INCL
+	C_DFLAGS        +=-DSRC_TREE
 else
 	C_IFLAGS        +=-I$(AUBITDIR)/incl
 endif

@@ -1436,8 +1436,9 @@ So it will be included only in gui.c
 
 	int 	net_keyval			(char *v);
 	void 	convupper			(char *s);
-    #ifndef _NO_FORM_X_H_
+    #ifndef _NO_FORM_X_H_ /* if we don't include form_x.h, this would generate errors : */
 		int 	find_srec 			(struct_form * fd, char *name);
+        /* struct struct_scr_field defined in fcompile/form_x.h */
 		int 	has_str_attribute 	(struct struct_scr_field * f, int str);
 		int 	attr_name_match 	(struct struct_scr_field *field, char *s);
 		char *	get_str_attribute 	(struct struct_scr_field *f, int str);
@@ -1766,15 +1767,15 @@ So it will be included only in gui.c
 
 
 
-    	struct s_form_dets
+    	struct s_form_dets /* taken from a4gl_dbform.h */
 	  {
 	/* this was just
 		struct_form *fileform;
 		and it worked on Linux, but not on CygWin...??????
 	*/
-	    #ifndef _NO_FORM_X_H_
+	    /* #ifndef _NO_FORM_X_H_ what was this about??? */
 			struct struct_form *fileform;
-        #endif
+        /* #endif */
 	    struct s_form_attr form_details;
 	    void *form;
 	    int fields_cnt;
@@ -1782,8 +1783,6 @@ So it will be included only in gui.c
 	    void *form_fields[1024];
 	    void *currentfield;
 	  };
-
-
 
 	int     read_metrics 		(struct s_form_dets * formdets);
 	int     read_fields 		(struct s_form_dets * formdets);

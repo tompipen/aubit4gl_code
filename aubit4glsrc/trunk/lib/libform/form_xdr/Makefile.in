@@ -24,11 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-07-11 09:22:44 mikeaubury Exp $
+# $Id: Makefile.in,v 1.6 2002-07-13 10:36:31 afalout Exp $
 #
 
+ROOT		=../../..
+LIBROOT     =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 override NOINCL=0
 
 ## ==================================================================
@@ -36,7 +39,7 @@ override NOINCL=0
 ## ==================================================================
 
 #require XDR frunctions, part of Sun RPClib:
-CMODS_FORM_XDR		=../../../compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
+CMODS_FORM_XDR		=${ROOT}/compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
 OBJS_FORM_XDR      =${CMODS_FORM_XDR:.c=.o}
 
 ## ==================================================================
@@ -57,7 +60,7 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/fcompile -I../../libincl ${CFLAGS} -I../../common/dataio
+CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile -I${LIBROOT}/libincl ${CFLAGS} -I${ROOT}/common/dataio
 
 ## RPC type and XDR are not the same thing. RPC type represents Remote
 #Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
@@ -78,16 +81,16 @@ note:
 
 libFORM_XDR.so : ${OBJS_FORM_XDR}
 	${LD} ${SO_LDFLAGS} ${RPCLIB_NAME} -o $@ $^
-	${CP} $@ ../..
+	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
 .PHONY : dllFORM_XDR
-dllFORM_XDR : ${CMODS_FORM_XDR}  ../compilers/fcompile/form_x.h
-	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I../compilers/fcompile -I../incl"
-	${CP} libFORM_XDR.dll ../..
+dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
+	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
+	${CP} libFORM_XDR.dll ${LIBROOT}
 
 
 ## ==================================================================
@@ -97,16 +100,16 @@ dllFORM_XDR : ${CMODS_FORM_XDR}  ../compilers/fcompile/form_x.h
 ci: $(CMODS)
 	ci -l  $^
 
-../../../compilers/fcompile/form_x_xdr.c  ../../../compilers/fcompile/form_x.h:
-	${MAKE} -C ../../../compilers/fcompile rpc
+${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
 
 #error.c : generated/tmperrs.h
-#array.o: array.c ../compilers/fcompile/form_x_xdr.c
-#builtin.c: ../compilers/fcompile/form_x.h
+#array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
+#builtin.c: ${ROOT}/compilers/fcompile/form_x.h
 
 ## ==================================================================
 ##                        Clean Targets
