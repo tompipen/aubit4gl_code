@@ -1,5 +1,5 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-static char *module_id="$Id: binding.c,v 1.33 2004-10-26 12:34:03 mikeaubury Exp $";
+static char *module_id="$Id: binding.c,v 1.34 2004-11-05 15:12:14 mikeaubury Exp $";
 
 extern int ibindcnt;
 extern int obindcnt;
@@ -575,10 +575,10 @@ static char buff_ind[255];
 	  sprintf (buff,"date _vi_%d;", a);
 	  break;
 	case 8:
-	  if (A4GL_isyes(acl_getenv("MONEY_AS_MONEY"))) {
+	  if (A4GLSQLCV_check_requirement("MONEY_AS_MONEY")) {
 	  	sprintf (buff,"money _vi_%d;", a);
 	  } else {
-	  	if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
+	  	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
 	  		sprintf (buff,"decimal(%s) _vi_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
 		} else {
 	  		sprintf (buff,"money(%s) _vi_%d;", decode_decimal_size_as_string(ibind[a].dtype),a);
@@ -642,10 +642,10 @@ static char buff_ind[255];
 	  sprintf (buff,"date _vo_%d;", a);
 	  break;
 	case 8:
-	  if (A4GL_isyes(acl_getenv("MONEY_AS_MONEY"))) {
+	  if (A4GLSQLCV_check_requirement("MONEY_AS_MONEY")) {
 	  	sprintf (buff,"money _vo_%d;", a);
 	  } else {
-	  	if (A4GL_isyes(acl_getenv("MONEY_AS_DECIMAL"))) {
+	  	if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
 	  		sprintf (buff,"decimal(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype), a);
 		} else {
 	  		sprintf (buff,"money(%s) _vo_%d;", decode_decimal_size_as_string(obind[a].dtype),a);

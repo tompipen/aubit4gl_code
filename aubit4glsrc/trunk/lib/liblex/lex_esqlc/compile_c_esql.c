@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.92 2004-10-28 22:05:01 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.93 2004-11-05 15:12:14 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.92 2004-10-28 22:05:01 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.93 2004-11-05 15:12:14 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -206,7 +206,7 @@ print_close (char type, char *name)
       printc ("A4GL_remove_window(%s);\n", name);
       break;
     case 'D':
-	if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
+	if (A4GLSQLCV_check_requirement("USE_DATABASE_STMT")) {
   	 	A4GL_save_sql("CLOSE DATABASE",0);
       		printc ("\nEXEC SQL CLOSE DATABASE;\n");
 	} else {
@@ -455,7 +455,7 @@ print_put (char *xcname,char *putvals)
 A4GL_save_sql("PUT %s",cname);
   printc ("\nEXEC SQL PUT %s /* '%s' */\n", cname,putvals);
 
-  if (A4GL_isyes(acl_getenv("USE_BINDING_FOR_PUT"))==0) {
+  if (A4GLSQLCV_check_requirement("USE_BINDING_FOR_PUT")==0) {
 
   	if (strlen(putvals)) {
 		printc("FROM %s",putvals);
@@ -931,7 +931,7 @@ void
 print_init_conn (char *db)
 {
 
-if (A4GL_isyes(acl_getenv("USE_DATABASE_STMT"))) {
+if (A4GLSQLCV_check_requirement("USE_DATABASE_STMT")) {
   if (db == 0) {
       printc ("{");
       printc ("\nEXEC SQL BEGIN DECLARE SECTION /*2*/;\n");
@@ -1305,7 +1305,7 @@ char filename[256];
 char delim_s[256];
 if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
 
-  if (A4GL_isyes(acl_getenv("ESQL_UNLOAD"))) {
+  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD")) {
 	int ni;
 		printc("{");
   		ni = print_bind_definition ('i');
@@ -1394,7 +1394,7 @@ char filename[256];
 char delim_s[256];
 if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { sprintf(delim_s,":%s",delim); }
 
-  if (A4GL_isyes(acl_getenv("ESQL_UNLOAD"))) {
+  if (A4GLSQLCV_check_requirement("ESQL_UNLOAD")) {
 			if (file[0]=='"') { 
 				sprintf(filename,"'%s'",A4GL_strip_quotes(file)); 
 			} else {

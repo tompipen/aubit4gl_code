@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.188 2004-11-04 21:20:09 pjfalbe Exp $
+# $Id: compile_c.c,v 1.189 2004-11-05 15:12:14 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.188 2004-11-04 21:20:09 pjfalbe Exp $";
+static char *module_id="$Id: compile_c.c,v 1.189 2004-11-05 15:12:14 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -5465,7 +5465,7 @@ print_execute_immediate (char *stmt)
 {
   static int cnt = 0;
   char buff[256];
-  if (A4GL_isyes (acl_getenv ("FAKE_IMMEDIATE")) || !doing_esql ())
+  if (A4GLSQLCV_check_requirement ("FAKE_IMMEDIATE") || !doing_esql ())
     {
       sprintf (buff, "\"p_%d_%lx\"", cnt++, time (0));
       print_prepare (buff, stmt);
@@ -5475,7 +5475,7 @@ print_execute_immediate (char *stmt)
     {
       if (stmt[0] == '"')
 	{
-	  printc ("$execute immediate %s;", stmt);
+	  printc ("EXEC SQL EXECUTE IMMEDIATE %s;", stmt);
 	}
       else
 	{
@@ -5484,7 +5484,7 @@ print_execute_immediate (char *stmt)
 	  printc ("char *acl_ei_s;");
 	  printc ("EXEC SQL END DECLARE SECTION;");
 	  printc ("acl_ei_s=%s;", stmt);
-	  printc ("$execute immediate :acl_ei_s;");
+	  printc ("EXEC SQL EXECUTE IMMEDIATE :acl_ei_s;");
 	  printc ("}");
 	}
     }

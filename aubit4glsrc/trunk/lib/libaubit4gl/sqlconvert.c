@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.24 2004-11-03 14:34:28 pjfalbe Exp $
+# $Id: sqlconvert.c,v 1.25 2004-11-05 15:11:03 mikeaubury Exp $
 #
 */
 
@@ -68,6 +68,7 @@ char *cvsql_names[]={
   "CVSQL_COLUMN_ALIAS_AS",
   "CVSQL_ANSI_UPDATE",
   "CVSQL_MONEY_AS_DECIMAL",
+  "CVSQL_MONEY_AS_MONEY",
   "CVSQL_SQL_CURRENT_FUNCTION",
   "CVSQL_STRIP_ORDER_BY_INTO_TEMP",
   "CVSQL_ADD_CASCADE",
@@ -80,9 +81,12 @@ char *cvsql_names[]={
   "CVSQL_CONSTRAINT_NAME_BEFORE",
   "CVSQL_CONSTRAINT_NAME_AFTER",
   "CVSQL_USE_INDICATOR",
+  "CVSQL_USE_DATABASE_STMT",
+  "CVSQL_USE_BINDING_FOR_PUT",
   "CVSQL_IGNORE_CLOSE_ERROR",
   "CVSQL_OMIT_INDEX_CLUSTER",
   "CVSQL_OMIT_INDEX_ORDER",
+  "CVSQL_ESQL_UNLOAD",
   "CVSQL_ESQL_UNLOAD_FULL_PATH",
   "CVSQL_ESQL_AFTER_INSERT",
   "CVSQL_ESQL_AFTER_UPDATE",
@@ -95,6 +99,7 @@ char *cvsql_names[]={
   "CVSQL_SIMPLE_GRANT_SELECT",
   "CVSQL_RENAME_TABLE_AS_ALTER_TABLE",
   "CVSQL_RENAME_COLUMN_AS_ALTER_TABLE",
+  "CVSQL_FAKE_IMMEDIATE",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -123,6 +128,7 @@ enum cvsql_type
   CVSQL_COLUMN_ALIAS_AS,
   CVSQL_ANSI_UPDATE,
   CVSQL_MONEY_AS_DECIMAL,
+  CVSQL_MONEY_AS_MONEY,
   CVSQL_SQL_CURRENT_FUNCTION,
   CVSQL_STRIP_ORDER_BY_INTO_TEMP,
   CVSQL_ADD_CASCADE,
@@ -135,9 +141,12 @@ enum cvsql_type
   CVSQL_CONSTRAINT_NAME_BEFORE,
   CVSQL_CONSTRAINT_NAME_AFTER,
   CVSQL_USE_INDICATOR,
+  CVSQL_USE_DATABASE_STMT,
+  CVSQL_USE_BINDING_FOR_PUT,
   CVSQL_IGNORE_CLOSE_ERROR,
   CVSQL_OMIT_INDEX_CLUSTER,
   CVSQL_OMIT_INDEX_ORDER,
+  CVSQL_ESQL_UNLOAD,
   CVSQL_ESQL_UNLOAD_FULL_PATH,
   CVSQL_ESQL_AFTER_INSERT,
   CVSQL_ESQL_AFTER_UPDATE,
@@ -150,6 +159,7 @@ enum cvsql_type
   CVSQL_SIMPLE_GRANT_SELECT,
   CVSQL_RENAME_TABLE_AS_ALTER_TABLE,
   CVSQL_RENAME_COLUMN_AS_ALTER_TABLE,
+  CVSQL_FAKE_IMMEDIATE,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -685,6 +695,7 @@ int A4GL_cv_str_to_func (char *p, int len)
     return CVSQL_ANSI_UPDATE;
 
   if (strncasecmp (p, "MONEY_AS_DECIMAL", len) == 0) return CVSQL_MONEY_AS_DECIMAL;
+  if (strncasecmp (p, "MONEY_AS_MONEY", len) == 0) return CVSQL_MONEY_AS_MONEY;
   if (strncasecmp (p, "SQL_CURRENT_FUNCTION", len) == 0) return CVSQL_SQL_CURRENT_FUNCTION;
   if (strncasecmp (p, "STRIP_ORDER_BY_INTO_TEMP", len) == 0) return CVSQL_STRIP_ORDER_BY_INTO_TEMP;
   if (strncasecmp (p, "ADD_CASCADE", len) == 0) return CVSQL_ADD_CASCADE;
@@ -697,10 +708,13 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "CONSTRAINT_NAME_BEFORE", len) == 0) return CVSQL_CONSTRAINT_NAME_BEFORE;
   if (strncasecmp (p, "CONSTRAINT_NAME_AFTER", len) == 0) return CVSQL_CONSTRAINT_NAME_AFTER;
   if (strncasecmp (p, "USE_INDICATOR", len) == 0) return CVSQL_USE_INDICATOR;
+  if (strncasecmp (p, "USE_DATABASE_STMT", len) == 0) return CVSQL_USE_DATABASE_STMT;
+  if (strncasecmp (p, "USE_BINDING_FOR_PUT", len) == 0) return CVSQL_USE_BINDING_FOR_PUT;
   if (strncasecmp (p, "IGNORE_CLOSE_ERROR", len) == 0) return CVSQL_IGNORE_CLOSE_ERROR;
   if (strncasecmp (p, "OMIT_INDEX_CLUSTER", len) == 0) return CVSQL_OMIT_INDEX_CLUSTER;
   if (strncasecmp (p, "OMIT_INDEX_ORDER", len) == 0) return CVSQL_OMIT_INDEX_ORDER;
 
+  if (strncasecmp (p, "ESQL_UNLOAD", len) == 0) return CVSQL_ESQL_UNLOAD;
   if (strncasecmp (p, "ESQL_UNLOAD_FULL_PATH", len) == 0) return CVSQL_ESQL_UNLOAD_FULL_PATH;
   if (strncasecmp (p, "ESQL_AFTER_INSERT", len) == 0) return CVSQL_ESQL_AFTER_INSERT;
   if (strncasecmp (p, "ESQL_AFTER_UPDATE", len) == 0) return CVSQL_ESQL_AFTER_UPDATE;
@@ -714,6 +728,7 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "SIMPLE_GRANT_SELECT", len) == 0) return CVSQL_SIMPLE_GRANT_SELECT;
   if (strncasecmp (p, "RENAME_TABLE_AS_ALTER_TABLE", len) == 0) return CVSQL_RENAME_TABLE_AS_ALTER_TABLE;
   if (strncasecmp (p, "RENAME_COLUMN_AS_ALTER_TABLE", len) == 0) return CVSQL_RENAME_COLUMN_AS_ALTER_TABLE;
+  if (strncasecmp (p, "FAKE_IMMEDIATE", len) == 0) return CVSQL_FAKE_IMMEDIATE;
   //if (strncasecmp (p, "", len) == 0) return CVSQL_;
 
 
