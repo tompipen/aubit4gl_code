@@ -173,10 +173,24 @@ int special_cmd(struct cmd *c) {
 			return 1;
 	}
 
+	if (c->cmd_type==CMD_PUSH_OP) {
+			A4GL_debug("Push op : %x\n",c->cmd_u.c_push_op);
+			A4GL_pushop(c->cmd_u.c_push_op);
+			return 1;
+	}
+
 	if (c->cmd_type==CMD_PUSH_CHAR) {
 			A4GL_push_char(this_module.string_table.string_table_val[c->cmd_u.c_push_char].s);
 			return 1;
 	}
+
+        if (c->cmd_type==CMD_ECALL) {
+                A4GL_pcode_ecall(this_module.string_table.string_table_val[c->cmd_u.c_ecall->func_id].s,
+				c->cmd_u.c_ecall->ln,
+				c->cmd_u.c_ecall->nparam);
+		return 1;
+        }
+
 
 	if (c->cmd_type==CMD_CLR_ERR) {
 			aclfgli_clr_err_flg();
@@ -187,7 +201,14 @@ int special_cmd(struct cmd *c) {
 			A4GL_chk_err(c->cmd_u.c_chk_err_lineno,this_module.module_name);
 			return 1;
 	}
+
+	if (c->cmd_type==CMD_SET_STAT) {
+			A4GLSQL_set_status(c->cmd_u.c_setval,0);
+			return 1;
+	}
+
 	if (c->cmd_type==CMD_ERRCHK) {
+			A4GL_debug("LINE : %d\n",c->cmd_u.c_errchk->line);
 			// error checking...
 			return 1;
 	}

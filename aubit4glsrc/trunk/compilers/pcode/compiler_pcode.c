@@ -193,6 +193,14 @@ new_command (enum cmd_type cmd_type, void *ptr)
       CURRENT_CMD.cmd_u.c_push_op = (int) ptr;
       break;
 
+    case CMD_SET_STAT:
+      CURRENT_CMD.cmd_u.c_setval = (int) ptr;
+      break;
+
+    case CMD_ECALL:
+      CURRENT_CMD.cmd_u.c_ecall = (struct ecall *) ptr;
+      break;
+
     case CMD_PUSH_CHAR:
       CURRENT_CMD.cmd_u.c_push_char = (int) ptr;
       break;
@@ -463,9 +471,31 @@ long add_push_long(int n) {
   return new_command (CMD_PUSH_LONG, (void *)n);
 }
 
+long add_ecall(char *s,int a,int b) {
+  struct ecall *xptr;
+  char *ptr;
+        char *eptr;
+	xptr=malloc(sizeof(struct ecall));
+        ptr=strdup(&s[1]);
+        eptr=&ptr[strlen(ptr)-1];
+        *eptr=0;
+
+	xptr->func_id=add_string(ptr);
+	xptr->ln=a;
+	xptr->nparam=b;
+  return new_command (CMD_ECALL, (void *)xptr);
+}
+
+
+
+long add_set_stat(int a) {
+  struct ecall *ptr;
+  return new_command (CMD_SET_STAT, a);
+}
+
 long add_push_op(char *n) {
   int ni;
-  ni=-1;
+  ni=atoi(n);
   return new_command (CMD_PUSH_OP, ni);
 }
 

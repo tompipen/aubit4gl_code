@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.16 2003-11-18 21:26:51 afalout Exp $
+# $Id: Makefile,v 1.17 2004-05-13 17:56:28 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -38,7 +38,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS			=-Wall -O2 -g
+CFLAGS			=-Wall  -g
 
 ifneq "${COMSPEC}" ""
 	#for features.h

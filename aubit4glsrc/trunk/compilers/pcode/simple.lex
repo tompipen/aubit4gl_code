@@ -91,10 +91,12 @@ void count();
 "REPORT_PAGETRAILER" 		{strcpy(yytext,"-14"); count(); return CONSTANT;}
 "REPORT_TERMINATE" 		{strcpy(yytext,"-9999"); count(); return CONSTANT;}
 
-"A4GL_pushop"	{if (use_4gl_kw) return KW_A_PUSH_OP; else REJECT;}
+"ECALL"			{if (use_4gl_kw) return KW_A_ECALL; else REJECT;}
+"A4GL_pushop"		{if (use_4gl_kw) return KW_A_PUSH_OP; else REJECT;}
+"A4GLSQL_set_status"	{if (use_4gl_kw) return KW_A_SET_STAT; else REJECT;}
 "A4GL_push_long"	{if (use_4gl_kw) return KW_A_PUSH_LONG; else REJECT;}
 "A4GL_push_int"		{if (use_4gl_kw) return KW_A_PUSH_INT; else REJECT;}
-"A4GL_push_char"	{if (use_4gl_kw) return KW_A_PUSH_CHAR; else REJECT;}
+"xxxA4GL_push_char"	{if (use_4gl_kw) return KW_A_PUSH_CHAR; else REJECT;}
 "A4GL_chk_err"		{if (use_4gl_kw) return KW_A_CHK_ERR; else REJECT;}
 "aclfgli_clr_err_flg"	{if (use_4gl_kw) return KW_A_CLR_ERR; else REJECT;}
 "ERRCHK"	{if (use_4gl_kw) return KW_A_ERRCHK; else REJECT;}

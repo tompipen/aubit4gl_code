@@ -274,6 +274,11 @@ print_command (long func_id, long pc, struct cmd *cmd)
     case CMD_CLR_ERR:
 	print_clr_err();
 	break;
+
+    case CMD_ECALL :
+	print_ecall(cmd->cmd_u.c_ecall);
+  	break;
+
     case CMD_ERRCHK:
 	print_errchk(cmd->cmd_u.c_errchk);
 	break;
@@ -281,12 +286,25 @@ print_command (long func_id, long pc, struct cmd *cmd)
     case CMD_NULL:
       fprintf (stderr, "NULL COMMAND - SHOULDN'T HAPPEN\n");
       exit (2);
+   case CMD_SET_STAT:
+	print_set_stat(cmd->cmd_u.c_setval);
+	break;
+
+    default: 
+		printf("Unknown command : %d\n",cmd->cmd_type);
+		exit(2);
     }
 
   printf ("\n");
 
 }
 
+print_ecall(struct ecall *e) {
+	printf("ECALL %d %d %d",e->func_id,e->ln,e->nparam);
+}
+void print_set_stat(int n) {
+	printf("SET STATUS : %d\n",n);
+}
 void print_push_char(int n)  {
 	printf("A4GL_push_char(\"%s\")",GET_ID(n));
 }
@@ -297,7 +315,7 @@ void print_push_int(int n)  {
 
 
 void print_errchk(struct cmd_errchk *e) {
-	printf("ERRCHK\n");
+	printf("ERRCHK %d %d\n",e->line,e->module_name);
 }
 
 
@@ -308,7 +326,7 @@ void print_chk_err(int lineno) {
 	printf("A4GL_chk_err(%d,_modulename)",lineno);
 }
 void print_push_long(int n)  {
-	printf("A4GL_push_long(%d)",n);
+	printf("A4GL_push_long(%d) /* 0x%x */",n,n);
 }
 
 void print_push_op(int n)  {

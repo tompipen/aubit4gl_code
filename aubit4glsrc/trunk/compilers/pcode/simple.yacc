@@ -45,6 +45,8 @@ char buff[20];
 %token KW_A_CHK_ERR
 %token KW_A_CLR_ERR
 %token KW_A_ERRCHK
+%token KW_A_ECALL
+%token KW_A_SET_STAT
 
 
 %start translation_unit
@@ -134,17 +136,24 @@ cmd :
 
 
 fgl_funcs :
-	KW_A_PUSH_LONG '(' int_val ')' {
-			add_push_long($<e>3->param_u.n);
+	KW_A_PUSH_LONG '(' int_constant_val ')' {
+			add_push_long(atoi($<str>3));
 	}
-	| KW_A_PUSH_INT '(' int_val ')' {
-			add_push_int($<e>3->param_u.n);
+	| KW_A_PUSH_INT '(' int_constant_val ')' {
+			add_push_int(atoi($<str>3));
 	}
 	| KW_A_PUSH_CHAR '(' STRING_LITERAL ')' {
 			add_push_char($<str>3);
 	}
 	| KW_A_PUSH_OP '(' CONSTANT ')' {
 			add_push_op($<str>3);
+	}
+	| KW_A_SET_STAT '(' int_constant_val ',' int_val ')' {
+			add_set_stat(atoi($<str>3));
+	}
+	| KW_A_ECALL '(' STRING_LITERAL ',' int_val ',' int_val ')' {
+			printf("ECALL....\n"); 
+			add_ecall($<str>3,$<e>5->param_u.n,$<e>7->param_u.n);
 	}
 
 

@@ -33,7 +33,10 @@ enum cmd_type {
 	CMD_DISPLAY_AT	,
 	CMD_PUSH_OP,
 	CMD_CLR_ERR,
-	CMD_ERRCHK
+	CMD_ERRCHK,
+	CMD_ECALL,
+	CMD_SET_STAT
+
 
 };
 
@@ -73,10 +76,10 @@ enum var_category {
 
 
 struct variable_element {
-	long name_id;
+	short name_id;
 	long dtype;
-	long i_arr_size[3]; /* Informix limits to 3 levels of array */
-	long unit_size;
+	short i_arr_size[3]; /* Informix limits to 3 levels of array */
+	short unit_size;
 	long total_size;
 	long offset; /* This is the offset for CAT_NORMAL/PARAMETER, or a pointer for STATIC or EXTERN */
 	struct variable_element next<>;
@@ -225,6 +228,11 @@ struct cmd_errchk {
 };
 
 
+struct ecall {
+	int func_id;
+	int ln;
+	int nparam;
+};
 
 /* An individual command */
 union cmd switch(int  cmd_type) {
@@ -238,8 +246,8 @@ union cmd switch(int  cmd_type) {
 	case CMD_GOTO_PC: 	long 			c_goto_pc;
 	case CMD_RETURN: 	struct param 		*c_return;
 
-	case CMD_CLR_ERR:    void;
-	case CMD_END_4GL_0:  void;
+	case CMD_CLR_ERR:     void;
+	case CMD_END_4GL_0:   void;
 	case CMD_END_4GL_1:  void;
 	case CMD_NOP: 		void;
 
@@ -256,8 +264,10 @@ union cmd switch(int  cmd_type) {
 */
 	case CMD_DISPLAY_AT:	struct cmd_display_at c_disp_at;
 	case CMD_PUSH_OP:	long   c_push_op;
-
+	case CMD_ECALL:	struct ecall *c_ecall;
+	case CMD_SET_STAT: long c_setval;
 };
+
 
 struct call_stack {
 	struct cmd_block *block;
