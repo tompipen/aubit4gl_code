@@ -82,7 +82,9 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-#	${DEFAULT_RUN}
+	${DEFAULT_RUN}
+	if diff ${DIFF_FLAGS} sized.out sized.out.expected; then exit 0; else exit 1; fi
+	if diff ${DIFF_FLAGS} sizing.out sizing.out.expected; then exit 0; else exit 1; fi	
 #To run program and diff the stdout output against a file, testing for difference:
 #	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
@@ -91,7 +93,7 @@ run: compile
 #	${DEFAULT_DUMP_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
-	${DBG} ${SHELL} ./progname${NAMED_[DIFF|RUN]}
+#	${DBG} ${SHELL} ./progname${NAMED_[DIFF|RUN]}
 #If you need to set specific options for that program, you can do it like this:
 #(example shows how to specify key file):
 #	export A4GL_KEYFILE=somekeyfile.in; ${DBG} ./anotherprogname${NAMED_[DIFF|RUN]}
@@ -173,7 +175,7 @@ long_test:
 #Tests is certified to run (with -eci) If it fails, something was probably broken
 #in current code.
 cert_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #test is superceeded or obsoleted and should be silently skipped

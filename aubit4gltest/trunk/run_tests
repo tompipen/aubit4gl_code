@@ -7,45 +7,55 @@
 
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
-EXPECT_TO_FAIL_TESTS="240 670 706 277 278 681 682 686 687 701 704 918 938 939 \
-	940 941 942 943 944 945 946 947"
-
+#NOTE: <*> = OK with -esqli
+EXPECT_TO_FAIL_TESTS="240 670 706 278 681 682 686 687 701 704 107 \
+	766 767 793 794 911 912 913 914 915 961 962 963 976 987"
 #240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
 #670 (syntax errors in generated EC code) http://aubit.com/mantis/bug_view_page.php?bug_id=0000477
 #706 (expression in SQL syntax error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000515
-#277
-#278 
-#681 
-#682 
-#686 
-#687 
-#701 
-#704 
-#918 
-#938 
-#939 
-#940 
-#941
-#942 
-#943 
-#944 
-#945 
-#946 
-#947 
+#278 (Too few variables for the number of fields) http://aubit.com/mantis/bug_view_page.php?bug_id=0000593
+#681 <*>(undefined symbol: A4GL_push_ival) http://aubit.com/mantis/bug_view_page.php?bug_id=0000594
+#682 <*>same
+#686 <*>same
+#687 <*>same
+#701 <*>same
+#704 <*>same
+#107 <*>(Syntax error on identifier or symbol ''testunlo2.unl'') http://aubit.com/mantis/bug_view_page.php?bug_id=0000595
+#766 (Key CONTROL-H was 49     and not 8) http://aubit.com/mantis/bug_view_page.php?bug_id=0000596
+#767 (wrong codes returned) http://aubit.com/mantis/bug_view_page.php?bug_id=0000597
+#793 <*>(ec generation error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000598
+#794 <*>same
+#911 (An warning was not issued with truncation) http://aubit.com/mantis/bug_view_page.php?bug_id=0000599
+#912 same
+#913 same
+#914 <*>(A warning was not issued after an agregate with null values) - same?
+#915 (An warning was not issued after a select with less variables then into) -same?
+#961 (Error suming 1 to biggest date) http://aubit.com/mantis/bug_view_page.php?bug_id=0000600
+#962 (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
+#963 (Error on largest smallfloat comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000602
+#976 (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
+#987 same ?
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
-EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 107 239 282 735 766 \
-	767 793 794 911 912 913 914 915 961 962 963 976 987 "
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS "
+
+######################
+#Tests that currently fail with -esqli (but work with -cert)
+EXPECT_TO_FAIL_TESTS_ESQLI="80 685 694 703"
+#80 (Decimal or money value exceeds maximum precision) http://aubit.com/mantis/bug_view_page.php?bug_id=0000605
+#685 same
+#694 same
+#703 same
+
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
-EXPECT_TO_FAIL_TESTS_ECP="36 76 98 207 212 227 530 531 534 535"
-#36(close cursor) 76(datetime-ecpg issue) 98 (serial) 207(datetime)
-#212 ??
-#227 (syntax error)
-#530 (syntax+531,534,535)
-
-#218 - waits wth -ecp
+EXPECT_TO_FAIL_TESTS_ECP="36 76 98 227 530 531 534 535"
+#36 (close cursor) http://aubit.com/mantis/bug_view_page.php?bug_id=0000478
+#76 (datetime-ecpg issue) http://aubit.com/mantis/bug_view_page.php?bug_id=0000479
+#98 (serial) http://aubit.com/mantis/bug_view_page.php?bug_id=0000604
+#227 (syntax error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000483
+#530 (syntax+531,534,535) http://aubit.com/mantis/bug_view_page.php?bug_id=0000485
 
 #Not reported:
 EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
@@ -59,30 +69,28 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 	712 713 714 715 716 717 718 "
 
 #Expected to fail using Informix/4Js/Querix compiler
-EXPECT_TO_FAIL_IFX="102 227 251 254 319 487 "
+EXPECT_TO_FAIL_IFX="102 227 251 254 319 487 706"
 #102,254 - dump_screen empty
 #227 - all 3 compilers give different ouptput
 #251 - Ifx & Q same, but Aubit different
 #319 - NULL in function call not accepted by i4gl
 #487 - ON KEY ("home") supported only by 4js and Aubit
-#NOT expected to fail:  706 (1) - but it worked when I tries again?
+#706 - (Diferent value 32) http://aubit.com/mantis/bug_view_page.php?bug_id=0000515
 
 EXPECT_TO_FAIL_4JS="216 225 240 348 349 364 372 373 380 381 531 536 565 566 \
 	573 577 626 627 628 629 630 631 632 633 634 635 636 670 675 706"
+
 EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 	381 383 385 402 404 408 421 422 461 470 471 473 475 487 516 531 538 539 544 \
 	556 582 583 584 586 587 597 599 607 629 670 683 702 706"
 #487 - ON KEY ("home") supported only by 4js and Aubit
-#TODO-add compat descriptor to:  537 540 541 542 543 561 562 571
-
-
-#dump_screen tests:  4 6 8 10 15 29 67 74 102 103 220 223 230 231 236 247 252 254
 
 ######################
 #Tests that currently fail because of the errors in the test itself
 INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 	922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 \
-	953 954 955 956 957 958 959 964	966 284"
+	953 954 955 956 957 958 959 964	966 284 918 \
+	938 939 940 941 942 943 944 945 946 947 282"
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
@@ -92,10 +100,12 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #920 - no makefile
 #797  SET CONSTRAINTS ALL IMMEDIATE - fails even with -ifx-p
 #916,917,919,921,922,923,924,>>925<<,927,928,929,930,931,932,933,935,948...
-#...949 950 951 952 953 954 955 957 958 959 964 966- fails even with -ifx-p
+#...949 950 951 952 953 954 955 957 958 959 964 966 918 938 939 940 941 
+#...942 943 944 945 946 947 - fails even with -ifx-p (.c files with informix headers)
 #926 missing function
 #934 284 no test files
 #956 missing 4gl file
+#282 testtable does not exist in the database
 
 
 
@@ -103,6 +113,35 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #							Functions
 ##############################################################################
 
+##
+# Log resilts into Informix-style .unl file
+#
+##
+result_unl() {
+host="host"
+date=`date`
+flags="all_flags"
+aubit_ver="version"
+test_no=$1
+db_type=$2
+db_ver=$3
+db_method=$4
+result=$5
+
+dl="|"
+unl_file=results.unl
+
+	#if test -f "$unl_file"; then 
+	#	
+	#else
+	#
+	#fi
+	
+	echo "$host$dl$date$dl$flags$dl$aubit_ver$dl$test_no$dl$db_type$dl\
+		$db_ver$dl$db_method$dl$result" >> $unl_file
+
+
+}
 ##
 # Compare Aubit settings comming from aubit-config and environment
 #
@@ -199,7 +238,7 @@ look_for="$1:"
 change_to=$2
 test_no=$3
 makefile=`ls $CURR_DIR/$test_no/?akefile`
-if test "$makefile" = ""; then  240 706 225 234 248
+if test "$makefile" = ""; then
 	echo "ERROR: can't get makefile name"
 	pwd
 	echo "$CURR_DIR/$test_no/?akefile"
@@ -288,7 +327,8 @@ cfunc_t usrcfuncs[] =
 {
 	"aclfgl_dump_screen", aclfgl_dump_screen, 1,
 	0, 0, 0
-}
+};
+
 EOF
 }
 
@@ -405,8 +445,7 @@ OBJ_CUSTOM="$CUSTOM.o"
 		echo "ERROR: unknown compiler type: $COMPILER"
 		;;
 	esac
-			
-	exit 0
+
 }
 
 ##
@@ -486,6 +525,7 @@ DB=$2
 SCRIPT=$3
 LOGFILE=$4
 LOGFILE_CMD="> $LOGFILE 2>&1"
+AS_USER=$5
 
    case $RDBMS in
 	informix)
@@ -494,7 +534,10 @@ LOGFILE_CMD="> $LOGFILE 2>&1"
 		RET=$?
 		;;
 	postgres)
-		EXEC="psql -d $DB -f $SCRIPT $LOGFILE_CMD"
+		EXEC="$PSQL -d $DB -f $SCRIPT $LOGFILE_CMD"
+		if test "$AS_USER" != ""; then 
+			EXEC="su -l $AS_USER -c '$EXEC'"
+		fi
 		eval $EXEC
 		RET=$?
 		;;
@@ -648,7 +691,8 @@ CONSOLE_PROMPT_TESTS="3"
 #tests that use aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
 #they won't work in CONSOLE mode
 #core dumps in CONSOLE mode: 14 36
-DUMP_SCREEN_TESTS="4 6 8 14 36 40 41"
+DUMP_SCREEN_TESTS="10 102 103 104 105 11 15 220 223 229 230 231 236 247 \
+	252 254 263 29 4 6 67 74 8 276 277 278"
 
 #66-10 minutes to COMPILE (also with -esqli AND -eci)
 LONG_TESTS="66"
@@ -679,6 +723,9 @@ ALL_DESCRIBED_TESTS="$DB_TESTS $EC_TESTS $NOSILENT_TESTS $TUI_TESTS $FORM_TESTS 
 #Tests with makefile modified so that they can compile/run P-code
 PCODE_ENABLED="3 101 210"
 
+#tests that fail when running as cron job
+NO_CRON_TESTS="6 8"
+
 ##############################################################################
 #                           Initialise
 ##############################################################################
@@ -696,6 +743,9 @@ TEST_DB="test1"
 #decimals work ok with 'LC_NUMERIC' set to C
 #apparently they fail with anything else, like when LANG is set to 'de_DE@euro'
 export LC_NUMERIC="C"
+
+OUTPUT_LOG="output.log"
+ERROR_LOG="error.log"
 
 if test "$COMSPEC" != ""; then
 	FIND=/bin/find
@@ -722,11 +772,45 @@ else
 	AUBITDIR_SRC=""	
 fi
 
+HOSTNAME=`hostname`
+
+#Determine POSTGRESDIR and PSQL for PostgreSQL database engine
+#Must be here because PSQL is used before we reach dedicated PG section,
+#in running scripts function and to set default database when not specified
+PSQL=psql
+if test "$POSTGRESDIR" = ""; then
+	POSTGRESDIR=`aubit-config POSTGRESDIR`
+fi
+if test "$POSTGRESDIR" != ""; then
+	if test ! -d "$POSTGRESDIR"; then
+		echo "WARNING: POSTGRESDIR is invalid ($POSTGRESDIR)" 
+	else
+		export POSTGRESDIR
+		if test -f "$POSTGRESDIR/bin/postgres" ; then
+			#It can be only ecpg installation there, so check if actuall
+			#engine and tools are also there
+			POSTGRES_BIN=$POSTGRESDIR/bin
+			PSQL="$POSTGRES_BIN/psql"
+		fi
+	fi
+fi
+
+#remove this:
+if test "$HOSTNAME" = "xxxaptiva.falout.org"; then
+	#is actually a ecpg installation dir:
+	export POSTGRESDIR=/opt/ecpg-cvs
+
+	#libpq-fe.h :
+	export CFLAGS="-I/usr/include/pgsql $CFLAGS"
+    #FIXME: store @PGSQL_INCLUDE@ (@ECPG_IFLAGS@ ?) in aubitrc and retrive \
+	#with aubit-config
+fi
+
 #define emphasis characters for terminal display
 a4gl_shtool=$AUBITDIR_SRC/tools/project/shtool
 if test -f $a4gl_shtool; then
-	T_MD=`$a4gl_shtool echo -n -e %B`
-	T_ME=`$a4gl_shtool echo -n -e %b`
+	T_MD=`$a4gl_shtool echo -n -e %B 2>/dev/null`
+	T_ME=`$a4gl_shtool echo -n -e %b 2>/dev/null`
 fi
 
 #######################
@@ -839,8 +923,17 @@ for a in $FLAGS; do
 
    if test "$NEW_TEST" = "1"; then
      new_test $a
+	 exit 0
    fi
-
+   if test "$FIND_WORD" = "1"; then
+	 $FIND . -name "*.4gl" -exec grep -H "$a" {} \;
+	 exit 0
+   fi
+   if test "$LIST_CODE" = "1"; then
+	 less $a/*.4gl
+	 exit 0
+   fi
+   
 	if test "$CERT_TEST" = "1"; then
 		change_setting "cert_test" "1" "$a"
 		echo "Test $a marked as certified."
@@ -883,6 +976,17 @@ sleep 1;
 			NEW_TEST="1"
             continue
             ;;
+
+        -find) #find word in 4gl code
+			FIND_WORD="1"
+            continue
+            ;;
+
+        -list) #list 4gl code
+			LIST_CODE="1"
+            continue
+            ;;
+
 			
 		-certify)
 			#flage the test as certified in the makefile
@@ -903,7 +1007,6 @@ sleep 1;
 			LOGFILE=try.log
 			LOGFILE_CMD="> $LOGFILE 2>&1"
 			echo "select rowid from syscolumns where colname = 'dirpath' and tabid = 1" > $SCRIPT
-
 			EXEC="dbaccess $DB -qcr $SCRIPT $LOGFILE_CMD"
 			eval $EXEC
 			RET=$?
@@ -912,6 +1015,7 @@ sleep 1;
 			if test "$TEST" != ""; then
 				echo "This is NOT SE engine"
 			fi
+			rm -f try.sql try.log
 			exit $RET
 			;;
 			
@@ -965,6 +1069,16 @@ sleep 1;
 			bash run_tests -info > ./catalogue.txt
 			echo "Tests catalogue created (./catalogue.txt)"
 			exit 0
+			;;
+			
+		-calatlogue-unl) 
+			#unload all test info to .unl file
+			exit
+			;;
+		-unl-log)
+			#unload rest result to .unl file
+			result_unl "123" "ifx" "7.3" "eci" "pass"
+			exit
 			;;
         -add-makefile)
 			#Do not add makefile to 58 and 65 - they are obsolete
@@ -1303,7 +1417,7 @@ for a in $FLAGS; do
 
 		#PG:
 		cat ./testdb-ddl.sql | grep -v "^/\*" | grep -v "^\*/" | grep -v "^//" | sed -e 's/128,0/128/g' | tr "\"" "'" > testdb-tmp.sql
-		#psql -d $TEST_DB -f testdb-tmp.sql  > /tmp/testdb.log 2>&1
+		#$PSQL -d $TEST_DB -f testdb-tmp.sql  > /tmp/testdb.log 2>&1
 		
 		TO=XML
 		OUTFILE=testdb.xml
@@ -1355,9 +1469,11 @@ for a in $FLAGS; do
 		;;
 	-runner-ifx) 	#Create p-code runner for Informix P-code compiler 
 		create_runner informix
+		exit 0
 		;;
 	-runner-4js) 	#Create p-code runner for Four J's P-code compiler 
 		create_runner 4js
+		exit 0
 		;;
 	-noecho)    #Don't show any non-critical messages while running tests
         #we already got this one set
@@ -1550,6 +1666,7 @@ for a in $FLAGS; do
         fi
 		USE_SQLITE=0; USE_ESQLI=1; export SKIP_EC_RUN=1
 		export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=esql
+		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_ESQLI"
         ;;
 
     -eci)   		#Use Informix ESQL/C EC output in for db tests
@@ -1845,6 +1962,19 @@ for a in $FLAGS; do
 			RUNNER=$IFX_RUNNER
 			FGLRUN=$IFX_RUNNER
 			export FGLRUN RUNNER
+		else
+			create_runner informix
+			if test -f "$IFX_RUNNER" ; then
+				if test "$VERBOSE" = "1"; then
+					echo "Note: using custom runner"
+				fi
+				RUNNER=$IFX_RUNNER
+				FGLRUN=$IFX_RUNNER
+				export FGLRUN RUNNER
+			else
+				echo "Note: creation of Informix custom runner failed."
+				echo "All tests using dump_screen() will fail"
+			fi
 		fi
 		#Indicate that we will use Informix RDBMS
 		USE_SQLITE=0; USE_ESQLI=1
@@ -1868,6 +1998,19 @@ for a in $FLAGS; do
 			RUNNER=$FJSRUNNER
 			FGLRUN=$FJSRUNNER
 			export FGLRUN RUNNER
+		else
+			create_runner 4js
+			if test -f "$FJSRUNNER" ; then
+				if test "$VERBOSE" = "1"; then		
+					echo "Note: using custom runner"
+				fi
+				RUNNER=$FJSRUNNER
+				FGLRUN=$FJSRUNNER
+				export FGLRUN RUNNER
+			else
+				echo "Note: creation of 4Js custom runner failed."
+				echo "All tests using dump_screen() will fail"
+			fi
 		fi
 		#Indicate that we will use Informix RDBMS
 		USE_SQLITE=0; USE_ESQLI=1
@@ -1879,6 +2022,10 @@ for a in $FLAGS; do
 			#INT8                   DECIMAL(19,0)
 			#SERIAL8                DECIMAL(19,0)
 			#Note- fglschema will fail without -c - not sure why
+			# -c : Enable Database to 4GL data type conversion
+			#Not sure if DBDELIMITER has anything to do with it, but
+			#i had a case where fglschema failed with -c too
+			echo "$DBDELIMITER"
 			fglschema -c $TEST_DB
 			RET=$?
 			if test "$RET" != "0"; then 
@@ -1914,6 +2061,13 @@ for a in $FLAGS; do
 		T_ME=
         ;;
 
+	-cron)		#passed when test is invoked as cron job
+		CRON_JOB=1
+		NO_PROGRESS=1
+		T_MD=
+		T_ME=
+		;;
+		
 	-nodefaults)        #Do not use platform default settings
         #nothing to set; this is just to cause $@ not to be empty
         ;;
@@ -2153,7 +2307,7 @@ fi
 if test "$IS_ODBC_MANAGER" = "1" && test "$ODBC_USE_DB" = ""; then
 	if test "`dbaccess -V 2>/dev/null`" != ""; then
 		ODBC_USE_DB=IFX
-	elif test "`psql -V 2>/dev/null`" != ""; then
+	elif test "`$PSQL -V 2>/dev/null`" != ""; then
 		ODBC_USE_DB=PG
 	elif test "`sqlite -version 2>/dev/null`" != ""; then
 	    ODBC_USE_DB=SQLITE
@@ -2190,7 +2344,7 @@ fi
 # but in the scripts
 CLEAN_FIND_FILES='"(" -name "*.4ae" -o -name "*.afr" -o -name "*.afr.*" 
 		-o -name "*.o" -o -name "*.ao" -o -name "*.out" -o -name "*.glb" 
-		-o -name "*.err" -o -name "output.log" -o -name "errlog" 
+		-o -name "*.err" -o -name "$OUTPUT_LOG" -o -name "$ERROR_LOG" 
 		-o -name "*.tmp" -o -name "*.warn" -o -name "*.out" -o -name "*.cpc" 
 		-o -name "*.ec" -o -name "*.h" -o -name "pcode.run" 
 		-o -name "*.4pe.*" -o -name "*.4gi" -o -name "*.4go" -o -name "*$SO_EXT"
@@ -2264,17 +2418,6 @@ fi
 if test "$ALL_DB" = "1"; then
     #disable timing:
 	SHOW_TIME="0"
-fi
-
-HOSTNAME=`hostname`
-
-if test "$HOSTNAME" = "aptiva.falout.org"; then
-	#is actually a ecpg installation dir:
-	export POSTGRESDIR=/opt/ecpg-cvs
-
-	#libpq-fe.h :
-	export CFLAGS="-I/usr/include/pgsql $CFLAGS"
-    #FIXME: store @PGSQL_INCLUDE@ (@ECPG_IFLAGS@ ?) in aubitrc and retrive with aubit-config
 fi
 
 if test "$A4GL_UI" = ""; then
@@ -2493,7 +2636,7 @@ if test "$IS_ODBC" = "1"; then
     if test "$NEW_ODBC" = "1" || test "$HAS_ODBC_INI" != "1"; then
 
 		if test "$HAS_ODBC_INI" = "1"; then
-			if test "$SILENT" != "1"; then
+			if test "$VERBOSE" = "1"; then
 				echo "Found DSN for $TEST_DB"
             fi
 		else
@@ -2594,7 +2737,7 @@ if test "$IS_ODBC" = "1"; then
     fi
 
 	if test "$HAS_ODBC_INI" = "1"; then
-		if test "$SILENT" != "1"; then
+		if test "$VERBOSE" = "1"; then
 			echo "Found DSN for $TEST_DB"
         fi
     else
@@ -2857,15 +3000,47 @@ fi
 #Check and create PostgreSQL database
 
 if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
-	if test "`psql -V 2>/dev/null`" = ""; then
-        echo "ERROR: psql not found - no PostgreSQL engine?"
+	if test "`$PSQL -V 2>/dev/null`" = ""; then
+        echo "ERROR: $PSQL not found - no PostgreSQL engine?"
         exit 67
     fi
 
-	echo "\q" | psql -d $TEST_DB > /tmp/tmp.dbaccess 2>&1
+	#Find PostgreSQL data directory of currently running PG engine (PGDATA)
+	if test "$PGDATA" = ""; then
+		PGDATA=`ps -auxw | grep postmaster | head -1 | awk '{print $14}'`
+		if test ! -d "$PGDATA"; then
+			#try guessing
+			if test -d "/var/lib/pgsql/data"; then
+				#RedHat RPM's
+				PGDATA="/var/lib/pgsql/data"
+			fi
+			if test -d "/usr/local/pgsql/data"; then
+				#PG default
+				PGDATA="/usr/local/pgsql/data"
+			fi
+			if test -d "/usr/local/pgsql/data-7.4"; then
+				#Andrej
+				PGDATA="/usr/local/pgsql/data-7.4"
+			fi
+			if test ! -d "$PGDATA"; then
+				echo "WARNING: unable to set PGDATA"
+			fi
+		fi
+	fi
+	
+	#Find current PostgreSQL configuration file in sue by currently rinning
+	#instance of PG engine (PG_CONF)
+	if test -f "$PGDATA/postgresql.conf"; then 
+		PG_CONF="$PGDATA/postgresql.conf"
+	else
+		echo "WARNING: failed to determine PG config file location"
+	fi
+	
+	
+	echo "\q" | $PSQL -d $TEST_DB > /tmp/tmp.dbaccess 2>&1
 	RET=$?
 	if test "$RET" != "0"; then 
-		echo "psql returned code $RET."
+		echo "$PSQL returned code $RET."
 		cat /tmp/tmp.dbaccess
 		TEST=`cat /tmp/tmp.dbaccess | grep "could not connect to server"`
 		if test "$TEST" != ""; then
@@ -2876,10 +3051,10 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 		#	exit $RET
 		fi
 		#Try connecting again
-		echo "\q" | psql -d $TEST_DB > /tmp/tmp.dbaccess 2>&1
+		echo "\q" | $PSQL -d $TEST_DB > /tmp/tmp.dbaccess 2>&1
 		RET=$?
 		if test "$RET" != "0"; then 
-			echo "psql returned code $RET."
+			echo "$PSQL returned code $RET."
 			cat /tmp/tmp.dbaccess
 			TEST=`cat /tmp/tmp.dbaccess | grep "does not exist"`
 			if test "$TEST" != ""; then
@@ -2892,14 +3067,6 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 		fi
 	fi
    	TEST=`cat /tmp/tmp.dbaccess | grep "psql: FATAL"`
-
-	#FATAL:  user "root" does not exist
-
-#su postgres
-#psql -d template1
-#template1=# create user root createdb createuser ;
-
-	
 	
 	if test "$NEW_PG" = "1" -a "$TEST" = ""; then
 	    echo "Droping PostgreSQL database $TEST_DB"
@@ -2918,11 +3085,45 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
         echo "Creating PostgreSQL database $TEST_DB"
 		#createdb is a shell script wrapper around the SQL command
 		#CREATE DATABASE via the PostgreSQL interactive terminal psql.
-		createdb $TEST_DB > /tmp/credbtmp.log
+		createdb $TEST_DB > /tmp/credbtmp.log 2>&1
         RET=$?
         if test "$RET" != "0"; then
-            echo "Failed (code $RET). See /tmp/credbtmp.log"
-            exit 29
+			TMP4=`cat /tmp/credbtmp.log | grep "psql: FATAL:  user"`
+			if test "$TMP4" != ""; then 
+				#need to create user first - FATAL:  user "root" does not exist
+				USERNAME=`whoami`
+				echo "Need to create user '$USERNAME' first..."
+				SCRIPT=/tmp/pg-create-user.sql
+				echo "create user $USERNAME createdb createuser ;" > $SCRIPT
+			 	run_sql_script postgres template1 $SCRIPT /tmp/pg-create-user.log postgres
+				#we need this for future tests
+				createdb $USERNAME > /tmp/credb$USERNAME.log 2>&1
+				#xxxxx
+				#su postgres
+				#$PSQL -d template1
+				#template1=# create user root createdb createuser ;
+
+				echo "Again: Creating PostgreSQL database $TEST_DB"
+				createdb $TEST_DB > /tmp/credbtmp.log 2>&1
+				RET=$?
+				if test "$RET" != "0"; then
+					echo "Failed again (code $RET)."
+					cat /tmp/credbtmp.log
+					exit 29
+				else
+					TMP=`cat /tmp/credbtmp.log | grep "CREATE DATABASE"`
+					if test "$TMP" != ""; then
+						echo "Database Created"
+					else
+						echo "Database creation failed. See /tmp/credbtmp.log"
+						exit 8
+					fi
+				fi
+			else
+	            echo "Failed (code $RET)."
+				cat /tmp/credbtmp.log
+				exit 29
+			fi
         else
             TMP=`cat /tmp/credbtmp.log | grep "CREATE DATABASE"`
             if test "$TMP" != ""; then
@@ -2936,7 +3137,7 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
 		echo "Creating tables and loading data..."
 		new_testdb postgres
     else
-		if test "$NO_ECHO" != "1"; then
+		if test "$VERBOSE" = "1"; then
 			echo "Found PostgreSQL database $TEST_DB"
         fi
     fi
@@ -2944,6 +3145,80 @@ if test "$USE_PG" = "1" -o "$ODBC_USE_DB" = "PG"; then
     if test "$NEW_PG" = "1"; then
         exit
     fi
+
+	#################
+	#Tests to verify PG is configured as we need it for Informix
+	#compatibility
+	TMP=`echo 'show datestyle;' | $PSQL | grep -i "informix"`
+	if test "$TMP" = ""; then 
+		echo "WARNING: PostgreSQL config file ($PG_CONF)"
+		echo "does not contain needed setting:"
+		echo "datestyle = 'informix, mdy'"
+	fi
+	TMP=`echo 'show default_delim;' | $PSQL | grep "\|"`
+	if test "$TMP" = ""; then 
+		echo "WARNING: PostgreSQL config file ($PG_CONF)"
+		echo "does not contain needed setting:"
+		echo "default_delim = '|'"
+		echo "This must be set *after* you do the initdb"
+	fi
+
+	#> You should also initdb with --locale='C' if you want index's to be used
+	#> when comparing an indexed column with a string.
+	#eg. "initdb --locale='C' -D /usr/local/pgsql/data" ?
+	#Is there a way to verify that this was done on currently running PG instance?
+
+
+	#> One more little gotcha, postgres has a "problem" with using indexes with
+	#> bigint's. This has been fixed in 8.0, but in previous versions you
+	#> should use where bigintcol='1' , or where bigintcol=int8::1
+	
+	####################
+	#Set Aubit configuration options to perform correctly
+	#in PostgreSQL Informix compatibility mode
+	
+	# All updates will be transformed to Ansi syntax
+	#Rewrites the Update (col1,col2,col3)=(val1,val2,val3) -> update 
+	#col1=val1,col2=val2,col3=val3
+	export A4GL_FIXUPDATE=Y
+
+	# The keyword 'AS' is included when using an alias on a select column
+	#eg. select tabid tid from systables -> select tabid AS 'tid' from systables
+	export A4GL_USE_ALIAS_AS=Y
+
+	# Any CREATE TEMP TABLE .. WITH NO LOG will have the 'WITH NO LOG' silently removed
+	#This does not include the ' WITH NO LOG' at the end of a create temp table 
+	#when the original SQL does.
+	#create temp table a(a integer) WITH NO LOG ->
+	#create temp table a(a integer)
+	export A4GL_OMIT_NO_LOG=Y
+
+	# No indicator variables (=YES Adds indicators to SQL statements to check for nulls)
+	export A4GL_USE_INDICATOR=N
+
+	# When needed use the ecpg UNLOAD statement rather than the aubit code
+	export A4GL_ESQL_UNLOAD=Y
+	
+	#When SQL encounters CURRENT  - it calls this function instead with two string 
+	#parameters ('START' to 'END')
+	#select current year to minute from systables where tabid=1 ->
+	#select somename('year','minute') from systables where tabid=1
+	#export A4GL_SQL_CURRENT_FUNCTION=somename
+
+	#Treat MONEY type as DECIMAL when compiling to POSTGRES EC LEXTYPE
+	#Because PG EC compiler (ecpg) does not know about MONEY type. Without it,
+	#you will get (ERROR: Only numeric/decimal have precision/scale argument)
+	export A4GL_MONEY_AS_DECIMAL=YES
+	
+	#Treat MONEY type as MONEY when compiling to POSTGRES EC LEXTYPE
+	#This will probably fail, since PG EC compiler curently does not know about 
+	#MONEY datatype (ERROR: invalid datatype 'money').
+	export A4GL_MONEY_AS_MONEY=NO
+
+	#Enable sqlca.sqlerrd[6] (ROWID/OID of last inserted record) translation 
+	#This is apparently needed only with PostgreSQL (with IFX compatibility patches)
+	export SWAP_SQLCA62=Y 
+
 fi
 
 ######################
@@ -3099,7 +3374,7 @@ EOF`
             fi
 		fi
     else
-		if test "$NO_ECHO" != "1"; then
+		if test "$VERBOSE" = "1"; then
 			echo "Found SAP DB database $TEST_DB"
         fi
     fi
@@ -3146,7 +3421,7 @@ if test "$IS_ODBC_MANAGER" = "1"; then
 		cat /tmp/tmp.dbaccess
         exit 21
     else
-		if test "$NO_ECHO" != "1"; then
+		if test "$VERBOSE" = "1"; then
 			echo "Found ODBC database $TEST_DB"
         fi
     fi
@@ -3205,7 +3480,8 @@ fi
 echo "" >> $LOGFILE
 
 rm -f $CURR_DIR/$TIME_FILE
-
+rm -f $CURR_DIR/$OUTPUT_LOG
+rm -f $CURR_DIR/$ERROR_LOG
 
 ##############################################################################
 #							Run test(s)
@@ -3232,6 +3508,7 @@ rm -f $CURR_DIR/$TIME_FILE
 	IS_DUMP_SCREEN_CNT=0
 	IS_LONG_CNT=0
 	IS_CERT_CNT=0
+	IS_NO_CRON_CNT=0
 	IS_OBSOLETE_CNT=0
 	IS_COMPAT_CNT=0
 	IS_UNKNOWN_CNT=0
@@ -3287,6 +3564,7 @@ do
     IS_INVALID_TEST=0
     IS_PCODE_ENABLED=0
 	IS_UNKNOWN_TEST=0
+	IS_NO_CRON_TEST=0	
 	TEMPLATE_COMMENT=0
 	IS_REPORT_TEST=0
 	EXPECT_CODE=0
@@ -3459,6 +3737,11 @@ do
 			for b in $PCODE_ENABLED; do
 				if test "$b" = "$a"; then
 					IS_PCODE_ENABLED=1
+				fi
+			done
+			for b in $NO_CRON_TESTS; do
+				if test "$b" = "$a"; then
+					IS_NO_CRON_TEST=1
 				fi
 			done
 		fi
@@ -3752,8 +4035,16 @@ do
 			SKIP_GRAPHIC_LIST="$SKIP_GRAPHIC_LIST $a"
 	        continue
 	    fi
-		if [ ! -f $CURR_DIR/$a/makefile -a ! -f $CURR_DIR/$a/Makefile ]
-		then
+	    if test "$IS_NO_CRON_TEST" = "1" && test "$CRON_JOB" = "1"; then
+			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+			IS_NO_CRON_CNT=`(expr $IS_NO_CRON_CNT + 1) 2>/dev/null`
+			if test "$VERBOSE" = "1"; then
+				echo "Skipping test #$a that fails when run as cron job" >> $LOGFILE
+			fi
+			SKIP_NO_CRON_LIST="$SKIP_NO_CRON_LIST $a"
+	        continue
+	    fi
+		if [ ! -f $CURR_DIR/$a/makefile -a ! -f $CURR_DIR/$a/Makefile ]; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
 				echo "$a Not run - no Makefile" >> $LOGFILE
@@ -3854,9 +4145,13 @@ do
 			fi
 		else
 			if test "$NEED_TRANSACTION" = "1" -o "$NEED_TRANSACTION" = "2" ; then
-				SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
-				echo "Skip $a - explicit preference for transactions, but unable to determine state" >> $LOGFILE
-				continue
+				if test "1" = "1" ; then 
+					echo "WARNING: explicit preference for transactions, but unable to determine state" >> $LOGFILE				
+				else
+					SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+					echo "Skip $a - explicit preference for transactions, but unable to determine state" >> $LOGFILE
+					continue
+				fi
 			fi
 		fi
     fi
@@ -3934,16 +4229,16 @@ do
 	cd $CURR_DIR/$a
     if test "$SILENT" = "1"; then
 		if test "$ERR_WITH_LOG" != "1"; then
-			echo "Test : " $a   >> $CURR_DIR/errlog
-            ERRLOG="2>$CURR_DIR/errlog"
+			echo "Test : " $a   >> $CURR_DIR/$ERROR_LOG
+            ERRLOG="2>$CURR_DIR/$ERROR_LOG"
         else
             ERRLOG="2>&1"
 		fi
-        RUN_CMD="$TIME_CMD $MAKE $MAKE_TARGET >> $CURR_DIR/output.log $ERRLOG"
+        RUN_CMD="$TIME_CMD $MAKE $MAKE_TARGET >> $CURR_DIR/$OUTPUT_LOG $ERRLOG"
 	else
 		if test "$ERR_WITH_LOG" != "1"; then
-			echo "Test : " $a   >> $CURR_DIR/errlog
-            ERRLOG="2>> $CURR_DIR/errlog"
+			echo "Test : " $a   >> $CURR_DIR/$ERROR_LOG
+            ERRLOG="2>> $CURR_DIR/$ERROR_LOG"
         else
             ERRLOG=
         fi
@@ -3962,8 +4257,7 @@ do
 	eval $RUN_CMD
 	#############
 	RET=$?
-	if [ "$RET" != "$MAKE_EXPECT_CODE" ]
-	then
+	if [ "$RET" != "$MAKE_EXPECT_CODE" ]; then
 		if test "$SILENT" != "1"; then
 			stty sane # Just it case it bombed...
 		fi
@@ -4175,7 +4469,7 @@ fi
 	SKIP_OTHER_LIST="\
 	$SKIP_PCODE_LIST $SKIP_TUI_LIST $SKIP_LONG_LIST $SKIP_CONSOLE_LIST \
 	$SKIP_NONDB_LIST $SKIP_DB_LIST $SKIP_NOSILENT_LIST $SKIP_NOVERSION_LIST\
-	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST"
+	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST $SKIP_NO_CRON_LIST"
 	#clipp it:
 	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
 if test "$VERBOSE_RESULTS" = "1"; then 
@@ -4211,6 +4505,9 @@ if test "$VERBOSE_RESULTS" = "1"; then
 	fi 
 	if test "$SKIP_NOCOMPAT_LIST" != "" ; then 
 		echo "Skipped NOCOMPAT: $SKIP_NOCOMPAT_LIST" >> $LOGFILE
+	fi
+	if test "$SKIP_NO_CRON_LIST" != "" ; then 
+		echo "Skipped NO_CRON: ($IS_NO_CRON_CNT) $SKIP_NO_CRON_LIST" >> $LOGFILE
 	fi
 else
 	if test "$SKIP_OTHER_LIST" != "" ; then 

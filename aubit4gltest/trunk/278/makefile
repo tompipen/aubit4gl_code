@@ -82,7 +82,11 @@ run: compile
 #see included makefile for definition of DEFAULT_RUN. Overide it here if you
 #need to.
 #To run program and test for exit code:
-#	${DEFAULT_RUN}
+	${DEFAULT_RUN}
+	if diff ${DIFF_FLAGS} t1.out t1.out.expected; then exit 0; else exit 1; fi
+	if diff ${DIFF_FLAGS} t2.out t2.out.expected; then exit 0; else exit 1; fi	
+	if diff ${DIFF_FLAGS} t3.out t3.out.expected; then exit 0; else exit 1; fi
+	if diff ${DIFF_FLAGS} t4.out t4.out.expected; then exit 0; else exit 1; fi	
 #To run program and diff the stdout output against a file, testing for difference:
 #	${DEFAULT_DIFF}
 #Almost the same as DEFAULT_DIFF< but does not redirect optput of the running 
@@ -91,7 +95,7 @@ run: compile
 #	${DEFAULT_DUMP_DIFF}
 #If you need to explicitly state program name to run (eg. when test have more then
 #one program that needs to be executed), try this:
-	${DBG} sh ./run_prog${NAMED_[DIFF|RUN]}
+#	${DBG} sh ./run_prog${NAMED_[DIFF|RUN]}
 #If you need to set specific options for that program, you can do it like this:
 #(example shows how to specify key file):
 #	export A4GL_KEYFILE=somekeyfile.in; ${DBG} ./anotherprogname${NAMED_[DIFF|RUN]}
@@ -109,7 +113,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is a test of handling of multi occurences of the same name for a fieldname in a form"
+	@echo "This is a test of handling of multi occurences of the same name for \
+		a fieldname in a form"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -140,7 +145,7 @@ tui_test:
 ################
 #Test uses .per form files:
 form_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test uses REPORT section
@@ -162,7 +167,7 @@ console_prompt_test:
 #test uses aclfgl_aclfgl_dump_screen, A4GL_clr_window or aclfgl_fgl_drawbox, so
 #it won't work in CONSOLE mode
 dump_screen_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test takes more then 10 minutes to compile or run
@@ -183,7 +188,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)

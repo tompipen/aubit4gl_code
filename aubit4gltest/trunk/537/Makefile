@@ -179,8 +179,8 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-#I don't think this is compatible (PRIMARY KEY) 
-	@echo "0"
+#Compatible with ifx >=7.31, but not with 4Js 3.5 (PRIMARY KEY) 
+	@echo "1"
 
 ################
 #All other tests not belonging to any of the above groups should be listed here:
