@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.4 2002-05-08 13:42:05 mikeaubury Exp $
+# $Id: debug.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -34,28 +34,67 @@
  * @todo Add Doxygen comments to file
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
 
 #include <stdarg.h>
-
-int debug_full (char *fmt,...);
 
 #include "a4gl_dbform.h"
 #include "a4gl_stack.h"
 #include "a4gl_debug.h"
 #include "a4gl_pointers.h"
+
 #ifdef __CYGWIN__
-#include "a4gl_sqlca.h"
+	#include "a4gl_sqlca.h"
 #endif
 
-FILE *debugfile = 0;
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
 #define DEBUG_NOTREQUIRED 2
 #define DEBUG_REQUIRED 1
 #define DEBUG_DONTKNOW 0
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+FILE *debugfile = 0;
 int nodebug = DEBUG_DONTKNOW;
 char g_fname[256];
 int g_lineno;
 
-open_debugfile ()
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+//defined in header file
+//void debug_full (char *fmt,...);
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+open_debugfile (void)
 {
   debugfile = mja_fopen ("debug.out", "w");
   if (debugfile==0) {
@@ -64,6 +103,11 @@ open_debugfile ()
   }
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 debug_full (char *fmt,...)
 {
   va_list args;
@@ -91,7 +135,8 @@ debug_full (char *fmt,...)
       va_start (args, fmt);
       vsprintf (buff, fmt, args);
       if (buff[strlen (buff) - 1] != ':')
-        fprintf (debugfile, "%-20s %-6d status=%6d sqlca.sqlcode=%6d\n ", g_fname, g_lineno, status, sqlca.sqlcode);
+        fprintf (debugfile, "%-20s %-6d status=%6d sqlca.sqlcode=%6d\n ", g_fname, g_lineno, (int)status, sqlca.sqlcode);
+
       fprintf (debugfile, "%s\n", buff);
 
         //fixme: AUBITGUI can also be gui, not only gtk
@@ -109,6 +154,10 @@ debug_full (char *fmt,...)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 set_line (char *fname, long lineno)
 {
@@ -120,3 +169,5 @@ set_line (char *fname, long lineno)
     }
   return 0;
 }
+
+// =============================== EOF =============================

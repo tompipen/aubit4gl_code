@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: dmy.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -37,10 +37,21 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <string.h>
 #include "a4gl_debug.h"
-char *dategsub(char *s,char *r,char *p);
+#include "a4gl_aubit_lib.h"
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
 #define DDDD 0
 #define DDD 1
@@ -50,6 +61,12 @@ char *dategsub(char *s,char *r,char *p);
 #define MM 5
 #define YYYY 6
 #define YY 7
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 char *g_dnames[]={
 "Sun",
@@ -103,6 +120,20 @@ char *g_mnamesfull[]={
 "December"
 };
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+char *dategsub(char *s,char *r,char *p);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 /**
  *  Format a date in the internal format to a string formated acording to the
@@ -112,22 +143,24 @@ char *g_mnamesfull[]={
  *  @param us The using string.
  *  @return The formated date.
  */
-char *using_date(int dn,char *us) {
+char *
+using_date(int dn,char *us)
+{
   int d;
   int m;
   int y;
   int dno;
-  int uses[10];
+//  int uses[10];
   static char buff[256];
   char buff2[256];
-  
+
   char *using_strs[]={
     "dddd","ddd","dd","mmmm","mmm","mm","yyyy","yy","th","d","m",""
   };
   char *rusing_strs[]={
     "\nA","\nB","\nC","\nD","\nE","\nF","\nG","\nH","\nI","\nJ","\nK",""
   };
-  
+
   char rep_strs[20][20];
   int a;
   int flg=0;
@@ -177,12 +210,18 @@ char *using_date(int dn,char *us) {
 
 
 
-char *dategsub(char *s,char *r,char *p) {
+/**
+ *
+ * @todo Describe function
+ */
+char *
+dategsub(char *s,char *r,char *p)
+{
 	static char buff[256];
 	char buff2[256];
 	char buff3[256];
 	char *ptr;
-	int a;
+//	int a;
 	buff[0]=0;
 	strcpy(buff2,s);
 	while ((ptr=(char *)strstr(buff2,r))) {
@@ -202,7 +241,9 @@ char *dategsub(char *s,char *r,char *p) {
  *
  * @return Allways 1
  */
-get_day() {
+int
+get_day(void) 
+{
 	return 1;
 }
 
@@ -213,9 +254,13 @@ get_day() {
  *
  * @return Allways 0
  */
-get_dayno() {
+int
+get_dayno(void) 
+{
 
 	return 0;
 }
 
+
+// ================================ EOF ============================
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: conv.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -40,7 +40,25 @@
  * @todo Doxygen comments to add to functions
  */
 
+ /*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+
 #include <stdio.h>
+#include <sys/types.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+#include <locale.h>
+#include <time.h>
+#include <math.h>
+
+#ifdef __CYGWIN__
+	#include <errno.h>
+#endif
 
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
@@ -48,45 +66,328 @@
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
 
 
-#include <sys/types.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-#ifdef __CYGWIN__
-#include <errno.h>
-#endif
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
-extern int errno;
-//#include <unistd.h>
-//#include <pwd.h>
-#include <locale.h>
-/* #define DIGIT_ALIGN_LEFT */
-#include <time.h>
-#include <math.h>
-int lastsize;
+/**
+ * definitions for dates (seems a pretty odd conversion though...
+ */
+#define itomdec itodec
+#define dtodec ltodec
+#define dtomdec ltodec
+#define ltomdec ltodec
+
+#define ftomdec ftodec
+#define sftomdec sftodec
+#define mdectomdec dectodec
+#define mdectodec dectodec
+#define dectomdec dectodec
+
+#define OK (void *)1
+
+
+#define DEC_VAL(x) ( ((x)&0xf)+ (((x)&0xf0)*10 /16) )
+#define HEX_VAL(x) (((x)%10) + ((((x)-((x)%10)) / 10)*16))
+#define SIGNED(x) (x[0]&128)
+#define SET_SIGNED(x) (x[0]|=128)
+#define SET_UNSIGNED(x) (x[0]=(x[0]>=128)?x[0]:x[0]-128)
+#define NUM_DIG(x) ((x[0])&127 )
+#define NUM_DEC(x) ((x[1]))
+#define SET_DIG(x,y) (x[0]=y)
+#define SET_DEC(x,y) (x[1]=y)
+#define OFFSET_DEC(x) (2)
+#define NUM_BYTES(x) (NUM_DIG(x)+OFFSET_DEC(x))
+#define DBL_DIG1 512
+#define print_res(x) print_res_l(__LINE__,x)
+
+#define DT_YEAR 1
+#define DT_MONTH 2
+#define DT_DAY 3
+#define DT_HOUR 4
+#define DT_MINUTE 5
+#define DT_SECOND 6
+#define DT_FRACTION 7
+#define dt_encode(s,e) ((s*16)+e)
+
+#define DT_YEAR 1
+#define DT_MONTH 2
+#define DT_DAY 3
+#define DT_HOUR 4
+#define DT_MINUTE 5
+#define DT_SECOND 6
+#define DT_FRACTION 7
+#define dt_encode(s,e) ((s*16)+e)
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
 /** @todo Change all this function proptotypes to an header */
-int bname2 (char *str, char *s1, char *s2, char *s3);
-char *inv (char *s);
-double dec_to_double (void *buf);
-int double_to_dec (double arg, char *buf, size_t length, size_t digits);
-char *dec_to_str (char *s, int size);
-char *add_dec (char *a, char *b);
-char *minus_dec (char *a, char *b);
-char *str_to_dec (char *s, char *w);
-char *init_dec (char *s, int len, int d);
-char *mult_dec (char *s, char *v);
-char *divide_dec (char *s, char *w);
-void dec_to_dec (char *f, char *t);
-void dump (char *s);
 
-int op_ival (struct ival *a, struct ival *b, double double_val, char op,
- char param);
+int bname2 				(char *str, char *s1, char *s2, char *s3);
+char *inv 				(char *s);
+double dec_to_double 	(void *buf);
+char *dec_to_str 		(char *s, int size);
+char *add_dec 			(char *a, char *b);
+char *minus_dec 		(char *a, char *b);
+char *str_to_dec 		(char *s, char *w);
+char *init_dec 			(char *s, int len, int d);
+char *mult_dec 			(char *s, char *v);
+char *divide_dec		(char *s, char *w);
+void dec_to_dec 		(char *f, char *t);
+void dump 				(char *s);
 
-int conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff);
-/* === END PROPTOTYPES === */
+int op_ival 			(struct ival *a, struct ival *b, double double_val, char op, char param);
+
+int conv_invdatatoc		(int *data,int v1,int v2,int v3,char *buff);
+
+void trim_dec 			(char *s);
+void negate 			(char *s);
+void pr 				(char *wrkbf);
+void double_to_dec 		(double arg, char *buf, size_t length, size_t digits);
+void assertion 			(int a, char *s);
+
+
+int valid_dt 	(char *s, int *data);
+
+int ctoc 		(void *a, void *b, int size);
+int ctodt 		(void *a, void *b, int size);
+int ctoint 		(void *a, void *b, int size);
+
+int valid_int 	(char *s, int *data,int size);
+
+void setc 		(void *p);
+void seti 		(void *p);
+void setl 		(void *p);
+void setf 		(void *p);
+void setno 		(void *p);
+void setsf 		(void *p);
+
+int inttoint 	(void *a, void *b, int size);
+int inttoc 		(void *a1, void *b, int size);
+
+int mdectol 	(void *zz, void *aa, int sz_ignore);
+int mdectof 	(void *zz, void *aa, int sz_ignore);
+int mdectos 	(void *z, void *w, int size);
+
+int ltodec 		(void *a, void *z, int size);
+
+int btob 		(void *a, void *b, int size);
+
+int dtos 		(void *aa, void *zz, int size);
+int dttoc 		(void *a, void *b, int size);
+int dtof 		(void *aa, void *zz, int sz_ignore);
+int dtovc 		(void *aa, void *zz, int sz_ignore);
+int dtosf 		(void *aa, void *zz, int sz_ignore);
+int dtol 		(void *aa, void *zz, int sz_ignore);
+int dtoi 		(void *aa, void *zz, int sz_ignore);
+int dttodt 		(void *a, void *b, int size);
+
+int mdectoi 	(void *zz, void *aa, int sz_ignore);
+int mdectosf 	(void *zz, void *aa, int sz_ignore);
+
+int dectodec 	(void *a, void *z, int size);
+int dectos 		(void *z, void *w, int size);
+int dectosf 	(void *zz, void *aa, int sz_ignore);
+int dectol 		(void *zz, void *aa, int sz_ignore);
+int dectof 		(void *zz, void *aa, int sz_ignore);
+int dectoi 		(void *zz, void *aa, int sz_ignore);
+
+int ltoi 		(void *aa, void *zz, int sz_ignore);
+int ltod 		(void *aa, void *zz, int sz_ignore);
+int ltof 		(void *aa, void *zz, int sz_ignore);
+int ltoc 		(void *aa, void *zz, int size);
+int ltol 		(void *aa, void *bb, int sz_ignore);
+int ltovc 		(void *aa, void *zz, int c);
+int ltosf 		(void *aa, void *zz, int sz_ignore);
+
+int ftoi 		(void *aa, void *zz, int c);
+int ftol 		(void *aa, void *zz, int c);
+int ftof 		(void *aa, void *bb, int c);
+int ftosf 		(void *aa, void *zz, int c);
+int ftodec 		(void *a, void *z, int size);
+int ftod 		(void *aa, void *zz, int sz_ignore);
+int ftoc 		(void *aa, void *zz, int c);
+int ftovc 		(void *aa, void *zz, int c);
+
+
+int itof 		(void *aa, void *zz, int sz_ignore);
+int itosf 		(void *aa, void *zz, int sz_ignore);
+int itodec 		(void *a, void *z, int size);
+int itol 		(void *aa, void *zz, int sz_ignore);
+int itod 		(void *aa, void *zz, int sz_ignore);
+int itovc 		(void *aa, void *zz, int c);
+int itoi 		(void *aa, void *bb, int sz_ignore);
+int itoc 		(void *aa, void *zz, int size);
+
+int stof 		(void *aa, void *zz, int sz_ignore);
+int sftovc 		(void *aa, void *zz, int c);
+int sftod 		(void *aa, void *zz, int sz_ignore);
+int sftol 		(void *aa, void *zz, int c);
+int sftoi 		(void *aa, void *zz, int c);
+int sftoc		(void *aa, void *zz, int c);
+int sftof 		(void *aa, void *zz, int c);
+int sftosf 		(void *aa, void *bb, int c);
+int sftodec 	(void *a, void *z, int size);
+int stod 		(void *zz, void *aa, int sz_ignore);
+int stol 		(void *aa, void *zi, int sz_ignore);
+int stodec 		(void *a, void *z, int size);
+int stosf 		(void *aa, void *zz, int sz_ignore);
+int stoi 		(void *aa, void *zi, int sz_ignore);
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+/**
+ * @deprecated
+ */
+/*
+typedef struct
+{
+  double value, expect;
+  int length, digits;
+} TEST_T;
+*/
+
+
+extern int errno;
+int lastsize;
+
+void (*setdtype[15]) (void *ptr1) =
+{
+  setc, seti, setl, setf,
+    setsf, setf, setl, setno, setf, setno, setno, setno, setno, setno, setno
+};
+
+
+/**
+ * Convertion table.
+ */
+int (*convmatrix[15][15]) (void *ptr1, void *ptr2, int size) =
+{
+  {
+    ctoc, stoi, stol, stof, stosf, stodec, stol, stod, stof, NO, ctodt, NO,
+      NO, OK, ctoint},
+  {
+    itoc, itoi, itol, itof, itosf, itodec, itol, itod, itomdec, NO, NO, NO,
+      NO, itovc, NO},
+  {
+    ltoc, ltoi, ltol, ltof, ltosf, ltodec, ltol, ltod, ltomdec, NO, NO, NO,
+      NO, ltovc, NO},
+  {
+    ftoc, ftoi, ftol, ftof, ftosf, ftodec, ftol, ftod, ftomdec, NO, NO, NO,
+      NO, ftovc, NO},
+  {
+    sftoc, sftoi, sftol, sftof, sftosf, sftodec, sftol, sftod, sftomdec, NO,
+      NO, NO, NO, sftovc, NO},
+  {
+    dectos, dectoi, dectol, dectof, dectosf, dectodec, dectol, NO, dectomdec,
+      NO, NO, NO, NO, dectos, NO},
+  {
+    ltoc, ltoi, ltol, ltof, ltosf, ltodec, ltol, ltod, ltomdec, NO, NO, NO,
+      NO, ltovc, NO},
+  {
+    dtos, dtoi, dtol, dtof, dtosf, dtodec, dtof, ltol, dtomdec, NO, NO, NO,
+      NO, dtovc, NO},
+  {
+    mdectos, mdectoi, mdectol, mdectof, mdectosf, mdectodec, mdectol, NO,
+      mdectomdec, NO, NO, NO, NO, mdectos, NO},
+  {
+  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
+  {
+  dttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, dttodt, NO, NO, NO, NO},
+  {
+  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, btob, NO, NO, NO},
+  {
+  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, btob, NO, NO},
+  {
+  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
+  {
+  inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO,inttoint}
+};
+
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+#ifdef TEST
+
+/**
+ * Main function for convertion values testing.
+ */
+int
+main (void)
+{
+  double rv, value;
+  double rv2;
+  char wrkbf[50];
+  char wrkbf2[50];
+  char wrkbf3[50];
+  int a, b;
+  int rc, x_sub, y_sub, size, len, digits;
+  char *zzz;
+  init_dec (wrkbf, 30, 20);
+  init_dec (wrkbf2, 20, 6);
+  init_dec (wrkbf3, 20, 6);
+  str_to_dec ("1.0", wrkbf2);
+  str_to_dec ("0.01", wrkbf3);
+//print_res(wrkbf2);
+  //print_res(wrkbf3);
+  //printf("Calculating\n");
+  dec_math (wrkbf2, wrkbf3, wrkbf, '*');
+  //printf("-9x-0.9 =%s\n",dec_to_str(wrkbf));
+  //exercise();
+
+
+  debug ("0.00003 %s\n", dec_to_str (inv (str_to_dec ("0.00003", 0))));
+  debug ("0.0003 %s\n", dec_to_str (inv (str_to_dec ("0.0003", 0))));
+  debug ("0.003 %s\n", dec_to_str (inv (str_to_dec ("0.003", 0))));
+  debug ("0.03 %s\n", dec_to_str (inv (str_to_dec (".03", 0))));
+  debug ("0.3 %s\n", dec_to_str (inv (str_to_dec (".30", 0))));
+  debug ("3 %s\n", dec_to_str (inv (str_to_dec ("3.0", 0))));
+  debug ("30 %s\n", dec_to_str (inv (str_to_dec ("30.0", 0))));
+  debug ("300 %s\n", dec_to_str (inv (str_to_dec ("300.0", 0))));
+  debug ("3000 %s\n", dec_to_str (inv (str_to_dec ("3000.0", 0))));
+  debug ("30000 %s\n", dec_to_str (inv (str_to_dec ("30000.0", 0))));
+  debug ("300000 %s\n", dec_to_str (inv (str_to_dec ("300000.0", 0))));
+  exit (0);
+  inv (str_to_dec ("1.0", 0));
+  inv (str_to_dec ("2.0", 0));
+  inv (str_to_dec ("3.0", 0));
+  inv (str_to_dec ("4.0", 0));
+  inv (str_to_dec ("5.0", 0));
+  inv (str_to_dec ("6.0", 0));
+  inv (str_to_dec ("7.0", 0));
+  inv (str_to_dec ("8.0", 0));
+  inv (str_to_dec ("9.0", 0));
+  inv (str_to_dec ("10.0", 0));
+  inv (str_to_dec ("11.0", 0));
+  inv (str_to_dec ("12.0", 0));
+  inv (str_to_dec ("13.0", 0));
+  inv (str_to_dec ("14.0", 0));
+  inv (str_to_dec ("15.0", 0));
+  inv (str_to_dec ("16.0", 0));
+  inv (str_to_dec ("32.0", 0));
+  inv (str_to_dec ("64.0", 0));
+}
+
+#endif
 
 /**
  * Copy a int value.
@@ -96,11 +397,12 @@ int conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff);
  * @param size
  * @return Allways 1
  */
+int
 inttoint (void *a, void *b, int size)
 {
-  char buff[256];
-  int data[10];
-  int val1,val2,val3;
+//char buff[256];
+int data[10];
+int val1,val2,val3;
 struct ival *d;
 
   debug ("inttoint\n");
@@ -112,7 +414,12 @@ struct ival *d;
   val2 = (size >> 4) & 15;
   val3 = (size >> 8) & 15;
 
-  decode_interval ((struct ival *)a, &data);
+
+  exitwith ("serious bug in conv.c");
+
+  //trying to pass array of int to function expecting one int:
+	//void decode_interval (struct ival *ival, int *data);
+  decode_interval ((struct ival *)a, &data); // warning: passing arg 2 of `decode_interval' from incompatible pointer type
   debug("Converting to %d %d %d\n",val1,val2,val3);
 
   conv_invdatatoc(data,val1,val2,val3,d->data);
@@ -127,6 +434,7 @@ struct ival *d;
  * @param size
  * return Allways 1
  */
+int
 inttoc (void *a1, void *b, int size)
 {
   struct ival *a;
@@ -214,12 +522,13 @@ inttoc (void *a1, void *b, int size)
  *   - 0 : The integer its not valid.
  *   - 1 : Convertion made.
  */
+int
 ctoint (void *a, void *b, int size)
 {
   int data[256];
   struct ival *d;
   int v1, v2, v3;
-  char fractions[6];
+//  char fractions[6];
   debug ("ctoint : %p %p %d\n", a, b, size);
   debug ("a-->%s\n", a);
   d = (struct ival *) b;
@@ -259,6 +568,7 @@ ctoint (void *a, void *b, int size)
  *   - 0 : 
  *   - Otherwise
  */
+int
 dttodt (void *a, void *b, int size)
 {
   char buff[256];
@@ -279,6 +589,7 @@ dttodt (void *a, void *b, int size)
  *   - 0 : The value passed is an invalid date or datetime.
  *   - 1 : Convertion done.
  */
+int
 ctodt (void *a, void *b, int size)
 {
   int data[256];
@@ -324,6 +635,7 @@ ctodt (void *a, void *b, int size)
  *   - 0 : The value does not fit in the size.
  *   - 1 : Convertion made.
  */
+int
 dttoc (void *a, void *b, int size)
 {
   struct a4gl_dtime *d;
@@ -357,7 +669,7 @@ dttoc (void *a, void *b, int size)
   if (strlen (buff) > size)
     {
       debug ("does not fit '%s' %d", buff, size);
-      exitwith ("does not fit\n", buff, size);
+      exitwith ("does not fit\n");
       return 0;
     }
 
@@ -373,6 +685,7 @@ dttoc (void *a, void *b, int size)
  * @param size
  * @return Allways 1
  */
+int
 btob (void *a, void *b, int size)
 {
   struct fgl_int_loc *la;
@@ -392,10 +705,11 @@ btob (void *a, void *b, int size)
  * @param aa
  * @param zi
  * @param sz_ignore
- * @return 
+ * @return
  *   - 0 : An error as ocurred.
  *   - 1 : Value copied and converted.
  */
+int
 stoi (void *aa, void *zi, int sz_ignore)
 {
   int *z;
@@ -426,6 +740,7 @@ stoi (void *aa, void *zi, int sz_ignore)
  *   - 0 : An error as ocurred.
  *   - 1 : Copy and convertion made.
  */
+int
 stol (void *aa, void *zi, int sz_ignore)
 {
   char *eptr;
@@ -447,7 +762,6 @@ stol (void *aa, void *zi, int sz_ignore)
   return 1;
 }
 
-#define itomdec itodec
 /**
  * Copy and convert an integer value to a decimal value.
  *
@@ -458,10 +772,11 @@ stol (void *aa, void *zi, int sz_ignore)
  *   - 0 : The value was invalid.
  *   - 1 : Value converted and copied.
  */
+int
 itodec (void *a, void *z, int size)
 {
   char *eptr;
-  int zz;
+//  int zz;
   int h;
   int t;
   char buff[256];
@@ -483,26 +798,20 @@ itodec (void *a, void *z, int size)
 }
 
 /**
- * definitions for dates (seems a pretty odd conversion though... 
- */
-#define dtodec ltodec
-#define dtomdec ltodec
-
-#define ltomdec ltodec
-/**
  * Copy and convert a long value to a decimal value.
  *
  * @param a The long value.
  * @param z A pointer to the pçace where to put the converted decimal value.
  * @param size
- * @return 
+ * @return
  *   - 0 : An error as ocurred.
  *   - 1 : Convertion made.
  */
+int
 ltodec (void *a, void *z, int size)
 {
   char *eptr;
-  int zz;
+//  int zz;
   int h;
   int t;
   char buff[256];
@@ -522,8 +831,6 @@ ltodec (void *a, void *z, int size)
     return 0;
 }
 
-
-#define ftomdec ftodec
 /**
  * Convert a float value to decimal.
  *
@@ -534,10 +841,11 @@ ltodec (void *a, void *z, int size)
  *   - 0 : Invalid value or error ocurred.
  *   - 1 : Value converted.
  */
+int
 ftodec (void *a, void *z, int size)
 {
   char *eptr;
-  int zz;
+//  int zz;
   int h;
   int t;
   char buff[256];
@@ -558,9 +866,6 @@ ftodec (void *a, void *z, int size)
 }
 
 
-
-#define sftomdec sftodec
-
 /**
  * Convert a smallfloat to dec.
  *
@@ -571,10 +876,11 @@ ftodec (void *a, void *z, int size)
  *   - 0 : An error as ocurred.
  *   - 1 : Convertion made.
  */
+int
 sftodec (void *a, void *z, int size)
 {
   char *eptr;
-  int zz;
+//  int zz;
   int h;
   int t;
   char buff[256];
@@ -595,24 +901,21 @@ sftodec (void *a, void *z, int size)
 
 }
 
-#define mdectomdec dectodec
-#define mdectodec dectodec
-#define dectomdec dectodec
-
 /**
  * Copy a decimal value.
  *
  * @param a
  * @param z
  * @param size
- * @return 
+ * @return
  *   - 0 : The value is not valid.
  *   - 1 : _Convertion made.
  */
+int
 dectodec (void *a, void *z, int size)
 {
   char *eptr;
-  int zz;
+//  int zz;
   int h;
   int t;
   char *buff;
@@ -641,10 +944,11 @@ dectodec (void *a, void *z, int size)
  *   - 0 : Invalid value or error ocurred.
  *   - 1 : Convertion made.
  */
+int
 stodec (void *a, void *z, int size)
 {
   char *eptr;
-  int zz;
+//  int zz;
   int h;
   int t;
   h = size;
@@ -675,10 +979,11 @@ stodec (void *a, void *z, int size)
  * @param size
  * @return Allways 1
  */
+int
 mdectos (void *z, void *w, int size)
 {
-  char *eptr;
-  int zz;
+//  char *eptr;
+//  int zz;
   char *buff;
   buff = dec_to_str (z, size);
   debug ("In dectos gets '%s'", buff);
@@ -697,6 +1002,7 @@ mdectos (void *z, void *w, int size)
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 mdectol (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -719,6 +1025,7 @@ mdectol (void *zz, void *aa, int sz_ignore)
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 mdectoi (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -741,6 +1048,7 @@ mdectoi (void *zz, void *aa, int sz_ignore)
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 mdectod (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -758,10 +1066,11 @@ mdectod (void *zz, void *aa, int sz_ignore)
  * @param zz The decimal value.
  * @param aa A pointer where to return the decimal value.
  * @param sz_ignore Not used.
- * @return 
+ * @return
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 mdectof (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -780,10 +1089,11 @@ mdectof (void *zz, void *aa, int sz_ignore)
  * @param zz The decimal value.
  * @param aa A pointer where to return the small float value.
  * @param sz_ignore Not used.
- * @return 
+ * @return
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 mdectosf (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -802,14 +1112,15 @@ mdectosf (void *zz, void *aa, int sz_ignore)
  * @param z The decimal value.
  * @param w A pointer where to return the string value.
  * @param size
- * @return 
+ * @return
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 dectos (void *z, void *w, int size)
 {
-  char *eptr;
-  int zz;
+//  char *eptr;
+//  int zz;
   char *buff;
   int r;
   debug ("dectos");
@@ -828,10 +1139,11 @@ dectos (void *z, void *w, int size)
  * @param zz The decimal value.
  * @param aa A pointer where to return the string value.
  * @param sz_ignore Not used.
- * @return 
+ * @return
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 stof (void *aa, void *zz, int sz_ignore)
 {
   char *a;
@@ -852,6 +1164,7 @@ stof (void *aa, void *zz, int sz_ignore)
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 stosf (void *aa, void *zz, int sz_ignore)
 {
   char *a;
@@ -869,10 +1182,11 @@ stosf (void *aa, void *zz, int sz_ignore)
  * @param zz The decimal value.
  * @param aa A pointer where to return the long value.
  * @param sz_ignore Not used.
- * @return 
+ * @return
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 dectol (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -891,10 +1205,11 @@ dectol (void *zz, void *aa, int sz_ignore)
  * @param zz The decimal value.
  * @param aa A pointer where to return the integer value.
  * @param sz_ignore Not used.
- * @return 
+ * @return
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 dectoi (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -913,10 +1228,11 @@ dectoi (void *zz, void *aa, int sz_ignore)
  * @param zz The decimal value.
  * @param aa A pointer where to return the long value.
  * @param sz_ignore Not used.
- * @return 
+ * @return
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 dectod (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -934,10 +1250,11 @@ dectod (void *zz, void *aa, int sz_ignore)
  * @param zz The decimal value.
  * @param aa A pointer where to return the float value.
  * @param sz_ignore Not used.
- * @return 
+ * @return
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 dectof (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -960,6 +1277,7 @@ dectof (void *zz, void *aa, int sz_ignore)
  *   - 0 : Value invalid or error.
  *   - 1 : Value converted.
  */
+int
 dectosf (void *zz, void *aa, int sz_ignore)
 {
   char buff[64];
@@ -979,6 +1297,7 @@ dectosf (void *zz, void *aa, int sz_ignore)
  * @param sz_ignore Not used.
  * @return Allways 1
  */
+int
 dtosf (void *aa, void *zz, int sz_ignore)
 {
   int *a;
@@ -997,6 +1316,7 @@ dtosf (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return  Allways 1
  */
+int
 dtof (void *aa, void *zz, int sz_ignore)
 {
   int *a;
@@ -1016,6 +1336,7 @@ dtof (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return  Allways 1
  */
+int
 dtol (void *aa, void *zz, int sz_ignore)
 {
   int *a;
@@ -1034,6 +1355,7 @@ dtol (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return  Allways 1
  */
+int
 dtoi (void *aa, void *zz, int sz_ignore)
 {
   int *a;
@@ -1052,6 +1374,7 @@ dtoi (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return  Allways 1
  */
+int
 ltod (void *aa, void *zz, int sz_ignore)
 {
   long *a;
@@ -1070,6 +1393,7 @@ ltod (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return  Allways 1
  */
+int
 itod (void *aa, void *zz, int sz_ignore)
 {
   int *a;
@@ -1088,6 +1412,7 @@ itod (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return  Allways 1
  */
+int
 sftod (void *aa, void *zz, int sz_ignore)
 {
   float *a;
@@ -1107,6 +1432,7 @@ sftod (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return  Allways 1
  */
+int
 ftod (void *aa, void *zz, int sz_ignore)
 {
   double *a;
@@ -1128,6 +1454,7 @@ ftod (void *aa, void *zz, int sz_ignore)
  *   - 0 : There was a convertion error
  *   - 1 : Convertion made.
  */
+int
 stod (void *zz, void *aa, int sz_ignore)
 {
   int d[4];
@@ -1139,9 +1466,9 @@ stod (void *zz, void *aa, int sz_ignore)
   char dbdate_d[10] = "";
   int cnt = 0;
   int ptr1;
-  int a;
+//  int a;
   char buff[5];
-  char buff2[15];
+//  char buff2[15];
   char dbdate[20];
   int *c;
   char *z;
@@ -1149,17 +1476,11 @@ stod (void *zz, void *aa, int sz_ignore)
   z = (char *) zz;
   ptr1 = 0;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("stod %s", z);
-  }
+  {    debug ("stod %s", z);  }
 #endif
   if (bname2 (z, p1, p2, p3)==0) return 0;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("done bname2 '%s' '%s' '%s'", p1, p2, p3);
-  }
+  {    debug ("done bname2 '%s' '%s' '%s'", p1, p2, p3);  }
 #endif
   strcpy (dbdate, acl_getenv ("DBDATE"));
   debug ("DBDATE set to %s\n", dbdate);
@@ -1193,10 +1514,7 @@ stod (void *zz, void *aa, int sz_ignore)
   d[1] = atoi (p2);
   d[2] = atoi (p3);
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Split to numbers : %d %d %d", d[0], d[1], d[2]);
-  }
+  {    debug ("Split to numbers : %d %d %d", d[0], d[1], d[2]);  }
 #endif
   if (strlen (p1) > 0 && strlen (p2) > 0 && strlen (p3) > 0)
     {
@@ -1204,43 +1522,28 @@ stod (void *zz, void *aa, int sz_ignore)
     }
   trim (p3);
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("trimmed");
-  }
+  {    debug ("trimmed");  }
 #endif
   if (strlen (p3) <= 2)
     {
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Modify year");
-      }
+      {	debug ("Modify year");      }
 #endif
       d[2] = modify_year (d[2]);
     }
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Modified year");
-  }
+  {    debug ("Modified year");  }
 #endif
   if (cnt != 3)
     {
       /* could be all numbers */
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Check numbers %s", z);
-      }
+      {	debug ("Check numbers %s", z);      }
 #endif
       if (strlen (z) == 6)
 	{
 #ifdef DEBUG
-/* {DEBUG} */
-	  {
-	    debug ("6 chars long");
-	  }
+	  {	    debug ("6 chars long");	  }
 #endif
 	  buff[0] = z[0];
 	  buff[1] = z[1];
@@ -1258,18 +1561,12 @@ stod (void *zz, void *aa, int sz_ignore)
 	  cnt = 3;
 	}
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Checked 6");
-      }
+      {	debug ("Checked 6");      }
 #endif
       if (strlen (z) == 8)
 	{
 #ifdef DEBUG
-/* {DEBUG} */
-	  {
-	    debug ("8 chars long");
-	  }
+	  {	    debug ("8 chars long");	  }
 #endif
 	  buff[0] = z[0];
 	  buff[1] = z[1];
@@ -1288,40 +1585,25 @@ stod (void *zz, void *aa, int sz_ignore)
 	  cnt = 3;
 	}
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Checked 8");
-      }
+      {	debug ("Checked 8");      }
 #endif
     }
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("  (cnt=%d)", cnt);
-  }
+  {    debug ("  (cnt=%d)", cnt);  }
 #endif
   if (cnt == 3)
     {
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("cnt=3 %d %d %d", d[0], d[1], d[2]);
-      }
+      {	debug ("cnt=3 %d %d %d", d[0], d[1], d[2]);      }
 #endif
       *c = gen_dateno (d[0], d[1], d[2]);
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("Generated date");
-      }
+      {	debug ("Generated date");      }
 #endif
       if (*c != DATE_INVALID)
 	{
 #ifdef DEBUG
-/* {DEBUG} */
-	  {
-	    debug ("Made %d", *c);
-	  }
+	  {	    debug ("Made %d", *c);	  }
 #endif
 	  return 1;
 	}
@@ -1344,13 +1626,14 @@ stod (void *zz, void *aa, int sz_ignore)
  *   - 0 : There was a convertion error
  *   - 1 : Convertion made.
  */
+int
 dtovc (void *aa, void *zz, int sz_ignore)
 {
   int *a;
   char *z;
   a = (int *) aa;
   z = (char *) zz;
-  return dtos (a, z);
+  return dtos (a, z, 6);
 }
 
 /**
@@ -1363,6 +1646,7 @@ dtovc (void *aa, void *zz, int sz_ignore)
  *   - 0 : There was a convertion error
  *   - 1 : Convertion made.
  */
+int
 dtos (void *aa, void *zz, int size)
 {
   int *a;
@@ -1374,10 +1658,10 @@ dtos (void *aa, void *zz, int size)
   m = 0;
   y = 0;
 #ifdef DEBUG
-/* {DEBUG} */ { debug ("dtos"); }
+	{ debug ("dtos"); }
 #endif
 #ifdef DEBUG
-/* {DEBUG} */ { debug ("Size=%d\n", size); }
+	{ debug ("Size=%d\n", size); }
 #endif
 
   if (size < 6)
@@ -1445,6 +1729,7 @@ dtos (void *aa, void *zz, int size)
  *   - 0 : There was a convertion error
  *   - 1 : Convertion made.
  */
+int
 itoc (void *aa, void *zz, int size)
 {
   char fmt[10] = "d";
@@ -1456,10 +1741,7 @@ itoc (void *aa, void *zz, int size)
   if (digittoc (a, z, fmt, DTYPE_SMINT, size))
     {
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("itoc return from digittoc using %s", fmt);
-      }
+      {	debug ("itoc return from digittoc using %s", fmt);      }
 #endif
       sprintf (z, fmt, *(int *) a);
     }
@@ -1476,6 +1758,7 @@ itoc (void *aa, void *zz, int size)
  *   - 0 : There was a convertion error
  *   - 1 : Convertion made.
  */
+int
 itol (void *aa, void *zz, int sz_ignore)
 {
   int *a;
@@ -1483,10 +1766,7 @@ itol (void *aa, void *zz, int sz_ignore)
   z = (long *) zz;
   a = (int *) aa;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("itol");
-  }
+  {    debug ("itol");  }
 #endif
   *z = (long) *a;
   return 1;
@@ -1500,6 +1780,7 @@ itol (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return Allways 1
  */
+int
 itof (void *aa, void *zz, int sz_ignore)
 {
   int *a;
@@ -1518,6 +1799,7 @@ itof (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return Allways 1
  */
+int
 itosf (void *aa, void *zz, int sz_ignore)
 {
   int *a;
@@ -1536,6 +1818,7 @@ itosf (void *aa, void *zz, int sz_ignore)
  * @param c The size
  * @return Allways 1
  */
+int
 itovc (void *aa, void *zz, int c)
 {
   int *a;
@@ -1555,6 +1838,7 @@ itovc (void *aa, void *zz, int c)
  * @param size
  * @return Allways 1
  */
+int
 ltoc (void *aa, void *zz, int size)
 {
   long *a;
@@ -1563,18 +1847,12 @@ ltoc (void *aa, void *zz, int size)
   z = (char *) zz;
   a = (long *) aa;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Size=%d", size);
-  }
+  {    debug ("Size=%d", size);  }
 #endif
-  if (digittoc (a, z, fmt, DTYPE_INT, size))
+  if (digittoc ((int*)a, z, fmt, DTYPE_INT, size))
     {
 #ifdef DEBUG
-/* {DEBUG} */
-      {
-	debug ("ltoc return from digittoc using %s", fmt);
-      }
+      {	debug ("ltoc return from digittoc using %s", fmt);      }
 #endif
       sprintf (z, fmt, *(long *) a);
     }
@@ -1589,6 +1867,7 @@ ltoc (void *aa, void *zz, int size)
  * @param sz_ignore Not used.
  * @return Allways 1
  */
+int
 ltoi (void *aa, void *zz, int sz_ignore)
 {
   long *a;
@@ -1597,10 +1876,7 @@ ltoi (void *aa, void *zz, int sz_ignore)
   z = (int *) zz;
 
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Ltoi");
-  }
+  {    debug ("Ltoi");  }
 #endif
   *z = (int) *a;
   return 1;
@@ -1614,6 +1890,7 @@ ltoi (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return Allways 1
  */
+int
 ltof (void *aa, void *zz, int sz_ignore)
 {
   long *a;
@@ -1634,6 +1911,7 @@ ltof (void *aa, void *zz, int sz_ignore)
  * @param sz_ignore Not used.
  * @return Allways 1
  */
+int
 ltosf (void *aa, void *zz, int sz_ignore)
 {
   long *a;
@@ -1645,13 +1923,14 @@ ltosf (void *aa, void *zz, int sz_ignore)
 }
 
 /**
- * Convert a long value to 
+ * Convert a long value to
  *
  * @param aa The long value.
  * @param zz A pointer to the place where to return the value.
  * @param c
  * @return Allways 1
  */
+int
 ltovc (void *aa, void *zz, int c)
 {
   long *a;
@@ -1663,13 +1942,14 @@ ltovc (void *aa, void *zz, int c)
 }
 
 /**
- * Convert a float value to 
+ * Convert a float value to
  *
  * @param aa The float value.
  * @param zz A pointer to the place where to return the value.
  * @param c
  * @return Allways 1
  */
+int
 ftoc (void *aa, void *zz, int c)
 {
   double *a;
@@ -1677,7 +1957,7 @@ ftoc (void *aa, void *zz, int c)
   char fmt[10] = ".2lf";
   a = (double *) aa;
   z = (char *) zz;
-  if (digittoc (a, z, fmt, DTYPE_FLOAT, c))
+  if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c))
     {
       sprintf (z, fmt, *a);
     }
@@ -1692,6 +1972,7 @@ ftoc (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 ftoi (void *aa, void *zz, int c)
 {
   double *a;
@@ -1710,6 +1991,7 @@ ftoi (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 ftol (void *aa, void *zz, int c)
 {
   double *a;
@@ -1719,10 +2001,7 @@ ftol (void *aa, void *zz, int c)
   debug ("ftol");
   *z = (long) *a;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("a=%lf z=%d\n", *a, *z);
-  }
+  {    debug ("a=%lf z=%d\n", *a, *z);  }
 #endif
   return 1;
 }
@@ -1735,6 +2014,7 @@ ftol (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 ftosf (void *aa, void *zz, int c)
 {
   double *a;
@@ -1753,6 +2033,7 @@ ftosf (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 ftovc (void *aa, void *zz, int c)
 {
   double *a;
@@ -1772,6 +2053,7 @@ ftovc (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 sftoc (void *aa, void *zz, int c)
 {
   float *a;
@@ -1779,7 +2061,7 @@ sftoc (void *aa, void *zz, int c)
   char fmt[10] = ".2f";
   a = (float *) aa;
   z = (char *) zz;
-  if (digittoc (a, z, fmt, DTYPE_FLOAT, c))
+  if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c))
     {
       sprintf (z, fmt, *a);
     }
@@ -1794,6 +2076,7 @@ sftoc (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 sftoi (void *aa, void *zz, int c)
 {
   float *a;
@@ -1812,6 +2095,7 @@ sftoi (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 sftol (void *aa, void *zz, int c)
 {
   float *a;
@@ -1830,6 +2114,7 @@ sftol (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 sftof (void *aa, void *zz, int c)
 {
   float *a;
@@ -1848,6 +2133,7 @@ sftof (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 sftovc (void *aa, void *zz, int c)
 {
   float *a;
@@ -1866,6 +2152,7 @@ sftovc (void *aa, void *zz, int c)
  * @param c
  * @return Allways 1
  */
+int
 sftosf (void *aa, void *bb, int c)
 {
   float *a, *b;
@@ -1883,6 +2170,7 @@ sftosf (void *aa, void *bb, int c)
  * @param c
  * @return Allways 1
  */
+int
 ftof (void *aa, void *bb, int c)
 {
   double *a;
@@ -1901,20 +2189,15 @@ ftof (void *aa, void *bb, int c)
  * @param c
  * @return Allways 1
  */
+int
 ctoc (void *a, void *b, int size)
 {
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("--->Got size as %d", size);
-  }
+  {    debug ("--->Got size as %d", size);  }
 #endif
   string_set (b, a, size);
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("Set string");
-  }
+  {    debug ("Set string");  }
 #endif
   debug ("returning");
   return 1;
@@ -1928,6 +2211,7 @@ ctoc (void *a, void *b, int size)
  * @param c
  * @return Allways 1
  */
+int
 ltol (void *aa, void *bb, int sz_ignore)
 {
   long *a;
@@ -1937,10 +2221,7 @@ ltol (void *aa, void *bb, int sz_ignore)
 
   *b = *a;
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("ltol %ld %ld", *a, *b);
-  }
+  {    debug ("ltol %ld %ld", *a, *b);  }
 #endif
   return 1;
 }
@@ -1953,6 +2234,7 @@ ltol (void *aa, void *bb, int sz_ignore)
  * @param c
  * @return Allways 1
  */
+int
 itoi (void *aa, void *bb, int sz_ignore)
 {
   int *a;
@@ -2038,75 +2320,6 @@ setno (void *p)
 }
 
 
-void (*setdtype[15]) (void *ptr1) =
-{
-  setc, seti, setl, setf,
-    setsf, setf, setl, setno, setf, setno, setno, setno, setno, setno, setno
-};
-
-#define OK (void *)1
-
-/**
- * Convertion table.
- */
-int (*convmatrix[15][15]) (void *ptr1, void *ptr2, int size) =
-{
-  {
-    ctoc, stoi, stol, stof, stosf, stodec, stol, stod, stof, NO, ctodt, NO,
-      NO, OK, ctoint}
-  ,
-  {
-    itoc, itoi, itol, itof, itosf, itodec, itol, itod, itomdec, NO, NO, NO,
-      NO, itovc, NO}
-  ,
-  {
-    ltoc, ltoi, ltol, ltof, ltosf, ltodec, ltol, ltod, ltomdec, NO, NO, NO,
-      NO, ltovc, NO}
-  ,
-  {
-    ftoc, ftoi, ftol, ftof, ftosf, ftodec, ftol, ftod, ftomdec, NO, NO, NO,
-      NO, ftovc, NO}
-  ,
-  {
-    sftoc, sftoi, sftol, sftof, sftosf, sftodec, sftol, sftod, sftomdec, NO,
-      NO, NO, NO, sftovc, NO}
-  ,
-  {
-    dectos, dectoi, dectol, dectof, dectosf, dectodec, dectol, NO, dectomdec,
-      NO, NO, NO, NO, dectos, NO}
-  ,
-  {
-    ltoc, ltoi, ltol, ltof, ltosf, ltodec, ltol, ltod, ltomdec, NO, NO, NO,
-      NO, ltovc, NO}
-  ,
-  {
-    dtos, dtoi, dtol, dtof, dtosf, dtodec, dtof, ltol, dtomdec, NO, NO, NO,
-      NO, dtovc, NO}
-  ,
-  {
-    mdectos, mdectoi, mdectol, mdectof, mdectosf, mdectodec, mdectol, NO,
-      mdectomdec, NO, NO, NO, NO, mdectos, NO}
-  ,
-  {
-  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO}
-  ,
-  {
-  dttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, dttodt, NO, NO, NO, NO}
-  ,
-  {
-  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, btob, NO, NO, NO}
-  ,
-  {
-  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, btob, NO, NO}
-  ,
-  {
-  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO}
-  ,
-  {
-  inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO,inttoint}
-};
-
-
 /**
  * Convert a value from one data type to other data type.
  *
@@ -2116,10 +2329,11 @@ int (*convmatrix[15][15]) (void *ptr1, void *ptr2, int size) =
  * @param p2 Pointer to the place where to put the converted value.
  * @param size
  */
+int
 conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 {
   int (*ptr) (void *ptr1, void *ptr2, int size);
-  void *ptrf;
+//  void *ptrf;
   int rval;
   debug ("In conv.. d1=%d d2=%d size=%d", dtype1, dtype2, size);
 
@@ -2146,10 +2360,7 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 
 
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    /* debug ("convert %d %p %d %p\n", dtype1, p1, dtype2, p2); */
-  }
+  {    /* debug ("convert %d %p %d %p\n", dtype1, p1, dtype2, p2); */  }
 #endif
 
   ptr = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK];
@@ -2161,10 +2372,7 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
       return -1;
     }
 #ifdef DEBUG
-/* {DEBUG} */
-  {
-    debug ("conv (%ld %ld)", *(long *) p1, *(long *) p2);
-  }
+  {    debug ("conv (%ld %ld)", *(long *) p1, *(long *) p2);  }
 #endif
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);
   debug ("rval=%d\n", rval);
@@ -2179,6 +2387,7 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
  *   - Otherwise : The expression was not true.
  * @param s The message if the expression is not true.
  */
+void
 assertion (int a, char *s)
 {
 
@@ -2191,21 +2400,6 @@ assertion (int a, char *s)
       exit (0);
     }
 }
-
-
-#define DEC_VAL(x) ( ((x)&0xf)+ (((x)&0xf0)*10 /16) )
-#define HEX_VAL(x) (((x)%10) + ((((x)-((x)%10)) / 10)*16))
-#define SIGNED(x) (x[0]&128)
-#define SET_SIGNED(x) (x[0]|=128)
-#define SET_UNSIGNED(x) (x[0]=(x[0]>=128)?x[0]:x[0]-128)
-#define NUM_DIG(x) ((x[0])&127 )
-#define NUM_DEC(x) ((x[1]))
-#define SET_DIG(x,y) (x[0]=y)
-#define SET_DEC(x,y) (x[1]=y)
-#define OFFSET_DEC(x) (2)
-#define NUM_BYTES(x) (NUM_DIG(x)+OFFSET_DEC(x))
-#define DBL_DIG1 512
-#define print_res(x) print_res_l(__LINE__,x)
 
 
 /**
@@ -2399,7 +2593,7 @@ dec_math (char *s, char *w, char *r, char op)
  * @param digits
  * @return Nothing important.
  */
-int
+void
 double_to_dec (double arg, char *buf, size_t length, size_t digits)
 {
   char wrkbuf[DBL_DIG1], format[DBL_DIG1];
@@ -2409,15 +2603,6 @@ double_to_dec (double arg, char *buf, size_t length, size_t digits)
   str_to_dec (wrkbuf, buf);
 }
 
-/**
- * @deprecated
- */
-typedef struct
-{
-  double value, expect;
-  int length, digits;
-} TEST_T;
-
 
 /**
  * Copy a decimal value.
@@ -2425,7 +2610,8 @@ typedef struct
  * @param f The value to be copied.
  * @param t A pointer to the place where to copy the decimal value.
  */
-void dec_to_dec (char *f, char *t)
+void
+dec_to_dec (char *f, char *t)
 {
   int l, lt;
   int d, ld;
@@ -2488,7 +2674,8 @@ str_to_dec (char *s, char *w)
   int dp = 0;
   int neg = 0;
   char buff[DBL_DIG1];
-  int l, d, a;
+  int a; //l, d
+  
   memset (hd, 0, DBL_DIG1 - 1);
   memset (tl, 0, DBL_DIG1 - 1);
   for (cnt = 0; cnt < strlen (s); cnt++)
@@ -2567,13 +2754,14 @@ str_to_dec (char *s, char *w)
  * 
  * @param wrkbf The buffer with the information to be printed to debug.
  */
+void
 pr (char *wrkbf)
 {
   int rc;
   int y_sub;
   rc = NUM_DIG (wrkbf);
   for (y_sub = 0; y_sub <= rc + 1; y_sub++)
-    debug ("%02X ", wrkbf[y_sub] & 0xff);
+  debug ("%02X ", wrkbf[y_sub] & 0xff);
   debug ("\n");
 }
 
@@ -2584,7 +2772,8 @@ pr (char *wrkbf)
  * @param a
  * @param b
  */
-void match_dec (char *f, char *t, int *a, int *b)
+void 
+match_dec (char *f, char *t, int *a, int *b)
 {
   int l, lt;
   int d, ld;
@@ -2622,7 +2811,7 @@ add_dec (char *a, char *b)
   static char wrkbuf[3][DBL_DIG1];
   int xlen, xdig;
   int cnt;
-  int lb1, hb1, lb2, hb2;
+//  int lb1, hb1, lb2, hb2;
   int n1, n2;
   int carry = 0;
   int acc;
@@ -2664,9 +2853,10 @@ add_dec (char *a, char *b)
  *
  * @param s The value to be negated.
  */
+void
 negate (char *s)
 {
-  if (s[0] & 128 == 1)
+  if ((s[0] & 128) == 1)
     s[0] = s[0] - 128;
   else
     s[0] = s[0] + 128;
@@ -2778,7 +2968,7 @@ minus_dec (char *a, char *b)
   static char cbuff[DBL_DIG1];
   int xlen, xdig;
   int cnt;
-  int lb1, hb1, lb2, hb2;
+//  int lb1, hb1, lb2, hb2;
   int n1, n2;
   int carry = 0;
   int acc;
@@ -2855,75 +3045,6 @@ init_dec (char *s, int len, int d)
   return s;
 }
 
-/*************************************************************************/
-/*************************************************************************/
-/*************************************************************************/
-/*************************************************************************/
-/*************************************************************************/
-/*************************************************************************/
-
-#ifdef TEST
-
-/**
- * Main function for convertion values testing.
- */
-int
-main (void)
-{
-  double rv, value;
-  double rv2;
-  char wrkbf[50];
-  char wrkbf2[50];
-  char wrkbf3[50];
-  int a, b;
-  int rc, x_sub, y_sub, size, len, digits;
-  char *zzz;
-  init_dec (wrkbf, 30, 20);
-  init_dec (wrkbf2, 20, 6);
-  init_dec (wrkbf3, 20, 6);
-  str_to_dec ("1.0", wrkbf2);
-  str_to_dec ("0.01", wrkbf3);
-//print_res(wrkbf2);
-  //print_res(wrkbf3);
-  //printf("Calculating\n");
-  dec_math (wrkbf2, wrkbf3, wrkbf, '*');
-  //printf("-9x-0.9 =%s\n",dec_to_str(wrkbf));
-  //exercise();
-
-
-  debug ("0.00003 %s\n", dec_to_str (inv (str_to_dec ("0.00003", 0))));
-  debug ("0.0003 %s\n", dec_to_str (inv (str_to_dec ("0.0003", 0))));
-  debug ("0.003 %s\n", dec_to_str (inv (str_to_dec ("0.003", 0))));
-  debug ("0.03 %s\n", dec_to_str (inv (str_to_dec (".03", 0))));
-  debug ("0.3 %s\n", dec_to_str (inv (str_to_dec (".30", 0))));
-  debug ("3 %s\n", dec_to_str (inv (str_to_dec ("3.0", 0))));
-  debug ("30 %s\n", dec_to_str (inv (str_to_dec ("30.0", 0))));
-  debug ("300 %s\n", dec_to_str (inv (str_to_dec ("300.0", 0))));
-  debug ("3000 %s\n", dec_to_str (inv (str_to_dec ("3000.0", 0))));
-  debug ("30000 %s\n", dec_to_str (inv (str_to_dec ("30000.0", 0))));
-  debug ("300000 %s\n", dec_to_str (inv (str_to_dec ("300000.0", 0))));
-  exit (0);
-  inv (str_to_dec ("1.0", 0));
-  inv (str_to_dec ("2.0", 0));
-  inv (str_to_dec ("3.0", 0));
-  inv (str_to_dec ("4.0", 0));
-  inv (str_to_dec ("5.0", 0));
-  inv (str_to_dec ("6.0", 0));
-  inv (str_to_dec ("7.0", 0));
-  inv (str_to_dec ("8.0", 0));
-  inv (str_to_dec ("9.0", 0));
-  inv (str_to_dec ("10.0", 0));
-  inv (str_to_dec ("11.0", 0));
-  inv (str_to_dec ("12.0", 0));
-  inv (str_to_dec ("13.0", 0));
-  inv (str_to_dec ("14.0", 0));
-  inv (str_to_dec ("15.0", 0));
-  inv (str_to_dec ("16.0", 0));
-  inv (str_to_dec ("32.0", 0));
-  inv (str_to_dec ("64.0", 0));
-}
-
-#endif
 
 
 /**
@@ -3003,7 +3124,8 @@ mult_dec (char *s, char *v)
  *
  * Make some examples of decimal expressions.
  */
-exercise ()
+void
+exercise (void)
 {
   char buffx[DBL_DIG1];
   char buffy[DBL_DIG1];
@@ -3012,7 +3134,7 @@ exercise ()
   int xi, yi;
   double y;
   double z;
-  double z2;
+  double z2 = 0;
   char tb1[20];
   char tb2[20];
   init_dec (buffx, 20, 6);
@@ -3136,9 +3258,10 @@ exercise ()
 }
 
 /**
- * 
+ *
  * @param a The decimal value.
  */
+void
 trim_dec (char *s)
 {
   int a;
@@ -3201,6 +3324,10 @@ trim_dec (char *s)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 char *
 inv (char *s)
 {
@@ -3209,12 +3336,12 @@ inv (char *s)
   char mult_by[512];
   char mpoint01[512];
   static char tmpbuff[512];
-  char *res;
+//  char *res;
   int counter = 0;
   int d;
   int a;
   int flg;
-  double p;
+  double p = 0;
   memcpy (buff, s, NUM_BYTES (s));
   init_dec (mult_by, 64, 32);
   init_dec (tmpbuff, 64, 32);
@@ -3312,6 +3439,7 @@ divide_dec (char *s, char *w)
  * @param s
  * @param d
  */
+void
 trim_decimals (char *s, int d)
 {
   int diff;
@@ -3340,9 +3468,10 @@ trim_decimals (char *s, int d)
  * @param ln The line in the source code
  * @param s The value to be printed to the debug.
  */
+void
 print_res_l (int ln, char *s)
 {
-  static int c = 0;
+//  static int c = 0;
   //debug ("%4d->%s\n", ln, dec_to_str (s));
   debug ("      ");
   pr (s);
@@ -3355,7 +3484,8 @@ print_res_l (int ln, char *s)
  *
  * @param s The string to be dumped.
  */
-void dump (char *s)
+void
+dump (char *s)
 {
   int a;
   char buff[256] = "";
@@ -3378,6 +3508,7 @@ void dump (char *s)
  *   - 0 : The date is not valid.
  *   - 1 : The date is valid.
  */
+int
 valid_dt (char *s, int *data)
 {
   int a;
@@ -3450,14 +3581,6 @@ valid_dt (char *s, int *data)
       return 0;
     }
 
-#define DT_YEAR 1
-#define DT_MONTH 2
-#define DT_DAY 3
-#define DT_HOUR 4
-#define DT_MINUTE 5
-#define DT_SECOND 6
-#define DT_FRACTION 7
-#define dt_encode(s,e) ((s*16)+e)
   type[cnt] = 0;
   dt_type = -1;
   debug ("cnt=%d\n", cnt);
@@ -3614,6 +3737,7 @@ valid_dt (char *s, int *data)
  *   - 0 : The value is not a valid date or datetime.
  *   - 1 : The value is a valid datetime.
  */
+int
 valid_int (char *s, int *data,int size)
 {
   int a;
@@ -3694,14 +3818,6 @@ valid_int (char *s, int *data,int size)
       return 0;
     }
 
-#define DT_YEAR 1
-#define DT_MONTH 2
-#define DT_DAY 3
-#define DT_HOUR 4
-#define DT_MINUTE 5
-#define DT_SECOND 6
-#define DT_FRACTION 7
-#define dt_encode(s,e) ((s*16)+e)
   type[cnt] = 0;
   dt_type = -1;
   debug ("cnt=%d\n", cnt);
@@ -3865,18 +3981,19 @@ valid_int (char *s, int *data,int size)
  * @param ival
  * @param data
  */
+void
 decode_interval (struct ival *ival, int *data)
 {
-  int a;
+//  int a;
   char buff[256];
-  int b;
+//  int b;
   int i;
   int cnt = 0;
-  int has_yr_month = 0;
+//  int has_yr_month = 0;
   char buff2[64];
-  int has_rest = 0;
-  int buff_size;
-  int size_type;
+//  int has_rest = 0;
+//  int buff_size;
+//  int size_type;
   int s1;
   int s2;
   int c;
@@ -3959,4 +4076,7 @@ debug("buff=%s\n",buff);
 	debug("Data : %s %d\n",codes[c],data[c]);
   }
 }
+
+
+// ============================= EOF ================================
 

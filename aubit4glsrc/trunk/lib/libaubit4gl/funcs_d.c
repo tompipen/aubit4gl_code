@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.4 2002-05-17 07:08:33 afalout Exp $
+# $Id: funcs_d.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -95,54 +95,54 @@ char b3[10];
 	}
 
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("%p %p %p %p",str,str1,str2,str3);}
+	 {debug("%p %p %p %p",str,str1,str2,str3);}
 #endif
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("(1)%s %s %s",str1,str2,str3);}
+	 {debug("(1)%s %s %s",str1,str2,str3);}
 #endif
 	strcpy(ss,str);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("(1.1)%s %s %s",str1,str2,str3);}
+	 {debug("(1.1)%s %s %s",str1,str2,str3);}
 #endif
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("In bname2 %s");}
+	 {debug("In bname2 %s");}
 #endif
 	trim(ss);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("(2)%s %s %s",str1,str2,str3);}
+	 {debug("(2)%s %s %s",str1,str2,str3);}
 #endif
 	bnamexxx(ss,b2,b3);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("(1) Splits to %s %s",b2,b3);}
+	 {debug("(1) Splits to %s %s",b2,b3);}
 #endif
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("(3)%s %s %s",str1,str2,str3);}
+	 {debug("(3)%s %s %s",str1,str2,str3);}
 #endif
 	strcpy(ss,b2);
 	bnamexxx(ss,b1,b2);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("(2) Splits to '%s' '%s'",b1,b2);}
+	 {debug("(2) Splits to '%s' '%s'",b1,b2);}
 #endif
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("(4)%s %s %s",str1,str2,str3);}
+	 {debug("(4)%s %s %s",str1,str2,str3);}
 #endif
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("'%s' '%s' '%s'",b1,b2,b3);}
+	 {debug("'%s' '%s' '%s'",b1,b2,b3);}
 #endif
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("%s %s %s",str1,str2,str3);}
+	 {debug("%s %s %s",str1,str2,str3);}
 #endif
 	strcpy(str1,b1);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("1");}
+	 {debug("1");}
 #endif
 	strcpy(str2,b2);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("1");}
+	 {debug("1");}
 #endif
 	strcpy(str3,b3);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("Copied...");}
+	 {debug("Copied...");}
 #endif
 	return 1;
 }
@@ -228,32 +228,32 @@ static char fn[132];
 
 	strcpy(fn,str);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("In bnamexxx - splitting %s",str);}
+	 {debug("In bnamexxx - splitting %s",str);}
 #endif
 	for (a=strlen(fn);a>=0;a--) {
 		if (date_sep(fn[a])) {
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("separator found at %d",a);}
+	 {debug("separator found at %d",a);}
 #endif
 			fn[a]=0;
 			break;
 		}
 	}
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("a=%d",a);}
+	 {debug("a=%d",a);}
 #endif
 	ptr=&fn[a];
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("ptr=%p",ptr);}
+	 {debug("ptr=%p",ptr);}
 #endif
 	strcpy(str1,fn);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("Str1 now = '%s'",str1);}
+	 {debug("Str1 now = '%s'",str1);}
 #endif
 	if (a>=0) strcpy(str2,ptr+1);
 	else str2[0]=0;
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("Str2='%s'",str2);}
+	 {debug("Str2='%s'",str2);}
 #endif
 }
 
@@ -290,11 +290,11 @@ digittoc(int *a,char *z,char *fmt,int dtype,int size)
 {
 	static char buff[100];
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("digittoc"); }
+	 {debug("digittoc"); }
 #endif
 	sprintf(buff,fmt,*a);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("digittoc: %s",buff); }
+	 {debug("digittoc: %s",buff); }
 #endif
 	if (strlen(buff)>size) {
 		memset(z,'*',size);
@@ -308,11 +308,11 @@ digittoc(int *a,char *z,char *fmt,int dtype,int size)
 	sprintf(buff,"%%%d%s",size,fmt);
 #endif
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("digittoc: buff set to %s",buff);}
+	 {debug("digittoc: buff set to %s",buff);}
 #endif
 	strcpy(fmt,buff);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug("digittoc: returns");}
+	 {debug("digittoc: returns");}
 #endif
 	return 1;
 }
@@ -335,19 +335,19 @@ char fm1[64],fm2[64];
 char *ptr1,*ptr;
 char *ptr2;
 char *p;
-char arr_chr[]="*&#<,.-+()$";
-int isprinthead[20];
-int isprinttail[20];
+//char arr_chr[]="*&#<,.-+()$";
+//int isprinthead[20];
+//int isprinttail[20];
 char canfloat_head[]="*-+($";
-char canfloat_tail[]=")";
+//char canfloat_tail[]=")";
 char rep_digit[]="*&#<-+()$";
-char neg[]="()-";
+//char neg[]="()-";
 char buff[80];
 int isneg=0;
 int a,b;
 int isprnt=0;
 double ad;
-int k;
+//int k;
 
 	debug("In using...");
 	for (a=0;a<MAXPNT;a++) {pnt[a]=0;}

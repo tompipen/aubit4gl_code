@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
+# $Id: rexp2.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -457,27 +457,6 @@ doconstruct(char *s,char *whereclause)
         }
         if (strlen(whereclause)==0) strcpy(whereclause,"1=1");
 }
-
-
-/**
- *
- *
- * @return
- */
-static void
-stripnl(char *buff) 
-{
-        int a;
-        for (a=strlen(buff)-1;a--;a>=0)
-        {
-                if (buff[a]=='\n') {
-                        buff[a]=0;
-                        break;
-                }
-        }
-}
-
-
 
 
 #ifdef OLDSTYLE

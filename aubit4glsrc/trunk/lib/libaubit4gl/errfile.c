@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: errfile.c,v 1.3 2002-05-14 09:27:27 afalout Exp $
+# $Id: errfile.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -38,21 +38,47 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include "a4gl_debug.h"
+
 #ifdef WIN32
-#ifndef __CYGWIN__
-#include <share.h>
+	#ifndef __CYGWIN__
+		#include <share.h>
+	#endif
 #endif
-#endif
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 char buff[2048];
 FILE *fout=0;
 long le;
 int errline;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
 FILE *mja_fopen(char *name, char *mode);
 void find_nl(FILE *f,long fp,long *s,long *e);
 void prerrmark(FILE *f,int a);
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 /**
  * Write to error file.
@@ -66,10 +92,10 @@ void prerrmark(FILE *f,int a);
  * @param lineno Line number on the source file.
  */
 FILE*
-write_errfile(FILE *f,char *fname,long as,int lineno) 
+write_errfile(FILE *f,char *fname,long as,int lineno)
 {
   int a;
-  int b;
+//  int b;
   long s2,e;
   long s;
   int errorno;
@@ -133,7 +159,7 @@ write_cont(FILE *f)
 void
 find_nl(FILE *f,long fp,long *s,long *e)
 {
-  int a;
+//  int a;
   char buff[10];
 
   while (fp>0) {
@@ -152,12 +178,17 @@ find_nl(FILE *f,long fp,long *s,long *e)
   *e=fp-1;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 prerrmark(FILE *f,int a)
 {
 int b;
 	fprintf(f,"|"); for (b=1;b<a-1;b++) { fprintf(f,"_"); } fprintf(f,"^\n");
-	fprintf(f,"| Error at line %d, character %d\n",errline,le);
+	fprintf(f,"| Error at line %d, character %d\n",errline,(int)le);
+
 }
 
 /*
@@ -183,5 +214,5 @@ mja_fopen(char *name, char *mode)
 	return fopen(name,mode);
 }
 
-
+// ================================== EOF =============================
 

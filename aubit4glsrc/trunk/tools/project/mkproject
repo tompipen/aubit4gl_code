@@ -66,11 +66,11 @@ echo "
 *
 *******************************************************************************/
 
-int internal_build() {
+int internal_build(void) {
 	return $build;
 }
 
-char *internal_version() {
+char *internal_version(void) {
 	return \"$version\";
 }
 
@@ -104,7 +104,7 @@ END {
 print "{\"\",0}"
 print "};"
 
-print "set_version(int a,char *m,char *id) {"
+print "void set_version(int a,char *m,char *id) {"
 print "strcpy(m,internal_versions[a].module);"
 print "strcpy(id,internal_versions[a].id);"
 print "}"

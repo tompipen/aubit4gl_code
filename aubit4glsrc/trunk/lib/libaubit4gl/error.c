@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.5 2002-05-17 07:08:33 afalout Exp $
+# $Id: error.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -44,9 +44,12 @@
 =====================================================================
 */
 
+#include "string.h" //strcmp()
+#include <stdarg.h>
+
 #include "../generated/tmperrs.h"
 #include "a4gl_debug.h"
-#include <stdarg.h>
+#include "a4gl_aubit_lib.h"
 
 /*
 =====================================================================
@@ -78,6 +81,7 @@ int cache_statusno=0;
  *
  * @todo Describe function
  */
+void
 IGNOREEXITWITH exitwith(char *s)
 {
 int a;
@@ -110,6 +114,7 @@ int a;
  *
  * @todo Describe function
  */
+void
 IGNOREEXITWITH exitwith_sql(char *s)
 {
 int a;
@@ -152,7 +157,7 @@ set_error (char *fmt,...)
 char *
 get_errm(int z)
 {
-int a;
+int a=0;
 	debug("In get errm");
 	if (z==cache_status) {
 	debug("Cached...");

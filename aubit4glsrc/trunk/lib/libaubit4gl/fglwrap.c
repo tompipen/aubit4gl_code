@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.4 2002-05-07 22:52:24 saferreira Exp $
+# $Id: fglwrap.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -37,39 +37,59 @@
  * @todo Doxygen comments to add to functions
  */
 
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
+
+
 #define DEFINE_INTFLAG
 #define DEFINE_QUITFLAG
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+
 #include <signal.h>
 #include <locale.h>
-//#include <unistd.h>
 #include <string.h>
+
 #ifdef __CYGWIN__
-#include <windows.h>
-#include <errno.h>
+	#include <windows.h>
+	#include <errno.h>
 #endif
-/*#include "../../incl/sqlca.h"*/
 
 //authunix_parms redefined: start here:
 #include "a4gl_dbform.h"
 #include "a4gl_stack.h"
 #include "a4gl_debug.h"
 #include "a4gl_keys.h"
+#include "a4gl_aubit_lib.h"
+#include "a4gl_dlsql.h"	// A4GLSQL_initlib()
+#include "a4gl_runtime_tui.h"// push_int()
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 //FIXME: is this OK? see lib/libincl/dbform.h
 #ifdef __CYGWIN__
-extern int int_flag;
-extern int status;
+	extern int int_flag;
+	extern int status;
 #else
-extern long status;
+	extern long status;
 #endif
 
 extern sqlca_struct sqlca;
 int p_numargs=0;
 int isdebug=0;
 char *p_args[256];
-
-extern int start_gui();
-void nodef_init();
 int ui_mode=0;
 int int_flag;
 
@@ -78,12 +98,30 @@ int abort_pressed;
 
 extern int errno;
 
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+extern int start_gui();
+void nodef_init();
+void set_abort (int a);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 /**
  * Function called when a 4gl program terminates is execution.
  *
  * If in curses mode exit curses.
  */
-void fgl_end(void) 
+void 
+fgl_end(void)
 {
   if (isscrmode ()) {
 	  debug("In screen mode - ending curses...");
@@ -94,22 +132,23 @@ void fgl_end(void)
 
 /**
  * function called on initialization of every Aubit compiled 4gl program:
- * 
+ *
  * Command line arguments to compiled 4gl program can be:
- * 
+ *
  * GUIPORT    	- FIXME: what is it?
  * NOCURSES     - FIXME: this is now AUBITGUI=CONSOLE
  *
  * @param nargs The number of arguments.
  * @param argv The arguments values.
  */
-void fgl_start(int nargs,char *argv[]) 
+void
+fgl_start(int nargs,char *argv[])
 {
   int a;
   int b=0;
   void *ptr;
-  void *ptr_win;
-  int mcode;
+//  void *ptr_win;
+//  int mcode;
   char *p;
 
 	include_builtin_in_exe(); // This does nothing - but we NEED IT!
@@ -181,43 +220,23 @@ void fgl_start(int nargs,char *argv[])
 	debug("Init");
 
 
-// Initialize the UI library (ie load the dll)
+	// Initialize the UI library (ie load the dll)
 	if (!A4GLUI_initlib()) {
 		printf("4gllib: Error opening UI library (AUBITGUI=%s)\n",acl_getenv("AUBITGUI"));
 		exit(1);
 	}
 
-// Do any startup required by the library
+	// Do any startup required by the library
 	A4GLUI_ui_init(nargs,argv);
 
-/*
+	/*
     FIXME: programs should do make connection call only when they
     encounter DATABSE, CONNECT, etc - since we now have no-ODBC build
-*/
+	*/
 
 	debug("Connecting...");
 	A4GLSQL_initsqllib();
 
-#ifdef MOVED_TO_INIT_TUI_FUNCTION
-	if (ui_mode==0) {
-	#ifdef NCURSES_MOUSE_VERSION
-	  debug("Turning Mouse on");
-	#ifdef WIN32
-	#ifndef __CYGWIN__
-	  debug("Turning WIN32 mouse on\n");
-	  if (env_option_set("ACL_MOUSE") mouse_on(ALL_MOUSE_EVENTS);
-	#endif
-	#else
-	  if (env_option_set("ACL_MOUSE") ) {
-	           debug("Turning UNIX mouse on\n");
-	           mcode=mousemask(ALL_MOUSE_EVENTS,0);
-	           debug("Turned on %d (%d)",mcode,ALL_MOUSE_EVENTS);
-	  }
-	#endif
-	#endif
-	}
-#endif
-	
 	debug("Allocating rack loads of space.... saves time later");
 
 	ptr=malloc(1024*1024*10);
@@ -244,7 +263,8 @@ void fgl_start(int nargs,char *argv[])
  *   - 2 In background mode.
  *   
  */
-void system_run(int a)
+void 
+system_run(int a)
 {
   char *s;
   int ret;
@@ -267,13 +287,15 @@ void system_run(int a)
  * @return - 1 : Is yes
  *         - 0 : Otherwise
  */
-int isyes(char *s) 
+int 
+isyes(char *s)
 {
 	if (s==0) return 0;
 	if (s[0]==0) return 0;
 	if (s[0]=='y'||s[0]=='Y'||s[0]=='1'||aubit_strcasecmp(s,"true")==0) return 1;
 	return 0;
 }
+
 /**
  * Create an error in a string.
  *
@@ -281,14 +303,15 @@ int isyes(char *s)
  * @param fileName A string with the source name.
  * @param lineno The line in the source where the error ocurred.
  */
-void generateError(char *str,char *fileName,int lineno)
+void 
+generateError(char *str,char *fileName,int lineno)
 {
   if (isgui()) 
   {
     sprintf(str,"Error in '%s'@%d\rErr=%d.\r%s.",
       fileName,
       lineno,
-      status,
+      (int)status,
       err_print(status,sqlca.sqlerrm)
     );
   }
@@ -298,7 +321,7 @@ void generateError(char *str,char *fileName,int lineno)
      "Program stopped at '%s', line number %d.\nError status number %d.\n%s.\n",
       fileName,
       lineno,
-      status,
+      (int)status,
       err_print(status,sqlca.sqlerrm)
     );
   }
@@ -313,7 +336,8 @@ void generateError(char *str,char *fileName,int lineno)
  * @param lineno The source line number where the error ocurred.
  * @param fname The source 4gl file number where the error ocurred.
  */
-void chk_err(int lineno,char *fname) 
+void
+chk_err(int lineno,char *fname)
 {
   char s[2048];
   #ifdef DEBUG
@@ -323,7 +347,7 @@ void chk_err(int lineno,char *fname)
   if (status >= 0) 
     return;
 
-  if (isscrmode()) 
+  if (isscrmode())
     gotolinemode();
 
   debug("Error...");
@@ -348,7 +372,8 @@ void chk_err(int lineno,char *fname)
  *
  * @param s The error message
  */
-void set_errm(char *s)
+void 
+set_errm(char *s)
 {
 	strcpy(sqlca.sqlerrm,s);
 }
@@ -360,7 +385,8 @@ void set_errm(char *s)
  * @param n Not used
  * @return allways 1
  */
-int aclfgl_num_args(int n)
+int 
+aclfgl_num_args(int n)
 {
 	push_int(p_numargs-1);
 	return 1;
@@ -371,7 +397,8 @@ int aclfgl_num_args(int n)
  * @param n
  * @return allways 1
  */
-int aclfgl_arg_val(int n)
+int 
+aclfgl_arg_val(int n)
 {
   int k;
 
@@ -384,7 +411,8 @@ int aclfgl_arg_val(int n)
 /**
  * Dont do nothing
  */
-void null_func(void)
+void 
+null_func(void)
 {
 }
 
@@ -394,7 +422,8 @@ void null_func(void)
  * @param a The pointer to the pointer that points to the memory allocated.
  * @param sz The size to be allocated for the associative array.
  */
-static void ass_clrmem (char **a, int sz)
+static void 
+ass_clrmem (char **a, int sz)
 {
 	memset (a, 0, sz);
 }
@@ -413,7 +442,8 @@ static void ass_clrmem (char **a, int sz)
  *   - 0 : Reading from hash
  *   - Otherwise :
  */
-int ass_hash (char **a, int s, int d, char *str, long size,int rw)
+int 
+ass_hash (char **a, int s, int d, char *str, long size,int rw)
 {
 
   char buff[256];
@@ -537,7 +567,12 @@ int ass_hash (char **a, int s, int d, char *str, long size,int rw)
 }
 
 
-void set_intr(void)
+/**
+ *
+ * @todo Describe function
+ */
+void 
+set_intr(void)
 {
   	void def_int(void);
 
@@ -590,7 +625,8 @@ struct sigaction
 /**
  * Stop the defer interrupt in windows systems
  */
-void nodef_init(void) 
+void 
+nodef_init(void)
 {
 	debug("No defer interrupt");
 	SetConsoleCtrlHandler(set_intr_win32, 0); 
@@ -600,7 +636,8 @@ void nodef_init(void)
 /**
  * Start the DEFER INTERRUPT in windows systems
  */
-void def_int(void) 
+void 
+def_int(void)
 {
 	debug("Setting interrupt mode");
 	SetConsoleCtrlHandler(set_intr_win32, 1);
@@ -612,7 +649,8 @@ void def_int(void)
 /**
  * Stop the DEFER INTERRUPT in unix systems.
  */
-void nodef_init() 
+void 
+nodef_init()
 {
   struct sigaction sa;
   int ret;
@@ -634,7 +672,8 @@ void nodef_init()
 /**
  * Start the defer interrupt in unix systems.
  */
-void def_int(void) 
+void 
+def_int(void)
 {
   struct sigaction sa;
   int ret;
@@ -660,7 +699,8 @@ void def_int(void)
  * @param s The string to be trimmed
  * @return A new static string to be trimmed
  */
-static char *ftrim(char *s) 
+static char *
+ftrim(char *s)
 {
   static char f[256];
   int a;
@@ -678,7 +718,8 @@ static char *ftrim(char *s)
  * @param p
  * @return 
  */
-char *clob(char *s,char *p) 
+char *
+clob(char *s,char *p)
 {
   static char clobber[256];
 	sprintf(clobber,"%s:%s",s,ftrim(p));
@@ -690,7 +731,8 @@ char *clob(char *s,char *p)
  * 
  * @return A string pointer with the serial number.
  */
-char *get_serno(void) 
+char *
+get_serno(void)
 {
 	return "XXXXXXXXXX";
 }
@@ -701,7 +743,8 @@ char *get_serno(void)
  * @param program A string identifiing the program name
  * @param arg1 The first argument of the program argv[1]
  */
-void check_and_show_id(char *program, char *arg1) 
+void 
+check_and_show_id(char *program, char *arg1)
 {
   char mod[32];
   char id[132];
@@ -716,13 +759,13 @@ void check_and_show_id(char *program, char *arg1)
 	    exit(0);
 	}
 
-	if (strcmp(arg1,"-vfull")==0) 
+	if (strcmp(arg1,"-vfull")==0)
 	{
     printf("(c) 1997-2002 Aubit Computing Ltd\n%s\n\n",program);
 	  printf("Serial Number %s\n\nVersion       %s\nBuild Level   %d\n",
 			get_serno(),internal_version(),internal_build()
 		);
-	  for (a=0;;a++) 
+	  for (a=0;;a++)
 		{
 	    set_version(a,mod,id);
 	    if (strlen(mod)==0) break;
@@ -732,15 +775,11 @@ void check_and_show_id(char *program, char *arg1)
 	}
 }
 
-#ifdef THESE_ARE_IN_4GLC
-exitwith("Wrong number of parameters");
-#endif
-
-
 /**
  * Yes it is... used (?)
  */
-int aclfgl_get_ui_mode(void) 
+int 
+aclfgl_get_ui_mode(void)
 {
 	push_int(ui_mode);
 	return 1;
@@ -784,12 +823,18 @@ tests are valid.
 /**
  * Dummy function for DEFER QUIT
  */
-void def_quit(void) 
+void
+def_quit(void)
 {
 	debug("FIXME: DEFER QUIT NOT IMPLEMENTED - Setting quit mode");
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 set_abort (int a)
 {
   debug("set_abort called with %d",a);
@@ -797,16 +842,13 @@ set_abort (int a)
 }
 
 
-/*****************************************************************/
-/*Function             : stripnl                                 */
 /*Param (char *str)    : String to strip                         */
-/*Returns              :                                         */
 /*Description          : Strips trailing \n from a string        */
-/*                                                               */
-/*Created              : Wed May 14 14:55:15 BST 1997            */
-/*Author               : informix                                */
-/*Modifications        : None.                                   */
-/*****************************************************************/
+/**
+ *
+ * @todo Describe function
+ */
+void
 stripnl (char *str)
 {
   int a;
@@ -820,8 +862,30 @@ stripnl (char *str)
     }
 }
 
+/* same thing?
+
+void
+stripnl(char *buff)
+{
+        int a;
+        for (a=strlen(buff)-1;a--;a>=0)
+        {
+                if (buff[a]=='\n') {
+                        buff[a]=0;
+                        break;
+                }
+        }
+}
+
+*/
 
 
+
+
+/**
+ *
+ * @todo Describe function
+ */
 int
 fgl_error (int a, char *s, int err, int stat)
 {
@@ -833,3 +897,6 @@ fgl_error (int a, char *s, int err, int stat)
   exit (0);
   return 0;
 }
+
+// ================================= EOF =============================
+

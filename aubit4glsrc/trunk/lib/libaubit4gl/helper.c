@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.5 2002-05-14 09:27:27 afalout Exp $
+# $Id: helper.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -48,10 +48,11 @@
 #include "a4gl_pointers.h"
 #include "a4gl_debug.h"
 #include "a4gl_runtime_tui.h"
+#include "a4gl_aubit_lib.h"
 
 //don't include a4gl_dlsql.h here, since it need UCHAR defined, and this is
 // SQL driver dependent
-//#include "a4gl_dlsql.h" //A4GLSQL_get_currdbname()
+#include "a4gl_dlsql.h" //A4GLSQL_get_currdbname()
 
 /*
 =====================================================================
@@ -62,6 +63,8 @@
 
 extern char *A4GLSQL_get_currdbname(void);
 void strip_pc(char *s,char*d);
+int extract_numeral(char *s);
+
 
 /*
 =====================================================================
@@ -69,9 +72,9 @@ void strip_pc(char *s,char*d);
 =====================================================================
 */
 
-LIBPRIVATE char last_info[256]="";
-LIBPRIVATE char last_type[256]="";
-LIBPRIVATE char last_data[256]="";
+//LIBPRIVATE char last_info[256]="";
+//LIBPRIVATE char last_type[256]="";
+//LIBPRIVATE char last_data[256]="";
 
 LIBPRIVATE int used_value=0;
 
@@ -319,7 +322,7 @@ int_get_info_form(char *ptr,char *info)
 LIBPRIVATE int
 int_get_info_connection(char *ptr,char *info)
 {
-  struct s_form_dets *p;
+//  struct s_form_dets *p;
   int params;
   int a;
 
@@ -332,15 +335,18 @@ int_get_info_connection(char *ptr,char *info)
   #ifdef DEBUG
     /* {DEBUG} */ {debug("a=%d\n",a); }
   #endif
-  switch (a) 
+  switch (a)
   {
-    case 1: 
+    case 1:
       push_char(A4GLSQL_get_currdbname());  // warning: passing arg 1 of `push_char' makes pointer from integer without a cast
       break;
     case 0:
       exitwith("Invalid Window info request");
       return 0;
   }
+
+  return 0;
+
 }
 
 /**
@@ -452,6 +458,8 @@ int a;
 	        return 0;
 	}
 
+    return 0;
+
 }
 
 /**
@@ -459,7 +467,7 @@ int a;
  * @param
  * @return
  */
-LIBPRIVATE int 
+LIBPRIVATE int
 int_get_info(char *type,char *ptr,char *info)
 {
   int a;
@@ -473,7 +481,7 @@ int_get_info(char *type,char *ptr,char *info)
   #ifdef DEBUG
     /* {DEBUG} */ {debug("Returns %d",a); }
   #endif
-  switch(a) 
+  switch(a)
 	{
     case 0 : exitwith("Invalid type called in get_info");
 	    return 0;
@@ -484,6 +492,8 @@ int_get_info(char *type,char *ptr,char *info)
     //case 5 : return int_get_info_cursor(ptr,info);
     case 5 : return int_get_info_cursor();
   }
+
+  return 0;
 }
 
 /**
@@ -518,11 +528,12 @@ aclfgl_get_info(int np)
 
 
 /**
- *
+ * not used
  * @param
  * @return
  */
-LIBPRIVATE void 
+/*
+LIBPRIVATE void
 set_val(char *str,char *buff)
 {
 int a;
@@ -531,6 +542,7 @@ int a;
 	if (buff[a]=='%') buff[a]=0;
 	}
 }
+*/
 
 /**
  *

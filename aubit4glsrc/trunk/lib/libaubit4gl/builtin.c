@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
+# $Id: builtin.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -484,11 +484,11 @@ strcasecmp (char *s1, char *s2)
 }
 
 /**
- * Windows implementation of unix sleep.
+ * Windows implementation of unix sleep. On UNIX defined in <unistd.h>
  *
  * @param a The number of seconds to sleep.
  */
-int 
+void
 sleep (int a)
 {
     Sleep (a * 1000);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.3 2002-04-24 07:45:59 afalout Exp $
+# $Id: io.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -36,16 +36,40 @@
  * or to be externally seen
  */
 
-#include <stdio.h>
 /*
-#define true 1
-#define false 0
+=====================================================================
+		                    Includes
+=====================================================================
 */
+
+#include <stdio.h>
 
 #include "a4gl_dbform.h"
 #include "a4gl_tunable.h"
 #include "a4gl_debug.h"
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 FILE *oufile=0;
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 /**
  * Read an int from a file.
@@ -53,19 +77,20 @@ FILE *oufile=0;
  * @param ofile Pointer to the file to be readed. If 0 use global oufile.
  * @return The int readed.
  */
-int read_int (FILE * ofile)
+int 
+read_int (FILE * ofile)
 {
-  
-    unsigned char c;
+
+//    unsigned char c;
     int a;
-    int f;
-    short sa;
+//    int f;
+//    short sa;
 	if (ofile==0) ofile=oufile;
     fread (&a, 1, sizeof (int), ofile);
     //a=(int)sa;
 debug("read_int returns %d",a);
     return a;
-  
+
 }
 
 /**
@@ -74,10 +99,11 @@ debug("read_int returns %d",a);
  * @param ofile A pointer to the opened file. If 0 use oufile.
  * @param la The integer to be writed in the file.
  */
-void write_int (FILE * ofile, int la)
+void
+write_int (FILE * ofile, int la)
 {
-    short a;
-    unsigned char c;
+//    short a;
+//    unsigned char c;
 	static int locala;
 	int sizeo;
 	if (ofile==0) ofile=oufile;
@@ -93,139 +119,161 @@ void write_int (FILE * ofile, int la)
  * @todo : Remove if not used.
  * @deprecated Not used anywhere.
  */
-form_out_open(char *fname) {
+/*
+int
+form_out_open(char *fname)
+{
 	oufile=mja_fopen(fname,"wb");
 	if (oufile==0) return 0;
 	else return 1;
 }
+*/
 
 /**
  * @todo : Remove if not used.
  * @deprecated Not used anywhere.
  */
-FILE *form_out_file() {
+/*
+FILE *
+form_out_file()
+{
 	return oufile;
 }
+*/
 
 /**
  * @todo : Remove if not used.
  * @deprecated Not used anywhere.
  */
-form_out_close() {
+/*
+void
+form_out_close()
+{
 	fclose(oufile);
 }
+*/
 
 /**
  * @todo : Remove if not used.
  * @deprecated Not used anywhere.
  */
+/*
 read_hasmore (FILE * ofile)
 {
   if (ofile==0) ofile=oufile;
     return read_int (ofile);
-  
+
 }
+*/
 
 /**
  * @todo : Remove if not used.
  * @deprecated Not used anywhere.
  */
+/*
 write_hasmore (FILE * ofile)
 {
   if (ofile==0) ofile=oufile;
     write_int (ofile, 255);
-  
+
 }
+*/
 
 /**
  * @todo : Remove if not used.
  * @deprecated Not used anywhere.
  */
+/*
 write_nomore (FILE * ofile)
 {
   if (ofile==0) ofile=oufile;
     write_int (ofile, 0);
-  
+
 }
+*/
 
 /**
  * @todo : Remove if not used.
  * @deprecated Not used anywhere.
  */
+/*
 char *
 read_string_dup (FILE * ofile)
 {
     int c;
-  
+
     char *a;
   if (ofile==0) ofile=oufile;
     c = read_int (ofile);
-  
+
     if (c == 0)
     {
 	a = 0;
-      
+
 	return 0;
     }
-  
+
     a = (char *) acl_malloc (c + 1,"Read string dup");
     fread (a, 1, c, ofile);
     return a;
 }
-
+*/
 
 /**
  * @todo : Remove if not used.
  * @deprecated Not used anywhere.
  */
+/*
 read_string (FILE * ofile, char *a)
 {
-  
+
     int c;
   if (ofile==0) ofile=oufile;
     c = read_int (ofile);
-  
+
     if (c == 0)
     {
-      
-	a[0] = 0;
-      
-	return;
-      
-    }
-  
-    fread (a, 1, c, ofile);
-  
-}
 
+	a[0] = 0;
+
+	return;
+
+    }
+
+    fread (a, 1, c, ofile);
+
+}
+*/
 
 /**
  * @todo : Remove if not used.
  * @deprecated Not used anywhere.
  */
+/*
 write_string (FILE * ofile, char *a)
 {
-  
+
     int c;
-if (ofile==0) ofile=oufile;  
-    
+if (ofile==0) ofile=oufile;
+
     if (a == 0 || a[0] == 0)
     {
-      
+
 	write_int (ofile, 0);
-      
+
 	return;
-      
+
     }
-      
-    c = strlen (a) + 1;		/*include 0x0 */
-  
-    write_int (ofile, c);	/*store length first */
-  
-  /*fwrite(&c,1,1,ofile); */ 
+
+    c = strlen (a) + 1;		//include 0x0
+
+    write_int (ofile, c);	//store length first
+
+  //fwrite(&c,1,1,ofile);
     fwrite (a, 1, strlen (a) + 1, ofile);
-  
+
 }
+*/
 
 /**
  * Breaks the file name to take the file name without extension and dir name
@@ -239,7 +287,8 @@ if (ofile==0) ofile=oufile;
  * @param str1 A pointer to the place where to return the left part.
  * @param str2 A pointer to the place where to return the right part.
  */
-void bname (char *str, char *str1, char *str2) 
+void 
+bname (char *str, char *str1, char *str2)
 {
   
     static char fn[FNAMESIZE];
@@ -296,7 +345,8 @@ void bname (char *str, char *str1, char *str2)
  *   - Otherwise : Keep the file opened and return the File pointer.
  * @return The pointer of the file opened.
  */
-FILE *try_to_open(char *path,char *name,int keepopen) 
+FILE *
+try_to_open(char *path,char *name,int keepopen)
 {
   char buff[2048];
   FILE *f;
@@ -307,7 +357,7 @@ FILE *try_to_open(char *path,char *name,int keepopen)
   sprintf(buff,"%s\\%s",path,name);
   #endif
   debug("Opening path '%s'",buff);
-if (strlen(name)==0) return 0;
+  if (strlen(name)==0) return 0;
 
   /* Does it exist and can we read it ? */
   f=fopen(buff,"r");
@@ -327,7 +377,8 @@ if (strlen(name)==0) return 0;
  * @param fname The pointer to the filename to be opened.
  * @return The pointer to the file opened. 0 otherwise.
  */
-FILE *open_file_dbpath(char *fname) 
+FILE *
+open_file_dbpath(char *fname)
 {
   char str_path[2048];
   int cnt;
@@ -369,3 +420,5 @@ FILE *open_file_dbpath(char *fname)
   return (FILE *)0;
 }
 
+
+// ============================= EOF ===============================

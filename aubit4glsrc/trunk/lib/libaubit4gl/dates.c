@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
+# $Id: dates.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -61,6 +61,7 @@
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
 
 /*
 =====================================================================
@@ -116,9 +117,10 @@ struct s_days {
 =====================================================================
 */
 
-void	day_array (int, int, int *);
+void	day_array 	(int, int, int *);
 int		day_in_week (int, int, int);
 int		day_in_year (int, int, int);
+int     y2kmode		(int yr);
 
 /*
 =====================================================================
@@ -256,18 +258,18 @@ get_yr(int d)
 
 
 /**
- *  Get the month from a date in the internal format
+ *  Get the month(?) from a date in the internal format
  *
  *  @param d The date
- *  @return The month
+ *  @return The month (?)
  */
 int
-get_month(int d) 
+get_month(int d)
 {
-	int a;
+//	int a;
 	int i, leap;
 	int year;
-	int yr2;
+//	int yr2;
 	int day;
 	if (d==DATE_INVALID) return d;
 	year=get_yr(d);
@@ -280,6 +282,7 @@ get_month(int d)
 			break;
 		}
 	}
+    return 0;
 }
 
 /**
@@ -289,7 +292,7 @@ get_month(int d)
 int
 get_date(int d,int *day,int *mn,int *yr)
 {
-	int a;
+//	int a;
 	int i, leap;
 	int year;
         debug("d=%d\n",d);
@@ -333,15 +336,15 @@ y2kmode(int yr)
 {
 char *ptr;
 	int z;
-	struct tm *local_time;
-	time_t nw;
-	int ch, month, year, yflag;
-	int zz;
-	
+//	struct tm *local_time;
+//	time_t nw;
+	int year; //yflag; ch, month
+//	int zz;
+
 	#ifdef DEBUG
 	/* {DEBUG} */ {        debug("y2kmode");}
 	#endif
-        if (yr>99) 
+        if (yr>99)
 	{
 		#ifdef DEBUG
 		/* {DEBUG} */ {        debug("Year is ok");}
@@ -349,7 +352,7 @@ char *ptr;
 	   return yr;
 	}
 
-	if (y2ktype==-1) 
+	if (y2ktype==-1)
 	{
 		#ifdef DEBUG
 		/* {DEBUG} */ {debug("y2ktype not set");}
@@ -376,7 +379,7 @@ char *ptr;
 	999  - Do not add anything - dealing with AD 0-99
 	-999 - use current century
 	*/
-	
+
 	/*
 	time(&nw);
 	local_time = localtime(&nw);
@@ -420,6 +423,9 @@ char *ptr;
 	    if (yr>=z) return year-(year%100)+yr;
 	    else return year-(year%100)+100+yr;
 	}
+
+    return 0;
+
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.5 2002-05-17 07:08:33 afalout Exp $
+# $Id: API_sql.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -707,8 +707,8 @@ A4GLSQL_execute_sql   (char *pname, int ni, struct BINDING *ibind)
  * @param
  * @return
  */
-long 
-A4GLSQL_describe_stmt (char *stmt, int colno, int type) 
+long
+A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
   if (libptr==0) A4GLSQL_initlib();
   func=find_func(libptr,"A4GLSQL_describe_stmt");

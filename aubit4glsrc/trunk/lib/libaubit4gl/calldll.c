@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.4 2002-05-07 09:02:47 afalout Exp $
+# $Id: calldll.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -35,10 +35,16 @@
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
  */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include <string.h> // strcpy() strcat()
 #include "a4gl_debug.h"
-
-
-  char tempbuff[1024];
+#include "a4gl_aubit_lib.h"
 
 /************************************************************************/
 /* Under Cygwin, we can use the dl family of calls, but we need to jump */
@@ -51,38 +57,22 @@
 /************************************************************************/
 
 #if defined(__CYGWIN__)
-
-#include <cygwin/cygwin_dll.h>
-
-// declaration macro: DECLARE_CYGWIN_DLL(<your entry point>);
-//DECLARE_CYGWIN_DLL(dll_entry);
-
-//In the link phase use "__cygwin_dll_entry@12" as entry point. Note that 
-//you may have to perform 3 link passes.
-
+	#include <cygwin/cygwin_dll.h>
+#endif
 
 /*
-int WINAPI
-dll_entry(
-  HANDLE ,
-  DWORD reason,
-  void *)
-{
-  switch (reason)
-  {
-      case DLL_PROCESS_ATTACH: break;
-      case DLL_PROCESS_DETACH: break;
-      case DLL_THREAD_ATTACH:  break;
-      case DLL_THREAD_DETACH:  break;
-  }
-  return 1;
-}
-
+=====================================================================
+                    Variables definitions
+=====================================================================
 */
 
-#endif /* defined(__CYGWIN__) */
+char tempbuff[1024];
 
-
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
 
@@ -97,6 +87,7 @@ dll_entry(
  * @param function
  * @param args
  */
+int
 call_4gl_dll (char *filename, char *function, int args)
 {
   exitwith ("DLL functions not available yet for WIN32 platforms");
@@ -104,7 +95,7 @@ call_4gl_dll (char *filename, char *function, int args)
 }
 
 #else
-/* implementation for UNIX and CygWin */
+	/* implementation for UNIX and CygWin */
 
 #include <dlfcn.h>
 
@@ -114,13 +105,20 @@ call_4gl_dll (char *filename, char *function, int args)
  *
  * This way if someone try to call a non existent function the program stops.
  */
-void badfunc (void)
+void
+badfunc (void)
 {
 //  exitwith ("No DLL Loaded");
-  exitwith ("0: Non-existing function (%s) called in DLL\n",tempbuff);
+  exitwith ("0: Non-existing function called in DLL\n");
 }
 
-int nullfunc(void) {
+/**
+ *
+ * @todo Describe function
+ */
+int
+nullfunc(void)
+{
 	debug("Calling DLL where no function defined (Allowed)");
 	return 1;
 }
@@ -138,16 +136,17 @@ int nullfunc(void) {
  * @param name The name of the library to open.
  * @return A pointer to the dynamic library handle.
  */
-void *dl_openlibrary (char *type, char *name)
+void *
+dl_openlibrary (char *type, char *name)
 {
   void *dllhandle;
   char buff[1024];
 
-#ifdef __CYGWIN__
-  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, name);
-#else
-  sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type, name);
-#endif
+	#ifdef __CYGWIN__
+	  sprintf (buff, "%s/lib/lib%s_%s.dll", acl_getenv ("AUBITDIR"), type, name);
+	#else
+	  sprintf (buff, "%s/lib/lib%s_%s.so", acl_getenv ("AUBITDIR"), type, name);
+	#endif
 
   debug("Attempting to open shared library : '%s'",buff);
 
@@ -157,9 +156,7 @@ void *dl_openlibrary (char *type, char *name)
 
 		//Sometimes dlerror() returns empty string?
 		debug("Error: can't open DLL %S - %s - STOP",buff,dlerror());
-		//exitwith("Error: can't open DLL %s - %s - STOP",buff,dlerror());
-        exit (78);
-
+		exitwith("Error: can't open DLL - STOP");
 
   }
   return dllhandle;
@@ -173,7 +170,8 @@ void *dl_openlibrary (char *type, char *name)
  * @return - A pointer to the loaded function if it exist in the dll.
  *         - A pointer to the function badfunc if did not find it.
  */
-void *find_func (void *dllhandle, char *func)
+void *
+find_func (void *dllhandle, char *func)
 {
   int (*func_ptr) ();
   debug("find_func: Finding pointer to DLL function %s\n",func);
@@ -195,7 +193,7 @@ void *find_func (void *dllhandle, char *func)
     	//return badfunc;
   }
 
-//  debug("calldll.c: before return func=%s\n",func);
+	//  debug("calldll.c: before return func=%s\n",func);
 
   return func_ptr;
 }
@@ -208,7 +206,8 @@ void *find_func (void *dllhandle, char *func)
  * @return - A pointer to the loaded function if it exist in the dll.
  *         - A pointer to the function badfunc if did not find it.
  */
-void *find_func_double (void *dllhandle, char *func)
+void *
+find_func_double (void *dllhandle, char *func)
 {
   double (*func_ptr) ();
   debug("find_func_double: Finding pointer to DLL function %s which returns a double\n",func);
@@ -234,7 +233,12 @@ void *find_func_double (void *dllhandle, char *func)
 
 
 
-void *find_func_allow_missing (void *dllhandle, char *func)
+/**
+ *
+ * @todo Describe function
+ */
+void *
+find_func_allow_missing (void *dllhandle, char *func)
 {
   int (*func_ptr) ();
   debug("find_func_allow_missing: Finding pointer to DLL function %s\n",func);
@@ -243,7 +247,7 @@ void *find_func_allow_missing (void *dllhandle, char *func)
 
   if (dllhandle == 0)
   {
-//  exitwith ("2: Non-existing function (%s) called in DLL",func);
+	//  exitwith ("2: Non-existing function (%s) called in DLL",func);
 	return &badfunc;
   }
   func_ptr = dlsym (dllhandle, func);
@@ -260,6 +264,7 @@ void *find_func_allow_missing (void *dllhandle, char *func)
  * @param function The function name.
  * @param args The arguments ???
  */
+int
 call_4gl_dll (char *filename, char *function, int args)
 {
   void *dllhandle;
@@ -268,7 +273,7 @@ call_4gl_dll (char *filename, char *function, int args)
   char nfile[256];
   int (*func_ptr) (int);
   int a;
-  A4GLSQL_set_status (0);
+  A4GLSQL_set_status (0,0);
   strcpy (nfile, filename);
   strcpy (nfunc, "aclfgl_");
   strcat (nfunc, function);
@@ -329,4 +334,8 @@ call_4gl_dll (char *filename, char *function, int args)
   return a;
 
 }
-#endif
+#endif /* #if (defined(WIN32) && ! defined(__CYGWIN__)) */
+
+
+// ============================= EOF ==================================
+

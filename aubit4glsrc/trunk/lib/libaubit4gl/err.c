@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: err.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -36,16 +36,39 @@
  * or to be externally seen
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+#include "string.h"     //strcpy()
+#include "stdio.h"  	// sprintf()
 #include "a4gl_debug.h"
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
 extern char*get_errm(int a);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 /**
  * Create a string with an 4gl error.
- * 
+ *
  * @param a The error code.
  * @param s Aditional string to compose the error.
  */
-char *err_print(int a,char *s) 
+char *
+err_print(int a,char *s)
 {
   char *k;
   static char static_err[256];
@@ -54,7 +77,7 @@ char *err_print(int a,char *s)
   k=static_err;
   if (a==-3001) {
     debug("Ignore wrong number of variables..");
-    strcpy(static_err,"Wrong number of variables returned from function");	
+    strcpy(static_err,"Wrong number of variables returned from function");
     return k;
   }
   debug("Calling get_errm");
@@ -65,4 +88,4 @@ char *err_print(int a,char *s)
 }
 
 
-
+// =============================== EOF ==============================

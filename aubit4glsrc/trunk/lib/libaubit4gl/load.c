@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.4 2002-04-24 07:45:59 afalout Exp $
+# $Id: load.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -37,17 +37,41 @@
  *
  */
 
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h> //strlen() strcopy() strcat()
 
 #include "a4gl_aubit_lib.h"
 #include "a4gl_debug.h"
-extern int status;
+#include "a4gl_dlsql.h" //A4GLSQL_fill_array()
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
 /* tuneable */
 #define MAXLOADCOLS 256
 #define MAXCOLLENGTH 32
 #define LOADBUFFSIZE 32000
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+
+extern int status;
 
 /// Buffer that contains the current line being loaded
 char loadbuff[LOADBUFFSIZE];
@@ -58,22 +82,31 @@ char col_list[MAXLOADCOLS][MAXCOLLENGTH];
 /// Array with pointers to each delimiter in current load line
 char *colptr[MAXLOADCOLS];
 
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
 /**
  * Find the delimiters in the line to be loaded.
  *
  * @param delim The delimiter that separates columns
  * @return The number of fields found
  */
-static int find_delims(char delim) 
+static int 
+find_delims(char delim)
 {
   int cnt=1;
   int a;
-  char *ptr;
+//  char *ptr;
   colptr[0]=&loadbuff[0];
-  
-  for (a=0;a<strlen(loadbuff);a++) 
+
+  for (a=0;a<strlen(loadbuff);a++)
   {
-     if (loadbuff[a]==delim||loadbuff[a]==0) 
+     if (loadbuff[a]==delim||loadbuff[a]==0)
      {
         colptr[cnt++]=&loadbuff[a+1];
      }
@@ -95,7 +128,8 @@ static int find_delims(char delim)
  * @param cnt The count of columns
  * @return A pointer to a static buffer that contains twh column list generated
  */
-static char *collist_to_str(int cnt) 
+static char *
+collist_to_str(int cnt)
 {
   static char colliststr[32000];
   int a;
@@ -115,7 +149,8 @@ static char *collist_to_str(int cnt)
  * @param ncols The number of columns
  * @return The SQL insert string
  */
-static char *gen_insert_for_load(char *tabname,int ncols) 
+static char *
+gen_insert_for_load(char *tabname,int ncols)
 {
   static char inserttxt[6000];
   int a;
@@ -141,7 +176,8 @@ static char *gen_insert_for_load(char *tabname,int ncols)
  *
  * @param s The string where to strip new line
  */
-static void stripnlload(char *s)
+static void 
+stripnlload(char *s)
 {
   int a;
   a=strlen(s);
@@ -149,7 +185,7 @@ static void stripnlload(char *s)
   {
     if (s[a-2]!='|') 
         s[a-1]='|';
-    else 
+    else
         s[a-1]=0;
   }
 }
@@ -157,7 +193,7 @@ static void stripnlload(char *s)
 /**
  * Implementation of the 4gl load instruction.
  *
- * Open the file, split the fields and insert them in the table 
+ * Open the file, split the fields and insert them in the table
  * (of the database of course).
  *
  * @param fname The file name
@@ -169,13 +205,14 @@ static void stripnlload(char *s)
  *    - 0 : Error executing the load
  *    - 1 : OK
  */
-int A4GLSQL_load_data(char *fname,char *delims,char *tabname,...) 
+int
+A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
 {
   va_list ap;
   char *colname;
   int cnt=0;
   char delim;
-  int linelength;
+//  int linelength;
   int nfields;
   int lineno=0;
   char *insertstr;
@@ -183,6 +220,7 @@ int A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
   FILE *p;
   char buff[255];
   delim=delims[0];
+  
   debug("In load_data");
   strcpy(filename,fname);
   trim(filename);
@@ -204,8 +242,24 @@ int A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
   if (cnt==0) {
      /* get columns from database */
      debug("Getting columns from database");
-//     cnt=fill_array(MAXLOADCOLS,col_list,MAXCOLLENGTH-1,0,0,"COLUMNS",0,tabname);
-     cnt=A4GLSQL_fill_array(MAXLOADCOLS,col_list,MAXCOLLENGTH-1,0,0,"COLUMNS",0,tabname);
+	// cnt=fill_array(MAXLOADCOLS,col_list,MAXCOLLENGTH-1,0,0,"COLUMNS",0,tabname);
+     cnt=A4GLSQL_fill_array(MAXLOADCOLS,(char **)col_list,MAXCOLLENGTH-1,0,0,"COLUMNS",0,tabname);
+
+
+     /*
+      warning: passing arg 2 of `A4GLSQL_fill_array' from incompatible pointer type
+
+
+	 int A4GLSQL_fill_array     (int mx, char **arr1, int szarr1,
+	  char **arr2, int szarr2, char *service, int mode, char *info
+	);
+
+    /// Column name list where information is to be loaded
+	char col_list[MAXLOADCOLS][MAXCOLLENGTH];
+
+
+
+    */
 
   }
 
@@ -224,7 +278,7 @@ int A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
   }
 
   debug("Insert string=%s & prepared\n",insertstr);
-	
+
   while (1) {
       lineno++;
       fgets(loadbuff,LOADBUFFSIZE-1,p);
@@ -242,8 +296,8 @@ int A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
          exitwith("Number of fields in load file does not equal the number of columns %s");
          return 0;
       }
-//      set_status(0);
-	A4GLSQL_set_status(0);
+
+	A4GLSQL_set_status(0,1);
 
       A4GLSQL_execute_sql_from_ptr("_load",cnt,colptr);
       if (status!=0) {
@@ -256,3 +310,5 @@ int A4GLSQL_load_data(char *fname,char *delims,char *tabname,...)
   return 1;
 }
 
+
+// ============================== EOF ================================

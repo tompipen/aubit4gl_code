@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.5 2002-05-14 09:27:28 afalout Exp $
+# $Id: resource.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -55,6 +55,7 @@ we will define this two variables:
 #define GETENV_OK
 #define WGETENV_OK
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
 
 /*
 =====================================================================
@@ -70,11 +71,13 @@ we will define this two variables:
 =====================================================================
 */
 
+/*
 struct str_resource
   {
     char name[20];
     char value[127];
   };
+*/
 
 struct str_resource *user_resource = 0;
 int loaded_resources=0;

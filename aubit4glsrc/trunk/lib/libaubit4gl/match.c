@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: match.c,v 1.2 2002-05-18 11:56:47 afalout Exp $
+#*/
+
 /**
  * @file
  * Wildcard Pattern Matching
@@ -7,6 +36,12 @@
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
  */
+
+ /*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
 #define C_STAR '*'
 #define C_QUERY '?'
@@ -32,13 +67,33 @@
 #define PATTERN_CLOSE -3    /* no end bracket in [..] construct */
 #define PATTERN_EMPTY -4    /* [..] construct is empty */
 
+#define        min(a,b)        (a < b ? a : b)
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
 
 BOOLEAN is_pattern (char *pattern);
 BOOLEAN is_valid_pattern (char *pattern, int *error_type);
-
-
 int matche_after_star (register char *pattern, register char *text);
 int fast_match_after_star (register char *pattern, register char *text);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
 
 /**
  * Return TRUE if PATTERN has any special wildcard characters
@@ -48,7 +103,8 @@ int fast_match_after_star (register char *pattern, register char *text);
  *   - TRUE : The pattern have wildcards.
  *   - FALSE : The pattern dont have wildcards.
  */
-BOOLEAN is_pattern (char *p)
+BOOLEAN 
+is_pattern (char *p)
 {
       while (*p)
       {
@@ -83,7 +139,8 @@ BOOLEAN is_pattern (char *p)
  * @return TRUE if PATTERN has is a well formed regular expression according
  * to the above syntax
  */
-BOOLEAN is_valid_pattern (char *p, int *error_type)
+BOOLEAN 
+is_valid_pattern (char *p, int *error_type)
 {
       /* init error_type */
       *error_type = PATTERN_VALID;
@@ -222,7 +279,8 @@ BOOLEAN is_valid_pattern (char *p, int *error_type)
  *  @param The text to be checked.
  *
  */
-int matche (register char *p, register char *t)
+int 
+matche (register char *p, register char *t)
 {
       register char range_start, range_end;  /* start and end in range */
 
@@ -420,7 +478,8 @@ int matche (register char *p, register char *t)
  * @param p The pattern to be used.
  * @param t The text to be checked.
  */
-int matche_after_star (register char *p, register char *t)
+int 
+matche_after_star (register char *p, register char *t)
 {
       register int match = 0;
       register nextp;
@@ -495,7 +554,8 @@ int matche_after_star (register char *p, register char *t)
  * @param p The pattern to be used..
  * @param t The text to be checked.
  */
-BOOLEAN match( char *p, char *t )
+BOOLEAN 
+match( char *p, char *t )
 {
       int error_type;
 
@@ -608,8 +668,10 @@ int main(int argc, char *argv[])
 
 
 
-
-#define        min(a,b)        (a < b ? a : b)
+/**
+ *
+ * @todo Describe function
+ */
 int
 aubit_strcasecmp (char *a, char *b)
 {
@@ -628,3 +690,6 @@ aubit_strcasecmp (char *a, char *b)
   else
     return -1;
 }
+
+
+// ================================== EOF =============================

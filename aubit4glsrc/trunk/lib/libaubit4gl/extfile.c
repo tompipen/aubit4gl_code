@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.3 2002-04-24 07:45:59 afalout Exp $
+# $Id: extfile.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -34,8 +34,28 @@
  * @todo Add Doxygen comments to file
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h> //free()
+
+
+#include "a4gl_stack.h" // pop_int()
+#include "a4gl_io.h"
+#include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
+
 FILE *helpfile = 0;
 FILE *langfile = 0;
 char *language_file_contents=0;
@@ -43,8 +63,19 @@ char *language_file_contents=0;
 char disp[24][81];
 int max_width;
 
-// Callable from 4GL
-void set_help_file (char *fname)
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ * Callable from 4GL
+ *
+ * @todo Describe function
+ */
+void
+set_help_file (char *fname)
 {
   if (helpfile != 0)
     fclose (helpfile);
@@ -56,50 +87,62 @@ debug("Helpfile=%p",helpfile);
 }
 
 
-// Callable from 4GL
-void set_lang_file (char *fname_orig)
+/**
+ * Callable from 4GL
+ *
+ * @todo Describe function
+ */
+void 
+set_lang_file (char *fname_orig)
 {
 long l;
 long a;
 char *fname;
-fname=strdup(fname_orig);
-trim(fname);
-debug("Language file='%s'",fname);
 
-if (language_file_contents!=0) free(language_file_contents);
-langfile = (FILE *)open_file_dbpath(fname);
+	fname=strdup(fname_orig);
+	trim(fname);
+	debug("Language file='%s'",fname);
 
-if (langfile==0) {
-        language_file_contents=0;
-        exitwith("Unable to open language file");
-        free(fname);
-        return;
+	if (language_file_contents!=0) free(language_file_contents);
+	langfile = (FILE *)open_file_dbpath(fname);
+
+	if (langfile==0) {
+	        language_file_contents=0;
+	        exitwith("Unable to open language file");
+	        free(fname);
+	        return;
+	}
+
+	fseek(langfile,0,SEEK_END);
+	l=ftell(langfile);
+	rewind(langfile);
+	language_file_contents=malloc(l+1);
+	fread(language_file_contents,l,1,langfile);
+
+	language_file_contents[l]=0x0;
+
+	fclose(langfile);
+	debug("langfile=%p",langfile);
+
+	for (a=0;a<l;a++) {
+	        if ( language_file_contents[a]=='\n') {
+	                language_file_contents[a]=0;
+	        }
+	}
+
+	free(fname);
 }
 
-fseek(langfile,0,SEEK_END);
-l=ftell(langfile);
-rewind(langfile);
-language_file_contents=malloc(l+1);
-fread(language_file_contents,l,1,langfile);
-
-language_file_contents[l]=0x0;
-
-fclose(langfile);
-debug("langfile=%p",langfile);
-
-for (a=0;a<l;a++) {
-        if ( language_file_contents[a]=='\n') {
-                language_file_contents[a]=0;
-        }
-}
-
-free(fname);
-}
-
-aclfgl_fgl_show_help(int a) {
-        a=pop_int();
-        show_help(a);
-return 0;
+/**
+ *
+ * @todo Describe function
+ */
+int
+aclfgl_fgl_show_help(int a)
+{
+    a=pop_int();
+    show_help(a);
+	return 0;
 }
 
 
@@ -177,16 +220,21 @@ debug("Buff=%s",tmpbuf);
 */
 
 
-char *get_translated_id (char * no_c)
+/**
+ *
+ * @todo Describe function
+ */
+char *
+get_translated_id (char * no_c)
 {
-  short pos;
-  int cnt;
-  short num;
-  short *ptr;
+short pos;
+int cnt;
+short num;
+short *ptr;
 int no;
-  char *cptr;
-  max_width = 0;
-  cnt = 0;
+char *cptr;
+max_width = 0;
+cnt = 0;
 no=atoi(no_c);
 
   cptr=language_file_contents;
@@ -208,7 +256,7 @@ no=atoi(no_c);
       if (pos == -1 || pos > no) {
          debug("Out of range 1");
          exitwith("message not found");
-        return;
+        return 0;
         break;
       }
 
@@ -230,11 +278,25 @@ no=atoi(no_c);
 }
 
 
-has_helpfile() {
+/**
+ *
+ * @todo Describe function
+ */
+int
+has_helpfile(void) 
+{
 	if (helpfile) return 1;
 	else return 0;
 }
 
-char *get_help_disp(int n) {
+/**
+ *
+ * @todo Describe function
+ */
+char *
+get_help_disp(int n) 
+{
 	return disp[n];
 }
+
+// ================================ EOF ===============================

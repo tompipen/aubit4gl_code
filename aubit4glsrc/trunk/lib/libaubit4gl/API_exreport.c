@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_exreport.c,v 1.4 2002-05-14 09:27:27 afalout Exp $
+# $Id: API_exreport.c,v 1.5 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -65,7 +65,9 @@ void pdf_set_column(void *rep);
 
 extern void *find_func_double (void *dllhandle, char *func); //in calldll.c
 
-int A4GLREPORT_initlib (void) {
+int 
+A4GLREPORT_initlib (void) 
+{
 
         libptr=(void *)dl_openlibrary("EXREPORT",acl_getenv("A4GL_PDFTYPE"));
 

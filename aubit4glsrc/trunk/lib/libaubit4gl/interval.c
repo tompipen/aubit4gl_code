@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.2 2002-04-24 07:45:59 afalout Exp $
+# $Id: interval.c,v 1.3 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -36,8 +36,19 @@
  * or to be externally seen
  * @todo Doxygen comments to add to functions
  */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
 #include <math.h>
+#include <sys/types.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "a4gl_dbform.h"
 #include "a4gl_dates.h"
@@ -45,34 +56,65 @@
 #include "a4gl_stack.h"
 #include "a4gl_dtypes.h"
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
 
 
-#include <sys/types.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 extern int errno;
-
-
-int valid_int (char *s, int *data,int size);
-
-
 int rval_type;
 struct ival rval_ival;		// 1
 double rval_double;		// 2
 
 
-struct ival *get_rval_ival() {
-	return &rval_ival;
-}
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
-double get_rval_double() {
+int valid_int (char *s, int *data,int size);
+int mk_int_size(int s,int l);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+/**
+ *
+ * @todo Describe function
+ */
+double
+get_rval_double(void)
+{
 	return rval_double;
 }
 
 
-conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff) 
+
+/**
+ *
+ * @todo Describe function
+ */
+struct ival *
+get_rval_ival(void)
+{
+	return &rval_ival;
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff)
 {
   char fractions[6];
 
@@ -127,9 +169,9 @@ conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff)
 	sprintf (buff, "000000000000%0*d%s", v3, data[5], fractions);
 
       if (v2 >= 7)
-	sprintf (buff, "000000000000000%s", v3, fractions);
+	sprintf (buff, "000000000000000%d", v3);
 
-debug("Copied data");
+	debug("Copied data");
       return 1;
 }
 
@@ -152,7 +194,8 @@ debug("Copied data");
  *        'D' is also used internally...
  */
 
-int op_ival (struct ival *a, struct ival *b, double double_val, char op,
+int 
+op_ival (struct ival *a, struct ival *b, double double_val, char op,
  char param)
 {
   int data_a[10];
@@ -160,28 +203,28 @@ int op_ival (struct ival *a, struct ival *b, double double_val, char op,
   int data_r[10];
   int mode;
   int cnt;
-  int val;
+//  int val;
   int val1;
   int val2;
   int val3;
   int size;
   char buff[256];
-  char a_str[64];
-  char b_str[64];
+//  char a_str[64];
+//  char b_str[64];
 
-  double v1;
+  double v1 = 0;
   double v2;
-  double r1;
+  double r1 = 0;
 
-debug("In op_ival a=%p b=%p dv=%lf op=%c param=%c",a,b,double_val,op,param);
+	debug("In op_ival a=%p b=%p dv=%lf op=%c param=%c",a,b,double_val,op,param);
 
   if (param == 'd') // We're using a double - so ignore 'b'
     {
-      b = a; 
+      b = a;
     }
 
-  
-// Extract the time stuff..
+
+	// Extract the time stuff..
 
 
   debug("Converting intervals to strings...");
@@ -192,18 +235,20 @@ debug("In op_ival a=%p b=%p dv=%lf op=%c param=%c",a,b,double_val,op,param);
   debug("Converted first...");
   debug("a=%p b=%p\n",a,b);
   inttoc(b, &b_str, mk_int_size(b->stime,b->ltime));
-  
+
   debug("Converted second...");
   debug("INtervals as strings = %s  & %s",a_str,b_str);
-  
+
   valid_int (a_str, data_a,mk_int_size(a->stime,a->ltime));
   valid_int (b_str, data_b,mk_int_size(b->stime,b->ltime));
   */
 
-  decode_interval (a, &data_a);
-  decode_interval (b, &data_b);
+  decode_interval (a, data_a); // warning: passing arg 2 of `decode_interval' from incompatible pointer type
+		//void decode_interval 	(struct ival *ival, int *data);
 
-debug("Got interval data");
+  decode_interval (b, data_b);
+
+  debug("Got interval data");
   /* Clear down the return variable.. */
   for (cnt = 0; cnt < 10; cnt++)
     {
@@ -211,7 +256,7 @@ debug("Got interval data");
       data_r[cnt]=0;
     }
 
-debug("Cleared down..");
+	debug("Cleared down..");
 
   /* Are we dealing with a sensible sum ? */
 
@@ -309,38 +354,38 @@ debug("Cleared down..");
 
     }
 
-// If we got to here r1 will contain either a number or an interval
+	// If we got to here r1 will contain either a number or an interval
 
-if (rval_type==2) { // Yip yip - this ones easy !
-	rval_double=r1;
-	return 2;
-}
-debug("r1=%lf mode=%d\n",r1,mode);
+	if (rval_type==2) { // Yip yip - this ones easy !
+		rval_double=r1;
+		return 2;
+	}
+	debug("r1=%lf mode=%d\n",r1,mode);
 
 
-if (mode==1) { // we have a number of years in r1
-	double yd,md;
-	int m,y;
-	yd=floor(r1);
-	md=(r1-y)*12.0;
-	data_r[0]=yd;
-	data_r[1]=md;
+	if (mode==1) { // we have a number of years in r1
+		double yd,md;
+		int y = 0;
+		yd=floor(r1);
+		md=(r1-y)*12.0;
+		data_r[0]=yd;
+		data_r[1]=md;
 
-} else {
-	double sd,fd;
-	int s;
-	sd=floor(r1);
-	fd=r1-sd;
-	debug("sd=%lf fd=%lf\n",sd,fd);
-	data_r[6]=fd*100000;
-	s=sd;
-	data_r[5]=s%60; s=s/60; // Seconds
-	data_r[4]=s%60; s=s/60; // Minutes
-	data_r[3]=s%60; s=s/24; // Hours
-	data_r[2]=s; // Days
-}
+	} else {
+		double sd,fd;
+		int s;
+		sd=floor(r1);
+		fd=r1-sd;
+		debug("sd=%lf fd=%lf\n",sd,fd);
+		data_r[6]=fd*100000;
+		s=sd;
+		data_r[5]=s%60; s=s/60; // Seconds
+		data_r[4]=s%60; s=s/60; // Minutes
+		data_r[3]=s%60; s=s/24; // Hours
+		data_r[2]=s; // Days
+	}
 
-// data_r should be set up now...
+	// data_r should be set up now...
 
   debug("stime=%x ltime=%x",rval_ival.stime,rval_ival.ltime);
   val1=rval_ival.ltime;
@@ -357,6 +402,15 @@ if (mode==1) { // we have a number of years in r1
 }
 
 
-mk_int_size(int s,int l) {
+/**
+ *
+ * @todo Describe function
+ */
+int
+mk_int_size(int s,int l)
+{
   return l+ (s<<4);
 }
+
+// ==================================== EOF ============================
+

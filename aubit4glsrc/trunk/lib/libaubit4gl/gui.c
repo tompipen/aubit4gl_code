@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.5 2002-05-07 09:02:47 afalout Exp $
+# $Id: gui.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -45,57 +45,118 @@
  * @todo Doxygen comments to add to functions
  */
 
-#ifdef WIN32
-#ifndef __CYGWIN__
-#define USE_WINSOCK
-#endif
-#endif
+ /*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
-#include "a4gl_sockhelp.h"
-//#include <stdio.h>
-#include "a4gl_dbform.h"
-//#include <stdarg.h>
-#include "a4gl_debug.h"
-#include "a4gl_runtime_tui.h"
+#ifdef WIN32
+	#ifndef __CYGWIN__
+		#define USE_WINSOCK
+	#endif
+#endif
 
 #ifndef USE_WINSOCK
-#define SOCKET int
+	#define SOCKET int
 #endif
+
+#ifdef USE_WINSOCK
+	#ifndef EINTR
+		#define EINTR WSAEINTR
+	#endif
+#endif
+
+#ifdef USE_GTK
+	#define HAS_GTK 1
+	#define START_HAS_GTK if (ui_mode==UI_MODE_GTK) {
+	#define END_HAS_GTK }
+#endif
+
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+//obsolete #include <arpa/inet.h> //for inet_addr()
+
+#include <unistd.h> //close() write()
 
 #ifndef WIN32
-#include <sys/time.h>
-#endif
-#ifdef __CYGWIN__
-#include <sys/time.h>
+	#include <sys/time.h>
 #endif
 
+#ifdef __CYGWIN__
+	#include <sys/time.h>
+#endif
+
+
+#include "a4gl_dbform.h"
+#include "a4gl_sockhelp.h"
+#include "a4gl_debug.h"
+#include "a4gl_runtime_tui.h"
+#include "a4gl_aubit_lib.h"
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+void init_wsock (void);
+void proc_format (char *s, int a);
+int proc_gui_in (char *buff);
+void gui_kpress (void);
+void gui_click (void);
+int last_error (void);
+
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 int use_gui = 0;
 SOCKET sock = 0;
 int m_retval = 0;
 char m_cretval[64] = "";
 static char params[20][80];
-#ifdef USE_WINSOCK
-#ifndef EINTR
-#define EINTR WSAEINTR
-#endif
-#endif
-
-
-#ifdef USE_GTK
-#define HAS_GTK 1
-#define START_HAS_GTK if (ui_mode==UI_MODE_GTK) {
-#define END_HAS_GTK }
-#endif
-
-
 int listensock = -1;		/* So that we can close sockets on ctrl-c */
 SOCKET connectsock = -1;
 int connected = 1;
-//#include <sys/signal.h>
+
+struct s_in
+{
+  char name[10];
+  char format[20];
+  void (*func) ();
+}
+
+defs[] =
+{
+  { "KeyPress", "IIII", gui_kpress},
+  { "Click", "IIII", gui_click},
+  { "0", "0", 0}
+};
+
+//gui.c:148: warning: missing braces around initializer
+//gui.c:148: warning: (near initialization for `defs[2].name')
 
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 proc_it (char *buff)
 {
   int a;
@@ -118,13 +179,14 @@ proc_it (char *buff)
  *
  * @return Nothing important.
  */
-int
+void
 start_gui (void)
 {
-  char buffer[1024];
-  char *current_character;
+//  char buffer[1024];
+//  char *current_character;
   char *p;
   int port = -1;
+
   debug ("Start gui...");
   p = acl_getenv ("GUIPORT");
   init_wsock ();
@@ -160,7 +222,9 @@ start_gui (void)
 /**
  * @todo : Understand if not used and if not remove it.
  */
-read_gui ()
+/*
+int
+read_gui (void)
 {
   static char buffer[1024];
   fd_set rfds;
@@ -188,13 +252,16 @@ read_gui ()
     {
       return net_keyval (&buffer[7]);
     }
-}
 
+  return 0;
+}
+*/
 
 /**
  * Close the socket to the client.
  */
-void gui_close (void)
+void 
+gui_close (void)
 {
   close (sock);
 }
@@ -231,19 +298,21 @@ atoport (char *service,char *proto)
 }
 
 /**
- * Converts ascii text to in_addr struct.  
- *
+ * Converts ascii text to in_addr struct.
+ *                      OBSOLETE
  * @param address
  * @return
- *   - NULL : The address can not be found. 
+ *   - NULL : The address can not be found.
  *   - Otherwise :
  */
-struct in_addr *atoaddr (char *address)
+/*
+static struct in_addr *
+atoaddr (char *address)
 {
   struct hostent *host;
   static struct in_addr saddr;
 
-  /* First try it as aaa.bbb.ccc.ddd. */
+  // First try it as aaa.bbb.ccc.ddd.
   saddr.s_addr = inet_addr (address);
   if (saddr.s_addr != -1)
     {
@@ -256,6 +325,7 @@ struct in_addr *atoaddr (char *address)
     }
   return (struct in_addr *)0;
 }
+*/
 
 /**
  * This function listens on a port, and returns connections.  It forks
@@ -325,20 +395,17 @@ get_connection (socket_type, port, listener)
 
   if (socket_type == SOCK_STREAM)
     {
-      listen (listening_socket, 5);	/* Queue up to five connections
-before
-					   having them automatically
-rejected. */
+      listen (listening_socket, 5);	
+	  /* Queue up to five connections before
+		 having them automatically rejected. */
 
       while (connected_socket < 0)
 	{
 	  connected_socket = accept (listening_socket, NULL, NULL);
 	  if (connected_socket < 0)
 	    {
-	      /* Either a real error occured, or blocking was interrupted
-for
-	         some reason.  Only abort execution if a real error occured.
-*/
+	      /* Either a real error occured, or blocking was interrupted for
+	         some reason.  Only abort execution if a real error occured. */
 	      if (last_error () != EINTR)
 		{
 		  perror ("accept");
@@ -364,17 +431,14 @@ for
 	      if (new_process == 0)
 		{
 		  /* This is the new process. */
-		  close (listening_socket);	/* Close our copy of this
-socket */
+		  close (listening_socket);	/* Close our copy of this socket */
 		  if (listener != NULL)
-		    *listener = -1;	/* Closed in this process.  We are
-not 
+		    *listener = -1;	/* Closed in this process.  We are not
 					   responsible for it. */
 		}
 	      else
 		{
-		  /* This is the main loop.  Close copy of connected socket,
-and
+		  /* This is the main loop.  Close copy of connected socket, and
 		     continue loop. */
 		  close (connected_socket);
 		  connected_socket = -1;
@@ -389,19 +453,20 @@ and
 
 /**
  * This is a generic function to make a connection to a given server/port.
- *
+ *     OBSOLETE
  * @param service is the port name/number,
  * @param type is either SOCK_STREAM or SOCK_DGRAM, and
  * @param netaddress is the host name to connect to.
  * @eturn The socket, ready for action.
  */
+/*
 int
 make_connection (service, type, netaddress)
      char *service;
      int type;
      char *netaddress;
 {
-  /* First convert service from a string, to a number... */
+  // First convert service from a string, to a number...
   int port = -1;
   struct in_addr *addr;
   int sock, connected;
@@ -430,8 +495,7 @@ make_connection (service, type, netaddress)
 
   sock = socket (AF_INET, type, 0);
 
-  printf ("Connecting to %s on port %d.\n", inet_ntoa (*addr), htons
-(port));
+  printf ("Connecting to %s on port %d.\n", inet_ntoa (*addr), htons(port));
 
   if (type == SOCK_STREAM)
     {
@@ -444,7 +508,7 @@ make_connection (service, type, netaddress)
 	}
       return sock;
     }
-  /* Otherwise, must be for udp, so bind to address. */
+  // Otherwise, must be for udp, so bind to address.
   if (bind (sock, (struct sockaddr *) &address, sizeof (address)) < 0)
     {
       perror ("bind");
@@ -452,6 +516,7 @@ make_connection (service, type, netaddress)
     }
   return sock;
 }
+*/
 
 /**
  * This is just like the read() system call, accept that it will make
@@ -462,7 +527,8 @@ make_connection (service, type, netaddress)
  * @param count
  * @return The number of byted read.
  */
-int sock_read (int sockfd, char *buf, size_t count)
+int
+sock_read (int sockfd, char *buf, size_t count)
 {
   size_t bytes_read = 0;
   int this_read;
@@ -518,7 +584,7 @@ sock_write (int sockfd, char *buf, size_t count)
  * will be read and discarded!  You have been warned.
  *
  * @param sockfd The socket file descriptor.
- * @param str A pointer to the buffer where to write the information received 
+ * @param str A pointer to the buffer where to write the information received
  * by the socket.
  * @param count The maximum size to read.
  * @return -1 if the socket is closed during the read operation or the number
@@ -604,18 +670,24 @@ sock_puts (sockfd, str)
 /**
  * This ignores the SIGPIPE signal.  This is usually a good idea, since
  * the default behaviour is to terminate the application.  SIGPIPE is
- * sent when you try to write to an unconnected socket.  
+ * sent when you try to write to an unconnected socket.
  * You should check your return codes to make sure you catch this 
  * error!
  */
-isgui ()
+int
+isgui (void)
 {
   if (use_gui > 0 && sock)
     return 1;
   return 0;
 }
 
-get_gui_char ()
+/**
+ *
+ * @todo Describe function
+ */
+int
+get_gui_char (void)
 {
   static char buff[256];
   debug ("Waiting for char...");
@@ -628,6 +700,10 @@ get_gui_char ()
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 gui_kpress (void)
 {
@@ -636,6 +712,10 @@ gui_kpress (void)
   debug ("Key value=%d", m_retval);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 gui_click (void)
 {
@@ -645,27 +725,6 @@ gui_click (void)
   debug ("m_cretval=%s", m_cretval);
   m_retval = 0xffff;
 }
-
-struct s_in
-{
-  char name[10];
-  char format[20];
-  void (*func) ();
-}
-
-defs[] =
-{
-  {
-  "KeyPress", "IIII", gui_kpress}
-  ,
-  {
-  "Click", "IIII", gui_click}
-  ,
-  {
-  0, 0, 0}
-}
-
-;
 
 /**
  * Find a function name in a string.
@@ -677,6 +736,7 @@ defs[] =
  *   - The position in the array of the string found.
  *   - -1 : The string wanted was not found.
  */
+int
 find_str_in (char *s)
 {
   int a;
@@ -691,6 +751,11 @@ find_str_in (char *s)
 }
 
 
+/**
+ *
+ * @todo Describe function
+ */
+int
 proc_gui_in (char *buff)
 {
   int a;
@@ -707,14 +772,22 @@ proc_gui_in (char *buff)
   return m_retval;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 char *
-read_clicked ()
+read_clicked (void)
 {
   return m_cretval;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void *
-decode_clicked ()
+decode_clicked (void)
 {
   void *ptr;
   char buff[40];
@@ -722,11 +795,16 @@ decode_clicked ()
   debug ("m_retval=%s", m_cretval);
   sprintf (buff, "0x%s", m_cretval);
   debug ("Buff set to %s", buff);
-  sscanf (buff, "%lx", &ptr);
+  sscanf (buff, "%lx", (long unsigned int) &ptr); // waring: format argument is not a pointer (arg 3)
   debug ("Ptr set to %p", ptr);
   return ptr;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
+void
 proc_format (char *s, int a)
 {
   int slen = 0;
@@ -767,7 +845,8 @@ proc_format (char *s, int a)
 /**
  * Initialize windows sockets.
  */
-init_wsock ()
+void
+init_wsock (void)
 {
 #ifdef USE_WINSOCK
   WSADATA wsaData;
@@ -788,916 +867,17 @@ init_wsock ()
 #endif
 }
 
-last_error ()
+/**
+ *
+ * @todo Describe function
+ */
+int
+last_error (void)
 {
   return errno;
 //return WSAGetLastError();
 }
 
-#ifdef MOVED_TO_UI_DOT_C
 
-/* ************************************************************************/
-/*                            TUI/GUI Stuff */
-/* ************************************************************************/
+// ================================ EOF ================================
 
-/** User interface mode */
-extern int ui_mode;
-
-#define UI_MODE_TEXT 0
-#define UI_MODE_GTK  1
-
-/**
- * Create a new 4gl window.
- *
- * @param s The 4gl name of the window
- * @param iswindow
- * @param form_line The line where the eventual forms are opened.
- * @param error_line The line where the errors are displayed. 
- * @param prompt_line The line where the PROMPT statement is prcessed.
- * @param menu_line The line where the 4gl MENU statement is displayed.
- * @param border Flag that indicate if the window should have a border.
- * @param comment_line The line the comments are showed (form comments). 
- * @param message_line The line where the messages from MESSAGE statement is 
- *   showed.
- * @param attrib The attributes used Ignored.
- * @return The widget window created.
- */
-void *cr_window (char *s, int iswindow, int form_line, int error_line,
-	   int prompt_line, int menu_line, int border, int comment_line,
-	   int message_line, int attrib)
-{
-
-  if (ui_mode == UI_MODE_TEXT)
-    return (void *)cr_window_tui (
-				s, iswindow, form_line, error_line, prompt_line,
-			  menu_line, border, comment_line, message_line,
-			  attrib
-		);
-
-#ifdef HAS_GTK
-START_HAS_GTK
-    return (void *)cr_window_gtk (s, iswindow, form_line, error_line, prompt_line,
-			  menu_line, border, comment_line, message_line,
-			  attrib);
-
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (1)");
-}
-
-
-/**
- * Create a window with form.
- *
- * The form name is passed by the stack.
- *
- * @param s The 4gl name of the window
- * @param iswindow
- * @param form_line The line where the eventual forms are opened.
- * @param error_line The line where the errors are displayed.
- * @param prompt_line The line where the PROMPT statement is prcessed.
- * @param menu_line The line where the 4gl MENU statement is displayed.
- * @param border Flag that indicate if the window should have a border.
- * @param comment_line The line the comments are showed (form comments). 
- * @param message_line The line where the messages from MESSAGE statement is 
- *   showed. 
- * @param attrib The attributes used.
- */
-int
-cr_window_form (char *name,
-  int iswindow, int form_line, int error_line, int prompt_line,
-  int menu_line, int border, int comment_line, int message_line,
-  int attrib)
-{
-char newname[1024];
-strcpy(newname,name);
-trim(newname);
-
-  if (ui_mode == UI_MODE_TEXT)
-    return cr_window_form_tui (newname,
-			       iswindow,
-			       form_line,
-			       error_line,
-			       prompt_line,
-			       menu_line,
-			       border, comment_line, message_line, attrib);
-
-#ifdef HAS_GTK
-START_HAS_GTK
-    return cr_window_form_gtk (newname,
-			       iswindow,
-			       form_line,
-			       error_line,
-			       prompt_line,
-			       menu_line,
-			       border, comment_line, message_line, attrib);
-
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (2)");
-}
-
-/**
- * Display the fields.
- *
- * @param n
- * @param attr The attributes.
- * @param ... The list of fields.
- * @return
- */
-int disp_fields (int n, int attr, ...)
-{
-  va_list ap;
-  va_start (ap, attr);
-  if (ui_mode == UI_MODE_TEXT)
-    return disp_fields_tui (n, attr, &ap);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return disp_fields_gtk (n, attr, &ap);
-END_HAS_GTK
-#endif
-
-  exitwith ("Invalid UI Mode (3)");
-}
-
-int
-disp_form_fields (int n, int attr, char *formname,...)
-{
-  va_list ap;
-  va_start (ap, formname);
-
-  if (ui_mode == UI_MODE_TEXT)
-    return disp_form_fields_tui (n, attr, formname,&ap);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return disp_form_fields_gtk (n, attr, formname,&ap);
-END_HAS_GTK
-#endif
-
-  exitwith ("Invalid UI Mode (3)");
-}
-
-/**
- * Open a form.
- *
- * Executed by the generated from the OPEN FORM 4gl statement.
- *
- * @param form_id The form file name.
- */
-int
-open_form (char *name)
-{
-int a;
-  if (ui_mode == UI_MODE_TEXT) {
-    a=open_form_tui (name);
-    debug("a=%d\n",a);
-	debug("Opened form...");
-    return a;
-  }
-
-#ifdef HAS_GTK
-START_HAS_GTK
-    return open_form_gtk (name);
-END_HAS_GTK
-#endif
-
-  exitwith ("Invalid UI Mode (4)");
-}
-
-
-/**
- * Implementation of the OPEN FORM 4gl statement.
- *
- * @param name The form name.
- * @return
- */
-int
-close_form (char *name)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return close_form_tui (name);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return close_form_gtk (name);
-END_HAS_GTK
-#endif
-
-  exitwith ("Invalid UI Mode (5)");
-}
-
-/**
- * Implementation of OPEN FORM 4gl statement.
- *
- * @param form_id The form file name.
- * @param a Attributes. Ignored
- */
-int
-disp_form (char *name, int attr)
-{
-debug("In disp_form");
-debug(" params: %s %d",name,attr);
-
-  if (ui_mode == UI_MODE_TEXT)
-    return disp_form_tui (name, attr);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return disp_form_gtk (name, attr);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (6)");
-}
-
-/**
- * Implementation of 4gl CURRENT WINDOW IS statement.
- *
- * @param win_name A string with the name of the window.
- * @return
- */
-int
-current_window (char *win_name)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return current_window_tui (win_name);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return current_window_gtk (win_name);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (7)");
-
-}
-
-
-/**
- * This function aparentrly is not used
- * @todo Understand if the function is not used and if not remove it
- */
-ACL_Menu *new_menu (char *title, int x, int y, int mn_type, 
-		    int help_no, int nopts, ...)
-{
-  va_list ap;
-  va_start (ap, nopts);
-
-  if (ui_mode == UI_MODE_TEXT)
-    return new_menu_tui (title, x, y, mn_type, help_no, nopts, &ap);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return (void *)new_menu_gtk (title, x, y, mn_type, help_no, nopts, &ap);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (8)");
-
-}
-
-/**
- * Create a new menu.
- *
- * Called by the generated C code at run-time.
- * The items are created after with other function call.
- *
- * @param title The menu title.
- * @param x The column where to be created.
- * @param y The line where to be created.
- * @param mn_type The menu type:
- *   - Boxed
- *   - ???
- * @param help_no The help number of the menu.
- * @return A pointer to the structure that identifies the menu.
- */
-ACL_Menu *new_menu_create(char *title, int x, int y, int mn_type, int help_no)  {
-  if (ui_mode == UI_MODE_TEXT)
-    return new_menu_create_tui (title, x, y, mn_type, help_no);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return (void *)new_menu_create_gtk (title, x, y, mn_type, help_no);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (8.1)");
-}
-
-
-/**
- * Add a new menu option/item.
- *
- * Executed at run-time by the generated program.
- *
- * @param menu A pointer to the menu structure.
- * @param txt The text of the option (immediatly after command)
- * @param keys The keys if so
- * @param desc The text long description.
- * @param helpno The help number.
- * @param attr The attributes
- */
-void add_menu_option(ACL_Menu *menu,char *txt,char *keys,char *desc,
-	int helpno,int attr)  
-{
-  if (ui_mode == UI_MODE_TEXT) {
-	add_menu_option_tui(menu,txt,keys,desc,helpno,attr);
-	return;
-  }
-#ifdef HAS_GTK
-START_HAS_GTK
-	add_menu_option_gtk(menu,txt,keys,desc,helpno,attr);
-        return;
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (8.2)");
-
-}
-
-/**
- * Terminate the menu creation.
- *
- * Executed by the generated code at run-time after the menu created and all
- * the items inserted.
- *
- * @param menu The menu structure.
- */
-void finish_create_menu(ACL_Menu *menu)  
-{
-  if (ui_mode == UI_MODE_TEXT) {
-	finish_create_menu_tui(menu);
-	return;
-  }
-#ifdef HAS_GTK
-START_HAS_GTK
-	finish_create_menu_gtk(menu);
-        return;
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (8.3)");
-
-}
-
-/**
- * Called by the 4gl compiled program to display the menu.
- * The menu should be allready initialized when this function called.
- *
- * @todo Clean the return values or return void. Since the called functions
- * does not return anything. The cast is just for clean the warning but this
- * should be fixed
- *
- * @param A pointer to the menu information.
- * @return The return value is not used 
- */
-char *disp_h_menu (ACL_Menu *menu)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return disp_h_menu_tui (menu);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return (char *)disp_h_menu_gtk (menu);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (9)");
-}
-
-/**
- * Executes the menu loop until the user executes some option.
- *
- * Executed in run-time by the generated C code.
- *
- * @param menu A pointer to the menu structure information.
- */
-int menu_loop (ACL_Menu *menu)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return menu_loop_tui (menu);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return menu_loop_gtk (menu);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (10)");
-}
-
-/**
- * Execute the NEXT OPTION part of MENU statement.
- *
- * In GTK GUI mode have no efect.
- *
- * @param menu
- * @param nextop.
- */
-int
-next_option (ACL_Menu * menu,char *nextopt)
-{
-  if (ui_mode == UI_MODE_TEXT)
-	return next_option_tui ( menu, nextopt) ;
-#ifdef HAS_GTK
-START_HAS_GTK
-	return next_option_gtk ( menu, nextopt) ;
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (11)");
-}
-
-
-/**
- * Not used.
- */
-int
-free_menu (ACL_Menu * menu)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return free_menu_tui (menu);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return free_menu_gtk (menu);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (12)");
-}
-
-/**
- * Not used but should be.
- */
-int
-menu_hide (ACL_Menu * menu, ...)
-{
-  va_list ap;
-  va_start (ap, menu);
-  if (ui_mode == UI_MODE_TEXT)
-    return menu_hide_tui (menu, &ap);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return menu_hide_gtk (menu, &ap);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (13)");
-}
-
-/**
- * Show an item of the menu.
- *
- * Called by the generated C code at run-time.
- * 
- * @param The menu name to be showed.
- * @param ... The options to be showed.
- */
-int menu_show (ACL_Menu * menu, ...)
-{
-  va_list ap;
-  va_start (ap, menu);
-  if (ui_mode == UI_MODE_TEXT)
-    return menu_show_tui (menu, &ap);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return menu_show_gtk (menu, &ap);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (14)");
-}
-
-/**
- * Show a menu in a window.
- *
- * Called by the generated C code.
- *
- * @param menuid The menu name.
- * @param handler The menu handler name.
- * @return
- */
-int
-show_menu (char *menuid, void *handler)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return show_menu_tui (menuid, handler);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return show_menu_gtk (menuid, handler);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (15)");
-}
-
-/**
- * Print a message.
- *
- * @param a The attributes.
- * @param wait The time to wait during the message presentation.
- */
-#error BAD ..
-int
-
-aclfgli_pr_message (int attr,int wait)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return aclfgli_pr_message_tui (attr,wait);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return aclfgli_pr_message_gtk (attr,wait);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (16)");
-}
-
-/**
- * Display a error received by the char stack.
- *
- * @param a Not used
- * @param wait - 0 : The Do not wait for OK.
- *             - 1 : Show a window witj OK button.
- */
-int
-display_error (int attr,int wait)
-{
-  A4GLSQL_set_status(0,0);  
-  if (ui_mode == UI_MODE_TEXT)
-    return display_error_tui (attr,wait);
-
-#ifdef HAS_GTK
-START_HAS_GTK
-    return display_error_gtk (attr,wait);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (17)");
-}
-
-/**
- * Get the current form in GTK GUI mode.
- *
- * @return The current form
- */
-struct s_form_dets *get_curr_form ()
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return get_curr_form_tui ();
-#ifdef HAS_GTK
-START_HAS_GTK
-    return (void *)get_curr_form_gtk ();
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (18)");
-}
-
-
-/**
- * Implementation of part of the INPUT 4gl statement.
- *
- * Generate a list of fields acording the parameters.
- *
- * @param field_list A pointer to the place where to put the field list.
- * @param formdets Pointer to the structure filled with the form details.
- * @param ...
- * @return
- */
-int
-gen_field_chars (FIELD *** field_list, struct s_form_dets *formdets, ...)
-{
-  va_list ap;
-  va_start (ap, formdets);
-
-  if (ui_mode == UI_MODE_TEXT)
-    return gen_field_chars_tui (field_list, formdets, &ap);
-
-#ifdef HAS_GTK
-START_HAS_GTK
-    return gen_field_chars_gtk (field_list, formdets, &ap);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (19)");
-}
-
-/**
- * Implementation of the form input loop.
- *
- * Called by the generated C code.
- *
- * @param s A pointer to the screen IO structure.
- */
-int
-form_loop (struct s_screenio *s)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return form_loop_tui (s);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return form_loop_gtk (s);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (20)");
-}
-
-
-/**
- *
- * @param s A pointer to the screen information.
- */
-int push_constr (struct s_screenio *s)    
-{
-  if (ui_mode == UI_MODE_TEXT) 
-   return push_constr_tui (s);
-
-#ifdef HAS_GTK
-START_HAS_GTK
-    return push_constr_gtk (s);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (20)");
-}
-
-
-/* Input stuff */
-
-
-/**
- * Part of the C implementation of the input.
- *
- * Called by the generated C code.
- *
- * @param sio a pointer to the screen IO structure.
- */
-int
-set_fields (struct s_screenio *sio)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return set_fields_tui (sio);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return set_fields_gtk (sio);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (21)");
-}
-
-/**
- * DISPLAY AT 4gl statement implementation.
- *
- * @param n The row number where the display is made.
- * @param a The column number.
- */
-int
-display_at (int n, int a)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return display_at_tui (n, a);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return display_at_gtk (n, a);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (22)");
-}
-
-
-/**
- * Move the 4gl window.
- *
- * Implement the MOVE WINDOW 4gl statement.
- *
- * @param s The window name.
- * @param to_by Flag that identifies the scope of the move:
- *   - 0 : The move is abosulte in the screen.
- *   - 1 : The move is relative to the current position.
- */
-int
-movewin (char *winname, int absol)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return movewin_tui (winname, absol);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return movewin_gtk (winname, absol);
-END_HAS_GTK
-#endif
-
-  exitwith ("Invalid UI Mode (23)");
-}
-
-/* Display.. */
-
-/**
- * Implements the HIDE WINDOW 4gl instruction.
- *
- * @param winname The name of the window to be hidded.
- * @return ???
- */
-int
-hide_window (char *winname)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return hide_window_tui (winname);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return hide_window_gtk (winname);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (24)");
-}
-
-/**
- * Show a window.
- *
- * @param winname The name of the window to be showed.
- */
-int
-show_window (char *winname)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return show_window_tui (winname);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return show_window_gtk (winname);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (25)");
-}
-
-/**
- * Check if the user was in a screen field.
- *
- * @todo : Fix the call of the generrated C code that call this function
- * with only one parameter.
- *
- * @param s The field name.
- * @param a
- */
-long fgl_infield (char *s, int a)  
-{
-
-  if (ui_mode == UI_MODE_TEXT)
-    return fgl_infield_tui (s,a);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return fgl_infield_gtk (s,a);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (25)");
-}
-
-/**
- * Clear the content of a window.
- *
- * @param winname The name of the window to cleaned.
- */
-int
-clr_window (char *winname)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return clr_window_tui (winname);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return clr_window_gtk (winname);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (26)");
-}
-
-/**
- * 4gl SLEEP statement implementation.
- */
-int sleep_i ()
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return sleep_i_tui ();
-#ifdef HAS_GTK
-START_HAS_GTK
-    return sleep_i_gtk ();
-END_HAS_GTK
-#endif
-  debug("ui_mode=%d",ui_mode);
-  exitwith ("Invalid UI Mode (27)");
-}
-
-/**
- * Implements the CLOSE WINDOW 4gl statement.
- *
- * Called by the generated C code.
- *
- * @param win_name The window name.
- */
-int remove_window (char *win_name)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return remove_window_tui (win_name);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return remove_window_gtk (win_name);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (28)");
-}
-
-/**
- * C Implementation of the PROMPT 4gl statement.
- *
- * Called by the generated C code for a 4gl souced with PROMPT statement.
- *
- * @param prompt A pointer to the prompt structure where the information about
- * it is stored.
- */
-prompt_loop (struct s_prompt *prompt)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return prompt_loop_tui (prompt);
-#ifdef HAS_GTK
-START_HAS_GTK
-
-    return prompt_loop_gtk (prompt);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (29)");
-}
-
-/**
- * Implementation of the first part of C version PROMPT 4gl statement.
- *
- * @param prompt A pointer to the prompt identifier structure where this 
- *   function initialize the values.
- * @param ap The attributes for the message.
- * @param c Prompt for char (cbreak()) flag.
- * @param h The help number.
- * @param af The attributes.
- */
-int
-start_prompt (struct s_prompt *prompt, int ap, int c, int h, int af)
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return start_prompt_tui (prompt, ap, c, h, af);
-#ifdef HAS_GTK
-START_HAS_GTK
-    return start_prompt_gtk (prompt, ap, c, h, af);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (30)");
-}
-
-/**
- * Enable or disable fields.
- *
- * @param en_dis The action to do:
- *   - D : Disable
- *   - E : Enable
- * @param ... The list of the fields to be enabled or disabled.
- */
-int endis_fields (int en_dis, ...) 
-{
-  va_list ap;
-  va_start (ap, en_dis);
-
-  if (ui_mode==UI_MODE_TEXT) 
-	  return endis_fields_tui(en_dis,&ap);
-
-#ifdef HAS_GTK
-START_HAS_GTK
-	return endis_fields_gtk(en_dis,&ap);
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (30)");
-}
-
-/**
- * Clear the content of the fields in the current form.
- *
- * @param to_defaults Indicate if the values should be initialized just as in
- * defaults.
- */
-void clr_form (int to_defaults) 
-{
-
-  if (ui_mode==UI_MODE_TEXT)  {
-	  clr_form_tui(to_defaults);
-	  return;
-  }
-
-#ifdef HAS_GTK
-START_HAS_GTK
-
-	clr_form_gtk(to_defaults);
-	return;
-
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (30)");
-}
-
-gui_init(int c,char *argv[]) {
-#ifdef HAS_GTK
-START_HAS_GTK
-	gui_init_gtk(c,argv);
-	return;
-END_HAS_GTK
-#else
-	printf("Not compiled for GUI environment\n");
-	exitwith("Not compiled for a GUI environment");
-	exit(0);
-#endif
-}
-
-/**
- * Make a refresh in the windows in GUI mode in the z axys.
- */
-zrefresh ()
-{
-  if (ui_mode == UI_MODE_TEXT)
-    return zrefresh_tui();
-#ifdef HAS_GTK
-START_HAS_GTK
-    return zrefresh_gtk();
-END_HAS_GTK
-#endif
-  exitwith ("Invalid UI Mode (31)");
-}
-
-#endif

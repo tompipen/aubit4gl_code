@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.29 2002-05-17 07:08:34 afalout Exp $
+# $Id: sql.c,v 1.30 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -1320,7 +1320,7 @@ A4GLSQL_fetch_cursor (char *cursor_name,
  *
  * If a connection was allready opened free the resources used.
  *
- * Gets the username and passord from the environment and call make_connection.
+ * Gets the username and passord from the environment and call A4GLSQL_make_connection().
  *
  * @todo : Substitute the deprecated function SQLFreeConnect.
  * @param dbName The database name

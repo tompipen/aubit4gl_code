@@ -1,3 +1,32 @@
+/*
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: function_call_stack.c,v 1.6 2002-05-18 11:56:47 afalout Exp $
+#*/
+
 /**
  * @file
  * Functions to imlement the mechanism of registering the function call
@@ -10,13 +39,38 @@
  * @todo : Modify the compiler and the error function to call this facility
  */
 
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
 #include <stdio.h>
+#include <stdlib.h> 	//calloc()
+#include <string.h>     //strcpy() strcat() strcmp()
 #include "a4gl_debug.h"
+
+/*
+=====================================================================
+                    Constants definitions
+=====================================================================
+*/
 
 #define MAX_FUNCTION_CALL_STACK 1000
 
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
 
 extern char *params_on_stack (char *_paramnames[],int n);
+
+/*
+=====================================================================
+                    Variables definitions
+=====================================================================
+*/
 
 /**
  * The type definition of a function call 
@@ -43,14 +97,22 @@ static int currentFglLineNumber=0;
 /** Flag that indicate that the stack info is used */
 static int stackInfoInitialized = 0;
 
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
 /**
  * Initialize the function call stack
  *
- * @return 
+ * @return
  *   - 0 : No memory for initializing the stack
  *   - 1 : Stack initialized
  */
-int A4GLSTK_initFunctionCallStack(void)
+void
+A4GLSTK_initFunctionCallStack(void)
 {
   functionCallStack = (FunctionCall *)calloc(
     sizeof(FunctionCall),
@@ -66,7 +128,8 @@ int A4GLSTK_initFunctionCallStack(void)
  * @param moduleName The name of the module where the program is.
  * @param lineNumber The line at 4gl source where the program is.
  */
-void A4GLSTK_setCurrentLine(const char *moduleName,int lineNumber)
+void
+A4GLSTK_setCurrentLine(const char *moduleName,int lineNumber)
 {
   currentModuleName = moduleName;
   currentFglLineNumber = lineNumber;
@@ -77,7 +140,8 @@ void A4GLSTK_setCurrentLine(const char *moduleName,int lineNumber)
  *
  * @param functionName The name of the function called.
  */
-void A4GLSTK_pushFunction(const char *functionName,char *params[],int n)
+void
+A4GLSTK_pushFunction(const char *functionName,char *params[],int n)
 {
 int a;
  debug("Call from Module : %s line %d",currentModuleName,currentFglLineNumber);
@@ -95,9 +159,14 @@ int a;
 /**
  * Pop the last function from the stack.
  */
-void A4GLSTK_popFunction()
+void 
+A4GLSTK_popFunction(void)
 {
   if (functionCallStack[functionCallPointer-1].params) free(functionCallStack[functionCallPointer-1].params);
+//   warning: passing arg 1 of `free' discards qualifiers from pointer target type
+
+
+
   functionCallPointer--;
   if ( functionCallPointer < 0 )
     functionCallPointer = 0;
@@ -108,11 +177,12 @@ void A4GLSTK_popFunction()
  *
  * @return A pointer to a static char buffer where the stack trace was printed.
  */
-char *A4GLSTK_getStackTrace(void)
+char *
+A4GLSTK_getStackTrace(void)
 {
   static char stackTrace[640];
   static char tmpStackTrace[640];
-  char *ptr;
+//  char *ptr;
   int i;
 
   strcpy(stackTrace,"4gl function call stack :\n");
@@ -151,9 +221,10 @@ char *A4GLSTK_getStackTrace(void)
  *   - 0 : Stack info not initialized.
  *   - 1 : Stack info initialized.
  */
-int A4GLSTK_isStackInfo(void)
+int
+A4GLSTK_isStackInfo(void)
 {
   return stackInfoInitialized;
 }
 
-
+// ============================= EOF ================================

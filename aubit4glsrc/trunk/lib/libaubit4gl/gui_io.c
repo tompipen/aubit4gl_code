@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.3 2002-05-17 07:08:33 afalout Exp $
+# $Id: gui_io.c,v 1.4 2002-05-18 11:56:47 afalout Exp $
 #
 */
 
@@ -51,7 +51,10 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h> //strcpy()
+
 #include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
 
 
 /*
@@ -121,7 +124,7 @@ void
 gui_mkfield(int h,int w,int y,int x,void *p) 
 {
 char buff[256];
-	sprintf(buff,"%lx %d %d %d %d",p,x,y,w,h);
+	sprintf(buff,"%lx %d %d %d %d",(long unsigned int)p,x,y,w,h); //long unsigned int format, __builtin_va_list arg (arg 3)
 	debug("gui_mkfield:Make field");
 	gui_send("MKFIELD",buff);
 }
@@ -132,10 +135,10 @@ char buff[256];
  * @param
  */
 void
-gui_mklabel(int h,int w,int y,int x,char *s) 
+gui_mklabel(int h,int w,int y,int x,char *s)
 {
 char buff[256];
-	sprintf(buff,"\"%s\" %d %d %d %lx",s,x,y,w,h);
+	sprintf(buff,"\"%s\" %d %d %d %lx",s,x,y,w,(long unsigned int)h);
 	gui_send("MKLABEL",buff);
 }
 
@@ -149,7 +152,7 @@ void
 gui_wrefresh(void *d)
 {
 char buff[256];
-	sprintf(buff,"%lx",d);
+	sprintf(buff,"%lx",(long unsigned int)d);
 	#ifdef DEBUG
 	/* {DEBUG} */ {debug("gui_refresh");}
 	#endif
@@ -326,7 +329,7 @@ void
 gui_setbuff(void *a,char *n)
 {
 char buff[1024];
-	sprintf(buff,"%lx %s",a,n);
+	sprintf(buff,"%lx %s",(long unsigned int)a,n);
 	gui_send("SETBUFF",buff);
 }
 
@@ -336,7 +339,7 @@ char buff[1024];
  * @param
  */
 void
-gui_closewin(char *name) 
+gui_closewin(char *name)
 {
 	gui_send("RMWIN",name);
 }
@@ -347,7 +350,7 @@ gui_closewin(char *name)
  * @param
  */
 void
-gui_currwin(long a) 
+gui_currwin(long a)
 {
 char buff[1024];
 	sprintf(buff,"%lx",a);
@@ -490,9 +493,9 @@ char buff2[256];
  * @param
  */
 void
-gui_user(char *txt) 
+gui_user(char *txt)
 {
-char buff[256];
+//char buff[256];
 	gui_send("USER",txt);
 }
 
