@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.58 2003-06-09 11:11:42 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.59 2003-06-10 22:20:52 mikeaubury Exp $
 #
 */
 
@@ -1489,7 +1489,7 @@ extern "C"
 
 
 int
-A4GL_acli_scroll (void *s, int n);
+A4GL_acli_scroll (void *s, int n,int m);
 int
 aclfgl_a4gl_get_ui_mode (int n);
 int

@@ -19,8 +19,15 @@
 
 #ifdef DIALECT_INFORMIX
 #include "a4gl_esql_infx.h"
+#define VALID_DIALECT_FOUND
 #endif
+
 
 #ifdef DIALECT_POSTGRES
 #include "a4gl_esql_postgres.h"
+#define VALID_DIALECT_FOUND
+#endif
+
+#ifndef VALID_DIALECT_FOUND
+#include "a4gl_esql_infx.h"
 #endif

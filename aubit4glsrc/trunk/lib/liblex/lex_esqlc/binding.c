@@ -35,7 +35,7 @@ print_conversions (char i)
     }
   if (i == 'o')
     {
-      printc ("%s /* buff_out */\n", buff_out);
+      printc ("if (a4gl_status==0) { %s } /* buff_out */\n", buff_out);
     }
   if (i == 'I')
     {
@@ -43,7 +43,7 @@ print_conversions (char i)
     }
   if (i == 'O')
     {
-      printh ("%s /* buff_out */\n", buff_out);
+      printh ("if (a4gl_status==0) { %s } /* buff_out */\n", buff_out);
     }
   if (i=='0') {
 	strcpy(buff_in,"");

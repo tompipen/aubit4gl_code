@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.33 2003-06-09 11:12:21 mikeaubury Exp $
+# $Id: curslib.c,v 1.34 2003-06-10 22:20:54 mikeaubury Exp $
 #*/
 
 /**
@@ -86,6 +86,7 @@
 */
 
 WINDOW *curr_error_window=0;
+PANEL *curr_error_panel=0;
 
 
 int aborted;
@@ -266,30 +267,42 @@ A4GL_error_nobox (char *str,int attr)
   int eline;
   //int w;
   WINDOW *w;
+  PANEL *p;
+  PANEL *o;
+  WINDOW *ow;
+extern WINDOW *currwin;
  
   A4GL_chkwin();
   eline = A4GL_geterror_line ();
   A4GL_debug("Eline=%d\n",eline);
   A4GL_debug("subwin(%p, %d,  %d, %d, %d);",stdscr, 1,  A4GL_screen_width()-1, eline, 1);
-  w= subwin (stdscr, 1,  A4GL_screen_width()-1, eline, 0);
+  //w= subwin (stdscr, 1,  A4GL_screen_width()-1, eline, 0);
+  w= newwin ( 1,  A4GL_screen_width()-1, eline, 0);
 
-	if (w==0) {
+  if (w==0) {
 		A4GL_exitwith("Internal error - couldn't create error window");
 		return;
 	}
-
+  ow=currwin;
+  p=new_panel(w);
+  o=panel_below(0);
+  top_panel(p);
+  
   //A4GL_push_char (str);
   A4GL_subwin_gotoxy (w, 1, 1);
   if (attr==0) attr=A_REVERSE+A4GL_colour_code (COLOR_RED);
   wattrset (w, attr);
   A4GL_subwin_print (w, str);
-
+  //wrefresh(w);
 #ifdef DEBUG
   A4GL_debug ("YY REVERSE");
 #endif
 
   //A4GL_display_at (1, AUBIT_ATTR_REVERSE);
-	curr_error_window=w;
+  curr_error_window=w;
+  curr_error_panel=p;
+  A4GL_zrefresh();
+
 }
 
 
@@ -323,7 +336,10 @@ A4GL_clr_error_nobox (void)
   int a;
   A4GL_chkwin();
   if (curr_error_window) {
+	del_panel(curr_error_panel);
 	delwin(curr_error_window);
+	curr_error_window=0;
+	curr_error_panel=0;
 	return;
   }
 
@@ -2962,6 +2978,10 @@ aclfgli_pr_message (int attr, int wait)
   A4GL_debug ("In message...");
   cw = (WINDOW *) A4GL_get_currwin ();
   ml = A4GL_getmessage_line ();
+  if (ml<0) {
+	A4GL_exitwith("Internal error - negative messageline");
+	return ;
+  }
   A4GL_debug ("MJA - Got message line as %d\n", ml);
   width = A4GL_get_curr_width ();
   A4GL_pop_char (p, A4GL_get_curr_width ());

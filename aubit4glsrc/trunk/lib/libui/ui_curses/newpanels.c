@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.40 2003-06-09 11:12:21 mikeaubury Exp $
+# $Id: newpanels.c,v 1.41 2003-06-10 22:20:57 mikeaubury Exp $
 #*/
 
 /**
@@ -251,7 +251,8 @@ LIBUSEONLY void *
 A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
 {
   A4GL_chkwin();
-  return A4GL_create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1,
+  return A4GL_create_window (name, x, y, w, h, 1, 
+		0xff, 0xff, 0xff, 0xff, border, 0xff, 0xff,
 			0xffff);
 }
 
@@ -279,6 +280,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	 w, h, border, attrib);
 #endif
 
+/*
   if (form_line == 0xff)
     {
       form_line = std_dbscr.form_line;
@@ -303,6 +305,7 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
     {
       prompt_line = std_dbscr.prompt_line;
     }
+*/
 
   if (attrib == 0xffff)
     {
@@ -1490,21 +1493,10 @@ A4GL_inc_winname (char *b)
 int
 A4GL_getmenu_line (void)
 {
-#ifdef DEBUG
-    A4GL_debug ("In menu line... currwinno=%d ", currwinno);
-    A4GL_debug ("name=%s ", windows[currwinno].name);
-#endif
-
-  if (strcmp (windows[currwinno].name, "screen") == 0)
-    {
-      /* use screen default */
-      return A4GL_decode_line (std_dbscr.menu_line);
-    }
-
-  A4GL_debug ("form=%p", windows[currwinno].form);
-  A4GL_debug ("menu line=%d (%s)", windows[currwinno].winattr.menu_line,
-	 windows[currwinno].name);
-  return A4GL_decode_line (windows[currwinno].winattr.menu_line);
+  if (windows[currwinno].winattr.menu_line!=0xff) {
+	return A4GL_decode_line (windows[currwinno].winattr.menu_line);
+  }
+  return A4GL_decode_line (std_dbscr.menu_line);
 }
 
 /**
@@ -1514,6 +1506,7 @@ A4GL_getmenu_line (void)
 void
 A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 {
+A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,a,clr_line);
   if (x == -1 && y == -1)
     {
       A4GL_debug ("Line mode display");
@@ -2343,16 +2336,13 @@ A4GL_do_update_panels (void)
 int
 A4GL_getform_line (void)
 {
-  if (strcmp (windows[currwinno].name, "screen") == 0)
-    {
-      return A4GL_decode_line (std_dbscr.form_line);
-    }
-#ifdef DEBUG
-  {
-    A4GL_debug ("Use window value of : %d", windows[currwinno].winattr.form_line);
+
+  if (windows[currwinno].winattr.form_line!=0xff) {
+	return A4GL_decode_line (windows[currwinno].winattr.form_line);
   }
-#endif
-  return A4GL_decode_line (windows[currwinno].winattr.form_line);
+  return A4GL_decode_line (std_dbscr.form_line);
+
+
 }
 
 /**
@@ -2362,11 +2352,10 @@ A4GL_getform_line (void)
 int
 A4GL_getcomment_line (void)
 {
-  if (windows[currwinno].form == 0)
-    {				/* use screen default */
-      return A4GL_decode_line (std_dbscr.comment_line);
-    }
-  return A4GL_decode_line (windows[currwinno].form->form_details.comment_line);
+  if (windows[currwinno].winattr.comment_line!=0xff) {
+	return A4GL_decode_line (windows[currwinno].winattr.comment_line);
+  }
+  return A4GL_decode_line (std_dbscr.comment_line);
 }
 
 /**
@@ -2376,18 +2365,13 @@ A4GL_getcomment_line (void)
 int
 A4GL_geterror_line (void)
 {
-  if (windows[currwinno].form == 0)
-    {				/* use screen default */
-      A4GL_debug ("Get error line - no form\n");
-      return A4GL_decode_line_scr (std_dbscr.error_line);
-    }
-  A4GL_debug ("Get error line - form : %d",
-	 windows[currwinno].form->form_details.error_line);
-  if (currwinno == 0)
-    {
-      return A4GL_decode_line_scr (std_dbscr.error_line);
-    }
-  return A4GL_decode_line_scr (windows[currwinno].form->form_details.error_line);
+
+  A4GL_debug ("getmessage_line - %d", windows[currwinno].winattr.message_line);
+  if (windows[currwinno].winattr.error_line!=0xff) {
+        return A4GL_decode_line_scr (windows[currwinno].winattr.error_line);
+  }
+
+  return A4GL_decode_line_scr (std_dbscr.error_line);
 }
 
 
@@ -2399,14 +2383,12 @@ int
 A4GL_getmessage_line (void)
 {
   A4GL_debug ("getmessage_line - %d", windows[currwinno].winattr.message_line);
-  if (windows[currwinno].form == 0)
-    {				/* use screen default */
-      A4GL_debug ("getmessage_line - std_dbscr...");
-      return A4GL_decode_line (std_dbscr.message_line);
-    }
-  A4GL_debug ("getmessage_line - window...");
-  return windows[currwinno].winattr.message_line;
-  //return A4GL_decode_line (windows[currwinno].form->form_details.message_line);
+  if (windows[currwinno].winattr.message_line!=0xff) {
+        return A4GL_decode_line (windows[currwinno].winattr.message_line);
+  }
+
+  return A4GL_decode_line (std_dbscr.message_line);
+
 }
 
 
@@ -2417,15 +2399,10 @@ A4GL_getmessage_line (void)
 int
 A4GL_getprompt_line (void)
 {
-  A4GL_debug (">> %p ", windows[currwinno].name);
-  A4GL_debug (">> %s ", windows[currwinno].name);
-  if (strcmp (windows[currwinno].name, "screen") == 0)
-    {
-      A4GL_debug ("...std_dbscr");
-      return A4GL_decode_line (std_dbscr.prompt_line);
-    }
-  A4GL_debug ("...windows");
-  return A4GL_decode_line (windows[currwinno].winattr.prompt_line);
+  if (windows[currwinno].winattr.prompt_line!=0xff) {
+	return A4GL_decode_line (windows[currwinno].winattr.prompt_line);
+  }
+  return A4GL_decode_line (std_dbscr.prompt_line);
 }
 
 /**
@@ -2638,8 +2615,12 @@ A4GL_window_on_top (void)
   PANEL *ptr;
   const char *s;
   void *winptr;
-  ptr = panel_below (0);
-  s = panel_userptr (ptr);	/* get name of panel */
+  ptr=0;
+  while (1) {
+  	ptr = panel_below (ptr);
+  	s = panel_userptr (ptr);	/* get name of panel */
+	if (s) break;
+  }
   winptr = A4GL_find_pointer (s, WINCODE);
   return winptr;
 }

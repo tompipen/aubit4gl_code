@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.41 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: builtin.c,v 1.42 2003-06-10 22:20:53 mikeaubury Exp $
 #
 */
 
@@ -964,7 +964,7 @@ aclfgl_ascii (int n)
  *
 **/
 int
-A4GL_acli_scroll (void *s, int n)
+A4GL_acli_scroll (void *s, int n,int n2)
 {
   A4GL_exitwith ("acli_scroll not implemented");
   return 0;

@@ -36,14 +36,13 @@
 --[^!].* 	{if (in_screen_section) REJECT; 
 }
 
-[pdqb]  { 
-	if (ignorekw==0) REJECT; 
-       	if (graphics_mode==0) REJECT;
-	colno++;
-       	strcpy(yylval.str, "+"); 
-	return (CH);
+[pdqb]  {
+        if (ignorekw==0) REJECT;
+        if (graphics_mode==0) REJECT;
+        colno++;
+        sprintf(yylval.str, "\n%s",yytext);
+        return (CH);
 }
-
 "database"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(DATABASE);}
 "instructions"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); return(INSTRUCTIONS);}
 "attributes"		{if (ignorekw) REJECT; strcpy(yylval.str, yytext); buffpos();return(ATTRIBUTES);}
@@ -108,7 +107,12 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "NOT" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNOT;}
 
 "." 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return DOT;}
-"|" 		{ strcpy(yylval.str,yytext); colno++; if (graphics_mode==0) return PIPE; else return NAMED; }
+"|" 		{ strcpy(yylval.str,yytext); colno++; if (graphics_mode==0) return PIPE; 
+			else {
+				sprintf(yylval.str,"\n|");
+				return CH; 
+			}
+		}
 "=" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return EQUAL;}
 "tables" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return TABLES;}
 "without" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return WITHOUT;}
@@ -118,8 +122,22 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "(" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return OPEN_BRACKET;}
 ")" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return CLOSE_BRACKET;}
 "*" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return STAR;}
-"+" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return PLUS;}
-"-" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return MINUS;}
+"+" 		{if (ignorekw) REJECT;
+			strcpy(yylval.str,yytext); 
+			if (graphics_mode) {
+				A4GL_debug("GM +");
+				strcpy(yylval.str,"\n+");
+				return CH;
+				}
+		return PLUS;
+		}
+- 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); 
+			if (graphics_mode) {
+				strcpy(yylval.str,"\n-");
+				return CH;
+				}
+		return MINUS;
+		}
 "," 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return COMMA;}
 "thru" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
 "through" 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return THROUGH;}
@@ -185,18 +203,34 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "listbox"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return LISTBOX;}
 "button"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return BUTTON;}
 "panel"		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_PANEL;}
+
 [a-zA-Z]+[a-zA-Z\_0-9]*	{
 	if (ignorekw) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext);
 	A4GL_debug("NAMED : %s\n",yytext);
- return(NAMED);
+ 	return(NAMED);
 }
 [a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
 if (ignorekw!=1) REJECT;strcpy(yylval.str, yytext);colno+=strlen(yytext); 
  A4GL_debug("NAMED : %s\n",yytext); 
 return(NAMED);}
-.	{strcpy(yylval.str,yytext);colno++;
+
+.	{
+	strcpy(yylval.str,yytext);colno++;
+	if (graphics_mode) {
+		if (
+			strcmp(yytext,"+")==0 ||
+			strcmp(yytext,"p")==0 ||
+			strcmp(yytext,"q")==0 ||
+			strcmp(yytext,"b")==0 ||
+			strcmp(yytext,"d")==0 ||
+			strcmp(yytext,"-")==0 ||
+			strcmp(yytext,"|")==0 ) {
+			sprintf(yylval.str,"\n%s",yytext);
+		}
+	}
  A4GL_debug("CH : %s\n",yytext);  
-return CH;}
+return CH;
+}
 %%
 
 /**

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.3 2003-06-09 11:12:21 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.4 2003-06-10 22:20:55 mikeaubury Exp $
 #*/
 
 /**
@@ -271,6 +271,7 @@ process_control_stack (struct s_screenio *sio)
   if (sio->fcntrl[a].op == FORMCONTROL_BEFORE_INPUT)
     {
       new_state = 0;
+
       //rval = -99;
     }
 
@@ -341,6 +342,7 @@ process_control_stack (struct s_screenio *sio)
 
   if (sio->fcntrl[a].op == FORMCONTROL_BEFORE_FIELD)
     {
+	struct struct_scr_field *fprop;
       ptr_movement = (struct s_movement *) sio->fcntrl[a].parameter;
       new_state = 0;
       sio->curr_attrib = ptr_movement->attrib_no;
@@ -351,7 +353,10 @@ process_control_stack (struct s_screenio *sio)
       sio->currentfield = sio->field_list[sio->curr_attrib];
       set_current_field (sio->currform->form, sio->currentfield);
       pos_form_cursor (sio->currform->form);
-	sio->currform->currentfield=sio->currentfield;
+      sio->currform->currentfield=sio->currentfield;
+	fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+
+      A4GL_comments (fprop);
 
 	A4GL_debug("New current field set to %p",sio->currentfield);
 
@@ -372,13 +377,28 @@ process_control_stack (struct s_screenio *sio)
 	A4GL_debug("form_Field_chk returns %d\n",a);
 
 	if (ffc_rval!=-4) {
+		int field_no;
+		char buff[1024];
+		field_no=sio->curr_attrib;
       		new_state = 0;
+		strcpy(buff,field_buffer (sio->currentfield, 0));
+		A4GL_trim(buff);
+		if (strlen(buff)) {
+			A4GL_debug("Field is not null");
+	        	A4GL_push_char (buff);
+		} else {
+			A4GL_debug("Field is null");
+		 	A4GL_push_null();
+		}
+
+          	A4GL_pop_var2 (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+
       		A4GL_push_long ((long) sio->currentfield);
       		A4GL_push_char (sio->fcntrl[a].field_name);
       		rval = -198;
 	} else {
- 			A4GL_init_control_stack (sio,0);
-			return -1;
+		A4GL_init_control_stack (sio,0);
+		return -1;
 	}
     }
 

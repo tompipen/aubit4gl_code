@@ -46,10 +46,10 @@ A4GL_debug("Aubit size : %d %d\n",size & 15, size>>4);
 
 if (dir=='i') {
 	char *ptr;
-A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
+	A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
 	A4GL_push_variable(a4gl,(size<<16)+5);
    	A4GL_pop_var2(&b,0,0x28);
-A4GL_debug("Ptr=%s\n",b);
+	A4GL_debug("Ptr=%s\n",b);
 	deccvasc(b,strlen(b),infx);
 }
 

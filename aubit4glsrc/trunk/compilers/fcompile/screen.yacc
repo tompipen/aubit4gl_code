@@ -205,25 +205,31 @@ screen_element :
 some_text {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
+	     A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
 }
 | field  
 | CH {
+	char buff[256];
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
+	strcpy(buff,$<str>1);
+	if (buff[0]=='\n') A4GL_add_field("_label",1+colno-1,lineno,1,scr,0,$<str>1);
+	else A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
 }
 | PIPE {
+	char buff[256];
+	strcpy(buff,$<str>1);
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
+	if (buff[0]=='\n') A4GL_add_field("_label",1+colno-1,lineno,1,scr,0,$<str>1);
+	else A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,1,scr,0,$<str>1);
 }
 
 
 | CHAR_VALUE {
 	if (colno>the_form.maxcol) the_form.maxcol=colno; 
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
-	A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
+	     A4GL_add_field("_label",1+colno-strlen($<str>1),lineno,strlen($<str>1),scr,0,$<str>1);
 } 
 
 ;
