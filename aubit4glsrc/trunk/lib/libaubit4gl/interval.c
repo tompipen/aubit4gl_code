@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.15 2004-11-12 13:30:19 mikeaubury Exp $
+# $Id: interval.c,v 1.16 2004-11-30 17:38:00 mikeaubury Exp $
 #
 */
 
@@ -597,14 +597,7 @@ A4GL_decode_interval (struct ival *ival, int *data)
   data[4] = ival->i_minutes;
   data[5] = ival->i_seconds;
   data[6] = ival->i_fractions;
-  A4GL_debug("Y %d M %d D %d  H %d M %d S %d F %d",
-data[0],
-data[1],
-data[2],
-data[3],
-data[4],
-data[5],
-data[6]);
+  A4GL_debug("Y %d M %d D %d  H %d M %d S %d F %d", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
 
 }
 

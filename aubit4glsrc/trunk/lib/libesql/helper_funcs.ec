@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.25 2004-11-26 17:32:40 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.26 2004-11-30 17:38:01 mikeaubury Exp $
 #
 */
 
@@ -344,8 +344,8 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 			char *ptr;
 			char buff[255];
 		if (p_indicat) *p_indicat=0;
-			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
-			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {rsetnull(CINVTYPE,(void *)infx);return;}
+			if (A4GL_isnull(DTYPE_INTERVAL,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
+			if (A4GL_isnull(DTYPE_INTERVAL,(void *)a4gl)) {rsetnull(CINVTYPE,(void *)infx);return;}
 			A4GL_push_interval(a4gl);
 			ptr=A4GL_char_pop();
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.112 2004-11-25 15:38:59 mikeaubury Exp $
+# $Id: esql.ec,v 1.113 2004-11-30 17:38:01 mikeaubury Exp $
 #
 */
 
@@ -132,6 +132,8 @@ dll_export sqlca_struct a4gl_sqlca;
 //#define TU_DTENCODE(s,e) TU_ENCODE(((e)-(s)+((s)==TU_YEAR?4:2)), s, e)
 //#define TU_IENCODE(len,s,e) TU_ENCODE(((e)-(s)+(len)),s,e)
 //#define TU_FLEN(len) (TU_LEN(len)-(TU_END(len)-TU_START(len)))
+static void A4GL_sql_copy_interval(void *infxv, void *a4glv,int isnull,int size,int mode);
+
 
 /*
 =====================================================================
@@ -156,7 +158,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.112 2004-11-25 15:38:59 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.113 2004-11-30 17:38:01 mikeaubury Exp $";
 #endif
 
 
@@ -678,6 +680,79 @@ A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+static void A4GL_sql_copy_interval(void *infxv, void *a4glv,int isnull,int size,int mode)
+{
+intrvl_t *infx; struct A4GLSQL_dtime *a4gl;
+if (mode=='i'||mode=='o') ; else { A4GL_assertion(1,"Mode should be 'o' or 'i'"); }
+
+        infx=infxv;
+        a4gl=a4glv;
+                if (mode=='i') {
+                        char *ptr;
+                        char buff[255];
+                        if (A4GL_isnull(DTYPE_INTERVAL,(void *)a4gl)) {rsetnull(CINVTYPE,(void *)infx);return;}
+                        A4GL_push_interval((void *)a4gl);
+                        ptr=A4GL_char_pop();
+
+                if (!A4GL_isyes(acl_getenv("KEEP_QUALIFIER"))) {
+                        int ndig_s;
+                        int s;
+                        int e;
+                        int tr[]={0,TU_YEAR,TU_MONTH,TU_DAY,TU_HOUR,TU_MINUTE,TU_SECOND,TU_F1,TU_F2,TU_F3,TU_F4,TU_F5,0};
+                        ndig_s=size>>8;
+                        s=(size>>4)&0xf;
+                        e=(size&0xf);
+                        printf("%x %d %d %d %d\n",size,size,ndig_s,s,e);
+                        infx->in_qual=TU_IENCODE(ndig_s,tr[s],tr[e]);
+                }
+        incvasc(ptr,infx);
+
+        // Debugging stuff only
+                A4GL_debug("Copy interval in - aubit=%s\n",ptr);
+                printf("Copy interval in - aubit=%s\n",ptr);
+                        intoasc(infx,buff);
+                printf("                Informix=%s\n",buff);
+                A4GL_debug("                Informix=%s\n",buff);
+        // End of Debugging stuff only
+
+                        free(ptr);
+                }
+
+                if (mode=='o') {
+                        char buff[255];
+                        char *ptr;
+                        int a;
+                        if (risnull(CINVTYPE,(void*)infx)) { A4GL_setnull(DTYPE_INTERVAL,(void *)a4gl,size); return;}
+
+                        intoasc(infx,buff);
+                        A4GL_push_char(buff);
+                        A4GL_pop_param(a4gl,DTYPE_INTERVAL,size);
+
+			// DEBUG
+                        A4GL_push_interval((void *)a4gl);
+                        ptr=A4GL_char_pop();
+                A4GL_debug("Copy datetime out - aubit=%s\n",ptr);
+                A4GL_debug("                Informix=%s\n",buff);
+                        free(ptr);
+			// End of DEBUG
+                }
+
+}
+
+
+
 /**
  * Put a connection with a name as current connection.
  * 
@@ -1090,12 +1165,8 @@ int arr_dtime[]={
       break;
 
     case DTYPE_INTERVAL:
-      fgl_interval = (FglInterval *) bind[idx].ptr;
-      if (incvasc (fgl_interval->data, &interval_var))
-	{
-	/** @todo : We need to store this error */
-	  return 1;
-	}
+ 	A4GL_sql_copy_interval((void *)&interval_var,  bind[idx].ptr,0,bind[idx].size,'i');
+
       EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index
 	TYPE =:dataType, DATA =:interval_var;
       break;
@@ -1416,15 +1487,22 @@ int type;
     case DTYPE_INTERVAL:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:interval_var =
 	DATA;
+
+
       if (isSqlError ())
 	return 1;
+
+ 	A4GL_sql_copy_interval((void *)&interval_var,  bind[idx].ptr,0,bind[idx].size,'o');
+#ifdef NOTDEF
       fgl_interval = malloc (sizeof (FglInterval));
       if (intoasc (&interval_var, fgl_interval->data))
 	{
+		A4GL_debug("INTERVAL ERROR");
 	/** @todo : Store the error somewhere */
 	  return 1;
 	}
        bind[idx].ptr = (void *)fgl_interval;
+#endif
       break;
     case DTYPE_BYTE:
       break;
@@ -2758,6 +2836,7 @@ dataType=p_datatype;
       fgl_interval = &actual_fgl_interval; //malloc (sizeof (FglInterval));
       if (intoasc (&interval_var, fgl_interval->data))
 	{
+		A4GL_debug("INTERVAL ERROR");
 	/** @todo : Store the error somewhere */
 	  return 1;
 	}
@@ -3681,6 +3760,10 @@ A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
     {
       return 0;
     }
+  if (dataType==15) { // NCHAR 
+	dataType=0;
+  }
+
   *dtype = dataType;
   *size = fixlength (dataType, length);
   return 1;

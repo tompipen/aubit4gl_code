@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.94 2004-11-29 22:33:04 mikeaubury Exp $
+# $Id: conv.c,v 1.95 2004-11-30 17:38:00 mikeaubury Exp $
 #
 */
 
@@ -310,7 +310,10 @@ typedef struct
 void (*setdtype[MAX_DTYPE]) (void *ptr1) =
 {
 A4GL_setc, A4GL_seti, A4GL_setl, A4GL_setf,
-    A4GL_setsf, A4GL_setf, A4GL_setl, A4GL_setno, A4GL_setf, A4GL_setno, A4GL_setno, A4GL_setno, A4GL_setno, A4GL_setno, A4GL_setno};
+    A4GL_setsf, A4GL_setf, A4GL_setl, A4GL_setno, A4GL_setf, A4GL_setno, A4GL_setno, A4GL_setno, A4GL_setno, A4GL_setno, 
+A4GL_setno,
+A4GL_setno
+};
 
 
 /**
@@ -2844,6 +2847,8 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
   if (ptr == NO)
     {
       A4GL_debug ("No! - %d %d", dtype1, dtype2);
+      A4GL_exitwith("Invalid conversion");
+
       setdtype[dtype2 & DTYPE_MASK] (p2);
       return -1;
     }

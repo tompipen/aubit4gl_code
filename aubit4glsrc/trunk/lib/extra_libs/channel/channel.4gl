@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.4 2004-11-30 14:39:23 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.5 2004-11-30 17:36:38 mikeaubury Exp $
 }
 
 {**
@@ -111,6 +111,7 @@ code
 		x=A4GL_has_pointer(handle,CHANNEL_IN);
 		if (x) {
 			// Already open ?
+			x=A4GL_find_pointer(handle,CHANNEL_IN);
 			fclose(x);
 			x=0;
 			A4GL_del_pointer(handle,CHANNEL_IN);
@@ -119,6 +120,7 @@ code
 		x=A4GL_has_pointer(handle,CHANNEL_OUT);
 		if (x) {
 			// Already open ?
+			x=A4GL_find_pointer(handle,CHANNEL_OUT);
 			fclose(x);
 			x=0;
 			A4GL_del_pointer(handle,CHANNEL_OUT);

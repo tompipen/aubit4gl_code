@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.63 2004-11-12 13:30:20 mikeaubury Exp $
+# $Id: ops.c,v 1.64 2004-11-30 17:38:00 mikeaubury Exp $
 #
 */
 
@@ -1584,6 +1584,13 @@ A4GL_in_in_ops (int op)
       printf ("Confused... %d != %d\n", d1 & DTYPE_MASK, DTYPE_INTERVAL);
     }
 
+  if ((d2 & DTYPE_MASK) != DTYPE_INTERVAL)
+    {
+      printf ("Confused... %d != %d\n", d2 & DTYPE_MASK, DTYPE_INTERVAL);
+    }
+
+  A4GL_assertion(pi1==0,"First interval is 0");
+  A4GL_assertion(pi2==0,"Second interval is 0");
 
   se1 = pi1->stime & 0xf;
   se2 = pi2->stime & 0xf;
@@ -1629,7 +1636,9 @@ A4GL_in_in_ops (int op)
   A4GL_debug_print_stack();
   A4GL_pop_param (&in1, DTYPE_INTERVAL, in1.stime * 16 + in1.ltime);
   A4GL_pop_param (&in2, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
-
+  if (in1.stime==0 || in1.ltime==0 || in2.stime==0 || in2.ltime==0) {
+		A4GL_assertion(1,"Interval looks empty");
+  }
 
   A4GL_decode_interval (&in1, ival_data1);
   A4GL_decode_interval (&in2, ival_data2);
