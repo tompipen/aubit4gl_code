@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.95 2004-09-18 18:32:44 mikeaubury Exp $
+# $Id: lexer.c,v 1.96 2004-09-24 09:51:53 mikeaubury Exp $
 #*/
 
 /**
@@ -1373,7 +1373,9 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   /*if (chk4var)*/
   /*a = NAMED_GEN;*/
 
-
+  if (isin_command("FORMHANDLER")) {
+		if (a==INPUT) {a=FINPUT;}
+  }
   allow = allow_token_state (yystate, a);
   A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);
 

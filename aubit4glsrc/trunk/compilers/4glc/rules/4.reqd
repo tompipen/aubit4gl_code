@@ -14,6 +14,7 @@
 %left LESS_THAN_EQ 
 %left NOT_EQUAL
 %left MINUS PLUS
+%token FINPUT
 %left DIVIDE MULTIPLY
 %left MOD
 %right COMMAND
