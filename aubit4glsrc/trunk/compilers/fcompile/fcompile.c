@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.41 2005-01-29 11:35:00 mikeaubury Exp $
+# $Id: fcompile.c,v 1.42 2005-02-17 11:50:40 mikeaubury Exp $
 #*/
 
 /**
@@ -119,7 +119,7 @@ main (int argc, char *argv[])
     }
 
   A4GL_debug ("Initializing fcompile\n");
-  A4GL_setenv("A4GL_UI","CONSOLE");
+  A4GL_setenv("A4GL_UI","CONSOLE",1);
   A4GL_fgl_start(argc,argv);
   fcompile=0;
   if (strstr(argv[0],"fcompile"))  fcompile=1;
@@ -361,7 +361,7 @@ x[c]=0;
 return x;
 }
 
-int doing_4gl() {
+int doing_4gl(void) {
 	if (A4GL_isyes(acl_getenv("FGLFRMCOMPILE"))) return 1;
 	if (A4GL_isno(acl_getenv("FGLFRMCOMPILE"))) return 0;
 	if (fcompile) return 1;

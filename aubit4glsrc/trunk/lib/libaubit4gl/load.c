@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.25 2005-01-29 11:35:00 mikeaubury Exp $
+# $Id: load.c,v 1.26 2005-02-17 11:51:45 mikeaubury Exp $
 #
 */
 
@@ -222,7 +222,7 @@ A4GLSQL_load_data (char *fname, char *delims, char *tabname, ...)
   char buff[255];
   int a;
 
-void *v;
+//void *v;
 
   delim = delims[0];
 

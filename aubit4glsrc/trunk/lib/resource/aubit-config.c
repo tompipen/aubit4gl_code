@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.16 2005-01-11 15:08:07 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.17 2005-02-17 11:51:47 mikeaubury Exp $
 #
 */
 
@@ -72,7 +72,7 @@ int A4GL_has_pointer(char *s,char c);
 int A4GL_del_pointer(char *s,char c);
 int A4GL_add_pointer(char *s,char c,void *x);
 char *A4GL_strcpy(char *dest,char *src,char *f,int l);
-
+void A4GL_pause_execution(void );
 //char * DEBUG_CFG;
 
 /*
@@ -241,7 +241,7 @@ char *A4GL_strcpy(char *dest,char *src,char *f,int l) {
 	return dest;
 }
 
-void A4GL_pause_execution() {
+void A4GL_pause_execution(void ) {
 // Does nothing - only here so the thing will link
 }
 /* -------------------------- EOF ------------------------ */

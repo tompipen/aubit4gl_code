@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.72 2005-02-10 16:06:33 mikeaubury Exp $
+# $Id: ops.c,v 1.73 2005-02-17 11:51:45 mikeaubury Exp $
 #
 */
 
@@ -50,7 +50,6 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
-//static char *make_using (char *ptr);
 void A4GL_date_date_ops (int op);
 void A4GL_date_int_ops (int op);
 void A4GL_int_date_ops (int op);
@@ -69,7 +68,7 @@ A4GL_add_op_function (int dtype1, int dtype2, int op, void (*function)(int ops))
 
 void A4GL_int_int_ops (int op);
 int A4GL_dectos (void *z, void *w, int size);
-char * make_using_tostring (char *ptr, int d, int n);
+//char * A4GL_make_using_tostring (char *ptr, int d, int n);
 
 #ifdef OLD_INCL
 void A4GL_push_long (long a);
@@ -83,7 +82,6 @@ void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 void A4GL_dt_dt_ops (int op);
 //int A4GL_ctodt (void *a, void *b, int size);
 //int A4GL_ctoint (void *a, void *b, int size);
-//static char *make_using_tostring (char *ptr, int d, int n);
 
 
 char *A4GL_display_int (void *ptr, int size, int size_c,
@@ -179,7 +177,7 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
 //if (l) size_c++;
 
 
-  ptr = make_using_tostring (ptr2, size >> 8, size & 255);	//,size_c,n*2,l);
+  ptr = A4GL_make_using_tostring (ptr2, size >> 8, size & 255);	//,size_c,n*2,l);
   A4GL_debug ("Make using returns %s", ptr);
   A4GL_push_char (ptr);
   A4GL_pushop (OP_USING);
@@ -287,19 +285,19 @@ A4GL_debug("%f %f\n",a,b);
 }
 
 
-void A4GL_char_char_ops (int op)
+static void A4GL_char_char_ops (int op)
 {
   char * a;
   char * b;
-  double d1;
-  double d2;
-  double dc;
+  //double d1;
+  //double d2;
+  //double dc;
   int dt1;
   int dt2;
   int sz1;
   int sz2;
-  int l1;
-  int l2;
+  //int l1;
+  //int l2;
   int done1;
   int done2;
 
@@ -1040,8 +1038,8 @@ if (op==OP_SUB) {
 
 
 
-void A4GL_in_string_ops(int op) {
-  struct ival in;
+static void A4GL_in_string_ops(int op) {
+  //struct ival in;
   struct ival *pi;
   char *ps;
   int d1,d2;
@@ -1262,7 +1260,7 @@ A4GL_date_date_ops (int op)
   return;
 }
 
-void
+static void
 A4GL_date_char_ops (int op)
 {
   long a;
@@ -1296,7 +1294,7 @@ char buff[256];
   		A4GL_conversion_ok(1);
   		A4GL_push_char(buff);
   		c=A4GL_pop_date();
-  		if (!A4GL_conversion_ok()||A4GL_isnull(DTYPE_DATE,(void *)&c))  { // Its not a date..
+  		if (!A4GL_conversion_ok(-1)||A4GL_isnull(DTYPE_DATE,(void *)&c))  { // Its not a date..
 			// Try as an integer ?
 			A4GL_push_char(buff);
 			b=A4GL_pop_long();
@@ -1833,23 +1831,23 @@ A4GL_in_in_ops (int op)
 
 
 
-void
+static void
 A4GL_in_char_ops (int op)
 {
   struct ival in1;
-  struct ival in2;
+  //struct ival in2;
   int ival_data1[10];
   int d1, d2;
   int s1;
   struct ival *pi1;
-  struct ival in;
-  int se1;
-  double d_i1;
+  //struct ival in;
+  //int se1;
+  //double d_i1;
 int s2;
   int a;
   char*ptr;
 int done1;
-extern int params_cnt;
+//extern int params_cnt;
 
   for (a=0;a<10;a++) {
 		ival_data1[a]=0;
@@ -1905,7 +1903,7 @@ if (A4GL_isnull(d1,(void *)pi1)) {
 	if (d2==DTYPE_DECIMAL)  { fgldecimal c 	; A4GL_push_char(ptr); A4GL_pop_var2(&c,5,0x2010); 	A4GL_push_variable(&c,0x20100005);done1=1; 	}
 	if (d2==DTYPE_INT) 	{ long c 	; A4GL_push_char(ptr); A4GL_pop_var2(&c,2,0); 		A4GL_push_variable(&c,0x2);done1=1; 		}
 	if (d2==DTYPE_DATE) 	{ long c 	; A4GL_push_char(ptr); A4GL_pop_var2(&c,7,0); 		A4GL_push_variable(&c,0x7);done1=1; 		}
-	if (d2==DTYPE_INTERVAL)	{ char *tst; acli_interval(ptr,s2); done1=1; 		}
+	if (d2==DTYPE_INTERVAL)	{ acli_interval(ptr,s2); done1=1; 		}
 	if (d2==DTYPE_DTIME)	{ A4GL_assertion(1,"Failed to used a character string which looks like a datetime with an interval");}
 	if (!done1) 		{ A4GL_assertion(1,"Unhandled character operation"); }
 
@@ -2749,7 +2747,7 @@ A4GL_display_decimal (void *ptr, int size, int size_c,
 	}
 
 //A4GL_debug("Calling make_using.. ptr=%p");
-      A4GL_push_char (make_using_tostring (ptr, size >> 8, size & 255));
+      A4GL_push_char (A4GL_make_using_tostring (ptr, size >> 8, size & 255));
       A4GL_pushop (OP_USING);
       ptr = A4GL_char_pop ();
       strcpy (s_x0, ptr);
@@ -2856,7 +2854,7 @@ A4GL_display_money (void *ptr, int size, int size_c,
 
       A4GL_debug ("Calling make_using.. ");
       strcpy (buff_14, "-");
-      ubuff = make_using_tostring (ptr, size >> 8, size & 255);
+      ubuff = A4GL_make_using_tostring (ptr, size >> 8, size & 255);
       strcat (buff_14, ubuff);
       for (a = strlen (buff_14) - 1; a >= 0; a--)
 	{
@@ -3105,7 +3103,7 @@ make_using (char *ptr)
 
 
 
-char * make_using_tostring (char *ptr, int d, int n)
+char * A4GL_make_using_tostring (char *ptr, int d, int n)
 {
   static char buff_ts[256];
   char buff2[256];
@@ -3223,7 +3221,7 @@ returns *d=
 
 void A4GL_whats_in_a_string(char *s,int *d,int *sz) {
 int orig_conv_ok=0;
-int is_ok;
+//int is_ok;
 int a,b;
 char buff[2000];
 int val;
@@ -3317,12 +3315,14 @@ A4GL_conversion_ok(orig_conv_ok);
 		int size_b;
 		for (b=a;b<=10;b++) {
 			char str[256];
+			int ibuff[30];
 			strcpy(str,s);
+			
 			if (a==b) continue; // Year year, month month etc = integer
 			size_b=0x600+((a+1)<<4)+(b+1);
 			if ((a==0 || a==1) && b>1) continue;
 
-			if (A4GL_valid_int (str, buff, size_b)) {
+			if (A4GL_valid_int (str, ibuff, size_b)) {
 				A4GL_debug("Possible INTERVAL %d to %d",a,b);
 				*d=DTYPE_INTERVAL;
 				*sz=size_b;

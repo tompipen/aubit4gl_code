@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.45 2005-02-09 10:01:47 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.46 2005-02-17 11:51:46 mikeaubury Exp $
 #
 */
 
@@ -269,7 +269,7 @@ char *A4GL_cv_lastnonblank (char *str);
 char * A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx) {
 	char *sql_new;
 	char *sql;
-	int a;
+	//int a;
 	sql=sqlx;
 	A4GL_debug("A4GL_convert_sql_new : %s",sql);
 

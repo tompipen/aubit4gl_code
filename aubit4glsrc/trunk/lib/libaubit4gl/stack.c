@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.111 2005-02-10 16:06:33 mikeaubury Exp $
+# $Id: stack.c,v 1.112 2005-02-17 11:51:46 mikeaubury Exp $
 #
 */
 
@@ -52,8 +52,8 @@
 #include <ctype.h>
 #include "a4gl_libaubit4gl_int.h"
 
-struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
-int A4GL_conversion_ok(int);
+//struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
+//int A4GL_conversion_ok(int);
 /*
 =====================================================================
                     Platform specific definitions
@@ -81,8 +81,8 @@ struct passwd
 #define IGN 0xee
 #define UC (unsigned char)
 #define LOCAL_BINDINGS 20
-void A4GL_process_stack_op_other (int d);
-int A4GL_stof (void *aa, void *zz, int sz_ignore);
+//void A4GL_process_stack_op_other (int d);
+//int A4GL_stof (void *aa, void *zz, int sz_ignore);
 
 /*
 =====================================================================
@@ -181,15 +181,15 @@ int num_local_binding[LOCAL_BINDINGS];
 /* see a4gl_stack.h */
 
 
-void *A4GL_pop_binding (int *n);
+//void *A4GL_pop_binding (int *n);
 //void          A4GL_push_ascii                              (void);
 //void          A4GL_push_current                    (int a, int b);
 //void          A4GL_push_time                               (void);
 //void          A4GL_push_disp_bind                  (struct BINDING *b, int n);
-int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
-int A4GL_isparamdate (void);
+//static int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
+//static int A4GL_isparamdate (void);
 //void        A4GL_set_init                          (struct BINDING *b, int n);
-int A4GL_push_binding (void *ptr, int num);
+//int A4GL_push_binding (void *ptr, int num);
 void dif_add_bind (struct bound_list *list, void *dptr, int dtype, int size);
 void dif_add_bind_date (struct bound_list *list, long a);
 void dif_add_bind_smint (struct bound_list *list, int a);
@@ -2173,6 +2173,7 @@ A4GL_push_disp_bind (void *vb, int n)
 }
 
 
+#ifdef NO_LONGER_USED
 /**
  *
  *
@@ -2242,6 +2243,7 @@ A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no)
 #endif
   return -1;
 }
+#endif
 
 
 /**
@@ -2308,6 +2310,7 @@ A4GL_downshift_stk (void)
 #define FALSE 0
 #endif
 
+#ifdef NO_LONGER_USED
 int				//should be boll
 A4GL_isparamdate (void)
 {
@@ -2315,6 +2318,7 @@ A4GL_isparamdate (void)
     return TRUE;
   return FALSE;
 }
+#endif
 
 
 /**

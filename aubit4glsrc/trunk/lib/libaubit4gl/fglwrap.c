@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.80 2005-01-11 15:04:13 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.81 2005-02-17 11:51:45 mikeaubury Exp $
 #
 */
 
@@ -115,6 +115,12 @@ static char running_program[256];
  *
  * If in curses mode exit curses.
  */
+
+int fgl_callback (int nargs, char *argv[]) {
+	// Does nothing - but required...
+	return 0;
+}
+
 
 void
 A4GL_fgl_end_4gl_0 (void)
@@ -1269,7 +1275,4 @@ char *A4GL_get_running_program(void) {
 }
 
 
-int fgl_callback (int nargs, char *argv[]) {
-	// Does nothing - but required...
-}
 /* ================================= EOF ============================= */

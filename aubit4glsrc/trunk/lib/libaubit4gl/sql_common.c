@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.1 2005-01-30 07:59:34 mikeaubury Exp $
+# $Id: sql_common.c,v 1.2 2005-02-17 11:51:46 mikeaubury Exp $
 #
 */
 
@@ -69,6 +69,7 @@ static int must_convert = 0;
 
 char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 
+//extern int A4GL_nullfunc (void);
 extern void aclfgli_set_err_flg (void);
 
 char *A4GL_apisql_strdup (char *sql);
@@ -77,15 +78,19 @@ void A4GL_apisql_set_sess (char *sessname);
 void A4GL_apisql_drop_sess (char *sessname);
 char *A4GL_apisql_dflt_dialect (void);
 void A4GL_apisql_must_convert (void);
-extern int A4GL_nullfunc (void);
 int A4GLSQL_loadConnector (char *name);
 
 void A4GL_global_A4GLSQL_set_sqlcode (int n);
 void A4GLSQL_set_sqlerrm( char *m,char *p);
-struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni,
-    struct BINDING *obind, int no, char *s);
+
+
 struct s_sid * A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind);
 void *A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void  *ibind);
+
+
+
+//struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni,
+//struct BINDING *obind, int no, char *s);
 /*
 =====================================================================
                     Functions definitions

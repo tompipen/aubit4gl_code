@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.17 2004-03-24 11:06:28 mikeaubury Exp $
+# $Id: decompile.c,v 1.18 2005-02-17 11:50:40 mikeaubury Exp $
 #
 */
 
@@ -47,10 +47,10 @@
 =====================================================================
 */
 
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
   struct struct_form the_form;
-  FILE *f;
+  //FILE *f;
 //XDR xdrp;
   int a;
 
@@ -97,16 +97,14 @@ main (int argc, char *argv[])
 
   if (the_form.fcompile_version != FCOMILE_XDR_VERSION)
     {
-      printf ("Error - fdecompiler is compiled for XDR version %d forms\n",
-	      FCOMILE_XDR_VERSION);
-      printf ("This form appears to be version %d\n",
-	      the_form.fcompile_version);
+      printf ("Error - fdecompiler is compiled for XDR version %d forms\n", FCOMILE_XDR_VERSION);
+      printf ("This form appears to be version %ld\n", the_form.fcompile_version);
       exit (1);
     }
 
   printf ("Dumping form..\n");
   dump_form_desc (&the_form);
-
+return 0;
 }
 
 

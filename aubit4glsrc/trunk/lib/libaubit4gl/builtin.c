@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.76 2005-02-04 08:26:27 mikeaubury Exp $
+# $Id: builtin.c,v 1.77 2005-02-17 11:51:45 mikeaubury Exp $
 #
 */
 
@@ -1289,6 +1289,6 @@ int aclfgl_fgl_buffertouched(int n)  {
 }
 
 
-A4GL_strstartswith(char *s,char *w) {
+int A4GL_strstartswith(char *s,char *w) {
 	return (strncmp(s,w,strlen(w))==0);
 }

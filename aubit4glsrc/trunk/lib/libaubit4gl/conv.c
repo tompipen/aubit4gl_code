@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.100 2005-02-10 16:00:42 mikeaubury Exp $
+# $Id: conv.c,v 1.101 2005-02-17 11:51:45 mikeaubury Exp $
 #
 */
 
@@ -50,7 +50,7 @@
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
 
-int A4GL_conversion_ok(int);
+//int A4GL_conversion_ok(int);
 static int decimal_char=0;
 
 /*
@@ -101,10 +101,10 @@ int A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *d);
 int A4GL_bname2 (char *str, char *s1, char *s2, char *s3);
 char *A4GL_inv (char *s);
 double A4GL_dec_to_double (fgldecimal *buf);
-char *A4GL_dec_to_str (fgldecimal *s, int size);
+//char *A4GL_dec_to_str (fgldecimal *s, int size);
 char *A4GL_add_dec (fgldecimal *a, fgldecimal *b);
 fgldecimal *A4GL_minus_dec (fgldecimal *a, fgldecimal *b);
-char *A4GL_str_to_dec (char *s, fgldecimal *w);
+//char *A4GL_str_to_dec (char *s, fgldecimal *w);
 //char *A4GL_init_dec (fgldecimal *s, int len, int d);
 fgldecimal *A4GL_mult_dec (fgldecimal *s, fgldecimal *v);
 fgldecimal *A4GL_divide_dec (fgldecimal *s, fgldecimal *w);
@@ -141,7 +141,7 @@ int A4GL_ctoc (void *a, void *b, int size);
 //int A4GL_ctodt             (void *a, void *b, int size);
 //int A4GL_ctoint            (void *a, void *b, int size);
 
-int A4GL_valid_int (char *s, int *data, int size);
+//int A4GL_valid_int (char *s, int *data, int size);
 
 void A4GL_setc (void *p);
 void A4GL_seti (void *p);
@@ -207,7 +207,7 @@ int A4GL_itovc (void *aa, void *zz, int c);
 int A4GL_itoi (void *aa, void *bb, int sz_ignore);
 int A4GL_itoc (void *aa, void *zz, int size);
 
-int A4GL_stof (void *aa, void *zz, int sz_ignore);
+//int A4GL_stof (void *aa, void *zz, int sz_ignore);
 int A4GL_sftovc (void *aa, void *zz, int c);
 int A4GL_sftod (void *aa, void *zz, int sz_ignore);
 int A4GL_sftol (void *aa, void *zz, int c);
@@ -216,8 +216,8 @@ int A4GL_sftoc (void *aa, void *zz, int c);
 int A4GL_sftof (void *aa, void *zz, int c);
 int A4GL_sftosf (void *aa, void *bb, int c);
 int A4GL_sftodec (void *a, void *z, int size);
-int A4GL_stol (void *aa, void *zi, int sz_ignore);
-int A4GL_stodec (void *a, void *z, int size);
+//int A4GL_stol (void *aa, void *zi, int sz_ignore);
+//int A4GL_stodec (void *a, void *z, int size);
 //int A4GL_stomdec (void *a, void *z, int size);
 int A4GL_stosf (void *aa, void *zz, int sz_ignore);
 int A4GL_stoi (void *aa, void *zi, int sz_ignore);
@@ -910,7 +910,7 @@ A4GL_stol (void *aa, void *zi, int sz_ignore)
 int
 A4GL_itodec (void *a, void *z, int size)
 {
-  char *eptr;
+  fgldecimal *eptr;
   int h;
   int t;
   char buff[256];
@@ -944,7 +944,7 @@ A4GL_itodec (void *a, void *z, int size)
 int
 A4GL_ltodec (void *a, void *z, int size)
 {
-  char *eptr;
+  fgldecimal *eptr;
   int h;
   int t;
   char buff[256];
@@ -983,7 +983,7 @@ A4GL_ltodec (void *a, void *z, int size)
 int
 A4GL_ftodec (void *a, void *z, int size)
 {
-  char *eptr;
+  fgldecimal *eptr;
   int h;
   int t;
   double da;
@@ -1005,7 +1005,7 @@ A4GL_debug("ftodec... %lf" ,*(double *)a);
 
 
 if (A4GL_isyes(acl_getenv("DBL2DEC_USING"))) {
-	ptr=make_using_tostring("",h,t);
+	ptr=A4GL_make_using_tostring("",h,t);
 	strcpy(fmt,ptr);
 	ptr=malloc(strlen(fmt)+10);
 	a4gl_using (ptr, strlen(fmt), fmt, da);
@@ -1052,7 +1052,7 @@ if (A4GL_isyes(acl_getenv("DBL2DEC_USING"))) {
 int
 A4GL_sftodec (void *a, void *z, int size)
 {
-  char *eptr;
+  fgldecimal *eptr;
   int h;
   int t;
   char buff[256];
@@ -1086,7 +1086,7 @@ A4GL_sftodec (void *a, void *z, int size)
 int
 A4GL_dectodec (void *a, void *z, int size)
 {
-  char *eptr;
+  fgldecimal *eptr;
   int h;
   int t;
   char *buff;
@@ -1119,7 +1119,7 @@ A4GL_dectodec (void *a, void *z, int size)
 int
 A4GL_stodec (void *a, void *z, int size)
 {
-  char *eptr;
+  fgldecimal *eptr;
   int h;
   int t;
   h = size;

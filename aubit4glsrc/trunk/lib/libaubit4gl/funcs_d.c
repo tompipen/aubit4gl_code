@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.54 2005-02-02 10:35:26 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.55 2005-02-17 11:51:45 mikeaubury Exp $
 #
 */
 
@@ -788,7 +788,7 @@ void A4GL_strmaxcpy(char *dest,char *src,int max) {
 
 
 char *A4GL_get_esql_ext(void) {
-static char buff[256];
+//static char buff[256];
 char *hr;
 
 hr=acl_getenv("EC_EXT");

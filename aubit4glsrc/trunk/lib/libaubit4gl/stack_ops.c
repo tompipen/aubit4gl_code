@@ -24,15 +24,15 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.12 2004-12-17 13:19:03 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.13 2005-02-17 11:51:46 mikeaubury Exp $
 #
 */
 
 #include "a4gl_libaubit4gl_int.h"
 
-void *A4GL_pop_binding (int *n);
-void A4GL_process_stack_op_other (int d);
-struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
+//void *A4GL_pop_binding (int *n);
+//void A4GL_process_stack_op_other (int d);
+//struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
 
 
 

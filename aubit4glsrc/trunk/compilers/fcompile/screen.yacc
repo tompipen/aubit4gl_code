@@ -17,7 +17,6 @@
 
 #include "a4gl_fcompile_int.h"
 
-int doing_4gl();
 
 
 

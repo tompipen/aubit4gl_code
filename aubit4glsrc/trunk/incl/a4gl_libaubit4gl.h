@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.154 2005-02-11 03:30:12 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.155 2005-02-17 11:51:44 mikeaubury Exp $
 #
 */
 
@@ -1432,6 +1432,9 @@ void A4GL_display_at (int n, int a);
   int A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size);
   void A4GL_set_convmatrix (int dtype1, int dtype2, void *ptr);
   void A4GL_assertion (int a, char *s);
+int A4GL_stodec (void *a, void *z, int size);
+int A4GL_stol (void *aa, void *zi, int sz_ignore);
+int A4GL_valid_int (char *s, int *data, int size);
 
   /* ============================ fglwrap.c ============================== */
   int A4GL_fgl_error (int a, char *s, int err, int stat);
@@ -1509,6 +1512,7 @@ short a4gl_ntohs(long x);
 
   void *dif_get_bind (struct bound_list *list);
   void *dif_start_bind (void);
+int A4GL_conversion_ok(int a);
 
   /* =================== from a4gl_shockhelp.h ==================== */
 
@@ -1850,8 +1854,17 @@ void A4GL_set_last_outfile (char *s);
 void A4GL_ltrim(char *s) ;
 void A4GL_fgl_die(int n);
 fgldecimal *A4GL_init_dec (fgldecimal *s, int len, int d);
+//char *A4GL_str_to_dec (char *s, fgldecimal *w);
+char *A4GL_dec_to_str (fgldecimal *dec, int size) ;
 
+fgldecimal *A4GL_str_to_dec (char *str_orig, fgldecimal *dec);
 
+int A4GL_call_4gl_dll (char *filename, char *function, int args);
+void A4GL_process_stack_op_other (int d);
+void *A4GL_pop_binding (int *n);
+int A4GL_push_binding (void *ptr, int num);
+int A4GL_stof (void *aa, void *zz, int sz_ignore);
+int A4GL_nullfunc (void);
 
 void A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect) ;
 char *A4GLSQLCV_check_sql(char *s ) ;
@@ -1982,7 +1995,16 @@ void A4GL_push_date_expr(void);
 void A4GL_push_time_expr(void);
 void A4GL_make_field_slist_from_ap( struct s_field_name_list *list, va_list *ap);
 int aclfgl_aclfgl_setenv(int n);
+int A4GL_setenv(char *name, char *value, int overwrite);
+char * acl_getenv_only (char *s);
+void A4GL_log_changed_envvar(char *name,char *value);
+int A4GL_strstartswith(char *s,char *w);
+int A4GL_isnullfunc(void *ptr);
+char * A4GL_make_using_tostring (char *ptr, int d, int n);
+int fgl_callback (int nargs, char *argv[]);
+char *A4GL_get_esql_ext(void);
 int a4gl_isupper(int n);
+
 int a4gl_islower(int n);
 
 int A4GL_monitor_puts_int (char *str);
@@ -2001,7 +2023,8 @@ int A4GLSQL_execute_sql (char *pname, int ni, void *vibind);
 int A4GLSQL_add_prepare (char *pname, void *vsid);
 
 
-
+char *A4GLSQLCV_insert_alias(char *t,char *c,char *v);
+void A4GLSQLCV_add_temp_table(char *tabname);
 
   /* API prototypes */
 #include "a4gl_API_form.h"	/* generated from .spec */

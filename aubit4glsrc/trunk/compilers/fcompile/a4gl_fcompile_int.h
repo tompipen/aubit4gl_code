@@ -41,3 +41,6 @@ t_expression *create_expr_expr (t_complex_expr * expr);
 t_expression *create_expr_comp_expr (t_expression * expr1,
 				     t_expression * expr2, char *comp);
 t_expression *add_list_expr (t_expression * ptr, t_expression * expr);
+
+int doing_4gl(void );
+void dump_form_desc (struct_form * f);

@@ -12,7 +12,7 @@
 void popdate (long *x);
 void retdate (long x);
 void popdec_aubit (fgldecimal *x) ;
-fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
+//fgldecimal * A4GL_str_to_dec (char *str, fgldecimal *dec) ;
 
 
 

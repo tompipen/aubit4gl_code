@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.42 2005-01-17 13:35:40 mikeaubury Exp $
+# $Id: helper.c,v 1.43 2005-02-17 11:51:45 mikeaubury Exp $
 #
 */
 
@@ -182,7 +182,8 @@ struct s_windows
   struct s_form_attr winattr;
 };
 
-int A4GL_setenv(char *name, char *value, int overwrite);
+
+//int A4GL_setenv(char *name, char *value, int overwrite);
 
 //static long *ptr;
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.58 2005-02-04 15:37:44 mikeaubury Exp $
+# $Id: report.c,v 1.59 2005-02-17 11:51:46 mikeaubury Exp $
 #
 */
 
@@ -46,8 +46,8 @@
 
 #include "a4gl_libaubit4gl_int.h"
 #include "a4gl_API_sql.h"
-struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
-int A4GL_call_4gl_dll (char *filename, char *function, int args);
+//struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
+//int A4GL_call_4gl_dll (char *filename, char *function, int args);
 
 #define ENTRY_START 1
 #define ENTRY_BLOCK 2
@@ -1094,7 +1094,7 @@ A4GL_rep_file_print (struct rep_structure *rep, char *fname, int opt_semi)
 	return;
   }
   while (!feof(f)) {
-	  int a;
+	  char *a;
 	  a=fgets(buff,sizeof(buff)-1,f);
 	  if (!a) break;
 	  has_cr=0;
