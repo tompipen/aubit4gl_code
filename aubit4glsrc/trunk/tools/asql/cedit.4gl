@@ -150,19 +150,17 @@ end function
 
 
 code
-
-#define A4GLKEY_ENTER           0xff01
-#define A4GLKEY_DOWN            0xff02
-#define A4GLKEY_UP              0xff03
-#define A4GLKEY_LEFT            0xff04
-#define A4GLKEY_RIGHT           0xff05
+#define A4GLKEY_ENTER           13
+#define A4GLKEY_DOWN            2001
+#define A4GLKEY_UP              2000
+#define A4GLKEY_LEFT            2002
+#define A4GLKEY_RIGHT           2003
 #define A4GLKEY_PGUP            0xff06
 #define A4GLKEY_PGDN            0xff07
 #define A4GLKEY_INS             0xff08
 #define A4GLKEY_DEL             0xff09
 #define A4GLKEY_HOME            0xff0a
 #define A4GLKEY_END             0xff0b
-
 #define A4GLKEY_DC              0xff0c
 #define A4GLKEY_DL              0xff0d
 #define A4GLKEY_BACKSPACE       0xff0e
