@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.29 2004-09-27 18:58:38 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.30 2004-11-05 21:13:01 pjfalbe Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -614,6 +614,8 @@ A4GL_size_menu (ACL_Menu * menu)
   int disp_cnt;
   int s_length;
   int page = 0;
+  int s_off;
+  int something_else_printable=0;
   int xxx;
 
   A4GL_clr_menu_disp (menu);
@@ -674,7 +676,25 @@ A4GL_size_menu (ACL_Menu * menu)
 	  xxx += menu->menu_offset;
 	  xxx += s_length;
 
-	  if (xxx > menu->w)
+          something_else_printable=0;
+          s_off=0;
+
+          if (disp_cnt2 + menu->menu_offset + s_length  + 5 > menu->w) {
+                ACL_Menu_Opts *po;
+                po = (ACL_Menu_Opts *) opt1->next_option;
+                while(po!=0) {
+                        if ((po->attributes & ACL_MN_HIDE) != ACL_MN_HIDE) {
+                                something_else_printable=1;
+                                break;
+                        }
+		 po=(ACL_Menu_Opts *)po->next_option;
+                }
+                if (something_else_printable) s_off=5;
+          }
+
+
+
+	  if (xxx +s_off > menu->w)
 	    {
 	      page++;
 	      disp_cnt2 = 5;

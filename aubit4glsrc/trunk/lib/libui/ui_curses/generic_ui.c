@@ -1,6 +1,6 @@
 #include "a4gl_lib_ui_tui_int.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.17 2004-10-06 17:57:11 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.18 2004-11-05 21:11:21 pjfalbe Exp $";
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
@@ -545,7 +545,9 @@ A4GL_size_menu (ACL_Menu * menu)
   char disp_str[800];
   int disp_cnt;
   int s_length;
+  int s_off;
   int page = 0;
+  int something_else_printable;
   memset(disp_str,0,sizeof(disp_str));
   A4GL_clr_menu_disp (menu);
 
@@ -594,10 +596,31 @@ A4GL_size_menu (ACL_Menu * menu)
           }
 #endif
           s_length = strlen (opt1->opt_title);
-          A4GL_debug ("disp=%d width=%d %d %s", disp_cnt2, menu->w,
-                 menu->menu_offset, opt1->opt_title);
+          A4GL_debug ("GREPME disp=%d width=%d %d %s .. %d > %d ", disp_cnt2, menu->w, menu->menu_offset, opt1->opt_title,disp_cnt2 + menu->menu_offset + s_length  , menu->w);
 
-          if (disp_cnt2 + menu->menu_offset + s_length  > menu->w)
+
+
+	  something_else_printable=0;
+	  s_off=0;
+          if (disp_cnt2 + menu->menu_offset + s_length  + 5 > menu->w) {
+  		ACL_Menu_Opts *po;
+      		po = (ACL_Menu_Opts *) opt1->next_option;
+		while(po!=0) {
+      			if ((po->attributes & ACL_MN_HIDE) != ACL_MN_HIDE) {
+				something_else_printable=1;
+				break;
+			}
+			po=(ACL_Menu_Opts *)po->next_option;
+		}
+		if (something_else_printable) s_off=5;
+	  }
+
+
+
+
+
+// We need some space for the ellipses...
+          if (disp_cnt2 + menu->menu_offset + s_length +s_off  > menu->w)
             {
 #ifdef DEBUG
               {
