@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.34 2004-07-11 09:46:51 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.35 2004-10-28 22:04:56 mikeaubury Exp $
 #
 */
 
@@ -713,9 +713,13 @@ A4GL_debug("f_cnt=%d n_cnt=%d\n",f_cnt,n_cnt);
 
 
 
-int A4GL_esql_db_open(int a) {
+int A4GL_esql_db_open(int a,char *src,char *dest) {
 	static int dbopen=0;
-	if (a==1) {dbopen=1;return 1;}
+	if (a==1) {
+			dbopen=1;
+			A4GLSQLCV_load_convert(src,dest);
+			return 1;
+	}
 	if (a==0) {dbopen=0;return 0;}
 	return dbopen;
 }

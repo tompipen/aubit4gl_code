@@ -416,4 +416,19 @@ struct variable *find_dim(char *s);
 int has_function(char *s,char *file,struct flist *ptr);
 void push_object (char *objtype);
 void pop_scope(void);
+
+void A4GL_CV_print_exec_sql(char *s) ;
+
+
+void A4GL_CV_print_exec_sql_bound(char *s) ;
+
+void A4GL_CV_print_do_select(char *s) ;
+
+
+char *A4GL_CV_print_select_all(char *s) ;
+char *A4GL_compiled_sqlpack(void);
+char *A4GL_decode_packtype(char *s);
+
+
+
 /* ============================= EOF ================================= */

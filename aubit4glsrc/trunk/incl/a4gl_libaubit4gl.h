@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.137 2004-10-23 13:36:30 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.138 2004-10-28 22:04:56 mikeaubury Exp $
 #
 */
 
@@ -795,13 +795,14 @@
   void A4GL_strip_nl (char *str);
 int A4GL_readkey(void);
 
+/*
 char *A4GLSQLCV_generate_current(char *from,char *to) ;
 int A4GLSQLCV_check_requirement(char *s) ;
 char *A4GLSQLCV_check_colname(char *tabname,char *colname) ;
 char *A4GLSQLCV_matches_string(char *str,char *esc) ;
 char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) ;
 char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
-
+*/
 
 
 
@@ -1899,6 +1900,23 @@ fgldecimal *A4GL_init_dec (fgldecimal *s, int len, int d);
 
 
 
+void A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect) ;
+char *A4GLSQLCV_check_sql(char *s ) ;
+char *A4GLSQLCV_dtype_alias(char *s ) ;
+char *A4GLSQLCV_check_expr(char *s ) ;
+char *A4GLSQLCV_generate_current(char *from,char *to) ;
+int A4GLSQLCV_check_requirement(char *s) ;
+char *A4GLSQLCV_check_colname(char *tabname,char *colname) ;
+char *A4GLSQLCV_matches_string(char *str,char *esc) ;
+char *A4GLSQLCV_make_substr_s(char *colname,int n, char *l,char *r) ;
+char *A4GLSQLCV_make_substr(char *colname,int i0,int i1,int i2) ;
+char *A4GLSQLCV_make_ival_extend(char *ival,char *from,char *from_len,char *to,int extend) ;
+char *A4GLSQLCV_make_dtime_extend(char *dval,char *from,char *to,int extend) ;
+char *A4GLSQLCV_datetime_value(char *s) ;
+char *A4GLSQLCV_interval_value(char *s) ;
+void A4GLSQLCV_check_fullpath(char *s)  ;
+char *A4GLSQLCV_rencol(char *tabname,char *colname,char *ncolname) ;
+char *A4GLSQLCV_rentab(char *tabname,char *ntabname) ;
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.57 2004-10-23 13:36:26 mikeaubury Exp $
+# $Id: 4glc.c,v 1.58 2004-10-28 22:01:11 mikeaubury Exp $
 #
 */
 
@@ -114,9 +114,9 @@ main (int argc, char *argv[])
 
   if (dialect) {
 	// We're only going to load our pack now if we are generating a dialect...
-  	A4GL_load_convert(A4GL_compiled_sqlpack(),dialect);
+  	A4GLSQLCV_load_convert(A4GL_compiled_sqlpack(),dialect);
   }  else {
-  	A4GL_load_convert(A4GL_compiled_sqlpack(),"default");
+  	A4GLSQLCV_load_convert(A4GL_compiled_sqlpack(),"default");
   }
 
 

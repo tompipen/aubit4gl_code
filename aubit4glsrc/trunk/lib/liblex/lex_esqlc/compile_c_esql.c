@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.91 2004-10-26 20:55:13 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.92 2004-10-28 22:05:01 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.91 2004-10-26 20:55:13 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.92 2004-10-28 22:05:01 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -158,7 +158,9 @@ void
 print_exec_sql (char *s)
 {
   A4GL_save_sql(s,0);
-  printc ("\nEXEC SQL %s; /* exec_sql */\n", s);
+  if (strlen(s)) {
+  	printc ("\nEXEC SQL %s; /* exec_sql */\n", s);
+  }
   print_copy_status ();
 }
 
@@ -211,7 +213,7 @@ print_close (char type, char *name)
   		A4GL_save_sql("DISCONNECT 'default'",0);
       		printc ("\nEXEC SQL DISCONNECT 'default';\n");
 	}
-      printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(0);");
+      printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(0,0,0);");
       print_copy_status ();
       break;
     case 'S':
@@ -667,7 +669,7 @@ print_open_session (char *s, char *v, char *user)
 	}	
 	}
 
-	//printc("if (A4GL_esql_db_open(-1)) {");
+	//printc("if (A4GL_esql_db_open(-1,0,0)) {");
 	//print_close('D',"");
 	//printc("}");
 A4GL_save_sql("CONNECT TO '%s'", v);
@@ -898,12 +900,14 @@ print_fetch_3 (char *ftp, char *into)
 
   printc("/* ... no=%d*/",no);
   printc ("%s %s ;", buff, A4GL_get_into_part (0,no));
+
 A4GL_save_sql(buff,0);
+
   if (strcmp (into, "0,0") != 0)
     {
-      print_copy_status ();
       print_conversions ('o');
-    }
+    } 
+  print_copy_status ();
   printc("internal_recopy_%s_o_Dir();",sqcname);
   printc ("}");
   printc ("}");
@@ -964,7 +968,7 @@ A4GL_save_sql("DATABASE %s",db);
       printc ("\nEXEC SQL BEGIN DECLARE SECTION;/*3*/\n");
       printc ("char *s;");
       printc ("\nEXEC SQL END DECLARE SECTION;\n");
-	printc("if (A4GL_esql_db_open(-1)) {");
+	printc("if (A4GL_esql_db_open(-1,0,0)) {");
 	print_close('D',"");
 	printc("}");
       printc ("s=A4GL_char_pop();A4GL_trim(s);\n");
@@ -974,7 +978,7 @@ A4GL_save_sql("CONNECT TO $s AS 'default'",0);
     }
   else
     {
-	printc("if (A4GL_esql_db_open(-1)) {");
+	printc("if (A4GL_esql_db_open(-1,0,0)) {");
 	print_close('D',"");
 A4GL_save_sql("DISCONNECT default'",0);
       		/*printc ("\nEXEC SQL DISCONNECT 'default';\n");*/
@@ -993,7 +997,14 @@ A4GL_save_sql("CONNECT TO %s AS 'default'",db);
     }
   }
 
-  printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1);");
+
+  if (esql_type ()==2) {
+  	printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"POSTGRES\");");
+  } else {
+  	printc("if (sqlca.sqlcode==0) A4GL_esql_db_open(1,\"INFORMIX\",\"INFORMIX\");");
+  }
+
+
   print_copy_status ();
 }
 
@@ -1300,24 +1311,22 @@ if (delim[0]=='"') { sprintf(delim_s,"'%s'",A4GL_strip_quotes(delim)); } else { 
   		ni = print_bind_definition ('i');
 		print_bind_set_value('i');
   		print_conversions ('i');
-			if (file[0]=='"') { 
-				sprintf(filename,"'%s'",A4GL_strip_quotes(file)); 
-			} else { 
-				sprintf(filename,":_unlfname"); 
-				printc("{");
-				printc("\nEXEC SQL BEGIN DECLARE SECTION;/*4*/");
-				printc("char _unlfname[512];");
-				printc("\nEXEC SQL END DECLARE SECTION;");
-				printc("strcpy(_unlfname,%s);",file);
-				printc("A4GL_trim(_unlfname);");
+			sprintf(filename,":_unlfname"); 
+			printc("{");
+			printc("\nEXEC SQL BEGIN DECLARE SECTION;/*4*/");
+			printc("char _unlfname[512];");
+			printc("\nEXEC SQL END DECLARE SECTION;");
+			printc("strcpy(_unlfname,%s);",file);
+			printc("A4GL_trim(_unlfname);");
+
+			if (A4GLSQLCV_check_requirement("ESQL_UNLOAD_FULL_PATH")) {
+				printc("A4GLSQLCV_check_fullpath(_unlfname);");
 			}
 
-A4GL_save_sql("UNLOAD : %s",sql);
+			A4GL_save_sql("UNLOAD : %s",sql);
   			printc ("\nEXEC SQL UNLOAD TO %s DELIMITER %s %s ;",filename,delim_s,sql);
 
-			if (file[0]!='"') { 
-				printc("}");
-			}
+			printc("}");
 
 			print_copy_status ();
 		printc("}");

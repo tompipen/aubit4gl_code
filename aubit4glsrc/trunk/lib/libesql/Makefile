@@ -23,7 +23,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.20 2004-10-08 02:47:20 afalout Exp $
+# $Id: Makefile,v 1.21 2004-10-28 22:04:57 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -80,7 +80,7 @@ ifdef COMSPEC
     #export PWD
 
 #from Mikes Makefile.cygwin:
-	CFLAGS		=-g -O2 -Wall -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl
+	CFLAGS		=-g  -Wall -D_REENTRANT -DIFX_THREAD -I${ROOT}/incl
 	ESQL		=esql
 	ESQL_FLAGS	=-thread
 	LDFLAGS		=

@@ -1042,6 +1042,7 @@ define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
 define lv_runstr char(1024)
+define lv_compile_c_opts char(512)
 define lv_status integer
 
 if mv_verbose>=1 then
@@ -1069,7 +1070,15 @@ if mv_verbose>=4 then
 	display "include=",mv_include clipped
 end if
 
-let lv_runstr=mv_compile_c clipped," ",mv_compile_c_opts clipped," "
+let lv_compile_c_opts=mv_compile_c_opts
+
+if mv_compile_c="esql" then
+display "Hello World ",fgl_getenv("INFORMIXDIR")
+
+	let lv_compile_c_opts=mv_compile_c_opts clipped," -I",fgl_getenv("INFORMIXDIR") clipped,"/incl"
+end if
+
+let lv_runstr=mv_compile_c clipped," ",lv_compile_c_opts clipped," "
 
 if mv_debug then
 	let lv_runstr=lv_runstr clipped," ",mv_compile_c_debug
@@ -1078,7 +1087,7 @@ end if
 let lv_runstr=lv_runstr clipped, " ",mv_include clipped," -o ",lv_new clipped,
 		" -c ",lv_fname clipped," 2> ",mv_errfile
 if mv_verbose>=2 then
-	display lv_runstr clipped
+	display "X.",lv_runstr clipped
 end if
 run lv_runstr clipped returning lv_status
 call check_exit_status(lv_status,lv_fname,lv_runstr)

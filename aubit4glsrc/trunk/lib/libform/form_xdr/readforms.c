@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.36 2004-05-26 14:16:55 mikeaubury Exp $
+# $Id: readforms.c,v 1.37 2004-10-28 22:04:59 mikeaubury Exp $
 #*/
 
 /**
@@ -538,6 +538,7 @@ include_range_check (char *ss, char *ptr, int dtype)
 
   if (ptr3 == 0)
     {
+	int chk_again;
       /* Not a range */
         if (strcasecmp(ptr2,"NULL")==0) {
                 // Check for a null...
@@ -552,7 +553,17 @@ include_range_check (char *ss, char *ptr, int dtype)
       A4GL_pushop (OP_EQUAL);
       A4GL_debug ("Checking for equal");
       free (s);
-      return A4GL_pop_bool ();
+
+
+      chk_again= A4GL_pop_bool (); 
+      if ((dtype==DTYPE_SMINT||dtype==DTYPE_INT||dtype==DTYPE_DECIMAL ||dtype==DTYPE_FLOAT||dtype==DTYPE_SMFLOAT) && chk_again && !strncmp(ptr, "NULL", 4)) {
+
+      	A4GL_debug ("zero not equal to NULL during form range checks"); 
+      	chk_again = 0; 
+      } 
+      return chk_again; 
+ 
+
 
     }
   else

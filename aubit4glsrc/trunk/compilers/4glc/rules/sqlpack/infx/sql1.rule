@@ -170,10 +170,10 @@ sql_commands :  schema_ss {
 ;
 
 privilege_definition:
-	GRANT privileges ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$," %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
-	| REVOKE privileges ON table_name FROM grantee_list  {sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
-	| GRANT db_priv TO grantee_list {sprintf($<str>$," %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| REVOKE db_priv FROM grantee_list {sprintf($<str>$," %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);}
+	GRANT privileges ON table_name TO grantee_list op_with_grant_option {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
+	| REVOKE privileges ON table_name FROM grantee_list  {sprintf($<str>$,"%s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
+	| GRANT db_priv TO grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);}
+	| REVOKE db_priv FROM grantee_list {sprintf($<str>$,"%s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4);}
 ;
 
 
@@ -200,10 +200,22 @@ action_list:
 {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
 ;
 
-action: SELECT op_grant_column_list {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+action: SELECT op_grant_column_list {
+		if (A4GLSQLCV_check_requirement("SIMPLE_GRANT_SELECT"))  {
+			sprintf($<str>$," SELECT");
+		} else {
+			sprintf($<str>$," %s %s",$<str>1,$<str>2);
+		}
+	}
 	| INSERT
 	| DELETE
-	| UPDATE op_grant_column_list {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	| UPDATE op_grant_column_list {
+		if (A4GLSQLCV_check_requirement("SIMPLE_GRANT_UPDATE"))  {
+			sprintf($<str>$," UPDATE");
+		} else {
+			sprintf($<str>$," %s %s",$<str>1,$<str>2);
+		}
+	}
 	| ALTER
 	| INDEX
 ;
@@ -723,10 +735,15 @@ char_string_type:
 
 exact_numeric_type:
 	| SERIAL  {strcpy($<str>$,"SERIAL");}
-	| SERIAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"SERIAL(%s)",$<str>3);}
+	| SERIAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
+			if (A4GLSQLCV_check_requirement("NO_SERIAL_START_VALUE"))  {
+				sprintf($<str>$,"SERIAL");
+			} else {
+				sprintf($<str>$,"SERIAL(%s)",$<str>3);
+			}
+	}
 	| KW_DECIMAL 
-	| KW_DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET
-{sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);}
+	| KW_DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET {sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);}
 	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET {
 		if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
 			sprintf($<str>$," DECIMAL %s %s %s %s",$<str>2,$<str>3,$<str>4,$<str>5);
@@ -749,25 +766,30 @@ exact_numeric_type:
 	| NCHAR {strcpy($<str>$,"NCHAR");}
 	| NCHAR OPEN_BRACKET length CLOSE_BRACKET
 	| NVARCHAR
-	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
-{sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
-	| DATETIME s_curr TO e_curr
-{sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"NVARCHAR(%s)",$<str>3);}
+	| NVARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+			if (A4GLSQLCV_check_requirement("IGNORE_DTYPE_VARCHAR_MIN"))  {
+				sprintf($<str>$,"NVARCHAR(%s)",$<str>3);
+			} else {
+				sprintf($<str>$,"NVARCHAR(%s,%s)",$<str>3,$<str>5);
+			}
+	}
+	| DATETIME s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| DATETIME 
-	| INTERVAL s_curr TO e_curr
-{sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	| INTERVAL s_curr TO e_curr {sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| INTERVAL
-	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr
-{sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
+	| INTERVAL s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {sprintf($<str>$,"%s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);}
 	| TEXT
 	| KW_BYTE
 	| VARCHAR
-	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
-	| VARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
+	| VARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"VARCHAR(%s)",$<str>3);}
+	| VARCHAR OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+			if (A4GLSQLCV_check_requirement("IGNORE_DTYPE_VARCHAR_MIN"))  {
+				sprintf($<str>$,"VARCHAR(%s)",$<str>3);
+			} else {
+				sprintf($<str>$,"VARCHAR(%s,%s)",$<str>3,$<str>5);
+			}
+		}
 ;
 
 op_scale: {strcpy($<str>$,"");}
@@ -800,10 +822,14 @@ scale:
 
 table_name:
 	 CHAR_VALUE DOT identifier { 
-			if (A4GL_escape_quote_owner()) {
-				sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$,"%s", $<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
 			} else {
-				sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+				if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+				} else {
+					sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+				}
 			}
 	}
 	| CHAR_VALUE {
@@ -813,31 +839,43 @@ table_name:
 	| identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
 	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
 	| identifier COLON CHAR_VALUE DOT identifier { 
-                        if (A4GL_escape_quote_owner()) {
-				sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
-                        } else {
-				sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
-                        }
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$," %s:%s",$<str>1,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+                        	if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        	} else {
+					sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        	}
+			}
 	}
 
 	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
 	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
 	| identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier { 
-                        if (A4GL_escape_quote_owner()) {
-				sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
-                        } else {
-				sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
-                        }
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+                        	if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        	} else {
+					sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        	}
+			}
 	}
 
 ;
 
 idx_name:
 	 CHAR_VALUE DOT identifier { 
-			if (A4GL_escape_quote_owner()) {
-				sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$,"%s", $<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
 			} else {
-				sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+				if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$,"\\\"%s\\\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+				} else {
+					sprintf($<str>$,"\"%s\"%s%s", A4GL_strip_quotes ($<str>1),$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+				}
 			}
 	}
 	| CHAR_VALUE {
@@ -848,21 +886,29 @@ idx_name:
 	| identifier {strcpy($<str>$,$<str>1); addmap("Use Index",$<str>1,curr_func,yylineno,infilename); }
 	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); }
 	| identifier COLON CHAR_VALUE DOT identifier { 
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+				sprintf($<str>$," %s:%s",$<str>1,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+			} else {
                         if (A4GL_escape_quote_owner()) {
 				sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
                         } else {
 				sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
                         }
+		}
 	}
 
 	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); addmap("Use Index",$<str>1,curr_func,yylineno,infilename); }
 	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); }
 	| identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier { 
-                        if (A4GL_escape_quote_owner()) {
-				sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
-                        } else {
-				sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
-                        }
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$," %s@%s:%s",$<str>1,$<str>3,$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+			} else {
+                        	if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        	} else {
+					sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        	}
+			}
 	}
 
 
@@ -960,10 +1006,14 @@ cur_update_list : colident {strcpy($<str>$,$<str>1);} | cur_update_list KW_COMMA
 colident: identifier
 	| identifier DOT identifier {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
 	| CHAR_VALUE DOT identifier DOT identifier {
-			if (A4GL_escape_quote_owner()) {
-				sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+			if (A4GLSQLCV_check_requirement("IGNORE_OWNER"))  {
+					sprintf($<str>$,"%s.%s", $<str>3,$<str>5);
 			} else {
-				sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+				if (A4GL_escape_quote_owner()) {
+					sprintf($<str>$,"\\\"%s\\\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+				} else {
+					sprintf($<str>$,"\"%s\".%s.%s", A4GL_strip_quotes ($<str>1),$<str>3,$<str>5);
+				}
 			}
 	}
 ;
@@ -1132,7 +1182,9 @@ value_expression_complex_ss :
 	| identifier OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_ob,$<sql_string>3,kw_cb,0);}
 	| KW_DATE OPEN_BRACKET value_expr_list_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,kw_cb,0);}
 	| OPEN_BRACKET value_expression_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("("),$<sql_string>2,kw_cb,0);}
-	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {$<sql_string>$=make_sql_string_and_free(strdup("EXTEND("),$<sql_string>3,kw_cb,0);}
+	| EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {
+			$<sql_string>$=$<sql_string>3;
+	}
 	| datetime_value_qualified { $<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
 	| interval_value_qualified {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
 
@@ -1215,8 +1267,8 @@ misc_sql :
 ;
 
 rename_stmt :
-	RENTAB rentabname TO rentabname { sprintf($<str>$,"%s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4); }
-	| RENCOL table_name DOT rencolname TO rencolname { sprintf($<str>$,"RENAME COLUMN  %s.%s TO %s",$<str>2,$<str>4,$<str>6); }
+	RENTAB rentabname TO rentabname { strcpy($<str>$,A4GLSQLCV_rentab($<str>2,$<str>4)); }
+	| RENCOL table_name DOT rencolname TO rencolname { strcpy($<str>$,A4GLSQLCV_rencol($<str>2,$<str>4,$<str>6) ); }
 ;
 
 rentabname : identifier;
@@ -1257,30 +1309,49 @@ units_qual:
 	| UNITS_SECOND {strcpy($<str>$," UNITS SECOND"); }
 ;
 
+
+
 extend_qual_ss:
-        CURRENT KW_COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup($<str>2),strdup($<str>3),kw_space,strdup($<str>4),kw_space,strdup($<str>5),0);}
-        | var_ident_ibind_ss KW_COMMA s_curr TO e_curr {$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),strdup($<str>3),kw_space,strdup($<str>4),kw_space,strdup($<str>5),0);}
-        | CURRENT s_curr TO e_curr {$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);}
-	| value_expression_ss KW_COMMA s_curr TO e_curr
+        CURRENT KW_COMMA s_curr TO e_curr {
+			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>3,$<str>5,1)),0);
+	}
+        | var_ident_ibind_ss KW_COMMA s_curr TO e_curr {
+			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),0);
+			free($<sql_string>1);
+		//$<sql_string>$=make_sql_string_and_free($<sql_string>1,strdup($<str>2),strdup($<str>3),kw_space,strdup($<str>4),kw_space,strdup($<str>5),0);
+	}
+        | CURRENT s_curr TO e_curr {
+			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend("CURRENT",$<str>2,$<str>4,1)),0);
+
+		//$<sql_string>$=make_sql_string_and_free(strdup($<str>1),strdup($<str>2),kw_space,strdup($<str>3),kw_space,strdup($<str>4),0);
+	}
+	| value_expression_ss KW_COMMA s_curr TO e_curr {
+			$<sql_string>$=make_sql_string_and_free(strdup(A4GLSQLCV_make_dtime_extend($<sql_string>1,$<str>3,$<str>5,1)),0);
+			free($<sql_string>1);
+	}
 ;
 
 datetime_value_qualified :
 	datetime_value {strcpy($<str>$,$<str>1);}
-	| datetime_value s_curr TO e_curr {sprintf($<str>$,"%s %s TO %s",$<str>1,$<str>2,$<str>4);}
+	| datetime_value s_curr TO e_curr {strcpy($<str>$,A4GLSQLCV_make_dtime_extend($<str>1,$<str>2,$<str>4,0));}
 ;
 
 datetime_value:
-	DATETIME_VALUE  {sprintf($<str>$,"%s",$<str>1);}
+	DATETIME_VALUE  {sprintf($<str>$,"%s",A4GLSQLCV_datetime_value($<str>1));}
 ;
 
 interval_value_qualified :
 	interval_value {strcpy($<str>$,$<str>1);}
-	| interval_value s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {sprintf($<str>$,"%s %s(%s) TO %s",$<str>1,$<str>2,$<str>4,$<str>7);}
-	| interval_value s_curr TO e_curr {sprintf($<str>$,"%s %s TO %s",$<str>1,$<str>2,$<str>4);}
+	| interval_value s_curr OPEN_BRACKET INT_VALUE CLOSE_BRACKET TO e_curr {
+			strcpy($<str>$,A4GLSQLCV_make_ival_extend($<str>1,$<str>2,$<str>4,$<str>7,0));
+		}
+	| interval_value s_curr TO e_curr {
+		strcpy($<str>$,A4GLSQLCV_make_ival_extend($<str>1,$<str>2,(char *)0, $<str>4,0));
+	}
 ;
 
 interval_value:
-	INTERVAL_VALUE  {sprintf($<str>$,"%s",$<str>1);}
+	INTERVAL_VALUE  {sprintf($<str>$,"%s",A4GLSQLCV_interval_value($<str>1));}
 ;
 
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.22 2004-10-26 20:55:11 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.23 2004-10-28 22:04:57 mikeaubury Exp $
 #
 */
 
@@ -37,6 +37,7 @@
 =====================================================================
 */
 #include <ctype.h>
+#include <string.h>
 
 #define isquote(x) ((x)=='\"'||(x)=='\'')
 #define istabcol(x) (isalnum(x)||(x)=='.'||(x)=='_')
@@ -72,14 +73,28 @@ char *cvsql_names[]={
   "CVSQL_ADD_CASCADE",
   "CVSQL_OMIT_NO_LOG",
   "CVSQL_QUOTE_OWNER",
+  "CVSQL_CHAR_TO_DATETIME",
+  "CVSQL_CHAR_TO_INTERVAL",
   "CVSQL_NO_OWNER_QUOTE",
+  "CVSQL_IGNORE_OWNER",
   "CVSQL_CONSTRAINT_NAME_BEFORE",
   "CVSQL_CONSTRAINT_NAME_AFTER",
   "CVSQL_USE_INDICATOR",
   "CVSQL_IGNORE_CLOSE_ERROR",
   "CVSQL_OMIT_INDEX_CLUSTER",
   "CVSQL_OMIT_INDEX_ORDER",
-
+  "CVSQL_ESQL_UNLOAD_FULL_PATH",
+  "CVSQL_ESQL_AFTER_INSERT",
+  "CVSQL_ESQL_AFTER_UPDATE",
+  "CVSQL_ESQL_AFTER_DELETE",
+  "CVSQL_IGNORE_DTYPE_VARCHAR_MIN",
+  "CVSQL_INTERVAL_EXTEND_FUNCTION",
+  "CVSQL_DATETIME_EXTEND_FUNCTION",
+  "CVSQL_NO_SERIAL_START_VALUE",
+  "CVSQL_SIMPLE_GRANT_UPDATE",
+  "CVSQL_SIMPLE_GRANT_SELECT",
+  "CVSQL_RENAME_TABLE_AS_ALTER_TABLE",
+  "CVSQL_RENAME_COLUMN_AS_ALTER_TABLE",
   "CVSQL_DTYPE_ALIAS"
 };
 
@@ -113,13 +128,28 @@ enum cvsql_type
   CVSQL_ADD_CASCADE,
   CVSQL_OMIT_NO_LOG,
   CVSQL_QUOTE_OWNER,
+  CVSQL_CHAR_TO_DATETIME,
+  CVSQL_CHAR_TO_INTERVAL,
   CVSQL_NO_OWNER_QUOTE,
+  CVSQL_IGNORE_OWNER,
   CVSQL_CONSTRAINT_NAME_BEFORE,
   CVSQL_CONSTRAINT_NAME_AFTER,
   CVSQL_USE_INDICATOR,
   CVSQL_IGNORE_CLOSE_ERROR,
   CVSQL_OMIT_INDEX_CLUSTER,
   CVSQL_OMIT_INDEX_ORDER,
+  CVSQL_ESQL_UNLOAD_FULL_PATH,
+  CVSQL_ESQL_AFTER_INSERT,
+  CVSQL_ESQL_AFTER_UPDATE,
+  CVSQL_ESQL_AFTER_DELETE,
+  CVSQL_IGNORE_DTYPE_VARCHAR_MIN,
+  CVSQL_INTERVAL_EXTEND_FUNCTION,
+  CVSQL_DATETIME_EXTEND_FUNCTION,
+  CVSQL_NO_SERIAL_START_VALUE,
+  CVSQL_SIMPLE_GRANT_UPDATE,
+  CVSQL_SIMPLE_GRANT_SELECT,
+  CVSQL_RENAME_TABLE_AS_ALTER_TABLE,
+  CVSQL_RENAME_COLUMN_AS_ALTER_TABLE,
   CVSQL_DTYPE_ALIAS
 };
 
@@ -151,8 +181,11 @@ int conversion_rules_cnt = 0;
 =====================================================================
 */
 
-void A4GL_cv_fnlist (char *source, char *target);
+static void A4GL_cv_fnlist (char *source, char *target);
 int A4GL_cv_str_to_func (char *p, int len);
+int A4GL_strwscmp(char *a,char *b) ;
+int A4GL_strcasestr(char *h,char *n) ;
+static void A4GL_cvsql_replace_str (char *buff, char *from,char *to) ;
 
 void A4GL_cvsql_double_single (char *sql, char *args);
 /* void A4GL_cvsql_rowid (char *sql, char *oid); */
@@ -286,7 +319,7 @@ A4GL_cv_next_token (char *p, int *len, int dot)
  * @param  target   SQL dialect understood by the DBMS
 */
 void
-A4GL_load_convert (char *source_dialect, char *target_dialect)
+A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 {
   char buff[256];
   sprintf (buff, "%s_%s", source_dialect, target_dialect);
@@ -295,15 +328,15 @@ A4GL_load_convert (char *source_dialect, char *target_dialect)
   if (A4GL_has_pointer (buff, SQL_CONVERSION))
     {
       conversion_rules = A4GL_find_pointer (buff, SQL_CONVERSION);
-      conversion_rules_cnt = A4GL_find_pointer (buff, SQL_CONVERSION_CNT);
+      conversion_rules_cnt = (long)A4GL_find_pointer (buff, SQL_CONVERSION_CNT);
     }
   else
     {
       conversion_rules = 0;
       conversion_rules_cnt = 0;
       A4GL_cv_fnlist (source_dialect, target_dialect);
-      A4GL_add_pointer (buff, SQL_CONVERSION, conversion_rules);
-      A4GL_add_pointer (buff, SQL_CONVERSION_CNT, conversion_rules_cnt);
+      A4GL_add_pointer (buff, SQL_CONVERSION, (void *)conversion_rules);
+      A4GL_add_pointer (buff, SQL_CONVERSION_CNT, (void *)conversion_rules_cnt);
     }
 
 }
@@ -311,8 +344,7 @@ A4GL_load_convert (char *source_dialect, char *target_dialect)
 
 
 
-void
-A4GL_cv_fnlist (char *source, char *target)
+static void A4GL_cv_fnlist (char *source, char *target)
 {
   char buff[201];
   char buff_sm[201];
@@ -414,7 +446,6 @@ A4GL_trim(t);
 char *A4GLSQLCV_check_sql(char *s ) {
 int b;
 static char *buff=0;
-printf("check sql : %s\n",s);
 A4GL_debug("check sql : %s\n",s);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE_CMD) {
@@ -428,7 +459,7 @@ buff=realloc(buff,strlen(s)*2+1000);
 strcpy(buff,s);
 for (b=0;b<conversion_rules_cnt;b++) {
 	if (conversion_rules[b].type==CVSQL_REPLACE) {
-		if (A4GL_strcasestr(buff,conversion_rules[b].data.from)!=0) {
+		if (A4GL_strcasestr(buff,conversion_rules[b].data.from)!=0 ) {
 			//char b2[256];
 			//printf("%s = %s", conversion_rules[b].data.from,conversion_rules[b].data.to);
 			A4GL_cvsql_replace_str (buff, conversion_rules[b].data.from,conversion_rules[b].data.to );
@@ -443,19 +474,19 @@ char *A4GLSQLCV_dtype_alias(char *s ) {
 int b;
 A4GL_debug("Alias : '%s'\n",s);
 for (b=0;b<conversion_rules_cnt;b++) {
-	
 	if (conversion_rules[b].type==CVSQL_DTYPE_ALIAS) {
-		A4GL_debug("--> %s %s\n",conversion_rules[b].data.from,s);
-		if (strcmp(s,conversion_rules[b].data.from)==0) {
+		A4GL_debug("--> '%s' = '%s' ? \n",conversion_rules[b].data.from,s);
+		if (A4GL_strwscmp(s,conversion_rules[b].data.from)==0) {
 			A4GL_debug("Substitute : %s\n",conversion_rules[b].data.to);
 			return conversion_rules[b].data.to;
 		}
 	}
 }
+A4GL_debug("No substitute for '%s'\n",s);
 return s;
 }
 
-A4GL_cvsql_replace_str (char *buff, char *from,char *to) {
+void A4GL_cvsql_replace_str (char *buff, char *from,char *to) {
 int a;
 static char *buff2;
 int l;
@@ -466,10 +497,21 @@ l=strlen(buff)*2+1000;
 buff2=realloc(buff2,l);
 
 for (a=0;a<=strlen(buff);a++) {
-	if (sq==0&&dq==0&&strncasecmp(&buff[a],from,strlen(from))==0) {
+	int ok_to_replace; // We only want to replace whole words...
+	ok_to_replace=0;
+
+	if (a==0) {ok_to_replace=1;}
+	else {
+		if (!isalnum(buff[a-1])) ok_to_replace=1;
+	}
+	
+
+	
+	if (sq==0&&dq==0&&strncasecmp(&buff[a],from,strlen(from))==0 && ok_to_replace==1 ) {
 		strcat(buff2,to);
 		cnt=strlen(buff2);
 		a=a+strlen(from)-1;
+
 	} else {
 		buff2[cnt++]=buff[a];
 		buff2[cnt]=0;
@@ -599,8 +641,8 @@ return "???";
 
 
 char *A4GLSQLCV_make_substr(char *colname,int i0,int i1,int i2) {
-static char buff[256]; 
-int rule;
+//static char buff[256]; 
+//int rule;
 static char l[256]="";
 static char r[256]="";
 char *s;
@@ -644,18 +686,40 @@ int A4GL_cv_str_to_func (char *p, int len)
   if (strncasecmp (p, "ADD_CASCADE", len) == 0) return CVSQL_ADD_CASCADE;
   if (strncasecmp (p, "OMIT_NO_LOG", len) == 0) return CVSQL_OMIT_NO_LOG;
   if (strncasecmp (p, "QUOTE_OWNER", len) == 0) return CVSQL_QUOTE_OWNER;
+  if (strncasecmp (p, "CHAR_TO_DATETIME", len) == 0) return CVSQL_CHAR_TO_DATETIME;
+  if (strncasecmp (p, "CHAR_TO_INTERVAL", len) == 0) return CVSQL_CHAR_TO_INTERVAL;
   if (strncasecmp (p, "NO_OWNER_QUOTE", len) == 0) return CVSQL_NO_OWNER_QUOTE;
+  if (strncasecmp (p, "IGNORE_OWNER", len) == 0) return CVSQL_IGNORE_OWNER;
   if (strncasecmp (p, "CONSTRAINT_NAME_BEFORE", len) == 0) return CVSQL_CONSTRAINT_NAME_BEFORE;
   if (strncasecmp (p, "CONSTRAINT_NAME_AFTER", len) == 0) return CVSQL_CONSTRAINT_NAME_AFTER;
   if (strncasecmp (p, "USE_INDICATOR", len) == 0) return CVSQL_USE_INDICATOR;
   if (strncasecmp (p, "IGNORE_CLOSE_ERROR", len) == 0) return CVSQL_IGNORE_CLOSE_ERROR;
   if (strncasecmp (p, "OMIT_INDEX_CLUSTER", len) == 0) return CVSQL_OMIT_INDEX_CLUSTER;
   if (strncasecmp (p, "OMIT_INDEX_ORDER", len) == 0) return CVSQL_OMIT_INDEX_ORDER;
+
+  if (strncasecmp (p, "ESQL_UNLOAD_FULL_PATH", len) == 0) return CVSQL_ESQL_UNLOAD_FULL_PATH;
+  if (strncasecmp (p, "ESQL_AFTER_INSERT", len) == 0) return CVSQL_ESQL_AFTER_INSERT;
+  if (strncasecmp (p, "ESQL_AFTER_UPDATE", len) == 0) return CVSQL_ESQL_AFTER_UPDATE;
+  if (strncasecmp (p, "ESQL_AFTER_DELETE", len) == 0) return CVSQL_ESQL_AFTER_DELETE;
+  if (strncasecmp (p, "IGNORE_DTYPE_VARCHAR_MIN", len) == 0) return CVSQL_IGNORE_DTYPE_VARCHAR_MIN;
+  if (strncasecmp (p, "INTERVAL_EXTEND_FUNCTION", len) == 0) return CVSQL_INTERVAL_EXTEND_FUNCTION;
+  if (strncasecmp (p, "DATETIME_EXTEND_FUNCTION", len) == 0) return CVSQL_DATETIME_EXTEND_FUNCTION;
+  if (strncasecmp (p, "IGNORE_DTYPE_VARCHAR_MIN", len) == 0) return CVSQL_IGNORE_DTYPE_VARCHAR_MIN;
+  if (strncasecmp (p, "NO_SERIAL_START_VALUE", len) == 0) return CVSQL_NO_SERIAL_START_VALUE;
+  if (strncasecmp (p, "SIMPLE_GRANT_UPDATE", len) == 0) return CVSQL_SIMPLE_GRANT_UPDATE;
+  if (strncasecmp (p, "SIMPLE_GRANT_SELECT", len) == 0) return CVSQL_SIMPLE_GRANT_SELECT;
+  if (strncasecmp (p, "RENAME_TABLE_AS_ALTER_TABLE", len) == 0) return CVSQL_RENAME_TABLE_AS_ALTER_TABLE;
+  if (strncasecmp (p, "RENAME_COLUMN_AS_ALTER_TABLE", len) == 0) return CVSQL_RENAME_COLUMN_AS_ALTER_TABLE;
+  //if (strncasecmp (p, "", len) == 0) return CVSQL_;
+
+
   if (strncasecmp (p, "DTYPE_ALIAS", len) == 0) return CVSQL_DTYPE_ALIAS;
 
   A4GL_debug ("NOT IMPLEMENTED: %s", p);
+
+
 printf("Unknown : %s\n",p);
-  return NULL;
+  return 0;
 }
 
 
@@ -1560,7 +1624,7 @@ A4GL_cv_delchstr (char *str, int n)
 
 
 
-A4GL_strwscmp(char *a,char *b) {
+int A4GL_strwscmp(char *a,char *b) {
 int a_i;
 int b_i;
 char *o1;
@@ -1600,8 +1664,152 @@ h1=A4GL_char_pop();
 A4GL_push_char(n);
 A4GL_upshift_stk();
 n1=A4GL_char_pop();
-r=strstr(h1,n1);
+if (strstr(h1,n1)) r=1; else r=0;
 free(h1);
 free(n1);
 return r;
+}
+
+
+
+
+
+char *A4GLSQLCV_make_ival_extend(char *ival,char *from,char *from_len,char *to,int extend) {
+        static char buff[256];
+	int hr;
+	char *xx;
+	hr= A4GLSQLCV_check_requirement("INTERVAL_EXTEND_FUNCTION");
+        if (hr) {
+		xx=conversion_rules[hr-1].data.from;
+		if (from_len==0) {
+                sprintf(buff,"%s(%s,'%s',0,'%s')",xx, ival,from,to);
+		} else {
+                sprintf(buff,"%s(%s,'%s',%s,'%s')",xx, ival,from,from_len,to);
+		}
+
+        } else {
+        	if (from_len==0) { // The pointer not the value :-)
+			if (extend) {
+                		sprintf(buff,"EXTEND(%s,%s TO %s)",ival,from,to);
+			} else {
+                		sprintf(buff,"%s %s TO %s",ival,from,to);
+			}
+        	} else {
+			if (extend) {
+                		sprintf(buff,"EXTEND(%s,%s(%s) TO %s)",ival,from,from_len,to);
+			} else {
+                		sprintf(buff,"%s %s(%s) TO %s",ival,from,from_len,to);
+			}
+        	}
+        }
+        return buff;
+}
+
+char *A4GLSQLCV_make_dtime_extend(char *dval,char *from,char *to,int extend) {
+
+        static char buff[256];
+	int hr;
+	char *xx;
+
+
+        hr=A4GLSQLCV_check_requirement("DATETIME_EXTEND_FUNCTION");
+        if (hr) {
+		xx=conversion_rules[hr-1].data.from;
+                sprintf(buff,"%s(%s,'%s','%s')",xx, dval,from,to);
+        } else {
+		if (extend) {
+        	sprintf(buff,"EXTEND(%s,%s TO %s)",dval,from,to);
+		} else {
+        	sprintf(buff,"%s %s TO %s",dval,from,to);
+		}
+        }
+        return buff;
+}
+
+
+
+char *A4GLSQLCV_datetime_value(char *s) {
+static char buff[256];
+int hr;
+if (strncasecmp(s,"DATETIME(",9)==0) {
+        if (s[9]!='"') {
+		hr= A4GLSQLCV_check_requirement("CHAR_TO_DATETIME");
+                if (hr) {
+                        char *ptr;
+			char *xx;
+		xx=conversion_rules[hr-1].data.from;
+                        ptr=strdup(&s[9]);
+
+                        ptr[strlen(ptr)-1]=0;
+                        sprintf(buff,"%s(\"%s\")",xx,ptr);
+                        free(ptr);
+                        return buff;
+                }
+        }
+
+}
+return s;
+}
+
+char *A4GLSQLCV_interval_value(char *s) {
+static char buff[256];
+int hr;
+if (strncasecmp(s,"INTERVAL(",9)==0) {
+        if (s[9]!='"') {
+                hr=A4GLSQLCV_check_requirement("CHAR_TO_INTERVAL");
+                if (hr) {
+                        char *ptr;
+			char *xx;
+		xx=conversion_rules[hr-1].data.from;
+                        ptr=strdup(&s[9]);
+                        ptr[strlen(ptr)-1]=0;
+                        sprintf(buff,"%s(\"%s\")",xx,ptr);
+                        free(ptr);
+                        return buff;
+                }
+        }
+
+}
+return s;
+}
+
+
+
+
+void A4GLSQLCV_check_fullpath(char *s)  {
+char buff[512];
+char buff2[512];
+
+
+if (A4GLSQLCV_check_requirement("ESQL_UNLOAD_FULL_PATH")) {
+	if (s[0]!='/') {
+		getcwd(buff,512);
+		strcpy(buff2,s);
+		sprintf(s,"%s/%s",buff,buff2);
+	}
+}
+
+}
+
+
+
+
+char *A4GLSQLCV_rencol(char *tabname,char *colname,char *ncolname) {
+static char buff[256];
+if (A4GLSQLCV_check_requirement("RENAME_COLUMN_AS_ALTER_TABLE")) {
+	sprintf(buff,"ALTER TABLE %s RENAME COLUMN %s TO %s",tabname,colname,ncolname);
+} else {
+	sprintf(buff,"RENAME COLUMN %s.%s TO %s",tabname,colname,ncolname);
+}
+return buff;
+}
+
+char *A4GLSQLCV_rentab(char *tabname,char *ntabname) {
+static char buff[256];
+if (A4GLSQLCV_check_requirement("RENAME_TABLE_AS_ALTER_TABLE")) {
+	sprintf(buff,"ALTER TABLE %s RENAME TO %s",tabname,ntabname);
+} else {
+	sprintf(buff,"RENAME TABLE %s TO %s",tabname,ntabname);
+}
+return buff;
 }

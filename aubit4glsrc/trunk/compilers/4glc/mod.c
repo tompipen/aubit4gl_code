@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.185 2004-10-23 13:36:26 mikeaubury Exp $
+# $Id: mod.c,v 1.186 2004-10-28 22:01:12 mikeaubury Exp $
 #
 */
 
@@ -95,7 +95,6 @@
 
 
 
-
 int A4GL_get_nevents(void) ;
 void A4GL_get_event(int n,int *i,char **s) ;
 //static void set_whento (char *p);
@@ -112,9 +111,10 @@ char *get_curr_report_stack_why (void);
 char find_variable_scope (char *s_in);
 char *A4GL_get_important_from_clobber(char *s) ;
 char *A4GL_get_clobber_from_orig(char *s);
-char *A4GLSQLCV_check_sql(char *s) ;
+//char *A4GLSQLCV_check_sql(char *s) ;
 int get_rep_no_orderby(void) ;
 int get_validate_list_cnt(void) ;
+//char *A4GL_decode_packtype(char *s) ;
 
 /*
 =====================================================================
@@ -199,7 +199,7 @@ int nblock_no = 1;
 /*#define GEN_STACK_SIZE 5000*/
 #define GEN_STACK_SIZE 10000
 
-char gen_stack[GEN_STACKS][GEN_STACK_SIZE][80];
+char gen_stack[GEN_STACKS][GEN_STACK_SIZE][800];
 int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 struct s_constr_buff constr_buff[256];
 int constr_cnt = 0;
@@ -4651,12 +4651,13 @@ void A4GL_CV_print_exec_sql_bound(char *s) {
 }
 
 void A4GL_CV_print_do_select(char *s) {
-	print_do_select(s);
+	print_do_select(A4GLSQLCV_check_sql(s));
+
 }
 
 
-void A4GL_CV_print_select_all(char *s) {
-	print_select_all(A4GLSQLCV_check_sql(s));
+char *A4GL_CV_print_select_all(char *s) {
+	return print_select_all(A4GLSQLCV_check_sql(s));
 }
 
 
@@ -4666,5 +4667,47 @@ int A4GL_escape_quote_owner(void) {
 	if (strcmp(acl_getenv("A4GL_LEXTYPE"),"EC")==0)  return 0;
 	return 1;
 }
+
+
+#ifdef MOVED
+char *A4GL_datetime_value(char *s) {
+static char buff[256];
+if (strncasecmp(s,"DATETIME(",9)==0) {
+	if (s[9]!='"') {
+		if (A4GLSQLCV_check_requirement("QUOTE_DATETIME")) {
+			char *ptr;
+			ptr=strdup(&s[9]);
+			ptr[strlen(ptr)-1]=0;
+			sprintf(buff,"DATETIME(\"%s\")",ptr);
+			free(ptr);
+			return buff;
+		}
+	}
+
+}
+return s;
+}
+
+char *A4GL_interval_value(char *s) {
+static char buff[256];
+if (strncasecmp(s,"INTERVAL(",9)==0) {
+	if (s[9]!='"') {
+		if (A4GLSQLCV_check_requirement("QUOTE_INTERVAL")) {
+			char *ptr;
+			ptr=strdup(&s[9]);
+			ptr[strlen(ptr)-1]=0;
+			sprintf(buff,"INTERVAL(\"%s\")",ptr);
+			free(ptr);
+			return buff;
+		}
+	}
+
+}
+return s;
+}
+#endif
+
+
+
 
 /* ================================= EOF ============================= */

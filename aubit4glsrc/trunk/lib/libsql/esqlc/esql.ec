@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.103 2004-10-25 12:21:58 mikeaubury Exp $
+# $Id: esql.ec,v 1.104 2004-10-28 22:05:01 mikeaubury Exp $
 #
 */
 
@@ -152,7 +152,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.103 2004-10-25 12:21:58 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.104 2004-10-28 22:05:01 mikeaubury Exp $";
 #endif
 
 
@@ -1269,14 +1269,15 @@ int type;
 			sqlca.sqlwarn.sqlwarn0='W';
 			sqlca.sqlwarn.sqlwarn1='W';
 		}
-	{char *ptr;
-		ptr=bind[idx].ptr;
-      		strncpy (ptr, char_var,length);
-		ptr[bind[idx].size]=0;
-		A4GL_push_char(ptr);
-		A4GL_pop_char(ptr,length);
-		//if (length<bind[idx.size])  ptr[length]=0;
 
+
+	{int ml;
+		char *ptr;
+		if (length>bind[idx].size) ml=bind[idx].size; else ml=length;
+      		strncpy (bind[idx].ptr, char_var,ml);
+      		ptr=bind[idx].ptr;
+      		ptr[ml]=0;
+		A4GL_pad_string(bind[idx].ptr,bind[idx].size);
 	}
       free (char_var);
       break;

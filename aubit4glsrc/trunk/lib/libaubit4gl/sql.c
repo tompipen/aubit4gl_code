@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.13 2004-08-31 20:46:52 mikeaubury Exp $
+# $Id: sql.c,v 1.14 2004-10-28 22:04:57 mikeaubury Exp $
 #
 */
 
@@ -125,6 +125,15 @@ A4GLSQL_set_status (int a, int sql)
 
 
 void A4GLSQL_set_sqlerrm( char *m,char *p) {
+static FILE *flog=0;
+if (A4GL_isyes(acl_getenv("A4GL_LOGSQLERR")) && (strlen(m)||strlen(p))) {
+	if (flog==0) {
+		flog=fopen("/tmp/flog.err","a");
+	}
+	if (flog) {
+		fprintf(flog,"%d - %s - %s\n",a4gl_sqlca.sqlcode,m,p);
+	}
+}
         A4GL_debug("A4GLSQL_set_sqlerrm('%s','%s')", m, p);
         if(!m || !p) {
           A4GL_debug("Nullpointer, doing nothing!");
@@ -133,6 +142,10 @@ void A4GLSQL_set_sqlerrm( char *m,char *p) {
 	strcpy(a4gl_sqlca.sqlerrm,m);
 	strcpy(a4gl_sqlca.sqlerrp,p);
 }
+
+
+
+
 void A4GLSQL_set_sqlerrd( int a0, int a1, int a2, int a3, int a4, int a5) {
 
         A4GL_debug("A4GLSQL_set_sqlerrd(%d,%d,%d,%d,%d,%d)", a0, a1, a2, a3, a4, a5);

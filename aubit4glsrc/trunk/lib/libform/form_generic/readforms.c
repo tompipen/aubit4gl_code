@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.20 2004-05-26 14:14:46 mikeaubury Exp $
+# $Id: readforms.c,v 1.21 2004-10-28 22:04:58 mikeaubury Exp $
 #*/
 
 /**
@@ -430,28 +430,36 @@ include_range_check (char *ss, char *ptr, int dtype)
 
   if (ptr3 == 0)
     {
+        int chk_again;
       /* Not a range */
-	A4GL_debug("Not a range... %x",dtype);
-	if ((dtype&255)==0) {
-		A4GL_debug("checking equal for %s %s",ptr1,ptr2);
-	}
-/*
-	if (strcasecmp(ptr2,"NULL")==0) {
-		// Check for a null...
-		A4GL_trim(ptr1);
-		if (strlen(ptr1)==0) {
-			return 1;
-		}
-	}
-*/
-
+        if (strcasecmp(ptr2,"NULL")==0) {
+                // Check for a null...
+                A4GL_trim(ptr1);
+                if (strlen(ptr1)==0) {
+                        return 1;
+                }
+        }
       A4GL_push_param (ptr1, dtype);
       A4GL_push_param (ptr2, dtype);
       A4GL_debug_print_stack ();
       A4GL_pushop (OP_EQUAL);
       A4GL_debug ("Checking for equal");
       free (s);
-      return A4GL_pop_bool ();
+
+
+      chk_again= A4GL_pop_bool ();
+
+      if ((dtype==DTYPE_SMINT||dtype==DTYPE_INT||dtype==DTYPE_DECIMAL ||dtype==DTYPE_FLOAT||dtype==DTYPE_SMFLOAT) && chk_again && !strncmp(ptr, "NULL", 4)) {
+        A4GL_debug ("zero not equal to NULL during form range checks");
+        chk_again = 0;
+      }
+      return chk_again;
+
+
+
+
+
+
 
     }
   else

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.17 2004-05-24 12:49:07 mikeaubury Exp $
+# $Id: simple.c,v 1.18 2004-10-28 22:05:02 mikeaubury Exp $
 #*/
 
 
@@ -191,8 +191,15 @@ int
 A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
   char buff[2048];
-  //char tname[256];
+  char tname[256];
   curr_colno = 0;
+  
+  if (strchr(tabname,':')) {
+		strcpy(tname,strchr(tabname,':')+1);
+		tabname=tname;
+  }
+
+
   if (con == 0)
     {
       A4GL_exitwith ("Not connected to database");

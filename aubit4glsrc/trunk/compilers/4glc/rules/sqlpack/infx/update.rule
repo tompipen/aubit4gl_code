@@ -234,7 +234,13 @@ upd_value_expression_complex_ss :
         | identifier OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 		{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),kw_ob,$<sql_string>3,kw_cb,0);}
         | KW_DATE OPEN_BRACKET upd_value_expr_list_ss CLOSE_BRACKET 		{$<sql_string>$=make_sql_string_and_free(strdup("DATE("),$<sql_string>3,kw_cb,0);}
         | OPEN_BRACKET upd_value_expression_ss CLOSE_BRACKET 			{$<sql_string>$=make_sql_string_and_free(kw_ob,$<sql_string>2,kw_cb,0);}
-        | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET 			{$<sql_string>$=make_sql_string_and_free(strdup("EXTEND("),$<sql_string>3,kw_cb,0);}
+
+        | EXTEND OPEN_BRACKET extend_qual_ss CLOSE_BRACKET {
+                        $<sql_string>$=$<sql_string>3;
+        }
+
+
+
         | datetime_value_qualified 						{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
         | interval_value_qualified 						{$<sql_string>$=make_sql_string_and_free(strdup($<str>1),0);}
 
