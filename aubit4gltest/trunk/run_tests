@@ -9,12 +9,49 @@
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 EXPECT_TO_FAIL_TESTS="240 670 706 28 47 49 60 207 230 253 257 265 273 274 277 \
-	278 279 374 376 479 480 481 681 682 686 687 701 704 918 938 939 940 941 \
+	278 279 374 376 681 682 686 687 701 704 918 938 939 940 941 \
 	942 943 944 945 946 947"
 
-#240 (numeric formating) 
-#670 (syntax errors in generated EC code)
-#706 (expression in SQL syntax error)
+#240 (numeric formating) http://aubit.com/mantis/bug_view_page.php?bug_id=0000495
+#670 (syntax errors in generated EC code) http://aubit.com/mantis/bug_view_page.php?bug_id=0000477
+#706 (expression in SQL syntax error) http://aubit.com/mantis/bug_view_page.php?bug_id=0000515
+#28 (daytime) http://aubit.com/mantis/bug_view_page.php?bug_id=0000579
+#47 (daytime) http://aubit.com/mantis/bug_view_page.php?bug_id=0000580
+#49 (daytime) http://aubit.com/mantis/bug_view_page.php?bug_id=0000581
+#60 (date) http://aubit.com/mantis/bug_view_page.php?bug_id=0000582
+#207 (datetime) http://aubit.com/mantis/bug_view_page.php?bug_id=0000481
+#230 (terminal) http://aubit.com/mantis/bug_view_page.php?bug_id=0000583
+#253 missing .expected file
+#257 missing db table
+#265 (comparing datetimes) http://aubit.com/mantis/bug_view_page.php?bug_id=0000584
+#273 (field defaults in construct) http://aubit.com/mantis/bug_view_page.php?bug_id=0000585
+#274 (interuppt in construct) http://aubit.com/mantis/bug_view_page.php?bug_id=0000586
+#277
+#278 
+#279 
+#374 
+#376 
+#681 
+#682 
+#686 
+#687 
+#701 
+#704 
+#918 
+#938 
+#939 
+#940 
+#941
+#942 
+#943 
+#944 
+#945 
+#946 
+#947 
+
+#not reported (please enter bug report at: http://aubit.com/mantis)
+EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 106 107 108 239 282 351 735 766 \
+	767 793 794 911 912 913 914 915 961 962 963 976 987"
 
 ######################
 #Tests that currently fail with -ecp (but work with -cert)
@@ -59,25 +96,24 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 
 ######################
 #Tests that currently fail because of the errors in the test itself
-INVALID_TESTS="375 377 684 105 705 229 707 752 258 280 797 916 917 919 920 921 \
+INVALID_TESTS="375 377 684 105 705 707 752 280 797 916 917 919 920 921 \
 	922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 \
-	953 954 955 956 957 958 959 964	966"
+	953 954 955 956 957 958 959 964	966 284"
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
-#684,253,255 256 257 258 259 - no test files
+#684,253,255 256 257 259 - no test files
 #105 - missing database schemma
 #705 - "It is not possible to convert between the specified types." with -ifx-p
-#229 - missing *.infx files (should be .expected)
 #230 - diff: screen10_M.infx: No such file or directory - ...etc...
-#258 - DEFINE   t_tab1   RECORD LIKE tab1.* >> tab1 does not exist in the database (*)
 #280,920 - no makefile
 #797  SET CONSTRAINTS ALL IMMEDIATE - fails even with -ifx-p
 #916,917,919,921,922,923,924,>>925<<,927,928,929,930,931,932,933,935,948...
 #...949 950 951 952 953 954 955 957 958 959 964 966- fails even with -ifx-p
 #926 missing function
-#934 no test files
+#934 284 no test files
 #956 missing 4gl file
+
 
 
 ##############################################################################
@@ -508,7 +544,7 @@ DB_TESTS="1 14 36 51 63 68 72 73 76 80 100 101 91 94 95 98 99 206 207 212"
 EC_TESTS="36 68"
 
 #Tests that will fail if not running on screen (curses):
-NOSILENT_TESTS="11"
+NOSILENT_TESTS="11 15"
 
 #Tests that open windows
 #TODO- this is currently just added to TUI_TESTS - separate it
@@ -729,6 +765,11 @@ for a in $FLAGS; do
      new_test $a
    fi
 
+	if test "$CERT_TEST" = "1"; then
+		change_setting "cert_test" "1" "$a"
+		echo "Test $a marked as certified."
+		exit
+	fi
    case $a in
    
    		-xxx)
@@ -766,12 +807,59 @@ sleep 1;
 			NEW_TEST="1"
             continue
             ;;
-      -new-nocvs)
-			  #create new test
-			  NEW_TEST="1"
-			  NO_CVS="1"
-        continue
-       ;;
+			
+		-certify)
+			#flage the test as certified in the makefile
+			CERT_TEST=1
+			continue
+			;;
+			
+		-new-nocvs)
+			#create new test
+			NEW_TEST="1"
+			NO_CVS="1"
+			continue
+			;;
+
+		-cvs-update)
+			LOGFILE=/tmp/cvsupdate-aubit4gltest.log
+			echo "+--------------------------------------------------------------------+"
+			echo "| CVS update started at `date`"
+			echo "| Logging to $LOGFILE"
+			echo "+--------------------------------------------------------------------+"	
+			echo " "
+			cvs update -d -P > $LOGFILE 2>&1
+			RET=$?
+			if test "$RET" != "0"; then echo "ERROR: cvs updated failed"; fi
+			grep -v "cvs update: Updating" $LOGFILE
+			grep "cvs update: conflict" $LOGFILE  > /dev/null
+			RET=$?;
+			if test "$RET" = "0" ; then 
+				grep "cvs update: conflict" $LOGFILE
+				echo "WARNING: conflict(s) detected - see $LOGFILE"; 
+			fi
+			grep "configure" $LOGFILE  > /dev/null ; 
+			RET=$?; 
+			if test "$RET" = "0" ; then 
+				echo "WARNING: configure changed - re-run ./configure"; 
+			fi
+			#TODO - check id SQL files where updated to re-run db creation
+			echo " "
+			echo "+--------------------------------------------------------------------+"
+			echo "| CVS update finished at `date`"
+			echo "| See /tmp/cvsupdate-aubit4gl.log for details                        |"
+			echo "+--------------------------------------------------------------------+"
+			echo " "
+			exit 0
+			;;
+
+		-cvs-commit)
+			#Note: cvs commit command cannot be redirected to file because of the need
+			#to edit commit message
+			cvs -q commit
+			exit 0
+			;;
+			
         -info)
 			#Show information about the test
 			INFO_TEST="1"
@@ -1069,7 +1157,9 @@ for a in $FLAGS; do
         -verbose)   #Show more information about what is going on
             VERBOSE=1
 			;;
-
+        -verbose-results)   #Show more information about results			
+			VERBOSE_RESULTS=1
+			;;
 	####
 	esac
 	####
@@ -1180,6 +1270,9 @@ for a in $FLAGS; do
 		;;
 
     -verbose)   #Show more information about what is going on
+        #we already got this one set
+        ;;
+    -verbose-results)   #Show more information about results
         #we already got this one set
         ;;
 
@@ -1714,7 +1807,11 @@ for a in $FLAGS; do
 		NO_GRAPHIC=1
         ;;
 
-    -nodefaults)        #Do not use platform default settings
+    -noprogress)         #do not show testing progress counter 
+		NO_PROGRESS=1
+        ;;
+
+	-nodefaults)        #Do not use platform default settings
         #nothing to set; this is just to cause $@ not to be empty
         ;;
 
@@ -1789,6 +1886,7 @@ for a in $FLAGS; do
 	-help-test)
 		echo "Selecting test(s) to run:"
 		echo " -nographic  Skip tests that use platform specific characters"
+		echo " -noprogress Do not show testing progress counter"
 		echo " -nolong     Skip tests that take a long time to run"
 		echo " -onlytui    Run only TUI tests listed in TUI_TESTS"
 		echo " -described  Skip all not desctibed tests"
@@ -1843,7 +1941,7 @@ for a in $FLAGS; do
 		echo " -runner-[ifx|4js] Create p-code runner for specified compiler"		
 		echo " -update     Update tests souce code from CVS"
 		echo " -commit     commit changes to tests source code to CVS"
-
+		echo " -certify	x  flage the test as certified in the makefile"
 		echo ""
 		
 		exit 0
@@ -1854,6 +1952,7 @@ for a in $FLAGS; do
 		echo " -silent     Don't show output of programs execution"
 		echo " -noecho     Don't show any non-critical messages while running tests"
 		echo " -verbose    Show more information about what is going on"
+        echo " -verbose-results Show more information about results"
 		echo " -err-with-log Send stderr to same destination that logs stdout"
 		echo " -short      Show only short summary"
 		echo " -show-time  Show timing results for each test"
@@ -3654,7 +3753,9 @@ do
 			echo "Description: $desc_txt"
 		fi
 	else
-		echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a..."	
+		if test "$NO_PROGRESS" != "1"; then 
+			echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bRunning test $a..."
+		fi
     fi
 
 	if test "$ALL_COMPILE_ONLY" = "1"; then 
@@ -3933,8 +4034,44 @@ fi
 	$SKIP_GRAPHIC_LIST $SKIP_NOMAKEFILE_LIST $SKIP_NOCOMPAT_LIST"
 	#clipp it:
 	SKIP_OTHER_LIST=`echo $SKIP_OTHER_LIST`
-if test "$SKIP_OTHER_LIST" != "" ; then 
-	echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
+if test "$VERBOSE_RESULTS" = "1"; then 
+	if test "$SKIP_PCODE_LIST" != "" ; then 
+		echo "Skipped PCODE: $SKIP_PCODE_LIST" >> $LOGFILE
+	fi
+	if test "$SKIP_TUI_LIST" != "" ; then 
+		echo "Skipped TUI: $SKIP_TUI_LIST" >> $LOGFILE
+	fi 
+	if test "$SKIP_LONG_LIST" != "" ; then 
+		echo "Skipped long: $SKIP_LONG_LIST" >> $LOGFILE
+	fi 
+	if test "$SKIP_CONSOLE_LIST" != "" ; then 
+		echo "Skipped console: $SKIP_CONSOLE_LIST" >> $LOGFILE
+	fi
+	if test "$SKIP_NONDB_LIST" != "" ; then 
+		echo "Skipped NODB: $SKIP_NONDB_LIST" >> $LOGFILE
+	fi 
+	if test "$SKIP_DB_LIST" != "" ; then 
+		echo "Skipped DB: $SKIP_DB_LIST" >> $LOGFILE
+	fi 
+	if test "$SKIP_NOSILENT_LIST" != "" ; then 
+		echo "Skipped NOSILENT: $SKIP_NOSILENT_LIST" >> $LOGFILE
+	fi 
+	if test "$SKIP_NOVERSION_LIST" != "" ; then 
+		echo "Skipped NOVERSION: $SKIP_NOVERSION_LIST" >> $LOGFILE
+	fi
+	if test "$SKIP_GRAPHIC_LIST" != "" ; then 
+		echo "Skipped GRAPHIC: $SKIP_GRAPHIC_LIST" >> $LOGFILE
+	fi 
+	if test "$SKIP_NOMAKEFILE_LIST" != "" ; then 
+		echo "Skipped NOMEAKEFILE: $SKIP_NOMAKEFILE_LIST" >> $LOGFILE
+	fi 
+	if test "$SKIP_NOCOMPAT_LIST" != "" ; then 
+		echo "Skipped NOCOMPAT: $SKIP_NOCOMPAT_LIST" >> $LOGFILE
+	fi
+else
+	if test "$SKIP_OTHER_LIST" != "" ; then 
+		echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE
+	fi
 fi
 if test "$NOT_COMPAT_BUT_PASSED" != ""; then 
 	echo "TODO-add compat descriptor to: $NOT_COMPAT_BUT_PASSED" >> $LOGFILE

@@ -1,4 +1,9 @@
-
+{**
+ * @file
+ * Decribe the test here
+ * @process TEST_GENERAL
+ *}
+ 
 #if you need to use database, use "test1"
 #database test1
 main
