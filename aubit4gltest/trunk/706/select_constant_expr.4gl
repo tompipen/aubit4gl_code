@@ -436,7 +436,7 @@ MAIN
     LET exitStatus = 1
   END IF
   IF r_.currYearSecond != 	CURRENT YEAR TO SECOND THEN
-    DISPLAY "Diferent value 32"
+    DISPLAY "Diferent value 32 : ",r_.currYearSecond," ",CURRENT YEAR TO SECOND
     LET exitStatus = 1
   END IF
   IF r_.currMonthMonth != 	CURRENT MONTH TO MONTH  THEN
@@ -457,7 +457,7 @@ MAIN
   END IF
 
   IF r_.currMonthSecond != 	CURRENT MONTH TO SECOND THEN
-    DISPLAY "Diferent value 38"
+    DISPLAY "Diferent value 38 ", r_.currMonthSecond," ",CURRENT MONTH TO SECOND
     LET exitStatus = 1
   END IF
   IF r_.currDayDay != 	CURRENT DAY TO DAY  THEN

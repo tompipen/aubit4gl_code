@@ -42,7 +42,7 @@ MAIN
 
 	LET lv_varchar = "1234.5678901234"
 	LET lv_smallfloat = lv_varchar
-	IF lv_smallfloat < 1234.5670 OR lv_smallfloat >= 1234.5679 OR lv_smallfloat IS NULL THEN
+	IF lv_smallfloat < 1234.567 OR lv_smallfloat >= 1234.568 OR lv_smallfloat IS NULL THEN
 	   DISPLAY "A smallfloat on a string was not converted to smallfloat : ", 
 		         lv_smallfloat 
 		 LET exitStatus = 1

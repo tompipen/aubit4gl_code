@@ -26,7 +26,7 @@ MAIN
 
   LET dec_no_prec = 1e-130
 	IF dec_no_prec <= 0.0 THEN
-	  DISPLAY "Error on near zero decimal comparison "
+	  DISPLAY "Error on near zero decimal comparison ",dec_no_prec
 		LET exitStatus = 1
 	END IF
 	

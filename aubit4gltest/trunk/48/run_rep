@@ -16,7 +16,7 @@ if diff $DIFF_FLAGS rep.empty.out rep.empty.out.expected
 then
 :
 else
-	echo "DIFF 1"
+	echo "DIFF 2"
 	exit 1
 fi
 
