@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.11 2003-02-08 17:40:52 mikeaubury Exp $
+# $Id: newpanels.c,v 1.12 2003-02-28 09:07:58 mikeaubury Exp $
 #*/
 
 /**
@@ -353,7 +353,9 @@ create_window (char *name, int x, int y, int w, int h,
 
   mja_wrefresh (win);
 
-  if ((attrib & 0xff) == 0)
+  //attrib=attrib&0xff00;
+
+  if ((attrib & 0xff) == 0 || (attrib&0xff)==0xff )
     {
       attrib = attrib + ' ';
       debug ("Set pad char to space");
@@ -419,6 +421,8 @@ create_window (char *name, int x, int y, int w, int h,
     }
 
   keypad (win, TRUE);
+
+  debug("Deciding what to do... %s\n",name);
   if (toupper (name[0]) != name[0])
     {
 #ifdef DEBUG
@@ -719,7 +723,9 @@ tui_print (char *fmt,...)
   chkwin ();
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
-  wprintw (currwin, "%s", buff);
+  //wprintw (currwin, "%s", buff);
+  waddstr(currwin,buff);
+
   mja_wrefresh (currwin);
 }
 
@@ -889,7 +895,7 @@ display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
   int rows, cols;
   char buff[80];
   chkwin ();
-
+  debug("display_form_new_win - name=%s\n",name);
   scale_form (f->form, &rows, &cols);
   rows = f->fileform->maxline;
   cols = f->fileform->maxcol;
@@ -1137,6 +1143,7 @@ mja_setcolor (int typ)
  *
  * @todo Describe function
  */
+#ifdef IS_THIS_USED
 void
 display_at2 (char *z, int x, int y, int a)
 {
@@ -1151,6 +1158,7 @@ display_at2 (char *z, int x, int y, int a)
   wattrset (cwin, b);
   mja_wrefresh (cwin);
 }
+#endif
 
 
 /**
@@ -1432,7 +1440,9 @@ int clr_end_of_line=0;
     }
   else
     {
+	int line_length;
       /* WINDOW *win; */
+
       chkwin ();
       debug ("Screen mode");
       b = xwattr_get (currwin);
@@ -1441,6 +1451,15 @@ int clr_end_of_line=0;
       a4glattr_wattrset (window_on_top (), a);
       gui_print (a, s);
       mja_gotoxy (x, y);
+
+	line_length=get_curr_width()-x;
+	line_length++;
+	if (strlen(s)>line_length) {
+		debug("%s seems to long to display... - I'm gonna trim it..");
+		s[line_length]=0;
+		
+	}
+      
 	debug("s='%s'",s);
 
 	tui_print ("%s", s);

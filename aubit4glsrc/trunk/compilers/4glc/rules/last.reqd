@@ -15,6 +15,15 @@
 void
 set_clobber(char *c)
 {
+	char *ptr;
+	char *ptr2;
+	ptr=strrchr(c,'/');
+	if (ptr) { strcpy(clobber,ptr+1); return; }
+
+/* Do dos mode ? */
+	ptr=strrchr(c,'\\');
+	if (ptr) { strcpy(clobber,ptr+1); return; }
+
 	strcpy(clobber,c);
 }
 
