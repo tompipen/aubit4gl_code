@@ -1,6 +1,6 @@
 {**
  * @file
- * Test if the conversion from a varchar to a char work
+ * Test if the conversion from a varchar to a varchar work
  * @process TEST_CONV
  *}
 

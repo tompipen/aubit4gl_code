@@ -1,6 +1,6 @@
 {**
  * @file
- * Check if the create audit statement works.
+ * Check if the drop audit statement works.
  * Note that this statement only works on Informix SE.
  * @todo : Have a way to check if we are not in SE.
  *}

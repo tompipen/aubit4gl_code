@@ -1,5 +1,5 @@
 {**
- * Test the decimal variable limits.
+ * Test the MONEY variable limits.
  * @process DATA_TYPE
  *}
 

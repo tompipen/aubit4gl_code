@@ -1,5 +1,5 @@
 {**
- * Test the integer variable limits.
+ * Test the SMALLINT variable limits.
  * @todo : This is not OK. I must discuss it on the developers list
  * @process DATA_TYPE
  *}

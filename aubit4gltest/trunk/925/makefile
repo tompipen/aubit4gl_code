@@ -64,7 +64,7 @@ progname${TARGET_EXT}: ${MODULES}
 #see included makefile for definition of DEFAULT_LINK. Overide it here if you
 #need to with something like:
 #	${FGLC} $^ -o $@
-	${DEFAULT_LINK}
+	${DEFAULT_LINK} dectoflt.c
 
 
 #Add one or more of above targets here, if test uses more then one program
@@ -109,8 +109,7 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "This is not a test but a Testing template. \
-		Please provide brief description of functionality tested here."
+	@echo "Test if a decimal conversion to float with c function works ok"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -184,7 +183,7 @@ obsolete_test:
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
@@ -213,7 +212,8 @@ need_ifx_version:
 #"0" means "don't care"
 transaction:
 	@echo "0"
-	
+
+
 need_compat:
 	@echo "1"
 # ============================= EOF ================================

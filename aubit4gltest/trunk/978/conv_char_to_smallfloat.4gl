@@ -1,6 +1,6 @@
 {**
  * @file
- * Test if the conversion from char to a float work
+ * Test if the conversion from char to a SMALLFLOAT work
  * @process TEST_CONV
  *}
 

@@ -1,5 +1,5 @@
 {**
- * Test the conversion from 
+ * Test the conversion from CHAR to DATE
  * @todo : Get a way to test DBCENTURY
  * @todo : This should be tested using and setting DBDATE 
  * @process DATA_TYPE
