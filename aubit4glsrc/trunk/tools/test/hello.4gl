@@ -40,8 +40,7 @@ menu "Hello test"
             command "OK" "Close this window"
                 exit menu
         end menu
-
-		close window w2
+	close window w2
 
     command "help"
         call showhelp(1)

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.25 2003-05-22 12:14:46 mikeaubury Exp $
+# $Id: ioform.c,v 1.26 2003-05-22 21:59:08 mikeaubury Exp $
 #*/
 
 /**
@@ -180,7 +180,11 @@ A4GL_getfromform (FORM * f)
 FIELD *
 A4GL_make_label (int frow, int fcol, char *label)
 {
-  FIELD *f = new_field (1, strlen (label), frow, fcol, 0, 0);
+  FIELD *f ;
+  int l;
+  l=strlen(label);
+  A4GL_debug("A4GL_make_label : '%s'",label);
+  f= new_field (1, l, frow, fcol, 0, 0);
   A4GL_gui_mklabel (1, strlen (label), frow, fcol, label);
   if (f)
     {

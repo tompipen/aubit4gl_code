@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.5 2003-05-16 06:49:33 afalout Exp $
+# $Id: compile_c_gtk.c,v 1.6 2003-05-22 21:59:08 mikeaubury Exp $
 #
 */
 
@@ -281,7 +281,7 @@ print_gtk_menuhandler_on (char *s)
   print_gtk_menuhandler_bsm ();
   sprintf (buff, "\"%s\"", s);
   printc
-    ("  if (!mn_itemexists(%s)) { exitwith(\"Menu item does not exist\");\n}",
+    ("  if (!A4GL_mn_itemexists(%s)) { A4GL_exitwith(\"Menu item does not exist\");\n}",
      buff);
   printc ("}\nif (strcmp(p,%s)==0) {", buff);
 }

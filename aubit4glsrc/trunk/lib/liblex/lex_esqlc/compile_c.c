@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.44 2003-05-22 12:14:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.45 2003-05-22 21:59:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1783,7 +1783,7 @@ print_call_shared (char *libfile, char *funcname, int nargs)
 {
   printc ("{int _retvars;\n");
   printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
-  printc ("A4GLSQL_set_status(0,0);_retvars=call_4gl_dll(%s,%s,%d);\n",
+  printc ("A4GLSQL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,%s,%d);\n",
 	  libfile, funcname, nargs);
 }
 

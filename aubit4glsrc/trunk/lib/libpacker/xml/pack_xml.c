@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.12 2003-05-15 07:10:43 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.13 2003-05-22 21:59:08 mikeaubury Exp $
 #*/
 
 /**
@@ -585,6 +585,7 @@ input_int (char *name, int *val, int ptr, int isarr)
   chk (val);
   if (!getaline ())
     return 0;
+A4GL_debug("input_int : ptr=%d\n",ptr);
   a = atoi (A4GL_find_contents (ibuff));
   *val = a;
 
@@ -602,7 +603,7 @@ input_long (char *name, long *val, int ptr, int isarr)
   /* <ATTR NAME=\"%s\" TYPE=\"LONG\"%s>%d</ATTR> */
 
   chk (val);
-
+A4GL_debug("input_long : ptr=%d\n",ptr);
   if (!getaline ())
     return 0;
   *val = atoi (A4GL_find_contents (ibuff));
@@ -622,6 +623,7 @@ input_bool (char *name, int *val, int ptr, int isarr)
   chk (val);
   if (!getaline ())
     return 0;
+A4GL_debug("input_bool : ptr=%d\n",ptr);
   *val = atoi (A4GL_find_contents (ibuff));
   return contentok;
 }
@@ -641,12 +643,12 @@ input_string (char *name, char **val, int ptr, int isarr)
   int b;
   int a;
   /* <ATTR NAME=\"%s\" TYPE=\"STRING\"%s>%s</ATTR> */
-
+ A4GL_debug("input_string : ptr=%d\n",ptr);
   chk (val);
   if (!getaline ())
     return 0;
   buff = A4GL_find_contents (ibuff);
-  pptr = malloc ((strlen (buff) / 2) + 1);
+  pptr = malloc ((strlen (buff) / 2) + 2);
   buffer[2] = 0;
   b = 0;
   for (a = 0; a < strlen (buff); a += 2)
@@ -670,6 +672,7 @@ input_double (char *name, double *val, int ptr, int isarr)
 {
   /* <ATTR NAME=\"%s\" TYPE=\"DOUBLE\"%s>%f</ATTR> */
   chk (val);
+ A4GL_debug("input_double : ptr=%d\n",ptr);
   if (!getaline ())
     return 0;
   *val = atof (A4GL_find_contents (ibuff));
