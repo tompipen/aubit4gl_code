@@ -467,6 +467,11 @@ column_definiton:
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	;
 
+ct_column_definiton:
+	identifier data_type op_default_clause op_column_constraint_list
+{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	;
+
 op_default_clause: {strcpy($<str>$,"");}
 	|default_clause
 	;
@@ -769,7 +774,9 @@ exact_numeric_type:
 	;
 
 op_scale: {strcpy($<str>$,"");}
-	| COMMA scale
+	| COMMA scale {
+		sprintf($<str>$,",%s",$<str>2);
+}
 	;
 
 approx_numeric_type:

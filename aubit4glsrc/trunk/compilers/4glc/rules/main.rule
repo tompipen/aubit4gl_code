@@ -161,7 +161,7 @@ return_cmd :
   RETURN op_fgl_expr_ret_list 
   {
     printPopFunction();
-    print_return(atoi($<str>3));
+    print_return(atoi($<str>2));
   }
 ;
 
@@ -184,7 +184,7 @@ actual_globals_section :
 	| actual_globals_section xglobals_entry
 ;
 
-xglobals_entry : globals_entry | code_cmd |  whenever_cmd  | db_section
+xglobals_entry : globals_entry | module_code  | db_section
 ;
 
 globals_entry: GLOBALS {

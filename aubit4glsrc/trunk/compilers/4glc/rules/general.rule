@@ -179,6 +179,7 @@ reserved_word :
 	|AVERAGE
 	|UNDERLINE
 	|MENU
+	|KWMESSAGE
 ;
 
 

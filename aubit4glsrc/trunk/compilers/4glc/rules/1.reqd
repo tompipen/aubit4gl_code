@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.24 2003-02-14 10:18:47 mikeaubury Exp $
+# $Id: 1.reqd,v 1.25 2003-02-16 13:35:54 mikeaubury Exp $
 #
 */
 
@@ -77,7 +77,7 @@
 #endif
 #define YYPURE 1
 #define YYLEX_PARAM yystate,yyssa,yyssp
-
+#define YYDEBUG 1
 #define INCASE 		0
 #define INCONSTRUCT 1
 #define INDISPLAY 	2
@@ -92,6 +92,7 @@
 #define UPDVAL 		1
 #define SELINTO 	2
 #define PUTVAL 		3
+#define YYERROR_VERBOSE
 
 
 /* prevent warning for redundant declaration of yyparse: */
