@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.18 2003-02-26 22:28:08 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.19 2003-03-02 14:06:58 mikeaubury Exp $
 #
 */
 
@@ -693,15 +693,16 @@ find_function(char *a)
  * @todo Describe function
  */
 void 
-push_dtime(struct a4gl_dtime *p)
+push_dtime(struct A4GLSQL_dtime *p)
 {
         char *ptr;
-        struct a4gl_dtime *d;
-        ptr=(char *)acl_malloc(sizeof(struct a4gl_dtime),"push_dtime");
-        d=(struct a4gl_dtime *)ptr;
-        d->stime=p->stime;
-        d->ltime=p->ltime;
-        memcpy(d->data,p->data,32);
+        struct A4GLSQL_dtime *d;
+        ptr=(char *)acl_malloc(sizeof(struct A4GLSQL_dtime),"push_dtime");
+        d=(struct A4GLSQL_dtime *)ptr;
+        //d->stime=p->stime;
+        //d->ltime=p->ltime;
+        //memcpy(d->data,p->data,32);
+	memcpy(d,p,sizeof(struct A4GLSQL_dtime));
         debug("Pushing dtime block %x %x\n",p->stime,p->ltime);
         push_param(ptr,DTYPE_DTIME+DTYPE_MALLOCED);
 }
@@ -714,13 +715,10 @@ push_dtime(struct a4gl_dtime *p)
 void 
 push_interval(struct ival *p) 
 {
-        char *ptr;
-        struct ival *d;
-        ptr=(char *)acl_malloc(sizeof(struct ival),"push_ival");
-        d=(struct ival *)ptr;
-        d->stime=p->stime;
-        d->ltime=p->ltime;
-        memcpy(d->data,p->data,32);
+        struct ival *ptr;
+        ptr=(struct ival *)acl_malloc(sizeof(struct ival),"push_ival");
+	memcpy(ptr,p,sizeof(struct ival));
+	debug("Copied - %x %x",ptr->stime,ptr->ltime);
         push_param(ptr,DTYPE_INTERVAL+DTYPE_MALLOCED);
 
 //debug_print_stack();

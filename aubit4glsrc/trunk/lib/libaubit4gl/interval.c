@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.10 2003-02-22 15:46:12 mikeaubury Exp $
+# $Id: interval.c,v 1.11 2003-03-02 14:06:58 mikeaubury Exp $
 #
 */
 
@@ -42,6 +42,7 @@
 		                    Includes
 =====================================================================
 */
+
 
 #include "a4gl_libaubit4gl_int.h"
 
@@ -68,7 +69,7 @@ int 			mk_int_size		(int s,int l);
 
 double 			get_rval_double	(void);
 struct ival * 	get_rval_ival	(void);
-int 			conv_invdatatoc	(int *data,int v1,int v2,int v3,char *buff);
+int 			conv_invdatatoc	(int *data,int v1,int v2,int v3,struct ival *d);
 int 			op_ival 		(struct ival *a, struct ival *b,
 								double double_val,char op, char param);
 
@@ -108,9 +109,11 @@ get_rval_ival(void)
  * @todo Describe function
  */
 int
-conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff)
+conv_invdatatoc(int *data,int v1,int v2,int v3,struct ival *i) 
 {
   char fractions[6];
+  char *buff;
+  buff=i->data;
 
   debug ("v1=%d v2=%d v3=%d buff=%p\n", v1, v2, v3,buff);
 
@@ -138,8 +141,16 @@ conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff)
 
 
   debug("Normalized data..");
+  
+  i->i_years=data[0];
+  i->i_months=data[1];
+  i->i_days=data[2];
+  i->i_hours=data[3];
+  i->i_minutes=data[4];
+  i->i_seconds=data[5];
+  i->i_fractions=data[6];
 
-  if (v1>=7) { fractions[v1-6]=0; }
+  if (v1>=7) { fractions[v1-6]=0; debug("Set fractions to %s\n",fractions);}
 
       if (v2 == 1)
 	sprintf (buff, "%0*d%02d0000000000000", v3, data[0], data[1]);
@@ -163,7 +174,7 @@ conv_invdatatoc(int *data,int v1,int v2,int v3,char *buff)
 	sprintf (buff, "000000000000%0*d%s", v3, data[5], fractions);
 
       if (v2 >= 7)
-	sprintf (buff, "000000000000000%d", v3);
+	sprintf (buff, "000000000000000%s", fractions);
 
 	debug("Copied data");
       return 1;
@@ -383,10 +394,8 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 
   size=mk_int_size(rval_ival.stime,rval_ival.ltime);
 
-  conv_invdatatoc(data_r,val1,val2,val3,buff);
-  debug("buff=%s\n",buff);
-  debug("Calling ctoint - size=%x",size);
-  strcpy(rval_ival.data, buff);
+  conv_invdatatoc(data_r,val1,val2,val3,&rval_ival);
+
   return rval_type;
 }
 
@@ -400,6 +409,119 @@ mk_int_size(int s,int l)
 {
   return l+ (s<<4);
 }
+
+
+/**
+ * @param ival
+ * @param data
+ */
+void
+decode_interval (struct ival *ival, int *data)
+{
+char buff[256];
+int i;
+int cnt = 0;
+char buff2[64];
+int s1;
+int s2;
+int c;
+int cpc;
+int c2;
+int ltime;
+
+  char *codes[] = { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
+    "SECOND", "FRACTION",
+      0
+  };
+  int spc[] = {
+    0,
+    4,
+    2,
+    2,
+    2,
+    2,
+    2,
+    5
+  };
+
+  debug("Decoding interval into component parts");
+
+  for (i=0;i<10;i++) {
+        data[i]=0;
+  }
+
+  s1 = ival->stime % 16;
+  s2 = ival->stime / 16;
+  debug("s1=%d s2=%d",s1,s2);
+
+  sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
+           ival->data[0], ival->data[1], ival->data[2], ival->data[3],
+           ival->data[4], ival->data[5],
+           ival->data[6], ival->data[7],
+           ival->data[8], ival->data[9],
+           ival->data[10], ival->data[11],
+           ival->data[12], ival->data[13],
+           ival->data[14], ival->data[15],
+           ival->data[16], ival->data[17], ival->data[18],
+           ival->data[19], ival->data[20], ival->data[21],
+           ival->data[22], ival->data[23]
+);
+
+  debug("buff=%s\n",buff);
+
+  cnt = 0;
+  for (c = 1; c < s1; c++)
+    {
+      debug ("c=%d cnt=%d\n", c, cnt);
+      cnt += spc[c];
+    }
+
+  debug ("Cnt=%d\n", cnt);
+  debug("Taking first part (size=%d) from %d",s2,cnt);
+
+  c=s2;
+  strncpy(buff2,&buff[cnt],s2);
+  buff2[s2]=0;
+  debug("buff2 = '%s'\n",buff2);
+
+  c2 = c;
+  ltime=ival->ltime;
+  if (ltime>=7) ltime=7;
+
+  for (cpc = s1; cpc < ltime; cpc++)
+    {
+      debug("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ",cpc,buff2,c2,cnt,cnt+c2);
+      data[cpc-1]=atoi(buff2);
+
+      buff2[0] = buff[cnt + c2];
+      c2++;
+      if (ival->ltime<7) {
+                buff2[1] = buff[cnt + c2]; c2++; buff2[2]=0;
+        } else {
+                buff2[1] = buff[cnt + c2]; c2++;
+                buff2[2] = buff[cnt + c2]; c2++;
+                buff2[3] = buff[cnt + c2]; c2++;
+                buff2[4] = buff[cnt + c2]; c2++; buff2[4]=0;
+        }
+    }
+
+  debug("cpc=%d buff2=%s",cpc,buff2);
+  data[cpc-1]=atoi(buff2);
+  for (c=0;c<7;c++) {
+        debug("Data : %s %d\n",codes[c],data[c]);
+  }
+
+  debug("Internals....");
+  data[0]=ival->i_years;
+  data[1]=ival->i_months;
+  data[2]=ival->i_days;
+  data[3]=ival->i_hours;
+  data[4]=ival->i_minutes;
+  data[5]=ival->i_seconds;
+  data[6]=ival->i_fractions;
+
+}
+
 
 /* ==================================== EOF =========================== */
 

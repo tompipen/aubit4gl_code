@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.41 2003-03-01 13:07:19 mikeaubury Exp $
+# $Id: stack.c,v 1.42 2003-03-02 14:06:58 mikeaubury Exp $
 #
 */
 
@@ -47,7 +47,8 @@
 =====================================================================
 */
 
-
+#include <sys/time.h>
+#include <unistd.h>
 #include "a4gl_libaubit4gl_int.h"
 
 /*
@@ -146,8 +147,8 @@ int num_local_binding[LOCAL_BINDINGS];
 
 
 void * 		pop_binding 			(int *n);
-void 		push_ascii 				(void);
-void 		push_current 			(int a, int b);
+//void 		push_ascii 				(void);
+//void 		push_current 			(int a, int b);
 void 		push_time 				(void);
 void		push_disp_bind 			(struct BINDING *b, int n);
 int			chk_params 				(struct BINDING *b, int nb,
@@ -409,8 +410,8 @@ pop_char (char *z, int size)
 
 int dtype_alloc_char_size[] = {
   /*datatypes
-     0 1  2  3 4 5  6  7  8  9 10 11 12 13 14 15 */
-  0, 6, 11, 14, 14, 16, 12, 10, 16, 0, 20, 20, 20, 20, 20, 20
+     0  1  2  3 4 5  6  7  8  9 10 11 12 13 14 15 */
+  0, 6, 11, 14, 14, 16, 12, 10, 16, 0, 40, 40, 40, 40, 40, 40
 };
 
 
@@ -594,7 +595,6 @@ push_param (void *p, int d)
 
   size = DECODE_SIZE (d);
   d = d & 0xffff;
-
 
   if (params == 0)
     {
@@ -860,6 +860,7 @@ push_param (void *p, int d)
 				A4GLSQL_prepare_select (ibind, n, obind, 0,
 							s), 0, cname);
       }
+      free(s);
       if (status != 0)
 	{
 	  drop_param ();
@@ -921,6 +922,7 @@ push_param (void *p, int d)
       debug("Prepare seelct...");
       prep=A4GLSQL_prepare_select (dbind, n, obind, 0, s);
       debug("Declare");
+	free(s);
       A4GLSQL_declare_cursor (0,  prep , 0, cname);
 
       if (status != 0)
@@ -1111,15 +1113,29 @@ r=mja_match (c1, c2, 'M');
     case OP_CONCAT:
       debug ("In concat %d %d", n1, n2);
       /* if (n1) {drop_param (); return;} */
+
+      if (n1 == 1 && n2 == 0)
+	{
+		char *s1;
+		char *s2;
+	  s1 = char_pop ();
+	  s2 = char_pop ();
+		push_char(s2);
+		free(s1);free(s2);
+		return;
+ 	}
       if (n2 == 1 && n1 == 0)
 	{
-	  char *s;
-	  s = char_pop ();
-	  drop_param ();
-	  push_char ("");
-	  push_char (s);
+	  char *s1;
+	  char *s2;
+	  s1 = char_pop ();
+	  s2 = char_pop ();
+	  //push_char ("");
+	  push_char (s1);
+	  free(s1);free(s2);
 	  n2 = 0;
 	  debug ("Fudging...");
+	  return;
 	}
 
       if (chknull (2, n1, n2))
@@ -1282,26 +1298,41 @@ push_current (int a, int b)
 int ptrs[]={-1, 0, 5, 8, 11, 14, 17, 20,21,22,23,24,25 };
 int ptrs2[]={-1, 3, 6, 9, 12, 15, 18, 21,22,23,24,25,26 };
 int pstart;
+struct timeval tv1;
+struct timeval tv2;
+//long fracs;
 
 
   debug("push_current %d %d\n",a,b);
 /*  setlocale(LC_ALL,""); */
   debug ("In push_current");
-  (void) time (&now);
-  debug ("Called time...");
-  local_time = localtime (&now);
-  debug ("Got local time");
-  year = local_time->tm_year + 1900;
-  month = local_time->tm_mon + 1;
-  mja_day = local_time->tm_mday;
+  gettimeofday(&tv1,0);
+  	(void) time (&now);
+  	debug ("Called time...");
+	local_time = localtime (&now);
+	year = local_time->tm_year + 1900;
+	month = local_time->tm_mon + 1;
+	mja_day = local_time->tm_mday;
+  gettimeofday(&tv2,0);
+
+ // Its quite possible that the time has clicked over
+ // between the localtime and the gettimeofday
+ // So we'll try again...
+  if (tv1.tv_usec>tv2.tv_usec) {
+		printf("---> %d %d\n",tv1.tv_usec,tv2.tv_usec);
+		push_current(a,b);
+		return;
+ }
+
 /*
        0000000000111111111122222
        0123456789012345678901234
        YYYY-MM-DD hh:mm:ss.fffff
 */
-  sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%d000000000000",
+  sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%05ld000000000000",
 	   year, month, mja_day, local_time->tm_hour,
-	   local_time->tm_min, local_time->tm_sec, local_time->tm_sec	/* , 0 */
+	   local_time->tm_min, local_time->tm_sec, tv1.tv_usec/10
+	/* , 0 */
 	   /* no support for fractions of a second yet */
     );
   debug ("Time is %s", buff);
@@ -1317,7 +1348,6 @@ debug("Set buff2 to %s\n",buff2);
 
   n=(a<<4)+b;
 
-  debug("push_current -Pushing %s - n = %d (%x)",buff2,n,n);
   acli_datetime(buff2,n);
   debug ("All done - push_current...");
 }
@@ -1462,6 +1492,7 @@ opboolean (void)
       z1 = char_pop ();
       a = pop_double ();
       b = atof (z1);
+	free(z1);
       debug ("1 --> %s %lf", z1, a);
     }
   else
@@ -1470,6 +1501,7 @@ opboolean (void)
       a = pop_double ();
       z1 = char_pop ();
       b = atof (z1);
+      free(z1);
       debug ("2 --> %s %lf", z1, a);
     }
 
@@ -1506,10 +1538,10 @@ pop_args (int a)
   int z = 0;
   if (z > 0)
     {
-      for (z = 0; z < a; z++)
-	s = char_pop ();
-
-      acl_free (s);
+      for (z = 0; z < a; z++) {
+		s = char_pop ();
+      		acl_free (s);
+	}
     }
 }
 
@@ -1897,8 +1929,8 @@ setnull (int type, char *buff, int size)
     }
   if (type == DTYPE_DTIME)
     {
-      struct a4gl_dtime *i;
-      i = (struct a4gl_dtime *) buff;
+      struct A4GLSQL_dtime *i;
+      i = (struct A4GLSQL_dtime *) buff;
       i->data[0] = 0;
       return;
     }
@@ -1907,6 +1939,8 @@ setnull (int type, char *buff, int size)
     {
       struct ival *i;
       i = (struct ival *) buff;
+      i->stime = 0;
+      i->ltime = 0;
       i->data[0] = 0;
       return;
     }
@@ -1966,8 +2000,8 @@ isnull (int type, char *buff)
     }
   if (type == DTYPE_DTIME)
     {
-      struct a4gl_dtime *i;
-      i = (struct a4gl_dtime *) buff;
+      struct A4GLSQL_dtime *i;
+      i = (struct A4GLSQL_dtime *) buff;
       if (i->data[0] == 0)
 	return 1;
       else
@@ -1986,6 +2020,7 @@ isnull (int type, char *buff)
     {
       struct ival *i;
       i = (struct ival *) buff;
+
       if (i->data[0] == 0)
 	return 1;
       else
@@ -2186,7 +2221,7 @@ int
 conv_to_interval (int a)
 {
   double d;
-  struct ival i;
+  //struct ival i;
   char buff[256];
 
   debug ("Conv to interval - %d\n", a);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.23 2003-02-26 22:28:08 mikeaubury Exp $
+# $Id: builtin.c,v 1.24 2003-03-02 14:06:58 mikeaubury Exp $
 #
 */
 
@@ -779,7 +779,7 @@ void aclfgli_current(int a,int b) {
 }
 
 void aclfgli_extend(void) {
-	struct a4gl_dtime c;
+	struct A4GLSQL_dtime c;
 	int n;
 	n=pop_int();
 	pop_var2(&c,DTYPE_DTIME,n);
@@ -801,6 +801,8 @@ char *ptr;
 void acli_datetime(char *s,int n) {
 struct_dtime c;
 char *ptr;
+char buff[255];
+
 	debug("acli_datetime s=%s n=%d\n",s,n);
   	c.ltime = n&16;
   	c.stime = n/16;
@@ -808,9 +810,9 @@ char *ptr;
 	debug("acli_dtime - pop'd c - n=%x",n);
 	push_dtime(&c);
 	debug("ADDED DATETIME TO STACK - %d %d",c.stime,c.ltime);
-	ptr=char_pop();
-	debug("DOUBLE CHECK GIVES : %s",ptr);
-	free(ptr);
+	
+	pop_char(buff,40);
+	debug("DOUBLE CHECK GIVES : %s",buff);
 	push_dtime(&c);
 
 }
@@ -838,7 +840,8 @@ int aclfgl_ascii(int n) {
  *
 **/
 int aclfgl_fgl_drawbox(int n) {
-	exitwith("fgl_drawbox not implemented yet");
+	//exitwith("fgl_drawbox not implemented yet");
+	return 0;
 }
 
 /**
@@ -847,6 +850,7 @@ int aclfgl_fgl_drawbox(int n) {
 **/
 int acli_scroll(void *s,int n) {
 	exitwith("acli_scroll not implemented");
+	return 0;
 }
 
 /* ================================== EOF ============================= */

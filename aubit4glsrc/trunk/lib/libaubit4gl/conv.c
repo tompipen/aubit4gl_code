@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.31 2003-03-01 14:18:47 mikeaubury Exp $
+# $Id: conv.c,v 1.32 2003-03-02 14:06:58 mikeaubury Exp $
 #
 */
 
@@ -130,7 +130,6 @@ void dump 				(char *s);
 
 int op_ival 			(struct ival *a, struct ival *b, double double_val, char op, char param);
 
-int conv_invdatatoc		(int *data,int v1,int v2,int v3,char *buff);
 
 void trim_dec 			(char *s);
 void negate 			(char *s);
@@ -142,8 +141,8 @@ void double_to_dec 		(double arg, char *buf, size_t length, size_t digits);
 int valid_dt 	(char *s, int *data);
 
 int ctoc 		(void *a, void *b, int size);
-int ctodt 		(void *a, void *b, int size);
-int ctoint 		(void *a, void *b, int size);
+//int ctodt 		(void *a, void *b, int size);
+//int ctoint 		(void *a, void *b, int size);
 
 int valid_int 	(char *s, int *data,int size);
 
@@ -224,6 +223,7 @@ int stol 		(void *aa, void *zi, int sz_ignore);
 int stodec 		(void *a, void *z, int size);
 int stosf 		(void *aa, void *zz, int sz_ignore);
 int stoi 		(void *aa, void *zi, int sz_ignore);
+void decode_datetime(struct A4GLSQL_dtime *d, int *data);
 
 int 			mdectod 		(void *zz, void *aa, int sz_ignore);
 
@@ -392,7 +392,7 @@ main (void)
 /**
  * Copy a int value.
  *
- * @param a The integer to be copied.
+ * @param a The interval to be copied.
  * @param b A pointer to the place where to put the value copied.
  * @param size
  * @return Allways 1
@@ -405,12 +405,29 @@ int data[20];
 int val1,val2,val3;
 struct ival *d;
 struct ival *e;
+char buff[256];
 
   debug ("inttoint\n");
   d=b;
   e=a;
   debug("e->stime=0x%x e->ltime=0x%x",e->stime,e->ltime);
+  inttoc(a,buff,60);
+  trim(buff);
+  debug("Got Interval as : '%s'\n",buff);
+  return ctoint(buff,b,size);
 
+/*
+#ifdef DEBUG
+  inttoc(a,buff,40);
+	debug("MJAMJA Buff=%s\n",buff);
+#endif
+
+
+if (size==e->stime*16+e->ltime) {
+	
+	memcpy(b,a,sizeof(struct ival));
+	return 1;
+}
   d->ltime = size & 15;
   d->stime = size >> 4;
 
@@ -418,16 +435,12 @@ struct ival *e;
   val2 = (size >> 4) & 15;
   val3 = (size >> 8) & 15;
 
-/* void decode_interval (struct ival *ival, int *data);
-  decode_interval (a,(int *) data); -- warning: passing arg 2 of `decode_interval' from incompatible pointer type
-  */
-
-
   decode_interval (e,&data[0]);
 
   debug("Converting to %d %d %d\n",val1,val2,val3);
   conv_invdatatoc(data,val1,val2,val3,d->data);
   debug("Set b..");
+*/
   return 1;
 }
 
@@ -445,82 +458,63 @@ inttoc (void *a1, void *b, int size)
   struct ival *a;
   int s1;
   int s2;
+  int e;
   int c;
   int cnt;
   int cpc;
   int c2;
+  int data[10];
+  int nfrac;
   char buff[256];
   char buff2[256];
-  int spc[] = { 0, 4, 2, 2, 2, 2, 2, 5 };
+  //             0   1   2   3   4   5   6
+  char *pre[]={ " ","-","-"," ",":",":","."} ;
 
+
+  int spc[] = { 0, 4, 2, 2, 2, 2, 2, 5 };
   a = a1;
 
 
-  s1 = a->stime % 16;
-  s2 = a->stime / 16;
+  decode_interval(a,data);
 
-  debug("a->stime =%x a->ltime=%x size=%x\n",a->stime,a->ltime,size);
-  //if (size) { a->stime=s1; a->ltime=s2; }
-	//debug("s1=%d s2=%d\n",s1,s2);
+  debug("Y: %d",data[0]); // -
+  debug("M: %d",data[1]); // -
+  debug("D: %d",data[2]); // ' '
+  debug("H: %d",data[3]); // :
+  debug("M: %d",data[4]); // :
+  debug("S: %d",data[5]); // .
+  debug("F: %d",data[6]); // 
 
+  s2 = a->stime % 16;
+  s1 = a->stime / 16;
+  e  = a->ltime;
 
-  sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
-	   a->data[0], a->data[1], a->data[2], a->data[3],
-	   a->data[4], a->data[5],
-	   a->data[6], a->data[7],
-	   a->data[8], a->data[9],
-	   a->data[10], a->data[11],
-	   a->data[12], a->data[13],
-	   a->data[14], a->data[15], a->data[16], a->data[17], a->data[18]);
-  cnt = 0;
-  for (c = 1; c < s1; c++)
-    {
-      debug ("c=%d cnt=%d\n", c, cnt);
-      cnt += spc[c];
-    }
-
-  debug ("Cnt=%d\n", cnt);
-  debug ("buff=%s\n", buff);
-
-  for (c = 0; c < s2; c++)
-    {
-      debug("buff2[%d]=buff[%d] = %c",c,cnt+c,buff[cnt+c]);
-      buff2[c] = buff[cnt + c];
-    }
-
-  c2 = c;
-
-  debug("s1=%d a->ltime=%d\n",s1,a->ltime);
-
-  for (cpc = s1; cpc < a->ltime; cpc++)
-    {
-      if (cpc == 1)
-	buff2[c++] = '-';
-      if (cpc == 2)
-	buff2[c++] = '-';
-      if (cpc == 3)
-	buff2[c++] = ' ';
-      if (cpc == 4)
-	buff2[c++] = ':';
-      if (cpc == 5)
-	buff2[c++] = ':';
-      if (cpc == 6)
-	buff2[c++] = '.';
-
-      buff2[c] = buff[cnt + c2];
-      c++;
-      c2++;
-      buff2[c] = buff[cnt + c2];
-      c++;
-      c2++;
-    }
-
-  buff2[c] = 0;
+  if (e>=7) {
+        nfrac=e-6;
+	e=7;
+  }
 
 
-  debug("buff2=%s",buff2);
-  strcpy (b, buff2);
+  // s2 = start..
+  // s1 = number of digits in start..
+  strcpy(buff,"");
 
+  for (cnt=s2;cnt<=e;cnt++) {
+
+
+	if (strlen(buff)) strcat(buff,pre[cnt-1]);
+  	if (cnt==7)  {
+  		sprintf(buff2,"%05d",data[cnt-1]);
+		buff2[nfrac]=0;
+	} else {
+		sprintf(buff2,"%02d",data[cnt-1]);
+	}
+
+  	strcat(buff,buff2);
+
+  }
+  debug("-->%s\n",buff);
+  ctoc(buff,b,size);
   return 1;
 }
 
@@ -533,27 +527,41 @@ inttoc (void *a1, void *b, int size)
  *   - 1 : Convertion made.
  */
 int
-ctoint (void *a, void *b, int size)
+ctoint (void *a_char, void *b_int, int size_b)
 {
   int data[256];
   struct ival *d;
   int v1, v2, v3;
-  debug ("ctoint : %p %p %d\n", a, b, size);
-  debug ("a-->%s\n", a);
-  d = (struct ival *) b;
+char localchar[56];
 
-  d->ltime = size & 15;
-  d->stime = size >> 4;
+strcpy(localchar,a_char);
+  d = (struct ival *) b_int;
 
-  v1 = size & 15;
-  v2 = (size >> 4) & 15;
-  v3 = (size >> 8) & 15;
+  debug("ctoint - %s size_b=%x\n",a_char,size_b);
+  d->ltime = size_b & 15;
+  d->stime = size_b >> 4;
+
+  debug("Set d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
+  debug("Set d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
+	
+  debug("CHECKMJA0.01 :  d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
+
+
+  v1 = size_b & 15;
+  debug("CHECKMJA0.1 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  v2 = (size_b >> 4) & 15;
+  debug("CHECKMJA0.2 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  v3 = (size_b >> 8) & 15;
+
+  debug("CHECKMJA0 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
 
   debug ("v1=%d v2=%d v3=%d\n", v1, v2, v3);
 
-  if (valid_int (a, data,size))
+  if (valid_int (localchar, data, size_b))
     {
-	conv_invdatatoc(data,v1,v2,v3,d->data);
+  	debug("CHECKMJA1 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+	conv_invdatatoc(data,v1,v2,v3,d);
+  	debug("CHECKMJA2 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
 
       	return 1;
     }
@@ -581,15 +589,24 @@ int
 dttodt (void *a, void *b, int size)
 {
   char buff[256];
-  struct a4gl_dtime *d;
-d=a;
+  struct A4GLSQL_dtime *d;
+  d=a;
 
+	if(d->stime>=1&&d->stime<=11) ;
+	else {
+		assertion(1,"Start Time invalid on datetime (dttodt)");
+	}
+
+	if(d->ltime>=1&&d->ltime<=11) ;
+	else {
+		assertion(1,"End Time invalid on datetime (dttodt)");
+	}
 
   debug ("dttodt %p %p %d a->stime=%d a->ltime=%d\n", a, b, size,d->stime,d->ltime);
 
   if (size==-1) {
-	debug("Mallocing new a4gl_dtime");
-	memcpy(b,a,sizeof(struct a4gl_dtime));
+	debug("Mallocing new A4GLSQL_dtime");
+	memcpy(b,a,sizeof(struct A4GLSQL_dtime));
 	return 0;
   }
 
@@ -598,8 +615,11 @@ d=a;
   debug("In dttodt - calling dttoc size=%x ",size);
   if (dttoc (a, buff, 255))
     {
+	d=b;
 	debug("Got buff as : %s - size=%x\n",buff,size);
-      	return ctodt (buff, b, size);
+	d->stime=size/16;
+	d->ltime=size%16;
+      	return ctodt (buff, b, d->stime*16+d->ltime);
     }
   return 0;
 }
@@ -617,10 +637,10 @@ int
 ctodt (void *a, void *b, int size)
 {
   int data[256];
-  struct a4gl_dtime *d;
+  struct A4GLSQL_dtime *d;
   debug ("ctodt : %p %p %d\n", a, b, size);
   debug ("a-->%s\n", a);
-  d = (struct a4gl_dtime *) b;
+  d = (struct A4GLSQL_dtime *) b;
 
   d->ltime = size % 16;
   d->stime = size >> 4;
@@ -664,7 +684,7 @@ ctodt (void *a, void *b, int size)
 int
 dttoc (void *a, void *b, int size)
 {
-  struct a4gl_dtime *d;
+  struct A4GLSQL_dtime *d;
   int cnt;
   char buff[256];
   int x;
@@ -675,7 +695,17 @@ dttoc (void *a, void *b, int size)
   debug ("dttoc : %p %p %x\n", a, b, size);
   d = a;
   x = 0;
-  debug("d->stime=%d d->ltime=%d\n%s\n",d->stime,d->ltime,d->data);
+  debug("d->stime=%d d->ltime=%d\n",d->stime,d->ltime,d->data);
+
+	if(d->stime>=1&&d->stime<=11) ;
+	else {
+		assertion(1,"Start Time invalid on datetime");
+	}
+
+	if(d->ltime>=1&&d->ltime<=11) ;
+	else {
+		assertion(1,"End Time invalid on datetime");
+	}
 
   for (cnt = d->stime-1 ; cnt <= d->ltime-1 ; cnt++)
     {
@@ -701,7 +731,7 @@ dttoc (void *a, void *b, int size)
       return 0;
     }
 
-  debug("dttoc sets to %s",buff);
+  debug("dttoc sets to '%s'",buff);
 
   strcpy (b, buff);
   return 1;
@@ -3608,7 +3638,7 @@ valid_dt (char *s, int *data)
   };
 
   debug ("In valid_dt\n");
-  if (strlen (s) > 24)
+  if (strlen (s) > 25)
     {
       debug ("Too long\n");
       return 0;
@@ -3846,9 +3876,9 @@ valid_int (char *s, int *data,int size)
 
   size_type=(size>>4)&15;
   debug ("In valid_int\n");
-  if (strlen (s) > 24)
+  if (strlen (s) > 30)
     {
-      debug ("Too long\n");
+      debug ("Too long - '%s' (%d)\n",s,strlen(s));
       return 0;
     }
 
@@ -3904,7 +3934,7 @@ valid_int (char *s, int *data,int size)
   type[cnt] = 0;
   dt_type = -1;
   debug ("cnt=%d\n", cnt);
-  debug ("type='%s'\n", type);
+  debug ("type='%s' size=0x%x\n", type,size);
 
   if (strcmp (type, "") == 0)
     {
@@ -3955,7 +3985,10 @@ valid_int (char *s, int *data,int size)
 
   if (strcmp (type, ":") == 0)
     {
-      dt_type = dt_encode (DT_MINUTE, DT_SECOND);
+	if ((size&0xff)%16==6)
+      		dt_type = dt_encode (DT_MINUTE, DT_SECOND);
+	else
+      		dt_type = dt_encode (DT_HOUR, DT_MINUTE);
     }
 
   if (strcmp (type, "-- :") == 0)
@@ -3969,10 +4002,6 @@ valid_int (char *s, int *data,int size)
   if (strcmp (type, " :") == 0)
     {
       dt_type = dt_encode (DT_DAY, DT_MINUTE);
-    }
-  if (strcmp (type, ":") == 0)
-    {
-      dt_type = dt_encode (DT_HOUR, DT_MINUTE);
     }
 
   if (strcmp (type, "-- ") == 0)
@@ -4004,6 +4033,7 @@ valid_int (char *s, int *data,int size)
 	debug("Probably type= %d\n",size_type); 
 	dt_type=dt_encode(size_type,size_type);
   }
+
 
   if (dt_type == -1)
     return 0;
@@ -4070,13 +4100,13 @@ static int atoi_n(char *s,int n) {
 }
 
 
-void decode_datetime(struct a4gl_dtime *d, int *data) {
+void decode_datetime(struct A4GLSQL_dtime *d, int *data) {
   int cnt;
   char buff[256];
   int x;
   int pos[] = { 0, 4, 6, 8, 10, 12, 14, 15, 16, 17, 18, 19 };
   int sizes[] = { 4, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
-  char delim[] = "-- ::.*****";
+  //char delim[] = "-- ::.*****";
   int data_internal[20];
   if (d==0||data==0) {
 	assertion(d==0,"d=0 in decode_datetime");
@@ -4118,6 +4148,8 @@ void decode_datetime(struct a4gl_dtime *d, int *data) {
     data[6]=data[6]*10+data_internal[10]; //F5
 }
 
+
+#ifdef MOVED_TO_INTERVAL_C
 /**
  * @param ival
  * @param data
@@ -4134,6 +4166,7 @@ int s2;
 int c;
 int cpc;
 int c2;
+int ltime;
 
   char *codes[] = { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
     "SECOND", "FRACTION",
@@ -4160,7 +4193,7 @@ int c2;
   s2 = ival->stime / 16;
   debug("s1=%d s2=%d",s1,s2);
 
-  sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
+  sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
 	   ival->data[0], ival->data[1], ival->data[2], ival->data[3],
 	   ival->data[4], ival->data[5],
 	   ival->data[6], ival->data[7],
@@ -4168,7 +4201,10 @@ int c2;
 	   ival->data[10], ival->data[11],
 	   ival->data[12], ival->data[13],
 	   ival->data[14], ival->data[15],
-   	   ival->data[16], ival->data[17], ival->data[18]);
+   	   ival->data[16], ival->data[17], ival->data[18],
+   	   ival->data[19], ival->data[20], ival->data[21],
+   	   ival->data[22], ival->data[23]
+);
 
   debug("buff=%s\n",buff);
 
@@ -4188,7 +4224,10 @@ int c2;
   debug("buff2 = '%s'\n",buff2);
 
   c2 = c;
-  for (cpc = s1; cpc < ival->ltime; cpc++)
+  ltime=ival->ltime;
+  if (ltime>=7) ltime=7;
+
+  for (cpc = s1; cpc < ltime; cpc++)
     {
       debug("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ",cpc,buff2,c2,cnt,cnt+c2);
       data[cpc-1]=atoi(buff2);
@@ -4211,6 +4250,7 @@ int c2;
 	debug("Data : %s %d\n",codes[c],data[c]);
   }
 }
+#endif
 
 /**
 * This function sets up the conversion matrix
