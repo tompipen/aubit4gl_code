@@ -1,0 +1,27 @@
+
+
+validate_cmd : 
+VALIDATE init_bind_var_list LIKE {
+	clr_validate_list();
+} validate_tab_list  {
+	print_validate();
+}
+;
+
+
+validate_tab_list : validate_tab | validate_tab_list COMMA validate_tab {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
+}
+;
+
+validate_tab : tab_name DOT column_name {
+		sprintf($<str>$,"%s.%s",$<str>1,$<str>3);
+		push_validate($<str>$);
+	}
+	| tab_name DOT MULTIPLY {
+		sprintf($<str>$,"%s.*",$<str>1);
+		push_validate($<str>$);
+	}
+;
+
+
+/* =============================== validate.rule ======================== */
