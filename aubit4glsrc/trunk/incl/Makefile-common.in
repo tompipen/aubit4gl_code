@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.10 2002-01-25 12:20:42 afalout Exp $
+# $Id: Makefile-common.in,v 1.11 2002-01-26 02:27:07 afalout Exp $
 #
 
 
@@ -225,6 +225,10 @@ else
     SO_LDFLAGS	=-fPIC -shared
 endif
 
+#package names reported by gtk-config or pkg-config:
+GTK_NAME="@GTK_NAME@"
+GDK_NAME="@GDK_NAME@"
+GLIB_NAME="@GLIB_NAME@"
 
 
 

@@ -30,7 +30,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.41 2002-01-25 12:20:42 afalout Exp $
+# $Id: 4glpc,v 1.42 2002-01-26 02:27:07 afalout Exp $
 #
 
 ########################################################################
@@ -906,6 +906,42 @@ do
 
 		if [ -f $fname.c ]
         then
+
+			if ! [ -s $fname.c ]
+    	    then
+				#True if file exists and has  a  size  greater  than  zero.
+                echo "Created $fname.c is zero size !"
+
+				if [ "$A4GLVERBOSE" = "yes" ]
+				then
+				  	if [ -f $errfname ]
+	    	        then
+                        showerror
+					else
+						if [ -f $dirn/$errfname ]
+		                then
+							errfname=$dirn/$errfname
+							showerror
+							#$output "Error compiling $fname.c - see file $errfname"
+		                else
+							$output "Error compiling $fname.c - error file NOT created"
+		                fi
+	                fi
+
+					$output err_msg is: $err_msg
+	                $output err_code is: $err_code
+	                $output Please check file "$fname".err
+	                $output 'You can also "export DEBUG=ALL" to get "debug.out" file'
+				fi
+	            #we don't want to exit with 0 here:
+	            err_code=9
+				if [ "$A4GLVERBOSE" = "yes" ]
+				then
+					echo "Exiting with code $err_code"
+				fi
+				exit $err_code
+			fi
+
 		  if [ "$A4GLVERBOSE" = "yes" ]
 		  then
             $output $FGLCEXEC "$a" OK, continue...

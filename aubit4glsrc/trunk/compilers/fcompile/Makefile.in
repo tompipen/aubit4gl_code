@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.9 2002-01-25 12:20:42 afalout Exp $
+# $Id: Makefile.in,v 1.10 2002-01-26 02:27:07 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -47,9 +47,11 @@ endif
 
 ifdef COMSPEC
 	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
+	4GLPCFLAGS	+=-Xlinker -rdynamic
 	CYGWIN_FLAGS=-lrpclib
 else
 	RPCGEN 		= rpcgen form_x.x
+#	4GLPCFLAGS	+=-rdynamic
 endif
 
 ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
@@ -136,7 +138,7 @@ clean:
 #do NOT remove lex.yy.c and y.tab.c OR...
 	$(RM) fcompile fcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta \
 	core *~ *.ln *.output *.bak *.exe lex.yy.c form_x.h form_x_xdr.c \
-	*.err fdecompile-j fdecompile fshow-gtk fshow
+	*.err fdecompile-j fdecompile fshow-gtk fshow fshow.c
 
 ## ==================================================================
 ##                         Other Targets
@@ -150,7 +152,7 @@ fdecompile-j : decompile.c form_x_xdr.c dump_java.c
 	cp $@ ../../bin
 
 fdecompile : decompile.c form_x_xdr.c dump.c
-	${CC} decompile.c form_x_xdr.c dump.c -o $@ ${CYGWIN_FLAGS)
+	${CC} decompile.c form_x_xdr.c dump.c -o $@ ${CYGWIN_FLAGS}
 	cp $@ ../../bin
 
 fshow : fshow.4gl
@@ -158,7 +160,7 @@ fshow : fshow.4gl
 	-cp $@ ../../bin
 
 fshow-gtk : fshow.4gl
-	${SH} ../../bin/4glpc -gtk -DGTK fshow.4gl -o fshow-gtk
-	cp $@ ../../bin
+	-${SH} ../../bin/4glpc -gtk -DGTK fshow.4gl -o fshow-gtk
+	-cp $@ ../../bin
 
 #-----------------------------------------------------------------------

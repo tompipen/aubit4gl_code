@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.19 2002-01-25 12:20:39 afalout Exp $
+# $Id: configure.in,v 1.20 2002-01-26 02:27:05 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -55,11 +55,17 @@ AC_CANONICAL_SYSTEM
 ##                Define what will get substituted
 ## ==================================================================
 
+#Identification
 AC_SUBST(aubitdir)
 AC_SUBST(COMPILE_DATE)
 AC_SUBST(AUBIT_VERSION)
 AC_SUBST(AUBIT_BUILD)
 
+#SQL
+AC_SUBST(A4GL_SQLTYPE)
+AC_SUBST(ODBC_LIB_NAME)
+
+#Informix ESQL/C
 AC_SUBST(IFMX_ESQLC)
 AC_SUBST(IFX_ESQL_FLAGS)
 AC_SUBST(IFX_LIBS)
@@ -68,34 +74,46 @@ AC_SUBST(IFX_INCLUDE)
 AC_SUBST(IFX_C_MAKE)
 AC_SUBST(INFORMIXDIR)
 
+#Informix ODBC
 AC_SUBST(HAVE_IFXODBC)
+
+#PG ODBC
 AC_SUBST(HAVE_PGODBC)
 
-AC_SUBST(USE_PDF)
-AC_SUBST(PDFBUILD)
-AC_SUBST(A4GL_PDFTYPE)
-
-AC_SUBST(A4GL_SQLTYPE)
-AC_SUBST(ODBC_LIB_NAME)
-
+#UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
 AC_SUBST(UNIXODBC_INCLUDE)
 AC_SUBST(UNIXODBC_LFLAGS)
 AC_SUBST(UNIXODBC_LIBS)
 
+#Iodbc
 AC_SUBST(HAVE_IODBC)
 AC_SUBST(IODBC_INCLUDE)
 AC_SUBST(IODBC_LFLAGS)
 AC_SUBST(IODBC_LIBS)
 
+#GTK+
 AC_SUBST(GTKBUILD)
 AC_SUBST(AUBITGUI)
+AC_SUBST(GTK_LIB_PATH)
+AC_SUBST(GTK_INC_PATH)
+AC_SUBST(GTKLIBS)
+AC_SUBST(GTK_NAME)
+AC_SUBST(GDK_NAME)
+AC_SUBST(GLIB_NAME)
+
+
+
+#PDF
+AC_SUBST(USE_PDF)
+AC_SUBST(PDFBUILD)
+AC_SUBST(A4GL_PDFTYPE)
+
+#other
 AC_SUBST(JABBERBUILD)
 AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
 AC_SUBST(LDCONFIG)
-
-
 AC_SUBST(target)
 
 
@@ -889,6 +907,23 @@ AC_ARG_WITH(gtk,
 			WARN_LD_LIBRARY_PATH=1
 		fi
 
+
+        #If pkg-config was not found, but --with-gtk path was specified,
+        #try this, it will work on some CygWin GTK ports
+		if test "$GTK_CONFIG" = "no"; then
+			old_PATH=$PATH
+			PATH="$PATH:$withval/bin"
+			AC_PATH_PROG(GTK_CONFIG, gtk-config, no)
+	        PATH=$old_PATH
+        fi
+
+		if test "$PKG_CONFIG" = "no"; then
+			old_PATH=$PATH
+			PATH="$PATH:$withval/bin"
+			AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+	        PATH=$old_PATH
+        fi
+
 		old_LIBS=$LIBS
 		old_LDFLAGS=$LDFLAGS
 		LDFLAGS="$LDFLAGS -L$withval/lib"
@@ -916,17 +951,63 @@ AC_ARG_WITH(gtk,
 		if test $ac_cv_lib_gtk_main = yes; then
 			if test $ac_cv_lib_glib_main = yes; then
 				if test $ac_cv_lib_gdk_main = yes; then
+					AC_DEFINE(HAVE_GTK,1,[ ])
 					GTKBUILD=yes
 					AUBITGUI=gtk
-					GTK_LIB_PATH="-L$withval/lib"
-					AC_DEFINE(HAVE_GTK,1,[ ])
 
-                    GTKLIBS="-lgtk -lgdk"
+					if test "$GTK_CONFIG" != "no"; then
+	                    #this will get assigned in makefile iteself
+					else
+						if test "$PKG_CONFIG" != "no"; then
+		                    #this will get assigned in makefile iteself, but
+                            #plg-config needs package name as parameter, and on Cygwin,
+                            #this iclude version names, like this:
+							#gtk+-1.3-win32-production
+							#gdk-1.3-win32-production
+							#gmodule-2.0
+							#glib-2.0
+							#gobject-2.0
+							#gthread-2.0
+                            # - so we need to extract this names first:
 
-					if test "$ac_cv_lib_glib-1.3.dll_main" != "no"; then
-	                    GTKLIBS="$GTKLIBS -lglib-1.3.dll"
-                    else
-	                    GTKLIBS="$GTKLIBS -lglib"
+                            GTK_NAME=`$PKG_CONFIG --list-all | grep gtk | awk '{print $1}'`
+							GDK_NAME=`$PKG_CONFIG --list-all | grep gdk | awk '{print $1}'`
+							GLIB_NAME=`$PKG_CONFIG --list-all | grep glib | awk '{print $1}'`
+
+							#pkg-config options:
+							# --libs
+							# --libs-only-l
+							# --libs-only-L
+							# --cflags
+							# --cflags-only-I
+
+                            GTK_LIB_PATH=`$PKG_CONFIG --libs-only-L $GTK_NAME`
+							GTK_INC_PATH=`$PKG_CONFIG --cflags-only-I $GTK_NAME`
+							GTKLIBS=`$PKG_CONFIG --libs-only-l $GTK_NAME`
+
+                            #GTK_LIB_PATH="`$PKG_CONFIG --libs-only-L $GDK_NAME` $GTK_LIB_PATH"
+							#GTK_INC_PATH="`$PKG_CONFIG --cflags-only-I $GDK_NAME` $GTK_INC_PATH"
+							#GTKLIBS="`$PKG_CONFIG --libs-only-l $GDK_NAME` $GTKLIBS"
+
+                            #GTK_LIB_PATH="`$PKG_CONFIG --libs-only-L $GLIB_NAME` $GTK_LIB_PATH"
+							#GTK_INC_PATH="`$PKG_CONFIG --cflags-only-I $GLIB_NAME` $GTK_INC_PATH"
+							#GTKLIBS="`$PKG_CONFIG --libs-only-l $GLIB_NAME` $GTKLIBS"
+
+
+	                    else
+                            #try to assign paths manually:
+							GTK_LIB_PATH="-L$withval/lib"
+							GTK_INC_PATH="-I$withval/include -I$withval/include/gdk -I$withval/lib/gtk+/include"
+							GTKLIBS="-lgtk -lgdk"
+
+							#Some GTK distros on CygWin have a naming probem!
+							if test "$ac_cv_lib_glib-1.3.dll_main" != "no"; then
+			                    GTKLIBS="$GTKLIBS -lglib-1.3.dll"
+								GTK_INC_PATH="$GTK_INC_PATH -I$withval/include/glib-2.0 -I$withval/lib/glib-2.0/include"
+		                    else
+			                    GTKLIBS="$GTKLIBS -lglib"
+		                    fi
+	                    fi
                     fi
 				fi
 		    fi

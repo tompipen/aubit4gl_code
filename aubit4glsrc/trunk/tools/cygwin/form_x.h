@@ -27,29 +27,6 @@ in rpc/rpc.h :
 #ifndef _FORM_X_H_RPCGEN
 #define _FORM_X_H_RPCGEN
 
-/*
-In file included from /usr/include/netinet/in.h:14,
-                 from /usr/local/include/rpc/rpc.h:41,
-                 from form_x.h:10,
-                 from formwrite2.c:9:
-/usr/include/cygwin/in.h:150: warning: `INADDR_LOOPBACK' redefined
-/usr/local/include/rpc/types.h:60: warning: this is the location of the previous
- definition
-
-in rpc/rpc.h :
-
-#include <rpc/types.h>
-			
-			#ifndef INADDR_LOOPBACK
-			#define       INADDR_LOOPBACK         (u_long)0x7F000001
-			#endif
-
-#include <netinet/in.h>
-
-			#define INADDR_LOOPBACK         0x7f000001      /* 127.0.0.1   */
-
-*/
-
 #include <rpc/rpc.h>
 
 #ifdef __cplusplus
