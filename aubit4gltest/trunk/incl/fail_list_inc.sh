@@ -3,6 +3,30 @@
 
 #fails at random? #NOT expected to fail:  349 (1)
 
+
+#-esqli NOT expected to fail:  109 296 351 (3)
+#-eci NOT expected to fail:  109 296 (2)
+
+######################
+#Teats expected to fail with -ifxodbc (in addition to EXPECT_TO_FAIL_TESTS)
+EXPECT_TO_FAIL_TESTS_IFXODBC="1 \
+	753 758 759 760 783 791 792 798 901 902 904 905 906 907 \
+	908 909 910 911 912 913 914 915 936 1060"
+#1 conv.c               2751   (     0,     0) Start Time invalid on datetime(dttoc)
+
+######################
+#Tests that should not be run with -ifxodbc, because they go into endless loop 
+#and never exit
+BLACKLIST_TESTS_IFXODBC="107 286 287 681 682 686 687 701 702 703 704"
+#107: goes into loop:
+#sql.c                2082   (     0,     0) After SQL Error -11067 S1010 [Informix][Informix ODBC Driver]Function sequence error.
+#sql.c                2109   (     0,     0) 'S1010' '[Informix][Informix ODBC Driver]Function sequence error.' (-11067 56)
+
+
+#-unixodbc with -odbcdb-ifx
+EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX=""
+
+
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 #NOTE: <*> = OK with -esqli
@@ -96,7 +120,7 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 	922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 \
 	953 954 955 956 957 958 959 964	966 284 918 \
-	938 939 940 941 942 943 944 945 946 947 282 498 499"
+	938 939 940 941 942 943 944 945 946 947 282 498 499 288 291"
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
@@ -113,7 +137,7 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #956 missing 4gl file
 #282 testtable does not exist in the database
 #498,499 no keys.in
-
+#288 291 no files
 
 #testing function invocation:
 test_func() {

@@ -142,7 +142,7 @@ if test "$IS_ODBC" = "1"; then
 
     #Some drivers need explicit UID/PWD to connect
 	if test "$SQLPWD" = ""; then
-		SQLPWD=`AUBITDIR_UNIX/bin/aubit-config$EXE_EXT SQLPWD`
+		SQLPWD=`$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT SQLPWD`
 		if test "$SQLPWD" = ""; then
 	        echo "ERROR: Aubit setting SQLPWD is empty. Stop."
 	        exit 4
@@ -150,7 +150,7 @@ if test "$IS_ODBC" = "1"; then
     fi
 
 	if test "$SQLUID" = ""; then
-		SQLUID=`AUBITDIR_UNIX/bin/aubit-config$EXE_EXT SQLUID`
+		SQLUID=`$AUBITDIR_UNIX/bin/aubit-config$EXE_EXT SQLUID`
 		if test "$SQLUID" = ""; then
 			echo "ERROR: Aubit setting SQLUID is empty. Stop."
 	        exit 4

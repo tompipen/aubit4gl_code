@@ -4,6 +4,9 @@
 #
 ###########################################################################
 
+START_TIME=`date +%s`
+
+
 ###########################################
 #Include task specific shell script files:
 #List of all tests expected to fail:
@@ -17,6 +20,26 @@
 #Loop for runing multiple configurations of tests and tests matrix:
 . incl/multiple_test_inc.sh
 
+
+#Make sure we don't have a left-over watcher
+WATCHIT_SH="./watchit.sh"
+WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
+
+if test "$WATCH_PID" != "" -a "$WATCH_PID" != "0"; then
+	echo "Killing left-over watcher (pid $WATCH_PID)"
+	kill $WATCH_PID > /dev/null 2>&1
+	KILL_RET=$?
+	if test "$VERBOSE" = "1" ; then
+		echo "Killing watcher (pid $WATCH_PID) returned code $KILL_RET"
+	fi
+	WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
+	if test "$WATCH_PID" != ""; then
+		echo "error: still have one or more running:"
+		ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH"
+		exit 5
+	fi
+fi
+unset WATCH_PID
 
 ##############################################################################
 #                           Process command line switches
@@ -509,6 +532,8 @@ for a in $FLAGS; do
 		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_UNIXODBC=0
         USE_IODBC=0; IS_ODBC=1; USE_IFXODBC=1; ODBC_USE_DB=IFX
 		export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=ifxodbc
+		EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_IFXODBC"
+		BLACKLIST_TESTS="$BLACKLIST_TESTS $BLACKLIST_TESTS_IFXODBC"
         ;;
 
     -sqliteodbc)   		#Use SQLite ODBC plug-in for db tests
@@ -643,7 +668,10 @@ for a in $FLAGS; do
 
         ;;
 
-
+	-watch)			#kill tests that take more then 100 secconds to run
+		WATCHIT=1
+		;;
+		
     -nospace)           #Ignore changes in the amount of white space when diff-ing
 		export DIFF_FLAGS=--ignore-space-change
         ;;
@@ -787,9 +815,20 @@ for a in $FLAGS; do
 		compare_settings
 		exit
 		;;
-
+	
 	-compare2)
 		COMPARE_SETTINGS=1
+		;;
+	
+	-t1)	#Time from start of this script to test invocation point
+		TIME_SCRIPT=1
+		;;
+
+	-t2)	#Time from start of test loop to test invocation point
+		TIME_LOOP=1
+		;;
+	-t3)	#Time from start of test loop to test invocation point
+		TIME_LOOP2=1
 		;;
 		
 	-described)         #run only described tests
@@ -962,7 +1001,7 @@ for a in $FLAGS; do
 		echo " -silent     Don't show output of programs execution"
 		echo " -noecho     Don't show any non-critical messages while running tests"
 		echo " -verbose    Show more information about what is going on"
-
+		echo " -watch      kill tests that take more then 100 secconds to run"
 		echo " FORMATS (resource files):"
 		echo " -packed     Use PACKED packer for resource files"
 		echo " -xml        Use XML packer for resource files"
@@ -1033,6 +1072,13 @@ if test "$TEST_RANGE" = "1"; then
 		exit 5
 	fi
 fi
+
+#Fixme - do we need to move this lower, if script decides to use IFX with unixODBC
+#because rdbms was not specified?
+if test "$A4GL_SQLTYPE" = "unixodbc" -a "$ODBC_USE_DB" = "IFX"; then  
+	EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS $EXPECT_TO_FAIL_TESTS_UNIXODBC_IFX"
+fi	
+
 
 ##############################################################################
 #                           Configure test(s) to run
@@ -1283,6 +1329,7 @@ rm -f $CURR_DIR/$ERROR_LOG
 	FAIL_NONDB_CNT=0
 	PASS_DB_CNT=0
 	PASS_NONDB_CNT=0
+	KILL_CNT=0
 
 
 
@@ -1294,6 +1341,10 @@ fi
 for TEST_NO in $ALL_TESTS
 #########################
 do
+	if test "$TIME_LOOP" = "1"; then 
+		LOOP_START_TIME=`date +%s`
+	fi
+
 	#Make sure we are in tests root
 	cd $CURR_DIR
 
@@ -1327,6 +1378,7 @@ do
 	IS_CONSOLE_PROMPT_TEST=0
 	IS_DUMP_SCREEN_TEST=0
 	IS_FORM_TEST=0
+	IS_BLACKLIST_TEST=0
     IS_LONG_TEST=0
     IS_CERT_TEST=0
     IS_OBSOLETE_TEST=0
@@ -1526,6 +1578,11 @@ do
 		for b in $INVALID_TESTS; do
 			if test "$b" = "$TEST_NO"; then
 				IS_INVALID_TEST=1
+			fi
+		done
+		for b in $BLACKLIST_TESTS; do
+			if test "$b" = "$TEST_NO"; then
+				IS_BLACKLIST_TEST=1
 			fi
 		done
 		
@@ -1742,7 +1799,14 @@ do
 			#echo "WARNING - test is invalid - please FIX IT or list it as OBSOLETE." >> $LOGFILE
 	        continue
 	    fi
-
+		if test "$IS_BLACKLIST_TEST" = "1"; then
+			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
+			SKIP_BLACKLIST_LIST="$SKIP_BLACKLIST_LIST $TEST_NO"
+			if test "$RUN_ONE" != "" -o "$VERBOSE" = "1"; then
+				echo "Skipping blacklisted test #$TEST_NO." >> $LOGFILE
+			fi
+	        continue
+	    fi
 		if test "$IS_TUI_TEST" != "1" -a "$ONLY_TUI" = "1"; then
 			SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
 			if test "$VERBOSE" = "1"; then
@@ -2013,7 +2077,53 @@ do
 			exit 0
 		fi
     fi
-
+	
+		echo 'RUN_CNT=0' > $WATCHIT_SH
+		echo "TEST_NO=$TEST_NO" >> $WATCHIT_SH		
+		echo "echo 'Begin, test $TEST_NO' > /tmp/watchit.log" >> $WATCHIT_SH		
+		echo 'while [ "1" = "1" ] ; do' >> $WATCHIT_SH
+		echo '	RUN_CNT=`(expr $RUN_CNT + 1) 2>/dev/null`' >> $WATCHIT_SH
+		echo '	if test "$RUN_CNT" = "10"; then' >> $WATCHIT_SH
+		echo '		echo "Max loop 10 - exit" >> /tmp/watchit.log' >> $WATCHIT_SH
+		echo "		MAKE_PID=\`ps -ef | grep -v 'grep' | grep 'make run' | head -1 | awk '{print \$2}' \` " >> $WATCHIT_SH		
+		echo '		if test "$MAKE_PID" != "" -a "$MAKE_PID" != "0"; then' >> $WATCHIT_SH
+		echo '			echo "Killing $MAKE_PID" >> /tmp/watchit.log' >> $WATCHIT_SH
+		echo '			kill $MAKE_PID' >> $WATCHIT_SH
+		echo '		else' >> $WATCHIT_SH
+		echo '			echo "No PID ($MAKE_PID)" >> /tmp/watchit.log' >> $WATCHIT_SH		
+		echo '		fi' >> $WATCHIT_SH
+		echo '		break' >> $WATCHIT_SH
+		echo '	fi' >> $WATCHIT_SH
+		echo "#	ps -ef | grep -v 'grep' | grep 'make run' | head -1  >> /tmp/watchit.log " >> $WATCHIT_SH		
+		echo "	MAKE_PID=\`ps -ef | grep -v 'grep' | grep 'make run' | head -1 | awk '{print \$2}' \` " >> $WATCHIT_SH		
+		echo '	echo "Test $TEST_NO Loop $RUN_CNT , make pid=$MAKE_PID" >> /tmp/watchit.log' >> $WATCHIT_SH
+		echo '	sleep 10' >> $WATCHIT_SH
+		echo 'done' >> $WATCHIT_SH
+#exit
+	if test "$WATCHIT" = "1"; then
+		#See this for explanation on how to silence kill:
+		#http://www.experts-exchange.com/Programming/Programming_Platforms/Linux_Programming/Q_21078930.html
+		#bash $WATCHIT_SH &
+		(
+		bash $WATCHIT_SH & > /dev/null &
+		) 2>/dev/null
+		
+		#This $! will not work when we are starting watcher in another shell
+		#by using ( )
+		#PID1=$!
+		#WATCH_PID=$!
+		WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
+		#if test "$WATCH_PID" = "$PID1"; then
+		#	echo "same"
+		#	exit
+		#fi
+		if test "$WATCH_PID" = ""; then
+			echo "ERROR: no PID for watcher:"
+			ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1
+			exit 3
+		fi
+	fi
+	
 	##################################
     # run it:
 	RUN_CNT=`(expr $RUN_CNT + 1) 2>/dev/null`
@@ -2045,16 +2155,91 @@ do
 			compare_settings
 			exit 0
 	fi
-	#############
-	eval $RUN_CMD
-	#############
-	RET=$?
+	if test "$TIME_SCRIPT" = "1"; then
+		EXIT_TIME=`date +%s`
+		TOOK_TIME=`(expr $EXIT_TIME - $START_TIME) 2>/dev/null`
+		echo "Took $TOOK_TIME seconds from start of run_tests to execution point"
+		if test "$TIME_LOOP" != "1"; then
+			exit 0
+		else
+			TIME_SCRIPT=0
+		fi
+	fi
+	if test "$TIME_LOOP" = "1"; then
+		LOOP_EXIT_TIME=`date +%s`
+		LOOP_TOOK_TIME=`(expr $LOOP_EXIT_TIME - $LOOP_START_TIME) 2>/dev/null`
+		echo "Took $LOOP_TOOK_TIME seconds from start of test loop to execution point"
+		continue
+	fi
+
+	if test "$TIME_LOOP2" = "1"; then	
+		LOOP_START_TIME2=`date +%s`
+	else
+		#############
+		eval $RUN_CMD
+		#############
+		RET=$?
+	fi
+
 	if [ "$RET" != "$MAKE_EXPECT_CODE" ]; then
 		if test "$SILENT" != "1"; then
 			stty sane # Just it case it bombed...
 		fi
 	fi
 
+	if test "$WATCHIT" = "1"; then
+		TMP=`grep "Killing" /tmp/watchit.log`
+		if test "$TMP" != ""; then
+			if test "$VERBOSE" = "1" -o "$RUN_ONE" != ""; then
+				echo
+				echo "WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING!"
+				echo "Had to kill test #$TEST_NO - took more then 100 seconds to run"
+				echo "Probably an endless loop - investigate"			
+				echo "WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING!"
+			fi
+			RET="kill"
+			KILL_LIST="$KILL_LIST $TEST_NO"
+			KILL_CNT=`(expr $KILL_CNT + 1) 2>/dev/null`
+		else
+#VERBOSE=1
+			if test "$WATCH_PID" != "" -a "$WATCH_PID" != "0"; then
+				echo "Killing watcher (pid $WATCH_PID)" >> /tmp/killwatch.log
+				if test "$VERBOSE" = "1" ; then
+					echo "Killing watcher (pid $WATCH_PID)"
+				fi
+				#kill $WATCH_PID > /dev/null 2>&1
+				#/bin/kill $WATCH_PID  2> /dev/null > /dev/null
+				
+				#export $WATCH_PID
+				#bash -c kill $WATCH_PID 2>&1 > /dev/null
+				#See this for explanation on how to silence kill:
+				#http://www.experts-exchange.com/Programming/Programming_Platforms/Linux_Programming/Q_21078930.html
+				kill $WATCH_PID
+				KILL_RET=$?
+				if test "$KILL_RET" != "0"; then
+					echo 
+					echo "WARNING: Killing watcher (pid $WATCH_PID) returned code $KILL_RET"
+					echo 
+				else
+					if test "$VERBOSE" = "1" ; then
+						echo "Killing watcher (pid $WATCH_PID) returned code $KILL_RET"
+					fi
+				fi
+
+				#Check again to make sure we don't have another one still running				
+				NOW_WATCH_PID=`ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH" | head -1 | awk '{print $2}'`
+				if test "$NOW_WATCH_PID" != ""; then 
+					echo "ERROR: still have one or more $WATCHIT_SH running:"
+					ps -ef | grep -v "grep" | grep "bash $WATCHIT_SH"
+					exit 6
+				fi
+			else
+				echo "No pid for watcher"
+			fi
+#exit
+		fi
+	fi
+	
 	if test -f $TIME_TMPFILE; then
 		if test "$SHOW_TIME" = "1"; then
 			#TIME_STRING=`cat $TIME_TMPFILE`
@@ -2182,6 +2367,11 @@ do
         fi
 	fi
 
+	if test "$TIME_LOOP2" = "1"; then
+		LOOP_EXIT_TIME2=`date +%s`
+		LOOP_TOOK_TIME2=`(expr $LOOP_EXIT_TIME2 - $LOOP_START_TIME2) 2>/dev/null`
+		echo "Took $LOOP_TOOK_TIME2 seconds from execution point to end of loop"
+	fi
 #####
 done
 #####
@@ -2244,7 +2434,9 @@ fi
 
 echo "" >> $LOGFILE
 echo "Skipped: $SKIP_CNT Run: $RUN_CNT Passed: $PASS_CNT Failed: $FAIL_CNT ${T_MD}Success: $RESULT %${T_ME}" >> $LOGFILE
-
+if test "$KILL_CNT" != "0"; then 
+	echo "Had to kill $KILL_CNT tests: $KILL_LIST" >> $LOGFILE
+fi
 if test "$EXPECTED_TO_FAIL_CNT" != "0"; then 
 	echo "Expected to fail: $EXPECTED_TO_FAIL_LIST ($EXPECTED_TO_FAIL_CNT)"  >> $LOGFILE
 fi
