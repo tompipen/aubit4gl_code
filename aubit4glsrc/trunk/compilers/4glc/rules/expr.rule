@@ -598,6 +598,9 @@ builtin_funcs : UPSHIFT OPEN_BRACKET fgl_expr_c CLOSE_BRACKET
 | ASCII OPEN_BRACKET fgl_expr_c CLOSE_BRACKET { 
 	$<ptr>$=append_expr($<ptr>3,"push_ascii();");
 }
+| ASCII fgl_expr_c { 
+	$<ptr>$=append_expr($<ptr>2,"push_ascii();");
+}
 | EXTEND OPEN_BRACKET variable_or_current CLOSE_BRACKET { 
 	sprintf($<str>$,"%s",$<str>3); $<ptr>$=new_expr($<str>$); } ;
 pdf_expr : fgl_expr_c POINTS  {

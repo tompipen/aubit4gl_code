@@ -409,11 +409,12 @@ op_param_var_list CLOSE_BRACKET
 {
 lastlineno=yylineno;
 }
-define_section
+define_section {
+print_variables();
+}
 report_section 
 {
-print_variables();
-print_report_2(0,$<str>10);
+print_report_2(0,$<str>11);
 rordcnt=atoi($<str>10);
 }
 format_section 
