@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: cr_funcs.c,v 1.3 2003-01-20 09:50:37 mikeaubury Exp $
 #*/
 
 /**
@@ -144,6 +144,7 @@ make_pixmap (char *filename)
   }
 
   pixmap = gtk_pixmap_new (p, 0);
+  debug("New pixmap : %p\n",pixmap);
   return pixmap;
 }
 

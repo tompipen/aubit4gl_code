@@ -6,9 +6,10 @@
 #also, libaubit4gl.so is already linked with -lm
 
 use ExtUtils::MakeMaker;
+
 WriteMakefile(
         'NAME'    => 'aubit4gl_pl',
-        'LIBS'=> [ '-laubit4gl -lm -lcurses -lform -lpanel -L..' ],
+        'LIBS'=> [ '-laubit4gl -lm -lncurses -lform -lpanel -L..' ], 
         'OBJECT'  => 'lib_wrap.o '
 );
 

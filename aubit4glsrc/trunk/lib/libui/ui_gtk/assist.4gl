@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: assist.4gl,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: assist.4gl,v 1.3 2003-01-20 09:50:37 mikeaubury Exp $
 
 # ASSIST.4gl
 #
@@ -637,6 +637,28 @@ s=tolist(GTK_WIDGET(s));
 sel = GTK_CLIST(s)->selection;
 }
 //
+endcode
+end function
+
+
+function splat_with_image(img_file,w) 
+define w integer
+define img_file char(256)
+define lv_config char(512)
+let w=100
+let lv_config="filename='",img_file clipped,"';width='",w using "<<<<","'"
+code
+CHK_UI
+{
+GtkWidget *widget;
+GtkWidget *cw;
+trim(lv_config);
+widget=make_widget("pixmap",lv_config,w);
+gtk_widget_show(widget);
+cw=GTK_WIDGET(get_curr_win_gtk());
+gtk_fixed_put (GTK_FIXED (cw), widget, 0, 20);
+gtk_widget_show(cw);
+}
 endcode
 end function
 

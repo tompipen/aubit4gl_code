@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.91 2003-01-14 09:25:46 mikeaubury Exp $
+# $Id: mod.c,v 1.92 2003-01-20 09:50:24 mikeaubury Exp $
 #
 */
 
@@ -1761,6 +1761,7 @@ pushLikeAllTableColumns(char *tableName)
 
     /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
     rval = A4GLSQL_next_column(&ccol,&idtype,&isize);
+    debug ("next column for table '%p' is '%p'", tableName, ccol);
     debug ("next column for table '%s' is '%s'", tableName, ccol);
 
     strcpy(colname,ccol);

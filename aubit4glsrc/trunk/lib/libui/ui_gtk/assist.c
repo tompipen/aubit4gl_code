@@ -1686,3 +1686,165 @@ return 0;
 #line 642 "assist.4gl"
 }
 #line 642 "assist.4gl"
+ 
+#line 644 "assist.4gl"
+ 
+#line 644 "assist.4gl"
+ 
+#line 644 "assist.4gl"
+
+#line 644 "assist.4gl"
+int aclfgl_splat_with_image (int nargs){ 
+#line 644 "assist.4gl"
+
+#line 644 "assist.4gl"
+static char _functionName[] = "splat_with_image";
+#line 644 "assist.4gl"
+long w;
+#line 648 "assist.4gl"
+char img_file [256+1];
+#line 648 "assist.4gl"
+char lv_config [512+1];
+#line 648 "assist.4gl"
+struct BINDING fbind[]={ /* print_param */
+#line 648 "assist.4gl"
+{&img_file,0,256},
+#line 648 "assist.4gl"
+{&w,2,0}
+#line 648 "assist.4gl"
+}; /* end of binding */
+#line 648 "assist.4gl"
+char *_paramnames[]={"img_file","w"};A4GLSTK_pushFunction(_functionName,_paramnames,nargs);
+#line 648 "assist.4gl"
+if (nargs!=2) {status=-30174;pop_args(nargs);return 0;}
+#line 648 "assist.4gl"
+pop_params(fbind,2);
+#line 648 "assist.4gl"
+
+#line 648 "assist.4gl"
+
+#line 648 "assist.4gl"
+aclfgli_clr_err_flg();
+#line 648 "assist.4gl"
+
+#line 648 "assist.4gl"
+push_long(100);
+#line 649 "assist.4gl"
+
+#line 649 "assist.4gl"
+pop_var2(&w,2,0);
+#line 649 "assist.4gl"
+
+#line 649 "assist.4gl"
+/* End command */
+#line 649 "assist.4gl"
+{debug("Line 648 assist.4gl:");}if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
+#line 649 "assist.4gl"
+/* SQLERROR */   if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(648,_module_name);
+#line 649 "assist.4gl"
+/* ERROR */   if (status<0) chk_err(648,_module_name);
+#line 649 "assist.4gl"
+}
+#line 649 "assist.4gl"
+
+#line 649 "assist.4gl"
+
+#line 649 "assist.4gl"
+aclfgli_clr_err_flg();
+#line 649 "assist.4gl"
+
+#line 649 "assist.4gl"
+push_char("filename='");
+#line 649 "assist.4gl"
+
+#line 649 "assist.4gl"
+push_variable(&img_file,0x1000000);
+#line 649 "assist.4gl"
+pushop(OP_CLIP);
+#line 649 "assist.4gl"
+pushop(OP_CONCAT);
+#line 649 "assist.4gl"
+push_char("';width='");
+#line 649 "assist.4gl"
+
+#line 649 "assist.4gl"
+pushop(OP_CONCAT);
+#line 649 "assist.4gl"
+push_variable(&w,0x2);
+#line 649 "assist.4gl"
+push_char("<<<<");
+#line 649 "assist.4gl"
+
+#line 649 "assist.4gl"
+pushop(OP_USING);
+#line 649 "assist.4gl"
+pushop(OP_CONCAT);
+#line 649 "assist.4gl"
+push_char("'");
+#line 651 "assist.4gl"
+
+#line 651 "assist.4gl"
+pushop(OP_CONCAT);
+#line 651 "assist.4gl"
+pop_var2(&lv_config,0,512);
+#line 651 "assist.4gl"
+
+#line 651 "assist.4gl"
+/* End command */
+#line 651 "assist.4gl"
+{debug("Line 649 assist.4gl:");}if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
+#line 651 "assist.4gl"
+/* SQLERROR */   if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(649,_module_name);
+#line 651 "assist.4gl"
+/* ERROR */   if (status<0) chk_err(649,_module_name);
+#line 651 "assist.4gl"
+}
+#line 651 "assist.4gl"
+
+#line 651 "assist.4gl"
+
+#line 651 "assist.4gl"
+aclfgli_clr_err_flg();
+#line 651 "assist.4gl"
+
+#line 651 "assist.4gl"
+CHK_UI
+#line 652 "assist.4gl"
+{
+#line 653 "assist.4gl"
+GtkWidget *widget;
+#line 654 "assist.4gl"
+GtkWidget *cw;
+#line 655 "assist.4gl"
+trim(lv_config);
+#line 656 "assist.4gl"
+widget=make_widget("pixmap",lv_config,w);
+#line 657 "assist.4gl"
+gtk_widget_show(widget);
+#line 658 "assist.4gl"
+cw=GTK_WIDGET(get_curr_win_gtk());
+#line 659 "assist.4gl"
+gtk_fixed_put (GTK_FIXED (cw), widget, 0, 20);
+#line 660 "assist.4gl"
+gtk_widget_show(cw);
+#line 661 "assist.4gl"
+}
+#line 662 "assist.4gl"
+/* End of code */
+#line 663 "assist.4gl"
+/* End command */
+#line 663 "assist.4gl"
+{debug("Line 651 assist.4gl:");}if (aclfgli_get_err_flg()&&(sqlca.sqlcode !=0 || status !=0 || 0)) {
+#line 664 "assist.4gl"
+/* SQLERROR */   if (sqlca.sqlcode<0&&status==sqlca.sqlcode) chk_err(651,_module_name);
+#line 664 "assist.4gl"
+/* ERROR */   if (status<0) chk_err(651,_module_name);
+#line 664 "assist.4gl"
+}
+#line 664 "assist.4gl"
+A4GLSTK_popFunction();
+#line 664 "assist.4gl"
+return 0;
+#line 664 "assist.4gl"
+}
+#line 664 "assist.4gl"

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.24 2002-10-22 08:57:03 afalout Exp $
+# $Id: esql.ec,v 1.25 2003-01-20 09:50:37 mikeaubury Exp $
 #
 */
 
@@ -123,7 +123,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.24 2002-10-22 08:57:03 afalout Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.25 2003-01-20 09:50:37 mikeaubury Exp $";
 #endif
 
 /*
@@ -2347,7 +2347,7 @@ A4GLSQL_next_column(char **colname, int *dtype,int *size)
     int idx = getColumnsOrder;
     int dataType;
     int length;
-    char columnName[64];
+    static char columnName[64];
   EXEC SQL END DECLARE SECTION;
 
   if ( idx > getColumnsMax )
@@ -2359,7 +2359,8 @@ A4GLSQL_next_column(char **colname, int *dtype,int *size)
     return 0;
   *dtype = dataType;
   *size = length;
-  strcpy((char *)colname,columnName);
+  //strcpy((char *)colname,columnName);
+  *colname=columnName;
   getColumnsOrder++;
   return 1;
 }

@@ -521,6 +521,7 @@ EQUAL           fgl_expr_c {
 {
 	$<ptr>$=append_expr($<ptr>2,"pushop(OP_GREATER_THAN_EQ);");
 }
+
 ;
 
 
