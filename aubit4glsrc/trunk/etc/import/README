@@ -1,0 +1,85 @@
+This is the directory which contains import packages.
+Import packages allow the coder to use shared libraries without linking 
+and without requiring the full library::function(...) syntax.
+
+
+Just include the line :
+
+
+import package package-name
+
+at the top of your module, this will read the file from this directory called 'package-name'
+
+
+Package file syntax
+-------------------
+
+
+LIBRARY-NAME FUNCTION-NAME
+
+A package may contain functions from more than one library...
+
+eg:
+
+	a4gl_pcre :
+
+		A4GL_pcre pcre_match
+		A4GL_pcre pcre_text
+
+
+
+
+Usage :
+
+
+import package a4gl_pcre
+
+main
+	if pcre_match("cat|dog","there was a cat") then
+		display "Matched to :", pcre_text(1)
+	end if
+end main
+
+
+
+
+
+If you didn't do the import then it would look like :
+
+main
+	if a4gl_pcre::pcre_match("cat|dog","there was a cat") then
+		display "Matched to ", a4gl_pcre::pcre_text(1)
+	end if
+end main
+
+
+
+
+The package mechanism will later be extended to allow conditional loading, something like:
+
+a4gl_sqllib:ENV(SQLTYPE) sql_connect
+
+The exact syntax and scope has yet to be discussed - but this should allow conditional loading of a library module
+
+
+Take for example :
+
+	a4gl_lang:ENV(A4GL_LANG) get_msg
+
+
+you could have 
+
+	$ export A4GL_LANG=english
+and then it would call get_msg in a4gl_lang_english.so
+
+or
+	$ export A4GL_LANG=french
+and then it would call get_msg in a4gl_lang_french.so
+
+etc...
+
+
+This functionality isn't available using the current mechanisms, 
+other than by linking the shared library to some common name - but this restricts usage to 
+one categeory on one server...
+
