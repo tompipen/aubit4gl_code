@@ -23,6 +23,12 @@ sub using
   my ($num, $fmt) = @_;
 #                  NA
 
+if ( $fmt  =~ m/[mdy]/ ) {
+   # assume this is date format request
+   $result = &ace_format_date($num, $fmt);
+   return $result;
+   }
+
    $action{'*'}="**##**##";
    $action{'$'}='$$##$$##';
 
@@ -244,6 +250,46 @@ $result_i="";
   }
 
 return $result;
+}
+
+sub ace_format_date
+{
+my ($date,$fmt) = @_;
+
+# by default Informix dates are in mm/dd/yyyy format
+# can be changed by DBDATE or GL_DATE but I think only to mm/dd/yy
+# format.  If we figure out it is in mdy2 format we chuck the using
+# fmt because have no idea what century.
+my ($month,$day,$year) = split(/\//,$date);
+
+if ( ! defined $month || ! defined $day || ! defined $year ) {
+   return $date;
+   }
+
+if ( length($year) != 4 ) {
+   return $date;
+   }
+
+use Date::Calc qw (Date_to_Text);
+
+my $string = Date_to_Text($year,$month,$day);
+
+if ( ! defined $string ) { return $date; }  # bad date
+
+my ($ddd, $date_s) = split(/ /, $string);
+my ($dd,$mmm,$yyyy) = split(/\-/,$date_s);
+my $yy = substr($yyyy,2,2);
+
+# now do simple subsitutions for ddd, dd, yyyy, yy, mmm, mm
+$fmt =~ s/ddd/$ddd/g;
+$fmt =~ s/dd/$dd/g;
+$fmt =~ s/yyyy/$yyyy/g;
+$fmt =~ s/yy/$yy/g;
+$fmt =~ s/mmm/$mmm/g;
+$fmt =~ s/mm/$month/g;
+
+return $fmt;
+
 }
 
 1;

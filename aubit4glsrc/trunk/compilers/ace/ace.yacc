@@ -80,6 +80,9 @@ set_expr_int(struct expr *e,int a)
 }
 
 
+%left USING
+%left PLUS MINUS
+%left MULTIPLY DIVIDE
 %token AFTER
 %token AFTGROUP
 %token ALL
@@ -116,7 +119,6 @@ set_expr_int(struct expr *e,int a)
 %token DELIMITER
 %token DESC
 %token DISTINCT
-%token DIVIDE
 %token DO
 %token DOLLAR
 %token DOT
@@ -163,12 +165,10 @@ set_expr_int(struct expr *e,int a)
 %token LINES
 %token MARGIN
 %token MATCHES
-%token MINUS
 %token MINUTE
 %token MOD
 %token MONEY
 %token MONTH
-%token MULTIPLY
 %token NAMED
 %token NEED
 %token NOT
@@ -195,7 +195,6 @@ set_expr_int(struct expr *e,int a)
 %token PARAM
 %token PAUSE
 %token PERCENT 
-%token PLUS
 %token POW
 %token PRINT
 %token PRINTER
@@ -232,7 +231,6 @@ set_expr_int(struct expr *e,int a)
 %token UNITS_YEAR 
 %token UPDATE
 %token USER
-%token USING
 %token VARCHAR
 %token VARIABLE
 %token WHERE
