@@ -245,7 +245,7 @@ destroy (GtkWidget * widget, gpointer data)
 /* ******************************************************************************** */
 
 void
-edit_lle ()
+edit_lle ( struct r_report *report)
 {
   int a;
   GtkWidget *label;
@@ -279,7 +279,7 @@ edit_lle ()
   /* create a new window */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 gtk_widget_set_usize (GTK_WIDGET (window),500,300);
-  sprintf(desc,"Report Output Viewer (Report : %s from Module : %s)",report->repName,report->modName);
+  //sprintf(desc,"Report Output Viewer (Report : %s from Module : %s)",report->repName,report->modName);
   gtk_window_set_title (GTK_WINDOW (window), desc);
 
   /* When the window is given the "delete_event" signal (this is given

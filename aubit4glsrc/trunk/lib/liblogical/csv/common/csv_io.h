@@ -21,4 +21,4 @@ struct csv_report_layout {
 
 int write_csv(FILE *fout,struct csv_report_layout *out);
 struct csv_report_layout *read_csv(FILE *fin);
-struct csv_report_layout *default_csv(char *errbuff);
+struct csv_report_layout *default_csv(char *errbuff,void *rbx,int rbs);

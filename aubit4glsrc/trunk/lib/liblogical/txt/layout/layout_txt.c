@@ -7,7 +7,7 @@
 
 void msgbox(char *title,char *txt) ;
 
-void LR_default_file(void *report) {
+void LR_default_file(void *report,void *rbx,int rbs) {
 	msgbox("Cannot create default","There are no configurable options to create a default file for!");
 }
 
@@ -17,7 +17,7 @@ void LR_preview_file(void *report) {
 }
 
 
-void LR_show_layout_rest(void *report, void *sb) {
+void LR_show_layout_rest(void *report, void *sb,void *rbx,int rbs) {
 	gtk_container_add(sb,gtk_label_new("No configurable options"));
 }
 

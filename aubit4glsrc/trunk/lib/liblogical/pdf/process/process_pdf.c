@@ -16,7 +16,7 @@ void output_page (PDF *p, int w, int h,char **lines);
 
 
 
-int RP_default_file (void *report,char *errbuff) {
+int RP_default_file (void *report,char *errbuff,void *rbx, int rbs) {
 	return pdf_default_file();
 }
 
@@ -75,7 +75,7 @@ set_text (int x, int y, char *s)
 //extern struct r_report *report;
 
 
-int RP_process_report (void *vreport, char *buff) 
+int RP_process_report (void *vreport, char *buff,void *rbx,int rbs) 
 {
   int a;
   int block;

@@ -37,7 +37,7 @@ main (int argc, char *argv[])
   printf ("Pages : %d maximum lines/page :%d maximum column position:%d\n",
 	  report->max_page, report->max_line, report->max_col);
 
-  edit_lle ();
+  edit_lle (report);
   gtk_main();
 }
 

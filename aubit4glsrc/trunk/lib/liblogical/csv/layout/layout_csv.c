@@ -76,7 +76,7 @@ save_file (void)
 
 /* ******************************************************************************** */
 
-void LR_show_layout_rest (void *vreport, void* vvbox_in_sw)
+void LR_show_layout_rest (void *vreport, void* vvbox_in_sw,void *rbx, int rbs)
 {
   /* create a new window */
 
@@ -594,11 +594,11 @@ label=lb;
 
 
 void
-LR_default_file (void *report)
+LR_default_file (void *report,void *rvx, int rbs)
 {
   struct csv_report_layout *d;
   char buff[2048];
-  d=default_csv(buff);
+  d=default_csv(buff,rbx,rbs);
   if (d) {
 	remake_table_from_layout(d);
   } else {

@@ -96,7 +96,7 @@ if (argc-off != 4 && argc-off!=3 )
 			exit(2);
 		}
   } else {
-	if (!RP_default_file(report,errbuff)) {
+	if (!RP_default_file(report,errbuff,rbx,rbs)) {
 		printf("No default file could be generated :\n%s\n",errbuff);
 		exit(2);
 	}
@@ -109,7 +109,7 @@ if (argc-off != 4 && argc-off!=3 )
 
   strcpy(buff,ofile);
 
-  if (RP_process_report(report, buff)) {
+  if (RP_process_report(report, buff,rbx,rbs)) {
 	if (random_name)      printf("OK - output should be in %s\n",buff);
   } else {
 	printf("Failed to process\n");

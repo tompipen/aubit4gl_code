@@ -60,7 +60,7 @@ static void show_layout () {
 	
 }
 
-void LR_default_file(void *report) {
+void LR_default_file(void *report,void* rbx,int rbs) {
 	pdf_default_file();
 	show_layout();
 }
@@ -71,7 +71,7 @@ void LR_preview_file(void *report) {
 }
 
 
-void LR_show_layout_rest(void *report, void *sb) {
+void LR_show_layout_rest(void *report, void *sb, void *vrbx, int rbs) {
 	GtkWidget *lab;
 	GtkAdjustment *adj;
 	GtkWidget *hbox;
@@ -162,7 +162,7 @@ void LR_show_layout_rest(void *report, void *sb) {
 	values[4]=hbox;
 	gtk_table_attach_defaults(GTK_TABLE(table),values[4],1,2,4,5); 
 	gtk_widget_show_all(table);
-	LR_default_file(report);
+	LR_default_file(report,vrbx,rbs);
 	show_layout();
 }
 

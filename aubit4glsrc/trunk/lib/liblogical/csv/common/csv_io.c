@@ -6,8 +6,8 @@
 
 
 
-extern int rbs;
-extern struct s_rbx *rbx;
+//extern int rbs;
+//extern struct s_rbx *rbx;
 
 int write_csv(FILE *fout,struct csv_report_layout *csv_report_layout) {
 	int a;
@@ -103,20 +103,21 @@ return &csv_report_layout;
 
 
 
-struct csv_report_layout *default_csv(char *errbuff) {
+struct csv_report_layout *default_csv(char *errbuff,void *vrbx,int rbs) {
 int a;
 int b;
 int every=-1;
 int n;
+struct s_rbx *rbx;
+
 static struct csv_report_layout csv_report_layout;
 struct csv_entry *entry;
-
+rbx=vrbx;
 
 
 
   for (a = 0; a < rbs; a++)
     {
-	//printf("rbx[a].where=%c\n",rbx[a].where);
 	if (rbx[a].where=='E') every=a;
     }
 

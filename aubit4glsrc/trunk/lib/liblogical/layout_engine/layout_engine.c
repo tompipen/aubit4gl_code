@@ -26,7 +26,7 @@ void set_block_clicked (int rb);
 void set_clicked (int rb, int entry);
 void setup_entry (int b, int e, GtkWidget * evt, GtkWidget * label);
 void setup_block (int b, GtkWidget * evt, GtkWidget * label);
-void edit_lle(void);
+void edit_lle(struct r_report *r);
 
 
 int rbs;
@@ -45,7 +45,7 @@ int lc_rb = -1;
 static void
 default_file (void)
 {
-  LR_default_file (report_internal);
+  LR_default_file (report_internal,rbx,rbs);
 }
 
 static void
@@ -213,7 +213,7 @@ int main (int argc, char *argv[])
   //gtk_rc_parse_string (style_cell_disable);
 
   start_lle ();
-  edit_lle ();
+  edit_lle (report_internal);
   gtk_main ();
 return 0;
 }
@@ -320,7 +320,7 @@ void load_file (void)
 
 void open_rv (void)
 {
-  edit_lle ();
+  edit_lle (report_internal);
 }
 
 void open_pal (void)
@@ -406,7 +406,7 @@ start_lle ()
   gtk_container_add (GTK_CONTAINER (vbox_in_sw), l);
 
 
-  LR_show_layout_rest (report_internal,vbox_in_sw);
+  LR_show_layout_rest (report_internal,vbox_in_sw,rbx,rbs);
 
   gtk_widget_show_all (window);
 

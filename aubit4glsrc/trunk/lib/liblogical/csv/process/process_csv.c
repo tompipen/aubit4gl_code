@@ -3,8 +3,11 @@
 #include "../../common/a4gl_lle.h"
 #include "../../processor/API_process.h"
 #include "a4gl_libaubit4gl.h"
-extern int rbs;
-extern struct s_rbx *rbx;
+
+
+
+//extern int rbs;
+//extern struct s_rbx *rbx;
 
 struct csv_report_layout *layout;
 
@@ -17,8 +20,8 @@ int A4GLLOGREP_PROC_initlib() {
 
 
 
-int RP_default_file(void *report, char *buff) {
-	layout=default_csv(buff);
+int RP_default_file(void *report, char *buff,void *rbx,int rbs) {
+	layout=default_csv(buff,rbx,rbs);
 	if (layout) return 1;
 	else return 0;
 }
@@ -54,7 +57,7 @@ for (a=0;a<layout->nblocks;a++) {
 
 }
 
-void end_block(int rb) {
+void end_block(int rb,struct s_rbx *rbx) {
 int a;
 int x;
 int y;
@@ -137,11 +140,13 @@ for (a=0;a<layout->nblocks;a++) {
 
 }
 
-int RP_process_report(void *vreport, char* buff) {
+int RP_process_report(void *vreport, char* buff,void *vrbx,int rbs) {
 struct r_report *report;
 char fname[1024];
 int a;
 int b;
+struct s_rbx *rbx;
+rbx=vrbx;
 report=vreport;
 	rep_fout=0;
 
@@ -181,7 +186,7 @@ report=vreport;
 		for (b=0;b<report->blocks[a].nentries;b++) {
 			process_block(report->blocks[a].rb, report->blocks[a].entries[b].entry_id, report->blocks[a].entries[b].string);
 		}
-		end_block(report->blocks[a].rb);
+		end_block(report->blocks[a].rb,rbx);
         }
 	return 1;
 }

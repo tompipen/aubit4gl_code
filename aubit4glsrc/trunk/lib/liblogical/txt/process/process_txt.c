@@ -9,7 +9,7 @@ int page_touched = 0;
 FILE *rep_fout;
 
 
-int RP_default_file (void *report,char *errbuff) {
+int RP_default_file (void *report,char *errbuff,void *rbx, int rbs) {
 	// As there is no file description to mess with!
 	return 1;
 }
@@ -78,7 +78,7 @@ set_text (int x, int y, char *s)
 }
 
 
-int RP_process_report (void *rp, char *buff) 
+int RP_process_report (void *rp, char *buff,void *rbx, int rbs) 
 {
   int a;
   int block;
@@ -104,7 +104,7 @@ int RP_process_report (void *rp, char *buff)
 
   A4GL_trim(buff);
   if (!strlen(buff)) {
-	static lbuff[256];
+	static char lbuff[256];
 	buff=lbuff;
 	tmpnam(buff);
   }
