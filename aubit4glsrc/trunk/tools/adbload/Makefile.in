@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.5 2004-09-28 09:49:26 afalout Exp $
+# $Id: Makefile.in,v 1.6 2005-02-21 00:52:55 afalout Exp $
 #
 
 ROOT    =../..
@@ -47,6 +47,6 @@ adbload.4ae: adbload.4gl
 ## ==================================================================
 
 clean:
-	${RM} *.err *.bak *.c *.h *.4ge *.4ae core *.out *.glb
+	${RM} *.err *.bak *.c *.h *.4ge *.4ae core *.out *.glb *.warn
 
 

@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: header.mki,v 1.19 2003-08-23 00:42:58 afalout Exp $
+#	 $Id: header.mki,v 1.20 2005-02-21 00:52:54 afalout Exp $
 
 ############################################
 #   Aubit 4gl compiler - amake system
@@ -26,6 +26,13 @@
 ifndef AMAKE
 	AMAKE	=amake
 endif
+
+#Does not work:
+.PRECIOUS: %.err
+.PRECIOUS: %.ao
+#Does not work (applies to targets only?)
+#.SECONDARY does not accpt a pattern - must list each file or none
+#.SECONDARY: %.err
 
 #if we have to build 4Js .sch file, where to put it, and where to look
 #for it: WARNING: SCWORK is max specific, but we need it here, because it's

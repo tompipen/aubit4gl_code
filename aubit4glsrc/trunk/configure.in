@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.282 2005-02-11 12:34:05 afalout Exp $
+dnl # $Id: configure.in,v 1.283 2005-02-21 00:52:17 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2106,7 +2106,8 @@ RUNTIME_RESOURCE=""
 #Executables that are needed even in run-time distibutions:
 RUNTIME_EXE="afinderr configurator $AMAKE_BIN_EXE"
 
-COMP_EXE="4glc fcompile amkmessage convertsql 4glpc sql_parse asql_g$A4GL_EXE_EXT"
+COMP_EXE="4glc fcompile amkmessage convertsql 4glpc sql_parse adbschema \
+	asql_g$A4GL_EXE_EXT"
 
 if test "$enable_minimal" != "yes"; then
 #Note: some of them will still be built, but not installed or packaged
@@ -9047,7 +9048,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.282 2005-02-11 12:34:05 afalout Exp $
+| $Id: configure.in,v 1.283 2005-02-21 00:52:17 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

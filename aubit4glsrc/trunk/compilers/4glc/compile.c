@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.76 2005-02-08 18:48:09 mikeaubury Exp $
+# $Id: compile.c,v 1.77 2005-02-21 00:52:53 afalout Exp $
 #*/
 
 /**
@@ -103,7 +103,8 @@ int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 
 static int compile_4gl (int compile_object, char a[128], char incl_path[128],
 			int silent, int verbose, char output_object[128],int win_95_98,
-			char informix_esql[128], char pg_esql[128], char extra_ccflags[1024]);
+			char informix_esql[128], char pg_esql[128], char extra_ccflags[1024],
+			int preserve_warn);
 void printUsage (char *argv[]);
 static void printUsage_help (char *argv[]);
 int initArguments (int argc, char *argv[]);
@@ -153,6 +154,7 @@ initArguments (int argc, char *argv[])
   int compile_object = 0;
   int compile_exec = 0;
   int compile_so = 0;
+  int preserve_warn = 0; // should we preserve warnings by moving .err file to .warn file when no error occured in compilation
   int compile_lib = 0;
   int win_95_98 = 0;
   int shell_is_bash = 0;
@@ -196,6 +198,7 @@ initArguments (int argc, char *argv[])
     {"version_full", 0, 0, 'f'},
     {"lextype", 0, 0, 't'},
     {"keep", 0, 0, 'k'},
+    {"keep-warn", 0, 0, 'w'},	
     {"clean", 0, 0, 'K'},
     {"database", 1, 0, 'd'},
     {"system4gl", 0, 0, '4'},
@@ -240,11 +243,11 @@ initArguments (int argc, char *argv[])
 	/* set valid options for getopt_long depending on putput language*/
 	if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0 ||
       	strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0) {
-		strcpy (opt_list, "G4s:N:kKco::l::W::L::I::?hSgVvftD:d:");
+		strcpy (opt_list, "G4s:N:kwKco::l::W::L::I::?hSgVvftD:d:");
     } else if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0) {
 		strcpy (opt_list, "G4s:N:?hSgVvftd:");
     } else /* all other A4GL_LEXTYPE types*/ {
-		strcpy (opt_list, "G4s:N:kKco::l::L::?hSgVvftd:");
+		strcpy (opt_list, "G4s:N:kwKco::l::L::?hSgVvftd:");
     }
 	sprintf (mv_cmd, "%s", acl_getenv ("A4GL_MV_CMD"));
 	if (! strcmp (acl_getenv ("COMSPEC"), "") == 0) {
@@ -485,6 +488,15 @@ initArguments (int argc, char *argv[])
 	  break;
 
     /************************/
+	case 'w':		/* (--keep-warn) Keep warnings outout file if created, 
+					by renaming .err files to .warn file  */
+		#ifdef DEBUG
+			A4GL_debug ("Got -c\n");
+		#endif
+		preserve_warn = 1;
+		break;
+
+    /************************/
 	case 'K':		/* clean intermedate files when done (--clean) */
 
 		#ifdef DEBUG
@@ -640,7 +652,8 @@ initArguments (int argc, char *argv[])
 			#endif
 			todo++;
 			x = compile_4gl (compile_object, a, incl_path, silent, verbose, 
-		  				output_object, win_95_98,informix_esql, pg_esql, extra_ccflags);
+		  			output_object, win_95_98,informix_esql, pg_esql, extra_ccflags,
+					preserve_warn);
 		  
 			if (x) {
 				printf ("Exit code is: %d\n", x);
@@ -916,48 +929,59 @@ initArguments (int argc, char *argv[])
 		  printf ("Failed command was: %s\n", buff);
 		  printf ("Exit code is: %d\n", ret);
 		  /*fixme: show err file*/
-		  /*FIXME: if I exit with x, I get 0 code on the shell:*/
+		  /*FIXME: if I exit with ret, I get 0 code on the shell:*/
 		  exit (99);
 		} else {
-		  sprintf (buff, "%s.err", output_object);
-		  if (verbose) { printf ("checking for %s\n", buff); }
-		  filep = fopen (buff, "r");
-		  /*  f = A4GL_mja_fopen (ii, "r");*/
-		  fseek (filep, 0, SEEK_END);
-		  flength = ftell (filep);
-		  fclose (filep);
-		  /* The 'proper' way to do it is with 'stat' - but this isn't too portable (even
-			 though it should be). */
+			if (preserve_warn) {
+				// No error code from linking command - check if there was any output
+				sprintf (buff, "%s.err", output_object);
+				if (verbose) { printf ("checking for %s\n", buff); }
+				filep = fopen (buff, "r");
+				/*  f = A4GL_mja_fopen (ii, "r");*/
+				fseek (filep, 0, SEEK_END);
+				flength = ftell (filep);
+				fclose (filep);
+				/* The 'proper' way to do it is with 'stat' - but this isn't 
+					too portable (even though it should be). */
+		
+				if (flength) {
+					/*
+					 Since there was no error code returned from C compiler/linker,
+					 *.xxx.err file (when it exist and is not 0 size ) will contain
+					 linker warnings only
+					*/
+					A4GL_debug ("%s file size is not zero %d\n", buff, flength);
+					if (verbose) { printf ("%s is non-zero\n", buff); }
 	
-		if (flength) {
-				/*
-				 Since there was no error code returned from C compiler/linker,
-				 *.xxx.err file (when it exist and is not 0 size ) will contain
-				 linker warnings only
-				*/
-				A4GL_debug ("%s file size is not zero %d\n", buff, flength);
-				if (verbose) { printf ("%s is non-zero\n", buff); }
-
-				//something wrong here - does not show 1 or 0 but large random integer
-				//if (verbose) { printf ("shell_is_bash=%d\n"),shell_is_bash;}
-				if ( ! win_95_98 ) {
-					  sprintf (buff, "%s %s.err %s.warn", mv_cmd,
-						   output_object, output_object);
+					//something wrong here - does not show 1 or 0 but large random integer
+					//if (verbose) { printf ("shell_is_bash=%d\n"),shell_is_bash;}
+					if ( ! win_95_98 ) {
+						  sprintf (buff, "%s %s.err %s.warn", mv_cmd,
+							   output_object, output_object);
+					} else {
+						  /*suppress silly message from move command on w98*/
+						  sprintf (buff, "%s %s.err %s.warn > nul", mv_cmd,
+							   output_object, output_object);
+					}
+					#ifdef DEBUG
+						A4GL_debug ("Runnung %s", buff);
+					#endif
+					if (verbose) { printf ("Running %s\n", buff); }
+					ret = system (buff);
 				} else {
-					  /*suppress silly message from move command on w98*/
-					  sprintf (buff, "%s %s.err %s.warn > nul", mv_cmd,
-						   output_object, output_object);
+				  /*err file will be deleted if clean_aftercomp is set*/
+				  /*printf ("%s file size is zero %d\n",buff,flength);*/
 				}
+			} else {
+				//just delete any .err file possibly created - it contains
+				// only warnings, and preserve_warn=0
+				sprintf (buff, "%s %s.err", acl_getenv ("A4GL_RM_CMD"), output_object);
 				#ifdef DEBUG
-					A4GL_debug ("Runnung %s", buff);
+					A4GL_debug ("Runnung %s\n", buff);
 				#endif
-				if (verbose) { printf ("Running %s\n", buff); }
+				if (verbose) { printf ("Running %s\n", buff); }			
 				ret = system (buff);
-		} else {
-			  /*err file will be deleted if clean_aftercomp is set*/
-			  /*printf ("%s file size is zero %d\n",buff,flength);*/
-		}
-	
+			}
 		if (clean_aftercomp) {
 			/*
 				 FIXME:
@@ -1008,7 +1032,8 @@ initArguments (int argc, char *argv[])
 static int
 compile_4gl (int compile_object, char fgl_basename[128], char incl_path[128],
 		int silent, int verbose, char output_object[128],int win_95_98,
-		char informix_esql[128], char pg_esql[128], char extra_ccflags[1024])
+		char informix_esql[128], char pg_esql[128], char extra_ccflags[1024],
+		int preserve_warn)
 {
 int need_cc=0, yyparse_ret, ret, flength=0;
 char buff[1028];
@@ -1278,65 +1303,60 @@ char ext[8];
 				return ret;
 			} else {
 				if (verbose) { printf ("C/EC compilation of the object successfull.\n"); }
-				/* determine the c.err file size */
-				sprintf (buff, "%s.c.err", fgl_basename);
-				filep = fopen (buff, "r");
-				/*  f = A4GL_mja_fopen (ii, "r");*/
-				fseek (filep, 0, SEEK_END);
-				flength = ftell (filep);
-				fclose (filep);
-
-				/* The 'proper' way to do it is with 'stat' - but this isn't too 
-				portable (even though it should be). */
-
-				if (flength) {
-					/*
-					 Since there was no error code returned from C compiler,
-					 *.c.err file (when it exist and is not 0 size ) will contain
-					 compiler warnings only
-		
-					 PC9b.c:2439: warning: unknown escape sequence `\,'
-		
-					 src/ap/P34k.mk:                      PC9b.4gl \
-					 src/ap/P34l.mk:                      PC9b.4gl \
-					 src/ap/P34.mk:                       PC9b.4gl \
-					 src/ap/P34m.mk:                      PC9b.4gl \
-					 src/ap/P34p.mk:                      PC9b.4gl \
-					 src/ap/P34q.mk:                      PC9b.4gl \
-					 src/ap/P34r.mk:                      PC9b.4gl \
-					 src/ap/P34s.mk:                      PC9b.4gl \
-					 src/ap/P3A.mk:                       PC9b.4gl \
-					 src/ap/PCL.mk:GLOBALS.4gl    = PC9b.4gl
-		
-		
-					*/
-		
-					#ifdef DEBUG
-						A4GL_debug ("%s file size is not zero %d\n", buff, flength);
-					#endif
-				  
-					if ( ! win_95_98 ) {
-						sprintf (buff, "%s %s.c.err %s.c.warn",
-						   acl_getenv ("A4GL_MV_CMD"), fgl_basename, fgl_basename);
+				if (preserve_warn) {
+					/* determine the c.err file size */
+					sprintf (buff, "%s.c.err", fgl_basename);
+					filep = fopen (buff, "r");
+					/*  f = A4GL_mja_fopen (ii, "r");*/
+					fseek (filep, 0, SEEK_END);
+					flength = ftell (filep);
+					fclose (filep);
+					/* The 'proper' way to do it is with 'stat' - but this isn't too 
+					portable (even though it should be). */
+	
+					if (flength) {
+						/*
+						 Since there was no error code returned from C compiler,
+						 *.c.err file (when it exist and is not 0 size ) will contain
+						 compiler warnings only
+						*/
+			
+						#ifdef DEBUG
+							A4GL_debug ("%s file size is not zero %d\n", buff, flength);
+						#endif
+					  
+						if ( ! win_95_98 ) {
+							sprintf (buff, "%s %s.c.err %s.c.warn",
+							   acl_getenv ("A4GL_MV_CMD"), fgl_basename, fgl_basename);
+						} else {
+							/*suppress silly message from move command on w98*/
+							sprintf (buff, "%s %s.c.err %s.c.warn > nul",
+								acl_getenv ("A4GL_MV_CMD"), fgl_basename, fgl_basename);
+						}
+	
+						#ifdef DEBUG
+							A4GL_debug ("Runnung %s", buff);
+						#endif
+						ret = system (buff);
+						if (ret) {
+							printf ("Error executing: %s\n",buff);
+							printf ("%s.c.err file size = %d\n", fgl_basename, flength);
+						}
 					} else {
-						/*suppress silly message from move command on w98*/
-						sprintf (buff, "%s %s.c.err %s.c.warn > nul",
-							acl_getenv ("A4GL_MV_CMD"), fgl_basename, fgl_basename);
+						/*c.err file will be deleted if clean_aftercomp is set*/
+						/*printf ("%s file size is zero %d\n",buff,flength);*/
 					}
-
+				} else {
+					//just delete any .err file possibly created - it contains
+					// only warnings, and preserve_warn=0
+					//FIXME - use A4GL_EC_EXT instead of listing .cpc. ec ...etc
+					sprintf (buff, "%s %s.err %s.c.err %s.ec.err %s.cpc.err",
+						acl_getenv ("A4GL_RM_CMD"), fgl_basename, fgl_basename,fgl_basename, fgl_basename);
 					#ifdef DEBUG
 						A4GL_debug ("Runnung %s", buff);
 					#endif
 					ret = system (buff);
-					if (ret) {
-						printf ("Error executing: %s\n",buff);
-						printf ("%s.c.err file size = %d\n", fgl_basename, flength);
-					}
-				} else {
-					/*c.err file will be deleted if clean_aftercomp is set*/
-					/*printf ("%s file size is zero %d\n",buff,flength);*/
 				}
-
 				if (clean_aftercomp) {
 					/*is it smart to delete .glb files?*/
 					sprintf (buff, "%s %s.err %s.c.err %s.h %s.c ",	/*%s.glb*/
@@ -1416,7 +1436,8 @@ printUsage_help (char *argv[])
   printf ("  -f     | --version_full    : Show full compiler version and details\n");
   printf ("  -?     | --help            : Show this help and exit\n");
   printf ("  -tTYPE | --lextype         : output language, TYPE=C(default) or PERL\n");
-  printf ("  -k     | --keep            : keep intermediate files (defailt)\n");
+  printf ("  -k     | --keep            : keep intermediate files (default)\n");
+  printf ("  -w     | --keep-warn       : keep warnings output file [.warn](default=do not)\n");  
   printf ("  -K     | --clean           : clean intermediate files when done\n");
   printf ("  -s0|1  | --stack_trace 0|1 : Include the stack trace in file:\n");
   printf ("  -h | --as-dll | --shared    : create shared library\n");

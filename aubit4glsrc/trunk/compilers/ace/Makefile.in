@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.25 2004-10-04 13:49:59 afalout Exp $
+# $Id: Makefile.in,v 1.26 2005-02-21 00:52:54 afalout Exp $
 #
 
 ROOT        =../..
@@ -166,7 +166,8 @@ test2: ${ROOT}/bin/generate_aace ${ROOT}/bin/aace ${ROOT}/bin/aace_4gl
 clean:
 	${RM} *.bak .*.bak lex.yy.c y.tab.c y.output *.o \
 	*.a *${SO_EXT} *.err aace adecompile debug.out \
-	${ROOT}/tools/no_yacc/cygwin/compilers/ace/*.o ${ALL}
+	${ROOT}/tools/no_yacc/cygwin/compilers/ace/*.o ${ALL} \
+	*.warn
 
 ## ==================================================================
 ##                         Other Targets

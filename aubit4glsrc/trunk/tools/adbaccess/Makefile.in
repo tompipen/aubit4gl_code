@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.11 2004-09-28 09:49:25 afalout Exp $
+# $Id: Makefile.in,v 1.12 2005-02-21 00:52:55 afalout Exp $
 #
 
 ROOT    =../..
@@ -111,7 +111,7 @@ install:
 
 clean:
 	rm -f *.ao *.h *.c *.glb *.4ae *.frm *.4go *.4ge *.4gi *.o *.bak *.err \
-	*.afr *.afr.xml *.frm.xml *.ec
+	*.afr *.afr.xml *.frm.xml *.ec *.warn
 
 
 ## ==================================================================

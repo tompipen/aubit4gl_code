@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.9 2005-01-29 11:35:02 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.10 2005-02-21 00:52:54 afalout Exp $
 #*/
 
 /**
@@ -113,6 +113,8 @@ A4GLSQL_init_connection_internal (char *dbName)
     {
       A4GL_set_errm (fname);
       A4GL_exitwith ("Couldn't open schema file");
+      printf ("Couldn't open schema file %s in DBPATH\n",fname); 
+	  exit (1);
     }
 
   return 0;

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.13 2005-02-13 10:26:05 afalout Exp $
+# $Id: Makefile,v 1.14 2005-02-21 00:52:09 afalout Exp $
 #
 
 ## ==================================================================
@@ -181,7 +181,7 @@ corecompile:
 	$(MAKE) -C compilers/4glc
 	$(MAKE) -C compilers/sql
 	$(MAKE) -C compilers/helpcompile
-	$(MAKE) -C tools/4glpc	
+	$(MAKE) -C tools/4glpc
 	$(MAKE) -C compilers/fcompile
 	$(MAKE) -C compilers/menus
 	$(MAKE) -C lib loadmap
@@ -189,6 +189,7 @@ corecompile:
 	$(MAKE) -C tools/afinderr
 	$(MAKE) -C tools/configuration
 	$(MAKE) -C tools/asql
+	$(MAKE) -C tools/adbschema
 ifneq "${IFMX_ESQLC}" "no"
 	#curently compiles only with ESQL/C
 	$(MAKE) -C tools/aupscol
@@ -473,7 +474,8 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/test clean
 	$(MAKE) -C tools/test/gui clean
 	$(MAKE) -C tools/convertsql clean
-	
+	$(MAKE) -C tools/4glpc clean
+	$(MAKE) -C tools/adbschema clean
 	$(MAKE) -C tools/afinderr clean
 	$(MAKE) -C tools/configuration clean
 	$(MAKE) -C tools/asql clean
@@ -507,7 +509,6 @@ clean.tools:
 	$(MAKE) -C tools/4gl_beautify/iid clean
 	$(MAKE) -C tools/4gl_beautify/infmx_tidy clean
 	$(MAKE) -C tools/4glunit clean
-	$(MAKE) -C tools/4glpc clean
 	-$(MAKE) -C tools/fgldoc clean
 	(cd tools/4gltree; ${RM} *.bak)
 	(cd tools/metrics_4gl; ${RM} *.bak)

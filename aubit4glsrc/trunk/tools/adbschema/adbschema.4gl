@@ -9,16 +9,20 @@ define mv_silent integer
 define mv_mode integer
 define mv_perms integer
 
+GLOBALS
+	DEFINE gv_systables integer	#true or false, process Informix sys* tables (default=0)
+END GLOBALS
 
 function usage()
 	display " " 
 	display "ADBSCHEMA (c) 2005 Aubit Computing Ltd"
 	display " " 
-	display "adbschema [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] [-r rolename] [-f procname]"
+	display "adbschema [-sys] [-noperms] [-fileschema] [-t tabname] [-s user] [-p user] [-r rolename] [-f procname]"
 	display "          -d dbname [-ss] [filename]"
 
 	display "   -noperms     Do not include any GRANT/REVOKE"
 	display "   -fileschema  Generate a schema suitable for the FILESCHEMA SQL Module"
+	display "   -sys         Process Informix system tables with tabid < 99"	
 	display " "
 	exit program 1
 end function
@@ -43,6 +47,7 @@ define a integer
 define lv_4gl integer
 define lv_str char(40)
 
+	let gv_systables = 0
 	let mv_silent=0
 	LET lv_ss="N"
 	let lv_srpf="-"
@@ -85,7 +90,10 @@ define lv_str char(40)
 				let lv_user=arg_val(a)
 				let lv_srpf="P"
 		
-
+			when "-sys"
+				let a=a+1
+				let gv_systables = 1
+			
 			when "-r" 
 				let a=a+1
 				let lv_user=arg_val(a)

@@ -1,3 +1,9 @@
+
+GLOBALS
+	DEFINE gv_systables integer	#true or false, process Informix sys* tables (default=0)
+END GLOBALS
+
+
 define lv_colnames array[2000] of char(18)
 
 define lv_st record
@@ -63,8 +69,14 @@ define lv_nn char(10)
 let lv_t=downshift(lv_t)
 
 if lv_t="all" then
-	declare c_get_tables cursor for
-		select tabname from systables where tabid>99
+	if gv_systables = 1 then
+		declare c_get_tables cursor for
+			select tabname from systables 
+	else
+		declare c_get_tables cursor for
+			select tabname from systables 
+				where tabid>99
+	end if
 	
 	foreach c_get_tables into lv_t
 		call dump_table(lv_t)
@@ -187,6 +199,15 @@ IF lv_st.tabtype="T" THEN
 			when 13 let lv_sc.coldesc="VARCHAR(",decode_varchar(lv_sc.collength) clipped,")"," ",lv_nn
 			when 14 let lv_sc.coldesc=decode_interval(lv_sc.collength) clipped," ",lv_nn
 			when 15 let lv_sc.coldesc="NCHAR(",lv_sc.collength using "<<<<<<<",")"," ",lv_nn
+#Andrej mod
+			#This is just a hack to allow us to retrive Informix sys* tables info
+			#and is higly unlikely to be used in 4GL code anyway
+
+			#40=indexkeyarray (Used in Informix sys* tables like sysindices)
+			when 40 let lv_sc.coldesc="CHAR(",10 using "<<<<<<<",")"," ",lv_nn
+			#41=rtnparamtypes (Used in sysprocedures)
+			when 41 let lv_sc.coldesc="CHAR(",10 using "<<<<<<<",")"," ",lv_nn
+#Andrej mod end.			
 			otherwise
 				display "INVALID DATATYPE: ",lv_sc.coltype
 				exit program 1
@@ -557,8 +578,14 @@ define lv_type char(1)
 let lv_t=downshift(lv_t)
 
 if lv_t="all" then
-	declare c_get_tables cursor for
-		select tabname from systables where tabid>99
+	if gv_systables = 1 then
+		declare c_get_tables cursor for
+			select tabname from systables 
+	else
+		declare c_get_tables cursor for
+			select tabname from systables 
+				where tabid>99
+	end if
 	
 	foreach c_get_tables into lv_t
 		call dump(lv_type,lv_t)
@@ -571,7 +598,8 @@ case lv_type
 	when "U" display "UNLOAD TO '",lv_t clipped,".unl' SELECT * FROM ",lv_t clipped,";"
 	when "L" display "LOAD FROM '",lv_t clipped,".unl' INSERT INTO ",lv_t clipped,";"
 	otherwise
-		display "Operation : ",lv_type clipped, " not implemented yet"
+		display "Operation >",lv_type clipped, "< on table >", lv_t clipped, 
+			"< not implemented yet"
 		exit program 1
 end case
 
