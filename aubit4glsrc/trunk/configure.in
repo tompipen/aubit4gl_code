@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.25 2002-01-29 11:07:46 afalout Exp $
+# $Id: configure.in,v 1.26 2002-01-31 11:33:55 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -90,6 +90,8 @@ AC_SUBST(aubitdir)
 AC_SUBST(COMPILE_DATE)
 AC_SUBST(AUBIT_VERSION)
 AC_SUBST(AUBIT_BUILD)
+AC_SUBST(FULLNAME)
+AC_SUBST(SHORTNAME)
 
 #SQL
 AC_SUBST(A4GL_SQLTYPE)
@@ -151,6 +153,7 @@ AC_SUBST(PERL)
 AC_SUBST(PERLBUILD)
 AC_SUBST(LDCONFIG)
 AC_SUBST(target)
+AC_SUBST(target_cpu)
 AC_SUBST(ADD_LD_LIBRATY_PATH)
 
 #DoxyGen
@@ -167,6 +170,11 @@ AC_SUBST(APACHE_CONF)
 AC_SUBST(WWW_HOST_NAME)
 AC_SUBST(WWW_DOCUMENT_ROOT)
 
+#RPM
+AC_SUBST(RPM)
+AC_SUBST(AUTOSPEC)
+
+
 ## ==================================================================
 ##                             Defaults
 ## ==================================================================
@@ -177,6 +185,10 @@ if test "$AUBIT_SOURCE" = "1" ; then
 	AUBIT_VERSION=`cat tools/project/version`
 	AUBIT_BUILD=`cat tools/project/build`
 fi
+
+FULLNAME="Aubit 4gl compiler"
+SHORTNAME="aubit4gl"
+
 
 COMPILE_DATE=`date +%d-%m-%Y`
 aubitdir=`pwd`
@@ -237,20 +249,28 @@ fi
 ##                              Platform
 ## ==================================================================
 
+#this things are automatically set by configure:
 #build
 #build_cpu
 #build_vendor
 #build_os
-
 #host
 #host_cpu
 #host_vendor
 #host_os
-
 #target
 #target_cpu
 #target_vendor
 #target_os
+
+#This will return just 2.4
+#KERNEL=`kernelversion`
+#this will return 2.4.7-10
+KERNEL_VER=`uname -r`
+
+#FIXME: how do I get glibc version?
+GLIBC_VER=2.2.7
+
 
 ## ==================================================================
 ##                  Checks for standard programs
@@ -324,6 +344,9 @@ AC_PATH_PROG(LDD, ldd, no)
 AC_PATH_PROG(LDCONFIG, ldconfig, no)
 AC_PATH_PROG(AUTOCONF, autoconf, no)
 AC_PATH_PROG(ACLOCAL, aclocal, no)
+
+AC_PATH_PROG(RPM, rpm, no)
+AC_PATH_PROG(AUTOSPEC, autospec, no)
 
 AC_PATH_PROG(PROG_SENDMAIL, sendmail, /usr/lib/sendmail, $PATH /usr/bin /usr/sbin /usr/etc /etc /usr/ucblib)
 if test -n "$PROG_SENDMAIL"; then
@@ -1604,6 +1627,7 @@ esac
 if test "$AUBIT_SOURCE" = "1" ; then
 	AC_CONFIG_FILES([Makefile
                 etc/aubitrc
+                etc/aubit-rpm.spec
                 incl/Makefile-common
 				compilers/4glc/Makefile
                 compilers/4glc/rules/Makefile

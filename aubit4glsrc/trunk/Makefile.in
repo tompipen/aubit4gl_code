@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.27 2002-01-29 11:07:45 afalout Exp $
+# $Id: Makefile.in,v 1.28 2002-01-31 11:33:54 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -111,7 +111,10 @@ ALLBINDISTNAMES		=${ALLBINDISTNAMESNOPDF} ${ALLBINDISTNAMESPDF}
 ## ==================================================================
 
 #RPM setup:
-RPMBUILDROOT=/root/redhat
+#redhat 6:
+#RPMBUILDROOT=/root/redhat
+#redhat 7.2
+RPMBUILDROOT=/usr/src/redhat
 
 #SOURCE 		= $(AUBITDIR)
 SOURCE 		=.
@@ -605,12 +608,19 @@ clean.root:
 #	${RM} *.tmp
 	${RM} aubit4gl.lsm aubitdownload-template.htm
 
+#FIXME: move this to appropriate makefile:
+	${RM} rpmbuild.log
+	${RM} compilers/fcompile/fshow.glb
+	${RM} compilers/fcompile/fshow.h
+#FIXME: we no longer need this file:
+	${RM} etc/configure
+
 
 clean.bin:
 	(cd bin;${RM} 4glc fcompile mcompile mkmess 4glc-noodbc fcompile-noodbc \
 	mcompile-noodbc loadmap 4glc.exe fcompile.exe mkmess.exe mcompile.exe \
 	loadmap.exe *.bak ide fcompile-noodbc.exe mcompile-noodbc.exe 4glc-noodbc.exe \
-	4glc_perl mdecompile fdecompile fdecompile-j aubit-config)
+	4glc_perl mdecompile fdecompile fdecompile-j aubit-config fshow fshow-gtk)
 
 clean.etc:
 	${RM} etc/*.bak etc/aubit-auto.spec
@@ -1296,24 +1306,36 @@ cy.step.two: \
 #	SRPMS is where all source RPMs will be put.
 
 
-rpm.autospec: etc/aubit-auto.spec
-etc/aubit-auto.spec: aubit4gl.lsm
-#make -n = Print the commands that would be executed, but do not execute them.
-	${MAKE} ${MKNAME} -n install | autospec -i -d -n ${NAMEVERBLD} -g Development/Languages > ${AUBITDIR}/etc/aubit-auto.spec
+#will fail, bacause automaticaly generates spec file fill not have
+#"configure" step, and AUBITDIR will be wrong
+rpm.auto:
+ifneq "@RPM@" "no"
+ifneq "@AUTOSPEC@" "no"
+	${MAKE} rpm.build.auto
+else
+	@echo "RPM autospec tool where not detected on your system. Try 'make rpm.preset'"
+endif
+else
+	@echo "RPM tools where not detected on your system."
+endif
 
-#  -d     Don't look for documentation  files  like  `README'
-#              and  `BUGS' in the current directory to add them to
-#              the spec file list.
+#this will make rpm form autoconf-ed etc/aubit-rpm.conf
+rpm:
+ifneq "@RPM@" ""
+	${MAKE} rpm.build.preset
+else
+	@echo "RPM tools where not detected on your system."
+endif
 
 rpm.build.auto: etc/aubit-auto.spec
 rpm.build.auto: RPMCONFFILE:=${AUBITDIR}/etc/aubit-auto.spec
-rpm.build.auto: SRCTMP:=/root/redhat/SOURCES/${NAMEVERBLD}.tar.gz
+rpm.build.auto: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.tar.gz
 rpm.build.auto: rpm.build
 
-rpm.build.preset: RPMCONFFILE:=${AUBITDIR}/etc/aubit-0.20-1.spec
-rpm.build.preset: SRCTMP:=${RPMBUILDROOT}/SOURCES/${SOURCETARBASENAME}
+rpm.build.preset: RPMCONFFILE:=${AUBITDIR}/etc/aubit-rpm.spec
+#rpm.build.preset: SRCTMP:=${RPMBUILDROOT}/SOURCES/${SOURCETARBASENAME}
+rpm.build.preset: SRCTMP:=${RPMBUILDROOT}/SOURCES/${NAMEVERBLD}.tar.gz
 rpm.build.preset: rpm.build
-
 
 #rpm.build: AUBITDIR=${RPMBUILDROOT}/BUILD/aubit4gl-0.20
 #rpm.build: PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}
@@ -1321,21 +1343,35 @@ rpm.build:
 #RPM insists to have source code in ${RPMBUILDROOT}/SOURCES/ before it will
 #build it, and only then make rpm from both of them (src and bin RPM)
 #	echo xxx ${SOURCETARBASENAME} ZZZZ ${SRCTMP} xxx
+ifeq "${RPM}" "new"
+	${RM} ${SRCTMP}
+	${RM} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}
+endif
 	@if [ ! -f ${SRCTMP} ]; then \
-		if [ ! -f ${SOURCETARBASENAME} ]; then \
-			${MAKE} ${MKNAME} clean.all; \
+		echo "No ${SRCTMP}, making it..."; \
+		if [ ! -f /tmp/${NAMEVERBLD}/${SOURCETARBASENAME} ]; then \
+			echo "No /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}, making it..."; \
+			${MAKE} ${MKNAME} clean.all > /dev/null; \
 			${RMDIR} /tmp/${NAMEVERBLD}; \
 			${MKPATH} /tmp/${NAMEVERBLD}; \
 			${LN_S} ${AUBITDIR} /tmp/${NAMEVERBLD}/${NAMEVERBLD}; \
-			echo "Creating $(SOURCETARNAME) from ${NAMEVERBLD}/ ..."; \
+			echo "Creating /tmp/${NAMEVERBLD}/$(SOURCETARNAME) from ${NAMEVERBLD}/ ..."; \
 			(cd /tmp/${NAMEVERBLD}; tar -cvzf $(SOURCETARNAME) ${NAMEVERBLD}/* > /dev/null); \
-			${MAKE} ${MKNAME} rpm.autospec; \
+		else \
+            echo "Have /tmp/${NAMEVERBLD}/${SOURCETARBASENAME}"; \
 		fi; \
-		${CP} ${SOURCETARBASENAME} ${SRCTMP} ; \
+		${CP} /tmp/${NAMEVERBLD}/${SOURCETARBASENAME} ${SRCTMP} ; \
+	else \
+        echo "Have ${SRCTMP}"; \
 	fi
-	(export AUBITDIR=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}; export PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}; rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1)
+#	(export AUBITDIR=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}; export PATH=${RPMBUILDROOT}/BUILD/${NAMEVERBLD}/bin:${PATH}; rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1)
+	rpm -ba ${RPMCONFFILE} > rpmbuild.log 2>&1
 	@echo "See rpmbuild.log for details"
 
+rpm.1: RPMCONFFILE:=${AUBITDIR}/etc/aubit-auto.spec
+#rpm.1: LOGFILE=> rpmbuild.log 2>&1
+rpm.1:
+	rpm -ba ${RPMCONFFILE} ${LOGFILE}
 
 #       -bl    Do a "list check".  The "%files" section  from  the
 #              spec file is macro expanded, and checks are made to
@@ -1364,11 +1400,24 @@ rpm.build:
 #--keep-temps will keep all the temp files and scripts that were made in /tmp. You can actually see what files were created in /tmp using the -v option.
 #--test does not execute any real stages, but does keep-temp.
 
+#automatically create .spec file for RPM build:
+etc/aubit-auto.spec: aubit4gl.lsm
+	${MAKE} ${MKNAME} -n install | autospec -i -d -n ${NAMEVERBLD} -g Development/Languages > ${AUBITDIR}/etc/aubit-auto.spec
+
+#make -n = Print the commands that would be executed, but do not execute them.
+#autospec:
+#  -d     Don't look for documentation  files  like  `README'
+#              and  `BUGS' in the current directory to add them to
+#              the spec file list.
+
+
+
+
 build.diff.patch:
 	diff -uNr dirname.orig dirname > ../SOURCES/dirname-linux.patch
 
 
-#Linux Software Map (.lsm) see http://www.execpc.com/lsm/
+#Create Linux Software Map (.lsm) used by autospec, see http://www.execpc.com/lsm/
 aubit4gl.lsm: OUTFILE=aubit4gl.lsm
 aubit4gl.lsm:
 	@echo Begin4 > ${OUTFILE}
