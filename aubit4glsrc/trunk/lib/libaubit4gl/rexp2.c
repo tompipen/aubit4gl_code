@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.17 2003-08-27 15:28:35 mikeaubury Exp $
+# $Id: rexp2.c,v 1.18 2003-09-05 15:26:58 mikeaubury Exp $
 #
 */
 
@@ -139,7 +139,7 @@ appendchr (char *s, char c)
 int
 A4GL_mja_match (char *str1, char *str2, int likeormatch)
 {
-  char MULTICHAR, SINGLECHAR;
+  char MULTICHAR, SINGLECHAR,BRACECHAR;
   int error;
 
   A4GL_trim (str1);
@@ -154,15 +154,18 @@ A4GL_mja_match (char *str1, char *str2, int likeormatch)
     {
       MULTICHAR = '%';
       SINGLECHAR = '.';
+	BRACECHAR=' ';
     }
   else
     {
       MULTICHAR = '*';
       SINGLECHAR = '?';
+	BRACECHAR='[';
     }
 
   A4GL_debug ("Calling matche...");
-  error = A4GL_matche (str2, str1);
+  error = A4GL_matche (str2, str1,MULTICHAR,SINGLECHAR,BRACECHAR);
+   A4GL_debug("A4GL_matche=%d\n",error);
   if (error == MATCH_VALID)
     return 1;
   else

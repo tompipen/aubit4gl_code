@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.89 2003-09-01 15:58:18 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.90 2003-09-05 15:26:58 mikeaubury Exp $
 #
 */
 
@@ -1295,7 +1295,7 @@ void A4GL_display_at (int n, int a);
 
   /* ========================== match.c ================================== */
   int A4GL_aubit_strcasecmp (char *a, char *b);
-  int A4GL_matche (register char *p, register char *t);
+  int A4GL_matche (register char *p, register char *t,char m,char s,char b); /* m=multi s=single b=brace eg '*' '?' '[' */
 
   /* =========================== gui.c =================================== */
   int A4GL_isgui (void);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.32 2003-09-01 15:58:19 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.33 2003-09-05 15:26:59 mikeaubury Exp $
 #*/
 
 /**
@@ -266,6 +266,13 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
               attrib += dir;
               if (attrib > sio->nfields) 
                 {
+
+
+		  if (std_dbscr.input_wrapmode == 0) {
+      				A4GL_add_to_control_stack (sio, FORMCONTROL_EXIT_INPUT_OK, 0, 0, 0);
+              			return ;
+		  }
+
                   attrib = 0;
                 }
 
@@ -604,12 +611,33 @@ process_control_stack (struct s_screenio *sio)
 
 	if (ffc_rval!=-4) {
       		new_state = 0;
+      		fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 		if (sio->mode != MODE_CONSTRUCT) {
+			int has_picture=0;
+			char *picture;
 			int field_no;
 			char buff[10024];
 			field_no=sio->curr_attrib;
 			strcpy(buff,field_buffer (sio->currentfield, 0));
+
+
+          		if (A4GL_has_str_attribute (fprop, FA_S_PICTURE)) { 
+				int a;	
+				int blank=1;
+				picture=A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+				A4GL_debug("HAS PICTURE MJA123");
+				for (a=0;a<strlen(buff);a++) {
+					if (picture[a]=='X'&&buff[a]!=' ') {blank=0;break;}
+					if (picture[a]=='A'&&buff[a]!=' ') {blank=0;break;}
+					if (picture[a]=='#'&&buff[a]!=' ') {blank=0;break;}
+				}
+				if (blank) strcpy(buff,"");
+			}
+
+
+
 			A4GL_trim(buff);
+
 			A4GL_push_char(buff);
 			if (strlen(buff)) {
 				A4GL_debug("Field is not null");

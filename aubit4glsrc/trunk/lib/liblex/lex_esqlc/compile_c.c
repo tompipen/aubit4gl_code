@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.91 2003-09-02 21:46:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.92 2003-09-05 15:26:58 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -1052,13 +1052,23 @@ A4GL_prchkerr (int l, char *f)
  */
 
 if (doing_pcode()) {
-	printc("ERRCHK(%d,\"%s\"",l,f);
-	printc(",%d,\"%s\"",when_code[A_WHEN_SUCCESS],when_to[A_WHEN_SUCCESS]);
-	printc(",%d,\"%s\"",when_code[A_WHEN_NOTFOUND],when_to[A_WHEN_NOTFOUND]);
-	printc(",%d,\"%s\"",when_code[A_WHEN_SQLERROR],when_to[A_WHEN_SQLERROR]);
-	printc(",%d,\"%s\"",when_code[A_WHEN_ERROR],when_to[A_WHEN_ERROR]);
-	printc(",%d,\"%s\"",when_code[A_WHEN_WARNING],when_to[A_WHEN_WARNING]);
-	printc(");");
+	char buff[2000];
+	char tbuff[2000];
+	sprintf(tbuff,"ERRCHK(%d,\"%s\"",l,f);
+	strcpy(buff,tbuff);
+	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_SUCCESS],when_to[A_WHEN_SUCCESS]);
+	strcat(buff,tbuff);
+	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_NOTFOUND],when_to[A_WHEN_NOTFOUND]);
+	strcat(buff,tbuff);
+	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_SQLERROR],when_to[A_WHEN_SQLERROR]);
+	strcat(buff,tbuff);
+	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_ERROR],when_to[A_WHEN_ERROR]);
+	strcat(buff,tbuff);
+	sprintf(tbuff,",%d,\"%s\"",when_code[A_WHEN_WARNING],when_to[A_WHEN_WARNING]);
+	strcat(buff,tbuff);
+	sprintf(tbuff,");");
+	strcat(buff,tbuff);
+	printc("%s",buff);
 	return;
 }
 
@@ -3055,7 +3065,7 @@ print_let_manyvars (char *nexprs)
   int from_exprs;
   int to_vars;
   A4GL_debug ("1");
-  A4GL_debug ("In print_let_manyvars\n");
+  A4GL_debug ("In print_let_manyvars : %s\n",nexprs);
   printc ("{");
   to_vars = print_bind ('o');
   from_exprs = atoi (nexprs);
@@ -3353,6 +3363,7 @@ void
 print_report_2 (int pdf, char *repordby)
 {
   int cnt;
+	int a;
   if (pdf)
     printc ("static struct pdf_rep_structure rep;\n");
   else
@@ -3379,6 +3390,7 @@ print_report_2 (int pdf, char *repordby)
 
   if (last_orderby_type==1) {
   	printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
+	for (a=0;a<cnt;a++) { printc("A4GL_setnull(rbind[%d].dtype,rbind[%d].ptr,rbind[%d].size);",a,a,a); }
   	printc ("A4GL_pop_params(rbind,%d);",cnt);
   	print_report_table(mv_repname,'R',cnt);
   	printc ("return;}");
@@ -3391,6 +3403,7 @@ print_report_2 (int pdf, char *repordby)
   printc
     ("   if (_g>0&&_useddata) {for (_p=sizeof(_ordbind)/sizeof(struct BINDING);_p>=_g;_p--) %s(_p,REPORT_AFTERGROUP);}\n",
      get_curr_rep_name ());
+  for (a=0;a<cnt;a++) { printc("A4GL_setnull(rbind[%d].dtype,rbind[%d].ptr,rbind[%d].size);",a,a,a); }
   printc ("   A4GL_pop_params(rbind,%d);\n", cnt);
   printc ("   if (_useddata==0) {_g=1;}\n");
   printc ("   if (_g>0) {");
@@ -3626,8 +3639,7 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
 {
   printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
   printc ("A4GL_start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
-  printc
-    ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_p);\n");
+  printc ("while ((int)GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=A4GL_prompt_loop(&_p);\n");
 }
 
 /**
@@ -4735,7 +4747,7 @@ A4GL_expr_for_call (char *ident, char *params, int line, char *file)
 {
   static char buff[2048];
   if (doing_pcode()) {
-	sprintf(buff,"ECALL(%s%s,%d,%s)",get_namespace (ident), ident,line,params);
+	sprintf(buff,"ECALL(\"%s%s\",%d,%s);",get_namespace (ident), ident,line,params);
   } else {
         sprintf (buff, "{int _retvars;\n_retvars=%s%s(%s); {\nif (_retvars!= 1 ) {A4GLSQL_set_status(-3001,0);A4GL_chk_err(%d,\"%s\");}\n}\n}\n", get_namespace (ident), ident, params, line, file);
   }

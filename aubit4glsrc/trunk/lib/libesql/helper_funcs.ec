@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.3 2003-08-26 05:27:04 afalout Exp $
+# $Id: helper_funcs.ec,v 1.4 2003-09-05 15:26:58 mikeaubury Exp $
 #
 */
 
@@ -193,6 +193,7 @@ dtime_t *infx; struct A4GLSQL_dtime *a4gl;
 		if (mode=='i') {
 			char *ptr;
 			char buff[255];
+			if (A4GL_isnull(DTYPE_DTIME,(void *)a4gl)) {rsetnull(CDTIMETYPE,(void *)infx);return;}
 			A4GL_push_dtime(a4gl);
 			ptr=A4GL_char_pop();
 			if (size<0||size>107) {

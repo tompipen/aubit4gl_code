@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.45 2003-08-27 15:28:35 mikeaubury Exp $
+# $Id: iarray.c,v 1.46 2003-09-05 15:26:59 mikeaubury Exp $
 #*/
 
 /**
@@ -60,7 +60,7 @@ static void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 
 //extern int m_lastkey;
 extern WINDOW *currwin;
-struct s_inp_arr *curr_arr_inp;
+struct s_inp_arr *curr_arr_inp=0;
 //void A4GL_mja_set_current_field (FORM * form, FIELD * field);
 //int A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m);
 //int A4GL_req_field_input_array (struct s_inp_arr *arr,char typpe, va_list *ap) ;
@@ -452,6 +452,7 @@ iarr_loop (struct s_inp_arr *arr)
   int a;
   int reinpa;
   FORM *mform;
+struct struct_scr_field *fprop;
 
 //int iloop_action;     // What am I proposing to do ?
 //#define ILOOP_ACTION_MOVEFIELD
@@ -462,6 +463,10 @@ iarr_loop (struct s_inp_arr *arr)
   //void *iloop_context[3];  // What am i doing it do ?
 
 
+  if (curr_arr_inp!=arr) {
+	A4GL_debug("DO THEM AGAIN...");
+	A4GL_set_fields_inp_arr (arr);
+  }
   curr_arr_inp = arr;
   form = arr->currform;
   A4GL_set_array_mode ('I');
@@ -480,7 +485,7 @@ iarr_loop (struct s_inp_arr *arr)
   mform = form->form;
 
 
-
+   A4GL_debug("Field = %p opts=%x ",form->currentfield,field_opts(form->currentfield));
   A4GL_idraw_arr (arr, 2, arr->arr_line);
 
 
@@ -502,6 +507,10 @@ iarr_loop (struct s_inp_arr *arr)
 	  form->currentfield =
 	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
 	}
+
+      fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
+      if (fprop) A4GL_comments (fprop);
+
       A4GL_mja_set_current_field (mform, form->currentfield);
 
       A4GL_mja_pos_form_cursor (mform);
@@ -528,8 +537,7 @@ iarr_loop (struct s_inp_arr *arr)
       struct struct_scr_field *fprop;
 
       A4GL_debug ("Getting fprop");
-      fprop =
-	(struct struct_scr_field *) (field_userptr (form->currentfield));
+      fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
       if (fprop != 0)
 	{
 	  A4GL_debug ("Downshift?");
@@ -830,6 +838,10 @@ A4GL_inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
   struct s_inp_arr *inpa;
   inpa = (struct s_inp_arr *) vinpa;
 
+  if (curr_arr_inp&&curr_arr_inp!=inpa) {
+	A4GL_debug("DO THEM AGAIN...");
+	A4GL_set_fields_inp_arr (inpa);
+  }
   curr_arr_inp = inpa;
   A4GL_debug ("In A4GL_inp_arr : %s %p %p %d", srecname, defs, inpa, attrib);
 

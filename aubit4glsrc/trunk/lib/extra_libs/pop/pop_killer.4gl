@@ -60,7 +60,7 @@ define lv_t float
 let lv_started=0
 while true
 	set pause mode off
-	display "Connecting to server...." at 1,1
+	call banner("Connecting to server....")
 
 	if lv_started then
 		CALL A4GL_pop::popend()
@@ -69,20 +69,18 @@ while true
 
 	if A4GL_pop::popbegin(lv_details.server,lv_details.userid,lv_details.passwd) then
 		let lv_started=1
-		display "OK" at 1,30
+		call banner("Connected OK")
 	else
-		display "Failed:",A4GL_pop::poperr() at 1,30
+		call banner("Connection Failed")
 		continue while
 	end if
 
 
-        display "Collecting Data","" at 1,1
+        call banner("Collecting Data")
 
 set pause mode on
 clear screen
-display "POP SESSION ACTIVE" at 1,1
-display today using "dd/mm/yy" at 1,60
-display current hour to second at 1,70
+call banner("POP SESSION ACTIVE")
 let nmsg=A4GL_pop::popnum()
 
 display "You have ", nmsg USING "####&"," Messages" at 4,1
@@ -95,7 +93,7 @@ code
 {
 int a;
 char *ptr;
-for (a=0;a<strlen(txt);a++) if (txt[a]=='\n'||txt[a]=='\r') txt[a]='^';
+for (a=0;a<strlen(txt);a++) if (txt[a]<' '||!isprint(txt[a])) txt[a]='^';
 ptr=strstr(txt,"^^Subject:");
 
 if (ptr) {
@@ -104,6 +102,8 @@ if (ptr) {
 	subject[sizeof(subject)-1]=0;
 	ptr=strstr(subject,"^^");
 	if (ptr) *ptr=0;
+} else {
+	strcpy(subject,"No Subject");
 }
 }
 endcode
@@ -158,7 +158,15 @@ if lv_started then
 	CALL A4GL_pop::popend()
 	let lv_started=0
 end if
+call banner("POP SESSION INACTIVE")
 sleep 10
 end while
 
+end function
+function banner(s)
+define s char(80)
+let s[50,80]=" "
+let s[50,65]=today
+let s[65,80]=current hour to second
+display s,"" at 1,1 attribute(reverse,cyan)
 end function

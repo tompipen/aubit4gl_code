@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.35 2003-09-03 18:43:35 mikeaubury Exp $
+# $Id: ops.c,v 1.36 2003-09-05 15:26:58 mikeaubury Exp $
 #
 */
 
@@ -239,16 +239,16 @@ A4GL_debug("in_dt_ops");
   A4GL_decode_datetime (&dt, &dtime_data[0]);
 
 
-/*
-	printf("Datetime : Y=%d\n",dtime_data[0]);
-	printf("Datetime : M=%d\n",dtime_data[1]);
-	printf("Datetime : D=%d\n",dtime_data[2]);
-	printf("Datetime : H=%d\n",dtime_data[3]);
-	printf("Datetime : M=%d\n",dtime_data[4]);
-	printf("Datetime : S=%d\n",dtime_data[5]);
-	printf("Datetime : F=%d\n",dtime_data[6]);
 
-*/
+	A4GL_debug("Datetime : Y=%d\n",dtime_data[0]);
+	A4GL_debug("Datetime : M=%d\n",dtime_data[1]);
+	A4GL_debug("Datetime : D=%d\n",dtime_data[2]);
+	A4GL_debug("Datetime : H=%d\n",dtime_data[3]);
+	A4GL_debug("Datetime : M=%d\n",dtime_data[4]);
+	A4GL_debug("Datetime : S=%d\n",dtime_data[5]);
+	A4GL_debug("Datetime : F=%d\n",dtime_data[6]);
+
+
 
 
   switch (op)
@@ -282,28 +282,29 @@ A4GL_debug("in_dt_ops");
       dtime_data[3] += ival_data[3];
       while (dtime_data[3] >= 24)
 	{
+	A4GL_debug("Inc hours...");
 	  dtime_data[2]++;
 	  dtime_data[3] -= 24;
 	}
 
       // Days
       dtime_data[2] += ival_data[2];
+	A4GL_debug("Day : %d month=%d",dtime_data[2],dtime_data[1]);
+
       while (dtime_data[2] > A4GL_days_in_month(dtime_data[1],dtime_data[0]))
 	{
-	//printf("day too high: %d %d m=%d y=%d\n",dtime_data[2],A4GL_days_in_month(dtime_data[1],dtime_data[0]),dtime_data[1],dtime_data[0]);
-	  dtime_data[1]++;
-	  while (dtime_data[1]>12) {
-			dtime_data[0]++;
-			dtime_data[1]-=12;
-	  }
-	  dtime_data[2] -= A4GL_days_in_month(dtime_data[1],dtime_data[0]);							    /** @todo Fix this **/
+	A4GL_debug("day too high: %d %d m=%d y=%d\n",dtime_data[2],A4GL_days_in_month(dtime_data[1],dtime_data[0]),dtime_data[1],dtime_data[0]);
+	 dtime_data[2] -= A4GL_days_in_month(dtime_data[1],dtime_data[0]);	
+	 dtime_data[1]++;
+	 if (dtime_data[1]>12) { dtime_data[0]++; dtime_data[1]-=12; }
 	}
 
-
+	A4GL_debug("Checking months... %d %d",dtime_data[1],ival_data[1]);
       // Months
       dtime_data[1] += ival_data[1];
       while (dtime_data[1] > 12)
 	{
+	A4GL_debug("Change months");
 	  dtime_data[0]++;
 	  dtime_data[1] -= 12;
 	}
@@ -796,12 +797,18 @@ A4GL_dt_dt_ops (int op)
   //double d_d1;
   //double d_d2;
 
-  if (op != (OP_SUB))
+
+  if (op != (OP_SUB) && op!=(OP_EQUAL) && op!=(OP_NOT_EQUAL))
     {
-      A4GL_debug ("Can only subtract datetimes...");
+	
+	A4GL_drop_param();
+	A4GL_drop_param();
+
+      A4GL_debug ("Can only subtract, == and != datetimes at the minute...");
       A4GL_push_int (0);
       return;
     }
+  
 // d2 - d1
   A4GL_get_top_of_stack (2, &d1, &s1, (void **) &pd);
   A4GL_get_top_of_stack (1, &d2, &s2, (void **) &pi);
@@ -812,6 +819,23 @@ A4GL_dt_dt_ops (int op)
       printf ("Confused... %d != %d\n", d1 & DTYPE_MASK, DTYPE_DTIME);
     }
 
+
+  if (A4GL_isnull(DTYPE_DTIME,pd)) {
+		// First is null...
+        A4GL_drop_param();
+        A4GL_drop_param();
+		A4GL_push_null(DTYPE_INT,0);
+		return;
+  }
+
+
+  if (A4GL_isnull(DTYPE_DTIME,pi)) {
+		// Second is null...
+        A4GL_drop_param();
+        A4GL_drop_param();
+		A4GL_push_null(DTYPE_INT,0);
+		return;
+  }
 
   dt1.stime = pi->stime;
   dt1.ltime = pi->ltime;
@@ -839,6 +863,29 @@ A4GL_dt_dt_ops (int op)
 	 dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 
 
+
+if (op==(OP_EQUAL)||op==(OP_NOT_EQUAL)) {
+	int eq=1;
+	if  (dtime_data2[0] != dtime_data1[0]) eq=0;
+	if  (dtime_data2[1] != dtime_data1[1]) eq=0;
+	if  (dtime_data2[2] != dtime_data1[2]) eq=0;
+	if  (dtime_data2[3] != dtime_data1[3]) eq=0;
+	if  (dtime_data2[4] != dtime_data1[4]) eq=0;
+	if  (dtime_data2[5] != dtime_data1[5]) eq=0;
+	if  (dtime_data2[6] != dtime_data1[6]) eq=0;
+
+	if (op==(OP_EQUAL)) {
+		if (eq) A4GL_push_int(1);
+		else A4GL_push_int(0);
+	} else {
+		if (eq) A4GL_push_int(0);
+		else A4GL_push_int(1);
+	}
+	return;
+}
+	
+
+  if (op==(OP_SUB)) {
 
   dtime_data2[0] -= dtime_data1[0];	// Y
   dtime_data2[1] -= dtime_data1[1];	//
@@ -911,6 +958,7 @@ A4GL_dt_dt_ops (int op)
       A4GL_debug ("Buff = %s %x %x", buff);
       A4GL_push_interval (&in);
     }
+}
 
 
 }
@@ -1218,7 +1266,7 @@ A4GL_debug("Display_decimal size=%d",size);
                 size_c=n+1;
         }
 
-A4GL_debug("Calling make_using.. ptr=%p");
+//A4GL_debug("Calling make_using.. ptr=%p");
         A4GL_push_char(make_using(ptr));
         A4GL_pushop(OP_USING);
         ptr=A4GL_char_pop();

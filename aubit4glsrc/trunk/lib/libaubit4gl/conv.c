@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.58 2003-09-02 21:46:10 mikeaubury Exp $
+# $Id: conv.c,v 1.59 2003-09-05 15:26:58 mikeaubury Exp $
 #
 */
 
@@ -716,7 +716,8 @@ A4GL_dttoc (void *a, void *b, int size)
   A4GL_debug ("dttoc : %p %p %x\n", a, b, size);
   d = a;
   x = 0;
-  A4GL_debug ("d->stime=%d d->ltime=%d\n", d->stime, d->ltime, d->data);
+
+  //A4GL_debug ("d->stime=%d d->ltime=%d\n", d->stime, d->ltime, d->data);
 
   if (d->stime >= 1 && d->stime <= 11);
   else
@@ -1262,8 +1263,8 @@ A4GL_dectos (void *z, void *w, int size)
 /**
  * Convert a string value to float.
  *
- * @param zz The decimal value.
- * @param aa A pointer where to return the string value.
+ * @param zz The double value.
+ * @param aa A pointer where to the string value.
  * @param sz_ignore Not used.
  * @return
  *   - 0 : Value invalid or error.
@@ -1277,11 +1278,13 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
   char *p;
   char buff[32];
   int n;
+int ok;
 
   //A4GL_debug ("stof aa = %s, zz = %f", aa, (double *) zz);
   a = (char *) aa;
 
   z = (double *) zz;
+ *z=0;
 
   /* watch out for any "," separators in the number - remove them first */
   if (strchr (a, ','))
@@ -1296,9 +1299,11 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
       a = buff;
     }
 
-  sscanf (a, "%lf", z);
-  A4GL_debug ("stof: string %s -> float %lf", a, *z);
-  return 1;
+  ok=sscanf (a, "%lf", z);
+  A4GL_debug ("stof: string %s ", a);
+  A4GL_debug ("stof: float %lf", *z);
+  A4GL_debug ("stof: OK=%d", ok);
+  return ok;
 }
 
 /**
