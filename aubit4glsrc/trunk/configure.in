@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.261 2004-12-07 20:24:03 whaslbeck Exp $
+dnl # $Id: configure.in,v 1.262 2004-12-07 23:54:36 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2485,7 +2485,10 @@ if test "$AUBIT_SOURCE" = "1" ; then
 				#So a quick fix is setting LANG to C (or unset LANG, which is the
 				#same) "by hand" before ./configure. A better fix is to change
 				#the Makefile (replace "bison" with "LANG=C bison" or something)
-				BISON="LANG=C LC_ALL=C $BISON -y"
+
+				#BISON="LANG=C LC_ALL=C; nice -n -20 $BISON -y"
+				BISON="LANG=C LC_ALL=C; $BISON -y"
+				#('nice -n' for future compatibility)
 			fi
 		else
 			BISON=no
@@ -7701,7 +7704,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.261 2004-12-07 20:24:03 whaslbeck Exp $
+| $Id: configure.in,v 1.262 2004-12-07 23:54:36 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

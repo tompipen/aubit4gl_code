@@ -496,6 +496,9 @@ INFORMIXDIR=@INFORMIXDIR@
 #It's quoted in configure
 IFMX_ESQLC=@IFMX_ESQLC@
 
+#Location of Aubit regression tests; used in root makefile
+AUBIT_TEST_DIR=/usr2/aubit/aubit4gltest
+
 #-------------------------------- EOF -----------------------------
 
 

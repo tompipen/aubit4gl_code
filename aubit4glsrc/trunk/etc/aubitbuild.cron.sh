@@ -327,6 +327,12 @@ if test "$DO_TESTS" = "1"; then
 	if test "$DEBUG" = "1"; then
 		echo "Running tests..."
 	fi
+	
+	#Override location of Aubit regression tests directory, if neded
+	if test "$COMSPEC" != ""; then 
+		export AUBIT_TEST_DIR=/usr/src/aubit/aubit4gltest
+	fi
+	
 	make test.build > /tmp/aubittest.log 2>&1 
 	##################
 	#Send the email
