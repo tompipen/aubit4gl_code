@@ -1,0 +1,9 @@
+let .. = null
+called f_test()
+.. arg: NULL
+initialize to .. null
+called f_test()
+.. arg: NULL
+direct call
+called f_test()
+.. arg: NULL
