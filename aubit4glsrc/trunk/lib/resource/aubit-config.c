@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.13 2004-02-23 22:03:41 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.14 2004-11-05 00:37:28 afalout Exp $
 #
 */
 
@@ -208,6 +208,30 @@ int A4GL_del_pointer(char *s,char c) {
 
 int A4GL_add_pointer(char *s,char c,void *x) {
 return 0;
+}
+
+
+
+#ifdef strcpy
+#undef strcpy
+#endif
+//copy of function from funcs_d.c
+char *A4GL_strcpy(char *dest,char *src,char *f,int l) {
+	int a;
+	strcpy(dest,src);
+
+	if (strcmp(f,"dmy.c")==0) return dest;
+	//printf("Copy '%s' @ %s %d\n",src,f,l);
+	if (strlen(src)>255) {
+		//A4GL_debug("Long string : %s\n",src);
+	}
+	for (a=0;a<strlen(src);a++) {
+		if (!isprint(src[a])) {
+			//A4GL_debug("bad char @%d for string '%s' (%d)\n",a,src,strlen(src));
+		}
+	}
+	
+	return dest;
 }
 
 /* -------------------------- EOF ------------------------ */

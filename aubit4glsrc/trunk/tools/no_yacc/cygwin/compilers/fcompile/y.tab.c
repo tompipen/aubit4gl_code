@@ -2854,6 +2854,16 @@ A4GL_debug("fld->dynamic=%d",fld->dynamic); }
 }
     break;
 
+  case 113:
+#line 552 "screen.yacc"
+    {strcpy(yyval.str,yyvsp[0].str);}
+    break;
+
+  case 114:
+#line 553 "screen.yacc"
+    {strcpy(yyval.str,yyvsp[0].str);}
+    break;
+
   case 115:
 #line 554 "screen.yacc"
     {sprintf(yyval.str,"\n%s",yyvsp[0].str);}
@@ -3600,7 +3610,7 @@ printf("NUMBER VALUE : %s\n",yyvsp[0].str);
     }
 
 /* Line 991 of yacc.c.  */
-#line 3603 "y.tab.c"
+#line 3613 "y.tab.c"
 
   yyvsp -= yylen;
   yyssp -= yylen;

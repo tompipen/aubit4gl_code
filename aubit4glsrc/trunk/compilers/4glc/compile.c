@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.69 2004-10-30 04:36:22 afalout Exp $
+# $Id: compile.c,v 1.70 2004-11-05 00:37:26 afalout Exp $
 #*/
 
 /**
@@ -1597,36 +1597,29 @@ get_ansi_mode (void)
 void
 ansi_violation (char *s, int severity)
 {
-  char buff[256];
-  switch (get_ansi_mode ())
-    {
-    case ANSI_MODE_IGNORE:
-      return;
-    case ANSI_MODE_WARN:
-      if (severity == 0)
-	{
-	  printf ("Warning : Corrected ANSI violation : %s @ line %d\n", s,
-		  yylineno);
-	}
-      else
-	{
-	  printf ("Warning : ANSI violation : %s @ line %d\n", s, yylineno);
-	}
-      return;
+char buff[256];
+	switch (get_ansi_mode ()) {
+		case ANSI_MODE_IGNORE:
+			return;
+		case ANSI_MODE_WARN:
+			if (severity == 0) {
+				printf ("Warning : Corrected ANSI violation : %s @ line %d\n", s,
+					yylineno);
+			} else {
+				printf ("Warning : ANSI violation : %s @ line %d\n", s, yylineno);
+			}
+			return;
     }
-/* Must be an ansi error....*/
-
-  if (severity == 0)
-    {
-      printf ("Warning : Corrected ANSI violation : %s @ line %d\n", s,
-	      yylineno);
-      return;
+	
+	/* Must be an ansi error....*/
+	if (severity == 0) {
+		printf ("Warning : Corrected ANSI violation : %s @ line %d\n", s,
+	      	yylineno);
+		return;
     }
-  sprintf (buff, "Error: ANSI violation - %s", s);
-  a4gl_yyerror (buff);
+	sprintf (buff, "Error: ANSI violation - %s", s);
+	a4gl_yyerror (buff);
 }
-
-
 
 /**
  *

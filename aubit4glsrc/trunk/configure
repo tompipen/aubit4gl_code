@@ -27943,7 +27943,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.281 2004-11-01 05:10:47 afalout Exp $
+| $Id: configure,v 1.282 2004-11-05 00:35:39 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

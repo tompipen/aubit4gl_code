@@ -58,7 +58,7 @@ output_page (PDF *p, int w, int h,char **lines)
   A4GL_trim(layout.img_src);
 
   if (strlen(layout.img_src)) {
-	char img_class[200]="auto";A
+	char img_class[200]="auto";
 
 	if (strstr(layout.img_src,".gif")) { strcpy(img_class,"gif");  }
 	if (strstr(layout.img_src,".jpg")) { strcpy(img_class,"jpeg"); }
