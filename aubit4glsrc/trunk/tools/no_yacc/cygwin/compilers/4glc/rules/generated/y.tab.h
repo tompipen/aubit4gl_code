@@ -29,8 +29,8 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 1654,
-     UMINUS = 1655,
+     NAME = 1655,
+     UMINUS = 1656,
      COMMA = 1569,
      KW_OR = 1609,
      KW_AND = 1564,
@@ -50,16 +50,16 @@
      DIVIDE = 1515,
      MOD = 1583,
      COMMAND = 1361,
-     NUMBER_VALUE = 1656,
-     CHAR_VALUE = 1657,
-     INT_VALUE = 1658,
-     NAMED_GEN = 1659,
-     CLINE = 1660,
-     SQLLINE = 1661,
-     KW_CSTART = 1662,
-     KW_CEND = 1663,
-     USER_DTYPE = 1664,
-     SQL_TEXT = 1665,
+     NUMBER_VALUE = 1657,
+     CHAR_VALUE = 1658,
+     INT_VALUE = 1659,
+     NAMED_GEN = 1660,
+     CLINE = 1661,
+     SQLLINE = 1662,
+     KW_CSTART = 1663,
+     KW_CEND = 1664,
+     USER_DTYPE = 1665,
+     SQL_TEXT = 1666,
      BEFORE_INSERT = 1000,
      CONCAT_PIPES = 1001,
      BEFORE_DELETE = 1002,
@@ -693,11 +693,12 @@
      INPUT = 1649,
      END = 1650,
      INT_TO_ID = 1651,
-     TIMEOUT = 1652
+     TIMEOUT = 1652,
+     OFF = 1653
    };
 #endif
-#define NAME 1654
-#define UMINUS 1655
+#define NAME 1655
+#define UMINUS 1656
 #define COMMA 1569
 #define KW_OR 1609
 #define KW_AND 1564
@@ -717,16 +718,16 @@
 #define DIVIDE 1515
 #define MOD 1583
 #define COMMAND 1361
-#define NUMBER_VALUE 1656
-#define CHAR_VALUE 1657
-#define INT_VALUE 1658
-#define NAMED_GEN 1659
-#define CLINE 1660
-#define SQLLINE 1661
-#define KW_CSTART 1662
-#define KW_CEND 1663
-#define USER_DTYPE 1664
-#define SQL_TEXT 1665
+#define NUMBER_VALUE 1657
+#define CHAR_VALUE 1658
+#define INT_VALUE 1659
+#define NAMED_GEN 1660
+#define CLINE 1661
+#define SQLLINE 1662
+#define KW_CSTART 1663
+#define KW_CEND 1664
+#define USER_DTYPE 1665
+#define SQL_TEXT 1666
 #define BEFORE_INSERT 1000
 #define CONCAT_PIPES 1001
 #define BEFORE_DELETE 1002
@@ -1361,6 +1362,7 @@
 #define END 1650
 #define INT_TO_ID 1651
 #define TIMEOUT 1652
+#define OFF 1653
 
 
 
@@ -1387,7 +1389,7 @@ typedef union YYSTYPE {
 	float 	float_val;
 	} YYSTYPE;
 /* Line 1248 of yacc.c.  */
-#line 1390 "y.tab.h"
+#line 1392 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

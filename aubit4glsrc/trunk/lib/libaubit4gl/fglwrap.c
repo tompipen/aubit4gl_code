@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.52 2003-08-26 05:27:04 afalout Exp $
+# $Id: fglwrap.c,v 1.53 2003-09-26 19:08:28 mikeaubury Exp $
 #
 */
 
@@ -347,8 +347,14 @@ A4GL_system_run (int a)
 {
   char *s;
   int ret;
+int rf=0;
   
-  A4GL_gotolinemode ();
+  if (a!=2) {
+  	if (A4GL_isscrmode ()) {
+		A4GL_gotolinemode ();
+		rf=1;
+	}
+  }
   s = A4GL_char_pop ();
   if (a == 2)
     strcat (s, " &");
@@ -363,7 +369,9 @@ A4GL_system_run (int a)
       A4GL_push_int (ret);
     }
   acl_free (s);
-  A4GL_zrefresh ();
+  if (a!=2) {
+	if (rf) A4GL_zrefresh ();
+  }
 }
 
 /**

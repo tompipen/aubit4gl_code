@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.60 2003-09-22 20:02:27 mikeaubury Exp $
+# $Id: curslib.c,v 1.61 2003-09-26 19:09:02 mikeaubury Exp $
 #*/
 
 /**
@@ -4091,7 +4091,7 @@ int px;
 int py;
 
 
-return;
+if (A4GL_isyes(acl_getenv("HIDE_MENU"))) return;
 
  px=menu->gw_x;
  py=menu->gw_y;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.73 2003-09-22 20:02:28 mikeaubury Exp $
+# $Id: newpanels.c,v 1.74 2003-09-26 19:09:02 mikeaubury Exp $
 #*/
 
 /**
@@ -810,6 +810,7 @@ A4GL_zrefresh (void)
   if (A4GL_screen_mode (-1))
     {
       A4GL_chkwin ();
+      //clearok(curscr,TRUE);
       update_panels ();
       doupdate ();
       /* A4GL_mja_wrefresh (currwin); */
