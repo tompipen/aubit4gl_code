@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.92 2002-10-04 11:26:29 afalout Exp $
+# $Id: Makefile.in,v 1.93 2002-10-05 10:28:31 afalout Exp $
 #
 
 ## ==================================================================
@@ -650,6 +650,35 @@ refresh.noyacc:
 	${CP} compilers/fcompile/y.tab.c tools/no_yacc/cygwin/compilers/fcompile
 	${CP} compilers/menus/lex.yy.c tools/no_yacc/cygwin/compilers/menus
 	${CP} compilers/menus/y.tab.c tools/no_yacc/cygwin/compilers/menus
+
+refresh.norpcgen:
+ifeq "${TARGET_OS}" "cygwin"
+	${CP} compilers/fcompile/form_x.h tools/cygwin
+	${CP} compilers/fcompile/form_x_xdr.c tools/cygwin
+	${CP} compilers/menus/menu_x.h tools/cygwin
+	${CP} compilers/menus/menu_x_xdr.c tools/cygwin
+else
+	@echo "Not on CygWin - skipping."
+endif
+
+refresh.norpclib:
+ifeq "${TARGET_OS}" "cygwin"
+	${CP} ${RPC_INCL_DIR}/auth_unix.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/auth.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/pmap_clnt.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/clnt.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/netdb.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/pmap_prot.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/pmap_rmt.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/rpc.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/rpc_msg.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/svc.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/svc_auth.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/types.h tools/no_rpc/cygwin/rpc
+	${CP} ${RPC_INCL_DIR}/xdr.h tools/no_rpc/cygwin/rpc
+else
+	@echo "Not on CygWin - skipping."
+endif
 
 #Find c files with same names
 find.dup.c.files:
