@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.190 2004-11-05 16:59:25 mikeaubury Exp $
+# $Id: compile_c.c,v 1.191 2004-11-09 13:05:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.190 2004-11-05 16:59:25 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.191 2004-11-09 13:05:46 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -5002,6 +5002,11 @@ A4GL_get_push_literal (char type, char *value)
   if (type == 'S')		/* Char/String */
     {
       sprintf (buff, "A4GL_push_char(%s);\n", value);
+    }
+
+  if (type == 'N')		/* Empty ("") Char/String */
+    {
+      sprintf (buff, "A4GL_push_empty_char();");
     }
 
   /* FIXME: and if it's not D, L or S? */
