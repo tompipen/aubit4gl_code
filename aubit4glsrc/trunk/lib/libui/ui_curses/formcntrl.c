@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.70 2005-02-03 12:06:02 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.71 2005-02-08 18:19:52 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.70 2005-02-03 12:06:02 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.71 2005-02-08 18:19:52 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1707,10 +1707,13 @@ void UILIB_A4GL_reset_state_for(void *sio, char *siotype) {
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f) {
 	A4GL_debug("A4GL_field_is_noentry");
 
-	if (A4GL_has_bool_attribute (f, FA_B_NOENTRY)) {
+	if (A4GL_has_bool_attribute (f, FA_B_NOENTRY) ) {
+		if (doing_construct) { return 0;}
 		A4GL_debug("noentry");
 		return 1;
 	}
+
+
 // It would appear that the NOUPDATE allows entry to a field on a 'construct' but not
 // an input...
 	if (doing_construct) {
