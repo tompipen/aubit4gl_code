@@ -1,0 +1,522 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Aubit 4gl download page</title>
+</head>
+
+<body bgcolor="#000000" text="#FFFFFF" link="#00FFFF" vlink="#0000FF">
+
+<h1 align="center"><a name="Top of page - Aubit 4gl download page">Aubit 4gl
+download page</a></h1>
+<hr>
+<div align="left">
+  <table border="1">
+    <tr>
+      <td bgcolor="#C0C0C0">
+<p><font color="#000000">This server is on ADSL line (meaning it's slow), and is
+here primarily for nightly automatic binary builds; on top of that, it contains
+completely untested code, whatever is in CVS that night, will end up here.</font></p>
+<p><font color="#000000">Your preferred option should be to download RELEASED
+files from SourceForge <a href="http://sourceforge.net/projects/aubit4gl" target="_blank"><span style="background-color: #000000">Aubit4gl
+project page</span></a>, and/or to get source code from <a href="http://cvs.sourcefoge.net/cgi-bin/viewcvs.cgi/aubit4gl" target="_blank"><span style="background-color: #000000">Aubit
+CVS</span></a> on SourceForge.</font></p>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>Available for download:</p>
+<ul>
+  <li><a href="#Source distribution">Source distribution</a></li>
+  <li><a href="#Precompiled binary distribution">Precompiled binary distribution</a></li>
+  <li><a href="#Other files">Other files</a></li>
+  <li><a href="#Dependencies download links">Dependencies download links</a></li>
+</ul>
+<p><span style="background-color: #00FF00"><font color="#000000">Please note:&nbsp;</font></span></p>
+<ul>
+  <li> Files that don't have HTML links are not yet available</li>
+  <li> Files that have word &quot;template&quot; in there URL, failed to compile
+    on last nightly build, and are not available today. Maybe tomorrow they will
+    compile, and be available...</li>
+  <li>Downloading directly from CVS using download manager &quot;GetRight&quot; does not work, reason
+    unknown. Use your browser to download.</li>
+  <li>Some browsers will show empty page if you try to view
+    compile-platform-info-*.txt files, reason unknown. They are included in
+    compressed archives too.</li>
+  <li> <a href="mailto:afalout@ihug.co.nz">Let
+me know</a> if you have problems with any link on this page</li>
+</ul>
+<hr>
+<h3><a name="Source distribution">Source distribution</a>
+</h3>
+
+
+<p>Note: Aubit 4gl is intensive development, and changes are made almost every
+day. Therefore, it is highly recommended that you get source code directly from
+CVS.
+</p>
+
+
+<P>
+Download source code (all platforms):&nbsp;
+</P>
+
+
+<ul>
+		  <li><a href="
+aubit4gl-src--template--.tar.gz
+		">Source TarBall</a> in state used to compile UNIX binary distributions on
+            this page</li>
+
+		  <li><a href="
+aubit4gl-src--template--.zip
+		">Source ZipBall</a> in state used to compile Windows binary distributions on
+            this page (Windows/CygWin) (Note: TarBall and ZipBall contain same
+            code, compressed with different tools, unless they have different
+            version or date in there name)</li>
+
+
+		  <li>Go to <a href="http://sourceforge.net/cvs/?group_id=32409" target="_blank">CVS
+            on SourceForge</a></li>
+
+
+		</ul>
+
+
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
+<hr>
+
+<h3><a name="Precompiled binary distribution">Precompiled binary distribution</a>
+</h3>
+
+
+<P>
+ This is our first attempt at binary
+packaging, so please forgive us if it's not all it should be. <a href="mailto:afalout@ihug.co.nz">Let
+me know</a> if you have problems, but also please let me know in which
+configurations you found it to work OK. They are automatically built every
+ night, so they should always be at most a day old. If they are not, let me
+ know. We do not plan official releases until V 0.2
+</P>
+
+
+<P>
+ Filenames format:
+</P>
+
+
+<ul>
+  <li>
+ Binary packages compressed archives:&nbsp;<br>
+    aubit4gl-bin-[OS|kernel]-[iODBC/unixODBC/noODBC]-[GTK/noGTK]-[PDF/noPDF]-[version]-[build]-[build
+ date].[tar.gz|rpm]</li>
+  <li>
+ Compile platform info text files:&nbsp;<br>
+ compile-platform-info-[full binary package name].txt</li>
+</ul>
+<p>Platforms available:</p>
+<ul>
+  <li><a href="#tar.gz tarball precompiled binary packages:">Linux tar.gz and RPM precompiled binary packages</a></li>
+  <li><a href="#Microsoft Windows">Microsoft Windows</a></li>
+  <li><a href="#Other operating systems">Other operating systems</a></li>
+</ul>
+<p>Please note:</p>
+<ul>
+  <li>No dependencies build DOES NOT include ODBC functionality, therefore
+you CAN NOT execute any database oriented (SQL) commands!</li>
+  <li>Typical size of tar.gz packages is between 2 and 3 MB</li>
+</ul>
+<p><u><i><font color="#000000"><span style="background-color: #00FF00">Linux </span></font><a name="tar.gz tarball precompiled binary packages:"><span style="background-color: #00FF00"><font color="#000000">tar.gz
+tarball and RPM precompiled binary packages:</font></span></a></i></u></p>
+<div align="left">
+  <table border="1" width="605">
+    <tr>
+      <td width="205">OS/Kernel</td>
+      <td width="182" colspan="4" align="center" bgcolor="#C0C0C0">
+        <p align="right"><font color="#000000">RedHat 6 (kernel 2.2.x)</font></p>
+      </td>
+      <td width="180" colspan="4" align="center" bgcolor="#C0C0C0">
+        <p align="right"><font color="#000000">RedHat 7.1 (kernel 2.4.x)</font></td>
+    </tr>
+    <tr>
+      <td width="205">ODBC manager</td>
+      <td width="124" colspan="2" bgcolor="#808080"> OpenLink/iODBC</td>
+      <td width="148" colspan="2" bgcolor="#808080">
+        <p align="center">unixODBC</p>
+      </td>
+      <td width="32" colspan="2" bgcolor="#808080"> OpenLink/iODBC</td>
+      <td width="148" colspan="2" bgcolor="#808080">
+        <p align="center">unixODBC</p>
+      </td>
+    </tr>
+    <tr>
+      <td width="205">Package type</td>
+      <td width="62" bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">tar.gz</font></td>
+      <td width="61" bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">RPM</font></td>
+      <td width="61" bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">tar.gz</font></td>
+      <td width="61" bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">RPM</font></td>
+      <td width="49" bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">tar.gz</font></td>
+      <td width="49" bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">RPM</font></td>
+      <td width="49" bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">tar.gz</font></td>
+      <td width="49" bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">RPM</font></td>
+    </tr>
+    <tr>
+      <td width="205" bgcolor="#C0C0C0">		<font color="#000000">		no GTK, no PDF</font></td>
+      <td width="62">
+        <p align="center"><a href="
+aubit4gl-bin-RH6-iODBC-noGTK-noPDF---template--.tar.gz
+		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
+        <a href="
+compile-platform-info-aubit4gl-bin-RH6-iODBC-noGTK-noPDF---txttemplate--.tar.gz.txt
+		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
+      <td width="61">
+        &nbsp;</td>
+      <td width="61" align="center"><a href="
+aubit4gl-bin-RH6-unixODBC-noGTK-noPDF---template--.tar.gz
+	  "><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
+        <a href="
+compile-platform-info-aubit4gl-bin-RH6-unixODBC-noGTK-noPDF---txttemplate--.tar.gz.txt
+		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
+      <td width="61">
+        &nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+    </tr>
+    <tr>
+      <td width="205" bgcolor="#C0C0C0">
+        <font color="#000000">
+		GTK only</font></td>
+      <td width="62">
+        <p align="center"><a href="
+aubit4gl-bin-RH6-iODBC-GTK-noPDF---template--.tar.gz
+		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
+        <a href="
+compile-platform-info-aubit4gl-bin-RH6-iODBC-GTK-noPDF---txttemplate--.tar.gz.txt
+		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
+      <td width="61">
+        &nbsp;</td>
+      <td width="61" align="center"><a href="
+aubit4gl-bin-RH6-unixODBC-GTK-noPDF---template--.tar.gz
+	  "><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
+        <a href="
+compile-platform-info-aubit4gl-bin-RH6-unixODBC-GTK-noPDF---txttemplate--.tar.gz.txt
+		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
+      <td width="61">
+        &nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+    </tr>
+    <tr>
+      <td width="205" bgcolor="#C0C0C0">
+        <font color="#000000">
+		PDF only&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</font></td>
+      <td width="62">
+        <p align="center"><a href="
+aubit4gl-bin-RH6-iODBC-noGTK-PDF---template--.tar.gz
+		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
+        <a href="
+compile-platform-info-aubit4gl-bin-RH6-iODBC-noGTK-PDF---txttemplate--.tar.gz.txt
+		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
+      <td width="61">&nbsp;</td>
+      <td width="61">
+        <p align="center"><a href="
+aubit4gl-bin-RH6-unixODBC-noGTK-PDF---template--.tar.gz
+		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
+        <a href="
+compile-platform-info-aubit4gl-bin-RH6-unixODBC-noGTK-PDF---txttemplate--.tar.gz.txt
+		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></p>
+      </td>
+      <td width="61">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+    </tr>
+    <tr>
+      <td width="205" bgcolor="#C0C0C0">
+        <font color="#000000">
+		GTK and PDF</font></td>
+      <td width="62" align="center">
+        <p align="center"><a href="
+aubit4gl-bin-RH6-iODBC-GTK-PDF---template--.tar.gz
+		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
+        <a href="
+compile-platform-info-aubit4gl-bin-RH6-iODBC-GTK-PDF---txttemplate--.tar.gz.txt
+		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
+      <td width="61">&nbsp;</td>
+      <td width="61">
+        <p align="center"><a href="
+aubit4gl-bin-RH6-unixODBC-GTK-PDF---template--.tar.gz
+		"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
+        <a href="
+compile-platform-info-aubit4gl-bin-RH6-unixODBC-GTK-PDF---txttemplate--.tar.gz.txt
+		"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></p>
+      </td>
+      <td width="61">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+      <td width="49">&nbsp;</td>
+    </tr>
+    <tr>
+      <td width="205" bgcolor="#C0C0C0"><font color="#000000">No dependencies</font></td>
+      <td width="182" colspan="4" align="left">
+        <p align="left">&nbsp;</p>
+      </td>
+      <td width="180" colspan="4">
+        <p align="left">&nbsp;</p>
+      </td>
+    </tr>
+  </table>
+</div>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
+<p><span style="background-color: #00FF00"><font color="#000000"><u><i><a name="Microsoft Windows">Microsoft
+Windows</a></i></u></font></span></p>
+<p>&nbsp;&nbsp;&nbsp; <a href="http://sources.redhat.com/cygwin">CygWin</a> port:
+</p>
+<div align="left">
+  <table border="1">
+    <tr>
+      <td>OS</td>
+      <td bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">Win32 - CygWin</font></td>
+      <td bgcolor="#C0C0C0"><font color="#000000">Win32 - standalone (-mno-cygwin)</font></td>
+    </tr>
+    <tr>
+      <td>ODBC manager</td>
+      <td bgcolor="#808080">Windows ODBC32.dll</td>
+      <td bgcolor="#808080">
+        <p align="center">Windows ODBC32.dll</td>
+    </tr>
+    <tr>
+      <td>Package type</td>
+      <td bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">Zip</font></td>
+      <td bgcolor="#C0C0C0">
+        <p align="center"><font color="#000000">Zip</font></td>
+    </tr>
+    <tr>
+      <td bgcolor="#C0C0C0"><font color="#000000">GTK only</font></td>
+      <td>
+        <p align="center"><a href="
+aubit4gl-bin-win32-cygwin-odbc32-GTK-noPDF---template--.zip
+			"><img border="0" src="/icons/compressed.gif" alt="Download archive"></a>&nbsp;
+        <a href="
+compile-platform-info-aubit4gl-bin-win32-cygwin-odbc32-GTK-noPDF---txttemplate--.zip.txt
+			"><img border="0" src="/icons/text.gif" alt="Display compile platform info"></a></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td bgcolor="#C0C0C0"><font color="#000000">No dependencies</font></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+</div>
+<p>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
+<p><font color="#000000"><span style="background-color: #00FF00"><i><u><a name="Other operating systems">Other
+operating systems</a></u></i></span></font></p>
+<p>&nbsp;&nbsp;&nbsp; Sorry, not yet available.&nbsp;</p>
+<p>&nbsp;&nbsp;&nbsp; Please let us know if you compiled successfully on other
+platforms, and consider contributing binary packages.</p>
+<p>&nbsp;&nbsp;&nbsp; Aubit 4gl is known to compile on: Sun Solaris 7.1 and AIX</p>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
+<hr>
+<h3><a name="Other files">Other files</a></h3>
+
+
+<ul>
+  <li>&nbsp;&nbsp;&nbsp; Browse Aubit4gl <a href="http://aubit4gl.sourceforge.net/aubit4gldoc/index.html" target="_blank">Online Manuals
+(always current)</a>
+  </li>
+  <li>&nbsp;&nbsp;&nbsp; FIXME: provide downloadable manual in state used to compile binary
+    builds</li>
+  <li>&nbsp;&nbsp;&nbsp; FIXME: GWD::4gl files</li>
+</ul>
+
+
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
+<hr>
+<h3><a name="Dependencies download links">Dependencies download links</a></h3>
+<p>Depending on your choice of binary package, or options while compiling source
+distribution, you will need some or all third-party software and/or libraries
+listed here present on your system. First, check if you have them, and if they are
+compatible version. And if you don't, follow links provided, and install them
+according to there installation instructions. See manual for more information.</p>
+<p>Note: If you want minimum hassle, we found that Red Hat 7.1 contains all
+dependencies for Aubit 4gl out of the box, on one CD, all in RPM automatic
+installs (It does NOT have PDFlib, since it is commercial product - OpenSource,
+but you will need to pay fee if you use it) It has unixODBC with GUI configuration
+tools, PostgreSQL with nice GUI tools, and all worked immediately for me. So if
+you have choice of operating systems, this is our recommended platform.</p>
+<p>If you have RPM, or other package manager based system (DEB, etc), easiest
+way to check for existing dependencies is to query that system. Of course, if
+dependencies where installed using them...</p>
+<h4><i><span style="background-color: #00FF00"><font color="#000000">ODBC</font></span></i></h4>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>UNIX: Safest bet is to look for file &quot;odbc.ini&quot; - all ODBC managers
+and/or drivers use it. If you have it, look for libodbc.so (unixODBC) or
+libiodbc.so (iODBC).&nbsp;</p>
+<p>You don't need ODBC manager, you can link with ODBC drivers directly, but
+this is probably not what you want (in this case, you will have to recompile
+everything to change database backend)</p>
+<p>Windows: all Windows installation include ODBC manager, odbc32.dll</p>
+<p>PLEASE NOTE: Whatever you do, verify that your ODBC connection is working,
+BEFORE you start screaming &quot;Aubit is not working&quot;! Thank you.</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<ul>
+  <li> <a href="http://www.unixodbc.org/" target="_blank">unixODBC</a>
+    (recommended)</li>
+  <li> <a href="http://www.openlink.co.uk/" target="_blank">OpenLink</a> (Commercial
+    product - uses custom version of iODBC manager)</li>
+  <li> <a href="http://www.iodbc.org" target="_blank">iODBC</a>
+    (Standalone ODBC manager, GPL license)
+  </li>
+</ul>
+<p>Note that SOME managers come with drivers for SOME databases, and some don't.
+If you will be linking Aubit against ODBC manager, you will of course need both
+the manager, AND the ODBC driver(s) for your database(s) of choice. YMMW.</p>
+<h4><span style="background-color: #00FF00"><i><font color="#000000">PDF</font></i></span></h4>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+  <p>UNIX: Look for file &quot;pdflib.h&quot; - Without it, you will be unable to
+  compile Aubit with PDF support. If you downloaded precompiled Aubit binary
+  with PDFlib support, look for &quot;?????.so&quot;</p>
+  <p>Windows: FIXME: Is PDFlib available for CygWin?</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<ul>
+  <li> <a href="http://www.pdflib.com" target="_blank">PDFlib</a></li>
+</ul>
+<p>NOTE: This is commercial product - OpenSource, but you will need to pay fee
+if you use it. See license agreement on the site.&nbsp;</p>
+<h4><i><span style="background-color: #00FF00"><font color="#000000">NCURSES</font></span></i></h4>
+<p><i>How to check if you have it:</i> at least version 5.0 or higher</p>
+<blockquote>
+  <p>UNIX: Look for &quot;ncurses.h&quot;, probably in /usr/include. It should contain
+  string NCURSES_VERSION_MAJOR</p>
+  <p>Windows: CygWin default installation includes ncurses</p>
+</blockquote>
+<p><i>Download and install it if you don't:</i></p>
+<ul>
+  <li> <a href="http://www.gnu.org/software/ncurses/ncurses.html" target="_blank">Ncurses
+home page</a> </li>
+  <li> <a href="ftp://ftp.gnu.org/pub/gnu/ncurses" target="_blank">Ncurses
+FTP site</a></li>
+</ul>
+<h4><i><span style="background-color: #00FF00"><font color="#000000">GTK</font></span></i></h4>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+<p>UNIX: Try &quot;gtk-config --version&quot;</p>
+<p>Windows: try same as for UNIX, inside CygWin shell - see Aubit manual</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<ul>
+  <li> <a href="http://www.gtk.org" target="_blank">GTK</a></li>
+  <li> <a href="http://user.sgic.fi/~tml/gimp/win32/downloads.html" target="_blank">GTK
+    for Windows/CygWin</a></li>
+</ul>
+<h4><i><span style="background-color: #00FF00"><font color="#000000">IksEmEl -
+Jabber and XML</font></span></i></h4>
+<p>(Needed only to compile PROGRAMS that will use XML/Jabber calls)</p>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+  <p>UNIX: Look for file libiksemel.so</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<blockquote>
+<p><a href="http://jabber-x.sourceforge.net">IksEmEl libraries</a></p>
+</blockquote>
+<p>&nbsp;</p>
+<h4><span style="background-color: #00FF00"><font color="#000000">RPCgen</font></span></h4>
+<p>(Needed only when compiling Aubit 4gl compiler from source code)</p>
+<p><i>How to check if you have it:</i></p>
+<blockquote>
+  <p>Windows/CygWin: Currently, you don't need RPCgen, since we are distributing
+  Aubit code with special customized (read: hacked) versions of files that are
+  on UNIX created by RPCgen. Reason for this is that most versions we found,
+  where broken in one way or the other.</p>
+  <p>UNIX:</p>
+</blockquote>
+<p><i>Download and install it if you don't:&nbsp;</i></p>
+<ul>
+  <li>Sun RPCgen for <a href="http://www.hirmke.de/software/develop/gnuwin32/cygwin/porters/Vinschen_Corinna/B20/sunrpc-4.0.cygwin1.README" target="_blank">CygWin
+    readme</a></li>
+  <li>Sun RPC <a href="http://csgrad.cs.vt.edu/~fdrake/cs5204/rpc/rpc1057.html" target="_blank">protocol
+    specifications V2</a></li>
+  <li>Sun sources <a href="http://playground.sun.com/pub/rpc/" target="_blank">download</a></li>
+  <li><a href="http://netbula.com/oncrpc/rpcgen.html" target="_blank">Netbula
+    RPCgen</a> (and online manual) - commercial</li>
+  <li>Please let me know if you have better link for RPC download</li>
+</ul>
+<p><a href="#Top of page - Aubit 4gl download page">Back to top</a></p>
+<hr>
+<p><i><u>Obsolete links to CVS on falout.com:</u></i></p>
+<p><span style="background-color: #00FF00"><font color="#000000">CVS on falout.com is obsolete, and
+available only for reference.&nbsp;</font></span></p>
+
+
+<ul>
+  <li>NOTE: it is advisable to <a href="/servlets/JCVSlet/update/Aubit4gl/Aubit4gl/bin" target="_blank">update
+    jCVS --OLD-- Aubit 4gl repository</a> before you download or browse source files.
+    (NB: I know this link looks wrong, /bin, but because of bug in jCVS, it
+    updates one directory up from specified)</li>
+	  <li>Download ZIP from <a href="/servlets/JCVSlet/zip/Aubit4gl/Aubit4gl/Aubit4gl.zip">--OLD--
+        CVS</a> (includes complete CVS, including manual, examples and IDE)</li>
+
+
+		  <li><a href="AubitSourceTarball.x">Make yourself a tarball</a> from
+            --OLD-- CVS (for people that don't like ZIP files created with jCVS
+            servlet)</li>
+
+
+		  <li>
+
+
+
+Browse <a href="../../../cvsweb/cvs_source_access.htm">--OLD-- Version control system</a>
+options (CVS), or go directly to <a href="/servlets/JCVSlet/list/Aubit4gl/Aubit4gl">--OLD--
+Aubit
+4gl CVS root</a>.&nbsp;
+
+  </li>
+
+
+		  <li>
+
+
+<P>Download manual from <a href="/servlets/JCVSlet/zip/Aubit4gl/Aubit4gl/docs/docs.zip">--OLD--
+CVS</a>
+</P>
+
+
+  </li>
+		</ul>
+
+
+<hr>
+<p align="center"><a href="http://aubit4gl.sourceforge.net/" target="_blank">Aubit
+4gl on SourceForge</a>&nbsp; <a href="../index.htm">--OLD-- Aubit 4GL compiler project home page</a>
+<a href="../../../index1.html">Falout Online Home</a></p>
+
+</body>
+
+</html>
