@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.11 2004-01-16 11:36:04 mikeaubury Exp $
+# $Id: memfile.c,v 1.12 2004-01-16 16:37:42 mikeaubury Exp $
 #
 */
 
@@ -342,7 +342,7 @@ int b;
 int type=0;
 FILE *last;
 
-  if (!A4GL_isyes(acl_getenv("A4GL_REMOVE_COMMENTS_FIRST"))) return;
+  if (!A4GL_isyes(acl_getenv("RM_COMMENTS_FIRST"))) return;
 
   if (f != in)
     {
