@@ -46,6 +46,25 @@ define
 
 
 function init()
+define lv_pack char(256)
+
+
+
+	let lv_pack=fgl_getenv("A4GL_LEXTYPE")
+	call read_pack(lv_pack)
+
+	let lv_pack=fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+	call read_pack(lv_pack)
+
+	let lv_pack=fgl_getenv("A4GL_PLATFORM")
+	call read_pack(lv_pack)
+
+	let lv_pack=fgl_getenv("A4GL_PLATFORM"),"__",fgl_getenv("A4GL_LEXTYPE")
+	call read_pack(lv_pack)
+
+	let lv_pack=fgl_getenv("A4GL_PLATFORM"),"__",fgl_getenv("A4GL_LEXTYPE"),"_",fgl_getenv("A4GL_LEXDIALECT")
+	call read_pack(lv_pack)
+
 	initialize 	mv_db, 
 			mv_lextype,
 			mv_lexdialect,
@@ -86,10 +105,10 @@ function init()
 	END IF
 
 
-	let mv_include="-I \"",fgl_getenv("AUBITDIR"),"/incl\" "
+	let mv_include="-I\"",fgl_getenv("AUBITDIR"),"/incl\" "
 
 	IF fgl_getenv("GTK_INC_PATH")!= "" THEN
-		let mv_include=mv_include clipped, "-I \"",fgl_getenv("GTK_INC_PATH"),"\""
+		let mv_include=mv_include clipped, "-I\"",fgl_getenv("GTK_INC_PATH"),"\""
 	END IF
 
 	LET mv_libs=" -laubit4gl"
@@ -506,7 +525,6 @@ DEFINE lv_cnt integer
 
 
    if mv_stage="EXE" THEN
-	display "OBJECTS       : ",mv_objects clipped
 	call run_link(mv_output)
    end if
 
@@ -845,7 +863,7 @@ if mv_makecompile then
 		if mv_verbose>=2 then
 			display "Make Compile specified - file skipped as ",lv_new clipped, " is newer than ",lv_fname clipped
 		end if
-		LET mv_objects=mv_objects clipped," ",lv_new
+		call add_obj(lv_new)
 		return
 	end if
 end if
@@ -868,10 +886,33 @@ function run_compile_esql(lv_fname,lv_new,lv_base)
 define lv_fname char(512)
 define lv_new char(512)
 define lv_base char(512)
+define lv_runstr char(1024)
+define lv_status integer
 
-	DISPLAY "RUN_COMP_ESQL :",lv_fname clipped," ",lv_new clipped
-	LET mv_objects=mv_objects clipped," ",lv_new
-	call add_obj(lv_new)
+if mv_makecompile then
+        if mv_verbose>=3 then
+                display "Make Compile - checking file times"
+        end if
+        if compare_file_times(lv_fname,lv_new) then
+                if mv_verbose>=2 then
+                        display "Make Compile specified - file skipped as ",lv_new clipped, " is newer than ",lv_fname clipped
+                end if
+                call add_obj(lv_new)
+                return
+        end if
+end if
+
+DISPLAY "RUN_COMP_ESQL :",lv_fname clipped," ",lv_new clipped
+
+
+let mv_errfile=lv_base clipped,".err"
+let lv_runstr=mv_compile_pec clipped," ",mv_compile_pec_opts clipped," ",mv_include clipped," -o ",lv_new clipped, " -c ",lv_fname clipped," 2> ",mv_errfile
+if mv_verbose>=2 then
+        display lv_runstr clipped
+end if
+run lv_runstr clipped returning lv_status
+call check_exit_status(lv_status,lv_fname,lv_runstr)
+call add_obj(lv_new)
 end function
 
 
@@ -905,13 +946,17 @@ if mv_verbose>=2 then
 	display lv_runstr clipped
 end if
 
+display "OBJECTS       : ",mv_objects clipped
 run lv_runstr clipped returning lv_status
+
+display "Ran command"
 call check_exit_status(lv_status,lv_output,lv_runstr)
 end function
 
 function add_obj(lv_obj)
 define lv_obj char(256)
 
+	DISPLAY "ADD OBJ : ",lv_obj
 	LET mv_objects=mv_objects clipped," ",lv_obj
 
 	if mv_newest_obj is null then

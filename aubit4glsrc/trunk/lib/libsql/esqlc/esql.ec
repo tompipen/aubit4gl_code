@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.83 2004-04-21 08:19:12 mikeaubury Exp $
+# $Id: esql.ec,v 1.84 2004-05-21 15:34:52 mikeaubury Exp $
 #
 */
 
@@ -141,7 +141,7 @@ EXEC SQL include sqlca;
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.83 2004-04-21 08:19:12 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.84 2004-05-21 15:34:52 mikeaubury Exp $";
 #endif
 
 
@@ -809,6 +809,8 @@ prepareSqlStatement (struct BINDING *ibind, int ni, struct BINDING *obind,
   statementName = sid->statementName;
   statementText = sid->select;
   EXEC SQL PREPARE:statementName FROM:statementText;
+
+  copy_sqlca_Stuff();
   if (isSqlError ())
     {
       free (sid);
@@ -1820,6 +1822,8 @@ if (A4GL_isyes(acl_getenv("SWAP_SQLCA62"))) {
     a4gl_sqlca.sqlerrd[5]=sqlca.sqlerrd[5];
 }
 	strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
+	strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
+
     //strncpy(a4gl_sqlca.sqlawarn,sqlca.sqlawarn,9);
 	//strcpy(a4gl_sqlca.sqlstate,sqlca.sqlstate);
 
@@ -3392,4 +3396,23 @@ return ptr;
 }
 
 
+static copy_sqlca_Stuff( ) {
+
+
+    a4gl_sqlca.sqlerrd[0]=sqlca.sqlerrd[0];
+    a4gl_sqlca.sqlerrd[1]=sqlca.sqlerrd[1];
+    a4gl_sqlca.sqlerrd[2]=sqlca.sqlerrd[2];
+    a4gl_sqlca.sqlerrd[3]=sqlca.sqlerrd[3];
+    a4gl_sqlca.sqlerrd[4]=sqlca.sqlerrd[4];
+
+if (A4GL_isyes(acl_getenv("SWAP_SQLCA62"))) {
+    a4gl_sqlca.sqlerrd[5]=sqlca.sqlerrd[1];
+} else {
+    a4gl_sqlca.sqlerrd[5]=sqlca.sqlerrd[5];
+}
+
+	strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
+	strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
+
+}
 /* ================================= EOF ============================== */

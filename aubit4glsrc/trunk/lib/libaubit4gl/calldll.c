@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.44 2004-05-19 12:47:13 mikeaubury Exp $
+# $Id: calldll.c,v 1.45 2004-05-21 15:34:51 mikeaubury Exp $
 #
 */
 
@@ -492,7 +492,7 @@ A4GL_find_func (void *dllhandle, char *func)
   A4GL_debug ("35 Got %p", func_ptr);
   if (func_ptr == 0)
     {
-      A4GL_debug ("1 Function Not found");
+      A4GL_debug ("1 Function Not found : %s",tempbuff);
       A4GL_exitwith ("Could not find function in shared library");
       A4GL_fgl_die_with_msg(43,"Error:Could not find function in shared library - STOP");
       /* return badfunc; */

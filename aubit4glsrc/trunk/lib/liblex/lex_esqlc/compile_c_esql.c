@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_esql.c,v 1.78 2004-05-20 15:58:14 mikeaubury Exp $
+# $Id: compile_c_esql.c,v 1.79 2004-05-21 15:34:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c_esql.c,v 1.78 2004-05-20 15:58:14 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_esql.c,v 1.79 2004-05-21 15:34:52 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules for compiling with Informix or PostgreSQL 
@@ -82,6 +82,7 @@ static char *module_id="$Id: compile_c_esql.c,v 1.78 2004-05-20 15:58:14 mikeaub
 #include "a4gl_lib_lex_esqlc_int.h"
 char * A4GL_dtype_sz (int d, int s);
 
+	extern int fbindcnt;
 /*
 =====================================================================
                     Variables definitions
@@ -1403,6 +1404,7 @@ print_copy_status ()
 {
   printc ("A4GLSQL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
   printc ("A4GLSQL_set_sqlerrd(sqlca.sqlerrd[0], sqlca.sqlerrd[1], sqlca.sqlerrd[2], sqlca.sqlerrd[3], sqlca.sqlerrd[4], sqlca.sqlerrd[5]);");
+  printc ("A4GLSQL_set_sqlerrm(sqlca.sqlerrm,sqlca.sqlerrp);");
 
 }
 
@@ -1570,7 +1572,7 @@ if (type=='R') {
 	/* print_execute needs an ibind - we have an fbind - so we need*/
 	/* to copy it across...*/
 	extern int ibindcnt;
-	extern int fbindcnt;
+	//extern int fbindcnt;
 	memcpy(ibind,fbind,sizeof(struct binding_comp)*c+1);
 	ibindcnt=fbindcnt;
 	sprintf(iname,"acl_p%s",reptab);
@@ -1578,7 +1580,6 @@ if (type=='R') {
 	print_execute(iname,1);
 }
 if (type=='E') {
-	extern int fbindcnt;
 	printc("A4GL_free_duplicate_binding(obind,%d);",fbindcnt);
 	printc("}");
 	
@@ -1586,7 +1587,7 @@ if (type=='E') {
 
 if (type=='F') {
 	extern int obindcnt;
-	extern int fbindcnt;
+	//extern int fbindcnt;
 	char buff[256];
         char buff2[256];
 
@@ -1616,7 +1617,7 @@ if (type=='F') {
 
 if (type=='I') {
 	extern int current_ordbindcnt;
-	extern int fbindcnt;
+	//extern int fbindcnt;
 	extern struct binding_comp ordbind[];
 	char sql[1024];
 	int a;

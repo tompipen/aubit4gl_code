@@ -396,7 +396,11 @@ end function {aclfgl_openiem}
 
 
 
-
+code
+int HELPLIB_aclfgl_aclfgl_libhelp_showhelp(int n) {
+	return HELPLIB_aclfgl_libhelp_showhelp(n);
+}
+endcode
 
 {---------------------------------------------------------------------
 
