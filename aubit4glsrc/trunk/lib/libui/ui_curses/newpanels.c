@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.71 2003-08-24 17:54:15 mikeaubury Exp $
+# $Id: newpanels.c,v 1.72 2003-09-22 14:52:43 mikeaubury Exp $
 #*/
 
 /**
@@ -1715,6 +1715,7 @@ int nattr;
 WINDOW *wot;
 A4GL_debug("display_internal : %d %d %s %d %d",x,y,s,a,clr_line);
 A4GL_debug("determine_attribute seems to be returning %x\n",a);
+  A4GL_chkwin ();
 
   if (x == -1 && y == -1)
     {
@@ -1746,11 +1747,15 @@ A4GL_debug("determine_attribute seems to be returning %x\n",a);
       if (clr_line)
 	{
 	int sl;
-	char buff[256];
-	memset(buff,' ',255);
+	char buff[1024];
+	memset(buff,' ',1024);
 	sl=strlen(s);
 	sl=A4GL_get_curr_width()-sl;
-	buff[sl]=0;
+	if (sl>=0) buff[sl]=0;
+	buff[1023]=0;
+	A4GL_debug("currwin=%p",currwin);
+	A4GL_debug("Spacer..");
+	A4GL_debug("Buff=%s",buff);
   	waddstr (currwin, buff);
 	  A4GL_debug ("Clearing line...");
 	}
@@ -3027,20 +3032,28 @@ A4GL_window_on_top_ign_menu (void)
   PANEL *ptr;
   char *s;
   void *winptr;
+  int ok=0;
   ptr=0;
+
   while (1) {
   	ptr = panel_below (ptr);
-	A4GL_debug("panel below=%p");
+	A4GL_debug("panel below=%p",ptr);
   	s = panel_userptr (ptr);	/* get name of panel */
 	A4GL_debug("userptr=%p",s);
 	
 	if (s) {
 		A4GL_debug("Got an s = '%s'",s);
+		ok=1;
 		break;
 	}
 	
   }
-  A4GL_debug("window_on_top - %s",s);
+
+  if (ok==0) {
+	A4GL_debug("can't find window on top....");
+  } else {
+  	A4GL_debug("window_on_top - %s",s);
+  }
   if (A4GL_has_pointer (s, MNPARCODE)) {
 		// Damn - its a menu - whats our parent ?
 		A4GL_debug("Was menu window...");

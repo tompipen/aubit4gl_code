@@ -1,4 +1,4 @@
-# $Id: misql.4gl,v 1.7 2003-03-10 09:09:45 mikeaubury Exp $
+# $Id: misql.4gl,v 1.8 2003-09-22 14:51:58 mikeaubury Exp $
 # MISQL - Kerry's alternative to Informix-ISQL
 {
 MISQL is the result of work done on behalf of QUANTA SYSTEMS LTD,
@@ -86,6 +86,7 @@ DEFINE m_tabname            CHAR(18),
        m_depth              INTEGER,
        m_isql_or_dbaccess   CHAR(9)
 
+define m_pager char(80)
 MAIN
 define
     have_args integer
@@ -100,11 +101,17 @@ define
    DEFER QUIT
    OPTIONS MESSAGE LINE LAST
    LET have_args = false
+   let m_pager=fgl_getenv("PAGER")
+   if m_pager is null or m_pager matches " " THEN
+	let m_pager="pg"
+   end if
+
+
 
    IF arg_val(1) = "-v"
    OR arg_val(1) = "-V"
    THEN
-      CALL message_prompt("$Id: misql.4gl,v 1.7 2003-03-10 09:09:45 mikeaubury Exp $","")
+      CALL message_prompt("$Id: misql.4gl,v 1.8 2003-09-22 14:51:58 mikeaubury Exp $","")
       EXIT PROGRAM
    END IF
 
@@ -721,7 +728,7 @@ DEFINE   i            INTEGER,
       NEXT OPTION "Run"
    COMMAND "Run" "Run the current SQL commands"
       IF m_viname IS NOT NULL THEN
-         LET m_text = isql(),m_database CLIPPED, " < ",m_viname," | pg"
+         LET m_text = isql(),m_database CLIPPED, " < ",m_viname," | ",m_pager
          RUN m_text
 #        CALL execute_sql(m_viname)
          NEXT OPTION "Modify"
