@@ -1,0 +1,92 @@
+/*
+=====================================================================
+                        Source: window.rule
+=====================================================================
+*/
+
+
+op_clr_fields : {$<field_list>$=0;}| KWFIELD field_name_list_as_struct {
+	$<field_list>$=$<field_list>2;
+}
+;
+
+op_to_defs : 
+{ strcpy($<str>$,"0"); }
+| TO_DEFAULTS { strcpy($<str>$,"1"); }
+;
+
+clear_cmd	:	CLEARSCR { print_current_window("\"screen\""); print_clr_window("\"screen\""); }
+		|	CLEARWIN win_name { print_clr_window($<str>2); }
+		|	CLEARSTAT win_name { print_clr_window($<str>2); }
+		|	CLEARFORM { print_clr_form(0,0,"0"); }
+		|	CLEARFORMTODEFAULTS { print_clr_form(0,0,"1"); }
+		|	CLEAR_X_FORM form_name op_clr_fields  op_to_defs { print_clr_form($<str>2,$<str>3,$<str>4); }
+		|	CLEAR field_name_list_as_struct op_to_defs {
+	print_clr_fields(field_name_list_as_char($<field_list>2),$<str>3);
+}
+;
+
+
+
+
+
+
+
+current_win_cmd	:	CWIS {
+	print_current_window("\"screen\"");
+}
+		|	CURRENT_WINDOW_IS win_name 
+{
+	print_current_window($<str>2);
+};
+
+window_type	:	fgl_expr ROWS KW_COMMA fgl_expr COLUMNS {
+sprintf($<str>$,"A4GL_cr_window");
+reset_attrib(&form_attrib);
+}
+		|	KWFORM fgl_expr {
+add_feature("USES_FORM");
+sprintf($<str>$,"A4GL_cr_window_form");
+reset_attrib(&form_attrib);
+};
+
+show_cmd : SHOW_WINDOW win_name {
+	print_show_window($<str>2);
+	addmap("Show Window",$<str>2,curr_func,yylineno,infilename); 
+}
+| SHOW_MENU menu_name KW_USING menu_handler op_mnfile {
+	print_show_menu($<str>2,$<str>4);
+	addmap("Call Menuhandler",$<str>4,curr_func,yylineno,infilename); 
+}
+;
+op_mnfile : {
+
+print_def_mn_file();
+
+} | FROM fgl_expr
+;
+
+menu_name: identifier
+{addmap("Use Menu",$<str>1,curr_func,yylineno,infilename); }
+;
+
+menu_handler: identifier;
+
+
+hide_cmd : HIDE_WINDOW win_name {
+	print_hide_window($<str>2);
+}
+;
+
+move_cmd : MOVE_WINDOW win_name TO fgl_expr KW_COMMA fgl_expr 
+{
+print_move_window($<str>2,0);
+}
+          |  MOVE_WINDOW win_name BY fgl_expr KW_COMMA fgl_expr
+{
+print_move_window($<str>2,1);
+}
+;
+
+/* ========================== window.rule ========================= */
+

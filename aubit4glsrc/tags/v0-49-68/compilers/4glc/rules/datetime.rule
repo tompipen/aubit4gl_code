@@ -1,0 +1,50 @@
+/*
+=====================================================================
+                        Source: datetime.rule
+=====================================================================
+*/
+
+interval_expr:
+	UNITS_YEAR {
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_YEAR);");
+	}
+	| UNITS_MONTH {
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_MONTH);");
+	}
+	| UNITS_DAY {
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_DAY);");
+	}
+	| UNITS_HOUR {
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_HOUR);");
+	}
+	| UNITS_MINUTE {
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_MINUTE);");
+	}
+	| UNITS_SECOND {
+        	$<ptr>$=A4GL_new_expr("A4GL_pushop(OP_SECOND);");
+	}
+;
+
+
+extend_parameters: OPEN_BRACKET
+			fgl_expr_c
+			op_datetime_qual
+		CLOSE_BRACKET {
+			$<ptr>$=A4GL_append_expr_expr($<ptr>2,$<ptr>3);
+		}
+;
+
+
+
+
+op_datetime_qual:  { 
+	char buff[50];
+	sprintf(buff,"A4GL_push_int(0x%x);",22); 
+	$<ptr>$=A4GL_new_expr(buff);
+}
+| KW_COMMA dtime_start TO dtime_end { 
+	char buff[50];
+	sprintf(buff,"A4GL_push_int(0x%x);",(atoi($<str>2)*16) +atoi($<str>4)  ); 
+	$<ptr>$=A4GL_new_expr(buff);
+}
+;

@@ -1,0 +1,744 @@
+###########################################################################
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+###########################################################################
+
+#	 $Id: footer.mki,v 1.41 2005-03-09 02:22:57 afalout Exp $
+
+#############################################################################
+#   Aubit 4gl compiler - 'Amake' make system
+#
+# standard footer for all .mk files. Contains processing of variables defined
+# in .mk files, header.mki and any optional additionlly included files, to
+# prepare for execution of targets that are also defined here.
+#
+# do not put ANY hard coded names here!!!!!
+#
+#############################################################################
+
+ifneq "${DBASE}" "${FORMS_DBASE}"
+	#prevent forms from compiling, since they have hard-coded default database name:
+	FILES.per=
+endif
+
+ALL_SRC=${PROG} ${FILES.lib} ${FILES.4gl} ${FILES.per} ${FILES.msg}
+
+########################
+#Set name for 4Js database definition file to be created/used
+ifneq "$(DBASE)" ""
+	DBASE.sch = ${DBASE}.sch
+endif
+
+########################
+#Some dummy makefiles may not specify name of the target:
+ifeq "${PROG}" ""
+	PROG=no-name-specified.lib
+endif
+
+########################
+#Filter-out 4gl modules to be ignored:
+ifneq "${IGNORE.4gl}" ""
+	FILES.4gl:=$(filter-out ${IGNORE.4gl},${FILES.4gl})
+endif
+
+
+########################
+#Prevent targets on GLOB_GLOBALS_EXCEPTION list from linking GLOB_GLOBALS objects
+ifneq "$(filter ${GLOB_GLOBALS_EXCEPTION},${PROG})" ""
+	GLOB_GLOBALS=
+endif
+
+#######################
+#extract program file extension, to determine which kind of target to build
+#(library or program)
+PROGTYPE  = $(suffix ${PROG})
+
+########################
+#for ld to find C compiler libraries (and objects)
+#NOTE: this applies only to LD, and NOT to GCC
+LD_RUN_PATH	:=${LIBSTORE}:${LD_RUN_PATH}
+export LD_RUN_PATH
+
+#We need to add lib to name of libraries (libxxxx.xx) when we will use them to link using -l switch
+ifeq "${GCC_MINGW}" "yes"
+	LIBPREFIX	=lib
+    LIBLINKFLG	=-l
+endif
+
+
+########################
+#If we did not include rules files for all compilers, we must at least specify
+#extensions for the targets defined in this file, to avoid warning from make:
+# warning: overriding commands for target `xyz'
+ifeq "${I4GL_PRG_EXT}" ""
+	I4GL_PRG_EXT=.I4GL_RULES_NOT_INCLUDED
+	I4GL_CPRG_EXT=.I4GL_CPRG_EXT.${I4GL_PRG_EXT}
+	I4GL_LIB_EXT=${I4GL_PRG_EXT}
+endif
+ifeq "${A4GL_EXE_EXT}" ""
+	A4GL_EXE_EXT=.A4GL_RULES_NOT_INCLUDED
+	A4GL_LIB_EXT=${A4GL_EXE_EXT}
+endif
+ifeq "${Q4GL_PRG_EXT}" ""
+	Q4GL_PRG_EXT=.Q4GL_RULES_NOT_INCLUDED
+	Q4GL_LIB_EXT=${Q4GL_PRG_EXT}
+endif
+ifeq "${D4GL_PRG_EXT}" ""
+	D4GL_PRG_EXT=.D4GL_RULES_NOT_INCLUDED
+	D4GL_CPRG_EXT=.D4GL_CPRG_EXT.${D4GL_PRG_EXT}
+	D4GL_LIB_EXT=${D4GL_PRG_EXT}
+endif
+
+# =======================================================================
+#   Set options/extensions for compiling a target (program or library)
+# =======================================================================
+
+ifeq "$(PROGTYPE)" ".lib"
+	#we are making a library
+    ifeq "$(POINTTOSTORE)" "1"
+		ADDLIBSTORE=$(LIBSTORE)
+    endif
+	PROG.42r  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_LIB_EXT}}
+	PROG.42e  = $(ADDLIBSTORE)${PROG:.lib=${D4GL_CLIB_EXT}
+	PROG.4ge  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_CLIB_EXT}}
+	PROG.4gi  = $(ADDLIBSTORE)${PROG:.lib=${I4GL_LIB_EXT}}
+	PROG.4qe  = $(ADDLIBSTORE)${PROG:.lib=${Q4GL_LIB_EXT}}
+    ifeq "${LIBS_LINK}" "SHARED"
+		#aubit shared library
+		PROG.4ae  = $(ADDLIBSTORE)${LIBPREFIX}${PROG:.lib=${A4GL_SOL_EXT}}
+	else
+		#aubit static library
+		PROG.4ae  = $(ADDLIBSTORE)${LIBPREFIX}${PROG:.lib=${A4GL_LIB_EXT}}
+    endif
+else
+    #we are making a program
+    ifeq "$(POINTTOSTORE)" "1"
+		ADDEXECSTORE=${EXECSTORE}
+    endif
+	PROG.42r  = ${ADDEXECSTORE}${PROG}${D4GL_PRG_EXT}
+	PROG.42e  = ${ADDEXECSTORE}${PROG}${D4GL_CPRG_EXT}
+	PROG.4ge  = ${ADDEXECSTORE}${PROG}${I4GL_CPRG_EXT}
+	PROG.4gi  = ${ADDEXECSTORE}${PROG}${I4GL_PRG_EXT}
+	PROG.4qe  = ${ADDEXECSTORE}${PROG}${Q4GL_PRG_EXT}
+	PROG.4ae  = ${ADDEXECSTORE}${PROG}${A4GL_EXE_EXT}
+endif
+
+# =======================================================================
+#       Set extensions for compiling library/objects/forms/help files
+# =======================================================================
+
+#Libraries (as specified by make file as part of the program):
+	ifeq "$(POINTTOSTORE)" "1"
+		ADDLIBSTORE=$(LIBSTORE)
+	endif
+	FILES.42x = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${D4GL_LIB_EXT}})
+	FILES.42o = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${D4GL_CLIB_EXT}})
+	FILES.4gx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${I4GL_LIB_EXT}})
+	FILES.4cx = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${I4GL_CLIB_EXT}})
+	FILES.qox = $(addprefix $(ADDLIBSTORE), ${FILES.lib:.lib=${Q4GL_LIB_EXT}})
+
+	ifeq "${LIBS_LINK}" "SHARED"
+		FILES.aox = $(addprefix ${LIBPREFIX}$(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_SOL_EXT}})
+    else
+		FILES.aox = $(addprefix ${LIBPREFIX}$(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_LIB_EXT}})
+    endif
+
+	ifneq "${LIBLINKFLG}" ""
+		ifeq "${LIBS_LINK}" "SHARED"
+			FILES.aubit.link = $(addprefix ${LIBLINKFLG}$(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_SOL_EXT}})
+	    else
+			FILES.aubit.link = $(addprefix ${LIBLINKFLG}$(ADDLIBSTORE), ${FILES.lib:.lib=${A4GL_LIB_EXT}})
+	    endif
+    else
+
+
+	endif
+
+
+#OBJECTS
+	ifeq "$(POINTTOSTORE)" "1"
+		ADDOBJSTORE=${OBJSTORE}
+	endif
+	FILES.42m = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${D4GL_OBJ_EXT}})
+	FILES.4go = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${I4GL_OBJ_EXT}})
+	FILES.qo  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${Q4GL_OBJ_EXT}})
+	
+	ifeq "$(PROGTYPE)" ".lib"
+		#Librarises (composed of multiple 4gl modules) are to to result 
+		#in shared object (when using --shared) but object that will be 
+		#linked to crete that library are to be created a static objects
+		OBJS_LINK=STATIC
+	endif 
+	ifeq "${OBJS_LINK}" "SHARED"
+		#shared libraries will need to be passes as -l[lib]name on linking line
+        #will linker accept .aso as -l ??
+
+		#Create list of non-MAIN modules:
+		FILES.4gl.notMAIN=$(filter-out ${MAIN.4gl},${FILES.4gl})
+		
+		#4GL modules that do NOT contain MAIN block will be compiled to shared objects:
+		FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl.notMAIN:.4gl=${A4GL_SOB_EXT}})
+		
+		#4GL module containg MAIN block needs to compile to static object:
+		FILES.ao  += $(addprefix ${ADDOBJSTORE}, ${MAIN.4gl:.4gl=${A4GL_OBJ_EXT}})
+		GLOB_GLOBALS_A4GL=${GLOB_GLOBALS:.obj=${A4GL_SOB_EXT}}		
+    else
+		FILES.ao  = $(addprefix ${ADDOBJSTORE}, ${FILES.4gl:.4gl=${A4GL_OBJ_EXT}})
+		GLOB_GLOBALS_A4GL=${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}		
+    endif
+#FORMS
+	ifeq "$(POINTTOSTORE)" "1"
+		ADDFORMSTORE=${FORMSTORE}
+	endif
+	FILES.42f = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=${D4GL_FRM_EXT}})
+	FILES.frm = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=${I4GL_FRM_EXT}})
+	FILES.afr = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=${A4GL_FRM_EXT}})
+	FILES.pic = $(addprefix ${ADDFORMSTORE}, ${FILES.per:.per=${Q4GL_FRM_EXT}})
+
+#HELP
+	ifeq "$(POINTTOSTORE)" "1"
+		ADDHELPSTORE=${HELPSTORE}
+	endif
+	FILES.42h = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=${D4GL_HLP_EXT}})
+	FILES.iem = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=${I4GL_HLP_EXT}})
+	FILES.hlp = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=${A4GL_HLP_EXT}})
+	FILES.qms = $(addprefix ${ADDHELPSTORE}, ${FILES.msg:.msg=${Q4GL_HLP_EXT}})
+
+# =======================================================================
+#                         Targets dependencies
+# =======================================================================
+
+# WARNING!!!! VPATH can dissapear for second variable in dependency list,
+# if $^ is placed within ifeq or ifneq !!!!!!! (probably a make bug)
+# This is the reason why we will put all dependencies in one variable before
+# we need them:
+#NOTE: I've seen the case where make finds .aox in another firectory (using VPATH)
+#and does not try to remake it, and then DOES NOT find it any more, UNTILL YOU
+#DELETE IT AND RE-MAKE IT, and THEN it finds is - no idea why, but if something
+#like that happnes, do a full clean, and thern remake everything (or whatever
+#fails to link...)
+
+
+
+AUBIT_DEPS		=${FILES.ao} 	${FILES.aox}	${GLOB_GLOBALS_A4GL}
+D4GL_PCODE_DEPS	=${FILES.42m} 	${FILES.42x}	${GLOB_GLOBALS:.obj=${D4GL_OBJ_EXT}}
+D4GL_CCODE_DEPS	=${FILES.42o} 	${FILES.42FIX}	${GLOB_GLOBALS:.obj=${D4GL_COBJ_EXT}}
+I4GL_PCODE_DEPS	=${FILES.4go} 	${FILES.4gx}	${GLOB_GLOBALS:.obj=${I4GL_OBJ_EXT}}
+I4GL_CCODE_DEPS	=${FILES.oFIX}	${FILES.4cx}	${GLOB_GLOBALS:.obj=${I4GL_COBJ_EXT}}
+QUERIX_DEPS		=${FILES.qo} 	${FILES.qox}	${GLOB_GLOBALS:.obj=${Q4GL_OBJ_EXT}}
+
+ifneq "${LIBLINKFLG}" ""
+	AUBIT_LINK_DEPS	=${FILES.ao}	${GLOB_GLOBALS_A4GL}
+else
+	AUBIT_LINK_DEPS	=${AUBIT_DEPS}
+endif
+
+
+# =======================================================================
+#                 Define files to be cleaned
+# =======================================================================
+
+ifeq "$(DEFAULT)" "aubit"
+	DEBRIS.target   =${PROG.4ae}
+	DEBRIS.help     =${FILES.hlp}
+	DEBRIS.obj		=${FILES.ao} ${FILES.aox}
+	DEBRIS.c        =${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h} ${FILES.4gl:.4gl=.glb}
+	DEBRIS.forms    =${FILES.afr}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "d4gl-pcode"
+	DEBRIS.target   =${PROG.42r}
+	DEBRIS.help     =${FILES.42h}
+	DEBRIS.obj		=${FILES.42m} ${FILES.42x}
+	DEBRIS.forms    =${FILES.42f}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "d4gl-ccode"
+	DEBRIS.target   =${PROG.42e}
+	DEBRIS.help     =${FILES.42h}
+	DEBRIS.obj		=${FILES.42o} ${FILES.42FIXME}
+	DEBRIS.c        =${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h}
+	DEBRIS.forms    =${FILES.42f}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "i4gl-pcode"
+	DEBRIS.target   =${PROG.4gi}
+	DEBRIS.help     =${FILES.iem}
+	DEBRIS.obj		=${FILES.4go} ${FILES.4gx}
+	DEBRIS.forms    =${FILES.frm}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "i4gl-ccode"
+	DEBRIS.target   =${PROG.4ge}
+	DEBRIS.help     =${FILES.iem}
+	DEBRIS.obj		=${FILES.oFIXME} ${FILES.4cx}
+	DEBRIS.c        =${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h}
+	DEBRIS.forms    =${FILES.frm}
+	DEBRIS.libs     =
+endif
+ifeq "$(DEFAULT)" "querix"
+	DEBRIS.target   =${PROG.4qe}
+	DEBRIS.help     =${FILES.qms}
+	DEBRIS.obj		=${FILES.qo} ${FILES.qox}
+	DEBRIS.c        =${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h}
+	DEBRIS.forms    =${FILES.pic}
+	DEBRIS.libs     =
+endif
+
+
+# =======================================================================
+#                              Targets
+# =======================================================================
+
+
+default:	${DEFAULT}
+
+all:	aubit querix d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode
+
+#Touch all source file, to force recompile
+#use make option to do this, otherwise it will force CVS commit
+#touch.all: ${FILES.4gl} ${FILES.per} ${FILES.msg}
+#	@touch -c $^
+#	@echo "Touched all source files of this program/library"
+
+# =======================================================================
+#                      Compiler dependent Targets
+# =======================================================================
+
+#addind libraries in first place is an attempt to cause libs to exist in the moment
+#make reaches prgram target, examine dependencies, applies VPATH and hopefully
+#finds them. If this does not help, remove it, since it's redundant:
+#aubit	  :	${FILES.aox} ${PROG.4ae} ${FILES.afr} ${FILES.hlp}
+aubit	  :	${AUBIT_DEPS} 		${PROG.4ae} ${FILES.afr} ${FILES.hlp} ${FILES.4gl:.4gl=.glb} ${GLOB_GLOBALS:.obj=.glb}
+d4gl-pcode:	${D4GL_PCODE_DEPS} 	${PROG.42r} ${FILES.42f} ${FILES.42h}
+d4gl-ccode:	${D4GL_CCODE_DEPS} 	${PROG.42e} ${FILES.42f} ${FILES.42h}
+i4gl-pcode:	${I4GL_PCODE_DEPS} 	${PROG.4gi} ${FILES.frm} ${FILES.iem}
+i4gl-ccode:	${I4GL_CCODE_DEPS} 	${PROG.4ge} ${FILES.frm} ${FILES.iem}
+querix    : ${QUERIX_DEPS} 		${PROG.4qe} ${FILES.pic} ${FILES.qms}
+plexus:
+
+
+#When using Aubit, out-of-date .glb files can make a mess; compiler will not
+#check if coresopinfign 4gl file changed or not, and just use .glb file it found;
+#we can instruct 4glc to clean them after each compile, forcing them to allways
+#be up-to-date, but this will force large number of 4gl files
+#to get recompile over and over again, every time they are listed in
+#GLOBALS "filename.4gl" directive, which is time consuming; So the general rule
+#must be:
+#    file.glb must depend on file.4gl, and get re-created if .4gl changed
+#Attemt to acomplish this is adding:
+# ${FILES.4gl:.4gl=.glb} ${GLOB_GLOBALS:.obj=.glb}
+#to the "aubit:" target; if it works as expected, the things below should not be 
+#needed, and this can be removed:
+ifeq "$(DEFAULT)" "aubit"
+#%.ao: %.4gl -- implied
+#%.glb: %.4gl
+#%.glb: %${A4GL_OBJ_EXT}
+#%.glb: %.4gl
+#${GLOB_GLOBALS:.obj=.glb}: ${GLOB_GLOBALS:.obj=${A4GL_OBJ_EXT}}
+endif
+
+
+# =======================================================================
+#                            Aubit Targets
+# =======================================================================
+
+#This is an explicit rule - vpath will not be searched - use implicit rule instead?
+#${PROG.4ae}:${AUBIT_DEPS}
+${PROG.4ae}:${AUBIT_LINK_DEPS}
+ifeq "$(PROGTYPE)" ".lib" 	#------------------- linking library -----------------------
+ifeq "${A4GL_USE_LD}" "yes" #using ld
+#-fPIC will apparently not work on AIX - we should autoconf this file
+#--rpath${LIBSTORE} # -L${LIBSTORE}
+#	${FAIL_LINK}ld -fPIC -shared $^ -o ${xxEXECSTORE}$@
+	@${FAIL_LINK}for afile in $^ ; do \
+        x=`dirname $$afile`; \
+        if test "$$x" != "."; then \
+            allf="$$allf ${CYGWIN_ROOT}$$afile" ; \
+        else \
+            allf="$$allf $$afile" ; \
+        fi ; \
+    done; \
+	echo "ld -fPIC -shared $$allf -o ${xxEXECSTORE}$@"; \
+	ld -fPIC -shared $$allf -o ${xxEXECSTORE}$@; \
+	exit $$?;
+else                        #using 4glc
+	@${FAIL_LINK}for afile in $^ ; do \
+        x=`dirname $$afile`; \
+        if test "$$x" != "."; then \
+            allf="$$allf ${CYGWIN_ROOT}$$afile" ; \
+        else \
+            allf="$$allf $$afile" ; \
+        fi ; \
+    done; \
+	EXEC="${A4GL_CC} -shared $$allf -o ${xxEXECSTORE}$@ ${FILES.aubit.link}"; \
+    echo $$EXEC; \
+	$$EXEC; \
+    exit $$?;
+endif
+else 						#------------------ linking executable ---------------------
+ifeq "${USE_4GLPC}" "1"     #using 4glpc
+	${FAIL_LINK}${A4GL_CC} $^ -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS}
+else                        #using 4glc
+	@${FAIL_LINK}for afile in $^ ; do \
+        x=`dirname $$afile`; \
+        if test "$$x" != "."; then \
+            allf="$$allf ${CYGWIN_ROOT}$$afile" ; \
+        else \
+            allf="$$allf $$afile" ; \
+        fi ; \
+    done; \
+	EXEC="${A4GL_CC} $$allf -o ${xxEXECSTORE}$@ ${A4GL_CC_LDFLAGS} ${PATH.link} ${FILES.aubit.link}" ;\
+    echo $$EXEC; \
+	$$EXEC; \
+	exit $$?;
+endif
+endif
+#	@echo CHANGED: $?
+
+# =======================================================================
+#                            4Js Targets
+# =======================================================================
+
+#########################
+#Build P-code program
+${PROG.42r}: ${D4GL_PCODE_DEPS}
+#	${D4GL_PL} -o $@ $^ ${D4GL_PL_LDFLAGS}
+	${FAIL_LINK}fgllink -O -o $@ $^ ${FGLDIR}/lib/libfgl4js.42x ${D4GL_PL_LDFLAGS}
+
+########################
+#Build C-code program
+#${PROG.42e}:	${DBASE.sch} ${FILES.42o}
+${PROG.42e}: ${D4GL_CCODE_DEPS}
+	${D4GL_CL} -o $@ ${FILES.42o} ${D4GL_CL_LDFLAGS}
+
+# =======================================================================
+#                            Informix Targets
+# =======================================================================
+
+#########################
+#Build P-code program
+#this will fail in cases we are making ${FILES.4gx} outsid ecurrent dir on the fly,
+#because ${FILES.4gx} file names will not include path, since VPATH was
+#already examined. On the second run, ti will work OK.
+${PROG.4gi}: ${I4GL_PCODE_DEPS}
+#%.4gi: ${I4GL_PCODE_DEPS}
+	@X="${I4GL_PL} $^ > $@" ; \
+	echo $$X; \
+	eval $$X; \
+	RET=$$?; \
+	if test "$$RET" != "0"; then \
+		echo "CAT failed, removing $@"; \
+		rm $@; \
+		exit $$RET; \
+	fi
+
+
+
+########################
+#Build C-code program
+${PROG.4ge}: ${I4GL_CCODE_DEPS}
+	${I4GL_CC} -o $@ ${FILES.o}   ${I4GL_CC_LDFLAGS}
+
+
+# =======================================================================
+#                            Querix Targets
+# =======================================================================
+
+########################
+#Build C-code program
+${PROG.4qe}: ${QUERIX_DEPS}
+ifeq "$(PROGTYPE)" ".lib"
+#It looks like we should not use -shared for Querix?
+#but if we do, we need to supply it as -lname on link line!
+	ld -fPIC -shared $^ -o ${xxEXECSTORE}$@ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+#...but this causes a lot of undefined crap
+#	ld -fPIC -static $^ -o ${xxEXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
+#and so does this:
+#	qxcc ${CFLAGS} -o $@ $^ $(LDLIBS)
+else
+ifeq "${QX_CURSES_LOCAL}" "yes"
+	${FAIL_LINK}${Q4GL_CL} ${Q4GL_CL_LDFLAGS_APPSPEC} -rdynamic ${QXI_LIBS} -o $@ $^ ${Q4GL_CL_LDFLAGS}
+else
+	${FAIL_LINK}${Q4GL_CL} ${Q4GL_CL_LDFLAGS_APPSPEC} -rdynamic -o $@ $^ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+endif
+#cannt do this (WHY?):
+#	${FAIL_LINK}ld -rpath ${SCWORK}/common $^ -o ${xxEXECSTORE}$@ ${Q4GL_CL_LDFLAGS} ${QXI_LIBS}
+endif
+
+# =======================================================================
+#                          Define dependencies
+# =======================================================================
+
+#this dependency declaration was defined to cause file(s) declared as GLOBALS
+#to be compiled first, but is also causing everything to recompile when
+#GLOBALS file is changed - which is a pain. DO we really need this kind of
+#behaviour?
+#NOTE: fiels declared in GLOBALS.4gl are already included in FILES.4gl in
+#.mk file
+
+# Object file dependencies
+#${FILES.42m}:	${GLOBALS.4gl} ${DBASE.sch}
+${FILES.42m}:	${DBASE.sch}
+#${FILES.42o}:	${GLOBALS.4gl} ${DBASE.sch}
+${FILES.42o}:	${DBASE.sch}
+#${FILES.4go}:	${GLOBALS.4gl}
+#${FILES.o}:	${GLOBALS.4gl}
+#${FILES.ao}:	${GLOBALS.4gl}
+
+# =======================================================================
+#                          Install Targets
+# =======================================================================
+
+
+#install: ${FILES.42m} ${PROG.42r} ${FILES.42f} ${FILES.42h}
+#	mv ${FILES.42m} ${PROG.42r} ${MAXDIR}/gprog
+#	-mv ${FILES.42h} ${MAXDIR}/gprog
+#	-mv ${FILES.42f} ${MAXDIR}/gform
+
+# =======================================================================
+#                     Clean Targets - current compiler
+#                  only files specified by this make file
+# =======================================================================
+
+#FIXME: this will clean object only in current directory - but
+#object, libraries, forms, help files (and sometimes the target itself if it's a library
+#itself, for example, will reside outside of current directory. I'll need to use VPATH to
+#clean them...
+
+clean: clean.target clean.help clean.obj clean.cfiles \
+			clean.forms clean.libs clean.common
+
+clean.target:
+	${RM} ${DEBRIS.target}
+	@echo "Target deleted"
+
+clean.help:
+ifneq "${DEBRIS.help}" ""
+	${RM} ${DEBRIS.help}
+	@echo "Help files deleted"
+endif
+
+clean.obj:
+ifneq "${DEBRIS.obj}" ""
+	${RM} ${DEBRIS.obj}
+	@echo "Objects deleted"
+endif
+
+clean.cfiles:
+ifneq "${DEBRIS.c}" ""
+	${RM} ${DEBRIS.c}
+	@echo "C compiler debris deleted"
+endif
+
+clean.forms:
+ifneq "${DEBRIS.forms}" ""
+	${RM} ${DEBRIS.forms}
+	@echo "Forms deleted"
+endif
+
+clean.libs:
+ifneq "${DEBRIS.libs}" ""
+	${RM} ${DEBRIS.libs}
+	@echo "Libraries deleted"
+endif
+
+clean.common:
+	${RM} *.bak *.err debug.out debug-globals.out *.warn core
+	@echo "Common debris deleted"
+
+
+# =======================================================================
+#                     Clean Targets - all compilers
+#                  only files specified by this make file
+# =======================================================================
+
+#FIXME: see note under  Clean Targets - current compiler
+
+#FIXME: some targets are missing
+
+#Clean everything created by all compilers, defined in this makefile
+clean.all: clean.all.target clean.all.help clean.all.obj clean.all.cfiles \
+			clean.all.forms clean.all.libs clean.all.common
+
+#Program targets (program or library):
+clean.all.target:
+	${RM} ${PROG.42r} ${PROG.42e} ${PROG.4ge} ${PROG.4gi} ${PROG.4ae} ${PROG.4qe}
+
+#Help files:
+clean.all.help:
+	${RM} ${FILES.42h} ${FILES.iem} ${FILES.hlp} ${FILES.qms}
+
+#objects:
+clean.all.obj:
+	${RM} ${FILES.42m} ${FILES.4go} ${FILES.ao} ${FILES.qo}
+
+#C compilers intermediate files
+#WARNING: this is dangerous - what it user has manually created .c/.h files
+#in this directory?
+clean.all.cfiles:
+	${RM} ${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h} ${FILES.4gl:.4gl=.glb}
+
+#Forms
+clean.all.forms:
+	${RM} ${FILES.afr} ${FILES.per:.per=.c} ${FILES.frm}  ${FILES.pic} ${FILES.42f}
+
+clean.all.libs:
+ifneq "$(FILES.lib)" ""
+#Do not clean another library just becaue it is reference as part of this one
+	${RM} ${LIBSTORE}${FILES.aox} ${LIBSTORE}${FILES.42x}
+endif
+
+#Common rubbish:
+clean.all.common:
+	${RM} *.bak *.err debug.out debug-globals.out *.warn core
+
+
+# =======================================================================
+#                     Clean Targets - current compilers
+#          anything created by current compiler, in current directory
+# =======================================================================
+
+
+# =======================================================================
+#                     Clean Targets - all compilers
+#          anything created by any 4gl compiler, in current directory
+# =======================================================================
+
+
+# =======================================================================
+#                          Help
+# =======================================================================
+
+help:
+	@echo "Targets: (default=${DEFAULT})"
+	@echo "CLEAN: clean.target clean clean.most clean.all"
+	@echo "PROG: aubit d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode querix all"
+	@echo "FORMS: aubitforms"
+	@echo "INSTALL: install"
+
+# =======================================================================
+#                  Debugging and misc. targets
+# =======================================================================
+
+debug:
+	@echo ***DEBUG 1:*** ${FILES.ao}
+
+enddebug:
+	@echo ***DEBUG END***
+
+#Show current variables settings
+show:
+	@echo DEFAULT=${DEFAULT}
+	@echo MKTARGET=${MKTARGET}
+	@echo VPATH= ${VPATH}
+	@echo USEVPATH=${USEVPATH}
+	@echo USESTORE=${USESTORE}
+	@echo MOVETOSTORE=${MOVETOSTORE}
+	@echo FILES.per = ${FILES.per}
+	@echo SET_VPATH_GLOB  =${SET_VPATH_GLOB}
+	@echo SET_VPATH_4GL	  =${SET_VPATH_4GL}
+	@echo SET_VPATH_MK    =${SET_VPATH_MK}
+	@echo SET_VPATH_PER   =${SET_VPATH_PER}
+	@echo SET_VPATH_FRM   =${SET_VPATH_FRM}
+	@echo SET_VPATH_OBJ   =${SET_VPATH_OBJ}
+	@echo SET_VPATH_PRG   =${SET_VPATH_PRG}
+	@echo SET_VPATH_LIB   =${SET_VPATH_LIB}
+	@echo SET_VPATH_HLP   =${SET_VPATH_HLP}
+	@echo "EXTENSIONS (FRM, OBJ, PRG, LIB, HLP): ${FRM} ${OBJ} ${PRG} ${LIB} ${HLP}"
+	@echo CORE_PROGDIR = ${CORE_PROGDIR}
+	@echo CORE_LANGDIR = ${CORE_LANGDIR}
+	@echo A4GL_CC_LDFLAGS = ${A4GL_CC_LDFLAGS}
+	@echo A4GL_CC = ${A4GL_CC}
+	@echo A4GL_CC = ${EXECSTORE}
+	@echo PATH.link = ${PATH.link}
+	@echo FILES.aubit.link = ${FILES.aubit.link}
+	@echo "PRG_EXT=${PRG_EXT}"
+	@echo "OBJ_EXT=${OBJ_EXT}"
+	@echo "FRM_EXT=${FRM_EXT}"
+	@echo "HLP_EXT=${HLP_EXT}"
+	@echo "LIB_EXT=${LIB_EXT}"
+	@echo "FRM=${FRM}"
+	@echo "OBJ=${OBJ}"
+	@echo "PRG=${PRG}"
+	@echo "LIB=${LIB}"
+	@echo "HLP=${HLP}"
+	
+	
+
+src:
+	@echo ${PROG}
+	@echo ${FILES.lib}
+	@echo ${FILES.4gl}
+	@echo ${FILES.per}
+	@echo ${FILES.msg}
+
+src.all:
+	@echo ${ALL_SRC} ${PWD}
+
+#Targets we use from Amake to get files lists
+show.sources.GLOBALS.4gl:
+	@echo "${GLOBALS.4gl}"
+show.sources.FILES.4gl:
+	@echo "${FILES.4gl}"
+show.sources.FILES.lib:
+	@echo ${FILES.lib}
+show_SET_VPATH_4GL:
+	@echo "${SET_VPATH_4GL}"
+show.MAIN.4gl:
+	@echo "${MAIN.4gl}"
+show.PROG:
+	@echo "${PROG}"
+show.IGNORE.4gl:
+	@echo "${IGNORE.4gl}"
+#	@echo "Filtered:"
+#	@echo "$(filter-out ${IGNORE.4gl},${FILES.4gl})"
+
+#Load module/program relatinships into Doc4GL database from make files
+#SRC_LOAD_UTIL must be set from calling program/makefile, like in MaxERPdefs.mki
+#in case of OneMaxx
+#ALL_SRC is set on top of this file
+#PWD is set in Amake header.mki
+src.load:
+	${SRC_LOAD_UTIL} ${ALL_SRC} ${PWD}
+
+
+#Use C interpreter (CINT) to run this program by interpreting generated C source code
+#This will work only with C compilers
+cint:
+	@USE_AUBITDIR=`aubit-config AUBITDIR`; \
+	export CINTSYSDIR=/opt/cint; \
+	export MANPATH=$$MANPATH:$$CINTSYSDIR/doc; \
+	export PATH=$$PATH:$$CINTSYSDIR; \
+	LD_LIBRARY_PATH=.:$$CINTSYSDIR:$$USE_AUBITDIR/lib:$$LD_LIBRARY_PATH; \
+	LD_ELF_LIBRARY_PATH=$$LD_LIBRARY_PATH; \
+	export LD_LIBRARY_PATH LD_ELF_LIBRARY_PATH; \
+    export A4GL_UI=TUI; \
+	RUNME="cint -p -I$$USE_AUBITDIR/incl -l$$USE_AUBITDIR/lib/libA4GL_cint.so $(foreach lib,${FILES.aox},-l${lib}) ${FILES.4gl:.4gl=.c}"; \
+    echo $$RUNME; \
+    $$RUNME;
+
+# -D [macro] : define macro symbol for #ifdef
+
+    #echo $$PATH; \
+    #echo $$LD_LIBRARY_PATH; \
+
+#	cint -p -I$$USE_AUBITDIR/incl -l$$USE_AUBITDIR/lib/libA4GL_cint.so -l${FILES.aox} ${FILES.4gl:.4gl=.c}
+
+#	${GLOB_GLOBALS:.obj=.c}
+
+#	$ cint <options> <[file1].c [file2].c [shl].sl ...> [main].c
+
+# =============================== EOF ==================================

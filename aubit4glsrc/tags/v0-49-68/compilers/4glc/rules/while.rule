@@ -1,0 +1,23 @@
+/*
+=====================================================================
+                        Source: while.rule
+=====================================================================
+*/
+
+
+while_cmd : WHILE
+{
+print_while_1();
+push_blockcommand("WHILE");
+} fgl_expr {
+print_while_2();
+}
+            commands
+END_WHILE {
+print_while_3();
+pop_blockcommand("WHILE");
+}
+;
+
+/* ========================= while.rule ========================= */
+

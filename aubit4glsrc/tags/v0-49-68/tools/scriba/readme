@@ -1,0 +1,192 @@
+Scriba documentation						29 Oct 1997
+
+This tool was written on a September wednesday morning while ill & at home.
+Being completely incapable of staying away from my notebook, I decided that
+if I wasn't going to get any work done, at least I could write some of the
+4glworks reference manual I should have put in my little web site long ago.
+
+After having documented the third function, I realized that that was going
+to be a hell of a job, and that I needed a small tool to extract and format
+info straight from the source code, much like the javadoc tool for java.
+
+Once written, it gathered and formatted info from all of the 4glworks source
+files in a handful of seconds. It was then that I realized that the ability
+to spot descriptive code out of everybody's coding style habits coupled with
+a few collateral tools catering for automated documentation update would have
+made my documentation extractor interesting to a wider audience.
+
+The contents of this archive are the results of my efforts - I tried to put
+the accent on the ability to automatically update documentation whenever the
+code changes. The documentation extractor can keep track of the functions that
+have already been documented, and extracts only info from those that haven't.
+Other tools can subsequently be used to merge HTML documentation files,
+preserving possible headers and footers, and sorting the resulting file by
+function name; generate a TOC from this sorted HTML file, and insert (or update)
+the TOC itself back in the documentation or in a main TOC file.
+
+The core of the tool, create_man_entries, scans 4gl source files extracting
+FUNCTION and REPORT declarations, complete with parameter DEFINEs, as well as
+comments (purged from decorative lines - those full of #,=,-_+,*) found right
+before the declarations themselves and all the RETURNed values, the idea
+behind this being that such comments will give a description of the function
+purposes, while the RETURNed values will prove useful when manually polishing
+the documentation.
+The tool output is, of course, already formatted and provides a pointer to the
+source file, the already mentioned "declaration", "purpose" and "returns"
+sections, as well as a "notes" and "example" section, which will have to be
+filled in by hand.
+I have tested it against a variety of coding habits, using code mostly coming
+from the IIUG software archives, and except for one author (who simply doesn't
+put comments on top of functions or reports) it has always extracted the correct
+code and comments.
+
+Creating or updating documentation is a three step process, which requires
+collecting functions data out of the source files, hand polishing the resulting
+text (no HTML formatting necessary), and finally integrating the polished
+documentation in place. Sample shell scripts have been provided for both the
+first and the last step.
+
+Enough hype. Here's the scripts reference. Have fun.
+
+Marco Greco <marcog@ctonline.it>
+
+
+NAME
+	create_man_entries
+
+SYNOPSIS
+	awk -f create_man_entries [-v already_documented=doclist] src.4gl >
+		dest.html
+
+ARGUMENTS
+	doclist		is the name of the file containing the list of the
+			functions that have already been documented
+	src.4gl		is a list of 4gl source files
+	dest.html	is the name of the html output file
+
+DESCRIPTION
+	Creates documentation from 4gl source code, excluding all functions
+	contained in doclist, if specified. doclist is updated on exit.
+	Currently, the documentation of all the files specified in the command
+	line is grouped in one output file. Needs a shell wrapper (see later)
+	for a one to one output, which in turn is not exactly efficient when
+	it comes to updating the doclist file.
+	
+
+
+NAME
+	merge_man_entries
+
+SYNOPSIS
+	merge_man_entries src.html > dest.hmtl
+
+ARGUMENTS
+	src.html	is a list of html files that should be merged
+	dest.html	is the name of the html output file
+
+DESCRIPTION
+	Merges documenation coming from different files, ordering the text by
+	function name. One of the source files can have a header and a footer
+	(this is to allow the update of an existing, complete documentation
+	file) - these are used as header and footer of the output file.
+
+
+NAME
+	create_index
+
+SYNOPSIS
+	awk -f create_index source.html > dest.idx
+
+ARGUMENTS
+	source.html	is the documentation file from which the TOC is to be
+			created
+	dest.idx	is the output TOC file
+
+DESCRIPTION
+	creates a TOC out of a documentation file.
+
+
+NAME
+	insert_index
+
+SYNOPSIS
+	awk -f insert_index source.html source.idx > dest.html
+
+ARGUMENTS
+	source.html	is the html file containing the documentation
+	source.idx	is the file containig the TOC
+	dest.html	is the output documentation file
+
+DESCRIPTION
+	Inserts or updates a TOC within the documentation file used to generate
+	it. TOC is inserted in front of the first function documentation.
+
+
+NAME
+	merge_index
+
+SYNOPSIS
+	awk -f merge_index idx.html source.idx > dest.html
+
+ARGUMENTS
+	idx.html	is the html file containg the master TOC
+	source.idx	is the file containig the TOC
+	dest.html	is the output master TOC file
+
+DESCRIPTION
+	Inserts or updates a TOC file generated with create_index in a master
+	TOC file. Update takes place where the previous version of the TOC
+	is found, while new TOCs need a little hint: if merge_index spots a
+	link to the documentation file the TOC refers to, the TOC is inserted
+	following that link, otherwise at the end of the main TOC file.
+
+
+NAME
+	rebuild_list
+
+SYNOPSIS
+	awk -f rebuild_list src.html > doclist
+
+ARGUMENTS
+	src.html	is a list of html files containing the documentation
+	doclist		is the output file contained the list of the documented
+			functions
+
+DESCRIPTION
+	Rebuilds the list of already documented functions out of the
+	documentation.
+
+
+NAME
+	preprocess
+
+SYNOPSIS
+	preprocess [-l doclist][-o outputdir] src.4gl
+
+ARGUMENTS
+	doclist		is the name of the file containing the list of the
+			functions that have already been documented
+	outputdir	is the name of a directory that will contain the output
+			html files
+	src.4gl		is a list of 4gl source files
+
+DESCRIPTION
+	A sample frontend for create_man_entries, that creates a src.html
+	file for each src.4gl file it processes.
+
+
+NAME
+	postprocess
+
+SYNOPSIS
+	postprocess [-i idx.html] main.html src.html
+
+ARGUMENTS
+	idx.html	is the main html TOC file
+	main.html	is the documentation file to be updated
+	src.html	is a list of html containing function documentation
+
+DESCRIPTION
+	A sample shell script that can be used to update function documentation
+	within a preexisting file. A front_end to merge_man_entries, 
+	create_index, insert_index, merge_index.

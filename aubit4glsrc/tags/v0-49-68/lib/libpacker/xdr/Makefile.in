@@ -1,0 +1,120 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.9 2004-09-28 09:49:21 afalout Exp $
+#
+
+ROOT        =../../..
+LIBROOT     =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                    		Settings
+## ==================================================================
+
+ifeq "${USE_RPCGEN}" "0"
+	DATAIODIR	=${ROOT}/tools/cygwin
+else
+	DATAIODIR	=${ROOT}/common/dataio
+endif
+XDR_CMODS   =${DATAIODIR}/form_x_xdr.c ${DATAIODIR}/menu_x_xdr.c ${DATAIODIR}/report_xdr.c  ${DATAIODIR}/npcode_xdr.c
+XDR_OBJS	=${XDR_CMODS:.c=.o}
+CMODS   	=pack_xdr.c ${XDR_CMODS}
+
+ALL 		=${LIBROOT}/libPACKER_XDR${SO_EXT}
+ifeq "@HAVE_RPCLIB@" "0"
+#Is there any point in doing this? Not on Windows, since unresolved dependencies are not
+#allowed at link time, and we have no RPCLIB to link with anyway:
+	ifneq "${COMSPEC}" ""
+		ALL			=norpclib
+	endif
+else
+
+endif
+
+LOCAL_IFLAGS=-I..
+OBJS		= pack_xdr.o ${XDR_OBJS}
+CFLAGS      +=${LOCAL_IFLAGS}
+
+#we don't want -Wall in CFLAGS when compiling rpcgen generated c code because
+#it would #give us bunch of warnings about unused varibles, that we cannot fix
+CFLAGS_RPCGEN	=$(CFLAGS:%-Wall=%)
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -laubit4gl @RPCLIB_LFLAGS@ ${RPCLIB_NAME}
+endif
+
+ifeq "@HAVE_RPCLIB@" "0"
+	CFLAGS      +=-I${ROOT}/tools/no_rpc/cygwin
+endif
+
+## ==================================================================
+##                          Targets
+## ==================================================================
+
+ALL: ${ALL}
+
+${LIBROOT}/libPACKER_XDR${SO_EXT}: ${OBJS}
+	${CC} ${CFLAGS_RPCGEN} ${SO_LDFLAGS} $^ -o $@ ${LINKLIBS}
+#ifeq "${SO_EXT}" ".dll"
+#	${MV} TMP${SOEXP_EXT} $@.a
+#endif
+
+${XDR_OBJS}:
+#	${MAKE} -C ${ROOT}/common/dataio
+	${MAKE} -C ${ROOT}/common/dataio form_x_xdr.o
+	${MAKE} -C ${ROOT}/common/dataio menu_x_xdr.o
+	${MAKE} -C ${ROOT}/common/dataio report_xdr.o
+	${MAKE} -C ${ROOT}/common/dataio npcode_xdr.o
+
+#only source we can use full CFLAGS on:
+#pack_xdr.o: pack_xdr.c
+#	${CC} ${CFLAGS} -c $^ -o $@
+
+${OBJS}: ${XDR_CMODS}
+
+norpclib:
+	@echo "No rpclib detected - cannot do linking. Skipping libPACKER_XDR"
+
+## ==================================================================
+##                          Clean
+## ==================================================================
+
+clean:
+	${RM} *${SO_EXT} *.bak *.o
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+splint: lclint
+lclint: $(CMODS)
+	${LCLINTERR}${LCLINTEXE} ${LCLINTFLAGS} $(LCLINT_CFLAGS) $(CMODS) > ${LCLINTLOG} ${LCLINTLOGCMD}
+	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
+	@echo "see ${LCLINTLOG} for results"
+
+#=============================== EOF ================================
+

@@ -1,0 +1,109 @@
+/*
+=====================================================================
+                        Source: attributes.rule
+=====================================================================
+*/
+
+
+opt_attributes:	/*empty*/ {
+	 A4GL_debug("Using default attribute of WHITE");
+		sprintf($<str>$,"-1");}
+		| attributes_def {strcpy($<str>$,$<str>1);}
+;
+
+attributes_def	: ATTRIBUTES OPEN_BRACKET {
+//start_state("attribute",1);
+} attribs_sec CLOSE_BRACKET {strcpy($<str>$,$<str>4);
+A4GL_debug("Got Attributes : %s",$<str>4);
+//start_state("attribute",0);
+}
+| KW_SIZE OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET
+;
+
+attribs_sec	: attribute {strcpy($<str>$,$<str>1);}
+		| attribs_sec KW_COMMA attribute {
+sprintf($<str>$,"%d",atoi($<str>1)|atoi($<str>3));
+}
+;
+
+
+attribute	:BLACK     {sprintf($<str>$,"%d",attr_code("BLACK"));}
+		|BLUE      {sprintf($<str>$,"%d",attr_code("BLUE"));}
+		|CYAN      {sprintf($<str>$,"%d",attr_code("CYAN"));}
+		|GREEN     {sprintf($<str>$,"%d",attr_code("GREEN"));}
+		|MAGENTA   {sprintf($<str>$,"%d",attr_code("MAGENTA"));}
+		|RED       {sprintf($<str>$,"%d",attr_code("RED"));}
+		|WHITE     {sprintf($<str>$,"%d",attr_code("WHITE"));}
+		|YELLOW    {sprintf($<str>$,"%d",attr_code("YELLOW"));}
+		|REVERSE   {sprintf($<str>$,"%d",attr_code("REVERSE"));}
+		|BLINK     {sprintf($<str>$,"%d",attr_code("BLINK"));}
+		|UNDERLINE {sprintf($<str>$,"%d",attr_code("UNDERLINE"));}
+		|BOLD      {sprintf($<str>$,"%d",attr_code("BOLD"));}
+		|NORMAL    {sprintf($<str>$,"%d",attr_code("NORMAL"));}
+		|INVISIBLE {sprintf($<str>$,"%d",attr_code("INVISIBLE"));}
+		|DIM       {sprintf($<str>$,"%d",attr_code("DIM"));}
+              	|NO_NEW_LINES {inp_flags=inp_flags | 0x1; strcpy($<str>$,"0");}  
+		| input_array_attributes {strcpy($<str>$,"0");}
+	;
+
+win_attributes:	/*empty*/
+		| win_attributes_def
+;
+
+win_attributes_def	: 	ATTRIBUTES OPEN_BRACKET {
+A4GL_debug("win_attributes_def");
+//start_state("attribute",1);
+A4GL_debug("Started states");
+form_attrib.attrib=0;
+form_attrib.comment_line=0xff;
+form_attrib.form_line=0xff;
+form_attrib.error_line=0xff;
+form_attrib.menu_line=0xff;
+form_attrib.message_line=0xff;
+form_attrib.prompt_line=0xff;
+} wattribs_sec CLOSE_BRACKET {
+//start_state("attribute",0);
+strcpy($<str>$,"");
+}
+;
+
+wattribs_sec	: 	wattribute {strcpy($<str>$,$<str>1);}
+		| 	wattribs_sec KW_COMMA wattribute {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+;
+
+wattribute	:	attribute 
+{ 
+/*printf("Window attribute = %s\n",$<str>1);*/
+form_attrib.attrib      =form_attrib.attrib|atoi($<str>1);
+/*printf("Window attribute = %d\n",form_attrib.attrib);*/
+}
+		|	BORDER 
+{ form_attrib.border      =1;}
+		| PAD CHAR_VALUE
+{int a;
+char *buff;
+a=form_attrib.attrib&255;
+if (strlen($<str>2) > 2) {
+buff=$<str>2;
+form_attrib.attrib=form_attrib.attrib+buff[1];
+} else  {
+form_attrib.attrib=form_attrib.attrib+' ';
+      }
+}
+		|	COMMENT_LINE line_no
+{ form_attrib.comment_line=atoi($<str>2); }
+		|	FORM_LINE line_no
+{ form_attrib.form_line   =atoi($<str>2); }
+		|	ERROR_LINE line_no
+{ form_attrib.error_line  =atoi($<str>2); }
+		|	MENU_LINE line_no
+{ form_attrib.menu_line   =atoi($<str>2); 
+A4GL_debug("Set menu line to %s",$<str>2);
+}
+		|	MSG_LINE line_no
+{ form_attrib.message_line=atoi($<str>2); }
+		|	PROMPT_LINE line_no
+{ form_attrib.prompt_line =atoi($<str>2); }
+;
+
+

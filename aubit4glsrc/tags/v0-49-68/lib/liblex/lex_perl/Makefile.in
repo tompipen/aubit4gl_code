@@ -1,0 +1,118 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/liblex/lex_perl makefile|
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.12 2004-09-28 09:49:19 afalout Exp $
+#
+
+ROOT    =../../..
+LIBROOT =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                   Source files
+## ==================================================================
+
+#FIXME: are we really using compile_c_gtk.c for Perl?
+4GLPERL_OBJ     =compile_perl.o ../lex_c/compile_c_gtk.o
+
+## ==================================================================
+##                    Options
+## ==================================================================
+
+ifeq "${YACC}" "no"
+	CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
+	KW_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h
+	Y_TAB_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h
+else
+	KW_H		=${ROOT}/compilers/4glc/rules/generated/kw.h
+	Y_TAB_H		=${ROOT}/compilers/4glc/rules/generated/y.tab.h
+endif
+
+ifeq "${GCC_MINGW}" "yes"
+	CFLAGS		+=-I${ROOT}/tools/getopt
+endif
+
+ALL         =${LIBROOT}/libLEX_PERL${SO_EXT}
+
+CFLAGS			+=-I.. -I../lex_c -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
+
+ifneq "${COMSPEC}" ""
+	#LINKLIBS	=-L${LIBROOT} -L${ROOT}/compilers/4glc -lexportlib4glcomp -laubit4gl
+	LINKDEPS    =${LIBROOT}/lib4glc${SO_EXT}
+	LINKLIBS	+=-L${LIBROOT} -laubit4gl -l4glc
+endif
+
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+${LIBROOT}/libLEX_PERL${SO_EXT}: ${4GLPERL_OBJ}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+ifeq "${SO_EXT}" ".dll"
+	${MV} TMP${SOEXP_EXT} $@.a
+endif
+
+## ==================================================================
+##                            Windows Targets
+## ==================================================================
+
+#.PHONY : dllLEX_PERL
+#dllLEX_PERL: exportlib4glcomp ${4GLCOBJ_C}
+#	${MAKE} libLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L${LIBROOT} -L."
+#see mod.c for list of variables that can't be automaticelly exported.
+
+#${RPCLIB_NAME} -lFORM_XDR @CURSES_LIB_NAME@
+# -lPDF_NOPDF
+#	${CP} libLEX_C.dll ${LIBROOT}
+#	${CP} libLEX_C.dll.a ${LIBROOT}
+
+
+## ==================================================================
+##                            Dependencies
+## ==================================================================
+
+${LIBROOT}/lib4glc${SO_EXT}:
+	${MAKE} -C ${ROOT}/compilers/4glc lib4glc${SO_EXT}
+
+
+compile_perl.o: ${KW_H} ${Y_TAB_H}
+
+${KW_H} ${Y_TAB_H}:
+	${MAKE} -C ${ROOT}/compilers/4glc rules/generated/y.tab.c
+
+
+## ==================================================================
+##                            Clean Targets
+## ==================================================================
+
+clean:
+	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glp *.log *.dll *.dll.a
+
+#--------------------------------- EOF -----------------------------
+

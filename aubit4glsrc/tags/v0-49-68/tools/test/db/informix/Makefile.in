@@ -1,0 +1,96 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+# ==================================================================
+# Makefile for compiling the Aubit 4gl to database unit tests.
+# ==================================================================
+
+#
+# $Id: Makefile.in,v 1.3 2003-01-22 10:55:40 afalout Exp $
+#
+
+ROOT    =../../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                    Options
+## ==================================================================
+
+ESQL			=@IFMX_ESQLC@
+CFLAGS			+=-I${ROOT}/lib/libincl -L$(AUBITDIR)/lib
+
+SOURCES_ESQL    =test_informix_util.ec
+SOURCES_ESQL2	=fgl_ec_util.ec
+SOURCES_C       =test_informix.c connection_suite.c ddl_suite.c dml_suite.c
+
+OBJECTS         =${SOURCES_C:.c=.o} ${SOURCES_ESQL:.ec=.o}
+OBJECTS_ESQL2	=${SOURCES_ESQL2:.ec=.o}
+
+LIBS=-lcheck -laubit4gl
+
+ifeq "@HAS_CHECK@" "1"
+	ifneq "${ESQL}" "no"
+		ALL=test_informix
+	else
+		ALL=no_esql
+	endif
+else
+	ALL=no_check
+endif
+
+.PHONY: all clean no_esql no_check
+
+## ==================================================================
+##                    Targets
+## ==================================================================
+
+all: ${ALL}
+	@echo "Successfully compiled default targets: ${ALL}"
+
+test_informix: ${OBJECTS}
+	$(ESQL) $(CFLAGS) $^ -o $@ ${LIBS}
+
+## ==================================================================
+##                    Sub - Targets
+## ==================================================================
+
+${OBJECTS_ESQL2}: ${SOURCES_ESQL2}
+	$(ESQL) -c $^
+
+test_informix_util.o: ${SOURCES_ESQL}
+	$(ESQL) -c $^
+
+## ==================================================================
+##                    Clean
+## ==================================================================
+
+clean:
+	${RM} *.o test_informix *.exe *.bak *.out fgl_dml_suite.c fgl_dml_suite.h \
+    test_informix_util.c
+
+# =============================== EOF ===============================
+

@@ -1,0 +1,9 @@
+<Area>
+	<Sub 1>Sub 1 value</Sub 1>
+	<Sub 2>
+		<Sub 2.1>
+			<Sub 2.1.1>Sub 2.1.1 value</Sub 2.1.1>
+			<Sub 2.1.2>Sub 2.1.2 value</Sub 2.1.2>
+		</Sub 2.1>
+	</Sub 2>
+</Area>

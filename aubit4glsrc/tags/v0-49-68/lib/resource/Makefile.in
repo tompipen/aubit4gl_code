@@ -1,0 +1,92 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.12 2004-07-01 11:51:41 afalout Exp $
+#
+
+ROOT    =../..
+LIBROOT =..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+override NOINCL=0
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+CMODS           =aubit-config.c resource.c
+OBJS      		=${CMODS:.c=.o}
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+#CFLAGS			+= -I../compilers/fcompile -Ilibincl ${CFLAGS}
+#EXE_CFLAGS      +=-I../libincl
+CFLAGS          +=-I${ROOT}/compilers/fcompile -I${LIBROOT}/libaubit4gl \
+		-D"CONFIGURED_TARGET=\"${TARGET}\"" \
+		-D"CONFIGURED_TARGET_OS=\"${TARGET_OS}\"" \
+		-D"_AUBITETC_=\"${WINDOWS_DRIVE}${CYGWIN_PATH}/etc/opt/aubit4gl\"" 
+		
+#		-D"_WINDOWS_DRIVE_=\"${WINDOWS_DRIVE}\"" \
+#		-D"_CYGWIN_PATH_=\"${CYGWIN_PATH}\"" 
+		
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+${ROOT}/bin/aubit-config: ${OBJS}
+	${CC} ${EXE_CFLAGS} -I../libincl -o $@ $^
+#	${CP} $@ ../../bin
+
+
+## ==================================================================
+##                           Dependencies
+## ==================================================================
+
+resource.o: ${ROOT}/compilers/fcompile/form_x.h
+
+${ROOT}/compilers/fcompile/form_x.h:
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
+
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c project.c \
+    core aubit-config *.out *.glb *${SO_EXT} *.a  \
+	*.o  *.bak .*.bak *.exe *.dll *.stackdump *.err *.base *.exp *.def
+
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+

@@ -1,0 +1,86 @@
+A4GL_LEXTYPE=C
+export A4GL_LEXTYPE
+unset A4GL_LEXDIALECT
+export A4GL_DUMP_CORE=Y
+unset DEBUG
+
+if [ "$1" != "" ] 
+then
+	if [ $1 = "1" ] 
+	then
+		cvs  update -dP
+	fi
+	make cleanall
+	./configure  --with-unixodbc=/usr/local/unixODBC/lib --with-pgsqleng=/usr/local/pgsql --with-pgsql=/usr/local/pgsql --with-ecpg=/usr/local/pgsql --without-sapdb  --prefix=/home/aubit4gl/aubit4gl  --with-gtk=/opt/gnome --with-pgodbc=/usr/local
+
+
+#--with-curses=/usr/local/widec
+fi
+
+
+
+cd /home/aubit4gl/aubit4glsrc
+make  log
+
+if [ $? != 0 ]
+then
+	echo "Make failed..."
+	tail -10 make.log
+	exit
+fi
+cd /home/aubit4gl/aubit4glsrc
+cd lib/libui/ui_curses
+sh make_static
+
+cd /home/aubit4gl/aubit4glsrc
+cd lib/libsql/esqlc
+sh make_static
+sh make_simple
+
+
+cd /home/aubit4gl/aubit4glsrc/lib/libesql
+sh make_static
+sh make_simple
+
+cd /home/aubit4gl/aubit4glsrc/lib/liblogical
+sh makeit
+
+
+cd /home/aubit4gl/aubit4glsrc
+cp lib/*.so /home/aubit4gl/aubit4gl/lib
+cp incl/*.h /home/aubit4gl/aubit4gl/incl
+cd /home/aubit4gl/aubit4glsrc/tools/asql
+make asql_i.4ae
+make asql_p.4ae
+cp asql_i.4ae asql_p.4ae  /home/aubit4gl/aubit4gl/bin
+sleep 5
+
+cd /home/aubit4gl/aubit4glsrc/tools/afinderr
+cp /home/aubit4gl/aubit4glsrc/bin/afinderr /home/aubit4gl/aubit4gl/bin
+mkdir -p /home/aubit4gl/aubit4gl/help
+cp /home/aubit4gl/aubit4glsrc/help/* /home/aubit4gl/aubit4gl/help
+
+
+cd /home/aubit4gl/aubit4gltest
+
+if [ "$2" = "" ]
+then
+echo "No testing..."
+exit
+fi
+
+
+
+
+
+cd /home/aubit4gl/aubit4gltest
+find /home/aubit4gl/aubit4gltest -name "*.4ae" -exec rm {} \;
+find /home/aubit4gl/aubit4gltest -name "*.afr*" -exec rm {} \;
+
+A4GL_DUMP_CORE=Y
+export A4GL_DUMP_CORE
+
+
+sh run_tests -clean
+sh rerun $2
+

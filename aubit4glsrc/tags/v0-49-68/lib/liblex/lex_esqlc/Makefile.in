@@ -1,0 +1,128 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/liblex/lex_c makefile	 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.13 2004-09-28 09:49:18 afalout Exp $
+#
+
+ROOT        =../../..
+LIBROOT     =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                   Source files
+## ==================================================================
+
+#FIXME: does compile_c_gtk.o belong here, or in 4GLCAOBJ ?
+
+#Since compile_c.c includes calls to make_sql_bind, which is defined in binding.c, binding.c, must
+#be linked in C as well, because there cannot be any unsresolved symbols at link time on Windows:
+COMMON_OBJ      =compile_c.o compile_c_gtk.o binding.o init.o bad_idents.o class.o
+
+4GLCOBJ_C		=compile_c_sql.o ${COMMON_OBJ}
+
+#binding.c:268: undefined reference to `A4GL_dtype_sz'
+#4GLCOBJ_C		+=compile_c_esql.o
+
+
+4GLCOBJ_CS		=compile_c_sql.o ${COMMON_OBJ}
+4GLCOBJ_EC		=compile_c_esql.o ${COMMON_OBJ}
+
+## ==================================================================
+##                    Options
+## ==================================================================
+
+ifeq "${YACC}" "no"
+	CFLAGS		+=-I${ROOT}/tools/no_yacc/cygwin/compilers/4glc
+	KW_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/kw.h
+	Y_TAB_H		=${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.h
+else
+	KW_H		=${ROOT}/compilers/4glc/rules/generated/kw.h
+	Y_TAB_H		=${ROOT}/compilers/4glc/rules/generated/y.tab.h
+endif
+
+ifeq "${GCC_MINGW}" "yes"
+	CFLAGS		+=-I${ROOT}/tools/getopt
+endif
+
+CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
+ifneq "${COMSPEC}" ""
+	LINKDEPS    =${LIBROOT}/lib4glc${SO_EXT}
+	LINKLIBS	+=-L${LIBROOT} -laubit4gl -l4glc
+endif
+
+ALL         	+=${LIBROOT}/libLEX_C${SO_EXT}
+ALL         	+=${LIBROOT}/libLEX_CS${SO_EXT}
+ALL         	+=${LIBROOT}/libLEX_EC${SO_EXT}
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+ALL: ${ALL}
+	@echo "All targets (${ALL}) successfully compiled"
+
+#Pure C output for C compiler
+${LIBROOT}/libLEX_C${SO_EXT} : ${4GLCOBJ_C} ${LINKDEPS}
+	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_C} ${LINKLIBS}
+
+# C# (Mono) output
+${LIBROOT}/libLEX_CS${SO_EXT} : ${4GLCOBJ_CS} ${LINKDEPS}
+	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_CS} ${LINKLIBS}
+
+#Embededd SQL/C output, for Informix ESQL/C, PostgreSQL, Querix or
+#SAP DB EC compilers:
+${LIBROOT}/libLEX_EC${SO_EXT} : ${4GLCOBJ_EC} ${LINKDEPS}
+	${LD} ${SO_LDFLAGS} -o $@ ${4GLCOBJ_EC} ${LINKLIBS}
+
+## ==================================================================
+##                            Sub Targets
+## ==================================================================
+
+
+${LIBROOT}/lib4glc${SO_EXT}:
+	${MAKE} -C ${ROOT}/compilers/4glc lib4glc${SO_EXT}
+
+## ==================================================================
+##                            Dependencies
+## ==================================================================
+
+compile_c.o compile_c_sql.o: ${KW_H} ${Y_TAB_H}
+
+${KW_H} ${Y_TAB_H}:
+	${MAKE} -C ${ROOT}/compilers/4glc rules/generated/y.tab.c
+
+## ==================================================================
+##                            Clean Targets
+## ==================================================================
+
+clean:
+	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak \
+	.\#* 4glp *.log *.dll *.dll.a
+
+
+#--------------------------------- EOF -----------------------------

@@ -1,0 +1,113 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.8 2004-09-28 09:49:17 afalout Exp $
+#
+
+ROOT    =../../..
+LIBROOT =../..
+
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+## ==================================================================
+##                              Source files
+## ==================================================================
+
+CMODS_FORM_GENERIC	=readforms.c formwrite2.c
+OBJS_FORM_GENERIC	=${CMODS_FORM_GENERIC:.c=.o}
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+CFLAGS				+=-I..
+
+## RPC type and GENERIC are not the same thing. RPC type represents Remote
+#Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
+#but regardless of that, GENERIC functions (also conatained in Sun RPC libraries)
+#are needed by forms and menus functionality, and without it user would not
+#ba able to compile or open forms and menus, since they compiled output
+#file format is outpudte in GENERIC format for portability:
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -laubit4gl
+endif
+
+ALL				+=${LIBROOT}/libFORM_GENERIC${SO_EXT}
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: note ${ALL}
+	@echo "Default targets (${ALL}) built successfully."
+
+note:
+	@echo "Building: ${ALL}"
+
+${LIBROOT}/libFORM_GENERIC${SO_EXT} : ${OBJS_FORM_GENERIC}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+
+
+## ==================================================================
+##                             Sub Targets
+## ==================================================================
+
+ci: $(CMODS)
+	ci -l  $^
+
+## ==================================================================
+##                        Dependencies
+## ==================================================================
+
+#error.c : generated/tmperrs.h
+#array.o: array.c ${ROOT}/compilers/fcompile/form_x_xdr.c
+#builtin.c: ${ROOT}/compilers/fcompile/form_x.h
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean :
+	${RM} core *.out *${SO_EXT} *.o *.bak *.dll *.stackdump *.base *.exp *.dll.a
+
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+
