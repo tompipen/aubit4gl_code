@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.104 2003-01-25 05:29:28 afalout Exp $
+# $Id: Makefile-common.in,v 1.105 2003-01-25 12:21:26 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -1008,10 +1008,18 @@ DOXY_WWWPATH        =projects/Aubit4GL/doxy
 WGET				=@WGET@
 RPM					=@RPM@
 TIME                =$(shell date +%H-%M-%S)
+#This one on SF will not work, because it used cookies to redirect:
+#RH_RPM_PATH		=http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS
+#This one had time out problems:
+#RH_RPM_PATH         =ftp://rpmfind.net/linux/redhat/7.3/en/os/i386/RedHat/RPMS
+RH_RPM_PATH         =ftp://ftp.redhat.com/pub/redhat/linux/7.3/en/os/i386/RedHat/RPMS/
+
+#List of all missing options as make targets to be installed, as determined
+#by autoconf:
 INSTALL_MISSING_OPTIONAL =@INSTALL_MISSING_OPTIONAL@
 
 ##################
-#iODBC ODBC manager
+# 1: iODBC ODBC manager
 IODBC_INFO          =http://www.iodbc.org
 IODBC_PATH			=http://www.iodbc.org/dist
 #Archive contains Driver Manager Runtime (iODBC Shared Libraries &
@@ -1026,7 +1034,7 @@ IODBC_GUI_RPM       =libiodbc-admin-3.0.6-2.i386-glibc21.rpm
 
 
 ##################
-#PDF pdflib
+# 2: PDF pdflib
 PDFLIB_INFO			=http://www.pdflib.com
 PDFLIB_PATH         =http://www.pdflib.com/pdflib/download
 PDFLIB_SRC          =pdflib-4.0.3
@@ -1036,42 +1044,47 @@ PDFLIB_SRC_TGZ		=${PDFLIB_SRC}.tar.gz
 PDFLIB_BIN_TGZ		=pdflib-4.0.3-Linux.tar.gz
 
 ##################
-#JABBER eksemel
+# 3: XML-RPC
+XMLRPC_INFO			=http://xmlrpc-c.sourceforge.net
+XMLRPC_PATH			=http://download.sourceforge.net/xmlrpc-c
+XMLRPC_RPM          =xmlrpc-c-devel-0.9.9-1.i386.rpm
+LIBWWW_PATH         =${RH_RPM_PATH}
+LIBWWW_RPM			=w3c-libwww-5.3.2-5.i386.rpm
+
+##################
+# 4: JABBER eksemel
 IKSEMEL_INFO		=http://iksemel.jabberstudio.org
 IKSEMEL_PATH        =http://files.jabberstudio.org/iksemel
 IKSEMEL_SRC         =iksemel-0.0.1
 IKSEMEL_TGZ         =${IKSEMEL_SRC}.tar.gz
 
 ##################
-#swig
+# 5: swig
 SWIG_INFO           =http://www.swig.org
-#http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS/swig-1.1p5-12.i386.rpm
+SWIG_PATH           ${RH_RPM_PATH}
+SWIG_RPM			=swig-1.1p5-12.i386.rpm
 
 ##################
-#doxygen dot tool, used for drawing dependency graphs - part of Graphviz package
+# 6: doxygen dot tool, used for drawing dependency graphs - part of Graphviz package
 GRAPHVIZ_INFO		=http://www.research.att.com/sw/tools/graphviz/
 GRAPHVIZ_PATH       =http://www.graphviz.org/pub/graphviz
 GRAPHVIZ_RPM		=graphviz-1.8.10-4.i386.rpm
 
 ##################
-#DoxyGen
+# 7: SAPODBC
+SAPODBC_INFO        =http://www.sapdb.org
+SAPODBC_PATH		=ftp://ftp.sap.com/pub/sapdb/bin/linux
+SAPODBC_RPM			=sapdb-callif-7.3.0.29-1.i386.rpm
+
+##################
+# 8: DoxyGen
 DOXYGEN_INFO        =http://www.stack.nl/~dimitri/doxygen/
-#http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS/doxygen-1.2.14-4.i386.rpm
+DOXYGEN_PATH		=${RH_RPM_PATH}
+DOXYGEN_RPM			=doxygen-1.2.14-4.i386.rpm
+
 
 ##################
-#GTK+ - GUI
-GTK_INFO			=http://www.gtk.org/
-
-##################
-#curses - TUI
-CURSES_INFO			=http://www.gnu.org/software/ncurses/ncurses.html
-
-##################
-#Sun RPC - XDR and Sun RPC
-SUNRPC_INFO         =
-
-##################
-#IFX ESQL/C
+# 9: IFX ESQL/C and ODBC
 IFXESQLC_INFO       =http://www.ibm.com/informix
 #CSDK includes ESQL/C compiler
 IFXESQLC_PATH       =ftp://ftp.software.ibm.com/software/data/informix/downloads
@@ -1081,68 +1094,63 @@ ifeq "${INFORMIXDIR}" ""
 endif
 
 ##################
-#IFXODBC
-IFXODBC_INFO        =http://www.ibm.com/informix
-
-
-##################
-#PGODBC
+# 10: PGODBC
 PGODBC_INFO         =http://www.postgresql.org
-#http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS/postgresql-odbc-7.2.1-5.i386.rpm
+PGODBC_PATH         =${RH_RPM_PATH}
+PGODBC_RPM			=postgresql-odbc-7.2.1-5.i386.rpm
 
 ##################
-#PG ESQL
-PGESQLC_INFO        =http://www.postgresql.org
-#http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS/postgresql-devel-7.2.1-5.i386.rpm
-
-##################
-#unixODBC
-UNIXODBC_INFO		=http://www.unixodbc.org
-#UNIXODBC_PATH       =http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS
-UNIXODBC_PATH       =ftp://rpmfind.net/linux/redhat/7.3/en/os/i386/RedHat/RPMS
-UNIXODBC_RPM		=unixODBC-2.2.0-5.i386.rpm
-INIXODBC_GUI_RPM	=unixODBC-kde-2.2.0-5.i386.rpm
-
-##################
-#unixODBC DEV headers
+# 11: unixODBC DEV headers
 #We will often find unixODBC already installed, but without header files...
 UNIXODBCDEV_INFO	=http://www.unixodbc.org
-#UNIXODBCDEV_PATH    =http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS
-UNIXODBCDEV_PATH    =ftp://rpmfind.net/linux/redhat/7.3/en/os/i386/RedHat/RPMS
+UNIXODBCDEV_PATH    =${RH_RPM_PATH}
 UNIXODBCDEV_RPM		=unixODBC-devel-2.2.0-5.i386.rpm
 
 ##################
-#XML-RPC
-XMLRPC_INFO			=http://xmlrpc-c.sourceforge.net
-XMLRPC_PATH			=http://download.sourceforge.net/xmlrpc-c
-XMLRPC_RPM          =xmlrpc-c-devel-0.9.9-1.i386.rpm
-#LIBWWW_PATH         =http://umn.dl.sourceforge.net/mirrors/redhat/redhat/redhat-7.3-en/os/i386/RedHat/RPMS
-LIBWWW_PATH         =ftp://rpmfind.net/linux/redhat/7.3/en/os/i386/RedHat/RPMS
-LIBWWW_RPM			=w3c-libwww-5.3.2-5.i386.rpm
+# 12: unixODBC
+UNIXODBC_INFO		=http://www.unixodbc.org
+UNIXODBC_PATH       =${RH_RPM_PATH}
+UNIXODBC_RPM		=unixODBC-2.2.0-5.i386.rpm
+UNIXODBC_GUI_RPM	=unixODBC-kde-2.2.0-5.i386.rpm
 
 ##################
-#MPZ - gnu mp
+# 13: MPZ - gnu mp
 MPZ_INFO            =http://swox.com/gmp
 MPZ_MANUAL			=http://www.gnu.org/manual/gmp/html_mono/gmp.html
 MPZ_PATH            =ftp://mirrors.kernel.org/gnu/gmp
 MPZ_SRC             =gmp-4.1.2
-MPZ_SRC_TGZ			=${MPZ_SRC}/.tar.gz
-
-
-##################
-#SAPODBC
-SAPODBC_INFO        =http://www.sapdb.org
-SAPODBC_PATH		=ftp://ftp.sap.com/pub/sapdb/bin/linux
-SAPODBC_RPM			=sapdb-callif-7.3.0.29-1.i386.rpm
+MPZ_SRC_TGZ			=${MPZ_SRC}.tar.gz
 
 ##################
-#SAPDB ESQL/C
-ASPDBESQL_INFO      =http://www.sapdb.org
+# 14: PG ESQL
+PGESQLC_INFO        =http://www.postgresql.org
+PGESQLC_PATH        =${RH_RPM_PATH}
+PGESQLC_RPM         =postgresql-devel-7.2.1-5.i386.rpm
+
+##################
+# 15: libcheck
+CHECK_INFO			=http://check.sourceforge.net/
+CHECK_PATH			=http://prdownloads.sourceforge.net/check/
+CHECK_RPM			=check-0.8.3-1.i386.rpm
+
+##################
+# 16: SAPDB ESQL/C
+SAPDBESQL_INFO      =http://www.sapdb.org
 SAPDBESQL_PATH      =ftp://ftp.sap.com/pub/sapdb/bin/linux
-ASPDBESQL_RPM       =sapdb-precompiler-7.3.0.29-1.i386.rpm
+SAPDBESQL_RPM       =sapdb-precompiler-7.3.0.29-1.i386.rpm
 
 ##################
-#libcheck
+# 17: Sun RPC - XDR and Sun RPC
+SUNRPC_INFO         =
+
+##################
+# 18: GTK+ - GUI
+GTK_INFO			=http://www.gtk.org/
+
+##################
+# 19: curses - TUI
+CURSES_INFO			=http://www.gnu.org/software/ncurses/ncurses.html
+
 
 
 #=================================== EOF ================================
