@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.52 2003-01-26 01:20:09 afalout Exp $
+# $Id: Makefile-install.mki,v 1.53 2003-01-26 02:48:09 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -468,7 +468,8 @@ install.dot: ${GRAPHVIZ_RPM}
 
 ######################
 # 7: Install SAP DB ODBC driver
-install.sapdb.odbc: ${SAPODBC_RPM}
+install.sapdb.odbc: install.sapdb.odbc.first install.sapdb.env
+install.sapdb.odbc.first: ${SAPODBC_RPM}
 	${RPM} -i $^
 	@echo "Package info & manuals: ${SAPODBC_INFO}"
 	@echo " "
@@ -515,7 +516,18 @@ install.pg.odbc: ${PGODBC_RPM}
 ######################
 # 11: install unixODBC development package, including header files
 install.unixodbcdev: ${UNIXODBCDEV_RPM}
-	${RPM} -i $^
+#Conflicts with iODBC:
+	-cp /usr/include/sql.h /usr/include/sql.h.${TIME}.bak
+	-cp /usr/include/sqlext.h /usr/include/sqlext.h.${TIME}.bak
+	-cp /usr/include/sqltypes.h /usr/include/sqltypes.h.${TIME}.bak
+	${RPM} -i --replacefiles $^
+	@echo " "
+	@echo "Created backup copies of following files, if they existed:"
+	@echo "   /usr/include/sql.h"
+	@echo "   /usr/include/sqlext.h /usr/include/sqltypes.h"
+	@echo "by adding extension <current_time>.bak to them."
+	@echo "Please review, and edit if appropriate."
+	@echo " "
 	@echo "Package info & manuals: ${UNIXODBCDEV_INFO}"
 	@echo " "
 	@echo "unixODBC DEV package installed.  Please re-run 'configure' to detect changes."
@@ -523,13 +535,13 @@ install.unixodbcdev: ${UNIXODBCDEV_RPM}
 
 ######################
 # 12: Install unixODBC libraries, development and GUI manager packages
-install.unixodbc: ${UNIXODBCDEV_RPM} ${UNIXODBC_RPM} ${UNIXODBCDEV_GUI_RPM}
+install.unixodbc: install.unixodbc.first install.unixodbcdev
+install.unixodbc.first: ${UNIXODBC_RPM} ${UNIXODBCDEV_GUI_RPM}
 	${RPM} -i $^
 	@echo "Package info & manuals: ${UNIXODBC_INFO}"
 	@echo " "
 	@echo "unixODBC installed.  Please re-run 'configure' to detect changes."
 	@echo " "
-
 
 ######################
 # 13: Install MPZ GNU Multiple precision library:
@@ -573,8 +585,9 @@ install.sunrpc:
 	@echo "Package info & manuals: ${SUNRPC_INFO}"
 	@echo "FIXME: TO-DO"
 
-# 18:
-install.gtk:
+# 18: GTK+ libraries
+install.gtk: install.gtk.first install.gtk.dev
+install.gtk.first:
 	@echo "Package info & manuals: ${GTK_INFO}"
 	@echo "FIXME: TO-DO"
 
@@ -583,13 +596,23 @@ install.curses:
 	@echo "Package info & manuals: ${CURSES_INFO}"
 	@echo "FIXME: TO-DO"
 
-# 20: SAP DB Environment
+# 20: SAP DB Environment, needed by ODBC driver
 install.sapdb.env: ${SAPDBENV_RPM}
 	${RPM} -i $^
 	@echo "Package info & manuals: ${SAPDBENV_INFO}"
 	@echo " "
 	@echo "SAP DB Environment installed.  Please re-run 'configure' to detect changes."
 	@echo " "
+
+# 21: GTK+ dev packages:
+install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM}
+	${RPM} -i $^
+	@echo "Package info & manuals: ${GTK_DEV_INFO}"
+	@echo " "
+	@echo "GTK+ development packages installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+
 
 ########################
 #Define how to get installation files:
@@ -632,6 +655,12 @@ ${SAPDBESQL_RPM}:
 	${WGET} ${SAPDBESQL_PATH}/${SAPDBESQL_RPM}
 ${SAPDBENV_RPM}:
 	${WGET} ${SAPDBENV_PATH}/${SAPDBENV_RPM}
+${GTK_GTK_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_GTK_DEV_RPM}
+${GTK_GDK_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_GDK_DEV_RPM}
+${GTK_GLIB_DEV_RPM}:
+	${WGET} ${GTK_DEV_PATH}/${GTK_GLIB_DEV_RPM}
 
 
 # ============================== EOF ================================

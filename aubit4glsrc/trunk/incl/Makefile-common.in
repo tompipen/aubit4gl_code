@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.106 2003-01-26 01:20:08 afalout Exp $
+# $Id: Makefile-common.in,v 1.107 2003-01-26 02:48:09 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -1220,6 +1220,18 @@ CURSES_INFO			=http://www.gnu.org/software/ncurses/ncurses.html
 SAPDBENV_INFO       =http://www.sapdb.org
 SAPDBENV_PATH       =ftp://ftp.sap.com/pub/sapdb/bin/linux
 SAPDBENV_RPM        =sapdb-ind-7.3.0.29-1.i386.rpm
+
+#################
+# 21: GTK+ development packages - pkg-config info and headers
+GTK_DEV_INFO		=http://www.gtk.org/
+GTK_DEV_PATH        =${RH_RPM_PATH}
+
+ifeq "${RH_RPM_VER}" "8.0"
+	GTK_GTK_DEV_RPM		=gtk2-devel-2.0.6-8.i386.rpm
+	GTK_GDK_DEV_RPM		=gdk-pixbuf-devel-0.18.0-4.i386.rpm
+	GTK_GLIB_DEV_RPM	=glib2-devel-2.0.6-2.i386.rpm
+endif
+
 
 #=================================== EOF ================================
 
