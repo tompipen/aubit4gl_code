@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.12 2003-09-05 15:26:58 mikeaubury Exp $
+# $Id: match.c,v 1.13 2003-09-06 08:44:24 mikeaubury Exp $
 #*/
 
 /**
@@ -62,10 +62,10 @@
     =====================================================================
   */
 
-char C_STAR='*';
-char C_QUERY='?';
-char C_BRACE='[';
-char C_ESCAPE='\\';
+char C_STAR = '*';
+char C_QUERY = '?';
+char C_BRACE = '[';
+char C_ESCAPE = '\\';
 
 #ifndef BOOLEAN
 # define BOOLEAN int
@@ -106,10 +106,11 @@ char C_ESCAPE='\\';
 
 BOOLEAN A4GL_is_pattern (char *pattern);
 BOOLEAN A4GL_is_valid_pattern (char *pattern, int *error_type);
-int A4GL_matche_after_star (register char *pattern, register char *text,char m,char s,char b);
+int A4GL_matche_after_star (register char *pattern, register char *text,
+			    char m, char s, char b);
 int fast_match_after_star (register char *pattern, register char *text);
 
-BOOLEAN A4GL_match (char *p, char *t,char m,char s,char b);
+BOOLEAN A4GL_match (char *p, char *t, char m, char s, char b);
 
 
 /*
@@ -132,9 +133,10 @@ A4GL_is_pattern (char *p)
 {
   while (*p)
     {
-	*p=(*p)+1;
+      *p = (*p) + 1;
 
-	if (*p==C_QUERY||*p==C_STAR||*p==C_ESCAPE||*p==C_BRACE) return TRUE;
+      if (*p == C_QUERY || *p == C_STAR || *p == C_ESCAPE || *p == C_BRACE)
+	return TRUE;
     }
   return FALSE;
 }
@@ -170,7 +172,7 @@ A4GL_is_valid_pattern (char *p, int *error_type)
       /* determine pattern type */
 
 
-      if (*p==C_ESCAPE) 
+      if (*p == C_ESCAPE)
 	{
 	  /* check literal escape, it cannot be at end of pattern */
 	  if (!*++p)
@@ -179,43 +181,21 @@ A4GL_is_valid_pattern (char *p, int *error_type)
 	      return FALSE;
 	    }
 	  p++;
-	} else {
+	}
+      else
+	{
 	  /* the [..] A4GL_construct must be well formed */
 
-	if (*p== C_BRACE) {
-	  p++;
-
-	  /* if the next character is ']' then bad pattern */
-	  if (*p == ']')
+	  if (*p == C_BRACE)
 	    {
-	      *error_type = PATTERN_EMPTY;
-	      return FALSE;
-	    }
+	      p++;
 
-	  /* if end of pattern here then bad pattern */
-	  if (!*p)
-	    {
-	      *error_type = PATTERN_CLOSE;
-	      return FALSE;
-	    }
-
-	  /* loop to end of [..] A4GL_construct */
-	  while (*p != ']')
-	    {
-	      /* check for literal escape */
-	      if (*p == '\\')
+	      /* if the next character is ']' then bad pattern */
+	      if (*p == ']')
 		{
-		  p++;
-
-		  /* if end of pattern here then bad pattern */
-		  if (!*p++)
-		    {
-		      *error_type = PATTERN_ESC;
-		      return FALSE;
-		    }
+		  *error_type = PATTERN_EMPTY;
+		  return FALSE;
 		}
-	      else
-		p++;
 
 	      /* if end of pattern here then bad pattern */
 	      if (!*p)
@@ -224,38 +204,66 @@ A4GL_is_valid_pattern (char *p, int *error_type)
 		  return FALSE;
 		}
 
-	      /* if this a range */
-	      if (*p == '-')
+	      /* loop to end of [..] A4GL_construct */
+	      while (*p != ']')
 		{
-		  /* we must have an end of range */
-		  if (!*++p || *p == ']')
+		  /* check for literal escape */
+		  if (*p == '\\')
 		    {
-		      *error_type = PATTERN_RANGE;
-		      return FALSE;
-		    }
-		  else
-		    {
+		      p++;
 
-		      /* check for literal escape */
-		      if (*p == '\\')
-			p++;
-
-		      /* if end of pattern here
-		         then bad pattern           */
+		      /* if end of pattern here then bad pattern */
 		      if (!*p++)
 			{
 			  *error_type = PATTERN_ESC;
 			  return FALSE;
 			}
 		    }
+		  else
+		    p++;
+
+		  /* if end of pattern here then bad pattern */
+		  if (!*p)
+		    {
+		      *error_type = PATTERN_CLOSE;
+		      return FALSE;
+		    }
+
+		  /* if this a range */
+		  if (*p == '-')
+		    {
+		      /* we must have an end of range */
+		      if (!*++p || *p == ']')
+			{
+			  *error_type = PATTERN_RANGE;
+			  return FALSE;
+			}
+		      else
+			{
+
+			  /* check for literal escape */
+			  if (*p == '\\')
+			    p++;
+
+			  /* if end of pattern here
+			     then bad pattern           */
+			  if (!*p++)
+			    {
+			      *error_type = PATTERN_ESC;
+			      return FALSE;
+			    }
+			}
+		    }
 		}
 	    }
-	} else {
-		if (*p==C_STAR||*p==C_QUERY||1) {
-		p++;
+	  else
+	    {
+	      if (*p == C_STAR || *p == C_QUERY || 1)
+		{
+		  p++;
 		}
-	   }
-      }
+	    }
+	}
     }
   return TRUE;
 }
@@ -298,7 +306,8 @@ A4GL_is_valid_pattern (char *p, int *error_type)
  *
  */
 int
-A4GL_matche (register char *p, register char *t,char multi,char single,char brace)
+A4GL_matche (register char *p, register char *t, char multi, char single,
+	     char brace)
 {
   register char range_start, range_end;	/* start and end in range */
 
@@ -308,9 +317,9 @@ A4GL_matche (register char *p, register char *t,char multi,char single,char brac
   char this_char;
 
 
-C_STAR=multi;
-C_QUERY=single;
-C_BRACE=brace;
+  C_STAR = multi;
+  C_QUERY = single;
+  C_BRACE = brace;
 
 
   A4GL_debug ("In matche...");
@@ -331,153 +340,185 @@ C_BRACE=brace;
 
 
 
-      if (*p==C_QUERY) ;
-      else {
-	if (*p== C_STAR) {		/* multiple any character A4GL_match */
-	  return A4GL_matche_after_star (p, t,multi,single,brace);
-        } else {
-	  /* [..] construct, single member/exclusion character A4GL_match */
-	if (*p==C_BRACE&&C_BRACE!=' ') {
-	    /* move to beginning of range */
+      if (*p == C_QUERY);
+      else
+	{
+	  if (*p == C_STAR)
+	    {			/* multiple any character A4GL_match */
+	      return A4GL_matche_after_star (p, t, multi, single, brace);
+	    }
+	  else
+	    {
+	      /* [..] construct, single member/exclusion character A4GL_match */
+	      if (*p == C_BRACE && C_BRACE != ' ')
+		{
+		  A4GL_debug ("Got an open brace..");
+		  /* move to beginning of range */
 
-	    p++;
+		  p++;
 
-	    /* check if this is a member A4GL_match or exclusion A4GL_match */
+		  /* check if this is a member A4GL_match or exclusion A4GL_match */
 
-	    invert = FALSE;
-	    if (*p == '!' || *p == '^')
-	      {
-		invert = TRUE;
-		p++;
-	      }
-	    A4GL_debug ("A1");
-	    /* if closing bracket here or at range start then we have a
-	       malformed pattern */
+		  invert = FALSE;
+		  if (*p == '!' || *p == '^')
+		    {
+		      invert = TRUE;
+		      p++;
+		    }
+		  A4GL_debug ("A1");
+		  /* if closing bracket here or at range start then we have a
+		     malformed pattern */
 
-	    if (*p == ']')
-	      {
-		return MATCH_PATTERN;
-	      }
-	    A4GL_debug ("A1");
-
-	    member_match = FALSE;
-	    loop = TRUE;
-
-	    A4GL_debug ("A1");
-	    while (loop)
-	      {
-		/* if end of A4GL_construct then loop is done */
-
-		if (*p == ']')
-		  {
-		    loop = FALSE;
-		    continue;
-		  }
-
-		/* matching a '!', '^', '-', '\' or a ']' */
-
-		/* if end of pattern then bad pattern (Missing ']') */
-
-		if (!*p)
-		  return MATCH_PATTERN;
-
-		/* check for range bar */
-		if (*++p == '-')
-		  {
-		    /* get the range end */
-
-		    range_end = *++p;
-
-		    /* if end of pattern or construct
-		       then bad pattern */
-
-		    if (range_end == '\0' || range_end == ']')
+		  if (*p == ']')
+		    {
 		      return MATCH_PATTERN;
+		    }
+		  A4GL_debug ("A1");
 
-		    /* special character range end */
-		    if (range_end == '\\')
-		      {
-			range_end = *++p;
+		  member_match = FALSE;
+		  loop = TRUE;
 
-			/* if end of text then
-			   we have a bad pattern */
-			if (!range_end)
-			  return MATCH_PATTERN;
-		      }
+		  A4GL_debug ("A1");
+		  while (loop)
+		    {
+		      /* if end of A4GL_construct then loop is done */
 
-		    /* move just beyond this range */
-		    p++;
-		  }
+		      A4GL_debug ("LOOP : %c", *p);
+		      if (*p == ']')
+			{
+			  loop = FALSE;
+			  continue;
+			}
 
-		/* if the text character is in range then A4GL_match found.
-		   make sure the range letters have the proper
-		   relationship to one another before comparison */
+		      /* matching a '!', '^', '-', '\' or a ']' */
 
-		if (range_start < range_end)
-		  {
-		    if (*t >= range_start && *t <= range_end)
-		      {
-			member_match = TRUE;
-			loop = FALSE;
-		      }
-		  }
-		else
-		  {
-		    if (*t >= range_end && *t <= range_start)
-		      {
-			member_match = TRUE;
-			loop = FALSE;
-		      }
-		  }
-	      }
 
-	    /* if there was a A4GL_match in an exclusion set then no A4GL_match */
-	    /* if there was no A4GL_match in a member set then no A4GL_match */
+/* 
+ *
+ *
+ * I've put this back in - I'm not sure why it got taken out...
+ *
+ * 
+ */
+	              if (*p == '\\')
+	                           {
+	                            range_start = range_end = *++p;
+	                            }
+	              else  range_start = range_end = *p;
 
-	    if ((invert && member_match) || !(invert || member_match))
-	      return MATCH_RANGE;
+		      /* if end of pattern then bad pattern (Missing ']') */
 
-	    /* if this is not an exclusion then skip the rest of
-	       the [...] A4GL_construct that already matched. */
+		      if (!*p)
+			return MATCH_PATTERN;
 
-	    if (member_match)
-	      {
-		while (*p != ']')
-		  {
-		    /* bad pattern (Missing ']') */
-		    if (!*p)
-		      return MATCH_PATTERN;
+		      /* check for range bar */
+		      if (*++p == '-')
+			{
+			  /* get the range end */
 
-		    /* move to next pattern char */
+			  range_end = *++p;
 
-		    p++;
-		  }
-	      }
-	  } else {
-		if (*p== '\\') {		/* next character is quoted and must A4GL_match exactly */
-	  		///* move pattern pointer to quoted char and fall through */
-	  		p++;
-	  		///* if end of text then we have a bad pattern */
-	  		if (!*p)
-	    			return MATCH_PATTERN;
-		} else {
-	  ///* must A4GL_match this character exactly */
-	  		if (*p != *t)
-	    			return MATCH_LITERAL;
+			  /* if end of pattern or construct
+			     then bad pattern */
+
+			  if (range_end == '\0' || range_end == ']')
+			    return MATCH_PATTERN;
+
+			  /* special character range end */
+			  if (range_end == '\\')
+			    {
+			      range_end = *++p;
+
+			      /* if end of text then
+			         we have a bad pattern */
+			      if (!range_end)
+				return MATCH_PATTERN;
+			    }
+
+			  /* move just beyond this range */
+			  p++;
+			}
+
+		      /* if the text character is in range then A4GL_match found.
+		         make sure the range letters have the proper
+		         relationship to one another before comparison */
+	A4GL_debug("Range : %c %c",range_start,range_end);
+
+		      if (range_start < range_end)
+			{
+			  if (*t >= range_start && *t <= range_end)
+			    {
+			      member_match = TRUE;
+			      loop = FALSE;
+			    }
+			}
+		      else
+			{
+			  if (*t >= range_end && *t <= range_start)
+			    {
+			      member_match = TRUE;
+			      loop = FALSE;
+			    }
+			}
+		    }
+
+		  /* if there was a A4GL_match in an exclusion set then no A4GL_match */
+		  /* if there was no A4GL_match in a member set then no A4GL_match */
+
+		  if ((invert && member_match) || !(invert || member_match))
+		    return MATCH_RANGE;
+
+		  /* if this is not an exclusion then skip the rest of
+		     the [...] A4GL_construct that already matched. */
+
+		  if (member_match)
+		    {
+			    A4GL_debug("member_match");
+		      while (*p != ']')
+			{
+			  /* bad pattern (Missing ']') */
+			  if (!*p)
+			    return MATCH_PATTERN;
+
+			  /* move to next pattern char */
+
+			  p++;
+			}
+		    }
 		}
-	}
-}
+	      else
+		{
+		  if (*p == '\\')
+		    {		/* next character is quoted and must A4GL_match exactly */
+		      ///* move pattern pointer to quoted char and fall through */
+		      p++;
+		      ///* if end of text then we have a bad pattern */
+		      if (!*p)
+			return MATCH_PATTERN;
+		    }
+		  else
+		    {
+		      ///* must A4GL_match this character exactly */
+		      A4GL_debug("Literal matching : %c %c",*p,*t);
+		      if (*p != *t)
+			return MATCH_LITERAL;
+		    }
+		}
+	    }
 	}
 
 
     }
   /* if end of text not reached then the pattern fails */
 
-  if (*t) {
-    return MATCH_END;
-  } else {
+  if (*t)
+    {
+      return MATCH_END;
+    }
+  else
+    {
       return MATCH_VALID;
-  }
+    }
 }
 
 
@@ -489,7 +530,8 @@ C_BRACE=brace;
  * @param t The text to be checked.
  */
 int
-A4GL_matche_after_star (register char *p, register char *t,char m,char s,char b)
+A4GL_matche_after_star (register char *p, register char *t, char m, char s,
+			char b)
 {
   register int match = 0;
   register int nextp;
@@ -539,13 +581,13 @@ A4GL_matche_after_star (register char *p, register char *t,char m,char s,char b)
          the next pattern char is the beginning of a range.  Increment
          text pointer as we go here */
 
-      if (nextp == *t || (nextp == b && b!=' '))
- match = A4GL_matche (p, t,m,s,b);
+      if (nextp == *t || (nextp == b && b != ' '))
+	match = A4GL_matche (p, t, m, s, b);
 
       /* if the end of text is reached then no match */
 
       if (!*t++)
- match = MATCH_ABORT;
+	match = MATCH_ABORT;
 
     }
   while (match != MATCH_VALID &&
@@ -565,11 +607,11 @@ A4GL_matche_after_star (register char *p, register char *t,char m,char s,char b)
  * @param t The text to be checked.
  */
 BOOLEAN
-A4GL_match (char *p, char *t,char m,char s,char b)
+A4GL_match (char *p, char *t, char m, char s, char b)
 {
   int error_type;
 
-  error_type = A4GL_matche (p, t,m,s,b);
+  error_type = A4GL_matche (p, t, m, s, b);
   A4GL_debug ("error_type=%d - VALID=%d\n", error_type, MATCH_VALID);
   return (error_type == MATCH_VALID) ? TRUE : FALSE;
 }

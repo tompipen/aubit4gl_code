@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.18 2003-09-05 15:26:58 mikeaubury Exp $
+# $Id: rexp2.c,v 1.19 2003-09-06 08:44:25 mikeaubury Exp $
 #
 */
 
@@ -165,7 +165,7 @@ A4GL_mja_match (char *str1, char *str2, int likeormatch)
 
   A4GL_debug ("Calling matche...");
   error = A4GL_matche (str2, str1,MULTICHAR,SINGLECHAR,BRACECHAR);
-   A4GL_debug("A4GL_matche=%d\n",error);
+   A4GL_debug("A4GL_matche=%d (VALID=%d)\n",error,MATCH_VALID);
   if (error == MATCH_VALID)
     return 1;
   else
