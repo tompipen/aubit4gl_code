@@ -113,35 +113,56 @@ static void insertModule(package,module,comments)
   exec sql begin declare section;
     char *idPackage;
     char *moduleName;
-		char *author;
-		char *revision;
-		char *deprecated;
+    char *author;
+    char *revision;
+    char *deprecated;
+    char *since;
+    char *see;
     char *commentsText;
   exec sql end declare section;
   StatDesc = "insert p4gl_module";
 
-	idPackage = package;
-	moduleName = module;
-  author = comments->author;
-  if ( author == NULL )
-	  author = " ";
+  idPackage = package;
+  moduleName = module;
+  if ( comments != (Comment *)0 ) 
+  {
+    author = comments->author;
+    if ( author == NULL )
+      author = " ";
+  
+    revision = comments->revision;
+    if ( revision == NULL )
+      revision = " ";
 
-  revision = comments->revision;
-  if ( revision == NULL )
-	  revision = " ";
-
-  if ( comments->deprecated == 1 )
-	  deprecated = "Y";
-	else
-	  deprecated = "N";
+    since = comments->since;
+    if ( since == NULL )
+      since = " ";
+  
+    see = comments->see;
+    if ( see == NULL )
+      see = " ";
+  
+    if ( comments->deprecated == 1 )
+      deprecated = "Y";
+    else
+      deprecated = "N";
+  }
+  else
+  {
+    author = " ";
+    since = " ";
+    see = " ";
+    revision = " ";
+    deprecated = "N";
+  }
 
   commentsText = getCommentBuffer(comments);
   if ( commentsText == NULL )
     commentsText=" ";
-  /* printf("Comments <%s>\n",comments); */
-  exec sql insert into p4gl_module (id_package,module_name,author,revision,deprecated,comments) 
-	  values
-      (:idPackage,:moduleName,:author,:revision,:deprecated,:commentsText);
+  exec sql insert into p4gl_module 
+    (id_package,module_name,author,revision,deprecated,since,see,comments) 
+    values
+      (:idPackage,:moduleName,:author,:revision,:deprecated,:since,:see,:commentsText);
 }
 
 /**
@@ -186,13 +207,13 @@ static int insertProcess(idProcess)
 {
   exec sql begin declare section;
     int numProcesses;
-		char strProcess[20];
+    char strProcess[20];
   exec sql end declare section;
 
-	sprintf(strProcess,"unknown <%s>",idProcess);
+  sprintf(strProcess,"unknown <%s>",idProcess);
   numProcesses = 0;
   exec sql insert into p4gl_process (id_process,disp_process,den_process)
-	  values (:idProcess,:idProcess,:strProcess);
+    values (:idProcess,:idProcess,:strProcess);
 }
 
 
@@ -222,15 +243,15 @@ static void insertFunctionProcess(int idxFunction)
   {
     idProcess = FUNCAO(idxFunction).parsedDoc->processCode[i];
     if ( isValidProcess(idProcess) != 0 )
-		{
-			if ( !P4glCb.insertProcess )
-			{
+    {
+      if ( !P4glCb.insertProcess )
+      {
         /* @todo - Devia usar rotina de erros do p4gl */
         printf("Error : The process <%s> does not exist\n",idProcess);
-				continue;
-			}
-			insertProcess(idProcess);
-	  }
+        continue;
+      }
+      insertProcess(idProcess);
+    }
 
     exec sql insert into p4gl_fun_process (
       id_process,
@@ -259,10 +280,10 @@ char *getParameterDataType(int idxFunction,char *paramName)
   {
     varName = FUNCAO(idxFunction).variaveis[i].nome;
     if ( strcmp(varName,paramName) == 0 )
-		{
+    {
       dataType = FUNCAO(idxFunction).variaveis[i].tipo;
-			break;
-	  }
+      break;
+    }
   }
   /** @fixme : Possiblem memory leak */
   return strdup(dataType);

@@ -39,8 +39,8 @@ alnum [a-zA-Z_0-9]
 
 "@table" { startTable(); }
 
-"@see" {  }
-"@since" {  }
+"@see" { startSee(); }
+"@since" { startSince(); }
 
 "@"[aA]"uthor" { startAuthor(); }
 

@@ -10,9 +10,9 @@
 #  @todo : Substituir dies por gestão de erros correcta
 #  @todo : O HTML localizado não está completo
 #
-#  $Author: afalout $
-#  $Date: 2003-05-13 11:30:50 $
-#  $Id: ExportHtml.pm,v 1.5 2003-05-13 11:30:50 afalout Exp $
+#  $Author: saferreira $
+#  $Date: 2003-05-14 09:51:14 $
+#  $Id: ExportHtml.pm,v 1.6 2003-05-14 09:51:14 saferreira Exp $
 #
 # ============================================================================
 
@@ -573,13 +573,13 @@ sub selectModulesForProcess
   my $sth;
   if ( $processId eq "AllModules" )
   {
-    $sth = $obj->{dbh}->prepare(qq%
+    $sth = $obj->{dbh}->prepare(qq% 
       SELECT unique module_name FROM p4gl_module 
     %);
   }
   else
   {
-    $sth = $obj->{dbh}->prepare(qq%
+    $sth = $obj->{dbh}->prepare(qq% 
       SELECT unique module_name FROM p4gl_fun_process 
       WHERE id_process = '$processId'
     %);
@@ -1561,7 +1561,7 @@ sub genNavBar
         <FONT CLASS="$moduleBgColor">
           $str3
         </FONT>&nbsp;</TD>
-
+  
     <!-- Por enquanto nenhum destes se usa
       <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    
         <A HREF="overview-tree.html">
@@ -1684,9 +1684,9 @@ sub selectModuleInformation
   my $module = shift;
 
   my $sth = $obj->{dbh}->prepare(qq% 
-    SELECT module_name,author,revision,deprecated,since,comments 
-		FROM p4gl_module 
-		WHERE module_name='$module'
+    SELECT module_name,author,revision,deprecated,since,see,comments 
+    FROM p4gl_module 
+    WHERE module_name='$module'
   %);
   if ( ! $sth )
   {
@@ -1711,7 +1711,8 @@ sub selectModuleInformation
       'revision' => $row[2],
       'deprecated' => $row[3],
       'since' => $row[4],
-      'comments' => $row[5]
+      'see' => $row[5],
+      'comments' => $row[6],
     );
   }
   undef $sth;
@@ -1731,7 +1732,7 @@ sub selectModuleFunctions
   my $modRef = $obj->{moduleInformation};
   my $module = $modRef->{moduleName};
   my $sth = $obj->{dbh}->prepare(qq% 
-    SELECT function_name, function_type, comments 
+    SELECT function_name, function_type, deprecated, author, since, comments 
     FROM p4gl_function
     WHERE module_name = '$module'
   %);
@@ -1755,7 +1756,10 @@ sub selectModuleFunctions
     my %functionInformation = (
       'function_name'    => $row[0],
       'function_type'    => $row[1],
-      'comments'         => $row[2]
+      'deprecated'       => $row[2],
+      'author'           => $row[3],
+      'since'            => $row[4],
+      'comments'         => $row[5]
     );
     push(@functionList,\%functionInformation);
   }
@@ -1858,8 +1862,8 @@ http://www.w3.org/tr/rec-html40/frameset.dtd'>
 }
 
 #  ===========================================================================
-#  Imprime o html do header do modulo 
-#  @param module O nome do modulo corrente
+#  Print the module HTML header and module definition.
+#  @param module The 4gl module name.
 #  ===========================================================================
 sub printModuleHeader
 {
@@ -1875,29 +1879,35 @@ sub printModuleHeader
   <P> $obj->{moduleInformation}->{comments}
 |;
 
-	my $author = $obj->{moduleInformation}->{author};
+  my $author = $obj->{moduleInformation}->{author};
   $author =~ s/^ *//g;
-	if ( ! $author eq "" ) {
+  if ( ! $author eq "" ) {
     print MODULEHTML "<BR><B>Author</B>: $author\n";
-	}
+  }
 
-	my $revision = $obj->{moduleInformation}->{revision};
+  my $revision = $obj->{moduleInformation}->{revision};
   $revision =~ s/^ *//g;
-	if ( ! $revision eq "" ) {
+  if ( ! $revision eq "" ) {
     print MODULEHTML "<BR><B>Revision</B>: $revision\n";
-	}
+  }
 
-	my $since = $obj->{moduleInformation}->{since};
+  my $since = $obj->{moduleInformation}->{since};
   $since =~ s/^ *//g;
-	if ( ! $since eq "" ) {
+  if ( ! $since eq "" ) {
     print MODULEHTML "<BR><B>Since</B>: $since\n";
-	}
+  }
 
-	my $deprecated = $obj->{moduleInformation}->{deprecated};
+  my $see = $obj->{moduleInformation}->{see};
+  $see =~ s/^ *//g;
+  if ( ! $see eq "" ) {
+    print MODULEHTML "<BR><B>See</B>: $see\n";
+  }
+
+  my $deprecated = $obj->{moduleInformation}->{deprecated};
   $deprecated =~ s/^ *//g;
-	if ( ! $deprecated eq "Y" ) {
+  if ( ! $deprecated eq "Y" ) {
     print MODULEHTML "<BR><B>Warning</B>: This module is deprecated\n";
-	}
+  }
 
   print MODULEHTML "<HR><P>\n";
 }
@@ -2115,8 +2125,26 @@ sub printMethodDetailBody
 
   $obj->printFunctionParameters($moduleName,$functionName);
   $obj->printFunctionReturns($moduleName,$functionName);
+  $obj->printFunctionTables($moduleName,$functionName);
   $obj->printFunctionTodos($moduleName,$functionName);
 
+  my $author = $functionInformation{author};
+  $author =~ s/^ *//g;
+  if ( ! $author eq "" ) {
+    print MODULEHTML "<BR><B>Author</B>: $author\n";
+  }
+
+  my $since = $functionInformation{since};
+  $since =~ s/^ *//g;
+  if ( ! $since eq "" ) {
+    print MODULEHTML "<BR><B>Since</B>: $since\n";
+  }
+
+  my $deprecated = $functionInformation{deprecated};
+  $deprecated =~ s/^ *//g;
+  if ( ! $deprecated eq "Y" ) {
+    print MODULEHTML "<BR><B>Warning</B>: This function is deprecated\n";
+  }
   print MODULEHTML "</DL>\n";
 }
 
@@ -2335,10 +2363,110 @@ sub printFunctionReturns
 }
 
 #  ===========================================================================
+#  Select and print the usage of tables in the method detail.
+#  @param moduleName the Name of the 4gl module.
+#  @param functioName the Name of the function
+#  ===========================================================================
+sub printFunctionTables
+{
+  my $obj = shift;
+  my $moduleName = shift;
+  my $functionName = shift;
+  my $tableName;
+  my $operation;
+
+  my $sth = $obj->{dbh}->prepare(qq% 
+    SELECT unique table_name, operation FROM p4gl_table_usage
+      WHERE module_name='$moduleName' and function_name = '$functionName'
+      ORDER BY table_name
+  %);
+  if ( ! $sth )
+  {
+    $obj->{err}->error(
+      "Selection of table usage in functions",
+      "Can't prepare select from p4gl_table_usage\n$DBI::errstr"
+    );
+    return;
+  }
+  $sth->execute() || 
+    $obj->{err}->error(
+      "Selection of table usage in functions",
+      "Can't select from p4gl_table_usage\n$DBI::errstr"
+    );
+  my $haveTable = 0;
+  my(@row);
+  my %moduleInformation;
+  my $lastTable = "";
+  my $numOp=0;
+  while (@row = $sth->fetchrow_array())
+  {
+    if ( !$haveTable )
+    {
+      print MODULEHTML qq|
+      <BR><DD>
+      <DL>
+      <DT><B>Tables Used</B>
+      |;
+    }
+    $tableName = $row[0];
+    $operation = $row[1];
+    if ( $lastTable eq $tableName ) {
+      $numOp++;
+      if ($numOp != 1 ) {
+        print MODULEHTML ",";
+      }
+    }
+    else {
+      if ( $haveTable ) {
+        print MODULEHTML ")</DD>";
+      }
+      print MODULEHTML "<DD><CODE>$tableName (";
+      $numOp = 0;
+    }
+
+    my $denOperation = decodeOperation($operation);
+    print MODULEHTML "$denOperation";
+    print MODULEHTML "</CODE>\n";
+    $lastTable = $tableName;
+    $haveTable = 1;
+  }
+  print MODULEHTML ")</DD>";
+  undef $sth;
+
+  if ( $haveTable )
+  {
+    print MODULEHTML "</DT></DL></DD>\n";
+  }
+}
+
+#
+# Decode the operation made with the table
+#
+sub decodeOperation {
+  my $operation = shift;
+  my $denOperation;
+  if ( $operation eq "S" ) {
+    $denOperation = "Select";
+  }
+  elsif ( $operation eq "U" ) {
+    $denOperation = "Update";
+  }
+  elsif ( $operation eq "D" ) {
+    $denOperation = "Delete";
+  }
+  elsif ( $operation eq "I" ) {
+    $denOperation = "Insert";
+  }
+  else {
+    $denOperation = $operation;
+  }
+  return $denOperation;
+}
+
+#  ===========================================================================
 #  Select and print the function todos descripitons.
 #  @param moduleName the Name of the 4gl module.
 #  @param functioName the Name of the function
-#  @todo Implement it
 #  ===========================================================================
 sub printFunctionTodos
 {

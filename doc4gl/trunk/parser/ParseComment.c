@@ -14,8 +14,8 @@
  * @todo : Change the logic of the file level comments algorithm
  *
  * $Author: saferreira $
- * $Revision: 1.5 $
- * $Id: ParseComment.c,v 1.5 2003-05-12 11:29:58 saferreira Exp $
+ * $Revision: 1.6 $
+ * $Id: ParseComment.c,v 1.6 2003-05-14 09:51:40 saferreira Exp $
  *
  */
 
@@ -46,6 +46,8 @@ static int commentState = IN_COMMENT;
 #define TAG_AUTHOR     4
 #define TAG_REVISION   5
 #define TAG_TABLE      6
+#define TAG_SEE        7
+#define TAG_SINCE      8
 
 /** Last tag readed by the parser */
 static int currentTag = NO_TAG;
@@ -76,9 +78,13 @@ static void initComment(Comment *comm,int bufferSize)
 	comm->returnIdx         = -1;
 	comm->todoIdx           = -1;
   comm->deprecated        = 0;
-	comm->tableList         = (TableUsage **)calloc(10,sizeof(TableUsage *));
-	comm->tableIdx          = -1;
-	comm->tableStarted      = 0;
+  comm->tableList         = (TableUsage **)calloc(10,sizeof(TableUsage *));
+  comm->tableIdx          = -1;
+  comm->tableStarted      = 0;
+  comm->author = (char *)calloc(80,1);
+  comm->revision = (char *)calloc(80,1);
+  comm->since = (char *)calloc(80,1);
+  comm->see = (char *)calloc(80,1);
 }
 
 
@@ -95,14 +101,14 @@ Comment *parseComment(char *commentToParse)
 {
   register int i;
 
-	commentState = IN_COMMENT;
+  commentState = IN_COMMENT;
 
-	commentLineStarted = 0;
+  commentLineStarted = 0;
   currentComment = (Comment *)malloc(sizeof(Comment));
-	initComment(currentComment,strlen(commentToParse));
+  initComment(currentComment,strlen(commentToParse));
   currentChar = commentToParse;
   yyCommentlex();
-	return currentComment;
+  return currentComment;
 }
 
 /**
@@ -110,7 +116,7 @@ Comment *parseComment(char *commentToParse)
  */
 static void startCommentLine(void)
 {
-	commentLineStarted = 1;
+  commentLineStarted = 1;
 }
 
 
@@ -123,14 +129,12 @@ static void startCommentLine(void)
 int getCommentChar(void)
 {
   int retval;
-  /*printf("getting char\n"); */
-	if ( *currentChar == '\0' )
+  if ( *currentChar == '\0' )
     retval = EOF;
   else 
-		retval = *currentChar;
+    retval = *currentChar;
   currentChar++;
-  /*printf("Returning %c\n",retval); */
-	return retval;
+  return retval;
 }
 
 /**
@@ -145,7 +149,7 @@ static void setReturnComments(char *comments)
     currentComment->returnList[currentComment->returnIdx]= (char *)malloc(260);
     strcpy(currentComment->returnList[currentComment->returnIdx],comments);
   }
-	else
+  else
     strcat(currentComment->returnList[currentComment->returnIdx],comments);
   currentComment->returnStarted = 0;
 }
@@ -157,9 +161,28 @@ static void setReturnComments(char *comments)
  */
 static void setRevision(char *revision)
 {
-  currentComment->revision = (char *)strdup(revision);
+  strcat(currentComment->revision,revision);
 }
 
+/**
+ *  Afecta o since
+ *
+ *  @param revision Nº de revisão
+ */
+static void setSince(char *since)
+{
+  strcat(currentComment->since,since);
+}
+
+/**
+ *  Afecta o see
+ *
+ *  @param revision Nº de revisão
+ */
+static void setSee(char *see)
+{
+  strcat(currentComment->see,see);
+}
 /**
  *  Afecta o autor
  *
@@ -167,7 +190,7 @@ static void setRevision(char *revision)
  */
 static void setAuthor(char *author)
 {
-  currentComment->author = (char *)strdup(author);
+  strcat(currentComment->author,author);
 }
 
 
@@ -183,7 +206,7 @@ static void setTodoComments(char *comments)
     currentComment->todoList[currentComment->todoIdx]= (char *)malloc(260) ;
     strcpy(currentComment->todoList[currentComment->todoIdx],comments);
   }
-	else
+  else
     strcat(currentComment->todoList[currentComment->todoIdx],comments);
   currentComment->todoStarted = 0;
 }
@@ -198,26 +221,26 @@ static void setTodoComments(char *comments)
  */
 static void setTable(char *tableId)
 {
-	TableUsage *tableUsage;
+  TableUsage *tableUsage;
 
   if ( currentComment->tableStarted == 1 )
   {
     tableUsage = newTableUsage();
     currentComment->tableList[currentComment->tableIdx] = tableUsage;
-	  setTableUsageTableName(tableId,tableUsage);
-	  setTableUsageFoundAs(TU_COMMENT,tableUsage);
-	  setTableUsageOperation(TU_UNDEFINED,tableUsage);
-	  setTableUsageLineNumber(TU_UNDEFINED,tableUsage);
+    setTableUsageTableName(tableId,tableUsage);
+    setTableUsageFoundAs(TU_COMMENT,tableUsage);
+    setTableUsageOperation(TU_UNDEFINED,tableUsage);
+    setTableUsageLineNumber(TU_UNDEFINED,tableUsage);
   }
-	else
-	{
-		char *oldStr, newStr[64];
-		tableUsage = currentComment->tableList[currentComment->tableIdx];
-	  oldStr = getTableUsageTableName(tableUsage);
+  else
+  {
+    char *oldStr, newStr[64];
+    tableUsage = currentComment->tableList[currentComment->tableIdx];
+    oldStr = getTableUsageTableName(tableUsage);
     sprintf(newStr, "%s%s",oldStr,tableId);
-	  setTableUsageTableName(newStr,tableUsage);
-		free(oldStr);
-	}
+    setTableUsageTableName(newStr,tableUsage);
+    free(oldStr);
+  }
   currentComment->tableStarted = 0;
 }
 
@@ -233,28 +256,34 @@ static void setTable(char *tableId)
 static void writeTagComment(char *tagComment)
 {
   switch (currentTag)
-	{
-		case TAG_PROCESS:
-		  break;
-		case TAG_PARAMETER:
-			setParameterComments(currentComment->parameterList,tagComment);
-		  break;
-		case TAG_RETURN:
-			setReturnComments(tagComment);
-		  break;
-		case TAG_TODO:
-			setTodoComments(tagComment);
-		  break;
-		case TAG_AUTHOR:
-			setAuthor(tagComment);
-		  break;
-		case TAG_REVISION:
-			setRevision(tagComment);
-		  break;
-		case TAG_TABLE:
-			setTable(tagComment);
-		  break;
-	}
+  {
+    case TAG_PROCESS:
+      break;
+    case TAG_PARAMETER:
+      setParameterComments(currentComment->parameterList,tagComment);
+      break;
+    case TAG_RETURN:
+      setReturnComments(tagComment);
+      break;
+    case TAG_TODO:
+      setTodoComments(tagComment);
+      break;
+    case TAG_AUTHOR:
+      setAuthor(tagComment);
+      break;
+    case TAG_REVISION:
+      setRevision(tagComment);
+      break;
+    case TAG_SEE:
+      setSee(tagComment);
+      break;
+    case TAG_SINCE:
+      setSince(tagComment);
+      break;
+    case TAG_TABLE:
+      setTable(tagComment);
+      break;
+  }
 }
 
 /**
@@ -265,8 +294,8 @@ static void writeTagComment(char *tagComment)
 static void setProcessCode(char *id)
 {
   currentComment->processCode[currentComment->processIdx] = (char *)strdup(id);
-	currentComment->processIdx++;
-	currentComment->waitingForProcess = 0;
+  currentComment->processIdx++;
+  currentComment->waitingForProcess = 0;
 }
 
 
@@ -278,15 +307,15 @@ static void setProcessCode(char *id)
 static void writeTagCode(char *tagCode)
 {
   switch (currentTag)
-	{
-		case TAG_PROCESS:
-			setProcessCode(tagCode);
-		  break;
-		case TAG_PARAMETER:
-			setParameterName(currentComment->parameterList,tagCode);
-		  break;
-	}
-	commentState = TAG_COMMENT;
+  {
+    case TAG_PROCESS:
+      setProcessCode(tagCode);
+      break;
+    case TAG_PARAMETER:
+      setParameterName(currentComment->parameterList,tagCode);
+      break;
+  }
+  commentState = TAG_COMMENT;
 }
 
 /**
@@ -299,19 +328,19 @@ static void writeTagCode(char *tagCode)
  */
 void writeCommentIdentifier(char *id)
 {
-	commentLineStarted = 0;
+  commentLineStarted = 0;
   switch (commentState)
-	{
-		case IN_COMMENT:
+  {
+    case IN_COMMENT:
       strcat(currentComment->buffer,id);
-		  break;
-		case TAG_COMMENT:
-			writeTagComment(id);
-		  break;
-		case TAG_CODE:
-			writeTagCode(id);
-		  break;
-	}
+      break;
+    case TAG_COMMENT:
+      writeTagComment(id);
+      break;
+    case TAG_CODE:
+      writeTagCode(id);
+      break;
+  }
 }
 
 /**
@@ -328,8 +357,8 @@ void setModuleDocument(void)
 void startProcess(void)
 {
   currentComment->waitingForProcess = 1;
-	commentState = TAG_CODE;
-	currentTag   = TAG_PROCESS;
+  commentState = TAG_CODE;
+  currentTag   = TAG_PROCESS;
 }
 
 /**
@@ -337,8 +366,8 @@ void startProcess(void)
  */
 void startParameter(void)
 {
-	commentState = TAG_CODE;
-	currentTag   = TAG_PARAMETER;
+  commentState = TAG_CODE;
+  currentTag   = TAG_PARAMETER;
 }
 
 /**
@@ -348,10 +377,10 @@ void startParameter(void)
  */
 void startReturn(void)
 {
-	commentState = TAG_COMMENT;
-	currentTag   = TAG_RETURN;
+  commentState = TAG_COMMENT;
+  currentTag   = TAG_RETURN;
   currentComment->returnStarted = 1;
-	currentComment->returnIdx++;
+  currentComment->returnIdx++;
 }
 
 /**
@@ -360,10 +389,10 @@ void startReturn(void)
  */
 void startTodo(void)
 {
-	commentState = TAG_COMMENT;
-	currentTag   = TAG_TODO;
+  commentState = TAG_COMMENT;
+  currentTag   = TAG_TODO;
   currentComment->todoStarted = 1;
-	currentComment->todoIdx++;
+  currentComment->todoIdx++;
 }
 
 /**
@@ -374,10 +403,10 @@ void startTodo(void)
  */
 void startTable(void)
 {
-	commentState = TAG_COMMENT;
-	currentTag   = TAG_TABLE;
+  commentState = TAG_COMMENT;
+  currentTag   = TAG_TABLE;
   currentComment->tableStarted = 1;
-	currentComment->tableIdx++;
+  currentComment->tableIdx++;
 }
 
 /**
@@ -386,8 +415,8 @@ void startTable(void)
  */
 void startAuthor(void)
 {
-	commentState = TAG_COMMENT;
-	currentTag   = TAG_AUTHOR;
+  commentState = TAG_COMMENT;
+  currentTag   = TAG_AUTHOR;
 }
 
 /**
@@ -396,10 +425,29 @@ void startAuthor(void)
  */
 void startRevision(void)
 {
-	commentState = TAG_COMMENT;
-	currentTag   = TAG_REVISION;
+  commentState = TAG_COMMENT;
+  currentTag   = TAG_REVISION;
 }
 
+/**
+ * Started a since tag.
+ * Mark the fact in the state machine in order to read the source code revision
+ */
+void startSince(void)
+{
+  commentState = TAG_COMMENT;
+  currentTag   = TAG_SINCE;
+}
+
+/**
+ * Started a SEE tag.
+ * Mark the fact in the state machine in order to read the source code revision
+ */
+void startSee(void)
+{
+  commentState = TAG_COMMENT;
+  currentTag   = TAG_SEE;
+}
 
 /**
  * Nova linha iniciada. 
@@ -420,22 +468,22 @@ void writeNewLine(void)
  */
 void writeOtherComment(char *comm)
 {
-	if ( strcmp(comm,"*") == 0 && commentLineStarted == 1)
+  if ( strcmp(comm,"*") == 0 && commentLineStarted == 1)
     return;
-	commentLineStarted = 0;
+  commentLineStarted = 0;
 
   switch (commentState)
-	{
-		case IN_COMMENT:
+  {
+    case IN_COMMENT:
       strcat(currentComment->buffer,comm);
-		  break;
-		case TAG_COMMENT:
-	    if ( currentTag != TAG_TABLE )
-			  writeTagComment(comm);
-		  break;
-		case TAG_CODE:
-		  break;
-	}
+      break;
+    case TAG_COMMENT:
+      if ( currentTag != TAG_TABLE )
+        writeTagComment(comm);
+      break;
+    case TAG_CODE:
+      break;
+  }
 }
 
 /**
@@ -448,16 +496,16 @@ void writeOtherComment(char *comm)
 void writeSeparator(char *comm)
 {
   switch (commentState)
-	{
-		case IN_COMMENT:
+  {
+    case IN_COMMENT:
       strcat(currentComment->buffer,comm);
-		  break;
-		case TAG_COMMENT:
-			writeTagComment(comm);
-		  break;
-		case TAG_CODE:
-		  break;
-	}
+      break;
+    case TAG_COMMENT:
+      writeTagComment(comm);
+      break;
+    case TAG_CODE:
+      break;
+  }
 }
 
 /**
