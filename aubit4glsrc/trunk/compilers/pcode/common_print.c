@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #define NEED_CMD_TYPE_STR
 
 #if (defined(__CYGWIN__)) || defined(__MINGW32__)
@@ -39,7 +40,10 @@ char *op_str[]={
 
 
 void print_push_int(int n)  ;
+void print_push_op(int n)  ;
 void print_push_long(int n)  ;
+void print_set_stat(int n) ;
+void print_ecall(struct ecall *e) ;
 void print_chk_err(int lineno) ;
 void print_push_char(int n)  ;
 void print_push_op(int n)  ;
@@ -301,7 +305,7 @@ print_command (long func_id, long pc, struct cmd *cmd)
 
 }
 
-print_ecall(struct ecall *e) {
+void print_ecall(struct ecall *e) {
 	printf("ECALL %d %d %d",e->func_id,e->ln,e->nparam);
 }
 void print_set_stat(int n) {
@@ -317,7 +321,7 @@ void print_push_int(int n)  {
 
 
 void print_errchk(struct cmd_errchk *e) {
-	printf("ERRCHK %d %d\n",e->line,e->module_name);
+	printf("ERRCHK %ld %ld\n",e->line,e->module_name);
 }
 
 
@@ -371,9 +375,11 @@ print_var_element (int lvl, struct variable_element *ve)
 void
 print_variable (int lvl, struct npvariable *v)
 {
+  if (v==0) {printf("No V..\n"); return;}
   printf ("VARIABLE :  ID=%ld CAT=%d BLOCK=%ld ", v->variable_id, v->category,
 	  v->def_block);
-  print_var_element (0, v->var);
+  if (v->var) print_var_element (0, v->var);
+  else {printf("No v->var\n");}
 }
 
 
@@ -382,6 +388,11 @@ print_variable (int lvl, struct npvariable *v)
 void
 print_params (struct param *e)
 {
+static int lvl=0;
+int pa;
+
+for (pa=0;pa<lvl;pa++) printf("  ");
+
   if (e == 0)
     {
       printf ("Param : Null\n");
@@ -421,13 +432,18 @@ print_params (struct param *e)
 	struct param_list *p;
 	int a;
 	p = e->param_u.p_list;
-	printf ("LIST [ ");
+	printf ("LIST [\n");
+	lvl++;
 	for (a = 0; a < p->list.list_len; a++)
 	  {
-	    printf ("   %d ) ", a);
+	    for (pa=0;pa<lvl;pa++) printf("  ");
+	    printf ("%d ) ", a);
 	    print_params (&p->list.list_val[a]);
+	    printf("\n");
 
 	  }
+	lvl--;
+	    for (pa=0;pa<lvl;pa++) printf("  ");
 	printf ("]");
 
       }

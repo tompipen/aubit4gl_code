@@ -178,7 +178,7 @@ this should be the first thing in our function, always @ PC=0
 
   fprintf (logfile, "Entering function %s\n",
 	   GET_ID (this_module.functions.functions_val[func_no].
-		   func_name_id));
+		   func_name_id));fflush(logfile);
 
 /* 
 Now - did we get any parameters passed in at all 
@@ -187,7 +187,7 @@ Normally we should get a value for p - even if it contains a 0 length list
 
   if (p)
     {
-      fprintf (logfile, "Have some parameters...\n");
+      fprintf (logfile, "Have some parameters...\n");fflush(logfile);
       if (p->param_type != PARAM_TYPE_LIST)
 	{
 	  fprintf (stderr, "Internal error\n");
@@ -211,7 +211,7 @@ Normally we should get a value for p - even if it contains a 0 length list
 	    }
 	  else
 	    {
-	      fprintf (logfile, "Got %d parameters - as expected\n", got);
+	      fprintf (logfile, "Got %d parameters - as expected\n", got);fflush(logfile);
 	    }
 
 	  for (a = 0; a < got; a++)
@@ -233,7 +233,7 @@ Normally we should get a value for p - even if it contains a 0 length list
     }
   else
     {
-      fprintf (logfile, "No parameters\n");
+      fprintf (logfile, "No parameters\n");fflush(logfile);
     }
 
 
@@ -244,7 +244,7 @@ Now we've done our function startup - we can get on with actually running it...
   while (1)
     {
 
-      fprintf (logfile, "%04d-%04ld ", func_no, pc);
+      fprintf (logfile, "%04d-%04ld ", func_no, pc);fflush(logfile);
 
       if (pc >= this_module.functions.functions_val[func_no].cmds.cmds_len)
 	{
@@ -257,6 +257,7 @@ Now we've done our function startup - we can get on with actually running it...
       c = &this_module.functions.functions_val[func_no].cmds.cmds_val[pc];
       fprintf (logfile, "%-10.10s %03d\n", cmd_type_str[c->cmd_type],
 	       c->cmd_type);
+fflush(logfile);
 
 
       switch (c->cmd_type)
@@ -319,7 +320,7 @@ Now we've done our function startup - we can get on with actually running it...
 	      // Deallocate any variables
 	    }
 
-	  fprintf (logfile, "Leaving function\n");
+	  fprintf (logfile, "Leaving function\n");fflush(logfile);
 	  execute_end_block ();
 	  return i;
 
@@ -335,7 +336,7 @@ Now we've done our function startup - we can get on with actually running it...
 	  }
 	}
     }
-  fprintf (logfile, "Leaving function badly\n");
+  fprintf (logfile, "Leaving function badly\n");fflush(logfile);
   return 0;
 }
 

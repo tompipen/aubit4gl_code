@@ -150,6 +150,7 @@ static char *cmd_type_str[] = {
   "CMD_PUSH_LONG",
   "CMD_PUSH_INT",
   "CMD_PUSH_CHAR",
+  "CMD_PUSH_CHARV",
   "CMD_CHK_ERR",
   "CMD_PUSH_VARIABLE",
   "CMD_END_4GL_0",
@@ -158,7 +159,11 @@ static char *cmd_type_str[] = {
   "CMD_PUSH_OP",
   "CMD_CLR_ERR",
   "CMD_ERRCHK",
+  "CMD_ECALL",
+  "CMD_SET_STAT",
   ""
 };
+
+
 
 #endif

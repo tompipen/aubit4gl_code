@@ -73,7 +73,7 @@ add_block_to_stack (int pc, struct cmd_block *b)
     }
 
   fprintf (logfile, "ADDING to stack %p stack length : %d\n", b,
-	   callstack_cnt);
+	   callstack_cnt);fflush(logfile);
 
   for (a = 0; a < b->c_vars.c_vars_len; a++)
     {
@@ -129,6 +129,11 @@ add_block_to_stack (int pc, struct cmd_block *b)
       callstack[callstack_cnt - 1].mem_for_vars =
 	(long) malloc (callstack[callstack_cnt - 1].mem_to_alloc);
 	//printf("MALLOC : %d\n",callstack[callstack_cnt - 1].mem_to_alloc);
+	//printf("mem=%p to %p  (%d)\n",
+//callstack[callstack_cnt - 1].mem_for_vars, 
+//callstack[callstack_cnt - 1].mem_for_vars+ callstack[callstack_cnt - 1].mem_to_alloc,
+//callstack[callstack_cnt - 1].mem_to_alloc
+//);
     }
   else
     {
@@ -141,7 +146,7 @@ remove_block_from_stack ()
 {
   callstack_cnt--;
   fprintf (logfile, "Removing from stack - stack length : %d\n",
-	   callstack_cnt);
+	   callstack_cnt);fflush(logfile);
 
 }
 
@@ -176,15 +181,33 @@ set_var (long pc, struct cmd_set_var *sv)
   struct param *uset_var;
   struct use_variable *use_var;
   long *ptr;
+int call_stack_entry;
   struct param *nparam;
   struct cmd_set_var nsv;
+int lvl;
 
   uset_var = &sv->value;
   use_var = &sv->variable;
+  if (sv==0) {
+	char *ptr=0;
+	printf("Nothing to set ?\n");
+	*ptr=0;
+	exit(2);
 
+  }
+//print_set_var(sv);
+//printf("USE VAR:\n");
+//print_use_variable(use_var);fflush(stdout);
+//printf("---------\n");
+
+  if(use_var->variable_id<0) {
+	printf("Interal error - some corruption");
+	exit(2);
+  }
   if (uset_var->param_type == PARAM_TYPE_LIST)
     {
       int a;
+      struct npvariable *var;
       memset (&nsv, 0, sizeof (nsv));
       // Copy across the basics...
       memcpy (&nsv.variable, use_var, sizeof (struct use_variable));
@@ -194,13 +217,54 @@ set_var (long pc, struct cmd_set_var *sv)
 	malloc (sizeof (struct use_variable_sub) * (use_var->sub.sub_len + 1));
 
 
+
+
+  if (use_var->defined_in_block_pc == -1)
+    {
+      call_stack_entry = 0;
+    }
+  else
+    {
+      call_stack_entry = callstack_cnt - 1;
+    }
+
+
+      var = &callstack[call_stack_entry].c_vars.c_vars_val[use_var->variable_id];
+
+printf("\n\n\nVAR:\n");
+print_variable(0,var);
+printf("\n\n\n");
+printf("Levels : %d ****************************************\n",use_var->sub.sub_len) ;
+
+
+
+
+
       memcpy (nsv.variable.sub.sub_val, use_var->sub.sub_val,
 	      sizeof (struct use_variable_sub) * use_var->sub.sub_len);
 
       if (uset_var->param_u.p_list->list.list_len == 0)
 	{
-	  fprintf (logfile, "NO LENGTH\n");
+	  fprintf (logfile, "NO LENGTH\n");fflush(logfile);
 	}
+
+      //printf("uset_var->param_u.p_list->list.list_len=%d\n",uset_var->param_u.p_list->list.list_len);
+
+      lvl=use_var->sub.sub_len+1;
+//printf("lvl was=%d *****************\n",lvl);
+	if (var) {
+		if (var->var) {
+      			if (var->var->i_arr_size[0]) lvl--;
+      			if (var->var->i_arr_size[1]) lvl--;
+      			if (var->var->i_arr_size[2]) lvl--;
+		} else {
+			printf("No var->var\n");
+		}
+	} else {
+		printf("No var\n");
+	}
+
+//printf("lvl now=%d *****************\n",lvl);
 
       for (a = 0; a < uset_var->param_u.p_list->list.list_len; a++)
 	{
@@ -208,13 +272,20 @@ set_var (long pc, struct cmd_set_var *sv)
 	  i.param_type = PARAM_TYPE_LITERAL_INT;
 	  i.param_u.n = a;
 
-	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].subscript =
-	    &i;
-	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].element = -1;
+	if (lvl==0) {
+		printf("[%d]",a);
+	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].subscript = &i;
+	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].element   = -1;
+        } else {
+	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].subscript = 0;
+	  nsv.variable.sub.sub_val[nsv.variable.sub.sub_len - 1].element   = a;
+	}
 
 	  nparam = &uset_var->param_u.p_list->list.list_val[a];
-	  copy_across_params (&nsv.value,
-			      &uset_var->param_u.p_list->list.list_val[a]);
+	  copy_across_params (&nsv.value, &uset_var->param_u.p_list->list.list_val[a]);
+//printf("a=%d\n",a);
+      	//print_use_variable(&nsv.variable);
+	printf("pc=%d\n",pc);
 	  set_var (pc, &nsv);
 	}
       free (nsv.variable.sub.sub_val);
@@ -227,6 +298,7 @@ set_var (long pc, struct cmd_set_var *sv)
       //A4GL_debug ("=");
       use_var = &sv->variable;
       ptr = get_var_ptr (use_var);
+	//printf("ptr=%p\n",ptr);
       if (ptr)
 	{
 	  *(int *) ptr = x;
@@ -326,6 +398,7 @@ int indirect;
       exit (2);
     }
 
+  //printf("Found @ %d\n",a);
   var = &callstack[call_stack_entry].c_vars.c_vars_val[found];
   switch (var->category)
     {
@@ -356,6 +429,8 @@ int indirect;
       break;
     }
 
+
+  //printf("Cat = %c\n",pointer_or_offset);
   if (pointer_or_offset == 'P')
     {
       //printf("P--->%p\n",(char *)var->var->offset);
@@ -367,7 +442,8 @@ int indirect;
     {
       char *ptr;
       ptr = (char *) callstack[call_stack_entry].mem_for_vars;
-      //printf("entry=%d memforvars=%p",call_stack_entry,(char *)callstack[call_stack_entry].mem_for_vars);
+      //printf("entry=%d memforvars=%p\n",call_stack_entry,(char *)callstack[call_stack_entry].mem_for_vars);
+      //printf("offset=%d\n",var->var->offset);
       ptr = (void *) &ptr[var->var->offset];
       //printf("O--->%p\n",ptr);
       rptr = ptr;
@@ -377,12 +453,12 @@ int indirect;
 
   if (!rptr)
     {
-      fprintf (logfile, "****** Variable pointer not found\n");
+      fprintf (logfile, "****** Variable pointer not found\n");fflush(logfile);
 
       print_use_variable (uv);
       fflush (stdout);
 
-      fprintf (logfile, "\n");
+      fprintf (logfile, "\n");fflush(logfile);
       return 0;
     }
 
@@ -418,8 +494,10 @@ int indirect;
 	  else
 	    {
 	      int x;
-		//printf("Looking to get subscript\n");
+		//printf("Looking to get subscript %d\n",a);
 	      evaluate_param (uv->sub.sub_val[a].subscript, &x);
+//print_params(uv->sub.sub_val[a].subscript);
+		//printf("Element=%d x=%x\n",uv->sub.sub_val[a].element, x);
 	      //printf ("Sub :ARRAY (%d) +=%d\n", x,ve_main->unit_size*x);
 	      rptr += ve_main->unit_size * x;
 	    }
@@ -428,7 +506,7 @@ int indirect;
 
 indirect=uv->indirection;
 // Are we looking at an array ?
-
+//printf("A\n");
 if (ve_main->i_arr_size[0]) {
 	// Are we looking at the variable for the array - with no subscripts
 	// eg char buff[245];
