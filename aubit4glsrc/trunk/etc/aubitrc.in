@@ -491,6 +491,11 @@ IFX_LIBS='@IFX_LIBS@'
 #Must not use quotes on UNIX or ESQL will not be able to find esqlc executable
 INFORMIXDIR=@INFORMIXDIR@
 
+#We cannot use INFORMIXDIR to find esql compiler, because of use if
+#CSDK sub-directory on _SOME_ platforms
+#It's quoted in configure
+IFMX_ESQLC=@IFMX_ESQLC@
+
 #-------------------------------- EOF -----------------------------
 
 

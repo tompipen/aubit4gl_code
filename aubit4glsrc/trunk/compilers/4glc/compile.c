@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.66 2004-10-20 12:18:49 afalout Exp $
+# $Id: compile.c,v 1.67 2004-10-29 02:20:39 afalout Exp $
 #*/
 
 /**
@@ -215,7 +215,9 @@ initArguments (int argc, char *argv[])
   char pg_esql[128] = "";  
 
 //Cant use shell scripts on Windows: esql_wrap ecpg_wrap
-	sprintf (informix_esql, "\"%s/bin/esql\"",acl_getenv ("INFORMIXDIR"));
+	//sprintf (informix_esql, "\"%s/bin/esql\"",acl_getenv ("INFORMIXDIR"));
+	//sprintf (informix_esql, "\"%s\"",acl_getenv ("IFMX_ESQLC"));
+	sprintf (informix_esql, "%s",acl_getenv ("IFMX_ESQLC"));
 	sprintf (pg_esql, "\"%s/bin/ecpg\"",acl_getenv ("POSTGRESDIR"));  
   
 #ifdef DEBUG
