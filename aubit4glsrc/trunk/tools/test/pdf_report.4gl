@@ -2,8 +2,9 @@
 
 define mv_logo byte
 
-
+####
 main
+####
 
 define t,c char(20)
 define n integer
@@ -18,29 +19,37 @@ database maindb
 #you ?)
 
 
+#Try again - with an order by on the sql and an order external on the report.
+#I think the error may be when trying to insert new rows into the report table
+#(which is used to do an ordinary 'order by' within the report).
+
 	declare c1 cursor for
 		select tabname,colname,colno from systables,syscolumns
 		where systables.tabid=syscolumns.tabid
 		and systables.tabid<99
 		#and systables.tabid>99
-		order by 1,2,3
+#		order by 1,2,3
 
 
-        start report r1  to "rr1.pdf"
+    start report r1  to "rr1.pdf"
+	
 	foreach c1 into t,c,n
-        	display "Processing table ", t clipped
+        	#display "Processing table ", t clipped
 			output to report r1 (t,c,n)
 	end foreach
+	
 	finish report r1
 
     display "Finished, see result in rr1.pdf"
 
 end main
 
+#########################
 pdfreport r1(t,c,n)
+#########################
 define t,c  char(20)
 define n integer
-order external  by t,n
+#order external  by t,n
 
 format
 first page header
@@ -58,7 +67,7 @@ on every row
 	print column 2 inches,c
 
 before group of t
-	display t
+	display "Processing table", t
 	print "";
 	call pdf_function("set_font_size",20);
 	call pdf_function("set_parameter","underline","true");
@@ -72,3 +81,4 @@ after group of t
 
 end report
 
+#----------------------------- EOF -------------------------------------

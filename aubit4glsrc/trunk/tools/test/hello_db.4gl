@@ -15,6 +15,8 @@ define
 	DSN_postgres
 		char(40)
 
+#	database maindb
+
     let ifx_sess = false
     let pg_sess = false
 
@@ -25,15 +27,16 @@ options prompt line 4
 options message line 6
 
 menu "Hello_db test"
+
+    command "Access" "Access database and list some data"
+
+        call db_select ()
+
 	command "Window" "Show a little window"
 		open window w1 at 10,30 with 3 rows,20 columns attribute(border)
 		display "   Hello  World   " at 2,2 attribute(cyan,reverse)
         sleep 2
 		close window w1
-
-    command "Access" "Access database and list some data"
-
-        call db_select ()
 
 	command "Exit" "Exit program"
         exit menu
@@ -51,7 +54,9 @@ function db_select()
 define
 	DSN_informix,
 	DSN_postgres
-		char(40)
+		char(40),
+    cnt
+        integer
 
 
 		menu "BD type"
@@ -87,6 +92,44 @@ define
             command "PostgreSQL scrool"
 
 					call pg_SESSION_scroll("ptest")
+
+
+
+            command "IFX static SQL"
+
+				if
+					not ifx_sess
+		        then
+						OPEN SESSION s_ifmx TO DATABASE maindb as user "informix" password "ifmx"
+		                #cause "error compiling":
+						#OPEN SESSION s_ifmx TO DATABASE _variable(DSN_informix) as user "informix" password "ifmx"
+		                let ifx_sess = true
+		        end if
+
+                SET SESSION TO s_ifmx
+
+
+                select count(*) into cnt
+                    from systables
+
+                error "Count was ", cnt
+
+                select tabid into cnt
+                    from systables
+                        where
+                            tabname = "systables"
+
+
+                #This should always be "1"
+
+                error "Systables tabis is ", cnt, "(should be 1)"
+
+                update systables
+                    set tabname = "systables"
+                        where tabname = "systables"
+
+
+                error "Update syccessfull"
 
 
 			command "Exit"

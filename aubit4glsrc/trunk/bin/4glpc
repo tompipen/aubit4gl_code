@@ -229,7 +229,7 @@ function showerror {
 		    fi
 		    echo "========================================"
 		fi
-	    echo "see $errfname"
+	    echo "See file $errfname"
     fi
 
 }
@@ -492,13 +492,13 @@ do
             if [ -f $errfname ]
             then
 				showerror
-				$output "Error compiling $a, see $errfname"
+				#$output "Error compiling $a, see file $errfname"
 			else
 				if [ -f $dirn/$errfname ]
                 then
 					errfname=$dirn/$errfname
 					showerror
-					$output "Error compiling $a - see $errfname"
+					#$output "Error compiling $a - see file $errfname"
                 else
 					$output "Error compiling $a - error file NOT created"
                 fi
@@ -592,13 +592,13 @@ do
 			if [ -f $errfname ]
             then
 				showerror
-				$output "Error compiling $a - see $errfname"
+				#$output "Error compiling $a - see file $errfname"
 			else
 				if [ -f $dirn/$errfname ]
                 then
 					errfname=$dirn/$errfname
 					showerror
-					$output "Error compiling $a - see $errfname"
+					#$output "Error compiling $a - see file $errfname"
                 else
 					$output "Error compiling $a - error file NOT created"
                 fi
@@ -708,7 +708,7 @@ do
 		                then
 							errfname=$dirn/$errfname
 							showerror
-							$output "Error compiling $fname.c - see $errfname"
+							#$output "Error compiling $fname.c - see file $errfname"
 		                else
 							$output "Error compiling $fname.c - error file NOT created"
 		                fi

@@ -11,6 +11,9 @@ DBASE.sch = ${FGLDBPATH}/${DBASE}.sch
 
 PROGTYPE  = $(suffix ${PROG})
 
+#for ld to find .aox libs
+export LD_RUN_PATH=${LIBSTORE}
+
 ifeq "$(PROGTYPE)" ".lib"
 
 	#LIBFLAG=-c
@@ -25,7 +28,7 @@ ifeq "$(PROGTYPE)" ".lib"
 
     #ci ?
     #ar ?
-	TARGETCMD=ld -fPIC -shared $^ -o ${EXECSTORE}$@
+	TARGETCMD=ld -fPIC -shared $^ -o ${EXECSTORE}$@ #--rpath${LIBSTORE} # -L${LIBSTORE}
 
 
 	ifeq "$(xxLIBSTORE)" ""
@@ -45,7 +48,7 @@ ifeq "$(PROGTYPE)" ".lib"
 
 else
 	LIBFLAG=
-    TARGETCMD=${A4GL_CC} -o ${EXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG}
+    TARGETCMD=${A4GL_CC} -o ${EXECSTORE}$@ $^ ${A4GL_CC_LDFLAGS} ${LIBFLAG} #--rpath${LIBSTORE} #-L${LIBSTORE}
 
 	ifneq "$(xxEXECSTORE)" ""
 		PROG.42r  = ${PROG}.42r #D4GL/4Js p-code
@@ -107,7 +110,7 @@ DEBRIS.d4gl = ${FILES.42m} ${FILES.42f} ${FILES.42h}
 DEBRIS.i4gl = ${FILES.4go} ${FILES.frm} ${FILES.iem}
 DEBRIS.aubit = 	${FILES.ao} ${FILES.afr} ${FILES.hlp} ${FILES.4gl:.4gl=.c} \
 				${FILES.4gl:.4gl=.h} ${FILES.per:.per=.c} \
-				${GLOBALS.4gl:.4gl=.glb} \
+				${FILES.4gl:.4gl=.glb} \
 				${OBJSTORE}${PROG.4ae} \
                 $(addprefix ${OBJSTORE}, ${FILES.ao}) \
 

@@ -44,6 +44,7 @@ ALLFORMS.per= $(wildcard *.per) $(wildcard ./ENG/*.per)
 DBASE     	= maindb
 
 #LIBSTORE    =${MAXDIR}/aprog/
+LIBSTORE    =${MAXDIR}/winds/
 #OBJSTORE    =${MAXDIR}/aprog/
 #EXECSTORE   =${MAXDIR}/aprog/
 #FORMSTORE	=${MAXDIR}/aform/

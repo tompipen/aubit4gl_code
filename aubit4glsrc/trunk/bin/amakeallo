@@ -20,15 +20,21 @@ function stats {
 if test $AMAKE = "1"
 then
 
+    let TOTALIGNORE=FAILANYWAY+FAILCOMPATIBLE+FAILDEFLIKE+DUPLICATE
+
     echo " "
 	echo "Attempted to compile total of $ATTEMPTED"
 	echo "OK= $AMAKEOK, failed= $AMAKEFAIL, already compiled= $COMPBEFORE "
-    echo "See $AMAKEERRORLOG"
+	echo "IGNORED: total= $TOTALIGNORE : $FAILANYWAY that fail to compiled as 4gl files, $DUPLICATE duplicated errors,"
+	echo "$FAILCOMPATIBLE since they fails in alt compiler, $FAILDEFLIKE on DEFINE LIKE not in database"
+	echo "See $AMAKEERRORLOG and $LINKFAILLIST"
 
     echo " " >> $AMAKEERRORLOG
 	echo "Attempted to compile total of $ATTEMPTED" >> $AMAKEERRORLOG
 	echo "OK= $AMAKEOK, failed= $AMAKEFAIL, already compiled= $COMPBEFORE ." >> $AMAKEERRORLOG
-    echo "See $AMAKEERRORLOG" >> $AMAKEERRORLOG
+	echo "IGNORED: total= $TOTALIGNORE : $FAILANYWAY that fail to compiled as 4gl files, $DUPLICATE duplicated errors," >> $AMAKEERRORLOG
+	echo "$FAILCOMPATIBLE since they fails in alt compiler, $FAILDEFLIKE on DEFINE LIKE not in database" >> $AMAKEERRORLOG
+	echo "See $AMAKEERRORLOG and $LINKFAILLIST" >> $AMAKEERRORLOG
 	date >> $AMAKEERRORLOG
 
 
@@ -91,7 +97,7 @@ function shortstats {
 ############################
 	if test $AMAKE = "1"
 	then
-		echo "Tried=$ATTEMPTED OK=$AMAKEOK Fail=$AMAKEFAIL Previous=$COMPBEFORE "
+		echo "Tried=$ATTEMPTED OK=$AMAKEOK Fail=$AMAKEFAIL Previous=$COMPBEFORE IGN: aubit=$FAILANYWAY alt=$FAILCOMPATIBLE LIKE=$FAILDEFLIKE"
     else
 		echo "OK=$COMPSUCCESS 4gl=$COMPFAIL4GL skip=$COMPBEFORE c=$COMPFAILCCOMP core=$COMPFAILCORE ?=$COMPFAILUNKNOWN compat=$FAILCOMPATIBLE glb=$OKNOGLBFILE/$NOGLBFILE/$NO4GLNOGLBFILE cw=$CCOMPWARNING 0=$ZEROFILESIZE &=$TESTCONTINUESKIP L=$FAILDEFLIKE"
     fi
@@ -1029,12 +1035,16 @@ function compglobals {
 function runamake {
 ###################
 
-
+                #########################################################
 				#it can also be .aox and dummy.ao (allsinglelibs.mk) !!!
+                #########################################################
 				EXECFILE=`basename $i .mk`.4ae;
 				EXECFILEAOX=`basename $i .mk`.aox;
 
-                if test "$MAXMODE" = "1"
+                #########################################################
+				#if we allrealy have this one linked in storrage dir, skip it:
+                #########################################################
+				if test "$MAXMODE" = "1"
                 then
 					if [ -f "$MAXDIR/aprog/$EXECFILE" -o -f "$EXECFILEAOX" ]
 	                then
@@ -1047,7 +1057,10 @@ function runamake {
 	                fi
                 fi
 
-                if [ -f $EXECFILE ]
+                #########################################################
+                #if we allrealy have this one linked in this dir, skip it:
+                #########################################################
+				if [ -f $EXECFILE ]
                 then
 					let COMPBEFORE=COMPBEFORE+1
 					if test $VERBOSE = "1"
@@ -1064,26 +1077,38 @@ function runamake {
 					return
                 fi
 
+                #########################################################
                 #pass -cleantarget to amake instead
+                #########################################################
 				#if [ -f $EXECFILE ]
                 #then
 				#	rm $EXECFILE
                 #fi
 
 				let ATTEMPTED=ATTEMPTED+1
-				echo "################################################# $PWD/$i" >> $AMAKEERRORLOG 2>&1
 
-                amake -verbose $i > $ >> $AMAKEERRORLOG 2>&1
+                #########################################################
+				#run it
+                #########################################################
+				if test "$SCRIPTDEBUG" = "1"
+			    then
+                    echo "------------------- Running amake -verbose $i ----------------------"
+                fi
+
+				#amake -verbose $i >> $AMAKEERRORLOG 2>&1
+                amake -verbose $i > $i.log 2> $i.make.log
 				RET=$?
+
 				if test $RET = "0"
 				then
-					if test $VERBOSE = "1"
-                    then
-						echo "OK: $PWD/$i"
-                    fi
-   	                echo "OK: $PWD/$i" >> $AMAKEERRORLOG
+	                #########################################################
+					#no error code returned by amake:
+                    #########################################################
 
-	                if [ -f $EXECFILE ]
+                    #########################################################
+	                #did we create executable?
+                    #########################################################
+					if [ -f $EXECFILE ]
                     then
 			            if test "$MOVETOSTORE" = "1"
             			then
@@ -1092,21 +1117,284 @@ function runamake {
 								mv $EXECFILE $MAXDIR/aprog
                             fi
                         fi
+						if test $VERBOSE = "1"
+            	        then
+							echo "OK: $PWD/$i"
+    	                fi
+	   	                echo "OK: $PWD/$i" >> $AMAKEERRORLOG
+
 						let AMAKEOK=AMAKEOK+1
                     else
+						#########################################################
+						#did we crate library?
+                        #########################################################
 						if [ -f $EXECFILEAOX ]
                         then
 							let AMAKEOK=AMAKEOK+1
-                        else
+							if test $VERBOSE = "1"
+            		        then
+								echo "OK: $PWD/$i"
+    		                fi
+		   	                echo "OK: $PWD/$i" >> $AMAKEERRORLOG
+						else
 							if test $VERBOSE = "1"
             		        then
 								echo "ERROR (?): $EXECFILE or $EXECFILEAOX not created"
                             fi
+							echo "ERROR (?): $EXECFILE or $EXECFILEAOX not created"  >> $AMAKEERRORLOG
 							#let AMAKEFAIL=AMAKEFAIL+1
                         fi
                     fi
 
                 else
+	                #########################################################
+	                #if we got error code from amake:
+                    #########################################################
+
+					cat $i.make.log >> /tmp/allmakeerr.log
+
+                    #########################################################
+                    #can we link with alt compiler?
+                    #########################################################
+                    #if -compatfile was specified
+
+					if test "$USECOMPATFILE" = "1"
+		            then
+						amake -verbose $i d4gl-pcode > $i.alt.log 2> $i.make.alt.log
+						RET=$?
+
+						if test $RET != "0"
+						then
+			                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
+							if [ "$VERBOSE" = "1" ]
+						    then
+								echo "Ignoring error - $i fails to link with alt compiler too."
+		                    fi
+							echo "Ignoring error - $i fails to link with alt compiler too." >> $AMAKEERRORLOG
+		                    echo $i >> $ALTLINKFAILLIST
+							return
+                        else
+							if [ "$VERBOSE" = "1" ]
+						    then
+								echo "Links OK with alt compiler: $i."
+		                    fi
+							echo "Links OK with alt compiler: $i." >> $AMAKEERRORLOG
+						fi
+					fi
+
+                    #########################################################
+					#get name make failed on:
+                    #########################################################
+					PROBLEMFILE=$(cat $i.make.log | grep "make: ***" | awk '{print $3}')
+					RET=$?
+
+					if test $RET != "0"
+					then
+		                echo "error in: PROBLEMFILE=$(cat $i.make.log | grep "make: ***" | awk '{print $3}')"
+        		        exit 44
+		            fi
+
+					X=`echo $PROBLEMFILE | sed -e "/^\[/s/\[//"`
+					PROBLEMFILE=`echo $X | sed -e "/./s/\]//"`
+					if [ "$SCRIPTDEBUG" = "1" ]
+				    then
+						echo 1 $PROBLEMFILE
+                    fi
+
+					#/usr/aubit/aubit4glsrc/bin/amakeallo: /usr/aubit/aubit4glsrc/bin/amake: Text file busy
+                    if [ "$PROBLEMFILE" = "Text" ]
+                    then
+                        echo "BLAST!!!! amake: Text file busy"
+                        exit 55
+                    fi
+
+
+					Y=`basename $PROBLEMFILE .ao`;
+                    if [ "$PROBLEMFILE" != "$Y" ]
+                    then
+                        #we did have .ao, so we failed on 4gl compile
+						if [ "$SCRIPTDEBUG" = "1" ]
+					    then
+							echo "was 4gl"
+                        fi
+						PROBLEMFILE=$Y.4gl;
+
+                        #FIXME:
+                        #we might as well ignore here, if we failed to compile
+                        #single 4gl file, it's not amake issue?
+                        #return
+
+                    else
+						#did we have .4ae extension?
+
+						Y=`basename $PROBLEMFILE .4ae`;
+	                    if [ "$PROBLEMFILE" != "$Y" ]
+    	                then
+                        	#we did have .4ae, so we failed on maikng executable.
+							if [ "$SCRIPTDEBUG" = "1" ]
+						    then
+								echo "was exec"
+                            fi
+							PROBLEMFILE=$Y.exec;
+                        else
+							#did we have .aox extension?
+							Y=`basename $PROBLEMFILE .aox`;
+		                    if [ "$PROBLEMFILE" != "$Y" ]
+                            then
+	                        	#we did have .aox, so we failed on linking library.
+								if [ "$SCRIPTDEBUG" = "1" ]
+							    then
+									echo "was lib"
+                                fi
+								PROBLEMFILE=$Y.lib;
+                            else
+								echo "Failed on $PROBLEMFILE, not .ao, .aox or .4ae ? STOP."
+    	                        exit 33
+                            fi
+                        fi
+					fi
+
+					if [ "$SCRIPTDEBUG" = "1" ]
+				    then
+						echo "PROBLEMFILE = $PROBLEMFILE"
+						#PROBLEMFILE=serrwind.4gl
+                    fi
+
+                    #########################################################
+                    #eliminate duplicates:
+                    #########################################################
+                    if [ -f $LINKFAILLIST ]
+                    then
+						ERRLINES=`cat $LINKFAILLIST | grep -c "$PROBLEMFILE"`
+						if [ "$SCRIPTDEBUG" = "1" ]
+					    then
+				    			echo "Looking for $PROBLEMFILE in $LINKFAILLIST = $ERRLINES"
+				        fi
+						if test $ERRLINES != "0"
+						then
+							if [ "$VERBOSE" = "1" ]
+						    then
+								echo "Ignoring error - duplicate."
+		                    fi
+							let DUPLICATE=DUPLICATE+1
+                            return
+                        fi
+                    fi
+
+					#########################################################
+	                #look at FAILLIST for files that failed to compile to objects with same compiler:
+                    #########################################################
+                    if [ -f "$FAILLIST" ]
+	                then
+							ERRLINES=`cat $FAILLIST | grep -c "$PROBLEMFILE"`
+							if [ "$SCRIPTDEBUG" = "1" ]
+						    then
+					    			echo "Looking for $PROBLEMFILE in $FAILLIST = $ERRLINES"
+					        fi
+							if test $ERRLINES != "0"
+							then
+				                let FAILANYWAY=FAILANYWAY+1
+								#echo "Ignoring error - $PROBLEMFILE fails ($FAILLIST)." >> $AMAKEERRORLOG
+								if [ "$VERBOSE" = "1" ]
+							    then
+									echo "Ignoring error - $PROBLEMFILE fails ($FAILLIST)."
+			                    fi
+								return
+							fi
+		            else
+		                    echo "File that should contain failed sources, "
+		                    echo "$FAILLIST does not exist. STOP"
+		                    exit 19
+	                fi
+
+                    #########################################################
+                    #if -compatfile was specified, look if we failed on file failed with alt compiler:
+                    #########################################################
+					if test "$USECOMPATFILE" = "1"
+		            then
+						if [ -f "$ALTFAILLIST" ]
+		                then
+							ERRLINES=`cat $ALTFAILLIST | grep -c "$PROBLEMFILE"`
+							if [ "$SCRIPTDEBUG" = "1" ]
+						    then
+					    			echo "Looking for $PROBLEMFILE in $ALTFAILLIST = $ERRLINES"
+					        fi
+							if test $ERRLINES != "0"
+							then
+				                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
+								#echo "Ignoring error - $PROBLEMFILE fails (ALT$FAILLIST)." >> $AMAKEERRORLOG
+								if [ "$VERBOSE" = "1" ]
+							    then
+									echo "Ignoring error - $PROBLEMFILE fails ($ALTFAILLIST)."
+			                    fi
+								return
+							fi
+		                else
+		                    echo "File that should contain compatibility failed sources, "
+		                    echo "$ALTFAILLIST does not exist, but -compatfile was specified. STOP"
+		                    exit 19
+		                fi
+		            fi
+
+
+                    #########################################################
+                    #Is this "DEFINE ... LIKE not in database" error?
+                    #########################################################
+					ERRLINES=`cat $i.log | grep -c "does not exist in the database ()"`
+					if [ "$SCRIPTDEBUG" = "1" ]
+				    then
+			    			echo "'does not exist in the database ()' found in $i.log = $ERRLINES"
+			        fi
+					if test $ERRLINES != "0"
+					then
+				        let FAILDEFLIKE=FAILDEFLIKE+1
+					    if [ "$VERBOSE" = "1" ]
+					    then
+							echo "Ignoring error - fails DEFINE LIKE not in database."
+			            fi
+						#echo "Ignoring error - fails DEFINE LIKE not in database." >> $AMAKEERRORLOG
+						return
+			        fi
+
+                    #########################################################
+                    #can we link with alt compiler?
+                    #########################################################
+                    #if -compatfile was specified
+
+					if test "$USECOMPATFILE" = "1"
+		            then
+						amake -verbose $i d4gl-pcode > $i.alt.log 2> $i.make.alt.log
+						RET=$?
+
+						if test $RET != "0"
+						then
+			                let FAILCOMPATIBLE=FAILCOMPATIBLE+1
+							if [ "$VERBOSE" = "1" ]
+						    then
+								echo "Ignoring error - $i fails to link with alt compiler too."
+		                    fi
+							echo "Ignoring error - $i fails to link with alt compiler too." >> $AMAKEERRORLOG
+		                    echo $i >> $ALTLINKFAILLIST
+							return
+                        else
+							if [ "$VERBOSE" = "1" ]
+						    then
+								echo "Links OK with alt compiler: $i."
+		                    fi
+							echo "Links OK with alt compiler: $i." >> $AMAKEERRORLOG
+						fi
+					fi
+
+                    #########################################################
+                    #Remaining should be linking errors only:
+                    #########################################################
+                    echo $PROBLEMFILE >> $LINKFAILLIST
+					echo "################################################# $PWD/$i" >> $AMAKEERRORLOG 2>&1
+					cat $i.log >> $AMAKEERRORLOG
+					echo "----Make say it failed on:----" >> $AMAKEERRORLOG
+					cat $i.make.log >> $AMAKEERRORLOG
+					echo "------------------------------" >> $AMAKEERRORLOG
+
 					let AMAKEFAIL=AMAKEFAIL+1
 					if test $VERBOSE = "1"
                     then
@@ -1353,7 +1641,9 @@ function doit {
     AMAKEFAIL=0
 	ATTEMPTED=0
 	ATTEMPTEDGLOBALS=0
-    
+	FAILANYWAY=0
+	DUPLICATE=0
+
     #################################
 	#read options from command line:
     #################################
@@ -1556,6 +1846,8 @@ function doit {
 
 	FAILLIST=/tmp/amake-compatfail-$COMPILER
 	ALTFAILLIST=/tmp/amake-compatfail-$ALTCOMPILER
+	LINKFAILLIST=/tmp/amake-linkfail-$COMPILER
+	ALTLINKFAILLIST=/tmp/amake-linkfail-$ALTCOMPILER
 
 	if [ "$ALTCOMPILER" = "4js" ]
     then
@@ -1624,7 +1916,11 @@ function doit {
 		echo "Invoked with: $@" >> $AMAKEERRORLOG
 	    echo "Invoked in $PWD" >> $AMAKEERRORLOG
 		echo "-----------------------------------------------------" >> $AMAKEERRORLOG
-    else
+        date > $LINKFAILLIST
+        #NOT!:
+		#date > $ALTLINKFAILLIST
+		date > /tmp/allmakeerr.log
+	else
 	    date > $ERRORLOG
 		echo "Invoked with: $@" >> $ERRORLOG
 	    echo "Invoked in $PWD" >> $ERRORLOG
@@ -1635,7 +1931,7 @@ function doit {
 		date > $CLOG
 	    date > $CORELOG
 	    date > $GLOBLOG
-		date > FAILLIST
+		date > $FAILLIST
 	fi
 
     #################
@@ -1665,8 +1961,7 @@ function doit {
 
             SKIPDIRS="aform aprog forms prog gform gprog qform qprog"
         else
-			ALLSUBDIRS=`ls -l |
-			 "^d" | awk '{print $NF}'`
+			ALLSUBDIRS=`ls -l | "^d" | awk '{print $NF}'`
         fi
 
 		################################
@@ -1688,7 +1983,12 @@ function doit {
 
 			   if [ -d $ROOTDIR/$subsystem ]
 	           then
-				   	echo Making 4gl objects in $subsystem...
+				   	if test "$AMAKE" = "1"
+                    then
+                        echo Making programs in $subsystem...
+                    else
+						echo Making 4gl objects in $subsystem...
+                    fi
 				   	cd $ROOTDIR/$subsystem ;
 
                    	if [ "$subsystem" = "cm" ]  && [ test $MAXMODE = "1" ]

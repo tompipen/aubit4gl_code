@@ -27,11 +27,12 @@ OVERRIDEINCLUDE="0"
 HEADER="$AUBITDIR/incl/header.mki"
 FOOTER="$AUBITDIR/incl/footer.mki"
 
-#if you export MAKERULES, ti will override 4gl make rules included in 
+#if you export MAKERULES, ti will override 4gl make rules included in
 #standard header.mki:
 RULESDIR=$AUBITDIR/incl
-#export MAKERULES=$RULESDIR/i4gl.mk $RULESDIR/d4gl.mk $RULESDIR/a4gl.mk $RULESDIR/q4gl.mk
-export MAKERULES=$RULESDIR/a4gl.mk
+#export MAKERULES="$RULESDIR/i4gl.mk $RULESDIR/d4gl.mk $RULESDIR/a4gl.mk $RULESDIR/q4gl.mk"
+#export MAKERULES="$RULESDIR/a4gl.mk"
+export MAKERULES="$RULESDIR/d4gl.mk $RULESDIR/a4gl.mk"
 
 rm -f *.err
 
@@ -197,7 +198,7 @@ fi
 
 	if [ "$LOG" = "1" ]
 	then
-		echo "Logging make to make.log"
+		echo "Logging make to $LOGFILE"
 	fi
 
 	#####################
