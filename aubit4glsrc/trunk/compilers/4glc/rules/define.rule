@@ -10,7 +10,6 @@ define_multiple	:
 define_set :
 	DEFINE {dtypelist[0]=0;printcomment("/* define */\n");} def_part  {printcomment("/*end def */\n");}
 	| dim_section
-	| code_cmd 
 	| whenever_cmd 
 ;
 

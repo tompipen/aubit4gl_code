@@ -1,12 +1,19 @@
 /******************************************************************************
 * (c) 1997-1998 Aubit Computing Ltd.
 *
-* $Id: mod.c,v 1.21 2001-11-11 20:04:08 mikeaubury Exp $
+* $Id: mod.c,v 1.22 2001-11-14 07:45:33 mikeaubury Exp $
 *
 * Project : Part Of Aubit 4GL Library Functions
 *
 * Change History :
 *	$Log: not supported by cvs2svn $
+*	Revision 1.21  2001/11/11 20:04:08  mikeaubury
+*	Major upgrade - first phase commit.
+*	Includes :
+*	changes to usage of printc & addmap
+*	changes to include some extra AD 4gl constructs (not implemented in the library)
+*	& changes for constant handling (these are now passed in the globals)
+*	
 *	Revision 1.20  2001/10/29 14:42:00  mikeaubury
 *	Allow varibles in IN and EXISTS when using SQL
 *	
@@ -167,6 +174,9 @@ void *append_expr(struct expr_str *orig_ptr,char *value) ;
 #include "../../lib/libincl/tunable.h"
 #include "../../lib/libincl/debug.h"
 #include "../../lib/libincl/errors.h"
+#include "compiledefs.h"
+
+
 char *ignull (char *s);
 char pklist[2048] = "";
 char upd_using_notpk[5000] = "";
@@ -260,12 +270,7 @@ int read_glob_var = 0;
 int counters[256];
 int count_counters = 0;
 
-struct
-{
-  char why[20];
-  char whytype;
-}
-report_stack[256];
+struct s_report_stack report_stack[REPORTSTACKSIZE];
 
 int report_stack_cnt = 0;
 int report_cnt = 1;
@@ -274,8 +279,6 @@ int add_bind (char i, char *var);
 int nblock_no = 1;
 
 FILE *curr_db = 0;
-FILE *outfile = 0;
-FILE *hfile = 0;
 FILE *ferr = 0;
 #define GEN_STACKS 10
 char gen_stack[GEN_STACKS][100][80];
@@ -359,6 +362,8 @@ int in_record = 0;
 
 #define MAXMENU 10
 #define MAXMENUOPTS 10
+
+#ifdef GETRIDOFTHIS
 struct s_menu_stack
 {
 
@@ -369,7 +374,11 @@ struct s_menu_stack
   char menu_key[30];
   int menu_helpno;
 }
-menu_stack[MAXMENU][MAXMENUOPTS];
+#endif
+
+
+struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
+
 
 static char *
 print (char *z)
@@ -553,13 +562,7 @@ push_type (char *a, char *n, char *as)
 	{
 	  if (strcmp (a, "_ASSOCIATE") == 0)
 	    {
-	      printc ("DEF_ASS (_usg%s,%s+1);\n",
-		      downshift (vars[z].var_name), as);
-	      printc
-		("#define ASSOCIATE_%s(w,rw) %s[ass_hash(_usg%s,%s+1,%s,w,sizeof(_usg%s),rw)]\n",
-		 upshift (vars[z].var_name), downshift (vars[z].var_name),
-		 downshift (vars[z].var_name), n, as,
-		 downshift (vars[z].var_name));
+		print_declare_associate_1(vars[z].var_name,as,n);
 	      continue;
 	    }
 	}
@@ -662,12 +665,7 @@ print_variable (int z, char ff)
 
   if (strcmp (vars[z].var_type, "_ASSOCIATE") == 0)
     {
-      printc
-	("#define ASSOCIATE_%s(w) %s[ass_hash(_usg%s,%s,%s+1,w,sizeof(_usg%s))]\n",
-	 upshift (vars[z].var_name), downshift (vars[z].var_name),
-	 downshift (vars[z].var_name), vars[z].var_arrsize, vars[z].var_size,
-	 downshift (vars[z].var_name));
-
+	print_declare_associate_2(vars[z].var_name,vars[z].var_size,vars[z].var_arrsize);
       return;
     }
 
@@ -695,35 +693,42 @@ print_variable (int z, char ff)
     {
       if (strcmp (vars[z].var_type, "char") == 0)
 	{
-	  if (ff != '-')
-	    printc ("static %s [%d+1]; /* ?5 */\n", tmpbuff,
-		    atoi(vars[z].var_size));
-	  else
-	    printc ("%s [%d+1]; /* ?4 */\n", tmpbuff, atoi(vars[z].var_size));
+	  if (ff != '-') {
+		print_define_char(tmpbuff,atoi(vars[z].var_size),1);
+	}
+	  else {
+		print_define_char(tmpbuff,atoi(vars[z].var_size),0);
+	}
 	}
       else
 	{
-	  if (ff != '-')
-	    printc ("static %s;\n", tmpbuff);
-	  else
-	    printc ("%s;\n", tmpbuff);
+	  if (ff != '-') {
+		print_define(tmpbuff,1);
+	}
+	  else {
+		print_define(tmpbuff,0);
+	}
 	}
     }
   else
     {
       if (strcmp (vars[z].var_type, "char") == 0)
 	{
-	  if (ff != 'G')
-	    printc ("%s [%d+1];\n", tmpbuff, atoi(vars[z].var_size));
-	  if (ff == 'G')
-	    printc ("extern %s [%d+1];\n", tmpbuff, atoi(vars[z].var_size));
+	  if (ff != 'G') {
+		print_define_char(tmpbuff,atoi(vars[z].var_size),0);
+	}
+	  if (ff == 'G') {
+		print_define_char(tmpbuff,atoi(vars[z].var_size),2);
+	}
 	}
       else
 	{
-	  if (ff != 'G')
-	    printc ("%s;\n", tmpbuff);
-	  if (ff == 'G')
-	    printc ("extern %s;\n", tmpbuff);
+	  if (ff != 'G') {
+		print_define(tmpbuff,0);
+	}
+	  if (ff == 'G') {
+		print_define(tmpbuff,2);
+	}
 	}
     }
 
@@ -738,18 +743,19 @@ print_record (int z, char ff)
 
   if (isin_command ("REPORT"))
     {
-      if (ff != '-')
-	printc ("static struct { /* ?0 */\n");
-      else
-	printc ("struct { /* ?1 */\n");
+      if (ff != '-') {
+	print_start_record(1);
+	}
+      else {
+	print_start_record(0);
+	}
 
     }
   else
     {
-      if (ff != 'G')
-	printc ("struct { /* ?2 */\n");
-      if (ff == 'G')
-	printc ("extern struct { /* ?3 */\n");
+      if (ff != 'G') print_start_record(0);
+
+      if (ff == 'G') print_start_record(2);
     }
 
   for (a = z + 1; a < varcnt; a++)
@@ -777,12 +783,12 @@ print_record (int z, char ff)
 
   if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
     {
-      printc ("} %s;\n", vars[z].var_name);
+	print_end_record(vars[z].var_name,-1);
     }
 
   else
     {
-      printc ("} %s[%d];\n", vars[z].var_name, atoi(vars[z].var_arrsize));
+	print_end_record(vars[z].var_name,atoi(vars[z].var_arrsize));
     }
 
   return a;
@@ -804,12 +810,18 @@ push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
   debug ("Menu %d Option %d '%s'", mn, mnopt, b);
 }
 
+#ifdef MOVEDTOCOMPILE_C
 print_menu (mn)
 {
 
   int a;
   int c;
   c = 0;
+
+//
+// Just so you all know...
+// I really hate the way this does this - this will change to a menu item
+// binding I think..
 
   for (a = 0; menu_stack[mn][a].menu_title[0] != 0 ||
        menu_stack[mn][a].menu_key[0] != 0 ||
@@ -850,10 +862,16 @@ incprint ()
     }
 
 }
+#endif
 
 setinc (a)
 {
   inc += a;
+}
+
+
+getinc() {
+return inc;
 }
 
 long
@@ -1118,8 +1136,7 @@ scan_arr_variable (char *s)
 
 	      if (atoi (vars[a].var_arrsize) > 0)
 		{
-		  printc ("range_chk(%s,%d);\n", s,
-			  atoi (vars[a].var_arrsize));
+		  printc ("range_chk(%s,%d);\n", s, atoi (vars[a].var_arrsize));
 		}
 
 	      return find_type (vars[a].var_type);
@@ -1651,72 +1668,7 @@ pop_all_gen (int a, char *s)
     }
 }
 
-print_space ()
-{
-  char buff[256];
-  memset (buff, ' ', 255);
-  buff[ccnt * 3] = 0;
-  fprintf (outfile, "%s", buff);
-}
 
-printc (char *fmt, ...)
-{
-  va_list args;
-  char buff[40960];
-  char *ptr;
-  int a;
-
-  if (outfile == 0)
-    {
-      open_outfile ();
-    }
-
-  if (outfile == 0)
-    return;
-  va_start (args, fmt);
-  if (getenv ("INCLINES"))
-    {
-      vsprintf (buff, fmt, args);
-
-      for (a = 0; a < strlen (buff); a++)
-	{
-	  if (buff[a] == '\n')
-	    {
-	      if (infilename != 0)
-		{
-		  fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
-			   outputfilename);
-		}
-	      else
-		{
-		  fprintf (outfile, "\n#line %d \"null\"\n", yylineno,
-			   outputfilename);
-		}
-	    }
-	  else
-	    {
-	      fprintf (outfile, "%c", buff[a]);
-
-	      fflush (outfile);
-	    }
-	}
-    }
-  else
-    {
-      //print_space();
-
-      vsprintf (buff, fmt, args);
-      ptr = strtok (buff, "\n");
-
-      while (ptr)
-	{
-	  print_space ();
-	  fprintf (outfile, "%s\n", ptr);
-	  ptr = strtok (0, "\n");
-	}
-
-    }
-}
 
 yyerrorf (char *fmt, ...)
 {
@@ -1727,100 +1679,8 @@ yyerrorf (char *fmt, ...)
   yyerror (buff);
 }
 
-#ifdef USE_PRINTCOMMENT
-printcomment (char *fmt, ...)
-{
-  va_list args;
-  if (outfile == 0)
-    {
-      open_outfile ();
-    }
 
-  if (outfile == 0)
-    return;
-
-  if (getenv ("COMMENTS"))
-    {
-      va_start (args, fmt);
-      vfprintf (outfile, fmt, args);
-    }
-}
-#endif
-
-printh (char *fmt, ...)
-{
-  va_list args;
-  if (outfile == 0)
-    {
-      open_outfile ();
-    }
-  if (outfile == 0)
-    return;
-
-  va_start (args, fmt);
-  vfprintf (hfile, fmt, args);
-}
-
-open_outfile ()
-{
-  char h[132];
-  char c[132];
-  char err[132];
-  char *ptr;
-  //printf ("OPen outputs\n");
-  if (outputfilename == 0)
-    {
-      debug ("NO output file name");
-    }
-
-  //printf ("OPen outputs: %s\n", outputfilename);
-  strcpy (c, outputfilename);
-  strcpy (h, outputfilename);
-  strcpy (err, outputfilename);
-
-  if (strcmp (acl_getenv ("NOCLOBBER"), "N") == 0)
-    {
-      debug ("Clobbering...");
-      set_clobber (outputfilename);
-    }
-
-  debug ("Opening output map");
-  openmap (outputfilename);
-  //printf ("catting");
-  ptr = acl_getenv ("NOCFILE");
-  if (strlen (ptr))
-    {
-      if (ptr[0] == 'Y' || ptr[0] == 'y')
-	{
-	  debug (">>> NO C FILES... %s", ptr);
-	  return;
-	}
-    }
-
-  strcat (c, ".c");
-  strcat (h, ".h");
-  strcat (err, ".err");
-  //printf ("Opening files :\n %s\n %s\n", c, h);
-  outfile = mja_fopen (c, "w");
-  if (outfile==0) {
-		printf("Unable to open file %s (Check permissions)\n",c);
-		exit(3);
-  }
-  //ferr = mja_fopen (err, "w");
-
-  fprintf (outfile, "#define fgldate long\n");
-  //fprintf (outfile, "#include \"dbform.h\"\n");
-  fprintf (outfile, "#include \"4glhdr.h\"\n");
-  fprintf (outfile, "#include \"%s\"\n", h);
-  if (getenv ("GTKGUI"))
-    fprintf (outfile, "#include <acl4glgui.h>\n");
-  fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ());
-  fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n",
-	   outputfilename);
-
-  hfile = mja_fopen (h, "w");
-}
-
+#ifdef STILLUSEDQ
 add_string (char *s)
 {
   static int cnt = 1;
@@ -1828,6 +1688,7 @@ add_string (char *s)
   fprintf (hfile, ",\n%s", s);
   return cnt++;
 }
+#endif
 
 strip_bracket (char *s)
 {
@@ -2221,16 +2082,17 @@ exit_loop (char *cmd_type)
     }
 }
 
+
 push_report_block (char *why, char whytype)
 {
   set_curr_block (0);
   strcpy (report_stack[report_stack_cnt].why, why);
   report_stack[report_stack_cnt].whytype = whytype;
-  debug ("/* report block %s %c */ \n", why, whytype);
-  printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
+  print_repctrl_block();
   report_stack_cnt++;
 }
 
+#ifdef MOVEDTOCOMPILE_C
 print_report_ctrl ()
 {
   int a;
@@ -2318,6 +2180,7 @@ print_report_ctrl ()
     }
   pr_report_agg_clr ();
 }
+#endif
 
 get_curr_rep ()
 {

@@ -134,7 +134,7 @@ input_cmd	:	INPUT inp_rest
 print_input_1();
 } end_input 
 {
-print_input_2();
+print_input_2($<str>2);
 }
 ;
 

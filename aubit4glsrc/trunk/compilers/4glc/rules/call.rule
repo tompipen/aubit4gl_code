@@ -36,7 +36,7 @@ ibind_var_list {
 	}
    CLOSE_BRACKET 
    {
-  print_func_call($<str>1,$<ptr>4,atoi($<str>5));
+  print_func_call($<str>1,$<str>4,atoi($<str>5));
    }
    opt_return 
    {
@@ -50,7 +50,7 @@ opt_func_call_args {
    sprintf($<str>$,"%d",get_counter_val());drop_counter();
 }
 CLOSE_BRACKET opt_return {
-	print_call_shared($<str>4,$<str>2,$<str>8);
+	print_call_shared($<str>4,$<str>2,atoi($<str>8));
 	print_returning();
 	print_end_call_shared();
 }
@@ -81,7 +81,7 @@ CLOSE_BRACKET opt_return {
 	strcat(fname,$<str>4);
    }
 	
-   print_call_external($<str>2,fname,$<str>6,$<str>11);
+   print_call_external($<str>2,fname,$<str>6,atoi($<str>11));
 
    if (strcmp($<str>14,"WITHOUT WAITING")!=0) {	
 	print_returning();

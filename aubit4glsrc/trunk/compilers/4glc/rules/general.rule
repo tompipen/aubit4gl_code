@@ -33,7 +33,7 @@ field_name	:
 ;
 
 cursor_name	:	ident_or_var {
-				print_pushchar();
+				print_pushchar($<str>1);
 				addmap("Cursor",last_var,curr_func,yylineno,infilename);
 			}
 ;
