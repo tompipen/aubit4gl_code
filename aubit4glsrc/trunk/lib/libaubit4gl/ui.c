@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.6 2003-08-07 21:39:22 mikeaubury Exp $
+# $Id: ui.c,v 1.7 2003-08-08 13:52:06 mikeaubury Exp $
 #
 */
 
@@ -613,4 +613,38 @@ A4GL_debug("field_name_str_match : %s %s -> %d",f1p,f2p,a);
 return a;
 }
 
+
+void A4GL_chk_for_screen_print(int a) {
+static int have_key=0; // 0- don't know 1= do nothing 2=print screen to file 3=print screen to pipe
+static int key=0;
+char *ptr;
+char buff[256];
+if (have_key==1) return;
+
+if (have_key==0) {
+	have_key=1;
+	ptr=acl_getenv("PRINTSCRKEY");
+	if (ptr==0) return;
+	if (strlen(ptr)==0) return;
+
+	key=A4GL_key_val(ptr);
+	if (key==0) return;
+	have_key=2;
+	ptr=acl_getenv("PRINTSCRFILE");
+	if (ptr) {
+		if (strlen(ptr)==0) ptr=0;
+	}
+	if (ptr==0) {
+		have_key=1;
+		A4GL_exitwith("You have specified PRINTSCRKEY but not PRINTSCRFILE");
+		return ;
+	}
+}
+// If we've got to here then we've got a PRINTSCRKEY defined...
+
+if (a!=key) return; // Its not our key...
+
+aclfgl_aclfgl_dump_screen(0);
+
+}
 /* ============================= EOF ================================ */

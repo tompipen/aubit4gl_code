@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.64 2003-08-04 09:51:16 mikeaubury Exp $
+# $Id: newpanels.c,v 1.65 2003-08-08 13:52:24 mikeaubury Exp $
 #*/
 
 /**
@@ -1433,7 +1433,8 @@ A4GL_getch_swin (WINDOW * window_ptr)
     }
   cbreak ();
   a=A4GL_curses_to_aubit (a); // Convert it to an aubit key...
-	A4GL_logkey(a);
+  A4GL_chk_for_screen_print(a);
+  A4GL_logkey(a);
   A4GL_debug ("Got char from keyboard : %d F2=%d LEFT=%d 4GL for f5 = %d", a,KEY_F(2),KEY_LEFT,A4GLKEY_F (5));
   return a;
 }
@@ -1499,7 +1500,8 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
   cbreak ();
   A4GL_debug ("Got char from keyboard : %d LEFT=%d", a,KEY_LEFT);
   a=A4GL_curses_to_aubit (a);
-	A4GL_logkey(a);
+  A4GL_chk_for_screen_print(a);
+  A4GL_logkey(a);
   A4GL_debug (" = %d", a);
   return a;
 }
@@ -1731,7 +1733,7 @@ A4GL_debug("determine_attribute seems to be returning %x\n",a);
 	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, a, 0);
 	a=nattr;
       b = A4GL_xwattr_get (currwin);
-      a4glattr_wattrset (A4GL_window_on_top (), a);
+      a4glattr_wattrset (A4GL_window_on_top_ign_menu (), a);
       A4GL_gui_print (a, s);
       A4GL_mja_gotoxy (x, y);
 	A4GL_debug("X=%d Y=%d",x,y);

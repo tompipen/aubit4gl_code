@@ -20,6 +20,8 @@ aclfgl_aclfgl_dump_screen (int n)
 //w=find_pointer ("screen", WINCODE);
   w = curscr;
 
+
+
   if (n == 1)
     {
       ptr = A4GL_char_pop ();
@@ -31,7 +33,9 @@ aclfgl_aclfgl_dump_screen (int n)
       ptr = A4GL_char_pop ();
     }
 
-  A4GL_trim (ptr);
+  if (n!=0) {
+	A4GL_trim (ptr);
+  }
 
   if (mode == 3)
     {
@@ -71,7 +75,28 @@ aclfgl_aclfgl_dump_screen (int n)
 	sw = 132;
     }
 
-  f = fopen (ptr, "w");
+  if (n==0) {
+	A4GL_debug("AUTO PRINT...");
+		// We want to dump to to PRINTSCRFILE
+		ptr=acl_getenv("PRINTSCRFILE");
+		if (ptr) {
+			if (strlen(ptr)==0) ptr=0;
+		}
+		if (ptr==0) {
+			A4GL_debug("No PRINTSCRFILE - ignored print dump request");
+			return 0;
+		}
+		if (ptr[0]=='|') {
+			f=popen(&ptr[1],"w");
+		} else {
+			f=fopen(ptr,"w");
+		}
+  } else {
+  	f = fopen (ptr, "w");
+  }
+
+
+
   if (f == 0)
     {
       A4GL_debug ("Unable to open A4GL_dump file");

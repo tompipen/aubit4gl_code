@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.11 2003-07-25 22:04:54 mikeaubury Exp $
+# $Id: colours.c,v 1.12 2003-08-08 13:52:24 mikeaubury Exp $
 #*/
 
 /**
@@ -151,7 +151,15 @@ A4GL_decode_colour_attr_aubit (int a)
 void
 a4glattr_wattrset (WINDOW * w, int a)
 {
-  wattrset (w, A4GL_decode_aubit_attr (a, 'w'));
+
+if (w) {
+	wattrset (w, A4GL_decode_aubit_attr (a, 'w'));
+} else {
+	A4GL_debug("SERIOUS PROBLEM - w is set to zero....");
+}
+
+
+
 }
 
 /**
