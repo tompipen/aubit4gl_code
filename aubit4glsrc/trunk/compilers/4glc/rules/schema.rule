@@ -9,19 +9,58 @@ drops_c : DROP_TABLE  {sprintf($<str>$, "%s",$<str>1);}
 ;
 
 
-create_cmd : create_c_1 {
-	print_exec_sql($<str>1);
-
+create_cmd : 
+	create_c_1 { print_exec_sql($<str>1); }
+	| create_c_2 { print_exec_sql($<sql_string>1); 
+	free($<sql_string>1);
 }
 ;
 
+create_c_2  : 
+	CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET
+{
+int sz;
+sz=0;
+	sz+=strlen($<str>1);
+	sz+=strlen($<str>3);
+	sz+=strlen($<str>4);
+	sz+=strlen($<sql_string>6);
+	sz+=strlen($<str>7);
+	sz+=10;
+
+	$<sql_string>$=malloc(sz);
+
+	sprintf($<sql_string>$,"%s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<sql_string>6,$<str>7);
+
+	free($<sql_string>6);
+} 
+
+	| CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET op_no_log {
+
+int sz;
+sz=0;
+	sz+=strlen($<str>1);
+	sz+=strlen($<str>3);
+	sz+=strlen($<str>4);
+	sz+=strlen($<sql_string>6);
+	sz+=strlen($<str>7);
+	sz+=strlen($<str>8);
+	sz+=10;
+
+	$<sql_string>$=malloc(sz);
+
+
+sprintf($<sql_string>$,"%s %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<sql_string>6,$<str>7,$<str>8);
+	free($<sql_string>6);
+
+}
+
+;
+
+
+
 create_c_1  : 
-		CREATE_IDX idx_column_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);} 
-	| CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>6,$<str>7);} 
-	| CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list CLOSE_BRACKET op_no_log
-{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>6,$<str>7,$<str>8);}
+	CREATE_IDX idx_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);} 
 	| CREATE_DATABASE ident_or_var {
 		yyerror("You cannot create a database from within Aubit4gl....");
 	}
@@ -47,10 +86,16 @@ idx_column :
 
 
 table_element_list:
-	  table_element
-	| table_element_list COMMA table_element
-{sprintf($<str>$," %s %s %s",$<str>1,$<str>2,$<str>3);}
-	;
+	  table_element {
+		$<sql_string>$=strdup($<str>1);
+	  }
+	| table_element_list COMMA table_element {
+	int sz;
+	sz=strlen($<sql_string>1)+strlen($<str>3)+2;
+	$<sql_string>$=realloc($<sql_string>1,sz);
+	sprintf($<sql_string>$,"%s,%s",$<sql_string>1,$<str>3);
+	}
+;
 	
 table_element:
 	  ct_column_definiton

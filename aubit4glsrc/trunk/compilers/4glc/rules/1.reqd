@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.28 2003-02-20 23:02:26 mikeaubury Exp $
+# $Id: 1.reqd,v 1.29 2003-02-24 09:29:18 mikeaubury Exp $
 #
 */
 
@@ -193,6 +193,7 @@ struct 		form_attr form_attrib;
 						/* Was: char	str[20000]; */
 
 	struct expr_str *ptr;
+	char *sql_string;
 
 	}
 

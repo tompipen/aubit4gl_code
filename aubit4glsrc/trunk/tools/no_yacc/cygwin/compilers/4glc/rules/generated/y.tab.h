@@ -1334,10 +1334,11 @@ typedef union YYSTYPE {
 						/* Was: char	str[20000]; */
 
 	struct expr_str *ptr;
+	char *sql_string;
 
 	} YYSTYPE;
 /* Line 1248 of yacc.c.  */
-#line 1340 "y.tab.h"
+#line 1341 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
