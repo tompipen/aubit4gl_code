@@ -568,6 +568,20 @@ DUMP_LAST COMPILE output the results of the last remove comments
 =YES|NO
 	This will produce a file 'last' which contains the file with the comments
 	removed. This is used to check the operation of the RM_COMMENTS_FIRST code
+
+A4GL_CONSTRUCT_NO_MATCHES RUNTIME/SQL/UI Disable generation of MATCHES keywords
+=YES|NO
+	This setting stops construct from generating a MATCHES when it sees a [, * or ?
+	You can use this setting if your target SQL does NOT have the MATCHES keyword..
+	See also A4GL_CONSTRUCT_LIKE.
+
+A4GL_CONSTRUCT_LIKE RUNTIME/SQL/UI Enable generation of LIKE for construct
+=YES|NO
+	If set to Yes this allows % and _ to be detected and used to for a LIKE within
+	a generated construct string
+	This uses the same flag (ismatch==1 for MATCHES, ==2 for LIKE) as for matches.
+	So - If it looks like a matches, matches takes priority (unless CONSTRUCT_NO_MATCHES IS SET)..
+	Note: This does NOT translate from an entered MATCHES format string to a LIKE format...
 A4GL_DIALOG_OK LANG Text to display on OK button
 A4GL_DIALOG_CANCEL LANG Text to display on CANCEL button
 A4GL_DIALOG_ABORT LANG Text to display on ABORT button
