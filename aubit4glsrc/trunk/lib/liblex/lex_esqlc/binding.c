@@ -14,8 +14,8 @@ dll_import struct binding_comp obind[NUMBINDINGS];
  * ESQL/C types...
  *
 */
-char buff_in[10000];
-char buff_out[10000];
+char buff_in[100000];
+char buff_out[100000];
 
 
 void print_conversions (char i);
