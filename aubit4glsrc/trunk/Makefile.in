@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.129 2003-09-23 05:25:37 afalout Exp $
+# $Id: Makefile.in,v 1.130 2003-10-09 13:00:17 afalout Exp $
 #
 
 ## ==================================================================
@@ -977,6 +977,9 @@ show:
 	@echo "TARGET_OS=${TARGET_OS}"
 	@echo "YYDEBUG=${YYDEBUG}"
 	@echo "C_DFLAGS=${C_DFLAGS}"
+	@echo "INSTALL_DIR=${INSTALL_DIR}"
+	@echo "PREFIX=${PREFIX}"
+	@echo "AUBITNAME=${AUBITNAME}"
 
 
 

@@ -1644,7 +1644,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.26 2003-09-17 11:55:41 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.27 2003-10-09 13:02:53 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -4803,4 +4803,22 @@ lib/libui/ui_gtk/assist.4gl gives examples of the code/endcode..
 
 
 ============================================================================
+
+Aubit enhancement I'm afraid -
+
+IF exists (select * from systables where tabid=a) then
+	DISPLAY "There is a table with that ID"
+END IF
+
+On Monday 06 October 2003 5:28 am, Andrej Falout wrote:
+>          if exists = 0 then
+>
+> |__________________^
+> | Error at line 161, character 20
+> | syntax error, unexpected EQUAL, expecting OPEN_BRACKET (=)
+>
+> Works with Informix, 4Js and Querix
+>
+>===========================================================================
+
 

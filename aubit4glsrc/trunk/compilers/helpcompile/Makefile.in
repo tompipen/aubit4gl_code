@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2003-09-17 11:55:41 afalout Exp $
+# $Id: Makefile.in,v 1.17 2003-10-09 13:02:52 afalout Exp $
 #
 
 ROOT        =../..
@@ -62,6 +62,10 @@ ${ROOT}/bin/amkmessage: amkmessage.o
 
 ${ROOT}/bin/unmkmessage: unmkmessage.o
 	${LD_EXE} $^ -o $@ ${AUBIT_LIB} -L${ROOT}/lib
+
+
+amkmessage.o: amkmessage.c
+	${CC} ${CFLAGS} -DPORTABLE -c $^ -o $@
 
 ## ==================================================================
 ##                    Clean

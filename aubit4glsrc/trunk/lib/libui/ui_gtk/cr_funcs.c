@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.10 2003-10-08 17:09:51 mikeaubury Exp $
+# $Id: cr_funcs.c,v 1.11 2003-10-09 13:02:54 afalout Exp $
 #*/
 
 /**
@@ -141,7 +141,7 @@ A4GL_make_pixmap_gw (char *filename)
   return pixmap;
 }
 
-
+#if GTK_CHECK_VERSION(2,0,0)
 void *
 A4GL_make_pixbuf_gw (char *filename)
 {
@@ -149,7 +149,7 @@ A4GL_make_pixbuf_gw (char *filename)
   //GtkWidget *pixbuf;
   //GtkWidget *window,*hbox, *resized,*widget;
     GtkWidget *widget, *window, *hbox;
-    GdkPixbuf *pixbuf, *resized;
+	GdkPixbuf *pixbuf, *resized;
 
   //window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     //g_signal_connect(G_OBJECT(window), "destroy",
@@ -161,12 +161,14 @@ A4GL_make_pixbuf_gw (char *filename)
   printf ("Making pixmap from file:%s\n", filename);
   A4GL_trim(filename);
 
+
   pixbuf = gdk_pixbuf_new_from_file (filename,NULL);
+
 
   widget = gtk_image_new();
   A4GL_size_widget(widget,get_widget_next_size());
   resized = gdk_pixbuf_scale_simple(pixbuf, lastWidth-20, lastHeight-20, GDK_INTERP_BILINEAR);
-  
+
 
 
 
@@ -191,6 +193,7 @@ A4GL_make_pixbuf_gw (char *filename)
  gtk_widget_show(widget);
 return widget;
 }
+#endif
 
 /**
  * Create a new pixmap from a image allready loaded to memory.
