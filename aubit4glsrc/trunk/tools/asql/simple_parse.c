@@ -93,7 +93,7 @@ int need_tabname=0;
 				strcpy(buff,A4GL_strip_quotes(buff));
 				e->fname=strdup(buff);
 				// We also need to remove the UNLOAD ... bit...
-				//printf("Scrapping %s\n",ptr);
+				printf("Scrapping %s\n",ptr);
 				free(ptr); ptr=0;
 				need_fname=0;
 				continue;

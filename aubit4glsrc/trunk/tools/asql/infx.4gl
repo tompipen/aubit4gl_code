@@ -1331,7 +1331,7 @@ end function
 #####################################################################
 function table_info()
 define lv_tabname char(255)
-define lv_txt char(255)
+define lv_txt char(128)
 define lv_cont integer
         if not has_db() then
                 call select_db()
@@ -1354,8 +1354,9 @@ define lv_cont integer
 
 		let lv_cont=0
 
+		CALL set_exec_mode(0)
                 let lv_txt="INFO - ",lv_tabname
-                menu "Info"
+                menu lv_txt
 			command "Columns"
 				CALL open_display_file()
                 		if load_info_columns(lv_tabname) then

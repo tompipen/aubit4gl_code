@@ -116,14 +116,13 @@ end function
 function add_to_display_file(lv_str)
 define lv_str char(256)
 code
-A4GL_assertion(out==0,"No output file (1)");
 A4GL_trim(lv_str);
 
-
-
 if (get_exec_mode_c()==EXEC_MODE_INTERACTIVE)  {
+A4GL_assertion(out==0,"No output file (2.1)");
 fprintf(out,"%s\n",lv_str);
 } else {
+A4GL_assertion(exec_out==0,"No output file (2.2)");
 fprintf(exec_out,"%s\n",lv_str);
 }
 outlines++;
@@ -264,11 +263,19 @@ if (exec_mode!=EXEC_MODE_INTERACTIVE) {
 
 		raffected=0;
 
+
+
+
 		A4GL_debug("EXEC %d %c - %s\n",list[a].lineno,list[a].type,list[a].stmt);
 		p=list[a].stmt;
 
 			display_mode_unload(0);
+		if (list[a].type!='L'&&list[a].type!='l'&& list[a].type!='C'&&list[a].type!='c') {
+
 			qry_type=prepare_query_1(p,list[a].type);
+		} else {
+			qry_type=255;
+		}
 			if (qry_type==-1) { goto end_query; }
 
 
@@ -300,7 +307,7 @@ code
 			if (list[a].type!='S'&&list[a].type!='s') {
 				if (list[a].type=='C'|| list[a].type=='c') raffected=asql_unload_data(&list[a]);
 				else {
-					if (list[a].type=='L'|| list[a].type=='l') asql_load_data(&list[a]);
+					if (list[a].type=='L'|| list[a].type=='l') {raffected=asql_load_data(&list[a]);}
 					else {
 	
 						if (list[a].type>='1'&&list[a].type<='4') {

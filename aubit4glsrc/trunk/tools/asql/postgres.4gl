@@ -219,7 +219,7 @@ fetch c_qli1 into l_tabid
 	END IF
 
         IF  check_and_report_error() THEN
-      	   RETURN 
+      	   RETURN  0
         END IF
    END IF
 close c_qli1
@@ -255,7 +255,7 @@ endcode
         CALL add_to_display_file(lv_buff)
 
    END FOREACH
-
+return 1
 END FUNCTION
 
 
@@ -459,7 +459,7 @@ A4GL_debug("Getting details for index %d",index);
                 exec sql get descriptor descExec value :index
                         :DATETIME_INTERVAL_CODE=datetime_interval_code,
                         :STRINGVAR=data;cp_sqlca();
-                sprintf(buffer,"%d %s",DATETIME_INTERVAL_CODE,STRINGVAR);
+                sprintf(buffer,"%s",STRINGVAR);
                 break;
            case SQL3_INTERVAL:
                 exec sql get descriptor descExec value :index :STRINGVAR=data;cp_sqlca();
@@ -943,7 +943,7 @@ end function
 
 function table_info()
 define lv_tabname char(255)
-define lv_txt char(255)
+define lv_txt char(128)
 define lv_cont integer
 
         if not has_db() then
@@ -967,6 +967,7 @@ define lv_cont integer
 
                 let lv_cont=0
 
+		call set_exec_mode(0)
                 let lv_txt="INFO - ",lv_tabname
                 menu lv_txt
                         command "Columns"
