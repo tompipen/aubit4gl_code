@@ -4,6 +4,8 @@
 #
 ###########################################################################
 
+#fails at random? #NOT expected to fail:  349 (1)
+
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 #NOTE: <*> = OK with -esqli
@@ -80,7 +82,7 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 	922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 \
 	953 954 955 956 957 958 959 964	966 284 918 \
-	938 939 940 941 942 943 944 945 946 947 282"
+	938 939 940 941 942 943 944 945 946 947 282 498 499"
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
@@ -96,6 +98,7 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #934 284 no test files
 #956 missing 4gl file
 #282 testtable does not exist in the database
+#498,499 no keys.in
 
 
 
@@ -283,12 +286,12 @@ tmp_out="$makefile.tmp"
 #
 ##
 create_4js_api() {
-rm -f fgiusr-4js.c
+rm -f $FGIUSR_4JS_C
 
 #ERROR(-6200):Module 'prog': The function <extern C>.aclfgl_dump_screen(2,1) 
 #will be called as aclfgl_dump_screen(1,0).
 
-cat<<EOF > fgiusr-4js.c
+cat<<EOF > $FGIUSR_4JS_C
 #include <f2c/fglExt.h>
 int aclfgl_dump_screen (int n);
 	UsrData usrData[] = {
@@ -308,8 +311,8 @@ EOF
 #
 ##
 create_ifx_api() {
-rm -f fgiusr-ifx.c
-cat<<EOF > fgiusr-ifx.c
+rm -f $FGIUSR_IFX_C
+cat<<EOF > $FGIUSR_IFX_C
 #include "fgicfunc.h"
 int aclfgl_dump_screen (int n);
 cfunc_t usrcfuncs[] =
@@ -351,7 +354,7 @@ OBJ_CUSTOM="$CUSTOM.o"
 		fi		
 		create_ifx_api
 		rm -f $IFX_RUNNER 
-		SOURCES="$SRC_CUSTOM ./fgiusr-ifx.c"
+		SOURCES="$SRC_CUSTOM $FGIUSR_IFX_C"
 		#CFGLGO_FLAGS="-dumpspecs"
 		#CFGLGO_FLAGS="-v"
 		#CFGLGO_FLAGS="-DDEBUG"
@@ -386,7 +389,7 @@ OBJ_CUSTOM="$CUSTOM.o"
 		create_4js_api
 		
 		#decap program strips away the termcap escape sequences
-		EXEC="gcc $AUBITDIR_SRC/lib/extra_libs/infx_dump_screen/decap.c -o ./decap"
+		EXEC="gcc $AUBITDIR_SRC/lib/extra_libs/infx_dump_screen/decap.c -o ./bin/decap"
 		echo $EXEC
 		eval $EXEC
 		RET=$?
@@ -416,7 +419,7 @@ OBJ_CUSTOM="$CUSTOM.o"
 			$FJS_CFLAGS \
 			-acs \"$SRC_CUSTOM\" \
 			$LFLAGS \
-			-ext fgiusr-4js.c"
+			-ext $FGIUSR_4JS_C"
 		echo $EXEC
 		rm -f tmp.log
 		eval $EXEC > tmp.log 2>&1
@@ -733,18 +736,19 @@ TEST_DB="test1"
 #decimals work ok with 'LC_NUMERIC' set to C
 #apparently they fail with anything else, like when LANG is set to 'de_DE@euro'
 export LC_NUMERIC="C"
-
+FGIUSR_4JS_C="./bin/fgiusr-4js.c"
+FGIUSR_IFX_C="./bin/fgiusr-ifx.c"
 OUTPUT_LOG="output.log"
 ERROR_LOG="error.log"
-
+export MAKEFILE_COMMON="$CURR_DIR/incl/Makefile-common"
 if test "$COMSPEC" != ""; then
 	FIND=/bin/find
 else
 	FIND=find
 fi
 
-IFX_RUNNER="$CURR_DIR/testfglgo"
-FJSRUNNER="$CURR_DIR/testfglrun"
+IFX_RUNNER="$CURR_DIR/bin/testfglgo"
+FJSRUNNER="$CURR_DIR/bin/testfglrun"
 if test "$AUBITDIR_SRC" = ""; then
 	AUBITDIR_SRC=/opt/aubit/aubit4glsrc
 fi
@@ -1083,7 +1087,38 @@ for a in $FLAGS; do
 			UNL_LOG=1
 			exit
 			;;
-			
+		-xyz)
+			#replace a string in all makefiles
+			ALL_DIRS=[0-9]*
+			#ALL_DIRS=1004
+			#ALL_DIRS=250
+            for a in $ALL_DIRS; do
+				echo $a
+				MK=`ls $a/?akefile`
+				if test "$MK" = ""; then
+					continue
+				fi
+				if test -f $MK; then 
+					TO_REPLACE="include ..\/Makefile-common"
+					REPLACE_WITH='include ${MAKEFILE_COMMON}'
+					TMP=`grep "$TO_REPLACE" $MK`
+					RET=$?
+					if test "$RET" = "0"; then
+						echo "$MK"
+						#echo $TMP
+						TT=`echo $TMP | sed -e "s/$TO_REPLACE/$REPLACE_WITH/"`
+						echo "$TMP ==> $TT"
+						cat $MK  | sed -e "s/$TO_REPLACE/$REPLACE_WITH/" > /tmp/mk.tmp
+						mv /tmp/mk.tmp $MK
+					else
+						echo "no $TO_REPLACE string in $MK"
+					fi
+				else
+					echo "no makefile in $a" 
+				fi
+	 		done
+			exit
+			;;
         -add-makefile)
 			#Do not add makefile to 58 and 65 - they are obsolete
 			ALL_DIRS=[0-9]*
@@ -1365,7 +1400,9 @@ for a in $FLAGS; do
                     #NOTE: this is NOT the same as -silent
 			NO_ECHO=1
 			;;
-
+		-shdbg) 	#run_tests shell script debugging 
+			SH_DBG=1
+			;;
         -verbose)   #Show more information about what is going on
             VERBOSE=1
 			;;
@@ -1489,6 +1526,9 @@ for a in $FLAGS; do
 		;;
 	-noecho)    #Don't show any non-critical messages while running tests
         #we already got this one set
+		;;
+	-shdbg) 	#run_tests shell script debugging
+		#got that allready
 		;;
 
     -verbose)   #Show more information about what is going on
@@ -2028,7 +2068,7 @@ for a in $FLAGS; do
 		fi
 		#Indicate that we will use Informix RDBMS
 		USE_SQLITE=0; USE_ESQLI=1
-		if ! test -f "$TEST_DB.sch"; then 
+		if ! test -f "./etc/$TEST_DB.sch"; then 
 			#-c : Enable Database to 4GL data type conversion.
 			#Database type          4GL type
 			#--------------------------------------
@@ -2043,9 +2083,9 @@ for a in $FLAGS; do
 			fglschema -c $TEST_DB
 			RET=$?
 			if test "$RET" != "0"; then 
-				rm -f $TEST_DB.sch
+				rm -f ./etc/$TEST_DB.sch
 			fi
-			if ! test -f "$TEST_DB.sch"; then
+			if ! test -f "./etc/$TEST_DB.sch"; then
 				echo "ERROR: failed to create 4Js schema file for $TEST_DB"
 				exit 8
 			fi
@@ -2164,6 +2204,7 @@ for a in $FLAGS; do
 		echo " -gdb        use gdb to run programs with (not 4clc - just compiled programs)"
 		echo " -show-config Don't run any tests - just show configuration under which they would be executed"
 		echo " -show-make  Dont run 'run' target in makefile - run 'show' target instead"
+		echo " -shdbg      Turn on additional output for debugging of run_tests shell script"		
 		
 		echo ""
 		if test "$HELP_ALL" != "1"; then		
@@ -2491,8 +2532,8 @@ fi
 #Obay $ODBCINI: Informix, iODBC, UnixODBC, SqliteODBC, SAP
 #WARNING: Ignore $ODBCINI: Postgresql
 
-export ODBCINI=$CURR_DIR/odbc.ini
-export ODBCINSTINI=$CURR_DIR/odbcinst.ini
+export ODBCINI=$CURR_DIR/etc/odbc.ini
+export ODBCINSTINI=$CURR_DIR/etc/odbcinst.ini
 
 if ! test -f "$ODBCINI"; then
     touch $ODBCINI
@@ -3460,6 +3501,10 @@ if test "$NEW_ODBC" = "1"; then
 	exit
 fi
 
+if test "$SH_DBG" = "1"; then 
+	echo "Entering 'Finalise settings' section"
+fi
+
 ##############################################################################
 #                           Finalise settings
 ##############################################################################
@@ -3942,10 +3987,18 @@ do
 		continue
 	fi
 
+	if test "$SH_DBG" = "1"; then 
+		echo "Determening if we can/should run test $TEST_NO"
+	fi
+	
+	
 	###################################
 	#See if we can/should run this test
 
 	if test "$IS_OBSOLETE_TEST" = "1"; then
+		if test "$VERBOSE" = "1"; then
+			echo "Skipping obsolete test $TEST_NO"
+		fi
 		#SKIP_CNT=`(expr $SKIP_CNT + 1) 2>/dev/null`
         continue
     fi

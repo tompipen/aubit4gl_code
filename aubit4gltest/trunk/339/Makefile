@@ -2,7 +2,7 @@
 
 ################
 #All common settings and rules are included:
-include ../Makefile-common
+include ${MAKEFILE_COMMON}
 
 ## ======================================================================
 ##                  Local Setings - user modifiable

@@ -3,7 +3,7 @@
 
 ################
 #All common settings and rules are included:
-include ../Makefile-common
+include ${MAKEFILE_COMMON}
 
 ## ======================================================================
 ##                  Local Setings - user modifiable
@@ -100,8 +100,8 @@ run: compile
 #Text to describe functionality tested:
 #Change to actual description text" <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<(8)
 desc:
-	@echo "FIXME - no test files."
-	@echo "Please provide brief description of functionality tested here."
+	@echo "Simple INPUT BY MANE in form"
+	@echo "No error checking - no keys.in"
 
 #All targets below: change to appropriate 1 or 0 settings <<<<<<<<<<<<<<<<<<<(9)
 
@@ -132,7 +132,7 @@ tui_test:
 ################
 #Test uses .per form files:
 form_test:
-	@echo "0"
+	@echo "1"
 
 ################
 #Test uses REPORT section
@@ -170,12 +170,12 @@ cert_test:
 ################
 #test is superceeded or obsoleted and should be silently skipped
 obsolete_test:
-	@echo "1"
+	@echo "0"
 
 ################
 #Test can be run using any 4GL compatible compiler, not just Aubit
 compat_test:
-	@echo "0"
+	@echo "1"
 
 ####################################
 #Test is expeceted to exit with code (return "x" for any not-null exit code)
