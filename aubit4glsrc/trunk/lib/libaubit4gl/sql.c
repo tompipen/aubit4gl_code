@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.8 2004-07-20 14:20:44 mikeaubury Exp $
+# $Id: sql.c,v 1.9 2004-07-20 15:21:15 mikeaubury Exp $
 #
 */
 
@@ -566,19 +566,52 @@ return 1;
 
 
 
-int A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
+int
+A4GLSQL_add_prepare (char *pname, void *vsid)
 {
-	  struct s_sid *sid;
-	struct BINDING *ibind;
-		ibind=vibind;
-	    A4GL_debug("ESQL : A4GLSQL_execute_sql");
+  struct s_sid *sid;
+  sid = vsid;
+  if (sid)
+    {
+      A4GL_add_pointer (pname, PRECODE, sid);
+      return 1;
+    }
+  else
+    {
+      return 0;
+    }
+}
+
+
+
+void*
+A4GLSQL_prepare_glob_sql_internal (char *s, int ni, void  *ibind)
+{
+  return A4GLSQL_prepare_select (ibind, ni, (struct BINDING *) 0, 0, s);
+}
+
+
+/*
+void * A4GLSQL_prepare_sql (char *s)
+{
+  return A4GLSQL_prepare_select ((void *) 0, 0, (void *) 0, 0, s);
+}
+*/
+
+int
+A4GLSQL_execute_sql (char *pname, int ni, void *vibind)
+{
+  struct s_sid *sid;
+  struct BINDING *ibind;
+  ibind = vibind;
+  A4GL_debug ("ESQL : A4GLSQL_execute_sql");
 	      /** @todo : Fix the mode that is not used now  - done remove comment */
-      sid = A4GLSQL_find_prepare (pname); // ,0
-      sid->ibind = ibind;
-      sid->ni    = ni;
+  sid = A4GLSQL_find_prepare (pname);	// ,0
+  sid->ibind = ibind;
+  sid->ni = ni;
 
 
-return A4GLSQL_execute_implicit_sql(sid);
+  return A4GLSQL_execute_implicit_sql (sid);
 
 }
 
@@ -597,14 +630,16 @@ return A4GLSQL_execute_implicit_sql(sid);
  *  *   - A pointer to the structure found in the tree.
  *  *   - 0 : The structure was not found
  *  */
-void *A4GLSQL_find_prepare (char *pname)
+void *
+A4GLSQL_find_prepare (char *pname)
 {
-	  struct s_sid *ptr;
+  struct s_sid *ptr;
 
   A4GL_set_errm (pname);
-  ptr = (struct s_sid *)A4GL_find_pointer_val (pname, PRECODE);
-  if (ptr) return (void *)ptr;
-  return (void *)0;
+  ptr = (struct s_sid *) A4GL_find_pointer_val (pname, PRECODE);
+  if (ptr)
+    return (void *) ptr;
+  return (void *) 0;
 //struct s_sid 
 }
 
