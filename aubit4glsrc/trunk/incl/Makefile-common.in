@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.147 2004-01-15 05:44:05 afalout Exp $
+# $Id: Makefile-common.in,v 1.148 2004-02-03 04:55:07 afalout Exp $
 #
 
 
@@ -317,6 +317,8 @@ LDFLAGS             =@LDFLAGS@
 LDFLAGS_SHARED		=@LDFLAGS_SHARED@
 AWK                 =@AWK@
 STRIP               =@STRIP@
+FIND				=find
+
 
 #Default strip difference :
 #-rwxr-xr-x    1 root     root       701702 Jan 28 18:25 bin/4glc
@@ -569,6 +571,9 @@ CPEXE       =${LN_H}
 ## ==================================================================
 
 ifdef COMSPEC #############Windows platform - CygWin/MinGW related:################
+
+	#Only for CygWin - Windows 'find' is useless anyway
+	FIND=/bin/find
 
 	#dll on Windows are loaded by standard Windows loader, that don't
 	#understand CygWin symbolic links:

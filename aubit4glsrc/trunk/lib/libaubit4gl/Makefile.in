@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.62 2004-01-23 14:16:07 mikeaubury Exp $
+# $Id: Makefile.in,v 1.63 2004-02-03 04:55:07 afalout Exp $
 #
 
 ROOT    	=../..
@@ -291,7 +291,7 @@ clean : clean.generated clean.api
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c \
 		form_x_xdr.c form_x.h project.c core lclint.log \
 		*.out *.glb *${SO_EXT_LINKABLE} *.a  *.o  *.bak *.dll *.stackdump *.err \
-		*.base *.exp *.def .\#*
+		*.base *.exp *.def .\#* API_lex.c
 
 #################
 #Clean all generated files (except API files)

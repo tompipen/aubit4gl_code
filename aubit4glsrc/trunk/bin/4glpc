@@ -29,8 +29,54 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.121 2003-12-20 14:22:30 mikeaubury Exp $
+# $Id: 4glpc,v 1.122 2004-02-03 04:55:06 afalout Exp $
 #
+
+if [ "$1" = "-dirdiff" ]
+then
+	#Find files that exist in a tree but not in another tree
+	#to find files we missed in 'make clean.all'
+	echo "comparing $2 <=> $3"
+	cd $2
+	#DIRTYLIST=`find`
+	#find . -name "*~" -exec echo "\"{}\"" \;
+	#DIRTYLIST=`find . -exec echo "\"{}\"" \;`
+	
+	
+	#find . \( -path *tools/cygwin -o -path *crap \) -prune 
+	#find /usr/wpas/ \( -path *source -o -path *procs -o -path *\&* -o -path *.L
+	#-o -path *BP.O -o -path *SUBS.O -o -path *REPORT \) -prune -or -type d \(
+	#-name BP* -o -name *BP -o -name *PROG* -o -name *FUNC* -o -name *SUBS* -o
+	#-name *FMCS* -o -name INC* -o -name *INC -o -name PROMPTS* \) -print | tee
+	#/usr/wpas/source.dirs	
+	
+	#DIRTYLIST=`find . -exec echo "'{}'" \;`	
+	
+	#must ingnore tools/cygwin, since it contains files with spaces in filename
+	DIRTYLIST=`find . \( -path \*cygwin\* -o -path \*crap \) -prune -or -name "*"`
+	
+	cd -
+	
+	for file in $DIRTYLIST
+	do
+		LOOKFOR=$3/$file
+		#echo $LOOKFOR
+		if [ ! -f $LOOKFOR ]
+		then
+			if [ ! -d $LOOKFOR ]
+			then
+				#File exists in $2 but not in $3
+				#echo "$LOOKFOR"
+				echo $file
+				#exit
+			fi
+		fi
+	
+	done
+
+	
+	exit
+fi
 
 ########################################################################
 #this is main Aubit 4gl compiler .4gl files compiler script

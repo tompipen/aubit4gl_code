@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.55 2004-01-17 05:49:14 afalout Exp $
+# $Id: Makefile.in,v 1.56 2004-02-03 04:55:07 afalout Exp $
 #
 
 ROOT        =../..
@@ -184,7 +184,9 @@ clean: clean.fshow
     *.o *.glb
 
 clean.fshow:
-	${RM} fshow fshow.c fshow.h fshow.glb fshow.o fshow.exe ../../bin/fshow ../../bin/fshow.exe
+	${RM} fshow.c fshow.h fshow.glb fshow${EXE} ${ROOT}/bin/fshow${EXE} \
+	*.ao
+
 
 ## ==================================================================
 ##                         Other Targets

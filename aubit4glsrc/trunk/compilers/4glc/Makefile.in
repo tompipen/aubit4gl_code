@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.74 2004-01-28 09:37:49 mikeaubury Exp $
+# $Id: Makefile.in,v 1.75 2004-02-03 04:55:06 afalout Exp $
 #
 
 ROOT		=../..
@@ -233,8 +233,10 @@ lclint: $(CMODS)
 
 clean: clean.rules.generated clean.rules
 	${RM} *${SO_EXT} *.o *.err *.a *.exe *.bak .*.bak .\#* \
-	*.log *.dll *.dll.a *.def wantkw.c wantkw.h mk_states_1.h mk_states.h mk_states.c
+	*.log *.dll *.dll.a *.def wantkw.c wantkw.h mk_states_1.h mk_states.h \
+	mk_states.c API_lex.c API_lex.h mk_states_c
 
+	
 clean.rules.generated:
 	(cd rules/generated; ${RM} *.yacc *.c *.h single_words *.o *.yh *.rule \
 	*.output *.bak .*.bak)

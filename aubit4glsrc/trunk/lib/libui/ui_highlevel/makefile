@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.10 2004-02-01 03:16:53 afalout Exp $
+# $Id: makefile,v 1.11 2004-02-03 04:55:07 afalout Exp $
 #
 
 LIBROOT		=../..
@@ -226,6 +226,7 @@ testit:  $(OBJS) testit.o API_lowlevel.o
 ## ==================================================================
 
 clean:
-	${RM} *${SO_EXT} *.o *.bak testit API_lowlevel.c API_lowlevel.h lowlevel/*.bak
+	${RM} *${SO_EXT} *.o *.bak testit API_lowlevel.c API_lowlevel.h \
+	lowlevel/*.bak a4gl_API_lowlevel.h
 
 

@@ -80,7 +80,7 @@ This directory and all files should be removed from CVS
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2003-07-13 04:11:40 afalout Exp $
+# $Id: Makefile.in,v 1.17 2004-02-03 04:55:07 afalout Exp $
 #
 
 ROOT        =../../..
@@ -171,7 +171,9 @@ ${KW_H} ${Y_TAB_H}:
 ## ==================================================================
 
 clean:
-	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glp *.log *.dll *.dll.a
+	${RM} *${SO_EXT} *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glp \
+	*.log *.dll *.dll.a 
+
 
 
 #--------------------------------- EOF -----------------------------

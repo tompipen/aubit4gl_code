@@ -74,4 +74,8 @@ clean:
 	rm -f $(PROGRAM) $(OBJS) core y.tab.h
 
 distclean: clean
-	rm -f Makefile config.h config.status config.cache config.log
+	rm -f Makefile config.h config.status config.cache config.log \
+	confdefs.h 
+
+	
+	
