@@ -90,7 +90,7 @@ do
 	cfiles="$cfiles $out.c"
 done
 
-GCC_RUN="gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes"
+GCC_RUN="gcc  -I$POSTGRESDIR/include $other_args $cfiles -L$POSTGRESDIR/lib -lecpg -lecpg_compat -lpgtypes -lpq -lm"
 echo $GCC_RUN
 eval $GCC_RUN
 RET=$?
