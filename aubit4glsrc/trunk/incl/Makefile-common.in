@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.144 2003-10-16 09:46:24 afalout Exp $
+# $Id: Makefile-common.in,v 1.145 2003-11-12 22:22:45 afalout Exp $
 #
 
 
@@ -106,6 +106,11 @@ endif
 #     fi
 
 
+#save current stuff in environment so we can override configuration files
+ENV_A4GL_SQLTYPE:=${A4GL_SQLTYPE}
+ENV_A4GL_LEXTYPE:=${A4GL_LEXTYPE}
+ENV_A4GL_LEXDIALECT:=${A4GL_LEXDIALECT}
+
 ifeq "$(NOINCL)" "0"
 
 	NOERR=2>/dev/null
@@ -182,6 +187,21 @@ endif
 #for compiling Aubit compiler from source code
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	AUBITDIR=${AUBIT_SRC_ROOT}
+endif
+
+#optionally, override things set in environment:
+ifneq "${ENVOVERRIDE}" "NO"
+	ifneq "${ENV_A4GL_SQLTYPE}" ""
+		A4GL_SQLTYPE=${ENV_A4GL_SQLTYPE}
+    endif
+	ifneq "${ENV_A4GL_LEXTYPE}" ""
+		A4GL_LEXTYPE=${ENV_A4GL_LEXTYPE}
+    endif
+	ifneq "${ENV_A4GL_LEXDIALECT}" ""
+		A4GL_LEXDIALECT=${ENV_A4GL_LEXDIALECT}
+    endif
+    export A4GL_SQLTYPE A4GL_LEXTYPE A4GL_LEXDIALECT
+
 endif
 
 

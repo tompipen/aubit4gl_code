@@ -15,7 +15,7 @@
 #
 ###########################################################################
 
-#	 $Id: footer.mki,v 1.38 2003-08-23 00:42:58 afalout Exp $
+#	 $Id: footer.mki,v 1.39 2003-11-12 22:22:45 afalout Exp $
 
 #############################################################################
 #   Aubit 4gl compiler - 'Amake' make system
@@ -655,6 +655,12 @@ src:
 src.all:
 	@echo ${ALL_SRC} ${PWD}
 
+
+#Load module/program relatinships into Doc4GL database from make files
+#SRC_LOAD_UTIL must be set from calling program/makefile, like in MaxERPdefs.mki
+#in case of OneMaxx
+#ALL_SRC is set on top of this file
+#PWD is set in Amake header.mki
 src.load:
 	${SRC_LOAD_UTIL} ${ALL_SRC} ${PWD}
 

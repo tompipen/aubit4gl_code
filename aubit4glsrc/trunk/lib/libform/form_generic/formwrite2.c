@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.24 2003-10-26 19:12:01 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.25 2003-11-12 22:22:46 afalout Exp $
 #*/
 
 /**
@@ -62,13 +62,7 @@ char buff_xdr[30000];
 extern char *outputfilename;
 
 
-//#ifdef __CYGWIN__
 dll_import struct struct_form the_form;
-/*
-#else
-	extern struct struct_form the_form;
-#endif
-*/
 extern struct struct_scr_field *fld;
 
 
@@ -912,6 +906,7 @@ A4GL_write_form (void)
     }
 
 
+
   if (as_c)
     {
       int cnt = 0;
@@ -1064,51 +1059,6 @@ A4GL_init_form (void)
   the_form.records.records_val = 0;
 }
 
-
-/**
- * It seems that its not used
- * @toto Confirm if its used and if not remove it
- */
-/*
-static void
-new_field_bool_attribute(void)
-{
-  int cnt;
-
-  A4GL_debug("new_field_bool_attr\n");
-  cnt= the_form.attributes.attributes_len-1;
-
-  the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_len++;
-  the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_val=realloc(
-    the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_val,
-    the_form.attributes.attributes_val[cnt].bool_attribs.bool_attribs_len*
-    sizeof(enum FIELD_ATTRIBUTES_BOOL)
-  );
-}
-*/
-
-/**
- * It seems that its not used
- *
- * @todo Confirm if its used and if not remove it
- */
-/*
-static void
-new_field_str_attribute(void)
-{
-	int cnt;
-
-	A4GL_debug("new_field_str_attr\n");
-	cnt= the_form.attributes.attributes_len-1;
-
-	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_len++;
-	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_val=realloc(
-	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_val,
-	the_form.attributes.attributes_val[cnt].str_attribs.str_attribs_len*
-		sizeof(struct struct_field_attr_string));
-}
-*/
-
 /**
  * If necessary locate memory to field attributes and insert it to the 
  * attribute array of the screen field pointer.
@@ -1128,7 +1078,51 @@ A4GL_add_str_attr (void *f, int type, char *str)
 static void
 real_add_str_attr (struct struct_scr_field *f, int type, char *str)
 {
+char buff[1024];
   A4GL_debug ("add_str_attr %p %d - '%s'\n", f, type, str);
+
+/*
+List of input functionality attributes: (not interesting for DD)
+	AUTONEXT	FA_B_AUTONEXT = 0,
+	REQUIRED	FA_B_REQUIRED = 9,
+    NOENTRY		FA_B_NOENTRY = 3,
+    VERIFY		FA_B_VERIFY = 4,
+    WORDWRAP	FA_B_WORDWRAP = 5,
+    PROGRAM    	FA_S_PROGRAM = 4,
+
+
+List of presentation form field attributes: (not interesting for DD)
+	COLOR       < separate code table, see form_x.h
+	REVERSE		FA_B_REVERSE = 1,
+ 	INVISIBLE	FA_B_INVISIBLE = 2,
+	DISPLAY LIKE    <<<<<<<<<<<<<<<<<<< NOT IMPLEMENTED?
+				FA_S_WIDGET = 5,     -- 4Js?
+				FA_S_CONFIG = 6,     -- 4Js?
+				FA_B_COMPRESS = 6,   -- 4Js?
+
+Interesting for creating data dictionary:
+    VALIDATE LIKE -  <<<<<<<<<<<<<<<<<<< NOT IMPLEMENTED?
+
+see tools/loadmap/loadmap.4gl for loading example
+
+*/
+
+  if (strcmp (acl_getenv ("DUMPCOMMENTS"), "YES") == 0)
+   {
+	  // delimiter = @
+	  if ((type == 7) || (type == 0) || (type == 3) || (type == 1) || (type == 2)){
+        /*
+		COMMENTS 	FA_S_COMMENTS = 7,
+		INCLUDE    	FA_S_INCLUDE = 0,
+		DEFAULT    	FA_S_DEFAULT = 3,
+		FORMAT    	FA_S_FORMAT = 2,
+		PICTURE    	FA_S_PICTURE = 1,
+        */
+		sprintf(buff,"S@%d@%s@%s@%s\n",type,str,f->tabname, f->colname);
+		printf ("%s",buff);
+	  }
+   }
+
   if (str[0] != '\n')
     str = A4GL_char_val (str);
   else
@@ -1168,6 +1162,7 @@ A4GL_add_bool_attr (void *f, int type)
 static void
 real_add_bool_attr (struct struct_scr_field *f, int type)
 {
+char buff[1024];
   char *attrs[] = {
     "AUTONEXT",
     "REVERSE",
@@ -1181,6 +1176,20 @@ real_add_bool_attr (struct struct_scr_field *f, int type)
   };
 
   A4GL_debug ("add_bool_attr\n");
+
+  if (strcmp (acl_getenv ("DUMPCOMMENTS"), "YES") == 0)
+   {
+	  // delimiter = @
+	  if ((type == 7) || (type == 8)){
+	  	/*
+	    UPSHIFT		FA_B_UPSHIFT = 7,
+    	DOWNSHIFT	FA_B_DOWNSHIFT = 8,
+		*/
+		sprintf(buff,"B@%d@%s@%s@%s\n",type,"YES",f->tabname, f->colname);
+		printf ("%s",buff);
+	  }
+   }
+
 
   if (!A4GL_has_bool_attribute (f, type))	/* see a4gl_aubit_lib.h for declaration */
     {

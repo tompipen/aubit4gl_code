@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.11 2003-08-24 17:54:10 mikeaubury Exp $
+# $Id: where.c,v 1.12 2003-11-12 22:22:45 afalout Exp $
 #
 */
 
@@ -41,26 +41,7 @@
 */
 
 
-
-#ifdef OLD_INCL
-
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-
-#include "a4gl_formxw.h"
-#include "a4gl_fcomp_fcompile.h"
-#include "a4gl_compiler.h"
-#include "a4gl_dbform.h"
-#include "a4gl_fcomp_where.h"
-#include "a4gl_debug.h"
-
-#else
-
 #include "a4gl_fcompile_int.h"
-
-#endif
-
 
 #include <ctype.h>
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.32 2003-06-06 09:52:35 mikeaubury Exp $
+# $Id: fcompile.c,v 1.33 2003-11-12 22:22:45 afalout Exp $
 #*/
 
 /**
@@ -43,6 +43,7 @@
 */
 #define yyparse a4gl_form_yyparse
 #include "a4gl_fcompile_int.h"
+#define DO_DEBUG
 
 /*
 =====================================================================
@@ -92,38 +93,6 @@ void a4gl_form_yyerror (char *s);
 =====================================================================
 */
 
-
-/**
- *  From a file name takes the basename of the file (the file without extension)
- *
- *  @param str Origin file name
- *  @param str1 Pointer to the place where the base name is putted
- *  @param str2 Pointer to the place where the extension will be inserted
- */
-/* this function is in libaubit4gl
-static A4GL_bname (char *str, char *str1, char *str2)
-{
-  char fn[132];
-  int a;
-  char *ptr;
-  strcpy (fn, str);
-
-  for (a = strlen (fn); a >= 0; a--)
-    {
-      if (fn[a] == '.')
-	{
-	  fn[a] = 0;
-	  break;
-	}
-    }
-  ptr = &fn[a];
-  strcpy (str1, fn);
-  if (a >= 0)
-	strcpy (str2, ptr + 1);
-  else
-    str2[0] = 0;
-}
-*/
 
 /**
  * The main entry point to the form compiler
@@ -248,8 +217,6 @@ main (int argc, char *argv[])
 
 }
 
-#define DO_DEBUG
-
 #ifdef DO_DEBUG
 typedef union
 {
@@ -323,6 +290,10 @@ yywrap (void)
 
 
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GLF_getdatatype_fcompile (char *col, char *tab)
 {
@@ -337,6 +308,10 @@ A4GLF_getdatatype_fcompile (char *col, char *tab)
   return a;
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 void
 usage (char *s)
 {
@@ -344,6 +319,10 @@ usage (char *s)
   exit (0);
 }
 
+/**
+ *
+ * @todo Describe function
+ */
 int
 A4GLF_open_db (char *s)
 {

@@ -26,7 +26,7 @@
 ROOT    =../..
 
 #
-# $Id: Makefile.in,v 1.7 2002-12-08 06:34:37 afalout Exp $
+# $Id: Makefile.in,v 1.8 2003-11-12 22:22:46 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -60,8 +60,8 @@ ${ROOT}/bin/loadmap : loadmap.4gl
 ## ==================================================================
 
 clean :
-	${RM} loadmap loadmap.c loadmap.h core *.out *.glb *${SO_EXT} *.a  \
-	*.o  *.bak .*.bak *.exe *.dll *.stackdump *.err *.base *.exp
+	${RM} loadmap loadmap.c loadmap.h core *.out *.glb *${SO_EXT} *.a  *.ec \
+	*.o  *.bak .*.bak *.exe *.dll *.stackdump *.err *.base *.exp *.ao *.warn
 
 #----------------------------------- EOF -------------------------------
 

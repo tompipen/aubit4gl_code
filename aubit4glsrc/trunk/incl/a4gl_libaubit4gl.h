@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.99 2003-10-26 19:12:00 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.100 2003-11-12 22:22:45 afalout Exp $
 #
 */
 
@@ -1321,6 +1321,7 @@ void A4GL_display_at (int n, int a);
   char *A4GL_get_translated_id (char *no_c);
   char *A4GL_get_help_disp (int n);
   int A4GL_has_helpfile (void);
+  char * A4GL_get_last_outfile (void);
 
   /* =========================== from a4gl_io.h ================ */
 
