@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_perl.c,v 1.4 2002-08-18 05:00:27 afalout Exp $
+# $Id: pack_perl.c,v 1.5 2003-05-12 14:24:23 mikeaubury Exp $
 #*/
 
 /**
@@ -75,7 +75,7 @@ char ibuff[20000];		/* Input line buffer */
 int attrok = 0;
 int contentok = 0;
 int structs[1000];
-int structs_cnt=0;
+int structs_cnt = 0;
 
 
 /*
@@ -85,7 +85,7 @@ int structs_cnt=0;
 */
 
 char *find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
-char *find_contents (char *s);		/* Extract the tag contents from a string */
+char *find_contents (char *s);	/* Extract the tag contents from a string */
 
 /*
 int input_int (char *name, int *val, int ptr, int isarr);
@@ -124,9 +124,9 @@ int can_pack_all(char *name);
 
 */
 
-char *escape_str(char *s,char q,char e) ;
-void pr_nl(void);
-void pr1(void);
+char *escape_str (char *s, char q, char e);
+void pr_nl (void);
+void pr1 (void);
 
 /*
 --------------------------------
@@ -134,9 +134,9 @@ void pr1(void);
 --------------------------------
 */
 #ifdef _TESTING_
-	static chk (void *x);
+static chk (void *x);
 #endif
-static void out_only(void) ;
+static void out_only (void);
 
 
 /*
@@ -172,19 +172,20 @@ open_packer (char *basename, char dir)
   if (toupper (dir) == 'O')
     {
       outfile = fopen (buff, "w");
-      if (outfile) {
-         fprintf(outfile,"#!/bin/perl\n");
-         fprintf(outfile,"%%report=(\n"); /* warning: unknown conversion type character `r' in format */
+      if (outfile)
+	{
+	  fprintf (outfile, "#!/bin/perl\n");
+	  fprintf (outfile, "%%report=(\n");	/* warning: unknown conversion type character `r' in format */
 
-	 return 1;
-      }
+	  return 1;
+	}
       return 0;
     }
 
   if (toupper (dir) == 'I')
     {
-	out_only();
-	return 0;
+      out_only ();
+      return 0;
     }
 
   return 0;
@@ -198,14 +199,15 @@ open_packer (char *basename, char dir)
 void
 close_packer (char dir)
 {
-  if (toupper (dir) == 'O') {
-         fprintf(outfile,");\n");
+  if (toupper (dir) == 'O')
+    {
+      fprintf (outfile, ");\n");
 
-    fclose (outfile);
-  }
+      fclose (outfile);
+    }
 
   if (toupper (dir) == 'I')
-	out_only();
+    out_only ();
 }
 
 /*
@@ -221,11 +223,11 @@ close_packer (char dir)
 int
 output_start_array (char *s, int type, int len)
 {
-  pr1();
+  pr1 ();
   structs_cnt++;
-  structs[structs_cnt]=0;
-  fprintf (outfile, "\"%s\"=>{", s); /* Was [ */
-	pr_nl();
+  structs[structs_cnt] = 0;
+  fprintf (outfile, "\"%s\"=>{", s);	/* Was [ */
+  pr_nl ();
   return 1;
 }
 
@@ -236,9 +238,9 @@ output_start_array (char *s, int type, int len)
 int
 output_end_array (char *s, int type)
 {
-  fprintf (outfile, "}"); /* Was ] */
+  fprintf (outfile, "}");	/* Was ] */
   structs_cnt--;
-	pr_nl();
+  pr_nl ();
   return 1;
 }
 
@@ -247,13 +249,14 @@ output_end_array (char *s, int type)
  * @todo Describe function
  */
 void
-pr1(void)
+pr1 (void)
 {
-	if (structs[structs_cnt]) {
-		fprintf(outfile,",");
-		pr_nl();
-	}
-	structs[structs_cnt]++;
+  if (structs[structs_cnt])
+    {
+      fprintf (outfile, ",");
+      pr_nl ();
+    }
+  structs[structs_cnt]++;
 }
 
 /**
@@ -263,9 +266,11 @@ pr1(void)
 int
 output_int (char *name, int val, int ptr, int isarr)
 {
-pr1();
-     if (isarr>=0) fprintf (outfile, "%d => %d",isarr,val);
-     else fprintf (outfile, "\"%s\"=>%d", name,val);
+  pr1 ();
+  if (isarr >= 0)
+    fprintf (outfile, "%d => %d", isarr, val);
+  else
+    fprintf (outfile, "\"%s\"=>%d", name, val);
   return 1;
 }
 
@@ -276,9 +281,11 @@ pr1();
 int
 output_long (char *name, long val, int ptr, int isarr)
 {
-pr1();
-  if (isarr>=0) fprintf (outfile, "%d=>%d",isarr,(int)val);
-  else	fprintf (outfile, "\"%s\"=>%d", name,(int)val);
+  pr1 ();
+  if (isarr >= 0)
+    fprintf (outfile, "%d=>%d", isarr, (int) val);
+  else
+    fprintf (outfile, "\"%s\"=>%d", name, (int) val);
   return 1;
 }
 
@@ -290,9 +297,11 @@ pr1();
 int
 output_bool (char *name, int val, int ptr, int isarr)
 {
-pr1();
-  if (isarr>=0) fprintf (outfile, "%d=>%d",isarr,val);
-  else fprintf (outfile, "\"%s\"=>%d", name,val);
+  pr1 ();
+  if (isarr >= 0)
+    fprintf (outfile, "%d=>%d", isarr, val);
+  else
+    fprintf (outfile, "\"%s\"=>%d", name, val);
 
   return 1;
 }
@@ -304,9 +313,11 @@ pr1();
 int
 output_string (char *name, char *val, int ptr, int isarr)
 {
-pr1();
-  if (isarr>=0) fprintf (outfile, "%d=>\'%s\'", isarr,escape_str(val,'\'','\\'));
-	else fprintf (outfile, "\"%s\"=>\'%s\'", name,escape_str(val,'\'','\\'));
+  pr1 ();
+  if (isarr >= 0)
+    fprintf (outfile, "%d=>\'%s\'", isarr, escape_str (val, '\'', '\\'));
+  else
+    fprintf (outfile, "\"%s\"=>\'%s\'", name, escape_str (val, '\'', '\\'));
   return 1;
 }
 
@@ -317,9 +328,11 @@ pr1();
 int
 output_double (char *name, double val, int ptr, int isarr)
 {
-  pr1();
-  if (isarr>=0) fprintf (outfile, "%d=>%f",isarr,val);
-  else fprintf (outfile, "\"%s\"=>%f", name,val);
+  pr1 ();
+  if (isarr >= 0)
+    fprintf (outfile, "%d=>%f", isarr, val);
+  else
+    fprintf (outfile, "\"%s\"=>%f", name, val);
   return 1;
 }
 
@@ -330,14 +343,14 @@ output_double (char *name, double val, int ptr, int isarr)
 int
 output_start_struct (char *s, char *n, int ptr, int isarr)
 {
-pr1();
+  pr1 ();
   structs_cnt++;
-  structs[structs_cnt]=0;
+  structs[structs_cnt] = 0;
 
-if (isarr==-1)
-  fprintf (outfile, "\"%s\"=> {", n); /*, s);*/
-else
-  fprintf (outfile, "\"%d\"=> {", isarr); /* , s); */
+  if (isarr == -1)
+    fprintf (outfile, "\"%s\"=> {", n);	/*, s); */
+  else
+    fprintf (outfile, "\"%d\"=> {", isarr);	/* , s); */
   return 1;
 }
 
@@ -349,8 +362,8 @@ int
 output_end_struct (char *s, char *n)
 {
   structs_cnt--;
-  fprintf (outfile, "}"); /*, n, s); */
-	pr_nl();
+  fprintf (outfile, "}");	/*, n, s); */
+  pr_nl ();
   return 1;
 }
 
@@ -361,15 +374,18 @@ output_end_struct (char *s, char *n)
 int
 output_start_union (char *s, char *n, int ptr, int isarr)
 {
-pr1();
-	  structs_cnt++;
-	  structs[structs_cnt]=0;
-	 if (isarr==-1) {
-	  fprintf (outfile, "\"%s\"=> {",  n);
-	} else {
-	  fprintf (outfile, "\"%d\"=> {",  isarr);
-	}
-	  return 1;
+  pr1 ();
+  structs_cnt++;
+  structs[structs_cnt] = 0;
+  if (isarr == -1)
+    {
+      fprintf (outfile, "\"%s\"=> {", n);
+    }
+  else
+    {
+      fprintf (outfile, "\"%d\"=> {", isarr);
+    }
+  return 1;
 }
 
 /**
@@ -379,7 +395,7 @@ pr1();
 int
 output_nullptr (char *s)
 {
-pr1();
+  pr1 ();
   fprintf (outfile, " \"hasvalue\"=>0 ");
   return 1;
 }
@@ -391,7 +407,7 @@ pr1();
 int
 output_okptr (char *s)
 {
-pr1();
+  pr1 ();
   fprintf (outfile, " \"hasvalue\"=>1 ");
   return 1;
 }
@@ -405,7 +421,7 @@ output_end_union (char *s, char *n)
 {
   structs_cnt--;
   fprintf (outfile, "}");
-	pr_nl();
+  pr_nl ();
   return 1;
 }
 
@@ -416,8 +432,8 @@ output_end_union (char *s, char *n)
 int
 output_enum (char *name, char *s, int d)
 {
-pr1();
-  fprintf (outfile, "\"%s\"=>\"%s\"", name,  s);
+  pr1 ();
+  fprintf (outfile, "\"%s\"=>\"%s\"", name, s);
   return 1;
 }
 
@@ -428,11 +444,12 @@ pr1();
  * @todo Describe function
  */
 void
-pr_nl(void)
+pr_nl (void)
 {
-int a;
-	fprintf(outfile,"\n");
-	for (a=0;a<structs_cnt;a++) fprintf(outfile,"  ");
+  int a;
+  fprintf (outfile, "\n");
+  for (a = 0; a < structs_cnt; a++)
+    fprintf (outfile, "  ");
 }
 
 /*
@@ -445,10 +462,10 @@ int a;
  *
  * @todo Describe function
  */
-static void 
-out_only(void) 
+static void
+out_only (void)
 {
-	printf("Error - this is an output only library...\n");
+  printf ("Error - this is an output only library...\n");
 }
 
 /**
@@ -458,7 +475,8 @@ out_only(void)
 int
 input_start_array (char *s, int type, int *len)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 /**
@@ -468,7 +486,8 @@ input_start_array (char *s, int type, int *len)
 int
 input_end_array (char *s, int type)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 
@@ -479,7 +498,8 @@ input_end_array (char *s, int type)
 int
 input_int (char *name, int *val, int ptr, int isarr)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 /**
@@ -489,7 +509,8 @@ input_int (char *name, int *val, int ptr, int isarr)
 int
 input_long (char *name, long *val, int ptr, int isarr)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 
@@ -500,7 +521,8 @@ input_long (char *name, long *val, int ptr, int isarr)
 int
 input_bool (char *name, int *val, int ptr, int isarr)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 
@@ -511,7 +533,8 @@ input_bool (char *name, int *val, int ptr, int isarr)
 int
 input_string (char *name, char **val, int ptr, int isarr)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 /**
@@ -521,7 +544,8 @@ input_string (char *name, char **val, int ptr, int isarr)
 int
 input_double (char *name, double *val, int ptr, int isarr)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 /**
@@ -531,7 +555,8 @@ input_double (char *name, double *val, int ptr, int isarr)
 int
 input_start_struct (char *s, char *n, int ptr, int isarr)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 /**
@@ -541,7 +566,8 @@ input_start_struct (char *s, char *n, int ptr, int isarr)
 int
 input_end_struct (char *s, char *n)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 /**
@@ -551,7 +577,8 @@ input_end_struct (char *s, char *n)
 int
 input_start_union (char *s, char *n, int ptr, int isarr)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 /**
@@ -561,7 +588,8 @@ input_start_union (char *s, char *n, int ptr, int isarr)
 int
 input_ptr_ok (void)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 /**
@@ -571,7 +599,8 @@ input_ptr_ok (void)
 int
 input_end_union (char *s, char *n)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 /**
@@ -581,7 +610,8 @@ input_end_union (char *s, char *n)
 int
 input_enum (char *name, int *d)
 {
-	out_only(); return 0;
+  out_only ();
+  return 0;
 }
 
 
@@ -590,29 +620,32 @@ input_enum (char *name, int *d)
  * @todo Describe function
  */
 char *
-escape_str(char *s,char q,char e)
+escape_str (char *s, char q, char e)
 {
-static char buff[2000];
-int buffcnt=0;
-int a;
-	for (a=0;a<strlen(s);a++) {
-		if (s[a]==e) { /* Escape our escape character */
-				buff[buffcnt++]=e;
-				buff[buffcnt++]=e;
-				continue;
-		}
-		if (s[a]==q) { /* Escape a quote */
-				buff[buffcnt++]=e;
-				buff[buffcnt++]=q;
-				continue;
-		}
-
-		buff[buffcnt++]=s[a];
+  static char buff[2000];
+  int buffcnt = 0;
+  int a;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == e)
+	{			/* Escape our escape character */
+	  buff[buffcnt++] = e;
+	  buff[buffcnt++] = e;
+	  continue;
+	}
+      if (s[a] == q)
+	{			/* Escape a quote */
+	  buff[buffcnt++] = e;
+	  buff[buffcnt++] = q;
+	  continue;
 	}
 
-	buff[buffcnt++]=0;
+      buff[buffcnt++] = s[a];
+    }
 
-	return buff;
+  buff[buffcnt++] = 0;
+
+  return buff;
 }
 
 
@@ -621,10 +654,9 @@ int a;
  * @todo Describe function
  */
 int
-can_pack_all(char *name)
+can_pack_all (char *name)
 {
-	return 0;
+  return 0;
 }
 
 /* =================================== EOF ============================== */
-

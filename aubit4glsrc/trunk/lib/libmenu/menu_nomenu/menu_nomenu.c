@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu_nomenu.c,v 1.3 2003-03-07 08:11:56 afalout Exp $
+# $Id: menu_nomenu.c,v 1.4 2003-05-12 14:24:21 mikeaubury Exp $
 #*/
 
 /**
@@ -51,8 +51,8 @@ struct menu_list the_menus;
 
 extern char *outputfilename;
 
-FILE *fxx=0;
-FILE *fyy=0;
+FILE *fxx = 0;
+FILE *fyy = 0;
 extern int as_c;
 
 
@@ -69,12 +69,12 @@ void error_with (char *s, char *a, char *b);
 void
 write_menu (void)
 {
-char 		fname[132];
-char 		fname2[132];
-int 		a;
-menu_list *	ptr;
+  char fname[132];
+  char fname2[132];
+  int a;
+  menu_list *ptr;
 
-  ptr=&the_menus;
+  ptr = &the_menus;
   strcpy (fname, outputfilename);
   strcat (fname, acl_getenv ("A4GL_MNU_EXT"));
 
@@ -83,50 +83,62 @@ menu_list *	ptr;
 
 
 
-  debug("has %d menus\n",the_menus.menus.menus_len);
+  debug ("has %d menus\n", the_menus.menus.menus_len);
 
-  debug("calling write_data_to_file\n",the_menus.menus.menus_len);
+  debug ("calling write_data_to_file\n", the_menus.menus.menus_len);
 
-  a=write_data_to_file("menu_list",&the_menus,fname);
+  a = write_data_to_file ("menu_list", &the_menus, fname);
 
-	debug ("returned from write_data_to_file()");
+  debug ("returned from write_data_to_file()");
 
-	if (!a) {
-		debug("*** Write FAILED ***\n");
-		error_with("Unable to write data\n",0,0);
-	}
-
-
-//	xdr_destroy(&xdrp);
-	if (fxx) {
-		//what is this closing anyway?
-		fclose(fxx);
+  if (!a)
+    {
+      debug ("*** Write FAILED ***\n");
+      error_with ("Unable to write data\n", 0, 0);
     }
 
-	if (as_c) {
-		int cnt=0;
-		int a;
-		debug("Asc\n");
-		fxx=fopen(fname,"r");
-		fyy=fopen(fname2,"w");
-		fprintf(fyy,"char compiled_menu_%s[]={\n",outputfilename);
 
-		while (!feof(fxx)) {
-			a=fgetc(fxx);
-			if (feof(fxx)) break;
-			if (cnt>0) fprintf(fyy,",");
-			if (cnt%16==0&&cnt) {fprintf(fyy,"\n");}
-			if (a==-1) {break;}
-			fprintf(fyy,"0x%02x",a);
-			cnt++;
-		}
-		fprintf(fyy,"};\n");
-		fclose(fxx);
-		fclose(fyy);
-		/* unlink(fname); */
+//      xdr_destroy(&xdrp);
+  if (fxx)
+    {
+      //what is this closing anyway?
+      fclose (fxx);
+    }
+
+  if (as_c)
+    {
+      int cnt = 0;
+      int a;
+      debug ("Asc\n");
+      fxx = fopen (fname, "r");
+      fyy = fopen (fname2, "w");
+      fprintf (fyy, "char compiled_menu_%s[]={\n", outputfilename);
+
+      while (!feof (fxx))
+	{
+	  a = fgetc (fxx);
+	  if (feof (fxx))
+	    break;
+	  if (cnt > 0)
+	    fprintf (fyy, ",");
+	  if (cnt % 16 == 0 && cnt)
+	    {
+	      fprintf (fyy, "\n");
+	    }
+	  if (a == -1)
+	    {
+	      break;
+	    }
+	  fprintf (fyy, "0x%02x", a);
+	  cnt++;
 	}
+      fprintf (fyy, "};\n");
+      fclose (fxx);
+      fclose (fyy);
+      /* unlink(fname); */
+    }
 
-	debug ("Exiting write_menu()");
+  debug ("Exiting write_menu()");
 
 }
 
@@ -144,9 +156,8 @@ error_with (char *s, char *a, char *b)
     a = z;
   if (b == 0)
     b = z;
-   printf (s, a, b);
+  printf (s, a, b);
 
   debug ("\n");
   exit (8);
 }
-

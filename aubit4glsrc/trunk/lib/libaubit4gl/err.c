@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.6 2002-06-25 03:22:30 afalout Exp $
+# $Id: err.c,v 1.7 2003-05-12 14:24:05 mikeaubury Exp $
 #
 */
 
@@ -44,13 +44,13 @@
 
 #ifdef OLD_INCL
 
-	#include "string.h"     	/* strcpy() */
-	#include "stdio.h"  		/* sprintf() */
-	#include "a4gl_debug.h"
+#include "string.h"		/* strcpy() */
+#include "stdio.h"		/* sprintf() */
+#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_libaubit4gl_int.h"
+#include "a4gl_libaubit4gl_int.h"
 
 #endif
 
@@ -61,10 +61,10 @@
 =====================================================================
 */
 
-extern char *	get_errm	(int a);
- 
+extern char *get_errm (int a);
+
 #ifdef OLD_INCL
-	char * 			err_print	(int a,char *s);
+char *err_print (int a, char *s);
 #endif
 
 
@@ -83,22 +83,23 @@ extern char *	get_errm	(int a);
  * @param s Aditional string to compose the error.
  */
 char *
-err_print(int a,char *s)
+err_print (int a, char *s)
 {
   char *k;
   static char static_err[256];
-  debug("In err print");
-  sprintf(static_err,"Unknown error %d (%s)",a,s);
-  k=static_err;
-  if (a==-3001) {
-    debug("Ignore wrong number of variables..");
-    strcpy(static_err,"Wrong number of variables returned from function");
-    return k;
-  }
-  debug("Calling get_errm");
-  k=get_errm(a*-1);
-  debug("Got %s",k);
-  sprintf(static_err,k,s);
+  debug ("In err print");
+  sprintf (static_err, "Unknown error %d (%s)", a, s);
+  k = static_err;
+  if (a == -3001)
+    {
+      debug ("Ignore wrong number of variables..");
+      strcpy (static_err, "Wrong number of variables returned from function");
+      return k;
+    }
+  debug ("Calling get_errm");
+  k = get_errm (a * -1);
+  debug ("Got %s", k);
+  sprintf (static_err, k, s);
   return static_err;
 }
 

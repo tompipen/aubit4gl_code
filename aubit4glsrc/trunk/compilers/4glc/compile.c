@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.26 2003-04-30 22:13:37 afalout Exp $
+# $Id: compile.c,v 1.27 2003-05-12 14:23:45 mikeaubury Exp $
 #*/
 
 /**
@@ -59,8 +59,8 @@ static int genStackInfo = 1;
 
 /* -------- extern --------- */
 //FIXME - move in "a4gl_4glc_int.h"
-extern char *outputfilename;		/* Defined in libaubit4gl */
-extern int globals_only;			/* defined in map.c */
+extern char *outputfilename;	/* Defined in libaubit4gl */
+extern int globals_only;	/* defined in map.c */
 extern char infilename[132];
 extern FILE *yyin;
 extern int glob_only;
@@ -68,16 +68,16 @@ extern long fpos;					/** current file position for direct fseek */
 extern int yylineno;
 
 /* -------- unknown --------- */
-int compiling_system_4gl=0;
+int compiling_system_4gl = 0;
 char gcc_exec[128];
 char pass_options[1024] = "";
-int clean_aftercomp = 0;			/* clean intermediate files after compilation */
+int clean_aftercomp = 0;	/* clean intermediate files after compilation */
 char currinfile_dirname[1024] = "";	/* path to 4gl file we are currently compiling - used when compiling global files */
 char errbuff[1024] = "";
 char yytext[1024] = "";
 int globals_only = 0;
 int yyin_len;
-char *default_database=0;
+char *default_database = 0;
 
 #ifdef YYDEBUG
 extern int yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set */
@@ -94,13 +94,13 @@ int yydebug;			/* if !-DYYDEBUG, we need to define it here */
 
 static int compile_4gl (int compile_object, char a[128], char incl_path[128],
 			int silent, int verbose, char output_object[128]);
-void 		printUsage 				(char *argv[]);
-static void printUsage_help 		(char *argv[]);
-int 		initArguments 			(int argc, char *argv[]);
-void 		setGenStackInfo 		(int _genStackInfo);
-void 		set_yytext 				(char *s);
-int 		has_default_database	(void) ;
-char *		get_default_database	(void) ;
+void printUsage (char *argv[]);
+static void printUsage_help (char *argv[]);
+int initArguments (int argc, char *argv[]);
+void setGenStackInfo (int _genStackInfo);
+void set_yytext (char *s);
+int has_default_database (void);
+char *get_default_database (void);
 
 
 /*
@@ -141,7 +141,7 @@ initArguments (int argc, char *argv[])
   int todo = 0;
   int flength = 0;
 
-  char * chrptr;
+  char *chrptr;
   char opt_list[40] = "";
   char a[128] = "";
   char b[128] = "";
@@ -152,25 +152,25 @@ initArguments (int argc, char *argv[])
   char l_libs[1028] = "";
   char buff[4000] = "";
   char all_objects[4000] = "";
-char extra_ldflags[1024] = "";
+  char extra_ldflags[1024] = "";
 
   static FILE *filep = 0;
   static char output_object[128] = "";
   static struct option long_options[] = {
-    {"globals", 	0, 0, 'G'},
-    {"namespace", 	1, 0, 'N'},
+    {"globals", 0, 0, 'G'},
+    {"namespace", 1, 0, 'N'},
     {"stack_trace", 1, 0, 's'},
-    {"help", 		0, 0, '?'},
-    {"silent", 		0, 0, 'S'},
-    {"shared", 		0, 0, 'h'},
-    {"verbose", 	0, 0, 'V'},
-    {"version", 	0, 0, 'v'},
-    {"version_full",0, 0, 'f'},
-    {"lextype", 	0, 0, 't'},
-    {"keep", 		0, 0, 'k'},
-    {"clean", 		0, 0, 'K'},
-    {"database", 	1, 0, 'd'},
-    {"system4gl", 	0, 0, '4'},
+    {"help", 0, 0, '?'},
+    {"silent", 0, 0, 'S'},
+    {"shared", 0, 0, 'h'},
+    {"verbose", 0, 0, 'V'},
+    {"version", 0, 0, 'v'},
+    {"version_full", 0, 0, 'f'},
+    {"lextype", 0, 0, 't'},
+    {"keep", 0, 0, 'k'},
+    {"clean", 0, 0, 'K'},
+    {"database", 1, 0, 'd'},
+    {"system4gl", 0, 0, '4'},
     {0, 0, 0, 0},
   };
 
@@ -187,21 +187,22 @@ char extra_ldflags[1024] = "";
   debug ("Arg 0 set to >%s<", getarg0 ());
 #endif
 
-  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0 || strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
+  if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "C") == 0
+      || strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
     {
       //strcpy(opt_list,"Gs:co::d::l::?hSVvft");
       strcpy (opt_list, "G4s:N:kKco::l::L::?hSVvftd:");
-		#ifdef DEBUG
-			debug ("Compiling to C code\n");
-		#endif
-	}
+#ifdef DEBUG
+      debug ("Compiling to C code\n");
+#endif
+    }
 
   if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "PERL") == 0)
     {
       strcpy (opt_list, "G4s:N:?hSVvftd:");
-		#ifdef DEBUG
-			debug ("Compiling to Perl code\n");
-		#endif
+#ifdef DEBUG
+      debug ("Compiling to Perl code\n");
+#endif
     }
 
   /* this call will intercept -v and -vfull arguments, that can be only
@@ -218,8 +219,8 @@ char extra_ldflags[1024] = "";
 
 
   while ((i = getopt_long (argc, argv, opt_list,
-			 //  long_options, &option_index)) != -1)
-               long_options, &option_index)) != EOF)
+			   //  long_options, &option_index)) != -1)
+			   long_options, &option_index)) != EOF)
     {
       switch (i)
 	{
@@ -229,25 +230,25 @@ char extra_ldflags[1024] = "";
 	     C compiler style flags, because we decite linking tipe based on extension of the target object.
 	   */
 
-		#ifdef DEBUG
-			  debug ("Got -c\n");
-		#endif
+#ifdef DEBUG
+	  debug ("Got -c\n");
+#endif
 
-		compile_object = 1;
-		break;
+	  compile_object = 1;
+	  break;
 
 	case 'h':		/* Link resulting object(s) to shared library */
 	  /* this is more or less meaningless, and is here for compatibility with
 	     C compiler style flags, because we decite linking tipe based on extension of the target object.
-	  */
+	   */
 
-		compile_so = 1;
-		break;;
+	  compile_so = 1;
+	  break;;
 
 	case 'o':		/* compile and optionally Link resulting object(s) */
-		#ifdef DEBUG
-			debug ("Got -o flag\n");
-		#endif
+#ifdef DEBUG
+	  debug ("Got -o flag\n");
+#endif
 
 	  sprintf (output_object, "%s", (NULL == optarg) ? "" : optarg);
 	  if (strcmp (output_object, "") == 0)
@@ -324,39 +325,40 @@ char extra_ldflags[1024] = "";
 
 	  break;
 
-	case '4': 
-	  	compiling_system_4gl=1;
-		break;
+	case '4':
+	  compiling_system_4gl = 1;
+	  break;
 
 	case 'l':		// Extra libraries to link with
-		#ifdef DEBUG
-			  debug ("Pass trough option: %s\n", optarg);
-		#endif
+#ifdef DEBUG
+	  debug ("Pass trough option: %s\n", optarg);
+#endif
 	  strcat (extra_ldflags, "-l");
 	  strcat (extra_ldflags, optarg);
 	  strcat (extra_ldflags, " ");
 	  break;
 
 	case 'L':		// LD -L flags for linking extra libraries
-		#ifdef DEBUG
-			  debug ("Pass trough option: %s\n", optarg);
-		#endif
+#ifdef DEBUG
+	  debug ("Pass trough option: %s\n", optarg);
+#endif
 	  strcat (extra_ldflags, "-L");
 	  strcat (extra_ldflags, optarg);
 	  strcat (extra_ldflags, " ");
 	  break;
 
 	case 'd':		// Name of the database to compile against - DEFINE ... LIKE ... (?)
-	  printf("\n\nDB=%s\n\n",optarg);
-	  default_database=strdup(optarg);
+	  printf ("\n\nDB=%s\n\n", optarg);
+	  default_database = strdup (optarg);
 	  break;
 
 
-	case 'N':       // User specified namespace prefix
-		if (optarg==0) optarg="";
-		debug("Using specified namespace : %s\n",optarg);
-		set_namespace(optarg);
-		break;
+	case 'N':		// User specified namespace prefix
+	  if (optarg == 0)
+	    optarg = "";
+	  debug ("Using specified namespace : %s\n", optarg);
+	  set_namespace (optarg);
+	  break;
 
 	case 'G':		/* generate Globals file only */
 	  globals_only = 1;
@@ -382,9 +384,9 @@ char extra_ldflags[1024] = "";
 
 	case 'K':		/* clean intermedate files when done (--clean) */
 
-		#ifdef DEBUG
-			  debug ("Got --clean\n");
-		#endif
+#ifdef DEBUG
+	  debug ("Got --clean\n");
+#endif
 	  clean_aftercomp = 1;
 	  break;
 
@@ -397,9 +399,9 @@ char extra_ldflags[1024] = "";
 	case 'V':		/* Verbose */
 	  verbose = 1;
 	  silent = 0;
-		#ifdef DEBUG
-			  debug ("Turned on verbose mode\n");
-		#endif
+#ifdef DEBUG
+	  debug ("Turned on verbose mode\n");
+#endif
 	  break;
 
 	case 'v':		/* Show version - needed for long opts */
@@ -464,7 +466,7 @@ char extra_ldflags[1024] = "";
   strcat (incl_path, acl_getenv ("AUBITDIR"));
   strcat (incl_path, "/incl ");
 
-  chrptr=acl_getenv ("GTK_INC_PATH");//GTK_INC_PATH is set in aubitrc by Autoconf
+  chrptr = acl_getenv ("GTK_INC_PATH");	//GTK_INC_PATH is set in aubitrc by Autoconf
   /* NOTE: when GTK_INC_PATH was not set, I got core dumps on Windows - this should not happen */
 
   rm_quotes (chrptr);
@@ -550,9 +552,9 @@ char extra_ldflags[1024] = "";
       else
 	{
 	  /* just pass stuff you don't understand to CC */
-		#ifdef DEBUG
-		  debug ("Pass trough option: %s\n", c);
-		#endif
+#ifdef DEBUG
+	  debug ("Pass trough option: %s\n", c);
+#endif
 
 	  strcat (pass_options, c);
 	  strcat (pass_options, " ");
@@ -569,81 +571,84 @@ char extra_ldflags[1024] = "";
     }
 
 
-    #ifdef DEBUG
-		debug ("gcc_exec=%s",gcc_exec);
-		debug ("all_objects=%s",all_objects);
-		debug ("output_object=%s",output_object);
-		debug ("l_path=%s",l_path);
-		debug ("l_libs=%s",l_libs);
-        debug ("pass_options=%s",pass_options);
-		debug ("extra_ldflags=%s",extra_ldflags);
-		debug ("incl_path=%s",incl_path);
-    #endif
+#ifdef DEBUG
+  debug ("gcc_exec=%s", gcc_exec);
+  debug ("all_objects=%s", all_objects);
+  debug ("output_object=%s", output_object);
+  debug ("l_path=%s", l_path);
+  debug ("l_libs=%s", l_libs);
+  debug ("pass_options=%s", pass_options);
+  debug ("extra_ldflags=%s", extra_ldflags);
+  debug ("incl_path=%s", incl_path);
+#endif
 
 
 
   if (compile_exec)
     {
       debug ("Linking exec\n");
-	#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
-    //We are on UNIX
-	  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s",
+#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
+      //We are on UNIX
+      sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, l_libs,
-	       pass_options,extra_ldflags);
-	#else
-	  //We are on Windows
-	  //WARNING: libs must be at the end
+	       pass_options, extra_ldflags);
+#else
+      //We are on Windows
+      //WARNING: libs must be at the end
       sprintf (buff, "%s %s -o %s %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, pass_options,
 	       l_libs, extra_ldflags);
-	#endif
+#endif
     }
 
   if (compile_lib)
     {
-	#ifndef __MINGW32__
+#ifndef __MINGW32__
       debug ("Linking static library\n");
 
       sprintf (buff, "%s -static %s -o %s %s %s -shared %s %s",
 	       gcc_exec, all_objects, output_object, pass_options, l_path,
-	       l_libs,extra_ldflags);
-	#else
+	       l_libs, extra_ldflags);
+#else
       /* On Windows, there can be no unresolved dependencies at link time - so we allways must
          link with libaubit4gl - but we do not make any static Aubit libraries any more, so we
          must link with .dll - meaning that we must force shared linking even when user specified
          static flag */
-      debug ("Static linking specified - forcing shared linking on Windows\n");
+      debug
+	("Static linking specified - forcing shared linking on Windows\n");
       compile_lib = 0;
       compile_so = 1;
-	#endif
+#endif
     }
 
   if (compile_so)
     {
       debug ("Linking shared library\n");
-	#ifndef __MINGW32__
+#ifndef __MINGW32__
       sprintf (buff, "%s -shared %s -o %s %s %s %s %s %s",
 	       gcc_exec, all_objects, output_object, l_path, l_libs,
-	       pass_options,extra_ldflags,incl_path);
-		//FIXME: add incl_path only if there are .c files in all_objects
+	       pass_options, extra_ldflags, incl_path);
+      //FIXME: add incl_path only if there are .c files in all_objects
 
 //gcc -shared  -o  -L/usr/src/aubit/aubit4glsrc/lib -laubit4gl helplib.c a4gl_xxhelp.afr.c -o ../libHELP_std.dll   -I/usr/src/aubit/aubit4glsrc/incl -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
 
-	#else
+#else
       /*
          NOTE: we are acutally making a Window dll here.
          WARNING: libs must be at the end
          WARNING: without -L ld on Windows won't find it's own ass!!!! Not even in curren directory!!!
        */
 
-	  //FIXME: add incl_path only if there are .c files in all_objects
-	  sprintf (buff,"%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s",
-	       gcc_exec, output_object, all_objects, output_object,pass_options, l_path, l_libs, extra_ldflags,incl_path);
+      //FIXME: add incl_path only if there are .c files in all_objects
+      sprintf (buff,
+	       "%s -L. -shared -Wl,--out-implib=%s.a -Wl,--export-all-symbols %s -o %s %s %s %s %s %s",
+	       gcc_exec, output_object, all_objects, output_object,
+	       pass_options, l_path, l_libs, extra_ldflags, incl_path);
 
 
 
 
-	#endif
+#endif
 
     }
 
@@ -654,10 +659,10 @@ char extra_ldflags[1024] = "";
 	{
 	  printf ("%s\n", buff);
 	}
-		sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
-		#ifdef DEBUG
-			debug ("Runnung %s", buff);
-		#endif
+      sprintf (buff, "%s > %s.err 2>&1", buff, output_object);
+#ifdef DEBUG
+      debug ("Runnung %s", buff);
+#endif
       ret = system (buff);
       if (ret)
 	{
@@ -693,11 +698,11 @@ char extra_ldflags[1024] = "";
 
 	      debug ("%s file size is not zero %d\n", buff, flength);
 
-	      sprintf (buff, "%s %s.err %s.warn", acl_getenv ("A4GL_MV_CMD"), output_object,
-		       output_object);
-			#ifdef DEBUG
-				debug ("Runnung %s", buff);
-			#endif
+	      sprintf (buff, "%s %s.err %s.warn", acl_getenv ("A4GL_MV_CMD"),
+		       output_object, output_object);
+#ifdef DEBUG
+	      debug ("Runnung %s", buff);
+#endif
 	      ret = system (buff);
 
 	    }
@@ -721,9 +726,9 @@ char extra_ldflags[1024] = "";
 	      //sprintf (buff,"%s %s",acl_getenv("A4GL_RM_CMD"),all_objects);
 	      sprintf (buff, "%s %s.err", acl_getenv ("A4GL_RM_CMD"),
 		       output_object);
-			#ifdef DEBUG
-				debug ("Runnung %s\n", buff);
-			#endif
+#ifdef DEBUG
+	      debug ("Runnung %s\n", buff);
+#endif
 	      ret = system (buff);
 	      if (ret)
 		{
@@ -743,7 +748,7 @@ char extra_ldflags[1024] = "";
 	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
 	  printf
 	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
-      return (5);
+	  return (5);
 
 	}
     }
@@ -995,13 +1000,14 @@ compile_4gl (int compile_object, char aa[128], char incl_path[128],
 
 		   */
 
-		#ifdef DEBUG
+#ifdef DEBUG
 		  debug ("%s file size is not zero %d\n", buff, flength);
-        #endif
-		  sprintf (buff, "%s %s.c.err %s.c.warn",acl_getenv ("A4GL_MV_CMD"), aa, aa);
-		#ifdef DEBUG
-			debug ("Runnung %s", buff);
-		#endif
+#endif
+		  sprintf (buff, "%s %s.c.err %s.c.warn",
+			   acl_getenv ("A4GL_MV_CMD"), aa, aa);
+#ifdef DEBUG
+		  debug ("Runnung %s", buff);
+#endif
 		  ret = system (buff);
 
 		}
@@ -1044,7 +1050,7 @@ printUsage (char *argv[])
 {
   printf ("\n");
   printf ("Aubit 4GL compiler usage:\n");
-  printf (" %s [options] -oOutFile.ext file.ext [file.ext ...]\n",argv[0]);
+  printf (" %s [options] -oOutFile.ext file.ext [file.ext ...]\n", argv[0]);
   printf ("  Try -help for more.\n");
   printf ("\n");
 }
@@ -1086,7 +1092,8 @@ printUsage_help (char *argv[])
   printf ("  -G     | --globals         : Generate the globals map file\n");
   printf ("  -S     | --silent          : no output other then errors\n");
   printf ("  -V     | --verbose         : Verbose output\n");
-  printf ("  -N name| --namespace name         : Prefix all functions with name (default 'aclfgl_')\n");
+  printf
+    ("  -N name| --namespace name         : Prefix all functions with name (default 'aclfgl_')\n");
   printf ("  -v     | --version         : Show compiler version and exit\n");
   printf
     ("  -f     | --version_full    : Show full compiler version and details\n");
@@ -1324,12 +1331,18 @@ ansi_violation (char *s, int severity)
 
 
 
-int has_default_database(void ) {
-	if (default_database!=0) return 1;
-	return 0;
+int
+has_default_database (void)
+{
+  if (default_database != 0)
+    return 1;
+  return 0;
 }
 
-char *get_default_database(void ) {
-	return default_database;
+char *
+get_default_database (void)
+{
+  return default_database;
 }
+
 /* ==================================== EOF =============================== */

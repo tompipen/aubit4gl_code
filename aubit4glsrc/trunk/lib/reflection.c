@@ -27,21 +27,25 @@
 #define MAX_PARAMETERS 10
 
 /** The information about a variable */
-typedef struct Variable {
-  char *name;    /**< The name of the variable */
-  int dataType;  /**< The type of data that the variable contains */
+typedef struct Variable
+{
+  char *name;	 /**< The name of the variable */
+  int dataType;	 /**< The type of data that the variable contains */
   void *pointer; /**< A pointer to the memory of the variable */
-}Variable;
+}
+Variable;
 
 /** Typedef for parameter */
 typedef Variable Parameter;
 
 /** A function definition structure */
-typedef struct Function {
-  char *name;    /**< The name of the function */
+typedef struct Function
+{
+  char *name;	 /**< The name of the function */
   const void *pointer; /**< A pointer to the defined function */
   GHashTable parameters; /**< The function parameters */
-} Function;
+}
+Function;
 
 /** The function table */
 static GHashTable functionTable;
@@ -51,9 +55,10 @@ static GHashTable functionTable;
  *
  * @param numberOfFunctions The amount of functions to allocate space for
  */
-void initFunctionTable(int numberofFunctions)
+void
+initFunctionTable (int numberofFunctions)
 {
-  functionTable = g_hash_table_new(g_str_hash,g_str_equal);
+  functionTable = g_hash_table_new (g_str_hash, g_str_equal);
 }
 
 /**
@@ -63,12 +68,13 @@ void initFunctionTable(int numberofFunctions)
  * @param parameters The parameters definition array.
  * @param numberOfParameters The amount of parameters used.
  */
-int addFunction(const char *functionName,const void *functioPointer)
+int
+addFunction (const char *functionName, const void *functioPointer)
 {
-  Function function = malloc(sizeof(Function));
-  function.functionName = strdup(functionName);
+  Function function = malloc (sizeof (Function));
+  function.functionName = strdup (functionName);
   function.pointer = functionPointer;
-  g_hash_table_insert(functionTable,function.functionName,function);
+  g_hash_table_insert (functionTable, function.functionName, function);
 }
 
 /**
@@ -77,7 +83,8 @@ int addFunction(const char *functionName,const void *functioPointer)
  * @param The function where to add the parameter.
  * @param variableName The name of the parameter.
  */
-int addParameter(const char *functionName,const char *variableName)
+int
+addParameter (const char *functionName, const char *variableName)
 {
 }
 
@@ -87,7 +94,8 @@ int addParameter(const char *functionName,const char *variableName)
  * @param functionName The name of the function.
  * @param parameters An array of parameters pointer.
  */
-int executeFunction(char *functionName,int numParameters)
+int
+executeFunction (char *functionName, int numParameters)
 {
 }
 
@@ -97,7 +105,8 @@ int executeFunction(char *functionName,int numParameters)
  * @param variableName The name of the variable.
  * @param value A pointer to the variable vaue.
  */
-int setVariable(char *variableName,void *value)
+int
+setVariable (char *variableName, void *value)
 {
 }
 
@@ -107,6 +116,7 @@ int setVariable(char *variableName,void *value)
  * @param variableName The name of the variable where to get a value.
  * @return A pointer to the variable name.
  */
-void *getVariable(char *variableName)
+void *
+getVariable (char *variableName)
 {
 }

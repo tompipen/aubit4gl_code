@@ -92,7 +92,7 @@ getopt_long_only (argc, argv, options, long_options, opt_index)
 }
 
 
-#endif	/* Not ELIDE_CODE.  */
+#endif /* Not ELIDE_CODE.  */
 
 #ifdef TEST
 
@@ -110,8 +110,7 @@ main (argc, argv)
     {
       int this_option_optind = optind ? optind : 1;
       int option_index = 0;
-      static struct option long_options[] =
-      {
+      static struct option long_options[] = {
 	{"add", 1, 0, 0},
 	{"append", 0, 0, 0},
 	{"delete", 1, 0, 0},

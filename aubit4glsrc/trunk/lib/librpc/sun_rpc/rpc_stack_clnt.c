@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_stack_clnt.c,v 1.5 2002-06-29 13:12:03 afalout Exp $
+# $Id: rpc_stack_clnt.c,v 1.6 2003-05-12 14:24:24 mikeaubury Exp $
 #*/
 
 /**
@@ -46,12 +46,12 @@
 
 #ifdef OLD_INCL
 
-	#include <memory.h> /* for memset */
-	#include "a4gl_xdr_rpc_stack.h"
+#include <memory.h>		/* for memset */
+#include "a4gl_xdr_rpc_stack.h"
 
 #else
 
-    #include "a4gl_lib_rpc_xdr_int.h"
+#include "a4gl_lib_rpc_xdr_int.h"
 
 #endif
 
@@ -85,11 +85,11 @@ static struct timeval TIMEOUT = { 25, 0 };
  *
  */
 return_values *
-call_remote_func_1(call arg1,  CLIENT *clnt)
+call_remote_func_1 (call arg1, CLIENT * clnt)
 {
-static return_values clnt_res;
+  static return_values clnt_res;
 
-	memset((char *)&clnt_res, 0, sizeof(clnt_res));
+  memset ((char *) &clnt_res, 0, sizeof (clnt_res));
 
 /* in rpc/clnt.h :
  * enum clnt_stat
@@ -103,23 +103,18 @@ static return_values clnt_res;
  *	struct timeval timeout;
  */
 
-	if (clnt_call(
-			clnt,
-			CALL_REMOTE_FUNC,
-			(xdrproc_t)xdr_call,
-			(caddr_t)&arg1,
-			(xdrproc_t)xdr_return_values,
-			(caddr_t)&clnt_res,
-			TIMEOUT
-			)
-				!= RPC_SUCCESS)
-	{
-		return (NULL);
-	}
+  if (clnt_call (clnt,
+		 CALL_REMOTE_FUNC,
+		 (xdrproc_t) xdr_call,
+		 (caddr_t) & arg1,
+		 (xdrproc_t) xdr_return_values,
+		 (caddr_t) & clnt_res, TIMEOUT) != RPC_SUCCESS)
+    {
+      return (NULL);
+    }
 
-	return (&clnt_res);
+  return (&clnt_res);
 }
 
 
 /* ============================= EOF =============================== */
-

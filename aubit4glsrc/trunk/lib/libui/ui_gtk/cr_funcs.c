@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: cr_funcs.c,v 1.5 2003-04-23 16:37:28 mikeaubury Exp $
+# $Id: cr_funcs.c,v 1.6 2003-05-12 14:24:28 mikeaubury Exp $
 #*/
 
 /**
@@ -62,7 +62,7 @@ extern int widget_next_size;
 =====================================================================
 */
 
-GtkWidget * make_pixmap_from_mem (char *img);
+GtkWidget *make_pixmap_from_mem (char *img);
 
 /*
 =====================================================================
@@ -82,19 +82,19 @@ GtkWidget * make_pixmap_from_mem (char *img);
  * @param width The width wanted for the widget.
  */
 void
-size_widget (GtkWidget *w, int width)
+size_widget (GtkWidget * w, int width)
 {
   int x, y;
 
   /* If we have a specified width - use it */
-  x = (int)find_param ("*WIDTH");
+  x = (int) find_param ("*WIDTH");
   if (x)
     x = x * XWIDTH;
   else
     x = (width + 2) * XWIDTH;	/* use the fields width in chars.. */
 
   /* DO we have a specified height ? */
-  y = (int)find_param ("*HEIGHT");
+  y = (int) find_param ("*HEIGHT");
   if (y)
     y = y * YHEIGHT;
   else
@@ -115,19 +115,19 @@ make_pixmap_gw (char *filename)
 {
   GdkPixmap *p;
   GtkWidget *pixmap;
-  debug("Making pixmap from file:%s\n",filename);
+  debug ("Making pixmap from file:%s\n", filename);
   p = gdk_pixmap_colormap_create_from_xpm (0,
-    gdk_colormap_get_system (), NULL,
-    NULL, filename
-  );
-  if (p==0) {
-    printf("Bad pixmap...");
-    exitwith("Error creating pixmap");
-    return 0;
-  }
+					   gdk_colormap_get_system (), NULL,
+					   NULL, filename);
+  if (p == 0)
+    {
+      printf ("Bad pixmap...");
+      exitwith ("Error creating pixmap");
+      return 0;
+    }
 
   pixmap = gtk_pixmap_new (p, 0);
-  debug("New pixmap : %p\n",pixmap);
+  debug ("New pixmap : %p\n", pixmap);
   return pixmap;
 }
 
@@ -142,14 +142,13 @@ make_pixmap_from_mem (char *img)
 {
   GdkPixmap *p;
   GtkWidget *pixmap;
-  debug("Adding pixmap from memory : %p",img);
+  debug ("Adding pixmap from memory : %p", img);
   p = gdk_pixmap_colormap_create_from_xpm_d (0,
-    gdk_colormap_get_system (), NULL,
-    NULL, &img
-  );
-  debug("Done gdk bit");
+					     gdk_colormap_get_system (), NULL,
+					     NULL, &img);
+  debug ("Done gdk bit");
   pixmap = gtk_pixmap_new (p, 0);
-  debug("created pixmap");
+  debug ("created pixmap");
 
   return pixmap;
 }
@@ -184,48 +183,48 @@ cr_picture (void)
 GtkWidget *
 cr_button (void)
 {
-char *label;
-char *image;
-GtkLabel *l = 0;
-GtkButton *b;
-GtkVBox *v;
-GtkWidget *pixmap = 0;
+  char *label;
+  char *image;
+  GtkLabel *l = 0;
+  GtkButton *b;
+  GtkVBox *v;
+  GtkWidget *pixmap = 0;
 
   label = find_param ("*LABEL");
   image = find_param ("*IMAGE");
 
-  b = (GtkButton *)gtk_button_new ();
-  v = (GtkVBox *)gtk_vbox_new (0, 3);
-  gtk_container_add (GTK_CONTAINER (b), GTK_WIDGET(v));
+  b = (GtkButton *) gtk_button_new ();
+  v = (GtkVBox *) gtk_vbox_new (0, 3);
+  gtk_container_add (GTK_CONTAINER (b), GTK_WIDGET (v));
 
 
   if (label)
-  {
-    if (strlen (label))
-	  {
-	    l = (GtkLabel *)gtk_label_new (label);
-	    gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET(l));
-	    gtk_widget_show (GTK_WIDGET(l));
-	    gtk_object_set_data(GTK_OBJECT(b),"LABEL",l);
-	  }
-  }
+    {
+      if (strlen (label))
+	{
+	  l = (GtkLabel *) gtk_label_new (label);
+	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (l));
+	  gtk_widget_show (GTK_WIDGET (l));
+	  gtk_object_set_data (GTK_OBJECT (b), "LABEL", l);
+	}
+    }
 
   if (image)
-  {
-    if (strlen (image))
-	  {
-	    pixmap = make_pixmap_gw (image);
-	    gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET(pixmap));
-	    gtk_widget_show (pixmap);
-	    gtk_object_set_data(GTK_OBJECT(b),"IMAGE",image);
-	  }
-  }
-  gtk_widget_show (GTK_WIDGET(v));		/* Vbox */
-  gtk_widget_show (GTK_WIDGET(b));		/* Button itself.. */
+    {
+      if (strlen (image))
+	{
+	  pixmap = make_pixmap_gw (image);
+	  gtk_container_add (GTK_CONTAINER (v), GTK_WIDGET (pixmap));
+	  gtk_widget_show (pixmap);
+	  gtk_object_set_data (GTK_OBJECT (b), "IMAGE", image);
+	}
+    }
+  gtk_widget_show (GTK_WIDGET (v));	/* Vbox */
+  gtk_widget_show (GTK_WIDGET (b));	/* Button itself.. */
 
-  add_signal_clicked ((GtkWidget *)b, 0);
-  add_signal_grab_focus ((GtkWidget *)b, 0);
-  return GTK_WIDGET(b);
+  add_signal_clicked ((GtkWidget *) b, 0);
+  add_signal_grab_focus ((GtkWidget *) b, 0);
+  return GTK_WIDGET (b);
 }
 
 
@@ -237,13 +236,13 @@ GtkWidget *pixmap = 0;
 GtkWidget *
 cr_radio (void)
 {
-int a;
-char buff[40];
-char *ptr;
-int n;
-GSList *btn_grp;
-GtkHBox *hbox;
-GtkWidget *btn;
+  int a;
+  char buff[40];
+  char *ptr;
+  int n;
+  GSList *btn_grp;
+  GtkHBox *hbox;
+  GtkWidget *btn;
 /*
  Config will contain
    Num = Number of radio buttons
@@ -251,10 +250,10 @@ GtkWidget *btn;
    V1..VNum  = Values
 */
 
-  n = (int)find_param ("NUM");
+  n = (int) find_param ("NUM");
   debug ("Radio group with %d buttons\n", n);
   btn_grp = NULL;
-  hbox = (GtkHBox *)gtk_hbox_new (FALSE, 5);
+  hbox = (GtkHBox *) gtk_hbox_new (FALSE, 5);
   for (a = 0; a < n; a++)
     {
       sprintf (buff, "L%d", a + 1);
@@ -263,7 +262,7 @@ GtkWidget *btn;
       debug ("   %s\n", ptr);
 
       btn = gtk_radio_button_new_with_label (btn_grp, ptr);
-      btn_grp = (GSList *)gtk_radio_button_group (GTK_RADIO_BUTTON(btn));
+      btn_grp = (GSList *) gtk_radio_button_group (GTK_RADIO_BUTTON (btn));
       gtk_box_pack_start (GTK_BOX (hbox), btn, TRUE, TRUE, 0);
       gtk_widget_show (btn);
       sprintf (buff, "V%d", a + 1);
@@ -279,10 +278,10 @@ GtkWidget *btn;
       add_signal_clicked (btn, 0);
       add_signal_grab_focus (btn, 0);
     }
-  gtk_widget_show (GTK_WIDGET(hbox));
+  gtk_widget_show (GTK_WIDGET (hbox));
   /* add_signal_clicked(hbox,0); */
-  add_signal_grab_focus ((GtkWidget *)hbox, 0);
-  return GTK_WIDGET(hbox);
+  add_signal_grab_focus ((GtkWidget *) hbox, 0);
+  return GTK_WIDGET (hbox);
 }
 
 /**
@@ -297,8 +296,8 @@ cr_textbox (void)
 {
   GtkWidget *entry;
   int maxchars;
-  debug("Making textbox");
-  maxchars = (int)find_param ("*MAXCHARS");
+  debug ("Making textbox");
+  maxchars = (int) find_param ("*MAXCHARS");
   if (maxchars)
     {
       entry = gtk_entry_new_with_max_length (maxchars);
@@ -307,7 +306,7 @@ cr_textbox (void)
     {
       entry = gtk_entry_new ();
     }
-  debug("Created textbox widget %p",entry);
+  debug ("Created textbox widget %p", entry);
   gtk_widget_show (entry);
   add_signal_changed (entry, 0);
   add_signal_grab_focus (entry, 0);
@@ -380,12 +379,12 @@ GtkWidget *
 cr_combo (void)
 {
   GtkCombo *combo;
-  combo = (GtkCombo *)gtk_combo_new ();
+  combo = (GtkCombo *) gtk_combo_new ();
   gtk_object_set_data (GTK_OBJECT (combo->entry), "Parent", combo);
-  gtk_widget_show (GTK_WIDGET(combo));
+  gtk_widget_show (GTK_WIDGET (combo));
   add_signal_changed (combo->entry, 0);
   add_signal_grab_focus (combo->entry, 0);
-  return (GtkWidget *)combo;
+  return (GtkWidget *) combo;
 }
 
 
@@ -395,45 +394,46 @@ cr_combo (void)
  * @return A pointer to the list.
  */
 GtkWidget *
-cr_list(void)
+cr_list (void)
 {
   GtkWidget *w;
-  GtkWidget *scroll; /* CList needs to be in a scrolled window.. */
+  GtkWidget *scroll;		/* CList needs to be in a scrolled window.. */
 
-    /*
-	 This is the list widget - eventually this
-	 may be extended to take in a screen record and
-	 convert it to a list
-	 but for now lets keep things simple....
-    */
-	debug("Making list\n");
-	scroll = gtk_scrolled_window_new (NULL, NULL);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
-	                         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  /*
+     This is the list widget - eventually this
+     may be extended to take in a screen record and
+     convert it to a list
+     but for now lets keep things simple....
+   */
+  debug ("Making list\n");
+  scroll = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
+				  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-	gtk_widget_show(scroll);
+  gtk_widget_show (scroll);
 
-	w=gtk_clist_new ( 1 ); /* 1 column for now.... */
-	gtk_clist_set_selection_mode(GTK_CLIST(w),GTK_SELECTION_SINGLE);
-	gtk_clist_set_shadow_type(GTK_CLIST(w),GTK_SHADOW_IN);
+  w = gtk_clist_new (1);	/* 1 column for now.... */
+  gtk_clist_set_selection_mode (GTK_CLIST (w), GTK_SELECTION_SINGLE);
+  gtk_clist_set_shadow_type (GTK_CLIST (w), GTK_SHADOW_IN);
 
-	gtk_container_add(GTK_CONTAINER(scroll), GTK_WIDGET(w));
+  gtk_container_add (GTK_CONTAINER (scroll), GTK_WIDGET (w));
 
 
-	/* We don't want any titles displayed... */
-	gtk_clist_column_titles_hide(GTK_CLIST(w));
+  /* We don't want any titles displayed... */
+  gtk_clist_column_titles_hide (GTK_CLIST (w));
 
-	gtk_clist_set_column_width (GTK_CLIST(w), 0, (widget_next_size-2)*XWIDTH);
+  gtk_clist_set_column_width (GTK_CLIST (w), 0,
+			      (widget_next_size - 2) * XWIDTH);
 
-	gtk_object_set_data (GTK_OBJECT (w), "Parent",scroll);
-	gtk_object_set_data (GTK_OBJECT (scroll), "Child",w);
-	gtk_widget_show (w);
+  gtk_object_set_data (GTK_OBJECT (w), "Parent", scroll);
+  gtk_object_set_data (GTK_OBJECT (scroll), "Child", w);
+  gtk_widget_show (w);
 
-	add_signal_select_row(w,0);
-	add_signal_grab_focus (w, 0);
-	debug("Made list w=%p",w);
-	gtk_widget_set_sensitive (w, 0);
-return scroll;
+  add_signal_select_row (w, 0);
+  add_signal_grab_focus (w, 0);
+  debug ("Made list w=%p", w);
+  gtk_widget_set_sensitive (w, 0);
+  return scroll;
 }
 
 
@@ -446,13 +446,13 @@ GtkWidget *
 cr_calendar (void)
 {
   GtkWidget *cal;
-  debug("Making calendar...");
+  debug ("Making calendar...");
   cal = gtk_calendar_new ();
-  debug("showing");
+  debug ("showing");
   gtk_widget_show (cal);
   add_signal_changed (cal, 0);
   add_signal_grab_focus (cal, 0);
-  debug("added signals");
+  debug ("added signals");
   return cal;
 }
 
@@ -469,27 +469,30 @@ GtkWidget *
 cr_scrollbar (void)
 {
   GtkWidget *sb;
-int x,y;
-  
-  x = (int)find_param ("*WIDTH");
-  y = (int)find_param ("*HEIGHT");
+  int x, y;
 
-  if (x==0&&y==0) x=3;
+  x = (int) find_param ("*WIDTH");
+  y = (int) find_param ("*HEIGHT");
 
-  if (y>x)
-  {
-	/* Its vertical */
-  	sb = gtk_vscrollbar_new (0);
+  if (x == 0 && y == 0)
+    x = 3;
 
-  } else {
-  	sb = gtk_hscrollbar_new (0);
-	/* Its horizontal */
-  }
-  debug("showing");
+  if (y > x)
+    {
+      /* Its vertical */
+      sb = gtk_vscrollbar_new (0);
+
+    }
+  else
+    {
+      sb = gtk_hscrollbar_new (0);
+      /* Its horizontal */
+    }
+  debug ("showing");
   gtk_widget_show (sb);
   add_signal_changed (sb, 0);
   add_signal_grab_focus (sb, 0);
-  debug("added signals");
+  debug ("added signals");
   return sb;
 }
 

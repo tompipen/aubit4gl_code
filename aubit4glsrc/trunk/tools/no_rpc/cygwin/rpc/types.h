@@ -44,11 +44,11 @@
 #	define NULL 0
 #endif
 
-extern char *malloc();
+extern char *malloc ();
 #define mem_alloc(bsize)	malloc(bsize)
 #define mem_free(ptr, bsize)	free(ptr)
 
-#ifndef makedev /* ie, we haven't already included it */
+#ifndef makedev			/* ie, we haven't already included it */
 #include <sys/types.h>
 #endif
 #ifdef __CYGWIN32__

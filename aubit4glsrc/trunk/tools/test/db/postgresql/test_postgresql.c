@@ -14,7 +14,7 @@
 #include "../connection_suite.h"
 
 #ifndef WIN32
-	#include <dlfcn.h>
+#include <dlfcn.h>
 #endif
 
 
@@ -43,27 +43,28 @@ void setErrorMessage(char  *_errorMessage)
  * It should go to a separate module when we have several suites to
  * database(s) connection.
  */
-int main(void)
+int
+main (void)
 {
-  int nf; 
-  Suite *s = makeConnectionSuite(); 
+  int nf;
+  Suite *s = makeConnectionSuite ();
 
-  SRunner *sr = srunner_create(s); 
+  SRunner *sr = srunner_create (s);
   //srunner_add_suite(sr,makeDdlSuite());
   //srunner_add_suite(sr,makeDmlSuite());
-  srunner_set_fork_status (sr, CK_NOFORK); 
+  srunner_set_fork_status (sr, CK_NOFORK);
 
   /* Load the postgresql connector dynamic library */
-  if (A4GLSQL_loadConnector("pg") == 0)
-  {
-    printf("Cant load the SQL library\n");
-    exit(1);
-  }
+  if (A4GLSQL_loadConnector ("pg") == 0)
+    {
+      printf ("Cant load the SQL library\n");
+      exit (1);
+    }
 
-  srunner_run_all (sr, CK_VERBOSE); 
-  nf = srunner_ntests_failed(sr); 
-  srunner_free(sr); 
-  suite_free(s); 
+  srunner_run_all (sr, CK_VERBOSE);
+  nf = srunner_ntests_failed (sr);
+  srunner_free (sr);
+  suite_free (s);
 
   //return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 

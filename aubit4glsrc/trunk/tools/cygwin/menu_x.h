@@ -46,69 +46,76 @@ bool_t xdr_menu_list();
 
 
 #ifdef __MINGW32__
-	#include <rpc.h>
+#include <rpc.h>
 
-	typedef	char *	caddr_t;
-	#include "../../tools/no_rpc/cygwin/rpc/xdr.h"
+typedef char *caddr_t;
+#include "../../tools/no_rpc/cygwin/rpc/xdr.h"
 
 #else
-	#include <rpc/rpc.h>
+#include <rpc/rpc.h>
 #endif
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 
-struct menu_option_item {
-	char *id;
-	char *caption;
-	char *key_list;
-	char *image;
-	int checked;
-	int align;
-	int color;
-	char *submenu_id;
-};
-typedef struct menu_option_item menu_option_item;
+  struct menu_option_item
+  {
+    char *id;
+    char *caption;
+    char *key_list;
+    char *image;
+    int checked;
+    int align;
+    int color;
+    char *submenu_id;
+  };
+  typedef struct menu_option_item menu_option_item;
 
-struct menu {
-	char *id;
-	struct {
-		u_int options_len;
-		menu_option_item *options_val;
-	} options;
-};
-typedef struct menu menu;
+  struct menu
+  {
+    char *id;
+    struct
+    {
+      u_int options_len;
+      menu_option_item *options_val;
+    }
+    options;
+  };
+  typedef struct menu menu;
 
-struct menu_list {
-	struct {
-		u_int menus_len;
-		menu *menus_val;
-	} menus;
-};
-typedef struct menu_list menu_list;
+  struct menu_list
+  {
+    struct
+    {
+      u_int menus_len;
+      menu *menus_val;
+    }
+    menus;
+  };
+  typedef struct menu_list menu_list;
 
 /* the xdr functions */
 
 #if defined(__STDC__) || defined(__cplusplus)
-extern  bool_t xdr_menu_option_item (XDR *, menu_option_item*);
-extern  bool_t xdr_menu (XDR *, menu*);
-extern  bool_t xdr_menu_list (XDR *, menu_list*);
+  extern bool_t xdr_menu_option_item (XDR *, menu_option_item *);
+  extern bool_t xdr_menu (XDR *, menu *);
+  extern bool_t xdr_menu_list (XDR *, menu_list *);
 
-#else /* K&R C */
-extern bool_t xdr_menu_option_item ();
-extern bool_t xdr_menu ();
-extern bool_t xdr_menu_list ();
+#else				/* K&R C */
+  extern bool_t xdr_menu_option_item ();
+  extern bool_t xdr_menu ();
+  extern bool_t xdr_menu_list ();
 
-#endif /* K&R C */
+#endif				/* K&R C */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* !_MENU_X_H_RPCGEN */
+#endif				/* !_MENU_X_H_RPCGEN */
 
 #endif
-

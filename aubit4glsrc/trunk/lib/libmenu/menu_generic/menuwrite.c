@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.9 2003-05-04 08:49:32 mikeaubury Exp $
+# $Id: menuwrite.c,v 1.10 2003-05-12 14:24:21 mikeaubury Exp $
 #*/
 
 /**
@@ -51,7 +51,7 @@
 =====================================================================
 */
 
-extern int as_c; /* compile menu to C code, not as standalone resource file */
+extern int as_c;		/* compile menu to C code, not as standalone resource file */
 int scr = 0;
 int cmaxcol = 0;
 int cmaxline = 0;
@@ -73,8 +73,8 @@ struct menu_list the_menus;
 struct struct_scr_field *fld;
 
 char *chk_alias (char *s);
-FILE *fxx=0;
-FILE *fyy=0;
+FILE *fxx = 0;
+FILE *fyy = 0;
 
 /*
 =====================================================================
@@ -104,7 +104,7 @@ error_with (char *s, char *a, char *b)
     a = z;
   if (b == 0)
     b = z;
-   printf (s, a, b);
+  printf (s, a, b);
 
   debug ("\n");
   exit (8);
@@ -119,12 +119,12 @@ error_with (char *s, char *a, char *b)
 void
 write_menu (void)
 {
-char 		fname[132];
-char 		fname2[132];
-int 		a;
-menu_list *	ptr;
+  char fname[132];
+  char fname2[132];
+  int a;
+  menu_list *ptr;
 
-  ptr=&the_menus;
+  ptr = &the_menus;
   strcpy (fname, outputfilename);
   strcat (fname, acl_getenv ("A4GL_MNU_EXT"));
 
@@ -133,58 +133,71 @@ menu_list *	ptr;
 
 
 
-  debug("has %d menus\n",the_menus.menus.menus_len);
+  debug ("has %d menus\n", the_menus.menus.menus_len);
 
-  debug("calling write_data_to_file\n",the_menus.menus.menus_len);
+  debug ("calling write_data_to_file\n", the_menus.menus.menus_len);
 
-  a=write_data_to_file("menu_list",&the_menus,fname);
+  a = write_data_to_file ("menu_list", &the_menus, fname);
 
-	debug ("returned from write_data_to_file()");
+  debug ("returned from write_data_to_file()");
 
-	if (!a) {
-		debug("*** Write FAILED ***\n");
-		error_with("Unable to write data\n",0,0);
-	}
-
-
-//	xdr_destroy(&xdrp);
-	if (fxx) {
-		//what is this closing anyway?
-		fclose(fxx);
+  if (!a)
+    {
+      debug ("*** Write FAILED ***\n");
+      error_with ("Unable to write data\n", 0, 0);
     }
 
-	if (as_c) 
-	/* compile menu to C code, not as standalone resource file */
+
+//      xdr_destroy(&xdrp);
+  if (fxx)
+    {
+      //what is this closing anyway?
+      fclose (fxx);
+    }
+
+  if (as_c)
+    /* compile menu to C code, not as standalone resource file */
+    {
+      int cnt = 0;
+      int a;
+      debug ("As C\n");
+      fxx = fopen (fname, "r");
+      if (fxx == 0)
 	{
-		int cnt=0;
-		int a;
-		debug("As C\n");
-		fxx=fopen(fname,"r");
-		if (fxx==0) {
-			error_with("Unable to read compiled form (%s)\n",fname,0);
-		}
-		fyy=fopen(fname2,"w");
-		if (fyy==0) {
-			error_with("Unable to open file for C code (%s)\n",fname2,0);
-		}
-		fprintf(fyy,"char compiled_menu_%s[]={\n",outputfilename);
-
-		while (!feof(fxx)) {
-			a=fgetc(fxx);
-			if (feof(fxx)) break;
-			if (cnt>0) fprintf(fyy,",");
-			if (cnt%16==0&&cnt) {fprintf(fyy,"\n");}
-			if (a==-1) {break;}
-			fprintf(fyy,"0x%02x",a);
-			cnt++;
-		}
-		fprintf(fyy,"};\n");
-		fclose(fxx);
-		fclose(fyy);
-		/* unlink(fname); */
+	  error_with ("Unable to read compiled form (%s)\n", fname, 0);
 	}
+      fyy = fopen (fname2, "w");
+      if (fyy == 0)
+	{
+	  error_with ("Unable to open file for C code (%s)\n", fname2, 0);
+	}
+      fprintf (fyy, "char compiled_menu_%s[]={\n", outputfilename);
 
-	debug ("Exiting write_menu()");
+      while (!feof (fxx))
+	{
+	  a = fgetc (fxx);
+	  if (feof (fxx))
+	    break;
+	  if (cnt > 0)
+	    fprintf (fyy, ",");
+	  if (cnt % 16 == 0 && cnt)
+	    {
+	      fprintf (fyy, "\n");
+	    }
+	  if (a == -1)
+	    {
+	      break;
+	    }
+	  fprintf (fyy, "0x%02x", a);
+	  cnt++;
+	}
+      fprintf (fyy, "};\n");
+      fclose (fxx);
+      fclose (fyy);
+      /* unlink(fname); */
+    }
+
+  debug ("Exiting write_menu()");
 
 }
 

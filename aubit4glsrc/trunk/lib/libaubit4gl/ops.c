@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.12 2003-04-28 12:29:45 mikeaubury Exp $
+# $Id: ops.c,v 1.13 2003-05-12 14:24:17 mikeaubury Exp $
 #
 */
 
@@ -57,32 +57,51 @@
 =====================================================================
 */
 
-void int_int_ops(int op) ;
+void int_int_ops (int op);
 #ifdef OLD_INCL
-	void push_long(long a);
-	void push_int(int a);
+void push_long (long a);
+void push_int (int a);
 #endif
-void add_default_operations(void) ;
-void dt_in_ops(int op);
-void in_dt_ops(int op);
-void decode_datetime(struct A4GLSQL_dtime *d, int *data);
-void dt_dt_ops(int op);
-int ctodt                (void *a, void *b, int size);
-int ctoint               (void *a, void *b, int size);
+void add_default_operations (void);
+void dt_in_ops (int op);
+void in_dt_ops (int op);
+void decode_datetime (struct A4GLSQL_dtime *d, int *data);
+void dt_dt_ops (int op);
+int ctodt (void *a, void *b, int size);
+int ctoint (void *a, void *b, int size);
 
 
-char * display_int(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_smint(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_float(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_smfloat(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_date(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_char(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_decimal(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_money(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_dtime(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_interval(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_byte(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
-char * display_text(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) ;
+char *display_int (void *ptr, int size, int size_c,
+		   struct struct_scr_field *field_details, int display_type);
+char *display_smint (void *ptr, int size, int size_c,
+		     struct struct_scr_field *field_details,
+		     int display_type);
+char *display_float (void *ptr, int size, int size_c,
+		     struct struct_scr_field *field_details,
+		     int display_type);
+char *display_smfloat (void *ptr, int size, int size_c,
+		       struct struct_scr_field *field_details,
+		       int display_type);
+char *display_date (void *ptr, int size, int size_c,
+		    struct struct_scr_field *field_details, int display_type);
+char *display_char (void *ptr, int size, int size_c,
+		    struct struct_scr_field *field_details, int display_type);
+char *display_decimal (void *ptr, int size, int size_c,
+		       struct struct_scr_field *field_details,
+		       int display_type);
+char *display_money (void *ptr, int size, int size_c,
+		     struct struct_scr_field *field_details,
+		     int display_type);
+char *display_dtime (void *ptr, int size, int size_c,
+		     struct struct_scr_field *field_details,
+		     int display_type);
+char *display_interval (void *ptr, int size, int size_c,
+			struct struct_scr_field *field_details,
+			int display_type);
+char *display_byte (void *ptr, int size, int size_c,
+		    struct struct_scr_field *field_details, int display_type);
+char *display_text (void *ptr, int size, int size_c,
+		    struct struct_scr_field *field_details, int display_type);
 
 /*
 =====================================================================
@@ -95,33 +114,33 @@ char * display_text(void *ptr,int size,int size_c,struct struct_scr_field *field
  * @return
  */
 void
-dt_in_ops(int op)
+dt_in_ops (int op)
 {
-struct A4GLSQL_dtime dt;
-struct ival in;
-int ival_data[10];
-	
-	#ifdef DEBUG
-		debug("In dt_in_ops");
-    #endif
-	//printf("DTIN Here\n");
-	//fflush(stdout);
-	pop_param(&in,DTYPE_INTERVAL,-1);
-	pop_param(&dt,DTYPE_DTIME,-1);
-	//printf("DTIN Here2\n");
-	//fflush(stdout);
+  struct A4GLSQL_dtime dt;
+  struct ival in;
+  int ival_data[10];
 
-	decode_interval (&in, &ival_data[0]);
-	//printf("Interval : Y=%d\n",ival_data[0]);
-	//printf("Interval : M=%d\n",ival_data[1]);
-	
-	//printf("Interval : D=%d\n",ival_data[2]);
-	//printf("Interval : H=%d\n",ival_data[3]);
-	//printf("Interval : M=%d\n",ival_data[4]);
-	//printf("Interval : S=%d\n",ival_data[5]);
-	//printf("Interval : F=%d\n",ival_data[6]);
-	fflush(stdout);
-	push_int(0);
+#ifdef DEBUG
+  debug ("In dt_in_ops");
+#endif
+  //printf("DTIN Here\n");
+  //fflush(stdout);
+  pop_param (&in, DTYPE_INTERVAL, -1);
+  pop_param (&dt, DTYPE_DTIME, -1);
+  //printf("DTIN Here2\n");
+  //fflush(stdout);
+
+  decode_interval (&in, &ival_data[0]);
+  //printf("Interval : Y=%d\n",ival_data[0]);
+  //printf("Interval : M=%d\n",ival_data[1]);
+
+  //printf("Interval : D=%d\n",ival_data[2]);
+  //printf("Interval : H=%d\n",ival_data[3]);
+  //printf("Interval : M=%d\n",ival_data[4]);
+  //printf("Interval : S=%d\n",ival_data[5]);
+  //printf("Interval : F=%d\n",ival_data[6]);
+  fflush (stdout);
+  push_int (0);
 }
 
 
@@ -132,43 +151,44 @@ int ival_data[10];
  * @return
  */
 void
-in_dt_ops(int op)
+in_dt_ops (int op)
 {
-struct A4GLSQL_dtime dt;
-struct ival in;
-int ival_data[10];
-int dtime_data[10];
-int d1;
-int s1;
-void *ptr1;
-struct ival *pi;
-struct A4GLSQL_dtime *pd;
-int ok=0;
-char buff[256];
-int start;
-char *ptr;
+  struct A4GLSQL_dtime dt;
+  struct ival in;
+  int ival_data[10];
+  int dtime_data[10];
+  int d1;
+  int s1;
+  void *ptr1;
+  struct ival *pi;
+  struct A4GLSQL_dtime *pd;
+  int ok = 0;
+  char buff[256];
+  int start;
+  char *ptr;
 
-	get_top_of_stack (2, &d1, &s1, (void **) &pd);
+  get_top_of_stack (2, &d1, &s1, (void **) &pd);
 
-	get_top_of_stack (1, &d1, &s1, (void **) &pi);
-
-
-	if ((d1&DTYPE_MASK)!=DTYPE_INTERVAL) {
-		printf("Confused... %d != %d\n",d1&DTYPE_MASK,DTYPE_INTERVAL);
-	}
+  get_top_of_stack (1, &d1, &s1, (void **) &pi);
 
 
-	in.stime=pi->stime;
-	in.ltime=pi->ltime;
-	dt.stime=pd->stime;
-	dt.ltime=pd->ltime;
-	pop_var2(&in,DTYPE_INTERVAL,in.stime*16+in.ltime);
+  if ((d1 & DTYPE_MASK) != DTYPE_INTERVAL)
+    {
+      printf ("Confused... %d != %d\n", d1 & DTYPE_MASK, DTYPE_INTERVAL);
+    }
 
 
-	pop_param(&dt,DTYPE_DTIME,dt.stime*16+dt.ltime);
+  in.stime = pi->stime;
+  in.ltime = pi->ltime;
+  dt.stime = pd->stime;
+  dt.ltime = pd->ltime;
+  pop_var2 (&in, DTYPE_INTERVAL, in.stime * 16 + in.ltime);
 
 
-	decode_interval (&in, &ival_data[0]);
+  pop_param (&dt, DTYPE_DTIME, dt.stime * 16 + dt.ltime);
+
+
+  decode_interval (&in, &ival_data[0]);
 /*
 	//printf("\n\nInterval : Y=%d\n",ival_data[0]);
 	//printf("Interval : M=%d\n",ival_data[1]);
@@ -179,7 +199,7 @@ char *ptr;
 	//printf("Interval : F=%d\n",ival_data[6]);
 */
 
-	decode_datetime (&dt, &dtime_data[0]);
+  decode_datetime (&dt, &dtime_data[0]);
 
 /*
 	printf("Datetime : Y=%d\n",dtime_data[0]);
@@ -191,118 +211,184 @@ char *ptr;
 	printf("Datetime : F=%d\n",dtime_data[6]);
 */
 
-	switch(op) {
-		case OP_ADD:
-			// Fractions
-			dtime_data[6]+=ival_data[6];
-			if (dtime_data[6]>99999) {
-				dtime_data[5]++;
-				dtime_data[6]-=100000;
-			}
-
-			// Seconds
-			dtime_data[5]+=ival_data[5];
-			if (dtime_data[5]>60) { dtime_data[4]++; dtime_data[5]-=60; }
-
-			// Minutes
-			dtime_data[4]+=ival_data[4];
-			if (dtime_data[4]>60) { dtime_data[3]++; dtime_data[4]-=60; }
-
-			// Hours
-			dtime_data[3]+=ival_data[3];
-			if (dtime_data[3]>24) { dtime_data[2]++; dtime_data[3]-=24; }
-
-			// Days
-			dtime_data[2]+=ival_data[2];
-			if (dtime_data[2]>30) { dtime_data[1]++; dtime_data[2]-=30; /** @todo Fix this **/ }
-
-			// Months
-			dtime_data[1]+=ival_data[1];
-			if (dtime_data[1]>12) { dtime_data[0]++; dtime_data[1]-=12; }
-
-			// Years
-			dtime_data[0]+=ival_data[0];
-			ok=1;
-			break;
-
-		case OP_SUB:
-			// Fractions
-			dtime_data[6]-=ival_data[6];
-			if (dtime_data[6]<0) {
-				dtime_data[5]--;
-				dtime_data[6]+=100000;
-				//printf("Carry F\n");
-			}
-
-			// Seconds
-			dtime_data[5]-=ival_data[5];
-			if (dtime_data[5]<0) { dtime_data[4]--; dtime_data[5]+=60; /* printf("Carry S\n"); */ }
-
-			// Minutes
-			dtime_data[4]-=ival_data[4];
-			if (dtime_data[4]<0) { dtime_data[3]--; dtime_data[4]+=60; /* printf("Carry M\n"); */ }
-
-			// Hours
-			dtime_data[3]-=ival_data[3];
-			if (dtime_data[3]<0) { dtime_data[2]--; dtime_data[3]+=24; /* printf("Carry H\n"); */}
-
-			if (dt.stime<=3) {
-			// Days
-			dtime_data[2]-=ival_data[2];
-			if (dtime_data[2]<=1) { dtime_data[1]--; dtime_data[2]+=30; /** @todo Fix this **/ /*printf("Carry D\n"); */ }
-			}
-
-			if (dt.stime<=2) {
-				// Months
-				dtime_data[1]-=ival_data[1];
-				if (dtime_data[1]<=1) { dtime_data[0]--; dtime_data[1]+=12; /*printf("Carry M\n"); */}
-			}
-
-			if (dt.stime<=1) {
-				// Years
-				dtime_data[0]-=ival_data[0];
-			}
-
-
-			ok=1;
-			break;
+  switch (op)
+    {
+    case OP_ADD:
+      // Fractions
+      dtime_data[6] += ival_data[6];
+      if (dtime_data[6] > 99999)
+	{
+	  dtime_data[5]++;
+	  dtime_data[6] -= 100000;
 	}
 
-	if (ok) {
-		sprintf(buff,"%04d-%02d-%02d %02d:%02d:%02d.%05d",
-				dtime_data[0],
-				dtime_data[1],
-				dtime_data[2],
-				dtime_data[3],
-				dtime_data[4],
-				dtime_data[5],
-				dtime_data[6]);
+      // Seconds
+      dtime_data[5] += ival_data[5];
+      if (dtime_data[5] > 60)
+	{
+	  dtime_data[4]++;
+	  dtime_data[5] -= 60;
+	}
 
-		start=0;
-		if (dtime_data[0]>0&&!start) start=1;
-		if (dtime_data[1]>0&&!start) start=2;
-		if (dtime_data[2]>0&&!start) start=3;
-		if (dtime_data[3]>0&&!start) start=4;
-		if (dtime_data[4]>0&&!start) start=4;
-		if (dtime_data[5]>0&&!start) start=4;
-		if (dtime_data[6]>0&&!start) start=4; 
+      // Minutes
+      dtime_data[4] += ival_data[4];
+      if (dtime_data[4] > 60)
+	{
+	  dtime_data[3]++;
+	  dtime_data[4] -= 60;
+	}
+
+      // Hours
+      dtime_data[3] += ival_data[3];
+      if (dtime_data[3] > 24)
+	{
+	  dtime_data[2]++;
+	  dtime_data[3] -= 24;
+	}
+
+      // Days
+      dtime_data[2] += ival_data[2];
+      if (dtime_data[2] > 30)
+	{
+	  dtime_data[1]++;
+	  dtime_data[2] -= 30;							    /** @todo Fix this **/
+	}
+
+      // Months
+      dtime_data[1] += ival_data[1];
+      if (dtime_data[1] > 12)
+	{
+	  dtime_data[0]++;
+	  dtime_data[1] -= 12;
+	}
+
+      // Years
+      dtime_data[0] += ival_data[0];
+      ok = 1;
+      break;
+
+    case OP_SUB:
+      // Fractions
+      dtime_data[6] -= ival_data[6];
+      if (dtime_data[6] < 0)
+	{
+	  dtime_data[5]--;
+	  dtime_data[6] += 100000;
+	  //printf("Carry F\n");
+	}
+
+      // Seconds
+      dtime_data[5] -= ival_data[5];
+      if (dtime_data[5] < 0)
+	{
+	  dtime_data[4]--;
+	  dtime_data[5] += 60;	/* printf("Carry S\n"); */
+	}
+
+      // Minutes
+      dtime_data[4] -= ival_data[4];
+      if (dtime_data[4] < 0)
+	{
+	  dtime_data[3]--;
+	  dtime_data[4] += 60;	/* printf("Carry M\n"); */
+	}
+
+      // Hours
+      dtime_data[3] -= ival_data[3];
+      if (dtime_data[3] < 0)
+	{
+	  dtime_data[2]--;
+	  dtime_data[3] += 24;	/* printf("Carry H\n"); */
+	}
+
+      if (dt.stime <= 3)
+	{
+	  // Days
+	  dtime_data[2] -= ival_data[2];
+	  if (dtime_data[2] <= 1)
+	    {
+	      dtime_data[1]--;
+	      dtime_data[2] += 30;	/** @todo Fix this **//*printf("Carry D\n"); */
+	    }
+	}
+
+      if (dt.stime <= 2)
+	{
+	  // Months
+	  dtime_data[1] -= ival_data[1];
+	  if (dtime_data[1] <= 1)
+	    {
+	      dtime_data[0]--;
+	      dtime_data[1] += 12;	/*printf("Carry M\n"); */
+	    }
+	}
+
+      if (dt.stime <= 1)
+	{
+	  // Years
+	  dtime_data[0] -= ival_data[0];
+	}
 
 
-		//0123456789012345678901234
-		//0000-MM-30 23:57:10.00000
+      ok = 1;
+      break;
+    }
 
-		switch (start) {
-			case 1: ptr=&buff[0];break;
-			case 2: ptr=&buff[5];break;
-			case 3: ptr=&buff[8];break;
-			case 4: ptr=&buff[11];break;
-			case 5: ptr=&buff[14];break;
-			case 6: ptr=&buff[17];break;
-			case 7: ptr=&buff[18];break;
-		}
-			
-		dt.stime=start;
-		//dt.ltime=11;
+  if (ok)
+    {
+      sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%05d",
+	       dtime_data[0],
+	       dtime_data[1],
+	       dtime_data[2],
+	       dtime_data[3], dtime_data[4], dtime_data[5], dtime_data[6]);
+
+      start = 0;
+      if (dtime_data[0] > 0 && !start)
+	start = 1;
+      if (dtime_data[1] > 0 && !start)
+	start = 2;
+      if (dtime_data[2] > 0 && !start)
+	start = 3;
+      if (dtime_data[3] > 0 && !start)
+	start = 4;
+      if (dtime_data[4] > 0 && !start)
+	start = 4;
+      if (dtime_data[5] > 0 && !start)
+	start = 4;
+      if (dtime_data[6] > 0 && !start)
+	start = 4;
+
+
+      //0123456789012345678901234
+      //0000-MM-30 23:57:10.00000
+
+      switch (start)
+	{
+	case 1:
+	  ptr = &buff[0];
+	  break;
+	case 2:
+	  ptr = &buff[5];
+	  break;
+	case 3:
+	  ptr = &buff[8];
+	  break;
+	case 4:
+	  ptr = &buff[11];
+	  break;
+	case 5:
+	  ptr = &buff[14];
+	  break;
+	case 6:
+	  ptr = &buff[17];
+	  break;
+	case 7:
+	  ptr = &buff[18];
+	  break;
+	}
+
+      dt.stime = start;
+      //dt.ltime=11;
 
 /*
 		switch(dt.ltime) {
@@ -315,15 +401,15 @@ char *ptr;
 		}
 */
 
-		ctodt(ptr,&dt,dt.stime*16+dt.ltime);
-	
-		push_dtime(&dt);
-		return;
-	}
+      ctodt (ptr, &dt, dt.stime * 16 + dt.ltime);
+
+      push_dtime (&dt);
+      return;
+    }
 
 
 
-	push_int(0);
+  push_int (0);
 }
 
 
@@ -333,53 +419,88 @@ char *ptr;
  * @return
  */
 void
-int_int_ops(int op) 
+int_int_ops (int op)
 {
-long a;
-long b;
-long c;
-long d;
-	
-	b=pop_long();
-	a=pop_long();
+  long a;
+  long b;
+  long c;
+  long d;
 
-    #ifdef DEBUG
-		debug("int_int_ops : %d %d %d",a,b,op);
-    #endif
+  b = pop_long ();
+  a = pop_long ();
 
-	switch (op) {
-		case OP_ADD: 			push_long(a+b); return;
-		case OP_SUB: 			push_long(a-b); return;
-		case OP_MULT: 			push_long(a*b); return;
+#ifdef DEBUG
+  debug ("int_int_ops : %d %d %d", a, b, op);
+#endif
+
+  switch (op)
+    {
+    case OP_ADD:
+      push_long (a + b);
+      return;
+    case OP_SUB:
+      push_long (a - b);
+      return;
+    case OP_MULT:
+      push_long (a * b);
+      return;
 
 
-		case OP_DIV:
-		if (a%b==0) {
-			push_long(a/b); return;
-		} else {
-			push_double((double)a/(double)b); return;
-		}
-
-		case OP_MOD: 			push_long(a%b); return;
-		case OP_POWER:
-			if (b==0) {push_long(1); return;}
-			if (b==1) {push_long(a); return;}
-			c=a;
-			for (d=1;d<=b;d++) c*=b;
-			push_long(c);
-			return;
-
-		case OP_LESS_THAN: 		push_int(a<b); return;
-		case OP_GREATER_THAN: 		push_int(a>b); return;
-		case OP_LESS_THAN_EQ: 		push_int(a<=b); return;
-		case OP_GREATER_THAN_EQ: 	push_int(a>=b); return;
-		case OP_EQUAL: 			push_int(a==b); return;
-		case OP_NOT_EQUAL: 		push_int(a!=b); return;
+    case OP_DIV:
+      if (a % b == 0)
+	{
+	  push_long (a / b);
+	  return;
+	}
+      else
+	{
+	  push_double ((double) a / (double) b);
+	  return;
 	}
 
-	exitwith("Unknown operation");
-	push_int(0);
-return ;
+    case OP_MOD:
+      push_long (a % b);
+      return;
+    case OP_POWER:
+      if (b == 0)
+	{
+	  push_long (1);
+	  return;
+	}
+      if (b == 1)
+	{
+	  push_long (a);
+	  return;
+	}
+      c = a;
+      for (d = 1; d <= b; d++)
+	c *= b;
+      push_long (c);
+      return;
+
+    case OP_LESS_THAN:
+      push_int (a < b);
+      return;
+    case OP_GREATER_THAN:
+      push_int (a > b);
+      return;
+    case OP_LESS_THAN_EQ:
+      push_int (a <= b);
+      return;
+    case OP_GREATER_THAN_EQ:
+      push_int (a >= b);
+      return;
+    case OP_EQUAL:
+      push_int (a == b);
+      return;
+    case OP_NOT_EQUAL:
+      push_int (a != b);
+      return;
+    }
+
+  exitwith ("Unknown operation");
+  push_int (0);
+  return;
 }
 
 
@@ -388,136 +509,171 @@ return ;
  *
  * @return
  */
-void in_in_ops(int op)
+void
+in_in_ops (int op)
 {
-struct ival in2;
-struct ival in1;
-int ival_data1[10];
-int ival_data2[10];
-int d1,d2;
-int s1,s2;
-void *ptr1;
-struct ival *pi1;
-struct ival *pi2;
-struct ival in;
-int ok=0;
-char buff[256];
-int start;
-char *ptr;
-int se1;
-int se2;
-double d_i1;
-double d_i2;
+  struct ival in2;
+  struct ival in1;
+  int ival_data1[10];
+  int ival_data2[10];
+  int d1, d2;
+  int s1, s2;
+  void *ptr1;
+  struct ival *pi1;
+  struct ival *pi2;
+  struct ival in;
+  int ok = 0;
+  char buff[256];
+  int start;
+  char *ptr;
+  int se1;
+  int se2;
+  double d_i1;
+  double d_i2;
 
 // d2 op d1
-	get_top_of_stack (2, &d2, &s2, (void **) &pi2);
-	get_top_of_stack (1, &d1, &s1, (void **) &pi1);
+  get_top_of_stack (2, &d2, &s2, (void **) &pi2);
+  get_top_of_stack (1, &d1, &s1, (void **) &pi1);
 
 
-	if ((d1&DTYPE_MASK)!=DTYPE_INTERVAL) {
-		printf("Confused... %d != %d\n",d1&DTYPE_MASK,DTYPE_INTERVAL);
+  if ((d1 & DTYPE_MASK) != DTYPE_INTERVAL)
+    {
+      printf ("Confused... %d != %d\n", d1 & DTYPE_MASK, DTYPE_INTERVAL);
+    }
+
+
+  se1 = pi1->stime & 0xf;
+  se2 = pi2->stime & 0xf;
+  se1 = 6;
+  se2 = 6;
+  if (se1 == 1 || se1 == 2)
+    {
+      se1 = 2;
+    }
+  if (se2 == 1 || se2 == 2)
+    {
+      se2 = 2;
+    }
+
+  if (se1 != se2)
+    {
+      exitwith ("Can't use interval YEAR-MONTH and DAY-FRACTION together");
+      return;
+    }
+
+
+  if (se1 == 2)
+    {
+      in1.stime = 0x82;		// MONTH(8)
+      in1.ltime = 2;		// MONTH
+      in2.stime = 0x82;
+      in2.ltime = 2;
+      in.stime = in1.stime;
+      in.ltime = in1.ltime;
+
+    }
+  else
+    {
+      in1.stime = 0x86;		// SECOND(8)
+      in1.ltime = 11;		// FRACTION(5)
+      in2.stime = 0x86;
+      in2.ltime = 11;
+      in.stime = in1.stime;
+      in.ltime = in1.ltime;
+    }
+
+  pop_param (&in1, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
+  pop_param (&in2, DTYPE_INTERVAL, in1.stime * 16 + in2.ltime);
+
+
+  decode_interval (&in1, &ival_data1[0]);
+  decode_interval (&in2, &ival_data2[0]);
+
+  if (se1 == 2)
+    {
+      d_i1 = (double) ival_data1[1];
+      d_i2 = (double) ival_data2[1];
+    }
+  else
+    {
+      double df1;
+      double df2;
+      d_i1 = (double) ival_data1[5];
+      d_i2 = (double) ival_data2[5];
+
+      df1 = (double) ival_data1[6];
+      df2 = (double) ival_data2[6];
+      df1 /= 100000.0;
+      df2 /= 100000.0;
+      d_i1 += df1;
+      d_i2 += df2;
+    }
+
+
+  switch (op)
+    {
+    case OP_ADD:
+      d_i1 = d_i2 + d_i1;
+    case OP_SUB:
+      d_i1 = d_i2 - d_i1;
+      if (se1 == 2)
+	{
+	  char buff[256];
+	  sprintf (buff, "%f", d_i1);
+	  acli_interval (buff, 0x822);
+	  return;
+	}
+      else
+	{
+	  char buff[256];
+	  sprintf (buff, "%f", d_i1);
+	  acli_interval (buff, 0x866);
+	  return;
 	}
 
 
-	se1=pi1->stime&0xf;
-	se2=pi2->stime&0xf;
-	se1=6;
-	se2=6;
-	if (se1==1||se1==2) { se1=2; }
-	if (se2==1||se2==2) { se2=2; }
 
-	if (se1!=se2) {
-		exitwith("Can't use interval YEAR-MONTH and DAY-FRACTION together");
-		return;
-	}
-	
-
-	if (se1==2) {
-		in1.stime=0x82; // MONTH(8)
-		in1.ltime=2;    // MONTH
-		in2.stime=0x82;
-		in2.ltime=2;
-		in.stime=in1.stime; in.ltime=in1.ltime;
-
-	} else {
-		in1.stime=0x86; // SECOND(8)
-		in1.ltime=11;   // FRACTION(5)
-		in2.stime=0x86;
-		in2.ltime=11;
-		in.stime=in1.stime; in.ltime=in1.ltime;
-	}
-
-	pop_param(&in1,DTYPE_INTERVAL,in1.stime*16+in2.ltime);
-	pop_param(&in2,DTYPE_INTERVAL,in1.stime*16+in2.ltime);
- 
-
-	decode_interval (&in1, &ival_data1[0]);
-	decode_interval (&in2, &ival_data2[0]);
-
-	if (se1==2) { 
-		d_i1=(double)ival_data1[1];
-		d_i2=(double)ival_data2[1];
-	} else {
-		double df1;
-		double df2;
-		d_i1=(double)ival_data1[5];
-		d_i2=(double)ival_data2[5];
-
-		df1=(double)ival_data1[6];
-		df2=(double)ival_data2[6];
-		df1/=100000.0;
-		df2/=100000.0;
-		d_i1+=df1;
-		d_i2+=df2;
-	}
+    case OP_MULT:		// Multiplying two Intervals ?
+      exitwith ("You can't multiply two intervals...");
+      return;
 
 
-	switch (op) {
-		case OP_ADD: d_i1=d_i2+d_i1;
-		case OP_SUB: d_i1=d_i2-d_i1;			
-			if (se1==2) {
-				char buff[256];
-				sprintf(buff,"%f",d_i1);
-				acli_interval(buff,0x822);
-				return;
-			} else {
-				char buff[256];
-				sprintf(buff,"%f",d_i1);
-				acli_interval(buff,0x866);
-				return;
-			}
-			
+    case OP_DIV:
+      d_i1 = d_i2 / d_i1;
+      push_double (d_i1);	// This should be a number - not an interval
+      return;
 
+    case OP_MOD:
+      exitwith ("You can't mod two intervals...");
+      return;
 
-		case OP_MULT: 	// Multiplying two Intervals ?
-			exitwith("You can't multiply two intervals...");
-			return;
+    case OP_POWER:
+      exitwith ("You can't raise the power of intervals...");
+      return;
 
+    case OP_LESS_THAN:
+      push_int (d_i2 < d_i1);
+      return;
+    case OP_GREATER_THAN:
+      push_int (d_i2 > d_i1);
+      return;
+    case OP_LESS_THAN_EQ:
+      push_int (d_i2 <= d_i1);
+      return;
+    case OP_GREATER_THAN_EQ:
+      push_int (d_i2 >= d_i1);
+      return;
+    case OP_EQUAL:
+      push_int (d_i2 == d_i1);
+      return;
+    case OP_NOT_EQUAL:
+      push_int (d_i2 != d_i1);
+      return;
+    }
 
-		case OP_DIV:
-			d_i1=d_i2/d_i1;
-			push_double(d_i1); // This should be a number - not an interval
-			return;
+  printf ("In in_in_ops.... op=%x d_i1=%f d_i2=%f\n", op, d_i1, d_i2);
 
-		case OP_MOD: 
-			exitwith("You can't mod two intervals...");
-			return;
-
-		case OP_POWER:
-			exitwith("You can't raise the power of intervals...");
-			return;
-
-		case OP_LESS_THAN: 		push_int(d_i2< d_i1); return;
-		case OP_GREATER_THAN: 		push_int(d_i2> d_i1); return;
-		case OP_LESS_THAN_EQ: 		push_int(d_i2<=d_i1); return;
-		case OP_GREATER_THAN_EQ: 	push_int(d_i2>=d_i1); return;
-		case OP_EQUAL: 			push_int(d_i2==d_i1); return;
-		case OP_NOT_EQUAL: 		push_int(d_i2!=d_i1); return;
-	}
-
-	printf("In in_in_ops.... op=%x d_i1=%f d_i2=%f\n",op,d_i1,d_i2);
-
-	assertion(1,"in_in - not implemented yet...");
+  assertion (1, "in_in - not implemented yet...");
 
 }
 
@@ -529,119 +685,143 @@ double d_i2;
  *
  * @return
  */
-void dt_dt_ops(int op)
+void
+dt_dt_ops (int op)
 {
-struct A4GLSQL_dtime dt2;
-struct A4GLSQL_dtime dt1;
-int dtime_data1[10];
-int dtime_data2[10];
-int d1,d2;
-int s1,s2;
-void *ptr1;
-struct A4GLSQL_dtime *pi;
-struct A4GLSQL_dtime *pd;
-struct ival in;
-int ok=0;
-char buff[256];
-int start;
-char *ptr;
-double d_d1;
-double d_d2;
+  struct A4GLSQL_dtime dt2;
+  struct A4GLSQL_dtime dt1;
+  int dtime_data1[10];
+  int dtime_data2[10];
+  int d1, d2;
+  int s1, s2;
+  void *ptr1;
+  struct A4GLSQL_dtime *pi;
+  struct A4GLSQL_dtime *pd;
+  struct ival in;
+  int ok = 0;
+  char buff[256];
+  int start;
+  char *ptr;
+  double d_d1;
+  double d_d2;
 
-if (op != (OP_SUB)) {
-	debug("Can only subtract datetimes...");
-	push_int(0);
-	return;
-}
+  if (op != (OP_SUB))
+    {
+      debug ("Can only subtract datetimes...");
+      push_int (0);
+      return;
+    }
 // d2 - d1
-	get_top_of_stack (2, &d1, &s1, (void **) &pd);
-	get_top_of_stack (1, &d2, &s2, (void **) &pi);
+  get_top_of_stack (2, &d1, &s1, (void **) &pd);
+  get_top_of_stack (1, &d2, &s2, (void **) &pi);
 
 
-	if ((d1&DTYPE_MASK)!=DTYPE_DTIME) {
-		printf("Confused... %d != %d\n",d1&DTYPE_MASK,DTYPE_DTIME);
-	}
+  if ((d1 & DTYPE_MASK) != DTYPE_DTIME)
+    {
+      printf ("Confused... %d != %d\n", d1 & DTYPE_MASK, DTYPE_DTIME);
+    }
 
 
-	dt1.stime=pi->stime;
-	dt1.ltime=pi->ltime;
+  dt1.stime = pi->stime;
+  dt1.ltime = pi->ltime;
 
-	dt2.stime=pd->stime;
-	dt2.ltime=pd->ltime;
+  dt2.stime = pd->stime;
+  dt2.ltime = pd->ltime;
 
-	pop_param(&dt1,DTYPE_DTIME,dt1.stime*16+dt1.ltime);
-	pop_param(&dt2,DTYPE_DTIME,dt2.stime*16+dt2.ltime);
+  pop_param (&dt1, DTYPE_DTIME, dt1.stime * 16 + dt1.ltime);
+  pop_param (&dt2, DTYPE_DTIME, dt2.stime * 16 + dt2.ltime);
 
 
-	decode_datetime (&dt1, &dtime_data1[0]);
-	decode_datetime (&dt2, &dtime_data2[0]);
+  decode_datetime (&dt1, &dtime_data1[0]);
+  decode_datetime (&dt2, &dtime_data2[0]);
 
-	debug("Dtime1=%d %d %d %d %d %d %d",
-			dtime_data1[0],
-			dtime_data1[1],
-			dtime_data1[2],
-			dtime_data1[3],
-			dtime_data1[4],
-			dtime_data1[5],
-			dtime_data1[6]
-);
+  debug ("Dtime1=%d %d %d %d %d %d %d",
+	 dtime_data1[0],
+	 dtime_data1[1],
+	 dtime_data1[2],
+	 dtime_data1[3], dtime_data1[4], dtime_data1[5], dtime_data1[6]);
 
-	debug("Dtime2=%d %d %d %d %d %d %d",
-			dtime_data2[0],
-			dtime_data2[1],
-			dtime_data2[2],
-			dtime_data2[3],
-			dtime_data2[4],
-			dtime_data2[5],
-			dtime_data2[6]
-);
+  debug ("Dtime2=%d %d %d %d %d %d %d",
+	 dtime_data2[0],
+	 dtime_data2[1],
+	 dtime_data2[2],
+	 dtime_data2[3], dtime_data2[4], dtime_data2[5], dtime_data2[6]);
 
 
 
-	dtime_data2[0]-=dtime_data1[0]; // Y
-	dtime_data2[1]-=dtime_data1[1]; //
-	dtime_data2[2]-=dtime_data1[2];
-	dtime_data2[3]-=dtime_data1[3];
-	dtime_data2[4]-=dtime_data1[4];
-	dtime_data2[5]-=dtime_data1[5];
-	dtime_data2[6]-=dtime_data1[6];
+  dtime_data2[0] -= dtime_data1[0];	// Y
+  dtime_data2[1] -= dtime_data1[1];	//
+  dtime_data2[2] -= dtime_data1[2];
+  dtime_data2[3] -= dtime_data1[3];
+  dtime_data2[4] -= dtime_data1[4];
+  dtime_data2[5] -= dtime_data1[5];
+  dtime_data2[6] -= dtime_data1[6];
 
 // Borrow some seconds for fractions
-	while (dtime_data2[6]<0) { dtime_data2[6]+=100000; dtime_data2[5]--; }
+  while (dtime_data2[6] < 0)
+    {
+      dtime_data2[6] += 100000;
+      dtime_data2[5]--;
+    }
 
 // Borrow some minutes for seconds
-	while (dtime_data2[5]<0) { dtime_data2[5]+=60; dtime_data2[4]--; }
+  while (dtime_data2[5] < 0)
+    {
+      dtime_data2[5] += 60;
+      dtime_data2[4]--;
+    }
 
 // Borrow some hours for minutes
-	while (dtime_data2[4]<0) { dtime_data2[4]+=60; dtime_data2[3]--; }
+  while (dtime_data2[4] < 0)
+    {
+      dtime_data2[4] += 60;
+      dtime_data2[3]--;
+    }
 
 // Borrow some days for some hours..
-	while (dtime_data2[3]<0) { dtime_data2[3]+=24; dtime_data2[2]--; }
+  while (dtime_data2[3] < 0)
+    {
+      dtime_data2[3] += 24;
+      dtime_data2[2]--;
+    }
 
 // Borrow some months for some days. @ FIXME @todo fix days in months
-	while (dtime_data2[2]<0) { dtime_data2[2]+=30; dtime_data2[1]--; }
+  while (dtime_data2[2] < 0)
+    {
+      dtime_data2[2] += 30;
+      dtime_data2[1]--;
+    }
 
 // Borrow some years for some months.
-	while (dtime_data2[1]<0) { dtime_data2[1]+=12; dtime_data2[0]--; }
+  while (dtime_data2[1] < 0)
+    {
+      dtime_data2[1] += 12;
+      dtime_data2[0]--;
+    }
 
-	if (dtime_data2[0]||dtime_data2[1]) {
-		// YEAR TO MONTH interval
-		sprintf(buff,"%4d-%02d",dtime_data2[0],dtime_data2[1]);
+  if (dtime_data2[0] || dtime_data2[1])
+    {
+      // YEAR TO MONTH interval
+      sprintf (buff, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
 
-        	ctoint(buff,&in,1298);
-		push_interval(&in);
+      ctoint (buff, &in, 1298);
+      push_interval (&in);
 
-		
-	} else {
-		sprintf(buff,"%d %02d:%02d:%02d.%05d",dtime_data2[2],dtime_data2[3],dtime_data2[4],dtime_data2[5],dtime_data2[6]);
-		debug("Got buff as : %s\n",buff);
-        	ctoint(buff,&in,0x53b);
-		debug("Pushing Interval - %p - s=%x e=%x made from %s" ,&in,in.stime,in.ltime);
-		debug("Buff = %s %x %x",buff);
-		push_interval(&in);
-	}
- 
-	
+
+    }
+  else
+    {
+      sprintf (buff, "%d %02d:%02d:%02d.%05d", dtime_data2[2], dtime_data2[3],
+	       dtime_data2[4], dtime_data2[5], dtime_data2[6]);
+      debug ("Got buff as : %s\n", buff);
+      ctoint (buff, &in, 0x53b);
+      debug ("Pushing Interval - %p - s=%x e=%x made from %s", &in, in.stime,
+	     in.ltime);
+      debug ("Buff = %s %x %x", buff);
+      push_interval (&in);
+    }
+
+
 }
 
 
@@ -664,138 +844,196 @@ if (op != (OP_SUB)) {
 */
 
 
-char * display_int(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-	long a;
-	static char buff[256];
-	a=*(long *)ptr;
+char *
+display_int (void *ptr, int size, int size_c,
+	     struct struct_scr_field *field_details, int display_type)
+{
+  long a;
+  static char buff[256];
+  a = *(long *) ptr;
 
-	if (display_type==DISPLAY_TYPE_DISPLAY) {
-		sprintf(buff,"%11ld",a);
+  if (display_type == DISPLAY_TYPE_DISPLAY)
+    {
+      sprintf (buff, "%11ld", a);
+    }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_AT)
+    {
+      sprintf (buff, "%ld", a);
+    }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_TO)
+    {
+      push_long (a);
+      pop_char (buff, size_c);
+    }
+
+  return buff;
+}
+
+char *
+display_smint (void *ptr, int size, int size_c,
+	       struct struct_scr_field *field_details, int display_type)
+{
+  short a;
+  static char buff[256];
+  a = *(short *) ptr;
+
+  if (display_type == DISPLAY_TYPE_DISPLAY)
+    {
+      sprintf (buff, "%6d", a);
+    }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_AT)
+    {
+      sprintf (buff, "%d", a);
+    }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_TO)
+    {
+      push_int (a);
+      pop_char (buff, size_c);
+    }
+
+  return buff;
+
+}
+
+char *
+display_float (void *ptr, int size, int size_c,
+	       struct struct_scr_field *field_details, int display_type)
+{
+  double a;
+  static char buff[256];
+  a = *(double *) ptr;
+
+  if (display_type == DISPLAY_TYPE_DISPLAY)
+    {
+      sprintf (buff, "%14.2f", a);
+    }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_AT)
+    {
+      int cnt;
+      sprintf (buff, "%f", a);
+      for (cnt = strlen (buff) - 1; cnt > 0; cnt--)
+	{
+	  if (cnt <= 1)
+	    break;
+	  if (buff[cnt - 1] == '.')
+	    break;
+	  if (buff[cnt] != '0')
+	    break;
+	  if (buff[cnt] == '0')
+	    buff[cnt] = 0;
+
 	}
+    }
 
-	if (display_type==DISPLAY_TYPE_DISPLAY_AT) {
-		sprintf(buff,"%ld",a);
+  if (display_type == DISPLAY_TYPE_DISPLAY_TO)
+    {
+      push_double (a);
+      pop_char (buff, size_c);
+    }
+  return buff;
+
+}
+
+char *
+display_smfloat (void *ptr, int size, int size_c,
+		 struct struct_scr_field *field_details, int display_type)
+{
+  float a;
+  static char buff[256];
+  a = *(float *) ptr;
+
+  if (display_type == DISPLAY_TYPE_DISPLAY)
+    {
+      sprintf (buff, "%14.2f", a);
+    }
+
+  if (display_type == DISPLAY_TYPE_DISPLAY_AT)
+    {
+      int cnt;
+      sprintf (buff, "%f", a);
+      for (cnt = strlen (buff) - 1; cnt > 0; cnt--)
+	{
+	  if (cnt <= 1)
+	    break;
+	  if (buff[cnt - 1] == '.')
+	    break;
+	  if (buff[cnt] != '0')
+	    break;
+	  if (buff[cnt] == '0')
+	    buff[cnt] = 0;
+
 	}
+    }
 
-	if (display_type==DISPLAY_TYPE_DISPLAY_TO) {
-		push_long(a);
-		pop_char(buff,size_c);
-	}
+  if (display_type == DISPLAY_TYPE_DISPLAY_TO)
+    {
+      push_float (a);
+      pop_char (buff, size_c);
+    }
 
-	return buff;
-}
-
-char * display_smint(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-        short a;
-        static char buff[256];
-        a=*(short *)ptr;
-
-        if (display_type==DISPLAY_TYPE_DISPLAY) {
-                sprintf(buff,"%6d",a);
-        }
-
-        if (display_type==DISPLAY_TYPE_DISPLAY_AT) {
-                sprintf(buff,"%d",a);
-        }
-
-        if (display_type==DISPLAY_TYPE_DISPLAY_TO) {
-                push_int(a);
-                pop_char(buff,size_c);
-        }
-
-	return buff;
+  return buff;
 
 }
 
-char * display_float(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-        double a;
-        static char buff[256];
-        a=*(double *)ptr;
-
-        if (display_type==DISPLAY_TYPE_DISPLAY) {
-                sprintf(buff,"%14.2f",a);
-        }
-
-        if (display_type==DISPLAY_TYPE_DISPLAY_AT) {
-		int cnt;
-                sprintf(buff,"%f",a);
-		for (cnt=strlen(buff)-1;cnt>0;cnt--) {
-			if (cnt<=1) break;
-			if (buff[cnt-1]=='.') break;
-			if (buff[cnt]!='0') break;
-			if (buff[cnt]=='0') buff[cnt]=0;
-		
-		}
-        }
-
-        if (display_type==DISPLAY_TYPE_DISPLAY_TO) {
-                push_double(a);
-                pop_char(buff,size_c);
-        }
-	return buff;
-
+char *
+display_date (void *ptr, int size, int size_c,
+	      struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
 }
 
-char * display_smfloat(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-        float a;
-        static char buff[256];
-        a=*(float *)ptr;
-
-        if (display_type==DISPLAY_TYPE_DISPLAY) {
-                sprintf(buff,"%14.2f",a);
-        }
-
-        if (display_type==DISPLAY_TYPE_DISPLAY_AT) {
-                int cnt;
-                sprintf(buff,"%f",a);
-                for (cnt=strlen(buff)-1;cnt>0;cnt--) {
-                        if (cnt<=1) break;
-                        if (buff[cnt-1]=='.') break;
-                        if (buff[cnt]!='0') break;
-                        if (buff[cnt]=='0') buff[cnt]=0;
-
-                }
-        }
-
-        if (display_type==DISPLAY_TYPE_DISPLAY_TO) {
-                push_float(a);
-                pop_char(buff,size_c);
-        }
-
-	return buff;
-
+char *
+display_char (void *ptr, int size, int size_c,
+	      struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
 }
 
-char * display_date(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-return 0;
+char *
+display_decimal (void *ptr, int size, int size_c,
+		 struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
 }
 
-char * display_char(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-return 0;
+char *
+display_money (void *ptr, int size, int size_c,
+	       struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
 }
 
-char * display_decimal(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-return 0;
+char *
+display_dtime (void *ptr, int size, int size_c,
+	       struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
 }
 
-char * display_money(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-return 0;
+char *
+display_interval (void *ptr, int size, int size_c,
+		  struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
 }
 
-char * display_dtime(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-return 0;
+char *
+display_byte (void *ptr, int size, int size_c,
+	      struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
 }
 
-char * display_interval(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-return 0;
-}
-
-char * display_byte(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-return 0;
-}
-
-char * display_text(void *ptr,int size,int size_c,struct struct_scr_field *field_details,int display_type) {
-return 0;
+char *
+display_text (void *ptr, int size, int size_c,
+	      struct struct_scr_field *field_details, int display_type)
+{
+  return 0;
 }
 
 /**
@@ -804,7 +1042,7 @@ return 0;
  * @return
  */
 void
-add_default_operations(void) 
+add_default_operations (void)
 {
 
 
@@ -816,48 +1054,48 @@ DTYPE_DATE
 DTYPE_SERIAL
 */
 
-	add_op_function(DTYPE_INT,	DTYPE_INT,	OP_MATH,int_int_ops);
+  add_op_function (DTYPE_INT, DTYPE_INT, OP_MATH, int_int_ops);
 
-	add_op_function(DTYPE_SMINT,	DTYPE_SMINT,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_INT,	DTYPE_SMINT,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_SMINT,	DTYPE_INT,	OP_MATH,int_int_ops);
+  add_op_function (DTYPE_SMINT, DTYPE_SMINT, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_INT, DTYPE_SMINT, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_SMINT, DTYPE_INT, OP_MATH, int_int_ops);
 
-	add_op_function(DTYPE_DATE,	DTYPE_DATE,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_INT,	DTYPE_DATE,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_SMINT,	DTYPE_DATE,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_DATE,	DTYPE_SMINT,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_DATE,	DTYPE_INT,	OP_MATH,int_int_ops);
+  add_op_function (DTYPE_DATE, DTYPE_DATE, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_INT, DTYPE_DATE, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_SMINT, DTYPE_DATE, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_DATE, DTYPE_SMINT, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_DATE, DTYPE_INT, OP_MATH, int_int_ops);
 
-	add_op_function(DTYPE_SERIAL,	DTYPE_SERIAL,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_SERIAL,	DTYPE_INT,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_SERIAL,	DTYPE_SMINT,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_SERIAL,	DTYPE_DATE,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_INT,	DTYPE_SERIAL,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_SMINT,	DTYPE_SERIAL,	OP_MATH,int_int_ops);
-	add_op_function(DTYPE_DATE,	DTYPE_SERIAL,	OP_MATH,int_int_ops);
+  add_op_function (DTYPE_SERIAL, DTYPE_SERIAL, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_SERIAL, DTYPE_INT, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_SERIAL, DTYPE_SMINT, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_SERIAL, DTYPE_DATE, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_INT, DTYPE_SERIAL, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_SMINT, DTYPE_SERIAL, OP_MATH, int_int_ops);
+  add_op_function (DTYPE_DATE, DTYPE_SERIAL, OP_MATH, int_int_ops);
 
-	add_op_function(DTYPE_INTERVAL,	DTYPE_INTERVAL,	OP_MATH,in_in_ops);
-	add_op_function(DTYPE_INTERVAL,	DTYPE_DTIME,	OP_MATH,dt_in_ops);
+  add_op_function (DTYPE_INTERVAL, DTYPE_INTERVAL, OP_MATH, in_in_ops);
+  add_op_function (DTYPE_INTERVAL, DTYPE_DTIME, OP_MATH, dt_in_ops);
 
-	add_op_function(DTYPE_DTIME,	DTYPE_INTERVAL,	OP_MATH,in_dt_ops);
+  add_op_function (DTYPE_DTIME, DTYPE_INTERVAL, OP_MATH, in_dt_ops);
 
-	add_op_function(DTYPE_DTIME,	DTYPE_DTIME,	OP_MATH,dt_dt_ops);
+  add_op_function (DTYPE_DTIME, DTYPE_DTIME, OP_MATH, dt_dt_ops);
 
-	debug("Finished adding default operations");
+  debug ("Finished adding default operations");
 
 
-	add_datatype_function_i(DTYPE_INT,	"DISPLAY",display_int);
-	add_datatype_function_i(DTYPE_SMINT,	"DISPLAY",display_smint);
-	add_datatype_function_i(DTYPE_FLOAT,	"DISPLAY",display_float);
-	add_datatype_function_i(DTYPE_SMFLOAT,	"DISPLAY",display_smfloat);
-	add_datatype_function_i(DTYPE_DATE,	"DISPLAY",display_date);
-	add_datatype_function_i(DTYPE_CHAR,	"DISPLAY",display_char);
-	add_datatype_function_i(DTYPE_DECIMAL,	"DISPLAY",display_decimal);
-	add_datatype_function_i(DTYPE_MONEY,	"DISPLAY",display_money);
-	add_datatype_function_i(DTYPE_DTIME,	"DISPLAY",display_dtime);
-	add_datatype_function_i(DTYPE_INTERVAL,	"DISPLAY",display_interval);
-	add_datatype_function_i(DTYPE_BYTE,	"DISPLAY",display_byte);
-	add_datatype_function_i(DTYPE_TEXT,	"DISPLAY",display_text);
+  add_datatype_function_i (DTYPE_INT, "DISPLAY", display_int);
+  add_datatype_function_i (DTYPE_SMINT, "DISPLAY", display_smint);
+  add_datatype_function_i (DTYPE_FLOAT, "DISPLAY", display_float);
+  add_datatype_function_i (DTYPE_SMFLOAT, "DISPLAY", display_smfloat);
+  add_datatype_function_i (DTYPE_DATE, "DISPLAY", display_date);
+  add_datatype_function_i (DTYPE_CHAR, "DISPLAY", display_char);
+  add_datatype_function_i (DTYPE_DECIMAL, "DISPLAY", display_decimal);
+  add_datatype_function_i (DTYPE_MONEY, "DISPLAY", display_money);
+  add_datatype_function_i (DTYPE_DTIME, "DISPLAY", display_dtime);
+  add_datatype_function_i (DTYPE_INTERVAL, "DISPLAY", display_interval);
+  add_datatype_function_i (DTYPE_BYTE, "DISPLAY", display_byte);
+  add_datatype_function_i (DTYPE_TEXT, "DISPLAY", display_text);
 
 
 }

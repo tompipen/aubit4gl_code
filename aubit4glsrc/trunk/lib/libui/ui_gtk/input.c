@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input.c,v 1.8 2003-04-23 16:37:30 mikeaubury Exp $
+# $Id: input.c,v 1.9 2003-05-12 14:24:31 mikeaubury Exp $
 #*/
 
 /**
@@ -75,20 +75,20 @@ long inp_current_field = 0;
 =====================================================================
 */
 
-long get_curr_infield(void);
+long get_curr_infield (void);
 void gui_set_init_value (GtkWidget * f, void *ptr, int dtype);
-static int save_field (struct s_screenio *s, GtkWidget *w);
+static int save_field (struct s_screenio *s, GtkWidget * w);
 static int gui_proc_key_input (int a);
 static int gui_form_field_constr (void);
 static int gui_form_field_chk (void);
 
-void
-disp_form_fields_ap (int n, int attr, char *s,va_list * ap);
+void disp_form_fields_ap (int n, int attr, char *s, va_list * ap);
 
-extern char *replace_sql_var (char *s); 	/* others.c */
+extern char *replace_sql_var (char *s);	/* others.c */
 
 //int form_loop (struct s_screenio * s);
-int gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap);
+int gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin,
+			va_list * ap);
 //void disp_fields (int n, int attr, va_list * ap);
 //int push_constr (struct s_screenio *s);
 //void fgl_infield (char *s, int a);
@@ -108,12 +108,12 @@ int field_name_match_gtk (GtkWidget * f, char *s);
  * @return The current form
  */
 void *
-get_curr_form(void)
+get_curr_form (void)
 {
-GtkWidget *w;
-  
+  GtkWidget *w;
+
   debug ("**** GET_CURR_FORM_GTK\n");
-  w = (GtkWidget *)get_curr_win_gtk ();
+  w = (GtkWidget *) get_curr_win_gtk ();
 
 
   debug ("get_curr_form as %p ", w);
@@ -157,14 +157,14 @@ colname_for_field (GtkWidget * w)
  *   -
  */
 int
-form_loop (void *vs) 
+form_loop (void *vs)
 {
   int a;
   int action;
   long lastfieldval;
-struct s_screenio * s;
+  struct s_screenio *s;
   debug ("Form_loop");
-	s=vs;
+  s = vs;
 
   set_abort (0);
   if (s->mode != MODE_CONSTRUCT)
@@ -172,7 +172,7 @@ struct s_screenio * s;
     a = gui_form_field_chk ();
   else
     /* a = gui_form_field_constr (s, 0); */
-	a = gui_form_field_constr ();
+    a = gui_form_field_constr ();
   printf ("a=%d\n", a);
 
   if (a < 0)
@@ -182,22 +182,22 @@ struct s_screenio * s;
 
 
   while (1)
-  {
+    {
 
-    action = user_has_done_something ();
+      action = user_has_done_something ();
 
-    /* printf("Action=%d\n",action); */
-    if (action)
-      {
-	printf ("ACTION\n");
-	fflush (stdout);
-	break;
-      }
+      /* printf("Action=%d\n",action); */
+      if (action)
+	{
+	  printf ("ACTION\n");
+	  fflush (stdout);
+	  break;
+	}
 
-    a4gl_usleep (100);
-    if (gtk_events_pending ())
-      gtk_main_iteration ();
-  }
+      a4gl_usleep (100);
+      if (gtk_events_pending ())
+	gtk_main_iteration ();
+    }
 
   printf ("checking action %d\n", action);
 
@@ -213,16 +213,17 @@ struct s_screenio * s;
 	{
 	  if (s->mode != MODE_CONSTRUCT)
 	    /* a = gui_form_field_chk (s, -1); */
-        a = gui_form_field_chk ();
+	    a = gui_form_field_chk ();
 	  else
 	    /* a = gui_form_field_constr (s, -1); */
-        a = gui_form_field_constr ();
+	    a = gui_form_field_constr ();
 	  return 0;
 	}
 
-      if (a < 0) {
-	debug("Returning %d\n",a);
-	return a;
+      if (a < 0)
+	{
+	  debug ("Returning %d\n", a);
+	  return a;
 	}
       //printf ("A=%d\n", a);
       return -90;
@@ -248,17 +249,18 @@ struct s_screenio * s;
 
       printf ("Saved contents to variable...");
 
-      strcpy (buff, colname_for_field ((GtkWidget *)s->currentfield));
+      strcpy (buff, colname_for_field ((GtkWidget *) s->currentfield));
       lastfieldval = (long) s->currentfield;
       debug ("***MJA MJA setting current field to %p", get_which_field ());
-      s->currentfield = (void *)get_which_field();
+      s->currentfield = (void *) get_which_field ();
 
-      debug ("Pushing %s  ", colname_for_field ((GtkWidget *)s->currentfield));
+      debug ("Pushing %s  ",
+	     colname_for_field ((GtkWidget *) s->currentfield));
       debug ("buff=%s\n", buff);
 
-      push_long ((long)s->currentfield);
+      push_long ((long) s->currentfield);
 
-      push_char (colname_for_field ((GtkWidget *)s->currentfield));	/* before field */
+      push_char (colname_for_field ((GtkWidget *) s->currentfield));	/* before field */
 
       push_long (lastfieldval);
       push_char (buff);		/*  after field */
@@ -310,7 +312,7 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
 
   debug ("XXX2");
   debug ("gui_gen_field_list fd=%p\n", cwin);
-  fd1 = gtk_object_get_data(GTK_OBJECT(cwin), "currform");
+  fd1 = gtk_object_get_data (GTK_OBJECT (cwin), "currform");
   debug ("fd1=%p\n", fd1);
   formdets = gtk_object_get_data (fd1, "xdr_form");
   debug ("struct_form=%p\n", formdets);
@@ -333,7 +335,7 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
       debug ("s='%s'\n", s);
 
       if (s == 0)
-		break;
+	break;
 
       f = (int) va_arg (*ap, int *);
 
@@ -346,7 +348,7 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
 
 	  debug ("Looks too stupid");
 
-	/* for (a=1;a<10;a++) { s = va_arg (*ap, char *);	debug("%p (%s)",s,s); } */
+	  /* for (a=1;a<10;a++) { s = va_arg (*ap, char *);       debug("%p (%s)",s,s); } */
 	  exitwith ("Must have gotten confused somewhere");
 	  exit (0);
 	}
@@ -387,16 +389,18 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
 			 metric_no);
 		  k = &formdets->metrics.metrics_val[metric_no];
 
-		#ifdef DEBUG
-			{debug ("cnt=%d a=%d", cnt, a);}
-		#endif
+#ifdef DEBUG
+		  {
+		    debug ("cnt=%d a=%d", cnt, a);
+		  }
+#endif
 
 		  if (cnt >= a)
 		    {
 		      exitwith ("Too few variables for the number of fields");
 		    }
 		  debug ("Setting flist[%d] to %p", cnt, k);
-		  flist[cnt++] = (GtkWidget *)k->field;
+		  flist[cnt++] = (GtkWidget *) k->field;
 		  debug ("Set");
 		  ff = 1;
 		}
@@ -410,9 +414,11 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
 	    {
 	      attr_no = z;
 	      /* debug ("attr_no=%d", attr_no); */
-		#ifdef DEBUG
-			{debug ("Attr 2"); }
-		#endif
+#ifdef DEBUG
+	      {
+		debug ("Attr 2");
+	      }
+#endif
 	      mno =
 		attr_name_match (&formdets->
 				 attributes.attributes_val[attr_no], s);
@@ -427,16 +433,18 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
 		  debug ("metric_no=%d\n", metric_no);
 
 		  k = &formdets->metrics.metrics_val[metric_no];
-		#ifdef DEBUG
-			{ debug ("cnt=%d a=%d", cnt, a); }
-		#endif
+#ifdef DEBUG
+		  {
+		    debug ("cnt=%d a=%d", cnt, a);
+		  }
+#endif
 		  if (cnt >= a)
 		    {
 		      debug ("Too few variable");
 		      exitwith ("Too few variables for the number of fields");
 		    }
 		  debug ("Setting flist[%d] to %p", cnt, k->field);
-		  flist[cnt++] = (GtkWidget *)k->field;
+		  flist[cnt++] = (GtkWidget *) k->field;
 		  ff = 1;
 		}
 
@@ -454,32 +462,32 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
   debug ("H1");
 
   /*
-  s = va_arg (*ap, char *);
-  if (s != 0)
-  */
+     s = va_arg (*ap, char *);
+     if (s != 0)
+   */
 
 
   debug_last_field_created ("gfl 3.5");
   /*
-  for (f=0;f<cnt;f++) {
-  *field_list[f]=flist[f];
-  }
-  */
+     for (f=0;f<cnt;f++) {
+     *field_list[f]=flist[f];
+     }
+   */
 
   debug_last_field_created ("gfl 4");
 
 
-	/* allocate a bit more than we need.... */
+  /* allocate a bit more than we need.... */
   *field_list = calloc (cnt + 1, sizeof (GtkWidget *));
   debug ("H2 %p", field_list);
   memcpy (*field_list, flist, sizeof (GtkWidget *) * (cnt + 1));
   debug ("H3 *%p", *field_list);
   /*
-  debug ("Returning list\n");
-  for (f=0;f<=cnt;f++) {
-		debug("Field_list[%d]=%p",f,field_list[f]);
-  }
-  */
+     debug ("Returning list\n");
+     for (f=0;f<=cnt;f++) {
+     debug("Field_list[%d]=%p",f,field_list[f]);
+     }
+   */
   return cnt - 1;
 }
 
@@ -491,14 +499,14 @@ gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a,
  * @return The number of elements returned.
  */
 int
-gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap)
+gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list * ap)
 {
   int a;
   //va_list ap;
   //va_start (ap, cwin);
 
   debug ("XXX1");
-  a = gen_field_list_gtk (field_list, GTK_WINDOW(cwin), 9999, ap);
+  a = gen_field_list_gtk (field_list, GTK_WINDOW (cwin), 9999, ap);
   return a;
 }
 
@@ -509,7 +517,7 @@ gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, va_list *ap)
  * @return Not used.
  */
 int
-set_fields (void *vsio) 
+set_fields (void *vsio)
 {
 /* Disable all fields */
   int a;
@@ -517,13 +525,13 @@ set_fields (void *vsio)
   int nofields;
   int nv;
   GtkWidget **field_list;
-  struct s_screenio * sio;
+  struct s_screenio *sio;
   int wid = 0;			/* input_without_Defaults ?? */
 
   struct_form *formdets;
   struct struct_metrics *m;
-  sio=vsio;
-  debug("In set_fields");
+  sio = vsio;
+  debug ("In set_fields");
   fd1 = gtk_object_get_data (GTK_OBJECT (sio->currform), "currform");
   debug ("fd1=%p\n", fd1);
   formdets = gtk_object_get_data (GTK_OBJECT (fd1), "xdr_form");
@@ -533,7 +541,7 @@ set_fields (void *vsio)
     wid = 1;
 
   nofields = sio->nfields;
-  field_list = (GtkWidget **)sio->field_list;
+  field_list = (GtkWidget **) sio->field_list;
 
   debug ("Field list=%p number of fields = %d", field_list, nofields);
 
@@ -544,11 +552,12 @@ set_fields (void *vsio)
       debug
 	("Number of fields (%d) is not the same as the number of vars (%d)",
 	 nofields + 1, nv);
-      exitwith ("Number of fields is not the same as the number of variables");
+      exitwith
+	("Number of fields is not the same as the number of variables");
       return 0;
     }
 
-	/* Disable everything.... */
+  /* Disable everything.... */
   for (a = 0; a < formdets->metrics.metrics_len; a++)
     {
 
@@ -573,10 +582,9 @@ set_fields (void *vsio)
 	{
 	  struct struct_scr_field *prop;
 
-	  prop = (struct struct_scr_field *) gtk_object_get_data (
-		  GTK_OBJECT(field_list[a]),
-		  "Attribute"
-		);
+	  prop =
+	    (struct struct_scr_field *)
+	    gtk_object_get_data (GTK_OBJECT (field_list[a]), "Attribute");
 
 	  if (has_str_attribute (prop, FA_S_DEFAULT))
 	    {
@@ -594,7 +602,7 @@ set_fields (void *vsio)
 	}
     }
 
-	debug("Reached the end...");
+  debug ("Reached the end...");
   return 1;
 
 }
@@ -604,12 +612,12 @@ set_fields (void *vsio)
  * @param w
  * @param attr
  */
-void 
+void
 gui_set_field_pop_attr (GtkWidget * w, int attr)
 {
   char *ptr;
   ptr = char_pop ();
-	gui_set_field_fore(w, decode_colour_attr_aubit(attr));
+  gui_set_field_fore (w, decode_colour_attr_aubit (attr));
   debug ("Calling display_generic with %p and %s\n", w, ptr);
   display_generic (w, ptr);
   free (ptr);
@@ -627,11 +635,11 @@ gui_set_field_pop_attr (GtkWidget * w, int attr)
 void
 disp_fields_ap (int n, int attr, va_list * ap)
 {
-int a;
-int flg;
-GtkWidget **field_list;
-GtkWidget *formdets;
-int nofields;
+  int a;
+  int flg;
+  GtkWidget **field_list;
+  GtkWidget *formdets;
+  int nofields;
 
   a4gl_status = 0;
   debug_last_field_created ("disp_fields1 ");
@@ -643,10 +651,10 @@ int nofields;
 
   flg = 0;
   debug_last_field_created ("disp_fields2 ");
-  nofields = gen_field_list_gtk (&field_list, GTK_WINDOW(formdets), n, ap);
+  nofields = gen_field_list_gtk (&field_list, GTK_WINDOW (formdets), n, ap);
   debug_last_field_created ("disp_fields3 ");
 
-  debug("nofields=%d\n",nofields);
+  debug ("nofields=%d\n", nofields);
 
   for (a = 0; a <= nofields; a++)
     {
@@ -747,12 +755,12 @@ gui_proc_key_display_array (int a)
  *   - 1 : Field found and information saved.
  */
 static int
-save_field (struct s_screenio *s, GtkWidget *w)
+save_field (struct s_screenio *s, GtkWidget * w)
 {
   int a;
   char *ptr;
   char *z;
-  z = (char *)get_which_field ();
+  z = (char *) get_which_field ();
   debug ("Current widget=%p field structure=%p", w, z);
 
   debug ("s->nfields=%d\n", s->nfields);
@@ -767,7 +775,7 @@ save_field (struct s_screenio *s, GtkWidget *w)
       /* debug("col=%s\n",colname_for_field); */
       debug ("In save_field - %d %p=%p (%s)?\n", a, s->field_list[a], w,
 	     colname_for_field (w));
-      if (s->field_list[a] == (void *)w)
+      if (s->field_list[a] == (void *) w)
 	{
 	  debug ("Found field @ %d\n", a);
 	  ptr = fld_val_generic (w);
@@ -818,25 +826,24 @@ gui_set_init_value (GtkWidget * f, void *ptr, int dtype)
  * @return Allways 1
  */
 int
-push_constr (void *vs) 
+push_constr (void *vs)
 {
   struct struct_scr_field *fprop;
   GtkWidget *f;
   int a;
   char *ptr;
-struct s_screenio *s;
+  struct s_screenio *s;
   int flg = 0;
-s=vs;
+  s = vs;
   for (a = 0; a <= s->nfields; a++)
-  {
-    f = (GtkWidget *)s->field_list[a];
-    fprop = (struct struct_scr_field *) gtk_object_get_data(
-		  GTK_OBJECT(s->field_list[a]),
-			"Attribute"
-		);
-    debug ("fprop=%p", fprop);
-    if (fprop != 0)
-	  {
+    {
+      f = (GtkWidget *) s->field_list[a];
+      fprop =
+	(struct struct_scr_field *)
+	gtk_object_get_data (GTK_OBJECT (s->field_list[a]), "Attribute");
+      debug ("fprop=%p", fprop);
+      if (fprop != 0)
+	{
 	  debug ("getting ptr", fprop);
 	  debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname,
 		 (fprop->datatype) & 0xffff);
@@ -881,8 +888,8 @@ fgl_infield (char *s, int a)
 {
   long fld;
 
-  fld=get_curr_infield();
-return 1;
+  fld = get_curr_infield ();
+  return 1;
 
 }
 
@@ -897,7 +904,7 @@ field_name_match_gtk (GtkWidget * f, char *s)
   char tabname[40];
   char *f_colname;
   char *f_tabname;
-  struct struct_scr_field  *field;
+  struct struct_scr_field *field;
 
   int aa;
   int ab;
@@ -905,9 +912,11 @@ field_name_match_gtk (GtkWidget * f, char *s)
   if (f == 0)
     return 0;
 
-   field = (struct struct_scr_field *) gtk_object_get_data (GTK_OBJECT(f), "Attribute");
-   f_colname=field->colname;
-   f_tabname=field->tabname;
+  field =
+    (struct struct_scr_field *) gtk_object_get_data (GTK_OBJECT (f),
+						     "Attribute");
+  f_colname = field->colname;
+  f_tabname = field->tabname;
   aa = strcmp (field->tabname, tabname);
   ab = strcmp (field->colname, colname);
 
@@ -933,24 +942,25 @@ field_name_match_gtk (GtkWidget * f, char *s)
  *
  */
 void
-disp_form_fields_ap (int n, int attr, char *s,va_list * ap)
+disp_form_fields_ap (int n, int attr, char *s, va_list * ap)
 {
-	void *cwin;
-	void *w;
+  void *cwin;
+  void *w;
 
-	debug("In disp_Form_fields_gtk");
-	debug("s='%s'\n",s);
-	cwin = (GtkWidget *)get_curr_win_gtk ();
-	w = find_pointer (s, WINCODE);
-	if (w==0) {
-		exitwith("Form not open");
-		return;
-	}
-	debug("Swapping %p for %p",w,cwin);
-	set_current_window(w);
-	disp_fields(n,attr,ap);
-	debug("Swapping %p for %p",cwin,w);
-	set_current_window(cwin);
+  debug ("In disp_Form_fields_gtk");
+  debug ("s='%s'\n", s);
+  cwin = (GtkWidget *) get_curr_win_gtk ();
+  w = find_pointer (s, WINCODE);
+  if (w == 0)
+    {
+      exitwith ("Form not open");
+      return;
+    }
+  debug ("Swapping %p for %p", w, cwin);
+  set_current_window (w);
+  disp_fields (n, attr, ap);
+  debug ("Swapping %p for %p", cwin, w);
+  set_current_window (cwin);
 }
 
 
@@ -960,9 +970,9 @@ disp_form_fields_ap (int n, int attr, char *s,va_list * ap)
 void
 set_infield_from_stack (void)
 {
-  debug("**** CHANGED FIELD ****");
+  debug ("**** CHANGED FIELD ****");
   inp_current_field = pop_long ();
-  debug("New field :---> %p",inp_current_field);
+  debug ("New field :---> %p", inp_current_field);
 }
 
 
@@ -970,8 +980,9 @@ set_infield_from_stack (void)
  * @return The current field number.
  */
 long
-get_curr_infield(void) {
-        return inp_current_field;
+get_curr_infield (void)
+{
+  return inp_current_field;
 }
 
 

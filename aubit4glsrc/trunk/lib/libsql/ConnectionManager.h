@@ -7,32 +7,34 @@
 #ifndef CONNECTIONMANAGER_INCL
 #define CONNECTIONMANAGER_INCL
 
-	#include <string>
-	#include <map>
-	#include "AubitDatabaseDriver.h"
-	#include "AubitConnection.h"
+#include <string>
+#include <map>
+#include "AubitDatabaseDriver.h"
+#include "AubitConnection.h"
 
-	namespace Aubit4glSql {
+namespace Aubit4glSql
+{
 
-	  typedef std::map<string,Driver> Drivers;
-	  typedef std::map<string,Connection> Connections;
+  typedef std::map < string, Driver > Drivers;
+  typedef std::map < string, Connection > Connections;
 
-	  class ConnectionManager {
-		  private:
-	      char *curentConnection;
-			  Drivers drivers;
-			  Connections connections;
-	      void testDriverInterface(void);
-	    public:
-	      void setCurrentConnection(const char *connectionName);
-	      char *getCurrentConnection(void);
-	      void setConnection(Connection connection);
-	      Connection *getConnection(const char *connectionName);
-	      bool isConnection(const char *connectionName);
-	      void loadDriver(const char *driverName);
-	      void unloadDriver(const char *driverName);
-	  };
-	}
+  class ConnectionManager
+  {
+  private:
+    char *curentConnection;
+    Drivers drivers;
+    Connections connections;
+    void testDriverInterface (void);
+  public:
+    void setCurrentConnection (const char *connectionName);
+    char *getCurrentConnection (void);
+    void setConnection (Connection connection);
+    Connection *getConnection (const char *connectionName);
+    bool isConnection (const char *connectionName);
+    void loadDriver (const char *driverName);
+    void unloadDriver (const char *driverName);
+  };
+}
 
 
-#endif /* #ifndef CONNECTIONMANAGER_INCL */
+#endif				/* #ifndef CONNECTIONMANAGER_INCL */

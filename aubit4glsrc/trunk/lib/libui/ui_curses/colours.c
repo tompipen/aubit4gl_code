@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.3 2003-04-23 16:37:24 mikeaubury Exp $
+# $Id: colours.c,v 1.4 2003-05-12 14:24:26 mikeaubury Exp $
 #*/
 
 /**
@@ -45,14 +45,14 @@
 
 #ifdef OLD_INCL
 
-	#include "a4gl_dbform.h"
-	#include "a4gl_tui_tui.h"
-	#include "a4gl_aubitcolours.h"
-	#include "a4gl_debug.h"
+#include "a4gl_dbform.h"
+#include "a4gl_tui_tui.h"
+#include "a4gl_aubitcolours.h"
+#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_lib_ui_tui_int.h"
+#include "a4gl_lib_ui_tui_int.h"
 
 #endif
 
@@ -63,7 +63,7 @@
 */
 
 #ifdef OLD_INCL
-	int get_strings_from_attr(int attr,char *col_str,char *attr_str);
+int get_strings_from_attr (int attr, char *col_str, char *attr_str);
 #endif
 
 /*
@@ -92,7 +92,7 @@ colour_code (int a)
 	}
       return z;
     }
-  debug("Returning color code (%d+1)\n",a);
+  debug ("Returning color code (%d+1)\n", a);
   if (a == 0)
     return 0;
   return COLOR_PAIR (a + 1);
@@ -104,26 +104,34 @@ colour_code (int a)
 * @param a the attribute to decode 
 **/
 int
-decode_colour_attr_aubit(int a)
+decode_colour_attr_aubit (int a)
 {
-char colour[20];
-char attr[256];
+  char colour[20];
+  char attr[256];
 //int col;
-	debug("Decoding a");
-	get_strings_from_attr(a,colour,attr);
+  debug ("Decoding a");
+  get_strings_from_attr (a, colour, attr);
 
-	debug("Got colour as : %s",colour);
+  debug ("Got colour as : %s", colour);
 
-	if (strcmp(colour,"BLACK")==0)   return colour_code(COLOR_BLACK);
-	if (strcmp(colour,"RED")==0)     return colour_code(COLOR_RED);
-	if (strcmp(colour,"GREEN")==0)   return colour_code(COLOR_GREEN);
-	if (strcmp(colour,"YELLOW")==0)  return colour_code(COLOR_YELLOW);
-	if (strcmp(colour,"BLUE")==0)    return colour_code(COLOR_BLUE);
-	if (strcmp(colour,"MAGENTA")==0) return colour_code(COLOR_MAGENTA);
-	if (strcmp(colour,"CYAN")==0)    return colour_code(COLOR_CYAN);
-	if (strcmp(colour,"WHITE")==0)   return colour_code(COLOR_WHITE);
+  if (strcmp (colour, "BLACK") == 0)
+    return colour_code (COLOR_BLACK);
+  if (strcmp (colour, "RED") == 0)
+    return colour_code (COLOR_RED);
+  if (strcmp (colour, "GREEN") == 0)
+    return colour_code (COLOR_GREEN);
+  if (strcmp (colour, "YELLOW") == 0)
+    return colour_code (COLOR_YELLOW);
+  if (strcmp (colour, "BLUE") == 0)
+    return colour_code (COLOR_BLUE);
+  if (strcmp (colour, "MAGENTA") == 0)
+    return colour_code (COLOR_MAGENTA);
+  if (strcmp (colour, "CYAN") == 0)
+    return colour_code (COLOR_CYAN);
+  if (strcmp (colour, "WHITE") == 0)
+    return colour_code (COLOR_WHITE);
 
-return 0;
+  return 0;
 }
 
 /**
@@ -133,9 +141,9 @@ return 0;
 * @param a attribute
 **/
 void
-a4glattr_wattrset(WINDOW *w,int a)
+a4glattr_wattrset (WINDOW * w, int a)
 {
-	wattrset(w,decode_aubit_attr(a,'w'));
+  wattrset (w, decode_aubit_attr (a, 'w'));
 }
 
 /**
@@ -144,40 +152,55 @@ a4glattr_wattrset(WINDOW *w,int a)
 * @param a original aubit attribute
 **/
 int
-decode_aubit_attr(int a,char s)
+decode_aubit_attr (int a, char s)
 {
-char colour[20];
-char attr[256];
-int ca; 			/* Curses attribute */
-	
-	get_strings_from_attr(a,colour,attr);
-	ca=A_NORMAL;
-	if (s=='w') {
-		ca=decode_colour_attr_aubit(a);
-		if (strstr(attr,"NORMAL")) ca+=A_NORMAL;
-		if (strstr(attr,"REVERSE")) ca+=A_REVERSE;
-		if (strstr(attr,"UNDERLINE")) ca+=A_UNDERLINE;
-		if (strstr(attr,"BOLD")) ca+=A_BOLD;
-		if (strstr(attr,"BLINK")) ca+=A_BLINK;
-		if (strstr(attr,"DIM")) ca+=A_DIM;
+  char colour[20];
+  char attr[256];
+  int ca;			/* Curses attribute */
 
-	}
-	if (s=='f') {
-		ca=decode_colour_attr_aubit(a);
-		if (strstr(attr,"NORMAL")) ca+=A_NORMAL;
-		if (strstr(attr,"REVERSE")) ca+=A_REVERSE;
-		if (strstr(attr,"UNDERLINE")) ca+=A_UNDERLINE;
-		if (strstr(attr,"BOLD")) ca+=A_BOLD;
-		if (strstr(attr,"BLINK")) ca+=A_BLINK;
-		if (strstr(attr,"DIM")) ca+=A_DIM;
-	}
+  get_strings_from_attr (a, colour, attr);
+  ca = A_NORMAL;
+  if (s == 'w')
+    {
+      ca = decode_colour_attr_aubit (a);
+      if (strstr (attr, "NORMAL"))
+	ca += A_NORMAL;
+      if (strstr (attr, "REVERSE"))
+	ca += A_REVERSE;
+      if (strstr (attr, "UNDERLINE"))
+	ca += A_UNDERLINE;
+      if (strstr (attr, "BOLD"))
+	ca += A_BOLD;
+      if (strstr (attr, "BLINK"))
+	ca += A_BLINK;
+      if (strstr (attr, "DIM"))
+	ca += A_DIM;
 
-	if (s=='b') {
-		ca=decode_colour_attr_aubit(a);
-	}
+    }
+  if (s == 'f')
+    {
+      ca = decode_colour_attr_aubit (a);
+      if (strstr (attr, "NORMAL"))
+	ca += A_NORMAL;
+      if (strstr (attr, "REVERSE"))
+	ca += A_REVERSE;
+      if (strstr (attr, "UNDERLINE"))
+	ca += A_UNDERLINE;
+      if (strstr (attr, "BOLD"))
+	ca += A_BOLD;
+      if (strstr (attr, "BLINK"))
+	ca += A_BLINK;
+      if (strstr (attr, "DIM"))
+	ca += A_DIM;
+    }
+
+  if (s == 'b')
+    {
+      ca = decode_colour_attr_aubit (a);
+    }
 
 
-	return ca;
+  return ca;
 }
 
 

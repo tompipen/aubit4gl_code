@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.10 2003-04-28 12:29:45 mikeaubury Exp $
+# $Id: io.c,v 1.11 2003-05-12 14:24:17 mikeaubury Exp $
 #
 */
 
@@ -50,7 +50,7 @@
 =====================================================================
 */
 
-FILE *oufile=0;
+FILE *oufile = 0;
 
 /*
 =====================================================================
@@ -58,9 +58,9 @@ FILE *oufile=0;
 =====================================================================
 */
 
-int 		read_int 			(FILE * ofile);
-void 		write_int 			(FILE * ofile, int la);
-FILE * 		try_to_open			(char *path,char *name,int keepopen);
+int read_int (FILE * ofile);
+void write_int (FILE * ofile, int la);
+FILE *try_to_open (char *path, char *name, int keepopen);
 
 
 /*
@@ -79,13 +79,14 @@ FILE * 		try_to_open			(char *path,char *name,int keepopen);
 int
 read_int (FILE * ofile)
 {
-int a;
+  int a;
 
-	if (ofile==0) ofile=oufile;
-    fread (&a, 1, sizeof (int), ofile);
-    /* a=(int)sa; */
-	debug("read_int returns %d",a);
-    return a;
+  if (ofile == 0)
+    ofile = oufile;
+  fread (&a, 1, sizeof (int), ofile);
+  /* a=(int)sa; */
+  debug ("read_int returns %d", a);
+  return a;
 
 }
 
@@ -98,16 +99,17 @@ int a;
 void
 write_int (FILE * ofile, int la)
 {
-static int locala;
-int sizeo;
-	
-	if (ofile==0) ofile=oufile;
-	debug("File=%p",ofile);
-	debug("&locala=%p",&locala);
-	sizeo=sizeof(locala);
-	locala=la;
+  static int locala;
+  int sizeo;
 
-    fwrite (&locala,sizeo,1, ofile);
+  if (ofile == 0)
+    ofile = oufile;
+  debug ("File=%p", ofile);
+  debug ("&locala=%p", &locala);
+  sizeo = sizeof (locala);
+  locala = la;
+
+  fwrite (&locala, sizeo, 1, ofile);
 }
 
 /**
@@ -282,51 +284,51 @@ if (ofile==0) ofile=oufile;
  * @param str1 A pointer to the place where to return the left part.
  * @param str2 A pointer to the place where to return the right part.
  */
-void 
+void
 bname (char *str, char *str1, char *str2)
 {
-  
-    static char fn[FNAMESIZE];
-  
-    int a;
-  
-    char *ptr;
-  
-    strcpy (fn, str);
-  
-    for (a = strlen (fn); a >= 0; a--)
+
+  static char fn[FNAMESIZE];
+
+  int a;
+
+  char *ptr;
+
+  strcpy (fn, str);
+
+  for (a = strlen (fn); a >= 0; a--)
     {
-      
-	if (fn[a] == '.')
+
+      if (fn[a] == '.')
 	{
-	  
-	    fn[a] = 0;
-	  
-	    break;
-	  
+
+	  fn[a] = 0;
+
+	  break;
+
 	}
-      
+
     }
-  
-    ptr = &fn[a];
-  
-    strcpy (str1, fn);
-  
-    if (a > 0)
+
+  ptr = &fn[a];
+
+  strcpy (str1, fn);
+
+  if (a > 0)
     {
-      
-	strcpy (str2, ptr + 1);
-      
+
+      strcpy (str2, ptr + 1);
+
     }
   else
     {
-      
-	strcpy (str2, fn);
-      
-	strcpy (str1, "");
-      
+
+      strcpy (str2, fn);
+
+      strcpy (str1, "");
+
     }
-  
+
 }
 
 
@@ -341,33 +343,39 @@ bname (char *str, char *str1, char *str2)
  * @return The pointer of the file opened.
  */
 FILE *
-try_to_open(char *path,char *name,int keepopen)
+try_to_open (char *path, char *name, int keepopen)
 {
   char buff[2048];
   FILE *f;
 
-if (strlen(path)) {
-  #ifndef WIN32
-  sprintf(buff,"%s/%s",path,name);
-  #else
-  sprintf(buff,"%s\\%s",path,name);
-  #endif
-} else {
-	sprintf(buff,name);
-}
-  debug("Opening path '%s'",buff);
-  if (strlen(name)==0) return 0;
+  if (strlen (path))
+    {
+#ifndef WIN32
+      sprintf (buff, "%s/%s", path, name);
+#else
+      sprintf (buff, "%s\\%s", path, name);
+#endif
+    }
+  else
+    {
+      sprintf (buff, name);
+    }
+  debug ("Opening path '%s'", buff);
+  if (strlen (name) == 0)
+    return 0;
 
   /* Does it exist and can we read it ? */
-  f=fopen(buff,"r");
-  if (f==0) return (FILE *)0;
-  
-  if (!keepopen)  {  /* We just wanted to check.. */
-	  fclose(f);
-	  return (FILE *)1;
-  }
-  debug("opened file %s in path %s",name,path);
-  return f; /* We want it opened.. */
+  f = fopen (buff, "r");
+  if (f == 0)
+    return (FILE *) 0;
+
+  if (!keepopen)
+    {				/* We just wanted to check.. */
+      fclose (f);
+      return (FILE *) 1;
+    }
+  debug ("opened file %s in path %s", name, path);
+  return f;			/* We want it opened.. */
 }
 
 /**
@@ -377,55 +385,67 @@ if (strlen(path)) {
  * @return The pointer to the file opened. 0 otherwise.
  */
 FILE *
-open_file_dbpath(char *fname)
+open_file_dbpath (char *fname)
 {
-char str_path[2048];
-int cnt;
-char *ptr;
-int str_len;
-  
-  memset(str_path,0,2048);
+  char str_path[2048];
+  int cnt;
+  char *ptr;
+  int str_len;
 
-  if (try_to_open("",fname,0)) {
-	  return try_to_open("",fname,1);
-  }
+  memset (str_path, 0, 2048);
 
-  if (try_to_open(".",fname,0)) {
-	  return try_to_open(".",fname,1);
-  }
+  if (try_to_open ("", fname, 0))
+    {
+      return try_to_open ("", fname, 1);
+    }
 
-  if (strlen(acl_getenv("DBPATH"))) {
-	strcpy(str_path,acl_getenv("DBPATH"));
-  }
+  if (try_to_open (".", fname, 0))
+    {
+      return try_to_open (".", fname, 1);
+    }
 
-  str_len=strlen(str_path);
-  ptr=str_path;
+  if (strlen (acl_getenv ("DBPATH")))
+    {
+      strcpy (str_path, acl_getenv ("DBPATH"));
+    }
 
-  for (cnt=0;cnt<str_len;cnt++) {
-  #ifdef __MINGW32__
-	if (str_path[cnt]==';') {
-  #else
-	if (str_path[cnt]==':') {
-  #endif
-		str_path[cnt]=0;
-		if (strlen(ptr)) {
-			if (try_to_open(ptr,fname,0)) {
-				return try_to_open(ptr,fname,1);
-			} else {
-				cnt++;
-				ptr=&str_path[cnt];
-			}
+  str_len = strlen (str_path);
+  ptr = str_path;
+
+  for (cnt = 0; cnt < str_len; cnt++)
+    {
+#ifdef __MINGW32__
+      if (str_path[cnt] == ';')
+	{
+#else
+      if (str_path[cnt] == ':')
+	{
+#endif
+	  str_path[cnt] = 0;
+	  if (strlen (ptr))
+	    {
+	      if (try_to_open (ptr, fname, 0))
+		{
+		  return try_to_open (ptr, fname, 1);
 		}
+	      else
+		{
+		  cnt++;
+		  ptr = &str_path[cnt];
+		}
+	    }
 	}
-  }
+    }
 
-  if (strlen(ptr)) {
-	if (try_to_open(ptr,fname,0)) {
-		return try_to_open(ptr,fname,1);
-	} 
-  }
+  if (strlen (ptr))
+    {
+      if (try_to_open (ptr, fname, 0))
+	{
+	  return try_to_open (ptr, fname, 1);
+	}
+    }
 
-  return (FILE *)0;
+  return (FILE *) 0;
 }
 
 

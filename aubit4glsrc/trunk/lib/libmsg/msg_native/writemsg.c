@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: writemsg.c,v 1.1 2003-03-24 02:31:17 afalout Exp $
+# $Id: writemsg.c,v 1.2 2003-05-12 14:24:22 mikeaubury Exp $
 #*/
 
 /**
@@ -75,56 +75,60 @@
  * @param hlp output file handle
  */
 int
-writemsg(int offset,FILE *msg,FILE *tmp,FILE *hlp)
+writemsg (int offset, FILE * msg, FILE * tmp, FILE * hlp)
 {
-int flg=0;
-char tmpbuf[80];
-int offset2;
-int num;
+  int flg = 0;
+  char tmpbuf[80];
+  int offset2;
+  int num;
 
-  offset2=offset;
-  rewind(msg);
-  tmpbuf[0]=0;
+  offset2 = offset;
+  rewind (msg);
+  tmpbuf[0] = 0;
 
   while (1)
-  {
-	if(feof(msg))
     {
-		if (flg==1)
+      if (feof (msg))
+	{
+	  if (flg == 1)
+	    {
+	      if (tmpbuf[strlen (tmpbuf)] != '\n' && tmpbuf[0] != '#')
 		{
-        	if (tmpbuf[strlen(tmpbuf)]!='\n'&& tmpbuf[0]!='#')
-			{
-        		fprintf(tmp,"\n");
-			}
-			offset++;
+		  fprintf (tmp, "\n");
 		}
-		break;
+	      offset++;
+	    }
+	  break;
+	}
+      tmpbuf[0] = 0;
+      fgets (tmpbuf, 80, msg);
+      if (feof (msg))
+	break;
+      if (tmpbuf[0] == '.')
+	{
+	  if (flg == 1)
+	    {
+	      fprintf (tmp, "%c", 127);
+	    }
+	  offset++;
+	  num = atoi (&tmpbuf[1]);
+	  fwrite (&num, 2, 1, hlp);
+	  fwrite (&offset, 2, 1, hlp);
+	  flg = 1;
+	  continue;
+	}
+      if (flg == 1)
+	{
+	  fprintf (tmp, "%s", tmpbuf);
+	  offset = offset + strlen (tmpbuf);
+	}
     }
-    tmpbuf[0]=0;
-    fgets(tmpbuf,80,msg);
-    if (feof(msg)) break;
-    if (tmpbuf[0]=='.')
-    {
-      if (flg==1) {fprintf(tmp,"%c",127);}
-      offset++;
-      num=atoi(&tmpbuf[1]);
-      fwrite(&num,2,1,hlp);
-      fwrite(&offset,2,1,hlp);
-      flg=1;
-      continue;
-    }
-    if (flg==1)
-    {
-      fprintf(tmp,"%s",tmpbuf);
-      offset=offset+strlen(tmpbuf);
-    }
-  }
 
-  num=-1;
-  fwrite(&num,2,1,hlp);
-  fwrite(&offset,2,1,hlp);
-  fclose(tmp);
-  
+  num = -1;
+  fwrite (&num, 2, 1, hlp);
+  fwrite (&offset, 2, 1, hlp);
+  fclose (tmp);
+
 
   return (0);
 

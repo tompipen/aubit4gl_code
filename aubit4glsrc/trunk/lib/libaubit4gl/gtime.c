@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtime.c,v 1.5 2002-06-06 12:31:26 afalout Exp $
+# $Id: gtime.c,v 1.6 2003-05-12 14:24:16 mikeaubury Exp $
 #*/
 
 /**
@@ -42,7 +42,7 @@
 #include <time.h>
 
 /* #include "a4gl_debug.h" - causes wired errors */
-extern void debug_full (char *fmt,...);
+extern void debug_full (char *fmt, ...);
 
 
 /*
@@ -51,8 +51,8 @@ extern void debug_full (char *fmt,...);
 =====================================================================
 */
 
-long 			gettime			(void);
-void 			debug			(char *s);
+long gettime (void);
+void debug (char *s);
 
 /*
 =====================================================================
@@ -67,9 +67,9 @@ void 			debug			(char *s);
  * @return The time in seconds.
  */
 long
-gettime(void)
+gettime (void)
 {
-	return time(0);
+  return time (0);
 }
 
 
@@ -86,9 +86,9 @@ gettime(void)
     it is needed but how/why ?
 */
 void
-debug(char *s)
+debug (char *s)
 {
-  debug_full("ERROR  - debug called in full with %s",s);
+  debug_full ("ERROR  - debug called in full with %s", s);
 }
 
 /* ================================= EOF ============================= */

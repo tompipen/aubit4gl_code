@@ -52,64 +52,59 @@
  *
  * @todo : Check with esql if the data was inserted.
  */
-START_TEST(test_insert)
+START_TEST (test_insert)
 {
   struct s_sid *sid;
   int result;
   char strSql[512];
   struct BINDING ibind[] = {
-    {0,0,0}
+    {0, 0, 0}
   };
 
-  cleanTestTable();
+  cleanTestTable ();
   /** @todo : Inserting more columns */
-  strcpy(strSql,
-    "insert into test_table (an_int,a_char,a_decimal) values (2,'TWO',1234.56)"
-  );
-  sid = (struct s_sid *)A4GLSQL_prepare_glob_sql(
-    strSql,0,ibind
-  );
-  fail_unless(sid!=(struct s_sid *)0,"Prepare insert failed");
-  if ( sid==(struct s_sid *)0 )
+  strcpy (strSql,
+	  "insert into test_table (an_int,a_char,a_decimal) values (2,'TWO',1234.56)");
+  sid = (struct s_sid *) A4GLSQL_prepare_glob_sql (strSql, 0, ibind);
+  fail_unless (sid != (struct s_sid *) 0, "Prepare insert failed");
+  if (sid == (struct s_sid *) 0)
     return;
-  result = A4GLSQL_execute_implicit_sql(sid);
-  fail_unless(result==0,"Execute insert failed");
-  fail_unless(countTestRows() == 1, "No rows inserted");
-  fail_unless(validateTestRow(2,"TWO",1234.56) == 1, "No rows inserted");
+  result = A4GLSQL_execute_implicit_sql (sid);
+  fail_unless (result == 0, "Execute insert failed");
+  fail_unless (countTestRows () == 1, "No rows inserted");
+  fail_unless (validateTestRow (2, "TWO", 1234.56) == 1, "No rows inserted");
 }
-END_TEST
 
+END_TEST
 /**
  * Test the insert in a table with variable binding.
  *
  * @todo : Check with esql if the data was inserted.
  */
-START_TEST(test_bind_insert)
+START_TEST (test_bind_insert)
 {
   struct s_sid *sid;
   int result;
   long int_var = 100;
   char char_var[15] = "Hello world";
   struct BINDING ibind[] = {
-   {&int_var,2,0},
-   {&char_var,0,15}
+    {&int_var, 2, 0},
+    {&char_var, 0, 15}
   };
   char *strSql = "insert into test_table (an_int,a_char) values (?,?)";
 
-  cleanTestTable();
-  sid = (struct s_sid *)A4GLSQL_prepare_glob_sql(
-    strSql,2,ibind
-  );
-  fail_unless(sid!=(struct s_sid *)0,"Prepare insert failed");
-  if ( sid==(struct s_sid *)0 )
+  cleanTestTable ();
+  sid = (struct s_sid *) A4GLSQL_prepare_glob_sql (strSql, 2, ibind);
+  fail_unless (sid != (struct s_sid *) 0, "Prepare insert failed");
+  if (sid == (struct s_sid *) 0)
     return;
   //A4GLSQL_set_conn("test");
-  result = A4GLSQL_execute_implicit_sql(sid);
-  fail_unless(result==0,"Binded insert failed");
-  fail_unless(countTestRows() == 1, "No rows inserted");
+  result = A4GLSQL_execute_implicit_sql (sid);
+  fail_unless (result == 0, "Binded insert failed");
+  fail_unless (countTestRows () == 1, "No rows inserted");
 }
-END_TEST
 
+END_TEST
 /**
  * Test an update in a table.
  *
@@ -142,7 +137,6 @@ START_TEST(test_update)
 }
 END_TEST
 */
-
 /**
  * Test an update in a table with variable binding.
  *
@@ -175,7 +169,6 @@ START_TEST(test_bind_update)
 }
 END_TEST
 */
-
 /**
  * Test a delete in a table.
  *
@@ -188,7 +181,6 @@ START_TEST(test_delete)
 }
 END_TEST
 */
-
 /**
  * Test a binded delete in a table.
  *
@@ -201,7 +193,6 @@ START_TEST(test_bind_delete)
 }
 END_TEST
 */
-
 /**
  * Set up the test case.
  *
@@ -209,12 +200,13 @@ END_TEST
  *
  * Load the informix library and try to estabilish the database connection.
  */
-static void setup(void)
+  static void
+setup (void)
 {
   int result;
-  result = A4GLSQL_init_connection("test");
-  fail_unless(result==0,"Connection to test failed");
-  createTestTable();
+  result = A4GLSQL_init_connection ("test");
+  fail_unless (result == 0, "Connection to test failed");
+  createTestTable ();
 }
 
 /**
@@ -222,13 +214,14 @@ static void setup(void)
  *
  * Close the database connection.
  */
-static void teardown(void)
+static void
+teardown (void)
 {
-  dropTestTable();
-  fail_unless(
-    //A4GLSQL_close_connection("test")==0, "Disconnect from test failed"
-	A4GLSQL_close_connection()==0, "Disconnect from test failed"
-  );
+  dropTestTable ();
+  fail_unless (
+		//A4GLSQL_close_connection("test")==0, "Disconnect from test failed"
+		A4GLSQL_close_connection () == 0,
+		"Disconnect from test failed");
 }
 
 /**
@@ -236,16 +229,16 @@ static void teardown(void)
  *
  * @return A pointer to the created informix test_suite.
  */
-Suite *makeDmlSuite(void)
+Suite *
+makeDmlSuite (void)
 {
-  Suite *s = suite_create("Informix native data definition language"); 
-  TCase *tc_dml = tcase_create("Data Manipulation Language");
- 
-  suite_add_tcase (s, tc_dml);
- 
-  tcase_add_unchecked_fixture (tc_dml, setup, teardown);
-  tcase_add_test (tc_dml,test_insert); 
-  tcase_add_test (tc_dml,test_bind_insert); 
-  return s; 
-}
+  Suite *s = suite_create ("Informix native data definition language");
+  TCase *tc_dml = tcase_create ("Data Manipulation Language");
 
+  suite_add_tcase (s, tc_dml);
+
+  tcase_add_unchecked_fixture (tc_dml, setup, teardown);
+  tcase_add_test (tc_dml, test_insert);
+  tcase_add_test (tc_dml, test_bind_insert);
+  return s;
+}

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.10 2003-01-21 08:25:55 afalout Exp $
+# $Id: menuwrite.c,v 1.11 2003-05-12 14:24:22 mikeaubury Exp $
 #*/
 
 /**
@@ -85,7 +85,7 @@ FILE *fyy;
 void error_with (char *s, char *a, char *b);
 
 #ifdef OLD_INCL
-	void write_menu (void);
+void write_menu (void);
 #endif
 
 /*
@@ -108,7 +108,7 @@ error_with (char *s, char *a, char *b)
     a = z;
   if (b == 0)
     b = z;
-   printf (s, a, b);
+  printf (s, a, b);
 
   debug ("\n");
   exit (7);
@@ -128,7 +128,7 @@ write_menu (void)
   int a;
   XDR xdrp;
   menu_list *ptr;
-  ptr=&the_menus;
+  ptr = &the_menus;
   strcpy (fname, outputfilename);
   strcat (fname, acl_getenv ("A4GL_MNU_EXT"));
 
@@ -136,51 +136,62 @@ write_menu (void)
   strcat (fname2, ".c");
 
 
-  fxx=fopen(fname,"wb");
+  fxx = fopen (fname, "wb");
 
-  debug("has %d menus\n",the_menus.menus.menus_len);
+  debug ("has %d menus\n", the_menus.menus.menus_len);
 
-  debug("writing in XDR format file %s\n",fname);
+  debug ("writing in XDR format file %s\n", fname);
 
   if (fxx == 0)
     {
       error_with ("Couldnt open file for write (%s)\n", fname, 0);
     }
 
-        xdrstdio_create(&xdrp, fxx, XDR_ENCODE);
-        a=xdr_menu_list(&xdrp,ptr);
+  xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
+  a = xdr_menu_list (&xdrp, ptr);
 
-	if (!a) {
-		debug("*** Write FAILED ***\n");
-		error_with("Unable to write data\n",0,0);
+  if (!a)
+    {
+      debug ("*** Write FAILED ***\n");
+      error_with ("Unable to write data\n", 0, 0);
+    }
+
+  xdr_destroy (&xdrp);
+  fclose (fxx);
+
+  if (as_c)
+    {
+      int cnt = 0;
+      int a;
+      debug ("Asc\n");
+      fxx = fopen (fname, "r");
+      fyy = fopen (fname2, "w");
+      fprintf (fyy, "char compiled_menu_%s[]={\n", outputfilename);
+
+      while (!feof (fxx))
+	{
+	  a = fgetc (fxx);
+	  if (feof (fxx))
+	    break;
+	  if (cnt > 0)
+	    fprintf (fyy, ",");
+	  if (cnt % 16 == 0 && cnt)
+	    {
+	      fprintf (fyy, "\n");
+	    }
+	  if (a == -1)
+	    {
+	      break;
+	    }
+	  fprintf (fyy, "0x%02x", a);
+	  cnt++;
 	}
+      fprintf (fyy, "};\n");
+      fclose (fxx);
+      fclose (fyy);
+      /* unlink(fname); */
+    }
 
-	xdr_destroy(&xdrp);
-	fclose(fxx);
-
-	if (as_c) {
-		int cnt=0;
-		int a;
-		debug("Asc\n");
-		fxx=fopen(fname,"r");
-		fyy=fopen(fname2,"w");
-		fprintf(fyy,"char compiled_menu_%s[]={\n",outputfilename);
-
-		while (!feof(fxx)) {
-			a=fgetc(fxx);
-			if (feof(fxx)) break;
-			if (cnt>0) fprintf(fyy,",");
-			if (cnt%16==0&&cnt) {fprintf(fyy,"\n");}
-			if (a==-1) {break;}
-			fprintf(fyy,"0x%02x",a);
-			cnt++;
-		}
-		fprintf(fyy,"};\n");
-		fclose(fxx);
-		fclose(fyy);
-		/* unlink(fname); */
-	}
-	
 }
 
 

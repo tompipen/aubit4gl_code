@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: handler.c,v 1.3 2002-10-20 12:02:39 afalout Exp $
+# $Id: handler.c,v 1.4 2003-05-12 14:24:31 mikeaubury Exp $
 #*/
 
 /**
@@ -52,8 +52,8 @@
 #define ACL4GLGTK
 
 #ifdef __CYGWIN__
-	#define g_malloc malloc
-	#define g_free free
+#define g_malloc malloc
+#define g_free free
 #endif
 
 /*
@@ -69,11 +69,11 @@ extern char *field;
 int cnt = 0;
 int keypressed = -1;
 int beforefield = -1;
-GtkWidget *actionfield=0;
+GtkWidget *actionfield = 0;
 int onfield = -1;
 
 /** Last key pressed by the user */
-int lastkey=0;
+int lastkey = 0;
 
 /*
 =====================================================================
@@ -82,13 +82,13 @@ int lastkey=0;
 */
 
 #ifdef OLD_INCL
-	void clear_something (void);
-	int user_has_done_something (void);
-	GtkWidget * get_which_field (void);
-	int which_key (void);
-	int keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
-	void func (GtkWidget * w, char *mode);
-	int gui_get_lastkey(void);
+void clear_something (void);
+int user_has_done_something (void);
+GtkWidget *get_which_field (void);
+int which_key (void);
+int keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data);
+void func (GtkWidget * w, char *mode);
+int gui_get_lastkey (void);
 #endif
 
 
@@ -153,7 +153,9 @@ user_has_done_something (void)
 GtkWidget *
 get_which_field (void)
 {
-  {debug("Returning action field : %p",actionfield);}
+  {
+    debug ("Returning action field : %p", actionfield);
+  }
   return actionfield;
 }
 
@@ -192,7 +194,9 @@ int
 keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
 {
 
-  debug ("Key Pressed! %x %x (%s)\n", event->keyval, event->state,gdk_keyval_name(event->keyval));fflush(stdout);
+  debug ("Key Pressed! %x %x (%s)\n", event->keyval, event->state,
+	 gdk_keyval_name (event->keyval));
+  fflush (stdout);
 
   if (event->state & 4)
     {				/*  Control key held down... */
@@ -206,11 +210,11 @@ keypress (GtkWidget * widget, GdkEventKey * event, gpointer user_data)
       keypressed = event->keyval;
     }
 
-  lastkey=keypressed;
-  set_last_key(lastkey);
-  debug("setting action field=%p",widget);
+  lastkey = keypressed;
+  set_last_key (lastkey);
+  debug ("setting action field=%p", widget);
   actionfield = widget;
-return 0;
+  return 0;
 }
 
 /**
@@ -222,85 +226,91 @@ void
 func (GtkWidget * w, char *mode)
 {
 
-	debug("MJAMJA (func)- widget=%p\n",w);
-	if (gtk_object_get_data(GTK_OBJECT(w),"HANDLER")!=0)
-	{
-		/* void (*hand)(); */
-		void (*hand)(GtkWidget * w, char *mode);
-
-		debug("MJAMJA------------> Own handler....\n");
-		hand=gtk_object_get_data(GTK_OBJECT(w),"HANDLER");
-		hand(w,mode);
-		return;
-	}
-
-	debug("in func");
-	debug ("!**** func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
-	fflush(stdout);
-	debug ("**** func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
-
-  if (strcasecmp(mode,"grab_focus")==0) 
-  {
-      debug("grab focus detected...\n");
-      fflush(stdout);
-
-      debug("setting action field=%p",w);
-      actionfield=w;
-
-      beforefield=1;
-      return ;
-  }
-
-  if (strcmp(mode,"clicked")==0)
+  debug ("MJAMJA (func)- widget=%p\n", w);
+  if (gtk_object_get_data (GTK_OBJECT (w), "HANDLER") != 0)
     {
-      char *key;
-	  int m;
-      onfield = 1;
-	  debug("setting action field=%p",w);
+      /* void (*hand)(); */
+      void (*hand) (GtkWidget * w, char *mode);
+
+      debug ("MJAMJA------------> Own handler....\n");
+      hand = gtk_object_get_data (GTK_OBJECT (w), "HANDLER");
+      hand (w, mode);
+      return;
+    }
+
+  debug ("in func");
+  debug ("!**** func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
+  fflush (stdout);
+  debug ("**** func ---%p '%s' (%s:%s)\n", w, mode, widgettype, field);
+
+  if (strcasecmp (mode, "grab_focus") == 0)
+    {
+      debug ("grab focus detected...\n");
+      fflush (stdout);
+
+      debug ("setting action field=%p", w);
       actionfield = w;
 
-      key=gtk_object_get_data(GTK_OBJECT(w),"KEY");
+      beforefield = 1;
+      return;
+    }
 
-      debug("Key=%p\n",key);fflush(stdout);
+  if (strcmp (mode, "clicked") == 0)
+    {
+      char *key;
+      int m;
+      onfield = 1;
+      debug ("setting action field=%p", w);
+      actionfield = w;
 
-      if (key) 
-	  {
-		debug("Substituting specified key: %s\n",key);fflush(stdout);
+      key = gtk_object_get_data (GTK_OBJECT (w), "KEY");
 
-		if (strcasecmp(key,"ACCEPT")==0)  
+      debug ("Key=%p\n", key);
+      fflush (stdout);
+
+      if (key)
+	{
+	  debug ("Substituting specified key: %s\n", key);
+	  fflush (stdout);
+
+	  if (strcasecmp (key, "ACCEPT") == 0)
+	    {
+	      keypressed = 27;	/* FIXME */
+	    }
+	  else
+	    {
+	      if (strcasecmp (key, "INTERRUPT") == 0)
 		{
-			keypressed=27; /* FIXME */
-		}  
-		else 
-		{
-			if (strcasecmp(key,"INTERRUPT")==0)
-			{
-				keypressed=3; /* FIXME */
-			}
-			else
-			{
-				gtk_accelerator_parse(key,&keypressed,(GdkModifierType *)&m);
-				if (m&4 && tolower(keypressed)>='a' && tolower(keypressed)<='z') keypressed=tolower(keypressed)-'a'+1;
-				debug("keypressed=%x m=%x\n",keypressed,m);fflush(stdout);
-			}
+		  keypressed = 3;	/* FIXME */
 		}
-      }
+	      else
+		{
+		  gtk_accelerator_parse (key, &keypressed,
+					 (GdkModifierType *) & m);
+		  if (m & 4 && tolower (keypressed) >= 'a'
+		      && tolower (keypressed) <= 'z')
+		    keypressed = tolower (keypressed) - 'a' + 1;
+		  debug ("keypressed=%x m=%x\n", keypressed, m);
+		  fflush (stdout);
+		}
+	    }
+	}
     }
 
 
 #ifdef TESTING
   /*
-  if (strcmp (field, "formonly.btn1[0]") == 0
-      && strcmp (mode, "clicked") == 0)
-    {
-      testfunc ();
-    }
-    */
+     if (strcmp (field, "formonly.btn1[0]") == 0
+     && strcmp (mode, "clicked") == 0)
+     {
+     testfunc ();
+     }
+   */
 #endif
 
 
-	debug("All done");
-return;
+  debug ("All done");
+  return;
 }
 
 
@@ -349,7 +359,7 @@ upshift_insert_text_handler (GtkEntry * entry,
  * @return The last key typed.
  */
 int
-gui_get_lastkey(void)
+gui_get_lastkey (void)
 {
   return lastkey;
 }

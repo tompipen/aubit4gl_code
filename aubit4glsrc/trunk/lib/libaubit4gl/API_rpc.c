@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_rpc.c,v 1.10 2002-08-19 10:17:46 afalout Exp $
+# $Id: API_rpc.c,v 1.11 2003-05-12 14:24:02 mikeaubury Exp $
 #
 */
 
@@ -48,7 +48,7 @@
 =====================================================================
 */
 
-static void *libptr=0;
+static void *libptr = 0;
 
 /*
 =====================================================================
@@ -56,7 +56,7 @@ static void *libptr=0;
 =====================================================================
 */
 
-static int 		(*func)				();
+static int (*func) ();
 
 /*
 =====================================================================
@@ -73,22 +73,23 @@ int
 A4GLRPC_initlib (void)
 {
 
-	debug("Opening RPC library");
-        libptr=(void *)dl_openlibrary("RPC",acl_getenv("RPCTYPE"));
+  debug ("Opening RPC library");
+  libptr = (void *) dl_openlibrary ("RPC", acl_getenv ("RPCTYPE"));
 
-        debug("libptr=%p\n",libptr);
+  debug ("libptr=%p\n", libptr);
 
-        if (libptr==0) {
-                exitwith("Unable to open RPC library.");
-                return 0;
-        }
+  if (libptr == 0)
+    {
+      exitwith ("Unable to open RPC library.");
+      return 0;
+    }
 
-        func=find_func_allow_missing(libptr,"A4GLRPC_initlib");
+  func = find_func_allow_missing (libptr, "A4GLRPC_initlib");
 
-        if (func)
-                return func();
-        else
-                return 1;
+  if (func)
+    return func ();
+  else
+    return 1;
 }
 
 
@@ -99,12 +100,13 @@ A4GLRPC_initlib (void)
  * @todo Describe function
  */
 int
-remote_func_call (char *host,int async,char *funcname,int port,int np)
+remote_func_call (char *host, int async, char *funcname, int port, int np)
 {
-	debug("remote_func_call - libptr=%p\n");
-  if (libptr==0) A4GLRPC_initlib();
-  func=find_func(libptr,"remote_func_call");
-  return func (host,async,funcname,port,np);
+  debug ("remote_func_call - libptr=%p\n");
+  if (libptr == 0)
+    A4GLRPC_initlib ();
+  func = find_func (libptr, "remote_func_call");
+  return func (host, async, funcname, port, np);
 }
 
 

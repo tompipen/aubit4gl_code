@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: get_fld_val.c,v 1.4 2002-11-23 08:45:10 mikeaubury Exp $
+# $Id: get_fld_val.c,v 1.5 2003-05-12 14:24:30 mikeaubury Exp $
 #*/
 
 /**
@@ -54,7 +54,7 @@
 */
 
 #ifdef OLD_INCL
-	char * fld_val_generic (GtkWidget * k);
+char *fld_val_generic (GtkWidget * k);
 #endif
 
 /*
@@ -85,21 +85,21 @@ fld_val_generic (GtkWidget * k)
   if (ptr == NULL)
     {
       debug ("Cant find tyhe widget!");
-      return (char *)1;
+      return (char *) 1;
     }
 
   debug ("Widgettye=%s\n", ptr);
 
   if (strcasecmp (ptr, "LABEL") == 0)
     {
-      gtk_label_get (GTK_LABEL(k), &txt);
+      gtk_label_get (GTK_LABEL (k), &txt);
       return txt;
     }
 
   if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0)
     {
-      return gtk_entry_get_text (GTK_ENTRY(k));
-      return (char *)1;
+      return gtk_entry_get_text (GTK_ENTRY (k));
+      return (char *) 1;
     }
 
   if (strcasecmp (ptr, "RADIO") == 0)
@@ -114,7 +114,7 @@ fld_val_generic (GtkWidget * k)
 	  btn = gtk_object_get_data (GTK_OBJECT (k), buff);
 	  if (btn == 0)
 	    break;
-	  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(btn)))
+	  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (btn)))
 	    {
 	      ptr = gtk_object_get_data (GTK_OBJECT (btn), "Value");
 	      return ptr;
@@ -126,26 +126,26 @@ fld_val_generic (GtkWidget * k)
 
   if (strcasecmp (ptr, "CALENDAR") == 0)
     {
-	int d,m,y;
-	static char buff[256];
+      int d, m, y;
+      static char buff[256];
 
-        gtk_calendar_get_date (GTK_CALENDAR(k),&y,&m,&d);
-        push_variable(&m,0x2);
-        push_variable(&d,0x2);
-        push_variable(&y,0x2);
-        aclfgl_mdy(3);
-	pop_var2(&buff,0,20);
-	trim(buff);
-	return buff;
+      gtk_calendar_get_date (GTK_CALENDAR (k), &y, &m, &d);
+      push_variable (&m, 0x2);
+      push_variable (&d, 0x2);
+      push_variable (&y, 0x2);
+      aclfgl_mdy (3);
+      pop_var2 (&buff, 0, 20);
+      trim (buff);
+      return buff;
     }
 
   if (strcasecmp (ptr, "SCROLLBAR") == 0)
     {
-	static char buff[20];
-        /* d=gtk_adjustment_get_value (GTK_ADJUSTMENT(k)); */
-	sprintf(buff,"%d",0);
-        return buff;
-  }
+      static char buff[20];
+      /* d=gtk_adjustment_get_value (GTK_ADJUSTMENT(k)); */
+      sprintf (buff, "%d", 0);
+      return buff;
+    }
 
 /* NEWWIDGET - Add here */
 

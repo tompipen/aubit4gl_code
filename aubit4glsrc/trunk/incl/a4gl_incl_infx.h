@@ -1,27 +1,28 @@
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-void popquote(char *s,int size);
-void retquote(char *s);
-void retint(int a);
-void retflo(float *a);
-void pushint(int a);
-void strip(char *s);
+  void popquote (char *s, int size);
+  void retquote (char *s);
+  void retint (int a);
+  void retflo (float *a);
+  void pushint (int a);
+  void strip (char *s);
 //void rsetnull(int d,void *ptr);
 
-void retshort(short x);
-void poplong(long* x);
-void retlong(long x);
-void pushquote(char* x, int y);
-void popint(int* x);
-void popshort(short* x);
-void retstring(char* str);
+  void retshort (short x);
+  void poplong (long *x);
+  void retlong (long x);
+  void pushquote (char *x, int y);
+  void popint (int *x);
+  void popshort (short *x);
+  void retstring (char *str);
 
-void pushshort (short x);
-void pushlong (long x);
-void popvchar (char* x, int y);
-void retdub (double *x);
+  void pushshort (short x);
+  void pushlong (long x);
+  void popvchar (char *x, int y);
+  void retdub (double *x);
 
 
 

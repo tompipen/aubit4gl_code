@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pointers.c,v 1.17 2002-10-22 06:43:36 afalout Exp $
+# $Id: pointers.c,v 1.18 2003-05-12 14:24:17 mikeaubury Exp $
 #
 */
 
@@ -82,10 +82,10 @@ void *root = 0;
  * Tree node
  */
 struct s_node
-  {
-    char name[TXT_LEN + 1];
-    void *ptr;
-  };
+{
+  char name[TXT_LEN + 1];
+  void *ptr;
+};
 
 /*
 =====================================================================
@@ -94,12 +94,18 @@ struct s_node
 */
 
 #if defined(__DARWIN__) || defined (WIN32) || defined(__CYGWIN__) || defined(__MINGW32__)
-//actually, should use 	#if HAVE_SEARCH_H
-	
+//actually, should use  #if HAVE_SEARCH_H
+
 	/* search internal node for windows and platforms without this library function */
 
-	typedef struct entry { char *key, *data; } ENTRY;
-	typedef enum { FIND, ENTER } ACTION;
+typedef struct entry
+{
+  char *key, *data;
+}
+ENTRY;
+typedef enum
+{ FIND, ENTER }
+ACTION;
 
 	/* TSEARCH(3C) */
 	/** The type of the visit made to an element of the tree */
@@ -108,18 +114,18 @@ struct s_node
 	//void action (const void *nodep, const VISIT which, const int depth);
 
 	/** A node tree information */
-	typedef struct node_t
-	{
-	    char	  *key;
-	    struct node_t *left, *right;
-	}
-	node;
+typedef struct node_t
+{
+  char *key;
+  struct node_t *left, *right;
+}
+node;
 
-	node *tsearch(char *key, node **rootp, int		(*compar)());
-	node *tdelete(char *key, node **rootp, int		(*compar)());
-	void twalk(node* root, void *act);
+node *tsearch (char *key, node ** rootp, int (*compar) ());
+node *tdelete (char *key, node ** rootp, int (*compar) ());
+void twalk (node * root, void *act);
 	// void twalk(node *root, VISIT action);
-	node *tfind(char *key, node **rootp, int		(*compar)());
+node *tfind (char *key, node ** rootp, int (*compar) ());
 #endif
 
 /*
@@ -128,9 +134,9 @@ struct s_node
 =====================================================================
 */
 
-int 		strcmpare		(const void *a,const void *b);
-void 		action 			(const void *nodep, const VISIT which, const int depth);
-void 		print_ptr_stack	(void);
+int strcmpare (const void *a, const void *b);
+void action (const void *nodep, const VISIT which, const int depth);
+void print_ptr_stack (void);
 
 /*
 =====================================================================
@@ -149,9 +155,9 @@ void 		print_ptr_stack	(void);
  *   - greater than zero if a greater b
  */
 int
-strcmpare(const void *a,const void *b)
+strcmpare (const void *a, const void *b)
 {
-	return strcmp(a,b);
+  return strcmp (a, b);
 }
 
 /**
@@ -170,8 +176,8 @@ strcmpare(const void *a,const void *b)
 void
 action (const void *nodep, const VISIT which, const int depth)
 {
-struct s_node *datap;
-char buff[800];
+  struct s_node *datap;
+  char buff[800];
 
   memset (buff, ' ', 800);
   buff[depth * 4] = 0;
@@ -181,13 +187,13 @@ char buff[800];
       break;
     case postorder:
       datap = *(struct s_node **) nodep;
-      debug ("%s%s %p :", buff,datap->name, datap->ptr);
+      debug ("%s%s %p :", buff, datap->name, datap->ptr);
       break;
     case endorder:
       break;
     case leaf:
       datap = *(struct s_node **) nodep;
-      debug ("%s%s %p :", buff,datap->name, datap->ptr);
+      debug ("%s%s %p :", buff, datap->name, datap->ptr);
       break;
     }
   return;
@@ -209,11 +215,11 @@ add_pointer (char *orig_name, char type, void *ptr)
   struct s_node buff2;
   struct s_node *node;
   char ptrchar[800];
-  trim(orig_name);
-  debug("Adding pointer to %s %c (%p)",orig_name,type,ptr);
-  buff = (struct s_node *)malloc (sizeof (struct s_node));
+  trim (orig_name);
+  debug ("Adding pointer to %s %c (%p)", orig_name, type, ptr);
+  buff = (struct s_node *) malloc (sizeof (struct s_node));
   buff->name[0] = type;
-  buff->name[1]=0;
+  buff->name[1] = 0;
   strcat (buff->name, orig_name);
   buff->ptr = ptr;
   debug ("Buff=%p\n", buff);
@@ -255,12 +261,12 @@ add_pointer (char *orig_name, char type, void *ptr)
       a = ADD (buff);
       debug ("tsearch ... a=%p %p\n", a, buff);
     }
-  buff_add = (struct s_node *)malloc (sizeof (struct s_node));
+  buff_add = (struct s_node *) malloc (sizeof (struct s_node));
   sprintf (buff_add->name, ">%p", ptr);
   buff_add->ptr = buff;
   debug ("Adding extra for %s %p\n", buff_add->name, buff_add->ptr);
   a = ADD (buff_add);
-  debug("Added...");
+  debug ("Added...");
 }
 
 
@@ -280,23 +286,23 @@ find_pointer (const char *pname, char t)
   struct s_node *node;
   void *a;
 
-  debug("Finding pointer to %s %c",pname,t);
+  debug ("Finding pointer to %s %c", pname, t);
   buff.name[0] = t;
-  buff.name[1]=0;
+  buff.name[1] = 0;
   strcat (buff.name, pname);
   buff.ptr = 0;
-  debug("Finding %s",buff.name);
+  debug ("Finding %s", buff.name);
   a = FIND (&buff);
-  debug("A=%p",a);
-  if (a!=NULL)
+  debug ("A=%p", a);
+  if (a != NULL)
     {
       node = *(struct s_node **) a;
-      debug("Returning %s %c %p",&node->name[1],node->name[0],node->ptr);
+      debug ("Returning %s %c %p", &node->name[1], node->name[0], node->ptr);
       return node->ptr;
     }
   else
     {
-      debug("Opps - not found pname=%s t=%c a=%p",pname,t,a);
+      debug ("Opps - not found pname=%s t=%c a=%p", pname, t, a);
       return 0;
     }
 }
@@ -309,9 +315,9 @@ find_pointer (const char *pname, char t)
  * doing.
  */
 void
-print_ptr_stack(void)
+print_ptr_stack (void)
 {
-  twalk(root, action);
+  twalk (root, action);
 }
 
 /**
@@ -328,10 +334,10 @@ del_pointer (char *pname, char t)
   struct s_node buff2;
   struct s_node *node;
   char ptrchar[800];
-  buff = (struct s_node *)malloc (sizeof (struct s_node));
+  buff = (struct s_node *) malloc (sizeof (struct s_node));
   buff->name[0] = t;
-  buff->name[1]=0;
-  strcat (buff->name,pname);
+  buff->name[1] = 0;
+  strcat (buff->name, pname);
   debug ("Buff=%p\n", buff);
   a = FIND (buff);
   if (a)
@@ -350,9 +356,9 @@ del_pointer (char *pname, char t)
 	  free (node);
 	}
 #if ! defined(__MINGW32__)
-	DELETE(buff);
+      DELETE (buff);
 #endif
-    free(buff);
+      free (buff);
     }
 }
 
@@ -382,34 +388,31 @@ find_pointer_val (char *pname, char t)
  *   - 1 :
  */
 int
-find_pointer_ptr (
-		   char *name,
-		   char *type,
-		   void *ptr)
+find_pointer_ptr (char *name, char *type, void *ptr)
 {
   struct s_node buff;
   struct s_node *node;
   void *a;
-  debug("Finding pointer to pointer %p",ptr);
+  debug ("Finding pointer to pointer %p", ptr);
   sprintf (buff.name, ">%p", ptr);
-  debug("Finding %s",buff.name);
+  debug ("Finding %s", buff.name);
   buff.ptr = 0;
 
   a = FIND (&buff);
-  debug("Find returns %p",a);
+  debug ("Find returns %p", a);
   if (a)
     {
       node = *(struct s_node **) a;
-      node =(struct s_node *) node->ptr;
+      node = (struct s_node *) node->ptr;
 
-      debug("Copying.. %s",node->name);
+      debug ("Copying.. %s", node->name);
       *type = node->name[0];
       strcpy (name, &node->name[1]);
       return 1;
     }
   else
     {
-      debug("Not found");
+      debug ("Not found");
       return 0;
     }
 }
@@ -444,11 +447,9 @@ has_pointer (char *pname, char t)
  *
  * Totally public domain.
  */
-/*LINTLIBRARY*/
-
+ /*LINTLIBRARY*/
 #if defined(__DARWIN__) || defined (WIN32) || defined (__CYGWIN__)
-//actually, should use 	#if HAVE_SEARCH_H
-
+//actually, should use  #if HAVE_SEARCH_H
 /**
  * find or insert datum into search tree
  *
@@ -457,35 +458,35 @@ has_pointer (char *pname, char t)
  * @param compar ordering function
  * @todo Describe function
  */
-node *
-tsearch(key, rootp, compar)
-	char *key;
-	register node	**rootp;
-	int (*compar)();
+  node * tsearch (key, rootp, compar)
+     char *
+       key;
+     register node **
+       rootp;
+     int (*compar) ();
 {
-    register node *q;
+  register node *q;
 
-    if (rootp == (struct node_t **)0)
-	return ((struct node_t *)0);
-    while (*rootp != (struct node_t *)0)			/* Knuth's T1: */
+  if (rootp == (struct node_t **) 0)
+    return ((struct node_t *) 0);
+  while (*rootp != (struct node_t *) 0)	/* Knuth's T1: */
     {
-	int r;
+      int r;
 
-	if ((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
-	    return (*rootp);							/* we found it! */
+      if ((r = (*compar) (key, (*rootp)->key)) == 0)	/* T2: */
+	return (*rootp);	/* we found it! */
 
-	rootp = (r < 0) ?
-	    &(*rootp)->left :							/* T3: follow left branch */
-	    &(*rootp)->right;							/* T4: follow right branch */
+      rootp = (r < 0) ? &(*rootp)->left :	/* T3: follow left branch */
+	&(*rootp)->right;	/* T4: follow right branch */
     }
-    q = (node *) malloc(sizeof(node));				/* T5: key not found */
-    if (q != (struct node_t *)0)					/* make new node */
+  q = (node *) malloc (sizeof (node));	/* T5: key not found */
+  if (q != (struct node_t *) 0)	/* make new node */
     {
-	*rootp = q;										/* link new node to old */
-	q->key = key;									/* initialize new node */
-	q->left = q->right = (struct node_t *)0;
+      *rootp = q;		/* link new node to old */
+      q->key = key;		/* initialize new node */
+      q->left = q->right = (struct node_t *) 0;
     }
-    return (q);
+  return (q);
 }
 
 /**
@@ -498,52 +499,51 @@ tsearch(key, rootp, compar)
  * @todo Describe function
  */
 node *
-tdelete(key, rootp, compar)
-	char	*key;				/* key to be deleted */
-	register node	**rootp;	/* address of the root of tree */
-	int (*compar)();			/* comparison function */
+tdelete (key, rootp, compar)
+     char *key;			/* key to be deleted */
+     register node **rootp;	/* address of the root of tree */
+     int (*compar) ();		/* comparison function */
 {
-    node *p;
-    register node *q;
-    register node *r;
-    int cmp;
+  node *p;
+  register node *q;
+  register node *r;
+  int cmp;
 
 
-	if (rootp == (struct node_t **)0 || (p = *rootp) == (struct node_t *)0)
-	return ((struct node_t *)0);
+  if (rootp == (struct node_t **) 0 || (p = *rootp) == (struct node_t *) 0)
+    return ((struct node_t *) 0);
 
-	while ((cmp = (*compar)(key, (*rootp)->key)) != 0)
-	{
-		p = *rootp;
-		rootp = (cmp < 0) ?
-	    &(*rootp)->left :					/* follow left branch */
-	    &(*rootp)->right;					/* follow right branch */
-		if (*rootp == (struct node_t *)0)
-	    	return ((struct node_t *)0);	/* key not found */
-	}
-
-    r = (*rootp)->right;				/* D1: */
-    if ((q = (*rootp)->left) == (struct node_t *)0)	/* Left (struct node_t *)0? */
-	q = r;
-    else if (r != (struct node_t *)0)	/* Right link is null? */
+  while ((cmp = (*compar) (key, (*rootp)->key)) != 0)
     {
-	if (r->left == (struct node_t *)0)	/* D2: Find successor */
+      p = *rootp;
+      rootp = (cmp < 0) ? &(*rootp)->left :	/* follow left branch */
+	&(*rootp)->right;	/* follow right branch */
+      if (*rootp == (struct node_t *) 0)
+	return ((struct node_t *) 0);	/* key not found */
+    }
+
+  r = (*rootp)->right;		/* D1: */
+  if ((q = (*rootp)->left) == (struct node_t *) 0)	/* Left (struct node_t *)0? */
+    q = r;
+  else if (r != (struct node_t *) 0)	/* Right link is null? */
+    {
+      if (r->left == (struct node_t *) 0)	/* D2: Find successor */
 	{
-	    r->left = q;
-	    q = r;
+	  r->left = q;
+	  q = r;
 	}
-	else
-	{									/* D3: Find (struct node_t *)0 link */
-	    for (q = r->left; q->left != (struct node_t *)0; q = r->left)
-		r = q;
-	    r->left = q->right;
-	    q->left = (*rootp)->left;
-	    q->right = (*rootp)->right;
+      else
+	{			/* D3: Find (struct node_t *)0 link */
+	  for (q = r->left; q->left != (struct node_t *) 0; q = r->left)
+	    r = q;
+	  r->left = q->right;
+	  q->left = (*rootp)->left;
+	  q->right = (*rootp)->right;
 	}
     }
-    free((struct node_t *) *rootp);		/* D4: Free node */
-    *rootp = q;							/* link parent to new node */
-    return(p);
+  free ((struct node_t *) *rootp);	/* D4: Free node */
+  *rootp = q;			/* link parent to new node */
+  return (p);
 }
 
 /**
@@ -556,22 +556,22 @@ tdelete(key, rootp, compar)
  * @todo Describe function
  */
 static void
-trecurse(root, action, level)
-	register node	*root;			/* Root of the tree to be walked */
-	register void	(*action)();	/* Function to be called at each node */
-	register int	level;
+trecurse (root, action, level)
+     register node *root;	/* Root of the tree to be walked */
+     register void (*action) ();	/* Function to be called at each node */
+     register int level;
 {
-    if (root->left == (struct node_t *)0 && root->right == (struct node_t *)0)
-	(*action)(root, leaf, level);
-    else
+  if (root->left == (struct node_t *) 0 && root->right == (struct node_t *) 0)
+    (*action) (root, leaf, level);
+  else
     {
-	(*action)(root, preorder, level);
-	if (root->left != (struct node_t *)0)
-	    trecurse(root->left, action, level + 1);
-	(*action)(root, postorder, level);
-	if (root->right != (struct node_t *)0)
-	    trecurse(root->right, action, level + 1);
-	(*action)(root, endorder, level);
+      (*action) (root, preorder, level);
+      if (root->left != (struct node_t *) 0)
+	trecurse (root->left, action, level + 1);
+      (*action) (root, postorder, level);
+      if (root->right != (struct node_t *) 0)
+	trecurse (root->right, action, level + 1);
+      (*action) (root, endorder, level);
     }
 }
 
@@ -582,10 +582,10 @@ trecurse(root, action, level)
  * @paramaction Function to be called at each node
  */
 void
-twalk(node* root, void *act)
+twalk (node * root, void *act)
 {
-    if (root != (node *)0 && act != (void(*)())0)
-	trecurse(root, act, 0);
+  if (root != (node *) 0 && act != (void (*)()) 0)
+    trecurse (root, act, 0);
 }
 
 /* tsearch.c ends here */
@@ -599,8 +599,7 @@ twalk(node* root, void *act)
  *
  * Totally public domain.
  */
-/*LINTLIBRARY*/
-
+ /*LINTLIBRARY*/
 /**
  * Find a node
  *
@@ -611,25 +610,22 @@ twalk(node* root, void *act)
  *   - 0 : Key not found in the tree.
  *   - 1 : Key found in the tree.
  */
-node *
-tfind(char *key, register node **rootp, int (*compar)())
+node * tfind (char *key, register node ** rootp, int (*compar) ())
 {
-    if (rootp == (struct node_t **)0)
-	return ((struct node_t *)0);
-    while (*rootp != (struct node_t *)0)			/* T1: */
+  if (rootp == (struct node_t **) 0)
+    return ((struct node_t *) 0);
+  while (*rootp != (struct node_t *) 0)	/* T1: */
     {
-	int r;
-	if ((r = (*compar)(key, (*rootp)->key)) == 0)	/* T2: */
-	    return (*rootp);							/* key found */
-	rootp = (r < 0) ?
-	    &(*rootp)->left :							/* T3: follow left branch */
-	    &(*rootp)->right;							/* T4: follow right branch */
+      int r;
+      if ((r = (*compar) (key, (*rootp)->key)) == 0)	/* T2: */
+	return (*rootp);	/* key found */
+      rootp = (r < 0) ? &(*rootp)->left :	/* T3: follow left branch */
+	&(*rootp)->right;	/* T4: follow right branch */
     }
-    return (node *)0;
+  return (node *) 0;
 }
 
 
 #endif /* # defined (WIN32)  || defined (__CYGWIN__) || defined (__DARWIN__) */
 
 /* ============================== EOF ============================ */
-

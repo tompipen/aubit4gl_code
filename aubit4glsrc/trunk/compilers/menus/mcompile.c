@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.20 2003-04-27 12:20:37 afalout Exp $
+# $Id: mcompile.c,v 1.21 2003-05-12 14:23:58 mikeaubury Exp $
 #*/
 
 /**
@@ -51,16 +51,16 @@
 */
 
 /* in lex.yy.c */
-extern int 	buffpos				(void);
-extern int 	a4gl_menu_yyparse				(void);
-int			a4gl_menu_yyerror 			(char *s);	/* fgl_comp_error() */
-int 		yywrap				(void); 	/* fgl_comp_wrap() */
-menu * 		nmenu				(void);
-void 		push_menu			(void *a);
-void 		pop_menu			(void);
-void * 		get_menu			(void);
+extern int buffpos (void);
+extern int a4gl_menu_yyparse (void);
+int a4gl_menu_yyerror (char *s);	/* fgl_comp_error() */
+int yywrap (void);		/* fgl_comp_wrap() */
+menu *nmenu (void);
+void push_menu (void *a);
+void pop_menu (void);
+void *get_menu (void);
 
-menu_option_item * new_option(menu *m);
+menu_option_item *new_option (menu * m);
 
 /*
 =====================================================================
@@ -80,28 +80,28 @@ menu_option_item * new_option(menu *m);
 extern int as_c;
 
 #ifdef YYDEBUG
-	extern int yydebug;
+extern int yydebug;
 #else /*  */
-	int yydebug;
+int yydebug;
 #endif /*  */
 
-extern int 		yylineno;
-extern long 	fileseek;
-extern int 		yyleng;
-extern char 	yytext[];
-extern int 		chk4var;
-extern int 		lcnt;
-extern int 		lineno;
-extern FILE *	yyin;
-extern char *	outputfilename;
-extern struct 	menu_list the_menus;
+extern int yylineno;
+extern long fileseek;
+extern int yyleng;
+extern char yytext[];
+extern int chk4var;
+extern int lcnt;
+extern int lineno;
+extern FILE *yyin;
+extern char *outputfilename;
+extern struct menu_list the_menus;
 
-int 			ignorekw = 0;
-int 			colno = 0;
-int 			lineno = 0;
-char 			outputfile[132];
-void *			stackmenus[1000];
-int 			menu_cnt=0;
+int ignorekw = 0;
+int colno = 0;
+int lineno = 0;
+char outputfile[132];
+void *stackmenus[1000];
+int menu_cnt = 0;
 
 
 /*
@@ -116,74 +116,74 @@ int 			menu_cnt=0;
  * @todo Describe function
  */
 int
-main (int argc, char* argv[])
+main (int argc, char *argv[])
 {
-char a[128];
-char b[128];
-char c[128]; // menu source file name
+  char a[128];
+  char b[128];
+  char c[128];			// menu source file name
 
-	setarg0(argv[0]);
-	debug("Initializing mcompile\n");
+  setarg0 (argv[0]);
+  debug ("Initializing mcompile\n");
 
-	/* load settings from config file(s): */
-	build_user_resources();
+  /* load settings from config file(s): */
+  build_user_resources ();
 
-	if (argc > 1)
+  if (argc > 1)
     {
-		check_and_show_id("4GL Menu Compiler",argv[1]);
+      check_and_show_id ("4GL Menu Compiler", argv[1]);
 
-		outputfilename = outputfile;
+      outputfilename = outputfile;
 
-		if (strcmp(argv[1],"-c")==0)
-		{
-			as_c=1; /* compile menu to C code - not a standalone resource */
-    	  	strcpy (c, argv[2]);
-		}
-		else
-		{
-			as_c=0;
-      		strcpy (c, argv[1]);
-		}
+      if (strcmp (argv[1], "-c") == 0)
+	{
+	  as_c = 1;		/* compile menu to C code - not a standalone resource */
+	  strcpy (c, argv[2]);
+	}
+      else
+	{
+	  as_c = 0;
+	  strcpy (c, argv[1]);
+	}
 
-		bname (c, a, b);
-		//printf("c=%s a=%s b=%s\n",c,a,b);
+      bname (c, a, b);
+      //printf("c=%s a=%s b=%s\n",c,a,b);
 
-		if (a[0] == 0)
-		{
-			/* add extension to the menu source file specified, if it don't 
-			have it already */
-			strcat (c, ".menu");
-        }
+      if (a[0] == 0)
+	{
+	  /* add extension to the menu source file specified, if it don't 
+	     have it already */
+	  strcat (c, ".menu");
+	}
 
-		bname (c, a, b);
-		strcpy (outputfilename, a);
+      bname (c, a, b);
+      strcpy (outputfilename, a);
 
-		//extendion will be added later:
-		//strcat (outputfilename, acl_getenv ("A4GL_MNU_EXT"));
+      //extendion will be added later:
+      //strcat (outputfilename, acl_getenv ("A4GL_MNU_EXT"));
 
-		yyin = mja_fopen (c, "r");
+      yyin = mja_fopen (c, "r");
 
     }
-	else
+  else
     {
       printf ("Usage\n   %s [options] filename[.menu]\n", argv[0]);
       printf ("Options:\n");
-	  printf ("-c compile menu to C code, not as stanalone resource file\n");
+      printf ("-c compile menu to C code, not as stanalone resource file\n");
       exit (0);
     }
 
-	debug ("Outfile = %s\n", outputfilename);
+  debug ("Outfile = %s\n", outputfilename);
 
-	yydebug = 1;
+  yydebug = 1;
 
-	if (yyin == 0)
+  if (yyin == 0)
     {
       printf ("Error opening file : %s\n", c);
       exit (2);
     }
 
-	init_menu();
-	return (a4gl_menu_yyparse ());
+  init_menu ();
+  return (a4gl_menu_yyparse ());
 }
 
 
@@ -194,18 +194,19 @@ char c[128]; // menu source file name
 int
 a4gl_menu_yyerror (char *s)
 {
-char errfile[256];
-FILE *f;
-long ld = 0;
+  char errfile[256];
+  FILE *f;
+  long ld = 0;
 
-  ld=buffpos();
+  ld = buffpos ();
 
 
-  sprintf(errfile,"%s.err",outputfile);
-  f=write_errfile(yyin,errfile,ld-1,yylineno);
+  sprintf (errfile, "%s.err", outputfile);
+  f = write_errfile (yyin, errfile, ld - 1, yylineno);
   fprintf (f, "| %s", s);
-  write_cont(yyin);
-  printf("Error compiling %s.menu - check %s.err (%d %d)\n",outputfile,outputfile,lineno,yylineno);
+  write_cont (yyin);
+  printf ("Error compiling %s.menu - check %s.err (%d %d)\n", outputfile,
+	  outputfile, lineno, yylineno);
   exit (3);
 }
 
@@ -215,9 +216,9 @@ long ld = 0;
  * @todo Describe function
  */
 int
-yywrap(void)
+yywrap (void)
 {
-	return 1;
+  return 1;
 }
 
 
@@ -226,11 +227,11 @@ yywrap(void)
  * @todo Describe function
  */
 void
-init_menu(void)
+init_menu (void)
 {
-	the_menus.menus.menus_len=0;
-	the_menus.menus.menus_val=0;
-	the_menus.menus.menus_val=malloc(sizeof(menu)*MAXMENUS); /* MAX 256 Menus */
+  the_menus.menus.menus_len = 0;
+  the_menus.menus.menus_val = 0;
+  the_menus.menus.menus_val = malloc (sizeof (menu) * MAXMENUS);	/* MAX 256 Menus */
 }
 
 /**
@@ -238,25 +239,26 @@ init_menu(void)
  * @todo Describe function
  */
 menu *
-nmenu(void)
+nmenu (void)
 {
-menu *m;
-int l;
-	l=++the_menus.menus.menus_len;
-	if (l>=MAXMENUS) {
-		debug("Too many menus/submenus\n");
-		printf("Too many menus/submenus\n");
-		exit(7);
-	}
-	/* the_menus.menus.menus_val=realloc(the_menus.menus.menus_val,sizeof(menu)*l); */
-	m=&the_menus.menus.menus_val[l-1];
-	m->id="";
+  menu *m;
+  int l;
+  l = ++the_menus.menus.menus_len;
+  if (l >= MAXMENUS)
+    {
+      debug ("Too many menus/submenus\n");
+      printf ("Too many menus/submenus\n");
+      exit (7);
+    }
+  /* the_menus.menus.menus_val=realloc(the_menus.menus.menus_val,sizeof(menu)*l); */
+  m = &the_menus.menus.menus_val[l - 1];
+  m->id = "";
 
 
-	m->options.options_len=0;
-	m->options.options_val=0;
-	debug("New menu %p\n",m);
-	return m;
+  m->options.options_len = 0;
+  m->options.options_val = 0;
+  debug ("New menu %p\n", m);
+  return m;
 }
 
 /**
@@ -264,25 +266,28 @@ int l;
  * @todo Describe function
  */
 menu_option_item *
-new_option(menu *m)
+new_option (menu * m)
 {
-menu_option_item *i;
+  menu_option_item *i;
 
-	m->options.options_len++;
-	if ( m->options.options_len>1000) {
-		debug("Corrupt\n");
-		printf("Corrupt\n");
-		exit(4);
-	}
-	m->options.options_val=realloc(m->options.options_val, m->options.options_len*sizeof(menu_option_item));
-	i=&m->options.options_val[m->options.options_len-1];
-	i->caption=strdup("");
-	i->key_list=strdup("");
-	i->checked=0;
-	i->align=0;
-	i->color=-1;
-	i->submenu_id=strdup("");
-	return i;
+  m->options.options_len++;
+  if (m->options.options_len > 1000)
+    {
+      debug ("Corrupt\n");
+      printf ("Corrupt\n");
+      exit (4);
+    }
+  m->options.options_val =
+    realloc (m->options.options_val,
+	     m->options.options_len * sizeof (menu_option_item));
+  i = &m->options.options_val[m->options.options_len - 1];
+  i->caption = strdup ("");
+  i->key_list = strdup ("");
+  i->checked = 0;
+  i->align = 0;
+  i->color = -1;
+  i->submenu_id = strdup ("");
+  return i;
 }
 
 /**
@@ -290,9 +295,9 @@ menu_option_item *i;
  * @todo Describe function
  */
 void
-push_menu(void *a)
+push_menu (void *a)
 {
-	stackmenus[menu_cnt++]=a;
+  stackmenus[menu_cnt++] = a;
 }
 
 /**
@@ -300,9 +305,9 @@ push_menu(void *a)
  * @todo Describe function
  */
 void
-pop_menu(void)
+pop_menu (void)
 {
-	menu_cnt--;
+  menu_cnt--;
 }
 
 /**
@@ -310,9 +315,9 @@ pop_menu(void)
  * @todo Describe function
  */
 void *
-get_menu(void)
+get_menu (void)
 {
-	return stackmenus[menu_cnt-1];
+  return stackmenus[menu_cnt - 1];
 }
 
 

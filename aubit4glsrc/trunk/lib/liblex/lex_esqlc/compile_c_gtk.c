@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c_gtk.c,v 1.2 2003-02-05 07:39:44 afalout Exp $
+# $Id: compile_c_gtk.c,v 1.3 2003-05-12 14:24:20 mikeaubury Exp $
 #
 */
 
@@ -98,9 +98,9 @@ char lname[256];
 */
 
 
-extern void printc(char* fmt,... ); 	/* in API_lex.c */
-extern void lex_printh (char *fmt, ...); 	/* in API_lex.c */
-extern void printh (char *fmt, ...); 	/* in API_lex.c */
+extern void printc (char *fmt, ...);	/* in API_lex.c */
+extern void lex_printh (char *fmt, ...);	/* in API_lex.c */
+extern void printh (char *fmt, ...);	/* in API_lex.c */
 
 /*
 =====================================================================
@@ -108,7 +108,7 @@ extern void printh (char *fmt, ...); 	/* in API_lex.c */
 =====================================================================
 */
 
-static int printed_gtk=0;
+static int printed_gtk = 0;
 
 /**
  *
@@ -117,32 +117,36 @@ static int printed_gtk=0;
 void
 print_formhandler (char *name)
 {
-if (printed_gtk==0) {
-        //#ifdef OBSOLETE *** __NOT__ obsolete!
-		printh ( "#include <gtk/gtk.h>\n");
-        //#endif
-        printh ( "#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(strnullcmp(data,\"on\")==0||strnullcmp(data,\"clicked\")==0))\n");
-        printh ( "#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
-        printh ( "#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
-	printed_gtk++;
-}
-strcpy(lname,name);
+  if (printed_gtk == 0)
+    {
+      //#ifdef OBSOLETE *** __NOT__ obsolete!
+      printh ("#include <gtk/gtk.h>\n");
+      //#endif
+      printh
+	("#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(strnullcmp(data,\"on\")==0||strnullcmp(data,\"clicked\")==0))\n");
+      printh ("#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
+      printh
+	("#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
+      printed_gtk++;
+    }
+  strcpy (lname, name);
   lex_printh
     ("int hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data);\n",
      name);
+  lex_printh ("int hnd_c_%s(GtkWidget *widget,gpointer data);\n", name);
   lex_printh
-    ("int hnd_c_%s(GtkWidget *widget,gpointer data);\n",
+    ("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data);\n",
      name);
-  lex_printh ("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data);\n", name);
-  printc
-    ("int hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data) {\n",
-     name);
+  printc ("int hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data) {\n",
+	  name);
   printc ("  hnd_%s(widget,1,event,data);\n", name);
   printc ("return 0;}\n");
   printc ("int hnd_c_%s(GtkWidget *widget,gpointer data) {\n", name);
   printc ("  return hnd_%s(widget,0,0,data);\n", name);
   printc ("}\n");
-  printc ("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data) {\n", name);
+  printc
+    ("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data) {\n",
+     name);
 
 }
 
@@ -151,11 +155,13 @@ strcpy(lname,name);
  * @todo Describe function
  */
 void
-print_getwin(void)
+print_getwin (void)
 {
-	printc("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,get_currwin_name());\n",lname);
-	printc("if (strlen(this_win)==0) strcpy(this_win,get_currwin_name());\n");
-	printc("if (strcmp(this_win,cwin)!=0) current_window(this_win);");
+  printc
+    ("static char this_win[64]=\"\";char cwin[64]; strcpy(cwin,get_currwin_name());\n",
+     lname);
+  printc ("if (strlen(this_win)==0) strcpy(this_win,get_currwin_name());\n");
+  printc ("if (strcmp(this_win,cwin)!=0) current_window(this_win);");
 }
 
 
@@ -296,9 +302,9 @@ print_gtk_menuhandler_on_end (void)
  * @todo Describe function
  */
 void
-print_gtk_menuhandler_end(void) 
+print_gtk_menuhandler_end (void)
 {
-	printc("}\n");
+  printc ("}\n");
 }
 
 

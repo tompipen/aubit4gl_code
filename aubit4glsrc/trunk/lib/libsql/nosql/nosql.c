@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.24 2003-03-10 09:09:44 mikeaubury Exp $
+# $Id: nosql.c,v 1.25 2003-05-12 14:24:24 mikeaubury Exp $
 #*/
 
 /**
@@ -35,10 +35,10 @@
  */
 
  /*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
+    =====================================================================
+    Includes
+    =====================================================================
+  */
 
 #include "a4gl_lib_sql_int.h"
 extern sqlca_struct a4gl_sqlca;
@@ -59,7 +59,7 @@ char lasterrorstr[1024] = "";
 void local_exitwith (char *s);
 char *find_str_resource (char *s);
 struct s_sid *find_prepare (char *pname);
-extern char * global_A4GLSQL_get_sqlerrm (void); /* in API_sql.c */
+extern char *global_A4GLSQL_get_sqlerrm (void);	/* in API_sql.c */
 
 
 /*
@@ -87,7 +87,7 @@ A4GLSQL_set_status (int a, int sql)
 {
   a4gl_status = a;
   if (sql)
-	a4gl_sqlca.sqlcode = a;
+    a4gl_sqlca.sqlcode = a;
   debug ("Status set to %d", a);
 }
 
@@ -98,8 +98,9 @@ A4GLSQL_set_status (int a, int sql)
 int
 A4GLSQL_init_connection (char *dbName)
 {
-  debug("Connection with database not available: A4GL_SQLTYPE=nosql");
-  local_exitwith ("Could not init_connection - Connection with database not available: A4GL_SQLTYPE=nosql");
+  debug ("Connection with database not available: A4GL_SQLTYPE=nosql");
+  local_exitwith
+    ("Could not init_connection - Connection with database not available: A4GL_SQLTYPE=nosql");
   return 0;
 }
 
@@ -120,7 +121,7 @@ A4GLSQL_get_status (void)
 char *
 A4GLSQL_get_sqlerrm (void)
 {
-	return global_A4GLSQL_get_sqlerrm ();
+  return global_A4GLSQL_get_sqlerrm ();
 }
 
 /**
@@ -130,7 +131,7 @@ A4GLSQL_get_sqlerrm (void)
 int
 A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
-	local_exitwith ("Could not read_columns - noODBC build");
+  local_exitwith ("Could not read_columns - noODBC build");
   return 0;
 
 }
@@ -143,12 +144,12 @@ int
 A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
 {
   /*
-  local_exitwith ("Could not make ODBC connection - noODBC build");
-  FIXME: do we want to show some message here????
+     local_exitwith ("Could not make ODBC connection - noODBC build");
+     FIXME: do we want to show some message here????
 
-  FIXME: programs that do not use DATBASE or CONNECT or SESSION,
-  should not call this function, but they DO!
-  */
+     FIXME: programs that do not use DATBASE or CONNECT or SESSION,
+     should not call this function, but they DO!
+   */
 
   return 0;
 }
@@ -160,7 +161,7 @@ A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
 int
 A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
-	local_exitwith ("Could not get_datatype - noODBC build");
+  local_exitwith ("Could not get_datatype - noODBC build");
   return 0;
 }
 
@@ -377,7 +378,7 @@ A4GLSQL_commit_rollback (int mode)
 struct s_sid *
 A4GLSQL_find_prepare (char *pname)
 {
-	local_exitwith ("Could not find_prepare - noODBC build");
+  local_exitwith ("Could not find_prepare - noODBC build");
   return 0;
 }
 
@@ -388,7 +389,7 @@ A4GLSQL_find_prepare (char *pname)
 void
 A4GLSQL_flush_cursor (char *cursor)
 {
-	local_exitwith ("Could not flush_cursor - noODBC build");
+  local_exitwith ("Could not flush_cursor - noODBC build");
 }
 
 /**
@@ -398,7 +399,7 @@ A4GLSQL_flush_cursor (char *cursor)
 int
 A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 {
-	local_exitwith ("Could not execute_sql - noODBC build");
+  local_exitwith ("Could not execute_sql - noODBC build");
   return 0;
 }
 
@@ -407,9 +408,9 @@ A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  * @todo Describe function
  */
 int
-A4GLSQL_initsqllib(void)
+A4GLSQL_initsqllib (void)
 {
-	return 1;
+  return 1;
 }
 
 /**
@@ -419,14 +420,14 @@ A4GLSQL_initsqllib(void)
 void
 local_exitwith (char *s)
 {
-	#ifdef DEBUG
-		{debug ("ending because : %s", s);  }
-	#endif
+#ifdef DEBUG
+  {
+    debug ("ending because : %s", s);
+  }
+#endif
   printf ("\n\n\n");
   exit (1);
 
 }
 
 /* =============================== EOF ============================== */
-
-

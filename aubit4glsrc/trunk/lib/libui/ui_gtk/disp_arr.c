@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: disp_arr.c,v 1.5 2003-04-23 16:37:29 mikeaubury Exp $
+# $Id: disp_arr.c,v 1.6 2003-05-12 14:24:28 mikeaubury Exp $
 #*/
 
 /**
@@ -60,7 +60,7 @@ struct s_disp_arr *curr_arr;
 */
 
 struct struct_screen_record *get_srec_gtk (char *);
-void disp_arr_fields (int n, int fonly, int attr,...);
+void disp_arr_fields (int n, int fonly, int attr, ...);
 void idisp_arr_fields (int n, int fonly, int attr, ...);
 void set_arr_fields (int n, int attr, ...);
 void idraw_arr_all (struct s_inp_arr *disp);
@@ -70,7 +70,8 @@ void iclear_srec_line (struct struct_screen_record *srec, int line);
 void set_array_mode (int type);
 //int disp_arr (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
 
-int disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib, va_list * ap);
+int disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname,
+		 int attrib, va_list * ap);
 /*
 =====================================================================
                     Functions definitions
@@ -122,9 +123,12 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   int topline;
   int scr_line;
   int first_only = 0;
-	#ifdef DEBUG
-		/* {DEBUG} */ { debug ("in draw_arr %p %d %d", disp, type, no); }
-	#endif
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("in draw_arr %p %d %d", disp, type, no);
+  }
+#endif
   if (type < 0)
     {
       type = 0 - type;
@@ -138,9 +142,12 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
     {
       debug ("calling set_arr_Fields");
       set_arr_fields (disp->nbind, 0, srec2, scr_line, 0, 0);
-	#ifdef DEBUG
-		/* {DEBUG} */ {	debug ("Done");}
-	#endif
+#ifdef DEBUG
+      /* {DEBUG} */
+      {
+	debug ("Done");
+      }
+#endif
       return;
     }
 
@@ -153,15 +160,16 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   debug ("calling disp_arR_fields");
 
   if (disp->highlight)
-  {
-  	debug ("With highlight");
-  	disp_arr_fields (disp->nbind, first_only,type * 0x400, srec2, scr_line, 0, 0);
-  }
+    {
+      debug ("With highlight");
+      disp_arr_fields (disp->nbind, first_only, type * 0x400, srec2, scr_line,
+		       0, 0);
+    }
   else
-  {
-  	debug ("Without highlight");
-  	disp_arr_fields (disp->nbind, first_only, 0, srec2, scr_line, 0, 0);
-  }
+    {
+      debug ("Without highlight");
+      disp_arr_fields (disp->nbind, first_only, 0, srec2, scr_line, 0, 0);
+    }
 }
 
 /**
@@ -175,9 +183,12 @@ draw_arr_all (struct s_disp_arr *disp)
   int a;
   int topline;
   topline = disp->arr_line - disp->scr_line + 1;
-	#ifdef DEBUG
-		/* {DEBUG} */ { debug ("***** Draw_arr_all topline=%d",topline); }
-	#endif
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("***** Draw_arr_all topline=%d", topline);
+  }
+#endif
   for (a = 0; a < disp->srec->dim; a++)
     {
       if (a + topline < disp->no_arr)
@@ -187,16 +198,22 @@ draw_arr_all (struct s_disp_arr *disp)
 	  /* draw_arr (disp, a + topline == disp->arr_line, a + topline); */
 	  draw_arr (disp, 0, a + topline);
 
-	#ifdef DEBUG
-		/* {DEBUG} */ {debug ("after draw_arr (6)"); }
-	#endif
+#ifdef DEBUG
+	  /* {DEBUG} */
+	  {
+	    debug ("after draw_arr (6)");
+	  }
+#endif
 	}
     }
 
   draw_arr (disp, 1, disp->arr_line);
-	#ifdef DEBUG
-		/* {DEBUG} */  { debug ("after draw_arr (7)"); }
-	#endif
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("after draw_arr (7)");
+  }
+#endif
 }
 
 /**
@@ -211,14 +228,20 @@ redisplay_arr (struct s_disp_arr *arr, int redisp)
     {
       debug ("Redisplay one");
       draw_arr (arr, 0, arr->last_arr);
-	#ifdef DEBUG
-		/* {DEBUG} */ {	debug ("after draw_arr (4)"); }
-	#endif
+#ifdef DEBUG
+      /* {DEBUG} */
+      {
+	debug ("after draw_arr (4)");
+      }
+#endif
       debug ("Display one");
       draw_arr (arr, 1, arr->arr_line);
-	#ifdef DEBUG
-		/* {DEBUG} */ {	debug ("after draw_arr (5)");      }
-	#endif
+#ifdef DEBUG
+      /* {DEBUG} */
+      {
+	debug ("after draw_arr (5)");
+      }
+#endif
     }
   if (redisp == 2)
     {
@@ -264,9 +287,12 @@ disp_loop (struct s_disp_arr *arr)
 
   a = 0;
 
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug ("Currform=%p (s_form_dets)", form);}
-	#endif
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("Currform=%p (s_form_dets)", form);
+  }
+#endif
   if (form != get_curr_form ())
     {
       exitwith ("Input form is not the current form!");
@@ -343,22 +369,35 @@ disp_loop (struct s_disp_arr *arr)
 
 	      arr->last_arr = arr->arr_line;
 	      arr->arr_line = (int) a->value;
-		debug("***  Set to %d value=%f max=%f\n",arr->arr_line,a->value,a->upper);
+	      debug ("***  Set to %d value=%f max=%f\n", arr->arr_line,
+		     a->value, a->upper);
 
-		if (arr->last_arr-arr->arr_line==1) arr->scr_line--;
-		if (arr->last_arr-arr->arr_line==-1) arr->scr_line++;
+	      if (arr->last_arr - arr->arr_line == 1)
+		arr->scr_line--;
+	      if (arr->last_arr - arr->arr_line == -1)
+		arr->scr_line++;
 
 
 
-		if (arr->scr_line<=0) arr->scr_line=1;
-		if (arr->scr_line>arr->srec->dim) arr->scr_line=arr->srec->dim;
-		if (arr->scr_line>arr->arr_line) arr->scr_line=1;
+	      if (arr->scr_line <= 0)
+		arr->scr_line = 1;
+	      if (arr->scr_line > arr->srec->dim)
+		arr->scr_line = arr->srec->dim;
+	      if (arr->scr_line > arr->arr_line)
+		arr->scr_line = 1;
 
-		while (arr->arr_line-arr->scr_line+arr->srec->dim>arr->no_arr && arr->scr_line<arr->srec->dim)  arr->scr_line++;
-		while (arr->arr_line-arr->scr_line+arr->srec->dim<=0 && arr->scr_line>1)  arr->scr_line--;
+	      while (arr->arr_line - arr->scr_line + arr->srec->dim >
+		     arr->no_arr && arr->scr_line < arr->srec->dim)
+		arr->scr_line++;
+	      while (arr->arr_line - arr->scr_line + arr->srec->dim <= 0
+		     && arr->scr_line > 1)
+		arr->scr_line--;
 
 	      redisplay_arr (arr, 2);
-		debug("**** arr_line = %d scr_line=%d dim=%d no_arr=%d arr->last_arr=%d",arr->arr_line,arr->scr_line,arr->srec->dim,arr->no_arr,arr->last_arr);
+	      debug
+		("**** arr_line = %d scr_line=%d dim=%d no_arr=%d arr->last_arr=%d",
+		 arr->arr_line, arr->scr_line, arr->srec->dim, arr->no_arr,
+		 arr->last_arr);
 	      set_arr_curr (arr->arr_line);
 	      set_scr_line (arr->scr_line);
 	    }
@@ -468,7 +507,7 @@ disp_loop (struct s_disp_arr *arr)
  */
 int
 disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
-	  va_list * ap)
+	     va_list * ap)
 {
   int a;
   int nofields;
@@ -493,7 +532,8 @@ disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
 
       debug ("Trying to find scroll widget currform = %p", disp->currform);
 
-      nofields = gen_field_list_gtk (&field_list, (GtkWindow *)disp->currform, 1, ap);
+      nofields =
+	gen_field_list_gtk (&field_list, (GtkWindow *) disp->currform, 1, ap);
       nofields++;
       debug ("nofields=%d\n", nofields);
 
@@ -504,21 +544,21 @@ disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
 		 disp->srec->dim, get_count ());
 
 
-	/* This all changes for GTK 2.0
-	 Don't know why its not updated straight away mind you... */
+	  /* This all changes for GTK 2.0
+	     Don't know why its not updated straight away mind you... */
 	  p = gtk_adjustment_new ((gfloat) 1,
 				  (gfloat) 1,
 				  (gfloat) get_count (),
 				  (gfloat) 1,
-				  (gfloat) disp->srec->dim - 1,
-				  (gfloat)0);
-	  gtk_adjustment_set_value ((GtkAdjustment*)GTK_ENTRY (p), 1);
-	  gtk_range_set_update_policy ((GtkRange*)field_list[0], GTK_UPDATE_CONTINUOUS);
+				  (gfloat) disp->srec->dim - 1, (gfloat) 0);
+	  gtk_adjustment_set_value ((GtkAdjustment *) GTK_ENTRY (p), 1);
+	  gtk_range_set_update_policy ((GtkRange *) field_list[0],
+				       GTK_UPDATE_CONTINUOUS);
 
-      /*   GtkWidget **field_list;
-		void           gtk_range_set_update_policy      (GtkRange      *range,
-		                                                 GtkUpdateType  policy);
-      */
+	  /*   GtkWidget **field_list;
+	     void           gtk_range_set_update_policy      (GtkRange      *range,
+	     GtkUpdateType  policy);
+	   */
 
 	  gui_set_active (field_list[0], 1);
 	  gtk_range_set_adjustment (GTK_RANGE (field_list[0]),
@@ -527,7 +567,7 @@ disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
 	  gtk_adjustment_value_changed (p);
 	  gtk_adjustment_changed (p);
 	  gui_run_til_no_more ();
-	  gtk_object_set_data ((GtkObject*)field_list[0], "ARRAY", disp);
+	  gtk_object_set_data ((GtkObject *) field_list[0], "ARRAY", disp);
 
 /*
 void     gtk_object_set_data         (GtkObject      *object,
@@ -538,7 +578,10 @@ void     gtk_object_set_data         (GtkObject      *object,
 
 
 #ifdef DEBUG
-	/* {DEBUG} */{	debug ("disp->currform=%p", disp->currform); }
+      /* {DEBUG} */
+      {
+	debug ("disp->currform=%p", disp->currform);
+      }
 #endif
       disp->last_arr = -1;
       disp->scr_line = 1;
@@ -578,21 +621,33 @@ void     gtk_object_set_data         (GtkObject      *object,
 	    {
 
 #ifdef DEBUG
-	/* {DEBUG} */ {debug ("call draw_arr (1)");}
+	      /* {DEBUG} */
+	      {
+		debug ("call draw_arr (1)");
+	      }
 #endif
-			draw_arr (disp, a + 1 == disp->arr_line, a + 1);
+	      draw_arr (disp, a + 1 == disp->arr_line, a + 1);
 #ifdef DEBUG
-	/* {DEBUG} */ {	debug ("after draw_arr (1)"); }
+	      /* {DEBUG} */
+	      {
+		debug ("after draw_arr (1)");
+	      }
 #endif
 	    }
 
 	}
 #ifdef DEBUG
-	/* {DEBUG} */ {debug ("call draw_arr (2)"); }
+      /* {DEBUG} */
+      {
+	debug ("call draw_arr (2)");
+      }
 #endif
       draw_arr (disp, 1, disp->arr_line);
 #ifdef DEBUG
-	/* {DEBUG} */ {debug ("after draw_arr (2)");}
+      /* {DEBUG} */
+      {
+	debug ("after draw_arr (2)");
+      }
 #endif
       gui_scroll (disp->no_arr);
       set_arr_curr (disp->arr_line);
@@ -714,7 +769,7 @@ aclfgl_set_scrline (int np)
  * @param
  */
 void
-disp_arr_fields (int n, int fonly, int attr,...)
+disp_arr_fields (int n, int fonly, int attr, ...)
 {
   int a;
   va_list ap;
@@ -730,12 +785,17 @@ disp_arr_fields (int n, int fonly, int attr,...)
   va_start (ap, attr);
   debug (" field_list = %p", &field_list);
 #ifdef DEBUG
-	/* {DEBUG} */  {debug ("Genfldlist 5"); }
+  /* {DEBUG} */
+  {
+    debug ("Genfldlist 5");
+  }
 #endif
   debug ("disp_arr_fields");
-  nofields = gen_field_list_gtk ((GtkWidget ***)&field_list, (GtkWindow *)formdets, n, &ap);
+  nofields =
+    gen_field_list_gtk ((GtkWidget ***) & field_list, (GtkWindow *) formdets,
+			n, &ap);
 
-		/* int gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a, va_list * ap); */
+  /* int gen_field_list_gtk (GtkWidget *** field_list, GtkWindow * cwin, int a, va_list * ap); */
 
   if (fonly && nofields >= 0)
     nofields = 0;
@@ -744,7 +804,7 @@ disp_arr_fields (int n, int fonly, int attr,...)
     {
       for (a = 0; a <= nofields; a++)
 	{
-	  debug ("field_list[%d]=%p - attr=%x", a, field_list[a],attr);
+	  debug ("field_list[%d]=%p - attr=%x", a, field_list[a], attr);
 	  gui_set_field_pop_attr (field_list[a], attr);
 	  debug ("set_init_pop complete");
 	}
@@ -778,11 +838,15 @@ set_arr_fields (int n, int attr, ...)
   va_start (ap, attr);
   debug (" field_list = %p", &field_list);
 #ifdef DEBUG
-	{ debug ("Genfldlist 6");  }
+  {
+    debug ("Genfldlist 6");
+  }
 #endif
   debug ("set_arr_fields");
 
-  nofields = gen_field_list_gtk ((GtkWidget ***)&field_list, (GtkWindow *)formdets, n, &ap);
+  nofields =
+    gen_field_list_gtk ((GtkWidget ***) & field_list, (GtkWindow *) formdets,
+			n, &ap);
   debug ("Number of fields=%d", nofields);
 
   for (a = nofields; a >= 0; a--)
@@ -799,55 +863,55 @@ set_arr_fields (int n, int attr, ...)
 
 
     /*
-		struct s_disp_arr {
-		 int no_fields;
-		 int no_lines;
-		 int no_arr;
-		 int last_arr;
-		 struct struct_screen_record *srec;
-		 int arr_elemsize;
-		 int scr_line;
-		 int arr_line;
-		 int highlight;
-		 struct s_form_dets *currform;
-		 struct BINDING *binding;
-		 int nbind;
-		 int cntrl;
-		};
+       struct s_disp_arr {
+       int no_fields;
+       int no_lines;
+       int no_arr;
+       int last_arr;
+       struct struct_screen_record *srec;
+       int arr_elemsize;
+       int scr_line;
+       int arr_line;
+       int highlight;
+       struct s_form_dets *currform;
+       struct BINDING *binding;
+       int nbind;
+       int cntrl;
+       };
 
-    */
+     */
 
 
     /*
-		struct s_inp_arr {
-		  int mode;
-		  struct s_form_dets *currform;
-		  void *currentfield;
-		  struct s_metrics *currentmetrics;
-		  int novars;
-		  struct s_constr_list *constr;
-		  int nfields;
-		  void ***field_list;
-		  int no_fields;
-		  int no_lines;
-		  int no_arr;
-		  int inp_flags;
-		  int arr_size;
-		  int last_arr;
-		  struct struct_screen_record *srec;
-		  int arr_elemsize;
-		  int scr_line;
-		  int arr_line;
-		  int highlight;
-		  struct BINDING *binding;
-		  int nbind;
-		  int cntrl;
-		  int help_no;
-		  int curr_attrib;
-		};
+       struct s_inp_arr {
+       int mode;
+       struct s_form_dets *currform;
+       void *currentfield;
+       struct s_metrics *currentmetrics;
+       int novars;
+       struct s_constr_list *constr;
+       int nfields;
+       void ***field_list;
+       int no_fields;
+       int no_lines;
+       int no_arr;
+       int inp_flags;
+       int arr_size;
+       int last_arr;
+       struct struct_screen_record *srec;
+       int arr_elemsize;
+       int scr_line;
+       int arr_line;
+       int highlight;
+       struct BINDING *binding;
+       int nbind;
+       int cntrl;
+       int help_no;
+       int curr_attrib;
+       };
 
 
-    */
+     */
 
 /**
  * Not used
@@ -918,21 +982,27 @@ idraw_arr_all (struct s_inp_arr *disp)
   int topline;
   topline = disp->arr_line - disp->scr_line + 1;
 #ifdef DEBUG
-	{ debug ("Draw_arr_all");  }
+  {
+    debug ("Draw_arr_all");
+  }
 #endif
   for (a = 0; a < disp->srec->dim; a++)
     {
       /* if (a + topline < disp->no_arr)
-      {  */
+         {  */
       idraw_arr (disp, a + topline == disp->arr_line, a + topline);
 #ifdef DEBUG
-	{	debug ("after draw_arr (6)"); }
+      {
+	debug ("after draw_arr (6)");
+      }
 #endif
       /* } */
     }
   idraw_arr (disp, 1, disp->arr_line);
 #ifdef DEBUG
-	{ debug ("after draw_arr (7)");}
+  {
+    debug ("after draw_arr (7)");
+  }
 #endif
 }
 
@@ -950,7 +1020,9 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
   int scr_line;
   int fonly = 0;
 #ifdef DEBUG
-	{debug ("in draw_arr %p %d %d", disp, type, no);}
+  {
+    debug ("in draw_arr %p %d %d", disp, type, no);
+  }
 #endif
   if (type < 0)
     {
@@ -984,7 +1056,9 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
       debug ("calling set_arr_Fields");
       set_arr_fields (disp->nbind, 1, srec2, scr_line, 0, 0);
 #ifdef DEBUG
-	{debug ("Done"); }
+      {
+	debug ("Done");
+      }
 #endif
       return;
     }
@@ -998,15 +1072,16 @@ idraw_arr (struct s_inp_arr *disp, int type, int no)
   debug ("Print array no %d to scr %d", no, scr_line);
   debug ("calling disp_arR_fields");
   if (disp->highlight)
-  {
-  debug ("With highlight");
-  idisp_arr_fields (disp->nbind, fonly, type * 0x400, srec2, scr_line, 0, 0);
-  }
+    {
+      debug ("With highlight");
+      idisp_arr_fields (disp->nbind, fonly, type * 0x400, srec2, scr_line, 0,
+			0);
+    }
   else
-  {
-  debug ("Without highlight");
-  idisp_arr_fields (disp->nbind, fonly, 0, srec2, scr_line, 0, 0);
-  }
+    {
+      debug ("Without highlight");
+      idisp_arr_fields (disp->nbind, fonly, 0, srec2, scr_line, 0, 0);
+    }
 }
 
 
@@ -1054,21 +1129,23 @@ idisp_arr_fields (int n, int fonly, int attr, ...)
   va_start (ap, attr);
   debug (" field_list = %p", &field_list);
 #ifdef DEBUG
-	{debug ("Genfldlist 5");}
+  {
+    debug ("Genfldlist 5");
+  }
 #endif
   debug ("idisp_arr_fields");
-  nofields = gen_field_list_gtk (&field_list, (GtkWindow *)formdets, n, &ap);
+  nofields = gen_field_list_gtk (&field_list, (GtkWindow *) formdets, n, &ap);
   if (fonly && nofields >= 0)
     nofields = 0;
   debug ("Number of fields=%d", nofields);
   if (nofields >= 0)
     {
       for (a = 0; a <= nofields; a++)
-		{
-		  debug ("field_list[%d]=%p", a, field_list[a]);
-		  gui_set_field_pop_attr (field_list[a], attr);
-		  debug ("set_init_pop complete");
-		}
+	{
+	  debug ("field_list[%d]=%p", a, field_list[a]);
+	  gui_set_field_pop_attr (field_list[a], attr);
+	  debug ("set_init_pop complete");
+	}
     }
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkmess.c,v 1.10 2003-03-23 07:19:42 afalout Exp $
+# $Id: mkmess.c,v 1.11 2003-05-12 14:23:57 mikeaubury Exp $
 #*/
 
 /**
@@ -64,156 +64,172 @@
  * @param argv The arguments values
  */
 int
-main(int argc,char *argv[])
+main (int argc, char *argv[])
 {
-char pathfilename[128];
-char ext[128];
-int retcode;
-char tmpbuf[80];
-FILE *hlp;
-FILE *msg;
-FILE *tmp;
-char fname_hlp[128];
-char fname_msg[128];
-char fname_tmp[128];
-int offset;
+  char pathfilename[128];
+  char ext[128];
+  int retcode;
+  char tmpbuf[80];
+  FILE *hlp;
+  FILE *msg;
+  FILE *tmp;
+  char fname_hlp[128];
+  char fname_msg[128];
+  char fname_tmp[128];
+  int offset;
 //char tmpnum[6];
-int num;
+  int num;
 
-	setarg0(argv[0]);
+  setarg0 (argv[0]);
 
-   	#ifdef DEBUG
-		debug ("Starting mkmess");
-	#endif
+#ifdef DEBUG
+  debug ("Starting mkmess");
+#endif
 
-	/* load settings from config file(s): */
-	build_user_resources();
+  /* load settings from config file(s): */
+  build_user_resources ();
 
 
-	if ( argc == 1 || (strcmp (argv[1], "--help") == 0) )
-	{
-		printf("Aubit 4GL compiler - help message compiler\n");
-		printf("Usage: mkmess [path]helpfile[.msg] [[path]outfile.ext]\n");
-		exit(0);
-	}
-
-	bname (argv[1], pathfilename, ext);
-
-   	#ifdef DEBUG
-		debug("pathfilename=%s",pathfilename);
-    	debug("ext=%s",ext);
-    #endif
-
-	if (pathfilename[0] == 0)
+  if (argc == 1 || (strcmp (argv[1], "--help") == 0))
     {
-		//no extension was specified
-		strcpy(pathfilename,argv[1]);
-		ext[0]=0;
-	}
+      printf ("Aubit 4GL compiler - help message compiler\n");
+      printf ("Usage: mkmess [path]helpfile[.msg] [[path]outfile.ext]\n");
+      exit (0);
+    }
 
-	if (ext[0] == 0) {
-		sprintf(fname_msg,"%s.msg",pathfilename);
-	} else {
-		sprintf(fname_msg,"%s.%s",pathfilename,ext);
-	}
+  bname (argv[1], pathfilename, ext);
 
-	#ifdef DEBUG
-		debug("Input file is %s\n",fname_msg);
-    #endif
+#ifdef DEBUG
+  debug ("pathfilename=%s", pathfilename);
+  debug ("ext=%s", ext);
+#endif
 
-	if (argc==3) {
-		/* user specified output file name/path as second parameter on command line */
-		sprintf(fname_hlp,"%s",argv[2]);
-	} else {
-		sprintf(fname_hlp,"%s%s",pathfilename,acl_getenv ("A4GL_HLP_EXT"));
-	}
+  if (pathfilename[0] == 0)
+    {
+      //no extension was specified
+      strcpy (pathfilename, argv[1]);
+      ext[0] = 0;
+    }
 
-	sprintf(fname_tmp,"%s.tmp",pathfilename);
+  if (ext[0] == 0)
+    {
+      sprintf (fname_msg, "%s.msg", pathfilename);
+    }
+  else
+    {
+      sprintf (fname_msg, "%s.%s", pathfilename, ext);
+    }
 
-	#ifdef DEBUG
-		debug("Input file is %s\n",fname_msg);
-		debug("Output file is %s\n",fname_hlp);
-		debug("TMP file is %s\n",fname_tmp);
-    #endif
+#ifdef DEBUG
+  debug ("Input file is %s\n", fname_msg);
+#endif
 
+  if (argc == 3)
+    {
+      /* user specified output file name/path as second parameter on command line */
+      sprintf (fname_hlp, "%s", argv[2]);
+    }
+  else
+    {
+      sprintf (fname_hlp, "%s%s", pathfilename, acl_getenv ("A4GL_HLP_EXT"));
+    }
 
-	/* open all files we will need */
+  sprintf (fname_tmp, "%s.tmp", pathfilename);
 
-	msg=fopen(fname_msg,"r");
-	if (msg==0)
-	{
-    	printf("Error opening File %s\n",fname_msg);
-	    exit(2);
-	} else {
-		#ifdef DEBUG
-			debug("Opened File %s\n",fname_msg);
-	    #endif
-	}
-
-	hlp=fopen(fname_hlp,"wb");
-	if (hlp==0)
-	{
-	    printf("Error opening File %s\n",fname_hlp);
-    	exit(2);
-	} else {
-   		#ifdef DEBUG
-			debug("Opened File %s\n",fname_hlp);
-	    #endif
-	}
-
-	tmp=fopen(fname_tmp,"wb");
-	if (tmp==0)
-	{
-		printf("Error opening File %s\n",fname_tmp);
-	    exit(2);
-	} else {
-	   	#ifdef DEBUG
-			debug("Opened File %s\n",fname_tmp);
-	    #endif
-	}
+#ifdef DEBUG
+  debug ("Input file is %s\n", fname_msg);
+  debug ("Output file is %s\n", fname_hlp);
+  debug ("TMP file is %s\n", fname_tmp);
+#endif
 
 
-	/* calculate offset and verify that source file is correctly formated */
+  /* open all files we will need */
 
-	offset=0;
-	while (1)
-	{
-		if (feof(msg)) break;
-		fgets(tmpbuf,80,msg);
-		if (tmpbuf[0]=='#') continue;
-		if (tmpbuf[0]=='.') offset=offset+4;
-	}
-  
-	if (offset==0)
-	{
-		printf("Cannot process this file\nThere are no help numbers\n");
-		exit(1);
-	}
+  msg = fopen (fname_msg, "r");
+  if (msg == 0)
+    {
+      printf ("Error opening File %s\n", fname_msg);
+      exit (2);
+    }
+  else
+    {
+#ifdef DEBUG
+      debug ("Opened File %s\n", fname_msg);
+#endif
+    }
+
+  hlp = fopen (fname_hlp, "wb");
+  if (hlp == 0)
+    {
+      printf ("Error opening File %s\n", fname_hlp);
+      exit (2);
+    }
+  else
+    {
+#ifdef DEBUG
+      debug ("Opened File %s\n", fname_hlp);
+#endif
+    }
+
+  tmp = fopen (fname_tmp, "wb");
+  if (tmp == 0)
+    {
+      printf ("Error opening File %s\n", fname_tmp);
+      exit (2);
+    }
+  else
+    {
+#ifdef DEBUG
+      debug ("Opened File %s\n", fname_tmp);
+#endif
+    }
 
 
-	retcode = writemsg(offset,msg,tmp,hlp);
+  /* calculate offset and verify that source file is correctly formated */
 
-	/* copy content of tmp file to actual output file, lien by line */
-    /* FIXME: why are we not writing directly to output file? */
+  offset = 0;
+  while (1)
+    {
+      if (feof (msg))
+	break;
+      fgets (tmpbuf, 80, msg);
+      if (tmpbuf[0] == '#')
+	continue;
+      if (tmpbuf[0] == '.')
+	offset = offset + 4;
+    }
 
-	tmp=fopen(fname_tmp,"rb");
-	while (1==1)
-	{
-		num=fgetc(tmp);
-		if (feof(tmp)) break;
-		fputc(num,hlp);
-	}
-
-	fclose(hlp);
-	fclose(tmp);
-	unlink(fname_tmp);
+  if (offset == 0)
+    {
+      printf ("Cannot process this file\nThere are no help numbers\n");
+      exit (1);
+    }
 
 
-   	#ifdef DEBUG
-		debug ("Exiting mkmess");
-	#endif
+  retcode = writemsg (offset, msg, tmp, hlp);
 
-	exit (retcode);
+  /* copy content of tmp file to actual output file, lien by line */
+  /* FIXME: why are we not writing directly to output file? */
+
+  tmp = fopen (fname_tmp, "rb");
+  while (1 == 1)
+    {
+      num = fgetc (tmp);
+      if (feof (tmp))
+	break;
+      fputc (num, hlp);
+    }
+
+  fclose (hlp);
+  fclose (tmp);
+  unlink (fname_tmp);
+
+
+#ifdef DEBUG
+  debug ("Exiting mkmess");
+#endif
+
+  exit (retcode);
 
 }
 
@@ -221,58 +237,63 @@ int num;
 #ifdef _MOVED_TO_WRITEMSG_C_
 
 int
-writemsg(int offset2)
+writemsg (int offset2)
 {
-int flg=0;
+  int flg = 0;
 
-  rewind(msg);
-  tmpbuf[0]=0;
+  rewind (msg);
+  tmpbuf[0] = 0;
 
   while (1)
-  {
-	if(feof(msg))
     {
-		if (flg==1)
+      if (feof (msg))
+	{
+	  if (flg == 1)
+	    {
+	      if (tmpbuf[strlen (tmpbuf)] != '\n' && tmpbuf[0] != '#')
 		{
-        	if (tmpbuf[strlen(tmpbuf)]!='\n'&& tmpbuf[0]!='#')
-			{
-        		fprintf(tmp,"\n");
-			}
-			offset++;
+		  fprintf (tmp, "\n");
 		}
-		break;
+	      offset++;
+	    }
+	  break;
+	}
+      tmpbuf[0] = 0;
+      fgets (tmpbuf, 80, msg);
+      if (feof (msg))
+	break;
+      if (tmpbuf[0] == '.')
+	{
+	  if (flg == 1)
+	    {
+	      fprintf (tmp, "%c", 127);
+	    }
+	  offset++;
+	  num = atoi (&tmpbuf[1]);
+	  fwrite (&num, 2, 1, hlp);
+	  fwrite (&offset, 2, 1, hlp);
+	  flg = 1;
+	  continue;
+	}
+      if (flg == 1)
+	{
+	  fprintf (tmp, "%s", tmpbuf);
+	  offset = offset + strlen (tmpbuf);
+	}
     }
-    tmpbuf[0]=0;
-    fgets(tmpbuf,80,msg);
-    if (feof(msg)) break;
-    if (tmpbuf[0]=='.')
-    {
-      if (flg==1) {fprintf(tmp,"%c",127);}
-      offset++;
-      num=atoi(&tmpbuf[1]);
-      fwrite(&num,2,1,hlp);
-      fwrite(&offset,2,1,hlp);
-      flg=1;
-      continue;
-    }
-    if (flg==1)
-    {
-      fprintf(tmp,"%s",tmpbuf);
-      offset=offset+strlen(tmpbuf);
-    }
-  }
 
-  num=-1;
-  fwrite(&num,2,1,hlp);
-  fwrite(&offset,2,1,hlp);
-  fclose(tmp);
-  tmp=fopen(fname_tmp,"rb");
-  while (1==1)
-  {
-    num=fgetc(tmp);
-    if (feof(tmp)) break;
-    fputc(num,hlp);
-  }
+  num = -1;
+  fwrite (&num, 2, 1, hlp);
+  fwrite (&offset, 2, 1, hlp);
+  fclose (tmp);
+  tmp = fopen (fname_tmp, "rb");
+  while (1 == 1)
+    {
+      num = fgetc (tmp);
+      if (feof (tmp))
+	break;
+      fputc (num, hlp);
+    }
 
 
   return (1);
@@ -283,4 +304,3 @@ int flg=0;
 
 
 /* ================================ EOF ========================== */
-

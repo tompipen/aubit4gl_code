@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: widget.c,v 1.5 2003-04-23 16:37:30 mikeaubury Exp $
+# $Id: widget.c,v 1.6 2003-05-12 14:24:31 mikeaubury Exp $
 #*/
 
 /**
@@ -90,33 +90,33 @@ char *desc_bool[] = {
 
 #ifndef OLD_INCL
 
-	struct s_widgets widgets[]={
-	/*   Widget Type  cr_ function     parameters (placeholder).. */
-		{""			, cr_textbox	,{"MAXCHARS",0} 			},
-		{"TEXT" 	, cr_textbox	,{"MAXCHARS",0} 			},
-		{"ENTRY"	, cr_textbox	,{"MAXCHARS",0} 			},
-		{"BUTTON"	, cr_button		,{"*LABEL","*IMAGE",0} 		},
-		{"CHECK"	, cr_check		,{0} 						},
-		{"LABEL"	, cr_label		,{"CAPTION",0} 				},
-		{"PIXMAP"	, cr_picture	,{"FILENAME",0} 			},
-		{"COMBO"	, cr_combo		,{0} 						},
-		{"RADIO"	, cr_radio		,{"NUM",0} 					},
-		{"LIST"		, cr_list		,{0} 						},
+struct s_widgets widgets[] = {
+  /*   Widget Type  cr_ function     parameters (placeholder).. */
+  {"", cr_textbox, {"MAXCHARS", 0}},
+  {"TEXT", cr_textbox, {"MAXCHARS", 0}},
+  {"ENTRY", cr_textbox, {"MAXCHARS", 0}},
+  {"BUTTON", cr_button, {"*LABEL", "*IMAGE", 0}},
+  {"CHECK", cr_check, {0}},
+  {"LABEL", cr_label, {"CAPTION", 0}},
+  {"PIXMAP", cr_picture, {"FILENAME", 0}},
+  {"COMBO", cr_combo, {0}},
+  {"RADIO", cr_radio, {"NUM", 0}},
+  {"LIST", cr_list, {0}},
 
-		/* NOTE : Calendar needs about 22 characters wide by 7 lines */
-		{"CALENDAR"	, cr_calendar	,{0} 						},
-		/* 	NEWWIDGET 	*/
-		{ "SCROLLBAR",cr_scrollbar 	,{0}						},
-		/*
-		{ "IMAGE"	, gtk_image_new	,{0}						},
-		{ "LIST"	, gtk_list_new	,{0} 						},
-		{ "MENU"	, gtk_menu_new	,{0} 						},
-		{ "PROGRESS", gtk_progress_bar_new, {0} 				},
-		{ "ARROW"	, cr_arrow		,{"TYPE","SHADOW",0} 		},
-		{ "CALENDAR", gtk_calendar_new,{"MONTH","YEAR",0} 		},
-        */
-	{ 0 }
-	};
+  /* NOTE : Calendar needs about 22 characters wide by 7 lines */
+  {"CALENDAR", cr_calendar, {0}},
+  /*      NEWWIDGET       */
+  {"SCROLLBAR", cr_scrollbar, {0}},
+  /*
+     { "IMAGE"    , gtk_image_new ,{0}                                            },
+     { "LIST"     , gtk_list_new  ,{0}                                            },
+     { "MENU"     , gtk_menu_new  ,{0}                                            },
+     { "PROGRESS", gtk_progress_bar_new, {0}                              },
+     { "ARROW"    , cr_arrow              ,{"TYPE","SHADOW",0}            },
+     { "CALENDAR", gtk_calendar_new,{"MONTH","YEAR",0}            },
+   */
+  {0}
+};
 #endif
 
 
@@ -130,19 +130,20 @@ char *desc_bool[] = {
 this should be in a4gl_aubit_lib.h but it's different all over the
 place - see a4gl_aubit_lib.h
 */
-int gen_field_chars_ap (GtkWidget *** field_list,	GtkWindow * cwin,...);
+int gen_field_chars_ap (GtkWidget *** field_list, GtkWindow * cwin, ...);
 
-GtkWidget * make_widget (char *widget, char *config, int w);
-char * decode_config (struct_form * f, int a);
-char * decode_comments (struct_form * f, int a);
-char * decode_widget (struct_form * f, int a);
+GtkWidget *make_widget (char *widget, char *config, int w);
+char *decode_config (struct_form * f, int a);
+char *decode_comments (struct_form * f, int a);
+char *decode_widget (struct_form * f, int a);
 //int fgl_fieldnametoid(char *f,char *s,int n);
 
 #ifdef OLD_INCL
-	int KeySnooper (GtkWidget *grab_widget, GdkEventKey *event, gpointer func_data);
+int KeySnooper (GtkWidget * grab_widget, GdkEventKey * event,
+		gpointer func_data);
 #endif
-int strnullcmp(char *s1,char *s2);
-int widget_name_match(GtkWidget *w,char *name);
+int strnullcmp (char *s1, char *s2);
+int widget_name_match (GtkWidget * w, char *name);
 
 /*
 =====================================================================
@@ -161,9 +162,9 @@ int widget_name_match(GtkWidget *w,char *name);
 GtkWidget *
 make_widget (char *widget, char *config, int w)
 {
-int a;
-GtkWidget *ptr;
-char *buff;
+  int a;
+  GtkWidget *ptr;
+  char *buff;
 
   buff = strdup (config);
   split_config (buff);
@@ -173,31 +174,34 @@ char *buff;
       if (strcasecmp (widget, widgets[a].name) == 0)
 	{
 	  char *key;
-	  widget_next_size=w;
-	  debug("Making type %d",a);
+	  widget_next_size = w;
+	  debug ("Making type %d", a);
 	  ptr = widgets[a].make ();
-	  debug("SIzing widget (%p)",ptr);
+	  debug ("SIzing widget (%p)", ptr);
 	  size_widget (ptr, w);
-          dump_mem((char *)ptr);
- 	  key = find_param ("*KEY");
-	  if (key) {
-			gtk_object_set_data(GTK_OBJECT(ptr),"KEY",key);
-	  }
+	  dump_mem ((char *) ptr);
+	  key = find_param ("*KEY");
+	  if (key)
+	    {
+	      gtk_object_set_data (GTK_OBJECT (ptr), "KEY", key);
+	    }
 
 
-	gtk_object_set_data(GTK_OBJECT(ptr),"WIDGETSNAME",widget);
+	  gtk_object_set_data (GTK_OBJECT (ptr), "WIDGETSNAME", widget);
 
-	if (strcasecmp(widget,"PIXMAP")!=0&&strcasecmp(widget,"LIST")!=0) {
-		gtk_widget_set_sensitive (ptr, 0);
-	}
+	  if (strcasecmp (widget, "PIXMAP") != 0
+	      && strcasecmp (widget, "LIST") != 0)
+	    {
+	      gtk_widget_set_sensitive (ptr, 0);
+	    }
 	  return ptr;
 	}
     }
 
 
-	debug("No widget of that type available...");
-	exitwith("Invalid Widget");
-return 0;
+  debug ("No widget of that type available...");
+  exitwith ("Invalid Widget");
+  return 0;
 }
 
 
@@ -286,9 +290,10 @@ decode_widget (struct_form * f, int a)
  * @param txt A message to help in the debugging process.
  */
 void
-debug_last_field_created(char *txt)
+debug_last_field_created (char *txt)
 {
-  debug("Doing some debugging stuff on widget %p - %s\n",last_field_created,txt);
+  debug ("Doing some debugging stuff on widget %p - %s\n", last_field_created,
+	 txt);
 }
 
 /**
@@ -314,12 +319,12 @@ add_widget (int metric_no, struct_form * f,
   char buff[256];
 
 
-  debug("In add_widget");
+  debug ("In add_widget");
   metric = &f->metrics.metrics_val[metric_no];
 
   if (strlen (metric->label) != 0)
     {
-	debug("Is a label");
+      debug ("Is a label");
       /* Just a peice of text - create a label */
       new_widget = gtk_label_new (metric->label);
 
@@ -348,17 +353,16 @@ add_widget (int metric_no, struct_form * f,
 	}
 
       ptr = decode_widget (f, attr);
-      debug("decode_widget returns %s\n",ptr);
+      debug ("decode_widget returns %s\n", ptr);
       if (strcmp (ptr, "") == 0)
 	{
-          debug("Must be an entry..");
+	  debug ("Must be an entry..");
 	  ptr = "ENTRY";
 	}
 
       comments = decode_comments (f, attr);
 
-      new_widget = make_widget (ptr,
-				decode_config (f, attr), w);
+      new_widget = make_widget (ptr, decode_config (f, attr), w);
 
       if (new_widget == 0)
 	{
@@ -371,7 +375,7 @@ add_widget (int metric_no, struct_form * f,
 
       gtk_object_set_data (GTK_OBJECT (new_widget), "Metric", metric);
 
-      debug ("Adding WidgetType '%s'....to %p\n", ptr,new_widget);
+      debug ("Adding WidgetType '%s'....to %p\n", ptr, new_widget);
       gtk_object_set_data (GTK_OBJECT (new_widget), "WidgetType", ptr);
 
 
@@ -381,23 +385,20 @@ add_widget (int metric_no, struct_form * f,
       gtk_object_set_data (GTK_OBJECT (new_widget), "Field", strdup (buff));
 
       strcpy (buff, make_colname_from_metric (f, metric_no));
-      debug("Adding colname for %p - %s", new_widget,strdup (buff));
+      debug ("Adding colname for %p - %s", new_widget, strdup (buff));
 
       gtk_object_set_data (GTK_OBJECT (new_widget), "Colname", strdup (buff));
 
 
-      debug("Setting metric->field=%p",new_widget);
-      metric->field = (int)new_widget;
+      debug ("Setting metric->field=%p", new_widget);
+      metric->field = (int) new_widget;
 
       gtk_object_set_data (GTK_OBJECT (panel_to_add_to_window), strdup (buff),
 			   new_widget);
 
       /* Add this to the current form as an object... */
-      gtk_object_set_data (
-			  (GtkObject *) get_window_gtk(metric->scr), 
-				buff,
-			  new_widget
-			);
+      gtk_object_set_data ((GtkObject *) get_window_gtk (metric->scr),
+			   buff, new_widget);
 
       gtk_fixed_put (GTK_FIXED (get_window_gtk (metric->scr)), new_widget,
 		     (metric->x - 1) * XWIDTH, metric->y * 20);
@@ -414,8 +415,8 @@ add_widget (int metric_no, struct_form * f,
 			    comments);
 
       gtk_widget_show (new_widget);
-      last_field_created=new_widget;
-	debug_last_field_created("add_widget");
+      last_field_created = new_widget;
+      debug_last_field_created ("add_widget");
     }
 
 }
@@ -428,39 +429,43 @@ add_widget (int metric_no, struct_form * f,
  * @return w A pointer too the widget with the name passed.
  */
 int
-fgl_fieldnametoid(char *f,char *s,int n)
+fgl_fieldnametoid (char *f, char *s, int n)
 {
-GtkWidget *formdets;
-GtkWidget *w;
-int nofields;
-GtkWidget **field_list=0;
-  
-  if (ui_mode!=1)
-  {
-	  exitwith("Not in GUI mode");
-	  return 0;
-  }
+  GtkWidget *formdets;
+  GtkWidget *w;
+  int nofields;
+  GtkWidget **field_list = 0;
 
-  debug("fgl_fieldnametoid (%p,%d)",s,n);
+  if (ui_mode != 1)
+    {
+      exitwith ("Not in GUI mode");
+      return 0;
+    }
+
+  debug ("fgl_fieldnametoid (%p,%d)", s, n);
 
 
-  formdets = (GtkWidget *)get_curr_form ();
-  debug("Getting field list formdets=%p parent=%p",formdets,gtk_object_get_data((GtkObject*)formdets,"PARENT"));
+  formdets = (GtkWidget *) get_curr_form ();
+  debug ("Getting field list formdets=%p parent=%p", formdets,
+	 gtk_object_get_data ((GtkObject *) formdets, "PARENT"));
 
   /* debug("Getting field list formdets=%p parent=%p",formdets,gtk_object_get_data(formdets,"TOP")); */
 
 
   exitwith ("serious bug in widget.c");
 
-  nofields = gen_field_chars ((void ***)&field_list, (GtkWindow *)formdets, s,n,0);
+  nofields =
+    gen_field_chars ((void ***) &field_list, (GtkWindow *) formdets, s, n, 0);
 
-  debug("done Getting field list - nofields=%d",nofields);
+  debug ("done Getting field list - nofields=%d", nofields);
 
-  if (nofields!=-1) w=field_list[0];
-  else w=0;
-  debug("field_list=%p\n",field_list);
-  free(field_list);
-  return (int)w;
+  if (nofields != -1)
+    w = field_list[0];
+  else
+    w = 0;
+  debug ("field_list=%p\n", field_list);
+  free (field_list);
+  return (int) w;
 }
 
 /**
@@ -472,23 +477,22 @@ GtkWidget **field_list=0;
  * @return Allways zero
  */
 int
-KeySnooper (GtkWidget *grab_widget, GdkEventKey *event, gpointer func_data)
+KeySnooper (GtkWidget * grab_widget, GdkEventKey * event, gpointer func_data)
 {
-  debug("Key Snooper... %p %p %p\n",grab_widget,event,func_data);
+  debug ("Key Snooper... %p %p %p\n", grab_widget, event, func_data);
   debug ("Key Pressed! %x %x (%s)\n", event->keyval, event->state,
-	gtk_accelerator_name(event->keyval,event->state)
-  );
+	 gtk_accelerator_name (event->keyval, event->state));
 
 
-  if (event->keyval==0xffbe&&event->state==1) 
-  {
-    debug("Toggle console...");
-	console_toggle();
-  }
+  if (event->keyval == 0xffbe && event->state == 1)
+    {
+      debug ("Toggle console...");
+      console_toggle ();
+    }
 
-  fflush(stdout);
-  keypress(grab_widget,event,func_data);
-  clr_error_gtk();
+  fflush (stdout);
+  keypress (grab_widget, event, func_data);
+  clr_error_gtk ();
   return 0;
 }
 
@@ -503,13 +507,15 @@ KeySnooper (GtkWidget *grab_widget, GdkEventKey *event, gpointer func_data)
  * @return
  */
 int
-widget_name_match(GtkWidget *w,char *name)
+widget_name_match (GtkWidget * w, char *name)
 {
-void *s;
-	if (w==0) return 0;
-	s=gtk_object_get_data(GTK_OBJECT(w),"Attribute");
-	if (s==0) return 0;
-	return attr_name_match(s,name);
+  void *s;
+  if (w == 0)
+    return 0;
+  s = gtk_object_get_data (GTK_OBJECT (w), "Attribute");
+  if (s == 0)
+    return 0;
+  return attr_name_match (s, name);
 
 }
 

@@ -1,7 +1,7 @@
 /*
  *  odbctest.c
  *
- *  $Id: odbctest.c,v 1.4 2003-02-19 22:28:41 afalout Exp $
+ *  $Id: odbctest.c,v 1.5 2003-05-12 14:24:42 mikeaubury Exp $
  *
  *  Sample ODBC program
  *
@@ -31,103 +31,103 @@
 
 
 #if (defined (__CYGWIN__) || defined (__MINGW32__))
-	#include <windows.h>
-	#include <sqlext.h>
+#include <windows.h>
+#include <sqlext.h>
 #else
 
-	#ifdef UNIXODBC
-		#include <sql.h>
-		#include <sqlext.h>
-	#endif
+#ifdef UNIXODBC
+#include <sql.h>
+#include <sqlext.h>
+#endif
 
-	#ifdef IODBC
-		#include "isql.h"
-		#include "isqlext.h"
-	#endif
+#ifdef IODBC
+#include "isql.h"
+#include "isqlext.h"
+#endif
 #endif
 
 
 #ifdef THIS_IS_FROM_AUBIT_
-	#if (defined (__CYGWIN__) || defined (__MINGW32__))
-		#include <windows.h>
-		#include <sqlext.h>
-	#else
-		#ifdef UNIXODBC
-			#include <sql.h>
-			#include <sqlext.h>
-			#include <odbcinst.h>
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-		#endif
+#if (defined (__CYGWIN__) || defined (__MINGW32__))
+#include <windows.h>
+#include <sqlext.h>
+#else
+#ifdef UNIXODBC
+#include <sql.h>
+#include <sqlext.h>
+#include <odbcinst.h>
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
-		#ifdef IODBC
-			#ifdef OLDIODBC
-				#include <iodbc.h>
-				#include <isql.h>
-				#include <isqlext.h>
-	        #else
-				#include <sql.h>
-	            #include <sqlext.h>
-	            #include <sqltypes.h>
-			#endif
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-		#endif
+#ifdef IODBC
+#ifdef OLDIODBC
+#include <iodbc.h>
+#include <isql.h>
+#include <isqlext.h>
+#else
+#include <sql.h>
+#include <sqlext.h>
+#include <sqltypes.h>
+#endif
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
-		#ifdef IFXODBC
+#ifdef IFXODBC
 			/* infromix headers require wchar_t to be already defined
-			so we have to include stdio.h here */
-			#include <stdio.h>
+			   so we have to include stdio.h here */
+#include <stdio.h>
 
-			#include <incl/cli/infxcli.h>
-			#include <incl/cli/infxsql.h>
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
+#include <incl/cli/infxcli.h>
+#include <incl/cli/infxsql.h>
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
 			/* #include <incl/cli/sqlucode.h> */
-		#endif
+#endif
 
-		#ifdef PGODBC
-				#include <pgsql/iodbc/iodbc.h>
+#ifdef PGODBC
+#include <pgsql/iodbc/iodbc.h>
 				/* #include <pgsql/iodbc/isql.h> */
-				#include <pgsql/iodbc/isqlext.h>
+#include <pgsql/iodbc/isqlext.h>
 
-	            /* NOTHING WE CAN DO:
-	            /usr/include/pgsql/iodbc/isqlext.h:1344: warning: redundant redeclaration of `SQLNumResultCols' in same scope
-				/usr/include/pgsql/iodbc/isql.h:210: warning: previous declaration of `SQLNumResultCols'
-	            */
+		    /* NOTHING WE CAN DO:
+		       /usr/include/pgsql/iodbc/isqlext.h:1344: warning: redundant redeclaration of `SQLNumResultCols' in same scope
+		       /usr/include/pgsql/iodbc/isql.h:210: warning: previous declaration of `SQLNumResultCols'
+		     */
 
-				#define __UCHAR_DEFINED__
-			    #define __ODBC_DEFINED__
-		#endif
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
 
-		#ifdef SAPODBC
-				#include "WINDOWS.H"
+#ifdef SAPODBC
+#include "WINDOWS.H"
 				/*
-				incl/WINDOWS.H Header file for non-MS Windows platforms. On MS Windows 3.1 or
-				Windows NT, this file can be replaced by windows.h if an SDK has been installed.
-	            Also defines thingsa like DWORD needed by followint headers.
-				*/
+				   incl/WINDOWS.H Header file for non-MS Windows platforms. On MS Windows 3.1 or
+				   Windows NT, this file can be replaced by windows.h if an SDK has been installed.
+				   Also defines thingsa like DWORD needed by followint headers.
+				 */
 
-				#include <sql.h> 		/* Header file for the ODBC driver (Core). */
-				#include <sqlext.h>     /* Header file for the ODBC driver (Level1 and Level2). */
-				#include <sqltypes.h>   /* Header file for the ODBC driver (Datatypes). */
+#include <sql.h>		/* Header file for the ODBC driver (Core). */
+#include <sqlext.h>		/* Header file for the ODBC driver (Level1 and Level2). */
+#include <sqltypes.h>		/* Header file for the ODBC driver (Datatypes). */
 
-				#define __UCHAR_DEFINED__
-			    #define __ODBC_DEFINED__
-		#endif
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
-	    #ifndef __ODBC_DEFINED__
-	        /* default for tesing, when we don't use makefile we will not have -Dxxx
-			 unixODBC headers: */
-			#include <sql.h>
-			#include <sqlext.h>
-			#include <odbcinst.h>
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-		#endif
+#ifndef __ODBC_DEFINED__
+		/* default for tesing, when we don't use makefile we will not have -Dxxx
+		   unixODBC headers: */
+#include <sql.h>
+#include <sqlext.h>
+#include <odbcinst.h>
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
-	#endif
+#endif
 
 #endif
 
@@ -185,7 +185,7 @@ DB_Connect (char *connStr)
     return -1;
 
   SQLSetEnvAttr (henv, SQL_ATTR_ODBC_VERSION, (SQLPOINTER) SQL_OV_ODBC3,
-      SQL_IS_UINTEGER);
+		 SQL_IS_UINTEGER);
 
   if (SQLAllocHandle (SQL_HANDLE_DBC, henv, &hdbc) != SQL_SUCCESS)
     return -1;
@@ -225,13 +225,14 @@ DB_Connect (char *connStr)
 	 *  Print headers
 	 */
 	fprintf (stderr, "\n%-30s | %-30s\n", "DSN", "Description");
-	fprintf (stderr, "---------------------------------------------------------------\n");
+	fprintf (stderr,
+		 "---------------------------------------------------------------\n");
 
 	/*
 	 *  Goto the first record
 	 */
 	if (SQLDataSources (henv, SQL_FETCH_FIRST,
-		dsn, 33, &len1, desc, 255, &len2) != SQL_SUCCESS)
+			    dsn, 33, &len1, desc, 255, &len2) != SQL_SUCCESS)
 	  continue;
 
 	/*
@@ -242,11 +243,13 @@ DB_Connect (char *connStr)
 	    fprintf (stderr, "%-30s | %-30s\n", dsn, desc);
 	  }
 	while (SQLDataSources (henv, SQL_FETCH_NEXT,
-		dsn, 33, &len1, desc, 255, &len2) == SQL_SUCCESS);
+			       dsn, 33, &len1, desc, 255,
+			       &len2) == SQL_SUCCESS);
       }
 
   status = SQLDriverConnect (hdbc, 0, (UCHAR *) dataSource, SQL_NTS,
-      (UCHAR *) buf, sizeof (buf), &buflen, SQL_DRIVER_COMPLETE);
+			     (UCHAR *) buf, sizeof (buf), &buflen,
+			     SQL_DRIVER_COMPLETE);
 
   if (status != SQL_SUCCESS && status != SQL_SUCCESS_WITH_INFO)
     return -1;
@@ -334,7 +337,7 @@ DB_Errors (char *where)
    *  Get statement errors
    */
   while (SQLError (henv, hdbc, hstmt, sqlstate, NULL,
-      buf, sizeof(buf), NULL) == SQL_SUCCESS)
+		   buf, sizeof (buf), NULL) == SQL_SUCCESS)
     {
       fprintf (stderr, "%s, SQLSTATE=%s\n", buf, sqlstate);
     }
@@ -343,7 +346,7 @@ DB_Errors (char *where)
    *  Get connection errors
    */
   while (SQLError (henv, hdbc, SQL_NULL_HSTMT, sqlstate, NULL,
-      buf, sizeof(buf), NULL) == SQL_SUCCESS)
+		   buf, sizeof (buf), NULL) == SQL_SUCCESS)
     {
       fprintf (stderr, "%s, SQLSTATE=%s\n", buf, sqlstate);
     }
@@ -352,7 +355,7 @@ DB_Errors (char *where)
    *  Get environmental errors
    */
   while (SQLError (henv, SQL_NULL_HDBC, SQL_NULL_HSTMT, sqlstate, NULL,
-      buf, sizeof(buf), NULL) == SQL_SUCCESS)
+		   buf, sizeof (buf), NULL) == SQL_SUCCESS)
     {
       fprintf (stderr, "%s, SQLSTATE=%s\n", buf, sqlstate);
     }
@@ -389,28 +392,28 @@ DB_Test ()
        */
       printf ("\nSQL>");
       if (fgets (request, sizeof (request), stdin) == NULL)
-        break;
+	break;
 
       request[strlen (request) - 1] = '\0';
       if (request[0] == '\0')
-        continue;
+	continue;
 
       /*
        *  If the user just types tables, give him a list
        */
       if (!strcmp (request, "tables"))
-        {
-	   if (SQLTables (hstmt, NULL, SQL_NTS, NULL, SQL_NTS, NULL, SQL_NTS, 
-			  NULL, SQL_NTS) != SQL_SUCCESS)
-	     {
-	       DB_Errors ("SQLTables");
-	       continue;
-	     }
+	{
+	  if (SQLTables (hstmt, NULL, SQL_NTS, NULL, SQL_NTS, NULL, SQL_NTS,
+			 NULL, SQL_NTS) != SQL_SUCCESS)
+	    {
+	      DB_Errors ("SQLTables");
+	      continue;
+	    }
 	}
       else if (!strcmp (request, "quit") || !strcmp (request, "exit"))
-        break;	/* If you want to quit, just say so */
+	break;			/* If you want to quit, just say so */
       else
-        {
+	{
 	  /*
 	   *  Prepare & Execute the statement
 	   */
@@ -424,7 +427,7 @@ DB_Test ()
 	      DB_Errors ("SQLExec");
 	      continue;
 	    }
-        }
+	}
 
       /*
        *  Get the number of result columns for this cursor.
@@ -436,13 +439,13 @@ DB_Test ()
 	  goto endCursor;
 	}
       if (numCols == 0)
-        {
+	{
 	  printf ("Statement executed.\n");
 	  goto endCursor;
 	}
-    
+
       if (numCols > MAXCOLS)
-        numCols = MAXCOLS;
+	numCols = MAXCOLS;
 
       /*
        *  Get the names for the columns
@@ -453,8 +456,8 @@ DB_Test ()
 	   *  Get the name and other type information
 	   */
 	  if (SQLDescribeCol (hstmt, colNum, (UCHAR *) colName,
-	          sizeof (colName), NULL, &colType, &colPrecision,
-		  &colScale, &colNullable) != SQL_SUCCESS)
+			      sizeof (colName), NULL, &colType, &colPrecision,
+			      &colScale, &colNullable) != SQL_SUCCESS)
 	    {
 	      DB_Errors ("SQLDescribeCol");
 	      goto endCursor;
@@ -481,24 +484,24 @@ DB_Test ()
 	    case SQL_DECIMAL:
 	    case SQL_NUMERIC:
 	    case SQL_FLOAT:
-	      displayWidth = colPrecision + 2;  /* sign, comma */
+	      displayWidth = colPrecision + 2;	/* sign, comma */
 	      break;
 	    case SQL_DATE:
 	    case SQL_TIME:
 	    case SQL_TIMESTAMP:
-	      displayWidth = colPrecision;  
+	      displayWidth = colPrecision;
 	      break;
 	    default:
-	      displayWidths[colNum-1] = 0;	/* skip other data types */
+	      displayWidths[colNum - 1] = 0;	/* skip other data types */
 	      continue;
 	    }
-	
+
 	  if (displayWidth < strlen (colName))
 	    displayWidth = strlen (colName);
 	  if (displayWidth > sizeof (fetchBuffer) - 1)
 	    displayWidth = sizeof (fetchBuffer) - 1;
-	
-	  displayWidths[colNum-1] = displayWidth; 
+
+	  displayWidths[colNum - 1] = displayWidth;
 
 	  /*
 	   *  Print header field
@@ -513,8 +516,8 @@ DB_Test ()
        *  Print second line
        */
       for (colNum = 1; colNum <= numCols; colNum++)
-        {
-	  for (i = 0; i < displayWidths[colNum-1]; i++)
+	{
+	  for (i = 0; i < displayWidths[colNum - 1]; i++)
 	    putchar ('-');
 	  if (colNum < numCols)
 	    putchar ('+');
@@ -526,7 +529,7 @@ DB_Test ()
        */
       totalRows = 0;
       while (1)
-        {
+	{
 	  int sts = SQLFetch (hstmt);
 
 	  if (sts == SQL_NO_DATA_FOUND)
@@ -543,7 +546,8 @@ DB_Test ()
 	       *  Fetch this column as character
 	       */
 	      if (SQLGetData (hstmt, colNum, SQL_CHAR, fetchBuffer,
-		  sizeof (fetchBuffer), &colIndicator) != SQL_SUCCESS)
+			      sizeof (fetchBuffer),
+			      &colIndicator) != SQL_SUCCESS)
 		{
 		  DB_Errors ("SQLGetData");
 		  goto endCursor;
@@ -553,16 +557,16 @@ DB_Test ()
 	       *  Show NULL fields as ****
 	       */
 	      if (colIndicator == SQL_NULL_DATA)
-	        {
-		  for (i = 0; i < displayWidths[colNum-1]; i++)
+		{
+		  for (i = 0; i < displayWidths[colNum - 1]; i++)
 		    fetchBuffer[i] = '*';
 		  fetchBuffer[i] = '\0';
 		}
 
-	      printf ("%-*.*s", displayWidths[colNum-1],
-	          displayWidths[colNum-1], fetchBuffer);
+	      printf ("%-*.*s", displayWidths[colNum - 1],
+		      displayWidths[colNum - 1], fetchBuffer);
 	      if (colNum < numCols)
-	        putchar ('|');
+		putchar ('|');
 	    }
 	  putchar ('\n');
 	  totalRows++;

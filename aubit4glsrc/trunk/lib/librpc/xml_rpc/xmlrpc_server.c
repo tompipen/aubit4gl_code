@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_server.c,v 1.3 2002-06-29 13:12:03 afalout Exp $
+# $Id: xmlrpc_server.c,v 1.4 2003-05-12 14:24:24 mikeaubury Exp $
 #*/
 
 
@@ -50,24 +50,23 @@
 
 #ifdef OLD_INCL
 
-	#include <stdio.h>
-	#include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-	#include <xmlrpc.h>
-	#include <xmlrpc_client.h>
+#include <xmlrpc.h>
+#include <xmlrpc_client.h>
 
-	#include "a4gl_stack.h"
-	#include "a4gl_runtime_tui.h"		/* push_dtime */
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
+#include "a4gl_stack.h"
+#include "a4gl_runtime_tui.h"	/* push_dtime */
+#include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_lib_rpc_rpcxml_int.h"
+#include "a4gl_lib_rpc_rpcxml_int.h"
 
 #endif
 
 
 
 /* ============================= EOF ============================== */
-

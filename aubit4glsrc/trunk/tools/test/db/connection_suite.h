@@ -6,14 +6,13 @@
 #ifndef CONNECTION_SUITE_H
 #define CONNECTION_SUITE_H
     /* ----------------- prototypes ----------------------- */
-	Suite *makeConnectionSuite(void);
+Suite *makeConnectionSuite (void);
 	/*
-	Suite *makeDdlSuite(void);
-	Suite *makeDmlSuite(void);
-	*/
+	   Suite *makeDdlSuite(void);
+	   Suite *makeDmlSuite(void);
+	 */
 
 
 
 
 #endif
-

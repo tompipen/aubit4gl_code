@@ -1,6 +1,6 @@
 #include "a4gl_lib_lex_esqlc_int.h"
-void                        printc                          (char* fmt,... );
-static void print_copy_status(void) ;
+void printc (char *fmt, ...);
+static void print_copy_status (void);
 void print_conversions (char i);
 
 /**
@@ -13,9 +13,8 @@ void
 print_exec_sql (char *s)
 {
 
-  printc
-    ("EXEC SQL %s; /* exec_sql */\n", s);
-  print_copy_status();
+  printc ("EXEC SQL %s; /* exec_sql */\n", s);
+  print_copy_status ();
 }
 
 
@@ -31,10 +30,10 @@ print_exec_sql_bound (char *s)
   int c;
   printc ("{/* Start exec_sql_bound */\n");
   c = print_bind ('i');
-  printc("/* printed bind - print conversions */");
-  print_conversions('i');
+  printc ("/* printed bind - print conversions */");
+  print_conversions ('i');
   printc ("EXEC SQL %s; /* exec_sql_bound */\n", s);
-  print_copy_status();
+  print_copy_status ();
   printc ("}\n");
 }
 
@@ -53,12 +52,12 @@ print_close (char type, char *name)
       printc ("close_database();\n");
       break;
     case 'S':
-      printc ("EXEC SQL CLOSE SESSION %s;\n", strip_quotes(name));
-  print_copy_status();
+      printc ("EXEC SQL CLOSE SESSION %s;\n", strip_quotes (name));
+      print_copy_status ();
       break;
     case 'C':
-      printc ("EXEC SQL CLOSE %s;\n", strip_quotes(name));
-  print_copy_status();
+      printc ("EXEC SQL CLOSE %s;\n", strip_quotes (name));
+      print_copy_status ();
       break;
     }
 }
@@ -77,15 +76,17 @@ print_foreach_next (char *cursorname, char *into)
   int ni;
   int no;
   printc ("a4gl_sqlca.sqlcode=0;\n");
-  printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", strip_quotes(cursorname),into);
-  print_copy_status();
+  printc ("\nEXEC SQL OPEN  %s; /* into=%s */\n", strip_quotes (cursorname),
+	  into);
+  print_copy_status ();
   printc ("while (1) {\n");
   ni = print_bind ('i');
   no = print_bind ('o');
-  print_conversions('i');
-  printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",strip_quotes(cursorname),get_into_part(no),ni,no);
-  print_copy_status();
-  print_conversions('o');
+  print_conversions ('i');
+  printc ("\nEXEC SQL FETCH %s %s; /*foreach ni=%d no=%d*/\n",
+	  strip_quotes (cursorname), get_into_part (no), ni, no);
+  print_copy_status ();
+  print_conversions ('o');
 
   printc ("if (a4gl_sqlca.sqlcode<0||a4gl_sqlca.sqlcode==100) break;\n");
 }
@@ -102,8 +103,8 @@ print_foreach_next (char *cursorname, char *into)
 void
 print_free_cursor (char *s)
 {
-  printc ("EXEC SQL FREE %s\n",s);
-  print_copy_status();
+  printc ("EXEC SQL FREE %s\n", s);
+  print_copy_status ();
 }
 
 /**
@@ -162,7 +163,7 @@ print_linked_cmd (int type, char *var)
 	no = print_bind ('o');
 
       ni = print_bind ('i');
-  	print_conversions('i');
+      print_conversions ('i');
 
 
       if (type == 'S')
@@ -182,15 +183,17 @@ print_linked_cmd (int type, char *var)
 	  strcat (buff, "=? ");
 	}
 
-      if (type == 'S') {
-	printc ("EXEC SQL %s; /* linked - S */",buff);
-  print_copy_status();
-      }
+      if (type == 'S')
+	{
+	  printc ("EXEC SQL %s; /* linked - S */", buff);
+	  print_copy_status ();
+	}
 
-      if (type == 'D' || type == 'U') {
-	printc ("EXEC SQL %s; /* linked - D/U */", buff);
-  print_copy_status();
-      }
+      if (type == 'D' || type == 'U')
+	{
+	  printc ("EXEC SQL %s; /* linked - D/U */", buff);
+	  print_copy_status ();
+	}
 
       printc ("}\n");
     }
@@ -226,7 +229,7 @@ void
 print_set_conn (char *conn)
 {
   printc ("EXEC SQL SET CONNECTION TO %s;\n", conn);
-  print_copy_status();
+  print_copy_status ();
 }
 
 /**
@@ -237,20 +240,23 @@ void
 print_put (char *cname)
 {
   int n;
-int a;
+  int a;
   printc ("{\n");
   n = print_bind ('i');
-  print_conversions('i');
-  printc ("EXEC SQL PUT %s \n", strip_quotes(cname));
-  if (n) {
-	printc("FROM ");
-	for (a=0;a<n;a++) {
-		if (a) printc(",");
-		printc("   $_vi_%d",a);
+  print_conversions ('i');
+  printc ("EXEC SQL PUT %s \n", strip_quotes (cname));
+  if (n)
+    {
+      printc ("FROM ");
+      for (a = 0; a < n; a++)
+	{
+	  if (a)
+	    printc (",");
+	  printc ("   $_vi_%d", a);
 	}
-  }
-  printc(";");
-  print_copy_status();
+    }
+  printc (";");
+  print_copy_status ();
   printc ("}\n");
 }
 
@@ -267,15 +273,15 @@ int a;
 void
 print_prepare (char *stmt, char *sqlvar)
 {
-  printc("{\n");
-  printc("EXEC SQL BEGIN DECLARE SECTION;\n");
-  printc("char *_s;\n");
-  printc("EXEC SQL END DECLARE SECTION;\n");
-  printc("_s=strdup(%s);\n",sqlvar);
-  printc ("EXEC SQL PREPARE %s FROM :_s;\n", strip_quotes(stmt), sqlvar);
+  printc ("{\n");
+  printc ("EXEC SQL BEGIN DECLARE SECTION;\n");
+  printc ("char *_s;\n");
+  printc ("EXEC SQL END DECLARE SECTION;\n");
+  printc ("_s=strdup(%s);\n", sqlvar);
+  printc ("EXEC SQL PREPARE %s FROM :_s;\n", strip_quotes (stmt), sqlvar);
 
-  printc("free(_s);\n}\n");
-  print_copy_status();
+  printc ("free(_s);\n}\n");
+  print_copy_status ();
 }
 
 
@@ -292,25 +298,28 @@ void
 print_execute (char *stmt, int using)
 {
   int ni;
-  
-  if (using == 0) {
-    printc ("EXEC SQL EXECUTE %s;\n", strip_quotes(stmt));
-  print_copy_status();
-  }
+
+  if (using == 0)
+    {
+      printc ("EXEC SQL EXECUTE %s;\n", strip_quotes (stmt));
+      print_copy_status ();
+    }
   else
     {
-	int a;
+      int a;
       printc ("{ /* EXECUTE */\n");
       ni = print_bind ('i');
-print_conversions('i');
-      printc ("EXEC SQL EXECUTE %s USING \n", strip_quotes(stmt));
-        for  (a=0;a<ni;a++) {
-                if (a) printc(",");
-                printc(":_vi_%d\n",a);
-        }
+      print_conversions ('i');
+      printc ("EXEC SQL EXECUTE %s USING \n", strip_quotes (stmt));
+      for (a = 0; a < ni; a++)
+	{
+	  if (a)
+	    printc (",");
+	  printc (":_vi_%d\n", a);
+	}
 
-        printc(";");
-  print_copy_status();
+      printc (";");
+      print_copy_status ();
       printc ("}\n");
     }
 
@@ -331,7 +340,7 @@ print_open_session (char *s, char *v, char *user)
 {
 
   printc ("EXEC SQL OPEN SESSION %s", s);
-  print_copy_status();
+  print_copy_status ();
 
 
   if (strcmp (user, "?") == 0)
@@ -356,48 +365,60 @@ print_open_session (char *s, char *v, char *user)
 void
 print_open_cursor (char *cname, char *using)
 {
-int n;
-int a;
+  int n;
+  int a;
 
 
-  n=atoi(using);
-  if (n) {
-	printc("{\nEXEC SQL BEGIN DECLARE SECTION;");
-        for  (a=n-1;a>=0;a--) {
-		printc("char *_using_%d;",a);
+  n = atoi (using);
+  if (n)
+    {
+      printc ("{\nEXEC SQL BEGIN DECLARE SECTION;");
+      for (a = n - 1; a >= 0; a--)
+	{
+	  printc ("char *_using_%d;", a);
 	}
-	printc("EXEC SQL END DECLARE SECTION;");
+      printc ("EXEC SQL END DECLARE SECTION;");
 
-        for  (a=n-1;a>=0;a--) {
-		printc("_using_%d=char_pop();\n",a);
-        }
-
-  	printc ("\nEXEC SQL OPEN  %s USING /* %d variables */",  strip_quotes(cname),n);
-        for  (a=0;a<n;a++) {
-		if (a) printc(",");
-		printc(":_using_%d\n",a);
+      for (a = n - 1; a >= 0; a--)
+	{
+	  printc ("_using_%d=char_pop();\n", a);
 	}
 
-	printc(";");
+      printc ("\nEXEC SQL OPEN  %s USING /* %d variables */",
+	      strip_quotes (cname), n);
+      for (a = 0; a < n; a++)
+	{
+	  if (a)
+	    printc (",");
+	  printc (":_using_%d\n", a);
+	}
 
-        for  (a=n-1;a>=0;a--) {
-		printc("free(_using_%d);\n",a);
-        }
-	printc("}");
-  } else {
-  	printc ("\nEXEC SQL OPEN  %s; /* No using */\n",  strip_quotes(cname));
-  }
-  print_copy_status();
+      printc (";");
+
+      for (a = n - 1; a >= 0; a--)
+	{
+	  printc ("free(_using_%d);\n", a);
+	}
+      printc ("}");
+    }
+  else
+    {
+      printc ("\nEXEC SQL OPEN  %s; /* No using */\n", strip_quotes (cname));
+    }
+  print_copy_status ();
 }
 
 void
 print_sql_commit (int t)
 {
-	if (t==-1) printc ("EXEC SQL BEGIN WORK;\n", t);
-	if (t==0)  printc ("EXEC SQL ROLLBACK WORK;\n", t);
-	if (t==1)  printc ("EXEC SQL COMMIT WORK;\n", t);
+  if (t == -1)
+    printc ("EXEC SQL BEGIN WORK;\n", t);
+  if (t == 0)
+    printc ("EXEC SQL ROLLBACK WORK;\n", t);
+  if (t == 1)
+    printc ("EXEC SQL COMMIT WORK;\n", t);
 
-  print_copy_status();
+  print_copy_status ();
 }
 
 /**
@@ -419,92 +440,134 @@ print_sql_commit (int t)
 void
 print_fetch_3 (char *ftp, char *into)
 {
-  int fp1=0;
-  int fp2=0;
-  int poped=0;
+  int fp1 = 0;
+  int fp2 = 0;
+  int poped = 0;
   char buff[256];
   int no;
   char cname[256];
   //printf("/* ftp=%s into=%s */\n",ftp,into);
-  sscanf(into,"%d,",&no);
+  sscanf (into, "%d,", &no);
   //printf("no=%d\n",no);
-  printc("EXEC SQL BEGIN DECLARE SECTION;");
-  printc("int _fp;");
-  printc("EXEC SQL END DECLARE SECTION;");
+  printc ("EXEC SQL BEGIN DECLARE SECTION;");
+  printc ("int _fp;");
+  printc ("EXEC SQL END DECLARE SECTION;");
 
-  if (strstr(ftp,"pop_int")==0) {
-	char *ptr;
-	char *ptr2;
-  	char sbuff[256];
-	strcpy(sbuff,ftp);
-	ptr=strchr(sbuff,',');
-	if (ptr==0) { a4gl_yyerror("Internal Error FETCH1"); return; }
-	*ptr=0;
-	strcpy(cname,sbuff);
-	ptr++;
-
-	ptr2=strchr(ptr,',');
-	if (ptr==0) { a4gl_yyerror("Internal Error FETCH2"); return; }
-	*ptr2=0;
-	fp1=atoi(ptr);
-	ptr2++;
-	fp2=atoi(ptr2);
-	printc("_fp=%d;\n",fp2);
-  } else {
-	char *ptr;
-	char *ptr2;
-  	char sbuff[256];
-	strcpy(sbuff,ftp);
-	ptr=strchr(sbuff,',');
-	if (ptr==0) { a4gl_yyerror("Internal Error FETCH3"); return; }
-	*ptr=0;
-	strcpy(cname,sbuff);
-	ptr++;
-	ptr2=strchr(ptr,',');
-	if (ptr==0) { a4gl_yyerror("Internal Error FETCH4"); return; }
-	*ptr2=0;
-	fp1=atoi(ptr);
-	poped=1;
-	printc("_fp=pop_int();");
-  }
- 
-  strcpy(buff,"EMPTY");
-
-  if (poped==0) {
-	if (fp1==1) { // FETCH ABSOLUTE
-		switch (fp2) {
-		case 1: sprintf(buff,"EXEC SQL FETCH FIRST %s ", strip_quotes(cname));break;
-		case -1: sprintf(buff,"EXEC SQL FETCH LAST %s ", strip_quotes(cname));break;
-
-		} 
-	} else {// FETCH RELATIVE
-		if (fp2!=1) {
-  			sprintf(buff,"EXEC SQL FETCH RELATIVE %d %s ", fp2,strip_quotes(cname));
-		} else {
-  			sprintf(buff,"EXEC SQL FETCH %s", strip_quotes(cname));
-		}
+  if (strstr (ftp, "pop_int") == 0)
+    {
+      char *ptr;
+      char *ptr2;
+      char sbuff[256];
+      strcpy (sbuff, ftp);
+      ptr = strchr (sbuff, ',');
+      if (ptr == 0)
+	{
+	  a4gl_yyerror ("Internal Error FETCH1");
+	  return;
 	}
-  } else {
-	if (fp1==1) { // FETCH ABSOLUTE
-		sprintf(buff,"EXEC SQL FETCH ABSOLUTE :_fp %s", strip_quotes(cname));
-	} else {
-		sprintf(buff,"EXEC SQL FETCH RELATIVE :_fp %s", strip_quotes(cname));
+      *ptr = 0;
+      strcpy (cname, sbuff);
+      ptr++;
+
+      ptr2 = strchr (ptr, ',');
+      if (ptr == 0)
+	{
+	  a4gl_yyerror ("Internal Error FETCH2");
+	  return;
 	}
-  }
+      *ptr2 = 0;
+      fp1 = atoi (ptr);
+      ptr2++;
+      fp2 = atoi (ptr2);
+      printc ("_fp=%d;\n", fp2);
+    }
+  else
+    {
+      char *ptr;
+      char *ptr2;
+      char sbuff[256];
+      strcpy (sbuff, ftp);
+      ptr = strchr (sbuff, ',');
+      if (ptr == 0)
+	{
+	  a4gl_yyerror ("Internal Error FETCH3");
+	  return;
+	}
+      *ptr = 0;
+      strcpy (cname, sbuff);
+      ptr++;
+      ptr2 = strchr (ptr, ',');
+      if (ptr == 0)
+	{
+	  a4gl_yyerror ("Internal Error FETCH4");
+	  return;
+	}
+      *ptr2 = 0;
+      fp1 = atoi (ptr);
+      poped = 1;
+      printc ("_fp=pop_int();");
+    }
 
-  if (strcmp(buff,"EMPTY")==0) {
-	a4gl_yyerror("error calculating fetch instruction");
-	return;
-  }
+  strcpy (buff, "EMPTY");
+
+  if (poped == 0)
+    {
+      if (fp1 == 1)
+	{			// FETCH ABSOLUTE
+	  switch (fp2)
+	    {
+	    case 1:
+	      sprintf (buff, "EXEC SQL FETCH FIRST %s ",
+		       strip_quotes (cname));
+	      break;
+	    case -1:
+	      sprintf (buff, "EXEC SQL FETCH LAST %s ", strip_quotes (cname));
+	      break;
+
+	    }
+	}
+      else
+	{			// FETCH RELATIVE
+	  if (fp2 != 1)
+	    {
+	      sprintf (buff, "EXEC SQL FETCH RELATIVE %d %s ", fp2,
+		       strip_quotes (cname));
+	    }
+	  else
+	    {
+	      sprintf (buff, "EXEC SQL FETCH %s", strip_quotes (cname));
+	    }
+	}
+    }
+  else
+    {
+      if (fp1 == 1)
+	{			// FETCH ABSOLUTE
+	  sprintf (buff, "EXEC SQL FETCH ABSOLUTE :_fp %s",
+		   strip_quotes (cname));
+	}
+      else
+	{
+	  sprintf (buff, "EXEC SQL FETCH RELATIVE :_fp %s",
+		   strip_quotes (cname));
+	}
+    }
+
+  if (strcmp (buff, "EMPTY") == 0)
+    {
+      a4gl_yyerror ("error calculating fetch instruction");
+      return;
+    }
 
 
-  printc("%s %s ;",buff,get_into_part(no));
-  if(strcmp(into,"0,0")!=0) {
-  	print_copy_status();
-  	print_conversions('o');
-  }
-  printc("}");
-  printc("}");
+  printc ("%s %s ;", buff, get_into_part (no));
+  if (strcmp (into, "0,0") != 0)
+    {
+      print_copy_status ();
+      print_conversions ('o');
+    }
+  printc ("}");
+  printc ("}");
 }
 
 /**
@@ -523,22 +586,29 @@ void
 print_init_conn (char *db)
 {
 
-  if (db == 0) {
-    printc ("{");
-    printc("EXEC SQL BEGIN DECLARE SECTION;\n");
-    printc ("char *s;");
-    printc("EXEC SQL END DECLARE SECTION;\n");
-    printc("s=char_pop();\n");
-    printc ("EXEC SQL CONNECT TO $s AS 'default';\n");
-    printc("}");
-  }
-  else {
-    switch(esql_type()) {
-	case 1: printc ("EXEC SQL CONNECT TO \"%s\" AS 'default';\n",db); break;
-    	case 2: printc ("EXEC SQL CONNECT TO %s AS 'default';\n",db);break;
+  if (db == 0)
+    {
+      printc ("{");
+      printc ("EXEC SQL BEGIN DECLARE SECTION;\n");
+      printc ("char *s;");
+      printc ("EXEC SQL END DECLARE SECTION;\n");
+      printc ("s=char_pop();\n");
+      printc ("EXEC SQL CONNECT TO $s AS 'default';\n");
+      printc ("}");
+    }
+  else
+    {
+      switch (esql_type ())
+	{
+	case 1:
+	  printc ("EXEC SQL CONNECT TO \"%s\" AS 'default';\n", db);
+	  break;
+	case 2:
+	  printc ("EXEC SQL CONNECT TO %s AS 'default';\n", db);
+	  break;
 	}
-  }
-  print_copy_status();
+    }
+  print_copy_status ();
 }
 
 
@@ -558,9 +628,9 @@ print_do_select (char *s)
   //printc("/* printed bind ni=%d */",ni);
   //print_conversions('i');
   printc ("EXEC SQL %s;\n/* do_select */", s);
-  print_copy_status();
-  print_conversions('o');
-  printc("}\n");
+  print_copy_status ();
+  print_conversions ('o');
+  printc ("}\n");
 }
 
 /**
@@ -574,7 +644,7 @@ void
 print_flush_cursor (char *s)
 {
   printc ("EXEC SQL FLUSH CURSOR %s;\n", s);
-  print_copy_status();
+  print_copy_status ();
 }
 
 /**
@@ -602,38 +672,49 @@ print_flush_cursor (char *s)
 void
 print_declare (char *a1, char *a2, char *a3, int h1, int h2)
 {
-char buff[256];
+  char buff[256];
   //printc ("/* print_declare a1=%s h1=%d a2=%s h2=%d a3=%s */\n", a1, h1, a2, h2, a3);
   //printc(" /* nibind=%d a2=%s*/\n",get_bind_cnt('i'),a2);
   //printc(" /* nobind=%d a3=%s */\n",get_bind_cnt('o'),a3);
 
 
-  if (strstr(a2,"INTO $")!=0) {
-	  	a4gl_yyerror("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
-		return;
-  }
+  if (strstr (a2, "INTO $") != 0)
+    {
+      a4gl_yyerror
+	("ESQL lexer cannot handle DECLARE .. INTO at present, put the INTO on the FETCH/FOREACH instead...");
+      return;
+    }
 
-  if (a2[0]=='"') {
-	  	printc("{");
-  }
+  if (a2[0] == '"')
+    {
+      printc ("{");
+    }
 
-  if (atoi(a1)&&h2) {
-		a4gl_yyerror("Updates are not allowed on a scroll cursor");
-		return;
-  }
+  if (atoi (a1) && h2)
+    {
+      a4gl_yyerror ("Updates are not allowed on a scroll cursor");
+      return;
+    }
 
-  sprintf(buff,"EXEC SQL DECLARE %s",strip_quotes(a3));
-  if (h2) {strcat(buff," SCROLL");}
-  strcat(buff," CURSOR");
-  if (h1) {strcat(buff," WITH HOLD");}
+  sprintf (buff, "EXEC SQL DECLARE %s", strip_quotes (a3));
+  if (h2)
+    {
+      strcat (buff, " SCROLL");
+    }
+  strcat (buff, " CURSOR");
+  if (h1)
+    {
+      strcat (buff, " WITH HOLD");
+    }
 
-  printc("%s FOR",buff);
-  printc("     %s ",strip_quotes(a2));
-  if (atoi(a1)) {
-	printc("     FOR UPDATE");
-  }
-  printc(";");
-  print_copy_status();
+  printc ("%s FOR", buff);
+  printc ("     %s ", strip_quotes (a2));
+  if (atoi (a1))
+    {
+      printc ("     FOR UPDATE");
+    }
+  printc (";");
+  print_copy_status ();
   printc ("}\n");
 
 }
@@ -653,9 +734,11 @@ char *
 print_curr_spec (int type, char *s)
 {
   static char buff[3000];
-  strcpy(buff,"");
-  if (type == 1) sprintf (buff, "%s", s);
-  if (type == 2) sprintf (buff, "%s", s);
+  strcpy (buff, "");
+  if (type == 1)
+    sprintf (buff, "%s", s);
+  if (type == 2)
+    sprintf (buff, "%s", s);
   return buff;
 }
 
@@ -682,8 +765,8 @@ print_select_all (char *buff)
   printc ("{ /* print_select_all */\n");
   ni = print_bind ('i');
   no = print_bind ('o');
-  print_conversions('i');
-  b2=strdup(buff);
+  print_conversions ('i');
+  b2 = strdup (buff);
   return b2;
 }
 
@@ -726,13 +809,13 @@ void
 print_load (char *file, char *delim, char *tab, char *list)
 {
   //printc ("A4GLSQL_load_data(%s,%s,\"%s\",%s);\n", file, delim, tab, list);
-  printc("/* LOAD NOT IMPLEMENTED YET */");
+  printc ("/* LOAD NOT IMPLEMENTED YET */");
 }
 
 void
 print_load_str (char *file, char *delim, char *str)
 {
-  printc("/* LOAD NOT IMPLEMENTED YET */");
+  printc ("/* LOAD NOT IMPLEMENTED YET */");
 }
 
 
@@ -750,7 +833,7 @@ print_use_session (char *sess)
   //printc ("{char _sav_cur_conn[32];\n");
   //printc ("strcpy(_sav_cur_conn,A4GLSQL_get_curr_conn());\n");
   //printc ("A4GLSQL_set_conn(%s);\n", sess);
-  printc("/* USE NOT IMPLEMENTED FOR ESQL/C */");
+  printc ("/* USE NOT IMPLEMENTED FOR ESQL/C */");
 }
 
 
@@ -771,11 +854,16 @@ get_undo_use (void)
 }
 
 
-static void print_copy_status() {
-	printc("A4GLSQL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
+static void
+print_copy_status ()
+{
+  printc
+    ("A4GLSQL_set_status(sqlca.sqlcode,1); /* Informix Status -> A4GL */");
 }
 
 
-void print_sql_block_cmd(char *s) {
-	printc("EXEC SQL %s;",s);
+void
+print_sql_block_cmd (char *s)
+{
+  printc ("EXEC SQL %s;", s);
 }

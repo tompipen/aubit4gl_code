@@ -36,20 +36,22 @@
 /* Type Definitions */
 typedef struct
 {
-	char *name;
-	char *val;
-} form_entry;
+  char *name;
+  char *val;
+}
+form_entry;
 
 typedef struct
 {
-	char name[ENTRY_SIZE];
-	char val[ENTRY_SIZE];
-} cmdln_entry;
+  char name[ENTRY_SIZE];
+  char val[ENTRY_SIZE];
+}
+cmdln_entry;
 
 /* Function Prototypes */
-int	load_form_entries();
-void	free_form_entries();
-char	*retrieve_form_entry(char *field_name);
-int	load_cmdln_entries();
-char	*retrieve_cmdln_entry(char *field_name);
-char	*trim(char *trim_str);
+int load_form_entries ();
+void free_form_entries ();
+char *retrieve_form_entry (char *field_name);
+int load_cmdln_entries ();
+char *retrieve_cmdln_entry (char *field_name);
+char *trim (char *trim_str);

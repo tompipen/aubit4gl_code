@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fields.c,v 1.3 2003-04-23 16:37:29 mikeaubury Exp $
+# $Id: fields.c,v 1.4 2003-05-12 14:24:30 mikeaubury Exp $
 #*/
 
 /**
@@ -48,8 +48,7 @@
 =====================================================================
 */
 
-void
-endis_fields_ap (int en_dis,va_list *ap);
+void endis_fields_ap (int en_dis, va_list * ap);
 
 /*
 =====================================================================
@@ -66,23 +65,24 @@ endis_fields_ap (int en_dis,va_list *ap);
  * @param ... The list of the fields to be enabled or disabled.
  */
 void
-endis_fields_ap (int en_dis,va_list *ap)
+endis_fields_ap (int en_dis, va_list * ap)
 {
   GtkWidget *formdets;
   int a;
   int nofields;
   GtkWidget **field_list;
-  formdets = GTK_WIDGET(get_curr_form ());
+  formdets = GTK_WIDGET (get_curr_form ());
 
 
-  debug("Formdets = %p\n",formdets);
+  debug ("Formdets = %p\n", formdets);
 
-  nofields = gen_field_list_gtk (&field_list, (GtkWindow *)formdets, 9999, ap);
-  debug("nofields=%d\n",nofields);
+  nofields =
+    gen_field_list_gtk (&field_list, (GtkWindow *) formdets, 9999, ap);
+  debug ("nofields=%d\n", nofields);
 
   for (a = 0; a <= nofields; a++)
     {
-	debug("Doing something to %p %d\n",field_list[a],en_dis);
+      debug ("Doing something to %p %d\n", field_list[a], en_dis);
       gui_set_active (field_list[a], en_dis);
     }
 }
@@ -97,15 +97,16 @@ endis_fields_ap (int en_dis,va_list *ap)
  *   - E : Enable.
  */
 void
-gui_set_active(GtkWidget *w,int en_dis)
+gui_set_active (GtkWidget * w, int en_dis)
 {
   GtkWidget *p;
-  debug("Set active : %p %d",w,en_dis);
-	p=gtk_object_get_data (GTK_OBJECT(w), "Child");
-  debug("p=%p",p);
-	if (p==0) p=w;
-  debug(" activate %p ",p);
-	gtk_widget_set_sensitive (p, en_dis);
+  debug ("Set active : %p %d", w, en_dis);
+  p = gtk_object_get_data (GTK_OBJECT (w), "Child");
+  debug ("p=%p", p);
+  if (p == 0)
+    p = w;
+  debug (" activate %p ", p);
+  gtk_widget_set_sensitive (p, en_dis);
 
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.4 2003-05-01 09:42:41 mikeaubury Exp $
+# $Id: memfile.c,v 1.5 2003-05-12 14:24:17 mikeaubury Exp $
 #
 */
 
@@ -50,204 +50,276 @@
 
 //#include "memfile.h"  // why is this not in "a4gl_libaubit4gl_int.h" ?
 
-int opened=0;
+int opened = 0;
 char *buff;
-long  buff_len;
+long buff_len;
 FILE *in;
-long pos=0;
-FILE *mja_fopen(char *name,char *mode);
-void *memdup(void *ptr,int size) ;
-void dump_buffer(char *s,int l);
+long pos = 0;
+FILE *mja_fopen (char *name, char *mode);
+void *memdup (void *ptr, int size);
+void dump_buffer (char *s, int l);
 
-FILE *memfile_fopen(char *f,char *mode) {
+FILE *
+memfile_fopen (char *f, char *mode)
+{
 
-	if (opened>1) {
-		printf("Too many opened!!");
-		exit(1);
+  if (opened > 1)
+    {
+      printf ("Too many opened!!");
+      exit (1);
+    }
+
+  if (strchr (mode, 'w'))
+    {
+      printf ("Can't use memfile for Writing...");
+      exit (1);
+
+    }
+
+  opened++;
+
+  in = mja_fopen (f, mode);
+
+  if (in == 0)
+    return 0;
+  else
+    {
+      fseek (in, 0, SEEK_END);
+      buff_len = ftell (in);
+      buff = (char *) malloc (buff_len + 1);
+      rewind (in);
+
+      if (fread (buff, buff_len, 1, in) != 1)
+	{
+	  printf ("Unable to read file into buffer\n");
 	}
+    }
 
-	if (strchr(mode,'w')) {
-		printf("Can't use memfile for Writing...");
-		exit(1);
-	
-	}
-
-	opened++;
-
-	in=mja_fopen(f,mode);
-
-	if (in==0) return 0;
-	else {
-		fseek(in,0,SEEK_END);
-		buff_len=ftell(in);
-		buff=(char *)malloc(buff_len+1);
-		rewind(in);
-
-		if (fread(buff,buff_len,1,in)!=1) {
-			printf("Unable to read file into buffer\n");
-		}
-	}
-
-        pos=0;
-	return in;
+  pos = 0;
+  return in;
 }
 
-void *memdup(void *ptr,int size) {
-	        void *p2;
-	        p2=malloc(size);
-	        memcpy(p2,ptr,size);
-	        return p2;
-}
-
-
-FILE *memfile_fopen_buffer(char *ptr,int len) {
-        pos=0;
-	if (len==-1) {
-		int l;
-		int c1;
-		int c2;
-		int c3;
-		int c4;
-		c1=((unsigned char)ptr[0])&0xff;
-		c2=((unsigned char)ptr[1])&0xff;
-		c3=((unsigned char)ptr[2])&0xff;
-		c4=((unsigned char)ptr[3])&0xff;
-		//debug("size=%d %d %d %d",c1,c2,c3,c4);
-		l=c4;
-		l=l*256+c3;
-		l=l*256+c2;
-		l=l*256+c1;
-		len=l;
-		ptr+=4;
-	}
-	//debug("open_packer - length=%d",len);
-	buff_len=len;
-	buff=memdup(ptr,len);
-	dump_buffer(ptr,30);
-	in=(FILE *)buff;
-	return (FILE *)buff;
+void *
+memdup (void *ptr, int size)
+{
+  void *p2;
+  p2 = malloc (size);
+  memcpy (p2, ptr, size);
+  return p2;
 }
 
 
-
-int memfile_fseek(FILE *f, long offset,int whence) {
-	if (f!=in) {
-		return fseek(f,offset,whence);
-	} else {
-		if (whence==SEEK_SET) { pos=offset;return 0;}
-		if (whence==SEEK_END) { pos=buff_len-offset;return 0;}
-		if (whence==SEEK_CUR) { pos+=offset;return 0;}
-	}
-	return 1;
+FILE *
+memfile_fopen_buffer (char *ptr, int len)
+{
+  pos = 0;
+  if (len == -1)
+    {
+      int l;
+      int c1;
+      int c2;
+      int c3;
+      int c4;
+      c1 = ((unsigned char) ptr[0]) & 0xff;
+      c2 = ((unsigned char) ptr[1]) & 0xff;
+      c3 = ((unsigned char) ptr[2]) & 0xff;
+      c4 = ((unsigned char) ptr[3]) & 0xff;
+      //debug("size=%d %d %d %d",c1,c2,c3,c4);
+      l = c4;
+      l = l * 256 + c3;
+      l = l * 256 + c2;
+      l = l * 256 + c1;
+      len = l;
+      ptr += 4;
+    }
+  //debug("open_packer - length=%d",len);
+  buff_len = len;
+  buff = memdup (ptr, len);
+  dump_buffer (ptr, 30);
+  in = (FILE *) buff;
+  return (FILE *) buff;
 }
 
 
-int memfile_getc(FILE *f) {
-int a;
-	if (f!=in) {
-		return getc(f);
-	} else {
-		a=buff[pos];
-		pos++;
-		return a;
+
+int
+memfile_fseek (FILE * f, long offset, int whence)
+{
+  if (f != in)
+    {
+      return fseek (f, offset, whence);
+    }
+  else
+    {
+      if (whence == SEEK_SET)
+	{
+	  pos = offset;
+	  return 0;
 	}
+      if (whence == SEEK_END)
+	{
+	  pos = buff_len - offset;
+	  return 0;
+	}
+      if (whence == SEEK_CUR)
+	{
+	  pos += offset;
+	  return 0;
+	}
+    }
+  return 1;
 }
 
 
-void memfile_fclose(FILE *f) {
-	if (f!=in) {
-		fclose(f);
-	} else {
-		opened--;
-		free(buff);
-	}
+int
+memfile_getc (FILE * f)
+{
+  int a;
+  if (f != in)
+    {
+      return getc (f);
+    }
+  else
+    {
+      a = buff[pos];
+      pos++;
+      return a;
+    }
 }
 
-void memfile_rewind(FILE *f) {
-	if (f!=in) {
-		rewind(f);
-	} else {
-		pos=0;
-	}
+
+void
+memfile_fclose (FILE * f)
+{
+  if (f != in)
+    {
+      fclose (f);
+    }
+  else
+    {
+      opened--;
+      free (buff);
+    }
 }
 
-long memfile_ftell(FILE *f) {
-	if (f!=in) {
-		return ftell(f);
-	} else {
-		return pos;
-	}
+void
+memfile_rewind (FILE * f)
+{
+  if (f != in)
+    {
+      rewind (f);
+    }
+  else
+    {
+      pos = 0;
+    }
 }
 
-int memfile_ungetc(int c,FILE *f) {
-	if (f!=in) {
-		return ungetc(c,f);
-	} else {
-		pos--;
-	}
-	return 0;
+long
+memfile_ftell (FILE * f)
+{
+  if (f != in)
+    {
+      return ftell (f);
+    }
+  else
+    {
+      return pos;
+    }
 }
 
-int memfile_feof(FILE *f) {
-	char buffer[255];
-	if (f!=in) {
-		//debug("pos = %ld buff_len = %ld f=%x in=%x\n",pos,buff_len,f,in);
-		strncpy(buffer,&buff[pos],255);
-		buff[255]=0;
-		debug("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
-		printf("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
-		exit(2);
-		return feof(f);
-	} else {
-		//printf("pos = %d buff_len = %d f=%x in=%x\n",pos,buff_len,f,in);
-		return pos>buff_len;
-	}
+int
+memfile_ungetc (int c, FILE * f)
+{
+  if (f != in)
+    {
+      return ungetc (c, f);
+    }
+  else
+    {
+      pos--;
+    }
+  return 0;
 }
 
-int memfile_fread(char *ptr,int s,int n,FILE *f) {
-	if (f!=in) {
-		debug("Reading from fread with a file...This is bad!!!");
-		return fread(ptr,s,n,f);
-	} else {
-		int a;
-		//debug("Reading from buff start@:%d s=%d n=%d",pos,s,n);
-		memcpy(ptr,&buff[pos],s*n);
-		for (a=0;a<s*n;a++) {
-			//debug("%02x: %c",
-					//ptr[a]&0xff,
-					//isprint(ptr[a]&0xff)?ptr[a]&0xff:'.'
-					//);
-		}
-
-		//debug("And from pos:");
-		for (a=0;a<s*n;a++) {
-			//debug("%02x: %c",
-					//buff[pos+a]&0xff,
-					//isprint(buff[pos+a]&0xff)?buff[pos+a]&0xff:'.'
-					//);
-		}
-
-		pos+=s*n;
-		//debug("Reading from buff pos now %d",pos);
-		return n;
-	}
+int
+memfile_feof (FILE * f)
+{
+  char buffer[255];
+  if (f != in)
+    {
+      //debug("pos = %ld buff_len = %ld f=%x in=%x\n",pos,buff_len,f,in);
+      strncpy (buffer, &buff[pos], 255);
+      buff[255] = 0;
+      debug
+	("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
+      printf
+	("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
+      exit (2);
+      return feof (f);
+    }
+  else
+    {
+      //printf("pos = %d buff_len = %d f=%x in=%x\n",pos,buff_len,f,in);
+      return pos > buff_len;
+    }
 }
 
-void dump_buffer(char *s,int l) {
-	int a;
-	char buff[256];
-	char buffx[256];
-	strcpy(buff,"");
-	return;
-	debug("Dump buffer");
-	for (a=0;a<l;a++) {
-		sprintf(buffx,"0x%02x,",s[a]&0xff);
-		strcat(buff,buffx);
-		if (strlen(buff)>=80) {
-			strcat(buff,":");
-			debug("%s",buff);
-			strcpy(buff,"");
-		}
+int
+memfile_fread (char *ptr, int s, int n, FILE * f)
+{
+  if (f != in)
+    {
+      debug ("Reading from fread with a file...This is bad!!!");
+      return fread (ptr, s, n, f);
+    }
+  else
+    {
+      int a;
+      //debug("Reading from buff start@:%d s=%d n=%d",pos,s,n);
+      memcpy (ptr, &buff[pos], s * n);
+      for (a = 0; a < s * n; a++)
+	{
+	  //debug("%02x: %c",
+	  //ptr[a]&0xff,
+	  //isprint(ptr[a]&0xff)?ptr[a]&0xff:'.'
+	  //);
 	}
-	debug("%s",buff);
+
+      //debug("And from pos:");
+      for (a = 0; a < s * n; a++)
+	{
+	  //debug("%02x: %c",
+	  //buff[pos+a]&0xff,
+	  //isprint(buff[pos+a]&0xff)?buff[pos+a]&0xff:'.'
+	  //);
+	}
+
+      pos += s * n;
+      //debug("Reading from buff pos now %d",pos);
+      return n;
+    }
+}
+
+void
+dump_buffer (char *s, int l)
+{
+  int a;
+  char buff[256];
+  char buffx[256];
+  strcpy (buff, "");
+  return;
+  debug ("Dump buffer");
+  for (a = 0; a < l; a++)
+    {
+      sprintf (buffx, "0x%02x,", s[a] & 0xff);
+      strcat (buff, buffx);
+      if (strlen (buff) >= 80)
+	{
+	  strcat (buff, ":");
+	  debug ("%s", buff);
+	  strcpy (buff, "");
+	}
+    }
+  debug ("%s", buff);
 }

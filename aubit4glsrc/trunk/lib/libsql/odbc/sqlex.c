@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlex.c,v 1.20 2003-01-21 08:25:56 afalout Exp $
+# $Id: sqlex.c,v 1.21 2003-05-12 14:24:25 mikeaubury Exp $
 #
 */
 
@@ -68,19 +68,19 @@
 =====================================================================
 */
 
-struct xxsql_options 		/* struct sql_options */
-  {
-    char optname[30];
-    char param[30];
-    long opt_id;
-    long param_id;
-  };
+struct xxsql_options		/* struct sql_options */
+{
+  char optname[30];
+  char param[30];
+  long opt_id;
+  long param_id;
+};
 
 struct
-  {
-    void *ptr;
-    void *parent;
-  }
+{
+  void *ptr;
+  void *parent;
+}
 alloc_mem[MEMSIZE];
 
 int line[80];
@@ -94,28 +94,29 @@ char invalid[] = "<Invalid>";
 =====================================================================
 */
 
-int 	scan_options 	(struct xxsql_options options[], char *s, char *p, long *r1, long *r2);
+int scan_options (struct xxsql_options options[], char *s, char *p, long *r1,
+		  long *r2);
 //int scan_stmt (char *s, char *p, HSTMT hstmt);
-int 	add_txt 		(char *s, int x, int hwnd);
-int 	clrline 		(int line[]);
-int 	rm_txt 			(int a, int line[], int ign);
-int 	remove_it 		(int a);
-char *	getres 			(char *s);
-int 	add_userptr 	(void *ptr);
-long 	set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b);
-int 	set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob);
-long 	get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
-int 	alloc_find_ptr (void *ptr);
+int add_txt (char *s, int x, int hwnd);
+int clrline (int line[]);
+int rm_txt (int a, int line[], int ign);
+int remove_it (int a);
+char *getres (char *s);
+int add_userptr (void *ptr);
+long set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b);
+int set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob);
+long get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr);
+int alloc_find_ptr (void *ptr);
 
-int 	ctol 			(char s);
-char * 	generate_using_for_dmy (char *s, int size);
-void * 	allocate_mem 	(int size, void *parent);
-void 	init_mem 		(void);
-int 	alloc_find_parent (void *ptr, int start);
-void 	dealloc_mem 	(void *ptr);
-int 	new_rescnt 		(void);
-int 	get_blob_data 	(struct fgl_int_loc *blob, HSTMT hstmt, int colno);
-int 	set_blob_data	(HSTMT hstmt);
+int ctol (char s);
+char *generate_using_for_dmy (char *s, int size);
+void *allocate_mem (int size, void *parent);
+void init_mem (void);
+int alloc_find_parent (void *ptr, int start);
+void dealloc_mem (void *ptr);
+int new_rescnt (void);
+int get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno);
+int set_blob_data (HSTMT hstmt);
 
 /*
 =====================================================================
@@ -124,135 +125,135 @@ int 	set_blob_data	(HSTMT hstmt);
 */
 
 #ifdef __CYGWIN__
-	int 	need_logon 	(void);
-//	int 	set_regkey 	(char *key, char *data);
-//	int 	get_regkey 	(char *key, char *data, int n);
-	void 	createkey 	(void);
-//	HKEY 	newkey = 0;
-//	void 	get_anykey 	(HKEY whence, char *key, char *key2, char *data, int n);
-	void 	MBox 		(char *s, char *fmt,...);
-	void 	set_default_logon (void);
+int need_logon (void);
+//      int     set_regkey      (char *key, char *data);
+//      int     get_regkey      (char *key, char *data, int n);
+void createkey (void);
+//      HKEY    newkey = 0;
+//      void    get_anykey      (HKEY whence, char *key, char *key2, char *data, int n);
+void MBox (char *s, char *fmt, ...);
+void set_default_logon (void);
 	/*
-	#endif
+	   #endif
 
 
-	#define streq(a,b) (strcmp(a,b)==0)
+	   #define streq(a,b) (strcmp(a,b)==0)
 
-	#ifdef WIN32
-	struct sql_options conn_options[] =
-	*/
+	   #ifdef WIN32
+	   struct sql_options conn_options[] =
+	 */
 
 	/** Connection options memory table - Windows version */
-	struct xxsql_options conn_options[] =
-	{
-	  {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
-	  {"ACCESS MODE", "READ WRITE", SQL_ACCESS_MODE, SQL_MODE_READ_WRITE},
-	  {"AUTO COMMIT", "ON", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_ON},
-	  {"AUTO COMMIT", "OFF", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF},
-	  {"CURRENT QUALIFIER", "STRING", SQL_CURRENT_QUALIFIER, USERS_STRING},
-	  {"LOGIN TIMEOUT", "LONG", SQL_LOGIN_TIMEOUT, USERS_LONG},
-	  {"ODBC CURSORS", "USE IF NEEDED", SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED},
-	  {"ODBC CURSORS", "USE ODBC", SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC},
-	  {"ODBC CURSORS", "USE DRIVER", SQL_ODBC_CURSORS, SQL_CUR_USE_DRIVER},
-	  {"TRACE", "OFF", SQL_OPT_TRACE, SQL_OPT_TRACE_OFF},
-	  {"TRACE", "ON", SQL_OPT_TRACE, SQL_OPT_TRACE_ON},
-	  {"TRACEFILE", "STRING", SQL_OPT_TRACEFILE, USERS_STRING},
-	  {"PACKET SIZE", "LONG", SQL_PACKET_SIZE, USERS_LONG},
-	  {"QUIET MODE", "LONG", SQL_QUIET_MODE, USERS_LONG},
-	  {"ISOLATION", "READ UNCOMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_UNCOMMITTED},
-	  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
-	{"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION, SQL_TXN_REPEATABLE_READ},
-	  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
-	/* {"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING}, */
-	  {"", 0, 0, 0}
-	};
+struct xxsql_options conn_options[] = {
+  {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
+  {"ACCESS MODE", "READ WRITE", SQL_ACCESS_MODE, SQL_MODE_READ_WRITE},
+  {"AUTO COMMIT", "ON", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_ON},
+  {"AUTO COMMIT", "OFF", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF},
+  {"CURRENT QUALIFIER", "STRING", SQL_CURRENT_QUALIFIER, USERS_STRING},
+  {"LOGIN TIMEOUT", "LONG", SQL_LOGIN_TIMEOUT, USERS_LONG},
+  {"ODBC CURSORS", "USE IF NEEDED", SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED},
+  {"ODBC CURSORS", "USE ODBC", SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC},
+  {"ODBC CURSORS", "USE DRIVER", SQL_ODBC_CURSORS, SQL_CUR_USE_DRIVER},
+  {"TRACE", "OFF", SQL_OPT_TRACE, SQL_OPT_TRACE_OFF},
+  {"TRACE", "ON", SQL_OPT_TRACE, SQL_OPT_TRACE_ON},
+  {"TRACEFILE", "STRING", SQL_OPT_TRACEFILE, USERS_STRING},
+  {"PACKET SIZE", "LONG", SQL_PACKET_SIZE, USERS_LONG},
+  {"QUIET MODE", "LONG", SQL_QUIET_MODE, USERS_LONG},
+  {"ISOLATION", "READ UNCOMMITTED", SQL_TXN_ISOLATION,
+   SQL_TXN_READ_UNCOMMITTED},
+  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
+  {"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION,
+   SQL_TXN_REPEATABLE_READ},
+  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
+  /* {"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING}, */
+  {"", 0, 0, 0}
+};
 
 
 	/* struct sql_options stmt_options[] = */
 	/** Statement options memory table - Windows version */
-	struct xxsql_options stmt_options[] =
-	{
-	  {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
-	  {"CONCURRENCY", "LOCK", SQL_CONCURRENCY, SQL_CONCUR_LOCK},
-	  {"CONCURRENCY", "ROWVER", SQL_CONCURRENCY, SQL_CONCUR_ROWVER},
-	  {"CONCURRENCY", "VALUES", SQL_CONCURRENCY, SQL_CONCUR_VALUES},
-	  {"CURSOR TYPE", "FORWARD ONLY", SQL_CURSOR_TYPE, SQL_CURSOR_FORWARD_ONLY},
-	  {"CURSOR TYPE", "STATIC", SQL_CURSOR_TYPE, SQL_CURSOR_STATIC},
-	{"CURSOR TYPE", "KEYSET DRIVEN", SQL_CURSOR_TYPE, SQL_CURSOR_KEYSET_DRIVEN},
-	  {"CURSOR TYPE", "DYNAMIC", SQL_CURSOR_TYPE, SQL_CURSOR_DYNAMIC},
-	  {"KEYSET SIZE", "LONG", SQL_KEYSET_SIZE, USERS_LONG},
-	  {"MAX LENGTH", "LONG", SQL_MAX_LENGTH, USERS_LONG},
-	  {"MAX ROWS", "LONG", SQL_MAX_ROWS, USERS_LONG},
-	  {"NOSCAN", "OFF", SQL_NOSCAN, SQL_NOSCAN_OFF},
-	  {"NOSCAN", "ON", SQL_NOSCAN, SQL_NOSCAN_ON},
-	  {"QUERY TIMEOUT", "LONG", SQL_QUERY_TIMEOUT, USERS_LONG},
-	  {"RETRIEVE DATA", "ON", SQL_RETRIEVE_DATA, SQL_RD_ON},
-	  {"RETRIEVE DATA", "OFF", SQL_RETRIEVE_DATA, SQL_RD_OFF},
-	  {"SIMULATE CURSOR", "NON UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_NON_UNIQUE},
-	  {"SIMULATE CURSOR", "TRY UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_TRY_UNIQUE},
-	  {"SIMULATE CURSOR", "UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_UNIQUE},
-	  {"USE BOOKMARKS", "ON", SQL_USE_BOOKMARKS, SQL_UB_ON},
-	  {"USE BOOKMARKS", "OFF", SQL_USE_BOOKMARKS, SQL_UB_OFF},
-	  {"", 0, 0, 0}
-	};
+struct xxsql_options stmt_options[] = {
+  {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
+  {"CONCURRENCY", "LOCK", SQL_CONCURRENCY, SQL_CONCUR_LOCK},
+  {"CONCURRENCY", "ROWVER", SQL_CONCURRENCY, SQL_CONCUR_ROWVER},
+  {"CONCURRENCY", "VALUES", SQL_CONCURRENCY, SQL_CONCUR_VALUES},
+  {"CURSOR TYPE", "FORWARD ONLY", SQL_CURSOR_TYPE, SQL_CURSOR_FORWARD_ONLY},
+  {"CURSOR TYPE", "STATIC", SQL_CURSOR_TYPE, SQL_CURSOR_STATIC},
+  {"CURSOR TYPE", "KEYSET DRIVEN", SQL_CURSOR_TYPE, SQL_CURSOR_KEYSET_DRIVEN},
+  {"CURSOR TYPE", "DYNAMIC", SQL_CURSOR_TYPE, SQL_CURSOR_DYNAMIC},
+  {"KEYSET SIZE", "LONG", SQL_KEYSET_SIZE, USERS_LONG},
+  {"MAX LENGTH", "LONG", SQL_MAX_LENGTH, USERS_LONG},
+  {"MAX ROWS", "LONG", SQL_MAX_ROWS, USERS_LONG},
+  {"NOSCAN", "OFF", SQL_NOSCAN, SQL_NOSCAN_OFF},
+  {"NOSCAN", "ON", SQL_NOSCAN, SQL_NOSCAN_ON},
+  {"QUERY TIMEOUT", "LONG", SQL_QUERY_TIMEOUT, USERS_LONG},
+  {"RETRIEVE DATA", "ON", SQL_RETRIEVE_DATA, SQL_RD_ON},
+  {"RETRIEVE DATA", "OFF", SQL_RETRIEVE_DATA, SQL_RD_OFF},
+  {"SIMULATE CURSOR", "NON UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_NON_UNIQUE},
+  {"SIMULATE CURSOR", "TRY UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_TRY_UNIQUE},
+  {"SIMULATE CURSOR", "UNIQUE", SQL_SIMULATE_CURSOR, SQL_SC_UNIQUE},
+  {"USE BOOKMARKS", "ON", SQL_USE_BOOKMARKS, SQL_UB_ON},
+  {"USE BOOKMARKS", "OFF", SQL_USE_BOOKMARKS, SQL_UB_OFF},
+  {"", 0, 0, 0}
+};
 
 #else /* #ifdef __CYGWIN__ */
 
 	/* struct sql_options conn_options[] = */
 	/** Connection options memory table - unix version */
-	struct xxsql_options conn_options[] =
-	{
-	  {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
-	  {"ACCESS MODE", "READ WRITE", SQL_ACCESS_MODE, SQL_MODE_READ_WRITE},
-	  {"AUTO COMMIT", "ON", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_ON},
-	  {"AUTO COMMIT", "OFF", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF},
-	  {"CURRENT QUALIFIER", "STRING", SQL_CURRENT_QUALIFIER, USERS_STRING},
-	  {"LOGIN TIMEOUT", "LONG", SQL_LOGIN_TIMEOUT, USERS_LONG},
-	  {"ODBC CURSORS", "USE IF NEEDED", SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED},
-	  {"ODBC CURSORS", "USE ODBC", SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC},
-	  {"ODBC CURSORS", "USE DRIVER", SQL_ODBC_CURSORS, SQL_CUR_USE_DRIVER},
-	  {"TRACE", "OFF", SQL_OPT_TRACE, SQL_OPT_TRACE_OFF},
-	  {"TRACE", "ON", SQL_OPT_TRACE, SQL_OPT_TRACE_ON},
-	  {"TRACEFILE", "STRING", SQL_OPT_TRACEFILE, USERS_STRING},
-	  {"PACKET SIZE", "LONG", SQL_PACKET_SIZE, USERS_LONG},
-	  {"QUIET MODE", "LONG", SQL_QUIET_MODE, USERS_LONG},
-	  {"ISOLATION", "READ UNCOMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_UNCOMMITTED},
-	  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
-	{"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION, SQL_TXN_REPEATABLE_READ},
-	  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
-	/* {"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING}, */
-	  {"", "0", 0, 0}
-	};
+struct xxsql_options conn_options[] = {
+  {"ACCESS MODE", "READ ONLY", SQL_ACCESS_MODE, SQL_MODE_READ_ONLY},
+  {"ACCESS MODE", "READ WRITE", SQL_ACCESS_MODE, SQL_MODE_READ_WRITE},
+  {"AUTO COMMIT", "ON", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_ON},
+  {"AUTO COMMIT", "OFF", SQL_AUTOCOMMIT, SQL_AUTOCOMMIT_OFF},
+  {"CURRENT QUALIFIER", "STRING", SQL_CURRENT_QUALIFIER, USERS_STRING},
+  {"LOGIN TIMEOUT", "LONG", SQL_LOGIN_TIMEOUT, USERS_LONG},
+  {"ODBC CURSORS", "USE IF NEEDED", SQL_ODBC_CURSORS, SQL_CUR_USE_IF_NEEDED},
+  {"ODBC CURSORS", "USE ODBC", SQL_ODBC_CURSORS, SQL_CUR_USE_ODBC},
+  {"ODBC CURSORS", "USE DRIVER", SQL_ODBC_CURSORS, SQL_CUR_USE_DRIVER},
+  {"TRACE", "OFF", SQL_OPT_TRACE, SQL_OPT_TRACE_OFF},
+  {"TRACE", "ON", SQL_OPT_TRACE, SQL_OPT_TRACE_ON},
+  {"TRACEFILE", "STRING", SQL_OPT_TRACEFILE, USERS_STRING},
+  {"PACKET SIZE", "LONG", SQL_PACKET_SIZE, USERS_LONG},
+  {"QUIET MODE", "LONG", SQL_QUIET_MODE, USERS_LONG},
+  {"ISOLATION", "READ UNCOMMITTED", SQL_TXN_ISOLATION,
+   SQL_TXN_READ_UNCOMMITTED},
+  {"ISOLATION", "READ COMMITTED", SQL_TXN_ISOLATION, SQL_TXN_READ_COMMITTED},
+  {"ISOLATION", "REPEATABLE READ", SQL_TXN_ISOLATION,
+   SQL_TXN_REPEATABLE_READ},
+  {"ISOLATION", "SERIALIZABLE", SQL_TXN_ISOLATION, SQL_TXN_SERIALIZABLE},
+  /* {"ISOLATION","VERSIONING",      SQL_TXN_ISOLATION,SQL_TXN_VERSIONING}, */
+  {"", "0", 0, 0}
+};
 
 
 	/* struct sql_options stmt_options[] = */
 	/** Statement options memory table - unix version */
-	struct xxsql_options stmt_options[] =
-	{
-	  {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
-	  {"CONCURRENCY", "LOCK", SQL_CONCURRENCY, SQL_CONCUR_LOCK},
-	  {"CONCURRENCY", "ROWVER", SQL_CONCURRENCY, SQL_CONCUR_ROWVER},
-	  {"CONCURRENCY", "VALUES", SQL_CONCURRENCY, SQL_CONCUR_VALUES},
-	  {"CURSOR TYPE", "FORWARD ONLY", SQL_CURSOR_TYPE, SQL_SCROLL_FORWARD_ONLY},
-	  {"CURSOR TYPE", "STATIC", SQL_CURSOR_TYPE, SQL_SCROLL_STATIC},
-	{"CURSOR TYPE", "KEYSET DRIVEN", SQL_CURSOR_TYPE, SQL_SCROLL_KEYSET_DRIVEN},
-	  {"CURSOR TYPE", "DYNAMIC", SQL_CURSOR_TYPE, SQL_SCROLL_DYNAMIC},
-	  {"KEYSET SIZE", "LONG", SQL_KEYSET_SIZE, USERS_LONG},
-	  {"MAX LENGTH", "LONG", SQL_MAX_LENGTH, USERS_LONG},
-	  {"MAX ROWS", "LONG", SQL_MAX_ROWS, USERS_LONG},
-	  {"NOSCAN", "OFF", SQL_NOSCAN, 0},
-	  {"NOSCAN", "ON", SQL_NOSCAN, 1},
-	/*{"BIND TYPE","ON",              SQL_BIND_TYPE,USERS_LONG}, */
-	  {"QUERY TIMEOUT", "LONG", SQL_QUERY_TIMEOUT, USERS_LONG},
-	  {"RETRIEVE DATA", "ON", SQL_RETRIEVE_DATA, 1},
-	  {"RETRIEVE DATA", "OFF", SQL_RETRIEVE_DATA, 0},
-	  {"SIMULATE CURSOR", "NON UNIQUE", SQL_SIMULATE_CURSOR, 0},
-	  {"SIMULATE CURSOR", "TRY UNIQUE", SQL_SIMULATE_CURSOR, 1},
-	  {"SIMULATE CURSOR", "UNIQUE", SQL_SIMULATE_CURSOR, 2},
-	  {"USE BOOKMARKS", "ON", SQL_USE_BOOKMARKS, 1},
-	  {"USE BOOKMARKS", "OFF", SQL_USE_BOOKMARKS, 0},
-	  {"", "0", 0, 0}
-	};
+struct xxsql_options stmt_options[] = {
+  {"CONCURRENCY", "READ ONLY", SQL_CONCURRENCY, SQL_CONCUR_READ_ONLY},
+  {"CONCURRENCY", "LOCK", SQL_CONCURRENCY, SQL_CONCUR_LOCK},
+  {"CONCURRENCY", "ROWVER", SQL_CONCURRENCY, SQL_CONCUR_ROWVER},
+  {"CONCURRENCY", "VALUES", SQL_CONCURRENCY, SQL_CONCUR_VALUES},
+  {"CURSOR TYPE", "FORWARD ONLY", SQL_CURSOR_TYPE, SQL_SCROLL_FORWARD_ONLY},
+  {"CURSOR TYPE", "STATIC", SQL_CURSOR_TYPE, SQL_SCROLL_STATIC},
+  {"CURSOR TYPE", "KEYSET DRIVEN", SQL_CURSOR_TYPE, SQL_SCROLL_KEYSET_DRIVEN},
+  {"CURSOR TYPE", "DYNAMIC", SQL_CURSOR_TYPE, SQL_SCROLL_DYNAMIC},
+  {"KEYSET SIZE", "LONG", SQL_KEYSET_SIZE, USERS_LONG},
+  {"MAX LENGTH", "LONG", SQL_MAX_LENGTH, USERS_LONG},
+  {"MAX ROWS", "LONG", SQL_MAX_ROWS, USERS_LONG},
+  {"NOSCAN", "OFF", SQL_NOSCAN, 0},
+  {"NOSCAN", "ON", SQL_NOSCAN, 1},
+  /*{"BIND TYPE","ON",              SQL_BIND_TYPE,USERS_LONG}, */
+  {"QUERY TIMEOUT", "LONG", SQL_QUERY_TIMEOUT, USERS_LONG},
+  {"RETRIEVE DATA", "ON", SQL_RETRIEVE_DATA, 1},
+  {"RETRIEVE DATA", "OFF", SQL_RETRIEVE_DATA, 0},
+  {"SIMULATE CURSOR", "NON UNIQUE", SQL_SIMULATE_CURSOR, 0},
+  {"SIMULATE CURSOR", "TRY UNIQUE", SQL_SIMULATE_CURSOR, 1},
+  {"SIMULATE CURSOR", "UNIQUE", SQL_SIMULATE_CURSOR, 2},
+  {"USE BOOKMARKS", "ON", SQL_USE_BOOKMARKS, 1},
+  {"USE BOOKMARKS", "OFF", SQL_USE_BOOKMARKS, 0},
+  {"", "0", 0, 0}
+};
 
 
 #endif /* #ifdef __CYGWIN__ */
@@ -274,7 +275,8 @@ int 	set_blob_data	(HSTMT hstmt);
  * @param r2
  */
 int
-scan_options(struct xxsql_options options[],char *s,char *p,long *r1,long *r2)
+scan_options (struct xxsql_options options[], char *s, char *p, long *r1,
+	      long *r2)
 {
   int a;
   long val = 0;
@@ -562,8 +564,8 @@ generate_using_for_dmy (char *s, int size)
 void *
 allocate_mem (int size, void *parent)
 {
-int a;
-  
+  int a;
+
   a = alloc_find_ptr (0);
 
   if (a == -1)
@@ -682,11 +684,11 @@ new_rescnt (void)
 int
 get_blob_data (struct fgl_int_loc *blob, HSTMT hstmt, int colno)
 {
-int cnt;
+  int cnt;
 
-  debug("blob=%p",blob);
-  debug("blob->where=%c",blob->where);
-  debug("blob->filename=%s",blob->filename);
+  debug ("blob=%p", blob);
+  debug ("blob->where=%c", blob->where);
+  debug ("blob->filename=%s", blob->filename);
 
   if (blob->where != 'F' && blob->where != 'M')
     {
@@ -712,7 +714,7 @@ int cnt;
       cnt = get_blob_data_int (blob->f, hstmt, colno, 0);
 
       fclose (blob->f);
-      blob->f=0;
+      blob->f = 0;
     }
   else
     {
@@ -721,7 +723,7 @@ int cnt;
 	{
 	  free (blob->ptr);
 	}
-	  cnt = get_blob_data_int (0, hstmt, colno, (char **)&blob->ptr);
+      cnt = get_blob_data_int (0, hstmt, colno, (char **) &blob->ptr);
 
     }
   if (cnt < 0)
@@ -752,18 +754,18 @@ get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
   int rc;
   SDWORD i;
 
-  debug("In get_blob_data_int");
+  debug ("In get_blob_data_int");
 
   if (blob)
     rewind (blob);
 
   while (1)
     {
-	debug("In loop");
+      debug ("In loop");
 
       if (blob == 0)
 	{
-	  debug("Memory...");
+	  debug ("Memory...");
 	  ptr = realloc (ptr, cnt + sizeof (buff));
 	  if (ptr == 0)
 	    {
@@ -808,8 +810,8 @@ get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
     }
   if (blob == 0 && cptr)
     {
-	/* resize it down */
-       ptr = realloc (ptr, cnt);
+      /* resize it down */
+      ptr = realloc (ptr, cnt);
       *cptr = ptr;
     }
   return cnt;
@@ -821,15 +823,16 @@ get_blob_data_int (FILE * blob, HSTMT hstmt, int colno, char **cptr)
  * @param hstmt The statement handle.
  */
 int
-set_blob_data(HSTMT hstmt)
+set_blob_data (HSTMT hstmt)
 {
   int rc;
   struct fgl_int_loc *blob;
-  rc=SQL_NEED_DATA;
-  while (rc==SQL_NEED_DATA) {
-  	rc=SQLParamData(hstmt,(PTR)&blob);
-	set_blob_data_repeat(hstmt,blob);
-  }
+  rc = SQL_NEED_DATA;
+  while (rc == SQL_NEED_DATA)
+    {
+      rc = SQLParamData (hstmt, (PTR) & blob);
+      set_blob_data_repeat (hstmt, blob);
+    }
   return rc;
 }
 
@@ -843,14 +846,14 @@ set_blob_data(HSTMT hstmt)
  * @param blob Pointer to the the blob  location.
  */
 int
-set_blob_data_repeat (HSTMT hstmt,struct fgl_int_loc *blob)
+set_blob_data_repeat (HSTMT hstmt, struct fgl_int_loc *blob)
 {
-int cnt;
+  int cnt;
 
 
-  debug("blob=%p",blob);
-  debug("blob->where=%c",blob->where);
-  debug("blob->filename=%s",blob->filename);
+  debug ("blob=%p", blob);
+  debug ("blob->where=%c", blob->where);
+  debug ("blob->filename=%s", blob->filename);
 
   if (blob->where != 'F' && blob->where != 'M')
     {
@@ -876,7 +879,7 @@ int cnt;
       cnt = set_blob_data_int (blob->f, hstmt, blob);
 
       fclose (blob->f);
-      blob->f=0;
+      blob->f = 0;
     }
   else
     {
@@ -885,7 +888,7 @@ int cnt;
 	{
 	  free (blob->ptr);
 	}
-      cnt = set_blob_data_int (0, hstmt,  blob);
+      cnt = set_blob_data_int (0, hstmt, blob);
 
     }
 
@@ -896,7 +899,7 @@ int cnt;
     }
 
   blob->memsize = cnt;
-	/* everything is ok */
+  /* everything is ok */
   return 1;
 }
 
@@ -917,31 +920,38 @@ set_blob_data_int (FILE * blob, HSTMT hstmt, struct fgl_int_loc *b)
   int i;
   int write_bytes;
 
-  debug("In set_blob_data_int");
+  debug ("In set_blob_data_int");
 
-  if (blob) rewind (blob);
+  if (blob)
+    rewind (blob);
 
-  if (blob==0) {
-  	for (i=0;i<=b->memsize;i+=sizeof(buff)) {
-		if (i+sizeof(buff)<b->memsize) write_bytes=sizeof(buff);
-		else write_bytes=b->memsize-i;
-
-          rc = SQLPutData (hstmt, ptr+i, write_bytes);
-	  }
-	  return b->memsize;
-  }
-  else 
+  if (blob == 0)
+    {
+      for (i = 0; i <= b->memsize; i += sizeof (buff))
 	{
-		while (1) {
-			write_bytes=fread(buff,1,sizeof(buff),blob);
-			if (write_bytes<=0) break;
-			cnt+=write_bytes;
-          		rc = SQLPutData (hstmt, buff, write_bytes);
-		}
-			b->memsize=cnt;
-			return cnt;
+	  if (i + sizeof (buff) < b->memsize)
+	    write_bytes = sizeof (buff);
+	  else
+	    write_bytes = b->memsize - i;
+
+	  rc = SQLPutData (hstmt, ptr + i, write_bytes);
 	}
-return 0;
+      return b->memsize;
+    }
+  else
+    {
+      while (1)
+	{
+	  write_bytes = fread (buff, 1, sizeof (buff), blob);
+	  if (write_bytes <= 0)
+	    break;
+	  cnt += write_bytes;
+	  rc = SQLPutData (hstmt, buff, write_bytes);
+	}
+      b->memsize = cnt;
+      return cnt;
+    }
+  return 0;
 }
 
 

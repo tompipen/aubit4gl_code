@@ -1,7 +1,7 @@
 /*
  *  sqltypes.h
  *
- *  $Id: sqltypes.h,v 1.1 2002-04-02 08:50:34 afalout Exp $
+ *  $Id: sqltypes.h,v 1.2 2003-05-12 14:24:42 mikeaubury Exp $
  *
  *  ODBC typedefs
  *
@@ -34,7 +34,8 @@
 #endif
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 
@@ -64,15 +65,15 @@ extern "C" {
  * Windows style typedefs for UNIX machines
  */
 #ifndef WIN32
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef unsigned long DWORD;
+  typedef unsigned char BYTE;
+  typedef unsigned short WORD;
+  typedef unsigned long DWORD;
 
-typedef DWORD * LPDWORD;
-typedef char * LPSTR;
-typedef const char * LPCSTR;
+  typedef DWORD *LPDWORD;
+  typedef char *LPSTR;
+  typedef const char *LPCSTR;
 #ifndef BOOL
-typedef int BOOL;
+  typedef int BOOL;
 #endif
 #endif
 
@@ -80,118 +81,118 @@ typedef int BOOL;
 /* 
  *  SQL portable types for C 
  */
-typedef unsigned char           UCHAR;
-typedef signed char             SCHAR;
-typedef unsigned short          USHORT;
-typedef signed short            SSHORT;
-typedef unsigned long 		UDWORD;
-typedef signed long 		SDWORD;
-typedef unsigned short 		UWORD;
-typedef signed short 		SWORD;
-typedef unsigned long           ULONG;
-typedef signed long             SLONG;
-typedef float                   SFLOAT;
-typedef double                  SDOUBLE;
-typedef double            	LDOUBLE; 
+  typedef unsigned char UCHAR;
+  typedef signed char SCHAR;
+  typedef unsigned short USHORT;
+  typedef signed short SSHORT;
+  typedef unsigned long UDWORD;
+  typedef signed long SDWORD;
+  typedef unsigned short UWORD;
+  typedef signed short SWORD;
+  typedef unsigned long ULONG;
+  typedef signed long SLONG;
+  typedef float SFLOAT;
+  typedef double SDOUBLE;
+  typedef double LDOUBLE;
 
 
 /*
  *  API declaration data types
  */
-typedef unsigned char		SQLCHAR;
-typedef signed short		SQLSMALLINT;
-typedef unsigned short		SQLUSMALLINT;
-typedef signed long		SQLINTEGER;
-typedef unsigned long		SQLUINTEGER;
+  typedef unsigned char SQLCHAR;
+  typedef signed short SQLSMALLINT;
+  typedef unsigned short SQLUSMALLINT;
+  typedef signed long SQLINTEGER;
+  typedef unsigned long SQLUINTEGER;
 #if (ODBCVER >= 0x0300)
-typedef signed char		SQLSCHAR;
-typedef unsigned char		SQLDATE;
-typedef unsigned char		SQLDECIMAL;
-typedef unsigned char		SQLNUMERIC;
-typedef double			SQLDOUBLE;
-typedef double			SQLFLOAT;
-typedef float			SQLREAL;
-typedef unsigned char		SQLTIME;
-typedef unsigned char		SQLTIMESTAMP;
-typedef unsigned char		SQLVARCHAR;
-#endif	/* ODBCVER >= 0x0300 */
+  typedef signed char SQLSCHAR;
+  typedef unsigned char SQLDATE;
+  typedef unsigned char SQLDECIMAL;
+  typedef unsigned char SQLNUMERIC;
+  typedef double SQLDOUBLE;
+  typedef double SQLFLOAT;
+  typedef float SQLREAL;
+  typedef unsigned char SQLTIME;
+  typedef unsigned char SQLTIMESTAMP;
+  typedef unsigned char SQLVARCHAR;
+#endif				/* ODBCVER >= 0x0300 */
 
 
 /*
  *  Generic pointer types
  */
-typedef void FAR *              PTR;
-typedef void FAR *              SQLPOINTER;
-typedef void FAR *		SQLHANDLE;
+  typedef void FAR *PTR;
+  typedef void FAR *SQLPOINTER;
+  typedef void FAR *SQLHANDLE;
 /* typedef SQLINTEGER		SQLHANDLE; */
 
 
 /*
  *  Handles
  */
-typedef void FAR *		HENV;
-typedef void FAR *		HDBC;
-typedef void FAR *		HSTMT;
+  typedef void FAR *HENV;
+  typedef void FAR *HDBC;
+  typedef void FAR *HSTMT;
 
-typedef SQLHANDLE		SQLHENV;
-typedef SQLHANDLE		SQLHDBC;
-typedef SQLHANDLE		SQLHSTMT;
+  typedef SQLHANDLE SQLHENV;
+  typedef SQLHANDLE SQLHDBC;
+  typedef SQLHANDLE SQLHSTMT;
 #if (ODBCVER >= 0x0300)
-typedef SQLHANDLE		SQLHDESC;
-#endif	/* ODBCVER >= 0x0300 */
+  typedef SQLHANDLE SQLHDESC;
+#endif				/* ODBCVER >= 0x0300 */
 
 
 /*
  *  Window Handle
  */
 #if defined(WIN32) || defined(OS2)
-typedef HWND			SQLHWND;
+  typedef HWND SQLHWND;
 #else
-typedef SQLPOINTER		HWND;
-typedef SQLPOINTER		SQLHWND;
+  typedef SQLPOINTER HWND;
+  typedef SQLPOINTER SQLHWND;
 #endif
 
 
 /*
  *  Return type for functions
  */
-typedef SQLSMALLINT           	RETCODE;
-typedef SQLSMALLINT            	SQLRETURN;
+  typedef SQLSMALLINT RETCODE;
+  typedef SQLSMALLINT SQLRETURN;
 
 
 /*
  *  SQL portable types for C - DATA, TIME, TIMESTAMP, and BOOKMARK
  */
-typedef unsigned long int BOOKMARK;
+  typedef unsigned long int BOOKMARK;
 
 
-typedef struct tagDATE_STRUCT
+  typedef struct tagDATE_STRUCT
   {
     SQLSMALLINT year;
     SQLUSMALLINT month;
     SQLUSMALLINT day;
   }
-DATE_STRUCT;
+  DATE_STRUCT;
 
 #if (ODBCVER >= 0x0300)
-typedef DATE_STRUCT	SQL_DATE_STRUCT;
-#endif	/* ODBCVER >= 0x0300 */
+  typedef DATE_STRUCT SQL_DATE_STRUCT;
+#endif				/* ODBCVER >= 0x0300 */
 
 
-typedef struct tagTIME_STRUCT
+  typedef struct tagTIME_STRUCT
   {
     SQLUSMALLINT hour;
     SQLUSMALLINT minute;
     SQLUSMALLINT second;
   }
-TIME_STRUCT;
+  TIME_STRUCT;
 
 #if (ODBCVER >= 0x0300)
-typedef TIME_STRUCT	SQL_TIME_STRUCT;
-#endif	/* ODBCVER >= 0x0300 */
+  typedef TIME_STRUCT SQL_TIME_STRUCT;
+#endif				/* ODBCVER >= 0x0300 */
 
 
-typedef struct tagTIMESTAMP_STRUCT
+  typedef struct tagTIMESTAMP_STRUCT
   {
     SQLSMALLINT year;
     SQLUSMALLINT month;
@@ -201,11 +202,11 @@ typedef struct tagTIMESTAMP_STRUCT
     SQLUSMALLINT second;
     SQLUINTEGER fraction;
   }
-TIMESTAMP_STRUCT;
+  TIMESTAMP_STRUCT;
 
 #if (ODBCVER >= 0x0300)
-typedef TIMESTAMP_STRUCT	SQL_TIMESTAMP_STRUCT;
-#endif	/* ODBCVER >= 0x0300 */
+  typedef TIMESTAMP_STRUCT SQL_TIMESTAMP_STRUCT;
+#endif				/* ODBCVER >= 0x0300 */
 
 
 /*
@@ -214,7 +215,7 @@ typedef TIMESTAMP_STRUCT	SQL_TIMESTAMP_STRUCT;
  *  These values are from SQL-92
  */
 #if (ODBCVER >= 0x0300)
-typedef enum
+  typedef enum
   {
     SQL_IS_YEAR = 1,
     SQL_IS_MONTH = 2,
@@ -230,18 +231,18 @@ typedef enum
     SQL_IS_HOUR_TO_SECOND = 12,
     SQL_IS_MINUTE_TO_SECOND = 13
   }
-SQLINTERVAL;
+  SQLINTERVAL;
 
 
-typedef struct tagSQL_YEAR_MONTH
+  typedef struct tagSQL_YEAR_MONTH
   {
     SQLUINTEGER year;
     SQLUINTEGER month;
   }
-SQL_YEAR_MONTH_STRUCT;
+  SQL_YEAR_MONTH_STRUCT;
 
 
-typedef struct tagSQL_DAY_SECOND
+  typedef struct tagSQL_DAY_SECOND
   {
     SQLUINTEGER day;
     SQLUINTEGER hour;
@@ -249,22 +250,22 @@ typedef struct tagSQL_DAY_SECOND
     SQLUINTEGER second;
     SQLUINTEGER fraction;
   }
-SQL_DAY_SECOND_STRUCT;
+  SQL_DAY_SECOND_STRUCT;
 
 
-typedef struct tagSQL_INTERVAL_STRUCT
+  typedef struct tagSQL_INTERVAL_STRUCT
   {
     SQLINTERVAL interval_type;
     SQLSMALLINT interval_sign;
     union
-      {
-	SQL_YEAR_MONTH_STRUCT year_month;
-	SQL_DAY_SECOND_STRUCT day_second;
-      }
+    {
+      SQL_YEAR_MONTH_STRUCT year_month;
+      SQL_DAY_SECOND_STRUCT day_second;
+    }
     intval;
   }
-SQL_INTERVAL_STRUCT;
-#endif	/* ODBCVER >= 0x0300 */
+  SQL_INTERVAL_STRUCT;
+#endif				/* ODBCVER >= 0x0300 */
 
 
 /* 
@@ -279,10 +280,10 @@ SQL_INTERVAL_STRUCT;
 #endif
 
 #if defined (ODBCINT64)
-typedef signed   ODBCINT64	SQLBIGINT;
-typedef unsigned ODBCINT64	SQLUBIGINT;
+  typedef signed ODBCINT64 SQLBIGINT;
+  typedef unsigned ODBCINT64 SQLUBIGINT;
 #endif
-#endif	/* ODBCVER >= 0x0300 */
+#endif				/* ODBCVER >= 0x0300 */
 
 
 /*
@@ -290,34 +291,34 @@ typedef unsigned ODBCINT64	SQLUBIGINT;
  */
 #if (ODBCVER >= 0x0300)
 #define SQL_MAX_NUMERIC_LEN	16
-typedef struct tagSQL_NUMERIC_STRUCT
+  typedef struct tagSQL_NUMERIC_STRUCT
   {
     SQLCHAR precision;
     SQLSCHAR scale;
     SQLCHAR sign;		/* 0 for negative, 1 for positive */
     SQLCHAR val[SQL_MAX_NUMERIC_LEN];
   }
-SQL_NUMERIC_STRUCT;
-#endif	/* ODBCVER >= 0x0300 */
+  SQL_NUMERIC_STRUCT;
+#endif				/* ODBCVER >= 0x0300 */
 
 
 #if (ODBCVER >= 0x0350)
 #ifdef GUID_DEFINED
-typedef GUID SQLGUID;
+  typedef GUID SQLGUID;
 #else
-typedef struct tagSQLGUID
+  typedef struct tagSQLGUID
   {
     DWORD Data1;
     WORD Data2;
     WORD Data3;
-    BYTE Data4[8];	/* BYTE */
+    BYTE Data4[8];		/* BYTE */
   }
-SQLGUID;
-#endif	/* GUID_DEFINED */
-#endif	/* ODBCVER >= 0x0350 */
+  SQLGUID;
+#endif				/* GUID_DEFINED */
+#endif				/* ODBCVER >= 0x0350 */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* _SQLTYPES_H */
+#endif				/* _SQLTYPES_H */

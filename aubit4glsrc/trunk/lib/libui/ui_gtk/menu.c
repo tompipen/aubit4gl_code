@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menu.c,v 1.7 2003-04-28 13:38:47 mikeaubury Exp $
+# $Id: menu.c,v 1.8 2003-05-12 14:24:31 mikeaubury Exp $
 #*/
 
 /**
@@ -70,12 +70,14 @@ extern GtkWidget *tooltips;
 void disp_h_menu (void *m);
 int menu_loop (void *m);
 void free_menu (void *m);
-void next_option (void * menu, char *nextopt);
-void menu_hide (void *m, va_list *ap);
-void menu_show (void *m,va_list *ap);
-GtkWidget * new_menu_create (char *title, int x, int y, int mn_type, int help_no);
-void add_menu_option(void *menubar,char *txt,char *keys,char *desc, int helpno,int attr);
-void finish_create_menu(void *menubar);
+void next_option (void *menu, char *nextopt);
+void menu_hide (void *m, va_list * ap);
+void menu_show (void *m, va_list * ap);
+GtkWidget *new_menu_create (char *title, int x, int y, int mn_type,
+			    int help_no);
+void add_menu_option (void *menubar, char *txt, char *keys, char *desc,
+		      int helpno, int attr);
+void finish_create_menu (void *menubar);
 
 /*
 =====================================================================
@@ -93,13 +95,13 @@ void finish_create_menu(void *menubar);
  * @param w The item object that called this handler
  * @param p The 
  */
-static void 
-handler (GtkMenuItem *w, int p)
+static void
+handler (GtkMenuItem * w, int p)
 {
   GtkWidget *k;
   debug ("Menu Option %p %p\n", w, p);
   debug ("menu click");
-  k =(GtkWidget *) gtk_object_get_data ((GtkObject *)p, "Parent");
+  k = (GtkWidget *) gtk_object_get_data ((GtkObject *) p, "Parent");
   debug ("Parent k=%p\n", k);
   gtk_object_set_data (GTK_OBJECT (k), "selected", w);
 }
@@ -119,25 +121,24 @@ handler (GtkMenuItem *w, int p)
 void
 disp_h_menu (void *m)
 {
-GtkWidget *a;
-GtkWindow *cwin;
+  GtkWidget *a;
+  GtkWindow *cwin;
 
-  clr_error_gtk();
-  cwin = (GtkWindow *)gtk_object_get_data (GTK_OBJECT (m), "MASTERWIN");
+  clr_error_gtk ();
+  cwin = (GtkWindow *) gtk_object_get_data (GTK_OBJECT (m), "MASTERWIN");
 
-  a = (GtkWidget *)gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
+  a = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
   debug ("in gui_disp_h_menu\n");
   if (a == 0)
-  {
-    debug(
-	   "no current menu - must have been a child thats not there anymore\n"
-    );
-    /* v=gtk_object_get_data(cwin,"vbox"); */
-    gtk_widget_show (m);
-    gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", m);
-    gtk_widget_show (m);
-    printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, m);
-    gtk_fixed_put ((GtkFixed *)cwin, m, 0, 0);
+    {
+      debug
+	("no current menu - must have been a child thats not there anymore\n");
+      /* v=gtk_object_get_data(cwin,"vbox"); */
+      gtk_widget_show (m);
+      gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", m);
+      gtk_widget_show (m);
+      printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, m);
+      gtk_fixed_put ((GtkFixed *) cwin, m, 0, 0);
       /* gtk_box_pack_start_defaults(v, m); */
       debug ("Redisplayed me\n");
     }
@@ -156,62 +157,64 @@ menu_loop (void *m)
   GtkWidget *menubar;
   GtkWindow *cwin;
 
-  #ifdef DEBUG
-    debug("Seting up menu");
-  #endif
+#ifdef DEBUG
+  debug ("Seting up menu");
+#endif
 
 /* Check were still up... */
-  cwin = (GtkWindow *)gtk_object_get_data (GTK_OBJECT (m), "MASTERWIN");
+  cwin = (GtkWindow *) gtk_object_get_data (GTK_OBJECT (m), "MASTERWIN");
 
-  menubar = (GtkWidget *)gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
+  menubar = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
   if (menubar == 0)
-  {
-	#ifdef DEBUG
-		debug ("no current menu - must have been a child\n");
-    #endif
-    /* v=gtk_object_get_data(cwin,"vbox"); */
-    gtk_widget_show (m);
-    gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", m);
-    gtk_widget_show (m);
-    printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, m);
-    gtk_fixed_put ((GtkFixed *)cwin, m, 0, 0);
-	#ifdef DEBUG
-		debug ("Redisplayed menu\n");
-    #endif
-  }
+    {
+#ifdef DEBUG
+      debug ("no current menu - must have been a child\n");
+#endif
+      /* v=gtk_object_get_data(cwin,"vbox"); */
+      gtk_widget_show (m);
+      gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", m);
+      gtk_widget_show (m);
+      printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, m);
+      gtk_fixed_put ((GtkFixed *) cwin, m, 0, 0);
+#ifdef DEBUG
+      debug ("Redisplayed menu\n");
+#endif
+    }
   else
-  {
-    gtk_widget_hide (m);
-    gtk_widget_show (m);
-  }
+    {
+      gtk_widget_hide (m);
+      gtk_widget_show (m);
+    }
 
-  gtk_object_set_data (GTK_OBJECT (m), "selected", (gpointer)-1);
+  gtk_object_set_data (GTK_OBJECT (m), "selected", (gpointer) - 1);
 
-  #ifdef DEBUG
-    debug("Entering menu loop");
-  #endif
+#ifdef DEBUG
+  debug ("Entering menu loop");
+#endif
 
   while (1)
-  {
-    a4gl_usleep (100);
-    gui_run_til_no_more();
+    {
+      a4gl_usleep (100);
+      gui_run_til_no_more ();
 
-    a = (int)gtk_object_get_data (GTK_OBJECT (m), "selected");
+      a = (int) gtk_object_get_data (GTK_OBJECT (m), "selected");
 
-    if (a != -1) {
-	  #ifdef DEBUG
-		debug("A=%x",a);
-      #endif
+      if (a != -1)
+	{
+#ifdef DEBUG
+	  debug ("A=%x", a);
+#endif
 	}
 
-    if (a != -1) {
-		  clr_error_gtk();
-			#ifdef DEBUG
-                debug ("Exiting menu loop");
-            #endif
-			return a;
-	  }
-  }
+      if (a != -1)
+	{
+	  clr_error_gtk ();
+#ifdef DEBUG
+	  debug ("Exiting menu loop");
+#endif
+	  return a;
+	}
+    }
 }
 
 /**
@@ -225,10 +228,10 @@ free_menu (void *m)
 {
   GtkWindow *cwin;
   debug ("Free menu...");
-  cwin = (GtkWindow *)gtk_object_get_data (GTK_OBJECT (m), "MASTERWIN");
-  gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", (gpointer)0);
+  cwin = (GtkWindow *) gtk_object_get_data (GTK_OBJECT (m), "MASTERWIN");
+  gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", (gpointer) 0);
   /* v=gtk_object_get_data(cwin,"vbox"); */
-  gtk_container_remove((GtkContainer *)cwin, m);
+  gtk_container_remove ((GtkContainer *) cwin, m);
   debug ("Freed menu\n");
 }
 
@@ -247,22 +250,24 @@ find_menu_item (void *m, char *s)
   char *ptr;
   GtkWidget *widget;
   for (a = 0;; a++)
-  {
-    sprintf (buff, "MENUITEM%d", a);
-    debug("MNTEST Looking for menuitem %s in menu %p",s,m);
-    widget = (GtkWidget *)gtk_object_get_data (GTK_OBJECT (m), buff);
+    {
+      sprintf (buff, "MENUITEM%d", a);
+      debug ("MNTEST Looking for menuitem %s in menu %p", s, m);
+      widget = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (m), buff);
 
-    if (widget) {
-	debug("MNTEST Found..");
-    	ptr = (char *)gtk_object_get_data (GTK_OBJECT (widget), "Caption");
-   	if (ptr) {
-    		if (strcasecmp (ptr, s) == 0)
-	    		return widget;
-  		}
-  	}
-   } 
-	debug("MNTEST Not found..");
-	return (GtkWidget *)0;
+      if (widget)
+	{
+	  debug ("MNTEST Found..");
+	  ptr = (char *) gtk_object_get_data (GTK_OBJECT (widget), "Caption");
+	  if (ptr)
+	    {
+	      if (strcasecmp (ptr, s) == 0)
+		return widget;
+	    }
+	}
+    }
+  debug ("MNTEST Not found..");
+  return (GtkWidget *) 0;
 }
 
 /**
@@ -274,21 +279,21 @@ find_menu_item (void *m, char *s)
  * @param nextop.
  */
 void
-next_option (void * menu, char *nextopt)
+next_option (void *menu, char *nextopt)
 {
-	debug("next option - Has no effect in GUI mode");
+  debug ("next option - Has no effect in GUI mode");
 }
 
 /**
  * Not used but maybe should be.
  */
 void
-menu_hide (void *m, va_list *ap)
+menu_hide (void *m, va_list * ap)
 {
   GtkWidget *w;
   char *argp_c;
 
-  debug ("menu_hide - %p",m);
+  debug ("menu_hide - %p", m);
   while (1)
     {
       argp_c = va_arg (*ap, char *);
@@ -312,24 +317,24 @@ menu_hide (void *m, va_list *ap)
  * @param ap The optionlist to be showed.
  */
 void
-menu_show (void *m,va_list *ap)
+menu_show (void *m, va_list * ap)
 {
   GtkWidget *w;
   char *argp_c;
 
   while (1)
-  {
-    argp_c = va_arg (*ap, char *);
-    if (argp_c == 0)
-      break;
-    w = find_menu_item (m, argp_c);
-    if (w == 0)
-	  {
-	    exitwith ("Bad option - not in the menu");
-	    return;
-	  }
-    gtk_widget_show (w);
-  }
+    {
+      argp_c = va_arg (*ap, char *);
+      if (argp_c == 0)
+	break;
+      w = find_menu_item (m, argp_c);
+      if (w == 0)
+	{
+	  exitwith ("Bad option - not in the menu");
+	  return;
+	}
+      gtk_widget_show (w);
+    }
 }
 
 
@@ -440,30 +445,31 @@ va_list *ap)
 GtkWidget *
 new_menu_create (char *title, int x, int y, int mn_type, int help_no)
 {
-GtkWidget *menubar;
-GtkWindow *cwin;
-GtkWidget *w;
+  GtkWidget *menubar;
+  GtkWindow *cwin;
+  GtkWidget *w;
 
   debug ("Create window - title=%s", title);
-  cwin = GTK_WINDOW(get_curr_win_gtk ());
-  debug("Got cwin as %p\n",cwin);
+  cwin = GTK_WINDOW (get_curr_win_gtk ());
+  debug ("Got cwin as %p\n", cwin);
 
-  menubar = (GtkWidget *)gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
+  menubar = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (cwin), "MENUBAR");
 
   if (menubar)
     {
-      gtk_container_remove (GTK_CONTAINER(cwin), menubar);
+      gtk_container_remove (GTK_CONTAINER (cwin), menubar);
     }
 
   menubar = gtk_menu_bar_new ();
-  gtk_object_ref (GTK_OBJECT(menubar));
+  gtk_object_ref (GTK_OBJECT (menubar));
   gtk_object_set_data (GTK_OBJECT (cwin), "MENUBAR", menubar);
   gtk_object_set_data (GTK_OBJECT (menubar), "MASTERWIN", cwin);
   gtk_widget_show (menubar);
-  gtk_widget_set_usize (GTK_WIDGET (menubar),get_curr_width()*XWIDTH , YHEIGHT);
-  gtk_object_set_data (GTK_OBJECT (menubar),"NOPTS", (gpointer)0);
+  gtk_widget_set_usize (GTK_WIDGET (menubar), get_curr_width () * XWIDTH,
+			YHEIGHT);
+  gtk_object_set_data (GTK_OBJECT (menubar), "NOPTS", (gpointer) 0);
   printf ("gtk_fixed_put(%p, %p, 0,0);\n", cwin, menubar);
-  gtk_fixed_put ((GtkFixed *)cwin, menubar, 0, 0);
+  gtk_fixed_put ((GtkFixed *) cwin, menubar, 0, 0);
   trim (title);
 
   if (strlen (title))
@@ -473,7 +479,7 @@ GtkWidget *w;
       gtk_menu_bar_append (GTK_MENU_BAR (menubar), w);
     }
 
-return menubar;
+  return menubar;
 }
 
 
@@ -491,42 +497,40 @@ return menubar;
  * @param attr The attributes
  */
 void
-add_menu_option(void *menubar,char *txt,char *keys,char *desc, int helpno,int attr)
+add_menu_option (void *menubar, char *txt, char *keys, char *desc, int helpno,
+		 int attr)
 {
-GtkWidget *w;
-char buff[256];
-int cnt;
-      
-	  w = gtk_menu_item_new_with_label (txt);
+  GtkWidget *w;
+  char buff[256];
+  int cnt;
 
-      gtk_menu_bar_append (GTK_MENU_BAR (menubar), w);
-      gtk_object_set_data (GTK_OBJECT (w), "Parent", menubar);
-      gtk_object_set_data (GTK_OBJECT (w), "Caption", txt);
-      cnt= (int)gtk_object_get_data(GTK_OBJECT(menubar),"NOPTS");
-      cnt++;
-      gtk_signal_connect_object (
-			  GTK_OBJECT (w), 
-				"activate", 
-				GTK_SIGNAL_FUNC (handler), 
-				(gpointer)cnt-1
-			);
-      sprintf (buff, "MENUITEM%d", cnt);
-      debug("MJA - cnt = %d\n",cnt);
-      gtk_object_set_data (GTK_OBJECT (menubar), buff, w);
-      gtk_object_set_data (GTK_OBJECT (menubar),"NOPTS",(gpointer)cnt);
-      gtk_widget_show (w);
+  w = gtk_menu_item_new_with_label (txt);
 
-      /*
-      argp_c = va_arg (*ap, char *); // Key List
-      argp_c = va_arg (*ap, char *); // Help
-      */
-	if (strlen(desc))
-      		gtk_tooltips_set_tip (GTK_TOOLTIPS (tooltips), w, desc, desc);
+  gtk_menu_bar_append (GTK_MENU_BAR (menubar), w);
+  gtk_object_set_data (GTK_OBJECT (w), "Parent", menubar);
+  gtk_object_set_data (GTK_OBJECT (w), "Caption", txt);
+  cnt = (int) gtk_object_get_data (GTK_OBJECT (menubar), "NOPTS");
+  cnt++;
+  gtk_signal_connect_object (GTK_OBJECT (w),
+			     "activate",
+			     GTK_SIGNAL_FUNC (handler), (gpointer) cnt - 1);
+  sprintf (buff, "MENUITEM%d", cnt);
+  debug ("MJA - cnt = %d\n", cnt);
+  gtk_object_set_data (GTK_OBJECT (menubar), buff, w);
+  gtk_object_set_data (GTK_OBJECT (menubar), "NOPTS", (gpointer) cnt);
+  gtk_widget_show (w);
 
-      /*
-	  argp_c = va_arg (*ap, char *);
-      argp_c = va_arg (*ap, char *);
-      */
+  /*
+     argp_c = va_arg (*ap, char *); // Key List
+     argp_c = va_arg (*ap, char *); // Help
+   */
+  if (strlen (desc))
+    gtk_tooltips_set_tip (GTK_TOOLTIPS (tooltips), w, desc, desc);
+
+  /*
+     argp_c = va_arg (*ap, char *);
+     argp_c = va_arg (*ap, char *);
+   */
 
 }
 
@@ -539,9 +543,9 @@ int cnt;
  * @param menu The menu structure (GtkWidget).
  */
 void
-finish_create_menu(void *menubar)
+finish_create_menu (void *menubar)
 {
-  gtk_object_set_data (GTK_OBJECT (menubar), "selected", (gpointer)-1);
+  gtk_object_set_data (GTK_OBJECT (menubar), "selected", (gpointer) - 1);
 }
 
 /* ============================== EOF ================================ */

@@ -1,92 +1,90 @@
 
 
 #if (defined (__CYGWIN__) || defined (__MINGW32__))
-	#include <windows.h>
-	#include <sqlext.h>
+#include <windows.h>
+#include <sqlext.h>
 #else
-	#ifdef UNIXODBC
-		#include <sql.h>
-		#include <sqlext.h>
-		#include <odbcinst.h>
-		#define __UCHAR_DEFINED__
-	    #define __ODBC_DEFINED__
-	#endif
+#ifdef UNIXODBC
+#include <sql.h>
+#include <sqlext.h>
+#include <odbcinst.h>
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
-	#ifdef IODBC
-		#ifdef OLDIODBC
-			#include <iodbc.h>
-			#include <isql.h>
-			#include <isqlext.h>
-        #else
-			#include <sql.h>
-            #include <sqlext.h>
-            #include <sqltypes.h>
-		#endif
-		#define __UCHAR_DEFINED__
-	    #define __ODBC_DEFINED__
-	#endif
+#ifdef IODBC
+#ifdef OLDIODBC
+#include <iodbc.h>
+#include <isql.h>
+#include <isqlext.h>
+#else
+#include <sql.h>
+#include <sqlext.h>
+#include <sqltypes.h>
+#endif
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
-	#ifdef IFXODBC
+#ifdef IFXODBC
 		/* infromix headers require wchar_t to be already defined
-		so we have to include stdio.h here */
-		#include <stdio.h>
+		   so we have to include stdio.h here */
+#include <stdio.h>
 
-		#include <incl/cli/infxcli.h>
-		#include <incl/cli/infxsql.h>
-		#define __UCHAR_DEFINED__
-	    #define __ODBC_DEFINED__
+#include <incl/cli/infxcli.h>
+#include <incl/cli/infxsql.h>
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
 		/* #include <incl/cli/sqlucode.h> */
-	#endif
+#endif
 
-	#ifdef PGODBC
-			#include <pgsql/iodbc/iodbc.h>
+#ifdef PGODBC
+#include <pgsql/iodbc/iodbc.h>
 			/* #include <pgsql/iodbc/isql.h> */
-			#include <pgsql/iodbc/isqlext.h>
+#include <pgsql/iodbc/isqlext.h>
 
-            /* NOTHING WE CAN DO:
-            /usr/include/pgsql/iodbc/isqlext.h:1344: warning: redundant redeclaration of `SQLNumResultCols' in same scope
-			/usr/include/pgsql/iodbc/isql.h:210: warning: previous declaration of `SQLNumResultCols'
-            */
+	    /* NOTHING WE CAN DO:
+	       /usr/include/pgsql/iodbc/isqlext.h:1344: warning: redundant redeclaration of `SQLNumResultCols' in same scope
+	       /usr/include/pgsql/iodbc/isql.h:210: warning: previous declaration of `SQLNumResultCols'
+	     */
 
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-	#endif
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
 
-	#ifdef SAPODBC
-			#include "interfaces/odbc/incl/WINDOWS.H"
+#ifdef SAPODBC
+#include "interfaces/odbc/incl/WINDOWS.H"
 			/*
-			incl/WINDOWS.H Header file for non-MS Windows platforms. On MS Windows 3.1 or
-			Windows NT, this file can be replaced by windows.h if an SDK has been installed.
-            Also defines thingsa like DWORD needed by followint headers.
-			*/
+			   incl/WINDOWS.H Header file for non-MS Windows platforms. On MS Windows 3.1 or
+			   Windows NT, this file can be replaced by windows.h if an SDK has been installed.
+			   Also defines thingsa like DWORD needed by followint headers.
+			 */
 
-			#include "interfaces/odbc/incl/sql.h" 		/* Header file for the ODBC driver (Core). */
-			#include "interfaces/odbc/incl/sqlext.h"     /* Header file for the ODBC driver (Level1 and Level2). */
-			#include "interfaces/odbc/incl/sqltypes.h"   /* Header file for the ODBC driver (Datatypes). */
+#include "interfaces/odbc/incl/sql.h"	/* Header file for the ODBC driver (Core). */
+#include "interfaces/odbc/incl/sqlext.h"	/* Header file for the ODBC driver (Level1 and Level2). */
+#include "interfaces/odbc/incl/sqltypes.h"	/* Header file for the ODBC driver (Datatypes). */
 
-			#define __UCHAR_DEFINED__
-		    #define __ODBC_DEFINED__
-	#endif
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
-    #ifndef __ODBC_DEFINED__
-        /* default for tesing, when we don't use makefile we will not have -Dxxx
-		 unixODBC headers: */
-		#include <sql.h>
-		#include <sqlext.h>
-		#include <odbcinst.h>
-		#define __UCHAR_DEFINED__
-	    #define __ODBC_DEFINED__
-	#endif
+#ifndef __ODBC_DEFINED__
+	/* default for tesing, when we don't use makefile we will not have -Dxxx
+	   unixODBC headers: */
+#include <sql.h>
+#include <sqlext.h>
+#include <odbcinst.h>
+#define __UCHAR_DEFINED__
+#define __ODBC_DEFINED__
+#endif
 
 #endif
 
-    /*  -------------- in sql.c ------------------*/
-	HSTMT *			new_hstmt 		(HSTMT * hstmt);
-	void 			chk_rc_full 	(int rc, void *hstmt, char *c, int line, char *file);
-	void  			set_sqlca 		(HSTMT hstmt, char *s, int reset);
-	UDWORD 			display_size 	(SWORD coltype, UDWORD collen, UCHAR * colname);
+    /*  -------------- in sql.c ------------------ */
+HSTMT *new_hstmt (HSTMT * hstmt);
+void chk_rc_full (int rc, void *hstmt, char *c, int line, char *file);
+void set_sqlca (HSTMT hstmt, char *s, int reset);
+UDWORD display_size (SWORD coltype, UDWORD collen, UCHAR * colname);
 
-    #include "a4gl_lib_sql_int.h"
-
-
+#include "a4gl_lib_sql_int.h"

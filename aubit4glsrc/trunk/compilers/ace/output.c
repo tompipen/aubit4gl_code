@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: output.c,v 1.4 2002-07-21 06:41:48 afalout Exp $
+# $Id: output.c,v 1.5 2003-05-12 14:23:57 mikeaubury Exp $
 #*/
 
 /**
@@ -45,12 +45,12 @@
 
 #ifdef OLD_INCL
 
-	#include "report.h"
-	#include <stdio.h>
+#include "report.h"
+#include <stdio.h>
 
 #else
 
-    #include "a4gl_ace_int.h"
+#include "a4gl_ace_int.h"
 
 #endif
 
@@ -91,18 +91,18 @@ write_report (void)
 
   ptr = &this_report;
 
-  strcpy(fname, outputfilename);
+  strcpy (fname, outputfilename);
 
   /* ace_bname(outputfilename, ext, base); */
-  bname(outputfilename, ext, base);
+  bname (outputfilename, ext, base);
 
   if (ext[0] == 0)
-  {
-          strcat(fname, ".aarc");
-  }
+    {
+      strcat (fname, ".aarc");
+    }
 
-  strcpy(fname2, outputfilename);
-  strcat(fname2, ".c");
+  strcpy (fname2, outputfilename);
+  strcat (fname2, ".c");
 
 
   a = write_data_to_file ("report", ptr, fname);
@@ -113,17 +113,17 @@ write_report (void)
 
   //if (fxx == 0)
   //{
-    //printf("Couldnt open file for write (%s)\n", fname);
+  //printf("Couldnt open file for write (%s)\n", fname);
   //}
   //xdrstdio_create(&xdrp, fxx, XDR_ENCODE);
   //a=xdr_report(&xdrp,ptr);
 
 
   if (!a)
-        {
-           debug("*** Write FAILED ***\n");
-                printf("Unable to write data\n");
-  }
+    {
+      debug ("*** Write FAILED ***\n");
+      printf ("Unable to write data\n");
+    }
 
   //xdr_destroy(&xdrp);
   //fclose(fxx);

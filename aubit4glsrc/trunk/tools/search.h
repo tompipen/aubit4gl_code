@@ -50,25 +50,27 @@
 
 #include "histedit.h"
 
-typedef struct el_search_t {
-        char        *patbuf;                /* The pattern buffer                */
-        size_t         patlen;                /* Length of the pattern buffer        */
-        int         patdir;                /* Direction of the last search        */
-        int         chadir;                /* Character search direction        */
-        char         chacha;                /* Character we are looking for        */
-} el_search_t;
+typedef struct el_search_t
+{
+  char *patbuf;			/* The pattern buffer                */
+  size_t patlen;		/* Length of the pattern buffer        */
+  int patdir;			/* Direction of the last search        */
+  int chadir;			/* Character search direction        */
+  char chacha;			/* Character we are looking for        */
+}
+el_search_t;
 
 
-protected int           el_match(const char *, const char *);
-protected int           search_init(EditLine *);
-protected void          search_end(EditLine *);
-protected int           c_hmatch(EditLine *, const char *);
-protected void          c_setpat(EditLine *);
-protected el_action_t   ce_inc_search(EditLine *, int);
-protected el_action_t   cv_search(EditLine *, int);
-protected el_action_t   ce_search_line(EditLine *, char *, int);
-protected el_action_t   cv_repeat_srch(EditLine *, int);
-protected el_action_t   cv_csearch_back(EditLine *, int, int, int);
-protected el_action_t   cv_csearch_fwd(EditLine *, int, int, int);
+protected int el_match (const char *, const char *);
+protected int search_init (EditLine *);
+protected void search_end (EditLine *);
+protected int c_hmatch (EditLine *, const char *);
+protected void c_setpat (EditLine *);
+protected el_action_t ce_inc_search (EditLine *, int);
+protected el_action_t cv_search (EditLine *, int);
+protected el_action_t ce_search_line (EditLine *, char *, int);
+protected el_action_t cv_repeat_srch (EditLine *, int);
+protected el_action_t cv_csearch_back (EditLine *, int, int, int);
+protected el_action_t cv_csearch_fwd (EditLine *, int, int, int);
 
 #endif /* _h_el_search */

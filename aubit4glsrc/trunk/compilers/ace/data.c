@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.17 2003-03-08 10:22:51 mikeaubury Exp $
+# $Id: data.c,v 1.18 2003-05-12 14:23:57 mikeaubury Exp $
 #*/
 
 /**
@@ -79,7 +79,7 @@ void dif_add_bind_int (void *list, long a);
 #ifdef OLD_INCL
 int A4GLSQL_next_column (char *colname, int *dtype, int *size);
 void ace_add_variable (char *name, char *dstring, int category, int pno,
-		   int dtype, int dim);
+		       int dtype, int dim);
 void init_report (void);
 int find_variable (char *name);
 void add_function (char *name);
@@ -196,7 +196,7 @@ decode_dtype (char *s)
   if (STRLENEQ (s, "NCHAR"))
     return 15;
 
-  printf ("Unknown datatype for %s - assuming char...\n",s);
+  printf ("Unknown datatype for %s - assuming char...\n", s);
 
   return 0;
 }
@@ -207,7 +207,7 @@ decode_dtype (char *s)
  */
 void
 ace_add_variable (char *name, char *dstring, int category, int pno, int dtype,
-	      int dim)
+		  int dim)
 {
   struct variable *ptr;
   char buff[256];
@@ -610,7 +610,7 @@ execute_selects (void)
   int colsize;
   int coltype;
   //char colname[256];
-char *colname;
+  char *colname;
   int vid = 0;
 
   /* char * nval; */
@@ -672,9 +672,9 @@ char *colname;
 	  strcat (nstatement, " INTO TEMP a4gl_drep1234");
 	}
 
-	debug("1");
-	debug("Executing select..");
-	debug("%s",nstatement);
+      debug ("1");
+      debug ("Executing select..");
+      debug ("%s", nstatement);
 
       psql =
 	(void *) A4GLSQL_prepare_select (dif_get_bind (xi), xic,
@@ -717,7 +717,8 @@ char *colname;
 	   */
 	  if (A4GLSQL_get_columns ("a4gl_drep1234", "", 0, 0) == 0)
 	    {
-	      a4gl_ace_yyerror ("Unable to get column types for a temporary table");
+	      a4gl_ace_yyerror
+		("Unable to get column types for a temporary table");
 	    }
 
 	  /*
@@ -802,7 +803,7 @@ yyerror_sql (char *s)
 {
   char buff[256];
   sprintf (buff, "%s - %d", s, (int) a4gl_status);	/*  warning: int format, long int arg (arg 4)
-						 */
+							 */
   a4gl_ace_yyerror (buff);
 }
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.10 2002-10-07 11:06:26 afalout Exp $
+# $Id: dates.c,v 1.11 2003-05-12 14:24:04 mikeaubury Exp $
 #
 */
 
@@ -53,12 +53,12 @@
 
 /* #define DIGIT_ALIGN_LEFT */
 
-int y2ktype=-1;
+int y2ktype = -1;
 //extern int errno;
 
 static int days_in_month[2][13] = {
-	{0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
-	{0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
+  {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
+  {0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
 };
 
 /*
@@ -105,13 +105,13 @@ struct s_days {
 =====================================================================
 */
 
-void			day_array 	(int, int, int *);
-int				day_in_year (int, int, int);
-int     		y2kmode		(int yr);
+void day_array (int, int, int *);
+int day_in_year (int, int, int);
+int y2kmode (int yr);
 
-static long 	gen_dateno2	(int day, int month, int year);
-static int 		get_yr		(int d);
-int 			get_month	(int d);
+static long gen_dateno2 (int day, int month, int year);
+static int get_yr (int d);
+int get_month (int d);
 
 /*
 =====================================================================
@@ -124,25 +124,26 @@ int 			get_month	(int d);
  * @todo Describe function
  */
 int
-date_sep(int z) 
+date_sep (int z)
 {
-	if (z=='/'||z=='-'||z=='.') return 1;
-	return 0;
+  if (z == '/' || z == '-' || z == '.')
+    return 1;
+  return 0;
 }
 
 /**
  * @return the 1 based day number within the year
  */
-int 
-day_in_year(day, month, year)
-int day, month, year;
+int
+day_in_year (day, month, year)
+     int day, month, year;
 {
-	int i, leap;
+  int i, leap;
 
-	leap = leap_year(year);
-	for (i = 1; i < month; i++)
-		day += days_in_month[leap][i];
-	return (day);
+  leap = leap_year (year);
+  for (i = 1; i < month; i++)
+    day += days_in_month[leap][i];
+  return (day);
 }
 
 /**
@@ -152,18 +153,18 @@ int day, month, year;
  *	missing days.
  */
 int
-day_in_week(day, month, year)
-int day, month, year;
+day_in_week (day, month, year)
+     int day, month, year;
 {
-	long temp;
+  long temp;
 
-	temp = (long)(year - 1) * 365 + leap_years_since_year_1(year - 1)
-	    + day_in_year(day, month, year);
-	if (temp < FIRST_MISSING_DAY)
-		return ((temp - 1 + SATURDAY) % 7);
-	if (temp >= (FIRST_MISSING_DAY + NUMBER_MISSING_DAYS))
-		return (((temp - 1 + SATURDAY) - NUMBER_MISSING_DAYS) % 7);
-	return (THURSDAY);
+  temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1)
+    + day_in_year (day, month, year);
+  if (temp < FIRST_MISSING_DAY)
+    return ((temp - 1 + SATURDAY) % 7);
+  if (temp >= (FIRST_MISSING_DAY + NUMBER_MISSING_DAYS))
+    return (((temp - 1 + SATURDAY) - NUMBER_MISSING_DAYS) % 7);
+  return (THURSDAY);
 }
 
 /**
@@ -176,15 +177,18 @@ int day, month, year;
  * @return The date in internal format
  */
 static long
-gen_dateno2(int day, int month, int year)
+gen_dateno2 (int day, int month, int year)
 {
-	long temp;
-	if (month<1||month>12) return DATE_INVALID;
-	if (day<1) return DATE_INVALID;
-	if (day>days_in_month[leap_year(year)][month]) return DATE_INVALID;
-	temp = (long)(year - 1) * 365 + leap_years_since_year_1(year - 1)
-	    + day_in_year(day, month, year);
-	return temp-EPOCH;
+  long temp;
+  if (month < 1 || month > 12)
+    return DATE_INVALID;
+  if (day < 1)
+    return DATE_INVALID;
+  if (day > days_in_month[leap_year (year)][month])
+    return DATE_INVALID;
+  temp = (long) (year - 1) * 365 + leap_years_since_year_1 (year - 1)
+    + day_in_year (day, month, year);
+  return temp - EPOCH;
 }
 
 /**
@@ -196,18 +200,21 @@ gen_dateno2(int day, int month, int year)
  *
  * @return The date in internal format
  */
-long 
-gen_dateno(int day,int month,int year)
+long
+gen_dateno (int day, int month, int year)
 {
-	int z;
-	#ifdef DEBUG
-		{debug("In gen_dateno %d %d %d",day,month,year);}
-	#endif
-	z=gen_dateno2(day,month,year);
-	if (z==DATE_INVALID) {
-		exitwith("Invalid date");
-	}
-	return z;
+  int z;
+#ifdef DEBUG
+  {
+    debug ("In gen_dateno %d %d %d", day, month, year);
+  }
+#endif
+  z = gen_dateno2 (day, month, year);
+  if (z == DATE_INVALID)
+    {
+      exitwith ("Invalid date");
+    }
+  return z;
 }
 
 /**
@@ -217,34 +224,39 @@ gen_dateno(int day,int month,int year)
  *  @return The year
  */
 static int
-get_yr(int d)
+get_yr (int d)
 {
-	int e;
-	int h,l;
-        debug("D=%d\n",d);
-	if (d==DATE_INVALID||d<1000) return d;
-	e=(int)((double)(d-13+EPOCH)/365.2425)+1;
-	h=gen_dateno(31,12,e);
-	/*l=gen_dateno(1,1,e);*/
-	while (1) {
-		l=h-365-leap_year(e)+1;
-		if (d==l||d==h) {
-			return e;
-		}
-		if (d<l) {
-			e--;
-			h=l-1;
-			continue;
-		}
-		if (d>h) {
-			h=h+365+leap_year(e);
-			e++;
-			continue;
-		}
-
-		break;
+  int e;
+  int h, l;
+  debug ("D=%d\n", d);
+  if (d == DATE_INVALID || d < 1000)
+    return d;
+  e = (int) ((double) (d - 13 + EPOCH) / 365.2425) + 1;
+  h = gen_dateno (31, 12, e);
+  /*l=gen_dateno(1,1,e); */
+  while (1)
+    {
+      l = h - 365 - leap_year (e) + 1;
+      if (d == l || d == h)
+	{
+	  return e;
 	}
-	return e;
+      if (d < l)
+	{
+	  e--;
+	  h = l - 1;
+	  continue;
+	}
+      if (d > h)
+	{
+	  h = h + 365 + leap_year (e);
+	  e++;
+	  continue;
+	}
+
+      break;
+    }
+  return e;
 }
 
 
@@ -255,49 +267,55 @@ get_yr(int d)
  *  @return The month (?)
  */
 int
-get_month(int d)
+get_month (int d)
 {
-	int i, leap;
-	int year;
-	int day;
-	if (d==DATE_INVALID) return d;
-	year=get_yr(d);
-	day=d-gen_dateno(1,1,year)+1;
-	leap = leap_year(year);
-	for (i = 1; i <=12; i++) {
-		day -= days_in_month[leap][i];
-		if (day<=0)  {
-			day += days_in_month[leap][i];
-			break;
-		}
+  int i, leap;
+  int year;
+  int day;
+  if (d == DATE_INVALID)
+    return d;
+  year = get_yr (d);
+  day = d - gen_dateno (1, 1, year) + 1;
+  leap = leap_year (year);
+  for (i = 1; i <= 12; i++)
+    {
+      day -= days_in_month[leap][i];
+      if (day <= 0)
+	{
+	  day += days_in_month[leap][i];
+	  break;
 	}
+    }
+  return 0;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+get_date (int d, int *day, int *mn, int *yr)
+{
+  int i, leap;
+  int year;
+  debug ("d=%d\n", d);
+  if (d == DATE_INVALID || d < 10000)
     return 0;
-}
-
-/**
- *
- * @todo Describe function
- */
-int
-get_date(int d,int *day,int *mn,int *yr)
-{
-	int i, leap;
-	int year;
-        debug("d=%d\n",d);
-	if (d==DATE_INVALID||d<10000) return 0;
-	year=get_yr(d);
-	*day=d-gen_dateno(1,1,year)+1;
-	leap = leap_year(year);
-	for (i = 1; i <=12; i++) {
-		*day -= days_in_month[leap][i];
-		if (*day<=0)  {
-			*day += days_in_month[leap][i];
-			break;
-		}
+  year = get_yr (d);
+  *day = d - gen_dateno (1, 1, year) + 1;
+  leap = leap_year (year);
+  for (i = 1; i <= 12; i++)
+    {
+      *day -= days_in_month[leap][i];
+      if (*day <= 0)
+	{
+	  *day += days_in_month[leap][i];
+	  break;
 	}
-	*mn=i;
-	*yr=year;
-	return 1;
+    }
+  *mn = i;
+  *yr = year;
+  return 1;
 }
 
 /**
@@ -305,13 +323,16 @@ get_date(int d,int *day,int *mn,int *yr)
  * @todo Describe function
  */
 int
-modify_year(int a) 
+modify_year (int a)
 {
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("Modify year");}
-	#endif
-	a=y2kmode(a);
-	return a;
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("Modify year");
+  }
+#endif
+  a = y2kmode (a);
+  return a;
 }
 
 
@@ -320,100 +341,133 @@ modify_year(int a)
  * @todo Describe function
  */
 int
-y2kmode(int yr)
+y2kmode (int yr)
 {
-char *ptr;
-	int z;
-	int year;
+  char *ptr;
+  int z;
+  int year;
 
 
-	#ifdef DEBUG
-	/* {DEBUG} */ {        debug("y2kmode");}
-	#endif
-        if (yr>99)
-	{
-		#ifdef DEBUG
-		/* {DEBUG} */ {        debug("Year is ok");}
-		#endif
-	   return yr;
-	}
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("y2kmode");
+  }
+#endif
+  if (yr > 99)
+    {
+#ifdef DEBUG
+      /* {DEBUG} */
+      {
+	debug ("Year is ok");
+      }
+#endif
+      return yr;
+    }
 
-	if (y2ktype==-1)
-	{
-		#ifdef DEBUG
-		/* {DEBUG} */ {debug("y2ktype not set");}
-		#endif
-	    ptr=acl_getenv("AUBIT_Y2K");
-	    if (ptr==0) y2ktype=50;
-		    else y2ktype=atoi(ptr);
-		#ifdef DEBUG
-		/* {DEBUG} */ {debug("y2ktype set to %d",y2ktype);}
-		#endif
-	    if (y2ktype==0) y2ktype=50;
-	}
+  if (y2ktype == -1)
+    {
+#ifdef DEBUG
+      /* {DEBUG} */
+      {
+	debug ("y2ktype not set");
+      }
+#endif
+      ptr = acl_getenv ("AUBIT_Y2K");
+      if (ptr == 0)
+	y2ktype = 50;
+      else
+	y2ktype = atoi (ptr);
+#ifdef DEBUG
+      /* {DEBUG} */
+      {
+	debug ("y2ktype set to %d", y2ktype);
+      }
+#endif
+      if (y2ktype == 0)
+	y2ktype = 50;
+    }
 
-	/* y2ktypes
-	+n (n<100) - set to nearest year using +n years from today as limit for future
-	-n (n>-100) - set to nearest year using -n from today as limit for past
-	(note: -25 = +75 )
-	eg
-	year=1997
-	  n=20, anything after 17 will be taken as historic, anything less than= 17 is future
-	  n=-20, anything before 77 will be taken as future, anything greater than= 77 is in the past, 69=2069, 79=1979, 0 = 2000
+  /* y2ktypes
+     +n (n<100) - set to nearest year using +n years from today as limit for future
+     -n (n>-100) - set to nearest year using -n from today as limit for past
+     (note: -25 = +75 )
+     eg
+     year=1997
+     n=20, anything after 17 will be taken as historic, anything less than= 17 is future
+     n=-20, anything before 77 will be taken as future, anything greater than= 77 is in the past, 69=2069, 79=1979, 0 = 2000
 
-	XX00 - always use century XX
-	999  - Do not add anything - dealing with AD 0-99
-	-999 - use current century
-	*/
+     XX00 - always use century XX
+     999  - Do not add anything - dealing with AD 0-99
+     -999 - use current century
+   */
 
-	/*
-	time(&nw);
-	local_time = localtime(&nw);
-	*/
+  /*
+     time(&nw);
+     local_time = localtime(&nw);
+   */
 
-	/* this is right ! - not y2k specific  epoch = 1899*/
+  /* this is right ! - not y2k specific  epoch = 1899 */
 
 
-	/* year = local_time->tm_year + 1900;  */ /*DEBUGGING */
-	year=1997;
+/* year = local_time->tm_year + 1900;  *//*DEBUGGING */
+  year = 1997;
 
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("Y2K1");	}
-	#endif
-	if (y2ktype==999) {return yr;}
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("Y2K1");
+  }
+#endif
+  if (y2ktype == 999)
+    {
+      return yr;
+    }
 
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("Y2K2");	}
-	#endif
-	if (y2ktype==-999) {return yr+year-(year%100);}
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("Y2K2");
+  }
+#endif
+  if (y2ktype == -999)
+    {
+      return yr + year - (year % 100);
+    }
 
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("Y2K3");	}
-	#endif
-	if (y2ktype>=1000&&y2ktype%100==0) 
-	{
-	  yr+=y2ktype;
-	  return yr;
-	}
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("Y2K3");
+  }
+#endif
+  if (y2ktype >= 1000 && y2ktype % 100 == 0)
+    {
+      yr += y2ktype;
+      return yr;
+    }
 
-	if (y2ktype>0&&y2ktype<100) 
-	{
-	    z=(year+y2ktype)%100;
-	    if (yr>z) return year-(year%100)+yr;
-	    else return year-(year%100)+100+yr;
-	}
+  if (y2ktype > 0 && y2ktype < 100)
+    {
+      z = (year + y2ktype) % 100;
+      if (yr > z)
+	return year - (year % 100) + yr;
+      else
+	return year - (year % 100) + 100 + yr;
+    }
 
-	if (y2ktype<0&&y2ktype>-100) 
-	{
-	    z=(year+y2ktype)%100;
-	    if (yr>=z) return year-(year%100)+yr;
-	    else return year-(year%100)+100+yr;
-	}
+  if (y2ktype < 0 && y2ktype > -100)
+    {
+      z = (year + y2ktype) % 100;
+      if (yr >= z)
+	return year - (year % 100) + yr;
+      else
+	return year - (year % 100) + 100 + yr;
+    }
 
-    return 0;
+  return 0;
 
 }
 
 
 /* ============================= EOF =============================== */
-

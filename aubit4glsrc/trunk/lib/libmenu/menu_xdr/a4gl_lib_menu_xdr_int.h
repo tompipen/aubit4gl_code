@@ -6,15 +6,13 @@
 	/* ============== from a4gl_menuxw.h ==================== */
 
 
-	#ifdef __CYGWIN__
-		#include <rpc/rpc.h>
-	#endif
+#ifdef __CYGWIN__
+#include <rpc/rpc.h>
+#endif
 
-	#include "menu_x.h"
+#include "menu_x.h"
 
-	#include "a4gl_lib_ui_gtk_int.h" /* make_pixmap */
+#include "a4gl_lib_ui_gtk_int.h"	/* make_pixmap */
 
-	#include <gdk/gdk.h>
-	#include <gtk/gtk.h>
-
-
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.12 2003-03-01 13:07:19 mikeaubury Exp $
+# $Id: rexp2.c,v 1.13 2003-05-12 14:24:18 mikeaubury Exp $
 #
 */
 
@@ -63,18 +63,18 @@
 #define is_match_decimal "[\\+\\-]{0,1}[0-9]{0,}\\.[0-9]{0,}"
 #define is_match_integer "[\\+\\-]{0,1}[0-9]{1,}"
 
-#define MATCH_LITERAL  5    /* match failure on literal match */
-#define MATCH_RANGE    4    /* match failure on [..] construct */
-#define MATCH_ABORT    3    /* premature end of text string */
-#define MATCH_END      2    /* premature end of pattern string */
-#define MATCH_VALID    1    /* valid match */
+#define MATCH_LITERAL  5	/* match failure on literal match */
+#define MATCH_RANGE    4	/* match failure on [..] construct */
+#define MATCH_ABORT    3	/* premature end of text string */
+#define MATCH_END      2	/* premature end of pattern string */
+#define MATCH_VALID    1	/* valid match */
 
 /* pattern defines */
-#define PATTERN_VALID  0    /* valid pattern */
-#define PATTERN_ESC   -1    /* literal escape at end of pattern */
-#define PATTERN_RANGE -2    /* malformed range in [..] construct */
-#define PATTERN_CLOSE -3    /* no end bracket in [..] construct */
-#define PATTERN_EMPTY -4    /* [..] construct is empty */
+#define PATTERN_VALID  0	/* valid pattern */
+#define PATTERN_ESC   -1	/* literal escape at end of pattern */
+#define PATTERN_RANGE -2	/* malformed range in [..] construct */
+#define PATTERN_CLOSE -3	/* no end bracket in [..] construct */
+#define PATTERN_EMPTY -4	/* [..] construct is empty */
 
 /*
 =====================================================================
@@ -90,8 +90,8 @@
 =====================================================================
 */
 
-char *	constr_bits[256];
-int     constr_size;
+char *constr_bits[256];
+int constr_size;
 
 /*
 =====================================================================
@@ -100,10 +100,10 @@ int     constr_size;
 */
 
 
-void 		doconstruct				(char *s,char *whereclause);
-int 		mja_matchcmp			(char *a,char *s_match);
-static int 	isop					(char *str, int i);
-static void convert_constr_buffer	(char *str);
+void doconstruct (char *s, char *whereclause);
+int mja_matchcmp (char *a, char *s_match);
+static int isop (char *str, int i);
+static void convert_constr_buffer (char *str);
 
 /*
 =====================================================================
@@ -118,14 +118,15 @@ static void convert_constr_buffer	(char *str);
  * @return
  */
 static void
-appendchr(char *s, char c)
+appendchr (char *s, char c)
 {
-int     a;
-        
-		a = strlen(s);
-        if (c=='\'') appendchr(s,'\\');
-        s[a] = c;
-        s[a+1] = 0;
+  int a;
+
+  a = strlen (s);
+  if (c == '\'')
+    appendchr (s, '\\');
+  s[a] = c;
+  s[a + 1] = 0;
 
 }
 
@@ -136,29 +137,36 @@ int     a;
  * @return
  */
 int
-mja_match(char *str1, char*str2, int likeormatch)
+mja_match (char *str1, char *str2, int likeormatch)
 {
-char    MULTICHAR, SINGLECHAR;
-int error;
+  char MULTICHAR, SINGLECHAR;
+  int error;
 
-	trim(str1);
-	trim(str2);
-		#ifdef DEBUG
-			{debug("Match '%s' '%s' %c",str1,str2,likeormatch);}
-		#endif
+  trim (str1);
+  trim (str2);
+#ifdef DEBUG
+  {
+    debug ("Match '%s' '%s' %c", str1, str2, likeormatch);
+  }
+#endif
 
-        if (likeormatch == 'L') {
-                MULTICHAR = '%';
-                SINGLECHAR = '.';
-        } else {
-                MULTICHAR = '*';
-                SINGLECHAR = '?';
-        }
+  if (likeormatch == 'L')
+    {
+      MULTICHAR = '%';
+      SINGLECHAR = '.';
+    }
+  else
+    {
+      MULTICHAR = '*';
+      SINGLECHAR = '?';
+    }
 
-		debug("Calling matche...");
-		error = matche(str2,str1);
-		if (error==MATCH_VALID) return 1;
-			else return 0;
+  debug ("Calling matche...");
+  error = matche (str2, str1);
+  if (error == MATCH_VALID)
+    return 1;
+  else
+    return 0;
 }
 
 
@@ -168,181 +176,227 @@ int error;
  * @return
  */
 char *
-construct(char *colname, char *val, int inc_quotes)
+construct (char *colname, char *val, int inc_quotes)
 {
-char    *ptr2;
-int     a;
-char    quote[2] = "";
-static char     buffer[512];
-static char     buff2[512];
-static char     buff3[512];
-int     z;
-int     z2;
-int     cnt;
-int     k, k2=0;
-char    lastchar;
-int 	ismatch;
+  char *ptr2;
+  int a;
+  char quote[2] = "";
+  static char buffer[512];
+  static char buff2[512];
+  static char buff3[512];
+  int z;
+  int z2;
+  int cnt;
+  int k, k2 = 0;
+  char lastchar;
+  int ismatch;
 
-		trim(val);
-        ptr2 = val;
-        strcpy(buff3,"");
-		#ifdef DEBUG
-			{debug("Colname = %s , val = %s incq=%d\n",colname,val,inc_quotes);}
-		#endif
-        if (strcmp(val, "") == 0) return buff3;
+  trim (val);
+  ptr2 = val;
+  strcpy (buff3, "");
+#ifdef DEBUG
+  {
+    debug ("Colname = %s , val = %s incq=%d\n", colname, val, inc_quotes);
+  }
+#endif
+  if (strcmp (val, "") == 0)
+    return buff3;
 
-        constr_size = 0;
-        constr_bits[constr_size++] = buffer;
+  constr_size = 0;
+  constr_bits[constr_size++] = buffer;
 
-        if (inc_quotes) strcpy(quote, "'");
+  if (inc_quotes)
+    strcpy (quote, "'");
 
-        /* Clear buffer */
-        strcpy(buffer, "");
-        lastchar = -1;
-        z = -1;
-        ismatch=0;
-        for (a = 0; a < strlen(ptr2); a++) {
-                if (ptr2[a]=='['||ptr2[a]=='*'||ptr2[a]=='?') ismatch=1;
-                lastchar = z;
-                z = isop(ptr2, a);
-                if (z > 0 && lastchar == 0) { /* last character was not a control */
-                        appendchr(buffer, '\n');
-                        constr_bits[constr_size++] = &buffer[strlen(buffer)];
-                        appendchr(buffer, ptr2[a]);
-                        /*constr_bits[constr_size++]=&ptr2[a];*/
-                        /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1];*/
-                } else if (z == 0 && lastchar > 0) { /* last character was a control
-                                                                                                                                                                                                          but this one isnt */
-                        appendchr(buffer, '\n');
-                        constr_bits[constr_size++] = &buffer[strlen(buffer)];
-                        appendchr(buffer, ptr2[a]);
-                        /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1];*/
-                } else if (z > 0 && lastchar > 0) {
-                        if (lastchar<OR&&z==EQ) {
-                                appendchr(buffer, ptr2[a]);
-                        } else
-                        {
-                                appendchr(buffer, '\n');
-                                constr_bits[constr_size++] = &buffer[strlen(buffer)];
-                                appendchr(buffer, ptr2[a]);
-                        }
-                } else
-                        appendchr(buffer, ptr2[a]);
-                lastchar = z;
-        }
-        convert_constr_buffer(buffer);
-        if (!inc_quotes) {
-                for (z = 0; z < constr_size; z++) {
-                        if (isop(constr_bits[z], 0) == 0 || (z > 1 && isop(constr_bits[z], 0) != OR))
-                        {
+  /* Clear buffer */
+  strcpy (buffer, "");
+  lastchar = -1;
+  z = -1;
+  ismatch = 0;
+  for (a = 0; a < strlen (ptr2); a++)
+    {
+      if (ptr2[a] == '[' || ptr2[a] == '*' || ptr2[a] == '?')
+	ismatch = 1;
+      lastchar = z;
+      z = isop (ptr2, a);
+      if (z > 0 && lastchar == 0)
+	{			/* last character was not a control */
+	  appendchr (buffer, '\n');
+	  constr_bits[constr_size++] = &buffer[strlen (buffer)];
+	  appendchr (buffer, ptr2[a]);
+	  /*constr_bits[constr_size++]=&ptr2[a]; */
+	  /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1]; */
+	}
+      else if (z == 0 && lastchar > 0)
+	{			/* last character was a control
+				   but this one isnt */
+	  appendchr (buffer, '\n');
+	  constr_bits[constr_size++] = &buffer[strlen (buffer)];
+	  appendchr (buffer, ptr2[a]);
+	  /*constr_bits[constr_size++]=&buffer[strlen(buffer)-1]; */
+	}
+      else if (z > 0 && lastchar > 0)
+	{
+	  if (lastchar < OR && z == EQ)
+	    {
+	      appendchr (buffer, ptr2[a]);
+	    }
+	  else
+	    {
+	      appendchr (buffer, '\n');
+	      constr_bits[constr_size++] = &buffer[strlen (buffer)];
+	      appendchr (buffer, ptr2[a]);
+	    }
+	}
+      else
+	appendchr (buffer, ptr2[a]);
+      lastchar = z;
+    }
+  convert_constr_buffer (buffer);
+  if (!inc_quotes)
+    {
+      for (z = 0; z < constr_size; z++)
+	{
+	  if (isop (constr_bits[z], 0) == 0
+	      || (z > 1 && isop (constr_bits[z], 0) != OR))
+	    {
 
-               k = atoi(constr_bits[z]);
-               if (k || k2)  ;
-               else {
-					/* error in numeric */
-                    return 0;
-                    }
-                        }
-                }
-        }
-        strcpy(buff2, "");
-        z = isop(constr_bits[0], 0);
-        if (constr_size > 1)
-                z2 = isop(constr_bits[1], 0);
-        else
-                z2 = 0;
-        if (ismatch&&!inc_quotes) {
-			#ifdef DEBUG
-				{debug("Expression error");}
-			#endif
-                return 0;
-        }
-        if (z == 0 && z2 == 0) {
-                if (ismatch) strcat(buff2, " matches ");
-                else strcat(buff2,"=");
-                strcat(buff2, quote);
-                for (cnt = 0; cnt < constr_size; cnt++) {
-                        strcat(buff2, constr_bits[cnt]);
-                }
-                sprintf(buff3, "%s%s%s", colname, buff2, quote);
-        }
-        if (z > 0 && z < OR) {
-                strcat(buff2, constr_bits[0]);
-                strcat(buff2, quote);
-                for (z = 1; z < constr_size; z++) {
-                        strcat(buff2, constr_bits[z]);
-                }
-                strcat(buff2, quote);
-                if (strcmp(buff2, "=") == 0) {
-                        strcpy(buff2, "is null");
-                }
-                if (strcmp(buff2, "!=") == 0) {
-                        strcpy(buff2, "is not null");
-                }
-                sprintf(buff3, "%s%s", colname, buff2);
-        }
-        if (z == OR || (z2 == OR && z == 0)) {
-                if (z == OR)  {
-                        sprintf(buff3, "%s in ('',", colname);
-                        for (z = 1; z < constr_size; z++) {
-                                if (isop(constr_bits[z], 0) == OR)
-                                        continue;
-                                strcat(buff3, quote);
-                                strcat(buff3, constr_bits[z]);
-                                strcat(buff3, quote);
-                                if (z < constr_size - 1)
-                                        strcat(buff3, ",");
-                        }
-                        if (buff3[strlen(buff3)-1] == ',')
-                                strcat(buff3, "''");
-                        /*buff3[strlen(buff3)-1]=0;*/
-                        strcat(buff3, ")");
-                } else {
-                        sprintf(buff3, "%s in (", colname);
-                        for (z = 0; z < constr_size; z++) {
-                                if (isop(constr_bits[z], 0) == OR)
-                                        continue;
-                                strcat(buff3, quote);
-                                strcat(buff3, constr_bits[z]);
-                                strcat(buff3, quote);
-                                if (z < constr_size - 1)
-                                        strcat(buff3, ",");
-                        }
-                        if (buff3[strlen(buff3)-1] == ',')
-                                strcat(buff3, "''");
-                        strcat(buff3, ")");
-                }
-        }
-        if (z == RANGE || z2 == RANGE) {
-                if (z == RANGE) {
-                        sprintf(buff3, "(%s  between '' and %s", colname, quote);
-                        for (z = 1; z < constr_size; z++) {
-                                strcat(buff3, constr_bits[z]);
-                        }
-                        strcat(buff3, quote);
-                } else  {
-                        sprintf(buff3, "%s  between %s%s%s and ", colname, quote, constr_bits[0], quote);
-                        if (constr_size >= 2) {
-                                strcat(buff3, quote);
-                                for (z = 2; z < constr_size; z++) {
-                                        strcat(buff3, constr_bits[z]);
-                                }
-                                strcat(buff3, quote);
-                        } else
-                                strcat(buff3, "''");
-                }
-                strcat(buff3, "");
-        }
-        /*
-        	for (z=0;z<constr_size;z++)
-			{
-            	printf("(%s)\n",constr_bits[z]);
-            }
-		*/
-		#ifdef DEBUG
-			{debug("buff3= [ %s ]\n", buff3);}
-		#endif
-        return buff3;
+	      k = atoi (constr_bits[z]);
+	      if (k || k2);
+	      else
+		{
+		  /* error in numeric */
+		  return 0;
+		}
+	    }
+	}
+    }
+  strcpy (buff2, "");
+  z = isop (constr_bits[0], 0);
+  if (constr_size > 1)
+    z2 = isop (constr_bits[1], 0);
+  else
+    z2 = 0;
+  if (ismatch && !inc_quotes)
+    {
+#ifdef DEBUG
+      {
+	debug ("Expression error");
+      }
+#endif
+      return 0;
+    }
+  if (z == 0 && z2 == 0)
+    {
+      if (ismatch)
+	strcat (buff2, " matches ");
+      else
+	strcat (buff2, "=");
+      strcat (buff2, quote);
+      for (cnt = 0; cnt < constr_size; cnt++)
+	{
+	  strcat (buff2, constr_bits[cnt]);
+	}
+      sprintf (buff3, "%s%s%s", colname, buff2, quote);
+    }
+  if (z > 0 && z < OR)
+    {
+      strcat (buff2, constr_bits[0]);
+      strcat (buff2, quote);
+      for (z = 1; z < constr_size; z++)
+	{
+	  strcat (buff2, constr_bits[z]);
+	}
+      strcat (buff2, quote);
+      if (strcmp (buff2, "=") == 0)
+	{
+	  strcpy (buff2, "is null");
+	}
+      if (strcmp (buff2, "!=") == 0)
+	{
+	  strcpy (buff2, "is not null");
+	}
+      sprintf (buff3, "%s%s", colname, buff2);
+    }
+  if (z == OR || (z2 == OR && z == 0))
+    {
+      if (z == OR)
+	{
+	  sprintf (buff3, "%s in ('',", colname);
+	  for (z = 1; z < constr_size; z++)
+	    {
+	      if (isop (constr_bits[z], 0) == OR)
+		continue;
+	      strcat (buff3, quote);
+	      strcat (buff3, constr_bits[z]);
+	      strcat (buff3, quote);
+	      if (z < constr_size - 1)
+		strcat (buff3, ",");
+	    }
+	  if (buff3[strlen (buff3) - 1] == ',')
+	    strcat (buff3, "''");
+	  /*buff3[strlen(buff3)-1]=0; */
+	  strcat (buff3, ")");
+	}
+      else
+	{
+	  sprintf (buff3, "%s in (", colname);
+	  for (z = 0; z < constr_size; z++)
+	    {
+	      if (isop (constr_bits[z], 0) == OR)
+		continue;
+	      strcat (buff3, quote);
+	      strcat (buff3, constr_bits[z]);
+	      strcat (buff3, quote);
+	      if (z < constr_size - 1)
+		strcat (buff3, ",");
+	    }
+	  if (buff3[strlen (buff3) - 1] == ',')
+	    strcat (buff3, "''");
+	  strcat (buff3, ")");
+	}
+    }
+  if (z == RANGE || z2 == RANGE)
+    {
+      if (z == RANGE)
+	{
+	  sprintf (buff3, "(%s  between '' and %s", colname, quote);
+	  for (z = 1; z < constr_size; z++)
+	    {
+	      strcat (buff3, constr_bits[z]);
+	    }
+	  strcat (buff3, quote);
+	}
+      else
+	{
+	  sprintf (buff3, "%s  between %s%s%s and ", colname, quote,
+		   constr_bits[0], quote);
+	  if (constr_size >= 2)
+	    {
+	      strcat (buff3, quote);
+	      for (z = 2; z < constr_size; z++)
+		{
+		  strcat (buff3, constr_bits[z]);
+		}
+	      strcat (buff3, quote);
+	    }
+	  else
+	    strcat (buff3, "''");
+	}
+      strcat (buff3, "");
+    }
+  /*
+     for (z=0;z<constr_size;z++)
+     {
+     printf("(%s)\n",constr_bits[z]);
+     }
+   */
+#ifdef DEBUG
+  {
+    debug ("buff3= [ %s ]\n", buff3);
+  }
+#endif
+  return buff3;
 }
 
 
@@ -352,35 +406,37 @@ int 	ismatch;
  * @return
  */
 static int
-isop(char *str, int i)
+isop (char *str, int i)
 {
-        if (i >= 2) {
-                if (str[i-2] != '\\' && str[i-1] == '\\')
-                        return 0;
-        }
-        if (i >= 1) {
-                if (str[i-1] == '\\')
-                        return 0;
-        }
-        if (str[i] == '=')
-                return EQ;
-        if (str[i] == '=')
-                return EQ;
-        if (str[i] == '<' && str[i+1] == '=')
-                return LEQ;
-        if (str[i] == '!' && str[i+1] == '=')
-                return NEQ;
-        if (str[i] == '>' && str[i+1] == '=')
-                return GEQ;
-        if (str[i] == '<')
-                return LTHN;
-        if (str[i] == '>')
-                return GTHN;
-        if (str[i] == '|')
-                return OR;
-        if (str[i] == ':')
-                return RANGE;
-        return 0;
+  if (i >= 2)
+    {
+      if (str[i - 2] != '\\' && str[i - 1] == '\\')
+	return 0;
+    }
+  if (i >= 1)
+    {
+      if (str[i - 1] == '\\')
+	return 0;
+    }
+  if (str[i] == '=')
+    return EQ;
+  if (str[i] == '=')
+    return EQ;
+  if (str[i] == '<' && str[i + 1] == '=')
+    return LEQ;
+  if (str[i] == '!' && str[i + 1] == '=')
+    return NEQ;
+  if (str[i] == '>' && str[i + 1] == '=')
+    return GEQ;
+  if (str[i] == '<')
+    return LTHN;
+  if (str[i] == '>')
+    return GTHN;
+  if (str[i] == '|')
+    return OR;
+  if (str[i] == ':')
+    return RANGE;
+  return 0;
 }
 
 
@@ -390,17 +446,17 @@ isop(char *str, int i)
  * @return
  */
 static void
-convert_constr_buffer(char *str)
+convert_constr_buffer (char *str)
 {
-int     a;
-int     b;
+  int a;
+  int b;
 
-		b = strlen(str);
-        for (a = 0; a < b; a++)
-		{
-                if (str[a] == '\n')
-                        str[a] = 0;
-        }
+  b = strlen (str);
+  for (a = 0; a < b; a++)
+    {
+      if (str[a] == '\n')
+	str[a] = 0;
+    }
 }
 
 
@@ -410,38 +466,42 @@ int     b;
  * @return
  */
 void
-doconstruct(char *s,char *whereclause)
+doconstruct (char *s, char *whereclause)
 {
-        int a;
-        int t;
-        char buffer[2][800];
-        printf("Here 1\n");
-        strcpy(whereclause,"");
-        strcpy(buffer[0],"");
-        strcpy(buffer[1],"");
-        printf("s=%s\n",s);
-        t=0;
+  int a;
+  int t;
+  char buffer[2][800];
+  printf ("Here 1\n");
+  strcpy (whereclause, "");
+  strcpy (buffer[0], "");
+  strcpy (buffer[1], "");
+  printf ("s=%s\n", s);
+  t = 0;
 
-        for (a=0;a<=strlen(s);a++) {
-                if (s[a]==CONSTR_SEP||s[a]==0)  {
+  for (a = 0; a <= strlen (s); a++)
+    {
+      if (s[a] == CONSTR_SEP || s[a] == 0)
+	{
 
-                        if (t==1) {
-                                if (strlen(whereclause) > 0) strcat(whereclause," AND ");
-                                if (buffer[0][0]=='*')
-                                        strcat(whereclause,construct(&buffer[0][1],buffer[1],1));
-                                else
-                                        strcat(whereclause,construct(buffer[0],buffer[1],0));
-                                strcpy(buffer[0],"");
-                                strcpy(buffer[1],"");
-                        }
-                        t=!t;
-                }
-                else
-                        appendchr(buffer[t],s[a]);
-        }
-        if (strlen(whereclause)==0) strcpy(whereclause,"1=1");
+	  if (t == 1)
+	    {
+	      if (strlen (whereclause) > 0)
+		strcat (whereclause, " AND ");
+	      if (buffer[0][0] == '*')
+		strcat (whereclause, construct (&buffer[0][1], buffer[1], 1));
+	      else
+		strcat (whereclause, construct (buffer[0], buffer[1], 0));
+	      strcpy (buffer[0], "");
+	      strcpy (buffer[1], "");
+	    }
+	  t = !t;
+	}
+      else
+	appendchr (buffer[t], s[a]);
+    }
+  if (strlen (whereclause) == 0)
+    strcpy (whereclause, "1=1");
 }
 
 
 /* ============================ EOF ================================== */
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.12 2003-04-07 16:26:38 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.13 2003-05-12 14:24:19 mikeaubury Exp $
 #*/
 
 /**
@@ -62,7 +62,7 @@ extern char *outputfilename;
 
 
 //#ifdef __CYGWIN__
-	dll_import struct struct_form the_form;
+dll_import struct struct_form the_form;
 /*
 #else
 	extern struct struct_form the_form;
@@ -95,7 +95,7 @@ FILE *fyy;
 
 static void translate_form (void);
 extern char *translate (char *s);	/* translate.c */
-//extern void yyerror (char *s);	/* fcompile.c */
+//extern void yyerror (char *s);        /* fcompile.c */
 static void real_set_field (char *s, struct struct_scr_field *f);
 static void real_add_str_attr (struct struct_scr_field *f, int type,
 			       char *str);
@@ -858,12 +858,12 @@ chk_for_wordwrap(void)
 void
 write_form (void)
 {
-char fname[132];
-char fname2[132];
-char base[132];
-char ext[132];
-int a;
-struct_form *ptr;
+  char fname[132];
+  char fname2[132];
+  char base[132];
+  char ext[132];
+  int a;
+  struct_form *ptr;
 
   ptr = &the_form;
 
@@ -872,17 +872,17 @@ struct_form *ptr;
   bname (outputfilename, ext, base);
 
 
-  debug("Fname = %s\n",fname);
-  if (ext[0] == 0|| strchr(&fname[3],'.')==0)
+  debug ("Fname = %s\n", fname);
+  if (ext[0] == 0 || strchr (&fname[3], '.') == 0)
     {
-      debug("Setting base...");
-      strcat (fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
+      debug ("Setting base...");
+      strcat (fname, acl_getenv ("A4GL_FRM_BASE_EXT"));
     }
 
 
   translate_form ();
 
-  debug("Writing to %s\n",fname);
+  debug ("Writing to %s\n", fname);
   a = write_data_to_file ("struct_form", ptr, fname);
 
   if (!a)
@@ -898,27 +898,32 @@ struct_form *ptr;
       int a;
       int len;
       debug ("Asc...\n");
-      fxx = fopen (get_last_outfile(), "r");
-      if (fxx==0) {
-	      error_with("Unable to open output file(%s)\n",fname,0);
-	      return;
-      }
-      fseek(fxx,0,SEEK_END);
+      fxx = fopen (get_last_outfile (), "r");
+      if (fxx == 0)
+	{
+	  error_with ("Unable to open output file(%s)\n", fname, 0);
+	  return;
+	}
+      fseek (fxx, 0, SEEK_END);
 
-      len=ftell(fxx);
-      rewind(fxx);
+      len = ftell (fxx);
+      rewind (fxx);
 
-      sprintf(fname2,"%s.c",fname);
+      sprintf (fname2, "%s.c", fname);
 
       fyy = fopen (fname2, "w");
 
 
       fprintf (fyy, "char compiled_form_%s[]={\n", outputfilename);
 
-      fprintf (fyy, "0x%02x,\n", len&255); len/=256;
-      fprintf (fyy, "0x%02x,\n", len&255); len/=256;
-      fprintf (fyy, "0x%02x,\n", len&255); len/=256;
-      fprintf (fyy, "0x%02x,\n", len&255); len/=256;
+      fprintf (fyy, "0x%02x,\n", len & 255);
+      len /= 256;
+      fprintf (fyy, "0x%02x,\n", len & 255);
+      len /= 256;
+      fprintf (fyy, "0x%02x,\n", len & 255);
+      len /= 256;
+      fprintf (fyy, "0x%02x,\n", len & 255);
+      len /= 256;
 
       while (!feof (fxx))
 	{
@@ -988,7 +993,7 @@ getdatatype (char *col, char *tab)
       debug ("get_dtype failed\n");
       sprintf (buff, "%s.%s not found in database", tab, col);
       //yyerror (buff);
-      error_with(buff,"","");
+      error_with (buff, "", "");
     }
   return a;
 }
@@ -1095,7 +1100,7 @@ add_str_attr (void *f, int type, char *str)
 static void
 real_add_str_attr (struct struct_scr_field *f, int type, char *str)
 {
-  debug ("add_str_attr %p %d - '%s'\n", f,type, str);
+  debug ("add_str_attr %p %d - '%s'\n", f, type, str);
   if (str[0] != '\n')
     str = char_val (str);
   else
@@ -1216,4 +1221,3 @@ translate_form (void)
 
 
 /* =============================== EOF ================================= */
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.38 2003-04-26 06:37:30 afalout Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.39 2003-05-12 14:23:59 mikeaubury Exp $
 */
 
 /**
@@ -277,14 +277,14 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   void set_option_value (char type, int keyval);
   int aclfgli_get_err_flg (void);
   void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
-  void clr_fields (int to_defaults, char *flds,...);
+  void clr_fields (int to_defaults, char *flds, ...);
 
   int chk_iskey (char *keys);
   int fgl_infield (char *s, int a);
   int disp_fields (int n, int attr, ...);
   void disp_fields_ap (int n, int attr, va_list * ap);
 
-  int fgl_getfldbuf (char *fields,int n);
+  int fgl_getfldbuf (char *fields, int n);
   void set_init (struct BINDING *b, int n);
   int start_prompt (void *prompt, int ap, int c, int h, int af);	// Not really a char *prompt - but in an app it is...
   void display_error (int attr, int wait);
@@ -338,7 +338,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   void clr_form_fields (int to_defaults, char *defs);
 
   /* ============= from assist.4gl/.c ======================= */
-	int 	aclfgl_a4gl_run_gui 	(int nargs);
+  int aclfgl_a4gl_run_gui (int nargs);
   /* ============== from curslib.c =========================== */
   int aclfgl_fgl_drawbox (int n);
   //void  aclfgl_fgl_drawbox (int n);
@@ -394,8 +394,8 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   int aclfgl_fgl_keyval (int _np);
   int aclfgl_upshift (int _np);
   int aclfgl_downshift (int _np);
-  void upshift_stk(void);
-  void downshift_stk(void);
+  void upshift_stk (void);
+  void downshift_stk (void);
 
   /* ======================== datatypes.c ================ */
 

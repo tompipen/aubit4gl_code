@@ -5,10 +5,9 @@
 
 #ifndef POSTGRESQL_TEST_H
 #define POSTGRESQL_TEST_H
-	Suite *makePostgresConnectionSuite	(void);
+Suite *makePostgresConnectionSuite (void);
 
 
     /* ----------------- prototypes ----------------------- */
 
 #endif
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.120 2003-05-05 13:17:31 mikeaubury Exp $
+# $Id: mod.c,v 1.121 2003-05-12 14:23:45 mikeaubury Exp $
 #
 */
 
@@ -107,28 +107,28 @@ long fpos;
 #endif
 */
 
-void dump_updvals(void) ;
+void dump_updvals (void);
 char *pop_gen (int a);
-int gen_cnt(int a) ;
-void copy_gen(int a,int b);
-extern int 	menu_cnt; 		/** The count of menus found */
-extern int 	yylineno; 		/** The source file line number */
+int gen_cnt (int a);
+void copy_gen (int a, int b);
+extern int menu_cnt;			/** The count of menus found */
+extern int yylineno;			/** The source file line number */
 extern char *infilename;    /** The input (4gl file name */
-extern int 	in_define;
+extern int in_define;
 
-static int 	db_used = 0;     /** Flag that indicate that a database is being used */
-static int 	inc = 0;
+static int db_used = 0;		 /** Flag that indicate that a database is being used */
+static int inc = 0;
 static char pklist[2048] = "";
 static char upd_using_notpk[5000] = "";
-static int 	upd_using_notpk_cnt = 0;
+static int upd_using_notpk_cnt = 0;
 extern char current_upd_table[64];
-//static int 	const_cnt = 0;
+//static int    const_cnt = 0;
 
-int 		rep_type = 0; /** The report type */
+int rep_type = 0;	      /** The report type */
 
-//int 		last_var_found = -1;
+//int           last_var_found = -1;
 
-//int 		var_hdr_finished;
+//int           var_hdr_finished;
 int isin_command (char *cmd_type);
 
 
@@ -145,31 +145,31 @@ int when_code[8] = { WHEN_STOP,
   WHEN_NOTSET
 };
 
-char 		when_to_tmp[64];
-char 		when_to[64][8];
-int 		menu_nos[100];
-int 		cmenu = 0;
-int 		use_group = 0;
-char 		curr_rep_name[256];
-int 		curr_rep_block;
-int 		max_menu_no = 0;
-struct 		s_report sreports[1024];
-int 		sreports_cnt = 0;
-char 		mmtitle[132][132];         	/** Menu titles */
-extern char *outputfilename;    		/** Variables dump output file name */
-int 		read_glob_var = 0;
-int 		counters[256];
-int 		count_counters = 0;
-struct 		s_report_stack report_stack[REPORTSTACKSIZE];
-int 		report_stack_cnt = 0;
-int 		report_cnt = 1;
-int 		nblock_no = 1;
+char when_to_tmp[64];
+char when_to[64][8];
+int menu_nos[100];
+int cmenu = 0;
+int use_group = 0;
+char curr_rep_name[256];
+int curr_rep_block;
+int max_menu_no = 0;
+struct s_report sreports[1024];
+int sreports_cnt = 0;
+char mmtitle[132][132];				/** Menu titles */
+extern char *outputfilename;			/** Variables dump output file name */
+int read_glob_var = 0;
+int counters[256];
+int count_counters = 0;
+struct s_report_stack report_stack[REPORTSTACKSIZE];
+int report_stack_cnt = 0;
+int report_cnt = 1;
+int nblock_no = 1;
 
 #define GEN_STACK_SIZE 500
-char 		gen_stack[GEN_STACKS][GEN_STACK_SIZE][80];
-int 		gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-struct 		s_constr_buff constr_buff[256];
-int 		constr_cnt = 0;
+char gen_stack[GEN_STACKS][GEN_STACK_SIZE][80];
+int gen_stack_cnt[GEN_STACKS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+struct s_constr_buff constr_buff[256];
+int constr_cnt = 0;
 
 /**
  * Input bind array.
@@ -187,11 +187,11 @@ struct binding_comp obind[NUMBINDINGS];
 struct binding_comp fbind[NUMBINDINGS];
 struct binding_comp ordbind[NUMBINDINGS];
 
-int 		ordbindcnt = 0;
-int 		ibindcnt = 0;           /** Number of elements in ibind array */
-int 		nullbindcnt = 0;
-int 		obindcnt = 0;
-int 		fbindcnt = 0;
+int ordbindcnt = 0;
+int ibindcnt = 0;			/** Number of elements in ibind array */
+int nullbindcnt = 0;
+int obindcnt = 0;
+int fbindcnt = 0;
 
 
 /**
@@ -202,7 +202,7 @@ int 		fbindcnt = 0;
  *   - 0   : Modular variables
  *   - > 0 : Function local variables
  */
-int 		modlevel = -1;
+int modlevel = -1;
 
 /** Command stack array */
 struct cmds
@@ -210,7 +210,8 @@ struct cmds
   char cmd_type[20];
   int block_no;
 
-} command_stack[200];
+}
+command_stack[200];
 
 /** Command stack counter / index (number of elements in command_stack) */
 /*
@@ -218,7 +219,7 @@ struct cmds
 int ccnt = 0;
 #else
 */
-extern int 	ccnt;  /* in lexer.c */
+extern int ccnt;		/* in lexer.c */
 /* #endif */
 
 
@@ -227,26 +228,25 @@ extern int 	ccnt;  /* in lexer.c */
 
 
 
-int 		in_record = 0;
-struct 		s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS]; /** The menu stack array */
+int in_record = 0;
+struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];	       /** The menu stack array */
 
-int has_default_database(void) ;
-char *get_default_database(void) ;
+int has_default_database (void);
+char *get_default_database (void);
 
 /*
 =====================================================================
                     Functions prototypes
 =====================================================================
 */
-char *
-rettype (char *s);
-//static int 			is_pk 				(char *s);
-int 				yywrap 				(void);
-struct sreports * 	get_sreports		(int z);
-void 				a4gl_add_variable 	(char *name, char *type, char *n);
+char *rettype (char *s);
+//static int                    is_pk                           (char *s);
+int yywrap (void);
+struct sreports *get_sreports (int z);
+void a4gl_add_variable (char *name, char *type, char *n);
 
-char* get_namespace(char *s);
-char *make_sql_string(char *first,...);
+char *get_namespace (char *s);
+char *make_sql_string (char *first, ...);
 
 /*
 =====================================================================
@@ -283,7 +283,7 @@ static char *print (char *z)
  * 
  * @param s The string to be stripped
  */
-static void 
+static void
 strip_bracket (char *s)
 {
   char buff[256];
@@ -293,14 +293,14 @@ strip_bracket (char *s)
 
   debug ("strip_bracket\n");
   for (a = 0; a <= strlen (s); a++)
-  {
-    if (s[a] == '[')
-      f++;
-    if (f == 0)
-      buff[c++] = s[a];
-    if (s[a] == ']')
-      f--;
-  }
+    {
+      if (s[a] == '[')
+	f++;
+      if (f == 0)
+	buff[c++] = s[a];
+      if (s[a] == ']')
+	f--;
+    }
   strcpy (s, buff);
 }
 #endif
@@ -337,25 +337,25 @@ a4gl_add_variable (char *name, char *type, char *n)
 {
 // MJA - NEWVARIABLE
   debug ("a4gl_add_variable");
-  variable_action(-1,name,type,n,"a4gl_add_variable");
+  variable_action (-1, name, type, n, "a4gl_add_variable");
 }
 
 /**
  * Clear the variable stack by setting the counter to zero.
  */
-void 
+void
 clr_variable (void)
 {
-	// Does nothing
+  // Does nothing
 }
 
 /**
  *
  */
-void 
+void
 inmod (void)
 {
-	// Does nothing
+  // Does nothing
 }
 
 /**
@@ -371,25 +371,26 @@ inmod (void)
  *   - 0 : We are NOT in command type
  *   - 1 : We are in command type
  */
-int isin_command (char *cmd_type)
+int
+isin_command (char *cmd_type)
 {
   int z;
   if (ccnt == 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   for (z = ccnt - 1; z >= 0; z--)
-  {
-    if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
-      continue;
-
-    if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
     {
-	    debug ("OK\n");
-	    return z+1;
-	  }
-  }
+      if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
+	continue;
+
+      if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
+	{
+	  debug ("OK\n");
+	  return z + 1;
+	}
+    }
   return 0;
 }
 
@@ -404,65 +405,64 @@ int isin_command (char *cmd_type)
  */
 #ifdef OLD_STUFF
 static int
-print_record(int z, char ff,char *vname)
+print_record (int z, char ff, char *vname)
 {
   int a;
   /*  It should be declared here because the two function are tighly coupled */
-  static void print_variable(int z, char ff);
+  static void print_variable (int z, char ff);
 
-	// MJA - NEWVARIABLE
+  // MJA - NEWVARIABLE
 
-  debug("Print record %s\n",vname);
+  debug ("Print record %s\n", vname);
 
-  if (isin_command ("REPORT")||
-			isin_command("FORMHANDLER")||
-			isin_command("MENUHANDLER"))
-  {
-    if (ff != '-')
-	  {
-	    print_start_record (1,vname);
-	  }
-    else
-	  {
-	    print_start_record (0,vname);
-	  }
-  }
+  if (isin_command ("REPORT") ||
+      isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER"))
+    {
+      if (ff != '-')
+	{
+	  print_start_record (1, vname);
+	}
+      else
+	{
+	  print_start_record (0, vname);
+	}
+    }
   else
-  {
-    if (ff != 'G')
-	    print_start_record (0,vname);
-		else
-	    print_start_record (2,vname);
-  }
+    {
+      if (ff != 'G')
+	print_start_record (0, vname);
+      else
+	print_start_record (2, vname);
+    }
 
   for (a = z + 1; a < varcnt; a++)
-  {
+    {
 
-    if (strcmp (vars[a].var_type, "_RECORD") == 0)
-	  {
-	    if (vars[a].level > vars[z].level)
-	      a = print_record (a, '-',vars[a].var_name);
+      if (strcmp (vars[a].var_type, "_RECORD") == 0)
+	{
+	  if (vars[a].level > vars[z].level)
+	    a = print_record (a, '-', vars[a].var_name);
 
-	    continue;
-	  }
+	  continue;
+	}
 
-    if (strcmp (vars[a].var_type, "_ENDREC") == 0)
-	  {
-	    break;
-	  }
-    print_variable (a, '-');
-  }
+      if (strcmp (vars[a].var_type, "_ENDREC") == 0)
+	{
+	  break;
+	}
+      print_variable (a, '-');
+    }
 
   if (strcmp (vars[z].var_arrsize, EMPTY) == 0)
-  {
-    print_end_record (vars[z].var_name, "-1");
-  }
+    {
+      print_end_record (vars[z].var_name, "-1");
+    }
   else
-  {
-	debug("print_end_record %s %s",vars[z].var_name, vars[z].var_arrsize);
+    {
+      debug ("print_end_record %s %s", vars[z].var_name, vars[z].var_arrsize);
 
-    print_end_record (vars[z].var_name, vars[z].var_arrsize);
-  }
+      print_end_record (vars[z].var_name, vars[z].var_arrsize);
+    }
   return a;
 }
 #endif
@@ -472,7 +472,7 @@ print_record(int z, char ff,char *vname)
  *
  * @param a The increment.
  */
-void 
+void
 setinc (int a)
 {
   inc += a;
@@ -508,7 +508,7 @@ ignull (char *ptr)
  * @param a The variable name
  * @param n
  */
-void 
+void
 push_name (char *a, char *n)
 {
   debug ("push_name  a = %s n = %d \n", a, n);
@@ -530,14 +530,14 @@ push_name (char *a, char *n)
  * @param as If it is recognizing an array or associate is the number of 
  *           elements
  */
-void 
+void
 push_type (char *a, char *n, char *as)
 {
   debug ("push_type : %s %s %s", a, n, as);
 
-  variable_action(-1,a,n,as,"push_type");
+  variable_action (-1, a, n, as, "push_type");
 
-	// MJA - NEWVARIABLE
+  // MJA - NEWVARIABLE
 
 
 /* DELETE THIS WHEN DONE .........FIXME FIXME FIXME...........
@@ -570,7 +570,7 @@ push_record (void)
  * @param a The size of the string used in the key.
  * @param b Number of elements of the hash (array).
  */
-void 
+void
 push_associate (char *a, char *b)
 {
   push_type ("_ASSOCIATE", a, b);
@@ -579,10 +579,10 @@ push_associate (char *a, char *b)
 /**
  * pop the associate array description...
  */
-void 
+void
 pop_associate (char *a)
 {
-  a4gl_add_variable (0,"_ENDASSOC", 0); 
+  a4gl_add_variable (0, "_ENDASSOC", 0);
 }
 
 /**
@@ -590,7 +590,7 @@ pop_associate (char *a)
  * @param tab
  * @param pkey
  */
-void 
+void
 add_link_to (char *tab, char *pkey)
 {
 
@@ -599,17 +599,17 @@ add_link_to (char *tab, char *pkey)
   //int z;
   debug ("Adding link to %s %s\n", tab, pkey);
 
-  variable_action(-1,tab,pkey,"","add_link_to");
+  variable_action (-1, tab, pkey, "", "add_link_to");
 
 
-	// MJA - NEWVARIABLE
+  // MJA - NEWVARIABLE
 
 }
 
 /**
  *
  */
-void 
+void
 pop_record (void)
 {
 
@@ -629,7 +629,7 @@ pop_record (void)
  * @param c
  * @param hlp
  */
-void 
+void
 push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
 {
   strcpy (menu_stack[mn][mnopt - 1].menu_title, b);
@@ -651,7 +651,7 @@ push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
  * @return The content of the inc variable.
  */
 int
-getinc(void)
+getinc (void)
 {
   return inc;
 }
@@ -665,15 +665,15 @@ getinc(void)
  *   - The index of the character if found in the string
  *   - 0 if not found
  */
-static int 
+static int
 findex (char *str, char c)
 {
   int a;
   for (a = 0; a < strlen (str); a++)
-  {
-    if (str[a] == c)
-      return a;
-  }
+    {
+      if (str[a] == c)
+	return a;
+    }
   return 0;
 }
 
@@ -709,13 +709,13 @@ scan_variables (char *s, int mode)
 
   //int flg;
   //int lvl = 0;
-int dtype;
-int size;
-int vval;
+  int dtype;
+  int size;
+  int vval;
 
   //last_var_found = -1;
 
-	// MJA - NEWVARIABLE
+  // MJA - NEWVARIABLE
   if (s[0] == '.' && s[1] == '\0')
     return -1;
 
@@ -747,21 +747,23 @@ int vval;
 
 
 
-vval=find_variable(buff,&dtype,&size,0,0);
+  vval = find_variable (buff, &dtype, &size, 0, 0);
 
-if (vval==1) {
-	z_new= dtype+ (size << 16);
-	//printf("OK - %x (%d %d)\n",z_new,dtype,size);
-	return z_new;
-}
+  if (vval == 1)
+    {
+      z_new = dtype + (size << 16);
+      //printf("OK - %x (%d %d)\n",z_new,dtype,size);
+      return z_new;
+    }
 
-if (vval==0) {
-	return -1;
-} 
+  if (vval == 0)
+    {
+      return -1;
+    }
 
 
-	//printf("Find_variable returns %d for %s\n",vval,buff);
-	return vval;
+  //printf("Find_variable returns %d for %s\n",vval,buff);
+  return vval;
 
 
 
@@ -794,8 +796,8 @@ if (vval==0) {
       if (lvl > vars[a].level)
 	break;
       /*
-      debug ("Checking %s %s  %d %d", ptr, vars[a].var_name, vars[a].level, lvl);
-      */
+         debug ("Checking %s %s  %d %d", ptr, vars[a].var_name, vars[a].level, lvl);
+       */
 
       if ((strcmp (ptr, "*") == 0 || strcmp (vars[a].var_name, ptr) == 0)
 	  && vars[a].level == lvl)
@@ -808,10 +810,10 @@ if (vval==0) {
 	  else
 	    {
 	      /*
-		  debug ("Got more to check '%s'", ptr);
-	      debug ("vn=%s %s %s %s", vars[a].var_name, vars[a].var_type,
-	      vars[a].var_arrsize, vars[a].var_size);
-          */
+	         debug ("Got more to check '%s'", ptr);
+	         debug ("vn=%s %s %s %s", vars[a].var_name, vars[a].var_type,
+	         vars[a].var_arrsize, vars[a].var_size);
+	       */
 	      if (strcmp (vars[a].var_type, "_RECORD") == 0)
 		{
 		  /* debug ("_RECORD...."); */
@@ -851,9 +853,10 @@ if (vval==0) {
 	      /* debug ("Setting last_var_found to %d\n", a); */
 	      last_var_found = a;
 	      /* debug ("Find type returned %x", z); */
-		if (z_new!=z) {
-			printf("Discrepency between z's for %s\n",s);
-			exit(0);
+	      if (z_new != z)
+		{
+		  printf ("Discrepency between z's for %s\n", s);
+		  exit (0);
 		}
 	      return z;
 	    }
@@ -878,7 +881,7 @@ if (vval==0) {
  * @param s The string eventualy containing the variable
  * @return The data type in numeric code
  */
-long 
+long
 scan_variable (char *s)
 {
   char buff[256];
@@ -886,11 +889,11 @@ scan_variable (char *s)
   a = scan_variables (s, 1);
 
   if (a == -1)
-  {
-    strcpy (buff, s);
-    strcat (buff, ".*");
-    a = scan_variables (buff, 1);
-  }
+    {
+      strcpy (buff, s);
+      strcat (buff, ".*");
+      a = scan_variables (buff, 1);
+    }
   return a;
 }
 
@@ -909,17 +912,17 @@ scan_variable (char *s)
  *   - 1
  *   - 
  */
-static long 
+static long
 isvartype (char *s, int mode)
 {
-int a;
-char buff[256];
-char *ptr;
-int flg;
-int dir;
-int lvl = 0;
-  
-	// MJA - NEWVARIABLE
+  int a;
+  char buff[256];
+  char *ptr;
+  int flg;
+  int dir;
+  int lvl = 0;
+
+  // MJA - NEWVARIABLE
   if (s[0] == '.' && s[1] == 0)
     return -1;
   if (s[0] == 0)
@@ -984,7 +987,7 @@ int lvl = 0;
  *   - 0 
  *   - 1
  */
-long 
+long
 isarrvariable (char *s)
 {
   long a;
@@ -1078,9 +1081,9 @@ add_constant (char t, char *ptr, char *name)
   int x;
   char buff[256];
   x = 0;
- buff[1]=0;
- buff[0]=t;
-  variable_action(-1,name,ptr,buff,"add_constant");
+  buff[1] = 0;
+  buff[0] = t;
+  variable_action (-1, name, ptr, buff, "add_constant");
 
 #ifdef OLD_STUFF
   if (x != 0)
@@ -1106,8 +1109,9 @@ add_constant (char t, char *ptr, char *name)
       a4gl_yyerror ("Duplicate Constant");
     }
 
-  if (isin_command ("FUNC") || isin_command ("REPORT") || isin_command("MAIN")
-      || isin_command ("FORMHANDLER") || isin_command ("MENUHANDLER"))
+  if (isin_command ("FUNC") || isin_command ("REPORT")
+      || isin_command ("MAIN") || isin_command ("FORMHANDLER")
+      || isin_command ("MENUHANDLER"))
     {
       scope = 'f';
     }
@@ -1127,71 +1131,71 @@ add_constant (char t, char *ptr, char *name)
 /**
  * Set the internal 4gl variables in the array.
  */
-void 
-set_4gl_vars(void)
+void
+set_4gl_vars (void)
 {
-set_current_variable_scope('G');
-variable_action(-1,"int_flag","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"quit_flag","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"a4gl_status","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"time","","","a4gl_add_variable");
-variable_action(-1,"char","8","","push_type");
-variable_action(-1,"a4gl_sqlca","","","a4gl_add_variable");
-variable_action(-1,"_RECORD","","","push_type");
-variable_action(-1,"sqlcode","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"sqlerrm","","","a4gl_add_variable");
-variable_action(-1,"char","72","","push_type");
-variable_action(-1,"sqlerrp","","","a4gl_add_variable");
-variable_action(-1,"char","8","","push_type");
-variable_action(-1,"sqlerrd","","","a4gl_add_variable");
-variable_action(-1,"","","6","push_type");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"sqlawarn","","","a4gl_add_variable");
-variable_action(-1,"char","8","","push_type");
-variable_action(-1,"sqlstate","","","a4gl_add_variable");
-variable_action(-1,"char","9","","push_type");
-variable_action(-1,"","_ENDREC","","a4gl_add_variable");
+  set_current_variable_scope ('G');
+  variable_action (-1, "int_flag", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "quit_flag", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "a4gl_status", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "time", "", "", "a4gl_add_variable");
+  variable_action (-1, "char", "8", "", "push_type");
+  variable_action (-1, "a4gl_sqlca", "", "", "a4gl_add_variable");
+  variable_action (-1, "_RECORD", "", "", "push_type");
+  variable_action (-1, "sqlcode", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "sqlerrm", "", "", "a4gl_add_variable");
+  variable_action (-1, "char", "72", "", "push_type");
+  variable_action (-1, "sqlerrp", "", "", "a4gl_add_variable");
+  variable_action (-1, "char", "8", "", "push_type");
+  variable_action (-1, "sqlerrd", "", "", "a4gl_add_variable");
+  variable_action (-1, "", "", "6", "push_type");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "sqlawarn", "", "", "a4gl_add_variable");
+  variable_action (-1, "char", "8", "", "push_type");
+  variable_action (-1, "sqlstate", "", "", "a4gl_add_variable");
+  variable_action (-1, "char", "9", "", "push_type");
+  variable_action (-1, "", "_ENDREC", "", "a4gl_add_variable");
 
-variable_action(-1,"notfound","100","i","add_constant");
+  variable_action (-1, "notfound", "100", "i", "add_constant");
 
 // @todo - QUICK HACK
 //variable_action(-1,"sqlca","a4gl_sqlca","C","add_constant");
 //variable_action(-1,"status","a4gl_status","C","add_constant");
 
-variable_action(-1,"false","0","i","add_constant");
-variable_action(-1,"true","1","i","add_constant");
-variable_action(-1,"today","","","a4gl_add_variable");
-variable_action(-1,"fgldate","","","push_type");
-variable_action(-1,"user","","","a4gl_add_variable"); /* Did someone change this  to 'usr' */
-variable_action(-1,"char","8","","push_type");
-variable_action(-1,"pageno","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"lineno","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"usrtime","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"curr_hwnd","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"curr_form","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"err_file_name","","","a4gl_add_variable");
-variable_action(-1,"char","32","","push_type");
-variable_action(-1,"err_file_no","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"curr_file_name","","","a4gl_add_variable");
-variable_action(-1,"char","32","","push_type");
-variable_action(-1,"curr_line_no","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"err_status","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
-variable_action(-1,"aiplib_status","","","a4gl_add_variable");
-variable_action(-1,"long","","","push_type");
+  variable_action (-1, "false", "0", "i", "add_constant");
+  variable_action (-1, "true", "1", "i", "add_constant");
+  variable_action (-1, "today", "", "", "a4gl_add_variable");
+  variable_action (-1, "fgldate", "", "", "push_type");
+  variable_action (-1, "user", "", "", "a4gl_add_variable");	/* Did someone change this  to 'usr' */
+  variable_action (-1, "char", "8", "", "push_type");
+  variable_action (-1, "pageno", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "lineno", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "usrtime", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "curr_hwnd", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "curr_form", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "err_file_name", "", "", "a4gl_add_variable");
+  variable_action (-1, "char", "32", "", "push_type");
+  variable_action (-1, "err_file_no", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "curr_file_name", "", "", "a4gl_add_variable");
+  variable_action (-1, "char", "32", "", "push_type");
+  variable_action (-1, "curr_line_no", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "err_status", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
+  variable_action (-1, "aiplib_status", "", "", "a4gl_add_variable");
+  variable_action (-1, "long", "", "", "push_type");
 
-set_current_variable_scope('m');
+  set_current_variable_scope ('m');
 }
 
 /**
@@ -1201,20 +1205,21 @@ set_current_variable_scope('m');
  *
  * @param s The database name
  */
-void 
+void
 open_db (char *s)
 {
-char db[132];
-char buff[256];
+  char db[132];
+  char buff[256];
 
-  debug("open_db %s", s);
+  debug ("open_db %s", s);
   strcpy (db, s);
 
-  if (has_default_database()) {
-	strcpy(db,get_default_database());
-	debug("Overriding default database with %s",db);
-	trim(db);
-  }
+  if (has_default_database ())
+    {
+      strcpy (db, get_default_database ());
+      debug ("Overriding default database with %s", db);
+      trim (db);
+    }
 
   A4GLSQL_set_status (0, 1);
   A4GLSQL_init_connection (db);
@@ -1238,23 +1243,23 @@ char *
 rettype (char *s)
 {
   static char rs[20] = "long";
-	int a;
-  debug ("In rettype : %s", s );
+  int a;
+  debug ("In rettype : %s", s);
 
-  a=atoi(s);
+  a = atoi (s);
 
-  debug("In rettype");
-  if (has_datatype_function_i(a,"OUTPUT")) 
-  {
-	/* char *(*function) (); */
-    char *(*function) (void);
-	debug("In datatype");
-	function=get_datatype_function_i(a,"OUTPUT");
-	debug("Copy");
-	strcpy(rs,function());
-	debug("Returning %s\n",rs);
-	return  rs;
-  }
+  debug ("In rettype");
+  if (has_datatype_function_i (a, "OUTPUT"))
+    {
+      /* char *(*function) (); */
+      char *(*function) (void);
+      debug ("In datatype");
+      function = get_datatype_function_i (a, "OUTPUT");
+      debug ("Copy");
+      strcpy (rs, function ());
+      debug ("Returning %s\n", rs);
+      return rs;
+    }
 
   if (strcmp (s, "0") == 0)
     strcpy (rs, "char");
@@ -1303,17 +1308,17 @@ rettype (char *s)
  *
  * @param s The string to be trimmed
  */
-static void 
+static void
 trim_spaces (char *s)
 {
   int l;
   for (l = strlen (s) - 1; l >= 0; l--)
-  {
-    if (s[l] == ' ')
-      s[l] = 0;
-    else
-      break;
-  }
+    {
+      if (s[l] == ' ')
+	s[l] = 0;
+      else
+	break;
+    }
 }
 
 /**
@@ -1327,28 +1332,29 @@ trim_spaces (char *s)
  *   - 0 : Column does not exist or an error ocurred.
  *   - 1 : Type readed.
  */
-static int 
-pushLikeTableColumn(char *tableName,char *columnName)
+static int
+pushLikeTableColumn (char *tableName, char *columnName)
 {
-int rval;
-int idtype;
-int isize;
-char csize[20];
-char cdtype[20];
-char buff[300];
+  int rval;
+  int idtype;
+  int isize;
+  char csize[20];
+  char cdtype[20];
+  char buff[300];
 
   debug ("pushLikeTableColumn()");
   rval = A4GLSQL_read_columns (tableName, columnName, &idtype, &isize);
   if (rval == 0)
-  {
-    sprintf (buff, "%s.%s does not exist in the database",tableName,columnName);
-    a4gl_yyerror (buff);
-    return 0;
-  }
+    {
+      sprintf (buff, "%s.%s does not exist in the database", tableName,
+	       columnName);
+      a4gl_yyerror (buff);
+      return 0;
+    }
   sprintf (cdtype, "%d", idtype & 15);
   sprintf (csize, "%d", isize);
   trim_spaces (columnName);
-  push_type (rettype (cdtype), csize, (char *)0);
+  push_type (rettype (cdtype), csize, (char *) 0);
   return 1;
 }
 
@@ -1358,8 +1364,8 @@ char buff[300];
  *
  * @param tableName The name of the table
  */
-static int 
-pushLikeAllTableColumns(char *tableName)
+static int
+pushLikeAllTableColumns (char *tableName)
 {
   int rval;
   int isize = 0;
@@ -1372,47 +1378,48 @@ pushLikeAllTableColumns(char *tableName)
 
   debug ("pushLikeAllTableColumns()");
   /* A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) */
-  debug("Calling get_columns : %s\n",tableName);
-  rval = A4GLSQL_get_columns(tableName,colname,&idtype, &isize);
-debug("rval = %d",rval);
+  debug ("Calling get_columns : %s\n", tableName);
+  rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
+  debug ("rval = %d", rval);
   if (rval == 0 && tableName)
-  {
-    sprintf (buff, "%s does not exist in the database", tableName);
-    a4gl_yyerror (buff);
-    return 1;
-  }
+    {
+      sprintf (buff, "%s does not exist in the database", tableName);
+      a4gl_yyerror (buff);
+      return 1;
+    }
 
-  debug("Rval !=0");
+  debug ("Rval !=0");
 
   while (1)
-  {
-    colname[0] = 0;
+    {
+      colname[0] = 0;
 
-    /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
-    rval = A4GLSQL_next_column(&ccol,&idtype,&isize);
-    debug ("next column for table '%p' is '%p'", tableName, ccol);
-    debug ("next column for table '%s' is '%s'", tableName, ccol);
+      /* int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
+      rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+      debug ("next column for table '%p' is '%p'", tableName, ccol);
+      debug ("next column for table '%s' is '%s'", tableName, ccol);
 
-    strcpy(colname,ccol);
+      strcpy (colname, ccol);
 
-	/*
-	warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
-    we are sending char ARRAY to function expecting char POINTER !!!!
-    */
+      /*
+         warning: passing arg 1 of `A4GLSQL_next_column' from incompatible pointer type
+         we are sending char ARRAY to function expecting char POINTER !!!!
+       */
 
-    if (rval == 0 )
-      break;
+      if (rval == 0)
+	break;
 
-    sprintf (cdtype, "%d", idtype & 15);
-    sprintf (csize, "%d", isize);
-    debug ("%d %d", idtype, isize);
-    debug ("---> %s %s", cdtype, csize);
-    debug ("A4GLSQL_read_columns: Pushing %s %s %s", colname, cdtype, csize);
-    trim_spaces (colname);
-    push_name (colname, 0);
-    push_type (rettype (cdtype), csize, 0);
-  }
-  A4GLSQL_end_get_columns();
+      sprintf (cdtype, "%d", idtype & 15);
+      sprintf (csize, "%d", isize);
+      debug ("%d %d", idtype, isize);
+      debug ("---> %s %s", cdtype, csize);
+      debug ("A4GLSQL_read_columns: Pushing %s %s %s", colname, cdtype,
+	     csize);
+      trim_spaces (colname);
+      push_name (colname, 0);
+      push_type (rettype (cdtype), csize, 0);
+    }
+  A4GLSQL_end_get_columns ();
   return 0;
 }
 
@@ -1433,27 +1440,27 @@ push_like2 (char *t2)
   debug ("In push_like2");
 
   if (db_used == 0)
-  {
-    sprintf (buff, "You cannot use LIKE without specifying a database");
-    a4gl_yyerror (buff);
-    return;
-  }
+    {
+      sprintf (buff, "You cannot use LIKE without specifying a database");
+      a4gl_yyerror (buff);
+      return;
+    }
 
   strcpy (t, t2);
   strcpy (buff, t);
   strcat (buff, ".");
 
   tableName = strtok (buff, ".");	/* table name */
-  columnName = strtok (0, ".");		/* column name */
-  debug ("a='%s' b='%s'", tableName,columnName);
+  columnName = strtok (0, ".");	/* column name */
+  debug ("a='%s' b='%s'", tableName, columnName);
 
   if (columnName)
-  {
-    pushLikeTableColumn(tableName,columnName);
-    return;
-  }
+    {
+      pushLikeTableColumn (tableName, columnName);
+      return;
+    }
 
-  pushLikeAllTableColumns(tableName);
+  pushLikeAllTableColumns (tableName);
   return;
 }
 
@@ -1469,7 +1476,7 @@ push_like (char *t)
 {
 
   debug (">>>>>> %s\n", t);
-  push_like2(t);
+  push_like2 (t);
   debug ("<<<<<<\n");
 }
 
@@ -1491,7 +1498,7 @@ push_rectab (char *t)
  *
  * @param s The title of the menu
  */
-void 
+void
 push_menu_title (char *s)
 {
   strcpy (mmtitle[menu_cnt], s);
@@ -1506,7 +1513,7 @@ push_menu_title (char *s)
  *
  * @param cmd_type The type of the command found:
  */
-void 
+void
 push_blockcommand (char *cmd_type)
 {
 
@@ -1517,7 +1524,8 @@ push_blockcommand (char *cmd_type)
   if (strcmp (cmd_type, "MAIN") == 0
       || strcmp (cmd_type, "FUNC") == 0 ||
       strcmp (cmd_type, "REPORT") == 0 || strcmp (cmd_type, "GLOBALS") == 0 ||
-      strcmp (cmd_type, "FORMHANDLER") == 0 || strcmp (cmd_type, "MENUHANDLER") == 0)
+      strcmp (cmd_type, "FORMHANDLER") == 0
+      || strcmp (cmd_type, "MENUHANDLER") == 0)
     {
       command_stack[ccnt].block_no = -1;
     }
@@ -1543,7 +1551,7 @@ add_continue_blockcommand (char *cmd_type)
 {
   int a;
 
-	/* more checks here ! */
+  /* more checks here ! */
 
   for (a = ccnt - 1; a > 0; a--)
     {
@@ -1565,7 +1573,7 @@ add_continue_blockcommand (char *cmd_type)
  *   - 1 : Is a continue command.
  *   - 0 : Otherwise.
  */
-static int 
+static int
 iscontinuecmd (char *s)
 {
 
@@ -1577,10 +1585,10 @@ iscontinuecmd (char *s)
   if (strcmp (s, "CASE") == 0)
     return 1;
   /*
-  if (strcmp(s,"CONSTRUCT")==0) return 1;
-  if (strcmp(s,"DISPLAY")==0) return 1;
-  if (strcmp(s,"PROMPT")==0) return 1;
-  */
+     if (strcmp(s,"CONSTRUCT")==0) return 1;
+     if (strcmp(s,"DISPLAY")==0) return 1;
+     if (strcmp(s,"PROMPT")==0) return 1;
+   */
 
   return 0;
 }
@@ -1593,7 +1601,7 @@ iscontinuecmd (char *s)
  *
  * @param cmd_type The type of the block that was ended.
  */
-void 
+void
 pop_blockcommand (char *cmd_type)
 {
   int a;
@@ -1601,7 +1609,7 @@ pop_blockcommand (char *cmd_type)
   char err[80];
   debug ("END BLOCK %s", cmd_type);
 
-	/* more checks here ! */
+  /* more checks here ! */
 
   ccnt--;
   if (command_stack[ccnt].block_no > 0)
@@ -1660,13 +1668,13 @@ in_command (char *cmd_type)
     {
 
       if (command_stack[z].cmd_type == 0 || command_stack[z].cmd_type[0] == 0)
-		continue;
+	continue;
 
       if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
-      {
-	  	debug ("OK\n");
-	  	return 1;
-	  }
+	{
+	  debug ("OK\n");
+	  return 1;
+	}
     }
 
   printf ("Not in a %s command\n", cmd_type);
@@ -1699,10 +1707,10 @@ trim(char *s)
  * @param a 
  * @param s
  */
-void 
+void
 push_gen (int a, char *s)
 {
-  debug ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);
+  debug ("Push %d %s - %d\n", a, s, gen_stack_cnt[a]);
   //printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]);
   if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
     {
@@ -1713,34 +1721,41 @@ push_gen (int a, char *s)
 }
 
 
-int gen_cnt(int a) {
-	return gen_stack_cnt[a];
+int
+gen_cnt (int a)
+{
+  return gen_stack_cnt[a];
 }
 
 
 
-void copy_gen(int a,int b) {
-	int c;
+void
+copy_gen (int a, int b)
+{
+  int c;
 
 
 //dump_updvals();
-	if (gen_stack_cnt[a]&&gen_stack[a][gen_stack_cnt[a]-1][0]=='(') {
-		printf("POP\n");
-		pop_gen(a);
-	}
+  if (gen_stack_cnt[a] && gen_stack[a][gen_stack_cnt[a] - 1][0] == '(')
+    {
+      printf ("POP\n");
+      pop_gen (a);
+    }
 
 
-	for (c=0;c<gen_stack_cnt[b];c++) {
-		push_gen(a,gen_stack[b][c]);
-	}
-	gen_stack_cnt[b]=0;
+  for (c = 0; c < gen_stack_cnt[b]; c++)
+    {
+      push_gen (a, gen_stack[b][c]);
+    }
+  gen_stack_cnt[b] = 0;
 }
 
-char *pop_gen (int a)
+char *
+pop_gen (int a)
 {
-  printf("Popgen called\n");
-  printf("UPDVAL2 cnt = %d\n",  gen_stack_cnt[UPDVAL2]);
-	//dump_updvals();
+  printf ("Popgen called\n");
+  printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]);
+  //dump_updvals();
   gen_stack_cnt[a]--;
   return gen_stack[a][gen_stack_cnt[a]];
 
@@ -1752,17 +1767,18 @@ char *pop_gen (int a)
  * @param a
  * @param s
  */
-void 
+void
 pop_all_gen (int a, char *s)
 {
   int z;
   for (z = 0; z < gen_stack_cnt[a]; z++)
     {
-      if (z > 0) debug ("%s ", s);
+      if (z > 0)
+	debug ("%s ", s);
 
       debug ("%s", gen_stack[a][z]);
     }
-    gen_stack_cnt[a]=0;
+  gen_stack_cnt[a] = 0;
 }
 
 
@@ -1799,14 +1815,14 @@ is_pk (char *s)
   debug ("Checking if %s is a pk in %s", s, pklist);
   a = linked_split (pklist, 0, 0);
   for (cnt = 1; cnt <= a; cnt++)
-  {
-    linked_split (pklist, cnt, buff);
-    if (aubit_strcasecmp (s, buff) == 0)
     {
-      debug ("Yes");
-      return 1;
+      linked_split (pklist, cnt, buff);
+      if (aubit_strcasecmp (s, buff) == 0)
+	{
+	  debug ("Yes");
+	  return 1;
+	}
     }
-  }
   if (strlen (upd_using_notpk) > 0)
     strcat (upd_using_notpk, ",");
   strcat (upd_using_notpk, s);
@@ -1841,44 +1857,51 @@ add_bind (char i, char *var)
     {
       dtype = scan_variable (var);
     }
-  debug ("add_bind - dtype=%d (%s) i=%c\n", dtype, var,i);
+  debug ("add_bind - dtype=%d (%s) i=%c\n", dtype, var, i);
 
   if (i == 'i')
     {
-      if (dtype == -2||strstr(var,".*"))
+      if (dtype == -2 || strstr (var, ".*"))
 	{
 	  debug ("push_bind_rec...");
 	  push_bind_rec (var, i);
 	}
       else
 	{
-	  ibind[ibindcnt].start_char_subscript=0;
-	  ibind[ibindcnt].end_char_subscript=0;
+	  ibind[ibindcnt].start_char_subscript = 0;
+	  ibind[ibindcnt].end_char_subscript = 0;
 
 
-	  if (strncmp(var," substr(",8)!=0) {
-	  	strcpy (ibind[ibindcnt].varname, var);
-	  	ibind[ibindcnt].dtype = dtype;
-	  } else {
-		char buff[256];
-		char buff2[256];
-		int s_dtype;
-		int s_sstart;
-		int s_send;
-		int a;
-		strcpy(buff2,&var[8]);
+	  if (strncmp (var, " substr(", 8) != 0)
+	    {
+	      strcpy (ibind[ibindcnt].varname, var);
+	      ibind[ibindcnt].dtype = dtype;
+	    }
+	  else
+	    {
+	      char buff[256];
+	      char buff2[256];
+	      int s_dtype;
+	      int s_sstart;
+	      int s_send;
+	      int a;
+	      strcpy (buff2, &var[8]);
 
-		a=sscanf(buff2,"%s , %d , %d , %d) /*1*/",buff,&s_dtype,&s_sstart,&s_send);
-		if (a!=4) {
-			a4gl_yyerror("Internal error - (split substr)");
+	      a =
+		sscanf (buff2, "%s , %d , %d , %d) /*1*/", buff, &s_dtype,
+			&s_sstart, &s_send);
+	      if (a != 4)
+		{
+		  a4gl_yyerror ("Internal error - (split substr)");
 		}
-		if (s_send==0) s_send=s_sstart;
-	  	strcpy (ibind[ibindcnt].varname, buff);
-	  	ibind[ibindcnt].dtype = s_dtype;
-		ibind[ibindcnt].start_char_subscript=s_sstart;
-		ibind[ibindcnt].end_char_subscript=s_send;
-		//printf("%s %d %d %d\n",ibind[ibindcnt].varname,ibind[ibindcnt].dtype,ibind[ibindcnt].start_char_subscript,ibind[ibindcnt].end_char_subscript);
-	  }
+	      if (s_send == 0)
+		s_send = s_sstart;
+	      strcpy (ibind[ibindcnt].varname, buff);
+	      ibind[ibindcnt].dtype = s_dtype;
+	      ibind[ibindcnt].start_char_subscript = s_sstart;
+	      ibind[ibindcnt].end_char_subscript = s_send;
+	      //printf("%s %d %d %d\n",ibind[ibindcnt].varname,ibind[ibindcnt].dtype,ibind[ibindcnt].start_char_subscript,ibind[ibindcnt].end_char_subscript);
+	    }
 	  ibindcnt++;
 	}
       return ibindcnt;
@@ -1886,7 +1909,7 @@ add_bind (char i, char *var)
 
   if (i == 'N')
     {
-      if (dtype == -2||strstr(var,".*"))
+      if (dtype == -2 || strstr (var, ".*"))
 	{
 	  debug ("push_bind_rec...");
 	  push_bind_rec (var, i);
@@ -1904,7 +1927,7 @@ add_bind (char i, char *var)
 
   if (i == 'o')
     {
-      if (dtype == -2||strstr(var,".*"))
+      if (dtype == -2 || strstr (var, ".*"))
 	{
 	  push_bind_rec (var, i);
 	}
@@ -1919,7 +1942,7 @@ add_bind (char i, char *var)
 
   if (i == 'O')
     {
-      if (dtype == -2||strstr(var,".*"))
+      if (dtype == -2 || strstr (var, ".*"))
 	push_bind_rec (var, i);
       else
 	{
@@ -1938,7 +1961,7 @@ add_bind (char i, char *var)
       if (i == 'f')
 	dtype = -1;
 
-      if (dtype == -2||strstr(var,".*"))
+      if (dtype == -2 || strstr (var, ".*"))
 	push_bind_rec (var, i);
       else
 	{
@@ -1949,7 +1972,7 @@ add_bind (char i, char *var)
 	}
     }
 
-return 0;
+  return 0;
 }
 
 /**
@@ -2045,7 +2068,7 @@ how_many_in_bind (char i)
   if (i == 'O')
     return ordbindcnt - 1;
 
-return 0;
+  return 0;
 }
 
 /**
@@ -2068,27 +2091,27 @@ return 0;
  *
  * @param cmd_type The string containing the type name of the loop used
  */
-void 
+void
 continue_loop (char *cmd_type)
 {
   int a;
   int g = 0;
   for (a = ccnt - 1; a >= 0; a--)
-  {
-    debug ("continue_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
-
-    if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
     {
-      g = 1;
-      break;
+      debug ("continue_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
+
+      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+	{
+	  g = 1;
+	  break;
+	}
     }
-  }
   if (g == 0)
-  {
-    debug ("/* wanted to continue a %s but wasnt in one! */", cmd_type);
-    return;
-  }
-  print_continue_loop (command_stack[a].block_no,cmd_type);
+    {
+      debug ("/* wanted to continue a %s but wasnt in one! */", cmd_type);
+      return;
+    }
+  print_continue_loop (command_stack[a].block_no, cmd_type);
 }
 
 /**
@@ -2111,7 +2134,7 @@ continue_loop (char *cmd_type)
  *
  * @param cmd_type The string containing the type name of the loop used
  */
-void 
+void
 exit_loop (char *cmd_type)
 {
   int a;
@@ -2119,38 +2142,38 @@ exit_loop (char *cmd_type)
   int printed = 0;
 
   for (a = ccnt - 1; a >= 0; a--)
-  {
-    debug ("exit_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
-
-    if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
     {
-      g = 1;
-      break;
+      debug ("exit_loop:%s %s\n", command_stack[a].cmd_type, cmd_type);
+
+      if (strcmp (command_stack[a].cmd_type, cmd_type) == 0)
+	{
+	  g = 1;
+	  break;
+	}
     }
-  }
   if (g == 0)
-  {
-    debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
-    return;
-  }
+    {
+      debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
+      return;
+    }
 
   if (strcmp (cmd_type, "MENU") == 0)
-  {
-    print_exit_loop ('M', 0);
-    printed = 1;
-  }
+    {
+      print_exit_loop ('M', 0);
+      printed = 1;
+    }
 
   if (strcmp (cmd_type, "PROMPT") == 0)
-  {
-    print_exit_loop ('P', 0);
-    printed = 1;
-  }
+    {
+      print_exit_loop ('P', 0);
+      printed = 1;
+    }
 
 
   if (printed == 0)
-  {
-    print_exit_loop (0, command_stack[a].block_no);
-  }
+    {
+      print_exit_loop (0, command_stack[a].block_no);
+    }
 }
 
 /**
@@ -2219,16 +2242,16 @@ init_report_structure (struct rep_structure *rep)
 }
 
 
-void 
+void
 pdf_init_report_structure (struct pdf_rep_structure *rep)
 {
-debug("ZZ1 init structure...");
+  debug ("ZZ1 init structure...");
   rep->top_margin = -36.0;
   rep->bottom_margin = -36.0;
   rep->left_margin = -36.0;
 
-  rep->page_length = -842.0;		/* A4 */
-  rep->page_width = -595.0;			/* A4 */
+  rep->page_length = -842.0;	/* A4 */
+  rep->page_width = -595.0;	/* A4 */
 
   rep->right_margin = rep->page_width - (2 * rep->left_margin);
 
@@ -2249,57 +2272,57 @@ debug("ZZ1 init structure...");
  * @param
  */
 void
-resize_paper(struct pdf_rep_structure *pdf_rep_struct)
+resize_paper (struct pdf_rep_structure *pdf_rep_struct)
 {
-int portrait=1;
-float a;
+  int portrait = 1;
+  float a;
 
-	debug("ZZ1 Fixing paper size.....");
+  debug ("ZZ1 Fixing paper size.....");
 
-	if (pdf_rep_struct->paper_size!=0) 
-	{
-
-		if (pdf_rep_struct->paper_size<0)
-		{
-				portrait=0;
-				pdf_rep_struct->paper_size=0-pdf_rep_struct->paper_size;
-		}
-
-		switch (pdf_rep_struct->paper_size)
-		{
-		case 1:
-			pdf_rep_struct->page_length=0-a4_height;
-			pdf_rep_struct->page_width=0-a4_width;
-			break;
-		case 2:
-			pdf_rep_struct->page_length=0-letter_height;
-			pdf_rep_struct->page_width=0-letter_width;
-			break;
-		case 3:
-			pdf_rep_struct->page_length=0-legal_height;
-			pdf_rep_struct->page_width=0-legal_width;
-			break;
-
-		case 4:  /* Not used.... */
-			pdf_rep_struct->page_length=0-a4_height;
-			pdf_rep_struct->page_width=0-a4_width;
-			break;
-
-		case 5:
-			pdf_rep_struct->page_length=0-a5_height;
-			pdf_rep_struct->page_width=0-a5_width;
-			break;
-
-		}
-	}
-
-
-	if (portrait==0)  /* Its landscape - swap it around.... */
+  if (pdf_rep_struct->paper_size != 0)
     {
-		a=pdf_rep_struct->page_length;
-		pdf_rep_struct->page_length=pdf_rep_struct->page_width;
-		pdf_rep_struct->page_width=a;
+
+      if (pdf_rep_struct->paper_size < 0)
+	{
+	  portrait = 0;
+	  pdf_rep_struct->paper_size = 0 - pdf_rep_struct->paper_size;
 	}
+
+      switch (pdf_rep_struct->paper_size)
+	{
+	case 1:
+	  pdf_rep_struct->page_length = 0 - a4_height;
+	  pdf_rep_struct->page_width = 0 - a4_width;
+	  break;
+	case 2:
+	  pdf_rep_struct->page_length = 0 - letter_height;
+	  pdf_rep_struct->page_width = 0 - letter_width;
+	  break;
+	case 3:
+	  pdf_rep_struct->page_length = 0 - legal_height;
+	  pdf_rep_struct->page_width = 0 - legal_width;
+	  break;
+
+	case 4:		/* Not used.... */
+	  pdf_rep_struct->page_length = 0 - a4_height;
+	  pdf_rep_struct->page_width = 0 - a4_width;
+	  break;
+
+	case 5:
+	  pdf_rep_struct->page_length = 0 - a5_height;
+	  pdf_rep_struct->page_width = 0 - a5_width;
+	  break;
+
+	}
+    }
+
+
+  if (portrait == 0)		/* Its landscape - swap it around.... */
+    {
+      a = pdf_rep_struct->page_length;
+      pdf_rep_struct->page_length = pdf_rep_struct->page_width;
+      pdf_rep_struct->page_width = a;
+    }
 
 }
 
@@ -2328,21 +2351,21 @@ scan_orderby (char *varname, int cnt)
  * @param
  */
 void
-reset_attrib (struct form_attr * form_attrib)
+reset_attrib (struct form_attr *form_attrib)
 {
   debug ("Reseting attributes\n");
-  form_attrib->iswindow     = 0;
+  form_attrib->iswindow = 0;
 
-  form_attrib->attrib       = 0xffff;
+  form_attrib->attrib = 0xffff;
 
-  form_attrib->form_line    = 0xff;
-  form_attrib->error_line   = 0xff;
+  form_attrib->form_line = 0xff;
+  form_attrib->error_line = 0xff;
   form_attrib->comment_line = 0xff;
   form_attrib->message_line = 0xff;
-  form_attrib->prompt_line  = 0xff;
-  form_attrib->menu_line    = 0xff;
+  form_attrib->prompt_line = 0xff;
+  form_attrib->menu_line = 0xff;
 
-  form_attrib->border       = 0;
+  form_attrib->border = 0;
 }
 
 
@@ -2355,9 +2378,9 @@ int
 attr_code (char *s)
 {
 
- debug ("Decoding colour %s\n", s);
+  debug ("Decoding colour %s\n", s);
 
-  return get_attr_from_string(s);
+  return get_attr_from_string (s);
 
 }
 
@@ -2444,7 +2467,7 @@ matoi (char *s)
  * @param
  */
 void
-drop_counter(void)
+drop_counter (void)
 {
   count_counters--;
 }
@@ -2466,7 +2489,7 @@ new_counter (void)
  *
  * @param
  */
-int 
+int
 get_counter_val (void)
 {
   debug ("/* get_counter_val =  %d counter number %d*/\n",
@@ -2479,7 +2502,7 @@ get_counter_val (void)
  *
  * @param
  */
-int 
+int
 inc_counter (void)
 {
   return ++counters[count_counters];
@@ -2490,7 +2513,7 @@ inc_counter (void)
  *
  * @param
  */
-int 
+int
 dec_counter (void)
 {
   return --counters[count_counters];
@@ -2501,7 +2524,7 @@ dec_counter (void)
  *
  * @param
  */
-void 
+void
 reset_counter (void)
 {
   counters[count_counters] = 0;
@@ -2512,7 +2535,7 @@ reset_counter (void)
  *
  * @param
  */
-void 
+void
 set_counter (int a)
 {
   counters[count_counters] = a;
@@ -2615,7 +2638,7 @@ add_arr_bind (char i, char *nvar)
       return fbindcnt;
     }
 
-return 0;
+  return 0;
 }
 
 
@@ -2624,7 +2647,7 @@ return 0;
  *
  * @param
  */
-void 
+void
 start_arr_bind (char i, char *var)
 {
   if (i == 'i')
@@ -2654,7 +2677,7 @@ start_arr_bind (char i, char *var)
  *
  * @param
  */
-void 
+void
 push_construct (char *a, char *b)
 {
   strcpy (constr_buff[constr_cnt].tab, a);
@@ -2668,7 +2691,7 @@ push_construct (char *a, char *b)
  *
  * @param
  */
-void 
+void
 reset_constr (void)
 {
   constr_cnt = 0;
@@ -2686,7 +2709,7 @@ convstrsql (char *s)
   static char buff[1024];
   int a;
   int b = 0;
-  debug("Convstrsql ... %s",s);
+  debug ("Convstrsql ... %s", s);
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '"')
@@ -2711,7 +2734,7 @@ convstrsql (char *s)
       buff[b++] = s[a];
 
     }
-  debug("Convstrsql ... %s => %s",s,buff);
+  debug ("Convstrsql ... %s => %s", s, buff);
   return buff;
 }
 
@@ -2758,7 +2781,7 @@ downshift (char *a)
  *
  * @return The current block.
  */
-static int 
+static int
 get_curr_block (void)
 {
   return curr_rep_block;
@@ -2774,11 +2797,11 @@ get_curr_block (void)
  *
  * @return
  */
-int 
+int
 add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a)
 {
 
-debug("In add_report_agg a=%d\n",a);
+  debug ("In add_report_agg a=%d\n", a);
   if (use_group)
     {
       sreports[sreports_cnt].in_b = get_curr_block ();
@@ -2790,24 +2813,24 @@ debug("In add_report_agg a=%d\n",a);
 
   if (s2 == 0)
     {
-	
-      debug("Adding default where on report aggregate of 1");
-      sreports[sreports_cnt].rep_where_expr=new_expr("push_int(1);");
+
+      debug ("Adding default where on report aggregate of 1");
+      sreports[sreports_cnt].rep_where_expr = new_expr ("push_int(1);");
     }
   else
     {
-      debug("Adding non-default where on report aggregate");
-      sreports[sreports_cnt].rep_where_expr=s2;
+      debug ("Adding non-default where on report aggregate");
+      sreports[sreports_cnt].rep_where_expr = s2;
     }
 
-	
-  sreports[sreports_cnt].rep_cond_expr=s1;
+
+  sreports[sreports_cnt].rep_cond_expr = s1;
 
   sreports[sreports_cnt].a = a;
 
   sreports[sreports_cnt].t = t;
 
-  debug("sreports[%d].a=%d",sreports_cnt,a);
+  debug ("sreports[%d].a=%d", sreports_cnt, a);
 
   sreports_cnt++;
 
@@ -2856,7 +2879,7 @@ debug("In add_report_agg a=%d\n",a);
 void
 set_curr_rep_name (char *s)
 {
-  strcpy (curr_rep_name, (char *)get_namespace(s));
+  strcpy (curr_rep_name, (char *) get_namespace (s));
   strcat (curr_rep_name, s);
 }
 
@@ -2917,13 +2940,13 @@ set_whenever (int c, char *p)
   switch (c)
     {
     case WHEN_ERROR:
-	set_whenever (WHEN_SQLERROR,p);
-        code = A_WHEN_ERROR;
+      set_whenever (WHEN_SQLERROR, p);
+      code = A_WHEN_ERROR;
       break;
 
     case WHEN_ANYERROR:
-	set_whenever (WHEN_ERROR,p);
-	set_whenever (WHEN_SQLERROR,p);
+      set_whenever (WHEN_ERROR, p);
+      set_whenever (WHEN_SQLERROR, p);
       code = A_WHEN_ERROR;
       break;
 
@@ -2992,7 +3015,7 @@ npush_menu (void)
  *
  * @param
  */
-void 
+void
 pop_menu (void)
 {
   cmenu--;
@@ -3068,7 +3091,7 @@ swapstring (char *d, char *s)
  * @param s A pointer to the string with array declaration.
  * @return The number of dimentions.
  */
-int 
+int
 num_arr_elem (char *s)
 {
   int a;
@@ -3130,7 +3153,7 @@ yywrap (void)
  *   - 1 : Is an internal variable.
  *   - 0 : Otherwise
  */
-int 
+int
 system_var (char *s)
 {
   if (aubit_strcasecmp (s, "today") == 0)
@@ -3147,7 +3170,7 @@ system_var (char *s)
 /**
  * Increment the number of reports declared.
  */
-void 
+void
 inc_report_cnt (void)
 {
   sreports_cnt = 0;
@@ -3192,7 +3215,7 @@ trans_quote (char *s)
  *   - if a=0 return the number of pieces
  *   - if a=1 then return the first into buffetc...
  */
-int 
+int
 linked_split (char *s, int a, char *buff)
 {
   char *p;
@@ -3244,7 +3267,7 @@ linked_split (char *s, int a, char *buff)
  *
  * @param s The string to be copied.
  */
-void 
+void
 set_pklist (char *s)
 {
   debug ("pklist set to %s\n", s);
@@ -3327,7 +3350,7 @@ ispdf (void)
  * @param cnt The number of elements in the bind array.
  */
 void
-expand_bind (struct binding_comp * bind, int btype, int cnt)
+expand_bind (struct binding_comp *bind, int btype, int cnt)
 {
   struct binding_comp save_bind[NUMBINDINGS];
   char buff[256];
@@ -3358,7 +3381,7 @@ expand_bind (struct binding_comp * bind, int btype, int cnt)
 /**
  * Expandthe output bind
  */
-void 
+void
 expand_obind (void)
 {
   expand_bind (obind, 'o', obindcnt);
@@ -3369,7 +3392,7 @@ expand_obind (void)
  *
  * @param s
  */
-void 
+void
 chk_init_var (char *s)
 {
   char buff[1024];
@@ -3428,18 +3451,19 @@ chk_init_var (char *s)
  *
  * @param orig_ptr A pointer to the expression list
  */
-void 
+void
 dump_expr (struct expr_str *orig_ptr)
 {
   struct expr_str *start;
   start = orig_ptr;
 
-	debug("DUMP EXPR : ");
-      while (orig_ptr) {
-	debug ("     %s",orig_ptr->expr);
-	orig_ptr = orig_ptr->next;
+  debug ("DUMP EXPR : ");
+  while (orig_ptr)
+    {
+      debug ("     %s", orig_ptr->expr);
+      orig_ptr = orig_ptr->next;
     }
-	debug("---------------------------------------------------");
+  debug ("---------------------------------------------------");
 }
 
 /**
@@ -3452,7 +3476,7 @@ void *
 new_expr (char *value)
 {
   struct expr_str *ptr;
-  debug ("new_expr - %s",value);
+  debug ("new_expr - %s", value);
   ptr = malloc (sizeof (struct expr_str));
   ptr->next = 0;
   ptr->expr = strdup (value);
@@ -3502,10 +3526,10 @@ append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
   debug ("MJA append_expr_expr %p %p", orig_ptr, second_ptr);
   start = orig_ptr;
   if (orig_ptr->next != 0)
-  {
-    while (orig_ptr->next != 0)
-      orig_ptr = orig_ptr->next;
-  }
+    {
+      while (orig_ptr->next != 0)
+	orig_ptr = orig_ptr->next;
+    }
   orig_ptr->next = second_ptr;
   //dump_expr(start);
   return start;
@@ -3518,15 +3542,15 @@ append_expr_expr (struct expr_str *orig_ptr, struct expr_str *second_ptr)
  * @return The number of operands in an expression
  */
 int
-length_expr (struct expr_str * ptr)
+length_expr (struct expr_str *ptr)
 {
   int c = 0;
   debug ("Print expr... %p", ptr);
   while (ptr)
-  {
-    c++;
-    ptr = ptr->next;
-  }
+    {
+      c++;
+      ptr = ptr->next;
+    }
   return c;
 }
 
@@ -3543,11 +3567,11 @@ tr_glob_fname (char *s)
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '\\')
-		s[a] = '/';
+	s[a] = '/';
 
-		#ifdef MIKES_WORKAROUND_FOR_FILES_COPY_FROM_WINDOWS
-			s[a] = tolower (s[a]);
-        	#endif
+#ifdef MIKES_WORKAROUND_FOR_FILES_COPY_FROM_WINDOWS
+      s[a] = tolower (s[a]);
+#endif
     }
 }
 
@@ -3560,9 +3584,9 @@ tr_glob_fname (char *s)
  * @param
  */
 char *
-get_report_stack_whytype(int a)
+get_report_stack_whytype (int a)
 {
-    return &report_stack[a].whytype;
+  return &report_stack[a].whytype;
 }
 
 /**
@@ -3571,9 +3595,9 @@ get_report_stack_whytype(int a)
  * @param
  */
 char *
-get_report_stack_why(int a)
+get_report_stack_why (int a)
 {
-	return report_stack[a].why;
+  return report_stack[a].why;
 }
 
 /**
@@ -3582,9 +3606,9 @@ get_report_stack_why(int a)
  * @param
  */
 struct sreports *
-get_sreports(int z)
+get_sreports (int z)
 {
-	return (struct sreports *) z;
+  return (struct sreports *) z;
 }
 
 
@@ -3594,32 +3618,32 @@ get_sreports(int z)
  * @param
  */
 void
-add_ex_dtype(char *sx)
+add_ex_dtype (char *sx)
 {
-	char s[256];
-	char ss[256];
-	strcpy(s,sx);
-	trim(s);
-	strcpy(s,downshift(s));
-	debug("Initializing datatype : %s\n");
+  char s[256];
+  char ss[256];
+  strcpy (s, sx);
+  trim (s);
+  strcpy (s, downshift (s));
+  debug ("Initializing datatype : %s\n");
 
-	A4GLEXDATA_initlib(s);
+  A4GLEXDATA_initlib (s);
 
-	debug("Checking if we need an extra include...");
+  debug ("Checking if we need an extra include...");
 
-	if (has_datatype_function_n(s,"INCLUDE")) 
-	{
-       	/* char *(*function) (); */
-        char *(*function) (void);
-		debug("yep");
+  if (has_datatype_function_n (s, "INCLUDE"))
+    {
+      /* char *(*function) (); */
+      char *(*function) (void);
+      debug ("yep");
 
-        function=get_datatype_function_n(s,"INCLUDE");
+      function = get_datatype_function_n (s, "INCLUDE");
 
-		debug("function=%s\n",function);
+      debug ("function=%s\n", function);
 
-		strcpy(ss,function());
-		print_include(ss);
-	}
+      strcpy (ss, function ());
+      print_include (ss);
+    }
 }
 
 /**
@@ -3628,32 +3652,36 @@ add_ex_dtype(char *sx)
  * @param
  */
 char *
-subtract_one(char *s)
+subtract_one (char *s)
 {
-static char buff[256];
-int a;
-int c;
+  static char buff[256];
+  int a;
+  int c;
 
-	c=0;
-	for (a=0;a<strlen(s);a++) {
-		if (s[a]==',') {
-			buff[c++]='-';
-			buff[c++]='1';
-		}
-		buff[c++]=s[a];
+  c = 0;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == ',')
+	{
+	  buff[c++] = '-';
+	  buff[c++] = '1';
 	}
-	buff[c++]='-';
-	buff[c++]='1';
-	buff[c]=0;
-	return buff;
+      buff[c++] = s[a];
+    }
+  buff[c++] = '-';
+  buff[c++] = '1';
+  buff[c] = 0;
+  return buff;
 }
 
 /**
  * @param mode If mode is set to 1 - expect a '*' as column names...
 */
-char *fix_update_expr(int mode) {
+char *
+fix_update_expr (int mode)
+{
   static char big_buff[20000];
-int a;
+  int a;
   int rval;
   int isize = 0;
   int idtype = 0;
@@ -3662,85 +3690,110 @@ int a;
   //char cdtype[20];
   char buff[1000];
   char *ccol;
-strcpy(big_buff,"SET ");
+  strcpy (big_buff, "SET ");
 
 
-if (mode==1) {
-	// It will only be a '*' anyway....
-  	if (db_used == 0)
-  	{
-    		sprintf (buff, "You cannot use update * =  without specifying a database");
-    		a4gl_yyerror (buff);
-    		return 0;
-  	}
-	
-    	gen_stack_cnt[UPDCOL]=0;
+  if (mode == 1)
+    {
+      // It will only be a '*' anyway....
+      if (db_used == 0)
+	{
+	  sprintf (buff,
+		   "You cannot use update * =  without specifying a database");
+	  a4gl_yyerror (buff);
+	  return 0;
+	}
 
-	strcpy(colname,"");
-  	rval = A4GLSQL_get_columns(current_upd_table,colname,&idtype, &isize);
-	if (rval==0) {
-		a4gl_yyerror("Table is not in the database");
-		return 0;
+      gen_stack_cnt[UPDCOL] = 0;
+
+      strcpy (colname, "");
+      rval =
+	A4GLSQL_get_columns (current_upd_table, colname, &idtype, &isize);
+      if (rval == 0)
+	{
+	  a4gl_yyerror ("Table is not in the database");
+	  return 0;
 	}
 
 
-  	while (1)
-  	{
-    		colname[0] = 0;
-    		rval = A4GLSQL_next_column(&ccol,&idtype,&isize);
-    		strcpy(colname,ccol);
-    		if (rval == 0 ) break;
-    		trim_spaces (colname);
-		push_gen(UPDCOL,colname);
-  	}
-	A4GLSQL_end_get_columns();
+      while (1)
+	{
+	  colname[0] = 0;
+	  rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+	  strcpy (colname, ccol);
+	  if (rval == 0)
+	    break;
+	  trim_spaces (colname);
+	  push_gen (UPDCOL, colname);
+	}
+      A4GLSQL_end_get_columns ();
+    }
+
+  if (gen_stack_cnt[UPDCOL] != gen_stack_cnt[UPDVAL])
+    {
+      a4gl_yyerror
+	("Number of columns in update not the same as number of values");
+    }
+
+  for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
+    {
+      if (a)
+	strcat (big_buff, ",");
+      sprintf (buff, "%s=%s", gen_stack[UPDCOL][a], gen_stack[UPDVAL][a]);
+      strcat (big_buff, buff);
+    }
+
+  return big_buff;
 }
 
-if (gen_stack_cnt[UPDCOL]!=gen_stack_cnt[UPDVAL]) {
-	a4gl_yyerror("Number of columns in update not the same as number of values");
-}
-
-for (a=0;a<gen_stack_cnt[UPDCOL];a++) {
-  if (a) strcat(big_buff,",");
-  sprintf(buff,"%s=%s",gen_stack[UPDCOL][a],gen_stack[UPDVAL][a]);
-  strcat(big_buff,buff);
-}
-
-return big_buff;
-}
 
 
-
-char *make_sql_string(char *first,...) {
+char *
+make_sql_string (char *first, ...)
+{
   va_list ap;
-  char *ptr=0;
+  char *ptr = 0;
   int l;
   char *next;
-int n;
+  int n;
 
-n=0;
+  n = 0;
   va_start (ap, first);
-  ptr=strdup(first);
-  l=strlen(ptr);
+  ptr = strdup (first);
+  l = strlen (ptr);
 
-  while (1) {
-	n++;
-     next=va_arg(ap,char *);
-     if (next==0) break;
-     l+=strlen(next);
-     l++; // Extra space...
-     ptr=realloc(ptr,l);
-     strcat(ptr,next);
-  }
+  while (1)
+    {
+      n++;
+      next = va_arg (ap, char *);
+      if (next == 0)
+	break;
+      l += strlen (next);
+      l++;			// Extra space...
+      ptr = realloc (ptr, l);
+      strcat (ptr, next);
+    }
   return ptr;
 }
 
 
-void dump_updvals() {
-int a;
-for (a=0;a<gen_stack_cnt[UPDCOL];a++)  { printf("UPDCOL[%d] : %s\n",a,gen_stack[UPDCOL][a]); }
+void
+dump_updvals ()
+{
+  int a;
+  for (a = 0; a < gen_stack_cnt[UPDCOL]; a++)
+    {
+      printf ("UPDCOL[%d] : %s\n", a, gen_stack[UPDCOL][a]);
+    }
 
-for (a=0;a<gen_stack_cnt[UPDVAL];a++)  { printf("UPDVAL : %s\n",gen_stack[UPDVAL][a]); }
-for (a=0;a<gen_stack_cnt[UPDVAL2];a++) { printf("UPDVAL2: %s\n",gen_stack[UPDVAL2][a]); }
+  for (a = 0; a < gen_stack_cnt[UPDVAL]; a++)
+    {
+      printf ("UPDVAL : %s\n", gen_stack[UPDVAL][a]);
+    }
+  for (a = 0; a < gen_stack_cnt[UPDVAL2]; a++)
+    {
+      printf ("UPDVAL2: %s\n", gen_stack[UPDVAL2][a]);
+    }
 }
+
 /* ================================= EOF ============================= */

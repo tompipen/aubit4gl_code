@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.45 2003-02-24 07:52:51 afalout Exp $
+# $Id: 4glc.c,v 1.46 2003-05-12 14:23:44 mikeaubury Exp $
 #
 */
 
@@ -47,15 +47,15 @@
 =====================================================================
 */
 
-extern int 	yydebug; /* defined in y.tab.c _IF_ -DYYDEBUG is set, otherwise in map.c */
-extern 		FILE *ferr;
-extern int 	yyleng;
-extern int 	chk4var;
-extern int 	lcnt;
+extern int yydebug;		/* defined in y.tab.c _IF_ -DYYDEBUG is set, otherwise in map.c */
+extern FILE *ferr;
+extern int yyleng;
+extern int chk4var;
+extern int lcnt;
 extern FILE *yyin;
-extern char *outputfilename; /* Defined in libaubit4gl */
+extern char *outputfilename;	/* Defined in libaubit4gl */
 extern char infilename[132];
-extern int 	yyin_len; //now in map.c
+extern int yyin_len;		//now in map.c
 
 /*
 =====================================================================
@@ -63,7 +63,7 @@ extern int 	yyin_len; //now in map.c
 =====================================================================
 */
 
-extern int 	initArguments(int argc, char *argv[]);
+extern int initArguments (int argc, char *argv[]);
 
 /*
 =====================================================================
@@ -79,32 +79,31 @@ extern int 	initArguments(int argc, char *argv[]);
  * @param argv The argument values
  */
 int
-main(int argc, char *argv[])
+main (int argc, char *argv[])
 {
-int x=0;
-struct str_resource *user_resource = 0;
+  int x = 0;
+  struct str_resource *user_resource = 0;
 
 
-	setarg0(argv[0]);
-	debug("Initializing 4glc\n");
-	init_states ();
-	yydebug = 1;
+  setarg0 (argv[0]);
+  debug ("Initializing 4glc\n");
+  init_states ();
+  yydebug = 1;
 
-	/* load settings from config file(s): */
-	user_resource = build_user_resources();
+  /* load settings from config file(s): */
+  user_resource = build_user_resources ();
 
-	x = initArguments(argc,argv);
+  x = initArguments (argc, argv);
 
-	if (yydebug)
+  if (yydebug)
     {
-		printf ("Exit\n");
+      printf ("Exit\n");
     }
 
-	//dump_var_records();
-	debug("Exiting 4glc");
-	exit (x);
+  //dump_var_records();
+  debug ("Exiting 4glc");
+  exit (x);
 }
 
 
 /* ============================== EOF =============================== */
-

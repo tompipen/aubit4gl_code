@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.10 2003-01-28 15:19:51 mikeaubury Exp $
+# $Id: read_dty.c,v 1.11 2003-05-12 14:24:17 mikeaubury Exp $
 #
 */
 
@@ -46,15 +46,15 @@
 
 #ifdef OLD_INCL
 
-	#include <stdio.h>
-	#include "a4gl_dbform.h"
-	#include "a4gl_stack.h"
-	#include "a4gl_debug.h" 		/* debug() */
-	#include "a4gl_dlsql.h" 		/* A4GLSQL_get_datatype() */
+#include <stdio.h>
+#include "a4gl_dbform.h"
+#include "a4gl_stack.h"
+#include "a4gl_debug.h"		/* debug() */
+#include "a4gl_dlsql.h"		/* A4GLSQL_get_datatype() */
 
 #else
 
-    #include "a4gl_libaubit4gl_int.h"
+#include "a4gl_libaubit4gl_int.h"
 
 #endif
 
@@ -66,7 +66,7 @@
 
 
 #ifdef OLD_INCL
-	int get_dtype(char *tabname, char *colname,char *dbname,char *tablist[]);
+int get_dtype (char *tabname, char *colname, char *dbname, char *tablist[]);
 #endif
 
 
@@ -127,35 +127,39 @@ split_tab_col_type(char *str,char *str1,char *str2,char *str3)
  *   - Otherwise : The datatype found
  */
 int
-get_dtype(char *tabname, char *colname,char *dbname,char **tablist)
+get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
 {
-	int a,b;
-	int rval;
-	int idtype;
-	int isize;
+  int a, b;
+  int rval;
+  int idtype;
+  int isize;
 
-	b=0;
+  b = 0;
 
-	if (strlen(tabname)!=0)
-		{
-	  	rval = A4GLSQL_read_columns (tabname, colname, &idtype, &isize);
-		if (rval!=0 ) return idtype;
-		else return -1;
-		}
+  if (strlen (tabname) != 0)
+    {
+      rval = A4GLSQL_read_columns (tabname, colname, &idtype, &isize);
+      if (rval != 0)
+	return idtype;
+      else
+	return -1;
+    }
 
-	if (tablist==0) {
-	        debug("Column not found");
-	        return -1;
-	}
+  if (tablist == 0)
+    {
+      debug ("Column not found");
+      return -1;
+    }
 
-	for (a=0;tablist[a]!=0;a++) {
-  	    b= A4GLSQL_read_columns (tablist[a], colname, &idtype, &isize);
-	    if (b!=0) return idtype;
-	}
+  for (a = 0; tablist[a] != 0; a++)
+    {
+      b = A4GLSQL_read_columns (tablist[a], colname, &idtype, &isize);
+      if (b != 0)
+	return idtype;
+    }
 
-return -1;
+  return -1;
 }
 
 
 /* ========================= EOF ============================== */
-

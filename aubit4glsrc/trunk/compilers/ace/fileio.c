@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fileio.c,v 1.4 2003-03-07 04:37:35 afalout Exp $
+# $Id: fileio.c,v 1.5 2003-05-12 14:23:57 mikeaubury Exp $
 #*/
 
 /**
@@ -50,19 +50,19 @@
 =====================================================================
 */
 
-extern FILE *	yyin;
-extern char *	outputfilename; /* defined in libaubit4gl */
+extern FILE *yyin;
+extern char *outputfilename;	/* defined in libaubit4gl */
 //#ifdef YYDEBUG
-extern int 		a4gl_ace_yydebug; /* defined in y.tab.c */
+extern int a4gl_ace_yydebug;	/* defined in y.tab.c */
 //#else /*  */
 //int yydebug;
 //#endif /*  */
 
-char 			outputfile[132];
-int 			lineno;
-int 			colno;
-int 			ignorekw = 0;
-int 			yywrap (void);
+char outputfile[132];
+int lineno;
+int colno;
+int ignorekw = 0;
+int yywrap (void);
 
 /*
 =====================================================================
@@ -177,7 +177,7 @@ compile_ace_report (char *filename)
     {
 
       printf ("Error opening file : %s\n", c);
-	return 2;
+      return 2;
     }
 
   init_report ();
@@ -187,7 +187,7 @@ compile_ace_report (char *filename)
     {
       check_sql_columns ();
       write_report ();
-      printf("Ok\n");
+      printf ("Ok\n");
       return 0;
     }
   else

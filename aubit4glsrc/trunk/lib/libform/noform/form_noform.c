@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_noform.c,v 1.1 2002-06-26 06:11:43 afalout Exp $
+# $Id: form_noform.c,v 1.2 2003-05-12 14:24:19 mikeaubury Exp $
 #*/
 
 /**
@@ -48,15 +48,15 @@
 
 #ifdef OLD_INCL
 
-	#include <stdlib.h>
-	#include <stdio.h>  		/* printf() */
+#include <stdlib.h>
+#include <stdio.h>		/* printf() */
 
-	#include "a4gl_aubit_lib.h"
+#include "a4gl_aubit_lib.h"
 
 
 #else
 
-    #include "a4gl_lib_form_int.h"
+#include "a4gl_lib_form_int.h"
 
 #endif
 
@@ -79,11 +79,10 @@ void *
 read_form (char *fname, char *formname)
 {
 
-	printf("Unable to open form - using libFORM_NOFORM.\n");
-	exit(2);
+  printf ("Unable to open form - using libFORM_NOFORM.\n");
+  exit (2);
 
 }
 
 
 /* ================================= EOF ============================== */
-

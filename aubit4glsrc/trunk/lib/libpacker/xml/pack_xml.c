@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.10 2003-04-26 15:45:30 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.11 2003-05-12 14:24:23 mikeaubury Exp $
 #*/
 
 /**
@@ -46,7 +46,7 @@
 		                    Includes
 =====================================================================
 */
-    
+
 #include "a4gl_lib_packer_xml_int.h"
 
 /*
@@ -81,7 +81,7 @@ int level = 0;
 */
 
 char *find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
-char *find_contents (char *s);		/* Extract the tag contents from a string */
+char *find_contents (char *s);	/* Extract the tag contents from a string */
 
 /*
 --------------------------------
@@ -91,7 +91,7 @@ char *find_contents (char *s);		/* Extract the tag contents from a string */
 static void chk (void *x);
 
 void print_level (void);
-char * pr_elem (int a, int p);
+char *pr_elem (int a, int p);
 
 
 /*
@@ -108,13 +108,13 @@ char * pr_elem (int a, int p);
 void
 print_level (void)
 {
-int a;
-  #ifdef INDENT
-	  for (a = 0; a < level; a++)
-	    {
-	      fprintf (outfile, "  ");
-	    }
-  #endif
+  int a;
+#ifdef INDENT
+  for (a = 0; a < level; a++)
+    {
+      fprintf (outfile, "  ");
+    }
+#endif
 }
 
 
@@ -146,7 +146,7 @@ pr_elem (int a, int p)
 	}
       else
 	{
-	  sprintf (buff, " "); /*  warning: zero-length format string */
+	  sprintf (buff, " ");	/*  warning: zero-length format string */
 	}
     }
   return buff;
@@ -220,10 +220,10 @@ find_contents (char *s)
 static void
 chk (void *x)
 {
-return;
-  if ((int)x < 10000)
+  return;
+  if ((int) x < 10000)
     {
-      printf ("Suspect pointer... : %p\n",x);
+      printf ("Suspect pointer... : %p\n", x);
       exit (0);
     }
 }
@@ -248,47 +248,51 @@ return;
 int
 open_packer (char *basename, char dir)
 {
-char buff[256];
+  char buff[256];
 
-  sprintf(buff,"Basename=>%s< dir=%c\n",basename,dir);
-  debug(buff);
-  sprintf (buff, "%s%s", basename,acl_getenv ("A4GL_XML_EXT"));
-  debug(buff);
+  sprintf (buff, "Basename=>%s< dir=%c\n", basename, dir);
+  debug (buff);
+  sprintf (buff, "%s%s", basename, acl_getenv ("A4GL_XML_EXT"));
+  debug (buff);
 
   if (toupper (dir) == 'O')
     {
-		/* write XML file */
-				outfile = fopen (buff, "w");
-		if (outfile) {
-			set_last_outfile(buff);
-			fprintf(outfile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-			return 1;
-		} else {
-			exitwith("Unable to open form");
-			return 0;
-            		//exit (46);
-		}
+      /* write XML file */
+      outfile = fopen (buff, "w");
+      if (outfile)
+	{
+	  set_last_outfile (buff);
+	  fprintf (outfile, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+	  return 1;
+	}
+      else
+	{
+	  exitwith ("Unable to open form");
+	  return 0;
+	  //exit (46);
+	}
     }
 
   if (toupper (dir) == 'I')
     {
-		/* read XML file */
-		infile = open_file_dbpath (buff);
-		if (infile==0) {
-			exitwith("Unable to open form");
-			return 0;
-            		//exit (45);
-		}
+      /* read XML file */
+      infile = open_file_dbpath (buff);
+      if (infile == 0)
+	{
+	  exitwith ("Unable to open form");
+	  return 0;
+	  //exit (45);
+	}
 
-		/* Get rid of the ?xml line at the beginning */
-		fgets(buff,sizeof(buff),infile);
+      /* Get rid of the ?xml line at the beginning */
+      fgets (buff, sizeof (buff), infile);
 
-		if (infile)
-			return 1;
+      if (infile)
+	return 1;
 
     }
 
-  debug("Error in open_packer()\n");
+  debug ("Error in open_packer()\n");
 
   return 0;
 
@@ -302,7 +306,7 @@ char buff[256];
 void
 close_packer (char dir)
 {
-  debug("In close_packer()");
+  debug ("In close_packer()");
 
   if (toupper (dir) == 'O')
     fclose (outfile);
@@ -310,7 +314,7 @@ close_packer (char dir)
   if (toupper (dir) == 'I')
     fclose (infile);
 
-  debug("exiting close_packer()");
+  debug ("exiting close_packer()");
 }
 
 /*
@@ -393,16 +397,18 @@ output_bool (char *name, int val, int ptr, int isarr)
 int
 output_string (char *name, char *val, int ptr, int isarr)
 {
-int a;
+  int a;
 //char buff[10];
   print_level ();
-  debug ("in output_string() outfile=%p\n",outfile);
+  debug ("in output_string() outfile=%p\n", outfile);
 
-  fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"STRING\"%s>",name, pr_elem (isarr, ptr));
-  for (a=0;a<strlen(val);a++) {
-		fprintf(outfile,"%02x",val[a]);
-  }
-  fprintf(outfile,"</ATTR>\n");
+  fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"STRING\"%s>", name,
+	   pr_elem (isarr, ptr));
+  for (a = 0; a < strlen (val); a++)
+    {
+      fprintf (outfile, "%02x", val[a]);
+    }
+  fprintf (outfile, "</ATTR>\n");
 
   debug ("exit output_string()\n");
 
@@ -445,7 +451,7 @@ output_end_struct (char *s, char *n)
 {
   level--;
   print_level ();
-  fprintf (outfile, "</STRUCT>\n"); /* , n, s); */
+  fprintf (outfile, "</STRUCT>\n");	/* , n, s); */
   return 1;
 }
 
@@ -496,7 +502,7 @@ output_end_union (char *s, char *n)
 {
   level--;
   print_level ();
-  fprintf (outfile, "</UNION>\n"); /* , n , s); */
+  fprintf (outfile, "</UNION>\n");	/* , n , s); */
   return 1;
 }
 
@@ -640,17 +646,18 @@ input_string (char *name, char **val, int ptr, int isarr)
   if (!getaline ())
     return 0;
   buff = find_contents (ibuff);
-  pptr=malloc((strlen(buff)/2)+1);
-  buffer[2]=0;
-  b=0;
-  for (a=0;a<strlen(buff);a+=2) {
-	buffer[0]=buff[a];
-	buffer[1]=buff[a+1];
-	sscanf(buffer,"%02x",&c);
-   	pptr[b++]=c;
-   	pptr[b]=0;
-  }
-  *val=pptr;
+  pptr = malloc ((strlen (buff) / 2) + 1);
+  buffer[2] = 0;
+  b = 0;
+  for (a = 0; a < strlen (buff); a += 2)
+    {
+      buffer[0] = buff[a];
+      buffer[1] = buff[a + 1];
+      sscanf (buffer, "%02x", &c);
+      pptr[b++] = c;
+      pptr[b] = 0;
+    }
+  *val = pptr;
   return contentok;
 }
 
@@ -761,9 +768,9 @@ input_enum (char *name, int *d)
  * @todo Describe function
  */
 int
-can_pack_all(char *name)
+can_pack_all (char *name)
 {
-	return 0;
+  return 0;
 }
 
 /* ============================== EOF ================================ */

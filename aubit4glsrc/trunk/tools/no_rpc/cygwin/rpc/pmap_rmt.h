@@ -35,19 +35,21 @@
  * Copyright (C) 1986, Sun Microsystems, Inc.
  */
 
-struct rmtcallargs {
-	u_long prog, vers, proc, arglen;
-	caddr_t args_ptr;
-	xdrproc_t xdr_args;
+struct rmtcallargs
+{
+  u_long prog, vers, proc, arglen;
+  caddr_t args_ptr;
+  xdrproc_t xdr_args;
 };
 
-bool_t xdr_rmtcall_args();
+bool_t xdr_rmtcall_args ();
 
-struct rmtcallres {
-	u_long *port_ptr;
-	u_long resultslen;
-	caddr_t results_ptr;
-	xdrproc_t xdr_results;
+struct rmtcallres
+{
+  u_long *port_ptr;
+  u_long resultslen;
+  caddr_t results_ptr;
+  xdrproc_t xdr_results;
 };
 
-bool_t xdr_rmtcallres();
+bool_t xdr_rmtcallres ();

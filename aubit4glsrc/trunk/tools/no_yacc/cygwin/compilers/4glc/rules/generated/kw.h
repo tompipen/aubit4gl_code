@@ -1,7 +1,8 @@
-struct s_kw {
-    int id;
-	   int mode;
-    char *vals[20];
+struct s_kw
+{
+  int id;
+  int mode;
+  char *vals[20];
 };
 #define ALTER_TABLE 1000
 #define NEWFORMATSHARED 1001

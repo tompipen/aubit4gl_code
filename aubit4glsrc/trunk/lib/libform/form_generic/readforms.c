@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.9 2003-04-26 12:22:17 afalout Exp $
+# $Id: readforms.c,v 1.10 2003-05-12 14:24:19 mikeaubury Exp $
 #*/
 
 /**
@@ -111,10 +111,10 @@ static void real_dump_srec (struct s_form_dets *fd);
 
 
 #ifndef TRUE
-	#define TRUE 1
+#define TRUE 1
 #endif
 #ifndef FALSE
-	#define FALSE 0
+#define FALSE 0
 #endif
 
 /*
@@ -140,9 +140,9 @@ read_form_internal (char *fname, char *formname)
 static struct s_form_dets *
 real_read_form (char *fname, char *formname)
 {
-int a;
-struct s_form_dets *formdets;
-char buff[80];
+  int a;
+  struct s_form_dets *formdets;
+  char buff[80];
 
   trim (fname);
   trim (formname);
@@ -152,25 +152,26 @@ char buff[80];
   buff[strlen (buff) - 4] = 0;
 
 
-	#ifdef DEBUG
-    	debug ("fname=%s formname=%s", fname, formname);
-	#endif
+#ifdef DEBUG
+  debug ("fname=%s formname=%s", fname, formname);
+#endif
 
-	gui_startform (formname);
-	formdets =
-	    (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
+  gui_startform (formname);
+  formdets =
+    (struct s_form_dets *) acl_malloc (sizeof (struct s_form_dets),
 				       "Readform");
-	formdets->fileform =
-	    (struct_form *) acl_malloc (sizeof (struct_form), "Readform");
+  formdets->fileform =
+    (struct_form *) acl_malloc (sizeof (struct_form), "Readform");
 
-	memset (formdets->fileform, 0, sizeof (struct_form));
+  memset (formdets->fileform, 0, sizeof (struct_form));
 
-    #ifdef DEBUG
-		debug("Calling read_data_from_file with : struct_form,%p,%s",formdets->fileform,fname);
-    #endif
+#ifdef DEBUG
+  debug ("Calling read_data_from_file with : struct_form,%p,%s",
+	 formdets->fileform, fname);
+#endif
 
 
-	a=read_data_from_file("struct_form",formdets->fileform,fname);
+  a = read_data_from_file ("struct_form", formdets->fileform, fname);
 
   if (!a)
     {
@@ -301,8 +302,8 @@ dump_srec (void *fd)
 static void
 real_dump_srec (struct s_form_dets *fd)
 {
-int a;
-int b;
+  int a;
+  int b;
 
   return;
 
@@ -527,10 +528,10 @@ do_translate_form (struct_form * the_form)
 
 
 
-void 
-A4GLFORM_initlib() 
+void
+A4GLFORM_initlib ()
 {
-	// Does nothing...
+  // Does nothing...
 }
 
 /* ============================ EOF ============================== */

@@ -215,7 +215,7 @@ print_set_conn (char *conn)
  * insert cursors.
  */
 void
-print_put (char * cname)
+print_put (char *cname)
 {
   int n;
   printc ("{\n");
@@ -237,7 +237,8 @@ print_put (char * cname)
 void
 print_prepare (char *stmt, char *sqlvar)
 {
-  printc ("A4GLSQL_add_prepare(%s,A4GLSQL_prepare_select(0,0,0,0,%s));\n", stmt, sqlvar);
+  printc ("A4GLSQL_add_prepare(%s,A4GLSQL_prepare_select(0,0,0,0,%s));\n",
+	  stmt, sqlvar);
 }
 
 
@@ -539,8 +540,8 @@ get_undo_use (void)
   return "A4GLSQL_set_conn(_sav_cur_conn);}";
 }
 
-void print_sql_block_cmd(char *s) {
-	printc("/* %s */",s);
+void
+print_sql_block_cmd (char *s)
+{
+  printc ("/* %s */", s);
 }
-
-

@@ -8,20 +8,22 @@
 #ifndef AUBITDATABASEDRIVER_INCL
 #define AUBITDATABASEDRIVER_INCL
 
-	namespace Aubit4glSql {
-	  class Driver {
-	    private:
+namespace Aubit4glSql
+{
+  class Driver
+  {
+  private:
 	      /** Pointer to the handler of the dll (.so) loaded */
-	      void *dllHandler;
+    void *dllHandler;
 
 	      /** Used to generate the statement names */
-	      int statementCount;
+    int statementCount;
 
-	    public:
-	      void incrementStatement();
-	      char *getStatementName();
-	  };
-	}
+  public:
+    void incrementStatement ();
+    char *getStatementName ();
+  };
+}
 
 
-#endif /* #ifndef AUBITDATABASEDRIVER_INCL */
+#endif				/* #ifndef AUBITDATABASEDRIVER_INCL */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.11 2003-04-28 13:38:47 mikeaubury Exp $
+# $Id: prompt.c,v 1.12 2003-05-12 14:24:31 mikeaubury Exp $
 #*/
 
 /**
@@ -53,7 +53,7 @@
 /**
  * The prompt style.
  */
-int prompt_style=0;
+int prompt_style = 0;
 
 
 /*
@@ -85,7 +85,7 @@ int prompt_style=0;
  * @param af The attributes.
  */
 int
-start_prompt (void *vprompt, int ap, int c, int h,int af)
+start_prompt (void *vprompt, int ap, int c, int h, int af)
 {
   char *promptstr;
   int promptline;
@@ -94,103 +94,112 @@ start_prompt (void *vprompt, int ap, int c, int h,int af)
   GtkHBox *win;
   GtkWidget *cw = 0;
   GtkWidget *sarr[3];
-struct s_prompt *prompt;
-prompt=vprompt;
+  struct s_prompt *prompt;
+  prompt = vprompt;
 
-  win = GTK_HBOX(gtk_hbox_new(0,0));
+  win = GTK_HBOX (gtk_hbox_new (0, 0));
 
-  debug("In start prompt %p %d %d %d %d",prompt,ap,c,h,af);
+  debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
 
   memset (buff, ' ', 255);
 
-  if (prompt_style==0) {
-  	promptline = getprompt_line_gtk ();
-  	width = get_curr_width ();
-  	cw = GTK_WIDGET(get_curr_win_gtk());
-  } else {
-	promptline=0;
-	width=80;
-	if (prompt_style==1) cw=gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	
-	/* old style :
-	typedef enum
-	{
-	  GTK_WINDOW_TOPLEVEL,
-	  GTK_WINDOW_DIALOG, << missing!!!
-	  GTK_WINDOW_POPUP
-	} GtkWindowType;
+  if (prompt_style == 0)
+    {
+      promptline = getprompt_line_gtk ();
+      width = get_curr_width ();
+      cw = GTK_WIDGET (get_curr_win_gtk ());
+    }
+  else
+    {
+      promptline = 0;
+      width = 80;
+      if (prompt_style == 1)
+	cw = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 
-	GTK+ V 2:
+      /* old style :
+         typedef enum
+         {
+         GTK_WINDOW_TOPLEVEL,
+         GTK_WINDOW_DIALOG, << missing!!!
+         GTK_WINDOW_POPUP
+         } GtkWindowType;
 
-	typedef enum
-	{
-	  GTK_WINDOW_TOPLEVEL,
-	  GTK_WINDOW_POPUP
-	} GtkWindowType;
+         GTK+ V 2:
 
-	*/
+         typedef enum
+         {
+         GTK_WINDOW_TOPLEVEL,
+         GTK_WINDOW_POPUP
+         } GtkWindowType;
 
-	//if (prompt_style==2) cw=gtk_window_new(GTK_WINDOW_DIALOG);
-    if (prompt_style==2) cw=gtk_window_new(GTK_WINDOW_POPUP);
-	if (prompt_style==3) cw=gtk_window_new(GTK_WINDOW_POPUP);
-	gtk_widget_show(cw);
-  }
-  debug("Promptline=%d",promptline);
+       */
+
+      //if (prompt_style==2) cw=gtk_window_new(GTK_WINDOW_DIALOG);
+      if (prompt_style == 2)
+	cw = gtk_window_new (GTK_WINDOW_POPUP);
+      if (prompt_style == 3)
+	cw = gtk_window_new (GTK_WINDOW_POPUP);
+      gtk_widget_show (cw);
+    }
+  debug ("Promptline=%d", promptline);
   prompt->win = win;
   promptstr = char_pop ();
   prompt->mode = 0;
-  prompt->h=h;
-  prompt->charmode=c;
+  prompt->h = h;
+  prompt->charmode = c;
   prompt->promptstr = promptstr;
   prompt->lastkey = 0;
   width -= strlen (promptstr);
   width--;
 
-  sarr[0] = (void *)gtk_label_new(promptstr);
-  sarr[1] = (void *)gtk_entry_new();
+  sarr[0] = (void *) gtk_label_new (promptstr);
+  sarr[1] = (void *) gtk_entry_new ();
 
-  gtk_box_pack_start_defaults(GTK_BOX(win),GTK_WIDGET(sarr[0]));
-  gtk_box_pack_start_defaults(GTK_BOX(win),GTK_WIDGET(sarr[1]));
+  gtk_box_pack_start_defaults (GTK_BOX (win), GTK_WIDGET (sarr[0]));
+  gtk_box_pack_start_defaults (GTK_BOX (win), GTK_WIDGET (sarr[1]));
 
-  gtk_widget_show(sarr[0]);
-  gtk_widget_show(sarr[1]);
-  gtk_widget_show(GTK_WIDGET(win));
+  gtk_widget_show (sarr[0]);
+  gtk_widget_show (sarr[1]);
+  gtk_widget_show (GTK_WIDGET (win));
 
-  gtk_object_set_data(GTK_OBJECT(win),"STYLE",(void *)prompt_style);
-  gtk_object_set_data(GTK_OBJECT(win),"CW",cw);
+  gtk_object_set_data (GTK_OBJECT (win), "STYLE", (void *) prompt_style);
+  gtk_object_set_data (GTK_OBJECT (win), "CW", cw);
 
   gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
-                      GTK_SIGNAL_FUNC (keypress), win);
+		      GTK_SIGNAL_FUNC (keypress), win);
 
   gtk_signal_connect (GTK_OBJECT (sarr[1]), "key-press-event",
-                      GTK_SIGNAL_FUNC (keypress), sarr[1]);
+		      GTK_SIGNAL_FUNC (keypress), sarr[1]);
 
-  prompt->field = (void *)sarr[1];
+  prompt->field = (void *) sarr[1];
 
   /* gtk_fixed_put(cw,win,0,promptline*YHEIGHT); */
-  if (prompt_style==0)
-  	gtk_fixed_put(GTK_FIXED(cw),GTK_WIDGET(win),0,promptline*YHEIGHT);
+  if (prompt_style == 0)
+    gtk_fixed_put (GTK_FIXED (cw), GTK_WIDGET (win), 0, promptline * YHEIGHT);
   else
-	gtk_container_add(GTK_CONTAINER(cw),GTK_WIDGET(win));
+    gtk_container_add (GTK_CONTAINER (cw), GTK_WIDGET (win));
 
 
-  if (ap) {
-	      gui_set_field_fore(sarr[0],ap);
-	      gui_set_field_back(sarr[0],ap);
-  }
+  if (ap)
+    {
+      gui_set_field_fore (sarr[0], ap);
+      gui_set_field_back (sarr[0], ap);
+    }
 
-  if (af) {
-	      gui_set_field_back(sarr[1],af);
-	      gui_set_field_fore(sarr[1],af);
-  }
+  if (af)
+    {
+      gui_set_field_back (sarr[1], af);
+      gui_set_field_fore (sarr[1], af);
+    }
 
-  buff[0] = 0; /* -2*/
+  buff[0] = 0;			/* -2 */
 
-  gtk_entry_set_text (GTK_ENTRY(sarr[1]), buff);
+  gtk_entry_set_text (GTK_ENTRY (sarr[1]), buff);
   prompt->f = 0;
   A4GLSQL_set_status (0, 0);
 
-  if (a4gl_status != 0) return (prompt->mode = 2);
+  if (a4gl_status != 0)
+    return (prompt->mode = 2);
 
   A4GLSQL_set_status (0, 0);
 
@@ -206,75 +215,80 @@ prompt=vprompt;
 int
 prompt_loop (void *vprompt)
 {
-GtkWidget *p;
-int action;
-struct s_prompt * prompt;
-prompt=vprompt;
+  GtkWidget *p;
+  int action;
+  struct s_prompt *prompt;
+  prompt = vprompt;
 
   p = prompt->win;
 
 
-  gtk_widget_grab_focus(GTK_WIDGET(prompt->field));
+  gtk_widget_grab_focus (GTK_WIDGET (prompt->field));
   if (prompt->mode == 1)
     {
       int style;
       GtkWidget *cw;
-	char buff[1024];
+      char buff[1024];
 
-      strcpy (buff,gtk_entry_get_text(GTK_ENTRY(prompt->field)));
-	trim(buff);
+      strcpy (buff, gtk_entry_get_text (GTK_ENTRY (prompt->field)));
+      trim (buff);
       push_char (buff);
       prompt->mode = 2;
-      style = (int)gtk_object_get_data(GTK_OBJECT(p),"STYLE");
-      cw=gtk_object_get_data(GTK_OBJECT(p),"CW");
-      if (style==0) gtk_widget_destroy(p);
-      else {
-		gtk_widget_destroy(cw);
-      }
+      style = (int) gtk_object_get_data (GTK_OBJECT (p), "STYLE");
+      cw = gtk_object_get_data (GTK_OBJECT (p), "CW");
+      if (style == 0)
+	gtk_widget_destroy (p);
+      else
+	{
+	  gtk_widget_destroy (cw);
+	}
       return 0;
     }
 
-  if (prompt->mode > 0) return 0;
+  if (prompt->mode > 0)
+    return 0;
 
-  clear_something();
+  clear_something ();
 
   while (1)
     {
       action = user_has_done_something ();
       /* printf("Action=%d\n",action); */
       if (action)
-        {
-          break;
-        }
+	{
+	  break;
+	}
 
       a4gl_usleep (100);
       if (gtk_events_pending ())
-        gtk_main_iteration ();
+	gtk_main_iteration ();
     }
 
 
-   if (action == 1)
-    {                           /*  key pressed... */
+  if (action == 1)
+    {				/*  key pressed... */
       int k;
       k = which_key ();
       //printf ("KEY PRESSED 0x%x\n", k);fflush(stdout);
       set_last_key (k);
       clear_something ();
-  }
+    }
 
   prompt->lastkey = gui_get_lastkey ();
 
   //printf("lastkey = %x\n",prompt->lastkey);
 
-  if (prompt->lastkey == 10 || prompt->lastkey == 13 || prompt->lastkey==0xff0d || prompt->lastkey==0xff8d)
-      {
-	prompt->mode = 1;
-	return 0;
-      }
+  if (prompt->lastkey == 10 || prompt->lastkey == 13
+      || prompt->lastkey == 0xff0d || prompt->lastkey == 0xff8d)
+    {
+      prompt->mode = 1;
+      return 0;
+    }
 
-      if (prompt->charmode) {
-	push_char (gtk_entry_get_text(GTK_ENTRY(prompt->field)));
-	}
+  if (prompt->charmode)
+    {
+      push_char (gtk_entry_get_text (GTK_ENTRY (prompt->field)));
+    }
 
   return -90;
 }
@@ -286,12 +300,12 @@ prompt=vprompt;
  * @param a The prompt style
  */
 void
-gui_prompt_style(int a)
+gui_prompt_style (int a)
 {
-	if (a>=0&&a<=3)
-		prompt_style=a;
-	else
-		prompt_style=0;
+  if (a >= 0 && a <= 3)
+    prompt_style = a;
+  else
+    prompt_style = 0;
 }
 
 

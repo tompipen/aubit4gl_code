@@ -1,7 +1,7 @@
 /*
 @(#)File:           $RCSfile: access.c,v $
-@(#)Version:        $Revision: 1.1.1.1 $
-@(#)Last changed:   $Date: 2001-08-20 02:37:05 $
+@(#)Version:        $Revision: 1.2 $
+@(#)Last changed:   $Date: 2003-05-12 14:24:34 $
 @(#)Purpose:        I4GL/D4GL interface to access(2)
 @(#)Author:         J Leffler
 @(#)Copyright:      (C) JLSS 1988,1998
@@ -20,17 +20,20 @@
 #endif /* FOURJS */
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: access.c,v 1.1.1.1 2001-08-20 02:37:05 afalout Exp $";
+static const char rcs[] =
+  "@(#)$Id: access.c,v 1.2 2003-05-12 14:24:34 mikeaubury Exp $";
 #endif
 
 #ifdef AUBIT4GL
-int	aclfgl_file_access(int n)
+int
+aclfgl_file_access (int n)
 #else
-int	file_access(int n)
+int
+file_access (int n)
 #endif
 {
-	char	file[512];
-	int		mode;
+  char file[512];
+  int mode;
 
 #ifndef AUBIT4GL
 #ifndef QUERIX
@@ -64,18 +67,17 @@ tmp/ccAKBFBo.o: In function `main':
 
 
 
-	if (n != 2)
-		fgl_fatal("file_access", 1, -1318);
-	popint(&mode);
-	popstring(file, sizeof(file));
-	retint(access(file, mode));
+  if (n != 2)
+    fgl_fatal ("file_access", 1, -1318);
+  popint (&mode);
+  popstring (file, sizeof (file));
+  retint (access (file, mode));
 #endif
 #endif
 
-	return(1);
+  return (1);
 }
 
 #ifdef FOURJS
-CFACE(file_access, 2, 1)
+CFACE (file_access, 2, 1)
 #endif /* FOURJS */
-

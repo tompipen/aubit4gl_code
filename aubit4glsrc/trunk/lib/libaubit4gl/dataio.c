@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dataio.c,v 1.6 2003-01-21 08:25:52 afalout Exp $
+# $Id: dataio.c,v 1.7 2003-05-12 14:24:03 mikeaubury Exp $
 #
 */
 
@@ -65,8 +65,8 @@
 =====================================================================
 */
 
-static void *libptr=0;
-static int (*func)(void *ptr,char*filename);   /*FIXME-warning: function declaration isn't a prototype */
+static void *libptr = 0;
+static int (*func) (void *ptr, char *filename);	/*FIXME-warning: function declaration isn't a prototype */
 
 /*
 =====================================================================
@@ -89,21 +89,22 @@ static int (*func)(void *ptr,char*filename);   /*FIXME-warning: function declara
  * @param
  */
 int
-read_data_from_file(char *datatype, void *ptr, char *filename)
+read_data_from_file (char *datatype, void *ptr, char *filename)
 {
-char buff[256];
-	#ifdef DEBUG
-		debug("Read_data_from_file : %s %p %s",datatype,ptr,filename);
-    #endif
-	libptr=(void *)dl_openlibrary("DATA",datatype);
-	if (libptr==0) {
-		exitwith("Unable to open library");
-		return 0;
-	}
+  char buff[256];
+#ifdef DEBUG
+  debug ("Read_data_from_file : %s %p %s", datatype, ptr, filename);
+#endif
+  libptr = (void *) dl_openlibrary ("DATA", datatype);
+  if (libptr == 0)
+    {
+      exitwith ("Unable to open library");
+      return 0;
+    }
 
-	sprintf(buff,"read_%s",datatype);
-	func=find_func(libptr,buff);
-	return func(ptr,filename);
+  sprintf (buff, "read_%s", datatype);
+  func = find_func (libptr, buff);
+  return func (ptr, filename);
 }
 
 
@@ -115,38 +116,39 @@ char buff[256];
  * @param
  */
 int
-write_data_to_file(char *datatype, void *ptr, char *filename)
+write_data_to_file (char *datatype, void *ptr, char *filename)
 {
-char buff[256];
-int result;
-	#ifdef DEBUG
-		debug("Write data to file : datatype=%s ptr=%p file=%s\n",
-			datatype,ptr,filename);
-    #endif
-	libptr=(void *)dl_openlibrary("DATA",datatype);
-	if (libptr==0) {
-		exitwith("Unable to open library");
-		return 0;
-	}
+  char buff[256];
+  int result;
+#ifdef DEBUG
+  debug ("Write data to file : datatype=%s ptr=%p file=%s\n",
+	 datatype, ptr, filename);
+#endif
+  libptr = (void *) dl_openlibrary ("DATA", datatype);
+  if (libptr == 0)
+    {
+      exitwith ("Unable to open library");
+      return 0;
+    }
 
-	sprintf(buff,"write_%s",datatype);
+  sprintf (buff, "write_%s", datatype);
 
-	#ifdef DEBUG
-		debug("Looking for function : %s",buff);
-    #endif
+#ifdef DEBUG
+  debug ("Looking for function : %s", buff);
+#endif
 
-	func=find_func(libptr,buff);
-	#ifdef DEBUG
-		debug("Calling %s(ptr=%p,filename=%s)",buff,ptr,filename);
-    #endif
+  func = find_func (libptr, buff);
+#ifdef DEBUG
+  debug ("Calling %s(ptr=%p,filename=%s)", buff, ptr, filename);
+#endif
 
-	result=func(ptr,filename);
+  result = func (ptr, filename);
 
-	#ifdef DEBUG
-		debug("Returned from %s\n",buff);
-    #endif
+#ifdef DEBUG
+  debug ("Returned from %s\n", buff);
+#endif
 
-    return result;
+  return result;
 }
 
 /* ================================ EOF =================================== */

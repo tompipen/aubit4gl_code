@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: list.c,v 1.11 2003-03-06 22:38:33 mikeaubury Exp $
+# $Id: list.c,v 1.12 2003-05-12 14:23:45 mikeaubury Exp $
 #*/
 
 /**
@@ -80,7 +80,7 @@ list_prompt (char *s)
 {
   static char buff[256];
   printf ("Please enter %s:\n", s);
-  fgets (buff,255,stdin);
+  fgets (buff, 255, stdin);
   stripnl (buff);
   return buff;
 }
@@ -95,8 +95,8 @@ list_prompt (char *s)
  * @param id
  * @param s The string to be added at the end of the prompt
  */
-void 
-list_prompt_many(char *id, char *s)
+void
+list_prompt_many (char *id, char *s)
 {
   char *buff;
   strcpy (lists[list_cnt].list_id, id);
@@ -120,7 +120,7 @@ list_prompt_many(char *id, char *s)
  * @param id
  * @param s The string to be added at the end of the prompt
  */
-void 
+void
 list_prompt_single (char *id, char *s)
 {
   char *buff;
@@ -140,7 +140,7 @@ list_prompt_single (char *id, char *s)
 void
 list_set_single (char *id, char *s)
 {
-  
+
   strcpy (lists[list_cnt].list_id, id);
   lists[list_cnt].list_count = 0;
   strcpy (lists[list_cnt].list_values[lists[list_cnt].list_count], s);
@@ -223,7 +223,7 @@ list_append (char *id, char *id2, char *str)
  *
  * @todo Describe function
  */
-void 
+void
 list_copy (char *id, char *id2)
 {
   int a;
@@ -308,8 +308,8 @@ list_gen (char *id, char *newid, char *sep)
  *
  * @todo Describe function
  */
-void 
-list_print_all(void)
+void
+list_print_all (void)
 {
   int id;
   int a;
@@ -362,7 +362,7 @@ new_id (void)
  *
  * @todo Describe function
  */
-void 
+void
 list_columns (char *id, char *s)
 {
   list_set_single (id, s);
@@ -373,7 +373,7 @@ list_columns (char *id, char *s)
  *
  * @todo Describe function
  */
-void 
+void
 list_set_plus (char *newid, char *cid1, char *cid2)
 {
   int id1, id2;
@@ -394,7 +394,8 @@ list_set_plus (char *newid, char *cid1, char *cid2)
 	{
 	  if (strcmp
 	      (lists[id2].list_values[a],
-	       lists[list_cnt].list_values[b]) == 0) found = 1;
+	       lists[list_cnt].list_values[b]) == 0)
+	    found = 1;
 	}
       if (found == 1)
 	continue;
@@ -410,7 +411,7 @@ list_set_plus (char *newid, char *cid1, char *cid2)
  *
  * @todo Describe function
  */
-void 
+void
 list_set_minus (char *newid, char *cid1, char *cid2)
 {
   int id1, id2;
@@ -428,7 +429,8 @@ list_set_minus (char *newid, char *cid1, char *cid2)
       for (b = 0; b < lists[id2].list_count; b++)
 	{
 	  if (strcmp (lists[id1].list_values[a], lists[id2].list_values[b]) ==
-	      0) found = 1;
+	      0)
+	    found = 1;
 	}
       if (found == 1)
 	continue;
@@ -446,7 +448,7 @@ list_set_minus (char *newid, char *cid1, char *cid2)
  */
 
 void
-list_in(void)
+list_in (void)
 {
 };
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.20 2003-05-07 07:15:24 mikeaubury Exp $
+# $Id: ioform.c,v 1.21 2003-05-12 14:24:27 mikeaubury Exp $
 #*/
 
 /**
@@ -72,20 +72,20 @@
 =====================================================================
 */
 
-extern WINDOW 	*	currwin;
-int 				m_lastkey = 0;
-int 				tab_cnt = 0;
-int 				srec_cnt = 0;
-extern int 			errno;
-char 				delimiters[4];
+extern WINDOW *currwin;
+int m_lastkey = 0;
+int tab_cnt = 0;
+int srec_cnt = 0;
+extern int errno;
+char delimiters[4];
 
-int 				lastc = 0;
-int 				nline;
-int 				fline;
-int 				ncol;
-char 				dbname[64];
-long 				inp_current_field = 0;
-int 				do_input_nowrap=0;
+int lastc = 0;
+int nline;
+int fline;
+int ncol;
+char dbname[64];
+long inp_current_field = 0;
+int do_input_nowrap = 0;
 
 
 /*
@@ -97,60 +97,61 @@ int 				do_input_nowrap=0;
 
 /** @todo Take this prototype definition for a header file */
 
-void 			bomb_out			(void) ;
-extern char *	replace_sql_var 	(char *s);
-char *			read_string_dup 	(FILE * ofile);
-struct 			s_form_dets *getfromform 	(FORM * f);
-char *			string_width 		(char *a);
-WINDOW *		create_window 		(char *name, int x, int y, int w, int h, int border);
-void 			set_field_colour_attr(FIELD *field,int do_reverse,int colour) ;
+void bomb_out (void);
+extern char *replace_sql_var (char *s);
+char *read_string_dup (FILE * ofile);
+struct s_form_dets *getfromform (FORM * f);
+char *string_width (char *a);
+WINDOW *create_window (char *name, int x, int y, int w, int h, int border);
+void set_field_colour_attr (FIELD * field, int do_reverse, int colour);
 
-void 			disp_form_fields_ap (int n, int attr, char *formname,va_list *ap);
-int 			display_fields 		(FORM * mform, int n, ...);
-extern char * 	find_attribute 		(struct s_form_dets *f, int field_no);
-void 			debug_print_field_opts (FIELD * a);
-void 			mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
-void 			set_field_pop_attr 	(FIELD * field, int attr);
-int 			find_field_no 		(FIELD * f, struct s_screenio *sio);
-void 			do_after_field 		(FIELD * f, struct s_screenio * sio);
-int 			get_metric_for 		(struct s_form_dets * form, FIELD * f);
-int 			get_field_width 	(FIELD * f);
-int 			page_for_nfield 	(struct s_screenio * s);
-int 			proc_key 			(int a, FORM * mform, struct s_screenio * s);
-int 			form_field_chk 		(struct s_screenio *sio, int m);
-int 			form_field_constr 	(struct s_screenio *sio, int m);
-int 			get_curr_metric 	(struct s_form_dets *form);
-int 			page_for_pfield 	(struct s_screenio * s);
-void 			field_autonext 		(FIELD * f);
-void 			field_dynamic 		(FIELD * f);
-void 			field_invisible 	(FIELD * f);
-void 			field_noentry 		(FIELD * f);
-void 			set_field_attr 		(FIELD * field);
-int 			req_field_input 	(struct s_screenio *s, ...);
-int 			req_field_input_array (struct s_inp_arr *s, ...);
-void 			set_init_value 		(FIELD * f, void *ptr, int dtype);
-int 			get_metric_no 		(struct s_form_dets * form, FIELD * f);
-int 			turn_field_off 		(FIELD * f);
-void 			turn_field_on 		(FIELD * f);
-void 			turn_field_on2 		(FIELD * f, int a);
-void 			set_init_pop 		(FIELD * f);
-int 			field_name_match 	(FIELD * f, char *s);
-void 			do_before_field 	(FIELD * f, struct s_screenio *sio);
-void 			dump_fields 		(FIELD * fields[]);
-void 			set_init_pop_attr 	(FIELD * field, int attr);
-FIELD * 		scan_for_field 		(char *s);
-int 			get_curr_infield	(void);
-int 			key_prompt 			(int a, FORM * mform, struct s_prompt * prompt);
-void 			reset_delims 		(struct s_form_dets * formdets, char *delims);
-int 			page_for_field 		(struct s_screenio * s, FIELD * f);
-int 			page_for_cfield 	(struct s_screenio * s);
-int 			curr_metric_is_last (void);
-int 			curr_metric_is_first (void);
-int 			curr_metric_is_veryfirst (void);
-int 			curr_metric_is_verylast (void);
-int 			curses_to_aubit(int a);
-void 			set_field_attr_with_attr(FIELD *field,int attr);
-int 			gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets, va_list * ap);
+void disp_form_fields_ap (int n, int attr, char *formname, va_list * ap);
+int display_fields (FORM * mform, int n, ...);
+extern char *find_attribute (struct s_form_dets *f, int field_no);
+void debug_print_field_opts (FIELD * a);
+void mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
+void set_field_pop_attr (FIELD * field, int attr);
+int find_field_no (FIELD * f, struct s_screenio *sio);
+void do_after_field (FIELD * f, struct s_screenio *sio);
+int get_metric_for (struct s_form_dets *form, FIELD * f);
+int get_field_width (FIELD * f);
+int page_for_nfield (struct s_screenio *s);
+int proc_key (int a, FORM * mform, struct s_screenio *s);
+int form_field_chk (struct s_screenio *sio, int m);
+int form_field_constr (struct s_screenio *sio, int m);
+int get_curr_metric (struct s_form_dets *form);
+int page_for_pfield (struct s_screenio *s);
+void field_autonext (FIELD * f);
+void field_dynamic (FIELD * f);
+void field_invisible (FIELD * f);
+void field_noentry (FIELD * f);
+void set_field_attr (FIELD * field);
+int req_field_input (struct s_screenio *s, ...);
+int req_field_input_array (struct s_inp_arr *s, ...);
+void set_init_value (FIELD * f, void *ptr, int dtype);
+int get_metric_no (struct s_form_dets *form, FIELD * f);
+int turn_field_off (FIELD * f);
+void turn_field_on (FIELD * f);
+void turn_field_on2 (FIELD * f, int a);
+void set_init_pop (FIELD * f);
+int field_name_match (FIELD * f, char *s);
+void do_before_field (FIELD * f, struct s_screenio *sio);
+void dump_fields (FIELD * fields[]);
+void set_init_pop_attr (FIELD * field, int attr);
+FIELD *scan_for_field (char *s);
+int get_curr_infield (void);
+int key_prompt (int a, FORM * mform, struct s_prompt *prompt);
+void reset_delims (struct s_form_dets *formdets, char *delims);
+int page_for_field (struct s_screenio *s, FIELD * f);
+int page_for_cfield (struct s_screenio *s);
+int curr_metric_is_last (void);
+int curr_metric_is_first (void);
+int curr_metric_is_veryfirst (void);
+int curr_metric_is_verylast (void);
+int curses_to_aubit (int a);
+void set_field_attr_with_attr (FIELD * field, int attr);
+int gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets,
+			va_list * ap);
 
 /*
 =====================================================================
@@ -186,9 +187,11 @@ make_label (int frow, int fcol, char *label)
     }
   else
     {
-	#ifdef DEBUG
-	      {        debug ("FIeld not created!!!");      }
-	#endif
+#ifdef DEBUG
+      {
+	debug ("FIeld not created!!!");
+      }
+#endif
     }
   return (f);
 }
@@ -202,18 +205,18 @@ make_label (int frow, int fcol, char *label)
 int
 read_metrics (struct s_form_dets *formdets)
 {
-int a, n;
-int last_field = -1;
-int cnt = 0;
-int lscr = 1;
-int lfieldscr = -1;
-char delims[3][2];
-delims[0][0] = formdets->fileform->delim[0];
-delims[1][0] = formdets->fileform->delim[1];
-delims[2][0] = formdets->fileform->delim[2];
-delims[0][1] = 0;
-delims[1][1] = 0;
-delims[2][1] = 0;
+  int a, n;
+  int last_field = -1;
+  int cnt = 0;
+  int lscr = 1;
+  int lfieldscr = -1;
+  char delims[3][2];
+  delims[0][0] = formdets->fileform->delim[0];
+  delims[1][0] = formdets->fileform->delim[1];
+  delims[2][0] = formdets->fileform->delim[2];
+  delims[0][1] = 0;
+  delims[1][1] = 0;
+  delims[2][1] = 0;
 
   n = formdets->fileform->metrics.metrics_len;
   debug ("metrics len=%d", n);
@@ -224,79 +227,80 @@ delims[2][1] = 0;
 
 
       if (strlen (formdets->fileform->metrics.metrics_val[a].label) != 0)
-        {
-          formdets->fileform->metrics.metrics_val[a].field =
-            (int) make_label (formdets->fileform->metrics.metrics_val[a].y,
-                              formdets->fileform->metrics.metrics_val[a].x,
-                              formdets->fileform->metrics.metrics_val[a].
-                              label);
-          formdets->form_fields[cnt++] =
-            (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
-          formdets->form_fields[cnt] = 0;
-        }
+	{
+	  formdets->fileform->metrics.metrics_val[a].field =
+	    (int) make_label (formdets->fileform->metrics.metrics_val[a].y,
+			      formdets->fileform->metrics.metrics_val[a].x,
+			      formdets->fileform->metrics.metrics_val[a].
+			      label);
+	  formdets->form_fields[cnt++] =
+	    (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
+	  formdets->form_fields[cnt] = 0;
+	}
       else
-        {
-          debug ("Making field");
-          formdets->fileform->metrics.metrics_val[a].field =
-            (int) make_field (formdets->fileform->metrics.metrics_val[a].y,
-                              formdets->fileform->metrics.metrics_val[a].x, 1,
-                              formdets->fileform->metrics.metrics_val[a].w);
-          formdets->form_fields[cnt++] =
-            (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
-          formdets->form_fields[cnt] = 0;
-          formdets->fileform->metrics.metrics_val[a].dlm1 =
-            (int) make_label (formdets->fileform->metrics.metrics_val[a].y,
-                              formdets->fileform->metrics.metrics_val[a].x -
-                              1, delims[0]);
-          formdets->form_fields[cnt++] =
-            (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm1;
-          formdets->fileform->metrics.metrics_val[a].dlm2 =
-            (int) make_label (formdets->fileform->metrics.metrics_val[a].y,
-                              formdets->fileform->metrics.metrics_val[a].x +
-                              formdets->fileform->metrics.metrics_val[a].w,
-                              delims[1]);
-          formdets->form_fields[cnt++] =
-            (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm2;
-          formdets->form_fields[cnt] = 0;
-        }
+	{
+	  debug ("Making field");
+	  formdets->fileform->metrics.metrics_val[a].field =
+	    (int) make_field (formdets->fileform->metrics.metrics_val[a].y,
+			      formdets->fileform->metrics.metrics_val[a].x, 1,
+			      formdets->fileform->metrics.metrics_val[a].w);
+	  formdets->form_fields[cnt++] =
+	    (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
+	  formdets->form_fields[cnt] = 0;
+	  formdets->fileform->metrics.metrics_val[a].dlm1 =
+	    (int) make_label (formdets->fileform->metrics.metrics_val[a].y,
+			      formdets->fileform->metrics.metrics_val[a].x -
+			      1, delims[0]);
+	  formdets->form_fields[cnt++] =
+	    (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm1;
+	  formdets->fileform->metrics.metrics_val[a].dlm2 =
+	    (int) make_label (formdets->fileform->metrics.metrics_val[a].y,
+			      formdets->fileform->metrics.metrics_val[a].x +
+			      formdets->fileform->metrics.metrics_val[a].w,
+			      delims[1]);
+	  formdets->form_fields[cnt++] =
+	    (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm2;
+	  formdets->form_fields[cnt] = 0;
+	}
 
 
       if (lscr != formdets->fileform->metrics.metrics_val[a].scr)
-        {
-          lscr = formdets->fileform->metrics.metrics_val[a].scr;
-          set_new_page ((FIELD *) formdets->fileform->metrics.metrics_val[a].
-                        field, 1);
-        }
+	{
+	  lscr = formdets->fileform->metrics.metrics_val[a].scr;
+	  set_new_page ((FIELD *) formdets->fileform->metrics.metrics_val[a].
+			field, 1);
+	}
 
 
 
       if (strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
-        {
-          if (last_field == -1)
-            {
-              formdets->fileform->metrics.metrics_val[a].pos_code +=
-                POS_VERY_FIRST;}
-          debug ("LAST_FIELD2 -CHK111");
-          debug ("LAST_FIELD1 -CHK111");
-        }
+	{
+	  if (last_field == -1)
+	    {
+	      formdets->fileform->metrics.metrics_val[a].pos_code +=
+		POS_VERY_FIRST;
+	    }
+	  debug ("LAST_FIELD2 -CHK111");
+	  debug ("LAST_FIELD1 -CHK111");
+	}
 
       if (lfieldscr != formdets->fileform->metrics.metrics_val[a].scr
-          && strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
-        {
+	  && strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
+	{
 
-          formdets->fileform->metrics.metrics_val[a].pos_code += POS_FIRST;
+	  formdets->fileform->metrics.metrics_val[a].pos_code += POS_FIRST;
 
-          if (last_field != -1)
-            {
-              formdets->fileform->metrics.metrics_val[last_field].pos_code +=
-                POS_LAST;
-            }
-          lfieldscr = formdets->fileform->metrics.metrics_val[a].scr;
-        }
+	  if (last_field != -1)
+	    {
+	      formdets->fileform->metrics.metrics_val[last_field].pos_code +=
+		POS_LAST;
+	    }
+	  lfieldscr = formdets->fileform->metrics.metrics_val[a].scr;
+	}
       debug ("LAST_FIELD3 -CHK111 a=%d label='%s'", a,
-             formdets->fileform->metrics.metrics_val[a].label);
+	     formdets->fileform->metrics.metrics_val[a].label);
       if (strlen (formdets->fileform->metrics.metrics_val[a].label) == 0)
-        last_field = a;
+	last_field = a;
     }
 
   debug ("Last_field=%d\n", last_field);
@@ -306,9 +310,10 @@ delims[2][1] = 0;
       return 0;
     }
 
-  formdets->fileform->metrics.metrics_val[last_field].pos_code += POS_VERY_LAST;
+  formdets->fileform->metrics.metrics_val[last_field].pos_code +=
+    POS_VERY_LAST;
 
-return 1;
+  return 1;
 }
 
 
@@ -325,8 +330,8 @@ default_attributes (FIELD * f, int dtype)
     set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_STATIC);
   else
     set_field_opts (f,
-                    O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_STATIC |
-                    O_BLANK);
+		    O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_STATIC |
+		    O_BLANK);
 
   debug ("STATIC");
   set_field_fore (f, colour_code (7));
@@ -395,14 +400,15 @@ set_field_attr (FIELD * field)
   default_attributes (field, f->datatype);
   debug ("Set defs");
 
-  if (has_bool_attribute (f, FA_B_AUTONEXT)) {
-	debug("Autoskip");
-    field_opts_on (field, O_AUTOSKIP);
-  }
+  if (has_bool_attribute (f, FA_B_AUTONEXT))
+    {
+      debug ("Autoskip");
+      field_opts_on (field, O_AUTOSKIP);
+    }
 
   if (has_bool_attribute (f, FA_B_INVISIBLE))
     {
-	debug("Invisible");
+      debug ("Invisible");
       field_opts_off (field, O_PUBLIC);
     }
 
@@ -411,21 +417,21 @@ set_field_attr (FIELD * field)
       field_opts_off (field, O_STATIC);
 
       if (f->dynamic == -1)
-        {
-          debug ("Max size is lots");
-          set_max_field (field, 0);
-        }
+	{
+	  debug ("Max size is lots");
+	  set_max_field (field, 0);
+	}
       else
-        {
-          set_max_field (field, f->dynamic);
-          debug ("Max size=%d", f->dynamic);
-        }
+	{
+	  set_max_field (field, f->dynamic);
+	  debug ("Max size=%d", f->dynamic);
+	}
 
     }
 
   if (has_bool_attribute (f, FA_B_NOENTRY))
     {
-	debug("No entry");
+      debug ("No entry");
       field_opts_off (field, O_ACTIVE);
       field_opts_off (field, O_EDIT);
     }
@@ -440,25 +446,32 @@ set_field_attr (FIELD * field)
       field_opts_on (field, O_WRAP);
     }
 
-    set_field_colour_attr(field,f->do_reverse,f->colour);
+  set_field_colour_attr (field, f->do_reverse, f->colour);
 
 }
 
-void set_field_attr_with_attr(FIELD *field,int attr) {
-int r;
-	if (attr&AUBIT_ATTR_REVERSE) r=1;
-	else r=0;
-	debug("MJA Calling set_field_colour_attr - do_reverse=%d attr=%d",r,attr);
-	set_field_colour_attr(field,r,attr);
+void
+set_field_attr_with_attr (FIELD * field, int attr)
+{
+  int r;
+  if (attr & AUBIT_ATTR_REVERSE)
+    r = 1;
+  else
+    r = 0;
+  debug ("MJA Calling set_field_colour_attr - do_reverse=%d attr=%d", r,
+	 attr);
+  set_field_colour_attr (field, r, attr);
 }
 
-void set_field_colour_attr(FIELD *field,int do_reverse,int colour) {
+void
+set_field_colour_attr (FIELD * field, int do_reverse, int colour)
+{
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (field_userptr (field));
 
   if (do_reverse && colour == AUBIT_COLOR_WHITE)
     {
-	debug("XX1 REVERSE");
+      debug ("XX1 REVERSE");
       set_field_fore (field, A_REVERSE);
       set_field_back (field, A_REVERSE);
     }
@@ -466,9 +479,9 @@ void set_field_colour_attr(FIELD *field,int do_reverse,int colour) {
 
   if (do_reverse && colour != AUBIT_COLOR_WHITE)
     {
-     debug("XX2 REVERSE");
-      set_field_back (field, decode_colour_attr_aubit(colour) | A_REVERSE);
-      set_field_fore (field, decode_colour_attr_aubit(colour) | A_REVERSE);
+      debug ("XX2 REVERSE");
+      set_field_back (field, decode_colour_attr_aubit (colour) | A_REVERSE);
+      set_field_fore (field, decode_colour_attr_aubit (colour) | A_REVERSE);
     }
 
   if (do_reverse == 0 && colour != AUBIT_COLOR_WHITE)
@@ -491,7 +504,7 @@ void set_field_colour_attr(FIELD *field,int do_reverse,int colour) {
  */
 int
 req_field_input (struct s_screenio *s, ...)
-{                               /* does nothing yet... */
+{				/* does nothing yet... */
 /* fieldname + = next - = previous */
   int a;
   FIELD **ptr;
@@ -518,7 +531,7 @@ req_field_input (struct s_screenio *s, ...)
 
   pos_form_cursor (sdets->form);
   free (ptr);
-return 1;
+  return 1;
 }
 
 /**
@@ -527,7 +540,7 @@ return 1;
  */
 int
 req_field_input_array (struct s_inp_arr *s, ...)
-{                               /* does nothing yet... */
+{				/* does nothing yet... */
 /* fieldname + = next - = previous */
   int a;
   FIELD **ptr;
@@ -557,7 +570,7 @@ req_field_input_array (struct s_inp_arr *s, ...)
 
   pos_form_cursor (sdets->form);
   free (ptr);
-return 1;
+  return 1;
 }
 
 /**
@@ -565,24 +578,24 @@ return 1;
  * @todo Describe function
  */
 int
-form_loop (void *vs) 
+form_loop (void *vs)
 {
   struct s_form_dets *form;
   int a;
-struct s_screenio *s;
+  struct s_screenio *s;
   //int int_form_driver_ret = 0;
   struct struct_scr_field *fprop;
   struct struct_metrics *metrics;
   FORM *mform;
-	s=vs;
+  s = vs;
   form = s->currform;
   set_abort (0);
 
   if (form != get_curr_form ())
     {
-	debug("form=%p curr_form=%p",form,get_curr_form());
-        exitwith ("Input form is not current");
-	return 0;
+      debug ("form=%p curr_form=%p", form, get_curr_form ());
+      exitwith ("Input form is not current");
+      return 0;
     }
 
   mform = form->form;
@@ -600,8 +613,8 @@ struct s_screenio *s;
 
   // Have we changed fields ?
   if (a < 0)
-    { 
-	// Yep...
+    {
+      // Yep...
 
       return a;
     }
@@ -618,7 +631,8 @@ struct s_screenio *s;
 
 // Wait for a key..
   a = getch_win ();
-  if (abort_pressed) a = -1;
+  if (abort_pressed)
+    a = -1;
 
 
 // Process the key..
@@ -629,9 +643,9 @@ struct s_screenio *s;
   if (a == 0)
     {
       if (s->mode != MODE_CONSTRUCT)
-        a = form_field_chk (s, -1);
+	a = form_field_chk (s, -1);
       else
-        a = form_field_constr (s, -1);
+	a = form_field_constr (s, -1);
 
       return 0;
     }
@@ -642,10 +656,11 @@ struct s_screenio *s;
 
 
 // Have we changed fields ?
-  if (a < 0) {
-		// Yep...
-		return a;
-  }
+  if (a < 0)
+    {
+      // Yep...
+      return a;
+    }
 
   int_form_driver (mform, a);
 
@@ -669,7 +684,7 @@ struct s_screenio *s;
  * @todo Describe function
  */
 int
-proc_key (int a, FORM * mform, struct s_screenio * s)
+proc_key (int a, FORM * mform, struct s_screenio *s)
 {
   FIELD *f;
   struct s_form_attr *form;
@@ -679,7 +694,7 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
   int acckey;
   fd = getfromform (mform);
   form = &fd->form_details;
-  do_input_nowrap=0;
+  do_input_nowrap = 0;
 
   debug ("proc_key .... %d", a);
   f = current_field (mform);
@@ -691,20 +706,20 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
       debug ("fprop=%p\n", fprop);
 
       if (fprop != 0)
-        {
-          debug ("Downshift?");
-          if (has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
-              && isalpha (a))
-            {
-              a = tolower (a);
-            }
-          debug ("Upshift ?");
-          if (has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
-              && isalpha (a))
-            {
-              a = toupper (a);
-            }
-        }
+	{
+	  debug ("Downshift?");
+	  if (has_bool_attribute (fprop, FA_B_DOWNSHIFT) && isupper (a)
+	      && isalpha (a))
+	    {
+	      a = tolower (a);
+	    }
+	  debug ("Upshift ?");
+	  if (has_bool_attribute (fprop, FA_B_UPSHIFT) && islower (a)
+	      && isalpha (a))
+	    {
+	      a = toupper (a);
+	    }
+	}
 
     }
 
@@ -713,7 +728,7 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
   debug ("Got key %d", a);
 
   m_lastkey = a;
-  set_last_key(curses_to_aubit(a));
+  set_last_key (curses_to_aubit (a));
 
   if (a == acckey)
     {
@@ -735,7 +750,7 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
     case -1:
       debug ("proc_key - got an interrupt");
       int_form_driver (mform, REQ_VALIDATION);
-      m_lastkey = key_val("INTERRUPT");
+      m_lastkey = key_val ("INTERRUPT");
       s->field_changed = 1;
       return 0;
 
@@ -753,14 +768,17 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
       return REQ_DEL_CHAR;
 
     case KEY_UP:
-	if (s->mode!=MODE_INPUT_ARRAY) {
-      		npage = page_for_pfield (s) - 1;
-      		set_form_page (s->currform->form, npage);
-      		s->field_changed = 1;
-      		return REQ_PREV_FIELD;
-	} else {
-		// We want to go up on an input array...
-		return 0-A4GLKEY_UP;
+      if (s->mode != MODE_INPUT_ARRAY)
+	{
+	  npage = page_for_pfield (s) - 1;
+	  set_form_page (s->currform->form, npage);
+	  s->field_changed = 1;
+	  return REQ_PREV_FIELD;
+	}
+      else
+	{
+	  // We want to go up on an input array...
+	  return 0 - A4GLKEY_UP;
 	}
 
       /*
@@ -773,20 +791,26 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
     case 13:
     case 10:
     case KEY_DOWN:
-	if (s->mode!=MODE_INPUT_ARRAY||(a=='\t' && s->mode==MODE_INPUT_ARRAY)) {
-		if (std_dbscr.input_wrapmode==0 && curr_metric_is_used_last_s_screenio(s,f))  {
-      			s->field_changed = 1;
-      			do_input_nowrap=1;
-			return 0;
-		}
+      if (s->mode != MODE_INPUT_ARRAY
+	  || (a == '\t' && s->mode == MODE_INPUT_ARRAY))
+	{
+	  if (std_dbscr.input_wrapmode == 0
+	      && curr_metric_is_used_last_s_screenio (s, f))
+	    {
+	      s->field_changed = 1;
+	      do_input_nowrap = 1;
+	      return 0;
+	    }
 
-      		npage = page_for_nfield (s) - 1;
-      		set_form_page (s->currform->form, npage);
-      		s->field_changed = 1;
-      		return REQ_NEXT_FIELD;
-	} else {
-		// We want to go down a line in the input array...
-		return 0-A4GLKEY_DOWN;
+	  npage = page_for_nfield (s) - 1;
+	  set_form_page (s->currform->form, npage);
+	  s->field_changed = 1;
+	  return REQ_NEXT_FIELD;
+	}
+      else
+	{
+	  // We want to go down a line in the input array...
+	  return 0 - A4GLKEY_DOWN;
 	}
 
 
@@ -797,15 +821,15 @@ proc_key (int a, FORM * mform, struct s_screenio * s)
     case KEY_RIGHT:
       return REQ_NEXT_CHAR;
 
-    case 4: // Control - D
+    case 4:			// Control - D
       return REQ_CLR_EOF;
 
-    case 1: // Control - A
+    case 1:			// Control - A
       form->insmode = form->insmode ? 0 : 1;
       if (form->insmode)
-        return REQ_INS_MODE;
+	return REQ_INS_MODE;
       else
-        return REQ_OVL_MODE;
+	return REQ_OVL_MODE;
     }
   mja_refresh ();
   return a;
@@ -833,7 +857,7 @@ set_init_value (FIELD * f, void *ptr, int dtype)
     {
       ff = new_string (get_field_width (f));
       for (a = 0; a < get_field_width (f); a++)
-        ff[a] = ' ';
+	ff[a] = ' ';
       ff[get_field_width (f) - 1] = 0;
     }
   debug ("set_init_value : display '%s' to field", ff);
@@ -846,7 +870,7 @@ set_init_value (FIELD * f, void *ptr, int dtype)
  * @todo Describe function
  */
 int
-read_fields (struct s_form_dets * formdets)
+read_fields (struct s_form_dets *formdets)
 {
   int a, n;
   int n1, a1;
@@ -864,28 +888,28 @@ read_fields (struct s_form_dets * formdets)
       n1 = formdets->fileform->fields.fields_val[a].metric.metric_len;
 
       for (a1 = 0; a1 < n1; a1++)
-        {
-          metric_no =
-            formdets->fileform->fields.fields_val[a].metric.metric_val[a1];
-          debug ("Metric number read as %d\n", metric_no);
+	{
+	  metric_no =
+	    formdets->fileform->fields.fields_val[a].metric.metric_val[a1];
+	  debug ("Metric number read as %d\n", metric_no);
 
-          if (formdets->fileform->metrics.metrics_val[metric_no].field != 0)
-            {
-              debug ("Has an associated field");
-              if (ptr != 0)
-                {
-                  debug ("Has associated attribute!");
-                  set_field_userptr ((FIELD *) formdets->fileform->metrics.
-                                     metrics_val[metric_no].field, ptr);
-                  set_field_attr ((FIELD *) formdets->fileform->metrics.
-                                  metrics_val[metric_no].field);
-                  debug ("Done\n");
-                }
-            }
-        }
+	  if (formdets->fileform->metrics.metrics_val[metric_no].field != 0)
+	    {
+	      debug ("Has an associated field");
+	      if (ptr != 0)
+		{
+		  debug ("Has associated attribute!");
+		  set_field_userptr ((FIELD *) formdets->fileform->metrics.
+				     metrics_val[metric_no].field, ptr);
+		  set_field_attr ((FIELD *) formdets->fileform->metrics.
+				  metrics_val[metric_no].field);
+		  debug ("Done\n");
+		}
+	    }
+	}
     }
-  debug("formdets->form_fields=%p",formdets->form_fields);
-  formdets->form = new_form ((FIELD **)formdets->form_fields);
+  debug ("formdets->form_fields=%p", formdets->form_fields);
+  formdets->form = new_form ((FIELD **) formdets->form_fields);
   if (formdets->form == 0)
     {
       exitwith ("Failed to create the loaded the form");
@@ -893,7 +917,7 @@ read_fields (struct s_form_dets * formdets)
     }
   set_form_userptr (formdets->form, formdets);
   debug ("Loaded form...");
-return 1;
+  return 1;
 }
 
 
@@ -934,7 +958,7 @@ form_field_chk (struct s_screenio *sio, int m)
   mform = sio->currform->form;
   debug ("CHeck fields 1 m=%d", m);
   form = sio->currform;
-  debug ("CHeck fields 2 currentfield=",form->currentfield);
+  debug ("CHeck fields 2 currentfield=", form->currentfield);
 
   fprop = 0;
   if (m > 0)
@@ -948,88 +972,93 @@ form_field_chk (struct s_screenio *sio, int m)
 
 
   debug (" current field %p  currfield=%p m=%d", form->currentfield,
-         current_field (mform), m);
+	 current_field (mform), m);
   if ((form->currentfield != current_field (mform)) || m < 0)
     {
       /*
-	  debug ("Setting focus");
-      gui_setfocus (current_field (mform));
-      */
+         debug ("Setting focus");
+         gui_setfocus (current_field (mform));
+       */
       debug ("Is different");
       fprop = 0;
 
       if (form->currentfield != 0)
-        if (field_userptr (form->currentfield) != 0)
-          {
-            debug ("Is a proper field");
-            fprop =
-              (struct struct_scr_field
-               *) (field_userptr (form->currentfield));
-            debug ("fprop=%p", fprop);
-            if (fprop != 0)
-              {
-                debug ("check Datatype ");
-                if (((fprop->datatype != (DTYPE_CHAR & DTYPE_MASK)))
-                    && (field_status (form->currentfield)))
-                  {
-                    debug ("modify size dtype");
-                    debug ("modfy size for metric %d",
-                           get_metric_for (form, form->currentfield));
-                    modify_size (&buff[4],
-                                 form->fileform->metrics.
-                                 metrics_val[get_metric_for
-                                             (form, form->currentfield)].w);
-                    debug ("modfy size done -> '%s'", &buff[4]);
+	if (field_userptr (form->currentfield) != 0)
+	  {
+	    debug ("Is a proper field");
+	    fprop =
+	      (struct struct_scr_field
+	       *) (field_userptr (form->currentfield));
+	    debug ("fprop=%p", fprop);
+	    if (fprop != 0)
+	      {
+		debug ("check Datatype ");
+		if (((fprop->datatype != (DTYPE_CHAR & DTYPE_MASK)))
+		    && (field_status (form->currentfield)))
+		  {
+		    debug ("modify size dtype");
+		    debug ("modfy size for metric %d",
+			   get_metric_for (form, form->currentfield));
+		    modify_size (&buff[4],
+				 form->fileform->metrics.
+				 metrics_val[get_metric_for
+					     (form, form->currentfield)].w);
+		    debug ("modfy size done -> '%s'", &buff[4]);
 
-                    strcpy (&buff[4], field_buffer (form->currentfield, 0));
-                    debug ("copy 1");
-                    strcpy (buff2, &buff[4]);
-                    debug ("copy 2");
-                    debug ("trim buff");
-                    trim (buff2);
-                    getsyx (y, x);
+		    strcpy (&buff[4], field_buffer (form->currentfield, 0));
+		    debug ("copy 1");
+		    strcpy (buff2, &buff[4]);
+		    debug ("copy 2");
+		    debug ("trim buff");
+		    trim (buff2);
+		    getsyx (y, x);
 
-                    debug ("CHange y=%d, x=%d", y, x);
-                    debug ("stack manip buff2='%s'", buff2);
-                    if (strlen (buff2) > 0)
-                      {
+		    debug ("CHange y=%d, x=%d", y, x);
+		    debug ("stack manip buff2='%s'", buff2);
+		    if (strlen (buff2) > 0)
+		      {
 #ifdef DEBUG
-                        {                          debug ("Pushing param %p");                        }
+			{
+			  debug ("Pushing param %p");
+			}
 #endif
-                        push_param (buff2, DTYPE_CHAR);
-                        if (pop_param
-                            (buff, fprop->datatype,
-                             get_field_width (form->currentfield)))
-                          {
+			push_param (buff2, DTYPE_CHAR);
+			if (pop_param
+			    (buff, fprop->datatype,
+			     get_field_width (form->currentfield)))
+			  {
 #ifdef DEBUG
-                            {                              debug ("Pushing param %p %d", buff, fprop->datatype);                            }
+			    {
+			      debug ("Pushing param %p %d", buff,
+				     fprop->datatype);
+			    }
 #endif
-                            push_param (buff, fprop->datatype);
-                            if (has_str_attribute (fprop, FA_S_FORMAT))
-                              {
-                                push_char (get_str_attribute
-                                           (fprop, FA_S_FORMAT));
-                                //push_param ("using", FUNCTION_OP);
-                                pushop (OP_USING);
-                              }
-                            pop_param (buff, DTYPE_CHAR,
-                                       get_field_width (form->currentfield));
-                            mja_set_field_buffer (form->currentfield, 0,
-                                                  buff);
-                          }
-                        else
-                          {
-			//push_char(acl_getenv("FIELD_ERROR_MSG"));
-			//display_error(1,0);
-                            error_box (acl_getenv ("FIELD_ERROR_MSG"));
-                            debug ("Couldnt read datatype...");
-                            mja_set_field_buffer (form->currentfield, 0, " ");
-                            set_current_field (mform, form->currentfield);
-                          }
-                      }
-                  }
-              }
-          }
+			    push_param (buff, fprop->datatype);
+			    if (has_str_attribute (fprop, FA_S_FORMAT))
+			      {
+				push_char (get_str_attribute
+					   (fprop, FA_S_FORMAT));
+				//push_param ("using", FUNCTION_OP);
+				pushop (OP_USING);
+			      }
+			    pop_param (buff, DTYPE_CHAR,
+				       get_field_width (form->currentfield));
+			    mja_set_field_buffer (form->currentfield, 0,
+						  buff);
+			  }
+			else
+			  {
+			    //push_char(acl_getenv("FIELD_ERROR_MSG"));
+			    //display_error(1,0);
+			    error_box (acl_getenv ("FIELD_ERROR_MSG"));
+			    debug ("Couldnt read datatype...");
+			    mja_set_field_buffer (form->currentfield, 0, " ");
+			    set_current_field (mform, form->currentfield);
+			  }
+		      }
+		  }
+	      }
+	  }
     }
 
   debug ("fprop=%p", fprop);
@@ -1045,50 +1074,56 @@ form_field_chk (struct s_screenio *sio, int m)
     {
       sio->field_changed = 0;
       fprop =
-        (struct struct_scr_field *) (field_userptr (current_field (mform)));
+	(struct struct_scr_field *) (field_userptr (current_field (mform)));
 
       if (fprop != 0)
-        {
-          /* push_long (form->currentfield); */
-          push_long ((long)current_field (mform));
-          push_char (fprop->colname);
-        }
+	{
+	  /* push_long (form->currentfield); */
+	  push_long ((long) current_field (mform));
+	  push_char (fprop->colname);
+	}
       else
-        {
-          push_long ((long)0);
-          push_char ("THIS FIELD IS AT THE START");
-        }
+	{
+	  push_long ((long) 0);
+	  push_char ("THIS FIELD IS AT THE START");
+	}
 
       fprop =
-        (struct struct_scr_field *) (field_userptr (form->currentfield));
+	(struct struct_scr_field *) (field_userptr (form->currentfield));
       if (fprop != 0)
-        {
-          do_after_field (form->currentfield, sio);
-          /* push_long (current_field (mform)); */
-          push_long ((long)form->currentfield);
-          push_char (fprop->colname);
-        }
+	{
+	  do_after_field (form->currentfield, sio);
+	  /* push_long (current_field (mform)); */
+	  push_long ((long) form->currentfield);
+	  push_char (fprop->colname);
+	}
       else
-        {
-          push_long ((long)0);
-          push_char ("THIS FIELD IS AT THE START");
-        }
+	{
+	  push_long ((long) 0);
+	  push_char ("THIS FIELD IS AT THE START");
+	}
       flg = -1;
     }
 #ifdef DEBUG
-  {    debug ("Setting current field");  }
+  {
+    debug ("Setting current field");
+  }
 #endif
   form->currentfield = current_field (mform);
-  debug("Set to %p",form->currentfield);
+  debug ("Set to %p", form->currentfield);
   fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
 #ifdef DEBUG
-  {    debug ("Adding comments %p");  }
+  {
+    debug ("Adding comments %p");
+  }
 #endif
   if (fprop != 0)
     comments (fprop);
 
 #ifdef DEBUG
-  {    debug ("returning");  }
+  {
+    debug ("returning");
+  }
 #endif
   return flg;
 
@@ -1106,11 +1141,11 @@ get_curr_metric (struct s_form_dets *form)
   for (a = 0; a < form->fileform->metrics.metrics_len; a++)
     {
       if (current_field (form->form) ==
-          (FIELD *) form->fileform->metrics.metrics_val[a].field)
-        {
-          debug ("Returning %d\n", a);
-          return a;
-        }
+	  (FIELD *) form->fileform->metrics.metrics_val[a].field)
+	{
+	  debug ("Returning %d\n", a);
+	  return a;
+	}
     }
   debug ("NO current metric !");
   return -1;
@@ -1121,17 +1156,17 @@ get_curr_metric (struct s_form_dets *form)
  * @todo Describe function
  */
 int
-get_metric_no (struct s_form_dets * form, FIELD * f)
+get_metric_no (struct s_form_dets *form, FIELD * f)
 {
   int a;
   debug ("In curr metric");
   for (a = 0; a < form->fileform->metrics.metrics_len; a++)
     {
       if (f == (FIELD *) form->fileform->metrics.metrics_val[a].field)
-        {
-          debug ("Returning %d\n", a);
-          return a;
-        }
+	{
+	  debug ("Returning %d\n", a);
+	  return a;
+	}
     }
   debug ("NO current metric !");
   return -1;
@@ -1143,7 +1178,7 @@ get_metric_no (struct s_form_dets * form, FIELD * f)
  * @todo Describe function
  */
 int
-get_metric_for (struct s_form_dets * form, FIELD * f)
+get_metric_for (struct s_form_dets *form, FIELD * f)
 {
   int a;
 
@@ -1151,10 +1186,10 @@ get_metric_for (struct s_form_dets * form, FIELD * f)
   for (a = 0; a < form->fileform->metrics.metrics_len; a++)
     {
       if (f == (FIELD *) form->fileform->metrics.metrics_val[a].field)
-        {
-          debug ("Returning %d\n", a);
-          return a;
-        }
+	{
+	  debug ("Returning %d\n", a);
+	  return a;
+	}
     }
   debug ("NO current metric !");
   return -1;
@@ -1221,10 +1256,10 @@ turn_field_on2 (FIELD * f, int a)
 {
 
   struct struct_scr_field *fprop;
-  assertion(f==0,"Field is zero in turn_field_on2");
+  assertion (f == 0, "Field is zero in turn_field_on2");
   debug ("Turn field on %p %d", f, a);
   fprop = (struct struct_scr_field *) (field_userptr (f));
-  assertion(fprop==0,"Field has no properties");
+  assertion (fprop == 0, "Field has no properties");
   debug ("turn_field_on2 a=%d fprop=%p", a, fprop);
 
   debug ("Turn Field On %p %p", fprop->tabname, fprop->colname);
@@ -1268,7 +1303,7 @@ set_init_pop (FIELD * f)
  * @todo Describe function
  */
 int
-set_fields (void *vsio) 
+set_fields (void *vsio)
 {
   int wid;
   int a;
@@ -1280,12 +1315,13 @@ set_fields (void *vsio)
   FIELD **field_list;
   FIELD *firstfield = 0;
   int nofields;
-struct s_screenio *sio;
-	sio=vsio;
-  
-  
+  struct s_screenio *sio;
+  sio = vsio;
+
+
   wid = 0;
-  if (sio->mode == MODE_INPUT_WITHOUT_DEFAULTS || sio->mode==MODE_INPUT_ARRAY)
+  if (sio->mode == MODE_INPUT_WITHOUT_DEFAULTS
+      || sio->mode == MODE_INPUT_ARRAY)
     wid = 1;
   debug ("in set fields");
   formdets = sio->currform;
@@ -1298,20 +1334,20 @@ struct s_screenio *sio;
   for (a = 0; formdets->form_fields[a] != 0; a++)
     {
       field =
-        (struct struct_scr_field
-         *) (field_userptr (formdets->form_fields[a]));
+	(struct struct_scr_field
+	 *) (field_userptr (formdets->form_fields[a]));
       if (field == 0)
-        continue;
+	continue;
 
       if (turn_field_off (formdets->form_fields[a]))
-        {
-          firstfield = formdets->form_fields[a];
-        }
+	{
+	  firstfield = formdets->form_fields[a];
+	}
 
     }
 
   nofields = sio->nfields;
-  field_list = (FIELD **)sio->field_list;
+  field_list = (FIELD **) sio->field_list;
 
   debug ("Field list=%p number of fields = %d", field_list, nofields);
 
@@ -1320,9 +1356,10 @@ struct s_screenio *sio;
   if (nofields != nv - 1)
     {
       debug
-        ("Number of fields (%d) is not the same as the number of vars (%d)",
-         nofields + 1, nv);
-      exitwith ("Number of fields is not the same as the number of variables");
+	("Number of fields (%d) is not the same as the number of vars (%d)",
+	 nofields + 1, nv);
+      exitwith
+	("Number of fields is not the same as the number of variables");
       return 0;
     }
 
@@ -1330,47 +1367,47 @@ struct s_screenio *sio;
     {
 
       if (field_list[a] == firstfield)
-        {
-          firstfield = 0;
-        }
+	{
+	  firstfield = 0;
+	}
       debug ("loop through fields a=%d %p", a, field_list[a]);
       turn_field_on2 (field_list[a], sio->mode != MODE_CONSTRUCT);
 
       if (wid)
-        {
-          set_init_value (field_list[a], sio->vars[a].ptr,
-                          sio->vars[a].dtype);
-        }
+	{
+	  set_init_value (field_list[a], sio->vars[a].ptr,
+			  sio->vars[a].dtype);
+	}
       else
-        {
-          prop = (struct struct_scr_field *) field_userptr (field_list[a]);
-          if (has_str_attribute (prop, FA_S_DEFAULT))
-            {
-              debug ("default from form to '%s'",
-                     get_str_attribute (prop, FA_S_DEFAULT));
-              set_init_value (field_list[a],
-                              replace_sql_var (strip_quotes
-                                               (get_str_attribute
-                                                (prop, FA_S_DEFAULT))), 0);
-            }
-          else
-            {
-              set_init_value (field_list[a], 0, 0);
-            }
-        }
+	{
+	  prop = (struct struct_scr_field *) field_userptr (field_list[a]);
+	  if (has_str_attribute (prop, FA_S_DEFAULT))
+	    {
+	      debug ("default from form to '%s'",
+		     get_str_attribute (prop, FA_S_DEFAULT));
+	      set_init_value (field_list[a],
+			      replace_sql_var (strip_quotes
+					       (get_str_attribute
+						(prop, FA_S_DEFAULT))), 0);
+	    }
+	  else
+	    {
+	      set_init_value (field_list[a], 0, 0);
+	    }
+	}
 
       if (sio->mode != MODE_CONSTRUCT)
-        {
-          push_char (field_buffer (field_list[a], 0));
-          pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype, sio->vars[a].size);
-        }
+	{
+	  push_char (field_buffer (field_list[a], 0));
+	  pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype, sio->vars[a].size);
+	}
 
       if (flg == 0)
-        {
-          set_current_field (formdets->form, field_list[a]);
-			/*formdets->form_fields[z]); */
-          flg = 1;
-        }
+	{
+	  set_current_field (formdets->form, field_list[a]);
+	  /*formdets->form_fields[z]); */
+	  flg = 1;
+	}
 
     }
 
@@ -1392,7 +1429,7 @@ struct s_screenio *sio;
  * @todo Describe function
  */
 void
-set_fields2 (int nv, struct BINDING * vars, int d, int n,...)
+set_fields2 (int nv, struct BINDING *vars, int d, int n, ...)
 {
   int a;
   va_list ap;
@@ -1410,12 +1447,12 @@ set_fields2 (int nv, struct BINDING * vars, int d, int n,...)
   for (z = 0; formdets->form_fields[z] != 0; z++)
     {
       field =
-        (struct struct_scr_field
-         *) (field_userptr (formdets->form_fields[z]));
+	(struct struct_scr_field
+	 *) (field_userptr (formdets->form_fields[z]));
       if (field == 0)
-        {
-          continue;
-        }
+	{
+	  continue;
+	}
       turn_field_off (formdets->form_fields[z]);
     }
 
@@ -1423,7 +1460,9 @@ set_fields2 (int nv, struct BINDING * vars, int d, int n,...)
 
   va_start (ap, n);
 #ifdef DEBUG
-  {    debug ("Genfldlist 1");  }
+  {
+    debug ("Genfldlist 1");
+  }
 #endif
   debug ("set fields 2");
   nofields = gen_field_list (&field_list, formdets, nv, &ap);
@@ -1431,22 +1470,23 @@ set_fields2 (int nv, struct BINDING * vars, int d, int n,...)
   if (nofields != nv - 1)
     {
       sprintf (errbuff,
-               "Number of fields (%d) is not the same as the number of vars (%d)",
-               nofields, nv);
-      exitwith ("Number of fields is not the same as the number of variables");
+	       "Number of fields (%d) is not the same as the number of vars (%d)",
+	       nofields, nv);
+      exitwith
+	("Number of fields is not the same as the number of variables");
     }
 
   for (a = 0; a <= nofields; a++)
     {
       turn_field_on (field_list[a]);
       if (d)
-        set_init_value (field_list[a], vars[a].ptr, vars[a].dtype);
+	set_init_value (field_list[a], vars[a].ptr, vars[a].dtype);
 
       if (flg == 0)
-        {
-          set_current_field (formdets->form, formdets->form_fields[z]);
-          flg = 1;
-        }
+	{
+	  set_current_field (formdets->form, formdets->form_fields[z]);
+	  flg = 1;
+	}
     }
   if (flg == 0)
     {
@@ -1505,7 +1545,7 @@ void
 disp_fields_ap (int n, int attr, va_list * ap)
 {
   int a;
- int flg;
+  int flg;
   struct s_form_dets *formdets;
   FIELD **field_list;
   int nofields;
@@ -1514,7 +1554,9 @@ disp_fields_ap (int n, int attr, va_list * ap)
   debug ("In disp_fields");
   formdets = get_curr_form ();
 #ifdef DEBUG
-  {    debug ("Status=%d formdets=%p", a4gl_status, formdets);  }
+  {
+    debug ("Status=%d formdets=%p", a4gl_status, formdets);
+  }
 #endif
   if (a4gl_status != 0)
     return;
@@ -1522,7 +1564,9 @@ disp_fields_ap (int n, int attr, va_list * ap)
 
   debug (" field_list = %p", &field_list);
 #ifdef DEBUG
-  {    debug ("Genfldlist 2");  }
+  {
+    debug ("Genfldlist 2");
+  }
 #endif
   debug ("disp_fields");
   nofields = gen_field_list (&field_list, formdets, n, ap);
@@ -1534,7 +1578,7 @@ disp_fields_ap (int n, int attr, va_list * ap)
       debug_print_field_opts (field_list[a]);
       /* fldattr=field_opts(field_list[a]); */
 
-	debug("MJA Calling set_field_pop_attr - 1 - attr=%d",attr);
+      debug ("MJA Calling set_field_pop_attr - 1 - attr=%d", attr);
 
       set_field_pop_attr (field_list[a], attr);
       /* rc=set_field_opts(field_list[a],fldattr); */
@@ -1552,18 +1596,24 @@ disp_fields_ap (int n, int attr, va_list * ap)
  */
 int
 gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets,
-                     va_list * ap)
+		    va_list * ap)
 {
   int a;
   /* va_start (ap, formdets); */
 #ifdef DEBUG
-  {    debug ("Starting gen_field_chars %p %p", field_list, formdets);  }
-  {    debug ("Genfldlist 3");  }
+  {
+    debug ("Starting gen_field_chars %p %p", field_list, formdets);
+  }
+  {
+    debug ("Genfldlist 3");
+  }
 #endif
   debug ("gen_field_chars");
   a = gen_field_list (field_list, formdets, 9999, ap);
 #ifdef DEBUG
-  {    debug ("--------------------------------------END gen_field_chars");  }
+  {
+    debug ("--------------------------------------END gen_field_chars");
+  }
 #endif
   debug ("Gen_field_list returned %d", a);
   return a;
@@ -1574,7 +1624,8 @@ gen_field_chars_ap (FIELD *** field_list, struct s_form_dets *formdets,
  * @todo Describe function
  */
 int
-gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a, va_list * ap)
+gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a,
+		va_list * ap)
 {
   int z;
   int z1;
@@ -1593,143 +1644,154 @@ gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a, va_li
   int cnt = 0;
 
 #ifdef DEBUG
-  {    debug ("gen_field_list - %p %p %d %p", field_list, formdets, a, ap);  }
+  {
+    debug ("gen_field_list - %p %p %d %p", field_list, formdets, a, ap);
+  }
 #endif
   debug ("field_list=%p", field_list);
   debug ("Here 2");
   /*
-  *field_list = calloc (a, sizeof (FIELD *));
-  *field_list = calloc (1024, sizeof (FIELD *));
+     *field_list = calloc (a, sizeof (FIELD *));
+     *field_list = calloc (1024, sizeof (FIELD *));
 
-  dump_srec (&formdets);
-  */
+     dump_srec (&formdets);
+   */
 
   for (z1 = 0; z1 <= a; z1++)
     {
       debug ("Getting first %d", z1);
-      s = va_arg (*ap, char *); /* This is suspect.... */
+      s = va_arg (*ap, char *);	/* This is suspect.... */
 
       if (s == 0)
-        break;
+	break;
 
       debug ("Got first %s:", s);
 
       f = (int) va_arg (*ap, int *);
       debug ("f=%d\n", f);
-      if (f>0) f--;
-      
+      if (f > 0)
+	f--;
+
       debug (" got field number as %d ", f);
 
 
       ff = 0;
 
-	/* get screen record/table name */
+      /* get screen record/table name */
 
       bname (s, tabname, colname);
       srec_no = find_srec (formdets->fileform, tabname);
       debug ("srec_no=%d", srec_no);
       if (srec_no != -1)
-        {
-          for (z = 0;
-               z <
-               formdets->fileform->records.records_val[srec_no].attribs.
-               attribs_len; z++)
-            {
-              debug ("srec_no=%d", srec_no);
-              attr_no =
-                formdets->fileform->records.records_val[srec_no].attribs.
-                attribs_val[z];
-              debug ("attr_no=%d", attr_no);
+	{
+	  for (z = 0;
+	       z <
+	       formdets->fileform->records.records_val[srec_no].attribs.
+	       attribs_len; z++)
+	    {
+	      debug ("srec_no=%d", srec_no);
+	      attr_no =
+		formdets->fileform->records.records_val[srec_no].attribs.
+		attribs_val[z];
+	      debug ("attr_no=%d", attr_no);
 #ifdef DEBUG
-              {                debug ("Attr 1");              }
+	      {
+		debug ("Attr 1");
+	      }
 #endif
-              debug ("attr_no=%d s=%s\n", attr_no, s);
-              mno =
-                attr_name_match (&formdets->fileform->attributes.
-                                 attributes_val[attr_no], s);
-              debug ("mno=%d\n", mno);
+	      debug ("attr_no=%d s=%s\n", attr_no, s);
+	      mno =
+		attr_name_match (&formdets->fileform->attributes.
+				 attributes_val[attr_no], s);
+	      debug ("mno=%d\n", mno);
 
-             if (mno)
-                {
-                  fno =
-                    formdets->fileform->attributes.attributes_val[attr_no].
-                    field_no;
-                  debug ("Matched to field no %d", fno);
-                  if (fno >= formdets->fileform->fields.fields_len)
-                    {
-                      exitwith ("Dubious form\n");
-                      return 0;
-                    }
-                  metric_no =
-                    formdets->fileform->fields.fields_val[fno].metric.
-                    metric_val[f];
-                  debug ("fno=%d f=%d mno=%d metric_no=%d\n", fno, f, mno,
-                         metric_no);
-                  k = &formdets->fileform->metrics.metrics_val[metric_no];
+	      if (mno)
+		{
+		  fno =
+		    formdets->fileform->attributes.attributes_val[attr_no].
+		    field_no;
+		  debug ("Matched to field no %d", fno);
+		  if (fno >= formdets->fileform->fields.fields_len)
+		    {
+		      exitwith ("Dubious form\n");
+		      return 0;
+		    }
+		  metric_no =
+		    formdets->fileform->fields.fields_val[fno].metric.
+		    metric_val[f];
+		  debug ("fno=%d f=%d mno=%d metric_no=%d\n", fno, f, mno,
+			 metric_no);
+		  k = &formdets->fileform->metrics.metrics_val[metric_no];
 #ifdef DEBUG
-                  {                    debug ("cnt=%d a=%d", cnt, a);                  }
+		  {
+		    debug ("cnt=%d a=%d", cnt, a);
+		  }
 #endif
 
-                  if (cnt >= a)
-                    {
-			debug("cnt=%d a=%d",cnt,a);
-                      exitwith ("Too few variables for the number of fields");
-                    }
-                  debug ("Setting flist[%d] to %p", cnt, k);
-                  flist[cnt++] = (FIELD *) k->field;
-                  debug ("Set");
-                  ff = 1;
-                }
+		  if (cnt >= a)
+		    {
+		      debug ("cnt=%d a=%d", cnt, a);
+		      exitwith ("Too few variables for the number of fields");
+		    }
+		  debug ("Setting flist[%d] to %p", cnt, k);
+		  flist[cnt++] = (FIELD *) k->field;
+		  debug ("Set");
+		  ff = 1;
+		}
 
-            }
-        }
+	    }
+	}
 
       else
-        {
-          for (z = 0; z < formdets->fileform->attributes.attributes_len; z++)
-            {
-              attr_no = z;
-              debug ("attr_no=%d", attr_no);
+	{
+	  for (z = 0; z < formdets->fileform->attributes.attributes_len; z++)
+	    {
+	      attr_no = z;
+	      debug ("attr_no=%d", attr_no);
 #ifdef DEBUG
-              {                debug ("Attr 2");              }
+	      {
+		debug ("Attr 2");
+	      }
 #endif
-              mno =
-                attr_name_match (&formdets->fileform->attributes.
-                                 attributes_val[attr_no], s);
-              if (mno)
-                {
-                  fno =
-                    formdets->fileform->attributes.attributes_val[attr_no].
-                    field_no;
-                  debug ("Matched to field no %d", fno);
-                  metric_no =
-                    formdets->fileform->fields.fields_val[fno].metric.
-                    metric_val[f];
-                  k = &formdets->fileform->metrics.metrics_val[metric_no];
+	      mno =
+		attr_name_match (&formdets->fileform->attributes.
+				 attributes_val[attr_no], s);
+	      if (mno)
+		{
+		  fno =
+		    formdets->fileform->attributes.attributes_val[attr_no].
+		    field_no;
+		  debug ("Matched to field no %d", fno);
+		  metric_no =
+		    formdets->fileform->fields.fields_val[fno].metric.
+		    metric_val[f];
+		  k = &formdets->fileform->metrics.metrics_val[metric_no];
 #ifdef DEBUG
-                  {                    debug ("cnt=%d a=%d", cnt, a);                  }
+		  {
+		    debug ("cnt=%d a=%d", cnt, a);
+		  }
 #endif
-                  if (cnt >= a) /* was >= */
-                    {
-                      debug ("cnt=%d a=%d", cnt, a);
-                      debug ("Too few variable");
-                      exitwith ("Too few variables for the number of fields");
-                    }
-                  debug ("Setting flist[%d] to %p", cnt, k);
-                  flist[cnt++] = (FIELD *) k->field;
-                  debug ("aa");
-                  ff = 1;
-                }
-              debug ("aa");
-            }
-          debug ("aa");
+		  if (cnt >= a)	/* was >= */
+		    {
+		      debug ("cnt=%d a=%d", cnt, a);
+		      debug ("Too few variable");
+		      exitwith ("Too few variables for the number of fields");
+		    }
+		  debug ("Setting flist[%d] to %p", cnt, k);
+		  flist[cnt++] = (FIELD *) k->field;
+		  debug ("aa");
+		  ff = 1;
+		}
+	      debug ("aa");
+	    }
+	  debug ("aa");
 
-        }
+	}
       debug ("aa");
       if (ff == 0)
-        {
-          exitwith ("Field name not found");
-        }
+	{
+	  exitwith ("Field name not found");
+	}
 
     }
   s = va_arg (*ap, char *);
@@ -1752,7 +1814,7 @@ gen_field_list (FIELD *** field_list, struct s_form_dets *formdets, int a, va_li
  * @todo Describe function
  */
 void
-do_after_field (FIELD * f, struct s_screenio * sio)
+do_after_field (FIELD * f, struct s_screenio *sio)
 {
   int a;
   char *ptr;
@@ -1766,36 +1828,40 @@ do_after_field (FIELD * f, struct s_screenio * sio)
 
   if (a == -1)
     {
-	bomb_out();
+      bomb_out ();
       exitwith ("after field : field number not found!");
     }
 
   if (sio->mode != MODE_CONSTRUCT)
     {
 #ifdef DEBUG
-      {        debug ("   Field buffer = %s", field_buffer (f, 0));      }
+      {
+	debug ("   Field buffer = %s", field_buffer (f, 0));
+      }
 #endif
       push_char (field_buffer (f, 0));
 #ifdef DEBUG
-      {        debug ("   Ptr=%p dtype=%d size=%d", sio->vars[a].ptr,
-	  				 sio->vars[a].dtype, sio->vars[a].size);      }
+      {
+	debug ("   Ptr=%p dtype=%d size=%d", sio->vars[a].ptr,
+	       sio->vars[a].dtype, sio->vars[a].size);
+      }
 #endif
 
       /* now check that the form corresponds to the includes */
       if (sio->currform->currentfield)
-        {
-          debug ("Got current field %p\n", sio->currform->currentfield);
-          mform = sio->currform->form;
-          fprop = (struct struct_scr_field *) (field_userptr (f));
-          debug ("Got form %p", sio->currform->form);
-          if (check_field_for_include
-              (field_buffer (sio->currform->currentfield, 0),
-               get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype) == 0)
-            {
-              error_box ("This value is not available");
-              set_current_field (mform, sio->currform->currentfield);
-            }
-        }
+	{
+	  debug ("Got current field %p\n", sio->currform->currentfield);
+	  mform = sio->currform->form;
+	  fprop = (struct struct_scr_field *) (field_userptr (f));
+	  debug ("Got form %p", sio->currform->form);
+	  if (check_field_for_include
+	      (field_buffer (sio->currform->currentfield, 0),
+	       get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype) == 0)
+	    {
+	      error_box ("This value is not available");
+	      set_current_field (mform, sio->currform->currentfield);
+	    }
+	}
 
       pop_var2 (sio->vars[a].ptr, sio->vars[a].dtype, sio->vars[a].size);
 
@@ -1804,18 +1870,18 @@ do_after_field (FIELD * f, struct s_screenio * sio)
     {
       fprop = (struct struct_scr_field *) (field_userptr (f));
       if (fprop != 0)
-        {
-          if (fprop->colname != 0)
-            {
-              ptr =
-                (char *) construct (fprop->colname, field_buffer (f, 0),
-                                    (fprop->datatype == 0)
-                                    || (fprop->datatype == 8));
-              debug ("ptr=%s", ptr);
-              if (ptr == 0)
-                error_box ("Error in expression");
-            }
-        }
+	{
+	  if (fprop->colname != 0)
+	    {
+	      ptr =
+		(char *) construct (fprop->colname, field_buffer (f, 0),
+				    (fprop->datatype == 0)
+				    || (fprop->datatype == 8));
+	      debug ("ptr=%s", ptr);
+	      if (ptr == 0)
+		error_box ("Error in expression");
+	    }
+	}
     }
 
 }
@@ -1831,7 +1897,7 @@ do_before_field (FIELD * f, struct s_screenio *sio)
   int a;
   char *ptr;
   debug ("Before field....");
-  gui_setfocus ((long)f);
+  gui_setfocus ((long) f);
   a = find_field_no (f, sio);
   if (a == -1)
     {
@@ -1858,20 +1924,26 @@ find_field_no (FIELD * f, struct s_screenio *sio)
 {
   int a;
 #ifdef DEBUG
-  {    debug ("Finding field %p", f);  }
+  {
+    debug ("Finding field %p", f);
+  }
 #endif
   for (a = 0; a <= sio->nfields; a++)
     {
 #ifdef DEBUG
-      {        debug ("Checking against %p", sio->field_list[a]);      }
+      {
+	debug ("Checking against %p", sio->field_list[a]);
+      }
 #endif
 
       if (sio->field_list[a] == f)
-        return a;
+	return a;
 
     }
 #ifdef DEBUG
-  {    debug ("Its not there!");  }
+  {
+    debug ("Its not there!");
+  }
 #endif
   return -1;
 }
@@ -1886,7 +1958,7 @@ make_field (int frow, int fcol, int rows, int cols)
 {
   FIELD *f;
   debug ("Creating new field entry y=%d x=%d rows=%d width=%d\n", frow, fcol,
-         rows, cols);
+	 rows, cols);
 
   f = new_field (rows, cols, frow, fcol, 0, 0);
 
@@ -1921,7 +1993,7 @@ dump_fields (FIELD * fields[])
   while (fields[a] != 0)
     {
       debug ("Field %d %p (%d,%d) (%s)\n", a, fields[a], fields[a]->frow,
-             fields[a]->fcol, fields[a]->buf);
+	     fields[a]->fcol, fields[a]->buf);
       a++;
     }
 }
@@ -1971,7 +2043,8 @@ set_field_pop_attr (FIELD * field, int attr)
   debug ("set f->do_reverse to %d ", f->do_reverse);
   oopt = field_opts (field);
   set_field_attr (field);
-  if (attr!=0) set_field_attr_with_attr(field,attr);
+  if (attr != 0)
+    set_field_attr_with_attr (field, attr);
   debug ("set field attr");
   fff = get_curr_form ();
   debug ("set field");
@@ -1996,14 +2069,14 @@ set_init_pop_attr (FIELD * field, int attr)
   struct struct_scr_field *f;
   struct s_form_dets *fff;
   int a;
-  debug("Field = %p",field);
+  debug ("Field = %p", field);
   ff = new_string (get_field_width (field));
   pop_char (ff, get_field_width (field));
 
   debug ("set_init_pop_attr : display '%s' to field %d", ff, attr);
 
   f = (struct struct_scr_field *) (field_userptr (field));
-  assertion (f == 0,"set_init_pop_attr - Pointer is zero...");
+  assertion (f == 0, "set_init_pop_attr - Pointer is zero...");
   debug ("f=%p", f);
 
   a = f->do_reverse;
@@ -2012,16 +2085,16 @@ set_init_pop_attr (FIELD * field, int attr)
   if (attr)
     {
       if (f->do_reverse)
-        f->do_reverse = 0;
+	f->do_reverse = 0;
       else
-        f->do_reverse = 1;
+	f->do_reverse = 1;
     }
   else
     {
       if (f->do_reverse)
-        f->do_reverse = 1;
+	f->do_reverse = 1;
       else
-        f->do_reverse = 0;
+	f->do_reverse = 0;
     }
   debug ("set f->do_reverse to %d ", f->do_reverse);
   set_field_attr (field);
@@ -2062,7 +2135,9 @@ iarr_arr_fields (int n, int fonly, int attr, ...)
   va_start (ap, attr);
   debug (" field_list = %p", &field_list);
 #ifdef DEBUG
-  {    debug ("Genfldlist 5");  }
+  {
+    debug ("Genfldlist 5");
+  }
 #endif
   nofields = gen_field_list (&field_list, formdets, n, &ap);
   if (fonly && nofields >= 0)
@@ -2071,11 +2146,11 @@ iarr_arr_fields (int n, int fonly, int attr, ...)
   if (nofields >= 0)
     {
       for (a = 0; a <= nofields; a++)
-        {
-          debug ("field_list[%d]=%p", a, field_list[a]);
-          set_init_pop_attr (field_list[a], attr);
-          debug ("set_init_pop complete");
-        }
+	{
+	  debug ("field_list[%d]=%p", a, field_list[a]);
+	  set_init_pop_attr (field_list[a], attr);
+	  debug ("set_init_pop complete");
+	}
     }
 }
 
@@ -2104,7 +2179,9 @@ disp_arr_fields (int n, int fonly, int attr, ...)
   va_start (ap, attr);
   debug (" field_list = %p", &field_list);
 #ifdef DEBUG
-  {    debug ("Genfldlist 5");  }
+  {
+    debug ("Genfldlist 5");
+  }
 #endif
   debug ("disp_arr_fields");
   nofields = gen_field_list (&field_list, formdets, n, &ap);
@@ -2114,11 +2191,11 @@ disp_arr_fields (int n, int fonly, int attr, ...)
   if (nofields >= 0)
     {
       for (a = 0; a <= nofields; a++)
-        {
-          debug ("field_list[%d]=%p", a, field_list[a]);
-          set_init_pop_attr (field_list[a], attr);
-          debug ("set_init_pop complete");
-        }
+	{
+	  debug ("field_list[%d]=%p", a, field_list[a]);
+	  set_init_pop_attr (field_list[a], attr);
+	  debug ("set_init_pop complete");
+	}
     }
 }
 
@@ -2137,7 +2214,7 @@ set_arr_fields (int n, int attr, ...)
   FIELD **field_list;
   int nofields;
 
-  return;   /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+  return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
   debug ("In disp_fields");
   formdets = get_curr_form ();
@@ -2146,7 +2223,9 @@ set_arr_fields (int n, int attr, ...)
   va_start (ap, attr);
   debug (" field_list = %p", &field_list);
 #ifdef DEBUG
-  {    debug ("Genfldlist 6");  }
+  {
+    debug ("Genfldlist 6");
+  }
 #endif
   debug ("set_arr_fields");
   nofields = gen_field_list (&field_list, formdets, n, &ap);
@@ -2191,64 +2270,64 @@ form_field_constr (struct s_screenio *sio, int m)
     {
       /* fprop = 0; */
       if (form->currentfield != 0
-          && (field_userptr (form->currentfield) != 0))
-        {
-          fprop =
-            (struct struct_scr_field *) (field_userptr (form->currentfield));
-          if (fprop != 0)
-            {
-              if ((fprop->datatype != (DTYPE_CHAR & DTYPE_MASK))
-                  && (field_status (form->currentfield)))
-                {
-                  strcpy (buff, field_buffer (form->currentfield, 0));
-                  strcpy (buff2, buff);
-                  debug ("CHeckit here");
-                  getsyx (y, x);
-                }
-            }
-        }
+	  && (field_userptr (form->currentfield) != 0))
+	{
+	  fprop =
+	    (struct struct_scr_field *) (field_userptr (form->currentfield));
+	  if (fprop != 0)
+	    {
+	      if ((fprop->datatype != (DTYPE_CHAR & DTYPE_MASK))
+		  && (field_status (form->currentfield)))
+		{
+		  strcpy (buff, field_buffer (form->currentfield, 0));
+		  strcpy (buff2, buff);
+		  debug ("CHeckit here");
+		  getsyx (y, x);
+		}
+	    }
+	}
     }
 
   if (form->currentfield != current_field (mform))
     {
       fprop =
-        (struct struct_scr_field *) (field_userptr (current_field (mform)));
+	(struct struct_scr_field *) (field_userptr (current_field (mform)));
       debug ("Moving to %s", fprop->colname);
       if (fprop != 0)
-        {
-          push_long ((long)current_field (mform));
-          push_char (fprop->colname);
-        }
+	{
+	  push_long ((long) current_field (mform));
+	  push_char (fprop->colname);
+	}
       else
-        {
-          push_long (0);
-          push_char ("THIS FIELD IS AT THE START");
-        }
+	{
+	  push_long (0);
+	  push_char ("THIS FIELD IS AT THE START");
+	}
 
       fprop =
-        (struct struct_scr_field *) (field_userptr (form->currentfield));
+	(struct struct_scr_field *) (field_userptr (form->currentfield));
       if (fprop != 0)
-        {
-          if (fprop->colname != 0)
-            {
-              debug ("Moving from %s", fprop->colname);
-            }
-          else
-            {
-              debug ("Blank colname");
-            }
-        }
+	{
+	  if (fprop->colname != 0)
+	    {
+	      debug ("Moving from %s", fprop->colname);
+	    }
+	  else
+	    {
+	      debug ("Blank colname");
+	    }
+	}
       if (fprop != 0)
-        {
-          do_after_field (form->currentfield, sio);
-          push_long ((long)form->currentfield);
-          push_char (fprop->colname);
-        }
+	{
+	  do_after_field (form->currentfield, sio);
+	  push_long ((long) form->currentfield);
+	  push_char (fprop->colname);
+	}
       else
-        {
-          push_long (0);
-          push_char ("THIS FIELD IS AT THE START");
-        }
+	{
+	  push_long (0);
+	  push_char ("THIS FIELD IS AT THE START");
+	}
       flg = -1;
     }
   debug ("Setting currentfield entry on form...");
@@ -2282,7 +2361,7 @@ mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
   a = strlen (buff2);
   b = get_field_width (field);
   debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff, buff2, a,
-         b);
+	 b);
   gui_setbuff (field, buff);
   if (a < get_field_width (field))
     {
@@ -2303,17 +2382,23 @@ mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
     {
       touchwin (currwin);
 #ifdef DEBUG
-      {        debug ("Touched Window");      }
+      {
+	debug ("Touched Window");
+      }
 #endif
     }
   else
     {
 #ifdef DEBUG
-      {        debug ("No window to Touch");      }
+      {
+	debug ("No window to Touch");
+      }
 #endif
     }
 #ifdef DEBUG
-  {    debug ("Refreshed Window");  }
+  {
+    debug ("Refreshed Window");
+  }
 #endif
 }
 
@@ -2324,7 +2409,7 @@ mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
  * @todo Describe function
  */
 int
-push_constr (void *vs) 
+push_constr (void *vs)
 {
   struct struct_scr_field *fprop;
   FIELD *f;
@@ -2332,7 +2417,7 @@ push_constr (void *vs)
   char *ptr;
   int flg = 0;
   struct s_screenio *s;
-	s=vs;
+  s = vs;
   int_form_driver (s->currform->form, REQ_FIRST_PAGE);
 
   debug ("Push_constr");
@@ -2347,31 +2432,31 @@ push_constr (void *vs)
       fprop = (struct struct_scr_field *) (field_userptr (f));
       debug ("fprop=%p", fprop);
       if (fprop != 0)
-        {
-          debug ("getting ptr", fprop);
-          debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname,
-                 (fprop->datatype) & 0xffff);
-          ptr =
-            (char *) construct (fprop->colname, field_buffer (f, 0),
-                                ((fprop->datatype & 0xffff) == 0)
-                                || ((fprop->datatype & 0xffff) == 8));
-          if (strlen (ptr) > 0)
-            {
-              debug ("ptr=%s\n", ptr);
-              if (flg == 0)
-                {
-                  push_char (ptr);
-                  flg = 1;
-                }
-              else
-                {
-                  push_char (" AND ");
-                  push_char (ptr);
-                  pushop (OP_CONCAT);
-                  pushop (OP_CONCAT);
-                }
-            }
-        }
+	{
+	  debug ("getting ptr", fprop);
+	  debug ("fprop->colname=%s fprop->datatype=%x", fprop->colname,
+		 (fprop->datatype) & 0xffff);
+	  ptr =
+	    (char *) construct (fprop->colname, field_buffer (f, 0),
+				((fprop->datatype & 0xffff) == 0)
+				|| ((fprop->datatype & 0xffff) == 8));
+	  if (strlen (ptr) > 0)
+	    {
+	      debug ("ptr=%s\n", ptr);
+	      if (flg == 0)
+		{
+		  push_char (ptr);
+		  flg = 1;
+		}
+	      else
+		{
+		  push_char (" AND ");
+		  push_char (ptr);
+		  pushop (OP_CONCAT);
+		  pushop (OP_CONCAT);
+		}
+	    }
+	}
     }
   if (flg == 0)
     push_char ("1=1");
@@ -2398,10 +2483,10 @@ scan_for_field (char *s)
     {
       debug ("Calling field_name_match with %p", fld);
       if (field_name_match (fld, s))
-        {
-          debug ("Got a match - returning %p", fld);
-          return fld;
-        }
+	{
+	  debug ("Got a match - returning %p", fld);
+	  return fld;
+	}
     }
   return 0;
 }
@@ -2411,11 +2496,12 @@ scan_for_field (char *s)
  *
  * @todo Describe function
  */
-void set_infield_from_stack (void)
+void
+set_infield_from_stack (void)
 {
-  debug("**** CHANGED FIELD ****");
+  debug ("**** CHANGED FIELD ****");
   inp_current_field = pop_long ();
-  debug("New field :---> %p",inp_current_field);
+  debug ("New field :---> %p", inp_current_field);
 }
 
 
@@ -2423,9 +2509,9 @@ void set_infield_from_stack (void)
  * @return The current field number.
  */
 int
-get_curr_infield(void)
+get_curr_infield (void)
 {
-        return inp_current_field;
+  return inp_current_field;
 }
 
 /**
@@ -2445,7 +2531,7 @@ fgl_infield (char *s, int a)
   debug ("Current field = %p\n", f->currentfield);
 
   /* if (scan_for_field (s) == current_field (f->form)) { */
-  if (scan_for_field (s) == (FIELD *)inp_current_field)
+  if (scan_for_field (s) == (FIELD *) inp_current_field)
     {
       debug ("I'm in %s\n", s);
       return 1;
@@ -2460,7 +2546,7 @@ fgl_infield (char *s, int a)
  * @todo Describe function
  */
 int
-fgl_getfldbuf (char *s,int n)
+fgl_getfldbuf (char *s, int n)
 {
   struct s_form_dets *f;
   FIELD *fld;
@@ -2494,7 +2580,7 @@ fgl_getfldbuf (char *s,int n)
  * @todo Describe function
  */
 int
-key_prompt (int a, FORM * mform, struct s_prompt * prompt)
+key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 {
   FIELD *f;
   f = current_field (mform);
@@ -2523,10 +2609,10 @@ key_prompt (int a, FORM * mform, struct s_prompt * prompt)
     case KEY_BACKSPACE:
       debug ("Req del prev");
       if (get_curr_field_col (mform))
-        {
-          int_form_driver (mform, REQ_DEL_PREV);
-          debug ("Done...");
-        }
+	{
+	  int_form_driver (mform, REQ_DEL_PREV);
+	  debug ("Done...");
+	}
       return 0;
 
     case 24:
@@ -2538,9 +2624,9 @@ key_prompt (int a, FORM * mform, struct s_prompt * prompt)
     case 13:
     case 10:
     case KEY_DOWN:
-	#ifdef DEBUG
-		debug ("Next field in a prompt - they must mean enter");
-	#endif
+#ifdef DEBUG
+      debug ("Next field in a prompt - they must mean enter");
+#endif
       return 10;
 
     case KEY_LEFT:
@@ -2574,7 +2660,7 @@ key_prompt (int a, FORM * mform, struct s_prompt * prompt)
  * @todo Describe function
  */
 void
-reset_delims (struct s_form_dets * formdets, char *delims)
+reset_delims (struct s_form_dets *formdets, char *delims)
 {
   int a;
   char sbuff0[2];
@@ -2587,9 +2673,9 @@ reset_delims (struct s_form_dets * formdets, char *delims)
   for (a = 0; a < formdets->fileform->metrics.metrics_len; a++)
     {
       mja_set_field_buffer ((FIELD *) formdets->fileform->metrics.
-                            metrics_val[a].dlm1, 0, sbuff0);
+			    metrics_val[a].dlm1, 0, sbuff0);
       mja_set_field_buffer ((FIELD *) formdets->fileform->metrics.
-                            metrics_val[a].dlm2, 0, sbuff1);
+			    metrics_val[a].dlm2, 0, sbuff1);
     }
 }
 
@@ -2634,19 +2720,19 @@ debug_print_field_opts (FIELD * a)
  * @todo Describe function
  */
 int
-page_for_field (struct s_screenio * s, FIELD * f)
+page_for_field (struct s_screenio *s, FIELD * f)
 {
   int a;
   int metric_no;
   for (a = 0; s->field_list[a]; a++)
     {
       if (f == s->field_list[a])
-        {
-          metric_no = get_metric_no (s->currform, s->field_list[a]);
-          debug ("FIELD LIST : %p %d", s->field_list[a],
-                 s->currform->fileform->metrics.metrics_val[metric_no].scr);
-          return s->currform->fileform->metrics.metrics_val[metric_no].scr;
-        }
+	{
+	  metric_no = get_metric_no (s->currform, s->field_list[a]);
+	  debug ("FIELD LIST : %p %d", s->field_list[a],
+		 s->currform->fileform->metrics.metrics_val[metric_no].scr);
+	  return s->currform->fileform->metrics.metrics_val[metric_no].scr;
+	}
     }
   return 0;
 }
@@ -2656,7 +2742,7 @@ page_for_field (struct s_screenio * s, FIELD * f)
  * @todo Describe function
  */
 int
-page_for_cfield (struct s_screenio * s)
+page_for_cfield (struct s_screenio *s)
 {
   FIELD *f;
   int a;
@@ -2665,12 +2751,12 @@ page_for_cfield (struct s_screenio * s)
   for (a = 0; s->field_list[a]; a++)
     {
       if (f == s->field_list[a])
-        {
-          metric_no = get_metric_no (s->currform, s->field_list[a]);
-          debug ("FIELD LIST : %p %d", s->field_list[a],
-                 s->currform->fileform->metrics.metrics_val[metric_no].scr);
-          return s->currform->fileform->metrics.metrics_val[metric_no].scr;
-        }
+	{
+	  metric_no = get_metric_no (s->currform, s->field_list[a]);
+	  debug ("FIELD LIST : %p %d", s->field_list[a],
+		 s->currform->fileform->metrics.metrics_val[metric_no].scr);
+	  return s->currform->fileform->metrics.metrics_val[metric_no].scr;
+	}
     }
   return 0;
 }
@@ -2681,7 +2767,7 @@ page_for_cfield (struct s_screenio * s)
  * @todo Describe function
  */
 int
-page_for_nfield (struct s_screenio * s)
+page_for_nfield (struct s_screenio *s)
 {
   FIELD *f;
   int a;
@@ -2693,16 +2779,16 @@ page_for_nfield (struct s_screenio * s)
   for (a = 0; s->field_list[a]; a++)
     {
       if (f == s->field_list[a])
-        {
-          a++;
-          if (s->field_list[a] == 0)
-            a = 0;
-          metric_no = get_metric_no (s->currform, s->field_list[a]);
-          debug ("Metric_no=%d", metric_no);
-          debug ("FIELD LIST : %p %d", s->field_list[a],
-                 s->currform->fileform->metrics.metrics_val[metric_no].scr);
-          return s->currform->fileform->metrics.metrics_val[metric_no].scr;
-        }
+	{
+	  a++;
+	  if (s->field_list[a] == 0)
+	    a = 0;
+	  metric_no = get_metric_no (s->currform, s->field_list[a]);
+	  debug ("Metric_no=%d", metric_no);
+	  debug ("FIELD LIST : %p %d", s->field_list[a],
+		 s->currform->fileform->metrics.metrics_val[metric_no].scr);
+	  return s->currform->fileform->metrics.metrics_val[metric_no].scr;
+	}
     }
   return 0;
 }
@@ -2712,7 +2798,7 @@ page_for_nfield (struct s_screenio * s)
  * @todo Describe function
  */
 int
-page_for_pfield (struct s_screenio * s)
+page_for_pfield (struct s_screenio *s)
 {
   FIELD *f;
   int a, b;
@@ -2722,20 +2808,20 @@ page_for_pfield (struct s_screenio * s)
   for (a = 0; s->field_list[a]; a++)
     {
       if (f == s->field_list[a])
-        {
-          b = a - 1;
-          if (a <= 0)
-            {
-              debug ("field is at end of list");
-              for (b = 0; s->field_list[b + 1]; b++);
-              debug ("setting a to %d", a);
-            }
-          debug ("b=%d", b);
-          metric_no = get_metric_no (s->currform, s->field_list[b]);
-          debug ("FIELD LIST : %d %p %d", a, s->field_list[b],
-                 s->currform->fileform->metrics.metrics_val[metric_no].scr);
-          return s->currform->fileform->metrics.metrics_val[metric_no].scr;
-        }
+	{
+	  b = a - 1;
+	  if (a <= 0)
+	    {
+	      debug ("field is at end of list");
+	      for (b = 0; s->field_list[b + 1]; b++);
+	      debug ("setting a to %d", a);
+	    }
+	  debug ("b=%d", b);
+	  metric_no = get_metric_no (s->currform, s->field_list[b]);
+	  debug ("FIELD LIST : %d %p %d", a, s->field_list[b],
+		 s->currform->fileform->metrics.metrics_val[metric_no].scr);
+	  return s->currform->fileform->metrics.metrics_val[metric_no].scr;
+	}
     }
   return 0;
 }
@@ -2747,7 +2833,7 @@ page_for_pfield (struct s_screenio * s)
  * @todo Describe function
  */
 int
-copy_field_data (struct s_form_dets * form)
+copy_field_data (struct s_form_dets *form)
 {
   char buff[80] = "";
   char buff2[80] = "";
@@ -2759,72 +2845,72 @@ copy_field_data (struct s_form_dets * form)
   if (form->currentfield != 0)
     if (field_userptr (form->currentfield) != 0)
       {
-        debug ("Is a proper field");
-        fprop =
-          (struct struct_scr_field *) (field_userptr (form->currentfield));
-        debug ("fprop=%p", fprop);
-        if (fprop != 0)
-          {
-            debug ("check Datatype ");
-            if (((fprop->datatype != DTYPE_CHAR) & (DTYPE_MASK))
-                && (field_status (form->currentfield)))
-              {
-                debug ("modify size dtype");
-                debug ("modfy size for metric %d",
-                       get_metric_for (form, form->currentfield));
-                modify_size (&buff[4],
-                             form->fileform->metrics.
-                             metrics_val[get_metric_for
-                                         (form, form->currentfield)].w);
-                debug ("modfy size done -> '%s'", &buff[4]);
+	debug ("Is a proper field");
+	fprop =
+	  (struct struct_scr_field *) (field_userptr (form->currentfield));
+	debug ("fprop=%p", fprop);
+	if (fprop != 0)
+	  {
+	    debug ("check Datatype ");
+	    if (((fprop->datatype != DTYPE_CHAR) & (DTYPE_MASK))
+		&& (field_status (form->currentfield)))
+	      {
+		debug ("modify size dtype");
+		debug ("modfy size for metric %d",
+		       get_metric_for (form, form->currentfield));
+		modify_size (&buff[4],
+			     form->fileform->metrics.
+			     metrics_val[get_metric_for
+					 (form, form->currentfield)].w);
+		debug ("modfy size done -> '%s'", &buff[4]);
 
-                strcpy (&buff[4], field_buffer (form->currentfield, 0));
-                debug ("copy 1");
-                strcpy (buff2, &buff[4]);
-                debug ("copy 2");
-                debug ("trim buff");
-                trim (buff2);
-                getsyx (y, x);
+		strcpy (&buff[4], field_buffer (form->currentfield, 0));
+		debug ("copy 1");
+		strcpy (buff2, &buff[4]);
+		debug ("copy 2");
+		debug ("trim buff");
+		trim (buff2);
+		getsyx (y, x);
 
-                debug ("CHange y=%d, x=%d", y, x);
-                debug ("stack manip buff2='%s'", buff2);
-                if (strlen (buff2) > 0)
-                  {
-					#ifdef DEBUG
-                    	debug ("Pushing param %p");
-					#endif
-                    push_param (buff2, DTYPE_CHAR);
-                    if (pop_param
-                        (buff, fprop->datatype,
-                         get_field_width (form->currentfield)))
-                      {
-						#ifdef DEBUG
-                        	debug ("Pushing param %p %d", buff,fprop->datatype);
-						#endif
-                        push_param (buff, fprop->datatype);
-                        if (has_str_attribute (fprop, FA_S_FORMAT))
-                          {
-                            push_char (get_str_attribute
-                                       (fprop, FA_S_FORMAT));
-                            //push_param ("using", FUNCTION_OP);
-                            pushop (OP_USING);
-                          }
-                        pop_param (buff, DTYPE_CHAR,
-                                   get_field_width (form->currentfield));
-                        mja_set_field_buffer (form->currentfield, 0, buff);
-                      }
-                    else
-                      {
+		debug ("CHange y=%d, x=%d", y, x);
+		debug ("stack manip buff2='%s'", buff2);
+		if (strlen (buff2) > 0)
+		  {
+#ifdef DEBUG
+		    debug ("Pushing param %p");
+#endif
+		    push_param (buff2, DTYPE_CHAR);
+		    if (pop_param
+			(buff, fprop->datatype,
+			 get_field_width (form->currentfield)))
+		      {
+#ifdef DEBUG
+			debug ("Pushing param %p %d", buff, fprop->datatype);
+#endif
+			push_param (buff, fprop->datatype);
+			if (has_str_attribute (fprop, FA_S_FORMAT))
+			  {
+			    push_char (get_str_attribute
+				       (fprop, FA_S_FORMAT));
+			    //push_param ("using", FUNCTION_OP);
+			    pushop (OP_USING);
+			  }
+			pop_param (buff, DTYPE_CHAR,
+				   get_field_width (form->currentfield));
+			mja_set_field_buffer (form->currentfield, 0, buff);
+		      }
+		    else
+		      {
 			//push_char(acl_getenv("FIELD_ERROR_MSG"));
 			//display_error(1,0);
-                        error_box (acl_getenv ("FIELD_ERROR_MSG"));
-                        mja_set_field_buffer (form->currentfield, 0, " ");
-                        set_current_field (mform, form->currentfield);
-                        return 0;
-                      }
-                  }
-              }
-          }
+			error_box (acl_getenv ("FIELD_ERROR_MSG"));
+			mja_set_field_buffer (form->currentfield, 0, " ");
+			set_current_field (mform, form->currentfield);
+			return 0;
+		      }
+		  }
+	      }
+	  }
       }
   return 1;
 }
@@ -2854,9 +2940,13 @@ int_form_driver (FORM * form, int a)
   char buff2[1024];
   int fd_ok;
 
-  debug("int_form_driver called with %p - %d",form,a);
+  debug ("int_form_driver called with %p - %d", form, a);
 
-  if (a<=27) { debug("Control Character or ESC"); return; }
+  if (a <= 27)
+    {
+      debug ("Control Character or ESC");
+      return;
+    }
 
   field_pos = get_curr_field_col (form);
   f = current_field (form);
@@ -2872,18 +2962,20 @@ int_form_driver (FORM * form, int a)
 
   debug ("MJA Calling form_driver with %d for form %p", a, form);
 
-  fd_ok=form_driver (form, a);
-  if (fd_ok!=E_OK) {
-		debug("Problem in calling form_driver %p %d - returns %d",form,a,fd_ok);
-		exitwith("Form driver complaint");
-		return;
-  }
+  fd_ok = form_driver (form, a);
+  if (fd_ok != E_OK)
+    {
+      debug ("Problem in calling form_driver %p %d - returns %d", form, a,
+	     fd_ok);
+      exitwith ("Form driver complaint");
+      return;
+    }
 
   if (f != current_field (form))
     {
       debug ("Resetting focus");
       f = current_field (form);
-      gui_setfocus ((long)f);
+      gui_setfocus ((long) f);
     }
 
   if (field_pos != get_curr_field_col (form))
@@ -2929,32 +3021,32 @@ clr_form (int to_default)
 
   formdets = get_curr_form ();
 
-	/* Go through each field */
+  /* Go through each field */
   for (a = 0; a < formdets->fileform->attributes.attributes_len; a++)
     {
       fno = formdets->fileform->attributes.attributes_val[a].field_no;
 
-	/* And through each metric for this field */
+      /* And through each metric for this field */
       for (rn = 0;
-           rn < formdets->fileform->fields.fields_val[fno].metric.metric_len;
-           rn++)
-        {
-          metric_no =
-            formdets->fileform->fields.fields_val[fno].metric.metric_val[rn];
-          k = &formdets->fileform->metrics.metrics_val[metric_no];
-          f = (FIELD *) k->field;
-          if (!to_default)
-            mja_set_field_buffer (f, 0, "");
-          else
-            {
-              struct struct_scr_field *prop;
-              prop = (struct struct_scr_field *) field_userptr (f);
-              mja_set_field_buffer (f, 0,
-                                    replace_sql_var (strip_quotes
-                                                     (get_str_attribute
-                                                      (prop, FA_S_DEFAULT))));
-            }
-        }
+	   rn < formdets->fileform->fields.fields_val[fno].metric.metric_len;
+	   rn++)
+	{
+	  metric_no =
+	    formdets->fileform->fields.fields_val[fno].metric.metric_val[rn];
+	  k = &formdets->fileform->metrics.metrics_val[metric_no];
+	  f = (FIELD *) k->field;
+	  if (!to_default)
+	    mja_set_field_buffer (f, 0, "");
+	  else
+	    {
+	      struct struct_scr_field *prop;
+	      prop = (struct struct_scr_field *) field_userptr (f);
+	      mja_set_field_buffer (f, 0,
+				    replace_sql_var (strip_quotes
+						     (get_str_attribute
+						      (prop, FA_S_DEFAULT))));
+	    }
+	}
 
     }
 
@@ -2966,9 +3058,9 @@ clr_form (int to_default)
  * @todo Describe function
  */
 void
-disp_form_fields_ap (int n, int attr, char *formname,va_list *ap)
+disp_form_fields_ap (int n, int attr, char *formname, va_list * ap)
 {
-        exitwith("Not implemented for TUI mode");
+  exitwith ("Not implemented for TUI mode");
 }
 
 
@@ -3075,21 +3167,27 @@ curr_metric_is_verylast (void)
 }
 
 
-int curr_metric_is_used_last_s_screenio(struct s_screenio * s,FIELD *f) {
-int a;
-int fno=-1;
+int
+curr_metric_is_used_last_s_screenio (struct s_screenio *s, FIELD * f)
+{
+  int a;
+  int fno = -1;
 
-for (a=0;a<=s->nfields;a++) {
-	debug("Current field=%p field_list=%p",f,s->field_list[a]);
-	if (f==s->field_list[a]) fno=a;
-}
+  for (a = 0; a <= s->nfields; a++)
+    {
+      debug ("Current field=%p field_list=%p", f, s->field_list[a]);
+      if (f == s->field_list[a])
+	fno = a;
+    }
 
-debug("curr_metric_is_used_last_s_screenio fno=%d nfields=%d",fno,s->nfields) ;
-if (fno==s->nfields) {
-	return 1;
-} 
+  debug ("curr_metric_is_used_last_s_screenio fno=%d nfields=%d", fno,
+	 s->nfields);
+  if (fno == s->nfields)
+    {
+      return 1;
+    }
 
-return 0;
+  return 0;
 }
 
 
@@ -3098,15 +3196,15 @@ return 0;
  * @todo Describe function
  */
 int
-aclfgl_set_page(int n)
+aclfgl_set_page (int n)
 {
-int b;
-struct s_form_dets *f;
-	b=pop_int();
-	f=get_curr_form();
-	set_form_page(f->form,b);
-	refresh();
-	return 0;
+  int b;
+  struct s_form_dets *f;
+  b = pop_int ();
+  f = get_curr_form ();
+  set_form_page (f->form, b);
+  refresh ();
+  return 0;
 }
 
 /**
@@ -3114,23 +3212,23 @@ struct s_form_dets *f;
  * @todo Describe function
  */
 int
-aclfgl_get_page(int n)
+aclfgl_get_page (int n)
 {
-struct s_form_dets *f;
-	f=get_curr_form();
-	push_int(form_page(f->form));
-	return 1;
+  struct s_form_dets *f;
+  f = get_curr_form ();
+  push_int (form_page (f->form));
+  return 1;
 }
 
 
 /*
  * This function causes a SEGFAULT - useful for stopping the debugger!
 */
-void 
-bomb_out()
+void
+bomb_out ()
 {
-char *ptr=0;
-	*ptr=0;
+  char *ptr = 0;
+  *ptr = 0;
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.4 2003-04-23 16:37:24 mikeaubury Exp $
+# $Id: array.c,v 1.5 2003-05-12 14:24:26 mikeaubury Exp $
 #*/
 
 /**
@@ -48,7 +48,7 @@
 =====================================================================
 */
 
-//extern struct 	struct_screen_record *get_srec (char *name);
+//extern struct         struct_screen_record *get_srec (char *name);
 /* struct struct_screen_record *get_srec (char *); */
 
 /*
@@ -60,7 +60,7 @@
 extern int m_lastkey;
 extern WINDOW *currwin;
 struct s_disp_arr *curr_arr_disp;
-int cmode=0;
+int cmode = 0;
 
 /*
 =====================================================================
@@ -68,7 +68,8 @@ int cmode=0;
 =====================================================================
 */
 
-int disp_arr_ap(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_list *ap);
+int disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname,
+		 int attrib, va_list * ap);
 
 /*
 =====================================================================
@@ -100,8 +101,10 @@ clear_srec (struct struct_screen_record *srec)
 	  push_char (" ");
 
 	}
-      debug ("disp_fields(%d,%d,%s,%d,%d)", srec->attribs.attribs_len + 1, 0, srec1, b, 0, 0);
-      disp_arr_fields (srec->attribs.attribs_len + 1, 0,0, srec1, b + 1, 0, 0);
+      debug ("disp_fields(%d,%d,%s,%d,%d)", srec->attribs.attribs_len + 1, 0,
+	     srec1, b, 0, 0);
+      disp_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, b + 1, 0,
+		       0);
     }
 }
 
@@ -117,14 +120,17 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   char srec2[256];
   int topline;
   int scr_line;
-  int first_only=0;
+  int first_only = 0;
 #ifdef DEBUG
-  {    debug ("in draw_arr %p %d %d", disp, type, no);  }
+  {
+    debug ("in draw_arr %p %d %d", disp, type, no);
+  }
 #endif
-  if (type<0) {
-	type=0-type;
-	first_only=1;
-	}
+  if (type < 0)
+    {
+      type = 0 - type;
+      first_only = 1;
+    }
   topline = disp->arr_line - disp->scr_line + 1;
   scr_line = no - topline + 1;
   strcpy (srec2, disp->srec->name);
@@ -134,15 +140,17 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
       debug ("calling set_arr_Fields");
       set_arr_fields (disp->nbind, 0, srec2, scr_line, 0, 0);
 #ifdef DEBUG
-      {	debug ("Done");      }
+      {
+	debug ("Done");
+      }
 #endif
       return;
     }
 
-	if (first_only)
-	  push_bind (disp->binding, 1, no, disp->arr_elemsize);
-	else
-	  push_bind (disp->binding, disp->nbind, no, disp->arr_elemsize);
+  if (first_only)
+    push_bind (disp->binding, 1, no, disp->arr_elemsize);
+  else
+    push_bind (disp->binding, disp->nbind, no, disp->arr_elemsize);
 
   debug ("Print array no %d to scr %d", no, disp->scr_line);
   debug ("calling disp_arR_fields");
@@ -150,12 +158,13 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   if (disp->highlight)
     {
       debug ("With highlight");
-      disp_arr_fields (disp->nbind, first_only,type * A_REVERSE, srec2, scr_line, 0, 0);
+      disp_arr_fields (disp->nbind, first_only, type * A_REVERSE, srec2,
+		       scr_line, 0, 0);
     }
   else
     {
       debug ("Without highlight");
-      disp_arr_fields (disp->nbind, first_only,0, srec2, scr_line, 0, 0);
+      disp_arr_fields (disp->nbind, first_only, 0, srec2, scr_line, 0, 0);
     }
 }
 
@@ -171,7 +180,9 @@ draw_arr_all (struct s_disp_arr *disp)
   int topline;
   topline = disp->arr_line - disp->scr_line + 1;
 #ifdef DEBUG
-  {    debug ("Draw_arr_all");  }
+  {
+    debug ("Draw_arr_all");
+  }
 #endif
   for (a = 0; a < disp->srec->dim; a++)
     {
@@ -182,13 +193,17 @@ draw_arr_all (struct s_disp_arr *disp)
 	  draw_arr (disp, a + topline == disp->arr_line, a + topline);
 
 #ifdef DEBUG
-	  {	    debug ("after draw_arr (6)");	  }
+	  {
+	    debug ("after draw_arr (6)");
+	  }
 #endif
 	}
     }
   draw_arr (disp, 1, disp->arr_line);
 #ifdef DEBUG
-  {    debug ("after draw_arr (7)");  }
+  {
+    debug ("after draw_arr (7)");
+  }
 #endif
   mja_refresh ();
 }
@@ -206,12 +221,16 @@ redisplay_arr (struct s_disp_arr *arr, int redisp)
       debug ("Redisplay one");
       draw_arr (arr, 0, arr->last_arr);
 #ifdef DEBUG
-      {	debug ("after draw_arr (4)");      }
+      {
+	debug ("after draw_arr (4)");
+      }
 #endif
       debug ("Display one");
       draw_arr (arr, 1, arr->arr_line);
 #ifdef DEBUG
-      {	debug ("after draw_arr (5)");      }
+      {
+	debug ("after draw_arr (5)");
+      }
 #endif
     }
   if (redisp == 2)
@@ -229,10 +248,10 @@ redisplay_arr (struct s_disp_arr *arr, int redisp)
  *   - I : Input.
  *   - D : Display.
  */
-void 
-set_array_mode(int type)
+void
+set_array_mode (int type)
 {
-  cmode=type;
+  cmode = type;
 }
 
 /**
@@ -243,8 +262,8 @@ set_array_mode(int type)
  *
  * @param arr A pointer to the display array information structure.
  */
-static 
-int disp_loop (struct s_disp_arr *arr)
+static int
+disp_loop (struct s_disp_arr *arr)
 {
   struct s_form_dets *form;
   int a;
@@ -253,10 +272,12 @@ int disp_loop (struct s_disp_arr *arr)
   curr_arr_disp = arr;
   form = arr->currform;
   m_lastkey = 0;
-  set_array_mode('D');
+  set_array_mode ('D');
 
 #ifdef DEBUG
-  {    debug ("Currform=%p (s_form_dets)", form);  }
+  {
+    debug ("Currform=%p (s_form_dets)", form);
+  }
 #endif
   if (form != get_curr_form ())
     {
@@ -265,7 +286,9 @@ int disp_loop (struct s_disp_arr *arr)
     }
   mform = form->form;
 #ifdef DEBUG
-  {    debug ("FORM=%p", mform);  }
+  {
+    debug ("FORM=%p", mform);
+  }
 #endif
   if (arr->cntrl != 0)
     {
@@ -276,16 +299,28 @@ int disp_loop (struct s_disp_arr *arr)
     {
       draw_arr (arr, 2, arr->arr_line);
 #ifdef DEBUG
-      {	debug ("after draw_arr (3) mform=%p", mform);      }
-      {	debug ("Searching for form");      }
-      { find_ptr_debug (form);}
-      {	debug ("Searching for mform");      }
-      {	find_ptr_debug (mform);      }
-      {	debug ("form_win(mform)=%p", form_win (mform));      }
+      {
+	debug ("after draw_arr (3) mform=%p", mform);
+      }
+      {
+	debug ("Searching for form");
+      }
+      {
+	find_ptr_debug (form);
+      }
+      {
+	debug ("Searching for mform");
+      }
+      {
+	find_ptr_debug (mform);
+      }
+      {
+	debug ("form_win(mform)=%p", form_win (mform));
+      }
 #endif
 
       draw_arr (arr, -1, arr->arr_line);
-      mja_wrefresh(currwin);
+      mja_wrefresh (currwin);
       a = getch_win ();
       m_lastkey = a;
     }
@@ -383,7 +418,8 @@ int disp_loop (struct s_disp_arr *arr)
  * @param attrib The attributes
  */
 int
-disp_arr_ap(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_list *ap)
+disp_arr_ap (struct s_disp_arr *disp, void *ptr, char *srecname, int attrib,
+	     va_list * ap)
 {
   int a;
   curr_arr_disp = disp;
@@ -394,14 +430,17 @@ disp_arr_ap(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_lis
       disp->srec = get_srec (srecname);
 
 
-      if (disp->srec == 0) {
-	exitwith ("Screen record not found");
-	return 0;
+      if (disp->srec == 0)
+	{
+	  exitwith ("Screen record not found");
+	  return 0;
 	}
 
       disp->currform = get_curr_form ();
 #ifdef DEBUG
-      {	debug ("disp->currform=%p", disp->currform);      }
+      {
+	debug ("disp->currform=%p", disp->currform);
+      }
 #endif
       disp->last_arr = -1;
       disp->scr_line = 1;
@@ -418,11 +457,11 @@ disp_arr_ap(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_lis
 	}
       debug ("disparr3");
 
-      if (disp->srec->attribs.attribs_len  != disp->nbind)
+      if (disp->srec->attribs.attribs_len != disp->nbind)
 	{
 	  debug ("Too many or too few variables for fields %d %d %d",
-		 disp->srec->dim, disp->nbind,disp->srec->attribs.attribs_len
-	    );
+		 disp->srec->dim, disp->nbind,
+		 disp->srec->attribs.attribs_len);
 
 	  return 0;
 
@@ -440,22 +479,30 @@ disp_arr_ap(struct s_disp_arr *disp, void *ptr, char *srecname,int attrib,va_lis
 	    {
 
 #ifdef DEBUG
-	      {		debug ("call draw_arr (1)");	      }
+	      {
+		debug ("call draw_arr (1)");
+	      }
 #endif
 	      draw_arr (disp, a + 1 == disp->arr_line, a + 1);
 
 #ifdef DEBUG
-	      {		debug ("after draw_arr (1)");	      }
+	      {
+		debug ("after draw_arr (1)");
+	      }
 #endif
 	    }
 
 	}
 #ifdef DEBUG
-      {	debug ("call draw_arr (2)");      }
+      {
+	debug ("call draw_arr (2)");
+      }
 #endif
       draw_arr (disp, 1, disp->arr_line);
 #ifdef DEBUG
-      {	debug ("after draw_arr (2)");      }
+      {
+	debug ("after draw_arr (2)");
+      }
 #endif
       gui_scroll (disp->no_arr);
       set_arr_curr (disp->arr_line);
@@ -567,4 +614,3 @@ aclfgl_set_scrline(int np)
 */
 
 /* =============================== EOF ============================ */
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump.c,v 1.6 2003-02-18 09:02:24 mikeaubury Exp $
+# $Id: dump.c,v 1.7 2003-05-12 14:23:57 mikeaubury Exp $
 #*/
 
 /**
@@ -76,15 +76,15 @@ void decode_printfile (struct cmd_printfile *cmd);
 void decode_block (struct commands *cmd);
 void decode_call (struct cmd_call *cmd);
 void dump_commands (struct commands *cmd);
-char * decode_column(struct format *f);
+char *decode_column (struct format *f);
 void dump_format (void);
 void print_lvl (void);
-char * decode_op(int op);
-void decode_complex(struct complex_expr *e);
-void decode_compare(struct compare_expr *e);
-void decode_simple(struct simple_expr *e);
-void decode_list(struct expr_list *e);
-void decode_fcall(struct expr_call *e);
+char *decode_op (int op);
+void decode_complex (struct complex_expr *e);
+void decode_compare (struct compare_expr *e);
+void decode_simple (struct simple_expr *e);
+void decode_list (struct expr_list *e);
+void decode_fcall (struct expr_call *e);
 void dump_getdata (void);
 void dump_inputs (void);
 void dump_functions (void);
@@ -129,14 +129,14 @@ main (int argc, char *argv[])
       exit (2);
     }
 
-  fclose(f);
+  fclose (f);
   memset (&this_report, 0, sizeof (struct report));
 
   //xdrstdio_create (&xdrp, f, XDR_DECODE);
 
-  //a = xdr_report (&xdrp, &this_report);	//in lib/libform/form_xdr/formwrite2.c
+  //a = xdr_report (&xdrp, &this_report);       //in lib/libform/form_xdr/formwrite2.c
 
-  a=read_data_from_file("report",&this_report,argv[1]);
+  a = read_data_from_file ("report", &this_report, argv[1]);
 
   if (!a)
     {
@@ -294,39 +294,49 @@ dump_getdata (void)
   if (this_report.getdata.select_or_read == 0)
     {
       printf ("Using Select Statements\n");
-      
+
       for (a = 0; a < this_report.getdata.get_data_u.selects.selects_len; a++)
 	{
-	  ptr=&this_report.getdata.get_data_u.selects.selects_val[a];
+	  ptr = &this_report.getdata.get_data_u.selects.selects_val[a];
 
 	  printf ("%s\n", ptr->statement);
-	  if (ptr->wherepos1) {
-	  	for (b=0;b<ptr->wherepos1-1;b++) printf(" ");
-		printf("^");
-	  }
+	  if (ptr->wherepos1)
+	    {
+	      for (b = 0; b < ptr->wherepos1 - 1; b++)
+		printf (" ");
+	      printf ("^");
+	    }
 
-	  if (ptr->wherepos2) {
-	  	for (b=ptr->wherepos1;b<ptr->wherepos2-1;b++) printf(" ");
-		printf("^");
-	  }
+	  if (ptr->wherepos2)
+	    {
+	      for (b = ptr->wherepos1; b < ptr->wherepos2 - 1; b++)
+		printf (" ");
+	      printf ("^");
+	    }
 
-	  if (ptr->wherepos1) {
-		printf("\n");
-	  }
+	  if (ptr->wherepos1)
+	    {
+	      printf ("\n");
+	    }
 
-	  if (ptr->has_where) {
-			printf("Has a where clause\n");
-	  }
+	  if (ptr->has_where)
+	    {
+	      printf ("Has a where clause\n");
+	    }
 
-	  if (ptr->varids.varids_len) {
-		printf("OPEN USING :");
-		for (b=0;b<ptr->varids.varids_len;b++) {
-			if (b) printf(",");
-			print_variable(ptr->varids.varids_val[b]);
+	  if (ptr->varids.varids_len)
+	    {
+	      printf ("OPEN USING :");
+	      for (b = 0; b < ptr->varids.varids_len; b++)
+		{
+		  if (b)
+		    printf (",");
+		  print_variable (ptr->varids.varids_val[b]);
 		}
-	  }
+	    }
 
-	  if (strlen(ptr->temp_tab_name)) printf("Temp table : %s\n",ptr->temp_tab_name);
+	  if (strlen (ptr->temp_tab_name))
+	    printf ("Temp table : %s\n", ptr->temp_tab_name);
 
 	}
 
@@ -360,28 +370,42 @@ print_lvl (void)
  * @todo Describe function
  */
 char *
-decode_op(int op)
+decode_op (int op)
 {
-	switch(op)
-	{
-		case EXPR_AND: return "AND";
-        case EXPR_OR: return "OR";
-		case EXPR_ADD: return "+";
-        case EXPR_SUB: return "-";
-        case EXPR_MUL: return "*";
-        case EXPR_DIV: return "/";
-        case EXPR_POW: return "**";
+  switch (op)
+    {
+    case EXPR_AND:
+      return "AND";
+    case EXPR_OR:
+      return "OR";
+    case EXPR_ADD:
+      return "+";
+    case EXPR_SUB:
+      return "-";
+    case EXPR_MUL:
+      return "*";
+    case EXPR_DIV:
+      return "/";
+    case EXPR_POW:
+      return "**";
 
-        case EXPR_CLIP: return "CLIPPED";
-        case EXPR_USING: return "USING";
-        case EXPR_COLUMN: return "COLUMN";
-        case EXPR_SPACES: return "SPACES";
-        case EXPR_CONCAT: return ",";
-        case EXPR_ISNULL: return "IS NULL";
-        case EXPR_ISNOTNULL: return "IS NOT NULL";
-	}
+    case EXPR_CLIP:
+      return "CLIPPED";
+    case EXPR_USING:
+      return "USING";
+    case EXPR_COLUMN:
+      return "COLUMN";
+    case EXPR_SPACES:
+      return "SPACES";
+    case EXPR_CONCAT:
+      return ",";
+    case EXPR_ISNULL:
+      return "IS NULL";
+    case EXPR_ISNOTNULL:
+      return "IS NOT NULL";
+    }
 
-	return "Dont know(?!)";
+  return "Dont know(?!)";
 
 }
 
@@ -390,11 +414,11 @@ decode_op(int op)
  * @todo Describe function
  */
 void
-decode_complex(struct complex_expr *e)
+decode_complex (struct complex_expr *e)
 {
-	decode_expr(&e->expr1);
-	printf("%s (%d)",decode_op(e->operand),e->operand);
-	decode_expr(&e->expr2);
+  decode_expr (&e->expr1);
+  printf ("%s (%d)", decode_op (e->operand), e->operand);
+  decode_expr (&e->expr2);
 }
 
 
@@ -403,13 +427,13 @@ decode_complex(struct complex_expr *e)
  * @todo Describe function
  */
 void
-decode_compare(struct compare_expr *e)
+decode_compare (struct compare_expr *e)
 {
-	printf("(");
-	decode_expr(&e->expr1);
-	printf("%s",e->method);
-	decode_expr(&e->expr2);
-	printf(")");
+  printf ("(");
+  decode_expr (&e->expr1);
+  printf ("%s", e->method);
+  decode_expr (&e->expr2);
+  printf (")");
 }
 
 /**
@@ -417,25 +441,10 @@ decode_compare(struct compare_expr *e)
  * @todo Describe function
  */
 void
-decode_simple(struct simple_expr *e)
+decode_simple (struct simple_expr *e)
 {
-	decode_expr(&e->expr);
-	decode_op(e->operand);
-}
-
-
-/**
- *
- * @todo Describe function
- */
-void
-decode_list(struct expr_list *e)
-{
-int a;
-	for (a=0;a<e->elem.elem_len;a++) {
-		if (a) printf(", ");
-		decode_expr(&e->elem.elem_val[a]);
-	}
+  decode_expr (&e->expr);
+  decode_op (e->operand);
 }
 
 
@@ -444,43 +453,82 @@ int a;
  * @todo Describe function
  */
 void
-decode_fcall(struct expr_call *e)
+decode_list (struct expr_list *e)
 {
-	printf(" %s(",e->fname);
-	decode_list(e->lexpr);
-	printf(")");
+  int a;
+  for (a = 0; a < e->elem.elem_len; a++)
+    {
+      if (a)
+	printf (", ");
+      decode_expr (&e->elem.elem_val[a]);
+    }
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+decode_fcall (struct expr_call *e)
+{
+  printf (" %s(", e->fname);
+  decode_list (e->lexpr);
+  printf (")");
 }
 
 /**
  *
  * @todo Describe function
  */
-void 
+void
 decode_expr (struct expr *e)
 {
-  switch(e->type) 
-  {
-	case EXPRTYPE_INT    : printf("%d",e->expr_u.i); break;
-	case EXPRTYPE_DOUBLE : printf("%f",e->expr_u.d); break;
-	case EXPRTYPE_STRING : printf("%s",e->expr_u.s); break;
-	case EXPRTYPE_VARIABLE : print_variable(e->expr_u.varid); break;
-	case EXPRTYPE_BUILTIN  : printf("%s",e->expr_u.name); break;
-	case EXPRTYPE_COMPLEX: decode_complex(e->expr_u.expr);break;
-	case EXPRTYPE_COMPARE: decode_compare(e->expr_u.cexpr);break;
-	case EXPRTYPE_SIMPLE: decode_simple(e->expr_u.sexpr);break;
-	case EXPRTYPE_LIST: decode_list(e->expr_u.lexpr);break;
-	case EXPRTYPE_FCALL: decode_fcall(e->expr_u.fcall);break;
+  switch (e->type)
+    {
+    case EXPRTYPE_INT:
+      printf ("%d", e->expr_u.i);
+      break;
+    case EXPRTYPE_DOUBLE:
+      printf ("%f", e->expr_u.d);
+      break;
+    case EXPRTYPE_STRING:
+      printf ("%s", e->expr_u.s);
+      break;
+    case EXPRTYPE_VARIABLE:
+      print_variable (e->expr_u.varid);
+      break;
+    case EXPRTYPE_BUILTIN:
+      printf ("%s", e->expr_u.name);
+      break;
+    case EXPRTYPE_COMPLEX:
+      decode_complex (e->expr_u.expr);
+      break;
+    case EXPRTYPE_COMPARE:
+      decode_compare (e->expr_u.cexpr);
+      break;
+    case EXPRTYPE_SIMPLE:
+      decode_simple (e->expr_u.sexpr);
+      break;
+    case EXPRTYPE_LIST:
+      decode_list (e->expr_u.lexpr);
+      break;
+    case EXPRTYPE_FCALL:
+      decode_fcall (e->expr_u.fcall);
+      break;
 
-    /*
-    dump.c:478: warning: enumeration value `EXPRTYPE_NULL' not handled in switch
-	dump.c:478: warning: enumeration value `EXPRTYPE_AGG' not handled in switch
-    */
+      /*
+         dump.c:478: warning: enumeration value `EXPRTYPE_NULL' not handled in switch
+         dump.c:478: warning: enumeration value `EXPRTYPE_AGG' not handled in switch
+       */
 
-   	case EXPRTYPE_NULL: break;
-	case EXPRTYPE_AGG: break;
+    case EXPRTYPE_NULL:
+      break;
+    case EXPRTYPE_AGG:
+      break;
 
 
-  }
+    }
 
 }
 
@@ -632,8 +680,8 @@ decode_block (struct commands *cmd)
 void
 decode_call (struct cmd_call *cmd)
 {
-  printf ("CALL %s (",cmd->fcall->fname);
-  decode_list(cmd->fcall->lexpr);
+  printf ("CALL %s (", cmd->fcall->fname);
+  decode_list (cmd->fcall->lexpr);
 }
 
 /**
@@ -706,11 +754,11 @@ dump_commands (struct commands *cmd)
  * @todo Describe function
  */
 char *
-decode_column(struct format *f)
+decode_column (struct format *f)
 {
-static char buff[256];
-	sprintf(buff,"%s",f->column);
-	return buff;
+  static char buff[256];
+  sprintf (buff, "%s", f->column);
+  return buff;
 }
 
 /**
@@ -727,20 +775,39 @@ dump_format (void)
     {
 
 
-      switch(this_report.fmt.fmt_val[a].category) {
-	case FORMAT_PAGE_HEADER : printf("PAGE HEADER\n"); break;
-	case FORMAT_FIRST_PAGE_HEADER : printf("FIRST PAGE HEADER\n"); break;
-	case FORMAT_PAGE_TRAILER : printf("PAGE TRAILER\n"); break;
-	case FORMAT_EVERY_ROW : printf("EVERY ROW\n"); break;
-	case FORMAT_ON_EVERY_ROW: printf("ON EVERY ROW\n"); break;
-	case FORMAT_BEFORE_GROUP: printf("BEFORE GROUP OF %s\n",decode_column(&this_report.fmt.fmt_val[a])); break;
-	case FORMAT_AFTER_GROUP : printf("AFTER GROUP OF %s\n",decode_column(&this_report.fmt.fmt_val[a])); break;
-	case FORMAT_ON_LAST_ROW : printf("ON LAST ROW\n"); break;
-      }
-	/* fflush(stdout); */
-	lvl++;
+      switch (this_report.fmt.fmt_val[a].category)
+	{
+	case FORMAT_PAGE_HEADER:
+	  printf ("PAGE HEADER\n");
+	  break;
+	case FORMAT_FIRST_PAGE_HEADER:
+	  printf ("FIRST PAGE HEADER\n");
+	  break;
+	case FORMAT_PAGE_TRAILER:
+	  printf ("PAGE TRAILER\n");
+	  break;
+	case FORMAT_EVERY_ROW:
+	  printf ("EVERY ROW\n");
+	  break;
+	case FORMAT_ON_EVERY_ROW:
+	  printf ("ON EVERY ROW\n");
+	  break;
+	case FORMAT_BEFORE_GROUP:
+	  printf ("BEFORE GROUP OF %s\n",
+		  decode_column (&this_report.fmt.fmt_val[a]));
+	  break;
+	case FORMAT_AFTER_GROUP:
+	  printf ("AFTER GROUP OF %s\n",
+		  decode_column (&this_report.fmt.fmt_val[a]));
+	  break;
+	case FORMAT_ON_LAST_ROW:
+	  printf ("ON LAST ROW\n");
+	  break;
+	}
+      /* fflush(stdout); */
+      lvl++;
       dump_commands (&this_report.fmt.fmt_val[a].commands);
-	lvl--;
+      lvl--;
 
     }
 }
@@ -754,12 +821,14 @@ dump_format (void)
 void
 print_variable (int a)
 {
-	if (a==-1) 
-	{
-		printf("Unknown...\n");
-	} else {
-		      printf("%s",this_report.variables.variables_val[a].name);
-	}
+  if (a == -1)
+    {
+      printf ("Unknown...\n");
+    }
+  else
+    {
+      printf ("%s", this_report.variables.variables_val[a].name);
+    }
 }
 
 

@@ -8,103 +8,137 @@
 //void rsetnull(int d,void *ptr);
 
 
-void popint(int *s) {
-	int a;
-	a=pop_int();
-	*s=(a&0xffff);
-	
+void
+popint (int *s)
+{
+  int a;
+  a = pop_int ();
+  *s = (a & 0xffff);
+
 }
 
-void popquote(char *s,int size) {
-	pop_char(s,size);
-}
-
-
-void retquote(char *s) {
-	push_char(s);
-}
-
-
-void pushint(int a ) {
-	push_int(a);
-}
-
-void retint(int a) {
-	push_int(a);
-}
-
-void pushshort(short a) {
-	push_int(a&0xffff);
-}
-
-void pushlong(long a) {
-	push_long(a);
-}
-
-void popvchar(char *x,int y) {
-	pop_char(x,y);
-}
-
-void retdub(double *x) {
-	push_double(*x);
+void
+popquote (char *s, int size)
+{
+  pop_char (s, size);
 }
 
 
+void
+retquote (char *s)
+{
+  push_char (s);
+}
 
-void retflo(float *a) {
-	float b;
-	b=*a;
-	push_float(b);
+
+void
+pushint (int a)
+{
+  push_int (a);
+}
+
+void
+retint (int a)
+{
+  push_int (a);
+}
+
+void
+pushshort (short a)
+{
+  push_int (a & 0xffff);
+}
+
+void
+pushlong (long a)
+{
+  push_long (a);
+}
+
+void
+popvchar (char *x, int y)
+{
+  pop_char (x, y);
+}
+
+void
+retdub (double *x)
+{
+  push_double (*x);
+}
+
+
+
+void
+retflo (float *a)
+{
+  float b;
+  b = *a;
+  push_float (b);
 
 }
 
 
 //void rsetnull(int d,void *ptr) {
-//	setnull(d,ptr,0);
+//      setnull(d,ptr,0);
 //}
 
 
 
-void strip(char *s) {
-	trim(s);
+void
+strip (char *s)
+{
+  trim (s);
 }
 
 
-void retshort(short x) {
-	push_int(x&0xffff);
+void
+retshort (short x)
+{
+  push_int (x & 0xffff);
 }
 
-void poplong(long *x) {
-long a;
-	a=pop_long();
-	*x=a;
+void
+poplong (long *x)
+{
+  long a;
+  a = pop_long ();
+  *x = a;
 }
 
-void retlong(long x) {
-	push_long(x);
+void
+retlong (long x)
+{
+  push_long (x);
 }
 
-void pushquote(char *s,int n) {
-	char *ptr;
-	ptr=malloc(n+1);
-	strncpy(ptr,s,n);
-	ptr[n]=0;
-	push_char(ptr);
-	free(ptr);
-}
-
-
-
-
-void popshort(short *x) {
-	int a;
-	a=pop_int();
-	*x=a&0xffff;
+void
+pushquote (char *s, int n)
+{
+  char *ptr;
+  ptr = malloc (n + 1);
+  strncpy (ptr, s, n);
+  ptr[n] = 0;
+  push_char (ptr);
+  free (ptr);
 }
 
 
-void retstring(char *s) {
-	push_char(s);
+
+
+void
+popshort (short *x)
+{
+  int a;
+  a = pop_int ();
+  *x = a & 0xffff;
+}
+
+
+void
+retstring (char *s)
+{
+  push_char (s);
 }
 
 /*

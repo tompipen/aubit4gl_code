@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.2 2003-04-09 12:06:09 mikeaubury Exp $
+# $Id: simple.c,v 1.3 2003-05-12 14:24:26 mikeaubury Exp $
 #*/
 
 
@@ -245,9 +245,11 @@ A4GLSQL_next_column (char **colname, int *dtype, int *size)
   if (curr_colno >= nfields)
     return 0;
 
-  colptr = PQgetvalue (res, curr_colno, 0); strcpy (cname, colptr);
+  colptr = PQgetvalue (res, curr_colno, 0);
+  strcpy (cname, colptr);
   *colname = cname;
-  colptr = PQgetvalue (res, curr_colno, 1); fixtype (colptr, dtype, size);
+  colptr = PQgetvalue (res, curr_colno, 1);
+  fixtype (colptr, dtype, size);
 
   curr_colno++;
   return 1;
@@ -306,7 +308,7 @@ fixtype (char *type, int *d, int *s)
   if (strcmp (buff, "character") == 0)
     {
       *d = DTYPE_CHAR;
-      *s=atoi(l1);
+      *s = atoi (l1);
     }
 
   if (strcmp (buff, "integer") == 0)
@@ -321,8 +323,8 @@ fixtype (char *type, int *d, int *s)
 
   if (strcmp (buff, "numeric") == 0)
     {
-      	*d = DTYPE_DECIMAL;
-	*s=(atoi(l1)*16+atoi(l2));
+      *d = DTYPE_DECIMAL;
+      *s = (atoi (l1) * 16 + atoi (l2));
     }
 
   if (strcmp (buff, "date") == 0)
@@ -337,8 +339,8 @@ fixtype (char *type, int *d, int *s)
 
   if (strcmp (buff, "timestamp") == 0)
     {
-      	*d = DTYPE_DTIME;
-	*s=0x16000a;
+      *d = DTYPE_DTIME;
+      *s = 0x16000a;
     }
 
   if (strcmp (buff, "real") == 0)
@@ -354,7 +356,7 @@ fixtype (char *type, int *d, int *s)
   if (strcmp (buff, "interval") == 0)
     {
       *d = DTYPE_INTERVAL;
-	*s=0x249000e;
+      *s = 0x249000e;
     }
 
 

@@ -8,7 +8,7 @@
 #include "informix_test.h"
 
 #ifndef WIN32
-	#include <dlfcn.h>
+#include <dlfcn.h>
 #endif
 
 
@@ -37,34 +37,35 @@ void setErrorMessage(char  *_errorMessage)
  * It should go to a separate module when we have several suites to
  * database(s) connection.
  */
-int main(void)
+int
+main (void)
 {
-  int nf; 
-  Suite *s = makeInformixConnectionSuite(); 
+  int nf;
+  Suite *s = makeInformixConnectionSuite ();
 
-  SRunner *sr = srunner_create(s); 
+  SRunner *sr = srunner_create (s);
   //SRunner *sr = srunner_create(makeDdlSuite());
-  srunner_add_suite(sr,makeDdlSuite());
-  srunner_add_suite(sr,makeDmlSuite());
-  srunner_set_fork_status (sr, CK_NOFORK); 
+  srunner_add_suite (sr, makeDdlSuite ());
+  srunner_add_suite (sr, makeDmlSuite ());
+  srunner_set_fork_status (sr, CK_NOFORK);
 
   /* Load the esql library */
-  sql_lib = (void *)dlopen("SQL","esql");
+  sql_lib = (void *) dlopen ("SQL", "esql");
   /* Create the database using a specific esql/c */
-  connectToTestInstance();
-  createDatabase("test");
-  disconnectFromTestInstance();
+  connectToTestInstance ();
+  createDatabase ("test");
+  disconnectFromTestInstance ();
 
-  srunner_run_all (sr, CK_VERBOSE); 
-  nf = srunner_ntests_failed(sr); 
-  srunner_free(sr); 
-  suite_free(s); 
+  srunner_run_all (sr, CK_VERBOSE);
+  nf = srunner_ntests_failed (sr);
+  srunner_free (sr);
+  suite_free (s);
 
   /*
-  connectToTestInstance();
-  dropDatabase("test");
-  disconnectFromTestInstance();
-  */
+     connectToTestInstance();
+     dropDatabase("test");
+     disconnectFromTestInstance();
+   */
   //return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 
   return 0;

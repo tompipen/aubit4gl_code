@@ -26,15 +26,15 @@
  */
 
 /* from fgldoc.c */
-void regfun(char *name);
-void regfcall(char *name);
-void regrep(char *name);
-void regrcall(char *name);
-void regfrm(char *name);
+void regfun (char *name);
+void regfcall (char *name);
+void regrep (char *name);
+void regrcall (char *name);
+void regfrm (char *name);
 
 /* from read_pdbs.ec (if applicable) */
 #ifdef HAVE_ESQLC
-int read_progdbs(char *pname, int (*mod_reg_func)());
+int read_progdbs (char *pname, int (*mod_reg_func) ());
 #endif
 
 /* from lexer.l */

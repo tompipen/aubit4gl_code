@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile.c,v 1.12 2002-08-31 06:19:59 afalout Exp $
+# $Id: decompile.c,v 1.13 2003-05-12 14:23:58 mikeaubury Exp $
 #*/
 
 /**
@@ -50,8 +50,8 @@
 =====================================================================
 */
 
-void dump_options(menu *mm);
-void dump_menu(menu_list *m);
+void dump_options (menu * mm);
+void dump_menu (menu_list * m);
 
 /*
 =====================================================================
@@ -64,41 +64,45 @@ void dump_menu(menu_list *m);
  * @todo Describe function
  */
 int
-main(int argc,char *argv[])
+main (int argc, char *argv[])
 {
-struct menu_list the_menus;
+  struct menu_list the_menus;
 /* FILE *f;
 XDR xdrp; */
-int a = 0;
+  int a = 0;
 
-	if (argc!=2) {
-		printf("Usage %s filename\n",argv[0]);
-		exit(0);
-	}
+  if (argc != 2)
+    {
+      printf ("Usage %s filename\n", argv[0]);
+      exit (0);
+    }
 
-	/*
-	f=fopen(argv[1],"rb");
+  /*
+     f=fopen(argv[1],"rb");
 
-	if (f==0) {
-		printf("Unable to open file %s\n",argv[1]);
-		exit(2);
-	}
-    */
+     if (f==0) {
+     printf("Unable to open file %s\n",argv[1]);
+     exit(2);
+     }
+   */
 
-	memset(&the_menus,0,sizeof(menu_list));
+  memset (&the_menus, 0, sizeof (menu_list));
 
-    /*
-	int 	isolated_xdr_decompile			(void* the_menus,void* xdrp,void* f);
-	int 	isolated_xdr_decompile			(struct menu_list the_menus,XDR xdrp,FILE* f);
-    */
-    a=read_data_from_file("menu_list",&the_menus,argv[1]);
+  /*
+     int      isolated_xdr_decompile                  (void* the_menus,void* xdrp,void* f);
+     int      isolated_xdr_decompile                  (struct menu_list the_menus,XDR xdrp,FILE* f);
+   */
+  a = read_data_from_file ("menu_list", &the_menus, argv[1]);
 
-	if (!a) {
-		printf("Bad format\n");
-	} else {
-		dump_menu(&the_menus);
-	}
-return 0;
+  if (!a)
+    {
+      printf ("Bad format\n");
+    }
+  else
+    {
+      dump_menu (&the_menus);
+    }
+  return 0;
 }
 
 /**
@@ -106,16 +110,17 @@ return 0;
  * @todo Describe function
  */
 void
-dump_menu(menu_list *m)
+dump_menu (menu_list * m)
 {
-	int a;
-	menu *mm;
-	printf("%d menus & submenus\n",m->menus.menus_len);
-	for (a=0;a<m->menus.menus_len;a++) {
-		mm=&m->menus.menus_val[a];
-		printf("Menu : %s\n",mm->id);
-		dump_options(mm);
-	}
+  int a;
+  menu *mm;
+  printf ("%d menus & submenus\n", m->menus.menus_len);
+  for (a = 0; a < m->menus.menus_len; a++)
+    {
+      mm = &m->menus.menus_val[a];
+      printf ("Menu : %s\n", mm->id);
+      dump_options (mm);
+    }
 }
 
 /**
@@ -123,20 +128,22 @@ dump_menu(menu_list *m)
  * @todo Describe function
  */
 void
-dump_options(menu *mm)
+dump_options (menu * mm)
 {
-int a;
-menu_option_item *o;
-	for (a=0;a<mm->options.options_len;a++) {
-		o=&mm->options.options_val[a];
-		printf("   %s (%s) ",o->id,o->caption);
-		if (strlen(o->submenu_id)!=0) {
-			printf(" [Submenu ->%s] ",o->submenu_id);
-		}
-		printf(" Keys=%s Check=%d Attr=%x Color=%d\n",o->key_list,
-			o->checked,o->align,o->color);
-		printf(" Image='%s'\n",o->image);
+  int a;
+  menu_option_item *o;
+  for (a = 0; a < mm->options.options_len; a++)
+    {
+      o = &mm->options.options_val[a];
+      printf ("   %s (%s) ", o->id, o->caption);
+      if (strlen (o->submenu_id) != 0)
+	{
+	  printf (" [Submenu ->%s] ", o->submenu_id);
 	}
+      printf (" Keys=%s Check=%d Attr=%x Color=%d\n", o->key_list,
+	      o->checked, o->align, o->color);
+      printf (" Image='%s'\n", o->image);
+    }
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.12 2003-02-28 09:07:57 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.13 2003-05-12 14:24:14 mikeaubury Exp $
 #*/
 
 /**
@@ -48,14 +48,14 @@
 
 #ifdef OLD_INCL
 
-	#include <stdio.h>
-	#include <stdlib.h> 		/* calloc() free() */
-	#include <string.h>     	/* strcpy() strcat() strcmp() */
-	#include "a4gl_debug.h"
+#include <stdio.h>
+#include <stdlib.h>		/* calloc() free() */
+#include <string.h>		/* strcpy() strcat() strcmp() */
+#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_libaubit4gl_int.h"
+#include "a4gl_libaubit4gl_int.h"
 
 #endif
 
@@ -74,15 +74,15 @@
 */
 
 #ifdef OLD_INCL
-	extern char *	params_on_stack 				(char *_paramnames[],int n);
-	void 			A4GLSTK_pushFunction			(const char *functionName,char *params[],int n);
-	void 			A4GLSTK_popFunction				(void);
-	char * 			A4GLSTK_getStackTrace			(void);
-	int 			A4GLSTK_isStackInfo				(void);
+extern char *params_on_stack (char *_paramnames[], int n);
+void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
+void A4GLSTK_popFunction (void);
+char *A4GLSTK_getStackTrace (void);
+int A4GLSTK_isStackInfo (void);
 #endif
 
-void 			A4GLSTK_initFunctionCallStack	(void);
-void 			A4GLSTK_setCurrentLine			(const char *moduleName,int lineNumber);
+void A4GLSTK_initFunctionCallStack (void);
+void A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber);
 
 
 /*
@@ -94,12 +94,14 @@ void 			A4GLSTK_setCurrentLine			(const char *moduleName,int lineNumber);
 /**
  * The type definition of a function call 
  */
-typedef struct FunctionCall {
+typedef struct FunctionCall
+{
   const char *moduleName;   /**< Module where function was called */
-  int  lineNumber;          /**< Line in the 4gl where function was called */
+  int lineNumber;	    /**< Line in the 4gl where function was called */
   const char *functionName; /**< The name of the function called */
-  const char *params;       /**< a list of parameters passed to the function */
-} FunctionCall;
+  const char *params;	    /**< a list of parameters passed to the function */
+}
+FunctionCall;
 
 /** The current function call stack */
 static FunctionCall *functionCallStack;
@@ -108,10 +110,10 @@ static FunctionCall *functionCallStack;
 static int functionCallPointer;
 
 /** The current module where the program is flowing */
-static const char *currentModuleName="";
+static const char *currentModuleName = "";
 
 /** The current 4gl line number in the source where the program is working */
-static int currentFglLineNumber=0;
+static int currentFglLineNumber = 0;
 
 /** Flag that indicate that the stack info is used */
 static int stackInfoInitialized = 0;
@@ -131,21 +133,19 @@ static int stackInfoInitialized = 0;
  *   - 1 : Stack initialized
  */
 void
-A4GLSTK_initFunctionCallStack(void)
+A4GLSTK_initFunctionCallStack (void)
 {
-	#ifdef DEBUG
-		debug("Initializing Function Call Stack");
-    #endif
+#ifdef DEBUG
+  debug ("Initializing Function Call Stack");
+#endif
 
-  functionCallStack = (FunctionCall *)calloc(
-    sizeof(FunctionCall),
-    MAX_FUNCTION_CALL_STACK
-  );
+  functionCallStack = (FunctionCall *) calloc (sizeof (FunctionCall),
+					       MAX_FUNCTION_CALL_STACK);
   functionCallPointer = 0;
   stackInfoInitialized = 1;
-	#ifdef DEBUG
-		debug("Done Initializing Function Call Stack");
-    #endif
+#ifdef DEBUG
+  debug ("Done Initializing Function Call Stack");
+#endif
 }
 
 /**
@@ -155,7 +155,7 @@ A4GLSTK_initFunctionCallStack(void)
  * @param lineNumber The line at 4gl source where the program is.
  */
 void
-A4GLSTK_setCurrentLine(const char *moduleName,int lineNumber)
+A4GLSTK_setCurrentLine (const char *moduleName, int lineNumber)
 {
   currentModuleName = moduleName;
   currentFglLineNumber = lineNumber;
@@ -167,20 +167,22 @@ A4GLSTK_setCurrentLine(const char *moduleName,int lineNumber)
  * @param functionName The name of the function called.
  */
 void
-A4GLSTK_pushFunction(const char *functionName,char *params[],int n)
+A4GLSTK_pushFunction (const char *functionName, char *params[], int n)
 {
-int a;
- //printf("Call from Module : %s line %d to %s",currentModuleName,currentFglLineNumber,functionName);
- //fflush(stdout);
- debug("Call from Module : %s line %d",currentModuleName,currentFglLineNumber);
- debug("=====&&&&&&============PUSH %s %d,\n",functionName,n);
- for(a=0;a<n;a++) {
-	debug(" Param %d (%s)=",a+1,params[a]);
- }
+  int a;
+  //printf("Call from Module : %s line %d to %s",currentModuleName,currentFglLineNumber,functionName);
+  //fflush(stdout);
+  debug ("Call from Module : %s line %d", currentModuleName,
+	 currentFglLineNumber);
+  debug ("=====&&&&&&============PUSH %s %d,\n", functionName, n);
+  for (a = 0; a < n; a++)
+    {
+      debug (" Param %d (%s)=", a + 1, params[a]);
+    }
   functionCallStack[functionCallPointer].functionName = functionName;
-  functionCallStack[functionCallPointer].moduleName   = currentModuleName;
-  functionCallStack[functionCallPointer].lineNumber   = currentFglLineNumber;
-  functionCallStack[functionCallPointer].params       = params_on_stack(params,n);
+  functionCallStack[functionCallPointer].moduleName = currentModuleName;
+  functionCallStack[functionCallPointer].lineNumber = currentFglLineNumber;
+  functionCallStack[functionCallPointer].params = params_on_stack (params, n);
   functionCallPointer++;
 }
 
@@ -188,13 +190,13 @@ int a;
  * Pop the last function from the stack.
  */
 void
-A4GLSTK_popFunction(void)
+A4GLSTK_popFunction (void)
 {
-  if (functionCallStack[functionCallPointer-1].params)
-  		free((void *)functionCallStack[functionCallPointer-1].params);
+  if (functionCallStack[functionCallPointer - 1].params)
+    free ((void *) functionCallStack[functionCallPointer - 1].params);
 
   functionCallPointer--;
-  if ( functionCallPointer < 0 )
+  if (functionCallPointer < 0)
     functionCallPointer = 0;
 }
 
@@ -204,38 +206,40 @@ A4GLSTK_popFunction(void)
  * @return A pointer to a static char buffer where the stack trace was printed.
  */
 char *
-A4GLSTK_getStackTrace(void)
+A4GLSTK_getStackTrace (void)
 {
   static char stackTrace[640];
   static char tmpStackTrace[640];
   int i;
 
-  strcpy(stackTrace,"4gl function call stack :\n");
-  for ( i = functionCallPointer-1 ; i >= 0 ; i-- )
-  {
-    strcat(stackTrace,"    ");
-    if ( functionCallStack[i].moduleName == '\0' )
-      strcat(stackTrace,functionCallStack[i].functionName);
-    else {
-      sprintf(tmpStackTrace,
-       "%s (Line %d) calls %s",
-        functionCallStack[i].moduleName,
-        functionCallStack[i].lineNumber,
-        functionCallStack[i].functionName
-      );
-	strcat(stackTrace,tmpStackTrace);
-   }
+  strcpy (stackTrace, "4gl function call stack :\n");
+  for (i = functionCallPointer - 1; i >= 0; i--)
+    {
+      strcat (stackTrace, "    ");
+      if (functionCallStack[i].moduleName == '\0')
+	strcat (stackTrace, functionCallStack[i].functionName);
+      else
+	{
+	  sprintf (tmpStackTrace,
+		   "%s (Line %d) calls %s",
+		   functionCallStack[i].moduleName,
+		   functionCallStack[i].lineNumber,
+		   functionCallStack[i].functionName);
+	  strcat (stackTrace, tmpStackTrace);
+	}
 
-    /* Don't put the brackets on for a MAIN */
-    if (strcmp(functionCallStack[i].functionName,"MAIN")!=0) {
-    	strcat(stackTrace,"(");
-	if (functionCallStack[i].params) strcat(stackTrace,functionCallStack[i].params);
-    	strcat(stackTrace,")");
-       }
-    strcat(stackTrace,"\n");
+      /* Don't put the brackets on for a MAIN */
+      if (strcmp (functionCallStack[i].functionName, "MAIN") != 0)
+	{
+	  strcat (stackTrace, "(");
+	  if (functionCallStack[i].params)
+	    strcat (stackTrace, functionCallStack[i].params);
+	  strcat (stackTrace, ")");
+	}
+      strcat (stackTrace, "\n");
 
 
-  }
+    }
   return stackTrace;
 }
 
@@ -247,7 +251,7 @@ A4GLSTK_getStackTrace(void)
  *   - 1 : Stack info initialized.
  */
 int
-A4GLSTK_isStackInfo(void)
+A4GLSTK_isStackInfo (void)
 {
   return stackInfoInitialized;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.70 2003-05-06 17:39:01 mikeaubury Exp $
+# $Id: lexer.c,v 1.71 2003-05-12 14:23:45 mikeaubury Exp $
 #*/
 
 /**
@@ -68,7 +68,7 @@
 */
 
 #ifndef KWS_COMMENT
-	#define KWS_COMMENT COMMENT
+#define KWS_COMMENT COMMENT
 #endif
 
 #define stricmp 		aubit_strcasecmp
@@ -112,11 +112,11 @@ struct translate_string
   char *identifier;
 };
 
-int is_builtin_func(char *s);
-void set_namespace(char *s) ;
-char *get_namespace(char *s);
-int a4gl_yylex (void *pyylval, int yystate,void *yys1,void *yys2);
-char namespace[256]="aclfgl_";
+int is_builtin_func (char *s);
+void set_namespace (char *s);
+char *get_namespace (char *s);
+int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
+char namespace[256] = "aclfgl_";
 
 #define NEWLIST
 /* Extern reserved words table */
@@ -136,8 +136,8 @@ extern int translate_list_cnt;
 extern int chk4var;
 
 extern int ccnt;		/* defined in others.c */
-static void turn_state_all(int kw,int v,int arr) ;
-static int get_hash_val(char *s) ;
+static void turn_state_all (int kw, int v, int arr);
+static int get_hash_val (char *s);
 int current_yylex_state;
 
 /*
@@ -250,9 +250,10 @@ static void
 ccat (char *s, char a, int instr)
 {
   char buff[3];
-   if (strlen(s)>=1023) {
-	a4gl_yyerror("Internal error - word overflow..");
-   }
+  if (strlen (s) >= 1023)
+    {
+      a4gl_yyerror ("Internal error - word overflow..");
+    }
   if (instr == 0 || (a != '\n' && a != '\r' && a != '\t'))
     {
       buff[0] = a;
@@ -291,7 +292,7 @@ isnum (char *s)
 {
   int a;
   int dp = 0;
-  int is_e=0;
+  int is_e = 0;
 
   for (a = 0; a < strlen (s); a++)
     {
@@ -304,61 +305,77 @@ isnum (char *s)
 	}
       if (s[a] >= '0' && s[a] <= '9')
 	continue;
-      if (s[a]=='e'||s[a]=='E') {
-	is_e++;
-	continue;
+      if (s[a] == 'e' || s[a] == 'E')
+	{
+	  is_e++;
+	  continue;
 	}
-	
+
 
       return 0;
     }
 
-  if (is_e>1) {
-	return 0;
-  }
+  if (is_e > 1)
+    {
+      return 0;
+    }
 
-  if (is_e==1) {
-	char buff[256];
-	char *ptr;
-	long n;
-	double a_d=0;
-	long a_i=0;
-	int a_mode;
+  if (is_e == 1)
+    {
+      char buff[256];
+      char *ptr;
+      long n;
+      double a_d = 0;
+      long a_i = 0;
+      int a_mode;
 
-	strcpy(buff,s);
-	ptr=strchr(buff,'e');
-	if (ptr==0) ptr=strchr(buff,'E');
-	if (ptr==0) {
-		a4gl_yyerror("Internal error - couldn't locate 'e'..");
+      strcpy (buff, s);
+      ptr = strchr (buff, 'e');
+      if (ptr == 0)
+	ptr = strchr (buff, 'E');
+      if (ptr == 0)
+	{
+	  a4gl_yyerror ("Internal error - couldn't locate 'e'..");
 	}
-	*ptr=0;ptr++;
-	
-	sscanf(ptr,"%ld",&n);
+      *ptr = 0;
+      ptr++;
 
- 	if (strchr(buff,'.')) {
-		a_mode=2;
-		sscanf(buff,"%lf",&a_d);
-	} else {
-		a_mode=1;
-		sscanf(buff,"%ld",&a_i);
+      sscanf (ptr, "%ld", &n);
+
+      if (strchr (buff, '.'))
+	{
+	  a_mode = 2;
+	  sscanf (buff, "%lf", &a_d);
+	}
+      else
+	{
+	  a_mode = 1;
+	  sscanf (buff, "%ld", &a_i);
 
 	}
-	while (n) {
-		if (a_mode==1) a_i=a_i*10;
+      while (n)
+	{
+	  if (a_mode == 1)
+	    a_i = a_i * 10;
 
-		else          a_d=a_d*10.0;
-		n--;
+	  else
+	    a_d = a_d * 10.0;
+	  n--;
 	}
-	if (a_mode==1) {
-		sprintf(s,"%ld",a_i);
-	} else {
-		sprintf(s,"%f",a_d);
+      if (a_mode == 1)
+	{
+	  sprintf (s, "%ld", a_i);
 	}
-  }
+      else
+	{
+	  sprintf (s, "%f", a_d);
+	}
+    }
 
-  if (strchr (s, '.')) {
-		return 2;
-  }
+  if (strchr (s, '.'))
+    {
+      return 2;
+    }
 
   return 1;
 }
@@ -510,7 +527,7 @@ read_word2 (FILE * f, int *t)
 	      mja_ungetc (a, f);
 	      return word;
 	    }
-	
+
 	  a = mja_fgetc (f);
 	  if (a != '!')
 	    {
@@ -598,19 +615,22 @@ read_word2 (FILE * f, int *t)
 	{
 	  if (instrd == 1)
 	    {
-		int x;
-      	      x = mja_fgetc (f);
-	      mja_ungetc(x,f);
+	      int x;
+	      x = mja_fgetc (f);
+	      mja_ungetc (x, f);
 
-		if (x!='"') {
-	      		ccat (word, '"', instrs || instrd);
-	      		*t = CHAR_VALUE;
-	      		return word;
-		} else {
-      	      		x = mja_fgetc (f);
-	  		ccat (word, '\\', instrs || instrd);
-	  		ccat (word, '"', instrs || instrd);
-			continue;
+	      if (x != '"')
+		{
+		  ccat (word, '"', instrs || instrd);
+		  *t = CHAR_VALUE;
+		  return word;
+		}
+	      else
+		{
+		  x = mja_fgetc (f);
+		  ccat (word, '\\', instrs || instrd);
+		  ccat (word, '"', instrs || instrd);
+		  continue;
 		}
 	    }
 	  ccat (word, '"', instrs || instrd);
@@ -680,9 +700,10 @@ read_word (FILE * f, int *t)
     }
 
   /* if (s) ptr=s; */
-	if (word_cnt>=MAX_XWORDS) {
-		a4gl_yyerror("Internal error - xwords overflow..");
-	}
+  if (word_cnt >= MAX_XWORDS)
+    {
+      a4gl_yyerror ("Internal error - xwords overflow..");
+    }
   strcpy (xwords[word_cnt], ptr);
   word_cnt++;
 
@@ -878,17 +899,22 @@ chk_word (FILE * f, char *str)
 
 
 
-static int get_hash_val(char *s) {
-int c;
-	c=toupper(s[0]);
-	if (c>='A'&&c<='Z') {
-	
-		c=c-'A'+1;
-	} else {
-		c=0;
-	}
+static int
+get_hash_val (char *s)
+{
+  int c;
+  c = toupper (s[0]);
+  if (c >= 'A' && c <= 'Z')
+    {
 
-	return c;
+      c = c - 'A' + 1;
+    }
+  else
+    {
+      c = 0;
+    }
+
+  return c;
 }
 
 
@@ -906,7 +932,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
   /* check if the current word is a known reserved/key word */
 
 #ifdef NEWLIST
-  kwords=hashed_list[get_hash_val(p)];
+  kwords = hashed_list[get_hash_val (p)];
 #endif
 
   while (kwords[cnt].id > 0)
@@ -936,7 +962,7 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 	  static char tmpbuff[2000];
 	  memfile_fseek (f, yyline_fpos, SEEK_SET);
 	  tl = memfile_ftell (f);
-	//printf("a-tl = %d\n",a-tl);
+	  //printf("a-tl = %d\n",a-tl);
 	  memfile_fread (tmpbuff, a - tl, 1, f);
 	  tmpbuff[a - tl] = 0;
 	  strcpy (&yyline[yyline_len], tmpbuff);
@@ -966,14 +992,16 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
   strcpy (str, p);
 
   a = isnum (p);
-  if (a == 1) {
-    strcpy (str, p);
-    return INT_VALUE;
+  if (a == 1)
+    {
+      strcpy (str, p);
+      return INT_VALUE;
     }
-  if (a == 2) {
-    strcpy (str, p);
-    return NUMBER_VALUE;
-  }
+  if (a == 2)
+    {
+      strcpy (str, p);
+      return NUMBER_VALUE;
+    }
 
   return t;
 }
@@ -1022,7 +1050,8 @@ fix_bad_strings (char *s)
        * If you know what it is for - replace this with what it is */
 
 #ifdef I_VE_REMOVED_IT
-      if (s[a + 1]=='['||s[a + 1]==']' || s[a + 1] == '^' || s[a + 1] == '/')
+      if (s[a + 1] == '[' || s[a + 1] == ']' || s[a + 1] == '^'
+	  || s[a + 1] == '/')
 	{
 	  buff[c++] = s[a + 1];
 	  a++;
@@ -1061,13 +1090,13 @@ fix_bad_strings (char *s)
  */
 int
 //yylex (void)
-a4gl_yylex (void *pyylval, int yystate,void *yys1,void *yys2)
+a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 {
-int a;
-char buff[1024];
-char buffval[20480];
-int allow;
-static int last_pc = 0;
+  int a;
+  char buff[1024];
+  char buffval[20480];
+  int allow;
+  static int last_pc = 0;
 //int r;
 //short *stack_cnt;
 
@@ -1075,10 +1104,10 @@ static int last_pc = 0;
   //printf("In yylex ... yystate=%d\n", yystate);
   //printf("%p %d  %p %p\n",pyylval,yystate,yys1,yys2);
   //for (stack_cnt=(short *)yys2;stack_cnt>=(short *)yys1;stack_cnt--) {
-		//printf(" ==>%d\n",*stack_cnt);
+  //printf(" ==>%d\n",*stack_cnt);
   //}
 
-  current_yylex_state=yystate;
+  current_yylex_state = yystate;
 
   if (yyin == 0)
     {
@@ -1100,29 +1129,36 @@ static int last_pc = 0;
 
   a = chk_word (yyin, buff);
 
- debug ("chk_word returns token=%d, buff=%s state=%d\n", a, buff,yystate);
+  debug ("chk_word returns token=%d, buff=%s state=%d\n", a, buff, yystate);
 
   //if (chk4var)
   //a = NAMED_GEN;
 
 
-allow=allow_token_state(yystate,a);
-debug("Allow_token_State = %d state=%d\n",allow,yystate);
+  allow = allow_token_state (yystate, a);
+  debug ("Allow_token_State = %d state=%d\n", allow, yystate);
 
 
-if (sql_mode==0) {
-	if (allow==0&&isident(buff)) a=NAMED_GEN;
+  if (sql_mode == 0)
+    {
+      if (allow == 0 && isident (buff))
+	a = NAMED_GEN;
 
-	if (allow_token_state(yystate,USER_DTYPE)&&a==NAMED_GEN) {
-		if (find_datatype(upshift(buff))) {
-			a=USER_DTYPE;
-		}
+      if (allow_token_state (yystate, USER_DTYPE) && a == NAMED_GEN)
+	{
+	  if (find_datatype (upshift (buff)))
+	    {
+	      a = USER_DTYPE;
+	    }
 	}
-} else {
-	if (allow==0) a=SQL_TEXT;
-}
+    }
+  else
+    {
+      if (allow == 0)
+	a = SQL_TEXT;
+    }
 
-debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
+  debug ("-> %d (NAMED_GEN=%d)\n", a, NAMED_GEN);
 #ifdef OLDSTUFF
   /* variables/identifiers with the same names as 4GL keywords 
    * can easily be confused - any keyword tokens (they start from 1000) 
@@ -1152,10 +1188,11 @@ debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
 	  if (scan_variable (buff) == -1)
 	    break;
 	case 2:
-	  if (is_commandkw (a) == 0 && !sql_kword(a)) {
-	    a = NAMED_GEN;
-	  }
-	 break;
+	  if (is_commandkw (a) == 0 && !sql_kword (a))
+	    {
+	      a = NAMED_GEN;
+	    }
+	  break;
 	case 3:
 	  /* treat as identifier, unless token starts a command */
 	  if (is_commandkw (a) == 0)
@@ -1199,7 +1236,8 @@ debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
 	  strcpy (buff, buffval);
 	  a = NAMED_GEN;
 	  break;		/* 'C' */
-	default: a4gl_yyerror("Unexpected Error");
+	default:
+	  a4gl_yyerror ("Unexpected Error");
 
 	}
     }
@@ -1210,9 +1248,9 @@ debug("-> %d (NAMED_GEN=%d)\n",a,NAMED_GEN);
       to_lower_str (buff);
     }
 
-	//printf("Buff=%s\n",buff);
+  //printf("Buff=%s\n",buff);
   fix_bad_strings (buff);
-	//printf("After Buff=%s\n",buff);
+  //printf("After Buff=%s\n",buff);
 
   /* call set_str() to send back to the parser the text/value 
    * associated with the token.
@@ -1244,9 +1282,10 @@ turn_state (int kw, int v)
 {
   int a;
 #ifdef NEWLIST
-  for (a=0;a<=26;a++) {
-	turn_state_all(kw,v,a);
-  }
+  for (a = 0; a <= 26; a++)
+    {
+      turn_state_all (kw, v, a);
+    }
 #else
   for (a = 0; kwords[a].id > 0; a++)
     {
@@ -1266,28 +1305,37 @@ turn_state (int kw, int v)
 
 
 
-void set_namespace(char *s) {
-	strcpy(namespace,s);
+void
+set_namespace (char *s)
+{
+  strcpy (namespace, s);
 }
 
-char *get_namespace(char *s) {
+char *
+get_namespace (char *s)
+{
 
-	if (is_builtin_func(s)) return "aclfgl_"; // Always has aclfgl_...
+  if (is_builtin_func (s))
+    return "aclfgl_";		// Always has aclfgl_...
 
-	return namespace;
+  return namespace;
 }
 
 
 
 
-int is_builtin_func(char *s) {
-	int a;
-	extern char *builtin_aclfgl_functions[];
+int
+is_builtin_func (char *s)
+{
+  int a;
+  extern char *builtin_aclfgl_functions[];
 
-	for (a=0;builtin_aclfgl_functions[a];a++) {
-		if (strcmp(s,builtin_aclfgl_functions[a])==0) return 1;
-	}
-	return 0;
+  for (a = 0; builtin_aclfgl_functions[a]; a++)
+    {
+      if (strcmp (s, builtin_aclfgl_functions[a]) == 0)
+	return 1;
+    }
+  return 0;
 }
 
 
@@ -1295,10 +1343,12 @@ int is_builtin_func(char *s) {
 
 
 #ifdef NEWLIST
-static void turn_state_all(int kw,int v,int arr) {
-struct s_kw *local_kwords;
-int a;
-local_kwords=hashed_list[arr];
+static void
+turn_state_all (int kw, int v, int arr)
+{
+  struct s_kw *local_kwords;
+  int a;
+  local_kwords = hashed_list[arr];
 
 /* debug("State changes %d to %d\n",kw,v); */
   for (a = 0; local_kwords[a].id > 0; a++)

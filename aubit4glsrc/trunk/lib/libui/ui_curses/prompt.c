@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.9 2003-04-30 22:13:40 afalout Exp $
+# $Id: prompt.c,v 1.10 2003-05-12 14:24:27 mikeaubury Exp $
 #*/
 
 /**
@@ -52,9 +52,9 @@
 =====================================================================
 */
 
-int curses_to_aubit	(int a);
-int proc_key_prompt (int a, FORM * mform, struct s_prompt * prompt);
-int chkwin			(void);
+int curses_to_aubit (int a);
+int proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
+int chkwin (void);
 
 /*
 =====================================================================
@@ -68,104 +68,108 @@ int chkwin			(void);
  * @todo Describe function
  */
 int
-start_prompt ( void *vprompt, int ap, int c, int h,int af)
+start_prompt (void *vprompt, int ap, int c, int h, int af)
 {
-char *promptstr;
-int promptline;
-struct s_prompt *prompt;
-FIELD *sarr[3];
-WINDOW *p;
-WINDOW *d;
-WINDOW *cw;
-FORM *f;
-int width;
-char buff[300];
-int a;
+  char *promptstr;
+  int promptline;
+  struct s_prompt *prompt;
+  FIELD *sarr[3];
+  WINDOW *p;
+  WINDOW *d;
+  WINDOW *cw;
+  FORM *f;
+  int width;
+  char buff[300];
+  int a;
 
-  prompt=vprompt;
-  debug("In start prompt %p %d %d %d %d",prompt,ap,c,h,af);
+  prompt = vprompt;
+  debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h, af);
 
   memset (buff, ' ', 255);
   promptline = getprompt_line ();
-  debug("promptline=%d",promptline);
+  debug ("promptline=%d", promptline);
   width = get_curr_width ();
-  debug("create window %d %d",1,promptline);
-  debug("%d %d",width-1,2);
-  cw=(WINDOW *)get_currwin();
-  p = derwin(cw,1,width,promptline-1+iscurrborder()*2,iscurrborder());
+  debug ("create window %d %d", 1, promptline);
+  debug ("%d %d", width - 1, 2);
+  cw = (WINDOW *) get_currwin ();
+  p =
+    derwin (cw, 1, width, promptline - 1 + iscurrborder () * 2,
+	    iscurrborder ());
   prompt->win = p;
   promptstr = char_pop ();
   prompt->mode = 0;
-  prompt->h=h;
-  prompt->charmode=c;
+  prompt->h = h;
+  prompt->charmode = c;
   prompt->promptstr = promptstr;
   prompt->lastkey = 0;
   width -= strlen (promptstr);
   width--;
   sarr[0] = (FIELD *) make_label (0, 0, promptstr);
-  set_new_page(sarr[0],1);
-  debug("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
-  sarr[1] = (FIELD *) make_field (0, strlen (promptstr) , 1, width+1);
-  sarr[2] = 0; /* (FIELD *) make_label (0, strlen(promptstr)+width-1,"|"); */
+  set_new_page (sarr[0], 1);
+  debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
+  sarr[1] = (FIELD *) make_field (0, strlen (promptstr), 1, width + 1);
+  sarr[2] = 0;			/* (FIELD *) make_label (0, strlen(promptstr)+width-1,"|"); */
 
   /* set_field_pad(sarr[1],' '); */
   prompt->field = sarr[1];
-    debug ("set field to =%p", prompt->field);
-    debug ("Field=%p", sarr[1]);
+  debug ("set field to =%p", prompt->field);
+  debug ("Field=%p", sarr[1]);
 
   /* default_attributes (sarr[0], 0); */
 
   default_attributes (sarr[1], 0);
-	field_opts_off(sarr[1],O_STATIC);
+  field_opts_off (sarr[1], O_STATIC);
 
-  debug("ap=%d(%x) af=%d(%x)",ap,ap,af,af);
+  debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
 
-  if (ap) {
-	      set_field_fore(sarr[0],decode_aubit_attr(ap,'f'));
-	      set_field_back(sarr[0],decode_aubit_attr(ap,'b'));
-	}
-  if (af) {
-	      set_field_back(sarr[1],decode_aubit_attr(af,'f'));
-	      set_field_fore(sarr[1],decode_aubit_attr(af,'b'));
-	}
+  if (ap)
+    {
+      set_field_fore (sarr[0], decode_aubit_attr (ap, 'f'));
+      set_field_back (sarr[0], decode_aubit_attr (ap, 'b'));
+    }
+  if (af)
+    {
+      set_field_back (sarr[1], decode_aubit_attr (af, 'f'));
+      set_field_fore (sarr[1], decode_aubit_attr (af, 'b'));
+    }
 
-  field_opts_on(sarr[1],O_NULLOK);
-  debug("Set attributes");
+  field_opts_on (sarr[1], O_NULLOK);
+  debug ("Set attributes");
 
-  buff[0] = 0; /* -2*/
-  debug("Setting Buffer %p to '%s'",sarr[1],buff);
+  buff[0] = 0;			/* -2 */
+  debug ("Setting Buffer %p to '%s'", sarr[1], buff);
   set_field_buffer (sarr[1], 0, buff);
-  debug("Set buffer ");
+  debug ("Set buffer ");
   sarr[2] = 0;
 
   debug ("Made fields");
-  debug("Field attr : %d",field_opts(sarr[1]));
+  debug ("Field attr : %d", field_opts (sarr[1]));
 
   f = new_form (sarr);
-    debug ("Form f = %p", f);
+  debug ("Form f = %p", f);
   prompt->f = f;
   A4GLSQL_set_status (0, 0);
   if (a4gl_status != 0)
     return (prompt->mode = 2);
-  d = derwin (p, 0, 0, width+1, 1);
+  d = derwin (p, 0, 0, width + 1, 1);
   set_form_win (f, p);
   set_form_sub (f, d);
-    debug ("Set form win");
+  debug ("Set form win");
   a = post_form (f);
-    debug ("Posted form=%d", a);
+  debug ("Posted form=%d", a);
   int_form_driver (f, REQ_FIRST_FIELD);
   int_form_driver (f, REQ_INS_MODE);
-  wrefresh(p);
-    debug ("Initialized form");
+  wrefresh (p);
+  debug ("Initialized form");
 /* zrefresh(); */
   A4GLSQL_set_status (0, 0);
 
-  gui_startprompt ((long)prompt);
-  gui_setfocus((long)sarr[1]);
-  wrefresh(p);
-  mja_refresh();
+  gui_startprompt ((long) prompt);
+  gui_setfocus ((long) sarr[1]);
+  wrefresh (p);
+  mja_refresh ();
 
-return 1;
+  return 1;
 }
 
 
@@ -174,13 +178,13 @@ return 1;
  * @todo Describe function
  */
 int
-proc_key_prompt (int a, FORM * mform, struct s_prompt * prompt)
+proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 {
-FIELD *f;
+  FIELD *f;
 
   f = current_field (mform);
 
-  set_last_key(curses_to_aubit(a));
+  set_last_key (curses_to_aubit (a));
 
   debug ("In proc_key_prompt.... for %d", a);
   switch (a)
@@ -203,10 +207,10 @@ FIELD *f;
     case KEY_BACKSPACE:
       debug ("Req del prev");
       if (get_curr_field_col (mform))
-        {
-          int_form_driver (mform, REQ_DEL_PREV);
-          debug ("Done...");
-        }
+	{
+	  int_form_driver (mform, REQ_DEL_PREV);
+	  debug ("Done...");
+	}
       return 0;
 
     case 24:
@@ -218,9 +222,9 @@ FIELD *f;
     case 13:
     case 10:
     case KEY_DOWN:
-	#ifdef DEBUG
-		debug ("Next field in a prompt - they must mean enter");
-	#endif
+#ifdef DEBUG
+      debug ("Next field in a prompt - they must mean enter");
+#endif
       return 10;
 
     case KEY_LEFT:
@@ -258,28 +262,34 @@ prompt_loop (void *vprompt)
   int a;
   WINDOW *p;
   FORM *mform;
-struct s_prompt * prompt;
-prompt=vprompt;
+  struct s_prompt *prompt;
+  prompt = vprompt;
 
-chkwin();
+  chkwin ();
   mform = prompt->f;
   p = prompt->win;
 #ifdef DEBUG
-  {    debug ("In prompt loop mode = %d", prompt->mode);  }
+  {
+    debug ("In prompt loop mode = %d", prompt->mode);
+  }
 #endif
   if (prompt->mode == 1)
     {
-	char buff[1024];
+      char buff[1024];
 #ifdef DEBUG
-      {	debug ("Mode=1 - prepare to quit field=%p", prompt->field);      }
-      {	debug ("Buffer='%s'", field_buffer (prompt->field, 0));      }
+      {
+	debug ("Mode=1 - prepare to quit field=%p", prompt->field);
+      }
+      {
+	debug ("Buffer='%s'", field_buffer (prompt->field, 0));
+      }
 #endif
-	strcpy(buff,field_buffer(prompt->field,0));
-	trim(buff);
+      strcpy (buff, field_buffer (prompt->field, 0));
+      trim (buff);
 
       push_char (buff);
       prompt->mode = 2;
-      gui_endprompt ((long)prompt); /* void    gui_endprompt		(long ld); */
+      gui_endprompt ((long) prompt);	/* void    gui_endprompt            (long ld); */
       unpost_form (prompt->f);
       clear_prompt (prompt);
       return 0;
@@ -288,49 +298,57 @@ chkwin();
     return 0;
 
   pos_form_cursor (mform);
-  a = getch_win();
+  a = getch_win ();
 
 
-  a = proc_key_prompt (a, mform,prompt);
+  a = proc_key_prompt (a, mform, prompt);
   prompt->lastkey = get_lastkey ();
 
   if (a == 0)
     {
 #ifdef DEBUG
-      {	debug ("a==0");      }
+      {
+	debug ("a==0");
+      }
 #endif
       return 0;
     }
 #ifdef DEBUG
-  {    debug ("a==%d", a);  }
+  {
+    debug ("a==%d", a);
+  }
 #endif
 
   if (a < 0)
     return a;
 
-  debug("Requested..");
+  debug ("Requested..");
   if (prompt->lastkey == 10 || prompt->lastkey == 13)
-      {
-  int_form_driver (mform, REQ_VALIDATION);
-  wrefresh(p);
-	debug ("Return pressed");
-	prompt->mode = 1;
-	return 0;
-      }
+    {
+      int_form_driver (mform, REQ_VALIDATION);
+      wrefresh (p);
+      debug ("Return pressed");
+      prompt->mode = 1;
+      return 0;
+    }
 
-  debug ("Requesting Validation : %p %x %d",mform,a,a);
-  if (isprint(a)) int_form_driver (mform, a);
-  debug("Called int_form_driver");
+  debug ("Requesting Validation : %p %x %d", mform, a, a);
+  if (isprint (a))
+    int_form_driver (mform, a);
+  debug ("Called int_form_driver");
   int_form_driver (mform, REQ_VALIDATION);
-  debug("Called formdriver(validation)");
-  wrefresh(p);
-  debug("Refreshed screen");
+  debug ("Called formdriver(validation)");
+  wrefresh (p);
+  debug ("Refreshed screen");
 #ifdef DEBUG
-  {    debug (">>>Buffer='%s'", field_buffer (prompt->field, 0));  }
+  {
+    debug (">>>Buffer='%s'", field_buffer (prompt->field, 0));
+  }
 #endif
-      if (prompt->charmode) {
-	push_char (field_buffer (prompt->field, 0));
-	}
+  if (prompt->charmode)
+    {
+      push_char (field_buffer (prompt->field, 0));
+    }
   return -90;
 }
 
@@ -339,29 +357,38 @@ chkwin();
  * @todo Describe function
  */
 int
-curses_to_aubit(int a)
+curses_to_aubit (int a)
 {
-	int b;
-	for (b=0;b<64;b++) {
-		if (a==KEY_F(b)) return A4GLKEY_F(b);
-	}
+  int b;
+  for (b = 0; b < 64; b++)
+    {
+      if (a == KEY_F (b))
+	return A4GLKEY_F (b);
+    }
 
-	if (a==KEY_DOWN) return A4GLKEY_DOWN;
-	if (a==KEY_UP) return A4GLKEY_UP;
-	if (a==KEY_LEFT) return A4GLKEY_LEFT;
-	if (a==KEY_RIGHT) return A4GLKEY_RIGHT;
-	if (a==KEY_ENTER) return A4GLKEY_ENTER;
-	//if (a==KEY_PGDN) return A4GLKEY_PGDN;
-	//if (a==KEY_PGUP) return A4GLKEY_PGUP;
-	//if (a==KEY_INS) return A4GLKEY_INS;
-	//if (a==KEY_DEL) return A4GLKEY_DEL;
-	if (a==KEY_HOME) return A4GLKEY_HOME;
-	if (a==KEY_END) return A4GLKEY_END;
-	if (a==KEY_CANCEL) return A4GLKEY_CANCEL;
+  if (a == KEY_DOWN)
+    return A4GLKEY_DOWN;
+  if (a == KEY_UP)
+    return A4GLKEY_UP;
+  if (a == KEY_LEFT)
+    return A4GLKEY_LEFT;
+  if (a == KEY_RIGHT)
+    return A4GLKEY_RIGHT;
+  if (a == KEY_ENTER)
+    return A4GLKEY_ENTER;
+  //if (a==KEY_PGDN) return A4GLKEY_PGDN;
+  //if (a==KEY_PGUP) return A4GLKEY_PGUP;
+  //if (a==KEY_INS) return A4GLKEY_INS;
+  //if (a==KEY_DEL) return A4GLKEY_DEL;
+  if (a == KEY_HOME)
+    return A4GLKEY_HOME;
+  if (a == KEY_END)
+    return A4GLKEY_END;
+  if (a == KEY_CANCEL)
+    return A4GLKEY_CANCEL;
 
-	return a;
+  return a;
 }
 
 
 /* ============================== EOF ============================== */
-

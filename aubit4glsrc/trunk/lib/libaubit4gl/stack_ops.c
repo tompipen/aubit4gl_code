@@ -24,18 +24,20 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.4 2003-04-22 08:58:30 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.5 2003-05-12 14:24:18 mikeaubury Exp $
 #
 */
 
 #include "a4gl_libaubit4gl_int.h"
 
 void *pop_binding (int *n);
-void process_stack_op_other(int d);
+void process_stack_op_other (int d);
 
 
 
-void process_stack_op_other(int d) {
+void
+process_stack_op_other (int d)
+{
   int d1;
   int s1;
   int ptr1;
@@ -102,7 +104,7 @@ void process_stack_op_other(int d) {
 	  drop_param ();
 	  push_int (0);
 	}
-	free(s);
+      free (s);
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GLSQL_open_cursor (0, cname);
       if (a4gl_status != 0)
@@ -141,26 +143,26 @@ void process_stack_op_other(int d) {
       char cname[256];
 
       struct BINDING ibind[] = { {&tmpvar, 0, 255} };	/* end of binding */
-      struct BINDING obind[] = { {0, 0, 0} };			/* end of binding */
+      struct BINDING obind[] = { {0, 0, 0} };	/* end of binding */
       struct BINDING *dbind;
       void *prep;
 
       int n;
 
-      debug("OP_EXISTS - OP_NOTEXISTS...");
+      debug ("OP_EXISTS - OP_NOTEXISTS...");
       sprintf (cname, "chkex%d", cntsql++);
-	debug("Popping binding...");
+      debug ("Popping binding...");
 
       dbind = pop_binding (&n);
-      debug("poped dbind - Poping Sql");
+      debug ("poped dbind - Poping Sql");
       s = char_pop ();
       debug ("s=%s\n", s);
       A4GLSQL_set_sqlca_sqlcode (0);
-      debug("Prepare seelct...");
-      prep=A4GLSQL_prepare_select (dbind, n, obind, 0, s);
-      debug("Declare");
-	free(s);
-      A4GLSQL_declare_cursor (0,  prep , 0, cname);
+      debug ("Prepare seelct...");
+      prep = A4GLSQL_prepare_select (dbind, n, obind, 0, s);
+      debug ("Declare");
+      free (s);
+      A4GLSQL_declare_cursor (0, prep, 0, cname);
 
       if (a4gl_status != 0)
 	{
@@ -196,4 +198,3 @@ void process_stack_op_other(int d) {
     }
 
 }
-

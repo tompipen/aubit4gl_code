@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: signals.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: signals.c,v 1.3 2003-05-12 14:24:31 mikeaubury Exp $
 #*/
 
 /**
@@ -64,20 +64,18 @@ char *widgettype;
 void clicked_handler (GtkWidget * w, gpointer user_data);
 void changed_handler (GtkWidget * w, gpointer user_data);
 void
-select_row_handler ( GtkWidget      *w,
-                     gint            row,
-                     gint            column,
-				     GdkEventButton *event,
-                     gpointer        user_data );
+select_row_handler (GtkWidget * w,
+		    gint row,
+		    gint column, GdkEventButton * event, gpointer user_data);
 
 void grab_focus_handler (GtkWidget * w, gpointer user_data);
 
 
 #ifdef OLD_INCL
-	void add_signal_clicked (GtkWidget * widget, void *funcptr);
-	void add_signal_grab_focus (GtkWidget * widget, void *funcptr);
-	void add_signal_changed (GtkWidget * widget, void *funcptr);
-	void add_signal_select_row (GtkWidget * widget, void *funcptr);
+void add_signal_clicked (GtkWidget * widget, void *funcptr);
+void add_signal_grab_focus (GtkWidget * widget, void *funcptr);
+void add_signal_changed (GtkWidget * widget, void *funcptr);
+void add_signal_select_row (GtkWidget * widget, void *funcptr);
 #endif
 
 /*
@@ -91,7 +89,7 @@ void grab_focus_handler (GtkWidget * w, gpointer user_data);
  *
  * @param widget The widget where to assign some attributes.
  */
-static void 
+static void
 set_widget_data (GtkWidget * widget)
 {
   attr = gtk_object_get_data (GTK_OBJECT (widget), "Attribute");
@@ -112,18 +110,18 @@ clicked_handler (GtkWidget * w, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
-  void (*ptr) (GtkWidget *nw, char * a);
+  void (*ptr) (GtkWidget * nw, char *a);
   char *l;
   if (user_data)
     ptr = user_data;
   else
     ptr = func;
 
-  debug("Clicked... %p %p",w,user_data);
+  debug ("Clicked... %p %p", w, user_data);
   l = gtk_object_get_data (GTK_OBJECT (w), "Parent");
   if (l)
     {
-      nw = GTK_WIDGET(l);
+      nw = GTK_WIDGET (l);
     }
   else
     {
@@ -145,7 +143,7 @@ changed_handler (GtkWidget * w, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
-    void (*ptr) (GtkWidget *nw, char * a);
+  void (*ptr) (GtkWidget * nw, char *a);
   char *l;
 
   if (user_data)
@@ -157,7 +155,7 @@ changed_handler (GtkWidget * w, gpointer user_data)
   /* Is this a change on part of a larger widget  (eg combo/radio) */
   if (l)
     {
-      nw = GTK_WIDGET(l);			/* Yes - signal the parent */
+      nw = GTK_WIDGET (l);	/* Yes - signal the parent */
     }
   else
     {
@@ -165,7 +163,7 @@ changed_handler (GtkWidget * w, gpointer user_data)
     }
   debug ("\nchanged - ptr=%p w=%p\n", ptr, nw);
   set_widget_data (nw);
-  ptr(nw,"on");
+  ptr (nw, "on");
 }
 
 
@@ -174,16 +172,13 @@ changed_handler (GtkWidget * w, gpointer user_data)
  * @todo Describe function
  */
 void
-select_row_handler ( GtkWidget      *w,
-                     gint            row,
-                     gint            column,
-				     GdkEventButton *event,
-                     gpointer        user_data )
-
+select_row_handler (GtkWidget * w,
+		    gint row,
+		    gint column, GdkEventButton * event, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
-  void (*ptr) (GtkWidget *nw, char * a);
+  void (*ptr) (GtkWidget * nw, char *a);
   char *l;
 
   if (user_data)
@@ -195,7 +190,7 @@ select_row_handler ( GtkWidget      *w,
   /* Is this a change on part of a larger widget  (eg combo/radio) */
   if (l)
     {
-      nw = GTK_WIDGET(l);			/* Yes - signal the parent */
+      nw = GTK_WIDGET (l);	/* Yes - signal the parent */
     }
   else
     {
@@ -204,11 +199,13 @@ select_row_handler ( GtkWidget      *w,
 
   set_widget_data (nw);
 
-  if (ptr) ptr(nw,"on");
+  if (ptr)
+    ptr (nw, "on");
 
-  else {
-	printf("Nothing to do\n");
-  }
+  else
+    {
+      printf ("Nothing to do\n");
+    }
 }
 
 
@@ -222,11 +219,11 @@ grab_focus_handler (GtkWidget * w, gpointer user_data)
 {
   GtkWidget *nw;
   /* void (*ptr) (); */
-  void (*ptr) (GtkWidget *nw, char * a);
+  void (*ptr) (GtkWidget * nw, char *a);
 
   char *l;
-  
-  debug("Focus change ");
+
+  debug ("Focus change ");
 
   if (user_data)
     ptr = user_data;
@@ -236,7 +233,7 @@ grab_focus_handler (GtkWidget * w, gpointer user_data)
   l = gtk_object_get_data (GTK_OBJECT (w), "Parent");
   if (l)
     {
-      nw = GTK_WIDGET(l);
+      nw = GTK_WIDGET (l);
     }
   else
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui.c,v 1.17 2002-10-22 06:43:36 afalout Exp $
+# $Id: gui.c,v 1.18 2003-05-12 14:24:16 mikeaubury Exp $
 #
 */
 
@@ -46,23 +46,23 @@
  */
 
  /*
-=====================================================================
-                    Constants definitions
-=====================================================================
-*/
+    =====================================================================
+    Constants definitions
+    =====================================================================
+  */
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
-	#define USE_WINSOCK
+#define USE_WINSOCK
 #endif
 
 #ifndef USE_WINSOCK
-	#define SOCKET int
+#define SOCKET int
 #endif
 
 #ifdef USE_WINSOCK
-	#ifndef EINTR
-		#define EINTR WSAEINTR
-	#endif
+#ifndef EINTR
+#define EINTR WSAEINTR
+#endif
 #endif
 
 /*
@@ -105,7 +105,7 @@ So it will be included only in gui.c:
 oh, and in a4gl_libaubit4gl_int.h!!!!!!! Can we remove this one?
 
 */
-#include <errno.h> /* EINTR */
+#include <errno.h>		/* EINTR */
 
 
 /*
@@ -114,18 +114,18 @@ oh, and in a4gl_libaubit4gl_int.h!!!!!!! Can we remove this one?
 =====================================================================
 */
 
-void 		init_wsock 		(void);
-void 		proc_format 	(char *s, int a);
-int 		proc_gui_in 	(char *buff);
-void 		gui_kpress 		(void);
-void 		gui_click 		(void);
-int 		last_error 		(void);
+void init_wsock (void);
+void proc_format (char *s, int a);
+int proc_gui_in (char *buff);
+void gui_kpress (void);
+void gui_click (void);
+int last_error (void);
 
-void 		start_gui 		(void);
-void 		gui_close 		(void);
-static int 	find_str_in 	(char *s);
-char * 		read_clicked 	(void);
-void * 		decode_clicked 	(void);
+void start_gui (void);
+void gui_close (void);
+static int find_str_in (char *s);
+char *read_clicked (void);
+void *decode_clicked (void);
 
 
 /*
@@ -152,9 +152,14 @@ struct s_in
 
 defs[] =
 {
-  { "KeyPress", "IIII", gui_kpress},
-  { "Click", "IIII", gui_click},
-  { "0", "0", 0}
+  {
+  "KeyPress", "IIII", gui_kpress}
+  ,
+  {
+  "Click", "IIII", gui_click}
+  ,
+  {
+  "0", "0", 0}
 };
 
 /*
@@ -194,17 +199,19 @@ void
 start_gui (void)
 {
 #ifdef __OBSOLETE_CODE__
-char *p;
-int port = -1;
+  char *p;
+  int port = -1;
 
 
   debug ("Start gui...");
   p = acl_getenv ("GUIPORT");
   init_wsock ();
 
-  if (p) {
-	if (strcmp(p,"")==0) p=0;
-  }
+  if (p)
+    {
+      if (strcmp (p, "") == 0)
+	p = 0;
+    }
 
   if (p == 0)
     {
@@ -372,7 +379,7 @@ atoaddr (char *address)
  *   - otherwise :
  */
 int
-get_connection (int socket_type,u_short port,int *listener)
+get_connection (int socket_type, u_short port, int *listener)
 {
 #ifdef __OBSOLETE_CODE__
 
@@ -413,8 +420,8 @@ get_connection (int socket_type,u_short port,int *listener)
   if (socket_type == SOCK_STREAM)
     {
       listen (listening_socket, 5);
-	  /* Queue up to five connections before
-		 having them automatically rejected. */
+      /* Queue up to five connections before
+         having them automatically rejected. */
 
       while (connected_socket < 0)
 	{
@@ -468,7 +475,7 @@ get_connection (int socket_type,u_short port,int *listener)
     return listening_socket;
 #endif
 
-return 0;
+  return 0;
 
 }
 
@@ -617,13 +624,13 @@ sock_gets (int sockfd, char *str, size_t count)
 
 #ifdef __OBSOLETE_CODE__
 
-int bytes_read;
-int total_count = 0;
-char *current_position;
-char last_read = 0;
-fd_set rfds;
+  int bytes_read;
+  int total_count = 0;
+  char *current_position;
+  char last_read = 0;
+  fd_set rfds;
 /* struct timeval tv; */
-int retval;
+  int retval;
 
 
   debug ("Waiting for a string...");
@@ -635,9 +642,9 @@ int retval;
       FD_ZERO (&rfds);
       FD_SET (sockfd, &rfds);
       /* 
-	tv.tv_sec = 1;
-      	tv.tv_usec = 0;
-     */
+         tv.tv_sec = 1;
+         tv.tv_usec = 0;
+       */
       while (1)
 	{
 
@@ -659,7 +666,7 @@ int retval;
 	      /* The other side may have closed unexpectedly */
 	      debug ("Its gone down !");
 	      exitwith ("Connection Dropped");
-	      gotolinemode();
+	      gotolinemode ();
 	      exit (0);
 	      return -1;	/* Is this effective on other platforms than linux? */
 	    }
@@ -681,7 +688,7 @@ int retval;
 
 #endif
 
-return 0;
+  return 0;
 
 }
 
@@ -691,7 +698,7 @@ return 0;
  * @return -1 if the connection is closed while it is trying to write.
  */
 int
-sock_puts (int sockfd,char *str)
+sock_puts (int sockfd, char *str)
 {
   return sock_write (sockfd, str, strlen (str));
 }
@@ -826,7 +833,7 @@ decode_clicked (void)
   sprintf (buff, "0x%s", m_cretval);
   debug ("Buff set to %s", buff);
 /*  sscanf (buff, "%lx", (long unsigned int) &ptr); // waring: format argument is not a pointer (arg 3) */
-    sscanf (buff, "%px", &ptr);
+  sscanf (buff, "%px", &ptr);
   debug ("Ptr set to %p", ptr);
   return ptr;
 }
@@ -913,4 +920,3 @@ last_error (void)
 
 
 /* ================================ EOF ================================ */
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readmsg.c,v 1.8 2003-01-21 08:25:55 afalout Exp $
+# $Id: readmsg.c,v 1.9 2003-05-12 14:24:22 mikeaubury Exp $
 #*/
 
 /**
@@ -53,10 +53,10 @@
 */
 
 /* from extfile.c : */
-char 	helpbuff[10000];
-char 	disp[24][81];
-int 	max_width;
-FILE *	helpfile = 0;
+char helpbuff[10000];
+char disp[24][81];
+int max_width;
+FILE *helpfile = 0;
 
 /*
 =====================================================================
@@ -69,92 +69,95 @@ FILE *	helpfile = 0;
  * @todo Describe function
  */
 int
-read_help_f (int no,int *maxwidth)
+read_help_f (int no, int *maxwidth)
 {
-short pos;
-int cnt;
-short num;
-char tmpbuf[80];
+  short pos;
+  int cnt;
+  short num;
+  char tmpbuf[80];
 
 
   max_width = 0;
   cnt = 0;
   rewind (helpfile);
-  helpbuff[0]=0;
-  *maxwidth=0;
+  helpbuff[0] = 0;
+  *maxwidth = 0;
 
   /*
-    FIXME:
+     FIXME:
 
-	4gl programs are expected to specify full help file name, including the
-    extendion. This allmost allways means that programs will specify .iem
-    exstension, but Aubit help compiler will create help files with extension
-    acl_getenv ("A4GL_HLP_EXT") - which has to be different then Informix one -
-    to faciliate creation of multi-compiler make files, and also to distinguish
-    between files that are obviously not compatible.
+     4gl programs are expected to specify full help file name, including the
+     extendion. This allmost allways means that programs will specify .iem
+     exstension, but Aubit help compiler will create help files with extension
+     acl_getenv ("A4GL_HLP_EXT") - which has to be different then Informix one -
+     to faciliate creation of multi-compiler make files, and also to distinguish
+     between files that are obviously not compatible.
 
-    Therefore, we should not just blindly take "helpfile" variable, but instead
-    first strip it's extension, and add Aubit one.
+     Therefore, we should not just blindly take "helpfile" variable, but instead
+     first strip it's extension, and add Aubit one.
 
-    We also need to try using $DBPATH, as Informix does, to search for this
-    file, if it's not in current directory.
+     We also need to try using $DBPATH, as Informix does, to search for this
+     file, if it's not in current directory.
 
-  */
+   */
 
 
-  debug("Reading : %d (%p)",no,helpfile);
+  debug ("Reading : %d (%p)", no, helpfile);
   while (1)
     {
       fread (&pos, 2, 1, helpfile);
-      debug("pos=%d",pos);
+      debug ("pos=%d", pos);
 
-      if (pos == -1 || pos > no) {
-         debug("Out of range 1");
-         exitwith ("Help message not found");
-        break;
-      }
+      if (pos == -1 || pos > no)
+	{
+	  debug ("Out of range 1");
+	  exitwith ("Help message not found");
+	  break;
+	}
 
-      if (feof (helpfile)) {
-         debug("End of file");
-         exitwith ("Help message not found");
-        return 0;
-        break;
-      }
+      if (feof (helpfile))
+	{
+	  debug ("End of file");
+	  exitwith ("Help message not found");
+	  return 0;
+	  break;
+	}
 
       fread (&num, 2, 1, helpfile);
 
-      debug("num=%d",num);
+      debug ("num=%d", num);
 
       if (pos == no)
-        {
-			debug("Got it...");
-          fseek (helpfile, (long) num + 3, SEEK_SET);
-          while (1 == 1)
-            {
-              if (feof (helpfile))
-                break;
-              fgets (tmpbuf, 80, helpfile);
-				debug("Buff=%s",tmpbuf);
-              strcat(helpbuff,tmpbuf);
-              stripnl (tmpbuf);
-              strcpy (disp[cnt++], tmpbuf);
-              if (strlen (tmpbuf) > max_width)
-                max_width = strlen (tmpbuf);
-              if (cnt > 20)
-                break;
-              num = fgetc (helpfile);
-              if (num == 127)
-                break;
-              else
-                ungetc (num, helpfile);
-            }
-        }
+	{
+	  debug ("Got it...");
+	  fseek (helpfile, (long) num + 3, SEEK_SET);
+	  while (1 == 1)
+	    {
+	      if (feof (helpfile))
+		break;
+	      fgets (tmpbuf, 80, helpfile);
+	      debug ("Buff=%s", tmpbuf);
+	      strcat (helpbuff, tmpbuf);
+	      stripnl (tmpbuf);
+	      strcpy (disp[cnt++], tmpbuf);
+	      if (strlen (tmpbuf) > max_width)
+		max_width = strlen (tmpbuf);
+	      if (cnt > 20)
+		break;
+	      num = fgetc (helpfile);
+	      if (num == 127)
+		break;
+	      else
+		ungetc (num, helpfile);
+	    }
+	}
 
-      *maxwidth=max_width;
-      if (pos == no) {
-           debug("Got it...");
-           return cnt;
-      }
+      *maxwidth = max_width;
+      if (pos == no)
+	{
+	  debug ("Got it...");
+	  return cnt;
+	}
     }
   exitwith ("Could not read help message");
   return 0;
@@ -162,4 +165,3 @@ char tmpbuf[80];
 }
 
 /* ============================== EOF =============================== */
-

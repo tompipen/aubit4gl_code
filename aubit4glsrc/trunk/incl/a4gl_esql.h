@@ -13,7 +13,7 @@
 
 
 #include "a4gl_incl_4glhdr.h"
-#define GETENV_OK 
+#define GETENV_OK
 
 #include "a4gl_libaubit4gl.h"
 

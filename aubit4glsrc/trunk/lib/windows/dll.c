@@ -20,10 +20,10 @@ int sys_nerr;
 
 
 int WINAPI
-dllMain(HANDLE h, DWORD reason, void *foo)
+dllMain (HANDLE h, DWORD reason, void *foo)
 {
   return 1;
-}  
+}
 
 
 /*

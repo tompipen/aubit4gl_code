@@ -1,40 +1,42 @@
 /*
 @(#)File:            $RCSfile: getopt.c,v $
-@(#)Version:         $Revision: 1.1 $
-@(#)Last changed:    $Date: 2002-11-28 06:40:47 $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2003-05-12 14:24:42 $
 @(#)Purpose:         GNU version of GETOPT(3)
 @(#)Copyright:       (C) 1987 Free Software Foundation, Inc.
 @(#)Amendments:      J Leffler, JLSS
 @(#)Product:         SQLFMT Version 14 (1998-11-04)
-*/
-
-/*TABSTOP=4*/
-
+*/  
+  
+/*TABSTOP=4*/ 
+  
 #define USE_GNU_GETOPT
 #include "getopt.h"
-
+  
 #ifndef lint
-static const char rcs[] = "@(#)$Id: getopt.c,v 1.1 2002-11-28 06:40:47 afalout Exp $";
-#endif
+static const char rcs[] =
+  "@(#)$Id: getopt.c,v 1.2 2003-05-12 14:24:42 mikeaubury Exp $";
 
+#endif	/*  */
+  
 /*
 **  Rename to gnu_getopt() and use revised getopt.h header.
 **
 **  J Leffler, JLSS, 6th August 1996.
-*/
-
+*/ 
+  
 /*
 **  Convert to ANSI C and use getopt.h header
 **
 **  J Leffler, JLSS, 27th June 1996.
-*/
-
+*/ 
+  
 /*
 **  Initialize optopt to avoid a loading problem on Pyramids
 **
 **	J Leffler, JLSS, 28th June 1992.
-*/
-
+*/ 
+  
 /*
 **  Function xmalloc removed -- inline code used instead.
 **  Changed error message to "out of memory".
@@ -42,8 +44,8 @@ static const char rcs[] = "@(#)$Id: getopt.c,v 1.1 2002-11-28 06:40:47 afalout E
 **  Remove BSD bcopy and index stuff -- not POSIX compatible.
 **
 **	J Leffler, JLSS, 15th December 1991.
-*/
-
+*/ 
+  
 /*
 **	Global variable optopt added to conform with System V Release 4.
 **	This contains the function return value unless the return value is the
@@ -53,8 +55,8 @@ static const char rcs[] = "@(#)$Id: getopt.c,v 1.1 2002-11-28 06:40:47 afalout E
 **	and not always helpful (c < 040 || c >= 0177)).
 **
 **	J Leffler, Informix Software Ltd, 17th December 1990.
-*/
-
+*/ 
+  
 /*
 **	Format of code and comments revised to suit local conventions.
 **	Function completely unaltered, though appended memcpy() removed.
@@ -66,8 +68,8 @@ static const char rcs[] = "@(#)$Id: getopt.c,v 1.1 2002-11-28 06:40:47 afalout E
 **	option string.  The optional argument must be attached to flag.
 **
 **	J Leffler, Sphinx Ltd, 3rd April 1990.
-*/
-
+*/ 
+  
 /*
    Getopt for GNU.
    Modified by David MacKenzie to use malloc and free instead of alloca,
@@ -165,8 +167,8 @@ software.
 In other words, you are welcome to use, share and improve this program.
 You are forbidden to forbid anyone else to use, share and improve
 what you give them.   Help stamp out software-hoarding!
-*/
-
+*/ 
+  
 /*
 ** This version of `getopt' appears to the caller more or less like the
 ** standard Unix `getopt' but it behaves differently for the user, since it
@@ -181,23 +183,23 @@ what you give them.   Help stamp out software-hoarding!
 **
 ** GNU application programs can use a third alternative mode in which
 ** they can distinguish the relative order of options and other arguments.
-*/
-
+*/ 
+  
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include "getopt.h"
-
+  
 /*
 **	optarg -- for communication from `getopt' to the caller.
 **	When `getopt' finds an option that takes an argument,
 **	the argument value is returned here.
 **	Also, when `ordering' is RETURN_IN_ORDER,
 **	each non-option ARGV-element is returned here.
-*/
+*/ 
 char *optarg = 0;
-
+
 /*
 **	optind -- index in ARGV of the next element to be scanned.
 **	This is used for communication to and from the caller
@@ -210,9 +212,9 @@ char *optarg = 0;
 **
 **	Otherwise, `optind' communicates from one call to the next
 **	how much of ARGV has been scanned so far.
-*/
+*/ 
 int optind = 0;
-
+
 /*
 **	nextchar -- the next char to be scanned in the option-element
 **	in which the last option character we returned was found.
@@ -220,23 +222,23 @@ int optind = 0;
 **
 **	If this is zero, or a null string, it means resume the scan
 **	by advancing to the next ARGV-element.
-*/
+*/ 
 static char *nextchar;
-
+
 /*
 **	opterr -- callers store zero here to inhibit the error message
 **	for unrecognized options.
-*/
+*/ 
 int opterr = 1;
-
+
 /*
 **	optopt -- copy of option which was detected.  It is the same as the
 **	function return value unless the function returns '?' (for an invalid
 **	option) when optopt contains the actual flag which caused the error.
 **	Added in conformity with UNIX System V Release 4.
-*/
+*/ 
 int optopt = '0';
-
+
 /*
 **	Describe how to deal with options that follow non-option ARGV-elements.
 **
@@ -263,19 +265,21 @@ int optopt = '0';
 **	The special argument `--' forces an end of option-scanning regardless
 **	of the value of `ordering'.  In the case of RETURN_IN_ORDER, only
 **	`--' can cause `getopt' to return EOF with `optind' != ARGC.
-*/
-static enum { REQUIRE_ORDER, PERMUTE, RETURN_IN_ORDER } ordering;
-
-/* Handle permutation of arguments.  */
-
+*/ 
+  static enum
+{ REQUIRE_ORDER, PERMUTE, RETURN_IN_ORDER }
+ordering;
+
+/* Handle permutation of arguments.  */ 
+  
 /*
 **	Describe the part of ARGV that contains non-options that have
 **	been skipped.  `first_nonopt' is the index in ARGV of the first of them;
 **	`last_nonopt' is the index after the last of them.
-*/
+*/ 
 static int first_nonopt;
-static int last_nonopt;
-
+static int last_nonopt;
+
 /*
 **	Exchange two adjacent subsequences of ARGV.
 **	One subsequence is elements [first_nonopt,last_nonopt)
@@ -284,32 +288,32 @@ static int last_nonopt;
 **	the options processed since those non-options were skipped.
 **	`first_nonopt' and `last_nonopt' are relocated so that they describe
 **	the new indices of the non-options in ARGV after they are moved.
-*/
-
-static void exchange(char **argv)
+*/ 
+  static void
+exchange (char **argv) 
 {
-	int nonopts_size = (last_nonopt - first_nonopt) * sizeof(char *);
-	char **temp;
+  int nonopts_size = (last_nonopt - first_nonopt) * sizeof (char *);
+  char **temp;
+  if ((temp = (char **) malloc (nonopts_size)) == (char **) 0)
+    
+    {
+      fprintf (stderr, "out of memory\n");
+      exit (1);
+    }
+  
+    /* Interchange the two blocks of data in argv.  */ 
+    memmove (temp, &argv[first_nonopt], nonopts_size);
+  memmove (&argv[first_nonopt], &argv[last_nonopt], 
+	    (optind - last_nonopt) * sizeof (char *));
+  memmove (&argv[first_nonopt + optind - last_nonopt], temp, nonopts_size);
+  free (temp);
+  
+    /* Update records for the slots the non-options now occupy.  */ 
+    first_nonopt += (optind - last_nonopt);
+  last_nonopt = optind;
+}
 
-	if ((temp = (char **)malloc(nonopts_size)) == (char **)0)
-	{
-		fprintf(stderr, "out of memory\n");
-		exit(1);
-	}
-
-	/* Interchange the two blocks of data in argv.  */
-	memmove(temp, &argv[first_nonopt], nonopts_size);
-	memmove(&argv[first_nonopt], &argv[last_nonopt],
-	    (optind - last_nonopt) * sizeof(char *));
-	memmove(&argv[first_nonopt + optind - last_nonopt], temp, nonopts_size);
-
-	free(temp);
-
-	/* Update records for the slots the non-options now occupy.  */
-	first_nonopt += (optind - last_nonopt);
-	last_nonopt = optind;
-}
-
+
 /*
 **	Scan elements of ARGV (whose length is ARGC) for option characters
 **	given in OPTSTRING.
@@ -347,175 +351,205 @@ static void exchange(char **argv)
 **
 **	If OPTSTRING starts with `-', it requests a different method of handling the
 **	non-option ARGV-elements.  See the comments about RETURN_IN_ORDER, above.
-*/
-
-int gnu_getopt(int argc, char **argv, const char *optstring)
+*/ 
+  int
+gnu_getopt (int argc, char **argv, const char *optstring) 
 {
-	if (optind == 0)
+  if (optind == 0)
+    
+    {
+      
+	/*
+	   ** Initialize the internal data when the first call is made.
+	   ** Start processing options with ARGV-element 1 (since ARGV-element 0
+	   ** is the program name); the sequence of previously skipped
+	   ** non-option ARGV-elements is empty.
+	 */ 
+	first_nonopt = last_nonopt = optind = 1;
+      nextchar = 0;
+      
+	/* Determine how to handle the ordering of options and nonoptions.  */ 
+	if (optstring[0] == '-')
+	ordering = RETURN_IN_ORDER;
+      
+      else if (getenv ("_POSIX_OPTION_ORDER") != 0)
+	ordering = REQUIRE_ORDER;
+      
+      else
+	ordering = PERMUTE;
+    }
+  if (nextchar == 0 || *nextchar == 0)
+    
+    {
+      if (ordering == PERMUTE)
+	
 	{
-		/*
-		** Initialize the internal data when the first call is made.
-		** Start processing options with ARGV-element 1 (since ARGV-element 0
-		** is the program name); the sequence of previously skipped
-		** non-option ARGV-elements is empty.
-		*/
-		first_nonopt = last_nonopt = optind = 1;
-		nextchar = 0;
-
-		/* Determine how to handle the ordering of options and nonoptions.  */
-		if (optstring[0] == '-')
-			ordering = RETURN_IN_ORDER;
-		else if (getenv("_POSIX_OPTION_ORDER") != 0)
-			ordering = REQUIRE_ORDER;
-		else
-			ordering = PERMUTE;
-	}
-
-	if (nextchar == 0 || *nextchar == 0)
+	  
+	    /*
+	       ** If we have just processed some options following some
+	       ** non-options, exchange them so that the options come first.
+	     */ 
+	    if (first_nonopt != last_nonopt && last_nonopt != optind)
+	    exchange (argv);
+	  
+	  else if (last_nonopt != optind)
+	    first_nonopt = optind;
+	  
+	    /*
+	       ** Now skip any additional non-options and extend
+	       ** the range of non-options previously skipped.
+	     */ 
+	    while (optind < argc && 
+		   (argv[optind][0] != '-' || argv[optind][1] == 0))
+	    optind++;
+	  last_nonopt = optind;
+	}
+      
+	/*
+	   ** Special ARGV-element `--' means premature end of options.
+	   ** Skip it like a null option, then exchange with previous
+	   ** non-options as if it were an option, then skip everything else
+	   ** like a non-option.
+	 */ 
+	if (optind != argc && !strcmp (argv[optind], "--"))
+	
 	{
-		if (ordering == PERMUTE)
-		{
-			/*
-			** If we have just processed some options following some
-			** non-options, exchange them so that the options come first.
-			*/
-			if (first_nonopt != last_nonopt && last_nonopt != optind)
-				exchange(argv);
-			else if (last_nonopt != optind)
-				first_nonopt = optind;
-
-			/*
-			** Now skip any additional non-options and extend
-			** the range of non-options previously skipped.
-			*/
-			while (optind < argc &&
-					(argv[optind][0] != '-' || argv[optind][1] == 0))
-				optind++;
-			last_nonopt = optind;
-		}
-
-		/*
-		** Special ARGV-element `--' means premature end of options.
-     	** Skip it like a null option, then exchange with previous
-		** non-options as if it were an option, then skip everything else
-		** like a non-option.
-		*/
-		if (optind != argc && !strcmp(argv[optind], "--"))
-		{
-			optind++;
-
-			if (first_nonopt != last_nonopt && last_nonopt != optind)
-				exchange(argv);
-			else if (first_nonopt == last_nonopt)
-				first_nonopt = optind;
-			last_nonopt = argc;
-
-			optind = argc;
-		}
-
-		/*
-		** If we have done all the ARGV-elements, stop the scan
-     	** and back over any non-options that we skipped and permuted.
-		*/
-		if (optind == argc)
-		{
-			/*
-			** Set the next-arg-index to point at the non-options
-         	** that we previously skipped, so the caller will digest them.
-			*/
-			if (first_nonopt != last_nonopt)
-				optind = first_nonopt;
-			return EOF;
-		}
-
-		/*
-		** If we have come to a non-option and did not permute it,
-     	** either stop the scan or describe it to the caller and pass it by.
-		*/
-		if (argv[optind][0] != '-' || argv[optind][1] == 0)
-		{
-			if (ordering == REQUIRE_ORDER)
-				return EOF;
-			optarg = argv[optind++];
-			return 0;
-		}
-
-		/*
-		** We have found another option-ARGV-element.
-     	** Start decoding its characters.
-		*/
-		nextchar = argv[optind] + 1;
-	}
-
-	/* Look at and handle the next option-character.  */
+	  optind++;
+	  if (first_nonopt != last_nonopt && last_nonopt != optind)
+	    exchange (argv);
+	  
+	  else if (first_nonopt == last_nonopt)
+	    first_nonopt = optind;
+	  last_nonopt = argc;
+	  optind = argc;
+	}
+      
+	/*
+	   ** If we have done all the ARGV-elements, stop the scan
+	   ** and back over any non-options that we skipped and permuted.
+	 */ 
+	if (optind == argc)
+	
 	{
-		char c = *nextchar++;
-		char *temp = strchr(optstring, c);
+	  
+	    /*
+	       ** Set the next-arg-index to point at the non-options
+	       ** that we previously skipped, so the caller will digest them.
+	     */ 
+	    if (first_nonopt != last_nonopt)
+	    optind = first_nonopt;
+	  return EOF;
+	}
+      
+	/*
+	   ** If we have come to a non-option and did not permute it,
+	   ** either stop the scan or describe it to the caller and pass it by.
+	 */ 
+	if (argv[optind][0] != '-' || argv[optind][1] == 0)
+	
+	{
+	  if (ordering == REQUIRE_ORDER)
+	    return EOF;
+	  optarg = argv[optind++];
+	  return 0;
+	}
+      
+	/*
+	   ** We have found another option-ARGV-element.
+	   ** Start decoding its characters.
+	 */ 
+	nextchar = argv[optind] + 1;
+    }
+  
+    /* Look at and handle the next option-character.  */ 
+  {
+    char c = *nextchar++;
+    char *temp = strchr (optstring, c);
+    
+      /* Set optopt */ 
+      optopt = c;
+    
+      /* Increment `optind' when we start to process its last character.  */ 
+      if (*nextchar == 0)
+      optind++;
+    if (temp == 0 || c == ':')
+      
+      {
+	if (opterr != 0)
+	  
+	  {
+	    if (!isprint (c))
+	      fprintf (stderr,
+			"%s: unrecognized option, character code 0%o\n",
+			argv[0], c);
+	    
+	    else
+	      fprintf (stderr, "%s: unrecognized option `-%c'\n", argv[0],
+			c);
+	  }
+	return '?';
+      }
+    if (temp[1] == ':')
+      
+      {
+	if (temp[2] == ':')
+	  
+	  {
+	    
+	      /* This is an option that accepts an argument optionally.  */ 
+	      if (*nextchar != 0)
+	      
+	      {
+		optarg = nextchar;
+		optind++;
+	      }
+	    
+	    else
+	      optarg = 0;
+	    nextchar = 0;
+	  }
+	
+	else
+	  
+	  {
+	    
+	      /* This is an option that requires an argument.  */ 
+	      if (*nextchar != 0)
+	      
+	      {
+		optarg = nextchar;
+		
+		  /*
+		     ** If we end this ARGV-element by taking the rest as
+		     ** an arg, we must advance to the next element now.
+		   */ 
+		  optind++;
+	      }
+	    
+	    else if (optind == argc)
+	      
+	      {
+		if (opterr != 0)
+		  fprintf (stderr, "%s: no argument for `-%c' option\n",
+			    argv[0], c);
+		c = '?';
+	      }
+	    
+	    else
+	      
+	      {
+		
+		  /*
+		     ** We already incremented `optind' once; increment it
+		     ** again when taking next ARGV-elt as argument.
+		   */ 
+		  optarg = argv[optind++];
+	      }
+	    nextchar = 0;
+	  }
+      }
+    return c;
+  }
+}
 
-		/* Set optopt */
-		optopt = c;
 
-		/* Increment `optind' when we start to process its last character.  */
-		if (*nextchar == 0)
-			optind++;
-
-		if (temp == 0 || c == ':')
-		{
-			if (opterr != 0)
-			{
-				if (!isprint(c))
-					fprintf(stderr, "%s: unrecognized option, character code 0%o\n",
-					    argv[0], c);
-				else
-					fprintf(stderr, "%s: unrecognized option `-%c'\n",
-					    argv[0], c);
-			}
-			return '?';
-		}
-		if (temp[1] == ':')
-		{
-			if (temp[2] == ':')
-			{
-				/* This is an option that accepts an argument optionally.  */
-				if (*nextchar != 0)
-				{
-					optarg = nextchar;
-					optind++;
-				}
-				else
-					optarg = 0;
-				nextchar = 0;
-			}
-			else
-			{
-				/* This is an option that requires an argument.  */
-				if (*nextchar != 0)
-				{
-					optarg = nextchar;
-					/*
-					** If we end this ARGV-element by taking the rest as
-					** an arg, we must advance to the next element now.
-					*/
-					optind++;
-				}
-				else if (optind == argc)
-				{
-					if (opterr != 0)
-						fprintf(stderr, "%s: no argument for `-%c' option\n",
-						    argv[0], c);
-					c = '?';
-				}
-				else
-				{
-					/*
-					** We already incremented `optind' once; increment it
-					** again when taking next ARGV-elt as argument.
-					*/
-					optarg = argv[optind++];
-				}
-				nextchar = 0;
-			}
-		}
-		return c;
-	}
-}

@@ -51,24 +51,24 @@ void decode_printfile (struct cmd_printfile *cmd);
 void decode_simple (struct simple_expr *e);
 void decode_skip (struct cmd_skip *cmd);
 void decode_while (struct cmd_while *cmd);
-void dump_ascii (void );
+void dump_ascii (void);
 void dump_command (struct command *cmd);
 void dump_commands (struct commands *cmd);
-void dump_format (void );
-void dump_functions (void );
-void dump_getdata (void );
-void dump_output (void );
-void dump_report (void );
+void dump_format (void);
+void dump_functions (void);
+void dump_getdata (void);
+void dump_output (void);
+void dump_report (void);
 void print_inputs (void);
-void print_lvl (void );
-void print_set_params (void );
+void print_lvl (void);
+void print_set_params (void);
 void print_variable (int a);
 void print_variables (int class, int inrec);
-char * generate_order_by (struct select_stmts *ptr);
-char * decode_op (int op);
+char *generate_order_by (struct select_stmts *ptr);
+char *decode_op (int op);
 void decode_call (struct cmd_call *cmd);
-char * decode_column (struct format *f);
-int     read_data_from_file     (char *datatype, void *ptr, char *filename) ;
+char *decode_column (struct format *f);
+int read_data_from_file (char *datatype, void *ptr, char *filename);
 
 
 int
@@ -79,7 +79,9 @@ main (int argc, char *argv[])
 
   if (argc != 2)
     {
-      printf ("Usage %s filename [ Where filename is a compile report eg. simple.aarc ]\n", argv[0]);
+      printf
+	("Usage %s filename [ Where filename is a compile report eg. simple.aarc ]\n",
+	 argv[0]);
       exit (0);
     }
 
@@ -203,15 +205,18 @@ print_variables (int class, int inrec)
 	    printf ("DEFINE ");
 
 
-if (inrec) {
-	  printf ("%s %s",
-		  this_report.variables.variables_val[a].name,
-		  this_report.variables.variables_val[a].datatype_string);
-} else { 
-	  printf ("mv_%s %s",
-		  this_report.variables.variables_val[a].name,
-		  this_report.variables.variables_val[a].datatype_string);
-}
+	  if (inrec)
+	    {
+	      printf ("%s %s",
+		      this_report.variables.variables_val[a].name,
+		      this_report.variables.variables_val[a].datatype_string);
+	    }
+	  else
+	    {
+	      printf ("mv_%s %s",
+		      this_report.variables.variables_val[a].name,
+		      this_report.variables.variables_val[a].datatype_string);
+	    }
 
 	  k++;
 	  if (!inrec)
@@ -418,18 +423,24 @@ decode_compare (struct compare_expr *e)
 void
 decode_simple (struct simple_expr *e)
 {
-if (e->operand==EXPR_CLIP) { 
-  decode_expr (&e->expr);
-  printf(" %s ",decode_op (e->operand));
-} else {
-if (e->operand==EXPR_COLUMN||e->operand==EXPR_ASCII) {
-  printf(" %s ",decode_op (e->operand));
-  decode_expr (&e->expr);
-} else {
-  printf(" %s ",decode_op (e->operand));
-  decode_expr (&e->expr);
-}
-}
+  if (e->operand == EXPR_CLIP)
+    {
+      decode_expr (&e->expr);
+      printf (" %s ", decode_op (e->operand));
+    }
+  else
+    {
+      if (e->operand == EXPR_COLUMN || e->operand == EXPR_ASCII)
+	{
+	  printf (" %s ", decode_op (e->operand));
+	  decode_expr (&e->expr);
+	}
+      else
+	{
+	  printf (" %s ", decode_op (e->operand));
+	  decode_expr (&e->expr);
+	}
+    }
 }
 
 
@@ -515,7 +526,7 @@ decode_expr (struct expr *e)
       printf ("%f", e->expr_u.d);
       break;
     case EXPRTYPE_STRING:
-      printf ("\"%s\"", trans(e->expr_u.s));
+      printf ("\"%s\"", trans (e->expr_u.s));
       break;
     case EXPRTYPE_VARIABLE:
       print_variable (e->expr_u.varid);
@@ -662,7 +673,8 @@ decode_block (struct commands *cmd)
     }
 }
 
-void decode_call (struct cmd_call *cmd)
+void
+decode_call (struct cmd_call *cmd)
 {
   printf ("CALL %s (", cmd->fcall->fname);
   decode_list (cmd->fcall->lexpr);
@@ -797,8 +809,7 @@ print_variable (int a)
 
       if (this_report.variables.variables_val[a].category == CAT_SQL)
 	{
-	  printf ("lv_data.%s",
-		  this_report.variables.variables_val[a].name);
+	  printf ("lv_data.%s", this_report.variables.variables_val[a].name);
 	  return;
 	}
 
@@ -853,16 +864,20 @@ replace_vars_sql (struct select_stmts *ptr)
 }
 
 
-char *trans(char *s) {
-static char buff[256];
-int a;
-int c=0;
-for (a=0;a<strlen(s);a++) {
-	if (s[a]=='"') {
-			buff[c++]='\\';
+char *
+trans (char *s)
+{
+  static char buff[256];
+  int a;
+  int c = 0;
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == '"')
+	{
+	  buff[c++] = '\\';
+	}
+      buff[c++] = s[a];
     }
-buff[c++]=s[a];
-}
-buff[c]=0;
-return buff;
+  buff[c] = 0;
+  return buff;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.33 2003-04-23 16:37:17 mikeaubury Exp $
+# $Id: API_sql.c,v 1.34 2003-05-12 14:24:02 mikeaubury Exp $
 #
 */
 
@@ -54,15 +54,16 @@ extern sqlca_struct a4gl_sqlca;
 =====================================================================
 */
 
-static void *libptr=0;
+static void *libptr = 0;
 /* typedef unsigned char UCHAR; in a4gl_dlsql.h */
 
 /* list of open sessions - the current session is always first
  */
-struct sess {
-    char sessname[64];
-    char dbms_dialect[64];
-    struct sess *next;
+struct sess
+{
+  char sessname[64];
+  char dbms_dialect[64];
+  struct sess *next;
 };
 struct sess *curr_sess = NULL;
 
@@ -83,7 +84,7 @@ static int must_convert = 0;
 =====================================================================
 */
 
-static int 	(*func)					();
+static int (*func) ();
 /* void *		find_func				(void *p,char *s); in calldll.c */
 /* int         A4GLSQL_initlib 		(void); */
 /* void        A4GLSQL_xset_status(	int a); */
@@ -132,18 +133,18 @@ static int 	(*func)					();
 /*char *      A4GLSQL_get_currdbname  (char *cursor); */
 /* long        A4GLSQL_describe_stmt 	(char *stmt, int colno, int type); */
 /* long        A4GLSQL_initsqllib		(void); */
-char *      global_A4GLSQL_get_sqlerrm (void);
+char *global_A4GLSQL_get_sqlerrm (void);
 
-extern void aclfgli_set_err_flg(void);
+extern void aclfgli_set_err_flg (void);
 
-char *		apisql_strdup		( char *sql );
-void		apisql_add_sess		( char *sessname );
-void 		apisql_set_sess		( char *sessname );
-void		apisql_drop_sess	( char *sessname );
-char *		apisql_dflt_dialect	( void );
-void		apisql_must_convert	( void );
-extern int 	nullfunc		(void);
-int A4GLSQL_loadConnector(char *name);
+char *apisql_strdup (char *sql);
+void apisql_add_sess (char *sessname);
+void apisql_set_sess (char *sessname);
+void apisql_drop_sess (char *sessname);
+char *apisql_dflt_dialect (void);
+void apisql_must_convert (void);
+extern int nullfunc (void);
+int A4GLSQL_loadConnector (char *name);
 
 void global_A4GLSQL_set_sqlcode (int n);
 /*
@@ -167,16 +168,16 @@ A4GLSQL_initlib (void)
 {
   char *ptr;
 
-  ptr=acl_getenv("A4GL_SQLTYPE");
-  if (A4GLSQL_loadConnector(ptr) == 0)
+  ptr = acl_getenv ("A4GL_SQLTYPE");
+  if (A4GLSQL_loadConnector (ptr) == 0)
     return 0;
 
-  debug("A4GLSQL_initlib : ptr = %s", ptr );
+  debug ("A4GLSQL_initlib : ptr = %s", ptr);
 
-  func=find_func_allow_missing(libptr,"A4GLSQL_initlib");
+  func = find_func_allow_missing (libptr, "A4GLSQL_initlib");
 
   if (func)
-    return func();
+    return func ();
   else
     return 1;
 }
@@ -192,14 +193,16 @@ A4GLSQL_initlib (void)
  * @return - 0 : Impossible to open the dynamic SQL library.
  *         - 1 : The library was openend.
  */
-int A4GLSQL_loadConnector(char *name) 
+int
+A4GLSQL_loadConnector (char *name)
 {
-  libptr=(void *)dl_openlibrary("SQL",name);
-  debug("libptr=%p\n",libptr);
-  if (libptr==0) {
-    exitwith("Unable to open SQL library.");
-    return 0;
-  }
+  libptr = (void *) dl_openlibrary ("SQL", name);
+  debug ("libptr=%p\n", libptr);
+  if (libptr == 0)
+    {
+      exitwith ("Unable to open SQL library.");
+      return 0;
+    }
   return 1;
 }
 
@@ -214,11 +217,13 @@ int A4GLSQL_loadConnector(char *name)
 void
 A4GLSQL_set_status (int a, int sql)
 {
-  debug("A4GLSQL_set_status");
+  debug ("A4GLSQL_set_status");
 
   a4gl_status = a;
-  if (sql) a4gl_sqlca.sqlcode = a;
-  if (a!=0||sql!=0) aclfgli_set_err_flg();
+  if (sql)
+    a4gl_sqlca.sqlcode = a;
+  if (a != 0 || sql != 0)
+    aclfgli_set_err_flg ();
   debug ("Status set to %d", a);
 }
 
@@ -230,10 +235,10 @@ A4GLSQL_set_status (int a, int sql)
  * @return
  */
 void
-A4GLSQL_xset_status(int a)
+A4GLSQL_xset_status (int a)
 {
-	debug("A4GLSQL_xset_status");
-        A4GLSQL_set_status(a,0);
+  debug ("A4GLSQL_xset_status");
+  A4GLSQL_set_status (a, 0);
 }
 
 /**
@@ -246,14 +251,16 @@ A4GLSQL_xset_status(int a)
  * @return
  */
 int
-A4GLSQL_init_connection   (char *dbName)
+A4GLSQL_init_connection (char *dbName)
 {
   int rc;
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_init_connection");
-  rc = func(dbName);
-  debug ( "init_connection got rc = %d \n", rc );
-  if ( rc==0 ) apisql_add_sess("default");
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_init_connection");
+  rc = func (dbName);
+  debug ("init_connection got rc = %d \n", rc);
+  if (rc == 0)
+    apisql_add_sess ("default");
   return rc;
 }
 
@@ -263,13 +270,14 @@ A4GLSQL_init_connection   (char *dbName)
  * @return The status value.
  */
 int
-A4GLSQL_get_status   (void)
+A4GLSQL_get_status (void)
 {
-	debug("Status=%d sqlca.sqlcode=%d",a4gl_status,a4gl_sqlca.sqlcode);
+  debug ("Status=%d sqlca.sqlcode=%d", a4gl_status, a4gl_sqlca.sqlcode);
 
-	if (a4gl_status==0&&a4gl_sqlca.sqlcode<0) a4gl_status=a4gl_sqlca.sqlcode;
+  if (a4gl_status == 0 && a4gl_sqlca.sqlcode < 0)
+    a4gl_status = a4gl_sqlca.sqlcode;
 
-	return a4gl_status ;
+  return a4gl_status;
 }
 
 /**
@@ -281,11 +289,12 @@ A4GLSQL_get_status   (void)
  */
 /* int -- char * in sql.c */
 char *
-A4GLSQL_get_curr_conn   (void)
+A4GLSQL_get_curr_conn (void)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_get_curr_conn");
-  return (char *)func();
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_get_curr_conn");
+  return (char *) func ();
 }
 
 /**
@@ -297,11 +306,12 @@ A4GLSQL_get_curr_conn   (void)
  */
 /* int --- char * in sql.c */
 char *
-A4GLSQL_get_sqlerrm   (void)
+A4GLSQL_get_sqlerrm (void)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_get_sqlerrm");
-  return (char *)func();
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_get_sqlerrm");
+  return (char *) func ();
 }
 
 /**
@@ -322,9 +332,10 @@ A4GLSQL_get_sqlerrm   (void)
 int
 A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_get_columns");
-  return func(tabname,colname,dtype,size);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_get_columns");
+  return func (tabname, colname, dtype, size);
 }
 
 
@@ -345,11 +356,12 @@ A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQL_next_column(char **colname, int *dtype,int *size)
+A4GLSQL_next_column (char **colname, int *dtype, int *size)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_next_column");
-  return func(colname,dtype,size);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_next_column");
+  return func (colname, dtype, size);
 }
 
 /**
@@ -360,11 +372,12 @@ A4GLSQL_next_column(char **colname, int *dtype,int *size)
  *   - 1 : Error ocurred.
  */
 int
-A4GLSQL_end_get_columns(void)
+A4GLSQL_end_get_columns (void)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_end_get_columns");
-  return func();
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_end_get_columns");
+  return func ();
 }
 
 
@@ -381,11 +394,12 @@ A4GLSQL_end_get_columns(void)
  *   - 0 : Error ocurred.
  */
 int
-A4GLSQL_read_columns   (char *tabname, char *colname, int *dtype, int *size)
+A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_read_columns");
-  return func(tabname,colname,dtype,size);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_read_columns");
+  return func (tabname, colname, dtype, size);
 }
 
 /**
@@ -397,10 +411,12 @@ A4GLSQL_read_columns   (char *tabname, char *colname, int *dtype, int *size)
  * @return 
  */
 int
-A4GLSQL_make_connection   (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)  {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_make_connection");
-  return func(server,uid_p,pwd_p);
+A4GLSQL_make_connection (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)
+{
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_make_connection");
+  return func (server, uid_p, pwd_p);
 }
 
 
@@ -413,11 +429,12 @@ A4GLSQL_make_connection   (UCHAR * server, UCHAR * uid_p, UCHAR * pwd_p)  {
  * @return
  */
 int
-A4GLSQL_get_datatype   (char *db, char *tab, char *col)
+A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_get_datatype");
-  return func(db,tab,col);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_get_datatype");
+  return func (db, tab, col);
 }
 
 
@@ -431,13 +448,15 @@ A4GLSQL_get_datatype   (char *db, char *tab, char *col)
  * @param pwd The password of the user to set the connection.
  */
 int
-A4GLSQL_init_session   (char *sessname, char *dsn, char *usr, char *pwd)
+A4GLSQL_init_session (char *sessname, char *dsn, char *usr, char *pwd)
 {
   int rc;
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_init_session");
-  rc = func(sessname,dsn,usr,pwd);
-  if ( rc==0 ) apisql_add_sess(sessname);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_init_session");
+  rc = func (sessname, dsn, usr, pwd);
+  if (rc == 0)
+    apisql_add_sess (sessname);
   return rc;
 }
 
@@ -447,13 +466,15 @@ A4GLSQL_init_session   (char *sessname, char *dsn, char *usr, char *pwd)
  * @param sessname The session name.
  */
 int
-A4GLSQL_set_conn   (char *sessname)
+A4GLSQL_set_conn (char *sessname)
 {
   int rc;
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_set_conn");
-  rc = func(sessname);
-  if ( rc ) apisql_set_sess(sessname);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_set_conn");
+  rc = func (sessname);
+  if (rc)
+    apisql_set_sess (sessname);
   return rc;
 }
 
@@ -468,15 +489,17 @@ A4GLSQL_set_conn   (char *sessname)
  */
 /* int -- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_prepare_glob_sql   (char *s, int ni, struct BINDING *ibind)
+A4GLSQL_prepare_glob_sql (char *s, int ni, struct BINDING *ibind)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  if ( must_convert ) {
-      s = apisql_strdup(s);
-      convert_sql( source_dialect, curr_sess->dbms_dialect, s );
-  }
-  func=find_func(libptr,"A4GLSQL_prepare_glob_sql");
-  return (struct s_sid *)func(s,ni,ibind);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  if (must_convert)
+    {
+      s = apisql_strdup (s);
+      convert_sql (source_dialect, curr_sess->dbms_dialect, s);
+    }
+  func = find_func (libptr, "A4GLSQL_prepare_glob_sql");
+  return (struct s_sid *) func (s, ni, ibind);
 }
 
 
@@ -489,11 +512,12 @@ A4GLSQL_prepare_glob_sql   (char *s, int ni, struct BINDING *ibind)
  *  - 1 : An error as ocurred.
  */
 int
-A4GLSQL_execute_implicit_sql   (struct s_sid *sid)
+A4GLSQL_execute_implicit_sql (struct s_sid *sid)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_execute_implicit_sql");
-  return func(sid);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_execute_implicit_sql");
+  return func (sid);
 }
 
 
@@ -506,13 +530,15 @@ A4GLSQL_execute_implicit_sql   (struct s_sid *sid)
  *  - 1 : Connection does not exist or error ocurred.
  */
 int
-A4GLSQL_close_session   (char *sessname)
+A4GLSQL_close_session (char *sessname)
 {
   int rc;
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_close_session");
-  rc = func(sessname);
-  if ( rc ) apisql_drop_sess(sessname);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_close_session");
+  rc = func (sessname);
+  if (rc)
+    apisql_drop_sess (sessname);
   return rc;
 }
 
@@ -523,11 +549,12 @@ A4GLSQL_close_session   (char *sessname)
  * @return
  */
 int
-A4GLSQL_close_cursor   (char *currname)  
+A4GLSQL_close_cursor (char *currname)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_close_cursor");
-  return func(currname);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_close_cursor");
+  return func (currname);
 }
 
 
@@ -538,12 +565,13 @@ A4GLSQL_close_cursor   (char *currname)
  * @return
  */
 int
-A4GLSQL_fill_array     (int mx, char *arr1, int szarr1, char *arr2,
-						int szarr2, char *service, int mode, char *info)
+A4GLSQL_fill_array (int mx, char *arr1, int szarr1, char *arr2,
+		    int szarr2, char *service, int mode, char *info)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_fill_array");
-  return func(mx,arr1,szarr1,arr2,szarr2,service,mode,info);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_fill_array");
+  return func (mx, arr1, szarr1, arr2, szarr2, service, mode, info);
 }
 
 
@@ -555,15 +583,17 @@ A4GLSQL_fill_array     (int mx, char *arr1, int szarr1, char *arr2,
  */
 /* int --- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_prepare_sql   (char *s)
+A4GLSQL_prepare_sql (char *s)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  if ( must_convert ) {
-      s = apisql_strdup(s);
-      convert_sql( source_dialect, curr_sess->dbms_dialect, s );
-  }
-  func=find_func(libptr,"A4GLSQL_prepare_sql");
-  return (struct s_sid *)func(s);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  if (must_convert)
+    {
+      s = apisql_strdup (s);
+      convert_sql (source_dialect, curr_sess->dbms_dialect, s);
+    }
+  func = find_func (libptr, "A4GLSQL_prepare_sql");
+  return (struct s_sid *) func (s);
 }
 
 
@@ -575,11 +605,12 @@ A4GLSQL_prepare_sql   (char *s)
  * @return Allways 0
  */
 int
-A4GLSQL_add_prepare   (char *pname, struct s_sid *sid)
+A4GLSQL_add_prepare (char *pname, struct s_sid *sid)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_add_prepare");
-  return func(pname,sid);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_add_prepare");
+  return func (pname, sid);
 }
 
 
@@ -592,11 +623,12 @@ A4GLSQL_add_prepare   (char *pname, struct s_sid *sid)
  * @return Allways 0
  */
 int
-A4GLSQL_execute_sql_from_ptr   (char *pname, int ni, char **ibind)
+A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_execute_sql_from_ptr");
-  return func(pname,ni,*ibind);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_execute_sql_from_ptr");
+  return func (pname, ni, *ibind);
 }
 
 
@@ -612,11 +644,12 @@ A4GLSQL_execute_sql_from_ptr   (char *pname, int ni, char **ibind)
  *  - -1 : The pointer to the statement is null.
  */
 int
-A4GLSQL_execute_implicit_select   (struct s_sid *sid)
+A4GLSQL_execute_implicit_select (struct s_sid *sid)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_execute_implicit_select");
-  return func(sid);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_execute_implicit_select");
+  return func (sid);
 }
 
 
@@ -632,15 +665,18 @@ A4GLSQL_execute_implicit_select   (struct s_sid *sid)
  */
 /* int -- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_prepare_select       (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s    )
+A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind,
+			int no, char *s)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  if ( must_convert ) {
-      s = apisql_strdup(s);
-      convert_sql( source_dialect, curr_sess->dbms_dialect, s );
-  }
-  func=find_func(libptr,"A4GLSQL_prepare_select");
-  return (struct s_sid *)func(ibind,ni,obind,no,s);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  if (must_convert)
+    {
+      s = apisql_strdup (s);
+      convert_sql (source_dialect, curr_sess->dbms_dialect, s);
+    }
+  func = find_func (libptr, "A4GLSQL_prepare_select");
+  return (struct s_sid *) func (ibind, ni, obind, no, s);
 }
 
 /**
@@ -655,11 +691,13 @@ A4GLSQL_prepare_select       (struct BINDING *ibind, int ni, struct BINDING *obi
  */
 /* int -- struct s_cid * in sql.c */
 struct s_cid *
-A4GLSQL_declare_cursor    (int upd_hold, struct s_sid *sid, int scroll, char *cursname )
+A4GLSQL_declare_cursor (int upd_hold, struct s_sid *sid, int scroll,
+			char *cursname)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_declare_cursor");
-  return (struct s_cid *)func(upd_hold,sid,scroll,cursname);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_declare_cursor");
+  return (struct s_cid *) func (upd_hold, sid, scroll, cursname);
 }
 
 /**
@@ -669,12 +707,13 @@ A4GLSQL_declare_cursor    (int upd_hold, struct s_sid *sid, int scroll, char *cu
  */
 /* int -- void in sql.c */
 void
-A4GLSQL_set_sqlca_sqlcode   (int a)
+A4GLSQL_set_sqlca_sqlcode (int a)
 {
-debug("set_sqlca_sqlcode... %d\n",a);
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_set_sqlca_sqlcode");
-  func(a);
+  debug ("set_sqlca_sqlcode... %d\n", a);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_set_sqlca_sqlcode");
+  func (a);
 }
 
 /**
@@ -687,11 +726,12 @@ debug("set_sqlca_sqlcode... %d\n",a);
  * @param s The cursor name.
  */
 int
-A4GLSQL_open_cursor   (int ni, char *s)
+A4GLSQL_open_cursor (int ni, char *s)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_open_cursor");
-  return func(ni,s);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_open_cursor");
+  return func (ni, s);
 }
 
 /**
@@ -706,12 +746,13 @@ A4GLSQL_open_cursor   (int ni, char *s)
  * @return
  */
 int
-A4GLSQL_fetch_cursor   (char *cursor_name, int fetch_mode, int fetch_when,
-  int nibind, struct BINDING *ibind)
+A4GLSQL_fetch_cursor (char *cursor_name, int fetch_mode, int fetch_when,
+		      int nibind, struct BINDING *ibind)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_fetch_cursor");
-  return func(cursor_name,fetch_mode,fetch_when,nibind,ibind);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_fetch_cursor");
+  return func (cursor_name, fetch_mode, fetch_when, nibind, ibind);
 }
 
 
@@ -727,11 +768,12 @@ A4GLSQL_fetch_cursor   (char *cursor_name, int fetch_mode, int fetch_when,
  */
 /* int -- void in sql.c !!! */
 void
-A4GLSQL_put_insert   (struct BINDING *ibind, int n)
+A4GLSQL_put_insert (struct BINDING *ibind, int n)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_put_insert");
-  func(ibind,n);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_put_insert");
+  func (ibind, n);
 }
 
 
@@ -743,15 +785,17 @@ A4GLSQL_put_insert   (struct BINDING *ibind, int n)
  */
 /* int -- void in sql;.c */
 void
-A4GLSQL_unload_data   (char *fname, char *delims, char *sql1)
+A4GLSQL_unload_data (char *fname, char *delims, char *sql1)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  if ( must_convert ) {
-      sql1 = apisql_strdup(sql1);
-      convert_sql( source_dialect, curr_sess->dbms_dialect, sql1 );
-  }
-  func=find_func(libptr,"A4GLSQL_unload_data");
-  func(fname,delims,sql1);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  if (must_convert)
+    {
+      sql1 = apisql_strdup (sql1);
+      convert_sql (source_dialect, curr_sess->dbms_dialect, sql1);
+    }
+  func = find_func (libptr, "A4GLSQL_unload_data");
+  func (fname, delims, sql1);
 }
 
 
@@ -766,11 +810,12 @@ A4GLSQL_unload_data   (char *fname, char *delims, char *sql1)
  */
 /* int -- void in sql.c !! */
 void
-A4GLSQL_commit_rollback   (int mode)
+A4GLSQL_commit_rollback (int mode)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_commit_rollback");
-  func(mode);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_commit_rollback");
+  func (mode);
 }
 
 /**
@@ -783,11 +828,12 @@ A4GLSQL_commit_rollback   (int mode)
  */
 /* int --- struct s_sid * in sql.c */
 struct s_sid *
-A4GLSQL_find_prepare   (char *pname)
+A4GLSQL_find_prepare (char *pname)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_find_prepare");
-  return (struct s_sid *)func(pname);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_find_prepare");
+  return (struct s_sid *) func (pname);
 }
 
 /**
@@ -802,11 +848,12 @@ A4GLSQL_find_prepare   (char *pname)
  */
 /* int---void in sql.c !!! */
 void
-A4GLSQL_flush_cursor   (char *cursor)
+A4GLSQL_flush_cursor (char *cursor)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_flush_cursor");
-  func(cursor);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_flush_cursor");
+  func (cursor);
 }
 
 /**
@@ -817,12 +864,13 @@ A4GLSQL_flush_cursor   (char *cursor)
  */
 char *
 /* A4GLSQL_get_currdbname   (char *cursor) -- void in sql.c !!! */
-A4GLSQL_get_currdbname   (void)
+A4GLSQL_get_currdbname (void)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_get_currdbname");
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_get_currdbname");
   /* return (char *)func(cursor); */
-  return (char *)func();
+  return (char *) func ();
 }
 
 
@@ -835,11 +883,12 @@ A4GLSQL_get_currdbname   (void)
  * @return
  */
 int
-A4GLSQL_execute_sql   (char *pname, int ni, struct BINDING *ibind)
+A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_execute_sql");
-  return func(pname,ni,ibind);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_execute_sql");
+  return func (pname, ni, ibind);
 }
 
 
@@ -852,9 +901,10 @@ A4GLSQL_execute_sql   (char *pname, int ni, struct BINDING *ibind)
 long
 A4GLSQL_describe_stmt (char *stmt, int colno, int type)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_describe_stmt");
-  return func(stmt,colno,type);
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_describe_stmt");
+  return func (stmt, colno, type);
 
 }
 
@@ -868,12 +918,15 @@ A4GLSQL_describe_stmt (char *stmt, int colno, int type)
  */
 /* long --- int in sql.c ! */
 int
-A4GLSQL_initsqllib(void)
+A4GLSQL_initsqllib (void)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_initsqllib");
-  if (func) return func();
-  else return 1;
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_initsqllib");
+  if (func)
+    return func ();
+  else
+    return 1;
 }
 
 
@@ -889,14 +942,15 @@ of globals when making windows .dll
 char *
 global_A4GLSQL_get_sqlerrm (void)
 {
-	return a4gl_sqlca.sqlerrm;
+  return a4gl_sqlca.sqlerrm;
 }
 
 
-void global_A4GLSQL_set_sqlcode (int n)
+void
+global_A4GLSQL_set_sqlcode (int n)
 {
-                a4gl_sqlca.sqlcode=n;
-                a4gl_status=n;
+  a4gl_sqlca.sqlcode = n;
+  a4gl_status = n;
 }
 
 
@@ -906,11 +960,12 @@ void global_A4GLSQL_set_sqlcode (int n)
  * @return
  */
 int
-A4GLSQL_close_connection(void)
+A4GLSQL_close_connection (void)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_close_connection");
-  return func();
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_close_connection");
+  return func ();
 }
 
 /**
@@ -920,14 +975,16 @@ A4GLSQL_close_connection(void)
  * @return  a char string, eg. "INFORMIX", "ORACLE", "SAPDB"
  */
 char *
-A4GLSQL_dbms_dialect( void )
+A4GLSQL_dbms_dialect (void)
 {
-  if (libptr==0) A4GLSQL_initlib();
+  if (libptr == 0)
+    A4GLSQL_initlib ();
 
-  func=find_func_allow_missing(libptr,"A4GLSQL_dbms_dialect");
+  func = find_func_allow_missing (libptr, "A4GLSQL_dbms_dialect");
 
-  if (func == nullfunc ) return "";
-  return (char *) func();
+  if (func == nullfunc)
+    return "";
+  return (char *) func ();
 }
 
 
@@ -939,11 +996,12 @@ A4GLSQL_dbms_dialect( void )
  * @return  pointer to name
  */
 char *
-A4GLSQL_dbms_name( void )
+A4GLSQL_dbms_name (void)
 {
-  if (libptr==0) A4GLSQL_initlib();
-  func=find_func(libptr,"A4GLSQL_dbms_name");
-  return (char *) func();
+  if (libptr == 0)
+    A4GLSQL_initlib ();
+  func = find_func (libptr, "A4GLSQL_dbms_name");
+  return (char *) func ();
 }
 
 /**
@@ -952,15 +1010,17 @@ A4GLSQL_dbms_name( void )
  * @param	char string, eg. "INFORMIX", "ORACLE", "SAPDB"
  */
 void
-A4GLSQL_set_dialect( char *dialect )
+A4GLSQL_set_dialect (char *dialect)
 {
-  if ( dialect && (*dialect>0) ) {
-     strcpy( source_dialect, dialect );
-  }
-  else {
-     strcpy( source_dialect, apisql_dflt_dialect() );
-  }
-  apisql_must_convert();
+  if (dialect && (*dialect > 0))
+    {
+      strcpy (source_dialect, dialect);
+    }
+  else
+    {
+      strcpy (source_dialect, apisql_dflt_dialect ());
+    }
+  apisql_must_convert ();
 }
 
 /*======================= (private functions) ========================*/
@@ -974,21 +1034,21 @@ A4GLSQL_set_dialect( char *dialect )
  * @return	pointer to copy
  */
 char *
-apisql_strdup( char *sql )
+apisql_strdup (char *sql)
 {
- char *p = NULL;
- int n1, n2;
+  char *p = NULL;
+  int n1, n2;
 
   /* the copy is about 1.5 times the length of the original */
-  n1 = strlen(sql);
+  n1 = strlen (sql);
   n2 = 20 + (n1 * 3 / 2);
 
   /* malloc space for the new string, copy it and pad with spaces */
-  if ( ( p = malloc(n2+1) ) )
-  {
-      p = memcpy(memset(p,' ',n2), sql, n1);
+  if ((p = malloc (n2 + 1)))
+    {
+      p = memcpy (memset (p, ' ', n2), sql, n1);
       p[n2] = '\0';
-  }
+    }
   return p;
 }
 
@@ -998,15 +1058,15 @@ apisql_strdup( char *sql )
  * @param	session name
  */
 void
-apisql_add_sess( char *sessname )
+apisql_add_sess (char *sessname)
 {
- struct sess *next;
- next = curr_sess;
- curr_sess = (struct sess *) malloc( sizeof(struct sess) );
- strcpy( curr_sess->sessname, sessname );
- strcpy( curr_sess->dbms_dialect, A4GLSQL_dbms_dialect() );
- curr_sess->next = next;
- apisql_must_convert();
+  struct sess *next;
+  next = curr_sess;
+  curr_sess = (struct sess *) malloc (sizeof (struct sess));
+  strcpy (curr_sess->sessname, sessname);
+  strcpy (curr_sess->dbms_dialect, A4GLSQL_dbms_dialect ());
+  curr_sess->next = next;
+  apisql_must_convert ();
 }
 
 /**
@@ -1015,24 +1075,26 @@ apisql_add_sess( char *sessname )
  * @param	session name
  */
 void
-apisql_set_sess( char *sessname )
+apisql_set_sess (char *sessname)
 {
- struct sess *p;
- struct sess *p2 = NULL;
- p2 = NULL;
- p = curr_sess;
- while ( p != NULL ) {
-   if (strcmp(p->sessname,sessname)!=0) {
-	p2 = p;
-	p = p->next;
-	continue;
-   }
-   p2->next = p->next;
-   p->next = curr_sess;
-   curr_sess = p;
-   apisql_must_convert();
-   break;
- }
+  struct sess *p;
+  struct sess *p2 = NULL;
+  p2 = NULL;
+  p = curr_sess;
+  while (p != NULL)
+    {
+      if (strcmp (p->sessname, sessname) != 0)
+	{
+	  p2 = p;
+	  p = p->next;
+	  continue;
+	}
+      p2->next = p->next;
+      p->next = curr_sess;
+      curr_sess = p;
+      apisql_must_convert ();
+      break;
+    }
 }
 
 /**
@@ -1041,24 +1103,30 @@ apisql_set_sess( char *sessname )
  * @param	session name
  */
 void
-apisql_drop_sess( char *sessname )
+apisql_drop_sess (char *sessname)
 {
- struct sess *p;
- struct sess *p2 = NULL;
- p = curr_sess;
- while ( p != NULL ) {
-   if (strcmp(p->sessname,sessname)!=0) {
-	p2 = p;
-	p = p->next;
-	continue;
-   }
-   if (p2 == NULL) { curr_sess = p->next;
-   }
-   else { p2->next = p->next;
-   }
-   free(p);
-   break;
- }
+  struct sess *p;
+  struct sess *p2 = NULL;
+  p = curr_sess;
+  while (p != NULL)
+    {
+      if (strcmp (p->sessname, sessname) != 0)
+	{
+	  p2 = p;
+	  p = p->next;
+	  continue;
+	}
+      if (p2 == NULL)
+	{
+	  curr_sess = p->next;
+	}
+      else
+	{
+	  p2->next = p->next;
+	}
+      free (p);
+      break;
+    }
 }
 
 /**
@@ -1068,11 +1136,12 @@ apisql_drop_sess( char *sessname )
  * @param	session name
  */
 char *
-apisql_dflt_dialect( void )
+apisql_dflt_dialect (void)
 {
- char *p;
-  p = acl_getenv("SQLDIALECT");
-  if (p && *p>0) return p;
+  char *p;
+  p = acl_getenv ("SQLDIALECT");
+  if (p && *p > 0)
+    return p;
   return "INFORMIX";
 }
 
@@ -1083,23 +1152,23 @@ apisql_dflt_dialect( void )
  * @param	session name
  */
 void
-apisql_must_convert( void )
+apisql_must_convert (void)
 {
   /* if no source dialect is set, use the default */
-  if ( *source_dialect == '\0') {
-       strcpy( source_dialect, apisql_dflt_dialect() );
-  }
+  if (*source_dialect == '\0')
+    {
+      strcpy (source_dialect, apisql_dflt_dialect ());
+    }
   /* SQLCONVERT=YES must be set, and source/DBMS dialects must differ
    */
   must_convert = 0;
-  if ( (strcmp(acl_getenv("SQLCONVERT"),"YES")==0)
-        && (source_dialect[0] > '\0') &&
-        (curr_sess->dbms_dialect[0] > '\0') &&
-     (strcmp(curr_sess->dbms_dialect,source_dialect)!=0) )
-  {
-        must_convert = 1;
-  }
+  if ((strcmp (acl_getenv ("SQLCONVERT"), "YES") == 0)
+      && (source_dialect[0] > '\0') &&
+      (curr_sess->dbms_dialect[0] > '\0') &&
+      (strcmp (curr_sess->dbms_dialect, source_dialect) != 0))
+    {
+      must_convert = 1;
+    }
 }
 
 /* =============================== EOF ============================== */
-

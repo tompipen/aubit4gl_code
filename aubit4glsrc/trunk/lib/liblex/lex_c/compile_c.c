@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.68 2003-03-28 08:07:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.69 2003-05-12 14:24:20 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -91,49 +91,49 @@
 
 
 /** Pointer to the output C file */
-static FILE *	outfile = 0;
+static FILE *outfile = 0;
 
 /** Pointer to the output header (.h) file */
-static FILE *	hfile = 0;
+static FILE *hfile = 0;
 
 /** The output file name */
-extern char *	outputfilename;
-extern char *	curr_func;
-extern char *	infilename;
+extern char *outputfilename;
+extern char *curr_func;
+extern char *infilename;
 
 /** The source code linenumber */
-extern int 		yylineno;
-extern int 		lastlineno;
-extern int 		inp_flags;
-extern struct 	rep_structure rep_struct;
-extern struct 	pdf_rep_structure pdf_rep_struct;
-extern struct 	form_attr form_attrib;
-extern int 		menu_cnt;
-extern int 		ccnt;				/**< Block counter - defined in lexer.c */
-extern char 	mmtitle[132][132]; 	/** Menu titles */
-extern int 		report_stack_cnt;
-extern int 		report_cnt;
-extern int 		rep_type;
-extern int 		sreports_cnt;
-extern char 	when_to_tmp[64];
-extern int 		ordbindcnt;
-extern int 		ibindcnt;
-extern int 		nullbindcnt;
-extern int 		obindcnt;
-extern int 		fbindcnt;
-extern int 		constr_cnt;
+extern int yylineno;
+extern int lastlineno;
+extern int inp_flags;
+extern struct rep_structure rep_struct;
+extern struct pdf_rep_structure pdf_rep_struct;
+extern struct form_attr form_attrib;
+extern int menu_cnt;
+extern int ccnt;					/**< Block counter - defined in lexer.c */
+extern char mmtitle[132][132];		/** Menu titles */
+extern int report_stack_cnt;
+extern int report_cnt;
+extern int rep_type;
+extern int sreports_cnt;
+extern char when_to_tmp[64];
+extern int ordbindcnt;
+extern int ibindcnt;
+extern int nullbindcnt;
+extern int obindcnt;
+extern int fbindcnt;
+extern int constr_cnt;
 
 
-dll_import int      when_code[8];
-dll_import struct   s_report sreports[1024];
-dll_import struct   s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
-dll_import struct   binding_comp ibind[NUMBINDINGS];
-dll_import struct   binding_comp nullbind[NUMBINDINGS];
-dll_import struct   binding_comp obind[NUMBINDINGS];
-dll_import struct   binding_comp fbind[NUMBINDINGS];
-dll_import struct   binding_comp ordbind[NUMBINDINGS];
-dll_import struct   s_constr_buff constr_buff[256];
-dll_import char     when_to[64][8];
+dll_import int when_code[8];
+dll_import struct s_report sreports[1024];
+dll_import struct s_menu_stack menu_stack[MAXMENU][MAXMENUOPTS];
+dll_import struct binding_comp ibind[NUMBINDINGS];
+dll_import struct binding_comp nullbind[NUMBINDINGS];
+dll_import struct binding_comp obind[NUMBINDINGS];
+dll_import struct binding_comp fbind[NUMBINDINGS];
+dll_import struct binding_comp ordbind[NUMBINDINGS];
+dll_import struct s_constr_buff constr_buff[256];
+dll_import char when_to[64][8];
 
 /*
 =====================================================================
@@ -141,28 +141,31 @@ dll_import char     when_to[64][8];
 =====================================================================
 */
 
-void 			printc				(char* fmt,... );
-static void 	print_output_rep 	(struct rep_structure *rep);
-static void 	print_form_attrib 	(struct form_attr *form_attrib);
-static int 		print_field_bind 	(int ccc);
-static int 		print_arr_bind 		(char i);
-static int 		print_constr 		(void);
-static int 		print_field_bind_constr (void);
-static int 		pr_when_do 			(char *when_str, int when_code, int l, char *f, char *when_to);
-static void 	pr_report_agg 		(void);
-static void 	pr_report_agg_clr 	(void);
-static void 	print_menu 			(int mn);
+void printc (char *fmt, ...);
+static void print_output_rep (struct rep_structure *rep);
+static void print_form_attrib (struct form_attr *form_attrib);
+static int print_field_bind (int ccc);
+static int print_arr_bind (char i);
+static int print_constr (void);
+static int print_field_bind_constr (void);
+static int pr_when_do (char *when_str, int when_code, int l, char *f,
+		       char *when_to);
+static void pr_report_agg (void);
+static void pr_report_agg_clr (void);
+static void print_menu (int mn);
 
-void 			internal_lex_printc	(char *fmt, va_list *ap);
-void 			internal_lex_printcomment(char *fmt, va_list *ap);
-void 			internal_lex_printh	(char *fmt, va_list *ap);
+void internal_lex_printc (char *fmt, va_list * ap);
+void internal_lex_printcomment (char *fmt, va_list * ap);
+void internal_lex_printh (char *fmt, va_list * ap);
 
-static void 	real_print_expr 	(struct expr_str *ptr);
-static void 	real_print_func_call (char *identifier, struct expr_str *args, int args_cnt);
-static void 	real_print_class_func_call (char *var,char *identifier, struct expr_str *args, int args_cnt);
-static void 	real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
+static void real_print_expr (struct expr_str *ptr);
+static void real_print_func_call (char *identifier, struct expr_str *args,
+				  int args_cnt);
+static void real_print_class_func_call (char *var, char *identifier,
+					struct expr_str *args, int args_cnt);
+static void real_print_pdf_call (char *a1, struct expr_str *args, char *a3);
 
-void printh(char* fmt,... );
+void printh (char *fmt, ...);
 
 /*
 =====================================================================
@@ -175,7 +178,7 @@ void printh(char* fmt,... );
  * target C code.
  */
 static void
-print_space(void)
+print_space (void)
 {
   char buff[256];
   memset (buff, ' ', 255);
@@ -186,8 +189,8 @@ print_space(void)
 /**
  * Open the ouput target C file
  */
-static void 
-open_outfile(void)
+static void
+open_outfile (void)
 {
   char h[132];
   char c[132];
@@ -234,16 +237,16 @@ open_outfile(void)
 
   fprintf (outfile, "#define fgldate long\n");
   fprintf (outfile, "#include \"a4gl_incl_4glhdr.h\"\n");
-  if (strchr(h,'/')!=0)
-  	fprintf (outfile, "#include \"%s\"\n", strrchr(h,'/')+1);
+  if (strchr (h, '/') != 0)
+    fprintf (outfile, "#include \"%s\"\n", strrchr (h, '/') + 1);
   else
-  	fprintf (outfile, "#include \"%s\"\n", h);
+    fprintf (outfile, "#include \"%s\"\n", h);
   /* if (acl_getenv ("GTKGUI"))
-    fprintf (outfile, "#include <acl4glgui.h>\n");
+     fprintf (outfile, "#include <acl4glgui.h>\n");
 
-  we no longer need this:
-  fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ());
-  */
+     we no longer need this:
+     fprintf (outfile, "static char _compiler_ser[]=\"%s\";\n", get_serno ());
+   */
 
   fprintf (outfile, "static char _module_name[]=\"%s.4gl\";\n",
 	   outputfilename);
@@ -251,22 +254,26 @@ open_outfile(void)
   hfile = mja_fopen (h, "w");
 
 #ifdef OBSOLETE_CODE
-  if (strncmp(acl_getenv ("GTKGUI"),"Y",1)==0)  {
-	/*
-  	strange: was this supposed to be A4GL_UI and not GTKGUI?
-    Since GTK programs are working anyway, should I assume this is
-    obsolete code?
-	*/
+  if (strncmp (acl_getenv ("GTKGUI"), "Y", 1) == 0)
+    {
+      /*
+         strange: was this supposed to be A4GL_UI and not GTKGUI?
+         Since GTK programs are working anyway, should I assume this is
+         obsolete code?
+       */
 
-	/* fprintf (hfile, "#include <a4gl_incl_acl4glgui.h>\n"); */
-    /* only this was in a4gl_incl_acl4glgui.h, which was removed from CVS: */
-	
-	fprintf (hfile, "#include <gtk/gtk.h>\n");
-	fprintf (hfile, "#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(strnullcmp(data,'on')==0||strnullcmp(data,'clicked')==0))\n");
-	fprintf (hfile, "#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
-	fprintf (hfile, "#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
+      /* fprintf (hfile, "#include <a4gl_incl_acl4glgui.h>\n"); */
+      /* only this was in a4gl_incl_acl4glgui.h, which was removed from CVS: */
 
-  }
+      fprintf (hfile, "#include <gtk/gtk.h>\n");
+      fprintf (hfile,
+	       "#define ON_FIELD(x) (widget_name_match(widget,x)&&event==0&&(strnullcmp(data,'on')==0||strnullcmp(data,'clicked')==0))\n");
+      fprintf (hfile,
+	       "#define BEFORE_OPEN_FORM  (event==0&&widget==0&&data==0)\n");
+      fprintf (hfile,
+	       "#define BEFORE_CLOSE_FORM  (isevent==1&&(event->type==GDK_DELETE|| event->type==GDK_DESTROY))\n");
+
+    }
 #endif
 }
 
@@ -285,79 +292,80 @@ open_outfile(void)
 // cannot be static since it's called from compile_c_gtk.c. How do I make
 // it to be accessible only form libLEX_ ? LIBPRIVATE ?
 void
-printc(char* fmt,... )
+printc (char *fmt, ...)
 {
-va_list ap;
-	//debug("via printc (a) in lib\n");
-	va_start(ap,fmt);
-	internal_lex_printc(fmt,&ap);
+  va_list ap;
+  //debug("via printc (a) in lib\n");
+  va_start (ap, fmt);
+  internal_lex_printc (fmt, &ap);
 }
+
 void
-internal_lex_printc(char *fmt, va_list *ap)
+internal_lex_printc (char *fmt, va_list * ap)
 {
 /* va_list args; */
-char buff[40960]="ERROR-empty init";
-char buff2[40960];
-char *ptr;
-int a;
+  char buff[40960] = "ERROR-empty init";
+  char buff2[40960];
+  char *ptr;
+  int a;
 
   //debug("in real_lex_printc");
 
   if (outfile == 0)
-  {
-    open_outfile ();
-	if (outfile == 0)
-		return;
-  }
-    //debug("before vsprintf");
-	//debug("ap = %p\n",ap);
-	//debug("fmt = %p\n",fmt);
+    {
+      open_outfile ();
+      if (outfile == 0)
+	return;
+    }
+  //debug("before vsprintf");
+  //debug("ap = %p\n",ap);
+  //debug("fmt = %p\n",fmt);
 
-	/* va_start (args, fmt); */
-	vsprintf (buff, fmt, *ap);
+  /* va_start (args, fmt); */
+  vsprintf (buff, fmt, *ap);
 
-	//debug("buff in lib=%s\n",buff);
-	strcpy(buff2,fmt);
-	//debug("fmt in lib=%s\n",buff2);
+  //debug("buff in lib=%s\n",buff);
+  strcpy (buff2, fmt);
+  //debug("fmt in lib=%s\n",buff2);
 
 
-  if (isyes(acl_getenv ("INCLINES")))
-  {
-    for (a = 0; a < strlen (buff); a++)
-	  {
-	    if (buff[a] == '\n')
+  if (isyes (acl_getenv ("INCLINES")))
+    {
+      for (a = 0; a < strlen (buff); a++)
+	{
+	  if (buff[a] == '\n')
 	    {
 	      if (infilename != 0)
-		    {
-		      fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
-			      outputfilename
-					);
-		    }
+		{
+		  fprintf (outfile, "\n#line %d \"%s.4gl\"\n", yylineno,
+			   outputfilename);
+		}
 	      else
-		    {
-		      fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
-			     /* outputfilename); */
-		    }
+		{
+		  fprintf (outfile, "\n#line %d \"null\"\n", yylineno);
+		  /* outputfilename); */
+		}
 	    }
-	    else
+	  else
 	    {
 	      fprintf (outfile, "%c", buff[a]);
 	    }
-	  }
-  }
+	}
+    }
   else
-  {
-	  ptr = strtok (buff, "\n");
-	  while (ptr)
-		{
-		  print_space ();
-		  fprintf (outfile, "%s\n", ptr);
-		  ptr = strtok (0, "\n");
-		}
-  }
+    {
+      ptr = strtok (buff, "\n");
+      while (ptr)
+	{
+	  print_space ();
+	  fprintf (outfile, "%s\n", ptr);
+	  ptr = strtok (0, "\n");
+	}
+    }
 
-	/* Having this will really slow it down... */
-	if (strcmp(acl_getenv("DEBUG"),"ALL")==0) fflush(outfile);
+  /* Having this will really slow it down... */
+  if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
+    fflush (outfile);
 }
 
 
@@ -370,15 +378,16 @@ int a;
  * @param ... The variadic parameters to be passed to vsprintf
  */
 void
-printh(char* fmt,... )
+printh (char *fmt, ...)
 {
-va_list ap;
-	va_start(ap,fmt);
-	internal_lex_printh(fmt,&ap);
+  va_list ap;
+  va_start (ap, fmt);
+  internal_lex_printh (fmt, &ap);
 }
+
 void
 /* printh (char *fmt, ...) */
-internal_lex_printh(char *fmt, va_list *ap)
+internal_lex_printh (char *fmt, va_list * ap)
 {
 /* va_list args; */
   if (outfile == 0)
@@ -389,8 +398,8 @@ internal_lex_printh(char *fmt, va_list *ap)
     return;
 
   /* va_start (args, fmt);
-  vfprintf (hfile, fmt, args);
-  */
+     vfprintf (hfile, fmt, args);
+   */
 
   vfprintf (hfile, fmt, *ap);
 
@@ -405,15 +414,16 @@ internal_lex_printh(char *fmt, va_list *ap)
  * @param ... The variadic parameters to be passed to vsprintf
  */
 static void
-printcomment(char* fmt,... )
+printcomment (char *fmt, ...)
 {
-va_list ap;
-	va_start(ap,fmt);
-	internal_lex_printcomment(fmt,&ap);
+  va_list ap;
+  va_start (ap, fmt);
+  internal_lex_printcomment (fmt, &ap);
 }
+
 void
 /* internal_printcomment (char *fmt,...) */
-internal_lex_printcomment(char *fmt, va_list *ap)
+internal_lex_printcomment (char *fmt, va_list * ap)
 {
 #ifdef USE_PRINTCOMMENT
 /*  va_list args; */
@@ -428,9 +438,9 @@ internal_lex_printcomment(char *fmt, va_list *ap)
   if (acl_getenv ("COMMENTS"))
     {
       /*
-	  va_start (args, fmt);
-      vfprintf (outfile, fmt, args);
-      */
+         va_start (args, fmt);
+         vfprintf (outfile, fmt, args);
+       */
       vfprintf (outfile, fmt, ap);
     }
 #else
@@ -439,7 +449,7 @@ internal_lex_printcomment(char *fmt, va_list *ap)
 	 * comments in the output C module
 	 */
 
-	/* Do nothing... */
+  /* Do nothing... */
 
 #endif
 }
@@ -448,15 +458,15 @@ internal_lex_printcomment(char *fmt, va_list *ap)
  * Print the spaces corresponding to the scope level to have good
  * identation in the output source.
  */
-void 
-incprint(void)
+void
+incprint (void)
 {
   int a;
 
-  for (a = 0; a <= getinc(); a++)
-  {
-    printc ("   ");
-  }
+  for (a = 0; a <= getinc (); a++)
+    {
+      printc ("   ");
+    }
 }
 
 /**
@@ -471,7 +481,7 @@ incprint(void)
  *   - BEFORE GROUP
  *   - AFTER GROUP
  */
-void 
+void
 print_repctrl_block (void)
 {
   printc ("rep_ctrl%d_%d:\n", report_cnt, report_stack_cnt);
@@ -482,16 +492,16 @@ print_repctrl_block (void)
  * Print the C include statement for header file
  */
 void
-print_include(char *s)
+print_include (char *s)
 {
-	printc("#include <%s.h>\n",s);
+  printc ("#include <%s.h>\n", s);
 }
 
 /**
  * Print the C implementation of the current report control block
  */
 void
-print_report_ctrl(void)
+print_report_ctrl (void)
 {
   int a;
   debug
@@ -536,41 +546,41 @@ print_report_ctrl(void)
 
   for (a = 0; a < report_stack_cnt; a++)
     {
-	/* on last row */
-		if (*get_report_stack_whytype(a) == 'L')
+      /* on last row */
+      if (*get_report_stack_whytype (a) == 'L')
 	printc
 	  ("if (acl_ctrl==REPORT_LASTROW) { acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-	/* on every row */
-		if (*get_report_stack_whytype(a) == 'E')
+      /* on every row */
+      if (*get_report_stack_whytype (a) == 'E')
 	printc
 	  ("if (acl_ctrl==REPORT_DATA) {acl_ctrl=REPORT_AFTERDATA;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-	/* before group of */
-		if (*get_report_stack_whytype(a) == 'B')
+      /* before group of */
+      if (*get_report_stack_whytype (a) == 'B')
 	printc
 	  ("if (acl_ctrl==REPORT_BEFOREGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-	   get_report_stack_why(a), report_cnt, a);
+	   get_report_stack_why (a), report_cnt, a);
 
-	/* after group of */
-		if (*get_report_stack_whytype(a) == 'A')
+      /* after group of */
+      if (*get_report_stack_whytype (a) == 'A')
 	printc
 	  ("if (acl_ctrl==REPORT_AFTERGROUP&&nargs==%s) {nargs=-1*nargs;goto rep_ctrl%d_%d;}\n",
-	   get_report_stack_why(a), report_cnt, a);
+	   get_report_stack_why (a), report_cnt, a);
 
-		if (*get_report_stack_whytype(a) == 'T')
+      if (*get_report_stack_whytype (a) == 'T')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGETRAILER) {acl_ctrl=REPORT_PAGEHEADER;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-		if (*get_report_stack_whytype(a) == 'P')
+      if (*get_report_stack_whytype (a) == 'P')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&rep.page_no==1) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
 
-		if (*get_report_stack_whytype(a) == 'p')
+      if (*get_report_stack_whytype (a) == 'p')
 	printc
 	  ("if (acl_ctrl==REPORT_PAGEHEADER&&(rep.page_no!=1||(rep.page_no==1&&rep.has_first_page==0))) {acl_ctrl=0;goto rep_ctrl%d_%d;}\n",
 	   report_cnt, a);
@@ -584,7 +594,7 @@ print_report_ctrl(void)
  *
  * @todo : If scan_arr_variable() removed then remove this one to.
  */
-void 
+void
 print_range_check (char *var, char *size)
 {
   printc ("range_chk(%s,%d);\n", var, atoi (size));
@@ -595,7 +605,7 @@ print_range_check (char *var, char *size)
  *
  * @param n The block sequential number (used for the name of label)
  */
-void 
+void
 print_start_block (int n)
 {
   printc ("\n");
@@ -610,7 +620,7 @@ print_start_block (int n)
  *   - 0 : Dot not generate end brace "}"
  *   - Otherwise : Generate end brace
  */
-void 
+void
 print_continue_block (int n, int brace)
 {
   printc ("\n");
@@ -626,7 +636,7 @@ print_continue_block (int n, int brace)
  *
  * @param n The block sequential number.
  */
-void 
+void
 print_end_block (int n)
 {
   printc ("END_BLOCK_%d: ;\n\n", n);
@@ -640,11 +650,12 @@ print_end_block (int n)
  * @param n The loop number
  */
 void
-print_continue_loop (int n,char *cmd_type)
+print_continue_loop (int n, char *cmd_type)
 {
-if (strcmp(cmd_type,"INPUT")==0||strcmp(cmd_type,"CONSTRUCT")==0) {
-	printc("_fld_dr=-99;\n");
-}
+  if (strcmp (cmd_type, "INPUT") == 0 || strcmp (cmd_type, "CONSTRUCT") == 0)
+    {
+      printc ("_fld_dr=-99;\n");
+    }
   printc ("goto CONTINUE_BLOCK_%d;", n);
 }
 
@@ -787,58 +798,62 @@ pr_report_agg (void)
       a = sreports[z].a;
       t = sreports[z].t;
 
-    #ifdef DEBUG
-		debug("pr_report_agg - %c %d z=%d\n",t,a,z);
-    #endif
+#ifdef DEBUG
+      debug ("pr_report_agg - %c %d z=%d\n", t, a, z);
+#endif
 
       if (t == 'C')
 	{
-	  print_expr(sreports[z].rep_where_expr);
-	  printc ("if (pop_bool()) _g%d++;\n",  a);
+	  print_expr (sreports[z].rep_where_expr);
+	  printc ("if (pop_bool()) _g%d++;\n", a);
 	}
 
       if (t == 'P')
 	{
-	  printc ("_g%d++;",a+1);
-	  print_expr(sreports[z].rep_where_expr);
-	  printc(" if (pop_bool()) _g%d++; \n",  a);
+	  printc ("_g%d++;", a + 1);
+	  print_expr (sreports[z].rep_where_expr);
+	  printc (" if (pop_bool()) _g%d++; \n", a);
 	}
 
       if (t == 'S')
 	{
-	debug("X0");
-	  print_expr(sreports[z].rep_where_expr);
-	debug("X1");
-	  printc("if (pop_bool()) {double _res;");
-	debug("X2");
-	  print_expr(sreports[z].rep_cond_expr);
-	debug("X3");
-	  printc("_res=pop_double(); _g%d+=_res;}\n ", a);
+	  debug ("X0");
+	  print_expr (sreports[z].rep_where_expr);
+	  debug ("X1");
+	  printc ("if (pop_bool()) {double _res;");
+	  debug ("X2");
+	  print_expr (sreports[z].rep_cond_expr);
+	  debug ("X3");
+	  printc ("_res=pop_double(); _g%d+=_res;}\n ", a);
 	}
 
       if (t == 'A')
 	{
-	  print_expr(sreports[z].rep_where_expr);
+	  print_expr (sreports[z].rep_where_expr);
 	  printc ("if (pop_bool()) {double _res;");
-	  print_expr(sreports[z].rep_cond_expr);
+	  print_expr (sreports[z].rep_cond_expr);
 
 	  printc ("_res=pop_double(); _g%d+=_res;_g%d++;}\n", a, a + 1);
 	}
 
       if (t == 'N')
 	{
-	  print_expr(sreports[z].rep_where_expr);
+	  print_expr (sreports[z].rep_where_expr);
 	  printc ("if (pop_bool()) {double _res;");
-	  print_expr(sreports[z].rep_cond_expr);
-	  printc("_res=pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
+	  print_expr (sreports[z].rep_cond_expr);
+	  printc
+	    ("_res=pop_double(); if (_res<_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
+	     a, a, a, a);
 	}
 
       if (t == 'X')
 	{
-	  print_expr(sreports[z].rep_where_expr);
+	  print_expr (sreports[z].rep_where_expr);
 	  printc ("if (pop_bool()) {double _res;");
-	  print_expr(sreports[z].rep_cond_expr);
-	  printc ("_res=pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n", a, a, a, a);
+	  print_expr (sreports[z].rep_cond_expr);
+	  printc
+	    ("_res=pop_double(); if (_res>_g%d||_g%dused==0) {_g%d=_res;_g%dused=1;}}\n",
+	     a, a, a, a);
 	}
 
     }
@@ -916,13 +931,14 @@ prchkerr (int l, char *f)
  * 2 = call
  * 3 = goto 
  */
-  
-  #ifdef DEBUG
-	  debug ("MJA prchkerr %d %s", l, f);
-  #endif
-  printc ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || %d)) {\n",
-	  when_code[A_WHEN_SUCCESS] == WHEN_CALL
-	  || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
+
+#ifdef DEBUG
+  debug ("MJA prchkerr %d %s", l, f);
+#endif
+  printc
+    ("if (aclfgli_get_err_flg()&&(a4gl_sqlca.sqlcode !=0 || a4gl_status !=0 || %d)) {\n",
+     when_code[A_WHEN_SUCCESS] == WHEN_CALL
+     || when_code[A_WHEN_SQLSUCCESS] == WHEN_CALL);
   /*printc("debug(\"a4gl_status=%%d a4gl_sqlca.sqlcode=%%d\",a4gl_status,a4gl_sqlca.sqlcode);\n"); */
   printcomment ("/* NOTFOUND */");
 
@@ -932,8 +948,9 @@ prchkerr (int l, char *f)
   printc ("/* SQLERROR */");
 
   a =
-    pr_when_do ("   if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode)",
-		when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
+    pr_when_do
+    ("   if (a4gl_sqlca.sqlcode<0&&a4gl_status==a4gl_sqlca.sqlcode)",
+     when_code[A_WHEN_SQLERROR], l, f, when_to[A_WHEN_SQLERROR]);
 
 #ifdef ANYERRORISCAUSINGPROBS
   printc ("/* ANYERROR */");
@@ -963,13 +980,8 @@ prchkerr (int l, char *f)
 		when_code[A_WHEN_SQLSUCCESS], l, f,
 		when_to[A_WHEN_SQLSUCCESS]);
   printcomment ("/* SUCCESS */");
-  a = pr_when_do (
-	  "   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)",
-	  when_code[A_WHEN_SUCCESS], 
-		l, 
-		f,
-		when_to[A_WHEN_SUCCESS]
-	);
+  a = pr_when_do ("   if (a4gl_sqlca.sqlcode==0&&a4gl_status==0)",
+		  when_code[A_WHEN_SUCCESS], l, f, when_to[A_WHEN_SUCCESS]);
   printc ("}\n");
 }
 
@@ -1018,12 +1030,12 @@ pr_when_do (char *when_str, int when_code, int l, char *f, char *when_to)
  * an expression).
  */
 void
-print_expr(void* ptr)
+print_expr (void *ptr)
 {
-  #ifdef DEBUG
-	debug("via print_expr in lib");
-  #endif
-	real_print_expr(ptr);
+#ifdef DEBUG
+  debug ("via print_expr in lib");
+#endif
+  real_print_expr (ptr);
 }
 static void
 real_print_expr (struct expr_str *ptr)
@@ -1034,12 +1046,12 @@ real_print_expr (struct expr_str *ptr)
     {
       debug ("Printing %p", ptr->expr);
       printc ("%s\n", ptr->expr);
- 
+
       free (ptr->expr);
       optr = ptr;
       debug ("going to %p", ptr->next);
       ptr = ptr->next;
-      debug("Freeing old value %p",optr);
+      debug ("Freeing old value %p", optr);
       free (optr);
     }
 }
@@ -1062,10 +1074,10 @@ print_form_attrib (struct form_attr *form_attrib)
 	  form_attrib->border,
 	  form_attrib->comment_line,
 	  form_attrib->message_line, form_attrib->attrib);
-  #ifdef DEBUG
-	  debug ("Printing attributes\n");
-	  debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
-  #endif
+#ifdef DEBUG
+  debug ("Printing attributes\n");
+  debug ("%d,%d,%d,%d,%d,%d,%d,%d,(0x%x)", form_attrib->iswindow,
+#endif
 	 form_attrib->form_line, form_attrib->error_line,
 	 form_attrib->prompt_line, form_attrib->menu_line,
 	 form_attrib->border, form_attrib->comment_line,
@@ -1108,33 +1120,33 @@ print_bind_pop1 (char i)
   int a;
   a = 0;
 
-	#ifdef DEBUG
-    	//debug ("print_bind_pop1 i='%d' \n",i); // 111, %s core dumps
-    #endif
+#ifdef DEBUG
+  //debug ("print_bind_pop1 i='%d' \n",i); // 111, %s core dumps
+#endif
 
 
   if (i == 'i')
     {
-	#ifdef DEBUG
-    	//debug ("print_bind_pop1 i='i'\n");
-    #endif
-	if (scan_variable (obind[a].varname) != -1)
-		printc ("pop_var2(&%s,%d,0x%x);\n", ibind[a].varname,
-			(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
-    else
-		printc ("%s;\n", ibind[a].varname);
+#ifdef DEBUG
+      //debug ("print_bind_pop1 i='i'\n");
+#endif
+      if (scan_variable (obind[a].varname) != -1)
+	printc ("pop_var2(&%s,%d,0x%x);\n", ibind[a].varname,
+		(int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16);
+      else
+	printc ("%s;\n", ibind[a].varname);
     }
 
   if (i == 'o')
     {
-	#ifdef DEBUG
-    	//debug ("print_bind_pop1 i='o'\n");
-    #endif
-	if (scan_variable (obind[a].varname) != -1)
-		printc ("pop_var2(&%s,%d,0x%x);\n", obind[a].varname,
-			(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
-	else
-		printc ("%s;\n", obind[a].varname);
+#ifdef DEBUG
+      //debug ("print_bind_pop1 i='o'\n");
+#endif
+      if (scan_variable (obind[a].varname) != -1)
+	printc ("pop_var2(&%s,%d,0x%x);\n", obind[a].varname,
+		(int) obind[a].dtype & 0xffff, (int) obind[a].dtype >> 16);
+      else
+	printc ("%s;\n", obind[a].varname);
     }
 
 }
@@ -1152,11 +1164,11 @@ print_bind_pop1 (char i)
 static int
 print_arr_bind (char i)
 {
-int a;
-  
-  #ifdef DEBUG
-	  debug ("/* %c */\n", i);
-  #endif
+  int a;
+
+#ifdef DEBUG
+  debug ("/* %c */\n", i);
+#endif
   /* dump_vars (); */
   if (i == 'i')
     {
@@ -1266,8 +1278,8 @@ print_param (char i)
 	printc (",\n");
       printc ("{&%s,%d,%d}", fbind[a].varname,
 	      (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
-      
-      
+
+
 
     }
   printc ("\n}; /* end of binding */\n");
@@ -1291,14 +1303,15 @@ print_param (char i)
       printc ("};\n");
     }
 
-  printc("char *_paramnames[]={");
+  printc ("char *_paramnames[]={");
 
   for (a = 0; a < fbindcnt; a++)
     {
-	if (a) printc(",");
-        printc ("\"%s\"", fbind[a].varname);
+      if (a)
+	printc (",");
+      printc ("\"%s\"", fbind[a].varname);
     }
-  printc("};");
+  printc ("};");
 
   return a;
 }
@@ -1316,10 +1329,10 @@ print_param (char i)
 int
 print_bind (char i)
 {
-int a;
-  #ifdef DEBUG
-	  debug ("/* %c */\n", i);
-  #endif
+  int a;
+#ifdef DEBUG
+  debug ("/* %c */\n", i);
+#endif
   if (i == 'i')
     {
       printc ("\n");
@@ -1334,9 +1347,7 @@ int a;
 	    printc (",\n");
 	  printc ("{&%s,%d,%d,%d,%d}", ibind[a].varname,
 		  (int) ibind[a].dtype & 0xffff, (int) ibind[a].dtype >> 16,
-		ibind[a].start_char_subscript,
-		ibind[a].end_char_subscript
-	);
+		  ibind[a].start_char_subscript, ibind[a].end_char_subscript);
 	}
       printc ("\n}; /* end of binding */\n");
       start_bind (i, 0);
@@ -1390,15 +1401,15 @@ int a;
   if (i == 'O')
     {
       printc ("\n");
-      expand_bind (&ordbind[0], 'O', ordbindcnt);  
-	  /*
-	  warning: passing arg 1 of `expand_bind' from incompatible pointer type
-		void expand_bind (struct binding * bind, int btype, int cnt);
-        extern struct binding ordbind[NUMBINDINGS];
-        */
+      expand_bind (&ordbind[0], 'O', ordbindcnt);
+      /*
+         warning: passing arg 1 of `expand_bind' from incompatible pointer type
+         void expand_bind (struct binding * bind, int btype, int cnt);
+         extern struct binding ordbind[NUMBINDINGS];
+       */
 
 
-	  printc ("static struct BINDING _ordbind[]={\n");
+      printc ("static struct BINDING _ordbind[]={\n");
       if (ordbindcnt == 0)
 	{
 	  printc ("{0,0,0}");
@@ -1416,7 +1427,7 @@ int a;
       start_bind (i, 0);
       return a;
     }
-return 0;
+  return 0;
 }
 
 
@@ -1449,7 +1460,7 @@ print_bind_expr (void *ptr, char i)
       return a;
     }
 
-return 0;
+  return 0;
 }
 
 
@@ -1483,7 +1494,7 @@ print_screen_mode (int n)
  * comma.
  */
 void
-print_start_server (char * port, char *funclist)
+print_start_server (char *port, char *funclist)
 {
   printc ("server_run(%s+0x2000000);", port);
 
@@ -1588,8 +1599,8 @@ print_returning (void)
   printc ("{\n");
   cnt = print_bind ('i');
   printc
-    /* warning! : 	void    A4GLSQL_set_status 	(int a, int sql); */
-	("if (_retvars!= %d) {if (_retvars!=-1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
+    /* warning! :       void    A4GLSQL_set_status      (int a, int sql); */
+    ("if (_retvars!= %d) {if (_retvars!=-1) {if (a4gl_status==0) A4GLSQL_set_status(-3001,0);\npop_args(_retvars);}\n} else {A4GLSQL_set_status(0,0);\n",
      cnt);
   printc ("pop_params(ibind,%d);}\n", cnt);
   printc ("}\n");
@@ -1621,7 +1632,7 @@ print_form_is_compiled (char *s)
 void
 print_field_func (char type, char *name, char *var)
 {
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   if (type == 'I')
     printc ("push_int(fgl_infield(%s));", name);
   if (type == 'T')
@@ -1639,10 +1650,10 @@ print_field_func (char type, char *name, char *var)
  * @param args_cnt The number of arguments
  */
 void
-print_func_call(char *identifier, void* args, int args_cnt)
+print_func_call (char *identifier, void *args, int args_cnt)
 {
-	debug("via print_func_call in lib");
-	real_print_func_call(identifier,args,args_cnt);
+  debug ("via print_func_call in lib");
+  real_print_func_call (identifier, args, args_cnt);
 }
 
 /**
@@ -1650,10 +1661,10 @@ print_func_call(char *identifier, void* args, int args_cnt)
  * @todo Describe function
  */
 void
-print_class_func_call(char *var,char *identifier, void* args, int args_cnt)
+print_class_func_call (char *var, char *identifier, void *args, int args_cnt)
 {
-	debug("via print_func_call in lib");
-	real_print_class_func_call(var,identifier,args,args_cnt);
+  debug ("via print_func_call in lib");
+  real_print_class_func_call (var, identifier, args, args_cnt);
 }
 
 
@@ -1668,7 +1679,7 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
   real_print_expr (args);
   printc ("/* done print expr */");
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("_retvars=aclfgl_%s(%d);\n", identifier, args_cnt);
 }
 
@@ -1677,18 +1688,17 @@ real_print_func_call (char *identifier, struct expr_str *args, int args_cnt)
  * @todo Describe function
  */
 static void
-real_print_class_func_call (char *var,char *identifier, struct expr_str *args, int args_cnt)
+real_print_class_func_call (char *var, char *identifier,
+			    struct expr_str *args, int args_cnt)
 {
   printc ("/* printing parameters */");
   real_print_expr (args);
   printc ("/* done printing parameters */");
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
 
   printc ("_retvars=call_datatype_function_i(&%s,%d,\"%s\",%d);\n",
-		var,
-		scan_variable(var),
-		identifier,args_cnt);
+	  var, scan_variable (var), identifier, args_cnt);
 
 }
 
@@ -1700,17 +1710,17 @@ real_print_class_func_call (char *var,char *identifier, struct expr_str *args, i
  * @param a3 The returning values
  */
 void
-print_pdf_call(char *a1, void* args, char *a3)
+print_pdf_call (char *a1, void *args, char *a3)
 {
-	debug("via print_pdf_call in lib");
-	real_print_pdf_call(a1,args,a3);
+  debug ("via print_pdf_call in lib");
+  real_print_pdf_call (a1, args, a3);
 }
 static void
 real_print_pdf_call (char *a1, struct expr_str *args, char *a3)
 {
   real_print_expr (args);
   printc ("{int _retvars;A4GLSQL_set_status(0,0);\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("_retvars=pdf_pdffunc(&rep,%s,%s);\n", a1, a3);
 }
 
@@ -1727,7 +1737,7 @@ void
 print_call_shared (char *libfile, char *funcname, int nargs)
 {
   printc ("{int _retvars;\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("A4GLSQL_set_status(0,0);_retvars=call_4gl_dll(%s,%s,%d);\n",
 	  libfile, funcname, nargs);
 }
@@ -1754,9 +1764,10 @@ void
 print_call_external (char *host, char *func, char *port, int nargs)
 {
   printc ("{int _retvars;\n");
-  printc ("A4GLSTK_setCurrentLine(_module_name,%d);",yylineno);
+  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
   printc ("_retvars=remote_func_call(%s,%s,%s,%d);\n", host, func,
-	  port, nargs);}
+	  port, nargs);
+}
 
 /**
  * Print the C implementation of te last part of a call to a remote function.
@@ -1903,41 +1914,42 @@ print_construct_2 (char *driver)
  * @param attr The attribute list to be used.
  */
 void
-print_construct_3 (int byname, char *constr_str, char *attr) 
+print_construct_3 (int byname, char *constr_str, char *attr)
 {
-int ccc;
-int k;
-	printc ("{\n");
-	start_bind ('i', constr_str);
-	k = print_bind ('i');
-	ccc = print_constr ();
-	printc ("int _fld_dr=-100;char *fldname;char _inp_io[%d];\n",
-		sizeof (struct s_screenio) + 10);
-	printc ("while(_fld_dr!=0){\n");
-	printc ("if (_fld_dr==-100) {\n");
-	printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
-	printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
-	printc ("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
-	printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
-	printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
-	printc ("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
-	printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d);\n", MODE_CONSTRUCT);
-	if (byname == 1)
-	  {
-	    printc
-	      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
-	    print_field_bind_constr ();
-	    printc (" /* */,0));\n");
-	  }
-	else
-	  {
-	    printc
-	      ("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
-	       attr);}
+  int ccc;
+  int k;
+  printc ("{\n");
+  start_bind ('i', constr_str);
+  k = print_bind ('i');
+  ccc = print_constr ();
+  printc ("int _fld_dr=-100;char *fldname;char _inp_io[%d];\n",
+	  sizeof (struct s_screenio) + 10);
+  printc ("while(_fld_dr!=0){\n");
+  printc ("if (_fld_dr==-100) {\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n", ccc);
+  printc ("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"constr\",constr_flds);\n");
+  printc ("SET(\"s_screenio\",_inp_io,\"mode\",%d);\n", MODE_CONSTRUCT);
+  if (byname == 1)
+    {
+      printc
+	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
+      print_field_bind_constr ();
+      printc (" /* */,0));\n");
+    }
+  else
+    {
+      printc
+	("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",
+	 attr);
+    }
 
-	printc
-	  ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
-	printc ("_fld_dr=-99;\n");
+  printc
+    ("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
+  printc ("_fld_dr=-99;\n");
 }
 
 
@@ -2090,7 +2102,7 @@ get_display_str (int type, char *s, char *f)
 void
 print_display (char *fmt, char *expr, char *attr)
 {
-  printc (fmt, expr, attr); 
+  printc (fmt, expr, attr);
 }
 
 /**
@@ -2118,7 +2130,7 @@ print_display_form (char *s, char *a)
  * @param attr The attributes
  */
 void
-print_display_array_p1 (char *arrvar, char *srec, char *scroll,char *attr)
+print_display_array_p1 (char *arrvar, char *srec, char *scroll, char *attr)
 {
   int cnt;
   printcomment ("/* Display array */\n");
@@ -2130,10 +2142,11 @@ print_display_array_p1 (char *arrvar, char *srec, char *scroll,char *attr)
   printc ("SET(\"s_disp_arr\",_dispio,\"nbind\",%d);\n", cnt);
   printc ("SET(\"s_disp_arr\",_dispio,\"srec\",0);\n");
   printc
-    ("SET(\"s_disp_arr\",_dispio,\"arr_elemsize\",sizeof(%s[0]));\n",
-     arrvar); printc ("_fld_dr=-1;\n");
+    ("SET(\"s_disp_arr\",_dispio,\"arr_elemsize\",sizeof(%s[0]));\n", arrvar);
+  printc ("_fld_dr=-1;\n");
   printc ("while (_fld_dr!=0) {\n");
-  printc ("_fld_dr=disp_arr(&_dispio,%s,\"%s\",%s,%s);\n", arrvar, srec, attr,scroll);
+  printc ("_fld_dr=disp_arr(&_dispio,%s,\"%s\",%s,%s);\n", arrvar, srec, attr,
+	  scroll);
 }
 
 /**
@@ -2315,7 +2328,7 @@ print_pushchar (char *s)
 void
 print_goto (char *label)
 {
-  convlower(label);
+  convlower (label);
   printc ("goto %s;\n", label);
 }
 
@@ -2367,7 +2380,7 @@ print_gui_do_fields (char *list, int mode)
  * @param mode The action to be set:
  *   - D : Disable.
  *   - E : Enable.
- */  
+ */
 void
 print_gui_do_form (char *name, char *list, int mode)
 {
@@ -2432,7 +2445,8 @@ print_import (char *func, int nargs)
   printc ("long _retval;");
   printc
     ("   if (nargs!=%d) {a4gl_status=-30174;pop_args(nargs);return 0;}\n",
-     nargs, yylineno); for (a = 1; a <= nargs; a++)
+     nargs, yylineno);
+  for (a = 1; a <= nargs; a++)
     {
       printc ("   _argc[%d]=pop_int();\n", nargs - a);
     }
@@ -2456,136 +2470,173 @@ print_import (char *func, int nargs)
 
 
 
-static int split_arrsizes(char *s,int *arrsizes) {
-char *ptrs[10];
-char buff[200];
-int cnt=1;
-int a;
+static int
+split_arrsizes (char *s, int *arrsizes)
+{
+  char *ptrs[10];
+  char buff[200];
+  int cnt = 1;
+  int a;
 
 
-        strcpy(buff,s);
-        ptrs[0]=buff;
+  strcpy (buff, s);
+  ptrs[0] = buff;
 
-        for (a=0;a<10;a++) arrsizes[a]=0;
+  for (a = 0; a < 10; a++)
+    arrsizes[a] = 0;
 
-        for (a=0;a<strlen(s);a++) {
-                if (s[a]==']') {
-                        buff[a]=0;
-                        ptrs[cnt++]=&s[a+2];
-                }
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == ']')
+	{
+	  buff[a] = 0;
+	  ptrs[cnt++] = &s[a + 2];
+	}
 
-        }
+    }
 
 
-        for (a=0;a<cnt;a++) {
-                arrsizes[a]=atoi(ptrs[a]);
-        }
-        return cnt;
+  for (a = 0; a < cnt; a++)
+    {
+      arrsizes[a] = atoi (ptrs[a]);
+    }
+  return cnt;
 
 }
 
 
-void print_init_var(char *name,char *prefix,int alvl) {
-        int d;
-        int a;
-        int size;
-        int lvl;
-        char arr[256];
-        int x;
-        char buff[1024];
-        char prefix2[1024];
-        int arrsizes[10];
-        int cnt;
-        int acnt;
-	int printing_arr=0;
+void
+print_init_var (char *name, char *prefix, int alvl)
+{
+  int d;
+  int a;
+  int size;
+  int lvl;
+  char arr[256];
+  int x;
+  char buff[1024];
+  char prefix2[1024];
+  int arrsizes[10];
+  int cnt;
+  int acnt;
+  int printing_arr = 0;
 
 
 
-        // Have we got a record ?
-        if (strchr(name,'.')) {
-                char buffx[1024];
-                char *ptr;
+  // Have we got a record ?
+  if (strchr (name, '.'))
+    {
+      char buffx[1024];
+      char *ptr;
 
-                // OK - we're going to break this down...
-                strcpy(buffx,name);
-                ptr=strchr(buffx,'.');
-                // We've found the next '.'
-                // put the LHS onto 'prefix'
-                // and the RHS into name...
-                *ptr=0;
-                ptr++;
-                strcpy(prefix2,prefix);
-                if (strlen(prefix2)) {
-                        strcat(prefix2,".");
-                }
-                strcat(prefix2,buffx);
+      // OK - we're going to break this down...
+      strcpy (buffx, name);
+      ptr = strchr (buffx, '.');
+      // We've found the next '.'
+      // put the LHS onto 'prefix'
+      // and the RHS into name...
+      *ptr = 0;
+      ptr++;
+      strcpy (prefix2, prefix);
+      if (strlen (prefix2))
+	{
+	  strcat (prefix2, ".");
+	}
+      strcat (prefix2, buffx);
 
 
-                x=get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
+      x = get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
 
-                if (x==-1) { a4gl_yyerror("Couldn't find variable to null it...[2]"); return; }
-                if (x!=-2) { a4gl_yyerror("I was expecting a record..."); return;}
+      if (x == -1)
+	{
+	  a4gl_yyerror ("Couldn't find variable to null it...[2]");
+	  return;
+	}
+      if (x != -2)
+	{
+	  a4gl_yyerror ("I was expecting a record...");
+	  return;
+	}
 
-                // is this an array ?
-                if (a&&prefix2[strlen(prefix2)-1]!=']') {
-                        char buff_id[256];
-			printing_arr=1;
-                        cnt=split_arrsizes(arr,&arrsizes);
-                        for (acnt=0;acnt<cnt;acnt++) {
-                                sprintf(buff_id,"_fglcnt_%d",alvl);
-                                printc("{int %s;\n",buff_id);
-                                printc("for (%s=0;%s<%d;%s++) {",buff_id,buff_id,a,buff_id);
-                                strcat(prefix2,"[");
-                                strcat(prefix2,buff_id);
-                                strcat(prefix2,"]");
-                                alvl++;
-                        }
-                }
-                print_init_var(ptr,prefix2,alvl);
+      // is this an array ?
+      if (a && prefix2[strlen (prefix2) - 1] != ']')
+	{
+	  char buff_id[256];
+	  printing_arr = 1;
+	  cnt = split_arrsizes (arr, &arrsizes);
+	  for (acnt = 0; acnt < cnt; acnt++)
+	    {
+	      sprintf (buff_id, "_fglcnt_%d", alvl);
+	      printc ("{int %s;\n", buff_id);
+	      printc ("for (%s=0;%s<%d;%s++) {", buff_id, buff_id, a,
+		      buff_id);
+	      strcat (prefix2, "[");
+	      strcat (prefix2, buff_id);
+	      strcat (prefix2, "]");
+	      alvl++;
+	    }
+	}
+      print_init_var (ptr, prefix2, alvl);
 
-	
-        	if (printing_arr) {
-                        for (acnt=0;acnt<cnt;acnt++) {
-                                printc("} /* End init for */\n}\n"); alvl--;
-                        }
-                }
 
-                return;
-        }
+      if (printing_arr)
+	{
+	  for (acnt = 0; acnt < cnt; acnt++)
+	    {
+	      printc ("} /* End init for */\n}\n");
+	      alvl--;
+	    }
+	}
+
+      return;
+    }
 
 
 // If we've got to here we can only be dealing with a leaf on a record
-        strcpy(prefix2,prefix);
-        if (strlen(prefix2)) { strcat(prefix2,"."); }
-        strcat(prefix2,name);
+  strcpy (prefix2, prefix);
+  if (strlen (prefix2))
+    {
+      strcat (prefix2, ".");
+    }
+  strcat (prefix2, name);
 
 
 
-        x=get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
+  x = get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
 
-        if (x<0) { a4gl_yyerror("Couldn't find variable to null it...[1]"); return; }
-        if (a&&prefix2[strlen(prefix2)-1]!=']') {
-                        char buff_id[256];
-			printing_arr=1;
-                        cnt=split_arrsizes(arr,&arrsizes);
-                        for (acnt=0;acnt<cnt;acnt++) {
-                                sprintf(buff_id,"_fglcnt_%d",alvl);
-                                printc("{int %s;\n",buff_id);
-                                printc("for (%s=0;%s<%d;%s++) {",buff_id,buff_id,a,buff_id);
-                                strcat(prefix2,"[");
-                                strcat(prefix2,buff_id);
-                                strcat(prefix2,"]");
-                                alvl++;
-                        }
-        }
-        printc("setnull(%d,&%s,%d);",d&0xffff,prefix2,size);
-        if (printing_arr) {
-                        for (acnt=0;acnt<cnt;acnt++) {
-                                printc("} /* End init for */\n}\n"); alvl--;
-                        }
-        }
+  if (x < 0)
+    {
+      a4gl_yyerror ("Couldn't find variable to null it...[1]");
+      return;
+    }
+  if (a && prefix2[strlen (prefix2) - 1] != ']')
+    {
+      char buff_id[256];
+      printing_arr = 1;
+      cnt = split_arrsizes (arr, &arrsizes);
+      for (acnt = 0; acnt < cnt; acnt++)
+	{
+	  sprintf (buff_id, "_fglcnt_%d", alvl);
+	  printc ("{int %s;\n", buff_id);
+	  printc ("for (%s=0;%s<%d;%s++) {", buff_id, buff_id, a, buff_id);
+	  strcat (prefix2, "[");
+	  strcat (prefix2, buff_id);
+	  strcat (prefix2, "]");
+	  alvl++;
+	}
+    }
+  printc ("setnull(%d,&%s,%d);", d & 0xffff, prefix2, size);
+  if (printing_arr)
+    {
+      for (acnt = 0; acnt < cnt; acnt++)
+	{
+	  printc ("} /* End init for */\n}\n");
+	  alvl--;
+	}
+    }
 
 }
+
 /**
  * Print in the generated output file the C implementation of the
  * INITIALIZE <variable_list> TO NULL 4gl statement.
@@ -2597,9 +2648,10 @@ print_init (void)
   printc ("{\n");
   expand_bind (&nullbind[0], 'N', nullbindcnt);
 
-  for (cnt=0;cnt<nullbindcnt;cnt++) {
-                print_init_var(nullbind[cnt].varname,"",0);
-  }
+  for (cnt = 0; cnt < nullbindcnt; cnt++)
+    {
+      print_init_var (nullbind[cnt].varname, "", 0);
+    }
 
   //cnt = print_bind ('N');
   //printc ("set_init(nullbind,%d);\n", cnt);
@@ -2664,11 +2716,14 @@ void
 print_next_field (char *s)
 {
   printc ("req_field(&_inp_io,%s);\n", s);
-if (isin_command("INPUT")>isin_command("CONSTRUCT")) {
-  continue_loop("INPUT");
-} else {
-  continue_loop("CONSTRUCT");
-}
+  if (isin_command ("INPUT") > isin_command ("CONSTRUCT"))
+    {
+      continue_loop ("INPUT");
+    }
+  else
+    {
+      continue_loop ("CONSTRUCT");
+    }
 }
 
 /* ***************************************************************************/
@@ -2699,10 +2754,12 @@ print_input_2 (char *s)
   printc ("if (_fld_dr==-95) {/* after input */\n");
   printc ("   break;\n}\n");
   printc ("if (_fld_dr==-98) {/* before field */\n");
-  printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-97;continue;\n}\n");
+  printc
+    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-97;continue;\n}\n");
   printc ("_fld_dr=%s;_forminit=0;\n", s);
   printc ("if (_fld_dr==-1) {/* after field */\n");
-  printc ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-98;continue;\n}\n");
+  printc
+    ("   fldname=char_pop(); set_infield_from_stack(); _fld_dr=-98;continue;\n}\n");
   printc ("if (_fld_dr==0) { /* after input 2 */\n");
   printc ("   _fld_dr=-95;continue;\n}\n");
   add_continue_blockcommand ("INPUT");
@@ -2813,8 +2870,10 @@ print_input_array (char *arrvar, char *helpno, char *defs, char *srec,
   printc ("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n", MODE_INPUT, defs);
   printc
     ("SET(\"s_inp_arr\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",
-     srec); printc ("_fld_dr=-1;continue;\n");
-  sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs, srec, attr);
+     srec);
+  printc ("_fld_dr=-1;continue;\n");
+  sprintf (buff2, "inp_arr(&_inp_io,%s,\"%s\",%s,_forminit);\n", defs, srec,
+	   attr);
   return buff2;
 }
 
@@ -2834,7 +2893,7 @@ get_formloop_str (int type)
   if (type == 0)		/* Input, Input by name */
     return "form_loop(&_inp_io,_forminit)";
 
-    return "";
+  return "";
 }
 
 /**
@@ -2862,7 +2921,7 @@ print_scroll (char *flds, char *updown)
 void
 print_label (char *s)
 {
-convlower(s);
+  convlower (s);
   printc ("%s:\n", s);
 }
 
@@ -2876,15 +2935,15 @@ print_let_manyvars (char *nexprs)
 {
   int from_exprs;
   int to_vars;
-debug("1");
-  debug("In print_let_manyvars\n");
+  debug ("1");
+  debug ("In print_let_manyvars\n");
   printc ("{");
   to_vars = print_bind ('o');
   from_exprs = atoi (nexprs);
 
   if (to_vars != from_exprs)
     {
-	debug("to_Vars = %d from_Exprs = %d\n",to_vars,from_exprs);
+      debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
       return 0;
     }
   printc ("pop_params(obind,%d);\n", from_exprs);
@@ -3079,8 +3138,8 @@ print_format_every_row (void)
   printc ("push_char(\" \");rep_print(&rep,1,1,0); rep_print(&rep,0,0,0);");
   printc ("}");
   /* printc ("#error FORMAT EVERY ROW not implemented yet");
-  print_rep_ret (); */
-	print_rep_ret (report_cnt);
+     print_rep_ret (); */
+  print_rep_ret (report_cnt);
 
 }
 
@@ -3190,7 +3249,8 @@ void
 print_report_print_img (char *scaling, char *blob, char *type, char *semi)
 {
   printc ("%s pdf_blob_print(&rep,&%s,\"%s\",%s);\n", scaling,
-	  blob, type, semi);}
+	  blob, type, semi);
+}
 
 /**
  *  The parser did not found the SCALED BY statement.
@@ -3278,8 +3338,8 @@ print_report_2 (int pdf, char *repordby)
   printc ("}\n");
   printc ("if (acl_ctrl==REPORT_SENDDATA&&fgl_rep_orderby==1) {");
   printc
-    ("pop_params(rbind,%d);add_row_report(&rbind,%d);\nreturn;}",
-     cnt, cnt); printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
+    ("pop_params(rbind,%d);add_row_report(&rbind,%d);\nreturn;}", cnt, cnt);
+  printc ("if (acl_ctrl==REPORT_SENDDATA) {\n");
   printc ("   int _g,_p;\n");
   printc ("   _g=chk_params(&rbind,%d,&_ordbind,%s);\n", cnt, repordby);
   printc
@@ -3292,7 +3352,7 @@ print_report_2 (int pdf, char *repordby)
      get_curr_rep_name ());
   printc ("   _useddata=1;\n");
 /*  print_rep_ret (); */
-	print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt);
   printc ("}\n\n");
   printc ("if (acl_ctrl==REPORT_FINISH) {\n");
   printc ("    if (fgl_rep_orderby==1) {\n");
@@ -3316,12 +3376,13 @@ print_report_2 (int pdf, char *repordby)
   printc ("   pop_char(_rout1,254);\n");
   printc
     ("    if (fgl_rep_orderby==1) {make_report_table(&rbind,%d);return;}\n",
-     cnt); printc ("   _useddata=0;\n");
+     cnt);
+  printc ("   _useddata=0;\n");
   printc ("   _started=1;\n");
   printc ("goto output_%d;\n", report_cnt);
   printc ("}\n\n");
 /*  print_rep_ret (); */
-	print_rep_ret (report_cnt);
+  print_rep_ret (report_cnt);
   if (pdf)
     pdf_print_output_rep (&pdf_rep_struct);
   else
@@ -3417,7 +3478,7 @@ print_message (int type, char *attr, int wait)
  *   - 2 : In background
  * @param rvar The variable name to where the exit status should be returned.
  */
-void 
+void
 print_system_run (int type, char *rvar)
 {
   printc ("system_run(%d);", type);
@@ -3490,7 +3551,7 @@ print_while_3 (void)
  * insert cursors.
  */
 void
-print_put (char * cname)
+print_put (char *cname)
 {
   int n;
   printc ("{\n");
@@ -3512,7 +3573,8 @@ print_put (char * cname)
 void
 print_prepare (char *stmt, char *sqlvar)
 {
-  printc ("A4GLSQL_add_prepare(%s,A4GLSQL_prepare_select(0,0,0,0,%s));\n", stmt, sqlvar);
+  printc ("A4GLSQL_add_prepare(%s,A4GLSQL_prepare_select(0,0,0,0,%s));\n",
+	  stmt, sqlvar);
 }
 
 /**
@@ -3566,7 +3628,8 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
 {
   printc ("{char _p[%d];int _fld_dr;\n", sizeof (struct s_prompt));
   printc ("start_prompt(&_p,%s,%s,%s,%s);\n", a1, a2, a3, a4);
-  printc ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=prompt_loop(&_p);\n");
+  printc
+    ("while (GET(\"s_prompt\",_p,\"mode\")!=2) {_fld_dr=prompt_loop(&_p);\n");
 }
 
 /**
@@ -3575,9 +3638,9 @@ print_prompt_1 (char *a1, char *a2, char *a3, char *a4)
 void
 print_prompt_forchar (void)
 {
-  	printc ("if (_fld_dr) {\n");
-	print_exit_loop ('P', 0);
-	printc("}\n");
+  printc ("if (_fld_dr) {\n");
+  print_exit_loop ('P', 0);
+  printc ("}\n");
 }
 
 /**
@@ -3693,7 +3756,7 @@ print_clr_form (char *formname, char *clr, char *defs)
     printc ("clr_form(%d);", atoi (defs));
   else
     //print_niy ("Clear Form fields");
-	printc ("clr_form_fields(%d,%s);", atoi (defs),clr);
+    printc ("clr_form_fields(%d,%s);", atoi (defs), clr);
 }
 
 /**
@@ -3710,7 +3773,7 @@ void
 print_clr_fields (char *flds, char *defs)
 {
 
-	printc ("clr_fields(%d,%s);", atoi (defs),flds);
+  printc ("clr_fields(%d,%s);", atoi (defs), flds);
 
   //print_niy ("Clear Fields");
 }
@@ -3822,24 +3885,22 @@ print_menu_1 (void)
  * @param mn The index of the menu information in the menu stack, filled
  * by the parser.
  */
-static void 
+static void
 print_menu (int mn)
 {
   int a;
   int c;
   c = 0;
-  for (a = 0; 
-			 menu_stack[mn][a].menu_title[0] != 0 ||
-         menu_stack[mn][a].menu_key[0] != 0 ||
-         menu_stack[mn][a].menu_help[0] != 0; 
-			 a++)
+  for (a = 0;
+       menu_stack[mn][a].menu_title[0] != 0 ||
+       menu_stack[mn][a].menu_key[0] != 0 ||
+       menu_stack[mn][a].menu_help[0] != 0; a++)
     c = a;
   printc ("m=(void *)new_menu_create(%s,1,1,%d,0);\n", mmtitle[mn], 2);
   for (a = 0;
        menu_stack[mn][a].menu_title[0] != 0
-         || menu_stack[mn][a].menu_key[0] != 0
-         || menu_stack[mn][a].menu_help[0] != 0; 
-			 a++)
+       || menu_stack[mn][a].menu_key[0] != 0
+       || menu_stack[mn][a].menu_help[0] != 0; a++)
     {
 
       printc ("add_menu_option(m, %s,%s,%s,%d,0);\n",
@@ -3870,8 +3931,8 @@ print_end_menu_1 (void)
 /**
  * Print the execution of the menu loop to the generated C code.
  */
-void 
-print_end_menu_2(void)
+void
+print_end_menu_2 (void)
 {
   printc ("cmd_no=menu_loop(m);\n}free_menu(m);\n");
   printcomment ("/* end cwhile */\n");
@@ -3953,36 +4014,39 @@ print_at_termination (char *f)
  * If defined (as compiler option) print the C code for the call to the
  * initialization function to the calling stack.
  */
-void printInitFunctionStack(void)
+void
+printInitFunctionStack (void)
 {
-  if (!isGenStackInfo())
+  if (!isGenStackInfo ())
     return;
-  printc("A4GLSTK_initFunctionCallStack();");
+  printc ("A4GLSTK_initFunctionCallStack();");
 }
 
 /**
  * If defined (as compiler option) print the C code for the call to the
  * declaration function to the calling stack.
  */
-void printDeclareFunctionStack(char *_functionName)
+void
+printDeclareFunctionStack (char *_functionName)
 {
   //printf("Function %s\n",_functionName);
-  #ifdef DEBUG
-	  debug("Function %s\n",_functionName);
-  #endif
-  if (isGenStackInfo())
-    printc ("\nstatic char _functionName[] = \"%s\";\n",_functionName);
+#ifdef DEBUG
+  debug ("Function %s\n", _functionName);
+#endif
+  if (isGenStackInfo ())
+    printc ("\nstatic char _functionName[] = \"%s\";\n", _functionName);
 }
 
 /**
  * If defined (as compiler option) print the C code for the call to the
  * push function to the calling stack.
  */
-void printPushFunction(void)
+void
+printPushFunction (void)
 {
-  if (!isGenStackInfo())
+  if (!isGenStackInfo ())
     return;
-  printc("A4GLSTK_pushFunction(_functionName,_paramnames,nargs);\n");
+  printc ("A4GLSTK_pushFunction(_functionName,_paramnames,nargs);\n");
 }
 
 /**
@@ -3990,11 +4054,12 @@ void printPushFunction(void)
  *
  * It only does it if defined as compiler option.
  */
-void printPopFunction(void)
+void
+printPopFunction (void)
 {
-  if (!isGenStackInfo())
+  if (!isGenStackInfo ())
     return;
-  printc("A4GLSTK_popFunction();\n");
+  printc ("A4GLSTK_popFunction();\n");
 }
 
 
@@ -4034,13 +4099,10 @@ print_func_start (char *isstatic, char *fname, int type)
 void
 print_func_args (int c)
 {
-  printc(
-	  "if (nargs!=%d) {a4gl_status=-30174;pop_args(nargs);return 0;}\n",
-		c,
-    yylineno
-	); 
-print_function_variable_init();
-	printc ("pop_params(fbind,%d);\n", c);
+  printc ("if (nargs!=%d) {a4gl_status=-30174;pop_args(nargs);return 0;}\n",
+	  c, yylineno);
+  print_function_variable_init ();
+  printc ("pop_params(fbind,%d);\n", c);
 }
 
 
@@ -4071,8 +4133,8 @@ void
 print_main_1 (void)
 {
   printc ("\n\nmain(int argc,char *argv[]) {\n");
-  printc("char *_paramnames[]={\"\"};");
-  printc("int nargs=0;");
+  printc ("char *_paramnames[]={\"\"};");
+  printc ("int nargs=0;");
 }
 
 /**
@@ -4084,12 +4146,13 @@ print_main_1 (void)
 void
 print_fgllib_start (char *db)
 {
-  printc ("A4GLSTK_setCurrentLine(0,0);",yylineno);
+  printc ("A4GLSTK_setCurrentLine(0,0);", yylineno);
   printc ("\nfgl_start(argc,argv);\n");
   if (db[0] != 0)
     {
       print_init_conn (db);
-      printc ("if (a4gl_sqlca.sqlcode<0) chk_err(%d,_module_name);\n", lastlineno);
+      printc ("if (a4gl_sqlca.sqlcode<0) chk_err(%d,_module_name);\n",
+	      lastlineno);
     }
 }
 
@@ -4225,7 +4288,7 @@ print_fetch_2 (void)
 void
 print_fetch_3 (char *ftp, char *into)
 {
-  
+
   //FIXME: there are parameters missing here:
   printc ("A4GLSQL_fetch_cursor(%s,%s);}\n}\n", ftp, into);
 
@@ -4568,7 +4631,7 @@ print_start_record (int isstatic_extern, char *varname)
 void
 print_end_record (char *vname, char *arrsize)
 {
-  if (strcmp(arrsize,"-1")==0)
+  if (strcmp (arrsize, "-1") == 0)
     {
       printc ("} %s;\n", vname);
     }
@@ -4592,17 +4655,17 @@ char *
 get_push_literal (char type, char *value)
 {
   static char buff[80];
-  if (type == 'D')      /* Double */
+  if (type == 'D')		/* Double */
     {
       sprintf (buff, "push_double(%f);\n", atof (value));
     }
 
-  if (type == 'L')      /* Integer (Long) */
+  if (type == 'L')		/* Integer (Long) */
     {
       sprintf (buff, "push_long(%d);\n", atoi (value));
     }
 
-  if (type == 'S')      /* Char/String */
+  if (type == 'S')		/* Char/String */
     {
       sprintf (buff, "push_char(%s);\n", value);
     }
@@ -4618,23 +4681,27 @@ get_push_literal (char type, char *value)
  * @param s
  */
 char *
-decode_array_string(char *s) 
+decode_array_string (char *s)
 {
-static char buff[2000]="";
-int a;
-char tmp[2]="X"; /*  Just to get a terminator on it */
-strcpy(buff,"(");
+  static char buff[2000] = "";
+  int a;
+  char tmp[2] = "X";		/*  Just to get a terminator on it */
+  strcpy (buff, "(");
 
-	for (a=0;a<strlen(s);a++) {
-		if (s[a]==',') {
-			strcat(buff,")-1][(");
-		} else {
-			tmp[0]=s[a];
-			strcat(buff,tmp);
-		}
+  for (a = 0; a < strlen (s); a++)
+    {
+      if (s[a] == ',')
+	{
+	  strcat (buff, ")-1][(");
 	}
-	strcat(buff,")-1");
-	return buff;
+      else
+	{
+	  tmp[0] = s[a];
+	  strcat (buff, tmp);
+	}
+    }
+  strcat (buff, ")-1");
+  return buff;
 }
 
 
@@ -4642,50 +4709,62 @@ strcpy(buff,"(");
  *
  * @todo Describe function
  */
-void print_cmd_start() {
-	printc("\n\naclfgli_clr_err_flg();\n\n");
+void
+print_cmd_start ()
+{
+  printc ("\n\naclfgli_clr_err_flg();\n\n");
 }
 
 /**
  *
  * @todo Describe function
  */
-void print_cmd_end() {
-	//printc("\naclfgli_clr_err_flg()\n\n");
-	printc("\n/* End command */\n");
+void
+print_cmd_end ()
+{
+  //printc("\naclfgli_clr_err_flg()\n\n");
+  printc ("\n/* End command */\n");
 }
 
-char *get_into_part(int no) {
-	return "";
+char *
+get_into_part (int no)
+{
+  return "";
 }
 
 
-char *set_var_sql(int n) {
-int a;
-static char buff[2000];
+char *
+set_var_sql (int n)
+{
+  int a;
+  static char buff[2000];
 
-strcpy(buff,"");
-for (a=0;a<n;a++) { 
-       if (a>0) {
-	       strcat(buff,",");
-       } 
-       strcat(buff,"?"); 
-}
-return buff;
-}
-
-void lex_parsed_fgl() {
-	if (outfile) fclose(outfile);
-	if (hfile) fclose(hfile);
-
+  strcpy (buff, "");
+  for (a = 0; a < n; a++)
+    {
+      if (a > 0)
+	{
+	  strcat (buff, ",");
+	}
+      strcat (buff, "?");
+    }
+  return buff;
 }
 
-void print_sql_block_cmd(char *s) {
-	printc("/* %s */",s);
+void
+lex_parsed_fgl ()
+{
+  if (outfile)
+    fclose (outfile);
+  if (hfile)
+    fclose (hfile);
+
+}
+
+void
+print_sql_block_cmd (char *s)
+{
+  printc ("/* %s */", s);
 }
 
 /* =========================== EOF ================================ */
-
-
-
-

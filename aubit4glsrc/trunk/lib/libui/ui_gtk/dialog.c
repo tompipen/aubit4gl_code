@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.3 2002-10-22 06:43:37 afalout Exp $
+# $Id: dialog.c,v 1.4 2003-05-12 14:24:28 mikeaubury Exp $
 #*/
 
 /**
@@ -76,9 +76,9 @@
 */
 
 int gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
-	   char *msg);
-void aclfgli_pr_message (int a,int wait);
-void display_error (int a,int wait);
+	       char *msg);
+void aclfgli_pr_message (int a, int wait);
+void display_error (int a, int wait);
 
 /*
 =====================================================================
@@ -96,13 +96,10 @@ static void
 dialog_callback (GtkWidget * widget, gpointer data)
 {
   GtkObject *win;
-  win = GTK_OBJECT(widget);
+  win = GTK_OBJECT (widget);
   debug ("Win=%p\n", win);
-  gtk_object_set_data (
-		GTK_OBJECT(win), 
-		"RETURNS", 
-	  gtk_object_get_data (data, "BUTCODE")
-	);
+  gtk_object_set_data (GTK_OBJECT (win),
+		       "RETURNS", gtk_object_get_data (data, "BUTCODE"));
   debug ("Set code to %d\n", gtk_object_get_data (win, "RETURNS"));
   /* gtk_main_quit(); */
 }
@@ -120,7 +117,7 @@ add_button (GtkDialog * win, int but_code)
   char *txt = "";
   GtkButton *but;
   switch (but_code)
-  {
+    {
     case 1:
       txt = "OK";
       break;
@@ -142,22 +139,18 @@ add_button (GtkDialog * win, int but_code)
     case 7:
       txt = "No";
       break;
-  }
+    }
 
-  gtk_object_set_data (GTK_OBJECT(win), "RETURNS", 0);
+  gtk_object_set_data (GTK_OBJECT (win), "RETURNS", 0);
   but = (GtkButton *) gtk_button_new_with_label (txt);
-  gtk_object_set_data(GTK_OBJECT(but), "BUTCODE", (gpointer)but_code);
-  gtk_object_set_data(GTK_OBJECT(but), "DIALOGWIN", win);
-  gtk_container_add(
-		GTK_CONTAINER (GTK_DIALOG (win)->action_area), 
-	  (GtkWidget *)but
-	);
-  gtk_signal_connect_object (
-		GTK_OBJECT (but), 
-		"clicked",
-	  GTK_SIGNAL_FUNC (dialog_callback), 
-		GTK_OBJECT(win)
-	);
+  gtk_object_set_data (GTK_OBJECT (but), "BUTCODE", (gpointer) but_code);
+  gtk_object_set_data (GTK_OBJECT (but), "DIALOGWIN", win);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->action_area),
+		     (GtkWidget *) but);
+  gtk_signal_connect_object (GTK_OBJECT (but),
+			     "clicked",
+			     GTK_SIGNAL_FUNC (dialog_callback),
+			     GTK_OBJECT (win));
 }
 
 
@@ -190,22 +183,19 @@ gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
 /* Only do modal for now... */
   dis = DIALOG_DISABLE_ALL;
   win = (GtkDialog *) gtk_dialog_new ();
-  debug("In gtkdialog msg=%s\n",msg);
+  debug ("In gtkdialog msg=%s\n", msg);
 
-  gtk_window_set_modal ((GtkWindow *)win, 1);
+  gtk_window_set_modal ((GtkWindow *) win, 1);
 
-  gtk_signal_connect (
-	  GTK_OBJECT(win), 
-		"delete_event", 
-		GTK_SIGNAL_FUNC (gtk_true), 
-		NULL
-	);
-  label = (GtkLabel *)gtk_label_new (msg);
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->vbox), GTK_WIDGET(label));
+  gtk_signal_connect (GTK_OBJECT (win),
+		      "delete_event", GTK_SIGNAL_FUNC (gtk_true), NULL);
+  label = (GtkLabel *) gtk_label_new (msg);
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (win)->vbox),
+		     GTK_WIDGET (label));
 
 
   if (strlen (caption))
-    gtk_window_set_title (GTK_WINDOW(win), caption);
+    gtk_window_set_title (GTK_WINDOW (win), caption);
 
   switch (buttons)
     {
@@ -239,20 +229,20 @@ gtkdialog (char *caption, char *icon, int buttons, int defbutt, int dis,
     }
 
 
-  gtk_widget_show_all (GTK_WIDGET(win));
+  gtk_widget_show_all (GTK_WIDGET (win));
   rval = 0;
   while (1)
     {
       a4gl_usleep (100);
       /* printf("win = %p\n",win); */
-      rval = (int)gtk_object_get_data (GTK_OBJECT(win), "RETURNS");
+      rval = (int) gtk_object_get_data (GTK_OBJECT (win), "RETURNS");
       if (rval)
 	break;
       while (gtk_events_pending ())
 	gtk_main_iteration ();
     }
 
-  gtk_widget_destroy (GTK_WIDGET(win));
+  gtk_widget_destroy (GTK_WIDGET (win));
 
   return rval;
 }
@@ -283,7 +273,7 @@ main (int argc, char *argv[])
  * @param wait The time to wait during the message presentation.
  */
 void
-aclfgli_pr_message (int a,int wait)
+aclfgli_pr_message (int a, int wait)
 {
   char *p;
 	/** 
@@ -291,12 +281,12 @@ aclfgli_pr_message (int a,int wait)
 	 * but the headers needs some clean.
 	 */
 
-  p = (char *)char_pop ();
-  debug("In aclfgli_pr_message (GUI)- p=%s",p);
-  if (wait) 
-  	gtkdialog ("Message", "", BUTTONS_OK, BUTTON_OK, 0, p);
+  p = (char *) char_pop ();
+  debug ("In aclfgli_pr_message (GUI)- p=%s", p);
+  if (wait)
+    gtkdialog ("Message", "", BUTTONS_OK, BUTTON_OK, 0, p);
   else
-    msg_window_gtk(p);
+    msg_window_gtk (p);
 }
 
 /**
@@ -307,16 +297,16 @@ aclfgli_pr_message (int a,int wait)
  *             - 1 : Show a window witj OK button.
  */
 void
-display_error (int a,int wait)
+display_error (int a, int wait)
 {
   char *p;
-  p = (char *)char_pop ();
+  p = (char *) char_pop ();
   if (wait)
     gtkdialog ("Error", "", BUTTONS_OK, BUTTON_OK, 0, p);
   else
-    error_window_gtk(p);
+    error_window_gtk (p);
 
-  free(p);
+  free (p);
 }
 
 

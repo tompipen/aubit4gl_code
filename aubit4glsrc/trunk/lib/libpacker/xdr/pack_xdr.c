@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xdr.c,v 1.6 2003-04-07 16:26:46 mikeaubury Exp $
+# $Id: pack_xdr.c,v 1.7 2003-05-12 14:24:23 mikeaubury Exp $
 #*/
 
 /**
@@ -55,8 +55,8 @@
 
 int A4GLPACKER_initlib (void);
 
-static int (*func)(); /*  warning: function declaration isn't a prototype */
-static int process_xdr(char dir,char *name,void *s,char *filename) ;
+static int (*func) ();		/*  warning: function declaration isn't a prototype */
+static int process_xdr (char dir, char *name, void *s, char *filename);
 
 /*
 =====================================================================
@@ -72,20 +72,21 @@ static int process_xdr(char dir,char *name,void *s,char *filename) ;
 int
 A4GLPACKER_initlib (void)
 {
-	return 1;
+  return 1;
 }
 
 /**
  *
  * @todo Describe function
  */
-int 
-can_pack_all(char* name)
+int
+can_pack_all (char *name)
 {
-	void *libptr;
-  	libptr=(void *)dl_openlibrary("XDRPACKER",name);
-	if (libptr) return 1;
-	return -1;
+  void *libptr;
+  libptr = (void *) dl_openlibrary ("XDRPACKER", name);
+  if (libptr)
+    return 1;
+  return -1;
 }
 
 
@@ -94,19 +95,16 @@ can_pack_all(char* name)
    We don't need to worry about these two functions
    as we're doing the whole thing in one go using xdr
 */
-int open_packer(char *fname,char dir)  { return 1; }
-void close_packer(char dir) { return; }
-
-
-/**
- *
- * @todo Describe function
- */
 int
-pack_all(char *name,void *s,char *filename)
+open_packer (char *fname, char dir)
 {
-	debug("Pack all ...");
-	return process_xdr('O',name,s,filename);
+  return 1;
+}
+
+void
+close_packer (char dir)
+{
+  return;
 }
 
 
@@ -115,9 +113,21 @@ pack_all(char *name,void *s,char *filename)
  * @todo Describe function
  */
 int
-unpack_all(char *name,void *s,char *filename)
+pack_all (char *name, void *s, char *filename)
 {
-	return process_xdr('I',name,s,filename);
+  debug ("Pack all ...");
+  return process_xdr ('O', name, s, filename);
+}
+
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+unpack_all (char *name, void *s, char *filename)
+{
+  return process_xdr ('I', name, s, filename);
 }
 
 
@@ -126,49 +136,53 @@ unpack_all(char *name,void *s,char *filename)
  * @todo Describe function
  */
 static int
-process_xdr(char dir,char *name,void *s,char *filename)
+process_xdr (char dir, char *name, void *s, char *filename)
 {
-FILE *fxx;
-void *libptr;
-char buff[256];
-XDR xdrp;
+  FILE *fxx;
+  void *libptr;
+  char buff[256];
+  XDR xdrp;
 
-  sprintf(buff,"xdr_%s",name);
+  sprintf (buff, "xdr_%s", name);
 
-  libptr=(void *)dl_openlibrary("XDRPACKER",name);
-  if (libptr==0) return 0;
+  libptr = (void *) dl_openlibrary ("XDRPACKER", name);
+  if (libptr == 0)
+    return 0;
 
   /*
-   We can only write to the current directory - but we
-   can open files from anywhere on the dbpath
-  */
-	if (dir=='O') {
-	  fxx = fopen(filename,"wb");
-	  set_last_outfile(filename);
-	}
-	else
-	  fxx = (FILE *) open_file_dbpath (filename);
+     We can only write to the current directory - but we
+     can open files from anywhere on the dbpath
+   */
+  if (dir == 'O')
+    {
+      fxx = fopen (filename, "wb");
+      set_last_outfile (filename);
+    }
+  else
+    fxx = (FILE *) open_file_dbpath (filename);
 
 
-  if (fxx==0) {
-		debug("Can't open file %s\n",filename);
-		
-		return 0;
-	}
+  if (fxx == 0)
+    {
+      debug ("Can't open file %s\n", filename);
+
+      return 0;
+    }
 
 
-	if (dir=='O')
-	  xdrstdio_create(&xdrp, fxx, XDR_ENCODE);
-	else
-	  xdrstdio_create(&xdrp, fxx, XDR_DECODE);
+  if (dir == 'O')
+    xdrstdio_create (&xdrp, fxx, XDR_ENCODE);
+  else
+    xdrstdio_create (&xdrp, fxx, XDR_DECODE);
 
-  func=(void *)find_func(libptr,buff);
-  if (func==0) return 0;
+  func = (void *) find_func (libptr, buff);
+  if (func == 0)
+    return 0;
 
-  func(&xdrp,s);
+  func (&xdrp, s);
 
-  xdr_destroy(&xdrp);
-  fclose(fxx);
+  xdr_destroy (&xdrp);
+  fclose (fxx);
   return 1;
 }
 

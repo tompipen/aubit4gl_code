@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.13 2003-03-06 22:38:32 mikeaubury Exp $
+# $Id: globals.c,v 1.14 2003-05-12 14:23:45 mikeaubury Exp $
 #
 */
 
@@ -58,17 +58,17 @@
 
 /* These are all located in variables.c */
 
-extern struct 	variable **list_global;				// Our List
-extern int 		list_global_cnt;					// Number used in our list
-extern int 		list_global_alloc;					// Space allocated for our list
-extern struct 	variable **list_imported_global;	// Our List
-extern int 		list_imported_global_cnt;			// Number used in our list
-extern int 		list_imported_global_alloc;			// Space allocated for our list
+extern struct variable **list_global;	// Our List
+extern int list_global_cnt;	// Number used in our list
+extern int list_global_alloc;	// Space allocated for our list
+extern struct variable **list_imported_global;	// Our List
+extern int list_imported_global_cnt;	// Number used in our list
+extern int list_imported_global_alloc;	// Space allocated for our list
 
 /* This is from 4glc.c */
 
-extern char *	outputfilename;
-extern char currinfile_dirname[1024];   //path to 4gl file we are currently compiling
+extern char *outputfilename;
+extern char currinfile_dirname[1024];	//path to 4gl file we are currently compiling
 
 /*
 =====================================================================
@@ -161,10 +161,10 @@ write_global_float (FILE * f, char *name, double val)
 void
 dump_gvars (void)
 {
-FILE *f;
-int a;
-char ii[64];
-struct variable *v;
+  FILE *f;
+  int a;
+  char ii[64];
+  struct variable *v;
 
   strcpy (ii, outputfilename);
   strcat (ii, ".glb");
@@ -183,7 +183,7 @@ struct variable *v;
     {
       v = list_global[a];
       /* Output the standard header stuff */
-	debug("Output Global Entry %d - %p\n",a,v);
+      debug ("Output Global Entry %d - %p\n", a, v);
       write_variable_header (f, v);
     }
 
@@ -203,9 +203,9 @@ struct variable *v;
 static void
 write_variable_header (FILE * f, struct variable *v)
 {
-struct name_list *ptr;
-int a;
-int cnt;
+  struct name_list *ptr;
+  int a;
+  int cnt;
 
   write_global_string (f, "NAME", v->names.name);
   ptr = v->names.next;
@@ -279,8 +279,8 @@ write_variable_simple (FILE * f, struct variable *v)
 static void
 write_variable_linked (FILE * f, struct variable *v)
 {
-struct name_list *ptr;
-int cnt;
+  struct name_list *ptr;
+  int cnt;
 
   write_global_string (f, "LINKTABLE", v->data.v_record.linked->tabname);
 
@@ -320,7 +320,7 @@ int cnt;
 static void
 write_variable_record (FILE * f, struct variable *v)
 {
-int a;
+  int a;
   write_global_int (f, "COUNT", v->data.v_record.record_cnt);
 
   if (v->data.v_record.linked == 0)
@@ -351,7 +351,7 @@ int a;
 static void
 write_variable_assoc (FILE * f, struct variable *v)
 {
-struct variable *ptr;
+  struct variable *ptr;
   write_global_int (f, "SIZE", v->data.v_assoc.size);
   write_global_int (f, "CHARSIZE", v->data.v_assoc.char_size);
   ptr = v->data.v_assoc.variables[0];
@@ -377,7 +377,8 @@ write_variable_constant (FILE * f, struct variable *v)
     }
 
 
-  if (v->data.v_const.consttype == CONST_TYPE_CHAR || v->data.v_const.consttype == CONST_TYPE_IDENT)
+  if (v->data.v_const.consttype == CONST_TYPE_CHAR
+      || v->data.v_const.consttype == CONST_TYPE_IDENT)
     {
       write_global_string (f, "CONSTANT_VALUE", v->data.v_const.data.data_c);
     }
@@ -399,19 +400,19 @@ write_variable_constant (FILE * f, struct variable *v)
 static void
 generate_globals_for (char *s)
 {
-char buff[1024];
-char dirname[1024];
-char fname[1024];
-char *ptr;
-char nocfile[256];
+  char buff[1024];
+  char dirname[1024];
+  char fname[1024];
+  char *ptr;
+  char nocfile[256];
 
-  #ifdef DEBUG
-	  debug ("In generate_globals_for\n");
-  #endif
+#ifdef DEBUG
+  debug ("In generate_globals_for\n");
+#endif
 
   strcpy (buff, s);
 
-  
+
   //NOTE: we will get path in s only if it was specified in GLOBALS declaration
   if (strchr (buff, '/'))
     {
@@ -423,51 +424,53 @@ char nocfile[256];
     }
   else
     {
-	  if (currinfile_dirname)
-	  {
-		  //use path that was passed to 4glc with 4gl file name of main 4gl
-          //source file we are compiling, if any
-		  strcpy (dirname, currinfile_dirname);
+      if (currinfile_dirname)
+	{
+	  //use path that was passed to 4glc with 4gl file name of main 4gl
+	  //source file we are compiling, if any
+	  strcpy (dirname, currinfile_dirname);
 
-	  } else {
-		  strcpy (dirname, ".");
-      }
-   	  strcpy (fname, buff);
+	}
+      else
+	{
+	  strcpy (dirname, ".");
+	}
+      strcpy (fname, buff);
     }
 
   strcpy (nocfile, acl_getenv ("NOCFILE"));
   setenv ("NOCFILE", "Yes", 1);
   ptr = strchr (fname, '.');
   *ptr = 0;
-  #ifdef DEBUG
-	debug ("Trying to compile globals file %s in %s\n", fname,dirname );
+#ifdef DEBUG
+  debug ("Trying to compile globals file %s in %s\n", fname, dirname);
 
-	if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
-	{
-		sprintf (buff, "mv debug.out debug1.out");
-		debug ("Preserving debug.out: %s\n", buff );
-		system (buff);
+  if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
+    {
+      sprintf (buff, "mv debug.out debug1.out");
+      debug ("Preserving debug.out: %s\n", buff);
+      system (buff);
     }
-  #endif
+#endif
   //why cd? just pass the path in file name... */
   //sprintf (buff, "cd %s; 4glc --globals %s.4gl", dirname, fname);
   sprintf (buff, "4glc --globals %s/%s.4gl", dirname, fname);
-  #ifdef DEBUG
-	debug ("Executing system call: %s\n", buff );
-  #endif
+#ifdef DEBUG
+  debug ("Executing system call: %s\n", buff);
+#endif
   system (buff);
   setenv ("NOCFILE", nocfile, 1);
-  #ifdef DEBUG
-	if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
+#ifdef DEBUG
+  if (strcmp (acl_getenv ("DEBUG"), "ALL") == 0)
     {
-		sprintf (buff, "mv debug.out debug-globals.out");
-		debug ("Preserving debug.out: %s\n", buff );
-		system (buff);
-		sprintf (buff, "mv debug1.out debug.out");
-		debug ("Restoring debug.out: %s\n", buff );
-		system (buff);
+      sprintf (buff, "mv debug.out debug-globals.out");
+      debug ("Preserving debug.out: %s\n", buff);
+      system (buff);
+      sprintf (buff, "mv debug1.out debug.out");
+      debug ("Restoring debug.out: %s\n", buff);
+      system (buff);
     }
-  #endif
+#endif
 
 }
 
@@ -480,80 +483,83 @@ char nocfile[256];
 void
 read_glob (char *s)
 {
-FILE *f;
-char ii[64];
-char iii[256];
-char *dbname;
-int gvars;
-int start = 0;
-int a;
+  FILE *f;
+  char ii[64];
+  char iii[256];
+  char *dbname;
+  int gvars;
+  int start = 0;
+  int a;
 
-	// MJA - NEWVARIABLE
-	strcpy (ii, s);
-	strcat (ii, ".glb");
-	#ifdef DEBUG
-		debug ("Trying to open globals file %s\n", ii);
-	#endif
+  // MJA - NEWVARIABLE
+  strcpy (ii, s);
+  strcat (ii, ".glb");
+#ifdef DEBUG
+  debug ("Trying to open globals file %s\n", ii);
+#endif
 
-	f = mja_fopen (ii, "r");
+  f = mja_fopen (ii, "r");
 
-	if (f == 0)
+  if (f == 0)
     {
-		#ifdef DEBUG
-			debug ("Trying to compile globals file %s",ii);
-		#endif
-		generate_globals_for (ii);
-		f = mja_fopen (ii, "r");
+#ifdef DEBUG
+      debug ("Trying to compile globals file %s", ii);
+#endif
+      generate_globals_for (ii);
+      f = mja_fopen (ii, "r");
     }
 
-	if (f == 0)
+  if (f == 0)
     {
       /* try with same path supplied with call to 4glc for 4gl file we are actually compiling globals file for */
 
-		#ifdef DEBUG
-		  debug ("Couldnt open globals file %s\n", ii);
-		#endif
-        // add path
-        strcpy(iii,currinfile_dirname);
-        strcat(iii,"/");
-        strcat(iii,ii);
-		#ifdef DEBUG
-	      debug ("Trying globals file %s",iii);
-		#endif
-        generate_globals_for (iii);
-	    f = mja_fopen (iii, "r");
-		if (f == 0)
-		{
-			fprintf (stderr, "Couldnt open globals file %s, in . and %s\n", ii,currinfile_dirname);
-    		exit (7);
-        }
+#ifdef DEBUG
+      debug ("Couldnt open globals file %s\n", ii);
+#endif
+      // add path
+      strcpy (iii, currinfile_dirname);
+      strcat (iii, "/");
+      strcat (iii, ii);
+#ifdef DEBUG
+      debug ("Trying globals file %s", iii);
+#endif
+      generate_globals_for (iii);
+      f = mja_fopen (iii, "r");
+      if (f == 0)
+	{
+	  fprintf (stderr, "Couldnt open globals file %s, in . and %s\n", ii,
+		   currinfile_dirname);
+	  exit (7);
 	}
-  
-	read_global_string (f, "DATABASE", &dbname, 1);
-    
-	if (strlen (dbname) > 0)
-    {
-		set_hdrdbname (dbname);
-		open_db (dbname);
     }
-  
-	read_global_int (f, "NUMVARS", &gvars);
-	start = list_imported_global_cnt;
-	list_imported_global_cnt += gvars;
 
-	if (list_imported_global_cnt > list_imported_global_alloc)
+  read_global_string (f, "DATABASE", &dbname, 1);
+
+  if (strlen (dbname) > 0)
+    {
+      set_hdrdbname (dbname);
+      open_db (dbname);
+    }
+
+  read_global_int (f, "NUMVARS", &gvars);
+  start = list_imported_global_cnt;
+  list_imported_global_cnt += gvars;
+
+  if (list_imported_global_cnt > list_imported_global_alloc)
     {
       list_imported_global_alloc = list_imported_global_cnt;
     }
 
-	list_imported_global = realloc (list_imported_global, sizeof (struct variable *)*list_imported_global_alloc);
+  list_imported_global =
+    realloc (list_imported_global,
+	     sizeof (struct variable *) * list_imported_global_alloc);
 
-	for (a = start; a < list_imported_global_cnt; a++)
+  for (a = start; a < list_imported_global_cnt; a++)
     {
       list_imported_global[a] = malloc (sizeof (struct variable));
       read_variable_header (f, list_imported_global[a]);
     }
-	fclose (f);
+  fclose (f);
 }
 
 
@@ -565,16 +571,17 @@ int a;
 static void
 read_global_int (FILE * f, char *name, int *val)
 {
-char buff[256];
-char buff2[256];
+  char buff[256];
+  char buff2[256];
 
   sprintf (buff, "%s=%%d\n", name);
-  *val=0;
-  fgets(buff2,255,f);
+  *val = 0;
+  fgets (buff2, 255, f);
 
-  if (sscanf (buff2, buff, val)!=1) {
-		a4gl_yyerror ("Error in .glb file (int) - is it an old version ?");
-  }
+  if (sscanf (buff2, buff, val) != 1)
+    {
+      a4gl_yyerror ("Error in .glb file (int) - is it an old version ?");
+    }
 }
 
 /**
@@ -585,18 +592,19 @@ char buff2[256];
 static void
 read_global_string (FILE * f, char *name, char **val, int alloc)
 {
-char buff[256];
-int a;
-char buff2[2000];
-char buff3[2000];
-  
-  fgets(buff3,2000,f);
-  strcpy(buff2,"");
+  char buff[256];
+  int a;
+  char buff2[2000];
+  char buff3[2000];
+
+  fgets (buff3, 2000, f);
+  strcpy (buff2, "");
   sprintf (buff, "%s=%%s\n", name);
-  a=sscanf (buff3, buff, buff2);
-  if (a==0&&strcmp(buff,buff3)!=0) {
-		a4gl_yyerror ("Error in .glb file (string)- is it an old version ?");
-  }
+  a = sscanf (buff3, buff, buff2);
+  if (a == 0 && strcmp (buff, buff3) != 0)
+    {
+      a4gl_yyerror ("Error in .glb file (string)- is it an old version ?");
+    }
 
   if (alloc)
     {
@@ -617,14 +625,15 @@ char buff3[2000];
 static void
 read_global_char (FILE * f, char *name, char *val)
 {
-char buff[256];
-char buff3[256];
-  
-  fgets(buff3,255,f);
+  char buff[256];
+  char buff3[256];
+
+  fgets (buff3, 255, f);
   sprintf (buff, "%s=%%c\n", name);
-  if (sscanf (buff3, buff, val)!=1) {
-		a4gl_yyerror ("Error in .glb file (char)- is it an old version ?");
-  }
+  if (sscanf (buff3, buff, val) != 1)
+    {
+      a4gl_yyerror ("Error in .glb file (char)- is it an old version ?");
+    }
 }
 
 /**
@@ -635,15 +644,16 @@ char buff3[256];
 static void
 read_global_float (FILE * f, char *name, double *val)
 {
-char buff[256];
-char buff3[256];
+  char buff[256];
+  char buff3[256];
 
-  fgets(buff3,255,f);
+  fgets (buff3, 255, f);
   sprintf (buff, "%s=%%lf\n", name);
-  if (sscanf (buff3, buff, val)!=1) {
-		a4gl_yyerror ("Error in .glb file (float)- is it an old version ?");
-	
-  }
+  if (sscanf (buff3, buff, val) != 1)
+    {
+      a4gl_yyerror ("Error in .glb file (float)- is it an old version ?");
+
+    }
 
 }
 
@@ -658,49 +668,49 @@ static void
 read_variable_header (FILE * f, struct variable *v)
 {
 //struct name_list *ptr;
-int a;
-int cnt;
+  int a;
+  int cnt;
 
-	read_global_string (f, "NAME", &v->names.name, 1);
-	v->names.next=0;
-    #ifdef DEBUG
-		debug("Read variable : %s",v->names.name);
-    #endif
-  
-	read_global_int (f, "TYPE", &v->variable_type);
-	read_global_char (f, "USER_SYSTEM", &v->user_system);
-	read_global_int (f, "IS_ARRAY", &v->is_array);
-	read_global_string (f, "SRC_MODULE", &v->src_module, 1);
+  read_global_string (f, "NAME", &v->names.name, 1);
+  v->names.next = 0;
+#ifdef DEBUG
+  debug ("Read variable : %s", v->names.name);
+#endif
+
+  read_global_int (f, "TYPE", &v->variable_type);
+  read_global_char (f, "USER_SYSTEM", &v->user_system);
+  read_global_int (f, "IS_ARRAY", &v->is_array);
+  read_global_string (f, "SRC_MODULE", &v->src_module, 1);
 
 
-	for (a = 0; a < MAX_ARR_SUB; a++)
+  for (a = 0; a < MAX_ARR_SUB; a++)
     {
       v->arr_subscripts[a] = 0;
     }
 
-	if (v->is_array)
+  if (v->is_array)
     {
       read_global_int (f, "ARR_SUBSCRIPTS_CNT", &cnt);
 
-		for (a = 0; a < cnt; a++)
-		{
-		  read_global_int (f, "ARR_SUBSCRIPT", &v->arr_subscripts[a]);
-		}
+      for (a = 0; a < cnt; a++)
+	{
+	  read_global_int (f, "ARR_SUBSCRIPT", &v->arr_subscripts[a]);
+	}
     }
 
-	if (v->variable_type == VARIABLE_TYPE_SIMPLE)
+  if (v->variable_type == VARIABLE_TYPE_SIMPLE)
     {
       read_variable_simple (f, v);
     }
-	if (v->variable_type == VARIABLE_TYPE_RECORD)
+  if (v->variable_type == VARIABLE_TYPE_RECORD)
     {
       read_variable_record (f, v);
     }
-	if (v->variable_type == VARIABLE_TYPE_ASSOC)
+  if (v->variable_type == VARIABLE_TYPE_ASSOC)
     {
       read_variable_assoc (f, v);
     }
-	if (v->variable_type == VARIABLE_TYPE_CONSTANT)
+  if (v->variable_type == VARIABLE_TYPE_CONSTANT)
     {
       read_variable_constant (f, v);
     }
@@ -728,8 +738,8 @@ read_variable_simple (FILE * f, struct variable *v)
 static void
 read_variable_linked (FILE * f, struct variable *v)
 {
-int cnt;
-struct name_list *ptr;
+  int cnt;
+  struct name_list *ptr;
 
   read_global_string (f, "LINKTABLE", &v->data.v_record.linked->tabname, 1);
   read_global_int (f, "LINKCOLUMNS", &cnt);
@@ -756,16 +766,16 @@ struct name_list *ptr;
 static void
 read_variable_record (FILE * f, struct variable *v)
 {
-int a;
-int is_linked;
-  
-  read_global_int (f, "COUNT",  &v->data.v_record.record_cnt);
+  int a;
+  int is_linked;
+
+  read_global_int (f, "COUNT", &v->data.v_record.record_cnt);
   read_global_int (f, "LINKED", &is_linked);
 
 
   if (is_linked)
     {
-      v->data.v_record.linked=malloc(sizeof(struct linked_variable));
+      v->data.v_record.linked = malloc (sizeof (struct linked_variable));
       read_variable_linked (f, v);
     }
 
@@ -774,7 +784,7 @@ int is_linked;
 
   for (a = 0; a < v->data.v_record.record_cnt; a++)
     {
-      v->data.v_record.variables[a]=malloc(sizeof(struct variable));
+      v->data.v_record.variables[a] = malloc (sizeof (struct variable));
       read_variable_header (f, v->data.v_record.variables[a]);
     }
 
@@ -788,8 +798,8 @@ int is_linked;
 static void
 read_variable_assoc (FILE * f, struct variable *v)
 {
-struct variable *ptr;
-  
+  struct variable *ptr;
+
   read_global_int (f, "SIZE", &v->data.v_assoc.size);
   read_global_int (f, "CHARSIZE", &v->data.v_assoc.char_size);
   v->data.v_assoc.variables = malloc (sizeof (struct variable *) * 1);

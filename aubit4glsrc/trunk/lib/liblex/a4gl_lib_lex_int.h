@@ -6,5 +6,3 @@
 #include "a4gl_4glc_int.h"
 
 void print_free_cursor (char *s);
-
-

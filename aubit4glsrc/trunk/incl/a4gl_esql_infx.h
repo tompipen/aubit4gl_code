@@ -19,15 +19,18 @@
 #include "a4gl_incl_infx.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
-void copy_money(dec_t *infx,fglmoney *a4gl,int size,char dir);
-void copy_decimal(dec_t *infx,fgldecimal *a4gl,int size,char dir);
-void copy_datetime(dtime_t *infx, struct A4GLSQL_dtime *a4gl,int size,int mode);
+  void copy_money (dec_t * infx, fglmoney * a4gl, int size, char dir);
+  void copy_decimal (dec_t * infx, fgldecimal * a4gl, int size, char dir);
+  void copy_datetime (dtime_t * infx, struct A4GLSQL_dtime *a4gl, int size,
+		      int mode);
 
 
 // Conversion functions between informix types and A4GL datatypes
-void copy_decimal(struct decimal *infx,fgldecimal *a4gl,int size,char dir);
+  void copy_decimal (struct decimal *infx, fgldecimal * a4gl, int size,
+		     char dir);
 #define COPY_DATA_IN_0(a4gl,infx,size) strcpy(*(infx),*(a4gl))
 #define COPY_DATA_IN_1(a4gl,infx,size) *(infx)=*(a4gl)
 #define COPY_DATA_IN_2(a4gl,infx,size) *(infx)=*(a4gl)
@@ -60,7 +63,7 @@ void copy_decimal(struct decimal *infx,fgldecimal *a4gl,int size,char dir);
 #define COPY_DATA_OUT_14(a4gl,infx,size) copy_interval(infx,a4gl,size,'o')
 
 
-#define COPY_SQLCA 
+#define COPY_SQLCA
 #define popdec(x) {fgldecimal _s;pop_var(&_s,0x1e100005);copy_decimal(x,&_s,0x1e10,'i');}
 #define retdec(x) {fgldecimal _s;copy_decimal(x,&_s,0x1e10,'o');push_variable(&_s,0x1e100005);}
 

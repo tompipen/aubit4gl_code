@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gtk_4gl.c,v 1.14 2003-04-28 13:38:47 mikeaubury Exp $
+# $Id: gtk_4gl.c,v 1.15 2003-05-12 14:24:31 mikeaubury Exp $
 #*/
 
 /**
@@ -58,30 +58,30 @@
 */
 
 #ifdef __MINGW32__
-	typedef void *pthread_t;
+typedef void *pthread_t;
 #endif
 
 
-GtkWidget *tooltips = 0;        /** Tooltip widget */
+GtkWidget *tooltips = 0;	/** Tooltip widget */
 int window_frame_type = 0;
 pthread_t thread;
-GtkWidget *windows[256];        /** The 4gl window stack */
-GtkWidget *win_screen;          /** The 4gl special principal window (SCREEN) */
+GtkWidget *windows[256];	/** The 4gl window stack */
+GtkWidget *win_screen;		/** The 4gl special principal window (SCREEN) */
 int frame_style = GTK_SHADOW_IN;/** The frame style used in the GUI */
-GtkWindow *currwindow = 0;      /** The 4gl current window */
+GtkWindow *currwindow = 0;	/** The 4gl current window */
 void *argcv;
 void *argvv;
 int wait = 0;
 int mfrm_width;			/* set to the width of the last opened form */
 int mfrm_height;		/* set to the height of the last opened form */
-extern int ui_mode;     /** User interface used (GUI or TUI) */
+extern int ui_mode;	/** User interface used (GUI or TUI) */
 GtkWindow *console = 0;
 GtkWidget *console_list;
 char currwinname[256];
 static void show_form (GtkWindow * mainfrm, GtkFixed * form);
-struct s_form_dets * read_form (char *fname, char *formname);
-void dump_object(GtkObject *o);
-char *get_currwin_name(void);
+struct s_form_dets *read_form (char *fname, char *formname);
+void dump_object (GtkObject * o);
+char *get_currwin_name (void);
 /*
 =====================================================================
                     Functions prototypes
@@ -89,31 +89,31 @@ char *get_currwin_name(void);
 */
 
 
-void * read_form_gtk (char *fname,char *formname);
+void *read_form_gtk (char *fname, char *formname);
 void show_console (void);
 void hide_console (void);
 void add_to_console (char *s);
 void create_console (void);
-void decode_gui_winname(char *name);
+void decode_gui_winname (char *name);
 
 #ifdef MOVED_TO_4GLDEF
-GtkWindow * cr_window (char *s, int iswindow, int form_line, int error_line,	/*  Ignored */
-	       int prompt_line,	/* Ignored */
-	       int menu_line,	/* Ignored */
-	       int border,	/* Ignored */
-	       int comment_line,	/* Ignored */
-	       int message_line, int attrib) ;
+GtkWindow *cr_window (char *s, int iswindow, int form_line, int error_line,	/*  Ignored */
+		      int prompt_line,	/* Ignored */
+		      int menu_line,	/* Ignored */
+		      int border,	/* Ignored */
+		      int comment_line,	/* Ignored */
+		      int message_line, int attrib);
 
 
 //GtkFixed * read_form_gtk (char *fname);
 void cr_window_form (char *s,
-		    int iswindow,
-		    int form_line,
-		    int error_line,
-		    int prompt_line,
-		    int menu_line,
-		    int border,
-		    int comment_line, int message_line, int attrib);
+		     int iswindow,
+		     int form_line,
+		     int error_line,
+		     int prompt_line,
+		     int menu_line,
+		     int border,
+		     int comment_line, int message_line, int attrib);
 #endif
 
 //void open_form (char *form_id);
@@ -124,7 +124,7 @@ void clear_console (char *s);
 //int close_form (char *name);
 /* int open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())); */
 //int open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c(int a, int b)));
-struct struct_screen_record * get_srec_gtk (char *name);
+struct struct_screen_record *get_srec_gtk (char *name);
 
 /*
 =====================================================================
@@ -139,12 +139,14 @@ void
 gui_run_til_no_more (void)
 {
 
-  if (screen_mode (-1) )
+  if (screen_mode (-1))
     {
       while (gtk_events_pending ())
 	gtk_main_iteration ();
-    } else {
-	debug("Skipping run_til_no_more - in pause mode");
+    }
+  else
+    {
+      debug ("Skipping run_til_no_more - in pause mode");
     }
 
 }
@@ -180,22 +182,37 @@ create_window_gtk (char *name, int x, int y, int w, int h,
 		   int border, int comment_line, int message_line, int attrib)
 {
   GtkWidget *fixed;
-  GtkWidget *win; /* Should this not be GtkWindow *win; - not GtkWidget ? */
+  GtkWidget *win;		/* Should this not be GtkWindow *win; - not GtkWidget ? */
   GtkFrame *frame = 0;
   GtkWidget *wxx = 0;
   int isscreenwin = 0;
 
-debug("AAA - Message Line %d\n",message_line);
-if (form_line==0xff) { form_line=std_dbscr.form_line; }
-if (menu_line==0xff) { 
-		menu_line=std_dbscr.menu_line; 
-}
-if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
-if (error_line==0xff) { error_line=std_dbscr.error_line; }
-if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
-if (message_line==0xff) {message_line=std_dbscr.message_line;
-debug("Setting message line to default : %d\n",message_line);
- }
+  debug ("AAA - Message Line %d\n", message_line);
+  if (form_line == 0xff)
+    {
+      form_line = std_dbscr.form_line;
+    }
+  if (menu_line == 0xff)
+    {
+      menu_line = std_dbscr.menu_line;
+    }
+  if (comment_line == 0xff)
+    {
+      comment_line = std_dbscr.comment_line;
+    }
+  if (error_line == 0xff)
+    {
+      error_line = std_dbscr.error_line;
+    }
+  if (prompt_line == 0xff)
+    {
+      prompt_line = std_dbscr.prompt_line;
+    }
+  if (message_line == 0xff)
+    {
+      message_line = std_dbscr.message_line;
+      debug ("Setting message line to default : %d\n", message_line);
+    }
 
 
   debug ("gui_create_window %s %d %d %d %d", name, x, y, w, h);
@@ -214,17 +231,17 @@ debug("Setting message line to default : %d\n",message_line);
       isscreenwin = 0;
     }
 
-	/* Make the dimensions into gtk sizes (pixels ?) rather than characters */
+  /* Make the dimensions into gtk sizes (pixels ?) rather than characters */
   w = w * XWIDTH;
   x = x * XWIDTH;
   y = y * YHEIGHT;
   h = h * YHEIGHT;
 
-	/* Are we making the main screen ? */
+  /* Are we making the main screen ? */
   if (isscreenwin == 1)
     {
       win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	strcpy(currwinname,"SCREEN");
+      strcpy (currwinname, "SCREEN");
       gtk_window_set_title (GTK_WINDOW (win), name);
 
       if (win == 0)
@@ -235,17 +252,17 @@ debug("Setting message line to default : %d\n",message_line);
 	}
       fixed = gtk_fixed_new ();
       win_screen = fixed;
-      gtk_widget_show (GTK_WIDGET(fixed));
+      gtk_widget_show (GTK_WIDGET (fixed));
       gtk_container_add (GTK_CONTAINER (win), fixed);
       gtk_widget_set_usize (GTK_WIDGET (win), w, h);
       gtk_object_set_data (GTK_OBJECT (fixed), "TOP", win);
-      gtk_widget_show (GTK_WIDGET(win));
+      gtk_widget_show (GTK_WIDGET (win));
       win = fixed;
       win_screen = win;
     }
   else
     {
-	strcpy(currwinname,name);
+      strcpy (currwinname, name);
       if (border)
 	{
 
@@ -341,9 +358,9 @@ debug("Setting message line to default : %d\n",message_line);
 
   add_pointer (name, WINCODE, win);
   /*
-  vbox = gtk_vbox_new (0, 0);
-  gtk_container_add (fixed, vbox);
-  gtk_object_set_data (win, "vbox", vbox);
+     vbox = gtk_vbox_new (0, 0);
+     gtk_container_add (fixed, vbox);
+     gtk_object_set_data (win, "vbox", vbox);
    */
 
   gtk_widget_show (win);
@@ -351,20 +368,21 @@ debug("Setting message line to default : %d\n",message_line);
   gtk_signal_connect (GTK_OBJECT (win), "delete_event",
 		      GTK_SIGNAL_FUNC (delete_event), win);
 
-if (isscreenwin == 1) {
-  gtk_signal_connect (GTK_OBJECT (win), "destroy",
-		      GTK_SIGNAL_FUNC (destroy_event), win);
-}
+  if (isscreenwin == 1)
+    {
+      gtk_signal_connect (GTK_OBJECT (win), "destroy",
+			  GTK_SIGNAL_FUNC (destroy_event), win);
+    }
 
   gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
 		      GTK_SIGNAL_FUNC (keypress), win);
 
   debug ("Currwindow=%p MJA MJAMJA\n", win);
 
-  set_current_window(GTK_WINDOW(win));
+  set_current_window (GTK_WINDOW (win));
 
 
-  gtkwin_stack((GtkWindow *)win,'+');
+  gtkwin_stack ((GtkWindow *) win, '+');
   gui_run_til_no_more ();
   gtk_object_set_data (GTK_OBJECT (win), "FORM_LINE", (void *) form_line);
   return currwindow;
@@ -390,11 +408,11 @@ A4GLUI_ui_init (int argc, char *argv[])
   gtk_init (argcv, argvv);
   ui_mode = 1;
 
-    /*
- shouldn't need this any more as we won't be starting curses mode
- in the first place
-  mja_endwin ();
- */
+  /*
+     shouldn't need this any more as we won't be starting curses mode
+     in the first place
+     mja_endwin ();
+   */
 
   if (acl_getenv ("GTKRC"))
     {
@@ -440,11 +458,11 @@ A4GLUI_ui_init (int argc, char *argv[])
  */
 void *
 cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
-	       int prompt_line,	/* Ignored */
-	       int menu_line,	/* Ignored */
-	       int border,	/* Ignored */
-	       int comment_line,	/* Ignored */
-	       int message_line, int attrib)
+	   int prompt_line,	/* Ignored */
+	   int menu_line,	/* Ignored */
+	   int border,		/* Ignored */
+	   int comment_line,	/* Ignored */
+	   int message_line, int attrib)
 {
 
 
@@ -459,16 +477,34 @@ cr_window (char *s, int iswindow, int form_line, int error_line,	/* Ignored */
 
 
 
-if (form_line==0xff) { form_line=std_dbscr.form_line; }
-if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
-if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
-if (error_line==0xff) { error_line=std_dbscr.error_line; }
-if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
+  if (form_line == 0xff)
+    {
+      form_line = std_dbscr.form_line;
+    }
+  if (menu_line == 0xff)
+    {
+      menu_line = std_dbscr.menu_line;
+    }
+  if (comment_line == 0xff)
+    {
+      comment_line = std_dbscr.comment_line;
+    }
+  if (error_line == 0xff)
+    {
+      error_line = std_dbscr.error_line;
+    }
+  if (prompt_line == 0xff)
+    {
+      prompt_line = std_dbscr.prompt_line;
+    }
 
   if (has_pointer (s, WINCODE))
     {
 #ifdef DEBUG
-	/* {DEBUG} */{debug ("Window already exists"); }
+      /* {DEBUG} */
+      {
+	debug ("Window already exists");
+      }
 #endif
       set_errm (s);
       exitwith ("Window already exists (%s)");
@@ -483,7 +519,7 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
 			   menu_line,
 			   border, comment_line, message_line, attrib);
   gui_run_til_no_more ();
-  return (void *)win;
+  return (void *) win;
 
 }
 
@@ -494,9 +530,9 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
  * @return The panel where the form is showed.
  */
 void *
-read_form_gtk (char *fname,char *formname)
+read_form_gtk (char *fname, char *formname)
 {
-struct s_form_dets *f;
+  struct s_form_dets *f;
   struct struct_form *the_form;
   //FILE *f;
   //XDR xdrp;
@@ -506,18 +542,18 @@ struct s_form_dets *f;
 
   /*
 
-  debug ("Opening file %s\n", fname);
-  f = (FILE *) open_file_dbpath (fname);
+     debug ("Opening file %s\n", fname);
+     f = (FILE *) open_file_dbpath (fname);
 
-  if (f == 0)
-    {
-      exitwith ("Unable to open file.\n");
-      return 0;
-    }
-  debug ("Clearing memory...");
-  */
+     if (f == 0)
+     {
+     exitwith ("Unable to open file.\n");
+     return 0;
+     }
+     debug ("Clearing memory...");
+   */
 
-  f=read_form(fname,formname);
+  f = read_form (fname, formname);
 
   the_form = f->fileform;
 
@@ -526,24 +562,24 @@ struct s_form_dets *f;
   //memset (the_form, 0, sizeof (struct_form));
 
   //a=read_data_from_file("struct_form",the_form,fname);
-  
 
 
-   //xdrstdio_create (&xdrp, f, XDR_DECODE);
-   //a = xdr_struct_form (&xdrp, the_form);
-   /*
-	this is just a workaround - it still keep libUI_GTK dependent on
-    libFORM_XDR, and therefore Sun RPC XDR functions:
-	a=isolated_xdr_struct_form(&xdrp,the_form); //in lib/libform/form_xdr/formwrite2.c
-    */
 
-a=1;
+  //xdrstdio_create (&xdrp, f, XDR_DECODE);
+  //a = xdr_struct_form (&xdrp, the_form);
+  /*
+     this is just a workaround - it still keep libUI_GTK dependent on
+     libFORM_XDR, and therefore Sun RPC XDR functions:
+     a=isolated_xdr_struct_form(&xdrp,the_form); //in lib/libform/form_xdr/formwrite2.c
+   */
+
+  a = 1;
   if (!a)
     {
       debug ("Bad form file format, form returned=%d\n", a);
       exitwith ("Bad form file format\n");
       exit (27);
-	  /* return 0; */
+      /* return 0; */
     }
 
   debug ("XDR form read");
@@ -552,7 +588,7 @@ a=1;
   debug ("maxcol     : %d\n", the_form->maxcol);
   debug ("Here\n");
 
-	/* How many screens ? */
+  /* How many screens ? */
   if (the_form->snames.snames_len > 1)
     {				/* More than one - create a notebook */
       int a;
@@ -568,7 +604,9 @@ a=1;
 	  char buff[256];
 	  debug ("Making page %d\n", a);
 	  fixedpage = (GtkFixed *) gtk_fixed_new ();
-          gtk_widget_set_usize (GTK_WIDGET (fixedpage), the_form->maxcol*XWIDTH, the_form->maxline*YHEIGHT);
+	  gtk_widget_set_usize (GTK_WIDGET (fixedpage),
+				the_form->maxcol * XWIDTH,
+				the_form->maxline * YHEIGHT);
 
 
 	  gtk_widget_show (GTK_WIDGET (fixedpage));
@@ -619,14 +657,14 @@ void
 set_current_window (GtkWindow * w)
 {
 
-    /*
-  if (currwindow)
-  {                         // IF NOT USING FORMHANDLER
-  gtk_window_set_modal (currwindow, 0);
-  }
-  */
+  /*
+     if (currwindow)
+     {                         // IF NOT USING FORMHANDLER
+     gtk_window_set_modal (currwindow, 0);
+     }
+   */
 
-  debug("setting current window=%p from %p",w,currwindow);
+  debug ("setting current window=%p from %p", w, currwindow);
   currwindow = w;
 
 
@@ -640,10 +678,11 @@ set_current_window (GtkWindow * w)
  * @param mainform The window where the form should be rendered.
  * @param form The form to paint.
  */
-static void show_form (GtkWindow * mainfrm, GtkFixed * form)
+static void
+show_form (GtkWindow * mainfrm, GtkFixed * form)
 {
-GtkObject *a;
-int off;
+  GtkObject *a;
+  int off;
 
   debug ("SHow form mainfrm=%p form=%p", mainfrm, form);
   debug ("Foreach..");
@@ -667,8 +706,9 @@ int off;
 
   /* gtk_box_pack_end_defaults (v, form); */
   off = (int) gtk_object_get_data (GTK_OBJECT (mainfrm), "FORM_LINE");
-  debug("Off [FORM_LINE] = %d\n",off);
-  gtk_fixed_put (GTK_FIXED (mainfrm), GTK_WIDGET (form), 0, (off-1) * YHEIGHT);
+  debug ("Off [FORM_LINE] = %d\n", off);
+  gtk_fixed_put (GTK_FIXED (mainfrm), GTK_WIDGET (form), 0,
+		 (off - 1) * YHEIGHT);
 
   debug ("Added mainfrm=%p form =%p as currform\n", mainfrm, form);
   gtk_object_set_data (GTK_OBJECT (mainfrm), "currform", form);
@@ -704,13 +744,12 @@ int off;
  */
 int
 cr_window_form (char *s,
-		    int iswindow,
-		    int form_line,
-		    int error_line,
-		    int prompt_line,
-		    int menu_line,
-		    int border,
-		    int comment_line, int message_line, int attrib)
+		int iswindow,
+		int form_line,
+		int error_line,
+		int prompt_line,
+		int menu_line,
+		int border, int comment_line, int message_line, int attrib)
 {
   char *fname;
   int x, y;
@@ -718,14 +757,29 @@ cr_window_form (char *s,
   GtkFixed *form;
   GtkWindow *win;
 
-if (form_line==0xff) { form_line=std_dbscr.form_line; }
-if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
-if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
-if (error_line==0xff) { error_line=std_dbscr.error_line; }
-if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
+  if (form_line == 0xff)
+    {
+      form_line = std_dbscr.form_line;
+    }
+  if (menu_line == 0xff)
+    {
+      menu_line = std_dbscr.menu_line;
+    }
+  if (comment_line == 0xff)
+    {
+      comment_line = std_dbscr.comment_line;
+    }
+  if (error_line == 0xff)
+    {
+      error_line = std_dbscr.error_line;
+    }
+  if (prompt_line == 0xff)
+    {
+      prompt_line = std_dbscr.prompt_line;
+    }
 
   fname = char_pop ();
-  trim(fname);
+  trim (fname);
   debug ("fname=%s", fname);
   x = pop_long ();
   y = pop_long ();
@@ -734,27 +788,26 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   debug ("Create window & form");
   //sprintf (buff, "%s%s", fname,acl_getenv ("A4GL_FRM_BASE_EXT"));
   //
-  form = (GtkFixed *) read_form_gtk (fname,s);
+  form = (GtkFixed *) read_form_gtk (fname, s);
   debug_last_field_created ("read form");
 
   gui_run_til_no_more ();
 
   debug ("Read form");
 
-  win =
-    create_window_gtk (s, x, y, mfrm_width, mfrm_height + form_line, iswindow, form_line, error_line,	/* Ignored */
-		       prompt_line,	/* Ignored */
-		       menu_line,	/* Ignored */
-		       border,	/* Ignored */
-		       comment_line,	/* Ignored */
-		       message_line, attrib);
+  win = create_window_gtk (s, x, y, mfrm_width, mfrm_height + form_line, iswindow, form_line, error_line,	/* Ignored */
+			   prompt_line,	/* Ignored */
+			   menu_line,	/* Ignored */
+			   border,	/* Ignored */
+			   comment_line,	/* Ignored */
+			   message_line, attrib);
   debug ("Made window win=%p", win);
   debug_last_field_created ("make window");
 
   show_form (win, form);
   debug_last_field_created ("after show_form");
   debug ("SHown form");
-	return 1;
+  return 1;
 }
 
 /**
@@ -771,9 +824,9 @@ open_form (char *form_id)
   GtkFixed *form;
   //char buff[256];
   filename = char_pop ();
-  trim(filename);
+  trim (filename);
   //sprintf (buff, "%s%s", filename,acl_getenv ("A4GL_FRM_BASE_EXT"));
-  form = read_form_gtk (filename,form_id);
+  form = read_form_gtk (filename, form_id);
   debug_last_field_created ("after reading form");
   debug ("Adding form code for %s", form_id);
   gtk_object_ref (GTK_OBJECT (form));
@@ -831,9 +884,10 @@ get_window_gtk (int a)
 void
 zrefresh (void)
 {
-  if (screen_mode(-1)) {
-  	gui_run_til_no_more ();
-  }
+  if (screen_mode (-1))
+    {
+      gui_run_til_no_more ();
+    }
 
 }
 
@@ -846,31 +900,31 @@ zrefresh (void)
 int
 current_window (char *s)
 {
-GtkWindow *w;
-static GtkWidget *b=0;
+  GtkWindow *w;
+  static GtkWidget *b = 0;
 
-	/* If we are not using formhandlers then we need to
-	   ensure modality with the currwindow...
-	*/
+  /* If we are not using formhandlers then we need to
+     ensure modality with the currwindow...
+   */
   debug ("Finding window to make current %s\n", s);
   w = find_pointer (s, WINCODE);
 
-  debug(" Found : %p\n",w);
-  gtkwin_stack(w,'^');
+  debug (" Found : %p\n", w);
+  gtkwin_stack (w, '^');
 
   if (!has_pointer (s, WINCODE))
     {
       exitwith ("Window is not open");
-      return 0 ;
+      return 0;
     }
 
-	debug("Set_current %p",w);
-	set_current_window (w);
+  debug ("Set_current %p", w);
+  set_current_window (w);
 
-strcpy(currwinname,s);
+  strcpy (currwinname, s);
   if (strcmp (s, "screen") != 0)
     {
-strcpy(currwinname,"SCREEN");
+      strcpy (currwinname, "SCREEN");
 
       if (b)
 	{
@@ -882,19 +936,20 @@ strcpy(currwinname,"SCREEN");
 
       b = gtk_object_get_data (GTK_OBJECT (w), "TOP");
       debug ("1.Hiding (%s) %p\n", s, b);
-      if (b==0) b=(GtkWidget*)w;
+      if (b == 0)
+	b = (GtkWidget *) w;
 
-        /*
-		  GtkWindow *w;
-		  static GtkWidget *b=0;
-        */
+      /*
+         GtkWindow *w;
+         static GtkWidget *b=0;
+       */
 
 
       gtk_widget_hide (b);
       gtk_widget_show_all (b);
     }
   gui_run_til_no_more ();
-return 1;
+  return 1;
 }
 
 
@@ -906,16 +961,18 @@ return 1;
 void *
 get_curr_win_gtk (void)
 {
-  debug("Current window : %p",currwindow);
-  return (void *)GTK_WINDOW(currwindow);
+  debug ("Current window : %p", currwindow);
+  return (void *) GTK_WINDOW (currwindow);
 }
 
 
 
-void display_internal(int x,int y,char *s,int a,int clr_line) {
-GtkFixed *cwin;
-GtkLabel *lab;
-char buff[256];
+void
+display_internal (int x, int y, char *s, int a, int clr_line)
+{
+  GtkFixed *cwin;
+  GtkLabel *lab;
+  char buff[256];
   if (x == -1 && y == -1)
     {
       printf ("%s\n", s);
@@ -923,36 +980,40 @@ char buff[256];
     }
   else
     {
-      x--; y--;
+      x--;
+      y--;
       cwin = (GtkFixed *) get_curr_win_gtk ();
       sprintf (buff, "LABEL_%d_%d", x, y);
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
 
       if (lab)
-        {
-          if (strlen (s))
-            {
-              gui_set_field_fore((GtkWidget *)lab, decode_colour_attr_aubit(a));
-              gtk_label_set_text (lab, s);
-              gtk_widget_show (GTK_WIDGET (lab));
-            }
-          else
-            {
-              gtk_widget_destroy (GTK_WIDGET (lab));
-              gtk_object_set_data (GTK_OBJECT (cwin), buff, 0);
-            }
-        }
+	{
+	  if (strlen (s))
+	    {
+	      gui_set_field_fore ((GtkWidget *) lab,
+				  decode_colour_attr_aubit (a));
+	      gtk_label_set_text (lab, s);
+	      gtk_widget_show (GTK_WIDGET (lab));
+	    }
+	  else
+	    {
+	      gtk_widget_destroy (GTK_WIDGET (lab));
+	      gtk_object_set_data (GTK_OBJECT (cwin), buff, 0);
+	    }
+	}
       else
-        {
-          if (strlen (buff))
-            {
-              lab = (GtkLabel *) gtk_label_new (s);
-       	      gui_set_field_fore((GtkWidget *)lab, decode_colour_attr_aubit(a));
-              gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH, y * YHEIGHT);
-              gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
-              gtk_widget_show (GTK_WIDGET (lab));
-            }
-        }
+	{
+	  if (strlen (buff))
+	    {
+	      lab = (GtkLabel *) gtk_label_new (s);
+	      gui_set_field_fore ((GtkWidget *) lab,
+				  decode_colour_attr_aubit (a));
+	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
+			     y * YHEIGHT);
+	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
+	      gtk_widget_show (GTK_WIDGET (lab));
+	    }
+	}
     }
   gui_run_til_no_more ();
 
@@ -969,28 +1030,29 @@ char buff[256];
 void
 display_at (int n, int a)
 {
-int x, y;
-int z;
-char *s=0;
-char *ptr; char *buff2=0;
-GtkFixed *cwin;
-GtkLabel *lab;
-char buff[256];
+  int x, y;
+  int z;
+  char *s = 0;
+  char *ptr;
+  char *buff2 = 0;
+  GtkFixed *cwin;
+  GtkLabel *lab;
+  char buff[256];
 
   x = pop_int ();
   y = pop_int ();
-  s=malloc(2);
-  s[0]=0;
-  debug("Got %d arguments");
+  s = malloc (2);
+  s[0] = 0;
+  debug ("Got %d arguments");
   for (z = 0; z <= n - 1; z++)
     {
-        ptr=char_pop();
-        debug("DISPLAY_AT : '%s'\n",ptr);
-        buff2=realloc(buff2,strlen(s)+strlen(ptr)+1);
-        s=realloc(s,strlen(s)+strlen(ptr)+1);
-        sprintf(buff2,"%s%s",ptr,s);
-        strcpy(s,buff2);
-        debug("s='%s' %p\n",s,s);
+      ptr = char_pop ();
+      debug ("DISPLAY_AT : '%s'\n", ptr);
+      buff2 = realloc (buff2, strlen (s) + strlen (ptr) + 1);
+      s = realloc (s, strlen (s) + strlen (ptr) + 1);
+      sprintf (buff2, "%s%s", ptr, s);
+      strcpy (s, buff2);
+      debug ("s='%s' %p\n", s, s);
     }
   debug ("Display @ x=%d y=%d s=%s\n", x, y, s);
 
@@ -1001,7 +1063,8 @@ char buff[256];
     }
   else
     {
-      x--; y--;
+      x--;
+      y--;
       cwin = (GtkFixed *) get_curr_win_gtk ();
       sprintf (buff, "LABEL_%d_%d", x, y);
       lab = (GtkLabel *) gtk_object_get_data (GTK_OBJECT (cwin), buff);
@@ -1010,7 +1073,8 @@ char buff[256];
 	{
 	  if (strlen (s))
 	    {
-      		gui_set_field_fore((GtkWidget *)lab, decode_colour_attr_aubit(a));
+	      gui_set_field_fore ((GtkWidget *) lab,
+				  decode_colour_attr_aubit (a));
 	      gtk_label_set_text (lab, s);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
@@ -1025,8 +1089,10 @@ char buff[256];
 	  if (strlen (buff))
 	    {
 	      lab = (GtkLabel *) gtk_label_new (s);
-      	gui_set_field_fore((GtkWidget *)lab, decode_colour_attr_aubit(a));
-		  gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH, y * YHEIGHT);
+	      gui_set_field_fore ((GtkWidget *) lab,
+				  decode_colour_attr_aubit (a));
+	      gtk_fixed_put (GTK_FIXED (cwin), GTK_WIDGET (lab), x * XWIDTH,
+			     y * YHEIGHT);
 	      gtk_object_set_data (GTK_OBJECT (cwin), buff, lab);
 	      gtk_widget_show (GTK_WIDGET (lab));
 	    }
@@ -1166,7 +1232,8 @@ close_form (char *name)
  */
 int
 /* open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c())) */
-open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, void *handler_e,void (*handler_c(int a, int b)))
+open_gui_form (char *name_orig, int absolute, int nat, char *like,
+	       int disable, void *handler_e, void (*handler_c (int a, int b)))
 {
   GtkWindow *win;
   GtkFixed *fixed;
@@ -1176,9 +1243,9 @@ open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, v
   struct struct_form *the_form;
   int a;
 
-  strcpy(name,name_orig);
-  decode_gui_winname(name);
-  if (like&&strlen(like))
+  strcpy (name, name_orig);
+  decode_gui_winname (name);
+  if (like && strlen (like))
     {
       strcpy (formname, like);
     }
@@ -1213,49 +1280,50 @@ open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, v
   /* add_pointer (name, WINCODE, fixed); */
   add_pointer (name, WINCODE, win);
 
-  gtk_signal_connect (GTK_OBJECT (win), "delete_event", GTK_SIGNAL_FUNC (handler_e), win);
-  gtk_signal_connect (GTK_OBJECT (win), "destroy", GTK_SIGNAL_FUNC (handler_e), win);
-  /*
-  gtk_signal_connect (GTK_OBJECT (win), "motion_notify", GTK_SIGNAL_FUNC (handler_e), win);
-  gtk_signal_connect (GTK_OBJECT (win), "key_press_event", GTK_SIGNAL_FUNC (handler_e), win);
-  gtk_signal_connect (GTK_OBJECT (win), "key_release_event", GTK_SIGNAL_FUNC (handler_e), win);
-  */
-  gtk_signal_connect (GTK_OBJECT (win), "focus_in_event", GTK_SIGNAL_FUNC (handler_e), win);
-  /*
-  gtk_signal_connect (GTK_OBJECT (win), "focus_out_event", GTK_SIGNAL_FUNC (handler_e), win);
-  gtk_signal_connect (GTK_OBJECT (win), "other_event", GTK_SIGNAL_FUNC (handler_e), win);
-  gtk_signal_connect (GTK_OBJECT (win), "enter_notify_event", GTK_SIGNAL_FUNC (handler_e), win);
-  gtk_signal_connect (GTK_OBJECT (win), "leave_notify_event", GTK_SIGNAL_FUNC (handler_e), win);
-  gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
+  gtk_signal_connect (GTK_OBJECT (win), "delete_event",
 		      GTK_SIGNAL_FUNC (handler_e), win);
-  */
+  gtk_signal_connect (GTK_OBJECT (win), "destroy",
+		      GTK_SIGNAL_FUNC (handler_e), win);
+  /*
+     gtk_signal_connect (GTK_OBJECT (win), "motion_notify", GTK_SIGNAL_FUNC (handler_e), win);
+     gtk_signal_connect (GTK_OBJECT (win), "key_press_event", GTK_SIGNAL_FUNC (handler_e), win);
+     gtk_signal_connect (GTK_OBJECT (win), "key_release_event", GTK_SIGNAL_FUNC (handler_e), win);
+   */
+  gtk_signal_connect (GTK_OBJECT (win), "focus_in_event",
+		      GTK_SIGNAL_FUNC (handler_e), win);
+  /*
+     gtk_signal_connect (GTK_OBJECT (win), "focus_out_event", GTK_SIGNAL_FUNC (handler_e), win);
+     gtk_signal_connect (GTK_OBJECT (win), "other_event", GTK_SIGNAL_FUNC (handler_e), win);
+     gtk_signal_connect (GTK_OBJECT (win), "enter_notify_event", GTK_SIGNAL_FUNC (handler_e), win);
+     gtk_signal_connect (GTK_OBJECT (win), "leave_notify_event", GTK_SIGNAL_FUNC (handler_e), win);
+     gtk_signal_connect (GTK_OBJECT (win), "key-press-event",
+     GTK_SIGNAL_FUNC (handler_e), win);
+   */
 
-  form = (GtkFixed *) read_form_gtk (formname,"uhmmm");
-  printf(">>>>      Setting currform...\n");
-  debug(">>>>      Setting currform... for %p  to %p\n",fixed,form);
-  if (form==0) {
-	exitwith("Unable to open form");
-	return 0;
-  }
+  form = (GtkFixed *) read_form_gtk (formname, "uhmmm");
+  printf (">>>>      Setting currform...\n");
+  debug (">>>>      Setting currform... for %p  to %p\n", fixed, form);
+  if (form == 0)
+    {
+      exitwith ("Unable to open form");
+      return 0;
+    }
   gtk_object_set_data (GTK_OBJECT (win), "currform", form);
 
   gtk_fixed_put (GTK_FIXED (fixed), GTK_WIDGET (form), 0, 0);
   gtk_widget_show (GTK_WIDGET (form));
   gtk_widget_show_all (GTK_WIDGET (win));
 
-  handler_c(0,0);
+  handler_c (0, 0);
 
   the_form = gtk_object_get_data (GTK_OBJECT (form), "xdr_form");
 
   for (a = 0; a < the_form->metrics.metrics_len; a++)
-  {
-    debug ("%p -> ", the_form->metrics.metrics_val[a].field);
-	  gtk_object_set_data(
-		  (GtkObject *)the_form->metrics.metrics_val[a].field,
-			"HANDLER",
-			handler_c
-		);
-  }
+    {
+      debug ("%p -> ", the_form->metrics.metrics_val[a].field);
+      gtk_object_set_data ((GtkObject *) the_form->metrics.metrics_val[a].
+			   field, "HANDLER", handler_c);
+    }
 
 
   gtk_widget_show (GTK_WIDGET (win));
@@ -1269,18 +1337,19 @@ open_gui_form (char *name_orig, int absolute,int nat, char *like, int disable, v
  *
  */
 void
-decode_gui_winname(char *name)
+decode_gui_winname (char *name)
 {
-char buff[256];
-char *ptr;
-	strcpy(buff,name);
-	ptr=strchr(name,'_');
-	debug("Decoding name %s - ptr=%p",name,ptr);
-	if (ptr) {
-		strcpy(buff,ptr+1);
-		debug("Buff=%s\n",buff);
-		strcpy(name,buff);
-	}
+  char buff[256];
+  char *ptr;
+  strcpy (buff, name);
+  ptr = strchr (name, '_');
+  debug ("Decoding name %s - ptr=%p", name, ptr);
+  if (ptr)
+    {
+      strcpy (buff, ptr + 1);
+      debug ("Buff=%s\n", buff);
+      strcpy (name, buff);
+    }
 }
 
 /**
@@ -1289,29 +1358,37 @@ char *ptr;
  *
  */
 void
-gotolinemode(void)
+gotolinemode (void)
 {
-	debug("Set gotolinemode");
+  debug ("Set gotolinemode");
 }
 
 /**
  *
  */
 int
-decode_colour_attr_aubit(int a)
+decode_colour_attr_aubit (int a)
 {
-char colour[20];
-char attr[256];
-	get_strings_from_attr(a,colour,attr);
-	if (strcmp(colour,"BLACK")==0)   return 0;
-	if (strcmp(colour,"RED")==0)     return 1;
-	if (strcmp(colour,"GREEN")==0)   return 2;
-	if (strcmp(colour,"YELLOW")==0)  return 3;
-	if (strcmp(colour,"BLUE")==0)    return 4;
-	if (strcmp(colour,"MAGENTA")==0) return 5;
-	if (strcmp(colour,"CYAN")==0)    return 6;
-	if (strcmp(colour,"WHITE")==0)   return 7;
-	return 0;
+  char colour[20];
+  char attr[256];
+  get_strings_from_attr (a, colour, attr);
+  if (strcmp (colour, "BLACK") == 0)
+    return 0;
+  if (strcmp (colour, "RED") == 0)
+    return 1;
+  if (strcmp (colour, "GREEN") == 0)
+    return 2;
+  if (strcmp (colour, "YELLOW") == 0)
+    return 3;
+  if (strcmp (colour, "BLUE") == 0)
+    return 4;
+  if (strcmp (colour, "MAGENTA") == 0)
+    return 5;
+  if (strcmp (colour, "CYAN") == 0)
+    return 6;
+  if (strcmp (colour, "WHITE") == 0)
+    return 7;
+  return 0;
 }
 
 /**
@@ -1320,13 +1397,13 @@ char attr[256];
 struct struct_screen_record *
 get_srec_gtk (char *name)
 {
-int a;
-struct_form *formdets;
-void *fd1;
-void *cwin;
+  int a;
+  struct_form *formdets;
+  void *fd1;
+  void *cwin;
 
   cwin = (GtkFixed *) get_curr_win_gtk ();
-  fd1 = gtk_object_get_data(GTK_OBJECT(cwin), "currform");
+  fd1 = gtk_object_get_data (GTK_OBJECT (cwin), "currform");
   debug ("fd1=%p\n", fd1);
   formdets = gtk_object_get_data (fd1, "xdr_form");
 
@@ -1342,15 +1419,20 @@ void *cwin;
 
 
 
-char *get_currwin_name() {
-	return currwinname;
+char *
+get_currwin_name ()
+{
+  return currwinname;
 }
+
 /* ================================ EOF ================================ */
 
 
 
-void dump_object(GtkObject *o) {
-	debug("Object : %p\n");
+void
+dump_object (GtkObject * o)
+{
+  debug ("Object : %p\n");
 /*
 	debug("type:%d ",o->klass->type);
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.2 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.3 2003-05-12 14:24:26 mikeaubury Exp $
 #*/
 
 /**
@@ -42,10 +42,10 @@
  */
 
  /*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
+    =====================================================================
+    Includes
+    =====================================================================
+  */
 
 #include "a4gl_lib_sql_int.h"
 extern sqlca_struct sqlca;
@@ -90,7 +90,8 @@ void
 A4GLSQL_set_status (int a, int sql)
 {
   status = a;
-  if (sql) sqlca.sqlcode = a;
+  if (sql)
+    sqlca.sqlcode = a;
   debug ("Status set to %d", a);
 }
 #endif
@@ -102,14 +103,15 @@ A4GLSQL_set_status (int a, int sql)
 int
 A4GLSQL_init_connection (char *dbName)
 {
-char fname[256];
-  sprintf(fname,"%s.schema",dbName);
-  f_db_in=open_file_dbpath(fname);
-  if (f_db_in==0) {
-		set_errm(fname);
-		exitwith("Couldn't open schema file");
-  }
-	
+  char fname[256];
+  sprintf (fname, "%s.schema", dbName);
+  f_db_in = open_file_dbpath (fname);
+  if (f_db_in == 0)
+    {
+      set_errm (fname);
+      exitwith ("Couldn't open schema file");
+    }
+
   return 0;
 }
 
@@ -130,7 +132,7 @@ A4GLSQL_get_status (void)
 char *
 A4GLSQL_get_sqlerrm (void)
 {
-	return global_A4GLSQL_get_sqlerrm ();
+  return global_A4GLSQL_get_sqlerrm ();
 }
 
 /**
@@ -140,15 +142,21 @@ A4GLSQL_get_sqlerrm (void)
 int
 A4GLSQL_read_columns (char *tabname, char *colname, int *dtype, int *size)
 {
-char *buff;
-	if (f_db_in==0) { exitwith("Not connected to database"); return 0; }
-debug("READ COLUMNS\n");
-  A4GLSQL_get_columns(tabname,colname,dtype,size);
+  char *buff;
+  if (f_db_in == 0)
+    {
+      exitwith ("Not connected to database");
+      return 0;
+    }
+  debug ("READ COLUMNS\n");
+  A4GLSQL_get_columns (tabname, colname, dtype, size);
 
-  while (A4GLSQL_next_column(&buff,dtype,size)) {
-		if (strcasecmp(colname,buff)==0) return 1;
-  }
-return 0;
+  while (A4GLSQL_next_column (&buff, dtype, size))
+    {
+      if (strcasecmp (colname, buff) == 0)
+	return 1;
+    }
+  return 0;
 }
 
 /**
@@ -156,71 +164,89 @@ return 0;
  * @todo Describe function
  */
 int
-A4GLSQL_initsqllib(void)
+A4GLSQL_initsqllib (void)
 {
-	return 1;
+  return 1;
 }
 
 int
-A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size) {
-char buff[256];
-char tname[256];
-if (f_db_in==0) { exitwith("Not connected to database"); return 0; }
+A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
+{
+  char buff[256];
+  char tname[256];
+  if (f_db_in == 0)
+    {
+      exitwith ("Not connected to database");
+      return 0;
+    }
 
-rewind(f_db_in);
+  rewind (f_db_in);
 
-while (1) {
-	if (feof(f_db_in)) break;
-	fgets(buff,255,f_db_in);
-	debug("%s\n",buff);
-	if (buff[0]=='[') {
-		char *ptr;
-		strcpy(tname,&buff[1]);
-		ptr=strchr(tname,']');
-		if (!ptr) {
-			exitwith("Parse error in schema file - no ']'");
-			return 0;
-		}
+  while (1)
+    {
+      if (feof (f_db_in))
+	break;
+      fgets (buff, 255, f_db_in);
+      debug ("%s\n", buff);
+      if (buff[0] == '[')
+	{
+	  char *ptr;
+	  strcpy (tname, &buff[1]);
+	  ptr = strchr (tname, ']');
+	  if (!ptr)
+	    {
+	      exitwith ("Parse error in schema file - no ']'");
+	      return 0;
+	    }
 
-		*ptr=0;
+	  *ptr = 0;
 
-		debug("Checking table : %s %s\n",tname,tabname);
-		if (strcasecmp(tname,tabname)==0) {
-			// Found it...
-			return 1;
-		}
+	  debug ("Checking table : %s %s\n", tname, tabname);
+	  if (strcasecmp (tname, tabname) == 0)
+	    {
+	      // Found it...
+	      return 1;
+	    }
 	}
-}
-set_errm(tabname);
-exitwith("Table not found\n");
-return 0;
+    }
+  set_errm (tabname);
+  exitwith ("Table not found\n");
+  return 0;
 }
 
 
 
 int
-A4GLSQL_end_get_columns(void)
+A4GLSQL_end_get_columns (void)
 {
   return 0;
 }
 
 int
-A4GLSQL_next_column(char **colname, int *dtype,int *size) {
-char buff[256];
-static char cname[256];
-int a;
-if (f_db_in==0) { exitwith("Not connected to database"); return 0; }
+A4GLSQL_next_column (char **colname, int *dtype, int *size)
+{
+  char buff[256];
+  static char cname[256];
+  int a;
+  if (f_db_in == 0)
+    {
+      exitwith ("Not connected to database");
+      return 0;
+    }
 
 // We should already be at the right spot....
-fgets(buff,255,f_db_in);
+  fgets (buff, 255, f_db_in);
 
 // Is this a valid line ?
-if (buff[0]=='[') return 0; // Obviously not - its another table...
-a=sscanf(buff,"%s %d %d",cname,dtype,size);
-if (a!=3) return 0;
-*colname=cname;
-debug("Got cname as %s\n",cname);
-return 1;
+  if (buff[0] == '[')
+    return 0;			// Obviously not - its another table...
+  a = sscanf (buff, "%s %d %d", cname, dtype, size);
+  if (a != 3)
+    return 0;
+  *colname = cname;
+  debug ("Got cname as %s\n", cname);
+  return 1;
 
 }
+
 /* =============================== EOF ============================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.7 2003-01-11 16:05:47 mikeaubury Exp $
+# $Id: screen.c,v 1.8 2003-05-12 14:24:18 mikeaubury Exp $
 #*/
 
 /**
@@ -46,13 +46,13 @@
 
 #ifdef OLD_INCL
 
-	#include "a4gl_dbform.h" 	/* needed for struct s_form_dets in function find_attribute */
-	#include "a4gl_aubit_lib.h" /* zrefresh() */
-	#include "a4gl_debug.h" 	/* debug() */
+#include "a4gl_dbform.h"	/* needed for struct s_form_dets in function find_attribute */
+#include "a4gl_aubit_lib.h"	/* zrefresh() */
+#include "a4gl_debug.h"		/* debug() */
 
 #else
 
-    #include "a4gl_libaubit4gl_int.h"
+#include "a4gl_libaubit4gl_int.h"
 
 #endif
 
@@ -71,7 +71,7 @@ extern int ui_mode;
 */
 
 
-char * find_attribute (struct s_form_dets *f, int field_no);
+char *find_attribute (struct s_form_dets *f, int field_no);
 int chk_iskey (char *keys);
 
 /*
@@ -85,22 +85,22 @@ int chk_iskey (char *keys);
  * @param a
  */
 int
-screen_mode(int a)
+screen_mode (int a)
 {
-  static int smode=1;
-  if (a==-1)
-	  return smode;
+  static int smode = 1;
+  if (a == -1)
+    return smode;
 
-  if (a==smode)
+  if (a == smode)
     return smode;
-  if (a==0)
-  {
-    smode=0;
-    return smode;
-  }
-  smode=1;
-  zrefresh();
-	return smode;
+  if (a == 0)
+    {
+      smode = 0;
+      return smode;
+    }
+  smode = 1;
+  zrefresh ();
+  return smode;
 }
 
 
@@ -147,12 +147,12 @@ chk_iskey (char *keys)
     {
       debug ("Chk keys (%s - %d %d )\n", k, key_val (k), get_lastkey ());
       if (key_val (k) == get_lastkey ())
-        {
-          return 1;
-        }
+	{
+	  return 1;
+	}
       k = strtok (0, "|");
       if (k == 0)
-        return 0;
+	return 0;
     }
   return 0;
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: params.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: params.c,v 1.3 2003-05-12 14:24:31 mikeaubury Exp $
 #*/
 
 /**
@@ -81,8 +81,8 @@ static int args_type[256];
 */
 
 #ifdef OLD_INCL
-	void split_config (char *str);
-	void * find_param (char *name);
+void split_config (char *str);
+void *find_param (char *name);
 #endif
 
 

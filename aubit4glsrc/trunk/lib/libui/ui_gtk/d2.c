@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: d2.c,v 1.3 2002-12-24 08:57:45 mikeaubury Exp $
+# $Id: d2.c,v 1.4 2003-05-12 14:24:28 mikeaubury Exp $
 #*/
 
 /**
@@ -96,7 +96,7 @@ delete_event (GtkWidget * widget, GdkEvent * event, gpointer data)
 void
 destroy_event (GtkWidget * widget, gpointer data)
 {
-  debug(" destroy_event : widget=%p data=%x\n",widget,data);
+  debug (" destroy_event : widget=%p data=%x\n", widget, data);
   gtk_main_quit ();
 }
 

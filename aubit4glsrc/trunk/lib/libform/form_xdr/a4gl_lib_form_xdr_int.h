@@ -1,6 +1,6 @@
 
 #ifdef __CYGWIN__
-	#include <rpc/rpc.h>
+#include <rpc/rpc.h>
 #endif
 
 //prevent form_x.xs.h from including from form_x.x.h
@@ -16,9 +16,7 @@ dll_import struct struct_form the_form;
 */
 #define USE_XDR_H
 #ifndef USE_XDR_H
-	#include "../../../common/dataio/form_x.x.h"
+#include "../../../common/dataio/form_x.x.h"
 #else
-	#include "../../../common/dataio/form_x.h"
+#include "../../../common/dataio/form_x.h"
 #endif
-
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display.c,v 1.5 2003-03-08 10:22:52 mikeaubury Exp $
+# $Id: display.c,v 1.6 2003-05-12 14:24:29 mikeaubury Exp $
 #*/
 
 /**
@@ -65,9 +65,9 @@ extern GtkWindow *currwindow;
 
 
 #ifdef OLD_INCL
-	int display_generic (GtkWidget * k, char *s);
-	GtkWidget * find_widget (GtkWindow * form, char *ident);
-	void dump_mem(char *ptr);
+int display_generic (GtkWidget * k, char *s);
+GtkWidget *find_widget (GtkWindow * form, char *ident);
+void dump_mem (char *ptr);
 #endif
 
 /*
@@ -92,7 +92,7 @@ int
 display_generic (GtkWidget * k, char *s)
 {
   char *ptr;
-  debug ("in display_generic k=%p s='%s'\n", k,s);
+  debug ("in display_generic k=%p s='%s'\n", k, s);
 
   ptr = gtk_object_get_data (GTK_OBJECT (k), "WidgetType");
 
@@ -104,36 +104,40 @@ display_generic (GtkWidget * k, char *s)
 
   debug ("Widgettye=%s\n", ptr);
 
-  if (strcasecmp (ptr, "BUTTON") == 0) {
-	GtkWidget *w;
-	w=gtk_object_get_data(GTK_OBJECT(k),"LABEL");
-	if (w) {
-		gtk_label_set_text(GTK_LABEL(w),s);
+  if (strcasecmp (ptr, "BUTTON") == 0)
+    {
+      GtkWidget *w;
+      w = gtk_object_get_data (GTK_OBJECT (k), "LABEL");
+      if (w)
+	{
+	  gtk_label_set_text (GTK_LABEL (w), s);
 	}
-  }
+    }
 
 
 
   if (strcasecmp (ptr, "LABEL") == 0)
     {
-      gtk_label_set_text (GTK_LABEL(k), s);
+      gtk_label_set_text (GTK_LABEL (k), s);
       return 1;
     }
 
   if (strcasecmp (ptr, "ENTRY") == 0 || strcasecmp (ptr, "TEXT") == 0)
     {
-      gtk_entry_set_text (GTK_ENTRY(k), s);
+      gtk_entry_set_text (GTK_ENTRY (k), s);
       return 1;
     }
 
 
-  if (strcasecmp (ptr, "LIST") == 0) {
-	printf("Adding to list...\n");fflush(stdout);
+  if (strcasecmp (ptr, "LIST") == 0)
+    {
+      printf ("Adding to list...\n");
+      fflush (stdout);
 
-	k = gtk_object_get_data (GTK_OBJECT (k), "Child");
-        gtk_clist_append(GTK_CLIST(k),&s);
+      k = gtk_object_get_data (GTK_OBJECT (k), "Child");
+      gtk_clist_append (GTK_CLIST (k), &s);
 
-  }
+    }
 
 
   if (strcasecmp (ptr, "RADIO") == 0)
@@ -155,59 +159,65 @@ display_generic (GtkWidget * k, char *s)
 	  if (strcmp (ptr, s) == 0)
 	    {
 	      debug ("Ok - set it\n");
-	      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(btn), 1);
+	      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (btn), 1);
 	      return 1;
 	    }
 	}
       return 0;
     }
 
-  if (strcasecmp (ptr, "CALENDAR") == 0) {
-	int da;
-	int d,m,y;
-	char ss[21];
-	strcpy(ss,s);
-	A4GLSQL_set_status(0,0);
-	trim(ss);
-	if (strlen(ss)==0) {
-        	gtk_calendar_clear_marks(GTK_CALENDAR(k));
-		return 0;
-	}
-		
-	debug("s set to %s\n",ss);
-   	push_variable(&ss,0x140000);
-   	pop_var2(&da,7,0);
-	debug("Got date as %d\n",da);
-
-	if (a4gl_status!=0) return 1;
-	debug("Everything seems ok...");
-
-   	push_variable(&da,0x7); aclfgl_day(1);
-   	pop_var2(&d,2,0);
-
-   	push_variable(&da,0x7); aclfgl_month(1);
-   	pop_var2(&m,2,0);
-
-   	push_variable(&da,0x7); aclfgl_year(1);
-   	pop_var2(&y,2,0);
-
-        gtk_calendar_select_month(GTK_CALENDAR(k),m,y);
-        gtk_calendar_select_day(GTK_CALENDAR(k),d);
-	return 1;
-  }
-
-  if (strcasecmp (ptr, "SCROLLBAR") == 0 )
+  if (strcasecmp (ptr, "CALENDAR") == 0)
     {
-	gdouble d;
-	d=atof(s);
-        gtk_adjustment_set_value ((GtkAdjustment*)GTK_ENTRY(k), d);
-        /*
-		#define GTK_ENTRY(obj)                  (GTK_CHECK_CAST ((obj), GTK_TYPE_ENTRY, GtkEntry))
+      int da;
+      int d, m, y;
+      char ss[21];
+      strcpy (ss, s);
+      A4GLSQL_set_status (0, 0);
+      trim (ss);
+      if (strlen (ss) == 0)
+	{
+	  gtk_calendar_clear_marks (GTK_CALENDAR (k));
+	  return 0;
+	}
 
-		void       gtk_adjustment_set_value             (GtkAdjustment   *adjustment,
-		                                                 gfloat           value);
-        */
-		return 1;
+      debug ("s set to %s\n", ss);
+      push_variable (&ss, 0x140000);
+      pop_var2 (&da, 7, 0);
+      debug ("Got date as %d\n", da);
+
+      if (a4gl_status != 0)
+	return 1;
+      debug ("Everything seems ok...");
+
+      push_variable (&da, 0x7);
+      aclfgl_day (1);
+      pop_var2 (&d, 2, 0);
+
+      push_variable (&da, 0x7);
+      aclfgl_month (1);
+      pop_var2 (&m, 2, 0);
+
+      push_variable (&da, 0x7);
+      aclfgl_year (1);
+      pop_var2 (&y, 2, 0);
+
+      gtk_calendar_select_month (GTK_CALENDAR (k), m, y);
+      gtk_calendar_select_day (GTK_CALENDAR (k), d);
+      return 1;
+    }
+
+  if (strcasecmp (ptr, "SCROLLBAR") == 0)
+    {
+      gdouble d;
+      d = atof (s);
+      gtk_adjustment_set_value ((GtkAdjustment *) GTK_ENTRY (k), d);
+      /*
+         #define GTK_ENTRY(obj)                  (GTK_CHECK_CAST ((obj), GTK_TYPE_ENTRY, GtkEntry))
+
+         void       gtk_adjustment_set_value             (GtkAdjustment   *adjustment,
+         gfloat           value);
+       */
+      return 1;
     }
 
 /* NEWWIDGET - Add here */
@@ -231,7 +241,7 @@ find_widget (GtkWindow * form, char *ident)
   if (form == 0)
     form = currwindow;
 
-  w = gtk_object_get_data (GTK_OBJECT(form), "currform");
+  w = gtk_object_get_data (GTK_OBJECT (form), "currform");
 
 
   if (w == 0)
@@ -255,13 +265,14 @@ find_widget (GtkWindow * form, char *ident)
  * @param ptr A pointer to the information that we want to dump.
  */
 void
-dump_mem(char *ptr)
+dump_mem (char *ptr)
 {
   int a;
-  debug("Mem dump for %p\n",ptr);
-  for (a=0;a<32;a++) {
-    debug("%d : %x",a,ptr[a]);
-  }
+  debug ("Mem dump for %p\n", ptr);
+  for (a = 0; a < 32; a++)
+    {
+      debug ("%d : %x", a, ptr[a]);
+    }
 }
 
 

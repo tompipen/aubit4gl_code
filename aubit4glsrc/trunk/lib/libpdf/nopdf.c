@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nopdf.c,v 1.5 2002-10-20 12:02:38 afalout Exp $
+# $Id: nopdf.c,v 1.6 2003-05-12 14:24:23 mikeaubury Exp $
 #*/
 
 /**
@@ -46,20 +46,19 @@
 #include <stdio.h>
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
-	#include <windows.h>
-	int WINAPI
+#include <windows.h>
+int WINAPI
+libPDF_NOPDF_init (HANDLE h, DWORD reason, void *foo)
+{
+  return 1;
+}
 
-	libPDF_NOPDF_init(HANDLE h, DWORD reason, void *foo)
-	{
-	  return 1;
-	}
 
-
-	char
-	libPDF_NOPDF_is_dll (void)
-	{
-	  return 1;
-	}
+char
+libPDF_NOPDF_is_dll (void)
+{
+  return 1;
+}
 #endif /* WIN32 && DLL_EXPORT */
 
 /*
@@ -91,9 +90,10 @@
 
 extern void A4GLPDF_initlib (void);
 
-void A4GLPDF_initlib (void) 
+void
+A4GLPDF_initlib (void)
 {
-	/* Does nothing */
+  /* Does nothing */
 }
 
 /* ======================== EOF =============================== */

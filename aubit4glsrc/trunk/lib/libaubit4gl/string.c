@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.16 2003-04-24 13:35:06 mikeaubury Exp $
+# $Id: string.c,v 1.17 2003-05-12 14:24:18 mikeaubury Exp $
 #
 */
 
@@ -39,10 +39,10 @@
 
 
  /*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
+    =====================================================================
+    Includes
+    =====================================================================
+  */
 
 
 
@@ -71,7 +71,7 @@
 =====================================================================
 */
 
-int strnullcmp(char *s1,char *s2);
+int strnullcmp (char *s1, char *s2);
 
 
 
@@ -79,14 +79,14 @@ int strnullcmp(char *s1,char *s2);
  *
  * @todo Desctibe function
  */
-void 
-string_set(char *ptr,char *b,int size)
+void
+string_set (char *ptr, char *b, int size)
 {
-	strncpy(ptr,b,size);
-        ptr[size]=0; /* MJA 16.08.2001 */
-	pad_string(ptr,size);
-	debug("..");
-	debug("ptr=%p\n",ptr);
+  strncpy (ptr, b, size);
+  ptr[size] = 0;		/* MJA 16.08.2001 */
+  pad_string (ptr, size);
+  debug ("..");
+  debug ("ptr=%p\n", ptr);
 }
 
 
@@ -97,14 +97,14 @@ string_set(char *ptr,char *b,int size)
  * @return A pointer to the string created.
  */
 char *
-new_string(int a)
+new_string (int a)
 {
-char *ptr;
-	debug("In new_string %d\n",a);
-	ptr=(char *)acl_malloc(a+2,"New string"); /* 1 for NULL 1 for extra*/
-	memset(ptr,0,a+2);
-	debug("Aclmalloc returns %p",ptr);
-	return ptr;
+  char *ptr;
+  debug ("In new_string %d\n", a);
+  ptr = (char *) acl_malloc (a + 2, "New string");	/* 1 for NULL 1 for extra */
+  memset (ptr, 0, a + 2);
+  debug ("Aclmalloc returns %p", ptr);
+  return ptr;
 }
 
 
@@ -116,19 +116,21 @@ char *ptr;
  * @return A pointer to the string created.
  */
 char *
-new_string_set(int a,char *b)
+new_string_set (int a, char *b)
 {
-	char *ptr;
-	debug("new_string_set 0 a=%d",a);
-	ptr=new_string(a);
-	debug("new_string_set 1");
-	string_set(ptr,b,a);
-	debug("new_string_set 2");
-	#ifdef DEBUG
-		{debug("added : '%s' ",ptr);}
-	#endif
-	debug("new_string_set 3");
-	return ptr;
+  char *ptr;
+  debug ("new_string_set 0 a=%d", a);
+  ptr = new_string (a);
+  debug ("new_string_set 1");
+  string_set (ptr, b, a);
+  debug ("new_string_set 2");
+#ifdef DEBUG
+  {
+    debug ("added : '%s' ", ptr);
+  }
+#endif
+  debug ("new_string_set 3");
+  return ptr;
 }
 
 
@@ -137,14 +139,14 @@ new_string_set(int a,char *b)
  * @todo Describe function
  */
 void
-modify_size(char *z,int a)
+modify_size (char *z, int a)
 {
-char *zzz;
-	#ifdef DEBUG
-		debug("Modify size has been called !");
-	#endif
-	zzz=z-sizeof(int);
-	*(int *)zzz=a;
+  char *zzz;
+#ifdef DEBUG
+  debug ("Modify size has been called !");
+#endif
+  zzz = z - sizeof (int);
+  *(int *) zzz = a;
 }
 
 
@@ -161,9 +163,9 @@ char *zzz;
  *   - Otherwise : They are not equal.
  */
 int
-strncasecmp(char *a,char *b,int c)
+strncasecmp (char *a, char *b, int c)
 {
-	return strnicmp(a,b,c);
+  return strnicmp (a, b, c);
 }
 #endif
 
@@ -185,27 +187,28 @@ mja_strncmp (char *str1, char *str2, int n)
   else
     b = len2;
   if (b > n && n != 0)
-    b = n;                   /* compare only the first n, except where n=0 */
+    b = n;			/* compare only the first n, except where n=0 */
   for (a = 0; a < b; a++)
     {
       c1 = toupper (str1[a]);
       c2 = toupper (str2[a]);
       if (c1 < c2)
-        return -1;
+	return -1;
       if (c1 > c2)
-        return 1;
+	return 1;
     }
   return 0;
 }
 
 
 int
-strnullcmp(char *s1,char *s2)
+strnullcmp (char *s1, char *s2)
 {
-        if (s1==0) return -1;
-        if (s2==0) return -1;
-        return strcmp(s1,s2);
+  if (s1 == 0)
+    return -1;
+  if (s2 == 0)
+    return -1;
+  return strcmp (s1, s2);
 }
 
 /* =================================== EOF ============================ */
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.6 2003-04-07 16:26:46 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.7 2003-05-12 14:24:23 mikeaubury Exp $
 #*/
 
 /**
@@ -69,13 +69,13 @@
 */
 
 #ifdef PORTABLE
-	#include <netinet/in.h>
+#include <netinet/in.h>
 #else
 #ifndef htonl
-	#define htonl(x) (x)
-	#define htons(x) (x)
-	#define ntohl(x) (x)
-	#define ntohs(x) (x)
+#define htonl(x) (x)
+#define htons(x) (x)
+#define ntohl(x) (x)
+#define ntohs(x) (x)
 #endif
 #endif
 
@@ -89,11 +89,11 @@
 FILE *infile = 0;
 FILE *outfile = 0;
 
-char ibuff[20000];					/* Input line buffer */
+char ibuff[20000];		/* Input line buffer */
 
 int attrok = 0;
 int contentok = 0;
-int is_in_mem=0;
+int is_in_mem = 0;
 
 /*
 =====================================================================
@@ -102,7 +102,7 @@ int is_in_mem=0;
 */
 
 char *find_attr (char *s, char *n);	/* Extract a specified attribute from a string */
-char *find_contents (char *s);		/* Extract the tag contents from a string */
+char *find_contents (char *s);	/* Extract the tag contents from a string */
 
 /*
 int input_int (char *name, int *val, int ptr, int isarr);
@@ -184,31 +184,32 @@ chk (void *x)
  * @todo Describe function
  */
 int
-open_packer (char *basename,char dir)
+open_packer (char *basename, char dir)
 {
   char buff[256];
-  is_in_mem=0;
+  is_in_mem = 0;
 
   if (toupper (dir) == 'O')
     {
-  	sprintf (buff, "%s.dat", basename);
+      sprintf (buff, "%s.dat", basename);
       outfile = fopen (buff, "w");
 
-      if (outfile) {
-	set_last_outfile(buff);
-	return 1;
-      }
+      if (outfile)
+	{
+	  set_last_outfile (buff);
+	  return 1;
+	}
       return 0;
     }
 
   if (toupper (dir) == 'I')
     {
-  	sprintf (buff, "%s.dat", basename);
+      sprintf (buff, "%s.dat", basename);
       infile = open_file_dbpath (buff);
       if (infile)
 	return 1;
       return 0;
-   
+
     }
 
 
@@ -246,8 +247,8 @@ close_packer (char dir)
 int
 output_start_array (char *s, int type, int len)
 {
- 
-  return output_long(s,len,0,-1);
+
+  return output_long (s, len, 0, -1);
   /* return fwrite(&len,1,sizeof(len),outfile); */
 }
 
@@ -269,9 +270,9 @@ output_end_array (char *s, int type)
 int
 output_short (char *name, short val, int ptr, int isarr)
 {
-  debug("Outputing SHORT %s : 0x%x",name,val);
-  val=htons(val);
-  return fwrite(&val,1,sizeof(val),outfile);
+  debug ("Outputing SHORT %s : 0x%x", name, val);
+  val = htons (val);
+  return fwrite (&val, 1, sizeof (val), outfile);
 }
 
 
@@ -282,11 +283,14 @@ output_short (char *name, short val, int ptr, int isarr)
 int
 output_int (char *name, int val, int ptr, int isarr)
 {
-	if (sizeof(int)==sizeof(long)) {
-		return output_long(name,val,ptr,isarr);
-	} else {
-		return output_short(name,val,ptr,isarr);
-	}
+  if (sizeof (int) == sizeof (long))
+    {
+      return output_long (name, val, ptr, isarr);
+    }
+  else
+    {
+      return output_short (name, val, ptr, isarr);
+    }
 }
 
 /**
@@ -296,12 +300,12 @@ output_int (char *name, int val, int ptr, int isarr)
 int
 output_long (char *name, long val, int ptr, int isarr)
 {
-int a;
-  debug("Outputing LONG %s - 0x%x\n",name,val);
-  val=htonl(val);
- a=fwrite(&val,1,sizeof(val),outfile);
-	debug("a=%d\n",a);
- return a;
+  int a;
+  debug ("Outputing LONG %s - 0x%x\n", name, val);
+  val = htonl (val);
+  a = fwrite (&val, 1, sizeof (val), outfile);
+  debug ("a=%d\n", a);
+  return a;
 }
 
 
@@ -313,7 +317,7 @@ int
 //output_bool (char *name, short val, int ptr, int isarr)
 output_bool (char *name, int val, int ptr, int isarr)
 {
-	return output_short(name,val,ptr,isarr);
+  return output_short (name, val, ptr, isarr);
 }
 
 /**
@@ -323,14 +327,16 @@ output_bool (char *name, int val, int ptr, int isarr)
 int
 output_string (char *name, char *val, int ptr, int isarr)
 {
-int a;
-  debug("Output string - length first (%d) pos=%d",strlen(val),ftell(outfile));
-      output_long(name,strlen(val),ptr,isarr);
-  debug("outputing string itself (%s)",val);
-  a=fwrite(val,1,strlen(val),outfile);
+  int a;
+  debug ("Output string - length first (%d) pos=%d", strlen (val),
+	 ftell (outfile));
+  output_long (name, strlen (val), ptr, isarr);
+  debug ("outputing string itself (%s)", val);
+  a = fwrite (val, 1, strlen (val), outfile);
 
-  if (strlen(val)==0) a=1;
-  debug("pos now = %d",ftell(outfile));
+  if (strlen (val) == 0)
+    a = 1;
+  debug ("pos now = %d", ftell (outfile));
   return a;
 }
 
@@ -342,7 +348,7 @@ int
 output_double (char *name, double val, int ptr, int isarr)
 {
 /*  FIX PORTABILITY.... */
-  return fwrite(&val,1,sizeof(val),outfile);
+  return fwrite (&val, 1, sizeof (val), outfile);
 }
 
 /**
@@ -352,7 +358,7 @@ output_double (char *name, double val, int ptr, int isarr)
 int
 output_start_struct (char *s, char *n, int ptr, int isarr)
 {
-  debug("Starting struct %s\n",s);
+  debug ("Starting struct %s\n", s);
   return 1;
 }
 
@@ -383,8 +389,8 @@ output_start_union (char *s, char *n, int ptr, int isarr)
 int
 output_nullptr (char *s)
 {
-  char n=0;
-  return fwrite(&n,1,sizeof(n),outfile);
+  char n = 0;
+  return fwrite (&n, 1, sizeof (n), outfile);
 }
 
 /**
@@ -394,8 +400,8 @@ output_nullptr (char *s)
 int
 output_okptr (char *s)
 {
-  char n=1;
-  return fwrite(&n,1,sizeof(n),outfile);
+  char n = 1;
+  return fwrite (&n, 1, sizeof (n), outfile);
 }
 
 /**
@@ -433,10 +439,10 @@ output_enum (char *name, char *s, int d)
 int
 input_start_array (char *s, int type, int *len)
 {
-int a;
-  a=input_int(s,len,0,-1);
-  debug("ARRAY %s - Length of array=%d",s,*len);
-return a;
+  int a;
+  a = input_int (s, len, 0, -1);
+  debug ("ARRAY %s - Length of array=%d", s, *len);
+  return a;
 }
 
 /**
@@ -456,9 +462,9 @@ input_end_array (char *s, int type)
 int
 input_short (char *name, short *val, int ptr, int isarr)
 {
-int a;
-  a=fread(val,1,sizeof(short),infile);
-  *val=ntohs(*val);
+  int a;
+  a = fread (val, 1, sizeof (short), infile);
+  *val = ntohs (*val);
   return a;
 
 }
@@ -471,11 +477,14 @@ int a;
 int
 input_int (char *name, int *val, int ptr, int isarr)
 {
-	if (sizeof(int)==sizeof(long)) {
-	 return input_long(name,(long *)val,ptr,isarr);
-	} else {
-	 return input_short(name,(short *)val,ptr,isarr);
-	}
+  if (sizeof (int) == sizeof (long))
+    {
+      return input_long (name, (long *) val, ptr, isarr);
+    }
+  else
+    {
+      return input_short (name, (short *) val, ptr, isarr);
+    }
 }
 
 /**
@@ -487,12 +496,12 @@ input_long (char *name, long *val, int ptr, int isarr)
 {
   int a;
   /* long n; */
-  debug("Input_long val=%p",val);
-  a=fread(val,1,sizeof(long),infile);
+  debug ("Input_long val=%p", val);
+  a = fread (val, 1, sizeof (long), infile);
 
-  debug("Got long as %d\n",*val);
-  *val=ntohl(*val);
-  debug("->Got long as %d\n",*val);
+  debug ("Got long as %d\n", *val);
+  *val = ntohl (*val);
+  debug ("->Got long as %d\n", *val);
   return a;
 }
 
@@ -504,7 +513,7 @@ input_long (char *name, long *val, int ptr, int isarr)
 int
 input_bool (char *name, int *val, int ptr, int isarr)
 {
-	return input_short(name,(short *)val,ptr,isarr);
+  return input_short (name, (short *) val, ptr, isarr);
 }
 
 
@@ -515,15 +524,17 @@ input_bool (char *name, int *val, int ptr, int isarr)
 int
 input_string (char *name, char **val, int ptr, int isarr)
 {
-long l;
-int a;
-	debug("Inputing string %s",name);
-	if (!input_long("",&l,0,-1)) return 0;
-	debug("Got length as %d",l);
-	*val=malloc(l+1); /* Extra 1 for the \0 */
-	a=fread(*val,1,l,infile);
-	if (a==0&&l==0) return 1;
-	return a;
+  long l;
+  int a;
+  debug ("Inputing string %s", name);
+  if (!input_long ("", &l, 0, -1))
+    return 0;
+  debug ("Got length as %d", l);
+  *val = malloc (l + 1);	/* Extra 1 for the \0 */
+  a = fread (*val, 1, l, infile);
+  if (a == 0 && l == 0)
+    return 1;
+  return a;
 }
 
 /**
@@ -533,7 +544,7 @@ int a;
 int
 input_double (char *name, double *val, int ptr, int isarr)
 {
-  return fread(&val,1,sizeof(val),infile);
+  return fread (&val, 1, sizeof (val), infile);
 }
 
 /**
@@ -573,10 +584,12 @@ input_start_union (char *s, char *n, int ptr, int isarr)
 int
 input_ptr_ok ()
 {
-char n;
-	fread(&n,1,sizeof(n),infile);
-	if (n) return 1;
-	else   return 0;
+  char n;
+  fread (&n, 1, sizeof (n), infile);
+  if (n)
+    return 1;
+  else
+    return 0;
 }
 
 /**
@@ -596,7 +609,7 @@ input_end_union (char *s, char *n)
 int
 input_enum (char *name, int *d)
 {
-return input_int(name,d,0,-1);
+  return input_int (name, d, 0, -1);
 }
 
 /**
@@ -605,9 +618,9 @@ return input_int(name,d,0,-1);
  */
 int
 //can_pack_all(void)
-can_pack_all(char* name)
+can_pack_all (char *name)
 {
-	return 0;
+  return 0;
 }
 
 

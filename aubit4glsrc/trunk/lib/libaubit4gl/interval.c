@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.11 2003-03-02 14:06:58 mikeaubury Exp $
+# $Id: interval.c,v 1.12 2003-05-12 14:24:17 mikeaubury Exp $
 #
 */
 
@@ -54,8 +54,8 @@
 
 //extern int errno;
 int rval_type;
-struct ival rval_ival;			/* 1 */
-double rval_double;				/* 2 */
+struct ival rval_ival;		/* 1 */
+double rval_double;		/* 2 */
 
 
 /*
@@ -64,14 +64,14 @@ double rval_double;				/* 2 */
 =====================================================================
 */
 
-/* int 			valid_int 		(char *s, int *data,int size); */ /* in conv.c */
-int 			mk_int_size		(int s,int l);
+/* int 			valid_int 		(char *s, int *data,int size); *//* in conv.c */
+int mk_int_size (int s, int l);
 
-double 			get_rval_double	(void);
-struct ival * 	get_rval_ival	(void);
-int 			conv_invdatatoc	(int *data,int v1,int v2,int v3,struct ival *d);
-int 			op_ival 		(struct ival *a, struct ival *b,
-								double double_val,char op, char param);
+double get_rval_double (void);
+struct ival *get_rval_ival (void);
+int conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *d);
+int op_ival (struct ival *a, struct ival *b,
+	     double double_val, char op, char param);
 
 
 /*
@@ -85,9 +85,9 @@ int 			op_ival 		(struct ival *a, struct ival *b,
  * @todo Describe function
  */
 double
-get_rval_double(void)
+get_rval_double (void)
 {
-	return rval_double;
+  return rval_double;
 }
 
 
@@ -97,9 +97,9 @@ get_rval_double(void)
  * @todo Describe function
  */
 struct ival *
-get_rval_ival(void)
+get_rval_ival (void)
 {
-	return &rval_ival;
+  return &rval_ival;
 }
 
 
@@ -109,13 +109,13 @@ get_rval_ival(void)
  * @todo Describe function
  */
 int
-conv_invdatatoc(int *data,int v1,int v2,int v3,struct ival *i) 
+conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
 {
   char fractions[6];
   char *buff;
-  buff=i->data;
+  buff = i->data;
 
-  debug ("v1=%d v2=%d v3=%d buff=%p\n", v1, v2, v3,buff);
+  debug ("v1=%d v2=%d v3=%d buff=%p\n", v1, v2, v3, buff);
 
   debug ("Y %d\n", data[0]);
   debug ("M %d\n", data[1]);
@@ -124,60 +124,88 @@ conv_invdatatoc(int *data,int v1,int v2,int v3,struct ival *i)
   debug ("m %d\n", data[4]);
   debug ("S %d\n", data[5]);
   debug ("F %d\n", data[6]);
-  sprintf(fractions,"%05d",data[6]);
+  sprintf (fractions, "%05d", data[6]);
 
-  while (data[5]>=60) {data[5]-=60;data[4]++;} /* Increase minutes */
-  while (data[4]>=60) {data[4]-=60;data[3]++;} /* Increase Hours */
-  while (data[3]>=24) {data[3]-=24;data[2]++;} /* Increase days */
-  while (data[1]>=12) {data[1]-=12;data[0]++;}
+  while (data[5] >= 60)
+    {
+      data[5] -= 60;
+      data[4]++;
+    }				/* Increase minutes */
+  while (data[4] >= 60)
+    {
+      data[4] -= 60;
+      data[3]++;
+    }				/* Increase Hours */
+  while (data[3] >= 24)
+    {
+      data[3] -= 24;
+      data[2]++;
+    }				/* Increase days */
+  while (data[1] >= 12)
+    {
+      data[1] -= 12;
+      data[0]++;
+    }
 
 
-  switch (v2) {
-		case 2: data[1]+=data[0]*12;break; /* Month */
-		case 4: data[3]+=data[2]*24;break; /* Hour */
-		case 5: data[4]+=data[2]*24*60+data[3]*60;break; /* Minute */
-		case 6: data[5]+=data[2]*24*60*60+data[3]*60*60+data[4]*60;break; /* Second */
-	}
+  switch (v2)
+    {
+    case 2:
+      data[1] += data[0] * 12;
+      break;			/* Month */
+    case 4:
+      data[3] += data[2] * 24;
+      break;			/* Hour */
+    case 5:
+      data[4] += data[2] * 24 * 60 + data[3] * 60;
+      break;			/* Minute */
+    case 6:
+      data[5] += data[2] * 24 * 60 * 60 + data[3] * 60 * 60 + data[4] * 60;
+      break;			/* Second */
+    }
 
 
-  debug("Normalized data..");
-  
-  i->i_years=data[0];
-  i->i_months=data[1];
-  i->i_days=data[2];
-  i->i_hours=data[3];
-  i->i_minutes=data[4];
-  i->i_seconds=data[5];
-  i->i_fractions=data[6];
+  debug ("Normalized data..");
 
-  if (v1>=7) { fractions[v1-6]=0; debug("Set fractions to %s\n",fractions);}
+  i->i_years = data[0];
+  i->i_months = data[1];
+  i->i_days = data[2];
+  i->i_hours = data[3];
+  i->i_minutes = data[4];
+  i->i_seconds = data[5];
+  i->i_fractions = data[6];
 
-      if (v2 == 1)
-	sprintf (buff, "%0*d%02d0000000000000", v3, data[0], data[1]);
+  if (v1 >= 7)
+    {
+      fractions[v1 - 6] = 0;
+      debug ("Set fractions to %s\n", fractions);
+    }
 
-      if (v2 == 2)
-	sprintf (buff, "0000%0*d0000000000000", v3, data[1]);
+  if (v2 == 1)
+    sprintf (buff, "%0*d%02d0000000000000", v3, data[0], data[1]);
 
-      if (v2 == 3)
-	sprintf (buff, "000000%0*d%02d%02d%02d%s",
-		 v3, data[2], data[3], data[4], data[5], fractions);
+  if (v2 == 2)
+    sprintf (buff, "0000%0*d0000000000000", v3, data[1]);
 
-      if (v2 == 4)
-	sprintf (buff, "00000000%0*d%02d%02d%s",
-		 v3, data[3], data[4], data[5], fractions);
+  if (v2 == 3)
+    sprintf (buff, "000000%0*d%02d%02d%02d%s",
+	     v3, data[2], data[3], data[4], data[5], fractions);
 
-      if (v2 == 5)
-	sprintf (buff, "0000000000%0*d%02d%s",
-		 v3, data[4], data[5], fractions);
+  if (v2 == 4)
+    sprintf (buff, "00000000%0*d%02d%02d%s",
+	     v3, data[3], data[4], data[5], fractions);
 
-      if (v2 == 6)
-	sprintf (buff, "000000000000%0*d%s", v3, data[5], fractions);
+  if (v2 == 5)
+    sprintf (buff, "0000000000%0*d%02d%s", v3, data[4], data[5], fractions);
 
-      if (v2 >= 7)
-	sprintf (buff, "000000000000000%s", fractions);
+  if (v2 == 6)
+    sprintf (buff, "000000000000%0*d%s", v3, data[5], fractions);
 
-	debug("Copied data");
-      return 1;
+  if (v2 >= 7)
+    sprintf (buff, "000000000000000%s", fractions);
+
+  debug ("Copied data");
+  return 1;
 }
 
 /**
@@ -201,7 +229,7 @@ conv_invdatatoc(int *data,int v1,int v2,int v3,struct ival *i)
 
 int
 op_ival (struct ival *a, struct ival *b, double double_val, char op,
- char param)
+	 char param)
 {
   int data_a[10];
   int data_b[10];
@@ -218,45 +246,46 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
   double v2;
   double r1 = 0;
 
-	debug("In op_ival a=%p b=%p dv=%lf op=%c param=%c",a,b,double_val,op,param);
+  debug ("In op_ival a=%p b=%p dv=%lf op=%c param=%c", a, b, double_val, op,
+	 param);
 
-  if (param == 'd') /* We're using a double - so ignore 'b' */
+  if (param == 'd')		/* We're using a double - so ignore 'b' */
     {
       b = a;
     }
 
 
-	/* Extract the time stuff.. */
+  /* Extract the time stuff.. */
 
 
-  debug("Converting intervals to strings...");
+  debug ("Converting intervals to strings...");
 
 
   /*
-  inttoc(a, &a_str, mk_int_size(a->stime,a->ltime));
-  debug("Converted first...");
-  debug("a=%p b=%p\n",a,b);
-  inttoc(b, &b_str, mk_int_size(b->stime,b->ltime));
+     inttoc(a, &a_str, mk_int_size(a->stime,a->ltime));
+     debug("Converted first...");
+     debug("a=%p b=%p\n",a,b);
+     inttoc(b, &b_str, mk_int_size(b->stime,b->ltime));
 
-  debug("Converted second...");
-  debug("INtervals as strings = %s  & %s",a_str,b_str);
+     debug("Converted second...");
+     debug("INtervals as strings = %s  & %s",a_str,b_str);
 
-  valid_int (a_str, data_a,mk_int_size(a->stime,a->ltime));
-  valid_int (b_str, data_b,mk_int_size(b->stime,b->ltime));
-  */
+     valid_int (a_str, data_a,mk_int_size(a->stime,a->ltime));
+     valid_int (b_str, data_b,mk_int_size(b->stime,b->ltime));
+   */
 
   decode_interval (a, data_a);
   decode_interval (b, data_b);
 
-  debug("Got interval data");
+  debug ("Got interval data");
   /* Clear down the return variable.. */
   for (cnt = 0; cnt < 10; cnt++)
     {
       rval_ival.data[cnt] = '0';
-      data_r[cnt]=0;
+      data_r[cnt] = 0;
     }
 
-	debug("Cleared down..");
+  debug ("Cleared down..");
 
   /* Are we dealing with a sensible sum ? */
 
@@ -282,20 +311,26 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 
 
   if (mode == 1)
-    { /* Number of years.. */
-  	rval_ival.stime = 0x51;
-  	rval_ival.ltime = 2;
+    {				/* Number of years.. */
+      rval_ival.stime = 0x51;
+      rval_ival.ltime = 2;
       v1 = data_a[0] + data_a[1] / 12;
       v2 = data_b[0] + data_b[1] / 12;
     }
   else
-    { /* Number of seconds... */
-  	rval_ival.stime = 0x53;
-  	rval_ival.ltime = 0xb;
-      debug("v1 = %d + %d + %d + %d + %lf",data_a[2]*60*60*24 , data_a[3]*60*60 , data_a[4]*60 , data_a[5] , (double)(data_a[6])/100000.0);
+    {				/* Number of seconds... */
+      rval_ival.stime = 0x53;
+      rval_ival.ltime = 0xb;
+      debug ("v1 = %d + %d + %d + %d + %lf", data_a[2] * 60 * 60 * 24,
+	     data_a[3] * 60 * 60, data_a[4] * 60, data_a[5],
+	     (double) (data_a[6]) / 100000.0);
 
-      v1 = data_a[2]*60*60*24 + data_a[3]*60*60 + data_a[4]*60 + data_a[5] + (double)(data_a[6])/100000.0;
-      v2 = data_b[2]*60*60*24 + data_b[3]*60*60 + data_b[4]*60 + data_b[5] + (double)(data_b[6])/100000.0;
+      v1 =
+	data_a[2] * 60 * 60 * 24 + data_a[3] * 60 * 60 + data_a[4] * 60 +
+	data_a[5] + (double) (data_a[6]) / 100000.0;
+      v2 =
+	data_b[2] * 60 * 60 * 24 + data_b[3] * 60 * 60 + data_b[4] * 60 +
+	data_b[5] + (double) (data_b[6]) / 100000.0;
     }
 
 
@@ -305,7 +340,7 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
   if (param == 'd')
     {				/* Using a double */
 
-      v2=double_val;
+      v2 = double_val;
 
 
       switch (op)
@@ -320,13 +355,13 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 
 	case '/':
 	  r1 = v1 / double_val;
-	  rval_type = 1; /* Interval */
+	  rval_type = 1;	/* Interval */
 	  break;
 
 	case '*':
-		debug("v1=%lf dv=%lf\n",v1,double_val);
+	  debug ("v1=%lf dv=%lf\n", v1, double_val);
 	  r1 = v1 * double_val;
-	  rval_type = 1; /* Interval */
+	  rval_type = 1;	/* Interval */
 	  break;
 	}
     }
@@ -336,15 +371,15 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 	{
 	case '+':
 	  r1 = v1 + v2;
-	  rval_type = 1; /* Interval */
+	  rval_type = 1;	/* Interval */
 	  break;
 	case '-':
 	  r1 = v1 - v2;
-	  rval_type = 1; /* Interval */
+	  rval_type = 1;	/* Interval */
 	  break;
 	case '/':
 	  r1 = v1 / v2;
-	  rval_type = 2; /* Number */
+	  rval_type = 2;	/* Number */
 	  break;
 	case '*':
 	  exitwith ("Can't multiply two intervals");
@@ -354,47 +389,54 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
 
     }
 
-	/* If we got to here r1 will contain either a number or an interval */
+  /* If we got to here r1 will contain either a number or an interval */
 
-	if (rval_type==2) { /* Yip yip - this ones easy ! */
-		rval_double=r1;
-		return 2;
-	}
-	debug("r1=%lf mode=%d\n",r1,mode);
+  if (rval_type == 2)
+    {				/* Yip yip - this ones easy ! */
+      rval_double = r1;
+      return 2;
+    }
+  debug ("r1=%lf mode=%d\n", r1, mode);
 
 
-	if (mode==1) { /* we have a number of years in r1 */
-		double yd,md;
-		int y = 0;
-		yd=floor(r1);
-		md=(r1-y)*12.0;
-		data_r[0]=yd;
-		data_r[1]=md;
+  if (mode == 1)
+    {				/* we have a number of years in r1 */
+      double yd, md;
+      int y = 0;
+      yd = floor (r1);
+      md = (r1 - y) * 12.0;
+      data_r[0] = yd;
+      data_r[1] = md;
 
-	} else {
-		double sd,fd;
-		int s;
-		sd=floor(r1);
-		fd=r1-sd;
-		debug("sd=%lf fd=%lf\n",sd,fd);
-		data_r[6]=fd*100000;
-		s=sd;
-		data_r[5]=s%60; s=s/60; /* Seconds */
-		data_r[4]=s%60; s=s/60; /* Minutes */
-		data_r[3]=s%60; s=s/24; /* Hours */
-		data_r[2]=s; /* Days */
-	}
+    }
+  else
+    {
+      double sd, fd;
+      int s;
+      sd = floor (r1);
+      fd = r1 - sd;
+      debug ("sd=%lf fd=%lf\n", sd, fd);
+      data_r[6] = fd * 100000;
+      s = sd;
+      data_r[5] = s % 60;
+      s = s / 60;		/* Seconds */
+      data_r[4] = s % 60;
+      s = s / 60;		/* Minutes */
+      data_r[3] = s % 60;
+      s = s / 24;		/* Hours */
+      data_r[2] = s;		/* Days */
+    }
 
-	/* data_r should be set up now... */
+  /* data_r should be set up now... */
 
-  debug("stime=%x ltime=%x",rval_ival.stime,rval_ival.ltime);
-  val1=rval_ival.ltime;
-  val2=rval_ival.stime&15;
-  val3=(rval_ival.stime>>4)&15;
+  debug ("stime=%x ltime=%x", rval_ival.stime, rval_ival.ltime);
+  val1 = rval_ival.ltime;
+  val2 = rval_ival.stime & 15;
+  val3 = (rval_ival.stime >> 4) & 15;
 
-  size=mk_int_size(rval_ival.stime,rval_ival.ltime);
+  size = mk_int_size (rval_ival.stime, rval_ival.ltime);
 
-  conv_invdatatoc(data_r,val1,val2,val3,&rval_ival);
+  conv_invdatatoc (data_r, val1, val2, val3, &rval_ival);
 
   return rval_type;
 }
@@ -405,9 +447,9 @@ op_ival (struct ival *a, struct ival *b, double double_val, char op,
  * @todo Describe function
  */
 int
-mk_int_size(int s,int l)
+mk_int_size (int s, int l)
 {
-  return l+ (s<<4);
+  return l + (s << 4);
 }
 
 
@@ -418,20 +460,20 @@ mk_int_size(int s,int l)
 void
 decode_interval (struct ival *ival, int *data)
 {
-char buff[256];
-int i;
-int cnt = 0;
-char buff2[64];
-int s1;
-int s2;
-int c;
-int cpc;
-int c2;
-int ltime;
+  char buff[256];
+  int i;
+  int cnt = 0;
+  char buff2[64];
+  int s1;
+  int s2;
+  int c;
+  int cpc;
+  int c2;
+  int ltime;
 
   char *codes[] = { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
     "SECOND", "FRACTION",
-      0
+    0
   };
   int spc[] = {
     0,
@@ -444,30 +486,30 @@ int ltime;
     5
   };
 
-  debug("Decoding interval into component parts");
+  debug ("Decoding interval into component parts");
 
-  for (i=0;i<10;i++) {
-        data[i]=0;
-  }
+  for (i = 0; i < 10; i++)
+    {
+      data[i] = 0;
+    }
 
   s1 = ival->stime % 16;
   s2 = ival->stime / 16;
-  debug("s1=%d s2=%d",s1,s2);
+  debug ("s1=%d s2=%d", s1, s2);
 
   sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
-           ival->data[0], ival->data[1], ival->data[2], ival->data[3],
-           ival->data[4], ival->data[5],
-           ival->data[6], ival->data[7],
-           ival->data[8], ival->data[9],
-           ival->data[10], ival->data[11],
-           ival->data[12], ival->data[13],
-           ival->data[14], ival->data[15],
-           ival->data[16], ival->data[17], ival->data[18],
-           ival->data[19], ival->data[20], ival->data[21],
-           ival->data[22], ival->data[23]
-);
+	   ival->data[0], ival->data[1], ival->data[2], ival->data[3],
+	   ival->data[4], ival->data[5],
+	   ival->data[6], ival->data[7],
+	   ival->data[8], ival->data[9],
+	   ival->data[10], ival->data[11],
+	   ival->data[12], ival->data[13],
+	   ival->data[14], ival->data[15],
+	   ival->data[16], ival->data[17], ival->data[18],
+	   ival->data[19], ival->data[20], ival->data[21],
+	   ival->data[22], ival->data[23]);
 
-  debug("buff=%s\n",buff);
+  debug ("buff=%s\n", buff);
 
   cnt = 0;
   for (c = 1; c < s1; c++)
@@ -477,51 +519,63 @@ int ltime;
     }
 
   debug ("Cnt=%d\n", cnt);
-  debug("Taking first part (size=%d) from %d",s2,cnt);
+  debug ("Taking first part (size=%d) from %d", s2, cnt);
 
-  c=s2;
-  strncpy(buff2,&buff[cnt],s2);
-  buff2[s2]=0;
-  debug("buff2 = '%s'\n",buff2);
+  c = s2;
+  strncpy (buff2, &buff[cnt], s2);
+  buff2[s2] = 0;
+  debug ("buff2 = '%s'\n", buff2);
 
   c2 = c;
-  ltime=ival->ltime;
-  if (ltime>=7) ltime=7;
+  ltime = ival->ltime;
+  if (ltime >= 7)
+    ltime = 7;
 
   for (cpc = s1; cpc < ltime; cpc++)
     {
-      debug("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ",cpc,buff2,c2,cnt,cnt+c2);
-      data[cpc-1]=atoi(buff2);
+      debug ("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ", cpc, buff2, c2, cnt,
+	     cnt + c2);
+      data[cpc - 1] = atoi (buff2);
 
       buff2[0] = buff[cnt + c2];
       c2++;
-      if (ival->ltime<7) {
-                buff2[1] = buff[cnt + c2]; c2++; buff2[2]=0;
-        } else {
-                buff2[1] = buff[cnt + c2]; c2++;
-                buff2[2] = buff[cnt + c2]; c2++;
-                buff2[3] = buff[cnt + c2]; c2++;
-                buff2[4] = buff[cnt + c2]; c2++; buff2[4]=0;
-        }
+      if (ival->ltime < 7)
+	{
+	  buff2[1] = buff[cnt + c2];
+	  c2++;
+	  buff2[2] = 0;
+	}
+      else
+	{
+	  buff2[1] = buff[cnt + c2];
+	  c2++;
+	  buff2[2] = buff[cnt + c2];
+	  c2++;
+	  buff2[3] = buff[cnt + c2];
+	  c2++;
+	  buff2[4] = buff[cnt + c2];
+	  c2++;
+	  buff2[4] = 0;
+	}
     }
 
-  debug("cpc=%d buff2=%s",cpc,buff2);
-  data[cpc-1]=atoi(buff2);
-  for (c=0;c<7;c++) {
-        debug("Data : %s %d\n",codes[c],data[c]);
-  }
+  debug ("cpc=%d buff2=%s", cpc, buff2);
+  data[cpc - 1] = atoi (buff2);
+  for (c = 0; c < 7; c++)
+    {
+      debug ("Data : %s %d\n", codes[c], data[c]);
+    }
 
-  debug("Internals....");
-  data[0]=ival->i_years;
-  data[1]=ival->i_months;
-  data[2]=ival->i_days;
-  data[3]=ival->i_hours;
-  data[4]=ival->i_minutes;
-  data[5]=ival->i_seconds;
-  data[6]=ival->i_fractions;
+  debug ("Internals....");
+  data[0] = ival->i_years;
+  data[1] = ival->i_months;
+  data[2] = ival->i_days;
+  data[3] = ival->i_hours;
+  data[4] = ival->i_minutes;
+  data[5] = ival->i_seconds;
+  data[6] = ival->i_fractions;
 
 }
 
 
 /* ==================================== EOF =========================== */
-

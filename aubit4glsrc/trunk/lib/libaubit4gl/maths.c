@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: maths.c,v 1.9 2002-09-27 04:45:38 afalout Exp $
+# $Id: maths.c,v 1.10 2003-05-12 14:24:17 mikeaubury Exp $
 #
 */
 
@@ -50,13 +50,14 @@
 =====================================================================
 */
 
-struct s_math {
-	int op;
-	void *function;
-	struct s_math *next;
+struct s_math
+{
+  int op;
+  void *function;
+  struct s_math *next;
 };
 
-static int inited=0;
+static int inited = 0;
 struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
 
 /*
@@ -66,10 +67,10 @@ struct s_math *arr_math[MAX_DTYPE][MAX_DTYPE];
 */
 
 
-void        init_arr_math		(void);
+void init_arr_math (void);
 
 #ifdef OLD_INCL
- void *      find_op_function	(int dtype1,int dtype2,int op);
+void *find_op_function (int dtype1, int dtype2, int op);
 #endif
 
 /*
@@ -84,57 +85,60 @@ void        init_arr_math		(void);
  *
  * @todo Describe function
  */
-static int 
-nparam_op(int op) 
+static int
+nparam_op (int op)
 {
-	switch (op) 
+  switch (op)
+    {
+    case OP_NOT:
+    case OP_ISNOTNULL:
+    case OP_ISNULL:
+      return 1;
+
+    case OP_CONCAT:
+    case OP_EQUAL:
+    case OP_NOT_EQUAL:
+    case OP_OR:
+    case OP_AND:
+    case OP_LESS_THAN:
+    case OP_GREATER_THAN:
+    case OP_GREATER_THAN_EQ:
+    case OP_LESS_THAN_EQ:
+    case OP_LIKE:
+    case OP_USING:
+    case OP_CLIP:
+    case OP_MATCHES:
+    case OP_ADD:
+    case OP_SUB:
+    case OP_MULT:
+    case OP_MOD:
+    case OP_DIV:
+    case OP_POWER:
+      return 2;
+    }
+
+  return -1;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+void
+init_arr_math (void)
+{
+  int a, b;
+  if (inited == 0)
+    {
+      inited = 1;
+      for (a = 0; a < MAX_DTYPE; a++)
 	{
-		case OP_NOT:
-		case OP_ISNOTNULL:
-		case OP_ISNULL:
-		    return 1;
-
-		case OP_CONCAT:
-		case OP_EQUAL:
-		case OP_NOT_EQUAL:
-		case OP_OR:
-		case OP_AND:
-		case OP_LESS_THAN:
-		case OP_GREATER_THAN:
-		case OP_GREATER_THAN_EQ:
-		case OP_LESS_THAN_EQ:
-		case OP_LIKE:
-		case OP_USING:
-		case OP_CLIP:
-		case OP_MATCHES:
-		case OP_ADD:
-		case OP_SUB:
-		case OP_MULT:
-		case OP_MOD:
-		case OP_DIV:
-		case OP_POWER:
-				return 2;
+	  for (b = 0; b < MAX_DTYPE; b++)
+	    {
+	      arr_math[a][b] = 0;
+	    }
 	}
-
-return -1;
-}
-
-/**
- *
- * @todo Describe function
- */
-void
-init_arr_math(void)
-{
-int a,b;
-	if (inited==0) {
-	inited=1;
-	for (a=0;a<MAX_DTYPE;a++) {
-		for (b=0;b<MAX_DTYPE;b++) {
-			arr_math[a][b]=0;
-		}
-	}
-	}
+    }
 }
 
 
@@ -143,38 +147,45 @@ int a,b;
  * @todo Describe function
  */
 void
-add_op_function(int dtype1,int dtype2,int op,void *function)
+add_op_function (int dtype1, int dtype2, int op, void *function)
 {
-	struct s_math *ptr_orig;
-	struct s_math *ptr_new;
+  struct s_math *ptr_orig;
+  struct s_math *ptr_new;
 
-	debug("Adding %x function for %d,%d (%p)",op,dtype1,dtype2,function);
+  debug ("Adding %x function for %d,%d (%p)", op, dtype1, dtype2, function);
 
-	if (inited==0) init_arr_math();
+  if (inited == 0)
+    init_arr_math ();
 
-	if (nparam_op(op)==0) {
-		dtype1=0;
-		dtype2=0;
-	}
+  if (nparam_op (op) == 0)
+    {
+      dtype1 = 0;
+      dtype2 = 0;
+    }
 
-	if (nparam_op(op)==1) dtype2=dtype1;
+  if (nparam_op (op) == 1)
+    dtype2 = dtype1;
 
 
-	ptr_orig=arr_math[dtype1][dtype2];
+  ptr_orig = arr_math[dtype1][dtype2];
 
-	ptr_new=malloc(sizeof(struct s_math));
-	ptr_new->op=op;
-	ptr_new->function=function;
-	ptr_new->next=0;
+  ptr_new = malloc (sizeof (struct s_math));
+  ptr_new->op = op;
+  ptr_new->function = function;
+  ptr_new->next = 0;
 
-	if (ptr_orig==0) {
-		arr_math[dtype1][dtype2]=ptr_new;
-	} else {
-		while (ptr_orig->next!=0) ptr_orig=ptr_orig->next;
-		ptr_orig->next=ptr_new;
-	}
+  if (ptr_orig == 0)
+    {
+      arr_math[dtype1][dtype2] = ptr_new;
+    }
+  else
+    {
+      while (ptr_orig->next != 0)
+	ptr_orig = ptr_orig->next;
+      ptr_orig->next = ptr_new;
+    }
 
-	/* debug("Finished adding function"); */
+  /* debug("Finished adding function"); */
 }
 
 
@@ -184,39 +195,45 @@ add_op_function(int dtype1,int dtype2,int op,void *function)
  * @todo Describe function
  */
 void *
-find_op_function(int dtype1,int dtype2,int op)
+find_op_function (int dtype1, int dtype2, int op)
 {
-	struct s_math *ptr_orig;
-	if (inited==0) init_arr_math();
+  struct s_math *ptr_orig;
+  if (inited == 0)
+    init_arr_math ();
 
-	dtype1=dtype1&DTYPE_MASK;
-	dtype2=dtype2&DTYPE_MASK;
+  dtype1 = dtype1 & DTYPE_MASK;
+  dtype2 = dtype2 & DTYPE_MASK;
 
-	debug("Looking for something that will %x %d %d",op,dtype1,dtype2);
+  debug ("Looking for something that will %x %d %d", op, dtype1, dtype2);
 
-	if (nparam_op(op)==0) {
-		dtype1=0;
-		dtype2=0;
+  if (nparam_op (op) == 0)
+    {
+      dtype1 = 0;
+      dtype2 = 0;
+    }
+
+  if (nparam_op (op) == 1)
+    dtype2 = dtype1;
+
+  ptr_orig = arr_math[dtype1][dtype2];
+
+  if (ptr_orig == 0)
+    {
+      debug ("No ptr_orig - so no...");
+      return 0;
+    }
+
+  while (ptr_orig != 0)
+    {
+      if (ptr_orig->op == op)
+	{
+	  debug ("Got it -> %p", ptr_orig->function);
+	  return ptr_orig->function;
 	}
-
-	if (nparam_op(op)==1) dtype2=dtype1;
-
-	ptr_orig=arr_math[dtype1][dtype2];
-
-	if (ptr_orig==0) {
-		debug("No ptr_orig - so no...");
-		return 0;
-	}
-
-	while (ptr_orig!=0) {
-		if (ptr_orig->op==op) {
-			debug("Got it -> %p",ptr_orig->function);
-			return ptr_orig->function;
-		}
-		ptr_orig=ptr_orig->next;
-	}
-	debug("Nope - use standard");
-	return 0;
+      ptr_orig = ptr_orig->next;
+    }
+  debug ("Nope - use standard");
+  return 0;
 
 }
 

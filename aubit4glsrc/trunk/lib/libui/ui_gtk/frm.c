@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: frm.c,v 1.3 2003-04-23 16:37:29 mikeaubury Exp $
+# $Id: frm.c,v 1.4 2003-05-12 14:24:30 mikeaubury Exp $
 #*/
 
 /**
@@ -55,8 +55,8 @@ int find_attrib_from_field (struct_form * f, int field_no);
 int find_fields_no_metric (struct_form * f, int metric_no);
 
 #ifdef OLD_INCL
-	char * make_colname_from_metric (struct_form * f, int metric_no);
-	char * make_field_from_metric (struct_form * f, int metric_no);
+char *make_colname_from_metric (struct_form * f, int metric_no);
+char *make_field_from_metric (struct_form * f, int metric_no);
 #endif
 
 //void clr_form(int to_default);
@@ -94,7 +94,7 @@ find_fields_no_metric (struct_form * f, int metric_no)
   int a, b;
   debug ("BB\n");
   for (a = 0; a < f->fields.fields_len; a++)
-   {
+    {
       for (b = 0; b < f->fields.fields_val[a].metric.metric_len; b++)
 	{
 	  if (f->fields.fields_val[a].metric.metric_val[b] == metric_no)
@@ -104,7 +104,7 @@ find_fields_no_metric (struct_form * f, int metric_no)
 	}
     }
 
-return 0;
+  return 0;
 }
 
 /**
@@ -229,17 +229,16 @@ make_widgets (struct_form * f, GtkWidget * panel_to_add_to_window)
       debug ("Making Widget %d\n", a);
       add_widget (a, f, panel_to_add_to_window);
     }
-  debug_last_field_created("make_widgets");
+  debug_last_field_created ("make_widgets");
 }
 
 /**
  * Not implemented yet.
  */
 void
-clr_form(int to_default)
+clr_form (int to_default)
 {
-	/* Not implemented yet */
+  /* Not implemented yet */
 }
 
 /* =============================== EOF ============================== */
-

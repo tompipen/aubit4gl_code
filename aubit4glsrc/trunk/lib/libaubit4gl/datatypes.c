@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.14 2003-04-28 12:29:44 mikeaubury Exp $
+# $Id: datatypes.c,v 1.15 2003-05-12 14:24:03 mikeaubury Exp $
 #
 */
 
@@ -104,10 +104,11 @@ static void *libptr = 0;
 */
 
 int add_datatype_function_i (int a, char *funcname, void *func);
-extern void add_default_operations (void); /* in ops.c */
+extern void add_default_operations (void);	/* in ops.c */
 void add_default_datatypes (void);
 static int (*func) (void);
-int call_datatype_function_i (void *obj, int dtype, char *funcname,int nparam);
+int call_datatype_function_i (void *obj, int dtype, char *funcname,
+			      int nparam);
 
 
 /*
@@ -162,7 +163,7 @@ init_datatypes (void)
 	}
       add_default_datatypes ();
     }
-	debug("Finished initializing data types");
+  debug ("Finished initializing data types");
 }
 
 
@@ -207,7 +208,7 @@ has_datatype_function_i (int a, char *funcname)
     init_datatypes ();
   a = a & DTYPE_MASK;
   //debug ("Looking for function %s for datatype %d (%d elements)", funcname, a,
-//	 dtypes[a].funcs_len);
+//       dtypes[a].funcs_len);
   for (n = 0; n < dtypes[a].funcs_len; n++)
     {
       //debug ("   %s", dtypes[a].funcs[n]->name);
@@ -502,7 +503,7 @@ add_default_datatypes (void)
   add_datatype ("NCHAR", 15, 0);
   add_default_operations ();
 
-	debug("Finished adding default data types");
+  debug ("Finished adding default data types");
 }
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.32 2003-05-10 12:39:41 mikeaubury Exp $
+# $Id: newpanels.c,v 1.33 2003-05-12 14:24:27 mikeaubury Exp $
 #*/
 
 /**
@@ -55,8 +55,8 @@
 
 
 #ifdef __CYGWIN__
-	dll_import struct s_form_attr std_dbscr;
-	dll_import sqlca_struct sqlca;
+dll_import struct s_form_attr std_dbscr;
+dll_import sqlca_struct sqlca;
 #endif
 
 /*
@@ -75,10 +75,10 @@
 */
 
 WINDOW *currwin;
-int scr_width 	= -1;
-int scr_height 	= -1;
-int currwinno 	= -1;
-int currattr 	= 0;
+int scr_width = -1;
+int scr_height = -1;
+int currwinno = -1;
+int currattr = 0;
 
 /*
    struct ptrs
@@ -91,14 +91,14 @@ int currattr 	= 0;
  */
 
 struct s_windows
-  {
-    int x, y, w, h;
-    PANEL *pan;
-    WINDOW *win;
-    char name[20];
-    struct s_form_dets *form;
-    struct s_form_attr winattr;
-  };
+{
+  int x, y, w, h;
+  PANEL *pan;
+  WINDOW *win;
+  char name[20];
+  struct s_form_dets *form;
+  struct s_form_attr winattr;
+};
 
 
 struct s_windows windows[MAXWIN];
@@ -110,62 +110,66 @@ struct s_windows windows[MAXWIN];
 */
 /** @todo Take this prototypes of from here */
 
-int 	mja_vwprintw 		(WINDOW * win, char *fmt,va_list *args);
-//int 	current_window 		(char *win_name);
-void 	print_panel_stack 	(void);
-void 	init_stddbscr 		(void);
-void 	do_update_panels 	(void);
-void 	change_currwinno 	(int a, char *s);
-void 	change_currwin 		(WINDOW * a, char *s);
-void 	inc_winname 		(char *b);
-int 	getch_swin 			(WINDOW * window_ptr);
-int 	getform_line 		(void);
-int 	find_win 			(PANEL * p);
-int 	chkwin 				(void);
-int 	screen_height 		(void);
-int 	top_win 			(PANEL * p);
-char * 	pointer_code 		(int c);
-//void 	clr_window 			(char *win_name);
-int 	int_current_window 	(char *win_name);
-void 	mja_gotoxy 			(int x, int y);
-int 	get_curr_win 		(void);
-int 	get_curr_height 	(void);
-int 	get_curr_top 		(void);
-char * 	get_currwin_name 	(void);
-int 	get_curr_border 	(void);
-void 	display_at2 		(char *z, int x, int y, int a);
-int 	decode_line 		(int l);
-//void 	display_error 		(int a,int wait);
-void 	add_compiled_form	(char *s,char *frm);
-//int  	open_form 			(char *name);
-//void 	close_form 			(char *formname);
-//int  	disp_form 			(char *name, int attr);
-int  	set_window 			(int a);
-int 	subwin_printxy 		(WINDOW * win, int x, int y, char *fmt,...);
-int 	subwin_setcolor 	(WINDOW * win, int typ);
-int 	getcomment_line 	(void);
-void 	set_attr_win 		(char s, int wattr);
-char * 	windowname_on_top 	(void);
-int 	invert_color 		(int a);
-//void 	sleep_i				(void);
+int mja_vwprintw (WINDOW * win, char *fmt, va_list * args);
+//int   current_window          (char *win_name);
+void print_panel_stack (void);
+void init_stddbscr (void);
+void do_update_panels (void);
+void change_currwinno (int a, char *s);
+void change_currwin (WINDOW * a, char *s);
+void inc_winname (char *b);
+int getch_swin (WINDOW * window_ptr);
+int getform_line (void);
+int find_win (PANEL * p);
+int chkwin (void);
+int screen_height (void);
+int top_win (PANEL * p);
+char *pointer_code (int c);
+//void  clr_window                      (char *win_name);
+int int_current_window (char *win_name);
+void mja_gotoxy (int x, int y);
+int get_curr_win (void);
+int get_curr_height (void);
+int get_curr_top (void);
+char *get_currwin_name (void);
+int get_curr_border (void);
+void display_at2 (char *z, int x, int y, int a);
+int decode_line (int l);
+//void  display_error           (int a,int wait);
+void add_compiled_form (char *s, char *frm);
+//int   open_form                       (char *name);
+//void  close_form                      (char *formname);
+//int   disp_form                       (char *name, int attr);
+int set_window (int a);
+int subwin_printxy (WINDOW * win, int x, int y, char *fmt, ...);
+int subwin_setcolor (WINDOW * win, int typ);
+int getcomment_line (void);
+void set_attr_win (char s, int wattr);
+char *windowname_on_top (void);
+int invert_color (int a);
+//void  sleep_i                         (void);
 
-WINDOW *window_on_top 		(void);
-WINDOW *display_form_new_win (char *name, struct s_form_dets *f, int x, int y);
-WINDOW * display_form 		(struct s_form_dets *f);
-WINDOW *create_window 		(char *name, int x, int y, int w, int h, int iswindow, int form_line, int error_line, int prompt_line, int menu_line, int border, int comment_line, int message_line, int attrib);
-WINDOW * display_form_win 	(WINDOW * w, char *name, struct s_form_dets * f);
+WINDOW *window_on_top (void);
+WINDOW *display_form_new_win (char *name, struct s_form_dets *f, int x,
+			      int y);
+WINDOW *display_form (struct s_form_dets *f);
+WINDOW *create_window (char *name, int x, int y, int w, int h, int iswindow,
+		       int form_line, int error_line, int prompt_line,
+		       int menu_line, int border, int comment_line,
+		       int message_line, int attrib);
+WINDOW *display_form_win (WINDOW * w, char *name, struct s_form_dets *f);
 
-//void * 	cr_window 			(char *s,int iswindow,int form_line,int error_line,int prompt_line,
-	  				//int menu_line,int border,int comment_line,int message_line,int attrib);
-//int 	cr_window_form 		(char *name,int iswindow,int form_line,int error_line,
+//void *        cr_window                       (char *s,int iswindow,int form_line,int error_line,int prompt_line,
+					//int menu_line,int border,int comment_line,int message_line,int attrib);
+//int   cr_window_form          (char *name,int iswindow,int form_line,int error_line,
 					//int prompt_line,int menu_line,int border,int comment_line,int message_line,
 					//int attrib);
 
 
-void* read_form(char* fname,char* formname);
-//LIBEXPORT void hide_window 	(char *winname);
-//LIBEXPORT void show_window 	(char *winname);
-//LIBEXPORT int movewin 		(char *winname, int absol);
+void *read_form (char *fname, char *formname);
+//LIBEXPORT void hide_window    (char *winname);
+//LIBEXPORT void show_window    (char *winname);
+//LIBEXPORT int movewin                 (char *winname, int absol);
 
 
 /*
@@ -245,7 +249,8 @@ init_windows (void)
 LIBUSEONLY void *
 create_blank_window (char *name, int x, int y, int w, int h, int border)
 {
-  return create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1, 0xffff);
+  return create_window (name, x, y, w, h, 1, 1, 1, 1, 1, border, 1, 1,
+			0xffff);
 }
 
 /**
@@ -259,11 +264,7 @@ create_window (char *name, int x, int y, int w, int h,
 	       int error_line,
 	       int prompt_line,
 	       int menu_line,
-	       int border,
-	       int comment_line,
-	       int message_line,
-	       int attrib
-)
+	       int border, int comment_line, int message_line, int attrib)
 {
   WINDOW *win = 0;
   WINDOW *dswin;
@@ -271,35 +272,59 @@ create_window (char *name, int x, int y, int w, int h,
   int a;
   chkwin ();
 
-  #ifdef DEBUG
-  	debug ("Creating window %s (%d %d %d %d) border=%d attrib=0x%x", name, x, y, w, h, border, attrib);
-  #endif
+#ifdef DEBUG
+  debug ("Creating window %s (%d %d %d %d) border=%d attrib=0x%x", name, x, y,
+	 w, h, border, attrib);
+#endif
 
-	if (form_line==0xff) { form_line=std_dbscr.form_line; }
-	if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
-	if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
-	if (message_line==0xff) { message_line=std_dbscr.comment_line; }
-	if (error_line==0xff) { error_line=std_dbscr.error_line; }
-	if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
+  if (form_line == 0xff)
+    {
+      form_line = std_dbscr.form_line;
+    }
+  if (menu_line == 0xff)
+    {
+      menu_line = std_dbscr.menu_line;
+    }
+  if (comment_line == 0xff)
+    {
+      comment_line = std_dbscr.comment_line;
+    }
+  if (message_line == 0xff)
+    {
+      message_line = std_dbscr.comment_line;
+    }
+  if (error_line == 0xff)
+    {
+      error_line = std_dbscr.error_line;
+    }
+  if (prompt_line == 0xff)
+    {
+      prompt_line = std_dbscr.prompt_line;
+    }
 
-   if (attrib==0xffff) {
-	char *s;
-	int a;
-	int n;
-	s=acl_getenv("BACKGROUND");
-	if (strlen(s)) {
-		n=sscanf(s,"%x",&a);
-		if (n) {
-			attrib=a;
-		}
-	} else {
-		attrib=0x0;
+  if (attrib == 0xffff)
+    {
+      char *s;
+      int a;
+      int n;
+      s = acl_getenv ("BACKGROUND");
+      if (strlen (s))
+	{
+	  n = sscanf (s, "%x", &a);
+	  if (n)
+	    {
+	      attrib = a;
+	    }
 	}
-	
-   }
-	
+      else
+	{
+	  attrib = 0x0;
+	}
 
-	if (strcmp (name, "screen") == 0)
+    }
+
+
+  if (strcmp (name, "screen") == 0)
     {
       h = screen_height () - 1;
       w = screen_width () - 1;
@@ -312,64 +337,65 @@ create_window (char *name, int x, int y, int w, int h,
       debug ("w=%d", w);
       set_bkg (win, attrib);
 
-      gui_win (name, screen_height (), screen_width (), 1, 1, 0, (long)win);
+      gui_win (name, screen_height (), screen_width (), 1, 1, 0, (long) win);
       add_pointer (name, WINCODE, win);
     }
-	else
+  else
     {
 
-    	if (border==1)
-		{
-		  win = newwin (h + 2, w + 2, y - 2, x - 2);
-		  if (toupper (name[0]) != name[0])
-	    	gui_win (name, h + 2, w + 2, y - 2, x - 2, 1, (long)win);
-		  add_pointer (name, WINCODE, win);
-		}
+      if (border == 1)
+	{
+	  win = newwin (h + 2, w + 2, y - 2, x - 2);
+	  if (toupper (name[0]) != name[0])
+	    gui_win (name, h + 2, w + 2, y - 2, x - 2, 1, (long) win);
+	  add_pointer (name, WINCODE, win);
+	}
 
-      	if (border==2)
-		{
-			dswin = newwin (h + 4, w + 4, y - 2, x - 2);
-			win = newwin (h + 2, w + 2, y - 2, x - 2);
-			add_pointer (name, WINCODE, win);
-			add_pointer (name, DROPSHADOW, dswin);
-	  		set_bkg (dswin, '+');
-			debug("XX3 REVERSE");
-	      	  	wbkgdset (dswin, COLOR_RED|A_REVERSE);
-	  		mja_wrefresh (dswin);
-			sleep(2);
-		}
+      if (border == 2)
+	{
+	  dswin = newwin (h + 4, w + 4, y - 2, x - 2);
+	  win = newwin (h + 2, w + 2, y - 2, x - 2);
+	  add_pointer (name, WINCODE, win);
+	  add_pointer (name, DROPSHADOW, dswin);
+	  set_bkg (dswin, '+');
+	  debug ("XX3 REVERSE");
+	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
+	  mja_wrefresh (dswin);
+	  sleep (2);
+	}
 
-		if (border==3)
-		{
-		  	dswin = newwin (h + 4, w + 4, y - 1, x - 1);
-		  	win = newwin (h, w, y - 2, x - 2);
-		  	add_pointer (name, WINCODE, win);
-		  	add_pointer (name, DROPSHADOW, dswin);
-		  	debug("XX4 REVERSE");
-	      	wbkgdset (dswin, COLOR_RED|A_REVERSE);
-	  		mja_wrefresh (dswin);
-			sleep(2);
-	    }
+      if (border == 3)
+	{
+	  dswin = newwin (h + 4, w + 4, y - 1, x - 1);
+	  win = newwin (h, w, y - 2, x - 2);
+	  add_pointer (name, WINCODE, win);
+	  add_pointer (name, DROPSHADOW, dswin);
+	  debug ("XX4 REVERSE");
+	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
+	  mja_wrefresh (dswin);
+	  sleep (2);
+	}
 
-		if (border==0)
-		{
-		  win = newwin (h, w, y - 1, x - 1);
-		  if (toupper (name[0]) != name[0]) gui_win (name, h, w, y - 1, x - 1, 0, (long)win);
-		  add_pointer (name, WINCODE, win);
-		  debug ("Window = %p", win);
-		}
+      if (border == 0)
+	{
+	  win = newwin (h, w, y - 1, x - 1);
+	  if (toupper (name[0]) != name[0])
+	    gui_win (name, h, w, y - 1, x - 1, 0, (long) win);
+	  add_pointer (name, WINCODE, win);
+	  debug ("Window = %p", win);
+	}
 
     }
 
-	#ifdef DEBUG
-		debug ("Window created");
-	#endif
+#ifdef DEBUG
+  debug ("Window created");
+#endif
 
-	if (win == 0)
+  if (win == 0)
     {
-	  #ifdef DEBUG
-    	debug ("COuldnt create window h=%d w=%d y=%d x=%d", h, w, y, x);
-	  #endif
+#ifdef DEBUG
+      debug ("COuldnt create window h=%d w=%d y=%d x=%d", h, w, y, x);
+#endif
       exitwith ("Couldnt create window");
       return 0;
     }
@@ -378,12 +404,12 @@ create_window (char *name, int x, int y, int w, int h,
 
   //attrib=attrib&0xff00;
 
-  if ((attrib & 0xff) == 0 || (attrib&0xff)==0xff )
+  if ((attrib & 0xff) == 0 || (attrib & 0xff) == 0xff)
     {
       attrib = attrib + ' ';
       debug ("Set pad char to space");
     }
-  debug ("Setting attribute for window to 0x%x for %s\n", attrib,name);
+  debug ("Setting attribute for window to 0x%x for %s\n", attrib, name);
 
 
 
@@ -408,7 +434,9 @@ create_window (char *name, int x, int y, int w, int h,
   add_pointer (name, PANCODE, pan);
 
 #ifdef DEBUG
-  {     debug ("Panel created at %p for window %p", pan, win);  }
+  {
+    debug ("Panel created at %p for window %p", pan, win);
+  }
 #endif
 
   if (pan == 0)
@@ -422,7 +450,9 @@ create_window (char *name, int x, int y, int w, int h,
       if (windows[a].name[0] == 0)
 	{
 #ifdef DEBUG
-	  {	    debug ("Adding window at %d panel id = %p", a, pan);	  }
+	  {
+	    debug ("Adding window at %d panel id = %p", a, pan);
+	  }
 #endif
 	  strcpy (windows[a].name, name);
 	  add_pointer (name, S_WINDOWSCODE, &windows[a]);
@@ -453,11 +483,13 @@ create_window (char *name, int x, int y, int w, int h,
 
   keypad (win, TRUE);
 
-  debug("Deciding what to do... %s\n",name);
+  debug ("Deciding what to do... %s\n", name);
   if (toupper (name[0]) != name[0])
     {
 #ifdef DEBUG
-      {	debug ("Making proper window....for %s", name);      }
+      {
+	debug ("Making proper window....for %s", name);
+      }
 #endif
       change_currwin (win, "Marker 1");
       change_currwinno (a, "Marker 2");
@@ -469,14 +501,20 @@ create_window (char *name, int x, int y, int w, int h,
 	  doupdate ();
 	}
 #ifdef DEBUG
-      {	debug ("Adding new pointer to window...");      }
-      {	debug ("Done...");      }
+      {
+	debug ("Adding new pointer to window...");
+      }
+      {
+	debug ("Done...");
+      }
 #endif
     }
   else
     {
 #ifdef DEBUG
-      {	debug ("Adding window pointers for menu %p > %p", currwin, win);      }
+      {
+	debug ("Adding window pointers for menu %p > %p", currwin, win);
+      }
 #endif
       add_pointer (name, MNPARCODE, currwin);
       add_pointer (name, MNWINCODE, win);
@@ -511,7 +549,9 @@ clr_window (char *win_name)
       return;
     }
 #ifdef DEBUG
-  {    debug ("Clr window .... %s", win_name);  }
+  {
+    debug ("Clr window .... %s", win_name);
+  }
 #endif
   w = find_pointer (win_name, WINCODE);
   win = find_pointer (win_name, S_WINDOWSCODE);
@@ -546,12 +586,14 @@ void
 remove_window (char *win_name)
 {
   int a;
-  WINDOW *win=0;
-  PANEL *panel=0;
+  WINDOW *win = 0;
+  PANEL *panel = 0;
   chkwin ();
 #ifdef DEBUG
   gui_closewin (win_name);
-  {     debug ("Remove Window : %s", win_name);  }
+  {
+    debug ("Remove Window : %s", win_name);
+  }
 #endif
 
   if (!(has_pointer (win_name, WINCODE)))
@@ -569,24 +611,36 @@ remove_window (char *win_name)
 	  win = panel_window (windows[a].pan);
 	  panel = windows[a].pan;
 #ifdef DEBUG
-	  {	    debug ("Deleting window and panel at %d", a);	  }
-	  {	    debug ("Window found ... deleting... %p", win);	  }
-	  {	    debug ("Deleted window.. deleting panel %p", panel);	  }
+	  {
+	    debug ("Deleting window and panel at %d", a);
+	  }
+	  {
+	    debug ("Window found ... deleting... %p", win);
+	  }
+	  {
+	    debug ("Deleted window.. deleting panel %p", panel);
+	  }
 #endif
 	  del_panel (panel);
 #ifdef DEBUG
-	  {	    debug ("Deleted panel ... removing window");	  }
+	  {
+	    debug ("Deleted panel ... removing window");
+	  }
 #endif
 	  delwin (win);
 #ifdef DEBUG
-	  {	    debug ("Here...");	  }
+	  {
+	    debug ("Here...");
+	  }
 #endif
 	  windows[a].name[0] = 0;
 	  break;
 	}
     }
 #ifdef DEBUG
-  {    debug ("Finding top window number");  }
+  {
+    debug ("Finding top window number");
+  }
 #endif
   top_win (0);
   update_panels ();
@@ -594,7 +648,9 @@ remove_window (char *win_name)
   refresh ();
   zrefresh ();
 #ifdef DEBUG
-  {    debug ("Deleting pointer %s", win_name);  }
+  {
+    debug ("Deleting pointer %s", win_name);
+  }
 #endif
   del_pointer (win_name, WINCODE);
 
@@ -645,7 +701,9 @@ current_window (char *win_name)
 
   chkwin ();
 #ifdef DEBUG
-  {    debug ("In current window %s", win_name);  }
+  {
+    debug ("In current window %s", win_name);
+  }
 #endif
   p = find_pointer (win_name, PANCODE);
   w = find_pointer (win_name, WINCODE);
@@ -658,12 +716,16 @@ current_window (char *win_name)
     }
   top_panel (p);
 #ifdef DEBUG
-  {    debug ("Resetting current window %d", a);  }
+  {
+    debug ("Resetting current window %d", a);
+  }
 #endif
   change_currwin (panel_window (p), "Marker 5");
   change_currwinno (find_win (p), "Marker 6");
 #ifdef DEBUG
-  {    debug ("Changed windows...");  }
+  {
+    debug ("Changed windows...");
+  }
 #endif
   if (screen_mode (-1))
     {
@@ -671,16 +733,22 @@ current_window (char *win_name)
       doupdate ();
     }
 #ifdef DEBUG
-  {    debug ("Updated screen %p", currwin);  }
+  {
+    debug ("Updated screen %p", currwin);
+  }
 #endif
   mja_wrefresh (currwin);
 #ifdef DEBUG
-  {    debug ("wrefresh");  }
+  {
+    debug ("wrefresh");
+  }
 #endif
   zrefresh ();
   mja_refresh ();
 #ifdef DEBUG
-  {    debug ("Refreshed screen");  }
+  {
+    debug ("Refreshed screen");
+  }
 #endif
   return 0;
 
@@ -744,18 +812,20 @@ mja_gotoxy (int x, int y)
  * @todo Describe function
  */
 void
-tui_print (char *fmt,...)
+tui_print (char *fmt, ...)
 {
   va_list args;
   char buff[256];
 #ifdef DEBUG
-  {    debug ("In tui_print");  }
+  {
+    debug ("In tui_print");
+  }
 #endif
   chkwin ();
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
   //wprintw (currwin, "%s", buff);
-  waddstr(currwin,buff);
+  waddstr (currwin, buff);
 
   mja_wrefresh (currwin);
 }
@@ -793,10 +863,10 @@ display_form (struct s_form_dets *f)
   int rows, cols;
   char buff[80];
   int a;
-  int informix_behaviour=1;
+  int informix_behaviour = 1;
   WINDOW *w;
   WINDOW *drwin;
-	/*  FIELD **p; */
+  /*  FIELD **p; */
 
   int fl;
   chkwin ();
@@ -811,18 +881,20 @@ display_form (struct s_form_dets *f)
 
   fl = getform_line ();
   scale_form (f->form, &rows, &cols);
-  rows = f->fileform->maxline-1;
+  rows = f->fileform->maxline - 1;
   cols = f->fileform->maxcol;
 
   debug ("Form line=%d", fl);
   debug ("Scale form returns %d %d", rows, cols);
-  debug ("Current window %d %d", windows[currwinno].h,
-	 windows[currwinno].w);
+  debug ("Current window %d %d", windows[currwinno].h, windows[currwinno].w);
 
-  if (windows[currwinno].winattr.border) {
-	rows++;
-  } else {
-  }
+  if (windows[currwinno].winattr.border)
+    {
+      rows++;
+    }
+  else
+    {
+    }
 
   if (rows - windows[currwinno].winattr.border > windows[currwinno].h + 1)
     {
@@ -836,13 +908,14 @@ display_form (struct s_form_dets *f)
     }
 
 
-	/* fix - not sure whats going on here bit form_details.border is set to 1 for the screen! */
+  /* fix - not sure whats going on here bit form_details.border is set to 1 for the screen! */
 
 
- if (informix_behaviour) {
-	rows=windows[currwinno].h-fl;
-	cols=windows[currwinno].w;
- }
+  if (informix_behaviour)
+    {
+      rows = windows[currwinno].h - fl;
+      cols = windows[currwinno].w;
+    }
 
   f->form_details.border = windows[currwinno].winattr.border;
 
@@ -863,19 +936,24 @@ display_form (struct s_form_dets *f)
     {
       debug ("Window details returns it has *NO* border ");
     }
-  debug("derwin - %d rows %d cols form line=%d",rows,cols,fl);
+  debug ("derwin - %d rows %d cols form line=%d", rows, cols, fl);
 
-  if (windows[currwinno].winattr.border) {
-		debug("MJAPASS1");
-    		 drwin = derwin (w, rows, cols, fl+1, 1);
-	} else {
-		 debug("MJAPASS2 rows=%d cols=%d fl=%d",rows,cols,fl);
-		 drwin = derwin (w, rows, cols, fl-1, 0);
-		
-   	}
+  if (windows[currwinno].winattr.border)
+    {
+      debug ("MJAPASS1");
+      drwin = derwin (w, rows, cols, fl + 1, 1);
+    }
+  else
+    {
+      debug ("MJAPASS2 rows=%d cols=%d fl=%d", rows, cols, fl);
+      drwin = derwin (w, rows, cols, fl - 1, 0);
+
+    }
 
 #ifdef DEBUG
-  {    debug ("drwin=%p", drwin);  }
+  {
+    debug ("drwin=%p", drwin);
+  }
 #endif
 
   if (drwin == 0)
@@ -884,7 +962,7 @@ display_form (struct s_form_dets *f)
       return 0;
     }
 
-  wclear(drwin);
+  wclear (drwin);
   a = set_form_win (f->form, w);
 
   if (a == E_POSTED)
@@ -901,10 +979,11 @@ display_form (struct s_form_dets *f)
   /*error_box(buff); */
   windows[currwinno].form = f;
 
-  if (f->form == 0) {
-	exitwith("Unable to create form");
-	return 0;
-  }
+  if (f->form == 0)
+    {
+      exitwith ("Unable to create form");
+      return 0;
+    }
 
   debug ("post the form s_form_dets=%p form=%p", f, f->form);
   a = post_form (f->form);
@@ -938,29 +1017,35 @@ WINDOW *
 display_form_new_win (char *name, struct s_form_dets * f, int x, int y)
 {
   WINDOW *w;
-int nlines;
+  int nlines;
   int rows, cols;
   char buff[80];
   chkwin ();
-  debug("display_form_new_win - name=%s\n",name);
+  debug ("display_form_new_win - name=%s\n", name);
   scale_form (f->form, &rows, &cols);
-  if (f->form_details.border) {
-  	rows = f->fileform->maxline-1;
-  } else {
-  	rows = f->fileform->maxline;
-  }
+  if (f->form_details.border)
+    {
+      rows = f->fileform->maxline - 1;
+    }
+  else
+    {
+      rows = f->fileform->maxline;
+    }
   cols = f->fileform->maxcol;
-  debug ("display_form_new_win : %d rows %d cols at %d,%d x,y", rows, cols, x, y);
+  debug ("display_form_new_win : %d rows %d cols at %d,%d x,y", rows, cols, x,
+	 y);
 
   debug ("display_form_new_win - border=%d", f->form_details.border);
   sprintf (buff, "%d %d", cols, rows);
 #ifdef DEBUG
-  {				/*debug("Rows=%d formline=%d f2 = %d",rows,getform_line(),f->form_details.form_line); */  }
-#endif
-  nlines=rows+f->form_details.form_line-1;
-  if (f->form_details.border) {
-	nlines++;
+  {				/*debug("Rows=%d formline=%d f2 = %d",rows,getform_line(),f->form_details.form_line); */
   }
+#endif
+  nlines = rows + f->form_details.form_line - 1;
+  if (f->form_details.border)
+    {
+      nlines++;
+    }
   w = create_window (name, x, y, cols, nlines,
 		     1,
 		     f->form_details.form_line,
@@ -969,13 +1054,13 @@ int nlines;
 		     f->form_details.menu_line,
 		     f->form_details.border,
 		     f->form_details.comment_line,
-		     f->form_details.message_line,
-		     f->form_details.colour
-    );
+		     f->form_details.message_line, f->form_details.colour);
 
   gui_dispform (name, getform_line ());
-  if (display_form (f)) return w;
-  else return 0;
+  if (display_form (f))
+    return w;
+  else
+    return 0;
 }
 
 /**
@@ -987,7 +1072,9 @@ display_form_win (WINDOW * w, char *name, struct s_form_dets * f)
 {
   chkwin ();
 #ifdef DEBUG
-  {    debug ("setting form window for %p to %p", f->form, w);  }
+  {
+    debug ("setting form window for %p to %p", f->form, w);
+  }
 #endif
 
   set_form_win (f->form, w);
@@ -1020,7 +1107,9 @@ get_curr_form (void)
   sprintf (buff, "currwinno=%d", currwinno);
 
 #ifdef DEBUG
-  {    debug ("currwinno=%d", currwinno);  }
+  {
+    debug ("currwinno=%d", currwinno);
+  }
 #endif
 
   /*error_box(buff); */
@@ -1061,7 +1150,10 @@ int
 get_curr_print_top (void)
 {
 #ifdef DEBUG
-  {    debug ("In curr_print_top %d %d", windows[currwinno].winattr.border, windows[currwinno].y);  }
+  {
+    debug ("In curr_print_top %d %d", windows[currwinno].winattr.border,
+	   windows[currwinno].y);
+  }
 #endif
 
   return windows[currwinno].y + windows[currwinno].winattr.border;
@@ -1084,10 +1176,9 @@ get_curr_top (void)
 int
 get_curr_width (void)
 {
-  chkwin();
+  chkwin ();
   debug ("get curr width, currwinno=%d windows name =%s %d", currwinno,
-	 windows[currwinno].name,
-	 windows[currwinno].w);
+	 windows[currwinno].name, windows[currwinno].w);
   return windows[currwinno].w;
 }
 
@@ -1110,8 +1201,7 @@ int
 get_curr_border (void)
 {
   debug ("get curr border, currwinno=%d windows name =%s %d", currwinno,
-	 windows[currwinno].name,
-	 windows[currwinno].winattr.border);
+	 windows[currwinno].name, windows[currwinno].winattr.border);
   return windows[currwinno].winattr.border;
 }
 
@@ -1131,11 +1221,11 @@ mja_setcolor (int typ)
       switch (typ)
 	{
 	case ERROR_COL:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  currwin->_attrs = colour_code (COLOR_RED) | A_REVERSE;
 	  break;
 	case MESSAGE:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  currwin->_attrs = colour_code (COLOR_CYAN) | A_REVERSE;
 	  break;
 	case NORMAL_MENU:
@@ -1144,7 +1234,7 @@ mja_setcolor (int typ)
 	  break;
 	case INVERT_MENU:
 	  standout ();
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  /* currwin->_attrs = colour_code (COLOR_WHITE) | A_REVERSE; */
 	  break;
 	case TITLE_COL:
@@ -1165,7 +1255,7 @@ mja_setcolor (int typ)
       switch (typ)
 	{
 	case ERROR_COL:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  currwin->_attrs = A_REVERSE;
 	  break;
 	case MESSAGE:
@@ -1176,15 +1266,15 @@ mja_setcolor (int typ)
 	  break;
 	case INVERT_MENU:
 	  standout ();
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  /* currwin->_attrs = A_REVERSE; */
 	  break;
 	case TITLE_COL:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  currwin->_attrs = A_REVERSE;
 	  break;
 	case EDIT_FIELD:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  currwin->_attrs = A_REVERSE;
 	  break;
 	case NORMAL_TEXT:
@@ -1224,7 +1314,7 @@ display_at2 (char *z, int x, int y, int a)
 int
 getch_win (void)
 {
-  debug("getch_win called...");
+  debug ("getch_win called...");
   return getch_swin (window_on_top ());
 }
 
@@ -1264,7 +1354,7 @@ getch_swin (WINDOW * window_ptr)
 
       if (a != -1)
 	{
-	  debug ("MJAC Key Pressed %d",a);
+	  debug ("MJAC Key Pressed %d", a);
 	  break;
 	}
 
@@ -1284,18 +1374,18 @@ int
 decode_line (int l)
 {
   if (l > 0)
-  {
-    if (get_curr_border ())
-      {
-	debug ("Decoded line %d to %d (because of border)", l, l - 1);
-	return l - 1;
-      }
-    else
-      {
-	debug ("Decoded line %d to %d", l, l);
-	return l;
-      }
-  }
+    {
+      if (get_curr_border ())
+	{
+	  debug ("Decoded line %d to %d (because of border)", l, l - 1);
+	  return l - 1;
+	}
+      else
+	{
+	  debug ("Decoded line %d to %d", l, l);
+	  return l;
+	}
+    }
 /* -1 = last */
 /* -2 = last -1 */
   if (get_curr_border ())
@@ -1316,7 +1406,7 @@ decode_line (int l)
 	}
 
     }
-return 0;
+  return 0;
 }
 
 /**
@@ -1329,7 +1419,9 @@ glob_window (int x, int y, int w, int h, int border)
   static char winname[20];
   int f;
 #ifdef DEBUG
-  {    debug ("In glob_window");  }
+  {
+    debug ("In glob_window");
+  }
 #endif
   chkwin ();
   memset (winname, 'A', 19);
@@ -1337,7 +1429,9 @@ glob_window (int x, int y, int w, int h, int border)
   winname[19] = 0;
 
 #ifdef DEBUG
-  {    debug ("Finding free window ... starting with %s", winname);  }
+  {
+    debug ("Finding free window ... starting with %s", winname);
+  }
 #endif
 
   while (has_pointer (winname, WINCODE))
@@ -1346,7 +1440,8 @@ glob_window (int x, int y, int w, int h, int border)
     }
   create_blank_window (winname, x, y + 1, w, h, border);
 #ifdef DEBUG
-  {				/*debug("Adding window @ %d %s",a,winname); */  }
+  {				/*debug("Adding window @ %d %s",a,winname); */
+  }
 #endif
   /*add_pointer (winname, WINCODE, win); */
   return winname;
@@ -1379,8 +1474,12 @@ int
 getmenu_line (void)
 {
 #ifdef DEBUG
-  {    debug ("In menu line... currwinno=%d ", currwinno);  }
-  {    debug ("name=%s ", windows[currwinno].name);  }
+  {
+    debug ("In menu line... currwinno=%d ", currwinno);
+  }
+  {
+    debug ("name=%s ", windows[currwinno].name);
+  }
 #endif
 
   if (strcmp (windows[currwinno].name, "screen") == 0)
@@ -1391,8 +1490,7 @@ getmenu_line (void)
 
   debug ("form=%p", windows[currwinno].form);
   debug ("menu line=%d (%s)", windows[currwinno].winattr.menu_line,
-	 windows[currwinno].name
-    );
+	 windows[currwinno].name);
   return decode_line (windows[currwinno].winattr.menu_line);
 }
 
@@ -1401,7 +1499,7 @@ getmenu_line (void)
  * @todo Describe function
  */
 void
-display_internal (int x, int y,char *s,int a,int clr_line)
+display_internal (int x, int y, char *s, int a, int clr_line)
 {
   if (x == -1 && y == -1)
     {
@@ -1415,8 +1513,8 @@ display_internal (int x, int y,char *s,int a,int clr_line)
     }
   else
     {
-	int b;
-	int line_length;
+      int b;
+      int line_length;
       /* WINDOW *win; */
 
       chkwin ();
@@ -1425,10 +1523,11 @@ display_internal (int x, int y,char *s,int a,int clr_line)
       gui_print (a, s);
       mja_gotoxy (x, y);
       tui_print ("%s", s);
-      if (clr_line) {
-		debug("Clearing line...");
-		wclrtoeol(window_on_top());
-      }
+      if (clr_line)
+	{
+	  debug ("Clearing line...");
+	  wclrtoeol (window_on_top ());
+	}
 
       debug (">> printed %s", s);
 
@@ -1445,7 +1544,7 @@ display_internal (int x, int y,char *s,int a,int clr_line)
  * @todo Describe function
  */
 void
-display_error (int a,int wait)
+display_error (int a, int wait)
 {
   char *s;
   debug ("Cr string");
@@ -1455,10 +1554,13 @@ display_error (int a,int wait)
   debug ("trimmed -> %s", s);
   if (isgui ())
     gui_error (s, geterror_line ());
-  else {
-	if (wait) error_box (s);
-	else error_nobox(s);
-  }
+  else
+    {
+      if (wait)
+	error_box (s);
+      else
+	error_nobox (s);
+    }
   debug ("error_box done");
   acl_free (s);
   a4gl_status = 0;
@@ -1472,12 +1574,13 @@ display_error (int a,int wait)
 void
 mja_endwin (void)
 {
-  if (isscrmode ()) {
-  	set_scrmode('L');
-  	printf ("\n");
-  	fflush (stdout);
-  	endwin ();
-  }
+  if (isscrmode ())
+    {
+      set_scrmode ('L');
+      printf ("\n");
+      fflush (stdout);
+      endwin ();
+    }
 }
 
 /**
@@ -1487,16 +1590,17 @@ mja_endwin (void)
 int
 chkwin (void)
 {
-  if (env_option_set("NOCURSES")) {       /* FIXME: this is now A4GL_UI=CONSOLE */
-	exitwith("NOCURSES Mode has been specified - operation not permitted");
-	exit(0);
-	return 0;
-  }
+  if (env_option_set ("NOCURSES"))
+    {				/* FIXME: this is now A4GL_UI=CONSOLE */
+      exitwith ("NOCURSES Mode has been specified - operation not permitted");
+      exit (0);
+      return 0;
+    }
 
   if (islinemode ())
     {
-      A4GL_init_curses_stuff();
-      set_scrmode('S');
+      A4GL_init_curses_stuff ();
+      set_scrmode ('S');
       mja_refresh ();
     }
   return 1;
@@ -1514,14 +1618,10 @@ cr_window (char *s,
 	   int error_line,
 	   int prompt_line,
 	   int menu_line,
-	   int border,
-	   int comment_line,
-	   int message_line,
-	   int attrib)
-
+	   int border, int comment_line, int message_line, int attrib)
 {
-WINDOW *win;
-int x, y, w, h;
+  WINDOW *win;
+  int x, y, w, h;
   w = pop_int ();
   h = pop_int ();
   x = pop_int ();
@@ -1529,7 +1629,9 @@ int x, y, w, h;
   if (has_pointer (s, WINCODE))
     {
 #ifdef DEBUG
-      {	debug ("Window already exists");      }
+      {
+	debug ("Window already exists");
+      }
 #endif
       set_errm (s);
       exitwith ("Window already exists (%s)");
@@ -1540,13 +1642,9 @@ int x, y, w, h;
 		       form_line,
 		       error_line,
 		       prompt_line,
-		       menu_line,
-		       border,
-		       comment_line,
-		       message_line,
-		       attrib);
+		       menu_line, border, comment_line, message_line, attrib);
 
-    return win;
+  return win;
 }
 
 /**
@@ -1560,45 +1658,60 @@ cr_window_form (char *name,
 		int error_line,
 		int prompt_line,
 		int menu_line,
-		int border,
-		int comment_line,
-		int message_line,
-		int attrib)
+		int border, int comment_line, int message_line, int attrib)
 {
-  int x, y, w, h
-   ;
+  int x, y, w, h;
   char *s;
   char buff[132];
   struct s_form_dets *form;
   WINDOW *win;
   debug ("cr_window_form(%s,%d,%d,%d,%d,%d,%d,%d,%d,%d)\n",
-	 name, iswindow, form_line, error_line, prompt_line, menu_line, border, comment_line, message_line, attrib);
+	 name, iswindow, form_line, error_line, prompt_line, menu_line,
+	 border, comment_line, message_line, attrib);
 
-if (form_line==0xff) { form_line=std_dbscr.form_line; }
-if (menu_line==0xff) { menu_line=std_dbscr.menu_line; }
-if (comment_line==0xff) { comment_line=std_dbscr.comment_line; }
-if (error_line==0xff) { error_line=std_dbscr.error_line; }
-if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
+  if (form_line == 0xff)
+    {
+      form_line = std_dbscr.form_line;
+    }
+  if (menu_line == 0xff)
+    {
+      menu_line = std_dbscr.menu_line;
+    }
+  if (comment_line == 0xff)
+    {
+      comment_line = std_dbscr.comment_line;
+    }
+  if (error_line == 0xff)
+    {
+      error_line = std_dbscr.error_line;
+    }
+  if (prompt_line == 0xff)
+    {
+      prompt_line = std_dbscr.prompt_line;
+    }
 
   s = char_pop ();
   x = pop_int ();
   y = pop_int ();
   strcpy (buff, s);
-  trim(buff);
+  trim (buff);
   //strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
 
-  debug ("reading file %s - name=%s", buff,name);
+  debug ("reading file %s - name=%s", buff, name);
   a4gl_status = 0;
   form = read_form (buff, name);
-  if (a4gl_status != 0) return 0;
+  if (a4gl_status != 0)
+    return 0;
 
-  if (form==0) {
-	exitwith("Unable to create form");
-	return 0;
-	}
-  else {
-	debug("Created form %p",form);
-	}
+  if (form == 0)
+    {
+      exitwith ("Unable to create form");
+      return 0;
+    }
+  else
+    {
+      debug ("Created form %p", form);
+    }
 
   scale_form (form->form, &w, &h);
 
@@ -1620,12 +1733,15 @@ if (prompt_line==0xff) { prompt_line=std_dbscr.prompt_line; }
   add_pointer (name, S_FORMDETSCODE, form);
 
   win = display_form_new_win (name, form, x, y);
-  if (win) {
-  	add_pointer (name, WINCODE, win);
-  	mja_wrefresh (currwin);
-  } else {
-	 exitwith("Error displaying form in window");
-	}
+  if (win)
+    {
+      add_pointer (name, WINCODE, win);
+      mja_wrefresh (currwin);
+    }
+  else
+    {
+      exitwith ("Error displaying form in window");
+    }
   acl_free (s);
   return 0;
 }
@@ -1647,32 +1763,32 @@ open_form (char *name)
   char buff[256];
   struct s_form_dets *form;
   s = char_pop ();
-  strncpy (buff, s,256);
-  buff[255]=0;
+  strncpy (buff, s, 256);
+  buff[255] = 0;
   trim (buff);
   //strcat (buff, acl_getenv ("A4GL_FRM_BASE_EXT"));
   debug ("reading file %s ?", buff);
-  A4GLSQL_set_status (0,0);
+  A4GLSQL_set_status (0, 0);
 
   form = read_form (buff, name);
-  debug("Read form returns %d status = %d\n",form);
+  debug ("Read form returns %d status = %d\n", form);
   if (a4gl_status != 0)
     {
-	debug("Some problem opening form...");
+      debug ("Some problem opening form...");
       acl_free (s);
       return -1;
     }
   set_default_form (&form->form_details);
   scale_form (form->form, &h, &w);
   /*
-  form->w=w; // MJA 2707
-  form->h=h; // MJA 2707
-  */
+     form->w=w; // MJA 2707
+     form->h=h; // MJA 2707
+   */
   debug ("adding pointer F to %s", name);
   add_pointer (name, S_FORMDETSCODE, form);
-  debug("Freeing s");
+  debug ("Freeing s");
   acl_free (s);
-  debug("Freed - form has been opened");
+  debug ("Freed - form has been opened");
   return 0;
 }
 
@@ -1683,7 +1799,7 @@ open_form (char *name)
 void
 close_form (char *formname)
 {
-	debug("FIXME : close_form not implemented");
+  debug ("FIXME : close_form not implemented");
 }
 
 
@@ -1698,12 +1814,12 @@ disp_form (char *name, int attr)
   WINDOW *w;
   char buff[80];
 
-  debug("attr=%d\n",attr);
-  attr=decode_aubit_attr(attr,'w');
+  debug ("attr=%d\n", attr);
+  attr = decode_aubit_attr (attr, 'w');
 
-  debug("attr=%x\n",attr);
+  debug ("attr=%x\n", attr);
 
-  debug("Disp_form_tui");
+  debug ("Disp_form_tui");
   f = (struct s_form_dets *) find_pointer_val (name, S_FORMDETSCODE);
   debug ("Got pointer to form as %p", f);
   if (f == 0)
@@ -1753,7 +1869,7 @@ set_window (int a)
  * @todo Describe function
  */
 int
-refresh_menu_window (char *name,int top)
+refresh_menu_window (char *name, int top)
 {
   PANEL *ptr;
   int rc;
@@ -1782,10 +1898,10 @@ refresh_menu_window (char *name,int top)
   debug ("Setting menu (%s) panel to top", name);
   ptr = find_pointer (name, PANCODE);
   debug ("refresh menu with pointer to %p", ptr);
-if (top) 
-  rc = top_panel (ptr);
-else
-  rc = bottom_panel (ptr);
+  if (top)
+    rc = top_panel (ptr);
+  else
+    rc = bottom_panel (ptr);
   debug ("Rc=%d", rc);
   debug ("Topped");
   update_panels ();
@@ -1816,13 +1932,13 @@ subwin_gotoxy (WINDOW * win, int x, int y)
  * @todo Describe function
  */
 int
-subwin_print (WINDOW * win, char *fmt,...)
+subwin_print (WINDOW * win, char *fmt, ...)
 {
   va_list args;
   chkwin ();
-  debug ("subwin_print '%s' on window %p", fmt,win);
+  debug ("subwin_print '%s' on window %p", fmt, win);
   va_start (args, fmt);
-  mja_vwprintw (win, fmt, &args); /*  MJAMJAMJA */
+  mja_vwprintw (win, fmt, &args);	/*  MJAMJAMJA */
   mja_wrefresh (win);
   return 0;
 }
@@ -1833,7 +1949,7 @@ subwin_print (WINDOW * win, char *fmt,...)
  * @todo Describe function
  */
 int
-subwin_printxy (WINDOW * win, int x, int y, char *fmt,...)
+subwin_printxy (WINDOW * win, int x, int y, char *fmt, ...)
 {
   va_list args;
   chkwin ();
@@ -1865,8 +1981,9 @@ subwin_setcolor (WINDOW * win, int typ)
   debug ("Subwin - setcolor");
   if (has_colors ())
     {
-	debug("XX4 REVERSE");
-      debug ("Color display - %d current attrib is reverse %d", typ, attr & A_REVERSE);
+      debug ("XX4 REVERSE");
+      debug ("Color display - %d current attrib is reverse %d", typ,
+	     attr & A_REVERSE);
       switch (typ)
 	{
 	case NORMAL_TEXT:
@@ -1878,24 +1995,25 @@ subwin_setcolor (WINDOW * win, int typ)
 	  debug ("Invert...");
 	  if (attr & A_REVERSE)
 	    {
-	debug("XX4 REVERSE");
-	      if (((attr) & (colour_code (COLOR_WHITE))) == colour_code (COLOR_WHITE))
+	      debug ("XX4 REVERSE");
+	      if (((attr) & (colour_code (COLOR_WHITE))) ==
+		  colour_code (COLOR_WHITE))
 		{
 		  debug ("Use red %x", colour_code (COLOR_RED));
-	debug("XX4 REVERSE");
+		  debug ("XX4 REVERSE");
 		  wattrset (currwin, A_REVERSE | colour_code (COLOR_RED));
 		}
 	      else
 		{
 		  debug ("Ops - try green instead of red...\n");
-	debug("XX4 REVERSE");
+		  debug ("XX4 REVERSE");
 		  wattrset (currwin, A_REVERSE + colour_code (COLOR_WHITE));
 		}
 	    }
 	  else
 	    {
 	      debug ("Off for invert");
-	debug("XX4 REVERSE");
+	      debug ("XX4 REVERSE");
 	      wattron (currwin, A_REVERSE);
 	    }
 
@@ -1914,23 +2032,23 @@ subwin_setcolor (WINDOW * win, int typ)
       switch (typ)
 	{
 	case ERROR_COL:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  wattron (currwin, A_REVERSE);
 	  break;
 	case MESSAGE:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  wattroff (currwin, A_REVERSE);
 	  break;
 	case NORMAL_MENU:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  wattroff (currwin, A_REVERSE);
 	  break;
 	case INVERT_MENU:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  wattron (currwin, A_REVERSE);
 	  break;
 	case TITLE_COL:
-	debug("XX4 REVERSE");
+	  debug ("XX4 REVERSE");
 	  wattron (currwin, A_REVERSE);
 	  break;
 	case EDIT_FIELD:
@@ -1952,7 +2070,7 @@ subwin_setcolor (WINDOW * win, int typ)
  * @todo Describe function
  */
 int
-mja_vwprintw (WINDOW * win, char *fmt,va_list *args)
+mja_vwprintw (WINDOW * win, char *fmt, va_list * args)
 {
   char buff[256];
   vsprintf (buff, fmt, *args);
@@ -1960,13 +2078,15 @@ mja_vwprintw (WINDOW * win, char *fmt,va_list *args)
   if (xwattr_get (win) == 0x20)
     {
       wattrset (win, 0);
-    } else {
-	int a;
-	a=xwattr_get(win);
-	a=a-(a&0xff);
-        wattrset (win, a);
     }
-  debug("Attribute : %x on win %p\n",xwattr_get(win),win);
+  else
+    {
+      int a;
+      a = xwattr_get (win);
+      a = a - (a & 0xff);
+      wattrset (win, a);
+    }
+  debug ("Attribute : %x on win %p\n", xwattr_get (win), win);
   wprintw (win, "%s", buff);
   return 0;
 }
@@ -1978,9 +2098,9 @@ mja_vwprintw (WINDOW * win, char *fmt,va_list *args)
 int
 init_colour_pairs (void)
 {
-  
+
 #ifndef WIN32
-    debug ("Non WIN32 color scheme");
+  debug ("Non WIN32 color scheme");
   init_pair (1, COLOR_BLACK, COLOR_BLACK);
   init_pair (2, COLOR_RED, COLOR_BLACK);
   init_pair (3, COLOR_GREEN, COLOR_BLACK);
@@ -1989,21 +2109,21 @@ init_colour_pairs (void)
   init_pair (6, COLOR_MAGENTA, COLOR_BLACK);
   init_pair (7, COLOR_CYAN, COLOR_BLACK);
   init_pair (8, COLOR_WHITE, COLOR_BLACK);
-  
+
 #else
 
-    debug ("WIN32 color scheme");
-    init_pair (1, COLOR_BLACK, COLOR_BLACK);
-    init_pair (2, COLOR_BLUE, COLOR_BLACK);
-    init_pair (3, COLOR_GREEN, COLOR_BLACK);
-    init_pair (4, COLOR_CYAN, COLOR_BLACK);
-    init_pair (5, COLOR_RED, COLOR_BLACK);
-    init_pair (6, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair (7, COLOR_YELLOW, COLOR_BLACK);
-    init_pair (8, COLOR_WHITE, COLOR_BLACK);
+  debug ("WIN32 color scheme");
+  init_pair (1, COLOR_BLACK, COLOR_BLACK);
+  init_pair (2, COLOR_BLUE, COLOR_BLACK);
+  init_pair (3, COLOR_GREEN, COLOR_BLACK);
+  init_pair (4, COLOR_CYAN, COLOR_BLACK);
+  init_pair (5, COLOR_RED, COLOR_BLACK);
+  init_pair (6, COLOR_MAGENTA, COLOR_BLACK);
+  init_pair (7, COLOR_YELLOW, COLOR_BLACK);
+  init_pair (8, COLOR_WHITE, COLOR_BLACK);
 
 #endif
-    return 0;
+  return 0;
 }
 
 /**
@@ -2046,9 +2166,11 @@ void
 change_currwin (WINDOW * a, char *s)
 {
 #ifdef DEBUG
-  {    debug ("Changing currwin to %p (%s)", a, s);  }
+  {
+    debug ("Changing currwin to %p (%s)", a, s);
+  }
 #endif
-  gui_currwin ((long)a);
+  gui_currwin ((long) a);
   currwin = a;
 
 }
@@ -2061,7 +2183,9 @@ void
 change_currwinno (int a, char *s)
 {
 #ifdef DEBUG
-  {    debug ("Changing currwinno to %d (%s)", a, s);  }
+  {
+    debug ("Changing currwinno to %d (%s)", a, s);
+  }
 #endif
   currwinno = a;
 }
@@ -2080,8 +2204,8 @@ top_win (PANEL * p)
 
   if (a == -1)
     return 1;
-	
-	/* a is now the top window */
+
+  /* a is now the top window */
 
   z = windows[a].pan;
   change_currwin (panel_window (z), "Marker 3");
@@ -2100,21 +2224,30 @@ find_win (PANEL * p)
   if (p == 0)
     return find_win (panel_below (0));
 #ifdef DEBUG
-  {    debug ("Finding window %p", p);  }
+  {
+    debug ("Finding window %p", p);
+  }
 #endif
 
   for (a = 0; a < MAXWIN; a++)
     {
 #ifdef DEBUG
-      {	debug ("Checking windows   : %p %p %p", panel_window (windows[a].pan), windows[a].pan, p);      }
+      {
+	debug ("Checking windows   : %p %p %p", panel_window (windows[a].pan),
+	       windows[a].pan, p);
+      }
 #endif
 
-      if ((PANEL *) panel_window (windows[a].pan) == p || (PANEL *) windows[a].pan == p)
+      if ((PANEL *) panel_window (windows[a].pan) == p
+	  || (PANEL *) windows[a].pan == p)
 	{
 	  if (toupper (windows[a].name[0]) == windows[a].name[0])
 	    {
 #ifdef DEBUG
-	      {		debug ("window is a menu - finding parent of %s", windows[a].name);	      }
+	      {
+		debug ("window is a menu - finding parent of %s",
+		       windows[a].name);
+	      }
 #endif
 	      return find_win (find_pointer (windows[a].name, MNPARCODE));
 	    }
@@ -2136,13 +2269,17 @@ hide_window (char *winname)
   int a;
   p = find_pointer (winname, PANCODE);
 #ifdef DEBUG
-  {    debug ("hiding window %s %p", winname, p);  }
+  {
+    debug ("hiding window %s %p", winname, p);
+  }
 #endif
   if (p)
     {
       a = hide_panel (p);
 #ifdef DEBUG
-      {	debug ("a=%d", a);      }
+      {
+	debug ("a=%d", a);
+      }
 #endif
     }
   do_update_panels ();
@@ -2159,7 +2296,9 @@ show_window (char *winname)
   PANEL *p;
   p = find_pointer (winname, PANCODE);
 #ifdef DEBUG
-  {    debug ("showing window %s %p", winname, p);  }
+  {
+    debug ("showing window %s %p", winname, p);
+  }
 #endif
   if (p)
     show_panel (p);
@@ -2193,7 +2332,9 @@ getform_line (void)
       return decode_line (std_dbscr.form_line);
     }
 #ifdef DEBUG
-  {    debug ("Use window value of : %d", windows[currwinno].winattr.form_line);  }
+  {
+    debug ("Use window value of : %d", windows[currwinno].winattr.form_line);
+  }
 #endif
   return decode_line (windows[currwinno].winattr.form_line);
 }
@@ -2221,13 +2362,15 @@ geterror_line (void)
 {
   if (windows[currwinno].form == 0)
     {				/* use screen default */
-	    	debug("Get error line - no form\n");
+      debug ("Get error line - no form\n");
       return decode_line (std_dbscr.error_line);
     }
-  debug("Get error line - form : %d",windows[currwinno].form->form_details.error_line);
-  if (currwinno==0) {
+  debug ("Get error line - form : %d",
+	 windows[currwinno].form->form_details.error_line);
+  if (currwinno == 0)
+    {
       return decode_line (std_dbscr.error_line);
-  }
+    }
   return decode_line (windows[currwinno].form->form_details.error_line);
 }
 
@@ -2239,14 +2382,14 @@ geterror_line (void)
 int
 getmessage_line (void)
 {
-debug("getmessage_line - %d",windows[currwinno].winattr.message_line);
+  debug ("getmessage_line - %d", windows[currwinno].winattr.message_line);
   if (windows[currwinno].form == 0)
     {				/* use screen default */
-	debug("getmessage_line - std_dbscr...");
+      debug ("getmessage_line - std_dbscr...");
       return decode_line (std_dbscr.message_line);
     }
-	debug("getmessage_line - window...");
-return windows[currwinno].winattr.message_line;
+  debug ("getmessage_line - window...");
+  return windows[currwinno].winattr.message_line;
   //return decode_line (windows[currwinno].form->form_details.message_line);
 }
 
@@ -2284,11 +2427,15 @@ movewin (char *winname, int absol)
   x = pop_int ();
   y = pop_int ();
 #ifdef DEBUG
-  {    debug ("x=%d y=%d winname=%s", x, y, winname);  }
+  {
+    debug ("x=%d y=%d winname=%s", x, y, winname);
+  }
 #endif
   w = find_pointer (winname, S_WINDOWSCODE);
 #ifdef DEBUG
-  {    debug ("w=%p", w);  }
+  {
+    debug ("w=%p", w);
+  }
 #endif
   if (w)
     {
@@ -2302,7 +2449,9 @@ movewin (char *winname, int absol)
       if (absol)
 	{
 #ifdef DEBUG
-	  {	    debug ("Moving absolute to %d %d", y - 1, x - 1);	  }
+	  {
+	    debug ("Moving absolute to %d %d", y - 1, x - 1);
+	  }
 #endif
 	  r = move_panel (p, y - 1, x - 1);
 	  nx = x;
@@ -2311,7 +2460,9 @@ movewin (char *winname, int absol)
       else
 	{
 #ifdef DEBUG
-	  {	    debug ("Moving relative by %d %d", y, x);	  }
+	  {
+	    debug ("Moving relative by %d %d", y, x);
+	  }
 #endif
 	  r = move_panel (p, w->y + y - 1, w->x + x - 1);
 	  nx = w->x + x + 1;
@@ -2325,7 +2476,9 @@ movewin (char *winname, int absol)
       return 0;
     }
 #ifdef DEBUG
-  {    debug ("r=%d", r);  }
+  {
+    debug ("r=%d", r);
+  }
 #endif
 
   if (r != 0)
@@ -2335,7 +2488,9 @@ movewin (char *winname, int absol)
     }
 
 #ifdef DEBUG
-  {    debug ("Old %d %d  new %d %d", x, y, nx, ny);  }
+  {
+    debug ("Old %d %d  new %d %d", x, y, nx, ny);
+  }
 #endif
 
   w->x = nx;
@@ -2486,7 +2641,7 @@ invert_color (int a)
 int
 xwattr_get (WINDOW * w)
 {
-    return getattrs(w);
+  return getattrs (w);
 }
 
 
@@ -2499,12 +2654,13 @@ screen_width (void)
 {
   if (scr_width == -1)
     {
-      
+
       getmaxyx (stdscr, scr_height, scr_width);
-      if (atoi(acl_getenv("COLUMNS"))) {
-		scr_width =atoi(acl_getenv("COLUMNS"));
-		scr_height=atoi(acl_getenv("LINES"));
-      }
+      if (atoi (acl_getenv ("COLUMNS")))
+	{
+	  scr_width = atoi (acl_getenv ("COLUMNS"));
+	  scr_height = atoi (acl_getenv ("LINES"));
+	}
     }
   debug ("screen_width returning %d", scr_width);
   return scr_width;
@@ -2520,10 +2676,11 @@ screen_height (void)
   if (scr_width == -1)
     {
       getmaxyx (stdscr, scr_height, scr_width);
-      if (atoi(acl_getenv("COLUMNS"))) {
-                scr_width =atoi(acl_getenv("COLUMNS"));
-                scr_height=atoi(acl_getenv("LINES"));
-      }
+      if (atoi (acl_getenv ("COLUMNS")))
+	{
+	  scr_width = atoi (acl_getenv ("COLUMNS"));
+	  scr_height = atoi (acl_getenv ("LINES"));
+	}
 
     }
   debug ("screen_height returning %d", scr_height);
@@ -2535,15 +2692,14 @@ screen_height (void)
  * @todo Describe function
  */
 void
-sleep_i(void)
+sleep_i (void)
 {
-int a;
-	a=pop_int();
-	sleep(a);
+  int a;
+  a = pop_int ();
+  sleep (a);
 }
 
 
 
 
 /* =============================== EOF =============================== */
-

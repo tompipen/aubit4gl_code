@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.37 2003-05-01 09:42:40 mikeaubury Exp $
+# $Id: conv.c,v 1.38 2003-05-12 14:24:03 mikeaubury Exp $
 #
 */
 
@@ -41,10 +41,10 @@
  */
 
  /*
-=====================================================================
-		                    Includes
-=====================================================================
-*/
+    =====================================================================
+    Includes
+    =====================================================================
+  */
 
 
 #include "a4gl_libaubit4gl_int.h"
@@ -86,7 +86,7 @@
 #define NUM_BYTES(x) 	(NUM_DIG(x)+OFFSET_DEC(x))
 #define print_res(x) 	print_res_l(__LINE__,x)
 #define dt_encode(s,e) 	((s*16)+e)
-//#define dt_encode(s,e) 	((s*16)+e)
+//#define dt_encode(s,e)        ((s*16)+e)
 
 #define DBL_DIG1 		512
 #define DT_YEAR 		1
@@ -115,133 +115,134 @@
 
 /** @todo Change all this function proptotypes to an header */
 
-int bname2 				(char *str, char *s1, char *s2, char *s3);
-char *inv 				(char *s);
-double dec_to_double 	(void *buf);
-char *dec_to_str 		(char *s, int size);
-char *add_dec 			(char *a, char *b);
-char *minus_dec 		(char *a, char *b);
-char *str_to_dec 		(char *s, char *w);
-char *init_dec 			(char *s, int len, int d);
-char *mult_dec 			(char *s, char *v);
-char *divide_dec		(char *s, char *w);
-int dec_roundoff		( char *s, int n );
-void dec_to_dec 		(char *f, char *t);
-void dump 				(char *s);
+int bname2 (char *str, char *s1, char *s2, char *s3);
+char *inv (char *s);
+double dec_to_double (void *buf);
+char *dec_to_str (char *s, int size);
+char *add_dec (char *a, char *b);
+char *minus_dec (char *a, char *b);
+char *str_to_dec (char *s, char *w);
+char *init_dec (char *s, int len, int d);
+char *mult_dec (char *s, char *v);
+char *divide_dec (char *s, char *w);
+int dec_roundoff (char *s, int n);
+void dec_to_dec (char *f, char *t);
+void dump (char *s);
 
-int op_ival 			(struct ival *a, struct ival *b, double double_val, char op, char param);
-
-
-void trim_dec 			(char *s);
-void negate 			(char *s);
-void pr 				(char *wrkbf);
-void double_to_dec 		(double arg, char *buf, size_t length, size_t digits);
-//void assertion 			(int a, char *s);
+int op_ival (struct ival *a, struct ival *b, double double_val, char op,
+	     char param);
 
 
-int valid_dt 	(char *s, int *data);
-
-int ctoc 		(void *a, void *b, int size);
-//int ctodt 		(void *a, void *b, int size);
-//int ctoint 		(void *a, void *b, int size);
-
-int valid_int 	(char *s, int *data,int size);
-
-void setc 		(void *p);
-void seti 		(void *p);
-void setl 		(void *p);
-void setf 		(void *p);
-void setno 		(void *p);
-void setsf 		(void *p);
-
-int inttoint 	(void *a, void *b, int size);
-
-int inttoc 		(void *a1, void *b, int size);
-int mdectol 	(void *zz, void *aa, int sz_ignore);
-int mdectof 	(void *zz, void *aa, int sz_ignore);
-int mdectos 	(void *z, void *w, int size);
-
-int ltodec 		(void *a, void *z, int size);
-
-int btob 		(void *a, void *b, int size);
-
-int dtos 		(void *aa, void *zz, int size);
-int dttoc 		(void *a, void *b, int size);
-int dtof 		(void *aa, void *zz, int sz_ignore);
-int dtovc 		(void *aa, void *zz, int sz_ignore);
-int dtosf 		(void *aa, void *zz, int sz_ignore);
-int dtol 		(void *aa, void *zz, int sz_ignore);
-int dtoi 		(void *aa, void *zz, int sz_ignore);
-int dttodt 		(void *a, void *b, int size);
-
-int mdectoi 	(void *zz, void *aa, int sz_ignore);
-int mdectosf 	(void *zz, void *aa, int sz_ignore);
-
-int dectodec 	(void *a, void *z, int size);
-int dectos 		(void *z, void *w, int size);
-int dectosf 	(void *zz, void *aa, int sz_ignore);
-int dectol 		(void *zz, void *aa, int sz_ignore);
-int dectof 		(void *zz, void *aa, int sz_ignore);
-int dectoi 		(void *zz, void *aa, int sz_ignore);
-
-int ltoi 		(void *aa, void *zz, int sz_ignore);
-int ltod 		(void *aa, void *zz, int sz_ignore);
-int ltof 		(void *aa, void *zz, int sz_ignore);
-int ltoc 		(void *aa, void *zz, int size);
-int ltol 		(void *aa, void *bb, int sz_ignore);
-int ltovc 		(void *aa, void *zz, int c);
-int ltosf 		(void *aa, void *zz, int sz_ignore);
-
-int ftoi 		(void *aa, void *zz, int c);
-int ftol 		(void *aa, void *zz, int c);
-int ftof 		(void *aa, void *bb, int c);
-int ftosf 		(void *aa, void *zz, int c);
-int ftodec 		(void *a, void *z, int size);
-int ftod 		(void *aa, void *zz, int sz_ignore);
-int ftoc 		(void *aa, void *zz, int c);
-int ftovc 		(void *aa, void *zz, int c);
+void trim_dec (char *s);
+void negate (char *s);
+void pr (char *wrkbf);
+void double_to_dec (double arg, char *buf, size_t length, size_t digits);
+//void assertion                        (int a, char *s);
 
 
-int itof 		(void *aa, void *zz, int sz_ignore);
-int itosf 		(void *aa, void *zz, int sz_ignore);
-int itodec 		(void *a, void *z, int size);
-int itol 		(void *aa, void *zz, int sz_ignore);
-int itod 		(void *aa, void *zz, int sz_ignore);
-int itovc 		(void *aa, void *zz, int c);
-int itoi 		(void *aa, void *bb, int sz_ignore);
-int itoc 		(void *aa, void *zz, int size);
+int valid_dt (char *s, int *data);
 
-int stof 		(void *aa, void *zz, int sz_ignore);
-int sftovc 		(void *aa, void *zz, int c);
-int sftod 		(void *aa, void *zz, int sz_ignore);
-int sftol 		(void *aa, void *zz, int c);
-int sftoi 		(void *aa, void *zz, int c);
-int sftoc		(void *aa, void *zz, int c);
-int sftof 		(void *aa, void *zz, int c);
-int sftosf 		(void *aa, void *bb, int c);
-int sftodec 	(void *a, void *z, int size);
-int stol 		(void *aa, void *zi, int sz_ignore);
-int stodec 		(void *a, void *z, int size);
-int stosf 		(void *aa, void *zz, int sz_ignore);
-int stoi 		(void *aa, void *zi, int sz_ignore);
-void decode_datetime(struct A4GLSQL_dtime *d, int *data);
+int ctoc (void *a, void *b, int size);
+//int ctodt             (void *a, void *b, int size);
+//int ctoint            (void *a, void *b, int size);
 
-int 			mdectod 		(void *zz, void *aa, int sz_ignore);
+int valid_int (char *s, int *data, int size);
 
-static char *   dec_math 		(char *s, char *w, char *r, char op);
-static void 	match_dec 		(char *f, char *t, int *a, int *b);
-void 			trim_decimals 	(char *s, int d);
-void 			set_setdtype	(int dtype, void *ptr);
-int             dectod 			(void *zz, void *aa, int sz_ignore);
+void setc (void *p);
+void seti (void *p);
+void setl (void *p);
+void setf (void *p);
+void setno (void *p);
+void setsf (void *p);
+
+int inttoint (void *a, void *b, int size);
+
+int inttoc (void *a1, void *b, int size);
+int mdectol (void *zz, void *aa, int sz_ignore);
+int mdectof (void *zz, void *aa, int sz_ignore);
+int mdectos (void *z, void *w, int size);
+
+int ltodec (void *a, void *z, int size);
+
+int btob (void *a, void *b, int size);
+
+int dtos (void *aa, void *zz, int size);
+int dttoc (void *a, void *b, int size);
+int dtof (void *aa, void *zz, int sz_ignore);
+int dtovc (void *aa, void *zz, int sz_ignore);
+int dtosf (void *aa, void *zz, int sz_ignore);
+int dtol (void *aa, void *zz, int sz_ignore);
+int dtoi (void *aa, void *zz, int sz_ignore);
+int dttodt (void *a, void *b, int size);
+
+int mdectoi (void *zz, void *aa, int sz_ignore);
+int mdectosf (void *zz, void *aa, int sz_ignore);
+
+int dectodec (void *a, void *z, int size);
+int dectos (void *z, void *w, int size);
+int dectosf (void *zz, void *aa, int sz_ignore);
+int dectol (void *zz, void *aa, int sz_ignore);
+int dectof (void *zz, void *aa, int sz_ignore);
+int dectoi (void *zz, void *aa, int sz_ignore);
+
+int ltoi (void *aa, void *zz, int sz_ignore);
+int ltod (void *aa, void *zz, int sz_ignore);
+int ltof (void *aa, void *zz, int sz_ignore);
+int ltoc (void *aa, void *zz, int size);
+int ltol (void *aa, void *bb, int sz_ignore);
+int ltovc (void *aa, void *zz, int c);
+int ltosf (void *aa, void *zz, int sz_ignore);
+
+int ftoi (void *aa, void *zz, int c);
+int ftol (void *aa, void *zz, int c);
+int ftof (void *aa, void *bb, int c);
+int ftosf (void *aa, void *zz, int c);
+int ftodec (void *a, void *z, int size);
+int ftod (void *aa, void *zz, int sz_ignore);
+int ftoc (void *aa, void *zz, int c);
+int ftovc (void *aa, void *zz, int c);
+
+
+int itof (void *aa, void *zz, int sz_ignore);
+int itosf (void *aa, void *zz, int sz_ignore);
+int itodec (void *a, void *z, int size);
+int itol (void *aa, void *zz, int sz_ignore);
+int itod (void *aa, void *zz, int sz_ignore);
+int itovc (void *aa, void *zz, int c);
+int itoi (void *aa, void *bb, int sz_ignore);
+int itoc (void *aa, void *zz, int size);
+
+int stof (void *aa, void *zz, int sz_ignore);
+int sftovc (void *aa, void *zz, int c);
+int sftod (void *aa, void *zz, int sz_ignore);
+int sftol (void *aa, void *zz, int c);
+int sftoi (void *aa, void *zz, int c);
+int sftoc (void *aa, void *zz, int c);
+int sftof (void *aa, void *zz, int c);
+int sftosf (void *aa, void *bb, int c);
+int sftodec (void *a, void *z, int size);
+int stol (void *aa, void *zi, int sz_ignore);
+int stodec (void *a, void *z, int size);
+int stosf (void *aa, void *zz, int sz_ignore);
+int stoi (void *aa, void *zi, int sz_ignore);
+void decode_datetime (struct A4GLSQL_dtime *d, int *data);
+
+int mdectod (void *zz, void *aa, int sz_ignore);
+
+static char *dec_math (char *s, char *w, char *r, char op);
+static void match_dec (char *f, char *t, int *a, int *b);
+void trim_decimals (char *s, int d);
+void set_setdtype (int dtype, void *ptr);
+int dectod (void *zz, void *aa, int sz_ignore);
 
 #ifdef TEST
-	static void 	exercise 		(void);
-	static void 	print_res_l 	(int ln, char *s);
+static void exercise (void);
+static void print_res_l (int ln, char *s);
 #endif
 
 #include <errno.h>
 /* extern int 		errno; */
-int 			lastsize;
+int lastsize;
 
 
 /*
@@ -263,9 +264,8 @@ typedef struct
 
 void (*setdtype[MAX_DTYPE]) (void *ptr1) =
 {
-  setc, seti, setl, setf,
-    setsf, setf, setl, setno, setf, setno, setno, setno, setno, setno, setno
-};
+setc, seti, setl, setf,
+    setsf, setf, setl, setno, setf, setno, setno, setno, setno, setno, setno};
 
 
 /**
@@ -274,43 +274,58 @@ void (*setdtype[MAX_DTYPE]) (void *ptr1) =
 int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
 {
   {
-    ctoc, stoi, stol, stof, stosf, stodec, stol, stod, stof, NO, ctodt, NO, NO, OK, ctoint},
+  ctoc, stoi, stol, stof, stosf, stodec, stol, stod, stof, NO, ctodt, NO,
+      NO, OK, ctoint}
+  ,
   {
-    itoc, itoi, itol, itof, itosf, itodec, itol, itod, itomdec, NO, NO, NO,
-      NO, itovc, NO},
+  itoc, itoi, itol, itof, itosf, itodec, itol, itod, itomdec, NO, NO, NO,
+      NO, itovc, NO}
+  ,
   {
-    ltoc, ltoi, ltol, ltof, ltosf, ltodec, ltol, ltod, ltomdec, NO, NO, NO,
-      NO, ltovc, NO},
+  ltoc, ltoi, ltol, ltof, ltosf, ltodec, ltol, ltod, ltomdec, NO, NO, NO,
+      NO, ltovc, NO}
+  ,
   {
-    ftoc, ftoi, ftol, ftof, ftosf, ftodec, ftol, ftod, ftomdec, NO, NO, NO,
-      NO, ftovc, NO},
+  ftoc, ftoi, ftol, ftof, ftosf, ftodec, ftol, ftod, ftomdec, NO, NO, NO,
+      NO, ftovc, NO}
+  ,
   {
-    sftoc, sftoi, sftol, sftof, sftosf, sftodec, sftol, sftod, sftomdec, NO,
-      NO, NO, NO, sftovc, NO},
+  sftoc, sftoi, sftol, sftof, sftosf, sftodec, sftol, sftod, sftomdec, NO,
+      NO, NO, NO, sftovc, NO}
+  ,
   {
-    dectos, dectoi, dectol, dectof, dectosf, dectodec, dectol, NO, dectomdec,
-      NO, NO, NO, NO, dectos, NO},
+  dectos, dectoi, dectol, dectof, dectosf, dectodec, dectol, NO, dectomdec,
+      NO, NO, NO, NO, dectos, NO}
+  ,
   {
-    ltoc, ltoi, ltol, ltof, ltosf, ltodec, ltol, ltod, ltomdec, NO, NO, NO,
-      NO, ltovc, NO},
+  ltoc, ltoi, ltol, ltof, ltosf, ltodec, ltol, ltod, ltomdec, NO, NO, NO,
+      NO, ltovc, NO}
+  ,
   {
-    dtos, dtoi, dtol, dtof, dtosf, dtodec, dtof, ltol, dtomdec, NO, NO, NO,
-      NO, dtovc, NO},
+  dtos, dtoi, dtol, dtof, dtosf, dtodec, dtof, ltol, dtomdec, NO, NO, NO,
+      NO, dtovc, NO}
+  ,
   {
-    mdectos, mdectoi, mdectol, mdectof, mdectosf, mdectodec, mdectol, NO,
-      mdectomdec, NO, NO, NO, NO, mdectos, NO},
+  mdectos, mdectoi, mdectol, mdectof, mdectosf, mdectodec, mdectol, NO,
+      mdectomdec, NO, NO, NO, NO, mdectos, NO}
+  ,
   {
-  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
+  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO}
+  ,
   {
-  dttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, dttodt, NO, NO, NO, NO},
+  dttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, dttodt, NO, NO, NO, NO}
+  ,
   {
-  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, btob, NO, NO, NO},
+  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, btob, NO, NO, NO}
+  ,
   {
-  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, btob, NO, NO},
+  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, btob, NO, NO}
+  ,
   {
-  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO},
+  NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO}
+  ,
   {
-  inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO,inttoint}
+  inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, inttoint}
 };
 
 
@@ -343,17 +358,17 @@ main (void)
   str_to_dec ("1.0", wrkbf2);
   str_to_dec ("0.01", wrkbf3);
   /*
-  print_res(wrkbf2);
-  print_res(wrkbf3);
-  printf("Calculating\n");
-  */
+     print_res(wrkbf2);
+     print_res(wrkbf3);
+     printf("Calculating\n");
+   */
   dec_math (wrkbf2, wrkbf3, wrkbf, '*');
   /* printf("-9x-0.9 =%s\n",dec_to_str(wrkbf)); */
 
-  #ifdef EXERCISE
-	  exercise();
-      print_res_l(0,'0');
-  #endif
+#ifdef EXERCISE
+  exercise ();
+  print_res_l (0, '0');
+#endif
 
 
   debug ("0.00003 %s\n", dec_to_str (inv (str_to_dec ("0.00003", 0))));
@@ -402,20 +417,20 @@ int
 inttoint (void *a, void *b, int size)
 /* inttoint (struct ival *a, void *b, int size) */
 {
-int data[20];
-int val1,val2,val3;
-struct ival *d;
-struct ival *e;
-char buff[256];
+  int data[20];
+  int val1, val2, val3;
+  struct ival *d;
+  struct ival *e;
+  char buff[256];
 
   debug ("inttoint\n");
-  d=b;
-  e=a;
-  debug("e->stime=0x%x e->ltime=0x%x",e->stime,e->ltime);
-  inttoc(a,buff,60);
-  trim(buff);
-  debug("Got Interval as : '%s'\n",buff);
-  return ctoint(buff,b,size);
+  d = b;
+  e = a;
+  debug ("e->stime=0x%x e->ltime=0x%x", e->stime, e->ltime);
+  inttoc (a, buff, 60);
+  trim (buff);
+  debug ("Got Interval as : '%s'\n", buff);
+  return ctoint (buff, b, size);
 
 /*
 #ifdef DEBUG
@@ -469,53 +484,59 @@ inttoc (void *a1, void *b, int size)
   char buff[256];
   char buff2[256];
   //             0   1   2   3   4   5   6
-  char *pre[]={ " ","-","-"," ",":",":","."} ;
+  char *pre[] = { " ", "-", "-", " ", ":", ":", "." };
 
 
   int spc[] = { 0, 4, 2, 2, 2, 2, 2, 5 };
   a = a1;
 
 
-  decode_interval(a,data);
+  decode_interval (a, data);
 
-  debug("Y: %d",data[0]); // -
-  debug("M: %d",data[1]); // -
-  debug("D: %d",data[2]); // ' '
-  debug("H: %d",data[3]); // :
-  debug("M: %d",data[4]); // :
-  debug("S: %d",data[5]); // .
-  debug("F: %d",data[6]); // 
+  debug ("Y: %d", data[0]);	// -
+  debug ("M: %d", data[1]);	// -
+  debug ("D: %d", data[2]);	// ' '
+  debug ("H: %d", data[3]);	// :
+  debug ("M: %d", data[4]);	// :
+  debug ("S: %d", data[5]);	// .
+  debug ("F: %d", data[6]);	// 
 
   s2 = a->stime % 16;
   s1 = a->stime / 16;
-  e  = a->ltime;
+  e = a->ltime;
 
-  if (e>=7) {
-        nfrac=e-6;
-	e=7;
-  }
+  if (e >= 7)
+    {
+      nfrac = e - 6;
+      e = 7;
+    }
 
 
   // s2 = start..
   // s1 = number of digits in start..
-  strcpy(buff,"");
+  strcpy (buff, "");
 
-  for (cnt=s2;cnt<=e;cnt++) {
+  for (cnt = s2; cnt <= e; cnt++)
+    {
 
 
-	if (strlen(buff)) strcat(buff,pre[cnt-1]);
-  	if (cnt==7)  {
-  		sprintf(buff2,"%05d",data[cnt-1]);
-		buff2[nfrac]=0;
-	} else {
-		sprintf(buff2,"%02d",data[cnt-1]);
+      if (strlen (buff))
+	strcat (buff, pre[cnt - 1]);
+      if (cnt == 7)
+	{
+	  sprintf (buff2, "%05d", data[cnt - 1]);
+	  buff2[nfrac] = 0;
+	}
+      else
+	{
+	  sprintf (buff2, "%02d", data[cnt - 1]);
 	}
 
-  	strcat(buff,buff2);
+      strcat (buff, buff2);
 
-  }
-  debug("-->%s\n",buff);
-  ctoc(buff,b,size);
+    }
+  debug ("-->%s\n", buff);
+  ctoc (buff, b, size);
   return 1;
 }
 
@@ -533,38 +554,38 @@ ctoint (void *a_char, void *b_int, int size_b)
   int data[256];
   struct ival *d;
   int v1, v2, v3;
-char localchar[56];
+  char localchar[56];
 
-strcpy(localchar,a_char);
+  strcpy (localchar, a_char);
   d = (struct ival *) b_int;
 
-  debug("ctoint - %s size_b=%x\n",a_char,size_b);
+  debug ("ctoint - %s size_b=%x\n", a_char, size_b);
   d->ltime = size_b & 15;
   d->stime = size_b >> 4;
 
-  debug("Set d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
-  debug("Set d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
-	
-  debug("CHECK0.01 :  d->stime=%d d->ltime=%d %p",d->stime,d->ltime,d);
+  debug ("Set d->stime=%d d->ltime=%d %p", d->stime, d->ltime, d);
+  debug ("Set d->stime=%d d->ltime=%d %p", d->stime, d->ltime, d);
+
+  debug ("CHECK0.01 :  d->stime=%d d->ltime=%d %p", d->stime, d->ltime, d);
 
 
   v1 = size_b & 15;
-  debug("CHECK0.1 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  debug ("CHECK0.1 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
   v2 = (size_b >> 4) & 15;
-  debug("CHECK0.2 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  debug ("CHECK0.2 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
   v3 = (size_b >> 8) & 15;
 
-  debug("CHECK0 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+  debug ("CHECK0 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
 
   debug ("v1=%d v2=%d v3=%d\n", v1, v2, v3);
 
   if (valid_int (localchar, data, size_b))
     {
-  	debug("CHECK1 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
-	conv_invdatatoc(data,v1,v2,v3,d);
-  	debug("CHECK2 :  d->stime=%d d->ltime=%d",d->stime,d->ltime);
+      debug ("CHECK1 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
+      conv_invdatatoc (data, v1, v2, v3, d);
+      debug ("CHECK2 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
 
-      	return 1;
+      return 1;
     }
   else
     {
@@ -591,36 +612,40 @@ dttodt (void *a, void *b, int size)
 {
   char buff[256];
   struct A4GLSQL_dtime *d;
-  d=a;
+  d = a;
 
-	if(d->stime>=1&&d->stime<=11) ;
-	else {
-		assertion(1,"Start Time invalid on datetime (dttodt)");
-	}
+  if (d->stime >= 1 && d->stime <= 11);
+  else
+    {
+      assertion (1, "Start Time invalid on datetime (dttodt)");
+    }
 
-	if(d->ltime>=1&&d->ltime<=11) ;
-	else {
-		assertion(1,"End Time invalid on datetime (dttodt)");
-	}
+  if (d->ltime >= 1 && d->ltime <= 11);
+  else
+    {
+      assertion (1, "End Time invalid on datetime (dttodt)");
+    }
 
-  debug ("dttodt %p %p %d a->stime=%d a->ltime=%d\n", a, b, size,d->stime,d->ltime);
+  debug ("dttodt %p %p %d a->stime=%d a->ltime=%d\n", a, b, size, d->stime,
+	 d->ltime);
 
-  if (size==-1) {
-	debug("Mallocing new A4GLSQL_dtime");
-	memcpy(b,a,sizeof(struct A4GLSQL_dtime));
-	return 0;
-  }
+  if (size == -1)
+    {
+      debug ("Mallocing new A4GLSQL_dtime");
+      memcpy (b, a, sizeof (struct A4GLSQL_dtime));
+      return 0;
+    }
 
 
 
-  debug("In dttodt - calling dttoc size=%x ",size);
+  debug ("In dttodt - calling dttoc size=%x ", size);
   if (dttoc (a, buff, 255))
     {
-	d=b;
-	debug("Got buff as : %s - size=%x\n",buff,size);
-	d->stime=size/16;
-	d->ltime=size%16;
-      	return ctodt (buff, b, d->stime*16+d->ltime);
+      d = b;
+      debug ("Got buff as : %s - size=%x\n", buff, size);
+      d->stime = size / 16;
+      d->ltime = size % 16;
+      return ctodt (buff, b, d->stime * 16 + d->ltime);
     }
   return 0;
 }
@@ -645,7 +670,7 @@ ctodt (void *a, void *b, int size)
 
   d->ltime = size % 16;
   d->stime = size >> 4;
-  debug("d->ltime=%d d->stime=%d\n",d->ltime,d->stime);
+  debug ("d->ltime=%d d->stime=%d\n", d->ltime, d->stime);
 
   if (valid_dt (a, data))
     {
@@ -695,25 +720,27 @@ dttoc (void *a, void *b, int size)
   debug ("dttoc : %p %p %x\n", a, b, size);
   d = a;
   x = 0;
-  debug("d->stime=%d d->ltime=%d\n",d->stime,d->ltime,d->data);
+  debug ("d->stime=%d d->ltime=%d\n", d->stime, d->ltime, d->data);
 
-	if(d->stime>=1&&d->stime<=11) ;
-	else {
-		assertion(1,"Start Time invalid on datetime");
-	}
+  if (d->stime >= 1 && d->stime <= 11);
+  else
+    {
+      assertion (1, "Start Time invalid on datetime");
+    }
 
-	if(d->ltime>=1&&d->ltime<=11) ;
-	else {
-		assertion(1,"End Time invalid on datetime");
-	}
+  if (d->ltime >= 1 && d->ltime <= 11);
+  else
+    {
+      assertion (1, "End Time invalid on datetime");
+    }
 
-  for (cnt = d->stime-1 ; cnt <= d->ltime-1 ; cnt++)
+  for (cnt = d->stime - 1; cnt <= d->ltime - 1; cnt++)
     {
       //debug ("cnt=%d", cnt);
       //debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
       strncpy (&buff[x], &d->data[pos[cnt]], sizes[cnt]);
       x += sizes[cnt];
-      if (cnt < d->ltime-1 )
+      if (cnt < d->ltime - 1)
 	{
 	  if (delim[cnt] != '*')
 	    {
@@ -731,7 +758,7 @@ dttoc (void *a, void *b, int size)
       return 0;
     }
 
-  debug("dttoc sets to '%s'",buff);
+  debug ("dttoc sets to '%s'", buff);
 
   strcpy (b, buff);
   return 1;
@@ -781,7 +808,7 @@ stoi (void *aa, void *zi, int sz_ignore)
   trim (a);
   zz = strlen (a);
   errno = 0;
-  *z = (short)strtol (a, &eptr, 10);
+  *z = (short) strtol (a, &eptr, 10);
   if (eptr - a < zz)
     return 0;
   if (errno != 0 || *eptr != 0 || eptr == a)
@@ -879,15 +906,15 @@ ltodec (void *a, void *z, int size)
   t = t - h * 256;
   errno = 0;
 
-  debug("Size=%d - 0x%x\n",size,size);
-  debug("a=%p %d",a, *(long *) a);
-  debug ("converting %d to a decimal (%x) %d,%d", *(long *)a, size, h, t);
+  debug ("Size=%d - 0x%x\n", size, size);
+  debug ("a=%p %d", a, *(long *) a);
+  debug ("converting %d to a decimal (%x) %d,%d", *(long *) a, size, h, t);
 
   init_dec (z, h, t);
   sprintf (buff, "%ld", *(long *) a);
-  debug("Buff=%s\n",buff);
+  debug ("Buff=%s\n", buff);
   eptr = str_to_dec (buff, z);
-  debug("eptr=%p\n",eptr);
+  debug ("eptr=%p\n", eptr);
 
   if (eptr)
     return 1;
@@ -914,21 +941,23 @@ ftodec (void *a, void *z, int size)
   char buff[64];
   char fmt[16];
 
-  ndig = size>>8;
+  ndig = size >> 8;
   ndec = size & 0xff;
   errno = 0;
   init_dec (z, ndig, ndec);
 
-  if (ndec >= 0) {
-     // set format to the number of digits needed, to force round-off
-     sprintf(fmt,"%%-32.%df", ndec);
-  }
-  else {
-     strcpy(fmt,"%-32.16f");
-  }
-  sprintf(buff, fmt, *(double *) a);
+  if (ndec >= 0)
+    {
+      // set format to the number of digits needed, to force round-off
+      sprintf (fmt, "%%-32.%df", ndec);
+    }
+  else
+    {
+      strcpy (fmt, "%-32.16f");
+    }
+  sprintf (buff, fmt, *(double *) a);
 
-  eptr = str_to_dec(buff, z);
+  eptr = str_to_dec (buff, z);
 
   if (eptr)
     return 1;
@@ -1191,10 +1220,10 @@ dectos (void *z, void *w, int size)
   //dump (z);
 
   buff = dec_to_str (z, size);
-  debug("dec_to_str -> '%s'\n", buff);
+  debug ("dec_to_str -> '%s'\n", buff);
   //r = ctoc(buff, w, size);
-  strcpy(w,buff);
-  debug("w = %s\n", buff);
+  strcpy (w, buff);
+  debug ("w = %s\n", buff);
   return 1;
 }
 
@@ -1217,23 +1246,26 @@ stof (void *aa, void *zz, int sz_ignore)
   char buff[32];
   int n;
 
-  debug("stof aa = %s, zz = %f", aa, (double *) zz );
+  debug ("stof aa = %s, zz = %f", aa, (double *) zz);
   a = (char *) aa;
 
   z = (double *) zz;
 
   /* watch out for any "," separators in the number - remove them first */
-  if (strchr(a,',')) {
-    a = buff;
-    for (n=0, p = (char *) aa; *p > '\0' && n < 32; p++,n++ ) {
-         if (*p != ',') *a++ = *p; 
+  if (strchr (a, ','))
+    {
+      a = buff;
+      for (n = 0, p = (char *) aa; *p > '\0' && n < 32; p++, n++)
+	{
+	  if (*p != ',')
+	    *a++ = *p;
+	}
+      *a = '\0';
+      a = buff;
     }
-    *a = '\0';
-    a = buff;
-  }
 
   sscanf (a, "%lf", z);
-  debug("stof: string %s -> float %lf", a, *z );
+  debug ("stof: string %s -> float %lf", a, *z);
   return 1;
 }
 
@@ -1278,7 +1310,7 @@ dectol (void *zz, void *aa, int sz_ignore)
   debug ("dectol");
   a = (long *) aa;
   z = (char *) zz;
-  debug("dectol");
+  debug ("dectol");
   dectos (z, buff, 64);
   return stol (buff, a, 0);
 }
@@ -1542,45 +1574,49 @@ ftod (void *aa, void *zz, int sz_ignore)
  *   - 0 :  There was a conversion error
  *   - 1 :  Conversion done.
  */
-int stod( void *str_v, void *date_v, int sz_ignore )
+int
+stod (void *str_v, void *date_v, int sz_ignore)
 {
-  static char dbdate[10] = "";    // holds current DBDATE value
-  static int d_pos,m_pos,y_pos;   // relative positions of day/month/year
-  char   num[3][10];              // date numbers extracted from string
-  char   *p;
-  int    n;
-  char *str; 
+  static char dbdate[10] = "";	// holds current DBDATE value
+  static int d_pos, m_pos, y_pos;	// relative positions of day/month/year
+  char num[3][10];		// date numbers extracted from string
+  char *p;
+  int n;
+  char *str;
   int *date;
 
-  str=(char *)str_v;
-  date=(int *)date_v;
+  str = (char *) str_v;
+  date = (int *) date_v;
   // set date format from (A4GL_)DBDATE, or use Informix default "mdy4".
   // we only need to do this once, the first time stod() is called.
   // note - for this conversion we need only the three letters DMY
   // in their correct sequence, which we put into variables d/m/y_pos
-  if ( dbdate[0] == '\0' ) {
-     char dmy[4] = "";
-     strncpy( dbdate, get_dbdate(), 10);
-     for ( p = dbdate; (*p > '\0') && (strlen(dmy) < 3); p++ ) {
-       if ( isalpha(*p) ) {
-	       *p = toupper(*p);
-	       strncat( dmy, p, 1 );
-       }
-     }
-     // store the positions (0-2) in dmy string of characters D,M,Y
-     d_pos = strcspn(dmy,"D");
-     m_pos = strcspn(dmy,"M");
-     y_pos = strcspn(dmy,"Y");
-     // each of these must be different and in the range 0-2
-     if ( (d_pos+m_pos+y_pos) != 3 || d_pos == m_pos ||
-           d_pos == y_pos || m_pos == y_pos )
-     {
-        // we have an invalid dbdate format - die ...
-        set_errm (dbdate);
-        exitwith("conv.c - Invalid DBDATE format: %s");
-	return 0;
-     }
-  } // end of dbdate initialization
+  if (dbdate[0] == '\0')
+    {
+      char dmy[4] = "";
+      strncpy (dbdate, get_dbdate (), 10);
+      for (p = dbdate; (*p > '\0') && (strlen (dmy) < 3); p++)
+	{
+	  if (isalpha (*p))
+	    {
+	      *p = toupper (*p);
+	      strncat (dmy, p, 1);
+	    }
+	}
+      // store the positions (0-2) in dmy string of characters D,M,Y
+      d_pos = strcspn (dmy, "D");
+      m_pos = strcspn (dmy, "M");
+      y_pos = strcspn (dmy, "Y");
+      // each of these must be different and in the range 0-2
+      if ((d_pos + m_pos + y_pos) != 3 || d_pos == m_pos ||
+	  d_pos == y_pos || m_pos == y_pos)
+	{
+	  // we have an invalid dbdate format - die ...
+	  set_errm (dbdate);
+	  exitwith ("conv.c - Invalid DBDATE format: %s");
+	  return 0;
+	}
+    }				// end of dbdate initialization
 
   // first scan the string and extract contiguous sequences
   // of digits, up to three of them ( for day/month/year )
@@ -1589,67 +1625,90 @@ int stod( void *str_v, void *date_v, int sz_ignore )
   num[1][0] = '\0';
   num[2][0] = '\0';
   n = 0;
-  for ( p = str; (*p > '\0') && (n < 3); p++ ) {
-    if ( isdigit( *p ) ) {
-       strncat(num[n], p, 1);
-       if ( strlen(num[n]) > 8 ) { n++; }
+  for (p = str; (*p > '\0') && (n < 3); p++)
+    {
+      if (isdigit (*p))
+	{
+	  strncat (num[n], p, 1);
+	  if (strlen (num[n]) > 8)
+	    {
+	      n++;
+	    }
+	}
+      else
+	{
+	  if (num[n][0] > '\0')
+	    {
+	      n++;
+	    }
+	}
     }
-    else {
-       if ( num[n][0] > '\0' ) { n++; }
-    }
-  }
 
   // a single sequence of 6 digits is treated as three 2-digit numbers
-  if ( strlen(num[0]) == 6 ) {
-       strncpy(num[1],&num[0][2],2);
-       strncpy(num[2],&num[0][4],2);
-       num[0][2] = '\0';
-       num[1][2] = '\0';
-       num[2][2] = '\0';
-  }
-  else {
-    if ( strlen(num[0]) == 8 ) {
-    // a single sequence of 8 digits is treated as two 2-digit numbers
-    // and one 4-digit year (which four depends on DBDATE)
-       switch ( y_pos ) {
-	case 0: // year is the first number
-         strncpy(num[1],&num[0][4],2); num[1][2] = '\0';
-         strncpy(num[2],&num[0][6],2); num[2][2] = '\0';
-         num[0][4] = '\0';
-	 break;
-	case 1: // year is in the middle (v. unlikely)
-         strncpy(num[1],&num[0][2],4); num[1][4] = '\0';
-         strncpy(num[2],&num[0][6],2); num[2][2] = '\0';
-         num[0][2] = '\0';
-	 break;
-        default: // year is at the end, the usual case
-         strncpy(num[1],&num[0][2],2); num[1][2] = '\0';
-         strncpy(num[2],&num[0][4],4); num[2][4] = '\0';
-         num[0][2] = '\0';
-	 break;
-       }
+  if (strlen (num[0]) == 6)
+    {
+      strncpy (num[1], &num[0][2], 2);
+      strncpy (num[2], &num[0][4], 2);
+      num[0][2] = '\0';
+      num[1][2] = '\0';
+      num[2][2] = '\0';
     }
-    else {
-      // otherwise, we expect exactly three separate numbers
-         if (! isdigit(num[2][0]) ) {
-	    *date = DATE_INVALID;
-	    return 0;
-         }
+  else
+    {
+      if (strlen (num[0]) == 8)
+	{
+	  // a single sequence of 8 digits is treated as two 2-digit numbers
+	  // and one 4-digit year (which four depends on DBDATE)
+	  switch (y_pos)
+	    {
+	    case 0:		// year is the first number
+	      strncpy (num[1], &num[0][4], 2);
+	      num[1][2] = '\0';
+	      strncpy (num[2], &num[0][6], 2);
+	      num[2][2] = '\0';
+	      num[0][4] = '\0';
+	      break;
+	    case 1:		// year is in the middle (v. unlikely)
+	      strncpy (num[1], &num[0][2], 4);
+	      num[1][4] = '\0';
+	      strncpy (num[2], &num[0][6], 2);
+	      num[2][2] = '\0';
+	      num[0][2] = '\0';
+	      break;
+	    default:		// year is at the end, the usual case
+	      strncpy (num[1], &num[0][2], 2);
+	      num[1][2] = '\0';
+	      strncpy (num[2], &num[0][4], 4);
+	      num[2][4] = '\0';
+	      num[0][2] = '\0';
+	      break;
+	    }
+	}
+      else
+	{
+	  // otherwise, we expect exactly three separate numbers
+	  if (!isdigit (num[2][0]))
+	    {
+	      *date = DATE_INVALID;
+	      return 0;
+	    }
+	}
     }
-  }
 
   // convert d/m/y strings to integer, and then convert to informix-style
   // internal date number  - but first check year for y2k conversion
 
-  if ( strlen(num[y_pos]) < 4 ) {
-    n = modify_year( atoi(num[y_pos]) );
-  }
-  else {
-    n = atoi(num[y_pos]);
-  }
+  if (strlen (num[y_pos]) < 4)
+    {
+      n = modify_year (atoi (num[y_pos]));
+    }
+  else
+    {
+      n = atoi (num[y_pos]);
+    }
 
-  return ( (*date = gen_dateno(atoi(num[d_pos]), atoi(num[m_pos]), n)) 
-           != DATE_INVALID );
+  return ((*date = gen_dateno (atoi (num[d_pos]), atoi (num[m_pos]), n))
+	  != DATE_INVALID);
 }
 
 
@@ -1695,26 +1754,35 @@ dtos (void *aa, void *zz, int size)
   a = (int *) aa;
 
 #ifdef DEBUG
-    /* {DEBUG} */ { debug ("dtos date=%d", *a); }
+  /* {DEBUG} */
+  {
+    debug ("dtos date=%d", *a);
+  }
 #endif
 
   /* without a format string, using_date() will refer to DBDATE */
-  p = using_date( *a, "");
+  p = using_date (*a, "");
 
-  if (size < strlen(p))
-  {
-    #ifdef DEBUG
-    /* {DEBUG} */ { debug ("Size too small, %d", size); }
-    #endif
-    memset (z, '*', size);
-    z[size] = 0;
-    return 0;
-  }
-  strncpy(z, p, size);
-  pad_string (z, size);
-  
+  if (size < strlen (p))
+    {
 #ifdef DEBUG
-  /* {DEBUG} */ { debug ("Date = %s\n", z); }
+      /* {DEBUG} */
+      {
+	debug ("Size too small, %d", size);
+      }
+#endif
+      memset (z, '*', size);
+      z[size] = 0;
+      return 0;
+    }
+  strncpy (z, p, size);
+  pad_string (z, size);
+
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("Date = %s\n", z);
+  }
 #endif
   return 1;
 }
@@ -1735,23 +1803,28 @@ itoc (void *aa, void *zz, int size)
   char fmt[10] = "d";
   int *a;
   char *z;
-char buff[256];
+  char buff[256];
   a = (int *) aa;
   *a = ((*a) & 0xffff);
   z = (char *) zz;
   if (digittoc (a, z, fmt, DTYPE_SMINT, size))
     {
 #ifdef DEBUG
-      {	debug ("itoc return from digittoc using %s", fmt);      }
+      {
+	debug ("itoc return from digittoc using %s", fmt);
+      }
 #endif
       sprintf (buff, fmt, *(short *) a);
     }
-	if(strlen(buff)>size)  {
-		memset(z,'*',size);
-		z[size]=0;
-	} else {
-		strcpy(z,buff);
-	}
+  if (strlen (buff) > size)
+    {
+      memset (z, '*', size);
+      z[size] = 0;
+    }
+  else
+    {
+      strcpy (z, buff);
+    }
 
   return 1;
 }
@@ -1774,7 +1847,9 @@ itol (void *aa, void *zz, int sz_ignore)
   z = (long *) zz;
   a = (short *) aa;
 #ifdef DEBUG
-  {    debug ("itol");  }
+  {
+    debug ("itol");
+  }
 #endif
   *z = (long) *a;
 
@@ -1853,24 +1928,29 @@ ltoc (void *aa, void *zz, int size)
   long *a;
   char *z;
   char fmt[10] = "ld";
-char buff[256];
+  char buff[256];
   z = (char *) zz;
   a = (long *) aa;
 #ifdef DEBUG
-  {    debug ("Size=%d", size);  }
+  {
+    debug ("Size=%d", size);
+  }
 #endif
-  if (digittoc ((int*)a, z, fmt, DTYPE_INT, size))
+  if (digittoc ((int *) a, z, fmt, DTYPE_INT, size))
     {
 #ifdef DEBUG
-      {	debug ("ltoc return from digittoc using %s", fmt);      }
+      {
+	debug ("ltoc return from digittoc using %s", fmt);
+      }
 #endif
       sprintf (buff, fmt, *(long *) a);
-	if (strlen(buff)>size) {
-		memset(buff,'*',size);
-		buff[size]=0;
+      if (strlen (buff) > size)
+	{
+	  memset (buff, '*', size);
+	  buff[size] = 0;
 	}
-	strcpy(z,buff);
-        pad_string(z,size);
+      strcpy (z, buff);
+      pad_string (z, size);
     }
   return 1;
 }
@@ -1891,7 +1971,9 @@ ltoi (void *aa, void *zz, int sz_ignore)
   a = (long *) aa;
   z = (short *) zz;
 #ifdef DEBUG
-  {    debug ("Ltoi");  }
+  {
+    debug ("Ltoi");
+  }
 #endif
   *z = (short) *a;
   return 1;
@@ -1970,29 +2052,43 @@ ftoc (void *aa, void *zz, int c)
   double *a;
   char *z;
   char fmt[10] = ".2lf";
-char buff[256];
+  char buff[256];
   a = (double *) aa;
   z = (char *) zz;
 
-  strcpy(buff,"******************************************");
-  if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
+  strcpy (buff, "******************************************");
+  if (digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
+    {
+      sprintf (buff, fmt, *a);
+    }
 
-  if (strlen(buff)>c) {
-        // Its too long...
-        strcpy(fmt,".1f");
-        if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
-        if (strlen(buff)>c) {
-                strcpy(fmt,".0f");
-                if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
-        }
-  }
+  if (strlen (buff) > c)
+    {
+      // Its too long...
+      strcpy (fmt, ".1f");
+      if (digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
+	{
+	  sprintf (buff, fmt, *a);
+	}
+      if (strlen (buff) > c)
+	{
+	  strcpy (fmt, ".0f");
+	  if (digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
+	    {
+	      sprintf (buff, fmt, *a);
+	    }
+	}
+    }
 
-  if (strlen(buff)>c) {
-        memset(z,'*',c);
-        z[c]=0;
-  } else {
-        strcpy(z,buff);
-  }
+  if (strlen (buff) > c)
+    {
+      memset (z, '*', c);
+      z[c] = 0;
+    }
+  else
+    {
+      strcpy (z, buff);
+    }
 
 
   return 1;
@@ -2035,7 +2131,9 @@ ftol (void *aa, void *zz, int c)
   debug ("ftol");
   *z = (long) *a;
 #ifdef DEBUG
-  {    debug ("a=%lf z=%d\n", *a, *z);  }
+  {
+    debug ("a=%lf z=%d\n", *a, *z);
+  }
 #endif
   return 1;
 }
@@ -2096,24 +2194,38 @@ sftoc (void *aa, void *zz, int c)
   char buff[256];
   a = (float *) aa;
   z = (char *) zz;
-  strcpy(buff,"******************************************");
-  if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
+  strcpy (buff, "******************************************");
+  if (digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
+    {
+      sprintf (buff, fmt, *a);
+    }
 
-  if (strlen(buff)>c) {
-	// Its too long...
-	strcpy(fmt,".1f");
-  	if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
-  	if (strlen(buff)>c) {
-		strcpy(fmt,".0f");
-  		if (digittoc ((int*)a, z, fmt, DTYPE_FLOAT, c)) { sprintf (buff, fmt, *a); }
+  if (strlen (buff) > c)
+    {
+      // Its too long...
+      strcpy (fmt, ".1f");
+      if (digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
+	{
+	  sprintf (buff, fmt, *a);
 	}
-  }
-  if (strlen(buff)>c) {
-	memset(z,'*',c);
-	z[c]=0;
-  } else {
-	strcpy(z,buff);
-  }
+      if (strlen (buff) > c)
+	{
+	  strcpy (fmt, ".0f");
+	  if (digittoc ((int *) a, z, fmt, DTYPE_FLOAT, c))
+	    {
+	      sprintf (buff, fmt, *a);
+	    }
+	}
+    }
+  if (strlen (buff) > c)
+    {
+      memset (z, '*', c);
+      z[c] = 0;
+    }
+  else
+    {
+      strcpy (z, buff);
+    }
 
 
   return 1;
@@ -2244,16 +2356,20 @@ int
 ctoc (void *a, void *b, int size)
 {
 #ifdef DEBUG
-  {    debug ("--->Got size as %d", size);  }
+  {
+    debug ("--->Got size as %d", size);
+  }
 #endif
 
 
-debug("String_set....");
+  debug ("String_set....");
 
   string_set (b, a, size);
 
 #ifdef DEBUG
-  {    debug ("Set string");  }
+  {
+    debug ("Set string");
+  }
 #endif
   debug ("returning");
   return 1;
@@ -2277,7 +2393,9 @@ ltol (void *aa, void *bb, int sz_ignore)
 
   *b = *a;
 #ifdef DEBUG
-  {    debug ("ltol %ld %ld", *a, *b);  }
+  {
+    debug ("ltol %ld %ld", *a, *b);
+  }
 #endif
   return 1;
 }
@@ -2413,20 +2531,23 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 	}
     }
 
-   /* Sanity check - conv() is sometimes erroneously called with
-    * just a length for decimals, instead of length + decimal places.
-    * This is a temporary measure - such bugs will be located & fixed.
-    */
-   if (dtype2 == DTYPE_DECIMAL && (size < 256) )
-   {
-     // we don't know how many decimals are required, 4 should be ok
-     size += 4; if (size > 32) size = 32;
-     size = size * 256 + 4;
-     debug( "conv: changing invalid decimal size to %d", size);
-   }
+  /* Sanity check - conv() is sometimes erroneously called with
+   * just a length for decimals, instead of length + decimal places.
+   * This is a temporary measure - such bugs will be located & fixed.
+   */
+  if (dtype2 == DTYPE_DECIMAL && (size < 256))
+    {
+      // we don't know how many decimals are required, 4 should be ok
+      size += 4;
+      if (size > 32)
+	size = 32;
+      size = size * 256 + 4;
+      debug ("conv: changing invalid decimal size to %d", size);
+    }
 
 #ifdef DEBUG
-  {    /* debug ("convert %d %p %d %p\n", dtype1, p1, dtype2, p2); */  }
+  {				/* debug ("convert %d %p %d %p\n", dtype1, p1, dtype2, p2); */
+  }
 #endif
 
   ptr = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK];
@@ -2438,12 +2559,13 @@ conv (int dtype1, void *p1, int dtype2, void *p2, int size)
       return -1;
     }
 
-{
-  debug ("conv (%ld %lx)", *(long *) p1, *(long *) p2); 
-  debug ("conv (%x %x)", *(short *) p1, *(short *) p2); 
+  {
+    debug ("conv (%ld %lx)", *(long *) p1, *(long *) p2);
+    debug ("conv (%x %x)", *(short *) p1, *(short *) p2);
 
-  debug("Convmatrix %d %d --- size=%d",dtype1&DTYPE_MASK,dtype2&DTYPE_MASK,size);
-}
+    debug ("Convmatrix %d %d --- size=%d", dtype1 & DTYPE_MASK,
+	   dtype2 & DTYPE_MASK, size);
+  }
 
   rval = convmatrix[dtype1 & DTYPE_MASK][dtype2 & DTYPE_MASK] (p1, p2, size);
 
@@ -2464,7 +2586,7 @@ assertion (int a, char *s)
 {
   if (a)
     {
-      fflush(stdout);
+      fflush (stdout);
       set_errm (s);
       debug ("%s", s);
       exitwith ("Assertion failed %s");
@@ -2692,13 +2814,13 @@ dec_to_dec (char *f, char *t)
   int x, y, c;
   char buff[64];
 
-debug("dec_to_dec");
-dump(f);
-dump(t);
+  debug ("dec_to_dec");
+  dump (f);
+  dump (t);
 
   trim_dec (f);
 
-dump(f);
+  dump (f);
 
   l = NUM_DIG (f);
   d = NUM_DEC (f);
@@ -2708,27 +2830,33 @@ dump(f);
   lt = NUM_DIG (t);
   ld = NUM_DEC (t);
 
-  if ( ld < d && d > 0 ) {
-  // target has fewer decimal places - do we need to round off ?
-  // we need only do this if the rounding might be upward on the
-  // last decimal digit, ie. check if the next digit is 5 or more
-     c = 0;
-     x = l + OFFSET_DEC(f) - ( d%2==0 ? d/2 : (d+1)/2);
-     if ( ld%2 == 0 ) {
-         if ( (f[x+(ld/2)] & 0xf0) >= 0x50 )  c = 1;
-     }
-     else {
-         if ( (f[x+(ld-1)/2] & 0x0f) >= 0x05 ) c = 1;
-     }
-     debug("rounding = %d",c);
-     if ( c ) {
-        // use a rounded copy of the source decimal
-	printf("copying %d bytes\n", NUM_BYTES(f) );
-        memcpy( buff, f, NUM_BYTES(f) );
-	dec_roundoff( buff, ld );
-	f = buff;
-     }
-  }
+  if (ld < d && d > 0)
+    {
+      // target has fewer decimal places - do we need to round off ?
+      // we need only do this if the rounding might be upward on the
+      // last decimal digit, ie. check if the next digit is 5 or more
+      c = 0;
+      x = l + OFFSET_DEC (f) - (d % 2 == 0 ? d / 2 : (d + 1) / 2);
+      if (ld % 2 == 0)
+	{
+	  if ((f[x + (ld / 2)] & 0xf0) >= 0x50)
+	    c = 1;
+	}
+      else
+	{
+	  if ((f[x + (ld - 1) / 2] & 0x0f) >= 0x05)
+	    c = 1;
+	}
+      debug ("rounding = %d", c);
+      if (c)
+	{
+	  // use a rounded copy of the source decimal
+	  printf ("copying %d bytes\n", NUM_BYTES (f));
+	  memcpy (buff, f, NUM_BYTES (f));
+	  dec_roundoff (buff, ld);
+	  f = buff;
+	}
+    }
 
   x = 0;
   y = 0;
@@ -2755,7 +2883,7 @@ dump(f);
       return;
     }
 
-  debug("lt=%d c=%d\n",lt,c);
+  debug ("lt=%d c=%d\n", lt, c);
 
   memset (&t[OFFSET_DEC (t)], 0, lt);
 
@@ -2764,7 +2892,7 @@ dump(f);
   if (f[0] & 128)
     negate (t);
 
-  dump( t );
+  dump (t);
 }
 
 /**
@@ -2785,7 +2913,7 @@ str_to_dec (char *s, char *w)
   int neg = 0;
   char buff[DBL_DIG1];
   int a;
-  
+
   memset (hd, 0, DBL_DIG1 - 1);
   memset (tl, 0, DBL_DIG1 - 1);
   for (cnt = 0; cnt < strlen (s); cnt++)
@@ -2832,23 +2960,23 @@ str_to_dec (char *s, char *w)
       tlcnt++;
     }
 
-debug("Head : %s (%d) tail %s(%d) \n",hd,hdcnt,tl,tlcnt);
+  debug ("Head : %s (%d) tail %s(%d) \n", hd, hdcnt, tl, tlcnt);
 
   init_dec (buff, (hdcnt + tlcnt), tlcnt);
   cnt = OFFSET_DEC (buff);
 
-debug("Cnt = %d\n",cnt);
+  debug ("Cnt = %d\n", cnt);
 
   for (a = 0; a < hdcnt; a += 2)
     {
       buff[cnt] = HEX_VAL ((hd[a] - '0') * 10 + (hd[a + 1] - '0'));
-	cnt++;
+      cnt++;
     }
 
   for (a = 0; a < tlcnt; a += 2)
     {
       buff[cnt] = HEX_VAL ((tl[a] - '0') * 10 + (tl[a + 1] - '0'));
-	cnt++;
+      cnt++;
     }
 
   if (w == 0)
@@ -2859,11 +2987,12 @@ debug("Cnt = %d\n",cnt);
   dec_to_dec (buff, w);
   if (neg)
     {
-      debug("NEGATE...");
+      debug ("NEGATE...");
       negate (w);
     }
   return w;
 }
+
 /**
  * For debuging purpose only.
  *
@@ -2878,7 +3007,7 @@ pr (char *wrkbf)
   int y_sub;
   rc = NUM_DIG (wrkbf);
   for (y_sub = 0; y_sub <= rc + 1; y_sub++)
-  debug ("%02X ", wrkbf[y_sub] & 0xff);
+    debug ("%02X ", wrkbf[y_sub] & 0xff);
   debug ("\n");
 }
 
@@ -2988,27 +3117,27 @@ negate (char *s)
 char *
 dec_to_str (char *s, int size)
 {
-  int l,d;
-  int c,x,a,k;
+  int l, d;
+  int c, x, a, k;
   static char buff[DBL_DIG1];
-  int dot_printed=-1;
-  int blank=0;
+  int dot_printed = -1;
+  int blank = 0;
   char buff2[200];
 
-  l = NUM_DIG (s);  // length of decimal in bytes
-  d = NUM_DEC (s);  // number of digits to right of decimal point
+  l = NUM_DIG (s);		// length of decimal in bytes
+  d = NUM_DEC (s);		// number of digits to right of decimal point
   // calculate starting position (bytes) of decimal point
-  x = l + OFFSET_DEC(s) - ( d%2==0 ? d/2 : (d+1)/2);
+  x = l + OFFSET_DEC (s) - (d % 2 == 0 ? d / 2 : (d + 1) / 2);
 
-  debug("dec_to_str l=%d d=%d\n", l, d);
+  debug ("dec_to_str l=%d d=%d\n", l, d);
   //dump(s);
 
   if (l == 0 && d == 0)
-   {
+    {
       l = size & 256;
       d = size % 256;
       debug ("**** CHECK THIS - IT LOOKS WRONG, l=%d d=%d\n", l, d);
-   }
+    }
 
   memset (buff, 0, DBL_DIG1 - 1);
   c = 0;
@@ -3020,18 +3149,24 @@ dec_to_str (char *s, int size)
     }
 
   // skip initial 2-byte 'header' and leading zero bytes before dec. point
-  a = OFFSET_DEC(s);
-  while (s[a] == 0 && a < x) { blank+=2;a++; }
+  a = OFFSET_DEC (s);
+  while (s[a] == 0 && a < x)
+    {
+      blank += 2;
+      a++;
+    }
 
   // scan digits (0-9) of number, packed two per byte/char
-  for ( ; a <= l + 1; a++)
+  for (; a <= l + 1; a++)
     {
-      if ( a == x ) {
-         // insert decimal point, and a leading zero if needed
-	 if (c==0 || buff[c-1]=='-')  buff[c++] = '0';
-	 dot_printed=c;
-         buff[c++] = '.';
-      }
+      if (a == x)
+	{
+	  // insert decimal point, and a leading zero if needed
+	  if (c == 0 || buff[c - 1] == '-')
+	    buff[c++] = '0';
+	  dot_printed = c;
+	  buff[c++] = '.';
+	}
 
       // extract decimal as a 2-digit number ( 00 - 99 ) 
       k = DEC_VAL (s[a]);
@@ -3039,21 +3174,34 @@ dec_to_str (char *s, int size)
       // append ascii char for left-hand digit, unless
       // it's an unecessary leading zero
       buff[c] = ((int) k / 10) + '0';
-      if ( buff[c]=='0' && (c==0 || buff[c-1]=='-')) { blank++;buff[c] = 0; } else c++;
+      if (buff[c] == '0' && (c == 0 || buff[c - 1] == '-'))
+	{
+	  blank++;
+	  buff[c] = 0;
+	}
+      else
+	c++;
 
       // similarly for right-hand digit
       buff[c] = (int) k % 10 + '0';
-      if ( buff[c]=='0' && (c==0 || buff[c-1]=='-') ) {blank++; buff[c] = 0; } else c++;
+      if (buff[c] == '0' && (c == 0 || buff[c - 1] == '-'))
+	{
+	  blank++;
+	  buff[c] = 0;
+	}
+      else
+	c++;
     }
 
-  if (dot_printed&&d%2==1) {
-	buff[dot_printed+d+1]=0;
-  }
-  memset(buff2,' ',199);
-  buff2[blank]=0;
-  strcat(buff2,buff);
-  strcpy(buff,buff2);
-  debug("returning: %s - blank=%d\n",buff,blank);
+  if (dot_printed && d % 2 == 1)
+    {
+      buff[dot_printed + d + 1] = 0;
+    }
+  memset (buff2, ' ', 199);
+  buff2[blank] = 0;
+  strcat (buff2, buff);
+  strcpy (buff, buff2);
+  debug ("returning: %s - blank=%d\n", buff, blank);
   return buff;
 }
 
@@ -3137,8 +3285,9 @@ minus_dec (char *a, char *b)
 char *
 init_dec (char *s, int len, int d)
 {
-	debug("init_dec len=%d,d=%d",len,d);
-  if (len%2==1) len++; /* This was missing - odd number decimals wouldn't allocate the right space! */
+  debug ("init_dec len=%d,d=%d", len, d);
+  if (len % 2 == 1)
+    len++;			/* This was missing - odd number decimals wouldn't allocate the right space! */
   if (s == 0)
     {
       s = malloc (len + OFFSET_DEC (s));
@@ -3146,7 +3295,7 @@ init_dec (char *s, int len, int d)
   memset (s, 0, len + OFFSET_DEC (s));
   SET_DIG (s, len / 2);
   SET_DEC (s, d);
-  dump(s);
+  dump (s);
   return s;
 }
 
@@ -3232,46 +3381,51 @@ mult_dec (char *s, char *v)
  * @return   1 if rounded ok,  0 if failed (overflow)
 */
 int
-dec_roundoff( char *s, int n ) {
- int l,d,i,c,k;
- char buff[DBL_DIG1];
+dec_roundoff (char *s, int n)
+{
+  int l, d, i, c, k;
+  char buff[DBL_DIG1];
 
-  l = NUM_DIG (s);  // length of decimal in bytes
-  d = NUM_DEC (s);  // number of decimal places
- 
+  l = NUM_DIG (s);		// length of decimal in bytes
+  d = NUM_DEC (s);		// number of decimal places
+
   // we can only round off to fewer decimals than we have
-  if (n >= d) return 0;
+  if (n >= d)
+    return 0;
 
   // copy the decimal digits to a char buffer - ignore sign and dec. point
   memset (buff, 0, DBL_DIG1 - 1);
-  c=0;
-  for ( i = OFFSET_DEC(s); i <= l + 1; i++)
-  {
-      k = DEC_VAL(s[i]);
+  c = 0;
+  for (i = OFFSET_DEC (s); i <= l + 1; i++)
+    {
+      k = DEC_VAL (s[i]);
       buff[c++] = ((int) k / 10) + '0';
       buff[c++] = (int) k % 10 + '0';
-  }
+    }
 
   // round off number in the char buffer
   n = l * 2 - n;
-  while ( n > 0 && buff[n] >= '5' ) {
+  while (n > 0 && buff[n] >= '5')
+    {
       buff[n--] = '0';
-      if ( buff[n] < '9' ) {
-          buff[n] += 1;
+      if (buff[n] < '9')
+	{
+	  buff[n] += 1;
 	  break;
-      }
+	}
       buff[n] = '9';
-  }
+    }
 
   // test for an overflow - we cannot round in that case
-  if ( n < 1 && buff[0] == '0' ) return 0;
+  if (n < 1 && buff[0] == '0')
+    return 0;
 
   // write rounded result back to decimal number
-  i = OFFSET_DEC(s);
-  for ( c = 0; c <= strlen(buff); c += 2 )
-  {
-      s[i++] = HEX_VAL ((buff[c] - '0') * 10 + (buff[c+1] - '0'));
-  }
+  i = OFFSET_DEC (s);
+  for (c = 0; c <= strlen (buff); c += 2)
+    {
+      s[i++] = HEX_VAL ((buff[c] - '0') * 10 + (buff[c + 1] - '0'));
+    }
 
   return 1;
 }
@@ -3316,7 +3470,7 @@ exercise (void)
 	      double_to_dec (x, buffx, 20, 8);
 	      double_to_dec (y, buffy, 20, 8);
 
-		/* printf("x=%lf ",x);debug("%s ",dec_to_str(buffx));debug("y=%lf ",y);debug("%s\n",dec_to_str(buffy)); */
+	      /* printf("x=%lf ",x);debug("%s ",dec_to_str(buffx));debug("y=%lf ",y);debug("%s\n",dec_to_str(buffy)); */
 	      if (z == 0)
 		dec_math (buffx, buffy, buffz, '+');
 
@@ -3686,7 +3840,7 @@ valid_dt (char *s, int *data)
   int buff_size;
   char *codes[] = { "", "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
     "SECOND", "FRACTION1", "FRACTION2", "FRACTION3", "FRACTION4", "FRACTION5",
-      0
+    0
   };
 
   debug ("In valid_dt\n");
@@ -3698,7 +3852,7 @@ valid_dt (char *s, int *data)
 
   strcpy (buff, s);
   ptr[0] = &buff[0];
-  debug ("Splitting '%s'\n",s);
+  debug ("Splitting '%s'\n", s);
   cnt = 0;
   buff_size = strlen (buff);
   for (a = 1; a < buff_size; a++)
@@ -3882,23 +4036,31 @@ valid_dt (char *s, int *data)
 
       if (i != 1 && strlen (ptr[i - a]) != 2 && i != 7)
 	{
-	  debug ("expecting 2 digits -> '%s'\n",ptr[i-a]);
+	  debug ("expecting 2 digits -> '%s'\n", ptr[i - a]);
 	  return 0;
 	}
 
-      if (i==7) {
-		int l;
-		char buff[10];
-		strncpy(buff,ptr[i-a],9);
-		buff[5]=0;
-		l=strlen(ptr[i-a]);
-		if (l==1) data[i-1] = atoi (ptr[i-a])*10000;
-		if (l==2) data[i-1] = atoi (ptr[i-a])*1000;
-		if (l==3) data[i-1] = atoi (ptr[i-a])*100;
-		if (l==4) data[i-1] = atoi (ptr[i-a])*10;
-		if (l==5) data[i-1] = atoi (ptr[i-a])*1;
-	} else {
-      		data[i-1 ] = atoi (ptr[i - a]);
+      if (i == 7)
+	{
+	  int l;
+	  char buff[10];
+	  strncpy (buff, ptr[i - a], 9);
+	  buff[5] = 0;
+	  l = strlen (ptr[i - a]);
+	  if (l == 1)
+	    data[i - 1] = atoi (ptr[i - a]) * 10000;
+	  if (l == 2)
+	    data[i - 1] = atoi (ptr[i - a]) * 1000;
+	  if (l == 3)
+	    data[i - 1] = atoi (ptr[i - a]) * 100;
+	  if (l == 4)
+	    data[i - 1] = atoi (ptr[i - a]) * 10;
+	  if (l == 5)
+	    data[i - 1] = atoi (ptr[i - a]) * 1;
+	}
+      else
+	{
+	  data[i - 1] = atoi (ptr[i - a]);
 	}
 
       debug ("%s -> '%s'\n", codes[i], ptr[i - a]);
@@ -3916,7 +4078,7 @@ valid_dt (char *s, int *data)
  *   - 1 : The value is a valid datetime.
  */
 int
-valid_int (char *s, int *data,int size)
+valid_int (char *s, int *data, int size)
 {
   int a;
   char buff[256];
@@ -3932,24 +4094,25 @@ valid_int (char *s, int *data,int size)
   int size_type;
   char *codes[] = { "", "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
     "SECOND", "FRACTION1", "FRACTION2", "FRACTION3", "FRACTION4", "FRACTION5",
-      0
+    0
   };
 
-  for (i=0;i<10;i++) {
-	data[i]=0;
-  }
+  for (i = 0; i < 10; i++)
+    {
+      data[i] = 0;
+    }
 
-  size_type=(size>>4)&15;
+  size_type = (size >> 4) & 15;
   debug ("In valid_int\n");
   if (strlen (s) > 30)
     {
-      debug ("Too long - '%s' (%d)\n",s,strlen(s));
+      debug ("Too long - '%s' (%d)\n", s, strlen (s));
       return 0;
     }
 
   strcpy (buff, s);
   ptr[0] = &buff[0];
-  debug ("Splitting '%s'\n",buff);
+  debug ("Splitting '%s'\n", buff);
   cnt = 0;
   buff_size = strlen (buff);
   for (a = 1; a < buff_size; a++)
@@ -4050,10 +4213,10 @@ valid_int (char *s, int *data,int size)
 
   if (strcmp (type, ":") == 0)
     {
-	if ((size&0xff)%16==6)
-      		dt_type = dt_encode (DT_MINUTE, DT_SECOND);
-	else
-      		dt_type = dt_encode (DT_HOUR, DT_MINUTE);
+      if ((size & 0xff) % 16 == 6)
+	dt_type = dt_encode (DT_MINUTE, DT_SECOND);
+      else
+	dt_type = dt_encode (DT_HOUR, DT_MINUTE);
     }
 
   if (strcmp (type, "-- :") == 0)
@@ -4089,15 +4252,16 @@ valid_int (char *s, int *data,int size)
 
   if (strcmp (type, "-") == 0)
     {
-	  dt_type = dt_encode (DT_YEAR, DT_MONTH);
+      dt_type = dt_encode (DT_YEAR, DT_MONTH);
     }
 
-  debug("dt_type= %d\n",dt_type);
+  debug ("dt_type= %d\n", dt_type);
 
-  if (dt_type==0) { /* Lets assume the programmer knows what he's doing.. */
-	debug("Probably type= %d\n",size_type); 
-	dt_type=dt_encode(size_type,size_type);
-  }
+  if (dt_type == 0)
+    {				/* Lets assume the programmer knows what he's doing.. */
+      debug ("Probably type= %d\n", size_type);
+      dt_type = dt_encode (size_type, size_type);
+    }
 
 
   if (dt_type == -1)
@@ -4128,15 +4292,18 @@ valid_int (char *s, int *data,int size)
     {
       debug ("i=%d i-a=%d\n", i, i - a);
 
-	if (i==7) {
-		char buff[256];
-		strcpy(buff,ptr[i-a]);
-		strcat(buff,"000000");
-		buff[5]=0;
-		debug("Setting fraction to %d\n",atoi(buff));
-      		data[i - 1] = atoi (buff);
-	} else {
-      		data[i - 1] = atoi (ptr[i - a]);
+      if (i == 7)
+	{
+	  char buff[256];
+	  strcpy (buff, ptr[i - a]);
+	  strcat (buff, "000000");
+	  buff[5] = 0;
+	  debug ("Setting fraction to %d\n", atoi (buff));
+	  data[i - 1] = atoi (buff);
+	}
+      else
+	{
+	  data[i - 1] = atoi (ptr[i - a]);
 	}
 
       debug ("%s -> '%s'\n", codes[i], ptr[i - a]);
@@ -4157,15 +4324,19 @@ valid_int (char *s, int *data,int size)
 
 
 
-static int atoi_n(char *s,int n) {
-	char buff[256];
-	strcpy(buff,s);
-	buff[n]=0;
-	return atoi(buff);
+static int
+atoi_n (char *s, int n)
+{
+  char buff[256];
+  strcpy (buff, s);
+  buff[n] = 0;
+  return atoi (buff);
 }
 
 
-void decode_datetime(struct A4GLSQL_dtime *d, int *data) {
+void
+decode_datetime (struct A4GLSQL_dtime *d, int *data)
+{
   int cnt;
   char buff[256];
   int x;
@@ -4173,44 +4344,47 @@ void decode_datetime(struct A4GLSQL_dtime *d, int *data) {
   int sizes[] = { 4, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1 };
   //char delim[] = "-- ::.*****";
   int data_internal[20];
-  if (d==0||data==0) {
-	assertion(d==0,"d=0 in decode_datetime");
-	assertion(data==0,"data=0 in decode_datetime");
-  }
+  if (d == 0 || data == 0)
+    {
+      assertion (d == 0, "d=0 in decode_datetime");
+      assertion (data == 0, "data=0 in decode_datetime");
+    }
 
-  for (x=0;x<10;x++) {
-	data[x]=0;
-  }
+  for (x = 0; x < 10; x++)
+    {
+      data[x] = 0;
+    }
 
-  for (x=0;x<20;x++) {
-	data_internal[x]=0;
-  }
+  for (x = 0; x < 20; x++)
+    {
+      data_internal[x] = 0;
+    }
 
   x = 0;
 
-  for (cnt = d->stime-1 ; cnt <= d->ltime-1 ; cnt++)
+  for (cnt = d->stime - 1; cnt <= d->ltime - 1; cnt++)
     {
-	
+
       //debug ("cnt=%d", cnt);
       //debug ("   pos=%d sizes=%d", pos[cnt], sizes[cnt]);
       strncpy (&buff[x], &d->data[pos[cnt]], sizes[cnt]);
 
-	data_internal[cnt]=atoi_n(&buff[x],sizes[cnt]);
-        x += sizes[cnt];
+      data_internal[cnt] = atoi_n (&buff[x], sizes[cnt]);
+      x += sizes[cnt];
     }
-    // Got our split into Y,M,D,H,M,S,F,F,F,F,F
-    // Need to copy these across
-    data[0]=data_internal[0]; //Y
-    data[1]=data_internal[1]; //M
-    data[2]=data_internal[2]; //D
-    data[3]=data_internal[3]; //H
-    data[4]=data_internal[4]; //M
-    data[5]=data_internal[5]; //S
-    data[6]=data_internal[6]; //F1
-    data[6]=data[6]*10+data_internal[7]; //F2
-    data[6]=data[6]*10+data_internal[8]; //F3
-    data[6]=data[6]*10+data_internal[9]; //F4
-    data[6]=data[6]*10+data_internal[10]; //F5
+  // Got our split into Y,M,D,H,M,S,F,F,F,F,F
+  // Need to copy these across
+  data[0] = data_internal[0];	//Y
+  data[1] = data_internal[1];	//M
+  data[2] = data_internal[2];	//D
+  data[3] = data_internal[3];	//H
+  data[4] = data_internal[4];	//M
+  data[5] = data_internal[5];	//S
+  data[6] = data_internal[6];	//F1
+  data[6] = data[6] * 10 + data_internal[7];	//F2
+  data[6] = data[6] * 10 + data_internal[8];	//F3
+  data[6] = data[6] * 10 + data_internal[9];	//F4
+  data[6] = data[6] * 10 + data_internal[10];	//F5
 }
 
 
@@ -4222,20 +4396,20 @@ void decode_datetime(struct A4GLSQL_dtime *d, int *data) {
 void
 decode_interval (struct ival *ival, int *data)
 {
-char buff[256];
-int i;
-int cnt = 0;
-char buff2[64];
-int s1;
-int s2;
-int c;
-int cpc;
-int c2;
-int ltime;
+  char buff[256];
+  int i;
+  int cnt = 0;
+  char buff2[64];
+  int s1;
+  int s2;
+  int c;
+  int cpc;
+  int c2;
+  int ltime;
 
   char *codes[] = { "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
     "SECOND", "FRACTION",
-      0
+    0
   };
   int spc[] = {
     0,
@@ -4248,15 +4422,16 @@ int ltime;
     5
   };
 
-  debug("Decoding interval into component parts");
+  debug ("Decoding interval into component parts");
 
-  for (i=0;i<10;i++) {
-	data[i]=0;
-  }
+  for (i = 0; i < 10; i++)
+    {
+      data[i] = 0;
+    }
 
   s1 = ival->stime % 16;
   s2 = ival->stime / 16;
-  debug("s1=%d s2=%d",s1,s2);
+  debug ("s1=%d s2=%d", s1, s2);
 
   sprintf (buff, "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
 	   ival->data[0], ival->data[1], ival->data[2], ival->data[3],
@@ -4266,12 +4441,11 @@ int ltime;
 	   ival->data[10], ival->data[11],
 	   ival->data[12], ival->data[13],
 	   ival->data[14], ival->data[15],
-   	   ival->data[16], ival->data[17], ival->data[18],
-   	   ival->data[19], ival->data[20], ival->data[21],
-   	   ival->data[22], ival->data[23]
-);
+	   ival->data[16], ival->data[17], ival->data[18],
+	   ival->data[19], ival->data[20], ival->data[21],
+	   ival->data[22], ival->data[23]);
 
-  debug("buff=%s\n",buff);
+  debug ("buff=%s\n", buff);
 
   cnt = 0;
   for (c = 1; c < s1; c++)
@@ -4281,39 +4455,52 @@ int ltime;
     }
 
   debug ("Cnt=%d\n", cnt);
-  debug("Taking first part (size=%d) from %d",s2,cnt);
+  debug ("Taking first part (size=%d) from %d", s2, cnt);
 
-  c=s2;
-  strncpy(buff2,&buff[cnt],s2);
-  buff2[s2]=0;
-  debug("buff2 = '%s'\n",buff2);
+  c = s2;
+  strncpy (buff2, &buff[cnt], s2);
+  buff2[s2] = 0;
+  debug ("buff2 = '%s'\n", buff2);
 
   c2 = c;
-  ltime=ival->ltime;
-  if (ltime>=7) ltime=7;
+  ltime = ival->ltime;
+  if (ltime >= 7)
+    ltime = 7;
 
   for (cpc = s1; cpc < ltime; cpc++)
     {
-      debug("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ",cpc,buff2,c2,cnt,cnt+c2);
-      data[cpc-1]=atoi(buff2);
+      debug ("cpc=%d buff2=%s c2=%d cnt=%d cnt+c2=%d ", cpc, buff2, c2, cnt,
+	     cnt + c2);
+      data[cpc - 1] = atoi (buff2);
 
       buff2[0] = buff[cnt + c2];
       c2++;
-      if (ival->ltime<7) {
-		buff2[1] = buff[cnt + c2]; c2++; buff2[2]=0;
-	} else {
-		buff2[1] = buff[cnt + c2]; c2++; 
-		buff2[2] = buff[cnt + c2]; c2++;
-		buff2[3] = buff[cnt + c2]; c2++;
-		buff2[4] = buff[cnt + c2]; c2++; buff2[4]=0;
+      if (ival->ltime < 7)
+	{
+	  buff2[1] = buff[cnt + c2];
+	  c2++;
+	  buff2[2] = 0;
 	}
-    } 
+      else
+	{
+	  buff2[1] = buff[cnt + c2];
+	  c2++;
+	  buff2[2] = buff[cnt + c2];
+	  c2++;
+	  buff2[3] = buff[cnt + c2];
+	  c2++;
+	  buff2[4] = buff[cnt + c2];
+	  c2++;
+	  buff2[4] = 0;
+	}
+    }
 
-  debug("cpc=%d buff2=%s",cpc,buff2);
-  data[cpc-1]=atoi(buff2);
-  for (c=0;c<7;c++) {
-	debug("Data : %s %d\n",codes[c],data[c]);
-  }
+  debug ("cpc=%d buff2=%s", cpc, buff2);
+  data[cpc - 1] = atoi (buff2);
+  for (c = 0; c < 7; c++)
+    {
+      debug ("Data : %s %d\n", codes[c], data[c]);
+    }
 }
 #endif
 
@@ -4322,12 +4509,12 @@ int ltime;
 * for a new datatype
 **/
 void
-set_convmatrix(int dtype1,int dtype2,void *ptr)
+set_convmatrix (int dtype1, int dtype2, void *ptr)
 {
 
-	debug("Setting convmatrix %d %d to %p",dtype1,dtype2,ptr);
+  debug ("Setting convmatrix %d %d to %p", dtype1, dtype2, ptr);
 
-        convmatrix[dtype1][dtype2]=ptr;
+  convmatrix[dtype1][dtype2] = ptr;
 }
 
 /**
@@ -4335,10 +4522,9 @@ set_convmatrix(int dtype1,int dtype2,void *ptr)
 *
 **/
 void
-set_setdtype(int dtype, void *ptr)
+set_setdtype (int dtype, void *ptr)
 {
-        setdtype[dtype]=ptr;
+  setdtype[dtype] = ptr;
 }
 
 /* ============================= EOF ================================ */
-

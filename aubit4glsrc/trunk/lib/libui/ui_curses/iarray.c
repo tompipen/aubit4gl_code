@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.15 2003-04-28 12:29:51 mikeaubury Exp $
+# $Id: iarray.c,v 1.16 2003-05-12 14:24:27 mikeaubury Exp $
 #*/
 
 /**
@@ -57,12 +57,13 @@
 extern int m_lastkey;
 extern WINDOW *currwin;
 struct s_inp_arr *curr_arr_inp;
-void mja_set_current_field (FORM *form, FIELD *field) ;
+void mja_set_current_field (FORM * form, FIELD * field);
 
-struct s_movement {
-	int scr_line;
-	int arr_line;
-	int attrib_no;
+struct s_movement
+{
+  int scr_line;
+  int arr_line;
+  int attrib_no;
 };
 
 
@@ -73,21 +74,23 @@ struct s_movement {
 */
 
 
-static void init_arr_line(struct s_inp_arr *sio, int n) ;
-void mja_pos_form_cursor(FORM *form);
+static void init_arr_line (struct s_inp_arr *sio, int n);
+void mja_pos_form_cursor (FORM * form);
 //int set_fields_inp_arr (struct s_inp_arr *sio);
 int turn_field_off (FIELD * f);
 int turn_field_on (FIELD * f);
 int turn_field_on2 (FIELD * f, int a);
-void                   debug_print_field_opts (FIELD * a);
-static int process_control_stack(struct s_inp_arr *arr);
-int has_something_on_control_stack(struct s_inp_arr *sio);
+void debug_print_field_opts (FIELD * a);
+static int process_control_stack (struct s_inp_arr *arr);
+int has_something_on_control_stack (struct s_inp_arr *sio);
 
-void add_to_control_stack(struct s_inp_arr *sio,int op,FIELD *f,char *parameter,int extent);
+void add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f,
+			   char *parameter, int extent);
 
-void newMovement(struct s_inp_arr *arr,int scr_line,int arr_line,int attrib);
-void init_control_stack(struct s_inp_arr *sio,int malloc_data);
-void *memdup(void *ptr,int size);
+void newMovement (struct s_inp_arr *arr, int scr_line, int arr_line,
+		  int attrib);
+void init_control_stack (struct s_inp_arr *sio, int malloc_data);
+void *memdup (void *ptr, int size);
 /*
 =====================================================================
                     Functions definitions
@@ -114,7 +117,7 @@ iclear_srec_line (struct struct_screen_record *srec, int line)
       push_char (" ");
     }
   iarr_arr_fields (srec->attribs.attribs_len + 1, 0, 0, srec1, line + 1, 0,
-		    0);
+		   0);
 }
 
 /**
@@ -150,10 +153,11 @@ idraw_arr (struct s_inp_arr *inpa, int type, int no)
       debug ("scr line out of range %d %d\n", scr_line, inpa->srec->dim);
       return;
     }
-  if (scr_line<0) {
-	debug("scr line out of range <0 %d",scr_line);
-	return;
-	}
+  if (scr_line < 0)
+    {
+      debug ("scr line out of range <0 %d", scr_line);
+      return;
+    }
 
   if (no > inpa->no_arr)
     {
@@ -189,7 +193,7 @@ idraw_arr (struct s_inp_arr *inpa, int type, int no)
     {
       debug ("With highlight");
       iarr_arr_fields (inpa->nbind, fonly, type * A_REVERSE, srec2, scr_line,
-			0, 0);
+		       0, 0);
     }
   else
     {
@@ -312,9 +316,9 @@ proc_zero(char *s)
 static void
 debug_print_field (FIELD * f)
 {
-struct struct_scr_field *attr;
+  struct struct_scr_field *attr;
   attr = (struct struct_scr_field *) field_userptr (f);
-  debug("Field : %p:\n",f);
+  debug ("Field : %p:\n", f);
   debug_print_field_opts (f);
   /* debug("attr=%p",f,attr); */
   debug ("Value='%s':", field_buffer (f, 0));
@@ -402,19 +406,19 @@ iarr_loop (struct s_inp_arr *arr)
   int reinpa;
   FORM *mform;
 
-//int iloop_action; 	// What am I proposing to do ?
+//int iloop_action;     // What am I proposing to do ?
 //#define ILOOP_ACTION_MOVEFIELD
 //#define ILOOP_ACTION_MOVELINE
 //#define ILOOP_KEYPRESS
 
-  //int iloop_extent;	// How much am i proposing to do it ?
+  //int iloop_extent;   // How much am i proposing to do it ?
   //void *iloop_context[3];  // What am i doing it do ?
 
 
   curr_arr_inp = arr;
   form = arr->currform;
   set_array_mode ('I');
-  
+
   m_lastkey = 0;
 #ifdef DEBUG
   {
@@ -430,32 +434,36 @@ iarr_loop (struct s_inp_arr *arr)
 
 
 
-      idraw_arr (arr, 2, arr->arr_line);
-
-	
+  idraw_arr (arr, 2, arr->arr_line);
 
 
 
-  if (has_something_on_control_stack(arr))
+
+
+  if (has_something_on_control_stack (arr))
     {
-	int rval;
-	rval=process_control_stack(arr);
-	debug("Control stack - he say %d",rval);
-	return rval;
+      int rval;
+      rval = process_control_stack (arr);
+      debug ("Control stack - he say %d", rval);
+      return rval;
     }
   else
     {
-      if (form->currentfield!=arr->field_list[arr->scr_line - 1][arr->curr_attrib])  {
-      		form->currentfield = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
-      }
+      if (form->currentfield !=
+	  arr->field_list[arr->scr_line - 1][arr->curr_attrib])
+	{
+	  form->currentfield =
+	    arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+	}
       mja_set_current_field (mform, form->currentfield);
-      mja_pos_form_cursor(mform);
-      abort_pressed=0;
+      mja_pos_form_cursor (mform);
+      abort_pressed = 0;
       a = getch_win ();
-      if (abort_pressed) {
-		a = -1;
-		fprintf(stderr,"ABORT\n");
-		fflush(stderr);
+      if (abort_pressed)
+	{
+	  a = -1;
+	  fprintf (stderr, "ABORT\n");
+	  fflush (stderr);
 	}
       m_lastkey = a;
     }
@@ -491,28 +499,24 @@ iarr_loop (struct s_inp_arr *arr)
   switch (a)
     {
     case KEY_NPAGE:
-		newMovement(	arr,
-				arr->scr_line,
-				arr->arr_line + arr->srec->dim,
-				arr->curr_attrib);
-		break;
+      newMovement (arr,
+		   arr->scr_line,
+		   arr->arr_line + arr->srec->dim, arr->curr_attrib);
+      break;
 
     case KEY_PPAGE:
-		newMovement(	arr,
-				arr->scr_line,
-				arr->arr_line - arr->srec->dim,
-				arr->curr_attrib);
-		break;
-				
+      newMovement (arr,
+		   arr->scr_line,
+		   arr->arr_line - arr->srec->dim, arr->curr_attrib);
+      break;
+
 
 
     case KEY_DOWN:
-		newMovement( 	arr,
-				arr->scr_line+1,
-				arr->arr_line+1,
-				arr->curr_attrib);
+      newMovement (arr,
+		   arr->scr_line + 1, arr->arr_line + 1, arr->curr_attrib);
 
-      		break;
+      break;
 
 
     case KEY_RIGHT:
@@ -530,46 +534,38 @@ iarr_loop (struct s_inp_arr *arr)
     case 13:
     case '\t':
     case KEY_ENTER:
-		newMovement( 	arr,
-				arr->scr_line,
-				arr->arr_line,
-				arr->curr_attrib+1);
+      newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib + 1);
 
       break;
 
     case KEY_BACKSPACE:
-		newMovement( 	arr,
-				arr->scr_line,
-				arr->arr_line,
-				arr->curr_attrib-1);
-		break;
+      newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib - 1);
+      break;
 
     case KEY_UP:
-		newMovement( 	arr,
-				arr->scr_line-1,
-				arr->arr_line-1,
-				arr->curr_attrib);
-		break;
+      newMovement (arr,
+		   arr->scr_line - 1, arr->arr_line - 1, arr->curr_attrib);
+      break;
 
     case 27:
-      add_to_control_stack(arr,FORMCONTROL_EXIT_INPUT_OK,0,0,a);
-	break;
+      add_to_control_stack (arr, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
+      break;
 
     case -1:
-      add_to_control_stack(arr,FORMCONTROL_EXIT_INPUT_ABORT,0,0,a);
-	break;
-		
+      add_to_control_stack (arr, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
+      break;
+
     }
 
 
 
   if (a > 0 && a < 255)
     {
-      	add_to_control_stack(arr,FORMCONTROL_KEY_PRESS,0,0,a);
+      add_to_control_stack (arr, FORMCONTROL_KEY_PRESS, 0, 0, a);
     }
 
 
-return -1;
+  return -1;
 
 }
 
@@ -598,7 +594,7 @@ gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d)
   int fc;
   int lc;
   char buff[64];
-  debug ("Generating field list for screen array a=%d d=%d",a,d);
+  debug ("Generating field list for screen array a=%d d=%d", a, d);
 
   fld_list = (FIELD ***) calloc (d, sizeof (FIELD **));
 
@@ -640,13 +636,13 @@ gen_srec_field_list (char *s, struct s_form_dets *form, int a, int d)
  * @return
  */
 int
-inp_arr (void *vinpa, int defs, char *srecname, int attrib,int init)
+inp_arr (void *vinpa, int defs, char *srecname, int attrib, int init)
 {
   FIELD ***fld_list;
   //int a;
 
-struct s_inp_arr *inpa;
-inpa=(struct s_inp_arr *)vinpa;
+  struct s_inp_arr *inpa;
+  inpa = (struct s_inp_arr *) vinpa;
 
   curr_arr_inp = inpa;
   debug ("In inp_arr : %s %p %p %d", srecname, defs, inpa, attrib);
@@ -664,7 +660,7 @@ inpa=(struct s_inp_arr *)vinpa;
 	}
       inpa->currform = get_curr_form ();
 
-      init_control_stack(inpa,1);
+      init_control_stack (inpa, 1);
 
 #ifdef DEBUG
       {
@@ -680,7 +676,8 @@ inpa=(struct s_inp_arr *)vinpa;
 
       debug ("********** no_arr=%d\n", inpa->no_arr);
       debug ("********** nbind=%d\n", inpa->nbind);
-      if (inpa->no_arr==0) init_arr_line(inpa,0);
+      if (inpa->no_arr == 0)
+	init_arr_line (inpa, 0);
 
       set_arr_curr (inpa->arr_line);
       set_scr_line (inpa->scr_line);
@@ -721,24 +718,24 @@ inpa=(struct s_inp_arr *)vinpa;
 			     inpa->srec->dim);
       debug ("All done...");
       inpa->field_list = (void ***) fld_list;
- 	set_fields_inp_arr (inpa);
+      set_fields_inp_arr (inpa);
 
       //for (a = 0; a < inpa->srec->dim; a++)
-	//{
-	  //if (a < inpa->no_arr)
+      //{
+      //if (a < inpa->no_arr)
 //
-	    //{
+      //{
 
-	      //idraw_arr (inpa, a + 1 == inpa->arr_line, a + 1);
+      //idraw_arr (inpa, a + 1 == inpa->arr_line, a + 1);
 //
-	    //}
+      //}
 //
-	//}
+      //}
       idraw_arr (inpa, 1, inpa->arr_line);
 
       gui_scroll (inpa->no_arr);
-      inpa->last_scr_line=-1;
-      inpa->last_arr_line=-1;
+      inpa->last_scr_line = -1;
+      inpa->last_arr_line = -1;
       //set_arr_curr (inpa->arr_line);
       //set_scr_line (inpa->scr_line);
 
@@ -748,7 +745,7 @@ inpa=(struct s_inp_arr *)vinpa;
       //mja_wrefresh (currwin);
       inpa->curr_attrib = 0;
       //debug("MJAMJA setting current field = %p",inpa->field_list[inpa->scr_line - 1][inpa->curr_attrib]);
-      newMovement(inpa,0,0,0);
+      newMovement (inpa, 0, 0, 0);
 
     }
   debug ("inpaarr4");
@@ -826,10 +823,11 @@ debug_print_all_fields(FORM *f)
 /* This function disables all fields except those used in the 
 * input array itself
 */
-int set_fields_inp_arr (void *vsio) 
+int
+set_fields_inp_arr (void *vsio)
 {
   int wid;
-  int a,b;
+  int a, b;
   int nv;
   int flg;
   struct s_form_dets *formdets;
@@ -838,10 +836,10 @@ int set_fields_inp_arr (void *vsio)
   FIELD **field_list;
   FIELD *firstfield = 0;
   int nofields;
-struct s_inp_arr *sio;
-	sio=vsio;
-  
-  
+  struct s_inp_arr *sio;
+  sio = vsio;
+
+
   wid = 1;
   debug ("in set fields");
   formdets = sio->currform;
@@ -851,24 +849,26 @@ struct s_inp_arr *sio;
 
   debug ("Turning off all");
 
-  field_list=form_fields(sio->currform->form);
+  field_list = form_fields (sio->currform->form);
 
-  for (a = 0;field_list[a] ; a++)
+  for (a = 0; field_list[a]; a++)
     {
-        field = (struct struct_scr_field *) (field_userptr (formdets->form_fields[a]));
+      field =
+	(struct struct_scr_field
+	 *) (field_userptr (formdets->form_fields[a]));
 
       if (field == 0)
-        continue;
+	continue;
 
       if (turn_field_off (formdets->form_fields[a]))
-        {
-          firstfield = formdets->form_fields[a];
-        }
+	{
+	  firstfield = formdets->form_fields[a];
+	}
 
     }
 
   nofields = sio->nfields;
-  field_list = (FIELD **)sio->field_list;
+  field_list = (FIELD **) sio->field_list;
 
   debug ("Field list=%p number of fields = %d", field_list, nofields);
 
@@ -877,54 +877,75 @@ struct s_inp_arr *sio;
   if (nofields != nv - 1)
     {
       debug
-        ("Number of fields (%d) is not the same as the number of vars (%d)",
-         nofields + 1, nv);
-      exitwith ("Number of fields is not the same as the number of variables");
+	("Number of fields (%d) is not the same as the number of vars (%d)",
+	 nofields + 1, nv);
+      exitwith
+	("Number of fields is not the same as the number of variables");
       return 0;
     }
 
- 
-debug("turning some back on");
+
+  debug ("turning some back on");
   for (a = 0; a < sio->srec->dim; a++)
     {
-  	for (b = 0; b < sio->srec->attribs.attribs_len; b++)
-    	{
-		debug("MJAMJA Turn on field : %p",sio->field_list[a][b]);
-      		turn_field_on2 (sio->field_list[a][b], 1);
+      for (b = 0; b < sio->srec->attribs.attribs_len; b++)
+	{
+	  debug ("MJAMJA Turn on field : %p", sio->field_list[a][b]);
+	  turn_field_on2 (sio->field_list[a][b], 1);
 	}
     }
   return 1;
 }
 
-void mja_pos_form_cursor(FORM *form) {
-	int a;
-	debug("mja_pos_form_cursor called with form=%p field would be %p",form,current_field(form));
+void
+mja_pos_form_cursor (FORM * form)
+{
+  int a;
+  debug ("mja_pos_form_cursor called with form=%p field would be %p", form,
+	 current_field (form));
 
-	a=pos_form_cursor(form);
-	if (a!=E_OK) {
-		debug("Error in pos_form_cursor - %d",a);
-	}
-	mja_wrefresh (currwin);
+  a = pos_form_cursor (form);
+  if (a != E_OK)
+    {
+      debug ("Error in pos_form_cursor - %d", a);
+    }
+  mja_wrefresh (currwin);
 }
 
 
 
-void mja_set_current_field (FORM *form, FIELD *field) {
-	int a;
-	a=set_current_field(form,field);
-	if (a!=E_OK) {
-		debug ("MJA Error in mja_set_current_field: %p %p",form,field);
-		switch(a) {
-			case E_SYSTEM_ERROR : debug("System Error");break;
-			case E_BAD_ARGUMENT : debug("Bad Argument");break;
-			case E_BAD_STATE : debug("Bad State");break;
-			case E_INVALID_FIELD : debug("Invalid Field");break;
-			case E_REQUEST_DENIED : debug("Request Denied");break;
-		}
-	} else {
-		debug("MJA mja_set_current_field OK");
-		mja_pos_form_cursor(form);
+void
+mja_set_current_field (FORM * form, FIELD * field)
+{
+  int a;
+  a = set_current_field (form, field);
+  if (a != E_OK)
+    {
+      debug ("MJA Error in mja_set_current_field: %p %p", form, field);
+      switch (a)
+	{
+	case E_SYSTEM_ERROR:
+	  debug ("System Error");
+	  break;
+	case E_BAD_ARGUMENT:
+	  debug ("Bad Argument");
+	  break;
+	case E_BAD_STATE:
+	  debug ("Bad State");
+	  break;
+	case E_INVALID_FIELD:
+	  debug ("Invalid Field");
+	  break;
+	case E_REQUEST_DENIED:
+	  debug ("Request Denied");
+	  break;
 	}
+    }
+  else
+    {
+      debug ("MJA mja_set_current_field OK");
+      mja_pos_form_cursor (form);
+    }
 }
 
 /* 
@@ -934,16 +955,19 @@ void mja_set_current_field (FORM *form, FIELD *field) {
 * which is greater than the current maximum number of lines
 * set from a set_count or previous movement
 */
-static void init_arr_line(struct s_inp_arr *sio, int n) {
+static void
+init_arr_line (struct s_inp_arr *sio, int n)
+{
   int a;
   struct BINDING *b;
 
-  b=sio->binding;
+  b = sio->binding;
 
-  for (a = sio->nbind-1; a >= 0; a--)
+  for (a = sio->nbind - 1; a >= 0; a--)
     {
-	debug("b[a].dtype=%d",b[a].dtype);
-        setnull(b[a].dtype,(char *) b[a].ptr + sio->arr_elemsize * (n - 1), b[a].size);
+      debug ("b[a].dtype=%d", b[a].dtype);
+      setnull (b[a].dtype, (char *) b[a].ptr + sio->arr_elemsize * (n - 1),
+	       b[a].size);
     }
 }
 
@@ -952,26 +976,31 @@ static void init_arr_line(struct s_inp_arr *sio, int n) {
 * this is read to determine when to call before/after fields etc
 *
 */
-void add_to_control_stack(struct s_inp_arr *sio,int op,FIELD *f,char *parameter,int extent) {
-char *field_name;
-int a;
-struct struct_scr_field *attr;
+void
+add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f,
+		      char *parameter, int extent)
+{
+  char *field_name;
+  int a;
+  struct struct_scr_field *attr;
 
-debug("add to control stack called with op=%d field=%p extent=%d",op,f,extent);
+  debug ("add to control stack called with op=%d field=%p extent=%d", op, f,
+	 extent);
 
-	field_name=0;
+  field_name = 0;
 
-	if (f) {
-		attr = (struct struct_scr_field *) field_userptr (f);
-		field_name=attr->colname;
-	}
-	a=sio->fcntrl_cnt;
-	sio->fcntrl[a].op=op;
-	sio->fcntrl[a].parameter=parameter;
-	sio->fcntrl[a].field_name=field_name;
-	sio->fcntrl[a].field_number=0; // This is reserved for future enhancement :)
-	sio->fcntrl[a].extent=extent;
-	sio->fcntrl_cnt++;
+  if (f)
+    {
+      attr = (struct struct_scr_field *) field_userptr (f);
+      field_name = attr->colname;
+    }
+  a = sio->fcntrl_cnt;
+  sio->fcntrl[a].op = op;
+  sio->fcntrl[a].parameter = parameter;
+  sio->fcntrl[a].field_name = field_name;
+  sio->fcntrl[a].field_number = 0;	// This is reserved for future enhancement :)
+  sio->fcntrl[a].extent = extent;
+  sio->fcntrl_cnt++;
 
 }
 
@@ -979,9 +1008,12 @@ debug("add to control stack called with op=%d field=%p extent=%d",op,f,extent);
 
 
 /* This function determines if there is something to do on the control stack */
-int has_something_on_control_stack(struct s_inp_arr *sio) {
-	if (sio->fcntrl_cnt) return 1;
-	return 0;
+int
+has_something_on_control_stack (struct s_inp_arr *sio)
+{
+  if (sio->fcntrl_cnt)
+    return 1;
+  return 0;
 }
 
 
@@ -990,35 +1022,42 @@ int has_something_on_control_stack(struct s_inp_arr *sio) {
 /***************************************
 	This function creates the control stack and can also be used for clearing it down (if malloc_data is set to 0)
 ****************************************/
-void init_control_stack(struct s_inp_arr *sio,int malloc_data) {
-int a;
+void
+init_control_stack (struct s_inp_arr *sio, int malloc_data)
+{
+  int a;
 
-debug("init_control_stack - malloc_data = %d\n",malloc_data);
+  debug ("init_control_stack - malloc_data = %d\n", malloc_data);
 // Do we need to allocate the storage area ?
-	if (malloc_data) {
-      		sio->fcntrl=malloc(sizeof(struct s_formcontrol)*10);
-      		sio->fcntrl_cnt=0;
-	}
+  if (malloc_data)
+    {
+      sio->fcntrl = malloc (sizeof (struct s_formcontrol) * 10);
+      sio->fcntrl_cnt = 0;
+    }
 
 // Do we need to clear down any old data ?
-	if (sio->fcntrl_cnt) {
-		for (a=0;a<sio->fcntrl_cnt;a++) {
-			// parameter is the only one that will be malloc'd
-			if (sio->fcntrl[a].parameter) {
-				free(sio->fcntrl[a].parameter);
-			}
-		}
+  if (sio->fcntrl_cnt)
+    {
+      for (a = 0; a < sio->fcntrl_cnt; a++)
+	{
+	  // parameter is the only one that will be malloc'd
+	  if (sio->fcntrl[a].parameter)
+	    {
+	      free (sio->fcntrl[a].parameter);
+	    }
 	}
+    }
 
 // Go through each line and set everything to zero...
-      for (a=0;a<CONTROL_STACK_LENGTH;a++) {
-                sio->fcntrl[a].op=0;
-                sio->fcntrl[a].parameter=0;
-                sio->fcntrl[a].field_number=0;
-                sio->fcntrl[a].state=99;
-                sio->fcntrl[a].extent=0;
-		
-      }
+  for (a = 0; a < CONTROL_STACK_LENGTH; a++)
+    {
+      sio->fcntrl[a].op = 0;
+      sio->fcntrl[a].parameter = 0;
+      sio->fcntrl[a].field_number = 0;
+      sio->fcntrl[a].state = 99;
+      sio->fcntrl[a].extent = 0;
+
+    }
 }
 
 
@@ -1039,107 +1078,129 @@ void *memdup(void *ptr,int size) {
 /*
  *  Set up a record for a desired movement...
  */
-void newMovement(struct s_inp_arr *arr,int scr_line,int arr_line,int attrib) {
-struct s_movement *ptr;
-void *last_field;
-void *next_field;
+void
+newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib)
+{
+  struct s_movement *ptr;
+  void *last_field;
+  void *next_field;
 
 
-debug("newMovement %d %d %d",scr_line,arr_line,attrib);
+  debug ("newMovement %d %d %d", scr_line, arr_line, attrib);
 
 // Sanity check the movements....
 
-	  if (arr_line<1) {
-		// Attempt to move off the top program array...
-		newMovement(arr,scr_line,1,attrib);
-		return ; 
-	   }
+  if (arr_line < 1)
+    {
+      // Attempt to move off the top program array...
+      newMovement (arr, scr_line, 1, attrib);
+      return;
+    }
 
 
-	  if (attrib<0) {
-		 // attempt to move too far to the left
-		 // In informix - this results in just going up a line - still on field 0
-		 debug("Too far to the left");
-		 newMovement(arr,scr_line,arr_line-1,0);
-		 return;
-	  }
+  if (attrib < 0)
+    {
+      // attempt to move too far to the left
+      // In informix - this results in just going up a line - still on field 0
+      debug ("Too far to the left");
+      newMovement (arr, scr_line, arr_line - 1, 0);
+      return;
+    }
 
 
-	  if (scr_line>arr->srec->dim) {
-		 debug("Too far down in screen lines");
-		 scr_line=arr->srec->dim;
-		 newMovement(arr,scr_line,arr_line,attrib);
-		 return;
-	  }
+  if (scr_line > arr->srec->dim)
+    {
+      debug ("Too far down in screen lines");
+      scr_line = arr->srec->dim;
+      newMovement (arr, scr_line, arr_line, attrib);
+      return;
+    }
 
-	  if (scr_line<=0) {
-		 debug("Too far up in screen lines");
-		scr_line=1;
-		newMovement(arr,scr_line,arr_line,attrib);
-		return;
-	  }
+  if (scr_line <= 0)
+    {
+      debug ("Too far up in screen lines");
+      scr_line = 1;
+      newMovement (arr, scr_line, arr_line, attrib);
+      return;
+    }
 
-	  if ((arr_line+1)-scr_line<0) {
-		 debug("scr lines too big for current line %d %d",scr_line,arr_line);
-		scr_line=arr_line-scr_line+1;
-		newMovement(arr,scr_line,arr_line,attrib);
-		return;
-	  }
-
-
-
-	  if (attrib>=arr->srec->attribs.attribs_len) {
-		// Too far over to the right - wrap around to the start of the next line
-		debug("Too far to the right");
-		 newMovement(arr,scr_line+1,arr_line+1,0);
-		 return ;
-	  }
+  if ((arr_line + 1) - scr_line < 0)
+    {
+      debug ("scr lines too big for current line %d %d", scr_line, arr_line);
+      scr_line = arr_line - scr_line + 1;
+      newMovement (arr, scr_line, arr_line, attrib);
+      return;
+    }
 
 
 
-	  if (arr_line>arr->arr_size) { // Attempting to move off the bottom of the array...
-		debug("Too far down the program array");
-		// Do nothing at all...
-		return;
-	  }
+  if (attrib >= arr->srec->attribs.attribs_len)
+    {
+      // Too far over to the right - wrap around to the start of the next line
+      debug ("Too far to the right");
+      newMovement (arr, scr_line + 1, arr_line + 1, 0);
+      return;
+    }
 
 
-          if (arr_line > arr->no_arr) { // Attempting to move off the bottom of the current set_count
-	      // @todo - check see if we need to do this here or later...
-		debug("Attempting to add a new line");
-              if ((arr->inp_flags & 0x01) == 0x01)  {
-			debug("Refused - no new lines set");
-			// Do nothing at all...
-			return; // NO NEW ROWS....
-		}
-          }
 
-	  ptr=malloc(sizeof(struct s_movement));
-	  ptr->scr_line=scr_line;
-	  ptr->arr_line=arr_line;
-	  ptr->attrib_no=attrib;
+  if (arr_line > arr->arr_size)
+    {				// Attempting to move off the bottom of the array...
+      debug ("Too far down the program array");
+      // Do nothing at all...
+      return;
+    }
 
-	  if (arr->scr_line>0) last_field=arr->field_list[arr->scr_line - 1][arr->curr_attrib];
-	  else last_field=0;
 
-	  next_field=arr->field_list[scr_line - 1][attrib];
+  if (arr_line > arr->no_arr)
+    {				// Attempting to move off the bottom of the current set_count
+      // @todo - check see if we need to do this here or later...
+      debug ("Attempting to add a new line");
+      if ((arr->inp_flags & 0x01) == 0x01)
+	{
+	  debug ("Refused - no new lines set");
+	  // Do nothing at all...
+	  return;		// NO NEW ROWS....
+	}
+    }
 
-	  if (arr_line!=arr->arr_line) {
-		debug("Bef1");
-		add_to_control_stack(arr,FORMCONTROL_BEFORE_FIELD,next_field,memdup(ptr,sizeof(struct s_movement)),0);
-		add_to_control_stack(arr,FORMCONTROL_BEFORE_ROW,next_field,memdup(ptr,sizeof(struct s_movement)),0);
+  ptr = malloc (sizeof (struct s_movement));
+  ptr->scr_line = scr_line;
+  ptr->arr_line = arr_line;
+  ptr->attrib_no = attrib;
 
-		if (last_field) {
-			add_to_control_stack(arr,FORMCONTROL_AFTER_ROW,last_field,0,0);
-			add_to_control_stack(arr,FORMCONTROL_AFTER_FIELD,last_field,0,0);
-		}
-	  } else {
-		debug("Bef2");
-			add_to_control_stack(arr,FORMCONTROL_BEFORE_FIELD,next_field,memdup(ptr,sizeof(struct s_movement)),0);
-			if (last_field) add_to_control_stack(arr,FORMCONTROL_AFTER_FIELD,last_field,0,0);
-	 }
+  if (arr->scr_line > 0)
+    last_field = arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+  else
+    last_field = 0;
 
-	free(ptr);
+  next_field = arr->field_list[scr_line - 1][attrib];
+
+  if (arr_line != arr->arr_line)
+    {
+      debug ("Bef1");
+      add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, next_field,
+			    memdup (ptr, sizeof (struct s_movement)), 0);
+      add_to_control_stack (arr, FORMCONTROL_BEFORE_ROW, next_field,
+			    memdup (ptr, sizeof (struct s_movement)), 0);
+
+      if (last_field)
+	{
+	  add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
+	  add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field, 0,
+				0);
+	}
+    }
+  else
+    {
+      debug ("Bef2");
+      add_to_control_stack (arr, FORMCONTROL_BEFORE_FIELD, next_field,
+			    memdup (ptr, sizeof (struct s_movement)), 0);
+      if (last_field)
+	add_to_control_stack (arr, FORMCONTROL_AFTER_FIELD, last_field, 0, 0);
+    }
+
+  free (ptr);
 }
 
 
@@ -1148,153 +1209,184 @@ debug("newMovement %d %d %d",scr_line,arr_line,attrib);
 * process any waiting actions 
 *
 */
-static int process_control_stack(struct s_inp_arr *arr) {
-int a;
-int rval;
-int new_state;
-struct s_movement *ptr_movement;
+static int
+process_control_stack (struct s_inp_arr *arr)
+{
+  int a;
+  int rval;
+  int new_state;
+  struct s_movement *ptr_movement;
 
-rval=-1;
-new_state=99;
+  rval = -1;
+  new_state = 99;
 
 
-	a=arr->fcntrl_cnt-1;
+  a = arr->fcntrl_cnt - 1;
 
-	if (arr->fcntrl[a].op==FORMCONTROL_BEFORE_INPUT) {
-		new_state=0;
-		rval=-99;
+  if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_INPUT)
+    {
+      new_state = 0;
+      rval = -99;
+    }
+
+  if (arr->fcntrl[a].op == FORMCONTROL_AFTER_INPUT)
+    {
+      if (arr->fcntrl[a].op == 99)
+	{
+	  new_state = 50;
+	  rval = -95;		// Do any AFTER INPUT section
 	}
 
-	if (arr->fcntrl[a].op==FORMCONTROL_AFTER_INPUT) {
-		if (arr->fcntrl[a].op==99) {
-			new_state=50;
-			rval=-95; // Do any AFTER INPUT section
-		}
-
-		if (arr->fcntrl[a].op==50) {
-			new_state=0;
-			rval=-94; // CLEANUP
-		}
+      if (arr->fcntrl[a].op == 50)
+	{
+	  new_state = 0;
+	  rval = -94;		// CLEANUP
 	}
+    }
 
 
-	if (arr->fcntrl[a].op==FORMCONTROL_EXIT_INPUT_OK) {
-		new_state=0;
-		add_to_control_stack(arr,FORMCONTROL_AFTER_INPUT,0,0,0);
-		rval=0;
-	}
+  if (arr->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_OK)
+    {
+      new_state = 0;
+      add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
+      rval = 0;
+    }
 
 
-	if (arr->fcntrl[a].op==FORMCONTROL_EXIT_INPUT_ABORT) {
-		//extern int int_flag;
-		debug("FORM ABORT..");
-		int_flag=1;
-		add_to_control_stack(arr,FORMCONTROL_AFTER_INPUT,0,0,0);
-		rval=0;
-		new_state=0;
-	}
+  if (arr->fcntrl[a].op == FORMCONTROL_EXIT_INPUT_ABORT)
+    {
+      //extern int int_flag;
+      debug ("FORM ABORT..");
+      int_flag = 1;
+      add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
+      rval = 0;
+      new_state = 0;
+    }
 
 
-	if (arr->fcntrl[a].op==FORMCONTROL_BEFORE_DELETE) {
-		new_state=0;
-		rval= -12;
-	}
+  if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_DELETE)
+    {
+      new_state = 0;
+      rval = -12;
+    }
 
 
-	if (arr->fcntrl[a].op==FORMCONTROL_AFTER_DELETE) {
-		new_state=0;
-		rval= -13;
-	}
+  if (arr->fcntrl[a].op == FORMCONTROL_AFTER_DELETE)
+    {
+      new_state = 0;
+      rval = -13;
+    }
 
 
-	if (arr->fcntrl[a].op==FORMCONTROL_BEFORE_ROW) {
-		ptr_movement=(struct s_movement *) arr->fcntrl[a].parameter;
+  if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_ROW)
+    {
+      ptr_movement = (struct s_movement *) arr->fcntrl[a].parameter;
 
-		if (ptr_movement->arr_line > arr->no_arr) {
-                  	set_arr_count (ptr_movement->arr_line);
-                  	init_arr_line(arr,ptr_movement->arr_line);
-               		arr->no_arr++;
-		}
-
-
-		arr->scr_line=ptr_movement->scr_line;
-		arr->arr_line=ptr_movement->arr_line;
-      		set_arr_curr (ptr_movement->arr_line);
-      		set_scr_line (ptr_movement->scr_line);
-		debug("MJAMJA a=%d s=%d",ptr_movement->arr_line,ptr_movement->scr_line);
-
-		if (arr->scr_line!=ptr_movement->scr_line) ; //ireinpalay_arr (arr, 1);
-		else 	ireinpalay_arr (arr, 2);
-
-		new_state=0;
-		rval= -10;
-	}
-
-
-
-	if (arr->fcntrl[a].op==FORMCONTROL_AFTER_ROW) {
-		new_state=0;
-		rval= -11;
-	}
-
-	if (arr->fcntrl[a].op==FORMCONTROL_BEFORE_INSERT) {
-		new_state=0;
-		rval= -14;
-	}
-
-	if (arr->fcntrl[a].op==FORMCONTROL_AFTER_INSERT) {
-		new_state=0;
-		rval= -15;
-	}
-
-	if (arr->fcntrl[a].op==FORMCONTROL_KEY_PRESS) {
-		if (arr->fcntrl[a].state==99) {
-			new_state=50;
-			rval= -90;
-		}
-
-		if (arr->fcntrl[a].state==50) {
-			new_state=0;
-			debug("Checking key state.. %d",arr->fcntrl[a].extent);
-      			int_form_driver (arr->currform->form, arr->fcntrl[a].extent);
-      			int_form_driver (arr->currform->form, REQ_VALIDATION);
-			//mja_wrefresh(currwin);
-		}
+      if (ptr_movement->arr_line > arr->no_arr)
+	{
+	  set_arr_count (ptr_movement->arr_line);
+	  init_arr_line (arr, ptr_movement->arr_line);
+	  arr->no_arr++;
 	}
 
 
-	if (arr->fcntrl[a].op==FORMCONTROL_BEFORE_FIELD) {
-		ptr_movement=(struct s_movement *) arr->fcntrl[a].parameter;
-		new_state=0;
-		arr->curr_attrib=ptr_movement->attrib_no;
-		debug("Before field - fieldname=%p",arr->fcntrl[a].field_name);
-		debug("Before field - fieldname=%s",arr->fcntrl[a].field_name);
-		push_long((long)arr->currentfield);
-		push_char(arr->fcntrl[a].field_name);
-		arr->currentfield=arr->field_list[arr->scr_line - 1][arr->curr_attrib];
-		rval= -197;
-	}
+      arr->scr_line = ptr_movement->scr_line;
+      arr->arr_line = ptr_movement->arr_line;
+      set_arr_curr (ptr_movement->arr_line);
+      set_scr_line (ptr_movement->scr_line);
+      debug ("MJAMJA a=%d s=%d", ptr_movement->arr_line,
+	     ptr_movement->scr_line);
+
+      if (arr->scr_line != ptr_movement->scr_line);	//ireinpalay_arr (arr, 1);
+      else
+	ireinpalay_arr (arr, 2);
+
+      new_state = 0;
+      rval = -10;
+    }
 
 
-	if (arr->fcntrl[a].op==FORMCONTROL_AFTER_FIELD) {
-		pop_iarr_var (arr->currform, arr->curr_attrib, arr->arr_line, arr->arr_elemsize, arr->binding);
-		new_state=0;
-		push_long((long)arr->currentfield);
-		push_char(arr->fcntrl[a].field_name);
-		rval= -198;
+
+  if (arr->fcntrl[a].op == FORMCONTROL_AFTER_ROW)
+    {
+      new_state = 0;
+      rval = -11;
+    }
+
+  if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_INSERT)
+    {
+      new_state = 0;
+      rval = -14;
+    }
+
+  if (arr->fcntrl[a].op == FORMCONTROL_AFTER_INSERT)
+    {
+      new_state = 0;
+      rval = -15;
+    }
+
+  if (arr->fcntrl[a].op == FORMCONTROL_KEY_PRESS)
+    {
+      if (arr->fcntrl[a].state == 99)
+	{
+	  new_state = 50;
+	  rval = -90;
 	}
 
-	if (new_state!=0) {
-		if (arr->fcntrl[a].state==new_state) {
-			exitwith("Internal error - no change in state..");
-		}
-		debug("Setting input control state to %d",new_state);
-		arr->fcntrl[a].state=new_state;
-	} else {
-		debug("Popping type %d off control stack @ %d",arr->fcntrl[a].op,a);
-		arr->fcntrl_cnt--;
-		if (arr->fcntrl[a].parameter) { free(arr->fcntrl[a].parameter);}
+      if (arr->fcntrl[a].state == 50)
+	{
+	  new_state = 0;
+	  debug ("Checking key state.. %d", arr->fcntrl[a].extent);
+	  int_form_driver (arr->currform->form, arr->fcntrl[a].extent);
+	  int_form_driver (arr->currform->form, REQ_VALIDATION);
+	  //mja_wrefresh(currwin);
 	}
-	debug("Returning %d\n",rval);
-	return rval;
+    }
+
+
+  if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_FIELD)
+    {
+      ptr_movement = (struct s_movement *) arr->fcntrl[a].parameter;
+      new_state = 0;
+      arr->curr_attrib = ptr_movement->attrib_no;
+      debug ("Before field - fieldname=%p", arr->fcntrl[a].field_name);
+      debug ("Before field - fieldname=%s", arr->fcntrl[a].field_name);
+      push_long ((long) arr->currentfield);
+      push_char (arr->fcntrl[a].field_name);
+      arr->currentfield =
+	arr->field_list[arr->scr_line - 1][arr->curr_attrib];
+      rval = -197;
+    }
+
+
+  if (arr->fcntrl[a].op == FORMCONTROL_AFTER_FIELD)
+    {
+      pop_iarr_var (arr->currform, arr->curr_attrib, arr->arr_line,
+		    arr->arr_elemsize, arr->binding);
+      new_state = 0;
+      push_long ((long) arr->currentfield);
+      push_char (arr->fcntrl[a].field_name);
+      rval = -198;
+    }
+
+  if (new_state != 0)
+    {
+      if (arr->fcntrl[a].state == new_state)
+	{
+	  exitwith ("Internal error - no change in state..");
+	}
+      debug ("Setting input control state to %d", new_state);
+      arr->fcntrl[a].state = new_state;
+    }
+  else
+    {
+      debug ("Popping type %d off control stack @ %d", arr->fcntrl[a].op, a);
+      arr->fcntrl_cnt--;
+      if (arr->fcntrl[a].parameter)
+	{
+	  free (arr->fcntrl[a].parameter);
+	}
+    }
+  debug ("Returning %d\n", rval);
+  return rval;
 }

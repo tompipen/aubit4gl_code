@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.29 2003-04-02 13:43:53 mikeaubury Exp $
+# $Id: map.c,v 1.30 2003-05-12 14:23:45 mikeaubury Exp $
 #*/
 
 /**
@@ -51,7 +51,7 @@
 =====================================================================
 */
 
-static FILE *mapfile = 0; 		/* The map file pointer opened file */
+static FILE *mapfile = 0;	/* The map file pointer opened file */
 
 /*
 =====================================================================
@@ -78,28 +78,28 @@ void
 openmap (char *s)
 {
   char buff[256];
-  #ifdef DEBUG
-	  debug ("openmap");
-  #endif
-  if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0 && mapfile==0)
+#ifdef DEBUG
+  debug ("openmap");
+#endif
+  if (strcmp (acl_getenv ("MAP4GL"), "Y") == 0 && mapfile == 0)
     {
-	  #ifdef DEBUG
-		  debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
-      #endif
+#ifdef DEBUG
+      debug ("Opening map file..%s \n", acl_getenv ("MAP4GL"));
+#endif
       sprintf (buff, "%s.map", s);
       mapfile = fopen (buff, "w");
 
       if (mapfile == 0)
 	{
-	  #ifdef DEBUG
-		  debug ("Unable to open map file");
-      #endif
+#ifdef DEBUG
+	  debug ("Unable to open map file");
+#endif
 	  printf ("Unable to open map file\n");
 	  exit (1);
 	}
-	  #ifdef DEBUG
-		  debug ("Mapfile=%p", mapfile);
-      #endif
+#ifdef DEBUG
+      debug ("Mapfile=%p", mapfile);
+#endif
     }
 }
 
@@ -122,9 +122,9 @@ openmap (char *s)
 void
 addmap (char *t, char *s, char *w, int l, char *m)
 {
-  #ifdef DEBUG
-	  debug ("Adding to map: %p", mapfile);
-  #endif
+#ifdef DEBUG
+  debug ("Adding to map: %p", mapfile);
+#endif
   if (mapfile)
     fprintf (mapfile, "%s|%s|%s|%d|%s|\n", t, s, w, l, m);
 }
@@ -147,16 +147,16 @@ closemap (void)
 void
 rm_quotes (char *s)
 {
-char buff[256];
-int a;
-int b = 0;
-buff[0]=0;
+  char buff[256];
+  int a;
+  int b = 0;
+  buff[0] = 0;
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] != '"')
 	{
 	  buff[b++] = s[a];
-	  buff[b]=0;
+	  buff[b] = 0;
 	}
     }
   strcpy (s, buff);
@@ -170,10 +170,10 @@ buff[0]=0;
 void
 rm_quote (char *s)
 {
-char buff[256];
-int a;
-int b = 0;
-  
+  char buff[256];
+  int a;
+  int b = 0;
+
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] != '"')

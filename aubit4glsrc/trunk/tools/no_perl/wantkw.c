@@ -21,2854 +21,3438 @@
  *   - 3 : Return as either
  */
 int
-wants_kw_token( int state, int kw )
+wants_kw_token (int state, int kw)
 {
 
- /* 22: when_do  ->  FCALL . function_name_when
- */
- if ( state == 22 ) return (inkwlist0(kw) ? 0 : 2);
- /* 23: when_do  ->  GOTO . label_goto
- */
- if ( state == 23 ) return (inkwlist1(kw) ? 0 : 2);
- /* 34: op_import  ->  IMPORT_DATATYPE . identifier
- */
- if ( state == 34 ) return (inkwlist0(kw) ? 0 : 2);
- /* 83: label_goto  ->  COLON . identifier
- */
- if ( state == 83 ) return (inkwlist0(kw) ? 0 : 2);
- /* 86: when_do  ->  GO TO . label_goto
- */
- if ( state == 86 ) return (inkwlist1(kw) ? 0 : 2);
- /* 93: db_section  ->  DATABASE . dbase_name
- */
- if ( state == 93 ) return (inkwlist0(kw) ? 0 : 2);
- /* 106: globals_entry  ->  GLOBALS @111 . glob_section
- */
- if ( state == 106 ) return (inkwlist2(kw) ? 0 : 3);
- /* 110: dim_section  ->  DEFINE_TYPE . identifier @41 AS dim_dtype
- */
- if ( state == 110 ) return (inkwlist0(kw) ? 0 : 2);
- /* 112: var_int  ->  ATSIGN . var
- */
- if ( state == 112 ) return (inkwlist0(kw) ? 0 : 1);
- /* 123: var  ->  varsetidentdot . identifier OPEN_SQUARE num_list CLOSE_SQUARE
- */
- if ( state == 123 ) return (inkwlist3(kw) ? 0 : 2);
- /* 134: assoc_var_read  ->  identifier OPEN_SHEV . assoc_sub CLOSE_SHEV
- */
- if ( state == 134 ) return (inkwlist4(kw) ? 0 : 3);
- /* 135: arr_subscripts  ->  OPEN_SQUARE . num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE
- */
- if ( state == 135 ) return (inkwlist5(kw) ? 0 : 3);
- /* 146: define_ident  ->  @30 . identifier
- */
- if ( state == 146 ) return (inkwlist0(kw) ? 0 : 2);
- /* 156: arr_expr  ->  OPEN_BRACKET . arr_expr CLOSE_BRACKET
- */
- if ( state == 156 ) return (inkwlist5(kw) ? 0 : 3);
- /* 162: var  ->  varsetidentdot identifier OPEN_SQUARE . num_list CLOSE_SQUARE
- */
- if ( state == 162 ) return (inkwlist5(kw) ? 0 : 3);
- /* 173: dtype2  ->  @37 . dtype
- */
- if ( state == 173 ) return (inkwlist6(kw) ? 0 : 2);
- /* 181: arr_expr  ->  arr_expr arr_next_math . arr_expr
- */
- if ( state == 181 ) return (inkwlist5(kw) ? 0 : 3);
- /* 183: num_list  ->  num_list COMMA . num_list_element
- */
- if ( state == 183 ) return (inkwlist5(kw) ? 0 : 3);
- /* 248: arr_subscripts  ->  OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE . num_list CLOSE_SQUARE
- */
- if ( state == 248 ) return (inkwlist5(kw) ? 0 : 3);
- /* 252: import_m  ->  IMPORT_FUNCTION . identifier OPEN_BRACKET INT_VALUE CLOSE_BRACKET
- */
- if ( state == 252 ) return (inkwlist0(kw) ? 0 : 2);
- /* 253: mem_func_def  ->  MEMBER_FUNCTION . identifier MEMBER_OF identifier OPEN_BRACKET @112 op_param_var_list CLOSE_BRACKET @113 define_section @114 op_code commands end_func_command
- */
- if ( state == 253 ) return (inkwlist0(kw) ? 0 : 2);
- /* 258: formhandler_def  ->  FORMHANDLER . identifier @67 define_section @68 op_code op_bef_ev_list op_input_section op_aft_ev_list END_FORMHANDLER
- */
- if ( state == 258 ) return (inkwlist0(kw) ? 0 : 2);
- /* 259: menu_def  ->  MENUHANDLER . identifier @115 define_section @116 menu_handler_elements END_MENUHANDLER
- */
- if ( state == 259 ) return (inkwlist0(kw) ? 0 : 2);
- /* 275: dim_record_variable  ->  RECORD_LIKE @45 . identifier DOT MULTIPLY
- */
- if ( state == 275 ) return (inkwlist0(kw) ? 0 : 2);
- /* 286: dim_record_variable  ->  RECORD @44 . dim_def_part END_RECORD
- */
- if ( state == 286 ) return (inkwlist0(kw) ? 0 : 2);
- /* 316: pdf_report_def  ->  PDF_REPORT @144 . identifier OPEN_BRACKET @145 op_param_var_list CLOSE_BRACKET @146 define_section pdf_report_section @147 format_section @148 END_REPORT
- */
- if ( state == 316 ) return (inkwlist0(kw) ? 0 : 2);
- /* 319: report_def  ->  REPORT @139 . identifier OPEN_BRACKET @140 op_param_var_list CLOSE_BRACKET @141 define_section report_section @142 format_section @143 END_REPORT
- */
- if ( state == 319 ) return (inkwlist0(kw) ? 0 : 2);
- /* 324: func_def  ->  ldeffunction @105 . identifier OPEN_BRACKET @106 op_param_var_list CLOSE_BRACKET @107 define_section @108 op_code commands end_func_command
- */
- if ( state == 324 ) return (inkwlist0(kw) ? 0 : 2);
- /* 375: mem_func_def  ->  MEMBER_FUNCTION identifier MEMBER_OF . identifier OPEN_BRACKET @112 op_param_var_list CLOSE_BRACKET @113 define_section @114 op_code commands end_func_command
- */
- if ( state == 375 ) return (inkwlist0(kw) ? 0 : 2);
- /* 396: dim_def_part  ->  dim_def_part COMMA . dim_def_part2
- */
- if ( state == 396 ) return (inkwlist0(kw) ? 0 : 2);
- /* 398: dim_var_def_list  ->  dim_var_def_list COMMA . dim_var_def_name
- */
- if ( state == 398 ) return (inkwlist0(kw) ? 0 : 2);
- /* 450: pdf_report_def  ->  PDF_REPORT @144 identifier OPEN_BRACKET @145 . op_param_var_list CLOSE_BRACKET @146 define_section pdf_report_section @147 format_section @148 END_REPORT
- */
- if ( state == 450 ) return (inkwlist0(kw) ? 0 : 2);
- /* 453: report_def  ->  REPORT @139 identifier OPEN_BRACKET @140 . op_param_var_list CLOSE_BRACKET @141 define_section report_section @142 format_section @143 END_REPORT
- */
- if ( state == 453 ) return (inkwlist0(kw) ? 0 : 2);
- /* 461: func_def  ->  ldeffunction @105 identifier OPEN_BRACKET @106 . op_param_var_list CLOSE_BRACKET @107 define_section @108 op_code commands end_func_command
- */
- if ( state == 461 ) return (inkwlist0(kw) ? 0 : 2);
- /* 482: mem_func_def  ->  MEMBER_FUNCTION identifier MEMBER_OF identifier OPEN_BRACKET @112 . op_param_var_list CLOSE_BRACKET @113 define_section @114 op_code commands end_func_command
- */
- if ( state == 482 ) return (inkwlist0(kw) ? 0 : 2);
- /* 488: at_term_cmd  ->  AT_TERMINATION_CALL . identifier
- */
- if ( state == 488 ) return (inkwlist0(kw) ? 0 : 2);
- /* 489: clear_cmd  ->  CLEARSTAT . win_name
- */
- if ( state == 489 ) return 3;
- /* 490: close_cmd  ->  CLOSE_STATUSBOX . win_name
- */
- if ( state == 490 ) return 3;
- /* 491: connect_cmd  ->  CONNECT_TO . var_ident op_connect_as con_user_details
- */
- if ( state == 491 ) return (inkwlist4(kw) ? 0 : 2);
- /* 492: show_cmd  ->  SHOW_MENU . menu_name USING menu_handler op_mnfile
- */
- if ( state == 492 ) return (inkwlist0(kw) ? 0 : 2);
- /* 494: create_c_1  ->  CREATE_IDX . idx_column_list CLOSE_BRACKET
- */
- if ( state == 494 ) return (inkwlist0(kw) ? 0 : 2);
- /* 497: upd_stats_cmd  ->  UPDATESTATS_T . identifier
- */
- if ( state == 497 ) return (inkwlist0(kw) ? 0 : 2);
- /* 499: start_rpc_cmd  ->  START_EXTERN . valid_port CLOSE_SQUARE FOR remote_func_list
- */
- if ( state == 499 ) return (inkwlist4(kw) ? 0 : 3);
- /* 503: current_win_cmd  ->  CURRENT_WINDOW_IS . win_name
- */
- if ( state == 503 ) return 3;
- /* 508: output_cmd  ->  OUTPUT_TO_REPORT . rep_name op_values OPEN_BRACKET @127 reset_cnt @128 op_fgl_expr_list @129 CLOSE_BRACKET
- */
- if ( state == 508 ) return (inkwlist0(kw) ? 0 : 2);
- /* 515: set_cmd  ->  SQLSLMW . op_fgl_expr
- */
- if ( state == 515 ) return (inkwlist7(kw) ? 0 : 3);
- /* 521: set_cmd  ->  SET_SESSION_TO . conn_id
- */
- if ( state == 521 ) return 3;
- /* 524: close_cmd  ->  CLOSE_SESSION . conn_id
- */
- if ( state == 524 ) return 3;
- /* 527: finish_cmd  ->  FINISH_REPORT . rep_name
- */
- if ( state == 527 ) return (inkwlist0(kw) ? 0 : 2);
- /* 530: close_cmd  ->  CLOSE_WINDOW . win_name
- */
- if ( state == 530 ) return 3;
- /* 533: linked_del_cmd  ->  DELETE_USING . variable
- */
- if ( state == 533 ) return (inkwlist4(kw) ? 0 : 1);
- /* 534: display_form_cmd  ->  DISPLAY_FORM . form_name display_attr
- */
- if ( state == 534 ) return 3;
- /* 537: exit_prog_cmd  ->  EXIT_PROGRAM . fgl_expr
- */
- if ( state == 537 ) return (inkwlist7(kw) ? 0 : 1);
- /* 538: open_session_cmd  ->  OPEN_SESSION . conn_id TO_DATABASE var_ident user_details
- */
- if ( state == 538 ) return 3;
- /* 539: linked_cmd  ->  SELECT_USING . variable
- */
- if ( state == 539 ) return (inkwlist4(kw) ? 0 : 1);
- /* 540: start_cmd  ->  START_REPORT . rep_name
- */
- if ( state == 540 ) return (inkwlist0(kw) ? 0 : 2);
- /* 541: linked_upd_cmd  ->  UPDATE_USING . variable
- */
- if ( state == 541 ) return (inkwlist4(kw) ? 0 : 1);
- /* 542: set_cmd  ->  SET_SESSION . op_conn_id OPTION char_or_var TO char_or_var
- */
- if ( state == 542 ) return (kw==OPTION ? 0 : 3);
- /* 545: hide_option_cmd  ->  HIDE_OPTION . opt_name_list
- */
- if ( state == 545 ) return (inkwlist8(kw) ? 0 : 3);
- /* 546: hide_cmd  ->  HIDE_WINDOW . win_name
- */
- if ( state == 546 ) return 3;
- /* 547: move_cmd  ->  MOVE_WINDOW . win_name BY fgl_expr COMMA fgl_expr
- */
- if ( state == 547 ) return 3;
- /* 548: next_option_cmd  ->  NEXT_OPTION . opt_name
- */
- if ( state == 548 ) return (inkwlist8(kw) ? 0 : 3);
- /* 549: open_window_cmd  ->  OPEN_WINDOW . open_win_name AT coords WITH window_type win_attributes
- */
- if ( state == 549 ) return 3;
- /* 550: open_statusbox_cmd  ->  OPEN_STATUSBOX . identifier op_at_statusbox
- */
- if ( state == 550 ) return (inkwlist0(kw) ? 0 : 2);
- /* 551: show_option_cmd  ->  SHOW_OPTION . opt_name_list
- */
- if ( state == 551 ) return (inkwlist8(kw) ? 0 : 3);
- /* 552: show_cmd  ->  SHOW_WINDOW . win_name
- */
- if ( state == 552 ) return 3;
- /* 554: opt_use  ->  USE_SESSION . conn_id FOR
- */
- if ( state == 554 ) return 3;
- /* 555: clear_cmd  ->  CLEARWIN . win_name
- */
- if ( state == 555 ) return 3;
- /* 556: close_cmd  ->  CLOSE_FORM . form_name
- */
- if ( state == 556 ) return 3;
- /* 561: init_cmd  ->  INITIALIZE . init_bind_var_list LIKE init_tab_list
- */
- if ( state == 561 ) return (inkwlist4(kw) ? 0 : 3);
- /* 562: set_cmd  ->  SET_CURSOR . cursor_name OPTION char_or_var TO char_or_var
- */
- if ( state == 562 ) return 3;
- /* 563: clear_cmd  ->  CLEARFORM . form_name op_clr_fields op_to_defs
- */
- if ( state == 563 ) return (kw==VARIABLE ? 0 : 3);
- /* 564: next_field_cmd  ->  NEXTFIELD . next_field
- */
- if ( state == 564 ) return (inkwlist9(kw) ? 0 : 2);
- /* 565: next_form_cmd  ->  NEXTFORM . identifier KWFIELD next_field
- */
- if ( state == 565 ) return (inkwlist0(kw) ? 0 : 2);
- /* 570: open_form_cmd  ->  OPEN_FORM . open_form_name open_form_rest
- */
- if ( state == 570 ) return 3;
- /* 571: set_database_cmd  ->  DATABASE . var_ident op_exclusive
- */
- if ( state == 571 ) return (inkwlist4(kw) ? 0 : 2);
- /* 575: execute_cmd  ->  EXECUTE . stmt_id USING ibind_var_list
- */
- if ( state == 575 ) return 3;
- /* 578: locate_cmd  ->  LOCATE . variable IN_FILE file_name
- */
- if ( state == 578 ) return (inkwlist4(kw) ? 0 : 1);
- /* 579: gui_prompt_cmd  ->  PROMPT . prompt_title opt_attributes RETURNING variable
- */
- if ( state == 579 ) return (inkwlist7(kw) ? 0 : 3);
- /* 581: scroll_cmd  ->  SCROLL . fld_list up_or_down
- */
- if ( state == 581 ) return (inkwlist0(kw) ? 0 : 2);
- /* 582: clear_cmd  ->  CLEAR . fld_list op_to_defs
- */
- if ( state == 582 ) return (inkwlist0(kw) ? 0 : 2);
- /* 583: close_cmd  ->  CLOSE . fetch_cursor_name
- */
- if ( state == 583 ) return 3;
- /* 585: label_cmd  ->  LABEL . identifier COLON
- */
- if ( state == 585 ) return (inkwlist0(kw) ? 0 : 2);
- /* 586: pause_command  ->  PAUSE . pause_msg
- */
- if ( state == 586 ) return (inkwlist4(kw) ? 0 : 3);
- /* 587: print_img_command  ->  PRINT_IMAGE . blob_var img_types opt_scaling opt_semi
- */
- if ( state == 587 ) return (inkwlist4(kw) ? 0 : 3);
- /* 588: print_file_command  ->  PRINT_FILE . char_or_var opt_semi
- */
- if ( state == 588 ) return (inkwlist4(kw) ? 0 : 3);
- /* 589: print_command  ->  PRINT . opt_rep_expr_list opt_semi
- */
- if ( state == 589 ) return (inkwlist7(kw) ? 0 : 3);
- /* 590: sleep_cmd  ->  SLEEP . fgl_expr
- */
- if ( state == 590 ) return (inkwlist7(kw) ? 0 : 1);
- /* 592: call_cmd  ->  FCALL . call_ext
- */
- if ( state == 592 ) return (inkwlist10(kw) ? 0 : 3);
- /* 593: case_cmd  ->  CASE . fgl_expr @16 when_unit_expr op_otherwise_command_expr end_case_command
- */
- if ( state == 593 ) return (inkwlist7(kw) ? 0 : 1);
- /* 594: free_cmd  ->  FREE . cursor_name
- */
- if ( state == 594 ) return 3;
- /* 595: goto_cmd  ->  GOTO . label_goto
- */
- if ( state == 595 ) return (inkwlist1(kw) ? 0 : 2);
- /* 597: need_command  ->  NEED . fgl_expr @137 KWLINE
- */
- if ( state == 597 ) return (inkwlist7(kw) ? 0 : 1);
- /* 598: open_cursor_cmd  ->  OPEN . cursor_name USING reset_cnt fgl_expr_list
- */
- if ( state == 598 ) return 3;
- /* 599: skip_command  ->  SKIP . fgl_expr @138 op_lines
- */
- if ( state == 599 ) return (inkwlist7(kw) ? 0 : 1);
- /* 600: for_cmd  ->  FOR . variable EQUAL fgl_expr TO fgl_expr for_step @78 commands @79 END_FOR
- */
- if ( state == 600 ) return (inkwlist4(kw) ? 0 : 1);
- /* 602: put_cmd  ->  PUT . cursor_name @126 put_from
- */
- if ( state == 602 ) return 3;
- /* 603: run_cmd  ->  RUN . fgl_expr EXIT
- */
- if ( state == 603 ) return (inkwlist7(kw) ? 0 : 1);
- /* 604: if_cmd  ->  IF . fgl_expr THEN @81 commands op_else END_IF
- */
- if ( state == 604 ) return (inkwlist7(kw) ? 0 : 1);
- /* 606: check_menu_cmd  ->  CHECK_MENUITEM . menu_item_list
- */
- if ( state == 606 ) return (inkwlist0(kw) ? 0 : 2);
- /* 607: disable_cmd  ->  DISABLE_FORM . form_name KWFIELD fld_list
- */
- if ( state == 607 ) return 3;
- /* 608: disable_cmd  ->  DISABLE_MENUITEMS . menu_item_list
- */
- if ( state == 608 ) return (inkwlist0(kw) ? 0 : 2);
- /* 609: disable_cmd  ->  DISABLE . fld_list
- */
- if ( state == 609 ) return (inkwlist0(kw) ? 0 : 2);
- /* 610: enable_cmd  ->  ENABLE_FORM . form_name KWFIELD fld_list
- */
- if ( state == 610 ) return 3;
- /* 611: enable_cmd  ->  ENABLE_MENUITEMS . menu_item_list
- */
- if ( state == 611 ) return (inkwlist0(kw) ? 0 : 2);
- /* 612: enable_cmd  ->  ENABLE . fld_list
- */
- if ( state == 612 ) return (inkwlist0(kw) ? 0 : 2);
- /* 614: uncheck_menu_cmd  ->  UNCHECK_MENUITEM . menu_item_list
- */
- if ( state == 614 ) return (inkwlist0(kw) ? 0 : 2);
- /* 615: input_cmd  ->  INPUT . inp_rest @95 end_input
- */
- if ( state == 615 ) return (inkwlist11(kw) ? 0 : 3);
- /* 710: menu_handler_element  ->  ON . identifier @118 commands
- */
- if ( state == 710 ) return (inkwlist0(kw) ? 0 : 2);
- /* 722: func_def_var  ->  identifier DOT . identifier
- */
- if ( state == 722 ) return (inkwlist0(kw) ? 0 : 2);
- /* 724: fparam_var_list  ->  fparam_var_list COMMA . func_def_var
- */
- if ( state == 724 ) return (inkwlist0(kw) ? 0 : 2);
- /* 733: var2  ->  ATSIGN . var3
- */
- if ( state == 733 ) return (inkwlist0(kw) ? 0 : 2);
- /* 748: create_c_1  ->  CREATE_TEMP_TABLE @154 . table_name OPEN_BRACKET @155 table_element_list CLOSE_BRACKET op_no_log
- */
- if ( state == 748 ) return (inkwlist0(kw) ? 0 : 2);
- /* 752: display_b_n_cmd  ->  DISPLAY_BY_NAME reset_cnt . ibind_var_list display_attr
- */
- if ( state == 752 ) return (inkwlist12(kw) ? 0 : 3);
- /* 758: fgl_expr_c  ->  MINUS . fgl_expr_c
- */
- if ( state == 758 ) return (inkwlist7(kw) ? 0 : 3);
- /* 759: fgl_expr_c  ->  PLUS . fgl_expr_c
- */
- if ( state == 759 ) return (inkwlist7(kw) ? 0 : 3);
- /* 771: report_only_expr  ->  COLUMNS . fgl_expr_c
- */
- if ( state == 771 ) return (inkwlist7(kw) ? 0 : 3);
- /* 777: boolean_expr  ->  OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET
- */
- if ( state == 777 ) return (inkwlist7(kw) ? 0 : 3);
- /* 778: report_only_expr  ->  COLUMN . fgl_expr_c
- */
- if ( state == 778 ) return (inkwlist7(kw) ? 0 : 3);
- /* 781: literal_expr  ->  ASCII . variable
- */
- if ( state == 781 ) return (inkwlist4(kw) ? 0 : 1);
- /* 791: boolean_expr  ->  NOT . fgl_expr_c
- */
- if ( state == 791 ) return (inkwlist7(kw) ? 0 : 3);
- /* 815: display_array_cmd  ->  DISPLAY_ARRAY @46 . use_arr_var TO identifier DOT MULTIPLY opt_scroll opt_attributes @47 disp_rest
- */
- if ( state == 815 ) return (inkwlist4(kw) ? 0 : 3);
- /* 818: create_c_1  ->  CREATE_TABLE @152 . table_name OPEN_BRACKET @153 table_element_list CLOSE_BRACKET
- */
- if ( state == 818 ) return (inkwlist0(kw) ? 0 : 2);
- /* 860: construct_cmd  ->  CONSTRUCT @22 . constr_rest @23 end_constr
- */
- if ( state == 860 ) return (inkwlist4(kw) ? 0 : 3);
- /* 864: msg_start  ->  KWMESSAGE @123 . fgl_expr_concat
- */
- if ( state == 864 ) return (inkwlist7(kw) ? 0 : 3);
- /* 865: display_cmd  ->  DISPLAY reset_cnt . fgl_expr_list opt_at display_attr
- */
- if ( state == 865 ) return (inkwlist7(kw) ? 0 : 3);
- /* 868: foreach_cmd  ->  FOREACH @64 . fetch_cursor_name @65 opt_foreach_into_fetch_part @66 commands END_FOREACH
- */
- if ( state == 868 ) return 3;
- /* 874: opt_allopts  ->  COMMENT_LINE . line_no
- */
- if ( state == 874 ) return (inkwlist13(kw) ? 0 : 3);
- /* 875: opt_allopts  ->  PROMPT_LINE . line_no
- */
- if ( state == 875 ) return (inkwlist13(kw) ? 0 : 3);
- /* 876: opt_allopts  ->  ERROR_LINE . line_no
- */
- if ( state == 876 ) return (inkwlist13(kw) ? 0 : 3);
- /* 878: opt_allopts  ->  MSG_LINE . line_no
- */
- if ( state == 878 ) return (inkwlist13(kw) ? 0 : 3);
- /* 880: opt_allopts  ->  FORM_LINE . line_no
- */
- if ( state == 880 ) return (inkwlist13(kw) ? 0 : 3);
- /* 881: opt_allopts  ->  MENU_LINE . line_no
- */
- if ( state == 881 ) return (inkwlist13(kw) ? 0 : 3);
- /* 886: opt_allopts  ->  HELP_FILE . file_name
- */
- if ( state == 886 ) return (inkwlist4(kw) ? 0 : 3);
- /* 887: opt_allopts  ->  LANG_FILE . file_name
- */
- if ( state == 887 ) return (inkwlist4(kw) ? 0 : 3);
- /* 898: return_cmd  ->  RETURN reset_cnt . op_fgl_expr_ret_list
- */
- if ( state == 898 ) return (inkwlist7(kw) ? 0 : 3);
- /* 904: error_cmd  ->  ERROR reset_cnt . fgl_expr_concat opt_attributes WAIT_FOR_KEY
- */
- if ( state == 904 ) return (inkwlist7(kw) ? 0 : 3);
- /* 917: xrep_expr_list  ->  xrep_expr_list . xxrep_expr_list
- */
- if ( state == 917 ) return (inkwlist7(kw) ? 0 : 3);
- /* 922: while_cmd  ->  WHILE @169 . fgl_expr @170 commands END_WHILE
- */
- if ( state == 922 ) return (inkwlist7(kw) ? 0 : 1);
- /* 928: call_ext  ->  EXTERNAL . remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET @13 opt_func_call_args @14 CLOSE_BRACKET @15 opt_return_remote
- */
- if ( state == 928 ) return (inkwlist0(kw) ? 0 : 2);
- /* 930: call_ext  ->  SHARED . char_or_var IN char_or_var OPEN_BRACKET @9 opt_func_call_args @10 CLOSE_BRACKET opt_return
- */
- if ( state == 930 ) return (inkwlist4(kw) ? 0 : 3);
- /* 941: menu_cmd  ->  MENU @119 . menu_title menu_commands end_menu_command
- */
- if ( state == 941 ) return (inkwlist4(kw) ? 0 : 3);
- /* 946: let_cmd  ->  LET @101 . obind_var_let_list @102 EQUAL reset_cnt op_expr_null
- */
- if ( state == 946 ) return (inkwlist0(kw) ? 0 : 3);
- /* 960: msg_box_cmd  ->  MESSAGEBOX @80 . fgl_expr_list op_caption op_icon op_buttons op_disable_msg op_returning_msg
- */
- if ( state == 960 ) return (inkwlist7(kw) ? 0 : 3);
- /* 964: inp_rest  ->  BY_NAME . ibind_var_list opt_defs opt_help_no opt_attributes
- */
- if ( state == 964 ) return (inkwlist12(kw) ? 0 : 3);
- /* 965: inp_rest  ->  ARRAY . use_arr_var opt_defs FROM identifier DOT MULTIPLY opt_help_no @96 opt_attributes
- */
- if ( state == 965 ) return (inkwlist4(kw) ? 0 : 3);
- /* 973: gm_returning_msg  ->  RETURNING . variable
- */
- if ( state == 973 ) return (inkwlist4(kw) ? 0 : 1);
- /* 974: gm_caption  ->  CAPTION . fgl_expr_list
- */
- if ( state == 974 ) return (inkwlist7(kw) ? 0 : 3);
- /* 989: load_cmd  ->  opt_use LOAD_FROM . ufile opt_delim INSERT_INTO table_name opt_col_list
- */
- if ( state == 989 ) return (inkwlist4(kw) ? 0 : 3);
- /* 990: unload_cmd  ->  opt_use UNLOAD_TO . ufile opt_delim select_statement2
- */
- if ( state == 990 ) return (inkwlist4(kw) ? 0 : 3);
- /* 991: declare_cmd  ->  opt_use DECLARE . fetch_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel @166 curs_forupdate
- */
- if ( state == 991 ) return 3;
- /* 992: prepare_cmd  ->  opt_use PREPARE . stmt_id FROM var_or_char
- */
- if ( state == 992 ) return 3;
- /* 993: flush_cmd  ->  opt_use FLUSH . fetch_cursor_name
- */
- if ( state == 993 ) return 3;
- /* 1017: var3  ->  CHAR_VALUE DOT . var3 DOT aft_dot
- */
- if ( state == 1017 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1019: array_r_varid  ->  identifier OPEN_SQUARE . num_list CLOSE_SQUARE
- */
- if ( state == 1019 ) return (inkwlist5(kw) ? 0 : 3);
- /* 1020: op_connect_as  ->  AS . var_ident
- */
- if ( state == 1020 ) return (inkwlist4(kw) ? 0 : 2);
- /* 1022: var3  ->  var3 DOT . aft_dot
- */
- if ( state == 1022 ) return (inkwlist3(kw) ? 0 : 2);
- /* 1023: show_cmd  ->  SHOW_MENU menu_name USING . menu_handler op_mnfile
- */
- if ( state == 1023 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1026: idx_column_list  ->  idx_column_list COMMA . idx_column
- */
- if ( state == 1026 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1042: rep_where  ->  WHERE . fgl_expr_c
- */
- if ( state == 1042 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1045: function_call_expr  ->  ID_TO_INT OPEN_BRACKET . field_name CLOSE_BRACKET
- */
- if ( state == 1045 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1046: function_call_expr  ->  FIELDTOWIDGET OPEN_BRACKET . field_name CLOSE_BRACKET
- */
- if ( state == 1046 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1047: function_call_expr  ->  FIELD_TOUCHED OPEN_BRACKET . field_name CLOSE_BRACKET
- */
- if ( state == 1047 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1048: function_call_expr  ->  GET_FLDBUF OPEN_BRACKET . fld_list CLOSE_BRACKET
- */
- if ( state == 1048 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1050: builtin_funcs  ->  DOWNSHIFT OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET
- */
- if ( state == 1050 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1051: rep_agg  ->  AVERAGE OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
- */
- if ( state == 1051 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1062: function_call_expr  ->  INFIELD OPEN_BRACKET . field_name CLOSE_BRACKET
- */
- if ( state == 1062 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1064: builtin_funcs  ->  UPSHIFT OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET
- */
- if ( state == 1064 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1069: builtin_funcs  ->  ASCII OPEN_BRACKET . variable CLOSE_BRACKET
- */
- if ( state == 1069 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1076: rep_agg  ->  AVG OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
- */
- if ( state == 1076 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1078: rep_agg  ->  XMAX OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
- */
- if ( state == 1078 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1079: rep_agg  ->  XMIN OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
- */
- if ( state == 1079 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1081: rep_agg  ->  SUM OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
- */
- if ( state == 1081 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1082: and_or_expr  ->  OR . fgl_expr_c
- */
- if ( state == 1082 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1083: and_or_expr  ->  AND . fgl_expr_c
- */
- if ( state == 1083 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1084: using_expr  ->  USING . fgl_expr_c
- */
- if ( state == 1084 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1085: string_match_expr  ->  MATCHES . fgl_expr_c
- */
- if ( state == 1085 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1086: math_expr  ->  POWER . fgl_expr_c
- */
- if ( state == 1086 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1087: comparison_expr  ->  LESS_THAN . fgl_expr_c
- */
- if ( state == 1087 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1088: comparison_expr  ->  GREATER_THAN . fgl_expr_c
- */
- if ( state == 1088 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1089: comparison_expr  ->  EQUAL . fgl_expr_c
- */
- if ( state == 1089 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1090: comparison_expr  ->  GREATER_THAN_EQ . fgl_expr_c
- */
- if ( state == 1090 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1091: comparison_expr  ->  LESS_THAN_EQ . fgl_expr_c
- */
- if ( state == 1091 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1092: comparison_expr  ->  NOT_EQUAL . fgl_expr_c
- */
- if ( state == 1092 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1093: math_expr  ->  MINUS . fgl_expr_c
- */
- if ( state == 1093 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1094: math_expr  ->  PLUS . fgl_expr_c
- */
- if ( state == 1094 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1095: math_expr  ->  DIVIDE . fgl_expr_c
- */
- if ( state == 1095 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1096: math_expr  ->  MULTIPLY . fgl_expr_c
- */
- if ( state == 1096 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1097: math_expr  ->  MOD . fgl_expr_c
- */
- if ( state == 1097 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1108: string_match_expr  ->  NOT_MATCHES . fgl_expr_c
- */
- if ( state == 1108 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1109: string_match_expr  ->  NOT_LIKE . fgl_expr_c
- */
- if ( state == 1109 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1113: comparison_expr  ->  EQUAL_EQUAL . fgl_expr_c
- */
- if ( state == 1113 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1115: string_match_expr  ->  LIKE . fgl_expr_c
- */
- if ( state == 1115 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1130: literal_expr  ->  variable THRU . variable
- */
- if ( state == 1130 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1137: open_session_cmd  ->  OPEN_SESSION conn_id TO_DATABASE . var_ident user_details
- */
- if ( state == 1137 ) return (inkwlist4(kw) ? 0 : 2);
- /* 1138: start_cmd  ->  START_REPORT rep_name TO_PIPE . rout
- */
- if ( state == 1138 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1140: start_cmd  ->  START_REPORT rep_name TO . rout
- */
- if ( state == 1140 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1141: set_cmd  ->  SET_SESSION op_conn_id OPTION . char_or_var TO char_or_var
- */
- if ( state == 1141 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1142: opt_name_list  ->  opt_name_list COMMA . opt_name
- */
- if ( state == 1142 ) return (inkwlist8(kw) ? 0 : 3);
- /* 1143: move_cmd  ->  MOVE_WINDOW win_name BY . fgl_expr COMMA fgl_expr
- */
- if ( state == 1143 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1144: move_cmd  ->  MOVE_WINDOW win_name TO . fgl_expr COMMA fgl_expr
- */
- if ( state == 1144 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1145: open_window_cmd  ->  OPEN_WINDOW open_win_name AT . coords WITH window_type win_attributes
- */
- if ( state == 1145 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1149: init_bind_var  ->  variable THRU . variable
- */
- if ( state == 1149 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1150: init_bind_var_list  ->  init_bind_var_list COMMA . init_bind_var
- */
- if ( state == 1150 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1153: set_cmd  ->  SET_CURSOR cursor_name OPTION . char_or_var TO char_or_var
- */
- if ( state == 1153 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1154: op_clr_fields  ->  KWFIELD . fld_list
- */
- if ( state == 1154 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1156: field_name  ->  INT_TO_ID OPEN_BRACKET . identifier CLOSE_BRACKET
- */
- if ( state == 1156 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1157: field_name  ->  identifier OPEN_SQUARE . arr_expr CLOSE_SQUARE DOT identifier
- */
- if ( state == 1157 ) return (inkwlist5(kw) ? 0 : 3);
- /* 1158: field_name  ->  identifier DOT . identifier
- */
- if ( state == 1158 ) return (inkwlist3(kw) ? 0 : 2);
- /* 1159: next_form_cmd  ->  NEXTFORM identifier KWFIELD . next_field
- */
- if ( state == 1159 ) return (inkwlist9(kw) ? 0 : 2);
- /* 1160: constr_rest  ->  BY_NAME . variable ON constr_col_list opt_defs op_help opt_attributes
- */
- if ( state == 1160 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1163: open_form_rest  ->  FROM . fgl_expr
- */
- if ( state == 1163 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1173: execute_cmd  ->  EXECUTE stmt_id USING . ibind_var_list
- */
- if ( state == 1173 ) return (inkwlist12(kw) ? 0 : 3);
- /* 1199: locate_cmd  ->  LOCATE variable IN_FILE . file_name
- */
- if ( state == 1199 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1200: fgl_expr_concat  ->  fgl_expr_concat COMMA . fgl_expr
- */
- if ( state == 1200 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1207: fld_list  ->  fld_list COMMA . field_name
- */
- if ( state == 1207 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1226: rep_expr_list  ->  rep_expr_list COMMA . rep_expr
- */
- if ( state == 1226 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1231: call_ext  ->  FORM_IS_COMPILED OPEN_BRACKET . identifier CLOSE_BRACKET
- */
- if ( state == 1231 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1233: call_ext  ->  FIELD_TOUCHED OPEN_BRACKET . field_name CLOSE_BRACKET RETURNING variable
- */
- if ( state == 1233 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1234: call_ext  ->  GET_FLDBUF OPEN_BRACKET . fld_list CLOSE_BRACKET RETURNING @3 ibind_var_list
- */
- if ( state == 1234 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1238: call_ext  ->  INFIELD OPEN_BRACKET . field_name CLOSE_BRACKET RETURNING variable
- */
- if ( state == 1238 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1240: call_ext  ->  function_callb RETURNING . variable
- */
- if ( state == 1240 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1242: call_ext  ->  variable COLON . identifier OPEN_BRACKET @4 opt_func_call_args CLOSE_BRACKET @5 opt_return
- */
- if ( state == 1242 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1243: when_command  ->  WHEN . fgl_expr @20 commands
- */
- if ( state == 1243 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1253: for_cmd  ->  FOR variable EQUAL . fgl_expr TO fgl_expr for_step @78 commands @79 END_FOR
- */
- if ( state == 1253 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1263: run_cmd  ->  RUN fgl_expr RETURNING . variable
- */
- if ( state == 1263 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1267: menu_item_list  ->  menu_item_list COMMA . menu_item
- */
- if ( state == 1267 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1268: disable_cmd  ->  DISABLE_FORM form_name KWFIELD . fld_list
- */
- if ( state == 1268 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1269: enable_cmd  ->  ENABLE_FORM form_name KWFIELD . fld_list
- */
- if ( state == 1269 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1274: ibind_var  ->  variable THRU . variable
- */
- if ( state == 1274 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1275: ibind_var_list  ->  ibind_var_list COMMA . ibind_var
- */
- if ( state == 1275 ) return (inkwlist12(kw) ? 0 : 3);
- /* 1293: schema  ->  CREATE_SCHEMA . schema_authorization_clause schema_element_list
- */
- if ( state == 1293 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1296: view_definition  ->  CREATE_VIEW . table_name op_view_column_list AS query_specification op_with_check_option
- */
- if ( state == 1296 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1297: delete_statement_search  ->  DELETE_FROM . table_name op_where_clause
- */
- if ( state == 1297 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1301: rename_stmt  ->  RENCOL . rentabname DOT rencolname TO rencolname
- */
- if ( state == 1301 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1303: rename_stmt  ->  RENTAB . rentabname TO rentabname
- */
- if ( state == 1303 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1305: update_statement  ->  UPDATE . table_name XSET set_clause_list where_upd
- */
- if ( state == 1305 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1330: input_sub_section  ->  FORMHANDLER_INPUT . in_variable_list FROM in_id_list
- */
- if ( state == 1330 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1343: ident_p2  ->  VARIABLE OPEN_BRACKET . var_or_string CLOSE_BRACKET
- */
- if ( state == 1343 ) return (inkwlist0(kw) ? 0 : 3);
- /* 1348: con_user_details  ->  USER . char_or_var USING char_or_var
- */
- if ( state == 1348 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1358: start_rpc_cmd  ->  START_EXTERN valid_port CLOSE_SQUARE FOR . remote_func_list
- */
- if ( state == 1358 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1359: table_name  ->  CHAR_VALUE DOT . table_identifier
- */
- if ( state == 1359 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1361: table_name  ->  db_name COLON . table_identifier
- */
- if ( state == 1361 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1365: function_call_expr2  ->  NEWFORMATSHARED OPEN_BRACKET @54 . opt_func_call_args @55 CLOSE_BRACKET
- */
- if ( state == 1365 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1385: function_callb  ->  MONTH OPEN_BRACKET @58 . fgl_expr_c @59 CLOSE_BRACKET
- */
- if ( state == 1385 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1386: function_callb  ->  DATE OPEN_BRACKET @56 . fgl_expr_c @57 CLOSE_BRACKET
- */
- if ( state == 1386 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1387: function_callb  ->  YEAR OPEN_BRACKET @62 . fgl_expr_c @63 CLOSE_BRACKET
- */
- if ( state == 1387 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1389: function_callb  ->  DAY OPEN_BRACKET @60 . fgl_expr_c @61 CLOSE_BRACKET
- */
- if ( state == 1389 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1415: function_call_expr2  ->  identifier OPEN_BRACKET @52 . opt_func_call_args @53 CLOSE_BRACKET
- */
- if ( state == 1415 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1417: display_array_cmd  ->  DISPLAY_ARRAY @46 use_arr_var TO . identifier DOT MULTIPLY opt_scroll opt_attributes @47 disp_rest
- */
- if ( state == 1417 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1431: op_at_statusbox  ->  AT OPEN_BRACKET . fgl_expr COMMA fgl_expr CLOSE_BRACKET op_size_statusbox
- */
- if ( state == 1431 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1449: constr_rest  ->  variable ON . constr_col_list opt_defs FROM fld_list op_help opt_attributes
- */
- if ( state == 1449 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1453: op_like_gui  ->  LIKE . ident_or_var
- */
- if ( state == 1453 ) return 3;
- /* 1455: fgl_expr_list  ->  fgl_expr_list COMMA . fgl_expr
- */
- if ( state == 1455 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1457: opt_at  ->  TO_MENUITEM . identifier
- */
- if ( state == 1457 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1458: opt_at  ->  TO_STATUSBOX . identifier
- */
- if ( state == 1458 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1459: opt_at  ->  AT . display_coords
- */
- if ( state == 1459 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1460: opt_at  ->  TO . fld_list
- */
- if ( state == 1460 ) return (inkwlist14(kw) ? 0 : 2);
- /* 1487: gui_prompt_cmd  ->  PROMPT prompt_title opt_attributes RETURNING . variable
- */
- if ( state == 1487 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1489: fgl_expr_ret_list  ->  fgl_expr_ret_list COMMA . fgl_expr_ret
- */
- if ( state == 1489 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1494: opt_scaling  ->  SCALED_BY . fgl_expr_c COMMA fgl_expr_c
- */
- if ( state == 1494 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1496: op_wordwrap  ->  WORDWRAP RIGHT_MARGIN . variable
- */
- if ( state == 1496 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1500: call_ext  ->  NEWFORMATSHARED OPEN_BRACKET @11 . opt_func_call_args @12 CLOSE_BRACKET opt_return
- */
- if ( state == 1500 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1505: call_ext  ->  EXTERNAL remote_host_name COLON . remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET @13 opt_func_call_args @14 CLOSE_BRACKET @15 opt_return_remote
- */
- if ( state == 1505 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1507: call_ext  ->  SHARED char_or_var IN . char_or_var OPEN_BRACKET @9 opt_func_call_args @10 CLOSE_BRACKET opt_return
- */
- if ( state == 1507 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1509: call_ext  ->  identifier OPEN_BRACKET @6 . opt_func_call_args @7 CLOSE_BRACKET @8 opt_return
- */
- if ( state == 1509 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1515: when_command_expr  ->  WHEN . fgl_expr @21 commands
- */
- if ( state == 1515 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1523: open_cursor_cmd  ->  OPEN cursor_name USING reset_cnt . fgl_expr_list
- */
- if ( state == 1523 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1527: assoc_var_write  ->  identifier OPEN_SHEV . assoc_sub CLOSE_SHEV
- */
- if ( state == 1527 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1530: obind_var_let_list  ->  obind_var_let_list COMMA . obind_let_var
- */
- if ( state == 1530 ) return (inkwlist0(kw) ? 0 : 3);
- /* 1532: put_from  ->  FROM . put_val_list
- */
- if ( state == 1532 ) return (inkwlist15(kw) ? 0 : 2);
- /* 1543: field_command  ->  BEFFIELD . bef_field_list @86 commands
- */
- if ( state == 1543 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1544: field_command  ->  AFTFIELD . aft_field_list @87 commands
- */
- if ( state == 1544 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1559: inp_rest  ->  ibind_var_list opt_defs FROM . fld_list opt_help_no opt_attributes
- */
- if ( state == 1559 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1564: opt_delim  ->  DELIMITER . char_or_var
- */
- if ( state == 1564 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1566: unload_cmd  ->  opt_use UNLOAD_TO ufile opt_delim . select_statement2
- */
- if ( state == 1566 ) return (inkwlist16(kw) ? 0 : 3);
- /* 1567: declare_cmd  ->  opt_use DECLARE fetch_cursor_name SCROLL_CURSOR_FOR . cursor_specification_sel @165 curs_forupdate
- */
- if ( state == 1567 ) return (kw==SELECT ? 0 : 3);
- /* 1570: prepare_cmd  ->  opt_use PREPARE stmt_id FROM . var_or_char
- */
- if ( state == 1570 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1578: insert_statement  ->  INSERT_INTO @156 . table_name op_insert_column_list ins_2
- */
- if ( state == 1578 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1586: select_statement  ->  SELECT op_ad . select_list @167 opt_into_sel @168 table_expression sel_p2
- */
- if ( state == 1586 ) return (inkwlist15(kw) ? 0 : 2);
- /* 1588: fetch_statement  ->  FETCH @158 . fetch_part @159 opt_into_fetch_part
- */
- if ( state == 1588 ) return (inkwlist17(kw) ? 0 : 3);
- /* 1597: curs_forupdate  ->  FOR_UPDATE_OF . cur_update_list
- */
- if ( state == 1597 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1602: input_sub_section  ->  FORMHANDLER_INPUT BY_NAME . in_bn_variable_list
- */
- if ( state == 1602 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1610: field_op  ->  AFTER . in_id_list @76 commands
- */
- if ( state == 1610 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1611: field_op  ->  ON . in_id_list @77 commands
- */
- if ( state == 1611 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1614: field_op  ->  BEFORE . in_id_list @75 commands
- */
- if ( state == 1614 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1631: var3  ->  CHAR_VALUE DOT var3 DOT . aft_dot
- */
- if ( state == 1631 ) return (inkwlist3(kw) ? 0 : 2);
- /* 1634: con_user_details  ->  AS USER . char_or_var USING char_or_var
- */
- if ( state == 1634 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1635: op_mnfile  ->  FROM . fgl_expr
- */
- if ( state == 1635 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1642: create_c_1  ->  CREATE_TEMP_TABLE @154 table_name OPEN_BRACKET @155 . table_element_list CLOSE_BRACKET op_no_log
- */
- if ( state == 1642 ) return (inkwlist18(kw) ? 0 : 2);
- /* 1653: in_select_statement  ->  SELECT op_ad . select_list table_expression sel_p2
- */
- if ( state == 1653 ) return (inkwlist15(kw) ? 0 : 2);
- /* 1680: in_expr  ->  NOT_IN OPEN_BRACKET reset_cnt . inexpr_list CLOSE_BRACKET
- */
- if ( state == 1680 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1682: in_expr  ->  IN OPEN_BRACKET reset_cnt . inexpr_list CLOSE_BRACKET
- */
- if ( state == 1682 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1686: create_c_1  ->  CREATE_TABLE @152 table_name OPEN_BRACKET @153 . table_element_list CLOSE_BRACKET
- */
- if ( state == 1686 ) return (inkwlist18(kw) ? 0 : 2);
- /* 1687: user_details  ->  AS . char_or_var COMMA char_or_var
- */
- if ( state == 1687 ) return (inkwlist19(kw) ? 0 : 3);
- /* 1689: set_cmd  ->  SET_SESSION op_conn_id OPTION char_or_var TO . char_or_var
- */
- if ( state == 1689 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1690: move_cmd  ->  MOVE_WINDOW win_name BY fgl_expr COMMA . fgl_expr
- */
- if ( state == 1690 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1691: move_cmd  ->  MOVE_WINDOW win_name TO fgl_expr COMMA . fgl_expr
- */
- if ( state == 1691 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1692: coords  ->  a_number COMMA . a_number
- */
- if ( state == 1692 ) return (inkwlist7(kw) ? 0 : 3);
- /* 1693: open_window_cmd  ->  OPEN_WINDOW open_win_name AT coords WITH . window_type win_attributes
- */
- if ( state == 1693 ) return (inkwlist20(kw) ? 0 : 3);
- /* 1695: init_tab  ->  tab_name DOT . column_name
- */
- if ( state == 1695 ) return (inkwlist3(kw) ? 0 : 2);
- /* 1698: set_cmd  ->  SET_CURSOR cursor_name OPTION char_or_var TO . char_or_var
- */
- if ( state == 1698 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1701: field_name  ->  identifier DOT INT_TO_ID OPEN_BRACKET . identifier CLOSE_BRACKET
- */
- if ( state == 1701 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1702: constr_rest  ->  BY_NAME variable ON . constr_col_list opt_defs op_help opt_attributes
- */
- if ( state == 1702 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1705: constr_extra_command  ->  BEFFIELD . bef_c_field_list @24 commands
- */
- if ( state == 1705 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1706: constr_extra_command  ->  AFTFIELD . aft_c_field_list @25 commands
- */
- if ( state == 1706 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1714: op_at_gui  ->  AT op_absolute OPEN_BRACKET . fgl_expr COMMA fgl_expr CLOSE_BRACKET
- */
- if ( state == 1714 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1724: opt_at  ->  TO KWFORM . identifier CAPTION
- */
- if ( state == 1724 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1736: prompt_cmd  ->  PROMPT prompt_title opt_attributes FOR opt_char . variable opt_help_no opt_attributes @124 prompt_key_sec
- */
- if ( state == 1736 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1765: menu_block_command  ->  COMMAND opt_key . opt_help_no @122 commands
- */
- if ( state == 1765 ) return (inkwlist21(kw) ? 0 : 3);
- /* 1771: for_cmd  ->  FOR variable EQUAL fgl_expr TO . fgl_expr for_step @78 commands @79 END_FOR
- */
- if ( state == 1771 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1773: let_var  ->  let_var setident DOT . identifier OPEN_SQUARE num_list CLOSE_SQUARE
- */
- if ( state == 1773 ) return (inkwlist3(kw) ? 0 : 2);
- /* 1785: value_expression  ->  OPEN_BRACKET . value_expression CLOSE_BRACKET
- */
- if ( state == 1785 ) return (inkwlist15(kw) ? 0 : 2);
- /* 1809: inp_rest  ->  ARRAY use_arr_var opt_defs FROM . identifier DOT MULTIPLY opt_help_no @96 opt_attributes
- */
- if ( state == 1809 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1852: load_cmd  ->  opt_use LOAD_FROM ufile opt_delim INSERT_INTO . table_name opt_col_list
- */
- if ( state == 1852 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1862: declare_cmd  ->  opt_use DECLARE fetch_cursor_name CURSOR FOR . cursor_specification_all @163 curs_forupdate
- */
- if ( state == 1862 ) return (kw==SELECT ? 0 : 3);
- /* 1866: op_view_column_list  ->  OPEN_BRACKET . view_column_list CLOSE_BRACKET
- */
- if ( state == 1866 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1868: delete_statement_position  ->  DELETE_FROM table_name WHERE_CURRENT_OF . fetch_cursor_name
- */
- if ( state == 1868 ) return 3;
- /* 1869: where_clause  ->  WHERE . search_condition
- */
- if ( state == 1869 ) return (inkwlist22(kw) ? 0 : 2);
- /* 1876: rename_stmt  ->  RENCOL rentabname DOT . rencolname TO rencolname
- */
- if ( state == 1876 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1877: rename_stmt  ->  RENTAB rentabname TO . rentabname
- */
- if ( state == 1877 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1881: update_statement  ->  UPDATE table_name XSET . set_clause_list where_upd
- */
- if ( state == 1881 ) return (inkwlist3(kw) ? 0 : 2);
- /* 1882: fetch_place  ->  ABSOLUTE . fgl_expr
- */
- if ( state == 1882 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1884: fetch_place  ->  RELATIVE . fgl_expr
- */
- if ( state == 1884 ) return (inkwlist7(kw) ? 0 : 1);
- /* 1891: fetch_part  ->  fetch_place . fetch_cursor_name
- */
- if ( state == 1891 ) return 3;
- /* 1892: op_grant_column_list  ->  OPEN_BRACKET . grant_column_list CLOSE_BRACKET
- */
- if ( state == 1892 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1894: privilege_definition  ->  GRANT privileges ON . table_name TO grantee_list op_with_grant_option
- */
- if ( state == 1894 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1902: in_variable_list  ->  in_variable_list COMMA . variable
- */
- if ( state == 1902 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1903: input_sub_section  ->  FORMHANDLER_INPUT in_variable_list FROM . in_id_list
- */
- if ( state == 1903 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1945: op_rep_order_by  ->  ORDER_EXTERNAL_BY . obind_var_list_ord
- */
- if ( state == 1945 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1958: output_command  ->  REPORT_TO . variable
- */
- if ( state == 1958 ) return (inkwlist4(kw) ? 0 : 1);
- /* 1965: con_user_details  ->  USER char_or_var USING . char_or_var
- */
- if ( state == 1965 ) return (inkwlist4(kw) ? 0 : 3);
- /* 1968: remote_func_list  ->  remote_func_list COMMA . remote_func
- */
- if ( state == 1968 ) return (inkwlist0(kw) ? 0 : 2);
- /* 1985: func_call_args  ->  func_call_args COMMA . func_arg
- */
- if ( state == 1985 ) return (inkwlist7(kw) ? 0 : 3);
- /* 2006: user_details  ->  AS USER . char_or_var COMMA PASSWORD char_or_var
- */
- if ( state == 2006 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2012: window_type  ->  KWFORM . fgl_expr
- */
- if ( state == 2012 ) return (inkwlist7(kw) ? 0 : 1);
- /* 2015: op_at_statusbox  ->  AT OPEN_BRACKET fgl_expr COMMA . fgl_expr CLOSE_BRACKET op_size_statusbox
- */
- if ( state == 2015 ) return (inkwlist7(kw) ? 0 : 1);
- /* 2020: field_name  ->  identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT . identifier
- */
- if ( state == 2020 ) return (inkwlist3(kw) ? 0 : 2);
- /* 2033: constr_col_list  ->  constr_col_list COMMA . constr_col
- */
- if ( state == 2033 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2035: constr_col  ->  identifier DOT . identifier
- */
- if ( state == 2035 ) return (inkwlist3(kw) ? 0 : 2);
- /* 2037: open_form_gui  ->  op_at_gui op_like_gui op_disable USING . formhandler_name
- */
- if ( state == 2037 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2039: opt_foreach_into_fetch_part  ->  INTO @161 . ibind_var_list
- */
- if ( state == 2039 ) return (inkwlist12(kw) ? 0 : 3);
- /* 2044: opt_scaling  ->  SCALED_BY fgl_expr_c COMMA . fgl_expr_c
- */
- if ( state == 2044 ) return (inkwlist7(kw) ? 0 : 3);
- /* 2047: pdf_functions  ->  PDF_FUNCTION OPEN_BRACKET CHAR_VALUE COMMA @149 . opt_func_call_args @150 CLOSE_BRACKET @151 opt_return
- */
- if ( state == 2047 ) return (inkwlist7(kw) ? 0 : 3);
- /* 2048: call_ext  ->  FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET RETURNING . variable
- */
- if ( state == 2048 ) return (inkwlist4(kw) ? 0 : 1);
- /* 2050: call_ext  ->  EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE . valid_port CLOSE_SQUARE OPEN_BRACKET @13 opt_func_call_args @14 CLOSE_BRACKET @15 opt_return_remote
- */
- if ( state == 2050 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2051: remote_func_name  ->  identifier DOT . identifier
- */
- if ( state == 2051 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2052: call_ext  ->  INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING . variable
- */
- if ( state == 2052 ) return (inkwlist4(kw) ? 0 : 1);
- /* 2055: call_ext  ->  variable COLON identifier OPEN_BRACKET @4 . opt_func_call_args CLOSE_BRACKET @5 opt_return
- */
- if ( state == 2055 ) return (inkwlist7(kw) ? 0 : 3);
- /* 2064: menu_block_command  ->  COMMAND opt_key menu_opt_name . menu_optional_desc opt_help_no @121 commands
- */
- if ( state == 2064 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2072: let_cmd  ->  LET @101 obind_var_let_list @102 EQUAL reset_cnt . op_expr_null
- */
- if ( state == 2072 ) return (inkwlist7(kw) ? 0 : 3);
- /* 2093: value_expression  ->  identifier OPEN_BRACKET . value_expr_list CLOSE_BRACKET
- */
- if ( state == 2093 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2094: put_val_list  ->  put_val_list COMMA . put_val
- */
- if ( state == 2094 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2095: value_expression  ->  value_expression MINUS . value_expression
- */
- if ( state == 2095 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2096: value_expression  ->  value_expression PLUS . value_expression
- */
- if ( state == 2096 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2097: value_expression  ->  value_expression DIVIDE . value_expression
- */
- if ( state == 2097 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2098: value_expression  ->  value_expression MULTIPLY . value_expression
- */
- if ( state == 2098 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2106: var_ident_ibind  ->  var2 THRU . var2
- */
- if ( state == 2106 ) return (inkwlist4(kw) ? 0 : 2);
- /* 2115: bef_field_list  ->  bef_field_list COMMA . field_name
- */
- if ( state == 2115 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2117: aft_field_list  ->  aft_field_list COMMA . field_name
- */
- if ( state == 2117 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2136: declare_cmd  ->  opt_use DECLARE fetch_cursor_name SCROLL_CURSOR WITH_HOLD FOR . cursor_specification_sel @166 curs_forupdate
- */
- if ( state == 2136 ) return (kw==SELECT ? 0 : 3);
- /* 2137: declare_cmd  ->  opt_use DECLARE fetch_cursor_name CURSOR WITH_HOLD FOR . cursor_specification_sel @164 curs_forupdate
- */
- if ( state == 2137 ) return (kw==SELECT ? 0 : 3);
- /* 2147: value_expression  ->  OPEN_BRACKET . value_expression CLOSE_BRACKET
- */
- if ( state == 2147 ) return (inkwlist23(kw) ? 0 : 2);
- /* 2149: boolean_factor  ->  NOT . boolean_primary
- */
- if ( state == 2149 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2161: op_insert_column_list  ->  OPEN_BRACKET . insert_column_list CLOSE_BRACKET
- */
- if ( state == 2161 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2166: select_list  ->  select_list COMMA . value_expression_pls
- */
- if ( state == 2166 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2170: set_clause_list  ->  OPEN_BRACKET . upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET
- */
- if ( state == 2170 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2185: colident  ->  CHAR_VALUE DOT . identifier DOT identifier
- */
- if ( state == 2185 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2186: colident  ->  identifier DOT . identifier
- */
- if ( state == 2186 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2187: cur_update_list  ->  cur_update_list COMMA . colident
- */
- if ( state == 2187 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2188: in_bn_variable_list  ->  in_bn_variable_list COMMA . variable
- */
- if ( state == 2188 ) return (inkwlist4(kw) ? 0 : 1);
- /* 2193: in_id_list  ->  in_id_list COMMA . identifier
- */
- if ( state == 2193 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2219: op_rep_order_by  ->  ORDER BY . obind_var_list_ord
- */
- if ( state == 2219 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2235: con_user_details  ->  AS USER char_or_var USING . char_or_var
- */
- if ( state == 2235 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2237: referential_constraint_definition  ->  FOREIGN_KEY OPEN_BRACKET . references_columns CLOSE_BRACKET references_specification
- */
- if ( state == 2237 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2238: unique_constraint_definition  ->  PRIMARY_KEY OPEN_BRACKET . unique_column_list CLOSE_BRACKET
- */
- if ( state == 2238 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2239: unique_constraint_definition  ->  UNIQUE OPEN_BRACKET . unique_column_list CLOSE_BRACKET
- */
- if ( state == 2239 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2240: check_constraint_definition  ->  CHECK OPEN_BRACKET . search_condition CLOSE_BRACKET
- */
- if ( state == 2240 ) return (inkwlist22(kw) ? 0 : 2);
- /* 2243: table_element_list  ->  table_element_list COMMA . table_element
- */
- if ( state == 2243 ) return (inkwlist18(kw) ? 0 : 2);
- /* 2267: output_cmd  ->  OUTPUT_TO_REPORT rep_name op_values OPEN_BRACKET @127 reset_cnt @128 . op_fgl_expr_list @129 CLOSE_BRACKET
- */
- if ( state == 2267 ) return (inkwlist7(kw) ? 0 : 3);
- /* 2270: from_clause  ->  FROM . table_reference_list
- */
- if ( state == 2270 ) return (inkwlist24(kw) ? 0 : 2);
- /* 2277: inexpr_list  ->  inexpr_list COMMA . fgl_expr_c
- */
- if ( state == 2277 ) return (inkwlist7(kw) ? 0 : 3);
- /* 2284: user_details  ->  AS char_or_var COMMA . char_or_var
- */
- if ( state == 2284 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2297: bef_c_field_list  ->  bef_c_field_list COMMA . field_name2
- */
- if ( state == 2297 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2299: field_name2  ->  identifier OPEN_SQUARE . arr_expr CLOSE_SQUARE DOT identifier
- */
- if ( state == 2299 ) return (inkwlist5(kw) ? 0 : 3);
- /* 2300: field_name2  ->  identifier DOT . identifier
- */
- if ( state == 2300 ) return (inkwlist3(kw) ? 0 : 2);
- /* 2301: aft_c_field_list  ->  aft_c_field_list COMMA . field_name2
- */
- if ( state == 2301 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2305: constr_rest  ->  variable ON constr_col_list opt_defs FROM . fld_list op_help opt_attributes
- */
- if ( state == 2305 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2308: op_at_gui  ->  AT op_absolute OPEN_BRACKET fgl_expr COMMA . fgl_expr CLOSE_BRACKET
- */
- if ( state == 2308 ) return (inkwlist7(kw) ? 0 : 1);
- /* 2312: opt_at  ->  TO KWFORM identifier KWFIELD . fld_list
- */
- if ( state == 2312 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2322: call_ext  ->  GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET RETURNING @3 . ibind_var_list
- */
- if ( state == 2322 ) return (inkwlist12(kw) ? 0 : 3);
- /* 2326: call_ext  ->  SHARED char_or_var IN char_or_var OPEN_BRACKET @9 . opt_func_call_args @10 CLOSE_BRACKET opt_return
- */
- if ( state == 2326 ) return (inkwlist7(kw) ? 0 : 3);
- /* 2336: for_step  ->  STEP . fgl_expr
- */
- if ( state == 2336 ) return (inkwlist7(kw) ? 0 : 1);
- /* 2338: let_var  ->  let_var setident DOT identifier OPEN_SQUARE . num_list CLOSE_SQUARE
- */
- if ( state == 2338 ) return (inkwlist5(kw) ? 0 : 3);
- /* 2347: value_expression  ->  COUNT OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
- */
- if ( state == 2347 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2349: value_expression  ->  AVG OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
- */
- if ( state == 2349 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2350: value_expression  ->  XMAX OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
- */
- if ( state == 2350 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2351: value_expression  ->  XMIN OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
- */
- if ( state == 2351 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2352: value_expression  ->  SUM OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
- */
- if ( state == 2352 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2361: op_else  ->  ELIF @83 . fgl_expr THEN @84 commands op_else
- */
- if ( state == 2361 ) return (inkwlist7(kw) ? 0 : 1);
- /* 2378: opt_col_list  ->  OPEN_BRACKET . col_list CLOSE_BRACKET
- */
- if ( state == 2378 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2380: select_statement21  ->  SELECT setident op_ad . select_list opt_into_sel table_expression sel_p2
- */
- if ( state == 2380 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2385: view_column_list  ->  view_column_list COMMA . column_name
- */
- if ( state == 2385 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2396: search_condition  ->  search_condition OR . boolean_term
- */
- if ( state == 2396 ) return (inkwlist22(kw) ? 0 : 2);
- /* 2397: boolean_term  ->  boolean_term AND . boolean_factor
- */
- if ( state == 2397 ) return (inkwlist22(kw) ? 0 : 2);
- /* 2408: quantified_predicate  ->  subquery comp_op . value_expression
- */
- if ( state == 2408 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2413: comparison_predicate  ->  value_expression comp_op . subquery
- */
- if ( state == 2413 ) return (inkwlist25(kw) ? 0 : 2);
- /* 2419: rename_stmt  ->  RENCOL rentabname DOT rencolname TO . rencolname
- */
- if ( state == 2419 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2421: opt_into_sel  ->  INTO . obind_var_list
- */
- if ( state == 2421 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2423: special_upd_clause  ->  MULTIPLY EQUAL . upd_val_list
- */
- if ( state == 2423 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2426: where_upd  ->  WHERE_CURRENT_OF . fetch_cursor_name
- */
- if ( state == 2426 ) return 3;
- /* 2427: where_upd  ->  WHERE . search_condition
- */
- if ( state == 2427 ) return (inkwlist22(kw) ? 0 : 2);
- /* 2429: upd_columns  ->  upd_columns COMMA . col_1
- */
- if ( state == 2429 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2430: col_1  ->  upd_column_name EQUAL . upd_val
- */
- if ( state == 2430 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2433: grant_column_list  ->  grant_column_list COMMA . column_name
- */
- if ( state == 2433 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2435: privilege_definition  ->  GRANT privileges ON table_name TO . grantee_list op_with_grant_option
- */
- if ( state == 2435 ) return (inkwlist26(kw) ? 0 : 2);
- /* 2448: obind_var_list_ord  ->  obind_var_list_ord COMMA . obind_var_ord
- */
- if ( state == 2448 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2453: format_action  ->  BEFGROUP . variable @135 commands
- */
- if ( state == 2453 ) return (inkwlist4(kw) ? 0 : 1);
- /* 2455: format_action  ->  AFTGROUP . variable @136 commands
- */
- if ( state == 2455 ) return (inkwlist4(kw) ? 0 : 1);
- /* 2475: column_name  ->  table_name setident DOT . identifier col_arr
- */
- if ( state == 2475 ) return (inkwlist3(kw) ? 0 : 2);
- /* 2490: table_reference  ->  OUTER . tname
- */
- if ( state == 2490 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2494: tname  ->  table_name . correlation_name
- */
- if ( state == 2494 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2496: sel_p2  ->  INTO_TEMP . tmp_tabname op_no_log
- */
- if ( state == 2496 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2505: user_details  ->  AS USER char_or_var PASSWORD . char_or_var
- */
- if ( state == 2505 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2507: window_type  ->  fgl_expr ROWS COMMA . fgl_expr COLUMNS
- */
- if ( state == 2507 ) return (inkwlist7(kw) ? 0 : 1);
- /* 2525: opt_return  ->  RETURNING . ibind_var_list
- */
- if ( state == 2525 ) return (inkwlist12(kw) ? 0 : 3);
- /* 2547: value_expression  ->  DATE setident OPEN_BRACKET setident . value_expr_list CLOSE_BRACKET
- */
- if ( state == 2547 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2552: value_expr_list  ->  value_expr_list COMMA . value_expression
- */
- if ( state == 2552 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2581: comparison_predicate  ->  value_expression op_not BETWEEN . value_expression AND value_expression
- */
- if ( state == 2581 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2583: value_expression  ->  OPEN_BRACKET . value_expression CLOSE_BRACKET
- */
- if ( state == 2583 ) return (inkwlist27(kw) ? 0 : 2);
- /* 2592: insert_column_list  ->  insert_column_list COMMA . column_name
- */
- if ( state == 2592 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2600: value_expression  ->  OPEN_BRACKET . value_expression CLOSE_BRACKET
- */
- if ( state == 2600 ) return (inkwlist27(kw) ? 0 : 2);
- /* 2606: upd_col_list  ->  upd_col_list COMMA . upd_column_name
- */
- if ( state == 2606 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2612: opt_into_fetch_part  ->  INTO @160 . ibind_var_list
- */
- if ( state == 2612 ) return (inkwlist12(kw) ? 0 : 3);
- /* 2618: colident  ->  CHAR_VALUE DOT identifier DOT . identifier
- */
- if ( state == 2618 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2634: references_column_list  ->  references_column_list COMMA . column_name
- */
- if ( state == 2634 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2635: unique_column_list  ->  unique_column_list COMMA . column_name
- */
- if ( state == 2635 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2657: references_specification  ->  REFERENCES . referenced_table_and_columns
- */
- if ( state == 2657 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2664: table_reference  ->  OUTER OPEN_BRACKET . tname_list CLOSE_BRACKET
- */
- if ( state == 2664 ) return (inkwlist24(kw) ? 0 : 2);
- /* 2666: table_reference_list  ->  table_reference_list COMMA . table_reference
- */
- if ( state == 2666 ) return (inkwlist24(kw) ? 0 : 2);
- /* 2669: group_by_clause  ->  GROUP_BY . column_specification_list
- */
- if ( state == 2669 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2674: order_by_clause  ->  ORDER BY . sort_specification_list
- */
- if ( state == 2674 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2675: sel_p2  ->  UNION op_all . select_statement2
- */
- if ( state == 2675 ) return (inkwlist16(kw) ? 0 : 3);
- /* 2676: opt_scroll  ->  SCROLL USING . field_name
- */
- if ( state == 2676 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2678: user_details  ->  AS USER char_or_var COMMA PASSWORD . char_or_var
- */
- if ( state == 2678 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2708: col_list  ->  col_list COMMA . simple_column_name
- */
- if ( state == 2708 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2713: query_specification  ->  SELECT setident op_ad . select_list table_expression
- */
- if ( state == 2713 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2714: subquery  ->  OPEN_BRACKET SELECT setident op_ad . select_list table_expression CLOSE_BRACKET
- */
- if ( state == 2714 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2724: ins_2  ->  VALUES @157 OPEN_BRACKET . insert_value_list CLOSE_BRACKET
- */
- if ( state == 2724 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2725: obind_var_list  ->  obind_var_list COMMA . obind_var
- */
- if ( state == 2725 ) return (inkwlist4(kw) ? 0 : 3);
- /* 2729: upd_val_list  ->  upd_val_list COMMA . upd_val
- */
- if ( state == 2729 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2733: grantee_list  ->  grantee_list COMMA . grantee
- */
- if ( state == 2733 ) return (inkwlist26(kw) ? 0 : 2);
- /* 2762: column_constraint  ->  CHECK OPEN_BRACKET . search_condition CLOSE_BRACKET
- */
- if ( state == 2762 ) return (inkwlist22(kw) ? 0 : 2);
- /* 2771: having_clause  ->  HAVING . search_condition
- */
- if ( state == 2771 ) return (inkwlist22(kw) ? 0 : 2);
- /* 2785: wattribute  ->  COMMENT_LINE . line_no
- */
- if ( state == 2785 ) return (inkwlist13(kw) ? 0 : 3);
- /* 2786: wattribute  ->  PROMPT_LINE . line_no
- */
- if ( state == 2786 ) return (inkwlist13(kw) ? 0 : 3);
- /* 2787: wattribute  ->  ERROR_LINE . line_no
- */
- if ( state == 2787 ) return (inkwlist13(kw) ? 0 : 3);
- /* 2788: wattribute  ->  MSG_LINE . line_no
- */
- if ( state == 2788 ) return (inkwlist13(kw) ? 0 : 3);
- /* 2789: wattribute  ->  FORM_LINE . line_no
- */
- if ( state == 2789 ) return (inkwlist13(kw) ? 0 : 3);
- /* 2790: wattribute  ->  MENU_LINE . line_no
- */
- if ( state == 2790 ) return (inkwlist13(kw) ? 0 : 3);
- /* 2796: op_size_statusbox  ->  SIZE OPEN_BRACKET . fgl_expr COMMA fgl_expr CLOSE_BRACKET
- */
- if ( state == 2796 ) return (inkwlist7(kw) ? 0 : 1);
- /* 2797: field_name2  ->  identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT . identifier
- */
- if ( state == 2797 ) return (inkwlist3(kw) ? 0 : 2);
- /* 2804: call_ext  ->  EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET @13 . opt_func_call_args @14 CLOSE_BRACKET @15 opt_return_remote
- */
- if ( state == 2804 ) return (inkwlist7(kw) ? 0 : 3);
- /* 2819: comparison_predicate  ->  value_expression op_not BETWEEN value_expression AND . value_expression
- */
- if ( state == 2819 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2830: set_clause_list  ->  OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET . upd_val_list CLOSE_BRACKET
- */
- if ( state == 2830 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2842: referenced_table_and_columns  ->  table_name OPEN_BRACKET . references_column_list CLOSE_BRACKET
- */
- if ( state == 2842 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2844: tname_list  ->  tname_list COMMA . table_reference
- */
- if ( state == 2844 ) return (inkwlist24(kw) ? 0 : 2);
- /* 2846: column_specification_list  ->  column_specification_list COMMA . column_specification
- */
- if ( state == 2846 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2848: sort_specification_list  ->  sort_specification_list COMMA . sort_specification
- */
- if ( state == 2848 ) return (inkwlist0(kw) ? 0 : 2);
- /* 2886: insert_value_list  ->  insert_value_list COMMA . insert_value
- */
- if ( state == 2886 ) return (inkwlist15(kw) ? 0 : 2);
- /* 2902: op_size_statusbox  ->  SIZE OPEN_BRACKET fgl_expr COMMA . fgl_expr CLOSE_BRACKET
- */
- if ( state == 2902 ) return (inkwlist7(kw) ? 0 : 1);
- /* 2919: opt_return_remote  ->  RETURNING . ibind_var_list
- */
- if ( state == 2919 ) return (inkwlist12(kw) ? 0 : 3);
+  /* 22: when_do  ->  FCALL . function_name_when
+   */
+  if (state == 22)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 23: when_do  ->  GOTO . label_goto
+   */
+  if (state == 23)
+    return (inkwlist1 (kw) ? 0 : 2);
+  /* 34: op_import  ->  IMPORT_DATATYPE . identifier
+   */
+  if (state == 34)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 83: label_goto  ->  COLON . identifier
+   */
+  if (state == 83)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 86: when_do  ->  GO TO . label_goto
+   */
+  if (state == 86)
+    return (inkwlist1 (kw) ? 0 : 2);
+  /* 93: db_section  ->  DATABASE . dbase_name
+   */
+  if (state == 93)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 106: globals_entry  ->  GLOBALS @111 . glob_section
+   */
+  if (state == 106)
+    return (inkwlist2 (kw) ? 0 : 3);
+  /* 110: dim_section  ->  DEFINE_TYPE . identifier @41 AS dim_dtype
+   */
+  if (state == 110)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 112: var_int  ->  ATSIGN . var
+   */
+  if (state == 112)
+    return (inkwlist0 (kw) ? 0 : 1);
+  /* 123: var  ->  varsetidentdot . identifier OPEN_SQUARE num_list CLOSE_SQUARE
+   */
+  if (state == 123)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 134: assoc_var_read  ->  identifier OPEN_SHEV . assoc_sub CLOSE_SHEV
+   */
+  if (state == 134)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 135: arr_subscripts  ->  OPEN_SQUARE . num_list CLOSE_SQUARE OPEN_SQUARE num_list CLOSE_SQUARE
+   */
+  if (state == 135)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 146: define_ident  ->  @30 . identifier
+   */
+  if (state == 146)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 156: arr_expr  ->  OPEN_BRACKET . arr_expr CLOSE_BRACKET
+   */
+  if (state == 156)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 162: var  ->  varsetidentdot identifier OPEN_SQUARE . num_list CLOSE_SQUARE
+   */
+  if (state == 162)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 173: dtype2  ->  @37 . dtype
+   */
+  if (state == 173)
+    return (inkwlist6 (kw) ? 0 : 2);
+  /* 181: arr_expr  ->  arr_expr arr_next_math . arr_expr
+   */
+  if (state == 181)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 183: num_list  ->  num_list COMMA . num_list_element
+   */
+  if (state == 183)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 248: arr_subscripts  ->  OPEN_SQUARE num_list CLOSE_SQUARE OPEN_SQUARE . num_list CLOSE_SQUARE
+   */
+  if (state == 248)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 252: import_m  ->  IMPORT_FUNCTION . identifier OPEN_BRACKET INT_VALUE CLOSE_BRACKET
+   */
+  if (state == 252)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 253: mem_func_def  ->  MEMBER_FUNCTION . identifier MEMBER_OF identifier OPEN_BRACKET @112 op_param_var_list CLOSE_BRACKET @113 define_section @114 op_code commands end_func_command
+   */
+  if (state == 253)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 258: formhandler_def  ->  FORMHANDLER . identifier @67 define_section @68 op_code op_bef_ev_list op_input_section op_aft_ev_list END_FORMHANDLER
+   */
+  if (state == 258)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 259: menu_def  ->  MENUHANDLER . identifier @115 define_section @116 menu_handler_elements END_MENUHANDLER
+   */
+  if (state == 259)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 275: dim_record_variable  ->  RECORD_LIKE @45 . identifier DOT MULTIPLY
+   */
+  if (state == 275)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 286: dim_record_variable  ->  RECORD @44 . dim_def_part END_RECORD
+   */
+  if (state == 286)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 316: pdf_report_def  ->  PDF_REPORT @144 . identifier OPEN_BRACKET @145 op_param_var_list CLOSE_BRACKET @146 define_section pdf_report_section @147 format_section @148 END_REPORT
+   */
+  if (state == 316)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 319: report_def  ->  REPORT @139 . identifier OPEN_BRACKET @140 op_param_var_list CLOSE_BRACKET @141 define_section report_section @142 format_section @143 END_REPORT
+   */
+  if (state == 319)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 324: func_def  ->  ldeffunction @105 . identifier OPEN_BRACKET @106 op_param_var_list CLOSE_BRACKET @107 define_section @108 op_code commands end_func_command
+   */
+  if (state == 324)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 375: mem_func_def  ->  MEMBER_FUNCTION identifier MEMBER_OF . identifier OPEN_BRACKET @112 op_param_var_list CLOSE_BRACKET @113 define_section @114 op_code commands end_func_command
+   */
+  if (state == 375)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 396: dim_def_part  ->  dim_def_part COMMA . dim_def_part2
+   */
+  if (state == 396)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 398: dim_var_def_list  ->  dim_var_def_list COMMA . dim_var_def_name
+   */
+  if (state == 398)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 450: pdf_report_def  ->  PDF_REPORT @144 identifier OPEN_BRACKET @145 . op_param_var_list CLOSE_BRACKET @146 define_section pdf_report_section @147 format_section @148 END_REPORT
+   */
+  if (state == 450)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 453: report_def  ->  REPORT @139 identifier OPEN_BRACKET @140 . op_param_var_list CLOSE_BRACKET @141 define_section report_section @142 format_section @143 END_REPORT
+   */
+  if (state == 453)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 461: func_def  ->  ldeffunction @105 identifier OPEN_BRACKET @106 . op_param_var_list CLOSE_BRACKET @107 define_section @108 op_code commands end_func_command
+   */
+  if (state == 461)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 482: mem_func_def  ->  MEMBER_FUNCTION identifier MEMBER_OF identifier OPEN_BRACKET @112 . op_param_var_list CLOSE_BRACKET @113 define_section @114 op_code commands end_func_command
+   */
+  if (state == 482)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 488: at_term_cmd  ->  AT_TERMINATION_CALL . identifier
+   */
+  if (state == 488)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 489: clear_cmd  ->  CLEARSTAT . win_name
+   */
+  if (state == 489)
+    return 3;
+  /* 490: close_cmd  ->  CLOSE_STATUSBOX . win_name
+   */
+  if (state == 490)
+    return 3;
+  /* 491: connect_cmd  ->  CONNECT_TO . var_ident op_connect_as con_user_details
+   */
+  if (state == 491)
+    return (inkwlist4 (kw) ? 0 : 2);
+  /* 492: show_cmd  ->  SHOW_MENU . menu_name USING menu_handler op_mnfile
+   */
+  if (state == 492)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 494: create_c_1  ->  CREATE_IDX . idx_column_list CLOSE_BRACKET
+   */
+  if (state == 494)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 497: upd_stats_cmd  ->  UPDATESTATS_T . identifier
+   */
+  if (state == 497)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 499: start_rpc_cmd  ->  START_EXTERN . valid_port CLOSE_SQUARE FOR remote_func_list
+   */
+  if (state == 499)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 503: current_win_cmd  ->  CURRENT_WINDOW_IS . win_name
+   */
+  if (state == 503)
+    return 3;
+  /* 508: output_cmd  ->  OUTPUT_TO_REPORT . rep_name op_values OPEN_BRACKET @127 reset_cnt @128 op_fgl_expr_list @129 CLOSE_BRACKET
+   */
+  if (state == 508)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 515: set_cmd  ->  SQLSLMW . op_fgl_expr
+   */
+  if (state == 515)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 521: set_cmd  ->  SET_SESSION_TO . conn_id
+   */
+  if (state == 521)
+    return 3;
+  /* 524: close_cmd  ->  CLOSE_SESSION . conn_id
+   */
+  if (state == 524)
+    return 3;
+  /* 527: finish_cmd  ->  FINISH_REPORT . rep_name
+   */
+  if (state == 527)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 530: close_cmd  ->  CLOSE_WINDOW . win_name
+   */
+  if (state == 530)
+    return 3;
+  /* 533: linked_del_cmd  ->  DELETE_USING . variable
+   */
+  if (state == 533)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 534: display_form_cmd  ->  DISPLAY_FORM . form_name display_attr
+   */
+  if (state == 534)
+    return 3;
+  /* 537: exit_prog_cmd  ->  EXIT_PROGRAM . fgl_expr
+   */
+  if (state == 537)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 538: open_session_cmd  ->  OPEN_SESSION . conn_id TO_DATABASE var_ident user_details
+   */
+  if (state == 538)
+    return 3;
+  /* 539: linked_cmd  ->  SELECT_USING . variable
+   */
+  if (state == 539)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 540: start_cmd  ->  START_REPORT . rep_name
+   */
+  if (state == 540)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 541: linked_upd_cmd  ->  UPDATE_USING . variable
+   */
+  if (state == 541)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 542: set_cmd  ->  SET_SESSION . op_conn_id OPTION char_or_var TO char_or_var
+   */
+  if (state == 542)
+    return (kw == OPTION ? 0 : 3);
+  /* 545: hide_option_cmd  ->  HIDE_OPTION . opt_name_list
+   */
+  if (state == 545)
+    return (inkwlist8 (kw) ? 0 : 3);
+  /* 546: hide_cmd  ->  HIDE_WINDOW . win_name
+   */
+  if (state == 546)
+    return 3;
+  /* 547: move_cmd  ->  MOVE_WINDOW . win_name BY fgl_expr COMMA fgl_expr
+   */
+  if (state == 547)
+    return 3;
+  /* 548: next_option_cmd  ->  NEXT_OPTION . opt_name
+   */
+  if (state == 548)
+    return (inkwlist8 (kw) ? 0 : 3);
+  /* 549: open_window_cmd  ->  OPEN_WINDOW . open_win_name AT coords WITH window_type win_attributes
+   */
+  if (state == 549)
+    return 3;
+  /* 550: open_statusbox_cmd  ->  OPEN_STATUSBOX . identifier op_at_statusbox
+   */
+  if (state == 550)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 551: show_option_cmd  ->  SHOW_OPTION . opt_name_list
+   */
+  if (state == 551)
+    return (inkwlist8 (kw) ? 0 : 3);
+  /* 552: show_cmd  ->  SHOW_WINDOW . win_name
+   */
+  if (state == 552)
+    return 3;
+  /* 554: opt_use  ->  USE_SESSION . conn_id FOR
+   */
+  if (state == 554)
+    return 3;
+  /* 555: clear_cmd  ->  CLEARWIN . win_name
+   */
+  if (state == 555)
+    return 3;
+  /* 556: close_cmd  ->  CLOSE_FORM . form_name
+   */
+  if (state == 556)
+    return 3;
+  /* 561: init_cmd  ->  INITIALIZE . init_bind_var_list LIKE init_tab_list
+   */
+  if (state == 561)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 562: set_cmd  ->  SET_CURSOR . cursor_name OPTION char_or_var TO char_or_var
+   */
+  if (state == 562)
+    return 3;
+  /* 563: clear_cmd  ->  CLEARFORM . form_name op_clr_fields op_to_defs
+   */
+  if (state == 563)
+    return (kw == VARIABLE ? 0 : 3);
+  /* 564: next_field_cmd  ->  NEXTFIELD . next_field
+   */
+  if (state == 564)
+    return (inkwlist9 (kw) ? 0 : 2);
+  /* 565: next_form_cmd  ->  NEXTFORM . identifier KWFIELD next_field
+   */
+  if (state == 565)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 570: open_form_cmd  ->  OPEN_FORM . open_form_name open_form_rest
+   */
+  if (state == 570)
+    return 3;
+  /* 571: set_database_cmd  ->  DATABASE . var_ident op_exclusive
+   */
+  if (state == 571)
+    return (inkwlist4 (kw) ? 0 : 2);
+  /* 575: execute_cmd  ->  EXECUTE . stmt_id USING ibind_var_list
+   */
+  if (state == 575)
+    return 3;
+  /* 578: locate_cmd  ->  LOCATE . variable IN_FILE file_name
+   */
+  if (state == 578)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 579: gui_prompt_cmd  ->  PROMPT . prompt_title opt_attributes RETURNING variable
+   */
+  if (state == 579)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 581: scroll_cmd  ->  SCROLL . fld_list up_or_down
+   */
+  if (state == 581)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 582: clear_cmd  ->  CLEAR . fld_list op_to_defs
+   */
+  if (state == 582)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 583: close_cmd  ->  CLOSE . fetch_cursor_name
+   */
+  if (state == 583)
+    return 3;
+  /* 585: label_cmd  ->  LABEL . identifier COLON
+   */
+  if (state == 585)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 586: pause_command  ->  PAUSE . pause_msg
+   */
+  if (state == 586)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 587: print_img_command  ->  PRINT_IMAGE . blob_var img_types opt_scaling opt_semi
+   */
+  if (state == 587)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 588: print_file_command  ->  PRINT_FILE . char_or_var opt_semi
+   */
+  if (state == 588)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 589: print_command  ->  PRINT . opt_rep_expr_list opt_semi
+   */
+  if (state == 589)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 590: sleep_cmd  ->  SLEEP . fgl_expr
+   */
+  if (state == 590)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 592: call_cmd  ->  FCALL . call_ext
+   */
+  if (state == 592)
+    return (inkwlist10 (kw) ? 0 : 3);
+  /* 593: case_cmd  ->  CASE . fgl_expr @16 when_unit_expr op_otherwise_command_expr end_case_command
+   */
+  if (state == 593)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 594: free_cmd  ->  FREE . cursor_name
+   */
+  if (state == 594)
+    return 3;
+  /* 595: goto_cmd  ->  GOTO . label_goto
+   */
+  if (state == 595)
+    return (inkwlist1 (kw) ? 0 : 2);
+  /* 597: need_command  ->  NEED . fgl_expr @137 KWLINE
+   */
+  if (state == 597)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 598: open_cursor_cmd  ->  OPEN . cursor_name USING reset_cnt fgl_expr_list
+   */
+  if (state == 598)
+    return 3;
+  /* 599: skip_command  ->  SKIP . fgl_expr @138 op_lines
+   */
+  if (state == 599)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 600: for_cmd  ->  FOR . variable EQUAL fgl_expr TO fgl_expr for_step @78 commands @79 END_FOR
+   */
+  if (state == 600)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 602: put_cmd  ->  PUT . cursor_name @126 put_from
+   */
+  if (state == 602)
+    return 3;
+  /* 603: run_cmd  ->  RUN . fgl_expr EXIT
+   */
+  if (state == 603)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 604: if_cmd  ->  IF . fgl_expr THEN @81 commands op_else END_IF
+   */
+  if (state == 604)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 606: check_menu_cmd  ->  CHECK_MENUITEM . menu_item_list
+   */
+  if (state == 606)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 607: disable_cmd  ->  DISABLE_FORM . form_name KWFIELD fld_list
+   */
+  if (state == 607)
+    return 3;
+  /* 608: disable_cmd  ->  DISABLE_MENUITEMS . menu_item_list
+   */
+  if (state == 608)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 609: disable_cmd  ->  DISABLE . fld_list
+   */
+  if (state == 609)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 610: enable_cmd  ->  ENABLE_FORM . form_name KWFIELD fld_list
+   */
+  if (state == 610)
+    return 3;
+  /* 611: enable_cmd  ->  ENABLE_MENUITEMS . menu_item_list
+   */
+  if (state == 611)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 612: enable_cmd  ->  ENABLE . fld_list
+   */
+  if (state == 612)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 614: uncheck_menu_cmd  ->  UNCHECK_MENUITEM . menu_item_list
+   */
+  if (state == 614)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 615: input_cmd  ->  INPUT . inp_rest @95 end_input
+   */
+  if (state == 615)
+    return (inkwlist11 (kw) ? 0 : 3);
+  /* 710: menu_handler_element  ->  ON . identifier @118 commands
+   */
+  if (state == 710)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 722: func_def_var  ->  identifier DOT . identifier
+   */
+  if (state == 722)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 724: fparam_var_list  ->  fparam_var_list COMMA . func_def_var
+   */
+  if (state == 724)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 733: var2  ->  ATSIGN . var3
+   */
+  if (state == 733)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 748: create_c_1  ->  CREATE_TEMP_TABLE @154 . table_name OPEN_BRACKET @155 table_element_list CLOSE_BRACKET op_no_log
+   */
+  if (state == 748)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 752: display_b_n_cmd  ->  DISPLAY_BY_NAME reset_cnt . ibind_var_list display_attr
+   */
+  if (state == 752)
+    return (inkwlist12 (kw) ? 0 : 3);
+  /* 758: fgl_expr_c  ->  MINUS . fgl_expr_c
+   */
+  if (state == 758)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 759: fgl_expr_c  ->  PLUS . fgl_expr_c
+   */
+  if (state == 759)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 771: report_only_expr  ->  COLUMNS . fgl_expr_c
+   */
+  if (state == 771)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 777: boolean_expr  ->  OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET
+   */
+  if (state == 777)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 778: report_only_expr  ->  COLUMN . fgl_expr_c
+   */
+  if (state == 778)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 781: literal_expr  ->  ASCII . variable
+   */
+  if (state == 781)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 791: boolean_expr  ->  NOT . fgl_expr_c
+   */
+  if (state == 791)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 815: display_array_cmd  ->  DISPLAY_ARRAY @46 . use_arr_var TO identifier DOT MULTIPLY opt_scroll opt_attributes @47 disp_rest
+   */
+  if (state == 815)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 818: create_c_1  ->  CREATE_TABLE @152 . table_name OPEN_BRACKET @153 table_element_list CLOSE_BRACKET
+   */
+  if (state == 818)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 860: construct_cmd  ->  CONSTRUCT @22 . constr_rest @23 end_constr
+   */
+  if (state == 860)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 864: msg_start  ->  KWMESSAGE @123 . fgl_expr_concat
+   */
+  if (state == 864)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 865: display_cmd  ->  DISPLAY reset_cnt . fgl_expr_list opt_at display_attr
+   */
+  if (state == 865)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 868: foreach_cmd  ->  FOREACH @64 . fetch_cursor_name @65 opt_foreach_into_fetch_part @66 commands END_FOREACH
+   */
+  if (state == 868)
+    return 3;
+  /* 874: opt_allopts  ->  COMMENT_LINE . line_no
+   */
+  if (state == 874)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 875: opt_allopts  ->  PROMPT_LINE . line_no
+   */
+  if (state == 875)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 876: opt_allopts  ->  ERROR_LINE . line_no
+   */
+  if (state == 876)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 878: opt_allopts  ->  MSG_LINE . line_no
+   */
+  if (state == 878)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 880: opt_allopts  ->  FORM_LINE . line_no
+   */
+  if (state == 880)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 881: opt_allopts  ->  MENU_LINE . line_no
+   */
+  if (state == 881)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 886: opt_allopts  ->  HELP_FILE . file_name
+   */
+  if (state == 886)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 887: opt_allopts  ->  LANG_FILE . file_name
+   */
+  if (state == 887)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 898: return_cmd  ->  RETURN reset_cnt . op_fgl_expr_ret_list
+   */
+  if (state == 898)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 904: error_cmd  ->  ERROR reset_cnt . fgl_expr_concat opt_attributes WAIT_FOR_KEY
+   */
+  if (state == 904)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 917: xrep_expr_list  ->  xrep_expr_list . xxrep_expr_list
+   */
+  if (state == 917)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 922: while_cmd  ->  WHILE @169 . fgl_expr @170 commands END_WHILE
+   */
+  if (state == 922)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 928: call_ext  ->  EXTERNAL . remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET @13 opt_func_call_args @14 CLOSE_BRACKET @15 opt_return_remote
+   */
+  if (state == 928)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 930: call_ext  ->  SHARED . char_or_var IN char_or_var OPEN_BRACKET @9 opt_func_call_args @10 CLOSE_BRACKET opt_return
+   */
+  if (state == 930)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 941: menu_cmd  ->  MENU @119 . menu_title menu_commands end_menu_command
+   */
+  if (state == 941)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 946: let_cmd  ->  LET @101 . obind_var_let_list @102 EQUAL reset_cnt op_expr_null
+   */
+  if (state == 946)
+    return (inkwlist0 (kw) ? 0 : 3);
+  /* 960: msg_box_cmd  ->  MESSAGEBOX @80 . fgl_expr_list op_caption op_icon op_buttons op_disable_msg op_returning_msg
+   */
+  if (state == 960)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 964: inp_rest  ->  BY_NAME . ibind_var_list opt_defs opt_help_no opt_attributes
+   */
+  if (state == 964)
+    return (inkwlist12 (kw) ? 0 : 3);
+  /* 965: inp_rest  ->  ARRAY . use_arr_var opt_defs FROM identifier DOT MULTIPLY opt_help_no @96 opt_attributes
+   */
+  if (state == 965)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 973: gm_returning_msg  ->  RETURNING . variable
+   */
+  if (state == 973)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 974: gm_caption  ->  CAPTION . fgl_expr_list
+   */
+  if (state == 974)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 989: load_cmd  ->  opt_use LOAD_FROM . ufile opt_delim INSERT_INTO table_name opt_col_list
+   */
+  if (state == 989)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 990: unload_cmd  ->  opt_use UNLOAD_TO . ufile opt_delim select_statement2
+   */
+  if (state == 990)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 991: declare_cmd  ->  opt_use DECLARE . fetch_cursor_name SCROLL_CURSOR WITH_HOLD FOR cursor_specification_sel @166 curs_forupdate
+   */
+  if (state == 991)
+    return 3;
+  /* 992: prepare_cmd  ->  opt_use PREPARE . stmt_id FROM var_or_char
+   */
+  if (state == 992)
+    return 3;
+  /* 993: flush_cmd  ->  opt_use FLUSH . fetch_cursor_name
+   */
+  if (state == 993)
+    return 3;
+  /* 1017: var3  ->  CHAR_VALUE DOT . var3 DOT aft_dot
+   */
+  if (state == 1017)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1019: array_r_varid  ->  identifier OPEN_SQUARE . num_list CLOSE_SQUARE
+   */
+  if (state == 1019)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 1020: op_connect_as  ->  AS . var_ident
+   */
+  if (state == 1020)
+    return (inkwlist4 (kw) ? 0 : 2);
+  /* 1022: var3  ->  var3 DOT . aft_dot
+   */
+  if (state == 1022)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 1023: show_cmd  ->  SHOW_MENU menu_name USING . menu_handler op_mnfile
+   */
+  if (state == 1023)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1026: idx_column_list  ->  idx_column_list COMMA . idx_column
+   */
+  if (state == 1026)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1042: rep_where  ->  WHERE . fgl_expr_c
+   */
+  if (state == 1042)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1045: function_call_expr  ->  ID_TO_INT OPEN_BRACKET . field_name CLOSE_BRACKET
+   */
+  if (state == 1045)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1046: function_call_expr  ->  FIELDTOWIDGET OPEN_BRACKET . field_name CLOSE_BRACKET
+   */
+  if (state == 1046)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1047: function_call_expr  ->  FIELD_TOUCHED OPEN_BRACKET . field_name CLOSE_BRACKET
+   */
+  if (state == 1047)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1048: function_call_expr  ->  GET_FLDBUF OPEN_BRACKET . fld_list CLOSE_BRACKET
+   */
+  if (state == 1048)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1050: builtin_funcs  ->  DOWNSHIFT OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET
+   */
+  if (state == 1050)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1051: rep_agg  ->  AVERAGE OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
+   */
+  if (state == 1051)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1062: function_call_expr  ->  INFIELD OPEN_BRACKET . field_name CLOSE_BRACKET
+   */
+  if (state == 1062)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1064: builtin_funcs  ->  UPSHIFT OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET
+   */
+  if (state == 1064)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1069: builtin_funcs  ->  ASCII OPEN_BRACKET . variable CLOSE_BRACKET
+   */
+  if (state == 1069)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1076: rep_agg  ->  AVG OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
+   */
+  if (state == 1076)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1078: rep_agg  ->  XMAX OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
+   */
+  if (state == 1078)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1079: rep_agg  ->  XMIN OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
+   */
+  if (state == 1079)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1081: rep_agg  ->  SUM OPEN_BRACKET . fgl_expr_c CLOSE_BRACKET rep_where
+   */
+  if (state == 1081)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1082: and_or_expr  ->  OR . fgl_expr_c
+   */
+  if (state == 1082)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1083: and_or_expr  ->  AND . fgl_expr_c
+   */
+  if (state == 1083)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1084: using_expr  ->  USING . fgl_expr_c
+   */
+  if (state == 1084)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1085: string_match_expr  ->  MATCHES . fgl_expr_c
+   */
+  if (state == 1085)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1086: math_expr  ->  POWER . fgl_expr_c
+   */
+  if (state == 1086)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1087: comparison_expr  ->  LESS_THAN . fgl_expr_c
+   */
+  if (state == 1087)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1088: comparison_expr  ->  GREATER_THAN . fgl_expr_c
+   */
+  if (state == 1088)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1089: comparison_expr  ->  EQUAL . fgl_expr_c
+   */
+  if (state == 1089)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1090: comparison_expr  ->  GREATER_THAN_EQ . fgl_expr_c
+   */
+  if (state == 1090)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1091: comparison_expr  ->  LESS_THAN_EQ . fgl_expr_c
+   */
+  if (state == 1091)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1092: comparison_expr  ->  NOT_EQUAL . fgl_expr_c
+   */
+  if (state == 1092)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1093: math_expr  ->  MINUS . fgl_expr_c
+   */
+  if (state == 1093)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1094: math_expr  ->  PLUS . fgl_expr_c
+   */
+  if (state == 1094)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1095: math_expr  ->  DIVIDE . fgl_expr_c
+   */
+  if (state == 1095)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1096: math_expr  ->  MULTIPLY . fgl_expr_c
+   */
+  if (state == 1096)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1097: math_expr  ->  MOD . fgl_expr_c
+   */
+  if (state == 1097)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1108: string_match_expr  ->  NOT_MATCHES . fgl_expr_c
+   */
+  if (state == 1108)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1109: string_match_expr  ->  NOT_LIKE . fgl_expr_c
+   */
+  if (state == 1109)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1113: comparison_expr  ->  EQUAL_EQUAL . fgl_expr_c
+   */
+  if (state == 1113)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1115: string_match_expr  ->  LIKE . fgl_expr_c
+   */
+  if (state == 1115)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1130: literal_expr  ->  variable THRU . variable
+   */
+  if (state == 1130)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1137: open_session_cmd  ->  OPEN_SESSION conn_id TO_DATABASE . var_ident user_details
+   */
+  if (state == 1137)
+    return (inkwlist4 (kw) ? 0 : 2);
+  /* 1138: start_cmd  ->  START_REPORT rep_name TO_PIPE . rout
+   */
+  if (state == 1138)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1140: start_cmd  ->  START_REPORT rep_name TO . rout
+   */
+  if (state == 1140)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1141: set_cmd  ->  SET_SESSION op_conn_id OPTION . char_or_var TO char_or_var
+   */
+  if (state == 1141)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1142: opt_name_list  ->  opt_name_list COMMA . opt_name
+   */
+  if (state == 1142)
+    return (inkwlist8 (kw) ? 0 : 3);
+  /* 1143: move_cmd  ->  MOVE_WINDOW win_name BY . fgl_expr COMMA fgl_expr
+   */
+  if (state == 1143)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1144: move_cmd  ->  MOVE_WINDOW win_name TO . fgl_expr COMMA fgl_expr
+   */
+  if (state == 1144)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1145: open_window_cmd  ->  OPEN_WINDOW open_win_name AT . coords WITH window_type win_attributes
+   */
+  if (state == 1145)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1149: init_bind_var  ->  variable THRU . variable
+   */
+  if (state == 1149)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1150: init_bind_var_list  ->  init_bind_var_list COMMA . init_bind_var
+   */
+  if (state == 1150)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1153: set_cmd  ->  SET_CURSOR cursor_name OPTION . char_or_var TO char_or_var
+   */
+  if (state == 1153)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1154: op_clr_fields  ->  KWFIELD . fld_list
+   */
+  if (state == 1154)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1156: field_name  ->  INT_TO_ID OPEN_BRACKET . identifier CLOSE_BRACKET
+   */
+  if (state == 1156)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1157: field_name  ->  identifier OPEN_SQUARE . arr_expr CLOSE_SQUARE DOT identifier
+   */
+  if (state == 1157)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 1158: field_name  ->  identifier DOT . identifier
+   */
+  if (state == 1158)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 1159: next_form_cmd  ->  NEXTFORM identifier KWFIELD . next_field
+   */
+  if (state == 1159)
+    return (inkwlist9 (kw) ? 0 : 2);
+  /* 1160: constr_rest  ->  BY_NAME . variable ON constr_col_list opt_defs op_help opt_attributes
+   */
+  if (state == 1160)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1163: open_form_rest  ->  FROM . fgl_expr
+   */
+  if (state == 1163)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1173: execute_cmd  ->  EXECUTE stmt_id USING . ibind_var_list
+   */
+  if (state == 1173)
+    return (inkwlist12 (kw) ? 0 : 3);
+  /* 1199: locate_cmd  ->  LOCATE variable IN_FILE . file_name
+   */
+  if (state == 1199)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1200: fgl_expr_concat  ->  fgl_expr_concat COMMA . fgl_expr
+   */
+  if (state == 1200)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1207: fld_list  ->  fld_list COMMA . field_name
+   */
+  if (state == 1207)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1226: rep_expr_list  ->  rep_expr_list COMMA . rep_expr
+   */
+  if (state == 1226)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1231: call_ext  ->  FORM_IS_COMPILED OPEN_BRACKET . identifier CLOSE_BRACKET
+   */
+  if (state == 1231)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1233: call_ext  ->  FIELD_TOUCHED OPEN_BRACKET . field_name CLOSE_BRACKET RETURNING variable
+   */
+  if (state == 1233)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1234: call_ext  ->  GET_FLDBUF OPEN_BRACKET . fld_list CLOSE_BRACKET RETURNING @3 ibind_var_list
+   */
+  if (state == 1234)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1238: call_ext  ->  INFIELD OPEN_BRACKET . field_name CLOSE_BRACKET RETURNING variable
+   */
+  if (state == 1238)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1240: call_ext  ->  function_callb RETURNING . variable
+   */
+  if (state == 1240)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1242: call_ext  ->  variable COLON . identifier OPEN_BRACKET @4 opt_func_call_args CLOSE_BRACKET @5 opt_return
+   */
+  if (state == 1242)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1243: when_command  ->  WHEN . fgl_expr @20 commands
+   */
+  if (state == 1243)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1253: for_cmd  ->  FOR variable EQUAL . fgl_expr TO fgl_expr for_step @78 commands @79 END_FOR
+   */
+  if (state == 1253)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1263: run_cmd  ->  RUN fgl_expr RETURNING . variable
+   */
+  if (state == 1263)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1267: menu_item_list  ->  menu_item_list COMMA . menu_item
+   */
+  if (state == 1267)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1268: disable_cmd  ->  DISABLE_FORM form_name KWFIELD . fld_list
+   */
+  if (state == 1268)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1269: enable_cmd  ->  ENABLE_FORM form_name KWFIELD . fld_list
+   */
+  if (state == 1269)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1274: ibind_var  ->  variable THRU . variable
+   */
+  if (state == 1274)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1275: ibind_var_list  ->  ibind_var_list COMMA . ibind_var
+   */
+  if (state == 1275)
+    return (inkwlist12 (kw) ? 0 : 3);
+  /* 1293: schema  ->  CREATE_SCHEMA . schema_authorization_clause schema_element_list
+   */
+  if (state == 1293)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1296: view_definition  ->  CREATE_VIEW . table_name op_view_column_list AS query_specification op_with_check_option
+   */
+  if (state == 1296)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1297: delete_statement_search  ->  DELETE_FROM . table_name op_where_clause
+   */
+  if (state == 1297)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1301: rename_stmt  ->  RENCOL . rentabname DOT rencolname TO rencolname
+   */
+  if (state == 1301)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1303: rename_stmt  ->  RENTAB . rentabname TO rentabname
+   */
+  if (state == 1303)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1305: update_statement  ->  UPDATE . table_name XSET set_clause_list where_upd
+   */
+  if (state == 1305)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1330: input_sub_section  ->  FORMHANDLER_INPUT . in_variable_list FROM in_id_list
+   */
+  if (state == 1330)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1343: ident_p2  ->  VARIABLE OPEN_BRACKET . var_or_string CLOSE_BRACKET
+   */
+  if (state == 1343)
+    return (inkwlist0 (kw) ? 0 : 3);
+  /* 1348: con_user_details  ->  USER . char_or_var USING char_or_var
+   */
+  if (state == 1348)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1358: start_rpc_cmd  ->  START_EXTERN valid_port CLOSE_SQUARE FOR . remote_func_list
+   */
+  if (state == 1358)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1359: table_name  ->  CHAR_VALUE DOT . table_identifier
+   */
+  if (state == 1359)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1361: table_name  ->  db_name COLON . table_identifier
+   */
+  if (state == 1361)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1365: function_call_expr2  ->  NEWFORMATSHARED OPEN_BRACKET @54 . opt_func_call_args @55 CLOSE_BRACKET
+   */
+  if (state == 1365)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1385: function_callb  ->  MONTH OPEN_BRACKET @58 . fgl_expr_c @59 CLOSE_BRACKET
+   */
+  if (state == 1385)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1386: function_callb  ->  DATE OPEN_BRACKET @56 . fgl_expr_c @57 CLOSE_BRACKET
+   */
+  if (state == 1386)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1387: function_callb  ->  YEAR OPEN_BRACKET @62 . fgl_expr_c @63 CLOSE_BRACKET
+   */
+  if (state == 1387)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1389: function_callb  ->  DAY OPEN_BRACKET @60 . fgl_expr_c @61 CLOSE_BRACKET
+   */
+  if (state == 1389)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1415: function_call_expr2  ->  identifier OPEN_BRACKET @52 . opt_func_call_args @53 CLOSE_BRACKET
+   */
+  if (state == 1415)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1417: display_array_cmd  ->  DISPLAY_ARRAY @46 use_arr_var TO . identifier DOT MULTIPLY opt_scroll opt_attributes @47 disp_rest
+   */
+  if (state == 1417)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1431: op_at_statusbox  ->  AT OPEN_BRACKET . fgl_expr COMMA fgl_expr CLOSE_BRACKET op_size_statusbox
+   */
+  if (state == 1431)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1449: constr_rest  ->  variable ON . constr_col_list opt_defs FROM fld_list op_help opt_attributes
+   */
+  if (state == 1449)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1453: op_like_gui  ->  LIKE . ident_or_var
+   */
+  if (state == 1453)
+    return 3;
+  /* 1455: fgl_expr_list  ->  fgl_expr_list COMMA . fgl_expr
+   */
+  if (state == 1455)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1457: opt_at  ->  TO_MENUITEM . identifier
+   */
+  if (state == 1457)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1458: opt_at  ->  TO_STATUSBOX . identifier
+   */
+  if (state == 1458)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1459: opt_at  ->  AT . display_coords
+   */
+  if (state == 1459)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1460: opt_at  ->  TO . fld_list
+   */
+  if (state == 1460)
+    return (inkwlist14 (kw) ? 0 : 2);
+  /* 1487: gui_prompt_cmd  ->  PROMPT prompt_title opt_attributes RETURNING . variable
+   */
+  if (state == 1487)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1489: fgl_expr_ret_list  ->  fgl_expr_ret_list COMMA . fgl_expr_ret
+   */
+  if (state == 1489)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1494: opt_scaling  ->  SCALED_BY . fgl_expr_c COMMA fgl_expr_c
+   */
+  if (state == 1494)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1496: op_wordwrap  ->  WORDWRAP RIGHT_MARGIN . variable
+   */
+  if (state == 1496)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1500: call_ext  ->  NEWFORMATSHARED OPEN_BRACKET @11 . opt_func_call_args @12 CLOSE_BRACKET opt_return
+   */
+  if (state == 1500)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1505: call_ext  ->  EXTERNAL remote_host_name COLON . remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET @13 opt_func_call_args @14 CLOSE_BRACKET @15 opt_return_remote
+   */
+  if (state == 1505)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1507: call_ext  ->  SHARED char_or_var IN . char_or_var OPEN_BRACKET @9 opt_func_call_args @10 CLOSE_BRACKET opt_return
+   */
+  if (state == 1507)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1509: call_ext  ->  identifier OPEN_BRACKET @6 . opt_func_call_args @7 CLOSE_BRACKET @8 opt_return
+   */
+  if (state == 1509)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1515: when_command_expr  ->  WHEN . fgl_expr @21 commands
+   */
+  if (state == 1515)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1523: open_cursor_cmd  ->  OPEN cursor_name USING reset_cnt . fgl_expr_list
+   */
+  if (state == 1523)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1527: assoc_var_write  ->  identifier OPEN_SHEV . assoc_sub CLOSE_SHEV
+   */
+  if (state == 1527)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1530: obind_var_let_list  ->  obind_var_let_list COMMA . obind_let_var
+   */
+  if (state == 1530)
+    return (inkwlist0 (kw) ? 0 : 3);
+  /* 1532: put_from  ->  FROM . put_val_list
+   */
+  if (state == 1532)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 1543: field_command  ->  BEFFIELD . bef_field_list @86 commands
+   */
+  if (state == 1543)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1544: field_command  ->  AFTFIELD . aft_field_list @87 commands
+   */
+  if (state == 1544)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1559: inp_rest  ->  ibind_var_list opt_defs FROM . fld_list opt_help_no opt_attributes
+   */
+  if (state == 1559)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1564: opt_delim  ->  DELIMITER . char_or_var
+   */
+  if (state == 1564)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1566: unload_cmd  ->  opt_use UNLOAD_TO ufile opt_delim . select_statement2
+   */
+  if (state == 1566)
+    return (inkwlist16 (kw) ? 0 : 3);
+  /* 1567: declare_cmd  ->  opt_use DECLARE fetch_cursor_name SCROLL_CURSOR_FOR . cursor_specification_sel @165 curs_forupdate
+   */
+  if (state == 1567)
+    return (kw == SELECT ? 0 : 3);
+  /* 1570: prepare_cmd  ->  opt_use PREPARE stmt_id FROM . var_or_char
+   */
+  if (state == 1570)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1578: insert_statement  ->  INSERT_INTO @156 . table_name op_insert_column_list ins_2
+   */
+  if (state == 1578)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1586: select_statement  ->  SELECT op_ad . select_list @167 opt_into_sel @168 table_expression sel_p2
+   */
+  if (state == 1586)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 1588: fetch_statement  ->  FETCH @158 . fetch_part @159 opt_into_fetch_part
+   */
+  if (state == 1588)
+    return (inkwlist17 (kw) ? 0 : 3);
+  /* 1597: curs_forupdate  ->  FOR_UPDATE_OF . cur_update_list
+   */
+  if (state == 1597)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1602: input_sub_section  ->  FORMHANDLER_INPUT BY_NAME . in_bn_variable_list
+   */
+  if (state == 1602)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1610: field_op  ->  AFTER . in_id_list @76 commands
+   */
+  if (state == 1610)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1611: field_op  ->  ON . in_id_list @77 commands
+   */
+  if (state == 1611)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1614: field_op  ->  BEFORE . in_id_list @75 commands
+   */
+  if (state == 1614)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1631: var3  ->  CHAR_VALUE DOT var3 DOT . aft_dot
+   */
+  if (state == 1631)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 1634: con_user_details  ->  AS USER . char_or_var USING char_or_var
+   */
+  if (state == 1634)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1635: op_mnfile  ->  FROM . fgl_expr
+   */
+  if (state == 1635)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1642: create_c_1  ->  CREATE_TEMP_TABLE @154 table_name OPEN_BRACKET @155 . table_element_list CLOSE_BRACKET op_no_log
+   */
+  if (state == 1642)
+    return (inkwlist18 (kw) ? 0 : 2);
+  /* 1653: in_select_statement  ->  SELECT op_ad . select_list table_expression sel_p2
+   */
+  if (state == 1653)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 1680: in_expr  ->  NOT_IN OPEN_BRACKET reset_cnt . inexpr_list CLOSE_BRACKET
+   */
+  if (state == 1680)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1682: in_expr  ->  IN OPEN_BRACKET reset_cnt . inexpr_list CLOSE_BRACKET
+   */
+  if (state == 1682)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1686: create_c_1  ->  CREATE_TABLE @152 table_name OPEN_BRACKET @153 . table_element_list CLOSE_BRACKET
+   */
+  if (state == 1686)
+    return (inkwlist18 (kw) ? 0 : 2);
+  /* 1687: user_details  ->  AS . char_or_var COMMA char_or_var
+   */
+  if (state == 1687)
+    return (inkwlist19 (kw) ? 0 : 3);
+  /* 1689: set_cmd  ->  SET_SESSION op_conn_id OPTION char_or_var TO . char_or_var
+   */
+  if (state == 1689)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1690: move_cmd  ->  MOVE_WINDOW win_name BY fgl_expr COMMA . fgl_expr
+   */
+  if (state == 1690)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1691: move_cmd  ->  MOVE_WINDOW win_name TO fgl_expr COMMA . fgl_expr
+   */
+  if (state == 1691)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1692: coords  ->  a_number COMMA . a_number
+   */
+  if (state == 1692)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 1693: open_window_cmd  ->  OPEN_WINDOW open_win_name AT coords WITH . window_type win_attributes
+   */
+  if (state == 1693)
+    return (inkwlist20 (kw) ? 0 : 3);
+  /* 1695: init_tab  ->  tab_name DOT . column_name
+   */
+  if (state == 1695)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 1698: set_cmd  ->  SET_CURSOR cursor_name OPTION char_or_var TO . char_or_var
+   */
+  if (state == 1698)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1701: field_name  ->  identifier DOT INT_TO_ID OPEN_BRACKET . identifier CLOSE_BRACKET
+   */
+  if (state == 1701)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1702: constr_rest  ->  BY_NAME variable ON . constr_col_list opt_defs op_help opt_attributes
+   */
+  if (state == 1702)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1705: constr_extra_command  ->  BEFFIELD . bef_c_field_list @24 commands
+   */
+  if (state == 1705)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1706: constr_extra_command  ->  AFTFIELD . aft_c_field_list @25 commands
+   */
+  if (state == 1706)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1714: op_at_gui  ->  AT op_absolute OPEN_BRACKET . fgl_expr COMMA fgl_expr CLOSE_BRACKET
+   */
+  if (state == 1714)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1724: opt_at  ->  TO KWFORM . identifier CAPTION
+   */
+  if (state == 1724)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1736: prompt_cmd  ->  PROMPT prompt_title opt_attributes FOR opt_char . variable opt_help_no opt_attributes @124 prompt_key_sec
+   */
+  if (state == 1736)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1765: menu_block_command  ->  COMMAND opt_key . opt_help_no @122 commands
+   */
+  if (state == 1765)
+    return (inkwlist21 (kw) ? 0 : 3);
+  /* 1771: for_cmd  ->  FOR variable EQUAL fgl_expr TO . fgl_expr for_step @78 commands @79 END_FOR
+   */
+  if (state == 1771)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1773: let_var  ->  let_var setident DOT . identifier OPEN_SQUARE num_list CLOSE_SQUARE
+   */
+  if (state == 1773)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 1785: value_expression  ->  OPEN_BRACKET . value_expression CLOSE_BRACKET
+   */
+  if (state == 1785)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 1809: inp_rest  ->  ARRAY use_arr_var opt_defs FROM . identifier DOT MULTIPLY opt_help_no @96 opt_attributes
+   */
+  if (state == 1809)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1852: load_cmd  ->  opt_use LOAD_FROM ufile opt_delim INSERT_INTO . table_name opt_col_list
+   */
+  if (state == 1852)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1862: declare_cmd  ->  opt_use DECLARE fetch_cursor_name CURSOR FOR . cursor_specification_all @163 curs_forupdate
+   */
+  if (state == 1862)
+    return (kw == SELECT ? 0 : 3);
+  /* 1866: op_view_column_list  ->  OPEN_BRACKET . view_column_list CLOSE_BRACKET
+   */
+  if (state == 1866)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1868: delete_statement_position  ->  DELETE_FROM table_name WHERE_CURRENT_OF . fetch_cursor_name
+   */
+  if (state == 1868)
+    return 3;
+  /* 1869: where_clause  ->  WHERE . search_condition
+   */
+  if (state == 1869)
+    return (inkwlist22 (kw) ? 0 : 2);
+  /* 1876: rename_stmt  ->  RENCOL rentabname DOT . rencolname TO rencolname
+   */
+  if (state == 1876)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1877: rename_stmt  ->  RENTAB rentabname TO . rentabname
+   */
+  if (state == 1877)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1881: update_statement  ->  UPDATE table_name XSET . set_clause_list where_upd
+   */
+  if (state == 1881)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 1882: fetch_place  ->  ABSOLUTE . fgl_expr
+   */
+  if (state == 1882)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1884: fetch_place  ->  RELATIVE . fgl_expr
+   */
+  if (state == 1884)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 1891: fetch_part  ->  fetch_place . fetch_cursor_name
+   */
+  if (state == 1891)
+    return 3;
+  /* 1892: op_grant_column_list  ->  OPEN_BRACKET . grant_column_list CLOSE_BRACKET
+   */
+  if (state == 1892)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1894: privilege_definition  ->  GRANT privileges ON . table_name TO grantee_list op_with_grant_option
+   */
+  if (state == 1894)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1902: in_variable_list  ->  in_variable_list COMMA . variable
+   */
+  if (state == 1902)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1903: input_sub_section  ->  FORMHANDLER_INPUT in_variable_list FROM . in_id_list
+   */
+  if (state == 1903)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1945: op_rep_order_by  ->  ORDER_EXTERNAL_BY . obind_var_list_ord
+   */
+  if (state == 1945)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1958: output_command  ->  REPORT_TO . variable
+   */
+  if (state == 1958)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 1965: con_user_details  ->  USER char_or_var USING . char_or_var
+   */
+  if (state == 1965)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 1968: remote_func_list  ->  remote_func_list COMMA . remote_func
+   */
+  if (state == 1968)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 1985: func_call_args  ->  func_call_args COMMA . func_arg
+   */
+  if (state == 1985)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 2006: user_details  ->  AS USER . char_or_var COMMA PASSWORD char_or_var
+   */
+  if (state == 2006)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2012: window_type  ->  KWFORM . fgl_expr
+   */
+  if (state == 2012)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 2015: op_at_statusbox  ->  AT OPEN_BRACKET fgl_expr COMMA . fgl_expr CLOSE_BRACKET op_size_statusbox
+   */
+  if (state == 2015)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 2020: field_name  ->  identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT . identifier
+   */
+  if (state == 2020)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 2033: constr_col_list  ->  constr_col_list COMMA . constr_col
+   */
+  if (state == 2033)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2035: constr_col  ->  identifier DOT . identifier
+   */
+  if (state == 2035)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 2037: open_form_gui  ->  op_at_gui op_like_gui op_disable USING . formhandler_name
+   */
+  if (state == 2037)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2039: opt_foreach_into_fetch_part  ->  INTO @161 . ibind_var_list
+   */
+  if (state == 2039)
+    return (inkwlist12 (kw) ? 0 : 3);
+  /* 2044: opt_scaling  ->  SCALED_BY fgl_expr_c COMMA . fgl_expr_c
+   */
+  if (state == 2044)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 2047: pdf_functions  ->  PDF_FUNCTION OPEN_BRACKET CHAR_VALUE COMMA @149 . opt_func_call_args @150 CLOSE_BRACKET @151 opt_return
+   */
+  if (state == 2047)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 2048: call_ext  ->  FIELD_TOUCHED OPEN_BRACKET field_name CLOSE_BRACKET RETURNING . variable
+   */
+  if (state == 2048)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 2050: call_ext  ->  EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE . valid_port CLOSE_SQUARE OPEN_BRACKET @13 opt_func_call_args @14 CLOSE_BRACKET @15 opt_return_remote
+   */
+  if (state == 2050)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2051: remote_func_name  ->  identifier DOT . identifier
+   */
+  if (state == 2051)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2052: call_ext  ->  INFIELD OPEN_BRACKET field_name CLOSE_BRACKET RETURNING . variable
+   */
+  if (state == 2052)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 2055: call_ext  ->  variable COLON identifier OPEN_BRACKET @4 . opt_func_call_args CLOSE_BRACKET @5 opt_return
+   */
+  if (state == 2055)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 2064: menu_block_command  ->  COMMAND opt_key menu_opt_name . menu_optional_desc opt_help_no @121 commands
+   */
+  if (state == 2064)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2072: let_cmd  ->  LET @101 obind_var_let_list @102 EQUAL reset_cnt . op_expr_null
+   */
+  if (state == 2072)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 2093: value_expression  ->  identifier OPEN_BRACKET . value_expr_list CLOSE_BRACKET
+   */
+  if (state == 2093)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2094: put_val_list  ->  put_val_list COMMA . put_val
+   */
+  if (state == 2094)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2095: value_expression  ->  value_expression MINUS . value_expression
+   */
+  if (state == 2095)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2096: value_expression  ->  value_expression PLUS . value_expression
+   */
+  if (state == 2096)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2097: value_expression  ->  value_expression DIVIDE . value_expression
+   */
+  if (state == 2097)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2098: value_expression  ->  value_expression MULTIPLY . value_expression
+   */
+  if (state == 2098)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2106: var_ident_ibind  ->  var2 THRU . var2
+   */
+  if (state == 2106)
+    return (inkwlist4 (kw) ? 0 : 2);
+  /* 2115: bef_field_list  ->  bef_field_list COMMA . field_name
+   */
+  if (state == 2115)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2117: aft_field_list  ->  aft_field_list COMMA . field_name
+   */
+  if (state == 2117)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2136: declare_cmd  ->  opt_use DECLARE fetch_cursor_name SCROLL_CURSOR WITH_HOLD FOR . cursor_specification_sel @166 curs_forupdate
+   */
+  if (state == 2136)
+    return (kw == SELECT ? 0 : 3);
+  /* 2137: declare_cmd  ->  opt_use DECLARE fetch_cursor_name CURSOR WITH_HOLD FOR . cursor_specification_sel @164 curs_forupdate
+   */
+  if (state == 2137)
+    return (kw == SELECT ? 0 : 3);
+  /* 2147: value_expression  ->  OPEN_BRACKET . value_expression CLOSE_BRACKET
+   */
+  if (state == 2147)
+    return (inkwlist23 (kw) ? 0 : 2);
+  /* 2149: boolean_factor  ->  NOT . boolean_primary
+   */
+  if (state == 2149)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2161: op_insert_column_list  ->  OPEN_BRACKET . insert_column_list CLOSE_BRACKET
+   */
+  if (state == 2161)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2166: select_list  ->  select_list COMMA . value_expression_pls
+   */
+  if (state == 2166)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2170: set_clause_list  ->  OPEN_BRACKET . upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list CLOSE_BRACKET
+   */
+  if (state == 2170)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2185: colident  ->  CHAR_VALUE DOT . identifier DOT identifier
+   */
+  if (state == 2185)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2186: colident  ->  identifier DOT . identifier
+   */
+  if (state == 2186)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2187: cur_update_list  ->  cur_update_list COMMA . colident
+   */
+  if (state == 2187)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2188: in_bn_variable_list  ->  in_bn_variable_list COMMA . variable
+   */
+  if (state == 2188)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 2193: in_id_list  ->  in_id_list COMMA . identifier
+   */
+  if (state == 2193)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2219: op_rep_order_by  ->  ORDER BY . obind_var_list_ord
+   */
+  if (state == 2219)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2235: con_user_details  ->  AS USER char_or_var USING . char_or_var
+   */
+  if (state == 2235)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2237: referential_constraint_definition  ->  FOREIGN_KEY OPEN_BRACKET . references_columns CLOSE_BRACKET references_specification
+   */
+  if (state == 2237)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2238: unique_constraint_definition  ->  PRIMARY_KEY OPEN_BRACKET . unique_column_list CLOSE_BRACKET
+   */
+  if (state == 2238)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2239: unique_constraint_definition  ->  UNIQUE OPEN_BRACKET . unique_column_list CLOSE_BRACKET
+   */
+  if (state == 2239)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2240: check_constraint_definition  ->  CHECK OPEN_BRACKET . search_condition CLOSE_BRACKET
+   */
+  if (state == 2240)
+    return (inkwlist22 (kw) ? 0 : 2);
+  /* 2243: table_element_list  ->  table_element_list COMMA . table_element
+   */
+  if (state == 2243)
+    return (inkwlist18 (kw) ? 0 : 2);
+  /* 2267: output_cmd  ->  OUTPUT_TO_REPORT rep_name op_values OPEN_BRACKET @127 reset_cnt @128 . op_fgl_expr_list @129 CLOSE_BRACKET
+   */
+  if (state == 2267)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 2270: from_clause  ->  FROM . table_reference_list
+   */
+  if (state == 2270)
+    return (inkwlist24 (kw) ? 0 : 2);
+  /* 2277: inexpr_list  ->  inexpr_list COMMA . fgl_expr_c
+   */
+  if (state == 2277)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 2284: user_details  ->  AS char_or_var COMMA . char_or_var
+   */
+  if (state == 2284)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2297: bef_c_field_list  ->  bef_c_field_list COMMA . field_name2
+   */
+  if (state == 2297)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2299: field_name2  ->  identifier OPEN_SQUARE . arr_expr CLOSE_SQUARE DOT identifier
+   */
+  if (state == 2299)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 2300: field_name2  ->  identifier DOT . identifier
+   */
+  if (state == 2300)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 2301: aft_c_field_list  ->  aft_c_field_list COMMA . field_name2
+   */
+  if (state == 2301)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2305: constr_rest  ->  variable ON constr_col_list opt_defs FROM . fld_list op_help opt_attributes
+   */
+  if (state == 2305)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2308: op_at_gui  ->  AT op_absolute OPEN_BRACKET fgl_expr COMMA . fgl_expr CLOSE_BRACKET
+   */
+  if (state == 2308)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 2312: opt_at  ->  TO KWFORM identifier KWFIELD . fld_list
+   */
+  if (state == 2312)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2322: call_ext  ->  GET_FLDBUF OPEN_BRACKET fld_list CLOSE_BRACKET RETURNING @3 . ibind_var_list
+   */
+  if (state == 2322)
+    return (inkwlist12 (kw) ? 0 : 3);
+  /* 2326: call_ext  ->  SHARED char_or_var IN char_or_var OPEN_BRACKET @9 . opt_func_call_args @10 CLOSE_BRACKET opt_return
+   */
+  if (state == 2326)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 2336: for_step  ->  STEP . fgl_expr
+   */
+  if (state == 2336)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 2338: let_var  ->  let_var setident DOT identifier OPEN_SQUARE . num_list CLOSE_SQUARE
+   */
+  if (state == 2338)
+    return (inkwlist5 (kw) ? 0 : 3);
+  /* 2347: value_expression  ->  COUNT OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
+   */
+  if (state == 2347)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2349: value_expression  ->  AVG OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
+   */
+  if (state == 2349)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2350: value_expression  ->  XMAX OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
+   */
+  if (state == 2350)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2351: value_expression  ->  XMIN OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
+   */
+  if (state == 2351)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2352: value_expression  ->  SUM OPEN_BRACKET op_all . value_expression CLOSE_BRACKET
+   */
+  if (state == 2352)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2361: op_else  ->  ELIF @83 . fgl_expr THEN @84 commands op_else
+   */
+  if (state == 2361)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 2378: opt_col_list  ->  OPEN_BRACKET . col_list CLOSE_BRACKET
+   */
+  if (state == 2378)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2380: select_statement21  ->  SELECT setident op_ad . select_list opt_into_sel table_expression sel_p2
+   */
+  if (state == 2380)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2385: view_column_list  ->  view_column_list COMMA . column_name
+   */
+  if (state == 2385)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2396: search_condition  ->  search_condition OR . boolean_term
+   */
+  if (state == 2396)
+    return (inkwlist22 (kw) ? 0 : 2);
+  /* 2397: boolean_term  ->  boolean_term AND . boolean_factor
+   */
+  if (state == 2397)
+    return (inkwlist22 (kw) ? 0 : 2);
+  /* 2408: quantified_predicate  ->  subquery comp_op . value_expression
+   */
+  if (state == 2408)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2413: comparison_predicate  ->  value_expression comp_op . subquery
+   */
+  if (state == 2413)
+    return (inkwlist25 (kw) ? 0 : 2);
+  /* 2419: rename_stmt  ->  RENCOL rentabname DOT rencolname TO . rencolname
+   */
+  if (state == 2419)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2421: opt_into_sel  ->  INTO . obind_var_list
+   */
+  if (state == 2421)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2423: special_upd_clause  ->  MULTIPLY EQUAL . upd_val_list
+   */
+  if (state == 2423)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2426: where_upd  ->  WHERE_CURRENT_OF . fetch_cursor_name
+   */
+  if (state == 2426)
+    return 3;
+  /* 2427: where_upd  ->  WHERE . search_condition
+   */
+  if (state == 2427)
+    return (inkwlist22 (kw) ? 0 : 2);
+  /* 2429: upd_columns  ->  upd_columns COMMA . col_1
+   */
+  if (state == 2429)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2430: col_1  ->  upd_column_name EQUAL . upd_val
+   */
+  if (state == 2430)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2433: grant_column_list  ->  grant_column_list COMMA . column_name
+   */
+  if (state == 2433)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2435: privilege_definition  ->  GRANT privileges ON table_name TO . grantee_list op_with_grant_option
+   */
+  if (state == 2435)
+    return (inkwlist26 (kw) ? 0 : 2);
+  /* 2448: obind_var_list_ord  ->  obind_var_list_ord COMMA . obind_var_ord
+   */
+  if (state == 2448)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2453: format_action  ->  BEFGROUP . variable @135 commands
+   */
+  if (state == 2453)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 2455: format_action  ->  AFTGROUP . variable @136 commands
+   */
+  if (state == 2455)
+    return (inkwlist4 (kw) ? 0 : 1);
+  /* 2475: column_name  ->  table_name setident DOT . identifier col_arr
+   */
+  if (state == 2475)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 2490: table_reference  ->  OUTER . tname
+   */
+  if (state == 2490)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2494: tname  ->  table_name . correlation_name
+   */
+  if (state == 2494)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2496: sel_p2  ->  INTO_TEMP . tmp_tabname op_no_log
+   */
+  if (state == 2496)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2505: user_details  ->  AS USER char_or_var PASSWORD . char_or_var
+   */
+  if (state == 2505)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2507: window_type  ->  fgl_expr ROWS COMMA . fgl_expr COLUMNS
+   */
+  if (state == 2507)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 2525: opt_return  ->  RETURNING . ibind_var_list
+   */
+  if (state == 2525)
+    return (inkwlist12 (kw) ? 0 : 3);
+  /* 2547: value_expression  ->  DATE setident OPEN_BRACKET setident . value_expr_list CLOSE_BRACKET
+   */
+  if (state == 2547)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2552: value_expr_list  ->  value_expr_list COMMA . value_expression
+   */
+  if (state == 2552)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2581: comparison_predicate  ->  value_expression op_not BETWEEN . value_expression AND value_expression
+   */
+  if (state == 2581)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2583: value_expression  ->  OPEN_BRACKET . value_expression CLOSE_BRACKET
+   */
+  if (state == 2583)
+    return (inkwlist27 (kw) ? 0 : 2);
+  /* 2592: insert_column_list  ->  insert_column_list COMMA . column_name
+   */
+  if (state == 2592)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2600: value_expression  ->  OPEN_BRACKET . value_expression CLOSE_BRACKET
+   */
+  if (state == 2600)
+    return (inkwlist27 (kw) ? 0 : 2);
+  /* 2606: upd_col_list  ->  upd_col_list COMMA . upd_column_name
+   */
+  if (state == 2606)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2612: opt_into_fetch_part  ->  INTO @160 . ibind_var_list
+   */
+  if (state == 2612)
+    return (inkwlist12 (kw) ? 0 : 3);
+  /* 2618: colident  ->  CHAR_VALUE DOT identifier DOT . identifier
+   */
+  if (state == 2618)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2634: references_column_list  ->  references_column_list COMMA . column_name
+   */
+  if (state == 2634)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2635: unique_column_list  ->  unique_column_list COMMA . column_name
+   */
+  if (state == 2635)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2657: references_specification  ->  REFERENCES . referenced_table_and_columns
+   */
+  if (state == 2657)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2664: table_reference  ->  OUTER OPEN_BRACKET . tname_list CLOSE_BRACKET
+   */
+  if (state == 2664)
+    return (inkwlist24 (kw) ? 0 : 2);
+  /* 2666: table_reference_list  ->  table_reference_list COMMA . table_reference
+   */
+  if (state == 2666)
+    return (inkwlist24 (kw) ? 0 : 2);
+  /* 2669: group_by_clause  ->  GROUP_BY . column_specification_list
+   */
+  if (state == 2669)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2674: order_by_clause  ->  ORDER BY . sort_specification_list
+   */
+  if (state == 2674)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2675: sel_p2  ->  UNION op_all . select_statement2
+   */
+  if (state == 2675)
+    return (inkwlist16 (kw) ? 0 : 3);
+  /* 2676: opt_scroll  ->  SCROLL USING . field_name
+   */
+  if (state == 2676)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2678: user_details  ->  AS USER char_or_var COMMA PASSWORD . char_or_var
+   */
+  if (state == 2678)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2708: col_list  ->  col_list COMMA . simple_column_name
+   */
+  if (state == 2708)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2713: query_specification  ->  SELECT setident op_ad . select_list table_expression
+   */
+  if (state == 2713)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2714: subquery  ->  OPEN_BRACKET SELECT setident op_ad . select_list table_expression CLOSE_BRACKET
+   */
+  if (state == 2714)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2724: ins_2  ->  VALUES @157 OPEN_BRACKET . insert_value_list CLOSE_BRACKET
+   */
+  if (state == 2724)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2725: obind_var_list  ->  obind_var_list COMMA . obind_var
+   */
+  if (state == 2725)
+    return (inkwlist4 (kw) ? 0 : 3);
+  /* 2729: upd_val_list  ->  upd_val_list COMMA . upd_val
+   */
+  if (state == 2729)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2733: grantee_list  ->  grantee_list COMMA . grantee
+   */
+  if (state == 2733)
+    return (inkwlist26 (kw) ? 0 : 2);
+  /* 2762: column_constraint  ->  CHECK OPEN_BRACKET . search_condition CLOSE_BRACKET
+   */
+  if (state == 2762)
+    return (inkwlist22 (kw) ? 0 : 2);
+  /* 2771: having_clause  ->  HAVING . search_condition
+   */
+  if (state == 2771)
+    return (inkwlist22 (kw) ? 0 : 2);
+  /* 2785: wattribute  ->  COMMENT_LINE . line_no
+   */
+  if (state == 2785)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 2786: wattribute  ->  PROMPT_LINE . line_no
+   */
+  if (state == 2786)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 2787: wattribute  ->  ERROR_LINE . line_no
+   */
+  if (state == 2787)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 2788: wattribute  ->  MSG_LINE . line_no
+   */
+  if (state == 2788)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 2789: wattribute  ->  FORM_LINE . line_no
+   */
+  if (state == 2789)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 2790: wattribute  ->  MENU_LINE . line_no
+   */
+  if (state == 2790)
+    return (inkwlist13 (kw) ? 0 : 3);
+  /* 2796: op_size_statusbox  ->  SIZE OPEN_BRACKET . fgl_expr COMMA fgl_expr CLOSE_BRACKET
+   */
+  if (state == 2796)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 2797: field_name2  ->  identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT . identifier
+   */
+  if (state == 2797)
+    return (inkwlist3 (kw) ? 0 : 2);
+  /* 2804: call_ext  ->  EXTERNAL remote_host_name COLON remote_func_name OPEN_SQUARE valid_port CLOSE_SQUARE OPEN_BRACKET @13 . opt_func_call_args @14 CLOSE_BRACKET @15 opt_return_remote
+   */
+  if (state == 2804)
+    return (inkwlist7 (kw) ? 0 : 3);
+  /* 2819: comparison_predicate  ->  value_expression op_not BETWEEN value_expression AND . value_expression
+   */
+  if (state == 2819)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2830: set_clause_list  ->  OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET . upd_val_list CLOSE_BRACKET
+   */
+  if (state == 2830)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2842: referenced_table_and_columns  ->  table_name OPEN_BRACKET . references_column_list CLOSE_BRACKET
+   */
+  if (state == 2842)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2844: tname_list  ->  tname_list COMMA . table_reference
+   */
+  if (state == 2844)
+    return (inkwlist24 (kw) ? 0 : 2);
+  /* 2846: column_specification_list  ->  column_specification_list COMMA . column_specification
+   */
+  if (state == 2846)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2848: sort_specification_list  ->  sort_specification_list COMMA . sort_specification
+   */
+  if (state == 2848)
+    return (inkwlist0 (kw) ? 0 : 2);
+  /* 2886: insert_value_list  ->  insert_value_list COMMA . insert_value
+   */
+  if (state == 2886)
+    return (inkwlist15 (kw) ? 0 : 2);
+  /* 2902: op_size_statusbox  ->  SIZE OPEN_BRACKET fgl_expr COMMA . fgl_expr CLOSE_BRACKET
+   */
+  if (state == 2902)
+    return (inkwlist7 (kw) ? 0 : 1);
+  /* 2919: opt_return_remote  ->  RETURNING . ibind_var_list
+   */
+  if (state == 2919)
+    return (inkwlist12 (kw) ? 0 : 3);
 
- // if we got here, no identifier is expected at all
- return 0;
+  // if we got here, no identifier is expected at all
+  return 0;
 }
 
-int inkwlist0( int kw ) {
- switch (kw) {
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+int
+inkwlist0 (int kw)
+{
+  switch (kw)
+    {
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist1( int kw ) {
- switch (kw) {
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COLON:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist1 (int kw)
+{
+  switch (kw)
+    {
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COLON:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist2( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DEFINE:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist2 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DEFINE:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist3( int kw ) {
- switch (kw) {
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case MULTIPLY:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist3 (int kw)
+{
+  switch (kw)
+    {
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case MULTIPLY:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist4( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist4 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist5( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MINUS:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case PLUS:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist5 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MINUS:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case PLUS:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist6( int kw ) {
- switch (kw) {
-	case ARRAY:
-	case AS:
-	case ASSOCIATE:
-	case AUDIT:
-	case BYTE:
-	case CHAR:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DATE:
-	case DATETIME:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DECIMAL:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FLOAT:
-	case FOREIGN:
-	case HEADER:
-	case INTEGER:
-	case INTERVAL:
-	case KWFORM:
-	case KWLINE:
-	case LIKE:
-	case MENU:
-	case MODE:
-	case MONEY:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RECORD:
-	case RESOURCE:
-	case SMALLFLOAT:
-	case SMALLINT:
-	case SPACES:
-	case STATUSBOX:
-	case TEXT:
-	case UPSHIFT:
-	case VALIDATE:
-	case VARCHAR:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist6 (int kw)
+{
+  switch (kw)
+    {
+    case ARRAY:
+    case AS:
+    case ASSOCIATE:
+    case AUDIT:
+    case BYTE:
+    case CHAR:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DATE:
+    case DATETIME:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DECIMAL:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FLOAT:
+    case FOREIGN:
+    case HEADER:
+    case INTEGER:
+    case INTERVAL:
+    case KWFORM:
+    case KWLINE:
+    case LIKE:
+    case MENU:
+    case MODE:
+    case MONEY:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RECORD:
+    case RESOURCE:
+    case SMALLFLOAT:
+    case SMALLINT:
+    case SPACES:
+    case STATUSBOX:
+    case TEXT:
+    case UPSHIFT:
+    case VALIDATE:
+    case VARCHAR:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist7( int kw ) {
- switch (kw) {
-	case ASCII:
-	case ATSIGN:
-	case AUDIT:
-	case AVERAGE:
-	case AVG:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COLUMN:
-	case COLUMNS:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CURRENT:
-	case CYAN:
-	case DATE:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOT:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FIELDTOWIDGET:
-	case FOREIGN:
-	case GROUP:
-	case HEADER:
-	case INFIELD:
-	case KWLINE:
-	case MENU:
-	case MINUS:
-	case MODE:
-	case MONTH:
-	case NEWFORMATSHARED:
-	case NOT:
-	case OPTION:
-	case PASSWORD:
-	case PERCENT:
-	case PLUS:
-	case RESOURCE:
-	case SPACES:
-	case SUM:
-	case UPSHIFT:
-	case VALIDATE:
-	case XMAX:
-	case XMIN:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist7 (int kw)
+{
+  switch (kw)
+    {
+    case ASCII:
+    case ATSIGN:
+    case AUDIT:
+    case AVERAGE:
+    case AVG:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COLUMN:
+    case COLUMNS:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CURRENT:
+    case CYAN:
+    case DATE:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOT:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FIELDTOWIDGET:
+    case FOREIGN:
+    case GROUP:
+    case HEADER:
+    case INFIELD:
+    case KWLINE:
+    case MENU:
+    case MINUS:
+    case MODE:
+    case MONTH:
+    case NEWFORMATSHARED:
+    case NOT:
+    case OPTION:
+    case PASSWORD:
+    case PERCENT:
+    case PLUS:
+    case RESOURCE:
+    case SPACES:
+    case SUM:
+    case UPSHIFT:
+    case VALIDATE:
+    case XMAX:
+    case XMIN:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist8( int kw ) {
- switch (kw) {
-	case ALL:
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist8 (int kw)
+{
+  switch (kw)
+    {
+    case ALL:
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist9( int kw ) {
- switch (kw) {
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case NEXT:
-	case OPTION:
-	case PASSWORD:
-	case PREVIOUS:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist9 (int kw)
+{
+  switch (kw)
+    {
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case NEXT:
+    case OPTION:
+    case PASSWORD:
+    case PREVIOUS:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist10( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DATE:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case EXTERNAL:
-	case FOREIGN:
-	case HEADER:
-	case INFIELD:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case NEWFORMATSHARED:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SHARED:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist10 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DATE:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case EXTERNAL:
+    case FOREIGN:
+    case HEADER:
+    case INFIELD:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case NEWFORMATSHARED:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SHARED:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist11( int kw ) {
- switch (kw) {
-	case ARRAY:
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOT:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist11 (int kw)
+{
+  switch (kw)
+    {
+    case ARRAY:
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOT:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist12( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOT:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist12 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOT:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist13( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FIRST:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case LAST:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist13 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FIRST:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case LAST:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist14( int kw ) {
- switch (kw) {
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWFORM:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist14 (int kw)
+{
+  switch (kw)
+    {
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWFORM:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist15( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case AVG:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CURRENT:
-	case CYAN:
-	case DATE:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOT:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MINUS:
-	case MODE:
-	case MONTH:
-	case MULTIPLY:
-	case NUMERIC:
-	case OPTION:
-	case PASSWORD:
-	case PLUS:
-	case RESOURCE:
-	case SPACES:
-	case SUM:
-	case UPSHIFT:
-	case USER:
-	case VALIDATE:
-	case XMAX:
-	case XMIN:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist15 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case AVG:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CURRENT:
+    case CYAN:
+    case DATE:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOT:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MINUS:
+    case MODE:
+    case MONTH:
+    case MULTIPLY:
+    case NUMERIC:
+    case OPTION:
+    case PASSWORD:
+    case PLUS:
+    case RESOURCE:
+    case SPACES:
+    case SUM:
+    case UPSHIFT:
+    case USER:
+    case VALIDATE:
+    case XMAX:
+    case XMIN:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist16( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SELECT:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist16 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SELECT:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist17( int kw ) {
- switch (kw) {
-	case ABSOLUTE:
-	case CURRENT:
-	case FIRST:
-	case LAST:
-	case NEXT:
-	case PREVIOUS:
-	case RELATIVE:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist17 (int kw)
+{
+  switch (kw)
+    {
+    case ABSOLUTE:
+    case CURRENT:
+    case FIRST:
+    case LAST:
+    case NEXT:
+    case PREVIOUS:
+    case RELATIVE:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist18( int kw ) {
- switch (kw) {
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UNIQUE:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist18 (int kw)
+{
+  switch (kw)
+    {
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UNIQUE:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist19( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case USER:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist19 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case USER:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist20( int kw ) {
- switch (kw) {
-	case ASCII:
-	case ATSIGN:
-	case AUDIT:
-	case AVERAGE:
-	case AVG:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COLUMN:
-	case COLUMNS:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CURRENT:
-	case CYAN:
-	case DATE:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOT:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FIELDTOWIDGET:
-	case FOREIGN:
-	case GROUP:
-	case HEADER:
-	case INFIELD:
-	case KWFORM:
-	case KWLINE:
-	case MENU:
-	case MINUS:
-	case MODE:
-	case MONTH:
-	case NEWFORMATSHARED:
-	case NOT:
-	case OPTION:
-	case PASSWORD:
-	case PERCENT:
-	case PLUS:
-	case RESOURCE:
-	case SPACES:
-	case SUM:
-	case UPSHIFT:
-	case VALIDATE:
-	case XMAX:
-	case XMIN:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist20 (int kw)
+{
+  switch (kw)
+    {
+    case ASCII:
+    case ATSIGN:
+    case AUDIT:
+    case AVERAGE:
+    case AVG:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COLUMN:
+    case COLUMNS:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CURRENT:
+    case CYAN:
+    case DATE:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOT:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FIELDTOWIDGET:
+    case FOREIGN:
+    case GROUP:
+    case HEADER:
+    case INFIELD:
+    case KWFORM:
+    case KWLINE:
+    case MENU:
+    case MINUS:
+    case MODE:
+    case MONTH:
+    case NEWFORMATSHARED:
+    case NOT:
+    case OPTION:
+    case PASSWORD:
+    case PERCENT:
+    case PLUS:
+    case RESOURCE:
+    case SPACES:
+    case SUM:
+    case UPSHIFT:
+    case VALIDATE:
+    case XMAX:
+    case XMIN:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist21( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case HELP:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist21 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case HELP:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist22( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case AVG:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CURRENT:
-	case CYAN:
-	case DATE:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOT:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MINUS:
-	case MODE:
-	case MONTH:
-	case MULTIPLY:
-	case NOT:
-	case NUMERIC:
-	case OPTION:
-	case PASSWORD:
-	case PLUS:
-	case RESOURCE:
-	case SPACES:
-	case SUM:
-	case UPSHIFT:
-	case USER:
-	case VALIDATE:
-	case XMAX:
-	case XMIN:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist22 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case AVG:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CURRENT:
+    case CYAN:
+    case DATE:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOT:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MINUS:
+    case MODE:
+    case MONTH:
+    case MULTIPLY:
+    case NOT:
+    case NUMERIC:
+    case OPTION:
+    case PASSWORD:
+    case PLUS:
+    case RESOURCE:
+    case SPACES:
+    case SUM:
+    case UPSHIFT:
+    case USER:
+    case VALIDATE:
+    case XMAX:
+    case XMIN:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist23( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case AVG:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CURRENT:
-	case CYAN:
-	case DATE:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOT:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MINUS:
-	case MODE:
-	case MONTH:
-	case MULTIPLY:
-	case NOT:
-	case NUMERIC:
-	case OPTION:
-	case PASSWORD:
-	case PLUS:
-	case RESOURCE:
-	case SELECT:
-	case SPACES:
-	case SUM:
-	case UPSHIFT:
-	case USER:
-	case VALIDATE:
-	case XMAX:
-	case XMIN:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist23 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case AVG:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CURRENT:
+    case CYAN:
+    case DATE:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOT:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MINUS:
+    case MODE:
+    case MONTH:
+    case MULTIPLY:
+    case NOT:
+    case NUMERIC:
+    case OPTION:
+    case PASSWORD:
+    case PLUS:
+    case RESOURCE:
+    case SELECT:
+    case SPACES:
+    case SUM:
+    case UPSHIFT:
+    case USER:
+    case VALIDATE:
+    case XMAX:
+    case XMIN:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist24( int kw ) {
- switch (kw) {
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case OUTER:
-	case PASSWORD:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist24 (int kw)
+{
+  switch (kw)
+    {
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case OUTER:
+    case PASSWORD:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist25( int kw ) {
- switch (kw) {
-	case ALL:
-	case ANY:
-	case ATSIGN:
-	case AUDIT:
-	case AVG:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CURRENT:
-	case CYAN:
-	case DATE:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOT:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MINUS:
-	case MODE:
-	case MONTH:
-	case MULTIPLY:
-	case NUMERIC:
-	case OPTION:
-	case PASSWORD:
-	case PLUS:
-	case RESOURCE:
-	case SOME:
-	case SPACES:
-	case SUM:
-	case UPSHIFT:
-	case USER:
-	case VALIDATE:
-	case XMAX:
-	case XMIN:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist25 (int kw)
+{
+  switch (kw)
+    {
+    case ALL:
+    case ANY:
+    case ATSIGN:
+    case AUDIT:
+    case AVG:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CURRENT:
+    case CYAN:
+    case DATE:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOT:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MINUS:
+    case MODE:
+    case MONTH:
+    case MULTIPLY:
+    case NUMERIC:
+    case OPTION:
+    case PASSWORD:
+    case PLUS:
+    case RESOURCE:
+    case SOME:
+    case SPACES:
+    case SUM:
+    case UPSHIFT:
+    case USER:
+    case VALIDATE:
+    case XMAX:
+    case XMIN:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist26( int kw ) {
- switch (kw) {
-	case AUDIT:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CYAN:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MODE:
-	case MONTH:
-	case OPTION:
-	case PASSWORD:
-	case PUBLIC:
-	case RESOURCE:
-	case SPACES:
-	case UPSHIFT:
-	case VALIDATE:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist26 (int kw)
+{
+  switch (kw)
+    {
+    case AUDIT:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CYAN:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MODE:
+    case MONTH:
+    case OPTION:
+    case PASSWORD:
+    case PUBLIC:
+    case RESOURCE:
+    case SPACES:
+    case UPSHIFT:
+    case VALIDATE:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
-int inkwlist27( int kw ) {
- switch (kw) {
-	case ATSIGN:
-	case AUDIT:
-	case AVG:
-	case CHECK:
-	case CLEAR:
-	case CLIPPED:
-	case CLOSE:
-	case COMMENT:
-	case CONSTANT:
-	case CONSTRUCT:
-	case COUNT:
-	case CURRENT:
-	case CYAN:
-	case DATE:
-	case DAY:
-	case DBA:
-	case DBYNAME:
-	case DEFAULT:
-	case DEFAULTS:
-	case DEFER:
-	case DELETE:
-	case DELIMITER:
-	case DESC:
-	case DESCENDING:
-	case DIM:
-	case DISABLE:
-	case DOT:
-	case DOWN:
-	case DOWNSHIFT:
-	case DROP:
-	case ESCAPE:
-	case EXISTS:
-	case FOREIGN:
-	case HEADER:
-	case KWLINE:
-	case MENU:
-	case MINUS:
-	case MODE:
-	case MONTH:
-	case MULTIPLY:
-	case NUMERIC:
-	case OPTION:
-	case PASSWORD:
-	case PLUS:
-	case RESOURCE:
-	case SELECT:
-	case SPACES:
-	case SUM:
-	case UPSHIFT:
-	case USER:
-	case VALIDATE:
-	case XMAX:
-	case XMIN:
-	case YEAR:
-	return 1;
- }
-	return 0;
+
+int
+inkwlist27 (int kw)
+{
+  switch (kw)
+    {
+    case ATSIGN:
+    case AUDIT:
+    case AVG:
+    case CHECK:
+    case CLEAR:
+    case CLIPPED:
+    case CLOSE:
+    case COMMENT:
+    case CONSTANT:
+    case CONSTRUCT:
+    case COUNT:
+    case CURRENT:
+    case CYAN:
+    case DATE:
+    case DAY:
+    case DBA:
+    case DBYNAME:
+    case DEFAULT:
+    case DEFAULTS:
+    case DEFER:
+    case DELETE:
+    case DELIMITER:
+    case DESC:
+    case DESCENDING:
+    case DIM:
+    case DISABLE:
+    case DOT:
+    case DOWN:
+    case DOWNSHIFT:
+    case DROP:
+    case ESCAPE:
+    case EXISTS:
+    case FOREIGN:
+    case HEADER:
+    case KWLINE:
+    case MENU:
+    case MINUS:
+    case MODE:
+    case MONTH:
+    case MULTIPLY:
+    case NUMERIC:
+    case OPTION:
+    case PASSWORD:
+    case PLUS:
+    case RESOURCE:
+    case SELECT:
+    case SPACES:
+    case SUM:
+    case UPSHIFT:
+    case USER:
+    case VALIDATE:
+    case XMAX:
+    case XMIN:
+    case YEAR:
+      return 1;
+    }
+  return 0;
 }
+
 /* symbols that can be identifiers/variables
  NAMED                           IDENT
  fgl_expr                        VAR

@@ -1,22 +1,24 @@
 /*
 @(#)File:            $RCSfile: getopt.h,v $
-@(#)Version:         $Revision: 1.1 $
-@(#)Last changed:    $Date: 2002-11-28 06:40:47 $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2003-05-12 14:24:42 $
 @(#)Purpose:         Declarations for GETOPT(3) and GETSUBOPT(3)
 @(#)Author:          J Leffler
 @(#)Copyright:       JLSS (C) 1992-93,1996-97
 @(#)Product:         SQLFMT Version 14 (1998-11-04)
-*/
-
+*/  
+  
 #ifndef GETOPT_H
 #define GETOPT_H
-
+  
 #ifdef MAIN_PROGRAM
 #ifndef lint
-static const char getopt_h[] = "@(#)$Id: getopt.h,v 1.1 2002-11-28 06:40:47 afalout Exp $";
+static const char getopt_h[] =
+  "@(#)$Id: getopt.h,v 1.2 2003-05-12 14:24:42 mikeaubury Exp $";
+
 #endif	/* lint */
 #endif	/* MAIN_PROGRAM */
-
+  
 /*
 ** GNU getopt provides facilities not available in standard getopt.
 ** Specifically, it will reorder all option arguments before all non-option
@@ -27,25 +29,23 @@ static const char getopt_h[] = "@(#)$Id: getopt.h,v 1.1 2002-11-28 06:40:47 afal
 ** value of '\0' indicating a file option by starting the options string
 ** with a '-'.  It also has a different interface from standard getopt
 ** because the second (argv) argument is not const.
-*/
-
+*/ 
+  
 #ifdef USE_GNU_GETOPT
 #define GETOPT(argc, argv, opts)	gnu_getopt(argc, argv, opts)
 #define opterr	gnu_opterr
 #define optind	gnu_optind
 #define optarg	gnu_optarg
 #define optopt	gnu_optopt
-#else
+#else	/*  */
 #define GETOPT(argc, argv, opts)	getopt(argc, argv, opts)
-#endif /* USE_GNU_GETOPT */
-
-extern int      optopt;
-extern int      opterr;
-extern int      optind;
-extern char    *optarg;
-
-extern int      getopt(int argc, char *const*argv, const char *opts);
-extern int      getsubopt(char **opt, char *const*names, char **value);
-extern int      gnu_getopt(int argc, char **argv, const char *opts);
-
+#endif	/* USE_GNU_GETOPT */
+extern int optopt;
+extern int opterr;
+extern int optind;
+extern char *optarg;
+extern int getopt (int argc, char *const *argv, const char *opts);
+extern int getsubopt (char **opt, char *const *names, char **value);
+extern int gnu_getopt (int argc, char **argv, const char *opts);
+
 #endif	/* GETOPT_H */

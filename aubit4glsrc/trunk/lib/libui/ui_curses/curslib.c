@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.27 2003-05-10 12:39:41 mikeaubury Exp $
+# $Id: curslib.c,v 1.28 2003-05-12 14:24:26 mikeaubury Exp $
 #*/
 
 /**
@@ -61,11 +61,11 @@
 #define mja_strcmp(a,b) mja_strncmp(a,b,0)
 
 #ifndef strnicmp		/* typically in /usr/include/string.h */
-	#define strnicmp(a,b,c) mja_strncmp(a,b,c)
+#define strnicmp(a,b,c) mja_strncmp(a,b,c)
 #endif
 
 #ifndef stricmp			/* typically in /usr/include/string.h */
-	#define stricmp(a,b) mja_strncmp(a,b,0)
+#define stricmp(a,b) mja_strncmp(a,b,0)
 #endif
 
 //#define DEBUG
@@ -113,7 +113,7 @@ char lastspec[20][2][80];
 char selected[1024];
 
 char formdetails[MAXFORM][2048];
-int init_curses_mode=0;
+int init_curses_mode = 0;
 
 /*
 =====================================================================
@@ -147,8 +147,7 @@ int new_do_keys (ACL_Menu * menu, int a);
 int menu_getkey (ACL_Menu * menu);
 void horiz_disp_opt (int row, int x, int y, int type);
 void puttext (int x1, int y1, int x2, int y2, char *buf);
-int
-endis_fields_ap (int en_dis, va_list *ap);
+int endis_fields_ap (int en_dis, va_list * ap);
 void gettextinfo (struct text_info r);
 static void a4gl_gettext (int l, int t, int r, int b, char *buf);
 /* void    strip_nl 		(char *str); */
@@ -206,10 +205,9 @@ void add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
 		      int helpno, int attr);
 void finish_create_menu (ACL_Menu * menu);
 void refresh_after_system (void);
-WINDOW *window_on_top               (void);
+WINDOW *window_on_top (void);
 void aclfgli_show_help (int n);
-void
-menu_show_ap (ACL_Menu * menu, va_list *ap);
+void menu_show_ap (ACL_Menu * menu, va_list * ap);
 
 /*
 =====================================================================
@@ -224,10 +222,10 @@ menu_show_ap (ACL_Menu * menu, va_list *ap);
 char *
 string_width (char *s)
 {
-char buff[10];
-int a;
-static char buff2[132];
-  
+  char buff[10];
+  int a;
+  static char buff2[132];
+
   a = get_curr_width () - 2;
   sprintf (buff, "%%-%d.%ds", a, a);
   sprintf (buff2, buff, s);
@@ -298,8 +296,8 @@ title_box (str, a, x, l)
 static void
 message (textarea * area, char *str, int x, int a)
 {
-int pos;
-  
+  int pos;
+
   /*YELLOW ON CYAN */
   mja_setcolor (TITLE_COL);
   pos = (get_curr_width () - strlen (str)) / 2;
@@ -320,14 +318,14 @@ error_nobox (char *str)
 {
   int a;
   push_char (str);
-  a=geterror_line();
-  debug("Error line = %d",a);
+  a = geterror_line ();
+  debug ("Error line = %d", a);
   push_int (a);
   push_int (1);
 
-  #ifdef DEBUG
-  	debug ("YY REVERSE");
-  #endif
+#ifdef DEBUG
+  debug ("YY REVERSE");
+#endif
   display_at (1, AUBIT_ATTR_REVERSE);
 }
 
@@ -339,15 +337,15 @@ error_nobox (char *str)
 void
 error_box (char *str)
 {
-int a, pos;
-WINDOW *x;
+  int a, pos;
+  WINDOW *x;
 
   /*YELLOW ON RED */
   mja_setcolor (ERROR_COL);
   a = 4;
   pos = (screen_width () - (strlen (str))) / 2;
 
-debug("error_box - screen_width=%d pos=%d",screen_width(),pos);
+  debug ("error_box - screen_width=%d pos=%d", screen_width (), pos);
 
   x = create_blank_window ("error", pos, a, strlen (str), 3, 1);
   /*wmove(x,2,2); */
@@ -358,7 +356,7 @@ debug("error_box - screen_width=%d pos=%d",screen_width(),pos);
   do_pause ();
   remove_window ("error");
   zrefresh ();
-  debug("All done in error box");
+  debug ("All done in error box");
   mja_setcolor (NORMAL_TEXT);
 }
 
@@ -383,10 +381,10 @@ void
 combi_menu (char *dstn, char *str, int x, int y, int w, int h,
 	    char *lst, int lstwidth, int nopts, char *nme, int border)
 {
-int a, pos;
-int fwidth, numdisp_opts;
-char st[80];
-static int last_opt = -1;
+  int a, pos;
+  int fwidth, numdisp_opts;
+  char st[80];
+  static int last_opt = -1;
 
   st[0] = 0;
   mja_setcolor (NORMAL_TEXT);
@@ -560,10 +558,10 @@ newbox (textarea * area, int l, int t, int r, int b, int typ)
 int
 aclfgl_fgl_drawbox (int n)
 {
-int x, y, w, h, c;
-int xx, yy;
+  int x, y, w, h, c;
+  int xx, yy;
 //void *ptr=0;
-void *win;
+  void *win;
   c = 0;
   if (n == 5)
     c = pop_int ();
@@ -571,34 +569,34 @@ void *win;
   y = pop_int ();
   w = pop_int ();
   h = pop_int ();
-  debug("In fgl_drawbox");
-  debug("h=%d y+h=%d",h,y+h);
+  debug ("In fgl_drawbox");
+  debug ("h=%d y+h=%d", h, y + h);
   //win=curscr;
   win = find_pointer ("screen", WINCODE);
-  win=window_on_top();
+  win = window_on_top ();
 
-  #define PMOVE(x,y,c) 	mvwaddch(win,(y-1),(x-1),c)
+#define PMOVE(x,y,c) 	mvwaddch(win,(y-1),(x-1),c)
 
-  for (xx = x + 1; xx <x + w - 1; xx++)
+  for (xx = x + 1; xx < x + w - 1; xx++)
     {
-      PMOVE( xx,y,ACS_HLINE);
+      PMOVE (xx, y, ACS_HLINE);
 
-      PMOVE (xx,y+h-1,ACS_HLINE);
+      PMOVE (xx, y + h - 1, ACS_HLINE);
     }
 
   for (yy = y + 1; yy < y + h - 1; yy++)
     {
-      PMOVE ( x,yy ,ACS_VLINE);
+      PMOVE (x, yy, ACS_VLINE);
 
-  	PMOVE ( x+w-1,yy ,ACS_VLINE);
+      PMOVE (x + w - 1, yy, ACS_VLINE);
     }
 
-  PMOVE ( x,y ,ACS_ULCORNER);
-  PMOVE (x+w-1,y ,ACS_URCORNER);
+  PMOVE (x, y, ACS_ULCORNER);
+  PMOVE (x + w - 1, y, ACS_URCORNER);
 
-  PMOVE (x,y + h-1 ,ACS_LLCORNER);
+  PMOVE (x, y + h - 1, ACS_LLCORNER);
 
-  PMOVE (x+w-1,y + h-1 ,ACS_LRCORNER);
+  PMOVE (x + w - 1, y + h - 1, ACS_LRCORNER);
 
   mja_refresh ();
   return 0;
@@ -693,9 +691,9 @@ do_key_menu (void)
   int a;
   abort_pressed = FALSE;
   a = getkey ();
-  #ifdef DEBUG
-  	debug (" do_key_menu...A=%d", a);
-  #endif
+#ifdef DEBUG
+  debug (" do_key_menu...A=%d", a);
+#endif
 
   if (a == UPKEY || a == LEFTKEY)
     {
@@ -713,17 +711,17 @@ do_key_menu (void)
 
   if (a == ESC || a == 'Q' || a == 'q')
     {
-		#ifdef DEBUG
-      		debug ("Abort Pressed in menu");
-		#endif
+#ifdef DEBUG
+      debug ("Abort Pressed in menu");
+#endif
       abort_pressed = 1;
     }
 
   if (a == CR)
     {
-		#ifdef DEBUG
-		      debug ("Enter !");
-		#endif
+#ifdef DEBUG
+      debug ("Enter !");
+#endif
       return 1;
     }
 
@@ -750,11 +748,11 @@ clearbox (textarea * area)
 void
 do_pause (void)
 {
-WINDOW *x;
-int w;
-int emw;
-char buff[80];
-  
+  WINDOW *x;
+  int w;
+  int emw;
+  char buff[80];
+
   w = screen_width ();
   sprintf (buff, " %s ", acl_getenv ("ERROR_MSG"));
   emw = strlen (buff);
@@ -766,9 +764,9 @@ char buff[80];
   zrefresh ();
   abort_pressed = FALSE;
   doupdate ();
-  debug("getch_win...");
+  debug ("getch_win...");
   getch_win ();
-  debug("Done getch_win");
+  debug ("Done getch_win");
   remove_window ("pause");
   mja_setcolor (NORMAL_TEXT);
 }
@@ -783,15 +781,15 @@ acllib_pause (char *s)
 {
   char buff[80] = "Pausing...";
   char *p;
-  #ifdef DEBUG
-  	debug ("Pausing in report");
-  #endif
+#ifdef DEBUG
+  debug ("Pausing in report");
+#endif
   p = acl_getenv ("PAUSE_MSG");
   if (p)
     strcpy (buff, p);
-  #ifdef DEBUG
-  	debug ("Got default of %s", buff);
-  #endif
+#ifdef DEBUG
+  debug ("Got default of %s", buff);
+#endif
   if (s != 0)
     {
       if (strlen (s) > 0)
@@ -799,9 +797,9 @@ acllib_pause (char *s)
 	  strcpy (buff, s);
 	}
     }
-  #ifdef DEBUG
-  	debug ("Actual=%s", buff);
-  #endif
+#ifdef DEBUG
+  debug ("Actual=%s", buff);
+#endif
   /* buff now contains our message */
   strcat (buff, "\n");
   push_char (buff);
@@ -809,9 +807,9 @@ acllib_pause (char *s)
   push_int (-1);
   display_at (1, 0);
   fflush (stdout);
-  #ifdef DEBUG
-  	debug ("Printed");
-  #endif
+#ifdef DEBUG
+  debug ("Printed");
+#endif
   fgetc (stdin);
 }
 
@@ -826,11 +824,11 @@ edit (string, type, length, x, y)
      char type;
      int x, y, length;
 {
-textarea area;
-int a;
-int len = 0;
-int flg = 0;
-  
+  textarea area;
+  int a;
+  int len = 0;
+  int flg = 0;
+
   if (abort_pressed)
     return 0;
   len = strlen (string);
@@ -842,9 +840,9 @@ int flg = 0;
   /* textbackground(COLOR_BLACK); */
 
   /*newbox (&area, x, y, x + length + 1, y + 2, NORMAL_BOX); */
-  #ifdef DEBUG
-  	debug ("Box %d %d %d", x, y, x + length);
-  #endif
+#ifdef DEBUG
+  debug ("Box %d %d %d", x, y, x + length);
+#endif
   newbox (&area, x, y, x + length + 1, y + 1, NORMAL_BOX);
   wattron (area.win_no, A_NORMAL);
 
@@ -856,7 +854,7 @@ int flg = 0;
   wprintw (area.win_no, "%s", string);
   zrefresh ();
   while (1 == 1)
-  {
+    {
       mja_gotoxy (x + len + 1, y + 1);
       abort_pressed = FALSE;
       a = getkey ();
@@ -906,7 +904,7 @@ int flg = 0;
 	  if (type == 'Y')
 	    len = 0;
 	}
-  }
+    }
   return 1;
 }
 
@@ -954,11 +952,11 @@ check_type (char c, char type, int flg, int len)
 void
 ask_char (char *prompt, char *s, int a)	/*  prompt for an integer from user  */
 {
-char inbuf[80] = "";
-textarea area;
-textarea area2;
-inbuf[0] = 0;
-  
+  char inbuf[80] = "";
+  textarea area;
+  textarea area2;
+  inbuf[0] = 0;
+
   strcpy (inbuf, s);
   newbox (&area2, (((80 - a) / 2) - 4), 11, (((80 - a) / 2) + a + 4), 15, 1);
   message (&area, prompt, 0, 10);
@@ -975,17 +973,17 @@ inbuf[0] = 0;
 void
 ask_cmdline (char *prompt, char *s, int a)	/*  prompt for an integer from user  */
 {
-char inbuf[80] = "";
-textarea area2;
-inbuf[0] = 0;
+  char inbuf[80] = "";
+  textarea area2;
+  inbuf[0] = 0;
 
-  #ifdef DEBUG
-  	debug ("in ask_cmdline");
-  #endif
+#ifdef DEBUG
+  debug ("in ask_cmdline");
+#endif
   strcpy (inbuf, s);
-  #ifdef DEBUG
-  	debug ("newbox");
-  #endif
+#ifdef DEBUG
+  debug ("newbox");
+#endif
 
   newbox (&area2, 2, 20, 76, 24, BORDER_BOX);
 
@@ -999,9 +997,9 @@ inbuf[0] = 0;
 
   edit (inbuf, 'A', a, 3, 22);
 
-  #ifdef DEBUG
-  	debug ("Done edit1");
-  #endif
+#ifdef DEBUG
+  debug ("Done edit1");
+#endif
   /* mja_setcolor (NORMAL_TEXT); */
   /*clearbox (&area); */
 
@@ -1017,9 +1015,9 @@ int
 ask_int (prompt)		/*  prompt for an integer from user  */
      char *prompt;
 {
-int i;
-char inbuf[80];
-textarea area;
+  int i;
+  char inbuf[80];
+  textarea area;
 
   i = 0;
   inbuf[0] = 0;
@@ -1039,9 +1037,9 @@ double
 ask_dbl (prompt)		/*  prompt for an integer from user  */
      char *prompt;
 {
-double d;
-char inbuf[80];
-textarea area;
+  double d;
+  char inbuf[80];
+  textarea area;
 
   d = 0.0;
   inbuf[0] = 0;
@@ -1061,12 +1059,12 @@ int
 ask_verify (prompt)		/*  prompt for verification  */
      char *prompt;
 {
-int i;
-char kch, inbuf[80];
-int rm_disp = 0;
-textarea area;
-textarea area1;
-  
+  int i;
+  char kch, inbuf[80];
+  int rm_disp = 0;
+  textarea area;
+  textarea area1;
+
   if (abort_pressed)
     return 0;
   if (strlen (prompt) > 0)
@@ -1286,74 +1284,77 @@ puttext (int x1, int y1, int x2, int y2, char *buf)
 void
 A4GLUI_ui_init (int argc, char *argv[])
 {
- set_scrmode('L');
- init_curses_mode=0;
+  set_scrmode ('L');
+  init_curses_mode = 0;
 }
 
 
-void A4GL_init_curses_stuff() {
+void
+A4GL_init_curses_stuff ()
+{
 #define BLANK ' '
 
 // Have we already done it ?
-if (init_curses_mode) return;
-		init_curses_mode=1;
+  if (init_curses_mode)
+    return;
+  init_curses_mode = 1;
 
-	#ifdef DEBUG
-		debug ("Initializing curses environment");
-	#endif
-		initscr ();
-		bkgdset (BLANK);
-		start_color ();
+#ifdef DEBUG
+  debug ("Initializing curses environment");
+#endif
+  initscr ();
+  bkgdset (BLANK);
+  start_color ();
 
-		#ifndef __sun__
-			#ifndef __sparc__
-			  //curses function not available on Solaris (!!!!?????)
-			  use_default_colors ();
-		    #endif
-		#endif
+#ifndef __sun__
+#ifndef __sparc__
+  //curses function not available on Solaris (!!!!?????)
+  use_default_colors ();
+#endif
+#endif
 
-		cbreak ();
-		noecho ();
-		nonl ();
-		intrflush (stdscr, TRUE);
-		keypad (stdscr, TRUE);
+  cbreak ();
+  noecho ();
+  nonl ();
+  intrflush (stdscr, TRUE);
+  keypad (stdscr, TRUE);
 
-		start_color ();
-		init_colour_pairs ();
-		init_windows ();
+  start_color ();
+  init_colour_pairs ();
+  init_windows ();
 
-		mja_gotoxy (1, 1);
-		tui_print ("                                 ");
-		zrefresh ();
+  mja_gotoxy (1, 1);
+  tui_print ("                                 ");
+  zrefresh ();
 
 
-		#ifdef NCURSES_MOUSE_VERSION
-		#ifdef DEBUG
-				debug ("Turning Mouse on");
-		#endif
-		#ifdef WIN32
-				#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
-					#ifdef DEBUG
-					      debug ("Turning WIN32 mouse on\n");
-					#endif
-				      if (env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
-				#endif
-		#else
-			    if (env_option_set ("ACL_MOUSE"))
-				{
-					#ifdef DEBUG
-						debug ("Turning UNIX mouse on\n");
-					#endif
-					{
-						int mcode;
-						mcode = mousemask (ALL_MOUSE_EVENTS, 0);
-						#ifdef DEBUG
-							  debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
-						#endif
-			        }
-				}
-		#endif
-	#endif
+#ifdef NCURSES_MOUSE_VERSION
+#ifdef DEBUG
+  debug ("Turning Mouse on");
+#endif
+#ifdef WIN32
+#if (! defined(__CYGWIN__) && ! defined(__MINGW32__))
+#ifdef DEBUG
+  debug ("Turning WIN32 mouse on\n");
+#endif
+  if (env_option_set ("ACL_MOUSE") mouse_on (ALL_MOUSE_EVENTS);
+#endif
+#else
+  if (env_option_set ("ACL_MOUSE"))
+    {
+#ifdef DEBUG
+      debug ("Turning UNIX mouse on\n");
+#endif
+      {
+	int mcode;
+	mcode = mousemask (ALL_MOUSE_EVENTS, 0);
+#ifdef DEBUG
+	debug ("Turned on %d (%d)", mcode, ALL_MOUSE_EVENTS);
+#endif
+      }
+    }
+#endif
+#endif
 }
 
 
@@ -1492,7 +1493,8 @@ set_option (ACL_Menu * menu, int opt)
   for (a = 0; a < opt; a++)
     {
       (ACL_Menu_Opts *) menu->curr_option =
-	(ACL_Menu_Opts *) ((ACL_Menu_Opts *) (menu->curr_option))-> next_option;
+	(ACL_Menu_Opts *) ((ACL_Menu_Opts *) (menu->curr_option))->
+	next_option;
     }
 }
 
@@ -1504,9 +1506,11 @@ void
 free_menu (ACL_Menu * menu)
 {
   ACL_Menu_Opts *opt1, *opt2;
-  #ifdef DEBUG
-  	{ debug ("Freeing menu");  }
-  #endif
+#ifdef DEBUG
+  {
+    debug ("Freeing menu");
+  }
+#endif
   opt1 = (ACL_Menu_Opts *) menu->first;
   while (opt1 != 0)
     {
@@ -1514,20 +1518,20 @@ free_menu (ACL_Menu * menu)
       free (opt1);
       opt1 = opt2;
     }
-  #ifdef DEBUG
-  	debug ("Attempting to delete window : %p", menu->menu_win);
-  #endif
+#ifdef DEBUG
+  debug ("Attempting to delete window : %p", menu->menu_win);
+#endif
   clear_menu (menu);
   update_panels ();
   doupdate ();
   zrefresh ();
-  #ifdef DEBUG
-  	debug ("Menu=%p &Menu=%p", menu, &menu);
-  #endif
+#ifdef DEBUG
+  debug ("Menu=%p &Menu=%p", menu, &menu);
+#endif
   gui_rmmenu ((int) menu);
-  #ifdef DEBUG
-	debug ("Deleted window");
-  #endif
+#ifdef DEBUG
+  debug ("Deleted window");
+#endif
 }
 
 /**
@@ -1680,36 +1684,37 @@ menu_loop (ACL_Menu * menu)
       /* subwin_gotoxy (menu->menu_win,menu->menu_offset - 1, menu->menu_line+1); */
 
 
-	#ifdef DEBUG
+#ifdef DEBUG
       debug ("Moved cursor for menu to %d %d", menu->menu_offset - 1,
 	     menu->menu_line);
-	#endif
+#endif
 
 
       wmove (menu->menu_win, 0, 0);
 
 
-	#ifdef DEBUG
+#ifdef DEBUG
       debug (">>>> Getting key from menu");
-	#endif
+#endif
 
       a = menu_getkey (menu);
-	#ifdef DEBUG
+#ifdef DEBUG
       debug (">>>> KEY=%d", a);
-	#endif
+#endif
 
       if (a == 23 || a == key_val ("HELP"))
 	{
-	#ifdef DEBUG
-	  debug ("....SHOWHELP.... menu->curr_option->help_no=%d",menu->curr_option->help_no);
-	  debug ("menu->curr_option=%p",menu->curr_option);
-	#endif
+#ifdef DEBUG
+	  debug ("....SHOWHELP.... menu->curr_option->help_no=%d",
+		 menu->curr_option->help_no);
+	  debug ("menu->curr_option=%p", menu->curr_option);
+#endif
 	  if (menu->curr_option->help_no)
 	    {
 	      int hlp;
 	      hlp = menu->curr_option->help_no;
 	      debug ("Curroption=%p", menu->curr_option);
-	      push_int(hlp);
+	      push_int (hlp);
 	      aclfgli_show_help (1);
 	      debug ("After show help Curroption=%p", menu->curr_option);
 	      continue;
@@ -1796,9 +1801,12 @@ display_menu (ACL_Menu * menu)
 	     opt1->attributes, ACL_MN_HIDE, opt1->attributes & ACL_MN_HIDE);
       if ((opt1->attributes & ACL_MN_HIDE) != ACL_MN_HIDE)
 	{
-	#ifdef DEBUG
-	  {debug ("OK to display - Page %d of %d", menu->curr_page,opt1->page);}
-	#endif
+#ifdef DEBUG
+	  {
+	    debug ("OK to display - Page %d of %d", menu->curr_page,
+		   opt1->page);
+	  }
+#endif
 	  if (menu->curr_page == opt1->page)
 	    {
 	      if (have_displayed == 0)
@@ -1845,7 +1853,9 @@ display_menu (ACL_Menu * menu)
       opt1 = (ACL_Menu_Opts *) opt1->next_option;
     }
 #ifdef DEBUG
-  {debug ("Displayed Menu"); }
+  {
+    debug ("Displayed Menu");
+  }
 #endif
   mja_refresh ();
 }
@@ -1858,16 +1868,20 @@ display_menu (ACL_Menu * menu)
 void
 clear_menu (ACL_Menu * menu)
 {
-PANEL *p;
-WINDOW *w;
-  
+  PANEL *p;
+  WINDOW *w;
+
   p = find_pointer (menu->window_name, PANCODE);
   w = find_pointer (menu->window_name, WINCODE);
 
-  #ifdef DEBUG
-  	{debug ("Clearing Window..%p", w);}
-	{debug ("Clearing Panel %p", p);}
-  #endif
+#ifdef DEBUG
+  {
+    debug ("Clearing Window..%p", w);
+  }
+  {
+    debug ("Clearing Panel %p", p);
+  }
+#endif
 
   del_panel (p);		/* this is causing problems INVESTIGATE */
   delwin (w);
@@ -1882,10 +1896,12 @@ WINDOW *w;
 void
 clear_prompt (struct s_prompt *prmt)
 {
-PANEL *p;
-  #ifdef DEBUG
-  	{debug ("Clearing prompt...");}
-  #endif
+  PANEL *p;
+#ifdef DEBUG
+  {
+    debug ("Clearing prompt...");
+  }
+#endif
   p = prmt->win;
   delwin ((WINDOW *) p);
 }
@@ -2219,12 +2235,12 @@ curs_err (char *str)
 int
 load_form (char *fname2, int fno1, int fno)
 {
-FILE *formfile;
-char buffer[133];
-char fname[32];
-int currno;
-char fname3[64];
-  
+  FILE *formfile;
+  char buffer[133];
+  char fname[32];
+  int currno;
+  char fname3[64];
+
   strcpy (fname3, fname2);
   strcat (fname3, acl_getenv ("A4GL_FRM_BASE_EXT"));
   formfile = mja_fopen (fname3, "rt");
@@ -2517,7 +2533,7 @@ getkey (void)
   while (1)
     {
       a = getch_win ();
-	#ifdef WIN32_BROKEN
+#ifdef WIN32_BROKEN
       if (a == KEY_MOUSE)
 	{
 	  request_mouse_pos ();
@@ -2526,7 +2542,7 @@ getkey (void)
 	      return 27;
 	    }
 	}
-	#endif
+#endif
       if (a == 18)
 	{
 	  mja_refresh ();
@@ -2711,8 +2727,8 @@ next_option (void *vmenu, char *nextopt)
   ACL_Menu_Opts *option;
   ACL_Menu_Opts *old_option;
   char s[256];
-ACL_Menu * menu;
-	menu=vmenu;
+  ACL_Menu *menu;
+  menu = vmenu;
   h_disp_opt (menu, menu->curr_option, menu->menu_offset, menu->mn_offset,
 	      NORM);
   trim (nextopt);
@@ -2761,7 +2777,7 @@ menu_hide_ap (ACL_Menu * menu, va_list * ap)
  * @todo Describe function
  */
 void
-menu_show_ap (ACL_Menu * menu, va_list *ap)
+menu_show_ap (ACL_Menu * menu, va_list * ap)
 {
   debug ("Show");
   menu_attrib (menu, 1, ap);
@@ -2947,7 +2963,7 @@ aclfgli_pr_message (int attr, int wait)
   debug ("In message...");
   cw = (WINDOW *) get_currwin ();
   ml = getmessage_line ();
-	debug("MJA - Got message line as %d\n",ml);
+  debug ("MJA - Got message line as %d\n", ml);
   width = get_curr_width ();
   pop_char (p, get_curr_width ());
 
@@ -2975,7 +2991,7 @@ aclfgli_pr_message (int attr, int wait)
       display_at (1, attr);
     }
 
-  return;		/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+  return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
   debug (" NW PTR");
   sprintf (buff, "MS%p", cw);
@@ -3148,9 +3164,9 @@ void
 set_bkg (WINDOW * win, int attr)
 {
 
-  wbkgd (win, decode_aubit_attr(attr,'w'));
- //wbkgdset (win, 0);
-  wbkgdset (win,  decode_aubit_attr(attr,'w'));
+  wbkgd (win, decode_aubit_attr (attr, 'w'));
+  //wbkgdset (win, 0);
+  wbkgdset (win, decode_aubit_attr (attr, 'w'));
 
 }
 
@@ -3175,24 +3191,25 @@ menu_setcolor (ACL_Menu * menu, int typ)
 
   /* wbkgd(menu->menu_win,0); */
 
-  debug ("Window background = %x - window - %x", attr,currwin);
+  debug ("Window background = %x - window - %x", attr, currwin);
 
-  if ((attr-(attr&0xff))==0) {
-	attr=A_NORMAL+(attr&0xff);
-  }
-
-  if ((attr&0xff) == 0)
+  if ((attr - (attr & 0xff)) == 0)
     {
-      debug("Nothing specified for the background..");
+      attr = A_NORMAL + (attr & 0xff);
+    }
+
+  if ((attr & 0xff) == 0)
+    {
+      debug ("Nothing specified for the background..");
       attr += ' ';
     }
 
-  debug ("Subwin - setcolor - attr=%x",attr);
+  debug ("Subwin - setcolor - attr=%x", attr);
   switch (typ)
     {
     case NORMAL_TEXT:
     case NORMAL_MENU:
-	debug("Normal : %x\n",attr);
+      debug ("Normal : %x\n", attr);
       wattrset (currwin, attr);
       break;
 
@@ -3205,7 +3222,7 @@ menu_setcolor (ACL_Menu * menu, int typ)
       else
 	attr2 = attr + A_REVERSE;
 
-	debug("Reverse : %x\n",attr2);
+      debug ("Reverse : %x\n", attr2);
       wattrset (currwin, attr2);
       break;
     }
@@ -3272,7 +3289,7 @@ menu_getkey (ACL_Menu * menu)
 
        */
 
-      debug("Check for autobang");
+      debug ("Check for autobang");
 
       if (strcmp (acl_getenv ("A4GL_AUTOBANG"), "1") != 0)
 	{
@@ -3293,8 +3310,8 @@ menu_getkey (ACL_Menu * menu)
 	    }
 	}
 
-    debug("Returning A\n");
-    return a;
+      debug ("Returning A\n");
+      return a;
     }
 }
 
@@ -3386,7 +3403,7 @@ show_menu (void)
  * @todo Describe function
  */
 int
-endis_fields_ap (int en_dis, va_list *ap)
+endis_fields_ap (int en_dis, va_list * ap)
 {
   exitwith ("Not available in TUI mode (enable/disable)");
   return 0;
@@ -3565,7 +3582,7 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
   char op1[256];
   int nopts;
   opt1 = nalloc (ACL_Menu_Opts);
-  debug("MJAMJA helpno=%d",helpno);
+  debug ("MJAMJA helpno=%d", helpno);
 
   opt1->next_option = 0;
   opt1->prev_option = 0;
@@ -3573,7 +3590,7 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
 
   debug ("In add menu option : %s\n", txt);
 
-  debug("MJAMJA helpno=%d",helpno);
+  debug ("MJAMJA helpno=%d", helpno);
   if (menu->first == 0)
     {
       debug ("Setting first..\n");
@@ -3585,7 +3602,7 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
   nopts = menu->num_opts;
   opt2 = menu->last;
   opt1->opt_no = nopts - 1;
-  debug("MJAMJA helpno=%d",helpno);
+  debug ("MJAMJA helpno=%d", helpno);
   if (opt1 != opt2)
     {
       opt2->next_option = opt1;
@@ -3596,7 +3613,7 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
   debug ("opt1 : prev=%p next=%p", opt1->prev_option, opt1->next_option);
   debug ("opt2 : prev=%p next=%p", opt2->prev_option, opt2->next_option);
 
-  debug("MJAMJA helpno=%d",helpno);
+  debug ("MJAMJA helpno=%d", helpno);
   if (strlen (txt))
     {
       strcpy (opt1->opt_title, " ");
@@ -3610,20 +3627,20 @@ add_menu_option (ACL_Menu * menu, char *txt, char *keys, char *desc,
       strcpy (opt1->opt_title, "");
     }
 
-  debug("MJAMJA helpno=%d",helpno);
+  debug ("MJAMJA helpno=%d", helpno);
   opt1->optlength = strlen (opt1->opt_title);
-  debug("MJAMJA helpno=%d",helpno);
+  debug ("MJAMJA helpno=%d", helpno);
   strcpy (opt1->optkey, keys);
-  debug("MJAMJA helpno=%d",helpno);
+  debug ("MJAMJA helpno=%d", helpno);
   strcpy (opt1->shorthelp, desc);
-  debug("MJA setting opt1->help_no = %d",helpno);
+  debug ("MJA setting opt1->help_no = %d", helpno);
   opt1->help_no = helpno;
   opt1->attributes = attr;
   if (opt1->optlength == 0)
     opt1->attributes |= ACL_MN_HIDE;
   menu->last = (ACL_Menu_Opts *) opt1;
   menu->num_opts = nopts;
-  debug("MJA opt1->help_no = %d",opt1->help_no);
+  debug ("MJA opt1->help_no = %d", opt1->help_no);
 }
 
 /**
@@ -3645,8 +3662,8 @@ finish_create_menu (ACL_Menu * menu)
 
   gui_setfocus ((int) menu->curr_option);
   gui_endmenu ((int) menu);
-  debug("Current option=%p",menu->curr_option);
-  debug("Current option help=%d",menu->curr_option->help_no);
+  debug ("Current option=%p", menu->curr_option);
+  debug ("Current option help=%d", menu->curr_option->help_no);
   return;
 }
 

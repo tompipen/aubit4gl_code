@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: window.c,v 1.7 2003-04-28 13:38:49 mikeaubury Exp $
+# $Id: window.c,v 1.8 2003-05-12 14:24:31 mikeaubury Exp $
 #*/
 
 /**
@@ -56,7 +56,7 @@ extern GtkWidget *win_screen;
 static GtkWindow *win_stack[1024];
 
 /** The windows stack counter / index */
-static int win_stack_cnt=0;
+static int win_stack_cnt = 0;
 
 /*
 =====================================================================
@@ -64,15 +64,15 @@ static int win_stack_cnt=0;
 =====================================================================
 */
 
-void dump_gtkwinstack(void);
+void dump_gtkwinstack (void);
 //void hide_window (char *s);
 //void show_window (char *s);
 //void movewin (char *s, int to_by);
 //void remove_window (char *s);
-int get_curr_border_gtk(void);
-int get_curr_height_gtk(void);
+int get_curr_border_gtk (void);
+int get_curr_height_gtk (void);
 //void clr_window(char *name);
-void dump_object(GtkObject *o);
+void dump_object (GtkObject * o);
 
 /*
 =====================================================================
@@ -88,10 +88,12 @@ void dump_object(GtkObject *o);
  *         - 0 : The window does not have top
  */
 static int
-has_top(GtkWidget *cwin)
+has_top (GtkWidget * cwin)
 {
- if (gtk_object_get_data (GTK_OBJECT(cwin), "TOP")) return 1;
- else return 0;
+  if (gtk_object_get_data (GTK_OBJECT (cwin), "TOP"))
+    return 1;
+  else
+    return 0;
 }
 
 /**
@@ -103,10 +105,10 @@ void
 hide_window (char *s)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *)find_pointer (s, WINCODE);
-  printf("cwin=%p",cwin);
-  if (has_top(cwin)) 
-	  cwin = (GtkWidget *)gtk_object_get_data (GTK_OBJECT(cwin), "TOP");
+  cwin = (GtkWidget *) find_pointer (s, WINCODE);
+  printf ("cwin=%p", cwin);
+  if (has_top (cwin))
+    cwin = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (cwin), "TOP");
   printf ("Hide %p\n", cwin);
   gtk_widget_hide (cwin);
   gui_run_til_no_more ();
@@ -122,8 +124,9 @@ show_window (char *s)
 {
   GtkWidget *cwin;
 
-  cwin = (GtkWidget *)find_pointer (s, WINCODE);
-  if (has_top(cwin)) cwin = gtk_object_get_data (GTK_OBJECT(cwin), "TOP");
+  cwin = (GtkWidget *) find_pointer (s, WINCODE);
+  if (has_top (cwin))
+    cwin = gtk_object_get_data (GTK_OBJECT (cwin), "TOP");
   gtk_widget_show (cwin);
   gui_run_til_no_more ();
 }
@@ -151,16 +154,16 @@ movewin (char *s, int to_by)
   x = pop_int ();
   y = pop_int ();
 
-  cwin = (GtkWidget *)find_pointer (s, WINCODE);
-  yo = (int)gtk_object_get_data (GTK_OBJECT(cwin), "Y_OFF");
-  xo = (int)gtk_object_get_data (GTK_OBJECT(cwin), "X_OFF");
+  cwin = (GtkWidget *) find_pointer (s, WINCODE);
+  yo = (int) gtk_object_get_data (GTK_OBJECT (cwin), "Y_OFF");
+  xo = (int) gtk_object_get_data (GTK_OBJECT (cwin), "X_OFF");
 
-  cwin = (GtkWidget *)gtk_object_get_data (GTK_OBJECT(cwin), "TOP");
+  cwin = (GtkWidget *) gtk_object_get_data (GTK_OBJECT (cwin), "TOP");
 
-  gtk_fixed_move ((GtkFixed *)win_screen, cwin, (x - 1) * XWIDTH + xo,
+  gtk_fixed_move ((GtkFixed *) win_screen, cwin, (x - 1) * XWIDTH + xo,
 		  (y - 1) * YHEIGHT + yo);
   gui_run_til_no_more ();
-return 1;
+  return 1;
 }
 
 /**
@@ -174,43 +177,43 @@ return 1;
  *   - - : The window is removed from stack and the last one is made current.
  *   - ^ : The window is made current.
  */
-void 
-gtkwin_stack(GtkWindow *w,int op)
+void
+gtkwin_stack (GtkWindow * w, int op)
 {
   int a;
   int b;
 
-	debug("gtkwin_stack : %p %c",w,op);
+  debug ("gtkwin_stack : %p %c", w, op);
 
-	if (op=='+') 
-		win_stack[win_stack_cnt++] = w;
+  if (op == '+')
+    win_stack[win_stack_cnt++] = w;
 
-	if (op=='-') 
+  if (op == '-')
+    {
+      for (a = 0; a < win_stack_cnt; a++)
 	{
-		for (a=0;a<win_stack_cnt;a++) 
+	  if (win_stack[a] == w)
+	    {
+	      win_stack[a] = 0;
+	      for (b = a + 1; b < win_stack_cnt; b++)
 		{
-			if (win_stack[a]==w) 
-			{
-				win_stack[a]=0;
-				for (b=a+1;b<win_stack_cnt;b++) 
-				{
-					win_stack[b-1]=win_stack[b];
-				}
-	  			win_stack_cnt--;
-	  			debug("win_stack_cnt=%d",win_stack_cnt);
-	  			set_current_window (win_stack[win_stack_cnt-1]);
-				break;
-			}
+		  win_stack[b - 1] = win_stack[b];
 		}
+	      win_stack_cnt--;
+	      debug ("win_stack_cnt=%d", win_stack_cnt);
+	      set_current_window (win_stack[win_stack_cnt - 1]);
+	      break;
+	    }
+	}
 
 
-	}
-				
-	if (op=='^') 
-	{
-		gtkwin_stack(w,'-');
-		gtkwin_stack(w,'+');
-	}
+    }
+
+  if (op == '^')
+    {
+      gtkwin_stack (w, '-');
+      gtkwin_stack (w, '+');
+    }
 }
 
 /**
@@ -224,31 +227,31 @@ remove_window (char *s)
   GtkWidget *cwin;
   GtkWidget *cwin_2;
 
-  debug("Removing window %s",s);
-                                               
+  debug ("Removing window %s", s);
+
   if (!(has_pointer (s, WINCODE)))
     {
       set_error ("Window not found %s", s);
       exitwith ("Window not found");
       set_errm (s);
       return;
-    } 
+    }
 
-  cwin_2 = (GtkWidget *)find_pointer (s, WINCODE);
-  dump_object((GtkObject *)cwin_2);
+  cwin_2 = (GtkWidget *) find_pointer (s, WINCODE);
+  dump_object ((GtkObject *) cwin_2);
 
-  cwin = gtk_object_get_data (GTK_OBJECT(cwin_2), "TOP");
-  dump_object((GtkObject *)cwin);
+  cwin = gtk_object_get_data (GTK_OBJECT (cwin_2), "TOP");
+  dump_object ((GtkObject *) cwin);
 
-  debug("cwin_2=%p cwin=%p win_screen=%p",cwin_2,cwin,win_screen);
+  debug ("cwin_2=%p cwin=%p win_screen=%p", cwin_2, cwin, win_screen);
 
   gtk_widget_destroy (cwin);
   gtk_widget_destroy (cwin_2);
   del_pointer (s, WINCODE);
   gui_run_til_no_more ();
-  dump_gtkwinstack();
-  gtkwin_stack((GtkWindow *)cwin_2,'-');
-  dump_gtkwinstack();
+  dump_gtkwinstack ();
+  gtkwin_stack ((GtkWindow *) cwin_2, '-');
+  dump_gtkwinstack ();
 }
 
 
@@ -258,13 +261,13 @@ remove_window (char *s)
  * @return The width of the current window.
  */
 int
-get_curr_width(void)
+get_curr_width (void)
 {
   GtkWidget *cwin;
   int width;
-	cwin = (GtkWidget *)get_curr_win_gtk ();
-  	width = (int)gtk_object_get_data (GTK_OBJECT(cwin), "WIDTH");
-	return width;
+  cwin = (GtkWidget *) get_curr_win_gtk ();
+  width = (int) gtk_object_get_data (GTK_OBJECT (cwin), "WIDTH");
+  return width;
 }
 
 /**
@@ -273,14 +276,17 @@ get_curr_width(void)
  * @return The prompt line.
  */
 int
-getprompt_line_gtk(void)
+getprompt_line_gtk (void)
 {
   GtkWidget *cwin;
-	cwin = (GtkWidget *)get_curr_win_gtk ();
-if (gtk_object_get_data (GTK_OBJECT (cwin), "currform")==0) {
+  cwin = (GtkWidget *) get_curr_win_gtk ();
+  if (gtk_object_get_data (GTK_OBJECT (cwin), "currform") == 0)
+    {
       return decode_line_gtk (std_dbscr.prompt_line);
-}
-    return decode_line_gtk((int)gtk_object_get_data (GTK_OBJECT(cwin), "PROMPT_LINE"));
+    }
+  return decode_line_gtk ((int)
+			  gtk_object_get_data (GTK_OBJECT (cwin),
+					       "PROMPT_LINE"));
 }
 
 /**
@@ -288,15 +294,16 @@ if (gtk_object_get_data (GTK_OBJECT (cwin), "currform")==0) {
  *
  * @return The line used to display an error.
  */
-int 
-geterr_line_gtk(void)
+int
+geterr_line_gtk (void)
 {
-GtkWidget *cwin;
-cwin = (GtkWidget *)get_curr_win_gtk ();
-if (gtk_object_get_data (GTK_OBJECT (cwin), "currform")==0) {
+  GtkWidget *cwin;
+  cwin = (GtkWidget *) get_curr_win_gtk ();
+  if (gtk_object_get_data (GTK_OBJECT (cwin), "currform") == 0)
+    {
       return decode_line_gtk (std_dbscr.error_line);
-}
-  	return (int)gtk_object_get_data (GTK_OBJECT(cwin), "ERROR_LINE");
+    }
+  return (int) gtk_object_get_data (GTK_OBJECT (cwin), "ERROR_LINE");
 }
 
 /**
@@ -305,15 +312,18 @@ if (gtk_object_get_data (GTK_OBJECT (cwin), "currform")==0) {
  * @return The line used to display a message.
  */
 int
-getmsg_line_gtk(void)
+getmsg_line_gtk (void)
 {
-	GtkWidget *cwin;
-	cwin = (GtkWidget *)get_curr_win_gtk ();
-if (gtk_object_get_data (GTK_OBJECT (cwin), "currform")==0) {
-  	return (int)std_dbscr.message_line;
-} else {
-  	return (int)gtk_object_get_data (GTK_OBJECT(cwin), "MESSAGE_LINE");
-}
+  GtkWidget *cwin;
+  cwin = (GtkWidget *) get_curr_win_gtk ();
+  if (gtk_object_get_data (GTK_OBJECT (cwin), "currform") == 0)
+    {
+      return (int) std_dbscr.message_line;
+    }
+  else
+    {
+      return (int) gtk_object_get_data (GTK_OBJECT (cwin), "MESSAGE_LINE");
+    }
 }
 
 /**
@@ -322,17 +332,21 @@ if (gtk_object_get_data (GTK_OBJECT (cwin), "currform")==0) {
  * @return The border type.
  */
 int
-get_curr_border_gtk(void)
+get_curr_border_gtk (void)
 {
-GtkWidget *cwin;
-	cwin = (GtkWidget *)get_curr_win_gtk ();
-  	return (int)gtk_object_get_data (GTK_OBJECT(cwin), "BORDER");
+  GtkWidget *cwin;
+  cwin = (GtkWidget *) get_curr_win_gtk ();
+  return (int) gtk_object_get_data (GTK_OBJECT (cwin), "BORDER");
 
 }
 
-int iscurrborder() {
-	if (get_curr_border_gtk()) return 1;
-	else return 0;
+int
+iscurrborder ()
+{
+  if (get_curr_border_gtk ())
+    return 1;
+  else
+    return 0;
 }
 
 /**
@@ -341,23 +355,23 @@ int iscurrborder() {
  * @return The heigth of thr current window.
  */
 int
-get_curr_height_gtk(void)
+get_curr_height_gtk (void)
 {
-GtkWidget *cwin;
-	cwin = (GtkWidget *)get_curr_win_gtk ();
-  	return (int)gtk_object_get_data (GTK_OBJECT(cwin), "HEIGHT");
+  GtkWidget *cwin;
+  cwin = (GtkWidget *) get_curr_win_gtk ();
+  return (int) gtk_object_get_data (GTK_OBJECT (cwin), "HEIGHT");
 }
 
 /**
  * Clear the window in GTK GUI mode.
  */
 void
-clr_window(char *name)
+clr_window (char *name)
 {
   GtkWidget *cwin;
-  cwin = (GtkWidget *)find_pointer (name, WINCODE);
-  cwin = gtk_object_get_data (GTK_OBJECT(cwin), "TOP");
-  debug("FIXME : clr_window NOT IMPLEMENTED YET");
+  cwin = (GtkWidget *) find_pointer (name, WINCODE);
+  cwin = gtk_object_get_data (GTK_OBJECT (cwin), "TOP");
+  debug ("FIXME : clr_window NOT IMPLEMENTED YET");
 }
 
 /**
@@ -372,56 +386,63 @@ int
 decode_line_gtk (int l)
 {
   if (l > 0)
-  {
-    if (get_curr_border_gtk ())
-      {
-        debug ("1. Decoded line %d to %d (because of border)", l, l - 1);
-        return l - 1;
-      }
-    else
-      {
-        debug ("Decoded line %d to %d", l, l);
-        return l;
-      }
-  }
-	/* -1 = last */
-	/* -2 = last -1 */
+    {
+      if (get_curr_border_gtk ())
+	{
+	  debug ("1. Decoded line %d to %d (because of border)", l, l - 1);
+	  return l - 1;
+	}
+      else
+	{
+	  debug ("Decoded line %d to %d", l, l);
+	  return l;
+	}
+    }
+  /* -1 = last */
+  /* -2 = last -1 */
   if (get_curr_border_gtk ())
     {
       if (l < 0)
-        {
-          debug ("2. Decoded line %d to %d  %d ", l, get_curr_height_gtk ());
-          return get_curr_height_gtk () + l;
-        }
+	{
+	  debug ("2. Decoded line %d to %d  %d ", l, get_curr_height_gtk ());
+	  return get_curr_height_gtk () + l;
+	}
 
     }
   else
     {
       if (l < 0)
-        {
-          debug ("3. Decoded line %d to %d  %d ", l, get_curr_height_gtk ());
-          return get_curr_height_gtk () + l + 1;
-        }
+	{
+	  debug ("3. Decoded line %d to %d  %d ", l, get_curr_height_gtk ());
+	  return get_curr_height_gtk () + l + 1;
+	}
     }
 
-return 0;
+  return 0;
 }
 
 /**
  * Dump the window stack into the debug mechanism.
  */
 void
-dump_gtkwinstack(void)
+dump_gtkwinstack (void)
 {
-int a;
-	for (a=0;a<win_stack_cnt;a++) {
-		debug("Winstack : %d %p",a,win_stack[a]);
-	}
+  int a;
+  for (a = 0; a < win_stack_cnt; a++)
+    {
+      debug ("Winstack : %d %p", a, win_stack[a]);
+    }
 }
 
-int aclfgl_fgl_drawbox(int n) {
-while (n) {pop_int();n--;}
-return 0;
+int
+aclfgl_fgl_drawbox (int n)
+{
+  while (n)
+    {
+      pop_int ();
+      n--;
+    }
+  return 0;
 }
+
 /* =============================== EOF ============================= */
-

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.52 2003-04-28 12:29:46 mikeaubury Exp $
+# $Id: stack.c,v 1.53 2003-05-12 14:24:18 mikeaubury Exp $
 #
 */
 
@@ -59,10 +59,10 @@
 
 
 #if (defined(WIN32) && ! defined(__CYGWIN__))
-	struct passwd
-	{
-	  char pw_name[20];
-	};
+struct passwd
+{
+  char pw_name[20];
+};
 #endif
 
 
@@ -77,7 +77,7 @@
 #define IGN 0xee
 #define UC (unsigned char)
 #define LOCAL_BINDINGS 20
-void process_stack_op_other(int d);
+void process_stack_op_other (int d);
 
 /*
 =====================================================================
@@ -146,36 +146,34 @@ int num_local_binding[LOCAL_BINDINGS];
 /* see a4gl_stack.h */
 
 
-void * 		pop_binding 			(int *n);
-//void 		push_ascii 				(void);
-//void 		push_current 			(int a, int b);
-//void 		push_time 				(void);
-//void		push_disp_bind 			(struct BINDING *b, int n);
-int			chk_params 				(struct BINDING *b, int nb,
-									struct BINDING *o, int no);
-int         isparamdate 			(void);
-//void        set_init 				(struct BINDING *b, int n);
-int         push_binding 			(void *ptr, int num);
-void        dif_add_bind 			(struct bound_list *list, void *dptr,
-									int dtype, int size);
-void        dif_add_bind_date 		(struct bound_list *list, long a);
-void        dif_add_bind_smint 		(struct bound_list *list, int a);
-void        dif_add_bind_smint_ptr 	(struct bound_list *list, int *a);
-void        dif_add_bind_dbl_ptr 	(struct bound_list *list, double *a);
-void        dif_add_bind_int 		(struct bound_list *list, long a);
-void        dif_add_bind_float 		(struct bound_list *list, double a);
-void        dif_add_bind_smfloat 	(struct bound_list *list, float a);
-void        dif_add_bind_char 		(struct bound_list *list, char *a);
-void        dif_free_bind 			(struct bound_list *list);
-void        dif_print_bind 			(struct bound_list *list);
-long        dif_pop_bind_int 		(struct bound_list *list);
-char *      dif_pop_bind_char 		(struct bound_list *list);
-int         dif_pop_bind_smint 		(struct bound_list *list);
-int         dif_pop_bind_float 		(struct bound_list *list);
-int         dif_pop_bind_smfloat 	(struct bound_list *list);
-int         dif_pop_bind_dec 		(struct bound_list *list);
-int         dif_pop_bind_money 		(struct bound_list *list);
-void set_escape(char *s);
+void *pop_binding (int *n);
+//void          push_ascii                              (void);
+//void          push_current                    (int a, int b);
+//void          push_time                               (void);
+//void          push_disp_bind                  (struct BINDING *b, int n);
+int chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
+int isparamdate (void);
+//void        set_init                          (struct BINDING *b, int n);
+int push_binding (void *ptr, int num);
+void dif_add_bind (struct bound_list *list, void *dptr, int dtype, int size);
+void dif_add_bind_date (struct bound_list *list, long a);
+void dif_add_bind_smint (struct bound_list *list, int a);
+void dif_add_bind_smint_ptr (struct bound_list *list, int *a);
+void dif_add_bind_dbl_ptr (struct bound_list *list, double *a);
+void dif_add_bind_int (struct bound_list *list, long a);
+void dif_add_bind_float (struct bound_list *list, double a);
+void dif_add_bind_smfloat (struct bound_list *list, float a);
+void dif_add_bind_char (struct bound_list *list, char *a);
+void dif_free_bind (struct bound_list *list);
+void dif_print_bind (struct bound_list *list);
+long dif_pop_bind_int (struct bound_list *list);
+char *dif_pop_bind_char (struct bound_list *list);
+int dif_pop_bind_smint (struct bound_list *list);
+int dif_pop_bind_float (struct bound_list *list);
+int dif_pop_bind_smfloat (struct bound_list *list);
+int dif_pop_bind_dec (struct bound_list *list);
+int dif_pop_bind_money (struct bound_list *list);
+void set_escape (char *s);
 
 /*
 =====================================================================
@@ -193,20 +191,21 @@ int
 pop_bool (void)
 {
   int ptr;
-  ptr=0;
+  ptr = 0;
 
   debug ("Popping boolean..");
-	//debug_print_stack();
-  ptr=pop_int();
+  //debug_print_stack();
+  ptr = pop_int ();
   //pop_param (&ptr, DTYPE_SMINT, 0);
-  debug ("Popping boolean gets %d %x",ptr,ptr);
+  debug ("Popping boolean gets %d %x", ptr, ptr);
 
-	if (ptr!=0&&ptr!=1) {
-			debug("SERIOUS PROBLEM ?????");
-			debug_print_stack();
-	} 
-  if (ptr) 
-	return 1;
+  if (ptr != 0 && ptr != 1)
+    {
+      debug ("SERIOUS PROBLEM ?????");
+      debug_print_stack ();
+    }
+  if (ptr)
+    return 1;
   return 0;
 }
 
@@ -224,7 +223,7 @@ pop_int (void)
 #ifdef DEBUG
   debug ("pop_int b=%d\n", b);
 #endif
-  ptr=ptr&0xffff;
+  ptr = ptr & 0xffff;
   return ptr;
 }
 
@@ -292,24 +291,24 @@ pop_var (void *p, int d)
   int s;
   s = DECODE_SIZE (d);
 #ifdef DEBUG
-	debug ("pop variable type %d %x (%d) \n", d, d, s);
+  debug ("pop variable type %d %x (%d) \n", d, d, s);
 #endif
   z = pop_param (p, d, s);
 #ifdef DEBUG
-	debug ("z=%d", z);
+  debug ("z=%d", z);
 #endif
   if (((z) != (1)))
     {
       exitwith ("Error in conversion");
 #ifdef DEBUG
-	debug ("pop_var: error in conversion %d\n", z);
+      debug ("pop_var: error in conversion %d\n", z);
 #endif
       return 0;
     }
   else
     {
 #ifdef DEBUG
-	debug ("pop_var: conversion ok");
+      debug ("pop_var: conversion ok");
 #endif
     }
   return z;
@@ -326,34 +325,34 @@ pop_var2 (void *p, int d, int s)
   int z;
   char *pl;
 
-	#ifdef DEBUG
-  		debug ("pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
-	#endif
+#ifdef DEBUG
+  debug ("pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
+#endif
 
   if (d == 0)
     {
       pl = new_string (s);
       z = pop_param (pl, d, s);
-	#ifdef DEBUG
-    	debug ("z=%d\n", z);
-	#endif
+#ifdef DEBUG
+      debug ("z=%d\n", z);
+#endif
       if (z == 1)
 	{
-	#ifdef DEBUG
-		debug ("zconv ok");
-	#endif
+#ifdef DEBUG
+	  debug ("zconv ok");
+#endif
 	}
       if (z != 1)
 	{
-	#ifdef DEBUG
-		debug ("zconv bad");
-	#endif
+#ifdef DEBUG
+	  debug ("zconv bad");
+#endif
 	}
       if (((z) != (1)))
 	{
-	#ifdef DEBUG
-		debug ("pop_var2: error in conversion %d d=0 s=%d\n",z, s);
-	#endif
+#ifdef DEBUG
+	  debug ("pop_var2: error in conversion %d d=0 s=%d\n", z, s);
+#endif
 	}
       debug ("Copying string '%s' to p", pl);
       strcpy ((char *) p, pl);
@@ -366,9 +365,9 @@ pop_var2 (void *p, int d, int s)
   if (z != 1)
     {
       exitwith ("Error in conversion");
-	#ifdef DEBUG
-    	debug ("pop_var2 - error in conversion %d d=%d s=%d\n", z,d, s);
-	#endif
+#ifdef DEBUG
+      debug ("pop_var2 - error in conversion %d d=%d s=%d\n", z, d, s);
+#endif
     }
   return z;
 }
@@ -434,10 +433,10 @@ char_pop (void)
       if (has_datatype_function_i (f, ">STRING"))
 	{
 	  char *(*function) (void *, char *, int);
-	debug("Calling >STRING for datatype");
+	  debug ("Calling >STRING for datatype");
 	  function = get_datatype_function_i (f, ">STRING");
 	  s = function (params[params_cnt - 1].ptr, 0, 0);
-	  drop_param();
+	  drop_param ();
 	}
       else
 	{
@@ -446,10 +445,10 @@ char_pop (void)
 	}
 
       //trim (s);
-	debug("char_pop - pushing char : '%s'",s);
+      debug ("char_pop - pushing char : '%s'", s);
       push_char (s);
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
-    }		/* if last entry is not a character string make it one */
+    }				/* if last entry is not a character string make it one */
   else
     {
       params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
@@ -473,13 +472,14 @@ pop_param (void *p, int d, int size)
   char *ptr;
   params_cnt--;
 ////printf("pop_param....\n");
-  if (params_cnt<0) {
-	  	debug("Stack got corrupted");
-	  	assertion(1,"Stack got corrupted");
-		exit(0);
-  }
+  if (params_cnt < 0)
+    {
+      debug ("Stack got corrupted");
+      assertion (1, "Stack got corrupted");
+      exit (0);
+    }
   //debug ("pop_param... %d %d %d", params[params_cnt].dtype & DTYPE_MASK,
-	 //d & DTYPE_MASK, size);
+  //d & DTYPE_MASK, size);
   //debug ("             %p %p ", params[params_cnt].ptr, p);
 
 
@@ -588,8 +588,8 @@ push_param (void *p, int d)
   int s2;
   int ptr1;
   int ptr2 = 0;
-  int dtype_1=-1;
-  int dtype_2=-1;
+  int dtype_1 = -1;
+  int dtype_2 = -1;
 
 
   size = DECODE_SIZE (d);
@@ -612,7 +612,8 @@ push_param (void *p, int d)
 					 alloc_params_cnt);
     }
 
-  if (params != 0 && params_cnt < alloc_params_cnt - NUM_PARAM && params_cnt>1)
+  if (params != 0 && params_cnt < alloc_params_cnt - NUM_PARAM
+      && params_cnt > 1)
     {
       debug ("Allocating less space for stack\n");
       alloc_params_cnt -= NUM_PARAM;
@@ -647,14 +648,14 @@ push_param (void *p, int d)
 	{
 	  size = strlen (p);
 #ifdef DEBUG
-	debug ("Defaulting size");
+	  debug ("Defaulting size");
 #endif
 	}
 
       if ((d & DTYPE_MASK) == 0)
 	{
 #ifdef DEBUG
-	debug ("Adding string '%s' size %d", p, size);
+	  debug ("Adding string '%s' size %d", p, size);
 #endif
 	}
 
@@ -667,7 +668,7 @@ push_param (void *p, int d)
   debug ("params_cnt=%d\n", params_cnt);
   if (params_cnt > 0)
     {
-      dtype_1=params[params_cnt - 1].dtype;
+      dtype_1 = params[params_cnt - 1].dtype;
       if (isnull (params[params_cnt - 1].dtype, params[params_cnt - 1].ptr))
 	{
 
@@ -698,12 +699,10 @@ push_param (void *p, int d)
   debug ("Checking 2nd");
   if (params_cnt > 1)
     {
-      dtype_2=params[params_cnt - 2].dtype;
+      dtype_2 = params[params_cnt - 2].dtype;
       if (isnull (params[params_cnt - 2].dtype, params[params_cnt - 2].ptr))
 	{
-	  zzz =
-	    ((params[params_cnt - 2].dtype & DTYPE_MASK) +
-	     (strlen (params[params_cnt - 2].ptr)));	/* + params[params_cnt - 2].size; */
+	  zzz = ((params[params_cnt - 2].dtype & DTYPE_MASK) + (strlen (params[params_cnt - 2].ptr)));	/* + params[params_cnt - 2].size; */
 	  zzz = 1;
 
 	  if (zzz == 0)
@@ -718,56 +717,64 @@ push_param (void *p, int d)
   debug ("Checked %d %d", n1, n2);
 
 
-	/*
-	Have a look see if this condition
-	is specifically handled
-    	*/
+  /*
+     Have a look see if this condition
+     is specifically handled
+   */
 
-  if (dtype_2==-1) dtype_2=dtype_1;
+  if (dtype_2 == -1)
+    dtype_2 = dtype_1;
 
-  if (dtype_1!=-1) {
-	void (*function) (int);
-	debug("Calling OP function");
+  if (dtype_1 != -1)
+    {
+      void (*function) (int);
+      debug ("Calling OP function");
 
-	function=0;
+      function = 0;
 
 
 /* 
 	First - lets see if we have a OP_MATH function available
 */
-	switch(d) {
-		case OP_ADD:
-		case OP_SUB:
-		case OP_MULT:
-		case OP_DIV:
-		case OP_POWER:
-		case OP_MOD:
-        	case OP_LESS_THAN:
-        	case OP_GREATER_THAN:
-        	case OP_LESS_THAN_EQ:
-        	case OP_GREATER_THAN_EQ:
-        	case OP_EQUAL:
-        	case OP_NOT_EQUAL: 
-			function=find_op_function(dtype_2,dtype_1,OP_MATH);
+      switch (d)
+	{
+	case OP_ADD:
+	case OP_SUB:
+	case OP_MULT:
+	case OP_DIV:
+	case OP_POWER:
+	case OP_MOD:
+	case OP_LESS_THAN:
+	case OP_GREATER_THAN:
+	case OP_LESS_THAN_EQ:
+	case OP_GREATER_THAN_EQ:
+	case OP_EQUAL:
+	case OP_NOT_EQUAL:
+	  function = find_op_function (dtype_2, dtype_1, OP_MATH);
 	}
 
-	debug("Looked for GENERIC MATH handing - %d %d %d - got %p\n",dtype_2,dtype_1,OP_MATH,function);
+      debug ("Looked for GENERIC MATH handing - %d %d %d - got %p\n", dtype_2,
+	     dtype_1, OP_MATH, function);
 
-	if (function==0) {
-	/* Nope - try a specific */
-		function=find_op_function(dtype_2,dtype_1,d);
-		debug("Looked for SPECIFIC handing - %d %d %d - got %p\n",dtype_2,dtype_1,d,function);
+      if (function == 0)
+	{
+	  /* Nope - try a specific */
+	  function = find_op_function (dtype_2, dtype_1, d);
+	  debug ("Looked for SPECIFIC handing - %d %d %d - got %p\n", dtype_2,
+		 dtype_1, d, function);
 	}
 
 
-	if (function) {
-		/* We've got something to play with*/
-		debug("Calling specified function for %d %d, %d",dtype_1&DTYPE_MASK,dtype_2&DTYPE_MASK,d);
-		function(d);
-		return;
+      if (function)
+	{
+	  /* We've got something to play with */
+	  debug ("Calling specified function for %d %d, %d",
+		 dtype_1 & DTYPE_MASK, dtype_2 & DTYPE_MASK, d);
+	  function (d);
+	  return;
 	}
 
-  }
+    }
 
 
 
@@ -850,7 +857,7 @@ push_param (void *p, int d)
 				A4GLSQL_prepare_select (ibind, n, obind, 0,
 							s), 0, cname);
       }
-      free(s);
+      free (s);
       if (a4gl_status != 0)
 	{
 	  drop_param ();
@@ -893,26 +900,26 @@ push_param (void *p, int d)
       char cname[256];
 
       struct BINDING ibind[] = { {&tmpvar, 0, 255} };	/* end of binding */
-      struct BINDING obind[] = { {0, 0, 0} };			/* end of binding */
+      struct BINDING obind[] = { {0, 0, 0} };	/* end of binding */
       struct BINDING *dbind;
       void *prep;
 
       int n;
 
-      debug("OP_EXISTS - OP_NOTEXISTS...");
+      debug ("OP_EXISTS - OP_NOTEXISTS...");
       sprintf (cname, "chkex%d", cntsql++);
-	debug("Popping binding...");
+      debug ("Popping binding...");
 
       dbind = pop_binding (&n);
-      debug("poped dbind - Poping Sql");
+      debug ("poped dbind - Poping Sql");
       s = char_pop ();
       debug ("s=%s\n", s);
       A4GLSQL_set_sqlca_sqlcode (0);
-      debug("Prepare seelct...");
-      prep=A4GLSQL_prepare_select (dbind, n, obind, 0, s);
-      debug("Declare");
-	free(s);
-      A4GLSQL_declare_cursor (0,  prep , 0, cname);
+      debug ("Prepare seelct...");
+      prep = A4GLSQL_prepare_select (dbind, n, obind, 0, s);
+      debug ("Declare");
+      free (s);
+      A4GLSQL_declare_cursor (0, prep, 0, cname);
 
       if (a4gl_status != 0)
 	{
@@ -950,7 +957,7 @@ push_param (void *p, int d)
   if (d & NUMERIC_OP_2)
     {
 
-	debug("OP_NUMERIC...");
+      debug ("OP_NUMERIC...");
 
       if (chknull (2, n1, n2))
 	return;
@@ -971,7 +978,7 @@ push_param (void *p, int d)
 
   switch (d)
     {
-	int r;
+      int r;
 
     case OP_MATCHES:
       if (chknull (2, n1, n2))
@@ -981,8 +988,8 @@ push_param (void *p, int d)
 
 #ifdef DEBUG
 #endif
-r=mja_match (c1, c2, 'M');
-	debug("mja_match returns %d\n",r);
+      r = mja_match (c1, c2, 'M');
+      debug ("mja_match returns %d\n", r);
       push_int (r);
       acl_free (c1);
       acl_free (c2);
@@ -1013,17 +1020,19 @@ r=mja_match (c1, c2, 'M');
 	push_int (0);
       break;
 
-    case OP_NOT_EQUAL: 
-	debug("Checking OP NOT EQUAL");
+    case OP_NOT_EQUAL:
+      debug ("Checking OP NOT EQUAL");
       if (chknull_boolean (2, n1, n2))
 	return;
 
       debug ("OP_NOT_EQUAL");
-      if (opboolean () == 0) {
-	push_int (0);
+      if (opboolean () == 0)
+	{
+	  push_int (0);
 	}
-      else {
-	push_int (1);
+      else
+	{
+	  push_int (1);
 	}
       break;
 
@@ -1104,14 +1113,15 @@ r=mja_match (c1, c2, 'M');
 
       if (n1 == 1 && n2 == 0)
 	{
-		char *s1;
-		char *s2;
+	  char *s1;
+	  char *s2;
 	  s1 = char_pop ();
 	  s2 = char_pop ();
-		push_char(s2);
-		free(s1);free(s2);
-		return;
- 	}
+	  push_char (s2);
+	  free (s1);
+	  free (s2);
+	  return;
+	}
       if (n2 == 1 && n1 == 0)
 	{
 	  char *s1;
@@ -1120,7 +1130,8 @@ r=mja_match (c1, c2, 'M');
 	  s2 = char_pop ();
 	  //push_char ("");
 	  push_char (s1);
-	  free(s1);free(s2);
+	  free (s1);
+	  free (s2);
 	  n2 = 0;
 	  debug ("Fudging...");
 	  return;
@@ -1170,7 +1181,7 @@ r=mja_match (c1, c2, 'M');
     case OP_POWER:
       if (chknull (2, n1, n2))
 	return;
-      push_double (pow(doublea , doubleb));
+      push_double (pow (doublea, doubleb));
       break;
 
     case OP_MOD:
@@ -1218,7 +1229,7 @@ push_user (void)
   a = getuid ();
   p = getpwuid (a);
 #else
-    printf ("FIXME: no getuid() / getpwuid() on MinGW\n");
+  printf ("FIXME: no getuid() / getpwuid() on MinGW\n");
 #endif
   //printf ("User=%s\n", p->pw_name);
   push_char (p->pw_name);
@@ -1230,11 +1241,11 @@ push_user (void)
  * @return
  */
 void
-push_ascii () 
+push_ascii ()
 {
-int a;
+  int a;
   char buff[3];
-  a=pop_int();
+  a = pop_int ();
   buff[0] = a;
   buff[1] = 0;
   push_char (buff);
@@ -1255,7 +1266,7 @@ push_today (void)
   time_t now;
   int month, year;		/* ch, yflag; */
 
-	/*      setlocale(LC_ALL,""); */
+  /*      setlocale(LC_ALL,""); */
   (void) time (&now);
   local_time = localtime (&now);
   year = local_time->tm_year + 1900;
@@ -1277,11 +1288,13 @@ push_today (void)
 #include <sys/types.h>
 #include <winsock.h>
 
-void gettimeofday(struct timeval* t,void* timezone)
-{       struct _timeb timebuffer;
-        _ftime( &timebuffer );
-        t->tv_sec=timebuffer.time;
-        t->tv_usec=1000*timebuffer.millitm;
+void
+gettimeofday (struct timeval *t, void *timezone)
+{
+  struct _timeb timebuffer;
+  _ftime (&timebuffer);
+  t->tv_sec = timebuffer.time;
+  t->tv_usec = 1000 * timebuffer.millitm;
 }
 
 #endif
@@ -1295,28 +1308,33 @@ void gettimeofday(struct timeval* t,void* timezone)
 // see http://lists.ntop.org/pipermail/ntop-dev/2001-November/000227.html
 
 /*  winbase.h definitions */
-typedef struct _FILETIME {
-	unsigned long dwLowDateTime;
-	unsigned long dwHighDateTime;
-} FILETIME;
+typedef struct _FILETIME
+{
+  unsigned long dwLowDateTime;
+  unsigned long dwHighDateTime;
+}
+FILETIME;
 
-void __stdcall GetSystemTimeAsFileTime(FILETIME*);
+void __stdcall GetSystemTimeAsFileTime (FILETIME *);
 
 /*time from 1 Jan 1601 to 1 Jan 1970 in 100ns units */
 #define _W32_FT_OFFSET (116444736000000000LL)
 
-typedef union {
-	long long ns100; /*time since 1 Jan 1601 in 100ns units */
-	FILETIME ft;
-} w32_ftv;
-
-void nt_gettimeofday(struct timeval* p, struct timezone* tz /* IGNORED */)
+typedef union
 {
-		w32_ftv _now;
-		GetSystemTimeAsFileTime( &(_now.ft) );
-	        p->tv_usec=(long)((_now.ns100 / 10LL) % 1000000LL );
-		p->tv_sec= (long)((_now.ns100-_W32_FT_OFFSET)/10000000LL);
-	return;
+  long long ns100;		/*time since 1 Jan 1601 in 100ns units */
+  FILETIME ft;
+}
+w32_ftv;
+
+void
+nt_gettimeofday (struct timeval *p, struct timezone *tz /* IGNORED */ )
+{
+  w32_ftv _now;
+  GetSystemTimeAsFileTime (&(_now.ft));
+  p->tv_usec = (long) ((_now.ns100 / 10LL) % 1000000LL);
+  p->tv_sec = (long) ((_now.ns100 - _W32_FT_OFFSET) / 10000000LL);
+  return;
 }
 #endif
 
@@ -1336,10 +1354,10 @@ push_current (int a, int b)
   char buff[50];
   char buff2[50];
   int n;
-int ptrs[]={-1, 0, 5, 8, 11, 14, 17, 20,21,22,23,24,25 };
-int ptrs2[]={-1, 3, 6, 9, 12, 15, 18, 21,22,23,24,25,26 };
-int pstart;
-struct timeval tv1;
+  int ptrs[] = { -1, 0, 5, 8, 11, 14, 17, 20, 21, 22, 23, 24, 25 };
+  int ptrs2[] = { -1, 3, 6, 9, 12, 15, 18, 21, 22, 23, 24, 25, 26 };
+  int pstart;
+  struct timeval tv1;
 //struct timeval tv2;
 //long fracs;
 
@@ -1349,16 +1367,16 @@ struct timeval tv1;
   //debug ("In push_current");
 
 //#ifndef __MINGW32__
-  gettimeofday(&tv1,0);
+  gettimeofday (&tv1, 0);
 //#else
 //    printf ("FIXME: no gettimeofday on Windows\n");
 //#endif
-  	//(void) time (&now);
-  	//debug ("Called time...");
-	local_time = localtime (&tv1.tv_sec);
-	year = local_time->tm_year + 1900;
-	month = local_time->tm_mon + 1;
-	mja_day = local_time->tm_mday;
+  //(void) time (&now);
+  //debug ("Called time...");
+  local_time = localtime (&tv1.tv_sec);
+  year = local_time->tm_year + 1900;
+  month = local_time->tm_mon + 1;
+  mja_day = local_time->tm_mday;
 
 /*
        0000000000111111111122222
@@ -1368,25 +1386,25 @@ struct timeval tv1;
   sprintf (buff, "%04d-%02d-%02d %02d:%02d:%02d.%06ld",
 	   year, month, mja_day, local_time->tm_hour,
 	   local_time->tm_min, local_time->tm_sec, tv1.tv_usec
-	/* , 0 */
+	   /* , 0 */
 	   /* no support for fractions of a second yet */
     );
   //printf("--2>%s\n",buff);
-  buff[27]=0;
+  buff[27] = 0;
   //printf("--3>%s\n",buff);
   debug ("Time is %s", buff);
   //debug ("a=%d b=%d ",a,b);
-  pstart=ptrs2[b]+1;
+  pstart = ptrs2[b] + 1;
   //debug("pstart=%d buff=%s\n",pstart,buff);
-  buff[pstart]=0;
+  buff[pstart] = 0;
 
 //debug("Set buff to %s\n",buff);
   strcpy (buff2, &buff[ptrs[a]]);
   //printf("-->%s\n",buff2);
 
-  n=(a<<4)+b;
+  n = (a << 4) + b;
 
-  acli_datetime(buff2,n);
+  acli_datetime (buff2, n);
   debug ("All done - push_current...");
 }
 
@@ -1444,22 +1462,23 @@ void
 pushop (int a)
 {
 
-if (a==(OP_MATCHES) || a==(OP_LIKE)) {
-	char *s;
-	s=char_pop();
-	set_escape(s);
-	free(s);
-}
-	
+  if (a == (OP_MATCHES) || a == (OP_LIKE))
+    {
+      char *s;
+      s = char_pop ();
+      set_escape (s);
+      free (s);
+    }
 
-  debug("PUSHOP : %d",a);
-	if (
-		a==OP_IN||a==OP_NOTIN
-		||a == OP_IN_SELECT || a == OP_NOTIN_SELECT
-		||a == OP_EXISTS || a == OP_NOTEXISTS) {
-			process_stack_op_other(a);
-		return;
-	}
+
+  debug ("PUSHOP : %d", a);
+  if (a == OP_IN || a == OP_NOTIN
+      || a == OP_IN_SELECT || a == OP_NOTIN_SELECT
+      || a == OP_EXISTS || a == OP_NOTEXISTS)
+    {
+      process_stack_op_other (a);
+      return;
+    }
 
   push_param (0, a);
 }
@@ -1474,8 +1493,8 @@ int
 opboolean (void)
 {
   int d1, d2;
-  char *z1=0;
-  char *z2=0;
+  char *z1 = 0;
+  char *z2 = 0;
   double a, b;
   int cmp;
   int adate;
@@ -1504,8 +1523,8 @@ opboolean (void)
 	    cmp = 1;
 	  acl_free (z1);
 	  acl_free (z2);
-	z1=0;
-	z2=0;
+	  z1 = 0;
+	  z2 = 0;
 	  debug ("String compare gives %d\n", cmp);
 	  return cmp;
 	}
@@ -1559,8 +1578,10 @@ opboolean (void)
 
     }
 
-  if (z1) acl_free (z1);
-  if (z2) acl_free (z2);
+  if (z1)
+    acl_free (z1);
+  if (z2)
+    acl_free (z2);
 
   if (b > a)
     {
@@ -1586,9 +1607,10 @@ pop_args (int a)
   int z = 0;
   if (z > 0)
     {
-      for (z = 0; z < a; z++) {
-		s = char_pop ();
-      		acl_free (s);
+      for (z = 0; z < a; z++)
+	{
+	  s = char_pop ();
+	  acl_free (s);
 	}
     }
 }
@@ -1781,7 +1803,8 @@ void
 push_bind_reverse (struct BINDING *b, int n, int no, int elemsize)
 {
   int a;
-  for (a = 0;a<n;a++) {
+  for (a = 0; a < n; a++)
+    {
       push_param ((char *) b[a].ptr + elemsize * (no - 1), b[a].dtype);
     }
 }
@@ -1793,11 +1816,11 @@ push_bind_reverse (struct BINDING *b, int n, int no, int elemsize)
  * @return
  */
 void
-push_disp_bind (void *vb,int n)
+push_disp_bind (void *vb, int n)
 {
-struct BINDING *b;
+  struct BINDING *b;
   int a;
-b=(struct BINDING *)vb;
+  b = (struct BINDING *) vb;
 
 #ifdef DEBUG
   /* {DEBUG} */ debug ("push_disp_bind");
@@ -1971,12 +1994,12 @@ setnull (int type, void *vbuff, int size)
   char c;
   char *buff;
   debug ("Set null");
-  buff=(char *)vbuff;
+  buff = (char *) vbuff;
 
   if (has_datatype_function_i (type, "INIT"))
     {
       void (*function) (char *);
-	debug("Calling INIT for datatype");
+      debug ("Calling INIT for datatype");
       function = get_datatype_function_i (type, "INIT");
       function (buff);
       return;
@@ -2027,8 +2050,9 @@ setnull (int type, void *vbuff, int size)
       debug ("Opps");
       exitwith ("Could not initialize variable to null");
     }
-    if (type==0) {
-		debug("Set buff to %s\n",buff);
+  if (type == 0)
+    {
+      debug ("Set buff to %s\n", buff);
     }
 }
 
@@ -2053,7 +2077,7 @@ isnull (int type, char *buff)
   if (has_datatype_function_i (type, "ISNULL"))
     {
       int (*function) (char *);
-	debug("Calling ISNULL for datatype");
+      debug ("Calling ISNULL for datatype");
       function = get_datatype_function_i (type, "ISNULL");
       return function (buff);
     }
@@ -2324,14 +2348,14 @@ conv_to_interval (int a)
   if ((a == (OP_YEAR)) || (a == (OP_MONTH)))
     {
       debug ("%d %d", (a == (OP_YEAR)), (a == (OP_MONTH)));
-	debug("Calling acli_interval for year to month");
-      acli_interval(buff,1042); // YEAR(4) TO MONTH
+      debug ("Calling acli_interval for year to month");
+      acli_interval (buff, 1042);	// YEAR(4) TO MONTH
     }
   else
     {
       sprintf (buff, "%f", d);
-	debug("Calling acli_interval for second to fraction");
-      acli_interval(buff,0x46b); // SECOND(4) TO FRACTION(5)
+      debug ("Calling acli_interval for second to fraction");
+      acli_interval (buff, 0x46b);	// SECOND(4) TO FRACTION(5)
     }
 
   return 1;
@@ -2379,7 +2403,7 @@ dif_start_bind (void)
   list->ptr = 0;
   list->cnt = 0;
   list->popped = -1;
-  return (void *)list;
+  return (void *) list;
 }
 
 /**
@@ -2701,12 +2725,16 @@ lrtrim (char *z)
 
 
 char escape_chr;
-void set_escape(char *s) {
-	escape_chr=s[0];
+void
+set_escape (char *s)
+{
+  escape_chr = s[0];
 }
 
-int get_escape_chr(void) {
-	return (int)escape_chr;
+int
+get_escape_chr (void)
+{
+  return (int) escape_chr;
 }
 
 // ================================ EOF ================================

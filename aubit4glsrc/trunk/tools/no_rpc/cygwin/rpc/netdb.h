@@ -32,11 +32,12 @@
 /* Really belongs in <netdb.h> */
 
 #if 0
-struct rpcent {
-      char    *r_name;        /* name of server for this rpc program */
-      char    **r_aliases;    /* alias list */
-      int     r_number;       /* rpc program number */
+struct rpcent
+{
+  char *r_name;			/* name of server for this rpc program */
+  char **r_aliases;		/* alias list */
+  int r_number;			/* rpc program number */
 };
 
-struct rpcent *getrpcbyname(), *getrpcbynumber(), *getrpcent();
+struct rpcent *getrpcbyname (), *getrpcbynumber (), *getrpcent ();
 #endif

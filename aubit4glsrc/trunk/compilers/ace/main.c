@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.7 2002-08-29 09:10:31 afalout Exp $
+# $Id: main.c,v 1.8 2003-05-12 14:23:57 mikeaubury Exp $
 #*/
 
 /**
@@ -56,11 +56,10 @@
 int
 main (int argc, char *argv[])
 {
-  if (argc != 2) {
+  if (argc != 2)
+    {
       printf ("Usage\n   %s filename\n", argv[0]);
       exit (1);
-  }
-  exit(compile_ace_report(argv[1]));
+    }
+  exit (compile_ace_report (argv[1]));
 }
-
-

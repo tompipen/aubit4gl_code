@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: tables.c,v 1.4 2003-03-07 04:37:35 afalout Exp $
+# $Id: tables.c,v 1.5 2003-05-12 14:23:57 mikeaubury Exp $
 #*/
 
 /**
@@ -51,11 +51,12 @@
 
 /* extern int status; */
 
-struct select_columns {
-	char *table;
-	char *column;
-	char *alias;
-	struct select_columns *next;
+struct select_columns
+{
+  char *table;
+  char *column;
+  char *alias;
+  struct select_columns *next;
 };
 
 struct column
@@ -78,7 +79,7 @@ struct table
 struct table *tables = 0;
 struct table *last_table = 0;
 
-struct select_columns *sel_col_start=0;
+struct select_columns *sel_col_start = 0;
 
 
 /*
@@ -88,7 +89,7 @@ struct select_columns *sel_col_start=0;
 */
 
 int add_columns (char *tabname, struct table *table);
-void add_column (struct table * table, char *colname, int size, int dtype);
+void add_column (struct table *table, char *colname, int size, int dtype);
 
 /*
 =====================================================================
@@ -100,27 +101,28 @@ void add_column (struct table * table, char *colname, int size, int dtype);
  *
  */
 void
-reset_sql_stuff(void)
+reset_sql_stuff (void)
 {
-	//printf("Resetting\n");
-	tables=0;
-	last_table=0;
-	sel_col_start=0;
+  //printf("Resetting\n");
+  tables = 0;
+  last_table = 0;
+  sel_col_start = 0;
 }
 
 /**
  *
  */
 void
-check_sql_columns(void) 
+check_sql_columns (void)
 {
-struct select_columns *ptr_last;
+  struct select_columns *ptr_last;
 //printf("Printing columns used in last select : \n");
-	ptr_last=sel_col_start;
-	while (ptr_last->next!=0) {
-		//printf(" COLUMN : %s\n",ptr_last->alias);
-		ptr_last=ptr_last->next;
-	}
+  ptr_last = sel_col_start;
+  while (ptr_last->next != 0)
+    {
+      //printf(" COLUMN : %s\n",ptr_last->alias);
+      ptr_last = ptr_last->next;
+    }
 }
 
 
@@ -128,30 +130,34 @@ struct select_columns *ptr_last;
  *
  */
 void
-add_select_column(char *colname,char *alias) 
+add_select_column (char *colname, char *alias)
 {
-struct select_columns *ptr;
-struct select_columns *ptr_last;
+  struct select_columns *ptr;
+  struct select_columns *ptr_last;
 /*char buff1[256];
 char buff2[256];
 char buff3[256];*/
-	//printf("Adding  %s %s\n",colname,alias);
-	ptr=malloc(sizeof(struct select_columns));
-	ptr->table=0;
-	ptr->column=strdup(colname);
-	ptr->alias=strdup(alias);
-	ptr->next=0;
-	if (sel_col_start==0) {
-			//printf("Add start\n");
-			sel_col_start=ptr;
-	} else {
-		ptr_last=sel_col_start;
-		//printf("Append\n");
-		while (ptr_last->next!=0) {
-			ptr_last=ptr_last->next;
-		}
-		ptr_last->next=ptr;
+  //printf("Adding  %s %s\n",colname,alias);
+  ptr = malloc (sizeof (struct select_columns));
+  ptr->table = 0;
+  ptr->column = strdup (colname);
+  ptr->alias = strdup (alias);
+  ptr->next = 0;
+  if (sel_col_start == 0)
+    {
+      //printf("Add start\n");
+      sel_col_start = ptr;
+    }
+  else
+    {
+      ptr_last = sel_col_start;
+      //printf("Append\n");
+      while (ptr_last->next != 0)
+	{
+	  ptr_last = ptr_last->next;
 	}
+      ptr_last->next = ptr;
+    }
 }
 
 /**
@@ -176,13 +182,13 @@ add_columns (char *tabname, struct table *table)
 
   while (1)
     {
-      /* 	int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
-	  rval = A4GLSQL_next_column ((char **)ccol, &idtype, &isize);
+      /*        int A4GLSQL_next_column(char **colname, int *dtype,int *size); */
+      rval = A4GLSQL_next_column ((char **) ccol, &idtype, &isize);
 
       if (rval == 0)
 	break;
       strcpy (colname, ccol);
-	  /* free(ccol); */
+      /* free(ccol); */
       add_column (table, colname, isize, idtype);
     }
   A4GLSQL_end_get_columns ();
@@ -193,7 +199,7 @@ add_columns (char *tabname, struct table *table)
  *
  */
 void
-add_column (struct table * table, char *colname, int size, int dtype)
+add_column (struct table *table, char *colname, int size, int dtype)
 {
   struct column *col;
   struct column *ptr;

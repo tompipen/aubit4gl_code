@@ -18,10 +18,13 @@
 **
 ** RCS        :
 ** $Source: /opt/klaustem/aubit-test/cvs-backup/aubit4gl-backup/aubit4glsrc/tools/Tcl4gl/tcl4glP.h,v $
-** $Revision: 1.1 $
-** $Date: 2002-11-28 06:40:46 $
+** $Revision: 1.2 $
+** $Date: 2003-05-12 14:24:33 $
 **
 ** $Log: not supported by cvs2svn $
+** Revision 1.1  2002/11/28 06:40:46  afalout
+** Initial import from IIUG
+**
 ** Revision 1.2  1993/12/30  16:50:54  bkuhn
 **   -- added Tcl4gl_Init support
 **
@@ -37,16 +40,18 @@
 
 #include "tcl4gl.h"
 
-typedef struct {
-    Tcl_Interp *interp;
-    bool inUse;
-} t_Tcl4glInterp;
+typedef struct
+{
+  Tcl_Interp *interp;
+  bool inUse;
+}
+t_Tcl4glInterp;
 
 /* from hsTcl4gl.c */
 
-extern int Tcl4gl_HsMessageCmd();
+extern int Tcl4gl_HsMessageCmd ();
 
 /* from init.c */
-extern int Tcl4gl_Init();
+extern int Tcl4gl_Init ();
 
 #endif

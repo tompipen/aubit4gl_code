@@ -30,90 +30,95 @@
 #include <string.h>
 #include "formsproc.h"
 
-int load_form(int nargs)
+int
+load_form (int nargs)
 {
-	int num_ent;
-	
-	if (nargs != 0)
-	{
-		printf("Content-type: text/html%c%c",10,10);
-		printf("ERROR: wrong number of arguments in load_form\n");
-		exit(1);
-	}
-	num_ent = load_form_entries();
-	retint(num_ent);
-	return(1);
+  int num_ent;
+
+  if (nargs != 0)
+    {
+      printf ("Content-type: text/html%c%c", 10, 10);
+      printf ("ERROR: wrong number of arguments in load_form\n");
+      exit (1);
+    }
+  num_ent = load_form_entries ();
+  retint (num_ent);
+  return (1);
 }
 
-int free_form(int nargs)
+int
+free_form (int nargs)
 {
-	if (nargs != 0)
-	{
-		printf("Content-type: text/html%c%c",10,10);
-		printf("ERROR: wrong number of arguments in free_form\n");
-		exit(1);
-	}
-	free_form_entries();
-	return(0);
+  if (nargs != 0)
+    {
+      printf ("Content-type: text/html%c%c", 10, 10);
+      printf ("ERROR: wrong number of arguments in free_form\n");
+      exit (1);
+    }
+  free_form_entries ();
+  return (0);
 }
 
-int get_entry(int nargs)
+int
+get_entry (int nargs)
 {
-	char	field_name[ENTRY_SIZE];
-	char	*field_value;
+  char field_name[ENTRY_SIZE];
+  char *field_value;
 
-	if (nargs != 1)
-	{
-		printf("Content-type: text/html%c%c",10,10);
-		printf("ERROR: wrong number of arguments\n");
-		exit(1);
-	}
-	
-	/* Pop field_name */
-	popquote(field_name, ENTRY_SIZE);
-	trim(field_name);
-	
-	field_value = retrieve_form_entry(field_name);
-	
-	/* Push field value */
-	retquote(field_value);
-	return(1);
+  if (nargs != 1)
+    {
+      printf ("Content-type: text/html%c%c", 10, 10);
+      printf ("ERROR: wrong number of arguments\n");
+      exit (1);
+    }
+
+  /* Pop field_name */
+  popquote (field_name, ENTRY_SIZE);
+  trim (field_name);
+
+  field_value = retrieve_form_entry (field_name);
+
+  /* Push field value */
+  retquote (field_value);
+  return (1);
 }
 
-int load_cmdln(int nargs)
+int
+load_cmdln (int nargs)
 {
-	int num_ent;
-	
-	if (nargs != 0)
-	{
-		printf("Content-type: text/html%c%c",10,10);
-		printf("ERROR: wrong number of arguments\n");
-		exit(1);
-	}
-	num_ent = load_cmdln_entries();
-	retint(num_ent);
-	return(1);
+  int num_ent;
+
+  if (nargs != 0)
+    {
+      printf ("Content-type: text/html%c%c", 10, 10);
+      printf ("ERROR: wrong number of arguments\n");
+      exit (1);
+    }
+  num_ent = load_cmdln_entries ();
+  retint (num_ent);
+  return (1);
 }
 
-int get_cmdln(int nargs)
+int
+get_cmdln (int nargs)
 {
-	char	field_name[ENTRY_SIZE];
-	char 	*field_value;
+  char field_name[ENTRY_SIZE];
+  char *field_value;
 
-	if (nargs != 1)
-	{
-		printf("Content-type: text/html%c%c",10,10);
-		printf("ERROR: wrong number of arguments\n");
-		exit(1);
-	}
-	
-	/* Pop field_name */
-	popquote(field_name, ENTRY_SIZE);
-	trim(field_name);
-	
-	field_value = retrieve_cmdln_entry(field_name);
+  if (nargs != 1)
+    {
+      printf ("Content-type: text/html%c%c", 10, 10);
+      printf ("ERROR: wrong number of arguments\n");
+      exit (1);
+    }
 
-	/* Push field value */
-	retquote(field_value);
-	return(1);
+  /* Pop field_name */
+  popquote (field_name, ENTRY_SIZE);
+  trim (field_name);
+
+  field_value = retrieve_cmdln_entry (field_name);
+
+  /* Push field value */
+  retquote (field_value);
+  return (1);
 }

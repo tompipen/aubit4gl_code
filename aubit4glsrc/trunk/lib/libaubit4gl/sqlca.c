@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlca.c,v 1.1 2003-03-10 18:42:03 mikeaubury Exp $
+# $Id: sqlca.c,v 1.2 2003-05-12 14:24:18 mikeaubury Exp $
 #
 */
 
@@ -41,25 +41,30 @@ extern sqlca_struct a4gl_sqlca;
 
 // Get & Set Functions for a4gl_status and member of the sqlca structure...
 
-void set_a4gl_status(int a) {
-	a4gl_status=a;
+void
+set_a4gl_status (int a)
+{
+  a4gl_status = a;
 }
 
-int get_a4gl_status(void) {
-	return a4gl_status;
-}
-
-
-
-void set_a4gl_sqlca_sqlcode(int a) {
-	a4gl_sqlca.sqlcode=a;
-	set_a4gl_status(a);
-}
-
-
-int get_a4gl_sqlca_sqlcode(void ) {
-	return a4gl_sqlca.sqlcode;
+int
+get_a4gl_status (void)
+{
+  return a4gl_status;
 }
 
 
 
+void
+set_a4gl_sqlca_sqlcode (int a)
+{
+  a4gl_sqlca.sqlcode = a;
+  set_a4gl_status (a);
+}
+
+
+int
+get_a4gl_sqlca_sqlcode (void)
+{
+  return a4gl_sqlca.sqlcode;
+}

@@ -1,7 +1,7 @@
 /*
 @(#)File:            $RCSfile: popstr.c,v $
-@(#)Version:         $Revision: 1.1.1.1 $
-@(#)Last changed:    $Date: 2001-08-20 02:37:08 $
+@(#)Version:         $Revision: 1.2 $
+@(#)Last changed:    $Date: 2003-05-12 14:24:34 $
 @(#)Purpose:         Pop string and strip trailing blanks
 @(#)Author:          J Leffler
 @(#)Copyright:       (C) JLSS 1988,1990,1998
@@ -17,23 +17,25 @@
 #endif
 
 #ifndef lint
-static const char rcs[] = "@(#)$Id: popstr.c,v 1.1.1.1 2001-08-20 02:37:08 afalout Exp $";
+static const char rcs[] =
+  "@(#)$Id: popstr.c,v 1.2 2003-05-12 14:24:34 mikeaubury Exp $";
 #endif
 
 /* -- Routine: popstring		*/
 
-void	popstring(char *s, int l)
+void
+popstring (char *s, int l)
 {
-	register char *p = s + l - 1;
+  register char *p = s + l - 1;
 
-	popquote(s, l);
-	assert(strlen(s) == l - 1);
+  popquote (s, l);
+  assert (strlen (s) == l - 1);
 
-	if (l <= 1)
-		return;	/* Length 1 => "" */
+  if (l <= 1)
+    return;			/* Length 1 => "" */
 
-	while (p > s)
-		if (*--p != ' ')
-			break;
-	*(p+1) = '\0';
+  while (p > s)
+    if (*--p != ' ')
+      break;
+  *(p + 1) = '\0';
 }

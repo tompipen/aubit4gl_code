@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.4 2003-04-28 13:38:46 mikeaubury Exp $
+# $Id: error.c,v 1.5 2003-05-12 14:24:30 mikeaubury Exp $
 #*/
 
 /**
@@ -49,7 +49,7 @@
 =====================================================================
 */
 
-void set_red(void);
+void set_red (void);
 
 /*
 =====================================================================
@@ -64,7 +64,7 @@ void set_red(void);
  * @param s The message to be shoed.
  */
 void
-error_window_gtk(char *s)
+error_window_gtk (char *s)
 {
   GtkWidget *cw;
   GtkWidget *label;
@@ -78,44 +78,46 @@ error_window_gtk(char *s)
   rc_style->color_flags[GTK_STATE_NORMAL] |= GTK_RC_BG;
 
 
-  cw = (GtkWidget *)get_curr_win_gtk(); 
-	win=gtk_object_get_data(GTK_OBJECT(cw),"ERRORLABELWIN");
+  cw = (GtkWidget *) get_curr_win_gtk ();
+  win = gtk_object_get_data (GTK_OBJECT (cw), "ERRORLABELWIN");
 
-	if (win) gtk_widget_destroy(win);
-	if (strlen(s)==0) return;
+  if (win)
+    gtk_widget_destroy (win);
+  if (strlen (s) == 0)
+    return;
 
- 	errline = decode_line_gtk(geterr_line_gtk ());
-	debug("Error line :%d",errline);
+  errline = decode_line_gtk (geterr_line_gtk ());
+  debug ("Error line :%d", errline);
 
-	win=gtk_fixed_new(); 
-  gtk_widget_set_usize (win,get_curr_width()*XWIDTH , YHEIGHT);
-	label=gtk_label_new(s);
-	gtk_fixed_put(GTK_FIXED(win),label,0,0);
-	gtk_widget_show(win);
+  win = gtk_fixed_new ();
+  gtk_widget_set_usize (win, get_curr_width () * XWIDTH, YHEIGHT);
+  label = gtk_label_new (s);
+  gtk_fixed_put (GTK_FIXED (win), label, 0, 0);
+  gtk_widget_show (win);
 
-	gtk_fixed_put(GTK_FIXED(cw),win,0,(errline-1)*YHEIGHT);
+  gtk_fixed_put (GTK_FIXED (cw), win, 0, (errline - 1) * YHEIGHT);
   gtk_widget_modify_style (win, rc_style);
   gtk_rc_style_unref (rc_style);
-  gtk_widget_show(label);
-	gtk_object_set_data(GTK_OBJECT(cw),"ERRORLABELWIN",win);
+  gtk_widget_show (label);
+  gtk_object_set_data (GTK_OBJECT (cw), "ERRORLABELWIN", win);
 }
 
 /**
  * Clear an error in GTK GUI mode.
  */
-void 
-clr_error_gtk(void)
+void
+clr_error_gtk (void)
 {
   GtkWidget *cw;
   GtkWidget *win;
 
-  cw = (GtkWidget *)get_curr_win_gtk(); 
-	win = gtk_object_get_data(GTK_OBJECT(cw),"ERRORLABELWIN");
-	if (win) 
-	{
-		gtk_widget_destroy(win);
-	}
-	gtk_object_set_data(GTK_OBJECT(cw),"ERRORLABELWIN",0);
+  cw = (GtkWidget *) get_curr_win_gtk ();
+  win = gtk_object_get_data (GTK_OBJECT (cw), "ERRORLABELWIN");
+  if (win)
+    {
+      gtk_widget_destroy (win);
+    }
+  gtk_object_set_data (GTK_OBJECT (cw), "ERRORLABELWIN", 0);
 }
 
 
@@ -126,17 +128,18 @@ clr_error_gtk(void)
  * @todo : Understand if this function is not used.
  */
 void
-set_red(void)
+set_red (void)
 {
-  GdkColormap *cmap;  
- GdkColor color; 
-  cmap = gdk_colormap_get_system();
+  GdkColormap *cmap;
+  GdkColor color;
+  cmap = gdk_colormap_get_system ();
   color.red = 0xffff;
   color.green = 0;
   color.blue = 0;
-  if (!gdk_color_alloc(cmap, &color)) {
-    g_error("couldn't allocate color");
-  }   
+  if (!gdk_color_alloc (cmap, &color))
+    {
+      g_error ("couldn't allocate color");
+    }
 }
 
 /**
@@ -145,37 +148,40 @@ set_red(void)
  * @param s A string with the message to be showed.
  */
 void
-msg_window_gtk(char *s)
+msg_window_gtk (char *s)
 {
   GtkWidget *cw;
   GtkWidget *label;
   GtkWidget *win;
   int msgline;
-debug("A0");
-    cw = (GtkWidget *)get_curr_win_gtk(); 
-debug("A0.1");
-	win=gtk_object_get_data(GTK_OBJECT(cw),"MESSAGELABELWIN");
+  debug ("A0");
+  cw = (GtkWidget *) get_curr_win_gtk ();
+  debug ("A0.1");
+  win = gtk_object_get_data (GTK_OBJECT (cw), "MESSAGELABELWIN");
 
-	if (win) gtk_widget_destroy(GTK_WIDGET(win));
-	if (strlen(s)==0) return;
+  if (win)
+    gtk_widget_destroy (GTK_WIDGET (win));
+  if (strlen (s) == 0)
+    return;
 
- 	msgline = decode_line_gtk(getmsg_line_gtk ()); 
-	debug("A1 - msgline = %d",msgline);
-	win=gtk_fixed_new(); 
-	debug("A2");
-        gtk_widget_set_usize (GTK_WIDGET(win),get_curr_width()*XWIDTH , YHEIGHT);  
-	debug("A2.1");
-	label=gtk_label_new(s);
-	debug("A3");
-	gtk_fixed_put(GTK_FIXED(win),label,0,0);
-	gtk_widget_show(win);
+  msgline = decode_line_gtk (getmsg_line_gtk ());
+  debug ("A1 - msgline = %d", msgline);
+  win = gtk_fixed_new ();
+  debug ("A2");
+  gtk_widget_set_usize (GTK_WIDGET (win), get_curr_width () * XWIDTH,
+			YHEIGHT);
+  debug ("A2.1");
+  label = gtk_label_new (s);
+  debug ("A3");
+  gtk_fixed_put (GTK_FIXED (win), label, 0, 0);
+  gtk_widget_show (win);
 
-	debug("A4");
-	gtk_fixed_put(GTK_FIXED(cw),win,0,(msgline-1)*YHEIGHT);
-	debug("A5");
-   	gtk_widget_show(label);
-	debug("A6");
-	gtk_object_set_data(GTK_OBJECT(cw),"MESSAGELABELWIN",win);
+  debug ("A4");
+  gtk_fixed_put (GTK_FIXED (cw), win, 0, (msgline - 1) * YHEIGHT);
+  debug ("A5");
+  gtk_widget_show (label);
+  debug ("A6");
+  gtk_object_set_data (GTK_OBJECT (cw), "MESSAGELABELWIN", win);
 }
 
 

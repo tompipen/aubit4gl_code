@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gui_io.c,v 1.9 2002-06-25 03:22:30 afalout Exp $
+# $Id: gui_io.c,v 1.10 2003-05-12 14:24:17 mikeaubury Exp $
 #
 */
 
@@ -53,17 +53,17 @@
 
 #ifdef OLD_INCL
 
-	#include <stdarg.h>
-	#include <stdio.h>
-	#include <string.h> 				/* strcpy() */
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>		/* strcpy() */
 
 
-	#include "a4gl_aubit_lib.h"
-	#include "a4gl_debug.h"
+#include "a4gl_aubit_lib.h"
+#include "a4gl_debug.h"
 
 #else
 
-    #include "a4gl_libaubit4gl_int.h"
+#include "a4gl_libaubit4gl_int.h"
 
 #endif
 
@@ -73,9 +73,9 @@
 =====================================================================
 */
 
-static void 	gui_send		(char *c,char *s);
-void 			gui_startmenu	(char *mnname,long mn);
-void 			gui_user		(char *txt);
+static void gui_send (char *c, char *s);
+void gui_startmenu (char *mnname, long mn);
+void gui_user (char *txt);
 
 /*
 =====================================================================
@@ -91,21 +91,21 @@ void 			gui_user		(char *txt);
  * @param s The parameters of the comand.
  */
 static void
-gui_send(char *c,char *s)
+gui_send (char *c, char *s)
 {
   char buff[25600];
-  sprintf(buff,"%s %s\n",c,s);
-  proc_it(buff);
+  sprintf (buff, "%s %s\n", c, s);
+  proc_it (buff);
 
   /*
-  strcat(buffer,buff);
-  if (strcmp(c,"REFRESH")==0||strcmp(c,"WREFRESH")==0||strcmp(c,"ERROR")==0) {
+     strcat(buffer,buff);
+     if (strcmp(c,"REFRESH")==0||strcmp(c,"WREFRESH")==0||strcmp(c,"ERROR")==0) {
      debug("Calling proc_it with %s",buff);
      proc_it(buffer);
      buffer[0]=0;
-  }
-  */
-  debug("Sent");
+     }
+   */
+  debug ("Sent");
 }
 
 /**
@@ -114,12 +114,12 @@ gui_send(char *c,char *s)
  * @param a The color code to send to the client.
  */
 void
-gui_setcolor(int a) 
+gui_setcolor (int a)
 {
   char buff[256];
-  sprintf(buff,"%d",a);
-  gui_send("COLOUR",buff);
-  debug("Set color..");
+  sprintf (buff, "%d", a);
+  gui_send ("COLOUR", buff);
+  debug ("Set color..");
 }
 
 /**
@@ -128,11 +128,11 @@ gui_setcolor(int a)
  * @param
  */
 void
-gui_actmenu(long ld)
+gui_actmenu (long ld)
 {
-char buff[256];
-	sprintf(buff,"%lx",ld);
-	gui_send("MENUACT",buff);
+  char buff[256];
+  sprintf (buff, "%lx", ld);
+  gui_send ("MENUACT", buff);
 }
 
 /**
@@ -141,12 +141,12 @@ char buff[256];
  * @param
  */
 void
-gui_mkfield(int h,int w,int y,int x,void *p) 
+gui_mkfield (int h, int w, int y, int x, void *p)
 {
-char buff[256];
-	sprintf(buff,"%lx %d %d %d %d",(long unsigned int)p,x,y,w,h);
-	debug("gui_mkfield:Make field");
-	gui_send("MKFIELD",buff);
+  char buff[256];
+  sprintf (buff, "%lx %d %d %d %d", (long unsigned int) p, x, y, w, h);
+  debug ("gui_mkfield:Make field");
+  gui_send ("MKFIELD", buff);
 }
 
 /**
@@ -155,11 +155,11 @@ char buff[256];
  * @param
  */
 void
-gui_mklabel(int h,int w,int y,int x,char *s)
+gui_mklabel (int h, int w, int y, int x, char *s)
 {
-char buff[256];
-	sprintf(buff,"\"%s\" %d %d %d %lx",s,x,y,w,(long unsigned int)h);
-	gui_send("MKLABEL",buff);
+  char buff[256];
+  sprintf (buff, "\"%s\" %d %d %d %lx", s, x, y, w, (long unsigned int) h);
+  gui_send ("MKLABEL", buff);
 }
 
 
@@ -169,14 +169,17 @@ char buff[256];
  * @param
  */
 void
-gui_wrefresh(void *d)
+gui_wrefresh (void *d)
 {
-char buff[256];
-	sprintf(buff,"%lx",(long unsigned int)d);
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("gui_refresh");}
-	#endif
-     gui_send("WREFRESH",buff);
+  char buff[256];
+  sprintf (buff, "%lx", (long unsigned int) d);
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("gui_refresh");
+  }
+#endif
+  gui_send ("WREFRESH", buff);
 }
 
 
@@ -186,12 +189,15 @@ char buff[256];
  * @param
  */
 void
-gui_refresh(void) 
+gui_refresh (void)
 {
-	#ifdef DEBUG
-	/* {DEBUG} */ {debug("gui_refresh");}
-	#endif
-      gui_send("REFRESH","");
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("gui_refresh");
+  }
+#endif
+  gui_send ("REFRESH", "");
 }
 
 /**
@@ -200,23 +206,29 @@ gui_refresh(void)
  * @param
  */
 void
-gui_print (int a,char *fmt,...)
+gui_print (int a, char *fmt, ...)
 {
   va_list args;
   char buff[25600];
   char buff2[25600];
-return;
-	#ifdef DEBUG
-	/* {DEBUG} */ {  debug("Format =%s",fmt);}
-	#endif
+  return;
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("Format =%s", fmt);
+  }
+#endif
   va_start (args, fmt);
-  vsprintf (buff,fmt, args);
-  va_end(args);
-  sprintf(buff2,"%d \"%s\"",a,buff);
-	#ifdef DEBUG
-	/* {DEBUG} */ {  debug("Sending %s",buff2);}
-	#endif
-  gui_send("PRINT",buff2);
+  vsprintf (buff, fmt, args);
+  va_end (args);
+  sprintf (buff2, "%d \"%s\"", a, buff);
+#ifdef DEBUG
+  /* {DEBUG} */
+  {
+    debug ("Sending %s", buff2);
+  }
+#endif
+  gui_send ("PRINT", buff2);
 }
 
 
@@ -226,11 +238,11 @@ return;
  * @param
  */
 void
-gui_move(int x,int y) 
+gui_move (int x, int y)
 {
-char buff[256];
-	sprintf(buff,"%d %d",x,y);
-	gui_send("MOVE",buff);
+  char buff[256];
+  sprintf (buff, "%d %d", x, y);
+  gui_send ("MOVE", buff);
 }
 
 /**
@@ -239,12 +251,12 @@ char buff[256];
  * @param
  */
 void
-gui_win(char *name,int h,int w,int y,int x,int b,long d) 
+gui_win (char *name, int h, int w, int y, int x, int b, long d)
 {
-char buff[256];
-	sprintf(buff,"%s %d %d %d %d %d %lx",name,x,y,w,h,b,d);
-	debug("Sending %s",buff);
-	gui_send("MKWIN",buff);
+  char buff[256];
+  sprintf (buff, "%s %d %d %d %d %d %lx", name, x, y, w, h, b, d);
+  debug ("Sending %s", buff);
+  gui_send ("MKWIN", buff);
 }
 
 /**
@@ -253,11 +265,11 @@ char buff[256];
  * @param
  */
 void
-gui_endmenu(long ld) 
+gui_endmenu (long ld)
 {
-char buff[256];
-	sprintf(buff,"%lx",ld);
-	gui_send("ENDMENU",buff);
+  char buff[256];
+  sprintf (buff, "%lx", ld);
+  gui_send ("ENDMENU", buff);
 }
 
 /**
@@ -266,13 +278,13 @@ char buff[256];
  * @param
  */
 void
-gui_startform(char *name) 
+gui_startform (char *name)
 {
-char buff[256];
+  char buff[256];
 
-	sprintf(buff,"%s",name);
+  sprintf (buff, "%s", name);
 
-	gui_send("STARTFORM",buff);
+  gui_send ("STARTFORM", buff);
 }
 
 /**
@@ -281,9 +293,9 @@ char buff[256];
  * @param
  */
 void
-gui_endform(void) 
+gui_endform (void)
 {
-	gui_send("ENDFORM","");
+  gui_send ("ENDFORM", "");
 }
 
 /**
@@ -292,11 +304,11 @@ gui_endform(void)
  * @param
  */
 void
-gui_startmenu(char *mnname,long mn)
+gui_startmenu (char *mnname, long mn)
 {
-char buff[256];
-	sprintf(buff,"\"%s\" %lx",mnname,mn);
-	gui_send("MKMENU",buff);
+  char buff[256];
+  sprintf (buff, "\"%s\" %lx", mnname, mn);
+  gui_send ("MKMENU", buff);
 }
 
 /**
@@ -305,129 +317,11 @@ char buff[256];
  * @param
  */
 void
-gui_rmmenu(long ld) 
+gui_rmmenu (long ld)
 {
-char buff[256];
-	sprintf(buff,"%lx",ld);
-	gui_send("RMMENU",buff);
-}
-
-
-/**
- *
- *
- * @param
- */
-void
-gui_menuopt(char *title,long id)
-{
-char buff[256];
-
-	sprintf(buff,"\"%s\" %lx",title,id);
-	debug("Menu opt %s ",buff);
-	gui_send("MKOPT",buff);
-}
-
-/**
- *
- *
- * @param
- */
-void
-gui_dispform(char *s,int line)
-{
-char buff[256];
-	sprintf(buff,"%s %d",s,line);
-	gui_send("DISPFORM",buff);
-}
-
-/**
- *
- *
- * @param
- */
-void
-gui_setbuff(void *a,char *n)
-{
-char buff[1024];
-	sprintf(buff,"%lx %s",(long unsigned int)a,n);
-	gui_send("SETBUFF",buff);
-}
-
-/**
- *
- *
- * @param
- */
-void
-gui_closewin(char *name)
-{
-	gui_send("RMWIN",name);
-}
-
-/**
- *
- *
- * @param
- */
-void
-gui_currwin(long a)
-{
-char buff[1024];
-	sprintf(buff,"%lx",a);
-	gui_send("CURRWIN",buff);
-}
-
-/**
- *
- *
- * @param
- */
-void
-gui_scroll(int a)
-{
-char buff[1024];
-	sprintf(buff,"%d",a);
-	gui_send("SCROLL",buff);
-}
-
-/**
- *
- *
- * @param
- */
-void
-gui_scrollpos(int a)
-{
-char buff[1024];
-	sprintf(buff,"%d",a);
-	gui_send("SCROLLPOS",buff);
-}
-
-/**
- *
- *
- * @param
- */
-void
-gui_setattr(long a,int f,int b) 
-{
-char buff[256];
-	sprintf(buff,"%lx %d %d",a,f,b);
-	gui_send("SETATTR",buff);
-}
-
-/**
- *
- *
- * @param
- */
-void
-gui_startprompt(long ld) 
-{
-char buff[256];
-	sprintf(buff,"%lx",ld);
-	gui_send("STARTPROMPT",buff);
+  char buff[256];
+  sprintf (buff, "%lx", ld);
+  gui_send ("RMMENU", buff);
 }
 
 
@@ -437,11 +331,13 @@ char buff[256];
  * @param
  */
 void
-gui_endprompt(long ld) 
+gui_menuopt (char *title, long id)
 {
-char buff[256];
-	sprintf(buff,"%lx",ld);
-	gui_send("ENDPROMPT",buff);
+  char buff[256];
+
+  sprintf (buff, "\"%s\" %lx", title, id);
+  debug ("Menu opt %s ", buff);
+  gui_send ("MKOPT", buff);
 }
 
 /**
@@ -450,12 +346,11 @@ char buff[256];
  * @param
  */
 void
-gui_setfocus(long ld) 
+gui_dispform (char *s, int line)
 {
-char buff[256];
-	debug("gui_set focus %lx",ld);
-	sprintf(buff,"%lx",ld);
-	gui_send("SETFOCUS",buff);
+  char buff[256];
+  sprintf (buff, "%s %d", s, line);
+  gui_send ("DISPFORM", buff);
 }
 
 /**
@@ -464,12 +359,11 @@ char buff[256];
  * @param
  */
 void
-gui_setposition(long ld) 
+gui_setbuff (void *a, char *n)
 {
-char buff[256];
-	debug("gui_set position %lx",ld);
-	sprintf(buff,"%lx",ld);
-	gui_send("SETPOSITION",buff);
+  char buff[1024];
+  sprintf (buff, "%lx %s", (long unsigned int) a, n);
+  gui_send ("SETBUFF", buff);
 }
 
 /**
@@ -478,14 +372,132 @@ char buff[256];
  * @param
  */
 void
-gui_message(char *txt,int msgline) 
+gui_closewin (char *name)
 {
-char buff[256];
-char buff2[256];
-	strcpy(buff2,txt);
-	trim(buff2);
-	sprintf(buff,"\"%s\" %d",buff2,msgline);
-	gui_send("MESSAGE",buff);
+  gui_send ("RMWIN", name);
+}
+
+/**
+ *
+ *
+ * @param
+ */
+void
+gui_currwin (long a)
+{
+  char buff[1024];
+  sprintf (buff, "%lx", a);
+  gui_send ("CURRWIN", buff);
+}
+
+/**
+ *
+ *
+ * @param
+ */
+void
+gui_scroll (int a)
+{
+  char buff[1024];
+  sprintf (buff, "%d", a);
+  gui_send ("SCROLL", buff);
+}
+
+/**
+ *
+ *
+ * @param
+ */
+void
+gui_scrollpos (int a)
+{
+  char buff[1024];
+  sprintf (buff, "%d", a);
+  gui_send ("SCROLLPOS", buff);
+}
+
+/**
+ *
+ *
+ * @param
+ */
+void
+gui_setattr (long a, int f, int b)
+{
+  char buff[256];
+  sprintf (buff, "%lx %d %d", a, f, b);
+  gui_send ("SETATTR", buff);
+}
+
+/**
+ *
+ *
+ * @param
+ */
+void
+gui_startprompt (long ld)
+{
+  char buff[256];
+  sprintf (buff, "%lx", ld);
+  gui_send ("STARTPROMPT", buff);
+}
+
+
+/**
+ *
+ *
+ * @param
+ */
+void
+gui_endprompt (long ld)
+{
+  char buff[256];
+  sprintf (buff, "%lx", ld);
+  gui_send ("ENDPROMPT", buff);
+}
+
+/**
+ *
+ *
+ * @param
+ */
+void
+gui_setfocus (long ld)
+{
+  char buff[256];
+  debug ("gui_set focus %lx", ld);
+  sprintf (buff, "%lx", ld);
+  gui_send ("SETFOCUS", buff);
+}
+
+/**
+ *
+ *
+ * @param
+ */
+void
+gui_setposition (long ld)
+{
+  char buff[256];
+  debug ("gui_set position %lx", ld);
+  sprintf (buff, "%lx", ld);
+  gui_send ("SETPOSITION", buff);
+}
+
+/**
+ *
+ *
+ * @param
+ */
+void
+gui_message (char *txt, int msgline)
+{
+  char buff[256];
+  char buff2[256];
+  strcpy (buff2, txt);
+  trim (buff2);
+  sprintf (buff, "\"%s\" %d", buff2, msgline);
+  gui_send ("MESSAGE", buff);
 }
 
 
@@ -496,15 +508,15 @@ char buff2[256];
  * @param errline The place where the error ocurred.
  */
 void
-gui_error(char *txt,int errline) 
+gui_error (char *txt, int errline)
 {
-char buff[256];
-char buff2[256];
-	strcpy(buff2,txt);
-	trim(buff2);
-	debug("In gui_error");
-	sprintf(buff,"\"%s\" %d",buff2,errline);
-	gui_send("ERROR",buff);
+  char buff[256];
+  char buff2[256];
+  strcpy (buff2, txt);
+  trim (buff2);
+  debug ("In gui_error");
+  sprintf (buff, "\"%s\" %d", buff2, errline);
+  gui_send ("ERROR", buff);
 }
 
 
@@ -514,11 +526,10 @@ char buff2[256];
  * @param
  */
 void
-gui_user(char *txt)
+gui_user (char *txt)
 {
-	gui_send("USER",txt);
+  gui_send ("USER", txt);
 }
 
 
 /* ============================= EOF =============================== */
-

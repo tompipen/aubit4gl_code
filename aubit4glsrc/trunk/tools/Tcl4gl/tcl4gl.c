@@ -26,10 +26,13 @@
 **
 ** RCS        :
 ** $Source: /opt/klaustem/aubit-test/cvs-backup/aubit4gl-backup/aubit4glsrc/tools/Tcl4gl/tcl4gl.c,v $
-** $Revision: 1.1 $
-** $Date: 2002-11-28 06:40:46 $
+** $Revision: 1.2 $
+** $Date: 2003-05-12 14:24:33 $
 **
 ** $Log: not supported by cvs2svn $
+** Revision 1.1  2002/11/28 06:40:46  afalout
+** Initial import from IIUG
+**
 ** Revision 1.10  1994/06/06  14:52:29  bkuhn
 **   -- added Tcl_DeleteInterp(), typed CheckMalloc()
 **
@@ -70,11 +73,10 @@
 #include "tclsql.h"
 #include "tcl4glP.h"
 
-static char rcsid[] =
-  "$Id: tcl4gl.c,v 1.1 2002-11-28 06:40:46 afalout Exp $";
+static char rcsid[] = "$Id: tcl4gl.c,v 1.2 2003-05-12 14:24:33 mikeaubury Exp $";
 
 static t_Tcl4glInterp F4glInterp[TCL_INTERP_MAX];
-                                        /* file level global interpreters */
+					/* file level global interpreters */
 
 /******************************************************************************
 ** Tcl4gl_InitInterpList -- initialize the F4glInterp
@@ -82,166 +84,188 @@ static t_Tcl4glInterp F4glInterp[TCL_INTERP_MAX];
 **   POSTCONDITIONS: the F4glInterp array will be initialized
 **  This function is private to this file.
 */
-static void Tcl4gl_InitInterpList()
+static void
+Tcl4gl_InitInterpList ()
 {
-    register int ii;
+  register int ii;
 
-    for (ii = 0; ii < TCL_INTERP_MAX; ii++) {
-        F4glInterp[ii].inUse = FALSE;
-        F4glInterp[ii].interp = NULL;
+  for (ii = 0; ii < TCL_INTERP_MAX; ii++)
+    {
+      F4glInterp[ii].inUse = FALSE;
+      F4glInterp[ii].interp = NULL;
     }
-    return;
+  return;
 }
+
 /******************************************************************************
 ** Tcl4gl_CreateInterp -- create a new 4gl-TCL interpreter.
 **    PRECONDITIONS: None
 **    POSTCONDITIONS: An interpreter will be created and an ID for it will
 **                    be returned.
 */
-int tcl4gl_createinterp(numArgs)
-    int numArgs;
+int
+tcl4gl_createinterp (numArgs)
+     int numArgs;
 {
-    static bool firstTime = TRUE;
-    int ii;
-    bool foundNew;
-    
-    if (numArgs != 0) {
-        fprintf(stderr,
-                "tcl4gl_createinterp: wrong # of args(%d); should be %d\n",
-                numArgs, 0);
-        exit(-1);
+  static bool firstTime = TRUE;
+  int ii;
+  bool foundNew;
+
+  if (numArgs != 0)
+    {
+      fprintf (stderr,
+	       "tcl4gl_createinterp: wrong # of args(%d); should be %d\n",
+	       numArgs, 0);
+      exit (-1);
     }
-    if (firstTime) {
-        Tcl4gl_InitInterpList();
-        firstTime = FALSE;
+  if (firstTime)
+    {
+      Tcl4gl_InitInterpList ();
+      firstTime = FALSE;
     }
-    for(ii = 0, foundNew = FALSE; ii < TCL_INTERP_MAX; ii++) {
-        foundNew = (! F4glInterp[ii].inUse);
-        if (foundNew) break;
-    }
-     
-    if (! foundNew ) {
-        fprintf(stderr,
-                "Out of Tcl interpreters; maximum is %d...Aborting...\n",
-                TCL_INTERP_MAX);
-        exit(-1);
+  for (ii = 0, foundNew = FALSE; ii < TCL_INTERP_MAX; ii++)
+    {
+      foundNew = (!F4glInterp[ii].inUse);
+      if (foundNew)
+	break;
     }
 
-    F4glInterp[ii].inUse = TRUE;
-    F4glInterp[ii].interp = Tcl_CreateInterp();
+  if (!foundNew)
+    {
+      fprintf (stderr,
+	       "Out of Tcl interpreters; maximum is %d...Aborting...\n",
+	       TCL_INTERP_MAX);
+      exit (-1);
+    }
 
-    Tcl_SetVar(F4glInterp[ii].interp, "argv0", "tcl4gl",
-                    TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
+  F4glInterp[ii].inUse = TRUE;
+  F4glInterp[ii].interp = Tcl_CreateInterp ();
 
-    Tcl_SetVar(F4glInterp[ii].interp, "argv", "",
-               TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
+  Tcl_SetVar (F4glInterp[ii].interp, "argv0", "tcl4gl",
+	      TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
 
-    Tcl_SetVar(F4glInterp[ii].interp, "argc", "0",
-               TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
+  Tcl_SetVar (F4glInterp[ii].interp, "argv", "",
+	      TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
 
-    Tcl_SetVar(F4glInterp[ii].interp, "tcl_interactive", "0",
-               TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
-    TclX_Init(F4glInterp[ii].interp);
+  Tcl_SetVar (F4glInterp[ii].interp, "argc", "0",
+	      TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
 
-    Tcl_Init_Sql(F4glInterp[ii].interp);
-    Tcl_Init_KeyL(F4glInterp[ii].interp);
-    Tcl4gl_Init(F4glInterp[ii].interp);
+  Tcl_SetVar (F4glInterp[ii].interp, "tcl_interactive", "0",
+	      TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
+  TclX_Init (F4glInterp[ii].interp);
 
-    retint(ii);
-    return 1;
+  Tcl_Init_Sql (F4glInterp[ii].interp);
+  Tcl_Init_KeyL (F4glInterp[ii].interp);
+  Tcl4gl_Init (F4glInterp[ii].interp);
+
+  retint (ii);
+  return 1;
 }
+
 /******************************************************************************
 ** Tcl4gl_DeleteInterp -- delete a 4gl-TCL interpreter.
 **    PRECONDITIONS: the interpreter, interpID, exists
 **    POSTCONDITIONS: the interpreter will be destroyed
 */
-int tcl4gl_deleteinterp(numArgs)
-    int numArgs;
+int
+tcl4gl_deleteinterp (numArgs)
+     int numArgs;
 {
-    int interpID;
+  int interpID;
 
-    if (numArgs != 1) {
-        fprintf(stderr, "tcl4gl_deleteinterp: wrong # of args (%d)\n",
-                numArgs);
-        exit(-1);
+  if (numArgs != 1)
+    {
+      fprintf (stderr, "tcl4gl_deleteinterp: wrong # of args (%d)\n",
+	       numArgs);
+      exit (-1);
     }
 
-    popint(&interpID);
-    if ( (interpID < 0) || (interpID >= TCL_INTERP_MAX) || 
-         (! F4glInterp[interpID].inUse) ) {
-        fprintf(stderr, "tcl4gl_eval: invalid interpreter ID (%d)\n",
-                interpID);
-        exit(-1);
+  popint (&interpID);
+  if ((interpID < 0) || (interpID >= TCL_INTERP_MAX) ||
+      (!F4glInterp[interpID].inUse))
+    {
+      fprintf (stderr, "tcl4gl_eval: invalid interpreter ID (%d)\n",
+	       interpID);
+      exit (-1);
     }
 /* FIX ME ! I commented out the delete because it wasn't working */
-    Tcl_DeleteInterp(F4glInterp[interpID].interp);
-    F4glInterp[interpID].inUse = FALSE;
-    return 0;
+  Tcl_DeleteInterp (F4glInterp[interpID].interp);
+  F4glInterp[interpID].inUse = FALSE;
+  return 0;
 }
+
 /******************************************************************************
 ** Tcl4gl_Eval -- Evaluate a Tcl script
 **    PRECONDITIONS: interpID is a valid interpID; len(script) < TCL_STRING_MAX
 **    POSTCONDITIONS: script will be evaluated in interpID, the TCL code and
 **                    the result from the interpreter will be returned.
 */
-int tcl4gl_eval(numArgs)
-    int numArgs;
+int
+tcl4gl_eval (numArgs)
+     int numArgs;
 {
-    int interpID;
-    char script[TCL_STRING_MAX];
-    int retVal = 0;
+  int interpID;
+  char script[TCL_STRING_MAX];
+  int retVal = 0;
 
-    if (numArgs != 2) {
-        fprintf(stderr, "tcl4gl_eval: wrong # of args (%d)\n", numArgs);
-        exit(-1);
+  if (numArgs != 2)
+    {
+      fprintf (stderr, "tcl4gl_eval: wrong # of args (%d)\n", numArgs);
+      exit (-1);
     }
 
-    popquote(script, TCL_STRING_MAX);
+  popquote (script, TCL_STRING_MAX);
 
-    popint(&interpID);
-    if ( (interpID < 0) || (interpID >= TCL_INTERP_MAX) || 
-         (! F4glInterp[interpID].inUse) ) {
-        fprintf(stderr, "tcl4gl_eval: invalid interpreter ID (%d)\n",
-                interpID);
-        exit(-1);
+  popint (&interpID);
+  if ((interpID < 0) || (interpID >= TCL_INTERP_MAX) ||
+      (!F4glInterp[interpID].inUse))
+    {
+      fprintf (stderr, "tcl4gl_eval: invalid interpreter ID (%d)\n",
+	       interpID);
+      exit (-1);
     }
-    
-    retVal = Tcl_Eval(F4glInterp[interpID].interp, script);
-    pushint(retVal);
-    pushquote(F4glInterp[interpID].interp->result);
-    return 2;
+
+  retVal = Tcl_Eval (F4glInterp[interpID].interp, script);
+  pushint (retVal);
+  pushquote (F4glInterp[interpID].interp->result);
+  return 2;
 }
+
 /******************************************************************************
 ** Tcl4gl_EvalFile -- evaluate a file with a given interpreter
 **    PRECONDITIONS: interpID is a valid interpID; len(fname) < PATH_MAX
 **    POSTCONDITIONS: file will be evaluated in interpID, the TCL code and
 **                    the result from the interpreter will be returned.
 */
-int tcl4gl_evalfile(numArgs)
-    int numArgs;
+int
+tcl4gl_evalfile (numArgs)
+     int numArgs;
 {
-    char fname[PATH_MAX];
-    int interpID;
-    int retVal;
-    char *ptr = NULL;
+  char fname[PATH_MAX];
+  int interpID;
+  int retVal;
+  char *ptr = NULL;
 
-    popquote(fname, PATH_MAX);
-    ptr = strchr(fname, ' ');       /* remove spaces off the end */
-    if (ptr != NULL) *ptr = '\0';
-    
-    popint(&interpID);
-    if ( (interpID < 0) || (interpID >= TCL_INTERP_MAX) || 
-         (! F4glInterp[interpID].inUse) ) {
-        fprintf(stderr, "tcl4gl_evalfile: invalid interpreter ID (%d)\n",
-                interpID);
-        exit(-1);
+  popquote (fname, PATH_MAX);
+  ptr = strchr (fname, ' ');	/* remove spaces off the end */
+  if (ptr != NULL)
+    *ptr = '\0';
+
+  popint (&interpID);
+  if ((interpID < 0) || (interpID >= TCL_INTERP_MAX) ||
+      (!F4glInterp[interpID].inUse))
+    {
+      fprintf (stderr, "tcl4gl_evalfile: invalid interpreter ID (%d)\n",
+	       interpID);
+      exit (-1);
     }
-    
-    retVal = Tcl_EvalFile(F4glInterp[interpID].interp, fname);
-    retint(retVal);
-    retquote(F4glInterp[interpID].interp->result);
-    return 2;
+
+  retVal = Tcl_EvalFile (F4glInterp[interpID].interp, fname);
+  retint (retVal);
+  retquote (F4glInterp[interpID].interp->result);
+  return 2;
 }
+
 /******************************************************************************
 ** Tcl4gl_GlobalEval -- Evaluate a Tcl script globally
 **    PRECONDITIONS: interpID is a valid interpID; len(script) < TCL_STRING_MAX
@@ -249,78 +273,89 @@ int tcl4gl_evalfile(numArgs)
 **                    the TCL code and the result from the interpreter will be
 **                    returned.
 */
-int tcl4gl_globaleval(numArgs)
-    int numArgs;
+int
+tcl4gl_globaleval (numArgs)
+     int numArgs;
 {
-    int interpID;
-    char script[TCL_STRING_MAX];
-    int retVal;
+  int interpID;
+  char script[TCL_STRING_MAX];
+  int retVal;
 
-    if (numArgs != 2) {
-        fprintf(stderr, "tcl4gl_globaleval: wrong # of args (%d)\n", numArgs);
-        exit(-1);
+  if (numArgs != 2)
+    {
+      fprintf (stderr, "tcl4gl_globaleval: wrong # of args (%d)\n", numArgs);
+      exit (-1);
     }
 
-    popquote(script, TCL_STRING_MAX);
+  popquote (script, TCL_STRING_MAX);
 
-    popint(&interpID);
-    if ( (interpID < 0) || (interpID >= TCL_INTERP_MAX) || 
-         (! F4glInterp[interpID].inUse) ) {
-        fprintf(stderr, "tcl4gl_globaleval: invalid interpreter ID (%d)\n",
-                interpID);
-        exit(-1);
+  popint (&interpID);
+  if ((interpID < 0) || (interpID >= TCL_INTERP_MAX) ||
+      (!F4glInterp[interpID].inUse))
+    {
+      fprintf (stderr, "tcl4gl_globaleval: invalid interpreter ID (%d)\n",
+	       interpID);
+      exit (-1);
     }
-    
-    retVal = Tcl_GlobalEval(F4glInterp[interpID].interp, script);
-    pushint(retVal);
-    pushquote(F4glInterp[interpID].interp->result);
-    return 2;
+
+  retVal = Tcl_GlobalEval (F4glInterp[interpID].interp, script);
+  pushint (retVal);
+  pushquote (F4glInterp[interpID].interp->result);
+  return 2;
 }
+
 /******************************************************************************
 ** Tcl4gl_Startup -- Startup a tcl command loop
 **    PRECONDITIONS: interpID is a valid interpID.
 **    POSTCONDITIONS: a command loop will have been started and executed
 */
-int tcl4gl_startup(numArgs)
-    int numArgs;
+int
+tcl4gl_startup (numArgs)
+     int numArgs;
 {
-    int  interpID;
-    char **argv = NULL, *ptr = NULL;
-    int  argc = 0;
-    int  ii;
+  int interpID;
+  char **argv = NULL, *ptr = NULL;
+  int argc = 0;
+  int ii;
 
-    if (numArgs < 1) {
-        fprintf(stderr, "tcl4gl_startup: wrong # of args (%d)", numArgs);
-        exit(-1);
+  if (numArgs < 1)
+    {
+      fprintf (stderr, "tcl4gl_startup: wrong # of args (%d)", numArgs);
+      exit (-1);
     }
 
-    argv = (char **) CheckMalloc(numArgs * sizeof(char *));
+  argv = (char **) CheckMalloc (numArgs * sizeof (char *));
 
-    while (argc < (numArgs - 1) ) {
-        argv[argc++] = (char *) CheckMalloc(TCL_ARG_MAX * sizeof(char));
+  while (argc < (numArgs - 1))
+    {
+      argv[argc++] = (char *) CheckMalloc (TCL_ARG_MAX * sizeof (char));
     }
-    argv[argc] = NULL;
-    
-    for(ii = argc - 1; ii >= 0; ii--) {
-        popquote(argv[ii], TCL_ARG_MAX);
-        ptr = strchr(argv[ii], ' ');       /* remove spaces off the end */
-        if (ptr != NULL) *ptr = '\0';
-    }
+  argv[argc] = NULL;
 
-    popint(&interpID);
-
-    if ( (interpID < 0) || (interpID >= TCL_INTERP_MAX) || 
-         (! F4glInterp[interpID].inUse) ) {
-        fprintf(stderr, "tcl4gl_startup: invalid interpreter ID (%d)",
-                interpID);
-        exit(-1);
+  for (ii = argc - 1; ii >= 0; ii--)
+    {
+      popquote (argv[ii], TCL_ARG_MAX);
+      ptr = strchr (argv[ii], ' ');	/* remove spaces off the end */
+      if (ptr != NULL)
+	*ptr = '\0';
     }
 
-    Tcl_CommandLoop (F4glInterp[interpID].interp, isatty (0));
+  popint (&interpID);
 
-    for(ii = 0; ii < argc; ii++)   CheckFree(argv[ii]);
-    CheckFree(argv);
+  if ((interpID < 0) || (interpID >= TCL_INTERP_MAX) ||
+      (!F4glInterp[interpID].inUse))
+    {
+      fprintf (stderr, "tcl4gl_startup: invalid interpreter ID (%d)",
+	       interpID);
+      exit (-1);
+    }
 
-    pushquote(F4glInterp[interpID].interp->result);
-    return 1;
+  Tcl_CommandLoop (F4glInterp[interpID].interp, isatty (0));
+
+  for (ii = 0; ii < argc; ii++)
+    CheckFree (argv[ii]);
+  CheckFree (argv);
+
+  pushquote (F4glInterp[interpID].interp->result);
+  return 1;
 }
