@@ -11,7 +11,13 @@
 =====================================================================
 */
 
+#ifndef A4GL_ESQL_H
+#define A4GL_ESQL_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 //#include "a4gl_incl_4glhdr.h"
 #define GETENV_OK
 #include "a4gl_API_esql.h"
@@ -34,4 +40,9 @@
 
 #ifndef VALID_DIALECT_FOUND
 	#include "a4gl_esql_infx.h"
+#endif
+
+#ifdef __cplusplus
+}
+#endif
 #endif

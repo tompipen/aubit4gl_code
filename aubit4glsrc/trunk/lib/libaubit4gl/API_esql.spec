@@ -22,7 +22,6 @@ VARIABLE A4GL_LEXDIALECT
 * func-name param-type param-name ... -> returns
 *
 
-#include "a4gl_API_esql.h"
 /* ------------ functions from compile_[c|perl].c -------------- */
 
 /* void printc(char *fmt, ...) */

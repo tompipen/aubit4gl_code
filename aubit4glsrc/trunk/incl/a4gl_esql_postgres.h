@@ -11,6 +11,10 @@
 =====================================================================
 */
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 #include "a4gl_incl_4gldef.h"
 
 #include "decimal.h"
@@ -60,3 +64,7 @@
 
 //#define popdec(x) {char *s;s=A4GL_char_pop();printf("%s\n",s);deccvasc(s,strlen(s),x); }
 //#define retdec(x) {fgldecimal _s;A4GL_copy_decimal(x,&_s,0x1e10,'o');A4GL_push_variable(&_s,0x1e100005);}
+
+#ifdef __cplusplus
+}
+#endif
