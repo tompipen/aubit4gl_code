@@ -56,7 +56,7 @@ MAIN
 		  lv_count USING "<<", ">!=<1>"
     LET exitStatus = 1
   END IF
-  IF lv_dateColumn != DATE(MDY(12,31,19999)) THEN
+  IF lv_dateColumn != DATE(MDY(12,31,1999)) THEN
     DISPLAY "Diferent date value  on first iteration <", lv_dateColumn, ">"
     LET exitStatus = 1
   END IF
