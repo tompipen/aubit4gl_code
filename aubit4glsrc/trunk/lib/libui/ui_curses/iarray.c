@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.52 2003-09-19 16:16:59 mikeaubury Exp $
+# $Id: iarray.c,v 1.53 2003-09-29 15:01:17 mikeaubury Exp $
 #*/
 
 /**
@@ -2190,7 +2190,7 @@ process_control_stack (struct s_inp_arr *arr)
 
 		      ptr[a] = picture[a];
 		    }
-		  A4GL_push_param (cptr,
+		  A4GL_push_param (ptr,
 				   arr->binding[arr->curr_attrib].dtype +
 				   ENCODE_SIZE (arr->
 						binding[arr->curr_attrib].
@@ -2199,7 +2199,8 @@ process_control_stack (struct s_inp_arr *arr)
 					       arr->binding[arr->curr_attrib].
 					       dtype,
 					       arr->binding[arr->curr_attrib].
-					       size, cptr);
+					       size, ptr);
+		A4GL_debug("MJAMJA - PTR=%s",ptr);
 		}
 	    }
 	  else
@@ -2221,7 +2222,13 @@ process_control_stack (struct s_inp_arr *arr)
 
 	  if (has_picture)
 	    {
+		  FORM *mform;
 	      A4GL_int_form_driver (arr->currform->form, REQ_OVL_MODE);	// Always in overwrite mode in a picture...
+                  mform = arr->currform->form;
+                  if (strchr ("A#X", picture[mform->curcol]) == 0
+                      && picture[mform->curcol])
+                    do_key_move ('R', arr, arr->fcntrl[a].extent, has_picture,
+                                 picture);
 	    }
 
 
