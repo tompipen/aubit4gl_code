@@ -43,9 +43,8 @@ iskey=0;
 		| HELP single_key_val {
 print_options('H',$<str>2);
 }
-		| HELP_FILE file_name {
-print_set_helpfile($<str>2);
-}
+		| HELP_FILE file_name { print_set_helpfile($<str>2); }
+		| LANG_FILE file_name { print_set_langfile($<str>2); }
 		| DISPLAY attributes_def {
 print_options('d',$<str>2);
 }

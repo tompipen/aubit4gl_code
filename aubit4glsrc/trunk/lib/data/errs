@@ -1,4 +1,4 @@
-1|Input form is not the current form!
+1|Unknown error
 2|Pow not implemented
 3|trunc not implemented\n
 4|round not implemented\n
@@ -33,10 +33,9 @@
 33|Could not connect to database
 34|Can't free cursor thats not been defined
 35|Can't close cursor that hasn't been defined
-100|Not connected to database
 37|Statement has not been prepared
 38|Internal Error
 39|Statement could not be found
+100|Not connected to database
 174|Wrong number of parameters
-
-
+175|Input form is not the current form!
