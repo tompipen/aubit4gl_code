@@ -52,6 +52,7 @@ open(IN, $YOUTPUT ) or die "Cannot read file $YOUTPUT\n";
 
 @kwlist = ();
 
+open(PP,">t");
 # locate the Grammar section and find any symbols that can be /* empty */,
 # also look for keywords that appear at the start of a command
 $grammar = 0;
@@ -59,7 +60,10 @@ while(<IN>) {
   chomp;
   if ( $grammar )
   {
-    # rule lines begin with space or digits - anything else and we stop
+    # some older y.output's have 'rule' at starrt of rule line
+    if ( /^\s*rule\s+\d/i ) { s/rule/123/i }
+    # rule lines begin with space or digits
+    # - anything else and we stop
     if ( /^[a-z]/i )
      {
 	last;
@@ -80,7 +84,9 @@ while(<IN>) {
   elsif ( /^\s*Grammar\s*$/i ) {
 	$grammar = tell IN;
   }
+  print PP $_,"\n";
 }
+close(PP);
 
 # re-read the Grammar section, we are now looking for any rules where
 # the right hand side is potentially a single word identifier, ie.
@@ -89,6 +95,9 @@ while(<IN>) {
 seek IN, $grammar, 0;
 while(<IN>) {
   chomp;
+    # some older y.output's have 'rule' at start of rule line
+    if ( /^\s*rule\s+\d/i ) { s/rule/123/i }
+
     # rule lines begin with space or digits - anything else and we stop
     last if /^[a-z]/i;
 
