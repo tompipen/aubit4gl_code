@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.201 2005-02-23 12:16:33 mikeaubury Exp $
+# $Id: mod.c,v 1.202 2005-02-23 13:55:59 mikeaubury Exp $
 #
 */
 
@@ -4884,7 +4884,6 @@ void A4GL_add_feature(char *feature) {
 	static int dump_features=-1;
 	static int failed=0;
 	FILE *f;
-	printf("%s\n",feature);
 	if (dump_features==-1) {
 		dump_features=A4GL_isyes(acl_getenv("DUMP_FEATURES"));
 	}
