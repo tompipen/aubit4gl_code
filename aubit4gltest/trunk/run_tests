@@ -1692,9 +1692,9 @@ fi
 for TEST_NO in $ALL_TESTS
 #########################
 do
-	if test "$SH_DBG" = "1"; then
-		echo "Loop start: test $TEST_NO"
-	fi
+	#if test "$SH_DBG" = "1"; then
+	#	echo "Loop start: test $TEST_NO"
+	#fi
 
 	if test "$TIME_LOOP" = "1"; then 
 		LOOP_START_TIME=`date +%s`
@@ -1714,9 +1714,8 @@ do
 	
 	if test "$TEST_RANGE" = "1"; then 
 		if test "$TEST_NO" -lt "$TEST_RANGE_FROM"; then
-echo "skip to $TEST_RANGE_FROM"
 			if test "$VERBOSE" = "1"; then 
-				echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bSkipping to test $TEST_RANGE_FROM ($TEST_NO)   "
+				echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bSkipping to test $TEST_RANGE_FROM ($TEST_NO)     "
 			fi
 			continue
 		fi
@@ -1843,6 +1842,10 @@ echo "skip to $TEST_RANGE_FROM"
 	#see if Makefile contains description
 	#sets desc_txt TEMPLATE_COMMENT IS_DESCRIBED ALL_DESCRIBED_TESTS
 	check_desc_txt
+
+	if test "$SH_DBG" = "1"; then 
+		echo "Loading test info..."
+	fi
 
 	if test "$IS_OLD_MAKEFILE" = "0" ; then
 		##############
@@ -2001,6 +2004,11 @@ echo "skip to $TEST_RANGE_FROM"
 		fi
 	fi
 	
+	if test "$SH_DBG" = "1"; then 
+		echo "Finished loading test info..."
+	fi
+
+	
 		#################
 		#Proces test information that is allways held only in this script, 
 		#and NEVER in makefiles	
@@ -2043,6 +2051,9 @@ echo "skip to $TEST_RANGE_FROM"
 	#decide if we WANT to skip it
 	do_skip
 	if test "$DO_SKIP" = "1"; then
+		if test "$SH_DBG" = "1"; then 
+			echo "Skipping test $TEST_NO"
+		fi
 		continue
 	fi
 	

@@ -58,7 +58,7 @@ fi
 		#Determine which feature status applies to this db
 		if test "$DB_TYPE" != "PG-IFX-74" -a "$DB_TYPE" != "PG-74" \
 			-a "$DB_TYPE" != "IFX-OL" -a "$DB_TYPE" != "IFX-SE" \
-			-a "$DB_TYPE" != "SQLITE" -a "$DB_TYPE" != "PG80" ; then 
+			-a "$DB_TYPE" != "SQLITE" -a "$DB_TYPE" != "PG-80" ; then 
 			#DB we have no info stored for, treat it as ANSI
 			#TODO: determine if we have .cnv file for that db
 			if test "1" = "1"; then 
@@ -69,7 +69,7 @@ fi
 				FEATURE_DB_TYPE="ANSI-CNV"
 			fi
 		else
-			if test "$DB_TYPE" = "PG80"; then 
+			if test "$DB_TYPE" = "PG-80"; then 
 				FEATURE_DB_TYPE="PG-74"
 			else
 				FEATURE_DB_TYPE="$DB_TYPE"
@@ -101,7 +101,7 @@ fi
 		esac
 		
 		#Initialise counters:
-		CNT=0 ;	FIELD_CNT=0; ROW_CNT=0;
+		CNT=0 ;	FIELD_CNT=0; ROW_CNT=0; DOTS_CNT=0
 		D_CNT=0; S_CNT=0; C_CNT=0; P_CNT=0; F_CNT=0; X_CNT=0
 		POSIBLE_CNT=0; SUPPORTED_CNT=0; IMPOSSIBLE_CNT=0; DEPEND_CNT=0
 		D_P_CNT=0; D_S_CNT=0; D_I_CNT=0; D_D_CNT=0
@@ -190,6 +190,13 @@ fi
 					exit 5 ;;
 				esac
 				let ROW_CNT=ROW_CNT+1
+				let DOTS_CNT=DOTS_CNT+1
+				if test "$DOTS_CNT" = "20"; then 
+					DOTS_CNT=0
+					DOTS=""
+				fi
+				DOTS="$DOTS."
+				echo -e -n "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bLoading SQL features$DOTS                     "
 				FIELD_CNT=0
 			#######################################
 			#else
@@ -242,18 +249,18 @@ fi
 								
 if test "$SH_DBG" = "1"; then 
 	echo "Loaded SQL features list."
-	exit 
+	#exit
 fi
 
 }
 
 
 #Check for incompatible SQL dialect features (tests 234 256 etc...)
-chech_sql_features () {
+function chech_sql_features () {
 	
 if test "$SH_DBG" = "1"; then 
 	echo "Checking SQL features..."
-	exit 
+	#exit
 fi
 	#NOTE: All tests should at least compile, regardless of what 
 	#SQL features are used in the code - so we will skip testing for SQL
@@ -269,12 +276,18 @@ fi
 	#checking" in test description...
 	
 	if test "$DISABLE_SQL_FEATURES_CHECK" = "1" -o "$COMPILE_ONLY" = "1"; then
+		if test "$SH_DBG" = "1"; then
+			echo "DISABLE_SQL_FEATURES_CHECK=$DISABLE_SQL_FEATURES_CHECK COMPILE_ONLY=$COMPILE_ONLY"
+		fi
 		return
 	fi
 	
 	if test "$SQL_FEATURES_USED" = ""; then
 		#If test has no SQL/db features description, skip it - should never 
 		#happen if this is a db test
+		if test "$SH_DBG" = "1"; then
+			echo "SQL_FEATURES_USED ie empty"
+		fi
 		return
 	fi
 
@@ -397,7 +410,8 @@ fi
 		echo "INCOMPAT_SQL_LIST=$INCOMPAT_SQL_LIST"
 		echo "SQL_FEATURES_COMPATIBLE=$SQL_FEATURES_COMPATIBLE"
 		echo "DISABLE_SQL_FEATURES_SKIP=$DISABLE_SQL_FEATURES_SKIP"
-		exit
+		echo "SQL_FEATURES_USED=$SQL_FEATURES_USED"
+		#exit
 	fi
 }
 
@@ -2772,7 +2786,7 @@ show_test_info() {
 }
 
 
-check_skip_non_db() {
+function check_skip_non_db() {
 	
 		if test "$IS_DB_TEST" != "1" -a "$ONLY_DB" = "1"; then
 			SKIP_REASON="non-DB"
@@ -2787,7 +2801,7 @@ check_skip_non_db() {
 #
 # @param 
 ##
-check_skip() {
+function check_skip() {
 	
 	if test "$IS_OBSOLETE_TEST" = "1"; then
 		if test "$VERBOSE" = "1"; then
@@ -2958,8 +2972,14 @@ check_skip() {
 		fi
 		
 	fi #IS_INVALID_TEST
+
+	if test "$SH_DBG" = "1"; then
+		echo "exiting function check_skip()"
+	fi
+
 #echo "vncviewer -via mike@212.23.14.59 192.168.2.212:0"
 #exit
+
 
 }	
 
@@ -3015,7 +3035,7 @@ check_desc_txt() {
 
 #Instead of reading descriptions for each test before we can determine
 #if this test should be skiped, use allready loaded cached descriptions
-check_cached_skip_reasons() {
+function check_cached_skip_reasons() {
 
 	for b in $IS_DB_TEST_CACHE; do
 		if test "$b" = "$TEST_NO"; then
@@ -3029,7 +3049,7 @@ check_cached_skip_reasons() {
 
 
 #decide if we WANT to skip test
-do_skip() {
+function do_skip() {
 	DO_SKIP=0	
 	if test "$NO_SKIP" != "1"; then
 		#skip is allowed
