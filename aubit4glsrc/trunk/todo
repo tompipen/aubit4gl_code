@@ -2,95 +2,144 @@
 Please occasionally remove items that are completed from this list.
 
 
-4GL
-
+4GL compiler/libraries
+----------------------
 	Interval and datetime arithmetic...
-
 	Clean up error handling
-
 	Replace sqlca & status with acl_sqlca and acl_status -  use as sqlca&status in 4GL code
 		(This will allow other DBs to still have their own sqlca - which may be different). ** PARTIAL
-
+	fix PACKER=PACKED on MinGW (see test 11/y.per) (-xml)
+	find out what is causing different spaces in reports (-nospace) (see test #24)
 
 Enhancements
-	
+------------
+	1) Adding OO to aubit4GL (without breaking the rest of it)
+	This would be both academic and practical - what OO features would be
+	applicable, how would they be wrapped up etc
+
+	2) GUI
+	I'd like to have a native and client/server GUI, we have a sort of former, but
+	not too much of the latter.
+
+
+	3) Alternate/innovative DB (eg. what about one that could read flat files)
+		select uid,username from /etc/password
+
+	4) Java output mode/port of libaubit4gl ?
+
+	5) Anything that wraps up complex programming in a simple way (ie the 4GL way
+	of doing things, hard things easy - but only when within the confines of the
+	language)
+
+	6) Language bindings for database operations.
+	I like my SELECT .. USING
+	At the minute the program doesn't know too much about the database, its
+	linkages etc. I'd like to extend this, so it could use some data dictionary
+	to work out where clauses, apply validation etc.
+
+	7) isql perform form handling, written in 4GL (and extending libaubit4gl/libui
+	where required)..
+	We've got the ace report handling
+
 
 
 ESQL/C
-	Fix OPEN USING in esql/c (in sql) 
+------
+	Fix OPEN USING in esql/c (in sql)
 	Other fixes in ESQL/C output driver
-	
 
 
-FIXME's
+FIXME's (in DoxyGen comments)
+-------
 	Fix 'em
     TODO's - Do them (See DoxyGen @todo tags at http://www.falout.com/projects/Aubit4GL/doxy/html/pages.html )
 
 
 GTK
+----
 	Make it work - start with tools/test/gui code
 
 
-UI
-	
-
 Other unimplemented functions
+-----------------------------
 	put_insert *partial
 
 
 SQL Parser
+----------
 	Separate SQL parser into different YACC file (to allow for multiple SQL dialects)
 	Bind substrings (also used in displays/inputs) ******** PARTIAL (Generates but not coded in library)
 	implement grant and revoke
 
 
 SQL plugins
+-----------
     unixODBC bug (see bug db on SF)
     Finish native PostgreSQL plugin (Sergio), create SAP DB native
     show error when SQLUID/SQLPWD is not set on DEFINE ... LIKE
     Handle DSN-less connections (should be able to connect using CONNECT stmt, even without explicit DSN in odbc.ini)
-    Before using SQLUID and SQLPWD, odbc.ini should be examined for default username/password (?!!! - are you sure ?!)
+    Before using SQLUID and SQLPWD, odbc.ini should be examined for default username/password (?!!! - are you sure ?! - Yes I am, see example in SQLite ODBC code)
+	fix SQLite on MinGW (core dump) (-nodb)
+	fix/finish pg native driver
+	add SQL conversion for SAPODBC
+	fix test 100 (insert cursor/temp table/insert...select) - WORKS ONLY WITH Informix ESQL/C (-eci)
+	SQLite fails on ORDER BY in REPORT block (test 14)
 
 ACE
-	ace now uses xgen - enable Windows make files
+----
+	ace now uses xgen - enable Windows make files (this was doen I think?)
+    Integrate ACE in asql
 
 XML-RPC
-    create server part
+-------
+	create server part
 
 TUI
-	General cleanups.. 
+----
+	General cleanups..
     	Windows TUI uses strange characters
 
-    	DISPLAY without AT erises the screen completely - sends to stdout 
+    	DISPLAY without AT erises the screen completely - sends to stdout
 		- should display _OVER_ existing display/screen
-		(** THIS IS CURSES FAULT **NOT** Aubit...)
+		(** THIS IS CURSES FAULT **NOT** Aubit... - BUT IT'S STILL INCOMPATIBLE!)
+	find out why on MinGW/Cygwin graphic characters are different (-nographic)
+	fix curses on MinGW
+
+
 
 PERL
+----
 	fix "make perl"
 
 CVS
+----
     start branch tagging in CVS
 
 Build system & make files
+-------------------------
     Create commit and update targets to handle CVS commits and updates
-    in Commit: 
+    in Commit:
 		handle update of no_yacc, no_perl...etc files before commit
         handle build number
-    in Update: 
+    in Update:
 		handle "configure" file to prevent meaningless merginig
 
 
 MANUALS
-    need complete update
+--------
+	need complete update
     archtecture diagram needs update for libPACKER, LEX_EC, SQL_PG...
 
 WEBSITE
-	Replace current static pages with PostNuke
+-------
+	Replace current static pages with PostNuke or Xaraya
 
 PACKAGING
+---------
     create .deb (use Alien?)
 
 MISC
+-----
     fix all compiler warnings
 	add "#ifdef DEBUG" arround _ALL_ debug() calls
     complete DoxyGen function & variable comments
@@ -109,7 +158,14 @@ MISC
     remove lib/liblex/lex_c from CVS
 
 Windows port
-    export SQLCA explicitly - cannot be auto-imported
+-------------
+    export SQLCA explicitly - cannot be auto-imported (Done I think)
+
+
+BUILD TESTS
+-----------
+    p-code enable all tests using makefile in template/
+    See list of errors in run_test script
 
 
 Ad-Hoc Bug Fixes
