@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.144 2004-12-01 07:21:08 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.145 2004-12-02 09:33:20 mikeaubury Exp $
 #
 */
 
@@ -80,9 +80,8 @@
 	#define bool_t int
 	#define u_int unsigned int
 
-	#include <limits.h> // SHRT_MIN SHRT_MAX
+	#include <limits.h> /* SHRT_MIN SHRT_MAX */
 	
-	//remove        #define __NEED_DLL_IMPORT__
 
 #endif
 
@@ -96,17 +95,16 @@
 #if defined(__MINGW32__)
 	#undef WIN32
 
-	//#define assert("inside __MINGW32__" == 0)
+	/* #define assert("inside __MINGW32__" == 0) */
 
 	#if defined(WIN32)
-		//#if (defined(WIN32) && ! defined(__CYGWIN__))
+		/* #if (defined(WIN32) && ! defined(__CYGWIN__)) */
 		#define assert("inside W32 defined" == 0)
 	#endif
 
 	/* missing from rpcgen generated form_x.h on CygWin: */
 	#define bool_t int
 
-	//remove        #define __NEED_DLL_IMPORT__
 
   /*
      #define __WIN32__ 1
@@ -114,7 +112,7 @@
      #define __VERSION__ "3.2 (mingw special 20020817-1)"
    */
    
-	#include <limits.h> // SHRT_MIN SHRT_MAX   
+	#include <limits.h> /* SHRT_MIN SHRT_MAX    */
    
 #endif
 
@@ -154,7 +152,6 @@
 #define FGL_OK 						(void *)1
 #define DIGIT_ALIGN_RIGHT 			1
 #define NUM_PARAM 					30
-//#define DATE_INVALID 				0
 #define DATE_INVALID 				0x80000000
 
 #define MAXDIG 						30
@@ -294,8 +291,8 @@
 #define WINCODE 		'2'
 #define CURCODE 		'3'
 #define PRECODE 		'4'
-//#define MNWINCODE 		'5'
-//#define MNPARCODE 		'6'
+/* #define MNWINCODE 		'5' */
+/* #define MNPARCODE 		'6' */
 #define FORMCODE 		'7'
 #define S_WINDOWSCODE 	'8'
 #define S_FORMDETSCODE 	'9'
@@ -479,7 +476,6 @@
 		#endif
 	#endif
 
-  	//#include <ctype.h>    	/* tolower() toupper() */
 	#include <stdio.h>			/* needed for FILE symbol */
 
 	#ifndef WIN32
@@ -488,8 +484,7 @@
 	#include <stdlib.h>			/* free() */
 
 	#if HAVE_SEARCH_H && ! defined(__MINGW32__)
-	//#if HAVE_SEARCH_H
-		// MinGW 3.1.0 introduced search.h, but it's not complete
+		/* MinGW 3.1.0 introduced search.h, but it's not complete */
 		#include <search.h>		/* VISIT-used in pointers.c */
 	#else
 	
@@ -506,8 +501,10 @@
 		{ FIND, ENTER }
 		ACTION;
 		
+		/*
 		//why is this line commented out?
 		//void A4GL_action (const void *nodep, const VISIT which, const int depth);
+		*/
 		
 		/** A node tree information */
 		typedef struct node_t
@@ -521,7 +518,6 @@
 		node *tsearch (char *key, node ** rootp, int (*compar) (const void *l,const void *r));
 		node *tdelete (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
 		void twalk (node * root, void *act);
-			// void twalk(node *root, VISIT action);
 		node *tfind (char *key, node ** rootp, int (*compar) (const void*l,const void *r));
 		
 		  /* For tsearch */
@@ -535,7 +531,7 @@
 		  VISIT;
 
 #ifdef MAYBE_INVALID 
-//----------------- moved from pointers.c
+/*----------------- moved from pointers.c */
 	#if defined(__MINGW32__)
 		/* why was this line commented out? BECAUSE IT'S DEFINED IN 
 		incl/a4gl_libaubit4gl.h
@@ -557,21 +553,22 @@
 		pointers.c:122: redefinition of `VISIT'
 		a4gl_libaubit4gl.h:488: `VISIT' previously declared here
 		*/
-		// >>>>> incl/a4gl_libaubit4gl.h:489 <<<<
 		#if defined (__GNUC__) && defined (__GNUC_MINOR__)
+			/*
 			// Do a 'make gcc_symbols' in aubit source root to see what 
 			//current compiler defines
 			//&& defined (__VERSION__) && (__VERSION__ "3.2 (mingw special 20020817-1)")
 			//#define __VERSION__ "3.2.3 (mingw special 20030504-1)"
+			*/
 			#if (__GNUC__ == 3)
-				//#if (__GNUC_MINOR__ >= 3)
+				/*#if (__GNUC_MINOR__ >= 3) */
 				#if (__GNUC_MINOR__ >= 2)
  					typedef enum { preorder, postorder, endorder, leaf } VISIT;
 				#endif
 			#endif
 		#endif
 	#endif
-//------------------------------------	  
+/*------------------------------------	  */
 #endif	  
 	  
 	#endif
@@ -581,8 +578,10 @@
 	#include <math.h>		/* pow() */
 	#include <locale.h>		/* setlocale() */
 	
+	/*
 	//on CygWin cause conflicts with glib-2.0/glib/gwin32.h
 	// with g_win32_ftruncate
+	*/
 	#include <unistd.h>		/* sleep() close() write() usleep() */
 	#include <signal.h>		/* SIGINT */
 
@@ -597,12 +596,12 @@
 	#include <sys/types.h>
   /*@=skipposixheaders@ */
 
-#endif //_NO_SYSINCL_
+#endif /* _NO_SYSINCL_ */
 
 
 #ifdef USE_ZZIPLIB
 
-	//#define FILE ZZIP_FILE
+	/*#define FILE ZZIP_FILE */
 	#define fopen zzip_fopen
 	#define fread zzip_fread
 	#define fwrite zzip_fwrite
@@ -688,52 +687,6 @@
   }
   int_list;
 
-/* moved to a4GL_incl_4gldef.h becuse it's needed in A4GL_API_ui.h
-
-  typedef struct ACL_Menu_Opts
-  {
-    char opt_title[80];
-    char optkey[80];
-    int optlength;
-    int opt_no;
-    int help_no;
-    int optpos;
-    int attributes;
-    char shorthelp[80];
-    struct ACL_Menu_Opts *next_option;
-    struct ACL_Menu_Opts *prev_option;
-    int page;
-  }
-  ACL_Menu_Opts;
-
-  typedef struct
-  {
-    char menu_title[80];
-    int menu_type;
-    char parent_window_name[20];
-    ACL_Menu_Opts *curr_option;
-    int menu_offset;
-    int mn_offset;
-    int x;
-    int y;
-    int help_no;
-    int num_opts;
-    int abort_pressed;
-    ACL_Menu_Opts *first;
-    ACL_Menu_Opts *last;	// used for wrapping round
-    //void *menu_win;
-    int curr_page;
-    int max_page;
-    int w;
-    int menu_line;
-    int attrib;
-    int gw_y;
-    int gw_x;
-    int gw_b;
-  }
-  ACL_Menu;
-
-*/
 
   typedef struct s_field_geometry
   {
@@ -972,8 +925,8 @@ enum cmd_types {
 	FGL_CMD_COMMENT,
 	FGL_CMD_CONSTRUCT,
 	FGL_CMD_DEFER,
-	FGL_CMD_DISPLAY_CMD,  // DISPLAY / DISPLAY @
-	FGL_CMD_DISPLAY_FIELD_CMD,  // DISPLAY TO, DISPLAY BY NAME
+	FGL_CMD_DISPLAY_CMD,  /* DISPLAY / DISPLAY @ */
+	FGL_CMD_DISPLAY_FIELD_CMD,  /* DISPLAY TO, DISPLAY BY NAME */
 	FGL_CMD_DISPLAY_FORM,
 	FGL_CMD_ERROR,
 	FGL_CMD_EXIT,
@@ -1153,7 +1106,7 @@ char *get_bind_varname(char i,int n);
   void A4GL_push_today (void);
 
 void A4GL_fgl_end_4gl_0 (void);
-void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
+void A4GL_fgl_end_4gl_1 (void); /* Used on interrupt */
 void A4GL_display_at (int n, int a);
   void A4GL_push_dtime (struct A4GLSQL_dtime *p);
   void A4GL_push_int (short p);
@@ -1213,7 +1166,6 @@ void A4GL_display_at (int n, int a);
     int line_no;
     int col_no;
     /* was      int (*report)(); */
-/* int (*report)(void); *//* report.c:180: too many arguments to function */
     int (*report) (int a, int b);
     int lines_in_header;
     int lines_in_first_header;
@@ -1242,7 +1194,6 @@ void A4GL_display_at (int n, int a);
     double line_no;
     double col_no;
     /* was      int (*report)(); */
-/* int (*report)(void); *//* report.c:180: too many arguments to function */
     int (*report) (int a, int b);
     char font_name[256];
     double font_size;
@@ -1268,7 +1219,6 @@ void A4GL_display_at (int n, int a);
 
 
 
-  //double A4GL_pdf_size (double f, char c, struct pdf_rep_structure *p);
 
 #define REP_TYPE_PDF 			1
 #define REP_TYPE_NORMAL 		2
@@ -1337,7 +1287,7 @@ void A4GL_display_at (int n, int a);
   struct str_resource
   {
     char name[80];
-    char value[1024];		//must be long enough to hold GTK include paths
+    char value[1024];		/*must be long enough to hold GTK include paths */
   };
 
   char *A4GL_find_str_resource_int (char *search, int a);
@@ -1374,7 +1324,7 @@ void A4GL_display_at (int n, int a);
   void A4GL_gui_startprompt (long ld);
 
   /* ========================== funcs_d.c ================================ */
-  //void A4GL_trim (char *p);
+  /* void A4GL_trim (char *p); */
   void A4GL_bnamexxx (char *str, char *str1, char *str2);
   void A4GL_pad_string (char *ptr, int size);
   void *acl_malloc_full (int size, char *why, char *f, long line);
@@ -1454,7 +1404,7 @@ void A4GL_display_at (int n, int a);
 
   char *A4GL_params_on_stack (char *_paramnames[], int n);
   int A4GL_isnull (int type, char *buff);
-  //void A4GL_setnull (int type, void *buff, int size);
+  /* void A4GL_setnull (int type, void *buff, int size); */
   char *A4GL_lrtrim (char *z);
   void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr);
   void A4GL_drop_param (void);
@@ -1765,9 +1715,7 @@ short a4gl_ntohs(long x);
     int processed_onkey;
   };
 
-  //void *A4GL_get_curr_form (int warn_if_no_form);	/* in API_ui.c libtui/newpanels.c libgui/input.c */
   int load_data (char *fname, char *delims, char *tabname, ...);
-  //int A4GL_inp_arr (void *disp, int ptr, char *srecname, int attrib, int init);
   int set_scrline_ia (int np);
   int set_arrline_ia (int np);
   struct struct_screen_record *A4GL_get_srec (char *name);
@@ -1872,24 +1820,19 @@ A4GL_in_in_ops (int op);
 int
 A4GL_get_escape_chr (void);
 int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *fprop,char *val_for_field);
-//int A4GL_get_curr_width_gtk (void);
-//int aclfgli_libhelp_showhelp(int helpno);
 void
 a4gl_basename (char **ppsz);
-//void A4GL_display_internal (int x, int y, char *s, int a, int clr_line);
 void
 A4GL_error_nobox (char *str,int attr);
 void
 A4GL_clr_error_nobox (char *dbg_fromwhere);
-//int A4GL_fgl_getfldbuf_ap (char *s, int n,...);
-//int A4GL_fgl_fieldtouched_input_ap(Tscreenio *s,  va_list *ap);
 void A4GL_core_dump(void);
 void
 A4GL_set_core_dump (void);
 char *A4GL_null_as_null(char *s);
 int A4GL_has_errorlog (void);
 #ifdef CSCC
-	//int A4GL_add_datatype_function_i (int a, char *funcname, void (*function)(int));
+	/*int A4GL_add_datatype_function_i (int a, char *funcname, void (*function)(int)); */
 #else
 	int A4GL_add_datatype_function_i (int a, char *funcname, void *func);
 #endif
@@ -1906,8 +1849,6 @@ char *A4GLSQLCV_check_sql(char *s ) ;
 char *A4GLSQLCV_dtype_alias(char *s ) ;
 char *A4GLSQLCV_check_expr(char *s ) ;
 
-//conflicts with definition in sqlconvert.c:
-//char *A4GLSQLCV_sql_func(char *f,char *p);
 
 void A4GL_add_feature(char *s);
 char *A4GLSQLCV_get_sqlconst(char *cval);

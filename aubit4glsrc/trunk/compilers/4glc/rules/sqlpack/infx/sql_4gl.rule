@@ -179,9 +179,7 @@ value_expression_initial_ss :
 			*/
 		$<sql_string>$=$<sql_string>1;
 	}
-	| var_ident_ibind_ss 	{
-		$<sql_string>$=$<sql_string>1;
-	}
+	| var_ident_ibind_ss 	{ $<sql_string>$=$<sql_string>1; }
 	| subquery_ss { $<sql_string>$=$<sql_string>1; }
 	| ALL subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ALL "),$<sql_string>2,0); }
 	| ANY subquery_ss { $<sql_string>$=make_sql_string_and_free(strdup("ANY "),$<sql_string>2,0); }

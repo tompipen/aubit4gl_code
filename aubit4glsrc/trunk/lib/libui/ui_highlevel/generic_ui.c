@@ -5,7 +5,7 @@
 #include "formdriver.h"
 #include "hl_proto.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.36 2004-11-30 12:02:22 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.37 2004-12-02 09:33:24 mikeaubury Exp $";
 //#include "generic_ui.h"
 
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
@@ -91,10 +91,10 @@ void
 A4GL_set_option (ACL_Menu * menu, int opt)
 {
   int a;
-  (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
+  menu->curr_option = (ACL_Menu_Opts *) menu->first;
   for (a = 0; a < opt; a++)
     {
-      (ACL_Menu_Opts *) menu->curr_option =
+       menu->curr_option =
 	(ACL_Menu_Opts *) ((ACL_Menu_Opts *) (menu->curr_option))->
 	next_option;
     }
@@ -171,7 +171,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
 
   if (flg)
     {
-      (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) opt2;
+       menu->curr_option = (ACL_Menu_Opts *) opt2;
       A4GL_debug ("We're on it!");
       return 1;
     }
@@ -198,7 +198,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
 
       if (flg)
 	{
-	  (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) opt1;
+	  menu->curr_option = (ACL_Menu_Opts *) opt1;
 	  return 1;
 	}
       opt1 = (ACL_Menu_Opts *) opt1->next_option;
@@ -382,10 +382,10 @@ UILIB_A4GL_next_option (void *vmenu, char *nextopt)
       if (strcmp (s, nextopt) == 0)
 	{
 	  f = 1;
-	  (ACL_Menu_Opts *) menu->curr_option = option;
+	  menu->curr_option = option;
 	  break;
 	}
-      (ACL_Menu_Opts *) option =
+      option =
 	(ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
     }
 
@@ -500,7 +500,7 @@ A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list * ap)
 		}
 	    }
 	  A4GL_debug ("chk next");
-	  (ACL_Menu_Opts *) option =
+	  option =
 	    (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
 	  A4GL_debug ("set next");
 	}
@@ -559,17 +559,17 @@ A4GL_find_shown (ACL_Menu * menu, int chk, int dir)
 	  menu->curr_option = (ACL_Menu_Opts *) opt1->next_option;
 	  if (menu->curr_option == 0)
 	    {
-	      (ACL_Menu_Opts *) menu->curr_option =
+	      menu->curr_option =
 		(ACL_Menu_Opts *) menu->first;
 	    }
 	}
       else
 	{
-	  (ACL_Menu_Opts *) menu->curr_option =
+	   menu->curr_option =
 	    (ACL_Menu_Opts *) (menu->curr_option)->prev_option;
 	  if (menu->curr_option == 0)
 	    {
-	      (ACL_Menu_Opts *) menu->curr_option =
+	       menu->curr_option =
 		(ACL_Menu_Opts *) menu->last;
 	    }
 	}
@@ -850,18 +850,16 @@ UILIB_A4GL_finish_create_menu (void *menuv)
 {
   ACL_Menu *menu;
   menu = menuv;
-  (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
+  menu->curr_option = (ACL_Menu_Opts *) menu->first;
 
   while (menu->curr_option->attributes & ACL_MN_HIDE)
     {
       if (menu->curr_option == menu->last)
 	break;
-      (ACL_Menu_Opts *) menu->curr_option =
+      menu->curr_option =
 	(ACL_Menu_Opts *) menu->curr_option->next_option;
     }
 
-  //A4GL_gui_setfocus ((int) menu->curr_option);
-  //A4GL_gui_endmenu ((int) menu);
   A4GL_debug ("Current option=%p", menu->curr_option);
   A4GL_debug ("Current option help=%d", menu->curr_option->help_no);
   return;
@@ -955,19 +953,17 @@ A4GL_new_menu (char *title,
   va_end (*ap);
   menu->last = (ACL_Menu_Opts *) opt1;
 
-  (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
+  menu->curr_option = (ACL_Menu_Opts *) menu->first;
   while (menu->curr_option->attributes & ACL_MN_HIDE)
     {
       if (menu->curr_option == menu->last)
 	break;
-      (ACL_Menu_Opts *) menu->curr_option =
+      menu->curr_option =
 	(ACL_Menu_Opts *) menu->curr_option->next_option;
     }
 
 
-  //A4GL_gui_setfocus ((int) menu->curr_option);
   menu->num_opts = nopts;
-  //A4GL_gui_endmenu ((int) menu);
   return menu;
 }
 

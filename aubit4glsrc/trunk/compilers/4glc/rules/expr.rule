@@ -507,15 +507,6 @@ function_call_expr2:
                 $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"read\"");
         }
 /*
-   | KW_CHANNEL_WRITE OPEN_BRACKET variable KW_COMMA OPEN_SQUARE ebind_var_list CLOSE_SQUARE CLOSE_BRACKET {
-		start_bind('i',$<str>3);
-                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"write\"");
-        }
-   | KW_CHANNEL_WRITE OPEN_BRACKET variable KW_COMMA ebind_var_list CLOSE_BRACKET  {
-		start_bind('i',$<str>3);
-                $<ptr>$=get_call_shared_bound_expr("\"channel\"","\"write\"");
-        }
-*/
 | KW_CHANNEL_WRITE { new_counter(); } OPEN_BRACKET fgl_expr_c KW_COMMA {
         A4GLSQL_set_status(0,0);
 } opt_cw_func_call_args CLOSE_BRACKET {
@@ -527,7 +518,7 @@ function_call_expr2:
         p=A4GL_append_expr_expr($<ptr>4,$<ptr>7);
         $<ptr>$=A4GL_append_expr(p,$<str>$);
 }
-
+*/
 
 
 

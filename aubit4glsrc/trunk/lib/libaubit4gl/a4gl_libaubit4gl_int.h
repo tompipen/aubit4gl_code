@@ -19,11 +19,13 @@
 #define GETSETSET 		2
 #define GETSETGETPTR 	3
 
+/*
 //#define GETPTR(struct,ptr,element) get_set(struct,ptr,GETSETGETPTR,element,0)
 //#define GET(struct,ptr,element) get_set(struct,ptr,GETSETGET,element,0)
 //#define SET(struct,ptr,element,value) get_set(struct,ptr,GETSETSET,element,(long)value)
 //#define NEW(struct) get_set(struct,0,GETSETNEW,0,0)
 //#define RM(struct,ptr) get_set(struct,ptr,GETSETRM,0,0)
+*/
 
 
 #if HAVE_ERRNO_H
@@ -47,8 +49,8 @@ int rgetkey(void);
 int aclfgl_fgl_getkey(int n) ;
 char *A4GL_strcpy(char *d,char *s,char *fname,int l,int sdest);
 
-// Most of the time sizeof(d) will be 4 (size of a pointer) -
-// but sometimes it'll be useful...
+/* Most of the time sizeof(d) will be 4 (size of a pointer) - */
+/* but sometimes it'll be useful... */
 #define strcpy(d,s) A4GL_strcpy(d,s,__FILE__,__LINE__,sizeof(d))
 
 #endif /* #ifndef _AUBIT_LIB_INCL_INT_ */

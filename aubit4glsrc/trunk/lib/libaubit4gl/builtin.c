@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.69 2004-11-17 10:40:12 mikeaubury Exp $
+# $Id: builtin.c,v 1.70 2004-12-02 09:33:21 mikeaubury Exp $
 #
 */
 
@@ -115,8 +115,10 @@ aclfgl_set_count (int nargs)
 {
   long a = 0;
   struct BINDING fbind[] = {
-    {&a, 2, 0}			/* initializer element is not computable at load time (near initialization for `fbind[0].ptr') */
+    {0, 2, 0}			
   };				/* end of binding */
+
+	fbind[0].ptr=&a;
   if (nargs != 1)
     {
       /* A4GL_pop_args(nargs);set_status(-3001); */

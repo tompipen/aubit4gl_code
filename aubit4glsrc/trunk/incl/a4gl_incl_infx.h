@@ -10,7 +10,6 @@ extern "C"
   void retflo (float *a);
   void pushint (int a);
   void A4GL_strip (char *s);
-//void rsetnull(int d,void *ptr);
 
   void retshort (short x);
   void poplong (long *x);
@@ -26,11 +25,6 @@ extern "C"
   void popvchar (char *x, int y);
   void retdub (double *x);
 
-  //void popdec(void *x);
-  //void retdec(void *x) ;
-  //void popdtime(void *x) ;
-  //void retdtime(void *x) ;
-  //int rdayofweek(int n);
 
 
 #ifdef __cplusplus

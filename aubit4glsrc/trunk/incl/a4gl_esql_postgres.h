@@ -19,10 +19,10 @@ extern "C"
 
 
 #ifdef __WIN32__
-					//PG 8 on windows have ecpg_informix.h and no decimal.h
+					/* PG 8 on windows have ecpg_informix.h and no decimal.h */
 					#include "ecpg_informix.h"
-					//this used to be in sqltypes.h but on Windows PG8 does not 
-					//exist at all:
+					/* this used to be in sqltypes.h but on Windows PG8 does not  */
+					/* exist at all: */
 					
 					#ifndef ECPG_SQLTYPES_H
 						#define ECPG_SQLTYPES_H
@@ -55,13 +55,13 @@ extern "C"
 					
 					#endif /* ndef ECPG_SQLTYPES_H */
 	
-					//in datetime.h on UNIX but missing on Windows PG8
+					/*in datetime.h on UNIX but missing on Windows PG8 */
 					#ifndef _ECPG_DATETIME_H
 						#define _ECPG_DATETIME_H
 						
-						//missing on Windows PG8:
+						/*missing on Windows PG8:
 						//#include <compatlib.h>
-						//this is full compatlib.h from UNIX:
+						//this is full compatlib.h from UNIX: */
 						#ifndef _COMPATLIB_H
 							#define _COMPATLIB_H
 							/*
@@ -204,12 +204,13 @@ extern "C"
 					
 					#endif /* ndef _ECPG_DATETIME_H */
 
-					//decimal.h on UNIX, but missing on Windows PG8
+					/* decimal.h on UNIX, but missing on Windows PG8 */
 					#ifndef _ECPG_DECIMAL_H
 						#define _ECPG_DECIMAL_H
-						
+						/*
 						//mising on Win PG8, allready defined above:
 						//#include <compatlib.h>
+							*/
 						
 						typedef decimal dec_t;
 						
@@ -228,16 +229,16 @@ extern "C"
 			#include "postgresql/informix/esql/decimal.h"
 		#else
 			#if (HAVE_DECIMAL_H == 1)
-				//This is dangerous; Informix esqlc and Aubit also have decimal.h
-				//Who knows which one we will actually include like this...
+				/* This is dangerous; Informix esqlc and Aubit also have decimal.h */
+				/* Who knows which one we will actually include like this... */
 				#include "decimal.h"
 			#else
 				#ifndef __WIN32__			
-					//configure did not find decimal.h, in whic case compiling ECPG PG
-					//stuff should have been disabled, but you are still here somehow...
-					//#include "decimal.h"
+					/* configure did not find decimal.h, in whic case compiling ECPG PG */
+					/* stuff should have been disabled, but you are still here somehow... */
+					/* #include "decimal.h" */
 					assert("ERROR: Autoconf did not find decimal.h - STOP" == 0)
-					//make sure we cause compile-time error here:
+					/* make sure we cause compile-time error here: */
 					#include "must-force-compiler-error-missing-decimal.h"
 				#endif
 			#endif
@@ -245,10 +246,10 @@ extern "C"
 	#endif
 #else
 	#ifndef __WIN32__
-		//this header is needed in binary installation too,
-		//where there is no a4gl_incl_config.h to hold Autoconf results...
-		//so we just have to include decimal.h without the path and hope for the best...
-		//on my system, it will compile even without it (which is scarry)
+		/* this header is needed in binary installation too, */
+		/* where there is no a4gl_incl_config.h to hold Autoconf results... */
+		/* so we just have to include decimal.h without the path and hope for the best... */
+		/* on my system, it will compile even without it (which is scarry) */
 		#include "decimal.h"
 	#endif
 #endif	
@@ -272,9 +273,10 @@ extern "C"
 #define COPY_DATA_IN_12(a4gl,pgres,i,size) A4GL_copy_blob_text(pgres,a4gl,i,size,'i')
 #define COPY_DATA_IN_13(a4gl,pgres,i,size) A4GL_copy_char(pgres,a4gl,i,size,'i')
 
-
+/*
 // wrong? 
 //#define COPY_DATA_IN_14(a4gl,pgres,size,x,y) A4GL_copy_interval(pgres,a4gl,0,size,'i',x,y)
+*/
 #define COPY_DATA_IN_14(a4gl,pgres,size,x,y) A4GL_copy_interval(pgres,a4gl,0,size,'i')
 
 #define COPY_DATA_OUT_0(a4gl,pgres,i,size,x,y) A4GL_copy_char(pgres,a4gl,i,size,'o',x,y)
@@ -297,7 +299,7 @@ extern "C"
 #define A4GLSQL_SET_SQLCA_SQLWARN A4GL_copy_sqlca_sqlawarn_string8(sqlca.sqlwarn)
 
 
-// There may be some circumstances where we don't want to do automatic SQL conversions
+/* There may be some circumstances where we don't want to do automatic SQL conversions */
 #ifndef NO_SQL_TRANSLATION
 	#define CONVERTSQL(s) A4GLSQLCV_convert_sql("POSTGRES",s)
 #else
@@ -306,11 +308,10 @@ extern "C"
 
 #define copy_sqlca
 
-//#define dtime_t datetime
-
-
+/*#define dtime_t datetime 
 //#define popdec(x) {char *s;s=A4GL_char_pop();printf("%s\n",s);deccvasc(s,strlen(s),x); }
 //#define retdec(x) {fgldecimal _s;A4GL_copy_decimal(x,&_s,0x1e10,'o');A4GL_push_variable(&_s,0x1e100005);}
+*/
 
 #ifdef __cplusplus
 }

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.14 2004-11-27 15:37:58 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.15 2004-12-02 09:33:20 mikeaubury Exp $
 */
 
 /**
@@ -58,15 +58,15 @@ extern "C"
 #endif
 
 
-//#include "a4gl_API_esql.h"
+/* #include "a4gl_API_esql.h" */
 #include "a4gl_exdata.h"
 #include "a4gl_API_exreport.h"
 #include "a4gl_API_form.h"
 #include "a4gl_API_help.h"
-//#include "a4gl_API_lex.h"
+/* #include "a4gl_API_lex.h" */
 #include "a4gl_API_menu.h"
 #include "a4gl_API_msg.h"
-//#include "a4gl_API_packer.h"
+/* #include "a4gl_API_packer.h" */
 #include "a4gl_API_rpc.h"
 #include "a4gl_API_sql.h"
 #include "a4gl_API_ui.h"
@@ -138,12 +138,11 @@ char *A4GLSTK_getStackTrace (void);
 void A4GLSTK_pushFunction (const char *functionName, char *params[], int n);
 void A4GLSTK_popFunction (void);
 void A4GL_fgl_end_4gl_0 (void);
-void A4GL_fgl_end_4gl_1 (void); // Used on interrupt
+void A4GL_fgl_end_4gl_1 (void); /* Used on interrupt */
 void A4GL_display_at (int n, int a);
 int A4GL_add_compiled_form (char *s, char *packer, char *formtype, char *frm);
 void A4GLSQL_set_status (int a, int sql);
 int A4GL_key_val(char *s);
-double A4GL_pdf_size(double u,char x,void *ptr);
 
 
 #define A4GL_FUNCTION

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.77 2004-11-25 15:46:11 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.78 2004-12-02 09:33:20 mikeaubury Exp $
 */
 
 /**
@@ -49,11 +49,11 @@
 #ifndef _NO_SYSINCL_
 
 	#ifndef __NO_STDARG__
-	//int stdargSTART______________________;
+	/* int stdargSTART______________________; */
 		#include <stdarg.h>
-	//int stdargEND______________________;
+	/*int stdargEND______________________; */
 	#endif
-#endif // _NO_SYSINCL_
+#endif /* _NO_SYSINCL_ */
 
 #ifdef __cplusplus
 
@@ -62,9 +62,9 @@ extern "C"
 #endif
 
 #ifndef _NO_SYSINCL_
-	//int stdioSTART________________;
+	/*int stdioSTART________________; */
 	#include <stdio.h>
-	//int stdioEND________________;
+	/*int stdioEND________________; */
 #endif
 
 #define AFT_FIELD_CHK(zzz,xxx) (_fld_dr==-98&&A4GL_field_name_str_match(fldname,zzz))
@@ -229,7 +229,6 @@ struct s_constr_list {char *tabname;char *colname;};
     int abort_pressed;
     ACL_Menu_Opts *first;
     ACL_Menu_Opts *last;	/* used for wrapping round */
-    //void *menu_win;
     int curr_page;
     int max_page;
     int w;
@@ -312,15 +311,15 @@ int a_isprint(int a);
   void acli_datetime (char *s, int n);
 
 
-  int aclfgl_err_get (int statusnumber);	// CHECK
-  int aclfgl_err_print (int statusnumber);	// THESE SHOULD BE PASSED
-  int aclfgl_err_quit (int statusnumber);	// A NUMBER OF PARAMETERS
-  int aclfgl_startlog (char *filename);	// NOT THE PARAMETERS THEMSELVES
+  int aclfgl_err_get (int statusnumber);	/* CHECK */
+  int aclfgl_err_print (int statusnumber);	/* THESE SHOULD BE PASSED */
+  int aclfgl_err_quit (int statusnumber);	/* A NUMBER OF PARAMETERS */
+  int aclfgl_startlog (char *filename);		/* NOT THE PARAMETERS THEMSELVES */
 
 #define aclfgl_errorlog(n)  A4GL_errorlog(__FILE__,__LINE__,n);
 #define aclfgl_startlog(n)  A4GL_startlog(__FILE__,__LINE__,n);
 
-  //int     aclfgl_errorlog       (int n);
+  /* int     aclfgl_errorlog       (int n); */
   int A4GL_errorlog (char *s, int l, int n);
   int A4GL_startlog (char *s, int l, int n);
   char *A4GLSQLCV_convert_sql(char *dialect,char *sql);
@@ -346,7 +345,7 @@ int a_isprint(int a);
   int aclfgl_sqrt (int nargs);
 
   int A4GL_gen_field_chars (void ***field_list, void *formdets, ...);
-  //int A4GL_set_fields (void *sio);
+  /* int A4GL_set_fields (void *sio); */
   void aclfgli_clr_err_flg (void);
   void A4GL_set_option_value (char type, int keyval);
   int aclfgli_get_err_flg (void);
@@ -369,12 +368,14 @@ int a_isprint(int a);
   int A4GL_esql_db_open(int a,char *src,char *target);
 void *A4GLSQL_find_prepare (char *pname);
 
-  //double A4GL_pop_double(void);
+  /*double A4GL_pop_double(void); */
   /* ======================= API_ui.c ===================== */
 
-//does not A4GL_match actual function definition:
+/*
+//does not match actual function definition:
   //int aclfgl_set_page (int nargs);
   //int aclfgl_get_page (int nargs);
+*/
 
   /* ======================= builtin.c  ================== */
   void aclfgli_current (int a, int b);
@@ -387,8 +388,6 @@ void *A4GLSQL_find_prepare (char *pname);
   int A4GL_ctoint (void *a, void *b, int size);
 
 
-  //int     aclfgl_set_page               (void);
-  //int     aclfgl_get_page               (void);
 
 
   /* =================== sql.c ============================ */
@@ -407,6 +406,7 @@ void *A4GLSQL_find_prepare (char *pname);
 
   /* ======================= helper.c ======================= */
 
+/*
   //this function is inside ifdef INCLUDE_USR_FUNCS
   //and not invoked from anywhere: (most other the same)
   //int aclfgl_i_rowid_s (int arg);
@@ -414,6 +414,7 @@ void *A4GLSQL_find_prepare (char *pname);
   //int aclfgl_r_rowid_s (int arg);
   //int aclfgl_s_rowid_s (int arg);
   //int aclfgl_w_rowid_s (int arg);
+*/
   int aclfgl_fgl_prtscr (int n);
   int aclfgl_get_info (int np);
 
@@ -527,7 +528,7 @@ be used in applications which link to the library).
 
 #ifdef __NEED_DLL_IMPORT__
 	#define dll_export __declspec(dllexport)
-	#define dll_import extern __declspec(dllimport)	// for complex vars that can't be auto imported
+	#define dll_import extern __declspec(dllimport)	/* for complex vars that can't be auto imported */
 #else
 	#define dll_export
 	#define dll_import extern

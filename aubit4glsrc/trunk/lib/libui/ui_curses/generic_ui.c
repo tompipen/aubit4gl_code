@@ -1,6 +1,6 @@
 #include "a4gl_lib_ui_tui_int.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.19 2004-11-17 10:40:46 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.20 2004-12-02 09:33:23 mikeaubury Exp $";
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
@@ -56,10 +56,10 @@ void
 A4GL_set_option (ACL_Menu * menu, int opt)
 {
   int a;
-  (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
+  menu->curr_option = (ACL_Menu_Opts *) menu->first;
   for (a = 0; a < opt; a++)
     {
-      (ACL_Menu_Opts *) menu->curr_option =
+       menu->curr_option =
         (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (menu->curr_option))->
         next_option;
     }
@@ -150,7 +150,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
 
   if (flg)
     {
-      (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) opt2;
+       menu->curr_option = (ACL_Menu_Opts *) opt2;
       A4GL_debug ("We're on it!");
       return 1;
     }
@@ -177,7 +177,7 @@ A4GL_find_char (ACL_Menu * menu, int key)
 
       if (flg)
         {
-          (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) opt1;
+          menu->curr_option = (ACL_Menu_Opts *) opt1;
           return 1;
         }
       opt1 = (ACL_Menu_Opts *) opt1->next_option;
@@ -197,7 +197,6 @@ A4GL_move_bar (ACL_Menu * menu, int a)
   int flg;
   int dir = 0;
   int opage, npage;
-  void *z;
   opt1 = (ACL_Menu_Opts *) menu->curr_option;
   opage = opt1->page;
   flg = 0;
@@ -340,10 +339,10 @@ void
       if (strcmp (s, nextopt) == 0)
         {
           f = 1;
-          (ACL_Menu_Opts *) menu->curr_option = option;
+          menu->curr_option = option;
           break;
         }
-      (ACL_Menu_Opts *) option =
+      option =
         (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
     }
 
@@ -446,7 +445,7 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
                 }
             }
           A4GL_debug ("chk next");
-          (ACL_Menu_Opts *) option =
+          option =
             (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
           A4GL_debug ("set next");
         }
@@ -493,17 +492,17 @@ A4GL_find_shown (ACL_Menu * menu, int chk, int dir)
           menu->curr_option = (ACL_Menu_Opts *) opt1->next_option;
           if (menu->curr_option == 0)
             {
-              (ACL_Menu_Opts *) menu->curr_option =
+               menu->curr_option =
                 (ACL_Menu_Opts *) menu->first;
             }
         }
       else
         {
-          (ACL_Menu_Opts *) menu->curr_option =
+           menu->curr_option =
             (ACL_Menu_Opts *) (menu->curr_option)->prev_option;
           if (menu->curr_option == 0)
             {
-              (ACL_Menu_Opts *) menu->curr_option =
+               menu->curr_option =
                 (ACL_Menu_Opts *) menu->last;
             }
         }
@@ -788,18 +787,16 @@ void
 {
  ACL_Menu *menu;
  menu=menuv;
-  (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
+   menu->curr_option = (ACL_Menu_Opts *) menu->first;
 
   while (menu->curr_option->attributes & ACL_MN_HIDE)
     {
       if (menu->curr_option == menu->last)
         break;
-      (ACL_Menu_Opts *) menu->curr_option =
+      menu->curr_option =
         (ACL_Menu_Opts *) menu->curr_option->next_option;
     }
 
-  //A4GL_gui_setfocus ((int) menu->curr_option);
-  //A4GL_gui_endmenu ((int) menu);
   A4GL_debug ("Current option=%p", menu->curr_option);
   A4GL_debug ("Current option help=%d", menu->curr_option->help_no);
   return;
@@ -842,14 +839,13 @@ A4GL_new_menu (char *title,
   menu->first = (ACL_Menu_Opts *) opt1;
   opt1->prev_option = 0;
   A4GL_debug ("Menu=%p &Menu=%p", menu, &menu);
-  //A4GL_gui_startmenu (title, (long) menu);
   for (ret = 0; ret < nopts; ret++)
     {
       if (ret != 0)
         {
           opt2 = nalloc (ACL_Menu_Opts);
-          (ACL_Menu_Opts *) opt2->prev_option = (ACL_Menu_Opts *) opt1;
-          (ACL_Menu_Opts *) opt1->next_option = (ACL_Menu_Opts *) opt2;
+          opt2->prev_option = (ACL_Menu_Opts *) opt1;
+          opt1->next_option = (ACL_Menu_Opts *) opt2;
           opt2->next_option = 0;
           opt1 = opt2;
         }
@@ -860,7 +856,6 @@ A4GL_new_menu (char *title,
         {
           strcpy (opt1->opt_title, " ");
           strcpy (op1, argp_c);
-          //A4GL_gui_menuopt (argp_c, (int) opt1);
           A4GL_trim (op1);
           strcat (opt1->opt_title, op1);
           strcat (opt1->opt_title, " ");
@@ -892,12 +887,12 @@ A4GL_new_menu (char *title,
   va_end (*ap);
   menu->last = (ACL_Menu_Opts *) opt1;
 
-  (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
+  menu->curr_option = (ACL_Menu_Opts *) menu->first;
   while (menu->curr_option->attributes & ACL_MN_HIDE)
     {
       if (menu->curr_option == menu->last)
         break;
-      (ACL_Menu_Opts *) menu->curr_option =
+      menu->curr_option =
         (ACL_Menu_Opts *) menu->curr_option->next_option;
     }
 

@@ -23,7 +23,7 @@
  * MAKE SURE YOU REFER TO THIS FILE WITH FIXED PATH IN INCLUDE STATMENT, LIKE THIS:
  * #include "esql/decimal.h" 
 */
-//#include "decimal.h"
+/*#include "decimal.h" */
 #include "esql/decimal.h"
 #include "datetime.h"
 #include "sqltypes.h"
@@ -34,13 +34,16 @@
 extern "C"
 {
 #endif
-  //void A4GL_copy_money (dec_t * infx, fglmoney * a4gl, int indicat,int size, char dir);
+  /*
+  //void A4GL_copy_money (dec_t * infx, fglmoney * a4gl, int indicat,int size, char dir); 
   //void A4GL_copy_decimal (dec_t * infx, fgldecimal * a4gl, int indicat,int size, char dir);
   //void A4GL_copy_datetime (dtime_t * infx, struct A4GLSQL_dtime *a4gl, int indicat,int size, int mode);
+  */
 
-
+/*
 // Conversion functions between informix types and A4GL datatypes
 //void A4GL_copy_decimal (struct decimal *infx, fgldecimal * a4gl, int indicat,int size, char dir);
+*/
 
 #define COPY_DATA_IN_0(a4gl,infx,i,size,x,y) A4GL_copy_char(infx,a4gl,i,size,'i',x,y)
 #define COPY_DATA_IN_1(a4gl,infx,i,size) A4GL_copy_smint(infx,a4gl,i,size,'i')
@@ -84,12 +87,13 @@ extern "C"
 
 
 #define COPY_SQLCA
+
+/*
 //#define popdec(x) {fgldecimal _s;A4GL_pop_var(&_s,0x1e100005);A4GL_copy_decimal(x,&_s,0x1e10,'i');}
 //#define retdec(x) {fgldecimal _s;A4GL_copy_decimal(x,&_s,0x1e10,'o');A4GL_push_variable(&_s,0x1e100005);}
-
-
 //#define popdtime(x) {char *_s;_s=A4GL_char_pop();dtcvasc(_s,&x);free(_s);}
 //#define retdtime(x) {char _s[123];dttoasc(&x,_s);push_char(_s);}
+*/
 
 #ifdef __cplusplus
 }

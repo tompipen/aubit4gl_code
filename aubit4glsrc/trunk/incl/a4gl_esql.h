@@ -18,14 +18,16 @@
 extern "C"
 {
 #endif
-//#include "a4gl_incl_4glhdr.h"
+/*#include "a4gl_incl_4glhdr.h" */
 #define GETENV_OK
 #include "a4gl_API_esql.h"
 
+/*
 //Including a4gl_libaubit4gl.h here will force practicvally every header file
 //in Aubit compiler to become a dependency when installing Aubit compiler.
 //I compiled a lot of code, and did not find that there is a need for it.
 //#include "a4gl_libaubit4gl.h"
+*/
 
 #ifdef DIALECT_INFORMIX
 	#include "a4gl_esql_infx.h"
@@ -57,7 +59,7 @@ extern "C"
 #endif
 
 #ifndef VALID_DIALECT_FOUND
-	//default:
+	/* default: */
 	#include "a4gl_esql_infx.h"
 #endif
 

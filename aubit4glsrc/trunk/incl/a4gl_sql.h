@@ -53,9 +53,9 @@ extern "C"
   void A4GLSQL_set_status (int a, int sql);
   void A4GLSQL_set_sqlerrd(int a0,int a1,int a2,int a3,int a4,int a5);
   int A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind);
-  //struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni,struct BINDING *binding);
+  /*struct s_sid *A4GLSQL_prepare_glob_sql (char *s, int ni,struct BINDING *binding); */
   struct s_sid *A4GLSQL_prepare_sql (char *s);
-  //struct s_sid *A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s);
+  /*struct s_sid *A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s); */
 #define A4GL_convert_sql #error out of date
 char *A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sql);
   int A4GLSQL_swap_bind_stmt(char *stmt, char t, char **sb,int *sc,void *bind, int cnt);

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.24 2004-03-24 11:45:48 mikeaubury Exp $
+# $Id: data_if.c,v 1.25 2004-12-02 09:33:21 mikeaubury Exp $
 #
 */
 
@@ -307,7 +307,7 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
   A4GL_debug ("No found name %s\n", A4GL_null_as_null(name));
 
   return (void *) 0;		/* unknown value */
-};
+}
 
 /**
  * Handler for s_inp_arr
@@ -820,7 +820,7 @@ A4GL_debug("getcount=%d XYX",A4GL_get_count());
   A4GL_debug ("CRITICAL - UNKNOWN VALUE FOR  s_inp_arr - %s\n", A4GL_null_as_null(name));
 
   return (void *) 0;		/* unknown value */
-};
+}
 
 
 /**
@@ -980,7 +980,7 @@ get_set_s_prompt (void *ptr, int mode, char *name, long var)
     }
 
   return (void *) 0;		/* unknown value */
-};
+}
 
 /**
  * Handler for rep_structure.
@@ -1254,7 +1254,7 @@ get_set_rep_structure (void *ptr, int mode, char *name, long var)
     }
 
   return (void *) 0;		/* unknown value */
-};
+}
 
 
 /**
@@ -1483,7 +1483,7 @@ get_set_s_disp_arr (void *ptr, int mode, char *name, long var)
 
   A4GL_assertion (1, "CRITICAL ERROR - unknown name in GETSET/s_disp_arr");
   return (void *) 0;		/* unknown value */
-};
+}
 
 
 

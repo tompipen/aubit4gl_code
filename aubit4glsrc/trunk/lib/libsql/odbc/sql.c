@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.92 2004-11-25 15:38:59 mikeaubury Exp $
+# $Id: sql.c,v 1.93 2004-12-02 09:33:23 mikeaubury Exp $
 #
 */
 
@@ -3915,12 +3915,19 @@ A4GLSQL_unload_data_internal (char *fname, char *delims, char *sql1,int nbind, v
 
   rc = SQLExecDirect (hstmt, sql2, SQL_NTS);
   chk_rc (rc, hstmt, "unload_data");
+  if (a4gl_sqlca.sqlcode<0) return;
+
 #ifdef DEBUG
   A4GL_debug ("Executed %s %d", sql2, rc);
 #endif
 
   rc = SQLNumResultCols (hstmt, &ncols);
+	A4GL_debug("Calling chk_Rc %d\n",rc);
   chk_rc (rc, hstmt, "unload_data");
+  if (a4gl_sqlca.sqlcode<0) return;
+	A4GL_debug("Done Calling chk_Rc %d status=%d \n",rc,a4gl_sqlca.sqlcode);
+
+
   for (colcnt = 1; colcnt <= ncols; colcnt++)
     {
 

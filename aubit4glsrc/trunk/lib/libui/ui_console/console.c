@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.16 2004-08-31 20:46:54 mikeaubury Exp $
+# $Id: console.c,v 1.17 2004-12-02 09:33:23 mikeaubury Exp $
 #*/
 
 /**
@@ -255,13 +255,13 @@ void
 {
 ACL_Menu *menu;
 menu=menuv;
-  (ACL_Menu_Opts *) menu->curr_option = (ACL_Menu_Opts *) menu->first;
+   menu->curr_option = (ACL_Menu_Opts *) menu->first;
 
   while (menu->curr_option->attributes & ACL_MN_HIDE)
     {
       if (menu->curr_option == menu->last)
 	break;
-      (ACL_Menu_Opts *) menu->curr_option =
+      menu->curr_option =
 	(ACL_Menu_Opts *) menu->curr_option->next_option;
     }
 
@@ -506,8 +506,7 @@ A4GL_menu_attrib (void* menuv, int attr, va_list ap)
 		}
 	    }
 	  A4GL_debug ("chk next");
-	  (ACL_Menu_Opts *) option =
-	    (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
+	  option = (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
 	  A4GL_debug ("set next");
 	}
     }

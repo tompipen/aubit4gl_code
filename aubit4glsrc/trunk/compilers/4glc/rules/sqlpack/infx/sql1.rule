@@ -656,7 +656,9 @@ comparison_predicate_ss:
 	value_expression_ss op_not IS_NULL { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" IS NULL"),0); }
 	| value_expression_ss op_not IS_NOT_NULL { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" IS NOT NULL"),0); }
 	| value_expression_ss comp_op value_expression_ss { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0); }
-	| value_expression_ss EQUAL value_expression_ss { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0); table_cnt--; }
+	| value_expression_ss EQUAL value_expression_ss { 
+			$<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,0); table_cnt--; 
+	}
 	| value_expression_ss op_not BETWEEN value_expression_ss KW_AND value_expression_ss { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),strdup(" BETWEEN "),$<sql_string>4,strdup(" AND "),$<sql_string>6,0);
 	}
 	| value_expression_ss LIKE pattern_ss op_escape { $<sql_string>$=make_sql_string_and_free($<sql_string>1,kw_space,strdup($<str>2),kw_space,$<sql_string>3,strdup($<str>4),0); }

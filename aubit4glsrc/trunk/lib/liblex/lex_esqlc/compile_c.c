@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.203 2004-11-30 14:39:24 mikeaubury Exp $
+# $Id: compile_c.c,v 1.204 2004-12-02 09:33:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.203 2004-11-30 14:39:24 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.204 2004-12-02 09:33:22 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -1573,9 +1573,9 @@ print_param (char i)
     }
 
   if (i=='r') {
-    printc ("struct BINDING _rbind[%d]={ \n", ONE_NOT_ZERO(fbindcnt));
+    	printc ("struct BINDING _rbind[%d]={ \n", ONE_NOT_ZERO(fbindcnt));
   } else {
-    printc ("struct BINDING %cbind[%d]={ /* %d */\n", i, ONE_NOT_ZERO(fbindcnt),fbindcnt);
+    	printc ("struct BINDING %cbind[%d]={ /* %d */\n", i, ONE_NOT_ZERO(fbindcnt),fbindcnt);
   }
       if (fbindcnt == 0)
 	{
@@ -1587,10 +1587,8 @@ print_param (char i)
       		fbind[a].dtype = scan_variable (fbind[a].varname);
       		if (a > 0)
 			printc (",\n");
-      		printc ("{&%s,%d,%d}", fbind[a].varname,
-	      		(int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
-		
-		
+      		/* printc ("{&%s,%d,%d}", fbind[a].varname, (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16); */
+      		printc ("{0,%d,%d}", (int) fbind[a].dtype & 0xffff, (int) fbind[a].dtype >> 16);
 				
     		}
 	}
@@ -1627,6 +1625,11 @@ print_param (char i)
     }
     printc("0");
   printc ("};");
+
+  for (a=0;a<fbindcnt;a++) {
+    printc ("fbind[%d].ptr=&%s;\n", a,fbind[a].varname);
+  }
+
 
   return a;
 }
