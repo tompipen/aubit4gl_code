@@ -3,7 +3,7 @@
 #
 ################################################################
 #
-# $Id: Makefile.in,v 1.1 2001-12-10 20:04:52 saferreira Exp $
+# $Id: Makefile.in,v 1.2 2001-12-12 05:42:39 afalout Exp $
 #
 
 ## ==================================================================
@@ -11,7 +11,7 @@
 ## ==================================================================
 
 4GLPCFLAGS		= -make-compile -static -verbose
-PROGRAM 		=mcompile
+PROGRAM 		=mcompile mdecompile
 
 ifdef COMSPEC
 	CC 			= gcc
@@ -125,8 +125,9 @@ clean:
 ## ==================================================================
 
 
-decompiler: decompile.c menu_x_xdr.c
-	cc decompile.c menu_x_xdr.c
+mdecompile: decompile.c menu_x_xdr.c
+	cc decompile.c menu_x_xdr.c -o $@
+	cp $@ ../../bin
 
 lint:
 	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)

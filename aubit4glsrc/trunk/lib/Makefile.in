@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.1 2001-12-10 20:04:52 saferreira Exp $
+# $Id: Makefile.in,v 1.2 2001-12-12 05:42:39 afalout Exp $
 #
 
 ifndef NOINCL
@@ -54,8 +54,10 @@ override NOINCL=0
 #move it to your aubitbuild.mk. Thanks - Andrej:
 ODBCLIBDIR			= /home/aubit4gl/mycopy/Aubit4gl/lib/odbc
 
-ODBC				=iodbc
-PDFBUILD			=no
+#ODBC				=iodbc
+#PDFBUILD			=no
+ALL 				=libPDF_NOPDF.so
+
 
 #-DNODEBUG -g
 
@@ -69,9 +71,9 @@ ifdef COMSPEC
 #default RPC install path on CygWin is /usr/local/include:
 	LOCALCFLAGS		+=-DWIN32 -I/usr/local/include
 	LDFLAGS			+= -lrpclib -lc
-	ALL				=libaclall.a
+	ALL				+=libaclall.a
     ALL_GUI			=libaclallgui.a
-	
+
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
 			ALL			+=libaclall-noodbc.a
@@ -98,9 +100,9 @@ else
 	ifeq "$(PDFBUID)" "yes"
 		LOCALCFLAGS	+= -DUSE_PDF_REPORTS
     endif
-    ALL				=aclshared.so libaclall.a
+    ALL				+=aclshared.so libaclall.a
     ALL_GUI			=aclsharedgui.so libaclallgui.a
-	
+
 	ifeq "$(ODBC_LINK)" "static"
 		ifneq "$(ODBC)" "no"
 		    ALL			+=aclshared-noodbc.so libaclall-noodbc.a
@@ -128,9 +130,10 @@ COMMONSRC= \
 	array.c bogus.c builtin.c builtin_d.c conv.c colours.c curslib.c \
 	dates.c dmy.c err.c fglwrap.c funcs_d.c gtime.c gtrim.c io.c load.c \
 	newpanels.c others.c read_dty.c readform.c prompt.c readforms.c \
-	pdf_report.c report.c resource.c rexp2.c sleep.c stack.c string.c \
+	report.c resource.c rexp2.c sleep.c stack.c string.c \
 	screen.c rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
 	rpc_stack_xdr.c pointers.c calldll.c data_if.c
+
 
 DIFFSRC= \
 	iarray.c fields.c error.c gui_io.c errfile.c helper.c match.c \
@@ -163,6 +166,11 @@ else #default: dynamic linking for SQL access libs
 
 endif
 
+ifeq "$(PDFBUILD)" "yes"
+	ALL 			+=libPDF_PDF.so
+endif
+
+
 OBJS				=${CMODS:.c=.o} project.o
 OBJSNOSQL			+=${CMODSNOSQL:.c=.o} project.o
 
@@ -175,25 +183,27 @@ DLL_OBJS			=dll.o gui_gtk.o windef.def
 ## ==================================================================
 
 all: ${ALL}
+	@echo Targets ${ALL} built successfully.
+
 all_gui: ${ALL_GUI}
 
 #dynamic loading SQL libs:
 libsqlso: ${LIBSQL}
 
 libSQL_noodbc.so:
-	${MAKE} -C libsql/nosql
+	${MAKE} -f Makefile.old -C libsql/nosql
 	cp libsql/nosql/*.so .
 
 libSQL_iodbc.so:
-	${MAKE} -C libsql/odbc iodbc
+	${MAKE} -f Makefile.old -C libsql/odbc iodbc
 	cp libsql/odbc/*.so .
 
 libSQL_unixodbc.so:
-	${MAKE} -C libsql/odbc unixodbc
+	${MAKE} -f Makefile.old -C libsql/odbc unixodbc
 	cp libsql/odbc/*.so .
 
 #libSQL_esqlc.so
-#	${MAKE} -C libsql/esqlc
+#	${MAKE} -f Makefile.old -C libsql/esqlc
 #	cp libsql/libsqlc/*.so .
 
 #----------------- with ODBC, if ODBC != no ----------------------
@@ -247,6 +257,12 @@ aclsharedgui-noodbc.so: $(OBJSNOSQL) gui_gtk.o
 ## ==================================================================
 ##                             Sub Targets
 ## ==================================================================
+
+libPDF_PDF.so:
+	${MAKE} -C libpdf -f Makefile.old libPDF_PDF.so
+
+libPDF_NOPDF.so:
+	${MAKE} -C libpdf -f Makefile.old libPDF_NOPDF.so
 
 
 gui_tui.o: gui.c
@@ -320,7 +336,7 @@ $(A_DLLNAME).dll: $(A_DLLOBJS)
 ##                        Clean Targets
 ## ==================================================================
 
-clean : clean.generated clean.libsql
+clean : clean.generated clean.libsql clean.libpdf
 	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c
 	${RM} form_x_xdr.c form_x.h project.c
 	${RM} loadmap loadmap.c loadmap.h core
@@ -331,13 +347,15 @@ clean.generated:
 	${RM} generated/project.c generated/project.o
 
 clean.all: clean
-	${MAKE} -C libgui clean
+	${MAKE} -f Makefile.old -C libgui clean
 
 clean.libsql:
-	${MAKE} -C libsql/nosql clean
-	${MAKE} -C libsql/odbc clean
-#	${MAKE} -C libsql/esqlc
+	${MAKE} -f Makefile.old -C libsql/nosql clean
+	${MAKE} -f Makefile.old -C libsql/odbc clean
+#	${MAKE} -f Makefile.old -C libsql/esqlc
 
+clean.libpdf:
+	${MAKE} -f Makefile.old -C libpdf clean
 
 
 ## ==================================================================

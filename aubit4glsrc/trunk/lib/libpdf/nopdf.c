@@ -1,6 +1,6 @@
 /**
  * @file
- * PDF Report Implementation functions.
+ * PDF Report Implementation functions used in absence of PDF libraries on system.
  *
  * @todo Add Doxygen comments to file
  * @todo Take the prototypes here declared. See if the functions are static

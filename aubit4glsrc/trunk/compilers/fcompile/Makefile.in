@@ -3,7 +3,7 @@
 #
 ################################################################
 #
-# $Id: Makefile.in,v 1.1 2001-12-10 20:04:52 saferreira Exp $
+# $Id: Makefile.in,v 1.2 2001-12-12 05:42:39 afalout Exp $
 #
 
 ## ==================================================================
@@ -137,8 +137,13 @@ clean:
 lint:
 	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
 
-decompile : decompile.c form_x_xdr.c dump_java.c
-	cc decompile.c form_x_xdr.c dump_java.c -o decompile
+fdecompile-j : decompile.c form_x_xdr.c dump_java.c
+	cc decompile.c form_x_xdr.c dump_java.c -o $@
+	cp $@ ../../bin
+
+fdecompile : decompile.c form_x_xdr.c dump.c
+	cc decompile.c form_x_xdr.c dump.c -o $@
+	cp $@ ../../bin
 
 
 
