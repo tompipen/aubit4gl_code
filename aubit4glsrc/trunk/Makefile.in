@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.55 2002-04-06 06:33:37 afalout Exp $
+# $Id: Makefile.in,v 1.56 2002-04-12 12:22:50 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -63,7 +63,16 @@ endif
 TOLIBGTK	=$(SOURCE)/lib/libUI_GTK${SO_EXT} $(SOURCE)/lib/libUI_GTK_x${SO_EXT}
 TOLIBCUI	=$(SOURCE)/lib/libaubit4gl${SO_EXT} $(SOURCE)/lib/libEXREPORT_NOPDF${SO_EXT} \
 			$(SOURCE)/lib/libSQL_nosql${SO_EXT} $(SOURCE)/lib/libUI_CONSOLE${SO_EXT} \
-			$(SOURCE)/lib/libRPC_NORPC${SO_EXT}
+			$(SOURCE)/lib/libRPC_NORPC${SO_EXT} $(SOURCE)/lib/libA4GLLEX_C${SO_EXT}
+
+
+ifneq "@PERLBUILD@" "no"
+	#Perl compiler is compiled in "extra" and is optional
+	ifneq "$(shell ls $(SOURCE)/lib/libA4GLLEX_PERL${SO_EXT})" ""
+		TOLIBCUI	+=$(SOURCE)/lib/libA4GLLEX_PERL${SO_EXT}
+		TOBIN		+=$(SOURCE)/bin/4glp${EXEEXT}
+    endif
+endif
 
 ifneq "@HAVE_RPCLIB@" "0"
 	TOLIBCUI	+=$(SOURCE)/lib/libRPC_XDR${SO_EXT}
@@ -309,7 +318,7 @@ jabber:
 perl: perl.compiler perl.lib test.perl
 
 perl.compiler:
-	${MAKE} ${MKNAME} -C compilers/4glc 4glc_perl PDFBUILD=no ${NOINCL_PARAM}
+	${MAKE} -C compilers/4glc 4glp
 	@echo Aubit 4gl Perl-code generating version compiler created
 
 perl.lib:
@@ -317,7 +326,7 @@ perl.lib:
 	@echo Aubit 4gl Perl-code libraries installed
 
 test.perl:
-	cd tools/test; 4glc_perl test_build.4gl
+	cd tools/test; 4glp test_build.4gl
 	cd tools/test; perl test_build.pl
 
 ## ==================================================================
@@ -406,7 +415,7 @@ clean.bin:
 	(cd bin;${RM} 4glc${EXE} fcompile${EXE} mcompile${EXE} mkmess${EXE} \
 	mcompile-noodbc${EXE} loadmap${EXE} \
 	*.bak ide${EXE} fcompile-noodbc${EXE} 4glc-noodbc${EXE} \
-	4glc_perl${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
+	4glp${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
 	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
 	)
 

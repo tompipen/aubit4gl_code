@@ -2,7 +2,7 @@
  * @file
  * mkmess - message help file compiler, Informix 4gl style formated.
  *
- * Compile a message file (.msg) and generates a help compiled file (.hlp)
+ * Compile a message file (.msg) in ??? format, and generates a help compiled file (.hlp)
  */
 
 #include <stdio.h>

@@ -1,40 +1,56 @@
-ifdef COMSPEC
-	LN=cp
-    EXE=.exe
-else
-    LN=ln -f
-endif
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
 
+#
+# $Id: Makefile.in,v 1.2 2002-04-12 12:22:56 afalout Exp $
+#
 
-CFLAGS+= -O2 -I../../lib -I../.. -I.. -I../../lib/libincl
+#All stuff common to more then one Aubit compiler make file is there:
+include ../../incl/Makefile-common
+override NOINCL=0
+
+## ==================================================================
+##                    Options
+## ==================================================================
+
+CFLAGS+= -I../../lib -I../../lib/libincl
+
+## ==================================================================
+##                    Targets
+## ==================================================================
 
 all: mkmess
-	
-mkmess:
-	${CC}  mkmess.c -o mkmess
-	${LN} mkmess${EXE} ../../bin/mkmess${EXE}
+
+mkmess: mkmess.c
+	${CC} $^ -o $@
+	${LN} $@${EXE} ../../bin/$@${EXE}
+
+## ==================================================================
+##                    Clean
+## ==================================================================
 
 clean:
 	rm -f *.o mkmess.err mkmess mkmess.a *.bak *.exe
-
-
-
-
-#######################################################
-#delete this:
-
-
-all2: mkmess
-
-mkmess.o: mkmess.c
-
-
-4glc: mkmess.o
-#../../bin/mkmess -make-compile -static -DDEBUG -o makemess -lfl -ld
-#	ln -f mkmess ../../bin/mkmess
-	${CC}  mkmess.c -c -o mkmess.o
-	${LN} mkmess${EXE} ../../bin/mkmess${EXE}
-
-
-
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.4 2002-04-06 06:33:41 afalout Exp $
+# $Id: Makefile.in,v 1.5 2002-04-12 12:22:56 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,17 +37,11 @@ override NOINCL=0
 
 CMODS_NORPC		=rpc_norpc.c
 CMODS_RPC		=rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
-				rpc_stack_xdr.c 
+				rpc_stack_xdr.c
 #CMODS_XDR		= ../../../compilers/fcompile/form_x_xdr.c
 
-#CMODSNOSQL 			=${COMMONSRC}
-#CMODS_ODBC			=${CMODS_ODBCSQL} ${CMODS_ODBCEX}
-#OBJS_NOSQL			=${CMODS_NOSQL:.c=.o}
-#OBJS_XDR			=${CMODS_XDR:.c=.o}
 OBJS_RPC			=${CMODS_RPC:.c=.o}
 OBJS_NORPC			=${CMODS_NORPC:.c=.o}
-#CMODS 				=${CMODSNOSQL} ${CMODS_DLSQL}
-#OBJS				=${CMODS:.c=.o} ${CMODS_PROJECT:.c=.o}
 
 ## ==================================================================
 ##                              Options
