@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.46 2003-04-28 12:29:12 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.47 2003-04-30 13:25:18 mikeaubury Exp $
 #
 */
 
@@ -435,7 +435,7 @@ extern "C" {
 	#endif
 
 	#include <stdarg.h>  			/* va_start() */
-   	#include <ctype.h> 				/* tolower() toupper() */
+   	//#include <ctype.h> 				/* tolower() toupper() */
 	#include <stdio.h> 				/* needed for FILE symbol */
 	#ifndef WIN32
 		#include <string.h>
