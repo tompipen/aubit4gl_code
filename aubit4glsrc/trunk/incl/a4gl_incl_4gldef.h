@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.37 2003-04-24 10:31:29 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.38 2003-04-26 06:37:30 afalout Exp $
 */
 
 /**
@@ -338,8 +338,7 @@ assist.c:834: warning: no previous declaration for `aclfgl_list_selected'
   void clr_form_fields (int to_defaults, char *defs);
 
   /* ============= from assist.4gl/.c ======================= */
-  int aclfgl_run_gui (int nargs);
-
+	int 	aclfgl_a4gl_run_gui 	(int nargs);
   /* ============== from curslib.c =========================== */
   int aclfgl_fgl_drawbox (int n);
   //void  aclfgl_fgl_drawbox (int n);

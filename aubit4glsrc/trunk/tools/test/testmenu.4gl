@@ -4,7 +4,8 @@
 #
 main
 	
-	show menu mymenu using my_menuhandler from "testmenu.mnu"
+#	show menu mymenu using my_menuhandler from "testmenu.mnu"
+	show menu mymenu using my_menuhandler from "testmenu"
 
 # if you don't have this - your program will exit here!
 	call a4gl_run_gui()

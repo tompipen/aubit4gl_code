@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.170 2003-04-11 12:44:29 afalout Exp $
+dnl # $Id: configure.in,v 1.171 2003-04-26 06:37:22 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2922,14 +2922,25 @@ PHP_CONFIGURE_PART(Checking for standard libraries:)
 
 		case "$host" in
 		*-*-cygwin | *-*-cygwin* | *-*-mingw* | *-*-pw32* )
-				AC_MSG_CHECKING(libdl)
-				AC_MSG_RESULT(Cygwin DLL contains emulation of libdl functions.)
+			AC_MSG_CHECKING(libdl)
+			AC_MSG_RESULT(Cygwin DLL contains emulation of libdl functions.)
 		    ;;
 
 		*alpha* )
 			#DEC Alpha ES40 (uname -a gives: OSF1 maxdev V5.1 732 alpha)
-				AC_MSG_CHECKING(libdl)
-				AC_MSG_RESULT(DEC Alpha has dlopen in standard libraries.)
+			AC_MSG_CHECKING(libdl)
+			AC_MSG_RESULT(DEC Alpha has dlopen in standard libraries.)
+            ;;
+
+        *hp-hpux* )
+			#HP-UX 11.0 gives hppa2.0w-hp-hpux11.00
+            #uname -m = 9000/800
+			#uname -r = B.11.00
+			#uname -s = HP-UX
+			#uname -v = U
+			AC_MSG_CHECKING(libdl)
+			AC_MSG_RESULT(HP-UX has dlopen in standard libraries.)
+
             ;;
 
 		*)
