@@ -153,7 +153,7 @@ MSG=$(wildcard *.msg)
 #All targets in this make file are "phony" targets - they do not create files
 .PHONY: compile run desc clean db_test ec_test nosilent_test tui_test \
 	form_test report_test graphic_test console_prompt_test dump_screen_test \
-	long_test cert_test obsolete_test unknown_test
+	long_test cert_test obsolete_test unknown_test 
 
 ################
 
@@ -207,7 +207,7 @@ endif
 
 CLEAN_FILES=*.bak *.o *.4ae *.ao *.ec *.cpc *.h *.glb \
     ${MODULES} ${FORMS} *.4pe.dat *.4pe.xml ${ADD_CLEAN} *.c out *.err  \
-    pcode.run *.tmp out.ifx out.querix out.4js
+    pcode.run *.tmp out.ifx out.querix out.4js *.4go *.warn
 
 ifneq "${TARGET_EXT}" ""
 	CLEAN_FILES+=*${TARGET_EXT}
