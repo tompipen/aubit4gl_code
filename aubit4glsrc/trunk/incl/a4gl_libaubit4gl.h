@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.103 2003-12-09 11:23:44 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.104 2003-12-20 14:24:47 mikeaubury Exp $
 #
 */
 
@@ -173,6 +173,7 @@
 #define AUBIT_ATTR_BLINK      		0x08000
 #define AUBIT_ATTR_DIM        		0x10000
 #define AUBIT_ATTR_INVISIBLE   		0x20000
+#define AUBIT_ATTR_ALTCHARSET  		0x40000
 
   /* ====================== from a4gl_errors.h ================== */
 #define ERR_BADNOARGS 		1000

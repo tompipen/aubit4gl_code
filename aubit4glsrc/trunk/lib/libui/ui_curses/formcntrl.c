@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.39 2003-12-17 11:38:01 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.40 2003-12-20 14:24:47 mikeaubury Exp $
 #*/
 
 /**
@@ -1198,7 +1198,6 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   acckey = A4GL_key_val ("ACCEPT");
 
   A4GL_debug ("Got key %d", a);
-
 
   if (a == acckey)
     {

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.71 2003-12-16 17:52:06 mikeaubury Exp $
+# $Id: curslib.c,v 1.72 2003-12-20 14:24:47 mikeaubury Exp $
 #*/
 
 /**
@@ -1963,7 +1963,8 @@ A4GL_clr_menu_disp (ACL_Menu * menu)
 {
   /* needs fix on width */
   A4GL_menu_setcolor (menu, NORMAL_TEXT);
-  A4GL_subwin_gotoxy (menu->menu_win, menu->menu_offset, menu->menu_line,
+        A4GL_debug("menu->menu_offset=%d menu->menu_line=%d",menu->menu_offset,menu->menu_line);
+  A4GL_subwin_gotoxy (menu->menu_win, menu->menu_offset, 1,
 		      A4GL_get_curr_border ());
   A4GL_debug ("Calling subwin_print...");
   A4GL_subwin_print (menu->menu_win,

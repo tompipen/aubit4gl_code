@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.33 2003-10-08 17:09:51 mikeaubury Exp $
+# $Id: others.c,v 1.34 2003-12-20 14:24:47 mikeaubury Exp $
 #
 */
 
@@ -547,6 +547,13 @@ A4GL_char_val (char *s)
   return str;
 }
 
+aclfgl_aclfgl_random(int n) {
+int a;
+	a=A4GL_pop_int();
+	a=rand()%a;
+	A4GL_push_int(a);
+	return 1;
+}
 
 /** Moved from readforms.c
  *
