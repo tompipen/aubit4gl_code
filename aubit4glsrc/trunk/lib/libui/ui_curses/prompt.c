@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.41 2004-03-03 13:18:07 mikeaubury Exp $
+# $Id: prompt.c,v 1.42 2004-03-19 19:24:53 mikeaubury Exp $
 #*/
-static char *module_id="$Id: prompt.c,v 1.41 2004-03-03 13:18:07 mikeaubury Exp $";
+static char *module_id="$Id: prompt.c,v 1.42 2004-03-19 19:24:53 mikeaubury Exp $";
 
 /**
  * @file
@@ -171,8 +171,6 @@ int
   set_field_buffer (prompt->field, 0, buff);
   A4GL_debug ("Set buffer ");
 
-  //sarr[2] = 0;
-
   A4GL_debug ("Made fields");
   A4GL_debug ("Field attr : %d", field_opts (prompt->field));
 
@@ -193,9 +191,7 @@ int
 
   A4GL_int_form_driver (f, REQ_FIRST_FIELD);
   A4GL_int_form_driver (f, REQ_OVL_MODE);
-  //wrefresh (p);
   A4GL_debug ("Initialized form");
-/* zrefresh(); */
   A4GLSQL_set_status (0, 0);
 
   A4GL_gui_startprompt ((long) prompt);
@@ -215,7 +211,6 @@ int
 A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 {
   FIELD *f;
-
   f = current_field (mform);
 
 
@@ -232,7 +227,7 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
 	abort_pressed=1;
 	return 0;
 
-    case 27:
+    case A4GLKEY_ESCAPE:
       return 0;
 
     case 26:
@@ -294,7 +289,7 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
     }
 
   /* A4GL_mja_refresh (); */
-  if (a == A4GL_key_val ("HELP"))
+  if (A4GL_is_special_key(a,A4GLKEY_HELP))
     {
       aclfgl_a4gl_show_help (prompt->h);
       a = 0;
@@ -367,7 +362,7 @@ A4GL_debug("prompt_last_key = %d\n",prompt_last_key);
         prompt->processed_onkey=a;
 	A4GL_debug("Read character... %d",a);
   	A4GL_clr_error_nobox("prompt");
-	if (abort_pressed ) a=-100;
+	if (abort_pressed ) a=A4GLKEY_INTERRUPT;
 	prompt_last_key=a;
   	A4GL_set_last_key (a);
   	prompt->lastkey = A4GL_get_lastkey ();

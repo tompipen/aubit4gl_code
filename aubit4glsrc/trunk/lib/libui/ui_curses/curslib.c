@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.88 2004-03-03 13:18:07 mikeaubury Exp $
+# $Id: curslib.c,v 1.89 2004-03-19 19:24:53 mikeaubury Exp $
 #*/
 
 /**
@@ -40,7 +40,7 @@
  * @todo Doxygen comments to add to functions
  */
 
-static char *module_id="$Id: curslib.c,v 1.88 2004-03-03 13:18:07 mikeaubury Exp $";
+static char *module_id="$Id: curslib.c,v 1.89 2004-03-19 19:24:53 mikeaubury Exp $";
 /*
 =====================================================================
 		                    Includes
@@ -1652,7 +1652,7 @@ int
       A4GL_debug (">>>> KEY=%d", a);
 #endif
 
-      if (a == 23 || a == A4GL_key_val ("HELP"))
+      if (A4GL_is_special_key(a,A4GLKEY_HELP))
 	{
 #ifdef DEBUG
 	  A4GL_debug ("....SHOWHELP.... menu->curr_option->help_no=%d",
@@ -2699,7 +2699,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	  if (abort_pressed)
 	    {
 	      A4GL_debug ("Got interrupt key pressed....");
-	      a = A4GL_key_val ("INTERRUPT");	/* MJA 31/7/00 */
+	      a = A4GLKEY_INTERRUPT;
 	      wrapper_wgetch (menu->menu_win);
 	      A4GL_set_abort (0);
 	      return a;

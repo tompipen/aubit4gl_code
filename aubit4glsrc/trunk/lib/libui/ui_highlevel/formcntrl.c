@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.9 2004-03-09 09:35:49 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.10 2004-03-19 19:24:53 mikeaubury Exp $
 #*/
-static char *module_id="$Id: formcntrl.c,v 1.9 2004-03-09 09:35:49 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.10 2004-03-19 19:24:53 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1130,13 +1130,16 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 // Wait for a key..
    A4GL_LL_set_carat(mform);
   a = A4GL_getch_win ();
+
+  if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)) a=A4GLKEY_ACCEPT;
+
   s->processed_onkey = a;
   m_lastkey = a;
   A4GL_set_last_key (a);
   A4GL_clr_error_nobox ("A4GL_form_loop");
 
   if (abort_pressed) {
-    a =  -100;   // A4GL_key_val ("INTERRUPT");
+    a =  A4GLKEY_INTERRUPT;   // A4GL_key_val ("INTERRUPT");
     A4GL_set_last_key (a);
       abort_pressed = 0;
   }
@@ -1270,7 +1273,6 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
   struct s_form_attr *form;
   struct struct_scr_field *fprop;
   struct s_form_dets *fd;
-  int acckey;
   int has_picture = 0;
   int c;
   char *picture = 0;
@@ -1335,12 +1337,11 @@ A4GL_proc_key_input (int a, void *mform, struct s_screenio *s)
 
     }
 
-  acckey = A4GL_key_val ("ACCEPT");
 
   A4GL_debug ("Got key %d", a);
 
 
-  if (a == acckey)
+  if (a == A4GLKEY_ACCEPT)
     {
       A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
       return -1;
@@ -1366,7 +1367,7 @@ break;
 */
 
 
-    case -100:
+    case A4GLKEY_INTERRUPT:
       A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
       break;
 

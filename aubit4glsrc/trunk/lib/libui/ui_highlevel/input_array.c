@@ -25,10 +25,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.11 2004-03-07 16:30:17 mikeaubury Exp $
+# $Id: input_array.c,v 1.12 2004-03-19 19:24:53 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: input_array.c,v 1.11 2004-03-07 16:30:17 mikeaubury Exp $";
+static char *module_id="$Id: input_array.c,v 1.12 2004-03-19 19:24:53 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -627,16 +627,21 @@ iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt)
 	//A4GL_LL_screen_update();
       abort_pressed = 0;
       a = A4GL_getch_win ();
+
+
+        if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)) a=A4GLKEY_ACCEPT;
+        if (A4GL_is_special_key(a,A4GLKEY_INSERT)) a=A4GLKEY_INSERT;
+        if (A4GL_is_special_key(a,A4GLKEY_DELETE)) a=A4GLKEY_DELETE;
+        if (A4GL_is_special_key(a,A4GLKEY_NEXT))   a=A4GLKEY_NEXT;
+        if (A4GL_is_special_key(a,A4GLKEY_PREV))   a=A4GLKEY_PREV;
+
       arr->processed_onkey = a;
       if (abort_pressed)
 	{
-	  a = -100;
-	  //fprintf (stderr, "ABORT\n");
-	  //fflush (stderr);
+	  a = A4GLKEY_INTERRUPT;
 	}
       A4GL_debug ("calling set_last_key : %d", a);
       A4GL_set_last_key (a);
-      //m_lastkey = a;
     }
 
 
@@ -702,24 +707,24 @@ A4GL_debug("process_key_press inp_arr %d",a);
   act_as = a;
 
 
-  if (a == A4GL_key_val ("ACCEPT"))
+  if (a == A4GLKEY_ACCEPT)
     {
       act_as = -99;
     }
 
-  if (a == A4GL_key_val ("NEXT"))
+  if (a == A4GLKEY_NEXT)
     {
       act_as = A4GLKEY_PGDN;
       a = act_as;
     }
 
-  if (a == A4GL_key_val ("PREV"))
+  if (a == A4GLKEY_PREV)
     {
       act_as = A4GLKEY_PGUP;
       a = act_as;
     }
 
-  if (a == A4GL_key_val ("INSERT"))
+  if (a == A4GLKEY_INSERT)
     {
       if (arr->allow_insert)
 	{
@@ -736,7 +741,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
 	}
     }
 
-  if (a == A4GL_key_val ("DELETE"))
+  if (a == A4GLKEY_DELETE)
     {
       if (arr->allow_insert)
 	{
@@ -907,7 +912,7 @@ A4GL_debug("process_key_press inp_arr %d",a);
       A4GL_add_to_control_stack (arr, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
       break;
 
-    case -100:
+    case A4GLKEY_INTERRUPT:
       A4GL_add_to_control_stack (arr, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
       break;
 

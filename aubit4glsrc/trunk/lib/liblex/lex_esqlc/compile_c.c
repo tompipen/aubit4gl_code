@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.149 2004-03-17 14:49:56 mikeaubury Exp $
+# $Id: compile_c.c,v 1.150 2004-03-19 19:24:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.149 2004-03-17 14:49:56 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.150 2004-03-19 19:24:52 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -5580,6 +5580,7 @@ if (x) {free(x);x=0;}
   strcat (s, "||");
   A4GL_debug ("Chk keys %s\n", s);
 
+  //printf("s=%s\n",s);
   if (strcmp (keys, "->ANY") == 0) { x=malloc(sizeof(int)*2); x[0]=0xffff; x[1]=0; return x;}
 
   k=s;
@@ -5592,7 +5593,9 @@ if (x) {free(x);x=0;}
 	k+=2;
 	xcnt++;
 	x=realloc(x,sizeof(int)*xcnt);
+	//printf("k1=%s\n",k1);
 	x[xcnt-1]= A4GL_key_val (k1);
+	//printf("---> %d\n",x[xcnt-1]);
   }
 	
 
@@ -5705,9 +5708,9 @@ print_bind_definition (char i)
     {
       printc ("\n");
       
-	printf("Expanding ordbind %d ",ordbindcnt);
+	//printf("Expanding ordbind %d ",ordbindcnt);
       expand_bind (&ordbind[0], 'O', ordbindcnt);
-	printf("Expanding ordbind ->%d\n ",ordbindcnt);
+	//printf("Expanding ordbind ->%d\n ",ordbindcnt);
       printc ("static struct BINDING _ordbind[%d]={\n", ONE_NOT_ZERO (ordbindcnt));
       if (ordbindcnt == 0)
 	{

@@ -1,6 +1,6 @@
 #include "a4gl_lib_ui_tui_int.h"
 
-static char *module_id="$Id: generic_ui.c,v 1.12 2004-01-17 11:10:31 mikeaubury Exp $";
+static char *module_id="$Id: generic_ui.c,v 1.13 2004-03-19 19:24:53 mikeaubury Exp $";
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
 static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap);
@@ -70,13 +70,21 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
 {
   ACL_Menu_Opts *opt1;
   int fc;
-  if (a==A4GL_key_val("LEFT")) { a=A4GLKEY_LEFT; }
+
+/*
+  if (a==A4GL_key_val("LEFT"))  { a=A4GLKEY_LEFT; }
   if (a==A4GL_key_val("RIGHT")) { a=A4GLKEY_RIGHT; }
-  if (a==A4GL_key_val("UP")) { a=A4GLKEY_UP; }
-  if (a==A4GL_key_val("DOWN")) { a=A4GLKEY_DOWN; }
+  if (a==A4GL_key_val("UP"))    { a=A4GLKEY_UP; }
+  if (a==A4GL_key_val("DOWN"))  { a=A4GLKEY_DOWN; }
   if (a==A4GL_key_val("SPACE")) { a=' '; }
   if (a==A4GL_key_val("ENTER")) { a=13; }
+*/
 
+
+
+  if (a==13) {
+		a=A4GLKEY_ENTER;
+  }
   opt1 = (ACL_Menu_Opts *) menu->curr_option;
   A4GL_debug ("new_do_keys A=%d", a);
 
@@ -86,7 +94,7 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
 
 
 
-  if (a == 8 || a == ' ' || a == A4GLKEY_DOWN || a == A4GLKEY_RIGHT || a == A4GLKEY_UP || a == A4GLKEY_LEFT || a == 0xffff /* click */ ) // BACKSPACE ?
+  if (a == 8 || a==A4GLKEY_BACKSPACE || a == ' ' || a == A4GLKEY_DOWN || a == A4GLKEY_RIGHT || a == A4GLKEY_UP || a == A4GLKEY_LEFT || a == 0xffff /* click */ ) // BACKSPACE ?
     {
       A4GL_move_bar (menu, a);
       if (a == 0xffff)
@@ -94,25 +102,29 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
       return 0;
     }
 
-  if (a == 27)
+  if (a == A4GLKEY_ESCAPE)
     {
       A4GL_debug ("Escape!");
       abort_pressed = 1;
       return 0;
     }
 
-  if (a == 13)
+  if (a == A4GLKEY_ENTER)
     {
       A4GL_debug ("CR..");
       return 1;
     }
-  A4GL_debug ("Dropped through");
-  if (A4GL_isyes(acl_getenv("BEEP_BADMENUKEY"))) {
-  	beep();
-  }
-  if (A4GL_isyes(acl_getenv("FLASH_BADMENUKEY"))) {
+
+    A4GL_debug ("Dropped through");
+
+    if (A4GL_isyes(acl_getenv("BEEP_BADMENUKEY"))) {
+  	 beep();
+    }
+
+    if (A4GL_isyes(acl_getenv("FLASH_BADMENUKEY"))) {
   	flash();
-  }
+    }
+
   return fc;
 }
 

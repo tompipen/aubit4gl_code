@@ -90,7 +90,7 @@ REQUIRED REVERSE VERIFY WORDWRAP COMPRESS NONCOMPRESS TO  AS
 %token YEAR MONTH DAY HOUR MINUTE SECOND FRACTION
 /* extensions */
 %token LISTBOX BUTTON KW_PANEL
-%token KW_WS
+%token KW_WS KW_TAB
 
 %%
 
@@ -215,7 +215,10 @@ some_text {
 	if (lineno>the_form.maxline) the_form.maxline=lineno;
 }
 | field  
-
+| KW_TAB {
+	colno++;
+	while ((colno%8)!=0) {colno++;}
+}
 | GRAPH_CH {
 	char buff[256];
 	sprintf(buff,"\n%s",$<str>1);

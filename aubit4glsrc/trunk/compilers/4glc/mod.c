@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.166 2004-03-17 13:33:54 mikeaubury Exp $
+# $Id: mod.c,v 1.167 2004-03-19 19:23:52 mikeaubury Exp $
 #
 */
 
@@ -4512,6 +4512,7 @@ int a;
 }
 
 void A4GL_add_onkey_key(char *s) {
+	//printf("ADD EVENT 90 : %s\n",s);
 	A4GL_add_event(-90,s);
 }
 

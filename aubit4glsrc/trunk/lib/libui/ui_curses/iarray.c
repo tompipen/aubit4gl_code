@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.75 2004-03-17 13:33:57 mikeaubury Exp $
+# $Id: iarray.c,v 1.76 2004-03-19 19:24:53 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: iarray.c,v 1.75 2004-03-17 13:33:57 mikeaubury Exp $";
+static char *module_id="$Id: iarray.c,v 1.76 2004-03-19 19:24:53 mikeaubury Exp $";
 /**
  * @file
  * Input array implementation
@@ -620,16 +620,26 @@ iarr_loop (struct s_inp_arr *arr,struct aclfgl_event_list *evt)
       A4GL_mja_pos_form_cursor (mform);
       abort_pressed = 0;
       a = A4GL_getch_win ();
+  	if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)) a=A4GLKEY_ACCEPT; 
+  	if (A4GL_is_special_key(a,A4GLKEY_INSERT)) a=A4GLKEY_INSERT; 
+  	if (A4GL_is_special_key(a,A4GLKEY_DELETE)) a=A4GLKEY_DELETE; 
+  	if (A4GL_is_special_key(a,A4GLKEY_NEXT))   a=A4GLKEY_NEXT; 
+  	if (A4GL_is_special_key(a,A4GLKEY_PREV))   a=A4GLKEY_PREV; 
+
       arr->processed_onkey=a;
+
+
+
+
+
+
+
       if (abort_pressed)
 	{
-	  a = -100;
-	  //fprintf (stderr, "ABORT\n");
-	  //fflush (stderr);
+	  a = A4GLKEY_INTERRUPT;
 	}
       A4GL_debug ("calling set_last_key : %d", a);
       A4GL_set_last_key (a);
-      //m_lastkey = a;
     }
 
 
@@ -688,29 +698,29 @@ process_key_press (struct s_inp_arr *arr, int a)
       at_last = 1;
     }
 
-  A4GL_debug ("In process_key_press : %d", a);
+  A4GL_debug ("In process_key_press : %x", a);
 
   act_as=a;
 
 
-  if (a == A4GL_key_val ("ACCEPT"))
+  if (A4GL_is_special_key(a ,A4GLKEY_ACCEPT))
     {
       act_as = -99;
     }
 
-  if (a == A4GL_key_val ("NEXT"))
+  if (A4GL_is_special_key(a,A4GLKEY_NEXT))
     {
       act_as = A4GLKEY_PGDN;
 	a=act_as;
     }
 
-  if (a == A4GL_key_val ("PREV"))
+  if (A4GL_is_special_key(a ,A4GLKEY_PREV))
     {
       act_as = A4GLKEY_PGUP;
 	a=act_as;
     }
 
-  if (a == A4GL_key_val ("INSERT"))
+  if (A4GL_is_special_key(a,A4GLKEY_INSERT))
     {
       if (arr->allow_insert)
 	{
@@ -727,7 +737,7 @@ process_key_press (struct s_inp_arr *arr, int a)
 	}
     }
 
-  if (a == A4GL_key_val ("DELETE"))
+  if (A4GL_is_special_key(a,A4GLKEY_DELETE))
     {
       if (arr->allow_insert) {
 		act_as= A4GLKEY_DEL;
@@ -881,7 +891,7 @@ process_key_press (struct s_inp_arr *arr, int a)
       A4GL_add_to_control_stack (arr, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
       break;
 
-    case -100:
+    case A4GLKEY_INTERRUPT:
       A4GL_add_to_control_stack (arr, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
       break;
 
@@ -1377,6 +1387,17 @@ A4GL_add_to_control_stack (struct s_inp_arr *sio, int op, FIELD * f,
       field_name = attr->colname;
     }
   a = sio->fcntrl_cnt;
+
+  if (op==FORMCONTROL_KEY_PRESS) {
+	
+  	if (A4GL_is_special_key(extent,A4GLKEY_ACCEPT)) extent=A4GLKEY_ACCEPT; 
+  	if (A4GL_is_special_key(extent,A4GLKEY_INSERT)) extent=A4GLKEY_INSERT; 
+  	if (A4GL_is_special_key(extent,A4GLKEY_DELETE)) extent=A4GLKEY_DELETE; 
+  	if (A4GL_is_special_key(extent,A4GLKEY_NEXT))   extent=A4GLKEY_NEXT; 
+  	if (A4GL_is_special_key(extent,A4GLKEY_PREV))   extent=A4GLKEY_PREV; 
+
+	A4GL_debug("ADDED KEY : %d\n",extent);
+  }
   sio->fcntrl[a].op = op;
   sio->fcntrl[a].parameter = parameter;
   sio->fcntrl[a].field = f;

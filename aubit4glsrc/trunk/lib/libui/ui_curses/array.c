@@ -24,12 +24,12 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.29 2004-02-11 09:26:02 mikeaubury Exp $
+# $Id: array.c,v 1.30 2004-03-19 19:24:53 mikeaubury Exp $
 #*/
 
 
 
-static char *module_id="$Id: array.c,v 1.29 2004-02-11 09:26:02 mikeaubury Exp $";
+static char *module_id="$Id: array.c,v 1.30 2004-03-19 19:24:53 mikeaubury Exp $";
 
 
 
@@ -376,16 +376,47 @@ draw_arr (arr, -1, arr->arr_line);
 	//A4GL_zrefresh();
 	arr->processed_onkey=0;
         a = A4GL_getch_win ();
+
 	if (abort_pressed) {
 		int_flag=1;
-		a=-100;
+		a=A4GLKEY_INTERRUPT;
+		A4GL_debug("Abort pressed");
 	}
-	A4GL_debug("Abort pressed");
+
+/*
+// Traditional key handling
+// Assume F1 is the Accept Key...
+//    
+//  The normal truth table would be  :
+//
+//
+//  ON KEY (f1)  ON KEY (ACCEPT) Press Key    FGL_LASTKEY  ACTION
+//     N            N               F1        F1       Exit Display    *
+//     Y            N               F1        F1       Do ON KEY(f1)   *
+//     N            Y               F1        N/A      Exit Display    *
+//     Y            Y               F1        F1       Do ON KEY(f1)   *
+//
+//  ie - ON KEY(ACCEPT) is completely ignored
+//
+// Setting ONKEY_ACCEPT=Y changes this :
+//
+//  ON KEY (f1)  ON KEY (ACCEPT) Press Key    FGL_LASTKEY  ACTION
+//     N            N               F1        F1       Exit Display       
+//     Y            N               F1        F1       Do ON KEY(f1)      
+//     N            Y               F1        ACCEPT   Do ON KEY (ACCEPT)
+//     Y            Y               F1        F1       Do ON KEY(f1)
+*/
+	if (A4GL_isyes(acl_getenv("ONKEY_ACCEPT"))) {
+        	if (!A4GL_has_event_for_keypress(a,evt)) { // Is it hard coded...
+        		if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)&& A4GL_has_event_for_keypress(A4GLKEY_ACCEPT,evt)) a=A4GLKEY_ACCEPT;
+		}
+	}
 
 	arr->processed_onkey=a;
         m_lastkey = a;
+
         if (A4GL_has_event_for_keypress(a,evt)) {
-	A4GL_debug("has event...");
+		A4GL_debug("has event...");
                 return A4GL_has_event_for_keypress(a,evt);
         }
 	arr->processed_onkey=0;
@@ -395,19 +426,21 @@ draw_arr (arr, -1, arr->arr_line);
 
   redisp = 0;
   act_as=a;
- A4GL_debug("act as %d",act_as);
-  if (a==A4GL_key_val ("ACCEPT")) {
+
+  A4GL_debug("act as %d",act_as);
+
+  if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)) {
 	act_as=-99;
   }
 
 
-  if (a == A4GL_key_val ("NEXT"))
+  if (A4GL_is_special_key(a ,A4GLKEY_NEXT))
     {
       act_as = A4GLKEY_PGDN;
 	a=act_as;
     }
 
-  if (a == A4GL_key_val ("PREV"))
+  if (A4GL_is_special_key(a,A4GLKEY_PREV))
     {
       act_as = A4GLKEY_PGUP;
 	a=act_as;
@@ -558,8 +591,8 @@ if ( (arr->arr_line+arr->srec->dim <= arr->no_arr) || ( (arr->arr_line+1< arr->n
       		if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);
 		break;
 
-    case -100: 
- 	A4GL_debug("act as %d - abort!",act_as);
+    case A4GLKEY_INTERRUPT: 
+ 		A4GL_debug("act as %d - abort!",act_as);
 		int_flag=1;
       		if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);
 	return 0;

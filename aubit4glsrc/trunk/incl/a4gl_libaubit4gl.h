@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.117 2004-03-17 13:33:55 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.118 2004-03-19 19:24:52 mikeaubury Exp $
 #
 */
 
@@ -221,6 +221,7 @@
 #define matches(s1,s2) mja_match(s1,s2,'M');
 
   /* ========================= from a4gl_keys.h ================== */
+#define A4GLKEY_ESCAPE          27
 #define A4GLKEY_ENTER 		0xff01
 #define A4GLKEY_DOWN 		0xff02
 #define A4GLKEY_UP 		0xff03
@@ -232,11 +233,21 @@
 #define A4GLKEY_DEL 		0xff09
 #define A4GLKEY_HOME 		0xff0a
 #define A4GLKEY_END 		0xff0b
-
 #define A4GLKEY_DC 		0xff0c
 #define A4GLKEY_DL 		0xff0d
 #define A4GLKEY_BACKSPACE 	0xff0e
 #define A4GLKEY_SHTAB 		0xff0f
+
+#define A4GLKEY_ACCEPT 		0xff20
+#define A4GLKEY_DELETE		0xff21
+#define A4GLKEY_INSERT		0xff22
+#define A4GLKEY_HELP		0xff23
+#define A4GLKEY_NEXT		0xff24
+#define A4GLKEY_NEXTPAGE	0xff25
+#define A4GLKEY_PREV		0xff26
+#define A4GLKEY_PREVPAGE	0xff27
+#define A4GLKEY_INTERRUPT	0xff28
+
 
 #define A4GLKEY_CANCEL 		0xfffe
 
@@ -1422,6 +1433,7 @@ void A4GL_display_at (int n, int a);
 
   /* ============================ keys.c ================================= */
   int A4GL_key_val (char *str);
+  int A4GL_is_special_key(int k, int type);
   int A4GL_check_keys (int val, char *str2);
   int A4GL_check_key (int val, char *a, int ln);
 

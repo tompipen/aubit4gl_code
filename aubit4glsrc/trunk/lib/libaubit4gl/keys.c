@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.26 2003-09-02 21:46:10 mikeaubury Exp $
+# $Id: keys.c,v 1.27 2004-03-19 19:24:52 mikeaubury Exp $
 #
 */
 
@@ -137,6 +137,47 @@ A4GL_key_val (char *str)
   return a;
 }
 
+
+/* std_dbscr holds the current options for certain keys...
+
+   This routine checks to see of a particular key matches
+   a particular operation
+
+    Keys which can be reprogrammed : 
+    	int nextkey;
+    	int prevkey;
+    	int inskey;
+    	int delkey;
+    	int helpkey;
+    	int acckey;
+
+	@param  k  Key to check
+	@param  type key type to check against A4GLKEY_...
+
+*/
+int A4GL_is_special_key(int k, int type) {
+
+	if (k==type) return 1;
+	switch (type) {
+		case A4GLKEY_NEXT     : return (std_dbscr.nextkey==k);
+		case A4GLKEY_NEXTPAGE : return (std_dbscr.nextkey==k);
+		case A4GLKEY_PREV     : return (std_dbscr.prevkey==k);
+		case A4GLKEY_PREVPAGE : return (std_dbscr.prevkey==k);
+		case A4GLKEY_INSERT   : return (std_dbscr.inskey ==k);
+		case A4GLKEY_DELETE   : return (std_dbscr.delkey ==k);
+		case A4GLKEY_HELP     : return (std_dbscr.helpkey==k);
+		case A4GLKEY_ACCEPT   : return (std_dbscr.acckey ==k);
+	}
+	A4GL_debug("Unexpected internal key : %x\n",type);
+	A4GL_exitwith("Internal error - unexpected keytype for A4GL_is_special_key");
+	return 0;
+}
+
+
+
+
+
+
 /**
  *
  * @todo Describe function
@@ -154,73 +195,46 @@ A4GL_key_val2 (char *str)
       return str[0];
     }				/*single character */
 
-  if (mja_strcmp ("ACCEPT", str) == 0)
-    return std_dbscr.acckey;
+  if (mja_strcmp ("ACCEPT", str) == 0) return A4GLKEY_ACCEPT;
+  					//return std_dbscr.acckey;
 
-  if (mja_strcmp ("DELETE", str) == 0)
-    return std_dbscr.delkey;
+  if (mja_strcmp ("DELETE", str) == 0) return A4GLKEY_DELETE;
+    					//return std_dbscr.delkey;
 
-  if (mja_strcmp ("INSERT", str) == 0)
-    return std_dbscr.inskey;
+  if (mja_strcmp ("INSERT", str) == 0) return A4GLKEY_INSERT;
+    					//return std_dbscr.inskey;
 
-  if (mja_strcmp ("HELP", str) == 0)
-   return std_dbscr.helpkey;
-
-
+  if (mja_strcmp ("HELP", str) == 0)  return A4GLKEY_HELP;
+   					//return std_dbscr.helpkey;
 
 
   if (A4GL_isyes(acl_getenv("USEPAGEKEYS"))) {
-  	if (mja_strcmp ("NEXT", str) == 0) return A4GLKEY_PGDN;
-  	if (mja_strcmp ("NEXTPAGE", str) == 0)  return A4GLKEY_PGDN;
-  	if (mja_strcmp ("PREV", str) == 0)  return A4GLKEY_PGUP;
-  	if (mja_strcmp ("PREVPAGE", str) == 0)  return A4GLKEY_PGUP;
+  	if (mja_strcmp ("NEXT", str) == 0) 		return A4GLKEY_PGDN;
+  	if (mja_strcmp ("NEXTPAGE", str) == 0)  	return A4GLKEY_PGDN;
+  	if (mja_strcmp ("PREV", str) == 0)  		return A4GLKEY_PGUP;
+  	if (mja_strcmp ("PREVPAGE", str) == 0)  	return A4GLKEY_PGUP;
   } else {
-
-  if (mja_strcmp ("NEXT", str) == 0)
-    return std_dbscr.nextkey;
-
-  if (mja_strcmp ("NEXTPAGE", str) == 0)
-    return std_dbscr.nextkey;
-
-  if (mja_strcmp ("PREV", str) == 0)
-    return std_dbscr.prevkey;
-
-  if (mja_strcmp ("PREVPAGE", str) == 0)
-    return std_dbscr.prevkey;
-
+  	if (mja_strcmp ("NEXT", str) == 0) 		return std_dbscr.nextkey;
+  	if (mja_strcmp ("NEXTPAGE", str) == 0) 		return std_dbscr.nextkey;
+  	if (mja_strcmp ("PREV", str) == 0) 		return std_dbscr.prevkey;
+  	if (mja_strcmp ("PREVPAGE", str) == 0) 		return std_dbscr.prevkey;
   }
 
 
+  if (mja_strcmp ("INTERRUPT", str) == 0) 		return A4GLKEY_INTERRUPT;
+  if (mja_strcmp ("RETURN", str) == 0) 			return A4GLKEY_ENTER;
+  if (mja_strcmp ("ENTER", str) == 0) 			return A4GLKEY_ENTER;
+  if (mja_strcmp ("TAB", str) == 0) 			return '	';
+  if (mja_strcmp ("DOWN", str) == 0) 			return A4GLKEY_DOWN;
+  if (mja_strcmp ("UP", str) == 0) 			return A4GLKEY_UP;
+  if (mja_strcmp ("LEFT", str) == 0) 			return A4GLKEY_LEFT;
+  if (mja_strcmp ("RIGHT", str) == 0) 			return A4GLKEY_RIGHT;
 
 
-  if (mja_strcmp ("ACCEPT", str) == 0)
-    return std_dbscr.acckey;
 
-  if (mja_strcmp ("INTERRUPT", str) == 0)
-    return -100;
-
-  if (mja_strcmp ("RETURN", str) == 0)
-    return A4GLKEY_ENTER;
+  if (mja_strcmp ("ESCAPE", str) == 0) return A4GLKEY_ESCAPE;
 
 
-  if (mja_strcmp ("ENTER", str) == 0)
-    return A4GLKEY_ENTER;
-
-  if (mja_strcmp ("TAB", str) == 0)
-    return '	';
-  if (mja_strcmp ("DOWN", str) == 0)
-    return A4GLKEY_DOWN;
-  if (mja_strcmp ("UP", str) == 0)
-    return A4GLKEY_UP;
-
-  if (mja_strcmp ("LEFT", str) == 0)
-    return A4GLKEY_LEFT;
-
-  if (mja_strcmp ("RIGHT", str) == 0)
-    return A4GLKEY_RIGHT;
-
-  if (mja_strcmp ("ESCAPE", str) == 0)
-    return 27;
 
   if (A4GL_isyes(acl_getenv("PGKEYSMOVE"))) {
   	if (mja_strcmp("PGDN",str)==0) { return A4GLKEY_PGDN; }
@@ -229,6 +243,8 @@ A4GL_key_val2 (char *str)
   	if (mja_strcmp("PGDN",str)==0) { return std_dbscr.nextkey; }
   	if (mja_strcmp("PGUP",str)==0) {  return std_dbscr.prevkey;; }
   }
+
+
 
   if (mja_strcmp("BACKSPACE",str)==0) { return A4GLKEY_BACKSPACE; }
   if (mja_strcmp("CANCEL",str)==0) { return A4GLKEY_CANCEL; }
@@ -248,10 +264,16 @@ A4GL_key_val2 (char *str)
       			return toupper (str[10]) - 'A' + 1;
     }
 
+
+
+
   if (str[0] == '^')
     {
       return toupper (str[1]) - 'A' + 1;
     }
+
+
+
 
   if (toupper (str[0]) == 'F')
     {
@@ -264,6 +286,8 @@ A4GL_key_val2 (char *str)
       A4GL_debug ("F%s = %d", b, a);
       return a;
     }
+
+
   return -1;
 }
 

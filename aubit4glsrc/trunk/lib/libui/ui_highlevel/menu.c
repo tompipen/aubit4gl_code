@@ -4,7 +4,7 @@
 #include "a4gl_API_lowlevel.h"
 #include "hl_proto.h"
 #include <ctype.h>
-static char *module_id="$Id: menu.c,v 1.6 2004-03-04 16:27:49 mikeaubury Exp $";
+static char *module_id="$Id: menu.c,v 1.7 2004-03-19 19:24:53 mikeaubury Exp $";
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
 void A4GL_h_disp_title (ACL_Menu * menu, char *str);
@@ -374,7 +374,7 @@ A4GL_highlevel_menu_loop (void *menuv)
 
       a = A4GL_menu_getkey (menu);
       A4GL_debug ("menu_getkey returns %d", a);
-      if (a == 23 || a == A4GL_key_val ("HELP"))
+      if (a == 23 || A4GL_is_special_key(a,A4GLKEY_HELP))
 	{
 	  if (menu->curr_option->help_no)
 	    {
@@ -469,9 +469,7 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	  if (abort_pressed)
 	    {
 	      A4GL_debug ("Got interrupt key pressed....");
-	      a = A4GL_key_val ("INTERRUPT");	/* MJA 31/7/00 */
-	      	//wrapper_wgetch (menu->menu_win);
-		//a = A4GL_LL_getch_swin (A4GL_get_currwin ());
+	      a = A4GLKEY_INTERRUPT;	/* MJA 31/7/00 */
 	      A4GL_set_abort (0);
 	      return a;
 	    }

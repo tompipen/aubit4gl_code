@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.52 2004-03-17 13:33:57 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.53 2004-03-19 19:24:53 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.52 2004-03-17 13:33:57 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.53 2004-03-19 19:24:53 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -127,6 +127,14 @@ A4GL_add_to_control_stack (struct s_screenio *sio, int op, FIELD * f,
       attr = (struct struct_scr_field *) field_userptr (f);
       field_name = attr->colname;
     }
+
+
+  if (op==FORMCONTROL_KEY_PRESS) {
+  	A4GL_set_last_key (A4GLKEY_ACCEPT);
+	if (A4GL_is_special_key(extent,A4GLKEY_ACCEPT)) extent=A4GLKEY_ACCEPT;
+  }
+
+
   a = sio->fcntrl_cnt;
   sio->fcntrl[a].op = op;
   sio->fcntrl[a].parameter = parameter;
@@ -424,8 +432,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	  new_state = 50;
 	  if (sio->processed_onkey != 0)
 	    {
-	      A4GL_proc_key_input (sio->fcntrl[a].extent, sio->currform->form,
-				   sio);
+	      A4GL_proc_key_input (sio->fcntrl[a].extent, sio->currform->form, sio);
 	    }
 	  rval = -1;
 	}
@@ -948,7 +955,7 @@ A4GL_debug("Got rval as : %d",rval);
 switch (rval) {
 	case -197: if (A4GL_has_event_for_field(-97,last_field_name,evt)) { return A4GL_has_event_for_field(-97,last_field_name,evt); } rval=-1;break;
 	case -198: if (A4GL_has_event_for_field(-98,last_field_name,evt)) { return A4GL_has_event_for_field(-98,last_field_name,evt); } rval=-1;break;
-	case -90 :if (A4GL_has_event_for_keypress(last_key_code,evt)) { return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
+	case -90 :if (A4GL_has_event_for_keypress(last_key_code,evt)) { sio->processed_onkey=0; return A4GL_has_event_for_keypress(last_key_code,evt);} rval=-1;break;
  	case -99: if (A4GL_has_event(-99,evt)) return A4GL_has_event(-99,evt);rval=-1;break;
  	case -95: if (A4GL_has_event(-95,evt)) return A4GL_has_event(-95,evt);rval=-1;break;
  	case -94: if (A4GL_has_event(-94,evt)) return A4GL_has_event(-94,evt);rval=-1;break;
@@ -1117,7 +1124,7 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 
 // Wait for a key..
   a = A4GL_getch_win ();
-  if (abort_pressed) a = -100;
+  if (abort_pressed) a = A4GLKEY_INTERRUPT;
   s->processed_onkey = a;
   m_lastkey = a;
   A4GL_set_last_key (a);
@@ -1249,7 +1256,6 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   struct s_form_attr *form;
   struct struct_scr_field *fprop;
   struct s_form_dets *fd;
-  int acckey;
   int has_picture = 0;
   char *picture = 0;
 
@@ -1309,12 +1315,10 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
     }
 
-  acckey = A4GL_key_val ("ACCEPT");
 
-  A4GL_debug ("Got key %d", a);
-
-  if (a == acckey)
+  if (A4GL_is_special_key(a,A4GLKEY_ACCEPT))
     {
+      A4GL_set_last_key (A4GLKEY_ACCEPT);
       A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_OK, 0, 0, a);
       return -1;
     }
@@ -1324,26 +1328,11 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
   switch (a)
     {
     case 18:
-      //A4GL_mja_wrefresh (stdscr);
-      //A4GL_mja_wrefresh (currwin);
-
       clearok (curscr, 1);
       A4GL_mja_refresh ();
-
       break;
-/*
 
-A little experiment....
-
-    case 2: A4GL_debug("CONTROL - B %d",s->currentfield); 
-A4GL_set_field_attr_with_attr(s->currentfield,0x100,0);
-	  		A4GL_int_form_driver (s->currform->form, REQ_VALIDATION);
-A4GL_mja_refresh();
-break;
-*/
-
-
-    case -100:
+    case A4GLKEY_INTERRUPT:
       A4GL_add_to_control_stack (s, FORMCONTROL_EXIT_INPUT_ABORT, 0, 0, a);
       break;
 

@@ -5,7 +5,7 @@
 #include "a4gl_API_ui_lib.h"
 #include "hl_proto.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.11 2004-03-17 13:33:58 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.12 2004-03-19 19:24:53 mikeaubury Exp $";
 
 //void *UILIB_A4GL_get_curr_form (int n);
 
@@ -1247,8 +1247,8 @@ A4GL_proc_key_prompt (int a, void *mform, struct s_prompt *prompt)
 
     }
 
-  /* A4GL_mja_refresh (); */
-  if (a == A4GL_key_val ("HELP"))
+
+  if (A4GL_is_special_key(a, A4GLKEY_HELP))
     {
       aclfgl_a4gl_show_help (prompt->h);
       a = 0;
