@@ -1,0 +1,97 @@
+#	IMIL.txt  -  4gwmail messages, eng
+#
+#	4gwMail, a news and mail client 4glWorks module
+#	Copyright (C) 1997-2002 Marco Greco (marco@4glworks.com)
+#
+#	Initial release: Oct 97
+#	Current release: Jan 02
+#
+#	This library is free software; you can redistribute it and/or
+#	modify it under the terms of the GNU Lesser General Public
+#	License as published by the Free Software Foundation; either
+#	version 2.1 of the License, or (at your option) any later version.
+#
+#	This library is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#	Lesser General Public License for more details.
+#
+#	You should have received a copy of the GNU Lesser General Public
+#	License along with this library; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+asn	Already subscribed
+cmp	Message composition
+cna	While appropriate at times, you can't cancel somebody else's message
+cp	Message copied
+dex	How many times do you want to expire it?
+dm	Missing recipient?
+ef	The folder already exists!
+ena	Can't do that, you plagiarist!
+ewn	Cannot modify subscription file
+ewp	Cannot modify preferences file
+ews	Error while writing to the sent folder
+ex2	Let it last at least a couple of days!
+heaf	Sender               Subject                                  Date
+heam    Folder                                                  Messages
+mi	Message sent
+mo01	Jan
+mo02	Feb
+mo03	Mar
+mo04	Apr
+mo05	May
+mo06	Jun
+mo07	Jul
+mo08	Aug
+mo09	Sep
+mo10	Oct
+mo11	Nov
+mo12	Dec
+mv	Message moved
+nf	Cannot identify message to be deleted
+nha	No help available
+nm	New mail has arrived
+nrs	To whom do you want to send this message?
+nsg	No such newsgroup
+nsp	Error while starting the mail dispatcher
+pna	This news server does not allow posting
+prf	Preferences
+#
+#	%a author name, or author's mailbox if name missing
+#	%d message date
+#	%f full from: header
+#
+qstart	-- on %d, thus spake %a:
+qend	-- original message ends here
+#
+#	System calls errors
+#
+se004	Interrupt received
+#
+#	These are SCO based
+#
+se104	Network is down
+se105	Network unreachable
+se114	Connection timed out
+se115	Connection refused
+se116	Host not responding
+se117	No route to host
+#
+#	These are SCO based
+#
+se100	Network is down
+se101	Network unreachable
+se110	Connection timed out
+se111	Connection refused
+se112	Host not responding
+se113	No route to host
+#
+sf	Cannot use current folder!
+sr	Server replies:
+wd0	Sun
+wd1	Mon
+wd2	Tue
+wd3	Wed
+wd4	Thu
+wd5	Fri
+wd6	Sat

@@ -1,0 +1,92 @@
+4gwMail 1.2 release notes				Mar, 20 2000
+
+1) Introduction
+4gwMail is a 4glWorks based mail and news reader which can be quickly fitted
+in existing application. Making use of standard mail & news locking schemes and
+file formats, it is compatible with most mailers in circulation, thus allowing
+users to manage messages folders and newsgroups both from within their custom
+business application and using their favourite mailer.
+
+2) Features
+- message center
+- dual pane operation: main pane shows header info, slave message body
+- message sorting: by author, date, subject and thread, both ascending and
+  descending
+- selectable header display detail
+- supports multiple folders
+- supports timely new mail checks
+- message ops: print, save to file, copy to folder, move to folder, delete,
+  reply (quoted or bracketed), forward (quoted or bracketed), edit & resend,
+  cancel
+- supported composer headers: to:, cc:, newsgroups:, followup-to:, expires:
+- folder ops: create and delete
+- newsgroup ops: subscribe and unsubscribe
+- preferences editor
+- system wide settings in /usr/local/etc/4gwmailrc, local in ~/.4gwmailrc
+- various customizable texts (requires editing of appropriate text files)
+- demo applications wrapper in 4gwapps/maildemo: demonstrates 4gwMail
+  capabilities, offers guildelines on how to embed 4gwMail into applications
+
+3) Limitations
+A list of items that have not been included in 4gwMail can be found in
+4gwmods/mail/etc/todo. The most prominent limitations are the lack of a decent
+text editor (which descends straight from 4gl), and the fact that 4gwMail does
+not keep track of message status: newsgroup access implies download of all
+article headers, and folder access implies integral folder reload, even if
+already accessed within the same session. 
+In short, though 4gwMail has been succesfully used against large folders (up to
+one thousend messages) and over slow links, it is better suited for small
+folders (up to a hundred messages) and fast NNTP server connections.
+
+As of this writing, 4gwMail does not support TLI connections.
+
+4) Compilation
+4gwmail comes with an autoconf generated configure script which is executed
+automatically by the installation script, so it should compile out of the box.
+A few hint follow, should you run into problems.
+
+4.1) Configure output files
+There are 4 files you should create: 4gwmods/mail/buldfile and
+4gwmods/mail/source/{gd,id,is}-osdep.h.
+The first is simply a makefile style include file containing a list of socket
+related libraries that should be used for linking, all the others are header
+files required for the datetime parser, directory and socket routines.
+Start of by creating each file copying it from the corresponding template
+(find it in the same directory, with a .in postfixed the appropriate filename).
+Edit buildfile to include the libraries (if any is needed) containig all the
+socket related routines. The header files will contain #undef directives of
+the form HAVE_<some characteristic>, each complete with a short description.
+For each of the header files or types or structs described present in your
+system, change the corresponding #undef into #define.
+
+4.2) Datetime routines
+HPUX users, please note that yacc output needs to be passed thru an ansi
+compiler. Set INFORMIXC to cc -Ae before firing cbuild or mkfgwgo.
+
+4.3) Error messages
+Several error codes are OS dependent. Depending on the OS in use, messages
+of the form "seddd?!" could be displayed rather than meaningfull text.
+In this event, ddd is a 3 digit error code returned by the failing system
+call. Meaningfull messages can be obtained by looking up the error number
+meaning in /usr/include/sys/errno.h, and adding an appropriate message
+in 4gwmods/mail/<lan>/imil.txt.
+
+5) Integration into 4glworks applications
+This is slightly more complicated than for "normal" 4glworks modules.
+You should change your buildfile to include 4gwmods/mail/buildfile
+and add a $(LIBS) dependency to any target that includes 4gwMail.
+An example of a linking script can be found in 4gwapps/maildemo/buildfile
+
+6) Dual pane scroller
+The heart of 4gwMail, the mail viewer, has been written over a general purpose
+dual pane scroller, which can be easily used for display of other types of data.
+Find the source in 4gwmods/mail/source/{idpns.4gl,idpng.4gl}, the documentation
+in 4gwmods/mail/etc/idpns.html.
+
+7) Acknowledgements
+The string to datetime routines used within this package were kindly
+provided by Art S. Kagel <kagel@bloomberg.net>. I merely added the 4gl
+interface. The routines are in the public domain, and I make no claim
+on my own additions.
+
+Marco Greco <marco@4glworks.com>
