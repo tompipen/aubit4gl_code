@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.180 2005-02-09 02:20:13 afalout Exp $
+# $Id: Makefile-common.in,v 1.181 2005-02-11 03:30:12 afalout Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1114,7 +1114,8 @@ AMAKE_BIN_EXE=@AMAKE_BIN_EXE@
 RUNTIME_EXE=@RUNTIME_EXE@
 BIN_SCRIPTS=@ALL_SH@
 RUNTIME_RESOURCE=@RUNTIME_RESOURCE@
-BIN_EXE=@COMP_EXE@ ${AMAKE_BIN_EXE} ${RUNTIME_EXE}
+COMP_EXE=@COMP_EXE@
+BIN_EXE=${COMP_EXE} ${AMAKE_BIN_EXE} ${RUNTIME_EXE}
 
 #Building this is optional:
 ifneq "$(shell ls $(SOURCE)/bin/fdecompile-j${EXEEXT} 2> /dev/null)" ""
@@ -1132,7 +1133,13 @@ ifneq "$(shell ls $(SOURCE)/bin/odbctest-iodbc2${EXE} 2> /dev/null)" ""
 	BIN_EXE		+=odbctest-iodbc2${EXE}
 endif
 
-BIN_FILES   =${BIN_SCRIPTS} ${RUNTIME_RESOURCE} $(addsuffix ${EXE_EXT},${BIN_EXE})
+#WARNING: watch out for files that allready have Aubit exe extension (.4ae)
+#On Windows, we cant just add .exe to them!
+#$(filter %.o,$(files))
+BIN_EXE_NOT_4AE=$(filter-out %.4ae,${BIN_EXE})
+BIN_EXE_4AE=$(filter %.4ae,${BIN_EXE})
+BIN_FILES   =${BIN_SCRIPTS} ${RUNTIME_RESOURCE} ${BIN_EXE_4AE} \
+			$(addsuffix ${EXE_EXT},${BIN_EXE_NOT_4AE})
 AMAKE_BIN_FILES	=${AMAKE_BIN_SCRIPTS} $(addsuffix ${EXE_EXT},${AMAKE_BIN_EXE})
 
 

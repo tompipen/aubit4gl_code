@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.11 2005-02-09 02:16:38 afalout Exp $
+# $Id: Makefile,v 1.12 2005-02-11 03:27:22 afalout Exp $
 #
 
 ## ==================================================================
@@ -1422,6 +1422,12 @@ show:
 	@echo "CYG_AUBITDIR=${CYG_AUBITDIR}"
 	@echo "enable_minimal=${enable_minimal}"
 	@echo "CONFIGURE_COMMAND=${CONFIGURE_COMMAND}"
+	@echo "BIN_EXE=${BIN_EXE}"
+	@echo "COMP_EXE=${COMP_EXE}"
+	@echo "AMAKE_BIN_EXE=${AMAKE_BIN_EXE}"
+	@echo "RUNTIME_EXE=${RUNTIME_EXE}"
+	@echo "BIN_EXE_NOT_4AE=$(BIN_EXE_NOT_4AE)"
+	@echo "BIN_EXE_4AE=$(BIN_EXE_4AE)"
 
 show.platform: OUT="/tmp/showplatform"
 show.platform: platform.common

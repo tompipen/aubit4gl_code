@@ -323,7 +323,12 @@ A4GL_EXTENDED_GRAPHICS FORMS/UI/TUI enable the use of extended graphics from for
 	well as when you run program that will use form file compiled this way
 
 A4GL_FAKELEXTYPE PCODE/COMPILE Compile C code resulting from 4gl compilation to P-code
-A4GL_FAKE_IMMEDIATE
+A4GL_FAKE_IMMEDIATE COMPILE Affects EXECUTE IMMEDIATE, not sure how
+=YES|NO
+	For example, to use:
+		EXECUTE IMMEDIATE "set enable_seqscan to on" 
+	with PostgreSQL RDBMS, you'd have to have A4GL_FAKE_IMMEDIATE set
+
 A4GL_FIELD_CONSTR_EXPR UI/TUI/LANG Message to display when a fields value cannot be used for a construct statement
 A4GL_FIELD_ERROR_MSG UI/TUI/LANG Message to display when a fields value is invalid (eg non numeric in numeric field)
 A4GL_FIELD_INCL_MSG UI/TUI/LANG Message to display when a value in a field is not in the include list

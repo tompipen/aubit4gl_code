@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.280 2005-02-09 02:17:48 afalout Exp $
+dnl # $Id: configure.in,v 1.281 2005-02-11 03:28:13 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -2675,15 +2675,17 @@ if test "$COMSPEC" != ""; then
 			#FIXME: cant read it because resulting string looks like:
 			#regtool get '/HKEY_LOCAL_MACHINE/SOFTWARE/Informix/Setup/InstalledDirectories/E:\PROGRA~1\W2000\Informix\CSDK'
 			#so regtool thiks its all a path, not a key
-			echo "regtool get '$IFX_INSTDIR_REGPATH/$REG_INFORMIXDIR'"
+			#echo "regtool get '$IFX_INSTDIR_REGPATH/$REG_INFORMIXDIR'"
 			DATE_INFORMIXDIR_INSTALLED=`regtool get "$IFX_INSTDIR_REGPATH/$REG_INFORMIXDIR" 2>/dev/null`
 		fi
 	fi
 
 	if test "$INFORMIXDIR" = "" -a "$REG_INFORMIXDIR" != "" ; then
 		export INFORMIXDIR="$REG_INFORMIXDIR"
-		echo "NOTE: INFORMIXDIR set based on registry, to:"
-		echo "$INFORMIXDIR"
+		if test "$enable_ac_debug" = "yes" ; then
+			echo "NOTE: INFORMIXDIR set based on registry, to:"
+			echo "$INFORMIXDIR"
+		fi
 	fi
 	
 #ISTool:
@@ -5494,7 +5496,7 @@ AC_ARG_WITH(pgcompat,
     	AC_MSG_RESULT(disabled)
 	fi
 ],[
-  AC_MSG_RESULT(--with-pgsqleng not specified)
+  AC_MSG_RESULT(--with-pgcompat not specified)
 ])
 
 else
@@ -8483,8 +8485,10 @@ fi
 	for FILE in $COMP_EXE ; do
 		COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
 		FILE_EXE="$FILE"
-		if test "$COMSPEC" != ""; then 
-			if test "`basename $FILE $A4GL_EXE_EXT`" = "`basename $FILE`"; then
+		if test "$COMSPEC" != ""; then
+			A=`basename $FILE $A4GL_EXE_EXT`
+			B=`basename $FILE`
+			if test "$A" = "$B"; then
 				#file does not have Aubit executable extension
 				FILE_EXE="$FILE$EXEEXT"
 			fi
@@ -9003,7 +9007,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.280 2005-02-09 02:17:48 afalout Exp $
+| $Id: configure.in,v 1.281 2005-02-11 03:28:13 afalout Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 1.875.  */
+/* A Bison parser, made by GNU Bison 1.875b.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,40 +30,51 @@
       know about them.  */
    enum yytokentype {
      NAME = 2096,
-     UMINUS = 2097,
      KW_COMMA = 1653,
+     FINPUT = 1734,
+     WORDWRAP = 1437,
+     KW_USING = 1584,
+     SPACES = 1530,
+     COLUMN = 1489,
+     ASCII = 1543,
+     CLIPPED = 1445,
+     WHERE = 1585,
      KW_OR = 1693,
      KW_AND = 1648,
-     KW_USING = 1584,
-     WHERE = 1585,
      NOT = 1668,
-     MATCHES = 1465,
-     POWER = 1570,
-     LESS_THAN = 1566,
-     GREATER_THAN = 1482,
-     EQUAL = 1643,
-     GREATER_THAN_EQ = 1384,
-     LESS_THAN_EQ = 1441,
+     IS_NOT_NULL = 1302,
+     IS_NULL = 1440,
      NOT_EQUAL = 1513,
+     LESS_THAN_EQ = 1441,
+     EQUAL = 1643,
+     GREATER_THAN = 1482,
+     LESS_THAN = 1566,
+     GREATER_THAN_EQ = 1384,
+     NOT_LIKE = 1425,
+     LIKE = 1616,
+     NOT_MATCHES = 1305,
+     MATCHES = 1465,
      PLUS = 1679,
      MINUS = 1666,
-     FINPUT = 1734,
      MULTIPLY = 1571,
      DIVIDE = 1598,
      MOD = 1667,
+     POWER = 1570,
+     UNITS = 2097,
+     UMINUS = 2098,
      COMMAND = 1448,
-     NUMBER_VALUE = 2098,
-     CHAR_VALUE = 2099,
-     INT_VALUE = 2100,
-     NAMED_GEN = 2101,
-     CLINE = 2102,
-     SQLLINE = 2103,
-     KW_CSTART = 2104,
-     KW_CEND = 2105,
-     USER_DTYPE = 2106,
-     SQL_TEXT = 2107,
-     KW_WHENEVER_SET = 2108,
-     COMMENT = 2109,
+     NUMBER_VALUE = 2099,
+     CHAR_VALUE = 2100,
+     INT_VALUE = 2101,
+     NAMED_GEN = 2102,
+     CLINE = 2103,
+     SQLLINE = 2104,
+     KW_CSTART = 2105,
+     KW_CEND = 2106,
+     USER_DTYPE = 2107,
+     SQL_TEXT = 2108,
+     KW_WHENEVER_SET = 2109,
+     COMMENT = 2110,
      MEMBER_FUNCTION = 1000,
      TRACE_PROCEDURE = 1001,
      RAISE_EXCEPTION = 1002,
@@ -366,10 +377,8 @@
      HIDE_OPTION = 1299,
      HIDE_WINDOW = 1300,
      INSERT_INTO = 1301,
-     IS_NOT_NULL = 1302,
      MOVE_WINDOW = 1303,
      NEXT_OPTION = 1304,
-     NOT_MATCHES = 1305,
      ON_LAST_ROW = 1306,
      OPEN_WINDOW = 1307,
      OPEN_STATUSBOX = 1308,
@@ -488,7 +497,6 @@
      GROUP_BY = 1422,
      INTERVAL = 1423,
      KWMESSAGE = 1424,
-     NOT_LIKE = 1425,
      NOT_ILIKE = 1426,
      NOT_NULL = 1427,
      PASSWORD = 1428,
@@ -500,14 +508,11 @@
      SMALLINT = 1434,
      VALIDATE = 1435,
      WITH_LOG = 1436,
-     WORDWRAP = 1437,
      BY_NAME = 1438,
      IN_FILE = 1439,
-     IS_NULL = 1440,
      AVERAGE = 1442,
      BETWEEN = 1443,
      CAPTION = 1444,
-     CLIPPED = 1445,
      CLOSE_BRACKET = 1446,
      COLUMNS = 1447,
      CONNECT = 1449,
@@ -548,7 +553,6 @@
      OPEN_BRACKET = 1486,
      BORDER = 1487,
      BOTTOM = 1488,
-     COLUMN = 1489,
      COMMIT = 1490,
      CREATE = 1491,
      CURSOR = 1492,
@@ -588,7 +592,6 @@
      SELECT = 1527,
      SERIAL = 1528,
      SHARED = 1529,
-     SPACES = 1530,
      UNIQUE = 1531,
      UNLOCK = 1532,
      UPDATE = 1533,
@@ -601,7 +604,6 @@
      SINGLE_KEY = 1540,
      ALTER = 1541,
      ARRAY = 1542,
-     ASCII = 1543,
      AUDIT = 1544,
      BLACK = 1545,
      BLINK = 1546,
@@ -668,7 +670,6 @@
      INTO = 1613,
      LAST = 1614,
      LEFT = 1615,
-     LIKE = 1616,
      MAIN = 1617,
      MENU = 1618,
      MODE = 1619,
@@ -1141,40 +1142,51 @@
    };
 #endif
 #define NAME 2096
-#define UMINUS 2097
 #define KW_COMMA 1653
+#define FINPUT 1734
+#define WORDWRAP 1437
+#define KW_USING 1584
+#define SPACES 1530
+#define COLUMN 1489
+#define ASCII 1543
+#define CLIPPED 1445
+#define WHERE 1585
 #define KW_OR 1693
 #define KW_AND 1648
-#define KW_USING 1584
-#define WHERE 1585
 #define NOT 1668
-#define MATCHES 1465
-#define POWER 1570
-#define LESS_THAN 1566
-#define GREATER_THAN 1482
-#define EQUAL 1643
-#define GREATER_THAN_EQ 1384
-#define LESS_THAN_EQ 1441
+#define IS_NOT_NULL 1302
+#define IS_NULL 1440
 #define NOT_EQUAL 1513
+#define LESS_THAN_EQ 1441
+#define EQUAL 1643
+#define GREATER_THAN 1482
+#define LESS_THAN 1566
+#define GREATER_THAN_EQ 1384
+#define NOT_LIKE 1425
+#define LIKE 1616
+#define NOT_MATCHES 1305
+#define MATCHES 1465
 #define PLUS 1679
 #define MINUS 1666
-#define FINPUT 1734
 #define MULTIPLY 1571
 #define DIVIDE 1598
 #define MOD 1667
+#define POWER 1570
+#define UNITS 2097
+#define UMINUS 2098
 #define COMMAND 1448
-#define NUMBER_VALUE 2098
-#define CHAR_VALUE 2099
-#define INT_VALUE 2100
-#define NAMED_GEN 2101
-#define CLINE 2102
-#define SQLLINE 2103
-#define KW_CSTART 2104
-#define KW_CEND 2105
-#define USER_DTYPE 2106
-#define SQL_TEXT 2107
-#define KW_WHENEVER_SET 2108
-#define COMMENT 2109
+#define NUMBER_VALUE 2099
+#define CHAR_VALUE 2100
+#define INT_VALUE 2101
+#define NAMED_GEN 2102
+#define CLINE 2103
+#define SQLLINE 2104
+#define KW_CSTART 2105
+#define KW_CEND 2106
+#define USER_DTYPE 2107
+#define SQL_TEXT 2108
+#define KW_WHENEVER_SET 2109
+#define COMMENT 2110
 #define MEMBER_FUNCTION 1000
 #define TRACE_PROCEDURE 1001
 #define RAISE_EXCEPTION 1002
@@ -1477,10 +1489,8 @@
 #define HIDE_OPTION 1299
 #define HIDE_WINDOW 1300
 #define INSERT_INTO 1301
-#define IS_NOT_NULL 1302
 #define MOVE_WINDOW 1303
 #define NEXT_OPTION 1304
-#define NOT_MATCHES 1305
 #define ON_LAST_ROW 1306
 #define OPEN_WINDOW 1307
 #define OPEN_STATUSBOX 1308
@@ -1599,7 +1609,6 @@
 #define GROUP_BY 1422
 #define INTERVAL 1423
 #define KWMESSAGE 1424
-#define NOT_LIKE 1425
 #define NOT_ILIKE 1426
 #define NOT_NULL 1427
 #define PASSWORD 1428
@@ -1611,14 +1620,11 @@
 #define SMALLINT 1434
 #define VALIDATE 1435
 #define WITH_LOG 1436
-#define WORDWRAP 1437
 #define BY_NAME 1438
 #define IN_FILE 1439
-#define IS_NULL 1440
 #define AVERAGE 1442
 #define BETWEEN 1443
 #define CAPTION 1444
-#define CLIPPED 1445
 #define CLOSE_BRACKET 1446
 #define COLUMNS 1447
 #define CONNECT 1449
@@ -1659,7 +1665,6 @@
 #define OPEN_BRACKET 1486
 #define BORDER 1487
 #define BOTTOM 1488
-#define COLUMN 1489
 #define COMMIT 1490
 #define CREATE 1491
 #define CURSOR 1492
@@ -1699,7 +1704,6 @@
 #define SELECT 1527
 #define SERIAL 1528
 #define SHARED 1529
-#define SPACES 1530
 #define UNIQUE 1531
 #define UNLOCK 1532
 #define UPDATE 1533
@@ -1712,7 +1716,6 @@
 #define SINGLE_KEY 1540
 #define ALTER 1541
 #define ARRAY 1542
-#define ASCII 1543
 #define AUDIT 1544
 #define BLACK 1545
 #define BLINK 1546
@@ -1779,7 +1782,6 @@
 #define INTO 1613
 #define LAST 1614
 #define LEFT 1615
-#define LIKE 1616
 #define MAIN 1617
 #define MENU 1618
 #define MODE 1619
@@ -2254,7 +2256,7 @@
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 244 "fgl.yacc"
+#line 249 "fgl.yacc"
 typedef union YYSTYPE {
 
 
@@ -2281,8 +2283,8 @@ typedef union YYSTYPE {
 	struct sql_statement *sql_stmt;
 	struct ilist int_list;
 	} YYSTYPE;
-/* Line 1248 of yacc.c.  */
-#line 2285 "y.tab.h"
+/* Line 1252 of yacc.c.  */
+#line 2288 "y.tab.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
