@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.16 2003-03-07 04:37:35 afalout Exp $
+# $Id: Makefile.in,v 1.17 2003-03-08 04:29:24 afalout Exp $
 #
 
 LIBROOT	=../..
@@ -194,7 +194,7 @@ ${LIBROOT}/libMENU_XDR${SO_EXT} : ${OBJS_MENU_XDR}
 #Old:
 #	${LD} ${SO_LDFLAGS} -o $@ $^ @GTK_LIB_PATH@ ${GTKLIBS} ${RPCLIB_NAME} ${LINKLIBS}
 #from menu_generic:
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${GTK_LIB_PATH} ${LINKLIBS} ${GTKLIBS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${GTK_LIB_PATH} ${LINKLIBS} ${GTKLIBS} ${RPCLIB_NAME}
 
 ## ==================================================================
 ##                             Sub Targets

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.37 2003-02-25 04:15:37 afalout Exp $
+# $Id: Makefile.in,v 1.38 2003-03-08 04:29:29 afalout Exp $
 #
 
 ROOT    =../..
@@ -50,19 +50,32 @@ include ${ROOT}/incl/?4gl.mk
 DEFAULT	=hello.4ae hello2.4ae hello_db.4ae testmenu.4ae testmenu.mnu.xml \
 		form.afr.xml helpfile.hlp
 
+
 SUB		=guidemos
+
+ALL		=${DEFAULT} assoc2.4ae
+
+ifeq "@EXDATA_MPZ@" "yes"
+	ALL	+=testmpz.4ae
+endif
+
+
+#Targets still expected to fail, that need fixing:
+ALL_FAIL=pdf_report.4ae file.4ae
+
+#Targets that need database to compile
+ALL_DB  =test_select.4ae
 
 ifneq "${AUBIT_BIN_INSTALL}" "1"
 	#We have this dirs only in source code tree - not in bunary distros:
 	SUB+=langdemos
 	REGRES=regressiontests dbtests
+    #examples we have only in source code tree, but not in binary installations:
+	ALL +=solitaire.4ae
 endif
 
-#Targets still expected to fail, that need fixing:
-ALL_FAIL=
+ALL     +=${SUB} ${REGRES} ${ALL_FAIL}
 
-ALL		=${DEFAULT} test_select.4ae assoc2.4ae solitaire.4ae pdf_report.4ae file.4ae testmenu \
-		 testmpz.4ae ${SUB} ${REGRES} ${ALL_FAIL}
 
 .PHONY: default all sub test.build test.perl ${SUB} ${REGRES} \
 		help clean clean.sub
