@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.90 2004-12-29 11:42:14 afalout Exp $
+# $Id: resource.c,v 1.91 2005-01-07 10:32:10 mikeaubury Exp $
 #
 */
 
@@ -61,6 +61,7 @@ char *debug=0;
 char *debug_level=0;
 
 static char * A4GL_strip_quotes_resource (char *s);
+static char * acl_getenv_internal (char *s,int rcfiles);
 
 #define USE_OPTIMISATION 1
 
@@ -537,24 +538,29 @@ find_str_resource (char *s)
     }
 }
 
-//#define DEBUG_VARIABLE_USAGE 0
+
+char * acl_getenv (char *s) {
+	return acl_getenv_internal(s,1);
+}
+
+char * acl_getenv_only (char *s) {
+	return acl_getenv_internal(s,0);
+}
 
 /**
  * Get the contents of an resources or environment variable.
  * WARNING - DO NOT USE CALLS TO A4GL_debug() in this function (OR ANY FUNCTIION 
  * CALLED BY THIS FUNCTION - it will cause an endless loop
  * @param s The environment variable name.
+ * @param rcfiles Check rc files too
  */
-char *
-acl_getenv (char *s)
+static char * acl_getenv_internal (char *s,int rcfiles)
 {
 static char prefixed_string[1024];
 #ifdef DEBUG_VARIABLE_USAGE
 	static FILE *fd1=0;
 #endif
 static char *value_not_set="VALUE_NOT_SET";
-//WHY was this static?
-//static char *ptr;
 char *ptr_env=0, *ptr_env_A4GL=0,*ptr_resources=0, *ptr_resources_A4GL=0, *ptr_registry=0, *ptr=0;
 int cumulate = 0;
 char cumulate_char=0;
@@ -566,6 +572,12 @@ static char cumulated_string_tmp[2048]="";
 	}
 #endif
 
+
+// We can only use optimization in one case 
+// so we're choosing to do it when we can look in
+// rc files too...
+//
+if (rcfiles) { 
 #ifdef USE_OPTIMISATION
 ptr=(char *)A4GL_find_pointer (s,STR_RESOURCE_VAL);
 
@@ -589,10 +601,7 @@ if (ptr)  {
 }
 
 #endif
-
-//printf("Looking for %s\n",s);
-//WARNING - strings returned by getenv() are linited to 125 charcters!
-//strings defined in aubitrc don't have this limitation.
+}
 
 	cumulated_string[0] = 0;
 
@@ -607,19 +616,18 @@ if (ptr)  {
         #else
 			cumulate_char=':';
         #endif
-    }
+        }
 
         sprintf (prefixed_string, "A4GL_%s", s);
 
 	ptr_env_A4GL = getenv (prefixed_string); /* in environmet, with A4GL_ prefix */
 	ptr_env = getenv (s); /* in environment, but without the prefix */
+        ptr_registry=A4GL_getenv_registry (s,(char *) prefixed_string); /*Windows registry */
 
-
-
-	ptr_registry=A4GL_getenv_registry (s,(char *) prefixed_string); /*Windows registry */
+    if (rcfiles) {
 	ptr_resources_A4GL = find_str_resource (prefixed_string); 	/* Try in resources */
 	ptr_resources = find_str_resource (s); 		/* Try in resources */
-
+    }
 
     if (cumulate) {
 		if (ptr_env_A4GL != 0) {
@@ -665,32 +673,27 @@ if (ptr)  {
 		return "";
 	} else {
 
-    	/* FIXME: make sure that things like AUBITDIR are in appropriate format:
-         on Windows, watch out for Cywin relative paths.
-         /cygdrive/c/something is OK, but /usr/bin is not (missing drive
-		 letter and CygWin path)!
-		*/
+    	/* 
+		FIXME: make sure that things like AUBITDIR are in appropriate format:
+         	on Windows, watch out for Cywin relative paths.
+         	/cygdrive/c/something is OK, but /usr/bin is not (missing drive
+	        letter and CygWin path)!
+	*/
 		if (strcmp (s, "DBDATE") == 0) {
 			A4GL_chk_dbdate (ptr);
 		}
-		//if (strcmp(s,"DEBUG")==0 || strcmp(s,"A4GL_DEBUG")==0) {
-			//debug=ptr;
-		//} 
-		//if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
-			//debug_level=ptr;
-		//} 
 
 #ifdef DEBUG_VARIABLE_USAGE
 		if (fd1) fprintf(fd1,"%s - %s\n",s,ptr);
 #endif
+		//remove quotes - for instance for the cases where quotes are used in 
+		//aubitrc file because values contain spaces
 		ptr=A4GL_strip_quotes_resource (ptr);
 #ifdef USE_OPTIMISATION
 		ptr=strdup(ptr);
 		A4GL_add_pointer(s,STR_RESOURCE_VAL,ptr);
 #endif
 
-		//remove quotes - for instance for the cases where quotes are used in 
-		//aubitrc file because values contain spaces
 		return ptr;
     }
 }
