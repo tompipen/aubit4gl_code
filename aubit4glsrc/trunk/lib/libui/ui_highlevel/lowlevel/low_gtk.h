@@ -35,6 +35,7 @@
 #if ! GTK_CHECK_VERSION(2,0,0)
 	//Function g_locale_to_utf8 introduced in GTK+ V 2
 	//This is to allow us to compile with 1.x
-	#define g_locale_to_utf8(a,b,c,d,e) a
+        #define g_locale_to_utf8(a,b,c,d,e) g_strdup(a)
+        #define g_locale_from_utf8(a,b,c,d,e) g_strdup(a)
 #endif
 
