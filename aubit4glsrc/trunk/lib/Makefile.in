@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.33 2002-03-17 09:36:12 afalout Exp $
+# $Id: Makefile.in,v 1.34 2002-03-21 01:29:16 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -396,7 +396,8 @@ clean : clean.generated clean.libsql clean.libpdf clean.libincl
 	${RM} form_x_xdr.c form_x.h project.c aubit-config
 	${RM} loadmap loadmap.c loadmap.h core
 	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
-	${RM} *.base *.exp libaclshared.def
+	${RM} *.base *.exp libaclshared.def libRPC_NORPC.def libaclsharedgui.def libRPC_SUNRPC.def
+
 
 clean.generated:
 	${RM} generated/errdefs generated/tmperrs.h

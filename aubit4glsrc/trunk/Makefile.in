@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.41 2002-03-19 11:07:53 afalout Exp $
+# $Id: Makefile.in,v 1.42 2002-03-21 01:29:11 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -163,11 +163,16 @@ endif
 
 TOLIB_EXPORTLIB =$(SOURCE)/lib/libaclshared${SOEXP_EXT} \
             $(SOURCE)/lib/libPDF_NOPDF${SOEXP_EXT} $(SOURCE)/lib/libSQL_nosql${SOEXP_EXT} \
-            $(SOURCE)/lib/libUI_CONSOLE${SOEXP_EXT}
+            $(SOURCE)/lib/libUI_CONSOLE${SOEXP_EXT} $(SOURCE)/lib/libRPC_NORPC${SOEXP_EXT}
 
 ifneq "@HAVE_CURSES@" "0"
 	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libUI_TUI${SOEXP_EXT}
 endif
+
+ifneq "@HAVE_RPCLIB@" "0"
+	TOLIB_EXPORTLIB +=$(SOURCE)/lib/libRPC_SUNRPC${SOEXP_EXT}
+endif
+
 
 TOLIBGTK_EXPORTLIB	=$(SOURCE)/lib/libUI_GTK${SOEXP_EXT} $(SOURCE)/lib/libUI_GTK_x${SOEXP_EXT}
 #$(SOURCE)/lib/libaclsharedgui${SOEXP_EXT} \
@@ -602,6 +607,10 @@ clean.makefiles:
 	${RM} lib/libsql/esqlc/Makefile
 	${RM} lib/libsql/odbc/Makefile
 	${RM} lib/extra_libs/file/Makefile
+	${RM} lib/libtui/Makefile
+	${RM} tools/test/db/Makefile
+	${RM} tools/test/lang/Makefile
+	${RM} tools/test/regression/Makefile
 	${RM} tools/adbaccess/Makefile
 	${RM} tools/adbload/Makefile
 	${RM} tools/html/Makefile
@@ -662,6 +671,14 @@ clean.swig:
 clean.project:
 	(cd tools/project; ${RM} *.bak)
 	(cd tools/cygwin; ${RM} *.bak)
+
+
+#Clean stuff that is lef over aubitbuild.sh:
+clean.build:
+	${RM} *.tgz *.htm *.html *.tmp
+
+
+
 ## ------------------------------------------------------------------
 ##                       Installation Targets: *NIX
 ## ------------------------------------------------------------------

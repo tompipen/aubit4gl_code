@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.14 2002-03-21 00:22:53 afalout Exp $
+# $Id: Makefile-install.mki,v 1.15 2002-03-21 01:29:16 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -126,7 +126,7 @@ deinstall.bin.links:
 #remove links to binaries:
 	${RM} ${BIN_INSTALL_LINK}/aubit-config ${BIN_INSTALL_LINK}/aubit
 
-deinstall.all: deinstall.libs.links deinstall.bin.links
+deinstall.all: deinstall.libs.links deinstall.bin.links deinstall.build
 #deinstall: installdrop
 #we could just trop the whole $(INSTALL_DIR) tree, but this is not very safe;
 #in the case user placed some files there (stupido!) he will hate us nevertheless
@@ -155,11 +155,9 @@ deinstall.all: deinstall.libs.links deinstall.bin.links
 		$(INSTALL_DIR)/lib/libUI_GTK${SO_EXT} $(INSTALL_DIR)/lib/libUI_GTK_x.a \
 		$(INSTALL_DIR)/lib/libUI_GTK_x${SO_EXT} $(INSTALL_DIR)/lib/libUI_TUI${SO_EXT} \
 		$(INSTALL_DIR)/lib/libRPC_NORPC${SO_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SO_EXT} \
-		$(INSTALL_DIR)/lib/libRPC_CONSOLE${SO_EXT}
-
+		$(INSTALL_DIR)/lib/libRPC_CONSOLE${SO_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SO_EXT}
 
 #windows dll export libraries:
-
 ifneq "${COMSPEC}" ""
 	${RM} $(INSTALL_DIR)/lib/libaclshared${SOEXP_EXT} $(INSTALL_DIR)/lib/libPDF_NOPDF${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libSQL_nosql${SOEXP_EXT} $(INSTALL_DIR)/lib/libgtk4gl${SOEXP_EXT} \
@@ -167,10 +165,8 @@ ifneq "${COMSPEC}" ""
     $(INSTALL_DIR)/lib/libSQL_odbc32${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_GTK${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libUI_TUI${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_GTK_x${SOEXP_EXT} \
 	$(INSTALL_DIR)/lib/libRPC_NORPC${SOEXP_EXT} $(INSTALL_DIR)/lib/libRPC_SUNRPC${SOEXP_EXT} \
-	$(INSTALL_DIR)/lib/libRPC_CONSOLE${SOEXP_EXT}
+	$(INSTALL_DIR)/lib/libRPC_CONSOLE${SOEXP_EXT} $(INSTALL_DIR)/lib/libUI_CONSOLE${SOEXP_EXT}
 endif
-
-
 
 #examples:
 	${RM} $(INSTALL_DIR)/tools/test/*.4gl $(INSTALL_DIR)/tools/test/*.per \
@@ -209,6 +205,11 @@ else
 endif
 	@echo "Aubit compiler de-installed. Config file in ${AUBITETC} "
 	@echo "where not deleted."
+
+#stuff left over from aubitbuild.sh:
+deinstall.build:
+	${RM} $(INSTALL_DIR)/*.htm $(INSTALL_DIR)/*.tmp $(INSTALL_DIR)/*.html
+
 
 ## ==================================================================
 ##                    other targets
