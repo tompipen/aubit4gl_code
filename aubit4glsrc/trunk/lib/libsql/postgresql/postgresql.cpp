@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: postgresql.cpp,v 1.8 2003-01-28 23:45:39 saferreira Exp $
+# $Id: postgresql.cpp,v 1.9 2003-01-29 22:22:09 saferreira Exp $
 #
 */
 
@@ -89,7 +89,7 @@ extern "C" void debug (char *str);
 #endif
 
 #ifndef lint
-  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.8 2003-01-28 23:45:39 saferreira Exp $";
+  static const char rcs[] = "@(#)$Id: postgresql.cpp,v 1.9 2003-01-29 22:22:09 saferreira Exp $";
 #endif
 
 
@@ -104,34 +104,6 @@ char lasterrorstr[1024] = "";
 =====================================================================
 */
 
-
-/**
- * Check if there was an sql error. Uses ESQL/C XOpen global variable SQLSTATE.
- *
- * @todo : Implement it.
- *
- * @return 
- *   - 1 : An sql error was ocurred.
- *   - 0 : No error 
- */
-static int isSqlError()
-{
-  return 0;
-}
-
-/**
- * Check if the fetch was made to a not found row.
- *
- * Assign 100 to status.
- *
- * @return 
- *   - 1 : Row not found
- *   - 0 : Row found
- */
-static int isNotFound()
-{
-  return 0;
-}
 
 /**
  * Get the status value.
@@ -153,13 +125,14 @@ extern "C" int A4GLSQL_get_status(void)
  */
 extern "C" char *A4GLSQL_get_sqlerrm (void)
 {
-  return "XX";
+  Connection connection = driver.getCurrentConnection();
+  connection.getLastError();
 }
 
 /**
  * Initialization of the sql library.
  *
- * @todo It is here that the PgDriver object should be initialized.
+ * @todo : It is here that the PgDriver object should be initialized.
  */
 extern "C" int A4GLSQL_initsqllib (void) 
 {
@@ -176,12 +149,16 @@ extern "C" int A4GLSQL_initsqllib (void)
  * @param dsn The database name.
  * @param usr The user name to establish the connection.
  * @param pwd The password of the user to set the connection.
+ * @return
  */
 extern "C" int A4GLSQL_init_session (char *sessname, char *dsn, 
 char *usr, char *pwd)
 {
   char *conninfo;
   
+  // @todo : Handle the errors in a correct way.
+  Connection connection = driver.connect(sessname,dsn,usr,pwd);
+  driver.storeConnection(connection);
   return 0;
 }
 
@@ -1029,6 +1006,12 @@ extern "C" int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
 extern "C" int A4GLSQL_get_columns(char *tabname, char *colname, 
 		                   int *dtype, int *size)
 {
+  DatabaseMetadata metaData = connection.getMetaData();
+  ResultSet rs = metaData.getColumns(tabname,colname);
+  connection.storeMetaData(metaData,rs); 
+  *colname = rs.getString(4);
+  *dtype = rs.getInt(5);
+  *size = rs.getInt(7);
   return 1;
 }
 
@@ -1053,6 +1036,12 @@ extern "C" int A4GLSQL_get_columns(char *tabname, char *colname,
  */
 extern "C" int A4GLSQL_next_column(char **colname, int *dtype,int *size)
 {
+  ResultSet &rs = connection.getStoredRsMetadata();
+  // Here we should have a try catch block 
+  rs.next();
+  *colname = rs.getString(4);
+  *dtype = rs.getInt(5);
+  *size = rs.getInt(7);
   return 1;
 }
 
@@ -1067,6 +1056,8 @@ extern "C" int A4GLSQL_next_column(char **colname, int *dtype,int *size)
  */
 extern "C" int A4GLSQL_end_get_columns(void)
 {
+    // @todo Correct error management
+  connection.freeStoredMetadata();
   return 1;
 }
 
@@ -1090,6 +1081,7 @@ extern "C" int A4GLSQL_end_get_columns(void)
 static int getDataType(char *connName, char *tabname,char *colname,
   int *dtype,int *size)
 {
+    
   return 0;
 }
 
@@ -1133,30 +1125,34 @@ extern "C" int A4GLSQL_read_columns(char *tabname,char *colname,int *dtype,int *
  */
 extern "C" int A4GLSQL_get_datatype (char *db, char *tab, char *col)
 {
-  int dataType;
-  int length;
-  char *connectionName;
-
-  //connectionName = pgDriver.getConnectionNameForDatabase(db);
-  if ( connectionName == NULL )
-    return -1;
-
-  if ( getDataType(connectionName,tab,col,&dataType,&length) == 1 )
-    return -1;
-  return dataType;
+    int dataType;
+    
+    // @todo : Handle the errors properly.
+    Connection connection& = driver.getConnection(connName);
+    DatabaseMetadata metadata& = connection.getMetaData();
+    ResultSet rs = metadata.getTables(tabname,colname);
+    dataType = rs.getInt(5);
+    delete rs;
+    delete metadata;
+    return dataType;
 }
 
 /**
  * Close a cursor opened.
  *
- * @todo : Use the connection class
+ * @todo : Use the connection class.
+ * @todo : Handle the errors properly.
  *
  * @param currname The name of the cursor.
  * @return
  */
 extern "C" int A4GLSQL_close_cursor(char *currname)  
 {
-  return 1;
+    Connection connection = driver.getCurrentConnection();
+    ResultSet cursor connection.getCursor(currname);
+    cursor.close();
+    connection.deleteCursor();
+    return 1;
 }
 
 /**
@@ -1166,7 +1162,7 @@ extern "C" int A4GLSQL_fill_array (int mx, char **arr1, int szarr1,
 		    char **arr2, int szarr2,
 		    char *service, int mode, char *info)
 {
-  exitwith ("Could not fill_array - noODBC build");
+  exitwith ("Could not fill_array - not implemented in postgresql connector");
   return 1;
 }
 

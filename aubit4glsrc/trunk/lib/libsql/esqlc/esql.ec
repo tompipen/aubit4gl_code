@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.29 2003-01-28 15:47:13 mikeaubury Exp $
+# $Id: esql.ec,v 1.30 2003-01-29 22:21:44 saferreira Exp $
 #
 */
 
@@ -123,7 +123,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.29 2003-01-28 15:47:13 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.30 2003-01-29 22:21:44 saferreira Exp $";
 #endif
 
 /*
@@ -2290,8 +2290,6 @@ int A4GLSQL_execute_sql (char *pname, int ni, struct BINDING *ibind)
  *   - 0 : Error ocurred.
  */
 
-/* int A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size); */
-/* int A4GLSQL_get_columns(char *tabname) */
 int
 A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *size)
 {
@@ -2381,7 +2379,6 @@ A4GLSQL_next_column(char **colname, int *dtype,int *size)
     return 0;
   *dtype = dataType;
   *size = length;
-  //strcpy((char *)colname,columnName);
   *colname=columnName;
   getColumnsOrder++;
   return 1;
