@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.89 2004-05-12 08:13:45 mikeaubury Exp $
+# $Id: lexer.c,v 1.90 2004-06-03 07:46:03 mikeaubury Exp $
 #*/
 
 /**
@@ -1511,7 +1511,6 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   word_cnt = 0;
 
   A4GL_debug ("lexer returns  a=%d, buff=%s\n", a, buff);
-
   return a;
 }
 

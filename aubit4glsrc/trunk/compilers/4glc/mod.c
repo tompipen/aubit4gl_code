@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.174 2004-05-12 08:13:45 mikeaubury Exp $
+# $Id: mod.c,v 1.175 2004-06-03 07:46:04 mikeaubury Exp $
 #
 */
 
@@ -1794,7 +1794,6 @@ push_blockcommand (char *cmd_type)
     }
   else
     {
-
       print_start_block (nblock_no);
 
       command_stack[ccnt].block_no = nblock_no++;
