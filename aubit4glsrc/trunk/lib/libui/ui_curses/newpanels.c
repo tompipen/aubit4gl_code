@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.5 2002-10-20 12:02:38 afalout Exp $
+# $Id: newpanels.c,v 1.6 2003-01-08 20:01:13 mikeaubury Exp $
 #*/
 
 /**
@@ -1342,6 +1342,15 @@ char *s=0;
 char *ptr;
 char *buff=0;
 
+/* MJA Fix clear to end of line bug */
+
+int tos_size;
+int tos_dtype;
+void *tos_ptr;
+int clr_end_of_line=0;
+
+
+
     /*
   debug("Colors = %d pairs = %d ",COLORS,COLOR_PAIRS);
   debug("CHYYPE_LONG = %d",CHTYPE_LONG);
@@ -1350,6 +1359,8 @@ char *buff=0;
 
 
  
+
+//debug_print_stack();
   debug ("***************************** popx");
   x = 0;
   y = 0;
@@ -1362,7 +1373,25 @@ char *buff=0;
   debug (">display_at x=%d y=%d attribute %x", x, y, a);
   s=malloc(2);
   s[0]=0;
+
+
+
+
+
+
+
+  get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
+
+
+  debug("TOP1 = %d %d %p\n",tos_dtype%256,tos_size,tos_ptr);
+
+  if (tos_dtype%256==0 && tos_size==0) {
+	clr_end_of_line=1;
+  }
+
+
   debug("Got %d arguments");
+
   for (z = 0; z <= n - 1; z++)
     {
 	ptr=char_pop();
@@ -1416,13 +1445,13 @@ char *buff=0;
       gui_print (a, s);
       mja_gotoxy (x, y);
 	debug("s='%s'",s);
-	if (strlen(s)!=0) {
-			tui_print ("%s", s);
-	}
-        else {
+
+	tui_print ("%s", s);
+	if (clr_end_of_line) {
 		debug("Clearing line...");
 		wclrtoeol(window_on_top());
 	}
+
       debug (">> printed %s", s);
 
       /* b was got via curses - so we can use the curses version */
