@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.79 2004-01-04 19:41:40 mikeaubury Exp $
+# $Id: curslib.c,v 1.80 2004-01-08 13:55:06 mikeaubury Exp $
 #*/
 
 /**
@@ -571,6 +571,7 @@ int
   //win = A4GL_find_pointer ("screen", WINCODE);
   win = A4GL_window_on_top_ign_menu ();
   A4GL_debug ("Got win as %p from window_on_top", win);
+A4GL_debug("ATTR = %d",A4GL_decode_colour_attr_aubit(c));
 #define PMOVE(x,y,ch) 	mvwaddch(win,(y-1),(x-1),ch+A4GL_decode_colour_attr_aubit(c))
 
 
@@ -3066,7 +3067,7 @@ A4GL_debug("px=%d py=%d menu->gw_b=%d menu->y=%d",px,py,menu->gw_b,menu->y);
       //py-=2;
 
       px = 0;			// I'm sure this is gonna come back and bite me...
-      py = 0;
+      //py = 0;
     }
   m = menu->menu_win;
   p = A4GL_find_pointer (menu->window_name, MNPARCODE);
@@ -3090,7 +3091,7 @@ A4GL_debug("px=%d py=%d menu->gw_b=%d menu->y=%d",px,py,menu->gw_b,menu->y);
 		a -= A_NORMAL;
 	      a |= A_DIM;
 	    }
-	  A4GL_debug ("%d - %d,%d %04x %c", x, x + px, y + py, a, a & 0xff);
+	  A4GL_debug ("%d - px+x=%d,py+y=%d %04x %c", x, x + px, y + py, a, a & 0xff);
 	  mvwaddch (p, y + py, x + px, a);
 	}
     }
