@@ -1,11 +1,12 @@
 #include "a4gl_lib_lex_esqlc_int.h"
 void printc (char *fmt, ...);
 void printcomment (char *fmt, ...);
-static char *module_id="$Id: compile_c_sql.c,v 1.37 2004-09-14 11:49:15 mikeaubury Exp $";
+static char *module_id="$Id: compile_c_sql.c,v 1.38 2004-09-14 17:14:24 whaslbeck Exp $";
 
 void print_report_table(char *repname,char type, int c);
 void printh (char *fmt, ...);
 void liblex_add_ibind(int dtype,char *var) ;
+static char *trans_quote (char *s);
 
 /**
  * Print the C implementation of the execution of the SQL statement allready
