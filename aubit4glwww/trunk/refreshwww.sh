@@ -41,3 +41,6 @@ cp -r * $WWW
 cd $WWW
 cvs -dafalout@cvs1:/cvsroot/aubit4gl co aubit4gldoc
 echo "Aubit web site refreshed from CVS"
+
+sh refresh_hy4gl.sh
+
