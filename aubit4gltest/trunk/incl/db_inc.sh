@@ -544,6 +544,9 @@ if test "$IS_ODBC_MANAGER" = "1"; then
     fi
 
 fi
+if test "$USE_ECG" = "1" -o "$ODBC_USE_DB" = "INGRES"; then
+	DB_TYPE=INGRES
+fi
 
 #Now exit if we where just asked to create new ODBC database
 if test "$NEW_ODBC" = "1"; then

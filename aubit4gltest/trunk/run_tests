@@ -600,6 +600,7 @@ for a in $FLAGS; do
 
 		;;
 
+
     -ecq)   		#Use Querix EC output in for db tests
 		USE_SQLITE=0; USE_ESQLI=0; USE_ECQ=1; export SKIP_EC_RUN=0
 		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=QUERIX
@@ -613,6 +614,22 @@ for a in $FLAGS; do
             exit 9
         fi
 		;;
+    -ecg)   		#Use Ingres EC output in for db tests
+		USE_SQLITE=0; USE_ESQLI=0; USE_ECG=1; export SKIP_EC_RUN=0
+		export A4GL_LEXTYPE=EC; export A4GL_LEXDIALECT=INGRES
+        		#this will be used only by 4glc/fcompile compilers:
+		export A4GL_SQLTYPE=ingres
+		export FGLC=4glpc
+
+		if ! test -f $LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT; then
+			if ! test "$NO_ECHO"; then
+				echo "ERROR: cannot find plug-in SQL_$A4GL_SQLTYPE ($LIBS_DIR/libSQL_$A4GL_SQLTYPE$SO_EXT)"
+            fi
+            exit 9
+        fi
+		;;
+
+
 
     -informix-new) 	#Create new Informix database from scripts
 		USE_ESQLI=1; NEW_IFMX=1

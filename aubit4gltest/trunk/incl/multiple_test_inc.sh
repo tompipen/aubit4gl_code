@@ -130,7 +130,7 @@ if test "$ALL_TESTS_DB" = "1"; then
     #######################
     #now EC output:
 	if test "$DB_EC" = "1"; then
-	    EC_LIST="-eci -ecs -ecp -ecq"
+	    EC_LIST="-eci -ecs -ecp -ecq -ecg"
         for a in $EC_LIST; do
 			sh run_tests -onlydb $a $COMMON_FLAGS $RUN_ONE
 	        RET=$?
