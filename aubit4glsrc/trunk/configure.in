@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.180 2003-07-23 07:07:12 afalout Exp $
+dnl # $Id: configure.in,v 1.181 2003-07-26 04:47:01 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -108,6 +108,9 @@ if test "$AUBITCONF_FLAG" != "running"; then
 		echo "" >> order.c
 
 	##############################
+
+					#echo '\1330\135mysqlitedb\1331\135' > tmp2.tmp
+
 
 PHP_CONFIGURE_PART(Looking for configure parameters file:)
 
@@ -428,6 +431,26 @@ AC_SUBST(RPMFILE_28)
 AC_SUBST(RPMFILE_29)
 AC_SUBST(RPMFILE_30)
 
+AC_SUBST(RPMFILE_31)
+AC_SUBST(RPMFILE_32)
+AC_SUBST(RPMFILE_33)
+AC_SUBST(RPMFILE_34)
+AC_SUBST(RPMFILE_35)
+AC_SUBST(RPMFILE_36)
+AC_SUBST(RPMFILE_37)
+AC_SUBST(RPMFILE_38)
+AC_SUBST(RPMFILE_39)
+AC_SUBST(RPMFILE_40)
+AC_SUBST(RPMFILE_41)
+AC_SUBST(RPMFILE_42)
+AC_SUBST(RPMFILE_43)
+AC_SUBST(RPMFILE_44)
+AC_SUBST(RPMFILE_45)
+AC_SUBST(RPMFILE_46)
+AC_SUBST(RPMFILE_47)
+AC_SUBST(RPMFILE_48)
+AC_SUBST(RPMFILE_49)
+AC_SUBST(RPMFILE_50)
 
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
@@ -652,17 +675,6 @@ LIBFILE_27=
 LIBFILE_28=
 LIBFILE_29=
 LIBFILE_30=
-
-
-#What are this guys for?
-#lib/libDATA_menu_list.so
-#lib/libDATA_report.so
-#lib/libDATA_struct_form.so
-#lib/libesqlhelper_funcs.so
-#lib/libXDRPACKER_menu_list.so
-#lib/libXDRPACKER_report.so
-#lib/libXDRPACKER_struct_form.so
-
 
 #Install location - must install first:
 #IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$prefix/$SHORTNAME"
@@ -1667,6 +1679,179 @@ AC_ARG_WITH(pgsql,
 ])
 
 ## ==================================================================
+##                 Checks for SQLite support
+## ==================================================================
+	#Store current values
+	old_LIBS="$LIBS"
+	old_LDFLAGS="$LDFLAGS"
+	old_CFLAGS="$CFLAGS"
+
+	#force this check even if not specified on command line:
+	if test "$with_sqlite" = ""; then
+		with_sqlite=yes
+	fi
+
+	PHP_CONFIGURE_PART(Checking for SQLite library support:)
+	AC_ARG_WITH(sqlite,
+	[  --with-sqlite[=DIR]        Include SQLite support.  DIR is the SQLite
+	                          base install directory, defaults to /usr.],
+	[
+
+		AC_PATH_PROG(SQLITE, sqlite, no)
+
+		# FIXME: Replace `main' with a function in `-lc':
+		AC_CHECK_LIB([sqlite], [main])
+		AC_CHECK_HEADERS([ sqlite.h ])
+
+		if test "$ac_cv_lib_sqlite_main" = "yes" ; then
+			SQLITE_LIB=1
+			# test for availability of sqlite_libversion()
+			AC_CHECK_LIB(sqlite,sqlite_libversion,SQLITE_LIBVERSION=1,SQLITE_LIBVERSION=0)
+			AC_SUBST(SQLITE_LIBVERSION)
+
+			AC_MSG_CHECKING(for default SQLite database)
+            SQLITE_DB=tools/aubit.db
+			if test -f "$SQLITE_DB" ; then
+				AC_MSG_RESULT(Allready present in $SQLITE_DB)
+            else
+				#create a default database
+				$SQLITE $SQLITE_DB "create table testing (test integer)"
+				$SQLITE $SQLITE_DB "insert into testing values (987)"
+				#$SQLITE $SQLITE_DB "select * from testing"
+				AC_MSG_RESULT(Created $SQLITE_DB)
+			fi
+		fi
+	],[
+	  AC_MSG_RESULT(--with-sqlite not specified)
+	])
+
+	#Restore Stored values
+	LIBS="$old_LIBS"
+	LDFLAGS="$old_LDFLAGS"
+	CFLAGS="$old_CFLAGS"
+
+
+## ==================================================================
+##                 Checks for SQLite ODBC support
+## ==================================================================
+
+	#Store current values
+	old_LIBS="$LIBS"
+	old_LDFLAGS="$LDFLAGS"
+	old_CFLAGS="$CFLAGS"
+
+	#force this check even if not specified on command line:
+	if test "$with_sqliteodbc" = ""; then
+		with_sqliteodbc=yes
+	fi
+
+    #NOTE: sqlite ODBC driver needs iODBC or unixODB driver manager.
+    #-lsqliteodbc will be linked with -liodbcinst or -lodbcinst
+
+	PHP_CONFIGURE_PART(Checking for SQLite ODBC library support:)
+	AC_ARG_WITH(sqliteodbc,
+	[  --with-sqliteodbc[=DIR]        Include SQLite ODBC support.  DIR is the SQLite
+	                          odbc base install directory, defaults to /usr/local/lib.],
+	[
+
+		if test "$withval" != "no"; then
+			if test "$withval" = "yes"; then
+				withval=/usr/local/lib
+            fi
+
+            LDFLAGS="-L$withval $LDFLAGS"
+            #LIBS="-liodbc -liodbcadm $LIBS"
+            LIBS="-liodbcadm $LIBS"
+
+			AC_CHECK_LIB([sqliteodbc], [main])
+			if test "$ac_cv_lib_sqliteodbc_main" = "yes" ; then
+				#AC_MSG_RESULT(Yes)
+	            SQLITE_ODBC=1
+	        else
+                #maybe it was linked with unixODBC?
+	            #FIXME: do I need to add any libs here?
+				LIBS="$old_LIBS"
+				AC_CHECK_LIB([sqliteodbc], [main])
+				if test "$ac_cv_lib_sqliteodbc_main" = "yes" ; then
+					#AC_MSG_RESULT(Yes)
+		            SQLITE_ODBC=1
+                fi
+			fi
+
+			if test "$SQLITE_ODBC" = "1"; then
+
+				AC_MSG_CHECKING(for default SQLite odbc.ini entry)
+
+				ODBC_INI="/etc/odbc.ini"
+                if test -f $ODBC_INI; then
+					TMP=`grep mysqlitedb $ODBC_INI`
+                else
+					ODBC_INI="~/.odbc.ini"
+	                if test -f $ODBC_INI; then
+						TMP=`grep mysqlitedb $ODBC_INI`
+	                else
+						ODBC_INI=no
+                        TMP=no
+                    fi
+				fi
+				if test "$TMP" = ""; then
+					#To setup a SQLite data source using unixODBC (www.unixodbc.org):
+					#  1. Add the driver to /etc/odbcinst.ini:
+					#[SQLite]
+					#Description=SQLite ODBC Driver
+					#Driver=/usr/local/lib/libsqliteodbc.so
+					#Setup=
+					#[ODBC Drivers]
+					#SQLite=Installed
+
+					#  2. Add a DSN to your private ~/.odbc.ini:
+
+                    echo " " >> $ODBC_INI
+					#Workaround for Autoconf stripping [] - echo "[mysqlitedb]" >> $ODBC_INI
+					echo '\133mysqlitedb\135' > tmp.tmp
+					xx=`cat tmp.tmp`
+					echo -e "$xx" >> $ODBC_INI
+					echo "Description=Aubit created SQLite test database" >> $ODBC_INI
+					#unixODBC only:
+					#echo "Driver=SQLite" >> $ODBC_INI
+					#iODBC, but works for unixODBC too:
+					echo "Driver=/usr/local/lib/libsqliteodbc.so" >> $ODBC_INI
+					echo "Database=$aubitdir/$SQLITE_DB" >> $ODBC_INI
+					echo "# optional lock timeout in milliseconds" >> $ODBC_INI
+					echo "Timeout=2000" >> $ODBC_INI
+					echo "# optional turn threading support on" >> $ODBC_INI
+					echo "Threaded=1" >> $ODBC_INI
+                    echo " " >> $ODBC_INI
+
+					#For iODBC (www.iodbc.org, only versions 3.0.[56] tested)
+					#  2. Add a DSN to your private ~/.odbc.ini:
+					#    [ODBC Data Sources]
+					#    mysqlitedb=SQLite
+					AC_MSG_RESULT(Added)
+				else
+					if test "$ODBC_INI" = "no" ; then
+						AC_MSG_RESULT($ODBC_INI not found)
+                    else
+						AC_MSG_RESULT(allready present)
+                    fi
+                fi
+			fi
+
+        else
+			AC_MSG_RESULT(Disabled)
+        fi
+
+	],[
+	  AC_MSG_RESULT(--with-sqliteodbc not specified)
+	])
+
+
+	#Restore Stored values
+	LIBS="$old_LIBS"
+	LDFLAGS="$old_LDFLAGS"
+	CFLAGS="$old_CFLAGS"
+
+## ==================================================================
 ##                 Checks for Informix ODBC driver
 ## ==================================================================
 
@@ -1879,7 +2064,7 @@ AC_ARG_WITH(pgodbc,
 		CPPFLAGS="$CPPFLAGS $TMP_PGODBC_INCLUDE"
 		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
 		# FIXME: Replace `main' with a function in `-lpsqlodbc':
-		
+
 #libodbcpsql.so - is unixODBC distributed driver for PG - test for that one too?
 
 
@@ -2855,7 +3040,17 @@ else
 fi
 
 
+## ==================================================================
+##            Check for POP support
+## ==================================================================
 
+
+	PHP_CONFIGURE_PART(Checking for POP libraries:)
+
+	AC_CHECK_LIB([spopc], [main])
+	if test "$ac_cv_lib_spopc_main" = "yes"; then
+		HAVE_POPLIB=1
+    fi
 
 ## ==================================================================
 ##            Check for Perl generating compiler support
@@ -3437,41 +3632,145 @@ esac
 #override A4GL_SQLTYPE set earlier in this script:
 #Options: static nosql iodbc unixodbc esql ifxodbc pgodbc odbc32
 
-if test "$default_odbc" != ""; then
+if test "$default_sql" != ""; then
 	#User can force SQL driver default with --default-odbc=xxxx switch
-	A4GL_SQLTYPE="$default_odbc"
+
+	case "$default_sql" in
+		ec-i | ec-pg | ec-sap)
+			A4GL_LEXTYPE=EC
+        ;;
+
+		pgodbc | ifxodbc | sapodbc | unixodbc | iodbc | odbc32 | sqliteodbc | esql)
+			A4GL_LEXTYPE=C
+        ;;
+
+        *)
+			AC_MSG_ERROR(Specified --default-sql="$default_sql" is invalid)
+        ;;
+    esac
+	A4GL_SQLTYPE="$default_sql"
 else
 	############# ODBC drivers ##############
 	if test "$HAVE_PGODBC" = "yes" ; then
+		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=pgodbc
 	fi
 	if test "$HAVE_IFXODBC" = "yes" ; then
+		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=ifxodbc
 	fi
 
+	if test "$HAVE_SAPODBC" = "yes" ; then
+		A4GL_LEXTYPE=C
+		A4GL_SQLTYPE=sapodbc
+    fi
+
 	############# ODBC managers #############
 	if test "$HAVE_UNIXODBC" = "yes" ; then
+		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=unixodbc
 	fi
 	if test "$HAVE_IODBC" = "yes" ; then
 		#we want iodbc to have highest priority, when we have a choice,
         #sine we still have problems with unixODBC
+		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=iodbc
 	fi
 	if test "$cygwin" = "1"; then
 		#if we are on windows, we will ALLWAYS use native odbc32 manager
+		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=odbc32
 	fi
 
-	############# native ####################
+	########## SAP-DB ESQL/C pre-compiler output #############
+	if test "$SAPDB_ESQLC" != "no"; then
+		A4GL_LEXTYPE=EC
+		A4GL_LEXDIALECT=SAPDB
+        A4GL_SQLTYPE=ignored-ec
+    fi
+
+	########## PostgreSQL ESQL/C compiler #########
+	#If we have PostgreSQL ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
+    #setting - this will limit Aubit DB connectivity to PostgreSQL ONLY.
+    #Postgres - the ecpg needs to be the absolute latest CVS
+	#version which has support for the "-C INFORMIX" flag.
+	#Also - this version relies on a few backend changes for more Informix
+	#compatibilty - some of which won't make it into the official postgres
+	#releases and will need special patches...
+	#All these are available (open source etc) - they are just not what most people
+	#will have..
+	if test "$PG_ESQLC" != "no" ; then
+		if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
+			A4GL_LEXTYPE=EC
+			A4GL_LEXDIALECT=POSTGRES
+	        A4GL_SQLTYPE=ignored-ec
+        fi
+    fi
+
+    ########## Informix ESQL/C compiler ############
+	#If we have Informix ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
+    #setting - this will limit Aubit DB connectivity to Informix ONLY.
+	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_LEXTYPE=EC
+		A4GL_LEXDIALECT=INFORMIX
+        A4GL_SQLTYPE=ignored-ec
+    fi
+
+
+	############# native drivers ####################
 	#non existant:
 	#if test "$HAVE_PGSQL_LIB" = "yes" ; then
 	#	A4GL_SQLTYPE=pgsql
     #fi
 	if test "$IFMX_ESQLC" != "no" ; then
+		A4GL_LEXTYPE=C
 		A4GL_SQLTYPE=esql
 	fi
 
+	############# SQLite via ODBC ####################
+	#This will never happen, since SQLIte native connector will allways "win"
+	if test "$SQLITE_LIB" = "1" && test "$SQLITE_ODBC" = "1"; then
+		A4GL_LEXTYPE=C
+		A4GL_SQLTYPE=sqliteodbc
+    fi
+
+	############# SQLite native connector ####################
+	if test "$SQLITE_LIB" = "1" ; then
+		A4GL_LEXTYPE=C
+		A4GL_SQLTYPE=sqlite
+    fi
+
+
+fi
+
+## ==================================================================
+##            Decide on default COMPILER OUTPUT driver
+## ==================================================================
+
+if test "$default_comp" != ""; then
+	#User can force COMPILER driver default with --default-comp=xxxx switch
+	A4GL_LEXTYPE="$default_comp"
+	if test "$default_lexdialect" != ""; then
+		A4GL_LEXDIALECT="$default_lexdialect"
+    fi
+#else
+
+	#C compiler is the default at this point, unless a variant of embedded
+	#C was chosen in SQL connectivity "decide" section...
+
+	#Disabled since Perl output is not working at the moment
+	#if test "$PERLBUILD" != "no"; then
+	#	A4GL_LEXTYPE="PERL"
+    #fi
+
+	# C# output (Mono)
+	#if test "$CS_COMPILER" != "no"; then
+	#	A4GL_LEXTYPE="CS"
+    #fi
+
+
+    #NOTE: Since it primarily affects database connectivity, embedded C
+    #variants are in SQL connectivity "decide" section
 
 fi
 
@@ -3564,63 +3863,6 @@ else
     fi
 fi
 
-
-## ==================================================================
-##            Decide on default COMPILER OUTPUT driver
-## ==================================================================
-
-if test "$default_comp" != ""; then
-	#User can force COMPILER driver default with --default-comp=xxxx switch
-	A4GL_LEXTYPE="$default_comp"
-	if test "$default_lexdialect" != ""; then
-		A4GL_LEXDIALECT="$default_lexdialect"
-    fi
-else
-
-	#C compiler is the default at this point...
-
-	#Disabled since Perl output is not working at the moment
-	#if test "$PERLBUILD" != "no"; then
-	#	A4GL_LEXTYPE="PERL"
-    #fi
-
-	# C# output (Mono)
-	#if test "$CS_COMPILER" != "no"; then
-	#	A4GL_LEXTYPE="CS"
-    #fi
-
-	
-	#SAP-DB ESQL/C pre-compiler output
-	if test "$SAPDB_ESQLC" != "no"; then
-		A4GL_LEXTYPE=EC
-		A4GL_LEXDIALECT=SAPDB
-    fi
-
-
-	#If we have PostgreSQL ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
-    #setting - this will limit Aubit DB connectivity to PostgreSQL ONLY.
-    #Postgres - the ecpg needs to be the absolute latest CVS
-	#version which has support for the "-C INFORMIX" flag.
-	#Also - this version relies on a few backend changes for more Informix
-	#compatibilty - some of which won't make it into the official postgres
-	#releases and will need special patches...
-	#All these are available (open source etc) - they are just not what most people
-	#will have..
-	if test "$PG_ESQLC" != "no" ; then
-		if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
-			A4GL_LEXTYPE=EC
-			A4GL_LEXDIALECT=POSTGRES
-        fi
-    fi
-
-    #If we have Informix ESQL/C compiler, we can use it, bypassing A4GL_SQLTYPE
-    #setting - this will limit Aubit DB connectivity to Informix ONLY.
-	if test "$IFMX_ESQLC" != "no" ; then
-		A4GL_LEXTYPE=EC
-		A4GL_LEXDIALECT=INFORMIX
-    fi
-fi
-
 ## ==================================================================
 ##            Decide on default HELP MESSAGE driver
 ## ==================================================================
@@ -3681,7 +3923,7 @@ fi
 
 	if test "$IFMX_ESQLC" != "no" ; then
 		RPMFILE_4=$LIB_PREFIX/libSQL_esql$SO_EXT
-		RPMFILE_26=$LIB_PREFIX/libesqlhelper_funcs$SO_EXT
+		RPMFILE_1=$LIB_PREFIX/libesqlhelper_funcs$SO_EXT
 		PLUGIN_YES="$PLUGIN_YES IFX_NATIVE ESQLC_HELPER"
 	else
         PLUGIN_NO="$PLUGIN_NO IFX_NATIVE ESQLC_HELPER"
@@ -3837,7 +4079,7 @@ fi
     #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
 	if test "$GTKBUILD" != "no"; then
 		RPMFILE_25=$LIB_PREFIX/libUI_GTK$SO_EXT
-		RPMFILE_1=$LIB_PREFIX/libMENU_GENERIC$SO_EXT
+		RPMFILE_26=$LIB_PREFIX/libMENU_GENERIC$SO_EXT
 		PLUGIN_YES="$PLUGIN_YES GTK MENU_GENERIC"
 	else
         PLUGIN_NO="$PLUGIN_NO GTK MENU_GENERIC"
@@ -3853,9 +4095,55 @@ fi
         PLUGIN_NO="$PLUGIN_NO MENU_XDR"
     fi
 
-	#RPMFILE_28=$LIB_PREFIX/
-	#RPMFILE_29=$LIB_PREFIX/
-	#RPMFILE_30=$LIB_PREFIX/
+	#SQLite native connection
+	if test "$SQLITE_LIB" = "1"; then
+		RPMFILE_28=$LIB_PREFIX/libSQL_sqlite$SO_EXT
+		PLUGIN_YES="$PLUGIN_YES SQLITE"
+    else
+        PLUGIN_NO="$PLUGIN_NO SQLITE"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sqlite"
+    fi
+
+	#SQLite ODBC driver
+	if test "$SQLITE_ODBC" = "1"; then
+		RPMFILE_29=$LIB_PREFIX/libSQL_sqliteodbc$SO_EXT
+		PLUGIN_YES="$PLUGIN_YES SQLITE_ODBC"
+    else
+        PLUGIN_NO="$PLUGIN_NO SQLITE_ODBC"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sqlite.odbc"
+    fi
+
+	if test "$HAVE_POPLIB" = "1"; then
+		RPMFILE_30=$LIB_PREFIX/libA4GL_pop$SO_EXT
+		PLUGIN_YES="$PLUGIN_YES POP"
+    else
+        PLUGIN_NO="$PLUGIN_NO POP"
+		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
+    fi
+
+    #RPMFILE_31=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_32=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_33=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_34=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_35=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_36=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_37=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_38=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_39=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_40=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_41=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_42=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_43=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_44=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_45=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_46=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_47=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_48=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_49=$LIB_PREFIX/lib$SO_EXT
+    #RPMFILE_50=$LIB_PREFIX/lib$SO_EXT
+
+
+
 
 ## ==================================================================
 ##           Additional auto-install targets:

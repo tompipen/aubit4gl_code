@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.28 2003-02-14 12:49:31 mikeaubury Exp $
+# $Id: Makefile.in,v 1.29 2003-07-26 04:47:16 afalout Exp $
 #
 
 ROOT    =../../..
@@ -67,16 +67,18 @@ ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 
+.PHONY : clean all allodbc iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc odbc32 sqlite
+
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
 all :
 	@echo "Must specify target (because clean is not working.)"
-	@echo "Targets: iodbc unixodbc ifxodbc pgodbc odbc32 sapodbc allodbc"
+	@echo "Targets: iodbc unixodbc ifxodbc pgodbc odbc32 sapodbc allodbc sqliteodbc sqlite"
 
 
-allodbc: iodbc unixodbc ifxodbc pgodbc sapodbc
+allodbc: iodbc unixodbc ifxodbc pgodbc sapodbc sqliteodbc sqlite
 
 #we MUST always clean first, because we don't know for which libs where
 #current object compiled, if they exists.
@@ -94,6 +96,12 @@ pgodbc: 	clean ${LIBROOT}/libSQL_pgodbc${SO_EXT}
 
 sapodbc: 	clean ${LIBROOT}/libSQL_sapodbc${SO_EXT}
 	@echo "SAP DB ODBC target compiled successfully"
+
+sqliteodbc: clean ${LIBROOT}/libSQL_sqliteodbc${SO_EXT}
+	@echo "SQLite ODBC target compiled successfully"
+
+sqlite: clean ${LIBROOT}/libSQL_sqlite${SO_EXT}
+	@echo "SQLite native Aubit plug-in compiled successfully"
 
 odbc32: 	clean ${OBJECTS} ${LIBROOT}/libSQL_odbc32${SO_EXT}
 #	${MAKE} libSQL_odbc32.dll DLLOBJS="${OBJECTS}" DLL_LDLIBS="${AUBIT_LIB} -lodbc32" DLL_LDFLAGS="-L${LIBROOT}"
@@ -127,11 +135,24 @@ ${LIBROOT}/libSQL_sapodbc${SO_EXT}: CFLAGS:=-DSAPODBC @SAPODBC_INCLUDE@ @SAPODBC
 ${LIBROOT}/libSQL_sapodbc${SO_EXT}: ${OBJECTS}
 	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqlod -lsqlrte -lpcr -lpthread -lm @SAPODBC_LFLAGS@
 
+${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: CFLAGS:=-DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbtest/incl
+${LIBROOT}/libSQL_sqliteodbc${SO_EXT}: ${OBJECTS}
+	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqliteodbc
+
+#FIXME: remove -DHAVE_IODBC=1 and use odbc headers from -I${ROOT}/tools/odbtest/incl
+#so user don't have to have iODBC installed
+#FIXME: use $DBPATH to dinf SQLite .db file, so that user don't have to specify
+#full path & file name in DATABASE statement. Append .db extension automaticaly.
+#DATABSE 'xyz' should be resolved to <full_path>xyz.db before calling dbopen()
+${LIBROOT}/libSQL_sqlite${SO_EXT}: CFLAGS:=-DDONTINCLUDEDATASOURCES -DSQLITEODBC ${CFLAGS_NOREDUND} -I${ROOT}/tools/odbtest/incl -DHAVE_IODBC=1 -DHAVE_USLEEP=1 -DHAVE_LOCALECONV=1 -DHAVE_LIBVERSION=1 -I. -DWITHOUT_DRIVERMGR
+${LIBROOT}/libSQL_sqlite${SO_EXT}: ${OBJECTS} sqliteodbc.o
+	${LD} ${SO_LDFLAGS} $^ -o $@ -lsqlite
+
+
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
-.PHONY : clean
 clean:
 	${RM} *.o *.bak *${SO_EXT} *.base *.dll *.def *.exp *.a
 

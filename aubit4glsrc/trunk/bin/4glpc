@@ -29,7 +29,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: 4glpc,v 1.108 2003-07-20 06:53:24 afalout Exp $
+# $Id: 4glpc,v 1.109 2003-07-26 04:47:15 afalout Exp $
 #
 
 ########################################################################
@@ -298,6 +298,7 @@ then
 fi
 
 #echo 1 AUBITDIR=$AUBITDIR
+#echo $A4GL_LEXTYPE
 
 #we no longer export all variables, so this is obsolete?:
 if [ "$MAKINGAUBIT" = "1" ] #if we are invoked from Aubit compiler makefiles
@@ -1240,9 +1241,22 @@ else
 	FGLLIBS_COMMON="$FGLLIBS_COMMON -L/lib/w32api -L/usr/local/lib"
 fi
 
+if [ "$A4GL_LEXTYPE" = "EC" ]
+then
+	#if [ "$A4GL_LEXDIALECT"  = "POSTGRES" ]
+	#then
+		FGLLIBS_COMMON="$FGLLIBS_COMMON -lesqlhelper_funcs"
+	#else
+
+	#fi
+fi
+
 #FGLLIBS_COMMON="$FGLLIBS_COMMON -lm  -lRPC_$A4GL_XDRTYPE"
 FGLLIBS_STATIC="$FGLLIBS_COMMON -static"
 FGLLIBS_SHARED="$FGLLIBS_COMMON"
+
+
+
 
 if [ "$A4GLDEBUG" = "yes" ]
 then

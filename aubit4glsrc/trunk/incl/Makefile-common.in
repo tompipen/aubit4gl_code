@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.130 2003-07-20 06:53:25 afalout Exp $
+# $Id: Makefile-common.in,v 1.131 2003-07-26 04:47:15 afalout Exp $
 #
 
 
@@ -939,8 +939,11 @@ TMP_RPMFILES = \
 	@RPMFILE_13@ @RPMFILE_14@ @RPMFILE_15@ @RPMFILE_16@ @RPMFILE_17@ \
 	@RPMFILE_18@ @RPMFILE_19@ @RPMFILE_20@ @RPMFILE_21@ @RPMFILE_22@ \
 	@RPMFILE_23@ @RPMFILE_24@ @RPMFILE_25@ @RPMFILE_26@ @RPMFILE_27@ \
-	@RPMFILE_28@ @RPMFILE_29@ @RPMFILE_30@
-
+	@RPMFILE_28@ @RPMFILE_29@ @RPMFILE_30@ \
+	@RPMFILE_31@ @RPMFILE_32@ @RPMFILE_33@ @RPMFILE_34@ @RPMFILE_35@ \
+	@RPMFILE_36@ @RPMFILE_37@ @RPMFILE_38@ @RPMFILE_39@ @RPMFILE_40@ \
+	@RPMFILE_41@ @RPMFILE_42@ @RPMFILE_43@ @RPMFILE_44@ @RPMFILE_45@ \
+	@RPMFILE_46@ @RPMFILE_47@ @RPMFILE_48@ @RPMFILE_49@ @RPMFILE_50@
 
 LIB_OPTIONAL =$(notdir ${TMP_RPMFILES})
 
@@ -1408,6 +1411,25 @@ endif
 # 24: Electric Fence
 #info: http://perens.com/FreeSoftware/ and http://freshmeat.net/projects/efence/?topic_id=47
 #ftp://ftp.perens.com/pub/ElectricFence/
+
+#################
+# 26: SQLite
+SQLITE_INFO=http://www.hwaci.com/sw/sqlite/index.html
+SQLITE_PATH=http://www.hwaci.com/sw/sqlite/
+#RPM containing documentation, header files, and static library:
+SQLITE_RPM_LIB=sqlite-devel-2.8.5-1.i386.rpm
+#RPM containing shared libraries and the sqlite command-line program.
+SQLITE_RPM_DEV=sqlite-2.8.5-1.i386.rpm
+#ODBC driver for SQLite:
+SQLITE_ODBC_INFO=http://www.ch-werner.de/sqliteodbc
+SQLITE_ODBC_PATH=http://www.ch-werner.de/sqliteodbc
+SQLITE_ODBC_SRC=sqliteodbc-0.53
+SQLITE_ODBC_TGZ_SRC=${SQLITE_ODBC_SRC}.tar.gz
+
+#################
+# 27: libspopc
+SPOPC_INFO=http://brouits.free.fr/libspopc/
+
 
 #=================================== EOF ================================
 

@@ -6,7 +6,7 @@
 ###########################################################################
 
 #
-# $Id: aubit-rpm.spec.in,v 1.15 2003-07-21 09:22:08 afalout Exp $
+# $Id: aubit-rpm.spec.in,v 1.16 2003-07-26 04:47:15 afalout Exp $
 #
 
 #There may be times when RPM's automatic dependency processing is not
@@ -146,6 +146,27 @@ make install
 @RPMFILE_28@
 @RPMFILE_29@
 @RPMFILE_30@
+
+@RPMFILE_31@
+@RPMFILE_32@
+@RPMFILE_33@
+@RPMFILE_34@
+@RPMFILE_35@
+@RPMFILE_36@
+@RPMFILE_37@
+@RPMFILE_38@
+@RPMFILE_39@
+@RPMFILE_40@
+@RPMFILE_41@
+@RPMFILE_42@
+@RPMFILE_43@
+@RPMFILE_44@
+@RPMFILE_45@
+@RPMFILE_46@
+@RPMFILE_47@
+@RPMFILE_48@
+@RPMFILE_49@
+@RPMFILE_50@
 
 
 #Below are only files that should be created by make in any case:

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.89 2003-07-20 06:53:25 afalout Exp $
+# $Id: Makefile.in,v 1.90 2003-07-26 04:47:15 afalout Exp $
 #
 
 ROOT    =..
@@ -88,9 +88,6 @@ LIBIMJABBER_PATH	=${ROOT}/tools/jabber $@
 LOADMAP_PATH		=${ROOT}/tools/loadmap
 AUBITCONFIG_PATH	=resource
 FILESCHEMA_PATH     =libsql/schema_in_file
-
-
-
 
 
 #Specify dependencies for libraries, so they get rebuilt if dependencies change:
@@ -294,6 +291,12 @@ libSQL_iodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 
 libSQL_unixodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} unixodbc
+
+libSQL_sqliteodbc${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} sqliteodbc
+
+libSQL_sqlite${SO_EXT}: ${LIBSQLODBC_DEPS}
+	${MAKE} -C ${LIBSQLODBC_PATH} sqlite
 
 libSQL_odbc32.dll: ${LIBSQLODBC_DEPS}
 	${MAKE} -C ${LIBSQLODBC_PATH} odbc32

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.75 2003-07-25 22:04:53 mikeaubury Exp $
+# $Id: lexer.c,v 1.76 2003-07-26 04:47:15 afalout Exp $
 #*/
 
 /**
@@ -113,7 +113,6 @@ struct translate_string
 };
 
 int is_builtin_func (char *s);
-void set_namespace (char *s);
 char *get_namespace (char *s);
 int a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2);
 char namespace[256] = "aclfgl_";
@@ -1318,12 +1317,20 @@ turn_state (int kw, int v)
 
 
 
+/**
+ *
+ * @param s
+ */
 void
 set_namespace (char *s)
 {
   strcpy (namespace, s);
 }
 
+/**
+ *
+ * @param s
+ */
 char *
 get_namespace (char *s)
 {
@@ -1337,6 +1344,10 @@ get_namespace (char *s)
 
 
 
+/**
+ *
+ * @param s
+ */
 int
 is_builtin_func (char *s)
 {
@@ -1356,6 +1367,12 @@ is_builtin_func (char *s)
 
 
 #ifdef NEWLIST
+/**
+ *
+ * @param kw
+ * @param v
+ * @param arr
+ */
 static void
 turn_state_all (int kw, int v, int arr)
 {

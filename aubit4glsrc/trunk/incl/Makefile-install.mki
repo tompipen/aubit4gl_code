@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.64 2003-04-10 04:01:27 afalout Exp $
+# $Id: Makefile-install.mki,v 1.65 2003-07-26 04:47:15 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -666,7 +666,35 @@ install.gtk.dev: ${GTK_GTK_DEV_RPM} ${GTK_GDK_DEV_RPM} ${GTK_GLIB_DEV_RPM} \
 # 22: DBIx::Informix::Perform has been added to the CPAN module taxonomy and the
 #file DBIx-Informix-Perform-0.01.tar.gz will be available therein on or about 2 Apr. 2003.
 #
-#Tim Bunce has convinced the other interested person(s) in the CPAN Module Namespace group that the proper name is DBIx::Perform. The original downloads file is restored (was just hidden anyway) and the change to DBIx::Informix::Perform will become a branch on the CVS tree, which can be merged to the trunk if we ever need it
+#Tim Bunce has convinced the other interested person(s) in the CPAN Module
+#Namespace group that the proper name is DBIx::Perform. The original downloads
+#file is restored (was just hidden anyway) and the change to DBIx::Informix::Perform
+#will become a branch on the CVS tree, which can be merged to the trunk if we ever need it
+
+#################
+# 26: SQLite
+install.sqlite: ${SQLITE_RPM_LIB} ${SQLITE_RPM_DEV}
+	${RPM} -i $^
+	@echo " "
+	@echo "Package info & manuals: ${SQLITE_INFO}"
+	@echo " "
+	@echo "SQLite installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+#SQLite ODBC driver:
+install.sqlite.odbc: ${SQLITE_ODBC_TGZ_SRC}
+	cd /tmp; tar --gunzip -xf ${AUBIT_SRC_ROOT}/$^
+	cd /tmp/${SQLITE_ODBC_SRC}; ./configure; make; make install
+	@echo " "
+	@echo "Package info & manuals: ${SQLITE_ODBC_INFO}"
+	@echo " "
+	@echo "SQLite ODBC driver installed.  Please re-run 'configure' to detect changes."
+	@echo " "
+
+##################
+# 27: libspopc
+install.libspopc:
+
 
 
 ########################
@@ -756,8 +784,46 @@ ${LIBUNGIF_DEV_RPM}:
 ${AUDIOFILE_DEV_RPM}:
 	${WGET} ${GTK_DEV_PATH}/$@
 
+${SQLITE_RPM_LIB}:
+	${WGET} ${SQLITE_PATH}/$@
+${SQLITE_RPM_DEV}:
+	${WGET} ${SQLITE_PATH}/$@
+${SQLITE_ODBC_TGZ_SRC}:
+	${WGET} ${SQLITE_ODBC_PATH}/$@
 
 
+test.sqlite.odbc: test_sqlite_odbc test_sqlite
+	export A4GL_LEXTYPE=C; aubit 4glc test_sqlite_odbc.4gl -o test_sqlite_odbc.4ae
+	@echo "export A4GL_SQLTYPE=sqliteodbc; export A4GL_UI=TUI; export DEBUG=ALL; test_sqlite_odbc.4ae"
+	@echo " "
+	@export A4GL_SQLTYPE=sqliteodbc; export A4GL_UI=TUI; export DEBUG=ALL; xx=`test_sqlite_odbc.4ae | head -1`; if test "$$xx" = "        987"; then echo "Aubit connection to SQLite via ODBC successful."; rm test_sqlite_odbc.* ; else echo "Aubit connection to SQLite via ODBC FAILED...$$xx.."; fi
+
+test.sqlite: test_sqlite_native test_sqlite
+	export A4GL_LEXTYPE=C; aubit 4glc test_sqlite_odbc.4gl -o test_sqlite_odbc.4ae
+	@echo "export A4GL_SQLTYPE=sqlite; export A4GL_UI=TUI; export DEBUG=ALL; test_sqlite_odbc.4ae"
+	@echo " "
+	@export A4GL_SQLTYPE=sqlite; export A4GL_UI=TUI; export DEBUG=ALL; xx=`test_sqlite_odbc.4ae | head -1`; if test "$$xx" = "        987"; then echo "Aubit native connection to SQLite successful."; rm test_sqlite_odbc.* ; else echo "Aubit native connection to SQLite FAILED...$$xx.."; fi
+
+test_sqlite_odbc: clean.test.sqlite
+	@echo "main" > test_sqlite_odbc.4gl
+	@echo "define dummy integer" >> test_sqlite_odbc.4gl
+	@echo "	database mysqlitedb " >> test_sqlite_odbc.4gl
+
+test_sqlite_native: clean.test.sqlite
+	@echo "main" > test_sqlite_odbc.4gl
+	@echo "define dummy integer" >> test_sqlite_odbc.4gl
+	@echo "	database '${AUBIT_SRC_ROOT}/tools/aubit.db' " >> test_sqlite_odbc.4gl
+
+test_sqlite:
+	@echo "	declare sc1 cursor for select test from testing" >> test_sqlite_odbc.4gl
+	@echo "	foreach sc1 into dummy" >> test_sqlite_odbc.4gl
+	@echo "		display dummy" >> test_sqlite_odbc.4gl
+	@echo "	end foreach" >> test_sqlite_odbc.4gl
+	@echo "end main" >> test_sqlite_odbc.4gl
+	@echo " " >> test_sqlite_odbc.4gl
+
+clean.test.sqlite:
+	rm -f test_sqlite_odbc.*
 
 # ============================== EOF ================================
 

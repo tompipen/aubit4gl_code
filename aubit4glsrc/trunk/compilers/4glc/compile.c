@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.32 2003-07-23 07:07:32 afalout Exp $
+# $Id: compile.c,v 1.33 2003-07-26 04:47:15 afalout Exp $
 #*/
 
 /**
@@ -603,24 +603,25 @@ initArguments (int argc, char *argv[])
 	#if ( ! defined (__MINGW32__) && ! defined (__CYGWIN__) )
 	      //We are on UNIX
 	      
-		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0)
-	    {
-            /*
-			When using Embedded C output, we need to run appropriate ESQL/C
-            compiler to do the linking
-            */
-		  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0)
-		    {
-
-			  sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s",
+		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0){
+            /* When using Embedded C output, we need to run appropriate ESQL/C
+            compiler to do the linking */
+		  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "POSTGRES") == 0) {
+			  sprintf (buff, "ecpg_wrap -rdynamic %s -o %s %s %s %s %s -lesqlhelper_funcs",
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
 
 		    } else {
+			  if (strcmp (acl_getenv ("A4GL_LEXDIALECT"), "SAPDB") == 0) {
+				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s -lesqlhelper_funcs",
+			       acl_getenv ("A4GL_SAPDB_ESQLC"), all_objects, output_object, l_path, l_libs,
+			       pass_options, extra_ldflags);
+              } else {
 				//"A4GL_LEXDIALECT"="INFORMIX" - default
-			  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s",
+				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s -lesqlhelper_funcs",
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
+              }
 
 		    }
 	    } else { /* Pure C compiler output */

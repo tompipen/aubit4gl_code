@@ -8,7 +8,9 @@ PROG            = test_im
 
 GLOBALS.4gl     = test_im.4gl
 
-FILES.lib       = lib4glim.c
+#if we soecify .c file, it will be deleted in clean
+#FILES.lib       = lib4glim.c
+FILES.lib       = lib4glim.o
 
 FILES.4gl       = ${GLOBALS.4gl}
 

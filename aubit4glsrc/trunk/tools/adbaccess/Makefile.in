@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.8 2003-03-14 10:51:07 afalout Exp $
+# $Id: Makefile.in,v 1.9 2003-07-26 04:47:16 afalout Exp $
 #
 
 ROOT    =../..
@@ -103,7 +103,7 @@ misql.4ae.run:
 
 clean:
 	rm -f *.ao *.h *.c *.glb *.4ae *.frm *.4go *.4ge *.4gi *.o *.bak *.err \
-	*.afr *.afr.xml *.frm.xml
+	*.afr *.afr.xml *.frm.xml *.ec
 
 
 ## ==================================================================

@@ -49,7 +49,11 @@
 
 /* ==================== from a4gl_4glc_4glc.h ===================== */
 
-    /* ========================= in globals.c =========================== */
+
+/* ============================= in mk_states.c ======================= */
+int allow_token_state(int yystate,int yytoken);
+
+	/* ========================= in globals.c =========================== */
 void dump_gvars (void);
 
 	/* =========================== Implemented in 4glc.c ================= */
@@ -66,6 +70,7 @@ void a4gl_yyerror (char *s);
 
 int mja_fgetc (FILE * f);
 void turn_state (int kw, int v);
+void set_namespace (char *s);
 	//int   yylex                           (void);
 
 	//int   yylex                           (void *pyylval, int yystate);

@@ -83,6 +83,12 @@
 		#define __ODBC_DEFINED__
 	#endif
 
+    #ifdef SQLITEODBC
+        /* SQLite ODBC driver does not provide ODBC header files */
+
+
+    #endif
+
 	#ifndef __ODBC_DEFINED__
 		/* default for tesing, when we don't use makefile we will not have -Dxxx
 	   unixODBC headers: */

@@ -3,7 +3,22 @@ define
     pg_sess
         smallint
 
+{
 
+main
+define dummy integer
+    database mysqlitedb
+	prepare x1 from " select test from testing"
+    #declare sc1 cursor for select test from testing
+	declare sc1 cursor for x1
+    foreach sc1 into dummy
+		display dummy
+    end foreach
+end main
+
+
+
+}
 
 ###########
 main
