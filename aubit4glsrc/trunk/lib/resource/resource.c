@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.24 2002-12-08 06:34:37 afalout Exp $
+# $Id: resource.c,v 1.25 2003-01-09 14:28:41 psterry Exp $
 #
 */
 
@@ -495,7 +495,7 @@ chk_dbdate (char *p)
       return 0;
     }
 
-  for (cnt = 0; cnt <= 2; cnt++)
+  for (cnt = 0; cnt <= 3; cnt++)
     {
       if (toupper (p[cnt]) == 'Y')
         y = cnt;
@@ -511,15 +511,15 @@ chk_dbdate (char *p)
       return 0;
     }
 
-
-  if (strlen (p) > 3)
-    {
-      if (p[3] != '2' && p[3] != '4')
-        {
-          exitwith ("Invalid DBDATE format(3)");
-          return 0;
-        }
-    }
+ /* not correct :  eg. "Y4MD-" is valid */
+ //  if (strlen (p) > 3)
+ //    {
+ //      if (p[3] != '2' && p[3] != '4')
+ //        {
+ //          exitwith ("Invalid DBDATE format(3)");
+ //          return 0;
+ //        }
+ //    }
 
   return 0;
 }
@@ -957,4 +957,5 @@ char *a;
 
 
 /* ----------------------------- EOF --------------------------------- */
+
 
