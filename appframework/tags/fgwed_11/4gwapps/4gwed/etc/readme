@@ -1,0 +1,251 @@
+4gwed 1.0 release notes					Nov 12, 2000
+
+4gwed is a demo 4glWorks application. It's a basic sql frontend, much like
+dbaccess.  It has 2 operating modes:
+
+1) Batch client
+This is a small sql interpreter with formatting capabilities, which takes
+a piece of sql from a file (passed as an argument, which can be "-" to signify
+the standard input, and outputs the results on the standard output. Has basic
+html formatting capabilities (use the -h switch, or the -w width, to set the
+output width)
+Note that html formatting is pretty basic and does not include appropriate
+HTML headers & trailers (ie HTML & BODY tags, and the whole of the HEAD section)
+This has been done so that page looks can be customized from outside 4gwed
+using style sheets.
+
+2) Interactive client 
+This is the mode entered if no arguments are given on the command line.
+
+Use
+- Edit to enter a query
+- Do to execute it
+- Read to read a query from a file
+- Write to save the query to a file
+- TAB to cycle thru panes
+- Ctrl-X to quit the app.
+
+3) Language syntax
+The Sql interpreter boosts a number of interesting features, including
+
+- Additional statements. Besides supporting multiple SQL statements (separated
+  by semicolons), the following is supported
+
+  foreach <select statement>;
+    <statement list>|break|continue
+  done;
+
+  for <variable> in <expression>[, <expression>...];
+    <statement list>|break|continue
+  done;
+
+  while <expression>;
+    <statement list>|break|continue
+  done;
+
+  if <expression>;
+    <statement list>
+  [elif <expression>;
+    <statement list>
+  ...]
+  [else;
+    <statement list>]
+  fi;
+
+  unload to <expression> [delimiter <expression>] <select statement>;
+
+  load from <expression> [delimiter <expression>] <insert statement>;
+
+  let <variable>[<substring range>]=<expression>;
+
+  display <expression>[, <expression>...];
+
+  append to <expression>|default;
+
+  output to <expression>;
+
+  pipe to <expression>;
+
+  exit [<expression>];
+
+  whenever error continue|stop;
+
+  where <expression> can be just about anything listed in the "Condition"
+  and "Expression" segments of the IDS 7.3 syntax guide with the following
+  variations:
+
+  * expressions do not handle columns, but variables instead :-)
+  * variables are dynamic and typed, ie they spring into existence when
+    first referenced and change type at every new assignment (or select)
+    as the case needs be
+  * a number of functions and operators have been borrowed from 4gl: ASCII,
+    CLIPPED, SPACES, USING (please note that ASCII is a function & requires
+    the parenthesis)
+  * a couple of function have been added:
+    EXEC(command_line) executes a system command without ever returning.
+    it maps to
+
+    execl("/bin/sh", "-c", command_line, NULL);
+
+    so it handles shell expansions, etc.
+    FORK creates a child process as in fork(2). the child does not
+    inherit database connections, and does an implicit exit (see later)
+    at the end of the script.
+    GETENV(variable) returns the value of an environmental variable
+    WAIT waits for any child processes as in wait(2). returns the pid
+    of the child that has just terminated. return code and error number
+    are returned by DBINFO("$?") and DBINFO("errno") respectively.
+    WAITPID(pid) waits for child pid to terminate as in waitpid(2)
+    INDEX(source_string, substring) returns the position of substring
+    within source_string
+    PAD(pattern, len) will build a len bytes string containing repeated
+    pattern
+    RANDOM(mod [, seed]) returns a random number in the range 0..mod-1
+  * DATETIME and INTERVAL do not introduce constants, but are functions
+    instead. This is consistent with date handling (there's no such thing
+    as a date constant) and offers added versatility with a simplified
+    grammar, as both functions perform conversion and qualifier extension
+    in one invocation
+  * the FRACTION qualifier and the initial qualifier (intervals only) do not
+    support a precision specifier
+  * datetime and interval expression are automatically extended as the case
+    needs be: 1 UNITS DAY - 1 UNITS HOUR returns interval(0 23) day to hour
+    rather than a -1266
+  * DATETIME, INTERVAL and DATE accept an optional second parameter specifying
+    the input format a la TO_DATE
+  * REPLACE accepts optional start and length parameters having the same
+    meaning as in SUBSTR
+  * DBINFO only knows how to handle "sqlca.sqlerrd1", "sqlca.sqlerrd2",
+    "sqlca.sqlcode", "$?" and "errno"
+  * USER, TODAY and CURRENT do not necessarily return the same value as
+    they would on the engine side
+  * inline SPL & subselect invocation is not supported
+  * GLS support is incomplete at best
+  * a number of functions has not been implemented as deemed redundant, or
+    not easily implementable, or would needlessly complicate the grammar (or
+    all of the above): DBSERVERNAME, SITENAME, OCTET_LENGTH, EXTEND, TO_CHAR,
+    TO_DATE, TRIM, SUBSTRING
+
+  For, foreach and while loops can be exited with a break statement, or their
+  reminder can be skipped with a continue statement.
+
+  Append, output and pipe all instruct the interpreter to redirect its output.
+  The expression passed to append and output is a name of a file (output will
+  truncate it, append will add to it), while pipe, as you would expect, pipes
+  the output to a child process.
+  Append to default causes the new output generated by the interpreter to be
+  added to the default stream, which in the case of the demo application
+  is the viewer display. 
+
+  Note finally that exit has different meanings depending whether the process is
+  the result of a FORK (the process terminates) or not (the script terminates
+  and the process resumes normal operation).
+
+- Data Storage. Foreach and plain select statements can assign values to
+  variables. Use an
+
+  into variable[, variable...]
+
+  clause at the end of the statement to list the target variables.
+
+- Placeholders. As an alternative to the expansion facility (see below), it
+  is possible to use placeholders as you would on an open or execute
+  statement. Use an 
+
+  using variable[, variable...]
+
+  clause at the end of the statement to list the variables that should
+  substitute placeholders. This feature can be used to insert or update
+  (should you ever get a working version of the IFX_UPDDESC feature)
+  text values on the fly.
+
+- Formatting. Queries and displays can be formatted. Add the following clause
+  at the end of the statement:
+
+  format brief|{full|vertical [<expression>] [headers <expression list>]}
+
+  The brief format will only output column values separated by commas, with
+  no formatting whatsoever, vertical will output rows in a header/column
+  fashion (formatting each column in the way), and lastly full format 
+  formats rows as you would expect. :-)
+
+  The first expression is a format specifier in which c and 4gl format
+  specifiers can be used. C formats are specified the usual way (see sprintf
+  (3)), while 4gl formats have to be enclosed in square brackets. Format
+  specifiers can be interspersed with plain text, hard tabs & new lines, or
+  \n and \t.
+  To ease header formatting (in case plain text appears in the format, in
+  particular with vertical formats), columns can be separated with the pipe
+  (|) sign. This is not required though.
+  Special characters ([]%| and the quotes in use) can be escaped by doubling
+  them. Note that the backslash has special significance only when followed
+  by either 't' or 'n'.
+  Note that there's no need to specify as many format specifiers as columns,
+  while with full format, more than needed will combine multiple rows into
+  a single format.
+
+  The header clause specifies a list of headers to be output as the first
+  row of the query in full format, and preceding each column in vertical
+  format. Headers will be padded to the length of the appropriate field
+  (full format) or the largest header (vertical).
+
+  As for format specifiers, there's no need that the number of headers matches
+  that of the items being selected.
+
+- An expansion facility caters for pick lists or query or application output
+  substitution anywhere in the script. Expansions are performed whenever a
+  <+ +> pair is encountered, can be freely nested (up to a depth of 10 at
+  present), and can be any of the following:
+
+  READ file[ file...]		displays the contents of multiple files
+  EXEC pipe			executes an arbitrary application
+  get variable[, variable...]	returns the contents of previously
+				stored variables
+  a select statement		displays the results of a query
+
+  prefix the above with any of the following options to change expansion
+  behavior:
+
+  [coded|lone|silent]		Specifies which expansion should be performed.
+				Coded will open a code/description pick list
+				(only the code is returned), lone will open
+				a description only pick list, while silent
+				will just do a plain expansion.
+
+  [single|multi]		Specifies whether the expansion should return
+				one or more values. For pick lists, this
+				controls whether multiple selections are
+				allowed. For silent expansions, whether only
+				the first or all values should be returned.
+
+  put <variable>		stores the output of the expansion in the
+				variable specified
+			
+  quotes <quoted string>	Specifies quotes to surround each value
+				returned by get or multiple expansions.
+				Default is none. Enter two characters to
+				specify differring start and end quotes.
+
+  separator <quoted string>	Specifies the entry separator between each
+				value returned by get or multiple expansions.
+				Default is blank.
+
+  A few gotchas:
+
+  - default behavior is coded single (only because I use it a lot :-).
+  - quotes and separator are illegal with single, and imply multi (so,
+    multi usage is redundant, with them)
+  - pick list expansions will fail if the pick list is empty, while get
+    and silent expansions can happily expand to nothing. this is useful
+    to silently execute external applications
+
+  Expansions can be commented using a <* *> pair. At par to <+ +> pairs, such
+  comments can be nested. Expansions and comment tokens can be escaped with a
+  backslash. Note that the backslash does not escape anything else, thus you
+  don't need to escape it to use it in the context of a select statement or a
+  shell script.
+  Finally, feel free to use whichever comment mechanism you like, as long as it
+  makes sense within the context in which it is used, eg {} or --/<CR> in
+  SQL statements, or #/<CR> in perl/awk/sh scripts.
+
+Marco Greco <marco@4glworks.com>
