@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.36 2004-02-10 14:32:34 mikeaubury Exp $
+# $Id: fcompile.c,v 1.37 2004-05-24 11:47:02 mikeaubury Exp $
 #*/
 
 /**
@@ -182,9 +182,10 @@ main (int argc, char *argv[])
 
   
   //does not work - attempting to compile form without specifying .per extension will fail:
-  if (b[0] == 0)
+  if (a[0] == 0)
     {
       strcat (c, ".per");
+  	A4GL_bname (c, a, b);
     }
 
 
