@@ -23,7 +23,7 @@ define xscr integer
 
 	display "input f1:next" to msg
 	input dt without defaults from sdt1 attribute(white)
-	on key(f1)
+	on key(f10)
 		exit input
 	on key(return)
 		prompt "prompt : " for char q1 attribute (white)
@@ -44,7 +44,7 @@ define xscr integer
 	display "input array f1:quit" to msg
 	input array p_parm without defaults from parm_scr.*
 	before row
-		on key(f1)
+		on key(f10)
 			exit input
 		after field f1
 			prompt "prompt : " for char q1 attribute (white)

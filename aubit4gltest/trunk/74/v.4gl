@@ -31,7 +31,7 @@ define i integer
 	input array p_parm without defaults from parm_scr.*
 	after row
 		display "After row" at 1,1
-	on key(f1)
+	on key(f8)
 		call aclfgl_dump_screen("scr.out",0)
 	end input
 		call aclfgl_dump_screen("scr2.out",0)

@@ -67,7 +67,7 @@ MAIN
 #			NEXT FIELD loan
 			NEXT FIELD NEXT
 		
-		on key(f1)
+		on key(f8)
 			if infield(loan) then
 				exit program 0
 			else

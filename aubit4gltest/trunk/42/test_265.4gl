@@ -38,15 +38,15 @@ main
 		attribute (white)
 
 # comment out the following 2 lines in order to test "next field rcode"
-		on key(f2)
+		on key(f6)
 			error "Should continue input"
 			let lv_flag=1
 
-		on key(f3) 
+		on key(f7) 
 			error "Should next field rcode"
 			let lv_flag=2
 
-		on key(f4) 
+		on key(f8) 
 			if infield(rcode) then
 				call errorlog("In rcode")
 			end if
@@ -65,7 +65,7 @@ main
 			end if
 
 
-		on key (f1)
+		on key (f5)
 			exit input
 
 	end input

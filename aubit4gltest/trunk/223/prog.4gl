@@ -63,13 +63,13 @@ let oldx = null
 let x = null
     input array medarr without defaults from ftlbal.*
 
-		on key(f4) call aclfgl_dump_screen("s1.out")
-		on key(f5) call aclfgl_dump_screen("s2.out")
-		on key(f6) call aclfgl_dump_screen("s3.out")
-		on key(f7) call aclfgl_dump_screen("s4.out")
-		on key (F6)
+		on key(f6) call aclfgl_dump_screen("s1.out")
+		on key(f7) call aclfgl_dump_screen("s2.out")
+		on key(f8) call aclfgl_dump_screen("s3.out")
+		on key(f9) call aclfgl_dump_screen("s4.out")
+		on key (F10)
 			continue input
-		on key (F1)
+		on key (F11)
 			exit input
 
 		BEFORE ROW

@@ -34,7 +34,7 @@ define xscr integer
 		error "total : ",arr_count()
 	}
 
-	on key(f2) 
+	on key(f9) 
 		if infield(f1) and arr_curr()=1 then
 			display "OK"
 			exit program 0
@@ -42,7 +42,7 @@ define xscr integer
 			display "Bad"
 			exit program 1
 		end if
-	on key(f1)
+	on key(f10)
 		exit input
 	end input
 	display "Bad"

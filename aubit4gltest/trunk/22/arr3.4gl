@@ -15,8 +15,8 @@ MAIN
 
 	OPTIONS
 		INPUT WRAP,
-    	MESSAGE LINE 1,
-    	PROMPT LINE 23,
+    		MESSAGE LINE 1,
+    		PROMPT LINE 23,
 		COMMENT LINE 23,
 		ERROR LINE 24
 
@@ -63,7 +63,7 @@ MAIN
 			LET y = SCR_LINE()
 			MESSAGE "ARR_CURR = ", x, " SCR_LINE = ", y
 
-		ON KEY(f1)
+		ON KEY(f6)
 			if infield(price) then exit program 1  end if
 			if infield(loan) then exit program 0  end if
 
