@@ -1,0 +1,72 @@
+#  =========================================================================
+#  Makefile for fgldoc navigator compilation and instalation
+#
+#  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
+#
+#  $Id: Makefile.in,v 1.1 2003-01-02 21:45:46 afalout Exp $
+#  =========================================================================
+
+include ../FgldocDefs.mk
+
+# =========================================================================
+#                              Settings
+# =========================================================================
+
+#DocumentAudit.class Login.class
+CLASS_FILES	= FunctionDescription.class FunctionParameter.class \
+			FunctionReturn.class MainPanel.class ModuleDocument.class \
+			ModuleDocumentOptions.class GenJsTree.class
+
+JSP_FILES	= function_error.jsp function_list.jsp index.jsp login.jsp \
+			module.jsp module_list.jsp process_list.jsp
+
+IMG_FILES	=ftv2blank.gif ftv2doc.gif ftv2folderclosed.gif ftv2folderopen.gif \
+			ftv2lastnode.gif ftv2link.gif ftv2mlastnode.gif ftv2mnode.gif  \
+			ftv2plastnode.gif ftv2pnode.gif ftv2vertline.gif ftv2node.gif
+
+JS_FILES	= treeview.js
+
+.PHONY : all install clean deinstall
+
+# =========================================================================
+#                        	   Targets
+# =========================================================================
+
+all: $(CLASS_FILES)
+
+# =========================================================================
+#                              Rules
+# =========================================================================
+
+%.class : %.java
+	@JAVAC@ $?
+
+# =========================================================================
+#                              Install
+# =========================================================================
+
+install: all
+	mkdir -p ${NAV_DIR}
+	mkdir -p ${CLASS_DIR}
+	$(INSTALL) $(CLASS_FILES) $(CLASS_DIR)
+	$(INSTALL) $(JSP_FILES) $(NAV_DIR)
+	$(INSTALL) $(IMG_FILES) $(NAV_DIR)
+	$(INSTALL) $(JS_FILES) $(NAV_DIR)
+
+# =========================================================================
+#                              Deinstall
+# =========================================================================
+
+deinstall:
+	(cd $(CLASS_DIR); ${RM} -f $(CLASS_FILES))
+	(cd $(NAV_DIR); ${RM} -f $(JSP_FILES))
+	(cd $(NAV_DIR); ${RM} -f $(IMG_FILES))
+	(cd $(NAV_DIR); ${RM} -f $(JS_FILES))
+# =========================================================================
+#                              Clean
+# =========================================================================
+
+clean:
+	$(RM) -f *.class *.jar *.bak
+
+# =================================== EOF =================================

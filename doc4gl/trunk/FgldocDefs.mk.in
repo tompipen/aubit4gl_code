@@ -3,13 +3,11 @@
 #
 #  It was developed by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: FgldocDefs.mk.in,v 1.3 2003-01-02 10:15:36 afalout Exp $
+#  $Id: FgldocDefs.mk.in,v 1.4 2003-01-02 21:44:52 afalout Exp $
 #
 #  ==========================================================================
 
 # Settings to compile the 4gl parser
-# Warning (in HP/UX) it just works with -g)
-#
 YACC			=@YACC@
 YFLAGS			=-d
 LEX				=@LEX@
@@ -17,9 +15,8 @@ CFLAGS			=-g
 #CFLAGS			=@CFLAGS@
 ESQL			=@IFMX_ESQLC@ -static
 
-
 #  ==========================================================================
-#  The place where the parser (p4gl) executable is to be installed
+#  The place where the executables will to be installed
 #  ==========================================================================
 BINDIR			=@prefix@/bin
 
@@ -30,12 +27,12 @@ BINDIR			=@prefix@/bin
 PERL_MODULE_DIR	=@PERL_MODULE_DIR@/FglDocumenter
 
 #  ==========================================================================
-#  Place where tomcat jsp container is installed
+#  Place where Tomcat or other jsp container is installed
 #  ==========================================================================
 TOMCAT_DIR		=/usr/local/jakarta-tomcat
 
 #  ==========================================================================
-#  Application dir inside tomcat,
+#  Application dir inside tomcat, or other jsp container.
 #  The place where the jsp(s) should be installed
 #  ==========================================================================
 NAV_DIR			=$(TOMCAT_DIR)/webapps/fgldocumenter

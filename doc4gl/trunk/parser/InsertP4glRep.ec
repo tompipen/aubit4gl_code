@@ -24,9 +24,29 @@ extern char *StatDesc;
  */
 insertP4glRep()
 {
+	/*I get a core dump here
+
+	(gdb) run
+	Starting program: /usr/local/bin/p4gl --file=PZU.4gl --database=p4gl_repository  --insert  em /opt/aubit/apps/erp/src/ap
+
+	Program received signal SIGSEGV, Segmentation fault.
+	0x0805a125 in insertP4glRep () at InsertP4glRep.ec:30
+	30		updatePackage(P4glCb.package);
+	(gdb) bt
+	#0  0x0805a125 in insertP4glRep () at InsertP4glRep.ec:30
+	#1  0x08058d21 in executeActions () at actions.c:21
+	#2  0x08051dfd in main (argc=6, argv=0xbffff5e4) at m_p4gl.c:23
+	#3  0x4004c306 in __libc_start_main (main=0x8051dbc <main>, argc=6,
+	    ubp_av=0xbffff5e4, init=0x8049dec <_init>, fini=0x812fc90 <_fini>,
+	    rtld_fini=0x4000d2dc <_dl_fini>, stack_end=0xbffff5dc)
+	    at ../sysdeps/generic/libc-start.c:129
+	(gdb)
+
+
+    */
 	exec sql whenever sqlerror call SqlErrors;
 	ConnectDb();
-  deleteModule(P4glCb.package,P4glCb.module);
+	deleteModule(P4glCb.package,P4glCb.module);
 	updatePackage(P4glCb.package);
 	insertModule(P4glCb.package,P4glCb.module,P4glCb.parsedComment->buffer);
 	insertFunctions();
