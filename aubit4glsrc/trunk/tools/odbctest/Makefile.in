@@ -1,0 +1,32 @@
+DEFS1 = -DPACKAGE=\"libiodbc\" -DSTDC_HEADERS=1 -DHAVE_STRERROR=1
+DEFS2 = -DHAVE_DLFCN_H=1 -DHAVE_LIBDL=1 -DSYS_ODBC_INI=\"/etc/odbc.ini\" -DSYS_ODBCINST_INI=\"/etc/odbcinst.ini\"
+DEFS_V3= ${DEFS1} ${DEFS2} -DVERSION=\"3.0.1\"
+#DEFS_V2= ${DEFS1} ${DEFS2} -DVERSION2
+DEFS_V2= ${DEFS1} ${DEFS2} -DODBCVER=0x0200
+#define ODBCVER					0x0351
+
+all: shexec unix iodbc3
+
+iodbc3: odbctest3.o
+	gcc -g -O2 -DODBCVER=0x0350 -o odbctest-iodbc3 odbctest3.o -L/opt/iODBC_3beta/iODBC/lib -liodbc
+
+iodbc2: odbctest2.o
+	gcc -g -O2 -DODBCVER=0x0350 -o odbctest-iodbc2 odbctest2.o -L/usr/openlink/lib -liodbc
+
+unix: odbctest3.o
+	gcc -g -O2 -DODBCVER=0x0350 -o odbctest-unixODBC odbctest3.o -L/opt/unixODBC/lib/ -lodbc
+
+odbctest2.o:
+	gcc $(DEFS_V2) -I.. -I./  -g -O2 -DODBCVER=0x0350 -c odbctest.c -o odbctest2.o
+
+odbctest3.o:
+	gcc $(DEFS_V3) -I.. -I./  -g -O2 -DODBCVER=0x0350 -c odbctest.c -o odbctest3.o
+
+
+
+shexec:
+	chmod a+x autotest*
+
+clean:
+	rm -f *.o *.bak odbctest-iodbc* odbctest-unixODBC
+

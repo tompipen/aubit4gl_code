@@ -1,0 +1,81 @@
+.SUFFIXES :
+.SUFFIXES : .4ge .a .o .4gl .ec .c .frm .per .arc .ace .exe .msg
+.SUFFIXES:  .4go .src .hlp
+
+#if not .IGNORE then test can't be used
+.IGNORE :
+
+#INFORMIXDIR = /usr/informix
+INFORMIXBIN = $(INFORMIXDIR)/bin
+C4GL = $(INFORMIXBIN)/c4gl
+CFORM= form4gl
+
+CFLAGS = -O
+LIBS = 
+
+
+.4gl.o:
+	cd $(<D); $(C4GL) $(CFLAGS) -c $(<F); rm -f $(*F).ec $(*F).c
+
+.c.o:
+	cd $(<D);$(C4GL) $(CFLAGS) -c $(<F)
+
+.4gl.4ge:
+	cd $(<D); $(C4GL) $(CFLAGS) -o $@ $(<F); rm -f $(*F).ec $(*F).c
+
+.o.4ge:
+	$(C4GL) $(CFLAGS) -o $@ $<
+
+
+.c.a:
+	$(C4GL) $(CFLAGS) -c $<
+	ar rv $@ $*.o; rm -f $*.o
+	ranlib $@
+
+.ec.o:
+	$(C4GL) $(CFLAGS) -c $<; rm $(*F).ec $(*F).c
+
+.ec.4ge:
+	$(C4GL) $(CFLAGS) -o $(@) $<
+	rm -f $*.c
+
+.ace.arc:
+	cd $(<D); $(INFORMIXBIN)/saceprep $<
+
+.msg.exe:
+	$(INFORMIXBIN)/mkmessage $(*F).msg  $(*F).exe
+
+MAKEFLAGS = ""
+
+
+
+.4gl.4go:
+	$(INFORMIXDIR)/bin/fglpc $<
+
+.per.frm:
+	$(INFORMIXDIR)/bin/form4gl $<
+
+BINS4GE = coxxc04.o coxxq01.o coxxx03.o misql.o
+
+BINS4GI = coxxc04.4go coxxq01.4go coxxx03.4go misql.4go
+
+all: misql.4gi misql.4ge forms
+
+misql.4ge: $(BINS4GE)
+	$(C4GL) $(CFLAGS) -o $@  $(BINS4GE)
+
+misql.4gi: $(BINS4GI)
+	cat $(BINS4GI) > $@
+
+forms: misql.frm coxxq01a.frm coxxq01b.frm coxxq01c.frm coxxq01d.frm coxxq01e.frm coxxq01f.frm coxxq01g.frm coxxq01h.frm coxxq01i.frm coxxq01j.frm
+
+
+aubit:
+	4glpc coxxc04.4gl -c -o coxxc04.ao
+	4glpc coxxq01.4gl -c -o coxxq01.ao
+	4glpc coxxx03.4gl -c -o coxxx03.ao
+	4glpc misql.4gl -c -o misql.ao
+	4glpc *.per coxxc04.ao coxxq01.ao coxxx03.ao misql.ao -o misql.4ae
+
+clean:
+	rm -f *.ao *.h *.c *.glb *.4ae

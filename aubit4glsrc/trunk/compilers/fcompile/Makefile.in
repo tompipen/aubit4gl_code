@@ -1,0 +1,145 @@
+###############################################################
+#
+#
+################################################################
+#
+# $Id: Makefile.in,v 1.1 2001-12-10 20:04:52 saferreira Exp $
+#
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+4GLPCFLAGS		=-make-compile -static -verbose 
+CFLAGS 			+= -O2 -I../../lib -I.
+PROGRAM 		= fcompile
+
+ifdef COMSPEC
+	RPCGEN      = cp ../../tools/cygwin/form_x_xdr.c ../../tools/cygwin/form_x.h .
+#	(cp tools/cygwin/form_x_xdr.c compilers/fcompile )
+#	(cp tools/cygwin/menu_x_xdr.c compilers/menus)
+#	(cp tools/cygwin/form_x.h compilers/fcompile )
+#	(cp tools/cygwin/form_x.h lib)
+#	(cp tools/cygwin/form_x.h lib/libgui)
+#	(cp tools/cygwin/menu_x.h compilers/menus )
+#	(cp tools/cygwin/menu_x.h lib)
+
+
+	CC 			= gcc
+	LINK.c		=gcc
+	CFLAGS 		+= -I/usr/local/include
+	SH			=bash
+	4GLPCFLAGS	+= -nogtk #-lgtk4gl
+    LN			=cp
+    EXE			=.exe
+else
+	RPCGEN 		= rpcgen form_x.x
+	CC 			= cc
+	LINK.c		=cc
+    SH			=sh
+    LN			=ln -f
+#	4GLPCFLAGS	+= -lgtk4gl
+	4GLPCFLAGS	+= -nogtk #-noerrcode
+endif
+
+ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
+	ifeq "$(ODBC)" "no"
+		4GLPCFLAGS	+= -noodbc
+	else
+		PROGRAM 	+= fcompile-noodbc
+	endif
+endif
+
+ifeq "$(PDFBUILD)" "yes"
+	4GLPCFLAGS	+= -lpdf
+#else
+#	4GLPCFLAGS+= -lfl
+endif
+
+
+SCRIPT 			=
+SOURCES.c 		= fcompile.c formwrite2.c  form_x_xdr.c
+SOURCES.h 		=
+SOURCES.yacc 	=screen.yacc
+SOURCES.lex 	= screen.lex
+
+# Derived parameters.
+
+SOURCES 		= $(SOURCES.h) $(SOURCES.lex) $(SOURCES.yacc) $(SOURCES.c)
+
+TARGETS.c 		= y.tab.c
+
+TARGETS 		= $(TARGETS.c)
+
+OBJECTS 		= $(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
+
+LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
+
+CPPFLAGS 		+=
+LDFLAGS 		+= -s
+RM 				=rm -f
+
+## ==================================================================
+##                             Targets
+## ==================================================================
+
+all:	 $(PROGRAM)
+objects: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
+sources: $(SOURCES)
+targets: $(SOURCES) $(TARGETS)
+
+fcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall.a
+	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+	${LN} fcompile${EXE} ../../bin/fcompile${EXE}
+
+fcompile-noodbc: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall-noodbc.a
+	${SH} ../../bin/4glpc -noodbc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+	${LN} fcompile-noodbc${EXE} ../../bin/fcompile-noodbc${EXE}
+
+y.tab.c: $(SOURCES.yacc) lex.yy.c
+	nice -20 bison  -y  -v  $(SOURCES.yacc)
+
+lex.yy.c: $(SOURCES.lex)
+	nice -20 flex -i $(SOURCES.lex)
+
+fcompile.h: fcompile.c
+	@touch $@
+
+
+#form_x_xdr.c: rpc
+
+rpc: form_x_xdr.c
+
+form_x_xdr.c: form_x.x
+	${RPCGEN}
+
+
+## ==================================================================
+##                          Install targets
+## ==================================================================
+
+install:
+	install -m 555 fcompile $(SCRIPT) $(AWADI)/db_tools
+
+## ==================================================================
+##                          Clean Targets
+## ==================================================================
+
+clean:
+#do NOT remove lex.yy.c and y.tab.c OR...
+	$(RM) fcompile fcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta \
+	core *~ *.ln *.output *.bak *.exe lex.yy.c form_x.h form_x_xdr.c
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lint:
+	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
+
+decompile : decompile.c form_x_xdr.c dump_java.c
+	cc decompile.c form_x_xdr.c dump_java.c -o decompile
+
+
+
+#-----------------------------------------------------------------------

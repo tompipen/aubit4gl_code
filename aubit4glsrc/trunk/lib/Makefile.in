@@ -1,0 +1,356 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib makefile				 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.1 2001-12-10 20:04:52 saferreira Exp $
+#
+
+ifndef NOINCL
+    NOINCL=0
+endif
+
+ifeq "$(NOINCL)" "0"
+	ifdef AUBITBUILDMK
+		include $(AUBITBUILDMK)
+	else
+		include /etc/aubitbuild.mk
+	endif
+
+	ifdef AUBITBUILDMKMULTI
+		include $(AUBITBUILDMKMULTI)
+	endif
+endif
+
+override NOINCL=0
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+#Mike's privete copy:
+#FIXME: Mike, as per bug database request, please remove this and
+#move it to your aubitbuild.mk. Thanks - Andrej:
+ODBCLIBDIR			= /home/aubit4gl/mycopy/Aubit4gl/lib/odbc
+
+ODBC				=iodbc
+PDFBUILD			=no
+
+#-DNODEBUG -g
+
+LOCALCFLAGS			=-O2 -Ilibincl -I. -DAUTOBANG -DDEBUG
+# -lrpclib
+LDFLAGS				=-Map mapfile
+4GLPCFLAGS			=-verbose -nogtk
+
+ifdef COMSPEC
+#	LOCALCFLAGS		+=-DWIN32 -I/usr/src/rpc-4.0
+#default RPC install path on CygWin is /usr/local/include:
+	LOCALCFLAGS		+=-DWIN32 -I/usr/local/include
+	LDFLAGS			+= -lrpclib -lc
+	ALL				=libaclall.a
+    ALL_GUI			=libaclallgui.a
+	
+	ifeq "$(ODBC_LINK)" "static"
+		ifneq "$(ODBC)" "no"
+			ALL			+=libaclall-noodbc.a
+	    	ALL_GUI		+=libaclallgui-noodbc.a
+	    endif
+    endif
+    CC				=gcc
+    SH				=bash
+    EXE             =.exe
+else
+	LOCALCFLAGS		+= -g
+	ifneq "$(ODBC)" "no"
+		LOCALCFLAGS	+= -I$(ODBCLIBDIR)
+    endif
+	ifeq "$(ODBC)" "iodbc"
+		LOCALCFLAGS	+=-I/usr/include/pgsql/iodbc -DIODBC
+		#LOCALCFLAGS+=-Ilocal_odbc_incl -DIODBC
+		#LOCALCFLAGS+=-I/opt/unixODBC/include  -DIODBC
+	endif
+	ifeq "$(ODBC)" "no"
+		LOCALCFLAGS	+=-DNOODBC #-Ilocal_odbc_incl
+        4GLPCFLAGS	+=-noodbc
+	endif
+	ifeq "$(PDFBUID)" "yes"
+		LOCALCFLAGS	+= -DUSE_PDF_REPORTS
+    endif
+    ALL				=aclshared.so libaclall.a
+    ALL_GUI			=aclsharedgui.so libaclallgui.a
+	
+	ifeq "$(ODBC_LINK)" "static"
+		ifneq "$(ODBC)" "no"
+		    ALL			+=aclshared-noodbc.so libaclall-noodbc.a
+	    	ALL_GUI		+=aclsharedgui-noodbc.so libaclallgui-noodbc.a
+	    endif
+    endif
+    CC				=cc
+    SH				=sh
+    EXE             =
+endif
+
+#ifndef CFLAGS
+	CFLAGS			=${LOCALCFLAGS}
+#endif
+
+override	CFLAGS			+=-I../compilers/fcompile #-I../compilers/mcompile
+
+ifeq "$(PDFBUILD)" "yes"
+	4GLPCFLAGS		+= -lpdf
+#else
+#	4GLPCFLAGS+= -lfl
+endif
+
+COMMONSRC= \
+	array.c bogus.c builtin.c builtin_d.c conv.c colours.c curslib.c \
+	dates.c dmy.c err.c fglwrap.c funcs_d.c gtime.c gtrim.c io.c load.c \
+	newpanels.c others.c read_dty.c readform.c prompt.c readforms.c \
+	pdf_report.c report.c resource.c rexp2.c sleep.c stack.c string.c \
+	screen.c rpc_client.c rpc_server.c rpc_stack_clnt.c rpc_svc.c \
+	rpc_stack_xdr.c pointers.c calldll.c data_if.c
+
+DIFFSRC= \
+	iarray.c fields.c error.c gui_io.c errfile.c helper.c match.c \
+	../compilers/fcompile/form_x_xdr.c interval.c
+
+CMODSNOSQL 			=${COMMONSRC} ${DIFFSRC}
+
+TMPERRSSRC			=${COMMONSRC} gui.c libsql/odbc/sql.c
+
+
+ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
+	ifneq "$(ODBC)" "no"
+		CMODS 		=${CMODSNOSQL} libsql/odbc/sql.c libsql/odbc/sqlex.c
+	else
+		CMODS 		=${CMODSNOSQL} libsql/odbc/nosql.c
+	endif
+	OBJSNOSQL		=libsql/odbc/nosql.o
+else #default: dynamic linking for SQL access libs
+    ALL     		+= libsqlso
+	CMODS 			=${CMODSNOSQL} dlsql.c
+    LIBSQL			=libSQL_noodbc.so
+
+	ifeq "$(HAVE_IODBC)" "yes"
+	    LIBSQL		+=libSQL_iodbc.so
+    endif
+
+	ifeq "$(HAVE_UNIXODBC)" "yes"
+		LIBSQL		+=libSQL_unixodbc.so
+    endif
+
+endif
+
+OBJS				=${CMODS:.c=.o} project.o
+OBJSNOSQL			+=${CMODSNOSQL:.c=.o} project.o
+
+DLLNAME				=acl4gl
+DLL_OBJS			=dll.o gui_gtk.o windef.def
+
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+all_gui: ${ALL_GUI}
+
+#dynamic loading SQL libs:
+libsqlso: ${LIBSQL}
+
+libSQL_noodbc.so:
+	${MAKE} -C libsql/nosql
+	cp libsql/nosql/*.so .
+
+libSQL_iodbc.so:
+	${MAKE} -C libsql/odbc iodbc
+	cp libsql/odbc/*.so .
+
+libSQL_unixodbc.so:
+	${MAKE} -C libsql/odbc unixodbc
+	cp libsql/odbc/*.so .
+
+#libSQL_esqlc.so
+#	${MAKE} -C libsql/esqlc
+#	cp libsql/libsqlc/*.so .
+
+#----------------- with ODBC, if ODBC != no ----------------------
+
+libaclall.a : $(OBJS) gui_tui.o
+	ar rc libaclall.a $(OBJS) gui_tui.o
+	ranlib libaclall.a
+
+libaclallgui.a : $(OBJS) gui_gtk.o
+	ar rc libaclallgui.a $(OBJS) gui_gtk.o
+	ranlib libaclallgui.a
+
+aclshared.so : $(OBJS) gui_tui.o
+	touch libaclshared.so
+	rm libaclshared.so
+	ld  -fPIC -shared $(OBJS) gui_tui.o -o aclshared.so #-lform -lpanel -lncurses -Map  mapfile
+#FIXME: remove this ln:
+	ln aclshared.so libaclshared.so
+
+aclsharedgui.so : $(OBJS) gui_gtk.o
+	touch libaclsharedgui.so
+	rm libaclsharedgui.so
+	ld  -fPIC -shared $(OBJS) gui_gtk.o -o aclsharedgui.so #-lform -lpanel -lncurses -Map  mapfile
+#FIXME: remove this ln:
+	ln aclsharedgui.so libaclsharedgui.so
+
+#----------------- without ODBC, if ODBC = no ----------------------
+
+libaclall-noodbc.a: $(OBJSNOSQL) gui_tui.o
+	ar rc libaclall-noodbc.a $(OBJSNOSQL) gui_tui.o
+	ranlib libaclall-noodbc.a
+
+libaclallgui-noodbc.a: $(OBJSNOSQL) gui_gtk.o
+	ar rc libaclallgui-noodbc.a $(OBJSNOSQL) gui_gtk.o
+	ranlib libaclallgui-noodbc.a
+
+aclshared-noodbc.so:  $(OBJSNOSQL) gui_tui.o
+	touch libaclshared-noodbc.so
+	rm libaclshared-noodbc.so
+	ld  -fPIC -shared $(OBJSNOSQL) gui_tui.o -o aclshared-noodbc.so #-lform -lpanel -lncurses -Map  mapfile
+#FIXME: remove this ln:
+	ln aclshared-noodbc.so libaclshared-noodbc.so
+
+aclsharedgui-noodbc.so: $(OBJSNOSQL) gui_gtk.o
+	touch libaclsharedgui-noodbc.so
+	rm libaclsharedgui-noodbc.so
+	ld  -fPIC -shared $(OBJSNOSQL) gui_gtk.o -o aclsharedgui-noodbc.so #-lform -lpanel -lncurses -Map  mapfile
+#FIXME: remove this ln:
+	ln aclsharedgui-noodbc.so libaclsharedgui-noodbc.so
+
+## ==================================================================
+##                             Sub Targets
+## ==================================================================
+
+
+gui_tui.o: gui.c
+	${CC} -c $(CFLAGS) gui.c -o gui_tui.o
+
+gui_gtk.o: gui.c
+	${CC} -c $(CFLAGS) -DUSE_GTK gui.c -o gui_gtk.o
+
+loadmap:
+	${SH} 4glpc ${4GLPCFLAGS} loadmap.4gl -o loadmap
+	cp loadmap${EXE} ../bin
+
+
+generated/tmperrs.h : ${TMPERRSSRC}
+#generated/tmperrs.h : ${CMODS}
+	${SH} bin/mkerrors
+#	${CC} -c -o generated/error.o generated/error.c
+#	${CC} -c -o generated/error.o error.c
+
+#generated/error.c : generated/tmperrs.h
+error.c : generated/tmperrs.h
+
+ci: $(CMODS)
+	ci -l  $(CMODS)
+
+project.o: generated/project.c
+	${CC} -c -o project.o generated/project.c
+
+generated/project.c:
+	(chmod a+x ../tools/project/mkproject)
+	(cd ../tools/project; ${SH} mkproject)
+
+array.o: array.c ../compilers/fcompile/form_x_xdr.c
+
+#form_x_xdr.c: ../compilers/fcompile/form_x_xdr.c
+#	cp ../compilers/fcompile/form_x_xdr.c .
+#	cp ../compilers/fcompile/form_x.h .
+
+
+## ==================================================================
+##                       Windows 32 DLL Targets
+## ==================================================================
+
+#acl4gl.def:
+#	echo "EXPORTS" > acl4gl.def
+#	echo "sqlca @1 DATA" >> acl4gl.def
+#	echo "status @2 DATA" >> acl4gl.def
+#	echo "std_dbscr @3 DATA" >> acl4gl.def
+
+acl4gl.dll: $(DLL_OBJS) libaclall.a
+	gcc -shared --dll -Wl,--export-dynamic  -Wl,--out-implib=libacl4gl.dll.a -Wl,--enable-auto-image-base  -o acl4gl.dll $(DLL_OBJS) -L. -laclall -lgtk4gl -lgtk -lgdk -lglib  -lrpclib -lodbc32 -lform -lpanel -lcurses
+	dlltool -l libacl4gl_1.a -a -D acl4gl.dll -d windef.def -U
+
+A_DLLNAME=acl4gltest
+A_DLLOBJS=dll.o libaclall.a
+
+#see example from http://sources.redhat.com/cygwin/cygwin-ug-net/dll.html
+$(A_DLLNAME).dll: $(A_DLLOBJS)
+	echo "EXPORTS" > $(A_DLLNAME).def
+	gcc -s -Wl,--base-file,$(A_DLLNAME).base -o $(A_DLLNAME).dll $(A_DLLOBJS) -Wl,-e,_$(A_DLLNAME)_init@12
+	dlltool --base-file $(A_DLLNAME).base --def $(A_DLLNAME).def --output-exp $(A_DLLNAME).exp --dllname $(A_DLLNAME).dll
+	gcc -s -Wl,--base-file,$(A_DLLNAME).base,$(A_DLLNAME).exp -o $(A_DLLNAME).dll $(A_DLLOBJS) -Wl,-e,_$(A_DLLNAME)_init@12
+	dlltool --base-file $(A_DLLNAME).base --def $(A_DLLNAME).def --output-exp $(A_DLLNAME).exp --dllname $(A_DLLNAME).dll
+	gcc -Wl,$(A_DLLNAME).exp -o $(A_DLLNAME).dll $(A_DLLOBJS) -Wl,-e,_$(A_DLLNAME)_init@12
+	dlltool --def $(A_DLLNAME).def --dllname $(A_DLLNAME).dll --output-lib $(A_DLLNAME).a
+
+
+
+
+## ==================================================================
+##                        Clean Targets
+## ==================================================================
+
+clean : clean.generated clean.libsql
+	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c
+	${RM} form_x_xdr.c form_x.h project.c
+	${RM} loadmap loadmap.c loadmap.h core
+	${RM} *.out *.glb *.so *.a  *.o  *.bak *.exe *.dll *.stackdump
+
+clean.generated:
+	${RM} generated/errdefs generated/tmperrs.h
+	${RM} generated/project.c generated/project.o
+
+clean.all: clean
+	${MAKE} -C libgui clean
+
+clean.libsql:
+	${MAKE} -C libsql/nosql clean
+	${MAKE} -C libsql/odbc clean
+#	${MAKE} -C libsql/esqlc
+
+
+
+## ==================================================================
+##                         Other Targets
+## ==================================================================
+
+lclint: $(CMODS)
+	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
+	@echo "see lclint.log for results"
+
+#----------------------------------- EOF -------------------------------
+
+
+
+
+

@@ -1,0 +1,150 @@
+##########################################################
+#
+# $Id: Makefile.in,v 1.1 2001-12-10 20:04:50 saferreira Exp $
+#
+##########################################################
+
+
+ifndef NOINCL
+    NOINCL=0
+endif
+
+ifeq "$(NOINCL)" "0"
+	ifdef AUBITBUILDMK
+		include $(AUBITBUILDMK)
+	else
+		include /etc/aubitbuild.mk
+	endif
+
+	ifdef AUBITBUILDMKMULTI
+		include $(AUBITBUILDMKMULTI)
+	endif
+endif
+
+override NOINCL=0
+
+## ==================================================================
+##                    Options
+## ==================================================================
+
+
+OUTPUTLANG      =c
+#OUTPUTLANG      =perl
+
+4GLPCFLAGS		=-make-compile -static -DDEBUG -Irules -L/lib -nogtk -g
+ALL				=rules.t 4glc
+
+ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
+	ifneq "$(ODBC)" "no"
+		ALL		+=4glc-noodbc
+	endif
+else
+	4GLPCFLAGS	=-make-compile -static -DDEBUG -Irules -L/lib -nogtk -g
+endif
+
+#-lfl
+CFLAGS			+=-O2 -g -Irules -I../../lib -I../.. -I.. -I../../lib/libincl
+
+
+ifdef COMSPEC
+	CFLAGS		+=-DWIN32
+    #uncomment this to get debbuging in function yyparse() and then export YYDEBUG=1 to environment
+	#YYDEBUG		=-DYYDEBUG=1
+    EXEEXT		=.exe
+	CPEXE		=cp
+#	4GLPCFLAGS	+= -lgtk -lgdk
+    SH			=bash
+else
+    EXEEXT		=
+	CPEXE		=ln -f
+	4GLPCFLAGS	+=-ldl
+    SH			=sh
+endif
+
+ifeq "$(PDFBUILD)" "yes"
+	4GLPCFLAGS	+=-lpdf
+endif
+
+4GLPC			=${SH} ../../bin/4glpc -verbose -rdynamic
+
+4GLCAOBJ		=mod.o 4glc.o map.o rules/generated/states.o \
+				rules/generated/kw.o rules/generated/y.tab.o dim.o list.o
+
+4GLCAOBJ_PERL   := ${4GLCAOBJ} compile_perl.o compile_c_gtk.o
+4GLCOBJ_PERL	= ${4GLCAOBJ_PERL} lexer.o
+
+ifeq "$(OUTPUTLANG)" "c"
+	4GLCAOBJ	+= compile_c.o compile_c_gtk.o
+endif
+
+ifeq "$(OUTPUTLANG)" "perl"
+	4GLCAOBJ	+= compile_perl.o compile_c_gtk.o
+endif
+
+
+4GLCOBJ			=${4GLCAOBJ} lexer.o
+
+override CFLAGS	+=-I../fcompile #-I../mcompile
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+
+all: ${ALL}
+
+#4glc: rules.t
+4glc: ${4GLCOBJ} ../../lib/libaclall.a #rules.t
+	${4GLPC} ${4GLPCFLAGS} -o $@ ${4GLCOBJ}
+	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
+
+#4glc_perl:
+4glc_perl: ${4GLCOBJ_PERL} ../../lib/libaclall.a #rules.t
+#	${4GLPC} ${4GLPCFLAGS} 	${4GLCOBJ_PERL} ../../tools/test/libpdf-dummy.c -o 4glc_perl
+	${4GLPC} ${4GLPCFLAGS} 	${4GLCOBJ_PERL} -o $@
+	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
+
+
+
+#4glc-noodbc: rules.t
+4glc-noodbc:  ${4GLCOBJ} ../../lib/libaclall-noodbc.a #rules.t
+	${4GLPC} -noodbc ${4GLPCFLAGS} 	${4GLCOBJ} -o $@
+	${CPEXE} $@${EXEEXT} ../../bin/$@${EXEEXT}
+
+
+
+## ==================================================================
+##                            Sub Targets
+## ==================================================================
+
+rules/generated/kw.c: rules.t
+rules/generated/single_words.rule: rules.t
+rules/generated/y.tab.c: rules.t
+rules/generated/states.c: rules.t
+
+rules.t :
+	make -C rules
+
+rules/generated/y.tab.o: rules/generated/y.tab.c
+	$(CC) ${YYDEBUG} ${CFLAGS} -c -o rules/generated/y.tab.o rules/generated/y.tab.c
+
+mod.o: mod.c  rules/generated/y.tab.c
+
+4glc.o: 4glc.c
+	${CC} 4glc.c $(CFLAGS) -c -o 4glc.o
+
+rules/generated/y.tab.c:
+#	make -C rules generated/y.tab.c
+	make -C rules
+
+## ==================================================================
+##                            Clean Targets
+## ==================================================================
+
+clean: clean.rules.generated
+	rm -f *.o *.err 4glc 4glc-noodbc *.a *.exe *.bak .\#* 4glc_perl *.log
+
+clean.rules.generated:
+	(cd rules/generated; rm -f *.yacc *.c *.h single_words *.o *.yh *.rule *.output)
+
+

@@ -1,0 +1,134 @@
+###############################################################
+#
+#
+################################################################
+#
+# $Id: Makefile.in,v 1.1 2001-12-10 20:04:52 saferreira Exp $
+#
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+4GLPCFLAGS		= -make-compile -static -verbose
+PROGRAM 		=mcompile
+
+ifdef COMSPEC
+	CC 			= gcc
+	LINK.c		=gcc
+    SH			=bash
+    LN			=CP
+    EXE			=.exe
+	4GLPCFLAGS  += -nogtk #-noerrcode
+else
+	CC 			= cc
+	LINK.c		=cc
+    SH			=sh
+    LN			=ln -f
+    EXE			=
+	4GLPCFLAGS  += -nogtk #-noerrcode
+endif
+
+ifeq "$(ODBC_LINK)" "static" #static linking for SQL access libs
+	ifeq "$(ODBC)" "no"
+		4GLPCFLAGS	+= -noodbc
+	else
+		PROGRAM 	+=mcompile-noodbc
+	endif
+endif
+
+ifeq "$(PDFBUILD)" "yes"
+	4GLPCFLAGS	+= -lpdf
+#else
+#	4GLPCFLAGS+= -lfl
+endif
+
+SCRIPT 			=
+SOURCES.c 		= mcompile.c menuwrite.c  menu_x_xdr.c
+SOURCES.h 		=
+SOURCES.yacc 	=menu.yacc
+SOURCES.lex 	= menu.lex
+
+SOURCES 		= $(SOURCES.h) $(SOURCES.lex) $(SOURCES.yacc) $(SOURCES.c)
+
+TARGETS.c 		= y.tab.c
+
+TARGETS 		= $(TARGETS.c)
+
+OBJECTS 		= $(SOURCES.c:%.c=%.o) $(TARGETS.c:%.c=%.o)
+
+LINTFILES 		= $(SOURCES.c:%.c=%.ln) $(TARGETS.c:%.c=%.ln)
+
+CFLAGS 			+= -O2
+CPPFLAGS 		+=
+LDFLAGS 		+= -s
+
+## ==================================================================
+##                             Targets
+## ==================================================================
+
+
+all:	 $(PROGRAM)
+objects: $(SOURCES.c) $(TARGETS.c) $(OBJECTS)
+sources: $(SOURCES)
+targets: $(SOURCES) $(TARGETS)
+
+mcompile: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall.a
+	${SH} ../../bin/4glpc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+	${LN} mcompile${EXE} ../../bin/mcompile${EXE}
+
+mcompile-noodbc: $(SOURCES.c) $(TARGETS.c) $(TARGETS.h) $(OBJECTS) ../../lib/libaclall-noodbc.a
+	${SH} ../../bin/4glpc -noodbc ${4GLPCFLAGS} -o $@ $(OBJECTS)
+	${LN} mcompile-noodbc${EXE} ../../bin/mcompile-noodbc${EXE}
+
+#menu_x_xdr.c: menu_x.h
+
+#rpc: menu_x.x
+
+rpc: menu_x_xdr.c
+
+menu_x_xdr.c: menu_x.x
+	rpcgen menu_x.x
+
+menu_x.h: menu_x.x
+	rpcgen menu_x.x
+
+
+
+y.tab.c: $(SOURCES.yacc) lex.yy.c
+	nice -20 bison -y  -v  $(SOURCES.yacc)
+
+lex.yy.c: $(SOURCES.lex)
+	nice -20 flex -i $(SOURCES.lex)
+
+
+## ==================================================================
+##                           Install targets
+## ==================================================================
+
+
+install:
+	install -m 555 mcompile $(SCRIPT) $(AWADI)/db_tools
+
+## ==================================================================
+##                          Clean targets
+## ==================================================================
+
+
+clean:
+	$(RM) mcompile mcompile-noodbc $(OBJECTS) $(TARGETS.c) *.BAK *.delta core *~ *.ln \
+	*.output lex.yy.c *.err *.out decompiler menu_x_xdr.c menu_x.h \
+	*.bak *.exe
+
+## ==================================================================
+##                           Other targets
+## ==================================================================
+
+
+decompiler: decompile.c menu_x_xdr.c
+	cc decompile.c menu_x_xdr.c
+
+lint:
+	/usr/5bin/lint -n -lansic $(CPPFLAGS) $(SOURCES.c) $(TARGETS.c)
+
+#---------------------------- EOF -----------------------------------

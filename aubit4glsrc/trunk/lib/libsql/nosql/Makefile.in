@@ -1,0 +1,8 @@
+override CFLAGS+=-I../.. -I../../../compilers/fcompile
+
+libSQL_nosql.so: nosql.o
+	ld  -fPIC -shared nosql.o -o libSQL_nosql.so
+	cp libSQL_nosql.so ../..
+
+clean:
+	rm -f *.o *.so *.bak

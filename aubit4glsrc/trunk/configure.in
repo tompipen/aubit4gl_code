@@ -1,0 +1,89 @@
+# Process this file with autoconf to produce a configure script.
+AC_INIT([Aubit4gl],[0.2],[aubit4gl-discuss@lists.sourceforge.net])
+AC_CONFIG_SRCDIR([compilers/4glc/4glc.c])
+AC_CONFIG_HEADER([incl/config.h])
+
+# Checks for programs.
+AC_PROG_YACC
+AC_PROG_CC
+AC_PROG_LEX
+#AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-laclall':
+AC_CHECK_LIB([aclall], [main])
+# FIXME: Replace `main' with a function in `-lansic':
+AC_CHECK_LIB([ansic], [main])
+# FIXME: Replace `main' with a function in `-lc':
+AC_CHECK_LIB([c], [main])
+# FIXME: Replace `main' with a function in `-lclint':
+AC_CHECK_LIB([clint], [main])
+# FIXME: Replace `main' with a function in `-lcurses':
+AC_CHECK_LIB([curses], [main])
+# FIXME: Replace `main' with a function in `-ldl':
+AC_CHECK_LIB([dl], [main])
+# FIXME: Replace `main' with a function in `-lform':
+AC_CHECK_LIB([form], [main])
+# FIXME: Replace `main' with a function in `-lgdk':
+AC_CHECK_LIB([gdk], [main])
+# FIXME: Replace `main' with a function in `-lglib':
+AC_CHECK_LIB([glib], [main])
+# FIXME: Replace `main' with a function in `-lgtk':
+AC_CHECK_LIB([gtk], [main])
+# FIXME: Replace `main' with a function in `-lgtk4gl':
+AC_CHECK_LIB([gtk4gl], [main])
+# FIXME: Replace `main' with a function in `-liksemel':
+AC_CHECK_LIB([iksemel], [main])
+# FIXME: Replace `main' with a function in `-liodbc':
+AC_CHECK_LIB([iodbc], [main])
+# FIXME: Replace `main' with a function in `-lodbc':
+AC_CHECK_LIB([odbc], [main])
+# FIXME: Replace `main' with a function in `-lodbc32':
+AC_CHECK_LIB([odbc32], [main])
+# FIXME: Replace `main' with a function in `-lpanel':
+AC_CHECK_LIB([panel], [main])
+# FIXME: Replace `main' with a function in `-lpdf':
+AC_CHECK_LIB([pdf], [main])
+# FIXME: Replace `main' with a function in `-lrpclib':
+AC_CHECK_LIB([rpclib], [main])
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([alloca.h errno.h locale.h malloc.h memory.h netdb.h netinet/in.h stddef.h stdlib.h string.h strings.h sys/socket.h sys/time.h unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_STRUCT_TM
+
+# Checks for library functions.
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
+AC_TYPE_SIGNAL
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS([floor gethostbyname inet_ntoa memset pow putenv re_comp regcomp select setenv setlocale socket strcasecmp strchr strdup strncasecmp strrchr strstr strtol])
+
+AC_CONFIG_FILES([Makefile
+                 compilers/4glc/Makefile
+                 compilers/4glc/rules/Makefile
+                 compilers/fcompile/Makefile
+                 compilers/helpcompile/Makefile
+                 compilers/menus/Makefile
+                 lib/libgui/Makefile
+                 lib/libsql/nosql/Makefile
+                 lib/libsql/odbc/Makefile
+                 lib/Makefile
+                 tools/adbaccess/Makefile
+                 tools/adbload/Makefile
+                 tools/html/Makefile
+                 tools/ide/Makefile
+                 tools/jabber/Makefile
+                 tools/odbctest/Makefile
+                 tools/test/gui/Makefile
+                 tools/test/Makefile])
+AC_OUTPUT

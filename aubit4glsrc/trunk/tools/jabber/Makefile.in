@@ -1,0 +1,47 @@
+### -----------------------------------------------------------------
+###                     Settings
+### -----------------------------------------------------------------
+
+AMAKE_FLAGS=-verbose A4GL_CC_LDFLAGS+=-liksemel USESTORE=0 MOVETARGETTOSTORE=0
+#AMAKE_FLAGS+=A4GL_CC_LDFLAGS+=-nogtk A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf
+
+### -----------------------------------------------------------------
+###                     Targets
+### -----------------------------------------------------------------
+
+all: test_im
+
+test_im:
+	sh amake test_im ${AMAKE_FLAGS}
+
+lib4glim.o:
+	gcc lib4glim.c -c -o lib4glim.o
+
+
+### -----------------------------------------------------------------
+###                     Testing
+### -----------------------------------------------------------------
+
+#lib4glim can be compiled as executable for testing:
+exec4glim: lib4glim.c
+	gcc lib4glim.c -o exec4glim -liksemel -D__ASEXEC__
+
+#if you compile lib4glim.c as executable, then you can run it from command
+#line, like this. (note: in that case you will need configuration file,
+#"4glim.conf" that lokks like this:
+#	LOG mylogfile.log
+#	DEBUG
+#	USER myusername@jabber.org
+#	PASS mypassword
+test: exec4glim
+	echo "This is my message to you" | exec4glim
+
+### -----------------------------------------------------------------
+###                     Clean
+### -----------------------------------------------------------------
+
+clean: clean.test
+	-rm -f *.o core *.core *.bak *.4ae *.err *.glb *.h exec4glim *.afr *.frm *.log
+
+clean.test:
+	amake test_im clean

@@ -1,0 +1,59 @@
+#
+# $Id: Makefile.in,v 1.1 2001-12-10 20:04:52 saferreira Exp $
+#
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+#ifdef COMSPEC
+#    SH=/bin/sh
+#else
+#    SH=/bin/sh
+#endif
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: generated/kw.c generated/single_words.rule generated/y.tab.c generated/states.c
+
+generated/states.c: data/defstates
+	sh bin/procstates
+
+generated/kw.h: generated/single_words
+	sh bin/convkw
+
+
+generated/kw.c: generated/single_words
+	sh bin/convkw
+
+
+generated/single_words: data/kwords
+	sh bin/convkw.single
+
+generated/states.c: data/kwords
+
+generated/single_words.rule:generated/single_words
+	sh bin/make_enable
+
+generated/fgl.yacc: *.rule generated/single_words.rule *.reqd
+	sh bin/mkyacc
+
+
+generated/y.tab.c: generated/fgl.yacc
+#	(cd generated; unset DEBUG; bison --debug -d -y -v fgl.yacc)
+	(cd generated; unset DEBUG; bison -d -y -v fgl.yacc)
+
+## ==================================================================
+##                           Clean targets
+## ==================================================================
+
+clean: clean.generated
+	rm -f *.bak bin/*.bak
+
+clean.generated:
+	(cd generated; rm -f *.yacc *.c *.h *.yh *.rule *.output single_words)
+
+
+#----------------------------- EOF -------------------------------------

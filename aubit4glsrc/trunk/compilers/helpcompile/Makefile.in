@@ -1,0 +1,40 @@
+ifdef COMSPEC
+	LN=cp
+    EXE=.exe
+else
+    LN=ln -f
+endif
+
+
+CFLAGS+= -O2 -I../../lib -I../.. -I.. -I../../lib/libincl
+
+all: mkmess
+	
+mkmess:
+	${CC}  mkmess.c -o mkmess
+	${LN} mkmess${EXE} ../../bin/mkmess${EXE}
+
+clean:
+	rm -f *.o mkmess.err mkmess mkmess.a *.bak *.exe
+
+
+
+
+#######################################################
+#delete this:
+
+
+all2: mkmess
+
+mkmess.o: mkmess.c
+
+
+4glc: mkmess.o
+#../../bin/mkmess -make-compile -static -DDEBUG -o makemess -lfl -ld
+#	ln -f mkmess ../../bin/mkmess
+	${CC}  mkmess.c -c -o mkmess.o
+	${LN} mkmess${EXE} ../../bin/mkmess${EXE}
+
+
+
+

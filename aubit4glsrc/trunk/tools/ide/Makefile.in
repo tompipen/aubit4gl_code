@@ -1,0 +1,67 @@
+#	@(#)$Id: Makefile.in,v 1.1 2001-12-10 20:04:52 saferreira Exp $
+#	$Product: Aubit 4gl IDE $
+#   Based on "INFORMIX D4GL Programmer's Environment Version 2.00.UC2"
+## ------------------------------------------------------------------
+
+include $(wildcard $(AUBITDIR)/incl/*.mk)
+#include $(MAKERULES)
+
+#include $(AUBITDIR)/incl/i4gl.mk
+#include $(AUBITDIR)/incl/d4gl.mk
+#include $(AUBITDIR)/incl/a4gl.mk
+#include $(AUBITDIR)/incl/q4gl.mk
+
+##                       Program(s) to build
+## ------------------------------------------------------------------
+FILES		= ide
+
+##                       Program file names
+## ------------------------------------------------------------------
+
+#We can change the list of C source files into a list of object files by 
+#replacing the `.c' suffix with `.o' in the result, like this:
+#$(patsubst %.c,%.o,$(wildcard *.c))
+
+GLOBALS.4gl = d4glglob.4gl
+
+FILES.4gl	= ${GLOBALS.4gl} checkint.4gl findstr.4gl getopt.4gl instring.4gl \
+			d4glmain.4gl d4glfile.4gl d4glform.4gl rcsmunge.4gl shell.4gl
+
+
+FILES.aubit.4gl = access_a4gl.4gl
+
+FILES.per := $(wildcard *.per)
+#FILES.per 	= d4glinpt.per d4glopts.per
+
+FILES.msg := $(wildcard *.msg)
+#FILES.msg 	= d4glhelp.msg
+
+DBASE     = databasename
+DBASE.sch = ${DBASE}.sch
+
+CFILE1.c  	= access.c
+CFILE2.c  	= popstr.c
+CFILE3.c  	= d4gl-access.c
+FGIUSR.c  	= fgiusr.c
+FGLEXT.c  	= fglext.c
+
+##                       Install Information
+## ------------------------------------------------------------------
+#user and group to use to perform installation:
+D4GL_USR      = informix
+D4GL_GRP      = informix
+#files installation root:
+#D4GL_DIR      = ${AUBITDIR}
+D4GL_DIR      = /usr/local
+#place to put lounch shell script(s) (preferably in $PATH)
+D4GL_BIN      = ${D4GL_DIR}/bin
+#place to put all program files:
+#D4GL_D4GL     = ${D4GL_DIR}/${FILES}_bin
+D4GL_D4GL     = ${D4GL_DIR}/4glide
+
+ADDITIONAL_CLEAN	= *.log d4gl.4ge d4glopts.frm d4glinpt.frm d4glhelp.iem
+
+include $(AUBITDIR)/incl/footer-c.mki
+## ---------------------------- EOF ---------------------------------
+
+

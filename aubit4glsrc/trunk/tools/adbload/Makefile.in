@@ -1,0 +1,9 @@
+
+
+all:
+	rm -f *.err core *.c *.h *.glb
+	4glpc adbload.4gl -o adbload.4ge
+
+clean:
+	rm -f *.err *.bak *.c *.h *.4ge core *.out
+

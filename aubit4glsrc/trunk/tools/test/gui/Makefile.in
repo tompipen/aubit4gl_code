@@ -1,0 +1,55 @@
+#note: I plan to use Jleffler's makefile riles for this; this is just for now
+
+RM =rm -f
+
+ifdef COMSPEC
+	ifdef MONOLIT
+		ADDFLAGS= -mno-cygwin
+	endif
+    SH=bash
+else
+    SH=sh
+endif
+
+	#-gtk is now default, so we don't really need this...
+	GTK=-gtk
+    ALL=other 4gl regression.4gl regression.per 4glguionly
+
+#no longer needed:
+ADDFLAGS=-verbose -fnative-struct #-lgtk4gl_x
+
+
+all: 4gl forms
+
+
+4gl: demo game
+
+menu:
+	(mcompile menu.menu)
+#	(mcompile -c menu.menu)
+
+demo:
+	(${SH} 4glpc -gtk hello-gui.4gl -o hello-gui ${ADDFLAGS})
+
+game:
+	(${SH} 4glpc -gtk gui.4gl -o gui ${ADDFLAGS})
+
+forms:
+	(fcompile gui.per)
+	(fcompile widget.per)
+	(fcompile radio.per)
+	(fcompile multi.per)
+	(fcompile form-gui.per)
+
+
+
+
+help:
+	@echo "use 'make' to compile examples with GTK GUI"
+
+
+clean:
+	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.c *.o
+	${RM} *.hlp *.exe *.stackdump *.err
+	${RM} gui hello-gui
+

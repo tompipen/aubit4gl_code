@@ -1,0 +1,136 @@
+#
+# $Id: Makefile.in,v 1.1 2001-12-10 20:04:52 saferreira Exp $
+#
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+RM =rm -f
+4GLPCFLAGS=
+FGLPCEXEC=sh 4glpc
+
+ifdef COMSPEC
+	SH=bash
+else
+	SH=sh
+endif
+
+ifdef COMSPEC
+	FGLPCEXEC=bash 4glpc
+	ifdef MONOLIT
+		4GLPCFLAGS += -mno-cygwin
+	endif
+else
+	FGLPCEXEC=sh 4glpc
+endif
+
+#ifdef NOGTK
+ifeq "$(GTKBUILD)" "yes"
+	#-gtk is now default, so we don't really need this...
+	4GLPCFLAGS+= -gtk
+else
+	4GLPCFLAGS+= -nogtk
+endif
+
+
+ifeq "$(PDFBUILD)" "yes"
+	4GLPCFLAGS+= -lpdf
+    4GLPCTESTFLAGS= -lpdf
+endif
+
+ifeq "$(ODBC)" "no"
+	4GLPCFLAGS+= -noodbc
+	4GLPCTESTFLAGS+= -noodbc
+endif
+
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: html
+	@echo default targets successfully compiled
+
+html: libpdf-dummy.o
+#	amake -nogtk simple_html
+#	sh amake -verbose A4GL_CC_LDFLAGS+=-nogtk A4GL_CC_LDFLAGS+=-noodbc simple_html MOVETARGETTOSTORE=0
+	${SH} amake A4GL_CC_LDFLAGS+=-nogtk A4GL_CC_LDFLAGS+=-noodbc A4GL_CC_LDFLAGS+=-nopdf simple_html MOVETARGETTOSTORE=0
+
+
+#Create start-up shell script:
+simple_html:
+#	@rm simple_html
+	@echo '#!/bin/sh' > simple_html
+	@echo 'export NOCURSES=YES' >> simple_html
+#	@echo '/home/groups/a/au/aubit4gl/cgi-bin/simple_html.4ae NOCURSES=YES $$@' >> simple_html
+	@echo 'simple_html.4ae NOCURSES=YES $$@' >> simple_html
+	@echo "simple_html sh script created"
+
+simple_html.sf:
+	@echo '#!/bin/sh' > simple_html
+	@echo 'export NOCURSES=YES' >> simple_html
+	@echo '/home/groups/a/au/aubit4gl/cgi-bin/simple_html.4ae NOCURSES=YES $$@' >> simple_html
+	@echo "simple_html sh script created"
+
+
+#Compile dummy PDF library:
+libpdf-dummy.o: libpdf-dummy.c
+
+
+## ==================================================================
+##                          Install
+## ==================================================================
+
+#This will copy to local cgi-bin:
+copy.cgi: simple_html.4ae simple_html
+	@if [ -d /usr/Apache-JServ/webserver/cgi-bin ] ;then cp simple_html.4ae simple_html /usr/Apache-JServ/webserver/cgi-bin; fi
+	@echo "Programs copied to local cgi-bin"
+
+copy.css:
+	@if [ -d /usr/Apache-JServ/webserver/cgi-bin ] ;then cp *.css /usr/Apache-JServ/webserver/cgi-bin; fi
+
+#This will use expect script "autosfscp-cgi" to provide password:
+put.cgi: simple_html.4ae simple_html
+	autosfscp-cgi simple_html
+	autosfscp-cgi simple_html.4ae
+
+#This will prompt for password for scp:
+put.cgi.manual: simple_html.4ae simple_html
+	scp simple_html.4ae afalout@aubit4gl.sourceforge.net:/home/groups/a/au/aubit4gl/cgi-bin
+
+
+#this will put any file to cgi-bin on SF: "make put.manual FILE=myfile"
+put.manual:
+	scp $(FILE) afalout@aubit4gl.sourceforge.net:/home/groups/a/au/aubit4gl/cgi-bin
+
+
+
+
+## ==================================================================
+##                          Help
+## ==================================================================
+
+help:
+	@echo "use 'make NOGTK=1' to compile without GTK GUI"
+	@echo "use 'make' to compile with GTK GUI"
+
+
+## ==================================================================
+##                           Clean targets
+## ==================================================================
+
+
+clean: html.clean.all
+	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae
+	${RM} simple_html *.hlp *.exe *.stackdump *.err *.tmp *.glb
+
+
+html.clean.target:
+	${SH} amake simple_html clean.target
+
+html.clean.all:
+	${SH} amake simple_html clean
+
+
+#--------------------------- EOF -----------------------------------

@@ -9,7 +9,7 @@
  */
 
  /* 
-  * $Id: fcompile.c,v 1.8 2001-12-06 20:57:30 saferreira Exp $
+  * $Id: fcompile.c,v 1.9 2001-12-10 20:04:52 saferreira Exp $
   */
 
 #include "../../lib/libincl/compiler.h"
@@ -171,7 +171,7 @@ int main (int argc, char *argv[])
       exit (0);
 
     }
-init_form();
+  init_form();
 
   return (yyparse ());
 
