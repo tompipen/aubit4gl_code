@@ -24,11 +24,11 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.146 2004-03-14 15:59:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.147 2004-03-15 20:59:48 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
-static char *module_id="$Id: compile_c.c,v 1.146 2004-03-14 15:59:18 mikeaubury Exp $";
+static char *module_id="$Id: compile_c.c,v 1.147 2004-03-15 20:59:48 mikeaubury Exp $";
 /**
  * @file
  * Generate .C & .H modules.
@@ -2834,7 +2834,6 @@ print_init_var (char *name, char *prefix, int alvl)
 	}
       strcat (prefix2, buffx);
 
-
       x = get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
 
       if (x == -1)
@@ -2902,6 +2901,7 @@ print_init_var (char *name, char *prefix, int alvl)
 
   x = get_variable_dets (prefix2, &d, &a, &size, &lvl, arr);
 
+      //printf("prefix2=%s\n",prefix2);
   if (x < 0)
     {
       a4gl_yyerror ("Couldn't find variable to null it...[1]");

@@ -29,38 +29,39 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 1709,
-     UMINUS = 1710,
-     COMMA = 1615,
-     KW_OR = 1655,
-     KW_AND = 1610,
-     KW_USING = 1547,
-     NOT = 1630,
-     MATCHES = 1427,
-     POWER = 1533,
-     LESS_THAN = 1529,
-     GREATER_THAN = 1444,
-     EQUAL = 1605,
+     NAME = 1708,
+     UMINUS = 1709,
+     COMMA = 1614,
+     KW_OR = 1654,
+     KW_AND = 1609,
+     KW_USING = 1546,
+     NOT = 1629,
+     MATCHES = 1426,
+     POWER = 1532,
+     LESS_THAN = 1528,
+     GREATER_THAN = 1443,
+     EQUAL = 1604,
      GREATER_THAN_EQ = 1345,
      LESS_THAN_EQ = 1402,
-     NOT_EQUAL = 1475,
-     PLUS = 1641,
-     MINUS = 1628,
-     MULTIPLY = 1534,
-     DIVIDE = 1561,
-     MOD = 1629,
+     NOT_EQUAL = 1474,
+     PLUS = 1640,
+     MINUS = 1627,
+     MULTIPLY = 1533,
+     DIVIDE = 1560,
+     MOD = 1628,
      COMMAND = 1409,
-     NUMBER_VALUE = 1711,
-     CHAR_VALUE = 1712,
-     INT_VALUE = 1713,
-     NAMED_GEN = 1714,
-     CLINE = 1715,
-     SQLLINE = 1716,
-     KW_CSTART = 1717,
-     KW_CEND = 1718,
-     USER_DTYPE = 1719,
-     SQL_TEXT = 1720,
-     KW_WHENEVER_SET = 1721,
+     NUMBER_VALUE = 1710,
+     CHAR_VALUE = 1711,
+     INT_VALUE = 1712,
+     NAMED_GEN = 1713,
+     CLINE = 1714,
+     SQLLINE = 1715,
+     KW_CSTART = 1716,
+     KW_CEND = 1717,
+     USER_DTYPE = 1718,
+     SQL_TEXT = 1719,
+     KW_WHENEVER_SET = 1720,
+     COMMENT = 1721,
      DYNAMIC_ARRAY = 1000,
      RESIZE_ARRAY = 1001,
      ALLOCATE_ARRAY = 1002,
@@ -468,322 +469,322 @@
      CLIPPED = 1406,
      CLOSE_BRACKET = 1407,
      COLUMNS = 1408,
-     COMMENT = 1410,
-     CONNECT = 1411,
-     CURRENT = 1412,
-     DBYNAME = 1413,
-     DECIMAL = 1414,
-     DECLARE = 1415,
-     DEFAULT = 1416,
-     DISPLAY = 1417,
-     ENDCODE = 1418,
-     EXECUTE = 1419,
-     FOREACH = 1420,
-     FOREIGN = 1421,
-     GLOBALS = 1422,
-     INFIELD = 1423,
-     INTEGER = 1424,
-     KWWINDOW = 1425,
-     MAGENTA = 1426,
-     OPTIONS = 1428,
-     PERCENT = 1429,
-     PREPARE = 1430,
-     PROGRAM = 1431,
-     RECOVER = 1432,
-     REVERSE = 1433,
-     SECTION = 1434,
-     SESSION = 1435,
-     SYNONYM = 1436,
-     THRU = 1437,
-     TRAILER = 1438,
-     UPSHIFT = 1439,
-     VARCHAR = 1440,
-     WAITING = 1441,
-     CLOSE_SHEV = 1442,
-     CLOSE_SQUARE = 1443,
-     KW_FALSE = 1445,
-     NOT_IN = 1446,
-     ONKEY = 1447,
-     OPEN_BRACKET = 1448,
-     BORDER = 1449,
-     BOTTOM = 1450,
-     COLUMN = 1451,
-     COMMIT = 1452,
-     CREATE = 1453,
-     CURSOR = 1454,
-     DEFINE = 1455,
-     DELETE = 1456,
-     DOUBLE = 1457,
-     END_IF = 1458,
-     ESCAPE = 1459,
-     EXISTS = 1460,
-     EXTEND = 1461,
-     EXTENT = 1462,
-     FINISH = 1463,
-     FORMAT = 1464,
-     HAVING = 1465,
-     HEADER = 1466,
-     INSERT = 1467,
-     LOCATE = 1468,
-     MARGIN = 1469,
-     MEMORY = 1470,
-     MINUTE = 1471,
-     MODIFY = 1472,
-     NORMAL = 1473,
-     EQUAL_EQUAL = 1474,
-     OPEN_SHEV = 1476,
-     OPEN_SQUARE = 1477,
-     OPTION = 1478,
-     OUTPUT = 1479,
-     PROMPT = 1480,
-     PUBLIC = 1481,
-     RECORD = 1482,
-     REPORT = 1483,
-     REVOKE = 1484,
-     SCHEMA = 1485,
-     SCROLL_USING = 1486,
-     SCROLL = 1487,
-     SECOND = 1488,
-     SELECT = 1489,
-     SERIAL = 1490,
-     SETL = 1491,
-     SHARED = 1492,
-     SPACES = 1493,
-     UNIQUE = 1494,
-     UNLOCK = 1495,
-     UPDATE = 1496,
-     VALUES = 1497,
-     YELLOW = 1498,
-     AFTER = 1499,
-     KWLINE = 1500,
-     KW_NULL = 1501,
-     KW_TRUE = 1502,
-     SINGLE_KEY = 1503,
-     ALTER = 1504,
-     ARRAY = 1505,
-     ASCII = 1506,
-     AUDIT = 1507,
-     BLACK = 1508,
-     BLINK = 1509,
-     CHECK = 1510,
-     CLEAR = 1511,
-     CLOSE = 1512,
-     CODE_C = 1513,
-     COUNT = 1514,
-     DEFER = 1515,
-     ERROR = 1516,
-     EVERY = 1517,
-     FETCH = 1518,
-     FIRST = 1519,
-     FLOAT = 1520,
-     FLUSH = 1521,
-     FOUND = 1522,
-     GRANT = 1523,
-     GREEN = 1524,
-     GROUP = 1525,
-     INDEX = 1526,
-     KWFORM = 1527,
-     LABEL = 1528,
-     LOCAL = 1530,
-     MONEY = 1531,
-     MONTH = 1532,
-     ORDER = 1535,
-     OUTER = 1536,
-     PAUSE = 1537,
-     PRINT_IMAGE = 1538,
-     PRINT_FILE = 1539,
-     PRINT = 1540,
-     RIGHT = 1541,
-     DOUBLE_COLON = 1542,
-     SEMICOLON = 1543,
-     SLEEP = 1544,
-     TUPLE = 1545,
-     UNION = 1546,
-     WHERE = 1548,
-     WHILE = 1549,
-     WHITE = 1550,
-     CCODE = 1551,
-     ANSI = 1552,
-     BLUE = 1553,
-     BOLD = 1554,
-     BYTE = 1555,
-     FCALL = 1556,
-     CASE = 1557,
-     CYAN = 1558,
-     DATE = 1559,
-     DESC = 1560,
-     KWDOWN = 1562,
-     TAB = 1563,
-     DROP = 1564,
-     ELSE = 1565,
-     EXEC = 1566,
-     EXIT = 1567,
-     FREE = 1568,
-     FROM = 1569,
-     GOTO = 1570,
-     HELP_FILE = 1571,
-     LANG_FILE = 1572,
-     HELP = 1573,
-     HIDE = 1574,
-     HOUR = 1575,
-     INTO = 1576,
-     LAST = 1577,
-     LEFT = 1578,
-     LIKE = 1579,
-     MAIN = 1580,
-     MENU = 1581,
-     MODE = 1582,
-     NEED = 1583,
-     NEXT = 1584,
-     NOCR = 1585,
-     OPEN = 1586,
-     QUIT = 1587,
-     REAL = 1588,
-     ROWS = 1589,
-     SHOW = 1590,
-     SIZE = 1591,
-     SKIP = 1592,
-     SOME = 1593,
-     STEP = 1594,
-     STOP = 1595,
-     TEMP = 1596,
-     TEXT = 1597,
-     THEN = 1598,
-     USER = 1599,
-     WAIT = 1600,
-     WHEN = 1601,
-     WITH = 1602,
-     WORK = 1603,
-     YEAR = 1604,
-     KW_IS = 1606,
-     XSET = 1607,
-     ADD = 1608,
-     ALL = 1609,
-     ANY = 1611,
-     ASC = 1612,
-     AVG = 1613,
-     COLON = 1614,
-     DAY = 1616,
-     DBA = 1617,
-     DEC = 1618,
-     DIM = 1619,
-     FKEY = 1620,
-     FOR = 1621,
-     KEY = 1622,
-     KWNO = 1623,
-     LET = 1624,
-     LOG = 1625,
-     XMAX = 1626,
-     XMIN = 1627,
-     PAD = 1631,
-     PUT = 1632,
-     RED = 1633,
-     ROW = 1634,
-     RUN = 1635,
-     SQL = 1636,
-     SUM = 1637,
-     TOP = 1638,
-     USE = 1639,
-     ATSIGN = 1640,
-     AS_TIFF = 1642,
-     AS_GIF = 1643,
-     AS_PNG = 1644,
-     AS_JPEG = 1645,
-     AS = 1646,
-     AT = 1647,
-     BY = 1648,
-     DOT = 1649,
-     GO = 1650,
-     IF = 1651,
-     IN = 1652,
-     OF = 1653,
-     ON = 1654,
-     TO = 1656,
-     KWUP = 1657,
-     FONT_NAME = 1658,
-     FONT_SIZE = 1659,
-     PAPER_SIZE_IS_LETTER = 1660,
-     PAPER_SIZE_IS_LEGAL = 1661,
-     PAPER_SIZE_IS_A5 = 1662,
-     PAPER_SIZE_IS_A4 = 1663,
-     PAPER_SIZE_IS_LETTER_L = 1664,
-     PAPER_SIZE_IS_LEGAL_L = 1665,
-     PAPER_SIZE_IS_A5_L = 1666,
-     PAPER_SIZE_IS_A4_L = 1667,
-     FORMHANDLER = 1668,
-     END_FORMHANDLER = 1669,
-     BEFORE_EVENT = 1670,
-     BEFORE_OPEN_FORM = 1671,
-     AFTER_EVENT = 1672,
-     BEFORE_CLOSE_FORM = 1673,
-     BEFORE_ANY = 1674,
-     AFTER_ANY = 1675,
-     MENUHANDLER = 1676,
-     END_MENUHANDLER = 1677,
-     BEFORE_SHOW_MENU = 1678,
-     DISABLE_PROGRAM = 1679,
-     DISABLE_ALL = 1680,
-     BUTTONS = 1681,
-     CHECK_MENUITEM = 1682,
-     DISABLE_FORM = 1683,
-     DISABLE_MENUITEMS = 1684,
-     DISABLE = 1685,
-     ENABLE_FORM = 1686,
-     ENABLE_MENUITEMS = 1687,
-     ENABLE = 1688,
-     KWFIELD = 1689,
-     ICON = 1690,
-     MESSAGEBOX = 1691,
-     TO_DEFAULTS = 1692,
-     UNCHECK_MENUITEM = 1693,
-     BEFORE = 1694,
-     INPUT = 1695,
-     END = 1696,
-     INT_TO_ID = 1697,
-     TIMEOUT = 1698,
-     OFF = 1699,
-     WITH_1_DIMENSION = 1700,
-     WITH_2_DIMENSION = 1701,
-     WITH_3_DIMENSION = 1702,
-     TILDE = 1703,
-     ILIKE = 1704,
-     FGL_ISDYNARR_ALLOCATED = 1705,
-     FGL_DYNARR_EXTENTSIZE = 1706,
-     FILLFACTOR = 1707
+     CONNECT = 1410,
+     CURRENT = 1411,
+     DBYNAME = 1412,
+     DECIMAL = 1413,
+     DECLARE = 1414,
+     DEFAULT = 1415,
+     DISPLAY = 1416,
+     ENDCODE = 1417,
+     EXECUTE = 1418,
+     FOREACH = 1419,
+     FOREIGN = 1420,
+     GLOBALS = 1421,
+     INFIELD = 1422,
+     INTEGER = 1423,
+     KWWINDOW = 1424,
+     MAGENTA = 1425,
+     OPTIONS = 1427,
+     PERCENT = 1428,
+     PREPARE = 1429,
+     PROGRAM = 1430,
+     RECOVER = 1431,
+     REVERSE = 1432,
+     SECTION = 1433,
+     SESSION = 1434,
+     SYNONYM = 1435,
+     THRU = 1436,
+     TRAILER = 1437,
+     UPSHIFT = 1438,
+     VARCHAR = 1439,
+     WAITING = 1440,
+     CLOSE_SHEV = 1441,
+     CLOSE_SQUARE = 1442,
+     KW_FALSE = 1444,
+     NOT_IN = 1445,
+     ONKEY = 1446,
+     OPEN_BRACKET = 1447,
+     BORDER = 1448,
+     BOTTOM = 1449,
+     COLUMN = 1450,
+     COMMIT = 1451,
+     CREATE = 1452,
+     CURSOR = 1453,
+     DEFINE = 1454,
+     DELETE = 1455,
+     DOUBLE = 1456,
+     END_IF = 1457,
+     ESCAPE = 1458,
+     EXISTS = 1459,
+     EXTEND = 1460,
+     EXTENT = 1461,
+     FINISH = 1462,
+     FORMAT = 1463,
+     HAVING = 1464,
+     HEADER = 1465,
+     INSERT = 1466,
+     LOCATE = 1467,
+     MARGIN = 1468,
+     MEMORY = 1469,
+     MINUTE = 1470,
+     MODIFY = 1471,
+     NORMAL = 1472,
+     EQUAL_EQUAL = 1473,
+     OPEN_SHEV = 1475,
+     OPEN_SQUARE = 1476,
+     OPTION = 1477,
+     OUTPUT = 1478,
+     PROMPT = 1479,
+     PUBLIC = 1480,
+     RECORD = 1481,
+     REPORT = 1482,
+     REVOKE = 1483,
+     SCHEMA = 1484,
+     SCROLL_USING = 1485,
+     SCROLL = 1486,
+     SECOND = 1487,
+     SELECT = 1488,
+     SERIAL = 1489,
+     SETL = 1490,
+     SHARED = 1491,
+     SPACES = 1492,
+     UNIQUE = 1493,
+     UNLOCK = 1494,
+     UPDATE = 1495,
+     VALUES = 1496,
+     YELLOW = 1497,
+     AFTER = 1498,
+     KWLINE = 1499,
+     KW_NULL = 1500,
+     KW_TRUE = 1501,
+     SINGLE_KEY = 1502,
+     ALTER = 1503,
+     ARRAY = 1504,
+     ASCII = 1505,
+     AUDIT = 1506,
+     BLACK = 1507,
+     BLINK = 1508,
+     CHECK = 1509,
+     CLEAR = 1510,
+     CLOSE = 1511,
+     CODE_C = 1512,
+     COUNT = 1513,
+     DEFER = 1514,
+     ERROR = 1515,
+     EVERY = 1516,
+     FETCH = 1517,
+     FIRST = 1518,
+     FLOAT = 1519,
+     FLUSH = 1520,
+     FOUND = 1521,
+     GRANT = 1522,
+     GREEN = 1523,
+     GROUP = 1524,
+     INDEX = 1525,
+     KWFORM = 1526,
+     LABEL = 1527,
+     LOCAL = 1529,
+     MONEY = 1530,
+     MONTH = 1531,
+     ORDER = 1534,
+     OUTER = 1535,
+     PAUSE = 1536,
+     PRINT_IMAGE = 1537,
+     PRINT_FILE = 1538,
+     PRINT = 1539,
+     RIGHT = 1540,
+     DOUBLE_COLON = 1541,
+     SEMICOLON = 1542,
+     SLEEP = 1543,
+     TUPLE = 1544,
+     UNION = 1545,
+     WHERE = 1547,
+     WHILE = 1548,
+     WHITE = 1549,
+     CCODE = 1550,
+     ANSI = 1551,
+     BLUE = 1552,
+     BOLD = 1553,
+     BYTE = 1554,
+     FCALL = 1555,
+     CASE = 1556,
+     CYAN = 1557,
+     DATE = 1558,
+     DESC = 1559,
+     KWDOWN = 1561,
+     TAB = 1562,
+     DROP = 1563,
+     ELSE = 1564,
+     EXEC = 1565,
+     EXIT = 1566,
+     FREE = 1567,
+     FROM = 1568,
+     GOTO = 1569,
+     HELP_FILE = 1570,
+     LANG_FILE = 1571,
+     HELP = 1572,
+     HIDE = 1573,
+     HOUR = 1574,
+     INTO = 1575,
+     LAST = 1576,
+     LEFT = 1577,
+     LIKE = 1578,
+     MAIN = 1579,
+     MENU = 1580,
+     MODE = 1581,
+     NEED = 1582,
+     NEXT = 1583,
+     NOCR = 1584,
+     OPEN = 1585,
+     QUIT = 1586,
+     REAL = 1587,
+     ROWS = 1588,
+     SHOW = 1589,
+     SIZE = 1590,
+     SKIP = 1591,
+     SOME = 1592,
+     STEP = 1593,
+     STOP = 1594,
+     TEMP = 1595,
+     TEXT = 1596,
+     THEN = 1597,
+     USER = 1598,
+     WAIT = 1599,
+     WHEN = 1600,
+     WITH = 1601,
+     WORK = 1602,
+     YEAR = 1603,
+     KW_IS = 1605,
+     XSET = 1606,
+     ADD = 1607,
+     ALL = 1608,
+     ANY = 1610,
+     ASC = 1611,
+     AVG = 1612,
+     COLON = 1613,
+     DAY = 1615,
+     DBA = 1616,
+     DEC = 1617,
+     DIM = 1618,
+     FKEY = 1619,
+     FOR = 1620,
+     KEY = 1621,
+     KWNO = 1622,
+     LET = 1623,
+     LOG = 1624,
+     XMAX = 1625,
+     XMIN = 1626,
+     PAD = 1630,
+     PUT = 1631,
+     RED = 1632,
+     ROW = 1633,
+     RUN = 1634,
+     SQL = 1635,
+     SUM = 1636,
+     TOP = 1637,
+     USE = 1638,
+     ATSIGN = 1639,
+     AS_TIFF = 1641,
+     AS_GIF = 1642,
+     AS_PNG = 1643,
+     AS_JPEG = 1644,
+     AS = 1645,
+     AT = 1646,
+     BY = 1647,
+     DOT = 1648,
+     GO = 1649,
+     IF = 1650,
+     IN = 1651,
+     OF = 1652,
+     ON = 1653,
+     TO = 1655,
+     KWUP = 1656,
+     FONT_NAME = 1657,
+     FONT_SIZE = 1658,
+     PAPER_SIZE_IS_LETTER = 1659,
+     PAPER_SIZE_IS_LEGAL = 1660,
+     PAPER_SIZE_IS_A5 = 1661,
+     PAPER_SIZE_IS_A4 = 1662,
+     PAPER_SIZE_IS_LETTER_L = 1663,
+     PAPER_SIZE_IS_LEGAL_L = 1664,
+     PAPER_SIZE_IS_A5_L = 1665,
+     PAPER_SIZE_IS_A4_L = 1666,
+     FORMHANDLER = 1667,
+     END_FORMHANDLER = 1668,
+     BEFORE_EVENT = 1669,
+     BEFORE_OPEN_FORM = 1670,
+     AFTER_EVENT = 1671,
+     BEFORE_CLOSE_FORM = 1672,
+     BEFORE_ANY = 1673,
+     AFTER_ANY = 1674,
+     MENUHANDLER = 1675,
+     END_MENUHANDLER = 1676,
+     BEFORE_SHOW_MENU = 1677,
+     DISABLE_PROGRAM = 1678,
+     DISABLE_ALL = 1679,
+     BUTTONS = 1680,
+     CHECK_MENUITEM = 1681,
+     DISABLE_FORM = 1682,
+     DISABLE_MENUITEMS = 1683,
+     DISABLE = 1684,
+     ENABLE_FORM = 1685,
+     ENABLE_MENUITEMS = 1686,
+     ENABLE = 1687,
+     KWFIELD = 1688,
+     ICON = 1689,
+     MESSAGEBOX = 1690,
+     TO_DEFAULTS = 1691,
+     UNCHECK_MENUITEM = 1692,
+     BEFORE = 1693,
+     INPUT = 1694,
+     END = 1695,
+     INT_TO_ID = 1696,
+     TIMEOUT = 1697,
+     OFF = 1698,
+     WITH_1_DIMENSION = 1699,
+     WITH_2_DIMENSION = 1700,
+     WITH_3_DIMENSION = 1701,
+     TILDE = 1702,
+     ILIKE = 1703,
+     FGL_ISDYNARR_ALLOCATED = 1704,
+     FGL_DYNARR_EXTENTSIZE = 1705,
+     FILLFACTOR = 1706
    };
 #endif
-#define NAME 1709
-#define UMINUS 1710
-#define COMMA 1615
-#define KW_OR 1655
-#define KW_AND 1610
-#define KW_USING 1547
-#define NOT 1630
-#define MATCHES 1427
-#define POWER 1533
-#define LESS_THAN 1529
-#define GREATER_THAN 1444
-#define EQUAL 1605
+#define NAME 1708
+#define UMINUS 1709
+#define COMMA 1614
+#define KW_OR 1654
+#define KW_AND 1609
+#define KW_USING 1546
+#define NOT 1629
+#define MATCHES 1426
+#define POWER 1532
+#define LESS_THAN 1528
+#define GREATER_THAN 1443
+#define EQUAL 1604
 #define GREATER_THAN_EQ 1345
 #define LESS_THAN_EQ 1402
-#define NOT_EQUAL 1475
-#define PLUS 1641
-#define MINUS 1628
-#define MULTIPLY 1534
-#define DIVIDE 1561
-#define MOD 1629
+#define NOT_EQUAL 1474
+#define PLUS 1640
+#define MINUS 1627
+#define MULTIPLY 1533
+#define DIVIDE 1560
+#define MOD 1628
 #define COMMAND 1409
-#define NUMBER_VALUE 1711
-#define CHAR_VALUE 1712
-#define INT_VALUE 1713
-#define NAMED_GEN 1714
-#define CLINE 1715
-#define SQLLINE 1716
-#define KW_CSTART 1717
-#define KW_CEND 1718
-#define USER_DTYPE 1719
-#define SQL_TEXT 1720
-#define KW_WHENEVER_SET 1721
+#define NUMBER_VALUE 1710
+#define CHAR_VALUE 1711
+#define INT_VALUE 1712
+#define NAMED_GEN 1713
+#define CLINE 1714
+#define SQLLINE 1715
+#define KW_CSTART 1716
+#define KW_CEND 1717
+#define USER_DTYPE 1718
+#define SQL_TEXT 1719
+#define KW_WHENEVER_SET 1720
+#define COMMENT 1721
 #define DYNAMIC_ARRAY 1000
 #define RESIZE_ARRAY 1001
 #define ALLOCATE_ARRAY 1002
@@ -1191,288 +1192,287 @@
 #define CLIPPED 1406
 #define CLOSE_BRACKET 1407
 #define COLUMNS 1408
-#define COMMENT 1410
-#define CONNECT 1411
-#define CURRENT 1412
-#define DBYNAME 1413
-#define DECIMAL 1414
-#define DECLARE 1415
-#define DEFAULT 1416
-#define DISPLAY 1417
-#define ENDCODE 1418
-#define EXECUTE 1419
-#define FOREACH 1420
-#define FOREIGN 1421
-#define GLOBALS 1422
-#define INFIELD 1423
-#define INTEGER 1424
-#define KWWINDOW 1425
-#define MAGENTA 1426
-#define OPTIONS 1428
-#define PERCENT 1429
-#define PREPARE 1430
-#define PROGRAM 1431
-#define RECOVER 1432
-#define REVERSE 1433
-#define SECTION 1434
-#define SESSION 1435
-#define SYNONYM 1436
-#define THRU 1437
-#define TRAILER 1438
-#define UPSHIFT 1439
-#define VARCHAR 1440
-#define WAITING 1441
-#define CLOSE_SHEV 1442
-#define CLOSE_SQUARE 1443
-#define KW_FALSE 1445
-#define NOT_IN 1446
-#define ONKEY 1447
-#define OPEN_BRACKET 1448
-#define BORDER 1449
-#define BOTTOM 1450
-#define COLUMN 1451
-#define COMMIT 1452
-#define CREATE 1453
-#define CURSOR 1454
-#define DEFINE 1455
-#define DELETE 1456
-#define DOUBLE 1457
-#define END_IF 1458
-#define ESCAPE 1459
-#define EXISTS 1460
-#define EXTEND 1461
-#define EXTENT 1462
-#define FINISH 1463
-#define FORMAT 1464
-#define HAVING 1465
-#define HEADER 1466
-#define INSERT 1467
-#define LOCATE 1468
-#define MARGIN 1469
-#define MEMORY 1470
-#define MINUTE 1471
-#define MODIFY 1472
-#define NORMAL 1473
-#define EQUAL_EQUAL 1474
-#define OPEN_SHEV 1476
-#define OPEN_SQUARE 1477
-#define OPTION 1478
-#define OUTPUT 1479
-#define PROMPT 1480
-#define PUBLIC 1481
-#define RECORD 1482
-#define REPORT 1483
-#define REVOKE 1484
-#define SCHEMA 1485
-#define SCROLL_USING 1486
-#define SCROLL 1487
-#define SECOND 1488
-#define SELECT 1489
-#define SERIAL 1490
-#define SETL 1491
-#define SHARED 1492
-#define SPACES 1493
-#define UNIQUE 1494
-#define UNLOCK 1495
-#define UPDATE 1496
-#define VALUES 1497
-#define YELLOW 1498
-#define AFTER 1499
-#define KWLINE 1500
-#define KW_NULL 1501
-#define KW_TRUE 1502
-#define SINGLE_KEY 1503
-#define ALTER 1504
-#define ARRAY 1505
-#define ASCII 1506
-#define AUDIT 1507
-#define BLACK 1508
-#define BLINK 1509
-#define CHECK 1510
-#define CLEAR 1511
-#define CLOSE 1512
-#define CODE_C 1513
-#define COUNT 1514
-#define DEFER 1515
-#define ERROR 1516
-#define EVERY 1517
-#define FETCH 1518
-#define FIRST 1519
-#define FLOAT 1520
-#define FLUSH 1521
-#define FOUND 1522
-#define GRANT 1523
-#define GREEN 1524
-#define GROUP 1525
-#define INDEX 1526
-#define KWFORM 1527
-#define LABEL 1528
-#define LOCAL 1530
-#define MONEY 1531
-#define MONTH 1532
-#define ORDER 1535
-#define OUTER 1536
-#define PAUSE 1537
-#define PRINT_IMAGE 1538
-#define PRINT_FILE 1539
-#define PRINT 1540
-#define RIGHT 1541
-#define DOUBLE_COLON 1542
-#define SEMICOLON 1543
-#define SLEEP 1544
-#define TUPLE 1545
-#define UNION 1546
-#define WHERE 1548
-#define WHILE 1549
-#define WHITE 1550
-#define CCODE 1551
-#define ANSI 1552
-#define BLUE 1553
-#define BOLD 1554
-#define BYTE 1555
-#define FCALL 1556
-#define CASE 1557
-#define CYAN 1558
-#define DATE 1559
-#define DESC 1560
-#define KWDOWN 1562
-#define TAB 1563
-#define DROP 1564
-#define ELSE 1565
-#define EXEC 1566
-#define EXIT 1567
-#define FREE 1568
-#define FROM 1569
-#define GOTO 1570
-#define HELP_FILE 1571
-#define LANG_FILE 1572
-#define HELP 1573
-#define HIDE 1574
-#define HOUR 1575
-#define INTO 1576
-#define LAST 1577
-#define LEFT 1578
-#define LIKE 1579
-#define MAIN 1580
-#define MENU 1581
-#define MODE 1582
-#define NEED 1583
-#define NEXT 1584
-#define NOCR 1585
-#define OPEN 1586
-#define QUIT 1587
-#define REAL 1588
-#define ROWS 1589
-#define SHOW 1590
-#define SIZE 1591
-#define SKIP 1592
-#define SOME 1593
-#define STEP 1594
-#define STOP 1595
-#define TEMP 1596
-#define TEXT 1597
-#define THEN 1598
-#define USER 1599
-#define WAIT 1600
-#define WHEN 1601
-#define WITH 1602
-#define WORK 1603
-#define YEAR 1604
-#define KW_IS 1606
-#define XSET 1607
-#define ADD 1608
-#define ALL 1609
-#define ANY 1611
-#define ASC 1612
-#define AVG 1613
-#define COLON 1614
-#define DAY 1616
-#define DBA 1617
-#define DEC 1618
-#define DIM 1619
-#define FKEY 1620
-#define FOR 1621
-#define KEY 1622
-#define KWNO 1623
-#define LET 1624
-#define LOG 1625
-#define XMAX 1626
-#define XMIN 1627
-#define PAD 1631
-#define PUT 1632
-#define RED 1633
-#define ROW 1634
-#define RUN 1635
-#define SQL 1636
-#define SUM 1637
-#define TOP 1638
-#define USE 1639
-#define ATSIGN 1640
-#define AS_TIFF 1642
-#define AS_GIF 1643
-#define AS_PNG 1644
-#define AS_JPEG 1645
-#define AS 1646
-#define AT 1647
-#define BY 1648
-#define DOT 1649
-#define GO 1650
-#define IF 1651
-#define IN 1652
-#define OF 1653
-#define ON 1654
-#define TO 1656
-#define KWUP 1657
-#define FONT_NAME 1658
-#define FONT_SIZE 1659
-#define PAPER_SIZE_IS_LETTER 1660
-#define PAPER_SIZE_IS_LEGAL 1661
-#define PAPER_SIZE_IS_A5 1662
-#define PAPER_SIZE_IS_A4 1663
-#define PAPER_SIZE_IS_LETTER_L 1664
-#define PAPER_SIZE_IS_LEGAL_L 1665
-#define PAPER_SIZE_IS_A5_L 1666
-#define PAPER_SIZE_IS_A4_L 1667
-#define FORMHANDLER 1668
-#define END_FORMHANDLER 1669
-#define BEFORE_EVENT 1670
-#define BEFORE_OPEN_FORM 1671
-#define AFTER_EVENT 1672
-#define BEFORE_CLOSE_FORM 1673
-#define BEFORE_ANY 1674
-#define AFTER_ANY 1675
-#define MENUHANDLER 1676
-#define END_MENUHANDLER 1677
-#define BEFORE_SHOW_MENU 1678
-#define DISABLE_PROGRAM 1679
-#define DISABLE_ALL 1680
-#define BUTTONS 1681
-#define CHECK_MENUITEM 1682
-#define DISABLE_FORM 1683
-#define DISABLE_MENUITEMS 1684
-#define DISABLE 1685
-#define ENABLE_FORM 1686
-#define ENABLE_MENUITEMS 1687
-#define ENABLE 1688
-#define KWFIELD 1689
-#define ICON 1690
-#define MESSAGEBOX 1691
-#define TO_DEFAULTS 1692
-#define UNCHECK_MENUITEM 1693
-#define BEFORE 1694
-#define INPUT 1695
-#define END 1696
-#define INT_TO_ID 1697
-#define TIMEOUT 1698
-#define OFF 1699
-#define WITH_1_DIMENSION 1700
-#define WITH_2_DIMENSION 1701
-#define WITH_3_DIMENSION 1702
-#define TILDE 1703
-#define ILIKE 1704
-#define FGL_ISDYNARR_ALLOCATED 1705
-#define FGL_DYNARR_EXTENTSIZE 1706
-#define FILLFACTOR 1707
+#define CONNECT 1410
+#define CURRENT 1411
+#define DBYNAME 1412
+#define DECIMAL 1413
+#define DECLARE 1414
+#define DEFAULT 1415
+#define DISPLAY 1416
+#define ENDCODE 1417
+#define EXECUTE 1418
+#define FOREACH 1419
+#define FOREIGN 1420
+#define GLOBALS 1421
+#define INFIELD 1422
+#define INTEGER 1423
+#define KWWINDOW 1424
+#define MAGENTA 1425
+#define OPTIONS 1427
+#define PERCENT 1428
+#define PREPARE 1429
+#define PROGRAM 1430
+#define RECOVER 1431
+#define REVERSE 1432
+#define SECTION 1433
+#define SESSION 1434
+#define SYNONYM 1435
+#define THRU 1436
+#define TRAILER 1437
+#define UPSHIFT 1438
+#define VARCHAR 1439
+#define WAITING 1440
+#define CLOSE_SHEV 1441
+#define CLOSE_SQUARE 1442
+#define KW_FALSE 1444
+#define NOT_IN 1445
+#define ONKEY 1446
+#define OPEN_BRACKET 1447
+#define BORDER 1448
+#define BOTTOM 1449
+#define COLUMN 1450
+#define COMMIT 1451
+#define CREATE 1452
+#define CURSOR 1453
+#define DEFINE 1454
+#define DELETE 1455
+#define DOUBLE 1456
+#define END_IF 1457
+#define ESCAPE 1458
+#define EXISTS 1459
+#define EXTEND 1460
+#define EXTENT 1461
+#define FINISH 1462
+#define FORMAT 1463
+#define HAVING 1464
+#define HEADER 1465
+#define INSERT 1466
+#define LOCATE 1467
+#define MARGIN 1468
+#define MEMORY 1469
+#define MINUTE 1470
+#define MODIFY 1471
+#define NORMAL 1472
+#define EQUAL_EQUAL 1473
+#define OPEN_SHEV 1475
+#define OPEN_SQUARE 1476
+#define OPTION 1477
+#define OUTPUT 1478
+#define PROMPT 1479
+#define PUBLIC 1480
+#define RECORD 1481
+#define REPORT 1482
+#define REVOKE 1483
+#define SCHEMA 1484
+#define SCROLL_USING 1485
+#define SCROLL 1486
+#define SECOND 1487
+#define SELECT 1488
+#define SERIAL 1489
+#define SETL 1490
+#define SHARED 1491
+#define SPACES 1492
+#define UNIQUE 1493
+#define UNLOCK 1494
+#define UPDATE 1495
+#define VALUES 1496
+#define YELLOW 1497
+#define AFTER 1498
+#define KWLINE 1499
+#define KW_NULL 1500
+#define KW_TRUE 1501
+#define SINGLE_KEY 1502
+#define ALTER 1503
+#define ARRAY 1504
+#define ASCII 1505
+#define AUDIT 1506
+#define BLACK 1507
+#define BLINK 1508
+#define CHECK 1509
+#define CLEAR 1510
+#define CLOSE 1511
+#define CODE_C 1512
+#define COUNT 1513
+#define DEFER 1514
+#define ERROR 1515
+#define EVERY 1516
+#define FETCH 1517
+#define FIRST 1518
+#define FLOAT 1519
+#define FLUSH 1520
+#define FOUND 1521
+#define GRANT 1522
+#define GREEN 1523
+#define GROUP 1524
+#define INDEX 1525
+#define KWFORM 1526
+#define LABEL 1527
+#define LOCAL 1529
+#define MONEY 1530
+#define MONTH 1531
+#define ORDER 1534
+#define OUTER 1535
+#define PAUSE 1536
+#define PRINT_IMAGE 1537
+#define PRINT_FILE 1538
+#define PRINT 1539
+#define RIGHT 1540
+#define DOUBLE_COLON 1541
+#define SEMICOLON 1542
+#define SLEEP 1543
+#define TUPLE 1544
+#define UNION 1545
+#define WHERE 1547
+#define WHILE 1548
+#define WHITE 1549
+#define CCODE 1550
+#define ANSI 1551
+#define BLUE 1552
+#define BOLD 1553
+#define BYTE 1554
+#define FCALL 1555
+#define CASE 1556
+#define CYAN 1557
+#define DATE 1558
+#define DESC 1559
+#define KWDOWN 1561
+#define TAB 1562
+#define DROP 1563
+#define ELSE 1564
+#define EXEC 1565
+#define EXIT 1566
+#define FREE 1567
+#define FROM 1568
+#define GOTO 1569
+#define HELP_FILE 1570
+#define LANG_FILE 1571
+#define HELP 1572
+#define HIDE 1573
+#define HOUR 1574
+#define INTO 1575
+#define LAST 1576
+#define LEFT 1577
+#define LIKE 1578
+#define MAIN 1579
+#define MENU 1580
+#define MODE 1581
+#define NEED 1582
+#define NEXT 1583
+#define NOCR 1584
+#define OPEN 1585
+#define QUIT 1586
+#define REAL 1587
+#define ROWS 1588
+#define SHOW 1589
+#define SIZE 1590
+#define SKIP 1591
+#define SOME 1592
+#define STEP 1593
+#define STOP 1594
+#define TEMP 1595
+#define TEXT 1596
+#define THEN 1597
+#define USER 1598
+#define WAIT 1599
+#define WHEN 1600
+#define WITH 1601
+#define WORK 1602
+#define YEAR 1603
+#define KW_IS 1605
+#define XSET 1606
+#define ADD 1607
+#define ALL 1608
+#define ANY 1610
+#define ASC 1611
+#define AVG 1612
+#define COLON 1613
+#define DAY 1615
+#define DBA 1616
+#define DEC 1617
+#define DIM 1618
+#define FKEY 1619
+#define FOR 1620
+#define KEY 1621
+#define KWNO 1622
+#define LET 1623
+#define LOG 1624
+#define XMAX 1625
+#define XMIN 1626
+#define PAD 1630
+#define PUT 1631
+#define RED 1632
+#define ROW 1633
+#define RUN 1634
+#define SQL 1635
+#define SUM 1636
+#define TOP 1637
+#define USE 1638
+#define ATSIGN 1639
+#define AS_TIFF 1641
+#define AS_GIF 1642
+#define AS_PNG 1643
+#define AS_JPEG 1644
+#define AS 1645
+#define AT 1646
+#define BY 1647
+#define DOT 1648
+#define GO 1649
+#define IF 1650
+#define IN 1651
+#define OF 1652
+#define ON 1653
+#define TO 1655
+#define KWUP 1656
+#define FONT_NAME 1657
+#define FONT_SIZE 1658
+#define PAPER_SIZE_IS_LETTER 1659
+#define PAPER_SIZE_IS_LEGAL 1660
+#define PAPER_SIZE_IS_A5 1661
+#define PAPER_SIZE_IS_A4 1662
+#define PAPER_SIZE_IS_LETTER_L 1663
+#define PAPER_SIZE_IS_LEGAL_L 1664
+#define PAPER_SIZE_IS_A5_L 1665
+#define PAPER_SIZE_IS_A4_L 1666
+#define FORMHANDLER 1667
+#define END_FORMHANDLER 1668
+#define BEFORE_EVENT 1669
+#define BEFORE_OPEN_FORM 1670
+#define AFTER_EVENT 1671
+#define BEFORE_CLOSE_FORM 1672
+#define BEFORE_ANY 1673
+#define AFTER_ANY 1674
+#define MENUHANDLER 1675
+#define END_MENUHANDLER 1676
+#define BEFORE_SHOW_MENU 1677
+#define DISABLE_PROGRAM 1678
+#define DISABLE_ALL 1679
+#define BUTTONS 1680
+#define CHECK_MENUITEM 1681
+#define DISABLE_FORM 1682
+#define DISABLE_MENUITEMS 1683
+#define DISABLE 1684
+#define ENABLE_FORM 1685
+#define ENABLE_MENUITEMS 1686
+#define ENABLE 1687
+#define KWFIELD 1688
+#define ICON 1689
+#define MESSAGEBOX 1690
+#define TO_DEFAULTS 1691
+#define UNCHECK_MENUITEM 1692
+#define BEFORE 1693
+#define INPUT 1694
+#define END 1695
+#define INT_TO_ID 1696
+#define TIMEOUT 1697
+#define OFF 1698
+#define WITH_1_DIMENSION 1699
+#define WITH_2_DIMENSION 1700
+#define WITH_3_DIMENSION 1701
+#define TILDE 1702
+#define ILIKE 1703
+#define FGL_ISDYNARR_ALLOCATED 1704
+#define FGL_DYNARR_EXTENTSIZE 1705
+#define FILLFACTOR 1706
 
 
 
