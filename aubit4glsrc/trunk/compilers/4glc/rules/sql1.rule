@@ -808,7 +808,7 @@ approx_numeric_type:
 	| SMALLFLOAT
 	| FLOAT
 	| DOUBLE_PRECISION
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+{sprintf($<str>$," %s",$<str>1);}
 	;
 
 length:
