@@ -4,8 +4,8 @@
 #
 #  Methods to interact with a repository in p4gl format.
 #
-#  $Author: saferreira $
-#  $Id: P4glRepository.pm,v 1.5 2003-05-14 09:51:14 saferreira Exp $
+#  $Author: afalout $
+#  $Id: P4glRepository.pm,v 1.6 2003-05-15 10:23:26 afalout Exp $
 #
 #  @todo Correcto tratamento de erros e mensagens
 #  @todo Retirar dependencia directa de outros packages (sempre por objecto)
@@ -356,9 +356,10 @@ sub create
   $rv = $obj->execSql(qq/create table p4gl_module (
     id_package char(64) not null references p4gl_package (id_package),
     module_name char(64) not null,
+
     author char(64),
     revision char(64),
-    deprecated     char(1) default 'N' 
+    deprecated     char(1) default 'N'
       not null check (deprecated in ('Y','N')),
     since char(64),
     see char(64),
@@ -491,12 +492,21 @@ sub create
     module_name   char(64) not null,
     function_name char(50) not null,
     table_name    char(50) not null,
-    operation char(1) not null 
+    operation char(1) not null
       check (operation IN ('I' ,'U' ,'D' ,'S' )),
     foreign key (id_package,module_name,function_name)
       references p4gl_function (id_package,module_name,function_name)
   );
   /);
+
+
+# Use Sergio's DD tool tables instead for table and columns:
+#  $rv = $obj->execSql(qq/create table p4gl_table (
+#    table_name    char(50) not null primary key,
+#	id_package    char(64) not null,
+#    comments char(255)
+#  );
+#  /);
 
 
   $rv = $obj->execSql(qq/create table p4gl_excel (

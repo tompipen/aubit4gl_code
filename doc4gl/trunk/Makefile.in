@@ -4,7 +4,7 @@
 #
 #  Developed by Sergio Ferreira, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.13 2003-05-13 11:29:51 afalout Exp $
+#  $Id: Makefile.in,v 1.14 2003-05-15 10:23:07 afalout Exp $
 #
 #  ==========================================================================
 
@@ -33,28 +33,38 @@ ALL.PERLMODS	= install.cpan install.dbi install.tk install.unit \
 .PHONY:all parser manager browser install clean install.parser \
 		install.manager install.browser deinstall install.cpan install.dbi \
 		install.tk install.unit install.dbd-informix missing.perlmods \
-        all.perlmods
+        all.perlmods test
 
 
 # =========================================================================
 #                        	   Targets
 # =========================================================================
 
+###########################
+# Default target: compile all Doc4GL components
 all: ${ALL}
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
 	@echo "| Doc4gl default targets :                                           |"
 	@echo "| ${ALL} "
 	@echo "| successfully compiled. Execute 'make install' to install it.       |"
+	@echo "|   Execute 'make test' to test it.                                  |"
+	@echo "|   Execute 'make install' to install it.                            |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
+###########################
+# Compile Doc4GL Parser component (C)
 parser:
 	$(MAKE) -C parser all
 
+###########################
+# Compile Doc4GL Browser component (JSP/Java)
 browser:
 	$(MAKE) -C browser all
 
+###########################
+# Compile Doc4GL Manager compinent (Perl)
 manager:
 #This will invoke makefile created by Perl MakeMaker from Makefile.PL:
 	$(MAKE) -C manager
@@ -69,6 +79,9 @@ manager:
 #                           	Install
 # =========================================================================
 
+###########################
+# Main install target; install all Doc4GL components from source code tree
+# to the system locations
 install: ${ALL.INSTALL}
 	@echo ""
 	@echo "+--------------------------------------------------------------------+"
@@ -78,15 +91,21 @@ install: ${ALL.INSTALL}
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
+###########################
+# Install Doc4GL Parser component
 install.parser:
 	$(MAKE) -C parser install
 
+###########################
+# Install Doc4GL Browser component
 install.browser:
 	$(MAKE) -C browser install
 
+###########################
+# Install Doc4GL Manager component
+# This will invoke makefile created by Perl MakeMaker from Makefile.PL, so we
+# need to do some preparation work here:
 install.manager:
-#This will invoke makefile created by Perl MakeMaker from Makefile.PL, so we
-#need to do some preparation work here:
 	mkdir -p $(PERL_MODULE_DIR)/img
 	mkdir -p $(PERL_MODULE_DIR)/L10N
 	${INSTALL} manager/fgldoc ${BINDIR}
@@ -111,12 +130,20 @@ install.manager:
 # =========================================================================
 #                           Deinstall
 # =========================================================================
+
+###########################
+# Main deinstall target; deinstall all elements od Doc4GL installed outside
+# source code tree
 deinstall: deinstall.manager
 	$(MAKE) -C parser deinstall
 #Perl generated make file has no deinstall target:
 #	$(MAKE) -C manager deinstall
 	$(MAKE) -C browser deinstall
 
+###########################
+# Deinstall all installed Doc4GL Perl manager files
+# Cannot be in Manager make file, becaise that one is created automatically
+# by Perl make maker
 deinstall.manager:
 	cd ${PERL_MODULE_DIR}; rm -f ${MGR_PM_FILES} ${MGR_PRG} *.bak
 	cd ${PERL_MODULE_DIR}/img; rm -f ${MGR_IMG_FILES}
@@ -136,17 +163,26 @@ deinstall.manager:
 # =========================================================================
 #                                Clean
 # =========================================================================
+
+###########################
+# Main clean target; clean everything not in CVS
 clean: clean.etc clean.sql clean.manager
 	$(MAKE) -C parser clean
 	$(MAKE) -C browser clean
 	${RM} *.bak libtool
 
+###########################
+# Clean etc folder
 clean.etc:
 	cd etc; ${RM} *.bak stamp-h
 
+###########################
+# Clean sql folder
 clean.sql:
 	cd sql; ${RM} *.bak
 
+###########################
+# clean all Doc4GL Perl Manager files
 clean.manager:
 	$(MAKE) -C manager clean
 #Perl created makefile - from Makefile.PL - will rename Makefle to Makefile.old
@@ -157,15 +193,18 @@ clean.manager:
 	cd manager/FglDocumenter/test; ${RM} *.bak
 	rm -rf blib
 
+###########################
 #delete everything not in the distribution (CVS)
 distclean: clean
 	${RM} libtool config.log config.status Makefile
 
+###########################
 #Files created by configure script
 clean.config: clean.makefile
 	${RM} etc/fgldocrc FgldocDefs.mk pm_to_blib
 	rm -rf manager/blib etc/doc4gl_config.h
 
+###########################
 #Make files created by configure script:
 clean.makefile:
 	${RM} parser/Makefile browser/Makefile manager/Makefile manager/Makefile.old
@@ -187,6 +226,8 @@ clean.makefile:
 ##            DoxyGen doccumentation creation
 ## ==================================================================
 
+###########################
+# Create DoxyGen documentation
 doxy: docs/doxy/html/index.html
 docs/doxy/html/index.html:
 ifneq "@DOXYGEN@" "no"
@@ -203,6 +244,7 @@ else
 	@echo "Sorry DOXYGEN not detected"
 endif
 
+###########################
 # First remove existing documentation, then create new one
 doxy.make: clean.doxy.html doxy.create.html
 	@echo DoxyGen doccumentation created and placed in docs/doxy/html
@@ -254,9 +296,11 @@ clean.doxy.www:
 #Fixme: is there a way to accept all defaults when installing using CPAN
 #and avoid all this prompting?
 
+###########################
 #This will install _ALL_ Perl modules Doc4GL needs:
 all.perlmods: ${ALL.PERLMODS}
 
+###########################
 #This will install only Perl modules that are detected as missing by Autoconf:
 missing.perlmods: @MISSING_PERLMODS@
 	@echo ""
@@ -267,15 +311,18 @@ missing.perlmods: @MISSING_PERLMODS@
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
+###########################
 #if you're using ActivePerl on Windows, the PPM (Perl Package Manager) has
 #much of the same functionality as CPAN.pm.
 #manual: http://search.cpan.org/author/JHI/perl-5.8.0/lib/CPAN.pm
 install.tk:
 	${PERL} -MCPAN -e 'install Bundle::Tk'
 
+###########################
 install.unit:
 	${PERL} -MCPAN -e 'install Test::Unit'
 
+###########################
 install.dbd-informix:
 ifneq "@DBD_INFORMIX_USERNAME@" ""
 ifneq "@DBD_INFORMIX_PASSWORD@" ""
@@ -295,15 +342,19 @@ else
 	@echo "./configure --with-ifx-uname=MyUserName --with-ifx-pwd=MyPassword"
 endif
 
+###########################
 install.cpan:
 	${PERL} -MCPAN -e 'install Bundle::CPAN'
 
+###########################
 install.dbi:
 	${PERL} -MCPAN -e 'install Bundle::DBI'
 
+###########################
 install.dumper:
 	${PERL} -MCPAN -e 'install XML::Dumper'
 
+###########################
 install.maketxt:
 	${PERL} -MCPAN -e 'install Locale::Maketext'
 
@@ -311,6 +362,8 @@ install.maketxt:
 #                           Install Tomcat and it's dependencies
 # =========================================================================
 
+###########################
+# Install BlaskDown Java SDK
 install.jdk: ${BASE}/${BLACKDOWN_JSDK}
 	@echo ""
 	@echo "Answer the questions and the JDK will uncompress to ${BASE}:"
@@ -322,23 +375,8 @@ install.jdk: ${BASE}/${BLACKDOWN_JSDK}
 	@echo '  export PATH=$PATH:$JAVA_HOME/bin'
 	@echo ""
 
-${BASE}/${BLACKDOWN_JSDK}:
-	cd ${BASE}; ${WGET} ${BLACKDOWN_JSDK_PATH}/${BLACKDOWN_JSDK}
-	chmod +x ${BASE}/${BLACKDOWN_JSDK}
-${TOMCAT4_RPM}:
-	${WGET} ${JAKARTA_RPM_PATH}/${TOMCAT4_RPM}
-${SERVLETAPI_RPM}:
-	${WGET} ${JAKARTA_RPM_PATH}/${SERVLETAPI_RPM}
-${REGEX_RPM}:
-	${WGET} ${JAKARTA_RPM_PATH}/${REGEX_RPM}
-${XERCES_RPM}:
-	${WGET} ${JAKARTA_RPM_PATH}/${XERCES_RPM}
-${ADMINWEBAPPS_RPM}:
-	${WGET} ${JAKARTA_RPM_PATH}/${ADMINWEBAPPS_RPM}
-${WEBAPPS}:
-	${WGET} ${JAKARTA_RPM_PATH}/${WEBAPPS}
-
-get.tomcat: ${TOMCAT_RPMS}
+###########################
+# Install Tomcat
 install.tomcat:  ${TOMCAT_RPMS}
 	${RPM} -i $^
 	@echo "Tomcat Notes:"
@@ -365,6 +403,8 @@ install.tomcat:  ${TOMCAT_RPMS}
 	@echo ""
 
 
+###########################
+# Install Ant
 #NOT TESTED!!!
 install.ant:
 	wget http://jakarta.apache.org/builds/jakarta-ant/release/v1.4.1/bin/jakarta-ant-1.4.1-bin.tar.gz
@@ -378,6 +418,8 @@ install.ant:
 #cp /var/tomcat4/common/lib/xerces.jar $ANT_HOME/lib/.
 	cp $BASE/jakarta-ant-1.4.1/lib/jakarta-ant-1.4.1-optional.jar $BASE/jakarta-ant-1.4.1/lib/optional.jar
 
+###########################
+# Install Junit
 #NOT TESTED!!!
 install.junit:
 	wget http://download.sourceforge.net/junit/junit3.7.zip
@@ -385,10 +427,8 @@ install.junit:
 	export JUNIT_HOME=$BASE/junit3.7
 	export CLASSPATH=$CLASSPATH:$JUNIT_HOME/junit.jar
 
-
-${IFX_JDBC_PKG}:
-	${WGET} ${IFX_JDBC_PKG_PATH}/${IFX_JDBC_PKG}
-
+###########################
+# Install Infromix JDBC
 install.informix_jdbc: ${IFX_JDBC_PKG}
 	mkdir -p /tmp/ifxjdbc
 	unzip ${IFX_JDBC_PKG} -d /tmp/ifxjdbc
@@ -403,7 +443,47 @@ install.informix_jdbc: ${IFX_JDBC_PKG}
 #	cd ${INFORMIXDIR}/jdbc/lib; jar xvf ifxjdbc.jar
 #we can copy all filed to ${JAVA_SHARED}, and set CLASSPATH to ${JAVA_SHARED}
 
+
+# =========================================================================
+#     Targets to download install files for all third-party dependencies
+# =========================================================================
+
+${BASE}/${BLACKDOWN_JSDK}:
+	cd ${BASE}; ${WGET} ${BLACKDOWN_JSDK_PATH}/${BLACKDOWN_JSDK}
+	chmod +x ${BASE}/${BLACKDOWN_JSDK}
+${TOMCAT4_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${TOMCAT4_RPM}
+${SERVLETAPI_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${SERVLETAPI_RPM}
+${REGEX_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${REGEX_RPM}
+${XERCES_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${XERCES_RPM}
+${ADMINWEBAPPS_RPM}:
+	${WGET} ${JAKARTA_RPM_PATH}/${ADMINWEBAPPS_RPM}
+${WEBAPPS}:
+	${WGET} ${JAKARTA_RPM_PATH}/${WEBAPPS}
+${IFX_JDBC_PKG}:
+	${WGET} ${IFX_JDBC_PKG_PATH}/${IFX_JDBC_PKG}
+
+# =========================================================================
+#                           Misc targets
+# =========================================================================
+
+###########################
+# For make debugging: show values of make varibles
 show:
 	@echo DOXY_WWWPATH=${DOXY_WWWPATH}
+
+############################
+#Run tests to see if everything is working OK:
+test:
+#TODO there is a test 4gl file /manager/FglDocumenter/test/TestSource.4gl
+	${MAKE} -C parser test
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             All Doc4gl test successfull                            |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 # =============================== EOF ======================================

@@ -4,7 +4,7 @@
 #  AUTHOR : Sergio Ferreira
 #           Moredata, Lda - Lisbon, Portugal
 #
-# $Id: Makefile.in,v 1.5 2003-01-14 07:28:58 afalout Exp $
+# $Id: Makefile.in,v 1.6 2003-05-15 10:23:26 afalout Exp $
 #
 #  DESCRIPTION : Makefile for fgldoc 4gl parser compilation
 #
@@ -24,7 +24,7 @@ all: p4gl p4glpp
 	@echo "+--------------------------------------------------------------------+"
 	@echo ""
 
-.PHONY:install clean deinstall tags
+.PHONY:install clean deinstall tags test
 
 #  ============================================================================
 #  4GL Parser (for each source file)
@@ -85,6 +85,28 @@ p4glpp: $(P4GLPPOBJ)
 #  ==========================================================================
 p4gl.a : $(P4GLOBJ) p4glpp
 	ar rv p4gl.a $(P4GLOBJ)
+
+
+test: test.parser unit.test
+
+#run parser on some test 4gl files
+test.parser:
+	./p4gl --file=test/p4gl.4gl --database=maxdevdoc  --insert
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl parser parsing test successfull                 |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
+
+
+#run Test suite for p4gl unit testing:
+unit.test:
+	${MAKE} -C test
+	@echo ""
+	@echo "+--------------------------------------------------------------------+"
+	@echo "|             Doc4gl parser unit test successfull.                   |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo ""
 
 #  ==========================================================================
 #  Generate tag(s) file

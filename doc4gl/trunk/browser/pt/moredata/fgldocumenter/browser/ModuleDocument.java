@@ -24,7 +24,10 @@ public class ModuleDocument {
     
     /** Module table usage list */
     ArrayList tableUsageList = new ArrayList();
-    
+
+    /** Module target inclusion list */
+    ArrayList targetInclusionList = new ArrayList();
+
     /** Opções para documentação do módulo */
     ModuleDocumentOptions options;
     
@@ -107,6 +110,7 @@ public class ModuleDocument {
         }
         initModuleInfo();
         selectTableUsageList();
+        selectTargetInclusionList();
         initModuleFunctions();
     }
     
@@ -188,7 +192,35 @@ public class ModuleDocument {
             // ???? TODO : ver como se gerem excepções no JSP
         }
     }
-    
+
+    /**
+     * Select the target inclusion list and insert them as elements of the array
+     * list.
+     *
+     * @todo Inserir package como parâmetro
+     */
+    private void selectTargetInclusionList() {
+        String strSql = "select p4gl_program.program_name, p4gl_program.comments " +
+        " from p4gl_program, p4gl_module_prog " +
+        " WHERE p4gl_program.program_name = p4gl_module_prog.program_name and p4gl_module_prog.module_name = '" + module +"'";
+		// "G13a.4gl"
+
+		System.out.println("<BR>" + strSql);
+        try {
+            Statement stmt=P4glConnection.getConnection().createStatement();
+            ResultSet rs = stmt.executeQuery(strSql);
+            while ( rs.next() ) {
+                TargetInclusion ti = new TargetInclusion();
+                ti.setTargetName(rs.getString(1));
+                targetInclusionList.add(ti);
+            }
+        }
+        catch (SQLException e) {
+            // ???? TODO : ver como se gerem excepções no JSP
+        }
+    }
+
+
     /**
      * Inicializa um array list que passa a conter a lista de funções do módulo
      *
@@ -231,8 +263,15 @@ public class ModuleDocument {
      * Mostra o sumário do módulo
      */
     public void showModuleSummary() {
-        println("<HR><H2>");
-        println("<BR>Módulo: " +  getModule() + "</H2>");
+        //TODO: move this URL to .properties file or in database
+		String CVSURL = "http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/apps4gl/apps/erp/src/";
+
+		println("<HR><H2>");
+		println("<BR>Module: " +
+//		"<a href='http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/apps4gl/apps/erp/src/" +
+		"<a href='" + CVSURL +
+        getProcess() + "/" + getModule() + "'>" + getModule() + "</a></H2>");
+
         println("<HR>");
         if ( getComments() != null && ! getComments().trim().equals("") ) {
             println("<HR>");
@@ -283,13 +322,13 @@ public class ModuleDocument {
             println("<TD><CODE>" + fd.getComments().trim() + "</CODE></TD>");
         println("</TR>");
     }
-    
+
     /** Show the table usage summary.
      */
     public void showTableSummary() {
         for (int i = 0 ; i < tableUsageList.size() ; i++ ) {
             String tableName;
-            
+
             TableUsage tableUsage = (TableUsage)tableUsageList.get(i);
             tableName = tableUsage.getTableName();
             println("<TR BGCOLOR='white' CLASS='TableRowColor'>");
@@ -299,7 +338,35 @@ public class ModuleDocument {
             );
         }
     }
-    /**
+
+    /** Show the target inclusion summary.
+     * @todo Show the target (program or library) comment
+     * @todo Show target type
+     * @todo create a TargetDocument page
+	 * @todo Make target name in this table a hyper link to TargetDocument page
+     */
+    public void showInclusionSummary() {
+        for (int i = 0 ; i < targetInclusionList.size() ; i++ ) {
+            String targetName;
+
+            TargetInclusion targetInclusion = (TargetInclusion)targetInclusionList.get(i);
+            targetName = targetInclusion.getTargetName();
+            println("<TR BGCOLOR='white' CLASS='TableRowColor'>");
+            println("<TD><CODE><B>" +
+            targetName +
+            "</B></CODE></TD></TR>"
+            );
+        }
+    }
+
+/* TODO:
+moduleDocument.showFormSummary()
+moduleDocument.showHelpSummary()
+moduleDocument.showMenuSummary()
+*/
+
+
+	/**
      * Devolve em html a informação detalhada sobre as funções do módulo
      */
     public void showFunctionDetail() {

@@ -135,10 +135,23 @@ public class GenJsTree {
      */
     public String genProcessTree() {
         js = new StringBuffer("<script>\n");
-        js.append("  foldersTree = gFld(\"<b>Processos</b>\", \"\", \"\")\n");
-        js.append("  insDoc(foldersTree,");
-        js.append("gLnk(\"All Modules\", \"\", \"module_list.jsp?process=all\",");
-        js.append("\"modulesFrame\"))\n\n");
+        js.append("  foldersTree = gFld(\"<b>Processes</b>\", \"\", \"\")\n");
+        js.append("  insDoc(foldersTree,gLnk(\"All Modules\", \"\", \"module_list.jsp?process=all\",\"modulesFrame\"))\n\n");
+
+		js.append("  insDoc(foldersTree,gLnk(\"Home page\", \"\", \"module.jsp\",\"descriptionFrame\"))\n\n");
+
+
+		js.append("  NEW= insFld(foldersTree,gFld(\"Resources\", \"\", \"morestuff.jsp\"))\n\n");
+		js.append("  insDoc(NEW, gLnk(\"Database tables\", \"\", \"table_list.jsp?process=all\",\"modulesFrame\"))\n\n");
+		js.append("  insDoc(NEW, gLnk(\"Help files\", \"\", \"help_list.jsp?process=all\",\"modulesFrame\"))\n\n");
+		js.append("  insDoc(NEW, gLnk(\"Menus\", \"\", \"menu_list.jsp?process=all\",\"modulesFrame\"))\n\n");
+		js.append("  insDoc(NEW, gLnk(\"Forms\", \"\", \"form_list.jsp?process=all\",\"modulesFrame\"))\n\n");
+
+
+		js.append("  insDoc(foldersTree,gLnk(\"Search\", \"\", \"search.jsp\",\"descriptionFrame\"))\n\n");
+		js.append("  insDoc(foldersTree,gLnk(\"Targets\", \"\", \"target_list.jsp?process=all\",\"modulesFrame\"))\n\n");
+
+
         genJsForProcess(null,"foldersTree");
         js.append("</script>");
         return js.toString();

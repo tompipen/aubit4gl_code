@@ -3,7 +3,7 @@
 #
 #  Build by Sergio Ferreira from Moredata, Lisbon, Portugal
 #
-#  $Id: Makefile.in,v 1.8 2003-05-06 09:12:21 afalout Exp $
+#  $Id: Makefile.in,v 1.9 2003-05-15 10:23:26 afalout Exp $
 #  =========================================================================
 
 include ../FgldocDefs.mk
@@ -192,7 +192,7 @@ install.files: install.files.tree install.files.images
 ifneq "${TOMCAT_DIR}" "no"
 	$(INSTALL) $(CLASS_FILES) 	$(CLASS_DIR)
 	$(INSTALL) $(JSP_FILES) 	$(NAV_DIR)
-	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
+#	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
 	$(INSTALL) $(JS_FILES) 		$(NAV_DIR)
 	$(INSTALL) $(CCS_FILES) 	$(NAV_DIR)
 	@echo ""
@@ -207,7 +207,7 @@ endif
 
 install.files.images:
 ifneq "${TOMCAT_DIR}" "no"
-	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
+#	$(INSTALL) $(IMG_FILES) 	$(NAV_DIR)
 else
 	@echo "Tomcat directory unknown. Cannot install"
 endif
@@ -385,7 +385,7 @@ deinstall.files:
 ifneq "${TOMCAT_DIR}" "no"
 	(cd $(CLASS_DIR)/${CLASS_PACKAGE}; ${RM} $(CLASS_FILE))
 	(cd $(NAV_DIR); ${RM} $(JSP_FILE))
-	(cd $(NAV_DIR); ${RM} $(IMG_FILE))
+#	(cd $(NAV_DIR); ${RM} $(IMG_FILE))
 	(cd $(NAV_DIR)/images; ${RM} $(IMG_FILE))
 	(cd $(NAV_DIR); ${RM} $(JS_FILE))
 	(cd $(NAV_DIR); ${RM} $(CCS_FILE))

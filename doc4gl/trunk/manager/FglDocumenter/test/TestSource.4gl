@@ -1,5 +1,9 @@
 {**
- * This is a 4gl to test a 4gl import
+ * This is a 4gl to test a 4gl import.
+
+    It is not intended to test general 4gl parsing - only commnet parsing.
+
+   Also see 4gl code in parser/test, that tests Doc4GL parsing
  *}
 
 

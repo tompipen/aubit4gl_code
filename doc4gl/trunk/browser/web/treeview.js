@@ -4,7 +4,7 @@
 // keep this copyright notice: 
 // Script found in: http://www.geocities.com/Paris/LeftBank/2178/ 
 // Author: Marcelino Alves Martins (martins@hks.com) December '97. 
-//**************************************************************** 
+//****************************************************************
  
 //Log of changes: 
 //       17 Feb 98 - Fix initialization flashing problem with Netscape
@@ -32,7 +32,7 @@ function Folder(folderDescription, tagName, hreference) //constructor
  
   //dynamic data 
   this.isOpen = true 
-  this.iconSrc = "ftv2folderopen.gif"   
+  this.iconSrc = "images/ftv2folderopen.gif"
   this.children = new Array 
   this.nChildren = 0 
  
@@ -82,10 +82,10 @@ function propagateChangesInState(folder)
   { 
     if (folder.nodeImg) 
       if (folder.isLastNode) 
-        folder.nodeImg.src = "ftv2mlastnode.gif" 
+        folder.nodeImg.src = "images/ftv2mlastnode.gif"
       else 
-	  folder.nodeImg.src = "ftv2mnode.gif" 
-    folder.iconImg.src = "ftv2folderopen.gif" 
+	  folder.nodeImg.src = "images/ftv2mnode.gif"
+    folder.iconImg.src = "images/ftv2folderopen.gif"
     for (i=0; i<folder.nChildren; i++) 
       folder.children[i].display() 
   } 
@@ -93,10 +93,10 @@ function propagateChangesInState(folder)
   { 
     if (folder.nodeImg) 
       if (folder.isLastNode) 
-        folder.nodeImg.src = "ftv2plastnode.gif" 
+        folder.nodeImg.src = "images/ftv2plastnode.gif"
       else 
-	  folder.nodeImg.src = "ftv2pnode.gif" 
-    folder.iconImg.src = "ftv2folderclosed.gif" 
+	  folder.nodeImg.src = "images/ftv2pnode.gif"
+    folder.iconImg.src = "images/ftv2folderclosed.gif"
     for (i=0; i<folder.nChildren; i++) 
       folder.children[i].hide() 
   }  
@@ -139,14 +139,14 @@ var nc
   if (level>0) 
     if (lastNode) //the last 'brother' in the children array 
     { 
-      this.renderOb(leftSide + auxEv + "<img name='nodeIcon" + this.id + "' src='ftv2mlastnode.gif' width=16 height=22 border=0></a>") 
-      leftSide = leftSide + "<img src='ftv2blank.gif' width=16 height=22>"  
+      this.renderOb(leftSide + auxEv + "<img name='nodeIcon" + this.id + "' src='images/ftv2mlastnode.gif' width=16 height=22 border=0></a>")
+      leftSide = leftSide + "<img src='images/ftv2blank.gif' width=16 height=22>"
       this.isLastNode = 1 
     } 
     else 
     { 
-      this.renderOb(leftSide + auxEv + "<img name='nodeIcon" + this.id + "' src='ftv2mnode.gif' width=16 height=22 border=0></a>") 
-      leftSide = leftSide + "<img src='ftv2vertline.gif' width=16 height=22>" 
+      this.renderOb(leftSide + auxEv + "<img name='nodeIcon" + this.id + "' src='images/ftv2mnode.gif' width=16 height=22 border=0></a>")
+      leftSide = leftSide + "<img src='images/ftv2vertline.gif' width=16 height=22>"
       this.isLastNode = 0 
     } 
   else 
@@ -275,7 +275,7 @@ function Item(itemDescription, tagName, itemLink) // Constructor
   this.id = -1 //initialized in initalize() 
   this.navObj = 0 //initialized in render() 
   this.iconImg = 0 //initialized in render() 
-  this.iconSrc = "ftv2doc.gif" 
+  this.iconSrc = "images/ftv2doc.gif"
  
   // methods 
   this.initialize = initializeItem 
@@ -306,13 +306,13 @@ function initializeItem(level, lastNode, leftSide)
   if (level>0) 
     if (lastNode) //the last 'brother' in the children array 
     { 
-      this.renderOb(leftSide + "<img src='ftv2lastnode.gif' width=16 height=22>") 
-      leftSide = leftSide + "<img src='ftv2blank.gif' width=16 height=22>"  
+      this.renderOb(leftSide + "<img src='images/ftv2lastnode.gif' width=16 height=22>")
+      leftSide = leftSide + "<img src='images/ftv2blank.gif' width=16 height=22>"
     } 
     else 
     { 
-      this.renderOb(leftSide + "<img src='ftv2node.gif' width=16 height=22>") 
-      leftSide = leftSide + "<img src='ftv2vertline.gif' width=16 height=22>" 
+      this.renderOb(leftSide + "<img src='images/ftv2node.gif' width=16 height=22>")
+      leftSide = leftSide + "<img src='images/ftv2vertline.gif' width=16 height=22>"
     } 
   else 
     this.renderOb("")   
