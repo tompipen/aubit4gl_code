@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: configure.in,v 1.27 2002-02-02 11:57:20 afalout Exp $
+# $Id: configure.in,v 1.28 2002-02-03 04:18:02 afalout Exp $
 #
 
 # Process this file with autoconf to produce a configure script.
@@ -170,6 +170,8 @@ AC_SUBST(HAVE_IFXODBC)
 
 #PG ODBC
 AC_SUBST(HAVE_PGODBC)
+AC_SUBST(PGODBC_INCLUDE)
+AC_SUBST(PGODBC_LFLAGS)
 
 #UnixODBC
 AC_SUBST(HAVE_UNIXODBC)
@@ -934,25 +936,94 @@ fi
 ##                 Checks for PostgreSQL ODBC driver
 ## ==================================================================
 
-#libpsqlodbc.so
+AC_MSG_CHECKING(for PostgreSQL ODBC driver support)
 
-# FIXME: Replace `main' with a function in `-lpsqlodbc':
-AC_CHECK_LIB([psqlodbc], [main])
-
-if test $ac_cv_lib_psqlodbc_main = yes; then
-	HAVE_PGODBC=yes
+#force this check even if not specified on command line:
+if test "$with_pgodbc" = ""; then
+	with_pgodbc=yes
 fi
+
+AC_ARG_WITH(pgodbc,
+[  --with-pgodbc[=DIR]    Include PostgreSQL ODBC driver support.  DIR is the base
+                          install directory, defaults to /usr.],
+[
+  #PHP_WITH_SHARED
+	if test "$withval" != "no"; then
+		if test "$withval" = "yes"; then
+	    	withval=/usr
+		else
+			WARN_LD_LIBRARY_PATH=1
+            ADD_LD_LIBRATY_PATH="$withval/lib:$ADD_LD_LIBRATY_PATH"
+		fi
+
+		old_LIBS=$LIBS
+		old_LDFLAGS=$LDFLAGS
+		old_CFLAGS=$CFLAGS
+        old_CPPFLAGS=$CPPFLAGS
+		TMP_PGODBC_INCLUDE="-I$withval/include -I$withval/include/pgsql/iodbc"
+		TMP_PGODBC_LFLAGS="-L$withval/lib"
+
+		#CFLAGS="$CFLAGS $TMP_PGODBC_INCLUDE"
+		#CPPFLAGS=\"-DODBC_QNX -DSQLANY_BUG\"
+		CPPFLAGS="$CPPFLAGS $TMP_PGODBC_INCLUDE"
+		LDFLAGS="$LDFLAGS $TMP_PGODBC_LFLAGS $TMP_PGODBC_INCLUDE"
+		#  AC_CHECK_LIB(pq, PQcmdTuples,AC_DEFINE(HAVE_PQCMDTUPLES,1,[ ]))
+		# FIXME: Replace `main' with a function in `-lpsqlodbc':
+		AC_CHECK_LIB([psqlodbc], [main])
+		#also check for headers, since they are not in PG ODBC RPM, they are
+		#in postgresql-devel, including /usr/lib/libpsqlodbc.a (so we don't need
+		#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
+		#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
+		AC_CHECK_HEADERS([ iodbc.h isql.h isqlext.h ])
+		LIBS=$old_LIBS
+		LDFLAGS=$old_LDFLAGS
+		#CFLAGS=$old_CFLAGS
+        CPPFLAGS=$old_CPPFLAGS
+
+
+#echo "" > tmp.tmp
+#echo "ac_cv_header_$ac_header" >> tmp.tmp
+#echo "$as_ac_Header" >> tmp.tmp
+#echo "" >> tmp.tmp
+
+#echo xx ac_cv_header_iodbc.h $ac_cv_header_iodbc_h xx
+
+		if test $ac_cv_lib_psqlodbc_main = yes; then
+
+			if test "$ac_cv_header_iodbc_h" = "yes" && test "$ac_cv_header_isql_h" = "yes" && test "$ac_cv_header_isqlext_h" = "yes" ; then
+                HAVE_PG_HEADERS=yes
+            else
+                HAVE_PG_HEADERS=no
+            fi
+
+            if test "$HAVE_PG_HEADERS" != "yes" && AUBIT_SOURCE=1; then
+            #we need headers only to compile source code
+			    AC_DEFINE(HAVE_PGODBC,0,[ ])
+				AC_MSG_RESULT(no header files)
+			else
+				HAVE_PGODBC=yes
+			    PGODBC_INCLUDE="$TMP_PGODBC_INCLUDE"
+			    PGODBC_LFLAGS="$TMP_PGODBC_LFLAGS"
+
+			    AC_DEFINE(HAVE_PGODBC,1,[ ])
+			    AC_MSG_RESULT(PGODBC=yes)
+            fi
+		else
+		    AC_DEFINE(HAVE_PGODBC,0,[ ])
+		    AC_MSG_RESULT(PGODBC=no)
+		fi
+	else
+		AC_MSG_RESULT(disabled)
+	fi
+],[
+	AC_MSG_RESULT(--with-pgodbc not specified)
+])
 
 #FIXME:
 #warn user to run /usr/share/pgsql/odbc.sql script to add aditional
 # PostgreSQL catalog extensions and functions for ODBC compliance
 #do the same for ODBC managers, if you detect PH database installes
 
-#FIXME:
-#also check for headers, since they are not in PG ODBC RPM, they are
-#in postgresql-devel, including /usr/lib/libpsqlodbc.a (so we don't need
-#PGSQLODBC RPM installed at all, unless we are using ODBC manager):
-#/usr/include/pgsql/iodbc: iodbc.h isql.h isqlext.h
 
 
 ## ==================================================================
