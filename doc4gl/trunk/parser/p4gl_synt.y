@@ -599,6 +599,10 @@ function_def
 			op_local_variables 
 			fgl_statement_list
 		END_TOK FUNCTION_TOK      { StInsertFunction($1,lineno+1,$3);InLimbo=1; }
+	| CHECK '(' op_argument_list ')'  /* Just to fix Andrej problem */
+			op_local_variables 
+			fgl_statement_list
+		END_TOK FUNCTION_TOK      { StInsertFunction(CpStr("CHECK"),lineno+1,$3);InLimbo=1; }
 	| UNLOAD '(' op_argument_list ')'  /* Just to fix Andrej problem */
 			op_local_variables 
 			fgl_statement_list
@@ -1389,6 +1393,7 @@ var_name
   | FIELD         { strcpy($$,"FIELD");}
   | FILE_TOK                                   { strcpy($$,"FILE");}
   | FINISH        { strcpy($$,"FINISH");}
+  | FOREIGN       { strcpy($$,"FOREIGN");}
   | FREE   complete_array_usage                { strcpy($$,"FREE");}
   | FROM          { strcpy($$,"FROM");}
   | GROUP                                      { strcpy($$,"GROUP");}
@@ -1574,6 +1579,7 @@ function_call
   : IDENTIFIER '(' op_call_parameters ')'
                                { StInsertFunctionCall($1,lineno+1); 
                                  $$=CpStr("%s(%s)",$1,$3);           }
+  | CHECK '(' op_call_parameters ')' { $$=CpStr("CHECK()"); }
   | HEADER '(' op_call_parameters ')' { $$=CpStr("HEADER()"); }
   | UNLOAD '(' op_call_parameters ')' { $$=CpStr("UNLOAD()"); }
   | VERIFY '(' op_call_parameters ')' { $$=CpStr("VERIFY()"); }
@@ -1628,8 +1634,10 @@ output_command
   ;
 
 order_by_section
-  : ORDER EXTERNAL BY named_value_list    { CleanNameList($4); }
-  | ORDER BY named_value_list             { CleanNameList($3); }
+  : ORDER EXTERNAL BY sort_specification_list
+	  { CleanNameList($4); }
+  | ORDER BY sort_specification_list             
+	  { CleanNameList($3); }
   |
   ;
 
@@ -2911,6 +2919,11 @@ table_reference_list
       StIncrementTable(); 
      /* First try */
      InsertNameList(&$$,$1,$4,lineno+1); }
+  | table_reference_list ',' OUTER '(' table_reference ')'
+    { StInsertTable($5);   /* To remove */
+      StIncrementTable(); 
+     /* First try */
+     InsertNameList(&$$,$1,$5,lineno+1); }
   ;
 
 /* == It returns only the Name of the table */

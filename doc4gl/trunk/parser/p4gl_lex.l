@@ -2,8 +2,8 @@
 /*  ==========================================================================
  *
  *   Author : Sergio Ferreira
- *   $Date: 2003-12-17 10:31:53 $
- *   $Id: p4gl_lex.l,v 1.8 2003-12-17 10:31:53 saferreira Exp $
+ *   $Date: 2003-12-22 19:53:21 $
+ *   $Id: p4gl_lex.l,v 1.9 2003-12-22 19:53:21 saferreira Exp $
  *
  *   Lexical analyzer for the p4gl parser
  *
@@ -15,7 +15,7 @@
 #include "p4gl.h"
 #include "y.tab.h"
 
-//static char *rcsid = "$Id: p4gl_lex.l,v 1.8 2003-12-17 10:31:53 saferreira Exp $";
+//static char *rcsid = "$Id: p4gl_lex.l,v 1.9 2003-12-22 19:53:21 saferreira Exp $";
 
 int lineno=1;         /* Source line number counter */
 
@@ -41,7 +41,6 @@ quoted_string                   \'([^'\n,]|\\['\n])*\'
                               return(STRING); }
 
 {quoted_string}             { CopyToken(yytext,STRING); return(STRING);  }
-{double_quoted_string}      { CopyToken(yytext,STRING); return(STRING);  }
 
 
 [0-9]+                      { CopyToken(yytext,NUMBER); return(NUMBER); }
@@ -202,7 +201,7 @@ readString()
       case '\\':  // Everything after \ is consumed, even "
         lookAheadCh = p4glLexInput(); 
         str[j] = lookAheadCh; 
-                j++;
+        j++;
         break;
       case '\n':
         lineno++; 
@@ -211,6 +210,7 @@ readString()
     fflush(stdout);
   }
   str[j] = '\0';
+	//printf("String %s\n",str);
 }
 
 /*

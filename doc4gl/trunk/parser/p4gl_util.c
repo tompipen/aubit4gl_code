@@ -15,9 +15,9 @@
  *
  * Moredata - Lisboa, PORTUGAL
  *
- * $Author: afalout $
- * $Revision: 1.7 $
- * $Date: 2003-12-10 11:48:07 $
+ * $Author: saferreira $
+ * $Revision: 1.8 $
+ * $Date: 2003-12-22 19:53:22 $
  *
  */
 
@@ -197,7 +197,7 @@ RClipp(char *str)
 }
 
 /**
- * Remove spaces in the begenning of the string.
+ * Remove spaces in the beginning of the string.
  *
  * It does not alocate space to do it. The work is done in the original string.
  *
@@ -214,25 +214,23 @@ LClipp(char *str)
 
 
 	for (i=0 ; str[i] != '\0' ; i++)
+  {
+	  if ( str[i] != ' ' )
     {
-		if ( str[i] != ' ' )
-        {
-            firstChar=i;
-            break;
-        }
+       firstChar=i;
+       break;
     }
+  }
 
-//	P4glDebug("first = -%d-%d-\n",firstChar,len);
+  //	P4glDebug("first = -%d-%d-\n",firstChar,len);
 
-    if (firstChar == 0)
-	{
-        //nothing to do - characters already start at the first possition
-    } else {
+  if (firstChar > 0)
+  {
 		str2 = substr(str, firstChar, len);
 		//P4glDebug("got -%s-\n",str2);
 	    //str=strdup(str2);
-    	strcpy(str,str2);
-    }
+  	strcpy(str,str2);
+  }
 }
 
 int
@@ -300,13 +298,65 @@ copystr(char *StrDest,char *StrOrig)
 
 
 /**
+ * Shift left the caracters of a string.
+ * The first caracters are forgotten.
+ *
+ * @param str The string to be shifted.
+ * @param numberOfShifts The number of caracters to be shifted.
+ */
+void shiftLeft(char *str,int numberOfShifts) {
+  register int copyFrom;
+	register int copyTo;
+	register int len;
+
+	len = strlen(str);
+
+	// Test if the number of shifts is bigger than the strting */
+  if ( numberOfShifts - len - 1 < 0 )
+		return;
+
+	for ( copyFrom = numberOfShifts, copyTo=0 ;
+			  copyFrom < len-1 ; 
+				copyFrom++, copyTo++)
+	{
+    str[copyTo] = str[copyFrom];
+	}
+
+	// Clear the rigth caracters
+	str[len-numberOfShifts-1] = '\0';
+}
+
+
+/** 
+ * Strip the quotes if they exist from a string
+ *
+ * @param str The string to be stripped.
+ */
+void stripQuotes(char *str) 
+{
+	register int len;
+
+  len = strlen(str);
+  if ( len == 0 )
+	  return;
+	if ( str[0] == '"' || str[0] == '\'' )
+		shiftLeft(str,1);
+	if ( str[len-1] == '"' || str[len-1] == '\'' )
+		str[len-1] = '\0';
+}
+
+/**
  * Strip the quotes that are in the beginning and end of a string.
+ * If they do not exist are ignored.
  *
  * @param str The string where to strip the quotes.
  */
 void 
 tiraAspas(char *str)
 {
+	stripQuotes(str);
+	return;
+
 	if ( str[0] == '"' || str[0] == '\'' ) {
 	  str[0] = ' ';
     }
@@ -319,7 +369,6 @@ tiraAspas(char *str)
     LClipp(str);
 
 }
-
 
 /**
  *  Allocate space to the destination string and insert it the variable

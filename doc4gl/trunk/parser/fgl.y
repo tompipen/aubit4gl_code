@@ -2116,7 +2116,7 @@ error_cmd
 /**
  * All possible EXIT statements.
  */
-ext_cmd 
+exit_cmd 
   : EXIT_WHILE
 	| EXIT_INPUT
 	| EXIT_FOREACH
@@ -2751,6 +2751,9 @@ free_cmd
 
 /* <GENERAL_RULE> */
 
+/**
+ * A screen line number to be used on statements that need it (ex: PROMPT LINE)
+ */
 line_no		
   : LAST MINUS INT_VALUE 
 	| LAST 
@@ -2761,23 +2764,49 @@ line_no
 	| OFF 
   ;
 
+/**
+ * A file name to be used in statements like LOCATE.
+ * 4gl code examples:
+ *     "/tmp/xpto"
+ *     fileName
+ */
 file_name	
   :	CHAR_VALUE 
 	| cvariable 
   ;
 
+/**
+ * A number as any expression. Used only to define screen coordinates.
+ */
 a_number	
   :	fgl_expr
 	;
 
+/**
+ * Screen coordinates that define a line and a column. Used in statements
+ * like DISPLAY AT.
+ * 4gl code examples:
+ *    1, 2
+ *    x, y
+ */
 coords		
   :	a_number COMMA a_number 
   ;
 
+/**
+ * Screen coordinates to ne used only in DISPLAY AT statement.
+ * @todo : Undestand if this rule can be removed.
+ */
 display_coords	
   :	coords
 	;
 
+/**
+ * A form field name to be used in screen interaction statements.
+ * 4gl code examples:
+ *    xpto
+ *    
+ */
 field_name	
   :	identifier 
 	| INT_TO_ID OPEN_BRACKET identifier CLOSE_BRACKET 
@@ -2789,53 +2818,96 @@ field_name
 	| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier
   ;
 
+/**
+ * The name of a cursor
+ * 4gl code example:
+ *   crXpto
+ */
 cursor_name	
   :	ident_or_var 
   ;
 
+/**
+ * The name of a cursor when used to be fecthed.
+ * @todo : See if this rule can be merged with cursor_name.
+ */
 fetch_cursor_name	
   :	ident_or_var 
 	;
 
+/**
+ * The name of a screen window
+ */
 win_name	
   :	ident_or_var 
   ;
 
+/**
+ * The name of a screen window when they are opened.
+ */
 open_win_name	
   :	ident_or_var 
   ;
 
+/**
+ * The name of a form.
+ */
 form_name	
   : ident_or_var 
   ;
 
+/**
+ * The name of a form when it is to be opened.
+ */
 open_form_name	
   : ident_or_var 
   ;
 
+/**
+ * An optional help number to be used in INPUT(s), menu(s), etc.
+ * 4gl code example:
+ *    HELP 100
+ */
 opt_help_no		
   :	
 	| HELP INT_VALUE 
   ;
 
+/**
+ * An identifier.
+ */
 identifier	
   : NAMED  
   ;
 
+/**
+ * An identifier or variable.
+ */
 ident_or_var	
   : ident_p2  
   ;
 
+/**
+ * An identifier
+ * @todo : Understand why this rule is needed.
+ */
 ident_p2 
   : NAMED 
   | VARIABLE OPEN_BRACKET var_or_string CLOSE_BRACKET
   ;
 
+/**
+ * A variable or string
+ */
 var_or_string 
   : var 
 	| CHAR_VALUE
 	;
 
+/**
+ * Another rule for field name.
+ * @todo : Understand if this rule is realy needed.
+ */
 field_name2	
   :	identifier 
   | identifier OPEN_SQUARE arr_expr CLOSE_SQUARE
@@ -2845,70 +2917,31 @@ field_name2
   | identifier OPEN_SQUARE arr_expr CLOSE_SQUARE DOT identifier
   ;
 
+/**
+ * @todo : understand why this rule is needed.
+ */
 cvariable 
   : variable 
   ;
 
-
+/**
+ * A real literal number 
+ */
 real_number 
   : NUMBER_VALUE 
 	| DOT INT_VALUE 
   ;
-
-
-/* @todo : I think that this is no longer needed. Its fixed in another way
-reserved_word :
-	PASSWORD
-	|CHECK
-	|CLEAR
-	|CLIPPED
-	|CLOSE
-	|CONSTANT
-	|CONSTRUCT
-	|COUNT
-	|OPTION
-	|CYAN
-	|HEADER
-	|DBA
-	|DBYNAME
-	|AUDIT
-	|KWLINE
-	|MODE
-	|DEFAULT
-	|DEFAULTS
-	|DEFER
-	|DELIMITER
-	|DESC
-	|DESCENDING
-	|DIM
-	|DISABLE
-	|KWDOWN
-	|DOWNSHIFT
-	|DROP
-	|FOREIGN
-	|EXISTS
-	|YEAR
-	|MONTH
-	|DAY
-	|SPACES
-	|RESOURCE
-	|COMMENT
-	|DELETE
-	|VALIDATE
-	|ESCAPE
-	|UPSHIFT
-	|AVERAGE
-	|UNDERLINE
-	|MENU
-	|DATE
-;
-*/
 
 /* </GENERAL_RULE> */
 
 
 /* <GOTO_STATEMENT> */
 
+/**
+ * Goto statement
+ * 4gl code example:
+ *    GOTO xptoLabel
+ */
 goto_cmd 
   : GOTO label_goto 
   ;
@@ -2918,35 +2951,56 @@ goto_cmd
 
 /* <UI_RULE> */
 
+/**
+ *
+ */
 check_menu_cmd 
   : CHECK_MENUITEM menu_item_list
   ;
 
+/**
+ *
+ */
 menu_item_list
   : menu_item 
 	| menu_item_list COMMA menu_item
   ;
 
+/**
+ *
+ */
 menu_item
   : identifier 
   ;
 
+/**
+ *
+ */
 uncheck_menu_cmd 
   : UNCHECK_MENUITEM menu_item_list
   ;
 
+/**
+ *
+ */
 disable_cmd 
   : DISABLE_MENUITEMS menu_item_list
   | DISABLE fld_list
   | DISABLE_FORM form_name KWFIELD fld_list
   ;
 
+/**
+ *
+ */
 enable_cmd 
   : ENABLE_MENUITEMS menu_item_list
   | ENABLE fld_list
   | ENABLE_FORM form_name KWFIELD fld_list
   ;
 
+/**
+ *
+ */
 msg_box_cmd 
   : MESSAGEBOX fgl_expr_list
     op_caption
@@ -2956,53 +3010,85 @@ msg_box_cmd
     op_returning_msg 
   ;
 
+/**
+ *
+ */
 op_disable_msg 
   :
   | gm_disable_msg
   ;
 
+/**
+ *
+ */
 gm_disable_msg
   : DISABLE_PROGRAM 
 	| DISABLE_ALL
   ;
 
-
+/**
+ *
+ */
 op_returning_msg 
   : 
   | gm_returning_msg
   ;
 
+/**
+ *
+ */
 gm_returning_msg
   : RETURNING variable
   ;
 
+/**
+ *
+ */
 op_caption 
   : 
 	| gm_caption
   ;
 
+/**
+ *
+ */
 gm_caption
   : CAPTION fgl_expr_list 
 	;
 
+/**
+ *
+ */
 op_icon 
   : 
 	| gm_icon
   ;
 
+/**
+ *
+ */
 gm_icon
   : ICON INT_VALUE  
 	;
 
+/**
+ *
+ */
 op_buttons 
   : 
 	| gm_buttons
 	;
 
+/**
+ *
+ */
 gm_buttons 
   : BUTTONS INT_VALUE op_def_but
 	;
 
+/**
+ *
+ */
 op_def_but 
   : 
 	| DEFAULT INT_VALUE
@@ -3013,10 +3099,28 @@ op_def_but
 
 /* <IF_STATEMENT> */
 
+/**
+ * 4gl IF statement
+ * 4gl code example:
+ *    IF i = 1 THEN
+ *       ... 4gl statements ...
+ *    ELSE
+ *       ... 4gl statements ...
+ *    END IF
+ */
 if_cmd	
   : IF fgl_expr THEN  commands op_else END_IF 
   ;
 
+/**
+ * Optional ELSE subsatement of IF command.
+ * 4gl code examples:
+ *   ELSE
+ *     ... 4gl statements ...
+ *
+ *   ELSE IF x = 1 THEN
+ *     ... 4gl statements ...
+ */
 op_else 
   : 
 	| ELSE 
@@ -3025,11 +3129,18 @@ op_else
 
 /* </IF_STATEMENT> */
 
+/**
+ * Import function statement.
+ * This statement is an extension to original Informix 4gl.
+ */
 import_m 
   : IMPORT_FUNCTION identifier OPEN_BRACKET INT_VALUE CLOSE_BRACKET 
 	| IMPORT_LEGACY_FUNCTION identifier 
   ;
 
+/**
+ * Datatype import.
+ */
 module_import
   : IMPORT_DATATYPE identifier 
   ;
@@ -3037,42 +3148,65 @@ module_import
 
 /* <INITIALIZE_STATEMENT> */
 
-init_cmd : INITIALIZE init_bind_var_list {A4GL_debug("init to\n");} TO KW_NULL
- {
-	print_init();
- }
-| INITIALIZE init_bind_var_list LIKE init_tab_list  {
-	print_init_table($<str>4);
-}
-;
+/**
+ * The statement INITIALIZE to init values to variables.
+ * 4gl code examples:
+ *   INITIALIZE x, y, z.* TO NULL
+ *   INITIALIZE x LIKE tab.col
+ */ 
+init_cmd 
+  : INITIALIZE init_bind_var_list TO KW_NULL
+  | INITIALIZE init_bind_var_list LIKE init_tab_list
+  ;
 
+/**
+ * A list of tables used on initialize statement.
+ */
+init_tab_list 
+  : init_tab 
+	| init_tab_list COMMA init_tab 
+  ;
 
-init_tab_list : init_tab | init_tab_list COMMA init_tab {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);
-}
-;
-
-init_tab : tab_name DOT column_name {setrecord($<str>$,$<str>1,$<str>3);}
-	| tab_name DOT MULTIPLY {setrecord($<str>$,$<str>1,0);}
-;
+/**
+ * An table definitiono to be used on INITIALIZE statement.
+ */
+init_tab 
+  : tab_name DOT column_name 
+	| tab_name DOT MULTIPLY 
+  ;
 
 /* </INITIALIZE_STATEMENT> */
 
 /* <INPUT_STATEMENT> */
+
+/**
+ * Optional end input.
+ */
 end_input 
   :
   | field_commands END_INPUT 
 	;
 
+/**
+ * Optional WHITHOUT DEFAULTS property of INPUT statement.
+ */
 opt_defs 
   : 
   | WITHOUT_DEFAULTS 
   ;
 
+/**
+ * The list of field commands to be used inside INPUT statement.
+ * The commands are the field and input events.
+ */
 field_commands 
   : field_command 
 	| field_commands field_command
 	;
 
+/**
+ * The field commands tyo be used inside the INPUT statement.
+ */
 field_command 
   : BEFFIELD bef_field_list commands 
 	| AFTFIELD aft_field_list commands 
@@ -3087,66 +3221,63 @@ field_command
 	| AFTER_INSERT  commands 
   ;
 
-/*
-a_ins_or_delete_row :
-	a_ins_or_delete {sprintf($<str>$,"(%s)",$<str>1);} 
-	| a_ins_or_delete_row COMMA a_ins_or_delete {
-	char buff[256];
-	sprintf(buff,"(%s)",$<str>3);
-	A4GL_generate_or($<str>$,$<str>1,buff);
-	}
-;
-
-a_ins_or_delete:
-	INSERT {strcpy($<str>$,"AFT_INSERT");}
-	| DELETE {strcpy($<str>$,"AFT_DELETE");}
-;
-
-
-b_ins_or_delete_row :
-	b_ins_or_delete {sprintf($<str>$,"(%s)",$<str>1);} 
-	| b_ins_or_delete_row COMMA b_ins_or_delete {
-	char buff[80];
-		sprintf(buff,"(%s)",$<str>3);
-		A4GL_generate_or($<str>$,$<str>1,$<str>3);
- }
-
-;
-
-b_ins_or_delete:
-	INSERT {strcpy($<str>$,"BEF_INSERT");}
-	| DELETE {strcpy($<str>$,"BEF_DELETE");}
-;
-*/
-
+/**
+ * The list of fields to be used in before field event of the INPUT
+ * statement.
+ */
 bef_field_list 
   : field_name 
 	| bef_field_list COMMA field_name 
   ;
 
+/**
+ * The list of fields to be used in after field events of the INPUT 
+ * statement.
+ */
 aft_field_list 
   : field_name 
 	| aft_field_list COMMA field_name 
   ;
 
+/**
+ * The next field command that is used inside the events of the INPUT
+ * statement.
+ */
 next_field_cmd 
   : NEXTFIELD next_field 
   ;
 
+/**
+ *
+ */
 next_form_cmd 
   : NEXTFORM identifier KWFIELD next_field 
   ;
 
+/**
+ * The definition of the field that where to move with
+ * NEXT FIELD command.
+ */
 next_field	
   :	NEXT 
 	| PREVIOUS 
 	| field_name 
   ;
 
+/**
+ * The main rule of the INPUT statement.
+ */
 input_cmd	
   :	INPUT inp_rest end_input 
   ;
 
+/**
+ * The inside of the INPUT statement.
+ * 4gl code examples:
+ *   BY NAME xpto.* HELP 100
+ *   BY NAME xpto.* HELP 100
+ *   ARRAY vsArray FROM pa 
+ */
 inp_rest
   : BY_NAME ibind_var_list opt_defs opt_help_no opt_attributes 
   | ibind_var_list opt_defs FROM fld_list  opt_help_no opt_attributes 
@@ -3154,26 +3285,52 @@ inp_rest
     opt_attributes
   ;
 
+/**
+ * Scroll statement that scrolls up or down the values of an array
+ * in a screen array.
+ */
 scroll_cmd 
   : SCROLL fld_list up_or_down 
   ;
 
-up_or_down 
+/**
+ * The up or down definition os the scroll statement and the amount of
+ * lines.
+ * 4gl code example:
+ *    UP 2
+ *    DOWN 4
+ *    UP
+ *    DOWN
+ */
+up_or_down  
   : KWUP_BY INT_VALUE 
 	| KWDOWN_BY INT_VALUE 
 	| KWUP 
 	| KWDOWN 
   ;
 
+/**
+ * Optional help used in the construct statement.
+ * 4gl code example:
+ *    HELP 20
+ */
 op_help 
   : 
 	| HELP INT_VALUE
   ;
 
-input_array_attributes: 
-  input_array_attributes_int 
+/**
+ * Specific INPUT ARRAY attributes.
+ * @todo : Understand if this rule could be merged with 
+ * input_array_attributes_int rule.
+ */
+input_array_attributes
+  : input_array_attributes_int 
   ;
 
+/**
+ * Soecific INPUT ARRAY attributes.
+ */
 input_array_attributes_int 
   : CURRENT_ROW_DISPLAY_EQUAL CHAR_VALUE 	
 	| COUNT EQUAL INT_VALUE
@@ -3188,38 +3345,81 @@ input_array_attributes_int
 
 /* </INPUT_STATEMENT> */
 
+/**
+ * The on key command used on PROMPT, CONSTRUCT, INPUT statements.
+ * 4gl code example:
+ *   ON KEY CONTROL-A 
+ *   ON ANY KEY
+ */
 on_key_command 
   : ONKEY key_do 
   | ON_ANY_KEY 
   ;
 
+/**
+ * A possible KEY definition.
+ * 4gl code example:
+ *    KEY CONTROL-X
+ */ 
 key_val 
   : KEY key_do 
 	;
 
+/**
+ * The accept key definition.
+ * 4gl code example:
+ *    ACCEPT KEY ESC
+ */
 accept_key 
   :  ACCEPTKEY key_value 
   ;
 
 
+/**
+ * A single key definition.
+ * 4gl code example:
+ *   KEY CONTROL-X
+ */
 single_key_val 
   : KEY key_do 
   ;
 
+/**
+ * A multiple key definition.
+ * 4gl code examples:
+ *   CONTROL-W
+ *   (CONTROL-W,ESC)
+ */
 key_do	
   : key_value  
 	| OPEN_BRACKET key_value_list CLOSE_BRACKET  
   ;
 
+/**
+ * A list of comma separated key definition.
+ * 4gl code example:
+ *    CONTROL-W,ESC
+ */
 key_value_list 
   : key_value 
 	| key_value_list COMMA key_value 
   ;
 
+/**
+ * A key value.
+ * @todo : Understand if this rule can be merged with key_value_1
+ */
 key_value 
   : key_value_1 
   ;
 
+/**
+ * The definition of all possible specific keys. 
+ * 4gl code examples:
+ *    CONTROL-W
+ *    F1
+ *    ESCAPE
+ */
 key_value_1 
   : FKEY
 	| CTRL_KEY 
@@ -3242,6 +3442,12 @@ key_value_1
   ;
 
 
+/**
+ * The 4gl LABEL statement to be used with the GOTO statement.
+ * The identifier of the label is readed by the lexer.
+ * 4gl code example:
+ *   LABEL xpto
+ */
 label_cmd 
   : LABEL  
   ;
@@ -3249,10 +3455,23 @@ label_cmd
 
 /* <LET_STATEMENT> */
 
+/** 
+ * The 4gl assignment LET stateement.
+ * 4gl code examples:
+ *    LET i = 10
+ *    LET pRecord.* = NULL
+ */
 let_cmd 
-  : LET obind_var_let_list EQUAL reset_cnt op_expr_null
+  : LET obind_var_let_list EQUAL op_expr_null
   ;
 
+/**
+ * Optional null expression.
+ * @todo : Change the name to this rule because it is not only for NULLS
+ * 4gl code example:
+ *   NULL
+ *   
+ */
 op_expr_null
   : KW_NULL 
 	| fgl_expr_concat 
@@ -3261,19 +3480,34 @@ op_expr_null
 
 /* </LET_STATEMENT> */
 
-
+/** 
+ * @todo : Understand what statement is this one.
+ */
 linked_cmd 
   : SELECT_USING variable 
   ;
 
+/** 
+ * @todo : Understand what statement is this one.
+ */
 linked_del_cmd 
   : DELETE_USING variable 
   ;
 
+/** 
+ * @todo : Understand what statement is this one.
+ */
 linked_upd_cmd 
   : UPDATE_USING variable 
   ;
 
+/**
+ * The LOCATE statement to tell where the blob variable is located (in memory
+ * or file).
+ * 4gl code examples:
+ *    LOCATE blobVar IN MEMORY
+ *    LOCATE blobVar IN FILE "/tmp/blobFile"
+ */
 locate_cmd 
   : LOCATE variable IN_MEMORY 
   | LOCATE variable IN_FILE file_name 
@@ -3282,21 +3516,39 @@ locate_cmd
 
 /* <MAIN_RULE> */
 
+/**
+ * A 4gl module 
+ * 4gl code example:
+ *   
+ */
 module
   : op_module_header func_main_def 
   ;
 
 
+/**
+ * The optional 4gl module header.
+ * The module header could be the database, globals and modular
+ * variables definition.
+ */
 op_module_header
   : 
 	| module_header 
   ;
 
+/**
+ * The list of module header entry(s).
+ */
 module_header	
   :	module_entry 
 	|	module_header module_entry
   ;
 
+/**
+ * The possible 4gl header for modules.
+ * 4gl code examples:
+ *
+ */
 module_entry 
   : module_import 
   | module_code 
@@ -6030,7 +6282,7 @@ commands_all1
 	|	display_form_cmd
 	|	display_array_cmd
 	|	error_cmd
-	|	ext_cmd
+	|	exit_cmd
 	|	continue_cmd
 	|	exit_prog_cmd
 	|	for_cmd
