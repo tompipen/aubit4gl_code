@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.57 2003-06-30 17:36:15 mikeaubury Exp $
+# $Id: esql.ec,v 1.58 2003-06-30 17:37:31 mikeaubury Exp $
 #
 */
 
@@ -133,7 +133,7 @@ EXEC SQL include sqlca;
 */
 
 #ifndef lint
-	static const char rcs[] = "@(#)$Id: esql.ec,v 1.57 2003-06-30 17:36:15 mikeaubury Exp $";
+	static const char rcs[] = "@(#)$Id: esql.ec,v 1.58 2003-06-30 17:37:31 mikeaubury Exp $";
 #endif
 
 
@@ -1084,7 +1084,7 @@ static int bindOutputValue(char *descName,int idx,struct BINDING *bind)
     loc_t  blob;
 
     char     *char_var;
-    int      smint_var;
+    short      smint_var;
     long     int_var;
     double   float_var;
     float    smfloat_var;
@@ -2091,7 +2091,7 @@ static int printField(FILE *unloadFile,int idx,char *descName)
     loc_t  blob;
 
     char     *char_var;
-    int      smint_var;
+    short      smint_var;
     long     int_var;
     double   float_var;
     float    smfloat_var;
