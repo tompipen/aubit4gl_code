@@ -24,12 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-09-25 05:42:14 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-09-26 02:14:09 afalout Exp $
 #
 
+ROOT    =../../..
+LIBROOT =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
-override NOINCL=0
+include ${ROOT}/incl/Makefile-common
 
 ## ==================================================================
 ##                              Source files
@@ -38,7 +40,7 @@ override NOINCL=0
 CMODS_PROJECT	=project.c
 
 #require XDR frunctions, part of Sun RPClib:
-CMODS_FORM_XDR		=../../../compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
+CMODS_FORM_XDR		=${ROOT}/compilers/fcompile/form_x_xdr.c readforms.c formwrite2.c
 
 CMODS_FORM_NOFORM	=form_noform.c
 
@@ -53,11 +55,11 @@ OBJS_FORM_XDR      =${CMODS_FORM_XDR:.c=.o}
 
 ifdef COMSPEC
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=dllFORM_XDR
+		ALL			=dllFORM_XDR
     endif
 else
 	ifneq "@HAVE_RPCLIB@" "0"
-		ALL			+=libFORM_XDR${SO_EXT}
+		ALL			=${LIBROOT}/libFORM_XDR${SO_EXT}
     endif
 endif
 
@@ -65,7 +67,7 @@ endif
 #existing parameters already in CFLAGS: we must not do this, because if
 #specific path is needed to RPClib, it MUST be BEFORE other potenitially
 #conflicting paths:
-CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/fcompile -I../../libincl ${CFLAGS}
+CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I${ROOT}/compilers/fcompile ${CFLAGS}
 
 ## RPC type and XDR are not the same thing. RPC type represents Remote
 #Procedure Call in Aubit, that can be Sun RPC or XML-RPC (at the moment),
@@ -78,9 +80,9 @@ CFLAGS				:=-I.. @RPCLIB_INCLUDE@ @RPCLIB_LFLAGS@ -I../../../compilers/fcompile 
 ##                              Targets
 ## ==================================================================
 
-libFORM_NOFORM${SO_EXT} : ${OBJS_FORM_NOFORM}
+${LIBROOT}/libFORM_NOFORM${SO_EXT} : ${OBJS_FORM_NOFORM}
 	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ../..
+
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
@@ -89,7 +91,7 @@ libFORM_NOFORM${SO_EXT} : ${OBJS_FORM_NOFORM}
 .PHONY : dllFORM_NOFORM
 dllFORM_NOFORM : ${CMODS_FORM_NOFORM}
 	${MAKE} libFORM_NOFORM.dll DLLOBJS="$^"
-	${CP} libFORM_NOFORM.dll ../..
+	${CP} libFORM_NOFORM.dll ${LIBROOT}
 
 ## ==================================================================
 ##                             Sub Targets
@@ -98,27 +100,26 @@ dllFORM_NOFORM : ${CMODS_FORM_NOFORM}
 ci: $(CMODS)
 	ci -l  $^
 
-../../../compilers/fcompile/form_x_xdr.c  ../../../compilers/fcompile/form_x.h:
-	${MAKE} -C ../../../compilers/fcompile rpc
+${ROOT}/compilers/fcompile/form_x_xdr.c  ${ROOT}/compilers/fcompile/form_x.h:
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 ## ==================================================================
 ##                        Dependencies
 ## ==================================================================
 
 error.c : generated/tmperrs.h
-array.o: array.c ../compilers/fcompile/form_x_xdr.c
-builtin.c: ../compilers/fcompile/form_x.h
+#array.o: array.c ../compilers/fcompile/form_x_xdr.c
+#builtin.c: ../compilers/fcompile/form_x.h
 
 ## ==================================================================
 ##                        Clean Targets
 ## ==================================================================
 
 clean :
-	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c
-	${RM} form_x_xdr.c form_x.h project.c aubit-config
-	${RM} loadmap loadmap.c loadmap.h core
-	${RM} *.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err
-	${RM} *.base *.exp libaubit4gl.def
+	${RM} $(OBJS) $(OBJS_DEBUG) menu_x.h menu_x_xdr.c form_x_xdr.c form_x.h \
+	project.c aubit-config loadmap loadmap.c loadmap.h core \
+	*.out *.glb *${SO_EXT} *.a  *.o  *.bak *.exe *.dll *.stackdump *.err \
+	*.base *.exp libaubit4gl.def
 
 
 ## ==================================================================

@@ -24,12 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-09-25 05:42:14 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-09-26 02:14:09 afalout Exp $
 #
 
+ROOT    =../../..
+LIBROOT =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
-override NOINCL=0
+include ${ROOT}/incl/Makefile-common
 
 ## ==================================================================
 ##                   Source files
@@ -44,34 +46,33 @@ override NOINCL=0
 
 
 ifneq "${COMSPEC}" ""
-	ALL         =libLEX_PERL${SO_EXT}
+	ALL         =dllLEX_PERL
 else
-	ALL         =libLEX_PERL${SO_EXT}
+	ALL         =${LIBROOT}/libLEX_PERL${SO_EXT}
 endif
 
-CFLAGS			+=-I.. -I../lex_c -I../../libincl -I../../../compilers/fcompile -I../../../compilers/4glc/rules -I../../../compilers/4glc
+CFLAGS			+=-I.. -I../lex_c -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-libLEX_PERL${SO_EXT}: ${4GLPERL_OBJ}
+${LIBROOT}/libLEX_PERL${SO_EXT}: ${4GLPERL_OBJ}
 	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ../..
 
 ## ==================================================================
 ##                            Windows Targets
 ## ==================================================================
 
 .PHONY : dllLEX_PERL
-dllLEX_C: exportlib4glcomp ${4GLCOBJ_C}
-	${MAKE} libLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L../../lib -L."
+dllLEX_PERL: exportlib4glcomp ${4GLCOBJ_C}
+	${MAKE} libLEX_C.dll DLLOBJS="${4GLCOBJ_C}" DLL_LDLIBS="${AUBIT_LIB} -lexportlib4glcomp" DLL_LDFLAGS="-L${LIBROOT} -L."
 #see mod.c for list of variables that can't be automaticelly exported.
 
 #${RPCLIB_NAME} -lFORM_XDR @CURSES_LIB_NAME@
 # -lPDF_NOPDF
-	${CP} libLEX_C.dll ../..
-	${CP} libLEX_C.dll.a ../..
+	${CP} libLEX_C.dll ${LIBROOT}
+	${CP} libLEX_C.dll.a ${LIBROOT}
 
 
 ## ==================================================================

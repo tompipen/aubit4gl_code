@@ -24,12 +24,14 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2002-09-25 05:42:15 afalout Exp $
+# $Id: Makefile.in,v 1.6 2002-09-26 02:14:09 afalout Exp $
 #
 
+ROOT    =../../..
+LIBROOT =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
-override NOINCL=0
+include ${ROOT}/incl/Makefile-common
 
 ## ==================================================================
 ##                              Source files
@@ -44,8 +46,8 @@ OBJS				=${CMODS:.c=.o}
 ##                              Options
 ## ==================================================================
 
-CFLAGS				+=-I.. -I../../libincl -I../../../compilers/fcompile
-ALL 				=libMSG_NATIVE${SO_EXT}
+CFLAGS				+=-I.. -I${ROOT}/compilers/fcompile
+ALL 				=${LIBROOT}/libMSG_NATIVE${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
@@ -54,18 +56,18 @@ ALL 				=libMSG_NATIVE${SO_EXT}
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libMSG_NATIVE${SO_EXT} : ${OBJS}
+${LIBROOT}/libMSG_NATIVE${SO_EXT} : ${OBJS}
 	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ../..
+
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets
 ## ==================================================================
 
 .PHONY : dllFORM_XDR
-dllFORM_XDR : ${CMODS_FORM_XDR}  ../compilers/fcompile/form_x.h
-	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I../compilers/fcompile -I../incl"
-	${CP} libFORM_XDR.dll ../..
+dllFORM_XDR : ${CMODS_FORM_XDR}  ${ROOT}/compilers/fcompile/form_x.h
+	${MAKE} libFORM_XDR.dll DLLOBJS="${CMODS_FORM_XDR}" DLL_LDLIBS="${RPCLIB_NAME} -laubit4gl" DLL_LDFLAGS="@RPCLIB_LFLAGS@ -L. -I${ROOT}/compilers/fcompile -I${ROOT}/incl"
+	${CP} libFORM_XDR.dll ${LIBROOT}
 
 ## ==================================================================
 ##                             Sub Targets
@@ -79,10 +81,10 @@ ci: $(CMODS)
 ## ==================================================================
 
 
-readmsg.o: ../../../compilers/fcompile/form_x.h
+readmsg.o: ${ROOT}/compilers/fcompile/form_x.h
 
-../../../compilers/fcompile/form_x.h:
-	${MAKE} -C ../../../compilers/fcompile rpc
+${ROOT}/compilers/fcompile/form_x.h:
+	${MAKE} -C ${ROOT}/compilers/fcompile rpc
 
 
 ## ==================================================================

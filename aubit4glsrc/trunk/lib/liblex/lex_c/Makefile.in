@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-09-25 05:42:14 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-09-26 02:14:09 afalout Exp $
 #
 
 ROOT        =../../..
@@ -32,7 +32,6 @@ LIBROOT     =../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
 
 ## ==================================================================
 ##                   Source files
@@ -48,7 +47,7 @@ override NOINCL=0
 ifneq "${COMSPEC}" ""
 	ALL         = dllLEX_C
 else
-	ALL         = libLEX_C${SO_EXT}
+	ALL         = ${LIBROOT}/libLEX_C${SO_EXT}
 endif
 
 CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/compilers/4glc/rules -I${ROOT}/compilers/4glc
@@ -59,9 +58,8 @@ CFLAGS			+=-I.. -I. -I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile -I${ROOT}/
 
 ALL: ${ALL}
 
-libLEX_C${SO_EXT} : ${4GLCOBJ_C}
+${LIBROOT}/libLEX_C${SO_EXT} : ${4GLCOBJ_C}
 	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                            Windows Targets

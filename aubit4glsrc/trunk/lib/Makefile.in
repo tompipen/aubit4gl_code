@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.69 2002-09-26 00:34:08 afalout Exp $
+# $Id: Makefile.in,v 1.70 2002-09-26 02:13:59 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -66,17 +66,17 @@ libSQL_nosql.dll:
 libSQL_odbc32.dll:
 	${MAKE} -C libsql/odbc odbc32
 
-libEXREPORT_NOPDF.dll:
-	${MAKE} -C libpdf NOPDF.dll
+#libEXREPORT_NOPDF.dll:
+#	${MAKE} -C libpdf NOPDF.dll
 
-libFORM_NOFORM.dll :
-	${MAKE} -C libform/form_xdr dllFORM_NOFORM
+#libFORM_NOFORM.dll :
+#	${MAKE} -C libform/form_xdr dllFORM_NOFORM
 
 libMENU_XDR.dll :
 	${MAKE} -C libmenu/menu_xdr dllMENU_XDR
 
-libMENU_NOMENU.dll :
-	${MAKE} -C libmenu/menu_nomenu dllMENU_NOMENU
+#libMENU_NOMENU.dll :
+#	${MAKE} -C libmenu/menu_nomenu dllMENU_NOMENU
 
 libRPC_XDR.dll:
 	${MAKE} -C librpc/sun_rpc dlllibRPC_XDR
@@ -118,23 +118,22 @@ libaubit4gl${SO_EXT} :
 	${MAKE} -C libaubit4gl
 
 libFORM_NOFORM${SO_EXT} :
-	${MAKE} -C libform/noform $@
+	${MAKE} -C libform/noform
 
 libFORM_XDR${SO_EXT} :
 	${MAKE} -C libform/form_xdr $@
 
 libMENU_NOMENU${SO_EXT} :
-	${MAKE} -C libmenu/menu_nomenu $@
+	${MAKE} -C libmenu/menu_nomenu
 
 libMENU_XDR${SO_EXT} :
-#	${MAKE} -C libmenu/menu_xdr $@
 	${MAKE} -C libmenu/menu_xdr
 
 libEXREPORT_PDF${SO_EXT}:
 	${MAKE} -C libpdf $@
 
 libEXREPORT_NOPDF${SO_EXT}:
-	${MAKE} -C libpdf $@
+	${MAKE} -C libpdf
 
 libPACKER_PACKED${SO_EXT}:
 	${MAKE} -C libpacker/packed

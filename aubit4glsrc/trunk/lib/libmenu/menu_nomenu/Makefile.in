@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.3 2002-09-25 05:42:15 afalout Exp $
+# $Id: Makefile.in,v 1.4 2002-09-26 02:14:09 afalout Exp $
 #
 
 LIBROOT=../..
@@ -32,7 +32,6 @@ ROOT=../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-override NOINCL=0
 
 ## ==================================================================
 ##                              Source files
@@ -50,10 +49,10 @@ CFLAGS+=-I${ROOT}/compilers/fcompile
 ifdef COMSPEC
 	ALL=dllMENU_NOMENU
 else
-	ALL=libMENU_NOMENU${SO_EXT}
+	ALL=${LIBROOT}/libMENU_NOMENU${SO_EXT}
 endif
 
-CFLAGS	:=-I.. -I${ROOT}/compilers/menus -I${LIBROOT}/libincl ${CFLAGS} -I${ROOT}/compilers/menus  -I${LIBROOT}/libui/ui_gtk
+CFLAGS	:=-I.. -I${ROOT}/compilers/menus ${CFLAGS} -I${ROOT}/compilers/menus  -I${LIBROOT}/libui/ui_gtk
 
 ## ==================================================================
 ##                              Targets
@@ -62,9 +61,8 @@ CFLAGS	:=-I.. -I${ROOT}/compilers/menus -I${LIBROOT}/libincl ${CFLAGS} -I${ROOT}
 all: ${ALL}
 	@echo "Default targets (${ALL}) built successfully."
 
-libMENU_NOMENU${SO_EXT} : ${OBJS_MENU_NOMENU}
+${LIBROOT}/libMENU_NOMENU${SO_EXT} : ${OBJS_MENU_NOMENU}
 	${LD} ${SO_LDFLAGS} -o $@ $^
-	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                       Windows 32 DLL Targets

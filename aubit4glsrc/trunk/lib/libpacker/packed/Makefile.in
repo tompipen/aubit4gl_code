@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.2 2002-08-18 05:00:27 afalout Exp $
+# $Id: Makefile.in,v 1.3 2002-09-26 02:14:09 afalout Exp $
 #
 
 ROOT        =../../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CMODS   	=pack_packed.c
-ALL 		=libPACKER_PACKED${SO_EXT}
+ALL 		=${LIBROOT}/libPACKER_PACKED${SO_EXT}
 
 LOCAL_IFLAGS=-I..
 
@@ -50,10 +50,9 @@ CFLAGS      +=${LOCAL_IFLAGS}
 
 ALL: ${ALL}
 
-libPACKER_PACKED${SO_EXT}: ${CMODS}
+${LIBROOT}/libPACKER_PACKED${SO_EXT}: ${CMODS}
 	${CC} ${CFLAGS} ${SO_LDFLAGS} -o $@ $^
 #	-I../../libincl  -I../../../incl
-	${CP} $@ ${LIBROOT}
 
 ## ==================================================================
 ##                          Clean

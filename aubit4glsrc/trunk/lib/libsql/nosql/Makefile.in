@@ -24,21 +24,24 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.12 2002-09-25 05:42:15 afalout Exp $
+# $Id: Makefile.in,v 1.13 2002-09-26 02:14:09 afalout Exp $
 #
 
+ROOT    =../../..
+LIBROOT =../..
+
 #All stuff common to more then one Aubit compiler make file is there:
-include ../../../incl/Makefile-common
+include ${ROOT}/incl/Makefile-common
 #override NOINCL=0
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-I.. -I../../libincl -I../../../compilers/fcompile @RPCLIB_INCLUDE@
+CFLAGS+=-I.. -I${ROOT}/compilers/fcompile @RPCLIB_INCLUDE@
 
 ifeq "${COMSPEC}" ""
-    ALL=libSQL_nosql${SO_EXT}
+    ALL=${LIBROOT}/libSQL_nosql${SO_EXT}
 else
     ALL=nosql.dll
 endif
@@ -51,13 +54,13 @@ ALL: ${ALL}
 
 nosql${SO_EXT}: libSQL_nosql${SO_EXT}
 
-libSQL_nosql${SO_EXT}: nosql.o
+${LIBROOT}/libSQL_nosql${SO_EXT}: nosql.o
 	${LD} ${SO_LDFLAGS} $^ -o $@
-	${CP} $@ ../..
+
 
 nosql.dll: nosql.o
-	${MAKE} libSQL_nosql.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L../.."
-	${CP} libSQL_nosql.dll libSQL_nosql${DLL_EXPORTLIB_EXT} ../..
+	${MAKE} libSQL_nosql.dll DLLOBJS="$^" DLL_LDLIBS="${AUBIT_LIB}" DLL_LDFLAGS="-L${LIBROOT}"
+	${CP} libSQL_nosql.dll libSQL_nosql${DLL_EXPORTLIB_EXT} ${LIBROOT}
 
 
 ## ==================================================================
@@ -66,6 +69,6 @@ nosql.dll: nosql.o
 
 
 clean:
-	rm -f *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
+	${RM} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a
 
 #-------------------------------- EOF -------------------------------
