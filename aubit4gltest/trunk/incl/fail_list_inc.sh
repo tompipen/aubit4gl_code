@@ -6,9 +6,6 @@
 #							-cert (-eci)
 # --------------------------------------------------------------------------
 
-#NOT expected to fail:  233 1201 (2)
-#NOT certified:  91 100 (2)
-
 ######################
 #Tests that currently fail because of the bug in Aubit compiler (with -cert)
 #Note that this list will be included in all other EXPECT_TO_FAIL_
@@ -25,13 +22,14 @@ EXPECT_TO_FAIL_TESTS="240 670 706 278 766 767 962 976 987"
 #962 (Error on near zero decimal comparison) http://aubit.com/mantis/bug_view_page.php?bug_id=0000601
 #976 (Error in conversion.) http://aubit.com/mantis/bug_view_page.php?bug_id=0000603
 #987 same ?
+#233 failed once, but cant reproduce??
 
 #SEEM TO BE FIXED NOW: 348 349 350 351 fail at random ?!! (seem they work with -esqli ?)
 
 #not reported (please enter bug report at: http://aubit.com/mantis)
 EXPECT_TO_FAIL_TESTS="$EXPECT_TO_FAIL_TESTS 296 590 111 112"
 #296 Unable to read form.
-#590 Cannot open EXPLAIN output file. (Works with -ecp HOW?)
+#590 Cannot open EXPLAIN output file. (Works with -ecp HOW? is it ignored?)
 #111 channel function not implemented
 #112 opening form in DBPATH broken
 
@@ -124,7 +122,7 @@ EXPECT_TO_FAIL_TESTS_ECP="76 98 530 535"
 #############
 #Not reported, but diagnosed:
 EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
-	1 73 91 100 106 234 256 376 109 286 287 793 794 913 914 915 207 900 903"
+	1 73 91 100 106 234 256 376 109 286 287 793 794 913 914 915 207 900 903 739"
 #1 afinderr -213 /opt/aubit/aubit4glsrc/help/help_ecpg.iem: ECPG_MISSING_INDICATOR          -213   	
 #73 core dump in libecpg.so
 #91,100,234 put.cpc:155: ERROR: invalid datatype 'PUT' - now SKIP (PUT_CURSOR)
@@ -141,6 +139,7 @@ EXPECT_TO_FAIL_TESTS_ECP="$EXPECT_TO_FAIL_TESTS_ECP \
 #207 Performing extend(year to day)
 #900 A wrong select give a zero sqlca
 #903 Wrong sqlca it as not assigned sqlcode
+#739 A row was deleted from a temp table with no log
 
 #############
 #Not reported, not diagnosed:
@@ -192,7 +191,7 @@ EXPECT_TO_FAIL_QUERIX="234 240 351 359 362 363 364 365 366 372 373 374 376 380 \
 INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 	922 923 924 925 926 927 928 929 930 931 932 933 934 935 948 949 950 951 952 \
 	953 954 955 956 957 958 959 964	966  918 \
-	938 939 940 941 942 943 944 945 946 947  498 499 1202 1200"
+	938 939 940 941 942 943 944 945 946 947  498 499 1202 1200 1201"
 #752 - fails to run under informix 4gl
 #707 - fails to run under informix 4gl
 #375,377 -"informix".systables (assumes user "informix" created test database)
@@ -209,7 +208,7 @@ INVALID_TESTS="375 377 684 105 705 707 752 797 916 917 919 920 921 \
 #956 missing 4gl file
 #498,499 no keys.in
 #1202 - missing form file, and keys.in
-#1200  out.expected missing
+#1200 1201  out.expected missing
 
 ################################### EOF #################################
 

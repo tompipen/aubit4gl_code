@@ -218,3 +218,7 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE ALTER_TABLE ADD_CONSTRAINT DDL_CHECK \
+	SET_CONSTRAINTS BEGIN_WORK COMMIT_WORK CLOSE_CURSOR"
+

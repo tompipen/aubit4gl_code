@@ -218,3 +218,7 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE SCROLL_CURSOR FETCH_RELATIVE CLOSE_CURSOR \
+		SELECT_FOR_UPDATE_CURSOR BEGIN_WORK ROLLBACK_WORK"
+

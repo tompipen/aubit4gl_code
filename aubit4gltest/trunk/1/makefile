@@ -14,3 +14,8 @@ ansi_sql_compat:
 
 desc:
 	@echo "Test setting some basic types to null"
+	
+	
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE DDL_MONEY DDL_DATE DDL_DATETIME DROP_TABLE"
+	

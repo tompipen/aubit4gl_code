@@ -198,3 +198,6 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE BEGIN_WORK LOCK_TABLE_EXCLUSIVE ROLLBACK_WORK"
+

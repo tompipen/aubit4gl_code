@@ -6,19 +6,29 @@
 #Check for incompatible SQL dialect features (tests 234 256 etc...)
 chech_sql_features () {
 
-	if test "$DISABLE_SQL_FEATURES_CHECK" != "1"; then
+
+	#NOTE: All tests should at least compile, regardless of what 
+	#SQL features are used in the code - so we will skip testing for SQL
+	#features, otherwise it might appear that some tests that are compile-only
+	#'work', but they 'work' because they are never executed, and if they where,
+	#who knows what would happne
+	if test "$DISABLE_SQL_FEATURES_CHECK" != "1" -a "$COMPILE_ONLY" != "1"; then
 		if test "$SQL_FEATURES_USED" != ""; then 
 
+		
 		#List of non-ANSI compatible SQL or db features that is posible
 		#to translate/emulate, but this is __NOT__ currently working
 		#It is anticipated that support for them will be implemented in the 
 		#near future
 		SQL_FEATURES_NON_ANSI_POSIBLE="\
 			ALTER_TABLE \
+			ASC_INDEX \
+			DESC_INDEX \
 			CREATE_DATABASE \
-			CREATE_DATABASE_WITH_NO_LOG \
-			CREATE_SYNONYM \
-			CREATE_TEMP_TABLE \
+			CREATE_DATABASE_WITH_LOG \
+			CREATE_DATABASE_IN \
+			CREATE_DATABASE_MODE_ANSI \
+			CREATE_SYNONYM DDL_SYNONYM \
 			CREATE_VIEW \
 			DATABASE_EXCLUSIVE \
 			DATETIME_EXTEND \
@@ -27,59 +37,129 @@ chech_sql_features () {
 			DROP_SYNONYM \
 			DROP_TRIGGER \
 			DDL_DEFAULT_VALUE \
+			DDL_DEFAULT \
 			DDL_PRIMARY_KEY \
 			DDL_FOREIGN_KEY \
 			DDL_MONEY_DATATYPE \
+			DDL_MONEY \
+			DDL_SERIAL \
+			DDL_UNIQUE \
+			DDL_DOUBLE_PRECISION \
+			DDL_DATE \
+			DDL_DATETIME \
+			DDL_INTERVAL \
+			DDL_NCHAR \
+			DDL_NVARCHAR \
+			DDL_TEXT \
+			DDL_BYTE \
 			FREE_CURSOR \
-			INTERVAL_EXTEND \
+			FUNC_INTERVAL \
+			FUNC_EXTEND \
 			LOCK_TABLE \
 			PUT_CURSOR \
 			RENAME_COLUMN \
 			RENAME_TABLE \
-			SELECT_INTO_TEMP \
-			SELECT_RELATIVE \
+			ROWID \
+			SELECT_RELATIVE FETCH_RELATIVE \
 			SQL_FUNCTION_SUBSTR \
+			SQL_SERIAL \
 			SELECT_INTO_TEMP_WITH_NO_LOG \
+			SELECT_FOR_UPDATE SELECT_FOR_UPDATE_CURSOR \
+			TABLENAME_DB_SERVER_USER_TABLE \
+			TABLENAME_DB_TABLE \
+			TABLENAME_DB_USER_TABLE \
+			UNLOCK_TABLE \
 			UNLOAD_PATH_RELATIVE \
+			UPDATE_WHERE_CURRENT_OF \
+			UNLOAD_TO_SELECT_FROM \
+			UNLOAD_TO_SELECT_FROM_WHERE \
 			"
 	
 		#List of non-ANSI compatible SQL or db features that is posible
 		#to translate/emulate, and is implemented in Aubit and fully working
 		SQL_FEATURES_NON_ANSI_SUPORTED="\
+			ANSI_INSERT \
+			ANSI_DELETE \
+			ANSI_SELECT \
+			BEGIN_WORK ROLLBACK_WORK \
 			CLOSE_DATABASE \
+			CLOSE_CURSOR \
+			CREATE_TABLE \
+			CREATE_INDEX \
+			CREATE_TEMP_TABLE \
+			COMMIT_WORK \
+			DROP_VIEW \
+			CREATE_VIEW_SELECT \
 			DROP_TABLE \
+			EXECUTE_USING \
+			EXECUTE_INTO_USING \
 			GRANT \
+			INSERT_COLUMNLIST_EQ_VALUELIST \
+			INSERT_INTO_SELECT_FROM \
 			REVOKE \
-			SQL_END_SQL_BLOCK \
-			UNIQUE \
+			SELECT_INTO_TEMP \
+			SQL_END_SQL_BLOCK SQL_END_SQL\
+			SQL_UNIQUE \
+			SCROLL_CURSOR \
+			SQLCA_SQLCODE \
 			UPDATE_COLUMNLIST_EQ_VALUELIST \
 			"
-	
+#SQL features used not expected by compatiblity check:
+# 620=DELETE_WHERE_CURRENT_OF 621=DELETE_FROM_WHERE_WITH_SUBSELECT 622=DELETE_FROM_WHERE_EXISTS_SUBSELECT 623=DELETE_FROM_WHERE_ALL_SUBSELECT 623=DELETE_FROM_WHERE_ANY_SUBSELECT 623=DELETE_FROM_WHERE_SOME_SUBSELECT 624=DELETE_FROM_WHERE_NULL 625=DELETE_FROM_WHERE 626=LOAD_FROM_INSERT_INTO 627=LOAD_FROM_INSERT_INTO 628=LOAD_FROM_INSERT_INTO 629=LOAD_FROM_INSERT_INTO 630=LOAD_FROM_INSERT_INTO 631=LOAD_FROM_INSERT_INTO 632=UNLOAD_TO 632=LOAD_FROM_INSERT_INTO 633=UNLOAD_TO 633=LOAD_FROM_INSERT_INTO 634=UNLOAD_TO 634=LOAD_FROM_INSERT_INTO 635=UNLOAD_TO 635=LOAD_FROM_INSERT_INTO 636=UNLOAD_TO 636=LOAD_FROM_INSERT_INTO 637=ANSI_UPDATE 675=ANSI_UPDATE 675=CURSOR_SELECT 676=CURSOR_SELECT 676=META_UPDATE_VIEW 677=CURSOR_SELECT 677=META_UPDATE_MULTI_TABLE_VIEW 678=ANSI_UPDATE 678=CURSOR_SELECT 679=CURSOR_SELECT 681=CURSOR_SELECT 682=CURSOR_SELECT 685=CURSOR_SELECT 686=CURSOR_SELECT 687=CURSOR_SELECT 690=ANSI_UPDATE 690=CURSOR_SELECT
+			
 		#List of non-ANSI compatible SQL or db features that is NOT posible
 		#to translate/emulate, and never will be since it depends on the
 		#functionality of the back-end that CANNOT be emulated, translated
 		#or subsitituted
 		SQL_FEATURES_NON_ANSI_IMPOSIBLE="\
 			ALTER_INDEX \
+			ALTER_TABLE_ADD \
+			ALTER_TABLE_DROP \
+			ALTER_TABLE_LOCK_MODE \
+			ALTER_TABLE_ADD_BEFORE \
+			LOCK_TABLE_SHARED \
+			LOCK_TABLE_EXCLUSIVE \
+			CREATE_VIEW_SELECT_WITH_CHECK \
 			CLUSTER_INDEX \
 			CREATE_AUDIT \
+			CREATE_TEMP_TABLE_NO_LOG \
+			CREATE_TABLE_IN \
+			CREATE_TABLE_EXTENT \
+			CREATE_TABLE_NEXT_SIZE \
+			CREATE_TABLE_LOCK_MODE \
+			CREATE_INDEX_COMPOSITE \
+			CREATE_INDEX_UNIQUE \
+			CREATE_INDEX_UNIQUE_COMPOSITE \
+			CREATE_INDEX_CLUSTER \
+			CREATE_INDEX_ASC \
+			CREATE_INDEX_DESC \
+			CREATE_INDEX_ASC_DESC \
+			CREATE_PROCEDURE \
 			DROP_AUDIT \
+			DLL_UNIQUE \
 			DDL_CHECK \
 			DDL_REFERENCES \
 			DDL_SET_CONSTRAINT \
-			FREE_CURSOR \
+			DDL_CONSTRAINT ADD_CONSTRAINT DROP_CONSTRAINT \
+			DDL_NEXT_SIZE \
 			FREE_LOB \
+			INDEX_FILLFACTOR \
+			ORDER_BY_ASC \
+			ORDER_BY_DESC \
 			RECOVER_TABLE \
 			ROLLFORWARD_DATABASE \
 			SET_ISOLATION \
 			SET_LOCK_MODE \
 			SET_EXPLAIN \
 			SET_LOG \
+			SET_BUFFERED_LOG \
 			START_DATABASE \
+			START_DATABASE_WITH_LOG \
+			START_DATABASE_WITH_LOG_MODE_ANSI \
 			UPDATE_STATISTICS \
 			UPDATE_VIEW \
 			"
-		
+
 		#List of all non-ANSI compatible SQL or db features
 		SQL_FEATURES_NON_ANSI="$SQL_FEATURES_NON_ANSI_POSIBLE \
 								$SQL_FEATURES_NON_ANSI_SUPORTED \
@@ -88,27 +168,59 @@ chech_sql_features () {
 		#List of all non-ANSI compatible SQL or db features EXPECTED TO FAIL
 		SQL_FEATURES_NON_ANSI_EXPECT_FAIL="$SQL_FEATURES_NON_ANSI_POSIBLE \
 								$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
-							
+
+#sql_features_used:
+#	@echo "DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST \
+#		ANSI_UPDATE CURSOR_SELECT"
+								
 #sql_features_used:
 #	@echo ""
-#536 537 538 539 540 541 542 543 544 545 546 547 548 556 561 562 571 586 597 
-#599 607 683 702 796 936 937 531 554 555 558 560 569 572 585 600 797
+#TODO - check that all non-ANSI tests have sql_features_used target:
+#691 692 693 694 695 696 697 698 699 700 701 703 704 705 710 711 712 713 714 715 
+#716 717 718 719 720 721 722 723 724 725 726 727 728 729 730 731 732 733 734 735 
+#736 737 740 741 742 743 744 745 746 747 748 749 750 751 752 753 754 755 756 757 
+#758 759 760 761 762 763 764 765 768 769 770 771 772 773 774 775 776 778 779 780 
+#781 782 783 784 785 786 787 788 789 790 791 792 795 798 901 904 905 906 907 908 
+#909 910 911 912 914 915 916 917 1060 1300 1301 1302 1303 1304
 
-			#Statments not supported by 4Js ODI on non-Informix databases (all?)
-			SQL_INCOMPAT_4JS="$SQL_INCOMPAT_NON_IFX"
+
+			#Statments not supported by 4Js ODI on non-Informix databases
+			SQL_INCOMPAT_4JS="$SQL_FEATURES_NON_ANSI_IMPOSIBLE"
 				
-			#Statements incompatible uisng Aubit in PG EC mode against 
+			#Statements incompatible using Aubit in PG EC mode against 
 			#Informix compatibility patched PG engine
-			SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED="$SQL_INCOMPAT_NON_IFX SERIAL ROWID PUT_CURSOR"
+			SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
 	
 			#Statements incompatible uisng Aubit in PG EC mode against 
 			#vanilla (not patched) PG engine V 7.4
-			SQL_INCOMPAT_AUBIT_ECPG_PG_VANILLA="$SQL_INCOMPAT_AUBIT_ECPG_PG-PATCHED"
+			SQL_INCOMPAT_AUBIT_ECPG_PG_VANILLA="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
 			
 			#Statements incompatible uisng Aubit in C mode (ODBC) against 
 			#vanilla (not patched) PG engine V 7.4
-			SQL_INCOMPAT_AUBIT_C_PG_VANILLA="$SQL_INCOMPAT_AUBIT_ECPG_PG-PATCHED"
+			SQL_INCOMPAT_AUBIT_C_PG_VANILLA="$SQL_FEATURES_NON_ANSI_EXPECT_FAIL"
 	
+			if test "1" = "1"; then
+			#if test "$VERBOSE" = "1"; then
+				#Check that the feature listed in makefile has a pair
+				#in features definitions (spelling errors)
+				for a in $SQL_FEATURES_USED; do
+					TMP_OK=0
+					for b in $SQL_FEATURES_NON_ANSI; do
+						if test "$a" = "$b"; then
+							TMP_OK=1
+							break
+						fi
+					done
+					if test "$TMP_OK" = "0"; then 
+						#echo "ERROR: test #$TEST_NO - feature $a not expected. Stop"
+						FEATURE_NOT_EXPECTED="$FEATURE_NOT_EXPECTED $TEST_NO=$a"
+						#exit 6
+					fi
+				done
+			fi
+			INCOMPAT_FEATURE_LIST=
+			INCOMPAT_SQL_LIST=
+			
 			case $DB_TYPE in
 			
 				IFX-SE) #Informix SE engine, all versions
@@ -126,13 +238,17 @@ chech_sql_features () {
 					;;
 					
 				PG-IFX-74)  #PostgreSQL version 7.4 with Informix compatibility patch
-					for a in $SQL_FEATURES_USED; do
-						for b in $SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED; do
-							if test "$a" = "$b"; then
-								INCOMPAT_SQL_LIST="$INCOMPAT_SQL_LIST $a"
+					case "$USE_COMP" in
+						aubit)
+							INCOMPAT_FEATURE_LIST="$SQL_INCOMPAT_AUBIT_ECPG_PG_PATCHED"
+						;;
+						*)
+							if test "$VERBOSE" = "1"; then 
+								echo "FIXME: PG-IFX-74 and $USE_COMP - not checking features:"
+								echo "$SQL_FEATURES_USED"
 							fi
-						done
-					done
+						;;
+					esac
 					;;
 					
 				PG-74) #PostgreSQL version 7.4x, not patched
@@ -156,14 +272,54 @@ chech_sql_features () {
 					;;
 			esac
 			
-			if test "$INCOMPAT_SQL_LIST" != ""; then 
-				SKIP_INCOPAT_SQL_LIST="$SKIP_INCOMPAT_SQL_LIST $TEST_NO"
-				SKIP_REASON="incompatible SQL feature: $INCOMPAT_SQL_LIST"
-				SKIP_REASON_CODES="$SKIP_REASON_CODES 28"
+			#Perform the actuall check, by comparing the list of features used
+			#with list of features expected to fail:
+			INCOMPAT_SQL_LIST=
+			if test "$INCOMPAT_FEATURE_LIST" != ""; then 
+				for a in $SQL_FEATURES_USED; do
+					for b in $INCOMPAT_FEATURE_LIST; do
+						if test "$a" = "$b"; then
+							if test "$INCOMPAT_SQL_LIST" = ""; then 
+								INCOMPAT_SQL_LIST="$a"
+							else
+								INCOMPAT_SQL_LIST="$INCOMPAT_SQL_LIST $a"
+							fi
+							break
+						fi
+					done
+					#If we allread have one incompatible, searching
+					#for more wont change the outsome, so break and 
+					#save some time
+					if test "$INCOMPAT_SQL_LIST" != ""; then 
+						break
+					fi
+				done
+				if test "$INCOMPAT_SQL_LIST" != ""; then
+					#temporary:
+					DISABLE_SQL_FEATURES_SKIP=1
+					SQL_FEATURES_COMPATIBLE=0					
+					if test "$DISABLE_SQL_FEATURES_SKIP" != "1"; then		
+						if test "$SKIP_INCOPAT_SQL_LIST" = ""; then 
+							SKIP_INCOPAT_SQL_LIST="$TEST_NO"
+						else
+							SKIP_INCOPAT_SQL_LIST="$SKIP_INCOMPAT_SQL_LIST $TEST_NO"
+						fi
+						SKIP_REASON="incompatible SQL feature: $INCOMPAT_SQL_LIST"
+						SKIP_REASON_CODES="$SKIP_REASON_CODES 28"
+					else
+						#SKIP_REASON_NOTSKIP="incompatible SQL feature: $INCOMPAT_SQL_LIST"
+						SKIP_REASON_NOTSKIP="$INCOMPAT_SQL_LIST"
+						#Just confuses things at the moment - turn it back on
+						#when lists are clean:
+						#IS_EXPECT_TO_FAIL_TEST=1
+					fi
+				else
+					SQL_FEATURES_COMPATIBLE=1
+				fi
 			fi
 		fi
-	fi		
-		
+	fi
+
 }
 
 ###############################################################

@@ -14,3 +14,6 @@ MAIN
 	LOCK TABLE test1@unstable:'informix'.xpto IN SHARE MODE
 	DROP TABLE xpto
 END MAIN
+
+
+

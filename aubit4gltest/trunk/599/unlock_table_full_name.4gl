@@ -17,3 +17,6 @@ MAIN
 	UNLOCK TABLE test1@unstable:'informix'.xpto 
 	DROP TABLE xpto
 END MAIN
+
+
+

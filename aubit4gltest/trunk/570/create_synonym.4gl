@@ -12,3 +12,6 @@ MAIN
 	CREATE SYNONYM xpta FOR xpto
 	DROP TABLE xpto
 END MAIN
+
+
+

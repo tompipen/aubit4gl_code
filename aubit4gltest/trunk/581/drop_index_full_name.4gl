@@ -22,3 +22,5 @@ MAIN
 	DROP INDEX test1@unstable:'informix'.idxXptd 
 	DROP TABLE xpto
 END MAIN
+
+

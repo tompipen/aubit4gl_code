@@ -13,3 +13,6 @@ MAIN
 	RENAME COLUMN xpto.anIntField TO firstField
 	DROP TABLE xpto
 END MAIN
+
+
+

@@ -11,3 +11,6 @@ MAIN
 	CREATE INDEX idxXpto ON xpto (firstColumn,secondColumn)
 	DROP TABLE xpto
 END MAIN
+
+
+

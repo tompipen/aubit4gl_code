@@ -12,4 +12,8 @@ ansi_sql_compat:
 
 
 desc:
-	@echo "Some basic testing of sqlerrd[2] and sqlerrd[6]"
+	@echo "Some basic testing of sqlerrd[2] and sqlerrd[6] (SERIAL)"
+	
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE DDL_SERIAL"
+	

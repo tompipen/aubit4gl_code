@@ -201,3 +201,8 @@ compile_only:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE_IN CREATE_TABLE_EXTENT \
+		CREATE_TABLE_NEXT_SIZE CREATE_TABLE_LOCK_MODE"
+
+	

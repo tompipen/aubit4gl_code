@@ -22,3 +22,5 @@ call startlog("t.out")
 	display t1 at 2,1
 
 end main
+
+

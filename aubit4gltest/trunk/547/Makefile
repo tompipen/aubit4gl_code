@@ -191,3 +191,7 @@ unknown_test:
 ansi_sql_compat:
 	@echo "0"
 
+	
+sql_features_used:
+	@echo "DROP_DATABASE CREATE_DATABASE CREATE_DATABASE_WITH_LOG CREATE_DATABASE_IN CLOSE_DATABASE"
+

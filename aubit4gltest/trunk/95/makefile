@@ -30,3 +30,6 @@ ansi_sql_compat:
 cert_test:
 	@echo "1"
 
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE SELECT_FOR_UPDATE UPDATE_WHERE_CURRENT_OF"
+

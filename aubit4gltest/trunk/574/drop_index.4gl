@@ -12,3 +12,6 @@ MAIN
 	DROP INDEX idxXpto
 	DROP TABLE xpto
 END MAIN
+
+
+

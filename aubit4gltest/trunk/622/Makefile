@@ -191,3 +191,8 @@ unknown_test:
 ansi_sql_compat:
 	@echo "0"
 
+
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE ANSI_INSERT SQLCA_SQLCODE ANSI_SELECT \
+		DELETE_FROM_WHERE_EXISTS_SUBSELECT"
+

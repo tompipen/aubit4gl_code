@@ -11,3 +11,6 @@ run: desc.4ae
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE"
+

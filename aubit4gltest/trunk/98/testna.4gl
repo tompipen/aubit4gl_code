@@ -18,3 +18,5 @@ define a integer
 		exit program 0
 	end if
 end main
+
+

@@ -220,3 +220,6 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE DDL_SERIAL DDL_MONEY DDL_DATE \
+		INSERT_COLUMNLIST_EQ_VALUELIST UNLOAD_TO_SELECT_FROM_WHERE"

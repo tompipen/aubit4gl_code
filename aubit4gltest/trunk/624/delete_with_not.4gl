@@ -25,3 +25,5 @@ MAIN
 	DISPLAY sqlca.sqlcode
 	DROP TABLE xpto
 END MAIN
+
+

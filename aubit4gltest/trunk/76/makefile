@@ -14,3 +14,7 @@ ansi_sql_compat:
 
 desc:
 	@echo "Basic DB exercising of Datetimes"
+	
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE DDL_DATETIME"
+	

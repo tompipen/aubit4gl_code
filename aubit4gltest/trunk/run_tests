@@ -271,6 +271,10 @@ for a in $FLAGS; do
 	-disable-sql-features-check) #Do not skip tests with incompatible SQL features
 		DISABLE_SQL_FEATURES_CHECK=1
 		;;
+	-disable-sql-features-skip) #Check, but do not skip incompatible SQL features
+		DISABLE_SQL_FEATURES_SKIP=1
+		;;
+		
 	-loop-100)
 		LOOP_TIMES=100
 		;;
@@ -1123,6 +1127,7 @@ for a in $FLAGS; do
 		echo " -skip-unknown-trans Skip tests with explicit pref "
 		echo "             for trans, when cant determine state of trans in current RDBMS"
 		echo " -disable-sql-features-check Do not skip tests with incompatible SQL features"
+		echo " -disable-sql-features-skip Check, but do not skip incompatible SQL features"
 		echo " -sqlite     Use SQLite as database for db tests"
 		echo " -esqli      Use Informix ESQL/C plug-in for db tests"
 		echo " -ec[i|s|p|q] Use Informix/SAP/PG/Querix ESQL/C EC output in for db tests"
@@ -1692,11 +1697,9 @@ do
 		if test "$IS_DB_TEST" = "1"; then
 			#We are intereste in this features only if test is a db test,
 			SE_REQUIRED=`$MAKE -s -C $TEST_NO se_required 2>/dev/null`
-			SQL_FEATURES_USED=`$MAKE -s -C $TEST_NO sql_features_used 2>/dev/null`
 			NEED_IFX_VERSION=`$MAKE -s -C $TEST_NO need_ifx_version 2>/dev/null`
 		else
 			SE_REQUIRED=
-			SQL_FEATURES_USED=
 			NEED_IFX_VERSION=
 		fi
 		ec_test=`$MAKE -s -C $TEST_NO ec_test 2>/dev/null`
@@ -1831,6 +1834,17 @@ do
 	if test "$IS_DB_TEST" = "1"; then 
 		IS_MAKE_ANSI_SQL_COMPAT=`$MAKE -s -C $TEST_NO ansi_sql_compat 2>/dev/null`
 		NEED_TRANSACTION=`$MAKE -s -C $TEST_NO transaction 2>/dev/null`
+		SQL_FEATURES_USED=`$MAKE -s -C $TEST_NO sql_features_used 2>/dev/null`
+
+		if test "$IS_MAKE_ANSI_SQL_COMPAT" = "0" -a "$SQL_FEATURES_USED" = ""; then 
+			#echo "WARNING: #$TEST_NO is not compatible with ANSI SQL, but has no SQL features used description"
+			NOT_ANSI_NO_SQL_FEATURES_DESC="$NOT_ANSI_NO_SQL_FEATURES_DESC $TEST_NO"
+		else
+			if test "$SQL_FEATURES_USED" = ""; then
+				#echo "WARNING: #$TEST_NO is db test, but has no SQL features used description"			
+				IS_DB_NO_SQL_FEATURES_DESC="$IS_DB_NO_SQL_FEATURES_DESC $TEST_NO"
+			fi
+		fi
 	fi
 	
 		#################
@@ -2155,6 +2169,31 @@ do
 			PASS_NONDB_TESTS="$PASS_NONDB_TESTS $TEST_NO"
 			PASS_NONDB_CNT=`(expr $PASS_NONDB_CNT + 1) 2>/dev/null`
 		fi
+
+		#Compile list of all working SQL features:
+		if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
+			for used_feature in $SQL_FEATURES_USED ; do
+				ALLREADY_LISTED=0
+				for working_feature in $SQL_FEATURES_PASS_LIST ; do
+					if test "$used_feature" = "$working_feature" ; then 
+						ALLREADY_LISTED=1
+						break
+					fi
+				done
+				if test "$ALLREADY_LISTED" = "0"; then 
+					SQL_FEATURES_PASS_LIST="$SQL_FEATURES_PASS_LIST $used_feature"
+				fi
+			done
+		fi
+		
+		if test "$SKIP_REASON_NOTSKIP" != "" ; then
+			#This test has what we expected to be incompatible SQL feature, 
+			#but it passed
+			#echo "WARNING: $TEST_NO passed, but has incompatible SQL feature(s):" 
+			#echo "$SKIP_REASON_NOTSKIP"
+			PASS_INCOMPAT_SQL="$PASS_INCOMPAT_SQL $TEST_NO=$SKIP_REASON_NOTSKIP"
+			SKIP_REASON_NOTSKIP=
+		fi
 		
 		if test "$compat_test" != "1" -a "$USE_COMP" != "aubit"; then
 			#test is not described as compatible, but even using no-aubit compiler 
@@ -2190,6 +2229,34 @@ do
 		#test failed
 		RESULT=0
 		FAIL_CNT=`(expr $FAIL_CNT + 1) 2>/dev/null`
+		
+		#Compile list of all failed SQL features:
+		if test "$COMPILE_ONLY" != "1" -a "$SQL_FEATURES_USED" != ""; then
+#echo 1		
+			for used_feature in $SQL_FEATURES_USED ; do
+				ALLREADY_LISTED=0
+				for failed_feature in $SQL_FEATURES_FAIL_LIST ; do
+					if test "$used_feature" = "$failed_feature" ; then 
+						ALLREADY_LISTED=1
+						break
+					fi
+				done
+				if test "$ALLREADY_LISTED" = "0"; then 
+					SQL_FEATURES_FAIL_LIST="$SQL_FEATURES_FAIL_LIST $used_feature"
+				fi
+			done
+		fi
+#echo "SQL_FEATURES_FAIL_LIST $SQL_FEATURES_FAIL_LIST"
+
+		if test "$SQL_FEATURES_COMPATIBLE" = "1" -a "$IS_DB_TEST" = "1" \
+			-a "$SQL_FEATURES_USED" != ""; then 
+			#This db test had what we expected to be compatible SQL
+			#features, but it still failed. This does not mean in all cases
+			#that we clasified it wrong, since it can fail for other reasons,
+			#but it's worth knowing
+			FAIL_COMPAT_SQL="$FAIL_COMPAT_SQL ($TEST_NO=$SQL_FEATURES_USED)"
+		fi
+
 		if test "$IS_DB_TEST" = "1"; then
 			FAIL_DB_TESTS="$FAIL_DB_TESTS $TEST_NO"
 			FAIL_DB_CNT=`(expr $FAIL_DB_CNT + 1) 2>/dev/null`
@@ -2380,12 +2447,15 @@ if test "$VERBOSE_RESULTS" = "1"; then
 	if test "$SKIP_NO_SCRDUMP_PDCURSES_LIST" != "" ; then 
 		echo "Skipped screen_dump() with PDcurses: $SKIP_NO_SCRDUMP_PDCURSES_LIST" >> $LOGFILE
 	fi
-	if test "$SKIP_NONDB_LIST" != "" ; then 
-		echo "Skipped NODB: $SKIP_NONDB_LIST" >> $LOGFILE
-	fi 
-	if test "$SKIP_DB_LIST" != "" ; then 
-		echo "Skipped DB: $SKIP_DB_LIST" >> $LOGFILE
-	fi 
+	if test "$VERBOSE" = "1"; then
+		#usually very long lists, and not terribly usefull
+		if test "$SKIP_NONDB_LIST" != "" ; then 
+			echo "Skipped NODB: $SKIP_NONDB_LIST" >> $LOGFILE
+		fi 
+		if test "$SKIP_DB_LIST" != "" ; then 
+			echo "Skipped DB: $SKIP_DB_LIST" >> $LOGFILE
+		fi
+	fi
 	if test "$SKIP_NOSILENT_LIST" != "" ; then 
 		echo "Skipped NOSILENT: $SKIP_NOSILENT_LIST" >> $LOGFILE
 	fi 
@@ -2437,6 +2507,83 @@ if test "$VERBOSE_RESULTS" = "1"; then
 		done
 		echo "-------------------------------------------------------------------------------" >> $LOGFILE
 	fi
+
+	if test "$IS_DB_NO_SQL_FEATURES_DESC" != ""; then 
+		echo "DB tests but have no features description : $IS_DB_NO_SQL_FEATURES_DESC" >> $LOGFILE
+	fi
+	if test "$NOT_ANSI_NO_SQL_FEATURES_DESC" != ""; then 
+		echo "Not ANSI compatible but have no features description : $NOT_ANSI_NO_SQL_FEATURES_DESC" >> $LOGFILE
+	fi
+	if test "$PASS_INCOMPAT_SQL" != ""; then
+		echo "" >> $LOGFILE
+		echo "Passed, but SQL features used are listed as incompatible:" >> $LOGFILE
+		echo "$PASS_INCOMPAT_SQL" >> $LOGFILE
+		echo "" >> $LOGFILE
+	fi
+	
+	if test "$FAIL_COMPAT_SQL" != ""; then 
+		echo "" >> $LOGFILE
+		echo "Failed, but SQL features used are listed as compatible:" >> $LOGFILE
+		echo "$FAIL_COMPAT_SQL" >> $LOGFILE
+		echo "" >> $LOGFILE
+	fi	
+	
+	if test "$FEATURE_NOT_EXPECTED" != ""; then
+		echo "" >> $LOGFILE
+		echo "SQL features used not expected by compatiblity check:" >> $LOGFILE
+		echo "$FEATURE_NOT_EXPECTED" >> $LOGFILE
+		echo "" >> $LOGFILE
+	fi
+
+	#Eliminate working features from failed features list, test that contains
+	#them must have failed for some other reason, since feature is also
+	#present in test(s) that passed
+	if test "$SQL_FEATURES_PASS_LIST" != ""; then
+		for failed_feature in $SQL_FEATURES_FAIL_LIST; do
+			#for each feature that failed...
+			HAS_MATCH=0
+			for working_feature in $SQL_FEATURES_PASS_LIST; do	
+			#...look for that feature in pass list...
+				if test "$working_feature" = "$failed_feature"; then
+					#echo "feature $working_feature appears on both PASS nad FAIL lists"
+					HAS_MATCH=1
+					break
+				fi
+			done
+			if test "$HAS_MATCH" = "0"; then 
+				FILTERED_SQL_FEATURES_FAIL_LIST="$FILTERED_SQL_FEATURES_FAIL_LIST $failed_feature"
+			else
+				ELIMINATED_SQL_FEATURES_FAIL_LIST="$ELIMINATED_SQL_FEATURES_FAIL_LIST $failed_feature"
+			fi
+		done
+	else
+		#no pass list - nothing to filter out
+		FILTERED_SQL_FEATURES_FAIL_LIST="$SQL_FEATURES_FAIL_LIST"
+	fi
+	if test "$SH_DBG" = "1"; then 
+		echo ""	
+		echo "SQL_FEATURES_PASS_LIST=$SQL_FEATURES_PASS_LIST"
+		echo ""
+		echo "SQL_FEATURES_FAIL_LIST=$SQL_FEATURES_FAIL_LIST"
+		echo "---------------------------------------------------------"
+		echo "ELIMINATED_SQL_FEATURES_FAIL_LIST=$ELIMINATED_SQL_FEATURES_FAIL_LIST"
+		echo ""
+		echo "FILTERED_SQL_FEATURES_FAIL_LIST=$FILTERED_SQL_FEATURES_FAIL_LIST"
+		echo ""
+	fi
+	
+	if test "$SQL_FEATURES_PASS_LIST" != ""; then
+		#This is 100% correct
+		echo "All working SQL features: $SQL_FEATURES_PASS_LIST"  >> $LOGFILE
+	fi
+	if test "$FILTERED_SQL_FEATURES_FAIL_LIST" != ""; then
+		#This is potentially not 100% correct, since we can have here listed
+		#an feature that did not fail, but the test in which it appeared did 
+		#for some other reason, and the same feature did not appear in any
+		#of the tests that passed, so we could not eliminate it from fail list
+		echo "All failed SQL features: $FILTERED_SQL_FEATURES_FAIL_LIST" >> $LOGFILE
+	fi
+	
 else
 	if test "$SKIP_OTHER_LIST" != "" ; then 
 		echo "Other skipped tests: $SKIP_OTHER_LIST" >> $LOGFILE

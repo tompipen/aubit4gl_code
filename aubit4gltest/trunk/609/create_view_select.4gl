@@ -13,3 +13,5 @@ MAIN
 	CREATE VIEW vXpto AS SELECT firstColumn, secondColumn FROM xpto
 	DROP TABLE xpto
 END MAIN
+
+

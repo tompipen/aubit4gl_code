@@ -15,3 +15,5 @@ MAIN
 	CREATE VIEW test1@unstable:'informix'.xptd AS SELECT * FROM  xpto
 	DROP TABLE xpto
 END MAIN
+
+

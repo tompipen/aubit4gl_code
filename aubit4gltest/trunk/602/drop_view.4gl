@@ -14,3 +14,5 @@ MAIN
 	DROP VIEW vXpto
 	DROP TABLE xpto
 END MAIN
+
+

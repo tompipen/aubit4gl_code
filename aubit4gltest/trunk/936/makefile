@@ -220,3 +220,8 @@ need_compat:
 ansi_sql_compat:
 	@echo "0"
 
+	
+sql_features_used:
+	@echo "SET_LOG SET_BUFFERED_LOG"
+	
+

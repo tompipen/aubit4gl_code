@@ -17,3 +17,5 @@ MAIN
 	DROP VIEW  test1@unstable:'informix'.vXpto 
 	DROP TABLE  xpto
 END MAIN
+
+

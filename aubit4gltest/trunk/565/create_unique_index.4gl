@@ -15,3 +15,6 @@ MAIN
 	CREATE DISTINCT INDEX idxFourXpto ON xpto (thirdColumn)
 	DROP TABLE xpto
 END MAIN
+
+
+

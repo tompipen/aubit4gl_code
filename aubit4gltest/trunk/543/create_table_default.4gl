@@ -14,3 +14,6 @@ MAIN
 	)
 	DROP TABLE a_table
 END MAIN
+
+
+

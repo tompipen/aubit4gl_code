@@ -201,3 +201,8 @@ compile_only:
 ansi_sql_compat:
 	@echo "0"
 
+	
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE TABLENAME_DB_SERVER_USER_TABLE LOCK_TABLE UNLOCK_TABLE"
+
+

@@ -18,3 +18,5 @@ MAIN
 	DROP TABLE a_table
 	DROP TABLE another_table
 END MAIN
+
+

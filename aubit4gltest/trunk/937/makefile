@@ -221,3 +221,7 @@ need_compat:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "CLOSE_DATABASE START_DATABASE_WITH_LOG START_DATABASE_WITH_LOG_MODE_ANSI"
+	
+

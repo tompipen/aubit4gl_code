@@ -1,7 +1,7 @@
 {
 TEST IS INVALID
 cannot unlock table within transaction
-but commit or rollback will unloak the table anyway, so when we reach 
+but commit or rollback will unlock the table anyway, so when we reach 
 UNLOCK we will get error
 }
 
@@ -26,3 +26,5 @@ MAIN
 	WHENEVER ERROR STOP
 	DROP TABLE xpto
 END MAIN
+
+

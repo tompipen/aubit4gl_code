@@ -16,3 +16,6 @@ MAIN
 	RENAME COLUMN test1@unstable:'informix'.xpto.firstColumn TO otherColumn 
 	DROP TABLE  xpto
 END MAIN
+
+
+

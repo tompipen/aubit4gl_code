@@ -191,3 +191,6 @@ unknown_test:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE INSERT_COLUMNLIST_EQ_VALUELIST EXECUTE_USING EXECUTE_INTO_USING"
+

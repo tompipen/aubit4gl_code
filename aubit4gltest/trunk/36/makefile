@@ -18,3 +18,7 @@ ansi_sql_compat:
 
 desc:
 	@echo "Test a foreach when an open has already been done"
+	
+sql_features_used:
+	@echo "CREATE_TEMP_TABLE CLOSE_CURSOR DROP_TABLE"
+	

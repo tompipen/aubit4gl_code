@@ -20,3 +20,5 @@ MAIN
 	EXECUTE st USING intVar, chVar
 	DROP TABLE xpto
 END MAIN
+
+

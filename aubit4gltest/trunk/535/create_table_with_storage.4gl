@@ -1,6 +1,7 @@
 
 DATABASE test1
 
+
 MAIN
 	WHENEVER ERROR CONTINUE
   DROP TABLE tbl_ol_in_db 

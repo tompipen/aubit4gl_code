@@ -187,9 +187,9 @@ end main
 
 function expect(e,a) 
 define e,a char(25)
-display "Expected:",e," Actual ",a
-if e!=a then
-	display "EXPECTED!=ACTUAL"
-	exit program 1
-end if
+	display "Expected:",e," Actual ",a
+	if e!=a then
+		display "EXPECTED!=ACTUAL"
+		exit program 1
+	end if
 end function

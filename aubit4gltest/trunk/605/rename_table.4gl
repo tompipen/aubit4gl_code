@@ -14,3 +14,5 @@ MAIN
 	RENAME TABLE xpto TO xpta
 	DROP TABLE xpta
 END MAIN
+
+

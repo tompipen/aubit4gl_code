@@ -17,9 +17,11 @@ MAIN
      CALL do_loop()
 END MAIN
 
- FUNCTION do_loop()
+FUNCTION do_loop()
  DEFINE w_f1 INT, w_f2 CHAR(4)
- FOREACH c_loop INTO w_f1, w_f2
-     DISPLAY w_f1, w_f2
- END FOREACH
- END FUNCTION
+	 FOREACH c_loop INTO w_f1, w_f2
+		 DISPLAY w_f1, w_f2
+	 END FOREACH
+END FUNCTION
+ 
+

@@ -217,3 +217,6 @@ transaction:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TEMP_TABLE DDL_MONEY CREATE_TABLE"
+

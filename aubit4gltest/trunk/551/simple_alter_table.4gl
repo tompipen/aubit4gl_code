@@ -12,3 +12,5 @@ MAIN
 	ALTER TABLE xpto ADD (third_column SMALLINT)
 	DROP TABLE xpto
 END MAIN
+
+

@@ -40,3 +40,5 @@ MAIN
 	DROP TABLE xpto
 	DROP TABLE xpta
 END MAIN
+
+

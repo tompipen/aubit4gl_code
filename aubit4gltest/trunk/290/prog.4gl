@@ -11,3 +11,5 @@ MAIN
     SELECT f2 INTO w_f2 FROM testupdate WHERE f1 = 1
     DISPLAY "f2=", w_f2
 END MAIN
+
+

@@ -23,3 +23,4 @@ MAIN
 	ALTER TABLE xpto DROP CONSTRAINT (unk, dist)
 	DROP TABLE xpto
 END MAIN
+

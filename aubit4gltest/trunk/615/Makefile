@@ -191,3 +191,6 @@ unknown_test:
 ansi_sql_compat:
 	@echo "0"
 
+sql_features_used:
+	@echo "DROP_TABLE CREATE_TABLE INSERT_INTO_SELECT_FROM"
+

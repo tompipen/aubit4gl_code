@@ -13,3 +13,5 @@ MAIN
 	DROP SYNONYM xpta 
 	DROP TABLE xpto
 END MAIN
+
+
