@@ -131,9 +131,9 @@ fi
 
 if [ "$COMSPEC" = "" ]
 then
-	if [ -f $AUBITDIR/.a4glrc ]
+	if [ -f $AUBITDIR/etc/.a4glrc ]
 	then
-	. $AUBITDIR/.a4glrc
+	. $AUBITDIR/etc/.a4glrc
 	fi
 	
 	if [ -f $HOME/.a4glrc ]
@@ -141,9 +141,9 @@ then
 	. $HOME/.a4glrc
 	fi
 else
-	if [ -f $AUBITDIR/CygWin/.a4glrc-win ]
+	if [ -f $AUBITDIR/etc/.a4glrc-win ]
 	then
-	. $AUBITDIR/CygWin/.a4glrc-win
+	. $AUBITDIR/etc/.a4glrc-win
 	fi
 fi
 
