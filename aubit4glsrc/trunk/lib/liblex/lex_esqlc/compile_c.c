@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.34 2003-05-01 12:47:57 mikeaubury Exp $
+# $Id: compile_c.c,v 1.35 2003-05-04 08:49:32 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4221,7 +4221,7 @@ char *set_var_sql(int n)
 	int a;
 	static char buff[8000];
 	extern char *current_upd_table;
-	#define UPDVAL 1
+	#define UPDVAL2 4
 
 	if (doing_esql()) {
 		int z;
@@ -4235,9 +4235,10 @@ char *set_var_sql(int n)
 			}
 			sprintf(buff_small," :_vi_%d\n",a);
 			strcat(buff,buff_small);
+				printf("Pushing %s\n",buff_small);
 
 			if (current_upd_table) {
-				push_gen(UPDVAL,buff_small);
+				push_gen(UPDVAL2,buff_small);
 			}
 	        }
 		return buff;
@@ -4249,7 +4250,8 @@ char *set_var_sql(int n)
 		       } 
 			
 			if (current_upd_table) {
-				push_gen(UPDVAL,"?");
+				printf("Pushing ?\n");
+				push_gen(UPDVAL2,"?");
 			}
 		       strcat(buff,"?"); 
 	       }

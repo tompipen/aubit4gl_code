@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.118 2003-05-01 12:47:07 mikeaubury Exp $
+# $Id: mod.c,v 1.119 2003-05-04 08:48:59 mikeaubury Exp $
 #
 */
 
@@ -66,6 +66,7 @@
 
 #define UPDCOL 0
 #define UPDVAL 1
+#define UPDVAL2 4
 #define a0_width         (float) 2380.0
 #define a0_height        (float) 3368.0
 #define a1_width         (float) 1684.0
@@ -1706,18 +1707,30 @@ push_gen (int a, char *s)
   strcpy (gen_stack[a][gen_stack_cnt[a]++], s);
 }
 
-/**
- * Not used
- *
- * @param a
- */
-/*
-static char *pop_gen (int a)
+
+int gen_cnt(int a) {
+	return gen_stack_cnt[a];
+}
+
+
+
+void copy_gen(int a,int b) {
+	int c;
+	for (c=0;c<gen_stack_cnt[b];c++) {
+		push_gen(a,gen_stack[b][c]);
+	}
+	gen_stack_cnt[b]=0;
+}
+
+char *pop_gen (int a)
 {
+  printf("Popgen called\n");
+  printf("UPDVAL2 cnt = %d\n",  gen_stack_cnt[UPDVAL2]);
+	dump_updvals();
   gen_stack_cnt[a]--;
   gen_stack[a][gen_stack_cnt[a]];
 }
-*/
+
 
 /**
  *
@@ -1827,9 +1840,6 @@ add_bind (char i, char *var)
 	  ibind[ibindcnt].start_char_subscript=0;
 	  ibind[ibindcnt].end_char_subscript=0;
 
-	  //if (strlen(current_upd_table)) {
-		//push_gen(UPDVAL,"?");
-	  //}
 
 	  if (strncmp(var," substr(",8)!=0) {
 	  	strcpy (ibind[ibindcnt].varname, var);
@@ -3639,8 +3649,11 @@ int a;
   char *ccol;
 strcpy(big_buff,"");
 
-printf("\nFixupdateexpr - VALUES\n");
-for (a=0;a<gen_stack_cnt[UPDVAL];a++) { printf("UPDVAL : %s\n",gen_stack[UPDVAL][a]); }
+printf("\nFixupdateexpr - VALUES\n\n");
+dump_updvals() ;
+
+
+
 printf("current_upd_table=%s\n",current_upd_table);
 
 if (mode==1) {
@@ -3719,4 +3732,12 @@ n=0;
   return ptr;
 }
 
+
+dump_updvals() {
+int a;
+printf("\n");
+for (a=0;a<gen_stack_cnt[UPDCOL];a++)  { printf("UPDCOL : %s\n",gen_stack[UPDCOL][a]); }
+for (a=0;a<gen_stack_cnt[UPDVAL];a++)  { printf("UPDVAL : %s\n",gen_stack[UPDVAL][a]); }
+for (a=0;a<gen_stack_cnt[UPDVAL2];a++) { printf("UPDVAL2: %s\n",gen_stack[UPDVAL2][a]); }
+}
 /* ================================= EOF ============================= */

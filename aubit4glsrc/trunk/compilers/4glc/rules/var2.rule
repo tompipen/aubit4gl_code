@@ -21,7 +21,7 @@ var2 :
 ;
 
 var3:
-        array_r_variable // MJA 010503
+        array_r_variable_or_ident // MJA 010503
 	| identifier
 	| var3  DOT aft_dot {sprintf($<str>$,"%s.%s",$<str>1,$<str>3);}
 	| CHAR_VALUE DOT var3 DOT aft_dot {sprintf($<str>$,"\\\"%s\\\".%s.%s",strip_quotes($<str>1),$<str>3,$<str>5);}
@@ -33,6 +33,8 @@ aft_dot :
 	| identifier
 ;
 
+
+
 var_ident_ibind_ss :  var2  
 {
 	if (scan_variable($<str>1)!=-1&&(!system_var($<str>1)))
@@ -42,6 +44,7 @@ var_ident_ibind_ss :  var2
 		z=add_bind('i',$<str>1);
 		z-=a;
 		$<sql_string>$=strdup(set_var_sql(z));
+
 	} else {
 		$<sql_string>$=strdup($<str>1);
 	}
@@ -85,7 +88,8 @@ struct variable *v_loop;
 	}
 	$<sql_string>$=strdup(was_str);
 }
-
 ;
+
+
 
 /* ================================ var2.rule ===================== */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: menuwrite.c,v 1.8 2003-04-27 12:20:59 afalout Exp $
+# $Id: menuwrite.c,v 1.9 2003-05-04 08:49:32 mikeaubury Exp $
 #*/
 
 /**
@@ -160,7 +160,13 @@ menu_list *	ptr;
 		int a;
 		debug("As C\n");
 		fxx=fopen(fname,"r");
+		if (fxx==0) {
+			error_with("Unable to read compiled form (%s)\n",fname,0);
+		}
 		fyy=fopen(fname2,"w");
+		if (fyy==0) {
+			error_with("Unable to open file for C code (%s)\n",fname2,0);
+		}
 		fprintf(fyy,"char compiled_menu_%s[]={\n",outputfilename);
 
 		while (!feof(fxx)) {

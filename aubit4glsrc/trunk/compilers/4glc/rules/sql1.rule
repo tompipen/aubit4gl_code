@@ -4,125 +4,6 @@
 =====================================================================
 */
 
-
-update_statement_ss:
-	UPDATE table_name {
-		strcpy(current_upd_table,$<str>2);
-	} XSET set_clause_list_ss  {
-		strcpy(current_upd_table,"");
-	} where_upd_ss {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<str>4," ",$<sql_string>5," ",$<sql_string>7,0);
-	}
-	;
-
-where_upd_ss : {
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!");
-		$<sql_string>$=strdup("");
-	}
-	| WHERE_CURRENT_OF fetch_cursor_name { 
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!");
-		rm_quotes($<str>2);
-		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
-		$<sql_string>$=make_sql_string($<str>$,0);
-	}
-	| WHERE search_condition_ss {
-		pop_all_gen(UPDCOL,"!"); pop_all_gen(UPDVAL,"!");
-		$<sql_string>$=make_sql_string("WHERE ",$<sql_string>2,0);
-	}
-	;
-
-
-set_clause_list_ss: 
-    OPEN_BRACKET upd_col_list CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string("(",$<str>2,")=(",$<sql_string>6,")",0);
-
-		if (isyes(acl_getenv("FIXUPDATE"))) { 
-			$<sql_string>$=strdup(fix_update_expr(0)); 
-			ansi_violation("Update (..)=(..)",0);
-		}  else {
-			ansi_violation("Update (..)=(..)",1);
-		}
-    }
-    | upd_columns_ss  {
-		$<sql_string>$=$<sql_string>1;
-    }
-    | MULTIPLY EQUAL OPEN_BRACKET upd_val_list_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string("*=(",$<sql_string>4,")",0);
-		push_gen(UPDCOL,"*");
-		if (isyes(acl_getenv("FIXUPDATE"))) { 
-			$<sql_string>$=strdup(fix_update_expr(1));
-			ansi_violation("Update (..)=(..)",0);
-		} else {
-			ansi_violation("Update (..)=(..)",1);
-		}
-}
-	| MULTIPLY EQUAL upd_val_list_ss  {
-		char *ptr;
-
-		ptr=$<sql_string>3;
-		push_gen(UPDCOL,"*");
-
-		if (ptr[0]=='(') {
-			$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3,0);
-		} else {
-			$<sql_string>$=make_sql_string($<str>1,$<str>2,"(",$<sql_string>3,")",0);
-		}
-
-		if (isyes(acl_getenv("FIXUPDATE"))) { 
-			$<sql_string>$=strdup(fix_update_expr(1));
-			ansi_violation("Update (..)=(..)",0);
-		} else {
-			ansi_violation("Update (..)=(..)",1);
-		}
-	}
-;
-
-upd_columns_ss : 
-	col_1_ss  {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| upd_columns_ss COMMA col_1_ss {
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	}
-;
-
-
-upd_column_name : column_name  ;
-
-col_1_ss : 
-	upd_column_name EQUAL upd_val_ss {
-		$<sql_string>$=make_sql_string($<str>1,"=",$<sql_string>3,0);
-	}
-;
-
-upd_col_list  : upd_column_name {push_gen(UPDCOL,$<str>1); strcpy($<str>$,$<str>1);} | 
-                upd_col_list COMMA upd_column_name {push_gen(UPDCOL,$<str>3); sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
-
-;
-
-
-upd_val_list_ss  : 
-	upd_val_ss {
-		$<sql_string>$=$<sql_string>1;
-	}
-	| upd_val_list_ss COMMA upd_val_ss { 
-		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
-	} 
-;
-
-
-
-upd_val_ss : 
-	  //subquery_ss  { push_gen(UPDVAL,"<SUBQUERY>"); $<sql_string>$=$<sql_string>1; } | 
-	KW_NULL {
-		push_gen(UPDVAL,"NULL");
-		$<sql_string>$=strdup($<str>1);
-	}
-	| value_expression_ss  {
-		$<sql_string>$=$<sql_string>1;
-	}
-;
-
 rollback_statement:
 	ROLLBACK_W 
 		{
@@ -1313,28 +1194,22 @@ value_expression_initial_ss :
 ;
 
 value_expression_complex_ss :
-	value_expression_initial_ss DIVIDE value_expression_initial_ss
+	value_expression_initial_ss DIVIDE value_expression_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"/",$<sql_string>3,0);}
 	| value_expression_initial_ss units_qual
 		{$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,0);}
-	| value_expression_initial_ss MULTIPLY value_expression_initial_ss
+	| value_expression_initial_ss MULTIPLY value_expression_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"*",$<sql_string>3,0);}
-	| value_expression_initial_ss PLUS value_expression_initial_ss
+	| value_expression_initial_ss PLUS value_expression_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"+",$<sql_string>3,0);}
-	| value_expression_initial_ss MINUS value_expression_initial_ss
+	| value_expression_initial_ss MINUS value_expression_ss
 		{$<sql_string>$=make_sql_string($<sql_string>1,"-",$<sql_string>3,0);}
-	| literal
-		{$<sql_string>$=make_sql_string($<str>1,0);}
-	| KW_TRUE
-		{$<sql_string>$=make_sql_string("TRUE",0);}
-	| KW_FALSE
-		{$<sql_string>$=make_sql_string("FALSE",0);}
-	| USER
-		{$<sql_string>$=make_sql_string("USER",0);}
-	| MULTIPLY 
-		{$<sql_string>$=make_sql_string("*",0);}
-	| COUNT_MULTIPLY 
-{$<sql_string>$=make_sql_string("COUNT(*)",0);}
+	| literal {$<sql_string>$=make_sql_string($<str>1,0);}
+	| KW_TRUE {$<sql_string>$=make_sql_string("TRUE",0);}
+	| KW_FALSE {$<sql_string>$=make_sql_string("FALSE",0);}
+	| USER {$<sql_string>$=make_sql_string("USER",0);}
+	| MULTIPLY {$<sql_string>$=make_sql_string("*",0);}
+	| COUNT_MULTIPLY {$<sql_string>$=make_sql_string("COUNT(*)",0);}
  	| AVG OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET
 {$<sql_string>$=make_sql_string("AVERAGE(",$<str>3,$<sql_string>4,")",0);}
 	| XMAX OPEN_BRACKET op_all value_expression_ss CLOSE_BRACKET

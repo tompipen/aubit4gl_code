@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.34 2003-05-01 09:42:39 mikeaubury Exp $
+# $Id: 1.reqd,v 1.35 2003-05-04 08:49:32 mikeaubury Exp $
 #
 */
 
@@ -87,10 +87,12 @@
 #define INPROMPT 	7
 #define INWHILE 	8
 #define INIF 		9
+
 #define UPDCOL 		0
 #define UPDVAL 		1
 #define SELINTO 	2
 #define PUTVAL 		3
+#define UPDVAL2 	4
 
 // Hehe - This one is pretty cool if you have a fairly recent version of bison
 #define YYERROR_VERBOSE
