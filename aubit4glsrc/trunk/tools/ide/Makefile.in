@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 #   Based on "INFORMIX D4GL Programmer's Environment Version 2.00.UC2"
 #
-# $Id: Makefile.in,v 1.7 2003-01-22 10:55:39 afalout Exp $
+# $Id: Makefile.in,v 1.8 2003-02-07 04:01:46 afalout Exp $
 #
 
 #This make file uses "Amake" - NO TARGETS are defined here !
@@ -104,7 +104,8 @@ D4GL_BIN      = ${D4GL_DIR}/bin
 #D4GL_D4GL     = ${D4GL_DIR}/${FILES}_bin
 D4GL_D4GL     = ${D4GL_DIR}/4glide
 
-ADDITIONAL_CLEAN	= *.log d4gl.4ge d4glopts.frm d4glinpt.frm d4glhelp.iem *.afr
+ADDITIONAL_CLEAN	= *.log d4gl.4ge d4glopts.frm d4glinpt.frm d4glhelp.iem \
+					*.afr ${FILES.4gl:.4gl=.h}
 
 
 ## ==================================================================

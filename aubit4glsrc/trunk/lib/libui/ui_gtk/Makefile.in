@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.10 2003-01-27 05:47:36 afalout Exp $
+# $Id: Makefile.in,v 1.11 2003-02-07 04:01:46 afalout Exp $
 #
 
 LIBROOT=../..
@@ -189,7 +189,7 @@ set:
 clean:
 	${RM} *.o *${SO_EXT} menu_x_.h *.bak  *.ao *.err *.glb *.dll menu_x.h \
 	menu_x_xdr.c *.a *.def *.glb *.ao debug.out *.err core form_x.h \
-	gmon.out
+	gmon.out .\#*
 
 #------------------------------- EOF --------------------------------
 

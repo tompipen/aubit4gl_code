@@ -1630,7 +1630,7 @@ Sound good to me.
 > from a virgin source directory.  I call it acsetup.sh; I've also seen it
 > called bootstrap.
 >
->     :       "@(#)$Id: manaual_to-do.txt,v 1.6 2003-01-30 11:54:38 afalout Exp $"
+>     :       "@(#)$Id: manaual_to-do.txt,v 1.7 2003-02-07 04:01:43 afalout Exp $"
 >     #
 >     # Steps required to AutoConfigure SQLCMD
 >     #
@@ -3536,93 +3536,5 @@ but I'm not going to be fussed if you go with ELIF for some other reason.
 
 
 
-sh aubit sh 4glpc   P29f.4gl -c -o P29f.ao
-============ FIRST ERROR: ==============
-#                               (1) = Insert voucher & distributions
-#                               (2) = Update voucher & distributions
-#                               (3) = Update distributions only
-#
-database maindb
-
-globals
-   define
-      pr_batch_num like batch.batch_num,
-      pr_ordhead record like ordhead.*, # only uses order_num
-|____________________________________^
-| Error at line 16, character 38
-| ordhead does not exist in the database ()
-      pr_orderline record like orderline.*,
-      pr_voucherdist record like voucherdist.*
-========================================
-See file P29f.err
-make[2]: [P29f.ao] Error 2 (ignored)
-sh aubit sh 4glpc   /opt/aubit/apps/erp/src/common/conv_rate.4gl -c -o conv_rate.ao
-
-ordhead=105
--------------------------------------------
-
-sh aubit sh 4glpc   /opt/aubit/apps/erp/src/common/wshorwin.4gl -c -o wshorwin.ao
-============ FIRST ERROR: ==============
-
-#        wshorwin.4gl - show_mborders
-#                       Ordhead Lookup with attached Inquiry (mbordwin)
-#                       returns order_num
-database maindb
-function show_mborders(cmpy,filter_text)
-   define
-      cmpy like company.cmpy_code,
-      msgresp char(1),
-      pr_ordhead record like ordhead.*,
-|____________________________________^
-| Error at line 11, character 38
-| ordhead does not exist in the database ()
-      pr_customer record like customer.*,
-      pa_ordhead array[800] of record
-========================================
-See file /opt/aubit/apps/erp/src/common/wshorwin.err
-make[2]: [wshorwin.ao] Error 2 (ignored)
 
 
-
-Making library pinqwind.aox using /opt/aubit/apps/erp/src/common/pinqwind.mk
-amake -f /opt/aubit/apps/erp/src/common/pinqwind.mk
-aMaking pinqwind.mk
-make[3]: Entering directory `/opt/aubit/apps/erp/src/common'
-make[3]: -f: No such file or directory
-make[3]: *** No rule to make target `-f'.  Stop.
-make[3]: Leaving directory `/opt/aubit/apps/erp/src/common'
-ERROR: amake failed.
-See .err files generated
-make[2]: *** [pinqwind.aox] Error 1
-make[2]: Leaving directory `/opt/aubit/apps/erp/src/ap'
-ERROR: amake failed.
-make[1]: *** [ap] Error 1
-make[1]: Leaving directory `/opt/aubit/apps/erp'
-
-
-
-
-sh aubit sh 4glpc   psepwind.4gl -c -o psepwind.ao
-============ FIRST ERROR: ==============
-end function
-
-
-function valid_pallet(cmpy,whom,pr_cust_code,pr_ware_code,verbose_ind)
-   define
-      cmpy like company.cmpy_code,
-      whom like maxuser.sign_on_code,
-      pr_cust_code like customer.cust_code,
-      pr_ware_code like location.ware_code,
-      pr_mbparms record like mbparms.*,
-|____________________________________^
-| Error at line 339, character 38
-| mbparms does not exist in the database ()
-      pr_prodstatus record like prodstatus.*,
-      pr_customer record like customer.*,
-========================================
-See file psepwind.err
-make: *** [psepwind.ao] Error 2
-ERROR: amake failed.
-See .err files generated
-
-115

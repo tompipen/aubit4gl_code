@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.155 2003-02-05 08:14:52 afalout Exp $
+dnl # $Id: configure.in,v 1.156 2003-02-07 04:00:36 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -3274,9 +3274,10 @@ fi
 
 	if test "$IFMX_ESQLC" != "no" ; then
 		RPMFILE_4=$LIB_PREFIX/libSQL_esql$SO_EXT
-        PLUGIN_YES="$PLUGIN_YES IFX_NATIVE"
+		RPMFILE_26=$LIB_PREFIX/libesqlhelper_funcs$SO_EXT
+		PLUGIN_YES="$PLUGIN_YES IFX_NATIVE ESQLC_HELPER"
 	else
-        PLUGIN_NO="$PLUGIN_NO IFX_NATIVE"
+        PLUGIN_NO="$PLUGIN_NO IFX_NATIVE ESQLC_HELPER"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.ifx.esql"
 	fi
 
@@ -3430,10 +3431,10 @@ fi
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.gtk"
 	fi
 
-
-
-	#RPMFILE_26=$LIB_PREFIX/
-
+	#RPMFILE_27=$LIB_PREFIX/
+	#RPMFILE_28=$LIB_PREFIX/
+	#RPMFILE_29=$LIB_PREFIX/
+	#RPMFILE_30=$LIB_PREFIX/
 
 ## ==================================================================
 ##           Additional auto-install targets:

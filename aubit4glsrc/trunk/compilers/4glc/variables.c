@@ -1126,13 +1126,15 @@ print_variables (void)
 
   if (scope == 'g')
     {
-      print_global_variables ();
-	printf("***** DUMP GVARS ****");
+		print_global_variables ();
+		#ifdef DEBUG
+			debug("***** DUMP GVARS ****");
+        #endif
 
-      dump_gvars ();
+		dump_gvars ();
 
-      if (only_doing_globals ())
-	exit (0);
+		if (only_doing_globals ())
+			exit (0);
     }
 
 
@@ -1985,14 +1987,18 @@ print_variable (struct variable *v, char scope, int level)
   strcpy(arrbuff,"-1");
   // are we dealing with the sqlca variable ?
   if (level==0&&strcmp(v->names.name,"sqlca")==0) {
-	  printf("SQLCA!!!\n");
+		#ifdef DEBUG
+			debug("SQLCA!!!\n");
+        #endif
 	if (strcmp(acl_getenv("LEXTYPE"),"EC")==0) {
 			return;
 	}
   }
 
   if (scope=='G'&&strcasecmp(v->names.name,"time")==0&&level==0) {
-		printf("Ignore time....\n");
+		#ifdef DEBUG
+			debug("Ignore time....\n");
+        #endif
 		return;
   }
 

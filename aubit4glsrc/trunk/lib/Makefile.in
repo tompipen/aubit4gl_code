@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.81 2003-02-05 08:15:41 afalout Exp $
+# $Id: Makefile.in,v 1.82 2003-02-07 04:01:44 afalout Exp $
 #
 
 ROOT    =..
@@ -63,6 +63,7 @@ LIBLEXPERL_PATH   	=liblex/lex_perl
 LIBEXREPORTPDF_PATH =libpdf
 LIBFILE_PATH		=extra_libs/file
 LIBSTRING_PATH		=extra_libs/string
+LIBESQLCHELPER_PATH	=extra_libs/esqlc
 LIBHTML_PATH        =${ROOT}/tools/html
 LIBSQLESQL_PATH     =libsql/esqlc
 LIBUIGTK_PATH       =libui/ui_gtk
@@ -135,6 +136,8 @@ LIBEXREPORTPDF_DEPS	=$(wildcard ${LIBEXREPORTPDF_PATH}/*.c) $(wildcard ${LIBEXRE
 					$(wildcard ${LIBEXREPORTPDF_PATH}/Makefile)
 LIBFILE_DEPS		=$(wildcard ${LIBFILE_PATH}/*.c) $(wildcard ${LIBFILE_PATH}/*.h) \
 					$(wildcard ${LIBFILE_PATH}/Makefile)
+LIBESQLCHELPER_DEPS	=$(wildcard ${LIBESQLCHELPER_PATH}/*.c) $(wildcard ${LIBESQLCHELPER_PATH}/*.h) \
+					$(wildcard ${LIBESQLCHELPER_PATH}/Makefile)
 LIBSTRING_DEPS		=$(wildcard ${LIBSTRING_PATH}/*.c) $(wildcard ${LIBSTRING_PATH}/*.h) \
 					$(wildcard ${LIBSTRING_PATH}/Makefile)
 LIBHTML_DEPS		=$(wildcard ${LIBHTML_PATH}/*.c) $(wildcard ${LIBHTML_PATH}/*.h) \
@@ -312,18 +315,15 @@ libIM_JABBER${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
 
 libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
 	$(MAKE) -C ${LIBFILE_PATH}
-#	@echo "Disabled because it needs 4glc - $@"
-#	@touch $@
 
 libA4GL_string${SO_EXT}: ${4GLC} ${LIBSTRING_DEPS}
 	$(MAKE) -C ${LIBSTRING_PATH}
-#	@echo "Disabled because it needs 4glc - $@"
-#	@touch $@
+
+libesqlhelper_funcs${SO_EXT}: ${4GLC} ${LIBESQLCHELPER_DEPS}
+	$(MAKE) -C ${LIBESQLCHELPER_PATH}
 
 libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
-#	@echo "Disabled because it needs 4glc - $@"
-#	@touch $@
 
 aubit-config: ${AUBITCONFIG_DEPS}
 	${MAKE} -C ${AUBITCONFIG_PATH}
@@ -397,6 +397,7 @@ clean.other:
 	${MAKE} -C ${LIBEXDATA_PATH} clean
 	${MAKE} -C ${LIBSTRING_PATH} clean
 	${MAKE} -C ${LIBFILE_PATH} clean
+	${MAKE} -C ${LIBESQLCHELPER_PATH} clean
 	${MAKE} -C ${LIBHTML_PATH} clean
 
 ## ==================================================================

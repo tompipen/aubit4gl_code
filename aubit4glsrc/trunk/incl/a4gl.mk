@@ -15,11 +15,11 @@
 #
 ###########################################################################
 
-#	 $Id: a4gl.mk,v 1.21 2003-02-02 01:13:48 afalout Exp $
+#	 $Id: a4gl.mk,v 1.22 2003-02-07 04:01:44 afalout Exp $
 
 ##########################################################################
 #
-#   @(#)$Id: a4gl.mk,v 1.21 2003-02-02 01:13:48 afalout Exp $
+#   @(#)$Id: a4gl.mk,v 1.22 2003-02-07 04:01:44 afalout Exp $
 #
 #   @(#)$Product: Aubit 4gl $
 #
@@ -118,9 +118,9 @@ A4GL_OBJ_EXT=.ao        #static object
 A4GL_SOB_EXT=.aso       #shared object
 A4GL_LIB_EXT=.aox       #static library
 A4GL_SOL_EXT=.asx       #shared library
-A4GL_FRM_EXT=.afr.xml
+A4GL_FRM_EXT=.afr.xml   #FIXME: reverse => xml.afr
 A4GL_HLP_EXT=.hlp
-A4GL_MNU_EXT=.mnu.xml
+A4GL_MNU_EXT=.mnu.xml   #FIXME: reverse => xml.mnu
 
 #Files that compiler created, but are not neded at run-time, that are safe to delete:
 A4GL_TMP_SUFFIXES_DELETE=${A4GL_OBJ_EXT} .err .glb
@@ -162,16 +162,10 @@ A4GL_CLEAN_FLAGS	=$(addprefix *,	$(A4GL_TMP_SUFFIXES_DELETE)) $(addprefix *,$(A4
 #respect to the c file, and ignore possible change in 4gl file
 #.4gl${A4GL_OBJ_EXT}:
 %${A4GL_OBJ_EXT} : %.4gl
-#	${A4GL_CC} $< -c -o ${OBJSTORE}$@
-	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o $@
+	${FAIL_CMPL_4GL}${A4GL_CC} $< -c -o ${OBJSTORE}$@
+#FIXME: instead of above, invoke 4glc first, an then gcc directly, to maximize controll:
 #	aubit 4glc -c hello.4gl
 #	${FAIL_CMPL_C}${AUCC} ${AUCC_FLAGS} -c $*.c -o $*.ao
-ifeq "${VERBOSE}" "1"
-ifneq "${FAIL_CMPL_4GL}" "-"
-#we will not know if we succeded if ignore is on:
-	@echo 4GL OK: $<
-endif
-endif
 
 ####################################
 # Rule to compile an shared object file from a 4gl file
@@ -184,7 +178,6 @@ endif
 #
 %${A4GL_LIB_EXT}:  %.mk
 	@echo "Making library $*.aox using $^"
-#	${AMAKE} -f $<
 	${AMAKE} $<
 
 ####################################
@@ -192,39 +185,9 @@ endif
 #
 #With XML packer, fcompile will by default create forms with .frm.xml extension:
 %${A4GL_FRM_EXT}: %.per
-#.per.afr:
-#	${A4GL_FC} $*
-#using VPATH:
-#	${A4GL_FC} $^ > /dev/null
 #	${FAIL_CMPL_FRM}${A4GL_FC} $^ ${FORMSTORE}$@
 	${FAIL_CMPL_FRM}${A4GL_FC} $<
-ifeq "${VERBOSE}" "1"
-ifneq "${FAIL_CMPL_FRM}" "-"
-#we will not know if we succeded if ignore is on:
-	@echo PER OK: $<
-endif
-endif
-%.tmpcommentedout:
-#FIXME: change form compiler and aubit compiler to recognise .afr, and
-#remove this "ln" line(s)
-	XX=$(shell  if test -f ${FORMSTORE}$*.afr.xml ; then echo 1; fi)
-	@echo XX=${XX}
-	@echo xx$(shell  if test -f ${FORMSTORE}$*.afr.xml ; then echo 1; fi)xx
-ifeq "$(shell  if test -f ${FORMSTORE}$*.afr.xml ; then echo 1; fi)" "1"
-	@echo exist: ${FORMSTORE}$*.afr.xml
-	ln ${FORMSTORE}$*.afr.xml ${FORMSTORE}$*.xml.frm
-else
-	@echo No file: ${FORMSTORE}$*.afr.xml
-#ifeq "$(shell  if test -f ${FORMSTORE}$@ ; then echo 1; fi)" "1"
-ifeq "$(shell  if test -f ${FORMSTORE}$*.afr ; then echo 1; fi)" "1"
-#	@echo exist: ${FORMSTORE}$@
-	@echo exist: ${FORMSTORE}$*.afr
-	rm -f ${FORMSTORE}$*.frm
-	ln ${FORMSTORE}$@ ${FORMSTORE}$*.frm
-else
-	@echo No file: ${FORMSTORE}$*.afr
-endif
-endif
+
 
 ####################################
 #For old makefiles that still use .afr extension

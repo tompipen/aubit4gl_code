@@ -23,29 +23,34 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.6 2002-09-09 06:51:01 afalout Exp $
+# $Id: Makefile.in,v 1.7 2003-02-07 04:01:47 afalout Exp $
 #
-
-#note: I plan to use amake for this; this is just for now
 
 ROOT    =../../..
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ${ROOT}/incl/Makefile-common
-#override NOINCL=0
+
+
+#rules for making Aubit targets:
+include ${ROOT}/incl/a4gl.mk
 
 ## ==================================================================
 ##                              Options
 ## ==================================================================
 
-ALL=forms 4gl
-
 #no longer needed? (CHECK!)
 #ADDFLAGS=-fnative-struct
 
-IMAGES=aubit.xpm  img1.xpm  linux.xpm
-FORMS.per=gui.per widget.per radio.per multi.per form-gui.per calc.per
-FORMS.frm=${FORMS.per:.per=.frm}
+ALL			=forms 4gl
+
+IMAGES		=aubit.xpm img1.xpm linux.xpm
+
+FORMS.per	=gui.per widget.per radio.per multi.per form-gui.per calc.per
+
+FORMS.frm	=${FORMS.per:.per=${A4GL_FRM_EXT}}
+
+.PHONY: 	${ALL} clean help forms 4gl all
 
 ## ==================================================================
 ##                              Targets
@@ -53,32 +58,23 @@ FORMS.frm=${FORMS.per:.per=.frm}
 
 all: ${ALL}
 
-4gl: hello-gui game calc
+4gl: hello-gui.4ae game.4ae calc.4ae
 
-hello-gui: hello-gui.4gl
-	${FGLPCEXEC} $^ -o $@ ${ADDFLAGS}
-
-game: gui.4gl
-	${FGLPCEXEC} $^ -o $@ ${ADDFLAGS}
-
-calc: calc.4gl
+game.4ae: gui.4gl
 	${FGLPCEXEC} $^ -o $@ ${ADDFLAGS}
 
 forms: ${FORMS.frm}
 
 help:
-	@echo "use 'make' to compile examples with GTK GUI"
-
-%.frm: %.per
-	${FCOMPILE} $^
-
+	@echo "use 'make' to compile examples with GTK GUI functionality"
 
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean:
-	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.c *.o \
-	*.hlp *.exe *.stackdump *.err gui hello-gui *.glb
+	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.h *.c *.o *.4ae \
+	*.hlp *.exe *.stackdump *.err *.glb *${A4GL_FRM_EXT} ${FILES.4gl:.4gl=.h} \
+    calc game
 
 #------------------------------- EOF ---------------------------

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.54 2003-01-30 11:52:29 afalout Exp $
+# $Id: Makefile.in,v 1.55 2003-02-07 04:01:41 afalout Exp $
 #
 
 ROOT		=../..
@@ -50,15 +50,23 @@ ifeq "${GCC_MINGW}" "yes"
 	CFLAGS		+=-I${ROOT}/tools/getopt
 endif
 
+WANTKW_C		=wantkw.c
+Y_OUTPUT		=rules/generated/y.output
+
+ifeq "${HOSTNAME}" "aptiva"
+	#WANTKW_C	=/tmp/4glc/wantkw.c
+	Y_OUTPUT	=/tmp/4glc/rules/generated/y.output
+endif
+
 CMODS_EXE       =4glc.c
 CMODS_LIB       =\
 				dim.c \
 				list.c lexer.c \
 				mod.c map.c variables.c globals.c \
- 				wantkw.c \
 				rules/generated/states.c \
 				rules/generated/kw.c \
-                ${Y_TAB_C}
+                ${Y_TAB_C} \
+                ${WANTKW_C}
 
 CMODS           =${CMODS_EXE} ${CMODS_LIB}
 
@@ -121,9 +129,6 @@ ${ROOT}/bin/4glc: ${4GLCAOBJ}
 ##                            Windows Targets
 ## ==================================================================
 
-#libexportlib4glcomp.dll.a: ${4GLCAOBJ} ${4GLCOBJ_C}
-#	${CC} -shared -o ${ROOT}/lib/libexportlib4glcomp.dll -Wl,--out-implib=libexportlib4glcomp.dll.a $^ -Wl,--export-all-symbols ${AUBIT_LIB} -L${ROOT}/lib
-
 lib4glc${SO_EXT}: ${ROOT}/lib/lib4glc${SO_EXT}
 ${ROOT}/lib/lib4glc${SO_EXT}: ${OBJS_LIB}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
@@ -142,7 +147,7 @@ endif
 rules/generated/y.tab.o: ${Y_TAB_C}
 	$(CC) ${CFLAGS} -c -o $@ ${Y_TAB_C} @YYDEBUG@ -I${ROOT}/lib/liblex/lex_c -I.
 
-${Y_TAB_C}: ${RULES_SRC}
+${Y_TAB_C} rules/generated/y.output: ${RULES_SRC}
 	${MAKE} -C rules
 
 ../fcompile/form_x.h:
@@ -150,36 +155,28 @@ ${Y_TAB_C}: ${RULES_SRC}
 
 #${ROOT}/tools/no_yacc/cygwin/compilers/4glc/rules/generated/y.tab.c
 
+wantkw.c: wantkw_gen.pl ${Y_OUTPUT}
+ifeq "${HOSTNAME}" "aptiva"
+	cp ${Y_OUTPUT} rules/generated/y.output
+endif
+	@PERL@ $<
+
 ## ==================================================================
 ##                            Dependencies
 ## ==================================================================
 
-#${GENRULES}/kw.c: 				rules.t
-#${GENRULES}/single_words.rule: 	rules.t
-#${GENRULES}/y.tab.c: 			rules.t
-#${GENRULES}/states.c: 			rules.t
-
-#${GENRULES}/kw.c ${GENRULES}/single_words.rule ${GENRULES}/y.tab.c \
-#${GENRULES}/states.c: ${Y_TAB_C}
-
 ${GENRULES}/kw.c ${GENRULES}/single_words.rule \
 ${GENRULES}/states.c: ${Y_TAB_C}
 
-#rules/generated/states.o: rules/generated/states.c
 rules/generated/states.c rules/generated/kw.h rules/generated/y.tab.h:
 	${MAKE} -C rules $(MKNAME)
 
-4glc.o: rules/generated/kw.h rules/generated/y.tab.h
-dim.o: rules/generated/kw.h rules/generated/y.tab.h
-
-mod.o: 							mod.c ${Y_TAB_C}
-${GENRULES}/y.tab.o: 			../fcompile/form_x.h
-lexer.o: 						${GENRULES}/kw.h
-lexer.o: 						${GENRULES}/y.tab.h
-
-wantkw.c: rules/generated/y.output
-	@PERL@ wantkw_gen.pl
-wantkw.o: wantkw.c
+4glc.o: 				rules/generated/kw.h rules/generated/y.tab.h
+dim.o: 					rules/generated/kw.h rules/generated/y.tab.h
+mod.o: 					mod.c ${Y_TAB_C}
+${GENRULES}/y.tab.o: 	../fcompile/form_x.h
+lexer.o: 				${GENRULES}/kw.h
+lexer.o: 				${GENRULES}/y.tab.h
 
 ## ==================================================================
 ##                            Other Targets

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.50 2003-02-06 12:12:26 mikeaubury Exp $
+# $Id: compile_c.c,v 1.51 2003-02-07 04:01:45 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -4064,7 +4064,12 @@ print_fetch_2 (void)
 void
 print_fetch_3 (char *ftp, char *into)
 {
+  
+  //FIXME: there are parameters missing here:
   printc ("A4GLSQL_fetch_cursor(%s,%s);}\n}\n", ftp, into);
+
+
+
 }
 
 /**

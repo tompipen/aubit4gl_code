@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.111 2003-01-27 03:50:11 afalout Exp $
+# $Id: Makefile.in,v 1.112 2003-02-07 04:00:35 afalout Exp $
 #
 
 ## ==================================================================
@@ -268,6 +268,8 @@ clean.tools:
 	$(MAKE) -C tools/test/db clean
 	$(MAKE) -C tools/test/db/informix clean
 	$(MAKE) -C tools/test/db/postgresql clean
+	$(MAKE) -C tools/test/lang clean
+	$(MAKE) -C tools/test/regression clean
 	$(MAKE) -C tools/ide clean
 	$(MAKE) -C tools/html clean
 	$(MAKE) -C tools/jabber clean
@@ -280,6 +282,7 @@ clean.tools:
 	$(MAKE) -C tools/4glunit clean
 	$(MAKE) -C tools/fgldoc clean
 	(cd tools/4gltree; ${RM} *.bak)
+	(cd tools/metrics_4gl; ${RM} *.bak)
 	@echo Aubit 4gl compiler tools source tree is now clean
 
 #This will clean everything created with Autoconf configure script:
@@ -316,12 +319,13 @@ clean.makefiles:
 	lib/librpc/sun_rpc/Makefile lib/librpc/xml_rpc/Makefile \
 	lib/resource/Makefile tools/loadmap/Makefile lib/libaubit4gl/Makefile \
 	lib/liblex/lex_c/Makefile lib/liblex/lex_perl/Makefile \
-	lib/libui/ui_gtk/Makefile Makefile \
+	lib/libui/ui_gtk/Makefile lib/liblex/lex_esqlc/Makefile \
 	lib/libexdata/Makefile lib/libsql/postgresql/Makefile \
     lib/libform/form_generic/Makefile lib/libmenu/menu_generic/Makefile \
 	lib/libsql/sapdb/Makefile tools/4glunit/Makefile \
 	tools/test/db/informix/Makefile tools/test/db/postgresql/Makefile \
-    tools/fgldoc/Makefile
+    tools/fgldoc/Makefile \
+    Makefile
 
 
 
@@ -335,7 +339,7 @@ clean.root:
 #we must not clean *.tmp because of unixbuildnames.tmp:
 	$(RM) *.bak *.BAK libincl .*.bak core cyrpc.flg debug.out \
 	*.err ${PLATFORMINFO} make.log commit.log rpmbuild.log \
-	aubit4gl.lsm rpmbuild.log
+	aubit4gl.lsm rpmbuild.log .\#*
 	rm -rf autom4te.cache
 
 #stuff created by aubitbuild.sh:
@@ -343,7 +347,6 @@ clean.aubitbuild:
 	${RM} tmpdlpage1.html aubitdownload.htm tmpdlpage2.html aubitdownload-template.htm \
     cybuildnames.tmp unixbuildnames.tmp unixsrcbuildnames.tmp cysrcbuildnames.tmp \
     warning.log
-
 #FIXME: move this to appropriate makefile :
 	${RM} compilers/fcompile/fshow.glb compilers/fcompile/fshow.h \
 	tools/ide/debug.out tools/adbaccess/debug.out
@@ -359,7 +362,7 @@ clean.bin:
 	4glp${EXE} mdecompile${EXE} fdecompile${EXE} fdecompile-j${EXE} \
 	aubit-config${EXE} fshow${EXE}  odbctest-*${EXE} \
 	aace${EXE} aace_4gl${EXE} aace_perl${EXE} adecompile xgen dbbeauty *.err \
-    iid infmx_tidy \
+    iid infmx_tidy *.4ae *-strip \
 	)
 
 clean.etc:
@@ -367,7 +370,7 @@ clean.etc:
 	rm -rf etc/Output
 
 clean.incl:
-	${RM} incl/*.bak
+	${RM} incl/*.bak .\#*
 
 clean.docs:
 	rm -rf docs/doxy/html

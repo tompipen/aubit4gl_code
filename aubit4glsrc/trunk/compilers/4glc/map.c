@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.23 2003-01-30 11:52:29 afalout Exp $
+# $Id: map.c,v 1.24 2003-02-07 04:01:42 afalout Exp $
 #*/
 
 /**
@@ -811,9 +811,19 @@ char buff[456];
 
   if (! silent) {
     if (globals_only) {
-		printf ("Preparing globals file for: %s\n",c);
+		if (verbose) {
+			printf ("Preparing globals file for: %s\n",c);
+        }
+        #ifdef DEBUG
+			debug ("Preparing globals file for: %s\n",c);
+        #endif
     } else {
-		printf ("Translating to %s: %s\n",acl_getenv ("A4GL_LEXTYPE"),c);
+		if (verbose) {
+			printf ("Translating to %s: %s\n",acl_getenv ("A4GL_LEXTYPE"),c);
+        }
+        #ifdef DEBUG
+			debug ("Translating to %s: %s\n",acl_getenv ("A4GL_LEXTYPE"),c);
+        #endif
     }
   }
 
