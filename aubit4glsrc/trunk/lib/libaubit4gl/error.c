@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.14 2002-10-07 11:06:26 afalout Exp $
+# $Id: error.c,v 1.15 2003-01-04 17:29:56 psterry Exp $
 #
 */
 
@@ -158,6 +158,11 @@ int a;
 		     cache_statusno=a;
 		}
 	}
+	/* for now, until error handling and logging routines are completed,
+	 * display the error message to standard output
+	 */
+
+	printf("Error: %s\n",s);
 
 	exit (errors[a].a4gl_errno);
 

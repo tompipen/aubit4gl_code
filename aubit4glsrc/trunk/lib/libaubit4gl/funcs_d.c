@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.13 2003-01-02 10:53:00 psterry Exp $
+# $Id: funcs_d.c,v 1.14 2003-01-04 17:29:56 psterry Exp $
 #
 */
 
@@ -387,43 +387,60 @@ debug("In using... fmt=%s, num=%lf", fmt, num);
     // first, ensure the format string is wide enough to hold the number
     // if not, try drop trailing decimals, otherwise flag overflow with *'s
     {
-     int f_cnt = 0;
-     int n_cnt = isneg;
-	 // count format string number place holders, up to decimal point
-	 for (a=0; a < strlen(fmt); a++) {
+     int f_cnt = 0; // number of digits to left of dec. point in format
+     int d_cnt = 0; // number of digits to right of dec. point
+     int n_cnt = isneg; // number of left-digits needed for number supplied
+     // count format string number place holders, up to decimal point
+     for (a=0; a < strlen(fmt); a++) {
         if (fmt[a] == '.') break;
         if (strchr(rep_digit,fmt[a])) f_cnt++;
-	 }
-	 // count the digits in the integer part of the number
-	 for (a=b; (a > 0 && ptr1[a] > '0'); a--) n_cnt++;
+     }
+     // count format string number place holders, after the decimal point
+     while ( a < strlen(fmt) ) {
+        if (strchr(rep_digit,fmt[a])) d_cnt++;
+	a++;
+     }
+     // count the digits in the integer part of the number
+     for (a=b; (a > 0 && ptr1[a] > '0'); a--) n_cnt++;
 
-	 if ( f_cnt < n_cnt ) {
-	    debug("overflow, f_cnt=%d,n_cnt=%d", f_cnt, n_cnt);
-	    a = strlen(fmt);
-            if ( n_cnt > a ) {
-               // no way this number can fit, fill with stars ...
-	       if ( a > s ) a = s;
-               memset( str, '*', a);
-	       return;
-	    }
-            else
-            {
-               // use a compact format that at least can display the number
-               if ( isneg ) {
-               memset( fmt, '-', a);
-	       num = 0-num;
-	       }
-	       else {
-               memset( fmt, '#', a);
-	       }
-	        if (n_cnt < a) fmt[n_cnt]='.';
-		debug("trying fmt=%s",fmt);
-		return (using( str, s, fmt, num) );
-	    }
-	 }
-	}
-	for (a=strlen(fm1)-1;a>=0;a--) 
+     if ( f_cnt < n_cnt )
+     {
+        debug("overflow, f_cnt=%d,d_cnt=%d,n_cnt=%d", f_cnt, d_cnt, n_cnt);
+        a = strlen(fmt);
+        if (a > s) a = s;
+        if ( n_cnt > a ) {
+         // no way this number can fit, fill with stars ...
+            memset( str, '*', a);
+            return;
+        }
+        if ( strcasecmp(acl_getenv("FORMAT_OVERFLOW"),"REFORMAT") == 0 
+             || strcasecmp(acl_getenv("FORMAT_OVERFLOW"),"ROUND") == 0 )
 	{
+         // use a compact format that at least can display the number.
+	 // round off decimal places only if FORMAT_OVERFLOW allows it
+            if ( isneg ) {
+              memset( fmt, '-', a);
+              num = 0-num;
+            }
+            else {
+              memset( fmt, '#', a);
+            }
+            if (n_cnt < a) fmt[n_cnt]='.';
+            if ( (a - n_cnt > d_cnt) ||
+                 (strcasecmp(acl_getenv("FORMAT_OVERFLOW"),"ROUND") == 0) )
+            {
+            debug("trying fmt=%s",fmt);
+            return (using( str, s, fmt, num) );
+            }
+        }
+        // default is to use the strict I4GL behaviour, stars
+        memset( str, '*', a);
+        return;
+     }
+    }
+
+    for (a=strlen(fm1)-1;a>=0;a--) 
+    {
     if (strchr(rep_digit,fm1[a])) {
           if (((ptr1[b]=='0'&&ptr1[b-1]==' ')||ptr1[b]==' ')&&isprnt==1) isprnt=0;
           str[a]=ptr1[b--];
