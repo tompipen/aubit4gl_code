@@ -80,3 +80,6 @@ void PreparedStatement::setA4glStatement(A4glStatement *sid)
 A4glStatement *PreparedStatement::getA4glStatement(void) 
 {
 }
+
+
+

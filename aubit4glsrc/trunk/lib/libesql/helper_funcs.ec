@@ -3,6 +3,13 @@
 
 //needed for DTYPE_MONEY DTYPE_DECIMAL DTYPE_DTIME DTYPE_DATE ...
 
+
+#ifdef DIALECT_QUERIX
+	//avoid redeclaration of int_flag, quit_flag, UCHAR
+	#define _NO_INT_QUIT_FLAG_
+    //#define __UCHAR_DEFINED__
+#endif
+
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_esql.h"
 

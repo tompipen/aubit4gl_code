@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.5 2003-01-26 06:09:58 afalout Exp $
+# $Id: Makefile.in,v 1.6 2003-08-20 07:39:33 afalout Exp $
 #
 
 ROOT    =../../..
@@ -37,10 +37,14 @@ include ../../../incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-SRC		=postgresql.cpp ConnectionException.cpp PgConnection.cpp \
-		PgDriver.cpp PreparedStatement.cpp
-OBJS	=${SRC:.cpp=.o}
-CFLAGS	+=-I.. @PGSQL_INCLUDE@
+CPPSRC	=ConnectionException.cpp PreparedStatement.cpp \
+		postgresql.cpp PgConnection.cpp PgDriver.cpp
+
+SRC		=simple.c
+
+OBJS	=${SRC:.c=.o}
+CPPOBJS	=${CPPSRC:.cpp=.o}
+CFLAGS	+=-I.. @PGSQL_INCLUDE@ -I/usr/include/pgsql/libpq++ -I/usr/include/pgsql
 CXXFLAGS=$(CFLAGS)
 
 ALL		=${LIBROOT}/libSQL_pg${SO_EXT}
@@ -51,9 +55,17 @@ ALL		=${LIBROOT}/libSQL_pg${SO_EXT}
 
 ALL: ${ALL}
 
+#This "simple" PG plug-in with limited functionality was written by Mike
+libSQL_pg${SO_EXT}: ${LIBROOT}/libSQL_pg${SO_EXT}
 ${LIBROOT}/libSQL_pg${SO_EXT}: $(OBJS)
 	${LD} ${SO_LDFLAGS} $^ @PGSQL_LIBS@ -o $@
-#	${CP} $@ ${LIBROOT}
+
+#This "real" fully functional driver written in C++ was never 
+#finished by Sergio... :-(
+libSQL_pgDEVEL${SO_EXT}:${LIBROOT}/libSQL_pgDEVEL${SO_EXT}
+${LIBROOT}/libSQL_pgDEVEL${SO_EXT}: $(CPPOBJS)
+	${LD} ${SO_LDFLAGS} $^ @PGSQL_LIBS@ -o $@
+
 
 ## ==================================================================
 ##                              Clean

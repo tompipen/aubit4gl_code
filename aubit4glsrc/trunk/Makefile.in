@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.124 2003-08-18 06:18:20 afalout Exp $
+# $Id: Makefile.in,v 1.125 2003-08-20 07:38:48 afalout Exp $
 #
 
 ## ==================================================================
@@ -73,6 +73,7 @@ default: ${ALL}
 	@echo "| LIB_INSTALL_LINK =${LIB_INSTALL_LINK}"
 	@echo "| BIN_INSTALL_LINK =${BIN_INSTALL_LINK}"
 	@echo "| Execute 'make extra' to compile additional components.             |"
+	@echo "| Execute 'make test.build' to test the build.                       |"
 	@echo "+--------------------------------------------------------------------+"
 	@echo " "
 	@echo "Thank you for using Aubit 4gl compiler"
@@ -1041,6 +1042,13 @@ lclint:
 gcc_symbols:
 	gcc -E -dM - </dev/null
 
+#Run full set of tests
+test.build:
+#if have-sqlite
+	cd tools/test/build_tests; ${SH} run_tests -norunec -short -silent -sqlite
+#else
+#	cd tools/test/build_tests; ${SH} run_tests -short -silent -nodb
+#endif
 
 ## ---------------------------- EOF ----------------------------------
 

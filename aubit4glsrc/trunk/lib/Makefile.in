@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.96 2003-08-18 06:18:34 afalout Exp $
+# $Id: Makefile.in,v 1.97 2003-08-20 07:39:33 afalout Exp $
 #
 
 ROOT    =..
@@ -46,7 +46,8 @@ include ${ROOT}/incl/Makefile-common
 4GLC    =${ROOT}/bin/4glc
 
 #target names are maintained in configure.in
-ALL 	=aubit-config ${LIB_DEFAULT} ${LIB_OPTIONAL}
+ALL_LIBS=${LIB_DEFAULT} ${LIB_OPTIONAL}
+ALL 	=aubit-config ${ALL_LIBS}
 
 ALL_H   =$(wildcard ${ROOT}/incl/*.h)
 
@@ -175,16 +176,21 @@ LIBFORMXDR_DEPS		=$(wildcard ${LIBFORMXDR_PATH}/*.c) $(wildcard ${LIBFORMXDR_PAT
 LIBFORMGENERIC_DEPS	=$(wildcard ${LIBFORMGENERIC_PATH}/*.c) $(wildcard ${LIBFORMGENERIC_PATH}/*.h) \
 					$(wildcard ${LIBFORMGENERIC_PATH}/Makefile) ${ALL_H}
 
+.PHONY=all note check clean
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-all: note ${ALL}
+all: note ${ALL} check
 	@echo "Default targets (${ALL}) built successfully."
 
 note:
 	@echo "Building: ${ALL}"
+
+check:
+	@for a in $(ALL_LIBS); do if ! test -f $$a; then echo "$$a does not exist"; exit 1; fi; done
+	@echo "All library files built OK"
 
 ## ==================================================================
 ##                       Targets in sub-makefiles
@@ -344,6 +350,11 @@ libESQL_INFORMIX${SO_EXT}: ${LIBESQL_DEPS}
 libESQL_POSTGRES${SO_EXT}: ${LIBESQL_DEPS}
 	${MAKE} -C ${LIBESQL_PATH} $@
 
+libESQL_QUERIX${SO_EXT}: ${LIBESQL_DEPS}
+	${MAKE} -C ${LIBESQL_PATH} $@
+
+libESQL_SAP${SO_EXT}: ${LIBESQL_DEPS}
+	${MAKE} -C ${LIBESQL_PATH} $@
 
 ##############
 #libEXDTYPE_
@@ -359,14 +370,24 @@ libXDRPACKER_struct_form${SO_EXT} libXDRPACKER_menu_list${SO_EXT} \
 libXDRPACKER_report${SO_EXT}: ${LIBDATA_DEPS}
 	${MAKE} -C ${LIBDATA_PATH}
 
+
+
+###############
+#Misc libs:
 libMSG_NATIVE${SO_EXT}: ${LIBMSGNATIVE_DEPS}
 	${MAKE} -C ${LIBMSGNATIVE_PATH}
 
-libHELP_std${SO_EXT}: ${LIBHELP_STD_DEPS} ${4GLC} ${FCOMPILE}
-	${MAKE} -C ${LIBHELP_STD_PATH}
-
 libIM_JABBER${SO_EXT_LINKABLE}: ${LIBIMJABBER_DEPS}
 	$(MAKE) -C ${LIBIMJABBER_PATH} $@
+
+libA4GL_cint${SO_EXT_LINKABLE}:
+	cd ../cint; ${SH} make_cintlib
+
+
+##############
+#Libs that need 4glc
+libHELP_std${SO_EXT}: ${LIBHELP_STD_DEPS} ${4GLC} ${FCOMPILE}
+	${MAKE} -C ${LIBHELP_STD_PATH}
 
 libA4GL_file${SO_EXT}: ${4GLC} ${LIBFILE_DEPS}
 	$(MAKE) -C ${LIBFILE_PATH}
@@ -380,9 +401,8 @@ libA4GL_pop${SO_EXT}: ${4GLC} ${LIBPOP_DEPS}
 libA4GL_HTML${SO_EXT_LINKABLE}: ${4GLC} ${LIBHTML_DEPS}
 	$(MAKE) -C ${LIBHTML_PATH} $@
 
-libA4GL_cint${SO_EXT_LINKABLE}:
-	cd ../cint; ${SH} make_cintlib
-
+##############
+#Not libraries - programs:
 aubit-config: ${AUBITCONFIG_DEPS}
 	${MAKE} -C ${AUBITCONFIG_PATH}
 

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.137 2003-08-18 23:31:26 afalout Exp $
+# $Id: Makefile-common.in,v 1.138 2003-08-20 07:39:32 afalout Exp $
 #
 
 
@@ -769,6 +769,8 @@ ECPG_LIBDIR=@ECPG_LIBDIR@
 ECPG_LFLAGS=@ECPG_LFLAGS@
 ECPG_IFLAGS=@ECPG_IFLAGS@
 IFMX_ESQLC=@IFMX_ESQLC@
+SAPDB_ESQLC=@SAPDB_ESQLC@
+Q_ESQLC=@Q_ESQLC@
 
 
 ## ==================================================================
@@ -799,10 +801,18 @@ MANUAL_GTK="@GTKLIBS@ @GTK_LIB_PATH@ @GTK_INC_PATH@"
 ## ==================================================================
 
 #Create make file in current directory:
-#%mak: Makefile.in
 %.mak: Makefile.in
-#	cd ${AUBITDIR} && CONFIG_FILES=$(SUBDIR)/Makefile CONFIG_HEADERS= $(SH) ./config.status
 	cd ${AUBITDIR} && $(SH) ./config.status --file $(SUBDIR)/Makefile
+
+#"new" for instance
+%ew: Makefile.in
+	cd ${AUBITDIR} && $(SH) ./config.status --file $(SUBDIR)/Makefile
+
+#causes strange makefile updates...
+#"makefile" for instance
+#%akefile: Makefile.in
+#	cd ${AUBITDIR} && $(SH) ./config.status --file $(SUBDIR)/Makefile
+
 
 ## ==================================================================
 ##                    Install Settings

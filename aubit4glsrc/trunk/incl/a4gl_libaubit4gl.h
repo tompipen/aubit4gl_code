@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.85 2003-08-19 07:57:57 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.86 2003-08-20 07:39:32 afalout Exp $
 #
 */
 
@@ -1707,23 +1707,26 @@ char *A4GL_init_dec (char *s, int len, int d);
 #ifndef _DEFINE_STATUSVARS_     /* set from fglwrap.c --ONLY-- */
   /* for everything except libaubit4gl: */
 
-#ifndef _SQLCA_DEFINED_
-  /*
-     _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
-     that also define sqlca:
-   */
-#define _SQLCA_DEFINED_
-#endif
+	#ifndef _SQLCA_DEFINED_
+		/*
+	     _SQLCA_DEFINED_ is set in esql.ec to prevent conflict with Informix headers
+	     that also define sqlca:
+		*/
+		#define _SQLCA_DEFINED_
+	#endif
 
-  extern long a4gl_status;                            /** 4gl global status variable */
-  extern long int_flag;                                       /** 4gl interrupt ocurred global flag */
-  extern long quit_flag;                              /** 4gl quit ocurred global flag */
+	extern long a4gl_status;   /** 4gl global status variable */
+	
+	#ifndef _NO_INT_QUIT_FLAG_
+		extern long int_flag;      /** 4gl interrupt ocurred global flag */
+		extern long quit_flag;     /** 4gl quit ocurred global flag */
+    #endif
 #else
   /* only in libaubit4gl */
   dll_export sqlca_struct a4gl_sqlca;       /** Sqlca variable -- DEFINED WHERE ??? --*/
-  long a4gl_status;                                                     /** 4gl global status variable */
-  long int_flag;                                                /** 4gl interrupt ocurred global flag */
-  long quit_flag;                                               /** 4gl quit ocurred global flag */
+  long a4gl_status;            /** 4gl global status variable */
+  long int_flag;               /** 4gl interrupt ocurred global flag */
+  long quit_flag;              /** 4gl quit ocurred global flag */
 #endif
 
 int A4GL_get_option_value (char type);

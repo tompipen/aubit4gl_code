@@ -13,6 +13,8 @@
 #include <string>
 #include <map>
 
+#include "pgsql/libpq++.h"
+
 using namespace std;
 
 namespace Aubit4glSql_postgresql
@@ -27,19 +29,20 @@ namespace Aubit4glSql_postgresql
     int currentColumn;
     short fetch_direction;
   public:
-      boolean absolute (int row);
+      //andrej boolean absolute (int row);
+      bool absolute (int row);
     void afterLast ();
     void beforeFirst ();
     void close ();
     void first ();
 
     // @todo : I just need getPointer function.
-    Blob getBlob (int columnIndex);
-    Byte getByte (int columnIndex);
-    Decimal getDecimal (int columnIndex);
-    Clob getClob (int columnIndex);
+//andrej    Blob getBlob (int columnIndex);
+//andrej    Byte getByte (int columnIndex);
+//andrej    Decimal getDecimal (int columnIndex);
+//andrej    Clob getClob (int columnIndex);
       string & getCursorName ();
-    Date getDate (int columnIndex);
+//andrej    Date getDate (int columnIndex);
     double getDouble (int columnIndex);
     int getFetchDirection ();
     int getFetchSize ();
@@ -49,8 +52,8 @@ namespace Aubit4glSql_postgresql
     int getRow ();
     short getShort (int columnIndex);
     string getString (int columnIndex);
-    Time getTime (int columnIndex);
-    SQLWarning getWarnings ();
+//andrej    Time getTime (int columnIndex);
+//andrej    SQLWarning getWarnings ();
     void insertRow ();
     bool isAfterLast ();
     bool isBeforeFirst ();

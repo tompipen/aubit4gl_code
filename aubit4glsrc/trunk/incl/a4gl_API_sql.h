@@ -25,7 +25,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: a4gl_API_sql.h,v 1.16 2003-07-09 16:19:00 mikeaubury Exp $
+# $Id: a4gl_API_sql.h,v 1.17 2003-08-20 07:39:32 afalout Exp $
 #
 */
 
@@ -39,8 +39,8 @@
 /* all SQL drivers define there own UCHAR - maybe we should not
 define it in any case? */
 #ifndef __UCHAR_DEFINED__
-#define __UCHAR_DEFINED__
-typedef unsigned char UCHAR;
+	#define __UCHAR_DEFINED__
+	typedef unsigned char UCHAR;
 #endif
 
 

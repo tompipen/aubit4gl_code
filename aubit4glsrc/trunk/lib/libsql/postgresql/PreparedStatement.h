@@ -8,6 +8,14 @@
 #ifndef PGDRIVER_INCL
 #define PGDRIVER_INCL
 
+//#ifdef HAVE_CXX_STRING_HEADER
+#include <string>
+//#endif
+
+#include "ResultSet.h"
+
+#include "pgsql/libpq++.h"
+
 namespace Aubit4glSql_postgresql
 {
 

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.68 2003-08-18 23:31:26 afalout Exp $
+# $Id: Makefile-install.mki,v 1.69 2003-08-20 07:39:32 afalout Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -927,37 +927,53 @@ install.mpz: ${MPZ_SRC_TGZ}
 # 14: Install PostgreSQL ESQL/C pre-compiler:
 #install.pg.esql: ${PGESQLC_RPM}
 #	${RPM} -i $^
-install.pg.esql:
-	@echo "NOTE: enter 'xxx' when prompted for password:"
-	unset CVSROOT; unset CVS_RSH; cvs -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot login;
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/interfaces/ecpg
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/Makefile.global.in
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/configure.in
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/configure
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/access/common/heaptuple.c
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/config
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/template/linux
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/GNUmakefile.in
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include/pg_config.h.in
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/tas/dummy.s
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/dynloader/linux.c
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/sysv_sema.c
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/sysv_shmem.c
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/dynloader/linux.h
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include/port/linux.h
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/makefiles/Makefile.linux
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/Makefile.shlib
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/interfaces/libpq
-	unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/port
+#install.pg.esql: get.pg.esql.cvs
+install.pg.esql: get.pg.esql.cvs
 #PostgreSQL needs Bison version 1.875 or later.
-	export YACC=/opt/bison-1.875-inst/bin/bison; cd pgsql-server; ./configure
-	cd pgsql-server/src/interfaces/ecpg; make
-	pgsql-server/src/interfaces/ecpg/preproc/ecpg/preproc/ecpg --version
+	export YACC=/opt/bison-1.875-inst/bin/bison; cd /usr/src/pgsql-server; ./configure --prefix=/opt/ecpg-cvs
+	-cd /usr/src/pgsql-server/src/interfaces/ecpg; make
+#First make will fail with:
+#mv -f y.tab.c ./preproc.c
+#mv: cannot stat `y.tab.c': No such file or directory
+	cp /usr/src/pgsql-server/src/interfaces/ecpg/preproc/preproc.tab.c 	/usr/src/pgsql-server/src/interfaces/ecpg/preproc/y.tab.c
+	cp /usr/src/pgsql-server/src/interfaces/ecpg/preproc/preproc.tab.h  /usr/src/pgsql-server/src/interfaces/ecpg/preproc/y.tab.h
+#one more time...
+	cd /usr/src/pgsql-server/src/interfaces/ecpg; make
+#do the installation as per --prefix
+	cd /usr/src/pgsql-server/src/interfaces/ecpg; make install
+#See if it runs:
+#	/usr/src/pgsql-server/src/interfaces/ecpg/preproc/ecpg --version
+	/opt/ecpg-cvs/bin/ecpg --version
 	@echo "Package info & manuals: ${PGESQLC_INFO}"
 	@echo " "
 	@echo "PostreSQL ESQL/C compiler installed.  Please re-run 'configure' to detect changes."
 	@echo " "
+
+#Get PG ecpg from CVS:
+get.pg.esql.cvs:
+	@echo "NOTE: enter 'xxx' when prompted for password:"
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot login;
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/interfaces/ecpg
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/Makefile.global.in
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/configure.in
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/configure
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/access/common/heaptuple.c
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/config
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/template/linux
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/GNUmakefile.in
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include/pg_config.h.in
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/tas/dummy.s
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/dynloader/linux.c
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/sysv_sema.c
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/sysv_shmem.c
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/backend/port/dynloader/linux.h
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include/port/linux.h
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/makefiles/Makefile.linux
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/Makefile.shlib
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/include
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/interfaces/libpq
+	cd /usr/src; unset CVSROOT; unset CVS_RSH; cvs -z3 -d :pserver:anoncvs@anoncvs.postgresql.org:/projects/cvsroot co -P pgsql-server/src/port
+
 
 #####################
 # 15: Install Check unit testing libraries

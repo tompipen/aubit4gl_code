@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.5 2003-08-18 23:31:26 afalout Exp $
+# $Id: Makefile,v 1.6 2003-08-20 07:39:33 afalout Exp $
 #
 
 ROOT    =../..
@@ -42,50 +42,69 @@ include ${ROOT}/incl/Makefile-common
 #detected and linked properly, on some others - you need this to get the link
 #to work...
 #FIXME-in that case, it should be linked in conditionally:
-#ifeq "${TARGET_OS}" "theOneThatNeedIt"
+ifeq "${TARGET_OS}" "theOneThatNeedIt"
 	LIBAUBIT4GL=-L${LIBROOT} -laubit4gl
-#endif
-
-#PGSQL_INCDIR
-#PGSQL_LIBDIR
+endif
 
 PGLIBS=-L${ECPG_LIBDIR} ${ECPG_LFLAGS} -lecpg -lecpg_compat -lpgtypes
+
+ALL=${LIBROOT}/libESQL_INFORMIX${SO_EXT} ${LIBROOT}/libESQL_POSTGRES${SO_EXT} \
+    ${LIBROOT}/libESQL_SAP${SO_EXT} ${LIBROOT}/libESQL_QUERIX${SO_EXT}
 
 ## ==================================================================
 ##                              Targets
 ## ==================================================================
 
-all: ${LIBROOT}/libESQL_INFORMIX${SO_EXT} ${LIBROOT}/libESQL_POSTGRES${SO_EXT}
-	@echo "Done: libESQL_INFORMIX${SO_EXT} libESQL_POSTGRES${SO_EXT}"
+all: ${ALL}
+	@echo "Done: ${ALL}"
 
 libESQL_INFORMIX${SO_EXT}: ${LIBROOT}/libESQL_INFORMIX${SO_EXT}
-${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_i.o
+${LIBROOT}/libESQL_INFORMIX${SO_EXT}: helper_funcs_informix.o
 	${IFMX_ESQLC} -static -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
 libESQL_POSTGRES${SO_EXT}: ${LIBROOT}/libESQL_POSTGRES${SO_EXT}
-${LIBROOT}/libESQL_POSTGRES${SO_EXT}: helper_funcs_p.o
+${LIBROOT}/libESQL_POSTGRES${SO_EXT}: helper_funcs_postgresql.o
 	${CC} -static -g --shared $^ -o $@ ${PGLIBS} ${LIBAUBIT4GL}
 # -Bstatic
 #gcc: file path prefix "static" never used
+
+libESQL_SAP${SO_EXT}: ${LIBROOT}/libESQL_SAP${SO_EXT}
+${LIBROOT}/libESQL_SAP${SO_EXT}: helper_funcs_sap.o
+	${CC} -static -g --shared $^ -o $@ ${LIBAUBIT4GL}
+
+libESQL_QUERIX${SO_EXT}: ${LIBROOT}/libESQL_QUERIX${SO_EXT}
+${LIBROOT}/libESQL_QUERIX${SO_EXT}: helper_funcs_querix.o
+	${CC} -static -g --shared $^ -o $@ ${LIBAUBIT4GL}
 
 ## ==================================================================
 ##                              Sub-targets
 ## ==================================================================
 
 
-helper_funcs_i.o: helper_funcs.ec
+helper_funcs_informix.o: helper_funcs.ec
 	${IFMX_ESQLC} -static -DDIALECT_INFORMIX -g -c -o $@ $^ -I${ROOT}/incl
 
-helper_funcs_p.o: helper_funcs.ec
-	${PG_ESQLC} -C INFORMIX -t helper_funcs.ec
+helper_funcs_postgresql.o: helper_funcs.ec
+	${PG_ESQLC} -C INFORMIX -t $^
 	${CC} -DDIALECT_POSTGRES -g -c -o $@ helper_funcs.c -I$(ECPG_INCDIR) ${ECPG_IFLAGS} -I${ROOT}/incl
+
+helper_funcs_sap.o: helper_funcs.ec
+#cpc will allways add .cpc extension to any source files
+	cp $^ $^.cpc
+	${SAPDB_ESQLC} $^ -I${INFORMIXDIR}/incl/esql -I${ROOT}/incl -o $@ -DDIALECT_SAP
+	rm $^.cpc
+
+helper_funcs_querix.o: helper_funcs.ec
+	${Q_ESQLC} $^
+	${CC} -DDIALECT_QUERIX -g -c -o $@ helper_funcs.c -I${ROOT}/incl -I${QUERIXDIR}/incl
+	rm helper_funcs.c
 
 ## ==================================================================
 ##                              Clean
 ## ==================================================================
 
 clean:
-	${RM} -f *.o *.c *${SO_EXT}
+	${RM} -f *.o *.c *${SO_EXT} *.cpc *.bak
 
 
 # =============================== EOF ===============================

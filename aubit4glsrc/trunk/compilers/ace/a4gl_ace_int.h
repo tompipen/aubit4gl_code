@@ -3,12 +3,6 @@
 #define _NO_WINDOWS_H_
 #include "a4gl_libaubit4gl.h"
 
-/*
-#if HAVE_RPC_H
-	#include <rpc/rpc.h>
-#endif
-*/
-
 #include "../../common/dataio/report.xs.h"
 
 

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.190 2003-08-18 23:31:03 afalout Exp $
+dnl # $Id: configure.in,v 1.191 2003-08-20 07:38:54 afalout Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -392,6 +392,8 @@ AC_SUBST(CYGWIN_PATH)
 AC_SUBST(EFENCE)
 AC_SUBST(CINT)
 AC_SUBST(SQLITE_LDPATH)
+AC_SUBST(Q_ESQLC)
+
 
 #Inno Setup:
 AC_SUBST(IS_SOURCE)
@@ -795,34 +797,18 @@ A4GL_DBPATH=$aubitdir/tools:$prefix/$SHORTNAME/tools
 
 #List of libraries that we allways make. Here so we don't have to maintain it
 #separately for RPM config file, install/deinstall and lib Makefile:
-#LIBFILE_1=$LIB_PREFIX/libEXREPORT_NOPDF$SO_EXT
-#LIBFILE_2=$LIB_PREFIX/libaubit4gl$SO_EXT_LINKABLE
-#LIBFILE_3=$LIB_PREFIX/libRPC_NORPC$SO_EXT
-#LIBFILE_4=$LIB_PREFIX/libFORM_NOFORM$SO_EXT
-#LIBFILE_5=$LIB_PREFIX/libSQL_nosql$SO_EXT
-#LIBFILE_6=$LIB_PREFIX/libMENU_NOMENU$SO_EXT
-#LIBFILE_7=$LIB_PREFIX/libMSG_NATIVE$SO_EXT
-#LIBFILE_8=$LIB_PREFIX/libLEX_C$SO_EXT
-#LIBFILE_9=$LIB_PREFIX/libUI_CONSOLE$SO_EXT
-#LIBFILE_10=$LIB_PREFIX/libPACKER_PACKED$SO_EXT
-#LIBFILE_11=$LIB_PREFIX/libPACKER_PERL$SO_EXT
-#LIBFILE_12=$LIB_PREFIX/libPACKER_XML$SO_EXT
-#LIBFILE_13=$LIB_PREFIX/libLEX_PERL$SO_EXT
-#LIBFILE_14=$LIB_PREFIX/libFORM_GENERIC$SO_EXT
-#LIBFILE_15=$LIB_PREFIX/libDATA_menu_list$SO_EXT
-#LIBFILE_16=$LIB_PREFIX/libDATA_report$SO_EXT
-#LIBFILE_17=$LIB_PREFIX/libDATA_struct_form$SO_EXT
-#LIBFILE_18=$LIB_PREFIX/libHELP_std$SO_EXT
-#LIBFILE_19=$LIB_PREFIX/libLEX_EC$SO_EXT
-#LIBFILE_20=$LIB_PREFIX/libPACKER_MEMPACKED$SO_EXT
-#LIBFILE_21=$LIB_PREFIX/libSQL_FILESCHEMA$SO_EXT
-#LIBFILE_22=$LIB_PREFIX/libLEX_CS$SO_EXT
 
 COMP_LIBS="LEX_EC LEX_C LEX_CS LEX_PERL"
 
 ALL_LIBS="EXREPORT_NOPDF RPC_NORPC FORM_NOFORM SQL_nosql MENU_NOMENU MSG_NATIVE UI_CONSOLE \
 		PACKER_PACKED PACKER_PERL PACKER_XML FORM_GENERIC DATA_menu_list DATA_report \
 		DATA_struct_form HELP_std PACKER_MEMPACKED SQL_FILESCHEMA"
+
+
+#Libraries that need 4glc (and in some cases fcompile) to build:
+NEED_4GLC_libs="HELP_std A4GL_file A4GL_string A4GL_pop A4GL_HTML"
+
+
 
 #Install location - must install first:
 #IS_SOURCE="$HOMEDRIVE$CYGWIN_PATH$prefix/$SHORTNAME"
@@ -833,6 +819,14 @@ IS_SOURCE_GTK="$HOMEDRIVE$CYGWIN_PATH/lib"
     #Can't use 'let' - standard sh don't know that...
 	#let COUNTER=0
     COUNTER=0
+
+    #libaubit4gl should be first, to avoid dependency chase
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	eval "LIBFILE_$COUNTER='$LIB_PREFIX/libaubit4gl$SO_EXT_LINKABLE'"
+	eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\libaubit4gl$SO_EXT_LINKABLE; DestDir: {app}\bin; Components: runtime'"
+	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
+	#Windows exports library:
+	eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\libaubit4gl$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
 
 	for FILE in $COMP_LIBS ; do
 		#let COUNTER=COUNTER+1
@@ -847,12 +841,6 @@ IS_SOURCE_GTK="$HOMEDRIVE$CYGWIN_PATH/lib"
 		eval "LIBFILE_$COUNTER='$LIB_PREFIX/lib$FILE$SO_EXT'"
 		eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\lib$FILE$SO_EXT; DestDir: {app}\lib; Components: runtime'"
 	done
-
-	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "LIBFILE_$COUNTER='$LIB_PREFIX/libaubit4gl$SO_EXT_LINKABLE'"
-	eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\libaubit4gl$SO_EXT_LINKABLE; DestDir: {app}\bin; Components: runtime'"
-	COUNTER=`(expr $COUNTER + 1) 2>/dev/null`
-	eval "ISLIBFILE_$COUNTER='Source: $IS_SOURCE\lib\libaubit4gl$SO_EXT_LINKABLE.a; DestDir: {app}\lib; Components: runtime'"
 
 #Note: all command line switches like "--xxxx-wwwww" are automativaly
 #converted to shell variables in "xxxxx_wwwww" format.
@@ -1830,20 +1818,20 @@ AC_ARG_WITH(ecpg,
                           DIR is the PostgresSQL ecpg base install directory,
 						  defaults to /usr.],
 [
-echo "withval=$withval"
+#echo "withval=$withval"
 
   if test "$withval" != "no"; then
 	if test "$withval" = "yes"; then
 		withval=/usr
     fi
 
-	AC_PATH_PROG(PG_ESQLC, ecpg, no, $withval/bin:$withval/preproc:$PATH)
+	AC_PATH_PROG(PG_ESQLC, ecpg, no, $withval/bin:$PATH)
 
-	ECPG_INCDIR=$withval/include
-	ECPG_IFLAGS=-I$ECPG_INCDIR
-	ECPG_LIBDIR=$withval/lib
+	ECPG_INCDIR="$withval/include"
+	ECPG_IFLAGS="-I$ECPG_INCDIR"
+	ECPG_LIBDIR="$withval/lib"
 	#In case we are working from not installed CVS code:
-	ECPG_LFLAGS="-L$withval/compatlib -L$withval/ecpglib -L$withval/pgtypeslib"
+	#ECPG_LFLAGS="-L$withval/compatlib -L$withval/ecpglib -L$withval/pgtypeslib"
 
 	if test "$PG_ESQLC" != "no"; then
 		AC_MSG_CHECKING(PG ESQL Informix compatibility)
@@ -1880,14 +1868,31 @@ echo "withval=$withval"
 			AC_PATH_PROG(POSTMASTER, postmaster, no, $PATH)
 
             if test "$POSTMASTER" != "no"; then
-                POSTMASTER_VER=`$POSTMASTER --version`
-				#postmaster (PostgreSQL) 7.1.3
-            else
-				AC_MSG_WARN(Whoa! No postmaster?)
-			fi
-			AC_MSG_RESULT(FIXME-check PG db engine version)
+				AC_MSG_CHECKING(PG engine Informix compatibility)
+				POSTMASTER_VER=`$POSTMASTER --version 2>&1 | head -1 | sed -e 's/postmaster (PostgreSQL) //'`
+				#7.1.3
+				case "$POSTMASTER_VER" in
+					6.*.* | 7.1.* | 7.2.* | 7.3.*)
+				    	AC_MSG_RESULT(No-$POSTMASTER_VER)
+						AC_MSG_WARN(** Locally installed PostgreSQL db engine is)
+						AC_MSG_WARN(** NOT Informix compatible.)
+						#don't reset PG_ESQLC_IFXCOMPAT because user might use
+                        #remote one
+					    ;;
+					*.*.*) #7.4.0 and up
+				    	AC_MSG_RESULT(Yes-$POSTMASTER_VER)
+			            ;;
+					*)
+				    	AC_MSG_WARN(No-Invalid version number format-$POSTMASTER_VER)
+					    ;;
+		        esac
 
-            #we can't depend on the same checks in Pglib section, becaue it may be disabled
+
+            else
+				AC_MSG_WARN(No locally installed postmaster detected)
+			fi
+            
+			#we can't depend on the same checks in Pglib section, becaue it may be disabled
 
             if test "$PGSQL_WITHVAL" = ""; then
 				PGSQL_WITHVAL=/usr/local
@@ -1914,6 +1919,7 @@ echo "withval=$withval"
 
             #reset:
 			unset ac_cv_header_libpq_fe_h
+			#This hader is NOT part of ecpg, it's part of libpq
 			AC_CHECK_HEADERS([ libpq-fe.h ])
 
 			if test "$ac_cv_header_libpq_fe_h" = "yes" ; then
@@ -1926,6 +1932,7 @@ echo "withval=$withval"
 		    	AC_MSG_WARN(Disabled ecpg - no headers)
 		    fi
 
+			#FIXME: how do we check for libraries versions?
 			#also check versions of:
 			#-lecpg -lecpg_compat -lpgtypes
 
@@ -2194,9 +2201,18 @@ else
 	if test "$ac_cv_lib_ifcli_main" = "yes"; then
 		HAVE_IFXODBC=yes
 
-		WARN_LD_LIBRARY_PATH=1
-		WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IFXODBC"
-		ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
+		case $LD_LIBRARY_PATH in
+			*$INFORMIXDIR/lib/cli*)
+    	        ;;
+			*)
+				TMP=`cat /etc/ld.so.conf | grep $INFORMIXDIR/lib/cli`
+                if test "$TMP" = ""; then
+					WARN_LD_LIBRARY_PATH=1
+					WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON IFXODBC"
+					ADD_LD_LIBRARY_PATH="$INFORMIXDIR/lib/cli:$ADD_LD_LIBRARY_PATH"
+                fi
+				;;
+		esac
 		INFORMIXODBC_WARNING=1
 	else
 		old_LIBS=$LIBS
@@ -4422,15 +4438,18 @@ PLUGIN_NO_LINKABLE=
 	#PLUGIN_YES_LINKABLE="$PLUGIN_YES_LINKABLE A4GL_HTML"
 	PLUGIN_YES="$PLUGIN_YES A4GL_HTML"
 
-if test "disabled" = ""; then
-#Sergio never finised it... :-(
 	if test "$HAVE_PGSQL_LIB" = "yes"; then
-        PLUGIN_YES="$PLUGIN_YES SQL_pg"
+        #an simple PG plug-in with limited functionality (by Mike)
+		PLUGIN_YES="$PLUGIN_YES SQL_pg"
+if test "disabled" = ""; then
+		#"real" one written in CPP - Sergio never finised it... :-(
+		PLUGIN_YES="$PLUGIN_YES SQL_pgDEVEL"
+fi
 	else
 		PLUGIN_NO="$PLUGIN_NO SQL_pg"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pg.esql"
 	fi
-fi
+
 
 	#GTK plug-in may need to recompile assist.4gl, so it may need to have 4glc,
     #so it needs to be AFTER all other plug-ins needed by 4glc, like SQL plug-ins:
@@ -4493,25 +4512,27 @@ fi
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.libspopc"
     fi
 
-if test "disabled" = ""; then
 	if test "$Q_ESQLC" != "no" ; then
-        #Compile Aubit ESQL/C SQL connectivity plug-in using Querix ESQL/C compiler
-		PLUGIN_YES="$PLUGIN_YES ESQL_QUERIX SQL_esqlQ"
+		PLUGIN_YES="$PLUGIN_YES ESQL_QUERIX"
+if test "disabled" = ""; then
+		#Compile Aubit ESQL/C SQL connectivity plug-in using Querix ESQL/C compiler
+		PLUGIN_YES="$PLUGIN_YES SQL_esqlQ"
+fi
 	else
         PLUGIN_NO="$PLUGIN_NO ESQL_QUERIX SQL_esqlQ"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.querix"
     fi
-fi
 
-if test "disabled" = ""; then
 	if test "$SAPDB_ESQLC" != "no"; then
-        #Compile Aubit ESQL/C SQL connectivity plug-in using SAP DB ESQL/C compiler
-		PLUGIN_YES="$PLUGIN_YES SQL_esqlSAP ESQL_SAP"
+		PLUGIN_YES="$PLUGIN_YES ESQL_SAP"
+if test "disabled" = ""; then
+		#Compile Aubit ESQL/C SQL connectivity plug-in using SAP DB ESQL/C compiler
+		PLUGIN_YES="$PLUGIN_YES SQL_esqlSAP"
+fi
 	else
         PLUGIN_NO="$PLUGIN_NO SQL_esqlSAP ESQL_SAP"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.sap.esqlc"
     fi
-fi
 
     #Can't use 'let' - standard sh don't know that...
 	#let COUNTER=0
@@ -4869,7 +4890,7 @@ fi
     fi
 
 fi
-if test "$PLUGIN_NO" != ""; then
+if test "$PLUGIN_NO" != "" && test "$PLUGIN_NO" != " "; then
 cat<<X
 +--------------------------------------------------------------------+
 |                        ***   NOTE  ***                             |

@@ -38,7 +38,18 @@ extern "C"
 	#define VALID_DIALECT_FOUND
 #endif
 
+#ifdef DIALECT_QUERIX
+	#include "a4gl_esql_querix.h"
+	#define VALID_DIALECT_FOUND
+#endif
+
+#ifdef DIALECT_SAP
+	#include "a4gl_esql_sap.h"
+	#define VALID_DIALECT_FOUND
+#endif
+
 #ifndef VALID_DIALECT_FOUND
+	//default:
 	#include "a4gl_esql_infx.h"
 #endif
 
