@@ -10,7 +10,7 @@
  *                           - DEFINES
  *                           - Global and external variable declaration
  * ---------------------------------------------------------------------------
- * $Id: p4gl_symtab.h,v 1.3 2003-02-04 13:13:13 saferreira Exp $
+ * $Id: p4gl_symtab.h,v 1.4 2003-04-16 12:06:59 saferreira Exp $
  */
 
 
@@ -24,7 +24,7 @@
 #define MAXRET         64            /* Maximo de valores de return         */
 #define MAXVARS       128            /* Maximo de variaveis locais          */
 #define MAXGLBVARS  20000            /* Maximo de variaveis globais modulo  */
-#define MAXGLOB         1            /* Maximo de GLOBALS                   */
+#define MAXGLOB         5            /* Maximo de GLOBALS                   */
 #define MAXCURS       640            /* Maximo de cursores                  */
 #define MAXSQL         50            /* Maximo de instrucoes SQL por funcao */
 
