@@ -3,7 +3,7 @@
 	implement datetime() & interval() 4GL functions
 	'thru' on display etc ************** DONE
 	initialize array/record containing array
-	Allow auto initialize of function variables (As per pcode) ** Done (And module level too - globals still outstanding)
+	Allow auto initialize of function variables (As per pcode) ** DONE (And module level too - globals still outstanding)
 	Add globals header file into variable declaration
 	Create function names export
 	Clean up error handling

@@ -1,8 +1,1325 @@
-#ifndef BISON_Y_TAB_H
-# define BISON_Y_TAB_H
+/* A Bison parser, made by GNU Bison 1.875.  */
 
-#ifndef YYSTYPE
-typedef union	  {
+/* Skeleton parser for Yacc-like parsing with Bison,
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002 Free Software Foundation, Inc.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
+
+/* As a special exception, when this file is copied by Bison into a
+   Bison output file, you may use that output file without restriction.
+   This special exception was added by the Free Software Foundation
+   in version 1.24 of Bison.  */
+
+/* Tokens.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+   /* Put the tokens into the symbol table, so that GDB and other debuggers
+      know about them.  */
+   enum yytokentype {
+     NAME = 1631,
+     UMINUS = 1632,
+     COMMA = 1547,
+     KW_OR = 1587,
+     KW_AND = 1542,
+     KW_USING = 1478,
+     MATCHES = 1357,
+     POWER = 1465,
+     LESS_THAN = 1461,
+     GREATER_THAN = 1375,
+     EQUAL = 1537,
+     GREATER_THAN_EQ = 1274,
+     LESS_THAN_EQ = 1332,
+     NOT_EQUAL = 1406,
+     PLUS = 1573,
+     MINUS = 1560,
+     DIVIDE = 1493,
+     MULTIPLY = 1466,
+     MOD = 1561,
+     COMMAND = 1339,
+     NUMBER_VALUE = 1633,
+     CHAR_VALUE = 1634,
+     INT_VALUE = 1635,
+     NAMED_GEN = 1636,
+     CLINE = 1637,
+     SQLLINE = 1638,
+     KW_CSTART = 1639,
+     KW_CEND = 1640,
+     USER_DTYPE = 1641,
+     ALTER_TABLE = 1000,
+     CREATE_DATABASE = 1001,
+     ADD_CONSTRAINT = 1002,
+     DROP_CONSTRAINT = 1003,
+     AS_STATIC = 1004,
+     NOT_FIELD_TOUCHED = 1005,
+     LOCAL_FUNCTION = 1006,
+     EVERY_ROW = 1007,
+     ELIF = 1008,
+     DOUBLE_PRECISION = 1009,
+     COUNT_MULTIPLY = 1010,
+     NEWFORMATSHARED = 1011,
+     WAIT_FOR_KEY = 1012,
+     AT_TERMINATION_CALL = 1013,
+     TO_MAIN_CAPTION = 1014,
+     CLEARSTAT = 1015,
+     TO_MENUITEM = 1016,
+     ID_TO_INT = 1017,
+     TO_STATUSBOX = 1018,
+     ASCII_HEIGHT_ALL = 1019,
+     ASCII_WIDTH_ALL = 1020,
+     IMPORT_DATATYPE = 1021,
+     UP_BY = 1022,
+     PAGE_TRAILER_SIZE = 1023,
+     PAGE_HEADER_SIZE = 1024,
+     FIRST_PAGE_HEADER_SIZE = 1025,
+     BYTES_USE_AS_IMAGE = 1026,
+     BYTES_USE_AS_ASCII = 1027,
+     DOWN_BY = 1028,
+     CLOSE_STATUSBOX = 1029,
+     MODIFY_NEXT_SIZE = 1030,
+     LOCK_MODE_PAGE = 1031,
+     LOCK_MODE_ROW = 1032,
+     TO_PIPE = 1033,
+     TO_PRINTER = 1034,
+     STATUSBOX = 1035,
+     CONNECT_TO = 1036,
+     FORMHANDLER_INPUT = 1037,
+     UNITS_YEAR = 1038,
+     UNITS_MONTH = 1039,
+     UNITS_DAY = 1040,
+     UNITS_HOUR = 1041,
+     UNITS_MINUTE = 1042,
+     UNITS_SECOND = 1043,
+     NO_NEW_LINES = 1044,
+     FIELDTOWIDGET = 1045,
+     WITH_HOLD = 1046,
+     SHOW_MENU = 1047,
+     CWIS = 1048,
+     CREATE_IDX = 1049,
+     FORM_IS_COMPILED = 1050,
+     PDF_REPORT = 1051,
+     IMPORT_FUNCTION = 1052,
+     PROMPT_MANY = 1053,
+     POINTS = 1054,
+     MM = 1055,
+     INCHES = 1056,
+     PREPEND = 1057,
+     MEMBER_OF = 1058,
+     MEMBER_FUNCTION = 1059,
+     APPEND = 1060,
+     TEMPLATE = 1061,
+     END_TEMPLATE = 1062,
+     SQLSICS = 1063,
+     CREATE_SCHEMA = 1064,
+     SQLSIRR = 1065,
+     UPDATESTATS_T = 1066,
+     SQLSICR = 1067,
+     WHENEVER_SQLSUCCESS = 1068,
+     WHENEVER_SQLWARNING = 1069,
+     START_EXTERN = 1070,
+     WHENEVER_ANY_ERROR = 1071,
+     WHENEVER_NOT_FOUND = 1072,
+     CONTINUE_CONSTRUCT = 1073,
+     FOUNCONSTR = 1074,
+     SQLSIDR = 1075,
+     WHENEVER_SQLERROR = 1076,
+     CREATE_TEMP_TABLE = 1077,
+     CURRENT_WINDOW_IS = 1078,
+     FIRST_PAGE_HEADER = 1079,
+     ORDER_EXTERNAL_BY = 1080,
+     SCROLL_CURSOR_FOR = 1081,
+     SCROLL_CURSOR = 1082,
+     SQL_INTERRUPT_OFF = 1083,
+     STOP_ALL_EXTERNAL = 1084,
+     WITH_CHECK_OPTION = 1085,
+     WITH_GRANT_OPTION = 1086,
+     SQLSLMNW = 1087,
+     ADDCONSTUNIQ = 1088,
+     CONTINUE_DISPLAY = 1089,
+     CONTINUE_FOREACH = 1090,
+     OUTPUT_TO_REPORT = 1091,
+     SQL_INTERRUPT_ON = 1092,
+     WHENEVER_SUCCESS = 1093,
+     WHENEVER_WARNING = 1094,
+     WHERE_CURRENT_OF = 1095,
+     WITHOUT_DEFAULTS = 1096,
+     FOCONSTR = 1097,
+     SCALED_BY = 1098,
+     CONTINUE_PROMPT = 1099,
+     PDF_FUNCTION = 1100,
+     DEFER_INTERRUPT = 1101,
+     DISPLAY_BY_NAME = 1102,
+     NOT_NULL_UNIQUE = 1103,
+     SKIP_TO_TOP = 1104,
+     TOP_OF_PAGE = 1105,
+     SKIP_TO = 1106,
+     SKIP_BY = 1107,
+     WITHOUT_WAITING = 1108,
+     BEFCONSTRUCT = 1109,
+     SQLSLMW = 1110,
+     WHENEVER_ERROR_CONTINUE = 1111,
+     WHENEVER_ERROR = 1112,
+     AFTCONSTRUCT = 1113,
+     ALL_PRIVILEGES = 1114,
+     CLOSE_DATABASE = 1115,
+     CONTINUE_INPUT = 1116,
+     CONTINUE_WHILE = 1117,
+     CREATE_SYNONYM = 1118,
+     DROP_TABLE = 1119,
+     EXIT_CONSTRUCT = 1120,
+     INEXCLUSIVE = 1121,
+     REPORT_TO_PRINTER = 1122,
+     REPORT_TO_PIPE = 1123,
+     SET_SESSION_TO = 1124,
+     UPDATESTATS = 1125,
+     WITHOUT_HEAD = 1126,
+     CLEARSCR = 1127,
+     WITH_B_LOG = 1128,
+     AUTHORIZATION = 1129,
+     BOTTOM_MARGIN = 1130,
+     CLOSE_SESSION = 1131,
+     CONTINUE_CASE = 1132,
+     CONTINUE_MENU = 1133,
+     DISPLAY_ARRAY = 1134,
+     END_CONSTRUCT = 1135,
+     FIELD_TOUCHED = 1136,
+     FINISH_REPORT = 1137,
+     INFACC = 1138,
+     INPUT_NO_WRAP = 1139,
+     LOCKMODEPAGE = 1140,
+     SETPMOFF = 1141,
+     UNCONSTRAINED = 1142,
+     PAGE_TRAILER = 1143,
+     SETPMON = 1144,
+     BEFGROUP = 1145,
+     CLOSE_WINDOW = 1146,
+     COMMENT_LINE = 1147,
+     CONTINUE_FOR = 1148,
+     CREATE_DB = 1149,
+     CREATE_TABLE = 1150,
+     DEFAULT_NULL = 1151,
+     DELETE_USING = 1152,
+     DISPLAY_FORM = 1153,
+     END_FUNCTION = 1154,
+     EXIT_DISPLAY = 1155,
+     EXIT_FOREACH = 1156,
+     EXIT_PROGRAM = 1157,
+     INFCOLS = 1158,
+     LOCKMODEROW = 1159,
+     ON_EVERY_ROW = 1160,
+     OPEN_SESSION = 1161,
+     RIGHT_MARGIN = 1162,
+     SELECT_USING = 1163,
+     START_REPORT = 1164,
+     UNLOCK_TABLE = 1165,
+     UPDATE_USING = 1166,
+     ACL_BUILTIN = 1167,
+     AFTGROUP = 1168,
+     INFIDX = 1169,
+     INFSTAT = 1170,
+     LEFT_MARGIN = 1171,
+     PAGE_HEADER = 1172,
+     ROLLBACK_W = 1173,
+     SET_SESSION = 1174,
+     SQLSEOFF = 1175,
+     WITH_A_LOG = 1176,
+     BEFDISP = 1177,
+     BEFORE_MENU = 1178,
+     CREATE_VIEW = 1179,
+     DEFINE_TYPE = 1180,
+     DELETE_FROM = 1181,
+     END_DISPLAY = 1182,
+     END_REPORT = 1183,
+     END_FOREACH = 1184,
+     END_FOR = 1185,
+     END_GLOBALS = 1186,
+     EXIT_PROMPT = 1187,
+     EXTENT_SIZE = 1188,
+     FOREIGN_KEY = 1189,
+     HIDE_OPTION = 1190,
+     HIDE_WINDOW = 1191,
+     INSERT_INTO = 1192,
+     IS_NOT_NULL = 1193,
+     MOVE_WINDOW = 1194,
+     NEXT_OPTION = 1195,
+     NOT_MATCHES = 1196,
+     ON_LAST_ROW = 1197,
+     OPEN_WINDOW = 1198,
+     OPEN_STATUSBOX = 1199,
+     PAGE_LENGTH = 1200,
+     PAGE_WIDTH = 1201,
+     PRIMARY_KEY = 1202,
+     PROMPT_LINE = 1203,
+     RECORD_LIKE = 1204,
+     ROLLFORWARD = 1205,
+     SETBL = 1206,
+     SHOW_OPTION = 1207,
+     SHOW_WINDOW = 1208,
+     SQLSEON = 1209,
+     TO_DATABASE = 1210,
+     USE_SESSION = 1211,
+     WITH_NO_LOG = 1212,
+     AFTDISP = 1213,
+     BEFFIELD = 1214,
+     INSHARE = 1215,
+     UNLOCKTAB = 1216,
+     AFTFIELD = 1217,
+     ATTRIBUTES = 1218,
+     BEFINP = 1219,
+     BEGIN_WORK = 1220,
+     CLEARWIN = 1221,
+     CLOSE_FORM = 1222,
+     DEFER_QUIT = 1223,
+     DESCENDING = 1224,
+     DROP_INDEX = 1225,
+     END_PROMPT = 1226,
+     END_RECORD = 1227,
+     ERROR_LINE = 1228,
+     EXIT_INPUT = 1229,
+     EXIT_WHILE = 1230,
+     FOR_UPDATE_OF = 1231,
+     FOR_UPDATE = 1232,
+     GET_FLDBUF = 1233,
+     INITIALIZE = 1234,
+     INPUT_WRAP = 1235,
+     LOCK_TABLE = 1236,
+     MSG_LINE = 1237,
+     NOT_EXISTS = 1238,
+     ON_ANY_KEY = 1239,
+     REFERENCES = 1240,
+     RENCOL = 1241,
+     SET_CURSOR = 1242,
+     SMALLFLOAT = 1243,
+     SQLSUCCESS = 1244,
+     TOP_MARGIN = 1245,
+     WITH_ARRAY = 1246,
+     ACCEPTKEY = 1247,
+     ACCEPT = 1248,
+     AFTINP = 1249,
+     CLEARFORMTODEFAULTS = 1250,
+     CLEARFORM = 1251,
+     CLEAR_X_FORM = 1252,
+     COMMIT_W = 1253,
+     NEXTPAGE = 1254,
+     PREVPAGE = 1255,
+     CTRL_KEY = 1256,
+     INFTABS = 1257,
+     NEXTFIELD = 1258,
+     NEXTFORM = 1259,
+     RENTAB = 1260,
+     ASCENDING = 1261,
+     ASSOCIATE = 1262,
+     CHARACTER = 1263,
+     CONSTRUCT = 1264,
+     DELIMITER = 1265,
+     DOWNSHIFT = 1266,
+     DROP_VIEW = 1267,
+     END_INPUT = 1268,
+     END_WHILE = 1269,
+     EXCLUSIVE = 1270,
+     EXIT_CASE = 1271,
+     EXIT_MENU = 1272,
+     FORM_LINE = 1273,
+     INTERRUPT = 1275,
+     INTO_TEMP = 1276,
+     INVISIBLE = 1277,
+     IN_MEMORY = 1278,
+     LINKED_TO = 1279,
+     LOAD_FROM = 1280,
+     LOCKTAB = 1281,
+     MENU_LINE = 1282,
+     OPEN_FORM = 1283,
+     OTHERWISE = 1284,
+     PRECISION = 1285,
+     PRIOR = 1286,
+     PROCEDURE = 1287,
+     REPORT_TO = 1288,
+     RETURNING = 1289,
+     UNDERLINE = 1290,
+     UNLOAD_TO = 1291,
+     BEFROW = 1292,
+     UNLOAD_T = 1293,
+     VARIABLE = 1294,
+     ABSOLUTE = 1295,
+     AFTROW = 1296,
+     BUFFERED = 1297,
+     CONSTANT = 1298,
+     CONST = 1299,
+     CONTINUE = 1300,
+     DATABASE = 1301,
+     DATETIME = 1302,
+     DEFAULTS = 1303,
+     DISTINCT = 1304,
+     END_CASE = 1305,
+     END_MAIN = 1306,
+     END_MENU = 1307,
+     END_TYPE = 1308,
+     EXIT_FOR = 1309,
+     EXTERNAL = 1310,
+     FRACTION = 1311,
+     FUNCTION = 1312,
+     GROUP_BY = 1313,
+     INTERVAL = 1314,
+     KWMESSAGE = 1315,
+     NOT_LIKE = 1316,
+     NOT_NULL = 1317,
+     PASSWORD = 1318,
+     PREVIOUS = 1319,
+     READONLY = 1320,
+     REGISTER = 1321,
+     RELATIVE = 1322,
+     RESOURCE = 1323,
+     SMALLINT = 1324,
+     VALIDATE = 1325,
+     WHENEVER = 1326,
+     WITH_LOG = 1327,
+     WORDWRAP = 1328,
+     BY_NAME = 1329,
+     IN_FILE = 1330,
+     IS_NULL = 1331,
+     AVERAGE = 1333,
+     BETWEEN = 1334,
+     CAPTION = 1335,
+     CLIPPED = 1336,
+     CLOSE_BRACKET = 1337,
+     COLUMNS = 1338,
+     COMMENT = 1340,
+     CONNECT = 1341,
+     CURRENT = 1342,
+     DBYNAME = 1343,
+     DECIMAL = 1344,
+     DECLARE = 1345,
+     DEFAULT = 1346,
+     DISPLAY = 1347,
+     ENDCODE = 1348,
+     EXECUTE = 1349,
+     FOREACH = 1350,
+     FOREIGN = 1351,
+     GLOBALS = 1352,
+     INFIELD = 1353,
+     INTEGER = 1354,
+     KWWINDOW = 1355,
+     MAGENTA = 1356,
+     NUMERIC = 1358,
+     OPTIONS = 1359,
+     PERCENT = 1360,
+     PREPARE = 1361,
+     PROGRAM = 1362,
+     RECOVER = 1363,
+     REVERSE = 1364,
+     SECTION = 1365,
+     SESSION = 1366,
+     SYNONYM = 1367,
+     THRU = 1368,
+     TRAILER = 1369,
+     UPSHIFT = 1370,
+     VARCHAR = 1371,
+     WAITING = 1372,
+     CLOSE_SHEV = 1373,
+     CLOSE_SQUARE = 1374,
+     KW_FALSE = 1376,
+     NOT_IN = 1377,
+     ONKEY = 1378,
+     OPEN_BRACKET = 1379,
+     BORDER = 1380,
+     BOTTOM = 1381,
+     COLUMN = 1382,
+     COMMIT = 1383,
+     CREATE = 1384,
+     CURSOR = 1385,
+     DEFINE = 1386,
+     DELETE = 1387,
+     DOUBLE = 1388,
+     END_IF = 1389,
+     ESCAPE = 1390,
+     EXISTS = 1391,
+     EXTEND = 1392,
+     EXTENT = 1393,
+     FINISH = 1394,
+     FORMAT = 1395,
+     HAVING = 1396,
+     HEADER = 1397,
+     INSERT = 1398,
+     LOCATE = 1399,
+     MARGIN = 1400,
+     MEMORY = 1401,
+     MINUTE = 1402,
+     MODIFY = 1403,
+     NORMAL = 1404,
+     EQUAL_EQUAL = 1405,
+     OPEN_SHEV = 1407,
+     OPEN_SQUARE = 1408,
+     OPTION = 1409,
+     OUTPUT = 1410,
+     PROMPT = 1411,
+     PUBLIC = 1412,
+     RECORD = 1413,
+     REPORT = 1414,
+     RETURN = 1415,
+     REVOKE = 1416,
+     SCHEMA = 1417,
+     SCROLL_USING = 1418,
+     SCROLL = 1419,
+     SECOND = 1420,
+     SELECT = 1421,
+     SERIAL = 1422,
+     SETL = 1423,
+     SHARED = 1424,
+     SPACES = 1425,
+     UNIQUE = 1426,
+     UNLOCK = 1427,
+     UPDATE = 1428,
+     VALUES = 1429,
+     YELLOW = 1430,
+     AFTER = 1431,
+     KWLINE = 1432,
+     KW_NULL = 1433,
+     KW_TRUE = 1434,
+     SINGLE_KEY = 1435,
+     ALTER = 1436,
+     ARRAY = 1437,
+     ASCII = 1438,
+     AUDIT = 1439,
+     BLACK = 1440,
+     BLINK = 1441,
+     CHECK = 1442,
+     CLEAR = 1443,
+     CLOSE = 1444,
+     CODE_C = 1445,
+     COUNT = 1446,
+     DEFER = 1447,
+     ERROR = 1448,
+     EVERY = 1449,
+     FETCH = 1450,
+     FIRST = 1451,
+     FLOAT = 1452,
+     FLUSH = 1453,
+     FOUND = 1454,
+     GRANT = 1455,
+     GREEN = 1456,
+     GROUP = 1457,
+     INDEX = 1458,
+     KWFORM = 1459,
+     LABEL = 1460,
+     LOCAL = 1462,
+     MONEY = 1463,
+     MONTH = 1464,
+     ORDER = 1467,
+     OUTER = 1468,
+     PAUSE = 1469,
+     PRINT_IMAGE = 1470,
+     PRINT_FILE = 1471,
+     PRINT = 1472,
+     RIGHT = 1473,
+     SEMICOLON = 1474,
+     SLEEP = 1475,
+     TUPLE = 1476,
+     UNION = 1477,
+     WHERE = 1479,
+     WHILE = 1480,
+     WHITE = 1481,
+     CCODE = 1482,
+     ANSI = 1483,
+     BLUE = 1484,
+     BOLD = 1485,
+     BYTE = 1486,
+     FCALL = 1487,
+     CASE = 1488,
+     CHAR = 1489,
+     CYAN = 1490,
+     DATE = 1491,
+     DESC = 1492,
+     DOWN = 1494,
+     TAB = 1495,
+     DROP = 1496,
+     ELSE = 1497,
+     EXEC = 1498,
+     EXIT = 1499,
+     FREE = 1500,
+     FROM = 1501,
+     GOTO = 1502,
+     HELP_FILE = 1503,
+     LANG_FILE = 1504,
+     HELP = 1505,
+     HIDE = 1506,
+     HOUR = 1507,
+     INTO = 1508,
+     LAST = 1509,
+     LEFT = 1510,
+     LIKE = 1511,
+     MAIN = 1512,
+     MENU = 1513,
+     MODE = 1514,
+     NEED = 1515,
+     NEXT = 1516,
+     NOCR = 1517,
+     OPEN = 1518,
+     QUIT = 1519,
+     REAL = 1520,
+     ROWS = 1521,
+     SHOW = 1522,
+     SIZE = 1523,
+     SKIP = 1524,
+     SOME = 1525,
+     STEP = 1526,
+     STOP = 1527,
+     TEMP = 1528,
+     TEXT = 1529,
+     THEN = 1530,
+     USER = 1531,
+     WAIT = 1532,
+     WHEN = 1533,
+     WITH = 1534,
+     WORK = 1535,
+     YEAR = 1536,
+     KW_IS = 1538,
+     XSET = 1539,
+     ADD = 1540,
+     ALL = 1541,
+     ANY = 1543,
+     ASC = 1544,
+     AVG = 1545,
+     COLON = 1546,
+     DAY = 1548,
+     DBA = 1549,
+     DEC = 1550,
+     DIM = 1551,
+     FKEY = 1552,
+     FOR = 1553,
+     KEY = 1554,
+     KWNO = 1555,
+     LET = 1556,
+     LOG = 1557,
+     XMAX = 1558,
+     XMIN = 1559,
+     NOT = 1562,
+     PAD = 1563,
+     PUT = 1564,
+     RED = 1565,
+     ROW = 1566,
+     RUN = 1567,
+     SQL = 1568,
+     SUM = 1569,
+     TOP = 1570,
+     USE = 1571,
+     ATSIGN = 1572,
+     AS_TIFF = 1574,
+     AS_GIF = 1575,
+     AS_PNG = 1576,
+     AS_JPEG = 1577,
+     AS = 1578,
+     AT = 1579,
+     BY = 1580,
+     DOT = 1581,
+     GO = 1582,
+     IF = 1583,
+     IN = 1584,
+     OF = 1585,
+     ON = 1586,
+     TO = 1588,
+     UP = 1589,
+     FONT_NAME = 1590,
+     FONT_SIZE = 1591,
+     PAPER_SIZE_IS_LETTER = 1592,
+     PAPER_SIZE_IS_LEGAL = 1593,
+     PAPER_SIZE_IS_A5 = 1594,
+     PAPER_SIZE_IS_A4 = 1595,
+     PAPER_SIZE_IS_LETTER_L = 1596,
+     PAPER_SIZE_IS_LEGAL_L = 1597,
+     PAPER_SIZE_IS_A5_L = 1598,
+     PAPER_SIZE_IS_A4_L = 1599,
+     FORMHANDLER = 1600,
+     END_FORMHANDLER = 1601,
+     BEFORE_EVENT = 1602,
+     BEFORE_OPEN_FORM = 1603,
+     AFTER_EVENT = 1604,
+     BEFORE_CLOSE_FORM = 1605,
+     BEFORE_ANY = 1606,
+     AFTER_ANY = 1607,
+     MENUHANDLER = 1608,
+     END_MENUHANDLER = 1609,
+     BEFORE_SHOW_MENU = 1610,
+     DISABLE_PROGRAM = 1611,
+     DISABLE_ALL = 1612,
+     BUTTONS = 1613,
+     CHECK_MENUITEM = 1614,
+     DISABLE_FORM = 1615,
+     DISABLE_MENUITEMS = 1616,
+     DISABLE = 1617,
+     ENABLE_FORM = 1618,
+     ENABLE_MENUITEMS = 1619,
+     ENABLE = 1620,
+     KWFIELD = 1621,
+     ICON = 1622,
+     MESSAGEBOX = 1623,
+     TO_DEFAULTS = 1624,
+     UNCHECK_MENUITEM = 1625,
+     BEFORE = 1626,
+     INPUT = 1627,
+     END = 1628,
+     INT_TO_ID = 1629
+   };
+#endif
+#define NAME 1631
+#define UMINUS 1632
+#define COMMA 1547
+#define KW_OR 1587
+#define KW_AND 1542
+#define KW_USING 1478
+#define MATCHES 1357
+#define POWER 1465
+#define LESS_THAN 1461
+#define GREATER_THAN 1375
+#define EQUAL 1537
+#define GREATER_THAN_EQ 1274
+#define LESS_THAN_EQ 1332
+#define NOT_EQUAL 1406
+#define PLUS 1573
+#define MINUS 1560
+#define DIVIDE 1493
+#define MULTIPLY 1466
+#define MOD 1561
+#define COMMAND 1339
+#define NUMBER_VALUE 1633
+#define CHAR_VALUE 1634
+#define INT_VALUE 1635
+#define NAMED_GEN 1636
+#define CLINE 1637
+#define SQLLINE 1638
+#define KW_CSTART 1639
+#define KW_CEND 1640
+#define USER_DTYPE 1641
+#define ALTER_TABLE 1000
+#define CREATE_DATABASE 1001
+#define ADD_CONSTRAINT 1002
+#define DROP_CONSTRAINT 1003
+#define AS_STATIC 1004
+#define NOT_FIELD_TOUCHED 1005
+#define LOCAL_FUNCTION 1006
+#define EVERY_ROW 1007
+#define ELIF 1008
+#define DOUBLE_PRECISION 1009
+#define COUNT_MULTIPLY 1010
+#define NEWFORMATSHARED 1011
+#define WAIT_FOR_KEY 1012
+#define AT_TERMINATION_CALL 1013
+#define TO_MAIN_CAPTION 1014
+#define CLEARSTAT 1015
+#define TO_MENUITEM 1016
+#define ID_TO_INT 1017
+#define TO_STATUSBOX 1018
+#define ASCII_HEIGHT_ALL 1019
+#define ASCII_WIDTH_ALL 1020
+#define IMPORT_DATATYPE 1021
+#define UP_BY 1022
+#define PAGE_TRAILER_SIZE 1023
+#define PAGE_HEADER_SIZE 1024
+#define FIRST_PAGE_HEADER_SIZE 1025
+#define BYTES_USE_AS_IMAGE 1026
+#define BYTES_USE_AS_ASCII 1027
+#define DOWN_BY 1028
+#define CLOSE_STATUSBOX 1029
+#define MODIFY_NEXT_SIZE 1030
+#define LOCK_MODE_PAGE 1031
+#define LOCK_MODE_ROW 1032
+#define TO_PIPE 1033
+#define TO_PRINTER 1034
+#define STATUSBOX 1035
+#define CONNECT_TO 1036
+#define FORMHANDLER_INPUT 1037
+#define UNITS_YEAR 1038
+#define UNITS_MONTH 1039
+#define UNITS_DAY 1040
+#define UNITS_HOUR 1041
+#define UNITS_MINUTE 1042
+#define UNITS_SECOND 1043
+#define NO_NEW_LINES 1044
+#define FIELDTOWIDGET 1045
+#define WITH_HOLD 1046
+#define SHOW_MENU 1047
+#define CWIS 1048
+#define CREATE_IDX 1049
+#define FORM_IS_COMPILED 1050
+#define PDF_REPORT 1051
+#define IMPORT_FUNCTION 1052
+#define PROMPT_MANY 1053
+#define POINTS 1054
+#define MM 1055
+#define INCHES 1056
+#define PREPEND 1057
+#define MEMBER_OF 1058
+#define MEMBER_FUNCTION 1059
+#define APPEND 1060
+#define TEMPLATE 1061
+#define END_TEMPLATE 1062
+#define SQLSICS 1063
+#define CREATE_SCHEMA 1064
+#define SQLSIRR 1065
+#define UPDATESTATS_T 1066
+#define SQLSICR 1067
+#define WHENEVER_SQLSUCCESS 1068
+#define WHENEVER_SQLWARNING 1069
+#define START_EXTERN 1070
+#define WHENEVER_ANY_ERROR 1071
+#define WHENEVER_NOT_FOUND 1072
+#define CONTINUE_CONSTRUCT 1073
+#define FOUNCONSTR 1074
+#define SQLSIDR 1075
+#define WHENEVER_SQLERROR 1076
+#define CREATE_TEMP_TABLE 1077
+#define CURRENT_WINDOW_IS 1078
+#define FIRST_PAGE_HEADER 1079
+#define ORDER_EXTERNAL_BY 1080
+#define SCROLL_CURSOR_FOR 1081
+#define SCROLL_CURSOR 1082
+#define SQL_INTERRUPT_OFF 1083
+#define STOP_ALL_EXTERNAL 1084
+#define WITH_CHECK_OPTION 1085
+#define WITH_GRANT_OPTION 1086
+#define SQLSLMNW 1087
+#define ADDCONSTUNIQ 1088
+#define CONTINUE_DISPLAY 1089
+#define CONTINUE_FOREACH 1090
+#define OUTPUT_TO_REPORT 1091
+#define SQL_INTERRUPT_ON 1092
+#define WHENEVER_SUCCESS 1093
+#define WHENEVER_WARNING 1094
+#define WHERE_CURRENT_OF 1095
+#define WITHOUT_DEFAULTS 1096
+#define FOCONSTR 1097
+#define SCALED_BY 1098
+#define CONTINUE_PROMPT 1099
+#define PDF_FUNCTION 1100
+#define DEFER_INTERRUPT 1101
+#define DISPLAY_BY_NAME 1102
+#define NOT_NULL_UNIQUE 1103
+#define SKIP_TO_TOP 1104
+#define TOP_OF_PAGE 1105
+#define SKIP_TO 1106
+#define SKIP_BY 1107
+#define WITHOUT_WAITING 1108
+#define BEFCONSTRUCT 1109
+#define SQLSLMW 1110
+#define WHENEVER_ERROR_CONTINUE 1111
+#define WHENEVER_ERROR 1112
+#define AFTCONSTRUCT 1113
+#define ALL_PRIVILEGES 1114
+#define CLOSE_DATABASE 1115
+#define CONTINUE_INPUT 1116
+#define CONTINUE_WHILE 1117
+#define CREATE_SYNONYM 1118
+#define DROP_TABLE 1119
+#define EXIT_CONSTRUCT 1120
+#define INEXCLUSIVE 1121
+#define REPORT_TO_PRINTER 1122
+#define REPORT_TO_PIPE 1123
+#define SET_SESSION_TO 1124
+#define UPDATESTATS 1125
+#define WITHOUT_HEAD 1126
+#define CLEARSCR 1127
+#define WITH_B_LOG 1128
+#define AUTHORIZATION 1129
+#define BOTTOM_MARGIN 1130
+#define CLOSE_SESSION 1131
+#define CONTINUE_CASE 1132
+#define CONTINUE_MENU 1133
+#define DISPLAY_ARRAY 1134
+#define END_CONSTRUCT 1135
+#define FIELD_TOUCHED 1136
+#define FINISH_REPORT 1137
+#define INFACC 1138
+#define INPUT_NO_WRAP 1139
+#define LOCKMODEPAGE 1140
+#define SETPMOFF 1141
+#define UNCONSTRAINED 1142
+#define PAGE_TRAILER 1143
+#define SETPMON 1144
+#define BEFGROUP 1145
+#define CLOSE_WINDOW 1146
+#define COMMENT_LINE 1147
+#define CONTINUE_FOR 1148
+#define CREATE_DB 1149
+#define CREATE_TABLE 1150
+#define DEFAULT_NULL 1151
+#define DELETE_USING 1152
+#define DISPLAY_FORM 1153
+#define END_FUNCTION 1154
+#define EXIT_DISPLAY 1155
+#define EXIT_FOREACH 1156
+#define EXIT_PROGRAM 1157
+#define INFCOLS 1158
+#define LOCKMODEROW 1159
+#define ON_EVERY_ROW 1160
+#define OPEN_SESSION 1161
+#define RIGHT_MARGIN 1162
+#define SELECT_USING 1163
+#define START_REPORT 1164
+#define UNLOCK_TABLE 1165
+#define UPDATE_USING 1166
+#define ACL_BUILTIN 1167
+#define AFTGROUP 1168
+#define INFIDX 1169
+#define INFSTAT 1170
+#define LEFT_MARGIN 1171
+#define PAGE_HEADER 1172
+#define ROLLBACK_W 1173
+#define SET_SESSION 1174
+#define SQLSEOFF 1175
+#define WITH_A_LOG 1176
+#define BEFDISP 1177
+#define BEFORE_MENU 1178
+#define CREATE_VIEW 1179
+#define DEFINE_TYPE 1180
+#define DELETE_FROM 1181
+#define END_DISPLAY 1182
+#define END_REPORT 1183
+#define END_FOREACH 1184
+#define END_FOR 1185
+#define END_GLOBALS 1186
+#define EXIT_PROMPT 1187
+#define EXTENT_SIZE 1188
+#define FOREIGN_KEY 1189
+#define HIDE_OPTION 1190
+#define HIDE_WINDOW 1191
+#define INSERT_INTO 1192
+#define IS_NOT_NULL 1193
+#define MOVE_WINDOW 1194
+#define NEXT_OPTION 1195
+#define NOT_MATCHES 1196
+#define ON_LAST_ROW 1197
+#define OPEN_WINDOW 1198
+#define OPEN_STATUSBOX 1199
+#define PAGE_LENGTH 1200
+#define PAGE_WIDTH 1201
+#define PRIMARY_KEY 1202
+#define PROMPT_LINE 1203
+#define RECORD_LIKE 1204
+#define ROLLFORWARD 1205
+#define SETBL 1206
+#define SHOW_OPTION 1207
+#define SHOW_WINDOW 1208
+#define SQLSEON 1209
+#define TO_DATABASE 1210
+#define USE_SESSION 1211
+#define WITH_NO_LOG 1212
+#define AFTDISP 1213
+#define BEFFIELD 1214
+#define INSHARE 1215
+#define UNLOCKTAB 1216
+#define AFTFIELD 1217
+#define ATTRIBUTES 1218
+#define BEFINP 1219
+#define BEGIN_WORK 1220
+#define CLEARWIN 1221
+#define CLOSE_FORM 1222
+#define DEFER_QUIT 1223
+#define DESCENDING 1224
+#define DROP_INDEX 1225
+#define END_PROMPT 1226
+#define END_RECORD 1227
+#define ERROR_LINE 1228
+#define EXIT_INPUT 1229
+#define EXIT_WHILE 1230
+#define FOR_UPDATE_OF 1231
+#define FOR_UPDATE 1232
+#define GET_FLDBUF 1233
+#define INITIALIZE 1234
+#define INPUT_WRAP 1235
+#define LOCK_TABLE 1236
+#define MSG_LINE 1237
+#define NOT_EXISTS 1238
+#define ON_ANY_KEY 1239
+#define REFERENCES 1240
+#define RENCOL 1241
+#define SET_CURSOR 1242
+#define SMALLFLOAT 1243
+#define SQLSUCCESS 1244
+#define TOP_MARGIN 1245
+#define WITH_ARRAY 1246
+#define ACCEPTKEY 1247
+#define ACCEPT 1248
+#define AFTINP 1249
+#define CLEARFORMTODEFAULTS 1250
+#define CLEARFORM 1251
+#define CLEAR_X_FORM 1252
+#define COMMIT_W 1253
+#define NEXTPAGE 1254
+#define PREVPAGE 1255
+#define CTRL_KEY 1256
+#define INFTABS 1257
+#define NEXTFIELD 1258
+#define NEXTFORM 1259
+#define RENTAB 1260
+#define ASCENDING 1261
+#define ASSOCIATE 1262
+#define CHARACTER 1263
+#define CONSTRUCT 1264
+#define DELIMITER 1265
+#define DOWNSHIFT 1266
+#define DROP_VIEW 1267
+#define END_INPUT 1268
+#define END_WHILE 1269
+#define EXCLUSIVE 1270
+#define EXIT_CASE 1271
+#define EXIT_MENU 1272
+#define FORM_LINE 1273
+#define INTERRUPT 1275
+#define INTO_TEMP 1276
+#define INVISIBLE 1277
+#define IN_MEMORY 1278
+#define LINKED_TO 1279
+#define LOAD_FROM 1280
+#define LOCKTAB 1281
+#define MENU_LINE 1282
+#define OPEN_FORM 1283
+#define OTHERWISE 1284
+#define PRECISION 1285
+#define PRIOR 1286
+#define PROCEDURE 1287
+#define REPORT_TO 1288
+#define RETURNING 1289
+#define UNDERLINE 1290
+#define UNLOAD_TO 1291
+#define BEFROW 1292
+#define UNLOAD_T 1293
+#define VARIABLE 1294
+#define ABSOLUTE 1295
+#define AFTROW 1296
+#define BUFFERED 1297
+#define CONSTANT 1298
+#define CONST 1299
+#define CONTINUE 1300
+#define DATABASE 1301
+#define DATETIME 1302
+#define DEFAULTS 1303
+#define DISTINCT 1304
+#define END_CASE 1305
+#define END_MAIN 1306
+#define END_MENU 1307
+#define END_TYPE 1308
+#define EXIT_FOR 1309
+#define EXTERNAL 1310
+#define FRACTION 1311
+#define FUNCTION 1312
+#define GROUP_BY 1313
+#define INTERVAL 1314
+#define KWMESSAGE 1315
+#define NOT_LIKE 1316
+#define NOT_NULL 1317
+#define PASSWORD 1318
+#define PREVIOUS 1319
+#define READONLY 1320
+#define REGISTER 1321
+#define RELATIVE 1322
+#define RESOURCE 1323
+#define SMALLINT 1324
+#define VALIDATE 1325
+#define WHENEVER 1326
+#define WITH_LOG 1327
+#define WORDWRAP 1328
+#define BY_NAME 1329
+#define IN_FILE 1330
+#define IS_NULL 1331
+#define AVERAGE 1333
+#define BETWEEN 1334
+#define CAPTION 1335
+#define CLIPPED 1336
+#define CLOSE_BRACKET 1337
+#define COLUMNS 1338
+#define COMMENT 1340
+#define CONNECT 1341
+#define CURRENT 1342
+#define DBYNAME 1343
+#define DECIMAL 1344
+#define DECLARE 1345
+#define DEFAULT 1346
+#define DISPLAY 1347
+#define ENDCODE 1348
+#define EXECUTE 1349
+#define FOREACH 1350
+#define FOREIGN 1351
+#define GLOBALS 1352
+#define INFIELD 1353
+#define INTEGER 1354
+#define KWWINDOW 1355
+#define MAGENTA 1356
+#define NUMERIC 1358
+#define OPTIONS 1359
+#define PERCENT 1360
+#define PREPARE 1361
+#define PROGRAM 1362
+#define RECOVER 1363
+#define REVERSE 1364
+#define SECTION 1365
+#define SESSION 1366
+#define SYNONYM 1367
+#define THRU 1368
+#define TRAILER 1369
+#define UPSHIFT 1370
+#define VARCHAR 1371
+#define WAITING 1372
+#define CLOSE_SHEV 1373
+#define CLOSE_SQUARE 1374
+#define KW_FALSE 1376
+#define NOT_IN 1377
+#define ONKEY 1378
+#define OPEN_BRACKET 1379
+#define BORDER 1380
+#define BOTTOM 1381
+#define COLUMN 1382
+#define COMMIT 1383
+#define CREATE 1384
+#define CURSOR 1385
+#define DEFINE 1386
+#define DELETE 1387
+#define DOUBLE 1388
+#define END_IF 1389
+#define ESCAPE 1390
+#define EXISTS 1391
+#define EXTEND 1392
+#define EXTENT 1393
+#define FINISH 1394
+#define FORMAT 1395
+#define HAVING 1396
+#define HEADER 1397
+#define INSERT 1398
+#define LOCATE 1399
+#define MARGIN 1400
+#define MEMORY 1401
+#define MINUTE 1402
+#define MODIFY 1403
+#define NORMAL 1404
+#define EQUAL_EQUAL 1405
+#define OPEN_SHEV 1407
+#define OPEN_SQUARE 1408
+#define OPTION 1409
+#define OUTPUT 1410
+#define PROMPT 1411
+#define PUBLIC 1412
+#define RECORD 1413
+#define REPORT 1414
+#define RETURN 1415
+#define REVOKE 1416
+#define SCHEMA 1417
+#define SCROLL_USING 1418
+#define SCROLL 1419
+#define SECOND 1420
+#define SELECT 1421
+#define SERIAL 1422
+#define SETL 1423
+#define SHARED 1424
+#define SPACES 1425
+#define UNIQUE 1426
+#define UNLOCK 1427
+#define UPDATE 1428
+#define VALUES 1429
+#define YELLOW 1430
+#define AFTER 1431
+#define KWLINE 1432
+#define KW_NULL 1433
+#define KW_TRUE 1434
+#define SINGLE_KEY 1435
+#define ALTER 1436
+#define ARRAY 1437
+#define ASCII 1438
+#define AUDIT 1439
+#define BLACK 1440
+#define BLINK 1441
+#define CHECK 1442
+#define CLEAR 1443
+#define CLOSE 1444
+#define CODE_C 1445
+#define COUNT 1446
+#define DEFER 1447
+#define ERROR 1448
+#define EVERY 1449
+#define FETCH 1450
+#define FIRST 1451
+#define FLOAT 1452
+#define FLUSH 1453
+#define FOUND 1454
+#define GRANT 1455
+#define GREEN 1456
+#define GROUP 1457
+#define INDEX 1458
+#define KWFORM 1459
+#define LABEL 1460
+#define LOCAL 1462
+#define MONEY 1463
+#define MONTH 1464
+#define ORDER 1467
+#define OUTER 1468
+#define PAUSE 1469
+#define PRINT_IMAGE 1470
+#define PRINT_FILE 1471
+#define PRINT 1472
+#define RIGHT 1473
+#define SEMICOLON 1474
+#define SLEEP 1475
+#define TUPLE 1476
+#define UNION 1477
+#define WHERE 1479
+#define WHILE 1480
+#define WHITE 1481
+#define CCODE 1482
+#define ANSI 1483
+#define BLUE 1484
+#define BOLD 1485
+#define BYTE 1486
+#define FCALL 1487
+#define CASE 1488
+#define CHAR 1489
+#define CYAN 1490
+#define DATE 1491
+#define DESC 1492
+#define DOWN 1494
+#define TAB 1495
+#define DROP 1496
+#define ELSE 1497
+#define EXEC 1498
+#define EXIT 1499
+#define FREE 1500
+#define FROM 1501
+#define GOTO 1502
+#define HELP_FILE 1503
+#define LANG_FILE 1504
+#define HELP 1505
+#define HIDE 1506
+#define HOUR 1507
+#define INTO 1508
+#define LAST 1509
+#define LEFT 1510
+#define LIKE 1511
+#define MAIN 1512
+#define MENU 1513
+#define MODE 1514
+#define NEED 1515
+#define NEXT 1516
+#define NOCR 1517
+#define OPEN 1518
+#define QUIT 1519
+#define REAL 1520
+#define ROWS 1521
+#define SHOW 1522
+#define SIZE 1523
+#define SKIP 1524
+#define SOME 1525
+#define STEP 1526
+#define STOP 1527
+#define TEMP 1528
+#define TEXT 1529
+#define THEN 1530
+#define USER 1531
+#define WAIT 1532
+#define WHEN 1533
+#define WITH 1534
+#define WORK 1535
+#define YEAR 1536
+#define KW_IS 1538
+#define XSET 1539
+#define ADD 1540
+#define ALL 1541
+#define ANY 1543
+#define ASC 1544
+#define AVG 1545
+#define COLON 1546
+#define DAY 1548
+#define DBA 1549
+#define DEC 1550
+#define DIM 1551
+#define FKEY 1552
+#define FOR 1553
+#define KEY 1554
+#define KWNO 1555
+#define LET 1556
+#define LOG 1557
+#define XMAX 1558
+#define XMIN 1559
+#define NOT 1562
+#define PAD 1563
+#define PUT 1564
+#define RED 1565
+#define ROW 1566
+#define RUN 1567
+#define SQL 1568
+#define SUM 1569
+#define TOP 1570
+#define USE 1571
+#define ATSIGN 1572
+#define AS_TIFF 1574
+#define AS_GIF 1575
+#define AS_PNG 1576
+#define AS_JPEG 1577
+#define AS 1578
+#define AT 1579
+#define BY 1580
+#define DOT 1581
+#define GO 1582
+#define IF 1583
+#define IN 1584
+#define OF 1585
+#define ON 1586
+#define TO 1588
+#define UP 1589
+#define FONT_NAME 1590
+#define FONT_SIZE 1591
+#define PAPER_SIZE_IS_LETTER 1592
+#define PAPER_SIZE_IS_LEGAL 1593
+#define PAPER_SIZE_IS_A5 1594
+#define PAPER_SIZE_IS_A4 1595
+#define PAPER_SIZE_IS_LETTER_L 1596
+#define PAPER_SIZE_IS_LEGAL_L 1597
+#define PAPER_SIZE_IS_A5_L 1598
+#define PAPER_SIZE_IS_A4_L 1599
+#define FORMHANDLER 1600
+#define END_FORMHANDLER 1601
+#define BEFORE_EVENT 1602
+#define BEFORE_OPEN_FORM 1603
+#define AFTER_EVENT 1604
+#define BEFORE_CLOSE_FORM 1605
+#define BEFORE_ANY 1606
+#define AFTER_ANY 1607
+#define MENUHANDLER 1608
+#define END_MENUHANDLER 1609
+#define BEFORE_SHOW_MENU 1610
+#define DISABLE_PROGRAM 1611
+#define DISABLE_ALL 1612
+#define BUTTONS 1613
+#define CHECK_MENUITEM 1614
+#define DISABLE_FORM 1615
+#define DISABLE_MENUITEMS 1616
+#define DISABLE 1617
+#define ENABLE_FORM 1618
+#define ENABLE_MENUITEMS 1619
+#define ENABLE 1620
+#define KWFIELD 1621
+#define ICON 1622
+#define MESSAGEBOX 1623
+#define TO_DEFAULTS 1624
+#define UNCHECK_MENUITEM 1625
+#define BEFORE 1626
+#define INPUT 1627
+#define END 1628
+#define INT_TO_ID 1629
+
+
+
+
+#if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
+#line 184 "fgl.yacc"
+typedef union YYSTYPE {
 
 
 
@@ -12,646 +1329,15 @@ typedef union	  {
 
 	struct expr_str *ptr;
 
-	} yystype;
-# define YYSTYPE yystype
+	} YYSTYPE;
+/* Line 1248 of yacc.c.  */
+#line 1334 "y.tab.h"
+# define yystype YYSTYPE /* obsolescent; will be withdrawn */
+# define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
 #endif
-# define	NAME	257
-# define	UMINUS	258
-# define	COMMA	1541
-# define	OR	1581
-# define	AND	1536
-# define	USING	1470
-# define	MATCHES	1350
-# define	POWER	1457
-# define	LESS_THAN	1453
-# define	GREATER_THAN	1368
-# define	EQUAL	1531
-# define	GREATER_THAN_EQ	1268
-# define	LESS_THAN_EQ	1325
-# define	NOT_EQUAL	1399
-# define	MINUS	1554
-# define	PLUS	1567
-# define	DIVIDE	1485
-# define	MULTIPLY	1458
-# define	MOD	1555
-# define	COMMAND	1332
-# define	NUMBER_VALUE	259
-# define	CHAR_VALUE	260
-# define	INT_VALUE	261
-# define	NAMED_GEN	262
-# define	CLINE	263
-# define	SQLLINE	264
-# define	KW_CSTART	265
-# define	KW_CEND	266
-# define	LOCAL_FUNCTION	1000
-# define	EVERY_ROW	1001
-# define	DOUBLE_PRECISION	1002
-# define	COUNT_MULTIPLY	1003
-# define	NEWFORMATSHARED	1004
-# define	WAIT_FOR_KEY	1005
-# define	AT_TERMINATION_CALL	1006
-# define	TO_MAIN_CAPTION	1007
-# define	CLEARSTAT	1008
-# define	TO_MENUITEM	1009
-# define	ID_TO_INT	1010
-# define	TO_STATUSBOX	1011
-# define	ASCII_HEIGHT_ALL	1012
-# define	ASCII_WIDTH_ALL	1013
-# define	IMPORT_DATATYPE	1014
-# define	UP_BY	1015
-# define	PAGE_TRAILER_SIZE	1016
-# define	PAGE_HEADER_SIZE	1017
-# define	FIRST_PAGE_HEADER_SIZE	1018
-# define	BYTES_USE_AS_IMAGE	1019
-# define	BYTES_USE_AS_ASCII	1020
-# define	DOWN_BY	1021
-# define	CLOSE_STATUSBOX	1022
-# define	ADD_CONSTRAINT	1023
-# define	DROP_CONSTRAINT	1024
-# define	MODIFY_NEXT_SIZE	1025
-# define	LOCK_MODE_PAGE	1026
-# define	LOCK_MODE_ROW	1027
-# define	TO_PIPE	1028
-# define	TO_PRINTER	1029
-# define	STATUSBOX	1030
-# define	CONNECT_TO	1031
-# define	FORMHANDLER_INPUT	1032
-# define	UNITS_YEAR	1033
-# define	UNITS_MONTH	1034
-# define	UNITS_DAY	1035
-# define	UNITS_HOUR	1036
-# define	UNITS_MINUTE	1037
-# define	UNITS_SECOND	1038
-# define	NO_NEW_LINES	1039
-# define	FIELDTOWIDGET	1040
-# define	WITH_HOLD	1041
-# define	SHOW_MENU	1042
-# define	CWIS	1043
-# define	CREATE_IDX	1044
-# define	FORM_IS_COMPILED	1045
-# define	PDF_REPORT	1046
-# define	IMPORT_FUNCTION	1047
-# define	PROMPT_MANY	1048
-# define	POINTS	1049
-# define	MM	1050
-# define	INCHES	1051
-# define	PREPEND	1052
-# define	MEMBER_OF	1053
-# define	MEMBER_FUNCTION	1054
-# define	APPEND	1055
-# define	TEMPLATE	1056
-# define	END_TEMPLATE	1057
-# define	SQLSICS	1058
-# define	CREATE_SCHEMA	1059
-# define	SQLSIRR	1060
-# define	UPDATESTATS_T	1061
-# define	SQLSICR	1062
-# define	WHENEVER_SQLSUCCESS	1063
-# define	WHENEVER_SQLWARNING	1064
-# define	START_EXTERN	1065
-# define	WHENEVER_ANY_ERROR	1066
-# define	WHENEVER_NOT_FOUND	1067
-# define	CONTINUE_CONSTRUCT	1068
-# define	FOUNCONSTR	1069
-# define	SQLSIDR	1070
-# define	WHENEVER_SQLERROR	1071
-# define	CREATE_TEMP_TABLE	1072
-# define	CURRENT_WINDOW_IS	1073
-# define	FIRST_PAGE_HEADER	1074
-# define	ORDER_EXTERNAL_BY	1075
-# define	SCROLL_CURSOR_FOR	1076
-# define	SCROLL_CURSOR	1077
-# define	SQL_INTERRUPT_OFF	1078
-# define	STOP_ALL_EXTERNAL	1079
-# define	WITH_CHECK_OPTION	1080
-# define	WITH_GRANT_OPTION	1081
-# define	SQLSLMNW	1082
-# define	ADDCONSTUNIQ	1083
-# define	CONTINUE_DISPLAY	1084
-# define	CONTINUE_FOREACH	1085
-# define	OUTPUT_TO_REPORT	1086
-# define	SQL_INTERRUPT_ON	1087
-# define	WHENEVER_SUCCESS	1088
-# define	WHENEVER_WARNING	1089
-# define	WHERE_CURRENT_OF	1090
-# define	WITHOUT_DEFAULTS	1091
-# define	FOCONSTR	1092
-# define	SCALED_BY	1093
-# define	CONTINUE_PROMPT	1094
-# define	PDF_FUNCTION	1095
-# define	DEFER_INTERRUPT	1096
-# define	DISPLAY_BY_NAME	1097
-# define	NOT_NULL_UNIQUE	1098
-# define	SKIP_TO_TOP	1099
-# define	TOP_OF_PAGE	1100
-# define	SKIP_TO	1101
-# define	SKIP_BY	1102
-# define	WITHOUT_WAITING	1103
-# define	BEFCONSTRUCT	1104
-# define	SQLSLMW	1105
-# define	WHENEVER_ERROR_CONTINUE	1106
-# define	WHENEVER_ERROR	1107
-# define	AFTCONSTRUCT	1108
-# define	ALL_PRIVILEGES	1109
-# define	CLOSE_DATABASE	1110
-# define	CONTINUE_INPUT	1111
-# define	CONTINUE_WHILE	1112
-# define	CREATE_SYNONYM	1113
-# define	DROP_TABLE	1114
-# define	EXIT_CONSTRUCT	1115
-# define	INEXCLUSIVE	1116
-# define	REPORT_TO_PRINTER	1117
-# define	REPORT_TO_PIPE	1118
-# define	SET_SESSION_TO	1119
-# define	UPDATESTATS	1120
-# define	WITHOUT_HEAD	1121
-# define	CLEARSCR	1122
-# define	WITH_B_LOG	1123
-# define	AUTHORIZATION	1124
-# define	BOTTOM_MARGIN	1125
-# define	CLOSE_SESSION	1126
-# define	CONTINUE_CASE	1127
-# define	CONTINUE_MENU	1128
-# define	DISPLAY_ARRAY	1129
-# define	END_CONSTRUCT	1130
-# define	FIELD_TOUCHED	1131
-# define	FINISH_REPORT	1132
-# define	INFACC	1133
-# define	INPUT_NO_WRAP	1134
-# define	LOCKMODEPAGE	1135
-# define	SETPMOFF	1136
-# define	UNCONSTRAINED	1137
-# define	PAGE_TRAILER	1138
-# define	SETPMON	1139
-# define	BEFGROUP	1140
-# define	CLOSE_WINDOW	1141
-# define	COMMENT_LINE	1142
-# define	CONTINUE_FOR	1143
-# define	CREATE_DB	1144
-# define	CREATE_TABLE	1145
-# define	DEFAULT_NULL	1146
-# define	DELETE_USING	1147
-# define	DISPLAY_FORM	1148
-# define	END_FUNCTION	1149
-# define	EXIT_DISPLAY	1150
-# define	EXIT_FOREACH	1151
-# define	EXIT_PROGRAM	1152
-# define	INFCOLS	1153
-# define	LOCKMODEROW	1154
-# define	ON_EVERY_ROW	1155
-# define	OPEN_SESSION	1156
-# define	RIGHT_MARGIN	1157
-# define	SELECT_USING	1158
-# define	START_REPORT	1159
-# define	UNLOCK_TABLE	1160
-# define	UPDATE_USING	1161
-# define	ACL_BUILTIN	1162
-# define	AFTGROUP	1163
-# define	INFIDX	1164
-# define	INFSTAT	1165
-# define	LEFT_MARGIN	1166
-# define	PAGE_HEADER	1167
-# define	ROLLBACK_W	1168
-# define	SET_SESSION	1169
-# define	SQLSEOFF	1170
-# define	WITH_A_LOG	1171
-# define	ALTER_TABLE	1172
-# define	BEFDISP	1173
-# define	BEFORE_MENU	1174
-# define	CREATE_VIEW	1175
-# define	DEFINE_TYPE	1176
-# define	DELETE_FROM	1177
-# define	END_DISPLAY	1178
-# define	END_REPORT	1179
-# define	END_FOREACH	1180
-# define	END_FOR	1181
-# define	END_GLOBALS	1182
-# define	EXIT_PROMPT	1183
-# define	EXTENT_SIZE	1184
-# define	FOREIGN_KEY	1185
-# define	HIDE_OPTION	1186
-# define	HIDE_WINDOW	1187
-# define	INSERT_INTO	1188
-# define	IS_NOT_NULL	1189
-# define	MOVE_WINDOW	1190
-# define	NEXT_OPTION	1191
-# define	NOT_MATCHES	1192
-# define	ON_LAST_ROW	1193
-# define	OPEN_WINDOW	1194
-# define	OPEN_STATUSBOX	1195
-# define	PAGE_LENGTH	1196
-# define	PAGE_WIDTH	1197
-# define	PRIMARY_KEY	1198
-# define	PROMPT_LINE	1199
-# define	RECORD_LIKE	1200
-# define	ROLLFORWARD	1201
-# define	SETBL	1202
-# define	SHOW_OPTION	1203
-# define	SHOW_WINDOW	1204
-# define	SQLSEON	1205
-# define	TO_DATABASE	1206
-# define	USE_SESSION	1207
-# define	WITH_NO_LOG	1208
-# define	AFTDISP	1209
-# define	BEFFIELD	1210
-# define	INSHARE	1211
-# define	UNLOCKTAB	1212
-# define	AFTFIELD	1213
-# define	ATTRIBUTES	1214
-# define	BEFINP	1215
-# define	BEGIN_WORK	1216
-# define	CLEARWIN	1217
-# define	CLOSE_FORM	1218
-# define	DEFER_QUIT	1219
-# define	DESCENDING	1220
-# define	DROP_INDEX	1221
-# define	END_PROMPT	1222
-# define	END_RECORD	1223
-# define	ERROR_LINE	1224
-# define	EXIT_INPUT	1225
-# define	EXIT_WHILE	1226
-# define	FOR_UPDATE_OF	1227
-# define	FOR_UPDATE	1228
-# define	GET_FLDBUF	1229
-# define	INITIALIZE	1230
-# define	INPUT_WRAP	1231
-# define	LOCK_TABLE	1232
-# define	MSG_LINE	1233
-# define	NOT_EXISTS	1234
-# define	ON_ANY_KEY	1235
-# define	REFERENCES	1236
-# define	RENCOL	1237
-# define	SET_CURSOR	1238
-# define	SMALLFLOAT	1239
-# define	SQLSUCCESS	1240
-# define	TOP_MARGIN	1241
-# define	WITH_ARRAY	1242
-# define	ACCEPTKEY	1243
-# define	ACCEPT	1244
-# define	AFTINP	1245
-# define	CLEARFORM	1246
-# define	COMMIT_W	1247
-# define	NEXTPAGE	1248
-# define	PREVPAGE	1249
-# define	CTRL_KEY	1250
-# define	INFTABS	1251
-# define	NEXTFIELD	1252
-# define	NEXTFORM	1253
-# define	RENTAB	1254
-# define	ASCENDING	1255
-# define	ASSOCIATE	1256
-# define	CHARACTER	1257
-# define	CONSTRUCT	1258
-# define	DELIMITER	1259
-# define	DOWNSHIFT	1260
-# define	DROP_VIEW	1261
-# define	END_INPUT	1262
-# define	END_WHILE	1263
-# define	EXCLUSIVE	1264
-# define	EXIT_CASE	1265
-# define	EXIT_MENU	1266
-# define	FORM_LINE	1267
-# define	INTERRUPT	1269
-# define	INTO_TEMP	1270
-# define	INVISIBLE	1271
-# define	IN_MEMORY	1272
-# define	LINKED_TO	1273
-# define	LOAD_FROM	1274
-# define	LOCKTAB	1275
-# define	MENU_LINE	1276
-# define	OPEN_FORM	1277
-# define	OTHERWISE	1278
-# define	PRECISION	1279
-# define	PROCEDURE	1280
-# define	REPORT_TO	1281
-# define	RETURNING	1282
-# define	UNDERLINE	1283
-# define	UNLOAD_TO	1284
-# define	BEFROW	1285
-# define	UNLOAD_T	1286
-# define	VARIABLE	1287
-# define	ABSOLUTE	1288
-# define	AFTROW	1289
-# define	BUFFERED	1290
-# define	CONSTANT	1291
-# define	CONST	1292
-# define	CONTINUE	1293
-# define	DATABASE	1294
-# define	DATETIME	1295
-# define	DEFAULTS	1296
-# define	DISTINCT	1297
-# define	END_CASE	1298
-# define	END_MAIN	1299
-# define	END_MENU	1300
-# define	END_TYPE	1301
-# define	EXIT_FOR	1302
-# define	EXTERNAL	1303
-# define	FRACTION	1304
-# define	FUNCTION	1305
-# define	GROUP_BY	1306
-# define	INTERVAL	1307
-# define	KWMESSAGE	1308
-# define	NOT_LIKE	1309
-# define	NOT_NULL	1310
-# define	PASSWORD	1311
-# define	PREVIOUS	1312
-# define	READONLY	1313
-# define	REGISTER	1314
-# define	RELATIVE	1315
-# define	RESOURCE	1316
-# define	SMALLINT	1317
-# define	VALIDATE	1318
-# define	WHENEVER	1319
-# define	WITH_LOG	1320
-# define	WORDWRAP	1321
-# define	BY_NAME	1322
-# define	IN_FILE	1323
-# define	IS_NULL	1324
-# define	AVERAGE	1326
-# define	BETWEEN	1327
-# define	CAPTION	1328
-# define	CLIPPED	1329
-# define	CLOSE_BRACKET	1330
-# define	COLUMNS	1331
-# define	COMMENT	1333
-# define	CONNECT	1334
-# define	CURRENT	1335
-# define	DBYNAME	1336
-# define	DECIMAL	1337
-# define	DECLARE	1338
-# define	DEFAULT	1339
-# define	DISPLAY	1340
-# define	ENDCODE	1341
-# define	EXECUTE	1342
-# define	FOREACH	1343
-# define	FOREIGN	1344
-# define	GLOBALS	1345
-# define	INFIELD	1346
-# define	INTEGER	1347
-# define	KWWINDOW	1348
-# define	MAGENTA	1349
-# define	NUMERIC	1351
-# define	OPTIONS	1352
-# define	PERCENT	1353
-# define	PREPARE	1354
-# define	PROGRAM	1355
-# define	RECOVER	1356
-# define	REVERSE	1357
-# define	SECTION	1358
-# define	SESSION	1359
-# define	SYNONYM	1360
-# define	THRU	1361
-# define	TRAILER	1362
-# define	UPSHIFT	1363
-# define	VARCHAR	1364
-# define	WAITING	1365
-# define	CLOSE_SHEV	1366
-# define	CLOSE_SQUARE	1367
-# define	KW_FALSE	1369
-# define	NOT_IN	1370
-# define	ONKEY	1371
-# define	OPEN_BRACKET	1372
-# define	BORDER	1373
-# define	BOTTOM	1374
-# define	COLUMN	1375
-# define	COMMIT	1376
-# define	CREATE	1377
-# define	CURSOR	1378
-# define	DEFINE	1379
-# define	DELETE	1380
-# define	DOUBLE	1381
-# define	END_IF	1382
-# define	ESCAPE	1383
-# define	EXISTS	1384
-# define	EXTEND	1385
-# define	EXTENT	1386
-# define	FINISH	1387
-# define	FORMAT	1388
-# define	HAVING	1389
-# define	HEADER	1390
-# define	INSERT	1391
-# define	LOCATE	1392
-# define	MARGIN	1393
-# define	MEMORY	1394
-# define	MINUTE	1395
-# define	MODIFY	1396
-# define	NORMAL	1397
-# define	EQUAL_EQUAL	1398
-# define	OPEN_SHEV	1400
-# define	OPEN_SQUARE	1401
-# define	OPTION	1402
-# define	OUTPUT	1403
-# define	PROMPT	1404
-# define	PUBLIC	1405
-# define	RECORD	1406
-# define	REPORT	1407
-# define	RETURN	1408
-# define	REVOKE	1409
-# define	SCHEMA	1410
-# define	SCROLL	1411
-# define	SECOND	1412
-# define	SELECT	1413
-# define	SERIAL	1414
-# define	SETL	1415
-# define	SHARED	1416
-# define	SPACES	1417
-# define	UNIQUE	1418
-# define	UNLOCK	1419
-# define	UPDATE	1420
-# define	VALUES	1421
-# define	YELLOW	1422
-# define	AFTER	1423
-# define	KWLINE	1424
-# define	KW_NULL	1425
-# define	KW_TRUE	1426
-# define	SINGLE_KEY	1427
-# define	ALTER	1428
-# define	ARRAY	1429
-# define	ASCII	1430
-# define	AUDIT	1431
-# define	BLACK	1432
-# define	BLINK	1433
-# define	CHECK	1434
-# define	CLEAR	1435
-# define	CLOSE	1436
-# define	CODE_C	1437
-# define	COUNT	1438
-# define	DEFER	1439
-# define	ERROR	1440
-# define	EVERY	1441
-# define	FETCH	1442
-# define	FIRST	1443
-# define	FLOAT	1444
-# define	FLUSH	1445
-# define	FOUND	1446
-# define	GRANT	1447
-# define	GREEN	1448
-# define	GROUP	1449
-# define	INDEX	1450
-# define	KWFORM	1451
-# define	LABEL	1452
-# define	LOCAL	1454
-# define	MONEY	1455
-# define	MONTH	1456
-# define	ORDER	1459
-# define	OUTER	1460
-# define	PAUSE	1461
-# define	PRINT_IMAGE	1462
-# define	PRINT_FILE	1463
-# define	PRINT	1464
-# define	RIGHT	1465
-# define	SEMICOLON	1466
-# define	SLEEP	1467
-# define	TUPLE	1468
-# define	UNION	1469
-# define	WHERE	1471
-# define	WHILE	1472
-# define	WHITE	1473
-# define	CCODE	1474
-# define	ANSI	1475
-# define	BLUE	1476
-# define	BOLD	1477
-# define	BYTE	1478
-# define	FCALL	1479
-# define	CASE	1480
-# define	CHAR	1481
-# define	CYAN	1482
-# define	DATE	1483
-# define	DESC	1484
-# define	DOWN	1486
-# define	TAB	1487
-# define	DROP	1488
-# define	ELSE	1489
-# define	EXEC	1490
-# define	EXIT	1491
-# define	FREE	1492
-# define	FROM	1493
-# define	GOTO	1494
-# define	HELP_FILE	1495
-# define	LANG_FILE	1496
-# define	HELP	1497
-# define	HIDE	1498
-# define	HOUR	1499
-# define	INTO	1500
-# define	LAST	1501
-# define	LEFT	1502
-# define	LIKE	1503
-# define	MAIN	1504
-# define	MENU	1505
-# define	MODE	1506
-# define	MOVE	1507
-# define	NEED	1508
-# define	NEXT	1509
-# define	NOCR	1510
-# define	OPEN	1511
-# define	QUIT	1512
-# define	REAL	1513
-# define	ROWS	1514
-# define	SHOW	1515
-# define	SIZE	1516
-# define	SKIP	1517
-# define	SOME	1518
-# define	STEP	1519
-# define	STOP	1520
-# define	TEMP	1521
-# define	TEXT	1522
-# define	THEN	1523
-# define	USER	1524
-# define	VIEW	1525
-# define	WAIT	1526
-# define	WHEN	1527
-# define	WITH	1528
-# define	WORK	1529
-# define	YEAR	1530
-# define	KW_IS	1532
-# define	XSET	1533
-# define	ADD	1534
-# define	ALL	1535
-# define	ANY	1537
-# define	ASC	1538
-# define	AVG	1539
-# define	COLON	1540
-# define	DAY	1542
-# define	DBA	1543
-# define	DEC	1544
-# define	DIM	1545
-# define	FKEY	1546
-# define	FOR	1547
-# define	KEY	1548
-# define	KWNO	1549
-# define	LET	1550
-# define	LOG	1551
-# define	XMAX	1552
-# define	XMIN	1553
-# define	NOT	1556
-# define	PAD	1557
-# define	PUT	1558
-# define	RED	1559
-# define	ROW	1560
-# define	RUN	1561
-# define	SQL	1562
-# define	SUM	1563
-# define	TOP	1564
-# define	USE	1565
-# define	ATSIGN	1566
-# define	AS_TIFF	1568
-# define	AS_GIF	1569
-# define	AS_PNG	1570
-# define	AS_JPEG	1571
-# define	AS	1572
-# define	AT	1573
-# define	BY	1574
-# define	DOT	1575
-# define	GO	1576
-# define	IF	1577
-# define	IN	1578
-# define	OF	1579
-# define	ON	1580
-# define	TO	1582
-# define	UP	1583
-# define	FONT_NAME	1584
-# define	FONT_SIZE	1585
-# define	PAPER_SIZE_IS_LETTER	1586
-# define	PAPER_SIZE_IS_LEGAL	1587
-# define	PAPER_SIZE_IS_A5	1588
-# define	PAPER_SIZE_IS_A4	1589
-# define	PAPER_SIZE_IS_LETTER_L	1590
-# define	PAPER_SIZE_IS_LEGAL_L	1591
-# define	PAPER_SIZE_IS_A5_L	1592
-# define	PAPER_SIZE_IS_A4_L	1593
-# define	FORMHANDLER	1594
-# define	END_FORMHANDLER	1595
-# define	BEFORE_EVENT	1596
-# define	BEFORE_OPEN_FORM	1597
-# define	AFTER_EVENT	1598
-# define	BEFORE_CLOSE_FORM	1599
-# define	BEFORE_ANY	1600
-# define	AFTER_ANY	1601
-# define	MENUHANDLER	1602
-# define	END_MENUHANDLER	1603
-# define	BEFORE_SHOW_MENU	1604
-# define	DISABLE_PROGRAM	1605
-# define	DISABLE_ALL	1606
-# define	BUTTONS	1607
-# define	CHECK_MENUITEM	1608
-# define	DISABLE_FORM	1609
-# define	DISABLE_MENUITEMS	1610
-# define	DISABLE	1611
-# define	ENABLE_FORM	1612
-# define	ENABLE_MENUITEMS	1613
-# define	ENABLE	1614
-# define	KWFIELD	1615
-# define	ICON	1616
-# define	MESSAGEBOX	1617
-# define	TO_DEFAULTS	1618
-# define	UNCHECK_MENUITEM	1619
-# define	BEFORE	1620
-# define	INPUT	1621
-# define	END	1622
-# define	INT_TO_ID	1623
 
 
-extern YYSTYPE yylval;
 
-#endif /* not BISON_Y_TAB_H */
+
+
