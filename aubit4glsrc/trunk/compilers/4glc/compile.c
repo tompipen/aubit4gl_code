@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.44 2003-10-16 09:46:24 afalout Exp $
+# $Id: compile.c,v 1.45 2003-11-20 12:57:12 mikeaubury Exp $
 #*/
 
 /**
@@ -56,6 +56,8 @@
 #define ANSI_MODE_IGNORE 0
 #define ANSI_MODE_WARN   1
 #define ANSI_MODE_ERROR  2
+
+char *informix_esql="esql";
 
 
 /* -------- static --------- */
@@ -672,7 +674,7 @@ initArguments (int argc, char *argv[])
 			}
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s ",
+				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",informix_esql,
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }
@@ -706,7 +708,7 @@ initArguments (int argc, char *argv[])
 			}
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s ",
+				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",informix_esql,
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }
@@ -750,7 +752,7 @@ initArguments (int argc, char *argv[])
 			}
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s ",
+				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",informix_esql,
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }
@@ -804,7 +806,7 @@ initArguments (int argc, char *argv[])
 			}
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-				  sprintf (buff, "esql -rdynamic %s -o %s %s %s %s %s ",
+				  sprintf (buff, "%s -rdynamic %s -o %s %s %s %s %s ",informix_esql,
 			       all_objects, output_object, l_path, l_libs,
 			       pass_options, extra_ldflags);
             }
@@ -1209,7 +1211,7 @@ char ext[8];
             }
 			else //"A4GL_LEXDIALECT"="INFORMIX" - default
 			{
-       			  sprintf (buff, "esql %s.ec %s -c -o %s %s %s",
+       			  sprintf (buff, "%s %s.ec %s -c -o %s %s %s",informix_esql,
 				   aa, extra_ccflags, single_output_object, incl_path,
 				   pass_options);
 		    }
