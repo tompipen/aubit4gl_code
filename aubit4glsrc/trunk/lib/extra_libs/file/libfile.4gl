@@ -27,9 +27,9 @@ DEFINE mode char(3)
 DEFINE r INTEGER
 
 code
-	trim(p_command);
-	trim(mode);
-	r=popen(p_command,mode);
+	A4GL_trim(p_command);
+	A4GL_trim(mode);
+	r=(long)popen(p_command,mode);
 endcode
 
 	IF r=0 THEN
@@ -47,9 +47,9 @@ DEFINE mode char(3)
 DEFINE r INTEGER
 
 code
-	trim(filename);
-	trim(mode);
-	r=fopen(filename,mode);
+	A4GL_trim(filename);
+	A4GL_trim(mode);
+	r=(long)fopen(filename,mode);
 endcode
 
 	IF r=0 THEN
@@ -179,8 +179,8 @@ DEFINE r INTEGER
 
 code
 	fgets(buff,255,(FILE *)handle);
-	trim_nl(buff);
-	push_char(buff);
+	A4GL_trim_nl(buff);
+	A4GL_push_char(buff);
 	return 1;
 endcode
 
@@ -201,7 +201,7 @@ DEFINE r INTEGER
 code
 {
 FILE *hf;
-hf=handle;
+hf=(FILE *)handle;
 r=feof(hf);
 }
 endcode
