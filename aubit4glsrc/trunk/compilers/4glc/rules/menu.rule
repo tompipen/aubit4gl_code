@@ -14,6 +14,8 @@ menu_cmd	:	MENU {
 	menu_title menu_commands end_menu_command {
 	start_state("menu",0);
 	}
+;
+
 
 end_menu_command  : END_MENU {
    print_end_menu_1();
