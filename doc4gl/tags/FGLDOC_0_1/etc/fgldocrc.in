@@ -1,0 +1,40 @@
+#This is an example configuration file. Normally, it is created by 'fgldoc'
+#program, and placed in your home directory, as .fgldocrc
+
+$csvImportFile = '4gl_mapping.txt';
+$xmlImportFile = '4gl_mapping.xml';
+$UI = undef;
+$action = undef;
+$importInformixDir = '/opt/informix';
+$importInformixServer = 'aptiva_ids';
+$importHost = 'aptiva';
+$importDatabase = 'p4gl_repository';
+$importUser = 'root';
+$exportInformixDir = '/opt/informix';
+$exportInformixServer = 'aptiva_ids';
+$exportHost = 'aptiva';
+$exportDatabase = 'p4gl_repository';
+$exportUser = 'root';
+$csvExportFile = '4gl_mapping.txt';
+$xmlExportFile = '4gl_mapping.xml';
+$htmlExportDir = '';
+$ignoreExistDir = 1;
+$clearRepositoryOnImportCSV = 0;
+$normalize = 1;
+$clearRepositoryOnImportXML = 'false';
+$packageName = 1;
+$loadComments = 1;
+$parseOnly = 0;
+$loadTableUsage = 0;
+$loadParameters = 1;
+$loadStrings = 0;
+$loadLocalVariables = 0;
+$sourceDir = '/opt/aubit/doc4gl';
+$replaceFgldoc = 1;
+$fglSource = '';
+$insertEmptyComment = 0;
+$logShowed = '1';
+$importFglLocation = '.';
+$importFglModules = undef;
+$importFglDirs = undef;
+$loadFilesRecursive = 1;
