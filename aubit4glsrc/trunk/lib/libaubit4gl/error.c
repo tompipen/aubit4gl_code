@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.10 2002-06-25 03:22:30 afalout Exp $
+# $Id: error.c,v 1.11 2002-08-29 09:10:31 afalout Exp $
 #
 */
 
@@ -68,7 +68,9 @@
 =====================================================================
 */
 
-#define IGNOREEXITWITH
+/* this would prevent exitwith call from exiting program. If you need it
+please use -DIGNOREEXITWITH on compile line, do not hard-code it! */
+/* #define IGNOREEXITWITH */
 
 /*
 =====================================================================
@@ -100,19 +102,22 @@ char * get_errm(int z);
  * @todo Describe function
  */
 void
-IGNOREEXITWITH exitwith(char *s)
+// IGNOREEXITWITH exitwith(char *s)
+exitwith(char *s)
 {
 int a;
 	#ifdef DEBUG
-		/* {DEBUG} */ {debug("Error... %s",s);}
+		{debug("Error... %s",s);}
 	#endif
+
+	#ifndef IGNOREEXITWITH
 
 	for (a=0;errors[a].errno;a++)
 	{
 		if (strcmp(s,errors[a].errmsg)==0)
 		{
 			#ifdef DEBUG
-				/* {DEBUG} */ {debug("Found error = %d",errors[a].errno);}
+				{debug("Found error = %d",errors[a].errno);}
 			#endif
 			debug("Setting status");
 		   	A4GLSQL_set_status(-1*(errors[a].errno+30000),0);
@@ -120,11 +125,16 @@ int a;
 		    cache_status=(errors[a].errno+30000);
 			debug("Setting statusno");
 		    cache_statusno=a;
-			return;
+			//return;
+			printf ("Error:\n %s \nSTOP\n ", s);
+			debug("Exiting program.");
+			exit (errors[a].errno);
 		}
 	}
 
 	exitwith("Unknown error");
+
+    #endif
 }
 
 
@@ -133,24 +143,32 @@ int a;
  * @todo Describe function
  */
 void
-IGNOREEXITWITH exitwith_sql(char *s)
+//IGNOREEXITWITH exitwith_sql(char *s)
+exitwith_sql(char *s)
 {
 int a;
 	#ifdef DEBUG
-		/* {DEBUG} */ {debug("Error... %s",s); }
+		{debug("Error... %s",s); }
 	#endif
+
+	#ifndef IGNOREEXITWITH
+
 	for (a=0;errors[a].errno;a++)
 	{
 		if (strcmp(s,errors[a].errmsg)==0)
 		{
 			#ifdef DEBUG
-				/* {DEBUG} */ {debug("Found error = %d",errors[a].errno);}
+				{debug("Found error = %d",errors[a].errno);}
 			#endif
              A4GLSQL_set_status(-1*(errors[a].errno+30000),1);
 		     cache_status=(errors[a].errno+30000);
 		     cache_statusno=a;
 		}
 	}
+
+	exit (errors[a].errno);
+
+    #endif
 }
 
 /**

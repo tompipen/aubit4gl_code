@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile.in,v 1.20 2002-08-19 07:58:18 afalout Exp $
+# $Id: Makefile.in,v 1.21 2002-08-29 09:10:32 afalout Exp $
 #
 
 #note: I plan to use amake for this; this is just for now
@@ -42,10 +42,12 @@ ifneq "${AUBIT_BIN_INSTALL}" "1"
 	FCOMPILE	=../../bin/fcompile
 	MKMESS      =../../bin/mkmess
 	FGLPCEXEC	=${SH} ../../bin/4glpc
+	MCOMPILE	=../../bin/mcompile
 else
 	FCOMPILE	=aubit fcompile
 	MKMESS      =aubit mkmess
 	FGLPCEXEC	=aubit 4glpc
+	MCOMPILE	=aubit mcompile
 endif
 
 
@@ -106,10 +108,16 @@ test.perl:
 filetest: file.4gl
 	${FGLPCEXEC} ${4GLPCFLAGS} file.4gl -o filetest
 
+#Move this to gui/
+testmenu: testmenu-menu
+	${FGLPCEXEC} ${4GLPCFLAGS} $@.4gl -o $@
+
+testmenu-menu:
+	${MCOMPILE} $@.menu
+
 other:
 	${FCOMPILE} form.per
 	${MKMESS} helpfile
-#FIXME: we don't have any menu examples?
 	@echo Other targets successfully compiled
 
 ## ==================================================================
@@ -132,6 +140,8 @@ clean: clean.sub
 	test_build.c .\#* .*.bak
 
 clean.sub:
+ifneq "${AUBIT_BIN_INSTALL}" "1"
 	${MAKE} -C regression clean
+endif
 
 # ============================== EOF ================================

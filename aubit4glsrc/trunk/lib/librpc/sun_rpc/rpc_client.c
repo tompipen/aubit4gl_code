@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rpc_client.c,v 1.9 2002-08-13 11:56:48 afalout Exp $
+# $Id: rpc_client.c,v 1.10 2002-08-29 09:10:32 afalout Exp $
 #*/
 
 /**
@@ -66,7 +66,7 @@ extern unsigned long serviceport;
 */
 
 int fgl_rpc_1( char* host,char *func,int np);
-int remote_func_call(char *host,int async,char *func,int port,int np);
+//int remote_func_call(char *host,int async,char *func,int port,int np);
 
 /*
 =====================================================================

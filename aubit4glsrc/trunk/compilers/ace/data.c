@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.11 2002-08-02 13:53:54 mikeaubury Exp $
+# $Id: data.c,v 1.12 2002-08-29 09:10:31 afalout Exp $
 #*/
 
 /**
@@ -88,7 +88,6 @@ char *decode_datatype (int dtype, int dim);
 void yyerror_sql (char *s);
 void print_variables (char *s);
 char *add_zero_rows_where (struct select_stmts *ptr);
-int find_sql_var (int colno);
 void add_fmt (int cat, char *col, struct commands commands);
 int decode_dtype (char *s);
 

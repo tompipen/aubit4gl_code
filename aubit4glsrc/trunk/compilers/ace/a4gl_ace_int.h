@@ -28,6 +28,7 @@ void execute_selects (void);
 void print_lexpr(struct expr_list *l);
 int find_variable (char *name);
 int add_agg(struct agg_val agg) ;
+int find_sql_var (int colno);
 
 /* ================= from output.c =========================== */
 
@@ -57,6 +58,10 @@ void check_sql_columns(void);
 int ace_add_table (char *tabname, char *alias);
 
 
+/* =================== from fileio.c ========================= */
+
+
+int compile_ace_report (char *filename);
 
 
 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mcompile.c,v 1.12 2002-06-29 13:12:01 afalout Exp $
+# $Id: mcompile.c,v 1.13 2002-08-29 09:10:31 afalout Exp $
 #*/
 
 /**
@@ -42,19 +42,7 @@
 =====================================================================
 */
 
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-
-	#include "a4gl_compiler.h"
-	#include "a4gl_menuxw.h"
-	#include "a4gl_aubit_lib.h"
-
-#else
-
-    #include "a4gl_mcompile_int.h"
-
-#endif
+#include "a4gl_mcompile_int.h"
 
 /*
 =====================================================================
@@ -62,24 +50,18 @@
 =====================================================================
 */
 
-
-/* FILE *	mja_fopen		(char *name, char *mode); */
-/* FILE *	write_errfile	(FILE *f,char *s,long p,int l); */
-/* void    init_menu		(void); */
-
 /* in lex.yy.c */
-extern int buffpos		(void);
-extern int 	yyparse		(void);
+extern int 	buffpos				(void);
+extern int 	yyparse				(void);
 
-int yyerror (char *s); 		/* fgl_comp_error() */
-int yywrap(void); 			/* fgl_comp_wrap() */
+int			yyerror 			(char *s);	/* fgl_comp_error() */
+int 		yywrap				(void); 	/* fgl_comp_wrap() */
+menu * 		nmenu				(void);
+void 		push_menu			(void *a);
+void 		pop_menu			(void);
+void * 		get_menu			(void);
 
-
-menu * nmenu(void);
 menu_option_item * new_option(menu *m);
-void push_menu(void *a);
-void pop_menu(void);
-void * get_menu(void);
 
 /*
 =====================================================================
@@ -129,58 +111,6 @@ int menu_cnt=0;
 =====================================================================
 */
 
-/**
- * Breaks the file name to take the file name without extension and dir name
- *
- * Its used to separate column names from tablename too.
- *
- * This function is repeated in severall places.
- * @todo : Use only one function.
- *
- * @param str The file name 
- * @param str1 A pointer to the place where to return the left part.
- * @param str2 A pointer to the place where to return the right part.
- */
-/* now in libaubit4gl
-static
-bname (char *str, char *str1, char *str2)
-{
-
-  char fn[132];
-
-  int a;
-
-  char *ptr;
-
-  strcpy (fn, str);
-
-  for (a = strlen (fn); a >= 0; a--)
-    {
-
-      if (fn[a] == '.')
-	{
-
-	  fn[a] = 0;
-
-	  break;
-
-	}
-
-    }
-
-  ptr = &fn[a];
-
-  strcpy (str1, fn);
-
-  if (a >= 0)
-    strcpy (str2, ptr + 1);
-
-  else
-    str2[0] = 0;
-
-}
-*/
-
 
 /**
  *
@@ -196,49 +126,42 @@ main (int argc, char* argv[])
 	/* load settings from config file(s): */
 	build_user_resources();
 
-  if (argc > 1)
+	if (argc > 1)
     {
-      check_and_show_id("4GL Form Compiler",argv[1]);
+		check_and_show_id("4GL Menu Compiler",argv[1]);
 
-      outputfilename = outputfile;
+		outputfilename = outputfile;
 
-      if (strcmp(argv[1],"-c")==0)  {
-		as_c=1;
-      		strcpy (c, argv[2]);
-	}
-	else  {
-		as_c=0;
+		if (strcmp(argv[1],"-c")==0)
+		{
+			as_c=1;
+    	  	strcpy (c, argv[2]);
+		}
+		else
+		{
+			as_c=0;
       		strcpy (c, argv[1]);
-	}
+		}
 
+		bname (c, a, b);
 
-      bname (c, a, b);
+		if (b[0] == 0)
+		{
+			strcat (c, ".menu");
+        }
 
-
-      if (b[0] == 0)
-	{
-
-	  strcat (c, ".menu");
-
-	}
-
-
-      bname (c, a, b);
-
-      strcpy (outputfilename, a);
- 
-      yyin = mja_fopen (c, "r");
+		bname (c, a, b);
+		strcpy (outputfilename, a);
+		yyin = mja_fopen (c, "r");
 
     }
-
-  else
+	else
     {
-
       printf ("Usage\n   %s filename[.menu]\n", argv[0]);
-
       exit (0);
-
     }
+
+	printf ("Outfile = %s\n", a);
 
   yydebug = 1;
 

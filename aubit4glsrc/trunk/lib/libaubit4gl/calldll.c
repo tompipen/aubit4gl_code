@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.13 2002-06-25 03:22:30 afalout Exp $
+# $Id: calldll.c,v 1.14 2002-08-29 09:10:31 afalout Exp $
 #
 */
 
@@ -184,7 +184,7 @@ dl_openlibrary (char *type, char *name)
 
 		/* Sometimes dlerror() returns empty string? */
 		debug("Error: can't open DLL %s - %s - STOP",buff,dlerror());
-		exitwith("Error: can't open DLL - STOP");
+		exitwith("Error: can't open DLL - STOP. See debug.out");
 
   }
   return dllhandle;

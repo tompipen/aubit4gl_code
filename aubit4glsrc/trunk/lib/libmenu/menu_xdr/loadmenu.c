@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: loadmenu.c,v 1.14 2002-08-13 11:56:48 afalout Exp $
+# $Id: loadmenu.c,v 1.15 2002-08-29 09:10:32 afalout Exp $
 #*/
 
 /**
@@ -363,14 +363,14 @@ real_load_menu (char *fname, char *menu_id, int mode, void *handler)
 }
 
 /**
- * @todo : Confirm that its not used and remove it.
+ *
+ * This is used from compile_c_gtk.c to check if Menu item does exist.
  */
-/*
+int
 mn_itemexists (void)
 {				// FIXME
   return 1;
 }
-*/
 
 /**
  * Implementation of the SHOW MENU 4gl statement in GTK GUI mode.

@@ -7,19 +7,9 @@
 =====================================================================
 */
 #define YYDEBUG 1
-#ifdef OLD_INCL
-
-	#include <stdio.h>
-	#include <string.h>
-	#include "report.h"
-
-#else
-
-    #define _NO_YYPARSE_PROTO_
-	/* #define _NO_YYLEX_PROTO_ */
-    #include "a4gl_ace_int.h"
-
-#endif
+#define _NO_YYPARSE_PROTO_
+/* #define _NO_YYLEX_PROTO_ */
+#include "a4gl_ace_int.h"
 
 /*
 =====================================================================

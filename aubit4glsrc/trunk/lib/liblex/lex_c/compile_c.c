@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.30 2002-08-13 11:56:48 afalout Exp $
+# $Id: compile_c.c,v 1.31 2002-08-29 09:10:31 afalout Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
@@ -179,7 +179,7 @@ extern int constr_cnt;
 =====================================================================
 */
 
-static void printc(char* fmt,... );
+void printc(char* fmt,... );
 static void print_output_rep (struct rep_structure *rep);
 static void print_form_attrib (struct form_attr *form_attrib);
 static int print_field_bind (int ccc);
@@ -317,7 +317,9 @@ open_outfile(void)
  * @param fmt the format to be passed to vsprintf
  * @param ... The variadic parameters to be passed to vsprintf
  */
-static void
+// cannot be static since it's called from compile_c_gtk.c. How do I make
+// it to be accessible only form libLEX_ ? LIBPRIVATE ?
+void
 printc(char* fmt,... )
 {
 va_list ap;
