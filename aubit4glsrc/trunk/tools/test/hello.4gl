@@ -37,7 +37,7 @@ menu "Hello test"
         display "This is line 2 in the form" to s_info[2].info_line
 
         menu "Close window"
-            command "OK" "Close this window"
+            command "OK" "This will close this window"
                 exit menu
         end menu
 	close window w2
