@@ -752,3 +752,18 @@ char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s) {
         }
 }
 
+
+void
+dump_insvals ()
+{
+  int a;
+  for (a = 0; a < gen_stack_cnt[INSCOL]; a++)
+    {
+      printf ("INSCOL[%d] : %s\n", a, gen_stack[INSCOL][a]);
+    }
+
+  for (a = 0; a < gen_stack_cnt[INSVAL]; a++)
+    {
+      printf ("INSVAL[%d] : %s\n", a,gen_stack[INSVAL][a]);
+    }
+}
