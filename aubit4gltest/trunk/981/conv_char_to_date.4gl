@@ -25,7 +25,7 @@ MAIN
 	  LET exitStatus = 1
 	END IF
 
-	LET lv_char = "1-1-1"
+	LET lv_char = "1-1-0001" # Y2K fixups would take 1 and make it 2001, so specify it in full
 	LET date_variable = lv_char
 	IF date_variable != mdy(1,1,1) THEN
 		DISPLAY "Error in lowest date : ", date_variable

@@ -34,14 +34,15 @@ MAIN
 
 	LET lv_varchar = "2147483647"
 	LET lv_smallfloat = lv_varchar
-	IF lv_smallfloat != 2147483647 OR lv_smallfloat IS NULL THEN
-	   DISPLAY "The smallfloat was not converted "
+	# Precision on a smallfloat isn't great :-(
+	IF lv_smallfloat <2147483646.0 OR lv_smallfloat >2147483649.0 OR lv_smallfloat IS NULL THEN
+	   DISPLAY "The smallfloat was not converted ",lv_smallfloat
 		 LET exitStatus = 1
 	END IF
 
 	LET lv_varchar = "1234.5678901234"
 	LET lv_smallfloat = lv_varchar
-	IF lv_smallfloat != 1234.5678901234 OR lv_smallfloat IS NULL THEN
+	IF lv_smallfloat < 1234.5670 OR lv_smallfloat >= 1234.5679 OR lv_smallfloat IS NULL THEN
 	   DISPLAY "A smallfloat on a string was not converted to smallfloat : ", 
 		         lv_smallfloat 
 		 LET exitStatus = 1

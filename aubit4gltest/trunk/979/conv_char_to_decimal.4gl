@@ -9,8 +9,8 @@ MAIN
 	DEFINE lv_char CHAR(33)
 	DEFINE lv_DefDec DECIMAL
 	DEFINE lv_Dec_3216 DECIMAL(32,16)
-	DEFINE lv_Dec_one DECIMAL(1)
-	DEFINE lv_Dec_32 DECIMAL(32)
+	DEFINE lv_Dec_one DECIMAL(1,0)
+	DEFINE lv_Dec_32 DECIMAL(32,0)
 
   LET exitStatus = 0
 	LET lv_char = "Hello aubit 4gl testing world"

@@ -40,7 +40,7 @@ MAIN
 
 	LET lv_char = "1234.5678901234"
 	LET lv_float = lv_char
-	IF lv_float != 1234.5678901234 OR lv_float IS NULL THEN
+	IF lv_float < 1234.56789 OR lv_float > 1234.567899 OR lv_float IS NULL THEN
 	   DISPLAY "A float on a string was not converted to float : ", 
 		         lv_float 
 		 LET exitStatus = 1

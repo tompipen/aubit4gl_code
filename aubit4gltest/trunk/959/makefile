@@ -42,7 +42,7 @@ include ../Makefile-common
 ################
 #replace .per/.4gl with appropriate extesion in forms and modules list
 FORMS=${PER:.per=${A4GL_FORMEXT}}
-MODULES=${FGL:.4gl=${OBJ_EXT}}
+MODULES=${FGL:.4gl=${OBJ_EXT}} fgl_end.c
 HELP=${MSG:.msg=${HLP_EXT}}
 
 ################

@@ -38,11 +38,10 @@ MAIN
 		 LET exitStatus = 1
 	END IF
 
-	LET lv_varchar = "1234,5678901234"
+	LET lv_varchar = "1234.5678901234"
 	LET lv_float = lv_varchar
-	IF lv_float != 1234.5678901234 OR lv_float IS NULL THEN
-	   DISPLAY "A float on a string was not converted to float : ", 
-		         lv_float 
+	IF lv_float < 1234.5678 or lv_float>1234.5679 OR lv_float IS NULL THEN
+	   DISPLAY "A float on a string was not converted to float : ", lv_float 
 		 LET exitStatus = 1
 	END IF
 
