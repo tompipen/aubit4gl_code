@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.16 2003-10-20 12:18:59 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.17 2004-02-18 00:25:35 afalout Exp $
 #*/
 
 /**
@@ -63,7 +63,7 @@
  (On some platforms these may be the same, on others they won't be)
 -----------------------------------------------------------------------------
 */
-
+/* - moved to libaubit4gl.h
 #ifdef PORTABLE
 	#include <netinet/in.h>
 #else
@@ -74,7 +74,7 @@
 		#define ntohs(x) (x)
 	#endif
 #endif
-
+*/
 #include <ctype.h>
 
 /*

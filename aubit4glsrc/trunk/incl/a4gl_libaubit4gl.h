@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.111 2004-02-10 13:50:19 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.112 2004-02-18 00:24:53 afalout Exp $
 #
 */
 
@@ -1848,8 +1848,27 @@ int A4GL_fgl_infield (void *inp,char itype,...);
 #endif
 
 
+/*
+-----------------------------------------------------------------------------
+ PORTABLE
+   Set if we are going to use network style integers
+   Not set if we are going to use native integers
+ (On some platforms these may be the same, on others they won't be)
+-----------------------------------------------------------------------------
+*/
 
 
+#if HAVE_NETINET_IN_H
+//fdef PORTABLE
+	#include <netinet/in.h>
+#else
+	#ifndef htonl
+		#define htonl(x) (x)
+		#define htons(x) (x)
+		#define ntohl(x) (x)
+		#define ntohs(x) (x)
+	#endif
+#endif
 
 
 #endif				/* #ifndef _AUBIT_LIB_INCL_EXT_ */
