@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.55 2003-12-18 20:41:46 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.56 2004-01-24 19:42:28 mikeaubury Exp $
 #
 */
 
@@ -101,7 +101,7 @@ void A4GL_def_int (void);
 void A4GL_def_quit (void);
 char *A4GL_clob (char *s, char *p);
 
-
+static char running_program[256];
 
 /*
 =====================================================================
@@ -180,6 +180,8 @@ int b = 0;
 void *ptr;
 char *p;
 
+
+	strcpy(running_program,argv[0]);
 
   /* 
      This does nothing - but we NEED IT!
@@ -894,6 +896,7 @@ void A4GL_core_dump(void) {
    printf("with your bug log.\n");
    printf("\n");
    printf("%s\n",A4GLSTK_getStackTrace ());
+
    if (A4GL_isscrmode ())
     {
 #ifdef DEBUG
@@ -901,6 +904,14 @@ void A4GL_core_dump(void) {
 #endif
       A4GL_gotolinemode ();
     }
+
+   if (A4GL_isyes(acl_getenv("GDB_ATTACH"))) {
+	char buff[256];
+	sprintf(buff,"gdb %s %d",running_program,getpid());
+	
+	system(buff);
+   }
+
   A4GL_close_database ();
   A4GL_close_errorlog_file ();
   exit(99);

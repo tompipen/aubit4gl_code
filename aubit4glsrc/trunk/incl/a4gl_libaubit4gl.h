@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.107 2004-01-22 00:05:03 afalout Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.108 2004-01-24 19:39:43 mikeaubury Exp $
 #
 */
 
@@ -1807,13 +1807,9 @@ int A4GL_fgl_infield (void *inp,char itype,...);
 
 
 
-void A4GL_lex_printc(char* fmt,... );
-void A4GL_lex_printh(char* fmt,... );
-void A4GL_lex_printcomment(char* fmt,... );
 
 
   /* API prototypes */
-#include "a4gl_API_lex.h"	/* generated from .spec */
 #include "a4gl_API_form.h"	/* generated from .spec */
 #include "a4gl_API_menu.h"	/* generated from .spec */
 #include "a4gl_API_msg.h"	/* generated from .spec */

@@ -529,6 +529,21 @@ RM_COMMENTS_FIRST COMPILE remove any comments before compiling the 4GL code
 =YES|NO
 	This defaults to Yes, if you have problems with compilation - it may be
 	that this code is getting confused. Try setting to N, or setting DUMP_LAST
+GDB_ATTACH RUNTIME Attach GDB to the process when a Segmentation Fault occurs
+=YES|NO
+	This is useful for tracing back problems during runtime execution
+	The first command to execute in gdb would normally be a 'bt' which should give
+	something like :
+	#0  0x402095a9 in __wait4 () from /lib/libc.so.6
+	#1  0x40271ad8 in __DTOR_END__ () from /lib/libc.so.6
+	#2  0x401ad506 in system () from /lib/libc.so.6
+	#3  0x40038858 in A4GL_core_dump () at fglwrap.c:911
+	#4  <signal handler called>
+	#5  0x8048bbd in aclfgl_xxx (_nargs=0) at ./x1.c:95
+	#6  0x8048a6d in main (argc=1, argv=0xbffff1d4) at ./x1.c:58
+	#7  0x40180baf in __libc_start_main () from /lib/libc.so.6
+	Ignore everything up to the <signal handler called>, and 'frame 5' (in this case)
+	should show the offending line..
 DUMP_LAST COMPILE output the results of the last remove comments
 =YES|NO
 	This will produce a file 'last' which contains the file with the comments
