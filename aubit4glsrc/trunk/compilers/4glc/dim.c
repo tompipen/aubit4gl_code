@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dim.c,v 1.13 2002-06-29 13:12:01 afalout Exp $
+# $Id: dim.c,v 1.14 2002-09-20 07:04:37 mikeaubury Exp $
 #*/
 
 /**
@@ -339,6 +339,7 @@ push_dim_records (int cnt)
   int a;
   struct s_dimitem *ptr;
   a = 0;
+  debug("In push_dim...");
   ptr = dims[cnt]->item;
   while (ptr)
   {

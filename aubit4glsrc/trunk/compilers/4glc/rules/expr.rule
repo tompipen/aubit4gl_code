@@ -138,7 +138,7 @@ NOT fgl_expr_c {
 	$<ptr>$=new_expr("push_int(0);");
 }
 | OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>2; }
-| PLUS OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>3; }
+/*| PLUS OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  { $<ptr>$=$<ptr>3; } */
 | EXISTS OPEN_BRACKET in_select_statement CLOSE_BRACKET {
 	char buff[256];
 	int n;

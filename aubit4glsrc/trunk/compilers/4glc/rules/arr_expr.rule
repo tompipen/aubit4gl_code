@@ -7,7 +7,7 @@
 
 arr_expr :
 OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
-| arr_expr arr_next {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+| arr_expr arr_next_math arr_expr { sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
 | INT_VALUE {sprintf($<str>$,"%s",$<str>1);}
 | arr_int_sign INT_VALUE {sprintf($<str>$,"(%s%s)",$<str>1,$<str>2);}
 | variable {
@@ -23,14 +23,15 @@ OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
 }
 ;
 
-
-arr_next:
-PLUS arr_expr {sprintf($<str>$,"+ %s",$<str>2);} 
-| MINUS arr_expr {sprintf($<str>$,"- %s",$<str>2);}
-| MULTIPLY arr_expr {sprintf($<str>$,"* %s",$<str>2);}
-| DIVIDE  arr_expr {sprintf($<str>$,"/ %s",$<str>2);}
-| MOD arr_expr {sprintf($<str>$,"%% %s",$<str>2);}
+arr_next_math:
+	PLUS {strcpy($<str>$,"+");}
+|       MINUS {strcpy($<str>$,"-");}
+|       MULTIPLY {strcpy($<str>$,"*");}
+|       DIVIDE {strcpy($<str>$,"/");}
+|       MOD {strcpy($<str>$,"%");}
 ;
+
+
 
 arr_int_sign	: PLUS {strcpy($<str>$,"+");}
 		| MINUS {strcpy($<str>$,"-");}
