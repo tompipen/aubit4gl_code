@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-10-18 07:54:52 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-10-19 06:26:30 afalout Exp $
 #
 
 LIBROOT=../..
@@ -41,9 +41,14 @@ include ${ROOT}/incl/Makefile-common
 4GLPC=${SH} ${ROOT}/bin/4glpc
 
 GLIB_CFLAGS		=@GLIB_CFLAGS@
-GTKLIBS			=$(subst -rdynamic,,${@GTKLIBS@})
+GTKLIBS			=$(subst -rdynamic,,@GTKLIBS@)
+
+#Need to find better sollution for this:
+GTKLIBS			:=$(subst -lintl,-lintl-1,${GTKLIBS})
 
 CFLAGS			+=-I.. -I. -I${ROOT}/incl ${GLIB_CFLAGS} @GTK_INC_PATH@ @GTK_LIB_PATH@
+CFLAGS		 	:=$(subst /target,/usr,${CFLAGS})
+
 ALL				+=${LIBROOT}/libUI_GTK${SO_EXT}
 
 #we don't want -Wall in CFLAGS when compiling form_x_xdr.c because it would
@@ -75,6 +80,8 @@ ifeq "${TARGET_OS}" "cygwin"
 	LINKLIBS	=-L${LIBROOT} -laubit4gl
 endif
 
+
+
 ## ==================================================================
 ##                              Source files
 ## ==================================================================
@@ -102,7 +109,7 @@ all : ${ALL}
 	@echo "Default targets (${ALL}) successfully compiled."
 
 ${LIBROOT}/libUI_GTK${SO_EXT}: ${ALLOBJ}
-	${LD} ${SO_LDFLAGS} -o $@ $^ @GTK_LIB_PATH@ ${LINKLIBS} @GTKLIBS@ ${GTKLIBS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ @GTK_LIB_PATH@ ${LINKLIBS} ${GTKLIBS}
 #Need dll.a to link with libMENU_XDR - DO NOT REMOVE!
 ifeq "${SO_EXT}" ".dll"
 	${MV} TMP${SOEXP_EXT} $@.a
@@ -138,6 +145,21 @@ ${ROOT}/compilers/fcompile/form_x_xdr.o: ${ROOT}/compilers/fcompile/form_x_xdr.c
 %.o: %.c
 	${CC} ${CFLAGS_GTK_C} -c -o $@ $^
 
+set:
+	@echo CFLAGS: ${CFLAGS}
+#still contains /target
+	@echo GTK_LIB_PATH: @GTK_LIB_PATH@
+	@echo LINKLIBS: ${LINKLIBS}
+#Wrong: -lpango
+	@echo GTKLIBS: @GTKLIBS@
+	@echo GTKLIBS: ${GTKLIBS}
+
+#Output:
+#CFLAGS: -g -O2 -g -Wall -DDEBUG -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H -I/usr/local/include -I/usr/src/aubit/aubit4glsrc/incl -DWIN32 -I.. -I. -I../../../incl -I/usr/include/gtk-2.0 -I/usr/lib/gtk-2.0/include -I/usr/include/atk-1.0 -I/usr/include/pango-1.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -L/usr/lib
+#GTK_LIB_PATH: -L/target/lib
+#LINKLIBS: -L../.. -laubit4gl
+#GTKLIBS: -lgtk-win32-2.0 -lgdk-win32-2.0 -latk-1.0-0 -lgdk_pixbuf-2.0 -lpango -lgobject-2.0 -lgmodule-2.0 -lglib-2.0 -lintl -liconv
+#GTKLIBS:
 
 ## ==================================================================
 ##                              Dependencies

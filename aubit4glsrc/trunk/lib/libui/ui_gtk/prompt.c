@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.2 2002-10-13 11:44:40 afalout Exp $
+# $Id: prompt.c,v 1.3 2002-10-19 06:26:30 afalout Exp $
 #*/
 
 /**
@@ -110,7 +110,27 @@ start_prompt (struct s_prompt *prompt, int ap, int c, int h,int af)
 	promptline=0;
 	width=80;
 	if (prompt_style==1) cw=gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	if (prompt_style==2) cw=gtk_window_new(GTK_WINDOW_DIALOG);
+	
+	/* old style :
+	typedef enum
+	{
+	  GTK_WINDOW_TOPLEVEL,
+	  GTK_WINDOW_DIALOG, << missing!!!
+	  GTK_WINDOW_POPUP
+	} GtkWindowType;
+
+	GTK+ V 2:
+
+	typedef enum
+	{
+	  GTK_WINDOW_TOPLEVEL,
+	  GTK_WINDOW_POPUP
+	} GtkWindowType;
+
+	*/
+
+	//if (prompt_style==2) cw=gtk_window_new(GTK_WINDOW_DIALOG);
+    if (prompt_style==2) cw=gtk_window_new(GTK_WINDOW_POPUP);
 	if (prompt_style==3) cw=gtk_window_new(GTK_WINDOW_POPUP);
 	gtk_widget_show(cw);
   }

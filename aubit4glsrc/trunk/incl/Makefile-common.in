@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.91 2002-10-18 07:54:51 afalout Exp $
+# $Id: Makefile-common.in,v 1.92 2002-10-19 06:26:30 afalout Exp $
 #
 
 #Name we will use in many places, for consistency:
@@ -449,7 +449,9 @@ ifdef COMSPEC #############Windows platform - CygWin related:################
     #error with GCC 3.2 on CygWin
 	ifneq "${GCC_VER}" "3.2"
 		CFLAGS		+=-fnative-struct
-    endif
+    else
+		CFLAGS		+=-mms-bitfields
+	endif
 	CFLAGS		+=-DWIN32
     EXEEXT		=.exe
 	EXE			=${EXEEXT}
