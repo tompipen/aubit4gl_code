@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.49 2003-12-26 11:37:28 mikeaubury Exp $
+# $Id: builtin.c,v 1.50 2004-01-02 20:40:58 mikeaubury Exp $
 #
 */
 
@@ -1138,7 +1138,7 @@ aclfgl_winexec (char *exec_string)
 int aclfgl_fgl_getkey(int n) {
 	int a;
 	a=A4GL_get_key(-1);
-	A4GL_push_int(a);
+	A4GL_push_long(a);
 	return 1;
 }
 

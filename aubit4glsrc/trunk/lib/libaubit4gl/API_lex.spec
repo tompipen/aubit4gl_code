@@ -662,6 +662,7 @@ print_empty_bind char* name -> void
 print_dealloc_arr char* s -> void
 print_alloc_arr char* s char* dim -> void
 print_realloc_arr char* s char* dim -> void
+get_in_exists_sql char* s char t -> void*
 
 /*  ============================== EOF ================================= */
 
