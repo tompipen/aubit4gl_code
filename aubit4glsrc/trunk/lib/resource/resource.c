@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.62 2004-02-22 02:29:01 afalout Exp $
+# $Id: resource.c,v 1.63 2004-02-23 22:03:41 mikeaubury Exp $
 #
 */
 
@@ -533,9 +533,9 @@ if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
 
 
 
- //if (A4GL_has_pointer (s,STR_RESOURCE_VAL))  {
-	//return A4GL_find_pointer(s,STR_RESOURCE_VAL);
- //}
+if (A4GL_has_pointer (s,STR_RESOURCE_VAL))  {
+		A4GL_del_pointer(s,STR_RESOURCE_VAL);
+}
 
 
 
@@ -621,11 +621,12 @@ if (strcmp(s,"DEBUG_LEVEL")==0 || strcmp(s,"A4GL_DEBUG_LEVEL")==0) {
 			debug_level=ptr;
 		} 
 
-		//A4GL_add_pointer(s,STR_RESOURCE_VAL,ptr);
+		ptr=A4GL_strip_quotes (ptr);
+		ptr=strdup(ptr);
+		A4GL_add_pointer(s,STR_RESOURCE_VAL,ptr);
 
 		//remove quotes - for instance for the cases where quotes are used in 
 		//aubitrc file because values contain spaces
-		ptr=A4GL_strip_quotes (ptr);
 		return ptr;
     }
 }

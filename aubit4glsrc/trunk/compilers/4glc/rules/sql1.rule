@@ -380,8 +380,8 @@ references_column_list:
 
 
 unique_constraint_definition:
-	  UNIQUE OPEN_BRACKET unique_column_list CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	  UNIQUE OPEN_BRACKET unique_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	  | DISTINCT OPEN_BRACKET unique_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| PRIMARY_KEY OPEN_BRACKET unique_column_list CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	;
@@ -407,8 +407,9 @@ table_constraint_definition_ss:
 
 
 default_clause:
-	  DEFAULT literal
-{sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	  DEFAULT literal {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	  | DEFAULT_USER {sprintf($<str>$," DEFAULT USER");}
+	  | DEFAULT_TODAY {sprintf($<str>$," DEFAULT TODAY");}
 	| DEFAULT_NULL
 {sprintf($<str>$," %s",$<str>1);}
 	;
@@ -449,7 +450,15 @@ column_constraint_list_ss :
 	}
 ;
 
-column_constraint_ss:
+column_constraint_ss : 
+	column_constraint_ss_1 opt_constraint_name {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,0);
+	}
+;
+
+
+
+column_constraint_ss_1:
 	  NOT_NULL {
 		sprintf($<str>$," %s ",$<str>1);
 		$<sql_string>$=strdup($<str>$);
@@ -462,11 +471,18 @@ column_constraint_ss:
 		sprintf($<str>$," %s ",$<str>1);
 		$<sql_string>$=strdup($<str>$);
 	}
+	| DISTINCT {
+		sprintf($<str>$," %s ",$<str>1);
+		$<sql_string>$=strdup($<str>$);
+	}
 	| references_specification {
 		$<sql_string>$=strdup($<str>1);
 	}
 	| CHECK OPEN_BRACKET search_condition_ss CLOSE_BRACKET {
 		$<sql_string>$=make_sql_string($<str>1," ",$<str>2," ",$<sql_string>3," ",$<str>4,0);
+	}
+	| PRIMARY_KEY {
+		$<sql_string>$=make_sql_string(" PRIMARY KEY ",0);
 	}
 	;
 
@@ -798,15 +814,24 @@ char_string_type:
 	;
 
 exact_numeric_type:
-	NUMERIC OPEN_BRACKET precision op_scale CLOSE_BRACKET
-{sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
 	| SERIAL  {strcpy($<str>$,"SERIAL");}
+	| SERIAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {sprintf($<str>$,"SERIAL(%s)",$<str>3);}
+	| DECIMAL 
 	| DECIMAL OPEN_BRACKET precision op_scale CLOSE_BRACKET
+{sprintf($<str>$," DECIMAL(%s%s)",$<str>3,$<str>4);}
 	| MONEY OPEN_BRACKET precision op_scale CLOSE_BRACKET
 {sprintf($<str>$," %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5);}
+	| MONEY 
         | DATE
 	| INTEGER
 	| SMALLINT
+	| NCHAR
+	| NCHAR OPEN_BRACKET length CLOSE_BRACKET
+	| NVARCHAR
+	| NVARCHAR OPEN_BRACKET INT_VALUE CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
+	| NVARCHAR OPEN_BRACKET INT_VALUE COMMA INT_VALUE CLOSE_BRACKET
+{sprintf($<str>$," %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6);}
 	| DATETIME s_curr TO e_curr
 {sprintf($<str>$," %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4);}
 	| DATETIME 
@@ -866,6 +891,24 @@ table_name:
 	}
 	| identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
 	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	| identifier COLON CHAR_VALUE DOT identifier { 
+                        if (A4GL_escape_quote_owner()) {
+				sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        } else {
+				sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        }
+	}
+
+	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); addmap("Use Table",$<str>1,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier { 
+                        if (A4GL_escape_quote_owner()) {
+				sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        } else {
+				sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Table",$<str>$,curr_func,yylineno,infilename); 
+                        }
+	}
+
 	;
 
 idx_name:
@@ -880,8 +923,28 @@ idx_name:
 		sprintf($<str>$," %s", A4GL_strip_quotes ($<str>1));
 		addmap("Use Index",$<str>$,curr_func,yylineno,infilename);
 	}
+
 	| identifier {strcpy($<str>$,$<str>1); addmap("Use Index",$<str>1,curr_func,yylineno,infilename); }
 	| identifier COLON identifier { sprintf($<str>$," %s%s%s",$<str>1,$<str>2,$<str>3); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); }
+	| identifier COLON CHAR_VALUE DOT identifier { 
+                        if (A4GL_escape_quote_owner()) {
+				sprintf($<str>$," %s:\\\"%s\\\".%s",$<str>1,A4GL_strip_quotes($<str>3),$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        } else {
+				sprintf($<str>$," %s:%s.%s",$<str>1,$<str>3,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        }
+	}
+
+	| identifier ATSIGN identifier {strcpy($<str>$,$<str>1); addmap("Use Index",$<str>1,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier COLON identifier { sprintf($<str>$," %s@%s%s%s",$<str>1,$<str>3,$<str>4,$<str>5); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); }
+	| identifier ATSIGN identifier COLON CHAR_VALUE DOT identifier { 
+                        if (A4GL_escape_quote_owner()) {
+				sprintf($<str>$," %s@%s:\\\"%s\\\".%s",$<str>1,$<str>3,A4GL_strip_quotes($<str>5),$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        } else {
+				sprintf($<str>$," %s@%s:%s.%s",$<str>1,$<str>3,$<str>5,$<str>7); addmap("Use Index",$<str>$,curr_func,yylineno,infilename); 
+                        }
+	}
+
+
 	;
 
 
@@ -939,13 +1002,16 @@ literal: CHAR_VALUE {
 	strcpy($<str>$,convstrsql($<str>1));
  A4GL_debug("Set $<str>$ to %s\n",$<str>$);
 }
-	| NUMERIC
+	/*| NUMERIC */
 	| real_number
 	| INT_VALUE
+	
+	/*
 	//| PLUS real_number {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	//| PLUS INT_VALUE {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	//| MINUS real_number {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
 	//| MINUS INT_VALUE {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+	*/
         | curr_clause
 	;
 
@@ -1407,13 +1473,13 @@ rencolname : identifier;
 
 unlock_stmt:
 
-	UNLOCK_TABLE tab_name {
+	UNLOCK_TABLE table_name {
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 	}
 ;
 
 lock_stmt :
-	LOCK_TABLE tab_name share_or_exclusive  {
+	LOCK_TABLE table_name share_or_exclusive  {
 		sprintf($<str>$,"%s %s %s",
 					$<str>1,
 					$<str>2,

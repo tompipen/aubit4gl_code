@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.18 2004-02-22 02:29:00 afalout Exp $
+# $Id: io.c,v 1.19 2004-02-23 22:03:39 mikeaubury Exp $
 #
 */
 
@@ -168,7 +168,7 @@ A4GL_try_to_open (char *path, char *name, int keepopen)
 {
 char buff[2048];
 FILE *f;
-
+ A4GL_debug("path=%s name=%s",path,name);
   if (strlen (name) == 0)
     return 0;
 
@@ -193,10 +193,12 @@ FILE *f;
 	//FIXME: apparently does not wok with relative paths?
 	f = fopen (buff, "r");
 	if (f == 0) {
+		A4GL_debug("Unable to open %s %s (%s)",path,name,buff);
 		return (FILE *) 0;
 	}
 	if (!keepopen) {				/* We just wanted to check.. */
 	  fclose (f);
+		A4GL_debug("open %s %s (%s) was successful",path,name,buff);
 	  return (FILE *) 1;
 	}
 	A4GL_debug ("opened file %s in path %s", name, path);
@@ -216,20 +218,23 @@ char str_path[2048];
 int cnt;
 char *ptr;
 int str_len;
-
+A4GL_debug("fname=%s",fname);
 	memset (str_path, 0, 2048);
 
+A4GL_debug("Try1");
 	if (A4GL_try_to_open ("", fname, 0)) {
 		return A4GL_try_to_open ("", fname, 1);
-    }
+    	}
 
+A4GL_debug("Try2");
 	if (A4GL_try_to_open (".", fname, 0)) {
 		return A4GL_try_to_open (".", fname, 1);
 	}
 
+A4GL_debug("Try3");
 	if (strlen (acl_getenv ("DBPATH"))) {
 		strcpy (str_path, acl_getenv ("DBPATH"));
-    }
+    	}
 
 	str_len = strlen (str_path);
 	ptr = str_path;
@@ -269,6 +274,7 @@ int str_len;
 	}
 
 	if (strlen (ptr)) {
+A4GL_debug("Try4 : %s",ptr);
 		if (A4GL_try_to_open (ptr, fname, 0)) {
 			return A4GL_try_to_open (ptr, fname, 1);
         }

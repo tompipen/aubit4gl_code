@@ -20,7 +20,7 @@ static int A4GL_curses_to_aubit_int (int a);
 
 #include <panel.h>
 #include "formdriver.h"
-static char *module_id="$Id: lowlevel_tui.c,v 1.16 2004-02-20 14:39:53 mikeaubury Exp $";
+static char *module_id="$Id: lowlevel_tui.c,v 1.17 2004-02-23 22:03:40 mikeaubury Exp $";
 int inprompt = 0;
 void *A4GL_get_currwin (void);
 void try_to_stop_alternate_view(void) ;
@@ -1862,7 +1862,7 @@ int rblock;
     }
 
   A4GL_debug ("Requesting Validation : %p %x %d", mform, a, a);
-  if (isprint (a) && a < 0xff)
+  if ((isprint (a) && a < 0xff) || (a>=0x7f && a<=0xff))
     {
       A4GL_LL_int_form_driver (mform, a);
       A4GL_debug ("Called int_form_driver");
@@ -1875,7 +1875,7 @@ int rblock;
 
   if (prompt->charmode)
     {
-      if (isprint (a) && a < 0xff)
+  	if ((isprint (a) && a < 0xff) || (a>=0x7f && a<=0xff))
 	{
 	  A4GL_push_char (A4GL_LL_field_buffer (prompt->field, 0));
 

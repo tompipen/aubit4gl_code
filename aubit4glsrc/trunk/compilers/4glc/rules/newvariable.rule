@@ -4,7 +4,7 @@
 =====================================================================
 */
 
-
+/*
 variable_no_scope: variable {
 char buff[256];
 char buff2[256];
@@ -20,6 +20,7 @@ strcpy($<str>$,buff2);
 }
 
 ;
+*/
 
 
 variable: var_int

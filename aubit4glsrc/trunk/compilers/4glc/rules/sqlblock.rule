@@ -219,7 +219,7 @@ sql_block_entry:
 | NOCR
 | NORMAL
 | NOT
-| NUMERIC
+/*| NUMERIC */
 | OF
 | OFF
 | ON

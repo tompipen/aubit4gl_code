@@ -3,9 +3,10 @@ drops_cmd : drops_c {
 }
 ;
 
-drops_c : DROP_TABLE  {sprintf($<str>$, "%s",$<str>1);}
-	| DROP_VIEW  {sprintf($<str>$,  "%s",$<str>1);}
-	| DROP_INDEX  {sprintf($<str>$,"%s",$<str>1);}
+drops_c : DROP_TABLE table_name {sprintf($<str>$, "%s %s",$<str>1,$<str>2);}
+	| DROP_VIEW table_name {sprintf($<str>$,  "%s %s",$<str>1,$<str>2);}
+	| DROP_INDEX idx_name {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+	| DROP_TRIGGER identifier {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
 ;
 
 
@@ -17,25 +18,63 @@ create_cmd :
 ;
 
 create_c_2_ss  : 
-	CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4,$<sql_string>6,$<str>7,0);
+	CREATE_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET opt_cr_table_extra {
+		$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4,$<sql_string>6,$<str>7,$<str>8,0);
 		free($<sql_string>6);
 	} 
 
-	| CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET op_no_log {
-		$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4,$<sql_string>6,$<str>7, " ",$<str>8,0);
+	| CREATE_TEMP_TABLE {insql=1;} table_name OPEN_BRACKET {insql=0;} table_element_list_ss CLOSE_BRACKET opt_cr_table_extra op_no_log {
+		$<sql_string>$=make_sql_string($<str>1," ",$<str>3," ",$<str>4,$<sql_string>6,$<str>7, " ",$<str>8,$<str>9,0);
 		free($<sql_string>6);
-
-}
+	}
 
 ;
 
 
+opt_cr_table_extra : {strcpy($<str>$,"");} |
+	cr_table_extra {strcpy($<str>$,$<str>1);}
+;
 
+cr_table_extra :
+	cr_table_extra_entry |
+	cr_table_extra cr_table_extra_entry {sprintf($<str>$,"%s%s",$<str>1,$<str>2); }
+;
+
+
+cr_table_extra_entry : 
+	IN space_name {sprintf($<str>$," IN %s",$<str>2);}
+	| EXTENT_SIZE INT_VALUE {sprintf($<str>$," EXTENT SIZE %s",$<str>2); }
+	| NEXT_SIZE INT_VALUE {sprintf($<str>$," NEXT SIZE %s",$<str>2); }
+	| LOCK_MODE_PAGE {sprintf($<str>$," LOCK MODE (PAGE)");}
+	| LOCK_MODE_ROW {sprintf($<str>$," LOCK MODE (ROW)");}
+;
+
+space_name : NAMED;
+
+op_cr_index_extra: {strcpy($<str>$,"");} | cr_index_extra {strcpy($<str>$,$<str>1);}
+;
+
+cr_index_extra : cr_index_extra_entry 
+	| cr_index_extra cr_index_extra_entry {sprintf($<str>$,"%s%s",$<str>1,$<str>2);}
+;
+
+cr_index_extra_entry :
+	IN space_name {sprintf($<str>$," IN %s",$<str>2);}
+	| FILLFACTOR INT_VALUE {sprintf($<str>$,"FILLFACTOR %s",$<str>2);}
+;
 create_c_1  : 
-	CREATE_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET {sprintf($<str>$," %s %s %s %s %s %s %s ",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7);} 
+	CREATE_IDX idx_name ON table_name OPEN_BRACKET idx_column_list CLOSE_BRACKET op_cr_index_extra {sprintf($<str>$," %s %s %s %s %s %s %s %s",$<str>1,$<str>2,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8);} 
 	| CREATE_DATABASE ident_or_var {
-		a4gl_yyerror("You cannot create a database from within Aubit4gl....");
+		a4gl_yyerror("You cannot create a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
+	}
+	| DROP_DATABASE ident_or_var {
+		a4gl_yyerror("You cannot drop a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
+	}
+	| CREATE_SYNONYM table_name FOR table_name {
+		sprintf($<str>$,"%s %s FOR %s",$<str>1,$<str>2,$<str>4);
+	}
+	| DROP_SYNONYM table_name {
+		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 	}
 	;
 
@@ -124,13 +163,13 @@ alter_clause_ss:
 	| alter_drop_clause {
 		$<sql_string>$=strdup($<str>1);
 	}
-	| alter_modify_clause {
-		$<sql_string>$=strdup($<str>1);
+	| alter_modify_clause_ss {
+		$<sql_string>$=$<sql_string>1;
 	}
 	| alter_add_constraint_clause {
 		$<sql_string>$=strdup($<str>1);
 	}
-	| alter_drop_contraint_clause {
+	| alter_drop_constraint_clause {
 		$<sql_string>$=strdup($<str>1);
 	}
 	| alter_modify_next {
@@ -191,12 +230,12 @@ drop_column_list:
 drop_column : identifier
 ;
 
-alter_modify_clause :
+alter_modify_clause_ss :
 	MODIFY modify_column_clause_ss {
-		sprintf($<str>$,"MODIFY %s",$<sql_string>2);
+		$<sql_string>$=make_sql_string("MODIFY ",$<sql_string>2,0);
 	}
 	| MODIFY OPEN_BRACKET modify_column_clauses_ss CLOSE_BRACKET {
-		sprintf($<str>$,"MODIFY (%s)",$<sql_string>3);
+		$<sql_string>$=make_sql_string("MODIFY (",$<sql_string>3,")",0);
 	}
 ;
 
@@ -217,34 +256,55 @@ modify_column_clause_ss :
 
 
 alter_lock_mode :
-	LOCK_MODE_PAGE {strcpy($<str>$,"LOCK MODE PAGE");}
-	| LOCK_MODE_ROW {strcpy($<str>$,"LOCK MODE ROW");}
+	LOCK_MODE_PAGE {strcpy($<str>$,"LOCK MODE (PAGE)");}
+	| LOCK_MODE_ROW {strcpy($<str>$,"LOCK MODE (ROW)");}
 ;
 
 alter_modify_next :
 	MODIFY_NEXT_SIZE INT_VALUE {
-		sprintf($<str>$,"MODIFT NEXT SIZE %d",atoi($<str>2));
+		sprintf($<str>$,"MODIFY NEXT SIZE %d",atoi($<str>2));
 	}
 ;
 
 alter_add_constraint_clause:
-	ADD_CONSTRAINT column_constraint_ss {
-		sprintf($<str>$,"ADD CONSTRAINT %s",$<sql_string>2);
+	/* ADD_CONSTRAINT column_constraint_ss opt_constraint_name { sprintf($<str>$,"ADD CONSTRAINT %s",$<sql_string>2,$<str>3); } |  */
+	/* | ADD_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET opt_constraint_name { sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3,$<str>5); } */
+
+
+	ADD_CONSTRAINT table_constraint_definition_ss opt_constraint_name {
+		sprintf($<str>$,"ADD CONSTRAINT %s%s",$<sql_string>2,$<str>3);
 	}
-	| ADD_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET {
+	| ADD_CONSTRAINT OPEN_BRACKET table_constraint_definition_list_ss CLOSE_BRACKET {
 		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3);
 	}
 ;
 
 
-alter_drop_contraint_clause:
-	DROP_CONSTRAINT constraint_name
-	| DROP_CONSTRAINT OPEN_BRACKET column_constraints_ss CLOSE_BRACKET {
-		sprintf($<str>$,"ADD CONSTRAINT (%s)",$<sql_string>3);
+table_constraint_definition_list_ss: table_constraint_definition_ss opt_constraint_name {
+		$<sql_string>$=make_sql_string($<sql_string>1,$<str>2,0);
+} | table_constraint_definition_list_ss COMMA table_constraint_definition_ss opt_constraint_name {
+	$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,$<str>4, 0);
+}
+;
+
+opt_constraint_name : {strcpy($<str>$,"");} 
+		| CONSTRAINT identifier {sprintf($<str>$," %s %s",$<str>1,$<str>2);}
+;
+
+alter_drop_constraint_clause:
+	DROP_CONSTRAINT constraint_names
+		{ sprintf($<str>$,"DROP CONSTRAINT %s",$<str>2); }
+	| DROP_CONSTRAINT OPEN_BRACKET constraint_names CLOSE_BRACKET {
+		sprintf($<str>$,"DROP CONSTRAINT (%s)",$<str>3);
 	}
 ;
 
+constraint_names :
+	constraint_name {strcpy($<str>$,$<str>1);}
+	| constraint_names COMMA constraint_name {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+;
 
+/*
 column_constraints_ss:
 	column_constraint_ss {
 		$<sql_string>$=$<sql_string>1;
@@ -253,7 +313,7 @@ column_constraints_ss:
 		$<sql_string>$=make_sql_string($<sql_string>1,",",$<sql_string>3,0);
 	}
 ;
-
+*/
 constraint_name: identifier
 ;
 

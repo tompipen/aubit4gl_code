@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.17 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: ui.c,v 1.18 2004-02-23 22:03:39 mikeaubury Exp $
 #
 */
 
@@ -78,6 +78,7 @@
 
 char *A4GL_pull_off_data_for_display(int n,int display_type);
 void A4GL_processed_onkey_v2(char *iot,char *base) ;
+void A4GL_ensure_column(void ) ;
 void A4GL_add_key_mapping(int src,int dest) ;
 int A4GL_has_event(int a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt) ;
@@ -86,6 +87,8 @@ int aclfgl_aclfgl_add_keymap(int n) ;
 char  *A4GL_find_gui_id_name_from_id(int id) ;
 int A4GL_find_gui_id_from_name(char *s) ;
 int A4GL_add_gui_id_name(char *s) ;
+char *A4GL_linemode_goto_column(int a) ;
+void A4GL_set_line_mode_column(int n,int ab_rel) ;
 
 
 
@@ -291,6 +294,7 @@ void A4GL_display_at (int n, int a)
 
 	  if (x == -1 && y == -1) {
 		display_type=DISPLAY_TYPE_DISPLAY;
+		A4GL_set_line_mode_column(1,0);
 	  } else {
 		display_type=DISPLAY_TYPE_DISPLAY_AT;
 	  }
@@ -497,9 +501,10 @@ int ls;
   s = malloc (2);
   s[0] = 0;
 
-  for (z = 0; z <= n - 1; z++)
+  for (z = n -1; z >=0 ; z--)
     {
-      A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
+A4GL_debug("z=%d n=%d\n",z,n);
+      A4GL_get_top_of_stack (z+1, &tos_dtype, &tos_size, (void **) &tos_ptr);
 
       //A4GL_assertion(tos_ptr==0,"Top of the stack has 0 for the pointer..");
 
@@ -515,29 +520,52 @@ int ls;
                 function (tos_ptr, tos_size, -1,
                           (struct struct_scr_field *) 0,display_type);
 
-          if (ptr != 0)
-            {
-              A4GL_drop_param ();
-            }
-        }
+          //if (ptr != 0) { A4GL_drop_param (); }
 
-      if (ptr == 0)
-        {
-          ptr = A4GL_char_pop ();
-        } else {
-	ptr=strdup(ptr);
+
+		if (ptr) ptr=strdup(ptr);
+
+        } 
+
+	if (ptr==0)  {
+		A4GL_push_param(tos_ptr,(tos_dtype & DTYPE_MASK) + ENCODE_SIZE (tos_size));
+		ptr=A4GL_char_pop();
 	}
 
+
+	if (ptr[0]==0x01) {
+		if (display_type==DISPLAY_TYPE_DISPLAY) {
+			int a;
+			char buff[255];
+			strcpy(buff,&ptr[1]);
+			a=atoi(buff);
+			free(ptr);
+			ptr=strdup(A4GL_linemode_goto_column(a));
+		} else {
+			ptr=strdup("");
+		}
+
+	}
+
+	A4GL_debug("ptr='%s'\n",ptr);
+
+
       buff = realloc (buff, strlen (s) + strlen (ptr) + 1);
-	ls= strlen (s) + strlen (ptr) + 1;
+      ls= strlen (s) + strlen (ptr) + 1;
+      if (display_type==DISPLAY_TYPE_DISPLAY) {
+		A4GL_set_line_mode_column(strlen(ptr),1);
+	}
       s = realloc (s, ls);
-      sprintf (buff, "%s%s", ptr, s);
+      sprintf (buff, "%s%s",  s,ptr);
       free(ptr);
       strcpy (s, buff);
       A4GL_debug ("s='%s' %p %d %d\n", s, s,strlen(s),ls);
     }
     free(buff);
-	A4GL_debug("pull_off_data_for_display returns %s",s);
+    A4GL_debug("pull_off_data_for_display returns %s",s);
+    for (z=0;z<n;z++) {
+		A4GL_drop_param();
+	}
     return s;
 }
 
@@ -760,6 +788,42 @@ int A4GL_add_gui_id_name(char *s) {
 }
 
 
+int line_mode_column=0;
 
+
+/* 
+Maintain a line mode column number
+ab_rel : 0= absolute (line_mode_column = n)
+	 1= relatative (line_mode_column+=n)
+*/
+
+void A4GL_set_line_mode_column(int n,int ab_rel) {
+if (ab_rel==0) {
+	line_mode_column=n;
+} else {
+	line_mode_column+=n;
+}
+
+}
+
+void A4GL_ensure_column(void ) {
+char buff[2048];
+int a;
+a=A4GL_pop_int();
+sprintf(buff,"%c%d",0x01,a);
+A4GL_push_char(buff);
+}
+
+char *A4GL_linemode_goto_column(int a) {
+int b;
+static char buff[2048];
+b=0;
+	while (a>line_mode_column) {
+			b++;a--;
+	}
+	memset(buff,' ',b);
+	buff[b]=0;
+	return buff;
+}
 
 /* ============================= EOF ================================ */

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.45 2004-01-23 09:58:28 mikeaubury Exp $
+# $Id: 1.reqd,v 1.46 2004-02-23 22:03:09 mikeaubury Exp $
 #
 */
 
@@ -175,6 +175,7 @@ int 		in_cmd[]={0,0,0,0,0,0,0,0,0,0};
 int 		fcall_cnt=0;
 int 		doing_declare=0;
 int 		message_cnt=0;
+int 		doing_a_print=0;
 
 struct 		rep_structure rep_struct;
 struct 		pdf_rep_structure pdf_rep_struct;

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.7 2004-02-10 13:50:20 mikeaubury Exp $
+# $Id: readkeys.c,v 1.8 2004-02-23 22:03:39 mikeaubury Exp $
 #*/
 
 /**
@@ -59,6 +59,7 @@ static void open_keyfile(void) {
 	have_keyfile=0;
 
 	fname=acl_getenv("KEYFILE");
+	A4GL_debug("Keyfilename= %s",fname);
 	if (fname==0) return;
 	if (strlen(fname)==0) return ;
 	keyfile=(FILE *) A4GL_open_file_dbpath (fname);

@@ -263,14 +263,23 @@ variable_entry :
 report_only_expr:
 COLUMN fgl_expr_c 
 {
-	sprintf($<str>$,"A4GL_%sset_column(&rep);",ispdf());
+	if (doing_a_print) {
+		sprintf($<str>$,"A4GL_%sset_column(&rep);",ispdf());
+	} else {
+		sprintf($<str>$,"A4GL_ensure_column();");
+	}
 	$<ptr>$=A4GL_append_expr($<ptr>2,$<str>$);
+	
 }
 
 | COLUMNS fgl_expr_c 
 {
-sprintf($<str>$,"A4GL_%sset_column(&rep);",ispdf());
-$<ptr>$=A4GL_append_expr($<ptr>2,$<str>$);
+	if (doing_a_print) {
+		sprintf($<str>$,"A4GL_%sset_column(&rep);",ispdf());
+	} else {
+		sprintf($<str>$,"A4GL_ensure_column();");
+	}
+	$<ptr>$=A4GL_append_expr($<ptr>2,$<str>$);
 }
 | rep_agg  {
    if (!isin_command("REPORT")) {
