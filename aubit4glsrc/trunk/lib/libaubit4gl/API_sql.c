@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: API_sql.c,v 1.31 2003-03-10 09:09:38 mikeaubury Exp $
+# $Id: API_sql.c,v 1.32 2003-03-29 16:33:24 mikeaubury Exp $
 #
 */
 
@@ -890,6 +890,7 @@ global_A4GLSQL_get_sqlerrm (void)
 {
 	return a4gl_sqlca.sqlerrm;
 }
+
 
 void global_A4GLSQL_set_sqlcode (int n)
 {

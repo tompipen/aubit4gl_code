@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.28 2003-03-23 07:19:42 afalout Exp $
+# $Id: builtin.c,v 1.29 2003-03-29 16:33:25 mikeaubury Exp $
 #
 */
 
@@ -67,7 +67,7 @@ int m_scr_line = 0;
     call any function in Aubit libraries without aclfgl prefix.
 */
 
-
+FILE *error_log_file=0;
 /*
 =====================================================================
                     Functions definitions
@@ -660,6 +660,12 @@ A4GL_startlog (char *fname,int l,int n)
 	char *s;
 	s=char_pop();
 	debug("START LOG (%s Line:%d) to file '%s'\n",fname,l,s);
+	error_log_file=fopen(s,"w");
+
+	if (error_log_file==0) {
+		exitwith("Unable to open Error Log file");
+	}
+	
 	free(s);
 	
       return 0;
@@ -673,13 +679,42 @@ int
 A4GL_errorlog (char *fname,int l,int n)
 {
 	char *s;
+	char *date_str;
+	char *time_str;
+	int d;
+
 	s=char_pop();
 	debug("ERROR LOG - %s Line:%d %s\n",fname,l,s);
+
+	if (error_log_file) {
+		push_current (1, 3);
+		date_str=char_pop();
+
+ 		push_current (4, 6);
+		time_str=char_pop();
+
+		fprintf(error_log_file,"Date: %s    Time: %s\n",date_str,time_str);
+		if (isyes(acl_getenv("EXTENDED_ERRORLOG"))) {
+			fprintf(error_log_file,"MODULE : %s    Line: %d\n",fname,l);
+
+		}
+		fprintf(error_log_file,"%s\n",s);
+		fflush(error_log_file);
+
+	} else {
+		exitwith("Error Log file is not open");
+	}
+
 	free(s);
 
       return 0;
 }
 
+void A4GL_close_errorlog_file () {
+		if (error_log_file) {
+			fclose(error_log_file);
+		}
+}
 
 /**
  * The SHOWHELP( ) function displays a Help message, corresponding to its

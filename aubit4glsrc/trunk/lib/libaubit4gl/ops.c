@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.10 2003-03-02 14:06:58 mikeaubury Exp $
+# $Id: ops.c,v 1.11 2003-03-29 16:33:26 mikeaubury Exp $
 #
 */
 
@@ -670,7 +670,9 @@ DTYPE_SERIAL
 
 	add_op_function(DTYPE_INTERVAL,	DTYPE_INTERVAL,	OP_MATH,in_in_ops);
 	add_op_function(DTYPE_INTERVAL,	DTYPE_DTIME,	OP_MATH,dt_in_ops);
+
 	add_op_function(DTYPE_DTIME,	DTYPE_INTERVAL,	OP_MATH,in_dt_ops);
+
 	add_op_function(DTYPE_DTIME,	DTYPE_DTIME,	OP_MATH,dt_dt_ops);
 
 	debug("Finished adding default operations");
