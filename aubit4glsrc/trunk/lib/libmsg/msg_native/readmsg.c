@@ -18,7 +18,7 @@ int max_width;
 FILE *helpfile = 0;
 
 
-
+int
 read_help_f (int no,int *maxwidth)
 {
   short pos;

@@ -2,8 +2,8 @@
 
 ##########################################################################
 #
-#This script is used to create API C source file for Aubit libraraies to be loaded
-#at run-time using dlopen() function call.
+#This script is used to create API C source file for Aubit libraraies
+#to be loaded at run-time using dlopen() function call.
 #
 ##########################################################################
 
@@ -24,8 +24,8 @@ then
     echo " "
 	echo "SpecFile file format:"
 	echo "  func-name param-type param-name ... -> returns"
-	echo "  Any line beginning with a * is a comment"
-	echo "  Any line beginning with a # is included in the output Eg #define #include etc"
+	echo "  line beginning with * is a comment"
+	echo "  line beginning with # or / is included in the output Eg #define //comment etc"
     echo " "
     echo "Example input File :"
     echo "	LIBRARY TEST"
@@ -60,6 +60,10 @@ FS="[ 	,]"
 print "/** lib=" lib " env=" env
 print "* @file"
 print "* File definition"
+print "*"
+print "* This file was created from .spec file of same name, using dlmagic script"
+print "* - if you need to edit it, edit .spec file instad, and use [make filename.c]"
+print "* to re-create it."
 print "*"
 print "* @todo Add Doxygen comments to file"
 print "* @todo Take the prototypes here declared. See if the functions are static"
@@ -110,6 +114,9 @@ print ""
 /^LIBRARY / {next}
 /^VARIABLE / {next}
 /^#/ {print
+	next
+}
+/^\// {print
 	next
 }
 /^\*/ {next}
@@ -176,7 +183,7 @@ print ") {"
 if (va_start!="") {print "va_list ap;"}
 
 print "   if (libptr==0) A4GL" lib "_initlib();"
-print "   func=find_func(libptr,\"" fname "\");"
+print "   func=find_func(libptr,\"" lib "lib_" fname "\");"
 if (va_start!="") {
 	print "   va_start(ap," va_start ");"
 }

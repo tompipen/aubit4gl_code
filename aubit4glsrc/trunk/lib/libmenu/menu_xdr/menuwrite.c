@@ -37,23 +37,9 @@ char *chk_alias (char *s);
 FILE *fxx;
 FILE *fyy;
 
-char *
-char_val (char *s)
-{
-  static char str[80];
-  int a;
-  strcpy (str, &s[1]);
-  str[strlen (str) - 1] = 0;
-  for (a = 0; a < strlen (str); a++)
-    {
-      if (str[a] == '\t')
-	str[a] = ' ';
-    }
-  return str;
-}
 
-
-
+//is this not the same as exitwith() ?
+void
 error_with (char *s, char *a, char *b)
 {
   static char z[2];
@@ -68,6 +54,9 @@ error_with (char *s, char *a, char *b)
   exit (0);
 }
 
+
+//write the compiled menu data to file in Sun RPC XDR format
+void
 write_menu ()
 {
   char fname[132];

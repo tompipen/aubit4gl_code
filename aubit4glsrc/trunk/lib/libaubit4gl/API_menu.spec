@@ -15,7 +15,7 @@ VARIABLE A4GL_MENUTYPE
 * func-name param-type param-name ... -> returns"
 *
 *we should not make libaubit4gl depend on GTK headers - but how do I then
-#return GtkWidget* ?
+*return GtkWidget* ?
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
 write_menu

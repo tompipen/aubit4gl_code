@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.6 2002-04-25 09:47:59 afalout Exp $
+# $Id: Makefile.in,v 1.7 2002-04-26 05:53:02 afalout Exp $
 #
 
 #All stuff common to more then one Aubit compiler make file is there:
@@ -37,11 +37,13 @@ override NOINCL=0
 
 CMODS_PROJECT	=project.c
 
+
+CMODS_API   = \
+	API_ui.c API_exreport.c API_sql.c API_rpc.c \
+	API_lex.c API_form.c API_menu.c API_msg.c
+
 #In alphabetical order:
 COMMONSRC= \
-	 \
-	API_ui.c API_exreport.c API_sql.c API_rpc.c \
-	API_lex.c API_form.c API_menu.c API_msg.c \
 	builtin.c builtin_d.c \
 	calldll.c conv.c \
 	data_if.c dates.c dmy.c debug.c \
@@ -59,7 +61,8 @@ COMMONSRC= \
 	screen.c sleep.c stack.c string.c \
 	translate.c
 
-OBJS				=${COMMONSRC:.c=.o} ${CMODS_PROJECT:.c=.o}
+OBJS_API			=${CMODS_API:.c=.o}
+OBJS				=${COMMONSRC:.c=.o} ${CMODS_PROJECT:.c=.o} ${OBJS_API}
 
 ## ==================================================================
 ##                              Options
@@ -155,6 +158,8 @@ clean.generated:
 lclint: $(CMODS)
 	-lclint -weak $(CFLAGS) $(CMODS) > lclint.log 2>&1
 	@echo "see lclint.log for results"
+
+api: ${OBJS_API}
 
 API_msg.c: API_msg.spec
 	${SH} ${DLMAGIC} $^ > $@

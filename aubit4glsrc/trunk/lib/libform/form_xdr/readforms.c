@@ -247,7 +247,7 @@ read_form (char *fname, char *formname)
 
 
 
-
+void
 set_default_form (struct s_form_attr *form)
 {
   form->mode = -1;

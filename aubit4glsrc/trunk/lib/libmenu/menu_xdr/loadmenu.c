@@ -1,6 +1,6 @@
 /**
  * @file
- * aubit 4gl compiled menus load in GTK mode.
+ * aubit 4gl compiled menus load in GTK mode, from Sun RPC XDR fromated file.
  *
  * @todo Take the prototypes here declared. See if the functions are static
  * or to be externally seen
@@ -47,7 +47,7 @@ GtkWidget *tooltips = 0;
  * @param s The string with the menu definition.
  * @return The caption part.
  */
-char *mn_caption(char *s) 
+char *mn_caption(char *s)
 {
   static  char buff[256];
   char *ptr;
