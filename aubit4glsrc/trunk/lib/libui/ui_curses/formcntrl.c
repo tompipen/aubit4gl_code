@@ -24,10 +24,10 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.63 2004-08-31 20:46:55 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.64 2004-09-27 17:13:23 mikeaubury Exp $
 #*/
 
-static char *module_id="$Id: formcntrl.c,v 1.63 2004-08-31 20:46:55 mikeaubury Exp $";
+static char *module_id="$Id: formcntrl.c,v 1.64 2004-09-27 17:13:23 mikeaubury Exp $";
 /**
  * @file
  * Form movement control
@@ -1162,6 +1162,8 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init,void *vevt)
 //}
   A4GL_mja_pos_form_cursor (mform);
 
+  // cc 2004.09.14 fprop may have been changed, always read it again
+  fprop = (struct struct_scr_field *) field_userptr (current_field (mform));
 // Wait for a key..
   a = A4GL_getch_win ();
   if (abort_pressed) a = A4GLKEY_INTERRUPT;

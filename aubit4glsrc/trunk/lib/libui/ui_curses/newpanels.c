@@ -24,9 +24,9 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.94 2004-08-31 20:46:55 mikeaubury Exp $
+# $Id: newpanels.c,v 1.95 2004-09-27 17:13:23 mikeaubury Exp $
 #*/
-static char *module_id="$Id: newpanels.c,v 1.94 2004-08-31 20:46:55 mikeaubury Exp $";
+static char *module_id="$Id: newpanels.c,v 1.95 2004-09-27 17:13:23 mikeaubury Exp $";
 
 /**
  * @file
@@ -1664,7 +1664,10 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 	}
 
 
-	if (strlen(s)==0&&clr_line) return;
+	if (strlen(s)==0&&clr_line) {
+			A4GL_debug("Just got a '' on its own ?");
+			return;
+	}
 
 	A4GL_debug("Check we have CURSES env");
       A4GL_chkwin ();
