@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.69 2005-02-04 15:37:43 mikeaubury Exp $
+# $Id: ops.c,v 1.70 2005-02-09 18:51:34 mikeaubury Exp $
 #
 */
 
@@ -1095,7 +1095,7 @@ if (op==OP_SUB) {
 	}
       if (ptr == 0)
 	{
-	  A4GL_exitwith ("Internal error in_dt_ops");
+	  A4GL_assertion (1,"Internal error in_dt_ops");
 	  return;
 	}
 
