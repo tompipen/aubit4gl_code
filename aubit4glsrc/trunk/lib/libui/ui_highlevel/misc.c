@@ -2,11 +2,11 @@
 
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_lib_ui_int.h"
-#include "a4gl_API_lowlevel_lib.h"
+#include "a4gl_API_lowlevel.h"
 #include "a4gl_API_ui_lib.h"
 #include "a4gl_API_ui.h"
 #include "misc.h"
-static char *module_id="$Id: misc.c,v 1.6 2004-01-23 10:11:54 mikeaubury Exp $";
+static char *module_id="$Id: misc.c,v 1.7 2004-01-25 13:00:24 mikeaubury Exp $";
 
 void *UILIB_A4GL_get_curr_form (int n);
 

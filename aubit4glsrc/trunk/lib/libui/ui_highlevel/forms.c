@@ -1,8 +1,8 @@
-static char *module_id="$Id: forms.c,v 1.7 2004-01-23 10:10:45 mikeaubury Exp $";
+static char *module_id="$Id: forms.c,v 1.8 2004-01-25 13:00:23 mikeaubury Exp $";
 
 #include "forms.h"
 #include "a4gl_API_ui_lib.h"
-#include "a4gl_API_lowlevel_lib.h"
+#include "a4gl_API_lowlevel.h"
 
 void *A4GL_create_window (char *name, int x, int y, int w, int h,
 			  int iswindow,
